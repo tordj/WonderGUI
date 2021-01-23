@@ -64,17 +64,19 @@ DEPDIR = deps
 
 
 
-CPPFLAGS = -I/usr/include/freetype2/ -I../../src/ -I../../src/base/ -I../../src/components/ \
-  -I../../src/sizebrokers/ -I../../src/skins/ -I../../src/skins/meter/ -I../../src/skins/misc/ -I../../src/skins/state/ -I../../src/skins/static/ -I../../src/textmappers/ -I../../src/valueformatters/ \
-  -I../../src/widgets/ -I../../src/widgets/capsules/ -I../../src/widgets/layers/ -I../../src/widgets/panels/ -I../../src/widgets/lists/ \
+CPPFLAGS = -I/usr/include/freetype2/ -I../../src/ -I../../src/base/ -I../../src/components/ -I../../src/sizebrokers/ \
+  -I../../src/skins/ -I../../src/skins/anim/ -I../../src/skins/meter/ -I../../src/skins/misc/ -I../../src/skins/state/ \
+  -I../../src/skins/static/ -I../../src/textmappers/ -I../../src/valueformatters/ -I../../src/widgets/ \
+  -I../../src/widgets/capsules/ -I../../src/widgets/layers/ -I../../src/widgets/panels/ -I../../src/widgets/lists/ \
   -I../../src/gfxdevices/software/ -I../../src/gfxdevices/opengl/ -I../../src/gfxdevices/stream/ -I../../src/fonts/freetype/
 
-VPATH = ../../src/base::../../src/sizebrokers:../../src/components:../../src/sizebrokers:../../src/skins:../../src/skins/meter:../../src/skins/misc:../../src/skins/state:../../src/skins/static:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/gfxdevices/stream/:../../src/fonts/freetype:../../src/examples:$(OUTDIR):$(OBJDIR)
+VPATH = ../../src/base::../../src/sizebrokers:../../src/components:../../src/sizebrokers:../../src/skins:../../src/skins/anim:../../src/skins/meter:../../src/skins/misc:../../src/skins/state:../../src/skins/static:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/gfxdevices/stream/:../../src/fonts/freetype:../../src/examples:$(OUTDIR):$(OBJDIR)
 
 BASE = \
   wg_base.o \
   wg_bitmapfont.o \
   wg_blob.o \
+  wg_canvaslayers.o \
   wg_caret.o \
   wg_chain.o \
   wg_charbuffer.o \
@@ -93,6 +95,7 @@ BASE = \
   wg_gfxstreamplug.o \
   wg_gfxstreamreader.o \
   wg_gfxstreamwriter.o \
+  wg_gradient.o \
   wg_inputhandler.o \
   wg_mempool.o \
   wg_memstack.o \
@@ -106,6 +109,7 @@ BASE = \
   wg_receiver.o \
   wg_resdb.o \
   wg_scrollbartarget.o \
+  wg_skinslotmanager.o \
   wg_slot.o \
   wg_string.o \
   wg_surface.o \
@@ -118,7 +122,6 @@ BASE = \
   wg_util.o
 
 COMPONENTS = \
-  wg_ccanvas.o \
   wg_canimframes.o \
   wg_ccanvas.o \
   wg_ccolumnheader.o \
@@ -128,6 +131,7 @@ COMPONENTS = \
   wg_cicondisplay.o \
   wg_component.o \
   wg_cshadows.o \
+  wg_cskinslot.o \
   wg_cslot.o \
   wg_cstandardslot.o \
   wg_cstaticslotcollection.o \
@@ -147,8 +151,10 @@ SIZEBROKERS = \
   wg_uniform_sizebroker.o
 
 SKINS = \
+  wg_animskin.o \
   wg_skin.o \
   wg_stateskin.o \
+  wg_spinanimskin.o \
   wg_fillmeterskin.o \
   wg_framemeterskin.o \
   wg_piemeterskin.o \
@@ -160,10 +166,12 @@ SKINS = \
   wg_colorskin.o \
   wg_lambdaskin.o \
   wg_multiblockskin.o \
+  wg_scrollskin.o \
   wg_tileskin.o \
   wg_staticblockskin.o \
   wg_staticboxskin.o \
   wg_staticcolorskin.o \
+  wg_staticgradientskin.o \
   wg_statictileskin.o
 
 TEXTMAPPERS = \
@@ -204,8 +212,9 @@ WIDGETS = \
 
 
 CAPSULES = \
-  wg_canvasstack.o \
+  wg_canvascapsule.o \
   wg_capsule.o \
+  wg_renderlayercapsule.o \
   wg_shadercapsule.o \
   wg_sizecapsule.o
 
@@ -214,7 +223,8 @@ LAYERS = \
   wg_dragndroplayer.o \
   wg_layer.o \
   wg_modallayer.o \
-  wg_popuplayer.o
+  wg_popuplayer.o \
+  wg_tooltiplayer.o
 
 LISTS = \
   wg_list.o \

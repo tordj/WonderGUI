@@ -193,7 +193,6 @@ namespace wg
 	{
 		static const char * names[] = { 
 			"Dummy = 0",
-			"Tick",
 			"PointerChange",
 			"FocusGained",
 			"FocusLost",
