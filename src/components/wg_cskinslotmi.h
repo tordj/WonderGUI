@@ -136,7 +136,7 @@ namespace wg
 
 
 
-	class OCSkinSlotMI : public CSkinSlotMI
+	class OCSkinSlotMI : public CSkinSlotMI			/** @private */
 	{
 	public:
 		using CSkinSlotMI::_addInstance;

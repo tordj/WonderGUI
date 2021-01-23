@@ -123,7 +123,7 @@ namespace wg
 
 
 
-	class OCSkinSlot : public CSkinSlot
+	class OCSkinSlot : public CSkinSlot			/** @private */
 	{
 	public:
 		using CSkinSlot::_stateChanged;
