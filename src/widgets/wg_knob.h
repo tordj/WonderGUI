@@ -82,6 +82,7 @@ namespace wg
 		virtual Widget* _newOfMyType() const override { return new Knob(); };
 		void 			_receive(Msg* pMsg) override;
 
+		void 		_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window) override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_setValue(float value, bool bPostMsg = true);
 
@@ -92,7 +93,7 @@ namespace wg
 		MU			m_dragged;
 		float		m_value = 0.f;
 		float		m_valueAtPress = 0.f;
-		float		m_wheelStepSize = 0.f;
+		float		m_wheelStepSize = 0.01f;
 		int			m_nbSteps = 0;
 		Axis		m_dragAxis = Axis::Y;
 	};

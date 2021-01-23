@@ -190,7 +190,14 @@ namespace wg
 		Widget::_receive(_pMsg);
 	}
 
-	//____ _cloneContent() _______________________________________________________
+	//____ _render() __________________________________________________________
+
+	void Knob::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
+	{
+			OO(skin)._render(pDevice, canvas, m_state, m_value);
+	}
+
+//____ _cloneContent() _______________________________________________________
 
 	void Knob::_cloneContent( const Widget * _pOrg )
 	{

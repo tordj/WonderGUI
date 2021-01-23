@@ -93,6 +93,10 @@
 		175968EC25B82EEA00F11CEC /* wg_renderlayercapsule.h in Headers */ = {isa = PBXBuildFile; fileRef = 175968E825B82EE900F11CEC /* wg_renderlayercapsule.h */; };
 		175968ED25B82EEA00F11CEC /* wg_canvascapsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175968E925B82EE900F11CEC /* wg_canvascapsule.cpp */; };
 		175968EE25B82EEA00F11CEC /* wg_canvascapsule.h in Headers */ = {isa = PBXBuildFile; fileRef = 175968EA25B82EEA00F11CEC /* wg_canvascapsule.h */; };
+		175968F625B9BE1100F11CEC /* wg_scrollskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 175968F425B9BE1000F11CEC /* wg_scrollskin.h */; };
+		175968F725B9BE1100F11CEC /* wg_scrollskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175968F525B9BE1000F11CEC /* wg_scrollskin.cpp */; };
+		175968FB25B9BE2000F11CEC /* wg_tooltiplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175968F925B9BE2000F11CEC /* wg_tooltiplayer.cpp */; };
+		175968FC25B9BE2000F11CEC /* wg_tooltiplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 175968FA25B9BE2000F11CEC /* wg_tooltiplayer.h */; };
 		1760C834257010CA00EF3808 /* wg_staticgradientskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1760C832257010C900EF3808 /* wg_staticgradientskin.cpp */; };
 		1760C835257010CA00EF3808 /* wg_staticgradientskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 1760C833257010C900EF3808 /* wg_staticgradientskin.h */; };
 		1760C8392570110800EF3808 /* wg_animskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 1760C8362570110800EF3808 /* wg_animskin.h */; };
@@ -415,6 +419,10 @@
 		175968E825B82EE900F11CEC /* wg_renderlayercapsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_renderlayercapsule.h; path = ../capsules/wg_renderlayercapsule.h; sourceTree = "<group>"; };
 		175968E925B82EE900F11CEC /* wg_canvascapsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_canvascapsule.cpp; path = ../capsules/wg_canvascapsule.cpp; sourceTree = "<group>"; };
 		175968EA25B82EEA00F11CEC /* wg_canvascapsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_canvascapsule.h; path = ../capsules/wg_canvascapsule.h; sourceTree = "<group>"; };
+		175968F425B9BE1000F11CEC /* wg_scrollskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_scrollskin.h; path = state/wg_scrollskin.h; sourceTree = "<group>"; };
+		175968F525B9BE1000F11CEC /* wg_scrollskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_scrollskin.cpp; path = state/wg_scrollskin.cpp; sourceTree = "<group>"; };
+		175968F925B9BE2000F11CEC /* wg_tooltiplayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_tooltiplayer.cpp; sourceTree = "<group>"; };
+		175968FA25B9BE2000F11CEC /* wg_tooltiplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_tooltiplayer.h; sourceTree = "<group>"; };
 		1760C832257010C900EF3808 /* wg_staticgradientskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_staticgradientskin.cpp; path = static/wg_staticgradientskin.cpp; sourceTree = "<group>"; };
 		1760C833257010C900EF3808 /* wg_staticgradientskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_staticgradientskin.h; path = static/wg_staticgradientskin.h; sourceTree = "<group>"; };
 		1760C8362570110800EF3808 /* wg_animskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_animskin.h; sourceTree = "<group>"; };
@@ -723,6 +731,8 @@
 		17F095E624BDAA92002D9923 /* State */ = {
 			isa = PBXGroup;
 			children = (
+				175968F525B9BE1000F11CEC /* wg_scrollskin.cpp */,
+				175968F425B9BE1000F11CEC /* wg_scrollskin.h */,
 				17F0961224BDAAE9002D9923 /* wg_blockskin.cpp */,
 				17F0960B24BDAAE9002D9923 /* wg_blockskin.h */,
 				17F0960824BDAAE9002D9923 /* wg_boxskin.cpp */,
@@ -1103,6 +1113,8 @@
 		17F41B79225354AB008D1DE7 /* Layers */ = {
 			isa = PBXGroup;
 			children = (
+				175968F925B9BE2000F11CEC /* wg_tooltiplayer.cpp */,
+				175968FA25B9BE2000F11CEC /* wg_tooltiplayer.h */,
 				B3B75A44242A77F500036988 /* wg_designlayer.cpp */,
 				B3B75A43242A77F500036988 /* wg_designlayer.h */,
 				17169424229C6DA300196AB0 /* wg_dragndroplayer.cpp */,
@@ -1196,6 +1208,7 @@
 				171693D2229C6AA700196AB0 /* wg_widget.h in Headers */,
 				176817E3241E424A00D03076 /* wg_selectbox.h in Headers */,
 				17F095AD24BDA9BB002D9923 /* wg_canimframes.h in Headers */,
+				175968F625B9BE1100F11CEC /* wg_scrollskin.h in Headers */,
 				17F095D924BDA9BB002D9923 /* wg_cdynamicslotcollection.h in Headers */,
 				17F0951F24BDA995002D9923 /* wg_paddedslot.h in Headers */,
 				17F0951324BDA995002D9923 /* wg_dummyfont.h in Headers */,
@@ -1244,6 +1257,7 @@
 				171693C6229C6AA700196AB0 /* wg_textdisplay.h in Headers */,
 				17F095F024BDAAB0002D9923 /* wg_spinmeterskin.h in Headers */,
 				17F0952224BDA995002D9923 /* wg_textstyle.h in Headers */,
+				175968FC25B9BE2000F11CEC /* wg_tooltiplayer.h in Headers */,
 				171693B9229C6AA700196AB0 /* wg_simplevolumemeter.h in Headers */,
 				1760C8402570114700EF3808 /* wg_spinanimskin.h in Headers */,
 				17F095BC24BDA9BB002D9923 /* wg_cstaticslotvector.h in Headers */,
@@ -1403,6 +1417,7 @@
 				17F0955F24BDA995002D9923 /* wg_util.cpp in Sources */,
 				17F0954824BDA995002D9923 /* wg_caret.cpp in Sources */,
 				17F095C524BDA9BB002D9923 /* wg_canimframes.cpp in Sources */,
+				175968FB25B9BE2000F11CEC /* wg_tooltiplayer.cpp in Sources */,
 				17F0961A24BDAAE9002D9923 /* wg_multiblockskin.cpp in Sources */,
 				17F095CC24BDA9BB002D9923 /* wg_geocomponent.cpp in Sources */,
 				179280E925715E52007DD7F6 /* wg_canvaslayers.cpp in Sources */,
@@ -1412,6 +1427,7 @@
 				17F095D624BDA9BB002D9923 /* wg_cshadows.cpp in Sources */,
 				17F095D724BDA9BB002D9923 /* wg_cvalueeditor.cpp in Sources */,
 				1760C834257010CA00EF3808 /* wg_staticgradientskin.cpp in Sources */,
+				175968F725B9BE1100F11CEC /* wg_scrollskin.cpp in Sources */,
 				17F0956724BDA995002D9923 /* wg_bitmapfont.cpp in Sources */,
 				17F095B024BDA9BB002D9923 /* wg_cicondisplay.cpp in Sources */,
 				17F0963D24BDAB50002D9923 /* wg_timer.cpp in Sources */,

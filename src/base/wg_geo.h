@@ -106,7 +106,7 @@ namespace wg
 		inline Coord operator-(const Coord& k) const { return { x - k.x, y - k.y }; }
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Coord& operator*=(Type2 v) { x = (MU)(x*v); y = (MU)(x*v); return *this; }
+		inline Coord& operator*=(Type2 v) { x = (MU)(x*v); y = (MU)(y*v); return *this; }
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline Coord& operator/=(Type2 v) { x = (MU)(x / v); y = (MU)(y / v); return *this; }
@@ -546,7 +546,7 @@ namespace wg
 		inline CoordT<Type> operator-(const CoordT<Type>& k) const { return { x - k.x, y - k.y }; }
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline CoordT<Type>& operator*=(Type2 v) { x = (Type)(x*v); y = (Type)(x*v); return *this; }
+		inline CoordT<Type>& operator*=(Type2 v) { x = (Type)(x*v); y = (Type)(y*v); return *this; }
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline CoordT<Type>& operator/=(Type2 v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }

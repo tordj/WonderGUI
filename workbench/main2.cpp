@@ -608,7 +608,7 @@ int main(int argc, char** argv)
 //	sliderTest(&pRoot->slot);
 //	rangeSliderTest(&pRoot->slot);
 //	pieKnobTest(&pRoot->slot);
-//	spinKnobTest(&pRoot->slot);
+	spinKnobTest(&pRoot->slot);
 //  animKnobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
 //	doubleSkinTest(&pRoot->slot);
@@ -618,10 +618,10 @@ int main(int argc, char** argv)
 //	tileSkinTest(&pRoot->slot);
 //	bakeSkinTest(&pRoot->slot);
 //	animSkinTest(&pRoot->slot);
-	renderLayerTest(&pRoot->slot);
+//	renderLayerTest(&pRoot->slot);
 //	rigidPartNinePatchTest(&pRoot->slot);
 //	scrollSkinTest(&pRoot->slot);
-	tooltipLayerTest(&pRoot->slot);
+//	tooltipLayerTest(&pRoot->slot);
 
 
 	// Test IChild and IChildIterator baseclasses
