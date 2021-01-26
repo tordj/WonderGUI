@@ -77,7 +77,7 @@ namespace wg
 		void		setScaleMode(ScaleMode mode) override;
 		bool		isOpaque() const override;
 
-		void		setTiling(bool bTiling) override;
+		bool		setTiling(bool bTiling) override;
 
 		//.____ Content _______________________________________________________
 

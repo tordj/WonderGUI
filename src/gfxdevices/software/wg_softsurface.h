@@ -62,7 +62,7 @@ namespace wg
 		//.____ Appearance ____________________________________________________
 
 		bool		isOpaque() const override;
-		void		setTiling(bool bTiling) override;
+		bool		setTiling(bool bTiling) override;
 
 		//.____ Content _______________________________________________________
 

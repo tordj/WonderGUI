@@ -76,10 +76,10 @@ namespace wg
 		void			setFinalizer(Finalizer_p pFinalizer);
 		Finalizer_p		finalizer() const;
 
-		inline void		retain() { _incRefCount(); }
-		inline void		release() { _decRefCount(); }
+		inline void		retain();
+		inline void		release();
 		
-		inline int		refcount() const { return m_refCount; }
+		inline int		refcount() const;
 
 	protected:
 		Object();
@@ -98,7 +98,62 @@ namespace wg
 		std::atomic_int	m_refCount;
 	};
 
+	/**
+	 * @brief Increase objects reference count
+	 * 
+	 * Increases the reference count of the Object. 
+	 * 
+	 * An Objects reference count is automatically
+	 * increased/decreased with every shared pointer pointing to it and is destroyed when it
+	 * reaches zero.
+	 * 
+	 * This method allows you to increase the reference count by hand, keeping the object alive even
+	 * when no smart pointers points to it anymore.
+	 * 
+	 * To decrease the reference count call release().
+	 * 
+	 */
 
+	void Object::retain()
+	{ 
+		_incRefCount(); 
+	}
+
+	/**
+	 * @brief Decrease objects reference count
+	 * 
+	 * Decreases the reference count of the Object, potentially destroying it. 
+	 * 
+	 * An Objects reference count is automatically
+	 * increased/decreased with every shared pointer pointing to it and is destroyed when it
+	 * reaches zero.
+	 * 
+	 * This method allows you to decrease the reference count by hand and is the companion to
+	 * retain() which increases the reference count.
+	 * 
+	 * Never call this method without previously having called retain().
+	 * 
+	 */
+
+	void Object::release()
+	{ 
+		_decRefCount();
+	}
+
+	/**
+	 * @brief Get the reference count of the Object
+	 * 
+	 * The reference count is the count of how many hard references (like shared pointers) the Object has.
+	 * 
+	 * The Object is automatically destroyed when the reference count reaches zero.
+	 *  
+	 * @return The reference count of the Object. Always 1 or higher.
+	 */
+
+	int Object::refcount() const 
+	{ 
+		return m_refCount; 
+	}
 
 } // namespace wg
 #endif //WG_OBJECT_DOT_H

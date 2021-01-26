@@ -240,7 +240,7 @@ namespace wg
 
 	//____ setTiling() ________________________________________________________
 
-	void SoftSurface::setTiling(bool bTiling)
+	bool SoftSurface::setTiling(bool bTiling)
 	{
 		if (bTiling)
 		{
@@ -250,7 +250,7 @@ namespace wg
 			if (m_size.w != 1 << xBits || m_size.h != 1 << yBits)
 			{
 				Base::handleError(ErrorSeverity::Warning, ErrorCode::FailedPrerequisite, "Surface of non-two-factor size set to tile. Tiling will happen at largest two-factor boundary.", this, SoftSurface::TYPEINFO, __func__, __FILE__, __LINE__);
-				return;
+				return false;
 			}
 
 			m_srcPosMaskX = (1 << xBits) -1;
@@ -263,6 +263,7 @@ namespace wg
 		}
 
 		Surface::setTiling(bTiling);
+		return true;
 	}
 
 	//____ allocPixelBuffer() _________________________________________________

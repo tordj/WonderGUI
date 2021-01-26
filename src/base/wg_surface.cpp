@@ -95,6 +95,12 @@ namespace wg
 	}
 
 	//____ setScaleMode() __________________________________________________________
+	/**
+	 * @brief Set how graphics blitted from Surface is scaled.
+	 * @param mode	The way graphics should be scaled, either Nearest or Interpolate.
+	 * 
+	 * Sets how graphics blitted from the Surface should be scaled.
+	 */
 
 	void Surface::setScaleMode( ScaleMode mode )
 	{
@@ -102,10 +108,36 @@ namespace wg
 	}
 
 	//____ setTiling() ________________________________________________________
+	/**
+	 * @brief Set whether Surface should be tiling.
+	 * 
+	 * Set whether Surface should be tiling, e.g. if reads outside the Surface
+	 * should "loop back over the surface" or result in transparency.
+	 * 
+	 * @param bTiling	True if Surface should be tiling, otherwise false.
+	 * 
+	 * @return True if successful.
+	 * 
+	 * A Surface needs to be tiling in order for GfxDevice::tile() and similar functions
+	 * to work properly.
+	 * 
+	 * It also affects other blit methods such as rotScaleBlit() which will either
+	 * fill the destination with a tiled version or just produce one transformed copy with 
+	 * transparency around.
+	 * 
+	 * A Surface set to tiling can be used in normal blit operatons as well, but 
+	 * colors from one edge tend to bleed to the one across when using BlendMode::Interpolate
+	 * since they are considered neighbors.
+	 * 
+	 * Also worth noting is that SoftSurface puts extra restrictions on tiling Surfaces -
+	 * their length and height must be a power of two. Calling this method to enable tiling for 
+	 * a SoftSurface where not both dimension are a power of two will fail.
+	 */
 
-	void Surface::setTiling(bool bTiling)
+	bool Surface::setTiling(bool bTiling)
 	{
 		m_bTiling = bTiling;
+		return true;
 	}
 
 	//____ width() ________________________________________________________________
@@ -400,19 +432,6 @@ namespace wg
 		return retVal;
 	}
 
-	//____ setBaggage() _______________________________________________________
-
-	void Surface::setBaggage(Object * pBaggage)
-	{
-		m_pBaggage = pBaggage;
-	}
-
-	//_____ baggage() _________________________________________________________
-
-	Object_p Surface::baggage() const
-	{
-		return m_pBaggage;
-	}
 
 	//____ _copyFrom() _________________________________________________________
 
@@ -939,5 +958,83 @@ namespace wg
 	 * @return True if surface is guaranteed to only contain completely opaque pixels. False if
 	 * if it does contain (semi)transparent pixels or we simply just don't know.
 	 */
+
+
+	/**
+	 * @fn virtual const PixelBuffer Surface::allocPixelBuffer(const RectI& rect)
+	 * 
+	 * @brief 	Allocate a buffer to access part of the surface
+	 * 
+	 * @param rect	A rectangular area (measured in pixels) of the Surface that should be
+	 * 				mapped to this PixelBuffer.
+	 * 
+	 * @return 	A PixelBuffer providing info about the buffer, as well as working as a handle for
+	 * 			future references.
+	 * 
+	 * Allocates a buffer that provides access to a rectangular part of the surface. First pixel
+	 * in the buffer is the topmost pixel of the mapped rectangle. Mapping only part of the surface
+	 * and not the whole surface can allow for significantly faster push/pull operations, as well as
+	 * save memory.
+	 * 
+	 * The buffer should be expected to be uninitialized, but might already contain the
+	 * content of the Surface rectangle depending on Surface implementation. For example is the
+	 * buffer of a SoftSurface just a pointer into the pixels of the surface, providing
+	 * direct access, while the OpenGL and Metal surfaces are uninitialized since we don't
+	 * have direct access to the texture pixels.
+	 * 
+	 * To fill the buffer with the content of the surface rectangle, call pushPixels(). To copy the
+	 * content of the buffer to the surface rectangle, use pullPixels(). These calls will do the actual
+	 * pixel copying for an OpenGL and Metal surface, while just immediately return for a SoftSurface.
+	 * 
+	 * Once you are done with your buffer, call freePixelBuffer() to return the memory allocated.
+	 */
+
+	/**
+	 * @fn virtual void freePixelBuffer(const PixelBuffer& buffer)
+	 * 
+	 * @brief 	Free a previously allocated PixelBuffer.
+	 * 
+	 * Free a previously allocated PixelBuffer.
+	 * 
+	 */
+
+	/**
+	 * @fn virtual bool	Surface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+	 * 
+	 * @brief Partial copy of pixels from Surface to PixelBuffer.
+	 * 
+	 * Partial copy of pixels from Surface to PixelBuffer.
+	 * 
+	 * @param buffer		PixelBuffer to copy pixels to.
+	 * @param bufferRect	The destination rectangle withing the PixelBuffer. 
+	 * @return 				True if operation could be performed.
+	 * 
+	 * Only the specified rectangle within the PixelBuffer is updated with pixels from the Surface,
+	 * the rest is unaffected. To update the whole PixelBuffer, you can use pushPixels(const PixelBuffer& buffer) instead.
+	 * 
+	 * Please note that the rectangle specified is within the PixelBuffer, not the Surface. You should therefore not add
+	 * the offset of the PixelBuffers mapping to bufferRect.
+	 * 
+	 */
+
+	/**
+	 * @fn virtual bool	Surface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+	 * 
+	 * @brief Partial copy of pixels from PixelBuffer to Surface.
+	 * 
+	 * Partial copy of pixels from PixelBuffer to Surface.
+	 * 
+	 * @param buffer		PixelBuffer to copy pixels from.
+	 * @param bufferRect	The source rectangle withing the PixelBuffer. 
+	 * @return 				True if operation could be performed.
+	 * 
+	 * Only the specified rectangle within the PixelBuffer is copied to the Surface,
+	 * the rest of the surface is unaffected. To copy the whole PixelBuffer to Surface, use pullPixels(const PixelBuffer& buffer) instead.
+	 * 
+	 * Please note that the rectangle specified is within the PixelBuffer, not the Surface. You should therefore not add
+	 * the offset of the PixelBuffer to bufferRect.
+	 * 
+	 */
+
 
 } // namespace wg
