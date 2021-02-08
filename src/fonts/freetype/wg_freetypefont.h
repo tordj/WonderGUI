@@ -25,13 +25,13 @@
 #define WG_FREETYPEFONT_DOT_H
 #pragma once
 
+#include <vector>
 
 #include <wg_types.h>
 #include <wg_chain.h>
 
 
 #include <wg_font.h>
-#include <wg_surfacefactory.h>
 #include <wg_blob.h>
 
 
@@ -92,69 +92,49 @@ namespace wg
 
 		//.____ Appearance ___________________________________________
 
-		inline bool setRenderMode( RenderMode mode ) { return setRenderMode( mode, 0, 0xFFFF ); }
-		inline bool setRenderMode( RenderMode mode, int size ) { return setRenderMode(mode,size,size); }
-		bool		setRenderMode( RenderMode mode, int startSize, int endSize );
-		inline RenderMode	renderMode( int size ) const { if( size >= 0 && size <= c_maxFontSize ) return m_renderMode[size]; else return RenderMode::Monochrome; }
+		inline bool 		setRenderMode( RenderMode mode );
+		inline RenderMode	renderMode( int size ) const { return m_renderMode; }
 
 
 	private:
 		FreeTypeFont( Blob_p pFontFile, int faceIndex );
 		~FreeTypeFont();
 
-		const static int	c_maxFontSize = 256;	// Max size (pixels) for font.
-		const static int	c_minGlyphPixelSize = 12;
-		const static int	c_maxGlyphPixelSize = c_maxFontSize*2;
-		const static int	c_glyphPixelSizeQuantization = 4;
-		const static int	c_glyphSlotSizes = ((c_maxGlyphPixelSize-c_minGlyphPixelSize)/c_glyphPixelSizeQuantization)+1;
+		const static int	c_maxFontSize = 1024;	// Max size (pixels) for font.
 
-		class CacheSlot;
 
 		class MyGlyph : public Glyph
 		{
 		public:
 			MyGlyph();
 			MyGlyph( uint16_t character, MU size, MU advance, uint32_t kerningIndex, Font * pFont );
-			~MyGlyph();
 			const GlyphBitmap * getBitmap();
 
-			void	slotLost() { m_pSlot = 0; }
+			void	slotLost() { bitmap.pSurface = nullptr; }
 			bool	isInitialized() { return m_pFont?true:false; }
 
-			CacheSlot * m_pSlot;
+			GlyphBitmap	bitmap;
 			MU			m_size;			// size of character.
 			uint16_t	m_character;	// Unicode for character.
 		};
 
-		class CacheSurf : public Link
+		struct CacheSurf
 		{
-		public:
-			CacheSurf( Surface * _pSurf ) { pSurf = _pSurf; access = 0; }
-			~CacheSurf();
-
-			LINK_METHODS( CacheSurf );
-
-			uint32_t			access;			// Timestamp of last access.
-			Surface_p	pSurf;
+			CacheSurf( Surface * _pSurface, int _capacity ) : 
+				pSurface(_pSurface), 
+				capacity(_capacity), 
+				used(0)
+				{
+					creationNb = FreeTypeFont::s_cacheSurfacesCreated++;
+				}
+				
+			
+			Surface_p	pSurface;
+			int			capacity;
+			int			used;
+			
+			uint32_t	creationNb;
 		};
-
-
-		class CacheSlot : public Link
-		{
-		public:
-			CacheSlot( CacheSurf * _pSurf, const RectI& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; bitmap.pSurface = pSurf->pSurf; pGlyph = 0; }
-
-			LINK_METHODS( CacheSlot );
-
-			uint32_t			access;			// Timestamp of last access.
-
-			GlyphBitmap	bitmap;
-			MyGlyph *			pGlyph;
-
-			CacheSurf *		pSurf;
-			RectI			rect;				// RectI for the slot - not the glyph itself as in GlyphBitmap which might be smaller.
-		};
-
 
 		void				_copyA8ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint32_t * pDest, int dest_width, int dest_height, int dest_pitch );
 		void				_copyA1ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint32_t * pDest, int dest_width, int dest_height, int dest_pitch );
@@ -162,47 +142,44 @@ namespace wg
 
 		bool				_setCharSize( int size );
 
-		CacheSlot *			_generateBitmap( MyGlyph * pGlyph );
-		void				_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot );
+		void				_generateBitmap( MyGlyph * pGlyph );
+		void				_copyBitmap( FT_Bitmap * pBitmap, GlyphBitmap * pSlot );
 
 		MyGlyph *			_addGlyph( uint16_t ch, MU size, MU advance, uint32_t kerningIndex );
 		inline MyGlyph *	_findGlyph( uint16_t glyph, MU size ) const;
 
-		inline void			_touchSlot( CacheSlot * pSlot );
 		void				_refreshRenderFlags();
+
+		void 				_getCacheSlot( int width, int height, GlyphBitmap * pBitmap );
+		CacheSurf * 		_addCacheSurface( int category, int width, int height );
 
 
 		FT_Face				m_ftFace;
 		Blob_p				m_pFontFile;
-		char*				m_pData;
 		MyGlyph **			m_cachedGlyphsIndex[c_maxFontSize+1];
-		uint32_t			m_accessCounter;
-		int					m_renderFlags;
-		RenderMode			m_renderMode[c_maxFontSize+1];
 		MU					m_whitespaceAdvance[c_maxFontSize+1];
+		uint32_t			m_surfCreationNb = 0;
+
+		int					m_renderFlags;
+		RenderMode			m_renderMode;
 		MU					m_size;
 
 		//____ Static stuff __________________________________________________________
 
 
+		static int					s_instanceCounter;
+		static FT_Library			s_freeTypeLibrary;
 
-
-		static CacheSlot *	getCacheSlot( int width, int height );
-		static int			addCacheSlots( Chain<CacheSlot> * pChain, const SizeI& slotSize, int minSlots );
-		static int			maxSlotsInSurface( const SizeI& surf, const SizeI& slot );
-		static SizeI			calcTextureSize( const SizeI& slotSize, int nSlots );
-
-		static int			s_instanceCounter;
-		static FT_Library	s_freeTypeLibrary;
-
-		static Chain<CacheSlot>	s_cacheSlots[c_glyphSlotSizes];
-		static Chain<CacheSurf>	s_cacheSurfaces;
-		static SurfaceFactory_p	s_pSurfaceFactory;
+		static std::vector<CacheSurf>s_cacheSurfaces[10];		// The nine combined surfaces + the tenth vector with all character-specific surfaces.
 
 		//____
 
+		static uint32_t				s_cacheSurfacesCreated;
 
-
+		const static uint8_t		s_categoryHeight[9];
+		const static uint8_t		s_sizeToCategory[129];
+		
+		
 	};
 
 	//____ _findGlyphInIndex() _______________________________________________________
@@ -217,16 +194,6 @@ namespace wg
 		return 0;
 	}
 
-	//____ _touchSlot() _________________________________________________________
-
-	void FreeTypeFont::_touchSlot( CacheSlot * pSlot )
-	{
-		pSlot->moveFirst();								// Move slot to the top
-
-		pSlot->access = m_accessCounter;				// Increase access counter.
-		pSlot->pSurf->access = m_accessCounter++;		// We don't sort the surfaces, probably faster to just compare access when
-														// we need to destroy one?
-	}
 
 } // namespace wg
 
