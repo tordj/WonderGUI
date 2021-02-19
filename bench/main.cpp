@@ -56,7 +56,7 @@
 #include <wg_shadowlayer.h>
 #include <wg_pianokeyboard.h>
 #include <wg_tooltiplayer.h>
-
+#include <wg_mouseblocker.h>
 
 #include "testwidget.h"
 
@@ -231,7 +231,7 @@ int main ( int argc, char** argv )
 #endif
 
     auto pContext = wg::Context::create();
-    pContext->setScale(2.00f);
+    pContext->setScale(1.00f);
     pContext->setGfxDevice(g_pGfxDevice);
     pContext->setSurfaceFactory(g_pSurfaceFactory);
     wg::Base::setActiveContext(pContext);
@@ -1034,6 +1034,7 @@ bool tooltipLayerTest(WgRootPanel * pRoot)
     auto pBaseLayer = new WgFlexPanel();
     pBaseLayer->SetSkin( wg::ColorSkin::create(wg::Color::PapayaWhip) );
 
+
     auto pWidget1 = new WgFiller();
     pWidget1->SetColors( WgColorset::Create(wg::Color::Blue) );
     pWidget1->SetTooltipString( wg::String("This is widget 1.") );
@@ -1046,6 +1047,17 @@ bool tooltipLayerTest(WgRootPanel * pRoot)
 
     pTooltipLayer->SetBase( pBaseLayer );
     pRoot->SetChild(pTooltipLayer);
+
+
+	auto pBlocker = new WgMouseBlocker();
+	
+	WgRect hole( 20,20,30,30 );
+	
+	pBlocker->SetHoles( 1, &hole );
+	pBaseLayer->AddChild( pBlocker, WgRect( 0,0,300,300) );
+
+
+
     return true;
 }
 

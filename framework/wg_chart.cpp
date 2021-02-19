@@ -30,6 +30,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 
 static const char	c_widgetType[] = {"Chart"};
 
