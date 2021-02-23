@@ -107,7 +107,7 @@ const char * WgFlowPanel::GetClass()
 }
 
 //____ SetOrientation() ______________________________________________________
-/*
+
 void WgFlowPanel::SetOrientation( wg::Axis orientation )
 {
 	bool bHorizontal = orientation==wg::Axis::X?true:false;
@@ -121,7 +121,7 @@ void WgFlowPanel::SetOrientation( wg::Axis orientation )
 
 
 //____ SetSizeBroker() _______________________________________________________
-
+/*
 void WgFlowPanel::SetSizeBroker( WgSizeBroker * pBroker )
 {
 	if( m_pSizeBroker != pBroker )
@@ -188,8 +188,6 @@ int WgFlowPanel::MatchingPixelHeight( int width ) const
 	}
 	else
 	{
-		//TODO: Implement!
-
 		height = m_preferredSize.h;
 	}
 	return height;
@@ -199,9 +197,53 @@ int WgFlowPanel::MatchingPixelHeight( int width ) const
 
 int WgFlowPanel::MatchingPixelWidth( int height ) const
 {
-	//TODO: Implement!
+	if( m_pSkin )
+		height -= _skinContentPadding( m_pSkin, m_scale).h;
 
-	return m_preferredSize.w;
+	int width = 0;
+
+	if( !m_bHorizontal )
+	{
+		WgFlowHook * pH = FirstHook();
+
+		WgSize	row;
+
+		while( pH )
+		{
+			if (pH->IsVisible())
+			{
+				WgSize sz = pH->_paddedPreferredPixelSize(m_scale);
+
+				if (sz.h > height)
+				{
+					width += row.w;
+					width += pH->_paddedMatchingPixelWidth(height, m_scale);
+					row.clear();
+				}
+				else
+				{
+					if (sz.h + row.h > height)
+					{
+						width += row.w;
+						row.clear();
+					}
+
+					row.h += sz.h;
+
+					if (sz.w > row.w)
+						row.w = sz.w;
+				}
+
+			}
+			pH = pH->Next();
+		}
+		width += row.w;
+	}
+	else
+	{
+		width = m_preferredSize.w;
+	}
+	return width;
 }
 
 //____ PadAllChildren() _______________________________________________________
@@ -431,78 +473,159 @@ void WgFlowPanel::_refreshChildGeo()
 		canvas = _skinContentRect( m_pSkin, canvas, m_state, m_scale);
 
 	WgFlowHook * pH = FirstHook();
-
-	WgRect	row( canvas.x, canvas.y, 0,0 );
 	WgRect  newGeo;
-	while (pH)
+
+	if( m_bHorizontal )
 	{
-		if (pH->IsVisible())
+		WgRect	row( canvas.x, canvas.y, 0,0 );
+
+		while (pH)
 		{
-			WgSize sz = pH->_paddedPreferredPixelSize(m_scale);
-			WgBorders padding = pH->m_padding.scale(m_scale);
-
-			if (sz.w > canvas.w)
+			if (pH->IsVisible())
 			{
-				row.y += row.h;
-				row.x = canvas.x;
-				row.h = 0;
-				row.w = 0;
+				WgSize sz = pH->_paddedPreferredPixelSize(m_scale);
+				WgBorders padding = pH->m_padding.scale(m_scale);
 
-				int paddedHeight = pH->_paddedMatchingPixelHeight(canvas.w, m_scale);
-
-				newGeo = {	row.x+padding.left,
-							row.y+padding.top,
-							canvas.w-padding.width(),
-							paddedHeight-padding.height() };
-
-				row.y += paddedHeight;
-			}
-			else
-			{
-				if (sz.w + row.w > canvas.w)
+				if (sz.w > canvas.w)
 				{
 					row.y += row.h;
 					row.x = canvas.x;
-					row.w = 0;
 					row.h = 0;
+					row.w = 0;
+
+					int paddedHeight = pH->_paddedMatchingPixelHeight(canvas.w, m_scale);
+
+					newGeo = {	row.x+padding.left,
+								row.y+padding.top,
+								canvas.w-padding.width(),
+								paddedHeight-padding.height() };
+
+					row.y += paddedHeight;
+				}
+				else
+				{
+					if (sz.w + row.w > canvas.w)
+					{
+						row.y += row.h;
+						row.x = canvas.x;
+						row.w = 0;
+						row.h = 0;
+					}
+
+					newGeo = {	row.x + row.w + padding.left,
+								row.y + padding.top,
+								sz - padding.size() };
+
+					row.w += sz.w;
+
+					if (sz.h > row.h)
+						row.h = sz.h;
 				}
 
-				newGeo = {	row.x + row.w + padding.left,
-							row.y + padding.top,
-							sz - padding.size() };
+				if (newGeo != pH->m_geo)
+				{
+					_requestRender(newGeo);
+					_requestRender(pH->m_geo);
 
-				row.w += sz.w;
+					int oldW = pH->m_geo.w;
+					int oldH = pH->m_geo.h;
+					pH->m_geo = newGeo;
+					if (newGeo.w != oldW || newGeo.h != oldH)
+						pH->m_pWidget->_onNewSize(newGeo.size());
+				}
 
-				if (sz.h > row.h)
-					row.h = sz.h;
 			}
-
-			if (newGeo != pH->m_geo)
+			else
 			{
-				_requestRender(newGeo);
-				_requestRender(pH->m_geo);
+				if (pH->m_geo.w != 0 && pH->m_geo.h != 0)
+					_requestRender(pH->m_geo);
 
-				int oldW = pH->m_geo.w;
-				int oldH = pH->m_geo.h;
-				pH->m_geo = newGeo;
-				if (newGeo.w != oldW || newGeo.h != oldH)
-					pH->m_pWidget->_onNewSize(newGeo.size());
+				pH->m_geo.x = row.x + row.w;
+				pH->m_geo.y = row.y;
+				pH->m_geo.w = 0;
+				pH->m_geo.h = 0;
 			}
 
-		}
-		else
-		{
-			if (pH->m_geo.w != 0 && pH->m_geo.h != 0)
-				_requestRender(pH->m_geo);
-
-			pH->m_geo.x = row.x + row.w;
-			pH->m_geo.y = row.y;
-			pH->m_geo.w = 0;
-			pH->m_geo.h = 0;
-		}
-
-		pH = pH->Next();
+			pH = pH->Next();
+		}		
 	}
+	else
+	{
+		WgRect	col( canvas.x, canvas.y, 0,0 );
+
+		while (pH)
+		{
+			if (pH->IsVisible())
+			{
+				WgSize sz = pH->_paddedPreferredPixelSize(m_scale);
+				WgBorders padding = pH->m_padding.scale(m_scale);
+
+				if (sz.h > canvas.h)
+				{
+					col.x += col.w;
+					col.y = canvas.y;
+					col.w = 0;
+					col.h = 0;
+
+					int paddedWidth = pH->_paddedMatchingPixelWidth(canvas.h, m_scale);
+
+					newGeo = {	col.x+padding.left,
+								col.y+padding.top,
+								paddedWidth-padding.width(),
+								canvas.h-padding.height() };
+
+					col.x += paddedWidth;
+				}
+				else
+				{
+					if (sz.h + col.h > canvas.h)
+					{
+						col.x += col.w;
+						col.y = canvas.y;
+						col.w = 0;
+						col.h = 0;
+					}
+
+					newGeo = {	col.x + padding.left,
+								col.y + col.h + padding.top,
+								sz - padding.size() };
+
+					col.h += sz.h;
+
+					if (sz.w > col.w)
+						col.w = sz.w;
+				}
+
+				if (newGeo != pH->m_geo)
+				{
+					_requestRender(newGeo);
+					_requestRender(pH->m_geo);
+
+					int oldW = pH->m_geo.w;
+					int oldH = pH->m_geo.h;
+					pH->m_geo = newGeo;
+					if (newGeo.w != oldW || newGeo.h != oldH)
+						pH->m_pWidget->_onNewSize(newGeo.size());
+				}
+
+			}
+			else
+			{
+				if (pH->m_geo.w != 0 && pH->m_geo.h != 0)
+					_requestRender(pH->m_geo);
+
+				pH->m_geo.x = col.x;
+				pH->m_geo.y = col.y + col.h;
+				pH->m_geo.w = 0;
+				pH->m_geo.h = 0;
+			}
+
+			pH = pH->Next();
+		}
+
+	}
+	
+
 }
 
 //____ _populateSizeBrokerArray() ___________________________________________

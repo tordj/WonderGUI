@@ -75,6 +75,7 @@ bool pianoKeyboardTest(WgRootPanel * pRoot);
 bool rangeSliderTest(WgRootPanel* pRoot);
 bool canvasCapsuleTest(WgRootPanel* pRoot);
 bool tooltipLayerTest(WgRootPanel* pRoot);
+bool flowPanelTest(WgRootPanel* pRoot);
 
 
 //#define USE_OPEN_GL
@@ -311,6 +312,7 @@ int main ( int argc, char** argv )
 //	rangeSliderTest(pRoot);
 //    canvasCapsuleTest(pRoot);
     tooltipLayerTest(pRoot);
+    flowPanelTest(pRoot);
 
 
 	// Setup debug overlays
@@ -1048,18 +1050,79 @@ bool tooltipLayerTest(WgRootPanel * pRoot)
     pTooltipLayer->SetBase( pBaseLayer );
     pRoot->SetChild(pTooltipLayer);
 
-
+/*
 	auto pBlocker = new WgMouseBlocker();
 	
 	WgRect hole( 20,20,30,30 );
 	
 	pBlocker->SetHoles( 1, &hole );
 	pBaseLayer->AddChild( pBlocker, WgRect( 0,0,300,300) );
-
+*/
 
 
     return true;
 }
+
+
+//____ flowPanelTest() _________________________________________________________
+
+bool flowPanelTest(WgRootPanel* pRoot)
+{
+	wg::ColorSkin_p pSkin[5];
+	
+	pSkin[0] = wg::ColorSkin::create(WgColor(255,0,0));
+	pSkin[1] = wg::ColorSkin::create(WgColor(0,255,0));
+	pSkin[2] = wg::ColorSkin::create(WgColor(0,0,255));
+	pSkin[3] = wg::ColorSkin::create(WgColor(255,255,0));
+	pSkin[4] = wg::ColorSkin::create(WgColor(255,0,255));
+
+	int sizes[4] = {10,15,20,40};
+	
+
+    auto pBaseLayer = new WgFlexPanel();
+    pBaseLayer->SetSkin(wg::ColorSkin::create(wg::Color::PapayaWhip));
+
+    auto pFlow1 = new WgFlowPanel();
+	pFlow1->SetSkin(wg::ColorSkin::create(wg::Color::Black));
+
+	for( int i = 0 ; i < 10 ; i++ )
+	{
+		auto pFiller  = new WgFiller();
+		
+		pFiller->SetSkin( pSkin[i%5] );
+		pFiller->SetPreferredPointSize({sizes[i%4],sizes[i%4]});
+		pFlow1->AddChild(pFiller);
+	}
+
+    
+    pBaseLayer->AddChild(pFlow1, WgRect(10, 10,100,100));
+
+    auto pFlow2 = new WgFlowPanel();
+	pFlow2->SetOrientation(wg::Axis::Y);
+	pFlow2->SetSkin(wg::ColorSkin::create(wg::Color::Black));
+
+	for( int i = 0 ; i < 10 ; i++ )
+	{
+		auto pFiller  = new WgFiller();
+		
+		pFiller->SetSkin( pSkin[i%5] );
+		pFiller->SetPreferredPointSize({sizes[i%4],sizes[i%4]});
+		pFlow2->AddChild(pFiller);
+	}
+
+    
+    pBaseLayer->AddChild(pFlow2, WgRect(230, 10,100,100));
+
+
+    
+//    pCanvas->StartFade(WgColor(0,0,0,255), 5000 );
+
+    
+    pRoot->SetChild(pBaseLayer);
+    return true;
+}
+
+
 
 
 //____ setupGUI() ______________________________________________________________

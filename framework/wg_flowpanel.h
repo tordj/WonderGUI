@@ -82,8 +82,8 @@ public:
 
     void            PadAllChildren( WgBorders padding );
 
-//	void			SetOrientation( wg::Axis orientaiton );
-//	wg::Axis		Orientation() const { return m_bHorizontal?wg::Axis::X:wg::Axis::Y; }
+	void			SetOrientation( wg::Axis orientaiton );
+	wg::Axis		Orientation() const { return m_bHorizontal?wg::Axis::X:wg::Axis::Y; }
 
 	WgFlowHook *	FirstHook() const { return static_cast<WgFlowHook*>(_firstHook()); }
 	WgFlowHook *	LastHook() const { return static_cast<WgFlowHook*>(_lastHook()); }
