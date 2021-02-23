@@ -67,8 +67,10 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	// First we need to initialize the base system
+	// Normally we would provide a HostBridge-interface, but 
+	// for this simple example we skip it and pass null.
 
-	Base::init();
+	Base::init(nullptr);
 
 	// The software renderer needs a SoftSurface as its canvas,
 	// so we wrap the SDL WindowSurface into a SoftSurface.

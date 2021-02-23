@@ -143,7 +143,7 @@ protected:
         return;
     }
 
-    Base::init();
+    Base::init(nullptr);
 
     MetalGfxDevice::setMetalDevice( _view.device );
     m_pDevice = MetalGfxDevice::create();

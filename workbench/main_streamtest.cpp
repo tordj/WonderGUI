@@ -102,7 +102,7 @@ int main ( int argc, char** argv )
 	// Init WonderGUI
 	//------------------------------------------------------
 
-	Base::init();
+	Base::init(nullptr);
 //	FreeTypeFont::init( SoftSurfaceFactory::create() );
 
 	InputHandler_p pInput = Base::inputHandler();

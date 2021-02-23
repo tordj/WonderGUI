@@ -28,6 +28,7 @@
 
 #include <wg_strongptr.h>
 #include <wg_types.h>
+#include <wg_hostbridge.h>
 
 #include <string>
 #include <functional>
@@ -100,7 +101,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static bool init();
+		static bool init( HostBridge * pHostBridge );
 		static bool exit();
 
 		//.____ Content _____________________________________________
@@ -125,6 +126,8 @@ namespace wg
 
 		static void			setErrorHandler(std::function<void(Error&)> handler);
 		std::function<void(Error&)>	errorHandler();
+
+		static HostBridge *	hostBridge() { return s_pHostBridge; }
 
 		//.____ Misc ________________________________________________
 
@@ -189,6 +192,8 @@ namespace wg
 			MemPool *		pPtrPool;
 			MemStack *		pMemStack;
 		};
+		
+		static HostBridge*					s_pHostBridge;
 
 		static Data *						s_pData;
 		static std::function<void(Error&)>	s_pErrorHandler;

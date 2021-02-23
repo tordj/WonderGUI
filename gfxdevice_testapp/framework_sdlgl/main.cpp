@@ -223,7 +223,7 @@ int main(int argc, char *argv[] )
 
 bool init_wondergui()
 {
-	Base::init();
+	Base::init(nullptr);
 
 	Context_p pContext = Context::create();
     pContext->setScale(1.0);

@@ -49,7 +49,7 @@ using namespace wg;
     {
         mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
         
-        Base::init();
+        Base::init(nullptr);
     
         auto pContext = Context::create();
         pContext->setGammaCorrection(true);

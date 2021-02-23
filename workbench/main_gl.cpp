@@ -109,7 +109,7 @@ int main ( int argc, char** argv )
 	// Init WonderGUI
 	//------------------------------------------------------
 
-	Base::init();
+	Base::init(nullptr);
 //	Base::initFreeType();
 //	VectorFont::setSurfaceFactory( GlSurfaceFactory::create() );
 

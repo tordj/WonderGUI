@@ -97,7 +97,7 @@ bool renderLayerTest(CStandardSlot_p pSlot);
 bool rigidPartNinePatchTest(CStandardSlot_p pSlot);
 bool scrollSkinTest(CStandardSlot_p pSlot);
 bool tooltipLayerTest(CStandardSlot_p pSlot);
-
+bool kerningTest(CStandardSlot_p pSlot);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -301,7 +301,7 @@ int main(int argc, char** argv)
 
 
 	Base::beginObjectTracking();
-	Base::init();
+	Base::init(nullptr);
 
 
 //	Base::setErrorHandler([](Error&) { int x = 0; });
@@ -608,7 +608,7 @@ int main(int argc, char** argv)
 //	sliderTest(&pRoot->slot);
 //	rangeSliderTest(&pRoot->slot);
 //	pieKnobTest(&pRoot->slot);
-	spinKnobTest(&pRoot->slot);
+//	spinKnobTest(&pRoot->slot);
 //  animKnobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
 //	doubleSkinTest(&pRoot->slot);
@@ -622,6 +622,7 @@ int main(int argc, char** argv)
 //	rigidPartNinePatchTest(&pRoot->slot);
 //	scrollSkinTest(&pRoot->slot);
 //	tooltipLayerTest(&pRoot->slot);
+	kerningTest(&pRoot->slot);
 
 
 	// Test IChild and IChildIterator baseclasses
@@ -2716,6 +2717,29 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 
 	pTooltipLayer->mainSlot = pBaseLayer;
 	*pSlot = pTooltipLayer;
+	return true;
+}
+
+//____ tooltipLayerTest() _____________________________________________________
+
+bool kerningTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
+
+	auto pDisplay1 = TextDisplay::create();
+
+
+	auto pBigStyle = Base::defaultStyle()->clone();
+	pBigStyle->setSize(32);
+
+	pDisplay1->text.set("HHTATHHWAW");
+	pDisplay1->text.setStyle(pBigStyle);
+
+	pBaseLayer->slots.pushBackMovable(pDisplay1, Rect(10, 10, 300, 100));
+
+
+	*pSlot = pBaseLayer;
 	return true;
 }
 

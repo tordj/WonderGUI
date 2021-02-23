@@ -57,7 +57,7 @@ int main ( int argc, char** argv )
 
 	// Init WonderGUI
 
-	Base::init();
+	Base::init(nullptr);
 	sdl_wglib::MapKeys();
 
 //	Base::initFreeType();
