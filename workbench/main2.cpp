@@ -98,6 +98,7 @@ bool rigidPartNinePatchTest(CStandardSlot_p pSlot);
 bool scrollSkinTest(CStandardSlot_p pSlot);
 bool tooltipLayerTest(CStandardSlot_p pSlot);
 bool kerningTest(CStandardSlot_p pSlot);
+bool circleSkinTest(CStandardSlot_p pSlot);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -622,7 +623,8 @@ int main(int argc, char** argv)
 //	rigidPartNinePatchTest(&pRoot->slot);
 //	scrollSkinTest(&pRoot->slot);
 //	tooltipLayerTest(&pRoot->slot);
-	kerningTest(&pRoot->slot);
+//	kerningTest(&pRoot->slot);
+	circleSkinTest(&pRoot->slot);
 
 
 	// Test IChild and IChildIterator baseclasses
@@ -2743,6 +2745,30 @@ bool kerningTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+//____ circleSkinTest() ________________________________________________________
+
+bool circleSkinTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
+
+	auto pWidget = Filler::create();
+
+	auto pSkin = CircleSkin::create(Color8::Green, 1.f, 5.f, 1.f);
+
+	pSkin->setAppearance(StateEnum::Hovered, Color8::Yellow, 1.f, 15.f, 1.f);
+	pSkin->setAppearance(StateEnum::Pressed, Color8::Red, 0.8f, 100.f, 1.f);
+
+	pWidget->skin = pSkin;
+
+
+	pBaseLayer->slots.pushBackMovable(pWidget, Rect(10, 10, 300, 100));
+
+
+	*pSlot = pBaseLayer;
+	return true;
+
+}
 
 
 //____

@@ -127,6 +127,7 @@
 #include <wg_spinanimskin.h>
 #include <wg_multiblockskin.h>
 #include <wg_blockskin.h>
+#include <wg_circleskin.h>
 #include <wg_scrollskin.h>
 #include <wg_lambdaskin.h>
 #include <wg_tileskin.h>
