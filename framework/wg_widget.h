@@ -187,6 +187,7 @@ public:
 	virtual WgLayer * CastToLayer() { return 0; }
 	virtual const WgLayer * CastToLayer() const { return 0; }
 
+    void            SetFullStateSupport( bool bFullStateSupport ) { m_bFullStateSupport = bFullStateSupport; }
 
 	virtual bool	SetMarked();					// Switch to WG_MODE_MARKED unless we are disabled or widget controls mode itself.
 	virtual bool	SetSelected();					// Switch to WG_MODE_SELECTED unless we are disabled or widget controls mode itself.
@@ -253,6 +254,9 @@ protected:
 	virtual void	_onGotInputFocus();
 	virtual void	_onLostInputFocus();
 
+    virtual void    _setState( WgState state );
+
+    
 	// rename when widgets are done
 	virtual bool	TempIsInputField() const;
 	virtual Wg_Interface_TextHolder*	TempGetText();
@@ -292,7 +296,8 @@ protected:
 	bool			m_bSelected;
 
 	bool			m_bSelectable = true;	// Set if widget is allowed to be selected.
-
+    bool            m_bFullStateSupport = false;
+    
 	WgState         m_state;
 
 	bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.

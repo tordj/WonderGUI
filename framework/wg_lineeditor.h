@@ -98,6 +98,8 @@ protected:
 
 	void	_textModified();
 
+    void    _setState( WgState state );
+
 
 private:
 

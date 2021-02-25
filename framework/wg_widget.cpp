@@ -607,20 +607,48 @@ void WgWidget::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandl
 			bForward = false;
 			break;
 
+        case WG_EVENT_MOUSE_ENTER:
+            if( m_bFullStateSupport )
+                state.setHovered(true);
+            break;
+            
+        case WG_EVENT_MOUSE_LEAVE:
+            if( m_bFullStateSupport )
+                state.setHovered(false);
+            
 		default:
 			break;
 	}
 
+    if( m_bFullStateSupport )
+    {
+        
+    }
+    
+    
 	if( state != m_state )
 	{
 		//TODO: We should have a virtual method for setting state, just like WG3.
 
-		m_state = state;
-		_requestRender();
+        _setState(state);
 	}
 
 	if( bForward && (_pEvent->IsKeyEvent() || _pEvent->IsMouseEvent() || _pEvent->Type() == WG_EVENT_MOUSEWHEEL_ROLL) && _pEvent->Type() != WG_EVENT_MOUSE_ENTER && _pEvent->Type() != WG_EVENT_MOUSE_LEAVE )
 		pHandler->ForwardEvent( _pEvent );
+}
+
+
+//____ _setState() _________________________________________________________
+
+void WgWidget::_setState( WgState state )
+{
+    WgState oldState = m_state;
+    m_state = state;
+
+//    OO(skin)._stateChanged(state, oldState);
+//    m_bOpaque = OO(skin)._isOpaque(state);
+    
+    _requestRender();
 }
 
 bool WgWidget::_onAlphaTest( const WgCoord& ofs )
@@ -633,26 +661,56 @@ bool WgWidget::_onAlphaTest( const WgCoord& ofs )
 
 void WgWidget::_onEnable()
 {
+    if( m_bFullStateSupport )
+    {
+        WgState state = m_state;
+        state.setEnabled(true);
+        _setState(state);
+    }
 	_requestRender();
 }
 
 void WgWidget::_onDisable()
 {
+    if( m_bFullStateSupport )
+    {
+        WgState state = m_state;
+        state.setEnabled(false);
+        _setState(state);
+    }
 	_requestRender();
 }
 
 void WgWidget::_onGotInputFocus()
 {
 	m_bFocused = true;
-	m_state.setFocused(true);
+    
+    if( m_bFullStateSupport )
+    {
+        WgState state = m_state;
+        state.setFocused(true);
+        _setState(state);
+    }
+    else
+        m_state.setFocused(true);
+
 	_queueEvent(new WgEvent::FocusGained(this));
 }
 
 void WgWidget::_onLostInputFocus()
 {
 	m_bFocused = false;
-	m_state.setFocused(false);
-	_queueEvent(new WgEvent::FocusLost(this));
+
+    if( m_bFullStateSupport )
+    {
+        WgState state = m_state;
+        state.setFocused(false);
+        _setState(state);
+    }
+    else
+        m_state.setFocused(false);
+
+    _queueEvent(new WgEvent::FocusLost(this));
 }
 
 bool WgWidget::TempIsInputField() const

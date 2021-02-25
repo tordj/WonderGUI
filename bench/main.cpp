@@ -76,6 +76,7 @@ bool rangeSliderTest(WgRootPanel* pRoot);
 bool canvasCapsuleTest(WgRootPanel* pRoot);
 bool tooltipLayerTest(WgRootPanel* pRoot);
 bool flowPanelTest(WgRootPanel* pRoot);
+bool fullStateSupportTest(WgRootPanel* pRoot);
 
 
 //#define USE_OPEN_GL
@@ -311,8 +312,9 @@ int main ( int argc, char** argv )
 //	pianoKeyboardTest(pRoot);
 //	rangeSliderTest(pRoot);
 //    canvasCapsuleTest(pRoot);
-    tooltipLayerTest(pRoot);
-    flowPanelTest(pRoot);
+//    tooltipLayerTest(pRoot);
+//    flowPanelTest(pRoot);
+    fullStateSupportTest(pRoot);
 
 
 	// Setup debug overlays
@@ -1122,6 +1124,51 @@ bool flowPanelTest(WgRootPanel* pRoot)
     return true;
 }
 
+//____ fullStateSupportTest() __________________________________________________
+
+bool fullStateSupportTest(WgRootPanel* pRoot)
+{
+    auto pBaseLayer = new WgFlexPanel();
+    pRoot->SetChild(pBaseLayer);
+    
+    auto pTextSkin = wg::ColorSkin::create( {{WgStateEnum::Normal,wg::HiColor(0,4096,0)}, {WgStateEnum::Hovered,wg::HiColor(4096,4096,0)}, {WgStateEnum::Focused,wg::HiColor(4096,0,0)}, {WgStateEnum::HoveredFocused,wg::HiColor(4096,0,0)}});
+    pTextSkin->setContentPadding( {10,10,10,30} );
+    
+    auto pTextStyle = wg::Base::defaultStyle()->clone();
+    pTextStyle->setColor(WgColor::Black, WgStateEnum::Focused);
+    
+    
+    auto pText = new WgTextDisplay();
+    pText->SetText("TEXT 1 WITH AUTOWRAPPING ENABLED SO THAT WE GET MULTIPLE LINES.");
+    pText->SetSkin( pTextSkin );
+    pText->SetTextWrap(true);
+    pText->SetTextStyle(pTextStyle);
+    pText->SetEditMode(WgTextEditMode::Editable);
+
+    auto pText2 = new WgTextDisplay();
+    pText2->SetText("TEXT 2 WITH AUTOWRAPPING ENABLED SO THAT WE GET MULTIPLE LINES.");
+    pText2->SetSkin( pTextSkin );
+    pText2->SetTextWrap(true);
+    pText2->SetTextStyle(pTextStyle);
+    pText2->SetEditMode(WgTextEditMode::Editable);
+ 
+    
+    auto pPackX = new WgPackPanel();
+    pPackX->SetOrientation(wg::Axis::X);
+    pPackX->AddChild(pText);
+    pPackX->AddChild(pText2);
+    pPackX->SetSizeBroker(new WgUniformSizeBroker() );
+    
+    auto pPackSkin = wg::ColorSkin::create(WgColor::Brown);
+    pPackSkin->setContentPadding( {10,10,10,10} );
+
+ 
+    pBaseLayer->AddChild(pPackX, {50,50,300,160});
+
+    pRoot->SetChild(pBaseLayer);
+    return true;
+
+}
 
 
 

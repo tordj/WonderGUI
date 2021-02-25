@@ -47,6 +47,8 @@ namespace wg
 {
 	const TypeInfo	Base::TYPEINFO = { "Base", nullptr };
 
+	HostBridge*					Base::s_pHostBridge = nullptr;
+
 	Base::Data *				Base::s_pData = 0;
 
 	std::function<void(Error&)>	Base::s_pErrorHandler = nullptr;
@@ -65,13 +67,15 @@ namespace wg
 
 	//____ init() __________________________________________________________________
 
-	bool Base::init()
+	bool Base::init( HostBridge * pHostBridge )
 	{
 		if (s_pData != 0)
 		{
 			handleError(ErrorSeverity::SilentFail, ErrorCode::IllegalCall, "Call to Base::init() ignored, already initialized.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
+
+		s_pHostBridge = pHostBridge;
 
 		TextStyleManager::init();
 		SkinSlotManager::init();

@@ -35,6 +35,7 @@ cp wg_base.* \
    wg_geo.* \
    wg_gfxdevice.* \
    wg_gradient.* \
+   wg_hostbridge.* \
    wg_internal.* \
    wg_mempool.* \
    wg_memstack.* \

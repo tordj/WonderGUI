@@ -46,7 +46,7 @@ void WgBase::Init()
 	if(s_iSoftubeNumberOfInstances != 1)
 		return;
 
-	wg::Base::init();
+	wg::Base::init(nullptr);
 
 	assert( s_pData == 0 );
 	s_pData = new Data;

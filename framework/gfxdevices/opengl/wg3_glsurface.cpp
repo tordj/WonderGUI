@@ -569,7 +569,7 @@ namespace wg
 
 	//____ setTiling() ________________________________________________________
 
-	void GlSurface::setTiling(bool bTiling)
+	bool GlSurface::setTiling(bool bTiling)
 	{
 		GLint mode = bTiling ? GL_REPEAT : GL_CLAMP_TO_EDGE;
 
@@ -578,6 +578,7 @@ namespace wg
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
 
 		m_bTiling = bTiling;
+		return true;
 	}
 
 	//____ allocPixelBuffer() _________________________________________________

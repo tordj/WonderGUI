@@ -571,16 +571,34 @@ void WgLineEditor::_adjustViewOfs()
 
 void WgLineEditor::_onEnable()
 {
-	m_text.setState(wg::StateEnum::Normal);
-	_requestRender();
+    if( m_bFullStateSupport )
+    {
+        WgState state = m_state;
+        state.setEnabled(true);
+        _setState(state);
+    }
+    else
+    {
+        m_text.setState(wg::StateEnum::Normal);
+        _requestRender();
+    }
 }
 
 //____ _onDisable() ____________________________________________________________
 
 void WgLineEditor::_onDisable()
 {
-	m_text.setState(wg::StateEnum::Disabled);
-	_requestRender();
+    if( m_bFullStateSupport )
+    {
+        WgState state = m_state;
+        state.setEnabled(false);
+        _setState(state);
+    }
+    else
+    {
+        m_text.setState(wg::StateEnum::Disabled);
+        _requestRender();
+    }
 }
 
 //____ _onGotInputFocus() ______________________________________________________
@@ -649,5 +667,14 @@ void WgLineEditor::_textModified()
 	_requestRender();
 	_adjustViewOfs();
 	_queueEvent(new WgEvent::TextModify(this, m_pText));
+}
+
+//____ _setState() _____________________________________________________________
+
+void WgLineEditor::_setState( WgState state )
+{
+    m_text.setState(state);
+    
+    WgWidget::_setState(state);
 }
 
