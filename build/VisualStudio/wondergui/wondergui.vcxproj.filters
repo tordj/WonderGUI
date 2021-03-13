@@ -581,6 +581,9 @@
     <ClInclude Include="..\..\..\src\widgets\layers\wg_tooltiplayer.h">
       <Filter>widgets\layers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\state\wg_circleskin.h">
+      <Filter>skins\state</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">
@@ -1017,6 +1020,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\layers\wg_tooltiplayer.cpp">
       <Filter>widgets\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\state\wg_circleskin.cpp">
+      <Filter>skins\state</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

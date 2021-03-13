@@ -88,6 +88,12 @@ namespace wg
 		bool		hasGlyph( uint16_t chr ) override;
 		bool		isMonospace() override;
 
+
+		static void setCacheLimit(int maxBytes);
+		static int	cacheLimit() { return s_cacheLimit; }
+
+		static int	cacheSize() { return s_cacheSize; }
+
 		static void	clearCache();
 
 		//.____ Appearance ___________________________________________
@@ -100,9 +106,6 @@ namespace wg
 		FreeTypeFont( Blob_p pFontFile, int faceIndex );
 		~FreeTypeFont();
 
-		const static int	c_maxFontSize = 1024;	// Max size (pixels) for font.
-
-
 		class MyGlyph : public Glyph
 		{
 		public:
@@ -110,8 +113,8 @@ namespace wg
 			MyGlyph( uint16_t character, MU size, MU advance, uint32_t kerningIndex, Font * pFont );
 			const GlyphBitmap * getBitmap();
 
-			void	slotLost() { bitmap.pSurface = nullptr; }
-			bool	isInitialized() { return m_pFont?true:false; }
+			inline void	bitmapLost() { bitmap.pSurface = nullptr; }
+			inline bool	isInitialized() { return m_pFont?true:false; }
 
 			GlyphBitmap	bitmap;
 			MU			m_size;			// size of character.
@@ -136,11 +139,34 @@ namespace wg
 			uint32_t	creationNb;
 		};
 
-		void				_copyA8ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint32_t * pDest, int dest_width, int dest_height, int dest_pitch );
-		void				_copyA1ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint32_t * pDest, int dest_width, int dest_height, int dest_pitch );
+		struct CachedFontSize
+		{
+			CachedFontSize() 
+			{
+				whitespaceAdvance = 0;
+				for (int i = 0; i < 512; i++)
+					page[i] = nullptr;
+			}
+
+			~CachedFontSize()
+			{
+				for (int i = 0; i < 512; i++)
+					if( page[i] )
+						delete [] page[i];
+			}
+
+			MU			whitespaceAdvance;
+			MyGlyph*	page[512];
+		};
+
+		static void 		_getCacheSlot(int width, int height, GlyphBitmap* pBitmap);
+		static CacheSurf*	_addCacheSurface(int category, int width, int height);
+		static void			_truncateCache(int maxSize);
 
 
-		bool				_setCharSize( int size );
+		void				_copyA8ToA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint8_t * pDest, int dest_pitch );
+		void				_copyA1ToA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint8_t * pDest, int dest_pitch );
+		void				_copyBGRA8ToBGRA8(const uint8_t* pSrc, int src_width, int src_height, int src_pitch, uint8_t* pDest, int dest_pitch);
 
 		void				_generateBitmap( MyGlyph * pGlyph );
 		void				_copyBitmap( FT_Bitmap * pBitmap, GlyphBitmap * pSlot );
@@ -150,14 +176,17 @@ namespace wg
 
 		void				_refreshRenderFlags();
 
-		void 				_getCacheSlot( int width, int height, GlyphBitmap * pBitmap );
-		CacheSurf * 		_addCacheSurface( int category, int width, int height );
+		void				_growCachedFontSizes(int newSize);
+		void				_forgetCacheReferences(int nRemovedSurfaces, Surface* pRemovedSurfaces[]);
+		void				_forgetAllCacheReferences();
 
 
 		FT_Face				m_ftFace;
 		Blob_p				m_pFontFile;
-		MyGlyph **			m_cachedGlyphsIndex[c_maxFontSize+1];
-		MU					m_whitespaceAdvance[c_maxFontSize+1];
+
+		CachedFontSize **	m_pCachedFontSizes = nullptr;				//	[X sizes][512 codepages][128 glyphs/codepage]
+		int					m_nCachedFontSizes = 0;
+
 		uint32_t			m_surfCreationNb = 0;
 
 		int					m_renderFlags;
@@ -166,20 +195,23 @@ namespace wg
 
 		//____ Static stuff __________________________________________________________
 
-
-		static int					s_instanceCounter;
 		static FT_Library			s_freeTypeLibrary;
+
+		static	std::vector<FreeTypeFont*>	s_instances;		// List of alive FreeTypeFont-objects.
+
 
 		static std::vector<CacheSurf>s_cacheSurfaces[10];		// The nine combined surfaces + the tenth vector with all character-specific surfaces.
 
-		//____
 
-		static uint32_t				s_cacheSurfacesCreated;
+		static uint32_t				s_cacheSurfacesCreated;		// Increments and provides m_surfCreationNb for each new surface created.
+		static int					s_cacheSize;				// Size in bytes of existing cacheSurfaces. Used and unused cache space.
+		static int					s_cacheLimit;				// Maximum size of cache in bytes. 0 = no limit.
 
-		const static uint8_t		s_categoryHeight[9];
-		const static uint8_t		s_sizeToCategory[129];
+		const static uint8_t		s_categoryHeight[9];		// Pixel heights for cache surfaces in each category.
+		const static uint8_t		s_sizeToCategory[129];		// Table for grouping sizes into categories.
 		
-		
+
+
 	};
 
 	//____ _findGlyphInIndex() _______________________________________________________
@@ -188,8 +220,8 @@ namespace wg
 	{
 		int sizeOfs = size.px();
 
-		if( m_cachedGlyphsIndex[sizeOfs] != 0 && m_cachedGlyphsIndex[sizeOfs][ch>>8] != 0 && m_cachedGlyphsIndex[sizeOfs][ch>>8][ch&0xFF].isInitialized() )
-			return &m_cachedGlyphsIndex[sizeOfs][ch>>8][ch&0xFF];
+		if( m_pCachedFontSizes[sizeOfs] != nullptr && m_pCachedFontSizes[sizeOfs]->page[ch>>7] != nullptr && m_pCachedFontSizes[sizeOfs]->page[ch >> 7][ch&0x7F].isInitialized() )
+			return &m_pCachedFontSizes[sizeOfs]->page[ch >> 7][ch & 0x7F];
 
 		return 0;
 	}
