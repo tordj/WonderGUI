@@ -23,10 +23,18 @@ include_directories(
 	baselibrary/widgets/layers
 	baselibrary/widgets/lists
 	baselibrary/widgets/panels
+
+	gfxdevices/software
+	gfxdevices/opengl
+	fontengines/freetype
+
+	SDL2/include
+	SDL2_image/include
 )
 
 
 
 add_subdirectory(baselibrary)
 add_subdirectory(gfxdevices/software)
+add_subdirectory(fontengines/freetype)
 add_subdirectory(examples)
