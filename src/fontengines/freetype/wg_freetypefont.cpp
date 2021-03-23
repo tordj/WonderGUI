@@ -164,10 +164,12 @@ namespace wg
 		if (size < 0)
 			return false;
 
+		int pxSize = size.px();
+
 		// Sanity check
 
 
-		FT_Error err = FT_Set_Char_Size( m_ftFace, size.px()*64, 0, 0,0 );
+		FT_Error err = FT_Set_Char_Size( m_ftFace, pxSize*64, 0, 0,0 );
 //		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
 		if( err )
 		{
@@ -175,8 +177,9 @@ namespace wg
 			return false;
 		}
 
-		if (size >= m_nCachedFontSizes)
-			_growCachedFontSizes(int(size) + 1);
+
+		if (pxSize >= m_nCachedFontSizes)
+			_growCachedFontSizes(pxSize + 1);
 
 		m_size = size;
 		return true;

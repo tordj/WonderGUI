@@ -26,6 +26,8 @@
 #include <wg_util.h>
 #include <wg_skin.impl.h>
 
+#include <cmath>
+
 namespace wg
 {
 	using namespace Util;
