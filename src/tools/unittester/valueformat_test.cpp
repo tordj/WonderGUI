@@ -1,6 +1,6 @@
 #include "valueformat_test.h"
 
-#include <wg_valueformat.h>
+#include <wg_valueformatter.h>
 #include <wg_charbuffer.h>
 
 ValueFormatTest::ValueFormatTest()
@@ -61,7 +61,7 @@ bool ValueFormatTest::InitFromString()
 	TEST_ASSERT( format5.bForceDecimals == true );
 
 
-	std::string	a = std::string("$\xc2\xa3\xe2\x82\xac") + std::string("1;000000:0000 USD");		// string is '$£€1;000000:0000 USD'
+	std::string	a = std::string("$\xc2\xa3\xe2\x82\xac") + std::string("1;000000:0000 USD");		// string is '$ï¿½ï¿½1;000000:0000 USD'
 	WgValueFormat	format6( a );
 
 	TEST_ASSERT( format6.decimals == 4 );

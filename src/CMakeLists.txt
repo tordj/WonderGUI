@@ -5,8 +5,6 @@ project(wondergui VERSION 3.0 DESCRIPTION "WonderGUI User Interface Library")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/../builds)
-
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
@@ -32,6 +30,9 @@ include_directories(
 
 	gfxdevices/software
 	gfxdevices/opengl
+	gfxdevices/stream
+	gfxdevices/metal
+
 	fontengines/freetype
 
 	../SDL2/include
@@ -46,5 +47,9 @@ link_directories(
 
 add_subdirectory(baselibrary)
 add_subdirectory(gfxdevices/software)
+add_subdirectory(gfxdevices/opengl)
 add_subdirectory(fontengines/freetype)
 add_subdirectory(examples)
+add_subdirectory(tools/workbench)
+add_subdirectory(tools/gfxdevicetester)
+#add_subdirectory(tools/unittester)

@@ -87,6 +87,7 @@ ADD_LIBRARY( wondergui STATIC
 	skins/misc/wg_doubleskin.cpp
 	skins/state/wg_blockskin.cpp
 	skins/state/wg_boxskin.cpp
+	skins/state/wg_circleskin.cpp
 	skins/state/wg_colorskin.cpp
 	skins/state/wg_lambdaskin.cpp
 	skins/state/wg_multiblockskin.cpp

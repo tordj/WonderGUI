@@ -16,21 +16,21 @@
 #include <list>
 
 #include <wondergui.h>
-#include <gfxdevices/software/wg_softgfxdevice.h>
-#include <gfxdevices/software/wg_softsurfacefactory.h>
+#include <wg_softgfxdevice.h>
+#include <wg_softsurfacefactory.h>
 
 
-#include <gfxdevices/stream/wg_streamgfxdevice.h>
-#include <gfxdevices/stream/wg_streamsurfacefactory.h>
+#include <wg_streamgfxdevice.h>
+#include <wg_streamsurfacefactory.h>
 
 
-#include <gfxdevices/opengl/wg_glgfxdevice.h>
-#include <gfxdevices/opengl/wg_glsurface.h>
-#include <gfxdevices/opengl/wg_glsurfacefactory.h>
+#include <wg_glgfxdevice.h>
+#include <wg_glsurface.h>
+#include <wg_glsurfacefactory.h>
 
-#include "device.h"
-#include "gfxdevicetester.h"
-#include "app.h"
+#include "../device.h"
+#include "../gfxdevicetester.h"
+#include "../app.h"
 
 
 bool		init_system( Rect windowGeo );
@@ -284,10 +284,10 @@ bool init_system( Rect windowGeo )
 
 	//	SDL_Renderer * pRenderer = SDL_CreateRenderer(pWin, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-#ifdef WIN32  
+//#ifdef WIN32  
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
-#endif
+//#endif
 
 	glDrawBuffer(GL_FRONT);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

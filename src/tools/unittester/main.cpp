@@ -1,4 +1,4 @@
-#include <conio.h>
+//#include <conio.h>
 #include "testframework.h"
 
 
@@ -8,7 +8,7 @@ int main( int argc, char * argv[] )
 
 	bool res = t.RunAll();
 
-	_getch();
+//	_getch();
 
 	if( res )
 		return 0;

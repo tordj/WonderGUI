@@ -1,4 +1,4 @@
-#include "testsuites/testsuite.h"
+#include "testsuite.h"
 
 class ClutBlitTests : public TestSuite
 {
@@ -17,11 +17,11 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pLeaves = pAppVisitor->loadSurface("../resources/BLAETTER.GIF", pDevice->surfaceFactory());
+		m_pLeaves = pAppVisitor->loadSurface("../resources/blaetter.gif", pDevice->surfaceFactory());
 		if (!m_pLeaves)
 			return false;
 
-		m_pLeavesInterpolated = pAppVisitor->loadSurface("../resources/BLAETTER.GIF", pDevice->surfaceFactory());
+		m_pLeavesInterpolated = pAppVisitor->loadSurface("../resources/blaetter.gif", pDevice->surfaceFactory());
 		if (!m_pLeavesInterpolated)
 			return false;
 

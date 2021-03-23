@@ -1,4 +1,4 @@
-#include "testsuites/testsuite.h"
+#include "testsuite.h"
 
 class PatchBlitTests : public TestSuite
 {

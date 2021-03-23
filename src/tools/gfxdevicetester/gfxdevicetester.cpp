@@ -1,7 +1,7 @@
 
 #include <cmath>
 
-#include <fonts/freetype/wg_freetypefont.h>
+#include <wg_freetypefont.h>
 
 #include "gfxdevicetester.h"
 
