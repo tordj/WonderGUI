@@ -12,7 +12,7 @@ target_link_directories(example01 PRIVATE
 
 
 if(WIN32)
-target_link_libraries(example01 PUBLIC 
+target_link_libraries(example01 PRIVATE 
 	wgsoftgfx
 	wondergui 
 	SDL2
@@ -20,7 +20,7 @@ target_link_libraries(example01 PUBLIC
 )
 
 else()
-target_link_libraries(example01 PUBLIC 
+target_link_libraries(example01 PRIVATE 
 	wgsoftgfx
 	wondergui 
 	SDL2

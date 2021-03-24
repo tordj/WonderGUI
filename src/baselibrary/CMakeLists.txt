@@ -1,5 +1,5 @@
 
-ADD_LIBRARY( wondergui STATIC
+ADD_LIBRARY( wondergui
 	base/wg_base.cpp
 	base/wg_bitmapfont.cpp
 	base/wg_blob.cpp

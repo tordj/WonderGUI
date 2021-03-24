@@ -11,14 +11,14 @@ add_executable(unittester
 
 
 if(WIN32)
-target_link_libraries(unittester PUBLIC 
+target_link_libraries(unittester PRIVATE
 	wgfreetypefont
 	wondergui 
 	freetype
 )
 
 else()
-target_link_libraries(unittester PUBLIC 
+target_link_libraries(unittester PRIVATE
 	wgsoftgfx
 	wgopenglgfx
 	wgfreetypefont

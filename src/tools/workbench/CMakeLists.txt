@@ -12,7 +12,7 @@ target_link_directories(workbench PRIVATE
 
 
 if(WIN32)
-target_link_libraries(workbench PUBLIC 
+target_link_libraries(workbench PRIVATE
 	wgsoftgfx
 	wgopenglgfx
 	wgfreetypefont
@@ -20,24 +20,23 @@ target_link_libraries(workbench PUBLIC
 	SDL2
 	SDL2main
 	SDL2_image
-	GLEW
-	GL
 	freetype
+	glew32
+	opengl32
 )
 
 else()
-target_link_libraries(workbench PUBLIC 
+target_link_libraries(workbench PRIVATE
 	wgsoftgfx
 	wgopenglgfx
 	wgfreetypefont
 	wondergui 
 	SDL2
 	SDL2_image
+	freetype
 	GLEW
 	GL
-	freetype
 )
-
 endif()
 
 

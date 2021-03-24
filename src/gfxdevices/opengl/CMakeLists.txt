@@ -1,6 +1,6 @@
 project(GLGfxDevice)
 
-ADD_LIBRARY( wgopenglgfx STATIC 
+ADD_LIBRARY( wgopenglgfx 
 
 	wg_glgfxdevice.cpp
 	wg_glshaders.cpp 

@@ -1,6 +1,6 @@
 project(FreetypeFont)
 
-ADD_LIBRARY( wgfreetypefont STATIC 
+ADD_LIBRARY( wgfreetypefont 
 
 	wg_freetypefont.cpp
 )

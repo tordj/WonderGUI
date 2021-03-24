@@ -1,6 +1,6 @@
 project(SoftGfxDevice)
 
-ADD_LIBRARY( wgsoftgfx STATIC 
+ADD_LIBRARY( wgsoftgfx 
 
 	wg_softgfxdevice.cpp 
 	wg_softsurface.cpp 
@@ -9,6 +9,5 @@ ADD_LIBRARY( wgsoftgfx STATIC
 
 target_include_directories(wgsoftgfx PRIVATE 
 
-	.
 )
 

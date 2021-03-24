@@ -37,11 +37,15 @@ include_directories(
 
 	../SDL2/include
 	../SDL2_image/include
+	../freetype/include
+	../glew/include
 )
 
 link_directories(
 	../SDL2/lib/x64
 	../SDL2_image/lib/x64
+	../freetype/lib/x64
+	../glew/lib/Release/x64
 )
 
 
