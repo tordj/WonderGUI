@@ -1,156 +1,337 @@
 
-ADD_LIBRARY( wondergui
+add_library( wondergui
+			
 	base/wg_base.cpp
+	base/wg_base.h
 	base/wg_bitmapfont.cpp
+	base/wg_bitmapfont.h
 	base/wg_blob.cpp
+	base/wg_blob.h
 	base/wg_canvaslayers.cpp
+	base/wg_canvaslayers.h
 	base/wg_caret.cpp
+	base/wg_caret.h
 	base/wg_chain.cpp
+	base/wg_chain.h
+	base/wg_char.h
 	base/wg_charbuffer.cpp
+	base/wg_charbuffer.h
 	base/wg_charseq.cpp
+	base/wg_charseq.h
 	base/wg_codepages.cpp
+	base/wg_codepages.h
 	base/wg_color.cpp
+	base/wg_color.h
 	base/wg_context.cpp
+	base/wg_context.h
 	base/wg_dataset.cpp
+	base/wg_dataset.h
 	base/wg_dummyfont.cpp
+	base/wg_dummyfont.h
 	base/wg_enumextras.cpp
+	base/wg_enumextras.h
 	base/wg_font.cpp
+	base/wg_font.h
 	base/wg_geo.cpp
+	base/wg_geo.h
 	base/wg_gfxdevice.cpp
+	base/wg_gfxdevice.h
+	base/wg_gfxstream.h
 	base/wg_gfxstreamlogger.cpp
+	base/wg_gfxstreamlogger.h
 	base/wg_gfxstreamplayer.cpp
+	base/wg_gfxstreamplayer.h
 	base/wg_gfxstreamplug.cpp
+	base/wg_gfxstreamplug.h
 	base/wg_gfxstreamreader.cpp
+	base/wg_gfxstreamreader.h
 	base/wg_gfxstreamwriter.cpp
+	base/wg_gfxstreamwriter.h
 	base/wg_gradient.cpp
+	base/wg_gradient.h
+	base/wg_hostbridge.h
 	base/wg_inputhandler.cpp
+	base/wg_inputhandler.h
+	base/wg_internal.h
+	base/wg_key.h
 	base/wg_mempool.cpp
+	base/wg_mempool.h
 	base/wg_memstack.cpp
+	base/wg_memstack.h
 	base/wg_msg.cpp
+	base/wg_msg.h
 	base/wg_msglogger.cpp
+	base/wg_msglogger.h
 	base/wg_msgrouter.cpp
+	base/wg_msgrouter.h
 	base/wg_mu.cpp
+	base/wg_mu.h
 	base/wg_nullgfxdevice.cpp
+	base/wg_nullgfxdevice.h
 	base/wg_object.cpp
+	base/wg_object.h
+	base/wg_paddedslot.h
 	base/wg_patches.cpp
+	base/wg_patches.h
+	base/wg_pointers.h
 	base/wg_receiver.cpp
+	base/wg_receiver.h
 	base/wg_resdb.cpp
+	base/wg_resdb.h
+	base/wg_resloader.h
 	base/wg_scrollbartarget.cpp
+	base/wg_scrollbartarget.h
+	base/wg_selectableslot.h
+	base/wg_shadow.h
 	base/wg_skinslotmanager.cpp
+	base/wg_skinslotmanager.h
 	base/wg_slot.cpp
+	base/wg_slot.h
+	base/wg_slotholder.h
+	base/wg_slotiterator.h
+#	base/wg_state.cpp
+#	base/wg_state.h
 	base/wg_string.cpp
+	base/wg_string.h
+	base/wg_strongcomponentptr.h
+	base/wg_strongptr.h
 	base/wg_surface.cpp
+	base/wg_surface.h
 	base/wg_surfacefactory.cpp
+	base/wg_surfacefactory.h
 	base/wg_textlink.cpp
+	base/wg_textlink.h
 	base/wg_textstyle.cpp
+	base/wg_textstyle.h
 	base/wg_textstylemanager.cpp
+	base/wg_textstylemanager.h
 	base/wg_texttool.cpp
+	base/wg_texttool.h
 	base/wg_togglegroup.cpp
-	base/wg_util.cpp			
+	base/wg_togglegroup.h
+	base/wg_types.h
+	base/wg_util.cpp
+	base/wg_util.h
+	base/wg_weakcomponentptr.h
+	base/wg_weakptr.h
+
 
 	components/wg_canimframes.cpp
+	components/wg_canimframes.h
 	components/wg_ccanvas.cpp
+	components/wg_ccanvas.h
 	components/wg_ccolumnheader.cpp
+	components/wg_ccolumnheader.h
 	components/wg_cdynamicslotcollection.cpp
+	components/wg_cdynamicslotcollection.h
+	components/wg_cdynamicslotvector.h
+	components/wg_cdynamicslotvector.impl.h
+	components/wg_cdynamicvector.h
+	components/wg_cdynamicvector.impl.h
 	components/wg_cgfxinstream.cpp
+	components/wg_cgfxinstream.h
 	components/wg_cgfxoutstream.cpp
+	components/wg_cgfxoutstream.h
 	components/wg_cicondisplay.cpp
+	components/wg_cicondisplay.h
 	components/wg_component.cpp
+	components/wg_component.h
+	components/wg_cpaddedslotvector.h
+	components/wg_cpaddedslotvector.impl.h
+	components/wg_cselectableslotvector.h
+	components/wg_cselectableslotvector.impl.h
 	components/wg_cshadows.cpp
+	components/wg_cshadows.h
 	components/wg_cskinslot.cpp
+	components/wg_cskinslot.h
 	components/wg_cskinslotmi.cpp
+	components/wg_cskinslotmi.h
 	components/wg_cslot.cpp
+	components/wg_cslot.h
+	components/wg_cslotarray.h
 	components/wg_cstandardslot.cpp
+	components/wg_cstandardslot.h
 	components/wg_cstaticslotcollection.cpp
+	components/wg_cstaticslotcollection.h
+	components/wg_cstaticslotvector.h
+	components/wg_cstaticslotvector.impl.h
 	components/wg_cstatictextdisplay.cpp
+	components/wg_cstatictextdisplay.h
 	components/wg_cstaticvaluedisplay.cpp
+	components/wg_cstaticvaluedisplay.h
+	components/wg_cstaticvector.h
+	components/wg_cstaticvector.impl.h
 	components/wg_ctext.cpp
+	components/wg_ctext.h
 	components/wg_ctextdisplay.cpp
+	components/wg_ctextdisplay.h
 	components/wg_ctexteditor.cpp
+	components/wg_ctexteditor.h
 	components/wg_cvaluedisplay.cpp
+	components/wg_cvaluedisplay.h
 	components/wg_cvalueeditor.cpp
+	components/wg_cvalueeditor.h
 	components/wg_geocomponent.cpp
+	components/wg_geocomponent.h
 
-	sizebrokers/wg_sizebroker.cpp
-	sizebrokers/wg_uniform_sizebroker.cpp
 	sizebrokers/wg_scalepreferred_sizebroker.cpp
-
+	sizebrokers/wg_scalepreferred_sizebroker.h
+	sizebrokers/wg_sizebroker.cpp
+	sizebrokers/wg_sizebroker.h
+	sizebrokers/wg_uniform_sizebroker.cpp
+	sizebrokers/wg_uniform_sizebroker.h
+	
 	skins/wg_animskin.cpp
+	skins/wg_animskin.h
 	skins/wg_skin.cpp
+	skins/wg_skin.h
+	skins/wg_skin.impl.h
 	skins/wg_stateskin.cpp
+	skins/wg_stateskin.h	
 	skins/anim/wg_spinanimskin.cpp
+	skins/anim/wg_spinanimskin.h
 	skins/meter/wg_fillmeterskin.cpp
+	skins/meter/wg_fillmeterskin.h
 	skins/meter/wg_framemeterskin.cpp
+	skins/meter/wg_framemeterskin.h
 	skins/meter/wg_piemeterskin.cpp
+	skins/meter/wg_piemeterskin.h
 	skins/meter/wg_spinmeterskin.cpp
+	skins/meter/wg_spinmeterskin.h
 	skins/misc/wg_bakeskin.cpp
+	skins/misc/wg_bakeskin.h
 	skins/misc/wg_doubleskin.cpp
+	skins/misc/wg_doubleskin.h
 	skins/state/wg_blockskin.cpp
+	skins/state/wg_blockskin.h
 	skins/state/wg_boxskin.cpp
+	skins/state/wg_boxskin.h
 	skins/state/wg_circleskin.cpp
+	skins/state/wg_circleskin.h
 	skins/state/wg_colorskin.cpp
+	skins/state/wg_colorskin.h
 	skins/state/wg_lambdaskin.cpp
+	skins/state/wg_lambdaskin.h
 	skins/state/wg_multiblockskin.cpp
+	skins/state/wg_multiblockskin.h
 	skins/state/wg_scrollskin.cpp
+	skins/state/wg_scrollskin.h
 	skins/state/wg_tileskin.cpp
+	skins/state/wg_tileskin.h
 	skins/static/wg_staticblockskin.cpp
+	skins/static/wg_staticblockskin.h
 	skins/static/wg_staticboxskin.cpp
+	skins/static/wg_staticboxskin.h
 	skins/static/wg_staticcolorskin.cpp
+	skins/static/wg_staticcolorskin.h
 	skins/static/wg_staticgradientskin.cpp
+	skins/static/wg_staticgradientskin.h
 	skins/static/wg_statictileskin.cpp
+	skins/static/wg_statictileskin.h
 
-	textmappers/wg_textmapper.cpp
 	textmappers/wg_stdtextmapper.cpp
+	textmappers/wg_stdtextmapper.h
+	textmappers/wg_textmapper.cpp
+	textmappers/wg_textmapper.h
 
 	valueformatters/wg_standardformatter.cpp
+	valueformatters/wg_standardformatter.h
 	valueformatters/wg_timeformatter.cpp
+	valueformatters/wg_timeformatter.h
 	valueformatters/wg_valueformatter.cpp
+	valueformatters/wg_valueformatter.h
 
 	widgets/wg_animplayer.cpp
+	widgets/wg_animplayer.h
 	widgets/wg_button.cpp
+	widgets/wg_button.h
 	widgets/wg_canvas.cpp
+	widgets/wg_canvas.h
 	widgets/wg_container.cpp
+	widgets/wg_container.h
 	widgets/wg_filler.cpp
+	widgets/wg_filler.h
 	widgets/wg_fpsdisplay.cpp
+	widgets/wg_fpsdisplay.h
 	widgets/wg_image.cpp
+	widgets/wg_image.h
 	widgets/wg_knob.cpp
+	widgets/wg_knob.h
 	widgets/wg_lineeditor.cpp
+	widgets/wg_lineeditor.h
 	widgets/wg_pianokeyboard.cpp
+	widgets/wg_pianokeyboard.h
 	widgets/wg_popupopener.cpp
+	widgets/wg_popupopener.h
 	widgets/wg_rangeslider.cpp
+	widgets/wg_rangeslider.h
 	widgets/wg_rulerlabels.cpp
+	widgets/wg_rulerlabels.h
 	widgets/wg_scrollbar.cpp
+	widgets/wg_scrollbar.h
 	widgets/wg_selectbox.cpp
+	widgets/wg_selectbox.h
 	widgets/wg_sidecanvas.cpp
+	widgets/wg_sidecanvas.h
 	widgets/wg_simplevolumemeter.cpp
+	widgets/wg_simplevolumemeter.h
 	widgets/wg_slider.cpp
+	widgets/wg_slider.h
 	widgets/wg_textdisplay.cpp
+	widgets/wg_textdisplay.h
 	widgets/wg_texteditor.cpp
+	widgets/wg_texteditor.h
 	widgets/wg_timer.cpp
+	widgets/wg_timer.h
 	widgets/wg_togglebutton.cpp
+	widgets/wg_togglebutton.h
 	widgets/wg_valuedisplay.cpp
+	widgets/wg_valuedisplay.h
 	widgets/wg_volumemeter.cpp
+	widgets/wg_volumemeter.h
 	widgets/wg_widget.cpp
+	widgets/wg_widget.h
 
 	widgets/capsules/wg_canvascapsule.cpp
+	widgets/capsules/wg_canvascapsule.h
 	widgets/capsules/wg_capsule.cpp
+	widgets/capsules/wg_capsule.h
 	widgets/capsules/wg_renderlayercapsule.cpp
+	widgets/capsules/wg_renderlayercapsule.h
 	widgets/capsules/wg_shadercapsule.cpp
+	widgets/capsules/wg_shadercapsule.h
 	widgets/capsules/wg_sizecapsule.cpp
+	widgets/capsules/wg_sizecapsule.h
 	widgets/layers/wg_designlayer.cpp
+	widgets/layers/wg_designlayer.h
 	widgets/layers/wg_dragndroplayer.cpp
+	widgets/layers/wg_dragndroplayer.h
 	widgets/layers/wg_layer.cpp
+	widgets/layers/wg_layer.h
 	widgets/layers/wg_modallayer.cpp
+	widgets/layers/wg_modallayer.h
 	widgets/layers/wg_popuplayer.cpp
+	widgets/layers/wg_popuplayer.h
 	widgets/layers/wg_tooltiplayer.cpp
+	widgets/layers/wg_tooltiplayer.h
 	widgets/lists/wg_list.cpp
+	widgets/lists/wg_list.h
 	widgets/lists/wg_packlist.cpp
+	widgets/lists/wg_packlist.h
 	widgets/panels/wg_flexpanel.cpp
+	widgets/panels/wg_flexpanel.h
 	widgets/panels/wg_lambdapanel.cpp
+	widgets/panels/wg_lambdapanel.h
 	widgets/panels/wg_packpanel.cpp
+	widgets/panels/wg_packpanel.h
 	widgets/panels/wg_panel.cpp
+	widgets/panels/wg_panel.h
 	widgets/panels/wg_rootpanel.cpp
+	widgets/panels/wg_rootpanel.h
 	widgets/panels/wg_scrollpanel.cpp
+	widgets/panels/wg_scrollpanel.h
 	widgets/panels/wg_splitpanel.cpp
+	widgets/panels/wg_splitpanel.h
 	widgets/panels/wg_stackpanel.cpp
+	widgets/panels/wg_stackpanel.h
 )

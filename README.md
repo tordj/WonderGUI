@@ -1,6 +1,6 @@
 WonderGUI
 =========
 
-Cross platform, sophisticated, UI Toolkit for games and other multimedia programs that wants a custom made look-n-feel. Implemented in C++ and released under GPL and multiple commercial license offers. Used since 2005 in commercial products.
+Cross platform, sophisticated, UI Toolkit for games and other multimedia products that needs a custom look-n-feel. Implemented in C++ and released under GPL and a commercial licenses. Used since 2005 in commercial products.
 
 www.wondergui.com

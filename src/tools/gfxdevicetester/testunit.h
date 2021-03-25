@@ -73,7 +73,7 @@ namespace test
 		{
 			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_8);
 
-			m_pBlitSource = FileUtil::loadSurface("../resources/splash.png", pDevice->surfaceFactory());
+			m_pBlitSource = FileUtil::loadSurface("resources/splash.png", pDevice->surfaceFactory());
 			return(m_pMyCanvas != nullptr && m_pBlitSource != nullptr);
 		}
 
@@ -123,7 +123,7 @@ namespace test
 		{
 			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_8);
 
-			m_pBlitSource = FileUtil::loadSurface("../resources/splash.png", pDevice->surfaceFactory());
+			m_pBlitSource = FileUtil::loadSurface("resources/splash.png", pDevice->surfaceFactory());
 			return(m_pMyCanvas != nullptr && m_pBlitSource != nullptr);
 		}
 
@@ -265,7 +265,7 @@ namespace test
 		const string	name() const { return "RotScaleBlend"; }
 		bool			init(GfxDevice * pDevice, const RectI& canvas)
 		{
-			m_pSource = FileUtil::loadSurface("../resources/clockface_2500.png", pDevice->surfaceFactory());
+			m_pSource = FileUtil::loadSurface("resources/clockface_2500.png", pDevice->surfaceFactory());
 
 			if (m_pSource)
 			{

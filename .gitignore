@@ -17,3 +17,16 @@ doc/temp/
 resources/parallels/
 
 alpha_blending_example_files/
+
+SDL2_image/
+
+SDL2/
+
+glew/
+
+build/
+
+freetype/include
+freetype/lib
+
+.vscode/

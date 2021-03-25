@@ -39,7 +39,7 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pImg = pAppVisitor->loadSurface("../resources/small_tile.png", pDevice->surfaceFactory());
+		m_pImg = pAppVisitor->loadSurface("resources/small_tile.png", pDevice->surfaceFactory());
 		m_pImg->setScaleMode(ScaleMode::Interpolate);
 		if (!m_pImg)
 			return false;

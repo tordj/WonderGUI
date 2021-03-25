@@ -56,7 +56,7 @@ bool GfxDeviceTester::init( AppVisitor * pVisitor )
 
 	// Init fonts
 
-	Blob_p pFontFile = pVisitor->loadBlob("../resources/DroidSans.ttf");
+	Blob_p pFontFile = pVisitor->loadBlob("resources/DroidSans.ttf");
 	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 0);
 
 	TextStyle_p pStyle = TextStyle::create();
@@ -567,17 +567,17 @@ bool GfxDeviceTester::setup_chrome()
 {
 	// Load resources
 
-	auto pPlateSurface = m_pVisitor->loadSurface("../resources/grey_plate.bmp");
+	auto pPlateSurface = m_pVisitor->loadSurface("resources/grey_plate.bmp");
 	assert(pPlateSurface);
 	BlockSkin_p pPlateSkin = BlockSkin::create(pPlateSurface, BorderI(3));
 	pPlateSkin->setContentPadding(BorderI(5));
 
-	auto pPressablePlateSurface = m_pVisitor->loadSurface("../resources/grey_pressable_plate.bmp");
+	auto pPressablePlateSurface = m_pVisitor->loadSurface("resources/grey_pressable_plate.bmp");
 	assert(pPressablePlateSurface);
 	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pPressablePlateSkin->setContentPadding(BorderI(3));
 
-	auto pButtonSurface = m_pVisitor->loadSurface("../resources/simple_button.bmp");
+	auto pButtonSurface = m_pVisitor->loadSurface("resources/simple_button.bmp");
 	assert(pButtonSurface);
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pSimpleButtonSkin->setContentPadding(BorderI(5));

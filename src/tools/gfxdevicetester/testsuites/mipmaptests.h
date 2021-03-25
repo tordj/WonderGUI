@@ -14,12 +14,12 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pStdSurface = pAppVisitor->loadSurface("../resources/mipmaptest.png", pDevice->surfaceFactory());
+		m_pStdSurface = pAppVisitor->loadSurface("resources/mipmaptest.png", pDevice->surfaceFactory());
 		if (!m_pStdSurface)
 			return false;
 		m_pStdSurface->setScaleMode(ScaleMode::Interpolate);
 
-		m_pMipSurface = pAppVisitor->loadSurface("../resources/mipmaptest.png", pDevice->surfaceFactory(), SurfaceFlag::Mipmapped );
+		m_pMipSurface = pAppVisitor->loadSurface("resources/mipmaptest.png", pDevice->surfaceFactory(), SurfaceFlag::Mipmapped );
 		if (!m_pMipSurface)
 			return false;
 		m_pMipSurface->setScaleMode(ScaleMode::Interpolate);

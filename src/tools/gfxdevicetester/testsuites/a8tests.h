@@ -15,7 +15,7 @@ public:
 	{
 		m_pCanvas = pDevice->surfaceFactory()->createSurface(canvas.size(), PixelFormat::A_8, SurfaceFlag::Canvas);
 
-		m_pImg = pAppVisitor->loadSurface("../resources/splash.png", pDevice->surfaceFactory());
+		m_pImg = pAppVisitor->loadSurface("resources/splash.png", pDevice->surfaceFactory());
 		if (!m_pImg)
 			return false;
 

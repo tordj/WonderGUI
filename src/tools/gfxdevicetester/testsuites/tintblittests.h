@@ -25,7 +25,7 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pImg = pAppVisitor->loadSurface("../resources/mipmaptest.png", pDevice->surfaceFactory());
+		m_pImg = pAppVisitor->loadSurface("resources/mipmaptest.png", pDevice->surfaceFactory());
 		if (!m_pImg)
 			return false;
 

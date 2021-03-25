@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(wondergui VERSION 3.0 DESCRIPTION "WonderGUI User Interface Library")
+project(WonderGUI VERSION 3.0 DESCRIPTION "WonderGUI User Interface Library")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+#set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 
 include_directories( 
@@ -37,7 +37,6 @@ include_directories(
 
 	../SDL2/include
 	../SDL2_image/include
-	../freetype/include
 	../glew/include
 )
 

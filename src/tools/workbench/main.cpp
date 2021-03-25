@@ -448,9 +448,9 @@ int main(int argc, char** argv)
 
 	PixelDescription	pixelDesc;
 /*
-	char * pFontSpec = (char*)loadFile("../resources/anuvverbubbla_8x8.fnt");
+	char * pFontSpec = (char*)loadFile("resources/anuvverbubbla_8x8.fnt");
 
-	SDL_Surface * pFontSurf = IMG_Load("../resources/anuvverbubbla_8x8.png");
+	SDL_Surface * pFontSurf = IMG_Load("resources/anuvverbubbla_8x8.png");
 	//	convertSDLFormat( &pixelDesc, pFontSurf->format );
 	Surface_p pFontImg = pSurfaceFactory->createSurface(SizeI(pFontSurf->w, pFontSurf->h), PixelFormat::BGRA_8, (unsigned char*)pFontSurf->pixels, pFontSurf->pitch);
 	SDL_FreeSurface(pFontSurf);
@@ -463,7 +463,7 @@ int main(int argc, char** argv)
 	Base::setDefaultStyle(pStyle);
 */
 
-	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
+	Blob_p pFontFile = loadBlob("resources/DroidSans.ttf");
 
 	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 0);
 
@@ -483,48 +483,48 @@ int main(int argc, char** argv)
 
 	// Init skins
 
-	SDL_Surface * pSDLSurf = IMG_Load("../resources/simple_button.bmp");
+	SDL_Surface * pSDLSurf = IMG_Load("resources/simple_button.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pSimpleButtonSkin->setContentPadding(BorderI(5));
 
-	pSDLSurf = IMG_Load("../resources/simple_icon.png");
+	pSDLSurf = IMG_Load("resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pBackgroundSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pBackgroundSkin = BlockSkin::create(pBackgroundSurface);
 
 
-	pSDLSurf = IMG_Load("../resources/splash.png");
+	pSDLSurf = IMG_Load("resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pSplashSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pSplashSkin = BlockSkin::create(pSplashSurface);
 
 
-	pSDLSurf = IMG_Load("../resources/state_button.bmp");
+	pSDLSurf = IMG_Load("resources/state_button.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pStateButtonSkin = BlockSkin::create(pStateButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pStateButtonSkin->setContentPadding(BorderI(5));
 
-	pSDLSurf = IMG_Load("../resources/grey_pressable_plate.bmp");
+	pSDLSurf = IMG_Load("resources/grey_pressable_plate.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pPressablePlateSkin->setContentPadding(BorderI(3));
 
-	pSDLSurf = IMG_Load("../resources/list_entry.png");
+	pSDLSurf = IMG_Load("resources/list_entry.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pListEntrySurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	Skin_p pListEntrySkin = BlockSkin::create(pListEntrySurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, BorderI(2), Axis::X);
 
-	pSDLSurf = IMG_Load("../resources/splash.png");
+	pSDLSurf = IMG_Load("resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pImgSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
@@ -532,13 +532,13 @@ int main(int argc, char** argv)
 	pImgSurface->setScaleMode(ScaleMode::Interpolate);
 
 
-	pSDLSurf = IMG_Load("../resources/up_down_arrow.png");
+	pSDLSurf = IMG_Load("resources/up_down_arrow.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	Skin_p pUpDownArrowSkin = BlockSkin::create(pUpDownArrowSurface, { StateEnum::Normal, StateEnum::Selected }, BorderI(0));
 
-	pSDLSurf = IMG_Load("../resources/simple_icon.png");
+	pSDLSurf = IMG_Load("resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pSimpleIconSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
@@ -1673,7 +1673,7 @@ bool savePNG(Surface * pSurface, const char * path)
 bool shadowLayerTest(CStandardSlot_p pEntry )
 {
 /*
-	Surface_p pImgSurface = loadSurface("../resources/shadow.png", PixelFormat::A8);
+	Surface_p pImgSurface = loadSurface("resources/shadow.png", PixelFormat::A8);
 	
 	BlockStateSkin_p pShadowSkin = BlockSkin::createStaticFromSurface(pImgSurface);
 	pShadowSkin->setFrame({ 0,128,128,0 });
@@ -1739,7 +1739,7 @@ bool shadowLayerTest(CStandardSlot_p pEntry )
 
 bool stretchBlitTest(CStandardSlot_p pEntry)
 {
-	Surface_p pImgSurface = loadSurface("../resources/white_frame_256x256.png", PixelFormat::BGR_8 );
+	Surface_p pImgSurface = loadSurface("resources/white_frame_256x256.png", PixelFormat::BGR_8 );
 	pImgSurface->setScaleMode(ScaleMode::Interpolate);
 
 	auto pBack = FlexPanel::create();
@@ -2010,9 +2010,9 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	{
-		Surface_p pOddWhiteKeys = loadSurface("../resources/whiteoddkeys.png", PixelFormat::BGRA_8);
-		Surface_p pEvenWhiteKeys = loadSurface("../resources/whiteevenkeys.png", PixelFormat::BGRA_8);
-		Surface_p pBlackKeys = loadSurface("../resources/blackkeys.png", PixelFormat::BGRA_8);
+		Surface_p pOddWhiteKeys = loadSurface("resources/whiteoddkeys.png", PixelFormat::BGRA_8);
+		Surface_p pEvenWhiteKeys = loadSurface("resources/whiteevenkeys.png", PixelFormat::BGRA_8);
+		Surface_p pBlackKeys = loadSurface("resources/blackkeys.png", PixelFormat::BGRA_8);
 
 		auto pSimplePiano = PianoKeyboard::create();
 		pSimplePiano->skin = ColorSkin::create(Color::Black, { 60,10,10,10 });
@@ -2027,9 +2027,9 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 	}
 /*
 	{
-		Surface_p pOddWhiteKeys = loadSurface("../resources/NisOddWhite.png", PixelFormat::BGRA_8);
-		Surface_p pEvenWhiteKeys = loadSurface("../resources/NisEvenWhite.png", PixelFormat::BGRA_8);
-		Surface_p pBlackKeys = loadSurface("../resources/NisBlack.png", PixelFormat::BGRA_8);
+		Surface_p pOddWhiteKeys = loadSurface("resources/NisOddWhite.png", PixelFormat::BGRA_8);
+		Surface_p pEvenWhiteKeys = loadSurface("resources/NisEvenWhite.png", PixelFormat::BGRA_8);
+		Surface_p pBlackKeys = loadSurface("resources/NisBlack.png", PixelFormat::BGRA_8);
 
 		auto pNisPiano = PianoKeyboard::create();
 		pNisPiano->setSkin(ColorSkin::create(Color::Black, { 0,0,0,0 }));
@@ -2110,11 +2110,11 @@ bool spinKnobTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	Surface_p pSurfKnob_bg = loadSurface("../resources/knob_bg.png", PixelFormat::BGRA_8);
-	Surface_p pSurfKnob_fg = loadSurface("../resources/knob_fg.png", PixelFormat::BGRA_8);
+	Surface_p pSurfKnob_bg = loadSurface("resources/knob_bg.png", PixelFormat::BGRA_8);
+	Surface_p pSurfKnob_fg = loadSurface("resources/knob_fg.png", PixelFormat::BGRA_8);
 
-	Surface_p pSurfArrow = loadSurface("../resources/dialarrow_small.png", PixelFormat::BGRA_8);
-	Surface_p pSurfClockFace = loadSurface("../resources/clockface.png", PixelFormat::BGRA_8);
+	Surface_p pSurfArrow = loadSurface("resources/dialarrow_small.png", PixelFormat::BGRA_8);
+	Surface_p pSurfClockFace = loadSurface("resources/clockface.png", PixelFormat::BGRA_8);
 
 	pSurfArrow->setScaleMode(ScaleMode::Interpolate);
 
@@ -2156,7 +2156,7 @@ bool animKnobTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	Surface_p pSurfAnim = loadSurface("../resources/giraffe-anim-1024x1024.jpg", PixelFormat::BGRA_8);
+	Surface_p pSurfAnim = loadSurface("resources/giraffe-anim-1024x1024.jpg", PixelFormat::BGRA_8);
 
 
 	auto pAnimSkin = FrameMeterSkin::create();
@@ -2270,9 +2270,9 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 	pCanvasStack->setPreferredSize({ 1280, 1600 });
 	pCanvasStack->setCanvases(2);
 
-	Surface_p pBgSurf = loadSurface("../resources/parallels/background0001.png", PixelFormat::BGR_8);
-	Surface_p pFgSurf = loadSurface("../resources/parallels/panel0001.png", PixelFormat::BGRA_8);
-	Surface_p pLedMaskSurf = loadSurface("../resources/parallels/led_mask0001.png", PixelFormat::BGRA_8);
+	Surface_p pBgSurf = loadSurface("resources/parallels/background0001.png", PixelFormat::BGR_8);
+	Surface_p pFgSurf = loadSurface("resources/parallels/panel0001.png", PixelFormat::BGRA_8);
+	Surface_p pLedMaskSurf = loadSurface("resources/parallels/led_mask0001.png", PixelFormat::BGRA_8);
 
 	Surface_p pLedMixTempSurf = Base::activeContext()->surfaceFactory()->createSurface(pLedMaskSurf->size());
 	pLedMixTempSurf->fill(Color::Transparent);
@@ -2317,7 +2317,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 	pCanvasStack->slot.setWidget(pContent);
 
 
-	Surface_p pHandleSurf = loadSurface("../resources/parallels/fader0001.png", PixelFormat::BGRA_8);
+	Surface_p pHandleSurf = loadSurface("resources/parallels/fader0001.png", PixelFormat::BGRA_8);
 	auto pHandleSkin = BlockSkin::create(pHandleSurf);
 
 	auto pSliderBgSkin = FillMeterSkin::create(Direction::Up, Color(144/2, 196/2, 235/2), Color(144, 196, 235),Color::Transparent, BorderI(36,0,40,0), BorderI(),true);
@@ -2353,11 +2353,11 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	Surface_p pSurfKnob_bg = loadSurface("../resources/knob_bg.png", PixelFormat::BGRA_8);
-	Surface_p pSurfKnob_fg = loadSurface("../resources/knob_fg.png", PixelFormat::BGRA_8);
+	Surface_p pSurfKnob_bg = loadSurface("resources/knob_bg.png", PixelFormat::BGRA_8);
+	Surface_p pSurfKnob_fg = loadSurface("resources/knob_fg.png", PixelFormat::BGRA_8);
 
-	Surface_p pSurfArrow = loadSurface("../resources/dialarrow_small.png", PixelFormat::BGRA_8);
-	Surface_p pSurfClockFace = loadSurface("../resources/clockface.png", PixelFormat::BGRA_8);
+	Surface_p pSurfArrow = loadSurface("resources/dialarrow_small.png", PixelFormat::BGRA_8);
+	Surface_p pSurfClockFace = loadSurface("resources/clockface.png", PixelFormat::BGRA_8);
 
 	pSurfArrow->setScaleMode(ScaleMode::Interpolate);
 
@@ -2384,7 +2384,7 @@ bool timerTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-//	Surface_p pSurfClockFace = loadSurface("../resources/clockface.png", PixelFormat::BGRA_8);
+//	Surface_p pSurfClockFace = loadSurface("resources/clockface.png", PixelFormat::BGRA_8);
 //	pSurfClockFace->setScaleMode(ScaleMode::Interpolate);
 //	auto pSkin = SpinMeterSkin::create(pSurfClockFace, { 419,419 } );
 
@@ -2410,7 +2410,7 @@ bool animPlayerTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	Surface_p pSurfAnim = loadSurface("../resources/giraffe-anim-1024x1024.jpg", PixelFormat::BGRA_8);
+	Surface_p pSurfAnim = loadSurface("resources/giraffe-anim-1024x1024.jpg", PixelFormat::BGRA_8);
 
 
 	auto pPlayer = AnimPlayer::create();
@@ -2442,7 +2442,7 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	Surface_p pMainSurf = loadSurface("../resources/selectbox.png", PixelFormat::BGRA_8);
+	Surface_p pMainSurf = loadSurface("resources/selectbox.png", PixelFormat::BGRA_8);
 
 	auto pMainSkin = BlockSkin::create(pMainSurf, { 0,0,32,16 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed }, { 3,23,3,3 });
 	pMainSkin->setContentPadding({ 3,23,3,3 });
@@ -2480,10 +2480,10 @@ bool tileSkinTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	Surface_p pNormalSurf = loadSurface("../resources/tile_blocks.png", PixelFormat::BGRA_8);
+	Surface_p pNormalSurf = loadSurface("resources/tile_blocks.png", PixelFormat::BGRA_8);
 	pNormalSurf->setTiling(true);
 
-	Surface_p pHoveredSurf = loadSurface("../resources/tile_blocks_marked.png", PixelFormat::BGRA_8);
+	Surface_p pHoveredSurf = loadSurface("resources/tile_blocks_marked.png", PixelFormat::BGRA_8);
 	pHoveredSurf->setTiling(true);
 
 	auto pStaticSkin = TileSkin::create(pNormalSurf);
@@ -2516,17 +2516,17 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	Surface_p pNormalSurf = loadSurface("../resources/tile_blocks.png", PixelFormat::BGRA_8);
+	Surface_p pNormalSurf = loadSurface("resources/tile_blocks.png", PixelFormat::BGRA_8);
 	pNormalSurf->setTiling(true);
 
-	Surface_p pHoveredSurf = loadSurface("../resources/tile_blocks_marked.png", PixelFormat::BGRA_8);
+	Surface_p pHoveredSurf = loadSurface("resources/tile_blocks_marked.png", PixelFormat::BGRA_8);
 	pHoveredSurf->setTiling(true);
 
 	auto pDynamicSkin = TileSkin::create({ {StateEnum::Normal, pNormalSurf}, {StateEnum::Hovered, pHoveredSurf} });
 	pDynamicSkin->setContentPadding({ 10,10,10,10 });
 
 
-	Surface_p pSplashSurf = loadSurface("../resources/splash.png" );
+	Surface_p pSplashSurf = loadSurface("resources/splash.png" );
 
 	auto pSplashSkin = BlockSkin::create(pSplashSurf);
 	pSplashSkin->setBlendMode(BlendMode::Add);
@@ -2560,7 +2560,7 @@ bool animSkinTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	Surface_p pSplashSurf = loadSurface("../resources/splash.png");
+	Surface_p pSplashSurf = loadSurface("resources/splash.png");
 
 	auto pAnimSkin = SpinAnimSkin::create(pSplashSurf, { 256,256 }, 10000 );
 	pAnimSkin->setContentPadding(80);
@@ -2629,7 +2629,7 @@ bool rigidPartNinePatchTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	Surface_p pSurf = loadSurface("../resources/fixed_sections_alphatest.png");
+	Surface_p pSurf = loadSurface("resources/fixed_sections_alphatest.png");
 
 	auto pSkin = BlockSkin::create(pSurf, {StateEnum::Normal, StateEnum::Hovered}, 10, Axis::X);
 	pSkin->setRigidPartX(24, 16, YSections::Top | YSections::Center | YSections::Bottom);
@@ -2653,8 +2653,8 @@ bool scrollSkinTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	Surface_p pSliderSurf = loadSurface("../resources/sliding_statebutton.png");
-	Surface_p pCoverSurf = loadSurface("../resources/sliding_statebutton_cover.png");
+	Surface_p pSliderSurf = loadSurface("resources/sliding_statebutton.png");
+	Surface_p pCoverSurf = loadSurface("resources/sliding_statebutton_cover.png");
 
 	auto pSliderSkin = ScrollSkin::create(pSliderSurf, 84, StateBits::Selected, 300, Direction::Right, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Disabled }, 0);
 	auto pCoverSkin = StaticBlockSkin::create(pCoverSurf);
@@ -2680,7 +2680,7 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 
 	s_pTooltip = TextDisplay::create();
 
-	Surface_p pTooltipBg = loadSurface("../resources/tooltip_under_bg.png");
+	Surface_p pTooltipBg = loadSurface("resources/tooltip_under_bg.png");
 	auto pSkin = StaticBlockSkin::create(pTooltipBg, BorderI( 10,4,3,4 ) );
 	pSkin->setRigidPartX(5, 16, YSections::Top | YSections::Center | YSections::Bottom);
 	pSkin->setContentPadding({ 10,4,4,4 });
