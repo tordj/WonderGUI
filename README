@@ -109,17 +109,22 @@ Windows
 CMake will search for the packages in the WonderGUI root directory and expects
 a certain directory naming/structure.
 
-Easiest for you is to download and unzip my support package into the WonderGUI
-root directory.
+Easiest for you is to download and unzip my Windows development support package
+into the WonderGUI root directory.
 
 
 Mac OSX
 -------
 
-1. Download the SDL and SDL_Image framework from libsdl.org and follow the
-   installation instructions included.
+1. Download the SDL framework from libsdl.org and copy it to 
+   /Library/Frameworks, or to <Your home directory>/Library/Frameworks if 
+   your access priviliges are not high enough.
 
-2 ... (to be added).
+2. Download the SDL_image 2.0 framework from 
+   https://www.libsdl.org/projects/SDL_image/ and copy it to the same location.
+
+3. You also need the freetype library and header files. I have 
+
 
 
 Running and debugging included applications
@@ -202,6 +207,32 @@ No special instructions needed. Keep in mind that most tools and example files
 needs to be run from the WonderGUI root directory since they need files in the
 resources/ directory. Failing to find them, some might print an understandable
 error message while others will just crash.
+
+
+XCode
+=====
+
+Download, install and use CMake to generate the XCode project file. If you are 
+unfamiliar with CMake, this is how I recommend you to do it:
+
+1. Click "Browse Source..." and navigate to WonderGUI/src.
+2. Create a directory named "build" in WonderGUI/. Click "Browse Build..." and
+   select it.
+3. Click Configure and make sure everything goes through well. The table in
+   the the middle of the window gets some text with red background. This is
+   normal and only CMakes way to say that these values have been updated.
+4. Click Generate.
+
+You should now have a working XCode project in WonderGUI/build. 
+
+In order to build all included projects you need to satisfy their dependencies
+see section above for that.
+
+In order to run/debug tools and example files you will need to set the debug path to
+WonderGUI. Otherwise they won't find the files they need (located in WonderGUI/resources).
+
+
+
 
 
 

@@ -176,7 +176,7 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_resize( const Size& size ) override;
 		void			_receive( Msg * pMsg ) override;
-		void			_update(int microPassed, int64_t microsecTimestamp);
+		void			_update(int microPassed, int64_t microsecTimestamp) override;
 
 
 		// Needed by CSlots

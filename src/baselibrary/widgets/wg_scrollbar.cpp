@@ -1061,7 +1061,7 @@ namespace wg
 		MU   handlePos, handleLen;
 		_viewToPosLen( &handlePos, &handleLen );
 
-		Rect area = OO(skin)._contentRect((0,0,m_size),m_state);
+		Rect area = OO(skin)._contentRect(Rect(0,0,m_size),m_state);
 
 		if( m_bHorizontal )
 		{
