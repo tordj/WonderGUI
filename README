@@ -116,15 +116,24 @@ into the WonderGUI root directory.
 Mac OSX
 -------
 
-1. Download the SDL framework from libsdl.org and copy it to 
-   /Library/Frameworks, or to <Your home directory>/Library/Frameworks if 
-   your access priviliges are not high enough.
+1. Download the SDL and SDL_image frameworks from libsdl.org and install them
+   to /Library/Frameworks, or to <Your home directory>/Library/Frameworks if 
+   your access priviliges are not high enough. SDL_image is for some reason
+   not linked from the main page of libsdl.org, so I recommend you google
+   for SDL_image and find the page from libsdl.org. 
 
-2. Download the SDL_image 2.0 framework from 
-   https://www.libsdl.org/projects/SDL_image/ and copy it to the same location.
+   Worth noting is also that I had some problems with priviliges for SDL_image
+   since the package wasn't correctly signed. I therefore had to run the following
+   command:
 
-3. You also need the freetype library and header files. I have 
+   xattr -dr com.apple.quarantine /Library/Frameworks/SDL2_image.framework
 
+3. You also need a copy of the freetype library and header files. My CMake
+   script will assume they are located in freetype/lib and freetype/include 
+   respectively (path relative to WonderGUI root directory).
+
+  Easiest for you is to download and unzip my OSX development support package
+  into the WonderGUI root directory.
 
 
 Running and debugging included applications
@@ -215,22 +224,17 @@ XCode
 Download, install and use CMake to generate the XCode project file. If you are 
 unfamiliar with CMake, this is how I recommend you to do it:
 
-1. Click "Browse Source..." and navigate to WonderGUI/src.
-2. Create a directory named "build" in WonderGUI/. Click "Browse Build..." and
+1. Make sure to satisfy the dependencies as described above.
+2. Click "Browse Source..." and navigate to WonderGUI/src.
+3. Create a directory named "build" in WonderGUI/. Click "Browse Build..." and
    select it.
-3. Click Configure and make sure everything goes through well. The table in
-   the the middle of the window gets some text with red background. This is
-   normal and only CMakes way to say that these values have been updated.
-4. Click Generate.
+4. Click Configure, select Xcode as generator for this project and make sure 
+   everything goes through well. The table in the the middle of the window 
+   gets some text with red background. This is normal and only CMakes way to 
+   say that these values have been updated.
+5. Click Generate.
 
 You should now have a working XCode project in WonderGUI/build. 
-
-In order to build all included projects you need to satisfy their dependencies
-see section above for that.
-
-In order to run/debug tools and example files you will need to set the debug path to
-WonderGUI. Otherwise they won't find the files they need (located in WonderGUI/resources).
-
 
 
 

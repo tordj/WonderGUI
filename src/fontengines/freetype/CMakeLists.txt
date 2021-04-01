@@ -5,11 +5,19 @@ wg_freetypefont.h
 wg_freetypefont.cpp
 )
 
-target_include_directories(wgfreetypefont PRIVATE 
-	/usr/include/freetype2
-	../../../freetype/include
-)
+if(WIN32)
+    target_include_directories(wgfreetypefont PRIVATE ../../../freetype/include )
+    target_link_directories(wgfreetypefont PRIVATE ../freetype/lib/x64 )
+elseif(APPLE)
+    target_include_directories(wgfreetypefont PRIVATE ../../../freetype/include )
+    target_link_directories(wgfreetypefont PRIVATE ../freetype/lib)
+else()
+    target_include_directories(wgfreetypefont PRIVATE /usr/include/freetype2 )
+endif()
+
 
 target_link_libraries(wgfreetypefont
 	PRIVATE freetype
+            bz2
+            z
 )

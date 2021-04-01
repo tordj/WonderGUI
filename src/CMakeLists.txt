@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 
 project(WonderGUI VERSION 3.0 DESCRIPTION "WonderGUI User Interface Library")
 
@@ -45,6 +45,7 @@ link_directories(
 	../SDL2_image/lib/x64
 	../freetype/lib/x64
 	../glew/lib/Release/x64
+    ../freetype/lib
 )
 
 

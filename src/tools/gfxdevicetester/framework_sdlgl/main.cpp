@@ -284,10 +284,10 @@ bool init_system( Rect windowGeo )
 
 	//	SDL_Renderer * pRenderer = SDL_CreateRenderer(pWin, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-//#ifdef WIN32  
+#ifdef WIN32
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
-//#endif
+#endif
 
 	glDrawBuffer(GL_FRONT);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

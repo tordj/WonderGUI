@@ -28,6 +28,10 @@ elseif(APPLE)
         ${FRAMEWORK_SDL2}
     )
 
+    set_target_properties(example01 PROPERTIES
+        XCODE_GENERATE_SCHEME TRUE
+        XCODE_SCHEME_WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/.."
+    )
 
 else()
 	target_link_libraries(example01 PRIVATE 
