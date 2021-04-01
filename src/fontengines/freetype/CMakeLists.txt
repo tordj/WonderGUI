@@ -1,8 +1,8 @@
 
 add_library( wgfreetypefont 
 
-wg_freetypefont.h
-wg_freetypefont.cpp
+    wg_freetypefont.h
+    wg_freetypefont.cpp
 )
 
 if(WIN32)
@@ -15,9 +15,8 @@ else()
     target_include_directories(wgfreetypefont PRIVATE /usr/include/freetype2 )
 endif()
 
-
-target_link_libraries(wgfreetypefont
-	PRIVATE freetype
-            bz2
-            z
-)
+if(APPLE)
+    target_link_libraries(wgfreetypefont PRIVATE freetype bz2 z )
+else()
+    target_link_libraries(wgfreetypefont PRIVATE freetype )
+endif()

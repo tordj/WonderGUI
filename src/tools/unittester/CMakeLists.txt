@@ -10,21 +10,10 @@ add_executable(unittester
 	valueformat_test.h
 )
 
+target_working_directory(unittester, WG_ROOT)
 
-if(WIN32)
-	target_link_libraries(unittester PRIVATE
-		wgfreetypefont
-		wondergui 
-	)
-
-	set_property(TARGET unittester PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/..)
-
-else()
-	target_link_libraries(unittester PRIVATE
-		wgfreetypefont
-		wondergui 
-	)
-
-endif()
-
+target_link_libraries(unittester PRIVATE
+	wgfreetypefont
+	wondergui 
+)
 

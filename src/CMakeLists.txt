@@ -1,13 +1,11 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.16)
 
 project(WonderGUI VERSION 3.0 DESCRIPTION "WonderGUI User Interface Library")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-#set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-
+set(WG_ROOT ${PROJECT_SOURCE_DIR}/..)
 
 include_directories( 
 	baselibrary
@@ -47,6 +45,43 @@ link_directories(
 	../glew/lib/Release/x64
     ../freetype/lib
 )
+
+
+if(WIN32)
+
+	set(SDL2_LIBS SDL2 SDL2main)
+	set(SDL2IMAGE_LIBS SDL2_image)
+
+	set(OPENGL_LIBS glew32 opengl32)
+
+elseif(APPLE)
+
+	find_library(SDL2_LIBS SDL2)
+	find_library(SDL2IMAGE_LIBS SDL2_image)
+
+	find_library(OPENGL_LIBS OpenGL)
+
+else()
+
+	set(SDL2_LIBS SDL2)
+	set(SDL2IMAGE_LIBS SDL2_image)
+
+	set(OPENGL_LIBS GLEW GL)
+endif()
+
+
+function( target_working_directory target workpath )
+
+	if(WIN32)
+		set_property(TARGET ${target} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${workpath} )
+	elseif(APPLE)
+		set_target_properties( ${target} PROPERTIES
+			XCODE_GENERATE_SCHEME TRUE
+			XCODE_SCHEME_WORKING_DIRECTORY "${workpath}"
+		)
+	endif()
+
+endfunction()
 
 
 add_subdirectory(baselibrary)

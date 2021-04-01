@@ -237,8 +237,7 @@ int main(int argc, char** argv)
 
 	SDL_GLContext context = SDL_GL_CreateContext(pWin);
 
-#	ifdef __APPLE__
-#else
+#if defined(_WIN32) || defined(__linux__)
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 #endif

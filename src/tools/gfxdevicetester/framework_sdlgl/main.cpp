@@ -284,7 +284,7 @@ bool init_system( Rect windowGeo )
 
 	//	SDL_Renderer * pRenderer = SDL_CreateRenderer(pWin, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-#ifdef WIN32
+#if defined(_WIN32) || defined(__linux__)
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 #endif
