@@ -73,7 +73,12 @@ endif()
 function( target_working_directory target workpath )
 
 	if(WIN32)
-		set_property(TARGET ${target} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${workpath} )
+		set_target_properties( ${target} PROPERTIES 
+			VS_DEBUGGER_WORKING_DIRECTORY ${workpath} 
+		)
+
+#		set_property(TARGET ${target} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${workpath} )
+
 	elseif(APPLE)
 		set_target_properties( ${target} PROPERTIES
 			XCODE_GENERATE_SCHEME TRUE

@@ -32,7 +32,7 @@ add_executable(gfxdevicetester
 target_link_directories(gfxdevicetester PRIVATE 
 )
 
-target_working_directory(gfxdevicetester, WG_ROOT)
+target_working_directory(gfxdevicetester ${WG_ROOT} )
 
 target_link_libraries(gfxdevicetester PRIVATE
 	wgsoftgfx

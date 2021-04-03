@@ -1,12 +1,7 @@
-WELCOME TO WONDERGUI!
-=====================
 
-(I will write some nice introduction text here someday, I promise! ;)
-
-
-
-Building WonderGUI
-==================
+****************************
+**** BUILDING WONDERGUI ****
+****************************
 
 WonderGUI uses CMake as its configuration and build system. Through CMake you
 can easily create build- and project-files for your specific platform and 
@@ -30,20 +25,179 @@ specific information and instructions regarding these environments, check the
 specific sections at the end.
 
 
+*************************************************
+**** SATISFYING DEPENDENCIES ON YOU PLATFORM ****
+*************************************************
+
+WonderGUI and everyting related requires C++11 or higher.
+
+The WonderGUI base library (wondergui.lib) has no external dependencies, but separate
+addon libraries, example files and tools do have dependencies though. There is a list 
+of all build targets and their dependencies at the end of this document.
+
+To build everything you need the development libraries and header files
+for the following packages installed:
+
+SDL       ( Simple DirectMedia Layer, see libsdl.org, used by tools and 
+            examples but not by any library )
+
+SDL_Image ( Image loading library for SDL, used only by some tools )
+
+freetype  ( Font rendering library, used by wgfreetypefont, tools and examples )
+
+OpenGL    ( Used by wgopenglgfx and some tools )
+
+GLEW      ( An OpenGL wrapper, used by wgopenglgfx and some tools )
+
+
+Depending on your OS we recommend the following approaches to satisfy the dependencies:
+
+
+Linux
+=====
+
+All dependencies should be satisfied by your package manager. Just search,
+download and install.
+
+
+Windows
+=======
+
+My CMake script expects all dependencies to be found in the WonderGUI directory.
+
+Just extract dependency-packages/wondergui-dev-additions-win.zip into the
+WonderGUI directory and you have everything setup.
+
+
+Mac OSX
+=======
+
+1. Download the SDL and SDL_image frameworks from libsdl.org and install them
+   to /Library/Frameworks (or to <Your home directory>/Library/Frameworks if 
+   your access priviliges are not high enough). SDL_image is for some reason
+   not linked from the main page of libsdl.org, so I recommend you google
+   for SDL_image and find the page from libsdl.org. 
+
+   Worth noting is also that I had some problems with priviliges for SDL_image
+   since the package wasn't correctly signed. I therefore had to run the following
+   command:
+
+   xattr -dr com.apple.quarantine /Library/Frameworks/SDL2_image.framework
+
+2. My CMake script expects the treetype library and header files to be located
+   in freetype/lib and freetype/include. Therefore extract 
+   dependency-packages/wondergui-dev-additions-osx.zip into the WonderGUI 
+   directory.
+
+
+Running and debugging included applications
+===========================================
+
+Nearly all tools and example programs loads files from the resources/ directory 
+and needs to be run from the WonderGUI directory to find them. Failure to
+find the resources-directory will result in an error message or crash.
+
+So, in order to be able to run and debug these programs from within your IDE
+you need to specify your debugger working path to the WonderGUI directory. 
+
+
+*******************************************************
+**** DEVELOPMENT ENVIRONMENT SPECIFIC INSTRUCTIONS ****
+*******************************************************
+
+
+Visual Studio (not VSCode)
+==========================
+
+Visual Studio can be used in two ways:
+
+1. You generate WonderGUI.sln using CMake and use that project.
+
+2. You open the WonderGUI directory in Visual Studio. Visual Studio will
+   notice it is a CMake project and set it up as such.
+
+I recommend you use #1, since that will setup your debugger working directory
+correctly so that you can run (and debug) the example files and tools from
+Visual Studio. Both ways works for just building stuff though.
+
+
+
+Visual Studio Code (VSCode)
+===========================
+
+Have the CMake module installed.
+
+Open the WonderGUI directory in Visual Studio code. You should be asked to
+locate CMakeLists.txt which is located in src/. After this, VSCode gets stuck on
+"Saving open files" on my machines for unknown reason. Just restart VSCode and
+configuration will continue and complete.
+
+After that, everything should be setup for you and you should be able to build
+all included projects. In order to run/debug the tools and examples you will
+need to setup a launch.json file. If you are using VSCode you should know how
+to do that.
+
+
+Linux Console (Makefiles, Ninja etc.)
+=====================================
+
+No special instructions needed. Keep in mind that most tools and example files 
+needs to be run from the WonderGUI directory since they need files in the
+resources/ directory. Failing to find them, some might print an understandable
+error message while others will just crash.
+
+
+XCode
+=====
+
+Download, install and use CMake to generate the XCode project file. If you are 
+unfamiliar with CMake, this is how I recommend you to do it:
+
+1. Make sure to satisfy the dependencies as described above.
+2. Click "Browse Source..." and navigate to WonderGUI/src.
+3. Create a directory named "build" in WonderGUI/. Click "Browse Build..." and
+   select it.
+4. Click Configure, select Xcode as generator for this project and make sure 
+   everything goes through well. The table in the the middle of the window 
+   gets some text with red background. This is normal and only CMakes way to 
+   say that these values have been updated.
+5. Click Generate.
+
+You should now have a working XCode project in WonderGUI/build. 
+
+
+
+
+Happy Hacking, and let me know if you run into any problems!
+
+Tord Jansson
+tord@nordicuitech.com
+
+
+Directory structure
+===================
+		
+doc/
+        Contains a Doxyfile for building the documentation with doxygen.
+        Will be populated with generated API documentation when running 
+        doxygen.
+		
+resources/
+        Various files such as fonts and bitmaps used by the included
+        examples and tools.
+
+scripts/
+        Various scripts used for WonderGUI development. Undocumented
+        and useless for you unless you intend to hack on WonderGUI.
+		
+src/
+        The source tree containing all source code of this package.
+
+
 
 Build targets and their dependencies
 ====================================
 
-WonderGUI and everyting related requires C++11 or higher.
-
-The WonderGUI base library (wondergui.lib) has no external dependencies. 
-
-Separate addon libraries, example files and tools do have dependencies though.
-Below is a list of all build targets and their dependencies.
-
-
-Build targets:
---------------
 
 wondergui       - The WonderGUI base library, containing the framework
                   and all widget. No dependencies.
@@ -73,177 +227,4 @@ gfxdevicetester - Program for testing graphics devices for bugs and
 
 unittester      - Simple console application to run some simple unit tests
                   on parts of WonderGUI. No requirements.
-
-
-Satisfying dependencies
-=======================
-
-To build everything you need the development libraries and header files
-for the following packages installed:
-
-SDL       ( Simple DirectMedia Layer, see libsdl.org, used by tools and 
-            examples but not by any library )
-
-SDL_Image ( Image loading library for SDL, used only by some tools )
-
-freetype  ( Font rendering library, used by wgfreetypefont, tools and examples )
-
-OpenGL    ( Used by wgopenglgfx and some tools )
-
-GLEW      ( An OpenGL wrapper, used by wgopenglgfx and some tools )
-
-
-Depending on your OS we recommend the following approaches:
-
-
-Linux
------
-
-All dependencies should be satisfied by your package manager. Just search,
-download and install.
-
-
-Windows
--------
-
-CMake will search for the packages in the WonderGUI root directory and expects
-a certain directory naming/structure.
-
-Easiest for you is to download and unzip my Windows development support package
-into the WonderGUI root directory.
-
-
-Mac OSX
--------
-
-1. Download the SDL and SDL_image frameworks from libsdl.org and install them
-   to /Library/Frameworks, or to <Your home directory>/Library/Frameworks if 
-   your access priviliges are not high enough. SDL_image is for some reason
-   not linked from the main page of libsdl.org, so I recommend you google
-   for SDL_image and find the page from libsdl.org. 
-
-   Worth noting is also that I had some problems with priviliges for SDL_image
-   since the package wasn't correctly signed. I therefore had to run the following
-   command:
-
-   xattr -dr com.apple.quarantine /Library/Frameworks/SDL2_image.framework
-
-3. You also need a copy of the freetype library and header files. My CMake
-   script will assume they are located in freetype/lib and freetype/include 
-   respectively (path relative to WonderGUI root directory).
-
-  Easiest for you is to download and unzip my OSX development support package
-  into the WonderGUI root directory.
-
-
-Running and debugging included applications
-===========================================
-
-Nearly all tools and example programs loads files from the resources/ directory 
-and needs to be run from the WonderGUI root directory to find them. Failure to
-find the resources-directory will result in an error message or crash.
-
-So, in order to be able to run and debug these programs from within your IDE
-you need to specify your debugger working path to the WonderGUI root directory 
-(the directory containing src/ resources/ etc.)
-
-
-Directory structure
-===================
-		
-doc/
-        Contains a Doxyfile for building the documentation with doxygen.
-        Will be populated with generated API documentation when running 
-        doxygen.
-		
-resources/
-        Various files such as fonts and bitmaps used by the included
-        examples and tools.
-
-scripts/
-        Various scripts used for WonderGUI development. Undocumented
-        and useless for you unless you intend to hack on WonderGUI.
-		
-src/
-        The source tree containing all source code of this package.
-
-
-*******************************************************
-**** DEVELOPMENT ENVIRONMENT SPECIFIC INSTRUCTIONS ****
-*******************************************************
-
-Note! Also read section "Satisfying dependencies" for instructions on how to
-quickly and easily setup everyting.
-
-
-Visual Studio (not VSCode)
-==========================
-
-Visual Studio can be used in two ways:
-
-1. You generate WonderGUI.sln using CMake and use that project.
-
-2. You open the WonderGUI root directory in Visual Studio. Visual Studio will
-   notice it is a CMake project and set it up as such.
-
-I recommend you use #1, since that will setup your debugger working directory
-correctly so that you can run (and debug) the example files and tools from
-Visual Studio. Both ways works for just building stuff though.
-
-
-
-Visual Studio Code (VSCode)
-===========================
-
-Have the CMake module installed.
-
-Open the WonderGUI root directory in Visual Studio code. You should be asked to
-locate CMakeLists.txt which is located in src/. After this, VSCode gets stuck on
-"Saving open files" on my machines for unknown reason. Just restart VSCode and
-configuration will continue and complete.
-
-After that everything should be setup for you and you should be able to build
-all included projects. In order to run/debug the tools and examples you will
-need to create a launch.json file. If you are usnig VSCode you should know how
-to do that.
-
-
-
-Linux Console (Makefiles, Ninja etc.)
-=====================================
-
-No special instructions needed. Keep in mind that most tools and example files 
-needs to be run from the WonderGUI root directory since they need files in the
-resources/ directory. Failing to find them, some might print an understandable
-error message while others will just crash.
-
-
-XCode
-=====
-
-Download, install and use CMake to generate the XCode project file. If you are 
-unfamiliar with CMake, this is how I recommend you to do it:
-
-1. Make sure to satisfy the dependencies as described above.
-2. Click "Browse Source..." and navigate to WonderGUI/src.
-3. Create a directory named "build" in WonderGUI/. Click "Browse Build..." and
-   select it.
-4. Click Configure, select Xcode as generator for this project and make sure 
-   everything goes through well. The table in the the middle of the window 
-   gets some text with red background. This is normal and only CMakes way to 
-   say that these values have been updated.
-5. Click Generate.
-
-You should now have a working XCode project in WonderGUI/build. 
-
-
-
-
-
-
-
-Happy Hacking, and let me know if you run into any problems!
-
-Tord Jansson
-tord@nordicuitech.com
 

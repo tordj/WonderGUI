@@ -10,7 +10,7 @@ add_executable(unittester
 	valueformat_test.h
 )
 
-target_working_directory(unittester, WG_ROOT)
+target_working_directory(unittester ${WG_ROOT} )
 
 target_link_libraries(unittester PRIVATE
 	wgfreetypefont
