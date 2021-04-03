@@ -43,3 +43,76 @@ target_link_libraries(gfxdevicetester PRIVATE
 	${SDL2IMAGE_LIBS}
 	${OPENGL_LIBS}
 )
+
+if(APPLE)
+
+	set(compileRes
+		framework_metal/Base.lproj/Main.storyboard
+		framework_metal/Assets.xcassets
+	)
+
+
+	add_executable(gfxdevicetester_metal MACOSX_BUNDLE
+
+		framework_metal/AppDelegate.mm
+		framework_metal/GameViewController.mm
+		framework_metal/Renderer.mm
+		framework_metal/main.m
+		${compileRes}
+
+		app.h
+		device.cpp
+		device.h
+		gfxdevicetester.cpp
+		gfxdevicetester.h
+		testunit.h
+		
+		testsuites/a8tests.h
+		testsuites/blendtests.h
+		testsuites/blitblendtests.h
+		testsuites/blitconsistencytest.h
+		testsuites/blittests.h
+		testsuites/canvasformattests.h
+		testsuites/clutblittests.h
+		testsuites/filltests.h
+		testsuites/linetests.h
+		testsuites/mipmaptests.h
+		testsuites/piecharttests.h
+		testsuites/plottests.h
+		testsuites/segmenttests.h
+		testsuites/testsuite.h
+		testsuites/tiletests.h
+		testsuites/tintblittests.h
+		testsuites/tintsegmenttests.h
+		testsuites/wavetests.h
+	)
+
+	find_library(APPKIT AppKit)
+	find_library(METAL Metal)
+
+
+	target_link_directories(gfxdevicetester_metal PRIVATE 
+	)
+
+	target_working_directory(gfxdevicetester_metal ${WG_ROOT} )
+
+	target_link_libraries(gfxdevicetester_metal PRIVATE
+		wgsoftgfx
+		wgmetalgfx
+		wgfreetypefont
+		wondergui
+		${APPKIT}
+		${METAL}
+	)
+
+	set_target_properties(gfxdevicetester_metal PROPERTIES
+
+		MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/framework_metal/Info.plist"
+
+	)
+
+	set_source_files_properties(${compileRes} PROPERTIES
+		MACOSX_PACKAGE_LOCATION Resources
+	)
+
+endif()

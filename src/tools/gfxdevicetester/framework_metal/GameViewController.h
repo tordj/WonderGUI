@@ -1,5 +1,5 @@
 //
-//  AppDelegate.h
+//  GameViewController.h
 //  gfxdevice_testapp_metal
 //
 //  Created by Tord Jansson on 2020-08-07.
@@ -7,9 +7,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
+#import "Renderer.h"
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
-
-@property (assign) IBOutlet NSWindow *window;
+// Our macOS view controller.
+@interface GameViewController : NSViewController
 
 @end
