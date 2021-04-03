@@ -1,7 +1,6 @@
 
-****************************
-**** BUILDING WONDERGUI ****
-****************************
+QUICK START GUIDE TO CONFIGURE YOUR ENVIRONMENT AND BUILD WONDERGUI
+===================================================================
 
 WonderGUI uses CMake as its configuration and build system. Through CMake you
 can easily create build- and project-files for your specific platform and 
@@ -20,53 +19,50 @@ This will generate the project files for your IDE (if not, use the -G switch
 and specify your generator, cmake --help will display all generators available
 on your system).
 
-The WonderGUI CMake files have been tested with several build environments for
-specific information and instructions regarding these environments, check the
-specific sections at the end.
+The WonderGUI CMake files have been tested on Linux, Windows and OSX with 
+several IDEs and development environments, see sections below for instructions
+specific to your OS and development environments.
 
 
-*************************************************
-**** SATISFYING DEPENDENCIES ON YOU PLATFORM ****
-*************************************************
+Running and debugging included applications
+-------------------------------------------
+
+Nearly all tools and example programs loads files from the resources/ directory 
+and needs to be run from the WonderGUI directory to find them. Failure to find 
+the resources-directory will result in an error message or crash.
+
+So, in order to be able to run and debug these programs from within your IDE
+you need to specify your debugger working path to the WonderGUI directory. 
+
+
+********************************************
+**** SATISFYING DEPENDENCIES FOR YOU OS ****
+********************************************
 
 WonderGUI and everyting related requires C++11 or higher.
 
-The WonderGUI base library (wondergui.lib) has no external dependencies, but separate
-addon libraries, example files and tools do have dependencies though. There is a list 
-of all build targets and their dependencies at the end of this document.
+The WonderGUI base library (wondergui.lib) has no external dependencies, but 
+separate addon libraries, example files and tools do have dependencies though.
+There is a list of all build targets and their dependencies at the end of this
+document.
 
-To build everything you need the development libraries and header files
-for the following packages installed:
-
-SDL       ( Simple DirectMedia Layer, see libsdl.org, used by tools and 
-            examples but not by any library )
-
-SDL_Image ( Image loading library for SDL, used only by some tools )
-
-freetype  ( Font rendering library, used by wgfreetypefont, tools and examples )
-
-OpenGL    ( Used by wgopenglgfx and some tools )
-
-GLEW      ( An OpenGL wrapper, used by wgopenglgfx and some tools )
-
-
-Depending on your OS we recommend the following approaches to satisfy the dependencies:
+Depending on your OS we recommend the following approaches to satisfy all
+dependencies:
 
 
 Linux
 =====
 
 All dependencies should be satisfied by your package manager. Just search,
-download and install.
+download and install the following packages:
 
 
 Windows
 =======
 
-My CMake script expects all dependencies to be found in the WonderGUI directory.
-
-Just extract dependency-packages/wondergui-dev-additions-win.zip into the
-WonderGUI directory and you have everything setup.
+My CMake script expects all dependencies to be found in the WonderGUI 
+directory. Just extract dependency-packages/wondergui-dev-additions-win.zip 
+into the WonderGUI directory and you have everything setup.
 
 
 Mac OSX
@@ -90,20 +86,13 @@ Mac OSX
    directory.
 
 
-Running and debugging included applications
-===========================================
+**************************************************
+**** CONFIGURING YOUR DEVELOPMENT ENVIRONMENT ****
+**************************************************
 
-Nearly all tools and example programs loads files from the resources/ directory 
-and needs to be run from the WonderGUI directory to find them. Failure to
-find the resources-directory will result in an error message or crash.
-
-So, in order to be able to run and debug these programs from within your IDE
-you need to specify your debugger working path to the WonderGUI directory. 
-
-
-*******************************************************
-**** DEVELOPMENT ENVIRONMENT SPECIFIC INSTRUCTIONS ****
-*******************************************************
+Below is a list of development environments that are maintaned in and
+tested with our CMake scripts. But since we are using CMake, any environment
+decently supported by CMake should work decently. 
 
 
 Visual Studio (not VSCode)
@@ -163,19 +152,15 @@ unfamiliar with CMake, this is how I recommend you to do it:
    say that these values have been updated.
 5. Click Generate.
 
-You should now have a working XCode project in WonderGUI/build. 
+You should now have a fully working XCode project in WonderGUI/build. 
 
 
+********************************
+**** ADDITIONAL INFORMATION ****
+********************************
 
-
-Happy Hacking, and let me know if you run into any problems!
-
-Tord Jansson
-tord@nordicuitech.com
-
-
-Directory structure
-===================
+WonderGUI directory structure
+=============================
 		
 doc/
         Contains a Doxyfile for building the documentation with doxygen.
