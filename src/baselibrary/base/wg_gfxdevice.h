@@ -181,20 +181,6 @@ namespace wg
 
 
 
-
-		//.____ Deprecated ________________________________________________
-
-		virtual void	blitHorrBar(		const RectI& _src,
-											const BorderI& _borders, bool _bTile,
-											CoordI dest, int _len );
-
-		virtual void	blitVertBar(		const RectI& _src,
-											const BorderI& _borders, bool _bTile,
-											CoordI dest, int _len );
-
-		//
-
-
 	protected:
 		GfxDevice();
 		virtual ~GfxDevice();
@@ -290,7 +276,7 @@ namespace wg
 		RectI		m_tintGradientRect = { 0,0,0,0 };
 		bool		m_bTintGradient = false;
 
-		SizeI		m_canvasSize = { 0,0 };
+		SizeI		m_canvasSize = { 0,0 };			// 24:6 format.
 		bool        m_bRendering = false;
 	};
 
