@@ -1236,12 +1236,14 @@ namespace wg
 
 		const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
 
+		RectI pixelClip = clip / 64;
+
 		for (int i = 0; i < nCoords; i++)
 		{
-			const int x = pCoords[i].x;
-			const int y = pCoords[i].y;
+			const int x = (pCoords[i].x + 32) >> 6;
+			const int y = (pCoords[i].y + 32) >> 6;
 
-			if (y >= clip.y && y <= clip.y + clip.h - 1 && x >= clip.x && x <= clip.x + clip.w - 1)
+			if (y >= pixelClip.y && y <= pixelClip.y + pixelClip.h - 1 && x >= pixelClip.x && x <= pixelClip.x + pixelClip.w - 1)
 			{
 				uint8_t * pDst = pCanvas + y * pitchY + x * pitchX;
 
@@ -2841,20 +2843,159 @@ namespace wg
 
 		//
 
-		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p pFunc = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
-		if (pFunc == nullptr)
-			return;
-
-		for (int i = 0; i < m_nClipRects; i++)
+		if( (rect.x | rect.y | rect.w | rect.h) & 0x3F == 0 )
 		{
-			RectI patch(m_pClipRects[i], rect);
-			if (patch.w == 0 || patch.h == 0)
-				continue;
+			// No subpixel precision, make it quick and easy
 
-			uint8_t * pDst = m_pCanvasPixels + patch.y *m_canvasPitch + patch.x * pixelBytes;
-			pFunc(pDst, pixelBytes, m_canvasPitch - patch.w*pixelBytes, patch.h, patch.w, col, m_colTrans, patch.pos());
+			RectI pixelRect = rect;
+			roundToPixels(pixelRect);
+
+			int pixelBytes = m_canvasPixelBits / 8;
+			FillOp_p pFunc = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+			if (pFunc == nullptr)
+				return;
+
+			for (int i = 0; i < m_nClipRects; i++)
+			{
+				RectI patch(m_pClipRects[i]/64, pixelRect);
+				if (patch.w == 0 || patch.h == 0)
+					continue;
+
+				patch /= 64;
+
+				uint8_t * pDst = m_pCanvasPixels + patch.y *m_canvasPitch + patch.x * pixelBytes;
+				pFunc(pDst, pixelBytes, m_canvasPitch - patch.w*pixelBytes, patch.h, patch.w, col, m_colTrans, patch.pos());
+			}
 		}
+		else
+		{
+					BlendMode	edgeBlendMode = (m_blendMode == BlendMode::Replace) ? BlendMode::Blend : m_blendMode; // Need to blend edges and corners even if fill is replace
+
+			int pixelBytes = m_canvasPixelBits / 8;
+			FillOp_p pFillOp = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+			FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+	//		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+
+			for (int i = 0; i < m_nClipRects; i++)
+			{
+				HiColor color = col;
+
+				RectI  patch(rect, m_pClipRects[i]);
+				if (patch.w == 0 || patch.h == 0)
+					continue;
+
+				// Fill all but anti-aliased edges
+
+				int x1 = ((patch.x + 63) >> 6);
+				int y1 = ((patch.y + 63) >> 6);
+				int x2 = ((patch.x + patch.w) >> 6);
+				int y2 = ((patch.y + patch.h) >> 6);
+
+
+				uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + x1 * pixelBytes;
+				pFillOp(pDst, pixelBytes, m_canvasPitch - (x2 - x1)*pixelBytes, y2 - y1, x2 - x1, color, m_colTrans, { x1,y1 });
+
+				// Draw the sides
+
+				int aaLeft = 4096 - (patch.x & 0x3F) * 64;
+				int aaTop = 4096 - (patch.y & 0x3F) * 64;
+				int aaRight = ((patch.x + patch.w) & 0x3F) * 64;
+				int aaBottom = ((patch.y + patch.h) & 0x3F) * 64;
+
+				int aaTopLeft = aaTop * aaLeft / 4096;
+				int aaTopRight = aaTop * aaRight / 4096;
+				int aaBottomLeft = aaBottom * aaLeft / 4096;
+				int aaBottomRight = aaBottom * aaRight / 4096;
+
+
+				if (m_blendMode != BlendMode::Replace)
+				{
+					int alpha = color.a;
+
+					aaLeft = aaLeft * alpha >> 12;
+					aaTop = aaTop * alpha >> 12;
+					aaRight = aaRight * alpha >> 12;
+					aaBottom = aaBottom * alpha >> 12;
+
+					aaTopLeft = aaTopLeft * alpha >> 12;
+					aaTopRight = aaTopRight * alpha >> 12;
+					aaBottomLeft = aaBottomLeft * alpha >> 12;
+					aaBottomRight = aaBottomRight * alpha >> 12;
+				}
+
+				RectI pixelPatch = patch / 64;
+
+				if (aaTop != 0)
+				{
+					uint8_t * pDst = m_pCanvasPixels + pixelPatch.y * m_canvasPitch + x1 * pixelBytes;
+					int length = x2 - x1;
+					color.a = aaTop;
+					pEdgeOp(pDst, pixelBytes, 0, 1, length, color, m_colTrans, { x1,pixelPatch.y });
+				}
+
+				if (aaBottom != 0)
+				{
+					uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + x1 * pixelBytes;
+					int length = x2 - x1;
+					color.a = aaBottom;
+					pEdgeOp(pDst, pixelBytes, 0, 1, length, color, m_colTrans, { x1,y2 });
+				}
+
+				if (aaLeft != 0)
+				{
+					uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + pixelPatch.x * pixelBytes;
+					int length = y2 - y1;
+					color.a = aaLeft;
+					pEdgeOp(pDst, m_canvasPitch, 0, 1, length, color, m_colTrans, { pixelPatch.x, y1 });
+				}
+
+				if (aaRight != 0)
+				{
+					uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + x2 * pixelBytes;
+					int length = y2 - y1;
+					color.a = aaRight;
+					pEdgeOp(pDst, m_canvasPitch, 0, 1, length, color, m_colTrans, { x2, y1 });
+				}
+
+				// Draw corner pieces
+
+
+				if (aaTopLeft != 0)
+				{
+					uint8_t * pDst = m_pCanvasPixels + pixelPatch.y * m_canvasPitch + pixelPatch.x * pixelBytes;
+					color.a = aaTopLeft;
+					pEdgeOp(pDst, 0, 0, 1, 1, color, m_colTrans, { pixelPatch.x, pixelPatch.y } );
+	//				pPlotOp(pDst, color, m_colTrans, { (int)patch.x, (int)patch.y } );
+				}
+
+				if (aaTopRight != 0)
+				{
+					uint8_t * pDst = m_pCanvasPixels + pixelPatch.y * m_canvasPitch + x2 * pixelBytes;
+					color.a = aaTopRight;
+					pEdgeOp(pDst, 0, 0, 1, 1, color, m_colTrans, { x2, pixelPatch.y });
+	//				pPlotOp(pDst, color, m_colTrans, { x2, (int)patch.y });
+				}
+
+				if (aaBottomLeft != 0)
+				{
+					uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + pixelPatch.x * pixelBytes;
+					color.a = aaBottomLeft;
+					pEdgeOp(pDst, 0, 0, 1, 1, color, m_colTrans, { pixelPatch.x, y2 });
+	//				pPlotOp(pDst, color, m_colTrans, { (int)patch.x, y2 } );
+				}
+
+				if (aaBottomRight != 0)
+				{
+					uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + x2 * pixelBytes;
+					color.a = aaBottomRight;
+					pEdgeOp(pDst, 0, 0, 1, 1, color, m_colTrans, { x2, y2 });
+	//				pPlotOp(pDst, color, m_colTrans, { x2,y2 });
+				}
+			}
+
+		}
+
+
 	}
 	
 	void SoftGfxDevice::fill(const RectF& rect, HiColor col)
@@ -3010,6 +3151,10 @@ namespace wg
 
 	void SoftGfxDevice::drawLine(CoordI beg, CoordI end, HiColor color, float thickness)
 	{
+		//TODO: Proper 26:6 support
+		roundToPixels(beg);
+		roundToPixels(end);
+
 		if (!m_pRenderLayerSurface || !m_pCanvasPixels)
 			return;
 
@@ -3056,7 +3201,7 @@ namespace wg
 			{
 				// Do clipping
 
-				const RectI& clip = m_pClipRects[i];
+				const RectI clip = m_pClipRects[i]/64;
 
 				int _length = length;
 				int _pos = pos;
@@ -3107,7 +3252,7 @@ namespace wg
 			{
 				// Do clipping
 
-				const RectI& clip = m_pClipRects[i];
+				const RectI clip = m_pClipRects[i]/64;
 
 				int _length = length;
 				int _pos = pos;
@@ -3142,6 +3287,10 @@ namespace wg
 
 	void SoftGfxDevice::drawLine(CoordI _begin, Direction dir, int _length, HiColor _col, float thickness)
 	{
+		//TODO: Proper 26:6 support
+		roundToPixels(_begin);
+		roundToPixels(_length);
+
 		//TODO: Optimize!
 
 		if (thickness <= 0.f)
@@ -3162,7 +3311,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			const RectI& clip = m_pClipRects[i];
+			const RectI& clip = m_pClipRects[i]/64;
 
 			CoordI begin = _begin;
 			int length = _length;
@@ -3309,8 +3458,12 @@ namespace wg
 
 	//____ _transformDrawSegments() _________________________________________
 
-	void SoftGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
+	void SoftGfxDevice::_transformDrawSegments(const RectI& _destIn, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
 	{
+		//TODO: Proper 26:6 support
+		RectI _dest = _destIn;
+		roundToPixels(_dest);
+
 		RectI dest = _dest;
 
 		SegmentEdge edges[c_maxSegments - 1];
@@ -3674,7 +3827,7 @@ namespace wg
 
 		uint8_t* pOrigo = m_pCanvasPixels + start.y * yPitch + start.x * xPitch;
 
-		if (!dest.intersectsWith(m_clipBounds))
+		if (!dest.intersectsWith(m_clipBounds/64))
 			return;
 
 		SegmentOp_p	pOp = s_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
@@ -3687,7 +3840,7 @@ namespace wg
 		{
 			// Clip patch
 
-			RectI patch(dest, m_pClipRects[patchIdx]);
+			RectI patch(dest, m_pClipRects[patchIdx]/64);
 			if (patch.w == 0 || patch.h == 0)
 				continue;
 
@@ -4186,7 +4339,7 @@ namespace wg
 			return;
 
 		for (int i = 0; i < m_nClipRects; i++)
-			pOp(m_pClipRects[i], nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch, m_colTrans);
+			pOp(m_pClipRects[i]/64, nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch, m_colTrans);
 	}
 
 	//____ setBlitSource() ____________________________________________________
@@ -4353,7 +4506,7 @@ namespace wg
 		bool	bClear = false;
 		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer] == nullptr)
 		{
-			m_layerSurfaces[m_renderLayer] = SoftSurface::create(m_canvas.size, m_pCanvasLayers->layerFormat(m_renderLayer));
+			m_layerSurfaces[m_renderLayer] = SoftSurface::create(m_canvas.size/64, m_pCanvasLayers->layerFormat(m_renderLayer));
 			bClear = true;
 		}
 
@@ -4378,12 +4531,17 @@ namespace wg
 
 	//____ _transformBlit() [simple] ____________________________________
 
-	void SoftGfxDevice::_transformBlit(const RectI& dest, CoordI _src, const int simpleTransform[2][2])
+	void SoftGfxDevice::_transformBlit(const RectI& _dest, CoordI _src, const int simpleTransform[2][2])
 	{
 		// Clip and render the patches
 
-		if (!dest.intersectsWith(m_clipBounds))
+		if (!_dest.intersectsWith(m_clipBounds))
 			return;
+
+
+		//TODO: Proper 26:6 support
+		RectI dest = _dest;
+		roundToPixels(dest);
 
 		const RectI& clip = dest;
 
@@ -4396,7 +4554,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			RectI  patch = m_pClipRects[i];
+			RectI  patch = m_pClipRects[i]/64;
 
 			CoordI src = _src;
 
@@ -4445,19 +4603,22 @@ namespace wg
 
 	//____ _transformBlit() [complex] ____________________________________
 
-	void SoftGfxDevice::_transformBlit(const RectI& dest, CoordF _src, const float complexTransform[2][2])
+	void SoftGfxDevice::_transformBlit(const RectI& _dest, CoordF _src, const float complexTransform[2][2])
 	{
 		// Clip and render the patches
 
-		if (!dest.intersectsWith(m_clipBounds))
+		if (!_dest.intersectsWith(m_clipBounds))
 			return;
 
+		//TODO: Proper 26:6 support
+		RectI dest = _dest;
+		roundToPixels(dest);
 
 		const RectI& clip = dest;
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			RectI  patch = m_pClipRects[i];
+			RectI  patch = m_pClipRects[i]/64;
 
 			CoordF src = _src;
 

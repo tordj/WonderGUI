@@ -405,6 +405,8 @@ namespace wg
 			return false;
 		}
 		
+		sz *= 64;
+
 		RectI bounds;
 
 		if (nUpdateRects > 0)
@@ -680,7 +682,7 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		_transformBlit({ dest, m_pBlitSource->size() }, { 0,0 }, blitFlipTransforms[0]);
+		_transformBlit({ dest, m_pBlitSource->size()*64 }, { 0,0 }, blitFlipTransforms[0]);
 	}
 
 	void GfxDevice::blit(CoordI dest, const RectI& src)
@@ -696,7 +698,7 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		SizeI srcSize  = m_pBlitSource->size();
+		SizeI srcSize  = m_pBlitSource->size()*64;
 
 		int ofsX = srcSize.w * blitFlipOffsets[(int)flip][0];
 		int ofsY = srcSize.h * blitFlipOffsets[(int)flip][1];
@@ -731,7 +733,7 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		stretchBlit(dest, RectI(0, 0, m_pBlitSource->size()) );
+		stretchBlit(dest, RectI(0, 0, m_pBlitSource->size()*64) );
 	}
 
 	void GfxDevice::stretchBlit(const RectI& dest, const RectI& _src )
@@ -758,10 +760,10 @@ namespace wg
 	//			src.x += 0.5f;
 	//			src.y += 0.5f;
 
-				if (dest.w == 1)
+				if (dest.w == 64)
 					mtx[0][0] = 0;
 				else
-					mtx[0][0] = (src.w-1) / (dest.w-1);
+					mtx[0][0] = (src.w-64) / (dest.w-64);
 
 				mtx[0][1] = 0;
 				mtx[1][0] = 0;
@@ -769,7 +771,7 @@ namespace wg
 				if( dest.h == 1)
 					mtx[1][1] = 0;
 				else
-					mtx[1][1] = (src.h-1) / (dest.h-1);
+					mtx[1][1] = (src.h-64) / (dest.h-64);
 			}
 			else
 			{
@@ -816,7 +818,7 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		stretchFlipBlit(dest, RectI(0, 0, m_pBlitSource->size()), flip);
+		stretchFlipBlit(dest, RectI(0, 0, m_pBlitSource->size()*64), flip);
 	}
 
 	void GfxDevice::stretchFlipBlit(const RectI& dest, const RectI& src, GfxFlip flip)
@@ -828,11 +830,11 @@ namespace wg
 
 		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
 		{
-			float srcW = (float)(src.w - 1);
-			float srcH = (float)(src.h - 1);
+			float srcW = (float)(src.w - 64);
+			float srcH = (float)(src.h - 64);
 
-			scaleX = srcW / (dest.w-1);
-			scaleY = srcH / (dest.h-1);
+			scaleX = srcW / (dest.w-64);
+			scaleY = srcH / (dest.h-64);
 
 			ofsX = src.x + srcW * blitFlipOffsets[(int)flip][0];
 			ofsY = src.y + srcH * blitFlipOffsets[(int)flip][1];
@@ -902,7 +904,7 @@ namespace wg
 		mtx[1][0] = -sz * scale;
 		mtx[1][1] = cz * scale;
 
-		src = { srcCenter.x * m_pBlitSource->m_size.w, srcCenter.y * m_pBlitSource->m_size.h };
+		src = { srcCenter.x * m_pBlitSource->m_size.w*64, srcCenter.y * m_pBlitSource->m_size.h*64 };
 		 
 //		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
 //		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
@@ -940,7 +942,7 @@ namespace wg
 			return;
 		}
 
-		SizeI srcSize = m_pBlitSource->size();
+		SizeI srcSize = m_pBlitSource->size()*64;
 
 		int ofsX = srcSize.w * blitFlipOffsets[(int)flip][0];
 		int ofsY = srcSize.h * blitFlipOffsets[(int)flip][1];
@@ -998,9 +1000,9 @@ namespace wg
 		mtx[1][0] = blitFlipTransforms[(int)flip][1][0] / scale;
 		mtx[1][1] = blitFlipTransforms[(int)flip][1][1] / scale;
 
-		SizeI srcSize = m_pBlitSource->size();
-		float ofsX = (float) (srcSize.w-1) * blitFlipOffsets[(int)flip][0];
-		float ofsY = (float) (srcSize.h-1) * blitFlipOffsets[(int)flip][1];
+		SizeI srcSize = m_pBlitSource->size()*64;
+		float ofsX = (float) (srcSize.w-64) * blitFlipOffsets[(int)flip][0];
+		float ofsY = (float) (srcSize.h-64) * blitFlipOffsets[(int)flip][1];
 
 		ofsX += shift.x * mtx[0][0] + shift.y * mtx[1][0];
 		ofsY += shift.x * mtx[0][1] + shift.y * mtx[1][1];
@@ -1946,107 +1948,6 @@ namespace wg
 	void GfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
 	{
 		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)flip] );
-	}
-
-
-	//____ blitHorrBar() ______________________________________________________
-
-	void GfxDevice::blitHorrBar( 	  	const RectI& _src, const BorderI& _borders,
-									  	bool _bTile, CoordI dest, int _len )
-	{
-		/*
-			This can be optimized by handling clipping directly instead of calling clipBlit().
-		*/
-
-		// Blit left edge
-
-		RectI	r( _src.x, _src.y, _borders.left, _src.h );
-		blit( dest, r );
-
-		_len -= _borders.width();			// Remove left and right edges from len.
-		dest.x += _borders.left;
-
-		// Blit tiling part
-
-		r.x += _borders.left;
-		r.w = _src.w - _borders.width();
-
-		if( _bTile )
-		{
-			while( _len > r.w )
-			{
-				blit( dest, r );
-				_len -= r.w;
-				dest.x += r.w;
-			}
-			if( _len != 0 )
-			{
-				r.w = _len;
-				blit( dest, r );
-				dest.x += _len;
-			}
-		}
-		else
-		{
-			stretchBlit( RectI(dest, _len, r.h), r );
-			dest.x += _len;
-		}
-
-		// Blit right edge
-
-		r.x = _src.x + _src.w - _borders.right;
-		r.w = _borders.right;
-		blit( dest, r );
-	}
-
-	//____ blitVertBar() ______________________________________________________
-
-	void GfxDevice::blitVertBar(	  	const RectI& _src, const BorderI& _borders,
-									  	bool _bTile, CoordI dest, int _len )
-	{
-		/*
-			This can be optimized by handling clipping directly instead of calling clipBlit().
-		*/
-
-		// Blit top edge
-
-		RectI	r( _src.x, _src.y, _src.w, _borders.top );
-		blit( dest, r );
-
-		_len -= _borders.height();			// Remove top and bottom edges from len.
-		dest.y += _borders.top;
-
-		// Blit tiling part
-
-		r.y += _borders.top;
-		r.h = _src.h - _borders.height();
-
-		if( _bTile )
-		{
-			while( _len > r.h )
-			{
-				blit( dest, r );
-				_len -= r.h;
-				dest.y += r.h;
-			}
-			if( _len != 0 )
-			{
-				r.h = _len;
-				blit( dest, r );
-				dest.y += _len;
-			}
-		}
-		else
-		{
-			stretchBlit( RectI(dest, r.w, _len), r );
-			dest.y += _len;
-		}
-
-		// Blit bottom edge
-
-		r.y = _src.y + _src.h - _borders.bottom;
-		r.h = _borders.bottom;
-		blit( dest, r );
 	}
 
 	//____ _clipListWasChanged() _________________________________________________

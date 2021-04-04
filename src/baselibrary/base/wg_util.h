@@ -38,6 +38,11 @@ namespace wg
 
 	namespace Util		/** @private */
 	{
+		inline void roundToPixels(RectI& r);
+		inline void roundToPixels(CoordI& r);
+		inline void roundToPixels(SizeI& r);
+		inline void roundToPixels(int& r);
+
 
 		//____ pointsToPixels() _______________________________________________
 
@@ -181,6 +186,34 @@ namespace wg
 
 	}
 
+	void Util::roundToPixels(RectI& r)
+	{		
+		int x2 = r.x + r.w;
+		int y2 = r.y + r.h;
+
+		r.x = (r.x + 32) >> 6;
+		r.y = (r.y + 32) >> 6;
+
+		r.w = ((x2 + 32) >> 6) - r.x;
+		r.h = ((y2 + 32) >> 6) - r.y;
+	}
+
+	void Util::roundToPixels(CoordI& r)
+	{
+		r.x = (r.x + 32) >> 6;
+		r.y = (r.y + 32) >> 6;
+	}
+
+	void Util::roundToPixels(SizeI& r)
+	{
+		r.w = (r.w + 32) >> 6;
+		r.h = (r.h + 32) >> 6;
+	}
+
+	void Util::roundToPixels(int& r)
+	{
+		r = (r + 32) >> 6;
+	}
 
 
 

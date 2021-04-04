@@ -199,20 +199,6 @@ namespace wg
 
 
 
-
-		//.____ Deprecated ________________________________________________
-
-		virtual void	blitHorrBar(		const RectI& _src,
-											const BorderI& _borders, bool _bTile,
-											CoordI dest, int _len );
-
-		virtual void	blitVertBar(		const RectI& _src,
-											const BorderI& _borders, bool _bTile,
-											CoordI dest, int _len );
-
-		//
-
-
 	protected:
 		GfxDevice();
 		virtual ~GfxDevice();
