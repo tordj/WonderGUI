@@ -63,7 +63,6 @@ namespace wg
 			inline Widget_p			firstChild() const { return Widget_p(_firstChild()); }
 			inline Widget_p			lastChild() const { return Widget_p(_lastChild()); }
 
-
 			//.____ Misc _________________________________________________________________
 
 			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs,mode)); }
@@ -85,6 +84,7 @@ namespace wg
 
 			virtual Coord			_childPos( const StaticSlot * pSlot ) const override = 0;				///< Get the local position of a child.
 			virtual Coord			_childGlobalPos( const StaticSlot * pSlot ) const override;
+			virtual int				_childDefaultScale() const override;									///< Default scale value for all children.
 
 			virtual bool			_isChildVisible( const StaticSlot * pSlot ) const override;
 			virtual Rect			_childWindowSection( const StaticSlot * pSlot ) const override;		// Returns the window section within the childs canvas.

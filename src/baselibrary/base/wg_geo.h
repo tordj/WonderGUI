@@ -38,449 +38,26 @@ namespace wg
 	template<class T> class SizeT;
 	template<class T> class RectT;
 
+	typedef CoordT<pts>		Coord;
+	typedef CoordT<spx>		CoordSPX;
 	typedef	CoordT<int>		CoordI;
 	typedef CoordT<float>	CoordF;
 
+	typedef BorderT<pts>	Border;
+	typedef BorderT<spx>	BorderSPX;
 	typedef BorderT<int>	BorderI;
 	typedef BorderT<float>	BorderF;
 
+	typedef	SizeT<pts>		Size;
+	typedef	SizeT<spx>		SizeSPX;
 	typedef	SizeT<int>		SizeI;
 	typedef SizeT<float>	SizeF;
 
+	typedef	RectT<pts>		Rect;
+	typedef	RectT<spx>		RectSPX;
 	typedef	RectT<int>		RectI;
 	typedef RectT<float>	RectF;
 
-	class	Coord;
-	class	Border;
-	class   Size;
-	class	Rect;
-
-	//____ Coord ______________________________________________________________
-
-	class Coord
-	{
-	public:
-		//.____ Creation __________________________________________
-
-		Coord() : x(0), y(0) {}
-		Coord(MU x, MU y) : x(x), y(y) {}
-		Coord(const Coord& coord) : x(coord.x), y(coord.y) {}
-		explicit Coord(const Size& size);
-
-		template<typename T>
-		explicit Coord(const CoordT<T>& r) : x((MU)r.x), y((MU)r.y) {}
-
-		template<typename T>
-		explicit Coord(const RectT<T>& r) : x((MU)r.x), y((MU)r.y) {}
-
-
-		//.____ Misc ______________________________________________
-
-		inline void clear() { x = 0; y = 0; }			///< Sets X and Y to 0.
-
-		inline const CoordI&	qpix() const {	return reinterpret_cast<const CoordI&>(*this); }
-		inline const CoordI		px() const;
-		inline const CoordF		fpx() const;
-
-		inline Coord aligned() const { Coord c; c.x.qpix = x.qpix & 0xFFFFFFFC; c.y.qpix = y.qpix & 0xFFFFFFFC; return c; }
-
-		template<typename Type>
-		inline static Coord fromPX(const CoordT<Type>& c) { Coord c2; c2.x.qpix = int(c.x*4); c2.y.qpix = int(c.y*4); return c2; }
-
-		//.____ Operators ___________________________________________
-
-		// Coord can be IMPLICITLY cast to all CoordT<>
-
-		template<typename T>
-		inline operator CoordT<T>() const { return CoordT<T>(x,y); }
-
-
-		inline Coord operator=(const Coord& k) { x = k.x; y = k.y; return *this; }
-
-		inline bool operator==(const Coord& k) const { if (x == k.x && y == k.y) return true; return false; }
-		inline bool operator!=(const Coord& k) const { if (x != k.x || y != k.y) return true; return false; }
-
-		inline Coord& operator+=(const Coord& k) { x += k.x; y += k.y; return *this; }
-		inline Coord& operator-=(const Coord& k) { x -= k.x; y -= k.y; return *this; }
-		inline Coord operator+(const Coord& k) const { return { x + k.x, y + k.y }; }
-		inline Coord operator-(const Coord& k) const { return { x - k.x, y - k.y }; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Coord& operator*=(Type2 v) { x = (MU)(x*v); y = (MU)(y*v); return *this; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Coord& operator/=(Type2 v) { x = (MU)(x / v); y = (MU)(y / v); return *this; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Coord operator*(Type2 v) const { return { (MU)(x*v), (MU)(y*v) }; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Coord operator/(Type2 v) const { return { (MU)(x / v), (MU)(y / v) }; }
-
-
-		//.____ Properties __________________________________________
-
-		MU		x, y;
-	};
-
-	//____ Border _____________________________________________________________
-
-	class Border
-	{
-	public:
-	
-		//.____ Creation __________________________________________
-
-		Border() : top(0), right(0), bottom(0), left(0) {}
-		Border(MU topBottom, MU leftRight) : top(topBottom), right(leftRight), bottom(topBottom), left(leftRight) {}
-		Border(MU top, MU leftRight, MU bottom) : top(top), right(leftRight), bottom(bottom), left(leftRight) {}
-		Border(MU top, MU right, MU bottom, MU left) : top(top), right(right), bottom(bottom), left(left) {}
-		Border(MU all) : top(all), right(all), bottom(all), left(all) {}
-
-		template<typename T>
-		explicit Border(const BorderT<T>& b) : top((MU)b.top), right((MU)b.right), bottom((MU)b.bottom), left((MU)b.left) {}
-
-
-		//.____ Misc ______________________________________________
-
-		inline void		set(MU all) { left = right = top = bottom = all; }
-		inline void		set(MU topBottom, MU leftRight) { top = bottom = topBottom; left = right = leftRight; }
-		inline void		set(MU top, MU leftRight, MU bottom) { this->top = top; this->bottom = bottom; this->left = this->right = leftRight; }
-		inline void		set(MU top, MU right, MU bottom, MU left) { this->top = top; this->bottom = bottom; this->left = left; this->right = right; }
-
-		inline Size		size() const;
-		inline MU		width() const { return left + right; }
-		inline MU		height() const { return top + bottom; }
-		inline void		clear() { left.qpix = 0; right.qpix = 0; top.qpix = 0; bottom.qpix = 0; }		///< @brief Sets the thickness of all sides to 0.
-		inline bool		isEmpty() const { return (left.qpix | top.qpix | right.qpix | bottom.qpix) == 0; }
-
-		inline Border	scale(int scale) const { return Border(top*scale / 4096, right*scale / 4096, bottom*scale / 4096, left*scale / 4096); } // Only for WG2 compatibility!
-
-		inline const BorderI&	qpix() const { return reinterpret_cast<const BorderI&>(*this); }
-		inline const BorderI	px() const;
-		inline const BorderF	fpx() const;
-
-		inline Border aligned() const { Border b;  b.top.qpix = top.qpix & 0xFFFFFFFC; b.right.qpix = right.qpix & 0xFFFFFFFC; b.bottom.qpix = bottom.qpix & 0xFFFFFFFC; b.left.qpix = left.qpix & 0xFFFFFFFC; return b; }
-
-		template<typename Type>
-		inline static Border fromPX(const BorderT<Type>& b) { Border b2; b2.top.qpix = int(b.top*4); b2.right.qpix = int(b.right*4); b2.bottom.qpix = int(b.bottom*4); b2.left.qpix = int(b.left*4); return b2; }
-
-
-		//.____ Operators ___________________________________________
-
-		inline operator Size() const;
-
-		// Border can be IMPLICITLY cast to all BorderT<>
-
-		template<typename T>
-		inline operator BorderT<T>() const { return BorderT<T>(top, right, bottom, left); }
-
-		//
-
-
-		inline Border& operator+=(const Border& k) { top += k.top; right += k.right; bottom += k.bottom; left += k.left; return *this; }
-		inline Border& operator-=(const Border& k) { top -= k.top; right -= k.right; bottom -= k.bottom; left -= k.left; return *this; }
-		inline Border operator+(const Border& k) const { return { top + k.top, right + k.right, bottom + k.bottom, left + k.left }; }
-		inline Border operator-(const Border& k) const { return { top - k.top, right - k.right, bottom - k.bottom, left - k.left }; }
-
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Border& operator*=(Type2 v) { top = (MU)(top*v); right = (MU)(right*v); bottom = (MU)(bottom*v); left = (MU)(left*v); return *this; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Border& operator/=(Type2 v) { top = (MU)(top / v); right = (MU)(right / v); bottom = (MU)(bottom / v); left = (MU)(left / v); return *this; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Border operator*(Type2 v) const { return { (MU)(top*v), (MU)(right*v), (MU)(bottom*v), (MU)(left*v) }; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Border operator/(Type2 v) const { return { (MU)(top / v), (MU)(right / v), (MU)(bottom / v), (MU)(left / v) }; }
-
-
-		bool			operator==(const Border& borders) const 
-		{
-			return ((left.qpix - borders.left.qpix) | (right.qpix - borders.right.qpix) | (top.qpix - borders.top.qpix) | (bottom.qpix - borders.bottom.qpix)) == 0;
-		}
-		
-		bool			operator!=(const Border& borders) const { return !(*this == borders); }
-
-		//.____ Properties __________________________________________
-
-		MU		top, right, bottom, left;
-	};
-
-
-	//____ Size ________________________________________________________
-
-	/**
-		@brief Specifies the size of a rectangular area.
-
-		Specifies the size of a rectangular area.
-
-		Internal resolution is quarterpixels.
-	**/
-
-	class Size
-	{
-	public:
-		//.____ Creation __________________________________________
-
-		Size() : w(0), h(0) {}
-		Size(MU width, MU height) : w(width), h(height) {}
-		Size(const Size& size) : w(size.w), h(size.h) {}
-		explicit inline Size(const Coord& coord);
-
-		// These explicit constructors enables us to cast from RectI and SizeI of different kind.
-
-		template<typename T>
-		explicit Size(const SizeT<T>& r) : w((MU)r.w), h((MU)r.h) {}
-
-		template<typename T>
-		explicit Size(const RectT<T>& r) : w((MU)r.w), h((MU)r.h) {}
-
-
-		//.____ Misc ______________________________________________
-
-		inline void			limit(const Size& min, const Size& max);
-		inline void			clear() { w = 0; h = 0; }
-		inline bool			isEmpty() const { return (w == 0 && h == 0); }
-
-		inline const SizeI&	qpix() const { return reinterpret_cast<const SizeI&>(*this); }
-		inline const SizeI	px() const;
-		inline const SizeF	fpx() const;
-		inline Size	aligned() const { Size sz2;  sz2.w.qpix = w.qpix & 0xFFFFFFFC; sz2.h.qpix = h.qpix & 0xFFFFFFFC; return sz2; }
-
-		template<typename Type>
-		inline static Size fromPX(const SizeT<Type>& sz) { Size sz2; sz2.w.qpix = int(sz.w*4); sz2.h.qpix = int(sz.h*4); return sz2; }
-
-		static inline Size min(Size sz1, Size sz2) { return Size(sz1.w < sz2.w ? sz1.w : sz2.w, sz1.h < sz2.h ? sz1.h : sz2.h); }
-		static inline Size max(Size sz1, Size sz2) { return Size(sz1.w > sz2.w ? sz1.w : sz2.w, sz1.h > sz2.h ? sz1.h : sz2.h); }
-
-	
-		//.____ Operators ___________________________________________
-
-		// Size can be IMPLICITLY cast to all SizeT<> and RectT<>
-
-		template<typename T>
-		inline operator SizeT<T>() const { return SizeT<T>(w, h); }
-
-		template<typename T>
-		inline operator RectT<T>() const { return RectT<T>(0, 0, w, h); }
-
-		//
-
-		inline Size operator=(const Size& k) { w = k.w; h = k.h; return *this; }
-
-		inline bool operator==(const Size& k) const { if (w == k.w && h == k.h) return true; return false; }
-		inline bool operator!=(const Size& k) const { if (w != k.w || h != k.h) return true; return false; }
-
-		inline Size& operator+=(const Size& k) { w += k.w; h += k.h; return *this; }
-		inline Size& operator-=(const Size& k) { w -= k.w; h -= k.h; return *this; }
-		inline Size operator+(const Size& k) const { return { w + k.w, h + k.h }; }
-		inline Size operator-(const Size& k) const { return { w - k.w, h - k.h }; }
-
-		inline Size& operator+=(const Border& k) { w += k.left + k.right; h += k.top + k.bottom; return *this; }
-		inline Size& operator-=(const Border& k) { w -= k.left + k.right; h -= k.top + k.bottom; return *this; }
-		inline Size operator+(const Border& k) const { return { w + k.left + k.right, h + k.top + k.bottom }; }
-		inline Size operator-(const Border& k) const { return { w - k.left - k.right, h - k.top - k.bottom }; }
-
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Size& operator*=(Type2 x) { w = (MU)(w*x); h = (MU)(h*x); return *this; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Size& operator/=(Type2 x) { w = (MU)(w / x); h = (MU)(h / x); return *this; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Size operator*(Type2 x) const { return { (MU)(w*x), (MU)(h*x) }; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Size operator/(Type2 x) const { return { (MU)(w / x), (MU)(h / x) }; }
-
-		//.____ Properties __________________________________________
-
-		MU		w;		///< Width of the rectangular area in pixels.
-		MU		h;		///< Height of the rectangular area in pixels.
-
-	};
-
-
-
-	//____ Rect ___________________________________________________________
-
-	class Rect
-	{
-	public:
-		//.____ Creation __________________________________________
-
-		Rect() : x(0), y(0), w(0), h(0) {}									///< @brief Create rectangle with x, y, w and h set to 0.
-																			///<
-																			///< Create rectangle with x, y, w and h set to 0.
-		Rect(MU x, MU y, MU w, MU h) : x(x), y(y), w(w), h(h) {}			///< @brief Create rectangle with the given values.
-																			///<
-																			///< Create rectangle with the given values.
-		Rect(const Rect& r) : x(r.x), y(r.y), w(r.w), h(r.h) {}				///< @brief Create a copy of specified rectangle.
-																			///<
-																			///< Create a copy of specified rectangle.
-
-
-
-		Rect(const Rect& r1, const Rect& r2);						///< @brief Create rectangle from intersection of specified rectangles.
-		Rect(const Coord& p1, const Coord& p2);						///< @brief	Create rectangle to cover the area between the specified coordinates.
-		Rect(const Coord& p, const Size& sz) : x(p.x), y(p.y), w(sz.w), h(sz.h) {} 	///< @brief Create rectangle of specified position and size.
-																							///<
-																							///< Create rectangle of specified position and size.
-																							///< @param p 	Coordinate containing position for rectangle.
-																							///< @param sz	Coordinate containing size for rectangle.
-		Rect(const Coord& p, MU w, MU h) : x(p.x), y(p.y), w(w), h(h) {}			///< @brief Create rectangle of specified position and size.
-																							///<
-																							///< Create rectangle of specified position and size.
-																							///< @param p		Coordinate containing position for rectangle.
-																							///< @param w		Width for rectangle.
-																							///< @param h		Height for rectangle.
-		Rect(MU x, MU y, const Size& sz) : x(x), y(y), w(sz.w), h(sz.h) {}			///< @brief Create rectangle of specified position and size.
-																							///<
-																							///< Create rectangle of specified position and size.
-																							///< @param x		Horizontal position for rectangle.
-																							///< @param y		Vertical position for rectangle.
-																							///< @param sz	Width and height for rectangle.
-		Rect(const Coord& p) : x(p.x), y(p.y), w(0), h(0) {}			///< @brief Create rectangle of specified position and size of (0,0).
-																			///<
-																			///< Create rectangle of specified position and size of (0,0).
-																			///< @param p		Coordinate containing position for rectangle.
-		Rect(const Size& sz) : x(0), y(0), w(sz.w), h(sz.h) {}		///< @brief Create rectangle of specified size and position (0,0).
-																			///<
-																			///< Create rectangle of specified size and position (0,0).
-																			///< @param sz	Width and height for rectangle.
-
-		// All versions of Rect, CoordI and SizeI can be cast to any RectI EXPLICITLY.
-
-		template<typename T>
-		explicit Rect(const RectT<T>& r) : x((MU)r.x), y((MU)r.y), w((MU)r.w), h((MU)r.h) {}
-
-		template<typename T>
-		explicit Rect(const CoordT<T>& p) : x((MU)p.x), y((MU)p.y), w(0), h(0) {}
-
-		template<typename T>
-		explicit Rect(const SizeT<T>& sz) : x(0), y(0), w((MU)sz.w), h((MU)sz.h) {}
-
-
-		//.____ Misc ______________________________________________
-
-		inline void setPos(const Coord& pos);							///< @brief Set position of rectangle.
-		inline void setSize(const Size& size);					///< @brief Set size of rectangle.
-
-		void grow(const Border& borders);
-		void shrink(const Border& borders);
-
-		bool intersection(const Rect& r1, const Rect& r2);
-		static Rect getUnion(const Rect& r1, const Rect& r2);
-
-		void growToContain(const Rect& rect);
-		void growToContain(const Coord& coord);
-
-		bool	contains(const Coord& coord) const;		///< @brief Check if coordinate is within rectangle.
-		bool	contains(const Rect& rect) const;			///< @brief Check if rectangle is fully within our rectangle.
-
-		Coord limit(const Coord& coord) const;			///< @brief Limit given coordinate to stay within rectangle.
-		inline Coord center() const { return { x + w / 2,y + h / 2 }; }
-		inline Rect center(Size sz) const { return { x + (w - sz.w) / 2,y + (h - sz.h) / 2, sz }; }
-
-		bool intersectsWith(const Rect& rect) const;	///< @brief Check for intersection (partial or full overlap) with specified rectangle.
-
-		bool		intersectsWithOrContains(Coord p1, Coord p2, int precision = 14) const;
-		bool		clipLine(Coord * p1, Coord * p2, int precision = 14) const;
-
-
-		inline MU	width() const;								///< @brief Get the width of the rectangle.
-		inline MU	height() const;								///< @brief Get the height of the rectangle.
-		inline Size size() const;								///< @brief Get the size of the rectangle.
-		inline Coord pos() const;								///< @brief Get the position of the rectangle.
-
-		inline MU left() const;									///< @brief Get X coordinate of left border.
-		inline MU top() const;									///< @brief Get Y cordinate of top border.
-		inline MU right() const;								///< @brief Get X coordinate of right border.
-		inline MU bottom() const;								///< @brief Get Y coordinate of bottom border.
-
-		inline bool	isEmpty() const;							///< @brief Check if rectangle has no area.
-		inline void clear();									///< @brief Sets all values to zero.
-
-		inline Coord distance(Coord coord) const;				////< @brief Get distance (signed) between coordinate and rectangle. 0 if inside.
-
-        inline Coord topLeft() const { return {x,y}; }
-        inline Coord topRight() const { return {x+w,y}; }
-        inline Coord bottomRight() const { return {x+w,y+h}; }
-        inline Coord bottomLeft() const { return {x,y+h}; }
-
-        
-		inline const RectI&	qpix() const { return reinterpret_cast<const RectI&>(*this); }
-		inline const RectI	px() const;
-		inline const RectF	fpx() const;
-
-		inline Rect		aligned() const { Rect r2;  r2.x.qpix = x.qpix & 0xFFFFFFFC; r2.y.qpix = y.qpix & 0xFFFFFFFC; r2.w.qpix = (w.qpix + (x.qpix & 0x3)) & 0xFFFFFFFC; r2.h.qpix = (h.qpix + (y.qpix & 0x3)) & 0xFFFFFFFC; return r2; }
-
-		template<typename Type>
-		inline static Rect fromPX(const RectT<Type>& r) { Rect r2; r2.x.qpix = int(r.x*4); r2.y.qpix = int(r.y*4); r2.w.qpix = int(r.w*4); r2.h.qpix = int(r.h*4); return r2; }
-
-		//.____ Operators ___________________________________________
-
-		// Rect can be IMPLICITLY cast to all RectT<>, CoordT<> and SizeT<>
-
-		template<typename T>
-		inline operator RectT<T>() const { return RectT<T>(x, y, w, h); }
-
-		template<typename T>
-		inline operator CoordT<T>() const { return CoordT<T>(x, y); }
-
-		template<typename T>
-		inline operator SizeT<T>() const { return SizeT<T>(w, h); }
-
-		// Rect can be IMPLICITLY cast to subtypes Size and Coord
-
-		inline operator Size() const { return Size(w, h); }
-		inline operator Coord() const { return Coord(x, y); }
-
-		//
-
-		inline Rect& operator=(const Rect& rect);				///< @brief Normal assignment operator.
-		inline bool operator==(const Rect& rect) const;
-		inline bool operator!=(const Rect& rect) const;
-
-		inline Rect& operator+=(const Size& k);					///< @brief Increase size of rectangle.
-		inline Rect& operator-=(const Size& k);					///< @brief Decrease size of rectangle.
-		inline Rect operator+(const Size& k) const; 			///< @brief Returns rectangle with size increased by Size.
-		inline Rect operator-(const Size& k) const; 			///< @brief Returns rectangle with size decreased by Size.
-
-		inline Rect& operator+=(const Coord& k); 				///< @brief Increase position of rectangle.
-		inline Rect& operator-=(const Coord& k);				///< @brief Decrease position of rectangle.
-		inline Rect operator+(const Coord& k) const; 			///< @brief Returns rectangle with position increased by Coord.
-		inline Rect operator-(const Coord& k) const; 			///< @brief Returns rectangle with position decreased by Coord.
-
-		inline Rect& operator+=(const Border& k);				///< @brief Grow rectangle by the specified border.
-		inline Rect& operator-=(const Border& k);
-		inline Rect operator+(const Border& k) const;
-		inline Rect operator-(const Border& k) const;
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Rect& operator*=(Type2 v) { x *= v; y *= v; w *= v; h *= v; return *this; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Rect& operator/=(Type2 v) { x /= v; y /= v; w /= v; h /= v; return *this; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Rect operator*(Type2 v) const { return { x * v, y * v, w * v, h * v }; }
-
-		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline Rect operator/(Type2 v) const { return { x / v, y / v, w / v, h / v }; }
-
-
-		//.____ Properties __________________________________________
-
-		MU		x;		///< Start position along the X axis.
-		MU		y;		///< Start position along the Y axis.
-		MU		w;		///< Width, i.e. length of rectangle along the X axis.
-		MU		h;		///< Height, i.e. length of rectangle along the Y axis.
-	};
 
 	//____ CoordT<> ___________________________________________________________
 	/**
@@ -490,21 +67,10 @@ namespace wg
 
 		Specializations include:
 
-		- __Coord__		- coordinate with MU values
-		- __CoordI__	- coordinate with integer values
-		- __CoordF__	- coordinate with float values
-
-		A Coord always holds a coordinate in WonderGUI's internal MU format, allowing it to be converted to points
-		or pixels without losing precision, while CoordI and CoordF just holds a coordinate value which could be either points or pixels.
-
-		Casting between Coord and any of the other two is done implicitly and as points. So if a CoordI is assigned the value
-		of a Coord it receives the coordinate in points (possibly truncated). Likewise will an asignment
-		from a CoordI to a Coord be treated as an assignment of points.
-
-		Casting between CoordI and CoordF can be done explicitly.
-
-		For a better explanation of the WonderGUI coordinate system and how MU, points and pixels relate to each other, you should
-		read the coordinate system primer of the tutorial.
+		- __Coord__		- coordinate specified in pts (points)
+		- __CoordSPX__	- coordinate specified in spx (subpixels, e.g 1/64 pixel)
+		- __CoordI__	- coordinate in integer format
+		- __CoordF__	- coordinate in float format
 
 	**/
 	template<class Type> class CoordT
@@ -529,11 +95,6 @@ namespace wg
 		inline void clear() { x = 0; y = 0; }			///< Sets X and Y to 0.
 
 		//.____ Operators ___________________________________________
-
-		inline operator Coord() const { return Coord(x, y); }
-		inline operator Rect() const;
-
-		//
 
 		inline CoordT<Type> operator=(const CoordT<Type>& k) { x = k.x; y = k.y; return *this; }
 
@@ -571,11 +132,18 @@ namespace wg
 		y = size.h;
 	}
 
-	//____ BorderI ______________________________________________________________
+	//____ BorderT ______________________________________________________________
 	/**
-		@brief Specifies the thickness of the border of a rectangular area, measured in pixels.
+		@brief Specifies the thickness of the border of a rectangular area.
 
-		Specifies the thickness of the border of a rectangular area, measured in pixels.
+		Class Template for specifying the thickness of the border of a rectangular area.
+
+		Specializations include:
+
+		- __Border__	- border specified in pts (points)
+		- __BorderSPX__	- border specified in spx (subpixels, e.g 1/64 pixel)
+		- __BorderI__	- border in integer format
+		- __BorderF__	- border in float format
 
 		The thickness of the four sides of the border can be set individually.
 		The sides of the border always comes in the order: top, right, bottom, left. I.e.
@@ -622,18 +190,7 @@ namespace wg
 
 		inline operator SizeT<Type>() const { return SizeT<Type>(left + right, top + bottom); }
 
-		// All arithmetic versions of BorderI can be IMPLICITLY cast to Border
-
-//		template<typename TP = Type, typename std::enable_if< std::is_arithmetic<TP>::value, int >::type = 0>
-		inline operator Border() const { return Border(top, right, bottom, left); }
-
-		// Border can be IMPLICITLY cast to all BorderT<>
-
-		template<typename T, typename TP = Type, typename std::enable_if< std::is_class<TP>::value, int>::type = 0>
-		inline operator BorderT<T>() const { return BorderT<T>(top, right, bottom, left); }
-
 		//
-
 
 		inline BorderT<Type>& operator+=(const BorderT<Type>& k)        { top += k.top; right += k.right; bottom += k.bottom; left += k.left; return *this; }
 		inline BorderT<Type>& operator-=(const BorderT<Type>& k)        { top -= k.top; right -= k.right; bottom -= k.bottom; left -= k.left; return *this;}
@@ -669,10 +226,19 @@ namespace wg
 	//____ SizeT<T> ________________________________________________________
 
 	/**
-		@brief Specifies the size of a rectangular area, measured in pixels.
+		@brief Specifies the size of a rectangular area.
 
-		Specifies the size of a rectangular area, measured in pixels.
-		Members are integer precision and can be negative.
+		Class Template for specifying the size of a rectangular area.
+
+		Specializations include:
+
+		- __Size__		- size specified in pts (points)
+		- __SizeSPX__	- size specified in spx (subpixels, e.g 1/64 pixel)
+		- __SizeI__		- size in integer format
+		- __SizeF__		- size in float format
+
+
+		Specifies the size of a rectangular area.
 	**/
 
 	template<class Type> class SizeT
@@ -702,25 +268,6 @@ namespace wg
 		inline bool	isEmpty() const { return (w == 0 && h == 0); }
 
 		//.____ Operators ___________________________________________
-
-		// All arithmetic versions of SizeT can be IMPLICITLY cast to Size and Rect
-
-//		template<typename TP = Type, typename std::enable_if< std::is_arithmetic<TP>::value, int>::type = 0>
-		inline operator Size() const { return Size(w, h); }
-
-//		template<typename TP = Type, typename std::enable_if< std::is_arithmetic<TP>::value, int>::type = 0>
-		inline operator Rect() const;
-
-
-		// Size can be IMPLICITLY cast to all SizeT<> and RectT<>
-
-		template<typename T, typename TP = Type, typename std::enable_if< !std::is_arithmetic<TP>::value, int>::type = 0>
-		inline operator SizeT<T>() const { return SizeT<T>(w, h); }
-
-		template<typename T, typename TP = Type, typename std::enable_if< !std::is_arithmetic<TP>::value, int>::type = 0>
-		inline operator RectT<T>() const { return RectT<T>(0, 0, w, h); }
-
-		//
 
 		inline SizeT<Type> operator=(const SizeT<Type>& k)	{ w = k.w; h = k.h; return *this; }
 
@@ -784,7 +331,15 @@ namespace wg
 	/**
 		@brief Specifies a rectangular area of a 2D surface through position and size.
 
-		Specifies a rectangular area of a 2D surface through position and size.
+		Class Template for specifying a rectangular area of a 2D surface through position and size.
+
+		Specializations include:
+
+		- __Rect__		- rectangle specified in pts (points)
+		- __RectSPX__	- rectangle specified in spx (subpixels, e.g 1/64 pixel)
+		- __RectI__		- rectangle in integer format
+		- __RectF__		- rectangle in float format
+
 
 		Position is specified through the members x and y, containing the horizontal
 		and vertical offset from an origo position while members w and h specifies
@@ -846,7 +401,7 @@ namespace wg
 																			///< Create rectangle of specified size and position (0,0).
 																			///< @param sz	Width and height for rectangle.
 
-		// All versions of Rect, CoordI and SizeI can be cast to any RectI EXPLICITLY.
+		// All versions of RectI, CoordI and SizeI can be cast to any RectI EXPLICITLY.
 
 		template<typename T>
 		explicit RectT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y), w((Type)r.w), h((Type)r.h) {}
@@ -906,28 +461,6 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
-		// All arithmetic versions of RectI can be IMPLICITLY cast to Rect, Coord and Size
-
-//		template<typename TP = Type, typename std::enable_if< std::is_arithmetic<TP>::value, int>::type = 0>
-		inline operator Rect() const;
-
-//		template<typename TP = Type, typename std::enable_if< std::is_arithmetic<TP>::value, int>::type = 0>
-		inline operator Coord() const { return Coord(x, y); }
-
-//		template<typename TP = Type, typename std::enable_if< std::is_arithmetic<TP>::value, int>::type = 0>
-		inline operator Size() const { return Size(w, h); }
-
-		// Rect can be IMPLICITLY cast to all RectT<>, CoordT<> and SizeT<>
-
-		template<typename T, typename TP = Type, typename std::enable_if< !std::is_arithmetic<TP>::value, int>::type = 0>
-		inline operator RectT<T>() const { return RectT<T>(x, y, w, h); }
-
-		template<typename T, typename TP = Type, typename std::enable_if< !std::is_arithmetic<TP>::value, int>::type = 0>
-		inline operator CoordT<T>() const { return CoordT<T>(x, y); }
-
-		template<typename T, typename TP = Type, typename std::enable_if< !std::is_arithmetic<TP>::value, int>::type = 0>
-		inline operator SizeT<T>() const { return SizeT<T>(w, h); }
-
 		// All versions of RectT can be IMPLICITLY cast to their subtypes SizeT and CoordT
 
 		inline operator SizeT<Type>() const { return SizeT<Type>(w, h); }
@@ -969,427 +502,11 @@ namespace wg
 
 		//.____ Properties __________________________________________
 
-		Type	x;		///< Start position in pixels along the X axis.
-		Type	y;		///< Start position in pixels along the Y axis.
+		Type	x;		///< Start position along the X axis.
+		Type	y;		///< Start position along the Y axis.
 		Type	w;		///< Width, i.e. length of rectangle along the X axis.
 		Type	h;		///< Height, i.e. length of rectangle along the Y axis.
 	};
-
-
-	//_____________________________________________________________________________
-	inline Coord::Coord(const Size& size)
-	{
-		x = size.w;
-		y = size.h;
-	}
-
-	//_____________________________________________________________________________
-
-	inline const CoordI	Coord::px() const
-	{
-		return { x.qpix >> 2, y.qpix >> 2 };
-	}
-
-	//_____________________________________________________________________________
-
-	inline const CoordF	Coord::fpx() const
-	{
-		return { float(x.qpix)/4, float(y.qpix)/4 };
-	}
-
-	//_____________________________________________________________________________
-
-	inline Size Border::size() const
-	{
-		return Size(left + right, top + bottom);
-	}
-
-	//_____________________________________________________________________________
-
-	const BorderI Border::px() const 
-	{ 
-		return { top.qpix >> 2, right.qpix >> 2, bottom.qpix >> 2, left.qpix >> 2 }; 
-	}
-
-	//_____________________________________________________________________________
-
-	const BorderF Border::fpx() const
-	{
-		return { float(top.qpix)/4, float(right.qpix)/4, float(bottom.qpix)/4, float(left.qpix)/4 };
-	}
-
-	//_____________________________________________________________________________
-
-	inline Border::operator Size() const
-	{
-		return Size(left + right, top + bottom);
-	}
-
-	//_____________________________________________________________________________
-
-	inline Size::Size(const Coord& coord) : w(coord.x), h(coord.y)
-	{
-	}
-
-	//_____________________________________________________________________________
-
-	inline void Size::limit(const Size& min, const Size& max)
-	{
-		if (w < min.w)
-			w = min.w;
-		if (h < min.h)
-			h = min.h;
-
-		if (w > max.w)
-			w = max.w;
-		if (h > max.h)
-			h = max.h;
-	}
-
-	//_____________________________________________________________________________
-
-	const SizeI Size::px() const 
-	{ 
-		return { w.qpix >> 2, h.qpix >> 2 }; 
-	}
-
-	//_____________________________________________________________________________
-
-	const SizeF Size::fpx() const
-	{
-		return { float(w.qpix)/4, float(h.qpix)/4 };
-	}
-
-	//_____________________________________________________________________________
-
-	const RectI Rect::px() const 
-	{ 
-		return { x.qpix >> 2, y.qpix >> 2, w.qpix >> 2, h.qpix >> 2 }; 
-	}
-
-	//_____________________________________________________________________________
-
-	const RectF Rect::fpx() const
-	{
-		return { float(x.qpix)/4, float(y.qpix)/4, float(w.qpix)/4, float(h.qpix)/4 };
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Normal assignment operator.
-	 **/
-	inline Rect& Rect::operator=(const Rect& r2)
-	{
-		x = r2.x;
-		y = r2.y;
-		w = r2.w;
-		h = r2.h;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Standard comparison operator
-	 **/
-	inline bool Rect::operator==(const Rect& rect) const
-	{
-		return x == rect.x && y == rect.y && w == rect.w && h == rect.h;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Standard comparison operator
-	 **/
-	inline bool Rect::operator!=(const Rect& rect) const
-	{
-		return !(*this == rect);
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Increase size of rectangle.
-	 **/
-	inline Rect& Rect::operator+=(const Size& k)
-	{
-		w += k.w;
-		h += k.h;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Decrease size of rectangle.
-	 **/
-	inline Rect& Rect::operator-=(const Size& k)
-	{
-		w -= k.w;
-		h -= k.h;
-		return *this;
-	}
-	//_____________________________________________________________________________
-	/**
-	 * Get rectangle with size increased by Size.
-	 **/
-
-	inline Rect Rect::operator+(const Size& k) const
-	{
-		Rect res;
-		res.x = x;
-		res.y = y;
-		res.w = w + k.w;
-		res.h = h + k.h;
-		return res;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get rectangle with size decreased with Size.
-	 **/
-
-	inline Rect Rect::operator-(const Size& k) const
-	{
-		Rect res;
-		res.x = x;
-		res.y = y;
-		res.w = w - k.w;
-		res.h = h - k.h;
-		return res;
-	}
-
-
-	//_____________________________________________________________________________
-	/**
-	 * Increase position of rectangle.
-	 **/
-
-	inline Rect& Rect::operator+=(const Coord& k)
-	{
-		x += k.x;
-		y += k.y;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Decrease position of rectangle.
-	 **/
-
-	inline Rect& Rect::operator-=(const Coord& k)
-	{
-		x -= k.x;
-		y -= k.y;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get rectangle with position increased by Coord.
-	 **/
-
-	inline Rect Rect::operator+(const Coord& k) const
-	{
-		Rect res;
-		res.x = x + k.x;
-		res.y = y + k.y;
-		res.w = w;
-		res.h = h;
-		return res;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get rectangle with position decreased by Coord.
-	 **/
-	inline Rect Rect::operator-(const Coord& k) const
-	{
-		Rect res;
-		res.x = x - k.x;
-		res.y = y - k.y;
-		res.w = w;
-		res.h = h;
-		return res;
-	}
-
-
-	//_____________________________________________________________________________
-	/**
-	 * Grow rectangle by the specified border.
-	 *
-	 * The position of the rectangle is affected by the top and left borders.
-	 **/
-	inline Rect& Rect::operator+=(const Border& k)
-	{
-		x -= k.left;
-		y -= k.top;
-		w += k.left + k.right;
-		h += k.top + k.bottom;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * @brief Shrink rectangle by the specified border.
-	 *
-	 * Shrink rectangle by the specified border.
-	 * The position of the rectangle is affected by the top and left borders.
-	 **/
-	inline Rect& Rect::operator-=(const Border& k)
-	{
-		x += k.left;
-		y += k.top;
-		w -= k.left + k.right;
-		h -= k.top + k.bottom;
-		return *this;
-	}
-
-
-	//_____________________________________________________________________________
-	/**
-	 * @brief Returns a rectangle grown by the border.
-	 *
-	 * Returns a rectangle grown by the border.
-	 * The position of the rectangle is affected by the top and left borders.
-	 **/
-	inline Rect Rect::operator+(const Border& k) const
-	{
-		Rect res;
-		res.x = x - k.left;
-		res.y = y - k.top;
-		res.w = w + k.left + k.right;
-		res.h = h + k.top + k.bottom;
-		return res;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * @brief Returns a rectangle shrunk by the border.
-	 *
-	 * Returns a rectangle shrunk by the border.
-	 * The position of the rectangle is affected by the top and left borders.
-	 **/
-	inline Rect Rect::operator-(const Border& k) const
-	{
-		Rect	res;
-		res.x = x + k.left;
-		res.y = y + k.top;
-		res.w = w - (k.left + k.right);
-		res.h = h - (k.top + k.bottom);
-		return res;
-	}
-
-
-	//_____________________________________________________________________________
-	/**
-	 * Set position (members x and y) of the rectangle.
-	 **/
-	inline void Rect::setPos(const Coord& p)
-	{
-		x = p.x;
-		y = p.y;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Set the size (members w and h) of the rectangle.
-	 **/
-	inline void Rect::setSize(const Size& sz)
-	{
-		w = sz.w;
-		h = sz.h;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get width of the rectangle (member variable w).
-	 **/
-	inline MU Rect::width() const
-	{
-		return w;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get height of the rectangle (member variable h).
-	 **/
-	inline MU Rect::height() const
-	{
-		return h;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get size (width and height) of the rectangle.
-	 **/
-	inline Size Rect::size() const
-	{
-		return Size(w, h);
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get position (members x and y) of the rectangle.
-	 **/
-	inline Coord Rect::pos() const
-	{
-		return Coord(x, y);
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get X coordinate of left edge. This is equal to member variable x.
-	 **/
-	inline MU Rect::left() const
-	{
-		return x;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get Y coordinate of top edge. This is equal to member variable y.
-	 **/
-	inline MU Rect::top() const
-	{
-		return y;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get X coordinate of right edge. This is equal to member variables x + w.
-	 **/
-	inline MU Rect::right() const
-	{
-		return x + w;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get Y coordinate of bottom edge. This is equal to member variables y + h.
-	 **/
-	inline MU Rect::bottom() const
-	{
-		return y + h;
-	}
-	//_____________________________________________________________________________
-	/**
-	 * 	Check if rectangle has no area (width or height is zero).
-	 **/
-	inline bool	Rect::isEmpty() const
-	{
-		return (w == 0 || h == 0) ? true : false;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Sets all values to zero.
-	 **/
-	inline void Rect::clear()
-	{
-		x = 0;
-		y = 0;
-		w = 0;
-		h = 0;
-	}
-
 
 	//____ RectT() _______________________________________________________________
 	/**
@@ -2265,32 +1382,6 @@ namespace wg
 	 {
 		 return SizeT<Type>(left + right, top + bottom);
 	 }
-
-
-	//_____________________________________________________________________________
-
-
-	template<typename Type>
-	CoordT<Type>::operator Rect() const
-	{
-		return Rect(x, y, 0, 0);
-	}
-
-	template<typename Type>
-	SizeT<Type>::operator Rect() const
-	{
-		return Rect(0, 0, w, h);
-
-	}
-
-	template<typename Type>
-	RectT<Type>::operator Rect() const
-	{
-		return Rect(x, y, w, h);
-	}
-
-	//=======================================================================================
-
 
 
 } // namespace wg

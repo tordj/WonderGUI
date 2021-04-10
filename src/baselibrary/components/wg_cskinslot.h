@@ -82,30 +82,30 @@ namespace wg
 		void			_stateChanged(State newState, State oldState);
 		void			_valueChanged(float newValue, float oldValue, float newValue2 = -1, float oldValue2 = -1);
 
-		void 			_render(GfxDevice* pDevice, const Rect& canvas, State state, float value = 1.f, float value2 = -1.f) const;
+		void 			_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state, float value = 1.f, float value2 = -1.f) const;
 
-		inline Size		_minSize() const { return m_pSkin ? m_pSkin->minSize() : Size(); }
-		inline Size		_preferredSize() const { return m_pSkin ? m_pSkin->preferredSize() : Size(); }
+		inline SizeSPX	_minSize(int scale) const { return m_pSkin ? m_pSkin->_minSize(scale) : SizeSPX(); }
+		inline SizeSPX	_preferredSize(int scale) const { return m_pSkin ? m_pSkin->_preferredSize(scale) : SizeSPX(); }
 
-		inline Size		_contentPaddingSize() const { return m_pSkin ? m_pSkin->contentPaddingSize() : Size(); }
-		inline Size		_sizeForContent(const Size& contentSize) const { return m_pSkin ? m_pSkin->sizeForContent(contentSize) : contentSize; }
-		inline Coord	_contentOfs(State state) const { return m_pSkin ? m_pSkin->contentOfs(state) : Coord(); }
-		inline Rect		_contentRect(const Rect& canvas, State state) const { return m_pSkin ? m_pSkin->contentRect(canvas, state) : canvas; }
+		inline SizeSPX	_contentPaddingSize(int scale) const { return m_pSkin ? m_pSkin->_contentPaddingSize(scale) : SizeSPX(); }
+		inline SizeSPX	_sizeForContent(const SizeSPX& contentSize, int scale) const { return m_pSkin ? m_pSkin->_sizeForContent(contentSize,scale) : contentSize; }
+		inline CoordSPX	_contentOfs(int scale, State state) const { return m_pSkin ? m_pSkin->_contentOfs(scale,state) : CoordSPX(); }
+		inline RectSPX	_contentRect(const RectSPX& canvas, int scale, State state) const { return m_pSkin ? m_pSkin->_contentRect(canvas, scale, state) : canvas; }
 
-		inline bool		_isOpaque() const { return m_pSkin ? m_pSkin->isOpaque() : false; }
-		inline bool		_isOpaque(State state) const { return m_pSkin ? m_pSkin->isOpaque(state) : false; }
-		inline bool		_isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+		inline bool		_isOpaque() const { return m_pSkin ? m_pSkin->_isOpaque() : false; }
+		inline bool		_isOpaque(State state) const { return m_pSkin ? m_pSkin->_isOpaque(state) : false; }
+		inline bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 		{
-			return m_pSkin ? m_pSkin->isOpaque(rect, canvasSize, state) : false;
+			return m_pSkin ? m_pSkin->_isOpaque(rect, canvasSize, scale, state) : false;
 		}
 
-		inline bool		_markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold,
+		inline bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
 			float value = 1.f, float value2 = -1.f) const
 		{
-			return m_pSkin ? m_pSkin->markTest(ofs, canvas, state, opacityTreshold, value, value2) : false;
+			return m_pSkin ? m_pSkin->_markTest(ofs, canvas, scale, state, opacityTreshold, value, value2) : false;
 		}
 
-		inline bool		_isContentShifting() { return m_pSkin ? m_pSkin->isContentShifting() : false; }
+		inline bool		_isContentShifting() { return m_pSkin ? m_pSkin->_isContentShifting() : false; }
 
 		//
 
@@ -142,8 +142,6 @@ namespace wg
 
 	inline OCSkinSlot& OO(CSkinSlot& skin) { return reinterpret_cast<OCSkinSlot&>(skin); }
 	inline const OCSkinSlot& OO(const CSkinSlot& skin) { return reinterpret_cast<const OCSkinSlot&>(skin); }
-
-
 
 };
 

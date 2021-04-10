@@ -386,7 +386,7 @@ namespace wg
 
 		if (m_axis == Axis::X)
 		{
-			handleGeo.w = handlePrefSize.w * (contentGeo.h.qpix / float(handlePrefSize.h.qpix));
+			handleGeo.w = handlePrefSize.w * (contentGeo.h / float(handlePrefSize.h));
 			handleGeo.h = contentGeo.h;
 
 			handleGeo.x = contentGeo.x + (contentGeo.w - handleGeo.w) * value;
@@ -395,7 +395,7 @@ namespace wg
 		else
 		{
 			handleGeo.w = contentGeo.w;
-			handleGeo.h = handlePrefSize.h * (contentGeo.w.qpix / float(handlePrefSize.w.qpix));
+			handleGeo.h = handlePrefSize.h * (contentGeo.w / float(handlePrefSize.w));
 
 			handleGeo.x = contentGeo.x;
 			handleGeo.y = contentGeo.y + contentGeo.h - handleGeo.h - (contentGeo.h - handleGeo.h) * value;

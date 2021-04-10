@@ -70,6 +70,44 @@ namespace wg
 		return false;
 	}
 
+	//____ setScale() ___________________________________________________________
+	/**
+	 * @brief Explicitly set scale of widget.
+	 *
+	 * Explicitly set the scale of widget, overridding the scale provided by
+	 * parent.
+	 * 
+	 * @param scale Scale to be set or 0 to clear, returning widget to the 
+	 *              scale determined by parent.
+	 *				
+	 * Scale defines the size of a point, measured in 1/64ths of a pixel. Thus
+	 * is 64 the default size where one point equals one pixel and 128 is a 
+	 * 200% zoom factor.
+	 *
+	 * Setting the scale on a container or RootWidget will propagate the scale
+	 * to all children that doesn't have an explicitly set scale.
+	 * 
+	 *  @return True if scale was accepted.
+	 */
+
+	bool Widget::setScale(int scale)
+	{
+		if (scale < 0 || scale > 64 * 64)
+			return false;
+
+		m_bScaleSet = (scale > 0);
+
+		if (scale == 0)
+			scale = m_pHolder ? m_pHolder->_childDefaultScale() : m_scale;
+
+		if (scale != m_scale)
+		{
+			m_scale = scale;
+			_requestResize();
+		}
+
+		return true;
+	}
 
 	//____ parent() _______________________________________________________________
 	/**
@@ -287,7 +325,9 @@ namespace wg
 		if (m_markOpacity <= 0)
 			return true;
 
-		return _alphaTest(ofs);
+		CoordSPX translatedOfs = Util::ptsToSpx(ofs,m_scale);
+
+		return _alphaTest(translatedOfs);
 	}
 
 	//____ clone() _________________________________________________________
@@ -332,9 +372,11 @@ namespace wg
 	 * @return The preferred height for the given width.
 	 */
 
-	MU Widget::matchingHeight( MU width ) const
+
+	spx Widget::_matchingHeight( spx width, int scale ) const
 	{
-		return preferredSize().h;		// Default is to stick with preferred height no matter what width.
+		scale = _fixScale(scale);
+		return _preferredSize(scale).h;		// Default is to stick with preferred height no matter what width.
 	}
 
 	//____ matchingWidth() _______________________________________________________
@@ -351,9 +393,10 @@ namespace wg
 	 * @return The preferred width for the given height.
 	 */
 	 
-	MU Widget::matchingWidth( MU height ) const
+	spx Widget::_matchingWidth( spx height, int scale ) const
 	{
-		return preferredSize().w;		// Default is to stick with preferred width no matter what height.
+		scale = _fixScale(scale);
+		return _preferredSize(scale).w;		// Default is to stick with preferred width no matter what height.
 	}
 
 	//____ preferredSize() ________________________________________________________
@@ -374,9 +417,10 @@ namespace wg
 	 * @return The preferred size of the widget.
 	 */
 
-	Size Widget::preferredSize() const
+	SizeSPX Widget::_preferredSize(int scale) const
 	{
-		return OO(skin)._preferredSize();
+		scale = _fixScale(scale);
+		return OO(skin)._preferredSize(scale);
 	}
 
 	//____ minSize() ______________________________________________________________
@@ -388,16 +432,17 @@ namespace wg
 	 * Each widget has its own minimum size, which is depending on things such as
 	 * skinning, content and (in the case of containers) size and layout of children.
 	 *
-	 * The minimum size is only a hint for the container, which should strive to not
+	 * The minimum size is only a hint for the widgets parent, which should strive to not
 	 * make a child smaller than its minimum size, but is allowed to set the child to
 	 * any size it decides, including 0.0.
 	 *
 	 * @return The minimum size of the widget.
 	 */
 
-	Size Widget::minSize() const
+	SizeSPX Widget::_minSize(int scale) const
 	{
-		return OO(skin)._minSize();
+		scale = _fixScale(scale);
+		return OO(skin)._minSize(scale);
 	}
 
 	//____ maxSize() ______________________________________________________________
@@ -409,7 +454,7 @@ namespace wg
 	 * Each widget has its own maximum size, which is depending on things such as
 	 * skinning, content and (in the case of containers) size and layout of children.
 	 *
-	 * The maximum size is only a hint for the container, which should strive to not
+	 * The maximum size is only a hint for the widgets parent, which should strive to not
 	 * make a child larger than its maximum size, but is allowed to set the child to
 	 * any reasonable size it decides.
 	 *
@@ -418,9 +463,10 @@ namespace wg
 
 	//____ maxSize() ______________________________________________________________
 
-	Size Widget::maxSize() const
+	SizeSPX Widget::_maxSize(int scale) const
 	{
-		return Size(1 << 24, 1 << 24);
+		scale = _fixScale(scale);
+		return SizeSPX(0x7FFFFFC0, 0x7FFFFFC0);
 	}
 
 	//____ receive() _______________________________________________________________
@@ -497,18 +543,18 @@ namespace wg
 
 	//____ _collectPatches()  ____________________________________________________
 
-	void Widget::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void Widget::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
 	{
-			container.add( Rect( geo, clip ) );
+			container.add( RectSPX( geo, clip ) );
 	}
 
 	//____ _maskPatches() _______________________________________________________
 
-	void Widget::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void Widget::_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{
-			patches.sub( Rect( geo, clip ) );
+			patches.sub( RectSPX( geo, clip ) );
 		}
 	}
 
@@ -560,15 +606,18 @@ namespace wg
 
 	//____ _render() ____________________________________________________________
 
-	void Widget::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void Widget::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
-			OO(skin)._render( pDevice, _canvas, m_state );
+			OO(skin)._render( pDevice, _canvas, m_scale, m_state );
 	}
 
 	//____ _resize() ___________________________________________________________
 
-	void Widget::_resize( const Size& size )
+	void Widget::_resize( const SizeSPX& size, int scale )
 	{
+		if( !m_bScaleSet )
+			m_scale = _fixScale(scale);
+
 		m_size = size;
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
@@ -666,16 +715,16 @@ namespace wg
 
 	//____ _alphaTest() _________________________________________________________
 
-	bool Widget::_alphaTest( const Coord& ofs )
+	bool Widget::_alphaTest( const CoordSPX& ofs )
 	{
-		return OO(skin)._markTest( ofs, Rect(m_size), m_state, m_markOpacity );
+		return OO(skin)._markTest( ofs, RectSPX(m_size), m_scale, m_state, m_markOpacity );
 	}
 
 	//____ _windowPadding() _______________________________________________________
 
-	Size Widget::_windowPadding() const
+	SizeSPX Widget::_windowPadding() const
 	{
-		return Size();
+		return SizeSPX();
 	}
 
 	//____ _componentRequestRender() _________________________________________________________
@@ -685,7 +734,7 @@ namespace wg
 		_requestRender( _componentGeo( pComponent ) );
 	}
 
-	void Widget::_componentRequestRender( const GeoComponent * pComponent, const Rect& rect )
+	void Widget::_componentRequestRender( const GeoComponent * pComponent, const RectSPX& rect )
 	{
 		_requestRender( rect + _componentPos( pComponent ) );
 	}
@@ -709,13 +758,13 @@ namespace wg
 
 	void Widget::_componentRequestInView( const GeoComponent * pComponent )
 	{
-		Rect r = _componentGeo( pComponent );
+		RectSPX r = _componentGeo( pComponent );
 		_requestInView( r, r );
 	}
 
-	void Widget::_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave )
+	void Widget::_componentRequestInView( const GeoComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave )
 	{
-		Coord ofs = _componentPos( pComponent );
+		CoordSPX ofs = _componentPos( pComponent );
 		_requestInView(mustHave + ofs, niceToHave + ofs );
 	}
 
@@ -729,46 +778,46 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	Coord Widget::_componentPos( const GeoComponent * pComponent ) const
+	CoordSPX Widget::_componentPos( const GeoComponent * pComponent ) const
 	{
 		if (pComponent == &skin)
-			return Coord();
+			return CoordSPX();
 		else
-			return OO(skin)._contentOfs( m_state );
+			return OO(skin)._contentOfs( m_scale, m_state );
 	}
 
 	//____ _componentSize() ______________________________________________________________
 
-	Size Widget::_componentSize( const GeoComponent * pComponent ) const
+	SizeSPX Widget::_componentSize( const GeoComponent * pComponent ) const
 	{
 		if (pComponent == &skin)
 			return m_size;
 		else
-			return m_size - OO(skin)._contentPaddingSize();
+			return m_size - OO(skin)._contentPaddingSize(m_scale);
 	}
 
 	//____ _componentGeo() ______________________________________________________________
 
-	Rect Widget::_componentGeo( const GeoComponent * pComponent ) const
+	RectSPX Widget::_componentGeo( const GeoComponent * pComponent ) const
 	{
 		if (pComponent == &skin)
 			return m_size;
 		else
-			return OO(skin)._contentRect( m_size, m_state );
+			return OO(skin)._contentRect( m_size, m_scale, m_state );
 	}
 
 	//____ _globalComponentPos() ________________________________________________________
 
-	Coord Widget::_globalComponentPos( const GeoComponent * pComponent ) const
+	CoordSPX Widget::_globalComponentPos( const GeoComponent * pComponent ) const
 	{
-		return _componentPos( pComponent ) + globalPos();
+		return _componentPos( pComponent ) + _globalPos();
 	}
 
 	//____ _globalComponentGeo() ______________________________________________________________
 
-	Rect Widget::_globalComponentGeo( const GeoComponent * pComponent ) const
+	RectSPX Widget::_globalComponentGeo( const GeoComponent * pComponent ) const
 	{
-		return _componentGeo( pComponent ) + globalPos();
+		return _componentGeo( pComponent ) + _globalPos();
 	}
 
 	//____ _object() ______________________________________________________
@@ -796,8 +845,8 @@ namespace wg
 	{
 		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
 
-		if (!pNewSkin || !pOldSkin || pNewSkin->contentPaddingSize() != pOldSkin->contentPaddingSize() ||
-			pNewSkin->preferredSize() != pOldSkin->preferredSize() || pNewSkin->minSize() != pOldSkin->minSize())
+		if (!pNewSkin || !pOldSkin || pNewSkin->_contentPaddingSize(m_scale) != pOldSkin->_contentPaddingSize(m_scale) ||
+			pNewSkin->_preferredSize(m_scale) != pOldSkin->_preferredSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
 			_requestResize();
 	}
 

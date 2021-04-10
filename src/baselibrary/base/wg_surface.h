@@ -181,15 +181,17 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		inline SizeI		size() const;						///< @brief Get the size in pixels of the surface.
-		virtual	int			width() const;						///< @brief Get the width of the surface.
-		virtual	int			height() const;						///< @brief Get the height of the surface.
+		inline SizeI		pixelSize() const;						///< @brief Get the size in pixels of the surface.
+		inline	int			pixelWidth() const;						///< @brief Get the width of the surface.
+		inline	int			pixelHeight() const;						///< @brief Get the height of the surface.
 
-		bool                setScale( float scale );
-		inline float        scale() const;
+		inline Size			pointSize() const;
+		inline pts			pointWidth() const;
+		inline pts			pointHeight() const;
 
-		inline SizeI        pointSize() const;
-		inline int			qpixPerPoint() const;
+		bool                setScale( int scale );
+		inline int			scale() const;
+
 
 		//.____ Appearance ____________________________________________________
 
@@ -254,10 +256,11 @@ namespace wg
 
 		int                 m_id = 0;
 
-        int             	m_flags;                              // The flags provided to the constructor.
-		
+        int             	m_flags;                            // The flags provided to the constructor.
+		int					m_scale = 64;
+
 		PixelDescription	m_pixelDescription;
-		SizeI				m_size;				// Width and height in pixels.
+		SizeI				m_size;								// Width and height in pixels.
 
 		ScaleMode			m_scaleMode = ScaleMode::Nearest;
 		bool				m_bMipmapped = false;
@@ -267,8 +270,6 @@ namespace wg
 
 		Object_p			m_pBaggage;
 
-		// This is currently here just as metadata for WG2 compatibility, but needs to be factored in correctly in the future
-		int                 m_qpixPerPoint = 4;
 	};
 
 	//____ setIdentity() ____________________________________________________________
@@ -301,36 +302,78 @@ namespace wg
 		return m_id;
 	}
 
-	//____ size() _____________________________________________________________
+	//____ pixelSize() _____________________________________________________________
 	/**
 	 * Get the width and height of the surface in a SizeI structure.
 	 *
 	 * @return Size of the suface measured in pixels.
 	 */
-	SizeI Surface::size() const
+	SizeI Surface::pixelSize() const
 	{
 		return m_size;
 	}
 
+	//____ pixelWidth() ________________________________________________________________
+	/**
+	 * Get the width of the surface.
+	 *
+	 * @return The width of the surface, measured in pixels.
+	 **/
+	int Surface::pixelWidth() const
+	{
+		return m_size.w;
+	}
+
+	//____ pixelHeight() _______________________________________________________________
+	/**
+	 * Get the height of the surface.
+	 *
+	 * @return The height of the surface, measured in pixels.
+	 **/
+	int Surface::pixelHeight() const
+	{
+		return m_size.h;
+	}
+
+	//____ pointSize() _____________________________________________________________
+	/**
+	 * Get the width and height of the surface in a Size structure.
+	 *
+	 * @return Size of the suface measured in points.
+	 */
+	Size Surface::pointSize() const
+	{
+		return Size(m_size*64)/m_scale;
+	}
+
+	//____ pointWidth() ________________________________________________________________
+	/**
+	 * Get the width of the surface.
+	 *
+	 * @return The width of the surface, measured in points.
+	 **/
+	pts Surface::pointWidth() const
+	{
+		return pts(m_size.w*64)/m_scale;
+	}
+
+	//____ pointHeight() _______________________________________________________________
+	/**
+	 * Get the height of the surface.
+	 *
+	 * @return The height of the surface, measured in points.
+	 **/
+	pts Surface::pointHeight() const
+	{
+		return pts(m_size.h*64)/m_scale;
+	}
+
+
 	//____ scale() ____________________________________________________________
 
-	float Surface::scale() const
+	int Surface::scale() const
 	{
-		return m_qpixPerPoint / 4.f;
-	}
-
-	//____ pointSize() ________________________________________________________
-
-	SizeI Surface::pointSize() const
-	{
-		return (m_size * 4) / m_qpixPerPoint;
-	}
-
-	//____ qpixPerPoint() ____________________________________________
-
-	int Surface::qpixPerPoint() const
-	{
-		return m_qpixPerPoint;
+		return m_scale;
 	}
 
 	//____ scaleMode() ________________________________________________________

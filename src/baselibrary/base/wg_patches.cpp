@@ -37,13 +37,13 @@ namespace wg
 
 	Patches::Patches( int startCapacity )
 	{
-		m_pFirst	= new Rect[startCapacity];
+		m_pFirst	= new RectSPX[startCapacity];
 		m_size		= 0;
 		m_capacity	= startCapacity;
 		m_bOwnsArray = true;
 	}
 
-	Patches::Patches( Rect * pArray, int capacity )
+	Patches::Patches( RectSPX * pArray, int capacity )
 	{
 		m_pFirst 	= pArray;
 		m_size		= 0;
@@ -53,7 +53,7 @@ namespace wg
 
 	Patches::Patches(const Patches& source)
 	{
-		m_pFirst = new Rect[source.m_capacity];
+		m_pFirst = new RectSPX[source.m_capacity];
 		m_size = source.m_size;
 		m_capacity = source.m_capacity;
 		m_bOwnsArray = true;
@@ -63,16 +63,16 @@ namespace wg
 	}
 
 
-	Patches::Patches(const Patches& source, const Rect& trim)
+	Patches::Patches(const Patches& source, const RectSPX& trim)
 	{
-		m_pFirst = new Rect[source.m_capacity];
+		m_pFirst = new RectSPX[source.m_capacity];
 		m_size = 0;
 		m_capacity = source.m_capacity;
 		m_bOwnsArray = true;
 
 		for (int i = 0; i < source.m_size; i++)
 		{
-			const Rect& rect = source.m_pFirst[i];
+			const RectSPX& rect = source.m_pFirst[i];
 			if (rect.intersectsWith(trim))
 				m_pFirst[m_size++].intersection(rect, trim);
 		}
@@ -95,11 +95,11 @@ namespace wg
 		if( capacity < m_size )
 			return false;
 
-		Rect * pNew = nullptr;
+		RectSPX * pNew = nullptr;
 		if( capacity > 0 )
 		{
-			pNew = new Rect[capacity];
-			memcpy( pNew, m_pFirst, sizeof(Rect)*m_size );
+			pNew = new RectSPX[capacity];
+			memcpy( pNew, m_pFirst, sizeof(RectSPX)*m_size );
 		}
 
 		if( m_bOwnsArray )
@@ -114,13 +114,13 @@ namespace wg
 
 	//____ _add() __________________________________________________________________
 
-	void Patches::_add( const Rect& rect, int startOffset )
+	void Patches::_add( const RectSPX& rect, int startOffset )
 	{
-		Rect newR = rect;
+		RectSPX newR = rect;
 
 		for( int i = startOffset ; i < m_size ; i++ )
 		{
-			Rect * pR = m_pFirst + i;
+			RectSPX * pR = m_pFirst + i;
 
 			// Bail out early if no intersection at all.
 
@@ -155,7 +155,7 @@ namespace wg
 
 	 			if( newR.y < pR->y + pR->h && newR.y + newR.h >= pR->y + pR->h )
 	 			{
-	 				MU diff = pR->y + pR->h - newR.y;
+	 				spx diff = pR->y + pR->h - newR.y;
 	 				pR->h -= diff;
 					continue;
 	 			}
@@ -165,7 +165,7 @@ namespace wg
 	 		{
 	 			if( newR.x <= pR->x && newR.x + newR.w > pR->x )
 	 			{
-	 				MU diff = newR.x + newR.w - pR->x;
+	 				spx diff = newR.x + newR.w - pR->x;
 	 				pR->x += diff;
 	 				pR->w -= diff;
 					continue;
@@ -173,7 +173,7 @@ namespace wg
 
 	 			if( newR.x < pR->x + pR->w && newR.x + newR.w >= pR->x + pR->w )
 				{
-					MU diff = pR->x + pR->w - newR.x;
+					spx diff = pR->x + pR->w - newR.x;
 	 				pR->w -= diff;
 					continue;
 	 			}
@@ -181,7 +181,7 @@ namespace wg
 
 			// Clip newR against pR.
 
-			Rect	xR;
+			RectSPX	xR;
 			bool	bExtraRect = false;
 
 			// Cut off upper part
@@ -291,14 +291,14 @@ namespace wg
 			sub( pSource->m_pFirst[ofs++] );
 	}
 
-	void Patches::sub( const Rect& subR )
+	void Patches::sub( const RectSPX& subR )
 	{
-		if( subR.w.qpix == 0 || subR.h.qpix == 0 )
+		if( subR.w == 0 || subR.h == 0 )
 			return;
 
 		for( int i = 0 ; i < m_size ; i++ )
 		{
-			Rect rect = m_pFirst[i];
+			RectSPX rect = m_pFirst[i];
 
 			if( !(rect.x + rect.w > subR.x && rect.y + rect.h > subR.y &&
 				rect.x < subR.x + subR.w && rect.y < subR.y + subR.h) )
@@ -314,12 +314,12 @@ namespace wg
 
 				if( rect.y < subR.y )													// Top part
 				{
-					push( Rect( rect.x, rect.y, rect.w, subR.y - rect.y) );				// Not optimal, will cause unnecessary processing later.
+					push( RectSPX( rect.x, rect.y, rect.w, subR.y - rect.y) );				// Not optimal, will cause unnecessary processing later.
 				}
 
 				if( rect.x < subR.x )													// Left part
 				{
-					Rect newR;
+					RectSPX newR;
 
 					newR.x = rect.x;
 					newR.w = subR.x - rect.x;
@@ -339,7 +339,7 @@ namespace wg
 
 				if( rect.x + rect.w > subR.x + subR.w )					// Right part
 				{
-					Rect newR;
+					RectSPX newR;
 
 					newR.x = subR.x + subR.w;
 					newR.w = rect.x + rect.w - ( subR.x + subR.w );
@@ -359,7 +359,7 @@ namespace wg
 
 				if( rect.y + rect.h > subR.y + subR.h )					// Bottom part
 				{
-					push( Rect( rect.x,
+					push( RectSPX( rect.x,
 								  subR.y + subR.h,
 								  rect.w,
 								  rect.y + rect.h - ( subR.y + subR.h )) );				// Not optimal, will cause unnecessary processing later.
@@ -385,18 +385,18 @@ namespace wg
 		if( m_capacity - m_size < len )
 			_expandMem(len);
 
-		memcpy( m_pFirst + m_size, pSource->m_pFirst + ofs, sizeof(Rect)*len );
+		memcpy( m_pFirst + m_size, pSource->m_pFirst + ofs, sizeof(RectSPX)*len );
 		m_size += len;
 		return len;
 	}
 
 	//____ trimPush() _________________________________________________________
 
-	void Patches::trimPush(const Patches& source, const Rect& trim)
+	void Patches::trimPush(const Patches& source, const RectSPX& trim)
 	{
 		for (int i = 0; i < source.m_size; i++)
 		{
-			const Rect& rect = source.m_pFirst[i];
+			const RectSPX& rect = source.m_pFirst[i];
 			if (rect.intersectsWith(trim))
 			{
 				if (m_size == m_capacity)
@@ -441,9 +441,9 @@ namespace wg
 
 	//____ clip() __________________________________________________________________
 
-	void Patches::clip( const Rect& clip )
+	void Patches::clip( const RectSPX& clip )
 	{
-		for( Rect * pRect = m_pFirst ; pRect < m_pFirst + m_size ; pRect++ )
+		for( RectSPX * pRect = m_pFirst ; pRect < m_pFirst + m_size ; pRect++ )
 		{
 
 			if( pRect->x < clip.x || pRect->y < clip.y ||
@@ -458,15 +458,15 @@ namespace wg
 
 	//____ getUnion() _________________________________________________________________
 
-	Rect Patches::getUnion() const
+	RectSPX Patches::getUnion() const
 	{
 		if( m_size == 0 )
-			return Rect();
+			return RectSPX();
 
-		MU x1 = m_pFirst->x;
-		MU x2 = m_pFirst->x + m_pFirst->w;
-		MU y1 = m_pFirst->y;
-		MU y2 = m_pFirst->y + m_pFirst->h;
+		spx x1 = m_pFirst->x;
+		spx x2 = m_pFirst->x + m_pFirst->w;
+		spx y1 = m_pFirst->y;
+		spx y2 = m_pFirst->y + m_pFirst->h;
 
 		for( int i = 1 ; i < m_size ; i++ )
 		{
@@ -480,7 +480,7 @@ namespace wg
 				y2 = m_pFirst[i].y + m_pFirst[i].h;
 		}
 
-		return Rect(x1,y1,x2-x1,y2-y1);
+		return RectSPX(x1,y1,x2-x1,y2-y1);
 	}
 
 	//____ repair() ________________________________________________________________

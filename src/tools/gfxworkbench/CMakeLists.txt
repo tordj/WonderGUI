@@ -7,7 +7,7 @@ add_executable(gfxworkbench
 target_link_directories(gfxworkbench PRIVATE 
 )
 
-target_working_directory(gfxworkbench, WG_ROOT)
+target_working_directory(gfxworkbench ${WG_ROOT})
 
 target_link_libraries(gfxworkbench PRIVATE
 	wgsoftgfx
