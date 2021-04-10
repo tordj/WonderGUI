@@ -38,36 +38,60 @@ namespace wg
 
 	namespace Util		/** @private */
 	{
-		inline void roundToPixels(RectI& r);
-		inline void roundToPixels(CoordI& r);
-		inline void roundToPixels(SizeI& r);
-		inline void roundToPixels(int& r);
-
-
-		//____ pointsToPixels() _______________________________________________
-
-		inline CoordI pointsToPixels(const CoordI& points)
+		inline pts spxToPts(spx value, int scale)
 		{
-			return { (points.x * MU::qpixPerPoint()) >> 2, (points.y * MU::qpixPerPoint()) >> 2 };
+			return pts(value)/scale;
 		}
 
-		inline SizeI pointsToPixels(const SizeI& points)
+		inline Coord spxToPts(const CoordSPX& coord, int scale)
 		{
-			return { (points.w * MU::qpixPerPoint()) >> 2, (points.h * MU::qpixPerPoint()) >> 2 };
+			return Coord(pts(coord.x) / scale, pts(coord.y) / scale);
 		}
 
-		inline BorderI pointsToPixels(const BorderI& points)
+		inline Size spxToPts(const SizeSPX& size, int scale)
 		{
-			return { (points.top * MU::qpixPerPoint()) >> 2, (points.right * MU::qpixPerPoint()) >> 2,
-					 (points.bottom * MU::qpixPerPoint()) >> 2, (points.left * MU::qpixPerPoint()) >> 2 };
+			return Size(pts(size.w) / scale, pts(size.h) / scale);
 		}
 
-		inline RectI pointsToPixels(const RectI& points)
+		inline Border spxToPts(const BorderSPX& border, int scale)
 		{
-			return { (points.x * MU::qpixPerPoint()) >> 2, (points.y * MU::qpixPerPoint()) >> 2,
-					 (points.w * MU::qpixPerPoint()) >> 2, (points.h * MU::qpixPerPoint()) >> 2 };
+			return Border(	pts(border.top) / scale, pts(border.right) / scale,
+							pts(border.bottom) / scale, pts(border.left) / scale);
 		}
 
+		inline Rect spxToPts(const RectSPX& rect, int scale)
+		{
+			return Rect(pts(rect.x) / scale, pts(rect.y) / scale,
+						pts(rect.w) / scale, pts(rect.h) / scale);
+		}
+
+
+		inline spx ptsToSpx(pts value, int scale)
+		{
+			return spx(value * scale);
+		}
+
+		inline CoordSPX ptsToSpx(const Coord& coord, int scale)
+		{
+			return CoordSPX(spx(coord.x * scale), spx(coord.y * scale));
+		}
+
+		inline SizeSPX ptsToSpx(const Size& size, int scale)
+		{
+			return SizeSPX(spx(size.w * scale), spx(size.h * scale));
+		}
+
+		inline BorderSPX ptsToSpx(const Border& border, int scale)
+		{
+			return BorderSPX(spx(border.top * scale), spx(border.right * scale),
+				spx(border.bottom * scale), spx(border.left * scale));
+		}
+
+		inline RectSPX ptsToSpx(const Rect& rect, int scale)
+		{
+			return RectSPX(spx(rect.x * scale), spx(rect.y * scale),
+				spx(rect.w * scale), spx(rect.h * scale));
+		}
 
 
 		double	squareRoot(double a);
@@ -185,7 +209,7 @@ namespace wg
 
 
 	}
-
+/*
 	void Util::roundToPixels(RectI& r)
 	{		
 		int x2 = r.x + r.w;
@@ -214,7 +238,7 @@ namespace wg
 	{
 		r = (r + 32) >> 6;
 	}
-
+*/
 
 
 

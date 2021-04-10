@@ -108,6 +108,11 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
+		virtual bool		setScale(int scale);
+		inline bool			clearScale();
+		inline int			scale() const;
+		inline bool			isScaleSet() const;
+
 		inline Coord		pos() const;
 		inline const Size&	size() const;
 		inline Rect			geo() const;
@@ -119,12 +124,12 @@ namespace wg
 		inline Coord		toLocal( const Coord& coord ) const;
 		inline Rect			toLocal(const Rect& rect) const;
 
-		virtual MU			matchingHeight( MU width ) const;
-		virtual MU			matchingWidth( MU height ) const;
+		inline pts			matchingHeight( pts width ) const;
+		inline pts			matchingWidth( pts height ) const;
 
-		virtual Size		preferredSize() const;
-		virtual Size		minSize() const;
-		virtual Size		maxSize() const;
+		inline Size			preferredSize() const;
+		inline Size			minSize() const;
+		inline Size			maxSize() const;
 
 
 		//.____ Hierarchy _________________________________________________
@@ -179,7 +184,7 @@ namespace wg
 
 		//.____ Misc _________________________________________________________________
 
-		virtual bool		markTest( const Coord& ofs );
+		bool				markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg ) override final;
 
 		inline void			refresh();
@@ -207,6 +212,7 @@ namespace wg
 		virtual BlendMode	_getBlendMode() const;
 
 		int					_listAncestors(Widget* array[], int max);
+		inline int			_fixScale(int scale) const;
 
 		virtual Widget* 	_newOfMyType() const = 0;
 		int64_t				_startReceiveUpdates();
@@ -214,63 +220,81 @@ namespace wg
 
 		bool            	_requestPreRenderCall();
 
-		inline Rect			_contentRect() const { return OO(skin)._contentRect(m_size, m_state); }
-		inline Rect			_contentRect(const Rect& canvas) const { return OO(skin)._contentRect(canvas, m_state); }
-		inline Size			_contentPaddingSize() const { return OO(skin)._contentPaddingSize(); }
+		inline CoordSPX		_pos() const;
+		inline const SizeSPX& _size() const;
+		inline RectSPX		_geo() const;
+		inline CoordSPX		_globalPos() const;
+		inline RectSPX		_globalGeo() const;
+
+		inline CoordSPX		_toGlobal(const CoordSPX& coord) const;
+		inline RectSPX		_toGlobal(const RectSPX& rect) const;
+		inline CoordSPX		_toLocal(const CoordSPX& coord) const;
+		inline RectSPX		_toLocal(const RectSPX& rect) const;
+
+		virtual spx			_matchingHeight(spx width, int scale = -1) const;
+		virtual spx			_matchingWidth(spx height, int scale = -1) const;
+
+		virtual SizeSPX		_preferredSize(int scale = -1) const;
+		virtual SizeSPX		_minSize(int scale = -1) const;
+		virtual SizeSPX		_maxSize(int scale = -1) const;
+
+		inline RectSPX		_contentRect() const { return OO(skin)._contentRect(m_size, m_scale, m_state); }
+		inline RectSPX		_contentRect(const RectSPX& canvas) const { return OO(skin)._contentRect(canvas, m_scale, m_state); }
+		inline SizeSPX		_contentPaddingSize() const { return OO(skin)._contentPaddingSize(m_scale); }
 
 		// Convenient calls to holder
 
 		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
-		inline void			_requestRender( const Rect& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
+		inline void			_requestRender( const RectSPX& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
 		inline void			_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
 		inline void			_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
-		inline void			_requestInView( const Rect& mustHaveArea, const Rect& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
+		inline void			_requestInView( const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
 
 		inline Widget *		_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pSlot ); else return nullptr; }
 		inline Widget *		_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pSlot ); else return nullptr; }
 		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_container(); else return nullptr; }
 
-		inline Rect			_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return Rect(); }
+		inline RectSPX		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return RectSPX(); }
 
 		// To be overloaded by Widget
 
-		virtual void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		virtual void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+		virtual void		_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip );
+		virtual void		_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode );
 
 		Widget *			_clone() const;
 		virtual void		_cloneContent( const Widget * _pOrg );
 
 		virtual void    	_preRender();
-		virtual void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
+		virtual void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window );
 
 		virtual void		_refresh();
-		virtual void		_resize( const Size& size );
+		virtual void		_resize( const SizeSPX& size, int scale = -1 );
 		virtual void		_setState( State state );
 
 		virtual void		_receive( Msg * pMsg );
-		virtual	bool		_alphaTest( const Coord& ofs );
+		virtual	bool		_alphaTest( const CoordSPX& ofs );
 
-		virtual Size		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
+		virtual SizeSPX		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 
 		// Methods for components to access
 
-		Object * 	_object() override;
-		const Object * _object() const override;
+		Object * 		_object() override;
+		const Object *	_object() const override;
 
 		State			_componentState(const GeoComponent* pComponent) const override;
-		Coord			_componentPos( const GeoComponent * pComponent ) const override;
-		Size			_componentSize( const GeoComponent * pComponent ) const override;
-		Rect			_componentGeo( const GeoComponent * pComponent ) const override;
-		Coord			_globalComponentPos( const GeoComponent * pComponent ) const override;
-		Rect			_globalComponentGeo( const GeoComponent * pComponent ) const override;
+		CoordSPX		_componentPos( const GeoComponent * pComponent ) const override;
+		SizeSPX			_componentSize( const GeoComponent * pComponent ) const override;
+		RectSPX			_componentGeo( const GeoComponent * pComponent ) const override;
+		CoordSPX		_globalComponentPos( const GeoComponent * pComponent ) const override;
+		RectSPX			_globalComponentGeo( const GeoComponent * pComponent ) const override;
 
 		void			_componentRequestRender( const GeoComponent * pComponent ) override;
-		void			_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
+		void			_componentRequestRender( const GeoComponent * pComponent, const RectSPX& rect ) override;
 		void			_componentRequestResize( const GeoComponent * pComponent ) override;
 
  		void			_componentRequestFocus( const GeoComponent * pComponent ) override;
 		void			_componentRequestInView( const GeoComponent * pComponent ) override;
-		void			_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave ) override;
+		void			_componentRequestInView( const GeoComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave ) override;
 
 		void			_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
@@ -297,7 +321,9 @@ namespace wg
 		bool			m_bReceivingUpdates;//
 
 		State			m_state;			// Current state of widget.
-		Size			m_size;				// Current size of widget.
+		SizeSPX			m_size;				// Current size of widget.
+		int				m_scale;
+		bool			m_bScaleSet = false;// Set when scale is explicitly specified and not just inherited.
 
 		bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.
 		uint8_t         m_pickCategory;     // Category of drag-n-drop operations. User defined.
@@ -343,6 +369,55 @@ namespace wg
 		return m_id;
 	}
 
+	//____ clearScale() _______________________________________
+	/**
+	 * @brief Clear previously set scale.
+	 * 
+	 * Clear previously set scale. This is equivalent to setScale(0).
+	 * 
+	 * Once cleared, control of the widgets scale factor is returned back to 
+	 * its parent, which in most cases will set the scale itself has.
+	 * 
+	 */
+	void Widget::clearScale()
+	{
+		setScale(0);
+	}
+
+	//____ scale() _______________________________________
+	/**
+	 * @brief Get scale of widget.
+	 *
+	 * Get the scale of the widget as it is, independently of
+	 * if it is specifically set or inherited from parent. 
+	 * 
+	 * The scale value specifies the size of a point in subpixels (1/64th pixel),
+	 * thus is 64 the default scale where one point equals one pixel. A scale
+	 * value of 128 doubles the size of the widget (if allowed by the parent)
+	 * and all content within, including fonts and graphics.
+	 * 
+	 * @return Scale measured in subpixels per point.
+	 */
+
+	int Widget::scale() const
+	{
+		return m_scale;
+	}
+
+	//____ isScaleSet() _______________________________
+	/**
+	 * @brief Check if scale has been explicitly set
+	 * 
+	 * Check wether scale has been explicitly set through setScale() or is controlled by parent.
+	 * 
+	 * @return True if scale is explicitly set.
+	 * 
+	 **/
+
+	bool Widget::isScaleSet() const
+	{
+		return m_bScaleSet;
+	}
 
 
 	//____ pos() __________________________
@@ -356,11 +431,8 @@ namespace wg
 	 */
 	Coord Widget::pos() const
 	{
-		if( m_pHolder )
-			return m_pHolder->_childPos( m_pSlot );
-		return Coord(0,0);
+		Util::spxToPts(_pos(), m_scale);
 	}
-
 
 	//____ size() __________________________
 	/**
@@ -372,7 +444,7 @@ namespace wg
 	 */
 	const Size& Widget::size() const
 	{
-		return m_size;
+		return Util::spxToPts(_size(), m_scale);
 	}
 
 	//____ geo() __________________________
@@ -386,9 +458,7 @@ namespace wg
 	 */
 	Rect Widget::geo() const
 	{
-		if( m_pHolder )
-			return Rect(m_pHolder->_childPos( m_pSlot ), m_size);
-		return Rect(m_size);
+		Util::spxToPts(_geo(), m_scale);
 	}
 
 	//____ globalPos() __________________________
@@ -401,7 +471,7 @@ namespace wg
 	 */
 	Coord Widget::globalPos() const
 	{
-		return m_pHolder ? m_pHolder->_childGlobalPos(m_pSlot) : Coord();
+		return Util::spxToPts(_globalPos(), m_scale);
 	}
 
 	//____ globalGeo() __________________________
@@ -415,7 +485,7 @@ namespace wg
 	 */
 	Rect Widget::globalGeo() const
 	{
-		return  m_pHolder ? Rect(m_pHolder->_childGlobalPos(m_pSlot), m_size) : Rect(m_size);
+		return  Util::spxToPts(_globalGeo(), m_scale);
 	}
 
 	//____ toGlobal() __________________________
@@ -502,6 +572,185 @@ namespace wg
 		return rect - globalPos();
 	}
 
+	//____ matchingHeight() _______________________________________________________
+	/**
+	 * @brief Get the widgets preferred height for the specified width.
+	 *
+	 * Get the widgets preferred height for the specified width.
+	 *
+	 * @param width		Width in points.
+	 *
+	 * This method is used by containers to get the preferred height of a widget for which
+	 * it has already decided the width.
+	 *
+	 * @return The preferred height for the given width.
+	 */
+
+	pts Widget::matchingHeight( pts width ) const
+	{
+		return Util::spxToPts(_matchingHeight( Util::ptsToSpx(width, m_scale) ), m_scale);
+	}
+
+	//____ matchingWidth() _______________________________________________________
+	/**
+	 * @brief Get the widgets preferred width for the specified height.
+	 *
+	 * Get the widgets preferred width for the specified height.
+	 *
+	 * @param height	Height in points.
+	 *
+	 * This method is used by containers to get the preferred width of a widget for which
+	 * it has already decided the height.
+	 *
+	 * @return The preferred width for the given height.
+	 */
+	 
+	pts Widget::matchingWidth( pts height ) const
+	{
+		return Util::spxToPts(_matchingWidth(Util::ptsToSpx(height, m_scale)), m_scale);		// Default is to stick with preferred height no matter what width.
+	}
+
+	//____ preferredSize() ________________________________________________________
+	/**
+	 * @brief Get the widgets preferred size.
+	 *
+	 * Get the widgets preferred size.
+	 *
+	 * Each widget has its own preferred size, which is depending on things such as
+	 * skinning, content and (in the case of containers) size and layout of children.
+	 *
+	 * A container holding a widget will strive to provide the widget its preferred size, given
+	 * the constraints and limitations the container needs to work with. If a container can't
+	 * provide a widget its preferred size, it is likely to decide the closest width or height
+	 * that it can provide and then make a second call to either matchingWidth() or matchingHeight()
+	 * after which it will decide the size of the child.
+	 *
+	 * @return The preferred size of the widget.
+	 */
+
+	Size Widget::preferredSize() const
+	{
+		return Util::spxToPts(_preferredSize(), m_scale);
+	}
+
+	//____ minSize() ______________________________________________________________
+	/**
+	 * @brief Get the widgets recommended minimum size.
+	 *
+	 * Get the widgets recommended minimum size.
+	 *
+	 * Each widget has its own minimum size, which is depending on things such as
+	 * skinning, content and (in the case of containers) size and layout of children.
+	 *
+	 * The minimum size is only a hint for the widgets parent, which should strive to not
+	 * make a child smaller than its minimum size, but is allowed to set the child to
+	 * any size it decides, including 0.0.
+	 *
+	 * @return The minimum size of the widget.
+	 */
+
+	Size Widget::minSize() const
+	{
+		return Util::spxToPts(_minSize(), m_scale);
+	}
+
+	//____ maxSize() ______________________________________________________________
+	/**
+	 * @brief Get the widgets recommended maximum size.
+	 *
+	 * Get the widgets recommended maximum size.
+	 *
+	 * Each widget has its own maximum size, which is depending on things such as
+	 * skinning, content and (in the case of containers) size and layout of children.
+	 *
+	 * The maximum size is only a hint for the widgets parent, which should strive to not
+	 * make a child larger than its maximum size, but is allowed to set the child to
+	 * any reasonable size it decides.
+	 *
+	 * @return The maximum size of the widget.
+	 */
+
+	//____ maxSize() ______________________________________________________________
+
+	Size Widget::maxSize() const
+	{
+		return Util::spxToPts(_maxSize(), m_scale);
+	}
+
+	//____ _fixScale() _________________________
+
+	int Widget::_fixScale(int scale) const
+	{
+		// if scale is -1, we replace it with content of
+		// m_scale.
+
+		int mask = scale >> 30;	// Becomes all ones or all zeroes.
+		return (scale & ~mask) | (m_scale & mask);
+	}
+
+
+	//____ _pos() __________________________
+
+	CoordSPX Widget::_pos() const
+	{
+		if (m_pHolder)
+			return m_pHolder->_childPos(m_pSlot);
+		return CoordSPX(0, 0);
+	}
+
+	//____ size() __________________________
+
+	const SizeSPX& Widget::_size() const
+	{
+		return m_size;
+	}
+
+	//____ _geo() __________________________
+
+	RectSPX Widget::_geo() const
+	{
+		if (m_pHolder)
+			return RectSPX(m_pHolder->_childPos(m_pSlot), m_size);
+		return RectSPX(m_size);
+	}
+
+	//____ _globalPos() __________________________
+
+	CoordSPX Widget::_globalPos() const
+	{
+		return m_pHolder ? m_pHolder->_childGlobalPos(m_pSlot) : CoordSPX();
+	}
+
+	//____ _globalGeo() __________________________
+
+	RectSPX Widget::_globalGeo() const
+	{
+		return  m_pHolder ? RectSPX(m_pHolder->_childGlobalPos(m_pSlot), m_size) : RectSPX(m_size);
+	}
+
+	//____ _toGlobal() __________________________
+
+	CoordSPX Widget::_toGlobal(const CoordSPX& coord) const
+	{
+		return _globalPos() + coord;
+	}
+
+	RectSPX Widget::_toGlobal(const RectSPX& rect) const
+	{
+		return rect + _globalPos();
+	}
+
+	//____ _toLocal() ____________________________________________________________
+
+	CoordSPX Widget::_toLocal(const CoordSPX& coord) const
+	{
+		return coord - _globalPos();
+	}
+
+	RectSPX Widget::_toLocal(const RectSPX& rect) const
+	{
+		return rect - _globalPos();
+	}
 
 	//____ state() ____________________________________________________________
 	/**

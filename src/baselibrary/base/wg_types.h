@@ -70,6 +70,10 @@ namespace wg
 	#define IS_LITTLE_ENDIAN 0
 	#endif
 
+	typedef	float	pts;
+	typedef int		spx;
+
+
 	template<typename T> inline T min(const T &a, const T &b) { return a < b ? a : b; }
 	template<typename T> inline T min(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
 	template<typename T> inline T max(const T &a, const T &b) { return a > b ? a : b; }

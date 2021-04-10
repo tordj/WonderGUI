@@ -100,6 +100,13 @@ namespace wg
 		return _childPos(pSlot) + globalPos();
 	}
 
+	//____ _childDefaultScale() _____________________________________________________
+
+	int Container::_childDefaultScale() const
+	{
+		return m_scale;
+	}
+
 	//____ _isChildVisible() ________________________________________________________
 
 	bool Container::_isChildVisible( const StaticSlot * pSlot ) const

@@ -81,7 +81,7 @@ namespace wg
 		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );
         
         if( flags & SurfaceFlag::Scale200 )
-            m_qpixPerPoint = 8;            // TODO: Add error handling if size not divisable.
+            m_scale = 128;
     }
 
 	//____ ~Surface() ____________________________________________________________
@@ -143,38 +143,15 @@ namespace wg
 		return true;
 	}
 
-	//____ width() ________________________________________________________________
-	/**
-	 * Get the width of the surface.
-	 *
-	 * @return The width of the surface, measured in pixels.
-	 **/
-	int Surface::width() const
-	{
-		return size().w;
-	}
-
-	//____ height() _______________________________________________________________
-	/**
-	 * Get the height of the surface.
-	 *
-	 * @return The height of the surface, measured in pixels.
-	 **/
-	int Surface::height() const
-	{
-		return size().h;
-	}
-
 	//____ setScale() _______________________________________________________________
 
-	bool Surface::setScale( float scale )
+	bool Surface::setScale( int scale )
 	{
-		//TODO: Error check, only allow certain factors.
+		//TODO: Error check, only allow certain values.
 
-		m_qpixPerPoint = (int)(scale*4);
+		m_scale = scale;
 		return true;
 	}
-
 
 	//____ colorToPixel() ____________________________________________________________
 	/**
@@ -304,7 +281,7 @@ namespace wg
 
 	bool Surface::fill( HiColor col )
 	{
-		return fill( col, RectI(0,0,size()) );
+		return fill( col, RectI(0,0,pixelSize()) );
 	}
 
 	/**
@@ -412,7 +389,7 @@ namespace wg
 		if( !pSrcSurface )
 			return false;
 
-		return copyFrom( pSrcSurface, RectI(0,0,pSrcSurface->size()), dst );
+		return copyFrom( pSrcSurface, RectI(0,0,pSrcSurface->pixelSize()), dst );
 	}
 
 	/**

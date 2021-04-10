@@ -38,9 +38,9 @@ namespace wg
 
 		Patches();
 		Patches( int startCapacity );
-		Patches( Rect * pArray, int capacity );
+		Patches( RectSPX * pArray, int capacity );
 		Patches(const Patches& source);
-		Patches(const Patches& source, const Rect& trim);
+		Patches(const Patches& source, const RectSPX& trim);
 		~Patches();
 
 		//.____ Control ________________________________________________________
@@ -49,33 +49,33 @@ namespace wg
 //		bool			setArray( Rect * pArray, int capacity );
 		inline void		clear() { m_size = 0; }
 
-		inline void		add( const Rect& rect ) { if( rect.w.qpix > 0 && rect.h.qpix > 0 ) _add( rect, 0 ); }						// Adds the area
+		inline void		add( const RectSPX& rect ) { if( rect.w > 0 && rect.h > 0 ) _add( rect, 0 ); }						// Adds the area
 		void			add( const Patches * pSource, int ofs = 0, int len = INT_MAX );
 
-		void			sub( const Rect& rect );											// Subtracts the area
+		void			sub( const RectSPX& rect );											// Subtracts the area
 		void			sub( const Patches * pSource, int ofs = 0, int len = INT_MAX );
 
-		inline void		push( const Rect& rect );											// Adds the rect (no optimizations, overlap may occur).
+		inline void		push( const RectSPX& rect );											// Adds the rect (no optimizations, overlap may occur).
 		int				push( const Patches * pSource, int ofs = 0, int len = INT_MAX );
-		inline Rect	pop();																// Pops last rect from the patches.
+		inline RectSPX	pop();																// Pops last rect from the patches.
 
-		void			trimPush(const Patches& source, const Rect& trim);					// Adds the rects (no optimizations, overlap may occur).
+		void			trimPush(const Patches& source, const RectSPX& trim);					// Adds the rects (no optimizations, overlap may occur).
 
 		void			remove( int ofs );													// Deletes specific rect from the patches.
 		int				remove( int ofs, int len );											// Deletes range of rects from the patches.
 
 		//.____ Misc __________________________________________________________
 
-		void			clip( const Rect& clip );
-		Rect			getUnion() const;
+		void			clip( const RectSPX& clip );
+		RectSPX			getUnion() const;
 
 		int				repair();															// Fixes any overlap that might have resulted from push()
 		int				optimize();															// Combines small patches into larger ones where possible
 
 		//.____ Content ________________________________________________________
 
-		const Rect *	begin() const { return m_pFirst; }
-		const Rect *	end() const { return m_pFirst + m_size; }
+		const RectSPX *	begin() const { return m_pFirst; }
+		const RectSPX *	end() const { return m_pFirst + m_size; }
 		int				size() const { return m_size; }
 		int				capacity() const { return m_capacity; }
 		bool			isEmpty() const { return (m_size == 0); }
@@ -83,10 +83,10 @@ namespace wg
 	private:
 		const static int	c_defaultCapacity = 64;
 
-		void		_add( const Rect& rect, int startOffset );
+		void		_add( const RectSPX& rect, int startOffset );
 		void		_expandMem( int spaceNeeded );
 
-		Rect * 		m_pFirst;
+		RectSPX * 	m_pFirst;
 		int			m_size;
 		int			m_capacity;
 		bool		m_bOwnsArray;
@@ -94,19 +94,19 @@ namespace wg
 
 
 
-	void Patches::push( const Rect& rect )
+	void Patches::push( const RectSPX& rect )
 	{
 		if(m_size==m_capacity)
 			_expandMem(1);
 		m_pFirst[m_size++]=rect;
 	}
 
-	Rect Patches::pop()
+	RectSPX Patches::pop()
 	{
 		if( m_size > 0 )
 			return m_pFirst[--m_size];
 		else
-			return Rect();
+			return RectSPX();
 	}
 
 

@@ -54,16 +54,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual Size	minSize() const;
-		virtual Size	preferredSize() const;
-
 		virtual void	setContentPadding(const BorderI& padding);
 		virtual Border	contentPadding(State state) const;
-
-		virtual Size	contentPaddingSize() const;
-		virtual Size	sizeForContent(const Size& contentSize) const;
-		virtual Coord	contentOfs(State state) const;
-		virtual Rect	contentRect(const Rect& canvas, State state) const;
 
 		//.____ Rendering ______________________________________________________
 
@@ -72,29 +64,46 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool			isOpaque() const { return m_bOpaque; }
-		virtual bool	isOpaque( State state ) const;
-		virtual bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
+		inline bool		isOpaque() const { return m_bOpaque; }
+		inline bool		isOpaque(State state) const { return _isOpaque(state); };
 
-		virtual bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-									float value = 1.f, float value2 = -1.f ) const = 0;
+		//.____ Internal ________________________________________________________
 
-		virtual void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-								float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const = 0;
+		virtual SizeSPX		_minSize(int scale) const;
+		virtual SizeSPX		_preferredSize(int scale) const;
 
-		inline bool		ignoresValue() const { return m_bIgnoresValue; }
-		inline bool		ignoresState() const { return m_bIgnoresState; }
+		virtual SizeSPX		_contentPaddingSize(int scale) const;
+		virtual SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const;
+		virtual CoordSPX	_contentOfs(int scale, State state) const;
+		virtual RectSPX		_contentRect(const RectSPX& canvas, int scale, State state ) const;
 
-		inline bool		isContentShifting() const { return m_bContentShifting; }
+		bool				_isOpaque() const { return m_bOpaque; }
+		virtual bool		_isOpaque(State state) const;
+		virtual bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const;
 
-		virtual Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
-									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0, 
+		virtual bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
+									float value = 1.f, float value2 = -1.f) const = 0;
+
+		virtual void 		_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
+									float value = 1.f, float value2 = -1.f, int animPos = 0, 
+									float* pStateFractions = nullptr) const = 0;
+
+		virtual RectSPX		_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, 
+									float newValue = 1.f, float oldValue = 1.f, 
+									float newValue2 = -1.f, float oldValue2 = -1.f, 
+									int newAnimPos = 0, int oldAnimPos = 0,
 									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const;
 
-		virtual int		animationLength(State state) const;
+		inline bool			_ignoresValue() const { return m_bIgnoresValue; }
+		inline bool			_ignoresState() const { return m_bIgnoresState; }
 
-		virtual Bitmask<uint8_t>transitioningStates() const;
-		virtual const int*		transitionTimes() const;
+		inline bool			_isContentShifting() const { return m_bContentShifting; }
+
+
+		virtual int			_animationLength(State state) const;
+
+		virtual Bitmask<uint8_t> _transitioningStates() const;
+		virtual const int*	_transitionTimes() const;
 
 	protected:
 		Skin() {};
