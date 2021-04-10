@@ -65,7 +65,7 @@ namespace wg
 
 		static RootPanel_p	create();
 		static RootPanel_p	create(Surface* pCanvasSurface, GfxDevice* pDevice = nullptr);
-		static RootPanel_p	create(CanvasRef canvasRef, GfxDevice* pDevice = nullptr);
+		static RootPanel_p	create(CanvasRef canvasRef, int scale = 64, GfxDevice* pDevice = nullptr);
 
 		//.____ Components ____________________________________
 
@@ -78,6 +78,11 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Geometry _________________________________________________
+
+		bool				setScale(int scale);
+		inline void			clearScale();
+		inline int			scale() const;
+		inline bool			isScaleSet() const;
 
 		bool				setGeo( const Rect& geo );
 		Rect				geo() const;
@@ -115,28 +120,28 @@ namespace wg
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 
 		bool				setCanvas(Surface* pCanvasSurface);
-		bool				setCanvas(CanvasRef canvasRef);
+		bool				setCanvas(CanvasRef canvasRef, int scale = 64);
 		inline const CanvasInfo& canvasInfo() const { return m_canvas; }
 		inline SizeI		canvasSize() const { return m_canvas.size; }
 
 		void				setCanvasLayers( CanvasLayers * pLayers );
 		CanvasLayers_p		canvasLayers() const { return m_pCanvasLayers; }
 
-		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget( ofs-m_geo.pos(),mode)); }
+		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget( Util::ptsToSpx(ofs,m_scale)-m_geo.pos(),mode)); }
 
 		inline int			nbDirtyRects() const { return m_dirtyPatches.size(); }
-		inline const Rect*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? nullptr : reinterpret_cast<const Rect*>(m_dirtyPatches.begin()); }
+		inline const RectSPX*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? nullptr : m_dirtyPatches.begin(); }
 
 		inline int			nbUpdatedRects() const { return m_updatedPatches.size(); }
-		inline const Rect*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? nullptr : reinterpret_cast<const Rect*>(m_updatedPatches.begin()); }
+		inline const RectSPX*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? nullptr : m_updatedPatches.begin(); }
 
-		inline void			addDirtyPatch( const Rect& rect ) { m_dirtyPatches.add( rect ); }
+		inline void			addDirtyPatch( const RectSPX& rect ) { m_dirtyPatches.add( rect ); }
 
 
 	protected:
 		RootPanel();
 		RootPanel(Surface* pCanvasSurface, GfxDevice* pGfxDevice );
-		RootPanel(CanvasRef canvasRef, GfxDevice* pGfxDevice);
+		RootPanel(CanvasRef canvasRef, int scale, GfxDevice* pGfxDevice);
 		~RootPanel();
 
 		// SlotHolder methods
@@ -148,21 +153,22 @@ namespace wg
 		Object *		_object() override;
 		const Object *	_object() const override;
 
-		Coord			_childPos( const StaticSlot * pSlot ) const override;
-		Coord			_childGlobalPos( const StaticSlot * pSlot ) const override;
+		CoordSPX		_childPos( const StaticSlot * pSlot ) const override;
+		CoordSPX		_childGlobalPos( const StaticSlot * pSlot ) const override;
+		int				_childDefaultScale() const override;
 
 		bool			_isChildVisible( const StaticSlot * pSlot ) const override;
-		Rect			_childWindowSection( const StaticSlot * pSlot ) const override;
+		RectSPX			_childWindowSection( const StaticSlot * pSlot ) const override;
 
 		void			_childRequestRender( StaticSlot * pSlot ) override;
-		void			_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
+		void			_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;
 		void			_childRequestResize( StaticSlot * pSlot ) override;
 
 		bool			_childRequestFocus( StaticSlot * pSlot, Widget * pWidget ) override;
 		bool			_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget ) override;
 
 		void			_childRequestInView( StaticSlot * pSlot ) override;
-		void			_childRequestInView( StaticSlot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea ) override;
+		void			_childRequestInView( StaticSlot * pSlot, const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea ) override;
 
 		Widget *		_prevChild( const StaticSlot * pSlot ) const override;
 		Widget *		_nextChild( const StaticSlot * pSlot ) const override;
@@ -173,8 +179,8 @@ namespace wg
 		void			_selectSlots(StaticSlot * pSlot, int nb) override;
 		void			_unselectSlots(StaticSlot * pSlot, int nb) override;
 
-		void			_repadSlots(StaticSlot * pSlot, int nb, Border padding) override;
-		void			_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding) override;
+		void			_repadSlots(StaticSlot * pSlot, int nb, BorderSPX padding) override;
+		void			_repadSlots(StaticSlot * pSlot, int nb, const BorderSPX * pPadding) override;
 
 		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
@@ -186,19 +192,19 @@ namespace wg
 		// CSkinSlot::Holder methods
 
 		State			_componentState(const GeoComponent* pComponent) const override;
-		Coord			_componentPos(const GeoComponent* pComponent) const override;
-		Size			_componentSize(const GeoComponent* pComponent) const override;
-		Rect			_componentGeo(const GeoComponent* pComponent) const override;
-		Coord			_globalComponentPos(const GeoComponent* pComponent) const override;
-		Rect			_globalComponentGeo(const GeoComponent* pComponent) const override;
+		CoordSPX		_componentPos(const GeoComponent* pComponent) const override;
+		SizeSPX			_componentSize(const GeoComponent* pComponent) const override;
+		RectSPX			_componentGeo(const GeoComponent* pComponent) const override;
+		CoordSPX		_globalComponentPos(const GeoComponent* pComponent) const override;
+		RectSPX			_globalComponentGeo(const GeoComponent* pComponent) const override;
 
 		void			_componentRequestRender(const GeoComponent* pComponent) override;
-		void			_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
+		void			_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect) override;
 		void			_componentRequestResize(const GeoComponent* pComponent) override;
 
 		void			_componentRequestFocus(const GeoComponent* pComponent) override;
 		void			_componentRequestInView(const GeoComponent* pComponent) override;
-		void			_componentRequestInView(const GeoComponent* pComponent, const Rect& mustHave, const Rect& niceToHave) override;
+		void			_componentRequestInView(const GeoComponent* pComponent, const RectSPX& mustHave, const RectSPX& niceToHave) override;
 
 		void			_receiveComponentNotif(GeoComponent* pComponent, ComponentNotif notification, int value, void* pData) override;
 
@@ -211,7 +217,7 @@ namespace wg
 
 		inline void         _addPreRenderCall(Widget * pWidget) { m_preRenderCalls.push_back(pWidget); }
 
-		Widget *			_findWidget( const Coord& ofs, SearchMode mode );
+		Widget *			_findWidget( const CoordSPX& ofs, SearchMode mode );
 
 //		void				_setFocusedChild( Widget * pWidget );
 		Widget *			_focusedChild() const;
@@ -227,10 +233,16 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 
 		GfxDevice_p			m_pGfxDevice;
-		CanvasInfo			m_canvas;
+		CanvasInfo			m_canvas;			// Size of canvas in subpixels, when m_pCanvas is null.
+		int					m_canvasScale;		// Scale of canvas, needed when m_pCanvas is null.
 		CanvasLayers_p		m_pCanvasLayers;
-		Rect				m_geo;
+
+		RectSPX				m_geo;
 		bool				m_bHasGeo;
+
+		int					m_scale;
+		bool				m_bScaleSet = false;// Set when scale is explicitly specified and not taken from canvas.
+
 		bool				m_bVisible;
 
 		Widget_wp			m_pFocusedChild;

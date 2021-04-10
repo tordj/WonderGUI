@@ -319,16 +319,20 @@ namespace wg
 
 	bool Widget::markTest(const Coord& ofs)
 	{
+		return _markTest(Util::ptsToSpx(ofs, m_scale));
+	}
+
+	bool Widget::_markTest(const CoordSPX& ofs)
+	{
 		if (m_markOpacity >= 256 || ofs.x < 0 || ofs.y < 0 || ofs.x >= m_size.w || ofs.y >= m_size.h)
 			return false;
 
 		if (m_markOpacity <= 0)
 			return true;
 
-		CoordSPX translatedOfs = Util::ptsToSpx(ofs,m_scale);
-
-		return _alphaTest(translatedOfs);
+		return _alphaTest(ofs);
 	}
+
 
 	//____ clone() _________________________________________________________
 

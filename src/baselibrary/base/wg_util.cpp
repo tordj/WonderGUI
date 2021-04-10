@@ -836,22 +836,22 @@ int Util::gcd(int a, int b)
 
 	//____ patchesToClipList() ____________________________________________________________________
 
-	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const Rect& clip, const Patches& patches )
+	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const RectSPX& clip, const Patches& patches )
 	{
 		int nOldRects 				= pDevice->clipListSize();
-		const RectI * pOldRects 	= pDevice->clipList();
+		const RectSPX * pOldRects 	= pDevice->clipList();
 
 		int nRects = patches.size();
-		const Rect * pRects = patches.begin();
+		const RectSPX * pRects = patches.begin();
 
-		int allocSize = nRects * sizeof(RectI);
+		int allocSize = nRects * sizeof(RectSPX);
 
-		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
+		RectSPX * pNewRects = (RectSPX*) Base::memStackAlloc(allocSize);
 		int nNewRects = 0;
 
 		for( int i = 0 ; i < nRects ; i++ )
 		{
-			pNewRects[nNewRects] = Rect(pRects[i], clip).px();
+			pNewRects[nNewRects] = RectSPX(pRects[i], clip);
 			if( !pNewRects[nNewRects].isEmpty() )
 				nNewRects++;
 		}
@@ -866,14 +866,14 @@ int Util::gcd(int a, int b)
 		const RectI * pOldRects 	= pDevice->clipList();
 
 		int nRects = patches.size();
-		const Rect * pRects = patches.begin();
+		const RectSPX * pRects = patches.begin();
 
-		int allocSize = nRects * sizeof(RectI);
+		int allocSize = nRects * sizeof(RectSPX);
 
-		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
+		RectSPX * pNewRects = (RectSPX*) Base::memStackAlloc(allocSize);
 
 		for( int i = 0 ; i < nRects ; i++ )
-			pNewRects[i] = pRects[i].px();
+			pNewRects[i] = pRects[i];
 
 		pDevice->setClipList(nRects, pNewRects);
 		return { nOldRects, pOldRects, allocSize };
@@ -881,18 +881,18 @@ int Util::gcd(int a, int b)
 
 	//____ limitClipList() ____________________________________________________________________
 
-	Util::ClipPopData Util::limitClipList( GfxDevice * pDevice, const Rect& _clip )
+	Util::ClipPopData Util::limitClipList( GfxDevice * pDevice, const RectSPX& _clip )
 	{
-		RectI clip = _clip.px();
+		RectSPX clip = _clip;
 
 		if( clip.contains(pDevice->clipBounds()))
 			return { 0, nullptr, 0 };
 
 		int nRects 				= pDevice->clipListSize();
-		const RectI * pRects 	= pDevice->clipList();
-		int allocSize = nRects * sizeof(RectI);
+		const RectSPX * pRects 	= pDevice->clipList();
+		int allocSize = nRects * sizeof(RectSPX);
 
-		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
+		RectSPX * pNewRects = (RectSPX*) Base::memStackAlloc(allocSize);
 		int nNewRects = 0;
 
 		for( int i = 0 ; i < nRects ; i++ )

@@ -93,6 +93,40 @@ namespace wg
 				spx(rect.w * scale), spx(rect.h * scale));
 		}
 
+		inline spx align(spx x)
+		{
+			return x + 32 & 0xFFFFFFC0;
+		}
+
+		inline CoordSPX align(const CoordSPX& coord)
+		{
+			return { (coord.x + 32) & 0xFFFFFFC0, (coord.y + 32) & 0xFFFFFFC0 };
+		}
+
+		inline SizeSPX align(const SizeSPX& size)
+		{
+			return { (size.w + 32) & 0xFFFFFFC0, (size.w + 32) & 0xFFFFFFC0 };
+		}
+
+		inline BorderSPX align(const BorderSPX& border)
+		{
+			return { (border.top + 32) & 0xFFFFFFC0, (border.right + 32) & 0xFFFFFFC0,
+					 (border.bottom + 32) & 0xFFFFFFC0, (border.left + 32) & 0xFFFFFFC0 };
+		}
+
+		inline RectSPX align(const RectSPX& rect)
+		{
+			RectSPX out;
+
+			out.x = (rect.x + 32) & 0xFFFFFFC0;
+			out.y = (rect.y + 32) & 0xFFFFFFC0;
+
+			out.w = ((rect.x + rect.w + 32) & 0xFFFFFFC0) - out.x;
+			out.h = ((rect.y + rect.h + 32) & 0xFFFFFFC0) - out.y;
+
+			return out;
+		}
+
 
 		double	squareRoot(double a);
 		double	powerOfTen(int num);
@@ -140,17 +174,17 @@ namespace wg
 		struct ClipPopData				/** @private */
 		{
 			ClipPopData() : bInitialized(false) {}
-			ClipPopData(int _nRects, const RectI * _pRects, int _reservedMem ) : nRects(_nRects), pRects(_pRects), reservedMem(_reservedMem), bInitialized(true) {}
+			ClipPopData(int _nRects, const RectSPX * _pRects, int _reservedMem ) : nRects(_nRects), pRects(_pRects), reservedMem(_reservedMem), bInitialized(true) {}
 
 			int nRects;
-			const RectI * pRects;
+			const RectSPX * pRects;
 			int reservedMem;
 			bool bInitialized;
 		};
 
-		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Rect& clip, const Patches& patches );
+		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectSPX& clip, const Patches& patches );
 		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Patches& patches );
-		ClipPopData limitClipList( GfxDevice * pDevice, const Rect& clip );
+		ClipPopData limitClipList( GfxDevice * pDevice, const RectSPX& clip );
 		ClipPopData pushClipList(GfxDevice * pDevice);
 		void 		popClipList( GfxDevice * pDevice, const ClipPopData& popData );
 

@@ -109,7 +109,7 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 		virtual bool		setScale(int scale);
-		inline bool			clearScale();
+		inline void			clearScale();
 		inline int			scale() const;
 		inline bool			isScaleSet() const;
 
@@ -272,6 +272,7 @@ namespace wg
 		virtual void		_setState( State state );
 
 		virtual void		_receive( Msg * pMsg );
+		virtual	bool		_markTest(const CoordSPX& ofs);
 		virtual	bool		_alphaTest( const CoordSPX& ofs );
 
 		virtual SizeSPX		_windowPadding() const;	// Padding of window before we get to (scrollable) content.

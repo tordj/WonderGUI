@@ -75,7 +75,7 @@ namespace wg
 
 	//____ _descendantPos() _____________________________________________________
 
-	bool Container::_descendantPos( Widget * pDescendant, Coord& pos )
+	bool Container::_descendantPos( Widget * pDescendant, CoordSPX& pos )
 	{
 		pos.clear();
 
@@ -95,9 +95,9 @@ namespace wg
 
 	//____ _childGlobalPos() _______________________________________________________
 
-	Coord Container::_childGlobalPos( const StaticSlot * pSlot ) const
+	CoordSPX Container::_childGlobalPos( const StaticSlot * pSlot ) const
 	{
-		return _childPos(pSlot) + globalPos();
+		return _childPos(pSlot) + _globalPos();
 	}
 
 	//____ _childDefaultScale() _____________________________________________________
@@ -116,9 +116,9 @@ namespace wg
 
 	//____ _childWindowSection() ____________________________________________________
 
-	Rect Container::_childWindowSection( const StaticSlot * pSlot ) const
+	RectSPX Container::_childWindowSection( const StaticSlot * pSlot ) const
 	{
-		return Rect( 0,0, pSlot->size() );
+		return RectSPX( 0,0, pSlot->_widget()->_size() );
 	}
 
 	//____ _container() _____________________________________________________________
@@ -167,16 +167,16 @@ namespace wg
 	{
 		if( m_pHolder )
 		{
-			Rect area( _childPos( pSlot ), pSlot->size() );
+			RectSPX area( _childPos( pSlot ), pSlot->_widget()->_size() );
 			m_pHolder->_childRequestInView( m_pSlot, area, area );
 		}
 	}
 
-	void Container::_childRequestInView(StaticSlot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea )
+	void Container::_childRequestInView(StaticSlot * pSlot, const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea )
 	{
 		if( m_pHolder )
 		{
-			Coord pos( _childPos( pSlot ) );
+			CoordSPX pos( _childPos( pSlot ) );
 			m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
 		}
 	}
@@ -197,12 +197,12 @@ namespace wg
 
 	//____ _repadSlots() ______________________________________________________
 
-	void Container::_repadSlots(StaticSlot * pSlot, int nb, Border padding)
+	void Container::_repadSlots(StaticSlot * pSlot, int nb, BorderSPX padding)
 	{
 		return;				// By default we don't support padding
 	}
 
-	void Container::_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding)
+	void Container::_repadSlots(StaticSlot * pSlot, int nb, const BorderSPX * pPadding)
 	{
 		return;				// By default we don't support padding
 	}
@@ -251,7 +251,7 @@ namespace wg
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget * Container::_findWidget( const Coord& ofs, SearchMode mode )
+	Widget * Container::_findWidget( const CoordSPX& ofs, SearchMode mode )
 	{
 		SlotWithGeo	child;
 		_firstSlotWithGeo(child);
@@ -268,7 +268,7 @@ namespace wg
 					if (pRes)
 						return pRes;
 				}
-				else if( mode == SearchMode::Geometry || child.pSlot->_widget()->markTest( ofs - child.geo.pos() ) )
+				else if( mode == SearchMode::Geometry || child.pSlot->_widget()->_markTest( ofs - child.geo.pos() ) )
 					return pWidget;
 			}
 			_nextSlotWithGeo( child );
@@ -276,7 +276,7 @@ namespace wg
 
 		// Check against ourselves
 
-		if( mode == SearchMode::Geometry || markTest(ofs) )
+		if( mode == SearchMode::Geometry || _markTest(ofs) )
 			return this;
 
 		return nullptr;
@@ -344,22 +344,22 @@ namespace wg
 	{
 	public:
 		WidgetRenderContext() : pWidget(0) {}
-		WidgetRenderContext( Widget * pWidget, const Rect& geo ) : pWidget(pWidget), geo(geo) {}
+		WidgetRenderContext( Widget * pWidget, const RectSPX& geo ) : pWidget(pWidget), geo(geo) {}
 
 		Widget *	pWidget;
-		Rect		geo;
+		RectSPX		geo;
 		ClipPopData clipPop;
 	};
 
-	void Container::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void Container::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		// Render container itself
 
-		OO(skin)._render(pDevice, _canvas, m_state );
+		OO(skin)._render(pDevice, _canvas, m_scale, m_state );
 
 		// Render children
 
-		Rect	dirtBounds = Rect::fromPX( pDevice->clipBounds() );
+		RectSPX	dirtBounds = pDevice->clipBounds();
 
 		if( m_bSiblingsOverlap )
 		{
@@ -373,7 +373,7 @@ namespace wg
 			_firstSlotWithGeo( child );
 			while(child.pSlot)
 			{
-				Rect geo = child.geo + _canvas.pos();
+				RectSPX geo = child.geo + _canvas.pos();
 
 				if( geo.intersectsWith( dirtBounds ) )
 					renderList.push_back( WidgetRenderContext(OO(child.pSlot)->_widget(), geo ) );
@@ -388,7 +388,7 @@ namespace wg
 			Patches patches( nClipRects );
 
 			for( int i = 0 ; i < nClipRects ; i++ )
-				patches.push(Rect::fromPX(pClipRects[i]));
+				patches.push(pClipRects[i]);
 
 			// Go through WidgetRenderContexts, push and mask dirt
 
@@ -419,7 +419,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				Rect canvas = child.geo + _canvas.pos();
+				RectSPX canvas = child.geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
 					ClipPopData popData = limitClipList(pDevice, canvas );
@@ -447,7 +447,7 @@ namespace wg
 
 	//____ _collectPatches() _______________________________________________________
 
-	void Container::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void Container::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
 	{
 		if( skin.isEmpty() )
 		{
@@ -461,16 +461,16 @@ namespace wg
 			}
 		}
 		else
-			container.add( Rect( geo, clip ) );
+			container.add( RectSPX( geo, clip ) );
 	}
 
 	//____ _maskPatches() __________________________________________________________
 
-	void Container::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void Container::_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-			patches.sub( Rect(geo,clip) );
+			patches.sub( RectSPX(geo,clip) );
 		else
 		{
 			SlotWithGeo child;
