@@ -53,9 +53,9 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		inline Coord	pos() const { return m_pHolder->_childPos(this); }
-		inline Size		size() const { return m_pWidget->m_size; }
-		inline Rect		geo() const { return Rect(m_pHolder->_childPos(this), m_pWidget->m_size); }
+		inline Coord	pos() const { return Util::spxToPts(m_pHolder->_childPos(this),m_pHolder->_childDefaultScale()); }
+		inline Size		size() const { return Util::spxToPts(m_pWidget->m_size,m_pHolder->_childDefaultScale()); }
+		inline Rect		geo() const { return Util::spxToPts(RectSPX(m_pHolder->_childPos(this), m_pWidget->m_size), m_pHolder->_childDefaultScale()); }
 
 		//.____ Operators __________________________________________
 
@@ -146,7 +146,7 @@ namespace wg
 		inline SlotHolder * _holder() { return m_pHolder; }
 		inline const SlotHolder * _holder() const { return m_pHolder; }
 
-		inline void		_setSize( Size size ) const { m_pWidget->_resize(size); }
+		inline void		_setSize( SizeSPX size, int scale = -1 ) const { m_pWidget->_resize(size, scale); }
 
 		Widget *		m_pWidget = nullptr;
 		SlotHolder *	m_pHolder;

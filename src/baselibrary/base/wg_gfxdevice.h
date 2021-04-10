@@ -288,7 +288,7 @@ namespace wg
 
 	bool GfxDevice::beginCanvasUpdate(Surface* pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
 	{
-		return _beginCanvasUpdate(pCanvas->size(), pCanvas, nUpdateRects, pUpdateRects, pLayers, startLayer);
+		return _beginCanvasUpdate(pCanvas->pixelSize(), pCanvas, nUpdateRects, pUpdateRects, pLayers, startLayer);
 	}
 
 

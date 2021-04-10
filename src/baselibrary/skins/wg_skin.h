@@ -54,8 +54,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual void	setContentPadding(const BorderI& padding);
-		virtual Border	contentPadding(State state) const;
+		virtual void	setContentPadding(const Border& padding);
+		virtual Border	contentPadding() const;
 
 		//.____ Rendering ______________________________________________________
 
@@ -72,6 +72,7 @@ namespace wg
 		virtual SizeSPX		_minSize(int scale) const;
 		virtual SizeSPX		_preferredSize(int scale) const;
 
+		virtual BorderSPX	_contentPadding(int scale, State state) const;
 		virtual SizeSPX		_contentPaddingSize(int scale) const;
 		virtual SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const;
 		virtual CoordSPX	_contentOfs(int scale, State state) const;
@@ -114,7 +115,7 @@ namespace wg
 		virtual void	_incUseCount() { m_useCount++; }
 		virtual void	_decUseCount() { m_useCount--; }
 
-		BorderI			m_contentPadding;					// Unit: Points
+		Border			m_contentPadding;
 		bool			m_bContentShifting = false;
 		bool			m_bIgnoresValue = true;
 		bool			m_bIgnoresState = true;

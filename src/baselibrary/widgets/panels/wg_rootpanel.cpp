@@ -27,6 +27,7 @@
 #include <wg_inputhandler.h>
 #include <wg_util.h>
 #include <wg_internal.h>
+#include <wg_context.h>
 
 #include <new>
 
@@ -59,9 +60,9 @@ namespace wg
 		return RootPanel_p(new RootPanel(pCanvas, pDevice)); 
 	}
 
-	RootPanel_p	RootPanel::create( const SizeI& pixelSize, GfxDevice* pDevice )
+	RootPanel_p	RootPanel::create( const SizeI& pixelSize, int scale, GfxDevice* pDevice )
 	{ 
-		return RootPanel_p(new RootPanel(pixelSize, pDevice)); 
+		return RootPanel_p(new RootPanel(pixelSize, scale, pDevice)); 
 	}
 
 
@@ -71,6 +72,8 @@ namespace wg
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
+		m_bScaleSet = false;
+		m_canvasScale = 64;
 
 		m_bDebugMode = false;
 
@@ -82,16 +85,18 @@ namespace wg
 
 	RootPanel::RootPanel(Surface* pCanvas, GfxDevice * pGfxDevice ) : RootPanel()
 	{
-		m_geo = pCanvas->size();
-		m_canvasSize = pCanvas->size();
+		m_geo = pCanvas->pixelSize()*64;
+		m_canvasSize = pCanvas->pixelSize()*64;
+		m_canvasScale = pCanvas->scale();
 		m_pGfxDevice = pGfxDevice;
 		m_pCanvas = pCanvas;
 	}
 
-	RootPanel::RootPanel(const SizeI& pixelSize, GfxDevice* pGfxDevice) : RootPanel()
+	RootPanel::RootPanel(const SizeI& pixelSize, int scale, GfxDevice* pGfxDevice) : RootPanel()
 	{
-		m_geo = pixelSize;
-		m_canvasSize = pixelSize;
+		m_geo = pixelSize*64;
+		m_canvasSize = pixelSize*64;
+		m_canvasScale = scale;
 		m_pGfxDevice = pGfxDevice;
 		m_pCanvas = nullptr;
 	}
@@ -116,7 +121,7 @@ namespace wg
 	{
 		m_pGfxDevice = pDevice;
 
-		m_dirtyPatches.add( geo() );
+		m_dirtyPatches.add( m_geo );
 		return true;
 	}
 
@@ -129,25 +134,45 @@ namespace wg
 			return false;
 		}
 
+		int oldScale = m_scale;
+		SizeSPX oldSize = m_geo.size();
+
 		m_pCanvas = pCanvas;
-		m_canvasSize = pCanvas->size();
+		m_canvasSize = pCanvas->pixelSize()*64;
+		m_canvasScale = pCanvas->scale();
 
-		if (!m_bHasGeo && slot._widget())
-			OO(slot._widget())->_resize(Size::fromPX(pCanvas->size()));
+		if (!m_bScaleSet)
+			m_scale = m_canvasScale;
 
-		m_dirtyPatches.add(geo());
+		if (!m_bHasGeo)
+			m_geo = m_canvasSize;
+
+		if ((m_scale != oldScale || oldSize != m_geo.size()) && slot._widget())
+			OO(slot._widget())->_resize(m_geo.size(),m_scale);
+
+		m_dirtyPatches.add(m_geo);
 		return true;
 	}
 
-	bool RootPanel::setCanvas(const SizeI& pixelSize)
+	bool RootPanel::setCanvas(const SizeI& pixelSize, int scale)
 	{
+		int oldScale = m_scale;
+		SizeSPX oldSize = m_geo.size();
+
 		m_pCanvas = nullptr;
-		m_canvasSize = pixelSize;
+		m_canvasSize = pixelSize*64;
+		m_canvasScale = scale;
 
-		if (!m_bHasGeo && slot._widget())
-			OO(slot._widget())->_resize(Size::fromPX(pixelSize));
+		if (!m_bScaleSet)
+			m_scale = m_canvasScale;
 
-		m_dirtyPatches.add(geo());
+		if (!m_bHasGeo)
+			m_geo = m_canvasSize;
+
+		if ((m_scale != oldScale || oldSize != m_geo.size()) && slot._widget())
+			OO(slot._widget())->_resize(m_geo.size(), m_scale);
+
+		m_dirtyPatches.add(m_geo);
 		return true;
 	}
 
@@ -158,7 +183,22 @@ namespace wg
 		if( pLayers != m_pCanvasLayers )
 		{
 			m_pCanvasLayers = pLayers;
-			m_dirtyPatches.add(geo());
+			m_dirtyPatches.add(m_geo);
+		}
+	}
+
+	//____ setScale() __________________________________________________________
+
+	bool RootPanel::setScale(int scale)
+	{
+		if (scale != m_scale)
+		{
+			m_scale = scale;
+			if (slot._widget())
+			{
+				OO(slot)._setSize(m_geo.size(),m_scale);
+				m_dirtyPatches.add(m_geo);
+			}
 		}
 	}
 
@@ -166,15 +206,15 @@ namespace wg
 
 	bool RootPanel::setGeo(const Rect& _geo)
 	{
-		if (m_geo == _geo)
-			return true;
+		RectSPX geoSpx(m_canvasSize, align(ptsToSpx(_geo,m_scale)));
 
-		m_geo = _geo.aligned();
+		if (m_geo == geoSpx)
+			return true;
 
 		m_bHasGeo = !_geo.isEmpty();
 
 		if (slot._widget())
-			OO(slot)._setSize(geo().size());
+			OO(slot)._setSize(m_geo.size());
 
 		return true;
 	}
@@ -183,10 +223,7 @@ namespace wg
 
 	Rect RootPanel::geo() const
 	{
-		if (m_bHasGeo)
-			return m_geo;
-		else
-			return Size::fromPX(m_canvasSize);
+		return spxToPts(m_geo,m_scale);
 	}
 
 	//____ _object() ____________________________________________________________
@@ -208,7 +245,7 @@ namespace wg
 		if (bVisible != m_bVisible)
 		{
 			m_bVisible = bVisible;
-			m_dirtyPatches.add(geo());
+			m_dirtyPatches.add(m_geo);
 		}
 		return true;
 	}
@@ -274,7 +311,9 @@ namespace wg
 
 	bool RootPanel::beginRender()
 	{
-		if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !slot._widget() )
+		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::activeContext()->gfxDevice();
+
+		if( !pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !slot._widget() )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Handle preRender calls.
@@ -316,7 +355,7 @@ namespace wg
 
 		// Initialize GFX-device.
 
-		return m_pGfxDevice->beginRender();
+		return pGfxDevice->beginRender();
 	}
 
 
@@ -324,13 +363,15 @@ namespace wg
 
 	bool RootPanel::renderSection(const Rect& _clip)
 	{
-		if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !slot._widget() )
+		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::activeContext()->gfxDevice();
+
+		if( !pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !slot._widget() )
 			return false;						// Missing GfxDevice or Canvas or widgets to render.
 
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
-		Rect geo = this->geo();
-		Rect clip = Rect(_clip, geo).aligned();
+		RectSPX geo = m_geo;
+		RectSPX clip = RectSPX(align(ptsToSpx(_clip,m_scale)), geo);
 		if( clip.w == 0 || clip.h == 0 )
 			return false;						// Invalid rect area.
 
@@ -348,27 +389,18 @@ namespace wg
 		if (dirtyPatches.size() > 0)
 		{
 			int nRects = dirtyPatches.size();
-			const Rect* pRects = dirtyPatches.begin();
-
-			int allocSize = nRects * sizeof(RectI);
-
-			RectI* pNewRects = (RectI*)Base::memStackAlloc(allocSize);
-
-			for (int i = 0; i < nRects; i++)
-				pNewRects[i] = pRects[i].px();
+			const RectSPX* pRects = dirtyPatches.begin();
 
 			if (m_pCanvas)
-				m_pGfxDevice->beginCanvasUpdate(m_pCanvas, nRects, pNewRects, m_pCanvasLayers);
+				pGfxDevice->beginCanvasUpdate(m_pCanvas, nRects, pRects, m_pCanvasLayers);
 			else
-				m_pGfxDevice->beginCanvasUpdate(m_canvasSize, nRects, pNewRects, m_pCanvasLayers);
+				pGfxDevice->beginCanvasUpdate(m_canvasSize, nRects, pRects, m_pCanvasLayers);
 
-			OO(skin)._render(m_pGfxDevice, geo, StateEnum::Normal);
+			OO(skin)._render(pGfxDevice, geo, m_scale, StateEnum::Normal);
 
-			OO(slot._widget())->_render( m_pGfxDevice, geo, geo );
+			OO(slot._widget())->_render( pGfxDevice, geo, geo );
 
-			m_pGfxDevice->endCanvasUpdate();
-
-			Base::memStackRelease(allocSize);
+			pGfxDevice->endCanvasUpdate();
 		}
 
 		// Handle updated rect overlays
@@ -377,31 +409,29 @@ namespace wg
 		{
 			// Set clipping rectangle.
 
-			RectI myClip = clip.px();
-
 			if (m_pCanvas)
-				m_pGfxDevice->beginCanvasUpdate(m_pCanvas, 1, &myClip, nullptr, 0);
+				pGfxDevice->beginCanvasUpdate(m_pCanvas, 1, &clip, nullptr, 0);
 			else
-				m_pGfxDevice->beginCanvasUpdate(m_canvasSize, 1, &myClip, nullptr, 0);
+				pGfxDevice->beginCanvasUpdate(m_canvasSize, 1, &clip, nullptr, 0);
 
 			// Render our new overlays
 
-			for (const Rect* pRect = m_afterglowRects[0].begin(); pRect != m_afterglowRects[0].end(); pRect++)
+			for (const RectSPX* pRect = m_afterglowRects[0].begin(); pRect != m_afterglowRects[0].end(); pRect++)
 			{
-				m_pDebugOverlay->render(m_pGfxDevice, *pRect, StateEnum::Focused);
+				m_pDebugOverlay->_render(pGfxDevice, *pRect, m_scale, StateEnum::Focused);
 			}
 
 			// Render overlays that have turned into afterglow
 
 			if (m_afterglowRects.size() > 1)
 			{
-				for (const Rect* pRect = m_afterglowRects[1].begin(); pRect != m_afterglowRects[1].end(); pRect++)
+				for (const RectSPX* pRect = m_afterglowRects[1].begin(); pRect != m_afterglowRects[1].end(); pRect++)
 				{
-					m_pDebugOverlay->render(m_pGfxDevice, *pRect, StateEnum::Normal);
+					m_pDebugOverlay->_render(pGfxDevice, *pRect, m_scale, StateEnum::Normal);
 				}
 			}
 
-			m_pGfxDevice->endCanvasUpdate();
+			pGfxDevice->endCanvasUpdate();
 		}
 
 		return true;
@@ -411,7 +441,9 @@ namespace wg
 
 	bool RootPanel::endRender(void)
 	{
-		if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !slot._widget() )
+		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::activeContext()->gfxDevice();
+
+		if( !pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !slot._widget() )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Turn dirty patches into update patches
@@ -421,15 +453,15 @@ namespace wg
 		m_updatedPatches.add(&m_dirtyPatches);
 		m_dirtyPatches.clear();
 
-		return m_pGfxDevice->endRender();
+		return pGfxDevice->endRender();
 	}
 
 
 	//____ _findWidget() _____________________________________________________________
 
-	Widget* RootPanel::_findWidget(const Coord& ofs, SearchMode mode)
+	Widget* RootPanel::_findWidget(const CoordSPX& ofs, SearchMode mode)
 	{
-		if (!geo().contains(ofs) || !slot._widget())
+		if (!m_geo.contains(ofs) || !slot._widget())
 			return 0;
 
 		if (slot._widget() && slot._widget()->isContainer())
@@ -452,16 +484,23 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	Coord RootPanel::_childPos(const StaticSlot* pSlot) const
+	CoordSPX RootPanel::_childPos(const StaticSlot* pSlot) const
 	{
-		return geo().pos();
+		return m_geo.pos();
 	}
 
 	//____ _childGlobalPos() __________________________________________________
 
-	Coord RootPanel::_childGlobalPos(const StaticSlot* pSlot) const
+	CoordSPX RootPanel::_childGlobalPos(const StaticSlot* pSlot) const
 	{
-		return geo().pos();
+		return m_geo.pos();
+	}
+
+	//____ _childDefaultScale() _______________________________________________
+
+	int RootPanel::_childDefaultScale() const
+	{
+
 	}
 
 	//____ _isChildVisible() __________________________________________________
@@ -473,9 +512,9 @@ namespace wg
 
 	//____ _childWindowSection() __________________________________________________
 
-	Rect RootPanel::_childWindowSection(const StaticSlot* pSlot) const
+	RectSPX RootPanel::_childWindowSection(const StaticSlot* pSlot) const
 	{
-		return geo();
+		return m_geo;
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -504,13 +543,13 @@ namespace wg
 	void RootPanel::_childRequestRender(StaticSlot* pSlot)
 	{
 		if (m_bVisible)
-			m_dirtyPatches.add(geo());
+			m_dirtyPatches.add(m_geo);
 	}
 
-	void RootPanel::_childRequestRender(StaticSlot* pSlot, const Rect& rect)
+	void RootPanel::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)
 	{
 		if (m_bVisible)
-			m_dirtyPatches.add(Rect(geo().pos() + rect.pos(), rect.size()));
+			m_dirtyPatches.add(rect + m_geo.pos());
 	}
 
 	//____ _childRequestResize() __________________________________________________
@@ -553,7 +592,7 @@ namespace wg
 	{
 		// Do nothing, root ignores inView requests.
 	}
-	void RootPanel::_childRequestInView(StaticSlot* pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea)
+	void RootPanel::_childRequestInView(StaticSlot* pSlot, const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea)
 	{
 		// Do nothing, root ignores inView requests.
 	}
@@ -583,7 +622,7 @@ namespace wg
 
 	void RootPanel::_replaceChild(StaticSlot* pSlot, Widget* pNewWidget)
 	{
-		Rect myGeo = geo();
+		RectSPX myGeo = m_geo;
 
 		if (slot._widget())
 			OO(slot._widget())->_collectPatches(m_dirtyPatches, myGeo, myGeo);
@@ -592,7 +631,7 @@ namespace wg
 
 		if (pNewWidget)
 		{
-			OO(pNewWidget)->_resize(myGeo.size());
+			OO(pNewWidget)->_resize(myGeo.size(),m_scale);
 			OO(pNewWidget)->_collectPatches(m_dirtyPatches, myGeo, myGeo);
 		}
 	}
@@ -613,12 +652,12 @@ namespace wg
 
 	//____ _repadSlots() ______________________________________________________
 
-	void RootPanel::_repadSlots(StaticSlot* pSlot, int nb, Border padding)
+	void RootPanel::_repadSlots(StaticSlot* pSlot, int nb, BorderSPX padding)
 	{
 		return;				// RootPanel doesn't support padding
 	}
 
-	void RootPanel::_repadSlots(StaticSlot* pSlot, int nb, const Border* pPadding)
+	void RootPanel::_repadSlots(StaticSlot* pSlot, int nb, const BorderSPX* pPadding)
 	{
 		return;				// RootPanel doesn't support padding
 	}
@@ -667,35 +706,35 @@ namespace wg
 
 	//____ _componentPos() ____________________________________________________
 
-	Coord RootPanel::_componentPos(const GeoComponent* pComponent) const
+	CoordSPX RootPanel::_componentPos(const GeoComponent* pComponent) const
 	{
-		return Coord();
+		return CoordSPX();
 	}
 
 	//____ _componentSize() ___________________________________________________
 
-	Size RootPanel::_componentSize(const GeoComponent* pComponent) const
+	SizeSPX RootPanel::_componentSize(const GeoComponent* pComponent) const
 	{
 		return m_geo;
 	}
 
 	//____ _componentGeo() ____________________________________________________
 
-	Rect RootPanel::_componentGeo(const GeoComponent* pComponent) const
+	RectSPX RootPanel::_componentGeo(const GeoComponent* pComponent) const
 	{
 		return m_geo;
 	}
 
 	//____ _globalComponentPos() ______________________________________________
 
-	Coord RootPanel::_globalComponentPos(const GeoComponent* pComponent) const
+	CoordSPX RootPanel::_globalComponentPos(const GeoComponent* pComponent) const
 	{
 		return m_geo;
 	}
 
 	//____ _globalComponentGeo() ______________________________________________
 
-	Rect RootPanel::_globalComponentGeo(const GeoComponent* pComponent) const
+	RectSPX RootPanel::_globalComponentGeo(const GeoComponent* pComponent) const
 	{
 		return m_geo;
 	}
@@ -708,7 +747,7 @@ namespace wg
 		m_dirtyPatches.push(m_geo);
 	}
 
-	void RootPanel::_componentRequestRender(const GeoComponent* pComponent, const Rect& rect)
+	void RootPanel::_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect)
 	{
 		m_dirtyPatches.push(rect);
 	}
@@ -731,7 +770,7 @@ namespace wg
 	{
 	}
 
-	void RootPanel::_componentRequestInView(const GeoComponent* pComponent, const Rect& mustHave, const Rect& niceToHave)
+	void RootPanel::_componentRequestInView(const GeoComponent* pComponent, const RectSPX& mustHave, const RectSPX& niceToHave)
 	{
 	}
 
