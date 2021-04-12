@@ -52,7 +52,7 @@ namespace wg
 
 	//____ setContentShift() ______________________________________________________
 
-	void StateSkin::setContentShift(State state, CoordI shift)
+	void StateSkin::setContentShift(State state, Coord shift)
 	{
 		int index = _stateToIndex(state);
 		m_contentShift[index] = shift;
@@ -65,7 +65,7 @@ namespace wg
 
 	//____ setContentShift() _____________________________________________________
 
-	void StateSkin::setContentShift(std::initializer_list< std::pair<State, CoordI> > stateShifts)
+	void StateSkin::setContentShift(std::initializer_list< std::pair<State, Coord> > stateShifts)
 	{
 		for (auto& shift : stateShifts)
 		{
@@ -81,21 +81,21 @@ namespace wg
 
 	//____ contentShift() ________________________________________________
 
-	CoordI StateSkin::contentShift(State state) const
+	Coord StateSkin::contentShift(State state) const
 	{
 		int index = _stateToIndex(state);
 		if (m_contentShiftStateMask.bit(index))
 			return m_contentShift[index];
 
-		return CoordI();
+		return Coord();
 	}
 
-	//____ contentPadding() _______________________________________________________
+	//____ _contentPadding() _______________________________________________________
 
-	Border StateSkin::contentPadding(State state) const
+	BorderSPX StateSkin::_contentPadding(int scale, State state) const
 	{
-		Border b = Border(m_contentPadding).aligned();
-		Coord ofs = Coord(m_contentShift[_stateToIndex(state)]).aligned();
+		BorderSPX b = align(ptsToSpx(m_contentPadding,scale));
+		CoordSPX ofs = align(ptsToSpx(m_contentShift[_stateToIndex(state)], scale));
 
 		b.left += ofs.x;
 		b.top += ofs.y;
@@ -103,28 +103,29 @@ namespace wg
 		return b;
 	}
 
-	//____ contentRect() __________________________________________________________
+	//____ _contentRect() __________________________________________________________
 
-	Rect StateSkin::contentRect( const Rect& canvas, State state ) const
+	RectSPX StateSkin::_contentRect( const RectSPX& canvas, int scale, State state ) const
 	{
-		return (canvas - Border(m_contentPadding).aligned()) + Coord(m_contentShift[_stateToIndex(state)]).aligned();
+		return canvas - align(ptsToSpx(m_contentPadding,scale)) + align(ptsToSpx(m_contentShift[_stateToIndex(state)],scale));
 	}
 
-	//____ contentofs() __________________________________________________________
+	//____ _contentofs() __________________________________________________________
 
-	Coord StateSkin::contentOfs( State state ) const
+	CoordSPX StateSkin::_contentOfs( int scale, State state ) const
 	{
-		return Coord( m_contentPadding.left, m_contentPadding.top).aligned() + Coord(m_contentShift[_stateToIndex(state)]).aligned();
+		return align(ptsToSpx(Coord(m_contentPadding.left, m_contentPadding.top), scale)) + 
+			   align(ptsToSpx(m_contentShift[_stateToIndex(state)], scale));
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect StateSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX StateSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (m_contentShift[_stateToIndex(newState)] == m_contentShift[_stateToIndex(oldState)])
-			return Rect();
+			return RectSPX();
 		else
 			return canvas;
 	}

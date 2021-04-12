@@ -68,20 +68,20 @@ namespace wg
 			m_bOpaque = false;
 	}
 
-	//____ render() ______________________________________________________________
+	//____ _render() ______________________________________________________________
 
-	void StaticColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void StaticColorSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		pDevice->fill(canvas.px(), m_color);
+		pDevice->fill(canvas, m_color);
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool StaticColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool StaticColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
-		return ( canvas.contains(ofs) && ((int)m_color.a)/16 >= opacityTreshold );
+		return ( canvas.contains(ofs) && m_color.a >= opacityTreshold );
 	}
 
 

@@ -74,8 +74,6 @@ add_library( wondergui
 	base/wg_msglogger.h
 	base/wg_msgrouter.cpp
 	base/wg_msgrouter.h
-	base/wg_mu.cpp
-	base/wg_mu.h
 	base/wg_nullgfxdevice.cpp
 	base/wg_nullgfxdevice.h
 	base/wg_object.cpp

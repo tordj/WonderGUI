@@ -46,9 +46,9 @@ namespace wg
 		//.____ Behavior _______________________________________________________
 
 		void			clearContentShift();
-		void			setContentShift(State state, CoordI shift);
-		void			setContentShift(std::initializer_list< std::pair<State, CoordI> > StateShifts);
-		CoordI			contentShift(State state) const;
+		void			setContentShift(State state, Coord shift);
+		void			setContentShift(std::initializer_list< std::pair<State, Coord> > StateShifts);
+		Coord			contentShift(State state) const;
 
 	protected:
 		StateSkin() { m_bIgnoresState = false; }
@@ -63,7 +63,7 @@ namespace wg
 
 		void			_refreshUnsetStates();
 
-        CoordI				m_contentShift[StateEnum_Nb];       // Unit: Points
+        Coord				m_contentShift[StateEnum_Nb];       // Unit: Points
 		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
 	};
 

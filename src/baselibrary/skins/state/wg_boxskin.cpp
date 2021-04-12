@@ -40,12 +40,12 @@ namespace wg
 		return BoxSkin_p(new BoxSkin());
 	}
 
-	BoxSkin_p BoxSkin::create(BorderI frame, HiColor fillColor, HiColor frameColor )
+	BoxSkin_p BoxSkin::create(Border frame, HiColor fillColor, HiColor frameColor )
 	{
 		return BoxSkin_p(new BoxSkin(frame, fillColor, frameColor));
 	}
 
-	BoxSkin_p BoxSkin::create(BorderI frame, std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors )
+	BoxSkin_p BoxSkin::create(Border frame, std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors )
 	{
 		BoxSkin_p p = new BoxSkin();
 
@@ -71,7 +71,7 @@ namespace wg
 		m_bOpaque = true;
 	}
 
-	BoxSkin::BoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor )
+	BoxSkin::BoxSkin(Border frame, HiColor fillColor, HiColor frameColor )
 	{
 		m_frame = frame;
 		setColors(fillColor, frameColor);
@@ -94,7 +94,7 @@ namespace wg
 
 	//____ setFrame() ____________________________________________________
 
-	void BoxSkin::setFrame(BorderI frame)
+	void BoxSkin::setFrame(Border frame)
 	{
 		bool hadFrame = (m_frame.width() + m_frame.height() > 0);
 		bool hasFrame = (frame.width() + frame.height() > 0);
@@ -161,35 +161,33 @@ namespace wg
 
 	//____ _render() _______________________________________________________________
 
-	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void BoxSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		RectI canvas = _canvas.px();
-
 		int i = _stateToIndex(state);
 
-		if( m_frame.width() + m_frame.height() == 0 || m_frameColor[i] == m_fillColor[i] )
+		BorderSPX frame = align(ptsToSpx(m_frame, scale));
+
+		if( frame.width() + frame.height() == 0 || m_frameColor[i] == m_fillColor[i] )
 		{
 			pDevice->fill( canvas, m_fillColor[i] );
 		}
 		else
 		{
-			BorderI frame = pointsToPixels(m_frame);
-
 			if (frame.width() >= canvas.w || frame.height() >= canvas.h)
 			{
 				pDevice->fill(canvas, m_frameColor[i]);
 			}
 			else
 			{
-				RectI top( canvas.x, canvas.y, canvas.w, frame.top );
-				RectI left( canvas.x, canvas.y+frame.top, frame.left, canvas.h - frame.height() );
-				RectI right( canvas.x + canvas.w - frame.right, canvas.y+frame.top, frame.right, canvas.h - frame.height() );
-				RectI bottom( canvas.x, canvas.y + canvas.h - frame.bottom, canvas.w, frame.bottom );
-				RectI center( canvas - frame );
+				RectSPX top( canvas.x, canvas.y, canvas.w, frame.top );
+				RectSPX left( canvas.x, canvas.y+frame.top, frame.left, canvas.h - frame.height() );
+				RectSPX right( canvas.x + canvas.w - frame.right, canvas.y+frame.top, frame.right, canvas.h - frame.height() );
+				RectSPX bottom( canvas.x, canvas.y + canvas.h - frame.bottom, canvas.w, frame.bottom );
+				RectSPX center( canvas - frame );
 
 				pDevice->fill( top, m_frameColor[i] );
 				pDevice->fill( left, m_frameColor[i] );
@@ -203,39 +201,39 @@ namespace wg
 
 	}
 
-	//____ minSize() ______________________________________________________________
+	//____ _minSize() ______________________________________________________________
 
-	Size BoxSkin::minSize() const
+	SizeSPX BoxSkin::_minSize(int scale) const
 	{
-		Size content = StateSkin::minSize();
-		Size frame = Border(m_frame).aligned();
+		SizeSPX content = StateSkin::_minSize(scale);
+		SizeSPX frame = align(ptsToSpx(m_frame,scale));
 
-		return Size::max(content,frame);
+		return SizeSPX::max(content,frame);
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	Size BoxSkin::preferredSize() const
+	SizeSPX BoxSkin::_preferredSize(int scale) const
 	{
-		Size content = StateSkin::minSize();
-		Size frame = Border(m_frame).aligned();
+		SizeSPX content = StateSkin::_minSize(scale);
+		SizeSPX frame = align(ptsToSpx(m_frame, scale));
 
-		return Size::max(content, frame);
+		return SizeSPX::max(content, frame);
 	}
 
-	//____ sizeForContent() _______________________________________________________
+	//____ _sizeForContent() _______________________________________________________
 
-	Size BoxSkin::sizeForContent( const Size& contentSize ) const
+	SizeSPX BoxSkin::_sizeForContent( const SizeSPX& contentSize, int scale ) const
 	{
-		Size content = StateSkin::sizeForContent(contentSize);
-		Size frame = Border(m_frame).aligned();
+		SizeSPX content = StateSkin::_sizeForContent(contentSize,scale);
+		SizeSPX frame = align(ptsToSpx(m_frame, scale));
 
-		return Size::max(content, frame);
+		return SizeSPX::max(content, frame);
 	}
 
-	//____ markTest() _____________________________________________________________
+	//____ _markTest() _____________________________________________________________
 
-	bool BoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool BoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
@@ -248,19 +246,19 @@ namespace wg
 		{
 			int i = _stateToIndex(state);
 
-			Rect center = canvas - Border(m_frame).aligned();
+			RectSPX center = canvas - align(ptsToSpx(m_frame,scale));
 			if( center.contains(ofs) )
-				opacity = m_fillColor[i].a * 4096/255;
+				opacity = m_fillColor[i].a;
 			else
-				opacity = m_frameColor[i].a * 4096/255;
+				opacity = m_frameColor[i].a;
 		}
 
 		return ( opacity >= opacityTreshold );
 	}
 
-	//____ isOpaque() _____________________________________________________________
+	//____ _isOpaque() _____________________________________________________________
 
-	bool BoxSkin::isOpaque( State state ) const
+	bool BoxSkin::_isOpaque( State state ) const
 	{
 		int i = _stateToIndex(state);
 		if( m_bOpaque || (m_fillColor[i].a == 4096 && (m_frameColor[i].a == 4096 || (m_frame.width() + m_frame.height() == 0))) )
@@ -269,12 +267,12 @@ namespace wg
 		return false;
 	}
 
-	bool BoxSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
+	bool BoxSkin::_isOpaque( const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state ) const
 	{
 		if( m_bOpaque )
 			return true;
 
-		Rect center = Rect(canvasSize) - Border(m_frame).aligned();
+		RectSPX center = RectSPX(canvasSize) - align(ptsToSpx(m_frame,scale));
 		int i = _stateToIndex(state);
 		if( center.contains(rect) )
 			return m_fillColor[i].a == 4096;
@@ -284,14 +282,14 @@ namespace wg
 		return m_fillColor[i].a == 4096 && m_frameColor[i].a == 4096;
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect BoxSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX BoxSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (oldState == newState)
-			return Rect();
+			return RectSPX();
 
 		int i1 = _stateToIndex(newState);
 		int i2 = _stateToIndex(oldState);
@@ -299,7 +297,7 @@ namespace wg
 		if (m_fillColor[i1] != m_fillColor[i2] || (!m_frame.isEmpty() && m_frameColor[i1] != m_frameColor[i2]))
 			return canvas;
 
-		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+		return StateSkin::_dirtyRect(canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 

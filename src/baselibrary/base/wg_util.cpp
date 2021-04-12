@@ -172,10 +172,10 @@ int Util::gcd(int a, int b)
 
 	//____ markTestStretchRect() __________________________________________________
 
-	bool Util::markTestStretchRect( Coord ofs, Surface * pSurface, const RectI& source, const Rect& area, int opacityTreshold )
+	bool Util::markTestStretchRect( CoordSPX ofs, Surface * pSurface, const RectSPX& source, const RectSPX& area, int opacityTreshold )
 	{
 		// Sanity check & shortcuts.
-		if( !pSurface || !area.contains(ofs) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )
+		if( !pSurface || !area.contains(ofs) || source.isEmpty() || area.isEmpty() || opacityTreshold > 4096 )
 			return false;
 
 		if( pSurface->isOpaque() || opacityTreshold <= 0 )
@@ -188,24 +188,24 @@ int Util::gcd(int a, int b)
 
 		// Convert offset in area to offset in bitmap.
 
-		CoordI sourceOfs;
+		CoordSPX sourceOfs;
 
-		sourceOfs.x = (int) (ofs.x.qpix/((double)area.w.qpix) * source.w);
-		sourceOfs.y = (int) (ofs.y.qpix/((double)area.h.qpix) * source.h);
+		sourceOfs.x = (int) (ofs.x/((double)area.w) * source.w);
+		sourceOfs.y = (int) (ofs.y/((double)area.h) * source.h);
 
 		// Do alpha test
 
-		int alpha = pSurface->alpha(source.x+sourceOfs.x, source.y+sourceOfs.y);
+		int alpha = pSurface->alpha( sourceOfs );
 
 		return (alpha >= opacityTreshold);
 	}
 
 	//____ markTestTileRect() __________________________________________________
 
-	bool Util::markTestTileRect(Coord ofs, Surface* pSurface, const Rect& area, int opacityTreshold)
+	bool Util::markTestTileRect(CoordSPX ofs, Surface* pSurface, const RectSPX& area, int scale, int opacityTreshold)
 	{
 		// Sanity check & shortcuts.
-		if (!pSurface || !area.contains(ofs) || area.isEmpty() || opacityTreshold > 255)
+		if (!pSurface || !area.contains(ofs) || area.isEmpty() || opacityTreshold > 4096)
 			return false;
 
 		if (pSurface->isOpaque() || opacityTreshold <= 0)
@@ -218,9 +218,11 @@ int Util::gcd(int a, int b)
 
 		// Convert offset in area to offset in bitmap.
 
-		CoordI sourceOfs = ofs.px() * pSurface->qpixPerPoint() / MU::qpixPerPoint();
+		SizeSPX tileOnScreen = pSurface->pixelSize() * 64 * scale / pSurface->scale();
 
-		SizeI size = pSurface->size();
+		CoordSPX sourceOfs = ofs * pSurface->scale() / scale;
+
+		SizeI size = pSurface->pixelSize()*64;
 
 		sourceOfs.x %= size.w;
 		sourceOfs.y %= size.h;
@@ -232,17 +234,17 @@ int Util::gcd(int a, int b)
 		return (alpha >= opacityTreshold);
 	}
 
-	bool Util::markTestNinePatch(Coord ofs, Surface* pSurface, const NinePatch& patch, const Rect& _dest, int opacityTreshold)
+	bool Util::markTestNinePatch(CoordSPX ofs, Surface* pSurface, const NinePatch& patch, const RectSPX& _dest, const BorderSPX& destFrame, int scale, int opacityTreshold)
 	{
-		const BorderI& sourceFrame = patch.frame;
-		const RectI& _source = patch.block;
+		const BorderSPX& sourceFrame = patch.frame;
+		const RectSPX& _source = patch.block;
 
 		// Sanity check & shortcuts.
 
 		if (sourceFrame.isEmpty() && patch.rigidPartXSections == YSections::None && patch.rigidPartYSections == XSections::None )
 			return markTestStretchRect(ofs, pSurface, _source, _dest, opacityTreshold);
 
-		if (!pSurface || !_dest.contains(ofs) || _source.isEmpty() || _dest.isEmpty() || opacityTreshold > 255)
+		if (!pSurface || !_dest.contains(ofs) || _source.isEmpty() || _dest.isEmpty() || opacityTreshold > 4096)
 			return false;
 
 		if (pSurface->isOpaque() || opacityTreshold <= 0)
@@ -250,10 +252,8 @@ int Util::gcd(int a, int b)
 
 		//
 
-		BorderI destFrame = sourceFrame; // pointsToPixels(sourceFrame);
-
-		RectI source;
-		Rect dest;
+		RectSPX source;
+		RectSPX dest;
 
 		XSections markedSectionX;
 		YSections markedSectionY;
@@ -261,7 +261,7 @@ int Util::gcd(int a, int b)
 		if (ofs.x < _dest.x + destFrame.left)
 		{
 			// left section
-			markedSectionX = XSections::Left;
+			markedSectionX = XSections::Left; 
 
 			source.x = _source.x;
 			source.w = sourceFrame.left;
@@ -289,7 +289,6 @@ int Util::gcd(int a, int b)
 			dest.w = destFrame.right;
 		}
 
-		MU	test = _dest.y + destFrame.top;
 		if (ofs.y < _dest.y + destFrame.top)
 		{
 			// top section
@@ -328,8 +327,10 @@ int Util::gcd(int a, int b)
 
 
 		// Convert offset in area to offset in bitmap.
+/*
+		TJFIX!!!
 
-		RectI sourceOfs;
+RectI sourceOfs;
 
 		if (markedSectionX == XSections::Center && (patch.rigidPartXSections & markedSectionY) != YSections::None)
 		{
@@ -381,6 +382,8 @@ int Util::gcd(int a, int b)
 		int alpha = pSurface->alpha(source.x + sourceOfs.x, source.y + sourceOfs.y);
 
 		return (alpha >= opacityTreshold);
+*/
+		return true;
 	}
 
 
@@ -665,7 +668,7 @@ int Util::gcd(int a, int b)
 
 	//____ sizeFromPolicy() __________________________________________________________
 
-	MU Util::sizeFromPolicy( MU defaultSize, MU specifiedSize, SizePolicy policy )
+	spx Util::sizeFromPolicy( spx defaultSize, spx specifiedSize, SizePolicy policy )
 	{
 		switch( policy )
 		{
@@ -803,10 +806,10 @@ int Util::gcd(int a, int b)
 
 	//____ scaleToFit() _______________________________________________________
 
-	Size Util::scaleToFit(Size object, Size boundaries)
+	SizeSPX Util::scaleToFit(SizeSPX object, SizeSPX boundaries)
 	{
-		float wScale = object.w.qpix / (float)boundaries.w.qpix;
-		float hScale = object.h.qpix / (float)boundaries.h.qpix;
+		float wScale = object.w / (float)boundaries.w;
+		float hScale = object.h / (float)boundaries.h;
 
 		float useScale = max(wScale, hScale);
 

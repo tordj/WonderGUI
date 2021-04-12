@@ -34,14 +34,14 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	StaticBoxSkin_p StaticBoxSkin::create(BorderI frame, HiColor fillColor, HiColor frameColor)
+	StaticBoxSkin_p StaticBoxSkin::create(Border frame, HiColor fillColor, HiColor frameColor)
 	{
 		return StaticBoxSkin_p(new StaticBoxSkin(frame, fillColor, frameColor));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	StaticBoxSkin::StaticBoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor)
+	StaticBoxSkin::StaticBoxSkin(Border frame, HiColor fillColor, HiColor frameColor)
 	{
 		m_frame = frame;
 		m_fillColor = fillColor;
@@ -64,30 +64,30 @@ namespace wg
 		_updateOpaqueFlag();
 	}
 
-	//____ minSize() __________________________________________________________
+	//____ _minSize() __________________________________________________________
 
-	Size StaticBoxSkin::minSize() const
+	SizeSPX StaticBoxSkin::_minSize(int scale) const
 	{
-		Size content = Skin::minSize();
-		Size frame = Border(m_frame).aligned();
+		SizeSPX content = Skin::_minSize(scale);
+		SizeSPX frame = align(ptsToSpx(m_frame,scale));
 
-		return Size::max(content, frame);
+		return SizeSPX::max(content, frame);
 	}
 
 
-	//____ preferredSize() ____________________________________________________
+	//____ _preferredSize() ____________________________________________________
 
-	Size StaticBoxSkin::preferredSize() const
+	SizeSPX StaticBoxSkin::_preferredSize(int scale) const
 	{
-		Size content = Skin::minSize();
-		Size frame = Border(m_frame).aligned();
+		SizeSPX content = Skin::_minSize(scale);
+		SizeSPX frame = align(ptsToSpx(m_frame,scale));
 
-		return Size::max(content, frame);
+		return SizeSPX::max(content, frame);
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool StaticBoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool StaticBoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -98,31 +98,29 @@ namespace wg
 			opacity = 4096;
 		else
 		{
-			Rect center = canvas - Border(m_frame).aligned();
+			RectSPX center = canvas - align(ptsToSpx(m_frame,scale));
 			opacity =  center.contains(ofs) ? m_fillColor.a : m_frameColor.a;
 		}
 
-		return (opacity/16 >= opacityTreshold);
+		return (opacity >= opacityTreshold);
 	}
 
-	//____ render() ______________________________________________________________
+	//____ _render() ______________________________________________________________
 
-	void StaticBoxSkin::render(GfxDevice* pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void StaticBoxSkin::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		RectI canvas = _canvas.px();
+		BorderSPX frame = align(ptsToSpx(m_frame,scale));
 
-		if (m_frame.isEmpty() || m_frameColor == m_fillColor)
+		if (frame.isEmpty() || m_frameColor == m_fillColor)
 		{
 			pDevice->fill(canvas, m_fillColor);
 		}
 		else
 		{
-			BorderI frame = pointsToPixels(m_frame);
-
 			if (frame.width() >= canvas.w || frame.height() >= canvas.h)
 			{
 				pDevice->fill(canvas, m_frameColor);

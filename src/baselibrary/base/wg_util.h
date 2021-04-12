@@ -95,34 +95,34 @@ namespace wg
 
 		inline spx align(spx x)
 		{
-			return x + 32 & 0xFFFFFFC0;
+			return (x + 32) & 0xFFFFFFC0;
 		}
 
 		inline CoordSPX align(const CoordSPX& coord)
 		{
-			return { (coord.x + 32) & 0xFFFFFFC0, (coord.y + 32) & 0xFFFFFFC0 };
+			return { (coord.x + 32) & -64, (coord.y + 32) & -64 };
 		}
 
 		inline SizeSPX align(const SizeSPX& size)
 		{
-			return { (size.w + 32) & 0xFFFFFFC0, (size.w + 32) & 0xFFFFFFC0 };
+			return { (size.w + 32) & -64, (size.w + 32) & -64 };
 		}
 
 		inline BorderSPX align(const BorderSPX& border)
 		{
-			return { (border.top + 32) & 0xFFFFFFC0, (border.right + 32) & 0xFFFFFFC0,
-					 (border.bottom + 32) & 0xFFFFFFC0, (border.left + 32) & 0xFFFFFFC0 };
+			return { (border.top + 32) & -64, (border.right + 32) & -64,
+					 (border.bottom + 32) & -64, (border.left + 32) & -64 };
 		}
 
 		inline RectSPX align(const RectSPX& rect)
 		{
 			RectSPX out;
 
-			out.x = (rect.x + 32) & 0xFFFFFFC0;
-			out.y = (rect.y + 32) & 0xFFFFFFC0;
+			out.x = (rect.x + 32) & -64;
+			out.y = (rect.y + 32) & -64;
 
-			out.w = ((rect.x + rect.w + 32) & 0xFFFFFFC0) - out.x;
-			out.h = ((rect.y + rect.h + 32) & 0xFFFFFFC0) - out.y;
+			out.w = ((rect.x + rect.w + 32) & -64) - out.x;
+			out.h = ((rect.y + rect.h + 32) & -64) - out.y;
 
 			return out;
 		}
@@ -132,9 +132,9 @@ namespace wg
 		double	powerOfTen(int num);
 		int		gcd(int a, int b);
 
-		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const RectI& source, const Rect& area, int opacityTreshold );
-		bool		markTestTileRect(Coord ofs, Surface* pSurface, const Rect& area, int opacityTreshold);
-		bool		markTestNinePatch(Coord ofs, Surface* pSurface, const NinePatch& patch, const Rect& _dest, int opacityTreshold);
+		bool		markTestStretchRect( CoordSPX ofs, Surface * pSurface, const RectSPX& source, const RectSPX& area, int opacityTreshold );
+		bool		markTestTileRect(CoordSPX ofs, Surface* pSurface, const RectSPX& area, int scale, int opacityTreshold);
+		bool		markTestNinePatch(CoordSPX ofs, Surface* pSurface, const NinePatch& patch, const RectSPX& _dest, const BorderSPX& destFrame, int scale, int opacityTreshold);
 
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );
@@ -142,9 +142,9 @@ namespace wg
 		Coord 		placementToOfs( Placement placement, Size base );
 		Rect		placementToRect( Placement placement, Size base, Size rect );
 
-		Size		scaleToFit(Size object, Size boundaries);
+		SizeSPX		scaleToFit(SizeSPX object, SizeSPX boundaries);
 
-		MU 			sizeFromPolicy( MU defaultSize, MU specifiedSize, SizePolicy policy );
+		spx 		sizeFromPolicy( spx defaultSize, spx specifiedSize, SizePolicy policy );
 
 		inline Axis dirToAxis( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Axis::Y : Axis::X; }
 
@@ -243,36 +243,6 @@ namespace wg
 
 
 	}
-/*
-	void Util::roundToPixels(RectI& r)
-	{		
-		int x2 = r.x + r.w;
-		int y2 = r.y + r.h;
-
-		r.x = (r.x + 32) >> 6;
-		r.y = (r.y + 32) >> 6;
-
-		r.w = ((x2 + 32) >> 6) - r.x;
-		r.h = ((y2 + 32) >> 6) - r.y;
-	}
-
-	void Util::roundToPixels(CoordI& r)
-	{
-		r.x = (r.x + 32) >> 6;
-		r.y = (r.y + 32) >> 6;
-	}
-
-	void Util::roundToPixels(SizeI& r)
-	{
-		r.w = (r.w + 32) >> 6;
-		r.h = (r.h + 32) >> 6;
-	}
-
-	void Util::roundToPixels(int& r)
-	{
-		r = (r + 32) >> 6;
-	}
-*/
 
 
 

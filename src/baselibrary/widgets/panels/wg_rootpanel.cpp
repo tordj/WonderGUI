@@ -224,6 +224,8 @@ namespace wg
 				m_dirtyPatches.add(m_geo);
 			}
 		}
+
+		return true;
 	}
 
 	//_____ setGeo() _____________________________________________________________
@@ -536,7 +538,7 @@ namespace wg
 
 	int RootPanel::_childDefaultScale() const
 	{
-
+		return m_scale;
 	}
 
 	//____ _isChildVisible() __________________________________________________

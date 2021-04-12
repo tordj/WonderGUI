@@ -42,8 +42,8 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BoxSkin_p	create();
-		static BoxSkin_p 	create(BorderI frame, HiColor fillColor, HiColor frameColor );
-		static BoxSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,HiColor,HiColor> > stateColors );
+		static BoxSkin_p 	create(Border frame, HiColor fillColor, HiColor frameColor );
+		static BoxSkin_p	create(Border frame, std::initializer_list< std::tuple<State,HiColor,HiColor> > stateColors );
 
 		//.____ Identification __________________________________________
 
@@ -56,46 +56,45 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
-		void		setFrame( BorderI frame );
+		void		setFrame( Border frame );
 
 		void						setColors(HiColor fill, HiColor frame);
 		void						setColors(State state, HiColor fill, HiColor frame);
 		void						setColors(std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors);
 		std::tuple<HiColor, HiColor>	colors(State state) const;
 
-		//.____ Geometry _________________________________________________
-
-		Size		minSize() const override;
-		Size		preferredSize() const override;
-		Size		sizeForContent(const Size& contentSize) const override;
-
-		//.____ Misc ____________________________________________________
-
-		bool		isOpaque( State state ) const override;
-		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
-
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-								float value = 1.f, float value2 = -1.f) const override;
-
-		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float value = 1.f, float value2 = -1.f, int animPos = 0,
-							float* pStateFractions = nullptr) const override;
-
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
-							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
-							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
-
 
 	private:
 		BoxSkin();
-		BoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor  );
+		BoxSkin(Border frame, HiColor fillColor, HiColor frameColor  );
 		~BoxSkin() {};
 
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();
 
-		BorderI		m_frame;							// In points
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		SizeSPX		_minSize(int scale) const override;
+		SizeSPX		_preferredSize(int scale) const override;
+		SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const override;
+
+		bool		_isOpaque(State state) const override;
+		bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
+
+		bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
+								float value = 1.f, float value2 = -1.f) const override;
+
+		void		_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
+
+		RectSPX		_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, 
+								float newValue = 1.f, float oldValue = 1.f,
+								float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+								float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
+
+
+
+		Border		m_frame;
+		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 

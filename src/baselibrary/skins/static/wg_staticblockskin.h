@@ -42,17 +42,13 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static StaticBlockSkin_p create(Surface* pSurface, const BorderI& frame = { 0 });
-		static StaticBlockSkin_p create(Surface* pSurface, const RectI& block, const BorderI& frame = { 0 });
+		static StaticBlockSkin_p create(Surface* pSurface, const Border& frame = { 0 });
+		static StaticBlockSkin_p create(Surface* pSurface, const Rect& block, const Border& frame = { 0 });
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Geometry _________________________________________________
-
-		Size	preferredSize() const override;
 
 		//.____ Appearance _________________________________________________
 
@@ -65,27 +61,30 @@ namespace wg
 		HiColor		color() const { return m_color; }
 		Gradient	gradient() const { return m_gradient; }
 
-		bool		setRigidPartX(int ofs, int length, YSections sections);
-		bool		setRigidPartY(int ofs, int length, XSections sections);
+		bool		setRigidPartX(pts ofs, pts length, YSections sections);
+		bool		setRigidPartY(pts ofs, pts length, XSections sections);
 
 
-		//.____ Misc ____________________________________________________
+		//.____ Internal ____________________________________________________
 
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		SizeSPX		_preferredSize(int scale) const override;
+
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
 								float value = 1.f, float value2 = -1.f) const override;
 
-		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+		void		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f, int animPos = 0,
 							float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticBlockSkin(Surface* pSurface, const RectI& block, const BorderI& frame = { 0 });
+		StaticBlockSkin(Surface* pSurface, const Rect& block, const Border& frame = { 0 });
 		~StaticBlockSkin() {};
 
 		void _updateOpacityFlag();
 
 		Surface_p		m_pSurface;
 		NinePatch		m_ninePatch;
+		Border			m_gfxFrame;
 
 		BlendMode		m_blendMode = BlendMode::Undefined;
 		HiColor			m_color = Color::White;

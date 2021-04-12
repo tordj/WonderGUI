@@ -818,6 +818,7 @@ namespace wg
 		}
 		else
 		{
+			const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
 			switch (m_pixelSize)
 			{
 				case 2:
@@ -827,7 +828,6 @@ namespace wg
 						for (int x = 0; x < bufferRect.w; x++)
 						{
 							uint32_t val = (uint32_t)((uint16_t*)pSrc)[0];
-							const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
 							*pDst++ = pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
 							pSrc += m_pixelSize;
 						}
@@ -843,7 +843,6 @@ namespace wg
 						for (int x = 0; x < bufferRect.w; x++)
 						{
 							uint32_t val = ((uint32_t)pSrc[0]) + (((uint32_t)pSrc[1]) << 8) + (((uint32_t)pSrc[2]) << 16);
-							const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
 							*pDst++ = pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
 							pSrc += m_pixelSize;
 						}
@@ -859,7 +858,6 @@ namespace wg
 						for (int x = 0; x < bufferRect.w; x++)
 						{
 							uint32_t val = *((uint32_t*)pSrc);
-							const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
 							*pDst++ = pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
 							pSrc += m_pixelSize;
 						}

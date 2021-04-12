@@ -40,7 +40,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static StaticBoxSkin_p create(BorderI frame, HiColor fillColor, HiColor frameColor);
+		static StaticBoxSkin_p create(Border frame, HiColor fillColor, HiColor frameColor);
 
 		//.____ Identification __________________________________________
 
@@ -53,28 +53,26 @@ namespace wg
 		BlendMode	blendMode() const { return m_blendMode; }
 
 
-		//.____ Geometry _________________________________________________
+		//.____ Internal ____________________________________________________
 
-		Size	minSize() const override;
-		Size	preferredSize() const override;
+		SizeSPX		_minSize(int scale) const override;
+		SizeSPX		_preferredSize(int scale) const override;
 
-		//.____ Misc ____________________________________________________
-
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
 								float value = 1.f, float value2 = -1.f) const override;
 
-		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float value = 1.f, float value2 = -1.f, int animPos = 0, 
-							float* pStateFractions = nullptr) const override;
+		void		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+								float value = 1.f, float value2 = -1.f, int animPos = 0, 
+								float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticBoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor);
+		StaticBoxSkin(Border frame, HiColor fillColor, HiColor frameColor);
 		~StaticBoxSkin() {};
 
 		void		_updateOpaqueFlag();
 
-		BorderI		m_frame;							// In points
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		Border		m_frame;							// In points
+		BlendMode	m_blendMode = BlendMode::>Undefined;
 
 		HiColor		m_fillColor;
 		HiColor		m_frameColor;

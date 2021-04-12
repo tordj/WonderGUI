@@ -59,11 +59,14 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() ______________________________________________________________
+	//____ _preferredSize() ______________________________________________________________
 
-	Size StaticTileSkin::preferredSize() const
+	SizeSPX StaticTileSkin::_preferredSize(int scale) const
 	{
-		return m_pSurface ? Size(m_pSurface->size()) : Size();
+		if (!m_pSurface)
+			return SizeSPX();
+
+		return SizeSPX::max(ptsToSpx(m_pSurface->pointSize(), scale),Skin::_preferredSize(scale));
 	}
 
 	//____ setBlendMode() _____________________________________________________
@@ -89,9 +92,9 @@ namespace wg
 		_updateOpacityFlag();
 	}
 
-	//____ render() ______________________________________________________________
+	//____ _render() ______________________________________________________________
 
-	void StaticTileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void StaticTileSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pSurface)
 			return;
@@ -99,16 +102,16 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient );
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->scaleTile(canvas.px(),MU::scale());
+		pDevice->scaleTile(canvas,float(scale)/64);
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool StaticTileSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool StaticTileSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		//TODO: Take tint into account.
 
-		return markTestTileRect(ofs, m_pSurface, canvas, opacityTreshold);
+		return markTestTileRect(ofs, m_pSurface, canvas, scale, opacityTreshold);
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________

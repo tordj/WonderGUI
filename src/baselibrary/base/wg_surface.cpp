@@ -1036,5 +1036,22 @@ namespace wg
 	 * 
 	 */
 
+	 //____ alpha() ____________________________________________________________
+	 /**
+	  * @fn virtual int	Surface::alpha( CoordSPX coord )
+	  *
+	  * Get the alpha value from the specified coordinate of the surface.
+	  *
+	  * @param coord Coordinate, specified in subpixels.
+	  *
+	  * Gets the alpha value of the pixel at the specified coordinate in the range of 0-4096.
+	  * The alpha value is by default used for opacity level,
+	  * where 0 is a fully transparent pixel and 4096 is opaque.
+	  * The coordinate specified must be within the surface boundaries. A coordinate outside
+	  * the surface will result in undefined behavior.
+	  *
+	  * @return Alpha value of pixel at coordinate.
+	  */
+
 
 } // namespace wg

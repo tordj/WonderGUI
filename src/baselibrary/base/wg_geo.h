@@ -26,7 +26,6 @@
 //=============================================================================
 
 #include <wg_types.h>
-#include <wg_mu.h>
 
 #include <utility>
 #include <cstdlib>
