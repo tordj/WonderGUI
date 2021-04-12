@@ -52,12 +52,12 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
-		//.____ Misc ____________________________________________________
+		//.____ Internal ____________________________________________________
 
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
 								float value = 1.f, float value2 = -1.f) const override;
 
-		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+		void		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
 	private:

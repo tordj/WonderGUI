@@ -61,12 +61,12 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
-		bool		isOpaque() const override;
-		bool		setTiling(bool bTiling) override;
+		bool			isOpaque() const override;
+		bool			setTiling(bool bTiling) override;
 
 		//.____ Content _______________________________________________________
 
-		uint8_t		alpha( CoordI coord ) override;
+		int				alpha( CoordSPX coord ) override;
 
 		//.____ Control _______________________________________________________
 
@@ -98,7 +98,7 @@ namespace wg
 		Blob_p		m_pBlob;
 		uint8_t*	m_pData;
 
-		int16_t*	m_pClut4096 = nullptr;
+		HiColor*	m_pClut4096 = nullptr;
 	};
 
 

@@ -28,7 +28,6 @@
 #include <algorithm>
 #include <assert.h>
 
-#include <wg_mu.h>
 #include <wg_freetypefont.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>

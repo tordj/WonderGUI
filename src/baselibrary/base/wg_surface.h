@@ -138,8 +138,8 @@ namespace wg
 
 	struct NinePatch
 	{
-		RectI		block;
-		BorderI		frame;
+		RectSPX		block;
+		BorderSPX	frame;
 
 		int			rigidPartXOfs = 0;
 		int			rigidPartXLength = 0;
@@ -205,8 +205,7 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		virtual uint8_t		alpha( CoordI coord ) = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
-		inline uint8_t		alpha( int x, int y );		///< @brief Get Alpha value of pixel at specified coordinate.
+		virtual int			alpha( CoordSPX coord ) = 0;	///< @brief Get Alpha value of subpixel at specified coordinate.
 
 		virtual	uint32_t	colorToPixel( const HiColor& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
 		virtual	HiColor		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
@@ -416,26 +415,6 @@ namespace wg
 	int Surface::pixelBytes() const
 	{
 		return m_pixelDescription.bits / 8;
-	}
-
-	//____ alpha() ____________________________________________________________
-	/**
-	 * Get the alpha value from the specified coordinate of the surface.
-	 *
-	 * @param x X-coordinate of pixel.
-	 * @param y Y-coordinate of pixel.
-	 *
-	 * Gets the alpha value of the pixel at the specified coordinate in the range of 0-255.
-	 * The alpha value is by default used for opacity level,
-	 * where 0 is a fully transparent pixel and 255 is opaque.
-	 * The coordinate specified must be within the surface boundaries. A coordinate outside
-	 * the surface will result in undefined behavior.
-	 *
-	 * @return Alpha value of pixel at coordinate.
-	 */
-	uint8_t Surface::alpha( int x, int y )
-	{
-		return alpha( CoordI(x,y) );
 	}
 
 	//____ allocPixelBuffer() __________________________________________________

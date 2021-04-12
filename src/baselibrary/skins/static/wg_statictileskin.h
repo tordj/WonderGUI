@@ -47,10 +47,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
-
-		Size	preferredSize() const override;
-
 		//.____ Appearance _________________________________________________
 
 		void		setBlendMode(BlendMode mode);
@@ -62,12 +58,14 @@ namespace wg
 		void		setGradient(const Gradient& gradient);
 		Gradient	gradient() const { return m_gradient; }
 
-		//.____ Misc ____________________________________________________
+		//.____ Internal ____________________________________________________
 
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		SizeSPX		_preferredSize(int scale) const override;
+
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
 								float value = 1.f, float value2 = -1.f) const override;
 
-		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+		void		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f, int animPos = 0, 
 							float* pStateFractions = nullptr) const override;
 

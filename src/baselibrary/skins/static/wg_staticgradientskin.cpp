@@ -67,18 +67,18 @@ namespace wg
 		else
 			m_bOpaque = false;
 	}
-	//____ render() ______________________________________________________________
+	//____ _render() ______________________________________________________________
 
-	void StaticGradientSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void StaticGradientSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, Color::White, canvas, m_gradient, true);
 
-		pDevice->fill(canvas.px(), Color::White);
+		pDevice->fill(canvas, Color::White);
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool StaticGradientSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool StaticGradientSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs) )
 			return false;
@@ -86,12 +86,12 @@ namespace wg
 		int xFrac = (ofs.x - canvas.x) * 4096 / canvas.w;
 		int yFrac = (ofs.y - canvas.y) * 4096 / canvas.h;
 
-		int xVal1 = m_gradient.topLeft.a + (m_gradient.topRight.a - m_gradient.topLeft.a) * xFrac;
-		int xVal2 = m_gradient.bottomLeft.a + (m_gradient.bottomRight.a - m_gradient.bottomLeft.a) * xFrac;
+		int xVal1 = m_gradient.topLeft.a + (m_gradient.topRight.a - m_gradient.topLeft.a) * xFrac / 4096;
+		int xVal2 = m_gradient.bottomLeft.a + (m_gradient.bottomRight.a - m_gradient.bottomLeft.a) * xFrac / 4096;
 
-		int val = xVal1 + (xVal2 - xVal1) * yFrac;
+		int val = xVal1 + (xVal2 - xVal1) * yFrac / 4096;
 
-		return (val/16 >= opacityTreshold);
+		return (val >= opacityTreshold);
 	}
 
 

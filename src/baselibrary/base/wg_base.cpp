@@ -106,8 +106,6 @@ namespace wg
 		TextTool::setDefaultBreakRules();
 		HiColor::_initTables();
 
-		MU::s_scale = 1.f;
-		MU::s_qpixPerPoint = 4;
 		return true;
 	}
 
@@ -302,17 +300,6 @@ namespace wg
 	{
 		assert(s_pData != 0);
 		s_pData->pActiveContext = pContext;
-
-        if( pContext )
-        {
-            MU::s_scale = pContext->scale();
-            MU::s_qpixPerPoint = int(pContext->scale() * 4.f);
-        }
-        else
-        {
-            MU::s_scale = 1.f;
-            MU::s_qpixPerPoint = 4;
-        }
 
 	}
 

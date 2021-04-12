@@ -88,7 +88,7 @@ namespace wg
 	class RenderSettingsWithGradient
 	{
 	public:
-		RenderSettingsWithGradient(GfxDevice* pDevice, int layer, BlendMode blendMode, HiColor tintColor, const Rect& rect, const Gradient& tintGradient, bool bGradient )
+		RenderSettingsWithGradient(GfxDevice* pDevice, int layer, BlendMode blendMode, HiColor tintColor, const RectSPX& rect, const Gradient& tintGradient, bool bGradient )
 		{
 			m_pDevice = pDevice;
 

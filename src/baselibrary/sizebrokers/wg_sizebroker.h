@@ -24,7 +24,6 @@
 #pragma once
 
 #include <wg_pointers.h>
-#include <wg_mu.h>
 #include <wg_types.h>
 
 namespace wg

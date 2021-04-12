@@ -192,9 +192,12 @@ namespace wg
 
 	//____ alpha() _______________________________________________________________
 
-	uint8_t SoftSurface::alpha( CoordI coord )
+	int SoftSurface::alpha( CoordSPX _coord )
 	{
 		//TODO: Take endianess into account.
+		//TODO: Take advantage of subpixel precision and interpolate alpha value if surface set to interpolate.
+
+		CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
 
 		switch (m_pixelDescription.format)
 		{
@@ -202,32 +205,32 @@ namespace wg
 			case PixelFormat::CLUT_8_linear:
 			{
 				uint8_t index = m_pData[m_pitch * coord.y + coord.x];
-				return m_pClut[index].a;
+				return m_pClut4096[index].a;
 			}
 			case PixelFormat::A_8:
 			{
 				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x;
-				return pPixel[0];
+				return HiColor::unpackLinearTab[pPixel[0]];
 			}
 			case PixelFormat::BGRA_4_linear:
 			{
-				uint16_t pixel = * (uint16_t *)(m_pData + m_pitch * coord.y + coord.x);
+				uint16_t pixel = * (uint16_t *)(m_pData + m_pitch * coord.y + coord.x*2);
 				const uint8_t * pConvTab = s_pixelConvTabs[4];
 
-				return ((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
+				return HiColor::unpackLinearTab[((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift)];
 			}
 			case PixelFormat::BGRA_8_sRGB:
 			case PixelFormat::BGRA_8_linear:
 			{
 				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x * 4;
-				return pPixel[3];
+				return HiColor::unpackLinearTab[pPixel[3]];
 			}
 			case PixelFormat::Custom:
 			{
 				//TODO: Implement!
 			}
 			default:
-				return 0xFF;
+				return 4096;
 		}
 	}
 
@@ -344,18 +347,17 @@ namespace wg
 
 	void SoftSurface::_makeClut4096()
 	{
-		m_pClut4096 = new int16_t[256 * 4];
+		m_pClut4096 = new HiColor[256];
 
-		int16_t * p = m_pClut4096;
+		HiColor * p = m_pClut4096;
 		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		for (int i = 0; i < 256; i++)
 		{
-			*p++ = pUnpackTab[m_pClut[i].r];
-			*p++ = pUnpackTab[m_pClut[i].g];
-			*p++ = pUnpackTab[m_pClut[i].b];
-			*p++ = HiColor::unpackLinearTab[m_pClut[i].a];
-
+			p[i].r = pUnpackTab[m_pClut[i].r];
+			p[i].g = pUnpackTab[m_pClut[i].g];
+			p[i].b = pUnpackTab[m_pClut[i].b];
+			p[i].a = HiColor::unpackLinearTab[m_pClut[i].a];
 		}
 	}
 

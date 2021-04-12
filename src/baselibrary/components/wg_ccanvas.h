@@ -225,7 +225,7 @@ namespace wg
 
 	SizeI CCanvas::size() const
 	{
-		return m_pSurface ? m_pSurface->size() : m_fixedSize;
+		return m_pSurface ? m_pSurface->pixelSize() : m_fixedSize;
 	}
 
 	//____ backColor() ________________________________________________________

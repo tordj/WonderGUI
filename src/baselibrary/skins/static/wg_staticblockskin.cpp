@@ -36,23 +36,24 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const BorderI& frame)
+	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const Border& frame)
 	{
-		return StaticBlockSkin_p(new StaticBlockSkin(pSurface,pSurface->size(),frame));
+		return StaticBlockSkin_p(new StaticBlockSkin(pSurface,pSurface->pointSize(),frame));
 	}
 
-	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const RectI& block, const BorderI& frame)
+	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const Rect& block, const Border& frame)
 	{
 		return StaticBlockSkin_p(new StaticBlockSkin(pSurface, block, frame));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	StaticBlockSkin::StaticBlockSkin(Surface* pSurface, const RectI& block, const BorderI& frame)
+	StaticBlockSkin::StaticBlockSkin(Surface* pSurface, const Rect& block, const Border& frame)
 	{
 		m_pSurface = pSurface;
-		m_ninePatch.block = block;
-		m_ninePatch.frame = frame;
+		m_ninePatch.block = align(ptsToSpx(block,pSurface->scale()));
+		m_ninePatch.frame = align(ptsToSpx(frame, pSurface->scale()));
+		m_gfxFrame = frame;
 		m_bOpaque = m_pSurface->isOpaque();
 	}
 
@@ -61,13 +62,6 @@ namespace wg
 	const TypeInfo& StaticBlockSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ preferredSize() ______________________________________________________________
-
-	Size StaticBlockSkin::preferredSize() const
-	{
-		return sizeForContent(m_ninePatch.block.size());
 	}
 
 	//____ setBlendMode() _____________________________________________________
@@ -97,8 +91,11 @@ namespace wg
 
 	//____ setRigidPartX() _____________________________________________
 
-	bool StaticBlockSkin::setRigidPartX(int ofs, int length, YSections sections)
+	bool StaticBlockSkin::setRigidPartX(pts _ofs, pts _length, YSections sections)
 	{
+		spx ofs = align(ptsToSpx(_ofs, m_pSurface->scale()));
+		spx length = align(ptsToSpx(_length, m_pSurface->scale()));
+
 		int	midSecLen = m_ninePatch.block.w - m_ninePatch.frame.width();
 		ofs -= m_ninePatch.frame.left;
 
@@ -132,8 +129,11 @@ namespace wg
 
 	//____ setRigidPartY() _____________________________________________
 
-	bool StaticBlockSkin::setRigidPartY(int ofs, int length, XSections sections)
+	bool StaticBlockSkin::setRigidPartY(pts _ofs, pts _length, XSections sections)
 	{
+		spx ofs = align(ptsToSpx(_ofs, m_pSurface->scale()));
+		spx length = align(ptsToSpx(_length, m_pSurface->scale()));
+
 		int	midSecLen = m_ninePatch.block.h - m_ninePatch.frame.height();
 		ofs -= m_ninePatch.frame.top;
 
@@ -165,9 +165,18 @@ namespace wg
 		return true;
 	}
 
-	//____ render() ______________________________________________________________
+	//____ _preferredSize() ______________________________________________________________
 
-	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, 
+	SizeSPX StaticBlockSkin::_preferredSize(int scale) const
+	{
+		Size ptsSize = spxToPts( m_ninePatch.block.size(), m_pSurface->scale() );
+
+		return SizeSPX::max(align(ptsToSpx(ptsSize,scale)),_sizeForContent( SizeSPX(), scale));
+	}
+
+	//____ _render() ______________________________________________________________
+
+	void StaticBlockSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
 								  float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pSurface)
@@ -176,12 +185,12 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_ninePatch.frame * 4 / m_pSurface->qpixPerPoint()), m_ninePatch);
+		pDevice->blitNinePatch(canvas, align(ptsToSpx(m_gfxFrame,scale)), m_ninePatch);
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool StaticBlockSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, opacityTreshold );
 	}
