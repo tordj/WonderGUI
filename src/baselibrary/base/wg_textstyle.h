@@ -43,7 +43,7 @@ namespace wg
 			//.____ Properties ___________________________________________________________
 
 			Font_p			pFont;
-			MU				size;
+			pts				size;
 			HiColor			color;
 			BlendMode		renderMode;
 			HiColor			bgColor;
@@ -87,8 +87,8 @@ namespace wg
 		void			setColor(HiColor color, State state);
 		void			setBgColor( HiColor color );
 		void			setBgColor(HiColor color, State state);
-		void			setSize( int size );
-		void			setSize(int size, State state);
+		void			setSize( pts size );
+		void			setSize(pts size, State state);
 		void			setDecoration( TextDecoration decoration );
 		void			setDecoration( TextDecoration decoration, State state );
 
@@ -112,7 +112,7 @@ namespace wg
 		inline BlendMode		bgRenderMode() const;
 		inline HiColor			color( State state ) const;
 		inline HiColor			bgColor( State state ) const;
-		inline int				size( State state ) const;
+		inline pts				size( State state ) const;
 		inline TextDecoration 	decoration( State state ) const;
 
 		inline bool             isColorStatic() const { return m_bStaticColor; }
@@ -153,7 +153,7 @@ namespace wg
 		BlendMode			m_renderMode = BlendMode::Blend;
 		BlendMode			m_bgRenderMode = BlendMode::Blend;
 
-		int					m_size[StateEnum_Nb];
+		pts					m_size[StateEnum_Nb];
 		HiColor				m_color[StateEnum_Nb];
 		HiColor				m_bgColor[StateEnum_Nb];
 		TextDecoration		m_decoration[StateEnum_Nb];
@@ -202,7 +202,7 @@ namespace wg
 	}
 
 	//______________________________________________________________________________
-	inline int TextStyle::size( State state ) const
+	inline pts TextStyle::size( State state ) const
 	{
 		return m_size[Util::_stateToIndex(state)];
 	}

@@ -114,7 +114,7 @@ namespace wg
 		inline bool			isScaleSet() const;
 
 		inline Coord		pos() const;
-		inline const Size&	size() const;
+		inline const Size	size() const;
 		inline Rect			geo() const;
 		inline Coord		globalPos() const;
 		inline Rect			globalGeo() const;
@@ -432,7 +432,7 @@ namespace wg
 	 */
 	Coord Widget::pos() const
 	{
-		Util::spxToPts(_pos(), m_scale);
+		return Util::spxToPts(_pos(), m_scale);
 	}
 
 	//____ size() __________________________
@@ -443,7 +443,7 @@ namespace wg
 	 *
 	 * @return Size of widget.
 	 */
-	const Size& Widget::size() const
+	const Size Widget::size() const
 	{
 		return Util::spxToPts(_size(), m_scale);
 	}
@@ -459,7 +459,7 @@ namespace wg
 	 */
 	Rect Widget::geo() const
 	{
-		Util::spxToPts(_geo(), m_scale);
+		return Util::spxToPts(_geo(), m_scale);
 	}
 
 	//____ globalPos() __________________________

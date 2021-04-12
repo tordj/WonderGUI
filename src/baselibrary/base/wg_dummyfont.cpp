@@ -85,21 +85,21 @@ namespace wg
 
 	//____ setSize() _________________________________________________________
 
-	bool DummyFont::setSize( MU size )
+	bool DummyFont::setSize( int size )
 	{
 		return false;
 	}
 
 	//____ size() _____________________________________________________________
 
-	MU DummyFont::size()
+	int DummyFont::size()
 	{
 		return 1;
 	}
 
 	//____ kerning() __________________________________________________________
 
-	MU DummyFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
+	spx DummyFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
 		return 0;
 	}
@@ -113,35 +113,35 @@ namespace wg
 
 	//____ lineGap() __________________________________________________________
 
-	MU DummyFont::lineGap()
+	spx DummyFont::lineGap()
 	{
 		return 1;
 	}
 
 	//____ whitespaceAdvance() ________________________________________________
 
-	MU DummyFont::whitespaceAdvance()
+	spx DummyFont::whitespaceAdvance()
 	{
 		return 1;
 	}
 
 	//____ maxAdvance() _______________________________________________________
 
-	MU DummyFont::maxAdvance()
+	spx DummyFont::maxAdvance()
 	{
 		return 1;
 	}
 
 	//____ maxAscend() ________________________________________________________
 
-	MU DummyFont::maxAscend()
+	spx DummyFont::maxAscend()
 	{
 		return 1;
 	}
 
 	//____ maxDescend() _______________________________________________________
 
-	MU DummyFont::maxDescend()
+	spx DummyFont::maxDescend()
 	{
 		return 0;
 	}
