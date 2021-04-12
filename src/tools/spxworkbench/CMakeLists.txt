@@ -4,39 +4,39 @@ add_executable(spxworkbench
 	main.cpp
 
 
-#	../../baselibrary/base/wg_base.cpp
-#	../../baselibrary/base/wg_base.h
+    ../../baselibrary/base/wg_base.cpp
+	../../baselibrary/base/wg_base.h
 #	../../baselibrary/base/wg_bitmapfont.cpp
 #	../../baselibrary/base/wg_bitmapfont.h
-#	../../baselibrary/base/wg_blob.cpp
-#	../../baselibrary/base/wg_blob.h
+	../../baselibrary/base/wg_blob.cpp
+	../../baselibrary/base/wg_blob.h
 #	../../baselibrary/base/wg_canvaslayers.cpp
 #	../../baselibrary/base/wg_canvaslayers.h
 #	../../baselibrary/base/wg_caret.cpp
 #	../../baselibrary/base/wg_caret.h
-#	../../baselibrary/base/wg_chain.cpp
-#	../../baselibrary/base/wg_chain.h
-#	../../baselibrary/base/wg_char.h
-#	../../baselibrary/base/wg_charbuffer.cpp
-#	../../baselibrary/base/wg_charbuffer.h
-#	../../baselibrary/base/wg_charseq.cpp
-#	../../baselibrary/base/wg_charseq.h
-#	../../baselibrary/base/wg_codepages.cpp
-#	../../baselibrary/base/wg_codepages.h
-#	../../baselibrary/base/wg_color.cpp
-#	../../baselibrary/base/wg_color.h
+	../../baselibrary/base/wg_chain.cpp
+	../../baselibrary/base/wg_chain.h
+	../../baselibrary/base/wg_char.h
+	../../baselibrary/base/wg_charbuffer.cpp
+	../../baselibrary/base/wg_charbuffer.h
+	../../baselibrary/base/wg_charseq.cpp
+	../../baselibrary/base/wg_charseq.h
+	../../baselibrary/base/wg_codepages.cpp
+	../../baselibrary/base/wg_codepages.h
+	../../baselibrary/base/wg_color.cpp
+	../../baselibrary/base/wg_color.h
 #	../../baselibrary/base/wg_context.cpp
 #	../../baselibrary/base/wg_context.h
-#	../../baselibrary/base/wg_dataset.cpp
-#	../../baselibrary/base/wg_dataset.h
+	../../baselibrary/base/wg_dataset.cpp
+	../../baselibrary/base/wg_dataset.h
 #	../../baselibrary/base/wg_dummyfont.cpp
 #	../../baselibrary/base/wg_dummyfont.h
-#	../../baselibrary/base/wg_enumextras.cpp
-#	../../baselibrary/base/wg_enumextras.h
+	../../baselibrary/base/wg_enumextras.cpp
+	../../baselibrary/base/wg_enumextras.h
 #	../../baselibrary/base/wg_font.cpp
 #	../../baselibrary/base/wg_font.h
-#	../../baselibrary/base/wg_geo.cpp
-#	../../baselibrary/base/wg_geo.h
+	../../baselibrary/base/wg_geo.cpp
+	../../baselibrary/base/wg_geo.h
 #	../../baselibrary/base/wg_gfxdevice.cpp
 #	../../baselibrary/base/wg_gfxdevice.h
 #	../../baselibrary/base/wg_gfxstream.h
@@ -55,12 +55,12 @@ add_executable(spxworkbench
 #	../../baselibrary/base/wg_hostbridge.h
 #	../../baselibrary/base/wg_inputhandler.cpp
 #	../../baselibrary/base/wg_inputhandler.h
-#	../../baselibrary/base/wg_internal.h
-#	../../baselibrary/base/wg_key.h
-#	../../baselibrary/base/wg_mempool.cpp
-#	../../baselibrary/base/wg_mempool.h
-#	../../baselibrary/base/wg_memstack.cpp
-#	../../baselibrary/base/wg_memstack.h
+	../../baselibrary/base/wg_internal.h
+	../../baselibrary/base/wg_key.h
+	../../baselibrary/base/wg_mempool.cpp
+	../../baselibrary/base/wg_mempool.h
+	../../baselibrary/base/wg_memstack.cpp
+	../../baselibrary/base/wg_memstack.h
 #	../../baselibrary/base/wg_msg.cpp
 #	../../baselibrary/base/wg_msg.h
 #	../../baselibrary/base/wg_msglogger.cpp
@@ -69,12 +69,12 @@ add_executable(spxworkbench
 #	../../baselibrary/base/wg_msgrouter.h
 #	../../baselibrary/base/wg_nullgfxdevice.cpp
 #	../../baselibrary/base/wg_nullgfxdevice.h
-#	../../baselibrary/base/wg_object.cpp
-#	../../baselibrary/base/wg_object.h
+	../../baselibrary/base/wg_object.cpp
+	../../baselibrary/base/wg_object.h
 #	../../baselibrary/base/wg_paddedslot.h
 #	../../baselibrary/base/wg_patches.cpp
 #	../../baselibrary/base/wg_patches.h
-#	../../baselibrary/base/wg_pointers.h
+	../../baselibrary/base/wg_pointers.h
 #	../../baselibrary/base/wg_receiver.cpp
 #	../../baselibrary/base/wg_receiver.h
 #	../../baselibrary/base/wg_resdb.cpp
@@ -108,11 +108,11 @@ add_executable(spxworkbench
 #	../../baselibrary/base/wg_texttool.h
 #	../../baselibrary/base/wg_togglegroup.cpp
 #	../../baselibrary/base/wg_togglegroup.h
-#	../../baselibrary/base/wg_types.h
-#	../../baselibrary/base/wg_util.cpp
-#	../../baselibrary/base/wg_util.h
-#	../../baselibrary/base/wg_weakcomponentptr.h
-#	../../baselibrary/base/wg_weakptr.h
+	../../baselibrary/base/wg_types.h
+	../../baselibrary/base/wg_util.cpp
+	../../baselibrary/base/wg_util.h
+	../../baselibrary/base/wg_weakcomponentptr.h
+	../../baselibrary/base/wg_weakptr.h
 #
 #
 #	../../baselibrary/components/wg_canimframes.cpp
@@ -336,12 +336,12 @@ add_executable(spxworkbench
 
 )
 
-target_link_directories(gfxworkbench PRIVATE 
+target_link_directories(spxworkbench PRIVATE 
 )
 
-target_working_directory(gfxworkbench ${WG_ROOT})
+target_working_directory(spxworkbench ${WG_ROOT})
 
-target_link_libraries(gfxworkbench PRIVATE
+target_link_libraries(spxworkbench PRIVATE
 #	wgsoftgfx
 #	wgopenglgfx
 #	wgfreetypefont

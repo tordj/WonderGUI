@@ -49,17 +49,17 @@ namespace wg
 
 		//.____ Rendering ____________________________________________
 
-		bool			setSize( MU size ) override;
-		MU				size() override;
+		bool			setSize( int size ) override;
+		int				size() override;
 
-		MU				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
+		spx				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
 		Glyph_p			getGlyph( uint16_t chr ) override;
 
-		MU				lineGap() override;
-		MU				whitespaceAdvance() override;
-		MU				maxAdvance() override;
-		MU				maxAscend() override;
-		MU				maxDescend() override;
+		spx				lineGap() override;
+		spx				whitespaceAdvance() override;
+		spx 			maxAdvance() override;
+		spx				maxAscend() override;
+		spx				maxDescend() override;
 
 		//.____ Misc ___________________________________________________________
 

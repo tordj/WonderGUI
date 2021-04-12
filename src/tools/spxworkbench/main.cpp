@@ -7,7 +7,9 @@
 #else
 #	include <SDL2/SDL.h>
 #endif
-#include <wondergui.h>
+
+#include <wg_base.h>
+#include <wg_msgrouter.h>
 
 #include <wg_softsurface.h>
 #include <wg_softgfxdevice.h>
