@@ -145,11 +145,13 @@ namespace wg
 		_stopReceiveUpdates();
 	}
 
-	//____ preferredSize() ___________________________________________________________
+	//____ _preferredSize() ___________________________________________________________
 
-	Size AnimPlayer::preferredSize() const
+	SizeSPX AnimPlayer::_preferredSize(int _scale) const
 	{
-		return OO(skin)._sizeForContent(frames.frameSize());
+		int scale = _fixScale(_scale);
+
+		return OO(skin)._sizeForContent(frames.frameSize(),scale);
 	}
 
 	//____ _update() ______________________________________________________________
@@ -166,13 +168,13 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void AnimPlayer::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void AnimPlayer::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render( pDevice, _canvas, _window );
 
 		if (m_cycleDuration > 0 && m_state.isEnabled())
 		{
-			Rect canv = _contentRect();
+			RectSPX canv = _contentRect();
 			pDevice->setBlitSource(frames._surface());
 			auto * pFrame = frames.find(_playPosToTimestamp(m_playPos));
 			pDevice->stretchFlipBlit(canv, RectI(pFrame->source(), frames.frameSize()), pFrame->flip());
@@ -197,7 +199,7 @@ namespace wg
 
 	//____ _alphaTest() ______________________________________________________
 
-	bool AnimPlayer::_alphaTest( const Coord& ofs )
+	bool AnimPlayer::_alphaTest( const CoordSPX& ofs )
 	{
 		//TODO: Take flip into account!
 
@@ -205,7 +207,7 @@ namespace wg
 			return true;
 
 		if (m_cycleDuration > 0 && m_state.isEnabled())
-			return Util::markTestStretchRect(ofs, frames._surface(), RectI(frames.find(_playPosToTimestamp(m_playPos))->source(), frames.frameSize()), Rect(m_size), m_markOpacity);
+			return Util::markTestStretchRect(ofs, frames._surface(), RectI(frames.find(_playPosToTimestamp(m_playPos))->source(), frames.frameSize()), RectSPX(m_size), m_markOpacity);
 
 		return false;
 	}

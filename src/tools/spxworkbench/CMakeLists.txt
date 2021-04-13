@@ -3,6 +3,12 @@ add_executable(spxworkbench
 
 	main.cpp
 
+	../../gfxdevices/software/wg_softgfxdevice.cpp
+	../../gfxdevices/software/wg_softgfxdevice.h
+	../../gfxdevices/software/wg_softsurface.cpp
+	../../gfxdevices/software/wg_softsurface.h
+	../../gfxdevices/software/wg_softsurfacefactory.cpp
+	../../gfxdevices/software/wg_softsurfacefactory.h
 
     ../../baselibrary/base/wg_base.cpp
 	../../baselibrary/base/wg_base.h
@@ -10,10 +16,10 @@ add_executable(spxworkbench
 #	../../baselibrary/base/wg_bitmapfont.h
 	../../baselibrary/base/wg_blob.cpp
 	../../baselibrary/base/wg_blob.h
-#	../../baselibrary/base/wg_canvaslayers.cpp
-#	../../baselibrary/base/wg_canvaslayers.h
-#	../../baselibrary/base/wg_caret.cpp
-#	../../baselibrary/base/wg_caret.h
+	../../baselibrary/base/wg_canvaslayers.cpp
+	../../baselibrary/base/wg_canvaslayers.h
+	../../baselibrary/base/wg_caret.cpp
+	../../baselibrary/base/wg_caret.h
 	../../baselibrary/base/wg_chain.cpp
 	../../baselibrary/base/wg_chain.h
 	../../baselibrary/base/wg_char.h
@@ -25,20 +31,20 @@ add_executable(spxworkbench
 	../../baselibrary/base/wg_codepages.h
 	../../baselibrary/base/wg_color.cpp
 	../../baselibrary/base/wg_color.h
-#	../../baselibrary/base/wg_context.cpp
-#	../../baselibrary/base/wg_context.h
+	../../baselibrary/base/wg_context.cpp
+	../../baselibrary/base/wg_context.h
 	../../baselibrary/base/wg_dataset.cpp
 	../../baselibrary/base/wg_dataset.h
-#	../../baselibrary/base/wg_dummyfont.cpp
-#	../../baselibrary/base/wg_dummyfont.h
+	../../baselibrary/base/wg_dummyfont.cpp
+	../../baselibrary/base/wg_dummyfont.h
 	../../baselibrary/base/wg_enumextras.cpp
 	../../baselibrary/base/wg_enumextras.h
-#	../../baselibrary/base/wg_font.cpp
-#	../../baselibrary/base/wg_font.h
+	../../baselibrary/base/wg_font.cpp
+	../../baselibrary/base/wg_font.h
 	../../baselibrary/base/wg_geo.cpp
 	../../baselibrary/base/wg_geo.h
-#	../../baselibrary/base/wg_gfxdevice.cpp
-#	../../baselibrary/base/wg_gfxdevice.h
+	../../baselibrary/base/wg_gfxdevice.cpp
+	../../baselibrary/base/wg_gfxdevice.h
 #	../../baselibrary/base/wg_gfxstream.h
 #	../../baselibrary/base/wg_gfxstreamlogger.cpp
 #	../../baselibrary/base/wg_gfxstreamlogger.h
@@ -52,31 +58,31 @@ add_executable(spxworkbench
 #	../../baselibrary/base/wg_gfxstreamwriter.h
 #	../../baselibrary/base/wg_gradient.cpp
 #	../../baselibrary/base/wg_gradient.h
-#	../../baselibrary/base/wg_hostbridge.h
-#	../../baselibrary/base/wg_inputhandler.cpp
-#	../../baselibrary/base/wg_inputhandler.h
+	../../baselibrary/base/wg_hostbridge.h
+	../../baselibrary/base/wg_inputhandler.cpp
+	../../baselibrary/base/wg_inputhandler.h
 	../../baselibrary/base/wg_internal.h
 	../../baselibrary/base/wg_key.h
 	../../baselibrary/base/wg_mempool.cpp
 	../../baselibrary/base/wg_mempool.h
 	../../baselibrary/base/wg_memstack.cpp
 	../../baselibrary/base/wg_memstack.h
-#	../../baselibrary/base/wg_msg.cpp
-#	../../baselibrary/base/wg_msg.h
+	../../baselibrary/base/wg_msg.cpp
+	../../baselibrary/base/wg_msg.h
 #	../../baselibrary/base/wg_msglogger.cpp
 #	../../baselibrary/base/wg_msglogger.h
-#	../../baselibrary/base/wg_msgrouter.cpp
-#	../../baselibrary/base/wg_msgrouter.h
+	../../baselibrary/base/wg_msgrouter.cpp
+	../../baselibrary/base/wg_msgrouter.h
 #	../../baselibrary/base/wg_nullgfxdevice.cpp
 #	../../baselibrary/base/wg_nullgfxdevice.h
 	../../baselibrary/base/wg_object.cpp
 	../../baselibrary/base/wg_object.h
-#	../../baselibrary/base/wg_paddedslot.h
-#	../../baselibrary/base/wg_patches.cpp
-#	../../baselibrary/base/wg_patches.h
+	../../baselibrary/base/wg_paddedslot.h
+	../../baselibrary/base/wg_patches.cpp
+	../../baselibrary/base/wg_patches.h
 	../../baselibrary/base/wg_pointers.h
-#	../../baselibrary/base/wg_receiver.cpp
-#	../../baselibrary/base/wg_receiver.h
+	../../baselibrary/base/wg_receiver.cpp
+	../../baselibrary/base/wg_receiver.h
 #	../../baselibrary/base/wg_resdb.cpp
 #	../../baselibrary/base/wg_resdb.h
 #	../../baselibrary/base/wg_resloader.h
@@ -84,28 +90,28 @@ add_executable(spxworkbench
 #	../../baselibrary/base/wg_scrollbartarget.h
 #	../../baselibrary/base/wg_selectableslot.h
 #	../../baselibrary/base/wg_shadow.h
-#	../../baselibrary/base/wg_skinslotmanager.cpp
-#	../../baselibrary/base/wg_skinslotmanager.h
-#	../../baselibrary/base/wg_slot.cpp
-#	../../baselibrary/base/wg_slot.h
-#	../../baselibrary/base/wg_slotholder.h
-#	../../baselibrary/base/wg_slotiterator.h
-#	../../baselibrary/base/wg_string.cpp
-#	../../baselibrary/base/wg_string.h
-#	../../baselibrary/base/wg_strongcomponentptr.h
-#	../../baselibrary/base/wg_strongptr.h
-#	../../baselibrary/base/wg_surface.cpp
-#	../../baselibrary/base/wg_surface.h
-#	../../baselibrary/base/wg_surfacefactory.cpp
-#	../../baselibrary/base/wg_surfacefactory.h
-#	../../baselibrary/base/wg_textlink.cpp
-#	../../baselibrary/base/wg_textlink.h
-#	../../baselibrary/base/wg_textstyle.cpp
-#	../../baselibrary/base/wg_textstyle.h
-#	../../baselibrary/base/wg_textstylemanager.cpp
-#	../../baselibrary/base/wg_textstylemanager.h
-#	../../baselibrary/base/wg_texttool.cpp
-#	../../baselibrary/base/wg_texttool.h
+	../../baselibrary/base/wg_skinslotmanager.cpp
+	../../baselibrary/base/wg_skinslotmanager.h
+	../../baselibrary/base/wg_slot.cpp
+	../../baselibrary/base/wg_slot.h
+	../../baselibrary/base/wg_slotholder.h
+	../../baselibrary/base/wg_slotiterator.h
+	../../baselibrary/base/wg_string.cpp
+	../../baselibrary/base/wg_string.h
+	../../baselibrary/base/wg_strongcomponentptr.h
+	../../baselibrary/base/wg_strongptr.h
+	../../baselibrary/base/wg_surface.cpp
+	../../baselibrary/base/wg_surface.h
+	../../baselibrary/base/wg_surfacefactory.cpp
+	../../baselibrary/base/wg_surfacefactory.h
+	../../baselibrary/base/wg_textlink.cpp
+	../../baselibrary/base/wg_textlink.h
+	../../baselibrary/base/wg_textstyle.cpp
+	../../baselibrary/base/wg_textstyle.h
+	../../baselibrary/base/wg_textstylemanager.cpp
+	../../baselibrary/base/wg_textstylemanager.h
+	../../baselibrary/base/wg_texttool.cpp
+	../../baselibrary/base/wg_texttool.h
 #	../../baselibrary/base/wg_togglegroup.cpp
 #	../../baselibrary/base/wg_togglegroup.h
 	../../baselibrary/base/wg_types.h
@@ -133,23 +139,23 @@ add_executable(spxworkbench
 #	../../baselibrary/components/wg_cgfxoutstream.h
 #	../../baselibrary/components/wg_cicondisplay.cpp
 #	../../baselibrary/components/wg_cicondisplay.h
-#	../../baselibrary/components/wg_component.cpp
-#	../../baselibrary/components/wg_component.h
+	../../baselibrary/components/wg_component.cpp
+	../../baselibrary/components/wg_component.h
 #	../../baselibrary/components/wg_cpaddedslotvector.h
 #	../../baselibrary/components/wg_cpaddedslotvector.impl.h
 #	../../baselibrary/components/wg_cselectableslotvector.h
 #	../../baselibrary/components/wg_cselectableslotvector.impl.h
 #	../../baselibrary/components/wg_cshadows.cpp
 #	../../baselibrary/components/wg_cshadows.h
-#	../../baselibrary/components/wg_cskinslot.cpp
-#	../../baselibrary/components/wg_cskinslot.h
+	../../baselibrary/components/wg_cskinslot.cpp
+	../../baselibrary/components/wg_cskinslot.h
 #	../../baselibrary/components/wg_cskinslotmi.cpp
 #	../../baselibrary/components/wg_cskinslotmi.h
-#	../../baselibrary/components/wg_cslot.cpp
-#	../../baselibrary/components/wg_cslot.h
+	../../baselibrary/components/wg_cslot.cpp
+	../../baselibrary/components/wg_cslot.h
 #	../../baselibrary/components/wg_cslotarray.h
-#	../../baselibrary/components/wg_cstandardslot.cpp
-#	../../baselibrary/components/wg_cstandardslot.h
+	../../baselibrary/components/wg_cstandardslot.cpp
+	../../baselibrary/components/wg_cstandardslot.h
 #	../../baselibrary/components/wg_cstaticslotcollection.cpp
 #	../../baselibrary/components/wg_cstaticslotcollection.h
 #	../../baselibrary/components/wg_cstaticslotvector.h
@@ -170,8 +176,8 @@ add_executable(spxworkbench
 #	../../baselibrary/components/wg_cvaluedisplay.h
 #	../../baselibrary/components/wg_cvalueeditor.cpp
 #	../../baselibrary/components/wg_cvalueeditor.h
-#	../../baselibrary/components/wg_geocomponent.cpp
-#	../../baselibrary/components/wg_geocomponent.h
+	../../baselibrary/components/wg_geocomponent.cpp
+	../../baselibrary/components/wg_geocomponent.h
 #
 #	../../baselibrary/sizebrokers/wg_scalepreferred_sizebroker.cpp
 #	../../baselibrary/sizebrokers/wg_scalepreferred_sizebroker.h
@@ -182,11 +188,11 @@ add_executable(spxworkbench
 #	
 #	../../baselibrary/skins/wg_animskin.cpp
 #	../../baselibrary/skins/wg_animskin.h
-#	../../baselibrary/skins/wg_skin.cpp
-#	../../baselibrary/skins/wg_skin.h
+	../../baselibrary/skins/wg_skin.cpp
+	../../baselibrary/skins/wg_skin.h
 #	../../baselibrary/skins/wg_skin.impl.h
-#	../../baselibrary/skins/wg_stateskin.cpp
-#	../../baselibrary/skins/wg_stateskin.h	
+	../../baselibrary/skins/wg_stateskin.cpp
+	../../baselibrary/skins/wg_stateskin.h	
 #	../../baselibrary/skins/anim/wg_spinanimskin.cpp
 #	../../baselibrary/skins/anim/wg_spinanimskin.h
 #	../../baselibrary/skins/meter/wg_fillmeterskin.cpp
@@ -203,8 +209,8 @@ add_executable(spxworkbench
 #	../../baselibrary/skins/misc/wg_doubleskin.h
 #	../../baselibrary/skins/state/wg_blockskin.cpp
 #	../../baselibrary/skins/state/wg_blockskin.h
-#	../../baselibrary/skins/state/wg_boxskin.cpp
-#	../../baselibrary/skins/state/wg_boxskin.h
+	../../baselibrary/skins/state/wg_boxskin.cpp
+	../../baselibrary/skins/state/wg_boxskin.h
 #	../../baselibrary/skins/state/wg_circleskin.cpp
 #	../../baselibrary/skins/state/wg_circleskin.h
 #	../../baselibrary/skins/state/wg_colorskin.cpp
@@ -227,19 +233,19 @@ add_executable(spxworkbench
 #	../../baselibrary/skins/static/wg_staticgradientskin.h
 #	../../baselibrary/skins/static/wg_statictileskin.cpp
 #	../../baselibrary/skins/static/wg_statictileskin.h
-#
-#	../../baselibrary/textmappers/wg_stdtextmapper.cpp
-#	../../baselibrary/textmappers/wg_stdtextmapper.h
-#	../../baselibrary/textmappers/wg_textmapper.cpp
-#	../../baselibrary/textmappers/wg_textmapper.h
-#
-#	../../baselibrary/valueformatters/wg_standardformatter.cpp
-#	../../baselibrary/valueformatters/wg_standardformatter.h
-#	../../baselibrary/valueformatters/wg_timeformatter.cpp
-#	../../baselibrary/valueformatters/wg_timeformatter.h
-#	../../baselibrary/valueformatters/wg_valueformatter.cpp
-#	../../baselibrary/valueformatters/wg_valueformatter.h
-#
+
+	../../baselibrary/textmappers/wg_stdtextmapper.cpp
+	../../baselibrary/textmappers/wg_stdtextmapper.h
+	../../baselibrary/textmappers/wg_textmapper.cpp
+	../../baselibrary/textmappers/wg_textmapper.h
+
+	../../baselibrary/valueformatters/wg_standardformatter.cpp
+	../../baselibrary/valueformatters/wg_standardformatter.h
+	../../baselibrary/valueformatters/wg_timeformatter.cpp
+	../../baselibrary/valueformatters/wg_timeformatter.h
+	../../baselibrary/valueformatters/wg_valueformatter.cpp
+	../../baselibrary/valueformatters/wg_valueformatter.h
+
 #	../../baselibrary/widgets/wg_animplayer.cpp
 #	../../baselibrary/widgets/wg_animplayer.h
 #	../../baselibrary/widgets/wg_button.cpp
@@ -288,8 +294,8 @@ add_executable(spxworkbench
 #	../../baselibrary/widgets/wg_valuedisplay.h
 #	../../baselibrary/widgets/wg_volumemeter.cpp
 #	../../baselibrary/widgets/wg_volumemeter.h
-#	../../baselibrary/widgets/wg_widget.cpp
-#	../../baselibrary/widgets/wg_widget.h
+	../../baselibrary/widgets/wg_widget.cpp
+	../../baselibrary/widgets/wg_widget.h
 #
 #	../../baselibrary/widgets/capsules/wg_canvascapsule.cpp
 #	../../baselibrary/widgets/capsules/wg_canvascapsule.h
@@ -325,8 +331,8 @@ add_executable(spxworkbench
 #	../../baselibrary/widgets/panels/wg_packpanel.h
 #	../../baselibrary/widgets/panels/wg_panel.cpp
 #	../../baselibrary/widgets/panels/wg_panel.h
-#	../../baselibrary/widgets/panels/wg_rootpanel.cpp
-#	../../baselibrary/widgets/panels/wg_rootpanel.h
+	../../baselibrary/widgets/panels/wg_rootpanel.cpp
+	../../baselibrary/widgets/panels/wg_rootpanel.h
 #	../../baselibrary/widgets/panels/wg_scrollpanel.cpp
 #	../../baselibrary/widgets/panels/wg_scrollpanel.h
 #	../../baselibrary/widgets/panels/wg_splitpanel.cpp

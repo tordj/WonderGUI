@@ -81,10 +81,10 @@ namespace wg
 			RootPanel *				_root() override;
 			Object *				_object() override;
 			const Object *			_object() const override;
+			virtual int				_scale() const override;									///< Default scale value for all children.
 
 			virtual CoordSPX		_childPos( const StaticSlot * pSlot ) const override = 0;				///< Get the local position of a child.
 			virtual CoordSPX		_childGlobalPos( const StaticSlot * pSlot ) const override;
-			virtual int				_childDefaultScale() const override;									///< Default scale value for all children.
 
 			virtual bool			_isChildVisible( const StaticSlot * pSlot ) const override;
 			virtual RectSPX			_childWindowSection( const StaticSlot * pSlot ) const override;		// Returns the window section within the childs canvas.
@@ -108,8 +108,8 @@ namespace wg
 			virtual void			_selectSlots(StaticSlot * pSlot, int nb) override;
 			virtual void			_unselectSlots(StaticSlot * pSlot, int nb) override;
 
-			virtual void			_repadSlots(StaticSlot * pSlot, int nb, BorderSPX padding) override;
-			virtual void			_repadSlots(StaticSlot * pSlot, int nb, const BorderSPX * pPadding) override;
+			virtual void			_repadSlots(StaticSlot * pSlot, int nb, Border padding) override;
+			virtual void			_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding) override;
 
 			virtual void			_didAddSlots(StaticSlot * pSlot, int nb) override;
 			virtual void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;

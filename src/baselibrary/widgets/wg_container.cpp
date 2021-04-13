@@ -100,13 +100,6 @@ namespace wg
 		return _childPos(pSlot) + _globalPos();
 	}
 
-	//____ _childDefaultScale() _____________________________________________________
-
-	int Container::_childDefaultScale() const
-	{
-		return m_scale;
-	}
-
 	//____ _isChildVisible() ________________________________________________________
 
 	bool Container::_isChildVisible( const StaticSlot * pSlot ) const
@@ -146,6 +139,14 @@ namespace wg
 	{
 		return this;
 	}
+
+	//____ _scale() ________________________________________________________________
+
+	int Container::_scale() const
+	{
+		return m_scale;
+	}
+
 
 	//____ _childRequestFocus() ______________________________________________________
 
@@ -197,12 +198,12 @@ namespace wg
 
 	//____ _repadSlots() ______________________________________________________
 
-	void Container::_repadSlots(StaticSlot * pSlot, int nb, BorderSPX padding)
+	void Container::_repadSlots(StaticSlot * pSlot, int nb, Border padding)
 	{
 		return;				// By default we don't support padding
 	}
 
-	void Container::_repadSlots(StaticSlot * pSlot, int nb, const BorderSPX * pPadding)
+	void Container::_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding)
 	{
 		return;				// By default we don't support padding
 	}

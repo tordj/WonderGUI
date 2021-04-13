@@ -85,10 +85,10 @@ namespace wg
 		inline CaretMode	mode() const { return m_mode; }
 		virtual bool		restartCycle();
 		virtual spx			eolWidth( const SizeSPX& eolCell, int scale ) const;
-		virtual RectSPX		dirtyRect( RectSPX cell, int scale ) const;
+		virtual RectSPX		dirtyRect( const RectSPX& cell, int scale ) const;
 		virtual bool		tick( int millisec );
 		inline bool			needToRender() const { return m_bNeedToRender; }
-		virtual void		render( GfxDevice * pDevice, RectSPX cell, int scale );
+		virtual void		render( GfxDevice * pDevice, const RectSPX& cell, int scale );
 
 
 	protected:

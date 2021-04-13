@@ -54,7 +54,7 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		void			setPadding( Border padding) { static_cast<SlotHolder*>(_holder())->_repadSlots(this, 1, padding.aligned()); }
+		void			setPadding( Border padding) { static_cast<SlotHolder*>(_holder())->_repadSlots(this, 1, padding); }
 		inline Border	padding() const { return m_padding; }
 
 		//.____ Operators __________________________________________
@@ -68,13 +68,14 @@ namespace wg
 		inline SlotHolder * _holder() { return static_cast<SlotHolder*>(m_pHolder); }
 		inline const SlotHolder * _holder() const { return static_cast<SlotHolder*>(m_pHolder); }
 
-		Size		_paddedPreferredSize() const { return m_pWidget->preferredSize() + m_padding; }
-		Size		_paddedMinSize() const { return m_pWidget->minSize() + m_padding; }
-		Size		_paddedMaxSize() const { return m_pWidget->maxSize() + m_padding; }
-		MU			_paddedMatchingWidth(MU paddedHeight) const { return m_pWidget->matchingWidth(paddedHeight - m_padding.height()) + m_padding.width(); }
-		MU			_paddedMatchingHeight(MU paddedWidth) const { return m_pWidget->matchingHeight(paddedWidth - m_padding.width()) + m_padding.height(); }
+		SizeSPX		_paddedPreferredSize() const { return m_pWidget->_preferredSize() + m_paddingSPX; }
+		SizeSPX		_paddedMinSize() const { return m_pWidget->_minSize() + m_paddingSPX; }
+		SizeSPX		_paddedMaxSize() const { return m_pWidget->_maxSize() + m_paddingSPX; }
+		spx			_paddedMatchingWidth(spx paddedHeight) const { return m_pWidget->_matchingWidth(paddedHeight - m_paddingSPX.height()) + m_paddingSPX.width(); }
+		spx			_paddedMatchingHeight(spx paddedWidth) const { return m_pWidget->_matchingHeight(paddedWidth - m_paddingSPX.width()) + m_paddingSPX.height(); }
 
 		Border		m_padding;
+		BorderSPX	m_paddingSPX;
 		bool		m_bVisible;
 	};
 }

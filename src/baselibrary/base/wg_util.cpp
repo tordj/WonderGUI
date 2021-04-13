@@ -236,8 +236,8 @@ int Util::gcd(int a, int b)
 
 	bool Util::markTestNinePatch(CoordSPX ofs, Surface* pSurface, const NinePatch& patch, const RectSPX& _dest, const BorderSPX& destFrame, int scale, int opacityTreshold)
 	{
-		const BorderSPX& sourceFrame = patch.frame;
-		const RectSPX& _source = patch.block;
+		const BorderSPX sourceFrame = align(ptsToSpx(patch.frame,pSurface->scale()));
+		const RectSPX _source = align(ptsToSpx(patch.block, pSurface->scale()));
 
 		// Sanity check & shortcuts.
 

@@ -76,7 +76,7 @@ namespace wg
 
 	public:
 
-		//.____ Components ____________________________________
+		//.____ Components ____________________________________________________
 
 		/**
 		 * @brief The skin of this widget.
@@ -96,7 +96,7 @@ namespace wg
 
 		CSkinSlot			skin;
 
-		//.____ Identification _________________________________________________
+		//.____ Identification ________________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
@@ -106,7 +106,7 @@ namespace wg
 
 		virtual bool		isContainer() const;
 
-		//.____ Geometry _________________________________________________
+		//.____ Geometry ______________________________________________________
 
 		virtual bool		setScale(int scale);
 		inline void			clearScale();
@@ -132,7 +132,7 @@ namespace wg
 		inline Size			maxSize() const;
 
 
-		//.____ Hierarchy _________________________________________________
+		//.____ Hierarchy _____________________________________________________
 
 		inline Widget_p		nextSibling() const;
 		inline Widget_p		prevSibling() const;
@@ -142,7 +142,7 @@ namespace wg
 
 		Widget_p			commonAncestor(Widget* pOtherWidget);
 
-		//.____ State _________________________________________________
+		//.____ State _________________________________________________________
 
 		inline const State&	state() const;
 
@@ -157,7 +157,7 @@ namespace wg
 		inline bool			isFocused();
 
 
-		//.____ Appearance _________________________________________________
+		//.____ Appearance ____________________________________________________
 
 		inline void			setTooltip(const String& str);
 		inline virtual String tooltip() const;
@@ -166,7 +166,7 @@ namespace wg
 		virtual PointerStyle pointerStyle() const;
 
 
-		//.____ Behavior _______________________________________________________
+		//.____ Behavior ______________________________________________________
 
 		inline void			setMarkOpacity(int opacity);
 		inline int			markOpacity() const;
@@ -182,7 +182,7 @@ namespace wg
 		inline bool         isDropTarget() const;
 
 
-		//.____ Misc _________________________________________________________________
+		//.____ Misc __________________________________________________________
 
 		bool				markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg ) override final;
@@ -198,6 +198,14 @@ namespace wg
 		bool				hasBaggage() const;
 		Object_p			baggage() const;
 
+		//.____ Internal ______________________________________________________
+
+		virtual spx			_matchingHeight(spx width, int scale = -1) const;
+		virtual spx			_matchingWidth(spx height, int scale = -1) const;
+
+		virtual SizeSPX		_preferredSize(int scale = -1) const;
+		virtual SizeSPX		_minSize(int scale = -1) const;
+		virtual SizeSPX		_maxSize(int scale = -1) const;
 
 
 	protected:
@@ -230,13 +238,6 @@ namespace wg
 		inline RectSPX		_toGlobal(const RectSPX& rect) const;
 		inline CoordSPX		_toLocal(const CoordSPX& coord) const;
 		inline RectSPX		_toLocal(const RectSPX& rect) const;
-
-		virtual spx			_matchingHeight(spx width, int scale = -1) const;
-		virtual spx			_matchingWidth(spx height, int scale = -1) const;
-
-		virtual SizeSPX		_preferredSize(int scale = -1) const;
-		virtual SizeSPX		_minSize(int scale = -1) const;
-		virtual SizeSPX		_maxSize(int scale = -1) const;
 
 		inline RectSPX		_contentRect() const { return OO(skin)._contentRect(m_size, m_scale, m_state); }
 		inline RectSPX		_contentRect(const RectSPX& canvas) const { return OO(skin)._contentRect(canvas, m_scale, m_state); }
@@ -281,6 +282,7 @@ namespace wg
 
 		Object * 		_object() override;
 		const Object *	_object() const override;
+		int				_scale() const override;
 
 		State			_componentState(const GeoComponent* pComponent) const override;
 		CoordSPX		_componentPos( const GeoComponent * pComponent ) const override;
@@ -336,6 +338,22 @@ namespace wg
 
 	};
 
+	class OWidget : public Widget
+	{
+	public:
+		using Widget::_resize;
+		using Widget::_collectPatches;
+		using Widget::_maskPatches;
+		using Widget::_render;
+		using Widget::_parent;
+		using Widget::_slot;
+		using Widget::_windowPadding;
+		using Widget::_preRender;
+		using Widget::_setState;
+	};
+
+	inline OWidget* OO(Widget* pWidget) { return reinterpret_cast<OWidget*>(pWidget); }
+	inline const OWidget* OO(const Widget* pWidget) { return reinterpret_cast<const OWidget*>(pWidget); }
 
 
 	//____ Inline methods __________________________________________________________

@@ -59,6 +59,8 @@ namespace wg
 		virtual void		_mapperRequestRender(const RectSPX& rect) = 0;
 		virtual void		_mapperRequestResize() = 0;
 		
+		virtual int			_scale() const = 0;
+
 		union
 		{
 			void *			m_pMapperData;
@@ -87,7 +89,7 @@ namespace wg
 		virtual void	addText( Text * pText ) = 0;
 		virtual void	removeText( Text * pText ) = 0;
 
-		virtual int		charAtPos( const Text * pText, Coord pos ) const = 0;
+		virtual int		charAtPos( const Text * pText, CoordSPX pos ) const = 0;
 		virtual CoordSPX charPos( const Text * pText, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
 		virtual RectSPX	charRect( const Text * pText, int charOfs ) const = 0;
 		virtual int		charLine( const Text * pText, int charOfs ) const = 0;
@@ -129,7 +131,7 @@ namespace wg
 		// Methods for supporting a caret
 
 		virtual Direction 	textDirection( Text * pText, int charOfs ) const = 0;
-		virtual int			caretToPos( Text * pText, Coord pos, spx& wantedLineOfs ) const = 0;
+		virtual int			caretToPos( Text * pText, CoordSPX pos, spx& wantedLineOfs ) const = 0;
 		virtual int			caretUp( Text * pText, int charOfs, spx& wantedLineOfs ) const = 0;
 		virtual int			caretDown( Text * pText, int charOfs, spx& wantedLineOfs ) const = 0;
 		virtual int			caretLeft( Text * pText, int charOfs, spx& wantedLineOfs ) const = 0;
@@ -147,6 +149,7 @@ namespace wg
 
 		SizeSPX				_size( const Text * pText ) const;
 		int					_length( const Text * pText ) const;
+		int					_scale(const Text* pText) const;
 
 		bool				_caretVisible( const Text * pText ) const;
 		int					_caretOfs( const Text * pText ) const;

@@ -516,7 +516,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void CTextEditor::_render( GfxDevice * pDevice, const Rect& canvas )
+	void CTextEditor::_render( GfxDevice * pDevice, const RectSPX& canvas )
 	{
 		_textMapper()->render(this, pDevice, canvas );
 	}
@@ -905,7 +905,7 @@ namespace wg
 			return false;
 
 		int caretOfs = m_charBuffer.length();		// Caret placed on terminator char following the string.
-		m_editState.wantedOfs.qpix = -1;
+		m_editState.wantedOfs = -1;
 
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
@@ -916,7 +916,7 @@ namespace wg
 	{
 		m_editState.caretOfs = m_charBuffer.length();		// Caret placed on terminator char following the string.
 		m_editState.selectOfs = m_editState.caretOfs;
-		m_editState.wantedOfs.qpix = -1;
+		m_editState.wantedOfs = -1;
 		_updateInsertStyle();
 		_updateDisplayArea();
 	}
@@ -924,7 +924,7 @@ namespace wg
 
 	//____ caretToPos() __________________________________________________________
 
-	bool CTextEditor::caretToPos( Coord pos)
+	bool CTextEditor::caretToPos( CoordSPX pos)
 	{
 		int ofs = _textMapper()->caretToPos(this, pos, m_editState.wantedOfs );
 		return _moveCaret( ofs, MoveMethod::Mouse );
@@ -1001,8 +1001,8 @@ namespace wg
 		if (end < beg)
 			std::swap(beg, end);
 
-		Rect niceToHave = _textMapper()->rectForRange(this, beg, end - beg);
-		Rect mustHave = _textMapper()->rectForCaret(this);
+		RectSPX niceToHave = _textMapper()->rectForRange(this, beg, end - beg);
+		RectSPX mustHave = _textMapper()->rectForCaret(this);
 
 		_requestVisibility(mustHave, niceToHave);
 	}
