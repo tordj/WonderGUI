@@ -109,7 +109,7 @@ namespace wg
 		pText->_mapperRequestRender();
 	}
 
-	void  TextMapper::_setTextDirty( Text * pText, const Rect& rect )
+	void  TextMapper::_setTextDirty( Text * pText, const RectSPX& rect )
 	{
 		pText->_mapperRequestRender( rect );
 	}
@@ -123,7 +123,7 @@ namespace wg
 
 	//____ _size() _____________________________________________________________
 
-	Size TextMapper::_size( const Text * pText ) const
+	SizeSPX TextMapper::_size( const Text * pText ) const
 	{
 		return pText->_textSize();
 	}
@@ -156,6 +156,14 @@ namespace wg
 	{
 		return pText->_selectedText();
 	}
+
+	//____ _scale() ___________________________________________________________
+
+	int TextMapper::_scale(const Text* pText) const
+	{
+		return pText->_scale();
+	}
+
 
 
 } // namespace wg

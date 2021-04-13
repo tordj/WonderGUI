@@ -174,7 +174,7 @@ namespace wg
 
 		Widget_wp		m_latestPressWidgets[MouseButton_size];		// Widget that received the latest press, for each button.
 		int64_t			m_latestPressTimestamps[MouseButton_size];	// Timestamp of the latest press, for each button.
-		Coord			m_latestPressPosition[MouseButton_size];	// CoordI of the latest press, for each button.
+		Coord			m_latestPressPosition[MouseButton_size];	// Coord of the latest press, for each button.
 		bool			m_latestPressDoubleClick[MouseButton_size];	// Set if latest press resulted in a double-click.
 
 		// Current key states

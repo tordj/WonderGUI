@@ -1,0 +1,6 @@
+LEFTOVERS
+
+Surface::alpha   	- ev Coord med _alpha(CoordSPX)
+Surface::fill		- pts-based?
+Surface::copyFrom	- pts-based?
+

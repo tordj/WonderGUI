@@ -23,7 +23,7 @@
 #include <wg_base.h>
 #include <wg_rootpanel.h>
 #include <wg_container.h>
-#include <wg_internal.h>
+//#include <wg_internal.h>
 
 namespace wg
 {
@@ -409,7 +409,7 @@ namespace wg
 
 		if( m_latestPressTimestamps[(int)button] + m_doubleClickTimeTreshold > timestamp )
 		{
-			CoordI distance = m_pointerPos - m_latestPressPosition[(int)button];
+			Coord distance = m_pointerPos - m_latestPressPosition[(int)button];
 
 			if( distance.x <= m_doubleClickDistanceTreshold &&
 				distance.x >= -m_doubleClickDistanceTreshold &&

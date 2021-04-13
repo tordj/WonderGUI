@@ -152,10 +152,10 @@ namespace wg
 		RootPanel *		_root() override;
 		Object *		_object() override;
 		const Object *	_object() const override;
+		int				_scale() const override;
 
 		CoordSPX		_childPos( const StaticSlot * pSlot ) const override;
 		CoordSPX		_childGlobalPos( const StaticSlot * pSlot ) const override;
-		int				_childDefaultScale() const override;
 
 		bool			_isChildVisible( const StaticSlot * pSlot ) const override;
 		RectSPX			_childWindowSection( const StaticSlot * pSlot ) const override;
@@ -179,8 +179,8 @@ namespace wg
 		void			_selectSlots(StaticSlot * pSlot, int nb) override;
 		void			_unselectSlots(StaticSlot * pSlot, int nb) override;
 
-		void			_repadSlots(StaticSlot * pSlot, int nb, BorderSPX padding) override;
-		void			_repadSlots(StaticSlot * pSlot, int nb, const BorderSPX * pPadding) override;
+		void			_repadSlots(StaticSlot * pSlot, int nb, Border padding) override;
+		void			_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding) override;
 
 		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;

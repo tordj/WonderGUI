@@ -79,7 +79,7 @@ namespace wg
 		virtual void	addText( Text * pText ) override;
 		virtual void	removeText( Text * pText ) override;
 
-		virtual int		charAtPos( const Text * pText, Coord pos ) const override;
+		virtual int		charAtPos( const Text * pText, CoordSPX pos ) const override;
 		virtual CoordSPX charPos( const Text * pText, int charOfs ) const override;	// Note: characters position on the baseline, not upper left corner of rectangle!
 		virtual RectSPX	charRect( const Text * pText, int charOfs ) const override;
 		virtual int		charLine( const Text * pText, int charOfs ) const override;
@@ -122,7 +122,7 @@ namespace wg
 		virtual String 	tooltip( const Text * pText ) const override;
 
 		virtual Direction 	textDirection( Text * pText, int charOfs ) const override;
-		virtual int		caretToPos( Text * pText, Coord pos, spx& wantedLineOfs ) const override;
+		virtual int		caretToPos( Text * pText, CoordSPX pos, spx& wantedLineOfs ) const override;
 		virtual int		caretUp( Text * pText, int charOfs, spx& wantedLineOfs ) const override;
 		virtual int		caretDown( Text * pText, int charOfs, spx& wantedLineOfs ) const override;
 		virtual int		caretLeft( Text * pText, int charOfs, spx& wantedLineOfs ) const override;
@@ -164,15 +164,15 @@ namespace wg
 		int				_countLines( Text * pText, const Char * pChars ) const;
 
 		int				_countFixedLines(const Char * pChars) const;
-		int				_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, State state, spx maxLineWidth) const;
-		spx				_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, State state, spx maxLineWidth) const;
+		int				_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const;
+		spx				_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const;
 
 		void *			_reallocBlock( Text * pText, int lines );
 
 		void			_updateLineInfo(Text * pText, void * pBlock, const Char * pChars );
 
-		SizeSPX			_updateFixedLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, State state);
-		SizeSPX			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, State state, spx maxLineWidth);
+		SizeSPX			_updateFixedLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state);
+		SizeSPX			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth);
 
 
 		spx				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const;

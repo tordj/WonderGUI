@@ -36,19 +36,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setScale() _________________________________________________________
-
-	bool Context::setScale(float scale)
-	{
-		if (scale < 0.25f || scale > 8.f || float(int(scale * 4)) != scale*4)
-			return false;
-
-		// Save scale
-
-		m_scale = scale;
-		return true;
-	}
-
 	//____ setGfxDevice() _____________________________________________________
 
 	void Context::setGfxDevice(GfxDevice * pDevice)

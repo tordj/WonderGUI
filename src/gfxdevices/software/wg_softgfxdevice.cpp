@@ -218,7 +218,7 @@ namespace wg
 
 	//____ read_pixel_fast8() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	inline void SoftGfxDevice::_read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
 		if (format == PixelFormat::Unknown)
 		{
@@ -300,7 +300,7 @@ namespace wg
 
 	//____ read_pixel() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color8 * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color8 * pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
 		if (format == PixelFormat::Unknown)
 		{
@@ -387,11 +387,11 @@ namespace wg
 
 		if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
 		{
-			const int16_t* p = &pClut4096[(*pPixel) * 4];
-			outB = p[2];
-			outG = p[1];
-			outR = p[0];
-			outA = p[3];
+			const HiColor* p = &pClut4096[(*pPixel)];
+			outB = p->b;
+			outG = p->g;
+			outR = p->r;
+			outA = p->a;
 		}
 	}
 

@@ -67,7 +67,7 @@ namespace wg
 
 	//____ Glyph::Glyph() _______________________________________________________
 
-	Glyph::Glyph( MU advance, int kerningIndex, Font * pFont )
+	Glyph::Glyph( spx advance, int kerningIndex, Font * pFont )
 	{
 		m_pFont = pFont;
 		m_advance = advance;

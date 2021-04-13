@@ -404,6 +404,8 @@ namespace wg
 
 	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, Border padding)
 	{
+//		TJFIX!!!  Also set m_paddingSPX and use that for geometry instead!
+
 		for (int i = 0; i < nb; i++)
 			((Slot*)pSlot)[i].m_padding = padding;
 

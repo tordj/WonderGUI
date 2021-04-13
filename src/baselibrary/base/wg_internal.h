@@ -33,19 +33,6 @@
 namespace wg
 {
 
-	class OWidget : public Widget
-	{
-	public:
-		using Widget::_resize;
-		using Widget::_collectPatches;
-		using Widget::_maskPatches;
-		using Widget::_render;
-		using Widget::_parent;
-		using Widget::_slot;
-		using Widget::_windowPadding;
-		using Widget::_preRender;
-		using Widget::_setState;
-	};
 
 	class OSideCanvas : public SideCanvas
 	{
@@ -234,9 +221,6 @@ namespace wg
 		using Skin::_decUseCount;
 	};
 
-
-	inline OWidget *			OO(Widget* pWidget) { return reinterpret_cast<OWidget*>(pWidget); }
-	inline const OWidget *		OO(const Widget* pWidget) { return reinterpret_cast<const OWidget*>(pWidget); }
 
 	inline OContainer *			OO(Container* pContainer) { return reinterpret_cast<OContainer*>(pContainer); }
 	inline const OContainer *	OO(const Container* pContainer) { return reinterpret_cast<const OContainer*>(pContainer); }

@@ -47,12 +47,12 @@ namespace wg
 		virtual RootPanel *	_root() = 0;
 		virtual Object *	_object() = 0;
 		virtual const Object *	_object() const = 0;
+		virtual int			_scale() const = 0;
 
 		virtual const TypeInfo& _slotTypeInfo(const StaticSlot * pSlot) const = 0;
 
 		virtual CoordSPX	_childPos( const StaticSlot * pSlot ) const = 0;				///< Get the local position of the widget.
 		virtual CoordSPX	_childGlobalPos( const StaticSlot * pSlot ) const = 0;
-		virtual int			_childDefaultScale() const = 0;									///< Default scale value for all children.
 
 		virtual bool		_isChildVisible( const StaticSlot * pSlot ) const = 0;
 		virtual RectSPX		_childWindowSection( const StaticSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.
@@ -76,8 +76,8 @@ namespace wg
 		virtual void		_selectSlots(StaticSlot * pSlot, int nb) = 0;
 		virtual void		_unselectSlots(StaticSlot * pSlot, int nb) = 0;
 
-		virtual void		_repadSlots(StaticSlot * pSlot, int nb, BorderSPX padding) = 0;
-		virtual void		_repadSlots(StaticSlot * pSlot, int nb, const BorderSPX * pPadding) = 0;
+		virtual void		_repadSlots(StaticSlot * pSlot, int nb, Border padding) = 0;
+		virtual void		_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding) = 0;
 
 		virtual void		_didAddSlots(StaticSlot * pSlot, int nb) = 0;
 		virtual void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) = 0;

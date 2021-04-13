@@ -145,7 +145,7 @@ namespace wg
 
 	//____ charAtPos() _________________________________________________________
 
-	int StdTextMapper::charAtPos( const Text * pText, Coord pos ) const
+	int StdTextMapper::charAtPos( const Text * pText, CoordSPX pos ) const
 	{
 		int line = _lineAtPosY(pText, pos.y, SelectMode::Marked );
 		if( line == -1 )
@@ -156,22 +156,22 @@ namespace wg
 
 	//_____ charPos() ______________________________________________________
 
-	Coord StdTextMapper::charPos( const Text * pText, int charOfs ) const
+	CoordSPX StdTextMapper::charPos( const Text * pText, int charOfs ) const
 	{
 		int line = charLine(pText, charOfs);
 
-		MU ofsX = _charPosX(pText, charOfs);
-		MU ofsY = _linePosY(_dataBlock(pText), line, _size(pText).h );
+		spx ofsX = _charPosX(pText, charOfs);
+		spx ofsY = _linePosY(_dataBlock(pText), line, _size(pText).h );
 
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 		ofsY += pLine->base;
 
-		return Coord(ofsX,ofsY);
+		return CoordSPX(ofsX,ofsY);
 	}
 
 	//____ charRect() ________________________________________________________
 
-	Rect StdTextMapper::charRect( const Text * pText, int charOfs ) const
+	RectSPX StdTextMapper::charRect( const Text * pText, int charOfs ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -179,7 +179,7 @@ namespace wg
 
 		// Find correct line and determine yOfs
 
-		MU yOfs = _textPosY( pHeader, _size(pText).h );
+		spx yOfs = _textPosY( pHeader, _size(pText).h );
 		while( pLineInfo->length <= charOfs )
 		{
 			yOfs += pLineInfo->spacing;
@@ -189,7 +189,7 @@ namespace wg
 
 		// Determine xOfs by parsing line until character
 
-		MU xOfs = _linePosX( pLineInfo, _size(pText).w );
+		spx xOfs = _linePosX( pLineInfo, _size(pText).w );
 
 		TextAttr		baseAttr;
 		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr );
@@ -201,7 +201,7 @@ namespace wg
 
 		// Get cell width
 
-		MU width = 0;
+		spx width = 0;
 
 		TextAttr	attr = baseAttr;
 
@@ -217,7 +217,7 @@ namespace wg
 		else if( pLast->code() == 32 )
 			width = pFont->whitespaceAdvance();
 
-		return Rect(xOfs,yOfs,width,pLineInfo->height);
+		return RectSPX(xOfs,yOfs,width,pLineInfo->height);
 	}
 
 	//____ charLine() ________________________________________________________
@@ -290,7 +290,7 @@ namespace wg
 	// Returns distance in points between beginning of first and beginning of last char.
 	// Chars should be on the same line (or pLast could be first char on next line)
 
-	MU StdTextMapper::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const
+	spx StdTextMapper::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const
 	{
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -300,7 +300,7 @@ namespace wg
 		Glyph_p	pPrevGlyph =  0;
 		const Char * pChar = pFirst;
 
-		MU distance = 0;
+		spx distance = 0;
 
 		while( pChar <= pLast )
 		{
@@ -358,7 +358,7 @@ namespace wg
 				if( bDirty )
 				{
 					int caretOfs = _caretOfs(m_pFocusedText);
-					_setTextDirty( m_pFocusedText, pCaret->dirtyRect(charRect(m_pFocusedText, caretOfs)) );
+					_setTextDirty( m_pFocusedText, pCaret->dirtyRect(charRect(m_pFocusedText, caretOfs), _scale(m_pFocusedText)) );
 				}
 			}
 		}
@@ -366,7 +366,7 @@ namespace wg
 
 	//____ _render()___________________________________________________________
 
-	void StdTextMapper::render( Text * pText, GfxDevice * pDevice, const Rect& canvas )
+	void StdTextMapper::render( Text * pText, GfxDevice * pDevice, const RectSPX& canvas )
 	{
 
 		void * pBlock = _dataBlock(pText);
@@ -374,7 +374,7 @@ namespace wg
 		LineInfo * pLineInfo = _lineInfo(pBlock);
 		const Char * pCharArray = _chars(pText);
 
-		Coord lineStart = canvas.pos();
+		CoordSPX lineStart = canvas.pos();
 		lineStart.y += _textPosY( pHeader, canvas.h );
 
 		TextAttr		baseAttr;
@@ -428,7 +428,7 @@ namespace wg
 
 		//
 
-		const Rect& clip = Rect::fromPX(pDevice->clipBounds());
+		const RectSPX& clip = pDevice->clipBounds();
 
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
 		{
@@ -440,7 +440,7 @@ namespace wg
 				Glyph_p	pGlyph;
 				Glyph_p	pPrevGlyph =  0;
 
-				Coord pos = lineStart;
+				CoordSPX pos = lineStart;
 				pos.y += pLineInfo->base;
 
 				bool bRecalcColor = false;
@@ -452,7 +452,7 @@ namespace wg
 
 					if( pChar->styleHandle() != hStyle )
 					{
-						MU oldFontSize = attr.size;
+						spx oldFontSize = attr.size;
 						HiColor oldBgColor = attr.bgColor;
 
 						attr = baseAttr;
@@ -460,7 +460,7 @@ namespace wg
 						if( pChar->styleHandle() != 0 )
 							pChar->stylePtr()->addToAttr( _state(pText), &attr );
 
-						if( pFont != attr.pFont || MU(attr.size) != oldFontSize )
+						if( pFont != attr.pFont || attr.size != oldFontSize )
 						{
 
 							if( !pFont || (pFont->isMonochrome() != attr.pFont->isMonochrome()) )
@@ -512,7 +512,7 @@ namespace wg
 
 						const GlyphBitmap * pBitmap = pGlyph->getBitmap();
 						pDevice->setBlitSource(pBitmap->pSurface);
-						pDevice->blit( Coord(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY).px(), pBitmap->rect  );
+						pDevice->blit( CoordSPX(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY), pBitmap->rect  );
 
 						pos.x += pGlyph->advance();
 					}
@@ -539,7 +539,7 @@ namespace wg
 
 			if( pCaret )
 			{
-				pCaret->render( pDevice, charRect(pText, _caretOfs(pText)) + canvas.pos() );
+				pCaret->render( pDevice, charRect(pText, _caretOfs(pText)) + canvas.pos(), _scale(pText) );
 			}
 		}
 		// Pop any changes to cliplist.
@@ -552,7 +552,7 @@ namespace wg
 
 	//____ _renderBack()___________________________________________________________
 
-	void StdTextMapper::_renderBack( Text * pText, GfxDevice * pDevice, const Rect& canvas )
+	void StdTextMapper::_renderBack( Text * pText, GfxDevice * pDevice, const RectSPX& canvas )
 	{
 		const Char * pCharArray = _chars(pText);
 		const Char * pBeg = pCharArray;
@@ -594,38 +594,38 @@ namespace wg
 
 	//____ _renderBackSection() ________________________________________________
 
-	void StdTextMapper::_renderBackSection( Text * pText, GfxDevice * pDevice, const Rect& canvas,
+	void StdTextMapper::_renderBackSection( Text * pText, GfxDevice * pDevice, const RectSPX& canvas,
 											int begChar, int endChar, HiColor color )
 	{
 
-		Coord begPos = charPos( pText, begChar );
+		CoordSPX begPos = charPos( pText, begChar );
 		LineInfo * pBegLine = _lineInfo( _dataBlock(pText) ) + charLine( pText, begChar );
 
-		Coord endPos = charPos( pText, endChar );
+		CoordSPX endPos = charPos( pText, endChar );
 		LineInfo * pEndLine = _lineInfo( _dataBlock(pText) ) + charLine( pText, endChar );
 
 
 		if( pBegLine == pEndLine )
 		{
-			Rect area;
+			RectSPX area;
 			area.x = canvas.x + begPos.x;
 			area.y = canvas.y + begPos.y - pBegLine->base;
 			area.w = endPos.x - begPos.x;
 			area.h = pBegLine->height;
 
-			pDevice->fill( area.px(), color );
+			pDevice->fill( area, color );
 		}
 		else
 		{
 			LineInfo * pLine = pBegLine;
 
-			Rect area;
+			RectSPX area;
 			area.x = canvas.x + begPos.x;
 			area.y = canvas.y + begPos.y - pLine->base;
 			area.w = pLine->width - (begPos.x - _linePosX( pLine, canvas.w));
 			area.h = pLine->height;
 
-			pDevice->fill( area.px(), color );
+			pDevice->fill( area, color );
 
 			area.y += pLine->spacing;
 			pLine++;
@@ -636,7 +636,7 @@ namespace wg
 				area.w = pLine->width;
 				area.h = pLine->height;
 
-				pDevice->fill( area.px(), color );
+				pDevice->fill( area, color );
 
 				area.y += pLine->spacing;
 				pLine++;
@@ -647,7 +647,7 @@ namespace wg
 			area.w = endPos.x - area.x;
 			area.h = pLine->height;
 
-			pDevice->fill( area.px(), color );
+			pDevice->fill( area, color );
 		}
 
 	}
@@ -663,10 +663,10 @@ namespace wg
 
 			if( bDirty || oldOfs != newOfs )
 			{
-				_setTextDirty( pText, pCaret->dirtyRect( charRect(pText, newOfs) ));
+				_setTextDirty( pText, pCaret->dirtyRect( charRect(pText, newOfs), _scale(pText) ));
 
 				if( oldOfs != newOfs )
-					_setTextDirty( pText, pCaret->dirtyRect( charRect(pText, oldOfs)) );
+					_setTextDirty( pText, pCaret->dirtyRect( charRect(pText, oldOfs), _scale(pText)) );
 			}
 		}
 	}
@@ -727,7 +727,7 @@ namespace wg
 
 	//____ onResized() ___________________________________________________________
 
-	void StdTextMapper::onResized( Text * pText, Size newSize, Size oldSize )
+	void StdTextMapper::onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize )
 	{
 		if (m_bLineWrap)
 			onRefresh(pText);
@@ -806,21 +806,21 @@ namespace wg
 
 	//___ rectForRange() _________________________________________________________
 
-	Rect StdTextMapper::rectForRange( const Text * pText, int ofs, int length ) const
+	RectSPX StdTextMapper::rectForRange( const Text * pText, int ofs, int length ) const
 	{
 		int begChar = ofs;
 		int endChar = ofs + length;
 
-		Size canvas = _size(pText);
+		SizeSPX canvas = _size(pText);
 
 
-		Coord begPos = charPos(pText, begChar);
+		CoordSPX begPos = charPos(pText, begChar);
 		const LineInfo * pBegLine = _lineInfo(_dataBlock(pText)) + charLine(pText, begChar);
 
-		Coord endPos = charPos(pText, endChar);
+		CoordSPX endPos = charPos(pText, endChar);
 		const LineInfo * pEndLine = _lineInfo(_dataBlock(pText)) + charLine(pText, endChar);
 
-		MU x1, x2, y1, y2;
+		spx x1, x2, y1, y2;
 
 		if (pBegLine == pEndLine)
 		{
@@ -842,8 +842,8 @@ namespace wg
 
 			while (pLine != pEndLine)
 			{
-				MU nx1 = _linePosX(pLine, canvas.w);
-				MU nx2 = nx1 + pLine->width;
+				spx nx1 = _linePosX(pLine, canvas.w);
+				spx nx2 = nx1 + pLine->width;
 
 				if (nx1 < x1)
 					x1 = nx1;
@@ -854,8 +854,8 @@ namespace wg
 				pLine++;
 			}
 
-			MU nx1 = _linePosX(pLine, canvas.w);
-			MU nx2 = endPos.x;
+			spx nx1 = _linePosX(pLine, canvas.w);
+			spx nx2 = endPos.x;
 
 			if (nx1 < x1)
 				x1 = nx1;
@@ -865,20 +865,20 @@ namespace wg
 			y2 += pLine->height;
 		}
 
-		return Rect( x1, y1, x2-x1, y2-y1);
+		return RectSPX( x1, y1, x2-x1, y2-y1);
 	}
 
 	//____ rectForCaret() ______________________________________________________
 
 	// Includes left/right margin where applicable.
 
-	Rect StdTextMapper::rectForCaret( const Text * pText ) const
+	RectSPX StdTextMapper::rectForCaret( const Text * pText ) const
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		if( !_caretVisible(pText) || !pCaret )
-			return Rect();
+			return RectSPX();
 
-		return pCaret->dirtyRect( charRect(pText, _caretOfs(pText) ) );
+		return pCaret->dirtyRect( charRect(pText, _caretOfs(pText) ), _scale(pText) );
 	}
 
 
@@ -891,7 +891,7 @@ namespace wg
 
 	//____ caretToPos() _____________________________________________________
 
-	int StdTextMapper::caretToPos( Text * pText, Coord pos, MU& wantedLineOfs ) const
+	int StdTextMapper::caretToPos( Text * pText, CoordSPX pos, spx& wantedLineOfs ) const
 	{
 		wantedLineOfs = -1;
 
@@ -901,7 +901,7 @@ namespace wg
 
 	//____ caretUp() ___________________________________________________________
 
-	int StdTextMapper::caretUp( Text * pText, int charOfs, MU& wantedLineOfs ) const
+	int StdTextMapper::caretUp( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine(pText, charOfs );
 
@@ -917,7 +917,7 @@ namespace wg
 
 	//____ caretDown() _________________________________________________________
 
-	int StdTextMapper::caretDown( Text * pText, int charOfs, MU& wantedLineOfs ) const
+	int StdTextMapper::caretDown( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine(pText, charOfs );
 
@@ -933,7 +933,7 @@ namespace wg
 
 	//____ caretLeft() _________________________________________________________
 
-	int StdTextMapper::caretLeft( Text * pText, int charOfs, MU& wantedLineOfs ) const
+	int StdTextMapper::caretLeft( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		if( charOfs > 0 )
 			charOfs--;
@@ -944,7 +944,7 @@ namespace wg
 
 	//____ caretRight() ________________________________________________________
 
-	int StdTextMapper::caretRight( Text * pText, int charOfs, MU& wantedLineOfs ) const
+	int StdTextMapper::caretRight( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		if( charOfs < _length(pText) )
 			charOfs++;
@@ -955,7 +955,7 @@ namespace wg
 
 	//____ caretHome() ________________________________________________________
 
-	int StdTextMapper::caretHome( Text * pText, int charOfs, MU& wantedLineOfs ) const
+	int StdTextMapper::caretHome( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine( pText, charOfs );
 
@@ -970,7 +970,7 @@ namespace wg
 
 	//____ caretEnd() ________________________________________________________
 
-	int StdTextMapper::caretEnd( Text * pText, int charOfs, MU& wantedLineOfs ) const
+	int StdTextMapper::caretEnd( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine( pText, charOfs );
 
@@ -1012,23 +1012,23 @@ namespace wg
 
 	//____ preferredSize() _________________________________________________________
 
-	Size StdTextMapper::preferredSize( const Text * pText ) const
+	SizeSPX StdTextMapper::preferredSize( const Text * pText ) const
 	{
 		return _header(_dataBlock(pText))->preferredSize;
 	}
 
 	//____ matchingWidth() _________________________________________________________
 
-	MU StdTextMapper::matchingWidth( const Text * pText, MU height ) const
+	spx StdTextMapper::matchingWidth( const Text * pText, spx height ) const
 	{
 		return	_header(_dataBlock(pText))->preferredSize.w;
 	}
 
 	//____ matchingHeight() ________________________________________________________
 
-	MU StdTextMapper::matchingHeight( const Text * pText, MU width ) const
+	spx StdTextMapper::matchingHeight( const Text * pText, spx width ) const
 	{
-		return _calcMatchingHeight(_chars(pText), _baseStyle(pText), _state(pText), width);
+		return _calcMatchingHeight(_chars(pText), _baseStyle(pText), _scale(pText), _state(pText), width);
 	}
 
 	//____ _countLines() ___________________________________________________________
@@ -1036,7 +1036,7 @@ namespace wg
 	int StdTextMapper::_countLines( Text * pText, const Char * pChars ) const
 	{
 		if (m_bLineWrap)
-			return _countWrapLines(pChars, _baseStyle(pText), _state(pText), _size(pText).w);
+			return _countWrapLines(pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
 		else
 			return _countFixedLines(pChars);
 	}
@@ -1061,7 +1061,7 @@ namespace wg
 
 	//____ _countWrapLines() ________________________________________________
 
-	int StdTextMapper::_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, State state, MU maxLineWidth) const
+	int StdTextMapper::_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const
 	{
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr(state, &baseAttr);
@@ -1075,14 +1075,14 @@ namespace wg
 		Glyph_p	pGlyph = nullptr;
 		Glyph_p	pPrevGlyph = nullptr;
 
-		MU spaceAdv = 0;
-		MU width = 0;
-		MU potentialWidth = 0;
-		MU eolCaretWidth = 0;
+		spx spaceAdv = 0;
+		spx width = 0;
+		spx potentialWidth = 0;
+		spx eolCaretWidth = 0;
 		//
 
 		const Char * pBreakpoint = nullptr;
-		MU bpWidth = 0;
+		spx bpWidth = 0;
 
 		int nLines = 0;												//
 
@@ -1092,13 +1092,13 @@ namespace wg
 			if (pChars->styleHandle() != hCharStyle)
 			{
 
-				MU oldFontSize = attr.size;
+				spx oldFontSize = attr.size;
 
 				attr = baseAttr;
 				if (pChars->styleHandle() != 0)
 					pChars->stylePtr()->addToAttr(state, &attr);
 
-				if (pFont != attr.pFont || MU(attr.size) != oldFontSize)
+				if (pFont != attr.pFont || spx(attr.size) != oldFontSize)
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
@@ -1110,8 +1110,8 @@ namespace wg
 				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend());
-					eolCaretWidth = pCaret->eolWidth(eolCellSize);
+					SizeSPX eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
 					eolCaretWidth = 0;
@@ -1192,14 +1192,14 @@ namespace wg
 
 	//____ _calcMatchingHeight() ________________________________________________
 
-	MU StdTextMapper::_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, State state, MU maxLineWidth) const
+	spx StdTextMapper::_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr(state, &baseAttr);
 
-		MU totalHeight = 0;
+		spx totalHeight = 0;
 
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -1209,20 +1209,20 @@ namespace wg
 		Glyph_p	pGlyph = nullptr;
 		Glyph_p	pPrevGlyph = nullptr;
 
-		MU maxAscend = 0;
-		MU maxDescend = 0;
-		MU maxDescendGap = 0;							// Including the line gap.
-		MU spaceAdv = 0;
-		MU width = 0;
-		MU potentialWidth = 0;
-		MU eolCaretWidth = 0;
+		spx maxAscend = 0;
+		spx maxDescend = 0;
+		spx maxDescendGap = 0;							// Including the line gap.
+		spx spaceAdv = 0;
+		spx width = 0;
+		spx potentialWidth = 0;
+		spx eolCaretWidth = 0;
 		//
 
 		const Char * pBreakpoint = nullptr;
-		MU bpWidth = 0;
-		MU bpMaxAscend = 0;
-		MU bpMaxDescend = 0;
-		MU bpMaxDescendGap = 0;							// Including the line gap.
+		spx bpWidth = 0;
+		spx bpMaxAscend = 0;
+		spx bpMaxDescend = 0;
+		spx bpMaxDescendGap = 0;							// Including the line gap.
 
 															//
 		while (true)
@@ -1231,28 +1231,28 @@ namespace wg
 			if (pChars->styleHandle() != hCharStyle)
 			{
 
-				MU oldFontSize = attr.size;
+				spx oldFontSize = attr.size;
 
 				attr = baseAttr;
 				if (pChars->styleHandle() != 0)
 					pChars->stylePtr()->addToAttr(state, &attr);
 
-				if (pFont != attr.pFont || MU(attr.size) != oldFontSize)
+				if (pFont != attr.pFont || attr.size != oldFontSize)
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
 					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
 				}
 
-				MU ascend = pFont->maxAscend();
+				spx ascend = pFont->maxAscend();
 				if (ascend > maxAscend)
 					maxAscend = ascend;
 
-				MU descend = pFont->maxDescend();
+				spx descend = pFont->maxDescend();
 				if (descend > maxDescend)
 					maxDescend = descend;
 
-				MU descendGap = descend + pFont->lineGap();
+				spx descendGap = descend + pFont->lineGap();
 				if (descendGap > maxDescendGap)
 					maxDescendGap = descendGap;
 
@@ -1260,8 +1260,8 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend());
-					eolCaretWidth = pCaret->eolWidth(eolCellSize);
+					SizeSPX eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
 					eolCaretWidth = 0;
@@ -1295,8 +1295,8 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend());
-					MU w = pCaret->eolWidth(eolCellSize);
+					SizeSPX eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					spx w = pCaret->eolWidth(eolCellSize, scale);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
 				}
@@ -1415,12 +1415,12 @@ namespace wg
 		{
 			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update preferredSize.
 
-			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _state(pText));
-			pHeader->textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _state(pText), _size(pText).w);
+			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
+			pHeader->textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
 		}
 		else
 		{
-			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _state(pText));
+			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
 			pHeader->textSize = preferredSize;
 		}
 
@@ -1434,7 +1434,7 @@ namespace wg
 
 	//____ _updateWrapLineInfo() ________________________________________________
 
-	Size StdTextMapper::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, State state, MU maxLineWidth )
+	SizeSPX StdTextMapper::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		const Char * pTextStart = pChars;
@@ -1442,7 +1442,7 @@ namespace wg
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr(state, &baseAttr);
 
-		Size			size;
+		SizeSPX			size;
 
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -1452,20 +1452,20 @@ namespace wg
 		Glyph_p	pGlyph = nullptr;
 		Glyph_p	pPrevGlyph = nullptr;
 
-		MU maxAscend = 0;
-		MU maxDescend = 0;
-		MU maxDescendGap = 0;							// Including the line gap.
-		MU spaceAdv = 0;
-		MU width = 0;
-		MU potentialWidth = 0;
-		MU eolCaretWidth = 0;
+		spx maxAscend = 0;
+		spx maxDescend = 0;
+		spx maxDescendGap = 0;							// Including the line gap.
+		spx spaceAdv = 0;
+		spx width = 0;
+		spx potentialWidth = 0;
+		spx eolCaretWidth = 0;
 		//
 
 		const Char * pBreakpoint = nullptr;
-		MU bpWidth = 0;
-		MU bpMaxAscend = 0;
-		MU bpMaxDescend = 0;
-		MU bpMaxDescendGap = 0;							// Including the line gap.
+		spx bpWidth = 0;
+		spx bpMaxAscend = 0;
+		spx bpMaxDescend = 0;
+		spx bpMaxDescendGap = 0;							// Including the line gap.
 
 
 		pLines->offset = int(pChars - pTextStart);
@@ -1476,28 +1476,28 @@ namespace wg
 			if (pChars->styleHandle() != hCharStyle)
 			{
 
-				MU oldFontSize = attr.size;
+				spx oldFontSize = attr.size;
 
 				attr = baseAttr;
 				if (pChars->styleHandle() != 0)
 					pChars->stylePtr()->addToAttr(state, &attr);
 
-				if (pFont != attr.pFont || MU(attr.size) != oldFontSize)
+				if (pFont != attr.pFont || attr.size != oldFontSize)
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
 					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
 				}
 
-				MU ascend = pFont->maxAscend();
+				spx ascend = pFont->maxAscend();
 				if (ascend > maxAscend)
 					maxAscend = ascend;
 
-				MU descend = pFont->maxDescend();
+				spx descend = pFont->maxDescend();
 				if (descend > maxDescend)
 					maxDescend = descend;
 
-				MU descendGap = descend + pFont->lineGap();
+				spx descendGap = descend + pFont->lineGap();
 				if (descendGap > maxDescendGap)
 					maxDescendGap = descendGap;
 
@@ -1505,8 +1505,8 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend());
-					eolCaretWidth = pCaret->eolWidth(eolCellSize);
+					SizeSPX eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
 					eolCaretWidth = 0;
@@ -1540,8 +1540,8 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend());
-					MU w = pCaret->eolWidth(eolCellSize);
+					SizeSPX eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					spx w = pCaret->eolWidth(eolCellSize, scale);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
 				}
@@ -1662,13 +1662,13 @@ namespace wg
 
 	//____ _updateFixedLineInfo() ________________________________________________
 
-	Size StdTextMapper::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle,
-												State state )
+	SizeSPX StdTextMapper::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle,
+												int scale, State state )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		const Char * pTextStart = pChars;
 
-		Size		size;
+		SizeSPX			size;
 
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr( state, &baseAttr );
@@ -1681,11 +1681,11 @@ namespace wg
 		Glyph_p	pGlyph = nullptr;
 		Glyph_p	pPrevGlyph = nullptr;
 
-		MU maxAscend = 0;
-		MU maxDescend = 0;
-		MU maxDescendGap = 0;							// Including the line gap.
-		MU spaceAdv = 0;
-		MU width = 0;
+		spx maxAscend = 0;
+		spx maxDescend = 0;
+		spx maxDescendGap = 0;							// Including the line gap.
+		spx spaceAdv = 0;
+		spx width = 0;
 
 		pLines->offset = int(pChars - pTextStart);
 
@@ -1695,28 +1695,28 @@ namespace wg
 			if( pChars->styleHandle() != hCharStyle )
 			{
 
-				MU oldFontSize = attr.size;
+				spx oldFontSize = attr.size;
 
 				attr = baseAttr;
 				if( pChars->styleHandle() != 0 )
 					pChars->stylePtr()->addToAttr( state, &attr );
 
-				if( pFont != attr.pFont || MU(attr.size) != oldFontSize )
+				if( pFont != attr.pFont || attr.size != oldFontSize )
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
 					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
 				}
 
-				MU ascend = pFont->maxAscend();
+				spx ascend = pFont->maxAscend();
 				if( ascend > maxAscend )
 					maxAscend = ascend;
 
-				MU descend = pFont->maxDescend();
+				spx descend = pFont->maxDescend();
 				if( descend > maxDescend )
 					maxDescend = descend;
 
-				MU descendGap = descend + pFont->lineGap();
+				spx descendGap = descend + pFont->lineGap();
 				if( descendGap > maxDescendGap )
 					maxDescendGap = descendGap;
 
@@ -1751,8 +1751,8 @@ namespace wg
 
 				if( pCaret )
 				{
-					Size eolCellSize( pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend() );
-					MU w = pCaret->eolWidth( eolCellSize );
+					SizeSPX eolCellSize( pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend() );
+					spx w = pCaret->eolWidth( eolCellSize, scale );
 					if( w > eolCellSize.w )
 						width += w - eolCellSize.w;
 				}
@@ -1811,7 +1811,7 @@ namespace wg
 
 	//____ _linePosX() _______________________________________________________________
 
-	MU StdTextMapper::_linePosX( const LineInfo * pLine, MU canvasWidth ) const
+	spx StdTextMapper::_linePosX( const LineInfo * pLine, spx canvasWidth ) const
 	{
 		switch( m_placement )
 		{
@@ -1833,9 +1833,9 @@ namespace wg
 
 	//____ _linePosY() _______________________________________________________________
 
-	MU StdTextMapper::_linePosY( const void * pBlock, int line, MU canvasHeight ) const
+	spx StdTextMapper::_linePosY( const void * pBlock, int line, spx canvasHeight ) const
 	{
-		MU ofsY = _textPosY( _header(pBlock), canvasHeight );
+		spx ofsY = _textPosY( _header(pBlock), canvasHeight );
 
 		const LineInfo * pL = _lineInfo(pBlock);
 		for( int i = 0 ; i < line ; i++ )
@@ -1846,7 +1846,7 @@ namespace wg
 
 	//____ _textPosY() _____________________________________________________________
 
-	MU	StdTextMapper::_textPosY( const BlockHeader * pHeader, MU canvasHeight ) const
+	spx	StdTextMapper::_textPosY( const BlockHeader * pHeader, spx canvasHeight ) const
 	{
 		switch( m_placement )
 		{
@@ -1868,7 +1868,7 @@ namespace wg
 
 	//____ _charPosX() _________________________________________________________
 
-	MU StdTextMapper::_charPosX( const Text * pText, int charOfs ) const
+	spx StdTextMapper::_charPosX( const Text * pText, int charOfs ) const
 	{
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + charLine(pText, charOfs);
 		const Char * pChars = _chars(pText);
@@ -1881,11 +1881,11 @@ namespace wg
 
 	//____ _lineAtPosY() _______________________________________________________
 
-	int StdTextMapper::_lineAtPosY( const Text * pText, MU posY, SelectMode mode ) const
+	int StdTextMapper::_lineAtPosY( const Text * pText, spx posY, SelectMode mode ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHead = _header(pBlock);
-		MU linePosY = _textPosY( pHead, _size(pText).h );
+		spx linePosY = _textPosY( pHead, _size(pText).h );
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) );
 
 		if( posY < linePosY )
@@ -1900,12 +1900,12 @@ namespace wg
 		{
 			case SelectMode::ClosestBegin:
 			{
-				MU prevBeg = linePosY;
+				spx prevBeg = linePosY;
 				linePosY += pLine[0].spacing;
 
 				for( int i = 1 ; i < pHead->nbLines ; i++ )
 				{
-					MU beg = linePosY;
+					spx beg = linePosY;
 
 					if( posY <= beg )
 					{
@@ -1921,12 +1921,12 @@ namespace wg
 			}
 			case SelectMode::ClosestEnd:
 			{
-				MU prevEnd = linePosY + pLine[0].height;
+				spx prevEnd = linePosY + pLine[0].height;
 				linePosY += pLine[0].spacing;
 
 				for( int i = 1 ; i < pHead->nbLines ; i++ )
 				{
-					MU end = linePosY + pLine[i].height;
+					spx end = linePosY + pLine[i].height;
 
 					if( posY <= end )
 					{
@@ -1962,12 +1962,12 @@ namespace wg
 
 	//____ _charAtPosX() _______________________________________________________
 
-	int StdTextMapper::_charAtPosX( const Text * pText, int line, MU posX, SelectMode mode ) const
+	int StdTextMapper::_charAtPosX( const Text * pText, int line, spx posX, SelectMode mode ) const
 	{
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 
 
-		MU distance = _linePosX( pLine, _size(pText).w );
+		spx distance = _linePosX( pLine, _size(pText).w );
 
 		// Handle special case when we are left of line.
 
@@ -2013,13 +2013,13 @@ namespace wg
 
 			if( pChar->styleHandle() != hStyle )
 			{
-				MU oldFontSize = attr.size;
+				spx oldFontSize = attr.size;
 				attr = baseAttr;
 
 				if( pChar->styleHandle() != 0 )
 					pChar->stylePtr()->addToAttr( state, &attr );
 
-				if( pFont != attr.pFont || MU(attr.size) != oldFontSize )
+				if( pFont != attr.pFont || attr.size != oldFontSize )
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
@@ -2030,7 +2030,7 @@ namespace wg
 			// Forward distance with the glyph
 
 			pGlyph = _getGlyph( pFont.rawPtr(), pChar->code() );
-			MU charBeg = distance;
+			spx charBeg = distance;
 
 			if( pGlyph )
 			{

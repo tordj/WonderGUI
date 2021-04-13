@@ -58,10 +58,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ______________________________________________________
-
-		Size			preferredSize() const override;
-
 		//.____ Control __________________________________________
 
 		void			setPlayMode(PlayMode mode);
@@ -90,10 +86,12 @@ namespace wg
 
 		void			_cloneContent( const Widget * _pOrg ) override;
 
+		SizeSPX			_preferredSize(int scale = -1) const override;
+
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void			_refresh() override;
-		bool			_alphaTest( const Coord& ofs ) override;
+		bool			_alphaTest( const CoordSPX& ofs ) override;
 		void			_setState( State state ) override;
 
 		bool			_playPosUpdated();

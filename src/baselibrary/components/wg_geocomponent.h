@@ -45,6 +45,7 @@ namespace wg
 		public:
 			virtual Object * _object() = 0;
 			virtual const Object * _object() const = 0;
+			virtual int			_scale() const = 0;
 
 			virtual State		_componentState(const GeoComponent* pComponent) const = 0;
 			virtual CoordSPX	_componentPos(const GeoComponent * pComponent) const = 0;
@@ -73,6 +74,7 @@ namespace wg
 
 	protected:
 		inline CoordSPX	_pos() const { return m_pHolder->_componentPos(this); }
+		inline int		_scale() const { return m_pHolder->_scale(); }
 		inline SizeSPX	_size() const { return m_pHolder->_componentSize(this); }
 		inline RectSPX	_geo() const { return m_pHolder->_componentGeo(this); }
 		inline CoordSPX	_globalPos() const { return m_pHolder->_globalComponentPos(this); }

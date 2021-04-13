@@ -138,15 +138,15 @@ namespace wg
 
 	struct NinePatch
 	{
-		RectSPX		block;
-		BorderSPX	frame;
+		Rect		block;
+		Border		frame;
 
-		int			rigidPartXOfs = 0;
-		int			rigidPartXLength = 0;
+		pts			rigidPartXOfs = 0;
+		pts			rigidPartXLength = 0;
 		YSections	rigidPartXSections = YSections::None;
 
-		int			rigidPartYOfs = 0;
-		int			rigidPartYLength = 0;
+		pts			rigidPartYOfs = 0;
+		pts			rigidPartYLength = 0;
 		XSections	rigidPartYSections = XSections::None;
 	};
 

@@ -72,6 +72,13 @@ namespace wg
 		return SizeSPX(align(ptsToSpx(m_contentPadding, scale)));
 	}
 
+	//____ _contentPadding() ______________________________________________________________
+
+	BorderSPX Skin::_contentPadding(int scale, State state) const
+	{
+		return align(ptsToSpx(m_contentPadding, scale));
+	}
+
 	//____ _contentPaddingSize() ______________________________________________________________
 
 	SizeSPX Skin::_contentPaddingSize(int scale) const
@@ -101,6 +108,11 @@ namespace wg
 	}
 
 	//____ _isOpaque() ________________________________________________________
+
+	bool Skin::_isOpaque(State state) const
+	{
+		return m_bOpaque;
+	}
 
 	bool Skin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{

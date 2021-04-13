@@ -98,7 +98,7 @@ namespace wg
 		m_bScaleSet = (scale > 0);
 
 		if (scale == 0)
-			scale = m_pHolder ? m_pHolder->_childDefaultScale() : m_scale;
+			scale = m_pHolder ? m_pHolder->_scale() : m_scale;
 
 		if (scale != m_scale)
 		{
@@ -800,7 +800,7 @@ namespace wg
 			return m_size - OO(skin)._contentPaddingSize(m_scale);
 	}
 
-	//____ _componentGeo() ______________________________________________________________
+	//____ _componentGeo() ____________________________________________________
 
 	RectSPX Widget::_componentGeo( const GeoComponent * pComponent ) const
 	{
@@ -810,21 +810,21 @@ namespace wg
 			return OO(skin)._contentRect( m_size, m_scale, m_state );
 	}
 
-	//____ _globalComponentPos() ________________________________________________________
+	//____ _globalComponentPos() ______________________________________________
 
 	CoordSPX Widget::_globalComponentPos( const GeoComponent * pComponent ) const
 	{
 		return _componentPos( pComponent ) + _globalPos();
 	}
 
-	//____ _globalComponentGeo() ______________________________________________________________
+	//____ _globalComponentGeo() ______________________________________________
 
 	RectSPX Widget::_globalComponentGeo( const GeoComponent * pComponent ) const
 	{
 		return _componentGeo( pComponent ) + _globalPos();
 	}
 
-	//____ _object() ______________________________________________________
+	//____ _object() __________________________________________________________
 
 	Object * Widget::_object()
 	{
@@ -836,7 +836,14 @@ namespace wg
 		return this;
 	}
 
-	//____ _receiveComponentNotif() __________________________________________________
+	//____ _scale() ___________________________________________________________
+
+	int Widget::_scale() const
+	{
+		return m_scale;
+	}
+
+	//____ _receiveComponentNotif() ___________________________________________
 
 	void Widget::_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData )
 	{

@@ -147,7 +147,7 @@ namespace wg
 	 		{
 	 			if( newR.y <= pR->y && newR.y + newR.h > pR->y )
 	 			{
-	 				MU diff = newR.y + newR.h - pR->y;
+	 				spx diff = newR.y + newR.h - pR->y;
 	 				pR->y += diff;
 	 				pR->h -= diff;
 					continue;

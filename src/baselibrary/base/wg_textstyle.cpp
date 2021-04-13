@@ -144,7 +144,7 @@ namespace wg
 
 	//____ setSize() _______________________________________________________________
 
-	void TextStyle::setSize( int size )
+	void TextStyle::setSize( pts size )
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 			m_size[i] = size;
@@ -153,7 +153,7 @@ namespace wg
 		m_bStaticSize = true;
 	}
 
-	void TextStyle::setSize( int size, State state )
+	void TextStyle::setSize( pts size, State state )
 	{
 		int i = Util::_stateToIndex(state);
 

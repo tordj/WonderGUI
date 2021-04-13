@@ -534,13 +534,6 @@ namespace wg
 		return m_geo.pos();
 	}
 
-	//____ _childDefaultScale() _______________________________________________
-
-	int RootPanel::_childDefaultScale() const
-	{
-		return m_scale;
-	}
-
 	//____ _isChildVisible() __________________________________________________
 
 	bool RootPanel::_isChildVisible(const StaticSlot* pSlot) const
@@ -574,6 +567,13 @@ namespace wg
 	RootPanel* RootPanel::_root()
 	{
 		return this;
+	}
+
+	//____ _scale() _______________________________________________
+
+	int RootPanel::_scale() const
+	{
+		return m_scale;
 	}
 
 	//____ _childRequestRender() __________________________________________________
@@ -690,12 +690,12 @@ namespace wg
 
 	//____ _repadSlots() ______________________________________________________
 
-	void RootPanel::_repadSlots(StaticSlot* pSlot, int nb, BorderSPX padding)
+	void RootPanel::_repadSlots(StaticSlot* pSlot, int nb, Border padding)
 	{
 		return;				// RootPanel doesn't support padding
 	}
 
-	void RootPanel::_repadSlots(StaticSlot* pSlot, int nb, const BorderSPX* pPadding)
+	void RootPanel::_repadSlots(StaticSlot* pSlot, int nb, const Border* pPadding)
 	{
 		return;				// RootPanel doesn't support padding
 	}

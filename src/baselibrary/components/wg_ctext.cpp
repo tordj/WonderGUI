@@ -105,35 +105,35 @@ namespace wg
 
 	//____ _preferredSize() _________________________________________________________
 
-	Size CText::_preferredSize() const
+	SizeSPX CText::_preferredSize() const
 	{
 		return _textMapper()->preferredSize(this);
 	}
 
 	//____ _matchingWidth() _________________________________________________________
 
-	MU CText::_matchingWidth( MU height ) const
+	spx CText::_matchingWidth( spx height ) const
 	{
 		return _textMapper()->matchingWidth(this, height);
 	}
 
 	//____ _matchingHeight() ________________________________________________________
 
-	MU CText::_matchingHeight( MU width ) const
+	spx CText::_matchingHeight( spx width ) const
 	{
 		return _textMapper()->matchingHeight(this, width);
 	}
 
 	//____ _charAtPos() ___________________________________________________________
 
-	int CText::_charAtPos( Coord pos ) const
+	int CText::_charAtPos( CoordSPX pos ) const
 	{
 		return _textMapper()->charAtPos(this,pos);
 	}
 
 	//____ _charRect() ____________________________________________________________
 
-	Rect CText::_charRect( int charOfs ) const
+	RectSPX CText::_charRect( int charOfs ) const
 	{
 		return _textMapper()->charRect(this, charOfs);
 	}
@@ -155,26 +155,26 @@ namespace wg
 
 	//____ _setSize() _____________________________________________________________
 
-	void CText::_setSize( Size size )
+	void CText::_setSize( SizeSPX size )
 	{
 		if( size == m_size )
 			return;
 
-		Size oldSize = m_size;
+		SizeSPX oldSize = m_size;
 		m_size = size;
 		_textMapper()->onResized(this,size, oldSize);
 	}
 
 	//_____ _render() _____________________________________________________________
 
-	void  CText::_render( GfxDevice * pDevice, const Rect& _canvas )
+	void  CText::_render( GfxDevice * pDevice, const RectSPX& _canvas )
 	{
 		_textMapper()->render(this, pDevice, _canvas );
 	}
 
 	//____ _rectForRange() __________________________________________________________
 
-	Rect  CText::_rectForRange( int ofs, int length ) const
+	RectSPX  CText::_rectForRange( int ofs, int length ) const
 	{
 		return _textMapper()->rectForRange(this, ofs, length);
 	}
@@ -306,7 +306,7 @@ namespace wg
 
 	//____ _mapperRequestRender() _______________________________________________
 
-	void CText::_mapperRequestRender(const Rect& rect)
+	void CText::_mapperRequestRender(const RectSPX& rect)
 	{
 		_requestRender(rect);
 	}

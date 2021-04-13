@@ -153,7 +153,7 @@ namespace wg
 	 * @return The position and size of the caret.
 	 */
 
-	RectSPX Caret::dirtyRect( RectSPX cell, int scale ) const
+	RectSPX Caret::dirtyRect( const RectSPX& cell, int scale ) const
 	{
 		switch( m_mode )
 		{
@@ -180,7 +180,7 @@ namespace wg
 	 * @return Void.
 	 */
 
-	void Caret::render( GfxDevice * pDevice, RectSPX cell, int scale )
+	void Caret::render( GfxDevice * pDevice, const RectSPX& cell, int scale )
 	{
 		if( m_ticks < m_cycleLength / 2 )
 		{

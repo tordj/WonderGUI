@@ -62,8 +62,8 @@ namespace wg
 		static inline TextStyle * 	_getPointer( TextStyle_h handle ) { return s_pLookupTable[handle-1]; }
 
 		static TextStyle **	s_pLookupTable;			// Pointer at handle->pointer lookup table.
-		static int			s_capacity;				// SizeI in entries for lookup table.
-		static int			s_size;					// SizeI in entries for lookup table.
+		static int			s_capacity;				// Size in entries for lookup table.
+		static int			s_size;					// Size in entries for lookup table.
 		static int			s_nextAvailable;		// Offset in table for next available entry.
 	};
 }
