@@ -207,6 +207,8 @@ namespace wg
 		virtual SizeSPX		_minSize(int scale = -1) const;
 		virtual SizeSPX		_maxSize(int scale = -1) const;
 
+		inline const SizeSPX& _size() const;
+		inline int			_scale() const override;
 
 	protected:
 		Widget();
@@ -229,7 +231,6 @@ namespace wg
 		bool            	_requestPreRenderCall();
 
 		inline CoordSPX		_pos() const;
-		inline const SizeSPX& _size() const;
 		inline RectSPX		_geo() const;
 		inline CoordSPX		_globalPos() const;
 		inline RectSPX		_globalGeo() const;
@@ -282,7 +283,6 @@ namespace wg
 
 		Object * 		_object() override;
 		const Object *	_object() const override;
-		int				_scale() const override;
 
 		State			_componentState(const GeoComponent* pComponent) const override;
 		CoordSPX		_componentPos( const GeoComponent * pComponent ) const override;
@@ -722,6 +722,13 @@ namespace wg
 	const SizeSPX& Widget::_size() const
 	{
 		return m_size;
+	}
+
+	//____ _scale() ___________________________________________________________
+
+	int Widget::_scale() const
+	{
+		return m_scale;
 	}
 
 	//____ _geo() __________________________

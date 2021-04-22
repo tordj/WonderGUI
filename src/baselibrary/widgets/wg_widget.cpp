@@ -836,13 +836,6 @@ namespace wg
 		return this;
 	}
 
-	//____ _scale() ___________________________________________________________
-
-	int Widget::_scale() const
-	{
-		return m_scale;
-	}
-
 	//____ _receiveComponentNotif() ___________________________________________
 
 	void Widget::_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData )

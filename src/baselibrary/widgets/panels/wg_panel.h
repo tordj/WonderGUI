@@ -67,7 +67,7 @@ namespace wg
 		virtual ~Panel() {};
 
 		bool			_isPanel() const override;
-		virtual void	_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode ) override;
+		virtual void	_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 		virtual void	_cloneContent( const Widget * _pOrg ) override;
 
 

@@ -9,17 +9,52 @@
 #endif
 
 #include <wg_base.h>
+#include <wg_inputhandler.h>
 #include <wg_msgrouter.h>
 
 #include <wg_softsurface.h>
 #include <wg_softgfxdevice.h>
 
+#include <wg_rootpanel.h>
+#include <wg_lambdapanel.h>
+#include <wg_filler.h>
+
+#include <wg_staticcolorskin.h>
+#include <wg_boxskin.h>
+
+
 using namespace wg;
 
-void 			translateEvents();
+void 			translateEvents(RootPanel * pRoot);
 MouseButton 	translateMouseButton( uint8_t button );
 
 bool			bQuit = false;	// Set to false by myButtonClickCallback() or translateEvents().
+
+int				rootScale = 64;
+
+//____ drawFills() _____________________________________________________________
+
+void drawFills(GfxDevice_p pGfxDevice, Surface_p pCanvas)
+{
+	pGfxDevice->beginRender();
+	pGfxDevice->beginCanvasUpdate(pCanvas);
+
+	pGfxDevice->fill(HiColor::Black);
+
+	for (int y = 0; y < 17; y++)
+	{
+		for (int x = 0; x < 17; x++)
+		{
+			pGfxDevice->fill(RectI((4 + x * 16) * 64 + y * 4, (4 + y * 16) * 64 + x * 4, 10 * 64, 10 * 64), HiColor(4096, 0, 0, 4096));
+		}
+	}
+
+	pGfxDevice->fill(RectI((18 * 16) * 64, 0, 64 * 10, 64 * 300), HiColor(4096 / 16, 0, 0, 4096));
+
+	pGfxDevice->endCanvasUpdate();
+	pGfxDevice->endRender();
+}
+
 
 //____ main() _________________________________________________________________
 
@@ -31,7 +66,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 640*3, height = 480*3;
+	int posX = 100, posY = 100, width = 640, height = 480;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
@@ -63,7 +98,31 @@ int main ( int argc, char** argv )
 	SoftSurface_p pButtonSurface = SoftSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 	SDL_FreeSurface(pSDLSurf);
 
+	// 
 
+	RootPanel_p pRoot = RootPanel::create(pCanvas, pGfxDevice);
+
+	pRoot->setScale(rootScale);
+
+
+	//
+
+	auto pBaseLambda = LambdaPanel::create();
+	pBaseLambda->skin = StaticColorSkin::create(Color8::Beige);
+
+
+
+	auto pFiller = Filler::create();
+	auto pSkin = BoxSkin::create(10, {	{StateEnum::Normal, Color8::Blue, Color8::Salmon}, 
+										{StateEnum::Hovered, Color8::LightBlue, Color8::LightSalmon},
+										{StateEnum::Pressed, Color8::DarkBlue, Color8::DarkSalmon} });
+
+	pFiller->skin = pSkin;
+
+	pBaseLambda->slots.pushBack(pFiller, [](Widget* pWidget, Size parentSize) { return Rect(10,10,100,50); });
+
+
+	pRoot->slot = pBaseLambda;
 
 	//------------------------------------------------------
 	// Program Main Loop
@@ -74,34 +133,19 @@ int main ( int argc, char** argv )
 		// Loop through SDL events, translate them to WonderGUI events
 		// and process them.
 
-		translateEvents();
+		translateEvents(pRoot);
 
 		// Let WonderGUI render any updated/dirty regions of the screen.
 
 		SDL_LockSurface(pWinSurf);
 
-		pGfxDevice->beginRender();
-		pGfxDevice->beginCanvasUpdate(pCanvas);		
+		pRoot->render();
 
-		pGfxDevice->fill(HiColor::Black);
 
-		for( int y = 0 ; y < 17 ; y++ )
-		{
-			for( int x = 0 ; x < 17 ; x++ )
-			{
-				pGfxDevice->fill( RectI((4+x*16)*64+y*4,(4+y*16)*64+x*4,10*64,10*64), HiColor(4096,0,0,4096) );
-			}
-		}
-
-		pGfxDevice->fill( RectI((18*16)*64,0, 64*10, 64*300), HiColor(4096/16,0,0,4096) );
-
-		pGfxDevice->endCanvasUpdate();
-		pGfxDevice->endRender();
+//		drawFills(pGfxDevice, pCanvas);
 
 		SDL_UnlockSurface(pWinSurf);
-
 		SDL_UpdateWindowSurface( pWin );
-
 		SDL_Delay(20);
 	}
 
@@ -124,7 +168,7 @@ int main ( int argc, char** argv )
 
 //____ translateEvents() ___________________________________________________________
 
-void translateEvents()
+void translateEvents(RootPanel * pRoot)
 {
 	// Process all the SDL events in a loop.
 	// In this example we only use mouse input, but typically you
@@ -140,15 +184,15 @@ void translateEvents()
 				break;
 
 			case SDL_MOUSEMOTION:
-//				Base::inputHandler()->setPointer( pRoot, Coord(MU::fromPX(e.motion.x), MU::fromPX(e.motion.y)));
+				Base::inputHandler()->setPointer( pRoot, Coord(e.motion.x, e.motion.y)*64/rootScale);
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
-//				Base::inputHandler()->setButton( translateMouseButton(e.button.button), true );
+				Base::inputHandler()->setButton( translateMouseButton(e.button.button), true );
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-//				Base::inputHandler()->setButton( translateMouseButton(e.button.button), false );
+				Base::inputHandler()->setButton( translateMouseButton(e.button.button), false );
 				break;
 
 			default:

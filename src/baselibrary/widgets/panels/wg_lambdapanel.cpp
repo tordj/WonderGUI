@@ -95,7 +95,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	LambdaPanel::LambdaPanel() : slots(this), m_minSize(0,0), m_preferredSize(512,512), m_maxSize(MU::Max,MU::Max)
+	LambdaPanel::LambdaPanel() : slots(this), m_minSize(0,0), m_preferredSize(512,512), m_maxSize(16000000, 16000000)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -190,11 +190,31 @@ namespace wg
 		return true;
 	}
 
-	//____ preferredSize() _____________________________________________________
+	//____ _preferredSize() _____________________________________________________
 
-	Size LambdaPanel::preferredSize() const
+	SizeSPX LambdaPanel::_preferredSize(int _scale) const
 	{
-		return m_preferredSize;
+		int scale = _fixScale(_scale);
+
+		return SizeSPX(m_preferredSize*scale);
+	}
+
+	//____ _minSize() _____________________________________________________
+
+	SizeSPX LambdaPanel::_minSize(int _scale) const
+	{
+		int scale = _fixScale(_scale);
+
+		return SizeSPX(m_minSize * scale);
+	}
+
+	//____ _maxSize() _____________________________________________________
+
+	SizeSPX LambdaPanel::_maxSize(int _scale) const
+	{
+		int scale = _fixScale(_scale);
+
+		return SizeSPX(m_maxSize * scale);
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -342,7 +362,7 @@ namespace wg
 				Slot * p = pTo+1;
 				while (p <= pFrom)
 				{
-					Rect cover(pTo->m_geo, p->m_geo);
+					RectSPX cover(pTo->m_geo, p->m_geo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -356,7 +376,7 @@ namespace wg
 				Slot * p = pFrom;
 				while (p < pTo)
 				{
-					Rect cover(pTo->m_geo, p->m_geo);
+					RectSPX cover(pTo->m_geo, p->m_geo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -369,7 +389,7 @@ namespace wg
 
 	//____ _childPos() __________________________________________________________
 
-	Coord LambdaPanel::_childPos( const StaticSlot * pSlot ) const
+	CoordSPX LambdaPanel::_childPos( const StaticSlot * pSlot ) const
 	{
 		return ((Slot*)pSlot)->m_geo.pos();
 	}
@@ -382,7 +402,7 @@ namespace wg
 		_onRequestRender( pSlot->m_geo, pSlot );
 	}
 
-	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot, const Rect& rect )
+	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
 	{
 		Slot * pSlot = static_cast<Slot*>(_pSlot);
 		_onRequestRender( rect + pSlot->m_geo.pos(), pSlot );
@@ -453,9 +473,9 @@ namespace wg
 
 	//____ _resize() ____________________________________________________________
 
-	void LambdaPanel::_resize( const Size& size )
+	void LambdaPanel::_resize( const SizeSPX& size, int scale )
 	{
-		Panel::_resize( size );
+		Panel::_resize( size, scale );
 
 		for (auto * pSlot = slots._begin() ; pSlot != slots._end() ; pSlot++)
 			_updateGeo(pSlot);
@@ -467,12 +487,16 @@ namespace wg
 	{
 		//TODO: Don't requestRender if slot is hidden.
 
-		Rect geo;
+		RectSPX geo;
 
 		if (pSlot->m_func)
-			geo = pSlot->m_func(pSlot->_widget(), m_size).aligned();
+		{
+			Rect ptsGeo = pSlot->m_func(pSlot->_widget(), spxToPts(m_size,m_scale));
+
+			geo = align(ptsToSpx(ptsGeo,m_scale));
+		}
 		else
-			geo = { 0,0,pSlot->_widget()->preferredSize() };
+			geo = { 0,0, align(pSlot->_widget()->_preferredSize()) };
 
 		if (geo != pSlot->m_geo)
 		{
@@ -481,8 +505,8 @@ namespace wg
 				// Clip our geometry and put it in a dirtyrect-list
 
 				Patches patches;
-				patches.add(Rect(pSlot->m_geo, Rect(0, 0, m_size)));
-				patches.add(Rect(geo, Rect(0, 0, m_size)));
+				patches.add(RectSPX(pSlot->m_geo, RectSPX(0, 0, m_size)));
+				patches.add(RectSPX(geo, RectSPX(0, 0, m_size)));
 
 				// Remove portions of patches that are covered by opaque upper siblings
 
@@ -490,28 +514,29 @@ namespace wg
 				while (pCover < slots._end())
 				{
 					if (pCover->m_bVisible && (pCover->m_geo.intersectsWith(pSlot->m_geo) || pCover->m_geo.intersectsWith(geo)) )
-						OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, Rect(0, 0, 65536, 65536), _getBlendMode());
+						OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
 
 					pCover++;
 				}
 
 				// Make request render calls
 
-				for (const Rect * pRect = patches.begin(); pRect < patches.end(); pRect++)
+				for (const RectSPX * pRect = patches.begin(); pRect < patches.end(); pRect++)
 					_requestRender(*pRect);
 
 			}
 		}
 
 		pSlot->m_geo = geo;
+		auto pWidget = pSlot->_widget();
 
-		if (bForceResize || pSlot->_widget()->size() != geo.size())
-			pSlot->_setSize(geo);
+		if (bForceResize || pWidget->_size() != geo.size() || (pWidget->isScaleSet() == false && pWidget->_scale() != m_scale ))
+			pSlot->_setSize(geo, m_scale);
 	}
 
 	//____ _onRequestRender() ____________________________________________________
 
-	void LambdaPanel::_onRequestRender( const Rect& rect, const Slot * pSlot )
+	void LambdaPanel::_onRequestRender( const RectSPX& rect, const Slot * pSlot )
 	{
 		if (!pSlot->m_bVisible)
 			return;
@@ -519,19 +544,19 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		Patches patches;
-		patches.add(Rect(rect, Rect(0, 0, m_size)));
+		patches.add(RectSPX(rect, RectSPX(0, 0, m_size)));
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
 		for (Slot * pCover = slots._begin(); pCover < pSlot ; pCover++)
 		{
 			if (pCover->m_bVisible && pCover->m_geo.intersectsWith(rect))
-				OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, Rect(0, 0, 65536, 65536), _getBlendMode());
+				OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
 		}
 
 		// Make request render calls
 
-		for (const Rect * pRect = patches.begin(); pRect < patches.end(); pRect++)
+		for (const RectSPX * pRect = patches.begin(); pRect < patches.end(); pRect++)
 			_requestRender(*pRect);
 
 	}
