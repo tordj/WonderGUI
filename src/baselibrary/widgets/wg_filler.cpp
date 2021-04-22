@@ -62,12 +62,15 @@ namespace wg
 
 	//____ preferredSize() __________________________________________________________
 
-	Size Filler::preferredSize() const
+	SizeSPX Filler::_preferredSize(int _scale) const
 	{
-		if( m_preferredSize.w >= 0 && m_preferredSize.h >= 0 )
-			return m_preferredSize;
+		if (m_preferredSize.w >= 0 && m_preferredSize.h >= 0)
+		{
+			int scale = _fixScale(_scale);
+			return SizeSPX(m_preferredSize*scale);
+		}
 		else
-			return Widget::preferredSize();
+			return Widget::_preferredSize(_scale);
 	}
 
 

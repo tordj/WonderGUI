@@ -25,6 +25,7 @@ SDL2/
 glew/
 
 build/
+vsbuild/
 
 freetype/include
 freetype/lib

@@ -66,9 +66,9 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			inline Coord	pos() const { return m_geo.pos(); }
-			inline Size		size() const { return m_geo.size(); }
-			inline Rect		geo() const { return m_geo; }
+			inline Coord	pos() const { return Util::spxToPts(m_geo.pos(), _holder()->_scale()); }
+			inline Size		size() const { return Util::spxToPts(m_geo.size(), _holder()->_scale()); }
+			inline Rect		geo() const { return Util::spxToPts(m_geo, _holder()->_scale()); }
 
 			//.____ Operators __________________________________________
 
@@ -77,7 +77,7 @@ namespace wg
 		protected:
 
 			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder) {}
-			Slot(Slot&& o) = default;
+			Slot(Slot&& o) noexcept = default;
 			Slot& operator=(Slot&& o) = default;
 
 			const static bool safe_to_relocate = false;
@@ -85,7 +85,7 @@ namespace wg
 
 			std::function<Rect(Widget * pWidget, Size parentSize)>	m_func = nullptr;
 			bool			m_bVisible = false;
-			Rect			m_geo;				// Widgets geo relative parent
+			RectSPX			m_geo;				// Widgets geo relative parent
 		};
 
 
@@ -141,7 +141,6 @@ namespace wg
 		bool				setMaxSize(Size max);
 		bool				setSizeLimits( Size min, Size max );
 		bool				setPreferredSize(Size pref);
-		Size				preferredSize() const override;
 
 	protected:
 		LambdaPanel();
@@ -152,16 +151,20 @@ namespace wg
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
+		SizeSPX		_preferredSize(int scale = -1) const override;
+		SizeSPX		_minSize(int scale = -1) const override;
+		SizeSPX		_maxSize(int scale = -1) const override;
+
 		Widget *	_firstChild() const override;
 		Widget *	_lastChild() const override;
 
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		Coord		_childPos(const StaticSlot * pSlot) const override;
+		CoordSPX	_childPos(const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
-		void		_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;
 		void		_childRequestResize( StaticSlot * pSlot ) override;
 
 		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
@@ -181,10 +184,10 @@ namespace wg
 
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_resize( const Size& size ) override;
+		void		_resize( const SizeSPX& size, int scale = -1 ) override;
 		void		_updateGeo(Slot * pSlot, bool bForceResize = false);
 
-		void		_onRequestRender( const Rect& rect, const Slot * pSlot );
+		void		_onRequestRender( const RectSPX& rect, const Slot * pSlot );
 
 		Size		m_minSize;
 		Size		m_maxSize;
