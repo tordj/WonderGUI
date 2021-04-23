@@ -50,16 +50,18 @@ namespace wg
 		void			setContentShift(std::initializer_list< std::pair<State, Coord> > StateShifts);
 		Coord			contentShift(State state) const;
 
-	protected:
-		StateSkin() { m_bIgnoresState = false; }
+		//.____ Internal ________________________________________________________
 
 		BorderSPX		_contentPadding(int scale, State state) const override;
 		CoordSPX		_contentOfs(int scale, State state) const override;
 		RectSPX			_contentRect(const RectSPX& canvas, int scale, State state) const override;
 
-		RectSPX			_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX			_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
+
+	protected:
+		StateSkin() { m_bIgnoresState = false; }
 
 		void			_refreshUnsetStates();
 

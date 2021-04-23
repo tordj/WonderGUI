@@ -46,10 +46,10 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BlockSkin_p	create();
-		static BlockSkin_p create(Surface * pSurface, BorderI frame = { 0 } );
-		static BlockSkin_p	create(Surface * pSurface, RectI block, BorderI frame = { 0 } );
-		static BlockSkin_p	create(Surface * pSurface, RectI firstBlock, std::initializer_list<State> stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
-		static BlockSkin_p	create(Surface * pSurface, std::initializer_list<State> stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
+		static BlockSkin_p create(Surface * pSurface, Border frame = { 0 } );
+		static BlockSkin_p	create(Surface * pSurface, Rect block, Border frame = { 0 } );
+		static BlockSkin_p	create(Surface * pSurface, Rect firstBlock, std::initializer_list<State> stateBlocks, Border frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
+		static BlockSkin_p	create(Surface * pSurface, std::initializer_list<State> stateBlocks, Border frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
 
 
 
@@ -61,10 +61,10 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void		setBlock(CoordI ofs);
-		void		setBlock(State state, CoordI ofs);
-		void		setBlocks(std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 });
-		RectI		block(State state) const;
+		void		setBlock(Coord ofs);
+		void		setBlock(State state, Coord ofs);
+		void		setBlocks(std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, Coord blockStartOfs = { 0,0 });
+		Rect		block(State state) const;
 
 		void		setColor(HiColor tint);
 		void		setColor(State state, HiColor tint);
@@ -80,51 +80,48 @@ namespace wg
 		void		setSurface( Surface * pSurf );
 		Surface_p	surface() const { return m_pSurface; }
 
-		void		setBlockSize(SizeI size);
-		SizeI		blockSize() const { return m_ninePatch.block*4/m_pSurface->qpixPerPoint(); }
+		void		setBlockSize(Size size);
+		Size		blockSize() const { return m_ninePatch.block.size(); }
 
-		void		setFrame(BorderI frame);
-		BorderI		frame() const { return m_ninePatch.frame*4/m_pSurface->qpixPerPoint(); }
+		void		setFrame(Border frame);
+		Border		frame() const { return m_ninePatch.frame; }
 
-		bool		setRigidPartX(int ofs, int length, YSections sections);
-		bool		setRigidPartY(int ofs, int length, XSections sections);
-
-
-		//.____ Geometry _________________________________________________
-
-		Size		minSize() const override;
-		Size		preferredSize() const override;
-
-		Size		sizeForContent(const Size& contentSize) const override;
-
-		//.____ Misc ____________________________________________________
-
-		bool		isOpaque( State state ) const override;
-		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
-
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-								float value = 1.f, float value2 = -1.f) const override;
-
-		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float value = 1.f, float value2 = -1.f, int animPos = 0,
-							float* pStateFractions = nullptr) const override;
-
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
-							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
-							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
+		bool		setRigidPartX(pts ofs, pts length, YSections sections);
+		bool		setRigidPartY(pts ofs, pts length, XSections sections);
 
 
 		//.____ Deprecated ____________________________________________________
 
-		static BlockSkin_p createStatic(Surface * pSurface, RectI block, BorderI frame = BorderI(0));
-		static BlockSkin_p createClickable(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
-		static BlockSkin_p createStaticFromSurface(Surface * pSurface, BorderI frame = BorderI(0));
+		static BlockSkin_p createStatic(Surface * pSurface, Rect block, Border frame = Border(0));
+		static BlockSkin_p createClickable(Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0));
+		static BlockSkin_p createStaticFromSurface(Surface * pSurface, Border frame = Border(0));
+
+		//.____ Internal ________________________________________________________
+
+		SizeSPX		_minSize(int scale) const override;
+		SizeSPX		_preferredSize(int scale) const override;
+
+		SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const override;
+
+		bool		_isOpaque(State state) const override;
+		bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
+
+		bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
+							float value = 1.f, float value2 = -1.f) const override;
+
+		void		_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
+
+		RectSPX		_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 
 	private:
 
 		BlockSkin();
-		BlockSkin(Surface * pSurface, RectI block, BorderI frame);
+		BlockSkin(Surface * pSurface, Rect block, Border frame);
 		~BlockSkin() {};
 
 		void		_updateOpaqueFlags();
@@ -141,7 +138,7 @@ namespace wg
 		Bitmask<uint32_t>	m_stateBlockMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		CoordI		m_stateBlocks[StateEnum_Nb];
+		Coord		m_stateBlocks[StateEnum_Nb];
 		HiColor		m_stateColors[StateEnum_Nb];
 		bool		m_bStateOpaque[StateEnum_Nb];
 	};
