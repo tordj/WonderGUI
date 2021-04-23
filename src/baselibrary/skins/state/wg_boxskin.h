@@ -63,14 +63,7 @@ namespace wg
 		void						setColors(std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors);
 		std::tuple<HiColor, HiColor>	colors(State state) const;
 
-
-	private:
-		BoxSkin();
-		BoxSkin(Border frame, HiColor fillColor, HiColor frameColor  );
-		~BoxSkin() {};
-
-		void	_updateOpaqueFlag();
-		void	_updateUnsetColors();
+		//.____ Internal ________________________________________________________
 
 		SizeSPX		_minSize(int scale) const override;
 		SizeSPX		_preferredSize(int scale) const override;
@@ -80,18 +73,24 @@ namespace wg
 		bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
 
 		bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
-								float value = 1.f, float value2 = -1.f) const override;
+			float value = 1.f, float value2 = -1.f) const override;
 
 		void		_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
-							float value = 1.f, float value2 = -1.f, int animPos = 0,
-							float* pStateFractions = nullptr) const override;
+			float value = 1.f, float value2 = -1.f, int animPos = 0,
+			float* pStateFractions = nullptr) const override;
 
-		RectSPX		_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, 
-								float newValue = 1.f, float oldValue = 1.f,
-								float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
-								float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
+		RectSPX		_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState,
+			float newValue = 1.f, float oldValue = 1.f,
+			float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+			float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
+	private:
+		BoxSkin();
+		BoxSkin(Border frame, HiColor fillColor, HiColor frameColor  );
+		~BoxSkin() {};
 
+		void	_updateOpaqueFlag();
+		void	_updateUnsetColors();
 
 		Border		m_frame;
 		BlendMode	m_blendMode = BlendMode::Blend;

@@ -207,8 +207,8 @@ add_executable(spxworkbench
 #	../../baselibrary/skins/misc/wg_bakeskin.h
 #	../../baselibrary/skins/misc/wg_doubleskin.cpp
 #	../../baselibrary/skins/misc/wg_doubleskin.h
-#	../../baselibrary/skins/state/wg_blockskin.cpp
-#	../../baselibrary/skins/state/wg_blockskin.h
+	../../baselibrary/skins/state/wg_blockskin.cpp
+	../../baselibrary/skins/state/wg_blockskin.h
 	../../baselibrary/skins/state/wg_boxskin.cpp
 	../../baselibrary/skins/state/wg_boxskin.h
 #	../../baselibrary/skins/state/wg_circleskin.cpp

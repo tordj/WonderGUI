@@ -21,6 +21,7 @@
 
 #include <wg_staticcolorskin.h>
 #include <wg_boxskin.h>
+#include <wg_blockskin.h>
 
 
 using namespace wg;
@@ -121,6 +122,12 @@ int main ( int argc, char** argv )
 
 	pBaseLambda->slots.pushBack(pFiller, [](Widget* pWidget, Size parentSize) { return Rect(10,10,100,50); });
 
+	auto pFiller2 = Filler::create();
+	auto pSkin2 = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 0, Axis::X );
+
+	pFiller2->skin = pSkin2;
+
+	pBaseLambda->slots.pushBack(pFiller2, [](Widget* pWidget, Size parentSize) { return Rect(10, 100, 100, 50); });
 
 	pRoot->slot = pBaseLambda;
 
