@@ -643,6 +643,9 @@ namespace wg
 
 	void GlGfxDevice::setTintColor(HiColor color)
 	{
+		if (color == m_tintColor)
+			return;
+
 		if (!m_bRendering)
 		{
 			//TODO: Error handling!
@@ -662,6 +665,9 @@ namespace wg
 
 	void GlGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
 	{
+		if (m_bTintGradient && gradient == m_tintGradient && rect == m_tintGradientRect)
+			return;
+
 		if (!m_bRendering)
 		{
 			//TODO: Error handling!
@@ -686,6 +692,9 @@ namespace wg
 
 	void GlGfxDevice::clearTintGradient()
 	{
+		if (m_bTintGradient == false)
+			return;
+
 		if (!m_bRendering)
 		{
 			//TODO: Error handling!
@@ -725,21 +734,20 @@ namespace wg
 
 	bool GlGfxDevice::setBlitSource(Surface * pSource)
 	{
+		if (pSource == m_pBlitSource)
+			return true;
+
 		if (!m_bRendering)
 		{
 			//TODO: Error handling!
 			return false;
 		}
 
-		if (pSource == m_pBlitSource)
-			return true;
-
 		if (!pSource || pSource->typeInfo() != GlSurface::TYPEINFO)
 			return false;
 
 		m_pBlitSource = pSource;
 		m_blitSourceSize = CoordF(pSource->size().w, pSource->size().h);
-
 
         //TODO: Check so that we don't overrun m_surfaceBuffer;
 
@@ -754,6 +762,9 @@ namespace wg
 
 	void GlGfxDevice::setMorphFactor(float factor)
 	{
+		if (factor == m_morphFactor)
+			return;
+
 		if (!m_bRendering)
 		{
 			//TODO: Error handling!
