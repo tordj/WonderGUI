@@ -199,6 +199,9 @@ namespace wg
 		
 		CanvasInit		m_beginRenderOp = CanvasInit::Keep;
 
+		CoordF			m_blitSourceSize;
+
+
 		// Device programs
 
 		GLuint  m_fillProg[2];									// [RGB/A_8 dest]
@@ -243,8 +246,6 @@ namespace wg
 			GLfloat	topRightTint[4];
 			GLfloat	bottomRightTint[4];
 			GLfloat	bottomLeftTint[4];
-
-			SizeI	textureSize;
 		};
 
 		GLuint	m_canvasUBOId;
@@ -295,6 +296,7 @@ namespace wg
 		bool		m_bGradientActive = false;										
 		BlendMode	m_activeBlendMode = BlendMode::Blend;
 		bool		m_bActiveCanvasIsA8 = false;
+
 		// GL states saved between BeginRender() and EndRender().
 
 		GLboolean	m_glDepthTest;

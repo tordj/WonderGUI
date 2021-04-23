@@ -738,6 +738,8 @@ namespace wg
 			return false;
 
 		m_pBlitSource = pSource;
+		m_blitSourceSize = CoordF(pSource->size().w, pSource->size().h);
+
 
         //TODO: Check so that we don't overrun m_surfaceBuffer;
 
@@ -1479,31 +1481,37 @@ namespace wg
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs/4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				m_vertexOfs += 6;
@@ -1560,31 +1568,37 @@ namespace wg
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				m_vertexOfs += 6;
@@ -2018,6 +2032,7 @@ namespace wg
 
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
 
 		LOG_GLERROR(glGetError());
 
@@ -2183,12 +2198,9 @@ namespace wg
 					if( nVertices > 0 )
 					{
 						glUseProgram(m_segmentsProg[nEdges][m_bGradientActive][m_bActiveCanvasIsA8]);
-						glEnableVertexAttribArray(2);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
-
-						glDisableVertexAttribArray(2);
 
 						if( m_bMipmappedActiveCanvas )
 							m_pActiveCanvas->m_bMipmapStale = true;
@@ -2423,10 +2435,6 @@ namespace wg
 
 			m_pActiveBlitSource = pSurf;
 			pSurf->m_bPendingReads = false;			// Clear this as we pass it by...
-
-			m_canvasUBOBuffer.textureSize = pSurf->size();
-			glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-			glBufferSubData(GL_UNIFORM_BUFFER, ((char*)&m_canvasUBOBuffer.textureSize) - ((char*)&m_canvasUBOBuffer), sizeof(SizeI), &m_canvasUBOBuffer.textureSize);
 
 			if (pSurf->m_pClut)
 			{
