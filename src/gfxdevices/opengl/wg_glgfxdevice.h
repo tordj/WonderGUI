@@ -166,6 +166,9 @@ namespace wg
 
 		void	_executeBuffer();
 
+		void	_writeCanvasInfo();
+		void	_writeTintInfo();
+
 		SurfaceFactory_p	m_pSurfaceFactory = nullptr;
 
 		float	m_lineThicknessTable[17];
@@ -253,13 +256,50 @@ namespace wg
 		
 		//
 
+		struct CanvasInfo
+		{
+			GLfloat	canvasDimX;			// Becomes X in shader
+			GLfloat	canvasDimY;			// Becomes Y in shader
+			float	canvasYOfs;			// Becomes Z in shader
+			float	canvasYMul;			// Becomes W in shader
+		};
+
+
+		struct GradientTintInfo
+		{
+			GLfloat flatTint[4];		// This needs to be placed first, so first part is identical to FlatTintInfo
+
+			RectF	tintRect;
+
+			GLfloat	topLeftTint[4];
+			GLfloat	topRightTint[4];
+			GLfloat	bottomRightTint[4];
+			GLfloat	bottomLeftTint[4];
+		};
+
+		struct FlatTintInfo
+		{
+			GLfloat flatTint[4];
+		};
+
+
+		//
+
 		struct Vertex
 		{
 			CoordI	coord;
-			int		extrasOfs;						// Offset into extras buffer.
-			CoordF	uv;
+			CoordF	uv;								// Actually contains blitSourceSize in most cases.
+			int		extrasOfs;						// Offset into extras buffer for various data.
+			int		canvasInfoOfs;					// Offset into extras buffer for canvas info.
+			int		tintInfoOfs;					// Offset into extras buffer for tint info.
 		};
 
+
+		//
+
+		CanvasInfo			m_canvasInfo;
+		GradientTintInfo	m_tintInfo;
+		
 
 		// Buffers
 
@@ -270,6 +310,10 @@ namespace wg
 		int		m_segmentsTintTexOfs;				// Write offset in m_segmentsTintTexMap
 		int		m_clipWriteOfs;						// Write offset in m_clipListBuffer
 		int		m_clipCurrOfs;						// Offset to where current clipList is written to in clipListBuffer, or -1 if not written.
+
+		int		m_canvasInfoOfs;					// Offset in m_extrasBufferData where current CanvasInfo is written.
+		int		m_tintInfoOfs;						// Offset in m_extrasBufferData where current TintInfo is written.
+
 
 		GLuint  m_vertexArrayId;
 		GLuint  m_vertexBufferId;

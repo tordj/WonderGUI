@@ -436,7 +436,7 @@ namespace wg
 		glGenVertexArrays(1, &m_vertexArrayId);
 		glBindVertexArray(m_vertexArrayId);
 
-		glVertexAttribIPointer(
+		glVertexAttribIPointer(		// Attribute: Coord
 			0,						// attribute number, must match the layout in the shader.
 			2,						// size
 			GL_INT,					// type
@@ -444,24 +444,42 @@ namespace wg
 			(void*)0				// array buffer offset
 		);
 
-		LOG_INIT_GLERROR(glGetError());
-
-		glVertexAttribIPointer(
-			1,                  // attribute number, must match the layout in the shader.
-			1,                  // size
-			GL_INT,           // type
-			sizeof(Vertex),		// stride
-			(void*)(sizeof(CoordI))  // array buffer offset
-		);
-
-		glVertexAttribPointer(
-			2,						// attribute number, must match the layout in the shader.
+		glVertexAttribPointer(		// Attribute: uv
+			1,						// attribute number, must match the layout in the shader.
 			2,						// size
 			GL_FLOAT,				// type
 			GL_TRUE,				// normalized?
 			sizeof(Vertex),			// stride
-			(void*)(sizeof(CoordI) + sizeof(int) )  // array buffer offset
+			(void*)(sizeof(CoordI))  // array buffer offset
 		);
+
+		glVertexAttribIPointer(		// Attribute: extrasOfs
+			2,						// attribute number, must match the layout in the shader.
+			1,						// size
+			GL_INT,					// type
+			sizeof(Vertex),			// stride
+			(void*)(sizeof(CoordI) + sizeof(CoordF))  // array buffer offset
+		);
+
+		glVertexAttribIPointer(		// Attribute: canvasInfoOfs
+			3,						// attribute number, must match the layout in the shader.
+			1,						// size
+			GL_INT,					// type
+			sizeof(Vertex),			// stride
+			(void*)(sizeof(CoordI) + sizeof(CoordF) + sizeof(int))  // array buffer offset
+		);
+
+		glVertexAttribIPointer(		// Attribute: tintInfoOfs
+			4,						// attribute number, must match the layout in the shader.
+			1,						// size
+			GL_INT,					// type
+			sizeof(Vertex),			// stride
+			(void*)(sizeof(CoordI) + sizeof(CoordF) + sizeof(int)*2)  // array buffer offset
+		);
+
+
+		LOG_INIT_GLERROR(glGetError());
+
 
 
 		LOG_INIT_GLERROR(glGetError());
@@ -601,6 +619,12 @@ namespace wg
 			pRenderSurface = m_layerSurfaces[m_renderLayer];
 		}
 
+		m_tintInfo.flatTint[0] = m_tintColor.r / 4096.f;
+		m_tintInfo.flatTint[1] = m_tintColor.g / 4096.f;
+		m_tintInfo.flatTint[2] = m_tintColor.b / 4096.f;
+		m_tintInfo.flatTint[3] = m_tintColor.a / 4096.f;
+
+
 		// Do we need to end command and execute buffer if we
 		// put commands in the queue instead?
 
@@ -611,7 +635,9 @@ namespace wg
 
 		_setCanvas(static_cast<GlSurface*>(pRenderSurface), m_canvasSize.w, m_canvasSize.h);
 
-		_setBlendMode(m_blendMode);
+//		if( m_blendMode != m_activeBlendMode)
+			_setBlendMode(m_blendMode);
+
 		_setMorphFactor(m_morphFactor);
 
 		if (m_bTintGradient)
@@ -619,7 +645,8 @@ namespace wg
 
 		_setTintColor(m_tintColor);
 
-		_setBlitSource(static_cast<GlSurface*>(m_pBlitSource.rawPtr()));
+		if( m_pBlitSource != m_pActiveBlitSource )
+			_setBlitSource(static_cast<GlSurface*>(m_pBlitSource.rawPtr()));
 
 
 	//	_endCommand();
@@ -654,6 +681,15 @@ namespace wg
 
 		GfxDevice::setTintColor(color);
 
+		m_tintInfo.flatTint[0] = color.r / 4096.f;
+		m_tintInfo.flatTint[1] = color.g / 4096.f;
+		m_tintInfo.flatTint[2] = color.b / 4096.f;
+		m_tintInfo.flatTint[3] = color.a / 4096.f;
+
+		_writeTintInfo();
+
+		// Legacy code
+
 		_endCommand();
 		_beginStateCommand(Command::SetTintColor, 2);
 		
@@ -675,6 +711,33 @@ namespace wg
 		}
 
 		GfxDevice::setTintGradient(rect, gradient);
+
+		m_tintInfo.tintRect = (RectF)rect;
+
+		m_tintInfo.topLeftTint[0] = gradient.topLeft.r / 4096.f;
+		m_tintInfo.topLeftTint[1] = gradient.topLeft.g / 4096.f;
+		m_tintInfo.topLeftTint[2] = gradient.topLeft.b / 4096.f;
+		m_tintInfo.topLeftTint[3] = gradient.topLeft.a / 4096.f;
+
+		m_tintInfo.topRightTint[0] = gradient.topRight.r / 4096.f;
+		m_tintInfo.topRightTint[1] = gradient.topRight.g / 4096.f;
+		m_tintInfo.topRightTint[2] = gradient.topRight.b / 4096.f;
+		m_tintInfo.topRightTint[3] = gradient.topRight.a / 4096.f;
+
+		m_tintInfo.bottomRightTint[0] = gradient.bottomRight.r / 4096.f;
+		m_tintInfo.bottomRightTint[1] = gradient.bottomRight.g / 4096.f;
+		m_tintInfo.bottomRightTint[2] = gradient.bottomRight.b / 4096.f;
+		m_tintInfo.bottomRightTint[3] = gradient.bottomRight.a / 4096.f;
+
+		m_tintInfo.bottomLeftTint[0] = gradient.bottomLeft.r / 4096.f;
+		m_tintInfo.bottomLeftTint[1] = gradient.bottomLeft.g / 4096.f;
+		m_tintInfo.bottomLeftTint[2] = gradient.bottomLeft.b / 4096.f;
+		m_tintInfo.bottomLeftTint[3] = gradient.bottomLeft.a / 4096.f;
+
+		_writeTintInfo();
+
+
+		// Legacy code
 
 		_endCommand();
 		_beginStateCommand(Command::SetTintGradient, 12);
@@ -700,6 +763,9 @@ namespace wg
 			//TODO: Error handling!
 			return;
 		}
+
+		// We don't need to write any new TintInfo here,
+		// flatTint variables contain same info and are in the right place already.
 
 		GfxDevice::clearTintGradient();
 
@@ -1009,31 +1075,43 @@ namespace wg
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 			}
 		}
@@ -1089,31 +1167,43 @@ namespace wg
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 			}
 		}
@@ -1166,6 +1256,8 @@ namespace wg
 				{
 					m_vertexBufferData[m_vertexOfs].coord = pCoords[pixel];
 					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 					m_vertexOfs++;
 
 					HiColor color = pColors[pixel];
@@ -1277,26 +1369,38 @@ namespace wg
 
 		m_vertexBufferData[m_vertexOfs].coord = c1;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+		m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c2;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+		m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c3;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+		m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c1;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+		m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c3;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+		m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c4;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+		m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 		m_vertexOfs++;
 
 		m_extrasBufferData[m_extrasOfs++] = color.r / 4096.f;
@@ -1394,31 +1498,43 @@ namespace wg
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
 				m_vertexOfs++;
 			}
 		}
@@ -1492,36 +1608,48 @@ namespace wg
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs/4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
@@ -1579,36 +1707,48 @@ namespace wg
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = m_blitSourceSize;
 				pVertex++;
 
@@ -1749,36 +1889,48 @@ namespace wg
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = uv1;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = uv2;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = uv3;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = uv1;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = uv3;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->canvasInfoOfs = m_canvasInfoOfs / 4;
+				pVertex->tintInfoOfs = m_tintInfoOfs / 4;
 				pVertex->uv = uv4;
 				pVertex++;
 
@@ -2044,6 +2196,8 @@ namespace wg
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
+		glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(4);
 
 		LOG_GLERROR(glGetError());
 
@@ -2232,8 +2386,63 @@ namespace wg
 		m_clipWriteOfs = 0;
 		m_clipCurrOfs = -1;
 
+		_writeCanvasInfo();
+		_writeTintInfo();
+
 		LOG_GLERROR(glGetError());
 	}
+
+	//____ _writeCanvasInfo() _________________________________________________
+
+	void	GlGfxDevice::_writeCanvasInfo()
+	{
+		assert(sizeof(CanvasInfo) % 16 == 0);		// m_extrasOfs needs to grow in steps of 4 floats (read as vec4 by shader).
+
+		int canvasInfoSpace = sizeof(CanvasInfo) / 4;
+
+		if (m_extrasOfs > c_extrasBufferSize - canvasInfoSpace)
+		{
+			// CanvasInfo is automatically added to the new extrasBuffer by _executeBuffer().
+
+			_endCommand();
+			_executeBuffer();
+		}
+		else
+		{
+			memcpy(&m_extrasBufferData[m_extrasOfs], &m_canvasInfo, canvasInfoSpace*4);
+
+			m_canvasInfoOfs = m_extrasOfs;
+			m_extrasOfs += canvasInfoSpace;
+		}
+	}
+
+	//____ _writeTintInfo() ___________________________________________________
+
+	void	GlGfxDevice::_writeTintInfo()
+	{
+		assert(sizeof(GradientTintInfo) % 16 == 0);		// m_extrasOfs needs to grow in steps of 4 floats (read as vec4 by shader).
+		assert(sizeof(FlatTintInfo) % 16 == 0);			// m_extrasOfs needs to grow in steps of 4 floats (read as vec4 by shader).
+
+		// We just write a partial GradientTintInfo if we don't use gradients.
+
+		int tintInfoSpace = m_bTintGradient ? sizeof(GradientTintInfo) / 4 : sizeof(FlatTintInfo) / 4;
+
+		if (m_extrasOfs > c_extrasBufferSize - tintInfoSpace)
+		{
+			// TintInfo is automatically added to the new extrasBuffer by _executeBuffer().
+
+			_endCommand();
+			_executeBuffer();
+		}
+		else
+		{
+			memcpy(&m_extrasBufferData[m_extrasOfs], &m_tintInfo, tintInfoSpace*4);
+
+			m_tintInfoOfs = m_extrasOfs;
+			m_extrasOfs += tintInfoSpace;
+		}
+	}
+
 
 
 	//____ _setCanvas() _______________________________________________________
@@ -2282,8 +2491,17 @@ namespace wg
 		int canvasYstart	= pCanvas ? 0 : height;
 		int canvasYmul		= pCanvas ? 1 : -1;
 
-
 		// Updating canvas info for our shaders
+
+		m_canvasInfo.canvasDimX = (GLfloat)width;
+		m_canvasInfo.canvasDimY = (GLfloat)height;
+		m_canvasInfo.canvasYOfs = canvasYstart;
+		m_canvasInfo.canvasYMul = canvasYmul;
+
+		_writeCanvasInfo();
+
+
+		// Updating canvas info for our shaders (legacy)
 
 		m_canvasUBOBuffer.canvasDimX = (GLfloat) width;
 		m_canvasUBOBuffer.canvasDimY = (GLfloat) height;
@@ -2469,6 +2687,7 @@ namespace wg
 
 	void GlGfxDevice::_setTintColor(HiColor color)
 	{
+
 		m_canvasUBOBuffer.flatTint[0] = color.r / 4096.f;
 		m_canvasUBOBuffer.flatTint[1] = color.g / 4096.f;
 		m_canvasUBOBuffer.flatTint[2] = color.b / 4096.f;
@@ -2476,7 +2695,6 @@ namespace wg
 
 		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
 		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4 * 4, &m_canvasUBOBuffer.flatTint);
-
 	}
 
 	//____ _setTintGradient() _________________________________________________
