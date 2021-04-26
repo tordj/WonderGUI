@@ -114,9 +114,6 @@ namespace wg
 
 	void GlGfxDevice::_setDrawUniforms(GLuint progId, int uboBindingPoint)
 	{
-		unsigned int canvasIndex = glGetUniformBlockIndex(progId, "Canvas");
-		glUniformBlockBinding(progId, canvasIndex, uboBindingPoint);
-
 		GLint extrasIdLoc = glGetUniformLocation(progId, "extrasId");
 		glUseProgram(progId);
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
@@ -127,9 +124,6 @@ namespace wg
 
 	void GlGfxDevice::_setBlitUniforms(GLuint progId, int uboBindingPoint)
 	{
-		unsigned int canvasIndex = glGetUniformBlockIndex(progId, "Canvas");
-		glUniformBlockBinding(progId, canvasIndex, uboBindingPoint);
-
 		GLint extrasIdLoc = glGetUniformLocation(progId, "extrasId");
 		GLint texIdLoc = glGetUniformLocation(progId, "texId");
 
@@ -142,9 +136,6 @@ namespace wg
 
 	void GlGfxDevice::_setClutBlitUniforms(GLuint progId, int uboBindingPoint)
 	{
-		unsigned int canvasIndex = glGetUniformBlockIndex(progId, "Canvas");
-		glUniformBlockBinding(progId, canvasIndex, uboBindingPoint);
-
 		GLint extrasIdLoc = glGetUniformLocation(progId, "extrasId");
 		GLint texIdLoc = glGetUniformLocation(progId, "texId");
 		GLint clutIdLoc = glGetUniformLocation(progId, "clutId");
@@ -370,8 +361,6 @@ namespace wg
 				{
 					GLuint prog = _createGLProgram(pVertexShader, fragShader.c_str());
 					m_segmentsProg[i][j][canvType] = prog;
-					unsigned int canvasIndex = glGetUniformBlockIndex(prog, "Canvas");
-					glUniformBlockBinding(prog, canvasIndex, uboBindingPoint);
 
 					GLint extrasIdLoc = glGetUniformLocation(prog, "extrasId");
 					GLint colorsIdLoc = glGetUniformLocation(prog, "colorsId");
@@ -413,15 +402,6 @@ namespace wg
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 2 * c_maxSegments, 2 * c_segmentsTintTexMapSize, 0, GL_BGRA, GL_UNSIGNED_SHORT, nullptr);
-
-
-		// Create our Uniform Buffer
-
-		glGenBuffers(1, &m_canvasUBOId);
-		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(canvasUBO), NULL, GL_STATIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, uboBindingPoint, m_canvasUBOId);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// Create the buffers we need for FrameBuffer and Vertices
 
@@ -2500,17 +2480,6 @@ namespace wg
 
 		_writeCanvasInfo();
 
-
-		// Updating canvas info for our shaders (legacy)
-
-		m_canvasUBOBuffer.canvasDimX = (GLfloat) width;
-		m_canvasUBOBuffer.canvasDimY = (GLfloat) height;
-		m_canvasUBOBuffer.canvasYOfs = canvasYstart;
-		m_canvasUBOBuffer.canvasYMul = canvasYmul;
-
-		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, 4*4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer);
-
 		LOG_GLERROR(glGetError());
 
 		m_pActiveCanvas = pCanvas;
@@ -2687,14 +2656,6 @@ namespace wg
 
 	void GlGfxDevice::_setTintColor(HiColor color)
 	{
-
-		m_canvasUBOBuffer.flatTint[0] = color.r / 4096.f;
-		m_canvasUBOBuffer.flatTint[1] = color.g / 4096.f;
-		m_canvasUBOBuffer.flatTint[2] = color.b / 4096.f;
-		m_canvasUBOBuffer.flatTint[3] = color.a / 4096.f;
-
-		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4 * 4, &m_canvasUBOBuffer.flatTint);
 	}
 
 	//____ _setTintGradient() _________________________________________________
@@ -2702,31 +2663,6 @@ namespace wg
 	void GlGfxDevice::_setTintGradient(const RectI& rect, const Gradient& gradient)
 	{
 		m_bGradientActive = true;
-
-		m_canvasUBOBuffer.tintRect = rect;
-
-		m_canvasUBOBuffer.topLeftTint[0] = gradient.topLeft.r / 4096.f;
-		m_canvasUBOBuffer.topLeftTint[1] = gradient.topLeft.g / 4096.f;
-		m_canvasUBOBuffer.topLeftTint[2] = gradient.topLeft.b / 4096.f;
-		m_canvasUBOBuffer.topLeftTint[3] = gradient.topLeft.a / 4096.f;
-
-		m_canvasUBOBuffer.topRightTint[0] = gradient.topRight.r / 4096.f;
-		m_canvasUBOBuffer.topRightTint[1] = gradient.topRight.g / 4096.f;
-		m_canvasUBOBuffer.topRightTint[2] = gradient.topRight.b / 4096.f;
-		m_canvasUBOBuffer.topRightTint[3] = gradient.topRight.a / 4096.f;
-
-		m_canvasUBOBuffer.bottomRightTint[0] = gradient.bottomRight.r / 4096.f;
-		m_canvasUBOBuffer.bottomRightTint[1] = gradient.bottomRight.g / 4096.f;
-		m_canvasUBOBuffer.bottomRightTint[2] = gradient.bottomRight.b / 4096.f;
-		m_canvasUBOBuffer.bottomRightTint[3] = gradient.bottomRight.a / 4096.f;
-
-		m_canvasUBOBuffer.bottomLeftTint[0] = gradient.bottomLeft.r / 4096.f;
-		m_canvasUBOBuffer.bottomLeftTint[1] = gradient.bottomLeft.g / 4096.f;
-		m_canvasUBOBuffer.bottomLeftTint[2] = gradient.bottomLeft.b / 4096.f;
-		m_canvasUBOBuffer.bottomLeftTint[3] = gradient.bottomLeft.a / 4096.f;
-
-		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-		glBufferSubData(GL_UNIFORM_BUFFER, 16+16, 20 * 4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer.tintRect);
 	}
 
 	//____ _clearTintGradient() _________________________________________________

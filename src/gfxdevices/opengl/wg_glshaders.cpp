@@ -33,16 +33,16 @@ const char GlGfxDevice::fillVertexShader[] =
 
 "layout(std140) uniform Canvas"
 "{"
-"	vec2   canvasSize;"
-"	int    canvasYOfs;"
-"	int    canvasYMul;"
-"   vec4   flatTint;"
-"   ivec2  tintRectPos;"
-"   ivec2  tintRectSize;"
-"   vec4   topLeftTint;"
-"   vec4   topRightTint;"
-"   vec4   bottomRightTint;"
-"   vec4   bottomLeftTint;"
+"	vec2   xcanvasSize;"
+"	int    xcanvasYOfs;"
+"	int    xcanvasYMul;"
+"   vec4   xflatTint;"
+"   ivec2  xtintRectPos;"
+"   ivec2  xtintRectSize;"
+"   vec4   xtopLeftTint;"
+"   vec4   xtopRightTint;"
+"   vec4   xbottomRightTint;"
+"   vec4   xbottomLeftTint;"
 "};"
 
 
@@ -612,16 +612,16 @@ const char GlGfxDevice::plotVertexShader[] =
 
 "layout(std140) uniform Canvas"
 "{"
-"	vec2   canvasSize;"
-"	int    canvasYOfs;"
-"	int    canvasYMul;"
-"   vec4   flatTint;"
-"   ivec2  tintRectPos;"
-"   ivec2  tintRectSize;"
-"   vec4   topLeftTint;"
-"   vec4   topRightTint;"
-"   vec4   bottomRightTint;"
-"   vec4   bottomLeftTint;"
+"	vec2   xcanvasSize;"
+"	int    xcanvasYOfs;"
+"	int    xcanvasYMul;"
+"   vec4   xflatTint;"
+"   ivec2  xtintRectPos;"
+"   ivec2  xtintRectSize;"
+"   vec4   xtopLeftTint;"
+"   vec4   xtopRightTint;"
+"   vec4   xbottomRightTint;"
+"   vec4   xbottomLeftTint;"
 "};"
 
 
@@ -633,11 +633,13 @@ const char GlGfxDevice::plotVertexShader[] =
 "out vec4 fragColor;									"
 "void main()                                            "
 "{                                                      "
-"   gl_Position.x = (pos.x+0.5)*2.0/canvasSize.x - 1.0; "
-"   gl_Position.y = ((canvasYOfs + canvasYMul*pos.y)+0.5)*2.0/canvasSize.y - 1,0;	"
+"   vec4 canvasInfo = texelFetch(extrasId, canvasInfoOfs);	"
+"   gl_Position.x = pos.x*2/canvasInfo.x - 1.0;            "
+"   gl_Position.x = (pos.x+0.5)*2.0/canvasInfo.x - 1.0; "
+"   gl_Position.y = ((canvasInfo.z + canvasInfo.w*pos.y)+0.5)*2.0/canvasInfo.y - 1,0;	"
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = flatTint * texelFetch(extrasId, extrasOfs);		   "
+"   fragColor = texelFetch(extrasId, tintInfoOfs) * texelFetch(extrasId, extrasOfs);  "
 "}                                                      ";
 
 
@@ -667,21 +669,6 @@ const char GlGfxDevice::lineFromToVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	vec2   canvasSize;"
-"	int    canvasYOfs;"
-"	int    canvasYMul;"
-"   vec4   flatTint;"
-"   ivec2  tintRectPos;"
-"   ivec2  tintRectSize;"
-"   vec4   topLeftTint;"
-"   vec4   topRightTint;"
-"   vec4   bottomRightTint;"
-"   vec4   bottomLeftTint;"
-"};"
-
-
 "uniform samplerBuffer extrasId;								"
 "layout(location = 0) in ivec2 pos;                        "
 "layout(location = 2) in int extrasOfs;                    "
@@ -695,16 +682,17 @@ const char GlGfxDevice::lineFromToVertexShader[] =
 "flat out float ifMild;											"
 "void main()                                                "
 "{                                                          "
-"   gl_Position.x = pos.x*2/canvasSize.x - 1.0;             "
-"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;             "
+"   vec4 canvasInfo = texelFetch(extrasId, canvasInfoOfs);	"
+"   gl_Position.x = pos.x*2/canvasInfo.x - 1.0;             "
+"   gl_Position.y = (canvasInfo.z + canvasInfo.w*pos.y)*2/canvasInfo.y - 1.0;             "
 "   gl_Position.z = 0.0;                                    "
 "   gl_Position.w = 1.0;                                    "
-"   fragColor = flatTint * texelFetch(extrasId, extrasOfs);			"
+"   fragColor = texelFetch(extrasId, tintInfoOfs) * texelFetch(extrasId, extrasOfs);			"
 "   int ofs = extrasOfs+1;									"
 "   vec4 x = texelFetch(extrasId, ofs);						"
 "   s = x.x;												"
 "   w = x.y;												"
-"   slope = canvasYMul*x.z;										"
+"   slope = canvasInfo.w*x.z;										"
 "   ifSteep = x.w;											"
 "   ifMild = 1.0 - ifSteep;									"
 "}                                                          ";
@@ -746,21 +734,6 @@ const char GlGfxDevice::aaFillVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	vec2   canvasSize;"
-"	int    canvasYOfs;"
-"	int    canvasYMul;"
-"   vec4   flatTint;"
-"   ivec2  tintRectPos;"
-"   ivec2  tintRectSize;"
-"   vec4   topLeftTint;"
-"   vec4   topRightTint;"
-"   vec4   bottomRightTint;"
-"   vec4   bottomLeftTint;"
-"};"
-
-
 "uniform samplerBuffer extrasId;								"
 "layout(location = 0) in ivec2 pos;                        "
 "layout(location = 2) in int extrasOfs;                    "
@@ -770,13 +743,14 @@ const char GlGfxDevice::aaFillVertexShader[] =
 "flat out vec4 rect;										"
 "void main()                                                "
 "{                                                          "
-"   gl_Position.x = pos.x*2/canvasSize.x - 1.0;             "
-"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;             "
+"   vec4 canvasInfo = texelFetch(extrasId, canvasInfoOfs);	"
+"   gl_Position.x = pos.x*2/canvasInfo.x - 1.0;            "
+"   gl_Position.y = (canvasInfo.z + canvasInfo.w*pos.y)*2/canvasInfo.y - 1.0;    "
 "   gl_Position.z = 0.0;                                    "
 "   gl_Position.w = 1.0;                                    "
-"   fragColor = flatTint * texelFetch(extrasId, extrasOfs);			"
+"   fragColor = texelFetch(extrasId, tintInfoOfs) * texelFetch(extrasId, extrasOfs);			"
 "   rect = texelFetch(extrasId, extrasOfs+1);				"
-"   rect.y = canvasYOfs + canvasYMul*rect.y;							"
+"   rect.y = canvasInfo.z + canvasInfo.w*rect.y;							"
 "   rect.zw += vec2(0.5f,0.5f);								"		// Adding offset here so we don't have to do it in pixel shader.
 "}                                                          ";
 
@@ -784,21 +758,6 @@ const char GlGfxDevice::aaFillGradientVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	vec2   canvasSize;"
-"	int    canvasYOfs;"
-"	int    canvasYMul;"
-"   vec4   flatTint;"
-"   ivec2  tintRectPos;"
-"   ivec2  tintRectSize;"
-"   vec4   topLeftTint;"
-"   vec4   topRightTint;"
-"   vec4   bottomRightTint;"
-"   vec4   bottomLeftTint;"
-"};"
-
-
 "uniform samplerBuffer extrasId;								"
 "layout(location = 0) in ivec2 pos;                        "
 "layout(location = 2) in int extrasOfs;                    "
@@ -808,20 +767,30 @@ const char GlGfxDevice::aaFillGradientVertexShader[] =
 "flat out vec4 rect;										"
 "void main()                                                "
 "{                                                          "
-"   gl_Position.x = pos.x*2/canvasSize.x - 1.0;             "
-"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;             "
+"   vec4 canvasInfo = texelFetch(extrasId, canvasInfoOfs);	"
+"   gl_Position.x = pos.x*2/canvasInfo.x - 1.0;            "
+"   gl_Position.y = (canvasInfo.z + canvasInfo.w*pos.y)*2/canvasInfo.y - 1.0;    "
 "   gl_Position.z = 0.0;                                    "
 "   gl_Position.w = 1.0;                                    "
+
+"   vec4 tintRect = texelFetch(extrasId, tintInfoOfs+1);	"
+"   vec4 topLeftTint = texelFetch(extrasId, tintInfoOfs+2);	"
+"   vec4 topRightTint = texelFetch(extrasId, tintInfoOfs+3);	"
+"   vec4 bottomRightTint = texelFetch(extrasId, tintInfoOfs+4);	"
+"   vec4 bottomLeftTint = texelFetch(extrasId, tintInfoOfs+5);	"
+
+"   vec2 tintRectPos = tintRect.xy;	"
+"   vec2 tintRectSize = tintRect.zw;	"
 
 "	vec2 tintOfs = (pos - tintRectPos) / vec2(tintRectSize); "
 "   vec4 lineStartTint = topLeftTint + (bottomLeftTint - topLeftTint) * tintOfs.y;"
 "   vec4 lineEndTint = topRightTint + (bottomRightTint - topRightTint) * tintOfs.y;"
 "   vec4 gradientTint = lineStartTint + (lineEndTint - lineStartTint) * tintOfs.x;"
 
-"   fragColor = flatTint * gradientTint * texelFetch(extrasId, extrasOfs);		   "
+"   fragColor = texelFetch(extrasId, tintInfoOfs) * gradientTint * texelFetch(extrasId, extrasOfs);		   "
 
 "   rect = texelFetch(extrasId, extrasOfs+1);				"
-"   rect.y = canvasYOfs + canvasYMul*rect.y;							"
+"   rect.y = canvasInfo.z + canvasInfo.w*rect.y;							"
 "   rect.zw += vec2(0.5f,0.5f);								"		// Adding offset here so we don't have to do it in pixel shader.
 "}                                                          ";
 
@@ -859,20 +828,6 @@ const char GlGfxDevice::segmentsVertexShader[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	vec2   canvasSize;"
-"	int    canvasYOfs;"
-"	int    canvasYMul;"
-"   vec4   flatTint;"
-"   ivec2  tintRectPos;"
-"   ivec2  tintRectSize;"
-"   vec4   topLeftTint;"
-"   vec4   topRightTint;"
-"   vec4   bottomRightTint;"
-"   vec4   bottomLeftTint;"
-"};"
-
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                        "
@@ -888,8 +843,9 @@ const char GlGfxDevice::segmentsVertexShader[] =
 
 "void main()											"
 "{                                                      "
-"   gl_Position.x = pos.x*2/canvasSize.x - 1.0;         "
-"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;            "
+"   vec4 canvasInfo = texelFetch(extrasId, canvasInfoOfs);	"
+"   gl_Position.x = pos.x*2/canvasInfo.x - 1.0;            "
+"   gl_Position.y = (canvasInfo.z + canvasInfo.w*pos.y)*2/canvasInfo.y - 1.0;    "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
@@ -902,27 +858,13 @@ const char GlGfxDevice::segmentsVertexShader[] =
 "   float yTintOfs = uv.y/extras.w*1/extras2.w;"
 
 "   paletteOfs = vec2(extras2.x+xTintOfs,extras2.y+yTintOfs);"
-"   fragColor = flatTint;								"
+"   fragColor = texelFetch(extrasId, tintInfoOfs);								"
 "}                                                      ";
 
 const char GlGfxDevice::segmentsVertexShaderGradient[] =
 
 "#version 330 core\n"
 
-"layout(std140) uniform Canvas"
-"{"
-"	vec2   canvasSize;"
-"	int    canvasYOfs;"
-"	int    canvasYMul;"
-"   vec4   flatTint;"
-"   ivec2  tintRectPos;"
-"   ivec2  tintRectSize;"
-"   vec4   topLeftTint;"
-"   vec4   topRightTint;"
-"   vec4   bottomRightTint;"
-"   vec4   bottomLeftTint;"
-"};"
-
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                        "
@@ -938,8 +880,9 @@ const char GlGfxDevice::segmentsVertexShaderGradient[] =
 
 "void main()											"
 "{                                                      "
-"   gl_Position.x = pos.x*2/canvasSize.x - 1.0;         "
-"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;            "
+"   vec4 canvasInfo = texelFetch(extrasId, canvasInfoOfs);	"
+"   gl_Position.x = pos.x*2/canvasInfo.x - 1.0;            "
+"   gl_Position.y = (canvasInfo.z + canvasInfo.w*pos.y)*2/canvasInfo.y - 1.0;    "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
@@ -953,12 +896,21 @@ const char GlGfxDevice::segmentsVertexShaderGradient[] =
 
 "   paletteOfs = vec2(extras2.x+xTintOfs,extras2.y+yTintOfs);"
 
+"   vec4 tintRect = texelFetch(extrasId, tintInfoOfs+1);	"
+"   vec4 topLeftTint = texelFetch(extrasId, tintInfoOfs+2);	"
+"   vec4 topRightTint = texelFetch(extrasId, tintInfoOfs+3);	"
+"   vec4 bottomRightTint = texelFetch(extrasId, tintInfoOfs+4);	"
+"   vec4 bottomLeftTint = texelFetch(extrasId, tintInfoOfs+5);	"
+
+"   vec2 tintRectPos = tintRect.xy;	"
+"   vec2 tintRectSize = tintRect.zw;	"
+
 "	vec2 tintOfs = (pos - tintRectPos) / vec2(tintRectSize); "
 "   vec4 lineStartTint = topLeftTint + (bottomLeftTint - topLeftTint) * tintOfs.y;"
 "   vec4 lineEndTint = topRightTint + (bottomRightTint - topRightTint) * tintOfs.y;"
 "   vec4 gradientTint = lineStartTint + (lineEndTint - lineStartTint) * tintOfs.x;"
 
-"   fragColor = flatTint * gradientTint;		   "
+"   fragColor = texelFetch(extrasId, tintInfoOfs) * gradientTint;		   "
 "}                                                      ";
 
 const char GlGfxDevice::segmentsFragmentShader[] =

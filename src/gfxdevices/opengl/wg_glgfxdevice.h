@@ -234,28 +234,6 @@ namespace wg
 
 		//
 
-		struct canvasUBO			// Uniform buffer object for canvas information.
-		{							// DO NOT CHANGE ORDER OF MEMBERS!!!
-			GLfloat	canvasDimX;
-			GLfloat	canvasDimY;
-			int		canvasYOfs;
-			int		canvasYMul;
-
-			GLfloat flatTint[4];
-
-			RectI	tintRect;
-
-			GLfloat	topLeftTint[4];
-			GLfloat	topRightTint[4];
-			GLfloat	bottomRightTint[4];
-			GLfloat	bottomLeftTint[4];
-		};
-
-		GLuint	m_canvasUBOId;
-		canvasUBO	m_canvasUBOBuffer;
-		
-		//
-
 		struct CanvasInfo
 		{
 			GLfloat	canvasDimX;			// Becomes X in shader
