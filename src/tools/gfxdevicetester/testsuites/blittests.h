@@ -21,7 +21,7 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pClockFace = pAppVisitor->loadSurface("resources/clockface_2500.png", pDevice->surfaceFactory());
+		m_pClockFace = pAppVisitor->loadSurface("resources/clockface_2500.png", pDevice->surfaceFactory(), SurfaceFlag::Buffered);
 		if (!m_pClockFace)
 			return false;
 		m_pClockFace->setScaleMode(ScaleMode::Interpolate);
