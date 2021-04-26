@@ -223,11 +223,27 @@ namespace wg
 
             _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
 
+			// Setup CLUT before calling _setupGlTexture().
+
+			if (pClut)
+			{
+				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
+				memcpy(m_pClut, pClut, 1024);
+			}
+
             _setupGlTexture(m_pBlob->data(), m_pitch, flags);
         }
         else
 		{
-            if( pPixelDescription->format == PixelFormat::Custom )
+			// Setup CLUT before calling _setupGlTexture().
+
+			if (pClut)
+			{
+				m_pClut = new Color8[256];
+				memcpy(m_pClut, pClut, 1024);
+			}
+
+			if( pPixelDescription->format == PixelFormat::Custom )
             {
                 m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
                 m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
@@ -257,18 +273,6 @@ namespace wg
 				_updateAlphaMap(buf, size);
 			}
 		}
-
-        // Setup CLUT
-        
-        if (pClut)
-        {
-            if( m_pBlob )
-                m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-            else
-                m_pClut = new Color[256];
-
-            memcpy(m_pClut, pClut, 1024);
-        }
 	}
 
 
