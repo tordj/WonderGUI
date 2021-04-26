@@ -604,6 +604,28 @@ namespace wg
 		m_tintInfo.flatTint[2] = m_tintColor.b / 4096.f;
 		m_tintInfo.flatTint[3] = m_tintColor.a / 4096.f;
 
+		m_tintInfo.tintRect = (RectF) m_tintGradientRect;
+
+		m_tintInfo.topLeftTint[0] = m_tintGradient.topLeft.r / 4096.f;
+		m_tintInfo.topLeftTint[1] = m_tintGradient.topLeft.g / 4096.f;
+		m_tintInfo.topLeftTint[2] = m_tintGradient.topLeft.b / 4096.f;
+		m_tintInfo.topLeftTint[3] = m_tintGradient.topLeft.a / 4096.f;
+
+		m_tintInfo.topRightTint[0] = m_tintGradient.topRight.r / 4096.f;
+		m_tintInfo.topRightTint[1] = m_tintGradient.topRight.g / 4096.f;
+		m_tintInfo.topRightTint[2] = m_tintGradient.topRight.b / 4096.f;
+		m_tintInfo.topRightTint[3] = m_tintGradient.topRight.a / 4096.f;
+
+		m_tintInfo.bottomRightTint[0] = m_tintGradient.bottomRight.r / 4096.f;
+		m_tintInfo.bottomRightTint[1] = m_tintGradient.bottomRight.g / 4096.f;
+		m_tintInfo.bottomRightTint[2] = m_tintGradient.bottomRight.b / 4096.f;
+		m_tintInfo.bottomRightTint[3] = m_tintGradient.bottomRight.a / 4096.f;
+
+		m_tintInfo.bottomLeftTint[0] = m_tintGradient.bottomLeft.r / 4096.f;
+		m_tintInfo.bottomLeftTint[1] = m_tintGradient.bottomLeft.g / 4096.f;
+		m_tintInfo.bottomLeftTint[2] = m_tintGradient.bottomLeft.b / 4096.f;
+		m_tintInfo.bottomLeftTint[3] = m_tintGradient.bottomLeft.a / 4096.f;
+
 
 		// Do we need to end command and execute buffer if we
 		// put commands in the queue instead?
@@ -620,10 +642,7 @@ namespace wg
 
 		_setMorphFactor(m_morphFactor);
 
-		if (m_bTintGradient)
-			_setTintGradient(m_tintGradientRect, m_tintGradient);
-
-		_setTintColor(m_tintColor);
+		m_bGradientActive = m_bTintGradient;
 
 		if( m_pBlitSource != m_pActiveBlitSource )
 			_setBlitSource(static_cast<GlSurface*>(m_pBlitSource.rawPtr()));
@@ -668,13 +687,6 @@ namespace wg
 
 		_writeTintInfo();
 
-		// Legacy code
-
-		_endCommand();
-		_beginStateCommand(Command::SetTintColor, 2);
-		
-		* (HiColor*)(&m_commandBuffer[m_commandOfs]) = color;
-		m_commandOfs += 2;
 	}
 
 	//____ setTintGradient() __________________________________________________________________
@@ -717,18 +729,8 @@ namespace wg
 		_writeTintInfo();
 
 
-		// Legacy code
-
 		_endCommand();
-		_beginStateCommand(Command::SetTintGradient, 12);
-		m_commandBuffer[m_commandOfs++] = rect.x;
-		m_commandBuffer[m_commandOfs++] = rect.y;
-		m_commandBuffer[m_commandOfs++] = rect.w;
-		m_commandBuffer[m_commandOfs++] = rect.h;
-
-		const int* pSrc = (int*) &gradient;
-		for (int i = 0; i < sizeof(Gradient) / 4; i++)
-			m_commandBuffer[m_commandOfs++] = * pSrc++;
+		_beginStateCommand(Command::SetTintGradient, 0);
 	}
 
 	//____ clearTintGradient() __________________________________________________________________
@@ -2215,25 +2217,14 @@ namespace wg
 					_setMorphFactor((*pCmd++) / 1024.f);
 					break;
 				}
-				case Command::SetTintColor:
-				{
-					_setTintColor(*(HiColor*)(pCmd));
-					pCmd += 2;
-					break;
-				}
 				case Command::SetTintGradient:
 				{
-					RectI& rect = *(RectI*)pCmd;
-					pCmd += 4;
-					Gradient* pGradient = (Gradient*)pCmd;
-					pCmd += 8;
-
-					_setTintGradient(rect, * pGradient);
+					m_bGradientActive = true;
 					break;
 				}
 				case Command::ClearTintGradient:
 				{
-					_clearTintGradient();
+					m_bGradientActive = false;
 					break;
 				}
 				case Command::SetBlitSource:
@@ -2650,26 +2641,6 @@ namespace wg
             m_pActiveBlitSource = nullptr;
         }
 		LOG_GLERROR(glGetError());
-	}
-
-	//____ _setTintColor() ____________________________________________________
-
-	void GlGfxDevice::_setTintColor(HiColor color)
-	{
-	}
-
-	//____ _setTintGradient() _________________________________________________
-
-	void GlGfxDevice::_setTintGradient(const RectI& rect, const Gradient& gradient)
-	{
-		m_bGradientActive = true;
-	}
-
-	//____ _clearTintGradient() _________________________________________________
-
-	void GlGfxDevice::_clearTintGradient()
-	{
-		m_bGradientActive = false;
 	}
 
 	//____ _createGlProgram() ___________________________________________________

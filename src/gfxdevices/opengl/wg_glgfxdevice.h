@@ -136,9 +136,6 @@ namespace wg
 				void	_setBlendMode(BlendMode mode);
 				void	_setMorphFactor(float morphFactor);
 				void	_setBlitSource(GlSurface * pSurf);
-				void	_setTintColor(HiColor color);
-				void	_setTintGradient(const RectI& rect, const Gradient& gradient);
-				void	_clearTintGradient();
 
 				inline void	_beginDrawCommand(Command cmd);
 				inline void	_beginDrawCommandWithSource(Command cmd);

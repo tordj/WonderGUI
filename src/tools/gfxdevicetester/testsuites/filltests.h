@@ -145,6 +145,8 @@ public:
 			}
 		}
 
+		pDevice->clearTintGradient();
+
 		return true;
 	}
 
