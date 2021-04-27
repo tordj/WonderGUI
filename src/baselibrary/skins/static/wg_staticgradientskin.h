@@ -65,7 +65,7 @@ namespace wg
 		~StaticGradientSkin() {};
 
 		Gradient	m_gradient;
-		BlendMode	m_blendMode = BlendMode::Blend;
+		BlendMode	m_blendMode = BlendMode::Undefined;
 
 	};
 

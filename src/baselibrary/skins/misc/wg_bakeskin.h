@@ -126,7 +126,7 @@ namespace wg
 
 
 		Surface_p			m_pBakeSurface;
-		BlendMode			m_blendMode = BlendMode::Blend;
+		BlendMode			m_blendMode = BlendMode::Undefined;
 		HiColor				m_tintColor = Color::White;
 		Gradient			m_gradient;
 		bool				m_bGradient = false;

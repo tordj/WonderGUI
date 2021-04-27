@@ -903,7 +903,7 @@ namespace wg
 		glBindVertexArray(m_vertexArrayId);
 
 
-		glFinish();  //TODO: Remove.
+//		glFinish();  //TODO: Remove.
 
 		//
 
@@ -926,7 +926,7 @@ namespace wg
 
 		//
 
- 		glFinish(); //TODO: Remove.
+ 		//glFinish(); //TODO: Remove.
 
 		// Restore render states from before beginRender()
 
@@ -961,7 +961,7 @@ namespace wg
 
 		//m_idleSync = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
 
-		//glFlush();
+		glFlush();
 
 //
 
@@ -2158,6 +2158,9 @@ namespace wg
 	{
 		LOG_GLERROR(glGetError());
 
+		if (m_commandOfs == 0)
+			return;
+
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
 		glBufferData(GL_ARRAY_BUFFER, c_vertexBufferSize * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW);		// Orphan current buffer if still in use.
 		glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertexOfs * sizeof(Vertex), m_vertexBufferData);			// Fill new buffer with as much data as needed.
@@ -2301,8 +2304,9 @@ namespace wg
 							glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						}
 
-						glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
-						vertexOfs += nVertices;
+						glScissor(0, 0, m_activeCanvasSize.w, m_activeCanvasSize.h);
+
+                        vertexOfs += nVertices;
 
 						if( m_bMipmappedActiveCanvas )
 							m_pActiveCanvas->m_bMipmapStale = true;
@@ -2438,6 +2442,7 @@ namespace wg
 			{
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				m_pActiveCanvas = nullptr;
+                m_activeCanvasSize = { width, height };
 				m_bMipmappedActiveCanvas = false;
 
 				//TODO: Signal error that we could not set the specified canvas.
@@ -2474,6 +2479,7 @@ namespace wg
 		LOG_GLERROR(glGetError());
 
 		m_pActiveCanvas = pCanvas;
+        m_activeCanvasSize = { width, height };
 		m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->m_bMipmapped : false;
 
 		bool bIsAlphaOnly = m_pActiveCanvas ? m_pActiveCanvas->pixelFormat() == PixelFormat::A_8 : false;

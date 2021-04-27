@@ -329,7 +329,7 @@ namespace wg
 	 */
 
     void CanvasLayers::setCanvasModifier(int layer, const std::function<void(GfxDevice*)>& func)
-    {		
+    {
         if (layer < 1 || layer > m_nbLayers)
         {
             Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);

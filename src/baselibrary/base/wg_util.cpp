@@ -28,6 +28,8 @@
 #include <wg_base.h>
 #include <wg_context.h>
 
+#include <algorithm>
+
 namespace wg
 {
 

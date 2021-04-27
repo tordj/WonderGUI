@@ -78,7 +78,7 @@ namespace wg
 		void		_updateOpacityFlag();
 
 		Surface_p		m_pSurface;
-		BlendMode		m_blendMode = BlendMode::Blend;
+		BlendMode		m_blendMode = BlendMode::Undefined;
 		HiColor			m_color = Color::White;
 		Gradient		m_gradient;
 		bool			m_bGradient = false;

@@ -104,7 +104,7 @@ namespace wg
 		void		_updateUnsetStateSurfaces();
 		void		_updateUnsetStateColors();
 
-		BlendMode	m_blendMode = BlendMode::Blend;
+		BlendMode	m_blendMode = BlendMode::Undefined;
 
 		Bitmask<uint32_t>	m_stateSurfaceMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;

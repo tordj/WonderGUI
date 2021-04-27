@@ -27,6 +27,7 @@
 #include <wg_skin.impl.h>
 
 #include <cmath>
+#include <algorithm>
 
 namespace wg
 {

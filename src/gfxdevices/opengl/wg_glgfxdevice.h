@@ -311,6 +311,7 @@ namespace wg
 
 		GlSurface_p m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
 		GlSurface_p m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
+        SizeI       m_activeCanvasSize;                                             // Currently active canvas size in OpenGL, " -
 		bool        m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
 		bool		m_bGradientActive = false;										
 		BlendMode	m_activeBlendMode = BlendMode::Blend;

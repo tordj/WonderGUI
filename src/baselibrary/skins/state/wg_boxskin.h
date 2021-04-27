@@ -95,7 +95,7 @@ namespace wg
 		void	_updateUnsetColors();
 
 		BorderI		m_frame;							// In points
-		BlendMode	m_blendMode = BlendMode::Blend;
+		BlendMode	m_blendMode = BlendMode::Undefined;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 

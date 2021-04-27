@@ -132,7 +132,7 @@ namespace wg
 
 		BorderI		m_gfxPadding;
 
-		BlendMode	m_blendMode = BlendMode::Blend;
+		BlendMode	m_blendMode = BlendMode::Undefined;
 		HiColor		m_hubColor = Color::Transparent;
 		HiColor		m_backColor = Color::Transparent;
 		HiColor		m_emptyColor = Color::DarkBlue;

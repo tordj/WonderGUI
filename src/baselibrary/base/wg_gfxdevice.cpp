@@ -481,14 +481,17 @@ namespace wg
 
 	void GfxDevice::endCanvasUpdate()
 	{
-		// Sanity checks
+/*		// Sanity checks
 
+        // It is OK for canvas stack to be empty, we need another way to sync
+        // begin/endCanvasUpdate() calls.
+ 
 		if (m_canvasStack.empty())
 		{
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "No Canvas being updated, nothing to end.", this, TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
-
+*/
 		// Blend together the layers
 
 		if (m_pCanvasLayers)
@@ -701,7 +704,7 @@ namespace wg
 			swap(dstSize.w, dstSize.h);
 
 
-		_transformBlit({ dest, dstSize }, src.pos() + CoordI(ofsX, ofsY), blitFlipTransforms[(int)flip]);
+        _transformBlit({ dest, dstSize }, {ofsX, ofsY}, blitFlipTransforms[(int)flip]);
 	}
 
 

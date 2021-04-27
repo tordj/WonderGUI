@@ -88,7 +88,7 @@ namespace wg
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();
 
-		BlendMode	m_blendMode = BlendMode::Blend;
+		BlendMode	m_blendMode = BlendMode::Undefined;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 

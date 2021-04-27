@@ -98,7 +98,7 @@ namespace wg
 		void		_updateOpacity();
 		Rect		_valueChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
 
-		BlendMode	m_blendMode = BlendMode::Blend;
+		BlendMode	m_blendMode = BlendMode::Undefined;
 		Direction	m_direction;
 		BorderI		m_barPadding;
 		bool		m_bBarStartOutside;

@@ -103,7 +103,7 @@ namespace wg
 		BorderI		m_gfxPadding;
 		bool		m_bAllFramesOpaque = false;
 
-		BlendMode		m_blendMode = BlendMode::Blend;
+		BlendMode		m_blendMode = BlendMode::Undefined;
 		HiColor			m_color = Color::White;
 		Gradient		m_gradient;
 		bool			m_bGradient = false;

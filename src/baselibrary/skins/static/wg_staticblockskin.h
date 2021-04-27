@@ -87,7 +87,7 @@ namespace wg
 		Surface_p		m_pSurface;
 		NinePatch		m_ninePatch;
 
-		BlendMode		m_blendMode = BlendMode::Blend;
+		BlendMode		m_blendMode = BlendMode::Undefined;
 		HiColor			m_color = Color::White;
 		Gradient		m_gradient;
 		bool			m_bGradient = false;

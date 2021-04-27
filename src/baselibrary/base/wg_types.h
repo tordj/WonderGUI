@@ -452,6 +452,7 @@ namespace wg
 
 	enum class Axis : uint8_t	//. autoExtras
 	{
+        Undefined,
 		X,
 		Y
 	};

@@ -30,8 +30,8 @@ namespace wg
 	class HostBridge
 	{
 	public:
-		virtual void	hideCursor() = 0;
-		virtual void	showCursor() = 0;
+		virtual void	hidePointer() = 0;
+		virtual void	showPointer() = 0;
 	};
 }
 

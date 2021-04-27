@@ -65,7 +65,7 @@ namespace wg
 		~StaticColorSkin() {};
 
 		HiColor		m_color;
-		BlendMode	m_blendMode = BlendMode::Blend;
+		BlendMode	m_blendMode = BlendMode::Undefined;
 
 	};
 
