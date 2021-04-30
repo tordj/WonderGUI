@@ -2847,8 +2847,7 @@ namespace wg
 		{
 			// No subpixel precision, make it quick and easy
 
-			RectI pixelRect = rect;
-			roundToPixels(pixelRect);
+			RectI pixelRect = roundToPixels(rect);
 
 			int pixelBytes = m_canvasPixelBits / 8;
 			FillOp_p pFunc = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
@@ -3152,8 +3151,8 @@ namespace wg
 	void SoftGfxDevice::drawLine(CoordI beg, CoordI end, HiColor color, float thickness)
 	{
 		//TODO: Proper 26:6 support
-		roundToPixels(beg);
-		roundToPixels(end);
+		beg = roundToPixels(beg);
+		end = roundToPixels(end);
 
 		if (!m_pRenderLayerSurface || !m_pCanvasPixels)
 			return;
@@ -3288,8 +3287,8 @@ namespace wg
 	void SoftGfxDevice::drawLine(CoordI _begin, Direction dir, int _length, HiColor _col, float thickness)
 	{
 		//TODO: Proper 26:6 support
-		roundToPixels(_begin);
-		roundToPixels(_length);
+		_begin = roundToPixels(_begin);
+		_length = roundToPixels(_length);
 
 		//TODO: Optimize!
 
@@ -3461,8 +3460,7 @@ namespace wg
 	void SoftGfxDevice::_transformDrawSegments(const RectI& _destIn, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
 	{
 		//TODO: Proper 26:6 support
-		RectI _dest = _destIn;
-		roundToPixels(_dest);
+		RectI _dest = roundToPixels(_destIn);
 
 		RectI dest = _dest;
 
@@ -4540,8 +4538,7 @@ namespace wg
 
 
 		//TODO: Proper 26:6 support
-		RectI dest = _dest;
-		roundToPixels(dest);
+		RectI dest = roundToPixels(_dest);
 
 		const RectI& clip = dest;
 
@@ -4611,8 +4608,7 @@ namespace wg
 			return;
 
 		//TODO: Proper 26:6 support
-		RectI dest = _dest;
-		roundToPixels(dest);
+		RectI dest = roundToPixels(_dest);
 
 		const RectI& clip = dest;
 
@@ -4620,7 +4616,7 @@ namespace wg
 		{
 			RectI  patch = m_pClipRects[i]/64;
 
-			CoordF src = _src;
+			CoordF src = CoordF(_src)/64;
 
 			CoordI	patchOfs = patch.pos() - dest.pos();
 

@@ -43,7 +43,7 @@ namespace wg
 
 	BlockSkin_p BlockSkin::create(Surface * pSurface, Border frame )
 	{
-		BorderI pixelFrame = align(ptsToSpx(frame,pSurface->scale()))/64;
+		BorderI pixelFrame = roundToPixels(ptsToSpx(frame,pSurface->scale()));
 
 		if (pSurface == nullptr || pixelFrame.width() >= pSurface->pixelSize().w || pixelFrame.height() >= pSurface->pixelSize().h  )
 			return nullptr;
@@ -57,8 +57,8 @@ namespace wg
 			return nullptr;
 
 		SizeI surfSize = pSurface->pixelSize();
-		BorderI pixelFrame = align(ptsToSpx(frame, pSurface->scale())) / 64;
-		RectI pixelBlock = align(ptsToSpx(block, pSurface->scale())) / 64;
+		BorderI pixelFrame = roundToPixels(ptsToSpx(frame, pSurface->scale()));
+		RectI pixelBlock = roundToPixels(ptsToSpx(block, pSurface->scale()));
 
 		if( pixelFrame.width() >= surfSize.w || pixelFrame.height() >= surfSize.h ||
 			pixelBlock.x < 0 || pixelBlock.y < 0 || pixelBlock.right() > surfSize.w || pixelBlock.bottom() > surfSize.h )
@@ -74,10 +74,12 @@ namespace wg
 
 		// Get pixel values
 
+		int scale = pSurface->scale();
+
 		SizeI surfSize = pSurface->pixelSize();
-		RectI firstBlock = _firstBlock*pSurface->qpixPerPoint() / 4;
-		BorderI frame = _frame*pSurface->qpixPerPoint() / 4;
-		int   spacing = _spacing*pSurface->qpixPerPoint() / 4;
+		RectI firstBlock = roundToPixels(ptsToSpx(_firstBlock, scale));
+		BorderI frame = roundToPixels(ptsToSpx(_frame, scale));
+		int   spacing = roundToPixels(ptsToSpx(_spacing, scale));
 
 		// Check so all blocks fit
 
@@ -105,11 +107,12 @@ namespace wg
 		if (pSurface == nullptr || stateBlocks.size() < 1)
 			return nullptr;
 
+		int scale = pSurface->scale();
 
-		SizeI	surfSize = pSurface->size();
+		SizeI	surfSize = pSurface->pixelSize();
 		int		nBlocks = (int) stateBlocks.size();
-		BorderI frame = _frame * pSurface->qpixPerPoint() / 4;
-		int   spacing = _spacing * pSurface->qpixPerPoint() / 4;
+		BorderI frame = roundToPixels(ptsToSpx(_frame, scale));
+		int   spacing = roundToPixels(ptsToSpx(_spacing, scale));
 
 		// Check so blocks fit evenly
 
@@ -124,7 +127,7 @@ namespace wg
 
 		SizeI blockSize = axis == Axis::X ? SizeI(blockLen, surfSize.h) : SizeI(surfSize.w, blockLen);
 
-		BlockSkin * p = new BlockSkin(pSurface, blockSize, frame);
+		BlockSkin * p = new BlockSkin(pSurface, spxToPts(blockSize*64, scale), _frame);
 		p->setBlocks(stateBlocks, axis, spacing, Coord(0, 0));
 		return BlockSkin_p(p);
 	}

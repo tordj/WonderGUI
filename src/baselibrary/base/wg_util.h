@@ -38,10 +38,11 @@ namespace wg
 
 	namespace Util		/** @private */
 	{
-		inline void roundToPixels(RectI& r);
-		inline void roundToPixels(CoordI& r);
-		inline void roundToPixels(SizeI& r);
-		inline void roundToPixels(int& r);
+		inline RectI roundToPixels(const RectSPX& r);
+		inline CoordI roundToPixels(const CoordSPX& r);
+		inline SizeI roundToPixels(const SizeSPX& r);
+		inline BorderI roundToPixels(const BorderSPX& r);
+		inline int roundToPixels(spx r);
 
 		inline pts spxToPts(spx value, int scale)
 		{
@@ -249,33 +250,41 @@ namespace wg
 
 	}
 
-	void Util::roundToPixels(RectI& r)
+	RectI Util::roundToPixels(const RectSPX& r)
 	{
 		int x2 = r.x + r.w;
 		int y2 = r.y + r.h;
 
-		r.x = (r.x + 32) >> 6;
-		r.y = (r.y + 32) >> 6;
+		RectI out;
 
-		r.w = ((x2 + 32) >> 6) - r.x;
-		r.h = ((y2 + 32) >> 6) - r.y;
+		out.x = (r.x + 32) >> 6;
+		out.y = (r.y + 32) >> 6;
+
+		out.w = ((x2 + 32) >> 6) - out.x;
+		out.h = ((y2 + 32) >> 6) - out.y;
+
+		return out;
 	}
 
-	void Util::roundToPixels(CoordI& r)
+	CoordI Util::roundToPixels(const CoordSPX& r)
 	{
-		r.x = (r.x + 32) >> 6;
-		r.y = (r.y + 32) >> 6;
+		return { (r.x + 32) >> 6, (r.y + 32) >> 6 };
 	}
 
-	void Util::roundToPixels(SizeI& r)
+	SizeI Util::roundToPixels(const SizeSPX& r)
 	{
-		r.w = (r.w + 32) >> 6;
-		r.h = (r.h + 32) >> 6;
+		return { (r.w + 32) >> 6, (r.h + 32) >> 6 };
 	}
 
-	void Util::roundToPixels(int& r)
+	BorderI Util::roundToPixels(const BorderSPX& r)
 	{
-		r = (r + 32) >> 6;
+		return { (r.top + 32) >> 6, (r.right + 32) >> 6, (r.bottom + 32) >> 6, (r.left + 32) >> 6 };
+	}
+
+
+	int Util::roundToPixels(spx r)
+	{
+		return (r + 32) >> 6;
 	}
 
 
