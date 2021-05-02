@@ -40,8 +40,8 @@ namespace wg
 	//____ create() _______________________________________________________________
 
 	SpinAnimSkin_p SpinAnimSkin::create(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter,	CoordF dstCenter, 
-											float fromDegrees, float toDegrees, float zoom, const BorderI& gfxPadding, 
-											const BorderI& contentPadding)
+											float fromDegrees, float toDegrees, float zoom, const Border& gfxPadding, 
+											const Border& contentPadding)
 	{
 		return SpinAnimSkin_p(new SpinAnimSkin(pSurface, preferredSize, cycleDuration, srcCenter, dstCenter, fromDegrees, toDegrees, zoom, gfxPadding, contentPadding));
 	}
@@ -49,7 +49,7 @@ namespace wg
 	//____ constructor ____________________________________________________________
 
 	SpinAnimSkin::SpinAnimSkin(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter, CoordF dstCenter, float fromDegrees, 
-									float toDegrees, float zoom, const BorderI& gfxPadding, const BorderI& contentPadding) : 
+									float toDegrees, float zoom, const Border& gfxPadding, const Border& contentPadding) : 
 		m_pSurface(pSurface),
 		m_preferredSize(preferredSize),
 		m_srcCenter(srcCenter),
@@ -92,35 +92,39 @@ namespace wg
 			m_animationCycles[i] = millisec;
 	}
 
-	//____ render() ______________________________________________________________
+	//____ _render() ______________________________________________________________
 
-	void SpinAnimSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void SpinAnimSkin::_render(GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		float	zoom = m_zoom * Base::activeContext()->scale();
+		float	zoom = m_zoom * scale / 64;
 
 		// Scale zoom to fit content of preferred size into canvas size.
 
-		Rect canvas = _canvas;
-		if (!m_preferredSize.isEmpty() && canvas.size() != m_preferredSize)
+		RectSPX canvas = _canvas;
+		if (!m_preferredSize.isEmpty())
 		{
-			float xScale = float(_canvas.w) / float(m_preferredSize.w);
-			float yScale = float(_canvas.h) / float(m_preferredSize.h);
-			float scale = min(xScale, yScale);
+			SizeSPX prefSize = align(ptsToSpx(m_preferredSize,scale));
+			if (canvas.size() != prefSize)
+			{
+				float xScale = float(_canvas.w) / float(prefSize.w);
+				float yScale = float(_canvas.h) / float(prefSize.h);
+				float scaleSrc = min(xScale, yScale);
 
-			MU w = m_preferredSize.w * scale;
-			MU h = m_preferredSize.h * scale;
+				spx w = prefSize.w * scaleSrc;
+				spx h = prefSize.h * scaleSrc;
 
-			canvas.x += (w - canvas.w) / 2;
-			canvas.y += (h - canvas.h) / 2;
-			canvas.w = w;
-			canvas.h = h;
+				canvas.x += (w - canvas.w) / 2;
+				canvas.y += (h - canvas.h) / 2;
+				canvas.w = w;
+				canvas.h = h;
 
-			zoom *= scale;
+				zoom *= scale;
+			}
 		}
 
 		//
 
-		canvas -= m_gfxPadding;
+		canvas -= align(ptsToSpx(m_gfxPadding,scale));
 
 		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees)*animPos/(float)m_cycleDuration;
 
@@ -132,14 +136,14 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->rotScaleBlit(_canvas.px(), degrees, zoom, m_srcCenter, m_dstCenter);
+		pDevice->rotScaleBlit(_canvas, degrees, zoom, m_srcCenter, m_dstCenter);
 	}
 
-	//____ preferredSize() ______________________________________________________________
+	//____ _preferredSize() ______________________________________________________________
 
-	Size SpinAnimSkin::preferredSize() const
+	SizeSPX SpinAnimSkin::_preferredSize(int scale) const
 	{
-		return m_preferredSize;
+		return align(ptsToSpx(m_preferredSize, scale));
 	}
 
 	//____ setColor() _____________________________________________________
@@ -168,9 +172,9 @@ namespace wg
 		_updateOpacityFlag();
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool SpinAnimSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool SpinAnimSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -184,21 +188,21 @@ namespace wg
 	}
 
 
-	//____ dirtyRect() ________________________________________________________
+	//____ _dirtyRect() ________________________________________________________
 
-	Rect SpinAnimSkin::dirtyRect(const Rect& _canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX SpinAnimSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (newAnimPos == oldAnimPos)
-			return Rect();
+			return RectSPX();
 
 		return _canvas;
 	}
 
-	//____ animationLength() __________________________________________________
+	//____ _animationLength() __________________________________________________
 
-	int SpinAnimSkin::animationLength(State state) const
+	int SpinAnimSkin::_animationLength(State state) const
 	{
 		return m_cycleDuration;
 	}

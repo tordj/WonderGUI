@@ -73,8 +73,8 @@ add_executable(spxworkbench
 #	../../baselibrary/base/wg_msglogger.h
 	../../baselibrary/base/wg_msgrouter.cpp
 	../../baselibrary/base/wg_msgrouter.h
-#	../../baselibrary/base/wg_nullgfxdevice.cpp
-#	../../baselibrary/base/wg_nullgfxdevice.h
+	../../baselibrary/base/wg_nullgfxdevice.cpp
+	../../baselibrary/base/wg_nullgfxdevice.h
 	../../baselibrary/base/wg_object.cpp
 	../../baselibrary/base/wg_object.h
 	../../baselibrary/base/wg_paddedslot.h
@@ -186,15 +186,15 @@ add_executable(spxworkbench
 #	../../baselibrary/sizebrokers/wg_uniform_sizebroker.cpp
 #	../../baselibrary/sizebrokers/wg_uniform_sizebroker.h
 #	
-#	../../baselibrary/skins/wg_animskin.cpp
-#	../../baselibrary/skins/wg_animskin.h
+	../../baselibrary/skins/wg_animskin.cpp
+	../../baselibrary/skins/wg_animskin.h
 	../../baselibrary/skins/wg_skin.cpp
 	../../baselibrary/skins/wg_skin.h
-#	../../baselibrary/skins/wg_skin.impl.h
+	../../baselibrary/skins/wg_skin.impl.h
 	../../baselibrary/skins/wg_stateskin.cpp
 	../../baselibrary/skins/wg_stateskin.h	
-#	../../baselibrary/skins/anim/wg_spinanimskin.cpp
-#	../../baselibrary/skins/anim/wg_spinanimskin.h
+	../../baselibrary/skins/anim/wg_spinanimskin.cpp
+	../../baselibrary/skins/anim/wg_spinanimskin.h
 #	../../baselibrary/skins/meter/wg_fillmeterskin.cpp
 #	../../baselibrary/skins/meter/wg_fillmeterskin.h
 #	../../baselibrary/skins/meter/wg_framemeterskin.cpp
