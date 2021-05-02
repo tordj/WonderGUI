@@ -129,8 +129,8 @@ namespace wg
                                             4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31 };
 
 	const int16_t s_channel_6[256] =      { 4096*0/63, 4096*1/63, 4096*2/63, 4096*3/63, 4096*4/63, 4096*5/63, 4096*6/63, 4096*7/63, 4096*8/63, 4096*9/63, 4096*10/63, 4096*11/63, 4096*12/63, 4096*13/63, 4096*14/63, 4096*15/63,
-											4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
 											4096*32/63, 4096*33/63, 4096*34/63, 4096*35/63, 4096*36/63, 4096*37/63, 4096*38/63, 4096*39/63, 4096*40/63, 4096*41/63, 4096*42/63, 4096*43/63, 4096*44/63, 4096*45/63, 4096*46/63, 4096*47/63,
+											4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
 											4096*48/63, 4096*49/63, 4096*50/63, 4096*51/63, 4096*52/63, 4096*53/63, 4096*54/63, 4096*55/63, 4096*56/63, 4096*57/63, 4096*58/63, 4096*59/63, 4096*60/63, 4096*61/63, 4096*62/63, 4096*63/63,
 											4096*0/63, 4096*1/63, 4096*2/63, 4096*3/63, 4096*4/63, 4096*5/63, 4096*6/63, 4096*7/63, 4096*8/63, 4096*9/63, 4096*10/63, 4096*11/63, 4096*12/63, 4096*13/63, 4096*14/63, 4096*15/63,
 											4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
@@ -3148,7 +3148,7 @@ namespace wg
 
 	//____ drawLine() ____ [from/to] __________________________________________
 
-	void SoftGfxDevice::drawLine(CoordI beg, CoordI end, HiColor color, float thickness)
+	void SoftGfxDevice::drawLine(CoordSPX beg, CoordSPX end, HiColor color, float thickness)
 	{
 		//TODO: Proper 26:6 support
 		beg = roundToPixels(beg);
@@ -3284,7 +3284,7 @@ namespace wg
 	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
 	// where the outer pixels are faded.
 
-	void SoftGfxDevice::drawLine(CoordI _begin, Direction dir, int _length, HiColor _col, float thickness)
+	void SoftGfxDevice::drawLine(CoordSPX _begin, Direction dir, int _length, HiColor _col, float thickness)
 	{
 		//TODO: Proper 26:6 support
 		_begin = roundToPixels(_begin);
@@ -3457,7 +3457,7 @@ namespace wg
 
 	//____ _transformDrawSegments() _________________________________________
 
-	void SoftGfxDevice::_transformDrawSegments(const RectI& _destIn, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
+	void SoftGfxDevice::_transformDrawSegments(const RectSPX& _destIn, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
 	{
 		//TODO: Proper 26:6 support
 		RectI _dest = roundToPixels(_destIn);
@@ -4326,7 +4326,7 @@ namespace wg
 
 	//____ plotPixels() _________________________________________________
 
-	void SoftGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors)
+	void SoftGfxDevice::plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors)
 	{
 		const int pitch = m_canvasPitch;
 		const int pixelBytes = m_canvasPixelBits / 8;
@@ -4372,7 +4372,7 @@ namespace wg
 
 	//____ _rotScaleBlit() ____________________________________________________
 
-	void SoftGfxDevice::rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter )
+	void SoftGfxDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter )
 	{
 		if (m_pBlitSource->isTiling())
 		{
@@ -4394,7 +4394,7 @@ namespace wg
 
 	//____ tile() _____________________________________________________________
 
-	void SoftGfxDevice::tile(const RectI& dest, CoordI shift)
+	void SoftGfxDevice::tile(const RectSPX& dest, CoordSPX shift)
 	{
 		auto oldOnePass = m_pSimpleBlitOnePassOp;
 		auto oldFirstPass = m_pSimpleBlitFirstPassOp;
@@ -4407,7 +4407,7 @@ namespace wg
 
 	//____ flipTile() _________________________________________________________
 
-	void SoftGfxDevice::flipTile(const RectI& dest, GfxFlip flip, CoordI shift)
+	void SoftGfxDevice::flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift)
 	{
 		auto oldOnePass = m_pSimpleBlitOnePassOp;
 		auto oldFirstPass = m_pSimpleBlitFirstPassOp;
@@ -4420,7 +4420,7 @@ namespace wg
 
 	//____ scaleTile() ________________________________________________________
 
-	void SoftGfxDevice::scaleTile(const RectI& dest, float scale, CoordI shift)
+	void SoftGfxDevice::scaleTile(const RectSPX& dest, float scale, CoordSPX shift)
 	{
 		auto oldOnePass = m_pComplexBlitOnePassOp;
 		auto oldFirstPass = m_pComplexBlitFirstPassOp;
@@ -4433,7 +4433,7 @@ namespace wg
 
 	//____ scaleFlipTile() ____________________________________________________
 
-	void SoftGfxDevice::scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift)
+	void SoftGfxDevice::scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift)
 	{
 		auto oldOnePass = m_pComplexBlitOnePassOp;
 		auto oldFirstPass = m_pComplexBlitFirstPassOp;
@@ -4529,7 +4529,7 @@ namespace wg
 
 	//____ _transformBlit() [simple] ____________________________________
 
-	void SoftGfxDevice::_transformBlit(const RectI& _dest, CoordI _src, const int simpleTransform[2][2])
+	void SoftGfxDevice::_transformBlit(const RectSPX& _dest, CoordSPX _src, const int simpleTransform[2][2])
 	{
 		// Clip and render the patches
 
@@ -4600,7 +4600,7 @@ namespace wg
 
 	//____ _transformBlit() [complex] ____________________________________
 
-	void SoftGfxDevice::_transformBlit(const RectI& _dest, CoordF _src, const float complexTransform[2][2])
+	void SoftGfxDevice::_transformBlit(const RectSPX& _dest, CoordF _src, const float complexTransform[2][2])
 	{
 		// Clip and render the patches
 

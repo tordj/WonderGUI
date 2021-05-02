@@ -76,7 +76,7 @@ namespace wg
 
 		void		setTintColor(HiColor color) override;
 
-		void		setTintGradient(const RectI& rect, const Gradient& gradient) override;
+		void		setTintGradient(const RectSPX& rect, const Gradient& gradient) override;
 		void		clearTintGradient() override;
 
 		bool		setBlendMode(BlendMode blendMode) override;
@@ -90,22 +90,22 @@ namespace wg
 		//
 
 		using 	GfxDevice::fill;
-		void	fill(const RectI& rect, HiColor col) override;
+		void	fill(const RectSPX& rect, HiColor col) override;
 		void	fill(const RectF& rect, HiColor col) override;
 
-		void    plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
+		void    plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordI begin, CoordI end, HiColor color, float thickness = 1.f) override;
-		void	drawLine(CoordI begin, Direction dir, int length, HiColor col, float thickness = 1.f) override;
+		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness = 1.f) override;
+		void	drawLine(CoordSPX begin, Direction dir, int length, HiColor col, float thickness = 1.f) override;
 
 		bool	setBlitSource(Surface * pSource) override;
-		void	rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
+		void	rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
 
-		void	tile(const RectI& dest, CoordI shift = { 0,0 }) override;
-		void	flipTile(const RectI& dest, GfxFlip flip, CoordI shift = { 0,0 }) override;
+		void	tile(const RectSPX& dest, CoordSPX shift = { 0,0 }) override;
+		void	flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
-		void	scaleTile(const RectI& dest, float scale, CoordI shift = { 0,0 }) override;
-		void	scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift = { 0,0 }) override;
+		void	scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 }) override;
+		void	scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
 
 	protected:
@@ -116,10 +116,10 @@ namespace wg
 		void	_renderLayerWasChanged() override;
 
 
-		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
-		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
+		void	_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
+		void	_transformBlit(const RectSPX& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 		const static TintMode      TintMode_min = TintMode::None;
 		const static TintMode      TintMode_max = TintMode::GradientXY;

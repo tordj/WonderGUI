@@ -79,7 +79,7 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::fill(const RectI& rect, HiColor col)
+	void NullGfxDevice::fill(const RectSPX& rect, HiColor col)
 	{
 	}
 
@@ -87,23 +87,23 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors)
+	void NullGfxDevice::plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors)
 	{
 	}
 
-	void NullGfxDevice::drawLine(CoordI begin, CoordI end, HiColor color, float thickness)
+	void NullGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness)
 	{
 	}
 
-	void NullGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+	void NullGfxDevice::_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2])
 	{
 	}
 
-	void NullGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
+	void NullGfxDevice::_transformBlit(const RectSPX& dest, CoordF src, const float complexTransform[2][2])
 	{
 	}
 
-	void NullGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
+	void NullGfxDevice::_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
 	}
 

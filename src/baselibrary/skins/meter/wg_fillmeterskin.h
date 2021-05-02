@@ -41,7 +41,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static FillMeterSkin_p create();
-		static FillMeterSkin_p create(Direction direction, HiColor fillColorEmpty, HiColor fillColorFull, HiColor backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI(), int minFillLength = 0);
+		static FillMeterSkin_p create(Direction direction, HiColor fillColorEmpty, HiColor fillColorFull, HiColor backColor = Color::Transparent, const Border& gfxPadding = Border(), const Border& contentPadding = Border(), int minFillLength = 0);
 
 		//.____ Identification __________________________________________
 
@@ -50,8 +50,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		void	setPreferredSize(const SizeI& preferred);
-		Size	preferredSize() const override;
+		void	setPreferredSize(const Size& preferred);
 
 		//.____ Appearance ____________________________________________________
 
@@ -61,7 +60,7 @@ namespace wg
 		void	setDirection(Direction dir);
 		Direction direction() const { return m_direction; }
 
-		void	setGfxPadding(BorderI padding);
+		void	setGfxPadding(Border padding);
 		Border	gfxPadding() const { return m_barPadding; }
 
 		void	setBackColor(HiColor back);
@@ -79,31 +78,33 @@ namespace wg
         void    setCenteredBarOrigin(bool bCenter);
         bool    centeredBarOrigin() const { return m_bCenteredBarOrigin; }
         
-		//.____ Misc ____________________________________________________
+		//.____ Internal ____________________________________________________
 
-		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		SizeSPX	_preferredSize(int scale) const override;
+
+		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int sale, State state, int opacityTreshold, 
 							float value = 1.f, float value2 = -1.f) const override;
 
-		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, float value = 1.f, 
-						float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
+		void 	_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value = 1.f, 
+							float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX	_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 		FillMeterSkin();
 		FillMeterSkin(	Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, 
-						const BorderI& barPadding, const BorderI& contentPadding, int minFillLength );
+						const Border& barPadding, const Border& contentPadding, int minFillLength );
 		~FillMeterSkin() {};
 
-		Rect		_barFillArea(const Rect& canvas, float value, float value2) const;
+		Rect		_barFillArea(const RectSPX& canvas, float value, float value2) const;
 		void		_updateOpacity();
-		Rect		_valueChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
+		RectSPX		_valueChangeRect(const RectSPX& canvas, State state, float oldFraction, float newFraction) const;
 
 		BlendMode	m_blendMode = BlendMode::Undefined;
 		Direction	m_direction;
-		BorderI		m_barPadding;
+		Border		m_barPadding;
         int		    m_minFillLength;
 		HiColor		m_barColorEmpty;
 		HiColor		m_barColorFull;

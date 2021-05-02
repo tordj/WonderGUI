@@ -18,8 +18,8 @@
 #include <wg_rootpanel.h>
 #include <wg_lambdapanel.h>
 #include <wg_filler.h>
-
 #include <wg_staticcolorskin.h>
+
 #include <wg_boxskin.h>
 #include <wg_blockskin.h>
 
@@ -114,7 +114,7 @@ int main ( int argc, char** argv )
 
 
 	auto pFiller = Filler::create();
-	auto pSkin = BoxSkin::create(10, {	{StateEnum::Normal, Color8::Blue, Color8::Salmon}, 
+	auto pSkin = BoxSkin::create(3, {	{StateEnum::Normal, Color8::Blue, Color8::Salmon}, 
 										{StateEnum::Hovered, Color8::LightBlue, Color8::LightSalmon},
 										{StateEnum::Pressed, Color8::DarkBlue, Color8::DarkSalmon} });
 

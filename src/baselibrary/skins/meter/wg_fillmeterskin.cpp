@@ -40,7 +40,7 @@ namespace wg
 		return FillMeterSkin_p(new FillMeterSkin());
 	}
 
-	FillMeterSkin_p FillMeterSkin::create(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const BorderI& barPadding, const BorderI& contentPadding, int minFillLength )
+	FillMeterSkin_p FillMeterSkin::create(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const Border& barPadding, const Border& contentPadding, int minFillLength )
 	{
 		return FillMeterSkin_p(new FillMeterSkin(direction, barColorEmpty, barColorFull, backColor, barPadding, contentPadding, minFillLength ));
 	}
@@ -54,12 +54,12 @@ namespace wg
 		m_barColorFull(Color::LightBlue),
 		m_backColor(Color::Transparent)
 	{
-		m_preferredSize = SizeI::max(SizeI( 50,10 ),m_contentPadding.size());
+		m_preferredSize = Size::max(Size( 50,10 ),m_contentPadding.size());
 		m_bIgnoresValue = false;
 		_updateOpacity();
 	}
 
-	FillMeterSkin::FillMeterSkin(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const BorderI& barPadding, const BorderI& contentPadding, int minFillLength ) :
+	FillMeterSkin::FillMeterSkin(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const Border& barPadding, const Border& contentPadding, int minFillLength ) :
 		m_direction(direction),
 		m_barColorEmpty(barColorEmpty),
 		m_barColorFull(barColorFull),
@@ -67,8 +67,8 @@ namespace wg
 		m_barPadding(barPadding),
 		m_minFillLength(minFillLength)
 	{
-		SizeI pref = (direction == Direction::Up || direction == Direction::Down) ? SizeI(10, 50) : SizeI(50, 10);
-		m_preferredSize = SizeI::max(pref, m_contentPadding.size());
+		Size pref = (direction == Direction::Up || direction == Direction::Down) ? Size(10, 50) : Size(50, 10);
+		m_preferredSize = Size::max(pref, m_contentPadding.size());
 		m_bIgnoresValue = false;
 		m_contentPadding = contentPadding;
 		_updateOpacity();
@@ -81,19 +81,9 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() ____________________________________________________
-
-	Size FillMeterSkin::preferredSize() const
-	{
-		if (!m_preferredSize.isEmpty())
-			return m_preferredSize;
-		else
-			return minSize();
-	}
-
 	//____ setPreferredSize() _________________________________________________
 
-	void FillMeterSkin::setPreferredSize(const SizeI& preferred)
+	void FillMeterSkin::setPreferredSize(const Size& preferred)
 	{
 		m_preferredSize = preferred;
 	}
@@ -116,7 +106,7 @@ namespace wg
 
 	//____ setGfxPadding() ____________________________________________________
 
-	void FillMeterSkin::setGfxPadding(BorderI padding)
+	void FillMeterSkin::setGfxPadding(Border padding)
 	{
 		m_barPadding = padding;
 		_updateOpacity();
@@ -162,6 +152,16 @@ namespace wg
 		m_minFillLength = minFillLength;
 	}
 
+	//____ _preferredSize() ____________________________________________________
+
+	SizeSPX FillMeterSkin::_preferredSize(int scale) const
+	{
+		if (!m_preferredSize.isEmpty())
+			return ptsToSpx(m_preferredSize, scale);
+		else
+			return _minSize(scale);
+	}
+	
     //____ setCenteredBarOrigin() ____________________________________________
 
     void FillMeterSkin::setCenteredBarOrigin(bool bCenter)
@@ -173,13 +173,13 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void FillMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void FillMeterSkin::_render(GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		HiColor barColor = HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096 * value));
 
-		RectI barCanvas = _barFillArea(_canvas,value, value2).px();
+		RectSPX barCanvas = _barFillArea(_canvas,value, value2).px();
 		pDevice->fill(barCanvas, barColor);
 
 		if (m_backColor.a != 0)
