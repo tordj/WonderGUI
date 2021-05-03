@@ -45,16 +45,12 @@ namespace wg
 
 		static SpinMeterSkin_p create(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f,0.5f), 
 										CoordF dstCenter = CoordF(0.5f,0.5f), float fromDegrees = 0.f, float toDegrees = 360.f, 
-										float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI() );
+										float zoom = 1.f, const Border& gfxPadding = Border(), const Border& contentPadding = Border() );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Geometry _________________________________________________
-
-		Size	preferredSize() const override;
 
 		//.____ Appearance _________________________________________________
 
@@ -67,23 +63,25 @@ namespace wg
 		void		setGradient(const Gradient& gradient);
 		Gradient	gradient() const { return m_gradient; }
 
-		//.____ Misc ____________________________________________________
+		//.____ Internal ____________________________________________________
 
-		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		SizeSPX	_preferredSize(int scale) const override;
+
+		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
 							float value = 1.f, float value2 = -1.f) const override;
 
-		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-						float value = 1.f, float value2 = -1.f, int animPos = 0,
-						float* pStateFractions = nullptr) const override;
+		void 	_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
 
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX	_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 		SpinMeterSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f, 0.5f),
 						CoordF dstCenter = CoordF(0.5f, 0.5f), float fromDegrees = 0.f, float toDegrees = 360.f,
-						float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI());
+						float zoom = 1.f, const Border& gfxPadding = Border(), const Border& contentPadding = Border());
 		~SpinMeterSkin() {};
 
 		void		_updateOpacityFlag();
@@ -95,7 +93,7 @@ namespace wg
 		float		m_fromDegrees;
 		float		m_toDegrees;
 		float		m_zoom;
-		BorderI		m_gfxPadding;
+		Border		m_gfxPadding;
 
 		BlendMode		m_blendMode = BlendMode::Undefined;
 		HiColor			m_color = Color::White;

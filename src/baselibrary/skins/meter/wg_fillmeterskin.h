@@ -98,7 +98,7 @@ namespace wg
 						const Border& barPadding, const Border& contentPadding, int minFillLength );
 		~FillMeterSkin() {};
 
-		Rect		_barFillArea(const RectSPX& canvas, float value, float value2) const;
+		RectSPX		_barFillArea(const RectSPX& canvas, int scale, float value, float value2) const;
 		void		_updateOpacity();
 		RectSPX		_valueChangeRect(const RectSPX& canvas, State state, float oldFraction, float newFraction) const;
 
