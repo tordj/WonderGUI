@@ -195,14 +195,14 @@ add_executable(spxworkbench
 	../../baselibrary/skins/wg_stateskin.h	
 	../../baselibrary/skins/anim/wg_spinanimskin.cpp
 	../../baselibrary/skins/anim/wg_spinanimskin.h
-#	../../baselibrary/skins/meter/wg_fillmeterskin.cpp
-#	../../baselibrary/skins/meter/wg_fillmeterskin.h
+	../../baselibrary/skins/meter/wg_fillmeterskin.cpp
+	../../baselibrary/skins/meter/wg_fillmeterskin.h
 #	../../baselibrary/skins/meter/wg_framemeterskin.cpp
 #	../../baselibrary/skins/meter/wg_framemeterskin.h
 #	../../baselibrary/skins/meter/wg_piemeterskin.cpp
 #	../../baselibrary/skins/meter/wg_piemeterskin.h
-#	../../baselibrary/skins/meter/wg_spinmeterskin.cpp
-#	../../baselibrary/skins/meter/wg_spinmeterskin.h
+	../../baselibrary/skins/meter/wg_spinmeterskin.cpp
+  	../../baselibrary/skins/meter/wg_spinmeterskin.h
 #	../../baselibrary/skins/misc/wg_bakeskin.cpp
 #	../../baselibrary/skins/misc/wg_bakeskin.h
 #	../../baselibrary/skins/misc/wg_doubleskin.cpp

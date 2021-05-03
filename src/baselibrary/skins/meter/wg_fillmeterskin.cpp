@@ -162,7 +162,7 @@ namespace wg
 			return _minSize(scale);
 	}
 
-	//____ render() ______________________________________________________________
+	//____ _render() ______________________________________________________________
 
 	void FillMeterSkin::_render(GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
@@ -170,14 +170,16 @@ namespace wg
 
 		HiColor barColor = HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096 * value));
 
-		RectSPX barCanvas = _barFillArea(_canvas,value, value2).px();
+		RectSPX barCanvas = _barFillArea(_canvas, scale, value, value2);
 		pDevice->fill(barCanvas, barColor);
+
+		BorderSPX	barPadding = align(ptsToSpx(m_barPadding, scale));
 
 		if (m_backColor.a != 0)
 		{
-			RectI backCanvas = (_canvas - m_barPadding).px();
-			RectI backCanvas1 = backCanvas;
-			RectI backCanvas2 = backCanvas;
+			RectSPX backCanvas = (_canvas - barPadding);
+			RectSPX backCanvas1 = backCanvas;
+			RectSPX backCanvas2 = backCanvas;
 
 			switch (m_direction)
 			{
@@ -207,35 +209,35 @@ namespace wg
 		}
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool FillMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool FillMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
 
-		if( _barFillArea(canvas, value, value2).contains(ofs) )
-			return (((int)HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096*value)).a*255/4096) >= opacityTreshold);
+		if( _barFillArea(canvas, scale, value, value2).contains(ofs) )
+			return (HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096*value)).a >= opacityTreshold);
 
-		return (((int)m_backColor.a) >= opacityTreshold);
+		return (m_backColor.a >= opacityTreshold);
 	}
 
-	//____ dirtyRect() ________________________________________________________
+	//____ _dirtyRect() ________________________________________________________
 
-	Rect FillMeterSkin::dirtyRect(const Rect& _canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX FillMeterSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (newValue == oldValue)
-			return Rect();
+			return RectSPX();
 
 		if (m_barColorFull != m_barColorEmpty)
 			return _canvas;
 
-		Rect canvas = _canvas - m_contentPadding;
+		RectSPX canvas = _canvas - align(ptsToSpx(m_contentPadding, scale));
 
-		Rect result1;
-		Rect result2;
+		RectSPX result1;
+		RectSPX result2;
 
 		if (oldValue != newValue)
 			result1 = _valueChangeRect(canvas, newState, oldValue, newValue);
@@ -249,56 +251,56 @@ namespace wg
 		if (result1.isEmpty())
 			return result2;
 
-		return Rect::getUnion(result1, result2);
+		return RectSPX::getUnion(result1, result2);
 	}
 
 
-	Rect FillMeterSkin::_valueChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction ) const
+	RectSPX FillMeterSkin::_valueChangeRect(const RectSPX& canvas, State state, float oldFraction, float newFraction ) const
 	{
 		switch (m_direction)
 		{
 		case Direction::Up:
 		{
-			MU ofs1 = canvas.h - canvas.h * oldFraction;
-			MU ofs2 = canvas.h - canvas.h * newFraction;
+			spx ofs1 = align(canvas.h - canvas.h * oldFraction);
+			spx ofs2 = align(canvas.h - canvas.h * newFraction);
 			if (ofs1 > ofs2)
 				std::swap(ofs1, ofs2);
 
-			return Rect(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1).aligned();
+			return RectSPX(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1);
 		}
 
 		case Direction::Down:
 		{
-			MU ofs1 = canvas.h * oldFraction;
-			MU ofs2 = canvas.h * newFraction;
+			spx ofs1 = align(canvas.h * oldFraction);
+			spx ofs2 = align(canvas.h * newFraction);
 			if (ofs1 > ofs2)
 				std::swap(ofs1, ofs2);
 
-			return Rect(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1).aligned();
+			return RectSPX(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1);
 		}
 
 		case Direction::Left:
 		{
-			MU ofs1 = canvas.w - canvas.w * oldFraction;
-			MU ofs2 = canvas.w - canvas.w * newFraction;
+			spx ofs1 = align(canvas.w - canvas.w * oldFraction);
+			spx ofs2 = align(canvas.w - canvas.w * newFraction);
 			if (ofs1 > ofs2)
 				std::swap(ofs1, ofs2);
 
-			return Rect(canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h).aligned();
+			return RectSPX(canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h);
 		}
 
 		case Direction::Right:
 		{
-			MU ofs1 = canvas.w * oldFraction;
-			MU ofs2 = canvas.w * newFraction;
+			spx ofs1 = canvas.w * oldFraction;
+			spx ofs2 = canvas.w * newFraction;
 			if (ofs1 > ofs2)
 				std::swap(ofs1, ofs2);
 
-			return Rect(canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h).aligned();
+			return RectSPX(canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h);
 		}
 
 		default:
-			return Rect();			// Just to avoid compiler warnings.
+			return RectSPX();			// Just to avoid compiler warnings.
 		}
 	}
 
@@ -306,9 +308,9 @@ namespace wg
 
 	//____ _barFillArea() _____________________________________________________
 
-	Rect FillMeterSkin::_barFillArea(const Rect& _canvas, float value, float value2) const
+	RectSPX FillMeterSkin::_barFillArea(const RectSPX& _canvas, int scale, float value, float value2) const
 	{
-		Rect canvas = (_canvas - m_barPadding);
+		RectSPX canvas = (_canvas - align(ptsToSpx(m_barPadding,scale)));
 
 		float beg = value2 >= 0.f ? value : 0.f;
 		float end = value2 >= 0.f ? value2 : value;
@@ -319,8 +321,8 @@ namespace wg
 		{
 			case Direction::Up:
 			{
-				MU ofs = canvas.h - canvas.h * end;
-				MU len = canvas.h * (end-beg);
+				spx ofs = align(canvas.h - canvas.h * end);
+				spx len = align(canvas.h * (end-beg));
 
 				if (bStartOutside)
 					return { canvas.x, canvas.y + ofs, canvas.w, _canvas.h - ofs };
@@ -330,8 +332,8 @@ namespace wg
 
 			case Direction::Down:
 			{
-				MU ofs = canvas.h * beg;
-				MU len = canvas.h * (end - beg);
+				spx ofs = align(canvas.h * beg);
+				spx len = align(canvas.h * (end - beg));
 
 				if (bStartOutside)
 					return { canvas.x, _canvas.y, canvas.w, len + (canvas.y - _canvas.y) };
@@ -341,8 +343,8 @@ namespace wg
 
 			case Direction::Left:
 			{
-				MU ofs = canvas.w - canvas.w * end;
-				MU len = canvas.w * (end - beg);
+				spx ofs = align(canvas.w - canvas.w * end);
+				spx len = align(canvas.w * (end - beg));
 
 				if (bStartOutside)
 					return { canvas.x + ofs, canvas.y, _canvas.w - ofs, canvas.h };
@@ -352,8 +354,8 @@ namespace wg
 
 			case Direction::Right:
 			{
-				MU ofs = canvas.w * beg;
-				MU len = canvas.w * (end - beg);
+				spx ofs = align(canvas.w * beg);
+				spx len = align(canvas.w * (end - beg));
 
 				if (bStartOutside)
 					return { _canvas.x, canvas.y, len + (canvas.x - _canvas.x), canvas.h };
@@ -362,7 +364,7 @@ namespace wg
 			}
 
 			default:
-				return Rect();			// Just to avoid compiler warnings.
+				return RectSPX();			// Just to avoid compiler warnings.
 		}
 	}
 	 
