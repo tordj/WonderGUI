@@ -191,16 +191,18 @@ namespace wg
 	 *
 	 **/
 
-	void Scrollbar::setHandlePointPos( MU pos )
+	void Scrollbar::setHandlePointPos( pts _pos )
 	{
-		MU		handlePos, handleLen;
+		spx pos = align(ptsToSpx(_pos, m_scale));
+
+		spx		handlePos, handleLen;
 		_viewToPosLen( &handlePos, &handleLen );
 
-		MU		length;
+		spx		length;
 		if( m_bHorizontal )
-			length = m_size.w - OO(skin)._contentPaddingSize().w;
+			length = m_size.w - OO(skin)._contentPaddingSize(m_scale).w;
 		else
-			length = m_size.h - OO(skin)._contentPaddingSize().h;
+			length = m_size.h - OO(skin)._contentPaddingSize(m_scale).h;
 
 		length -= m_headerLen + m_footerLen;
 
@@ -386,25 +388,25 @@ namespace wg
 
 	void Scrollbar::_headerFooterChanged()
 	{
-		MU	fwdLen = 0, bwdLen = 0;
+		spx	fwdLen = 0, bwdLen = 0;
 
 		if( m_bHorizontal )
 		{
 			if( m_pBtnFwdSkin )
-				fwdLen = m_pBtnFwdSkin->preferredSize().w;
+				fwdLen = m_pBtnFwdSkin->_preferredSize(m_scale).w;
 			if( m_pBtnBwdSkin )
-				bwdLen = m_pBtnBwdSkin->preferredSize().w;
+				bwdLen = m_pBtnBwdSkin->_preferredSize(m_scale).w;
 		}
 		else
 		{
 			if( m_pBtnFwdSkin )
-				fwdLen = m_pBtnFwdSkin->preferredSize().h;
+				fwdLen = m_pBtnFwdSkin->_preferredSize(m_scale).h;
 			if( m_pBtnBwdSkin )
-				bwdLen = m_pBtnBwdSkin->preferredSize().h;
+				bwdLen = m_pBtnBwdSkin->_preferredSize(m_scale).h;
 		}
 
-		MU	headerLen = 0;
-		MU footerLen = 0;
+		spx	headerLen = 0;
+		spx footerLen = 0;
 
 		if( (m_btnLayout & HEADER_BWD) )
 			headerLen += bwdLen;
@@ -462,34 +464,34 @@ namespace wg
 
 	//____ _viewToPosLen() _________________________________________________________
 
-	void	Scrollbar::_viewToPosLen( MU * _wpPos, MU * _wpLen )
+	void	Scrollbar::_viewToPosLen( spx * _wpPos, spx * _wpLen )
 	{
 		// changes by Viktor.
 
 		// using floats here results in errors.
 		//float pos, len;
-		MU	pos, len;
+		spx	pos, len;
 
-		MU	maxLen;
+		spx	maxLen;
 		if( m_bHorizontal )
-			maxLen = m_size.w - OO(skin)._contentPaddingSize().w;
+			maxLen = m_size.w - OO(skin)._contentPaddingSize(m_scale).w;
 		else
-			maxLen = m_size.h - OO(skin)._contentPaddingSize().h;
+			maxLen = m_size.h - OO(skin)._contentPaddingSize(m_scale).h;
 
 		maxLen -= m_headerLen + m_footerLen;
 
 		//len = m_handleSize * maxLen;
-		len = m_handleSize * maxLen;
+		len = align(m_handleSize * maxLen);
 
-		MU	minLen;
+		spx	minLen;
 
 		if( m_bHorizontal )
-			minLen = m_pHandleSkin->minSize().w;
+			minLen = m_pHandleSkin->_minSize(m_scale).w;
 		else
-			minLen = m_pHandleSkin->minSize().h;
+			minLen = m_pHandleSkin->_minSize(m_scale).h;
 
-		if( minLen < 4 )
-			minLen = 4;
+		if( minLen < 4*64 )
+			minLen = 4*64;
 
 
 		if( len < minLen )
@@ -499,7 +501,7 @@ namespace wg
 		}
 
 		//pos = m_handlePos * (maxLen-len);
-		pos = m_handlePos * (maxLen-len);
+		pos = align(m_handlePos * (maxLen-len));
 
 		if( pos + len > maxLen )
 			pos = maxLen - len;
@@ -534,18 +536,20 @@ namespace wg
 		Widget::_refresh();
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	Size Scrollbar::preferredSize() const
+	SizeSPX Scrollbar::_preferredSize(int scale) const
 	{
-		Size sz = m_minSize;
+		scale = _fixScale(scale);
 
-		// Add 50 pixels in the scrollbars direction for best size.
+		SizeSPX sz = m_minSize;
+
+		// Add 50 points in the scrollbars direction for best size.
 
 		if( m_bHorizontal )
-			sz.w += 50;
+			sz.w += 50*scale*64;
 		else
-			sz.h += 50;
+			sz.h += 50*scale*64;
 
 		return sz;
 	}
@@ -555,14 +559,14 @@ namespace wg
 
 	void Scrollbar::_updateMinSize()
 	{
-		MU	minW = 4;
-		MU	minH = 4;
+		spx	minW = 4*64;
+		spx	minH = 4*64;
 
 		// Check min w/h for BgGfx.
 
 		if( m_pBgSkin )
 		{
-			Size sz = m_pBgSkin->minSize();
+			SizeSPX sz = m_pBgSkin->_minSize(m_scale);
 
 			minW = max( minW, sz.w );
 			minH = max( minH, sz.h );
@@ -572,7 +576,7 @@ namespace wg
 
 		if( m_pHandleSkin )
 		{
-			Size sz = m_pHandleSkin->minSize();
+			SizeSPX sz = m_pHandleSkin->_minSize(m_scale);
 
 			minW = max( minW, sz.w );
 			minH = max( minH, sz.h );
@@ -591,7 +595,7 @@ namespace wg
 
 		if( m_pBtnFwdSkin && (m_btnLayout & (HEADER_FWD | FOOTER_FWD)) )
 		{
-			Size sz = m_pBtnFwdSkin->preferredSize();
+			SizeSPX sz = m_pBtnFwdSkin->_preferredSize(m_scale);
 
 			minW = max( minW, sz.w );
 			minH = max( minH, sz.h );
@@ -601,7 +605,7 @@ namespace wg
 
 		if( m_pBtnBwdSkin && (m_btnLayout & (HEADER_BWD | FOOTER_BWD)) )
 		{
-			Size sz = m_pBtnBwdSkin->preferredSize();
+			SizeSPX sz = m_pBtnBwdSkin->_preferredSize(m_scale);
 
 			minW = max( minW, sz.w );
 			minH = max( minH, sz.h );
@@ -609,8 +613,8 @@ namespace wg
 
 		// Add padding for base skin
 
-		minW += OO(skin)._contentPaddingSize().w;
-		minH += OO(skin)._contentPaddingSize().h;
+		minW += OO(skin)._contentPaddingSize(m_scale).w;
+		minH += OO(skin)._contentPaddingSize(m_scale).h;
 
 		// Set if changed.
 
@@ -625,14 +629,14 @@ namespace wg
 
 	//____ _renderButton() _________________________________________________________
 
-	void Scrollbar::_renderButton( GfxDevice * pDevice, Rect& _dest, Skin * pSkin, State state )
+	void Scrollbar::_renderButton( GfxDevice * pDevice, RectSPX& _dest, Skin * pSkin, State state )
 	{
 			if( m_bHorizontal )
-				_dest.w = pSkin->preferredSize().w;
+				_dest.w = pSkin->_preferredSize(m_scale).w;
 			else
-				_dest.h = pSkin->preferredSize().h;
+				_dest.h = pSkin->_preferredSize(m_scale).h;
 
-			pSkin->render( pDevice, _dest, state );
+			pSkin->_render( pDevice, _dest, m_scale, state );
 
 			if( m_bHorizontal )
 				_dest.x += _dest.w;
@@ -642,11 +646,11 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void Scrollbar::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void Scrollbar::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect	dest = OO(skin)._contentRect(_canvas,m_state);
+		RectSPX	dest = OO(skin)._contentRect(_canvas,m_scale, m_state);
 
 		// Render header buttons
 
@@ -664,23 +668,23 @@ namespace wg
 			dest.h = m_size.h - m_headerLen - m_footerLen;
 
 		if( m_pBgSkin )
-			m_pBgSkin->render( pDevice, dest, m_states[C_BG] );
+			m_pBgSkin->_render( pDevice, dest, m_scale, m_states[C_BG] );
 
 		// Render the handle
 
 		if( m_pHandleSkin )
 		{
-			MU handlePos;
-			MU handleLen;
+			spx handlePos;
+			spx handleLen;
 			_viewToPosLen( &handlePos, &handleLen );
 
-			Rect	handleDest;
+			RectSPX	handleDest;
 			if( m_bHorizontal )
-				handleDest = Rect( dest.x + handlePos, dest.y, handleLen, dest.h );
+				handleDest = RectSPX( dest.x + handlePos, dest.y, handleLen, dest.h );
 			else
-				handleDest = Rect( dest.x, dest.y + handlePos, dest.w, handleLen );
+				handleDest = RectSPX( dest.x, dest.y + handlePos, dest.w, handleLen );
 
-			m_pHandleSkin->render( pDevice, handleDest, m_states[C_HANDLE] );
+			m_pHandleSkin->_render( pDevice, handleDest, m_scale, m_states[C_HANDLE] );
 		}
 
 		// Render footer buttons
@@ -699,7 +703,7 @@ namespace wg
 
 	//____ _alphaTest() ______________________________________________________
 
-	bool Scrollbar::_alphaTest( const Coord& ofs )
+	bool Scrollbar::_alphaTest( const CoordSPX& ofs )
 	{
 		if( _findMarkedComponent( ofs ) != C_NONE )
 			return true;
@@ -709,14 +713,14 @@ namespace wg
 
 	//____ _markTestButton() _______________________________________________________
 
-	bool Scrollbar::_markTestButton( Coord ofs, Rect& _dest, Skin * pSkin, State state )
+	bool Scrollbar::_markTestButton( CoordSPX ofs, RectSPX& _dest, Skin * pSkin, State state )
 	{
 			if( m_bHorizontal )
-				_dest.w = pSkin->preferredSize().w;
+				_dest.w = pSkin->_preferredSize(m_scale).w;
 			else
-				_dest.h = pSkin->preferredSize().h;
+				_dest.h = pSkin->_preferredSize(m_scale).h;
 
-			bool retVal = pSkin->markTest( ofs, _dest, state, m_markOpacity );
+			bool retVal = pSkin->_markTest( ofs, _dest, m_scale, state, m_markOpacity );
 
 			if( m_bHorizontal )
 				_dest.x += _dest.w;
@@ -728,11 +732,11 @@ namespace wg
 
 	//____ _findMarkedComponent() __________________________________________________
 
-	Scrollbar::Component Scrollbar::_findMarkedComponent( Coord ofs )
+	Scrollbar::Component Scrollbar::_findMarkedComponent( CoordSPX ofs )
 	{
-		Rect canvas = OO(skin)._contentRect( Rect(0,0,m_size),m_state);
+		RectSPX canvas = OO(skin)._contentRect( RectSPX(0,0,m_size),m_scale, m_state);
 
-		Rect dest = canvas;
+		RectSPX dest = canvas;
 
 		// First of all, do a mark test against the header buttons...
 
@@ -774,7 +778,7 @@ namespace wg
 
 		// Do a mark test against the dragbar background.
 
-		Rect	r = canvas;
+		RectSPX	r = canvas;
 
 		if( m_bHorizontal )
 		{
@@ -787,7 +791,7 @@ namespace wg
 			r.h -= m_headerLen + m_footerLen;
 		}
 
-		if( m_pBgSkin && m_pBgSkin->markTest( ofs, r, m_states[C_BG], m_markOpacity ) )
+		if( m_pBgSkin && m_pBgSkin->_markTest( ofs, r, m_scale, m_states[C_BG], m_markOpacity ) )
 			return C_BG;
 
 		return C_NONE;
@@ -807,16 +811,16 @@ namespace wg
 
 	void Scrollbar::_receive( Msg * pMsg )
 	{
-		MU		handlePos, handleLen;
+		spx		handlePos, handleLen;
 		_viewToPosLen( &handlePos, &handleLen );
 
 		MsgRouter_p	pHandler = Base::msgRouter();
-		Coord pos = static_cast<InputMsg*>(pMsg)->pointerPos() - globalPos();
+		CoordSPX pos = static_cast<InputMsg*>(pMsg)->pointerPosSPX() - _globalPos();
 
-		MU		pointerOfs;
-		MU		length;
+		spx		pointerOfs;
+		spx		length;
 
-		Rect contentRect = OO(skin)._contentRect(Rect(0,0,m_size),m_state);
+		RectSPX contentRect = OO(skin)._contentRect(RectSPX(0,0,m_size), m_scale,m_state);
 
 		if( m_bHorizontal )
 		{
@@ -914,8 +918,12 @@ namespace wg
 								setHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
 						}
 
-						MU pointPos, pointLen;
-						_viewToPosLen( &pointPos, &pointLen );
+						spx spxPos, spxLen;
+						_viewToPosLen( &spxPos, &spxLen );
+
+						pts pointPos = spxToPts(spxPos, m_scale);
+						pts pointLen = spxToPts(spxLen, m_scale);
+
 						pHandler->post( RangeUpdateMsg::create(this,pointPos,pointLen,m_handlePos,m_handleSize,true) );
 
 						break;
@@ -944,8 +952,12 @@ namespace wg
 				}
 
 
-				MU pointPos, pointLen;
-				_viewToPosLen( &pointPos, &pointLen );
+				spx spxPos, spxLen;
+				_viewToPosLen(&spxPos, &spxLen);
+
+				pts pointPos = spxToPts(spxPos, m_scale);
+				pts pointLen = spxToPts(spxLen, m_scale);
+
 				pHandler->post( RangeUpdateMsg::create(this,pointPos,pointLen,m_handlePos,m_handleSize,true) );
 				break;
 			}
@@ -984,8 +996,12 @@ namespace wg
 						setHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
 				}
 
-				MU pointPos, pointLen;
-				_viewToPosLen( &pointPos, &pointLen );
+				spx spxPos, spxLen;
+				_viewToPosLen(&spxPos, &spxLen);
+
+				pts pointPos = spxToPts(spxPos, m_scale);
+				pts pointLen = spxToPts(spxLen, m_scale);
+
 				pHandler->post( RangeUpdateMsg::create(this,pointPos,pointLen,m_handlePos,m_handleSize,true) );
 				break;
 			}
@@ -1011,8 +1027,11 @@ namespace wg
 						if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 							m_handlePos = m_pScrollbarTargetInterface->_setPosition(m_handlePos);
 
-						MU pointPos, pointLen;
-						_viewToPosLen( &pointPos, &pointLen );
+						spx spxPos, spxLen;
+						_viewToPosLen(&spxPos, &spxLen);
+
+						pts pointPos = spxToPts(spxPos, m_scale);
+						pts pointLen = spxToPts(spxLen, m_scale);
 						pHandler->post(RangeUpdateMsg::create(this,pointPos,pointLen,m_handlePos,m_handleSize,true) );
 						_requestRender();
 					}
@@ -1031,8 +1050,11 @@ namespace wg
 					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 						setHandlePos( m_pScrollbarTargetInterface->_wheelRolled(distance) );
 
-					MU pointPos, pointLen;
-					_viewToPosLen( &pointPos, &pointLen );
+					spx spxPos, spxLen;
+					_viewToPosLen(&spxPos, &spxLen);
+
+					pts pointPos = spxToPts(spxPos, m_scale);
+					pts pointLen = spxToPts(spxLen, m_scale);
 					pHandler->post( RangeUpdateMsg::create(this,pointPos,pointLen,m_handlePos,m_handleSize,true) );
 					pMsg->swallow();
 				}
@@ -1053,15 +1075,15 @@ namespace wg
 
 	//____ _markTestHandle() _______________________________________________________
 
-	bool Scrollbar::_markTestHandle( Coord ofs )
+	bool Scrollbar::_markTestHandle( CoordSPX ofs )
 	{
 		if( !m_pHandleSkin )
 			return false;
 
-		MU   handlePos, handleLen;
+		spx   handlePos, handleLen;
 		_viewToPosLen( &handlePos, &handleLen );
 
-		Rect area = OO(skin)._contentRect(Rect(0,0,m_size),m_state);
+		RectSPX area = OO(skin)._contentRect(RectSPX(0,0,m_size),m_scale,m_state);
 
 		if( m_bHorizontal )
 		{
@@ -1074,7 +1096,7 @@ namespace wg
 			area.h = handleLen;
 		}
 
-		return m_pHandleSkin->markTest( ofs, area, m_states[C_HANDLE], m_markOpacity );
+		return m_pHandleSkin->_markTest( ofs, area, m_scale, m_states[C_HANDLE], m_markOpacity );
 	}
 
 	//____ _setHandle() ____________________________________________________________

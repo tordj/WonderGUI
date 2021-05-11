@@ -42,7 +42,7 @@ namespace wg
 
 
 	PieMeterSkin_p PieMeterSkin::create(float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor,
-										float hubSize, HiColor hubColor, HiColor backColor, const BorderI& piePadding, const BorderI& contentPadding,
+										float hubSize, HiColor hubColor, HiColor backColor, const Border& piePadding, const Border& contentPadding,
 										bool bStaticSections, bool bRectangular)
 	{
 		return PieMeterSkin_p(new PieMeterSkin(start, min, max, minColor, maxColor, emptyColor, hubSize, hubColor, backColor, piePadding, contentPadding, bStaticSections, bRectangular));
@@ -64,7 +64,7 @@ namespace wg
 	}
 
 	PieMeterSkin::PieMeterSkin(	float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor, float hubSize,
-								HiColor hubColor, HiColor backColor, const BorderI& piePadding, const BorderI& contentPadding,
+								HiColor hubColor, HiColor backColor, const Border& piePadding, const Border& contentPadding,
 								bool bStaticSections, bool bRectangular)
 	{
 		m_rangeStart = start;
@@ -88,7 +88,7 @@ namespace wg
 
 		_updateOpacity();
 		
-		m_preferredSize = minSize() + SizeI(64, 64);
+		m_preferredSize = Size(64, 64);
 		m_bIgnoresValue = false;
 	}
 
@@ -192,7 +192,7 @@ namespace wg
 
 	//____ setGfxPadding() _____________________________________________________
 
-	void PieMeterSkin::setGfxPadding(BorderI padding)
+	void PieMeterSkin::setGfxPadding(Border padding)
 	{
 		m_gfxPadding = padding;
 	}
@@ -233,25 +233,25 @@ namespace wg
 		m_backColor = back;
 	}
 
-	//____ render() ______________________________________________________________
+	//____ _render() ______________________________________________________________
 
-	void PieMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void PieMeterSkin::_render(GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		bool	bFramed = false;
 
-		Rect canvas = _canvas;
+		RectSPX canvas = _canvas;
 
 		// Shrink canvas with padding
 
 		if (!m_gfxPadding.isEmpty())
 		{
-			canvas -= Border(m_gfxPadding).aligned();
+			canvas -= align(ptsToSpx(m_gfxPadding,scale));
 
 			if (canvas.w <= 0 || canvas.h <= 0)
 			{
-				pDevice->fill(_canvas.px(), m_backColor);
+				pDevice->fill(_canvas, m_backColor);
 				return;
 			}
 			bFramed = true;
@@ -280,14 +280,14 @@ namespace wg
 
 		if (bFramed && m_backColor.a > 0.f)
 		{
-			RectI	outer = _canvas.px();
-			RectI	inner = canvas.px();
-			BorderI frame = { inner.y - outer.y, outer.right() - inner.right(), outer.bottom() - inner.bottom(), inner.x - outer.x };
+			RectSPX	outer = _canvas;
+			RectSPX	inner = canvas;
+			BorderSPX frame = { inner.y - outer.y, outer.right() - inner.right(), outer.bottom() - inner.bottom(), inner.x - outer.x };
 
-			RectI top(outer.x, outer.y, outer.w, frame.top);
-			RectI left(outer.x, outer.y + frame.top, frame.left, outer.h - frame.height());
-			RectI right(outer.x + outer.w - frame.right, outer.y + frame.top, frame.right, outer.h - frame.height());
-			RectI bottom(outer.x, outer.y + outer.h - frame.bottom, outer.w, frame.bottom);
+			RectSPX top(outer.x, outer.y, outer.w, frame.top);
+			RectSPX left(outer.x, outer.y + frame.top, frame.left, outer.h - frame.height());
+			RectSPX right(outer.x + outer.w - frame.right, outer.y + frame.top, frame.right, outer.h - frame.height());
+			RectSPX bottom(outer.x, outer.y + outer.h - frame.bottom, outer.w, frame.bottom);
 
 			pDevice->fill(top, m_backColor);
 			pDevice->fill(left, m_backColor);
@@ -356,12 +356,12 @@ namespace wg
 			sliceSizes[nSlices++] = (1.f - value) * (m_maxRange - m_minRange);
 		}
 
-		pDevice->drawPieChart(canvas.px(), m_rangeStart, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
+		pDevice->drawPieChart(canvas, m_rangeStart, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
 	}
 
 	//____ setPreferredSize() _________________________________________________
 
-	void PieMeterSkin::setPreferredSize(const SizeI& preferred)
+	void PieMeterSkin::setPreferredSize(const Size& preferred)
 	{
 		if (preferred.w < 0 || preferred.h < 0)
 		{
@@ -372,16 +372,16 @@ namespace wg
 		m_preferredSize = preferred;
 	}
 
-	//____ preferredSize() ______________________________________________________________
+	//____  _preferredSize() ___________________________________________________
 
-	Size PieMeterSkin::preferredSize() const
+	SizeSPX	PieMeterSkin::_preferredSize(int scale) const
 	{
-		return m_preferredSize;
+		return align(ptsToSpx(m_preferredSize, scale));
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool PieMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool PieMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -394,9 +394,9 @@ namespace wg
 		return true;
 	}
 
-	//____ dirtyRect() ________________________________________________________
+	//____ _dirtyRect() ________________________________________________________
 
-	Rect PieMeterSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX PieMeterSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
@@ -405,7 +405,7 @@ namespace wg
 		if (newValue != oldValue)
 			return canvas;
 
-		return Rect();
+		return RectSPX();
 	}
 
 	//____ _updateOpacity() ___________________________________________________

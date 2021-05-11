@@ -54,18 +54,19 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ____________________________________________
-
-		Size	preferredSize() const override;
-
 
 		//.____ Appearance ________________________________________________________
 
-		void				setImage( Surface * pSurface, const RectI& rect );	///< @brief Set image to display.
+		void				setImage( Surface * pSurface, const Rect& rect );	///< @brief Set image to display.
 		void				setImage( Surface * pSurface );						///< @brief Set image to display.
 
 		inline Surface_p	imageSurface() const;								///< @brief Get surface of image displayed.
-		inline RectI		imageRect() const;									///< @brief Get area of surface rectangle of image displayed.
+		inline Rect			imageRect() const;									///< @brief Get area of surface rectangle of image displayed.
+
+		//.____ Internal ____________________________________________
+
+		SizeSPX	_preferredSize(int scale = -1) const override;
+
 
 	protected:
 		Image();
@@ -73,13 +74,13 @@ namespace wg
 		virtual Widget* _newOfMyType() const override { return new Image(); };
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
-		bool		_alphaTest( const Coord& ofs ) override;
+		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
+		bool		_alphaTest( const CoordSPX& ofs ) override;
 
 	private:
 
 		Surface_p	m_pSurface;
-		RectI		m_rect;
+		Rect		m_rect;
 
 	};
 
@@ -89,7 +90,7 @@ namespace wg
 		return m_pSurface;
 	}
 
-	RectI Image::imageRect() const
+	Rect Image::imageRect() const
 	{
 		return m_rect;
 	}

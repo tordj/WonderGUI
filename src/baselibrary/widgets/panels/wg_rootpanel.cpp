@@ -194,6 +194,7 @@ namespace wg
 		if (scale != m_scale)
 		{
 			m_scale = scale;
+			m_bScaleSet = true;
 			if (slot._widget())
 			{
 				OO(slot)._setSize(m_geo.size(),m_scale);
@@ -203,6 +204,23 @@ namespace wg
 
 		return true;
 	}
+
+	//____ clearScale() _________________________________________________________
+
+	void RootPanel::clearScale()
+	{
+		if (m_bScaleSet)
+		{
+			m_bScaleSet = false;
+			m_scale = m_canvasScale;
+			if (slot._widget())
+			{
+				OO(slot)._setSize(m_geo.size(), m_scale);
+				m_dirtyPatches.add(m_geo);
+			}
+		}
+	}
+
 
 	//_____ setGeo() _____________________________________________________________
 

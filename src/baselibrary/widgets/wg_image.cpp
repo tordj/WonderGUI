@@ -52,7 +52,7 @@ namespace wg
 
 	//____ setImage() _____________________________________________________________
 
-	void Image::setImage( Surface * pSurface, const RectI& rect )
+	void Image::setImage( Surface * pSurface, const Rect& rect )
 	{
 		if( pSurface != m_pSurface || rect != m_rect )
 		{
@@ -63,7 +63,7 @@ namespace wg
 			m_pSurface = pSurface;
 
 			if( pSurface )
-				m_rect = RectI( rect, RectI(pSurface->size()) );
+				m_rect = Rect( rect, Rect(pSurface->pointSize()) );
 			else
 				m_rect.clear();
 
@@ -78,13 +78,13 @@ namespace wg
 		if( pSurface != m_pSurface )
 		{
 			bool bResize = false;
-			if( !pSurface || !m_pSurface || pSurface->size() != m_pSurface->size() )
+			if( !pSurface || !m_pSurface || pSurface->pointSize() != m_pSurface->pointSize() )
 				bResize = true;
 
 			m_pSurface = pSurface;
 
 			if( pSurface )
-				m_rect = pSurface->size();
+				m_rect = pSurface->pointSize();
 			else
 				m_rect.clear();
 
@@ -94,14 +94,18 @@ namespace wg
 		}
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	Size Image::preferredSize() const
+	SizeSPX Image::_preferredSize(int scale) const
 	{
-		if( m_pSurface )
-			return OO(skin)._sizeForContent( m_rect.size() );
+
+		if (m_pSurface)
+		{
+			scale = _fixScale(scale);
+			return OO(skin)._sizeForContent( align(ptsToSpx(m_rect.size(),scale)), scale );
+		}
 		else
-			return Widget::preferredSize();
+			return Widget::_preferredSize(scale);
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -118,28 +122,28 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void Image::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void Image::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			Rect dest = OO(skin)._contentRect( _canvas, state() );
+			RectSPX dest = OO(skin)._contentRect( _canvas, m_scale, state() );
 
 			pDevice->setBlitSource(m_pSurface);
-			pDevice->stretchBlit( dest.px(), m_rect );
+			pDevice->stretchBlit( dest, m_rect*m_pSurface->scale() );		// Higher precision source coordinates than to use ptsToSpx().
 		}
 	}
 
 	//____ _alphaTest() ___________________________________________________________
 
-	bool Image::_alphaTest( const Coord& ofs )
+	bool Image::_alphaTest( const CoordSPX& ofs )
 	{
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			Rect dest = OO(skin)._contentRect( m_size, state() );
+			RectSPX dest = OO(skin)._contentRect( m_size, m_scale, state() );
 
-			if( Util::markTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity ) )
+			if( Util::markTestStretchRect( ofs, m_pSurface, ptsToSpx(m_rect, m_pSurface->scale()), dest, m_markOpacity ) )
 				return true;
 		}
 

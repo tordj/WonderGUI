@@ -51,8 +51,8 @@ namespace wg
 		static PieMeterSkin_p create();
 		static PieMeterSkin_p create(	float startAngle, float minLength, float maxLength, HiColor minColor, HiColor maxColor, HiColor emptyColor = Color::Transparent,
 										float hubSize = 0.f, HiColor hubColor = Color::Transparent, 
-										HiColor backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), 
-										const BorderI& contentPadding = BorderI(), bool bStaticSlices = true, bool bRectangular = false);
+										HiColor backColor = Color::Transparent, const Border& gfxPadding = Border(), 
+										const Border& contentPadding = Border(), bool bStaticSlices = true, bool bRectangular = false);
 
 		//.____ Identification __________________________________________
 
@@ -80,7 +80,7 @@ namespace wg
 		void	setStaticSections(bool bStatic);
 		bool	isStaticSections() const { return m_bStaticSections; }
 
-		void	setGfxPadding(BorderI padding);
+		void	setGfxPadding(Border padding);
 		Border	gfxPadding() const { return m_gfxPadding; }
 
 		void	setEmptyColor(HiColor empty);
@@ -98,30 +98,34 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		void	setPreferredSize(const SizeI& preferred);
-		Size	preferredSize() const override;
+		void	setPreferredSize(const Size& preferred);
+		Size	preferredSize() const { return m_preferredSize; }
 
-		//.____ Misc ____________________________________________________
+		//.____ Internal ____________________________________________________
 
-		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		//TODO: We probably need all kind of size related methods, taking set preferred size and content + padding into account.
+
+		SizeSPX	_preferredSize(int scale) const override;
+
+		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
 							float value = 1.f, float value2 = -1.f) const override;
 
-		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-						float value = 1.f, float value2 = -1.f, int animPos = 0,
-						float* pStateFractions = nullptr) const override;
+		void 	_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
 
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX	_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 		PieMeterSkin();
-		PieMeterSkin(float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor, float hubSize, HiColor hubColor, HiColor backColor, const BorderI& piePadding, const BorderI& contentPadding, bool bStaticSections, bool bSquare);
+		PieMeterSkin(float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor, float hubSize, HiColor hubColor, HiColor backColor, const Border& piePadding, const Border& contentPadding, bool bStaticSections, bool bSquare);
 		~PieMeterSkin() {};
 
 		void		_updateOpacity();
 
-		SizeI		m_preferredSize;
+		Size		m_preferredSize;
 
 		float		m_rangeStart = 0.55f;
 		float		m_minRange = 0.01f;
@@ -130,7 +134,7 @@ namespace wg
 		bool		m_bRectangular = false;
 		bool		m_bStaticSections = true;
 
-		BorderI		m_gfxPadding;
+		Border		m_gfxPadding;
 
 		BlendMode	m_blendMode = BlendMode::Undefined;
 		HiColor		m_hubColor = Color::Transparent;

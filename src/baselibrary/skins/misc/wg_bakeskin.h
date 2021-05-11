@@ -73,37 +73,40 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		Size			minSize() const override;
-		Size			preferredSize() const override;
-
-		void			setContentPadding(const BorderI& padding) override;
-		Border			contentPadding(State state) const override;
-		Size			contentPaddingSize() const override;
-		Coord			contentOfs(State state) const override;
-		Rect			contentRect(const Rect& canvas, State state) const override;
+		void			setContentPadding(const Border& padding) override;
 
 		//.____ Misc ____________________________________________________
 
 		void			setBakeSurface(Surface* pSurface);
 		Surface_p		bakeSurface() const { return m_pBakeSurface; }
 
-		bool			isOpaque( State state ) const override;
-		bool			isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
+		//.____ Internal _________________________________________________
 
-		bool			markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		SizeSPX			_minSize(int scale) const override;
+		SizeSPX			_preferredSize(int scale) const override;
+
+		BorderSPX		_contentPadding(int scale, State state) const override;
+		SizeSPX			_contentPaddingSize(int scale) const override;
+		CoordSPX		_contentOfs(int scale, State state) const override;
+		RectSPX			_contentRect(const RectSPX& canvas, int scale, State state) const override;
+
+		bool			_isOpaque( State state ) const override;
+		bool			_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
+
+		bool			_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
 									float value = 1.f, float value2 = -1.f) const override;
 
-		void			render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-								float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
+		void			_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+									float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
-		Rect			dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX			_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
-		int				animationLength(State state) const override;
+		int				_animationLength(State state) const override;
 
-		Bitmask<uint8_t>transitioningStates() const override;
-		const int*		transitionTimes() const override;
+		Bitmask<uint8_t>_transitioningStates() const override;
+		const int*		_transitionTimes() const override;
 
 
 	private:
@@ -114,9 +117,9 @@ namespace wg
 		void			_incUseCount() override;
 		void			_decUseCount() override;
 
-		void			_updateCachedGeo() const;
+		void			_updateCachedGeo(int scale) const;
 		void			_onModified();
-		Border			_stateContentPadding(State state) const;
+		BorderSPX		_stateContentPadding(int scale, State state) const;
 
 		void			_didAddEntries(Skin_p* pEntry, int nb) override;
 		void			_didMoveEntries(Skin_p* pFrom, Skin_p* pTo, int nb) override;
@@ -133,10 +136,10 @@ namespace wg
 		bool				m_bContentPaddingSet = false;
 		bool				m_bSkinInSkin = false;
 
-		mutable int			m_cachedQPixPerPoint = 0;
-		mutable Size		m_cachedMinSize;						// Calculated minSize for scale represented by m_cachedQPixPerPoint;
-		mutable Size		m_cachedPreferredSize;					// Calculated preferredSize for scale represented by m_cachedQPixPerPoint;
-		mutable Border		m_cachedContentPadding[StateEnum_Nb];
+		mutable int			m_cachedScale = 0;
+		mutable SizeSPX		m_cachedMinSize;						// Calculated minSize for scale represented by m_cachedScale;
+		mutable SizeSPX		m_cachedPreferredSize;					// Calculated preferredSize for scale represented by m_cachedScale;
+		mutable BorderSPX	m_cachedContentPadding[StateEnum_Nb];
 
 		Bitmask<uint32_t>	m_opaqueStates;
 

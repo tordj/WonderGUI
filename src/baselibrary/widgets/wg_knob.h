@@ -63,8 +63,8 @@ namespace wg
 		void			setDragAxis(Axis axis);
 		Axis			dragAxis() const { return m_dragAxis; }
 
-		void			setDragRange(MU length);
-		MU				dragRange() const { return m_dragRange; }
+		void			setDragRange(pts length);
+		pts				dragRange() const { return m_dragRange; }
 
 		void			setWheelStepSize(float stepSize);
 		float			wheelStepSize() const { return m_wheelStepSize; }
@@ -82,15 +82,15 @@ namespace wg
 		virtual Widget* _newOfMyType() const override { return new Knob(); };
 		void 			_receive(Msg* pMsg) override;
 
-		void 		_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window) override;
+		void 		_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window) override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_setValue(float value, bool bPostMsg = true);
 
 		float		_skinValue(const CSkinSlot* pSlot) const override;
 
 	private:
-		MU			m_dragRange = 200;
-		MU			m_dragged;
+		pts			m_dragRange = 200;
+		pts			m_dragged;
 		float		m_value = 0.f;
 		float		m_valueAtPress = 0.f;
 		float		m_wheelStepSize = 0.01f;

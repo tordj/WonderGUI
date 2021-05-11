@@ -56,8 +56,8 @@ add_executable(spxworkbench
 #	../../baselibrary/base/wg_gfxstreamreader.h
 #	../../baselibrary/base/wg_gfxstreamwriter.cpp
 #	../../baselibrary/base/wg_gfxstreamwriter.h
-#	../../baselibrary/base/wg_gradient.cpp
-#	../../baselibrary/base/wg_gradient.h
+	../../baselibrary/base/wg_gradient.cpp
+	../../baselibrary/base/wg_gradient.h
 	../../baselibrary/base/wg_hostbridge.h
 	../../baselibrary/base/wg_inputhandler.cpp
 	../../baselibrary/base/wg_inputhandler.h
@@ -83,12 +83,12 @@ add_executable(spxworkbench
 	../../baselibrary/base/wg_pointers.h
 	../../baselibrary/base/wg_receiver.cpp
 	../../baselibrary/base/wg_receiver.h
-#	../../baselibrary/base/wg_resdb.cpp
-#	../../baselibrary/base/wg_resdb.h
-#	../../baselibrary/base/wg_resloader.h
-#	../../baselibrary/base/wg_scrollbartarget.cpp
-#	../../baselibrary/base/wg_scrollbartarget.h
-#	../../baselibrary/base/wg_selectableslot.h
+	../../baselibrary/base/wg_resdb.cpp
+	../../baselibrary/base/wg_resdb.h
+	../../baselibrary/base/wg_resloader.h
+	../../baselibrary/base/wg_scrollbartarget.cpp
+	../../baselibrary/base/wg_scrollbartarget.h
+	../../baselibrary/base/wg_selectableslot.h
 #	../../baselibrary/base/wg_shadow.h
 	../../baselibrary/base/wg_skinslotmanager.cpp
 	../../baselibrary/base/wg_skinslotmanager.h
@@ -119,20 +119,20 @@ add_executable(spxworkbench
 	../../baselibrary/base/wg_util.h
 	../../baselibrary/base/wg_weakcomponentptr.h
 	../../baselibrary/base/wg_weakptr.h
-#
-#
-#	../../baselibrary/components/wg_canimframes.cpp
-#	../../baselibrary/components/wg_canimframes.h
+
+
+	../../baselibrary/components/wg_canimframes.cpp
+	../../baselibrary/components/wg_canimframes.h
 #	../../baselibrary/components/wg_ccanvas.cpp
 #	../../baselibrary/components/wg_ccanvas.h
 #	../../baselibrary/components/wg_ccolumnheader.cpp
 #	../../baselibrary/components/wg_ccolumnheader.h
 	../../baselibrary/components/wg_cdynamicslotcollection.cpp
 	../../baselibrary/components/wg_cdynamicslotcollection.h
-#	../../baselibrary/components/wg_cdynamicslotvector.h
-#	../../baselibrary/components/wg_cdynamicslotvector.impl.h
-#	../../baselibrary/components/wg_cdynamicvector.h
-#	../../baselibrary/components/wg_cdynamicvector.impl.h
+	../../baselibrary/components/wg_cdynamicslotvector.h
+	../../baselibrary/components/wg_cdynamicslotvector.impl.h
+	../../baselibrary/components/wg_cdynamicvector.h
+	../../baselibrary/components/wg_cdynamicvector.impl.h
 #	../../baselibrary/components/wg_cgfxinstream.cpp
 #	../../baselibrary/components/wg_cgfxinstream.h
 #	../../baselibrary/components/wg_cgfxoutstream.cpp
@@ -153,19 +153,19 @@ add_executable(spxworkbench
 #	../../baselibrary/components/wg_cskinslotmi.h
 	../../baselibrary/components/wg_cslot.cpp
 	../../baselibrary/components/wg_cslot.h
-#	../../baselibrary/components/wg_cslotarray.h
+	../../baselibrary/components/wg_cslotarray.h
 	../../baselibrary/components/wg_cstandardslot.cpp
 	../../baselibrary/components/wg_cstandardslot.h
 	../../baselibrary/components/wg_cstaticslotcollection.cpp
 	../../baselibrary/components/wg_cstaticslotcollection.h
-#	../../baselibrary/components/wg_cstaticslotvector.h
-#	../../baselibrary/components/wg_cstaticslotvector.impl.h
+	../../baselibrary/components/wg_cstaticslotvector.h
+	../../baselibrary/components/wg_cstaticslotvector.impl.h
 #	../../baselibrary/components/wg_cstatictextdisplay.cpp
 #	../../baselibrary/components/wg_cstatictextdisplay.h
 #	../../baselibrary/components/wg_cstaticvaluedisplay.cpp
 #	../../baselibrary/components/wg_cstaticvaluedisplay.h
-#	../../baselibrary/components/wg_cstaticvector.h
-#	../../baselibrary/components/wg_cstaticvector.impl.h
+	../../baselibrary/components/wg_cstaticvector.h
+	../../baselibrary/components/wg_cstaticvector.impl.h
 #	../../baselibrary/components/wg_ctext.cpp
 #	../../baselibrary/components/wg_ctext.h
 #	../../baselibrary/components/wg_ctextdisplay.cpp
@@ -199,40 +199,40 @@ add_executable(spxworkbench
 	../../baselibrary/skins/meter/wg_fillmeterskin.h
 #	../../baselibrary/skins/meter/wg_framemeterskin.cpp
 #	../../baselibrary/skins/meter/wg_framemeterskin.h
-#	../../baselibrary/skins/meter/wg_piemeterskin.cpp
-#	../../baselibrary/skins/meter/wg_piemeterskin.h
+	../../baselibrary/skins/meter/wg_piemeterskin.cpp
+	../../baselibrary/skins/meter/wg_piemeterskin.h
 	../../baselibrary/skins/meter/wg_spinmeterskin.cpp
   	../../baselibrary/skins/meter/wg_spinmeterskin.h
-#	../../baselibrary/skins/misc/wg_bakeskin.cpp
-#	../../baselibrary/skins/misc/wg_bakeskin.h
-#	../../baselibrary/skins/misc/wg_doubleskin.cpp
-#	../../baselibrary/skins/misc/wg_doubleskin.h
+	../../baselibrary/skins/misc/wg_bakeskin.cpp
+	../../baselibrary/skins/misc/wg_bakeskin.h
+	../../baselibrary/skins/misc/wg_doubleskin.cpp
+	../../baselibrary/skins/misc/wg_doubleskin.h
 	../../baselibrary/skins/state/wg_blockskin.cpp
 	../../baselibrary/skins/state/wg_blockskin.h
 	../../baselibrary/skins/state/wg_boxskin.cpp
 	../../baselibrary/skins/state/wg_boxskin.h
-#	../../baselibrary/skins/state/wg_circleskin.cpp
-#	../../baselibrary/skins/state/wg_circleskin.h
-#	../../baselibrary/skins/state/wg_colorskin.cpp
-#	../../baselibrary/skins/state/wg_colorskin.h
+	../../baselibrary/skins/state/wg_circleskin.cpp
+	../../baselibrary/skins/state/wg_circleskin.h
+	../../baselibrary/skins/state/wg_colorskin.cpp
+	../../baselibrary/skins/state/wg_colorskin.h
 #	../../baselibrary/skins/state/wg_lambdaskin.cpp
 #	../../baselibrary/skins/state/wg_lambdaskin.h
 #	../../baselibrary/skins/state/wg_multiblockskin.cpp
 #	../../baselibrary/skins/state/wg_multiblockskin.h
 #	../../baselibrary/skins/state/wg_scrollskin.cpp
 #	../../baselibrary/skins/state/wg_scrollskin.h
-#	../../baselibrary/skins/state/wg_tileskin.cpp
-#	../../baselibrary/skins/state/wg_tileskin.h
-#	../../baselibrary/skins/static/wg_staticblockskin.cpp
-#	../../baselibrary/skins/static/wg_staticblockskin.h
-#	../../baselibrary/skins/static/wg_staticboxskin.cpp
-#	../../baselibrary/skins/static/wg_staticboxskin.h
+	../../baselibrary/skins/state/wg_tileskin.cpp
+	../../baselibrary/skins/state/wg_tileskin.h
+	../../baselibrary/skins/static/wg_staticblockskin.cpp
+	../../baselibrary/skins/static/wg_staticblockskin.h
+	../../baselibrary/skins/static/wg_staticboxskin.cpp
+	../../baselibrary/skins/static/wg_staticboxskin.h
 	../../baselibrary/skins/static/wg_staticcolorskin.cpp
 	../../baselibrary/skins/static/wg_staticcolorskin.h
-#	../../baselibrary/skins/static/wg_staticgradientskin.cpp
-#	../../baselibrary/skins/static/wg_staticgradientskin.h
-#	../../baselibrary/skins/static/wg_statictileskin.cpp
-#	../../baselibrary/skins/static/wg_statictileskin.h
+	../../baselibrary/skins/static/wg_staticgradientskin.cpp
+	../../baselibrary/skins/static/wg_staticgradientskin.h
+	../../baselibrary/skins/static/wg_statictileskin.cpp
+	../../baselibrary/skins/static/wg_statictileskin.h
 
 	../../baselibrary/textmappers/wg_stdtextmapper.cpp
 	../../baselibrary/textmappers/wg_stdtextmapper.h
@@ -258,10 +258,10 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/wg_filler.h
 #	../../baselibrary/widgets/wg_fpsdisplay.cpp
 #	../../baselibrary/widgets/wg_fpsdisplay.h
-#	../../baselibrary/widgets/wg_image.cpp
-#	../../baselibrary/widgets/wg_image.h
-#	../../baselibrary/widgets/wg_knob.cpp
-#	../../baselibrary/widgets/wg_knob.h
+	../../baselibrary/widgets/wg_image.cpp
+	../../baselibrary/widgets/wg_image.h
+	../../baselibrary/widgets/wg_knob.cpp
+	../../baselibrary/widgets/wg_knob.h
 #	../../baselibrary/widgets/wg_lineeditor.cpp
 #	../../baselibrary/widgets/wg_lineeditor.h
 #	../../baselibrary/widgets/wg_pianokeyboard.cpp
@@ -272,16 +272,16 @@ add_executable(spxworkbench
 #	../../baselibrary/widgets/wg_rangeslider.h
 #	../../baselibrary/widgets/wg_rulerlabels.cpp
 #	../../baselibrary/widgets/wg_rulerlabels.h
-#	../../baselibrary/widgets/wg_scrollbar.cpp
-#	../../baselibrary/widgets/wg_scrollbar.h
+	../../baselibrary/widgets/wg_scrollbar.cpp
+	../../baselibrary/widgets/wg_scrollbar.h
 #	../../baselibrary/widgets/wg_selectbox.cpp
 #	../../baselibrary/widgets/wg_selectbox.h
 #	../../baselibrary/widgets/wg_sidecanvas.cpp
 #	../../baselibrary/widgets/wg_sidecanvas.h
 #	../../baselibrary/widgets/wg_simplevolumemeter.cpp
 #	../../baselibrary/widgets/wg_simplevolumemeter.h
-#	../../baselibrary/widgets/wg_slider.cpp
-#	../../baselibrary/widgets/wg_slider.h
+	../../baselibrary/widgets/wg_slider.cpp
+	../../baselibrary/widgets/wg_slider.h
 #	../../baselibrary/widgets/wg_textdisplay.cpp
 #	../../baselibrary/widgets/wg_textdisplay.h
 #	../../baselibrary/widgets/wg_texteditor.cpp
@@ -297,7 +297,7 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/wg_widget.cpp
 	../../baselibrary/widgets/wg_widget.h
 #
-#	../../baselibrary/widgets/capsules/wg_canvascapsule.cpp
+#	../../baselibrary/wi dgets/capsules/wg_canvascapsule.cpp
 #	../../baselibrary/widgets/capsules/wg_canvascapsule.h
 #	../../baselibrary/widgets/capsules/wg_capsule.cpp
 #	../../baselibrary/widgets/capsules/wg_capsule.h
@@ -331,7 +331,7 @@ add_executable(spxworkbench
 #	../../baselibrary/widgets/panels/wg_packpanel.h
 	../../baselibrary/widgets/panels/wg_panel.cpp
 	../../baselibrary/widgets/panels/wg_panel.h
-	../../baselibrary/widgets/panels/wg_rootpanel.cpp
+	../../baselibrary/widgets/panels/wg_rootpanel.cpp 
 	../../baselibrary/widgets/panels/wg_rootpanel.h
 #	../../baselibrary/widgets/panels/wg_scrollpanel.cpp
 #	../../baselibrary/widgets/panels/wg_scrollpanel.h

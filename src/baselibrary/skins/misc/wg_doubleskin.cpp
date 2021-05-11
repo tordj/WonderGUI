@@ -101,161 +101,161 @@ namespace wg
 		_onModified();
 	}
 
-	//____ minSize() __________________________________________________________
-
-	Size DoubleSkin::minSize() const
-	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
-		if (m_bSkinInSkin)
-			return m_pBackSkin->sizeForContent(m_pFrontSkin->minSize());
-		else
-			return Size::max(m_pFrontSkin->minSize(), m_pBackSkin->minSize());
-	}
-
-	//____ preferredSize() _________________________________________________
-
-	Size DoubleSkin::preferredSize() const
-	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
-		if (m_bSkinInSkin)
-			return Size::max(m_pBackSkin->sizeForContent(m_pFrontSkin->preferredSize()), m_pBackSkin->preferredSize());
-		else
-			return Size::max(m_pFrontSkin->preferredSize(), m_pBackSkin->preferredSize());
-	}
-
-	//____ sizeForContent() ________________________________________________
-
-	Size DoubleSkin::sizeForContent(const Size& contentSize) const
-	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
-		if (m_bSkinInSkin)
-			return m_pBackSkin->sizeForContent(m_pFrontSkin->sizeForContent(contentSize));
-		else
-		{
-			return Size::max(m_pFrontSkin->sizeForContent(contentSize), m_pBackSkin->minSize());
-		}
-	}
-
 	//____ setContentPadding() ____________________________________________
 
-	void DoubleSkin::setContentPadding(const BorderI& padding)
+	void DoubleSkin::setContentPadding(const Border& padding)
 	{
 		m_contentPadding = padding;
 		m_bContentPaddingSet = !padding.isEmpty();
 	}
 
+	//____ _minSize() __________________________________________________________
 
-	//____ contentPadding() _______________________________________________
+	SizeSPX DoubleSkin::_minSize(int scale) const
+	{
+		assert(m_pFrontSkin && m_pBackSkin);
 
-	Border DoubleSkin::contentPadding(State state) const
+		if (m_bSkinInSkin)
+			return m_pBackSkin->_sizeForContent(m_pFrontSkin->_minSize(scale),scale);
+		else
+			return SizeSPX::max(m_pFrontSkin->_minSize(scale), m_pBackSkin->_minSize(scale));
+	}
+
+	//____ _preferredSize() _________________________________________________
+
+	SizeSPX DoubleSkin::_preferredSize(int scale) const
+	{
+		assert(m_pFrontSkin && m_pBackSkin);
+
+		if (m_bSkinInSkin)
+			return SizeSPX::max(m_pBackSkin->_sizeForContent(m_pFrontSkin->_preferredSize(scale),scale), m_pBackSkin->_preferredSize(scale));
+		else
+			return SizeSPX::max(m_pFrontSkin->_preferredSize(scale), m_pBackSkin->_preferredSize(scale));
+	}
+
+	//____ _sizeForContent() ________________________________________________
+
+	SizeSPX DoubleSkin::_sizeForContent(const SizeSPX& contentSize, int scale) const
+	{
+		assert(m_pFrontSkin && m_pBackSkin);
+
+		if (m_bSkinInSkin)
+			return m_pBackSkin->_sizeForContent(m_pFrontSkin->_sizeForContent(contentSize, scale), scale);
+		else
+		{
+			return SizeSPX::max(m_pFrontSkin->_sizeForContent(contentSize, scale), m_pBackSkin->_minSize(scale));
+		}
+	}
+
+
+	//____ _contentPadding() _______________________________________________
+
+	BorderSPX DoubleSkin::_contentPadding(int scale, State state) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
 		if (m_bContentPaddingSet)
-			return m_contentPadding;
+			return align(ptsToSpx(m_contentPadding,scale));
 		else if (m_bSkinInSkin)
-			return m_pFrontSkin->contentPadding(state) + m_pBackSkin->contentPadding(state);
+			return m_pFrontSkin->_contentPadding(scale, state) + m_pBackSkin->_contentPadding(scale, state);
 		else
-			return m_pFrontSkin->contentPadding(state);
+			return m_pFrontSkin->_contentPadding(scale, state);
 	}
 
 
-	//____ contentPaddingSize() _______________________________________________
+	//____ _contentPaddingSize() _______________________________________________
 
-	Size DoubleSkin::contentPaddingSize() const
+	SizeSPX DoubleSkin::_contentPaddingSize(int scale) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
 		if (m_bContentPaddingSet)
-			return Size(Border(m_contentPadding).aligned());
+			return align(ptsToSpx(m_contentPadding, scale));
 		else if (m_bSkinInSkin)
-			return m_pFrontSkin->contentPaddingSize() + m_pBackSkin->contentPaddingSize();
+			return m_pFrontSkin->_contentPaddingSize(scale) + m_pBackSkin->_contentPaddingSize(scale);
 		else
-			return m_pFrontSkin->contentPaddingSize();
+			return m_pFrontSkin->_contentPaddingSize(scale);
 	}
 
-	//____ contentOfs() _______________________________________________________
+	//____ _contentOfs() _______________________________________________________
 
-	Coord DoubleSkin::contentOfs(State state) const
+	CoordSPX DoubleSkin::_contentOfs(int scale, State state) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
 		if( m_bContentPaddingSet )
-			return Coord(m_contentPadding.left, m_contentPadding.top).aligned();
+			return align(ptsToSpx(Coord(m_contentPadding.left, m_contentPadding.top),scale));
 		else if( m_bSkinInSkin )
-			return m_pFrontSkin->contentOfs(state) + m_pBackSkin->contentOfs(state);
+			return m_pFrontSkin->_contentOfs(scale, state) + m_pBackSkin->_contentOfs(scale, state);
 		else
-			return m_pFrontSkin->contentOfs(state);
+			return m_pFrontSkin->_contentOfs(scale, state);
 	}
 
-	//____ contentRect() _____________________________________________________
+	//____ _contentRect() _____________________________________________________
 
-	Rect DoubleSkin::contentRect(const Rect& canvas, State state) const
+	RectSPX DoubleSkin::_contentRect(const RectSPX& canvas, int scale, State state) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
 		if (m_bContentPaddingSet)
-			return (canvas - Border(m_contentPadding).aligned()).aligned();
+			return (canvas - align(ptsToSpx(m_contentPadding,scale)));
 
-		Rect content = m_bSkinInSkin ? m_pBackSkin->contentRect(canvas, state) : canvas;
+		RectSPX content = m_bSkinInSkin ? m_pBackSkin->_contentRect(canvas, scale, state) : canvas;
 
-		return m_pFrontSkin->contentRect(content, state);
+		return m_pFrontSkin->_contentRect(content, scale, state);
 	}
 
-	//____ isOpaque() _________________________________________________________
+	//____ _isOpaque() _________________________________________________________
 
-	bool DoubleSkin::isOpaque(State state) const
+	bool DoubleSkin::_isOpaque(State state) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
 		if (m_bOpaque)
 			return true;
 
-		if (m_pBackSkin->isOpaque(state))
+		if (m_pBackSkin->_isOpaque(state))
 			return true;
 
-		return m_pFrontSkin->isOpaque(state) && (!m_bSkinInSkin || m_pBackSkin->contentPaddingSize().isEmpty() );
+		return m_pFrontSkin->_isOpaque(state) && (!m_bSkinInSkin || m_pBackSkin->contentPadding().isEmpty() );
 	}
 
-	bool DoubleSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	bool DoubleSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
 		if (m_bOpaque)
 			return true;
 
-		if (m_pBackSkin->isOpaque(rect, canvasSize, state))
+		if (m_pBackSkin->_isOpaque(rect, canvasSize, scale, state))
 			return true;
 	 
-		Rect canvas2 = m_bSkinInSkin ? m_pBackSkin->contentRect(canvasSize, state) : Rect(canvasSize);
-		Rect rect2 = Rect::getUnion(rect, canvas2) - canvas2.pos();
+		RectSPX canvas2 = m_bSkinInSkin ? m_pBackSkin->_contentRect(canvasSize, scale, state) : RectSPX(canvasSize);
+		RectSPX rect2 = RectSPX::getUnion(rect, canvas2) - canvas2.pos();
 
-		return (!rect2.isEmpty() && m_pFrontSkin->isOpaque(rect2, canvas2.size(), state));
+		return (!rect2.isEmpty() && m_pFrontSkin->_isOpaque(rect2, canvas2.size(), scale, state));
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool DoubleSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool DoubleSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
-		if (m_pBackSkin->markTest(ofs, canvas, state, opacityTreshold, value,value2))
+		if (m_pBackSkin->_markTest(ofs, canvas, scale, state, opacityTreshold, value,value2))
 			return true;
 
-		Rect canvas2 = m_bSkinInSkin ? m_pBackSkin->contentRect(canvas, state) : canvas;
-		return canvas2.contains(ofs) && m_pFrontSkin->markTest(ofs, canvas2, state, opacityTreshold, value, value2);
+		RectSPX canvas2 = m_bSkinInSkin ? m_pBackSkin->_contentRect(canvas, scale, state) : canvas;
+		return canvas2.contains(ofs) && m_pFrontSkin->_markTest(ofs, canvas2, scale, state, opacityTreshold, value, value2);
 	}
 
-	//____ render() ___________________________________________________________
+	//____ _render() ___________________________________________________________
 
-	void DoubleSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void DoubleSkin::_render(GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
-		Rect canvas = _canvas;
+		RectSPX canvas = _canvas;
 
 		int oldLayer = -1;
 		if (m_layer != -1)
@@ -264,30 +264,30 @@ namespace wg
 			pDevice->setRenderLayer(m_layer);
 		}
 
-		m_pBackSkin->render(pDevice, canvas, state, value, value2, animPos, pStateFractions);
+		m_pBackSkin->_render(pDevice, canvas, scale, state, value, value2, animPos, pStateFractions);
 		if (m_bSkinInSkin)
-			canvas = m_pBackSkin->contentRect(canvas, state);
+			canvas = m_pBackSkin->_contentRect(canvas, scale, state);
 
-		m_pFrontSkin->render(pDevice, canvas, state, value, value2, animPos, pStateFractions);
+		m_pFrontSkin->_render(pDevice, canvas, scale, state, value, value2, animPos, pStateFractions);
 
 		if (oldLayer != -1)
 			pDevice->setRenderLayer(oldLayer);
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect DoubleSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX DoubleSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		Rect dirt1 = m_pBackSkin->dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+		RectSPX dirt1 = m_pBackSkin->_dirtyRect(canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 
 		if (dirt1 == canvas)
 			return dirt1;
 
-		Rect canvas2 = m_bSkinInSkin ? m_pBackSkin->contentRect(canvas, newState) : canvas;
-		Rect dirt2 = m_pFrontSkin->dirtyRect(canvas2, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+		RectSPX canvas2 = m_bSkinInSkin ? m_pBackSkin->_contentRect(canvas, scale, newState) : canvas;
+		RectSPX dirt2 = m_pFrontSkin->_dirtyRect(canvas2, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 
 		if (dirt1.isEmpty())
@@ -296,15 +296,15 @@ namespace wg
 		if (dirt2.isEmpty())
 			return dirt1;
 
-		return Rect::getUnion(dirt1, dirt2);
+		return RectSPX::getUnion(dirt1, dirt2);
 	}
 
-	//____ animationLength() __________________________________________________
+	//____ _animationLength() __________________________________________________
 
-	int DoubleSkin::animationLength(State state) const
+	int DoubleSkin::_animationLength(State state) const
 	{
-		int frontLength = m_pFrontSkin ? m_pFrontSkin->animationLength(state) : 0;
-		int backLength = m_pBackSkin ? m_pBackSkin->animationLength(state) : 0;
+		int frontLength = m_pFrontSkin ? m_pFrontSkin->_animationLength(state) : 0;
+		int backLength = m_pBackSkin ? m_pBackSkin->_animationLength(state) : 0;
 
 		int length = frontLength * backLength;
 
@@ -316,24 +316,24 @@ namespace wg
 		return frontLength / g * backLength;
 	}
 
-	//____ transitioningStates() ______________________________________________
+	//____ _transitioningStates() ______________________________________________
 
-	Bitmask<uint8_t>  DoubleSkin::transitioningStates() const
+	Bitmask<uint8_t>  DoubleSkin::_transitioningStates() const
 	{
 		Bitmask<uint8_t> x = 0;
 
 		if (m_pFrontSkin)
-			x |= m_pFrontSkin->transitioningStates();
+			x |= m_pFrontSkin->_transitioningStates();
 
 		if (m_pBackSkin)
-			x |= m_pBackSkin->transitioningStates();
+			x |= m_pBackSkin->_transitioningStates();
 
 		return x;
 	}
 
-	//____ transitionTimes() __________________________________________________
+	//____ _transitionTimes() __________________________________________________
 
-	const int* DoubleSkin::transitionTimes() const
+	const int* DoubleSkin::_transitionTimes() const
 	{
 		return m_transitionTimes;
 	}
@@ -349,14 +349,14 @@ namespace wg
 
 		if (m_pBackSkin)
 		{
-			m_bIgnoresValue = m_pBackSkin->ignoresValue();
-			m_bIgnoresState = m_pBackSkin->ignoresState();
+			m_bIgnoresValue = m_pBackSkin->_ignoresValue();
+			m_bIgnoresState = m_pBackSkin->_ignoresState();
 			m_bOpaque = m_pBackSkin->isOpaque();
 
 			if (m_bSkinInSkin)
-				m_bContentShifting = m_pBackSkin->isContentShifting();
+				m_bContentShifting = m_pBackSkin->_isContentShifting();
 
-			const int* p = m_pBackSkin->transitionTimes();
+			const int* p = m_pBackSkin->_transitionTimes();
 			for (int i = 0; i < StateBits_Nb ; i++)
 				m_transitionTimes[i] = p[i];
 		}
@@ -368,17 +368,17 @@ namespace wg
 
 		if (m_pFrontSkin)
 		{
-			if (m_pFrontSkin->isOpaque() && (!m_pBackSkin || !m_bSkinInSkin || m_pBackSkin->contentPaddingSize().isEmpty() ))
+			if (m_pFrontSkin->isOpaque() && (!m_pBackSkin || !m_bSkinInSkin || m_pBackSkin->contentPadding().isEmpty() ))
 				m_bOpaque = true;
 
-			if (!m_pFrontSkin->ignoresValue())
+			if (!m_pFrontSkin->_ignoresValue())
 				m_bIgnoresValue = false;
-			if (!m_pFrontSkin->ignoresState())
+			if (!m_pFrontSkin->_ignoresState())
 				m_bIgnoresState = false;
-			if (m_pFrontSkin->isContentShifting())
+			if (m_pFrontSkin->_isContentShifting())
 				m_bContentShifting = true;
 
-			const int* p = m_pFrontSkin->transitionTimes();
+			const int* p = m_pFrontSkin->_transitionTimes();
 			for (int i = 0; i < StateBits_Nb; i++)
 			{
 				if( p[i] != 0)

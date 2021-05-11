@@ -45,7 +45,7 @@ namespace wg
 
 	//____ setFrameSize() __________________________________________________________
 
-	void CAnimFrames::setFrameSize(SizeI pointSize)
+	void CAnimFrames::setFrameSize(Size pointSize)
 	{
 		if (pointSize != m_frameSize)
 		{

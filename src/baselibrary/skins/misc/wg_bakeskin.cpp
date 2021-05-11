@@ -119,22 +119,22 @@ namespace wg
 		_onModified();
 	}
 
-	//____ minSize() __________________________________________________________
+	//____ _minSize() __________________________________________________________
 
-	Size BakeSkin::minSize() const
+	SizeSPX BakeSkin::_minSize(int scale) const
 	{
-		if (m_cachedQPixPerPoint != MU::qpixPerPoint())
-			_updateCachedGeo();
+		if (m_cachedScale != scale)
+			_updateCachedGeo(scale);
 
 		return m_cachedMinSize;
 	}
 
-	//____ preferredSize() ____________________________________________________
+	//____ _preferredSize() ____________________________________________________
 
-	Size BakeSkin::preferredSize() const
+	SizeSPX BakeSkin::_preferredSize(int scale) const
 	{
-		if (m_cachedQPixPerPoint != MU::qpixPerPoint())
-			_updateCachedGeo();
+		if (m_cachedScale != scale)
+			_updateCachedGeo(scale);
 
 		return m_cachedPreferredSize;
 
@@ -142,7 +142,7 @@ namespace wg
 
 	//____ setContentPadding() ____________________________________________
 
-	void BakeSkin::setContentPadding(const BorderI& padding)
+	void BakeSkin::setContentPadding(const Border& padding)
 	{
 		if (padding != m_contentPadding)
 		{
@@ -151,50 +151,50 @@ namespace wg
 
 			// Invalidate our geo cache
 
-			m_cachedQPixPerPoint = 0;
+			m_cachedScale = 0;
 		}
 	}
 
 
-	//____ contentPadding() _______________________________________________
+	//____ _contentPadding() _______________________________________________
 
-	Border BakeSkin::contentPadding(State state) const
+	BorderSPX BakeSkin::_contentPadding(int scale, State state) const
 	{
-		if (m_cachedQPixPerPoint != MU::qpixPerPoint())
-			_updateCachedGeo();
+		if (m_cachedScale != scale)
+			_updateCachedGeo(scale);
 
 		return m_cachedContentPadding[_stateToIndex(state)];
 	}
 
 
-	//____ contentPaddingSize() _______________________________________________
+	//____ _contentPaddingSize() _______________________________________________
 
-	Size BakeSkin::contentPaddingSize() const
+	SizeSPX BakeSkin::_contentPaddingSize(int scale ) const
 	{
-		if (m_cachedQPixPerPoint != MU::qpixPerPoint())
-			_updateCachedGeo();
+		if (m_cachedScale != scale)
+			_updateCachedGeo(scale);
 
 		return m_cachedContentPadding[0].size();
 	}
 
-	//____ contentOfs() _______________________________________________________
+	//____ _contentOfs() _______________________________________________________
 
-	Coord BakeSkin::contentOfs(State state) const
+	CoordSPX BakeSkin::_contentOfs(int scale, State state) const
 	{
-		if (m_cachedQPixPerPoint != MU::qpixPerPoint())
-			_updateCachedGeo();
+		if (m_cachedScale != scale)
+			_updateCachedGeo(scale);
 
 		int index = _stateToIndex(state);
 
-		return Coord(m_cachedContentPadding[index].left, m_cachedContentPadding[index].top);
+		return CoordSPX(m_cachedContentPadding[index].left, m_cachedContentPadding[index].top);
 	}
 
-	//____ contentRect() _____________________________________________________
+	//____ _contentRect() _____________________________________________________
 
-	Rect BakeSkin::contentRect(const Rect& canvas, State state) const
+	RectSPX BakeSkin::_contentRect(const RectSPX& canvas, int scale, State state) const
 	{
-		if (m_cachedQPixPerPoint != MU::qpixPerPoint())
-			_updateCachedGeo();
+		if (m_cachedScale != scale)
+			_updateCachedGeo(scale);
 
 		return canvas - m_cachedContentPadding[_stateToIndex(state)];
 	}
@@ -206,42 +206,42 @@ namespace wg
 		m_pBakeSurface = pSurface;
 	}
 
-	//____ isOpaque() _____________________________________________________________
+	//____ _isOpaque() _____________________________________________________________
 
-	bool BakeSkin::isOpaque(State state) const
+	bool BakeSkin::_isOpaque(State state) const
 	{
 		return m_opaqueStates.bit(_stateToIndex(state));
 	}
 
-	bool BakeSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	bool BakeSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
 		if (m_opaqueStates.bit(_stateToIndex(state)))
 			return true;
 
 		for (auto& pSkin : skins)
 		{
-			if (pSkin &&  pSkin->isOpaque(rect, canvasSize, state))
+			if (pSkin &&  pSkin->_isOpaque(rect, canvasSize, scale, state))
 				return true;
 		}
 
 		return false;
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool BakeSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool BakeSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		for (auto& pSkin : skins)
 		{
-			if (pSkin && pSkin->markTest(ofs,canvas,state,opacityTreshold,value,value2))
+			if (pSkin && pSkin->_markTest(ofs,canvas,scale,state,opacityTreshold,value,value2))
 				return true;
 		}
 		return false;
 	}
 
-	//____ render() ______________________________________________________________
+	//____ _render() ______________________________________________________________
 
-	void BakeSkin::render(GfxDevice* pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void BakeSkin::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		// Sanity checking
 
@@ -256,8 +256,8 @@ namespace wg
 
 		// 
 
-		Rect bakeCanvas = canvas.size();
-		RectI bakeCanvasPX = bakeCanvas.px();
+		RectSPX bakeCanvas = canvas.size();
+//		RectI bakeCanvasPX = bakeCanvas.px();
 
 		// Generate and set new cliplist.
 
@@ -267,14 +267,13 @@ namespace wg
 		if (nClipRects <= 8)
 		{
 			auto pOldClip = pDevice->clipList();
-			auto oldPos = canvas.pos().px();
 
 			for( int i = 0 ; i < nClipRects ; i++ )
-				clip[i] = RectI( pOldClip[i] - oldPos, bakeCanvasPX );
+				clip[i] = RectSPX( pOldClip[i] - canvas.pos(), bakeCanvas );
 		}
 		else
 		{
-			clip[0] = bakeCanvasPX;
+			clip[0] = bakeCanvas;
 			nClipRects = 1;
 		}
 
@@ -295,14 +294,14 @@ namespace wg
 
 		if (m_bSkinInSkin)
 		{
-			Rect canvas = bakeCanvas;
+			RectSPX canvas = bakeCanvas;
 
 			for (auto it = skins.rbegin(); it != skins.rend(); it++ )
 			{
 				if ((*it) != nullptr)
 				{
-					(*it)->render(pDevice, canvas, state, value, value2, animPos, pStateFractions);
-					canvas = (*it)->contentRect(canvas, state);
+					(*it)->_render(pDevice, canvas, scale, state, value, value2, animPos, pStateFractions);
+					canvas = (*it)->_contentRect(canvas, scale, state);
 				}
 			}
 		}
@@ -311,7 +310,7 @@ namespace wg
 			for (auto it = skins.rbegin(); it != skins.rend(); it++)
 			{
 				if ((*it) != nullptr)
-					(*it)->render(pDevice, bakeCanvas, state, value, value2, animPos, pStateFractions);
+					(*it)->_render(pDevice, bakeCanvas, scale, state, value, value2, animPos, pStateFractions);
 			}
 		}
 
@@ -324,23 +323,23 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_tintColor, canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(m_pBakeSurface);
-		pDevice->blit(canvas.pos().px(), { 0,0,canvas.size().px() });
+		pDevice->blit(canvas.pos(), { 0,0,canvas.size()});
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect BakeSkin::dirtyRect(const Rect& _canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX BakeSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		Rect canvas = _canvas;
-		Rect r;
+		RectSPX canvas = _canvas;
+		RectSPX r;
 
 		for (auto it = skins.rbegin(); it != skins.rend(); it++)
 		{
 			if ((*it) != nullptr)
 			{
-				Rect r2 = (*it)->dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+				RectSPX r2 = (*it)->_dirtyRect(canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
 					newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 				if (!r2.isEmpty())
 				{
@@ -351,30 +350,30 @@ namespace wg
 				}
 
 				if( m_bSkinInSkin )
-					canvas = (*it)->contentRect(canvas, newState);
+					canvas = (*it)->_contentRect(canvas, scale, newState);
 			}
 		}
 
 		return r;
 	}
 
-	//____ animationLength() __________________________________________________
+	//____ _animationLength() __________________________________________________
 
-	int BakeSkin::animationLength(State state) const
+	int BakeSkin::_animationLength(State state) const
 	{
 		return m_animationLengths[_stateToIndex(state)];
 	}
 
-	//____ transitioningStates() _______________________________________________
+	//____ _transitioningStates() _______________________________________________
 
-	Bitmask<uint8_t> BakeSkin::transitioningStates() const
+	Bitmask<uint8_t> BakeSkin::_transitioningStates() const
 	{
 		return m_transitioningStates;
 	}
 
-	//____ transitionTimes() __________________________________________________
+	//____ _transitionTimes() __________________________________________________
 
-	const int* BakeSkin::transitionTimes() const
+	const int* BakeSkin::_transitionTimes() const
 	{
 		return m_transitionTimes;
 	}
@@ -382,21 +381,21 @@ namespace wg
 
 	//____ _updateCachedGeo() _________________________________________________
 
-	void BakeSkin::_updateCachedGeo() const
+	void BakeSkin::_updateCachedGeo(int scale) const
 	{
-		m_cachedQPixPerPoint = MU::qpixPerPoint();
+		m_cachedScale = scale;
 
 		// Update cached preferred and min size.
 
-		Size preferred;
-		Size min;
+		SizeSPX preferred;
+		SizeSPX min;
 
 		for (auto& pSkin : skins)
 		{
 			if (pSkin)
 			{
-				preferred = Size::max(preferred, pSkin->preferredSize());
-				min = Size::max(min, pSkin->minSize());
+				preferred = SizeSPX::max(preferred, pSkin->_preferredSize(scale));
+				min = SizeSPX::max(min, pSkin->_minSize(scale));
 			}
 		}
 
@@ -409,7 +408,7 @@ namespace wg
 		{
 			// Content padding is specified.
 
-			Border padding = Border(m_contentPadding).aligned();
+			BorderSPX padding = align(ptsToSpx(m_contentPadding,scale));
 
 			for (int index = 0; index < StateEnum_Nb; index++)
 				m_cachedContentPadding[index] = padding;
@@ -423,11 +422,11 @@ namespace wg
 				if (m_bContentShifting)
 				{
 					for (int index = 0; index < StateEnum_Nb; index++)
-						m_cachedContentPadding[index] = _stateContentPadding(_indexToState(index));
+						m_cachedContentPadding[index] = _stateContentPadding(scale,_indexToState(index));
 				}
 				else
 				{
-					Border padding = _stateContentPadding(StateEnum::Normal);
+					BorderSPX padding = _stateContentPadding(scale,StateEnum::Normal);
 
 					for (int index = 0; index < StateEnum_Nb; index++)
 						m_cachedContentPadding[index] = padding;
@@ -437,14 +436,14 @@ namespace wg
 			{
 				// Content padding is that of top skin.
 
-				Border contentPadding;
+				BorderSPX contentPadding;
 
 				for (auto& pSkin : skins)
 				{
 					if (pSkin)
 					{
 						for (int index = 0; index < StateEnum_Nb; index++)
-							m_cachedContentPadding[index] = pSkin->contentPadding(_indexToState(index));
+							m_cachedContentPadding[index] = pSkin->_contentPadding(scale,_indexToState(index));
 						break;
 					}
 				}
@@ -454,16 +453,16 @@ namespace wg
 
 	//____ _stateContentPadding() _____________________________________________
 
-	Border BakeSkin::_stateContentPadding(State state) const
+	BorderSPX BakeSkin::_stateContentPadding(int scale, State state) const
 	{
 		// Only called if we are skin-in-skin.
 
-		Border padding;
+		BorderSPX padding;
 
 		for (auto& pSkin : skins)
 		{
 			if (pSkin)
-				padding += pSkin->contentPadding(state);
+				padding += pSkin->_contentPadding(scale,state);
 		}
 		
 		return padding;
@@ -483,8 +482,8 @@ namespace wg
 		{
 			if (pSkin)
 			{
-				m_bContentShifting = m_bContentShifting || pSkin->isContentShifting();
-				m_bIgnoresValue = m_bIgnoresValue && pSkin->ignoresValue();
+				m_bContentShifting = m_bContentShifting || pSkin->_isContentShifting();
+				m_bIgnoresValue = m_bIgnoresValue && pSkin->_ignoresValue();
 			}
 		}
 
@@ -520,7 +519,7 @@ namespace wg
 							break;
 						}
 
-						if (!(*it)->contentPaddingSize().isEmpty())
+						if (!(*it)->contentPadding().isEmpty())
 						{
 							// Skin is not opaque and padds child, thus we are not opaque.
 							bOpaque = false;
@@ -560,7 +559,7 @@ namespace wg
 								break;
 							}
 
-							if (m_bSkinInSkin && !(*it)->contentPaddingSize().isEmpty())
+							if (m_bSkinInSkin && !(*it)->contentPadding().isEmpty())
 								break;			// is padding inner/upper skins, thus they are irrelevant.
 						}
 					}
@@ -574,7 +573,7 @@ namespace wg
 
 		// Invalidate our geo cache
 
-		m_cachedQPixPerPoint = 0;
+		m_cachedScale = 0;
 
 		// Update transition data
 
@@ -587,8 +586,8 @@ namespace wg
 		{
 			if (pSkin)
 			{
-				m_transitioningStates |= pSkin->transitioningStates();
-				auto p = pSkin->transitionTimes();
+				m_transitioningStates |= pSkin->_transitioningStates();
+				auto p = pSkin->_transitionTimes();
 
 				for (int i = 0; i < StateBits_Nb; i++)
 				{
@@ -610,7 +609,7 @@ namespace wg
 			{
 				if (pSkin)
 				{
-					int skinLength = pSkin->animationLength(state);
+					int skinLength = pSkin->_animationLength(state);
 					if (skinLength > 0)
 					{
 						if (combinedLength == 0)

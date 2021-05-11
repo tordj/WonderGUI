@@ -42,7 +42,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static CircleSkin_p	create();
-		static CircleSkin_p create(HiColor color, float size = 1.f, float thickness = 1.f, float outlineThickness = 0.f, HiColor outlineColor = Color::Black, BorderI contentPadding = BorderI());
+		static CircleSkin_p create(HiColor color, float size = 1, pts thickness = 1, pts outlineThickness = 0, HiColor outlineColor = Color::Black, Border contentPadding = Border());
 
 		//.____ Identification __________________________________________
 
@@ -55,28 +55,28 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
-		void		setAppearance(State state, HiColor color, float size = 1.f, float thickness = 1.f, float outlineThickness = 0.f, HiColor outlineColor = Color::Black);
+		void		setAppearance(State state, HiColor color, float size = 1.f, pts thickness = 1, pts outlineThickness = 0, HiColor outlineColor = Color::Black);
 
-		//.____ Misc ____________________________________________________
+		//.____ Internal ____________________________________________________
 
 
-		bool		isOpaque(State state) const override;
-		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
+		bool		_isOpaque(State state) const override;
+		bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
 
-		bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold,
-			float value = 1.f, float value2 = -1.f) const override;
+		bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
+								float value = 1.f, float value2 = -1.f) const override;
 
-		void		render(GfxDevice* pDevice, const Rect& canvas, State state,
-			float value = 1.f, float value2 = -1.f, int animPos = 0,
-			float* pStateFractions = nullptr) const override;
+		void		_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
 
-		Rect	dirtyRect(const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
-			float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
-			float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
+		RectSPX		_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+								float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+								float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 		CircleSkin();
-		CircleSkin(HiColor color, float size, float thickness, float outlineThickness, HiColor outlineColor, BorderI contentPadding);
+		CircleSkin(HiColor color, float size, float thickness, float outlineThickness, HiColor outlineColor, Border contentPadding);
 		~CircleSkin() {};
 
 		void	_updateUnsetStates();
@@ -89,8 +89,8 @@ namespace wg
 		{
 			HiColor		color;
 			float		size;
-			float		thickness;
-			float		outlineThickness;
+			pts			thickness;
+			pts			outlineThickness;
 			HiColor		outlineColor;
 		};
 

@@ -191,9 +191,9 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	//____ render() _______________________________________________________________
+	//____ _render() _______________________________________________________________
 
-	void TileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float * pStateFractions) const
+	void TileSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float * pStateFractions) const
 	{
 		int idx = _stateToIndex(state);
 
@@ -205,54 +205,54 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(pSurf);
-		pDevice->scaleTile(canvas.px(),MU::scale());
+		pDevice->scaleTile(canvas,scale/64.f);
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	Size TileSkin::preferredSize() const
+	SizeSPX TileSkin::_preferredSize(int scale) const
 	{
-		Size content = Border(m_contentPadding).aligned();
-		Size surface;
+		SizeSPX content = align(ptsToSpx(m_contentPadding,scale));
+		SizeSPX surface;
 
 		Surface * pSurface = m_stateSurfaces[0];
 		if (pSurface)
-			surface = pSurface->size();
+			surface = align(ptsToSpx(pSurface->pointSize(),scale));
 
-		return Size::max(content, surface);
+		return SizeSPX::max(content, surface);
 	}
 
-	//____ markTest() _____________________________________________________________
+	//____ _markTest() _____________________________________________________________
 
-	bool TileSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool TileSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		//TODO: Take gradient and tintColor into account.
 
 		Surface * pSurf = m_stateSurfaces[_stateToIndex(state)];
 
-		return markTestTileRect(_ofs, pSurf, canvas, opacityTreshold);
+		return markTestTileRect(_ofs, pSurf, canvas, scale, opacityTreshold);
 	}
 
-	//____ isOpaque() _____________________________________________________________
+	//____ _isOpaque() _____________________________________________________________
 
-	bool TileSkin::isOpaque( State state ) const
+	bool TileSkin::_isOpaque( State state ) const
 	{
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	bool TileSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
+	bool TileSkin::_isOpaque( const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state ) const
 	{
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect TileSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX TileSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (oldState == newState)
-			return Rect();
+			return RectSPX();
 
 		int i1 = _stateToIndex(newState);
 		int i2 = _stateToIndex(oldState);
@@ -260,7 +260,7 @@ namespace wg
 		if(m_stateSurfaces[i1] != m_stateSurfaces[i2])
 			return canvas;
 		
-		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2, 
+		return StateSkin::_dirtyRect(canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2, 
 									newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
