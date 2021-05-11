@@ -229,11 +229,14 @@ namespace wg
 	void InputHandler::setPointer( RootPanel * pRoot, Coord pos, int64_t timestamp )
 	{
 		Coord	prevPointerPos = m_pointerPos;
+		CoordSPX	prevPointerPosSPX = m_pointerPosSPX;
+
 		if( timestamp == 0 )
 			timestamp = m_timeStamp;
 
 		m_pointerPos = pos;
 		m_pMarkedRoot = 0;
+		m_pointerPosSPX.clear();
 
 		Widget_p pNowMarked = 0;
 		Widget_p pWidgetTarget = 0;
@@ -241,6 +244,7 @@ namespace wg
 		if( pRoot && pRoot->geo().contains( pos ) )
 		{
 			m_pMarkedRoot = pRoot;
+			m_pointerPosSPX = Util::ptsToSpx(pos, pRoot->scale());
 			pWidgetTarget = pRoot->findWidget( m_pointerPos, SearchMode::ActionTarget );
 		}
 
@@ -268,7 +272,7 @@ namespace wg
 
 		if (pFirstAlreadyMarked)
 		{
-			MouseMoveMsg_p p = MouseMoveMsg::create(m_inputId, pFirstAlreadyMarked, m_modKeys, pos, timestamp);
+			MouseMoveMsg_p p = MouseMoveMsg::create(m_inputId, pFirstAlreadyMarked, m_modKeys, pos, m_pointerPosSPX, timestamp);
 			p->setCopyTo(pFirstAlreadyMarked);
 			Base::msgRouter()->post(p);
 		}
@@ -282,7 +286,9 @@ namespace wg
 		{
 			if (m_bButtonPressed[i])
 			{
-				MouseDragMsg_p p = MouseDragMsg::create(m_inputId, (MouseButton)i, m_latestPressWidgets[i].rawPtr(), m_latestPressPosition[i], prevPointerPos, m_modKeys, m_pointerPos, timestamp);
+				CoordSPX pressPosSPX = Util::ptsToSpx(m_latestPressPosition[i], pRoot->scale());
+
+				MouseDragMsg_p p = MouseDragMsg::create(m_inputId, (MouseButton)i, m_latestPressWidgets[i].rawPtr(), m_latestPressPosition[i], prevPointerPos, pressPosSPX, prevPointerPosSPX, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(m_latestPressWidgets[i].rawPtr());
 				Base::msgRouter()->post(p);
 			}
@@ -328,7 +334,7 @@ namespace wg
 			}
 			else
 			{
-				MouseEnterMsg_p p = MouseEnterMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, timestamp);
+				MouseEnterMsg_p p = MouseEnterMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(pWidget);
 				Base::msgRouter()->post(p);
 			}
@@ -339,7 +345,7 @@ namespace wg
 		for( size_t i = 0 ; i < m_vEnteredWidgets.size() ; i++ )
 			if (m_vEnteredWidgets[i])
 			{
-				MouseLeaveMsg_p p = MouseLeaveMsg::create(m_inputId, m_vEnteredWidgets[i].rawPtr(), m_modKeys, m_pointerPos, timestamp);
+				MouseLeaveMsg_p p = MouseLeaveMsg::create(m_inputId, m_vEnteredWidgets[i].rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(m_vEnteredWidgets[i].rawPtr());
 				Base::msgRouter()->post(p);
 			}
@@ -399,7 +405,7 @@ namespace wg
 
 		Widget * pWidget = m_pMarkedWidget.rawPtr();
 
-		auto pMsg = MousePressMsg::create( m_inputId, button, pWidget, m_modKeys, m_pointerPos, timestamp );
+		auto pMsg = MousePressMsg::create( m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp );
 		pMsg->setCopyTo(pWidget);
 		Base::msgRouter()->post( pMsg );
 
@@ -418,12 +424,12 @@ namespace wg
 				{
 					if (pWidget && pWidget == m_latestPressWidgets[(int)button].rawPtr())
 					{
-						auto p = MouseDoubleClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, timestamp);
+						auto p = MouseDoubleClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 						p->setCopyTo(pWidget);
 						Base::msgRouter()->post(p);
 					}
 					else
-						Base::msgRouter()->post(MouseDoubleClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, timestamp));
+						Base::msgRouter()->post(MouseDoubleClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp));
 
 					doubleClick = true;
 				}
@@ -452,7 +458,7 @@ namespace wg
 		Widget * pWidget = m_latestPressWidgets[(int)button].rawPtr();
 		bool bIsInside = pWidget ? pWidget->globalGeo().contains( m_pointerPos ) : false;
 
-		auto pMsg = MouseReleaseMsg::create( m_inputId, button, pWidget, bIsInside, m_modKeys, m_pointerPos, timestamp );
+		auto pMsg = MouseReleaseMsg::create( m_inputId, button, pWidget, bIsInside, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp );
 		pMsg->setCopyTo(pWidget);
 		Base::msgRouter()->post( pMsg );
 
@@ -462,12 +468,12 @@ namespace wg
 		{
 			if (bIsInside)
 			{
-				auto p = MouseClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, timestamp);
+				auto p = MouseClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(pWidget);
 				Base::msgRouter()->post(p);
 			}
 			else
-				Base::msgRouter()->post(MouseClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, timestamp));
+				Base::msgRouter()->post(MouseClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp));
 		}
 	}
 
@@ -547,7 +553,7 @@ namespace wg
 
 	void InputHandler::_setFocused( Widget * pWidget )
 	{
-		FocusGainedMsg_p pMsg = new FocusGainedMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_timeStamp );
+		FocusGainedMsg_p pMsg = new FocusGainedMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, m_timeStamp );
 		Base::msgRouter()->post( pMsg );
 	}
 
@@ -555,7 +561,7 @@ namespace wg
 
 	void InputHandler::_setUnfocused( Widget * pWidget )
 	{
-		FocusLostMsg_p pMsg = new FocusLostMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_timeStamp );
+		FocusLostMsg_p pMsg = new FocusLostMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, m_timeStamp );
 		Base::msgRouter()->post( pMsg );
 	}
 
@@ -611,7 +617,7 @@ namespace wg
 		// Post KEY_PRESS message
 
 		Widget * pWidget = _focusedWidget();
-		Base::msgRouter()->post( new KeyPressMsg( m_inputId, nativeKeyCode, translatedKeyCode, pWidget, m_modKeys, m_pointerPos, timestamp ) );
+		Base::msgRouter()->post( new KeyPressMsg( m_inputId, nativeKeyCode, translatedKeyCode, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp ) );
 
 		// Post an EditCommand if that is associated with the key-combo.
 
@@ -664,7 +670,7 @@ namespace wg
 		Key translatedKeyCode = translateKey(nativeKeyCode);
 
 		Widget * pWidget = _focusedWidget();
-		Base::msgRouter()->post( new KeyReleaseMsg( m_inputId, nativeKeyCode, translatedKeyCode, pWidget, m_modKeys, m_pointerPos, timestamp ) );
+		Base::msgRouter()->post( new KeyReleaseMsg( m_inputId, nativeKeyCode, translatedKeyCode, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp ) );
 
 		// Update modkeys
 
@@ -696,7 +702,7 @@ namespace wg
 		{
 			if( timestamp == 0 )
 				timestamp = m_timeStamp;
-			Base::msgRouter()->post( new WheelRollMsg( m_inputId, wheel, distance, bInvertScroll, m_pMarkedWidget.rawPtr(), m_modKeys, m_pointerPos, timestamp ) );
+			Base::msgRouter()->post( new WheelRollMsg( m_inputId, wheel, distance, bInvertScroll, m_pMarkedWidget.rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp ) );
 		}
 	}
 
@@ -739,7 +745,7 @@ namespace wg
 
 				while( repeatPos <= timestamp )
 				{
-					auto p = MouseRepeatMsg::create(m_inputId, (MouseButton)button, m_latestPressWidgets[button].rawPtr(), m_modKeys, m_pointerPos, repeatPos);
+					auto p = MouseRepeatMsg::create(m_inputId, (MouseButton)button, m_latestPressWidgets[button].rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, repeatPos);
 					Base::msgRouter()->post(p);
 					repeatPos += m_keyRepeatRate;
 				}
@@ -764,7 +770,7 @@ namespace wg
 
 			while( repeatPos <= timestamp )
 			{
-				Base::msgRouter()->post( new KeyRepeatMsg( m_inputId, key.nativeKeyCode, key.translatedKeyCode, key.pWidget.rawPtr(), m_modKeys, m_pointerPos, repeatPos ));
+				Base::msgRouter()->post( new KeyRepeatMsg( m_inputId, key.nativeKeyCode, key.translatedKeyCode, key.pWidget.rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, repeatPos ));
 
 				EditCmd cmd = translateCommand( key.nativeKeyCode, m_modKeys );
 				if( cmd != EditCmd::None )

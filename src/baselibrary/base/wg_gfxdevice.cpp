@@ -1377,14 +1377,14 @@ namespace wg
 
 	//____ drawElipse() ______________________________________________________
 
-	void GfxDevice::drawElipse(const RectF& canvas, float thickness, HiColor fillColor, float outlineThickness, HiColor outlineColor )
+	void GfxDevice::drawElipse(const RectSPX& canvas, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor )
 	{
 		// Center and corners in 24.8 format.
 
-		int x1 = (int)(canvas.x * 256);
-		int y1 = (int)(canvas.y * 256);
-		int x2 = (int)((canvas.x + canvas.w) * 256);
-		int y2 = (int)((canvas.y + canvas.h) * 256);
+		int x1 = (int)(canvas.x * 4);
+		int y1 = (int)(canvas.y * 4);
+		int x2 = (int)((canvas.x + canvas.w) * 4);
+		int y2 = (int)((canvas.y + canvas.h) * 4);
 
 		CoordI center = { (x1 + x2) / 2, (y1 + y2) / 2 };
 
@@ -1408,15 +1408,15 @@ namespace wg
 
 		int radiusY[4];
 		radiusY[0] = (y2 - y1) / 2;
-		radiusY[1] = (int)(radiusY[0] - (outlineThickness * 256));
-		radiusY[2] = (int)(radiusY[1] - (thickness * 256));
-		radiusY[3] = (int)(radiusY[2] - (outlineThickness * 256));
+		radiusY[1] = (int)(radiusY[0] - (outlineThickness * 4));
+		radiusY[2] = (int)(radiusY[1] - (thickness * 4));
+		radiusY[3] = (int)(radiusY[2] - (outlineThickness * 4));
 
 		int radiusX[4];
 		radiusX[0] = (x2 - x1) / 2;
-		radiusX[1] = (int)(radiusX[0] - (outlineThickness * 256));
-		radiusX[2] = (int)(radiusX[1] - (thickness * 256));
-		radiusX[3] = (int)(radiusX[2] - (outlineThickness * 256));
+		radiusX[1] = (int)(radiusX[0] - (outlineThickness * 4));
+		radiusX[2] = (int)(radiusX[1] - (thickness * 4));
+		radiusX[3] = (int)(radiusX[2] - (outlineThickness * 4));
 
 		// Reserve buffer for our line traces
 

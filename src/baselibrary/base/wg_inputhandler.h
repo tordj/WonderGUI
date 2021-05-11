@@ -155,6 +155,7 @@ namespace wg
 		int64_t			m_timeStamp;
 
 		Coord			m_pointerPos;
+		CoordSPX		m_pointerPosSPX;
 
 		RootPanel_wp	m_pMarkedRoot;		// Root widget the pointer currently is "inside".
 		Widget_wp		m_pMarkedWidget;	// Widget the pointer currently is "inside". Empty if outside a modal widget.

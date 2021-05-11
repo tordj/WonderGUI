@@ -51,19 +51,9 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() __________________________________________________________
-
-	Size Slider::preferredSize() const
-	{
-		if( m_preferredSize.w >= 0 && m_preferredSize.h >= 0 )
-			return m_preferredSize;
-		else
-			return Widget::preferredSize();
-	}
-
 	//____ _setPreferredSlideLength() _________________________________________
 
-	void Slider::setPreferredSlideLength(MU length)
+	void Slider::setPreferredSlideLength(pts length)
 	{
 		if (length < 0)
 		{
@@ -113,6 +103,16 @@ namespace wg
 		_setValue(value,false);
 	}
 
+	//____ _preferredSize() __________________________________________________________
+
+	SizeSPX Slider::_preferredSize(int scale) const
+	{
+		if( scale == m_scale && m_preferredSize.w >= 0 && m_preferredSize.h >= 0)
+			return m_preferredSize;
+		else
+			return _calcPreferredSize(scale);
+	}
+
 	//____ _receive() __________________________________________________________
 
 	void Slider::_receive(Msg * _pMsg)
@@ -123,7 +123,7 @@ namespace wg
 			case MsgType::MouseMove:
 			{
 				auto pMsg = static_cast<InputMsg*>(_pMsg);
-				Coord pos = toLocal(pMsg->pointerPos());
+				CoordSPX pos = _toLocal(pMsg->pointerPosSPX());
 				if( _handleGeo(m_size).contains(pos) != m_handleState.isHovered() )
 				{
 					_setHandleState(m_handleState + StateEnum::Hovered);
@@ -143,8 +143,8 @@ namespace wg
 				if (pMsg->button() != MouseButton::Left)
 					break;
 
-				Coord pos = toLocal(pMsg->pointerPos());
-				Rect  handle = _handleGeo(m_size);
+				CoordSPX pos = _toLocal(pMsg->pointerPosSPX());
+				RectSPX  handle = _handleGeo(m_size);
 				if (handle.contains(pos))
 				{
 					_setHandleState(m_handleState + StateEnum::Pressed);
@@ -188,12 +188,12 @@ namespace wg
 				{
 					auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
 
-					Size contentSize = m_size - OO(skin)._contentPaddingSize();
-					Size handleSize = _handleGeo(m_size).size();
-					Coord totalDrag = pMsg->draggedTotal();
+					SizeSPX contentSize = m_size - OO(skin)._contentPaddingSize(m_scale);
+					SizeSPX handleSize = _handleGeo(m_size).size();
+					CoordSPX totalDrag = pMsg->_draggedTotal();
 
-					MU slideLen;
-					MU slided;
+					spx slideLen;
+					spx slided;
 
 					if (m_axis == Axis::X)
 					{
@@ -231,46 +231,64 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void Slider::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
+	void Slider::_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window)
 	{
-			OO(skin)._render(pDevice, canvas, m_state, m_value);
+			OO(skin)._render(pDevice, canvas, m_scale, m_state, m_value);
 
-			OO(handleSkin)._render(pDevice, _handleGeo(canvas), m_handleState, m_value);
+			OO(handleSkin)._render(pDevice, _handleGeo(canvas), m_scale, m_handleState, m_value);
 	}
 
 	//____ _alphaTest() ________________________________________________________
 
-	bool Slider::_alphaTest(const Coord& ofs)
+	bool Slider::_alphaTest(const CoordSPX& ofs)
 	{
-		bool bMarked = OO(skin)._markTest(ofs, Rect(m_size), m_state, m_markOpacity, m_value);
+		bool bMarked = OO(skin)._markTest(ofs, RectSPX(m_size), m_scale, m_state, m_markOpacity, m_value);
 
 		if (!bMarked && !handleSkin.isEmpty())
-			bMarked = OO(handleSkin)._markTest(ofs, _handleGeo(m_size), m_handleState, m_markOpacity, m_value);
+			bMarked = OO(handleSkin)._markTest(ofs, _handleGeo(m_size), m_scale, m_handleState, m_markOpacity, m_value);
 
 		return bMarked;
 	}
 
-
 	//____ _updatePreferredSize() ________________________________________________
 
-	void Slider::_updatePreferredSize()
-	{
-		Size sz = handleSkin.isEmpty() ? Size(4,4) : OO(handleSkin)._preferredSize();
-
-		if (m_axis == Axis::X)
-			sz.w += m_preferredSlideLength;
-		else
-			sz.h += m_preferredSlideLength;
-
-		sz += OO(skin)._contentPaddingSize();
-		sz = Size::max(sz, OO(skin)._preferredSize());
-
+	void Slider::_updatePreferredSize(bool bRequestResize)
+	{	
+		SizeSPX sz = _calcPreferredSize(m_scale);
 		if (sz != m_preferredSize)
 		{
 			m_preferredSize = sz;
-			_requestResize();
+			if( bRequestResize )
+				_requestResize();
 		}
 	}
+
+	//____ _calcPreferredSize() ________________________________________________
+
+	SizeSPX Slider::_calcPreferredSize(int scale) const
+	{
+		SizeSPX sz = handleSkin.isEmpty() ? SizeSPX(4, 4) : OO(handleSkin)._preferredSize(scale);
+
+		if (m_axis == Axis::X)
+			sz.w += align(ptsToSpx(m_preferredSlideLength,scale));
+		else
+			sz.h += align(ptsToSpx(m_preferredSlideLength,scale));
+
+		sz += OO(skin)._contentPaddingSize(scale);
+		sz = SizeSPX::max(sz, OO(skin)._preferredSize(scale));
+
+		return sz;
+	}
+
+
+	//____ _resize() ____________________________________________________________
+
+	void Slider::_resize(const SizeSPX& size, int scale)
+	{
+		Widget::_resize(size, scale);
+		_updatePreferredSize(false);			// Size is already decided for us, we just need to update m_preferredSize.
+	}
+
 
 	//____ _setValue() __________________________________________________________
 
@@ -285,12 +303,12 @@ namespace wg
 		if (value != m_value)
 		{
 			
-			Rect oldGeo = _handleGeo(m_size);
+			RectSPX oldGeo = _handleGeo(m_size);
 			float	oldValue = m_value;
 			m_value = value;
-			Rect newGeo = _handleGeo(m_size);
+			RectSPX newGeo = _handleGeo(m_size);
 
-			Rect changeRect = Rect::getUnion(oldGeo, newGeo);
+			RectSPX changeRect = RectSPX::getUnion(oldGeo, newGeo);
 			_requestRender(changeRect);
 
 			OO(skin)._valueChanged(m_value, oldValue);
@@ -313,17 +331,17 @@ namespace wg
 
 	//____ _handleGeo() _______________________________________________________
 
-	Rect Slider::_handleGeo(const Rect& widgetGeo) const
+	RectSPX Slider::_handleGeo(const RectSPX& widgetGeo) const
 	{
-		Rect contentGeo =  OO(skin)._contentRect(widgetGeo, m_state);
+		RectSPX contentGeo =  OO(skin)._contentRect(widgetGeo, m_scale, m_state);
 
-		Rect handleGeo;
+		RectSPX handleGeo;
 
-		Size handlePrefSize = OO(handleSkin)._preferredSize();
+		SizeSPX handlePrefSize = OO(handleSkin)._preferredSize(m_scale);
 
 		if (m_axis == Axis::X)
 		{
-			handleGeo.w = handlePrefSize.w * (contentGeo.h.qpix / float(handlePrefSize.h.qpix));
+			handleGeo.w = handlePrefSize.w * (contentGeo.h / float(handlePrefSize.h));
 			handleGeo.h = contentGeo.h;
 
 			handleGeo.x = contentGeo.x + (contentGeo.w - handleGeo.w) * m_value;
@@ -332,13 +350,13 @@ namespace wg
 		else
 		{
 			handleGeo.w = contentGeo.w;
-			handleGeo.h = handlePrefSize.h * (contentGeo.w.qpix / float(handlePrefSize.w.qpix));
+			handleGeo.h = handlePrefSize.h * (contentGeo.w / float(handlePrefSize.w));
 
 			handleGeo.x = contentGeo.x;
 			handleGeo.y = contentGeo.y + contentGeo.h - handleGeo.h - (contentGeo.h - handleGeo.h) * m_value;
 		}
 
-		return handleGeo.aligned();
+		return align(handleGeo);
 	}
 
 		//____ _componentState() _______________________________________________________
@@ -353,17 +371,17 @@ namespace wg
 
 	//____ _componentPos() ___________________________________________________
 
-	Coord Slider::_componentPos(const GeoComponent* pComponent) const
+	CoordSPX Slider::_componentPos(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &handleSkin)
 			return _handleGeo(m_size).pos();
 		else
-			return Coord();
+			return CoordSPX();
 	}
 
 	//____ _componentSize() ___________________________________________________
 
-	Size Slider::_componentSize(const GeoComponent* pComponent) const
+	SizeSPX Slider::_componentSize(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &handleSkin)
 			return _handleGeo(m_size).size();
@@ -373,7 +391,7 @@ namespace wg
 
 	//____ _componentGeo() ___________________________________________________
 
-	Rect Slider::_componentGeo(const GeoComponent* pComponent) const
+	RectSPX Slider::_componentGeo(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &handleSkin)
 			return _handleGeo(m_size);
@@ -391,7 +409,7 @@ namespace wg
 			_requestRender();
 	}
 
-	void Slider::_componentRequestRender(const GeoComponent* pComponent, const Rect& rect)
+	void Slider::_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect)
 	{
 		if (pComponent == &handleSkin)
 			_requestRender(rect + _handleGeo(m_size).pos());

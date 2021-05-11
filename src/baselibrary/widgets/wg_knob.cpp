@@ -78,7 +78,7 @@ namespace wg
 
 	//____ setDragRange() ____________________________________________________
 
-	void Knob::setDragRange(MU length)
+	void Knob::setDragRange(pts length)
 	{
 		if (length <= 0)
 		{
@@ -192,9 +192,9 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void Knob::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
+	void Knob::_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window)
 	{
-			OO(skin)._render(pDevice, canvas, m_state, m_value);
+			OO(skin)._render(pDevice, canvas, m_scale, m_state, m_value);
 	}
 
 //____ _cloneContent() _______________________________________________________

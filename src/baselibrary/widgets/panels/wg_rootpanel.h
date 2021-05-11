@@ -80,7 +80,7 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 		bool				setScale(int scale);
-		inline void			clearScale();
+		void				clearScale();
 		inline int			scale() const;
 		inline bool			isScaleSet() const;
 
@@ -247,6 +247,20 @@ namespace wg
 
 		Widget_wp			m_pFocusedChild;
 	};
+
+	//____ scale() ____________________________________________________________
+
+	int RootPanel::scale() const
+	{
+		return m_scale;
+	}
+
+	//____ isScaleSet() _______________________________________________________
+
+	bool RootPanel::isScaleSet() const
+	{
+		return m_bScaleSet;
+	}
 
 } // namespace wg
 #endif //WG_ROOTPANEL_DOT_H

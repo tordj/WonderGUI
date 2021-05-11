@@ -42,7 +42,7 @@ namespace wg
 		return CircleSkin_p(new CircleSkin());
 	}
 
-	CircleSkin_p CircleSkin::create(HiColor color, float size, float thickness, float outlineThickness, HiColor outlineColor, BorderI contentPadding)
+	CircleSkin_p CircleSkin::create(HiColor color, float size, pts thickness, pts outlineThickness, HiColor outlineColor, Border contentPadding)
 	{
 		return  new CircleSkin(color, size, thickness, outlineThickness, outlineColor, contentPadding);
 	}
@@ -65,7 +65,7 @@ namespace wg
 		m_bOpaque = false;
 	}
 
-	CircleSkin::CircleSkin(HiColor color, float size, float thickness, float outlineThickness, HiColor outlineColor, BorderI contentPadding)
+	CircleSkin::CircleSkin(HiColor color, float size, pts thickness, pts outlineThickness, HiColor outlineColor, Border contentPadding)
 	{
 		m_stateInfoMask = 1;
 
@@ -98,7 +98,7 @@ namespace wg
 
 	//____ setAppearance() ________________________________________________________
 
-	void CircleSkin::setAppearance(State state, HiColor color, float size, float thickness, float outlineThickness, HiColor outlineColor)
+	void CircleSkin::setAppearance(State state, HiColor color, float size, pts thickness, pts outlineThickness, HiColor outlineColor)
 	{
 		int i = _stateToIndex(state);
 
@@ -114,30 +114,30 @@ namespace wg
 	}
 
 
-	//____ isOpaque() _____________________________________________________________
+	//____ _isOpaque() _____________________________________________________________
 
-	bool CircleSkin::isOpaque(State state) const
+	bool CircleSkin::_isOpaque(State state) const
 	{
 		return false;
 	}
 
-	bool CircleSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	bool CircleSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
 		return false;
 	}
 
-	//____ render() _______________________________________________________________
+	//____ _render() _______________________________________________________________
 
-	void CircleSkin::render(GfxDevice* pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void CircleSkin::_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		int i = _stateToIndex(state);
 
-		RectF canvas = _canvas.fpx();
+		RectSPX canvas = _canvas;
 		if (canvas.w != canvas.h || m_stateInfo[i].size != 1.f )
 		{
-			float sideLength = std::min(canvas.w, canvas.h) * m_stateInfo[i].size;
+			spx sideLength = std::min(canvas.w, canvas.h) * m_stateInfo[i].size;
 			canvas.x += (canvas.w - sideLength) / 2;
 			canvas.y += (canvas.h - sideLength) / 2;
 			canvas.w = sideLength;
@@ -145,23 +145,23 @@ namespace wg
 		}
 
 
-		float thickness = m_stateInfo[i].thickness * MU::scale();
-		float outlineThickness = m_stateInfo[i].outlineThickness * MU::scale();
+		spx thickness = m_stateInfo[i].thickness * scale;
+		spx outlineThickness = m_stateInfo[i].outlineThickness * scale;
 
 
 		pDevice->drawElipse(canvas, thickness, m_stateInfo[i].color, outlineThickness, m_stateInfo[i].outlineColor);
 	}
 
-	//____ markTest() _____________________________________________________________
+	//____ _markTest() _____________________________________________________________
 
-	bool CircleSkin::markTest(const Coord& _ofs, const Rect& _canvas, State state, int opacityTreshold, float value, float value2) const
+	bool CircleSkin::_markTest(const CoordSPX& _ofs, const RectSPX& _canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		int i = _stateToIndex(state);
 
-		RectF	canvas = _canvas;
-		CoordF	ofs = _ofs;
+		RectSPX	canvas = _canvas;
+		CoordSPX ofs = _ofs;
 
-		float sideLength = std::min(canvas.w, canvas.h) * m_stateInfo[i].size;
+		spx sideLength = std::min(canvas.w, canvas.h) * m_stateInfo[i].size;
 
 		if (canvas.w != canvas.h || m_stateInfo[i].size != 1.f)
 		{
@@ -171,7 +171,7 @@ namespace wg
 			canvas.h = sideLength;
 		}
 
-		CoordF center = canvas.center();
+		CoordSPX center = canvas.center();
 
 		float distanceSquared = (float) (pow((ofs.x - center.x), 2) + pow((ofs.y - center.y), 2));
 
@@ -202,14 +202,14 @@ namespace wg
 		return false;
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect CircleSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX CircleSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (oldState == newState)
-			return Rect();
+			return RectSPX();
 
 		int i1 = _stateToIndex(newState);
 		int i2 = _stateToIndex(oldState);
@@ -220,8 +220,8 @@ namespace wg
 			m_stateInfo[i1].outlineColor != m_stateInfo[i2].outlineColor)
 			return canvas;
 
-		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
-			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
+		return StateSkin::_dirtyRect(	canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+										newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
 

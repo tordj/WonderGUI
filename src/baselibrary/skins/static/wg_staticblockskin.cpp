@@ -51,8 +51,8 @@ namespace wg
 	StaticBlockSkin::StaticBlockSkin(Surface* pSurface, const Rect& block, const Border& frame)
 	{
 		m_pSurface = pSurface;
-		m_ninePatch.block = align(ptsToSpx(block,pSurface->scale()));
-		m_ninePatch.frame = align(ptsToSpx(frame, pSurface->scale()));
+		m_ninePatch.block = block;
+		m_ninePatch.frame = frame;
 		m_gfxFrame = frame;
 		m_bOpaque = m_pSurface->isOpaque();
 	}
@@ -169,9 +169,7 @@ namespace wg
 
 	SizeSPX StaticBlockSkin::_preferredSize(int scale) const
 	{
-		Size ptsSize = spxToPts( m_ninePatch.block.size(), m_pSurface->scale() );
-
-		return SizeSPX::max(align(ptsToSpx(ptsSize,scale)),_sizeForContent( SizeSPX(), scale));
+		return SizeSPX::max(align(ptsToSpx(m_ninePatch.block.size(),scale)),_sizeForContent( SizeSPX(), scale));
 	}
 
 	//____ _render() ______________________________________________________________
@@ -185,14 +183,16 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch(canvas, align(ptsToSpx(m_gfxFrame,scale)), m_ninePatch);
+		pDevice->blitNinePatch(canvas, align(ptsToSpx(m_gfxFrame,scale)), m_ninePatch, scale);
 	}
 
 	//____ _markTest() _________________________________________________________
 
 	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
-		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, opacityTreshold );
+		BorderSPX destFrame = align(ptsToSpx(m_ninePatch.frame, scale));
+
+		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, destFrame, scale, opacityTreshold);
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________

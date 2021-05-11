@@ -108,8 +108,6 @@ namespace wg
 		void				setAxis( Axis axis );	///< @brief Set scrollbar to vertical or horizontal.
 		inline Axis	axis() const; 					///< @brief Check if scrollbar is vertical or horizontal.
 
-		Size				preferredSize() const override;
-
 		//.____ Appearance __________________________________________
 
 		void	setSkins( Skin * pBaseSkin, Skin * pBackgroundSkin, Skin * pHandleSkin,
@@ -142,7 +140,7 @@ namespace wg
 		void			setHandlePos( float pos );					///< @brief Set relative position of scrollbar handle.
 		inline float	handlePos() const;							///< @brief Get position of the scrollbar handle.
 
-		void			setHandlePointPos( MU pos );				///< @brief Set position of scrollbar handle.
+		void			setHandlePointPos( pts pos );				///< @brief Set position of scrollbar handle.
 
 		void			setHandleSize( float size );				///< @brief Set size of scrollbar handle.
 		inline float	handleSize() const;							///< @brief Get the size of the scrollbar handle.
@@ -154,12 +152,13 @@ namespace wg
 		Scrollbar();
 		virtual	~Scrollbar();
 
-	
+		virtual SizeSPX	_preferredSize(int scale = -1) const;
+
 		void	_cloneContent( const Widget * _pOrg ) override;
-		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		void	_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void	_receive( Msg * pMsg ) override;
 		void	_refresh() override;
-		bool	_alphaTest( const Coord& ofs ) override;
+		bool	_alphaTest( const CoordSPX& ofs ) override;
 		void	_setState( State state ) override;
 
 		bool	_setHandle( float pos, float size );		// Set scrollbar pos/size without notifying target (but should post messages).
@@ -191,15 +190,15 @@ namespace wg
 		BgPressMode		m_bgPressMode;
 		bool			m_bHorizontal;
 		bool			m_bPressOnHandle;
-		MU				m_handlePressOfs;
+		spx				m_handlePressOfs;
 
 		BtnLayout		m_btnLayout;
-		MU				m_headerLen;
-		MU				m_footerLen;
+		spx				m_headerLen;
+		spx				m_footerLen;
 
 		State			m_states[C_NUMBER_OF_COMPONENTS];
 
-		Size			m_minSize;
+		SizeSPX			m_minSize;
 
 		ScrollbarTarget *m_pScrollbarTargetInterface;			// So we can access our target.
 		Widget_wp	m_pScrollbarTargetWidget;				// So we can check if target has been deleted.
@@ -209,14 +208,14 @@ namespace wg
 
 
 
-		void	_viewToPosLen( MU * _wpPos, MU * _wpLen );
+		void	_viewToPosLen( spx * _wpPos, spx * _wpLen );
 		void	_updateMinSize( void );
 
 
-		Component	_findMarkedComponent( Coord ofs );								// -1 = None.
-		void		_renderButton( GfxDevice * pDevice, Rect& _dest, Skin * pSkin, State state );
-		bool		_markTestButton( Coord ofs, Rect& _dest, Skin * pSkin, State state );
-		bool		_markTestHandle( Coord ofs );
+		Component	_findMarkedComponent( CoordSPX ofs );								// -1 = None.
+		void		_renderButton( GfxDevice * pDevice, RectSPX& _dest, Skin * pSkin, State state );
+		bool		_markTestButton( CoordSPX ofs, RectSPX& _dest, Skin * pSkin, State state );
+		bool		_markTestHandle( CoordSPX ofs );
 		void		_headerFooterChanged();
 		void		_unhoverReqRender();
 	};

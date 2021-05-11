@@ -35,15 +35,15 @@ namespace wg
 	{
 		friend class CAnimFrames;
 	public:
-		AnimFrame(CoordI source, int duration, GfxFlip flip = GfxFlip::Normal) : m_source(source), m_timestamp(0), m_duration(duration), m_flip(flip) {}
+		AnimFrame(Coord source, int duration, GfxFlip flip = GfxFlip::Normal) : m_source(source), m_timestamp(0), m_duration(duration), m_flip(flip) {}
 
 		int		duration() const { return m_duration; }
 		GfxFlip	flip() const { return m_flip; }
-		CoordI	source() const { return m_source; }
+		Coord	source() const { return m_source; }
 		int		timestamp() const { return m_timestamp; }
 
 	protected:
-		CoordI	m_source;		// Points
+		Coord	m_source;		// Points
 		int		m_timestamp;	// Millisec
 		int		m_duration;		// Millisec
 		GfxFlip	m_flip;			
@@ -89,8 +89,8 @@ namespace wg
 		void			setSurface(Surface* pSurface);
 		Surface_p		surface() const { return m_pSurface; }
 
-		void			setFrameSize(SizeI pointSize);
-		SizeI			frameSize() const { return m_frameSize; }
+		void			setFrameSize(Size pointSize);
+		Size			frameSize() const { return m_frameSize; }
 
 		inline int		duration() const;
 		const AnimFrame * find(int timestamp) const;
@@ -109,7 +109,7 @@ namespace wg
 
 
 		int			m_duration = 0;
-		SizeI		m_frameSize;
+		Size		m_frameSize;
 		Surface_p	m_pSurface;
 	};
 

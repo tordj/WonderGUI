@@ -62,35 +62,36 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		Size			minSize() const override;
-		Size			preferredSize() const override;
-		Size			sizeForContent(const Size& contentSize) const override;
-
-		void			setContentPadding(const BorderI& padding) override;
-		Border			contentPadding(State state) const override;
-		Size			contentPaddingSize() const override;
-		Coord			contentOfs(State state) const override;
-		Rect			contentRect(const Rect& canvas, State state) const override;
+		void			setContentPadding(const Border& padding) override;
 
 		//.____ Misc ____________________________________________________
 
-		bool			isOpaque( State state ) const override;
-		bool			isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
+		SizeSPX			_minSize(int scale) const override;
+		SizeSPX			_preferredSize(int scale) const override;
+		SizeSPX			_sizeForContent(const SizeSPX& contentSize, int scale) const override;
 
-		bool			markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		BorderSPX		_contentPadding(int scale, State state) const override;
+		SizeSPX			_contentPaddingSize(int scale) const override;
+		CoordSPX		_contentOfs(int scale, State state) const override;
+		RectSPX			_contentRect(const RectSPX& canvas, int scale, State state) const override;
+
+		bool			_isOpaque( State state ) const override;
+		bool			_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
+
+		bool			_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
 									float value = 1.f, float value2 = -1.f) const override;
 
-		void			render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-								float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
+		void			_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+									float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
-		Rect			dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX			_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
-		int				animationLength(State state) const override;
+		int				_animationLength(State state) const override;
 
-		Bitmask<uint8_t>transitioningStates() const override;
-		const int*		transitionTimes() const override;
+		Bitmask<uint8_t>_transitioningStates() const override;
+		const int*		_transitionTimes() const override;
 
 	private:
 		DoubleSkin();
