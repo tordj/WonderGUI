@@ -61,17 +61,21 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		MU		matchingHeight(MU width) const override;
-		MU		matchingWidth(MU height) const override;
 
 		bool	setSizes( Size min, Size preferred, Size max );
 
 		void	setPreferredSize( Size size );
-		Size	preferredSize() const override;
 		void	setMinSize( Size size );
-		Size	minSize() const override;
 		void	setMaxSize( Size size );
-		Size	maxSize() const override;
+
+		//.____ Internal _________________________________________________
+
+		spx		_matchingHeight(spx width, int scale = -1) const override;
+		spx		_matchingWidth(spx height, int scale = -1) const override;
+
+		SizeSPX	_preferredSize(int scale = -1) const override;
+		SizeSPX	_minSize(int scale = -1) const override;
+		SizeSPX	_maxSize(int scale = -1) const override;
 
 
 	protected:
@@ -83,7 +87,7 @@ namespace wg
 	private:
 
 		Size			m_min;
-		Size			m_max = { MU::Max, MU::Max };
+		Size			m_max = { 1000000, 1000000 };
 		Size			m_preferred = { -1, -1 };
 	};
 

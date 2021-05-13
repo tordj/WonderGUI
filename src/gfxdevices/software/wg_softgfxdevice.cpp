@@ -4544,8 +4544,8 @@ namespace wg
 
 		// Step forward _src by half a pixel, so we start from correct pixel.
 
-		_src.x = (_src.x * 2 + simpleTransform[0][0] + simpleTransform[1][0]) / 2;
-		_src.y = (_src.y * 2 + simpleTransform[0][1] + simpleTransform[1][1]) / 2;
+//		_src.x = (_src.x * 2 + simpleTransform[0][0] + simpleTransform[1][0]) / 2;
+//		_src.y = (_src.y * 2 + simpleTransform[0][1] + simpleTransform[1][1]) / 2;
 
 		//
 
@@ -4553,7 +4553,7 @@ namespace wg
 		{
 			RectI  patch = m_pClipRects[i]/64;
 
-			CoordI src = _src;
+			CoordI src = _src/64;
 
 			CoordI	patchOfs = patch.pos() - dest.pos();
 

@@ -52,11 +52,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
-
-		Size		preferredSize() const override;
-		Size		minSize() const override;
-
 		//.____ Appearance ____________________________________________________
 
 		void		setBlendMode(BlendMode mode);
@@ -68,19 +63,22 @@ namespace wg
 		void		setGradient(const Gradient& gradient);
 		Gradient	gradient() const { return m_gradient; }
 
-		void		setGfxPadding(BorderI padding);
+		void		setGfxPadding(Border padding);
 		Border		gfxPadding() const { return m_gfxPadding; }
 
-		//.____ Misc ____________________________________________________
+		//.____ Internal ____________________________________________________
 
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		SizeSPX		_preferredSize(int scale) const override;
+		SizeSPX		_minSize(int scale) const override;
+
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
 								float value = 1.f, float value2 = -1.f) const override;
 
-		void 		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float value = 1.f, float value2 = -1.f, int animPos = 0,
-							float* pStateFractions = nullptr) const override;
+		void 		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+								float value = 1.f, float value2 = -1.f, int animPos = 0,
+								float* pStateFractions = nullptr) const override;
 
-		Rect		dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX		_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 								float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 								float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
@@ -100,8 +98,8 @@ namespace wg
 
 		Object*		_object() override;
 
-		BorderI		m_gfxPadding;
-		bool		m_bAllFramesOpaque = false;
+		Border			m_gfxPadding;
+		bool			m_bAllFramesOpaque = false;
 
 		BlendMode		m_blendMode = BlendMode::Undefined;
 		HiColor			m_color = Color::White;

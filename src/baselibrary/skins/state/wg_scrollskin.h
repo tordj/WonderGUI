@@ -46,8 +46,8 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static ScrollSkin_p	create();
-		static ScrollSkin_p	create(Surface* pSurface, int windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, std::initializer_list<State> stateBlocks = { StateEnum::Normal}, int spacing = 0);
-		static ScrollSkin_p	create(Surface* pSurface, int windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, RectI firstBlock, std::initializer_list<State> stateBlocks = { StateEnum::Normal }, int spacing = 0);
+		static ScrollSkin_p	create(Surface* pSurface, pts windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, std::initializer_list<State> stateBlocks = { StateEnum::Normal}, pts spacing = 0);
+		static ScrollSkin_p	create(Surface* pSurface, pts windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, Rect firstBlock, std::initializer_list<State> stateBlocks = { StateEnum::Normal }, pts spacing = 0);
 
 		//.____ Identification __________________________________________
 
@@ -57,10 +57,10 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void		setBlock(CoordI ofs);
-		void		setBlock(State state, CoordI ofs);
-		void		setBlocks(std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 });
-		RectI		block(State state) const;
+		void		setBlock(Coord ofs);
+		void		setBlock(State state, Coord ofs);
+		void		setBlocks(std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, pts spacing = 0, Coord blockStartOfs = { 0,0 });
+		Rect		block(State state) const;
 
 		void		setColor(HiColor tint);
 		void		setColor(State state, HiColor tint);
@@ -73,45 +73,43 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
-		//.____ Geometry _________________________________________________
+		//.____ Internal _________________________________________________
 
-		Size		preferredSize() const override;
+		SizeSPX		_preferredSize(int scale) const override;
 
-		//.____ Misc ____________________________________________________
+		bool		_isOpaque(State state) const override;
+		bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
 
-		bool		isOpaque(State state) const override;
-		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
+								float value = 1.f, float value2 = -1.f) const override;
 
-		bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold,
-			float value = 1.f, float value2 = -1.f) const override;
+		void		_render(	GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
+								float value = 1.f, float value2 = -1.f, int animPos = 0,
+								float* pStateFractions = nullptr) const override;
 
-		void		render(GfxDevice* pDevice, const Rect& canvas, State state,
-			float value = 1.f, float value2 = -1.f, int animPos = 0,
-			float* pStateFractions = nullptr) const override;
+		RectSPX		_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+								float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+								float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
-		Rect	dirtyRect(const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
-			float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
-			float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
-
-		Bitmask<uint8_t>	transitioningStates() const override;
-		const int*			transitionTimes() const override;
+		Bitmask<uint8_t>	_transitioningStates() const override;
+		const int*			_transitionTimes() const override;
 
 	private:
 
 		ScrollSkin();
-		ScrollSkin(Surface* pSurface, int windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, SizeI blockSize);
+		ScrollSkin(Surface* pSurface, pts windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, Size blockSize);
 		~ScrollSkin() {};
 
 		void		_updateOpaqueFlags();
 		void		_updateUnsetStateBlocks();
 		void		_updateUnsetStateColors();
 
-		RectF		_partInCanvas(State state, float* pStateFractions) const;
+		RectSPX		_partInCanvas(int scale, State state, float* pStateFractions) const;
 
 		Surface_p	m_pSurface;
 		Direction	m_scrollDirection = Direction::Right;
 		Size		m_blockSize;
-		int			m_windowLength = 0;
+		pts			m_windowLength = 0;
 		int			m_scrollTime = 250;						// Millisec
 		StateBits	m_scrollState = StateBits::Selected;
 
@@ -123,7 +121,7 @@ namespace wg
 		Bitmask<uint32_t>	m_stateBlockMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		CoordI		m_stateBlocks[StateEnum_Nb];
+		Coord		m_stateBlocks[StateEnum_Nb];
 		HiColor		m_stateColors[StateEnum_Nb];
 		bool		m_bStateOpaque[StateEnum_Nb];
 

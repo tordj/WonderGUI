@@ -83,11 +83,11 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void ShaderCapsule::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void ShaderCapsule::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		// Render our skin
 
-		OO(skin)._render( pDevice, _canvas, m_state );
+		OO(skin)._render( pDevice, _canvas, m_scale, m_state );
 
 		if (!slot._widget())
 			return;
@@ -107,7 +107,7 @@ namespace wg
 
 		// Render children recursively
 
-		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
+		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
 
 		if (canvas != _canvas)
 		{

@@ -123,7 +123,7 @@ int main ( int argc, char** argv )
 	pBaseLambda->slots.pushBack(pFiller, [](Widget* pWidget, Size parentSize) { return Rect(10,10,100,50); });
 
 	auto pFiller2 = Filler::create();
-	auto pSkin2 = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 0, Axis::X );
+	auto pSkin2 = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 3, Axis::X );
 
 	pFiller2->skin = pSkin2;
 
