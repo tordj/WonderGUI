@@ -152,7 +152,7 @@ namespace wg
 		Scrollbar();
 		virtual	~Scrollbar();
 
-		virtual SizeSPX	_preferredSize(int scale = -1) const;
+		virtual SizeSPX	_preferredSize(int scale = -1) const override;
 
 		void	_cloneContent( const Widget * _pOrg ) override;
 		void	_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;

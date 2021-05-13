@@ -2843,7 +2843,7 @@ namespace wg
 
 		//
 
-		if( (rect.x | rect.y | rect.w | rect.h) & 0x3F == 0 )
+		if( ((rect.x | rect.y | rect.w | rect.h) & 0x3F) == 0 )
 		{
 			// No subpixel precision, make it quick and easy
 
