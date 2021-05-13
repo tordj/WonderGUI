@@ -141,16 +141,16 @@ add_executable(spxworkbench
 #	../../baselibrary/components/wg_cicondisplay.h
 	../../baselibrary/components/wg_component.cpp
 	../../baselibrary/components/wg_component.h
-#	../../baselibrary/components/wg_cpaddedslotvector.h
-#	../../baselibrary/components/wg_cpaddedslotvector.impl.h
-#	../../baselibrary/components/wg_cselectableslotvector.h
-#	../../baselibrary/components/wg_cselectableslotvector.impl.h
+	../../baselibrary/components/wg_cpaddedslotvector.h
+	../../baselibrary/components/wg_cpaddedslotvector.impl.h
+	../../baselibrary/components/wg_cselectableslotvector.h
+	../../baselibrary/components/wg_cselectableslotvector.impl.h
 #	../../baselibrary/components/wg_cshadows.cpp
 #	../../baselibrary/components/wg_cshadows.h
 	../../baselibrary/components/wg_cskinslot.cpp
 	../../baselibrary/components/wg_cskinslot.h
-#	../../baselibrary/components/wg_cskinslotmi.cpp
-#	../../baselibrary/components/wg_cskinslotmi.h
+	../../baselibrary/components/wg_cskinslotmi.cpp
+	../../baselibrary/components/wg_cskinslotmi.h
 	../../baselibrary/components/wg_cslot.cpp
 	../../baselibrary/components/wg_cslot.h
 	../../baselibrary/components/wg_cslotarray.h
@@ -197,8 +197,8 @@ add_executable(spxworkbench
 	../../baselibrary/skins/anim/wg_spinanimskin.h
 	../../baselibrary/skins/meter/wg_fillmeterskin.cpp
 	../../baselibrary/skins/meter/wg_fillmeterskin.h
-#	../../baselibrary/skins/meter/wg_framemeterskin.cpp
-#	../../baselibrary/skins/meter/wg_framemeterskin.h
+	../../baselibrary/skins/meter/wg_framemeterskin.cpp
+	../../baselibrary/skins/meter/wg_framemeterskin.h
 	../../baselibrary/skins/meter/wg_piemeterskin.cpp
 	../../baselibrary/skins/meter/wg_piemeterskin.h
 	../../baselibrary/skins/meter/wg_spinmeterskin.cpp
@@ -219,8 +219,8 @@ add_executable(spxworkbench
 #	../../baselibrary/skins/state/wg_lambdaskin.h
 #	../../baselibrary/skins/state/wg_multiblockskin.cpp
 #	../../baselibrary/skins/state/wg_multiblockskin.h
-#	../../baselibrary/skins/state/wg_scrollskin.cpp
-#	../../baselibrary/skins/state/wg_scrollskin.h
+	../../baselibrary/skins/state/wg_scrollskin.cpp
+	../../baselibrary/skins/state/wg_scrollskin.h
 	../../baselibrary/skins/state/wg_tileskin.cpp
 	../../baselibrary/skins/state/wg_tileskin.h
 	../../baselibrary/skins/static/wg_staticblockskin.cpp
@@ -296,17 +296,17 @@ add_executable(spxworkbench
 #	../../baselibrary/widgets/wg_volumemeter.h
 	../../baselibrary/widgets/wg_widget.cpp
 	../../baselibrary/widgets/wg_widget.h
-#
+
 #	../../baselibrary/wi dgets/capsules/wg_canvascapsule.cpp
 #	../../baselibrary/widgets/capsules/wg_canvascapsule.h
-#	../../baselibrary/widgets/capsules/wg_capsule.cpp
-#	../../baselibrary/widgets/capsules/wg_capsule.h
-#	../../baselibrary/widgets/capsules/wg_renderlayercapsule.cpp
-#	../../baselibrary/widgets/capsules/wg_renderlayercapsule.h
-#	../../baselibrary/widgets/capsules/wg_shadercapsule.cpp
-#	../../baselibrary/widgets/capsules/wg_shadercapsule.h
-#	../../baselibrary/widgets/capsules/wg_sizecapsule.cpp
-#	../../baselibrary/widgets/capsules/wg_sizecapsule.h
+	../../baselibrary/widgets/capsules/wg_capsule.cpp
+	../../baselibrary/widgets/capsules/wg_capsule.h
+	../../baselibrary/widgets/capsules/wg_renderlayercapsule.cpp
+	../../baselibrary/widgets/capsules/wg_renderlayercapsule.h
+	../../baselibrary/widgets/capsules/wg_shadercapsule.cpp
+	../../baselibrary/widgets/capsules/wg_shadercapsule.h
+	../../baselibrary/widgets/capsules/wg_sizecapsule.cpp
+	../../baselibrary/widgets/capsules/wg_sizecapsule.h
 #	../../baselibrary/widgets/layers/wg_designlayer.cpp
 #	../../baselibrary/widgets/layers/wg_designlayer.h
 #	../../baselibrary/widgets/layers/wg_dragndroplayer.cpp

@@ -54,26 +54,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() ______________________________________________________________
-
-	Size FrameMeterSkin::preferredSize() const
-	{
-		if (!frames.isEmpty())
-			return Size::max( frames.frameSize(), Size(Border(m_contentPadding).aligned()) );
-		else
-			return Skin::minSize();
-	}
-
-	//____ minSize() ______________________________________________________________
-
-	Size FrameMeterSkin::minSize() const
-	{
-		if (!frames.isEmpty())
-			return Size::max(Size(Border(m_gfxPadding).aligned()), Size(Border(m_contentPadding).aligned()));
-		else
-			return Skin::minSize();
-	}
-
 	//____ setColor() _____________________________________________________
 
 	void FrameMeterSkin::setColor(HiColor color)
@@ -102,14 +82,35 @@ namespace wg
 
 	//____ setGfxPadding() ____________________________________________________
 
-	void FrameMeterSkin::setGfxPadding(BorderI padding)
+	void FrameMeterSkin::setGfxPadding(Border padding)
 	{
 		m_gfxPadding = padding;
 	}
 
-	//____ render() ______________________________________________________________
+	//____ _preferredSize() ______________________________________________________________
 
-	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	SizeSPX FrameMeterSkin::_preferredSize(int scale) const
+	{
+		if (!frames.isEmpty())
+			return SizeSPX::max(align(ptsToSpx(frames.frameSize(),scale)), align(ptsToSpx(m_contentPadding,scale)));
+		else
+			return Skin::_minSize(scale);
+	}
+
+	//____ _minSize() ______________________________________________________________
+
+	SizeSPX FrameMeterSkin::_minSize(int scale) const
+	{
+		if (!frames.isEmpty())
+			return SizeSPX::max(SizeSPX(align(ptsToSpx(m_gfxPadding,scale))), SizeSPX(align(ptsToSpx(m_contentPadding,scale))));
+		else
+			return Skin::_minSize(scale);
+	}
+
+
+	//____ _render() ______________________________________________________________
+
+	void FrameMeterSkin::_render(GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Support flip!
 
@@ -121,15 +122,15 @@ namespace wg
 			pDevice->setBlitSource(frames.surface());
 
 			NinePatch patch;
-			patch.block = RectI(pFrame->source(), frames.frameSize());
+			patch.block = Rect(pFrame->source(), frames.frameSize());
 			patch.frame = m_gfxPadding;
-			pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_gfxPadding), patch);
+			pDevice->blitNinePatch(canvas, align(ptsToSpx(m_gfxPadding,scale)), patch,scale);
 		}
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool FrameMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool FrameMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		//TODO: Support flip!
 		//TODO: Support tint!
@@ -141,28 +142,28 @@ namespace wg
 		if (pFrame)
 		{
 			NinePatch patch;
-			patch.block = RectI(pFrame->source(), frames.frameSize());
+			patch.block = Rect(pFrame->source(), frames.frameSize());
 			patch.frame = m_gfxPadding;
-			return Util::markTestNinePatch(ofs, frames._surface(), patch, canvas, opacityTreshold);
+			return Util::markTestNinePatch(ofs, frames._surface(), patch, canvas, align(ptsToSpx(m_gfxPadding, scale)), scale, opacityTreshold);
 		}
 
 		return false;
 	}
 
-	//____ dirtyRect() ________________________________________________________
+	//____ _dirtyRect() ________________________________________________________
 
-	Rect FrameMeterSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX FrameMeterSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (newValue == oldValue)
-			return Rect();
+			return RectSPX();
 
 		auto pOldFrame = _valueToFrame(oldValue);
 		auto pNewFrame = _valueToFrame(newValue);
 
 		if (pOldFrame == pNewFrame)
-			return Rect();
+			return RectSPX();
 		else
 			return canvas;
 	}

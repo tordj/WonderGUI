@@ -63,11 +63,11 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void RenderLayerCapsule::_render(GfxDevice* pDevice, const Rect& _canvas, const Rect& _window)
+	void RenderLayerCapsule::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
 		// Render our skin
 
-		OO(skin)._render(pDevice, _canvas, m_state);
+		OO(skin)._render(pDevice, _canvas, m_scale, m_state);
 
 		if (!slot._widget())
 			return;
@@ -76,7 +76,7 @@ namespace wg
 		if( m_renderLayer >= 0 )
 			pDevice->setRenderLayer(m_renderLayer);
 
-		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
+		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
 		OO(slot._widget())->_render(pDevice, canvas, canvas);
 
 

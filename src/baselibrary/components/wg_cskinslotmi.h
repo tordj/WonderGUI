@@ -46,11 +46,12 @@ namespace wg
 			virtual void	_skinChanged(const CSkinSlotMI* pSlot, Skin* pNewSkin, Skin* pOldSkin) = 0;
 
 			virtual State	_skinInstanceState(void* instance) = 0;
-			virtual Size	_skinInstanceSize(void* instance) = 0;
+			virtual SizeSPX	_skinInstanceSize(void* instance) = 0;
 			virtual void	_skinInstanceRequestRender(void* instance) = 0;
 			virtual void	_skinInstanceRequestRender(void* instance, const RectSPX& rect) = 0;
 			virtual float	_skinInstanceValue(void* instance) = 0;
 			virtual float	_skinInstanceValue2(void* instance) = 0;
+			virtual int		_scale() = 0;
 		};
 
 		CSkinSlotMI(Holder* pHolder) : m_pHolder(pHolder) {}
@@ -89,7 +90,7 @@ namespace wg
 		void			_stateChanged(SkinSlotPocket*& pPocket, void* instance, State newState, State oldState);
 		void			_valueChanged(SkinSlotPocket*& pPocket, void* instance, float newValue, float oldValue, float newValue2 = -1, float oldValue2 = -1);
 
-		void 			_render(SkinSlotPocket* pPocket, GfxDevice* pDevice, const RectSPX& canvas, State state, float value = 1.f, float value2 = -1.f) const;
+		void 			_render(SkinSlotPocket* pPocket, GfxDevice* pDevice, const RectSPX& canvas, int scale, State state, float value = 1.f, float value2 = -1.f) const;
 
 		inline SizeSPX	_minSize(int scale) const { return m_pSkin ? m_pSkin->_minSize(scale) : SizeSPX(); }
 		inline SizeSPX	_preferredSize(int scale) const { return m_pSkin ? m_pSkin->_preferredSize(scale) : SizeSPX(); }
