@@ -1,4 +1,6 @@
 
+source_group(Files REGULAR_EXPRESSION ".*")
+
 add_executable(example01
 
 	example01.cpp

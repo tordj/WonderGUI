@@ -1,4 +1,6 @@
 
+source_group(Files REGULAR_EXPRESSION ".*")
+
 add_executable(gfxworkbench
 
 	main.cpp

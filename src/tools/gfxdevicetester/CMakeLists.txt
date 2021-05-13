@@ -1,4 +1,8 @@
 
+source_group(Files REGULAR_EXPRESSION ".*")
+source_group(Files/TestSuites REGULAR_EXPRESSION "testsuites/*")
+
+
 add_executable(gfxdevicetester
 
 	framework_sdlgl/main.cpp
