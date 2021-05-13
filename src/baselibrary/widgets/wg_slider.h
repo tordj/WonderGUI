@@ -95,10 +95,10 @@ namespace wg
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		bool		_alphaTest(const CoordSPX& ofs) override;
+        void        _resize(const SizeSPX& size, int scale = -1) override;
 
 		SizeSPX		_calcPreferredSize(int scale) const;
 		void		_updatePreferredSize(bool bRequestResize = true);
-		void		_resize(const SizeSPX& size, int scale = -1);
 
 		void		_setValue(float value, bool bPostMsg = true);
 		void		_setHandleState(State state);
