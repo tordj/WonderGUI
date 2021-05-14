@@ -2860,8 +2860,6 @@ namespace wg
 				if (patch.w == 0 || patch.h == 0)
 					continue;
 
-				patch /= 64;
-
 				uint8_t * pDst = m_pCanvasPixels + patch.y *m_canvasPitch + patch.x * pixelBytes;
 				pFunc(pDst, pixelBytes, m_canvasPitch - patch.w*pixelBytes, patch.h, patch.w, col, m_colTrans, patch.pos());
 			}
@@ -4531,6 +4529,8 @@ namespace wg
 
 	void SoftGfxDevice::_transformBlit(const RectSPX& _dest, CoordSPX _src, const int simpleTransform[2][2])
 	{
+		// For this method, source and dest should be pixel aligned.
+
 		// Clip and render the patches
 
 		if (!_dest.intersectsWith(m_clipBounds))
@@ -4544,8 +4544,8 @@ namespace wg
 
 		// Step forward _src by half a pixel, so we start from correct pixel.
 
-//		_src.x = (_src.x * 2 + simpleTransform[0][0] + simpleTransform[1][0]) / 2;
-//		_src.y = (_src.y * 2 + simpleTransform[0][1] + simpleTransform[1][1]) / 2;
+		_src.x = _src.x + (simpleTransform[0][0] + simpleTransform[1][0])*32;
+		_src.y = _src.y + (simpleTransform[0][1] + simpleTransform[1][1])*32;
 
 		//
 
