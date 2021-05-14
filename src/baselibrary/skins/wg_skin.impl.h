@@ -47,7 +47,7 @@ namespace wg
 				pDevice->setRenderLayer(layer);
 			}
 
-			if (blendMode != BlendMode::Undefined)
+			if (blendMode != BlendMode::Undefined && blendMode != pDevice->blendMode())
 			{
 				m_prevBlendMode = pDevice->blendMode();
 				pDevice->setBlendMode(blendMode);
