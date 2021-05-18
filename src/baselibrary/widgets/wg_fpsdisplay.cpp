@@ -81,34 +81,36 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() __________________________________________________________
+	//____ _preferredSize() __________________________________________________________
 
-	Size FpsDisplay::preferredSize() const
+	SizeSPX FpsDisplay::_preferredSize(int scale) const
 	{
-		SizeI contentSize = OO(labels)._preferredSize();
+		scale = _fixScale(scale);
+
+		SizeSPX contentSize = OO(labels)._preferredSize(scale);
 
 		TextAttr attr;
-		OO(values)._style()->exportAttr( State(StateEnum::Normal), &attr );
+		OO(values)._style()->exportAttr( State(StateEnum::Normal), &attr, scale );
 
 		int prevSize = attr.pFont->size();
 		attr.pFont->setSize(attr.size);
 		contentSize.w += attr.pFont->maxAdvance() * 7;			// Reserve space for: ' 999.99' after longest label.
 		attr.pFont->setSize(prevSize);
 
-		int valueHeight = OO(values)._preferredSize().h;
+		int valueHeight = OO(values)._preferredSize(scale).h;
 		if( valueHeight > contentSize.h )
 			contentSize.h = valueHeight;
 
-		return OO(skin)._sizeForContent(contentSize);
+		return OO(skin)._sizeForContent(contentSize, scale);
 	}
 
 	//____ _render() ________________________________________________________
 
-	void FpsDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void FpsDisplay::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect content = OO(skin)._contentRect( _canvas, m_state );
+		RectSPX content = OO(skin)._contentRect( _canvas, m_scale, m_state );
 
 		OO(labels)._render( pDevice, content );
 		OO(values)._render( pDevice, content );

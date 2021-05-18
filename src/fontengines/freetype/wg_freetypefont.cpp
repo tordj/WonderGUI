@@ -33,6 +33,7 @@
 #include <wg_surfacefactory.h>
 #include <wg_base.h>
 #include <wg_context.h>
+#include <wg_util.h>
 
 
 #include <ft2build.h>
@@ -49,6 +50,7 @@
 
 namespace wg
 {
+	using namespace Util;
 
 	const TypeInfo FreeTypeFont::TYPEINFO = { "FreeTypeFont", &Font::TYPEINFO };
 
@@ -106,7 +108,7 @@ namespace wg
 		}
 
 		setRenderMode( RenderMode::BestShapes );
-		setSize( 10 );
+		setSize( 10*64 );
 		
 		// Darken the stem if we have gammaCorrection enabled.
 
@@ -155,20 +157,22 @@ namespace wg
 
 	//____ setSize() __________________________________________________________
 
-	bool FreeTypeFont::setSize( MU size )
+	bool FreeTypeFont::setSize( spx _size )
 	{
+		spx size = align(_size);
+
 		if( size == m_size )
 			return true;
 
 		if (size < 0)
 			return false;
 
-		int pxSize = size.px();
+		int pxSize = size/64;
 
 		// Sanity check
 
 
-		FT_Error err = FT_Set_Char_Size( m_ftFace, pxSize*64, 0, 0,0 );
+		FT_Error err = FT_Set_Char_Size( m_ftFace, size, 0, 0,0 );
 //		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
 		if( err )
 		{
@@ -219,7 +223,7 @@ namespace wg
 
 	//____ kerning() ___________________________________________________________
 
-	MU FreeTypeFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
+	spx FreeTypeFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
 		if( !pLeftGlyph || !pRightGlyph || pLeftGlyph->_font() != this || pRightGlyph->_font() != this )
 			return 0;
@@ -229,14 +233,14 @@ namespace wg
 		FT_Vector	delta;
 		FT_Get_Kerning( m_ftFace, pLeftGlyph->kerningIndex(), pRightGlyph->kerningIndex(), FT_KERNING_DEFAULT, &delta );
 
-		return MU::fromPX(int(delta.x >> 6));
+		return delta.x;
 	}
 
 	//____ whitespaceAdvance() _________________________________________________
 
-	MU FreeTypeFont::whitespaceAdvance()
+	spx FreeTypeFont::whitespaceAdvance()
 	{
-        int pxSize = m_size.px();
+        int pxSize = m_size/64;
         
 		if (m_pCachedFontSizes[pxSize] == nullptr)
 		{
@@ -244,7 +248,7 @@ namespace wg
 		}
 
 
-		if( !m_pCachedFontSizes[pxSize]->whitespaceAdvance.qpix )
+		if( !m_pCachedFontSizes[pxSize]->whitespaceAdvance )
 		{
 			FT_Error err;
 
@@ -255,7 +259,7 @@ namespace wg
 				return 0;
 
 			// Get and return advance
-			m_pCachedFontSizes[pxSize]->whitespaceAdvance = MU::fromPX(int(m_ftFace->glyph->advance.x >> 6));
+			m_pCachedFontSizes[pxSize]->whitespaceAdvance = align(m_ftFace->glyph->advance.x);
 		}
 
         return m_pCachedFontSizes[pxSize]->whitespaceAdvance;
@@ -263,24 +267,24 @@ namespace wg
 
 	//____ lineGap() ____________________________________________________________
 
-	MU FreeTypeFont::lineGap()
+	spx FreeTypeFont::lineGap()
 	{
-		return MU::fromPX(int(m_ftFace->size->metrics.height - m_ftFace->size->metrics.ascender + m_ftFace->size->metrics.descender) >> 6);
+		return align(m_ftFace->size->metrics.height - m_ftFace->size->metrics.ascender + m_ftFace->size->metrics.descender);
 	}
 
 
 	//____ maxAscend() ____________________________________________________________
 
-	MU FreeTypeFont::maxAscend()
+	spx FreeTypeFont::maxAscend()
 	{
-		return MU::fromPX(int(m_ftFace->size->metrics.ascender) >> 6);
+		return m_ftFace->size->metrics.ascender;
 	}
 
 	//____ maxDescend() ____________________________________________________________
 
-	MU FreeTypeFont::maxDescend()
+	spx FreeTypeFont::maxDescend()
 	{
-		return MU::fromPX(-int(m_ftFace->size->metrics.descender) >> 6);
+		return -(m_ftFace->size->metrics.descender);
 	}
 
 
@@ -307,9 +311,9 @@ namespace wg
 
 	//____ maxAdvance() ___________________________________________________
 
-	MU FreeTypeFont::maxAdvance()
+	spx FreeTypeFont::maxAdvance()
 	{
-		return MU::fromPX(int(m_ftFace->size->metrics.max_advance >> 6));
+		return align(m_ftFace->size->metrics.max_advance);
 	}
 
 
@@ -348,7 +352,7 @@ namespace wg
                         return m_pBackupFont->getGlyph(ch);
                     else
                     {
-                        MU sz = m_pBackupFont->size();
+                        spx sz = m_pBackupFont->size();
                         m_pBackupFont->setSize(m_size);
                         Glyph_p pGlyph = m_pBackupFont->getGlyph(ch);
                         m_pBackupFont->setSize(sz);
@@ -365,7 +369,7 @@ namespace wg
 
 			// Get some details about the glyph
 
-			MU advance = MU::fromPX(int(m_ftFace->glyph->advance.x >> 6));
+			spx advance = align(m_ftFace->glyph->advance.x);
 
 			// Get a MyGlyph object and fill in details
 
@@ -389,7 +393,7 @@ namespace wg
         bool bDifferentSize = pGlyph->m_size != m_size;
 
         if( bDifferentSize )
-             FT_Set_Char_Size( m_ftFace, pGlyph->m_size.px()*64, 0, 0,0 );
+             FT_Set_Char_Size( m_ftFace, align(pGlyph->m_size), 0, 0,0 );
 
 		// Load MyGlyph
 
@@ -399,7 +403,7 @@ namespace wg
 			//TODO: Error handling!
 			
             if( bDifferentSize )
-                FT_Set_Char_Size( m_ftFace, m_size.px()*64, 0, 0,0 );
+                FT_Set_Char_Size( m_ftFace, m_size, 0, 0,0 );
             return;
         }
 
@@ -412,14 +416,14 @@ namespace wg
 
 		_getCacheSlot( width, height, &pGlyph->bitmap );
 
-		pGlyph->bitmap.bearingX = MU::fromPX(m_ftFace->glyph->bitmap_left);
-		pGlyph->bitmap.bearingY = MU::fromPX(-m_ftFace->glyph->bitmap_top);
+		pGlyph->bitmap.bearingX = m_ftFace->glyph->bitmap_left*64;
+		pGlyph->bitmap.bearingY = -m_ftFace->glyph->bitmap_top*64;
 
 
 		_copyBitmap( &m_ftFace->glyph->bitmap, &pGlyph->bitmap );	// Copy our glyph bitmap to the slot
 
         if( bDifferentSize )
-            FT_Set_Char_Size( m_ftFace, m_size.px()*64, 0, 0,0 );
+            FT_Set_Char_Size( m_ftFace, m_size, 0, 0,0 );
 	}
 
 
@@ -431,7 +435,7 @@ namespace wg
 	{
 		Surface_p pSurf = pGlyphBitmap->pSurface;
 
-		auto pixbuf = pSurf->allocPixelBuffer(pGlyphBitmap->rect);
+		auto pixbuf = pSurf->allocPixelBuffer(pGlyphBitmap->rect/64);
 
 		assert( pSurf->pixelDescription()->format == PixelFormat::A_8);
 
@@ -511,9 +515,9 @@ namespace wg
 
 	//___ _addGlyph() ________________________________________________________
 
-	FreeTypeFont::MyGlyph * FreeTypeFont::_addGlyph( uint16_t ch, MU size, MU advance, uint32_t kerningIndex )
+	FreeTypeFont::MyGlyph * FreeTypeFont::_addGlyph( uint16_t ch, spx size, spx advance, uint32_t kerningIndex )
 	{
-		int szOfs = size.px();
+		int szOfs = size/64;
 
 		if (m_pCachedFontSizes[szOfs] == nullptr)
 			m_pCachedFontSizes[szOfs] = new CachedFontSize();
@@ -649,10 +653,10 @@ namespace wg
 		}
 		
 		pBitmap->pSurface = pCacheSurf->pSurface;
-		pBitmap->rect.x = pCacheSurf->used;
+		pBitmap->rect.x = pCacheSurf->used*64;
 		pBitmap->rect.y = 0;
-		pBitmap->rect.w = width;
-		pBitmap->rect.h = height;
+		pBitmap->rect.w = width*64;
+		pBitmap->rect.h = height*64;
 		
 		pCacheSurf->used += width;
 	}
@@ -701,7 +705,7 @@ namespace wg
 
 			// Decreaste s_cacheSize
 
-			SizeI pixels = toRemove.pSurface->size();
+			SizeI pixels = toRemove.pSurface->pixelSize();
 			s_cacheSize -= pixels.w * pixels.h;
 
 			// Remove surface and add to list of removed.
@@ -748,7 +752,7 @@ namespace wg
 	}
 
 
-	FreeTypeFont::MyGlyph::MyGlyph( uint16_t character, MU size, MU advance, uint32_t kerningIndex, Font * pFont )
+	FreeTypeFont::MyGlyph::MyGlyph( uint16_t character, spx size, spx advance, uint32_t kerningIndex, Font * pFont )
 	: Glyph( advance, kerningIndex, pFont )
 	{
 		m_size = size;

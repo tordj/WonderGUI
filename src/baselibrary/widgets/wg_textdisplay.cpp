@@ -74,48 +74,54 @@ namespace wg
 			return OO(text)._tooltip();
 	}
 
-	//____ matchingWidth() _______________________________________________________
+	//____ _matchingWidth() _______________________________________________________
 
-	MU TextDisplay::matchingWidth(MU height) const
+	spx TextDisplay::_matchingWidth(spx height, int scale) const
 	{
+		scale = _fixScale(scale);
+
 		//TODO: Need to remove padding before calculations as well.
 
-		MU textWidth = OO(text)._matchingWidth(height);
+		spx textWidth = OO(text)._matchingWidth(height, scale);
 
-		textWidth += OO(skin)._contentPaddingSize().w;
+		textWidth += OO(skin)._contentPaddingSize(scale).w;
 
 		return textWidth;
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	MU TextDisplay::matchingHeight(MU width) const
+	spx TextDisplay::_matchingHeight(spx width, int scale) const
 	{
 		//TODO: Need to remove padding before calculations as well.
 
-		MU textHeight = OO(text)._matchingHeight(width);
+		scale = _fixScale(scale);
 
-		textHeight += OO(skin)._contentPaddingSize().h;
+		spx textHeight = OO(text)._matchingHeight(width, scale);
+
+		textHeight += OO(skin)._contentPaddingSize(scale).h;
 
 		return textHeight;
 	}
 
 	//____ preferredSize() _____________________________________________________________
 
-	Size TextDisplay::preferredSize() const
+	SizeSPX TextDisplay::_preferredSize(int scale) const
 	{
-		Size contentSize = OO(text)._preferredSize();
+		scale = _fixScale(scale);
 
-		return OO(skin)._sizeForContent(contentSize);
+		SizeSPX contentSize = OO(text)._preferredSize(scale);
+
+		return OO(skin)._sizeForContent(contentSize, scale);
 	}
 
 	//____ _render() ________________________________________________________
 
-	void TextDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void TextDisplay::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
+		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
 
 		OO(text)._render(pDevice, canvas);
 	}
@@ -167,13 +173,13 @@ namespace wg
 
 	//____ _resize() ________________________________________________
 
-	void TextDisplay::_resize( const Size& size )
+	void TextDisplay::_resize( const SizeSPX& size, int scale )
 	{
-		Widget::_resize(size);
+		Widget::_resize(size, scale);
 
-		Size textSize = size - OO(skin)._contentPaddingSize();
+		SizeSPX textSize = size - OO(skin)._contentPaddingSize(m_scale);		// Using m_scale here, since that has been fixed.
 
-		OO(text)._setSize( textSize );
+		OO(text)._setSize( textSize, scale );
 	}
 
 

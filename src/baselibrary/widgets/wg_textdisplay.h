@@ -52,16 +52,17 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
-
-		MU				matchingWidth(MU height) const override;
-		MU				matchingHeight(MU width) const override;
-		Size			preferredSize() const override;
-
 		//.____ Appearance _________________________________________________
 
 		PointerStyle	pointerStyle() const override;
 		String			tooltip() const override;
+
+		//.____ Internal _________________________________________________
+
+		spx				_matchingWidth(spx height, int scale = -1) const override;
+		spx				_matchingHeight(spx width, int scale = -1) const override;
+		SizeSPX			_preferredSize(int scale = -1) const override;
+
 
 	protected:
 		TextDisplay();
@@ -70,8 +71,8 @@ namespace wg
 
 
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
-		void			_resize( const Size& size ) override;
+		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
+		void			_resize( const SizeSPX& size, int scale = -1 ) override;
 		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;

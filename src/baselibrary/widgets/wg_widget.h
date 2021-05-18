@@ -210,6 +210,18 @@ namespace wg
 		inline const SizeSPX& _size() const;
 		inline int			_scale() const override;
 
+		inline CoordSPX		_pos() const;
+		inline RectSPX		_geo() const;
+		inline CoordSPX		_globalPos() const;
+		inline RectSPX		_globalGeo() const;
+
+		inline CoordSPX		_toGlobal(const CoordSPX& coord) const;
+		inline RectSPX		_toGlobal(const RectSPX& rect) const;
+		inline CoordSPX		_toLocal(const CoordSPX& coord) const;
+		inline RectSPX		_toLocal(const RectSPX& rect) const;
+
+		virtual	bool		_markTest(const CoordSPX& ofs);
+
 	protected:
 		Widget();
 		virtual ~Widget();
@@ -229,16 +241,6 @@ namespace wg
 		void				_stopReceiveUpdates();
 
 		bool            	_requestPreRenderCall();
-
-		inline CoordSPX		_pos() const;
-		inline RectSPX		_geo() const;
-		inline CoordSPX		_globalPos() const;
-		inline RectSPX		_globalGeo() const;
-
-		inline CoordSPX		_toGlobal(const CoordSPX& coord) const;
-		inline RectSPX		_toGlobal(const RectSPX& rect) const;
-		inline CoordSPX		_toLocal(const CoordSPX& coord) const;
-		inline RectSPX		_toLocal(const RectSPX& rect) const;
 
 		inline RectSPX		_contentRect() const { return OO(skin)._contentRect(m_size, m_scale, m_state); }
 		inline RectSPX		_contentRect(const RectSPX& canvas) const { return OO(skin)._contentRect(canvas, m_scale, m_state); }
@@ -274,7 +276,6 @@ namespace wg
 		virtual void		_setState( State state );
 
 		virtual void		_receive( Msg * pMsg );
-		virtual	bool		_markTest(const CoordSPX& ofs);
 		virtual	bool		_alphaTest( const CoordSPX& ofs );
 
 		virtual SizeSPX		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
@@ -325,7 +326,7 @@ namespace wg
 
 		State			m_state;			// Current state of widget.
 		SizeSPX			m_size;				// Current size of widget.
-		int				m_scale;
+		int				m_scale = 64;
 		bool			m_bScaleSet = false;// Set when scale is explicitly specified and not just inherited.
 
 		bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.

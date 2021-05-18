@@ -69,17 +69,17 @@ namespace wg
 
 		//.____ Rendering ______________________________________________________
 
-		bool		setSize( MU size ) override;
-		inline MU	size() override { return m_size; }
+		bool		setSize( spx size ) override;
+		inline spx	size() override { return m_size; }
 
-		MU			kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
+		spx			kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
 		Glyph_p		getGlyph( uint16_t chr ) override;
 
-		MU			lineGap() override;
-		MU			whitespaceAdvance() override;
-		MU			maxAdvance() override;
-		MU			maxAscend() override;
-		MU			maxDescend() override;
+		spx			lineGap() override;
+		spx			whitespaceAdvance() override;
+		spx			maxAdvance() override;
+		spx			maxAscend() override;
+		spx			maxDescend() override;
 
 		//.____ Misc ___________________________________________________________
 
@@ -110,14 +110,14 @@ namespace wg
 		{
 		public:
 			MyGlyph();
-			MyGlyph( uint16_t character, MU size, MU advance, uint32_t kerningIndex, Font * pFont );
+			MyGlyph( uint16_t character, spx size, spx advance, uint32_t kerningIndex, Font * pFont );
 			const GlyphBitmap * getBitmap();
 
 			inline void	bitmapLost() { bitmap.pSurface = nullptr; }
 			inline bool	isInitialized() { return m_pFont?true:false; }
 
 			GlyphBitmap	bitmap;
-			MU			m_size;			// size of character.
+			spx			m_size;			// size of character.
 			uint16_t	m_character;	// Unicode for character.
 		};
 
@@ -155,7 +155,7 @@ namespace wg
 						delete [] page[i];
 			}
 
-			MU			whitespaceAdvance;
+			spx			whitespaceAdvance;
 			MyGlyph*	page[512];
 		};
 
@@ -171,8 +171,8 @@ namespace wg
 		void				_generateBitmap( MyGlyph * pGlyph );
 		void				_copyBitmap( FT_Bitmap * pBitmap, GlyphBitmap * pSlot );
 
-		MyGlyph *			_addGlyph( uint16_t ch, MU size, MU advance, uint32_t kerningIndex );
-		inline MyGlyph *	_findGlyph( uint16_t glyph, MU size ) const;
+		MyGlyph *			_addGlyph( uint16_t ch, spx size, spx advance, uint32_t kerningIndex );
+		inline MyGlyph *	_findGlyph( uint16_t glyph, spx size ) const;
 
 		void				_refreshRenderFlags();
 
@@ -191,7 +191,7 @@ namespace wg
 
 		int					m_renderFlags;
 		RenderMode			m_renderMode;
-		MU					m_size;
+		spx					m_size;
 
 		//____ Static stuff __________________________________________________________
 
@@ -216,9 +216,9 @@ namespace wg
 
 	//____ _findGlyphInIndex() _______________________________________________________
 
-	FreeTypeFont::MyGlyph * FreeTypeFont::_findGlyph( uint16_t ch, MU size ) const
+	FreeTypeFont::MyGlyph * FreeTypeFont::_findGlyph( uint16_t ch, spx size ) const
 	{
-		int sizeOfs = size.px();
+		int sizeOfs = (size+32)/64;
 
 		if( m_pCachedFontSizes[sizeOfs] != nullptr && m_pCachedFontSizes[sizeOfs]->page[ch>>7] != nullptr && m_pCachedFontSizes[sizeOfs]->page[ch >> 7][ch&0x7F].isInitialized() )
 			return &m_pCachedFontSizes[sizeOfs]->page[ch >> 7][ch & 0x7F];

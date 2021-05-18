@@ -44,45 +44,45 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	MU Layer::matchingHeight( MU width ) const
+	spx Layer::_matchingHeight( spx width, int scale ) const
 	{
 		if( mainSlot._widget() )
-			return mainSlot._widget()->matchingHeight( width );
+			return mainSlot._widget()->_matchingHeight( width, scale );
 		else
-			return Widget::matchingHeight(width);
+			return Widget::_matchingHeight(width, scale);
 	}
 
-	//____ matchingWidth() _______________________________________________________
+	//____ _matchingWidth() _______________________________________________________
 
-	MU Layer::matchingWidth( MU height ) const
+	spx Layer::_matchingWidth( spx height, int scale ) const
 	{
 		if( mainSlot._widget() )
-			return mainSlot._widget()->matchingWidth( height );
+			return mainSlot._widget()->_matchingWidth( height, scale );
 		else
-			return Widget::matchingWidth(height);
+			return Widget::_matchingWidth(height, scale);
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	Size Layer::preferredSize() const
+	SizeSPX Layer::_preferredSize(int scale) const
 	{
 		if( mainSlot._widget() )
-			return mainSlot._widget()->preferredSize();
+			return mainSlot._widget()->_preferredSize(scale);
 		else
-			return Size(1,1);
+			return SizeSPX(64,64);
 	}
 
 
 	//____ _onRequestRender() _____________________________________________________
 
-	void Layer::_onRequestRender( const Rect& rect, const Slot * pSlot )
+	void Layer::_onRequestRender( const RectSPX& rect, const Slot * pSlot )
 	{
 		// Clip our geometry and put it in a dirtyrect-list
 
 		Patches patches;
-		patches.add( Rect( rect, Rect(0,0,m_size)) );
+		patches.add( RectSPX( rect, RectSPX(0,0,m_size)) );
 
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
@@ -95,14 +95,14 @@ namespace wg
 		while( pCover <  pEnd )
 		{
 			if( pCover->m_geo.intersectsWith( rect ) )
-				OO(pCover->_widget())->_maskPatches( patches, pCover->m_geo, Rect(0,0, MU::Max, MU::Max ), _getBlendMode() );
+				OO(pCover->_widget())->_maskPatches( patches, pCover->m_geo, RectSPX(0,0, m_size ), _getBlendMode() );
 
 			pCover = _incLayerSlot(pCover,incNext);
 		}
 
 		// Make request render calls
 
-		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
+		for( const RectSPX * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 			_requestRender( * pRect );
 	}
 
@@ -197,7 +197,7 @@ namespace wg
 		if (pSlot == &mainSlot)
 		{
 			OO(mainSlot)._setWidget(nullptr);
-			_onRequestRender(Rect(0, 0, m_size), 0);
+			_onRequestRender(RectSPX(0, 0, m_size), 0);
 			_requestResize();
 		}
 	}
@@ -211,28 +211,30 @@ namespace wg
 			OO(mainSlot)._setWidget(pNewWidget);
 			if( pNewWidget )
 				OO(pNewWidget)->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
-			_onRequestRender(Rect(0, 0, m_size), 0);
+			_onRequestRender(RectSPX(0, 0, m_size), 0);
 			_requestResize();
 		}
 	}
 
 	//____ _resize() _______________________________________________________
 
-	void Layer::_resize(const Size& size)
+	void Layer::_resize(const SizeSPX& size, int scale)
 	{
-		Container::_resize(size);
+		Container::_resize(size, scale);
 
 		if ( mainSlot._widget())
-			OO(mainSlot._widget())->_resize(size);
+			OO(mainSlot._widget())->_resize(size, scale);
+
+		//TODO: Update size and scale of other children
 	}
 
 
 	//____ _childPos() _________________________________________________________
 
-	Coord Layer::_childPos( const StaticSlot * pSlot ) const
+	CoordSPX Layer::_childPos( const StaticSlot * pSlot ) const
 	{
 		if( pSlot == &mainSlot )
-			return Coord();
+			return CoordSPX();
 
 		return ((Slot*)pSlot)->m_geo;
 	}
@@ -242,7 +244,7 @@ namespace wg
 	void Layer::_childRequestRender( StaticSlot * _pSlot )
 	{
 		if( _pSlot == &mainSlot )
-			_onRequestRender( Rect( 0,0, m_size ), 0 );		//TODO: Take padding into account
+			_onRequestRender( RectSPX( 0,0, m_size ), 0 );		//TODO: Take padding into account
 		else
 		{
 			Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);
@@ -250,7 +252,7 @@ namespace wg
 		}
 	}
 
-	void Layer::_childRequestRender( StaticSlot * _pSlot, const Rect& rect )
+	void Layer::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
 	{
 		if( _pSlot == &mainSlot )
 			_onRequestRender( rect, 0 );		//TODO: Take padding into account

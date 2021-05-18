@@ -74,6 +74,10 @@ namespace wg
 	typedef int		spx;
 
 
+	static const int spx_max = 0x7FFFFFC0;	// On pixel boundary with margin for rounding operation.
+
+
+
 	template<typename T> inline T min(const T &a, const T &b) { return a < b ? a : b; }
 	template<typename T> inline T min(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
 	template<typename T> inline T max(const T &a, const T &b) { return a > b ? a : b; }

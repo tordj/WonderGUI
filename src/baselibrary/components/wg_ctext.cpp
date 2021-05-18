@@ -105,23 +105,23 @@ namespace wg
 
 	//____ _preferredSize() _________________________________________________________
 
-	SizeSPX CText::_preferredSize() const
+	SizeSPX CText::_preferredSize(int scale) const
 	{
-		return _textMapper()->preferredSize(this);
+		return _textMapper()->preferredSize(this, scale);
 	}
 
 	//____ _matchingWidth() _________________________________________________________
 
-	spx CText::_matchingWidth( spx height ) const
+	spx CText::_matchingWidth( spx height, int scale ) const
 	{
-		return _textMapper()->matchingWidth(this, height);
+		return _textMapper()->matchingWidth(this, height, scale);
 	}
 
 	//____ _matchingHeight() ________________________________________________________
 
-	spx CText::_matchingHeight( spx width ) const
+	spx CText::_matchingHeight( spx width, int scale ) const
 	{
-		return _textMapper()->matchingHeight(this, width);
+		return _textMapper()->matchingHeight(this, width, scale);
 	}
 
 	//____ _charAtPos() ___________________________________________________________
@@ -155,14 +155,16 @@ namespace wg
 
 	//____ _setSize() _____________________________________________________________
 
-	void CText::_setSize( SizeSPX size )
+	void CText::_setSize( SizeSPX size, int scale )
 	{
 		if( size == m_size )
 			return;
 
 		SizeSPX oldSize = m_size;
+		int		oldScale = scale;
 		m_size = size;
-		_textMapper()->onResized(this,size, oldSize);
+		m_scale = scale;
+		_textMapper()->onResized(this,size, oldSize, scale, oldScale);
 	}
 
 	//_____ _render() _____________________________________________________________

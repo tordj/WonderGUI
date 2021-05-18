@@ -45,8 +45,9 @@ namespace wg
 
 	void PopupLayer::CSlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bAutoClose, Size maxSize )
 	{
-		pPopup->releaseFromParent();
-		_holder()->_addSlot( pPopup, pOpener, launcherGeo, attachPoint, bAutoClose, maxSize);
+		int scale = _holder()->_scale();
+
+		_pushFront(pPopup, pOpener, align(ptsToSpx(launcherGeo, scale)), attachPoint, bAutoClose, align(ptsToSpx(maxSize,scale)));
 	}
 
 	//____ pop() ________________________________________________
@@ -80,6 +81,13 @@ namespace wg
 		_holder()->_removeSlots(0,size());
 	}
 
+	//____ _pushFront() ________________________________________________
+
+	void PopupLayer::CSlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bAutoClose, SizeSPX maxSize)
+	{
+		pPopup->releaseFromParent();
+		_holder()->_addSlot(pPopup, pOpener, launcherGeo, attachPoint, bAutoClose, maxSize);
+	}
 
 
 	//____ constructor ____________________________________________________________
@@ -110,7 +118,7 @@ namespace wg
 
 		//
 
-		Rect geo(0,0,Size::min(pSlot->_widget()->preferredSize(),Size::min(pSlot->m_maxSize,m_size)));
+		RectSPX geo(0,0,SizeSPX::min(pSlot->_widget()->_preferredSize(m_scale),SizeSPX::min(pSlot->m_maxSize,m_size)));
 
 		switch( pSlot->m_attachPoint )
 		{
@@ -261,7 +269,7 @@ namespace wg
 
 		// Update geometry if it has changed.
 
-		if (pSlot->size() != geo.size())
+		if (pSlot->_geo().size() != geo.size())
 			bDoResize = true;
 
 		if (geo != pSlot->m_geo)
@@ -288,7 +296,7 @@ namespace wg
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget *  PopupLayer::_findWidget( const Coord& ofs, SearchMode mode )
+	Widget *  PopupLayer::_findWidget( const CoordSPX& ofs, SearchMode mode )
 	{
 		// MenuPanel has its own _findWidget() method since we need special treatment of
 		// searchmode ACTION_TARGET when a menu is open.
@@ -306,7 +314,7 @@ namespace wg
 				{
 					if( pSlot->_widget()->isContainer() )
 						pResult = static_cast<OContainer*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
-					else if( pSlot->_widget()->markTest( ofs - pSlot->m_geo.pos() ) )
+					else if( pSlot->_widget()->_markTest( ofs - pSlot->m_geo.pos() ) )
 						pResult = pSlot->_widget();
 				}
 				pSlot++;
@@ -321,10 +329,10 @@ namespace wg
 				{
 					Widget * pOpener = pSlot->m_pOpener.rawPtr();
 
-					Coord 	absPos 		= ofs + globalPos();
-					Rect	openerGeo 	= pOpener->globalGeo();
+					CoordSPX 	absPos 		= ofs + _globalPos();
+					RectSPX		openerGeo 	= pOpener->_globalGeo();
 
-					if( openerGeo.contains(absPos) && pOpener->markTest( absPos - openerGeo.pos() ) )
+					if( openerGeo.contains(absPos) && pOpener->_markTest( absPos - openerGeo.pos() ) )
 						pResult = pOpener;
 				}
 
@@ -345,7 +353,7 @@ namespace wg
 
 	//____ _onRequestRender() _____________________________________________________
 
-	void PopupLayer::_onRequestRender( const Rect& rect, const Layer::Slot * pSlot )
+	void PopupLayer::_onRequestRender( const RectSPX& rect, const Layer::Slot * pSlot )
 	{
 		// Don not render anything if not visible
 
@@ -355,7 +363,7 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		Patches patches;
-		patches.add( Rect( rect, Rect(0,0,m_size)) );
+		patches.add( RectSPX( rect, RectSPX(0,0,m_size)) );
 
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
@@ -372,14 +380,14 @@ namespace wg
 			while (pCover >= popupSlots._begin())
 			{
 				if (pCover->m_geo.intersectsWith(rect) && pCover->m_state != Slot::State::OpeningDelay && pCover->m_state != Slot::State::Opening && pCover->m_state != Slot::State::Closing)
-					OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, Rect(0, 0, MU::Max, MU::Max), _getBlendMode());
+					OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, spx_max, spx_max), _getBlendMode());
 
 				pCover--;
 			}
 		}
 		// Make request render calls
 
-		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
+		for( const RectSPX * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 			_requestRender( * pRect );
 	}
 
@@ -389,22 +397,22 @@ namespace wg
 	{
 	public:
 		WidgetRenderContext() : pSlot(0) {}
-		WidgetRenderContext(PopupLayer::Slot * pSlot, const Rect& geo) : pSlot(pSlot), geo(geo) {}
+		WidgetRenderContext(PopupLayer::Slot * pSlot, const RectSPX& geo) : pSlot(pSlot), geo(geo) {}
 
 		PopupLayer::Slot *	pSlot;
-		Rect		geo;
+		RectSPX		geo;
 		ClipPopData clipPop;
 	};
 
-	void PopupLayer::_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window)
+	void PopupLayer::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
 		// Render container itself
 
-		OO(skin)._render(pDevice, _canvas, m_state);
+		OO(skin)._render(pDevice, _canvas, m_scale, m_state);
 
 		// Render children
 
-		Rect	dirtBounds = Rect::fromPX( pDevice->clipBounds() );
+		RectSPX	dirtBounds = pDevice->clipBounds();
 
 		// Create WidgetRenderContext's for popups that might get dirty patches
 
@@ -412,7 +420,7 @@ namespace wg
 
 		for( auto pSlot = popupSlots._begin() ; pSlot != popupSlots._end() ; pSlot++ )
 		{
-			Rect geo = pSlot->m_geo + _canvas.pos();
+			RectSPX geo = pSlot->m_geo + _canvas.pos();
 
 			if (geo.intersectsWith(dirtBounds) && pSlot->m_state != Slot::State::OpeningDelay)
 				renderList.push_back(WidgetRenderContext(pSlot, geo));
@@ -425,7 +433,7 @@ namespace wg
 		Patches patches( nClipRects );
 
 		for( int i = 0 ; i < nClipRects ; i++ )
-			patches.push(Rect::fromPX(pClipRects[i]));
+			patches.push(pClipRects[i]);
 
 		// Go through WidgetRenderContexts, push and mask dirt
 
@@ -497,9 +505,9 @@ namespace wg
 
 	//____ _resize() ___________________________________________________________
 
-	void PopupLayer::_resize( const Size& sz )
+	void PopupLayer::_resize( const SizeSPX& sz, int scale )
 	{
-		Layer::_resize(sz);
+		Layer::_resize(sz, scale);
 	}
 
 	//____ _cloneContent() ______________________________________________________
@@ -523,7 +531,7 @@ namespace wg
 				if (popupSlots.isEmpty())
 					break;
 
-				Coord 	pointerPos = static_cast<InputMsg*>(_pMsg)->pointerPos() - globalPos();
+				CoordSPX 	pointerPos = static_cast<InputMsg*>(_pMsg)->pointerPosSPX() - _globalPos();
 
 				// Top popup can be in state PeekOpen, which needs special attention.
 
@@ -832,7 +840,7 @@ namespace wg
 
 	//____ _addSlot() ____________________________________________________________
 
-	void PopupLayer::_addSlot(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Placement _attachPoint, bool _bAutoClose, Size _maxSize)
+	void PopupLayer::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectSPX& _launcherGeo, Placement _attachPoint, bool _bAutoClose, SizeSPX _maxSize)
 	{
 		Slot * pSlot = popupSlots._pushFrontEmpty();
 		pSlot->m_pOpener = _pOpener;

@@ -129,8 +129,8 @@ namespace wg
 
 		inline TextStyle_h	handle() { return m_handle; }
 
-		void			exportAttr( State state, TextAttr * pDest ) const;
-		void			addToAttr( State state, TextAttr * pDest ) const;
+		void			exportAttr( State state, TextAttr * pDest, int scale ) const;
+		void			addToAttr( State state, TextAttr * pDest, int scale ) const;
 
         bool            isStateIdentical( State state1, State state2 ) const;
 		bool			isIdentical( TextStyle * pOther );

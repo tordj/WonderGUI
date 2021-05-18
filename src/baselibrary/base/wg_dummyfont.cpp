@@ -24,16 +24,13 @@
 
 namespace wg
 {
-
-
 	const TypeInfo DummyFont::TYPEINFO = { "DummyFont", &Font::TYPEINFO };
 
 	//____ constructor ____________________________________________________________
 
-	DummyFont::DummyFont() : m_glyph(this)
+	DummyFont::DummyFont()
 	{
 	}
-
 
 	//____ Destructor _____________________________________________________________
 
@@ -85,16 +82,16 @@ namespace wg
 
 	//____ setSize() _________________________________________________________
 
-	bool DummyFont::setSize( int size )
+	bool DummyFont::setSize( spx size )
 	{
 		return false;
 	}
 
 	//____ size() _____________________________________________________________
 
-	int DummyFont::size()
+	spx DummyFont::size()
 	{
-		return 1;
+		return 64;
 	}
 
 	//____ kerning() __________________________________________________________
@@ -108,35 +105,35 @@ namespace wg
 
 	Glyph_p DummyFont::getGlyph( uint16_t chr )
 	{
-		return &m_glyph;
+		return nullptr;
 	}
 
 	//____ lineGap() __________________________________________________________
 
 	spx DummyFont::lineGap()
 	{
-		return 1;
+		return 64;
 	}
 
 	//____ whitespaceAdvance() ________________________________________________
 
 	spx DummyFont::whitespaceAdvance()
 	{
-		return 1;
+		return 64;
 	}
 
 	//____ maxAdvance() _______________________________________________________
 
 	spx DummyFont::maxAdvance()
 	{
-		return 1;
+		return 64;
 	}
 
 	//____ maxAscend() ________________________________________________________
 
 	spx DummyFont::maxAscend()
 	{
-		return 1;
+		return 64;
 	}
 
 	//____ maxDescend() _______________________________________________________
@@ -144,15 +141,5 @@ namespace wg
 	spx DummyFont::maxDescend()
 	{
 		return 0;
-	}
-
-	//____ DummyGlyph::Constructor ____________________________________________
-
-	DummyFont::DummyGlyph::DummyGlyph( Font * pFont )
-	: Glyph( 1, 0, pFont )
-	{
-			m_src.pSurface	= 0;
-			m_src.bearingX	= 0;
-			m_src.bearingY	= 0;
 	}
 }

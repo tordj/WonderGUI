@@ -104,7 +104,7 @@ namespace wg
 		virtual void	selectionChange( Text * pText, int newBeg, int newLen, int oldBeg, int oldLen ) override;
 
 		virtual void	onTextModified( Text * pText, int ofs, int charsRemoved, int charsAdded ) override;
-		virtual void	onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize ) override;
+		virtual void	onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale ) override;
 		virtual void	onStateChanged( Text * pText, State newState, State oldState ) override;
 		virtual void	onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) override;
 		virtual void	onCharStyleChanged( Text * pText, int ofs, int len ) override;
@@ -112,9 +112,9 @@ namespace wg
 
 
 
-		virtual SizeSPX	preferredSize( const Text * pText ) const override;
-		virtual spx		matchingWidth( const Text * pText, spx height ) const override;
-		virtual spx		matchingHeight( const Text * pText, spx width ) const override;
+		virtual SizeSPX	preferredSize( const Text * pText, int scale ) const override;
+		virtual spx		matchingWidth( const Text * pText, spx height, int scale ) const override;
+		virtual spx		matchingHeight( const Text * pText, spx width, int scale ) const override;
 
 		virtual RectSPX	rectForRange( const Text * pText, int ofs, int length ) const override;
 		virtual RectSPX	rectForCaret( const Text * pText ) const override;
@@ -175,7 +175,7 @@ namespace wg
 		SizeSPX			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth);
 
 
-		spx				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const;
+		spx				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, int scale, State state ) const;
 
 		inline BlockHeader *		_header( void * pBlock ) { return static_cast<BlockHeader*>(pBlock); }
 		inline const BlockHeader *	_header( const void * pBlock ) const { return static_cast<const BlockHeader*>(pBlock); }

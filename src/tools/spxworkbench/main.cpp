@@ -14,14 +14,25 @@
 
 #include <wg_softsurface.h>
 #include <wg_softgfxdevice.h>
+#include <wg_softsurfacefactory.h>
 
 #include <wg_rootpanel.h>
 #include <wg_lambdapanel.h>
-#include <wg_filler.h>
-#include <wg_staticcolorskin.h>
 
+#include <wg_popuplayer.h>
+
+#include <wg_filler.h>
+#include <wg_textdisplay.h>
+#include <wg_fpsdisplay.h>
+#include <wg_button.h>
+#include <wg_selectbox.h>
+
+#include <wg_staticcolorskin.h>
 #include <wg_boxskin.h>
 #include <wg_blockskin.h>
+
+#include <wg_freetypefont.h>
+#include <wg_context.h>
 
 
 using namespace wg;
@@ -57,6 +68,30 @@ void drawFills(GfxDevice_p pGfxDevice, Surface_p pCanvas)
 }
 
 
+//____ loadBlob() _____________________________________________________________
+
+Blob_p loadBlob(const char* pPath)
+{
+	FILE* fp = fopen(pPath, "rb");
+	if (!fp)
+		return 0;
+
+	fseek(fp, 0, SEEK_END);
+	size_t size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+
+	Blob_p pBlob = Blob::create((int)size);
+
+	size_t nRead = fread(pBlob->data(), 1, size, fp);
+	fclose(fp);
+
+	if (nRead < size)
+		return 0;
+
+	return pBlob;
+
+}
+
 //____ main() _________________________________________________________________
 
 int main ( int argc, char** argv )
@@ -79,6 +114,20 @@ int main ( int argc, char** argv )
 
 	Base::init(nullptr);
 
+	Context_p pContext = Context::create();
+
+
+	SoftGfxDevice_p		pGfxDevice = SoftGfxDevice::create();
+	SurfaceFactory_p	pFactory = SoftSurfaceFactory::create();
+
+	pContext->setSurfaceFactory(pFactory);
+	pContext->setGfxDevice(pGfxDevice);
+
+	Base::setActiveContext(pContext);
+
+
+
+
 	PixelFormat format = PixelFormat::Unknown;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
@@ -89,9 +138,6 @@ int main ( int argc, char** argv )
 	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
 	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
 
-
-	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
-
 	// First we load the 24-bit bmp containing the button graphics.
 	// No error handling or such to keep this example short and simple.
 
@@ -99,28 +145,48 @@ int main ( int argc, char** argv )
 	SoftSurface_p pButtonSurface = SoftSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 	SDL_FreeSurface(pSDLSurf);
 
+	// Load a font
+
+	Blob_p pFontFile = loadBlob("resources/DroidSans.ttf");
+
+	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 0);
+
+	TextStyle_p pStyle = TextStyle::create();
+	pStyle->setFont(pFont);
+	pStyle->setSize(16);
+	pStyle->setColor(Color::Black);
+	Base::setDefaultStyle(pStyle);
+
+
 	// 
 
 	RootPanel_p pRoot = RootPanel::create(pCanvas, pGfxDevice);
 
 	pRoot->setScale(rootScale);
 
+	auto pPopupLayer = PopupLayer::create();
+	pRoot->slot = pPopupLayer;
+
 
 	//
 
 	auto pBaseLambda = LambdaPanel::create();
 	pBaseLambda->skin = StaticColorSkin::create(Color8::Beige);
+	pPopupLayer->mainSlot = pBaseLambda;
 
-
+	//
 
 	auto pFiller = Filler::create();
 	auto pSkin = BoxSkin::create(3, {	{StateEnum::Normal, Color8::Blue, Color8::Salmon}, 
 										{StateEnum::Hovered, Color8::LightBlue, Color8::LightSalmon},
 										{StateEnum::Pressed, Color8::DarkBlue, Color8::DarkSalmon} });
+	pSkin->setContentPadding(3);
 
 	pFiller->skin = pSkin;
 
 	pBaseLambda->slots.pushBack(pFiller, [](Widget* pWidget, Size parentSize) { return Rect(10,10,100,50); });
+
+	//
 
 	auto pFiller2 = Filler::create();
 	auto pSkin2 = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 3, Axis::X );
@@ -129,11 +195,49 @@ int main ( int argc, char** argv )
 
 	pBaseLambda->slots.pushBack(pFiller2, [](Widget* pWidget, Size parentSize) { return Rect(10, 100, 100, 50); });
 
-	pRoot->slot = pBaseLambda;
+
+	//
+
+	auto pLabel = TextDisplay::create();
+
+	pLabel->skin = pSkin;
+	pLabel->text.set("Label");
+
+	pBaseLambda->slots.pushBack(pLabel, [](Widget* pWidget, Size parentSize) { return Rect(10, 200, 100, 50); });
+
+//	pLabel->setScale(128);
+
+	//
+
+	auto pFpsDisplay = FpsDisplay::create();
+
+	pBaseLambda->slots.pushBack(pFpsDisplay, [](Widget* pWidget, Size parentSize) { return Rect(200, 10, 100, 100); });
+
+	//
+
+	auto pButton = Button::create();
+	pButton->skin = pSkin2;
+	pButton->text.set("BUTTON");
+
+	pBaseLambda->slots.pushBack(pButton, [](Widget* pWidget, Size parentSize) { return Rect(10, 300, 100, 50); });
+
+	//
+
+	auto pSelectBox = SelectBox::create();
+	
+	pSelectBox->skin = pSkin2;
+	pSelectBox->setListSkin(pSkin);
+
+	pSelectBox->entries.pushBack({ SelectBoxEntry(1, String("One")), SelectBoxEntry(2,String("Two")) });
+
+	pBaseLambda->slots.pushBack(pSelectBox, [](Widget* pWidget, Size parentSize) { return Rect(10, 400, 100, 50); });
+
 
 	//------------------------------------------------------
 	// Program Main Loop
 	//------------------------------------------------------
+
+	int64_t	timestamp = 0;
 
 	while( !bQuit )
 	{
@@ -141,6 +245,9 @@ int main ( int argc, char** argv )
 		// and process them.
 
 		translateEvents(pRoot);
+
+
+		Base::update(timestamp);
 
 		// Let WonderGUI render any updated/dirty regions of the screen.
 
@@ -154,6 +261,7 @@ int main ( int argc, char** argv )
 		SDL_UnlockSurface(pWinSurf);
 		SDL_UpdateWindowSurface( pWin );
 		SDL_Delay(20);
+		timestamp += 20000;
 	}
 
 	// Cleanup. We should null all our smartpointers so that all objects are
@@ -161,6 +269,15 @@ int main ( int argc, char** argv )
 
 	pCanvas = nullptr;
 	pCanvasBlob = nullptr;
+	pRoot = nullptr;
+	pBaseLambda = nullptr;
+
+	pFiller = nullptr;
+	pFiller2 = nullptr;
+	pLabel = nullptr;
+	pFpsDisplay = nullptr;
+	pButton = nullptr;
+
 
 	// Exit WonderGUI
 

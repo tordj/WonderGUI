@@ -25,6 +25,7 @@
 
 #include <wg_container.h>
 #include <wg_cstandardslot.h>
+#include <wg_util.h>
 
 
 namespace wg
@@ -76,17 +77,17 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			inline Coord	pos() const { return m_geo.pos(); }
-			inline Size		size() const { return m_geo.size(); }
-			inline Rect		geo() const { return m_geo; }
+			inline Coord	pos() const { return Util::spxToPts(m_geo.pos(),m_pHolder->_scale()); }
+			inline Size		size() const { return Util::spxToPts(m_geo.size(), m_pHolder->_scale()); }
+			inline Rect		geo() const { return Util::spxToPts(m_geo, m_pHolder->_scale()); }
 
 		protected:
 			Slot(SlotHolder * pHolder) : StaticSlot(pHolder) {}
 
-			inline void _setSize(Size size) { m_geo.setSize(size); StaticSlot::_setSize(size); }
-			inline void _setGeo(Rect geo) { m_geo = geo; StaticSlot::_setSize(geo.size()); }
+			inline void _setSize(SizeSPX size) { m_geo.setSize(size); StaticSlot::_setSize(size); }
+			inline void _setGeo(RectSPX geo) { m_geo = geo; StaticSlot::_setSize(geo.size()); }
 
-			Rect	m_geo;
+			RectSPX		m_geo;
 		};
 
 
@@ -100,12 +101,12 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ______________________________________________________
+		//.____ Internal ______________________________________________________
 
-		virtual MU		matchingHeight(MU width) const override;
-		virtual MU		matchingWidth(MU height) const override;
+		virtual spx		_matchingHeight(spx width, int scale = -1) const override;
+		virtual spx		_matchingWidth(spx height, int scale = -1) const override;
 
-		Size			preferredSize() const override;
+		SizeSPX			_preferredSize(int scale = -1) const override;
 
 	protected:
 		Layer();
@@ -118,10 +119,10 @@ namespace wg
 		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
-		Coord		_childPos( const StaticSlot * pSlot ) const override;
+		CoordSPX		_childPos( const StaticSlot * pSlot ) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
-		void		_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;
 //		void		_childRequestResize( StaticSlot * pSlot ) override;
 
 		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
@@ -132,14 +133,14 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void		_resize(const Size& size) override;
+		void		_resize(const SizeSPX& size, int scale = -1) override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 
 
 
 		//
 
-		virtual	void	_onRequestRender( const Rect& rect, const Slot * pSlot );	// rect is in our coordinate system.
+		virtual	void	_onRequestRender( const RectSPX& rect, const Slot * pSlot );	// rect is in our coordinate system.
 
 		virtual const Slot * _beginLayerSlots() const = 0;
 		virtual const Slot * _endLayerSlots() const = 0;
