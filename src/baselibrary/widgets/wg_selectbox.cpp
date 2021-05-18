@@ -65,8 +65,8 @@ namespace wg
 
 	void SelectBox::setEntrySkin(Skin * pSkin)
 	{
-		Size oldPadding = m_entryContentPaddingSize;
-		Size newPadding = pSkin ? pSkin->contentPaddingSize() : Size();
+		SizeSPX oldPadding = m_entryContentPaddingSize;
+		SizeSPX newPadding = pSkin ? pSkin->_contentPaddingSize(m_scale) : SizeSPX();
 
 		m_pEntrySkin = pSkin;
 		if (oldPadding != newPadding)
@@ -104,8 +104,8 @@ namespace wg
 	{
 		Skin* pOldSkin = m_pListCanvas->skin;
 
-		Size oldPadding = pOldSkin ? pOldSkin->contentPaddingSize() : Size();
-		Size newPadding = pSkin ? pSkin->contentPaddingSize() : Size();
+		SizeSPX oldPadding = pOldSkin ? pOldSkin->_contentPaddingSize(m_scale) : SizeSPX();
+		SizeSPX newPadding = pSkin ? pSkin->_contentPaddingSize(m_scale) : SizeSPX();
 
 		if (oldPadding != newPadding)
 			m_listCanvasPreferredSize += newPadding - oldPadding;
@@ -175,30 +175,36 @@ namespace wg
 			return -1;
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	Size SelectBox::preferredSize() const
+	SizeSPX SelectBox::_preferredSize(int scale) const
 	{
+		scale = _fixScale(scale);
+
+		//TODO: Handle preferredSize in other scale than our current.
+
 		return m_preferredSize;
 	}
 
-	//____ matchingHeight() ____________________________________________________________
+	//____ _matchingHeight() ____________________________________________________________
 
-	MU SelectBox::matchingHeight(MU width) const
+	spx SelectBox::_matchingHeight(spx width, int scale) const
 	{
+		scale = _fixScale(scale);
+
 		if (width == m_size.w)
 			return m_matchingHeight;
 		else
 		{
-			Size contentPadding = _contentPaddingSize();
+			SizeSPX contentPadding = OO(skin)._contentPaddingSize(scale);
 
-			MU contentWidth = width - contentPadding.w;
-			MU contentHeight = 0;
+			spx contentWidth = width - contentPadding.w;
+			spx contentHeight = 0;
 
 			auto pMapper = _listTextMapper();
 			for (auto& entry : entries)
 			{
-				contentHeight = std::max(contentHeight, pMapper->matchingHeight(&entry, contentWidth) );
+				contentHeight = std::max(contentHeight, pMapper->matchingHeight(&entry, contentWidth, scale) );
 			}
 			return contentHeight + contentPadding.h;
 		}
@@ -258,21 +264,21 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void SelectBox::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void SelectBox::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
+		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
 
 		OO(text)._render(pDevice, canvas);
 	}
 
 	//____ _resize() _______________________________________________________________
 
-	void SelectBox::_resize(const Size& size)
+	void SelectBox::_resize(const SizeSPX& size, int scale)
 	{
-		m_size = size;
-		m_matchingHeight = matchingHeight(size.w);
+		m_matchingHeight = _matchingHeight(size.w,scale);
+		Widget::_resize(size, scale);
 	}
 
 	//____ _setState() ________________________________________________________
@@ -319,7 +325,7 @@ namespace wg
 	{
 		bool bOpaque = OO(m_pListCanvas->skin)._isOpaque();
 
-		if (m_pEntrySkin && m_pEntrySkin->isOpaque() && OO(m_pListCanvas->skin)._contentPaddingSize().isEmpty())
+		if (m_pEntrySkin && m_pEntrySkin->isOpaque() && OO(m_pListCanvas->skin)._contentPaddingSize(m_scale).isEmpty())
 			bOpaque = true;
 
 		m_pListCanvas->m_bOpaque = bOpaque;
@@ -333,11 +339,11 @@ namespace wg
 		if (!m_pListCanvas->_parent())
 			return;
 
-		MU ofs = 0;
+		spx ofs = 0;
 		for (auto p = &entries[0]; p != pEntry; p++)
 			ofs += p->m_height;
 
-		Rect rect = m_pListCanvas->_contentRect();
+		RectSPX rect = m_pListCanvas->_contentRect();
 		rect.y += ofs;
 		rect.h = pEntry->m_height;
 
@@ -399,13 +405,13 @@ namespace wg
 
 	//____ _findEntry() _____________________________________________________
 
-	int SelectBox::_findEntry(const Coord& ofsInListPanel, Coord * pOfsOut)
+	int SelectBox::_findEntry(const CoordSPX& ofsInListPanel, CoordSPX * pOfsOut)
 	{
-		Rect contentRect = m_pListCanvas->_contentRect();
+		RectSPX contentRect = m_pListCanvas->_contentRect();
 
 		if (contentRect.contains(ofsInListPanel))
 		{
-			Coord ofsInEntry = ofsInListPanel - contentRect.pos();
+			CoordSPX ofsInEntry = ofsInListPanel - contentRect.pos();
 			for (int i = 0; i < entries.size(); i++)
 			{
 				auto& entry = entries[i];
@@ -431,11 +437,11 @@ namespace wg
 	{
 		auto pMapper = _listTextMapper();
 
-		Size entryPadding = m_pEntrySkin ? m_pEntrySkin->contentPaddingSize() : Size();
-		Size boxPadding = OO(skin)._contentPaddingSize();
-		Size listPadding = OO(m_pListCanvas->skin)._contentPaddingSize();
+		SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_contentPaddingSize(m_scale) : SizeSPX();
+		SizeSPX boxPadding = OO(skin)._contentPaddingSize(m_scale);
+		SizeSPX listPadding = OO(m_pListCanvas->skin)._contentPaddingSize(m_scale);
 
-		Size	oldPreferred		= m_preferredSize;
+		SizeSPX	oldPreferred		= m_preferredSize;
 //		int		oldMatchingHeight = m_matchingHeight;
 
 		for (int i = 0; i < nb; i++)
@@ -447,23 +453,23 @@ namespace wg
 
 			// Update entry height and listCanvas matchingHeight
 
-			MU entryHeight = pMapper->matchingHeight(pEntry, m_entryContentWidth) + entryPadding.h;
+			spx entryHeight = pMapper->matchingHeight(pEntry, m_entryContentWidth, m_scale) + entryPadding.h;
 
 			pEntry->m_height = entryHeight;
 			m_listCanvasMatchingHeight += entryHeight;
 
 			// Update m_matchingHeight
 
-			MU boxHeight = pMapper->matchingHeight(pEntry, (m_size.w - boxPadding.w) ) + boxPadding.h;
+			spx boxHeight = pMapper->matchingHeight(pEntry, (m_size.w - boxPadding.w), m_scale ) + boxPadding.h;
 
 			if (boxHeight < m_matchingHeight)
 				m_matchingHeight = boxHeight;
 
 			// Update m_preferredSize and m_listCanvasPreferredSize
 
-			Size contentPreferred = pMapper->preferredSize(pEntry);
-			Size entryPreferred = contentPreferred + entryPadding;
-			Size boxPreferred = contentPreferred + boxPadding;
+			SizeSPX contentPreferred = pMapper->preferredSize(pEntry, m_scale);
+			SizeSPX entryPreferred = contentPreferred + entryPadding;
+			SizeSPX boxPreferred = contentPreferred + boxPadding;
 
 			if (entryPreferred.w + listPadding.w > m_listCanvasPreferredSize.w)
 				m_listCanvasPreferredSize.w = entryPreferred.w + listPadding.w;
@@ -504,23 +510,25 @@ namespace wg
 
 	//____ _sideCanvasMatchingHeight() ________________________________________
 
-	MU SelectBox::_sideCanvasMatchingHeight(const SideCanvas * pCanvas, MU width) const
+	spx SelectBox::_sideCanvasMatchingHeight(const SideCanvas * pCanvas, spx width, int scale) const
 	{
+		scale = _fixScale(scale);
+
 		if (width == m_pListCanvas->m_size.w)
 			return m_listCanvasMatchingHeight;
 		else
 		{
-			Size canvasPadding = m_pListCanvas->_contentPaddingSize();
-			Size entryPadding = m_pEntrySkin ? m_pEntrySkin->contentPaddingSize() : Size();
+			SizeSPX canvasPadding = m_pListCanvas->_contentPaddingSize();
+			SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_contentPaddingSize(m_scale) : SizeSPX();
 
-			MU contentWidth = width - canvasPadding.w - entryPadding.w;
+			spx contentWidth = width - canvasPadding.w - entryPadding.w;
 
-			MU height = canvasPadding.h + entryPadding.h * entries.size();
+			spx height = canvasPadding.h + entryPadding.h * entries.size();
 
 			auto pMapper = _listTextMapper();
 			for (auto& entry : entries)
 			{
-				height += pMapper->matchingHeight(&entry, contentWidth);
+				height += pMapper->matchingHeight(&entry, contentWidth, scale);
 			}
 			return height;
 		}
@@ -528,37 +536,37 @@ namespace wg
 
 	//____ _sideCanvasMatchingWidth() _________________________________________
 
-	MU SelectBox::_sideCanvasMatchingWidth(const SideCanvas * pCanvas, MU height) const
+	spx SelectBox::_sideCanvasMatchingWidth(const SideCanvas * pCanvas, spx height, int scale) const
 	{
 		return std::max(m_listCanvasPreferredSize.w, m_preferredSize.w);
 	}
 
 	//____ _sideCanvasPreferredSize() _________________________________________
 
-	Size SelectBox::_sideCanvasPreferredSize(const SideCanvas * pCanvas) const
+	SizeSPX SelectBox::_sideCanvasPreferredSize(const SideCanvas * pCanvas, int scale) const
 	{
 		return { std::max(m_listCanvasPreferredSize.w, m_preferredSize.w), m_listCanvasPreferredSize.h };
 	}
 
 	//____ _sideCanvasRender() ________________________________________________
 	
-	void SelectBox::_sideCanvasRender(SideCanvas * _pWidget, GfxDevice * pDevice, const Rect& canvas, const Rect& window)
+	void SelectBox::_sideCanvasRender(SideCanvas * _pWidget, GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window)
 	{
 		auto pWidget = static_cast<MySideCanvas*>(_pWidget);
 		pWidget->Widget::_render(pDevice, canvas, window);
 
-		Rect contentRect = pWidget->_contentRect(canvas);
+		RectSPX contentRect = pWidget->_contentRect(canvas);
 
 		TextMapper* pTextMapper = _listTextMapper();
 
-		Coord pos = contentRect.pos();
+		CoordSPX pos = contentRect.pos();
 		for (auto& entry : entries )
 		{
-			Rect entryRect = { pos, contentRect.w, entry.m_height };
+			RectSPX entryRect = { pos, contentRect.w, entry.m_height };
 			if (m_pEntrySkin)
 			{
-				m_pEntrySkin->render(pDevice, entryRect, entry.m_state);
-				entryRect = m_pEntrySkin->contentRect(entryRect, entry.m_state);
+				m_pEntrySkin->_render(pDevice, entryRect, m_scale, entry.m_state);
+				entryRect = m_pEntrySkin->_contentRect(entryRect, m_scale, entry.m_state);
 			}
 			pTextMapper->render(&entry, pDevice, entryRect);
 			pos.y += entry.m_height;
@@ -574,19 +582,21 @@ namespace wg
 
 	//____ _sideCanvasResize() _________________________________________________
 
-	void SelectBox::_sideCanvasResize(SideCanvas * pCanvas, const Size& size)
+	void SelectBox::_sideCanvasResize(SideCanvas * pCanvas, const SizeSPX& size, int scale)
 	{
+		scale = _fixScale(scale);
+
 		TextMapper* pMapper = _listTextMapper();
 
-		Size listCanvasPaddingSize = OO(m_pListCanvas->skin)._contentPaddingSize();
+		SizeSPX listCanvasPaddingSize = OO(m_pListCanvas->skin)._contentPaddingSize(scale);
 
-		MU newContentWidth = size.w - listCanvasPaddingSize.w;
-		MU matchingHeight = listCanvasPaddingSize.h;
+		spx newContentWidth = size.w - listCanvasPaddingSize.w;
+		spx matchingHeight = listCanvasPaddingSize.h;
 
 		for (auto& entry : entries)
 		{
-			MU newEntryHeight = pMapper->matchingHeight(&entry, newContentWidth);
-			pMapper->onResized(&entry, { newContentWidth, newEntryHeight }, { m_entryContentWidth,entry.m_height });
+			spx newEntryHeight = pMapper->matchingHeight(&entry, newContentWidth, scale);
+			pMapper->onResized(&entry, { newContentWidth, newEntryHeight }, { m_entryContentWidth,entry.m_height }, scale, pCanvas->scale() );
 			newEntryHeight += m_entryContentPaddingSize.h;
 			entry.m_height = newEntryHeight;
 			matchingHeight += newEntryHeight;
@@ -594,7 +604,7 @@ namespace wg
 
 		m_entryContentWidth = newContentWidth;
 		m_listCanvasMatchingHeight = matchingHeight;
-		m_pListCanvas->Widget::_resize(size);
+		m_pListCanvas->Widget::_resize(size, scale);
 	}
 
 	//____ _sideCanvasReceive() ________________________________________________
@@ -606,7 +616,7 @@ namespace wg
 		case MsgType::MouseEnter:
 		case MsgType::MouseMove:
 		{
-			Coord pos = pCanvas->toLocal(static_cast<InputMsg*>(pMsg)->pointerPos());
+			CoordSPX pos = pCanvas->_toLocal(static_cast<InputMsg*>(pMsg)->pointerPosSPX());
 			_markEntry(_findEntry(pos));
 			break;
 		}
@@ -630,7 +640,7 @@ namespace wg
 
 	//____ _sideCanvasAlphaTest() _____________________________________________
 
-	bool SelectBox::_sideCanvasAlphaTest(SideCanvas * pCanvas, const Coord& ofs)
+	bool SelectBox::_sideCanvasAlphaTest(SideCanvas * pCanvas, const CoordSPX& ofs)
 	{
 		// Test against SideCanvas widget itself
 
@@ -641,16 +651,16 @@ namespace wg
 
 		if (m_pEntrySkin)
 		{
-			Coord ofsInEntry;
+			CoordSPX ofsInEntry;
 			int entryIdx = _findEntry(ofs, &ofsInEntry);
 
 			if (entryIdx >= 0)
 
 			{
-				Rect contentRect = m_pListCanvas->_contentRect();
-				Rect entryGeo = { 0,0,contentRect.w,entries[entryIdx].m_height };
+				RectSPX contentRect = m_pListCanvas->_contentRect();
+				RectSPX entryGeo = { 0,0,contentRect.w,entries[entryIdx].m_height };
 
-				return m_pEntrySkin->markTest(ofsInEntry, entryGeo, entries[entryIdx].m_state, m_pListCanvas->m_markOpacity);
+				return m_pEntrySkin->_markTest(ofsInEntry, entryGeo, m_scale, entries[entryIdx].m_state, m_pListCanvas->m_markOpacity);
 			}
 		}
 
@@ -674,9 +684,9 @@ namespace wg
 
 
 
-	Size SelectBoxEntry::_textSize() const
+	SizeSPX SelectBoxEntry::_textSize() const
 	{
-		return Size( m_pParent->m_entryContentWidth, m_height - m_pParent->m_entryContentPaddingSize.h );
+		return SizeSPX( m_pParent->m_entryContentWidth, m_height - m_pParent->m_entryContentPaddingSize.h );
 	}
 
 	State SelectBoxEntry::_textState() const
@@ -719,7 +729,7 @@ namespace wg
 		m_pParent->_requestRenderEntry(this);
 	}
 
-	void SelectBoxEntry::_mapperRequestRender(const Rect& rect)
+	void SelectBoxEntry::_mapperRequestRender(const RectSPX& rect)
 	{
 		m_pParent->_requestRenderEntry(this);			// Make it easy, entry is small anyway.
 	}
@@ -729,6 +739,10 @@ namespace wg
 		return;			// We ignore this, make sure to check size whenever we update text,style etc.
 	}
 
+	int SelectBoxEntry::_scale() const
+	{
+		return m_pParent->_scale();
+	}
 
 
 } // namespace wg

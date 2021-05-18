@@ -49,7 +49,7 @@ namespace wg
 
 		// Overloaded from Text
 
-		Size		_textSize() const override;
+		SizeSPX		_textSize() const override;
 		State		_textState() const override;
 		TextStyle * _textStyle() const override;
 
@@ -61,11 +61,13 @@ namespace wg
 		std::tuple<int, int>	_selectedText() const override;
 
 		void		_mapperRequestRender() override;
-		void		_mapperRequestRender(const Rect& rect) override;
+		void		_mapperRequestRender(const RectSPX& rect) override;
 		void		_mapperRequestResize() override;
 
+		int			_scale() const override;
+
 		int			m_id;
-		MU			m_height;
+		spx			m_height;
 		String 		m_string;
 		SelectBox * m_pParent = nullptr;
 		State		m_state = StateEnum::Normal;
@@ -97,11 +99,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ______________________________________________________
-
-		Size			preferredSize() const override;
-		MU				matchingHeight(MU width) const override;
-
 		//.____ Appearance ________________________________________________________
 
 		void			setEntrySkin(Skin * pSkin);
@@ -125,6 +122,10 @@ namespace wg
 		int				selectedEntryId() const;
 		inline int		selectedEntryIndex() const { return m_selectedEntryIndex; }
 
+		//.____ Internal ______________________________________________________
+
+		SizeSPX		_preferredSize(int scale = -1) const override;
+		spx			_matchingHeight(spx width, int scale = -1) const override;
 
 	protected:
 		SelectBox();
@@ -133,8 +134,8 @@ namespace wg
 		void 			_receive(Msg* pMsg) override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
-		void		_resize(const Size& size) override;
+		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
+		void		_resize(const SizeSPX& size, int scale = -1) override;
 		void		_setState(State state) override;
 
 		void		_open();
@@ -152,7 +153,7 @@ namespace wg
 		void		_requestRenderEntry(SelectBoxEntry* pEntry);
 		void		_markEntry(int idx);
 		void		_selectEntry(int idx);
-		int			_findEntry(const Coord& ofsInListPanel, Coord * pOfsOut = nullptr);
+		int			_findEntry(const CoordSPX& ofsInListPanel, CoordSPX * pOfsOut = nullptr);
 
 		inline TextMapper * _listTextMapper() { return m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper(); }
 		inline const TextMapper * _listTextMapper() const { return m_pListTextMapper ? m_pListTextMapper: Base::defaultTextMapper();  }
@@ -167,17 +168,17 @@ namespace wg
 
 		//
 		
-		MU			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, MU width ) const override;
-		MU			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, MU height ) const override;
+		spx			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, spx width, int scale = -1 ) const override;
+		spx			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, spx height, int scale = -1 ) const override;
 
-		Size		_sideCanvasPreferredSize( const SideCanvas * pCanvas ) const  override;
-		void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		SizeSPX		_sideCanvasPreferredSize( const SideCanvas * pCanvas, int scale = -1 ) const  override;
+		void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 
 		void		_sideCanvasRefresh( SideCanvas * pCanvas) override;
-		void		_sideCanvasResize( SideCanvas * pCanvas, const Size& size ) override;
+		void		_sideCanvasResize( SideCanvas * pCanvas, const SizeSPX& size, int scale = -1 ) override;
 
 		void		_sideCanvasReceive( SideCanvas * pCanvas,  Msg * pMsg ) override;
-		bool		_sideCanvasAlphaTest( SideCanvas * pCanvas,  const Coord& ofs ) override;			
+		bool		_sideCanvasAlphaTest( SideCanvas * pCanvas,  const CoordSPX& ofs ) override;			
 	
 		void		_sideCanvasSetSkin(SideCanvas * pCanvas, Skin * pSkin) override;
 		void		_sideCanvasSetState(SideCanvas * pCanvas, State state) override;
@@ -194,14 +195,14 @@ namespace wg
 		Skin_p			m_pEntrySkin;
 		TextStyle_p		m_pEntryStyle;
 
-		MU				m_entryContentWidth;			// Width of content of an entry in the list, in quarterpixels.
-		Size			m_entryContentPaddingSize;		// Sfize of padding of content of an entry in the list, in quarterpixels.
+		spx				m_entryContentWidth;			// Width of content of an entry in the list.
+		SizeSPX			m_entryContentPaddingSize;		// Size of padding of content of an entry in the list.
 
-		Size			m_preferredSize;
-		MU				m_matchingHeight = 0;			// Matching height for current width.
+		SizeSPX			m_preferredSize;
+		spx				m_matchingHeight = 0;			// Matching height for current width.
 
-		MU				m_listCanvasMatchingHeight = 0;
-		Size			m_listCanvasPreferredSize;
+		spx				m_listCanvasMatchingHeight = 0;
+		SizeSPX			m_listCanvasPreferredSize;
 
 		bool			m_bOpen = false;
 		State			m_closeState;

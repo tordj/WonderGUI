@@ -28,12 +28,14 @@ namespace wg
 {
 	const TypeInfo CIconDisplay::TYPEINFO = { "CIconDisplay", &GeoComponent::TYPEINFO };
 
+	using namespace Util;
+
 	//____ constructor ____________________________________________________________
 
 	CIconDisplay::CIconDisplay( GeoComponent::Holder * pHolder ) : GeoComponent(pHolder)
 	{
 		m_placement		= Placement::NorthWest;
-		m_scale			= 0.f;
+		m_scaleFactor	= 0.f;
 		m_bOverlap		= true;
 	}
 
@@ -46,12 +48,12 @@ namespace wg
 
 	//____ set() ___________________________________________________________________
 
-	bool CIconDisplay::set( Skin * pSkin, Placement placement, BorderI padding, float scale, bool bOverlap )
+	bool CIconDisplay::set( Skin * pSkin, Placement placement, Border padding, float scaleFactor, bool bOverlap )
 	{
 		m_pSkin 	= pSkin;
 		m_placement	= placement;
 		m_padding 	= padding;
-		m_scale 	= scale;
+		m_scaleFactor = scaleFactor;
 		m_bOverlap 	= bOverlap;
 
 		_requestResize();
@@ -64,23 +66,23 @@ namespace wg
 	{
 		m_pSkin 	= 0;
 		m_placement	= Placement::West;
-		m_padding 	= BorderI(0);
-		m_scale 	= 0.f;
+		m_padding 	= Border();
+		m_scaleFactor	= 0.f;
 		m_bOverlap 	= false;
 
 		_requestResize();
 	}
 
-	//____ _setScale() _________________________________________________________
+	//____ _setScaleFactor() _________________________________________________________
 
-	bool CIconDisplay::_setScale( float scaleFactor )
+	bool CIconDisplay::_setScaleFactor( float scaleFactor )
 	{
 		if( scaleFactor > 1.f || scaleFactor < 0.f )
 			return false;
 
-		if( scaleFactor != m_scale )
+		if( scaleFactor != m_scaleFactor )
 		{
-			m_scale = scaleFactor;
+			m_scaleFactor = scaleFactor;
 			_requestResize();
 		}
 
@@ -138,48 +140,50 @@ namespace wg
 
 	*/
 
-	Rect CIconDisplay::_getIconRect( const Rect& contentRect ) const
+	RectSPX CIconDisplay::_getIconRect( const RectSPX& contentRect, int scale ) const
 	{
 		if( m_pSkin )
-			return _getIconRect(contentRect, m_pSkin->preferredSize());
+			return _getIconRect(contentRect, m_pSkin->_preferredSize(scale), scale);
 		else
-			return RectI();
+			return RectSPX();
 	}
 
-	Rect CIconDisplay::_getIconRect( const Rect& contentRect, const Size& iconSize ) const
+	RectSPX CIconDisplay::_getIconRect( const RectSPX& contentRect, const SizeSPX& iconSize, int scale ) const
 	{
-		Rect rect;
+		RectSPX rect;
 
-		MU w = iconSize.w;
-		MU h = iconSize.h;
+		spx w = iconSize.w;
+		spx h = iconSize.h;
 
-		if( w.qpix > 0 && h.qpix > 0 )
+		BorderSPX padding = align(ptsToSpx(m_padding, scale));
+
+		if( w > 0 && h > 0 )
 		{
-			MU bgW = contentRect.w - m_padding.width();
-			MU bgH = contentRect.h - m_padding.height();
+			spx bgW = contentRect.w - padding.width();
+			spx bgH = contentRect.h - padding.height();
 
-			if( m_scale != 0.f )
+			if( m_scaleFactor != 0.f )
 			{
-				if( (w.qpix / (float) bgW.qpix) > (h.qpix / (float) bgH.qpix) )
+				if( (w / (float) bgW) > (h / (float) bgH) )
 				{
-					h = (MU) ((h * bgW * m_scale) / w);
-					w = (MU) (bgW * m_scale);
+					h = (spx) ((h * bgW * m_scaleFactor) / w);
+					w = (spx) (bgW * m_scaleFactor);
 				}
 				else
 				{
-					w = (MU) ((w * bgH * m_scale) / h);
-					h = (MU) (bgH * m_scale);
+					w = (spx) ((w * bgH * m_scaleFactor) / h);
+					h = (spx) (bgH * m_scaleFactor);
 				}
 			}
 
 			//
 
-			w += m_padding.width();
-			h += m_padding.height();
+			w += padding.width();
+			h += padding.height();
 
-			rect = Util::placementToRect( m_placement, contentRect.size(), Size(w,h) );
+			rect = Util::placementToRect( m_placement, contentRect.size(), SizeSPX(w,h) );
 			rect += contentRect.pos();
-			rect -= m_padding;
+			rect -= padding;
 		}
 
 		return rect;
@@ -189,56 +193,58 @@ namespace wg
 
 	//____ _getTextRect() _____________________________________________________
 
-	Rect CIconDisplay::_getTextRect( const Rect& contentRect, const Rect& iconRect ) const
+	RectSPX CIconDisplay::_getTextRect( const RectSPX& contentRect, const RectSPX& iconRect, int scale ) const
 	{
-		Rect textRect = contentRect;
+		RectSPX textRect = contentRect;
 
-		if( !m_bOverlap && iconRect.w.qpix > 0 && iconRect.h.qpix > 0 )
+		if( !m_bOverlap && iconRect.w > 0 && iconRect.h > 0 )
 		{
+			BorderSPX padding = align(ptsToSpx(m_padding, scale));
+
 			switch( m_placement )
 			{
 				case Placement::NorthWest:
 				case Placement::SouthWest:
 				case Placement::West:
 				{
-					MU diff = iconRect.x - contentRect.x + iconRect.w + m_padding.right;
+					spx diff = iconRect.x - contentRect.x + iconRect.w + padding.right;
 					textRect.x += diff;
 					textRect.w -= diff;
-					if( textRect.w.qpix < 0 )
-						textRect.w.qpix = 0;
+					if( textRect.w < 0 )
+						textRect.w = 0;
 					break;
 				}
 				case Placement::NorthEast:
 				case Placement::East:
 				case Placement::SouthEast:
 				{
-					textRect.w = iconRect.x - contentRect.x - m_padding.left;
-					if( textRect.w.qpix < 0 )
-						textRect.w.qpix = 0;
+					textRect.w = iconRect.x - contentRect.x - padding.left;
+					if( textRect.w < 0 )
+						textRect.w = 0;
 					break;
 				}
 
 				case Placement::North:
 				case Placement::Center:
 				{
-					int diff = iconRect.y - contentRect.y + iconRect.h + m_padding.bottom;
+					int diff = iconRect.y - contentRect.y + iconRect.h + padding.bottom;
 					textRect.y += diff;
 					textRect.h -= diff;
-					if( textRect.h.qpix < 0 )
-						textRect.h.qpix = 0;
+					if( textRect.h < 0 )
+						textRect.h = 0;
 					break;
 				}
 				case Placement::South:
 				{
-					textRect.h = iconRect.y - contentRect.y - m_padding.top;
-					if( textRect.h.qpix < 0 )
-						textRect.h.qpix = 0;
+					textRect.h = iconRect.y - contentRect.y - padding.top;
+					if( textRect.h < 0 )
+						textRect.h = 0;
 					break;
 				}
 			}
 		}
 
-		return textRect;
+		return align(textRect);
 	}
 
 	//____ _onCloneContent() ________________________________________________________
@@ -246,20 +252,20 @@ namespace wg
 	void CIconDisplay::_onCloneContent( const CIconDisplay * _pOrg )
 	{
 		m_placement			= _pOrg->m_placement;
-		m_scale			= _pOrg->m_scale;
-		m_bOverlap		= _pOrg->m_bOverlap;
-		m_padding		= _pOrg->m_padding;
-		m_pSkin			= _pOrg->m_pSkin;
+		m_scaleFactor		= _pOrg->m_scaleFactor;
+		m_bOverlap			= _pOrg->m_bOverlap;
+		m_padding			= _pOrg->m_padding;
+		m_pSkin				= _pOrg->m_pSkin;
 	}
 
 	//____ _preferredSize() ________________________________________________________
 
-	Size CIconDisplay::_preferredSize() const
+	SizeSPX CIconDisplay::_preferredSize(int scale) const
 	{
 		if( m_pSkin )
-			return m_pSkin->preferredSize() + m_padding;
+			return m_pSkin->_preferredSize(scale) + align(ptsToSpx(m_padding,scale));
 
-		return Size();
+		return SizeSPX();
 	}
 
 

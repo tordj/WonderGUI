@@ -95,12 +95,12 @@ namespace wg
 		inline State		_state() const { return m_state; }
 		virtual void		_setState( State state );
 
-		virtual void		_setSize( SizeSPX size );
+		virtual void		_setSize( SizeSPX size, int scale );
 		inline SizeSPX		_size() const { return m_size; }
 
-		virtual SizeSPX		_preferredSize() const;
-		virtual spx			_matchingWidth( spx height ) const;
-		virtual spx			_matchingHeight( spx width ) const;
+		virtual SizeSPX		_preferredSize(int scale) const;
+		virtual spx			_matchingWidth( spx height, int scale ) const;
+		virtual spx			_matchingHeight( spx width, int scale ) const;
 
 		virtual int			_charAtPos( CoordSPX pos ) const;
 		virtual RectSPX		_charRect( int charOfs ) const;
@@ -140,6 +140,7 @@ namespace wg
 	protected:
 
 		SizeSPX				m_size;
+		int					m_scale;
 
 		State				m_state;
 		TextStyle_p			m_pStyle;

@@ -63,6 +63,8 @@ namespace wg
 
 		protected:
 
+			inline const RectSPX& _geo() const { return m_geo; }
+
 			Slot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
 
 			enum class State
@@ -76,12 +78,12 @@ namespace wg
 				Closing,				// Popup is closing (fading out).
 			};
 
-			Rect		m_launcherGeo;		// Launcher geo relative sibling or parent.
-			Placement		m_attachPoint = Placement::NorthWest;
+			RectSPX		m_launcherGeo;		// Launcher geo relative sibling or parent.
+			Placement	m_attachPoint = Placement::NorthWest;
 			bool		m_bAutoClose;		// Has been opened in auto-close mode.
 			State		m_state;
 			int			m_stateCounter;		// Counts millisec the slot has been in a transitative state (Delay, Opening, Coundown and Closing).
-			Size		m_maxSize = { MU::Max, MU::Max };
+			SizeSPX		m_maxSize = { spx_max, spx_max };
 			Widget_wp	m_pOpener;			// Widget that opened this popup.
 			Widget_wp	m_pKeyFocus;		// Pointer at widget that held focus when this popup was ontop.
 		};
@@ -105,10 +107,15 @@ namespace wg
 
 			//.____ Content _______________________________________________________
 
-			void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bAutoClose = false, Size maxSize = Size(MU::Max, MU::Max));
+			void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bAutoClose = false, Size maxSize = Size(1000000, 1000000));
 			void	pop(int nb = 1);
 			void	pop(Widget * pPopup);
 			void	clear();
+
+			//.____ Internal ______________________________________________________
+
+			void	_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bAutoClose = false, SizeSPX maxSize = SizeSPX(spx_max, spx_max));
+
 
 		protected:
 
@@ -147,7 +154,7 @@ namespace wg
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		Widget *		_findWidget( const Coord& ofs, SearchMode mode ) override;
+		Widget *		_findWidget( const CoordSPX& ofs, SearchMode mode ) override;
 
 
 		// Only base slot can have child replaced, we need error handling...
@@ -162,7 +169,7 @@ namespace wg
 		const Layer::Slot * _endLayerSlots() const override;
 		int					_sizeOfLayerSlot() const override;
 
-		void				_onRequestRender(const Rect& rect, const Layer::Slot * pSlot) override;	// rect is in our coordinate system.
+		void				_onRequestRender(const RectSPX& rect, const Layer::Slot * pSlot) override;	// rect is in our coordinate system.
 
 		// Overloaded from container
 
@@ -172,9 +179,9 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void            _render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		void            _render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_resize( const Size& size ) override;
+		void			_resize( const SizeSPX& size, int scale = -1 ) override;
 		void			_receive( Msg * pMsg ) override;
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
 
@@ -182,7 +189,7 @@ namespace wg
 		// Needed by CSlots
 
 		void			_removeSlots(int ofs, int nb);
-		void			_addSlot(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bAutoClose, Size maxSize);
+		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bAutoClose, SizeSPX maxSize);
 
 		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
 

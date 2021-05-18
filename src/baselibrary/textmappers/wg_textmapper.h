@@ -111,16 +111,16 @@ namespace wg
 		//
 
 		virtual void	onTextModified( Text * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
-		virtual void	onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize ) = 0;
+		virtual void	onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale ) = 0;
 		virtual void	onStateChanged( Text * pText, State newState, State oldState ) = 0;
 		virtual void	onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
 		virtual void	onCharStyleChanged( Text * pText, int ofs = 0, int len = INT_MAX ) = 0;
 		virtual void	onRefresh( Text * pText ) = 0;
 
 
-		virtual SizeSPX	preferredSize( const Text * pText ) const = 0;
-		virtual spx		matchingWidth( const Text * pText, spx height ) const = 0;
-		virtual spx		matchingHeight( const Text * pText, spx width ) const = 0;
+		virtual SizeSPX	preferredSize( const Text * pText, int scale ) const = 0;
+		virtual spx		matchingWidth( const Text * pText, spx height, int scale ) const = 0;
+		virtual spx		matchingHeight( const Text * pText, spx width, int scale ) const = 0;
 
 		virtual RectSPX	rectForRange( const Text * pText, int ofs, int length ) const = 0;
 		virtual RectSPX	rectForCaret( const Text * pText ) const = 0;

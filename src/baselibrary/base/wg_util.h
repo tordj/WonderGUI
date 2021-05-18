@@ -133,6 +133,80 @@ namespace wg
 			return out;
 		}
 
+		inline spx alignUp(spx x)
+		{
+			return (x + 63) & 0xFFFFFFC0;
+		}
+
+		inline CoordSPX alignUp(const CoordSPX& coord)
+		{
+			return { (coord.x + 63) & -64, (coord.y + 63) & -64 };
+		}
+
+		inline SizeSPX alignUp(const SizeSPX& size)
+		{
+			return { (size.w + 63) & -64, (size.w + 63) & -64 };
+		}
+
+		inline BorderSPX alignUp(const BorderSPX& border)
+		{
+			return { (border.top + 63) & -64, (border.right + 63) & -64,
+					 (border.bottom + 63) & -64, (border.left + 63) & -64 };
+		}
+
+		inline RectSPX alignUp(const RectSPX& rect)
+		{
+			//NOTE: Actually aligns down position in order to expand rectangle outwards.
+
+			RectSPX out;
+
+			out.x = (rect.x) & -64;
+			out.y = (rect.y) & -64;
+
+			out.w = ((rect.x + rect.w + 63) & -64) - out.x;
+			out.h = ((rect.y + rect.h + 63) & -64) - out.y;
+
+			return out;
+		}
+
+		inline spx alignDown(spx x)
+		{
+			return (x) & 0xFFFFFFC0;
+		}
+
+		inline CoordSPX alignDown(const CoordSPX& coord)
+		{
+			return { (coord.x) & -64, (coord.y) & -64 };
+		}
+
+		inline SizeSPX alignDown(const SizeSPX& size)
+		{
+			return { (size.w) & -64, (size.w) & -64 };
+		}
+
+		inline BorderSPX alignDown(const BorderSPX& border)
+		{
+			return { (border.top) & -64, (border.right) & -64,
+					 (border.bottom) & -64, (border.left) & -64 };
+		}
+
+		inline RectSPX alignDown(const RectSPX& rect)
+		{
+			//NOTE: Actually aligns down position in order to expand rectangle outwards.
+
+			RectSPX out;
+
+			out.x = (rect.x + 63) & -64;
+			out.y = (rect.y + 63) & -64;
+
+			out.w = ((rect.x + rect.w) & -64) - out.x;
+			out.h = ((rect.y + rect.h) & -64) - out.y;
+
+			return out;
+		}
+
+
+
 
 		double	squareRoot(double a);
 		double	powerOfTen(int num);
@@ -145,8 +219,8 @@ namespace wg
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );
 
-		Coord 		placementToOfs( Placement placement, Size base );
-		Rect		placementToRect( Placement placement, Size base, Size rect );
+		CoordSPX 	placementToOfs( Placement placement, SizeSPX base );
+		RectSPX		placementToRect( Placement placement, SizeSPX base, SizeSPX rect );
 
 		SizeSPX		scaleToFit(SizeSPX object, SizeSPX boundaries);
 

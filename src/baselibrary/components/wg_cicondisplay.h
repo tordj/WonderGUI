@@ -52,23 +52,22 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
-		bool			set(Skin * pIconGfx, Placement placement = Placement::West, BorderI padding = BorderI(0),
-							float _scale = 0.f, bool _bOverlap = false);
+		bool			set(Skin * pIconGfx, Placement placement = Placement::West, Border padding = Border(0),
+							float _scaleFactor = 0.f, bool _bOverlap = false);
 		void			clear();
 
 		inline bool		isEmpty() const { return !m_pSkin; }
 
 		//.____ Appearance _____________________________________________
 
-		inline bool			setScale(float scaleFactor) { return _setScale(scaleFactor); }
+		inline bool			setScale(float scaleFactor) { return _setScaleFactor(scaleFactor); }
 		inline void			setPlacement(Placement placement) { _setPlacement(placement); }
 		inline void			setPadding(Border padding) { _setPadding(padding); }
 		inline void			setOverlap(bool bOverlap) { _setOverlap(bOverlap); }
 		inline void			setSkin(Skin * pSkin) { _setSkin(pSkin); }
-
-		inline float		scale() const { return _scale(); }
+		inline float		scaleFactor() const { return _scaleFactor(); }
 		inline Placement	placement() const { return _placement(); }
-		inline Border		padding() const { return _padding(); }
+		inline Border		padding() const { return m_padding; }
 		inline bool			overlap() const { return _overlap(); }
 		inline Skin_p		skin() const { return _skin(); }
 
@@ -80,32 +79,31 @@ namespace wg
 	protected:
 
 
-		bool			_setScale( float scaleFactor );
+		bool			_setScaleFactor( float scaleFactor );
 		void			_setPlacement( Placement placement );
 		void			_setPadding( Border borders );
 		void			_setOverlap( bool bOverlap );
 		void			_setSkin( Skin * pSkin );
 
-		float			_scale() const { return m_scale; }
+		float			_scaleFactor() const { return m_scaleFactor; }
 		Placement		_placement() const { return m_placement; }
-		Border			_padding() const { return m_padding; }
+		BorderSPX		_padding(int scale) const { return Util::align(Util::ptsToSpx(m_padding,scale)); }
 		bool			_overlap() const { return m_bOverlap; }
 		Skin_p			_skin() const { return  m_pSkin; }
 
 
-		Rect			_getIconRect( const Rect& contentRect ) const;
-		Rect			_getIconRect( const Rect& contentRect, const Size& iconSize ) const;
-		Rect			_getTextRect( const Rect& contentRect, const Rect& iconRect ) const;
+		RectSPX			_getIconRect( const RectSPX& contentRect, int scale ) const;
+		RectSPX			_getIconRect( const RectSPX& contentRect, const SizeSPX& iconSize, int scale ) const;
+		RectSPX			_getTextRect( const RectSPX& contentRect, const RectSPX& iconRect, int scale ) const;
 		void			_onCloneContent( const CIconDisplay * _pOrg );
-		Size			_preferredSize() const;
+		SizeSPX			_preferredSize(int scale) const;
 
 	private:
 		Placement		m_placement;
-		float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
+		float			m_scaleFactor;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 		bool			m_bOverlap;
 		Border			m_padding;
 		Skin_p			m_pSkin;
-
 	};
 
 

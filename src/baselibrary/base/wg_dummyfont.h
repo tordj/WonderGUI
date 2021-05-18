@@ -49,8 +49,8 @@ namespace wg
 
 		//.____ Rendering ____________________________________________
 
-		bool			setSize( int size ) override;
-		int				size() override;
+		bool			setSize( spx size ) override;
+		spx				size() override;
 
 		spx				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
 		Glyph_p			getGlyph( uint16_t chr ) override;
@@ -69,23 +69,9 @@ namespace wg
 		bool			isMonochrome() override;
 		bool			hasGlyph( uint16_t chr ) override;
 
-
-
-
 	protected:
 		DummyFont();
 		~DummyFont();
-
-		class DummyGlyph : public Glyph
-		{
-		public:
-			DummyGlyph( Font * pFont );
-
-			const GlyphBitmap * getBitmap() override { return &m_src; }
-			GlyphBitmap	m_src;
-		};
-
-		DummyGlyph	m_glyph;
 
 	};
 

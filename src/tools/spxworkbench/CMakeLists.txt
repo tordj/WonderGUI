@@ -159,8 +159,8 @@ add_executable(spxworkbench
 #	../../baselibrary/components/wg_cgfxinstream.h
 #	../../baselibrary/components/wg_cgfxoutstream.cpp
 #	../../baselibrary/components/wg_cgfxoutstream.h
-#	../../baselibrary/components/wg_cicondisplay.cpp
-#	../../baselibrary/components/wg_cicondisplay.h
+	../../baselibrary/components/wg_cicondisplay.cpp
+	../../baselibrary/components/wg_cicondisplay.h
 	../../baselibrary/components/wg_component.cpp
 	../../baselibrary/components/wg_component.h
 	../../baselibrary/components/wg_cpaddedslotvector.h
@@ -182,20 +182,20 @@ add_executable(spxworkbench
 	../../baselibrary/components/wg_cstaticslotcollection.h
 	../../baselibrary/components/wg_cstaticslotvector.h
 	../../baselibrary/components/wg_cstaticslotvector.impl.h
-#	../../baselibrary/components/wg_cstatictextdisplay.cpp
-#	../../baselibrary/components/wg_cstatictextdisplay.h
-#	../../baselibrary/components/wg_cstaticvaluedisplay.cpp
-#	../../baselibrary/components/wg_cstaticvaluedisplay.h
+	../../baselibrary/components/wg_cstatictextdisplay.cpp
+	../../baselibrary/components/wg_cstatictextdisplay.h
+	../../baselibrary/components/wg_cstaticvaluedisplay.cpp
+	../../baselibrary/components/wg_cstaticvaluedisplay.h
 	../../baselibrary/components/wg_cstaticvector.h
 	../../baselibrary/components/wg_cstaticvector.impl.h
-#	../../baselibrary/components/wg_ctext.cpp
-#	../../baselibrary/components/wg_ctext.h
-#	../../baselibrary/components/wg_ctextdisplay.cpp
-#	../../baselibrary/components/wg_ctextdisplay.h
+	../../baselibrary/components/wg_ctext.cpp
+	../../baselibrary/components/wg_ctext.h
+	../../baselibrary/components/wg_ctextdisplay.cpp
+	../../baselibrary/components/wg_ctextdisplay.h
 #	../../baselibrary/components/wg_ctexteditor.cpp
 #	../../baselibrary/components/wg_ctexteditor.h
-#	../../baselibrary/components/wg_cvaluedisplay.cpp
-#	../../baselibrary/components/wg_cvaluedisplay.h
+	../../baselibrary/components/wg_cvaluedisplay.cpp
+	../../baselibrary/components/wg_cvaluedisplay.h
 #	../../baselibrary/components/wg_cvalueeditor.cpp
 #	../../baselibrary/components/wg_cvalueeditor.h
 	../../baselibrary/components/wg_geocomponent.cpp
@@ -270,16 +270,16 @@ add_executable(spxworkbench
 
 #	../../baselibrary/widgets/wg_animplayer.cpp
 #	../../baselibrary/widgets/wg_animplayer.h
-#	../../baselibrary/widgets/wg_button.cpp
-#	../../baselibrary/widgets/wg_button.h
+	../../baselibrary/widgets/wg_button.cpp
+	../../baselibrary/widgets/wg_button.h
 #	../../baselibrary/widgets/wg_canvas.cpp
 #	../../baselibrary/widgets/wg_canvas.h
 	../../baselibrary/widgets/wg_container.cpp
 	../../baselibrary/widgets/wg_container.h
 	../../baselibrary/widgets/wg_filler.cpp
 	../../baselibrary/widgets/wg_filler.h
-#	../../baselibrary/widgets/wg_fpsdisplay.cpp
-#	../../baselibrary/widgets/wg_fpsdisplay.h
+	../../baselibrary/widgets/wg_fpsdisplay.cpp
+	../../baselibrary/widgets/wg_fpsdisplay.h
 	../../baselibrary/widgets/wg_image.cpp
 	../../baselibrary/widgets/wg_image.h
 	../../baselibrary/widgets/wg_knob.cpp
@@ -296,16 +296,16 @@ add_executable(spxworkbench
 #	../../baselibrary/widgets/wg_rulerlabels.h
 	../../baselibrary/widgets/wg_scrollbar.cpp
 	../../baselibrary/widgets/wg_scrollbar.h
-#	../../baselibrary/widgets/wg_selectbox.cpp
-#	../../baselibrary/widgets/wg_selectbox.h
-#	../../baselibrary/widgets/wg_sidecanvas.cpp
-#	../../baselibrary/widgets/wg_sidecanvas.h
+	../../baselibrary/widgets/wg_selectbox.cpp
+	../../baselibrary/widgets/wg_selectbox.h
+	../../baselibrary/widgets/wg_sidecanvas.cpp
+	../../baselibrary/widgets/wg_sidecanvas.h
 #	../../baselibrary/widgets/wg_simplevolumemeter.cpp
 #	../../baselibrary/widgets/wg_simplevolumemeter.h
 	../../baselibrary/widgets/wg_slider.cpp
 	../../baselibrary/widgets/wg_slider.h
-#	../../baselibrary/widgets/wg_textdisplay.cpp
-#	../../baselibrary/widgets/wg_textdisplay.h
+	../../baselibrary/widgets/wg_textdisplay.cpp
+	../../baselibrary/widgets/wg_textdisplay.h
 #	../../baselibrary/widgets/wg_texteditor.cpp
 #	../../baselibrary/widgets/wg_texteditor.h
 #	../../baselibrary/widgets/wg_timer.cpp
@@ -333,12 +333,12 @@ add_executable(spxworkbench
 #	../../baselibrary/widgets/layers/wg_designlayer.h
 #	../../baselibrary/widgets/layers/wg_dragndroplayer.cpp
 #	../../baselibrary/widgets/layers/wg_dragndroplayer.h
-#	../../baselibrary/widgets/layers/wg_layer.cpp
-#	../../baselibrary/widgets/layers/wg_layer.h
+	../../baselibrary/widgets/layers/wg_layer.cpp
+	../../baselibrary/widgets/layers/wg_layer.h
 #	../../baselibrary/widgets/layers/wg_modallayer.cpp
 #	../../baselibrary/widgets/layers/wg_modallayer.h
-#	../../baselibrary/widgets/layers/wg_popuplayer.cpp
-#	../../baselibrary/widgets/layers/wg_popuplayer.h
+	../../baselibrary/widgets/layers/wg_popuplayer.cpp
+	../../baselibrary/widgets/layers/wg_popuplayer.h
 #	../../baselibrary/widgets/layers/wg_tooltiplayer.cpp
 #	../../baselibrary/widgets/layers/wg_tooltiplayer.h
 #	../../baselibrary/widgets/lists/wg_list.cpp
@@ -372,7 +372,7 @@ target_working_directory(spxworkbench ${WG_ROOT})
 target_link_libraries(spxworkbench PRIVATE
 #	wgsoftgfx
 #	wgopenglgfx
-#	wgfreetypefont
+	wgfreetypefont
 #	wondergui 
 	${SDL2_LIBS}
 	${SDL2IMAGE_LIBS}

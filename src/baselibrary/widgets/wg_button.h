@@ -59,11 +59,10 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ______________________________________________________
+		//.____ Internal ______________________________________________________
 
-		virtual MU		matchingHeight(MU width) const override;
-
-		Size			preferredSize() const override;
+		spx				_matchingHeight(spx width, int scale = -1) const override;
+		SizeSPX			_preferredSize(int scale = -1) const override;
 
 
 	protected:
@@ -75,18 +74,18 @@ namespace wg
 
 
 
-		virtual void	_receive( Msg * pMsg ) override;
-		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		void			_receive( Msg * pMsg ) override;
+		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void			_refresh() override;
-		virtual void	_cloneContent( const Widget * _pOrg ) override;
-		bool			_alphaTest( const Coord& ofs ) override;
-		virtual void	_resize( const Size& size ) override;
+		void			_cloneContent( const Widget * _pOrg ) override;
+		bool			_alphaTest( const CoordSPX& ofs ) override;
+		void			_resize( const SizeSPX& size, int scale = -1 ) override;
 		void			_setState( State state ) override;
 
 
-		Coord			_componentPos( const GeoComponent * pComponent ) const override;
-		Size			_componentSize( const GeoComponent * pComponent ) const override;
-		Rect			_componentGeo( const GeoComponent * pComponent ) const override;
+		CoordSPX		_componentPos( const GeoComponent * pComponent ) const override;
+		SizeSPX			_componentSize( const GeoComponent * pComponent ) const override;
+		RectSPX			_componentGeo( const GeoComponent * pComponent ) const override;
 
 		class IconAccess : public CIconDisplay { friend class Button; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }

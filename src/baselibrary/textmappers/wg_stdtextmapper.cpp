@@ -192,12 +192,12 @@ namespace wg
 		spx xOfs = _linePosX( pLineInfo, _size(pText).w );
 
 		TextAttr		baseAttr;
-		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr );
+		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr, _scale(pText) );
 
 		const Char * pFirst = _chars(pText) + pLineInfo->offset;
 		const Char * pLast = pFirst + charOfs;
 
-		xOfs += _charDistance( pFirst, pLast, baseAttr, _state(pText) );
+		xOfs += _charDistance( pFirst, pLast, baseAttr, _scale(pText), _state(pText) );
 
 		// Get cell width
 
@@ -206,7 +206,7 @@ namespace wg
 		TextAttr	attr = baseAttr;
 
 		if( pLast->styleHandle() != 0 )
-			pLast->stylePtr()->addToAttr( _state(pText), &attr );
+			pLast->stylePtr()->addToAttr( _state(pText), &attr, _scale(pText) );
 
 		Font * pFont = attr.pFont.rawPtr();
 		pFont->setSize(attr.size);
@@ -290,7 +290,7 @@ namespace wg
 	// Returns distance in points between beginning of first and beginning of last char.
 	// Chars should be on the same line (or pLast could be first char on next line)
 
-	spx StdTextMapper::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const
+	spx StdTextMapper::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, int scale, State state ) const
 	{
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -313,7 +313,7 @@ namespace wg
 				attr = baseAttr;
 
 				if( pChar->styleHandle() != 0 )
-					pChar->stylePtr()->addToAttr( state, &attr );
+					pChar->stylePtr()->addToAttr( state, &attr, scale );
 
 				if( pFont != attr.pFont || attr.size != oldFontSize )
 				{
@@ -378,7 +378,7 @@ namespace wg
 		lineStart.y += _textPosY( pHeader, canvas.h );
 
 		TextAttr		baseAttr;
-		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr );
+		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr, _scale(pText) );
 
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -458,7 +458,7 @@ namespace wg
 						attr = baseAttr;
 
 						if( pChar->styleHandle() != 0 )
-							pChar->stylePtr()->addToAttr( _state(pText), &attr );
+							pChar->stylePtr()->addToAttr( _state(pText), &attr, _scale(pText) );
 
 						if( pFont != attr.pFont || attr.size != oldFontSize )
 						{
@@ -513,7 +513,6 @@ namespace wg
 						const GlyphBitmap * pBitmap = pGlyph->getBitmap();
 						pDevice->setBlitSource(pBitmap->pSurface);
 						pDevice->blit( CoordSPX(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY), pBitmap->rect  );
-
 						pos.x += pGlyph->advance();
 					}
 					else if( pChar->code() == 32 )
@@ -727,9 +726,9 @@ namespace wg
 
 	//____ onResized() ___________________________________________________________
 
-	void StdTextMapper::onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize )
+	void StdTextMapper::onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale )
 	{
-		if (m_bLineWrap)
+		if (m_bLineWrap || newScale != oldScale)
 			onRefresh(pText);
 
 
@@ -1012,22 +1011,31 @@ namespace wg
 
 	//____ preferredSize() _________________________________________________________
 
-	SizeSPX StdTextMapper::preferredSize( const Text * pText ) const
+	SizeSPX StdTextMapper::preferredSize( const Text * pText, int scale ) const
 	{
+		if (scale != _scale(pText))
+			assert(false);				//TODO: Implement!!!
+
 		return _header(_dataBlock(pText))->preferredSize;
 	}
 
 	//____ matchingWidth() _________________________________________________________
 
-	spx StdTextMapper::matchingWidth( const Text * pText, spx height ) const
+	spx StdTextMapper::matchingWidth( const Text * pText, spx height, int scale ) const
 	{
+		if (scale != _scale(pText))
+			assert(false);				//TODO: Implement!!!
+
 		return	_header(_dataBlock(pText))->preferredSize.w;
 	}
 
 	//____ matchingHeight() ________________________________________________________
 
-	spx StdTextMapper::matchingHeight( const Text * pText, spx width ) const
+	spx StdTextMapper::matchingHeight( const Text * pText, spx width, int scale ) const
 	{
+		if (scale != _scale(pText))
+			assert(false);				//TODO: Implement!!!
+
 		return _calcMatchingHeight(_chars(pText), _baseStyle(pText), _scale(pText), _state(pText), width);
 	}
 
@@ -1064,7 +1072,7 @@ namespace wg
 	int StdTextMapper::_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const
 	{
 		TextAttr		baseAttr;
-		pBaseStyle->exportAttr(state, &baseAttr);
+		pBaseStyle->exportAttr(state, &baseAttr, scale);
 
 
 		TextAttr		attr;
@@ -1096,7 +1104,7 @@ namespace wg
 
 				attr = baseAttr;
 				if (pChars->styleHandle() != 0)
-					pChars->stylePtr()->addToAttr(state, &attr);
+					pChars->stylePtr()->addToAttr(state, &attr, scale);
 
 				if (pFont != attr.pFont || spx(attr.size) != oldFontSize)
 				{
@@ -1197,7 +1205,7 @@ namespace wg
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 
 		TextAttr		baseAttr;
-		pBaseStyle->exportAttr(state, &baseAttr);
+		pBaseStyle->exportAttr(state, &baseAttr, scale);
 
 		spx totalHeight = 0;
 
@@ -1235,7 +1243,7 @@ namespace wg
 
 				attr = baseAttr;
 				if (pChars->styleHandle() != 0)
-					pChars->stylePtr()->addToAttr(state, &attr);
+					pChars->stylePtr()->addToAttr(state, &attr, scale);
 
 				if (pFont != attr.pFont || attr.size != oldFontSize)
 				{
@@ -1425,6 +1433,8 @@ namespace wg
 		}
 
 
+
+
 		if (preferredSize != pHeader->preferredSize)
 		{
 			pHeader->preferredSize = preferredSize;
@@ -1440,7 +1450,7 @@ namespace wg
 		const Char * pTextStart = pChars;
 
 		TextAttr		baseAttr;
-		pBaseStyle->exportAttr(state, &baseAttr);
+		pBaseStyle->exportAttr(state, &baseAttr, scale);
 
 		SizeSPX			size;
 
@@ -1480,7 +1490,7 @@ namespace wg
 
 				attr = baseAttr;
 				if (pChars->styleHandle() != 0)
-					pChars->stylePtr()->addToAttr(state, &attr);
+					pChars->stylePtr()->addToAttr(state, &attr, scale);
 
 				if (pFont != attr.pFont || attr.size != oldFontSize)
 				{
@@ -1655,7 +1665,7 @@ namespace wg
 				}
 			}
 		}
-		return size;
+		return alignUp(size);
 	}
 
 
@@ -1671,7 +1681,7 @@ namespace wg
 		SizeSPX			size;
 
 		TextAttr		baseAttr;
-		pBaseStyle->exportAttr( state, &baseAttr );
+		pBaseStyle->exportAttr( state, &baseAttr, scale );
 
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -1699,7 +1709,7 @@ namespace wg
 
 				attr = baseAttr;
 				if( pChars->styleHandle() != 0 )
-					pChars->stylePtr()->addToAttr( state, &attr );
+					pChars->stylePtr()->addToAttr( state, &attr, scale );
 
 				if( pFont != attr.pFont || attr.size != oldFontSize )
 				{
@@ -1805,7 +1815,7 @@ namespace wg
 			else
 				pChars++;
 		}
-		return size;
+		return alignUp(size);
 	}
 
 
@@ -1874,9 +1884,9 @@ namespace wg
 		const Char * pChars = _chars(pText);
 
 		TextAttr attr;
-		_baseStyle(pText)->exportAttr( _state(pText), &attr );
+		_baseStyle(pText)->exportAttr( _state(pText), &attr, _scale(pText) );
 
-		return _linePosX( pLine, _size(pText).w ) + _charDistance( pChars + pLine->offset, pChars + charOfs, attr, _state(pText) );
+		return _linePosX( pLine, _size(pText).w ) + _charDistance( pChars + pLine->offset, pChars + charOfs, attr, _scale(pText), _state(pText) );
 	}
 
 	//____ _lineAtPosY() _______________________________________________________
@@ -1993,9 +2003,10 @@ namespace wg
 
 		const Char * pTextBegin = _chars(pText);
 		State state = _state(pText);
+		int scale	= _scale(pText);
 
 		TextAttr baseAttr;
-		_baseStyle(pText)->exportAttr( state, &baseAttr );
+		_baseStyle(pText)->exportAttr( state, &baseAttr, scale );
 
 
 		TextAttr		attr;
@@ -2017,7 +2028,7 @@ namespace wg
 				attr = baseAttr;
 
 				if( pChar->styleHandle() != 0 )
-					pChar->stylePtr()->addToAttr( state, &attr );
+					pChar->stylePtr()->addToAttr( state, &attr, scale );
 
 				if( pFont != attr.pFont || attr.size != oldFontSize )
 				{

@@ -734,73 +734,73 @@ RectI sourceOfs;
 
 	//____ placementToOfs() ________________________________________________________
 
-	Coord Util::placementToOfs( Placement placement, Size base )
+	CoordSPX Util::placementToOfs( Placement placement, SizeSPX base )
 	{
 		switch( placement )
 		{
 			default:
 			case Placement::NorthWest:
-				return Coord();
+				return CoordSPX();
 
 			case Placement::North:
-				return Coord( base.w/2,0 );
+				return CoordSPX( align(base.w/2),0 );
 
 			case Placement::NorthEast:
-				return Coord( base.w,0 );
+				return CoordSPX( base.w,0 );
 
 			case Placement::East:
-				return Coord( base.w, base.h/2 );
+				return CoordSPX( base.w, align(base.h/2) );
 
 			case Placement::SouthEast:
-				return Coord( base.w, base.h );
+				return CoordSPX( base.w, base.h );
 
 			case Placement::South:
-				return Coord( base.w/2, base.h );
+				return CoordSPX( align(base.w/2), base.h );
 
 			case Placement::SouthWest:
-				return Coord( 0, base.h );
+				return CoordSPX( 0, base.h );
 
 			case Placement::West:
-				return Coord( 0, base.h/2 );
+				return CoordSPX( 0, align(base.h/2) );
 
 			case Placement::Center:
-				return Coord( base.w/2, base.h/2 );
+				return CoordSPX( align(base.w/2), align(base.h/2) );
 		}
 	}
 
 	//____ placementToRect() ________________________________________________________
 
-	Rect Util::placementToRect( Placement placement, Size base, Size rect )
+	RectSPX Util::placementToRect( Placement placement, SizeSPX base, SizeSPX rect )
 	{
 		switch( placement )
 		{
 			default:
 			case Placement::NorthWest:
-				return Rect(0,0, rect);
+				return RectSPX(0,0, rect);
 
 			case Placement::North:
-				return Rect( base.w/2 - rect.w/2, 0, rect );
+				return RectSPX( align(base.w/2 - rect.w/2), 0, rect );
 
 			case Placement::NorthEast:
-				return Rect( base.w - rect.w, 0, rect );
+				return RectSPX( base.w - rect.w, 0, rect );
 
 			case Placement::East:
-				return Rect( base.w - rect.w, base.h/2 - rect.h/2, rect );
+				return RectSPX( base.w - rect.w, align(base.h/2 - rect.h/2), rect );
 
 			case Placement::SouthEast:
-				return Rect( base.w - rect.w, base.h - rect.h, rect );
+				return RectSPX( base.w - rect.w, base.h - rect.h, rect );
 
 			case Placement::South:
-				return Rect( base.w/2 - rect.w/2, base.h - rect.h, rect );
+				return RectSPX( align(base.w/2 - rect.w/2), base.h - rect.h, rect );
 
 			case Placement::SouthWest:
-				return Rect( 0, base.h - rect.h, rect );
+				return RectSPX( 0, base.h - rect.h, rect );
 
 			case Placement::West:
-				return Rect( 0, base.h/2 - rect.h/2, rect );
+				return RectSPX( 0, align(base.h/2 - rect.h/2), rect );
 
 			case Placement::Center:
-				return Rect( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
+				return RectSPX( align(base.w/2 - rect.w/2), align(base.h/2 - rect.h/2), rect );
 		}
 	}
 

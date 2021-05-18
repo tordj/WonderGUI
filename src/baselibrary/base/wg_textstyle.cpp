@@ -232,7 +232,7 @@ namespace wg
 
 	//____ exportAttr() ____________________________________________________________
 
-	void TextStyle::exportAttr( State state, TextAttr * pDest ) const
+	void TextStyle::exportAttr( State state, TextAttr * pDest, int scale ) const
 	{
 		int idx = Util::_stateToIndex(state);
 
@@ -241,13 +241,13 @@ namespace wg
 		pDest->renderMode	= m_renderMode;
 		pDest->bgRenderMode = m_bgRenderMode;
 
-		pDest->size 		= m_size[idx];
+		pDest->size 		= ptsToSpx(m_size[idx],scale);
 		pDest->color		= m_color[idx];
 		pDest->bgColor		= m_bgColor[idx];
 		pDest->decoration	= m_decoration[idx];
 
 		if( pDest->size == 0 )
-			pDest->size = 12;								// Default to size 12.
+			pDest->size = ptsToSpx(12,scale);				// Default to size 12.
 
 		if( pDest->decoration == TextDecoration::Undefined )
 			pDest->decoration = TextDecoration::None;
@@ -258,7 +258,7 @@ namespace wg
 
 	//____ addToAttr() _____________________________________________________________
 
-	void TextStyle::addToAttr( State state, TextAttr * pDest ) const
+	void TextStyle::addToAttr( State state, TextAttr * pDest, int scale ) const
 	{
 		int idx = Util::_stateToIndex(state);
 
@@ -272,7 +272,7 @@ namespace wg
 			pDest->bgRenderMode = m_bgRenderMode;
 
 		if( m_size[idx] != 0 )
-			pDest->size	= m_size[idx];
+			pDest->size	= ptsToSpx(m_size[idx],scale);
 		if( m_decoration[idx] != TextDecoration::Undefined )
 			pDest->decoration = m_decoration[idx];
 

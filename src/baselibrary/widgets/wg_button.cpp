@@ -56,17 +56,19 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	MU Button::matchingHeight( MU width ) const
+	spx Button::_matchingHeight( spx width, int scale ) const
 	{
-		MU height = OO(skin)._preferredSize().h;
+		scale = _fixScale(scale);
+
+		spx height = OO(skin)._preferredSize(scale).h;
 
 		if( !OO(text).isEmpty() )
 		{
-			Size padding = OO(skin)._contentPaddingSize();
+			SizeSPX padding = OO(skin)._contentPaddingSize(scale);
 
-			MU heightForText = OO(text)._matchingHeight(width-padding.w) + padding.h;
+			spx heightForText = OO(text)._matchingHeight(width-padding.w,scale) + padding.h;
 			if( heightForText > height )
 				height = heightForText;
 		}
@@ -77,16 +79,18 @@ namespace wg
 	}
 
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	Size Button::preferredSize() const
+	SizeSPX Button::_preferredSize(int scale) const
 	{
-		Size preferred;
+		scale = _fixScale(scale);
+
+		SizeSPX preferred;
 
 		if( !OO(text).isEmpty() )
-			preferred = OO(text)._preferredSize();
+			preferred = OO(text)._preferredSize(scale);
 
-		preferred = OO(skin)._sizeForContent(preferred);
+		preferred = OO(skin)._sizeForContent(preferred, scale);
 
 		//TODO: Take icon into account.
 
@@ -109,34 +113,34 @@ namespace wg
 
 	//____ _resize() ____________________________________________________________
 
-	void Button::_resize( const Size& _size )
+	void Button::_resize( const SizeSPX& _size, int scale )
 	{
-		Widget::_resize(_size);
+		Widget::_resize(_size, scale);
 
-		Rect	contentRect = OO(skin)._contentRect(_size,m_state);
+		RectSPX	contentRect = OO(skin)._contentRect(_size,m_scale,m_state);
 
-		Rect textRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
+		RectSPX textRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale );
 
-		OO(text)._setSize( textRect );
+		OO(text)._setSize( textRect, m_scale );
 	}
 
 	//____ _render() _____________________________________________________________
 
-	void Button::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void Button::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect	contentRect = OO(skin)._contentRect(_canvas, m_state);
+		RectSPX	contentRect = OO(skin)._contentRect(_canvas, m_scale, m_state);
 
 		// Get icon and text rect from content rect
 
-		Rect iconRect = _icon()._getIconRect( contentRect );
-		Rect textRect = _icon()._getTextRect( contentRect, iconRect );
+		RectSPX iconRect = _icon()._getIconRect( contentRect, m_scale );
+		RectSPX textRect = _icon()._getTextRect( contentRect, iconRect, m_scale );
 
 		// Render icon
 
 		if( _icon().skin() )
-			_icon().skin()->render( pDevice, iconRect, m_state );
+			_icon().skin()->_render( pDevice, iconRect, m_scale, m_state );
 
 		// Print text
 
@@ -255,7 +259,7 @@ namespace wg
 
 	//____ _alphaTest() ___________________________________________________________
 
-	bool Button::_alphaTest( const Coord& ofs )
+	bool Button::_alphaTest( const CoordSPX& ofs )
 	{
 		if( _icon().skin() )
 		{
@@ -267,60 +271,60 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	Coord Button::_componentPos( const GeoComponent * pComponent ) const
+	CoordSPX Button::_componentPos( const GeoComponent * pComponent ) const
 	{
 		if (pComponent == &skin)
-			return Coord();
+			return CoordSPX();
 
-		Rect contentRect = OO(skin)._contentRect(contentRect, m_state);
+		RectSPX contentRect = OO(skin)._contentRect(contentRect, m_scale, m_state);
 
 		// Get icon and text rect from content rect
 
-		Rect iconRect = _icon()._getIconRect( contentRect );
+		RectSPX iconRect = _icon()._getIconRect( contentRect, m_scale );
 
 		if( pComponent == &icon )
 			return iconRect.pos();
 
-		Rect textRect = _icon()._getTextRect( contentRect, iconRect );
+		RectSPX textRect = _icon()._getTextRect( contentRect, iconRect, m_scale );
 		return textRect.pos();
 	}
 
 	//____ _componentSize() ______________________________________________________________
 
-	Size Button::_componentSize( const GeoComponent * pComponent ) const
+	SizeSPX Button::_componentSize( const GeoComponent * pComponent ) const
 	{
 		if (pComponent == &skin)
 			return m_size;
 
-		Size	sz = m_size - OO(skin)._contentPaddingSize();
+		SizeSPX	sz = m_size - OO(skin)._contentPaddingSize(m_scale);
 
-		Rect iconRect = _icon()._getIconRect( sz );
+		RectSPX iconRect = _icon()._getIconRect( sz, m_scale );
 
 		if( pComponent == &icon )
 			return iconRect.size();
 
-		Rect textRect = _icon()._getTextRect( sz, iconRect );
+		RectSPX textRect = _icon()._getTextRect( sz, iconRect, m_scale );
 		return textRect.size();
 
 	}
 
 	//____ _componentGeo() ______________________________________________________________
 
-	Rect Button::_componentGeo( const GeoComponent * pComponent ) const
+	RectSPX Button::_componentGeo( const GeoComponent * pComponent ) const
 	{
 		if (pComponent == &skin)
 			return m_size;
 
-		Rect	contentRect = OO(skin)._contentRect(m_size, m_state);
+		RectSPX	contentRect = OO(skin)._contentRect(m_size, m_scale, m_state);
 
 		// Get icon and text rect from content rect
 
-		Rect iconRect = _icon()._getIconRect( contentRect );
+		RectSPX iconRect = _icon()._getIconRect( contentRect, m_scale );
 
 		if( pComponent == &icon )
 			return iconRect;
 
-		Rect textRect = _icon()._getTextRect( contentRect, iconRect );
+		RectSPX textRect = _icon()._getTextRect( contentRect, iconRect, m_scale );
 		return textRect;
 	}
 
