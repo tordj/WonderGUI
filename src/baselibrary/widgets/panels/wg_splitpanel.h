@@ -60,9 +60,10 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			inline Coord	pos() const { return m_geo.pos(); }
-			inline Size		size() const { return m_geo.size(); }
-			inline Rect		geo() const { return m_geo; }
+			inline Coord	pos() const { return Util::spxToPts(m_geo.pos(),_holder()->_scale()); }
+			inline Size		size() const { return Util::spxToPts(m_geo.size(), _holder()->_scale()); }
+			inline Rect		geo() const { return Util::spxToPts(m_geo, _holder()->_scale());
+			}
 
 			//.____ Operators __________________________________________
 
@@ -71,7 +72,7 @@ namespace wg
 		protected:
 			Slot() : DynamicSlot(nullptr) {}
 
-			Rect	m_geo;
+			RectSPX	m_geo;
 		};
 
 
@@ -115,12 +116,10 @@ namespace wg
 		void			setAxis(Axis orientaiton);
 		Axis			axis() const { return m_bHorizontal ? Axis::X : Axis::Y; }
 
-		Size			preferredSize() const override;
-
 		//.____ Appearance _________________________________________________
 
-		void			setHandleThickness(MU thickness);
-		MU				handleThickness() const { return m_handleThickness;  }
+		void			setHandleThickness(pts thickness);
+		pts				handleThickness() const { return m_handleThickness;  }
 
 		//.____ Behavior _______________________________________________________
 
@@ -134,37 +133,43 @@ namespace wg
 		void			setScaleBehavior(ScaleBehavior behavior);
 		ScaleBehavior	scaleBehavior() const { return m_scaleBehavior; }
 
-		void			setBrokerFunction(std::function<MU(Widget * pFirst, Widget * pSecond, MU totalLength, float splitFactor, MU handleMovement)> func);
-		std::function<MU(Widget * pFirst, Widget * pSecond, MU totalLength, float splitFactor, MU handleMovement)> brokerFunction() const { return m_brokerFunc;  }
+		void			setBrokerFunction(std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float splitFactor, pts handleMovement)> func);
+		std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float splitFactor, pts handleMovement)> brokerFunction() const { return m_brokerFunc;  }
 
 		//.____ Control ________________________________________________________
 
 		void		setSplitFactor(float fraction);
 		float		splitFactor() const { return m_splitFactor; }
 
+		//.____ Internal _______________________________________________________
+
+		SizeSPX			_preferredSize(int scale = -1) const override;
+
+
 	protected:
 		SplitPanel();
 		virtual ~SplitPanel();
 		virtual Widget* _newOfMyType() const override { return new SplitPanel(); };
 
-		MU			_handleThickness();					// Takes both m_handleThickness and m_pHandleSkin into account.
+		spx			_handleThickness(int scale) const;					// Takes both m_handleThickness and m_pHandleSkin into account.
 		void		_updatePreferredSize();
-		bool		_updateGeo(MU handleMovement=0);
-		MU		_defaultBroker(Widget * pFirst, Widget * pSecond, MU totalLength, float splitFactor, MU handleMovement);
+		SizeSPX		_calcPreferredSize(int scale) const;
+		bool		_updateGeo(spx handleMovement=0);
+		spx			_defaultBroker(Widget * pFirst, Widget * pSecond, spx totalLength, float splitFactor, spx handleMovement);
 
 		// Overloaded from Widget
 
-		void		_resize(const Size& size) override;
+		void		_resize(const SizeSPX& size, int scale = -1) override;
 		void		_setState(State state) override;
 		void		_refresh() override;
 		void		_receive(Msg * pMsg) override;
 
-		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 
-		void		_collectPatches(Patches& container, const Rect& geo, const Rect& clip) override;
-		void		_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode) override;
+		void		_collectPatches(Patches& container, const RectSPX& geo, const RectSPX& clip) override;
+		void		_maskPatches(Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode) override;
 
-		bool		_alphaTest(const Coord& ofs) override;
+		bool		_alphaTest(const CoordSPX& ofs) override;
 		void		_cloneContent(const Widget * _pOrg) override;
 
 		// Overloaded from Container
@@ -177,10 +182,10 @@ namespace wg
 		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
-		Coord		_childPos( const StaticSlot * pSlot) const override;
+		CoordSPX	_childPos( const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender(StaticSlot * pSlot) override;
-		void		_childRequestRender(StaticSlot * pSlot, const Rect& rect) override;
+		void		_childRequestRender(StaticSlot * pSlot, const RectSPX& rect) override;
 		void		_childRequestResize(StaticSlot * pSlot) override;
 
 		Widget *	_prevChild(const StaticSlot * pSlot) const override;
@@ -192,28 +197,28 @@ namespace wg
 		//
 
 		State			_componentState(const GeoComponent* pComponent) const override;
-		Coord			_componentPos(const GeoComponent* pComponent) const override;
-		Size			_componentSize(const GeoComponent* pComponent) const override;
-		Rect			_componentGeo(const GeoComponent* pComponent) const override;
+		CoordSPX		_componentPos(const GeoComponent* pComponent) const override;
+		SizeSPX			_componentSize(const GeoComponent* pComponent) const override;
+		RectSPX			_componentGeo(const GeoComponent* pComponent) const override;
 
 		void			_componentRequestRender(const GeoComponent* pComponent) override;
-		void			_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
+		void			_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect) override;
 
 		void			_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
 
 		//
 
 		bool			m_bHorizontal;
-		Size			m_preferredSize;
+		SizeSPX			m_preferredSize;
 		float			m_splitFactor;			// fraction of available child length that goes to first child. Measured in 1/65536.
 		ScaleBehavior	m_scaleBehavior;
 
-		MU				m_handleThickness;			// Set to 0 to use default from handleSkin.
-		Rect			m_handleGeo;
+		pts				m_handleThickness;			// Set to 0 to use default from handleSkin.
+		RectSPX			m_handleGeo;
 		State			m_handleState;
-		MU				m_handlePressOfs;
+		spx				m_handlePressOfs;
 
-		std::function<MU(Widget * pFirst, Widget * pSecond, MU totalLength, float splitFactor, MU handleMovement)>	m_brokerFunc;
+		std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float splitFactor, pts handleMovement)>	m_brokerFunc;
 	};
 
 }

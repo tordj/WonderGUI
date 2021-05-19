@@ -89,7 +89,7 @@ namespace wg
 
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
-		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void		_setValue(int millisec);
 
 		float		_skinValue(const CSkinSlot* pSlot) const override;

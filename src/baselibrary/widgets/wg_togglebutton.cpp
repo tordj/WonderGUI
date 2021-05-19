@@ -36,6 +36,7 @@ namespace wg
 
 	const TypeInfo ToggleButton::TYPEINFO = { "ToggleButton", &Widget::TYPEINFO };
 
+	using namespace Util;
 
 
 	//____ ToggleButton() _________________________________________________________________
@@ -85,28 +86,30 @@ namespace wg
 		m_bFlipOnRelease = bFlipOnRelease;
 	}
 
-	//____ preferredSize() __________________________________________________
+	//____ _preferredSize() __________________________________________________
 
-	Size ToggleButton::preferredSize() const
+	SizeSPX ToggleButton::_preferredSize(int scale) const
 	{
-		Size iconPreferredSize;
-		Size textPreferredSize;
+		scale = _fixScale(scale);
+
+		SizeSPX iconPreferredSize;
+		SizeSPX textPreferredSize;
 
 		if( !OO(text).isEmpty() )
-			textPreferredSize = OO(text)._preferredSize();
+			textPreferredSize = OO(text)._preferredSize(scale);
 
 		if( !_icon().isEmpty() )
 		{
-			iconPreferredSize = _icon().skin()->preferredSize() + _icon().padding().size();
+			iconPreferredSize = _icon().skin()->_preferredSize(scale) + align(ptsToSpx(_icon().padding().size(),scale));
 
 			//TODO: Add magic for how icon influences textPreferredSize based on placement, iconBorder, iconScale and bgPreferredSize
 		}
 
 		// Apply the skin
 
-		Size preferredSize = Size::max( iconPreferredSize, textPreferredSize );
+		SizeSPX preferredSize = SizeSPX::max( iconPreferredSize, textPreferredSize );
 
-		preferredSize = OO(skin)._sizeForContent( preferredSize );
+		preferredSize = OO(skin)._sizeForContent( preferredSize, scale );
 
 		return preferredSize;
 	}
@@ -244,26 +247,26 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void ToggleButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void ToggleButton::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
 		// Get the content rect and icon rect
 
-		Rect contentRect	= OO(skin)._contentRect(_canvas, m_state );
+		RectSPX contentRect	= OO(skin)._contentRect(_canvas, m_scale, m_state );
 
-		Rect iconRect		= _icon()._getIconRect( contentRect );
+		RectSPX iconRect		= _icon()._getIconRect( contentRect, m_scale );
 
 		// Blit icon
 
 		if( _icon().isEmpty() && iconRect.w > 0 && iconRect.h > 0 )
-			_icon().skin()->render( pDevice, iconRect, m_state );
+			_icon().skin()->_render( pDevice, iconRect, m_scale, m_state );
 
 		// Print text
 
 	 	if( !OO(text).isEmpty() )
 		{
-			Rect	textRect = _icon()._getTextRect( contentRect, iconRect );
+			RectSPX	textRect = _icon()._getTextRect( contentRect, iconRect, m_scale );
 			OO(text)._render( pDevice, textRect );
 		}
 	}
@@ -279,13 +282,13 @@ namespace wg
 
 	//____ _resize() _______________________________________________________
 
-	void ToggleButton::_resize( const Size& size )
+	void ToggleButton::_resize( const SizeSPX& size, int scale )
 	{
-		Widget::_resize( size );
+		Widget::_resize( size, scale );
 
-		Rect contentRect	= OO(skin)._contentRect(size, m_state );
+		RectSPX contentRect	= OO(skin)._contentRect(size, m_scale, m_state );
 
-		OO(text)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect )) );
+		OO(text)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale), m_scale );
 	}
 
 
@@ -305,11 +308,11 @@ namespace wg
 
 	//____ _markTestTextArea() ______________________________________________________
 
-	bool ToggleButton::_markTestTextArea( const Coord& pos )
+	bool ToggleButton::_markTestTextArea( const CoordSPX& pos )
 	{
-		Rect contentRect = OO(skin)._contentRect(m_size, m_state );
+		RectSPX contentRect = OO(skin)._contentRect(m_size, m_scale, m_state );
 
-		contentRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
+		contentRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale );
 
 		if( OO(text)._charAtPos( pos - contentRect.pos() ) != -1 )
 			return true;
@@ -319,13 +322,13 @@ namespace wg
 
 	//____ _alphaTest() ______________________________________________________
 
-	bool ToggleButton::_alphaTest( const Coord& ofs )
+	bool ToggleButton::_alphaTest( const CoordSPX& ofs )
 	{
-		Size	bgSize		= m_size;
+		SizeSPX	bgSize		= m_size;
 
-		Rect	contentRect = OO(skin)._contentRect( bgSize, m_state );
+		RectSPX	contentRect = OO(skin)._contentRect( bgSize, m_scale, m_state );
 
-		Rect	iconRect	= _icon()._getIconRect( contentRect );
+		RectSPX	iconRect	= _icon()._getIconRect( contentRect, m_scale );
 
 		switch( m_clickArea )
 		{
@@ -333,7 +336,7 @@ namespace wg
 			{
 				// Extend iconRect so it connects with textArea before we compare
 
-				Rect	textRect = _icon()._getTextRect( contentRect, iconRect);
+				RectSPX	textRect = _icon()._getTextRect( contentRect, iconRect, m_scale);
 
 				if( iconRect.x + iconRect.w < textRect.x )
 					iconRect.w = textRect.x - iconRect.x;
@@ -363,7 +366,7 @@ namespace wg
 			case ALPHA:			// Alpha test on background and icon.
 			{
 				if( Widget::_alphaTest( ofs ) ||
-					( !_icon().isEmpty() && _icon().skin()->markTest( ofs, iconRect, m_state, m_markOpacity )) )
+					( !_icon().isEmpty() && _icon().skin()->_markTest( ofs, iconRect, m_scale, m_state, m_markOpacity )) )
 					return true;
 
 				return false;
@@ -372,7 +375,7 @@ namespace wg
 				return true;
 			case ICON:			// Only the icon (alpha test) is clickable.
 			{
-				if( !_icon().isEmpty() && _icon().skin()->markTest( ofs, iconRect, m_state, m_markOpacity ) )
+				if( !_icon().isEmpty() && _icon().skin()->_markTest( ofs, iconRect, m_scale, m_state, m_markOpacity ) )
 					return true;
 
 				return false;
@@ -393,60 +396,60 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	Coord ToggleButton::_componentPos(const GeoComponent* pComponent) const
+	CoordSPX ToggleButton::_componentPos(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &skin)
-			return Coord();
+			return CoordSPX();
 
-		Rect contentRect = OO(skin)._contentRect(contentRect, m_state);
+		RectSPX contentRect = OO(skin)._contentRect(contentRect, m_scale, m_state);
 
 		// Get icon and text rect from content rect
 
-		Rect iconRect = _icon()._getIconRect(contentRect);
+		RectSPX iconRect = _icon()._getIconRect(contentRect, m_scale);
 
 		if (pComponent == &icon)
 			return iconRect.pos();
 
-		Rect textRect = _icon()._getTextRect(contentRect, iconRect);
+		RectSPX textRect = _icon()._getTextRect(contentRect, iconRect, m_scale);
 		return textRect.pos();
 	}
 
 	//____ _componentSize() ______________________________________________________________
 
-	Size ToggleButton::_componentSize(const GeoComponent* pComponent) const
+	SizeSPX ToggleButton::_componentSize(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &skin)
 			return m_size;
 
-		Size	sz = m_size - OO(skin)._contentPaddingSize();
+		SizeSPX	sz = m_size - OO(skin)._contentPaddingSize(m_scale);
 
-		Rect iconRect = _icon()._getIconRect(sz);
+		RectSPX iconRect = _icon()._getIconRect(sz, m_scale);
 
 		if (pComponent == &icon)
 			return iconRect.size();
 
-		Rect textRect = _icon()._getTextRect(sz, iconRect);
+		RectSPX textRect = _icon()._getTextRect(sz, iconRect, m_scale);
 		return textRect.size();
 
 	}
 
 	//____ _componentGeo() ______________________________________________________________
 
-	Rect ToggleButton::_componentGeo(const GeoComponent* pComponent) const
+	RectSPX ToggleButton::_componentGeo(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &skin)
 			return m_size;
 
-		Rect	contentRect = OO(skin)._contentRect(m_size, m_state);
+		RectSPX	contentRect = OO(skin)._contentRect(m_size, m_scale, m_state);
 
 		// Get icon and text rect from content rect
 
-		Rect iconRect = _icon()._getIconRect(contentRect);
+		RectSPX iconRect = _icon()._getIconRect(contentRect, m_scale);
 
 		if (pComponent == &icon)
 			return iconRect;
 
-		Rect textRect = _icon()._getTextRect(contentRect, iconRect);
+		RectSPX textRect = _icon()._getTextRect(contentRect, iconRect, m_scale);
 		return textRect;
 	}
 

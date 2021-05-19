@@ -18,6 +18,7 @@
 
 #include <wg_rootpanel.h>
 #include <wg_lambdapanel.h>
+#include <wg_splitpanel.h>
 
 #include <wg_popuplayer.h>
 
@@ -26,6 +27,7 @@
 #include <wg_fpsdisplay.h>
 #include <wg_button.h>
 #include <wg_selectbox.h>
+#include <wg_texteditor.h>
 
 #include <wg_staticcolorskin.h>
 #include <wg_boxskin.h>
@@ -125,8 +127,63 @@ int main ( int argc, char** argv )
 
 	Base::setActiveContext(pContext);
 
+	//
+
+	InputHandler_p pInput = Base::inputHandler();
+
+	pInput->mapKey(SDLK_LEFT, Key::Left);
+	pInput->mapKey(SDLK_RIGHT, Key::Right);
+	pInput->mapKey(SDLK_UP, Key::Up);
+	pInput->mapKey(SDLK_DOWN, Key::Down);
+	pInput->mapKey(SDLK_BACKSPACE, Key::Backspace);
+	pInput->mapKey(SDLK_DELETE, Key::Delete);
+	pInput->mapKey(SDLK_END, Key::End);
+	pInput->mapKey(SDLK_ESCAPE, Key::Escape);
+	pInput->mapKey(SDLK_HOME, Key::Home);
+	pInput->mapKey(SDLK_PAGEDOWN, Key::PageDown);
+	pInput->mapKey(SDLK_PAGEUP, Key::PageUp);
+	pInput->mapKey(SDLK_RETURN, Key::Return);
+	pInput->mapKey(SDLK_SPACE, Key::Space);
+	pInput->mapKey(SDLK_TAB, Key::Tab);
+	pInput->mapKey(SDLK_F1, Key::F1);
+	pInput->mapKey(SDLK_F2, Key::F2);
+	pInput->mapKey(SDLK_F3, Key::F3);
+	pInput->mapKey(SDLK_F4, Key::F4);
+	pInput->mapKey(SDLK_F5, Key::F5);
+	pInput->mapKey(SDLK_F6, Key::F6);
+	pInput->mapKey(SDLK_F7, Key::F7);
+	pInput->mapKey(SDLK_F8, Key::F8);
+	pInput->mapKey(SDLK_F9, Key::F9);
+	pInput->mapKey(SDLK_F10, Key::F10);
+	pInput->mapKey(SDLK_F11, Key::F11);
+	pInput->mapKey(SDLK_F12, Key::F12);
 
 
+	pInput->mapKey(SDLK_LCTRL, Key::Control);
+	pInput->mapKey(SDLK_RCTRL, Key::Control);
+
+	pInput->mapKey(SDLK_LSHIFT, Key::Shift);
+	pInput->mapKey(SDLK_RSHIFT, Key::Shift);
+
+	pInput->mapKey(SDLK_LALT, Key::Alt);
+	pInput->mapKey(SDLK_RALT, Key::Alt);
+
+	pInput->mapKey(SDLK_KP_ENTER, Key::Return);
+
+
+	pInput->mapCommand(SDLK_ESCAPE, MODKEY_NONE, EditCmd::Escape);
+
+	pInput->mapCommand(SDLK_x, MODKEY_CTRL, EditCmd::Cut);
+	pInput->mapCommand(SDLK_c, MODKEY_CTRL, EditCmd::Copy);
+	pInput->mapCommand(SDLK_v, MODKEY_CTRL, EditCmd::Paste);
+
+	pInput->mapCommand(SDLK_a, MODKEY_CTRL, EditCmd::SelectAll);
+
+	pInput->mapCommand(SDLK_z, MODKEY_CTRL, EditCmd::Undo);
+	pInput->mapCommand(SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo);
+
+
+	//
 
 	PixelFormat format = PixelFormat::Unknown;
 
@@ -167,6 +224,7 @@ int main ( int argc, char** argv )
 	auto pPopupLayer = PopupLayer::create();
 	pRoot->slot = pPopupLayer;
 
+	Base::inputHandler()->setFocusedWindow(pRoot);
 
 	//
 
@@ -231,6 +289,33 @@ int main ( int argc, char** argv )
 	pSelectBox->entries.pushBack({ SelectBoxEntry(1, String("One")), SelectBoxEntry(2,String("Two")) });
 
 	pBaseLambda->slots.pushBack(pSelectBox, [](Widget* pWidget, Size parentSize) { return Rect(10, 400, 100, 50); });
+
+	//
+
+	auto pSplitPanel = SplitPanel::create();
+
+
+	auto pTextEditor = TextEditor::create();
+	pTextEditor->text.set("EDITABLE");
+	pTextEditor->skin = pSkin;
+
+	auto pTextEditor2= TextEditor::create();
+	pTextEditor2->text.set("EDIT2");
+	pTextEditor2->skin = pSkin;
+
+	pSplitPanel->slots[0] = pTextEditor;
+
+	pSplitPanel->slots[1] = pTextEditor2;
+
+	pSplitPanel->handleSkin = pSkin2;
+
+	pBaseLambda->slots.pushBack(pSplitPanel, [](Widget* pWidget, Size parentSize) { return Rect(200, 200, 100, 200); });
+
+	//
+
+
+
+
 
 
 	//------------------------------------------------------
@@ -317,6 +402,35 @@ void translateEvents(RootPanel * pRoot)
 
 			case SDL_MOUSEBUTTONUP:
 				Base::inputHandler()->setButton( translateMouseButton(e.button.button), false );
+				break;
+
+			case SDL_MOUSEWHEEL:
+			{
+				bool bInvertScroll = false;
+				Coord distance(e.wheel.x, e.wheel.y);
+				if (e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
+				{
+					bInvertScroll = true;
+					distance *= -1;
+				}
+				Base::inputHandler()->setWheelRoll(1, distance, bInvertScroll);
+				break;
+			}
+
+			case SDL_KEYDOWN:
+			{
+				Base::inputHandler()->setKey(e.key.keysym.sym, true);
+				break;
+			}
+
+			case SDL_KEYUP:
+			{
+				Base::inputHandler()->setKey(e.key.keysym.sym, false);
+				break;
+			}
+
+			case SDL_TEXTINPUT:
+				Base::inputHandler()->putText(e.text.text);
 				break;
 
 			default:

@@ -185,14 +185,14 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void Timer::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
+	void Timer::_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window)
 	{
 		if (!skin.isEmpty())
 		{
 			int quantizedValue = m_value - (m_value % m_stepSize);
 			m_renderedFraction = quantizedValue / float(m_duration);
 
-			OO(skin)._render(pDevice, canvas, m_state, m_renderedFraction );
+			OO(skin)._render(pDevice, canvas, m_scale, m_state, m_renderedFraction );
 		}
 	}
 

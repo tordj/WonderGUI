@@ -54,35 +54,39 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	MU TextEditor::matchingHeight( MU width ) const
+	spx TextEditor::_matchingHeight( spx width, int scale ) const
 	{
+		scale = _fixScale(scale);
+
 		//TODO: Remove skin contentPadding before calculations.
 
-		MU textHeight = OO(text)._matchingHeight( width );
+		spx textHeight = OO(text)._matchingHeight( width, scale );
 
-		textHeight += OO(skin)._contentPaddingSize().h;
+		textHeight += OO(skin)._contentPaddingSize(scale).h;
 
 		return textHeight;
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	Size TextEditor::preferredSize() const
+	SizeSPX TextEditor::_preferredSize(int scale) const
 	{
-		Size contentSize = OO(text)._preferredSize();
+		scale = _fixScale(scale);
 
-		return OO(skin)._sizeForContent(contentSize);
+		SizeSPX contentSize = OO(text)._preferredSize(scale);
+
+		return OO(skin)._sizeForContent(contentSize,scale);
 	}
 
 	//____ _render() ________________________________________________________
 
-	void TextEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void TextEditor::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
+		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
 
 		OO(text)._render( pDevice, canvas );
 	}
@@ -127,11 +131,11 @@ namespace wg
 
 	//____ _resize() ________________________________________________
 
-	void TextEditor::_resize( const Size& size )
+	void TextEditor::_resize( const SizeSPX& size, int scale )
 	{
-		Widget::_resize( size );
+		Widget::_resize( size, scale );
 
-		OO(text)._setSize(size - OO(skin)._contentPaddingSize());
+		OO(text)._setSize(size - OO(skin)._contentPaddingSize(m_scale), m_scale);
 	}
 
 } // namespace wg
