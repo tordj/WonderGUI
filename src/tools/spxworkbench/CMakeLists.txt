@@ -134,8 +134,8 @@ add_executable(spxworkbench
 	../../baselibrary/base/wg_textstylemanager.h
 	../../baselibrary/base/wg_texttool.cpp
 	../../baselibrary/base/wg_texttool.h
-#	../../baselibrary/base/wg_togglegroup.cpp
-#	../../baselibrary/base/wg_togglegroup.h
+	../../baselibrary/base/wg_togglegroup.cpp
+	../../baselibrary/base/wg_togglegroup.h
 	../../baselibrary/base/wg_types.h
 	../../baselibrary/base/wg_util.cpp
 	../../baselibrary/base/wg_util.h
@@ -192,8 +192,8 @@ add_executable(spxworkbench
 	../../baselibrary/components/wg_ctext.h
 	../../baselibrary/components/wg_ctextdisplay.cpp
 	../../baselibrary/components/wg_ctextdisplay.h
-#	../../baselibrary/components/wg_ctexteditor.cpp
-#	../../baselibrary/components/wg_ctexteditor.h
+	../../baselibrary/components/wg_ctexteditor.cpp
+	../../baselibrary/components/wg_ctexteditor.h
 	../../baselibrary/components/wg_cvaluedisplay.cpp
 	../../baselibrary/components/wg_cvaluedisplay.h
 #	../../baselibrary/components/wg_cvalueeditor.cpp
@@ -306,12 +306,12 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/wg_slider.h
 	../../baselibrary/widgets/wg_textdisplay.cpp
 	../../baselibrary/widgets/wg_textdisplay.h
-#	../../baselibrary/widgets/wg_texteditor.cpp
-#	../../baselibrary/widgets/wg_texteditor.h
-#	../../baselibrary/widgets/wg_timer.cpp
-#	../../baselibrary/widgets/wg_timer.h
-#	../../baselibrary/widgets/wg_togglebutton.cpp
-#	../../baselibrary/widgets/wg_togglebutton.h
+	../../baselibrary/widgets/wg_texteditor.cpp
+	../../baselibrary/widgets/wg_texteditor.h
+	../../baselibrary/widgets/wg_timer.cpp
+	../../baselibrary/widgets/wg_timer.h
+	../../baselibrary/widgets/wg_togglebutton.cpp
+	../../baselibrary/widgets/wg_togglebutton.h
 #	../../baselibrary/widgets/wg_valuedisplay.cpp
 #	../../baselibrary/widgets/wg_valuedisplay.h
 #	../../baselibrary/widgets/wg_volumemeter.cpp
@@ -319,7 +319,7 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/wg_widget.cpp
 	../../baselibrary/widgets/wg_widget.h
 
-#	../../baselibrary/wi dgets/capsules/wg_canvascapsule.cpp
+#	../../baselibrary/widgets/capsules/wg_canvascapsule.cpp
 #	../../baselibrary/widgets/capsules/wg_canvascapsule.h
 	../../baselibrary/widgets/capsules/wg_capsule.cpp
 	../../baselibrary/widgets/capsules/wg_capsule.h
@@ -357,8 +357,8 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/panels/wg_rootpanel.h
 #	../../baselibrary/widgets/panels/wg_scrollpanel.cpp
 #	../../baselibrary/widgets/panels/wg_scrollpanel.h
-#	../../baselibrary/widgets/panels/wg_splitpanel.cpp
-#	../../baselibrary/widgets/panels/wg_splitpanel.h
+	../../baselibrary/widgets/panels/wg_splitpanel.cpp
+	../../baselibrary/widgets/panels/wg_splitpanel.h
 #	../../baselibrary/widgets/panels/wg_stackpanel.cpp
 #	../../baselibrary/widgets/panels/wg_stackpanel.h
 

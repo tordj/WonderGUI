@@ -84,10 +84,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
-
-		Size			preferredSize() const override;
-
 		//.____ State _________________________________________________
 
 		inline bool			isSelected();
@@ -105,25 +101,30 @@ namespace wg
 
 		inline ToggleGroup_p toggleGroup() const;
 
+		//.____ Geometry _________________________________________________
+
+		SizeSPX			_preferredSize(int scale = -1) const override;
+
+
 	protected:
 		ToggleButton();
 		virtual ~ToggleButton();
 		virtual Widget* _newOfMyType() const override { return new ToggleButton(); };
 
-		void	_cloneContent( const Widget * _pOrg ) override;
-		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
-		void	_receive( Msg * pMsg ) override;
-		void	_refresh() override;
-		void	_resize( const Size& size ) override;
-		bool	_alphaTest( const Coord& ofs ) override;
-		void	_setState( State state ) override;
+		void		_cloneContent( const Widget * _pOrg ) override;
+		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
+		void		_receive( Msg * pMsg ) override;
+		void		_refresh() override;
+		void		_resize( const SizeSPX& size, int scale = -1 ) override;
+		bool		_alphaTest( const CoordSPX& ofs ) override;
+		void		_setState( State state ) override;
 
-		void	_setToggleGroup( ToggleGroup * pGroup );
+		void		_setToggleGroup( ToggleGroup * pGroup );
 		ToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }
 
-		Coord	_componentPos( const GeoComponent * pComponent ) const override;
-		Size	_componentSize( const GeoComponent * pComponent ) const override;
-		Rect	_componentGeo( const GeoComponent * pComponent ) const override;
+		CoordSPX	_componentPos( const GeoComponent * pComponent ) const override;
+		SizeSPX		_componentSize( const GeoComponent * pComponent ) const override;
+		RectSPX		_componentGeo( const GeoComponent * pComponent ) const override;
 
 
 
@@ -134,7 +135,7 @@ namespace wg
 
 
 //		void	_refreshTextArea();
-		bool	_markTestTextArea( const Coord& pos );
+		bool	_markTestTextArea( const CoordSPX& pos );
 
 		bool			m_bPressed;						// Set when mouse is pressed and over.
 		bool			m_bReturnPressed;
