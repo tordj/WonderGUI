@@ -367,7 +367,7 @@ namespace wg
 				if (m_handleState.isPressed())
 					return;
 
-				CoordSPX pos = static_cast<InputMsg*>(pMsg)->pointerPosSPX() - _globalPos();
+				CoordSPX pos = static_cast<InputMsg*>(pMsg)->_pointerPos() - _globalPos();
 
 				bool bHovered = m_handleGeo.contains(pos);
 				handleState.setHovered(bHovered);
@@ -389,7 +389,7 @@ namespace wg
 				if (p->button() != MouseButton::Left)
 					return;
 
-				CoordSPX pos = p->pointerPosSPX() - _globalPos();
+				CoordSPX pos = p->_pointerPos() - _globalPos();
 				if (m_handleGeo.contains(pos))
 				{
 					m_handlePressOfs = m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y;
@@ -423,7 +423,7 @@ namespace wg
 
 				if (handleState.isPressed())
 				{
-					CoordSPX pos = p->pointerPosSPX() - _globalPos();
+					CoordSPX pos = p->_pointerPos() - _globalPos();
 					spx diff = (m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y) - m_handlePressOfs;
 
 					_updateGeo(diff);

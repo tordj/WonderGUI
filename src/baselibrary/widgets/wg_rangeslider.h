@@ -62,10 +62,8 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		Size			preferredSize() const override;
-
-		void			setPreferredSlideLength(MU length);
-		inline MU		preferredSlideLength() const { return m_preferredSlideLength; }
+		void			setPreferredSlideLength(pts length);
+		inline pts		preferredSlideLength() const { return m_preferredSlideLength; }
 
 		//.____ Appearance _____________________________________________
 
@@ -85,6 +83,9 @@ namespace wg
 		inline float	rangeBegin() const { return m_rangeBegin; }
 		inline float	rangeEnd() const { return m_rangeEnd; }
 
+		//.____ Internal _______________________________________________________
+
+		SizeSPX			_preferredSize(int scale = -1) const override;
 
 	protected:
 		RangeSlider();
@@ -93,22 +94,23 @@ namespace wg
 		void 			_receive(Msg* pMsg) override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
-		bool		_alphaTest(const Coord& ofs) override;
+		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
+		bool		_alphaTest(const CoordSPX& ofs) override;
 
 		void		_updatePreferredSize();
+		SizeSPX		_calcPreferredSize(int scale) const;
 
 		void		_setRange(float begin, float end, bool bPostMsg = true);
 		void		_setHandleState(State state, bool isBeginHandle);
-		Rect		_handleGeo(const Rect& widgetGeo, bool isbBeginHandle) const;
+		RectSPX		_handleGeo(const RectSPX& widgetGeo, bool isbBeginHandle) const;
 
 		State		_componentState(const GeoComponent* pComponent) const override;
-		Coord		_componentPos(const GeoComponent* pComponent) const override;
-		Size		_componentSize(const GeoComponent* pComponent) const override;
-		Rect		_componentGeo(const GeoComponent* pComponent) const override;
+		CoordSPX	_componentPos(const GeoComponent* pComponent) const override;
+		SizeSPX		_componentSize(const GeoComponent* pComponent) const override;
+		RectSPX		_componentGeo(const GeoComponent* pComponent) const override;
 
 		void		_componentRequestRender(const GeoComponent* pComponent) override;
-		void		_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
+		void		_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect) override;
 
 		void		_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
 
@@ -117,8 +119,8 @@ namespace wg
 
 
 	private:
-		Size		m_preferredSize;
-		MU			m_preferredSlideLength;
+		SizeSPX		m_preferredSize;
+		pts			m_preferredSlideLength;
 		float		m_rangeBegin = 0.f;
 		float		m_rangeEnd = 1.f;
 		float		m_minRange = 0.f;

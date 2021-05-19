@@ -53,12 +53,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ______________________________________________________
-
-		virtual MU		matchingHeight(MU width) const override;
-
-		Size			preferredSize() const override;
-
 		//.____ Behavior ____________________________________________
 
 		void		setPopup(Widget * pPopup);
@@ -70,14 +64,21 @@ namespace wg
 		void		setAttachPoint(Placement attachPoint);
 		Placement		attachPoint() const { return m_attachPoint;  }
 
+		//.____ Internal ______________________________________________________
+
+		virtual spx		_matchingHeight(spx width, int scale = -1) const override;
+
+		SizeSPX			_preferredSize(int scale = -1) const override;
+
+
 	protected:
 		PopupOpener();
 		virtual ~PopupOpener();
 		virtual Widget* _newOfMyType() const override { return new PopupOpener(); };
 
 		void			_cloneContent(const Widget * _pOrg) override;
-		void			_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
-		void			_resize(const Size& size) override;
+		void			_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
+		void			_resize(const SizeSPX& size, int scale = -1) override;
 		void			_refresh() override;
 		void			_receive(Msg * pMsg) override;
 		void			_setState(State state) override;
@@ -86,9 +87,9 @@ namespace wg
 		void			_open();
 		void			_close();
 
-		Coord			_componentPos(const GeoComponent * pComponent) const override;
-		Size			_componentSize(const GeoComponent * pComponent) const override;
-		Rect			_componentGeo(const GeoComponent * pComponent) const override;
+		CoordSPX		_componentPos(const GeoComponent * pComponent) const override;
+		SizeSPX			_componentSize(const GeoComponent * pComponent) const override;
+		RectSPX			_componentGeo(const GeoComponent * pComponent) const override;
 
 		class IconAccess : public CIconDisplay { friend class PopupOpener; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
@@ -98,7 +99,7 @@ namespace wg
 
 		Widget_p		m_pPopup;
 
-		Placement			m_attachPoint = Placement::SouthWest;
+		Placement		m_attachPoint = Placement::SouthWest;
 		bool			m_bOpenOnHover = false;
 		bool			m_bOpen = false;
 		State			m_closeState;

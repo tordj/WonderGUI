@@ -50,13 +50,15 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() __________________________________________________________
+	//____ _preferredSize() __________________________________________________________
 
-	Size ValueDisplay::preferredSize() const
+	SizeSPX ValueDisplay::_preferredSize(int scale) const
 	{
-		Size size = OO(value)._preferredSize();
+		scale = _fixScale(scale);
 
-		return OO(skin)._sizeForContent(size);
+		SizeSPX size = OO(value)._preferredSize(scale);
+
+		return OO(skin)._sizeForContent(size, scale);
 	}
 
 
@@ -70,7 +72,7 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void ValueDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void ValueDisplay::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 		OO(value)._render(pDevice, _canvas);
