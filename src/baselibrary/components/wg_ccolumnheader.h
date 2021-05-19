@@ -68,37 +68,37 @@ namespace wg
 		void			_setState(State state);
 		inline State	_state() const { return m_state; }
 
-		void			_setSize(Size size);
-		inline Size		_size() const { return m_size; }
+		void			_setSize(SizeSPX size, int scale);
+		inline SizeSPX	_size() const { return m_size; }
 
-		Size			_preferredSize() const;
-		MU				_matchingWidth(MU height) const;
-		MU				_matchingHeight(MU width) const;
+		SizeSPX			_preferredSize(int scale) const;
+		spx				_matchingWidth(spx height, int scale) const;
+		spx				_matchingHeight(spx width, int scale) const;
 
 		bool			_receive(Msg * pMsg);
 
-		void			_render(GfxDevice * pDevice, const Rect& _canvas);
+		void			_render(GfxDevice * pDevice, const RectSPX& _canvas);
 
 		inline Object *			_object() override { return GeoComponent::_object(); }
 		inline const Object *	_object() const override { return GeoComponent::_object(); }
 
 
-		State	_componentState(const GeoComponent* pComponent) const override { return StateEnum::Normal; }
-		Coord	_componentPos( const GeoComponent * pComponent ) const override;
-		Size	_componentSize( const GeoComponent * pComponent ) const override;
-		Rect	_componentGeo( const GeoComponent * pComponent ) const override;
-		Coord	_globalComponentPos( const GeoComponent * pComponent ) const override;
-		Rect	_globalComponentGeo( const GeoComponent * pComponent ) const override;
+		State		_componentState(const GeoComponent* pComponent) const override { return StateEnum::Normal; }
+		CoordSPX	_componentPos( const GeoComponent * pComponent ) const override;
+		SizeSPX		_componentSize( const GeoComponent * pComponent ) const override;
+		RectSPX		_componentGeo( const GeoComponent * pComponent ) const override;
+		CoordSPX	_globalComponentPos( const GeoComponent * pComponent ) const override;
+		RectSPX		_globalComponentGeo( const GeoComponent * pComponent ) const override;
 
-		void	_componentRequestRender( const GeoComponent * pComponent ) override;
-		void	_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
-		void	_componentRequestResize( const GeoComponent * pComponent ) override;
+		void		_componentRequestRender( const GeoComponent * pComponent ) override;
+		void		_componentRequestRender( const GeoComponent * pComponent, const RectSPX& rect ) override;
+		void		_componentRequestResize( const GeoComponent * pComponent ) override;
 
-		void	_componentRequestFocus( const GeoComponent * pComponent ) override;
-		void	_componentRequestInView( const GeoComponent * pComponent ) override;
-		void	_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave ) override;
+		void		_componentRequestFocus( const GeoComponent * pComponent ) override;
+		void		_componentRequestInView( const GeoComponent * pComponent ) override;
+		void		_componentRequestInView( const GeoComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave ) override;
 
-		void	_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
+		void		_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
 		class IconAccess : public CIconDisplay { friend class CColumnHeader; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
@@ -110,7 +110,8 @@ namespace wg
 		Skin_p			m_pSkin;
 
 		State			m_state;
-		Size			m_size;
+		SizeSPX			m_size;
+		int				m_scale = 64;
 
 		bool			m_bPressed;
 		SortOrder		m_sortOrder;

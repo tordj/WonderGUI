@@ -33,6 +33,7 @@
 namespace wg
 {
 	template class CDynamicVector<AnimFrame>;
+	using namespace Util;
 
 	const TypeInfo AnimPlayer::TYPEINFO = { "AnimPlayer", &Widget::TYPEINFO };
 
@@ -151,7 +152,7 @@ namespace wg
 	{
 		int scale = _fixScale(_scale);
 
-		return OO(skin)._sizeForContent(frames.frameSize(),scale);
+		return OO(skin)._sizeForContent(align(ptsToSpx(frames.frameSize(),scale)),scale);
 	}
 
 	//____ _update() ______________________________________________________________
@@ -177,7 +178,7 @@ namespace wg
 			RectSPX canv = _contentRect();
 			pDevice->setBlitSource(frames._surface());
 			auto * pFrame = frames.find(_playPosToTimestamp(m_playPos));
-			pDevice->stretchFlipBlit(canv, RectI(pFrame->source(), frames.frameSize()), pFrame->flip());
+			pDevice->stretchFlipBlit(canv, align(ptsToSpx(Rect(pFrame->source(), frames.frameSize()),m_scale)), pFrame->flip());
 		}
 	}
 
@@ -207,7 +208,10 @@ namespace wg
 			return true;
 
 		if (m_cycleDuration > 0 && m_state.isEnabled())
-			return Util::markTestStretchRect(ofs, frames._surface(), RectI(frames.find(_playPosToTimestamp(m_playPos))->source(), frames.frameSize()), RectSPX(m_size), m_markOpacity);
+		{
+			Rect source = Rect(frames.find(_playPosToTimestamp(m_playPos))->source(), frames.frameSize());
+			return Util::markTestStretchRect(ofs, frames._surface(), align(ptsToSpx(source, m_scale)), RectSPX(m_size), m_markOpacity);
+		}
 
 		return false;
 	}

@@ -616,7 +616,7 @@ namespace wg
 		case MsgType::MouseEnter:
 		case MsgType::MouseMove:
 		{
-			CoordSPX pos = pCanvas->_toLocal(static_cast<InputMsg*>(pMsg)->pointerPosSPX());
+			CoordSPX pos = pCanvas->_toLocal(static_cast<InputMsg*>(pMsg)->_pointerPos());
 			_markEntry(_findEntry(pos));
 			break;
 		}

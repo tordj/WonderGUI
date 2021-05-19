@@ -31,6 +31,8 @@ namespace wg
 {
 	const TypeInfo CanvasCapsule::TYPEINFO = { "CanvasCapsule", &Capsule::TYPEINFO };
 
+	using namespace Util;
+
 	//____ constructor ____________________________________________________________
 
 	CanvasCapsule::CanvasCapsule()
@@ -110,7 +112,7 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void CanvasCapsule::_render(GfxDevice* pDevice, const Rect& _canvas, const Rect& _window)
+	void CanvasCapsule::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
 		// Possibly regenerate the canvas
 
@@ -123,30 +125,36 @@ namespace wg
 				return;
 			}
 
-			m_pCanvas = pFactory->createSurface(m_size.px(), m_canvasFormat, SurfaceFlag::Canvas);
+			SizeI pixelSize = align(m_size) / 64;
+			m_pCanvas = pFactory->createSurface(m_size, m_canvasFormat, SurfaceFlag::Canvas);
 			m_patches.clear();
 			m_patches.add(m_size);
 		}
 
+		// Make sure we have right scale
+
+		if (m_pCanvas->scale() != m_scale)
+			m_pCanvas->setScale(m_scale);
+
 		// Generate the clip buffer
 
-		int allocSize = m_patches.size() * sizeof(RectI);
-		RectI * pClipBuffer = (RectI*) Base::memStackAlloc(allocSize);
+		int allocSize = m_patches.size() * sizeof(RectSPX);
+		RectSPX * pClipBuffer = (RectSPX*) Base::memStackAlloc(allocSize);
 
-		RectI* pDst = pClipBuffer;
-		const Rect* pSrc = m_patches.begin();
+		RectSPX* pDst = pClipBuffer;
+		const RectSPX* pSrc = m_patches.begin();
 		while (pSrc != m_patches.end())
-			*pDst++ = (*pSrc++).px();
+			*pDst++ = (*pSrc++);
 
 		// Render 
 
 		pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), pClipBuffer, m_pCanvasLayers, m_renderLayer);
 
-		OO(skin)._render(pDevice, _canvas.size(), m_state);
+		OO(skin)._render(pDevice, _canvas.size(), m_scale, m_state);
 		
 		// Render children recursively
 
-		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
+		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
 
 		if (canvas != _canvas)
 		{
@@ -163,7 +171,7 @@ namespace wg
 		// Blit our canvas
 
 		pDevice->setBlitSource(m_pCanvas);
-		pDevice->blit(_canvas.px());
+		pDevice->blit(_canvas);
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -175,10 +183,11 @@ namespace wg
 
 	//____ _resize() _____________________________________________________________
 
-	void CanvasCapsule::_resize(const Size& size)
+	void CanvasCapsule::_resize(const SizeSPX& size, int scale)
 	{
-		m_pCanvas = nullptr;
-		Capsule::_resize(size);
+		if( size != m_size)
+			m_pCanvas = nullptr;
+		Capsule::_resize(size, scale);
 	}
 
 	//____ _childRequestRender() _________________________________________________
@@ -190,9 +199,9 @@ namespace wg
 		Capsule::_childRequestRender(pSlot);
 	}
 
-	void CanvasCapsule::_childRequestRender(StaticSlot* pSlot, const Rect& rect)
+	void CanvasCapsule::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)
 	{
-		Rect dirt = rect + _contentRect().pos();
+		RectSPX dirt = rect + _contentRect().pos();
 
 		m_patches.add(dirt);
 		_requestRender(dirt);

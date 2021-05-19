@@ -147,8 +147,8 @@ add_executable(spxworkbench
 	../../baselibrary/components/wg_canimframes.h
 #	../../baselibrary/components/wg_ccanvas.cpp
 #	../../baselibrary/components/wg_ccanvas.h
-#	../../baselibrary/components/wg_ccolumnheader.cpp
-#	../../baselibrary/components/wg_ccolumnheader.h
+	../../baselibrary/components/wg_ccolumnheader.cpp
+	../../baselibrary/components/wg_ccolumnheader.h
 	../../baselibrary/components/wg_cdynamicslotcollection.cpp
 	../../baselibrary/components/wg_cdynamicslotcollection.h
 	../../baselibrary/components/wg_cdynamicslotvector.h
@@ -196,8 +196,8 @@ add_executable(spxworkbench
 	../../baselibrary/components/wg_ctexteditor.h
 	../../baselibrary/components/wg_cvaluedisplay.cpp
 	../../baselibrary/components/wg_cvaluedisplay.h
-#	../../baselibrary/components/wg_cvalueeditor.cpp
-#	../../baselibrary/components/wg_cvalueeditor.h
+	../../baselibrary/components/wg_cvalueeditor.cpp
+	../../baselibrary/components/wg_cvalueeditor.h
 	../../baselibrary/components/wg_geocomponent.cpp
 	../../baselibrary/components/wg_geocomponent.h
 #
@@ -268,8 +268,8 @@ add_executable(spxworkbench
 	../../baselibrary/valueformatters/wg_valueformatter.cpp
 	../../baselibrary/valueformatters/wg_valueformatter.h
 
-#	../../baselibrary/widgets/wg_animplayer.cpp
-#	../../baselibrary/widgets/wg_animplayer.h
+	../../baselibrary/widgets/wg_animplayer.cpp
+	../../baselibrary/widgets/wg_animplayer.h
 	../../baselibrary/widgets/wg_button.cpp
 	../../baselibrary/widgets/wg_button.h
 #	../../baselibrary/widgets/wg_canvas.cpp
@@ -288,10 +288,10 @@ add_executable(spxworkbench
 #	../../baselibrary/widgets/wg_lineeditor.h
 #	../../baselibrary/widgets/wg_pianokeyboard.cpp
 #	../../baselibrary/widgets/wg_pianokeyboard.h
-#	../../baselibrary/widgets/wg_popupopener.cpp
-#	../../baselibrary/widgets/wg_popupopener.h
-#	../../baselibrary/widgets/wg_rangeslider.cpp
-#	../../baselibrary/widgets/wg_rangeslider.h
+	../../baselibrary/widgets/wg_popupopener.cpp
+	../../baselibrary/widgets/wg_popupopener.h
+	../../baselibrary/widgets/wg_rangeslider.cpp
+	../../baselibrary/widgets/wg_rangeslider.h
 #	../../baselibrary/widgets/wg_rulerlabels.cpp
 #	../../baselibrary/widgets/wg_rulerlabels.h
 	../../baselibrary/widgets/wg_scrollbar.cpp
@@ -312,15 +312,15 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/wg_timer.h
 	../../baselibrary/widgets/wg_togglebutton.cpp
 	../../baselibrary/widgets/wg_togglebutton.h
-#	../../baselibrary/widgets/wg_valuedisplay.cpp
-#	../../baselibrary/widgets/wg_valuedisplay.h
+	../../baselibrary/widgets/wg_valuedisplay.cpp
+	../../baselibrary/widgets/wg_valuedisplay.h
 #	../../baselibrary/widgets/wg_volumemeter.cpp
 #	../../baselibrary/widgets/wg_volumemeter.h
 	../../baselibrary/widgets/wg_widget.cpp
 	../../baselibrary/widgets/wg_widget.h
 
-#	../../baselibrary/widgets/capsules/wg_canvascapsule.cpp
-#	../../baselibrary/widgets/capsules/wg_canvascapsule.h
+	../../baselibrary/widgets/capsules/wg_canvascapsule.cpp
+	../../baselibrary/widgets/capsules/wg_canvascapsule.h
 	../../baselibrary/widgets/capsules/wg_capsule.cpp
 	../../baselibrary/widgets/capsules/wg_capsule.h
 	../../baselibrary/widgets/capsules/wg_renderlayercapsule.cpp

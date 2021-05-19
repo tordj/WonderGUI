@@ -815,7 +815,7 @@ namespace wg
 		_viewToPosLen( &handlePos, &handleLen );
 
 		MsgRouter_p	pHandler = Base::msgRouter();
-		CoordSPX pos = static_cast<InputMsg*>(pMsg)->pointerPosSPX() - _globalPos();
+		CoordSPX pos = static_cast<InputMsg*>(pMsg)->_pointerPos() - _globalPos();
 
 		spx		pointerOfs;
 		spx		length;

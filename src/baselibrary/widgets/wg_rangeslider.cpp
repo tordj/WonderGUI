@@ -51,19 +51,9 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() __________________________________________________________
+	//____ setPreferredSlideLength() _________________________________________
 
-	Size RangeSlider::preferredSize() const
-	{
-		if (m_preferredSize.w >= 0 && m_preferredSize.h >= 0)
-			return m_preferredSize;
-		else
-			return Widget::preferredSize();
-	}
-
-	//____ _setPreferredSlideLength() _________________________________________
-
-	void RangeSlider::setPreferredSlideLength(MU length)
+	void RangeSlider::setPreferredSlideLength(pts length)
 	{
 		if (length < 0)
 		{
@@ -115,6 +105,16 @@ namespace wg
 		_setRange(begin, end, false);
 	}
 
+	//____ _preferredSize() __________________________________________________________
+
+	SizeSPX RangeSlider::_preferredSize(int scale) const
+	{
+		if (m_preferredSize.w >= 0 && m_preferredSize.h >= 0)
+			return m_preferredSize;
+		else
+			return Widget::_preferredSize(scale);
+	}
+
 	//____ _receive() __________________________________________________________
 
 	void RangeSlider::_receive(Msg* _pMsg)
@@ -125,7 +125,7 @@ namespace wg
 		case MsgType::MouseMove:
 		{
 			auto pMsg = static_cast<InputMsg*>(_pMsg);
-			Coord pos = toLocal(pMsg->pointerPos());
+			CoordSPX pos = _toLocal(pMsg->_pointerPos());
 
 			if (_handleGeo(m_size, true).contains(pos) != m_beginHandleState.isHovered())
 				_setHandleState(m_beginHandleState + StateEnum::Hovered, true);
@@ -151,9 +151,9 @@ namespace wg
 			if (pMsg->button() != MouseButton::Left)
 				break;
 
-			Coord pos = toLocal(pMsg->pointerPos());
-			Rect  beginHandle = _handleGeo(m_size, true);
-			Rect  endHandle = _handleGeo(m_size, false);
+			CoordSPX pos = _toLocal(pMsg->_pointerPos());
+			RectSPX  beginHandle = _handleGeo(m_size, true);
+			RectSPX  endHandle = _handleGeo(m_size, false);
 			if (beginHandle.contains(pos))
 			{
 				_setHandleState(m_beginHandleState + StateEnum::Pressed, true);
@@ -207,12 +207,12 @@ namespace wg
 
 				bool isBeginHandle = m_beginHandleState.isPressed();
 
-				Size contentSize = m_size - OO(skin)._contentPaddingSize();
-				Size handleSize = _handleGeo(m_size, isBeginHandle).size();
-				Coord totalDrag = pMsg->draggedTotal();
+				SizeSPX contentSize = m_size - OO(skin)._contentPaddingSize(m_scale);
+				SizeSPX handleSize = _handleGeo(m_size, isBeginHandle).size();
+				CoordSPX totalDrag = pMsg->_draggedTotal();
 
-				MU slideLen;
-				MU slided;
+				spx slideLen;
+				spx slided;
 
 				if (m_axis == Axis::X)
 				{
@@ -261,24 +261,24 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void RangeSlider::_render(GfxDevice* pDevice, const Rect& canvas, const Rect& window)
+	void RangeSlider::_render(GfxDevice* pDevice, const RectSPX& canvas, const RectSPX& window)
 	{
-		OO(skin)._render(pDevice, canvas, m_state, m_rangeBegin, m_rangeEnd);
-		OO(beginHandleSkin)._render(pDevice, _handleGeo(canvas, true), m_beginHandleState, m_rangeBegin);
-		OO(endHandleSkin)._render(pDevice, _handleGeo(canvas, false), m_endHandleState, m_rangeEnd);
+		OO(skin)._render(pDevice, canvas, m_scale, m_state, m_rangeBegin, m_rangeEnd);
+		OO(beginHandleSkin)._render(pDevice, _handleGeo(canvas, true), m_scale, m_beginHandleState, m_rangeBegin);
+		OO(endHandleSkin)._render(pDevice, _handleGeo(canvas, false), m_scale, m_endHandleState, m_rangeEnd);
 	}
 
 	//____ _alphaTest() ________________________________________________________
 
-	bool RangeSlider::_alphaTest(const Coord& ofs)
+	bool RangeSlider::_alphaTest(const CoordSPX& ofs)
 	{
-		bool bMarked = OO(skin)._markTest(ofs, Rect(m_size), m_state, m_markOpacity, m_rangeBegin, m_rangeEnd);
+		bool bMarked = OO(skin)._markTest(ofs, RectSPX(m_size), m_scale, m_state, m_markOpacity, m_rangeBegin, m_rangeEnd);
 
 		if (!bMarked)
-			bMarked = OO(beginHandleSkin)._markTest(ofs, _handleGeo(m_size, true), m_beginHandleState, m_markOpacity, m_rangeBegin);
+			bMarked = OO(beginHandleSkin)._markTest(ofs, _handleGeo(m_size, true), m_scale, m_beginHandleState, m_markOpacity, m_rangeBegin);
 
 		if (!bMarked)
-			bMarked = OO(endHandleSkin)._markTest(ofs, _handleGeo(m_size, false), m_endHandleState, m_markOpacity, m_rangeEnd);
+			bMarked = OO(endHandleSkin)._markTest(ofs, _handleGeo(m_size, false), m_scale, m_endHandleState, m_markOpacity, m_rangeEnd);
 
 		return bMarked;
 	}
@@ -288,22 +288,31 @@ namespace wg
 
 	void RangeSlider::_updatePreferredSize()
 	{
-		Size sz = OO(beginHandleSkin)._preferredSize();
-		Size sz2 = OO(endHandleSkin)._preferredSize();
-
-		if (m_axis == Axis::X)
-			sz.w += m_preferredSlideLength + sz2.w;
-		else
-			sz.h += m_preferredSlideLength + sz2.h;
-
-		sz += OO(skin)._contentPaddingSize();
-		sz = Size::max(sz, OO(skin)._preferredSize());
-
+		SizeSPX sz = _calcPreferredSize(m_scale);
 		if (sz != m_preferredSize)
 		{
 			m_preferredSize = sz;
 			_requestResize();
 		}
+
+	}
+
+	//____ _calcPreferredSize() __________________________________________________
+
+	SizeSPX RangeSlider::_calcPreferredSize(int scale) const
+	{
+		SizeSPX sz = OO(beginHandleSkin)._preferredSize(scale);
+		SizeSPX sz2 = OO(endHandleSkin)._preferredSize(scale);
+
+		if (m_axis == Axis::X)
+			sz.w += align(ptsToSpx(m_preferredSlideLength,scale)) + sz2.w;
+		else
+			sz.h += align(ptsToSpx(m_preferredSlideLength,scale)) + sz2.h;
+
+		sz += OO(skin)._contentPaddingSize(scale);
+		sz = SizeSPX::max(sz, OO(skin)._preferredSize(scale));
+
+		return sz;
 	}
 
 	//____ _setRange() __________________________________________________________
@@ -324,24 +333,24 @@ namespace wg
 			float oldBegin = m_rangeBegin;
 			float oldEnd = m_rangeEnd;
 
-			Rect changeRect;
+			RectSPX changeRect;
 
 			if (begin != m_rangeBegin)
 			{
-				Rect oldGeo = _handleGeo(m_size, true);
+				RectSPX oldGeo = _handleGeo(m_size, true);
 				m_rangeBegin = begin;
-				Rect newGeo = _handleGeo(m_size, true);
+				RectSPX newGeo = _handleGeo(m_size, true);
 
-				changeRect = Rect::getUnion(oldGeo, newGeo);
+				changeRect = RectSPX::getUnion(oldGeo, newGeo);
 			}
 
 			if (end != m_rangeEnd)
 			{
-				Rect oldGeo = _handleGeo(m_size, false);
+				RectSPX oldGeo = _handleGeo(m_size, false);
 				m_rangeEnd = end;
-				Rect newGeo = _handleGeo(m_size, false);
+				RectSPX newGeo = _handleGeo(m_size, false);
 
-				changeRect = Rect::getUnion(changeRect, Rect::getUnion(oldGeo, newGeo));
+				changeRect = RectSPX::getUnion(changeRect, RectSPX::getUnion(oldGeo, newGeo));
 			}
 			_requestRender(changeRect);
 
@@ -375,13 +384,13 @@ namespace wg
 
 	//____ _handleGeo() _______________________________________________________
 
-	Rect RangeSlider::_handleGeo(const Rect& widgetGeo, bool isBeginHandle) const
+	RectSPX RangeSlider::_handleGeo(const RectSPX& widgetGeo, bool isBeginHandle) const
 	{
-		Rect contentGeo = OO(skin)._contentRect(widgetGeo, m_state);
+		RectSPX contentGeo = OO(skin)._contentRect(widgetGeo, m_scale, m_state);
 
-		Rect handleGeo;
+		RectSPX handleGeo;
 
-		Size handlePrefSize = isBeginHandle ? OO(beginHandleSkin)._preferredSize() : OO(endHandleSkin)._preferredSize();
+		SizeSPX handlePrefSize = isBeginHandle ? OO(beginHandleSkin)._preferredSize(m_scale) : OO(endHandleSkin)._preferredSize(m_scale);
 		float value = isBeginHandle ? m_rangeBegin : m_rangeEnd;
 
 		if (m_axis == Axis::X)
@@ -401,7 +410,7 @@ namespace wg
 			handleGeo.y = contentGeo.y + contentGeo.h - handleGeo.h - (contentGeo.h - handleGeo.h) * value;
 		}
 
-		return handleGeo.aligned();
+		return align(handleGeo);
 	}
 
 	//____ _componentState() _______________________________________________________
@@ -418,38 +427,38 @@ namespace wg
 
 	//____ _componentPos() ___________________________________________________
 
-	Coord RangeSlider::_componentPos(const GeoComponent* pComponent) const
+	CoordSPX RangeSlider::_componentPos(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &beginHandleSkin)
 			return _handleGeo(m_size, true).pos();
 		else if (pComponent == &endHandleSkin)
 			return _handleGeo(m_size, false).pos();
 
-		return Coord();
+		return CoordSPX();
 	}
 
 	//____ _componentSize() ___________________________________________________
 
-	Size RangeSlider::_componentSize(const GeoComponent* pComponent) const
+	SizeSPX RangeSlider::_componentSize(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &beginHandleSkin)
 			return _handleGeo(m_size, true).size();
 		else if (pComponent == &endHandleSkin)
 			return _handleGeo(m_size, false).size();
 
-		return Size();
+		return SizeSPX();
 	}
 
 	//____ _componentGeo() ___________________________________________________
 
-	Rect RangeSlider::_componentGeo(const GeoComponent* pComponent) const
+	RectSPX RangeSlider::_componentGeo(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &beginHandleSkin)
 			return _handleGeo(m_size, true);
 		else if (pComponent == &endHandleSkin)
 			return _handleGeo(m_size, false);
 
-		return Size();
+		return SizeSPX();
 	}
 
 	//____ _componentRequestRender() _______________________________________________
@@ -464,9 +473,9 @@ namespace wg
 			_requestRender();
 	}
 
-	void RangeSlider::_componentRequestRender(const GeoComponent* pComponent, const Rect& rect)
+	void RangeSlider::_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect)
 	{
-		Coord ofs;
+		CoordSPX ofs;
 
 		if (pComponent == &beginHandleSkin)
 			ofs = _handleGeo(m_size, true).pos();

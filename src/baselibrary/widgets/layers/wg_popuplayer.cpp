@@ -531,7 +531,7 @@ namespace wg
 				if (popupSlots.isEmpty())
 					break;
 
-				CoordSPX 	pointerPos = static_cast<InputMsg*>(_pMsg)->pointerPosSPX() - _globalPos();
+				CoordSPX 	pointerPos = static_cast<InputMsg*>(_pMsg)->_pointerPos() - _globalPos();
 
 				// Top popup can be in state PeekOpen, which needs special attention.
 
