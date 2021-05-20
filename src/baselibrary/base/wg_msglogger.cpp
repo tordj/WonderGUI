@@ -306,7 +306,7 @@ namespace wg
 			case MsgType::RangeUpdate:
 			{
 				RangeUpdateMsg_p pMsg = static_cast<RangeUpdateMsg*>(_pMsg);
-				snprintf( params, c_paramLen, " offset=%d length=%d fracOfs=%f fracLen=%f final=%s", pMsg->offset(), pMsg->length(), pMsg->fracOffset(), pMsg->fracLength(), pMsg->isFinal()?"true":"false" );
+				snprintf( params, c_paramLen, " offset=%f length=%f fracOfs=%f fracLen=%f final=%s", float(pMsg->offset()), float(pMsg->length()), pMsg->fracOffset(), pMsg->fracLength(), pMsg->isFinal()?"true":"false" );
 				break;
 			}
 

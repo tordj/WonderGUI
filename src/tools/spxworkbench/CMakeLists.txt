@@ -91,8 +91,8 @@ add_executable(spxworkbench
 	../../baselibrary/base/wg_memstack.h
 	../../baselibrary/base/wg_msg.cpp
 	../../baselibrary/base/wg_msg.h
-#	../../baselibrary/base/wg_msglogger.cpp
-#	../../baselibrary/base/wg_msglogger.h
+	../../baselibrary/base/wg_msglogger.cpp
+	../../baselibrary/base/wg_msglogger.h
 	../../baselibrary/base/wg_msgrouter.cpp
 	../../baselibrary/base/wg_msgrouter.h
 	../../baselibrary/base/wg_nullgfxdevice.cpp
@@ -239,8 +239,8 @@ add_executable(spxworkbench
 	../../baselibrary/skins/state/wg_colorskin.h
 #	../../baselibrary/skins/state/wg_lambdaskin.cpp
 #	../../baselibrary/skins/state/wg_lambdaskin.h
-#	../../baselibrary/skins/state/wg_multiblockskin.cpp
-#	../../baselibrary/skins/state/wg_multiblockskin.h
+	../../baselibrary/skins/state/wg_multiblockskin.cpp
+	../../baselibrary/skins/state/wg_multiblockskin.h
 	../../baselibrary/skins/state/wg_scrollskin.cpp
 	../../baselibrary/skins/state/wg_scrollskin.h
 	../../baselibrary/skins/state/wg_tileskin.cpp
@@ -284,10 +284,10 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/wg_image.h
 	../../baselibrary/widgets/wg_knob.cpp
 	../../baselibrary/widgets/wg_knob.h
-#	../../baselibrary/widgets/wg_lineeditor.cpp
-#	../../baselibrary/widgets/wg_lineeditor.h
-#	../../baselibrary/widgets/wg_pianokeyboard.cpp
-#	../../baselibrary/widgets/wg_pianokeyboard.h
+	../../baselibrary/widgets/wg_lineeditor.cpp
+	../../baselibrary/widgets/wg_lineeditor.h
+	../../baselibrary/widgets/wg_pianokeyboard.cpp
+	../../baselibrary/widgets/wg_pianokeyboard.h
 	../../baselibrary/widgets/wg_popupopener.cpp
 	../../baselibrary/widgets/wg_popupopener.h
 	../../baselibrary/widgets/wg_rangeslider.cpp
@@ -339,8 +339,8 @@ add_executable(spxworkbench
 #	../../baselibrary/widgets/layers/wg_modallayer.h
 	../../baselibrary/widgets/layers/wg_popuplayer.cpp
 	../../baselibrary/widgets/layers/wg_popuplayer.h
-#	../../baselibrary/widgets/layers/wg_tooltiplayer.cpp
-#	../../baselibrary/widgets/layers/wg_tooltiplayer.h
+	../../baselibrary/widgets/layers/wg_tooltiplayer.cpp
+	../../baselibrary/widgets/layers/wg_tooltiplayer.h
 #	../../baselibrary/widgets/lists/wg_list.cpp
 #	../../baselibrary/widgets/lists/wg_list.h
 #	../../baselibrary/widgets/lists/wg_packlist.cpp

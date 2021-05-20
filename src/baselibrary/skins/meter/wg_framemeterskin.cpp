@@ -144,7 +144,7 @@ namespace wg
 			NinePatch patch;
 			patch.block = Rect(pFrame->source(), frames.frameSize());
 			patch.frame = m_gfxPadding;
-			return Util::markTestNinePatch(ofs, frames._surface(), patch, canvas, align(ptsToSpx(m_gfxPadding, scale)), scale, opacityTreshold);
+			return Util::markTestNinePatch(ofs, frames._surface(), patch, canvas, scale, opacityTreshold);
 		}
 
 		return false;

@@ -48,7 +48,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static MultiBlockSkin_p create(SizeI blockSize, BorderI frame = BorderI(0) );
+		static MultiBlockSkin_p create(Size blockSize, Border frame = Border(0) );
 
 		//.____ Identification __________________________________________
 
@@ -58,30 +58,28 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		int		addLayer(Surface * pSurf, CoordI ofs);
-		int		addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, std::initializer_list<State> stateBlocks);		// DEPRECATED!!!
-		int		addLayer(Surface * pSurf, std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 } );
+		int		addLayer(Surface * pSurf, Coord ofs);
+		int		addLayer(Surface * pSurf, Coord blockStartOfs, Size blockPitch, std::initializer_list<State> stateBlocks);		// DEPRECATED!!!
+		int		addLayer(Surface * pSurf, std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, pts spacing = 0, Coord blockStartOfs = { 0,0 } );
 
 		bool	setLayerColor(int layerIdx, HiColor tintColor);
 		bool	setLayerColor(int layerIdx, std::initializer_list< std::pair<State,HiColor> > stateColors);
 		bool	setLayerBlendMode(int layerIdx, BlendMode blendMode);
 
-		//.____ Geometry _________________________________________________
+		//.____ Internal _________________________________________________
 
-		Size	minSize() const override;
-		Size	preferredSize() const override;
-		Size	sizeForContent(const Size& contentSize) const override;
+		SizeSPX	_minSize(int scale) const override;
+		SizeSPX	_preferredSize(int scale) const override;
+		SizeSPX	_sizeForContent(const SizeSPX& contentSize, int scale) const override;
 
-		//.____ Misc ____________________________________________________
-
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
 								float value = 1.f, float value2 = -1.f) const override;
 
-		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+		void	_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f, int animPos = 0,
 							float* pStateFractions = nullptr) const override;
 
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX	_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
@@ -94,7 +92,7 @@ namespace wg
 			Bitmask<uint32_t>   stateBlockMask = 0;
 			Bitmask<uint32_t>   stateColorMask = 1;         // Normal state always exist for colors and is by default white.
 
-			CoordI				blockOfs[StateEnum_Nb];		// Block for each state
+			Coord				blockOfs[StateEnum_Nb];		// Block for each state
 			HiColor				tintColor[StateEnum_Nb];
 	//		Placement			placementOrigo;
 	//		CoordI			placementOfs;
@@ -103,15 +101,13 @@ namespace wg
 		};
 
 
-		MultiBlockSkin(SizeI blockSize, BorderI frame);
+		MultiBlockSkin(Size blockSize, Border frame);
 		~MultiBlockSkin() {};
 
 		void			_updateStateOpacity( int stateIdx );
 
-		SizeI			m_blockSizePoints;					// Stored in points
-
-		SizeI			m_blockSize;						// Stored in pixels
-		BorderI			m_frame;                        // Stored in points
+		Size			m_blockSizePoints;
+		Border			m_frame;
 
 		std::vector<LayerData>	m_layers;
 

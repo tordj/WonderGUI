@@ -51,9 +51,9 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
+		//.____ Internal _________________________________________________
 
-		Size			preferredSize() const override;
+		SizeSPX			_preferredSize(int scale = -1) const override;
 
 	protected:
 		LineEditor();
@@ -62,24 +62,24 @@ namespace wg
 
 
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
-		void			_resize( const Size& size ) override;
+		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
+		void			_resize( const SizeSPX& size, int scale = -1 ) override;
 		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
 
-		Coord			_componentPos( const GeoComponent * pComponent ) const override;
-		Size			_componentSize( const GeoComponent * pComponent ) const override;
-		Rect			_componentGeo( const GeoComponent * pComponent ) const override;
+		CoordSPX		_componentPos( const GeoComponent * pComponent ) const override;
+		SizeSPX			_componentSize( const GeoComponent * pComponent ) const override;
+		RectSPX			_componentGeo( const GeoComponent * pComponent ) const override;
 
 		void			_componentRequestRender(const GeoComponent * pComponent) override;
-		void			_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
+		void			_componentRequestRender( const GeoComponent * pComponent, const RectSPX& rect ) override;
 		void			_componentRequestResize( const GeoComponent * pComponent ) override;
-		void			_componentRequestInView(const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave) override;
+		void			_componentRequestInView(const GeoComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave) override;
 
 	private:
 
-		MU				m_textScrollOfs;
+		spx				m_textScrollOfs;
 	};
 
 

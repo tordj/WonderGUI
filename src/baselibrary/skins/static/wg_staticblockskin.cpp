@@ -190,9 +190,7 @@ namespace wg
 
 	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
-		BorderSPX destFrame = align(ptsToSpx(m_ninePatch.frame, scale));
-
-		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, destFrame, scale, opacityTreshold);
+		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, scale, opacityTreshold);
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________

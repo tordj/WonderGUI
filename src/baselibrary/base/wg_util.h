@@ -214,7 +214,7 @@ namespace wg
 
 		bool		markTestStretchRect( CoordSPX ofs, Surface * pSurface, const RectSPX& source, const RectSPX& area, int opacityTreshold );
 		bool		markTestTileRect(CoordSPX ofs, Surface* pSurface, const RectSPX& area, int scale, int opacityTreshold);
-		bool		markTestNinePatch(CoordSPX ofs, Surface* pSurface, const NinePatch& patch, const RectSPX& _dest, const BorderSPX& destFrame, int scale, int opacityTreshold);
+		bool		markTestNinePatch(CoordSPX ofs, Surface* pSurface, const NinePatch& patch, const RectSPX& _dest, int scale, int opacityTreshold);
 
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );

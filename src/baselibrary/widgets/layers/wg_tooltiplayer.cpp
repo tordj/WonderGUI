@@ -34,6 +34,7 @@ namespace wg
 	const TypeInfo TooltipLayer::TYPEINFO = { "TooltipLayer", &Layer::TYPEINFO };
 	const TypeInfo TooltipLayer::Slot::TYPEINFO = { "TooltipLayer::Slot", &Layer::Slot::TYPEINFO };
 
+	using namespace Util;
 
 	//____ constructor ____________________________________________________________
 
@@ -97,24 +98,24 @@ namespace wg
 		if (pHovered == nullptr || pHovered->tooltip().isEmpty() )
 			return;
 
-		Rect hoveredGeo = pHovered->globalGeo() - globalPos();
-		Border widgetMargin{ hoveredGeo.y, m_size.w - hoveredGeo.right(), m_size.h - hoveredGeo.bottom(), hoveredGeo.x };
+		RectSPX hoveredGeo = pHovered->_globalGeo() - _globalPos();
+		BorderSPX widgetMargin{ hoveredGeo.y, m_size.w - hoveredGeo.right(), m_size.h - hoveredGeo.bottom(), hoveredGeo.x };
 
 		m_activePosition = m_defaultPosition;
-		Widget_p pWidget = m_tooltipGenerator(m_activePosition, pHovered, widgetMargin);
+		Widget_p pWidget = m_tooltipGenerator(m_activePosition, pHovered, spxToPts(widgetMargin,m_scale));
 
 		if (pWidget)
 		{
 			m_tooltipSlot._setWidget(pWidget);
 
-			Size tooltipSize = pWidget->preferredSize();
+			SizeSPX tooltipSize = pWidget->_preferredSize(m_scale);
 
 			Position& position = m_activePosition;
 
-			Rect center = position.bAroundPointer ? Rect(m_hoverPos) : hoveredGeo;
-			center += position.spacing;
+			RectSPX center = position.bAroundPointer ? RectSPX(m_hoverPos) : hoveredGeo;
+			center += ptsToSpx(position.spacing,m_scale);
 
-			Coord tooltipPos;
+			CoordSPX tooltipPos;
 
 			// Take care of vertical position
 
@@ -165,7 +166,7 @@ namespace wg
 
 			//
 
-			m_tooltipSlot._setGeo({ tooltipPos, tooltipSize });
+			m_tooltipSlot._setGeo({ align(tooltipPos), tooltipSize });
 			_requestRender(m_tooltipSlot.m_geo);
 		}
 	}
@@ -201,7 +202,7 @@ namespace wg
 			// No break, fall through to next case on purpose.
 		case MsgType::MouseMove:
 		{
-			Coord mousePos = static_cast<InputMsg*>(_pMsg)->pointerPos() - globalPos();
+			CoordSPX mousePos = static_cast<InputMsg*>(_pMsg)->_pointerPos() - _globalPos();
 			Widget* pHovered = _findWidget(mousePos, SearchMode::ActionTarget);
 
 			if (pHovered->tooltip().isEmpty())
@@ -278,9 +279,9 @@ namespace wg
 
 	//____ _findWidget() ______________________________________________________
 
-	Widget* TooltipLayer::_findWidget(const Coord& ofs, SearchMode mode)
+	Widget* TooltipLayer::_findWidget(const CoordSPX& ofs, SearchMode mode)
 	{
-		if (!Rect(m_size).contains(ofs))
+		if (!RectSPX(m_size).contains(ofs))
 			return nullptr;
 
 		if (mode == SearchMode::ActionTarget)
@@ -292,7 +293,7 @@ namespace wg
 				Widget* pChild = OO(mainSlot)._widget();			
 				if (pChild->isContainer())
 					return OO(static_cast<Container*>(pChild))->_findWidget(ofs, mode);
-				else if (pChild->markTest(ofs))
+				else if (pChild->_markTest(ofs))
 					return pChild;
 			}
 			return nullptr;

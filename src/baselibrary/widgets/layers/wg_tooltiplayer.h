@@ -103,7 +103,7 @@ namespace wg
 
 		const TypeInfo& _slotTypeInfo(const StaticSlot* pSlot) const override;
 
-		Widget*			_findWidget(const Coord& ofs, SearchMode mode) override;
+		Widget*			_findWidget(const CoordSPX& ofs, SearchMode mode) override;
 
 		void			_childRequestResize(StaticSlot* pSlot) override;
 
@@ -117,7 +117,7 @@ namespace wg
 		Slot		m_tooltipSlot;
 
 		int			m_hoverMillisec		= 300;				// Number of millisec to hover before tooltip is displayed.
-		Coord		m_hoverPos			= { -1,-1 };
+		CoordSPX	m_hoverPos			= { -1,-1 };
 		int			m_hoverCountdown	= 0;
 		Widget*		m_pHoverWidget = nullptr;
 

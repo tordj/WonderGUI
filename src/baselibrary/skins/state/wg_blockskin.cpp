@@ -454,9 +454,7 @@ namespace wg
 		NinePatch	patch = m_ninePatch;
 		patch.block.setPos(m_stateBlocks[_stateToIndex(state)]);
 
-		BorderSPX destFrame = align(ptsToSpx(m_ninePatch.frame, scale));
-
-		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, destFrame, scale, opacityTreshold);
+		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, scale, opacityTreshold);
 	}
 
 	//____ _isOpaque() _____________________________________________________________
