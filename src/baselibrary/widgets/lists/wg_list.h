@@ -110,24 +110,24 @@ namespace wg
 
 		virtual int		_flipSelection( Slot * pBegin, Slot * pEnd, bool bPostMsg );
 
-		virtual Slot * _findEntry( const Coord& ofs ) = 0;
-		virtual void	_getEntryGeo( Rect& geo, const Slot * pSlot ) const = 0;
+		virtual Slot * _findEntry( const CoordSPX& ofs ) = 0;
+		virtual void	_getEntryGeo( RectSPX& geo, const Slot * pSlot ) const = 0;
 
-		virtual Rect	_listArea() const = 0;										// Area for the entries (contentRect minus header).
-		virtual Rect	_listWindow() const = 0;
-		virtual Rect	_listCanvas() const = 0;
+		virtual RectSPX	_listArea() const = 0;										// Area for the entries (contentRect minus header).
+		virtual RectSPX	_listWindow() const = 0;
+		virtual RectSPX	_listCanvas() const = 0;
 
-		virtual void	_onEntrySkinChanged( Size oldPadding, Size newPadding ) = 0;
-		virtual void	_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso ) = 0;
+		virtual void	_onEntrySkinChanged( SizeSPX oldPadding, SizeSPX newPadding ) = 0;
+		virtual void	_onLassoUpdated( const RectSPX& oldLasso, const RectSPX& newLasso ) = 0;
 
 
 		State			_componentState(const GeoComponent* pComponent) const override;
-		Coord			_componentPos(const GeoComponent* pComponent) const override;
-		Size			_componentSize(const GeoComponent* pComponent) const override;
-		Rect			_componentGeo(const GeoComponent* pComponent) const override;
+		CoordSPX		_componentPos(const GeoComponent* pComponent) const override;
+		SizeSPX			_componentSize(const GeoComponent* pComponent) const override;
+		RectSPX			_componentGeo(const GeoComponent* pComponent) const override;
 
 		void			_componentRequestRender(const GeoComponent* pComponent) override;
-		void			_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
+		void			_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect) override;
 
 
 		virtual Slot * _beginSlots() const = 0;
@@ -145,8 +145,8 @@ namespace wg
 		Skin_p			m_pEntrySkin[2];
 		bool			m_bOpaqueEntries;
 
-		Coord			m_lassoBegin;
-		Coord			m_lassoEnd;
+		CoordSPX		m_lassoBegin;
+		CoordSPX		m_lassoEnd;
 
 		Widget_wp		m_pFocusedChild;
 		Widget_wp		m_pHoveredChild;

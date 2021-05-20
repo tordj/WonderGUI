@@ -75,8 +75,6 @@ namespace wg
 		m_sortOrder = SortOrder::Ascending;
 		_header()._setSortOrder( SortOrder::Ascending );
 
-		m_maxEntrySize = Size(MU::Max,MU::Max);		//TODO: Test so m_maxEntrySize matters!
-
 		m_contentBreadth = 0;
 		m_contentLength = 0;
 		m_contentPreferredLength = 0;
@@ -142,6 +140,7 @@ namespace wg
 			return false;
 
 		m_minEntrySize = min;
+		m_minEntrySizeSPX = align(ptsToSpx(min, m_scale));
 		_refreshList();
 		return true;
 	}
@@ -157,26 +156,32 @@ namespace wg
 			return false;
 
 		m_maxEntrySize = max;
+		m_maxEntrySizeSPX = align(ptsToSpx(max, m_scale));
 		_refreshList();
 		return true;
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	Size PackList::preferredSize() const
+	SizeSPX PackList::_preferredSize(int scale) const
 	{
-		Size sz = OO(skin)._contentPaddingSize();
-		Size headerSize = _header()._preferredSize();
+		scale = _fixScale(scale);
+
+		//TODO: Support other scale than what we already have!
+		assert(scale == m_scale);
+
+		SizeSPX sz = OO(skin)._contentPaddingSize(scale);
+		SizeSPX headerSize = _header()._preferredSize(scale);
 
 		if (m_bHorizontal)
 		{
-			sz += Size(m_contentPreferredLength + headerSize.w, m_contentPreferredBreadth);
+			sz += SizeSPX(m_contentPreferredLength + headerSize.w, m_contentPreferredBreadth);
 			if (headerSize.h > sz.h)
 				sz.h = headerSize.h;
 		}
 		else
 		{
-			sz += Size(m_contentPreferredBreadth, m_contentPreferredLength + headerSize.h);
+			sz += SizeSPX(m_contentPreferredBreadth, m_contentPreferredLength + headerSize.h);
 			if (headerSize.w > sz.w)
 				sz.w = headerSize.w;
 		}
@@ -184,91 +189,101 @@ namespace wg
 		return sz;
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	MU PackList::matchingHeight(MU width) const
+	spx PackList::_matchingHeight(spx width, int scale) const
 	{
+		scale = _fixScale(scale);
+
+		//TODO: Support other scale than what we already have!
+		assert(scale == m_scale);
+
 		if (m_bHorizontal)
 		{
-			MU height = m_contentPreferredBreadth + OO(skin)._contentPaddingSize().h;
-			return std::max(height, _header()._preferredSize().h);
+			spx height = m_contentPreferredBreadth + OO(skin)._contentPaddingSize(scale).h;
+			return std::max(height, _header()._preferredSize(scale).h);
 		}
 		else
 		{
-			MU height = _header()._matchingHeight(width);
-			Size pad = OO(skin)._contentPaddingSize();
+			spx height = _header()._matchingHeight(width, scale);
+			SizeSPX pad = OO(skin)._contentPaddingSize(scale);
 			width -= pad.w;
 			height += pad.h;
 
 			width -= m_entryPadding.w;
 
 			for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
-				height += pSlot->_widget()->matchingHeight(width);
+				height += pSlot->_widget()->_matchingHeight(width,scale);
 
 			height += m_entryPadding.h*slots.size();
 			return height;
 		}
 	}
 
-	//____ matchingWidth() _______________________________________________________
+	//____ _matchingWidth() _______________________________________________________
 
-	MU PackList::matchingWidth(MU height) const
+	spx PackList::_matchingWidth(spx height, int scale) const
 	{
+		scale = _fixScale(scale);
+
+		//TODO: Support other scale than what we already have!
+		assert(scale == m_scale);
+
 		if (m_bHorizontal)
 		{
-			MU width = _header()._matchingWidth(height);
-			Size pad = OO(skin)._contentPaddingSize();
+			spx width = _header()._matchingWidth(height,scale);
+			SizeSPX pad = OO(skin)._contentPaddingSize(scale);
 			height -= pad.w;
 			width += pad.h;
 
 			height -= m_entryPadding.h;
 
 			for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
-				width += pSlot->_widget()->matchingWidth(width);
+				width += pSlot->_widget()->_matchingWidth(width, scale);
 
 			width += m_entryPadding.w*slots.size();
 			return width;
 		}
 		else
 		{
-			MU width = m_contentPreferredBreadth + OO(skin)._contentPaddingSize().w;
+			spx width = m_contentPreferredBreadth + OO(skin)._contentPaddingSize(scale).w;
 
-			return std::max(width, _header()._preferredSize().w);
+			return std::max(width, _header()._preferredSize(scale).w);
 		}
 	}
 
 
 	//____ _collectPatches() ____________________________________________________
 
-	void PackList::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void PackList::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
 	{
 		if( skin.isEmpty() )
 		{
 			if (m_bHorizontal)
-				container.add(Rect(Rect(geo.x, geo.y, wg::min(geo.w, m_contentLength), geo.h), clip));
+				container.add(RectSPX(RectSPX(geo.x, geo.y, wg::min(geo.w, m_contentLength), geo.h), clip));
 			else
-				container.add(Rect(Rect(geo.x, geo.y, geo.w, wg::min(geo.h, m_contentLength)), clip));
+				container.add(RectSPX(RectSPX(geo.x, geo.y, geo.w, wg::min(geo.h, m_contentLength)), clip));
 		}
 		else
-			container.add( Rect( geo, clip ) );
+			container.add( RectSPX( geo, clip ) );
 	}
 
 	//____ _maskPatches() _______________________________________________________
 
-	void PackList::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void PackList::_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-			patches.sub( Rect(geo,clip) );
+			patches.sub( RectSPX(geo,clip) );
 		else if( m_bOpaqueEntries && blendMode == BlendMode::Blend )
 		{
 			if( m_bHorizontal )
-				patches.sub( Rect( Rect( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
+				patches.sub( RectSPX( RectSPX( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
 			else
-				patches.sub( Rect( Rect( geo.x, geo.y, geo.w, wg::min(geo.h,m_contentLength) ), clip ) );
+				patches.sub( RectSPX( RectSPX( geo.x, geo.y, geo.w, wg::min(geo.h,m_contentLength) ), clip ) );
 		}
 		else
 		{
-			Rect	myClip(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't.
+			RectSPX	myClip(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't.
 			SlotWithGeo child;
 			_firstSlotWithGeo( child );
 
@@ -292,18 +307,18 @@ namespace wg
 
 	//____ _render() _______________________________________________________
 
-	void PackList::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void PackList::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		// Render container itself
 
-		Rect contentRect = _listCanvas() + _canvas.pos();
+		RectSPX contentRect = _listCanvas() + _canvas.pos();
 
-		Rect clip = Rect::fromPX(pDevice->clipBounds());
+		RectSPX clip = pDevice->clipBounds();
 
-		OO(skin)._render( pDevice, contentRect, m_state );
-		contentRect = OO(skin)._contentRect( contentRect, m_state );
+		OO(skin)._render( pDevice, contentRect, m_scale, m_state );
+		contentRect = OO(skin)._contentRect( contentRect, m_scale, m_state );
 
-		MU startOfs = m_bHorizontal ? clip.x-contentRect.x : clip.y-contentRect.y;
+		spx startOfs = m_bHorizontal ? clip.x-contentRect.x : clip.y-contentRect.y;
 		if( startOfs < 0 )
 			startOfs = 0;
 
@@ -314,7 +329,7 @@ namespace wg
 
 			// Get entry geometry, skin and state
 
-			Rect entryGeo( contentRect );
+			RectSPX entryGeo( contentRect );
 			if( m_bHorizontal )
 			{
 				if( pSlot->m_ofs >= contentRect.w )
@@ -340,7 +355,7 @@ namespace wg
 
 			if( pEntrySkin )
 			{
-				pEntrySkin->render( pDevice, entryGeo, state );
+				pEntrySkin->_render( pDevice, entryGeo, m_scale, state );
 				//            childGeo = pEntrySkin->_contentRect( entryGeo, state );
 			}
 
@@ -352,7 +367,7 @@ namespace wg
 
 		// Render children
 
-		Rect	dirtBounds = Rect::fromPX(pDevice->clipBounds());
+		RectSPX	dirtBounds = pDevice->clipBounds();
 
 		{
 			SlotWithGeo child;
@@ -360,7 +375,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				Rect canvas = child.geo + _canvas.pos();
+				RectSPX canvas = child.geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
 					ClipPopData clipPop = limitClipList(pDevice, canvas );
@@ -377,7 +392,7 @@ namespace wg
 		if( _header()._size().h != 0 )
 		{
 //			bool bInvertedSort = (m_sortOrder == SortOrder::Descending);
-			Rect canvas = _headerGeo() + _canvas.pos();
+			RectSPX canvas = _headerGeo() + _canvas.pos();
 
 			_header()._render( pDevice, canvas );
 		}
@@ -386,25 +401,37 @@ namespace wg
 
 		if( lasso && m_lassoBegin != m_lassoEnd )
 		{
-			Rect lassoRect( m_lassoBegin, m_lassoEnd );
+			RectSPX lassoRect( m_lassoBegin, m_lassoEnd );
 			lassoRect += _canvas.pos();
 
-			lasso->render(pDevice, lassoRect, m_state );
+			lasso->_render(pDevice, lassoRect, m_scale, m_state );
 		}
 	}
 
 	//____ _resize() ___________________________________________________________
 
-	void PackList::_resize( const Size& _size )
+	void PackList::_resize( const SizeSPX& _size, int scale )
 	{
-		List::_resize(_size);
+		scale = _fixScale(scale);
 
-		Size headerSize = m_bHorizontal ? Size(_header()._matchingWidth(_size.h), _size.h) : Size( _size.w, _header()._matchingHeight( _size.w ));
-		_header()._setSize( headerSize );
+		//TODO: Recalc MORE stuff if scale changes.
 
-		Size size = _size - OO(skin)._contentPaddingSize();
+		if (scale != m_scale)
+		{
+			m_minEntrySizeSPX = align(ptsToSpx(m_minEntrySize, scale));
+			m_maxEntrySizeSPX = align(ptsToSpx(m_maxEntrySize, scale));
+		}
 
-		MU newContentBreadth;
+		//
+
+		List::_resize(_size, scale);
+
+		SizeSPX headerSize = m_bHorizontal ? SizeSPX(_header()._matchingWidth(_size.h,m_scale), _size.h) : SizeSPX( _size.w, _header()._matchingHeight( _size.w, m_scale ));
+		_header()._setSize( headerSize, m_scale );
+
+		SizeSPX size = _size - OO(skin)._contentPaddingSize(m_scale);
+
+		spx newContentBreadth;
 
 		if( m_bHorizontal )
 			newContentBreadth = size.h;
@@ -414,7 +441,7 @@ namespace wg
 		if( newContentBreadth != m_contentBreadth )
 		{
 			m_contentBreadth = newContentBreadth;
-			MU ofs = 0;
+			spx ofs = 0;
 
 			for( auto pSlot = slots._begin() ; pSlot < slots._end() ; pSlot++ )
 			{
@@ -422,21 +449,21 @@ namespace wg
 
 				if( m_bHorizontal )
 				{
-					MU newEntryLength = _paddedLimitedMatchingWidth(pSlot, newContentBreadth );
+					spx newEntryLength = _paddedLimitedMatchingWidth(pSlot, newContentBreadth );
 					pSlot->m_ofs = ofs;
 					pSlot->m_length = newEntryLength;
 					ofs += newEntryLength;
 
-					OO(pWidget)->_resize( Size(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					OO(pWidget)->_resize( SizeSPX(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 				else
 				{
-					MU newEntryLength = _paddedLimitedMatchingHeight(pSlot, newContentBreadth );
+					spx newEntryLength = _paddedLimitedMatchingHeight(pSlot, newContentBreadth );
 					pSlot->m_ofs = ofs;
 					pSlot->m_length = newEntryLength;
 					ofs += newEntryLength;
 
-					OO(pWidget)->_resize( Size(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					OO(pWidget)->_resize( SizeSPX(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 			}
 			m_contentLength = ofs;
@@ -459,16 +486,16 @@ namespace wg
 	void PackList::_refreshList()
 	{
 		if( m_pEntrySkin[0] )
-			m_entryPadding = m_pEntrySkin[0]->contentPaddingSize();
+			m_entryPadding = m_pEntrySkin[0]->_contentPaddingSize(m_scale);
 
 		m_contentPreferredLength = 0;
 		m_contentPreferredBreadth = 0;
 		m_nbPreferredBreadthEntries = 0;
-		MU ofs = 0;
+		spx ofs = 0;
 
 		for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
 		{
-			Size pref = _paddedLimitedPreferredSize( pSlot );
+			SizeSPX pref = _paddedLimitedPreferredSize( pSlot );
 
 			if( m_bHorizontal )
 			{
@@ -559,11 +586,11 @@ namespace wg
 
 	//____ _onLassoUpdated() ______________________________________________________
 
-	void PackList::_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso )
+	void PackList::_onLassoUpdated( const RectSPX& oldLasso, const RectSPX& newLasso )
 	{
 		// Get out content area
 
-		Rect listArea = _listArea();
+		RectSPX listArea = _listArea();
 
 		// Check if our lassos are inside content area or not.
 
@@ -580,8 +607,8 @@ namespace wg
 
 		// Get first/last entries marked by old/new lasso
 
-		MU oldOfs1, oldOfs2;
-		MU newOfs1, newOfs2;
+		spx oldOfs1, oldOfs2;
+		spx newOfs1, newOfs2;
 
 
 		if( m_bHorizontal )
@@ -687,7 +714,7 @@ namespace wg
 			{
 				pSlot[i].m_bVisible = false;
 
-				Size pref = _paddedLimitedPreferredSize(pSlot);
+				SizeSPX pref = _paddedLimitedPreferredSize(pSlot);
 				if (m_bHorizontal)
 					_subFromContentPreferredSize(pref.w, pref.h);
 				else
@@ -715,7 +742,7 @@ namespace wg
 				pSlot[i].m_bVisible = true;
 
 				Widget * pChild = pSlot[i]._widget();
-				Size pref = _paddedLimitedPreferredSize(pSlot);
+				SizeSPX pref = _paddedLimitedPreferredSize(pSlot);
 
 				if (m_bHorizontal)
 				{
@@ -745,7 +772,7 @@ namespace wg
 
 				m_contentLength += pSlot[i].m_length;
 
-				Rect childGeo;
+				RectSPX childGeo;
 				_getChildGeo(childGeo, pSlot + i);
 				OO(pChild)->_resize(childGeo);
 			}
@@ -792,7 +819,7 @@ namespace wg
 
 	// ofs is counted from beginning of container content, not widget.
 
-	int PackList::_getEntryAt( MU ofs ) const
+	int PackList::_getEntryAt( spx ofs ) const
 	{
 		int first = 0;
 		int last = slots.size() - 1;
@@ -847,9 +874,9 @@ namespace wg
 
 	//____ _findEntry() ___________________________________________________________
 
-	List::List::Slot * PackList::_findEntry( const Coord& ofs )
+	List::List::Slot * PackList::_findEntry( const CoordSPX& ofs )
 	{
-		Rect list = _listArea();
+		RectSPX list = _listArea();
 
 		if( list.contains(ofs) && _listWindow().contains(ofs) )
 		{
@@ -868,10 +895,10 @@ namespace wg
 
 	//____ _findWidget() __________________________________________________________
 
-	Widget * PackList::_findWidget( const Coord& ofs, SearchMode mode )
+	Widget * PackList::_findWidget( const CoordSPX& ofs, SearchMode mode )
 	{
 		Widget * pResult = 0;
-		Rect list = _listArea();
+		RectSPX list = _listArea();
 
 		if( list.contains(ofs) && _listWindow().contains(ofs) )
 		{
@@ -884,7 +911,7 @@ namespace wg
 			if( entry != slots.size() )
 			{
 				Slot * pSlot = slots._slot(entry);
-				Rect childGeo;
+				RectSPX childGeo;
 				_getChildGeo( childGeo, pSlot );
 				if( childGeo.contains(ofs) )
 				{
@@ -892,7 +919,7 @@ namespace wg
 					{
 						pResult = static_cast<OContainer*>(pSlot->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 					}
-					else if( mode == SearchMode::Geometry || pSlot->_widget()->markTest( ofs - childGeo.pos() ) )
+					else if( mode == SearchMode::Geometry || pSlot->_widget()->_markTest( ofs - childGeo.pos() ) )
 					{
 							pResult = pSlot->_widget();
 					}
@@ -906,7 +933,7 @@ namespace wg
 
 		// Check against ourselves
 
-		if( !pResult && ( mode == SearchMode::Geometry || markTest(ofs)) )
+		if( !pResult && ( mode == SearchMode::Geometry || _markTest(ofs)) )
 			pResult = this;
 
 		return pResult;
@@ -914,7 +941,7 @@ namespace wg
 
 	//____ _addToContentPreferredSize() ___________________________________________
 
-	void  PackList::_addToContentPreferredSize( MU length, MU breadth )
+	void  PackList::_addToContentPreferredSize( spx length, spx breadth )
 	{
 		m_contentPreferredLength += length;
 
@@ -929,7 +956,7 @@ namespace wg
 
 	//____ _subFromContentPreferredSize() _________________________________________
 
-	void  PackList::_subFromContentPreferredSize( MU length, MU breadth )
+	void  PackList::_subFromContentPreferredSize( spx length, spx breadth )
 	{
 		m_contentPreferredLength -= length;
 
@@ -938,7 +965,7 @@ namespace wg
 			m_nbPreferredBreadthEntries--;
 			if( m_nbPreferredBreadthEntries == 0 )
 			{
-				MU highest = 0;
+				spx highest = 0;
 				for( Slot * p = slots._begin() ; p < slots._end() ; p++ )
 				{
 					if (p->m_prefBreadth == breadth)
@@ -962,10 +989,10 @@ namespace wg
 
 	void PackList::_requestRenderChildren(Slot * pBegin, Slot * pEnd)
 	{
-		Rect box = _listArea();
+		RectSPX box = _listArea();
 
-		MU beg = pBegin->m_ofs;
-		MU end = pEnd < slots._end() ? pEnd->m_ofs + pEnd->m_length : m_contentLength;
+		spx beg = pBegin->m_ofs;
+		spx end = pEnd < slots._end() ? pEnd->m_ofs + pEnd->m_length : m_contentLength;
 
 
 		if (m_bHorizontal)
@@ -987,7 +1014,7 @@ namespace wg
 
 	void PackList::_updateChildOfsFrom( Slot * pSlot )
 	{
-		MU ofs = 0;
+		spx ofs = 0;
 		if( pSlot > slots._begin() )
 			ofs = pSlot[-1].m_ofs + pSlot[-1].m_length;
 
@@ -1001,7 +1028,7 @@ namespace wg
 
 	//____ _onEntrySkinChanged() __________________________________________________
 
-	void PackList::_onEntrySkinChanged( Size oldPadding, Size newPadding )
+	void PackList::_onEntrySkinChanged( SizeSPX oldPadding, SizeSPX newPadding )
 	{
 		_requestRender();
 
@@ -1010,7 +1037,7 @@ namespace wg
 			m_entryPadding = newPadding;
 			int nEntries = slots.size();
 
-			MU	lengthDiff, breadthDiff;
+			spx	lengthDiff, breadthDiff;
 			if( m_bHorizontal )
 			{
 				lengthDiff = (newPadding.w - oldPadding.w)*nEntries;
@@ -1037,7 +1064,7 @@ namespace wg
 
 	//____ _getEntryGeo() _________________________________________________________
 
-	void PackList::_getEntryGeo( Rect& geo, const List::Slot * _pSlot ) const
+	void PackList::_getEntryGeo( RectSPX& geo, const List::Slot * _pSlot ) const
 	{
 		const Slot * pSlot = static_cast<const Slot*>(_pSlot);
 
@@ -1058,7 +1085,7 @@ namespace wg
 
 	//____ _getChildGeo() _________________________________________________________
 
-	void PackList::_getChildGeo( Rect& geo, const Slot * pSlot ) const
+	void PackList::_getChildGeo( RectSPX& geo, const Slot * pSlot ) const
 	{
 		geo = _listArea();
 
@@ -1079,57 +1106,57 @@ namespace wg
 		{
 			int index = slots._index( pSlot );
 			if( m_pEntrySkin[index&0x1] )
-				geo = m_pEntrySkin[index&0x1]->contentRect( geo, pSlot->_widget()->state() );
+				geo = m_pEntrySkin[index&0x1]->_contentRect( geo, m_scale, pSlot->_widget()->state() );
 		}
 	}
 
 	//____ _paddedLimitedMatchingHeight() _________________________________________
 
-	MU PackList::_paddedLimitedMatchingHeight( StaticSlot * _pSlot, MU paddedWidth )
+	spx PackList::_paddedLimitedMatchingHeight( StaticSlot * _pSlot, spx paddedWidth )
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
-		MU height = pSlot->_widget()->matchingHeight( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
-		limit( height, m_minEntrySize.h, m_maxEntrySize.h );
+		spx height = pSlot->_widget()->_matchingHeight( paddedWidth - m_entryPadding.w, m_scale ) + m_entryPadding.h;
+		limit( height, m_minEntrySizeSPX.h, m_maxEntrySizeSPX.h );
 		return height;
 	}
 
 	//____ _paddedLimitedMatchingWidth() _________________________________________
 
-	MU PackList::_paddedLimitedMatchingWidth( StaticSlot * _pSlot, MU paddedHeight )
+	spx PackList::_paddedLimitedMatchingWidth( StaticSlot * _pSlot, spx paddedHeight )
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
-		MU width = pSlot->_widget()->matchingWidth( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
-		limit( width, m_minEntrySize.w, m_maxEntrySize.w );
+		spx width = pSlot->_widget()->_matchingWidth( paddedHeight - m_entryPadding.h, m_scale ) + m_entryPadding.w;
+		limit( width, m_minEntrySizeSPX.w, m_maxEntrySizeSPX.w );
 		return width;
 	}
 
 	//____ _paddedLimitedPreferredSize() __________________________________________
 
-	Size PackList::_paddedLimitedPreferredSize( StaticSlot * _pSlot )
+	SizeSPX PackList::_paddedLimitedPreferredSize( StaticSlot * _pSlot )
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
-		Size sz = pSlot->_widget()->preferredSize();
+		SizeSPX sz = pSlot->_widget()->_preferredSize(m_scale);
 		sz += m_entryPadding;
 
 		// Apply limits
 
-		if( sz.w < m_minEntrySize.w )
-			sz.w = m_minEntrySize.w;
-		if( sz.h < m_minEntrySize.h )
-			sz.h = m_minEntrySize.h;
+		if( sz.w < m_minEntrySizeSPX.w )
+			sz.w = m_minEntrySizeSPX.w;
+		if( sz.h < m_minEntrySizeSPX.h )
+			sz.h = m_minEntrySizeSPX.h;
 
-		if( sz.w > m_maxEntrySize.w )
+		if( sz.w > m_maxEntrySizeSPX.w )
 		{
-			MU h = pSlot->_widget()->matchingHeight(m_maxEntrySize.w-m_entryPadding.w) + m_entryPadding.h;
-			limit(h, m_minEntrySize.h, m_maxEntrySize.h );
+			spx h = pSlot->_widget()->_matchingHeight(m_maxEntrySizeSPX.w-m_entryPadding.w, m_scale) + m_entryPadding.h;
+			limit(h, m_minEntrySizeSPX.h, m_maxEntrySizeSPX.h );
 		}
-		else if( sz.h > m_maxEntrySize.h )
+		else if( sz.h > m_maxEntrySizeSPX.h )
 		{
-			MU w = pSlot->_widget()->matchingWidth(m_maxEntrySize.h-m_entryPadding.h) + m_entryPadding.w;
-			limit(w, m_minEntrySize.w, m_maxEntrySize.w );
+			spx w = pSlot->_widget()->_matchingWidth(m_maxEntrySizeSPX.h-m_entryPadding.h, m_scale) + m_entryPadding.w;
+			limit(w, m_minEntrySizeSPX.w, m_maxEntrySizeSPX.w );
 		}
 
 		return sz;
@@ -1137,11 +1164,11 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	Coord PackList::_childPos( const StaticSlot * _pSlot ) const
+	CoordSPX PackList::_childPos( const StaticSlot * _pSlot ) const
 	{
 		const Slot * pSlot = reinterpret_cast<const Slot*>(_pSlot);
 
-		Rect geo;
+		RectSPX geo;
 		_getChildGeo(geo, pSlot);
 
 		return geo.pos();
@@ -1153,16 +1180,16 @@ namespace wg
 	{
 		Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);
 
-		Rect geo;
+		RectSPX geo;
 		_getChildGeo(geo, pSlot);
 		_requestRender(geo);
 	}
 
-	void PackList::_childRequestRender( StaticSlot * _pSlot, const Rect& rect )
+	void PackList::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
 	{
 		Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);
 
-		Rect geo;
+		RectSPX geo;
 		_getChildGeo(geo, pSlot);
 		geo.x += rect.x;
 		geo.y += rect.y;
@@ -1179,12 +1206,12 @@ namespace wg
 
 		Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);
 
-		if (pSlot->m_bVisible && m_minEntrySize != m_maxEntrySize)
+		if (pSlot->m_bVisible && m_minEntrySizeSPX != m_maxEntrySizeSPX)
 		{
-			Size prefEntrySize = _paddedLimitedPreferredSize(pSlot);
+			SizeSPX prefEntrySize = _paddedLimitedPreferredSize(pSlot);
 
-			MU prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
-			MU prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
+			spx prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
+			spx prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
 
 			// Update preferred sizes
 
@@ -1193,7 +1220,7 @@ namespace wg
 				// NOTE: Order here is important!
 
 				_addToContentPreferredSize( prefLength, prefBreadth );
-				MU oldPrefBreadth = pSlot->m_prefBreadth;
+				spx oldPrefBreadth = pSlot->m_prefBreadth;
 				pSlot->m_prefBreadth = prefBreadth;
 				_subFromContentPreferredSize( pSlot->m_length, oldPrefBreadth );
 
@@ -1202,7 +1229,7 @@ namespace wg
 
 			// Calculate new length
 
-			MU length;
+			spx length;
 			if( prefBreadth == m_contentBreadth )
 				length = prefLength;
 			else
@@ -1219,7 +1246,7 @@ namespace wg
 				_updateChildOfsFrom( pSlot );
 				_requestRenderChildren( pSlot, slots._end() );
 
-				Rect childGeo;
+				RectSPX childGeo;
 				_getChildGeo(childGeo,pSlot);
 				OO(pSlot->_widget())->_resize(childGeo);
 			}
@@ -1230,7 +1257,7 @@ namespace wg
 
 		// Always set size on request since our _resize() won't do it unless breadth has changed.
 
-		Rect geo;
+		RectSPX geo;
 		_getChildGeo(geo, pSlot);
 		pSlot->_setSize(geo.size());
 	}
@@ -1315,16 +1342,16 @@ namespace wg
 
 	//____ _listArea() ____________________________________________________________
 
-	Rect PackList::_listArea() const
+	RectSPX PackList::_listArea() const
 	{
-		return OO(skin)._contentRect( _listCanvas(), m_state );
+		return OO(skin)._contentRect( _listCanvas(), m_scale, m_state );
 	}
 
 	//____ _listWindow() ____________________________________________________________
 
-	Rect PackList::_listWindow() const
+	RectSPX PackList::_listWindow() const
 	{
-		Rect r = _windowSection();		// Window in widgets own coordinate system.
+		RectSPX r = _windowSection();		// Window in widgets own coordinate system.
 
 		if( m_bHorizontal )
 		{
@@ -1341,42 +1368,42 @@ namespace wg
 
 	//____ _listCanvas() ____________________________________________________________
 
-	Rect PackList::_listCanvas() const
+	RectSPX PackList::_listCanvas() const
 	{
-		Size headerSize = _header()._size();
+		SizeSPX headerSize = _header()._size();
 
 		if( m_bHorizontal )
-			return Rect(headerSize.w, 0, m_size.w - headerSize.w, m_size.h );
+			return RectSPX(headerSize.w, 0, m_size.w - headerSize.w, m_size.h );
 		else
-			return Rect(0, headerSize.h, m_size.w, m_size.h - headerSize.h);	// List canvas in widgets own coordinate system.
+			return RectSPX(0, headerSize.h, m_size.w, m_size.h - headerSize.h);	// List canvas in widgets own coordinate system.
 	}
 
 	//____ _headerGeo() ___________________________________________________________
 
-	Rect PackList::_headerGeo() const
+	RectSPX PackList::_headerGeo() const
 	{
 		if( m_bHorizontal )
-			return Rect( _windowSection().x, 0, _header()._size().w, m_size.h );
+			return RectSPX( _windowSection().x, 0, _header()._size().w, m_size.h );
 		else
-			return Rect( 0, _windowSection().y, m_size.w, _header()._size().h );
+			return RectSPX( 0, _windowSection().y, m_size.w, _header()._size().h );
 	}
 
 	//____ _windowPadding() _______________________________________________________
 
-	Size PackList::_windowPadding() const
+	SizeSPX PackList::_windowPadding() const
 	{
 		if( m_bHorizontal )
-			return Size( _header()._size().w, 0 );
+			return SizeSPX( _header()._size().w, 0 );
 		else
-			return Size( 0, _header()._size().h );
+			return SizeSPX( 0, _header()._size().h );
 	}
 
 	//____ _refreshHeader() _______________________________________________________
 
 	void PackList::_refreshHeader()
 	{
-		Size wantedSize = _header()._preferredSize();
-		Size currentSize = _header()._size();
+		SizeSPX wantedSize = _header()._preferredSize(m_scale);
+		SizeSPX currentSize = _header()._size();
 
 		bool	bRequestResize = false;
 
@@ -1460,24 +1487,24 @@ namespace wg
 
 	//____ _componentPos() ____________________________________________________________
 
-	Coord PackList::_componentPos( const GeoComponent * pComponent ) const
+	CoordSPX PackList::_componentPos( const GeoComponent * pComponent ) const
 	{
-		Coord c = m_bHorizontal ? Coord(_windowSection().x, 0 ) : Coord(0, _windowSection().y );
+		CoordSPX c = m_bHorizontal ? CoordSPX(_windowSection().x, 0 ) : CoordSPX(0, _windowSection().y );
 		return c;
 	}
 
 	//____ _componentSize() _________________________________________________________
 
-	Size PackList::_componentSize( const GeoComponent * pComponent ) const
+	SizeSPX PackList::_componentSize( const GeoComponent * pComponent ) const
 	{
 		return _header()._size();		// We store size internally in the _header().
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
-	Rect PackList::_componentGeo( const GeoComponent * pComponent ) const
+	RectSPX PackList::_componentGeo( const GeoComponent * pComponent ) const
 	{
-		return Rect( _componentPos(pComponent), _header()._size() );
+		return RectSPX( _componentPos(pComponent), _header()._size() );
 	}
 
 	//____ _receiveComponentNotif() _____________________________________________________

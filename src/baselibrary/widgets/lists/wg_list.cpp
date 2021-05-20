@@ -59,25 +59,25 @@ namespace wg
 
 	void List::setEntrySkin( Skin * pSkin )
 	{
-		Size oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPaddingSize() : Size();
+		SizeSPX oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentPaddingSize(m_scale) : SizeSPX();
 
 		m_pEntrySkin[0] = pSkin;
 		m_pEntrySkin[1] = pSkin;
 		m_bOpaqueEntries = pSkin ? pSkin->isOpaque() : false;
 
-		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->contentPaddingSize() : Size() );
+		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->_contentPaddingSize(m_scale) : SizeSPX() );
 	}
 
 	bool List::setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin )
 	{
 //		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentPaddingSize() : SizeI();
-		Size padding[2];
+		SizeSPX padding[2];
 
 		if( pOddEntrySkin )
-			padding[0] = pOddEntrySkin->contentPaddingSize();
+			padding[0] = pOddEntrySkin->_contentPaddingSize(m_scale);
 
 		if( pEvenEntrySkin )
-			padding[1] = pEvenEntrySkin->contentPaddingSize();
+			padding[1] = pEvenEntrySkin->_contentPaddingSize(m_scale);
 
 		if( (padding[0].w != padding[1].w) || (padding[0].h != padding[1].h) )
 			return false;
@@ -86,7 +86,7 @@ namespace wg
 		m_pEntrySkin[1] = pEvenEntrySkin;
 		m_bOpaqueEntries = (pOddEntrySkin->isOpaque() && pEvenEntrySkin->isOpaque());
 
-		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->contentPaddingSize() : Size() );
+		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->_contentPaddingSize(m_scale) : SizeSPX() );
 		return true;
 	}
 
@@ -124,10 +124,10 @@ namespace wg
 			case MsgType::MouseMove:
 			{
 				MouseMoveMsg * pMsg = static_cast<MouseMoveMsg*>(_pMsg);
-				Slot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
+				Slot * pEntry = _findEntry(_toLocal(pMsg->_pointerPos()));
 				if( pEntry && pEntry->_widget() != m_pHoveredChild.rawPtr() )
 				{
-					Rect geo;
+					RectSPX geo;
 					if( m_pHoveredChild )
 					{
 						_getEntryGeo( geo, (Slot*) OO(m_pHoveredChild)->_slot() );
@@ -143,10 +143,10 @@ namespace wg
 			case MsgType::MouseLeave:
 			{
 				MouseLeaveMsg_p pMsg = static_cast<MouseLeaveMsg*>(_pMsg);
-				Slot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
+				Slot * pEntry = _findEntry(_toLocal(pMsg->_pointerPos()));
 				if( m_pHoveredChild && !pEntry )
 				{
-					Rect geo;
+					RectSPX geo;
 					_getEntryGeo( geo, (Slot*) OO(m_pHoveredChild)->_slot() );
 					_requestRender(geo);
 					m_pHoveredChild = nullptr;
@@ -160,11 +160,11 @@ namespace wg
 				MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
 				if( m_selectMode != SelectMode::Unselectable && pMsg->button() == MouseButton::Left )
 				{
-					Coord ofs = toLocal(pMsg->pointerPos());
+					CoordSPX ofs = _toLocal(pMsg->_pointerPos());
 					if( !_listWindow().contains(ofs) )
 						break;								// Click on header or somewhere else outside the real list.
 
-					Rect listArea = _listArea();
+					RectSPX listArea = _listArea();
 					Slot * pEntry = _findEntry(ofs);
 
 					ofs = listArea.limit(ofs);
@@ -242,7 +242,7 @@ namespace wg
 			case MsgType::MouseRelease:
 				if( m_selectMode != SelectMode::Unselectable &&  static_cast<MouseReleaseMsg*>(_pMsg)->button() == MouseButton::Left )
 				{
-					Rect dirtyRect( m_lassoBegin, m_lassoEnd );
+					RectSPX dirtyRect( m_lassoBegin, m_lassoEnd );
 					_requestRender(dirtyRect);
 
 					m_lassoBegin = m_lassoEnd;
@@ -263,15 +263,15 @@ namespace wg
 				auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
 				if( (m_selectMode == SelectMode::FlipOnSelect || m_selectMode == SelectMode::MultiEntries) && pMsg->button() == MouseButton::Left )
 				{
-					Coord ofs = _listArea().limit(toLocal(pMsg->pointerPos()));
+					CoordSPX ofs = _listArea().limit(_toLocal(pMsg->_pointerPos()));
 					ofs = _listWindow().limit(ofs);
 
-					Rect oldLasso( m_lassoBegin, m_lassoEnd );
-					Rect newLasso( m_lassoBegin, ofs );
+					RectSPX oldLasso( m_lassoBegin, m_lassoEnd );
+					RectSPX newLasso( m_lassoBegin, ofs );
 
 					_onLassoUpdated( oldLasso, newLasso );
 
-					Rect dirtyRect = oldLasso;
+					RectSPX dirtyRect = oldLasso;
 					dirtyRect.growToContain( ofs );
 					_requestRender( dirtyRect );
 					m_lassoEnd = ofs;
@@ -380,11 +380,11 @@ namespace wg
 
 		// Request render for the range
 
-		Rect geoFirst;
-		Rect geoLast;
+		RectSPX geoFirst;
+		RectSPX geoLast;
 		_getEntryGeo( geoFirst, pBegin );
 		_getEntryGeo( geoLast, pLast );
-		_requestRender( Rect::getUnion(geoFirst,geoLast) );
+		_requestRender( RectSPX::getUnion(geoFirst,geoLast) );
 
 		// Reserve ItemInfo array of right size if we are going to post message
 
@@ -464,20 +464,20 @@ namespace wg
 
 	//____ _componentPos() ____________________________________________________
 
-	Coord List::_componentPos(const GeoComponent* pComponent) const
+	CoordSPX List::_componentPos(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &lasso)
 			return m_lassoBegin;
 		else
-			return Coord();
+			return CoordSPX();
 	}
 
 	//____ _componentSize() ___________________________________________________
 
-	Size List::_componentSize(const GeoComponent* pComponent) const
+	SizeSPX List::_componentSize(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &lasso)
-			return Size(m_lassoEnd - m_lassoBegin);
+			return SizeSPX(m_lassoEnd - m_lassoBegin);
 		else
 			return m_size;
 
@@ -485,10 +485,10 @@ namespace wg
 
 	//____ _componentGeo() ____________________________________________________
 
-	Rect List::_componentGeo(const GeoComponent* pComponent) const
+	RectSPX List::_componentGeo(const GeoComponent* pComponent) const
 	{
 		if (pComponent == &lasso)
-			return Rect(m_lassoBegin, m_lassoEnd);
+			return RectSPX(m_lassoBegin, m_lassoEnd);
 		else
 			return m_size;
 	}
@@ -498,13 +498,13 @@ namespace wg
 	void List::_componentRequestRender(const GeoComponent* pComponent)
 	{
 		if (pComponent == &lasso)
-			return _requestRender( Rect(m_lassoBegin, m_lassoEnd) );
+			return _requestRender( RectSPX(m_lassoBegin, m_lassoEnd) );
 		else
 			return _requestRender();
 
 	}
 
-	void List::_componentRequestRender(const GeoComponent* pComponent, const Rect& rect)
+	void List::_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect)
 	{
 		if (pComponent == &lasso)
 			return _requestRender( rect + m_lassoBegin );

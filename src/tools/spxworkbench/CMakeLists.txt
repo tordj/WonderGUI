@@ -341,10 +341,10 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/layers/wg_popuplayer.h
 	../../baselibrary/widgets/layers/wg_tooltiplayer.cpp
 	../../baselibrary/widgets/layers/wg_tooltiplayer.h
-#	../../baselibrary/widgets/lists/wg_list.cpp
-#	../../baselibrary/widgets/lists/wg_list.h
-#	../../baselibrary/widgets/lists/wg_packlist.cpp
-#	../../baselibrary/widgets/lists/wg_packlist.h
+	../../baselibrary/widgets/lists/wg_list.cpp
+	../../baselibrary/widgets/lists/wg_list.h
+	../../baselibrary/widgets/lists/wg_packlist.cpp
+	../../baselibrary/widgets/lists/wg_packlist.h
 #	../../baselibrary/widgets/panels/wg_flexpanel.cpp
 #	../../baselibrary/widgets/panels/wg_flexpanel.h
 	../../baselibrary/widgets/panels/wg_lambdapanel.cpp
