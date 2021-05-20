@@ -56,13 +56,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ______________________________________________________
-
-		Size		preferredSize() const override;
-		Size		minSize() const override;
-		Size		maxSize() const override;
-
-
 		//.____ Appearance ____________________________________________________
 
 		void		setLayout(int nbWhiteKeys, const std::bitset<7>& blackKeyPositions );
@@ -92,20 +85,27 @@ namespace wg
 
 		int			userPressedKey() const { return m_bIsHoveredPressed ? m_hoveredKey : -1; }
 
+		//.____ Internal ______________________________________________________
+
+		SizeSPX		_preferredSize(int scale = -1) const override;
+		SizeSPX		_minSize(int scale = -1) const override;
+		SizeSPX		_maxSize(int scale = -1) const override;
+
+
 	protected:
 		PianoKeyboard();
 		virtual ~PianoKeyboard();
 		virtual Widget* _newOfMyType() const override { return new PianoKeyboard(); };
 
 		void		_cloneContent(const Widget * _pOrg) override;
-		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void		_receive(Msg * pMsg) override;
-		bool		_alphaTest(const Coord& ofs) override;
+		bool		_alphaTest(const CoordSPX& ofs) override;
 //		void		_setState(State state) override;
 
 		void		_requestRenderKey(int keyIdx);
-		int			_markTestKey(const Coord& pos);
-		Rect		_keyRect(int keyIdx);
+		int			_markTestKey(const CoordSPX& pos);
+		RectSPX		_keyRect(int keyIdx);
 		void		_setHoveredKey(int keyIdx, uint64_t timestamp);
 		void		_setAPIPressed(int keyIdx, bool bPressed);
 		void		_setHoverPress(bool bPressed, uint64_t timestamp);
@@ -117,10 +117,10 @@ namespace wg
 		int				m_nbWhiteKeys = 0;
 		std::bitset<7>	m_blackKeyPositions;
 		int				m_nbKeys = 0;
-		SizeI			m_keyboardSourceSize;			// In pixels	
+		SizeSPX			m_keyboardSourceSize;
 		Size			m_preferredKeyboardSize;
-		MU				m_blackKeyHeight = 0;
-		int				m_blackKeySourceHeight = 0;		// In pixels
+		float			m_blackKeyHeight = 0;			// Relative to canvas content height.
+		spx				m_blackKeySourceHeight = 0;
 
 		Surface_p		m_pOddWhiteKeys;
 		Surface_p		m_pEvenWhiteKeys;

@@ -234,10 +234,13 @@ int Util::gcd(int a, int b)
 		return (alpha >= opacityTreshold);
 	}
 
-	bool Util::markTestNinePatch(CoordSPX ofs, Surface* pSurface, const NinePatch& patch, const RectSPX& _dest, const BorderSPX& destFrame, int scale, int opacityTreshold)
+	bool Util::markTestNinePatch(CoordSPX ofs, Surface* pSurface, const NinePatch& patch, const RectSPX& _dest, int scale, int opacityTreshold)
 	{
+		const BorderSPX destFrame = align(ptsToSpx(patch.frame, scale));
 		const BorderSPX sourceFrame = align(ptsToSpx(patch.frame,pSurface->scale()));
 		const RectSPX _source = align(ptsToSpx(patch.block, pSurface->scale()));
+
+
 
 		// Sanity check & shortcuts.
 

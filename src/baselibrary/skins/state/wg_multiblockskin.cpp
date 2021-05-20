@@ -35,7 +35,7 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	MultiBlockSkin_p MultiBlockSkin::create(SizeI blockSize, BorderI frame)
+	MultiBlockSkin_p MultiBlockSkin::create(Size blockSize, Border frame)
 	{
 		return MultiBlockSkin_p(new MultiBlockSkin(blockSize,frame));
 	}
@@ -43,7 +43,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	MultiBlockSkin::MultiBlockSkin(SizeI blockSize, BorderI frame)
+	MultiBlockSkin::MultiBlockSkin(Size blockSize, Border frame)
 	{
 		m_blockSizePoints	= blockSize;
 		m_frame				= frame;
@@ -62,12 +62,8 @@ namespace wg
 
 	//____ addLayer() _____________________________________________________________
 
-	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI ofs)
+	int MultiBlockSkin::addLayer(Surface * pSurf, Coord ofs)
 	{
-		// HACK!
-
-		m_blockSize = (m_blockSizePoints*pSurf->qpixPerPoint()) / 4;
-
 		//
 
 		m_layers.emplace_back();
@@ -83,7 +79,7 @@ namespace wg
 
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
-			layer.blockOfs[i] = ofs*pSurf->qpixPerPoint()/4;
+			layer.blockOfs[i] = ofs;
 			layer.tintColor[i] = Color::White;
 
 			_updateStateOpacity(i);
@@ -93,17 +89,8 @@ namespace wg
 		return (int) m_layers.size();
 	}
 
-	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, std::initializer_list<State> stateBlocks)
+	int MultiBlockSkin::addLayer(Surface * pSurf, Coord blockStartOfs, Size blockPitch, std::initializer_list<State> stateBlocks)
 	{
-		// HACK!
-
-		m_blockSize = (m_blockSizePoints*pSurf->qpixPerPoint()) / 4;
-
-		//
-
-		blockStartOfs = (blockStartOfs*pSurf->qpixPerPoint()) / 4;
-		blockPitch = (blockPitch*pSurf->qpixPerPoint()) / 4;
-
 		//
 
 		m_layers.emplace_back();
@@ -129,7 +116,7 @@ namespace wg
 			int index = _stateToIndex(state);
 
 			layer.stateBlockMask.setBit(index);
-			layer.blockOfs[index] = blockStartOfs + CoordI( blockPitch.w*ofs, blockPitch.h*ofs );
+			layer.blockOfs[index] = blockStartOfs + Coord( blockPitch.w*ofs, blockPitch.h*ofs );
 			ofs++;
 		}
 
@@ -155,9 +142,9 @@ namespace wg
 		return (int) m_layers.size();
 	}
 
-	int MultiBlockSkin::addLayer(Surface * pSurf, std::initializer_list<State> stateBlocks, Axis axis, int spacing, CoordI blockStartOfs )
+	int MultiBlockSkin::addLayer(Surface * pSurf, std::initializer_list<State> stateBlocks, Axis axis, pts spacing, Coord blockStartOfs )
 	{
-		SizeI blockPitch;
+		Size blockPitch;
 
 		if (axis == Axis::X)
 			blockPitch.w = m_blockSizePoints.w + spacing;
@@ -250,14 +237,14 @@ namespace wg
 		return true;
 	}
 
-	//____ render() _______________________________________________________________
+	//____ _render() _______________________________________________________________
 
-	void MultiBlockSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void MultiBlockSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		if (m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0 )
-			return;
+		RectSPX blockSize = align(ptsToSpx(m_blockSizePoints, scale));
 
-		RectI canvas = _canvas.px();
+		if (m_layers.empty() || blockSize.w <= 0 || blockSize.h <= 0 )
+			return;
 
 		int stateIndex = _stateToIndex(state);
 
@@ -292,15 +279,10 @@ namespace wg
 
 			pDevice->setBlitSource(layer.pSurface);
 
-			const RectI&	src = RectI(layer.blockOfs[stateIndex], m_blockSize);
-
-			const BorderI&    sourceBorders = m_frame*layer.pSurface->qpixPerPoint();
-			const BorderI     canvasBorders = pointsToPixels(m_frame);
-
 			NinePatch patch;
-			patch.block = src;
-			patch.frame = sourceBorders;
-			pDevice->blitNinePatch(canvas, canvasBorders, patch);
+			patch.block = Rect(layer.blockOfs[stateIndex], m_blockSizePoints);
+			patch.frame = m_frame;
+			pDevice->blitNinePatch(canvas, align(ptsToSpx(m_frame,scale)), patch, scale);
 		}
 
 		if (mixedTint != orgTintColor)
@@ -314,39 +296,41 @@ namespace wg
 	}
 
 
-	//____ minSize() ______________________________________________________________
+	//____ _minSize() ______________________________________________________________
 
-	Size MultiBlockSkin::minSize() const
+	SizeSPX MultiBlockSkin::_minSize(int scale) const
 	{
-		Size content = StateSkin::minSize();
-		Size frame = Border(m_frame).aligned();
-		return Size::max(content, frame);
+		SizeSPX content = StateSkin::_minSize(scale);
+		SizeSPX frame = align(ptsToSpx(m_frame,scale));
+		return SizeSPX::max(content, frame);
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	Size MultiBlockSkin::preferredSize() const
+	SizeSPX MultiBlockSkin::_preferredSize(int scale) const
 	{
         // Preferred size is to map each point of the surface to a pixel of the skinarea.
         
-        return m_blockSizePoints;
+        return align(ptsToSpx(m_blockSizePoints,scale));
 	}
 
-	//____ sizeForContent() _______________________________________________________
+	//____ _sizeForContent() _______________________________________________________
 
-	Size MultiBlockSkin::sizeForContent( const Size& contentSize ) const
+	SizeSPX MultiBlockSkin::_sizeForContent( const SizeSPX& contentSize, int scale ) const
 	{
-		Size sz = StateSkin::sizeForContent(contentSize);
-		Size min = Border(m_frame).aligned();
+		SizeSPX sz = StateSkin::_sizeForContent(contentSize,scale);
+		SizeSPX min = align(ptsToSpx(m_frame, scale));
 
-		return SizeI::max(sz, min);
+		return SizeSPX::max(sz, min);
 	}
 
-	//____ markTest() _____________________________________________________________
+	//____ _markTest() _____________________________________________________________
 
-	bool MultiBlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool MultiBlockSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
-		if (!canvas.contains(_ofs) || m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0)
+		RectSPX blockSize = align(ptsToSpx(m_blockSizePoints, scale));
+
+		if (!canvas.contains(_ofs) || m_layers.empty() || blockSize.w <= 0 || blockSize.h <= 0)
 			return false;
 
 		if( m_bOpaque )
@@ -356,12 +340,12 @@ namespace wg
 
 		for (auto& layer : m_layers)
 		{
-			CoordI srcOfs = layer.blockOfs[stateIndex];
+			Coord srcOfs = layer.blockOfs[stateIndex];
 
 			NinePatch patch;
-			patch.block = { srcOfs,m_blockSize };
-			patch.frame = m_frame * layer.pSurface->qpixPerPoint();
-			bool bMarked = markTestNinePatch(_ofs, layer.pSurface, patch, canvas, opacityTreshold);
+			patch.block = { srcOfs, m_blockSizePoints };
+			patch.frame = m_frame;
+			bool bMarked = markTestNinePatch(_ofs, layer.pSurface, patch, canvas, scale, opacityTreshold);
 			if (bMarked)
 				return true;
 		}
@@ -369,14 +353,14 @@ namespace wg
 		return false;
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect MultiBlockSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX MultiBlockSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (oldState == newState)
-			return Rect();
+			return RectSPX();
 
 		int i1 = _stateToIndex(newState);
 		int i2 = _stateToIndex(oldState);
@@ -387,7 +371,7 @@ namespace wg
 				return canvas;
 		}
 
-		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+		return StateSkin::_dirtyRect(canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
