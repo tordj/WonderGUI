@@ -82,6 +82,7 @@ namespace wg
 		inline Object *			_object() override { return GeoComponent::_object(); }
 		inline const Object *	_object() const override { return GeoComponent::_object(); }
 
+		int			_scale() const override { return m_scale; }
 
 		State		_componentState(const GeoComponent* pComponent) const override { return StateEnum::Normal; }
 		CoordSPX	_componentPos( const GeoComponent * pComponent ) const override;
