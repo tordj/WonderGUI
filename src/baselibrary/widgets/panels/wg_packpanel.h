@@ -66,9 +66,9 @@ namespace wg
 			void			setWeight(float weight);
 			inline float	weight() const { return m_weight; }
 
-			inline Coord	pos() const { return m_geo.pos(); }
-			inline Size		size() const { return m_geo.size(); }
-			inline Rect		geo() const { return m_geo; }
+			inline Coord	pos() const { return Util::spxToPts(m_geo.pos(),_holder()->_scale()); }
+			inline Size		size() const { return Util::spxToPts(m_geo.size(), _holder()->_scale()); }
+			inline Rect		geo() const { return Util::spxToPts(m_geo, _holder()->_scale()); }
 
 			//.____ Operators __________________________________________
 
@@ -82,8 +82,8 @@ namespace wg
 
 			bool			m_bResizeRequired = false;
 			float			m_weight = 1.f;				// Weight for space allocation.
-			Rect			m_geo;						// Real geo of child (no padding included).
-			Size			m_preferredSize;				// Cached padded preferred size from the child.
+			RectSPX			m_geo;						// Real geo of child (no padding included).
+			SizeSPX			m_preferredSize;			// Cached padded preferred size from the child.
 		};
 
 
@@ -135,16 +135,18 @@ namespace wg
 		void			setAxis( Axis orientaiton );
 		Axis		axis() const { return m_bHorizontal?Axis::X:Axis::Y; }
 
-		MU				matchingHeight(MU width) const override;
-		MU				matchingWidth(MU height) const override;
-
-		Size			preferredSize() const override;
-
-
 		//.____ Behavior ________________________________________________________
 
 		void			setSizeBroker( SizeBroker * pBroker );
 		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
+
+		//.____ Internal ______________________________________________________
+
+		spx				_matchingHeight(spx width, int scale = -1) const override;
+		spx				_matchingWidth(spx height, int scale = -1) const override;
+
+		SizeSPX			_preferredSize(int scale = -1) const override;
+
 
 	protected:
 		PackPanel();
@@ -153,7 +155,7 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void			_resize( const Size& size ) override;
+		void			_resize( const SizeSPX& size, int scale = -1 ) override;
 
 
 		// Overloaded from Container
@@ -166,10 +168,10 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		Coord		_childPos(const StaticSlot * pSlot) const override;
+		CoordSPX		_childPos(const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender(StaticSlot * pSlot) override;
-		void		_childRequestRender(StaticSlot * pSlot, const Rect& rect) override;
+		void		_childRequestRender(StaticSlot * pSlot, const RectSPX& rect) override;
 		void		_childRequestResize(StaticSlot * pSlot) override;
 
 		Widget *	_prevChild(const StaticSlot * pSlot) const override;
@@ -200,16 +202,16 @@ namespace wg
 		void		_unhideChildren(Slot * pSlot, int nb);
 
 		void		_refreshGeometries();
-		Size		_calcPreferredSize();
+		SizeSPX		_calcPreferredSize();
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
-		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, MU forcedBreadth ) const;
+		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, spx forcedBreadth ) const;
 
-		MU			_setItemLengths(SizeBrokerItem * pItems, int nItems, MU totalLength) const;
-		MU			_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const;
+		spx			_setItemLengths(SizeBrokerItem * pItems, int nItems, spx totalLength) const;
+		spx			_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const;
 
 		bool			m_bHorizontal;
 		SizeBroker_p	m_pSizeBroker;
-		Size			m_preferredContentSize;
+		SizeSPX			m_preferredContentSize;
 
 	};
 

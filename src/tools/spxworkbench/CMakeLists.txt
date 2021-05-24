@@ -200,14 +200,14 @@ add_executable(spxworkbench
 	../../baselibrary/components/wg_cvalueeditor.h
 	../../baselibrary/components/wg_geocomponent.cpp
 	../../baselibrary/components/wg_geocomponent.h
-#
-#	../../baselibrary/sizebrokers/wg_scalepreferred_sizebroker.cpp
-#	../../baselibrary/sizebrokers/wg_scalepreferred_sizebroker.h
-#	../../baselibrary/sizebrokers/wg_sizebroker.cpp
-#	../../baselibrary/sizebrokers/wg_sizebroker.h
-#	../../baselibrary/sizebrokers/wg_uniform_sizebroker.cpp
-#	../../baselibrary/sizebrokers/wg_uniform_sizebroker.h
-#	
+
+	../../baselibrary/sizebrokers/wg_scalepreferred_sizebroker.cpp
+	../../baselibrary/sizebrokers/wg_scalepreferred_sizebroker.h
+	../../baselibrary/sizebrokers/wg_sizebroker.cpp
+	../../baselibrary/sizebrokers/wg_sizebroker.h
+	../../baselibrary/sizebrokers/wg_uniform_sizebroker.cpp
+	../../baselibrary/sizebrokers/wg_uniform_sizebroker.h
+	
 	../../baselibrary/skins/wg_animskin.cpp
 	../../baselibrary/skins/wg_animskin.h
 	../../baselibrary/skins/wg_skin.cpp
@@ -329,8 +329,8 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/capsules/wg_shadercapsule.h
 	../../baselibrary/widgets/capsules/wg_sizecapsule.cpp
 	../../baselibrary/widgets/capsules/wg_sizecapsule.h
-#	../../baselibrary/widgets/layers/wg_designlayer.cpp
-#	../../baselibrary/widgets/layers/wg_designlayer.h
+	../../baselibrary/widgets/layers/wg_designlayer.cpp
+	../../baselibrary/widgets/layers/wg_designlayer.h
 #	../../baselibrary/widgets/layers/wg_dragndroplayer.cpp
 #	../../baselibrary/widgets/layers/wg_dragndroplayer.h
 	../../baselibrary/widgets/layers/wg_layer.cpp
@@ -349,8 +349,8 @@ add_executable(spxworkbench
 #	../../baselibrary/widgets/panels/wg_flexpanel.h
 	../../baselibrary/widgets/panels/wg_lambdapanel.cpp
 	../../baselibrary/widgets/panels/wg_lambdapanel.h
-#	../../baselibrary/widgets/panels/wg_packpanel.cpp
-#	../../baselibrary/widgets/panels/wg_packpanel.h
+	../../baselibrary/widgets/panels/wg_packpanel.cpp
+	../../baselibrary/widgets/panels/wg_packpanel.h
 	../../baselibrary/widgets/panels/wg_panel.cpp
 	../../baselibrary/widgets/panels/wg_panel.h
 	../../baselibrary/widgets/panels/wg_rootpanel.cpp 

@@ -68,7 +68,7 @@ namespace wg
 
 			bool		m_bVisible = true;
 			Placement	m_placement = Placement::NorthWest;
-			Coord		m_placementPos;			// Widgets pos relative selected widget and placement.
+			CoordSPX	m_placementPos;			// Widgets pos relative selected widget and placement.
 		};
 
 
@@ -95,13 +95,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ______________________________________________________
-
-		virtual MU		matchingHeight(MU width) const override;
-		virtual MU		matchingWidth(MU height) const override;
-
-		Size			preferredSize() const override;
-
 		//.____ Appearance _________________________________________________
 
 		void				setToolboxSkin(Skin * pSkin);
@@ -115,6 +108,13 @@ namespace wg
 		void				setEditMode(bool bEditMode);
 		inline bool			isEditMode() const;
 
+		//.____ Internal ______________________________________________________
+
+		virtual spx		_matchingHeight(spx width, int scale = -1) const override;
+		virtual spx		_matchingWidth(spx height, int scale = -1) const override;
+
+		SizeSPX			_preferredSize(int scale = -1) const override;
+
 
 	protected:
 		DesignLayer();
@@ -126,8 +126,8 @@ namespace wg
 
 		// Overloaded from Container
 
-		Widget *		_findWidget( const Coord& ofs, SearchMode mode ) override;
-		void			_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window) override;
+		Widget *		_findWidget( const CoordSPX& ofs, SearchMode mode ) override;
+		void			_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window) override;
 
 		// Overloaded from SlotHolder
 
@@ -148,7 +148,7 @@ namespace wg
 		// Overloaded from Widget
 
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_resize( const Size& size ) override;
+		void			_resize( const SizeSPX& size, int scale = -1 ) override;
 		void			_receive( Msg * pMsg ) override;
 
 		// Toolbox creators
@@ -158,7 +158,7 @@ namespace wg
 
 		//
 
-		Rect			_selectionGeo() const;
+		RectSPX			_selectionGeo() const;
 		void			_refreshRealGeo(ToolboxSlot * pSlot);
 		void			_selectWidget(Widget * pWidget);
 		//
@@ -173,7 +173,7 @@ namespace wg
 		PackPanel_p	m_pWidgetToolbox;
 
 		int			m_pressedToolbox = -1;			// Index for palette that is pressed.
-		Coord		m_pressedToolboxStartOfs;
+		CoordSPX	m_pressedToolboxStartOfs;
 	};
 
 	//____ paletteSkin() ______________________________________________________

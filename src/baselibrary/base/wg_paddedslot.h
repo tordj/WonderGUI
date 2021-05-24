@@ -68,11 +68,19 @@ namespace wg
 		inline SlotHolder * _holder() { return static_cast<SlotHolder*>(m_pHolder); }
 		inline const SlotHolder * _holder() const { return static_cast<SlotHolder*>(m_pHolder); }
 
-		SizeSPX		_paddedPreferredSize() const { return m_pWidget->_preferredSize() + m_paddingSPX; }
-		SizeSPX		_paddedMinSize() const { return m_pWidget->_minSize() + m_paddingSPX; }
-		SizeSPX		_paddedMaxSize() const { return m_pWidget->_maxSize() + m_paddingSPX; }
-		spx			_paddedMatchingWidth(spx paddedHeight) const { return m_pWidget->_matchingWidth(paddedHeight - m_paddingSPX.height()) + m_paddingSPX.width(); }
-		spx			_paddedMatchingHeight(spx paddedWidth) const { return m_pWidget->_matchingHeight(paddedWidth - m_paddingSPX.width()) + m_paddingSPX.height(); }
+		SizeSPX		_paddedPreferredSize(int scale) const { return m_pWidget->_preferredSize(scale) + Util::align(Util::ptsToSpx(m_padding,scale)); }
+		SizeSPX		_paddedMinSize(int scale) const { return m_pWidget->_minSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); }
+		SizeSPX		_paddedMaxSize(int scale) const { return m_pWidget->_maxSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); }
+		spx			_paddedMatchingWidth(spx paddedHeight, int scale) const 
+					{ 
+						SizeSPX paddingSize = Util::align(Util::ptsToSpx(m_padding, scale));
+						return m_pWidget->_matchingWidth(paddedHeight - paddingSize.h) + paddingSize.w; 
+					}
+		spx			_paddedMatchingHeight(spx paddedWidth, int scale) const 
+					{ 
+						SizeSPX paddingSize = Util::align(Util::ptsToSpx(m_padding, scale));
+						return m_pWidget->_matchingHeight(paddedWidth - paddingSize.w) + paddingSize.h; 
+					}
 
 		Border		m_padding;
 		BorderSPX	m_paddingSPX;

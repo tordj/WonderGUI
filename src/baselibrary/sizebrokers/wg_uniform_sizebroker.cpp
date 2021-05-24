@@ -36,14 +36,14 @@ namespace wg
 
 	//____ setItemLengths() _______________________________________________________
 
-	MU UniformSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, MU totalLength ) const
+	pts UniformSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, pts totalLength ) const
 	{
 		if( nItems == 0 )
 			return 0;
 
 		// Gather some data we need
 
-		MU staticLength = 0;				// Total preferred length of all static (non-stretching) items
+		pts staticLength = 0;				// Total preferred length of all static (non-stretching) items
 		int nUnifiedItems = 0;              // Number of static items
 		float extraWeight = 0;              // Total "extra weight", of all items with weight > 1.
 
@@ -59,15 +59,15 @@ namespace wg
 
 		// Calculate baseLength and extraLengthPerWeightUnit
 
-		MU unifiedLength = nUnifiedItems > 0 ? (totalLength - staticLength) / nUnifiedItems : MU(0);
-		MU paddingLength = totalLength - staticLength - unifiedLength*nUnifiedItems;
+		pts unifiedLength = nUnifiedItems > 0 ? (totalLength - staticLength) / nUnifiedItems : pts(0);
+		pts paddingLength = totalLength - staticLength - unifiedLength*nUnifiedItems;
 		float paddingPerWeightUnit = extraWeight > 0 ? float(paddingLength) / extraWeight : 0.f;
 
 		// Loop through items and set their length
 
 		float paddingAcc = 0.0001f;
-		MU total = 0;
-		MU length;
+		pts total = 0;
+		pts length;
 
 		for( int i = 0 ; i < nItems ; i++ )
 		{
@@ -78,8 +78,8 @@ namespace wg
 			else if( pItems[i].weight > 1 )
 			{
 				paddingAcc += (pItems[i].weight-1) * paddingPerWeightUnit;
-				length = (MU) paddingAcc;
-				paddingAcc -= (MU) paddingAcc;
+				length = (pts) paddingAcc;
+				paddingAcc -= (pts) paddingAcc;
 			}
 			else
 				length = unifiedLength;
@@ -92,14 +92,14 @@ namespace wg
 
 	//____ setPreferredLengths() __________________________________________________
 
-	MU UniformSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
+	pts UniformSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
 	{
 		if( nItems == 0 )
 			return 0;
 
-		MU unifiedLength = _findLongestUnified(pItems, nItems);
-		MU total = 0;
-		MU length;
+		pts unifiedLength = _findLongestUnified(pItems, nItems);
+		pts total = 0;
+		pts length;
 
 		for( int i = 0 ; i < nItems ; i++ )
 		{
@@ -126,9 +126,9 @@ namespace wg
 
 	//____ _findLongestUnified() __________________________________________________
 
-	MU UniformSizeBroker::_findLongestUnified( SizeBrokerItem * pItems, int nItems ) const
+	pts UniformSizeBroker::_findLongestUnified( SizeBrokerItem * pItems, int nItems ) const
 	{
-		MU longest = 0;
+		pts longest = 0;
 		for( int i = 0 ; i < nItems ; i++ )
 			if( pItems[i].preferred > longest && pItems[i].weight == 1.f )
 				longest = pItems[i].preferred;
