@@ -134,18 +134,28 @@ namespace wg
 		}
 	}
 
-	//____ preferredSize() _______________________________________________________
+	//____ _preferredSize() _______________________________________________________
 
-	Size PackPanel::preferredSize() const
+	SizeSPX PackPanel::_preferredSize(int scale) const
 	{
-		return m_preferredContentSize + OO(skin)._contentPaddingSize();
+		scale = _fixScale(scale);
+		if (scale != m_scale)
+		{
+			//TODO: Implement!
+			assert(false);
+			return SizeSPX();
+		}
+		else
+			return m_preferredContentSize + OO(skin)._contentPaddingSize(scale);
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	MU PackPanel::matchingHeight( MU width ) const
+	spx PackPanel::_matchingHeight( spx width, int scale ) const
 	{
-		MU height = 0;
+		scale = _fixScale(scale);
+
+		spx height = 0;
 
 		if( m_bHorizontal )
 		{
@@ -168,7 +178,7 @@ namespace wg
 				{
 					if( pS->m_bVisible )
 					{
-						MU itemHeight = pS->_paddedMatchingHeight( pI->output );
+						spx itemHeight = pS->_paddedMatchingHeight( pI->outSPX, scale );
 						if( itemHeight > height )
 							height = itemHeight;
 						pI++;
@@ -181,10 +191,25 @@ namespace wg
 			}
 			else
 			{
-				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+				if (scale == m_scale)
 				{
-					if( pS->m_bVisible && pS->m_preferredSize.h > height )
-							height = pS->m_preferredSize.h;
+					for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+					{
+						if( pS->m_bVisible && pS->m_preferredSize.h > height )
+								height = pS->m_preferredSize.h;
+					}
+				}
+				else
+				{
+					for (auto pS = slots._begin(); pS != slots._end(); pS++)
+					{
+						if (pS->m_bVisible)
+						{
+							spx h = pS->_paddedPreferredSize(scale).h;
+							if (h > height)
+								height = h;
+						}
+					}
 				}
 			}
 		}
@@ -212,21 +237,21 @@ namespace wg
 				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
 					if( pS->m_bVisible )
-						height += pS->_paddedMatchingHeight( width );
+						height += pS->_paddedMatchingHeight( width, scale );
 				}
 			}
 		}
 
-		height += OO(skin)._contentPaddingSize().h;
+		height += OO(skin)._contentPaddingSize(scale).h;
 
 		return height;
 	}
 
-	//____ matchingWidth() _______________________________________________________
+	//____ _matchingWidth() _______________________________________________________
 
-	MU PackPanel::matchingWidth( MU height ) const
+	spx PackPanel::_matchingWidth( spx height, int scale ) const
 	{
-		MU width = 0;
+		spx width = 0;
 
 		if( !m_bHorizontal )
 		{
@@ -249,7 +274,7 @@ namespace wg
 				{
 					if( pS->m_bVisible )
 					{
-						MU itemWidth = pS->_paddedMatchingWidth( pI->output.qpix );
+						spx itemWidth = pS->_paddedMatchingWidth( pI->outSPX, scale );
 						if( itemWidth > width )
 							width = itemWidth;
 						pI++;
@@ -262,10 +287,25 @@ namespace wg
 			}
 			else
 			{
-				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+				if (scale == m_scale)
 				{
-					if( pS->m_bVisible && pS->m_preferredSize.w > width )
+					for (auto pS = slots._begin(); pS != slots._end(); pS++)
+					{
+						if (pS->m_bVisible && pS->m_preferredSize.w > width)
 							width = pS->m_preferredSize.w;
+					}
+				}
+				else
+				{
+					for (auto pS = slots._begin(); pS != slots._end(); pS++)
+					{
+						if (pS->m_bVisible)
+						{
+							spx w = pS->_paddedPreferredSize(scale).w;
+							if (w > width)
+								width = w;
+						}
+					}
 				}
 			}
 		}
@@ -293,12 +333,12 @@ namespace wg
 				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
 					if( pS->m_bVisible )
-						width += pS->_paddedMatchingWidth( height );
+						width += pS->_paddedMatchingWidth( height, scale );
 				}
 			}
 		}
 
-		width += OO(skin)._contentPaddingSize().w;
+		width += OO(skin)._contentPaddingSize(scale).w;
 
 		return width;
 	}
@@ -468,7 +508,7 @@ namespace wg
 
 	//____ _childPos() _______________________________________________________
 
-	Coord PackPanel::_childPos(const StaticSlot * pSlot) const
+	CoordSPX PackPanel::_childPos(const StaticSlot * pSlot) const
 	{
 		return ((Slot*)pSlot)->m_geo;
 	}
@@ -481,7 +521,7 @@ namespace wg
 
 	}
 
-	void PackPanel::_childRequestRender(StaticSlot * pSlot, const Rect& rect)
+	void PackPanel::_childRequestRender(StaticSlot * pSlot, const RectSPX& rect)
 	{
 		_requestRender(rect + ((Slot*)pSlot)->m_geo.pos());
 	}
@@ -493,7 +533,7 @@ namespace wg
 		// Update cached preferred size of child
 
 		Slot * pSlot = static_cast<Slot*>(_pSlot);
-		pSlot->m_preferredSize = pSlot->_paddedPreferredSize();
+		pSlot->m_preferredSize = pSlot->_paddedPreferredSize(m_scale);
 		pSlot->m_bResizeRequired = true;
 
 		_refreshGeometries();
@@ -545,7 +585,7 @@ namespace wg
 		if (pSlot->m_bVisible)
 		{
 			pSlot->m_bVisible = true;
-			pSlot->m_preferredSize = pSlot->_paddedPreferredSize();
+			pSlot->m_preferredSize = pSlot->_paddedPreferredSize(m_scale);
 		}
 
 	}
@@ -560,7 +600,7 @@ namespace wg
 			if (pSlot[i].m_bVisible == false)
 			{
 				pSlot[i].m_bVisible = true;
-				pSlot[i].m_preferredSize = pSlot[i]._paddedPreferredSize();
+				pSlot[i].m_preferredSize = pSlot[i]._paddedPreferredSize(m_scale);
 			}
 		}
 
@@ -591,8 +631,8 @@ namespace wg
 	{
 		// Recalculate preferred sizes for widget and content.
 
-		Size newPreferredContentSize = _calcPreferredSize();
-		Size newPreferredSize = newPreferredContentSize + OO(skin)._contentPaddingSize();
+		SizeSPX newPreferredContentSize = _calcPreferredSize();
+		SizeSPX newPreferredSize = newPreferredContentSize + OO(skin)._contentPaddingSize(m_scale);
 
 		// request resize or just refresh child geo, depending on what is needed.
 
@@ -608,18 +648,18 @@ namespace wg
 
 	//____ _resize() ____________________________________________________________
 
-	void PackPanel::_resize( const Size& size )
+	void PackPanel::_resize( const SizeSPX& size, int scale )
 	{
-		Panel::_resize(size);
+		Panel::_resize(size, scale);
 		_refreshChildGeo(false);
 	}
 
 	//____ _calcPreferredSize() ______________________________________________________
 
-	Size PackPanel::_calcPreferredSize()
+	SizeSPX PackPanel::_calcPreferredSize()
 	{
-		MU length = 0;
-		MU breadth = 0;
+		spx length = 0;
+		spx breadth = 0;
 
 		if( m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths() )
 		{
@@ -639,7 +679,7 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					MU b = m_bHorizontal?pS->_paddedMatchingHeight(pI->output):pS->_paddedMatchingWidth(pI->output);
+					spx b = m_bHorizontal?pS->_paddedMatchingHeight(pI->outSPX, m_scale):pS->_paddedMatchingWidth(pI->outSPX, m_scale);
 					if( b > breadth )
 						breadth = b;
 					pI++;
@@ -681,7 +721,7 @@ namespace wg
 
 		//
 
-		return m_bHorizontal?Size(length,breadth):Size(breadth,length);
+		return m_bHorizontal?SizeSPX(length,breadth):SizeSPX(breadth,length);
 	}
 
 	//____ _refreshChildGeo() _________________________________________________________
@@ -691,20 +731,20 @@ namespace wg
 		if( slots.isEmpty() )
 			return;
 
-		Size sz = m_size - OO(skin)._contentPaddingSize();
-		Coord contentOfs = OO(skin)._contentOfs(StateEnum::Normal);			//TODO: Support offset changing in different states.
+		SizeSPX sz = m_size - OO(skin)._contentPaddingSize(m_scale);
+		CoordSPX contentOfs = OO(skin)._contentOfs(m_scale, StateEnum::Normal);			//TODO: Support offset changing in different states.
 
-		MU wantedLength = m_bHorizontal?m_preferredContentSize.w:m_preferredContentSize.h;
-		MU givenLength = m_bHorizontal?sz.w:sz.h;
-		MU givenBreadth = m_bHorizontal?sz.h:sz.w;
+		spx wantedLength = m_bHorizontal?m_preferredContentSize.w:m_preferredContentSize.h;
+		spx givenLength = m_bHorizontal?sz.w:sz.h;
+		spx givenBreadth = m_bHorizontal?sz.h:sz.w;
 
 		// Optimized special case, just copy preferred to length.
 		//TODO: We probably need to use matchingWidth()/matchingHeight() here anyway... prefered length might change with given breadth
 
 		if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->mayAlterPreferredLengths()) )
 		{
-			Coord pos;
-			Rect geo;
+			CoordSPX pos;
+			RectSPX geo;
 			for (auto p = slots._begin(); p != slots._end(); p++)
 			{
 				if( p->m_bVisible )
@@ -723,7 +763,7 @@ namespace wg
 						geo.h = p->m_preferredSize.h;
 						pos.y += p->m_preferredSize.h;
 					}
-					geo -= p->m_padding;
+					geo -= p->m_paddingSPX;
 					geo += contentOfs;
 
 					if( geo != p->m_geo )
@@ -734,8 +774,8 @@ namespace wg
 							_requestRender(p->m_geo);
 						}
 
-						MU oldW = p->m_geo.w;
-						MU oldH = p->m_geo.h;
+						spx oldW = p->m_geo.w;
+						spx oldH = p->m_geo.h;
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
@@ -786,8 +826,8 @@ namespace wg
 
 			SizeBrokerItem * pI = pItemArea;
 
-			Coord pos;
-			Rect geo;
+			CoordSPX pos;
+			RectSPX geo;
 			for (auto p = slots._begin(); p != slots._end(); p++)
 			{
 				if( p->m_bVisible )
@@ -796,17 +836,17 @@ namespace wg
 					geo.y = pos.y;
 					if( m_bHorizontal )
 					{
-						geo.w = pI->output;
+						geo.w = pI->outSPX;
 						geo.h = sz.h;
-						pos.x += pI->output;
+						pos.x += pI->outSPX;
 					}
 					else
 					{
 						geo.w = sz.w;
-						geo.h = pI->output;
-						pos.y += pI->output;
+						geo.h = pI->outSPX;
+						pos.y += pI->outSPX;
 					}
-					geo -= p->m_padding;
+					geo -= p->m_paddingSPX;
 					geo += contentOfs;
 
 					if( geo != p->m_geo )
@@ -816,8 +856,8 @@ namespace wg
 							_requestRender(geo);
 							_requestRender(p->m_geo);
 						}
-						MU oldW = p->m_geo.w;
-						MU oldH = p->m_geo.h;
+						spx oldW = p->m_geo.w;
+						spx oldH = p->m_geo.h;
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
@@ -871,9 +911,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = pS->m_preferredSize.w;
-					pI->min = pS->_paddedMinSize().w;
-					pI->max = pS->_paddedMaxSize().w;
+					pI->preferred = spxToPts(pS->m_preferredSize.w, m_scale);
+					pI->min = spxToPts(pS->_paddedMinSize(m_scale).w, m_scale);
+					pI->max = spxToPts(pS->_paddedMaxSize(m_scale).w, m_scale);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -885,9 +925,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = pS->m_preferredSize.h;
-					pI->min = pS->_paddedMinSize().h;
-					pI->max = pS->_paddedMaxSize().h;
+					pI->preferred = spxToPts(pS->m_preferredSize.h, m_scale);
+					pI->min = spxToPts(pS->_paddedMinSize(m_scale).h, m_scale);
+					pI->max = spxToPts(pS->_paddedMaxSize(m_scale).h, m_scale);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -897,7 +937,7 @@ namespace wg
 		return int(pI - pArray);
 	}
 
-	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray, MU forcedBreadth ) const
+	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray, spx forcedBreadth ) const
 	{
 		SizeBrokerItem * pI = pArray;
 
@@ -907,9 +947,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = pS->_paddedMatchingWidth(forcedBreadth);
-					pI->min = pS->_paddedMinSize().w;
-					pI->max = pS->_paddedMaxSize().w;
+					pI->preferred = spxToPts(pS->_paddedMatchingWidth(forcedBreadth,m_scale), m_scale);
+					pI->min = spxToPts(pS->_paddedMinSize(m_scale).w, m_scale);
+					pI->max = spxToPts(pS->_paddedMaxSize(m_scale).w, m_scale);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -921,9 +961,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = pS->_paddedMatchingHeight(forcedBreadth);
-					pI->min = pS->_paddedMinSize().h;
-					pI->max = pS->_paddedMaxSize().h;
+					pI->preferred = spxToPts(pS->_paddedMatchingHeight(forcedBreadth,m_scale), m_scale);
+					pI->min = spxToPts(pS->_paddedMinSize(m_scale).w, m_scale);
+					pI->max = spxToPts(pS->_paddedMaxSize(m_scale).w, m_scale);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -935,40 +975,44 @@ namespace wg
 
 	//____ _setItemLengths() ___________________________________________________________
 
-	MU PackPanel::_setItemLengths(SizeBrokerItem * pItems, int nItems, MU availableLength) const
+	spx PackPanel::_setItemLengths(SizeBrokerItem * pItems, int nItems, spx availableLength) const
 	{
-		MU totalLength = m_pSizeBroker->setItemLengths(pItems, nItems, availableLength );
+		m_pSizeBroker->setItemLengths(pItems, nItems, spxToPts(availableLength,m_scale) );
 
 		// Align outputs so we end up on pixel boundaries
 
-		int reminder = 0;
+		spx begin = 0;
+		pts end = 0;
 		for (int i = 0; i < nItems; i++)
 		{
-			reminder += pItems->output.qpix;
-			pItems->output.qpix = reminder & 0xFFFFFFFC;
-			reminder &= 0x3;
+			end += pItems->output;
+			spx conv = align(ptsToSpx(end, m_scale));
+			pItems->outSPX = conv - begin;
+			begin = conv;
 		}
 
-		return totalLength.aligned();
+		return begin;
 	}
 
 	//____ _setPreferredLengths() _______________________________________________________
 
-	MU PackPanel::_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const
+	spx PackPanel::_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const
 	{
-		MU totalLength = m_pSizeBroker->setPreferredLengths(pItems, nItems);
+		m_pSizeBroker->setPreferredLengths(pItems, nItems);
 
 		// Align outputs so we end up on pixel boundaries
 
-		int reminder = 0;
+		spx begin = 0;
+		pts end = 0;
 		for (int i = 0; i < nItems; i++)
 		{
-			reminder += pItems->output.qpix;
-			pItems->output.qpix = reminder & 0xFFFFFFFC;
-			reminder &= 0x3;
+			end += pItems->output;
+			spx conv = align(ptsToSpx(end, m_scale));
+			pItems->outSPX = conv - begin;
+			begin = conv;
 		}
 
-		return totalLength.aligned();
+		return begin;
 	}
 
 

@@ -21,6 +21,7 @@
 #include <wg_splitpanel.h>
 
 #include <wg_popuplayer.h>
+#include <wg_designlayer.h>
 
 #include <wg_filler.h>
 #include <wg_textdisplay.h>
@@ -221,8 +222,12 @@ int main ( int argc, char** argv )
 
 	pRoot->setScale(rootScale);
 
+	auto pDesignLayer = DesignLayer::create();
+	pDesignLayer->setEditMode(true);
+	pRoot->slot = pDesignLayer;
+
 	auto pPopupLayer = PopupLayer::create();
-	pRoot->slot = pPopupLayer;
+	pDesignLayer->mainSlot = pPopupLayer;
 
 	Base::inputHandler()->setFocusedWindow(pRoot);
 

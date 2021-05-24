@@ -35,11 +35,12 @@ namespace wg
 
 		//.____ Properties _____________________________________________________
 
-		MU	preferred;		// Preferred length for this item (input)
-		MU	min;			// Min length for this item (input)
-		MU	max;			// Max length for this item (input)
+		pts	preferred;		// Preferred length for this item (input)
+		pts	min;			// Min length for this item (input)
+		pts	max;			// Max length for this item (input)
 		float	weight;		// Weight for this item (input)
-		MU	output;			// Length or preferred length for this item (output)
+		pts	output;			// Length or preferred length for this item (output)
+		pts outSPX;			// Should be ignored by sizebroker. Used for postprocessing.
 	};
 
 
@@ -57,8 +58,8 @@ namespace wg
 
 		//.____ Misc __________________________________________
 
-		virtual MU setItemLengths( SizeBrokerItem * pItems, int nItems, MU totalLength ) const = 0;
-		virtual MU setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const = 0;
+		virtual pts setItemLengths( SizeBrokerItem * pItems, int nItems, pts totalLength ) const = 0;
+		virtual pts setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const = 0;
 		virtual bool mayAlterPreferredLengths() const = 0;
 
 	protected:

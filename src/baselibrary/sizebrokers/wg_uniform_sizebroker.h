@@ -46,15 +46,15 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		MU setItemLengths( SizeBrokerItem * pItems, int nItems, MU totalLength ) const override;
-		MU setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const override;
+		pts setItemLengths( SizeBrokerItem * pItems, int nItems, pts totalLength ) const override;
+		pts setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const override;
 		bool mayAlterPreferredLengths() const override;
 
 	protected:
 		UniformSizeBroker() {};
 		virtual ~UniformSizeBroker() {};
 
-		MU    _findLongestUnified( SizeBrokerItem * pItems, int nItems ) const;
+		pts    _findLongestUnified( SizeBrokerItem * pItems, int nItems ) const;
 	};
 
 

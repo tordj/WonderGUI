@@ -36,19 +36,19 @@ namespace wg
 
 	//____ setItemLengths() _______________________________________________________
 
-	MU ScalePreferredSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, MU totalLength ) const
+	pts ScalePreferredSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, pts totalLength ) const
 	{
 		return setPreferredLengths( pItems, nItems );
 	}
 
 	//____ setPreferredLengths() __________________________________________________
 
-	MU ScalePreferredSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
+	pts ScalePreferredSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
 	{
-		MU total = 0;
+		pts total = 0;
 		for( int i = 0 ; i < nItems ; i++ )
 		{
-			MU def = pItems[i].preferred * pItems[i].weight;
+			pts def = pItems[i].preferred * pItems[i].weight;
 			pItems[i].output = def;
 			total += def;
 		}

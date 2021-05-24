@@ -120,39 +120,39 @@ namespace wg
 		}
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	MU DesignLayer::matchingHeight(MU width) const
+	spx DesignLayer::_matchingHeight(spx width, int scale) const
 	{
 		if (mainSlot._widget())
-			return mainSlot._widget()->matchingHeight(width);
+			return mainSlot._widget()->_matchingHeight(width, scale);
 		else
-			return Widget::matchingHeight(width);
+			return Widget::_matchingHeight(width, scale);
 	}
 
-	//____ matchingWidth() _______________________________________________________
+	//____ _matchingWidth() _______________________________________________________
 
-	MU DesignLayer::matchingWidth(MU height) const
+	spx DesignLayer::_matchingWidth(spx height, int scale) const
 	{
 		if (mainSlot._widget())
-			return mainSlot._widget()->matchingWidth(height);
+			return mainSlot._widget()->_matchingWidth(height,scale);
 		else
-			return Widget::matchingWidth(height);
+			return Widget::_matchingWidth(height,scale);
 	}
 
 	//____ preferredSize() _____________________________________________________________
 
-	Size DesignLayer::preferredSize() const
+	SizeSPX DesignLayer::_preferredSize(int scale) const
 	{
 		if (mainSlot._widget())
-			return mainSlot._widget()->preferredSize();
+			return mainSlot._widget()->_preferredSize(scale);
 		else
-			return Size(1, 1);
+			return SizeSPX(1, 1);
 	}
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget *  DesignLayer::_findWidget(const Coord& ofs, SearchMode mode)
+	Widget *  DesignLayer::_findWidget(const CoordSPX& ofs, SearchMode mode)
 	{
 		if (m_bEditMode)
 		{
@@ -168,13 +168,13 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void DesignLayer::_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window)
+	void DesignLayer::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
 		// Render skin
 
-		OO(skin)._render(pDevice, _canvas, m_state);
+		OO(skin)._render(pDevice, _canvas, m_scale, m_state);
 
-		Rect contentRect = OO(skin)._contentRect(_canvas, m_state);
+		RectSPX contentRect = OO(skin)._contentRect(_canvas, m_scale, m_state);
 
 		if (!mainSlot.isEmpty())
 		{
@@ -184,19 +184,19 @@ namespace wg
 		if (m_bEditMode)
 		{
 			if (m_pSelectedWidget)
-				m_pSelectionSkin->render(pDevice, _selectionGeo(), StateEnum::Normal);
+				m_pSelectionSkin->_render(pDevice, _selectionGeo(), m_scale, StateEnum::Normal);
 		}
 
 		for (auto& palette : palettes)
 		{
 			if (palette.m_bVisible)
 			{
-				Rect geo = palette.m_geo + _canvas.pos();
+				RectSPX geo = palette.m_geo + _canvas.pos();
 
 				if (m_pToolboxSkin)
-					m_pToolboxSkin->render(pDevice, geo + m_pToolboxSkin->contentPadding(StateEnum::Normal), StateEnum::Normal);
+					m_pToolboxSkin->_render(pDevice, geo + m_pToolboxSkin->_contentPadding(m_scale, StateEnum::Normal), m_scale, StateEnum::Normal);
 
-				RectI pxPaletteGeo = palette.m_geo.px();
+				RectSPX pxPaletteGeo = palette.m_geo;
 				if (pDevice->clipBounds().intersectsWith(pxPaletteGeo))
 				{
 					ClipPopData popData = limitClipList(pDevice, palette.m_geo);
@@ -210,15 +210,15 @@ namespace wg
 
 	//____ _selectionGeo() ____________________________________________________
 
-	Rect DesignLayer::_selectionGeo() const
+	RectSPX DesignLayer::_selectionGeo() const
 	{
 		if (!m_pSelectedWidget)
-			return Rect();
+			return RectSPX();
 
-		Rect selectedGeo = m_pSelectedWidget->globalGeo() - globalPos();
+		RectSPX selectedGeo = m_pSelectedWidget->_globalGeo() - _globalPos();
 
 		if (m_pSelectionSkin)
-			selectedGeo += m_pSelectionSkin->contentPadding(StateEnum::Normal);
+			selectedGeo += m_pSelectionSkin->_contentPadding(m_scale, StateEnum::Normal);
 
 		return selectedGeo;
 	}
@@ -231,18 +231,18 @@ namespace wg
 		if (m_pSelectedWidget)
 		{
 			Placement placement = pSlot->m_placement;
-			Border palettePadding = m_pToolboxSkin ? m_pToolboxSkin->contentPadding(StateEnum::Normal) : Border();
+			BorderSPX palettePadding = m_pToolboxSkin ? m_pToolboxSkin->_contentPadding(m_scale, StateEnum::Normal) : BorderSPX();
 
-			Size wantedSize = pSlot->_widget()->preferredSize() + palettePadding;
+			SizeSPX wantedSize = pSlot->_widget()->_preferredSize() + palettePadding;
 
-			Rect selectedGeo = m_pSelectedWidget->globalGeo() - globalPos();
-			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->contentPadding(StateEnum::Normal) : Border();
-			Rect surroundBox = selectedGeo + Border(wantedSize.h+4, wantedSize.w+4);
+			RectSPX selectedGeo = m_pSelectedWidget->_globalGeo() - _globalPos();
+			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->_contentPadding(m_scale, StateEnum::Normal) : BorderSPX();
+			RectSPX surroundBox = selectedGeo + BorderSPX(wantedSize.h+4, wantedSize.w+4);
 
-			Coord ofs = placementToOfs(placement, surroundBox.size()) - placementToOfs(placement, wantedSize) + surroundBox.pos();
+			CoordSPX ofs = placementToOfs(placement, surroundBox.size()) - placementToOfs(placement, wantedSize) + surroundBox.pos();
 			ofs += pSlot->m_placementPos;
 
-			Rect geo = Rect(ofs, wantedSize).aligned();
+			RectSPX geo = align(RectSPX(ofs, wantedSize));
 
 			if (geo.x < 0)
 			{
@@ -278,7 +278,7 @@ namespace wg
 				geo.h = m_size.h;
 
 
-			Rect childGeo = geo - palettePadding;
+			RectSPX childGeo = geo - palettePadding;
 			if (childGeo != pSlot->m_geo)
 			{
 				_requestRender(geo);
@@ -287,7 +287,7 @@ namespace wg
 				pSlot->m_geo = childGeo;
 			}
 
-			if (pSlot->_widget()->size() != childGeo.size())
+			if (pSlot->_widget()->_size() != childGeo.size())
 				pSlot->_setSize(childGeo);
 		}
 		else
@@ -308,8 +308,8 @@ namespace wg
 		{
 			if (m_pSelectedWidget)
 			{
-				Rect geo = m_pSelectedWidget->globalGeo() - globalPos();
-				geo += m_pSelectionSkin->contentPadding(StateEnum::Normal);
+				RectSPX geo = m_pSelectedWidget->_globalGeo() - _globalPos();
+				geo += m_pSelectionSkin->_contentPadding(m_scale, StateEnum::Normal);
 				_requestRender(geo);
 			}
 
@@ -317,8 +317,8 @@ namespace wg
 
 			if (m_pSelectedWidget)
 			{
-				Rect geo = m_pSelectedWidget->globalGeo() - globalPos();
-				geo += m_pSelectionSkin->contentPadding(StateEnum::Normal);
+				RectSPX geo = m_pSelectedWidget->_globalGeo() - _globalPos();
+				geo += m_pSelectionSkin->_contentPadding(m_scale, StateEnum::Normal);
 				_requestRender(geo);
 			}
 		}
@@ -341,7 +341,7 @@ namespace wg
 		}
 		else
 		{
-			Border palettePadding = m_pToolboxSkin ? m_pToolboxSkin->contentPadding(StateEnum::Normal) : Border();
+			BorderSPX palettePadding = m_pToolboxSkin ? m_pToolboxSkin->_contentPadding(m_scale, StateEnum::Normal) : BorderSPX();
 			for (auto& palette : palettes)
 			{
 				if (palette.m_bVisible)
@@ -420,9 +420,9 @@ namespace wg
 
 	//____ _resize() ___________________________________________________________
 
-	void DesignLayer::_resize( const Size& sz )
+	void DesignLayer::_resize( const SizeSPX& sz, int scale )
 	{
-		Layer::_resize(sz);
+		Layer::_resize(sz, scale);
 
 		// Refresh modal widgets geometry, their positions might have changed.
 
@@ -455,13 +455,13 @@ namespace wg
 
 					if (pMsg->button() == MouseButton::Left)
 					{
-						Coord mousePos = pMsg->pointerPos() - globalPos();
+						CoordSPX mousePos = pMsg->_pointerPos() - _globalPos();
 
 						// Check for press on palette edge
 
 						if (m_pToolboxSkin)
 						{
-							Border	contentPadding = m_pToolboxSkin->contentPadding(StateEnum::Normal);
+							BorderSPX	contentPadding = m_pToolboxSkin->_contentPadding(m_scale, StateEnum::Normal);
 
 							for (int i = 0; i < palettes.size(); i++)
 							{
@@ -498,7 +498,7 @@ namespace wg
 				{
 					auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
 
-					palettes[m_pressedToolbox].m_placementPos = m_pressedToolboxStartOfs + pMsg->draggedTotal();
+					palettes[m_pressedToolbox].m_placementPos = m_pressedToolboxStartOfs + pMsg->_draggedTotal();
 					_refreshRealGeo(&palettes[m_pressedToolbox]);
 				}
 
