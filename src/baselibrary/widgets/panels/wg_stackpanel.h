@@ -86,7 +86,8 @@ namespace wg
 			const StackPanel *	_holder() const { return static_cast<const StackPanel*>(PaddedSlot::_holder()); }
 
 			Placement			m_placement = Placement::Center;
-			SizePolicy2D	m_sizePolicy = SizePolicy2D::Original;
+			SizePolicy2D		m_sizePolicy = SizePolicy2D::Original;
+			CoordSPX			m_position;
 		};
 
 
@@ -124,12 +125,12 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
+		//.____ Internal _________________________________________________
 
-		MU			matchingHeight(MU width) const override;
-		MU			matchingWidth(MU height) const override;
+		spx			_matchingHeight(spx width, int scale = -1) const override;
+		spx			_matchingWidth(spx height, int scale = -1) const override;
 
-		Size		preferredSize() const override;
+		SizeSPX		_preferredSize(int scale = -1) const override;
 
 
 	protected:
@@ -140,7 +141,7 @@ namespace wg
 		// Overloaded from Widget
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_resize( const Size& size ) override;
+		void		_resize( const SizeSPX& size, int scale = -1 ) override;
 
 		// Overloaded from Container
 
@@ -152,10 +153,10 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		Coord		_childPos(const StaticSlot * pSlot) const override;
+		CoordSPX	_childPos(const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
-		void		_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;
 		void		_childRequestResize( StaticSlot * pSlot ) override;
 
 		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
@@ -180,16 +181,16 @@ namespace wg
 
 		// Internal to StackPanel
 
-		Size 	_calcPreferredSize();
-		void	_adaptChildrenToSize();
+		SizeSPX _calcPreferredSize(int scale) const;
+		void	_updateChildGeo(Slot * pBegin, Slot * pEnd);
 
-		void	_hideChildren( Slot * pSlot, int nb );
-		void	_unhideChildren( Slot * pSlot, int nb );
+		void	_hideChildren( Slot * pBegin, Slot * pEnd );
+		void	_unhideChildren( Slot * pBegin, Slot * pEnd );
 
 
-		Rect	_childGeo( const Slot * pSlot ) const;
+		RectSPX	_childGeo( const Slot * pSlot ) const;
 
-		Size	m_preferredSize;
+		SizeSPX	m_preferredSize;
 	};
 
 

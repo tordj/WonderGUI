@@ -83,7 +83,6 @@ namespace wg
 					}
 
 		Border		m_padding;
-		BorderSPX	m_paddingSPX;
 		bool		m_bVisible;
 	};
 }
