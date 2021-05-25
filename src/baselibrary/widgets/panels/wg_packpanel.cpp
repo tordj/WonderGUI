@@ -763,7 +763,7 @@ namespace wg
 						geo.h = p->m_preferredSize.h;
 						pos.y += p->m_preferredSize.h;
 					}
-					geo -= p->m_paddingSPX;
+					geo -= align(ptsToSpx(p->m_padding,m_scale));
 					geo += contentOfs;
 
 					if( geo != p->m_geo )
@@ -846,7 +846,7 @@ namespace wg
 						geo.h = pI->outSPX;
 						pos.y += pI->outSPX;
 					}
-					geo -= p->m_paddingSPX;
+					geo -= align(ptsToSpx(p->m_padding,m_scale));
 					geo += contentOfs;
 
 					if( geo != p->m_geo )
