@@ -45,7 +45,7 @@ namespace wg
 
 	DragNDropLayer::DragNDropLayer() : m_dragSlot(this)
 	{
-		m_dragStartTreshold = 3 * MU::qpixPerPoint();
+		m_dragStartTreshold = 3;
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -74,7 +74,7 @@ namespace wg
 
 	//____ _findWidget() __________________________________________________________
 
-	Widget * DragNDropLayer::_findWidget( const Coord& ofs, SearchMode mode )
+	Widget * DragNDropLayer::_findWidget( const CoordSPX& ofs, SearchMode mode )
 	{
 		// Widget being dragged is totally transparent to the mouse, so we just
 		// forward to our child.
@@ -89,7 +89,7 @@ namespace wg
 				if (pRes)
 					return pRes;
 			}
-			else if (mode == SearchMode::Geometry || mainSlot._widget()->markTest(ofs))
+			else if (mode == SearchMode::Geometry || mainSlot._widget()->_markTest(ofs))
 				return mainSlot._widget();
 		}
 		else if( mode == SearchMode::Geometry )
@@ -108,10 +108,10 @@ namespace wg
 		{
 			auto p = static_cast<Slot*>(pSlot);
 
-			Size pref = p->_widget()->preferredSize();
-			Size max = Size::max(pref, p->m_geo.size());
+			SizeSPX pref = p->_widget()->_preferredSize(m_scale);
+			SizeSPX max = SizeSPX::max(pref, p->m_geo.size());
 
-			_requestRender(Rect({ 0,0,m_size }, { p->m_geo.pos(), max }));
+			_requestRender(RectSPX({ 0,0,m_size }, { p->m_geo.pos(), max }));
 			p->_setSize(pref);
 		}
 	}
@@ -152,14 +152,14 @@ namespace wg
 
 	//____ _onRequestRender() _______________________________________________
 
-	void DragNDropLayer::_onRequestRender(const Rect& rect, const Layer::Slot * pSlot)
+	void DragNDropLayer::_onRequestRender(const RectSPX& rect, const Layer::Slot * pSlot)
 	{
 		// We don't mask against drag widget, it is assumed to be too small/transparent/irregular
 		// for that to make sense.
 
 		// Clip our geometry and pass it on
 
-		_requestRender( Rect( rect, Rect(0,0,m_size) ));
+		_requestRender( RectSPX( rect, RectSPX(0,0,m_size) ));
 	}
 
 	//____ _cloneContent() ____________________________________________________
@@ -185,8 +185,8 @@ namespace wg
 				{
 					case DragState::Picking:
 					{
-						Coord total = pMsg->draggedTotal();
-						if (abs(total.x) + abs(total.y) > m_dragStartTreshold)
+						CoordSPX total = pMsg->_draggedTotal();
+						if (abs(total.x) + abs(total.y) > ptsToSpx(m_dragStartTreshold,m_scale))
 						{
 							Coord pickOfs = pMsg->startPos() - m_pPicked->globalPos();
 							Base::msgRouter()->post(new DropPickMsg(m_pPicked, pickOfs, this, pMsg->modKeys(), pMsg->pointerPos()));
@@ -197,7 +197,7 @@ namespace wg
 
 					case DragState::Dragging:
 					{
-						Coord pointerPos = pMsg->pointerPos();
+						CoordSPX pointerPos = pMsg->_pointerPos();
 
 						// Move the drag-widget onscreen.
 
@@ -207,7 +207,7 @@ namespace wg
 
 // MOVE TO TICK!						// Check if we entered/left a (possible) target.
 
-						Coord ofs = toLocal(pointerPos);
+						CoordSPX ofs = _toLocal(pointerPos);
 
 						Widget * pProbed = _findWidget(ofs, SearchMode::ActionTarget );
 
@@ -225,7 +225,7 @@ namespace wg
 
 					case DragState::Targeting:
 					{
-						Coord pointerPos = pMsg->pointerPos();
+						CoordSPX pointerPos = pMsg->_pointerPos();
 
 						// Move the drag-widget onscreen.
 
@@ -236,7 +236,7 @@ namespace wg
 
 // MOVE TO TICK!                        // Check if our target has changed
 
-						Coord ofs = toLocal(pointerPos);
+						CoordSPX ofs = _toLocal(pointerPos);
 
 						Widget * pHovered = _findWidget(ofs, SearchMode::ActionTarget );
 
@@ -348,23 +348,23 @@ namespace wg
 					// Set/generate drag widget (widget actually dragged across the screen)
 
 					Widget_p pDragWidget = pMsg->dragWidget();
-					SizeI    dragWidgetSize;
+					SizeSPX    dragWidgetSize;
 
 					if (pDragWidget)
 					{
 						pDragWidget->releaseFromParent();
-						m_dragWidgetOfs = pMsg->dragWidgetPointerOfs();
+						m_dragWidgetOfs = ptsToSpx(pMsg->dragWidgetPointerOfs(),m_scale);
 						m_dragSlot._setWidget(pDragWidget);
-						dragWidgetSize = m_dragSlot._widget()->preferredSize();
+						dragWidgetSize = m_dragSlot._widget()->_preferredSize(m_scale);
 					}
 					else
 					{
-						m_dragWidgetOfs = Coord(0,0) - pMsg->pickOfs();
-						dragWidgetSize = m_pPicked->size();                             //TODO: Possible source of error, if picked widget changes size before the render call.
+						m_dragWidgetOfs = ptsToSpx(Coord(0,0) - pMsg->pickOfs(),m_scale);
+						dragWidgetSize = m_pPicked->_size();                             //TODO: Possible source of error, if picked widget changes size before the render call.
 					}
 
-					Coord mousePos = toLocal(pMsg->pointerPos());
-					m_dragSlot.m_geo = { Coord(mousePos + m_dragWidgetOfs).aligned(), dragWidgetSize };
+					CoordSPX mousePos = _toLocal(ptsToSpx(pMsg->pointerPos(),m_scale));
+					m_dragSlot.m_geo = { align((mousePos + m_dragWidgetOfs)), dragWidgetSize };
 					_requestRender(m_dragSlot.m_geo);
 					m_dragState = DragState::Dragging;
 				}
@@ -489,8 +489,8 @@ namespace wg
 			pNewWidget->releaseFromParent();
 		m_dragSlot._setWidget(pNewWidget );
 
-		Size newSize = pNewWidget ? m_dragSlot._widget()->preferredSize() : Size();
-		Size maxSize = Size::max(m_dragSlot.m_geo.size(), newSize);
+		SizeSPX newSize = pNewWidget ? m_dragSlot._widget()->_preferredSize(m_scale) : SizeSPX();
+		SizeSPX maxSize = SizeSPX::max(m_dragSlot.m_geo.size(), newSize);
 
 		m_dragSlot.m_geo.setSize(newSize);
 
@@ -500,16 +500,16 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void DragNDropLayer::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void DragNDropLayer::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		// Generate drag widget as an image of picked widget if missing and needed./*/*
 
 		if( m_dragState == DragState::Dragging && !m_dragSlot._widget())
 		{
-			Size sz = m_pPicked->size();
+			SizeSPX sz = m_pPicked->_size();
 
 			auto pFactory = pDevice->surfaceFactory();
-			auto pCanvas = pFactory->createSurface(sz.px(),PixelFormat::BGRA_8);
+			auto pCanvas = pFactory->createSurface(sz/64,PixelFormat::BGRA_8);
 			pCanvas->fill( Color::Transparent );
 
 			pDevice->beginCanvasUpdate(pCanvas);

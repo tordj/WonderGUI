@@ -136,12 +136,12 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ______________________________________________________
+		//.____ Internal ______________________________________________________
 
-		virtual MU		matchingHeight(MU width) const override;
-		virtual MU		matchingWidth(MU height) const override;
+		spx				_matchingHeight(spx width, int scale = -1) const override;
+		spx				_matchingWidth(spx height, int scale = -1) const override;
 
-		Size			preferredSize() const override;
+		SizeSPX			_preferredSize(int scale = -1) const override;
 
 	protected:
 		ModalLayer();
@@ -160,14 +160,14 @@ namespace wg
 		// Overloaded from Widget
 
 		void			_cloneContent(const Widget * _pOrg) override;
-		void			_resize(const Size& size) override;
+		void			_resize(const SizeSPX& size, int scale = -1) override;
 		void			_receive(Msg * pMsg) override;
 
 		// Overloaded from Container
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		Widget *		_findWidget( const Coord& ofs, SearchMode mode ) override;
+		Widget *		_findWidget( const CoordSPX& ofs, SearchMode mode ) override;
 
 		//TODO: We should allow replacement of modal slots.
 		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }

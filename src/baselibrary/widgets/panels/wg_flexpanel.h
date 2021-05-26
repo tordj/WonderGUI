@@ -60,7 +60,7 @@ namespace wg
 		Coord	pos(Size canvas) const 
 		{ 
 			Coord c( origo.x*canvas.w + offset.x, origo.y*canvas.h + offset.y);
-			return c.aligned();
+			return c;
 		}
 
 		//.____ Properties _____________________________________________________
@@ -74,6 +74,14 @@ namespace wg
 																			offset == other.offset; }
 		bool			operator!=(const FlexPos& other) const { return origo != other.origo ||
 																			offset != other.offset; }
+		//.____ Internal _______________________________________________________
+
+		CoordSPX	_pos(SizeSPX canvas) const
+		{
+			CoordSPX c(origo.x * canvas.w + offset.x, origo.y * canvas.h + offset.y);
+			return c;
+		}
+
 	private:
 		static float	s_origoTab[9][2];
 	};
@@ -148,9 +156,9 @@ namespace wg
 
 			//
 
-			inline Coord	pos() const { return m_realGeo.pos(); }
-			inline Size		size() const { return m_realGeo.size(); }
-			inline Rect		geo() const { return m_realGeo; }
+			inline Coord	pos() const { return Util::spxToPts(m_realGeo.pos(),_holder()->_scale()); }
+			inline Size		size() const { return Util::spxToPts(m_realGeo.size(), _holder()->_scale()); }
+			inline Rect		geo() const { return Util::spxToPts(m_realGeo, _holder()->_scale()); }
 
 			//.____ Operators __________________________________________
 
@@ -170,7 +178,7 @@ namespace wg
 
 			bool			m_bPinned;
 			bool			m_bVisible;
-			Rect			m_realGeo;			// Widgets geo relative parent, pixel aligned.
+			RectSPX			m_realGeo;			// Widgets geo relative parent, pixel aligned.
 
 			// Positioned children
 
@@ -242,14 +250,14 @@ namespace wg
 		const TypeInfo&	typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ______________________________________________________
-
-		Size			preferredSize() const override;
-
 		//.____ Behavior ________________________________________________________
 
 		void			setConfineWidgets( bool bConfineWidgets );
 		bool			isConfiningWidgets() const { return m_bConfineWidgets; }
+
+		//.____ Internal ______________________________________________________
+
+		SizeSPX			_preferredSize(int scale = -1) const override;
 
 
 	protected:
@@ -270,10 +278,10 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		Coord		_childPos(const StaticSlot * pSlot) const override;
+		CoordSPX	_childPos(const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
-		void		_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;
 		void		_childRequestResize( StaticSlot * pSlot ) override;
 
 		void		_releaseChild(StaticSlot * pSlot) override;
@@ -287,14 +295,14 @@ namespace wg
 
 	private:
 		void		_refreshRealGeo(Slot * pSlot, bool bForceRefresh = false);
-		Size		_size() const { return m_size; }
+		SizeSPX		_size() const { return m_size; }
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_resize( const Size& size ) override;
+		void		_resize( const SizeSPX& size, int scale = -1 ) override;
 
-		void		_onRequestRender( const Rect& rect, const Slot * pSlot );
+		void		_onRequestRender( const RectSPX& rect, const Slot * pSlot );
 
-		Size		_sizeNeededForGeo( Slot * pSlot ) const;
+		SizeSPX		_sizeNeededForGeo( Slot * pSlot ) const;
 
 		bool		m_bConfineWidgets = false;
 //		int			m_qpixPerPoint;
