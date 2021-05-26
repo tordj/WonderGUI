@@ -46,7 +46,6 @@ link_directories(
     ../freetype/lib
 )
 
-
 if(WIN32)
 
 	set(SDL2_LIBS SDL2 SDL2main)
@@ -102,3 +101,13 @@ add_subdirectory(tools/workbench)
 add_subdirectory(tools/gfxdevicetester)
 #add_subdirectory(tools/unittester)
 add_subdirectory(tools/spxworkbench)
+
+if(MSVC)
+	target_compile_options(gfxdevicetester PRIVATE "/MP")
+	target_compile_options(gfxworkbench PRIVATE "/MP")
+	target_compile_options(spxworkbench PRIVATE "/MP")
+	target_compile_options(wgsoftgfx PRIVATE "/MP")
+	target_compile_options(wgopenglgfx PRIVATE "/MP")
+	target_compile_options(wondergui PRIVATE "/MP")
+	target_compile_options(workbench PRIVATE "/MP")
+endif()
