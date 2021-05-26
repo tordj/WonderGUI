@@ -93,7 +93,7 @@ namespace wg
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		Slot * pSlot = _pushFrontEmpty();
-		pSlot->m_geo = geometry;
+		pSlot->m_geo = ptsToSpx(geometry,_holder()->_scale());
 		pSlot->m_origo = origo;
 
 		pSlot->_setWidget(pWidget);
@@ -110,7 +110,7 @@ namespace wg
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		Slot * pSlot = _pushBackEmpty();
-		pSlot->m_geo = geometry;
+		pSlot->m_geo = ptsToSpx(geometry, _holder()->_scale());
 		pSlot->m_origo = origo;
 
 		pSlot->_setWidget(pWidget);
@@ -122,24 +122,26 @@ namespace wg
 
 	void ModalLayer::_refreshRealGeo( Slot * pSlot, bool bForceResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
-		Size sz = pSlot->m_placementGeo.size();
+		RectSPX placementGeo = align(ptsToSpx(pSlot->m_placementGeo,m_scale));
+
+		SizeSPX sz = placementGeo.size();
 
 		if( sz.w == 0 && sz.h == 0 )
-			sz = pSlot->_widget()->preferredSize();
+			sz = pSlot->_widget()->_preferredSize(m_scale);
 		else if( sz.w == 0 )
-			sz.w = pSlot->_widget()->matchingWidth(sz.h);
+			sz.w = pSlot->_widget()->_matchingWidth(sz.h,m_scale);
 		else if( sz.h == 0 )
-			sz.h = pSlot->_widget()->matchingHeight(sz.w);
+			sz.h = pSlot->_widget()->_matchingHeight(sz.w,m_scale);
 
 		if( sz.w <= 0 )
 			sz.w = 1;
 		if( sz.h <= 0 )
 			sz.h = 1;
 
-		Coord ofs = Util::placementToOfs( pSlot->m_origo, m_size ) - Util::placementToOfs( pSlot->m_origo, sz );
-		ofs += pSlot->m_placementGeo.pos();
+		CoordSPX ofs = Util::placementToOfs( pSlot->m_origo, m_size ) - Util::placementToOfs( pSlot->m_origo, sz );
+		ofs += placementGeo.pos();
 
-		Rect geo( ofs, sz );
+		RectSPX geo( ofs, sz );
 
 		if (geo != pSlot->m_geo)
 		{
@@ -148,7 +150,7 @@ namespace wg
 			_onRequestRender(pSlot->m_geo, pSlot);
 		}
 
-		if (bForceResize || pSlot->size() != geo.size())
+		if (bForceResize || pSlot->m_geo.size() != geo.size())
 			pSlot->_setSize(geo);
 	}
 
@@ -198,34 +200,34 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	MU ModalLayer::matchingHeight( MU width ) const
+	spx ModalLayer::_matchingHeight( spx width, int scale ) const
 	{
 		if( mainSlot._widget() )
-			return mainSlot._widget()->matchingHeight( width );
+			return mainSlot._widget()->_matchingHeight( width, scale );
 		else
-			return Widget::matchingHeight(width);
+			return Widget::_matchingHeight(width, scale);
 	}
 
-	//____ matchingWidth() _______________________________________________________
+	//____ _matchingWidth() _______________________________________________________
 
-	MU ModalLayer::matchingWidth( MU height ) const
+	spx ModalLayer::_matchingWidth( spx height, int scale ) const
 	{
 		if( mainSlot._widget() )
-			return mainSlot._widget()->matchingWidth( height );
+			return mainSlot._widget()->_matchingWidth( height, scale );
 		else
-			return Widget::matchingWidth(height);
+			return Widget::_matchingWidth(height, scale);
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	Size ModalLayer::preferredSize() const
+	SizeSPX ModalLayer::_preferredSize(int scale) const
 	{
 		if( mainSlot._widget() )
-			return mainSlot._widget()->preferredSize();
+			return mainSlot._widget()->_preferredSize(scale);
 		else
-			return Size(1,1);
+			return SizeSPX(64,64);
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -240,7 +242,7 @@ namespace wg
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget *  ModalLayer::_findWidget( const Coord& ofs, SearchMode mode )
+	Widget *  ModalLayer::_findWidget( const CoordSPX& ofs, SearchMode mode )
 	{
 		// In search mode ACTION_TARGET we always return either the topmost non-hidden modal Widget (or its children),
 		// or us.
@@ -259,7 +261,7 @@ namespace wg
 				}
 				else
 				{
-					if( pSlot->_widget()->markTest(ofs - pSlot->m_geo.pos()) )
+					if( pSlot->_widget()->_markTest(ofs - pSlot->m_geo.pos()) )
 						return pSlot->_widget();
 					else
 						return this;
@@ -395,7 +397,7 @@ namespace wg
 			Slot * p = pTo+1;
 			while (p <= pFrom)
 			{
-				Rect cover(pTo->m_geo, p->m_geo);
+				RectSPX cover(pTo->m_geo, p->m_geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, pTo);
@@ -409,7 +411,7 @@ namespace wg
 			Slot * p = pFrom;
 			while (p < pTo)
 			{
-				Rect cover(pTo->m_geo, p->m_geo);
+				RectSPX cover(pTo->m_geo, p->m_geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, p);
@@ -472,9 +474,9 @@ namespace wg
 
 	//____ _resize() ___________________________________________________________
 
-	void ModalLayer::_resize( const Size& sz )
+	void ModalLayer::_resize( const SizeSPX& sz, int scale )
 	{
-		Layer::_resize(sz);
+		Layer::_resize(sz,scale);
 
 		// Refresh modal widgets geometry, their positions might have changed.
 
@@ -499,27 +501,27 @@ namespace wg
 		{
 			InputMsg * pMsg = static_cast<InputMsg*>(_pMsg);
 
-			if( !modalSlots.isEmpty() && _findWidget( pMsg->pointerPos(), SearchMode::ActionTarget ) == this )
+			if( !modalSlots.isEmpty() && _findWidget( pMsg->_pointerPos(), SearchMode::ActionTarget ) == this )
 			{
 				switch( pMsg->type() )
 				{
 					case MsgType::MousePress:
 					{
 						MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
-						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
+						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->_pointerPos(), pMsg->timestamp()) );
 					}
 					break;
 
 					case MsgType::MouseRelease:
 					{
 						MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
-						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
+						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->_pointerPos(), pMsg->timestamp()) );
 					}
 					break;
 
 					case MsgType::MouseMove:
 					{
-						Base::msgRouter()->post( new ModalMoveOutsideMsg( pMsg->inputId(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
+						Base::msgRouter()->post( new ModalMoveOutsideMsg( pMsg->inputId(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->_pointerPos(), pMsg->timestamp()) );
 					}
 					break;
 

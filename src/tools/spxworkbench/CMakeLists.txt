@@ -331,12 +331,12 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/capsules/wg_sizecapsule.h
 	../../baselibrary/widgets/layers/wg_designlayer.cpp
 	../../baselibrary/widgets/layers/wg_designlayer.h
-#	../../baselibrary/widgets/layers/wg_dragndroplayer.cpp
-#	../../baselibrary/widgets/layers/wg_dragndroplayer.h
+	../../baselibrary/widgets/layers/wg_dragndroplayer.cpp
+	../../baselibrary/widgets/layers/wg_dragndroplayer.h
 	../../baselibrary/widgets/layers/wg_layer.cpp
 	../../baselibrary/widgets/layers/wg_layer.h
-#	../../baselibrary/widgets/layers/wg_modallayer.cpp
-#	../../baselibrary/widgets/layers/wg_modallayer.h
+	../../baselibrary/widgets/layers/wg_modallayer.cpp
+	../../baselibrary/widgets/layers/wg_modallayer.h
 	../../baselibrary/widgets/layers/wg_popuplayer.cpp
 	../../baselibrary/widgets/layers/wg_popuplayer.h
 	../../baselibrary/widgets/layers/wg_tooltiplayer.cpp
@@ -345,8 +345,8 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/lists/wg_list.h
 	../../baselibrary/widgets/lists/wg_packlist.cpp
 	../../baselibrary/widgets/lists/wg_packlist.h
-#	../../baselibrary/widgets/panels/wg_flexpanel.cpp
-#	../../baselibrary/widgets/panels/wg_flexpanel.h
+	../../baselibrary/widgets/panels/wg_flexpanel.cpp
+	../../baselibrary/widgets/panels/wg_flexpanel.h
 	../../baselibrary/widgets/panels/wg_lambdapanel.cpp
 	../../baselibrary/widgets/panels/wg_lambdapanel.h
 	../../baselibrary/widgets/panels/wg_packpanel.cpp

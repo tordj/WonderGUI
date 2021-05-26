@@ -79,13 +79,13 @@ namespace wg
 
 		void            _cloneContent(const Widget * _pOrg) override;
 		void            _receive(Msg * pMsg) override;
-		void            _render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		void            _render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 
 		// Overloaded from Container
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		Widget *        _findWidget( const Coord& ofs, SearchMode mode ) override;
+		Widget *        _findWidget( const CoordSPX& ofs, SearchMode mode ) override;
 
 		void            _childRequestResize(StaticSlot * pSlot) override;
 		void			_releaseChild(StaticSlot * pSlot) override;
@@ -96,7 +96,7 @@ namespace wg
 		const Layer::Slot *	_endLayerSlots() const override;
 		int					_sizeOfLayerSlot() const override;
 
-		void				_onRequestRender(const Rect& rect, const Layer::Slot * pSlot) override;    // rect is in our coordinate system.
+		void				_onRequestRender(const RectSPX& rect, const Layer::Slot * pSlot) override;    // rect is in our coordinate system.
 
 		// Internal
 
@@ -123,8 +123,8 @@ namespace wg
 		Widget_p		m_pPicked;
 		BasicDataset_p	m_pDataset;
 
-		MU				m_dragStartTreshold;
-		Coord			m_dragWidgetOfs;                // Drag widgets offset from pointer.
+		pts				m_dragStartTreshold;
+		CoordSPX		m_dragWidgetOfs;                // Drag widgets offset from pointer.
 
 		Widget_wp       m_pProbed;                     // Last widget we sent a DropProbeMsg to. To avoid sending multiple messages in a row to same while hovering.
 		Widget_wp       m_pTargeted;                   // Widget targeted while in state Targeting.
