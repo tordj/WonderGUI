@@ -72,7 +72,7 @@ namespace wg
 		void		_updateOpaqueFlag();
 
 		Border		m_frame;							// In points
-		BlendMode	m_blendMode = BlendMode::>Undefined;
+		BlendMode	m_blendMode = BlendMode::Undefined;
 
 		HiColor		m_fillColor;
 		HiColor		m_frameColor;

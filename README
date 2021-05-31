@@ -56,6 +56,10 @@ Linux
 All dependencies should be satisfied by your package manager. Just search,
 download and install the following packages:
 
+libfreetype-dev
+libsdl2-dev
+libsdl2-image-dev
+libglew-dev
 
 Windows
 =======
