@@ -1,24 +1,24 @@
 source_group(Files REGULAR_EXPRESSION ".*")
 
-source_group(Base REGULAR_EXPRESSION "base/*")
-source_group(Components REGULAR_EXPRESSION "components/*")
-source_group(SizeBrokers REGULAR_EXPRESSION "sizebrokers/*")
+source_group(Base REGULAR_EXPRESSION "base//*")
+source_group(Components REGULAR_EXPRESSION "components//*")
+source_group(SizeBrokers REGULAR_EXPRESSION "sizebrokers//*")
 
-source_group(Skins REGULAR_EXPRESSION "skins/*")
-source_group(Skins/Anim REGULAR_EXPRESSION "skins/anim/*")
-source_group(Skins/Meter REGULAR_EXPRESSION "skins/meter/*")
-source_group(Skins/Misc REGULAR_EXPRESSION "skins/misc/*")
-source_group(Skins/State REGULAR_EXPRESSION "skins/state/*")
-source_group(Skins/Static REGULAR_EXPRESSION "skins/static/*")
+source_group(Skins REGULAR_EXPRESSION "skins//*")
+source_group(Skins/Anim REGULAR_EXPRESSION "skins/anim//*")
+source_group(Skins/Meter REGULAR_EXPRESSION "skins/meter//*")
+source_group(Skins/Misc REGULAR_EXPRESSION "skins/misc//*")
+source_group(Skins/State REGULAR_EXPRESSION "skins/state//*")
+source_group(Skins/Static REGULAR_EXPRESSION "skins/static//*")
 
-source_group(TextMappers REGULAR_EXPRESSION "textmappers/*")
-source_group(ValueFormatters REGULAR_EXPRESSION "valueformatters/*")
+source_group(TextMappers REGULAR_EXPRESSION "textmappers//*")
+source_group(ValueFormatters REGULAR_EXPRESSION "valueformatters//*")
 
-source_group(Widgets REGULAR_EXPRESSION "widgets/*")
-source_group(Widgets/Capsules REGULAR_EXPRESSION "widgets/capsules/*")
-source_group(Widgets/Layers REGULAR_EXPRESSION "widgets/layers/*")
-source_group(Widgets/Lists REGULAR_EXPRESSION "widgets/lists/*")
-source_group(Widgets/Panels REGULAR_EXPRESSION "widgets/panels/*")
+source_group(Widgets REGULAR_EXPRESSION "widgets//*")
+source_group(Widgets/Capsules REGULAR_EXPRESSION "widgets/capsules//*")
+source_group(Widgets/Layers REGULAR_EXPRESSION "widgets/layers//*")
+source_group(Widgets/Lists REGULAR_EXPRESSION "widgets/lists//*")
+source_group(Widgets/Panels REGULAR_EXPRESSION "widgets/panels//*")
 
 
 add_executable(spxworkbench
@@ -108,8 +108,6 @@ add_executable(spxworkbench
 	../../baselibrary/base/wg_resdb.cpp
 	../../baselibrary/base/wg_resdb.h
 	../../baselibrary/base/wg_resloader.h
-	../../baselibrary/base/wg_scrollbartarget.cpp
-	../../baselibrary/base/wg_scrollbartarget.h
 	../../baselibrary/base/wg_selectableslot.h
 #	../../baselibrary/base/wg_shadow.h
 	../../baselibrary/base/wg_skinslotmanager.cpp
@@ -165,6 +163,8 @@ add_executable(spxworkbench
 	../../baselibrary/components/wg_component.h
 	../../baselibrary/components/wg_cpaddedslotvector.h
 	../../baselibrary/components/wg_cpaddedslotvector.impl.h
+	../../baselibrary/components/wg_cscrollbar.cpp
+	../../baselibrary/components/wg_cscrollbar.h	
 	../../baselibrary/components/wg_cselectableslotvector.h
 	../../baselibrary/components/wg_cselectableslotvector.impl.h
 #	../../baselibrary/components/wg_cshadows.cpp

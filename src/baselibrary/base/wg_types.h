@@ -573,6 +573,7 @@ namespace wg
 
 		Select,						// Non-value widget triggered, like a button being pressed.
 		Toggle,						// Boolean value widget toggled, like for checkboxes, radiobuttons etc.
+		ScrollbarMove,
 		ValueUpdate,					// Value of widget changed, like for editvalue, animations, sliders etc
 		RangeUpdate,					// Range widget updated, such as scrollbar, scrollpanel, rangesliders etc.
 

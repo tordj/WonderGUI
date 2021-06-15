@@ -25,7 +25,6 @@
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
-#include <wg_scrollbartarget.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 
@@ -37,29 +36,14 @@ namespace wg
 	const TypeInfo Scrollbar::TYPEINFO = { "Scrollbar", &Widget::TYPEINFO };
 
 
-	//____ Scrollbar() ____________________________________________________
+	//____ Scrollbar() ________________________________________________________
 
-	Scrollbar::Scrollbar()
+	Scrollbar::Scrollbar() : scrollbar(this,this,Axis::Y)
 	{
-		m_pScrollbarTargetInterface = 0;
 
-		m_handleSize 		= 1.0;
-		m_handlePos 		= 0.0;
-
-		m_bHorizontal		= false;
-		m_bgPressMode		= JUMP_PAGE;
-		m_bPressOnHandle	= false;
-		m_handlePressOfs	= 0;
-
-		m_btnLayout			= DEFAULT;
-		m_headerLen			= 0;
-		m_footerLen			= 0;
-
-		for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS; i++ )
-			m_states[i] = StateEnum::Normal;
 	}
 
-	//____ ~Scrollbar() _________________________________________________________
+	//____ ~Scrollbar() _______________________________________________________
 
 	Scrollbar::~Scrollbar( void )
 	{
@@ -73,367 +57,58 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setAxis() _______________________________________________________
+	//____ setAxis() __________________________________________________________
 	/**
 	 * Set if scrollbar should be horizontal or vertical.
 	 *
 	 * @param axis	Set to Axis::X to make widget horizontal or
-	 * 						Axis::Y to make widget vertical.
+	 * 				Axis::Y to make widget vertical.
 	 *
 	 * By default a scrollbar is vertical.
 	 **/
 
 	void Scrollbar::setAxis( Axis axis )
 	{
-		bool bHorizontal = (axis == Axis::X);
-
-		if( m_bHorizontal != bHorizontal )
+		if( axis != scrollbar._axis() )
 		{
-			m_bHorizontal = bHorizontal;
-			_headerFooterChanged();
-			_updateMinSize();
+			scrollbar._setAxis(axis);
 			_requestRender();
+			_requestResize();
 		}
 	}
 
+	//____ setMovementAmounts() _______________________________________________
 
-	//____ setBackgroundPressMode() _______________________________________________________
-	/**
-	 * Set scrollbar behavior for pressing left mouse button on scrollbar background.
-	 *
-	 * @param	mode	JUMP_PAGE or GOTO_POS depending on behavior wanted.
-	 *
-	 * The scrollbar can be set to behave in two different ways when left mouse button
-	 * is clicked on the scrollbar background.
-	 *
-	 * The default behavior (JUMP_PAGE) is that it jumps a page forward or backward depending on what
-	 * side of the handle the press occurred.
-	 *
-	 * The alternative behavior (GOTO_POS) is that the scrollbar handle goes directly to the position that
-	 * was pressed.
-	 *
-	 **/
-
-	void Scrollbar::setBackgroundPressMode( BgPressMode mode )
+	void Scrollbar::setMovementAmounts(pts singleStep, pts wheelRoll, pts pageOverlap)
 	{
-		m_bgPressMode = mode;
+		m_singleStep = singleStep;
+		m_wheelRoll = wheelRoll;
+		m_pageOverlap = pageOverlap;
 	}
 
+	//____ setView() __________________________________________________________
 
-
-	//____ setHandle() ____________________________________________________________
-	/**
-	 * Set relative size and position of the scrollbar handle.
-	 *
-	 * @param pos	Position of the handle in the range 0.0 -> 1.0.
-	 * @param size	SizeI of the handle in the range 0.0001 -> 1.0.
-	 *
-	 * Both parameters will be limited to their respective range.
-	 * The size of the handle will not get smaller than the skin of the
-	 * handle allows, but the value set is still the value later
-	 * returned by handlePos(). A size of 1.0 means that the handle will cover
-	 * the whole background and make position void.
-	 *
-	 * The positon of the handle is independent of the size of the handle. A
-	 * position of 0.5 always positions the handle straight in the middle of its area.
-	 *
-	 **/
-
-	void Scrollbar::setHandle( float _pos, float _size )
+	void Scrollbar::setView(pts viewPos, pts viewLength, pts contentLength)
 	{
-		limit( _size, 0.0001f, 1.f );
-		limit( _pos, 0.f, 1.f );
-
-		if( m_handlePos == _pos && m_handleSize == _size )
-			return;
-
-		m_handlePos		= _pos;
-		m_handleSize 	= _size;
-
-		_requestRender();
-	}
-
-	//____ setHandlePos() _________________________________________________________
-	/**
-	 * Set relative position of scrollbar handle.
-	 *
-	 * @param	pos		Position of the handle in the range 0.0 -> 1.0.
-	 *
-	 * Position is limited to its range before applied.
-	 * The positon of the handle is independent of the size of the handle. A
-	 * position of 0.5 always positions the handle straight in the middle of its area.
-	 *
-	 **/
-
-	void Scrollbar::setHandlePos( float pos )
-	{
-		limit( pos, 0.f, 1.f );
-
-		if( pos > m_handlePos-0.000001 && pos < m_handlePos+0.000001 )
-			return;
-
-		m_handlePos = pos;
-		_requestRender();
-	}
-
-	//____ setHandlePointPos() ___________________________________________________
-	/**
-	 * Set position of scrollbar handle in points.
-	 *
-	 * @param	pos		Position of the handle, as a point offset from the start
-	 *					of the slider area.
-	 *
-	 * Position is limited to its valid range before applied.
-	 * The scrollbar handle is moved so that it starts specified number of points
-	 * from the start of the slider area. The generated position is stored as a
-	 * relative value, making it move to keep its relative position when the
-	 * scrollbar widget or handle is resized.
-	 *
-	 **/
-
-	void Scrollbar::setHandlePointPos( pts _pos )
-	{
-		spx pos = align(ptsToSpx(_pos, m_scale));
-
-		spx		handlePos, handleLen;
-		_viewToPosLen( &handlePos, &handleLen );
-
-		spx		length;
-		if( m_bHorizontal )
-			length = m_size.w - OO(skin)._contentPaddingSize(m_scale).w;
-		else
-			length = m_size.h - OO(skin)._contentPaddingSize(m_scale).h;
-
-		length -= m_headerLen + m_footerLen;
-
-		float scrollhandlePos = 0.f;
-		if( m_handleSize < 1.f)
-			scrollhandlePos = ((float)(pos - (handleLen / 2))) / (length - handleLen);
-
-		setHandlePos(scrollhandlePos);
-	}
-
-	//____ setHandleSize() ________________________________________________________
-	/**
-	 * Set relative size of scrollbar handle.
-	 *
-	 * @param	size		SizeI of the handle in the range 0.0001 -> 1.0.
-	 *
-	 * SizeI is limited to its range before applied.
-	 *
-	 * The size of the handle will not get smaller than the skin of the
-	 * handle allows, but the value set is still the value later
-	 * returned by handlePos(). A size of 1.0 means that the handle will cover
-	 * the whole background and make position void.
-	 *
-	 **/
-
-	void Scrollbar::setHandleSize( float _size )
-	{
-		limit( _size, 0.0001f, 1.f );
-
-		if( _size == m_handleSize )
-			return;
-
-		m_handleSize = _size;
-		_requestRender();
-	}
-
-
-	//____ setSkins() ____________________________________________________________
-	/**
-	 * Set all skins in one go.
-	 *
-	 * @param pBaseSkin			The normal widget skin, enclosing all components.
-	 * @param pBackgroundSkin	Background skin for the scrollbar handle area.
-	 * @param pHandleSkin		Skin for the scrollbar handle.
-	 * @param pBwdButtonSkin	Skin for the backward (up or left) button.
-	 * @param pFwdButtonSkin	Skin for the forward (down or right) button.
-	 *
-	 * Skinning a scrollbar is a little more complex than a normal widget since it
-	 * is built up by different components that needs to be skinned individually.
-	 *
-	 * These components are the forward and backward buttons, the area for the scrollbar
-	 * handle to move over and the scrollbar handle itself. Additionally, the normal widget
-	 * skin, which encloses all components is still available. This gives a total of five
-	 * individual skins.
-	 *
-	 **/
-
-
-	void Scrollbar::setSkins( Skin * pBaseSkin, Skin * pBackgroundSkin,
-								Skin * pHandleSkin,
-								Skin * pBwdButtonSkin, Skin * pFwdButtonSkin )
-	{
-		skin.set( pBaseSkin );
-		m_pBgSkin		= pBackgroundSkin;
-		m_pHandleSkin	= pHandleSkin;
-		m_pBtnFwdSkin	= pFwdButtonSkin;
-		m_pBtnBwdSkin	= pBwdButtonSkin;
-
-		_headerFooterChanged();
-		_updateMinSize();
-		_requestRender();
-	}
-
-	//____ setBackgroundSkin() ____________________________________________________________
-
-	void Scrollbar::setBackgroundSkin( Skin * pSkin )
-	{
-		if( pSkin != m_pBgSkin )
+		if (viewPos != m_viewPos || viewLength != m_viewLen || contentLength != m_contentLen)
 		{
-			m_pBgSkin = pSkin;
+			spx oldPos = align(ptsToSpx(m_viewPos, m_scale));
+			spx oldLen = align(ptsToSpx(m_viewLen, m_scale)); 
+			spx oldContentLen = align(ptsToSpx(m_contentLen, m_scale));
 
-			_updateMinSize();
-			_requestRender();
+			spx newPos = align(ptsToSpx(viewPos, m_scale));
+			spx newLen = align(ptsToSpx(viewLength, m_scale));
+			spx newContentLen = align(ptsToSpx(contentLength, m_scale));
+
+			m_viewPos = viewPos;
+			m_viewLen = viewLength;
+			m_contentLen = contentLength;
+
+			scrollbar._update( newPos, oldPos, newLen, oldLen, newContentLen, oldContentLen );
 		}
 	}
 
-	//____ setHandleSkin() ____________________________________________________________
-
-	void Scrollbar::setHandleSkin( Skin * pSkin )
-	{
-		if( pSkin != m_pHandleSkin )
-		{
-			m_pHandleSkin = pSkin;
-
-			_updateMinSize();
-			_requestRender();
-		}
-	}
-
-	//____ setBwdButtonSkin() ____________________________________________________________
-
-	void Scrollbar::setBwdButtonSkin( Skin * pSkin )
-	{
-		if( pSkin != m_pBtnBwdSkin )
-		{
-			m_pBtnBwdSkin = pSkin;
-
-			_headerFooterChanged();
-			_updateMinSize();
-			_requestRender();
-		}
-	}
-
-	//____ setFwdButtonSkin() ____________________________________________________________
-
-	void Scrollbar::setFwdButtonSkin( Skin * pSkin )
-	{
-		if( pSkin != m_pBtnFwdSkin )
-		{
-			m_pBtnFwdSkin = pSkin;
-
-			_headerFooterChanged();
-			_updateMinSize();
-			_requestRender();
-		}
-	}
-
-
-	//____ setButtonLayout() ______________________________________________________
-	/**
-	 * Set the layout of the scrollbar buttons
-	 *
-	 * @param 	layout		Enum or bitmask specifying what buttons to show.
-	 *
-	 * The scrollbar can have a total of four buttons, a forward
-	 * and backward button in the header and the same in the footer.
-	 *
-	 * ButtonLayout is essentially a bitmask specifying which of the
-	 * buttons are displayed, so any combination can be achieved by
-	 * combining different values.
-	 *
-	 * The default is one
-	 *
-	 **/
-
-	void Scrollbar::setButtonLayout(  BtnLayout layout )
-	{
-		m_btnLayout = layout;
-
-		_headerFooterChanged();
-	}
-
-	//____ setScrollbarTarget() _______________________________________________________
-
-	bool Scrollbar::setScrollbarTarget( ScrollbarTarget * pTarget )
-	{
-		// Release previous target (if any)
-
-		if( m_pScrollbarTargetWidget )
-			m_pScrollbarTargetInterface->m_pScrollbar = 0;
-
-		// Set new target
-
-		if( pTarget == 0 )
-		{
-			m_pScrollbarTargetInterface	= 0;
-			m_pScrollbarTargetWidget	= 0;
-		}
-		else
-		{
-			if( pTarget->m_pScrollbar )
-				return false;									// Target is already controlled by another scrollbar.
-
-			m_pScrollbarTargetInterface 	= pTarget;
-			m_pScrollbarTargetWidget		= pTarget->_getWidget();
-			m_pScrollbarTargetInterface->m_pScrollbar = this;
-			_setHandle( pTarget->_getHandlePosition(), pTarget->_getHandleSize() );
-		}
-		return true;
-	}
-
-	//____ _headerFooterChanged() _______________________________________________
-
-	void Scrollbar::_headerFooterChanged()
-	{
-		spx	fwdLen = 0, bwdLen = 0;
-
-		if( m_bHorizontal )
-		{
-			if( m_pBtnFwdSkin )
-				fwdLen = m_pBtnFwdSkin->_preferredSize(m_scale).w;
-			if( m_pBtnBwdSkin )
-				bwdLen = m_pBtnBwdSkin->_preferredSize(m_scale).w;
-		}
-		else
-		{
-			if( m_pBtnFwdSkin )
-				fwdLen = m_pBtnFwdSkin->_preferredSize(m_scale).h;
-			if( m_pBtnBwdSkin )
-				bwdLen = m_pBtnBwdSkin->_preferredSize(m_scale).h;
-		}
-
-		spx	headerLen = 0;
-		spx footerLen = 0;
-
-		if( (m_btnLayout & HEADER_BWD) )
-			headerLen += bwdLen;
-
-		if( (m_btnLayout & HEADER_FWD) )
-			headerLen += fwdLen;
-
-		if( (m_btnLayout & FOOTER_BWD) )
-			footerLen += bwdLen;
-
-		if( (m_btnLayout & FOOTER_FWD) )
-			footerLen += fwdLen;
-
-		if( headerLen != m_headerLen || footerLen != m_footerLen )
-		{
-			m_headerLen = headerLen;
-			m_footerLen = footerLen;
-
-			_updateMinSize();
-		}
-
-		_requestRender();
-	}
-
-
-
-	//____ _cloneContent() _______________________________________________________
+	//____ _cloneContent() ____________________________________________________
 
 	void Scrollbar::_cloneContent( const Widget * _pOrg )
 	{
@@ -441,91 +116,21 @@ namespace wg
 
 		Scrollbar * pOrg = (Scrollbar *) _pOrg;
 
-		m_pBgSkin			= pOrg->m_pBgSkin;
-		m_pHandleSkin		= pOrg->m_pHandleSkin;
-		m_pBtnFwdSkin		= pOrg->m_pBtnFwdSkin;
-		m_pBtnBwdSkin		= pOrg->m_pBtnBwdSkin;
+		m_singleStep	= pOrg->m_singleStep;
+		m_wheelRoll		= pOrg->m_wheelRoll;
+		m_pageOverlap	= pOrg->m_pageOverlap;
 
-	  	m_handlePos			= pOrg->m_handlePos;
-		m_handleSize		= pOrg->m_handleSize;
-
-		m_bHorizontal		= pOrg->m_bHorizontal;
-		m_bgPressMode		= pOrg->m_bgPressMode;
-
-		m_bPressOnHandle	= 0;
-		m_handlePressOfs	= 0;
-
-		m_btnLayout			= pOrg->m_btnLayout;
-		m_headerLen			= pOrg->m_headerLen;
-		m_footerLen			= pOrg->m_footerLen;
-
-		m_minSize			= pOrg->m_minSize;
+	  	m_viewPos		= pOrg->m_viewPos;
+		m_viewLen		= pOrg->m_viewLen;
+		m_contentLen	= pOrg->m_contentLen;
 	}
-
-	//____ _viewToPosLen() _________________________________________________________
-
-	void	Scrollbar::_viewToPosLen( spx * _wpPos, spx * _wpLen )
-	{
-		// changes by Viktor.
-
-		// using floats here results in errors.
-		//float pos, len;
-		spx	pos, len;
-
-		spx	maxLen;
-		if( m_bHorizontal )
-			maxLen = m_size.w - OO(skin)._contentPaddingSize(m_scale).w;
-		else
-			maxLen = m_size.h - OO(skin)._contentPaddingSize(m_scale).h;
-
-		maxLen -= m_headerLen + m_footerLen;
-
-		//len = m_handleSize * maxLen;
-		len = align(m_handleSize * maxLen);
-
-		spx	minLen;
-
-		if( m_bHorizontal )
-			minLen = m_pHandleSkin->_minSize(m_scale).w;
-		else
-			minLen = m_pHandleSkin->_minSize(m_scale).h;
-
-		if( minLen < 4*64 )
-			minLen = 4*64;
-
-
-		if( len < minLen )
-		{
-			//len = (float) minLen;
-			len = minLen;
-		}
-
-		//pos = m_handlePos * (maxLen-len);
-		pos = align(m_handlePos * (maxLen-len));
-
-		if( pos + len > maxLen )
-			pos = maxLen - len;
-
-	//	pos += m_headerLen;
-
-		//* _wpPos = (int) pos;
-		//* _wpLen = (int) len;
-		* _wpPos = pos;
-		* _wpLen = len;
-	//	* _wpLen = ((int)(pos + len)) - (int) pos;
-	}
-
 
 	//____ _setState() ______________________________________________________
 
 	void Scrollbar::_setState( State state )
 	{
-		if( state.isEnabled() != m_state.isEnabled() )
-		{
-			for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
-				m_states[i].setEnabled(state.isEnabled());
-		}
-		_requestRender();
+		Widget::_setState(state);
+		scrollbar._setState(state);
 	}
 
 
@@ -536,113 +141,20 @@ namespace wg
 		Widget::_refresh();
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _preferredSize() ___________________________________________________
 
 	SizeSPX Scrollbar::_preferredSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX sz = m_minSize;
+		SizeSPX preferred = scrollbar._preferredSize(scale);
 
-		// Add 50 points in the scrollbars direction for best size.
+		if (!skin.isEmpty())
+			preferred += skin->_contentPaddingSize(scale);
 
-		if( m_bHorizontal )
-			sz.w += 50*scale*64;
-		else
-			sz.h += 50*scale*64;
-
-		return sz;
+		return preferred;
 	}
 
-
-	//____ _updateMinSize() ________________________________________________________
-
-	void Scrollbar::_updateMinSize()
-	{
-		spx	minW = 4*64;
-		spx	minH = 4*64;
-
-		// Check min w/h for BgGfx.
-
-		if( m_pBgSkin )
-		{
-			SizeSPX sz = m_pBgSkin->_minSize(m_scale);
-
-			minW = max( minW, sz.w );
-			minH = max( minH, sz.h );
-		}
-
-		// Check min w/h for BarGfx.
-
-		if( m_pHandleSkin )
-		{
-			SizeSPX sz = m_pHandleSkin->_minSize(m_scale);
-
-			minW = max( minW, sz.w );
-			minH = max( minH, sz.h );
-		}
-
-
-		// Add header and footer to minW/minH from scrollbar part.
-
-		if( m_bHorizontal )
-			minW += m_footerLen + m_headerLen;
-		else
-			minH += m_footerLen + m_headerLen;
-
-
-		// Check min w/h for forward button.
-
-		if( m_pBtnFwdSkin && (m_btnLayout & (HEADER_FWD | FOOTER_FWD)) )
-		{
-			SizeSPX sz = m_pBtnFwdSkin->_preferredSize(m_scale);
-
-			minW = max( minW, sz.w );
-			minH = max( minH, sz.h );
-		}
-
-		// Check min w/h for backward button.
-
-		if( m_pBtnBwdSkin && (m_btnLayout & (HEADER_BWD | FOOTER_BWD)) )
-		{
-			SizeSPX sz = m_pBtnBwdSkin->_preferredSize(m_scale);
-
-			minW = max( minW, sz.w );
-			minH = max( minH, sz.h );
-		}
-
-		// Add padding for base skin
-
-		minW += OO(skin)._contentPaddingSize(m_scale).w;
-		minH += OO(skin)._contentPaddingSize(m_scale).h;
-
-		// Set if changed.
-
-		if( minW != m_minSize.w || minH != m_minSize.h )
-		{
-			m_minSize.w = minW;
-			m_minSize.h = minH;
-
-			_requestResize();
-		}
-	}
-
-	//____ _renderButton() _________________________________________________________
-
-	void Scrollbar::_renderButton( GfxDevice * pDevice, RectSPX& _dest, Skin * pSkin, State state )
-	{
-			if( m_bHorizontal )
-				_dest.w = pSkin->_preferredSize(m_scale).w;
-			else
-				_dest.h = pSkin->_preferredSize(m_scale).h;
-
-			pSkin->_render( pDevice, _dest, m_scale, state );
-
-			if( m_bHorizontal )
-				_dest.x += _dest.w;
-			else
-				_dest.y += _dest.h;
-	}
 
 	//____ _render() ________________________________________________________
 
@@ -650,470 +162,100 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		RectSPX	dest = OO(skin)._contentRect(_canvas,m_scale, m_state);
+		RectSPX	contentCanvas = OO(skin)._contentRect(_canvas,m_scale, m_state);
 
-		// Render header buttons
-
-		if( m_pBtnBwdSkin && (m_btnLayout & HEADER_BWD) )
-			_renderButton( pDevice, dest, m_pBtnBwdSkin, m_states[C_HEADER_BWD] );
-
-		if( m_pBtnFwdSkin && (m_btnLayout & HEADER_FWD) )
-			_renderButton( pDevice, dest, m_pBtnFwdSkin, m_states[C_HEADER_FWD] );
-
-		// Render background (if any).
-
-		if( m_bHorizontal )
-			dest.w = m_size.w - m_headerLen - m_footerLen;
-		else
-			dest.h = m_size.h - m_headerLen - m_footerLen;
-
-		if( m_pBgSkin )
-			m_pBgSkin->_render( pDevice, dest, m_scale, m_states[C_BG] );
-
-		// Render the handle
-
-		if( m_pHandleSkin )
-		{
-			spx handlePos;
-			spx handleLen;
-			_viewToPosLen( &handlePos, &handleLen );
-
-			RectSPX	handleDest;
-			if( m_bHorizontal )
-				handleDest = RectSPX( dest.x + handlePos, dest.y, handleLen, dest.h );
-			else
-				handleDest = RectSPX( dest.x, dest.y + handlePos, dest.w, handleLen );
-
-			m_pHandleSkin->_render( pDevice, handleDest, m_scale, m_states[C_HANDLE] );
-		}
-
-		// Render footer buttons
-
-		if( m_bHorizontal )
-			dest.x += dest.w;
-		else
-			dest.y += dest.h;
-
-		if( m_pBtnBwdSkin && (m_btnLayout & FOOTER_BWD) )
-			_renderButton( pDevice, dest, m_pBtnBwdSkin, m_states[C_FOOTER_BWD] );
-
-		if( m_pBtnFwdSkin && (m_btnLayout & FOOTER_FWD) )
-			_renderButton( pDevice, dest, m_pBtnFwdSkin, m_states[C_FOOTER_FWD] );
+		scrollbar._render(pDevice, contentCanvas, m_scale);
 	}
 
 	//____ _alphaTest() ______________________________________________________
 
 	bool Scrollbar::_alphaTest( const CoordSPX& ofs )
 	{
-		if( _findMarkedComponent( ofs ) != C_NONE )
+		RectSPX	contentCanvas = OO(skin)._contentRect(m_size, m_scale, m_state);
+
+		if (contentCanvas.contains(ofs) && scrollbar._alphaTest(ofs-contentCanvas.pos(),contentCanvas.size(),m_markOpacity))
 			return true;
 
 		return Widget::_alphaTest(ofs);
 	}
 
-	//____ _markTestButton() _______________________________________________________
-
-	bool Scrollbar::_markTestButton( CoordSPX ofs, RectSPX& _dest, Skin * pSkin, State state )
-	{
-			if( m_bHorizontal )
-				_dest.w = pSkin->_preferredSize(m_scale).w;
-			else
-				_dest.h = pSkin->_preferredSize(m_scale).h;
-
-			bool retVal = pSkin->_markTest( ofs, _dest, m_scale, state, m_markOpacity );
-
-			if( m_bHorizontal )
-				_dest.x += _dest.w;
-			else
-				_dest.y += _dest.h;
-
-			return retVal;
-	}
-
-	//____ _findMarkedComponent() __________________________________________________
-
-	Scrollbar::Component Scrollbar::_findMarkedComponent( CoordSPX ofs )
-	{
-		RectSPX canvas = OO(skin)._contentRect( RectSPX(0,0,m_size),m_scale, m_state);
-
-		RectSPX dest = canvas;
-
-		// First of all, do a mark test against the header buttons...
-
-		if( m_pBtnBwdSkin && (m_btnLayout & HEADER_BWD) )
-		{
-			if( _markTestButton( ofs, dest, m_pBtnBwdSkin, m_states[C_HEADER_BWD]) )
-				return C_HEADER_BWD;
-		}
-
-		if( m_pBtnFwdSkin && (m_btnLayout & HEADER_FWD) )
-		{
-			if( _markTestButton( ofs, dest, m_pBtnFwdSkin, m_states[C_HEADER_FWD]) )
-				return C_HEADER_FWD;
-		}
-
-		// Then do a mark test against the footer buttons...
-
-		if( m_bHorizontal )
-			dest.x = canvas.x + canvas.w - m_footerLen;
-		else
-			dest.y = canvas.y + canvas.h - m_footerLen;
-
-		if( m_pBtnBwdSkin && (m_btnLayout & FOOTER_BWD) )
-		{
-			if( _markTestButton( ofs, dest, m_pBtnBwdSkin, m_states[C_FOOTER_BWD]) )
-				return C_FOOTER_BWD;
-		}
-
-		if( m_pBtnFwdSkin && (m_btnLayout & FOOTER_FWD) )
-		{
-			if( _markTestButton( ofs, dest, m_pBtnFwdSkin, m_states[C_FOOTER_FWD]) )
-				return C_FOOTER_FWD;
-		}
-
-		// Then, do a mark test against the dragbar...
-
-		if( _markTestHandle( ofs ) == true )
-			return C_HANDLE;
-
-		// Do a mark test against the dragbar background.
-
-		RectSPX	r = canvas;
-
-		if( m_bHorizontal )
-		{
-			r.x += m_headerLen;
-			r.w -= m_headerLen + m_footerLen;
-		}
-		else
-		{
-			r.y += m_headerLen;
-			r.h -= m_headerLen + m_footerLen;
-		}
-
-		if( m_pBgSkin && m_pBgSkin->_markTest( ofs, r, m_scale, m_states[C_BG], m_markOpacity ) )
-			return C_BG;
-
-		return C_NONE;
-	}
-
-	//____ _unhoverReqRender() ______________________________________________________
-
-	void Scrollbar::_unhoverReqRender()
-	{
-		for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
-			m_states[i].setHovered(false);
-
-		_requestRender();
-	}
-
-	//____ _receive() ______________________________________________________________
+	//____ _receive() _________________________________________________________
 
 	void Scrollbar::_receive( Msg * pMsg )
 	{
-		spx		handlePos, handleLen;
-		_viewToPosLen( &handlePos, &handleLen );
+		scrollbar._receive(pMsg);
+	}
 
-		MsgRouter_p	pHandler = Base::msgRouter();
-		CoordSPX pos = static_cast<InputMsg*>(pMsg)->_pointerPos() - _globalPos();
+	//____ _setViewPos() ______________________________________________________
 
-		spx		pointerOfs;
-		spx		length;
+	void Scrollbar::_setViewPos(pts pos)
+	{
+		limit(pos, 0, m_contentLen - m_viewLen);
 
-		RectSPX contentRect = OO(skin)._contentRect(RectSPX(0,0,m_size), m_scale,m_state);
-
-		if( m_bHorizontal )
+		if (pos != m_viewPos)
 		{
-			pointerOfs = pos.x - contentRect.x;
-			length = contentRect.w;
+			spx oldPos = align(ptsToSpx(m_viewPos, m_scale));
+			spx newPos = align(ptsToSpx(pos, m_scale));
+
+			spx len = align(ptsToSpx(m_viewLen, m_scale));
+			spx contentLen = align(ptsToSpx(m_contentLen, m_scale));
+
+			m_viewPos = pos;
+
+			scrollbar._update(newPos, oldPos, len, len, contentLen, contentLen);
+
+			_sendMessage();
 		}
-		else
-		{
-			pointerOfs = pos.y - contentRect.y;
-			length = contentRect.h;
-		}
+	}
 
-		length -= m_headerLen + m_footerLen;
-		pointerOfs -= m_headerLen;
+	//____ _sendMessage() _____________________________________________________
 
-		switch( pMsg->type() )
-		{
-			case MsgType::MouseRelease:
-			{
-				if( static_cast<MouseButtonMsg*>(pMsg)->button() != MouseButton::Left )
-					return;
-
-				// Just put them all to NORMAL and request render.
-				// Release is followed by over before render anyway so right one will be highlighted.
-
-				_unhoverReqRender();
-				break;
-			}
-
-			case MsgType::MouseLeave:
-			{
-				// Turn any MARKED/SELECTED button/bg back to NORMAL.
-				// Turn handle back to NORMAL only if MARKED (selected handle should remain selected).
-				// Request render only if something changed (which it has unless bar was SELECTED...).
-
-				if( m_states[C_HANDLE].isPressed() )
-					return;
-
-				_unhoverReqRender();
-				break;
-			}
-
-			case MsgType::MouseEnter:
-			case MsgType::MouseMove:
-			{
-				if( m_states[C_HANDLE].isPressed() )
-					return;
-
-				Component c = _findMarkedComponent(pos);
-
-				if( (c != C_NONE && !m_states[c].isHovered()) || (c == C_BG && m_states[C_HANDLE].isHovered()) )
-				{
-					_unhoverReqRender();
-					m_states[c].setHovered(true);
-					if( c == C_HANDLE )
-						m_states[C_BG].setHovered(true);			// Always also mark bg if bar is marked.
-				}
-				else if( c == C_BG && m_states[C_HANDLE].isHovered() )
-				{
-					m_states[C_HANDLE].setHovered(false);
-					m_states[C_BG].setHovered(false);
-					_requestRender();
-				}
-
-
-				break;
-			}
-
-			case MsgType::MousePress:
-			{
-				if( static_cast<MouseButtonMsg*>(pMsg)->button() != MouseButton::Left )
-					return;
-
-				Component c = _findMarkedComponent(pos);
-
-				_unhoverReqRender();
-				m_states[c].setPressed(true);
-
-				if( c == C_HANDLE )
-				{
-					m_handlePressOfs = pointerOfs - handlePos;
-					m_states[C_BG].setHovered(true);			// Always mark bg if bar is pressed.
-				}
-				else if( c == C_BG )
-				{
-					switch( m_bgPressMode )
-					{
-					case JUMP_PAGE:
-					{
-						if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						{
-							if( pointerOfs - handlePos < handleLen/2 )
-								setHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
-							else
-								setHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
-						}
-
-						spx spxPos, spxLen;
-						_viewToPosLen( &spxPos, &spxLen );
-
-						pts pointPos = spxToPts(spxPos, m_scale);
-						pts pointLen = spxToPts(spxLen, m_scale);
-
-						pHandler->post( RangeUpdateMsg::create(this,pointPos,pointLen,m_handlePos,m_handleSize,true) );
-
-						break;
-					}
-					case GOTO_POS:
-						m_states[C_HANDLE].setPressed(true);
-						m_states[C_BG].setHovered(true);
-						m_handlePressOfs = handleLen/2;
-						setHandlePointPos( pointerOfs );
-						break;
-					default:
-	//					assert( false );
-						break;
-					}
-
-				}
-				else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
-				{
-					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						setHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
-				}
-				else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
-				{
-					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						setHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
-				}
-
-
-				spx spxPos, spxLen;
-				_viewToPosLen(&spxPos, &spxLen);
-
-				pts pointPos = spxToPts(spxPos, m_scale);
-				pts pointLen = spxToPts(spxLen, m_scale);
-
-				pHandler->post( RangeUpdateMsg::create(this,pointPos,pointLen,m_handlePos,m_handleSize,true) );
-				break;
-			}
-
-			case MsgType::MouseRepeat:
-			{
-				if( static_cast<MouseButtonMsg*>(pMsg)->button() != MouseButton::Left )
-					return;
-
-				if( m_states[C_HANDLE].isPressed() )
-					return;
-
-				Component c = _findMarkedComponent(pos);
-
-				if( c == C_BG )
-				{
-					if( pointerOfs - handlePos < handleLen/2 )
-					{
-						if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-							setHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
-					}
-					else
-					{
-						if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-							setHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
-					}
-				}
-				else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
-				{
-					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						setHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
-				}
-				else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
-				{
-					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						setHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
-				}
-
-				spx spxPos, spxLen;
-				_viewToPosLen(&spxPos, &spxLen);
-
-				pts pointPos = spxToPts(spxPos, m_scale);
-				pts pointLen = spxToPts(spxLen, m_scale);
-
-				pHandler->post( RangeUpdateMsg::create(this,pointPos,pointLen,m_handlePos,m_handleSize,true) );
-				break;
-			}
-
-			case MsgType::MouseDrag:
-			{
-				if( static_cast<MouseButtonMsg*>(pMsg)->button() != MouseButton::Left )
-					return;
-
-				if( m_states[C_HANDLE].isPressed() )
-				{
-					float	scrollhandlePos = 0.f;
-
-					if( m_handleSize < 1.f)
-						scrollhandlePos = float(pointerOfs - m_handlePressOfs) / float(length - handleLen);
-
-					limit( scrollhandlePos, 0.f, 1.f );
-
-					if( scrollhandlePos != m_handlePos )
-					{
-						m_handlePos = scrollhandlePos;
-
-						if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-							m_handlePos = m_pScrollbarTargetInterface->_setPosition(m_handlePos);
-
-						spx spxPos, spxLen;
-						_viewToPosLen(&spxPos, &spxLen);
-
-						pts pointPos = spxToPts(spxPos, m_scale);
-						pts pointLen = spxToPts(spxLen, m_scale);
-						pHandler->post(RangeUpdateMsg::create(this,pointPos,pointLen,m_handlePos,m_handleSize,true) );
-						_requestRender();
-					}
-				}
-				break;
-			}
-
-			case MsgType::WheelRoll:
-			{
-				WheelRollMsg_p p = static_cast<WheelRollMsg*>(pMsg);
-
-				if( p->wheel() == 1 )
-				{
-					int inverter = p->invertScroll() ? -1 : 1;
-					int distance = p->distance().y*inverter;		//TODO: Should we support horizontal wheel roll for horizontal scrollbar?
-					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						setHandlePos( m_pScrollbarTargetInterface->_wheelRolled(distance) );
-
-					spx spxPos, spxLen;
-					_viewToPosLen(&spxPos, &spxLen);
-
-					pts pointPos = spxToPts(spxPos, m_scale);
-					pts pointLen = spxToPts(spxLen, m_scale);
-					pHandler->post( RangeUpdateMsg::create(this,pointPos,pointLen,m_handlePos,m_handleSize,true) );
-					pMsg->swallow();
-				}
-			}
-
-			default:
-				break;
-
-		}
-
-		// Swallow all button 1 messages.
-
-		if( pMsg->isMouseButtonMsg() && static_cast<MouseButtonMsg*>(pMsg)->button() == MouseButton::Left )
-				pMsg->swallow();
-
+	void Scrollbar::_sendMessage()
+	{
+		Base::msgRouter()->post(ScrollbarMoveMsg::create(this, spxToPts(m_viewPos, m_scale), fracViewPos() ));
 	}
 
 
-	//____ _markTestHandle() _______________________________________________________
+	//____ _scrollbarStep() ___________________________________________________
 
-	bool Scrollbar::_markTestHandle( CoordSPX ofs )
+	void Scrollbar::_scrollbarStep(const CScrollbar* pComponent, int dir)
 	{
-		if( !m_pHandleSkin )
-			return false;
+		spx newViewPos = m_viewPos + m_singleStep * dir;
+		limit(newViewPos, 0, m_contentLen - m_viewLen);
 
-		spx   handlePos, handleLen;
-		_viewToPosLen( &handlePos, &handleLen );
-
-		RectSPX area = OO(skin)._contentRect(RectSPX(0,0,m_size),m_scale,m_state);
-
-		if( m_bHorizontal )
-		{
-			area.x = handlePos + m_headerLen;
-			area.w = handleLen;
-		}
-		else
-		{
-			area.y = handlePos + m_headerLen;
-			area.h = handleLen;
-		}
-
-		return m_pHandleSkin->_markTest( ofs, area, m_scale, m_states[C_HANDLE], m_markOpacity );
+		_setViewPos(m_viewPos + m_singleStep * dir);
 	}
 
-	//____ _setHandle() ____________________________________________________________
+	//____ _scrollbarPage() ___________________________________________________
 
-	bool Scrollbar::_setHandle( float _pos, float _size )
+	void Scrollbar::_scrollbarPage(const CScrollbar* pComponent, int dir)
 	{
-		limit( _size, 0.0001f, 1.f );
-		limit( _pos, 0.f, 1.f );
+		_setViewPos(m_viewPos + (m_viewLen - m_pageOverlap) * dir);
+	}
 
-		if( m_handlePos == _pos && m_handleSize == _size )
-			return true;
+	//____ _scrollbarWheel() __________________________________________________
 
-		m_handlePos		= _pos;
-		m_handleSize 	= _size;
+	void Scrollbar::_scrollbarWheel(const CScrollbar* pComponent, int dir)
+	{
+		_setViewPos(m_viewPos + m_wheelRoll * dir);
+	}
 
-		_requestRender();
-		return	true;
+	//____ _scrollbarMove() ___________________________________________________
+
+	spx Scrollbar::_scrollbarMove(const CScrollbar* pComponent, spx pos)
+	{
+		m_viewPos = spxToPts(pos, m_scale);
+
+		_sendMessage();
+
+		return pos;
+	}
+
+	//____ _scrollbarOfsLenContent() __________________________________________
+
+	std::tuple<spx, spx, spx> Scrollbar::_scrollbarOfsLenContent(const CScrollbar* pComponent)
+	{
+		return std::make_tuple(m_viewPos, m_viewLen, m_contentLen);
 	}
 
 } // namespace wg

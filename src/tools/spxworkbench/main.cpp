@@ -4,8 +4,10 @@
 
 #ifdef WIN32
 #	include <SDL.h>
+#	include <SDL_image.h>
 #else
 #	include <SDL2/SDL.h>
+#	include <SDL2_image/SDL_image.h>
 #endif
 
 #include <wg_base.h>
@@ -29,6 +31,7 @@
 #include <wg_button.h>
 #include <wg_selectbox.h>
 #include <wg_texteditor.h>
+#include <wg_scrollbar.h>
 
 #include <wg_staticcolorskin.h>
 #include <wg_boxskin.h>
@@ -36,6 +39,8 @@
 
 #include <wg_freetypefont.h>
 #include <wg_context.h>
+
+
 
 
 using namespace wg;
@@ -104,6 +109,7 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	SDL_Init(SDL_INIT_VIDEO);
+	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
 	int posX = 100, posY = 100, width = 640, height = 480;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
@@ -196,12 +202,26 @@ int main ( int argc, char** argv )
 	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
 	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
 
-	// First we load the 24-bit bmp containing the button graphics.
+	// First we load the resources.
 	// No error handling or such to keep this example short and simple.
 
 	SDL_Surface * pSDLSurf = SDL_LoadBMP( "resources/simple_button.bmp" );
 	SoftSurface_p pButtonSurface = SoftSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 	SDL_FreeSurface(pSDLSurf);
+
+	// Load blocks and create skins
+
+	pSDLSurf = IMG_Load("resources/blocks.png");
+	SoftSurface_p pBlocksSurface = SoftSurface::create(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRX_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, 0);
+	SDL_FreeSurface(pSDLSurf);
+
+	auto pScrollbarBack = BlockSkin::create(pBlocksSurface, { 1,49,5,5 }, 2);
+	pScrollbarBack->setContentPadding(2);
+	auto pDragbar = BlockSkin::create(pBlocksSurface, { 1,39,8,8 }, {StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
+	auto pLeftArrowButton = BlockSkin::create(pBlocksSurface, { 1,1,17,17 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
+	auto pRightArrowButton = BlockSkin::create(pBlocksSurface, { 77,1,17,17 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
+	auto pUpArrowButton = BlockSkin::create(pBlocksSurface, { 1,17,17,17 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
+	auto pDownArrowButton = BlockSkin::create(pBlocksSurface, { 77,17,17,17 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
 
 	// Load a font
 
@@ -223,7 +243,7 @@ int main ( int argc, char** argv )
 	pRoot->setScale(rootScale);
 
 	auto pDesignLayer = DesignLayer::create();
-	pDesignLayer->setEditMode(true);
+	pDesignLayer->setEditMode(false);
 	pRoot->slot = pDesignLayer;
 
 	auto pPopupLayer = PopupLayer::create();
@@ -318,9 +338,14 @@ int main ( int argc, char** argv )
 
 	//
 
+	auto pScrollbar = Scrollbar::create();
 
+	pScrollbar->setAxis(Axis::X);
+	pScrollbar->scrollbar.setSkins(pScrollbarBack, pDragbar, pLeftArrowButton, pRightArrowButton);
+	pScrollbar->setMovementAmounts( 1, 2, 1);
+	pScrollbar->setView( 10, 5, 30);
 
-
+	pBaseLambda->slots.pushBack(pScrollbar, [](Widget* pWidget, Size parentSize) { return Rect(350, 50, 150, 50); });
 
 
 	//------------------------------------------------------
@@ -375,6 +400,7 @@ int main ( int argc, char** argv )
 
 	// Exit SDL
 
+	IMG_Quit();
 	SDL_Quit();
 
 	return 0;
