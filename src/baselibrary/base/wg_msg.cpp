@@ -730,7 +730,35 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ ValueChangeMsg ___________________________________________
+	//____ ScrollbarMoveMsg ___________________________________________
+
+	const TypeInfo ScrollbarMoveMsg::TYPEINFO = { "ScrollbarMoveMsg", &Msg::TYPEINFO };
+
+	ScrollbarMoveMsg::ScrollbarMoveMsg(Object* pSource, pts viewPos, float fracPos)
+	{
+		m_type = MsgType::ScrollbarMove;
+		m_pSource = pSource;
+		m_viewPos = viewPos;
+		m_fracPos = fracPos;
+	}
+
+	pts ScrollbarMoveMsg::viewPos() const
+	{
+		return m_viewPos;
+	}
+
+	float ScrollbarMoveMsg::fracPos() const
+	{
+		return m_fracPos;
+	}
+
+
+	const TypeInfo& ScrollbarMoveMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+	//____ ValueUpdateMsg ___________________________________________
 
 	const TypeInfo ValueUpdateMsg::TYPEINFO = { "ValueUpdateMsg", &Msg::TYPEINFO };
 

@@ -196,6 +196,10 @@ namespace wg
 	typedef	StrongPtr<ToggleMsg>		ToggleMsg_p;
 	typedef	WeakPtr<ToggleMsg>	ToggleMsg_wp;
 
+	class ScrollbarMoveMsg;
+	typedef	StrongPtr<ScrollbarMoveMsg>		ScrollbarMoveMsg_p;
+	typedef	WeakPtr<ScrollbarMoveMsg>	ScrollbarMoveMsg_wp;
+
 	class ValueUpdateMsg;
 	typedef	StrongPtr<ValueUpdateMsg>		ValueUpdateMsg_p;
 	typedef	WeakPtr<ValueUpdateMsg>	ValueUpdateMsg_wp;
@@ -247,6 +251,7 @@ namespace wg
 	class ModalBlockedReleaseMsg;
 	typedef	StrongPtr<ModalBlockedReleaseMsg>		ModalBlockedReleaseMsg_p;
 	typedef	WeakPtr<ModalBlockedReleaseMsg>	ModalBlockedReleaseMsg_wp;
+
 
 
 	//____ Msg _________________________________________________________________
@@ -910,6 +915,33 @@ namespace wg
 
 		bool	m_bSet;
 	};
+
+	//____ ScrollbarMoveMsg ______________________________________________________
+
+	class ScrollbarMoveMsg : public Msg
+	{
+	public:
+		//.____ Creation __________________________________________
+
+		inline static ScrollbarMoveMsg_p	create(Object* pSource, pts viewPos, float fracPos) { return new ScrollbarMoveMsg(pSource, viewPos, fracPos); }
+
+		//.____ Identification __________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content ________________________________________________________
+
+		pts			viewPos() const;
+		float		fracPos() const;
+
+	protected:
+		ScrollbarMoveMsg(Object* pSource, pts viewPos, float fracPos);
+
+		pts			m_viewPos;
+		float		m_fracPos;
+	};
+
 
 	//____ ValueUpdateMsg ______________________________________________________
 

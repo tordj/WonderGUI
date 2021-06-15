@@ -65,7 +65,7 @@ namespace wg
 
 		void			_refreshUnsetStates();
 
-        Coord				m_contentShift[StateEnum_Nb];       // Unit: Points
+        Coord				m_contentShift[StateEnum_Nb];
 		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
 	};
 
