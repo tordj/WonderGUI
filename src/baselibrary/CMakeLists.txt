@@ -87,8 +87,6 @@ add_library( wondergui
 	base/wg_resdb.cpp
 	base/wg_resdb.h
 	base/wg_resloader.h
-	base/wg_scrollbartarget.cpp
-	base/wg_scrollbartarget.h
 	base/wg_selectableslot.h
 	base/wg_shadow.h
 	base/wg_skinslotmanager.cpp
