@@ -186,6 +186,35 @@ namespace wg
 		}
 	}
 
+	//____ _pointerMoved() ________________________________________________
+
+	void CScrollbar::_pointerMoved(CoordSPX pointerPos)
+	{
+		RectSPX geo = _geo();
+		Part markedPart = _getMarkedPart(geo.size(), pointerPos);
+
+		if (m_pressedPart != Part::None && markedPart != m_pressedPart)
+			markedPart = Part::None;										// We can not mark anything else than what we have pressed.
+
+		if (markedPart != m_markedPart)
+		{
+			int scale = _scale();
+
+			if (m_markedPart != Part::None)
+				_setPartState(m_markedPart, m_states[m_markedPart] - StateEnum::Hovered,
+					m_states[m_markedPart], geo, scale);
+
+			if (markedPart != Part::None)
+			{
+				State newState = m_states[markedPart] + (markedPart == m_pressedPart ? StateEnum::Pressed : StateEnum::Hovered);
+				_setPartState(markedPart, newState, m_states[markedPart], geo, scale);
+			}
+
+			m_markedPart = markedPart;
+		}
+
+	}
+
 	//____ _receive() _________________________________________________________
 
 	void CScrollbar::_receive(Msg* _pMsg)
@@ -198,24 +227,7 @@ namespace wg
 			{
 				auto pMsg = static_cast<MouseMoveMsg*>(_pMsg);
 
-				RectSPX geo = _geo();
-				Part markedPart = _getMarkedPart(geo.size(), pMsg->_pointerPos() - _globalPos() );
-
-				if (markedPart != m_markedPart)
-				{
-					int scale = _scale();
-
-					if (m_markedPart != Part::None)
-						_setPartState(	m_markedPart, m_states[m_markedPart] - StateEnum::Hovered,
-										m_states[m_markedPart], geo, scale);
-
-					if (markedPart != Part::None)
-						_setPartState(	markedPart, m_states[markedPart] + StateEnum::Hovered,
-										m_states[markedPart], geo, scale);
-
-					m_markedPart = markedPart;
-				}
-
+				_pointerMoved(pMsg->_pointerPos() - _globalPos());
 				break;
 			}
 
@@ -224,21 +236,30 @@ namespace wg
 				if (m_markedPart == Part::None)
 					break;
 
+				m_pressedPart = m_markedPart;
 				RectSPX geo = _geo();
 				int scale = _scale();
 
-				switch (m_markedPart)
+				switch (m_pressedPart)
 				{			
 					case Part::Bar:
-						break;
-					case Part::Back:
 					{
 						auto pMsg = static_cast<MousePressMsg*>(_pMsg);
 						CoordSPX pointerPos = pMsg->_pointerPos() - _globalPos();
 
+						auto barTopLeft = _partGeo(Part::Bar, geo, scale).pos();
+
+						m_barPressOfs = m_axis == Axis::X ? pointerPos.x - barTopLeft.x : pointerPos.y - barTopLeft.y;
+						break;
+					}
+					case Part::Back:
+					{
+						auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+						CoordSPX pointerPos = pMsg->_pointerPos() - _globalPos();
 						auto barCenter = _partGeo(Part::Bar, geo, scale).center();
-						if (m_axis == Axis::X && pointerPos.x < barCenter.x ||
-							m_axis == Axis::Y && pointerPos.y < barCenter.y)
+
+						m_barPressOfs = m_axis == Axis::X ? pointerPos.x - barCenter.x : pointerPos.y - barCenter.y;
+						if (m_barPressOfs < 0 )
 							m_pHolderInterface->_scrollbarPage(this, -1);
 						else
 							m_pHolderInterface->_scrollbarPage(this, 1);
@@ -254,17 +275,17 @@ namespace wg
 						break;
 				}
 
-				_setPartState(m_markedPart, m_states[m_markedPart] + StateEnum::Pressed,
-					m_states[m_markedPart], geo, scale);
+				_setPartState(m_pressedPart, m_states[m_pressedPart] + StateEnum::Pressed,
+					m_states[m_pressedPart], geo, scale);
 				_pMsg->swallow();
 				break;
 			}
 			case MsgType::MouseRepeat:
 			{
-				if (m_markedPart == Part::None)
+				if (m_pressedPart == Part::None || m_pressedPart != m_markedPart)
 					break;
 
-				switch (m_markedPart)
+				switch (m_pressedPart)
 				{
 				case Part::Bar:
 					break;
@@ -277,10 +298,12 @@ namespace wg
 					CoordSPX pointerPos = pMsg->_pointerPos() - _globalPos();
 
 					auto barCenter = _partGeo(Part::Bar, geo, scale).center();
-					if (m_axis == Axis::X && pointerPos.x < barCenter.x ||
-						m_axis == Axis::Y && pointerPos.y < barCenter.y)
+
+					spx barRepeatOfs = m_axis == Axis::X ? pointerPos.x - barCenter.x : pointerPos.y - barCenter.y;
+
+					if (barRepeatOfs < 0 && m_barPressOfs < 0 )
 						m_pHolderInterface->_scrollbarPage(this, -1);
-					else
+					else if(barRepeatOfs > 0 && m_barPressOfs > 0 )
 						m_pHolderInterface->_scrollbarPage(this, 1);
 					break;
 				}
@@ -299,22 +322,67 @@ namespace wg
 			}
 			case MsgType::MouseRelease:
 			{
-				if (m_markedPart == Part::None)
+				if (m_pressedPart == Part::None)
 					break;
 
 				RectSPX geo = _geo();
 				int scale = _scale();
 
-				_setPartState(m_markedPart, m_states[m_markedPart] - StateEnum::Pressed,
-					m_states[m_markedPart], geo, scale);
+				_setPartState(m_pressedPart, m_states[m_pressedPart] - StateEnum::Pressed,
+					m_states[m_pressedPart], geo, scale);
+
+				m_pressedPart = Part::None;
+				
+				auto pMsg = static_cast<MouseReleaseMsg*>(_pMsg);
+				_pointerMoved(pMsg->_pointerPos() - _globalPos());
+
+
 				_pMsg->swallow();
 				break;
 			}
 			case MsgType::MouseDrag:
+			{
+				if (m_pressedPart == Part::Bar)
+				{
+					auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
+
+					RectSPX geo = _globalGeo();
+					int scale = _scale();
+
+					RectSPX backGeo = _partGeo(Part::Back, geo, scale);
+
+					RectSPX barGeo = _dragbarArea(backGeo, scale);
+
+					CoordSPX pointerOfs = pMsg->_pointerPos() - backGeo.pos();
 
 
+					spx barMaxOfs;
+					spx barOfs;
+
+					if (m_axis == Axis::X)
+					{
+						barMaxOfs = backGeo.w - barGeo.w;
+						barOfs = pointerOfs.x - m_barPressOfs;
+					}
+					else
+					{
+						barMaxOfs = backGeo.h - barGeo.h;
+						barOfs = pointerOfs.y - m_barPressOfs;
+					}
+
+					limit(barOfs, 0, barMaxOfs);
+
+					spx viewOfs;
+					spx viewLen;
+					spx contentLen;
+					std::tie(viewOfs, viewLen, contentLen) = m_pHolderInterface->_scrollbarOfsLenContent(this);
+
+					spx newViewOfs = (barOfs / float(barMaxOfs)) * (contentLen - viewLen);
+
+					m_pHolderInterface->_scrollbarMove(this, newViewOfs);
+				}
 				break;
-
+			}
 			case MsgType::WheelRoll:
 			{
 				auto pMsg = static_cast<WheelRollMsg*>(_pMsg);

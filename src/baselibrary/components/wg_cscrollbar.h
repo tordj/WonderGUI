@@ -104,6 +104,7 @@ namespace wg
 
 		inline GeoComponent::Holder* _holder() const { return m_pHolder; }
 
+		void		_pointerMoved(CoordSPX pointerPos);
 		Part		_getMarkedPart(const RectSPX& canvas, CoordSPX pos) const;
 		RectSPX		_partGeo(Part part, const RectSPX& canvas, int scale) const;
 		void		_setPartState(Part part, State newState, State oldState, const RectSPX& fullCanvas, int scale);
@@ -112,7 +113,6 @@ namespace wg
 		spx			_buttonLen(Part button, const RectSPX& canvas, int scale) const;
 		RectSPX		_dragbarArea(const RectSPX& slideArea, int scale) const;
 		RectSPX		_dragbarArea(const RectSPX& slideArea, int scale, spx viewOfs, spx viewLen, spx contentLen) const;
-		RectSPX		_slideArea(const RectSPX& geo) const;
 
 		Holder*		m_pHolderInterface;
 
@@ -123,6 +123,8 @@ namespace wg
 		State		m_states[Part_size];
 
 		Part		m_markedPart = Part::None;
+		Part		m_pressedPart = Part::None;
+		spx			m_barPressOfs = -1;				// press offset from beginning of bar when press on dragbar och middle of bar when press on background.
 	};
 
 
