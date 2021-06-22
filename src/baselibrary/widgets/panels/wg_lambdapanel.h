@@ -77,8 +77,8 @@ namespace wg
 		protected:
 
 			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder) {}
-			Slot(Slot&& o) noexcept = default;
-			Slot& operator=(Slot&& o) = default;
+//			Slot(Slot&& o) noexcept = default;
+//			Slot& operator=(Slot&& o) = default;
 
 			const static bool safe_to_relocate = false;
 

@@ -244,10 +244,14 @@ namespace wg
 
 	spx Scrollbar::_scrollbarMove(const CScrollbar* pComponent, spx pos)
 	{
+		spx viewLen = align(ptsToSpx(m_viewLen, m_scale));
+		spx contentLen = align(ptsToSpx(m_contentLen, m_scale));
+
+		scrollbar._update( pos, align(ptsToSpx(m_viewPos, m_scale)), viewLen, viewLen, contentLen, contentLen);
+
 		m_viewPos = spxToPts(pos, m_scale);
 
 		_sendMessage();
-
 		return pos;
 	}
 
@@ -255,7 +259,7 @@ namespace wg
 
 	std::tuple<spx, spx, spx> Scrollbar::_scrollbarOfsLenContent(const CScrollbar* pComponent)
 	{
-		return std::make_tuple(m_viewPos, m_viewLen, m_contentLen);
+		return std::make_tuple(align(ptsToSpx(m_viewPos,m_scale)), align(ptsToSpx(m_viewLen, m_scale)), align(ptsToSpx(m_contentLen, m_scale)) );
 	}
 
 } // namespace wg
