@@ -632,20 +632,16 @@ namespace wg
 		float fracLen = float(viewLen) / float(contentLen);
 		float fracOfs = float(viewOfs) / float(contentLen - viewLen);
 
+		spx maxLen = m_axis == Axis::X ? availableArea.w : availableArea.h;
+		spx minLen = m_axis == Axis::X ? m_skins[Part::Bar]->_preferredSize(scale).w : m_skins[Part::Bar]->_preferredSize(scale).h;
+
+		spx length = max(minLen,align(maxLen * fracLen));
+		spx ofs = align((maxLen - length) * fracOfs);
+
 		if (m_axis == Axis::X)
-		{
-			spx length = align(availableArea.w * fracLen);
-			spx ofs = align((availableArea.w - length) * fracOfs);
-
 			return { availableArea.x + ofs, availableArea.y, length, availableArea.h };
-		}
 		else
-		{
-			spx length = align(availableArea.h * fracLen);
-			spx ofs = align((availableArea.h - length) * fracOfs);
-
 			return { availableArea.x, availableArea.y + ofs, availableArea.w, length };
-		}
 	}
 
 }

@@ -343,7 +343,7 @@ int main ( int argc, char** argv )
 	pScrollbar->setAxis(Axis::X);
 	pScrollbar->scrollbar.setSkins(pScrollbarBack, pDragbar, pLeftArrowButton, pRightArrowButton);
 	pScrollbar->setMovementAmounts( 1, 2, 1);
-	pScrollbar->setView( 10, 5, 30);
+	pScrollbar->setView( 10, 5, 300);
 
 	pBaseLambda->slots.pushBack(pScrollbar, [](Widget* pWidget, Size parentSize) { return Rect(350, 50, 150, 50); });
 
