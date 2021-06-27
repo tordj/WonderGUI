@@ -56,10 +56,6 @@ namespace wg
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ State _______________________________________________
-
-		inline State			state() const { return CText::_state(); }
-
 		//.____ Content _____________________________________________
 
 		inline 	String			get() const { return CText::_getString(); }

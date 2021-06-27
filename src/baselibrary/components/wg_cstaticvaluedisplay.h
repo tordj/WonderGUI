@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_ctext.h>
-#include <wg_valueformatter.h>
+#include <wg_valuepresenter.h>
 
 namespace wg
 {
@@ -35,7 +35,7 @@ namespace wg
 
 	//____ CStaticValueDisplay ____________________________________________________________
 
-	class CStaticValueDisplay : public CText
+	class CStaticValueDisplay : public GeoComponent
 	{
 	public:
 		CStaticValueDisplay(Holder * pHolder);
@@ -48,37 +48,29 @@ namespace wg
 
 		//.____ Appearance _____________________________________________
 
-		void				setFormatter( ValueFormatter * pFormatter );
-		void				clearFormatter();
-		inline ValueFormatter_p	formatter() const { return m_pFormatter; }
+		void				setPresenter(ValuePresenter* pFormatter);
+		void				clearPresenter();
+		inline ValuePresenter_p	presenter() const { return m_pPresenter; }
 
 		//.____ Content _______________________________________________
 
-		inline int64_t		value() const { return m_value; }
-		inline int			scale() const { return m_scale; }
-
-		//.____ State _______________________________________________
-
-		inline State			state() const { return m_state; }
+		inline double		value() const { return m_value; }
 
 		//.____ Misc __________________________________________________
 
 		inline CStaticValueDisplay_p	ptr() { return CStaticValueDisplay_p(this); }
 
+		//.____ Internal __________________________________________________
+
+		virtual bool		_set(double value);
 
 	protected:
 
-		void				_clear() override;
-		virtual bool		_set( int64_t value, int scale );
+		void				_refresh();
 
-		void				_refresh() override;
+		double				m_value = 0.0;
 
-		void				_regenText();
-
-		int64_t				m_value;
-		int					m_scale;
-
-		ValueFormatter_p	m_pFormatter;
+		ValuePresenter_p	m_pPresenter;
 	};
 
 

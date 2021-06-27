@@ -19,49 +19,39 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_CVALUEDISPLAY_DOT_H
-#define WG_CVALUEDISPLAY_DOT_H
+#ifndef	WG_VALUEPRESENTER_DOT_H
+#define WG_VALUEPRESENTER_DOT_H
 #pragma once
 
-#include <wg_cstaticvaluedisplay.h>
+#include <wg_object.h>
+#include <wg_pointers.h>
+#include <wg_string.h>
 
 namespace wg
 {
 
+	class ValuePresenter;
+	typedef	StrongPtr<ValuePresenter>		ValuePresenter_p;
+	typedef	WeakPtr<ValuePresenter>	ValuePresenter_wp;
 
-	//____ CValueDisplay ____________________________________________________________
+	//____ ValuePresenter __________________________________________________________
 
-	class CValueDisplay : public CStaticValueDisplay
+	class ValuePresenter : public Object
 	{
 	public:
-		CValueDisplay(Holder * pHolder);
-		~CValueDisplay() {}
 
+		//.____ Identification __________________________________________
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
+		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Content _____________________________________________
+		//.____ Misc __________________________________________________
 
-		void				clear();
-		bool				set( double value );
+		virtual void 	render(double value, GfxDevice* pDevice, const RectSPX& canvas) = 0;
+		virtual SizeSPX	preferredSize(double value, int scale) const = 0;
 
-		bool				setRange( double min, double max );
-		inline double		min() const { return m_minValue; }
-		inline double		max() const { return m_maxValue; }
-
-
-	protected:
-
-		bool				_set(double value) override;
-
-		double				m_minValue;
-		double				m_maxValue;
 	};
 
 
-
 } // namespace wg
-#endif //WG_CVALUEDISPLAY_DOT_H
+#endif //WG_VALUEPRESENTER_DOT_H

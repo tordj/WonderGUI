@@ -45,7 +45,7 @@ namespace wg
 	class WeakPtrHub;
 	class MemStack;
 	class MsgRouter;
-	class ValueFormatter;
+	class ValuePresenter;
 	class InputHandler;
 	class TextMapper;
 	class Caret;
@@ -55,7 +55,7 @@ namespace wg
 	class Receiver;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
-	typedef	StrongPtr<ValueFormatter>	ValueFormatter_p;
+	typedef	StrongPtr<ValuePresenter>	ValuePresenter_p;
 	typedef	StrongPtr<InputHandler>		InputHandler_p;
 	typedef	StrongPtr<TextMapper>		TextMapper_p;
 	typedef	StrongPtr<Caret>			Caret_p;
@@ -118,8 +118,8 @@ namespace wg
 		static void			setDefaultStyle( TextStyle * pStyle );
 		static TextStyle_p 	defaultStyle();
 
-		static void			setDefaultValueFormatter(ValueFormatter * pFormatter);
-		static ValueFormatter_p defaultValueFormatter();
+		static void			setDefaultValuePresenter(ValuePresenter * pFormatter);
+		static ValuePresenter_p defaultValuePresenter();
 
 		static void			setActiveContext(Context * pContext);
 		static Context_p	activeContext();
@@ -180,7 +180,7 @@ namespace wg
 			InputHandler_p	pInputHandler;
 			TextMapper_p		pDefaultTextMapper;
 			Caret_p				pDefaultCaret;
-			ValueFormatter_p	pDefaultValueFormatter;
+			ValuePresenter_p	pDefaultValuePresenter;
 #endif
 
 			Context_p		pActiveContext;

@@ -20,21 +20,21 @@
 
 =========================================================================*/
 
-#include <wg_timeformatter.h>
+#include <wg_timepresenter.h>
 
 namespace wg
 {
 
-	const TypeInfo TimeFormatter::TYPEINFO = { "TimeFormatter", &ValueFormatter::TYPEINFO };
+	const TypeInfo TimePresenter::TYPEINFO = { "TimePresenter", &ValuePresenter::TYPEINFO };
 
 	//____ constructors ____________________________________________________________
 
-	TimeFormatter::TimeFormatter( const CharSeq& format24 )
+	TimePresenter::TimePresenter( const CharSeq& format24 )
 	{
 		m_format24 = format24;
 	}
 
-	TimeFormatter::TimeFormatter( const CharSeq& formatAM, const CharSeq& formatPM )
+	TimePresenter::TimePresenter( const CharSeq& formatAM, const CharSeq& formatPM )
 	{
 		m_formatAM = formatAM;
 		m_formatPM = formatPM;
@@ -42,14 +42,14 @@ namespace wg
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& TimeFormatter::typeInfo(void) const
+	const TypeInfo& TimePresenter::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ format() _______________________________________________________________
 
-	String TimeFormatter::format( int64_t value, int scale ) const
+	String TimePresenter::format( int64_t value, int scale ) const
 	{
 		int64_t seconds = value / scale;
 
@@ -176,7 +176,7 @@ namespace wg
 
 	}
 
-	String TimeFormatter::format( double value ) const
+	String TimePresenter::format( double value ) const
 	{
 		return format( (int64_t)(value*1000000), 1000000);
 	}

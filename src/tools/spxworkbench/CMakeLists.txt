@@ -12,7 +12,7 @@ source_group(Skins/State REGULAR_EXPRESSION "skins/state//*")
 source_group(Skins/Static REGULAR_EXPRESSION "skins/static//*")
 
 source_group(TextMappers REGULAR_EXPRESSION "textmappers//*")
-source_group(ValueFormatters REGULAR_EXPRESSION "valueformatters//*")
+source_group(ValuePresenters REGULAR_EXPRESSION "valuepresenters//*")
 
 source_group(Widgets REGULAR_EXPRESSION "widgets//*")
 source_group(Widgets/Capsules REGULAR_EXPRESSION "widgets/capsules//*")
@@ -261,12 +261,12 @@ add_executable(spxworkbench
 	../../baselibrary/textmappers/wg_textmapper.cpp
 	../../baselibrary/textmappers/wg_textmapper.h
 
-	../../baselibrary/valueformatters/wg_standardformatter.cpp
-	../../baselibrary/valueformatters/wg_standardformatter.h
-	../../baselibrary/valueformatters/wg_timeformatter.cpp
-	../../baselibrary/valueformatters/wg_timeformatter.h
-	../../baselibrary/valueformatters/wg_valueformatter.cpp
-	../../baselibrary/valueformatters/wg_valueformatter.h
+	../../baselibrary/valuepresenters/wg_basicvaluepresenter.cpp
+	../../baselibrary/valuepresenters/wg_basicvaluepresenter.h
+	../../baselibrary/valuepresenters/wg_timepresenter.cpp
+	../../baselibrary/valuepresenters/wg_timepresenter.h
+	../../baselibrary/valuepresenters/wg_valuepresenter.cpp
+	../../baselibrary/valuepresenters/wg_valuepresenter.h
 
 	../../baselibrary/widgets/wg_animplayer.cpp
 	../../baselibrary/widgets/wg_animplayer.h

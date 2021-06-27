@@ -19,7 +19,7 @@ include_directories(
 	baselibrary/skins/state
 	baselibrary/skins/static
 	baselibrary/textmappers
-	baselibrary/valueformatters
+	baselibrary/valuepresenter
 	baselibrary/widgets
 	baselibrary/widgets/capsules
 	baselibrary/widgets/layers

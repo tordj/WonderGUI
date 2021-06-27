@@ -27,7 +27,7 @@
 #ifndef WG2_MODE
 	#include <wg_msgrouter.h>
 	#include <wg_stdtextmapper.h>
-	#include <wg_standardformatter.h>
+	#include <wg_basicvaluepresenter.h>
 	#include <wg_inputhandler.h>
 #endif
 
@@ -94,7 +94,7 @@ namespace wg
 		s_pData->pDefaultTextMapper = StdTextMapper::create();
 
 
-		s_pData->pDefaultValueFormatter = StandardFormatter::create();
+		s_pData->pDefaultValuePresenter = BasicValuePresenter::create();
 
 		s_pData->pMsgRouter = MsgRouter::create();
       	s_pData->pInputHandler = InputHandler::create();
@@ -259,20 +259,20 @@ namespace wg
 		s_pData->pDefaultTextMapper = pTextMapper;
 	}
 
-	//____ defaultValueFormatter() _____________________________________________
+	//____ defaultValuePresenter() _____________________________________________
 
-	ValueFormatter_p Base::defaultValueFormatter()
+	ValuePresenter_p Base::defaultValuePresenter()
 	{
 		assert(s_pData != 0);
-		return s_pData->pDefaultValueFormatter;
+		return s_pData->pDefaultValuePresenter;
 	}
 
-	//____ setDefaultValueFormatter() _______________________________________________________
+	//____ setDefaultValuePresenter() _______________________________________________________
 
-	void Base::setDefaultValueFormatter(ValueFormatter * pFormatter)
+	void Base::setDefaultValuePresenter(ValuePresenter * pFormatter)
 	{
 		assert(s_pData != 0);
-		s_pData->pDefaultValueFormatter = pFormatter;
+		s_pData->pDefaultValuePresenter = pFormatter;
 	}
 
 #endif

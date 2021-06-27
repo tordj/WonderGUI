@@ -31,7 +31,7 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	CValueDisplay::CValueDisplay(GeoComponent::Holder * pHolder) : CStaticValueDisplay(pHolder), m_minValue(std::numeric_limits<int64_t>::min()), m_maxValue(std::numeric_limits<int64_t>::max())
+	CValueDisplay::CValueDisplay(GeoComponent::Holder * pHolder) : CStaticValueDisplay(pHolder), m_minValue(std::numeric_limits<double>::min()), m_maxValue(std::numeric_limits<double>::max())
 	{
 	}
 
@@ -46,75 +46,45 @@ namespace wg
 
 	void CValueDisplay::clear()
 	{
-		bool bModified = value() != 0;
-		_clear();
-
-		if (bModified)
-			_onValueModified();
+		m_minValue = std::numeric_limits<double>::min();
+		m_maxValue = std::numeric_limits<double>::max();
+		CStaticValueDisplay::_set(0.0);
 	}
 
 	//____ set() ___________________________________________________________________
 
-	bool CValueDisplay::set(int64_t value, int scale)
+	bool CValueDisplay::set(double value)
 	{
-		if (_set(value, scale))
-		{
-			_onValueModified();
-			return true;
-		}
-		else
-			return false;
+		return _set(value);
 	}
 
 	//____ setRange() ______________________________________________________________
 
-	bool CValueDisplay::setRange(int64_t min, int64_t max)
+	bool CValueDisplay::setRange(double min, double max)
 	{
-		int64_t val = value();
-
-		bool retVal = _setRange(min, max);
-		if (val != value())
-			_onValueModified();
-
-		return retVal;
-	}
-
-	//____ _clear() _________________________________________________________________
-
-	void CValueDisplay::_clear()
-	{
-		CStaticValueDisplay::_clear();
-		m_minValue = std::numeric_limits<int64_t>::min();
-		m_maxValue = std::numeric_limits<int64_t>::max();
-	}
-
-	//____ _set() ___________________________________________________________________
-
-	bool CValueDisplay::_set( int64_t value, int scale )
-	{
-		if( value > m_maxValue )
-			value = m_maxValue;
-		else if( value < m_minValue )
-			value = m_minValue;
-		return CStaticValueDisplay::_set(value,scale);
-	}
-
-	//____ _setRange() ______________________________________________________________
-
-	bool CValueDisplay::_setRange( int64_t min, int64_t max )
-	{
-		if( min > max )
+		if (min > max)
 			return false;
 
 		m_minValue = min;
 		m_maxValue = max;
 
-		int64_t val = m_value;
-		limit( val, min, max );
+		double val = m_value;
+		limit(val, min, max);
 		m_value = val;
-		if( val != m_value )
-			CStaticValueDisplay::_set(val, m_scale);
+		if (val != m_value)
+			CStaticValueDisplay::_set(val);
 		return true;
+	}
+
+	//____ _set() ___________________________________________________________________
+
+	bool CValueDisplay::_set( double value )
+	{
+		if( value > m_maxValue )
+			value = m_maxValue;
+		else if( value < m_minValue )
+			value = m_minValue;
+		return CStaticValueDisplay::_set(value);
 	}
 
 } // namespace wg
