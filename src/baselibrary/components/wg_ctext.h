@@ -66,6 +66,10 @@ namespace wg
 		virtual void		clearTextMapper();
 		TextMapper_p		textMapper() const { return m_pTextMapper; }
 
+		//.____ State _______________________________________________
+
+		inline State		state() const { return m_state; }
+
 		//.____ Misc __________________________________________________
 
 		inline CText_p		ptr() { return CText_p(this); }

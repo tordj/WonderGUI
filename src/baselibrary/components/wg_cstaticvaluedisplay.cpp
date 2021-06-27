@@ -29,10 +29,8 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	CStaticValueDisplay::CStaticValueDisplay(GeoComponent::Holder * pHolder) : CText(pHolder)
+	CStaticValueDisplay::CStaticValueDisplay(GeoComponent::Holder * pHolder) : GeoComponent(pHolder)
 	{
-		m_value = 0;
-		m_scale = 1;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -42,95 +40,50 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setFormatter() __________________________________________________________
+	//____ setPresenter() __________________________________________________________
 
-	void CStaticValueDisplay::setFormatter( ValueFormatter * pFormatter )
+	void CStaticValueDisplay::setPresenter(ValuePresenter* pPresenter)
 	{
-		if( m_pFormatter.rawPtr() != pFormatter )
+		if (m_pPresenter.rawPtr() != pPresenter)
 		{
-			m_pFormatter = pFormatter;
-			_regenText();
+			m_pPresenter = pPresenter;
+			_refresh();
 		}
 	}
 
-	//____ clearFormatter() ________________________________________________________
+	//____ clearPresenter() ________________________________________________________
 
-	void CStaticValueDisplay::clearFormatter()
+	void CStaticValueDisplay::clearPresenter()
 	{
-		if( m_pFormatter )
+		if (m_pPresenter)
 		{
-			m_pFormatter = 0;
-			_regenText();
-		}
-	}
-
-	//____ _clear() _________________________________________________________________
-
-	void CStaticValueDisplay::_clear()
-	{
-		if( m_value != 0 )
-		{
-			m_value = 0;
-			m_scale = 1;
-			_regenText();
+			m_pPresenter = 0;
+			_refresh();
 		}
 	}
 
 	//____ _set() ___________________________________________________________________
 
-	bool CStaticValueDisplay::_set( int64_t value, int scale )
+	bool CStaticValueDisplay::_set( double value )
 	{
-		if( m_value != value || m_scale != scale )
+		if( m_value != value )
 		{
-			if( scale <= 0 )
-				return false;
-
 			m_value = value;
-			m_scale = scale;
-			_regenText();
+			_refresh();
+			return true;
 		}
-		return true;
+		return false;
 	}
-	/*
-	void CStaticValueDisplay::set( float value )
-	{
-		value *= m_scale;
-		int64_t intVal = (int64_t) value;
-		if( intVal != m_value )
-		{
-			m_value = intVal;
-			_regenText();
-		}
-	}
-
-	void CStaticValueDisplay::set( double value )
-	{
-		value *= m_scale;
-		int64_t intVal = (int64_t) value;
-		if( intVal != value )
-		{
-			m_value = intVal;
-			_regenText();
-		}
-	}
-	*/
 
 	//____ _refresh() _____________________________________________________________
 
 	void CStaticValueDisplay::_refresh()
 	{
-		_regenText();
-		CText::_refresh();
-	}
+		ValuePresenter* pPresenter = m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultValuePresenter().rawPtr();
 
-	//____ _regenText() ____________________________________________________________
+//		if (m_pPresenter)
+//			m_charBuffer = pPresenter->format(m_value, m_scale);
 
-	void CStaticValueDisplay::_regenText()
-	{
-		ValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : Base::defaultValueFormatter().rawPtr();
-
-		if( m_pFormatter )
-			m_charBuffer = pFormatter->format(m_value, m_scale);
 		_requestRender();
 
 		//TODO: Conditional call to _requestResize();

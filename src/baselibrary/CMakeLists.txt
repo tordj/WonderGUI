@@ -11,7 +11,7 @@ source_group(Skins/State REGULAR_EXPRESSION "skins/state/*")
 source_group(Skins/Static REGULAR_EXPRESSION "skins/static/*")
 
 source_group(TextMappers REGULAR_EXPRESSION "textmappers/*")
-source_group(ValueFormatters REGULAR_EXPRESSION "valueformatters/*")
+source_group(ValuePresenters REGULAR_EXPRESSION "valuepresenters/*")
 
 source_group(Widgets REGULAR_EXPRESSION "widgets/*")
 source_group(Widgets/Capsules REGULAR_EXPRESSION "widgets/capsules/*")
@@ -251,12 +251,12 @@ add_library( wondergui
 	textmappers/wg_textmapper.cpp
 	textmappers/wg_textmapper.h
 
-	valueformatters/wg_standardformatter.cpp
-	valueformatters/wg_standardformatter.h
-	valueformatters/wg_timeformatter.cpp
-	valueformatters/wg_timeformatter.h
-	valueformatters/wg_valueformatter.cpp
-	valueformatters/wg_valueformatter.h
+	valuepresenters/wg_basicvaluepresenter.cpp
+	valuepresenters/wg_basicvaluepresenter.h
+	valuepresenters/wg_timepresenter.cpp
+	valuepresenters/wg_timepresenter.h
+	valuepresenters/wg_valuepresenter.cpp
+	valuepresenters/wg_valuepresenter.h
 
 	widgets/wg_animplayer.cpp
 	widgets/wg_animplayer.h

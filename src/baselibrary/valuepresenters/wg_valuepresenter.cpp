@@ -20,17 +20,17 @@
 
 =========================================================================*/
 
-#include <wg_valueformatter.h>
+#include <wg_valuepresenter.h>
 
 namespace wg
 {
 
-	const TypeInfo ValueFormatter::TYPEINFO = { "ValueFormatter", &Object::TYPEINFO };
+	const TypeInfo ValuePresenter::TYPEINFO = { "ValuePresenter", &Object::TYPEINFO };
 
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& ValueFormatter::typeInfo(void) const
+	const TypeInfo& ValuePresenter::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
