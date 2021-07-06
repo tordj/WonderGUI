@@ -62,11 +62,17 @@ namespace wg
 
 		//.____ Internal __________________________________________________
 
+
 		virtual bool		_set(double value);
+		void 				_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state);
+		SizeSPX				_preferredSize(int scale) const;
+		void				_refresh();
+		bool				_stateChangeNeedsRender(State newState, State oldState) const;
 
 	protected:
+		
+		ValuePresenter* _presenter() const { return m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultValuePresenter().rawPtr(); }
 
-		void				_refresh();
 
 		double				m_value = 0.0;
 

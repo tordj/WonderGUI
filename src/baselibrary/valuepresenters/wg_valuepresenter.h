@@ -47,8 +47,13 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		virtual void 	render(double value, GfxDevice* pDevice, const RectSPX& canvas) = 0;
-		virtual SizeSPX	preferredSize(double value, int scale) const = 0;
+		virtual void 	render(GfxDevice* pDevice, const RectSPX& canvas, double value, int scale, State state) = 0;
+		virtual SizeSPX	preferredSize(double value, int scale, State state) const = 0;
+		virtual bool	stateChangeNeedsRender(State newState, State oldState) const = 0;
+
+	protected:
+
+		void	_renderString(GfxDevice * pDevice, const Char* pString, TextStyle* pStyle, CoordSPX pos, int scale, State state );
 
 	};
 

@@ -32,6 +32,7 @@
 #include <wg_selectbox.h>
 #include <wg_texteditor.h>
 #include <wg_scrollbar.h>
+#include <wg_valuedisplay.h>
 
 #include <wg_staticcolorskin.h>
 #include <wg_boxskin.h>
@@ -40,7 +41,7 @@
 #include <wg_freetypefont.h>
 #include <wg_context.h>
 
-
+#include <wg_basicvaluepresenter.h>
 
 
 using namespace wg;
@@ -347,6 +348,22 @@ int main ( int argc, char** argv )
 	pScrollbar->setView( 10, 5, 300);
 
 	pBaseLambda->slots.pushBack(pScrollbar, [](Widget* pWidget, Size parentSize) { return Rect(350, 50, 150, 50); });
+
+	//
+
+	auto pValueDisplay = ValueDisplay::create();
+
+	pValueDisplay->value.set(-1234.1234);
+
+	BasicValuePresenter::Blueprint bp;
+	bp.prefix = "$";
+	bp.suffix = ":-";
+	bp.decimalMax = 6;
+
+	pValueDisplay->value.setPresenter(BasicValuePresenter::create(bp));
+	pValueDisplay->skin = pSkin;
+
+	pBaseLambda->slots.pushBack(pValueDisplay, [](Widget* pWidget, Size parentSize) { return Rect(350, 120, 150, 50); });
 
 
 	//------------------------------------------------------
