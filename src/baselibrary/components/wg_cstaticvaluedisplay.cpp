@@ -27,7 +27,7 @@ namespace wg
 {
 	const TypeInfo CStaticValueDisplay::TYPEINFO = { "CStaticValueDisplay", &CText::TYPEINFO };
 
-	//____ constructor _____________________________________________________________
+	//____ constructor ________________________________________________________
 
 	CStaticValueDisplay::CStaticValueDisplay(GeoComponent::Holder * pHolder) : GeoComponent(pHolder)
 	{
@@ -40,7 +40,7 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setPresenter() __________________________________________________________
+	//____ setPresenter() _____________________________________________________
 
 	void CStaticValueDisplay::setPresenter(ValuePresenter* pPresenter)
 	{
@@ -51,7 +51,7 @@ namespace wg
 		}
 	}
 
-	//____ clearPresenter() ________________________________________________________
+	//____ clearPresenter() ___________________________________________________
 
 	void CStaticValueDisplay::clearPresenter()
 	{
@@ -62,7 +62,7 @@ namespace wg
 		}
 	}
 
-	//____ _set() ___________________________________________________________________
+	//____ _set() _____________________________________________________________
 
 	bool CStaticValueDisplay::_set( double value )
 	{
@@ -75,7 +75,28 @@ namespace wg
 		return false;
 	}
 
-	//____ _refresh() _____________________________________________________________
+	//____ _render() __________________________________________________________
+
+	void CStaticValueDisplay::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state)
+	{
+		ValuePresenter* pPresenter = m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultValuePresenter().rawPtr();
+
+		pPresenter->render(pDevice, canvas, m_value, scale, state);
+
+	}
+
+
+	//____ _preferredSize() ___________________________________________________
+
+	SizeSPX CStaticValueDisplay::_preferredSize(int scale) const
+	{
+		ValuePresenter* pPresenter = m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultValuePresenter().rawPtr();
+
+		return pPresenter->preferredSize(m_value, scale, StateEnum::Normal);
+	}
+
+
+	//____ _refresh() _________________________________________________________
 
 	void CStaticValueDisplay::_refresh()
 	{
@@ -88,5 +109,15 @@ namespace wg
 
 		//TODO: Conditional call to _requestResize();
 	}
+
+	//____ _stateChangeNeedsRender() __________________________________________
+
+	bool CStaticValueDisplay::_stateChangeNeedsRender(State newState, State oldState) const
+	{
+		ValuePresenter* pPresenter = m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultValuePresenter().rawPtr();
+
+		return pPresenter->stateChangeNeedsRender(newState, oldState);
+	}
+
 
 } // namespace wg

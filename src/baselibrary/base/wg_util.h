@@ -145,7 +145,7 @@ namespace wg
 
 		inline SizeSPX alignUp(const SizeSPX& size)
 		{
-			return { (size.w + 63) & -64, (size.w + 63) & -64 };
+			return { (size.w + 63) & -64, (size.h + 63) & -64 };
 		}
 
 		inline BorderSPX alignUp(const BorderSPX& border)
@@ -181,7 +181,7 @@ namespace wg
 
 		inline SizeSPX alignDown(const SizeSPX& size)
 		{
-			return { (size.w) & -64, (size.w) & -64 };
+			return { (size.w) & -64, (size.h) & -64 };
 		}
 
 		inline BorderSPX alignDown(const BorderSPX& border)

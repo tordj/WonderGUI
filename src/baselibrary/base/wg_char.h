@@ -84,7 +84,7 @@ namespace wg
 
 		/// Initializes a character to contain the charcode and style as specified.
 
-		Char( uint16_t charCode, TextStyle * pStyle ) { m_code = charCode; m_style = pStyle->handle(); pStyle->_incRefCount(); }
+		Char(uint16_t charCode, TextStyle* pStyle) { m_code = charCode; if (pStyle) { m_style = pStyle->handle(); pStyle->_incRefCount(); } else m_style = 0; }
 		~Char() { if( m_style ) TextStyleManager::_getPointer(m_style)->_decRefCount(); }
 
 		//.____ Content ___________________________________________________________
@@ -103,7 +103,7 @@ namespace wg
 
 								/// Sets the style for the character.
 
-		inline void				setStyle( TextStyle * pStyle ) { if(m_style) TextStyleManager::_getPointer(m_style)->_decRefCount(); m_style = pStyle->handle(); pStyle->_incRefCount(); }
+		inline void				setStyle( TextStyle * pStyle ) { if(m_style) TextStyleManager::_getPointer(m_style)->_decRefCount(); if (pStyle) { m_style = pStyle->handle(); pStyle->_incRefCount(); } else m_style = 0; }
 
 								/// Gets a handle to the TextStyle of the character.
 								///

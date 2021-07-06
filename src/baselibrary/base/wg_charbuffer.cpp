@@ -438,12 +438,12 @@ namespace wg
 
 	int CharBuffer::pushFront( const CharSeq& seq )
 	{
-		int len = seq.length();
-		_pushFront(len);
+		int nChars = seq.length();
+		_pushFront(nChars);
+		memset(((Char*)_ptr(0)), 0, sizeof(Char) * nChars);
 		seq.copyTo((Char*)_ptr(0));
-		return len;
+		return nChars;
 	}
-
 
 	//____ pushBack() ______________________________________________________________
 	//

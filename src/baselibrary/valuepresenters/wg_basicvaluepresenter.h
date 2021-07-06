@@ -24,13 +24,16 @@
 #pragma once
 
 #include <wg_valuepresenter.h>
+#include <wg_textstyle.h>
+
+#include <vector>
 
 namespace wg
 {
 
 
 	class BasicValuePresenter;
-	typedef	StrongPtr<BasicValuePresenter>		BasicValuePresenter_p;
+	typedef	StrongPtr<BasicValuePresenter>	BasicValuePresenter_p;
 	typedef	WeakPtr<BasicValuePresenter>	BasicValuePresenter_wp;
 
 	//____ BasicValuePresenter __________________________________________________________
@@ -38,60 +41,65 @@ namespace wg
 	class BasicValuePresenter : public ValuePresenter
 	{
 	public:
+
+		//____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+			int			base = 10;						///< Numeric base used. Any value between 2 and 16 is accepted. Default is 10 (normal decimal values).
+
+			int			decimalMax = 6;					///< Maximum number of decimals to display. Last digit is rounded. Default is 6.
+			int			decimalMin = 0;					///< Minimum number of decimals to display. Default is 0.
+			uint16_t	decimalSign = '.';				///< Character to use for decimal sign. Default is a dot/period character.
+
+			int			integerGrouping = 3;			///< Number of integers displayed before an integerGroupSeparator is inserted. Default is 3.
+			uint16_t	integerGroupSeparator = ' ';	///< Character used to separate groups of integers. Default is whitespace.
+			int			integerMin = 1;					///< Minimum number of integers displayed. Default is 1. Valid range is 0-32.
+
+			Placement	placement = Placement::East;	///< Alignment of displayed value. Default is East, i.e. right justified and vertically centered.
+
+			String		prefix;							///< A prefix to be displayed left of the value e.g. '$' or '£'. Negative values display the minus sign before this prefix unless prefixNegative is set. 
+			String		prefixNegative;					///< A separate prefix to display for negative values only, should include the minus sign.
+
+			TextStyle_p	style;							///< TextStyle for the number, including decimal sign, group separator and (if prefixNegative not set) the minus sign.
+			TextStyle_p	styleDecimals;					///< A separate TextStyle, overriding .style for the decimal sign and decimals of the value. 
+			TextStyle_p	styleNegative;					///< A separate TextStyle to use for negative numbers. Overrides .style and .styleDecimals.
+			TextStyle_p	styleNegativeDecimals;			///< A separate TextStyle to use for decimal sign and decimals of negative values, overrides .style and .styleNegative.
+
+			String		suffix;							///< A suffix to be displayed right of the value e.g. " cm" or " km". 
+			String		suffixNegative;					///< A separate suffix to be displayed for negative values only.
+		};
+
 		//.____ Creation __________________________________________
 
-		static BasicValuePresenter_p	create() { return BasicValuePresenter_p(new BasicValuePresenter()); }
-		static BasicValuePresenter_p	create( const CharSeq& format ) { return BasicValuePresenter_p(new BasicValuePresenter(format)); }
+		static BasicValuePresenter_p	create( const Blueprint& blueprint ) { return BasicValuePresenter_p(new BasicValuePresenter( blueprint )); }
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Appearance ____________________________________________________
-
-		void	setPlacement(Placement placement);
-		inline Placement placement() const { return m_placement; }
-
-		void	setStyle(TextStyle* pStyle);
-		void	setStyles(	TextStyle* pPositiveIntegers, TextStyle* pNegativeIntegers,
-							TextStyle* pPositiveDecimals, TextStyle* pNegativeDecimals );
-
-		void	setNumberBase(int base);
-		void	setDecimals(int maxDecimals, int minDecimals = 0, uint16_t decimalSign = '.');
-		void	setIntegers(int grouping, int minIntegers = 1, uint16_t groupSeparator = ' ');
-		void	setPrefix(String prefix);
-		void	setSuffix(String suffix);
-
-		//    ,1-3.0-2
-
-
 		//.____ Misc __________________________________________________
 
-		void 	render(double value, GfxDevice* pDevice, const RectSPX& canvas) override;
-		SizeSPX	preferredSize(double value, int scale) const override;
+		void 	render(GfxDevice* pDevice, const RectSPX& canvas, double value, int scale, State state) override;
+		SizeSPX	preferredSize(double value, int scale, State state) const override;
+		bool	stateChangeNeedsRender(State newState, State oldState) const override;
+
+		Blueprint blueprint() const;
 
 	protected:
-		BasicValuePresenter();
-		BasicValuePresenter( const CharSeq& format );
+		BasicValuePresenter( const Blueprint& descriptor );
 		~BasicValuePresenter();
 
-		Placement	m_placement = Placement::East;
+		CharBuffer	_valueToStr(double value ) const;
+		std::tuple<SizeSPX, spx> _strSizeBaseline(const Char * pChars, int scale, State state) const;
+		void		_addStylesFromString(std::vector<TextStyle*>& stylesVector, const String& string) const;
 
-		TextStyle_p	m_pStylePosInt;
-		TextStyle_p	m_pStyleNegInt;
-		TextStyle_p	m_pStylePosDec;
-		TextStyle_p	m_pStyleNegDec;
 
-		int			m_numberBase = 10;
-		int			m_minDecimals = 0;
-		int			m_maxDecimals = 6;
-		int			m_minIntegers = 1;
-		int			m_integerGrouping = 3;
-		uint16_t	m_decimalSign = '.';
-		uint16_t	m_groupSeparator = ' ';
-		String		m_prefix;
-		String		m_suffix;
+		Blueprint	m_blueprint;
+
+		bool		m_bStatesIdentical[StateEnum_Nb][StateEnum_Nb];
+		bool		m_bHadNegativePrefix = false;
 	};
 
 

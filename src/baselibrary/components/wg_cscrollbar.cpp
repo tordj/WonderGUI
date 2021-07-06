@@ -548,7 +548,6 @@ namespace wg
 					return { canvas.x + canvas.w - nextButtonLen, canvas.y, nextButtonLen, canvas.h };
 				else
 					return { canvas.x, canvas.y + canvas.h - nextButtonLen, canvas.w, nextButtonLen };
-				break;
 		}
 	}
 

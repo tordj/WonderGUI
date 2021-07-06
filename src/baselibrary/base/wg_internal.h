@@ -204,15 +204,6 @@ namespace wg
 		using CTextEditor::_setState;
 	};
 
-	class OCValueDisplay : public CValueDisplay
-	{
-	public:
-		using CValueDisplay::_preferredSize;
-		using CValueDisplay::_refresh;
-		using CValueDisplay::_render;
-		using CValueDisplay::_setState;
-	};
-
 
 	class OSkin : public Skin
 	{
@@ -245,9 +236,6 @@ namespace wg
 
 	inline OCTextEditor&		OO(CTextEditor& component) { return reinterpret_cast<OCTextEditor&>(component); }
 	inline const OCTextEditor&	OO(const CTextEditor& component) { return reinterpret_cast<const OCTextEditor&>(component); }
-
-	inline OCValueDisplay&		OO(CValueDisplay& component) { return reinterpret_cast<OCValueDisplay&>(component); }
-	inline const OCValueDisplay& OO(const CValueDisplay& component) { return reinterpret_cast<const OCValueDisplay&>(component); }
 
 	inline OSideCanvas *		OO(SideCanvas* pWidget) { return reinterpret_cast<OSideCanvas*>(pWidget); }
 	inline const OSideCanvas *	OO(const SideCanvas* pWidget) { return reinterpret_cast<const OSideCanvas*>(pWidget); }

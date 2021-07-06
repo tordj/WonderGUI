@@ -94,7 +94,7 @@ namespace wg
 		s_pData->pDefaultTextMapper = StdTextMapper::create();
 
 
-		s_pData->pDefaultValuePresenter = BasicValuePresenter::create();
+		s_pData->pDefaultValuePresenter = BasicValuePresenter::create( BasicValuePresenter::Blueprint() );
 
 		s_pData->pMsgRouter = MsgRouter::create();
       	s_pData->pInputHandler = InputHandler::create();

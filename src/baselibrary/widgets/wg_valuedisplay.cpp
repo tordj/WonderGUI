@@ -56,7 +56,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX size = OO(value)._preferredSize(scale);
+		SizeSPX size = value._preferredSize(scale);
 
 		return OO(skin)._sizeForContent(size, scale);
 	}
@@ -66,7 +66,7 @@ namespace wg
 
 	void ValueDisplay::_refresh( void )
 	{
-		OO(value)._refresh();
+		value._refresh();
 		Widget::_refresh();
 	}
 
@@ -75,7 +75,7 @@ namespace wg
 	void ValueDisplay::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
-		OO(value)._render(pDevice, _canvas);
+		value._render(pDevice, _contentRect() + _canvas.pos(), m_scale, m_state);
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -89,8 +89,10 @@ namespace wg
 
 	void ValueDisplay::_setState( State state )
 	{
+		if (value._stateChangeNeedsRender(m_state, state))
+			_requestRender(_contentRect());
+
 		Widget::_setState(state);
-		OO(value)._setState(state);
 	}
 
 

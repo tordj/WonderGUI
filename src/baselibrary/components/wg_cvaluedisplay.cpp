@@ -31,7 +31,7 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	CValueDisplay::CValueDisplay(GeoComponent::Holder * pHolder) : CStaticValueDisplay(pHolder), m_minValue(std::numeric_limits<double>::min()), m_maxValue(std::numeric_limits<double>::max())
+	CValueDisplay::CValueDisplay(GeoComponent::Holder * pHolder) : CStaticValueDisplay(pHolder), m_minValue(std::numeric_limits<double>::lowest()), m_maxValue(std::numeric_limits<double>::max())
 	{
 	}
 
@@ -46,7 +46,7 @@ namespace wg
 
 	void CValueDisplay::clear()
 	{
-		m_minValue = std::numeric_limits<double>::min();
+		m_minValue = std::numeric_limits<double>::lowest();
 		m_maxValue = std::numeric_limits<double>::max();
 		CStaticValueDisplay::_set(0.0);
 	}

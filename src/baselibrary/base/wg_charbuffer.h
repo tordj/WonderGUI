@@ -110,6 +110,7 @@ namespace wg
 
 		CharBuffer( int size = 0 );
 		inline CharBuffer(const CharBuffer& r);
+		inline CharBuffer(CharBuffer&& r) noexcept;
 
 		~CharBuffer() { _derefBuffer(); }
 
@@ -298,6 +299,15 @@ namespace wg
 		if( m_pHead->m_lockCnt != 0 )
 			_reshapeBuffer(0,0,m_pHead->m_len,0);
 	};
+
+	CharBuffer::CharBuffer(CharBuffer&& r) noexcept
+	{
+		m_pHead = r.m_pHead;
+		r.m_pHead = g_pEmptyBuffer;
+		g_pEmptyBuffer->m_refCnt++;		// We always have exactly one more instance pointing to g_pEmptyBuffer now.
+	}
+
+
 
 	//____ setCapacity() __________________________________________________________
 	//

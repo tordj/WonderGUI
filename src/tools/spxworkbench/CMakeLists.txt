@@ -263,8 +263,8 @@ add_executable(spxworkbench
 
 	../../baselibrary/valuepresenters/wg_basicvaluepresenter.cpp
 	../../baselibrary/valuepresenters/wg_basicvaluepresenter.h
-	../../baselibrary/valuepresenters/wg_timepresenter.cpp
-	../../baselibrary/valuepresenters/wg_timepresenter.h
+#	../../baselibrary/valuepresenters/wg_timepresenter.cpp
+#	../../baselibrary/valuepresenters/wg_timepresenter.h
 	../../baselibrary/valuepresenters/wg_valuepresenter.cpp
 	../../baselibrary/valuepresenters/wg_valuepresenter.h
 
