@@ -669,20 +669,20 @@ RectI sourceOfs;
 		}
 	}
 
-	//____ sizeFromPolicy() __________________________________________________________
+	//____ sizeFromConstraint() __________________________________________________________
 
-	spx Util::sizeFromPolicy( spx defaultSize, spx specifiedSize, SizePolicy policy )
+	spx Util::sizeFromConstraint( spx defaultSize, spx specifiedSize, SizeConstraint policy )
 	{
 		switch( policy )
 		{
-			case SizePolicy::Default:
+			case SizeConstraint::None:
 				return defaultSize;
-			case SizePolicy::Bound:
+			case SizeConstraint::Equal:
 				return specifiedSize;
-			case SizePolicy::Confined:
+			case SizeConstraint::LessOrEqual:
 				if( defaultSize > specifiedSize )
 					return specifiedSize;
-			case SizePolicy::Expanded:
+			case SizeConstraint::GreaterOrEqual:
 				if( defaultSize < specifiedSize )
 					return specifiedSize;
 		}

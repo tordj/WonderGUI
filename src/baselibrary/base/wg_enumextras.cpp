@@ -169,13 +169,13 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(SizePolicy i)
+	const char * toString(SizeConstraint i)
 	{
 		static const char * names[] = { 
-			"Default = 0",
-			"Bound",
-			"Confined",
-			"Expanded" };
+			"None = 0",
+			"Equal",
+			"LessOrEqual",
+			"GreaterOrEqual" };
 
 		return names[(int)i];
 	}

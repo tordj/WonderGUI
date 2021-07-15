@@ -505,9 +505,9 @@ namespace wg
 
 
 
-	//____ SizePolicy ___________________________________________________________
+	//____ SizeConstraint ___________________________________________________________
 	/**
-		SizePolicy is used by certain containers, including FlexPanel and ScrollPanel,
+		SizeConstraint is used by certain containers, including FlexPanel and ScrollPanel,
 		to limit/control the geometry of children. Different SizePolicies can be set
 		for horizontal and vertical size.
 
@@ -515,12 +515,12 @@ namespace wg
 		ScrollPanel it is the size of the window to the scrollarea. In the case of
 		FlexPanel, it is a size specified for the child.
 	*/
-	enum class SizePolicy : uint8_t		//. autoExtras
+	enum class SizeConstraint : uint8_t		//. autoExtras
 	{
-		Default = 0,			///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
-		Bound,				///< Child is bound to the exact size specified by parent.
-		Confined,			///< Childs size is limited to the size specified by parent.
-		Expanded,			///< Childs size is set to at least the size specified by parent.
+		None = 0,				///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
+		Equal,					///< Child is bound to the exact size specified by parent.
+		LessOrEqual,			///< Childs size is limited to the size specified by parent.
+		GreaterOrEqual			///< Childs size is set to at least the size specified by parent.
 	};
 
 

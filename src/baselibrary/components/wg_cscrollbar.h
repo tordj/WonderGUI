@@ -78,6 +78,8 @@ namespace wg
 
 		inline CScrollbar_p		ptr() { return CScrollbar_p(this); }
 
+		inline bool				inWorkingOrder() const { return m_skins[Part::Bar] != nullptr || m_skins[Part::Prev] != nullptr || m_skins[Part::Next] != nullptr; }
+
 		//.____ Internal ______________________________________________
 
 		SizeSPX		_preferredSize(int scale) const;

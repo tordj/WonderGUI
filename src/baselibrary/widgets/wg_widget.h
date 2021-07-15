@@ -222,6 +222,23 @@ namespace wg
 
 		virtual	bool		_markTest(const CoordSPX& ofs);
 
+		virtual void		_collectPatches(Patches& container, const RectSPX& geo, const RectSPX& clip);
+		virtual void		_maskPatches(Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode);
+
+		Widget*				_clone() const;
+
+		virtual void    	_preRender();
+		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window);
+
+		virtual void		_refresh();
+		virtual void		_resize(const SizeSPX& size, int scale = -1);
+		virtual void		_setState(State state);
+
+		virtual void		_receive(Msg* pMsg);
+		virtual	bool		_alphaTest(const CoordSPX& ofs);
+
+		virtual SizeSPX		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
+
 	protected:
 		Widget();
 		virtual ~Widget();
@@ -262,23 +279,8 @@ namespace wg
 
 		// To be overloaded by Widget
 
-		virtual void		_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip );
-		virtual void		_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode );
-
-		Widget *			_clone() const;
 		virtual void		_cloneContent( const Widget * _pOrg );
 
-		virtual void    	_preRender();
-		virtual void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window );
-
-		virtual void		_refresh();
-		virtual void		_resize( const SizeSPX& size, int scale = -1 );
-		virtual void		_setState( State state );
-
-		virtual void		_receive( Msg * pMsg );
-		virtual	bool		_alphaTest( const CoordSPX& ofs );
-
-		virtual SizeSPX		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 
 		// Methods for components to access
 

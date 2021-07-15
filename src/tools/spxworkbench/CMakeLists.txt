@@ -355,8 +355,8 @@ add_executable(spxworkbench
 	../../baselibrary/widgets/panels/wg_panel.h
 	../../baselibrary/widgets/panels/wg_rootpanel.cpp 
 	../../baselibrary/widgets/panels/wg_rootpanel.h
-#	../../baselibrary/widgets/panels/wg_scrollpanel.cpp
-#	../../baselibrary/widgets/panels/wg_scrollpanel.h
+	../../baselibrary/widgets/panels/wg_scrollpanel.cpp
+	../../baselibrary/widgets/panels/wg_scrollpanel.h
 	../../baselibrary/widgets/panels/wg_splitpanel.cpp
 	../../baselibrary/widgets/panels/wg_splitpanel.h
 	../../baselibrary/widgets/panels/wg_stackpanel.cpp

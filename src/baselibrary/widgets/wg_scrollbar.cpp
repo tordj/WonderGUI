@@ -36,14 +36,14 @@ namespace wg
 	const TypeInfo Scrollbar::TYPEINFO = { "Scrollbar", &Widget::TYPEINFO };
 
 
-	//____ Scrollbar() ________________________________________________________
+	//____ Constructor ________________________________________________________
 
 	Scrollbar::Scrollbar() : scrollbar(this,this,Axis::Y)
 	{
 
 	}
 
-	//____ ~Scrollbar() _______________________________________________________
+	//____ Destructor _________________________________________________________
 
 	Scrollbar::~Scrollbar( void )
 	{

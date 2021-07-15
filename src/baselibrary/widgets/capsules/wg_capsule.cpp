@@ -141,10 +141,10 @@ namespace wg
 
 	void Capsule::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
 	{
-		if( !skin.isEmpty() )
+		if( !skin.isEmpty() && OO(skin)._isOpaque() )
 			container.add(RectSPX(geo, clip));
 		else if( slot._widget() )
-			OO(slot._widget())->_collectPatches(container, geo, clip);
+			OO(slot._widget())->_collectPatches(container, _contentRect(geo), clip);
 	}
 
 	//____ _maskPatches() ________________________________________________________
@@ -156,7 +156,7 @@ namespace wg
 			if(OO(skin)._isOpaque( clip, geo.size(), m_scale, m_state ) )
 				patches.sub(RectSPX(geo, clip));
 			else if( slot._widget() )
-				OO(slot._widget())->_maskPatches(patches, OO(skin)._contentRect(geo, m_scale, m_state), clip, blendMode);
+				OO(slot._widget())->_maskPatches(patches, _contentRect(geo), clip, blendMode);
 		}
 		else if( slot._widget() )
 			OO( slot._widget())->_maskPatches( patches, geo, clip, blendMode );
