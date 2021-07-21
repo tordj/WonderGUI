@@ -105,21 +105,25 @@ namespace wg
 		spx scrollbarYwidth = scrollbarY._preferredSize(m_scale).w;
 		spx scrollbarXwidth = scrollbarX._preferredSize(m_scale).h;
 
-		bool bShowScrollbarY = false;
-		bool bShowScrollbarX = false;
+		bool bShowScrollbarY = scrollbarX.inWorkingOrder();
+		bool bShowScrollbarX = scrollbarY.inWorkingOrder();
 
-		bool bCanHaveScrollbarX = scrollbarX.inWorkingOrder() && (m_widthConstraint == SizeConstraint::None || m_widthConstraint == SizeConstraint::GreaterOrEqual);
-		bool bCanHaveScrollbarY = scrollbarY.inWorkingOrder() && (m_heightConstraint == SizeConstraint::None || m_heightConstraint == SizeConstraint::GreaterOrEqual);
+		if (bShowScrollbarY)
+			m_scrollbarYRegion = {	content.x + content.w - scrollbarYwidth, content.y, 
+									scrollbarYwidth, bShowScrollbarX ? content.h - scrollbarXwidth : content.h };
 
-		if (m_bAutohideScrollbarX == false  || (content.w < m_childCanvas.w && bCanHaveScrollbarX))
-			bShowScrollbarX = true;
+		if (bShowScrollbarX)
+			m_scrollbarXRegion = {	content.x, content.y + content.h - scrollbarXwidth, 
+									bShowScrollbarY ? content.w - scrollbarYwidth : content.w, scrollbarXwidth };
 
+		if (bShowScrollbarY && !m_bOverlayScrollbarY)
+			content.w -= scrollbarYwidth;
 
+		if (bShowScrollbarX && !m_bOverlayScrollbarX)
+			content.h -= scrollbarXwidth;
 
-
+		m_viewRegion = content;
 	}
-
-
 
 	void ScrollPanel::_childWindowCorrection()
 	{
