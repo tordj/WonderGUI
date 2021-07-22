@@ -18,6 +18,8 @@
 #include <wg_softgfxdevice.h>
 #include <wg_softsurfacefactory.h>
 
+#include <wg_stdtextmapper.h>
+
 #include <wg_rootpanel.h>
 #include <wg_lambdapanel.h>
 #include <wg_splitpanel.h>
@@ -239,6 +241,10 @@ int main ( int argc, char** argv )
 	pStyle->setColor(Color::Black);
 	Base::setDefaultStyle(pStyle);
 
+	auto pTextMapper = StdTextMapper::create();
+	pTextMapper->setLineWrap(true);
+
+	Base::setDefaultTextMapper(pTextMapper);
 
 	// 
 
@@ -377,6 +383,8 @@ int main ( int argc, char** argv )
 		pScrollPanel->scrollbarX.setSkins(pScrollbarBack, pDragbar, pLeftArrowButton, pRightArrowButton);
 		pScrollPanel->scrollbarY.setSkins(pScrollbarBack, pDragbar, pUpArrowButton, pDownArrowButton);
 
+		pScrollPanel->setAutohideScrollbars(true, true);
+		pScrollPanel->setSizeConstraints(SizeConstraint::Equal, SizeConstraint::GreaterOrEqual);
 
 		pBaseLambda->slots.pushBack(pScrollPanel, [](Widget* pWidget, Size parentSize) { return Rect(350, 200, 200, 200); });
 

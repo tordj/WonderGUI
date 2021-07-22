@@ -63,8 +63,7 @@ namespace wg
 
 		void			setPlacement(Placement placement);
 
-		void			setWidthConstraint(SizeConstraint rule, pts value = 0);
-		void			setHeightConstraint(SizeConstraint rule, pts value = 0);
+		bool			setSizeConstraints(SizeConstraint width, SizeConstraint height);
 
 		void			setAutohideScrollbars(bool scrollbarX, bool scrollbarY);
 		void			setOverlayScrollbars(bool scrollbarX, bool scrollbarY);
@@ -78,7 +77,7 @@ namespace wg
 
 		void			setScrollWheels(int wheelForX, int wheelForY);
 		void			setScrollWheelAxisShift(ModifierKeys axisShift);
-		void			setStealWheelFromDragbars(bool bPrevent);
+		void			setStealWheelFromScrollbars(bool bSteal);
 
 		//void			setDragCombo(MouseButton button, ModifierKeys modkeys); // NOT POSSIBLE YET, NEEDS TO BE ABLE TO INTERCEPT MESSAGES.
 
@@ -93,6 +92,8 @@ namespace wg
 
 		void		_updateCanvasSize();
 		void		_updateScrollbars();
+
+		SizeSPX		_calcCanvasSize( SizeSPX viewMinSize, SizeSPX viewMaxSize );
 
 
 		// Overloaded from Widget
@@ -161,9 +162,7 @@ namespace wg
 
 		Placement		m_smallChildPlacement = Placement::NorthWest;	// Child placement within view if smaller than view.
 		SizeConstraint	m_widthConstraint = SizeConstraint::None;		// Constraint of child width.
-		pts				m_widthConstraintValue = 0;						// 0 = width of ScrollPanel viewRegion.
 		SizeConstraint	m_heightConstraint = SizeConstraint::None;		// Constraint of child height.
-		pts				m_heightConstraintValue = 0;						//  0 = height of ScrollPanel viewRegion.
 
 		bool			m_bAutohideScrollbarX = true;
 		bool			m_bAutohideScrollbarY = true;
@@ -181,7 +180,7 @@ namespace wg
 		int				m_wheelForScrollX = 2;		// What wheel should be used for horizontal scrolling. (0=none)
 		int				m_wheelForScrollY = 1;		// What wheel should be used for vertical scrolling. (0=none)
 		ModifierKeys	m_wheelAxisShiftCombo = ModifierKeys::MODKEY_ALT;
-		bool			m_bStealWheelFromDragbars = false;
+		bool			m_bStealWheelFromScrollbars = false;
 
 
 //		bool		m_bOverlayScrollbars;

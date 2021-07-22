@@ -60,6 +60,13 @@ namespace wg
 	}
 
 	//____ setPlacement() _____________________________________________________
+	/**
+		@brief Set placement of child smaller than view.
+
+		Sets the placement of a child that is smaller than the view of the ScrollPanel.
+		
+		Default is NorthWest.
+	*/
 
 	void ScrollPanel::setPlacement(Placement placement)
 	{
@@ -73,18 +80,58 @@ namespace wg
 
 	}
 
-	void ScrollPanel::setWidthConstraint(SizeConstraint rule, pts value)
+	//____ setSizeConstraints() _______________________________________________
+	/**
+		@brief Set constraints on child widgets size, relative view.
+
+		Constrains the width and/or height of the child widget to never be larger or
+		smaller (or both) than that of the view.
+
+		@param width	Constraint rule to apply to width of child.
+		@param height	Constraint rule to applyu to height of child.
+
+		@return TRUE if set, FALSE if constraints would break rule below.
+
+		Only one of the two parameters can be set to any of the SizeConstraint rules
+		(None, Equal, LessOrEqual or GreaterOrEqual), the other parameter must be set
+		to either None or GreaterOrEqual, e.g. only the width or height can be restricted
+		to the view, not both.
+
+		This is how the different values set to the width parameter would affect the childs width:
+
+		- None: Childs width is not restricted in any way.
+		- Equal: Childs width is set to exactly that of the view.
+		- LessOrEqual: Childs width is allowed to be smaller but not higher than that of the view.
+		- GreaterOrEqual: Childs width is at least that of the view.
+
+	*/
+
+	bool ScrollPanel::setSizeConstraints(SizeConstraint width, SizeConstraint height)
 	{
+		if ((width == SizeConstraint::Equal || width == SizeConstraint::LessOrEqual)
+			&& (height == SizeConstraint::Equal || height == SizeConstraint::LessOrEqual))
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Only one dimension can be constrained to Equal/LessOrEqual", this, TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
 
-	}
-
-	void ScrollPanel::setHeightConstraint(SizeConstraint rule, pts value)
-	{
-
+		m_widthConstraint = width;
+		m_heightConstraint = height;
+		true;
 	}
 
 	//____ setAutohideScrollbars() ____________________________________________
+	/**
+		@brief Set scrollbars to autohide when content fits without scrolling.
 
+		Setting a scrollbar to autohide will make it disappear when content fits without
+		scrolling. If scrollbar is not set to autohide, it will change to state disabled,
+		but not disappear.
+
+		@param scrollbarX	Set to TRUE to make horizontal scrollbar disappear when not needed.
+		@param scrollbarY	Set to TRUE to make vertical scrollbar disappear when not needed.
+
+	*/
 	void ScrollPanel::setAutohideScrollbars(bool scrollbarX, bool scrollbarY)
 	{
 		if (scrollbarX == m_bAutohideScrollbarX && scrollbarY == m_bAutohideScrollbarY)
@@ -92,11 +139,23 @@ namespace wg
 
 		m_bAutohideScrollbarX = scrollbarX;
 		m_bAutohideScrollbarY = scrollbarY;
+		_updateCanvasSize();
 		_updateRegions();
+		_requestRender();
 	}
 
 	//____ setOverlayScrollbars() _____________________________________________
+	/**
+		@brief Set scrollbars to appear inside view instead of outside.
 
+		Setting a scrollbar to overlay-mode will make it appear inside the content
+		view instead of next to it. Thus the content view will not shrink/grow when the
+		scrollbar appears/disappears, instead the scrollbar will cover part of the content.
+
+		@param scrollbarX	Set to TRUE to make horizontal scrollbar appear inside content view.
+		@param scrollbarY	Set to TRUE to make vertical scrollbar appear inside content view.
+
+	*/
 	void ScrollPanel::setOverlayScrollbars(bool scrollbarX, bool scrollbarY)
 	{
 		if (scrollbarX == m_bOverlayScrollbarX && scrollbarY == m_bOverlayScrollbarY)
@@ -104,16 +163,42 @@ namespace wg
 
 		m_bOverlayScrollbarX = scrollbarX;
 		m_bOverlayScrollbarY = scrollbarY;
+		_updateCanvasSize();
 		_updateRegions();
+
 	}
 
 	//____ setStepSize() ______________________________________________________
+	/**
+	*	@brief Set how much view will scroll when scrollbar button is pressed.
+	* 
+	*	StepSize determines how much the view content will scroll when a scrollbar
+	*	button is pressed.
+	* 
+	*	@param stepSize		Number of points to scroll the content when scrollbar button is pressed.
+	* 
+	*	This method sets the same stepSize for horizontal and vertical movement.
+	* 
+	*	Default value is 8.
+	*/
 
 	void ScrollPanel::setStepSize(pts stepSize)
 	{
 		m_stepSizeX = stepSize;
 		m_stepSizeY = stepSize;
 	}
+
+	/**
+	*	@brief Set how much view will scroll when scrollbar button is pressed.
+	*
+	*	StepSize determines how much the view content will scroll when a scrollbar
+	*	button is pressed.
+	*
+	*	@param x		Number of points to scroll the content horizontally when scrollbar button is pressed.
+	*	@param y		Number of points to scroll the content vertically when scrollbar button is pressed.
+	*
+	*	Default value is 8 for both.
+	*/
 
 	void ScrollPanel::setStepSize(pts x, pts y)
 	{
@@ -122,12 +207,40 @@ namespace wg
 	}
 
 	//____ setWheelStepSize() _________________________________________________
+	/**
+	*	@brief Set how much view will scroll when mouse wheel is rolled.
+	*
+	*	WheelStepSize determines how much the view content will scroll for each 'click' the
+	*	mouse wheel is rolled.
+	*
+	*	@param stepSize		Number of points to scroll the content when mouse wheel is rolled.
+	*
+	*	This method sets the same wheelStepSize for horizontal and vertical scrolling.
+	*
+	*	Default value is 24 (three times default value of button stepSize).
+	*/
 
 	void ScrollPanel::setWheelStepSize(pts stepSize)
 	{
 		m_wheelStepSizeX = stepSize;
 		m_wheelStepSizeY = stepSize;
 	}
+
+	/**
+	*	@brief Set how much view will scroll when mouse wheel is rolled.
+	*
+	*	WheelStepSize determines how much the view content will scroll for each 'click' the
+	*	mouse wheel is rolled. This can be controlled individually for horizontal and vertical
+	*   scrolling.
+	*
+	*	@param x		Number of points to scroll the content horizontally when mouse wheel is rolled.
+	*	@param y		Number of points to scroll the content vertically when mouse wheel is rolled.
+	*
+	*	Default value is 24 for both (three times default value of button stepSize).
+	* 
+	*	Use setScrollWheels() to determine what wheel scrolls in what direction. 
+	*	Also see setScrollWheelAxisShift().
+	*/
 
 	void ScrollPanel::setWheelStepSize(pts x, pts y)
 	{
@@ -137,11 +250,42 @@ namespace wg
 
 	//____ setPageOverlap() ___________________________________________________
 
+	/**
+	*	@brief Set how much of previous content should remain visible when jumping pages.
+	* 
+	*	A scrollbar can be made to jump a 'page' when pressing above or below the bar itself.
+	*
+	*	When jumping a page it is often desirable to keep a small section of the previous content
+	*	visible, like the last line of displayed text. PageOverlap controls the amount of content
+	*	that should be kept visible.
+	* 
+	*	@param overlap	Set the overlapping of pages in points, for both horizontal and vertical page jumps.
+	* 
+	*	Default value is 8.
+	* 
+	*/
+
 	void ScrollPanel::setPageOverlap(pts overlap)
 	{
 		m_pageOverlapX = overlap;
 		m_pageOverlapY = overlap;
 	}
+
+	/**
+	*	@brief Set how much of previous content should remain visible when jumping pages.
+	*
+	*	A scrollbar can be made to jump a 'page' when pressing above or below the bar itself.
+	*
+	*	When jumping a page it is often desirable to keep a small section of the previous content
+	*	visible, like the last line of displayed text. PageOverlap controls the amount of content
+	*	that should be kept visible.
+	*
+	*	@param x	Set the overlapping of pages in points for horizontal page jumps.
+	*	@param y	Set the overlapping of pages in points for vertical page jumps.
+	*
+	*	Default value is 8 for both.
+	*
+	*/
 
 	void ScrollPanel::setPageOverlap(pts x, pts y)
 	{
@@ -150,7 +294,28 @@ namespace wg
 	}
 
 	//____ setScrollWheels() __________________________________________________
-
+	/**
+	*	@brief Set which scroll wheels controls horizontal and vertical scrolling respectively.
+	* 
+	*	@param wheelForX	Scroll wheel to control horizontal scrolling.
+	*	@param wheelForY	Scroll wheel to control vertical scrolling.
+	*
+	*	The scroll wheels are enumerated starting with 1, which then refers to the only scroll wheel
+	*	of a normal mouse and 2 referring to any second scroll wheel on the mouse etc.
+	* 
+	*	Any parameter can also be set to 0 to disable scrolling with scroll wheel in that direction.
+	*	
+	*	Default values are 2 for X and 1 for Y, making the first scroll wheel control vertical
+	*	scrolling and any second scroll wheel control horizontal scrolling.
+	* 
+	*	Note that setScrollWheelAxisShift() can be used to set a modifier key to invert what wheel
+	*	is used for what axis, thus enable scrolling in both directions using only one mouse wheel.
+	* 
+	*	Also note that this setting doesn't affect how the scrollbars (if any) reacts to scroll wheels.
+	*	Hovering over a scrollbar and rolling wheel 1 will move the scrollbar forward/backward independent
+	*	of the scrollbars orientation. To disable this behavior you can call setStealWheelFromScrollbars().
+	* 
+	*/
 	void ScrollPanel::setScrollWheels(int wheelForX, int wheelForY)
 	{
 		m_wheelForScrollX = wheelForX;
@@ -158,17 +323,40 @@ namespace wg
 	}
 
 	//____ setScrollWheelAxisShift() __________________________________________
-
+	/**
+	*	@brief Set modifier keys used to shift axis scrolled by mouse wheel.
+	* 
+	*	Set a (combination of) modifier key(s) that, when pressed, swaps axis of
+	*	a scroll wheel. Making it scroll the view content horizontally instead of
+	*	vertically or vice versa.
+	* 
+	*	@param axisShift	Modifier keys to shift axis of mouse wheel.
+	* 
+	*	Default axisShift modifier key is ALT. To disable this feature, set axisShift to MODKEY_NONE.
+	*/
 	void ScrollPanel::setScrollWheelAxisShift(ModifierKeys axisShift)
 	{
 		m_wheelAxisShiftCombo = axisShift;
 	}
 
-	//____ setStealWheelFromDragbars() ________________________________________
+	//____ setStealWheelFromScrollbars() ________________________________________
+	/**
+	*	@brief Set scroll wheel to follow ScrollPanels settings when hovering a scrollbar.
+	* 
+	*	The scrollbars have their own way of handling the scroll wheel. Hovering over a scrollbar
+	*	and rolling the mouse wheel will make the scrollbar move forward or backward independently
+	*	of if it is a horizontal or vertical scrollbar.
+	* 
+	*	In some cases that is not what you need, instead you want the scroll wheel to behave the same
+	*	way no matter if it is hovering a scrollbar or not. This method lets you take control over that.
+	* 
+	*	@param bSteal	Set to TRUE to override scrollbars scroll wheel behavior with that of ScrollPanel.
+	* 
+	*/
 
-	void ScrollPanel::setStealWheelFromDragbars(bool bPrevent)
+	void ScrollPanel::setStealWheelFromScrollbars(bool bSteal)
 	{
-		m_bStealWheelFromDragbars = bPrevent;
+		m_bStealWheelFromScrollbars = bSteal;
 	}
 
 
@@ -179,26 +367,41 @@ namespace wg
 		auto content = _contentRect();
 
 		spx scrollbarYwidth = scrollbarY._preferredSize(m_scale).w;
-		spx scrollbarXwidth = scrollbarX._preferredSize(m_scale).h;
+		spx scrollbarXheight = scrollbarX._preferredSize(m_scale).h;
 
-		bool bShowScrollbarY = scrollbarX.inWorkingOrder();
-		bool bShowScrollbarX = scrollbarY.inWorkingOrder();
+		bool bShowScrollbarY = scrollbarX.inWorkingOrder() && (!m_bAutohideScrollbarY || content.h < m_childCanvas.h);
+		bool bShowScrollbarX = scrollbarY.inWorkingOrder() && (!m_bAutohideScrollbarX || content.w < m_childCanvas.w);
+
+
+		if (bShowScrollbarY && !m_bOverlayScrollbarY && !bShowScrollbarX)
+			bShowScrollbarX = (content.w - scrollbarYwidth < m_childCanvas.w);
+
+		if (bShowScrollbarX && !m_bOverlayScrollbarX && !bShowScrollbarY)
+			bShowScrollbarY = (content.h - scrollbarXheight < m_childCanvas.h);
+
 
 		if (bShowScrollbarY)
 			m_scrollbarYRegion = {	content.x + content.w - scrollbarYwidth, content.y, 
-									scrollbarYwidth, bShowScrollbarX ? content.h - scrollbarXwidth : content.h };
+									scrollbarYwidth, bShowScrollbarX ? content.h - scrollbarXheight : content.h };
+		else
+			m_scrollbarYRegion.clear();
 
 		if (bShowScrollbarX)
-			m_scrollbarXRegion = {	content.x, content.y + content.h - scrollbarXwidth, 
-									bShowScrollbarY ? content.w - scrollbarYwidth : content.w, scrollbarXwidth };
+			m_scrollbarXRegion = {	content.x, content.y + content.h - scrollbarXheight, 
+									bShowScrollbarY ? content.w - scrollbarYwidth : content.w, scrollbarXheight };
+		else
+			m_scrollbarXRegion.clear();
+
 
 		if (bShowScrollbarY && !m_bOverlayScrollbarY)
 			content.w -= scrollbarYwidth;
 
 		if (bShowScrollbarX && !m_bOverlayScrollbarX)
-			content.h -= scrollbarXwidth;
+			content.h -= scrollbarXheight;
 
 		m_viewRegion = content;
+
+		_requestRender();
 	}
 
 	//____ _childWindowCorrection() ___________________________________________
@@ -295,14 +498,43 @@ namespace wg
 		auto pWidget = OO(slot)._widget();
 		if (pWidget)
 		{
-			auto size = pWidget->_preferredSize(m_scale);
+			// Calc viewMaxSize & viewMinSize
+
+			SizeSPX viewMaxSize = _contentRect().size();
+			SizeSPX viewMinSize;
+
+			if (scrollbarX.inWorkingOrder() && !m_bOverlayScrollbarX)
+			{
+				spx scrollbarXheight = scrollbarX._preferredSize(m_scale).h;
+				if (m_bAutohideScrollbarX)
+					viewMinSize.h = viewMaxSize.h - scrollbarXheight;
+				else
+				{
+					viewMaxSize.h = viewMaxSize.h - scrollbarXheight;
+					viewMinSize.h = viewMaxSize.h;
+				}
+			}
+
+			if (scrollbarY.inWorkingOrder() && !m_bOverlayScrollbarY)
+			{
+				spx scrollbarYwidth = scrollbarY._preferredSize(m_scale).w;
+				if (m_bAutohideScrollbarY)
+					viewMinSize.w = viewMaxSize.w - scrollbarYwidth;
+				else
+				{
+					viewMaxSize.w= viewMaxSize.w - scrollbarYwidth;
+					viewMinSize.w = viewMaxSize.w;
+				}
+			}
+
+			//
+
+			auto size = _calcCanvasSize(viewMinSize, viewMaxSize);
 
 			if( size != m_childCanvas.size())
 			{
 				m_childCanvas.setSize(size);
-
 			}
-
 
 			if (pWidget->_size() != size || pWidget->scale() != m_scale)
 				pWidget->_resize(size, m_scale);
@@ -393,9 +625,9 @@ namespace wg
 	{
 		bool bX = false, bY = false;
 
-		// Give our dragbars the opportunity to process
+		// Give our scrollbars the opportunity to process
 
-		if (!(m_bStealWheelFromDragbars && pMsg->type() == MsgType::WheelRoll))
+		if (!(m_bStealWheelFromScrollbars && pMsg->type() == MsgType::WheelRoll))
 		{
 			if (scrollbarX.inWorkingOrder())
 				bX = scrollbarX._receive(pMsg);
@@ -404,12 +636,12 @@ namespace wg
 				bY = scrollbarY._receive(pMsg);
 		}
 
-		// Leave if processed by our dragbars.
+		// Leave if processed by our scrollbars.
 
 		if (bX || bY)
 			return;
 
-		// Process any messages not handled by our dragbars
+		// Process any messages not handled by our scrollbars
 
 		switch (pMsg->type())
 		{
@@ -420,7 +652,7 @@ namespace wg
 				int wheelX = m_wheelForScrollX;
 				int wheelY = m_wheelForScrollY;
 
-				if (m_wheelAxisShiftCombo == p->modKeys())
+				if (m_wheelAxisShiftCombo == p->modKeys() && m_wheelAxisShiftCombo != ModifierKeys::MODKEY_NONE)
 					std::swap(wheelX, wheelY);
 
 				spx movement = 0;
@@ -625,6 +857,7 @@ namespace wg
 	void ScrollPanel::_childRequestResize(StaticSlot* pSlot)
 	{
 		_updateCanvasSize();
+		_updateRegions();
 		_updateScrollbars();
 
 		_requestResize();
@@ -634,15 +867,51 @@ namespace wg
 
 	void ScrollPanel::_childRequestInView(StaticSlot* pSlot)
 	{
-		// Do nothing. Our child is always in view.
+		// Our only child is always in view as much as possible, so just pass it on like any
+		// normal container.
+
+		_requestInView( m_childWindow, m_childWindow);
 	}
 
 	void ScrollPanel::_childRequestInView(StaticSlot* pSlot, const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea)
 	{
-		if( m_childWindow.contains( niceToHaveArea + m_childCanvas.pos() ) )
-			return;
+		if (!m_childWindow.contains(niceToHaveArea + m_childCanvas.pos()))
+		{
+/*
+			RectSPX window = { m_viewPixOfs, m_elements[WINDOW].m_windowGeo.size() };
 
-		//TODO: Implement!!!
+			for (int i = 0; i < 2; i++)
+			{
+				WgRect inside = i == 0 ? niceToHaveArea : mustHaveArea;
+
+				int diffLeft = inside.x - window.x;
+				int diffRight = inside.right() - window.right();
+				int diffTop = inside.y - window.y;
+				int diffBottom = inside.bottom() - window.bottom();
+
+				if (diffLeft > 0 && diffRight > 0)
+					window.x += std::min(diffLeft, diffRight);
+				else if (diffLeft < 0 && diffRight < 0)
+					window.x += std::max(diffLeft, diffRight);
+
+				if (diffTop > 0 && diffBottom > 0)
+					window.y += std::min(diffTop, diffBottom);
+				else if (diffTop < 0 && diffBottom < 0)
+					window.y += std::max(diffTop, diffBottom);
+			}
+
+			if (window.pos() != m_viewPixOfs)
+				SetViewPixelOfs(window.x, window.y);
+
+			// Forward to any outer ScrollPanel
+
+			WgRect newMustHaveArea(mustHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo);
+			WgRect newNiceToHaveArea(niceToHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo);
+
+			_requestInView(newMustHaveArea, newNiceToHaveArea);
+
+*/
+		}
 	}
 
 	//____ _prevChild() _______________________________________________________
@@ -814,5 +1083,160 @@ namespace wg
 		else
 			return std::make_tuple(m_viewYOfs, m_viewYLen, m_canvasYLen);
 	}
+
+	//____ _calcCanvasSize() __________________________________________________
+
+	SizeSPX ScrollPanel::_calcCanvasSize(SizeSPX viewMinSize, SizeSPX viewMaxSize)
+	{
+		auto pWidget = OO(slot)._widget();
+		if (!pWidget)
+			return SizeSPX();
+
+		auto prefSize = pWidget->_preferredSize(m_scale);
+		auto size = prefSize;
+
+		auto viewSize = viewMaxSize;
+
+		Axis	mainAxis = Axis::X;
+
+		if (m_widthConstraint == SizeConstraint::Equal || m_widthConstraint == SizeConstraint::LessOrEqual)
+			mainAxis = Axis::Y;
+
+		if (mainAxis == Axis::Y)
+		{
+			// Calc canvas width/height from widthConstraint and a view with no scrollbars.
+
+			switch (m_widthConstraint)
+			{
+			case SizeConstraint::None:
+				break;
+			case SizeConstraint::Equal:
+				size.w = viewSize.w;
+				size.h = pWidget->_matchingHeight(size.w, m_scale);
+				break;
+			case SizeConstraint::LessOrEqual:
+				if (size.w > viewSize.w)
+				{
+					size.w = viewSize.w;
+					size.h = pWidget->_matchingHeight(size.w, m_scale);
+				}
+				break;
+			case SizeConstraint::GreaterOrEqual:
+				if (size.w < viewSize.w)
+				{
+					size.w = viewSize.w;
+					size.h = pWidget->_matchingHeight(size.w, m_scale);
+				}
+				break;
+			}
+
+			if (size.w > viewSize.w)
+				viewSize.h = viewMinSize.h;			// Horizontal scrollbar introduced.
+
+			if (size.h > viewSize.h && viewMinSize.w != viewMaxSize.w )
+			{
+				viewSize.w = viewMinSize.w;			// Vertical scrollbar introduced.
+
+				// Recalc size from constraints with new smaller width.
+
+				switch (m_widthConstraint)
+				{
+					case SizeConstraint::None:
+						break;
+					case SizeConstraint::Equal:
+						size.w = viewSize.w;
+						size.h = pWidget->_matchingHeight(size.w, m_scale);
+						break;
+					case SizeConstraint::LessOrEqual:
+						if (prefSize.w > viewSize.w)
+						{
+							size.w = viewSize.w;
+							size.h = pWidget->_matchingHeight(size.w, m_scale);
+						}
+						break;
+					case SizeConstraint::GreaterOrEqual:
+						if (prefSize.w < viewSize.w)
+						{
+							size.w = viewSize.w;
+							size.h = pWidget->_matchingHeight(size.w, m_scale);
+						}
+						break;
+				}
+			}
+
+			if (m_heightConstraint == SizeConstraint::GreaterOrEqual && size.h < viewSize.h)
+				size.h = viewSize.h;
+		}
+		else // (mainAxis == Axis::X)
+		{
+			// Calc canvas width/height from widthConstraint and a view with no scrollbars.
+
+			switch (m_heightConstraint)
+			{
+			case SizeConstraint::None:
+				break;
+			case SizeConstraint::Equal:
+				size.h = viewSize.h;
+				size.w = pWidget->_matchingWidth(size.h, m_scale);
+				break;
+			case SizeConstraint::LessOrEqual:
+				if (size.h > viewSize.h)
+				{
+					size.h = viewSize.h;
+					size.w = pWidget->_matchingWidth(size.h, m_scale);
+				}
+				break;
+			case SizeConstraint::GreaterOrEqual:
+				if (size.h < viewSize.h)
+				{
+					size.h = viewSize.h;
+					size.w = pWidget->_matchingWidth(size.h, m_scale);
+				}
+				break;
+			}
+
+			if (size.h > viewSize.h)
+				viewSize.w = viewMinSize.w;			// Vertical scrollbar introduced.
+
+			if (size.w > viewSize.w && viewMinSize.h != viewMaxSize.h)
+			{
+				viewSize.h = viewMinSize.h;			// Horizontal scrollbar introduced.
+
+				// Recalc size from constraints with new smaller width.
+
+				switch (m_heightConstraint)
+				{
+				case SizeConstraint::None:
+					break;
+				case SizeConstraint::Equal:
+					size.h = viewSize.h;
+					size.w = pWidget->_matchingWidth(size.h, m_scale);
+					break;
+				case SizeConstraint::LessOrEqual:
+					if (prefSize.h > viewSize.h)
+					{
+						size.h = viewSize.h;
+						size.w = pWidget->_matchingWidth(size.h, m_scale);
+					}
+					break;
+				case SizeConstraint::GreaterOrEqual:
+					if (prefSize.h < viewSize.h)
+					{
+						size.h = viewSize.h;
+						size.w = pWidget->_matchingWidth(size.h, m_scale);
+					}
+					break;
+				}
+			}
+
+			if (m_widthConstraint == SizeConstraint::GreaterOrEqual && size.w < viewSize.w)
+				size.w = viewSize.w;
+		}
+
+
+		return size;
+	}
+
+
 
 } // namespace wg
