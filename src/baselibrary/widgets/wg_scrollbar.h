@@ -104,9 +104,9 @@ namespace wg
 		spx		_scrollbarMove(const CScrollbar* pComponent, spx pos) override;
 		std::tuple<spx, spx, spx> _scrollbarOfsLenContent(const CScrollbar* pComponent) override;
 
-		pts				m_singleStep = 4;
-		pts				m_wheelRoll = 16;
-		pts				m_pageOverlap = 16;
+		pts				m_singleStep = 8;
+		pts				m_wheelRoll = 8*3;
+		pts				m_pageOverlap = 8;
 
 		pts				m_viewPos = 0;
 		pts				m_viewLen = 0;

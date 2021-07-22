@@ -225,7 +225,7 @@ int main(int argc, char** argv)
 
 #ifdef USE_OPEN_GL
 
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL );
+	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
 
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
@@ -249,7 +249,7 @@ int main(int argc, char** argv)
 
 
 #else
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
+	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
 #endif
 
 

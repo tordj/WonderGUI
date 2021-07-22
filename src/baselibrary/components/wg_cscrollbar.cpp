@@ -190,8 +190,8 @@ namespace wg
 
 	void CScrollbar::_pointerMoved(CoordSPX pointerPos)
 	{
-		RectSPX geo = _geo();
-		Part markedPart = _getMarkedPart(geo.size(), pointerPos);
+		RectSPX geo = _size();
+		Part markedPart = _getMarkedPart(geo, pointerPos);
 
 		if (m_pressedPart != Part::None && markedPart != m_pressedPart)
 			markedPart = Part::None;										// We can not mark anything else than what we have pressed.
@@ -217,8 +217,10 @@ namespace wg
 
 	//____ _receive() _________________________________________________________
 
-	void CScrollbar::_receive(Msg* _pMsg)
+	bool CScrollbar::_receive(Msg* _pMsg)
 	{
+		bool bProcessed = false;
+
 		switch (_pMsg->type())
 		{
 			case MsgType::MouseEnter:		// Continue to MouseMove
@@ -237,7 +239,7 @@ namespace wg
 					break;
 
 				m_pressedPart = m_markedPart;
-				RectSPX geo = _geo();
+				RectSPX geo = _size();
 				int scale = _scale();
 
 				switch (m_pressedPart)
@@ -278,6 +280,7 @@ namespace wg
 				_setPartState(m_pressedPart, m_states[m_pressedPart] + StateEnum::Pressed,
 					m_states[m_pressedPart], geo, scale);
 				_pMsg->swallow();
+				bProcessed = true;
 				break;
 			}
 			case MsgType::MouseRepeat:
@@ -291,7 +294,7 @@ namespace wg
 					break;
 				case Part::Back:
 				{
-					RectSPX geo = _geo();
+					RectSPX geo = _size();
 					int scale = _scale();
 
 					auto pMsg = static_cast<MousePressMsg*>(_pMsg);
@@ -318,6 +321,7 @@ namespace wg
 				}
 
 				_pMsg->swallow();
+				bProcessed = true;
 				break;
 			}
 			case MsgType::MouseRelease:
@@ -325,7 +329,7 @@ namespace wg
 				if (m_pressedPart == Part::None)
 					break;
 
-				RectSPX geo = _geo();
+				RectSPX geo = _size();
 				int scale = _scale();
 
 				_setPartState(m_pressedPart, m_states[m_pressedPart] - StateEnum::Pressed,
@@ -338,6 +342,7 @@ namespace wg
 
 
 				_pMsg->swallow();
+				bProcessed = true;
 				break;
 			}
 			case MsgType::MouseDrag:
@@ -380,6 +385,7 @@ namespace wg
 					spx newViewOfs = (barOfs / float(barMaxOfs)) * (contentLen - viewLen);
 
 					m_pHolderInterface->_scrollbarMove(this, newViewOfs);
+					bProcessed = true;
 				}
 				break;
 			}
@@ -388,12 +394,16 @@ namespace wg
 				auto pMsg = static_cast<WheelRollMsg*>(_pMsg);
 				int dir = pMsg->distance().y;
 
-				if (dir != 0)
+				if (dir != 0 && m_markedPart != Part::None)
+				{
 					m_pHolderInterface->_scrollbarWheel(this, dir);
+					_pMsg->swallow();
+					bProcessed = true;
+				}
 				break;
 			}
 		}
-
+		return bProcessed;
 	}
 
 	//____ _setState() ________________________________________________________
@@ -548,6 +558,8 @@ namespace wg
 					return { canvas.x + canvas.w - nextButtonLen, canvas.y, nextButtonLen, canvas.h };
 				else
 					return { canvas.x, canvas.y + canvas.h - nextButtonLen, canvas.w, nextButtonLen };
+			default:
+				return RectSPX();
 		}
 	}
 
@@ -629,7 +641,7 @@ namespace wg
 	RectSPX CScrollbar::_dragbarArea(const RectSPX& availableArea, int scale, spx viewOfs, spx viewLen, spx contentLen) const
 	{
 		float fracLen = float(viewLen) / float(contentLen);
-		float fracOfs = float(viewOfs) / float(contentLen - viewLen);
+		float fracOfs = contentLen == viewLen ? 0 : float(viewOfs) / float(contentLen - viewLen);
 
 		spx maxLen = m_axis == Axis::X ? availableArea.w : availableArea.h;
 		spx minLen = m_axis == Axis::X ? m_skins[Part::Bar]->_preferredSize(scale).w : m_skins[Part::Bar]->_preferredSize(scale).h;

@@ -21,6 +21,7 @@
 #include <wg_rootpanel.h>
 #include <wg_lambdapanel.h>
 #include <wg_splitpanel.h>
+#include <wg_scrollpanel.h>
 
 #include <wg_popuplayer.h>
 #include <wg_designlayer.h>
@@ -114,7 +115,8 @@ int main ( int argc, char** argv )
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
 	int posX = 100, posY = 100, width = 640, height = 480;
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
+	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
+
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
 
@@ -122,7 +124,7 @@ int main ( int argc, char** argv )
 	// Init WonderGUI
 	//------------------------------------------------------
 
-
+	 
 	Base::init(nullptr);
 
 	Context_p pContext = Context::create();
@@ -222,8 +224,8 @@ int main ( int argc, char** argv )
 	auto pDragbar = BlockSkin::create(pBlocksSurface, { 1,39,8,8 }, {StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
 	auto pLeftArrowButton = BlockSkin::create(pBlocksSurface, { 1,1,17,17 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
 	auto pRightArrowButton = BlockSkin::create(pBlocksSurface, { 77,1,17,17 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
-	auto pUpArrowButton = BlockSkin::create(pBlocksSurface, { 1,17,17,17 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
-	auto pDownArrowButton = BlockSkin::create(pBlocksSurface, { 77,17,17,17 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
+	auto pUpArrowButton = BlockSkin::create(pBlocksSurface, { 1,20,17,17 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
+	auto pDownArrowButton = BlockSkin::create(pBlocksSurface, { 77,20,17,17 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, 2, Axis::X, 2);
 
 	// Load a font
 
@@ -282,7 +284,7 @@ int main ( int argc, char** argv )
 
 
 	//
-
+/*
 	auto pLabel = TextDisplay::create();
 
 	pLabel->skin = pSkin;
@@ -364,6 +366,30 @@ int main ( int argc, char** argv )
 	pValueDisplay->skin = pSkin;
 
 	pBaseLambda->slots.pushBack(pValueDisplay, [](Widget* pWidget, Size parentSize) { return Rect(350, 120, 150, 50); });
+*/
+	//
+
+	{
+		auto pScrollPanel = ScrollPanel::create();
+
+		pScrollPanel->skin = StaticColorSkin::create(Color::MediumAquamarine);
+
+		pScrollPanel->scrollbarX.setSkins(pScrollbarBack, pDragbar, pLeftArrowButton, pRightArrowButton);
+		pScrollPanel->scrollbarY.setSkins(pScrollbarBack, pDragbar, pUpArrowButton, pDownArrowButton);
+
+
+		pBaseLambda->slots.pushBack(pScrollPanel, [](Widget* pWidget, Size parentSize) { return Rect(350, 200, 200, 200); });
+
+		auto pTextEditor = TextEditor::create();
+		pTextEditor->text.set("EDITABLE TEXT WITH A LONG LINE");
+		pTextEditor->skin = pSkin;
+
+		pScrollPanel->slot = pTextEditor;
+	}
+	
+
+
+
 
 
 	//------------------------------------------------------
@@ -407,9 +433,9 @@ int main ( int argc, char** argv )
 
 	pFiller = nullptr;
 	pFiller2 = nullptr;
-	pLabel = nullptr;
-	pFpsDisplay = nullptr;
-	pButton = nullptr;
+//	pLabel = nullptr;
+//	pFpsDisplay = nullptr;
+//	pButton = nullptr;
 
 
 	// Exit WonderGUI

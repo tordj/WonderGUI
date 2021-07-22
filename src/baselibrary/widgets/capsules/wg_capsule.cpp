@@ -141,7 +141,7 @@ namespace wg
 
 	void Capsule::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
 	{
-		if( !skin.isEmpty() && OO(skin)._isOpaque() )
+		if( !skin.isEmpty() )
 			container.add(RectSPX(geo, clip));
 		else if( slot._widget() )
 			OO(slot._widget())->_collectPatches(container, _contentRect(geo), clip);

@@ -224,7 +224,7 @@ namespace wg
 
 		SizeSPX		scaleToFit(SizeSPX object, SizeSPX boundaries);
 
-		spx 		sizeFromPolicy( spx defaultSize, spx specifiedSize, SizeConstraint policy );
+		spx 		sizeFromConstraint( spx defaultSize, spx specifiedSize, SizeConstraint policy );
 
 		inline Axis dirToAxis( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Axis::Y : Axis::X; }
 

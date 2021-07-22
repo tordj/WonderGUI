@@ -84,12 +84,13 @@ namespace wg
 
 		SizeSPX		_preferredSize(int scale) const;
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale);
-		void		_receive(Msg* pMsg);
+		bool		_receive(Msg* pMsg);
 		void		_setState(State state);
 		void		_setAxis(Axis axis);
 		Axis		_axis() const { return m_axis; }
 		bool		_alphaTest(CoordSPX ofs, SizeSPX canvas, int markOpacity);
 		void		_update(spx newViewPos, spx oldViewPos, spx newViewLen, spx oldViewLen, spx newContentLen, spx oldContentLen );
+
 
 	protected:
 

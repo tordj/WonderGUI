@@ -69,10 +69,18 @@ namespace wg
 		void			setAutohideScrollbars(bool scrollbarX, bool scrollbarY);
 		void			setOverlayScrollbars(bool scrollbarX, bool scrollbarY);
 
+		void			setStepSize(pts stepSize);
+		void			setStepSize(pts x, pts y);
+		void			setWheelStepSize(pts stepSize);
+		void			setWheelStepSize(pts x, pts y);
+		void			setPageOverlap(pts overlap);
+		void			setPageOverlap(pts x, pts y);
 
+		void			setScrollWheels(int wheelForX, int wheelForY);
+		void			setScrollWheelAxisShift(ModifierKeys axisShift);
+		void			setStealWheelFromDragbars(bool bPrevent);
 
-
-
+		//void			setDragCombo(MouseButton button, ModifierKeys modkeys); // NOT POSSIBLE YET, NEEDS TO BE ABLE TO INTERCEPT MESSAGES.
 
 	protected:
 		ScrollPanel();
@@ -82,6 +90,10 @@ namespace wg
 		void		_updateRegions();
 
 		void		_childWindowCorrection();
+
+		void		_updateCanvasSize();
+		void		_updateScrollbars();
+
 
 		// Overloaded from Widget
 
@@ -124,6 +136,14 @@ namespace wg
 		void		_releaseChild(StaticSlot * pSlot) override;
 		void		_replaceChild(StaticSlot * pSlot, Widget * pWidget) override;
 
+		//
+
+		CoordSPX		_componentPos(const GeoComponent* pComponent) const override;
+		SizeSPX			_componentSize(const GeoComponent* pComponent) const override;
+		RectSPX			_componentGeo(const GeoComponent* pComponent) const override;
+
+
+
 		// Needed for CScrollbar
 
 		void	_scrollbarStep(const CScrollbar* pComponent, int dir) override;
@@ -151,8 +171,19 @@ namespace wg
 		bool			m_bOverlayScrollbarX = false;
 		bool			m_bOverlayScrollbarY = false;
 
+		spx				m_viewXOfs, m_viewXLen, m_canvasXLen;
+		spx				m_viewYOfs, m_viewYLen, m_canvasYLen;
 
-//		int			m_wheelForScroll;								// What wheel should be used for scrolling. (0=none)
+		pts				m_stepSizeX = 8, m_stepSizeY = 8;
+		pts				m_wheelStepSizeX = 8*3, m_wheelStepSizeY = 8*3;
+		pts				m_pageOverlapX = 8, m_pageOverlapY = 8;
+
+		int				m_wheelForScrollX = 2;		// What wheel should be used for horizontal scrolling. (0=none)
+		int				m_wheelForScrollY = 1;		// What wheel should be used for vertical scrolling. (0=none)
+		ModifierKeys	m_wheelAxisShiftCombo = ModifierKeys::MODKEY_ALT;
+		bool			m_bStealWheelFromDragbars = false;
+
+
 //		bool		m_bOverlayScrollbars;
 
 

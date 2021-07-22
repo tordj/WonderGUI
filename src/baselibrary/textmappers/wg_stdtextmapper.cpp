@@ -1701,7 +1701,6 @@ namespace wg
 
 		while( true )
 		{
-
 			if( pChars->styleHandle() != hCharStyle )
 			{
 
@@ -1734,7 +1733,6 @@ namespace wg
 
 				hCharStyle = pChars->styleHandle();
 			}
-
 
 			// TODO: Include handling of special characters
 			// TODO: Support sub/superscript.
@@ -2036,6 +2034,8 @@ namespace wg
 					pFont->setSize(attr.size);
 					pPrevGlyph = 0;								// No kerning against across different fonts or characters of different size.
 				}
+
+				hStyle = pChar->styleHandle();
 			}
 
 			// Forward distance with the glyph
@@ -2081,6 +2081,9 @@ namespace wg
 					}
 				}
 			}
+
+			if (pChar->isEndOfLine())
+				return int(pChar - pTextBegin);		// We have passed the end of the line, probably in lines cursor-margin.
 
 			pPrevGlyph = pGlyph;
 			pChar++;
