@@ -19,13 +19,19 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
+/*
+	TODO: Support kerning.
+	TODO: Support multiple font-files and surfaces.
+	TODO: Support multiple sizes?
+	TODO: Support stretch-blitting?
+*/
 
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
 #include <wg_bitmapfont.h>
 #include <wg_texttool.h>
+#include <wg_gridwalker.h>
 
 namespace wg
 {
@@ -33,7 +39,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	BitmapFont::BitmapFont( Surface * pSurf, char * pGlyphSpec )
+	BitmapFont::BitmapFont(Surface* pSurf, char* pGlyphSpec)
 	{
 		m_nKerningGlyphs= 0;
 		m_pKerningTable = 0;
@@ -41,7 +47,6 @@ namespace wg
 		m_nGlyphs		= 0;
 		m_bMonospace	= true;
 		m_bMonochrome	= true;
-		m_avgAdvance	= 0;
 		m_maxAdvance	= 0;
 		m_spaceAdvance	= 0;
 		m_lineGap		= 0;
@@ -49,34 +54,10 @@ namespace wg
 		m_maxDescend	= 0;
 		m_size			= 0;
 
-
 		for( int i = 0 ; i < 256 ; i++ )
-			m_glyphTab[i] = 0;
+			m_glyphTab[i] = nullptr;
 
-		// Insert the glyphs
-		insertGlyphs(pSurf, pGlyphSpec);
-	/*
-		// Create an underline specification from the '_' character as default.
-		// It should be possible to specify something different in the spec file later on...
-
-		const Glyph* pUnder = getGlyph('_', 0);
-
-		m_underline.pSurf = pUnder->pSurf;
-		m_underline.rect = pUnder->rect;
-		m_underline.bearingX = pUnder->bearingX;
-		m_underline.bearingY = pUnder->bearingY;
-
-		if( pUnder->rect.w > 2 )
-		{
-			m_underline.leftBorder = 1;
-			m_underline.rightBorder = 1;
-		}
-		else
-		{
-			m_underline.leftBorder = 0;
-			m_underline.rightBorder = 0;
-		}
-	*/
+		_insertGlyphs(pSurf, pGlyphSpec);
 	}
 
 
@@ -138,7 +119,7 @@ namespace wg
 	//____ kerning() _________________________________________________________
 
 
-	inline MU BitmapFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
+	inline spx BitmapFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
 		if( !m_pKerningTable )
 			return 0;
@@ -152,14 +133,182 @@ namespace wg
 		if( indexLeft >= m_nKerningGlyphs || indexRight >= m_nKerningGlyphs )
 			return 0;
 
-		return MU::fromPX(m_pKerningTable[ (indexLeft * m_nKerningGlyphs) + indexRight ]);
+		return m_pKerningTable[ (indexLeft * m_nKerningGlyphs) + indexRight ]*64;
 	}
 
 
-	//____ insertGlyphs() _________________________________________________________
+	//____ _insertGlyphs() _________________________________________________________
 
-	void BitmapFont::insertGlyphs( Surface * pSurf, char* pGlyphSpec )
+	void BitmapFont::_insertGlyphs( Surface * pSurf, const char* pGlyphSpec )
 	{
+		// Get section pointers
+
+		const char* pInfoBeg = strstr(pGlyphSpec, "[INFO BEGIN]");
+		const char* pInfoEnd = strstr(pGlyphSpec, "[INFO END]");
+
+		const char* pCharmapBeg = strstr(pGlyphSpec, "[CHARMAP BEGIN]");
+		const char* pCharmapEnd = strstr(pGlyphSpec, "[CHARMAP END]");
+
+		const char* pKerningBeg = strstr(pGlyphSpec, "[KERNING BEGIN]");
+		const char* pKerningEnd = strstr(pGlyphSpec, "[KERNING END]");
+
+		if (!pInfoBeg || !pInfoEnd || !pCharmapBeg || !pCharmapEnd)
+		{
+			//TODO: Error handling
+
+			return;
+		}
+
+		// Advance pointers
+
+		pInfoBeg += 12;
+		pCharmapBeg += 15;
+
+		if (pKerningBeg)
+			pKerningBeg += 15;
+
+		// Read info
+
+		int	size = 0, whitespace = 0, monochrome = -1, baseline = 0, linegap = 0;
+
+		const char* pSize = strstr(pInfoBeg, "SIZE:");
+		const char* pWhitespace = strstr(pInfoBeg, "WHITESPACE:");
+		const char* pMonochrome = strstr(pInfoBeg, "MONOCHROME:");
+		const char* pBaseline = strstr(pInfoBeg, "BASELINE:");
+		const char* pLineGap = strstr(pInfoBeg, "LINEGAP:");
+
+		if (pSize && pSize < pInfoEnd)
+			size = strtol(pSize + 5, nullptr, 10);
+
+		if (pWhitespace && pWhitespace < pInfoEnd)
+			whitespace = strtol(pWhitespace + 11, nullptr, 10);
+
+		if(pMonochrome && pMonochrome < pInfoEnd)
+			monochrome = strtol(pMonochrome + 11, nullptr, 10);
+
+		if (pBaseline && pBaseline < pInfoEnd)
+			baseline = strtol(pBaseline + 9, nullptr, 10);
+
+		if (pLineGap && pLineGap < pInfoEnd)
+			linegap = strtol(pLineGap + 8, nullptr, 10);
+
+
+		// Read charmap and surface-grid
+
+		int	maxAdvance = 0;
+		int maxDescend = 0;
+		int firstAdvance = -1;
+		bool bMonospace = true;
+
+		const char* pChar = pCharmapBeg;
+		while ((*pChar == 10 || *pChar == 13) && pChar < pCharmapEnd)
+			TextTool::readChar(pChar);
+
+
+		PixelBuffer pixelBuffer = pSurf->allocPixelBuffer();
+		pSurf->pushPixels(pixelBuffer);
+
+		GridWalker	gw(pixelBuffer);
+
+		if (!gw.firstLine())
+		{
+			//TODO: Error handling!
+		}
+
+		bool bNewLine = false;
+		while (pChar < pCharmapEnd)
+		{
+			uint16_t ch = TextTool::readChar(pChar);
+
+			if (ch == '3')
+			{
+				int dummy = 0;
+			}
+
+			if (ch == 10 || ch == 13)
+				bNewLine = true;
+			else
+			{
+				RectI r;
+				if (bNewLine)
+				{
+					if (gw.nextLine() == false)
+					{
+						//TODO: Error handling!
+					}
+
+					r = gw.firstCell();
+					bNewLine = false;
+				}
+				else
+					r = gw.nextCell();
+
+				if (!r.isEmpty())
+				{
+					int tab = ch / 256;
+
+					if (m_glyphTab[tab] == nullptr)
+					{
+						m_glyphTab[tab] = new MyGlyph[256];
+						for (int i = 0; i < 256; i++)
+						{
+							m_glyphTab[tab][i] = MyGlyph();
+						}
+					}
+					ch &= 0xff;
+
+					if (!m_glyphTab[tab][ch].m_src.pSurface)
+					{
+						m_glyphTab[tab][ch] = MyGlyph(r.w, 0, -baseline, m_nGlyphs, this, pSurf, r*64);
+
+						if (firstAdvance == -1)
+							firstAdvance = r.w;
+
+						if (r.w != firstAdvance)
+							bMonospace = false;
+
+						if (r.w > maxAdvance)
+							maxAdvance = r.w;
+
+						if (r.h - baseline > maxDescend)
+							maxDescend = r.h - baseline;
+
+						m_nGlyphs++;
+					}
+				}
+			}
+		}
+
+		pSurf->freePixelBuffer(pixelBuffer);
+
+		// Fill in font data.
+
+		if (size > 0)
+			m_size = size * 64;
+
+		if (monochrome >= 0)
+			m_bMonochrome = monochrome;
+
+		if (linegap * 64 > m_lineGap)
+			m_lineGap = linegap * 64;
+
+		if (whitespace * 64 > m_spaceAdvance)
+			m_spaceAdvance = whitespace * 64;
+
+		if (bMonospace == false)
+			m_bMonospace = false;
+
+		if (maxAdvance * 64 > m_maxAdvance)
+			m_maxAdvance = maxAdvance * 54;
+
+		if (baseline * 64 > m_maxAscend)
+			m_maxAscend = baseline * 64;
+
+		if (maxDescend * 64 > m_maxDescend)
+			m_maxDescend = maxDescend * 64;
+		
+/*
+
 		// Multiply average spacing by glyph count so that we can continue to add widths..
 		m_avgAdvance *= m_nGlyphs;
 
@@ -322,6 +471,7 @@ namespace wg
 
 		// Divide back into average
 		m_avgAdvance /= m_nGlyphs;
+*/
 	}
 
 	//____ BitmapFont::MyGlyph constructor ______________________________________
@@ -331,13 +481,13 @@ namespace wg
 		m_src.pSurface = 0;
 	}
 
-	BitmapFont::MyGlyph::MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectI& rect )
-	: Glyph( MU::fromPX(advance), kerningIndex, pFont )
+	BitmapFont::MyGlyph::MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectSPX& rect )
+	: Glyph( advance*64, kerningIndex, pFont )
 	{
 			m_src.pSurface	= pSurf;
 			m_src.rect		= rect;
-			m_src.bearingX	= MU::fromPX(bearingX);
-			m_src.bearingY  = MU::fromPX(bearingY);
+			m_src.bearingX	= bearingX*64;
+			m_src.bearingY  = bearingY*64;
 	}
 
 } // namespace wg

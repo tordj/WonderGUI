@@ -34,8 +34,8 @@ add_executable(spxworkbench
 
     ../../baselibrary/base/wg_base.cpp
 	../../baselibrary/base/wg_base.h
-#	../../baselibrary/base/wg_bitmapfont.cpp
-#	../../baselibrary/base/wg_bitmapfont.h
+	../../baselibrary/base/wg_bitmapfont.cpp
+	../../baselibrary/base/wg_bitmapfont.h
 	../../baselibrary/base/wg_blob.cpp
 	../../baselibrary/base/wg_blob.h
 	../../baselibrary/base/wg_canvaslayers.cpp
@@ -80,6 +80,8 @@ add_executable(spxworkbench
 #	../../baselibrary/base/wg_gfxstreamwriter.h
 	../../baselibrary/base/wg_gradient.cpp
 	../../baselibrary/base/wg_gradient.h
+	../../baselibrary/base/wg_gridwalker.cpp
+	../../baselibrary/base/wg_gridwalker.h
 	../../baselibrary/base/wg_hostbridge.h
 	../../baselibrary/base/wg_inputhandler.cpp
 	../../baselibrary/base/wg_inputhandler.h
