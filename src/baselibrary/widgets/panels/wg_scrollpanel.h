@@ -78,6 +78,7 @@ namespace wg
 		void			setScrollWheels(int wheelForX, int wheelForY);
 		void			setScrollWheelAxisShift(ModifierKeys axisShift);
 		void			setStealWheelFromScrollbars(bool bSteal);
+		void			setAutoscroll(bool autoscrollX, bool autoscrollY);
 
 		//void			setDragCombo(MouseButton button, ModifierKeys modkeys); // NOT POSSIBLE YET, NEEDS TO BE ABLE TO INTERCEPT MESSAGES.
 
@@ -182,6 +183,8 @@ namespace wg
 		ModifierKeys	m_wheelAxisShiftCombo = ModifierKeys::MODKEY_ALT;
 		bool			m_bStealWheelFromScrollbars = false;
 
+		bool			m_bAutoscrollX = false;
+		bool			m_bAutoscrollY = false;
 
 //		bool		m_bOverlayScrollbars;
 

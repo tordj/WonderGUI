@@ -385,6 +385,7 @@ int main ( int argc, char** argv )
 
 		pScrollPanel->setAutohideScrollbars(true, true);
 		pScrollPanel->setSizeConstraints(SizeConstraint::Equal, SizeConstraint::GreaterOrEqual);
+		pScrollPanel->setAutoscroll(false, true);
 
 		pBaseLambda->slots.pushBack(pScrollPanel, [](Widget* pWidget, Size parentSize) { return Rect(350, 200, 200, 200); });
 

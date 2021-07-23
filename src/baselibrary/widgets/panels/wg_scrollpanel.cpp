@@ -19,6 +19,12 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+/*
+	TODO: Do not draw skin behind content if content is opaque.
+	TODO: Minimize amount and size of _requestRender/redraws in general.
+	TODO: Common flow through _updateRegions(), _updateCanvasSize() etc can probably be optimized, i.e. we are calling preferredSize on dragbars twice.
+*/
+
 
 #include <wg_scrollpanel.h>
 #include <wg_gfxdevice.h>
@@ -359,6 +365,31 @@ namespace wg
 		m_bStealWheelFromScrollbars = bSteal;
 	}
 
+	//____ setAutoscroll() ____________________________________________________
+	/**
+	*	@brief Set view to scroll when at end of content and new content is added.
+	* 
+	*	When Autoscroll is enabled, the view will automatically scroll to the end of
+	*	its content when new content is added, if it already was at the end.
+	* 
+	*	Example: If you have a ScrollPanel showing a TextDisplay to which new lines are
+	*	added continually (like a logfile), you might want the ScrollPanel to automatically
+	*	scroll down when new content is added if it already is showing the last line. Enabling
+	*   Autoscroll for the vertical dimension will make this happen.
+	* 
+	*	@param autoscrollX	Set to TRUE to enable horizontal autoscroll.
+	*	@param autoscrollY	Set to TRUE to enable vertical autoscroll.
+	* 	* 
+	*	Autoscroll is by default disabled for both dimensions.
+	*/
+
+	void ScrollPanel::setAutoscroll(bool autoscrollX, bool autoscrollY)
+	{
+		m_bAutoscrollX = autoscrollX;
+		m_bAutoscrollY = autoscrollY;
+	}
+
+
 
 	//____ _updateRegions() ___________________________________________________
 
@@ -448,7 +479,7 @@ namespace wg
 			if (m_childWindow.x < m_childCanvas.x)
 				m_childCanvas.x = m_childWindow.x;
 
-			if (m_childWindow.x + m_childWindow.w > m_childCanvas.x + m_childCanvas.w )
+			if ( m_childWindow.x + m_childWindow.w > m_childCanvas.x + m_childCanvas.w)
 				m_childCanvas.x = m_childWindow.x + m_childWindow.w - m_childCanvas.w;
 		}
 
@@ -858,8 +889,19 @@ namespace wg
 	{
 		_updateCanvasSize();
 		_updateRegions();
-		_updateScrollbars();
+		_childWindowCorrection();
 
+		// Handle autoscrolling, taking advantage of the fact that childCanvas & childWindow has been
+		// updated but not yet m_viewXOfs, m_viewXLen and m_canvasXLen.
+
+		if (m_bAutoscrollX && m_childWindow.w < m_childCanvas.w && m_viewXOfs + m_viewXLen == m_canvasXLen)
+			m_childCanvas.x = m_childWindow.x + m_childWindow.w - m_childCanvas.w;
+
+		if (m_bAutoscrollY && m_childWindow.h < m_childCanvas.h && m_viewYOfs + m_viewYLen == m_canvasYLen)
+			m_childCanvas.y = m_childWindow.y + m_childWindow.h - m_childCanvas.h;
+
+
+		_updateScrollbars();
 		_requestResize();
 	}
 
@@ -1008,6 +1050,8 @@ namespace wg
 			m_childCanvas.y -= movement;
 		}
 
+
+
 		_childWindowCorrection();
 		_updateScrollbars();
 		_requestRender();
@@ -1069,7 +1113,6 @@ namespace wg
 		_childWindowCorrection();
 		_updateScrollbars();
 		_requestRender();
-
 
 		return pos;
 	}
