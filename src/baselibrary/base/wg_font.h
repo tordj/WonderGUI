@@ -36,53 +36,22 @@ namespace wg
 
 
 
-	//____ GlyphBitmap _____________________________________________________________
+	//____ Glyph Info _________________________________________________________
 
-	struct GlyphBitmap
+	struct Glyph
 	{
-	public:
+		spx			advance;		// Set to zero if glyph do not exist.
+		uint32_t	kerningIndex;	//
+		Font*		pFont;			//
 
-		//.____ Properties _________________________________
+		// These below are not updated by getGlyphWithoutBitmap().
 
-		Surface_p 	pSurface;
+		Surface_p 	pSurface;		// Set to null if no bitmap for glyph could be found.
 		RectSPX		rect;
 		spx			bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
 		spx			bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
 	};
 
-
-	//____ Glyph ________________________________________________________________
-
-	class Glyph
-	{
-	friend class Font;
-
-	public:
-
-		//.____ Rendering ___________________________________________________________
-
-		virtual const GlyphBitmap * getBitmap() = 0;
-
-		//.____ Misc ___________________________________________________________
-
-		inline spx		advance() { return m_advance; }
-		inline int		kerningIndex() { return m_kerningIndex; }
-
-        //.____ Internal _______________________________________________________
-
-        inline Font *   _font() { return m_pFont; }
-
-	protected:
-		Glyph();
-		Glyph( spx advance, int _kerningIndex, Font * pFont );
-		virtual ~Glyph() {}
-
-		Font *			m_pFont;		// glyphset that this glyph belongs to
-		spx				m_advance;		// spacing to next glyph
-		int				m_kerningIndex;	// index into kerning table (BitmapFont) or glyph_index (FreeTypeFont)
-	};
-
-	typedef Glyph*	Glyph_p;
 
 	class Font;
 	typedef	StrongPtr<Font>		Font_p;
@@ -112,8 +81,9 @@ namespace wg
 
 		virtual bool			setSize( spx size ) = 0;	///@brief Set the font size for subsequent calls.
 		virtual spx				size() = 0;
-		virtual spx				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) = 0;
-		virtual Glyph_p			getGlyph( uint16_t chr ) = 0;
+		virtual void			getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) = 0;
+		virtual void			getGlyphWithBitmap(uint16_t chr, Glyph& glyph) = 0;
+		virtual spx				kerning( Glyph& leftGlyph, Glyph& rightGlyph ) = 0;
 
 		virtual spx				lineGap() = 0;					///@brief Returns distance between two lines of this font and current size.
 		virtual spx				whitespaceAdvance() = 0;		///@brief Returns width of a whitespace for current size.

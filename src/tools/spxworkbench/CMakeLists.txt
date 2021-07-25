@@ -126,6 +126,8 @@ add_executable(spxworkbench
 	../../baselibrary/base/wg_surface.h
 	../../baselibrary/base/wg_surfacefactory.cpp
 	../../baselibrary/base/wg_surfacefactory.h
+	../../baselibrary/base/wg_sysfont.cpp
+	../../baselibrary/base/wg_sysfont.h 
 	../../baselibrary/base/wg_textlink.cpp
 	../../baselibrary/base/wg_textlink.h
 	../../baselibrary/base/wg_textstyle.cpp

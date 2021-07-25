@@ -26,7 +26,6 @@
 #include <wg_container.h>
 #include <wg_sidecanvas.h>
 #include <wg_ctexteditor.h>
-#include <wg_ccanvas.h>
 #include <wg_cvaluedisplay.h>
 #include <wg_skin.h>
 
@@ -75,19 +74,6 @@ namespace wg
 	class OGeoComponent : public GeoComponent
 	{
 	public:
-	};
-
-	class OCCanvas : public CCanvas
-	{
-	public:
-		using CCanvas::_render;
-		using CCanvas::_alphaTest;
-
-		using CCanvas::_regenSurface;
-		using CCanvas::_calcPresentationArea;
-
-		using CCanvas::_setComponentSize;
-		using CCanvas::_preferredSize;
 	};
 
 	class OCStaticTextDisplay : public CStaticTextDisplay
@@ -224,9 +210,6 @@ namespace wg
 
 	inline OGeoComponent&		OO(GeoComponent& component) { return reinterpret_cast<OGeoComponent&>(component); }
 	inline const OGeoComponent&	OO(const GeoComponent& component) { return reinterpret_cast<const OGeoComponent&>(component); }
-
-	inline OCCanvas&			OO(CCanvas& component) { return reinterpret_cast<OCCanvas&>(component); }
-	inline const OCCanvas&		OO(const CCanvas& component) { return reinterpret_cast<const OCCanvas&>(component); }
 
 	inline OCStaticTextDisplay&	OO(CStaticTextDisplay& component) { return reinterpret_cast<OCStaticTextDisplay&>(component); }
 	inline const OCStaticTextDisplay&	OO(const CStaticTextDisplay& component) { return reinterpret_cast<const OCStaticTextDisplay&>(component); }
