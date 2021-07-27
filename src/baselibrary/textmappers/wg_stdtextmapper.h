@@ -159,7 +159,8 @@ namespace wg
 
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
 
-		inline Glyph_p	_getGlyph( Font * pFont, uint16_t charCode ) const;
+		inline void		_getGlyphWithoutBitmap( Font * pFont, uint16_t charCode, Glyph& glyph ) const;
+		inline void		_getGlyphWithBitmap(Font* pFont, uint16_t charCode, Glyph& glyph) const;
 
 		int				_countLines( Text * pText, const Char * pChars ) const;
 
@@ -221,22 +222,41 @@ namespace wg
 
 
 
-inline Glyph_p	StdTextMapper::_getGlyph( Font * pFont, uint16_t charCode ) const
+inline void StdTextMapper::_getGlyphWithoutBitmap( Font * pFont, uint16_t charCode, Glyph& glyph ) const
 {
 	if( charCode <= 32 )
 	{
-		return 0;
+		glyph.pFont = nullptr;
+		return;
 	}
 	else
 	{
-		Glyph_p p = pFont->getGlyph(charCode);
-		if( !p )
+		pFont->getGlyphWithoutBitmap(charCode,glyph);
+		if( !glyph.pFont )
 		{
-			p = pFont->getGlyph(0x25A1);			// White square character
-			if( !p )
-				p = pFont->getGlyph('?');
+			pFont->getGlyphWithoutBitmap(0x25A1,glyph);			// White square character
+			if( !glyph.pFont )
+				pFont->getGlyphWithoutBitmap('?',glyph);
 		}
-		return p;
+	}
+}
+
+inline void StdTextMapper::_getGlyphWithBitmap(Font* pFont, uint16_t charCode, Glyph& glyph) const
+{
+	if (charCode <= 32)
+	{
+		glyph.pFont = nullptr;
+		return;
+	}
+	else
+	{
+		pFont->getGlyphWithBitmap(charCode, glyph);
+		if (!glyph.pFont)
+		{
+			pFont->getGlyphWithBitmap(0x25A1, glyph);			// White square character
+			if (!glyph.pFont)
+				pFont->getGlyphWithBitmap('?', glyph);
+		}
 	}
 }
 

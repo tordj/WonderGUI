@@ -63,8 +63,9 @@ namespace wg
 
 		const RectSPX& clip = pDevice->clipBounds();
 
-		Glyph_p	pGlyph;
-		Glyph_p	pPrevGlyph = 0;
+		Glyph glyph[2];
+		Glyph* pGlyph = &glyph[0];
+		Glyph* pPrevGlyph = &glyph[1];
 
 		bool bRecalcColor = false;
 		bool bInSelection = false;
@@ -92,7 +93,7 @@ namespace wg
 
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph = 0;								// No kerning across different fonts or character of different size.
+					pPrevGlyph->pFont = nullptr;								// No kerning across different fonts or character of different size.
 				}
 
 				if (attr.color != localTint)
@@ -128,22 +129,20 @@ namespace wg
 			//
 
 			uint16_t charCode = pChar->code();
-			Glyph_p pGlyph = pFont->getGlyph(charCode);
+			pFont->getGlyphWithBitmap(charCode, * pGlyph);
 
 			if (pGlyph && charCode > 32)
 			{
-				if (pPrevGlyph)
-					pos.x += pFont->kerning(pPrevGlyph, pGlyph);
+				pos.x += pFont->kerning(* pPrevGlyph, * pGlyph);
 
-				const GlyphBitmap* pBitmap = pGlyph->getBitmap();
-				pDevice->setBlitSource(pBitmap->pSurface);
-				pDevice->blit(CoordSPX(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY), pBitmap->rect);
-				pos.x += pGlyph->advance();
+				pDevice->setBlitSource(pGlyph->pSurface);
+				pDevice->blit(CoordSPX(pos.x + pGlyph->bearingX, pos.y + pGlyph->bearingY), pGlyph->rect);
+				pos.x += pGlyph->advance;
 			}
 			else if (pChar->code() == 32)
 				pos.x += pFont->whitespaceAdvance();
 
-			pPrevGlyph = pGlyph;
+			std::swap( pPrevGlyph, pGlyph );
 			pChar++;
 		}
 

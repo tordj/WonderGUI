@@ -94,18 +94,31 @@ namespace wg
 		return 64;
 	}
 
-	//____ kerning() __________________________________________________________
+	//____ getGlyphWithoutBitmap() ____________________________________________
 
-	spx DummyFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
+	void DummyFont::getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph)
 	{
-		return 0;
+		glyph.pFont = nullptr;
+		glyph.advance = 0;
+		glyph.kerningIndex = 0;
 	}
 
-	//____ getGlyph() _________________________________________________________
+	//____ getGlyphWithBitmap() _______________________________________________
 
-	Glyph_p DummyFont::getGlyph( uint16_t chr )
+	void DummyFont::getGlyphWithBitmap(uint16_t chr, Glyph& glyph)
 	{
-		return nullptr;
+		glyph.pFont = nullptr;
+		glyph.advance = 0;
+		glyph.kerningIndex = 0;
+		glyph.pSurface = nullptr;
+	}
+
+
+	//____ kerning() __________________________________________________________
+
+	spx DummyFont::kerning( Glyph& leftGlyph, Glyph& rightGlyph )
+	{
+		return 0;
 	}
 
 	//____ lineGap() __________________________________________________________

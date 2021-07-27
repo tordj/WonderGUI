@@ -303,8 +303,9 @@ namespace wg
 
 		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
 
-		Glyph_p	pGlyph = nullptr;
-		Glyph_p	pPrevGlyph = nullptr;
+		Glyph glyph[2];
+		Glyph* pGlyph = &glyph[0];
+		Glyph* pPrevGlyph = &glyph[1];
 
 		spx maxAscend = 0;
 		spx maxDescend = 0;
@@ -328,7 +329,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
+					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
 				}
 
 				spx ascend = pFont->maxAscend();
@@ -349,14 +350,13 @@ namespace wg
 			}
 
 			uint16_t charCode = pChars->code();
-			Glyph_p pGlyph = pFont->getGlyph(charCode);
+			pFont->getGlyphWithoutBitmap(charCode, *pGlyph);
 
 			if (pGlyph && charCode > 32 )
 			{
-				if (pPrevGlyph)
-					width += pFont->kerning(pPrevGlyph, pGlyph);
+				width += pFont->kerning(* pPrevGlyph, * pGlyph);
 
-				width += pGlyph->advance();
+				width += pGlyph->advance;
 			}
 			else if (pChars->code() == 32)
 				width += spaceAdv;
@@ -409,6 +409,5 @@ namespace wg
 			pChars++;
 		}
 	}
-
 
 } // namespace wg

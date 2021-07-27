@@ -22,6 +22,9 @@
 /*
 	TODO: Support kerning.
 	TODO: Support multiple font-files and surfaces.
+	TODO: Support fallback-font.
+	TODO: Set advance on whitespace glyph from whitespace-advance.
+	TODO: Support charGap, just like lineGap, add onto all glyphs advance.
 	TODO: Support multiple sizes?
 	TODO: Support stretch-blitting?
 */
@@ -91,7 +94,7 @@ namespace wg
 		if( pGlyph )
 		{
 			pGlyph += (chr & 0xFF);
-			if( pGlyph->m_src.pSurface )
+			if( pGlyph->pSurface )
 				return true;
 		}
 
@@ -99,41 +102,71 @@ namespace wg
 	}
 
 
-	//____ getGlyph() _________________________________________________________
+	//____ getGlyphWithoutBitmap() _________________________________________________________
 
-	inline Glyph_p BitmapFont::getGlyph( uint16_t chr )
+	void BitmapFont::getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph)
 	{
 		MyGlyph * pGlyph = m_glyphTab[chr >> 8];
 
 		if( pGlyph )
 		{
 			pGlyph += (chr & 0xFF);
-			if( pGlyph->m_src.pSurface )
-				return pGlyph;
+			if (pGlyph->pSurface)
+			{
+				glyph.pFont = this;
+				glyph.advance = pGlyph->advance;
+				glyph.kerningIndex = pGlyph->kerningIndex;
+				return;
+			}
 		}
 
-		return 0;
+		glyph.pFont = 0;
+		glyph.advance = 0;
+		glyph.kerningIndex = 0;
+		return;
+	}
+
+	//____ getGlyphWithBitmap() _________________________________________________________
+
+	void BitmapFont::getGlyphWithBitmap(uint16_t chr, Glyph& glyph)
+	{
+		MyGlyph* pGlyph = m_glyphTab[chr >> 8];
+
+		if (pGlyph)
+		{
+			pGlyph += (chr & 0xFF);
+			if (pGlyph->pSurface)
+			{
+				glyph.pFont			= this;
+				glyph.advance		= pGlyph->advance;
+				glyph.kerningIndex	= pGlyph->kerningIndex;
+				glyph.pSurface		= pGlyph->pSurface;
+				glyph.rect			= pGlyph->rect;
+				glyph.bearingX		= pGlyph->bearingX;
+				glyph.bearingY		= pGlyph->bearingY;
+				return;
+			}
+		}
+
+		glyph.pFont = 0;
+		glyph.advance = 0;
+		glyph.kerningIndex = 0;
+		glyph.pSurface = nullptr;
+		return;
 	}
 
 
 	//____ kerning() _________________________________________________________
 
-
-	inline spx BitmapFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
+	inline spx BitmapFont::kerning( Glyph& leftGlyph, Glyph&  rightGlyph )
 	{
 		if( !m_pKerningTable )
 			return 0;
 
-		if( !pLeftGlyph || !pRightGlyph )
+		if( leftGlyph.pFont != this || rightGlyph.pFont != this )
 			return 0;
 
-		int indexLeft = pLeftGlyph->kerningIndex();
-		int indexRight = pRightGlyph->kerningIndex();
-
-		if( indexLeft >= m_nKerningGlyphs || indexRight >= m_nKerningGlyphs )
-			return 0;
-
-		return m_pKerningTable[ (indexLeft * m_nKerningGlyphs) + indexRight ]*64;
+		return m_pKerningTable[ (leftGlyph.kerningIndex * m_nKerningGlyphs) + rightGlyph.kerningIndex ]*64;
 	}
 
 
@@ -257,9 +290,16 @@ namespace wg
 					}
 					ch &= 0xff;
 
-					if (!m_glyphTab[tab][ch].m_src.pSurface)
+					if (!m_glyphTab[tab][ch].pSurface)
 					{
-						m_glyphTab[tab][ch] = MyGlyph(r.w, 0, -baseline, m_nGlyphs, this, pSurf, r*64);
+						auto * pGlyph = &m_glyphTab[tab][ch];
+						
+						pGlyph->advance = r.w * 64;
+						pGlyph->bearingX = 0;
+						pGlyph->bearingY = -baseline*64;
+						pGlyph->kerningIndex = 0;
+						pGlyph->pSurface = pSurf;
+						pGlyph->rect = r * 64;
 
 						if (firstAdvance == -1)
 							firstAdvance = r.w;
@@ -472,22 +512,6 @@ namespace wg
 		// Divide back into average
 		m_avgAdvance /= m_nGlyphs;
 */
-	}
-
-	//____ BitmapFont::MyGlyph constructor ______________________________________
-
-	BitmapFont::MyGlyph::MyGlyph()
-	{
-		m_src.pSurface = 0;
-	}
-
-	BitmapFont::MyGlyph::MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectSPX& rect )
-	: Glyph( advance*64, kerningIndex, pFont )
-	{
-			m_src.pSurface	= pSurf;
-			m_src.rect		= rect;
-			m_src.bearingX	= bearingX*64;
-			m_src.bearingY  = bearingY*64;
 	}
 
 } // namespace wg

@@ -211,9 +211,13 @@ namespace wg
 		Font * pFont = attr.pFont.rawPtr();
 		pFont->setSize(attr.size);
 
-		Glyph_p pGlyph = _getGlyph( pFont, pLast->code() );
-		if( pGlyph )
-			width = pGlyph->advance();				// Do not advance for last, just apply kerning.
+		Glyph glyph;
+
+
+		_getGlyphWithoutBitmap( pFont, pLast->code(), glyph );
+
+		if( glyph.pFont )
+			width = glyph.advance;				// Do not advance for last, just apply kerning.
 		else if( pLast->code() == 32 )
 			width = pFont->whitespaceAdvance();
 
@@ -296,8 +300,9 @@ namespace wg
 		Font_p 			pFont;
 		TextStyle_h		hStyle = 0xFFFF;
 
-		Glyph_p	pGlyph;
-		Glyph_p	pPrevGlyph =  0;
+		Glyph glyph[2];
+		Glyph* pGlyph = &glyph[0];
+		Glyph* pPrevGlyph = &glyph[1];
 		const Char * pChar = pFirst;
 
 		spx distance = 0;
@@ -319,24 +324,23 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph = 0;								// No kerning against across different fonts or characters of different size.
+					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or characters of different size.
 				}
 			}
 
-			pGlyph = _getGlyph( pFont.rawPtr(), pChar->code() );
+			_getGlyphWithoutBitmap( pFont.rawPtr(), pChar->code(), * pGlyph );
 
-			if( pGlyph )
+			if( pGlyph->pFont )
 			{
-				if( pPrevGlyph )
-					distance += pFont->kerning(pPrevGlyph, pGlyph);
+				distance += pFont->kerning(*pPrevGlyph, *pGlyph);
 
 				if( pChar != pLast )
-					distance += pGlyph->advance();				// Do not advance for last, just apply kerning.
+					distance += pGlyph->advance;				// Do not advance for last, just apply kerning.
 			}
 			else if( pChar->code() == 32 && pChar != pLast )
 				distance += pFont->whitespaceAdvance();
 
-			pPrevGlyph = pGlyph;
+			std::swap(pGlyph, pPrevGlyph);
 			pChar++;
 		}
 
@@ -437,8 +441,9 @@ namespace wg
 				lineStart.x = canvas.x + _linePosX( pLineInfo, canvas.w );
 				const Char * pChar = pCharArray + pLineInfo->offset;
 
-				Glyph_p	pGlyph;
-				Glyph_p	pPrevGlyph =  0;
+				Glyph glyph[2];
+				Glyph* pGlyph		= &glyph[0];
+				Glyph* pPrevGlyph	= &glyph[1];
 
 				CoordSPX pos = lineStart;
 				pos.y += pLineInfo->base;
@@ -468,7 +473,7 @@ namespace wg
 
 							pFont = attr.pFont;
 							pFont->setSize(attr.size);
-							pPrevGlyph = 0;								// No kerning against across different fonts or character of different size.
+							pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or character of different size.
 						}
 
 						if( attr.color != localTint )
@@ -503,22 +508,20 @@ namespace wg
 
 					//
 
-					pGlyph = _getGlyph( pFont.rawPtr(), pChar->code());
+					_getGlyphWithBitmap( pFont.rawPtr(), pChar->code(), * pGlyph);
 
-					if( pGlyph )
+					if( pGlyph->pFont )
 					{
-						if( pPrevGlyph )
-							pos.x += pFont->kerning(pPrevGlyph, pGlyph);
+						pos.x += pFont->kerning(*pPrevGlyph, *pGlyph);
 
-						const GlyphBitmap * pBitmap = pGlyph->getBitmap();
-						pDevice->setBlitSource(pBitmap->pSurface);
-						pDevice->blit( CoordSPX(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY), pBitmap->rect  );
-						pos.x += pGlyph->advance();
+						pDevice->setBlitSource(pGlyph->pSurface);
+						pDevice->blit( CoordSPX(pos.x + pGlyph->bearingX, pos.y + pGlyph->bearingY), pGlyph->rect  );
+						pos.x += pGlyph->advance;
 					}
 					else if( pChar->code() == 32 )
 						pos.x += pFont->whitespaceAdvance();
 
-					pPrevGlyph = pGlyph;
+					std::swap(pPrevGlyph, pGlyph);
 					pChar++;
 				}
 			}
@@ -768,6 +771,8 @@ namespace wg
 
 	void StdTextMapper::onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
+		onRefresh(pText);
+/*
 		//TODO: Optimize: only update line info if textsize possibly affected.
 
 		void * pBlock = _dataBlock(pText);
@@ -775,17 +780,21 @@ namespace wg
 		_updateLineInfo( pText, pBlock, _chars(pText) );
 
 		_setTextDirty(pText);
+*/
 	}
 
 	//____ onCharStyleChanged() __________________________________________________
 
 	void StdTextMapper::onCharStyleChanged( Text * pText, int ofs, int len )
 	{
+		onRefresh(pText);
+/*
 		void * pBlock = _dataBlock(pText);
 
 		_updateLineInfo( pText, pBlock, _chars(pText) );
 
 		_setTextDirty(pText);
+*/
 	}
 
 	//____ onRefresh() ___________________________________________________________
@@ -919,6 +928,8 @@ namespace wg
 	int StdTextMapper::caretDown( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine(pText, charOfs );
+
+		auto pHeader = _header(_dataBlock(pText));
 
 		if( line >= 0 && line < _header(_dataBlock(pText))->nbLines-1 )
 		{
@@ -1080,8 +1091,9 @@ namespace wg
 
 		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
 
-		Glyph_p	pGlyph = nullptr;
-		Glyph_p	pPrevGlyph = nullptr;
+		Glyph glyph[2];
+		Glyph* pGlyph = &glyph[0];
+		Glyph* pPrevGlyph = &glyph[1];
 
 		spx spaceAdv = 0;
 		spx width = 0;
@@ -1110,7 +1122,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
+					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
 				}
 
 				spaceAdv = pFont->whitespaceAdvance();
@@ -1118,7 +1130,7 @@ namespace wg
 				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
@@ -1129,20 +1141,19 @@ namespace wg
 			// TODO: Include handling of special characters
 			// TODO: Support sub/superscript.
 
-			pGlyph = _getGlyph(pFont.rawPtr(), pChars->code());
+			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), *pGlyph);
 
 			if (pGlyph)
 			{
-				if (pPrevGlyph)
-					width += pFont->kerning(pPrevGlyph, pGlyph);
+				width += pFont->kerning(*pPrevGlyph, *pGlyph);
 
-				potentialWidth += pGlyph->advance();
+				potentialWidth += pGlyph->advance;
 				width = potentialWidth;
 			}
 			else if (pChars->code() == 32)
 				potentialWidth += spaceAdv;
 
-			pPrevGlyph = pGlyph;
+			std::swap(pGlyph, pPrevGlyph);
 
 			// Handle end of line
 
@@ -1162,7 +1173,7 @@ namespace wg
 				width = 0;
 				potentialWidth = 0;
 				pBreakpoint = nullptr;
-				pPrevGlyph = nullptr;
+				pPrevGlyph->pFont = nullptr;
 			}
 			else
 			{
@@ -1179,7 +1190,7 @@ namespace wg
 					width = 0;
 					potentialWidth = 0;
 					pBreakpoint = nullptr;
-					pPrevGlyph = nullptr;
+					pPrevGlyph->pFont = nullptr;
 
 				}
 				else
@@ -1214,8 +1225,9 @@ namespace wg
 
 		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
 
-		Glyph_p	pGlyph = nullptr;
-		Glyph_p	pPrevGlyph = nullptr;
+		Glyph glyph[2];
+		Glyph* pGlyph = &glyph[0];
+		Glyph* pPrevGlyph = &glyph[1];
 
 		spx maxAscend = 0;
 		spx maxDescend = 0;
@@ -1249,7 +1261,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
+					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
 				}
 
 				spx ascend = pFont->maxAscend();
@@ -1268,7 +1280,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
@@ -1280,20 +1292,19 @@ namespace wg
 			// TODO: Include handling of special characters
 			// TODO: Support sub/superscript.
 
-			pGlyph = _getGlyph(pFont.rawPtr(), pChars->code());
+			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), * pGlyph);
 
 			if (pGlyph)
 			{
-				if (pPrevGlyph)
-					width += pFont->kerning(pPrevGlyph, pGlyph);
+				width += pFont->kerning(* pPrevGlyph, * pGlyph);
 
-				potentialWidth += pGlyph->advance();
+				potentialWidth += pGlyph->advance;
 				width = potentialWidth;
 			}
 			else if (pChars->code() == 32)
 				potentialWidth += spaceAdv;
 
-			pPrevGlyph = pGlyph;
+			std::swap(pPrevGlyph, pGlyph);
 
 			// Handle end of line
 
@@ -1303,7 +1314,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend());
 					spx w = pCaret->eolWidth(eolCellSize, scale);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
@@ -1323,7 +1334,7 @@ namespace wg
 				width = 0;
 				potentialWidth = 0;
 				pBreakpoint = nullptr;
-				pPrevGlyph = nullptr;
+				pPrevGlyph->pFont = nullptr;
 
 				if (pChars->styleHandle() == hCharStyle)
 				{
@@ -1357,7 +1368,7 @@ namespace wg
 					width = 0;
 					potentialWidth = 0;
 					pBreakpoint = nullptr;
-					pPrevGlyph = nullptr;
+					pPrevGlyph->pFont = nullptr;
 
 					if (pChars->styleHandle() == hCharStyle)
 					{
@@ -1459,8 +1470,9 @@ namespace wg
 
 		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
 
-		Glyph_p	pGlyph = nullptr;
-		Glyph_p	pPrevGlyph = nullptr;
+		Glyph glyph[2];
+		Glyph* pGlyph = &glyph[0];
+		Glyph* pPrevGlyph = &glyph[1];
 
 		spx maxAscend = 0;
 		spx maxDescend = 0;
@@ -1496,7 +1508,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
+					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
 				}
 
 				spx ascend = pFont->maxAscend();
@@ -1515,7 +1527,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
@@ -1527,20 +1539,18 @@ namespace wg
 			// TODO: Include handling of special characters
 			// TODO: Support sub/superscript.
 
-			pGlyph = _getGlyph(pFont.rawPtr(), pChars->code());
+			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), * pGlyph);
 
-			if (pGlyph)
+			if (pGlyph->pFont)
 			{
-				if (pPrevGlyph)
-					width += pFont->kerning(pPrevGlyph, pGlyph);
-
-				potentialWidth += pGlyph->advance();
+				potentialWidth += pFont->kerning(* pPrevGlyph, * pGlyph);
+				potentialWidth += pGlyph->advance;
 				width = potentialWidth;
 			}
 			else if (pChars->code() == 32)
 				potentialWidth += spaceAdv;
 
-			pPrevGlyph = pGlyph;
+			std::swap(pPrevGlyph, pGlyph);
 
 			// Handle end of line
 
@@ -1550,7 +1560,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend());
 					spx w = pCaret->eolWidth(eolCellSize, scale);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
@@ -1584,7 +1594,7 @@ namespace wg
 				width = 0;
 				potentialWidth = 0;
 				pBreakpoint = nullptr;
-				pPrevGlyph = nullptr;
+				pPrevGlyph->pFont = nullptr;
 
 				if (pChars->styleHandle() == hCharStyle)
 				{
@@ -1632,7 +1642,7 @@ namespace wg
 					width = 0;
 					potentialWidth = 0;
 					pBreakpoint = nullptr;
-					pPrevGlyph = nullptr;
+					pPrevGlyph->pFont = nullptr;
 
 					if (pChars->styleHandle() == hCharStyle)
 					{
@@ -1688,8 +1698,9 @@ namespace wg
 
 		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
 
-		Glyph_p	pGlyph = nullptr;
-		Glyph_p	pPrevGlyph = nullptr;
+		Glyph glyph[2];
+		Glyph* pGlyph = &glyph[0];
+		Glyph* pPrevGlyph = &glyph[1];
 
 		spx maxAscend = 0;
 		spx maxDescend = 0;
@@ -1714,7 +1725,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
+					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
 				}
 
 				spx ascend = pFont->maxAscend();
@@ -1737,19 +1748,17 @@ namespace wg
 			// TODO: Include handling of special characters
 			// TODO: Support sub/superscript.
 
-			pGlyph = _getGlyph( pFont.rawPtr(), pChars->code() );
+			_getGlyphWithoutBitmap( pFont.rawPtr(), pChars->code(), * pGlyph );
 
 			if( pGlyph )
 			{
-				if( pPrevGlyph )
-					width += pFont->kerning(pPrevGlyph, pGlyph);
-
-				width += pGlyph->advance();
+				width += pFont->kerning(* pPrevGlyph, * pGlyph);
+				width += pGlyph->advance;
 			}
 			else if( pChars->code() == 32 )
 				width += spaceAdv;
 
-			pPrevGlyph = pGlyph;
+			std::swap( pPrevGlyph, pGlyph);
 
 			// Handle end of line
 
@@ -1759,7 +1768,7 @@ namespace wg
 
 				if( pCaret )
 				{
-					SizeSPX eolCellSize( pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend() );
+					SizeSPX eolCellSize( pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend() );
 					spx w = pCaret->eolWidth( eolCellSize, scale );
 					if( w > eolCellSize.w )
 						width += w - eolCellSize.w;
@@ -1793,7 +1802,7 @@ namespace wg
 
 				pLines->offset = int(pChars - pTextStart);
 				width = 0;
-				pPrevGlyph = nullptr;
+				pPrevGlyph->pFont = nullptr;
 
 				if (pChars->styleHandle() == hCharStyle)
 				{
@@ -2011,8 +2020,9 @@ namespace wg
 		Font_p 			pFont;
 		TextStyle_h		hStyle = 0xFFFF;
 
-		Glyph_p	pGlyph;
-		Glyph_p	pPrevGlyph =  0;
+		Glyph glyph[2];
+		Glyph* pGlyph = &glyph[0];
+		Glyph* pPrevGlyph = &glyph[1];
 
 		const Char * pChar = pTextBegin + pLine->offset;
 
@@ -2032,7 +2042,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph = 0;								// No kerning against across different fonts or characters of different size.
+					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or characters of different size.
 				}
 
 				hStyle = pChar->styleHandle();
@@ -2040,15 +2050,14 @@ namespace wg
 
 			// Forward distance with the glyph
 
-			pGlyph = _getGlyph( pFont.rawPtr(), pChar->code() );
+			_getGlyphWithoutBitmap( pFont.rawPtr(), pChar->code(), * pGlyph );
 			spx charBeg = distance;
 
-			if( pGlyph )
+			if( pGlyph->pFont )
 			{
-				if( pPrevGlyph )
-					distance += pFont->kerning(pPrevGlyph, pGlyph);
+				distance += pFont->kerning(*pPrevGlyph, *pGlyph);
 
-				distance += pGlyph->advance();
+				distance += pGlyph->advance;
 			}
 			else if( pChar->code() == 32 )
 				distance += pFont->whitespaceAdvance();
@@ -2085,7 +2094,7 @@ namespace wg
 			if (pChar->isEndOfLine())
 				return int(pChar - pTextBegin);		// We have passed the end of the line, probably in lines cursor-margin.
 
-			pPrevGlyph = pGlyph;
+			std::swap( pPrevGlyph, pGlyph );
 			pChar++;
 		}
 

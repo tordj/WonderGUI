@@ -52,8 +52,9 @@ namespace wg
 		bool			setSize( spx size ) override;
 		spx				size() override;
 
-		spx				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
-		Glyph_p			getGlyph( uint16_t chr ) override;
+		void				getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) override;
+		void				getGlyphWithBitmap(uint16_t chr, Glyph& glyph) override;
+		spx					kerning(Glyph& leftGlyph, Glyph& rightGlyph) override;
 
 		spx				lineGap() override;
 		spx				whitespaceAdvance() override;

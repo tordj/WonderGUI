@@ -40,16 +40,16 @@ namespace wg
 
 	struct Glyph
 	{
-		spx			advance;		// Set to zero if glyph do not exist.
-		uint32_t	kerningIndex;	//
-		Font*		pFont;			//
+		spx			advance = 0;			// Set to zero if glyph do not exist.
+		uint32_t	kerningIndex = 0;		//
+		Font*		pFont = nullptr;			//
 
 		// These below are not updated by getGlyphWithoutBitmap().
 
 		Surface_p 	pSurface;		// Set to null if no bitmap for glyph could be found.
 		RectSPX		rect;
-		spx			bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
-		spx			bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
+		spx			bearingX = 0;		// x offset when rendering the glyph (negated offset to glyph origo)
+		spx			bearingY = 0;		// y offset when rendering the glyph (negated offset to glyph origo)
 	};
 
 

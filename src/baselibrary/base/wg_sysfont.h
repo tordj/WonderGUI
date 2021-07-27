@@ -26,7 +26,7 @@
 
 #include <wg_geo.h>
 #include <wg_font.h>
-#include <wg_surface.h>
+#include <wg_surfacefactory.h>
 
 namespace wg
 {
@@ -42,7 +42,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static SysFont_p	create(Surface* pSurf, char* pGlyphSpec) { return SysFont_p(new SysFont(pSurf, pGlyphSpec)); }
+		static SysFont_p	create( SurfaceFactory * pFactory ) { return SysFont_p(new SysFont(pFactory)); }
 
 		//.____ Identification __________________________________________
 
@@ -51,44 +51,33 @@ namespace wg
 
 		//.____ Rendering ______________________________________________________
 
-		inline bool			setSize(spx size) override { return (size == 16); };						// SizeI is just a dummy for SysFont...
-		inline spx			size() override { return 16; }
+		inline bool		setSize(spx size) override { return (size == 14); };						// SizeI is just a dummy for SysFont...
+		inline spx		size() override { return 14; }
 
-		Glyph_p				getGlyph(uint16_t chr) override;
-		spx					kerning(Glyph_p pLeftGlyph, Glyph_p pRightGlyph) override { return 0; }
+		void			getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) override;
+		void			getGlyphWithBitmap(uint16_t chr, Glyph& glyph) override;
+		spx				kerning(Glyph& leftGlyph, Glyph& rightGlyph) override;
 
-		inline spx			lineGap() override { return 2*64; }
-		inline spx			whitespaceAdvance() override { return 14*64; }
-		inline spx			maxAdvance() override { return 14*64; }
-		inline spx 			maxAscend() override { return 12*64; }
-		inline spx 			maxDescend() override { return 2*64; }
+		inline spx		lineGap() override { return 2*64; }
+		inline spx		whitespaceAdvance() override { return 14*64; }
+		inline spx		maxAdvance() override { return 14*64; }
+		inline spx 		maxAscend() override { return 12*64; }
+		inline spx 		maxDescend() override { return 2*64; }
 
 		//.____ Misc ___________________________________________________________
 
 
-		inline int			nbGlyphs() override { return 32*3; }
-		inline bool			hasGlyphs() override { return true; }
-		bool				hasGlyph(uint16_t chr) override;
-		inline bool			isMonospace() override { return true; }
-		inline bool			isMonochrome() override { return true; }
+		inline int		nbGlyphs() override { return 32*3; }
+		inline bool		hasGlyphs() override { return true; }
+		bool			hasGlyph(uint16_t chr) override;
+		inline bool		isMonospace() override { return true; }
+		inline bool		isMonochrome() override { return true; }
 
 	protected:
-		SysFont(Surface* pSurf, char* pGlyphSpec);
+		SysFont(SurfaceFactory * pFactory);
 		~SysFont();
 
-		class MyGlyph : public Glyph
-		{
-		public:
-			MyGlyph();
-			MyGlyph(int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font* pFont, Surface* pSurf, const RectSPX& rect);
-
-			const GlyphBitmap* getBitmap() override { return &m_src; }
-
-			void setAdvance(short advance) { m_advance = advance; }
-
-			GlyphBitmap	m_src;
-		};
-
+		Surface_p		m_pSurface;
 	};
 
 

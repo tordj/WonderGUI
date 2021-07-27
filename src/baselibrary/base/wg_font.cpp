@@ -56,24 +56,5 @@ namespace wg
         return true;
     }
 
-	//____ Glyph::Glyph() _______________________________________________________
-
-	Glyph::Glyph()
-	{
-		m_pFont = 0;
-		m_advance = 0;
-		m_kerningIndex = 0;
-	}
-
-	//____ Glyph::Glyph() _______________________________________________________
-
-	Glyph::Glyph( spx advance, int kerningIndex, Font * pFont )
-	{
-		m_pFont = pFont;
-		m_advance = advance;
-		m_kerningIndex = kerningIndex;
-	}
-
-
 
 } // namespace wg

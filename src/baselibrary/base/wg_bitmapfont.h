@@ -54,8 +54,9 @@ namespace wg
 		inline bool			setSize( spx size ) override { return (size == m_size);};						// SizeI is just a dummy for BitmapFont...
 		inline spx			size() override { return m_size; }
 
-		Glyph_p				getGlyph( uint16_t chr ) override;
-		spx					kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
+		void				getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) override;
+		void				getGlyphWithBitmap(uint16_t chr, Glyph& glyph) override;
+		spx					kerning(Glyph& leftGlyph, Glyph& rightGlyph) override;
 
 		inline spx			lineGap() override { return m_lineGap; }
 		inline spx			whitespaceAdvance() override { return m_spaceAdvance; }
@@ -78,17 +79,19 @@ namespace wg
 
 		void _insertGlyphs(Surface* pSurf, const char* pGlyphSpec);
 
-		class MyGlyph : public Glyph
+		class MyGlyph
 		{
 		public:
-			MyGlyph();
-			MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectSPX& rect );
+//			MyGlyph();
+//			MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectSPX& rect );
 
-			const GlyphBitmap * getBitmap() override { return &m_src; }
+			spx			advance = 0;
+			uint32_t	kerningIndex = 0;		//
 
-			void setAdvance( short advance ) { m_advance = advance; }
-
-			GlyphBitmap	m_src;
+			Surface_p 	pSurface;			// Set to null if no bitmap for glyph could be found.
+			RectSPX		rect;
+			spx			bearingX = 0;			// x offset when rendering the glyph (negated offset to glyph origo)
+			spx			bearingY = 0;			// y offset when rendering the glyph (negated offset to glyph origo)
 		};
 
 

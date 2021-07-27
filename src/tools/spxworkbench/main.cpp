@@ -43,6 +43,7 @@
 
 #include <wg_freetypefont.h>
 #include <wg_bitmapfont.h>
+#include <wg_sysfont.h>
 #include <wg_context.h>
 
 #include <wg_basicvaluepresenter.h>
@@ -291,7 +292,7 @@ int main ( int argc, char** argv )
 
 
 	//
-
+/*
 	auto pLabel = TextDisplay::create();
 
 	pLabel->skin = pSkin;
@@ -373,7 +374,7 @@ int main ( int argc, char** argv )
 	pValueDisplay->skin = pSkin;
 
 	pBaseLambda->slots.pushBack(pValueDisplay, [](Widget* pWidget, Size parentSize) { return Rect(350, 120, 150, 50); });
-
+*/
 	//
 
 	{
@@ -397,7 +398,7 @@ int main ( int argc, char** argv )
 		pScrollPanel->slot = pTextEditor;
 
 		// BITMAP FONT TEST
-
+/*
 		SDL_Surface* pSDLSurf = IMG_Load("resources/charmap-oldschool_white_5x7_ascii.png");
 
 		SoftSurface_p pSurf = SoftSurface::create(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, 0);
@@ -411,6 +412,19 @@ int main ( int argc, char** argv )
 		pStyle->setColor(Color::Black);
 
 		pTextEditor->text.setStyle(pStyle);
+*/
+		// SYSFONT TEST
+
+		auto pSysFont = SysFont::create(pFactory);
+
+		auto pStyle = TextStyle::create();
+		pStyle->setFont(pSysFont);
+		pStyle->setSize(14);
+		pStyle->setColor(Color::Black);
+
+		pTextEditor->text.setStyle(pStyle);
+
+
 	}
 
 

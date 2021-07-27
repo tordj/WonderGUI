@@ -70,13 +70,7 @@ namespace wg
 		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
-
 	};
-
-
-
-
-
 
 } // namespace wg
 #endif // WG_TEXTEDITOR_DOT_H
