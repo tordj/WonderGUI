@@ -1143,10 +1143,9 @@ namespace wg
 
 			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), *pGlyph);
 
-			if (pGlyph)
+			if (pGlyph->pFont)
 			{
-				width += pFont->kerning(*pPrevGlyph, *pGlyph);
-
+				potentialWidth += pFont->kerning(*pPrevGlyph, *pGlyph);
 				potentialWidth += pGlyph->advance;
 				width = potentialWidth;
 			}
@@ -1294,10 +1293,9 @@ namespace wg
 
 			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), * pGlyph);
 
-			if (pGlyph)
+			if (pGlyph->pFont)
 			{
-				width += pFont->kerning(* pPrevGlyph, * pGlyph);
-
+				potentialWidth += pFont->kerning(* pPrevGlyph, * pGlyph);
 				potentialWidth += pGlyph->advance;
 				width = potentialWidth;
 			}
@@ -1416,6 +1414,7 @@ namespace wg
 
 		pBlock = malloc( sizeof(BlockHeader) + sizeof(LineInfo)*nLines);
 		_setTextDataBlock(pText, pBlock);
+
 		((BlockHeader *)pBlock)->nbLines = nLines;
 
 		return pBlock;
@@ -1427,27 +1426,25 @@ namespace wg
 	void StdTextMapper::_updateLineInfo( Text * pText, void * pBlock, const Char * pChars )
 	{
 		BlockHeader * pHeader = _header(_dataBlock(pText));
-		SizeI preferredSize;
-
+		SizeSPX preferredSize;
+		SizeSPX textSize;
 
 		if (m_bLineWrap)
 		{
 			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update preferredSize.
 
 			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
-			pHeader->textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
+			textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
 		}
 		else
 		{
 			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
-			pHeader->textSize = preferredSize;
+			textSize = preferredSize;
 		}
 
-
-
-
-		if (preferredSize != pHeader->preferredSize)
+		if (preferredSize != pHeader->preferredSize || textSize != pHeader->textSize)
 		{
+			pHeader->textSize = textSize;
 			pHeader->preferredSize = preferredSize;
 			_requestTextResize(pText);
 		}
@@ -1750,7 +1747,7 @@ namespace wg
 
 			_getGlyphWithoutBitmap( pFont.rawPtr(), pChars->code(), * pGlyph );
 
-			if( pGlyph )
+			if( pGlyph->pFont )
 			{
 				width += pFont->kerning(* pPrevGlyph, * pGlyph);
 				width += pGlyph->advance;

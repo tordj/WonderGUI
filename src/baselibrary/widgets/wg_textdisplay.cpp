@@ -79,13 +79,11 @@ namespace wg
 	spx TextDisplay::_matchingWidth(spx height, int scale) const
 	{
 		scale = _fixScale(scale);
+		SizeSPX padding = _contentPaddingSize();
 
-		//TODO: Need to remove padding before calculations as well.
-
+		height -= padding.h;
 		spx textWidth = OO(text)._matchingWidth(height, scale);
-
-		textWidth += OO(skin)._contentPaddingSize(scale).w;
-
+		textWidth += padding.w;
 		return textWidth;
 	}
 
@@ -93,14 +91,12 @@ namespace wg
 
 	spx TextDisplay::_matchingHeight(spx width, int scale) const
 	{
-		//TODO: Need to remove padding before calculations as well.
-
 		scale = _fixScale(scale);
+		SizeSPX padding = _contentPaddingSize();
 
+		width -= padding.w;
 		spx textHeight = OO(text)._matchingHeight(width, scale);
-
-		textHeight += OO(skin)._contentPaddingSize(scale).h;
-
+		textHeight += padding.h;
 		return textHeight;
 	}
 

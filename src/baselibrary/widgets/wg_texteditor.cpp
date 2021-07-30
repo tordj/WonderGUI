@@ -54,18 +54,29 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ _matchingWidth() _______________________________________________________
+
+	spx TextEditor::_matchingWidth(spx height, int scale) const
+	{
+		scale = _fixScale(scale);
+		SizeSPX padding = _contentPaddingSize();
+
+		height -= padding.h;
+		spx textWidth = OO(text)._matchingWidth(height, scale);
+		textWidth += padding.w;
+		return textWidth;
+	}
+
 	//____ _matchingHeight() _______________________________________________________
 
 	spx TextEditor::_matchingHeight( spx width, int scale ) const
 	{
 		scale = _fixScale(scale);
+		SizeSPX padding = _contentPaddingSize();
 
-		//TODO: Remove skin contentPadding before calculations.
-
+		width -= padding.w;
 		spx textHeight = OO(text)._matchingHeight( width, scale );
-
-		textHeight += OO(skin)._contentPaddingSize(scale).h;
-
+		textHeight += padding.h;
 		return textHeight;
 	}
 
