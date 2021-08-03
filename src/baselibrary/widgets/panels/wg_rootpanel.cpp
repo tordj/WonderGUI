@@ -103,7 +103,7 @@ namespace wg
 
 		m_geo = m_canvas.size;
 		m_pGfxDevice = pGfxDevice;
-		m_canvasScale = pCanvas->scale();
+		m_scale = m_canvasScale;
 	}
 
 	RootPanel::RootPanel(CanvasRef ref, int scale, GfxDevice* pGfxDevice) : RootPanel()
@@ -114,7 +114,7 @@ namespace wg
 
 		m_geo = m_canvas.size;
 		m_pGfxDevice = pGfxDevice;
-		m_canvasScale = scale;
+		m_scale = scale;
 	}
 
 

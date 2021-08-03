@@ -1,2 +1,2 @@
 #!/bin/bash
-ruby scripts/make_superheader.rb src/base src/components src/interfaces src/sizebrokers src/skins src/textmappers src/valueformatters src/widgets > src/wondergui.h
+ruby scripts/make_superheader.rb src/baselibrary/base src/baselibrary/components src/baselibrary/sizebrokers src/baselibrary/skins src/baselibrary/textmappers src/baselibrary/valueformatters src/baselibrary/widgets > src/baselibrary/wondergui.h

@@ -103,7 +103,7 @@ namespace wg
 			return GlSurface_p();
 
 		SizeI max = maxSize();
-		SizeI size = pOther->size();
+		SizeI size = pOther->pixelSize();
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
@@ -281,7 +281,7 @@ namespace wg
 //        flags |= (int) SurfaceFlag::Buffered;
 		_setPixelDetails(pOther->pixelFormat());
 		m_scaleMode = ScaleMode::Interpolate;
-		m_size	= pOther->size();
+		m_size	= pOther->pixelSize();
 		m_pClut = nullptr;
 
 		auto pixbuf = pOther->allocPixelBuffer();
@@ -682,10 +682,15 @@ namespace wg
 
 	//____ alpha() ____________________________________________________________
 
-	uint8_t GlSurface::alpha( CoordI coord )
+	int GlSurface::alpha( CoordSPX _coord )
 	{
 //		if (m_bBackingBufferStale)
 //			_refreshBackingBuffer();
+
+		//TODO: Take endianess into account.
+		//TODO: Take advantage of subpixel precision and interpolate alpha value if surface set to interpolate.
+
+		CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
 
 		if (m_pBlob)
 		{
@@ -694,10 +699,10 @@ namespace wg
 
 			if (m_pixelDescription.bIndexed)
 			{
-				return m_pClut[*pPixel].a;
+				return HiColor::unpackLinearTab[m_pClut[*pPixel].a];
 			}
 			else if (m_pixelDescription.A_bits == 0)
-				return 255;
+				return 4096;
 			else
 			{
 				uint32_t val;
@@ -716,13 +721,13 @@ namespace wg
 
 				const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
 
-				return pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
+				return HiColor::unpackLinearTab[pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift]];
 			}
 		}
 		else if (m_pAlphaMap)
-			return m_pAlphaMap[coord.y * m_size.w + coord.x];
+			return HiColor::unpackLinearTab[m_pAlphaMap[coord.y * m_size.w + coord.x]];
 		else
-			return 255;
+			return 4096;
 	}
 
 	//____ unload() ___________________________________________________________

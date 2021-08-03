@@ -123,7 +123,7 @@ namespace wg
 
 		m_widthConstraint = width;
 		m_heightConstraint = height;
-		true;
+		return true;
 	}
 
 	//____ setAutohideScrollbars() ____________________________________________

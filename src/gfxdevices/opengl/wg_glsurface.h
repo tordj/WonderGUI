@@ -76,12 +76,11 @@ namespace wg
 
 		void		setScaleMode(ScaleMode mode) override;
 		bool		isOpaque() const override;
-
 		bool		setTiling(bool bTiling) override;
 
 		//.____ Content _______________________________________________________
 
-		uint8_t		alpha(CoordI coord) override;
+		int			alpha( CoordSPX coord ) override;
 
 		//.____ Control _______________________________________________________
 

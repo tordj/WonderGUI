@@ -26,7 +26,7 @@
 
 #include <wg_types.h>
 #include <wg_surface.h>
-
+#include <cassert>
 
 namespace wg
 {
@@ -65,8 +65,10 @@ namespace wg
 				return pPixel[0] + (uint32_t(pPixel[1]) << 8) + (uint32_t(pPixel[2]) << 16);
 			case 4:
 				return *(reinterpret_cast<const uint32_t*>(pPixel));
+			default:
+				assert(false);
+				return 0;
 		}
 	}
-
 }
 #endif //WG_GRIDWALKER_DOT_H

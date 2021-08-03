@@ -816,7 +816,7 @@ namespace wg
 			return false;
 
 		m_pBlitSource = pSource;
-		m_blitSourceSize = CoordF(pSource->size().w, pSource->size().h);
+		m_blitSourceSize = CoordF(pSource->pixelSize().w, pSource->pixelSize().h);
 
         //TODO: Check so that we don't overrun m_surfaceBuffer;
 

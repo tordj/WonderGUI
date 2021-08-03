@@ -33,7 +33,6 @@
 
 
 #include <wg_freetypefont.h>
-#include "testwidget.h"
 
 #define USE_OPEN_GL
 
@@ -307,7 +306,6 @@ int main(int argc, char** argv)
 //	Base::setErrorHandler([](Error&) { int x = 0; });
 
 	Context_p pContext = WGTRACK( Context::create() );
-	pContext->setScale(2.00);
 
 
 
@@ -487,8 +485,8 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
-	pSimpleButtonSkin->setContentPadding(BorderI(5));
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Border(3), Axis::X);
+	pSimpleButtonSkin->setContentPadding(Border(5));
 
 	pSDLSurf = IMG_Load("resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -508,21 +506,21 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pStateButtonSkin = BlockSkin::create(pStateButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, BorderI(3), Axis::X);
-	pStateButtonSkin->setContentPadding(BorderI(5));
+	BlockSkin_p pStateButtonSkin = BlockSkin::create(pStateButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, Border(3), Axis::X);
+	pStateButtonSkin->setContentPadding(Border(5));
 
 	pSDLSurf = IMG_Load("resources/grey_pressable_plate.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
-	pPressablePlateSkin->setContentPadding(BorderI(3));
+	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Border(3), Axis::X);
+	pPressablePlateSkin->setContentPadding(Border(3));
 
 	pSDLSurf = IMG_Load("resources/list_entry.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pListEntrySurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pListEntrySkin = BlockSkin::create(pListEntrySurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, BorderI(2), Axis::X);
+	Skin_p pListEntrySkin = BlockSkin::create(pListEntrySurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, Border(2), Axis::X);
 
 	pSDLSurf = IMG_Load("resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -536,13 +534,13 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pUpDownArrowSkin = BlockSkin::create(pUpDownArrowSurface, { StateEnum::Normal, StateEnum::Selected }, BorderI(0));
+	Skin_p pUpDownArrowSkin = BlockSkin::create(pUpDownArrowSurface, { StateEnum::Normal, StateEnum::Selected }, Border(0));
 
 	pSDLSurf = IMG_Load("resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pSimpleIconSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pSimpleIconSkin = BlockSkin::createStaticFromSurface(pSimpleIconSurface, BorderI(0));
+	Skin_p pSimpleIconSkin = BlockSkin::createStaticFromSurface(pSimpleIconSurface, Border(0));
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and
@@ -566,22 +564,22 @@ int main(int argc, char** argv)
 	*/
 
 
-	//	auto pTestSkin = BoxSkin::create({ {StateEnum::Normal, Color::Beige}, {StateEnum::Pressed, Color::Red} }, BorderI(5), { {StateEnum::Hovered, Color::Green} });
-	//	pTestSkin->setBlendMode(BlendMode::Add);
+//		auto pTestSkin = BoxSkin::create( Border(5), {{StateEnum::Normal, Color::Red, Color::Black}, {StateEnum::Pressed, Color::Red, Color::Pink} , {StateEnum::Hovered, Color::Green, Color::LightGreen} });
+//		pTestSkin->setBlendMode(BlendMode::Add);
 
-	auto pTestSkin = MultiBlockSkin::create({ 10,10 }, BorderI(4));
+	auto pTestSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
 
 	int layer1 = pTestSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Axis::X);
 	pTestSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
-	//	int layer2 = pTestSkin->addLayer(pBackgroundSurface, { 0,0 });
-	//	pTestSkin->setLayerTint(layer2, { {StateEnum::Normal, Color::Transparent}, {StateEnum::Hovered, {255,255,255,64} } });
+		int layer2 = pTestSkin->addLayer(pBackgroundSurface, { 0,0 });
+		pTestSkin->setLayerColor(layer2, { {StateEnum::Normal, Color::Transparent}, {StateEnum::Hovered, HiColor(255,255,255,64) } });
 
 	Button_p pImage0 = Button::create();
 	pImage0->skin = pTestSkin;
 	pImage0->setPointerStyle(PointerStyle::Crosshair);
 
-	pBasePanel->slots.pushBack(pImage0, [](Widget * pWidget, SizeI size) {return RectI(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
+	pBasePanel->slots.pushBack(pImage0, [](Widget * pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
 
 	Base::msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 
@@ -624,7 +622,7 @@ int main(int argc, char** argv)
 //	scrollSkinTest(&pRoot->slot);
 //	tooltipLayerTest(&pRoot->slot);
 //	kerningTest(&pRoot->slot);
-	circleSkinTest(&pRoot->slot);
+//	circleSkinTest(&pRoot->slot);
 
 
 	// Test IChild and IChildIterator baseclasses
@@ -1333,7 +1331,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				break;
 
 			case SDL_MOUSEMOTION:
-				pInput->setPointer(pRoot, { MU::fromPX(e.motion.x), MU::fromPX(e.motion.y) });
+				pInput->setPointer(pRoot, { pts(e.motion.x), pts(e.motion.y) });
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
@@ -1347,7 +1345,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 			case SDL_MOUSEWHEEL:
 			{
 				bool bInvertScroll = false;
-				CoordI distance( e.wheel.x, e.wheel.y );
+				Coord distance( e.wheel.x, e.wheel.y );
 				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
 				{
 					bInvertScroll = true;
@@ -1414,15 +1412,15 @@ void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 	if( nRects == 0 )
 		return;
 
-	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+	const RectSPX * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
 	{
-		pSDLRects[i].x = pUpdatedRects[i].x.qpix/4;
-		pSDLRects[i].y = pUpdatedRects[i].y.qpix/4;
-		pSDLRects[i].w = pUpdatedRects[i].w.qpix/4;
-		pSDLRects[i].h = pUpdatedRects[i].h.qpix/4;
+		pSDLRects[i].x = pUpdatedRects[i].x/64;
+		pSDLRects[i].y = pUpdatedRects[i].y/64;
+		pSDLRects[i].w = pUpdatedRects[i].w/64;
+		pSDLRects[i].h = pUpdatedRects[i].h/64;
 	}
 
 	SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );
@@ -1635,7 +1633,7 @@ Surface_p loadSurface(const std::string& path, PixelFormat pixFormat)
 
 bool savePNG(Surface * pSurface, const char * path)
 {
-	SizeI size = pSurface->size();
+	SizeI size = pSurface->pixelSize();
 	const PixelDescription* pFmt = pSurface->pixelDescription();
 
 	SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, pFmt->R_mask, pFmt->G_mask, pFmt->B_mask, pFmt->A_mask);
@@ -1772,7 +1770,7 @@ bool scrollIntoViewTest(CStandardSlot_p pEntry)
 	pEditor->skin = ColorSkin::create(Color::YellowGreen);
 
 	auto pScrollPanel = ScrollPanel::create();
-	pScrollPanel->viewSlot = pEditor;
+	pScrollPanel->slot = pEditor;
 	pScrollPanel->skin = ColorSkin::create(Color::Pink);
 
 
@@ -1888,25 +1886,11 @@ bool scrollbarTest(CStandardSlot_p pEntry)
 	pEditor->skin = ColorSkin::create(Color::YellowGreen);
 
 	auto pScrollPanel = ScrollPanel::create();
-	pScrollPanel->viewSlot = pEditor;
+	pScrollPanel->slot = pEditor;
 	pScrollPanel->skin = ColorSkin::create(Color::Pink);
 
-	auto pVScrollbar = Scrollbar::create();
-	pVScrollbar->setFwdButtonSkin(pButtonSkin);
-	pVScrollbar->setBwdButtonSkin(pButtonSkin);
-	pVScrollbar->setBackgroundSkin(ColorSkin::create(Color::DarkGreen));
-	pVScrollbar->setHandleSkin(pButtonSkin);
-
-	auto pHScrollbar = Scrollbar::create();
-	pHScrollbar->setFwdButtonSkin(pButtonSkin);
-	pHScrollbar->setBwdButtonSkin(pButtonSkin);
-	pHScrollbar->setBackgroundSkin(ColorSkin::create(Color::DarkGreen));
-	pHScrollbar->setHandleSkin(pButtonSkin);
-
-
-	pScrollPanel->vscrollbar = pVScrollbar;
-	pScrollPanel->hscrollbar = pHScrollbar;
-
+	pScrollPanel->scrollbarX.setSkins(ColorSkin::create(Color::DarkGreen), pButtonSkin, pButtonSkin, pButtonSkin);
+	pScrollPanel->scrollbarY.setSkins(ColorSkin::create(Color::DarkGreen), pButtonSkin, pButtonSkin, pButtonSkin);
 
 
 	auto pFlex = FlexPanel::create();
@@ -2166,7 +2150,7 @@ bool animKnobTest(CStandardSlot_p pSlot)
 	for (int y = 0; y < 2; y++)
 	{
 		for (int x = 0; x < 5; x++)
-			pAnimSkin->frames.pushBack(AnimFrame({ x * 204,y * 180 }, 150));
+			pAnimSkin->frames.pushBack(AnimFrame({ pts(x * 204),pts(y * 180) }, 150));
 	}
 
 
@@ -2193,7 +2177,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderX = Slider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, BorderI(0,10,0,10), BorderI(), true );
+		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, Border(0,10,0,10), Border(), true );
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->skin = pBgSkin;
@@ -2203,7 +2187,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderY = Slider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
+		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, Border(10, 0, 10, 0), Border(), false);
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->skin = pBgSkin;
@@ -2229,7 +2213,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderX = RangeSlider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, BorderI(0, 10, 0, 10), BorderI(), true);
+		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, Border(0, 10, 0, 10), Border(), true);
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->skin = pBgSkin;
@@ -2240,7 +2224,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderY = RangeSlider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
+		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, Border(10, 0, 10, 0), Border(), false);
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->skin = pBgSkin;
@@ -2422,7 +2406,7 @@ bool animPlayerTest(CStandardSlot_p pSlot)
 	{
 		for (int x = 0; x < 5; x++)
 		{
-			pPlayer->frames.pushBack(AnimFrame({ x*204,y*180 }, 150));
+			pPlayer->frames.pushBack(AnimFrame({ pts(x*204),pts(y*180) }, 150));
 		}
 	}
 
@@ -2531,7 +2515,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 	auto pSplashSkin = BlockSkin::create(pSplashSurf);
 	pSplashSkin->setBlendMode(BlendMode::Add);
 
-	Surface_p pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(Size(512, 512));
+	Surface_p pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
 
 	auto pBakedSkin = BakeSkin::create(pBakeSurface);
 
@@ -2640,7 +2624,7 @@ bool rigidPartNinePatchTest(CStandardSlot_p pSlot)
 
 	pBaseLayer->slots.pushBackMovable(pWidget, Rect(10, 10, 256, 256));
 
-	Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer](Msg* pMsg) { pBaseLayer->slots[0].setSize(pBaseLayer->slots[0].size() + SizeI(static_cast<MouseDragMsg*>(pMsg)->draggedNow())); });
+	Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer](Msg* pMsg) { pBaseLayer->slots[0].setSize(pBaseLayer->slots[0].size() + Size(static_cast<MouseDragMsg*>(pMsg)->draggedNow())); });
 
 	*pSlot = pBaseLayer;
 	return true;
@@ -2681,7 +2665,7 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 	s_pTooltip = TextDisplay::create();
 
 	Surface_p pTooltipBg = loadSurface("resources/tooltip_under_bg.png");
-	auto pSkin = StaticBlockSkin::create(pTooltipBg, BorderI( 10,4,3,4 ) );
+	auto pSkin = StaticBlockSkin::create(pTooltipBg, Border( 10,4,3,4 ) );
 	pSkin->setRigidPartX(5, 16, YSections::Top | YSections::Center | YSections::Bottom);
 	pSkin->setContentPadding({ 10,4,4,4 });
 	s_pTooltip->skin = pSkin;
@@ -2865,10 +2849,10 @@ void textStyleTest()
 
 	TextAttr attr;
 	
-	pBase->exportAttr(StateEnum::Hovered, &attr);
-	assert(attr.size == 16);
+	pBase->exportAttr(StateEnum::Hovered, &attr, 64);
+	assert(attr.size == 16*64);
 
-	pAdded->exportAttr(StateEnum::Hovered, &attr);
-	assert(attr.size == 15);
+	pAdded->exportAttr(StateEnum::Hovered, &attr, 64);
+	assert(attr.size == 15*64);
 
 }
