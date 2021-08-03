@@ -20,32 +20,32 @@
 
 =========================================================================*/
 
-#ifndef WG_DRAGNDROPLAYER_DOT_H
-#define WG_DRAGNDROPLAYER_DOT_H
+#ifndef WG_DRAGNDROPOVERLAY_DOT_H
+#define WG_DRAGNDROPOVERLAY_DOT_H
 #pragma once
 
-#include <wg_layer.h>
+#include <wg_overlay.h>
 #include <wg_dataset.h>
 #include <wg_key.h>
 
 namespace wg
 {
 
-	class   DragNDropLayer;
-	typedef	StrongPtr<DragNDropLayer>	DragNDropLayer_p;
-	typedef	WeakPtr<DragNDropLayer>		DragNDropLayer_wp;
+	class   DragNDropOverlay;
+	typedef	StrongPtr<DragNDropOverlay>	DragNDropOverlay_p;
+	typedef	WeakPtr<DragNDropOverlay>		DragNDropOverlay_wp;
 
-	//____ DragNDropLayer ____________________________________________________________
+	//____ DragNDropOverlay ____________________________________________________________
 
-	class DragNDropLayer : public Layer
+	class DragNDropOverlay : public Overlay
 	{
 	public:
 
 		//____ Slot ___________________________________________________________
 
-		class Slot : public Layer::Slot
+		class Slot : public Overlay::Slot
 		{
-			friend class DragNDropLayer;
+			friend class DragNDropOverlay;
 		public:
 
 			//.____ Identification ________________________________________________
@@ -54,13 +54,13 @@ namespace wg
 
 		protected:
 
-			Slot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
+			Slot(SlotHolder * pHolder) : Overlay::Slot(pHolder) {}
 		};
 
 
 		//.____ Creation __________________________________________
 
-		static DragNDropLayer_p  create() { return DragNDropLayer_p(new DragNDropLayer()); }
+		static DragNDropOverlay_p  create() { return DragNDropOverlay_p(new DragNDropOverlay()); }
 
 		//.____ Identification __________________________________________
 
@@ -68,12 +68,12 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 	protected:
-		DragNDropLayer();
-		virtual ~DragNDropLayer();
-		virtual Widget* _newOfMyType() const override { return new DragNDropLayer(); };
+		DragNDropOverlay();
+		virtual ~DragNDropOverlay();
+		virtual Widget* _newOfMyType() const override { return new DragNDropOverlay(); };
 
 
-//        DragNDropLayer *    _getDragNDropLayer() const { return const_cast<DragNDropLayer*>(this); }
+//        DragNDropOverlay *    _getDragNDropOverlay() const { return const_cast<DragNDropOverlay*>(this); }
 
 		// Overloaded from Widget
 
@@ -90,13 +90,13 @@ namespace wg
 		void            _childRequestResize(StaticSlot * pSlot) override;
 		void			_releaseChild(StaticSlot * pSlot) override;
 
-		// Overloaded from Layer
+		// Overloaded from Overlay
 
-		const Layer::Slot *	_beginLayerSlots() const override;
-		const Layer::Slot *	_endLayerSlots() const override;
-		int					_sizeOfLayerSlot() const override;
+		const Overlay::Slot *	_beginOverlaySlots() const override;
+		const Overlay::Slot *	_endOverlaySlots() const override;
+		int					_sizeOfOverlaySlot() const override;
 
-		void				_onRequestRender(const RectSPX& rect, const Layer::Slot * pSlot) override;    // rect is in our coordinate system.
+		void				_onRequestRender(const RectSPX& rect, const Overlay::Slot * pSlot) override;    // rect is in our coordinate system.
 
 		// Internal
 
@@ -134,5 +134,5 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_DRAGNDROPLAYER_DOT_H
+#endif //WG_DRAGNDROPOVERLAY_DOT_H
 

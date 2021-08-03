@@ -22,7 +22,7 @@ include_directories(
 	baselibrary/numberlayouts
 	baselibrary/widgets
 	baselibrary/widgets/capsules
-	baselibrary/widgets/layers
+	baselibrary/widgets/overlays
 	baselibrary/widgets/lists
 	baselibrary/widgets/panels
 

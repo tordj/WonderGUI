@@ -20,24 +20,24 @@
 
 =========================================================================*/
 
-#ifndef WG_TOOLTIPLAYER_DOT_H
-#define WG_TOOLTIPLAYER_DOT_H
+#ifndef WG_TOOLTIPOVERLAY_DOT_H
+#define WG_TOOLTIPOVERLAY_DOT_H
 #pragma once
 
-#include <wg_layer.h>
+#include <wg_overlay.h>
 #include <wg_cslot.h>
 
 namespace wg
 {
 
 
-	class TooltipLayer;
-	typedef	StrongPtr<TooltipLayer>	TooltipLayer_p;
-	typedef	WeakPtr<TooltipLayer>	TooltipLayer_wp;
+	class TooltipOverlay;
+	typedef	StrongPtr<TooltipOverlay>	TooltipOverlay_p;
+	typedef	WeakPtr<TooltipOverlay>	TooltipOverlay_wp;
 
-	//____ TooltipLayer ____________________________________________________________
+	//____ TooltipOverlay ____________________________________________________________
 
-	class TooltipLayer : public Layer
+	class TooltipOverlay : public Overlay
 	{
 	public:
 
@@ -52,7 +52,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static TooltipLayer_p	create() { return TooltipLayer_p(new TooltipLayer()); }
+		static TooltipOverlay_p	create() { return TooltipOverlay_p(new TooltipOverlay()); }
 
 		//.____ Identification ________________________________________________
 
@@ -70,20 +70,20 @@ namespace wg
 
 
 	protected:
-		TooltipLayer();
-		virtual ~TooltipLayer();
-		virtual Widget* _newOfMyType() const override { return new TooltipLayer(); };
+		TooltipOverlay();
+		virtual ~TooltipOverlay();
+		virtual Widget* _newOfMyType() const override { return new TooltipOverlay(); };
 
 
-		class Slot : public Layer::Slot
+		class Slot : public Overlay::Slot
 		{
-			friend class TooltipLayer;
+			friend class TooltipOverlay;
 		public:
 			const static TypeInfo	TYPEINFO;
 
 		protected:
 
-			Slot(SlotHolder* pHolder) : Layer::Slot(pHolder) {}
+			Slot(SlotHolder* pHolder) : Overlay::Slot(pHolder) {}
 		};
 
 
@@ -110,9 +110,9 @@ namespace wg
 
 		// Overloaded from Layer
 
-		const Layer::Slot*	_beginLayerSlots() const override;
-		const Layer::Slot*	_endLayerSlots() const override;
-		int					_sizeOfLayerSlot() const override;
+		const Overlay::Slot*	_beginOverlaySlots() const override;
+		const Overlay::Slot*	_endOverlaySlots() const override;
+		int					_sizeOfOverlaySlot() const override;
 
 		Slot		m_tooltipSlot;
 
@@ -134,4 +134,4 @@ namespace wg
 	};
 
 } // namespace wg
-#endif //WG_POPUPLAYER_DOT_H
+#endif //WG_POPUPOVERLAY_DOT_H

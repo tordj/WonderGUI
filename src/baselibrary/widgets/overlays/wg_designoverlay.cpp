@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_designlayer.h>
+#include <wg_designoverlay.h>
 #include <wg_util.h>
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
@@ -40,15 +40,15 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CStaticSlotVector<DesignLayer::ToolboxSlot>;
+	template class CStaticSlotVector<DesignOverlay::ToolboxSlot>;
 
-	const TypeInfo DesignLayer::TYPEINFO = { "DesignLayer", &Layer::TYPEINFO };
-	const TypeInfo DesignLayer::ToolboxSlot::TYPEINFO = { "DesignLayer::ToolboxSlot", &Layer::Slot::TYPEINFO };
+	const TypeInfo DesignOverlay::TYPEINFO = { "DesignOverlay", &Overlay::TYPEINFO };
+	const TypeInfo DesignOverlay::ToolboxSlot::TYPEINFO = { "DesignOverlay::ToolboxSlot", &Overlay::Slot::TYPEINFO };
 
 
 	//____ constructor ____________________________________________________________
 
-	DesignLayer::DesignLayer() : palettes(this)
+	DesignOverlay::DesignOverlay() : palettes(this)
 	{
 		// Create default skins
 
@@ -81,21 +81,21 @@ namespace wg
 
 	//____ Destructor _____________________________________________________________
 
-	DesignLayer::~DesignLayer()
+	DesignOverlay::~DesignOverlay()
 	{
 	}
 
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& DesignLayer::typeInfo(void) const
+	const TypeInfo& DesignOverlay::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ setToolboxSkin() ___________________________________________________
 
-	void DesignLayer::setToolboxSkin(Skin * pSkin)
+	void DesignOverlay::setToolboxSkin(Skin * pSkin)
 	{
 		m_pToolboxSkin = pSkin;
 		_requestRender();
@@ -103,7 +103,7 @@ namespace wg
 
 	//____ setSelectionSkin() _________________________________________________
 
-	void DesignLayer::setSelectionSkin(Skin * pSkin)
+	void DesignOverlay::setSelectionSkin(Skin * pSkin)
 	{
 		m_pSelectionSkin = pSkin;
 		_requestRender();
@@ -111,7 +111,7 @@ namespace wg
 
 	//____ setEditMode() ______________________________________________________
 
-	void DesignLayer::setEditMode(bool bEditMode)
+	void DesignOverlay::setEditMode(bool bEditMode)
 	{
 		if (bEditMode != m_bEditMode)
 		{
@@ -122,7 +122,7 @@ namespace wg
 
 	//____ _matchingHeight() _______________________________________________________
 
-	spx DesignLayer::_matchingHeight(spx width, int scale) const
+	spx DesignOverlay::_matchingHeight(spx width, int scale) const
 	{
 		if (mainSlot._widget())
 			return mainSlot._widget()->_matchingHeight(width, scale);
@@ -132,7 +132,7 @@ namespace wg
 
 	//____ _matchingWidth() _______________________________________________________
 
-	spx DesignLayer::_matchingWidth(spx height, int scale) const
+	spx DesignOverlay::_matchingWidth(spx height, int scale) const
 	{
 		if (mainSlot._widget())
 			return mainSlot._widget()->_matchingWidth(height,scale);
@@ -142,7 +142,7 @@ namespace wg
 
 	//____ preferredSize() _____________________________________________________________
 
-	SizeSPX DesignLayer::_preferredSize(int scale) const
+	SizeSPX DesignOverlay::_preferredSize(int scale) const
 	{
 		if (mainSlot._widget())
 			return mainSlot._widget()->_preferredSize(scale);
@@ -152,7 +152,7 @@ namespace wg
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget *  DesignLayer::_findWidget(const CoordSPX& ofs, SearchMode mode)
+	Widget *  DesignOverlay::_findWidget(const CoordSPX& ofs, SearchMode mode)
 	{
 		if (m_bEditMode)
 		{
@@ -168,7 +168,7 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void DesignLayer::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)
+	void DesignOverlay::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
 		// Render skin
 
@@ -210,7 +210,7 @@ namespace wg
 
 	//____ _selectionGeo() ____________________________________________________
 
-	RectSPX DesignLayer::_selectionGeo() const
+	RectSPX DesignOverlay::_selectionGeo() const
 	{
 		if (!m_pSelectedWidget)
 			return RectSPX();
@@ -226,7 +226,7 @@ namespace wg
 
 	//____ _refreshRealGeo() __________________________________________________
 
-	void DesignLayer::_refreshRealGeo(ToolboxSlot * pSlot)
+	void DesignOverlay::_refreshRealGeo(ToolboxSlot * pSlot)
 	{
 		if (m_pSelectedWidget)
 		{
@@ -297,7 +297,7 @@ namespace wg
 
 	//____ _selectWidget() ____________________________________________________
 
-	void DesignLayer::_selectWidget(Widget * pWidget)
+	void DesignOverlay::_selectWidget(Widget * pWidget)
 	{
 		if (pWidget == m_pSelectedWidget)
 			return;
@@ -359,7 +359,7 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo&	DesignLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	DesignOverlay::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &mainSlot)
 			return DynamicSlot::TYPEINFO;
@@ -369,7 +369,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void DesignLayer::_childRequestResize( StaticSlot * pSlot )
+	void DesignOverlay::_childRequestResize( StaticSlot * pSlot )
 	{
 		if( pSlot == &mainSlot )
 			_requestResize();
@@ -382,10 +382,10 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void DesignLayer::_releaseChild(StaticSlot * pSlot)
+	void DesignOverlay::_releaseChild(StaticSlot * pSlot)
 	{
 		if (pSlot == &mainSlot )
-			Layer::_releaseChild(pSlot);
+			Overlay::_releaseChild(pSlot);
 		else
 		{
 			auto p = static_cast<ToolboxSlot*>(pSlot);
@@ -396,23 +396,23 @@ namespace wg
 		}
 	}
 
-	//____ _beginLayerSlots() __________________________________________________
+	//____ _beginOverlaySlots() __________________________________________________
 
-	const Layer::Slot * DesignLayer::_beginLayerSlots() const
+	const Overlay::Slot * DesignOverlay::_beginOverlaySlots() const
 	{
 		return palettes._begin();
 	}
 
-	//____ _endLayerSlots() ____________________________________________________
+	//____ _endOverlaySlots() ____________________________________________________
 
-	const Layer::Slot *  DesignLayer::_endLayerSlots() const
+	const Overlay::Slot *  DesignOverlay::_endOverlaySlots() const
 	{
 		return palettes._end();
 	}
 
-	//____ _sizeOfLayerSlot() __________________________________________________
+	//____ _sizeOfOverlaySlot() __________________________________________________
 
-	int DesignLayer::_sizeOfLayerSlot() const
+	int DesignOverlay::_sizeOfOverlaySlot() const
 	{
 		return sizeof(ToolboxSlot);
 	}
@@ -420,9 +420,9 @@ namespace wg
 
 	//____ _resize() ___________________________________________________________
 
-	void DesignLayer::_resize( const SizeSPX& sz, int scale )
+	void DesignOverlay::_resize( const SizeSPX& sz, int scale )
 	{
-		Layer::_resize(sz, scale);
+		Overlay::_resize(sz, scale);
 
 		// Refresh modal widgets geometry, their positions might have changed.
 
@@ -432,17 +432,17 @@ namespace wg
 
 	//____ _cloneContent() ______________________________________________________
 
-	void DesignLayer::_cloneContent( const Widget * _pOrg )
+	void DesignOverlay::_cloneContent( const Widget * _pOrg )
 	{
-		Layer::_cloneContent( _pOrg );
+		Overlay::_cloneContent( _pOrg );
 	}
 
 	//____ _receive() ______________________________________________________________
 
-	void DesignLayer::_receive( Msg * _pMsg )
+	void DesignOverlay::_receive( Msg * _pMsg )
 	{
 		if( !m_bEditMode )
-			Layer::_receive(_pMsg);
+			Overlay::_receive(_pMsg);
 
 
 		switch( _pMsg->type() )
@@ -520,12 +520,12 @@ namespace wg
 				break;
 		};
 
-		Layer::_receive(_pMsg);
+		Overlay::_receive(_pMsg);
 	}
 	
 	//____ _createGenericSlotTool() ________________________________________
 
-	Widget_p DesignLayer::_createGenericSlotTool(const StaticSlot& slot)
+	Widget_p DesignOverlay::_createGenericSlotTool(const StaticSlot& slot)
 	{
 		auto pColumns = PackPanel::create();
 		pColumns->setAxis(Axis::X);
@@ -582,7 +582,7 @@ namespace wg
 
 	//____ _createGenericWidgetTool() ______________________________________
 
-	Widget_p DesignLayer::_createGenericWidgetTool( Widget * pWidget )
+	Widget_p DesignOverlay::_createGenericWidgetTool( Widget * pWidget )
 	{
 		auto pColumns = PackPanel::create();
 		pColumns->setAxis(Axis::X);

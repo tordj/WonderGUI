@@ -58,8 +58,8 @@ namespace wg
 
 
 		using Container::_findWidget;
-		using Container::_getPopupLayer;
-		using Container::_getModalLayer;
+		using Container::_getPopupOverlay;
+		using Container::_getModalOverlay;
 	};
 
 	class OSlot : public StaticSlot

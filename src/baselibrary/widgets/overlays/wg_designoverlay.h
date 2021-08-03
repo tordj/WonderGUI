@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef WG_DESIGNLAYER_DOT_H
-#define WG_DESIGNLAYER_DOT_H
+#ifndef WG_DESIGNOVERLAY_DOT_H
+#define WG_DESIGNOVERLAY_DOT_H
 #pragma once
 
-#include <wg_layer.h>
+#include <wg_overlay.h>
 #include <wg_cstaticslotvector.h>
 #include <wg_packpanel.h>
 
@@ -32,22 +32,22 @@ namespace wg
 {
 
 
-	class DesignLayer;
-	typedef	StrongPtr<DesignLayer>	DesignLayer_p;
-	typedef	WeakPtr<DesignLayer>	DesignLayer_wp;
+	class DesignOverlay;
+	typedef	StrongPtr<DesignOverlay>	DesignOverlay_p;
+	typedef	WeakPtr<DesignOverlay>	DesignOverlay_wp;
 
-	//____ DesignLayer __________________________________________________________
+	//____ DesignOverlay __________________________________________________________
 
-	class DesignLayer : public Layer
+	class DesignOverlay : public Overlay
 	{
 
 	public:
 
 		//____ ToolboxSlot ___________________________________________________________
 
-		class ToolboxSlot : public Layer::Slot
+		class ToolboxSlot : public Overlay::Slot
 		{
-			friend class DesignLayer;
+			friend class DesignOverlay;
 			friend class CDesignToolboxSlotVector;
 			template<class S> friend class CStaticSlotVector;
 			template<class S> friend class SlotVector;
@@ -59,10 +59,10 @@ namespace wg
 			const static TypeInfo	TYPEINFO;
 
 		protected:
-			ToolboxSlot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
+			ToolboxSlot(SlotHolder * pHolder) : Overlay::Slot(pHolder) {}
 
-			inline SlotHolder * _holder() { return static_cast<SlotHolder*>(Layer::Slot::_holder()); }
-			inline const SlotHolder * _holder() const { return static_cast<const SlotHolder*>(Layer::Slot::_holder()); }
+			inline SlotHolder * _holder() { return static_cast<SlotHolder*>(Overlay::Slot::_holder()); }
+			inline const SlotHolder * _holder() const { return static_cast<const SlotHolder*>(Overlay::Slot::_holder()); }
 
 			const static bool safe_to_relocate = false;
 
@@ -76,7 +76,7 @@ namespace wg
 
 		class CToolboxVector : public CStaticSlotVector<ToolboxSlot>
 		{
-			friend class DesignLayer;
+			friend class DesignOverlay;
 
 			CToolboxVector(SlotHolder * pHolder) : CStaticSlotVector<ToolboxSlot>(pHolder) {}
 		};
@@ -84,7 +84,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static DesignLayer_p	create() { return DesignLayer_p(new DesignLayer()); }
+		static DesignOverlay_p	create() { return DesignOverlay_p(new DesignOverlay()); }
 
 		//.____ Components _______________________________________
 
@@ -117,9 +117,9 @@ namespace wg
 
 
 	protected:
-		DesignLayer();
-		virtual ~DesignLayer();
-		virtual Widget* _newOfMyType() const  override { return new DesignLayer(); };
+		DesignOverlay();
+		virtual ~DesignOverlay();
+		virtual Widget* _newOfMyType() const  override { return new DesignOverlay(); };
 
 
 	private:
@@ -134,16 +134,16 @@ namespace wg
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		//TODO: We should allow replacement of modal slots.
-		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
+		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Overlay::_replaceChild(pSlot, pNewChild); }
 
 		void			_childRequestResize( StaticSlot * pSlot ) override;
 		void			_releaseChild(StaticSlot * pSlot) override;
 
-		// Overloaded from Layer
+		// Overloaded from Overlay
 
-		const Layer::Slot * 	_beginLayerSlots() const override;
-		const Layer::Slot * 	_endLayerSlots() const override;
-		int					_sizeOfLayerSlot() const override;
+		const Overlay::Slot * 	_beginOverlaySlots() const override;
+		const Overlay::Slot * 	_endOverlaySlots() const override;
+		int					_sizeOfOverlaySlot() const override;
 
 		// Overloaded from Widget
 
@@ -178,25 +178,25 @@ namespace wg
 
 	//____ paletteSkin() ______________________________________________________
 
-	Skin_p DesignLayer::paletteSkin() const
+	Skin_p DesignOverlay::paletteSkin() const
 	{
 		return m_pToolboxSkin;
 	}
 
 	//____ selectionSkin() ____________________________________________________
 
-	Skin_p DesignLayer::selectionSkin() const
+	Skin_p DesignOverlay::selectionSkin() const
 	{
 		return m_pSelectionSkin;
 	}
 
 	//____ isEditMode() _______________________________________________________
 
-	bool DesignLayer::isEditMode() const
+	bool DesignOverlay::isEditMode() const
 	{
 		return m_bEditMode;
 	}
 
 
 } // namespace wg
-#endif //WG_DESIGNLAYER_DOT_H
+#endif //WG_DESIGNOVERLAY_DOT_H

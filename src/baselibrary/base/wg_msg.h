@@ -42,9 +42,9 @@ namespace wg
 
 	class MsgRouter;
 	class Widget;
-	class PopupLayer;
-	class ModalLayer;
-	class DragNDropLayer;
+	class PopupOverlay;
+	class ModalOverlay;
+	class DragNDropOverlay;
 
 	class CStaticTextDisplay;
 	class CTextDisplay;
@@ -662,7 +662,7 @@ namespace wg
 
    class DragNDropMsg : public Msg
 	{
-		friend class DragNDropLayer;
+		friend class DragNDropOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -694,7 +694,7 @@ namespace wg
 
 	class DropPickMsg : public DragNDropMsg
 	{
-		friend class DragNDropLayer;
+		friend class DragNDropOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -724,7 +724,7 @@ namespace wg
 
 	class DropProbeMsg : public DragNDropMsg
 	{
-		friend class DragNDropLayer;
+		friend class DragNDropOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -747,7 +747,7 @@ namespace wg
 
 	class DropEnterMsg : public DragNDropMsg
 	{
-		friend class DragNDropLayer;
+		friend class DragNDropOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -769,7 +769,7 @@ namespace wg
 
 	class DropMoveMsg : public DragNDropMsg
 	{
-		friend class DragNDropLayer;
+		friend class DragNDropOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -791,7 +791,7 @@ namespace wg
 
 	class DropLeaveMsg : public DragNDropMsg
 	{
-		friend class DragNDropLayer;
+		friend class DragNDropOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -809,7 +809,7 @@ namespace wg
 
 	class DropDeliverMsg : public DragNDropMsg
 	{
-		friend class DragNDropLayer;
+		friend class DragNDropOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -833,7 +833,7 @@ namespace wg
 
 	class DropCancelMsg : public DragNDropMsg
 	{
-		friend class DragNDropLayer;
+		friend class DragNDropOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -852,7 +852,7 @@ namespace wg
 
 	class DropCompleteMsg : public DragNDropMsg
 	{
-		friend class DragNDropLayer;
+		friend class DragNDropOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -1174,7 +1174,7 @@ namespace wg
 
 	class PopupClosedMsg : public Msg
 	{
-		friend class PopupLayer;
+		friend class PopupOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -1186,11 +1186,11 @@ namespace wg
 
 	};
 
-	//____ WidgetModalLayer messages _________________________________________________
+	//____ WidgetModalOverlay messages _________________________________________________
 
 	class ModalMoveOutsideMsg : public InputMsg
 	{
-		friend class ModalLayer;
+		friend class ModalOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -1203,7 +1203,7 @@ namespace wg
 
 	class ModalBlockedPressMsg : public MouseButtonMsg
 	{
-		friend class ModalLayer;
+		friend class ModalOverlay;
 	public:
 		//.____ Identification __________________________________________
 
@@ -1216,7 +1216,7 @@ namespace wg
 
 	class ModalBlockedReleaseMsg : public MouseButtonMsg
 	{
-		friend class ModalLayer;
+		friend class ModalOverlay;
 	public:
 		//.____ Identification __________________________________________
 

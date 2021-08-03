@@ -285,22 +285,22 @@ namespace wg
 
 
 
-	ModalLayer *  Container::_getModalLayer() const
+	ModalOverlay *  Container::_getModalOverlay() const
 	{
 		const Container * p = _parent();
 
 		if( p )
-			return p->_getModalLayer();
+			return p->_getModalOverlay();
 		else
 			return 0;
 	}
 
-	PopupLayer * Container::_getPopupLayer() const
+	PopupOverlay * Container::_getPopupOverlay() const
 	{
 		const Container * p = _parent();
 
 		if( p )
-			return p->_getPopupLayer();
+			return p->_getPopupOverlay();
 		else
 			return 0;
 	}

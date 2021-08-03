@@ -22,7 +22,7 @@
 
 #include <wg_popupopener.h>
 #include <wg_container.h>
-#include <wg_popuplayer.h>
+#include <wg_popupoverlay.h>
 #include <wg_msg.h>
 #include <wg_inputhandler.h>
 #include <wg_internal.h>
@@ -248,7 +248,7 @@ namespace wg
 
 	void PopupOpener::_open()
 	{
-		auto pLayer = OO(_parent())->_getPopupLayer();
+		auto pLayer = OO(_parent())->_getPopupOverlay();
 		if (pLayer && m_pPopup)
 		{
 			pLayer->popupSlots.pushFront(m_pPopup, this, globalGeo(), m_attachPoint, m_bOpenOnHover );
@@ -261,7 +261,7 @@ namespace wg
 
 	void PopupOpener::_close()
 	{
-		auto pLayer = OO(_parent())->_getPopupLayer();
+		auto pLayer = OO(_parent())->_getPopupOverlay();
 		if (pLayer && m_pPopup)
 		{
 			pLayer->popupSlots.pop(m_pPopup.rawPtr());

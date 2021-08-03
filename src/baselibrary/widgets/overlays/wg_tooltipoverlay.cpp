@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_tooltiplayer.h>
+#include <wg_tooltipoverlay.h>
 #include <wg_msg.h>
 #include <wg_internal.h>
 #include <wg_base.h>
@@ -31,40 +31,40 @@
 namespace wg
 {
 
-	const TypeInfo TooltipLayer::TYPEINFO = { "TooltipLayer", &Layer::TYPEINFO };
-	const TypeInfo TooltipLayer::Slot::TYPEINFO = { "TooltipLayer::Slot", &Layer::Slot::TYPEINFO };
+	const TypeInfo TooltipOverlay::TYPEINFO = { "TooltipOverlay", &Overlay::TYPEINFO };
+	const TypeInfo TooltipOverlay::Slot::TYPEINFO = { "TooltipOverlay::Slot", &Overlay::Slot::TYPEINFO };
 
 	using namespace Util;
 
 	//____ constructor ____________________________________________________________
 
-	TooltipLayer::TooltipLayer() : m_tooltipSlot(this)
+	TooltipOverlay::TooltipOverlay() : m_tooltipSlot(this)
 	{
 	}
 
 	//____ Destructor _____________________________________________________________
 
-	TooltipLayer::~TooltipLayer()
+	TooltipOverlay::~TooltipOverlay()
 	{
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& TooltipLayer::typeInfo(void) const
+	const TypeInfo& TooltipOverlay::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ setTooltipGenerator() ______________________________________________
 
-	void TooltipLayer::setTooltipGenerator(const std::function<Widget_p(Position& position, const Widget*, const Border&)> func)
+	void TooltipOverlay::setTooltipGenerator(const std::function<Widget_p(Position& position, const Widget*, const Border&)> func)
 	{
 		m_tooltipGenerator = func;
 	}
 
 	//____ setTooltipPosition() ______________________________________________
 
-	void TooltipLayer::setTooltipPosition(Placement placement, Border spacing, bool bTooltipAroundPointer)
+	void TooltipOverlay::setTooltipPosition(Placement placement, Border spacing, bool bTooltipAroundPointer)
 	{
 		m_defaultPosition.placement = placement;
 		m_defaultPosition.spacing = spacing;
@@ -73,7 +73,7 @@ namespace wg
 
 	//____ setDisplayTooltips() _______________________________________________
 
-	void TooltipLayer::setDisplayTooltips(bool bDisplay)
+	void TooltipOverlay::setDisplayTooltips(bool bDisplay)
 	{
 		m_bDisplayTooltips = bDisplay;
 		if (!m_bDisplayTooltips)
@@ -82,14 +82,14 @@ namespace wg
 
 	//____ _updateTooltipGeo() ________________________________________________
 
-	void TooltipLayer::_updateTooltipGeo()
+	void TooltipOverlay::_updateTooltipGeo()
 	{
 		//TODO: Implement!
 	}
 
 	//____ _openTooltip() _____________________________________________________
 
-	void TooltipLayer::_openTooltip()
+	void TooltipOverlay::_openTooltip()
 	{
 		if (!m_tooltipSlot.isEmpty() || !m_bDisplayTooltips )
 			return;
@@ -173,7 +173,7 @@ namespace wg
 
 	//____ _closeTooltip() ____________________________________________________
 
-	void TooltipLayer::_closeTooltip()
+	void TooltipOverlay::_closeTooltip()
 	{
 		if (!m_tooltipSlot.isEmpty())
 		{
@@ -191,9 +191,9 @@ namespace wg
 
 	//____ _receive() _________________________________________________________
 
-	void TooltipLayer::_receive(Msg* _pMsg)
+	void TooltipOverlay::_receive(Msg* _pMsg)
 	{
-		Layer::_receive(_pMsg);
+		Overlay::_receive(_pMsg);
 
 		switch (_pMsg->type())
 		{
@@ -249,7 +249,7 @@ namespace wg
 
 	//____ _update() __________________________________________________________
 
-	void TooltipLayer::_update(int microPassed, int64_t microsecTimestamp)
+	void TooltipOverlay::_update(int microPassed, int64_t microsecTimestamp)
 	{
 		if (Base::inputHandler()->isAnyButtonPressed())
 			return;
@@ -269,7 +269,7 @@ namespace wg
 
 	//____ _slotTypeInfo() ____________________________________________________
 
-	const TypeInfo& TooltipLayer::_slotTypeInfo(const StaticSlot* pSlot) const
+	const TypeInfo& TooltipOverlay::_slotTypeInfo(const StaticSlot* pSlot) const
 	{
 		if (pSlot == &mainSlot)
 			return DynamicSlot::TYPEINFO;
@@ -279,7 +279,7 @@ namespace wg
 
 	//____ _findWidget() ______________________________________________________
 
-	Widget* TooltipLayer::_findWidget(const CoordSPX& ofs, SearchMode mode)
+	Widget* TooltipOverlay::_findWidget(const CoordSPX& ofs, SearchMode mode)
 	{
 		if (!RectSPX(m_size).contains(ofs))
 			return nullptr;
@@ -299,12 +299,12 @@ namespace wg
 			return nullptr;
 		}
 		else
-			return Layer::_findWidget(ofs, mode);
+			return Overlay::_findWidget(ofs, mode);
 	}
 
 	//____ _childRequestResize() ______________________________________________
 
-	void TooltipLayer::_childRequestResize(StaticSlot* pSlot)
+	void TooltipOverlay::_childRequestResize(StaticSlot* pSlot)
 	{
 		if (pSlot == &mainSlot)
 			_requestResize();
@@ -312,16 +312,16 @@ namespace wg
 			_updateTooltipGeo();
 	}
 
-	//____ _beginLayerSlots() _________________________________________________
+	//____ _beginOverlaySlots() _________________________________________________
 
-	const Layer::Slot* TooltipLayer::_beginLayerSlots() const
+	const Overlay::Slot* TooltipOverlay::_beginOverlaySlots() const
 	{
 		return &m_tooltipSlot;
 	}
 
-	//____ _endLayerSlots() ______________________________________________________
+	//____ _endOverlaySlots() ______________________________________________________
 
-	const Layer::Slot* TooltipLayer::_endLayerSlots() const
+	const Overlay::Slot* TooltipOverlay::_endOverlaySlots() const
 	{
 		if (m_tooltipSlot.isEmpty())
 			return &m_tooltipSlot;
@@ -329,16 +329,16 @@ namespace wg
 		return &m_tooltipSlot + 1;
 	}
 
-	//____ _sizeOfLayerSlot() ____________________________________________________
+	//____ _sizeOfOverlaySlot() ____________________________________________________
 
-	int	TooltipLayer::_sizeOfLayerSlot() const
+	int	TooltipOverlay::_sizeOfOverlaySlot() const
 	{
 		return sizeof(Slot);
 	}
 
 	//____ _defaultTooltipGenerator() ____________________________________________
 
-	Widget_p TooltipLayer::_defaultTooltipGenerator(Position& position, const Widget* pHovered, const Border& margin)
+	Widget_p TooltipOverlay::_defaultTooltipGenerator(Position& position, const Widget* pHovered, const Border& margin)
 	{
 		BoxSkin_p pSkin = BoxSkin::create(1, Color::LightYellow, Color::Black);
 		pSkin->setContentPadding(2);

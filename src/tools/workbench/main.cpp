@@ -547,16 +547,16 @@ int main(int argc, char** argv)
 	// a button using scaled bitmaps.
 	//------------------------------------------------------
 
-	DragNDropLayer_p pDnDLayer = DragNDropLayer::create();
+	DragNDropOverlay_p pDnDLayer = DragNDropOverlay::create();
 	pRoot->skin = ColorSkin::create(Color::Black);
 	pRoot->slot = pDnDLayer;
 
-	PopupLayer_p pPopupLayer = PopupLayer::create();
-	pDnDLayer->mainSlot = pPopupLayer;
+	PopupOverlay_p pPopupOverlay = PopupOverlay::create();
+	pDnDLayer->mainSlot = pPopupOverlay;
 
 	LambdaPanel_p pBasePanel = LambdaPanel::create();
 	pBasePanel->skin = StaticColorSkin::create(Color::Burlywood);
-	pPopupLayer->mainSlot = pBasePanel;
+	pPopupOverlay->mainSlot = pBasePanel;
 
 	/*	Filler_p pBackground = Filler::create();
 		pBackground->setSkin( ColorSkin::create(Color::aqua) );
@@ -1852,12 +1852,12 @@ bool popupOpenerTest(CStandardSlot_p pEntry)
 	pButtonSkin->setContentPadding(2);
 
 
-	auto pPopupLayer = PopupLayer::create();
-	* pEntry = pPopupLayer;
-	pPopupLayer->skin = ColorSkin::create(Color::PaleGoldenrod);
+	auto pPopupOverlay = PopupOverlay::create();
+	* pEntry = pPopupOverlay;
+	pPopupOverlay->skin = ColorSkin::create(Color::PaleGoldenrod);
 
 	auto pFlex = FlexPanel::create();
-	pPopupLayer->mainSlot = pFlex;
+	pPopupOverlay->mainSlot = pFlex;
 
 	auto  pOpener = PopupOpener::create();
 	pOpener->skin = pButtonSkin;
@@ -1910,7 +1910,7 @@ bool modalLayerTest(CStandardSlot_p pEntry)
 
 	scrollbarTest(pEntry);
 
-	auto pLayer = ModalLayer::create();
+	auto pLayer = ModalOverlay::create();
 
 	pLayer->mainSlot = pEntry->widget();
 //	pLayer->mainSlot = *pEntry;
@@ -1955,7 +1955,7 @@ bool splitPanelTest(CStandardSlot_p pEntry)
 
 bool designLayerTest(CStandardSlot_p pSlot)
 {
-	auto pDesignLayer = DesignLayer::create();
+	auto pDesignOverlay = DesignOverlay::create();
 
 	auto pFlexPanel = FlexPanel::create();
 	pFlexPanel->skin = ColorSkin::create(Color::Thistle);
@@ -1976,10 +1976,10 @@ bool designLayerTest(CStandardSlot_p pSlot)
 	pFlexPanel->slots.pushFrontMovable(pFiller2, Rect(20, 20, 50, 50));
 	pFlexPanel->slots.pushFrontMovable(pFiller3, Rect(30, 30, 50, 50));
 
-	pDesignLayer->mainSlot = pFlexPanel;
-	*pSlot = pDesignLayer;
+	pDesignOverlay->mainSlot = pFlexPanel;
+	*pSlot = pDesignOverlay;
 
-	pDesignLayer->setEditMode(true);
+	pDesignOverlay->setEditMode(true);
 
 //	*pSlot = pFlexPanel;
 
@@ -2421,7 +2421,7 @@ bool animPlayerTest(CStandardSlot_p pSlot)
 
 bool selectBoxTest(CStandardSlot_p pSlot)
 {
-	PopupLayer_p pPopupLayer = PopupLayer::create();
+	PopupOverlay_p pPopupOverlay = PopupOverlay::create();
 
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
@@ -2450,9 +2450,9 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("ENTRY 2")));
 
 	pBaseLayer->slots.pushBackMovable(pSelectBox, Coord(10, 10));
-	pPopupLayer->mainSlot = pBaseLayer;
+	pPopupOverlay->mainSlot = pBaseLayer;
 
-	*pSlot = pPopupLayer;
+	*pSlot = pPopupOverlay;
 	return true;
 }
 
@@ -2660,7 +2660,7 @@ TextDisplay_p	s_pTooltip;
 
 bool tooltipLayerTest(CStandardSlot_p pSlot)
 {
-	auto pTooltipLayer = TooltipLayer::create();
+	auto pTooltipOverlay = TooltipOverlay::create();
 
 	s_pTooltip = TextDisplay::create();
 
@@ -2671,7 +2671,7 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 	s_pTooltip->skin = pSkin;
 
 
-	pTooltipLayer->setTooltipGenerator([](TooltipLayer::Position& position, const Widget* pHoveredWidget, const Border& widgetMargins) 
+	pTooltipOverlay->setTooltipGenerator([](TooltipOverlay::Position& position, const Widget* pHoveredWidget, const Border& widgetMargins) 
 	{
 		position.bAroundPointer = false;
 		position.placement = Placement::South;
@@ -2701,8 +2701,8 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 	pWidget2->setTooltip(String("This is widget 2."));
 	pBaseLayer->slots.pushBackMovable(pWidget2, Rect(150, 20, 100, 100));
 
-	pTooltipLayer->mainSlot = pBaseLayer;
-	*pSlot = pTooltipLayer;
+	pTooltipOverlay->mainSlot = pBaseLayer;
+	*pSlot = pTooltipOverlay;
 	return true;
 }
 

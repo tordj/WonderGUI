@@ -32,8 +32,8 @@ namespace wg
 {
 
 	class Patches;
-	class ModalLayer;
-	class PopupLayer;
+	class ModalOverlay;
+	class PopupOverlay;
 
 	class Container;
 	typedef	StrongPtr<Container>			Container_p;
@@ -142,8 +142,8 @@ namespace wg
 			virtual void			_firstSlotWithGeo( SlotWithGeo& package ) const = 0;
 			virtual void			_nextSlotWithGeo( SlotWithGeo& package ) const = 0;
 
-			virtual ModalLayer *	_getModalLayer() const;
-			virtual PopupLayer*		_getPopupLayer() const;
+			virtual ModalOverlay *	_getModalOverlay() const;
+			virtual PopupOverlay*		_getPopupOverlay() const;
 
 			virtual void			_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 			virtual void			_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip ) override;

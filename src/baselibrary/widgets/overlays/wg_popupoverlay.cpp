@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_popuplayer.h>
+#include <wg_popupoverlay.h>
 #include <wg_util.h>
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
@@ -35,15 +35,15 @@
 namespace wg
 {
 	using namespace Util;
-	template class CStaticSlotVector<PopupLayer::Slot>;
+	template class CStaticSlotVector<PopupOverlay::Slot>;
 
-	const TypeInfo PopupLayer::TYPEINFO = { "PopupLayer", &Layer::TYPEINFO };
-	const TypeInfo PopupLayer::Slot::TYPEINFO = { "PopupLayer::Slot", &Layer::Slot::TYPEINFO };
+	const TypeInfo PopupOverlay::TYPEINFO = { "PopupOverlay", &Overlay::TYPEINFO };
+	const TypeInfo PopupOverlay::Slot::TYPEINFO = { "PopupOverlay::Slot", &Overlay::Slot::TYPEINFO };
 
 
 	//____ pushFront() ________________________________________________
 
-	void PopupLayer::CSlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bAutoClose, Size maxSize )
+	void PopupOverlay::CSlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bAutoClose, Size maxSize )
 	{
 		int scale = _holder()->_scale();
 
@@ -52,7 +52,7 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void PopupLayer::CSlots::pop(int nb)
+	void PopupOverlay::CSlots::pop(int nb)
 	{
 		if( nb <= 0 )
 			return;
@@ -64,7 +64,7 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void PopupLayer::CSlots::pop(Widget * pPopup)
+	void PopupOverlay::CSlots::pop(Widget * pPopup)
 	{
 		int i = index(pPopup);
 		if (i > -1)
@@ -73,7 +73,7 @@ namespace wg
 
 	//____ clear() ________________________________________________
 
-	void PopupLayer::CSlots::clear()
+	void PopupOverlay::CSlots::clear()
 	{
 		if( isEmpty() )
 			return;
@@ -83,7 +83,7 @@ namespace wg
 
 	//____ _pushFront() ________________________________________________
 
-	void PopupLayer::CSlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bAutoClose, SizeSPX maxSize)
+	void PopupOverlay::CSlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bAutoClose, SizeSPX maxSize)
 	{
 		pPopup->releaseFromParent();
 		_holder()->_addSlot(pPopup, pOpener, launcherGeo, attachPoint, bAutoClose, maxSize);
@@ -92,26 +92,26 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	PopupLayer::PopupLayer() : popupSlots(this)
+	PopupOverlay::PopupOverlay() : popupSlots(this)
 	{
 	}
 
 	//____ Destructor _____________________________________________________________
 
-	PopupLayer::~PopupLayer()
+	PopupOverlay::~PopupOverlay()
 	{
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& PopupLayer::typeInfo(void) const
+	const TypeInfo& PopupOverlay::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ _updateGeo() __________________________________________________________
 
-	void PopupLayer::_updateGeo(Slot* pSlot, bool bDoResize)
+	void PopupOverlay::_updateGeo(Slot* pSlot, bool bDoResize)
 	{
 		// Get size of parent and correct launcherGeo
 
@@ -285,7 +285,7 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo&	PopupLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	PopupOverlay::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &mainSlot)
 			return DynamicSlot::TYPEINFO;
@@ -296,7 +296,7 @@ namespace wg
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget *  PopupLayer::_findWidget( const CoordSPX& ofs, SearchMode mode )
+	Widget *  PopupOverlay::_findWidget( const CoordSPX& ofs, SearchMode mode )
 	{
 		// MenuPanel has its own _findWidget() method since we need special treatment of
 		// searchmode ACTION_TARGET when a menu is open.
@@ -353,7 +353,7 @@ namespace wg
 
 	//____ _onRequestRender() _____________________________________________________
 
-	void PopupLayer::_onRequestRender( const RectSPX& rect, const Layer::Slot * pSlot )
+	void PopupOverlay::_onRequestRender( const RectSPX& rect, const Overlay::Slot * pSlot )
 	{
 		// Don not render anything if not visible
 
@@ -397,14 +397,14 @@ namespace wg
 	{
 	public:
 		WidgetRenderContext() : pSlot(0) {}
-		WidgetRenderContext(PopupLayer::Slot * pSlot, const RectSPX& geo) : pSlot(pSlot), geo(geo) {}
+		WidgetRenderContext(PopupOverlay::Slot * pSlot, const RectSPX& geo) : pSlot(pSlot), geo(geo) {}
 
-		PopupLayer::Slot *	pSlot;
+		PopupOverlay::Slot *	pSlot;
 		RectSPX		geo;
 		ClipPopData clipPop;
 	};
 
-	void PopupLayer::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)
+	void PopupOverlay::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
 		// Render container itself
 
@@ -488,14 +488,14 @@ namespace wg
 
 	//____ _maskPatches() _____________________________________________________
 
-//	void PopupLayer::_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode)
+//	void PopupOverlay::_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode)
 //	{
 //		Need to except children that are in states OpeningDelay, Opening and Closing.
 //	}
 
 	//____ _collectPatches() ___________________________________________________
 
-//	void PopupLayer::_collectPatches(Patches& container, const RectI& geo, const RectI& clip)
+//	void PopupOverlay::_collectPatches(Patches& container, const RectI& geo, const RectI& clip)
 //	{
 //		Need to make sure patches are not collected for children in mode "OpeningDelay"
 //		This might be handled by slotWithGeo() methods, depending on how what we choose.
@@ -505,23 +505,23 @@ namespace wg
 
 	//____ _resize() ___________________________________________________________
 
-	void PopupLayer::_resize( const SizeSPX& sz, int scale )
+	void PopupOverlay::_resize( const SizeSPX& sz, int scale )
 	{
-		Layer::_resize(sz, scale);
+		Overlay::_resize(sz, scale);
 	}
 
 	//____ _cloneContent() ______________________________________________________
 
-	void PopupLayer::_cloneContent( const Widget * _pOrg )
+	void PopupOverlay::_cloneContent( const Widget * _pOrg )
 	{
-		Layer::_cloneContent( _pOrg );
+		Overlay::_cloneContent( _pOrg );
 	}
 
 	//____ _receive() ______________________________________________________________
 
-	void PopupLayer::_receive( Msg * _pMsg )
+	void PopupOverlay::_receive( Msg * _pMsg )
 	{
-		Layer::_receive(_pMsg);
+		Overlay::_receive(_pMsg);
 
 		switch( _pMsg->type() )
 		{
@@ -710,7 +710,7 @@ namespace wg
 
 	//____ _update() _______________________________________________________________
 
-	void PopupLayer::_update(int microPassed, int64_t microsecTimestamp)
+	void PopupOverlay::_update(int microPassed, int64_t microsecTimestamp)
 	{
 		int ms = microPassed / 1000;
 
@@ -776,7 +776,7 @@ namespace wg
 
 	//____ _stealKeyboardFocus() _________________________________________________
 
-	void PopupLayer::_stealKeyboardFocus()
+	void PopupOverlay::_stealKeyboardFocus()
 	{
 		// Verify that we have a root
 
@@ -799,7 +799,7 @@ namespace wg
 
 	//____ _restoreKeyboardFocus() _________________________________________________
 
-	void PopupLayer::_restoreKeyboardFocus()
+	void PopupOverlay::_restoreKeyboardFocus()
 	{
 		// Verify that we have a root
 
@@ -816,7 +816,7 @@ namespace wg
 
 	//____ _childRequestResize() _______________________________________________
 
-	void PopupLayer::_childRequestResize(StaticSlot * pSlot)
+	void PopupOverlay::_childRequestResize(StaticSlot * pSlot)
 	{
 		if( pSlot == &mainSlot )
 			_requestResize();
@@ -826,13 +826,13 @@ namespace wg
 
 	//____ _releaseChild() _____________________________________________________
 
-	void PopupLayer::_releaseChild( StaticSlot * pSlot )
+	void PopupOverlay::_releaseChild( StaticSlot * pSlot )
 	{
 		if (pSlot == &mainSlot)
-			Layer::_releaseChild(pSlot);
+			Overlay::_releaseChild(pSlot);
 		else
 		{
-			// PopupLayer is stack-based, releasing a popup forces us to also close all ontop of it
+			// PopupOverlay is stack-based, releasing a popup forces us to also close all ontop of it
 
 			_removeSlots(0, popupSlots._index(static_cast<Slot*>(pSlot)) + 1);
 		}
@@ -840,7 +840,7 @@ namespace wg
 
 	//____ _addSlot() ____________________________________________________________
 
-	void PopupLayer::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectSPX& _launcherGeo, Placement _attachPoint, bool _bAutoClose, SizeSPX _maxSize)
+	void PopupOverlay::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectSPX& _launcherGeo, Placement _attachPoint, bool _bAutoClose, SizeSPX _maxSize)
 	{
 		Slot * pSlot = popupSlots._pushFrontEmpty();
 		pSlot->m_pOpener = _pOpener;
@@ -862,7 +862,7 @@ namespace wg
 
 	//____ _removeSlots() __________________________________________________
 
-	void PopupLayer::_removeSlots(int ofs, int nb)
+	void PopupOverlay::_removeSlots(int ofs, int nb)
 	{
 		MsgRouter * pEH = Base::msgRouter().rawPtr();
 
@@ -885,23 +885,23 @@ namespace wg
 			_stopReceiveUpdates();
 	}
 
-	//____ _beginLayerSlots() __________________________________________________
+	//____ _beginOverlaySlots() __________________________________________________
 
-	const Layer::Slot * PopupLayer::_beginLayerSlots() const
+	const Overlay::Slot * PopupOverlay::_beginOverlaySlots() const
 	{
 		return popupSlots._begin();
 	}
 
-	//____ _endLayerSlots() __________________________________________________
+	//____ _endOverlaySlots() __________________________________________________
 
-	const Layer::Slot * PopupLayer::_endLayerSlots() const
+	const Overlay::Slot * PopupOverlay::_endOverlaySlots() const
 	{
 		return popupSlots._end();
 	}
 
-	//____ _sizeOfLayerSlot() __________________________________________________
+	//____ _sizeOfOverlaySlot() __________________________________________________
 
-	int PopupLayer::_sizeOfLayerSlot() const
+	int PopupOverlay::_sizeOfOverlaySlot() const
 	{
 		return sizeof(Slot);
 	}

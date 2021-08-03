@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_dragndroplayer.h>
+#include <wg_dragndropoverlay.h>
 #include <wg_base.h>
 #include <wg_msgrouter.h>
 #include <wg_msg.h>
@@ -38,33 +38,33 @@
 namespace wg
 {
 	using namespace Util;
-	const TypeInfo DragNDropLayer::TYPEINFO = { "DragNDropLayer", &Layer::TYPEINFO };
-	const TypeInfo DragNDropLayer::Slot::TYPEINFO = { "DragNDropLayer::Slot", &Layer::Slot::TYPEINFO };
+	const TypeInfo DragNDropOverlay::TYPEINFO = { "DragNDropOverlay", &Overlay::TYPEINFO };
+	const TypeInfo DragNDropOverlay::Slot::TYPEINFO = { "DragNDropOverlay::Slot", &Overlay::Slot::TYPEINFO };
 
 	//____ constructor ____________________________________________________________
 
-	DragNDropLayer::DragNDropLayer() : m_dragSlot(this)
+	DragNDropOverlay::DragNDropOverlay() : m_dragSlot(this)
 	{
 		m_dragStartTreshold = 3;
 	}
 
 	//____ Destructor _____________________________________________________________
 
-	DragNDropLayer::~DragNDropLayer()
+	DragNDropOverlay::~DragNDropOverlay()
 	{
 	}
 
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& DragNDropLayer::typeInfo(void) const
+	const TypeInfo& DragNDropOverlay::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo&	DragNDropLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	DragNDropOverlay::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &mainSlot)
 			return DynamicSlot::TYPEINFO;
@@ -74,7 +74,7 @@ namespace wg
 
 	//____ _findWidget() __________________________________________________________
 
-	Widget * DragNDropLayer::_findWidget( const CoordSPX& ofs, SearchMode mode )
+	Widget * DragNDropOverlay::_findWidget( const CoordSPX& ofs, SearchMode mode )
 	{
 		// Widget being dragged is totally transparent to the mouse, so we just
 		// forward to our child.
@@ -100,7 +100,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void DragNDropLayer::_childRequestResize(StaticSlot * pSlot)
+	void DragNDropOverlay::_childRequestResize(StaticSlot * pSlot)
 	{
 		if( pSlot == &mainSlot )
 			_requestResize();
@@ -118,24 +118,24 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void DragNDropLayer::_releaseChild(StaticSlot * pSlot)
+	void DragNDropOverlay::_releaseChild(StaticSlot * pSlot)
 	{
 		if (pSlot == &mainSlot)
-			Layer::_releaseChild(pSlot);
+			Overlay::_releaseChild(pSlot);
 		else
 			_replaceDragWidget(nullptr);
 	}
 
-	//____ _beginLayerSlots() _______________________________________________
+	//____ _beginOverlaySlots() _______________________________________________
 
-	const Layer::Slot * DragNDropLayer::_beginLayerSlots() const
+	const Overlay::Slot * DragNDropOverlay::_beginOverlaySlots() const
 	{
 		return &m_dragSlot;
 	}
 
-	//____ _endLayerSlots() ________________________________________________
+	//____ _endOverlaySlots() ________________________________________________
 
-	const Layer::Slot * DragNDropLayer::_endLayerSlots() const
+	const Overlay::Slot * DragNDropOverlay::_endOverlaySlots() const
 	{
 		if( m_dragSlot._widget() )
 			return (&m_dragSlot) + 1;
@@ -143,16 +143,16 @@ namespace wg
 			return &m_dragSlot;
 	}
 
-	//____ _sizeOfLayerSlot() _______________________________________________
+	//____ _sizeOfOverlaySlot() _______________________________________________
 
-	int DragNDropLayer::_sizeOfLayerSlot() const
+	int DragNDropOverlay::_sizeOfOverlaySlot() const
 	{
 		return sizeof(Slot);
 	}
 
 	//____ _onRequestRender() _______________________________________________
 
-	void DragNDropLayer::_onRequestRender(const RectSPX& rect, const Layer::Slot * pSlot)
+	void DragNDropOverlay::_onRequestRender(const RectSPX& rect, const Overlay::Slot * pSlot)
 	{
 		// We don't mask against drag widget, it is assumed to be too small/transparent/irregular
 		// for that to make sense.
@@ -164,14 +164,14 @@ namespace wg
 
 	//____ _cloneContent() ____________________________________________________
 
-	void DragNDropLayer::_cloneContent( const Widget * _pOrg )
+	void DragNDropOverlay::_cloneContent( const Widget * _pOrg )
 	{
 
 	}
 
 	//____ _receive() __________________________________________________________
 
-	void DragNDropLayer::_receive( Msg * _pMsg )
+	void DragNDropOverlay::_receive( Msg * _pMsg )
 	{
 		switch (_pMsg->type())
 		{
@@ -437,12 +437,12 @@ namespace wg
 				break;
 		}
 
-		Layer::_receive(_pMsg);
+		Overlay::_receive(_pMsg);
 	}
 
 	//____ _cancel() ________________________________________________________________
 
-	void DragNDropLayer::_cancel( ModifierKeys modKeys, Coord pointerPos )
+	void DragNDropOverlay::_cancel( ModifierKeys modKeys, Coord pointerPos )
 	{
 		if( m_dragSlot._widget())
 		{
@@ -464,7 +464,7 @@ namespace wg
 
 	//____ _complete() _______________________________________________________________
 
-	void DragNDropLayer::_complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos )
+	void DragNDropOverlay::_complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos )
 	{
 		assert( !m_pTargeted );
 
@@ -482,7 +482,7 @@ namespace wg
 
 	//____ _replaceDragWidget() ______________________________________________________
 
-	void DragNDropLayer::_replaceDragWidget( Widget * pNewWidget )
+	void DragNDropOverlay::_replaceDragWidget( Widget * pNewWidget )
 	{
 
 		if (pNewWidget)
@@ -500,7 +500,7 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void DragNDropLayer::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
+	void DragNDropOverlay::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		// Generate drag widget as an image of picked widget if missing and needed./*/*
 
@@ -525,7 +525,7 @@ namespace wg
 			m_dragSlot._setSize(sz);
 		}
 
-		Layer::_render(pDevice,_canvas,_window);
+		Overlay::_render(pDevice,_canvas,_window);
 	}
 
 

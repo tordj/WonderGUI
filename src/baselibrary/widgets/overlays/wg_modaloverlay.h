@@ -20,23 +20,23 @@
 
 =========================================================================*/
 
-#ifndef WG_MODALLAYER_DOT_H
-#define WG_MODALLAYER_DOT_H
+#ifndef WG_MODALOVERLAY_DOT_H
+#define WG_MODALOVERLAY_DOT_H
 #pragma once
 
-#include <wg_layer.h>
+#include <wg_overlay.h>
 #include <wg_cdynamicslotvector.h>
 
 namespace wg
 {
 
-	class ModalLayer;
-	typedef	StrongPtr<ModalLayer>	ModalLayer_p;
-	typedef	WeakPtr<ModalLayer>		ModalLayer_wp;
+	class ModalOverlay;
+	typedef	StrongPtr<ModalOverlay>	ModalOverlay_p;
+	typedef	WeakPtr<ModalOverlay>		ModalOverlay_wp;
 
-	//____ ModalLayer __________________________________________________________
+	//____ ModalOverlay __________________________________________________________
 
-	class ModalLayer : public Layer
+	class ModalOverlay : public Overlay
 	{
 		friend class Slot;
 		friend class CSlots;
@@ -45,9 +45,9 @@ namespace wg
 
 		//____ Slot ___________________________________________________________
 
-		class Slot : public Layer::Slot
+		class Slot : public Overlay::Slot
 		{
-			friend class ModalLayer;
+			friend class ModalOverlay;
 			friend class CSlots;
 			template<class S> friend class CDynamicSlotVector;
 			template<class S> friend class SlotVector;
@@ -74,10 +74,10 @@ namespace wg
 
 		protected:
 
-			Slot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
+			Slot(SlotHolder * pHolder) : Overlay::Slot(pHolder) {}
 
-			inline ModalLayer * _holder() { return static_cast<ModalLayer*>(Layer::Slot::_holder()); }
-			inline const ModalLayer * _holder() const { return static_cast<const ModalLayer*>(Layer::Slot::_holder()); }
+			inline ModalOverlay * _holder() { return static_cast<ModalOverlay*>(Overlay::Slot::_holder()); }
+			inline const ModalOverlay * _holder() const { return static_cast<const ModalOverlay*>(Overlay::Slot::_holder()); }
 
 			const static bool safe_to_relocate = false;
 
@@ -98,7 +98,7 @@ namespace wg
 
 		class CSlots : public CDynamicSlotVector<Slot>
 		{
-			friend class ModalLayer;
+			friend class ModalOverlay;
 		public:
 
 			//.____ Content _______________________________________________________
@@ -117,15 +117,15 @@ namespace wg
 
 			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
 
-			const ModalLayer *	_holder() const { return static_cast<const ModalLayer*>(CDynamicSlotVector<Slot>::_holder()); }
-			ModalLayer *	_holder() { return static_cast<ModalLayer*>(CDynamicSlotVector<Slot>::_holder()); }
+			const ModalOverlay *	_holder() const { return static_cast<const ModalOverlay*>(CDynamicSlotVector<Slot>::_holder()); }
+			ModalOverlay *	_holder() { return static_cast<ModalOverlay*>(CDynamicSlotVector<Slot>::_holder()); }
 
 		};
 
 
 		//.____ Creation __________________________________________
 
-		static ModalLayer_p	create() { return ModalLayer_p(new ModalLayer()); }
+		static ModalOverlay_p	create() { return ModalOverlay_p(new ModalOverlay()); }
 
 		//.____ Components _______________________________________
 
@@ -144,16 +144,16 @@ namespace wg
 		SizeSPX			_preferredSize(int scale = -1) const override;
 
 	protected:
-		ModalLayer();
-		virtual ~ModalLayer();
-		virtual Widget* _newOfMyType() const  override { return new ModalLayer(); };
+		ModalOverlay();
+		virtual ~ModalOverlay();
+		virtual Widget* _newOfMyType() const  override { return new ModalOverlay(); };
 
 
 	private:
 
 		void            _refreshRealGeo(Slot * pSlot, bool bForceResize = false);
 
-		ModalLayer *	_getModalLayer() const  override { return const_cast<ModalLayer*>(this); }
+		ModalOverlay *	_getModalOverlay() const  override { return const_cast<ModalOverlay*>(this); }
 
 		void			_updateKeyboardFocus();
 
@@ -170,7 +170,7 @@ namespace wg
 		Widget *		_findWidget( const CoordSPX& ofs, SearchMode mode ) override;
 
 		//TODO: We should allow replacement of modal slots.
-		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
+		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Overlay::_replaceChild(pSlot, pNewChild); }
 
 		void			_childRequestResize( StaticSlot * pSlot ) override;
 		void			_releaseChild(StaticSlot * pSlot) override;
@@ -181,15 +181,15 @@ namespace wg
 		void			_hideSlots(StaticSlot *, int nb) override;
 		void			_unhideSlots(StaticSlot *, int nb) override;
 
-		// Overloaded from Layer
+		// Overloaded from Overlay
 
-		const Layer::Slot * _beginLayerSlots() const override;
-		const Layer::Slot * _endLayerSlots() const override;
-		int					_sizeOfLayerSlot() const override;
+		const Overlay::Slot * _beginOverlaySlots() const override;
+		const Overlay::Slot * _endOverlaySlots() const override;
+		int					_sizeOfOverlaySlot() const override;
 
 		Widget_wp			m_pBaseKeyFocus;
 	};
 
 
 } // namespace wg
-#endif //WG_MODALLAYER_DOT_H
+#endif //WG_MODALOVERLAY_DOT_H

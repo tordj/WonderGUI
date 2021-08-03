@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_LAYER_DOT_H
-#define WG_LAYER_DOT_H
+#ifndef WG_OVERLAY_DOT_H
+#define WG_OVERLAY_DOT_H
 #pragma once
 
 #include <wg_container.h>
@@ -31,34 +31,34 @@
 namespace wg
 {
 
-	class Layer;
-	typedef	StrongPtr<Layer>	Layer_p;
-	typedef	WeakPtr<Layer>		Layer_wp;
+	class Overlay;
+	typedef	StrongPtr<Overlay>	Overlay_p;
+	typedef	WeakPtr<Overlay>		Overlay_wp;
 
 
-	//____ Layer ______________________________________________________________
+	//____ Overlay ______________________________________________________________
 	/**
 	 * @brief	Base class for containers that provides layers of different kinds.
 	 *
-	 * Layer is the base class for widget containers that are used as layers.
+	 * Overlay is the base class for widget containers that are used as overlays.
 	 *
-	 * The concept of Layers in WonderGUI is that a layer is a widget that provides
-	 * a special purpose layer on top of the rest of the GUI hierarchy. The placement of
-	 * this layer in the widget hierarchy decides on what layer things such as popups,
+	 * The concept of Overlays in WonderGUI is that an Overlay is a widget that provides
+	 * a special purpose overlay on top of the rest of the GUI hierarchy. The placement of
+	 * this overlay in the widget hierarchy decides where things such as popups,
 	 * modal dialog boxes, tooltips, notifications etc appear. (note: not all of these
 	 * mentioned conceptual layers are implemented yet).
 	 *
 	 * For example, a Menubar widget that opens a menu will place the menu widget in the
-	 * first PopupLayer it encounters while traversing it ancestors from itself upwards.
-	 * In similar way, placing a widget in a ModalLayer will make it modal only against the
-	 * children of that specific layer.
+	 * first PopupOverlay it encounters while traversing it ancestors from itself upwards.
+	 * In similar way, placing a widget in a ModalOverlay will make it modal only against the
+	 * children of that specific overlay.
 	 *
-	 * All layers have a base child, which is the child through which the normal hierarchy continues.
+	 * All overlays have a base child, which is the child through which the normal hierarchy continues.
 	 * Children that resides within the layer itself are usually referred to as layer children.
 	 *
 	 **/
 
-	class Layer : public Container
+	class Overlay : public Container
 	{
 
 	public:
@@ -67,7 +67,7 @@ namespace wg
 
 		class Slot : public StaticSlot
 		{
-			friend class Layer;
+			friend class Overlay;
 
 		public:
 
@@ -109,7 +109,7 @@ namespace wg
 		SizeSPX			_preferredSize(int scale = -1) const override;
 
 	protected:
-		Layer();
+		Overlay();
 
 		// Overloaded from Container
 
@@ -142,22 +142,22 @@ namespace wg
 
 		virtual	void	_onRequestRender( const RectSPX& rect, const Slot * pSlot );	// rect is in our coordinate system.
 
-		virtual const Slot * _beginLayerSlots() const = 0;
-		virtual const Slot * _endLayerSlots() const = 0;
-		virtual int			_sizeOfLayerSlot() const = 0;
+		virtual const Slot * _beginOverlaySlots() const = 0;
+		virtual const Slot * _endOverlaySlots() const = 0;
+		virtual int			_sizeOfOverlaySlot() const = 0;
 
-		inline Slot * _beginLayerSlots() { return const_cast<Slot*>(const_cast<const Layer*>(this)->_beginLayerSlots()); }
-		inline Slot * _endLayerSlots() { return const_cast<Slot*>(const_cast<const Layer*>(this)->_endLayerSlots()); }
+		inline Slot * _beginOverlaySlots() { return const_cast<Slot*>(const_cast<const Overlay*>(this)->_beginOverlaySlots()); }
+		inline Slot * _endOverlaySlots() { return const_cast<Slot*>(const_cast<const Overlay*>(this)->_endOverlaySlots()); }
 
-		inline Slot * _incLayerSlot( Slot * pSlot, int sizeOf ) const { return (Slot*) (((char*)pSlot)+sizeOf); }
-		inline const Slot * _incLayerSlot( const Slot * pSlot, int sizeOf ) const { return (const Slot*) (((char*)pSlot)+sizeOf); }
+		inline Slot * _incOverlaySlot( Slot * pSlot, int sizeOf ) const { return (Slot*) (((char*)pSlot)+sizeOf); }
+		inline const Slot * _incOverlaySlot( const Slot * pSlot, int sizeOf ) const { return (const Slot*) (((char*)pSlot)+sizeOf); }
 
-		inline Slot * _decLayerSlot( Slot * pSlot, int sizeOf ) const { return (Slot*) (((char*)pSlot)-sizeOf); }
-		inline const Slot * _decLayerSlot( const Slot * pSlot, int sizeOf ) const { return (const Slot*) (((char*)pSlot)-sizeOf); }
+		inline Slot * _decOverlaySlot( Slot * pSlot, int sizeOf ) const { return (Slot*) (((char*)pSlot)-sizeOf); }
+		inline const Slot * _decOverlaySlot( const Slot * pSlot, int sizeOf ) const { return (const Slot*) (((char*)pSlot)-sizeOf); }
 
 	};
 
 
 
 } // namespace wg
-#endif //WG_LAYER_DOT_H
+#endif //WG_OVERLAY_DOT_H

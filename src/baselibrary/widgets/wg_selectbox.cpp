@@ -25,7 +25,7 @@
 #include <wg_util.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
-#include <wg_popuplayer.h>
+#include <wg_popupoverlay.h>
 #include <wg_inputhandler.h>
 #include <wg_internal.h>
 #include <wg_cdynamicvector.impl.h>
@@ -299,7 +299,7 @@ namespace wg
 
 	void SelectBox::_open()
 	{
-		auto pLayer = OO(_parent())->_getPopupLayer();
+		auto pLayer = OO(_parent())->_getPopupOverlay();
 		if (pLayer && m_pListCanvas)
 		{
 			pLayer->popupSlots.pushFront(m_pListCanvas, this, globalGeo(), Placement::SouthWest, false);
@@ -312,7 +312,7 @@ namespace wg
 
 	void SelectBox::_close()
 	{
-		auto pLayer = OO(_parent())->_getPopupLayer();
+		auto pLayer = OO(_parent())->_getPopupOverlay();
 		if (pLayer && m_pListCanvas)
 		{
 			pLayer->popupSlots.pop(m_pListCanvas.rawPtr());

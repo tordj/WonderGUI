@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef WG_POPUPLAYER_DOT_H
-#define WG_POPUPLAYER_DOT_H
+#ifndef WG_POPUPOVERLAY_DOT_H
+#define WG_POPUPOVERLAY_DOT_H
 #pragma once
 
-#include <wg_layer.h>
+#include <wg_overlay.h>
 #include <wg_cstaticslotvector.h>
 
 #include <vector>
@@ -33,13 +33,13 @@ namespace wg
 {
 
 
-	class PopupLayer;
-	typedef	StrongPtr<PopupLayer>	PopupLayer_p;
-	typedef	WeakPtr<PopupLayer>	PopupLayer_wp;
+	class PopupOverlay;
+	typedef	StrongPtr<PopupOverlay>	PopupOverlay_p;
+	typedef	WeakPtr<PopupOverlay>	PopupOverlay_wp;
 
-	//____ PopupLayer ____________________________________________________________
+	//____ PopupOverlay ____________________________________________________________
 
-	class PopupLayer : public Layer
+	class PopupOverlay : public Overlay
 	{
 		friend class Slot;
 		friend class CSlots;
@@ -48,9 +48,9 @@ namespace wg
 
 		//____ Slot ___________________________________________________________
 
-		class Slot : public Layer::Slot
+		class Slot : public Overlay::Slot
 		{
-			friend class PopupLayer;
+			friend class PopupOverlay;
 			friend class CSlots;
 			friend class CStaticSlotVector<Slot>;
 
@@ -65,7 +65,7 @@ namespace wg
 
 			inline const RectSPX& _geo() const { return m_geo; }
 
-			Slot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
+			Slot(SlotHolder * pHolder) : Overlay::Slot(pHolder) {}
 
 			enum class State
 			{
@@ -97,7 +97,7 @@ namespace wg
 
 		class CSlots : public CStaticSlotVector<Slot>
 		{
-			friend class PopupLayer;
+			friend class PopupOverlay;
 
 		public:
 
@@ -121,14 +121,14 @@ namespace wg
 
 			CSlots(SlotHolder * pHolder) : CStaticSlotVector<Slot>(pHolder) {}
 
-			const PopupLayer *	_holder() const { return static_cast<const PopupLayer*>(CStaticSlotVector<Slot>::_holder()); }
-			PopupLayer *	_holder() { return static_cast<PopupLayer*>(CStaticSlotVector<Slot>::_holder()); }
+			const PopupOverlay *	_holder() const { return static_cast<const PopupOverlay*>(CStaticSlotVector<Slot>::_holder()); }
+			PopupOverlay *	_holder() { return static_cast<PopupOverlay*>(CStaticSlotVector<Slot>::_holder()); }
 		};
 
 
 		//.____ Creation __________________________________________
 
-		static PopupLayer_p	create() { return PopupLayer_p(new PopupLayer()); }
+		static PopupOverlay_p	create() { return PopupOverlay_p(new PopupOverlay()); }
 
 		//.____ Components _______________________________________
 
@@ -140,11 +140,11 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 	protected:
-		PopupLayer();
-		virtual ~PopupLayer();
-		virtual Widget* _newOfMyType() const override { return new PopupLayer(); };
+		PopupOverlay();
+		virtual ~PopupOverlay();
+		virtual Widget* _newOfMyType() const override { return new PopupOverlay(); };
 
-		PopupLayer *	_getPopupLayer() const override { return const_cast<PopupLayer*>(this); }
+		PopupOverlay *	_getPopupOverlay() const override { return const_cast<PopupOverlay*>(this); }
 
 		void			_stealKeyboardFocus();
 		void			_restoreKeyboardFocus();
@@ -158,18 +158,18 @@ namespace wg
 
 
 		// Only base slot can have child replaced, we need error handling...
-		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
+		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Overlay::_replaceChild(pSlot, pNewChild); }
 
 		void			_childRequestResize(StaticSlot * pSlot) override;
 		void			_releaseChild(StaticSlot * pSlot) override;
 
 		// Overloaded from Layer
 
-		const Layer::Slot * _beginLayerSlots() const override;
-		const Layer::Slot * _endLayerSlots() const override;
-		int					_sizeOfLayerSlot() const override;
+		const Overlay::Slot * _beginOverlaySlots() const override;
+		const Overlay::Slot * _endOverlaySlots() const override;
+		int					_sizeOfOverlaySlot() const override;
 
-		void				_onRequestRender(const RectSPX& rect, const Layer::Slot * pSlot) override;	// rect is in our coordinate system.
+		void				_onRequestRender(const RectSPX& rect, const Overlay::Slot * pSlot) override;	// rect is in our coordinate system.
 
 		// Overloaded from container
 
@@ -201,4 +201,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_POPUPLAYER_DOT_H
+#endif //WG_POPUPOVERLAY_DOT_H

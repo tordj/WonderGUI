@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_modallayer.h>
+#include <wg_modaloverlay.h>
 #include <wg_util.h>
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
@@ -35,17 +35,17 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CDynamicSlotVector<ModalLayer::Slot>;
+	template class CDynamicSlotVector<ModalOverlay::Slot>;
 
-	const TypeInfo ModalLayer::TYPEINFO = { "ModalLayer", &Layer::TYPEINFO };
-	const TypeInfo ModalLayer::Slot::TYPEINFO = { "ModalLayer::Slot", &Layer::Slot::TYPEINFO };
+	const TypeInfo ModalOverlay::TYPEINFO = { "ModalOverlay", &Overlay::TYPEINFO };
+	const TypeInfo ModalOverlay::Slot::TYPEINFO = { "ModalOverlay::Slot", &Overlay::Slot::TYPEINFO };
 
 	//TODO: Improve Modal geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
 
 
 	//____ Slot::setOrigo() ____________________________________________________
 
-	void ModalLayer::Slot::setOrigo(const Placement origo)
+	void ModalOverlay::Slot::setOrigo(const Placement origo)
 	{
 		m_origo = origo;
 		_holder()->_refreshRealGeo(this);
@@ -53,7 +53,7 @@ namespace wg
 
 	//____ Slot::setGeo() ____________________________________________________
 
-	void ModalLayer::Slot::setGeo(const Rect& geometry)
+	void ModalOverlay::Slot::setGeo(const Rect& geometry)
 	{
 		m_placementGeo = geometry;
 		_holder()->_refreshRealGeo(this);
@@ -61,7 +61,7 @@ namespace wg
 
 	//____ Slot::setOffset() ____________________________________________________
 
-	void ModalLayer::Slot::setOffset(const Coord& ofs)
+	void ModalOverlay::Slot::setOffset(const Coord& ofs)
 	{
 		m_placementGeo.setPos(ofs);
 		_holder()->_refreshRealGeo(this);
@@ -69,7 +69,7 @@ namespace wg
 
 	//____ Slot::setSize() ____________________________________________________
 
-	void ModalLayer::Slot::setSize(const Size& size)
+	void ModalOverlay::Slot::setSize(const Size& size)
 	{
 		m_placementGeo.setSize(size);
 		_holder()->_refreshRealGeo(this);
@@ -77,7 +77,7 @@ namespace wg
 
 	//____ Slot::move() ____________________________________________________
 
-	void ModalLayer::Slot::move(const Coord& ofs)
+	void ModalOverlay::Slot::move(const Coord& ofs)
 	{
 		m_placementGeo += ofs;
 		_holder()->_refreshRealGeo(this);
@@ -86,7 +86,7 @@ namespace wg
 
 	//____ pushFront() _________________________________________________________________
 
-	ModalLayer::CSlots::iterator ModalLayer::CSlots::pushFront(const Widget_p& pWidget, const Rect& geometry, Placement origo)
+	ModalOverlay::CSlots::iterator ModalOverlay::CSlots::pushFront(const Widget_p& pWidget, const Rect& geometry, Placement origo)
 	{
 		//TODO: Assert
 
@@ -103,7 +103,7 @@ namespace wg
 
 	//____ pushBack() _________________________________________________________________
 
-	ModalLayer::CSlots::iterator ModalLayer::CSlots::pushBack(const Widget_p& pWidget, const Rect& geometry, Placement origo)
+	ModalOverlay::CSlots::iterator ModalOverlay::CSlots::pushBack(const Widget_p& pWidget, const Rect& geometry, Placement origo)
 	{
 		//TODO: Assert
 
@@ -120,7 +120,7 @@ namespace wg
 
 	//____ _refreshRealGeo() __________________________________________________
 
-	void ModalLayer::_refreshRealGeo( Slot * pSlot, bool bForceResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
+	void ModalOverlay::_refreshRealGeo( Slot * pSlot, bool bForceResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
 		RectSPX placementGeo = align(ptsToSpx(pSlot->m_placementGeo,m_scale));
 
@@ -156,7 +156,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void ModalLayer::_childRequestResize( StaticSlot * pSlot )
+	void ModalOverlay::_childRequestResize( StaticSlot * pSlot )
 	{
 		if( pSlot == &mainSlot )
 			_requestResize();
@@ -169,10 +169,10 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void ModalLayer::_releaseChild(StaticSlot * pSlot)
+	void ModalOverlay::_releaseChild(StaticSlot * pSlot)
 	{
 		if (pSlot == &mainSlot)
-			Layer::_releaseChild(pSlot);
+			Overlay::_releaseChild(pSlot);
 		else
 		{
 			_willEraseSlots(pSlot, 1);
@@ -182,27 +182,27 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	ModalLayer::ModalLayer() : modalSlots(this)
+	ModalOverlay::ModalOverlay() : modalSlots(this)
 	{
 	}
 
 	//____ Destructor _____________________________________________________________
 
-	ModalLayer::~ModalLayer()
+	ModalOverlay::~ModalOverlay()
 	{
 	}
 
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& ModalLayer::typeInfo(void) const
+	const TypeInfo& ModalOverlay::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ _matchingHeight() _______________________________________________________
 
-	spx ModalLayer::_matchingHeight( spx width, int scale ) const
+	spx ModalOverlay::_matchingHeight( spx width, int scale ) const
 	{
 		if( mainSlot._widget() )
 			return mainSlot._widget()->_matchingHeight( width, scale );
@@ -212,7 +212,7 @@ namespace wg
 
 	//____ _matchingWidth() _______________________________________________________
 
-	spx ModalLayer::_matchingWidth( spx height, int scale ) const
+	spx ModalOverlay::_matchingWidth( spx height, int scale ) const
 	{
 		if( mainSlot._widget() )
 			return mainSlot._widget()->_matchingWidth( height, scale );
@@ -222,7 +222,7 @@ namespace wg
 
 	//____ _preferredSize() _____________________________________________________________
 
-	SizeSPX ModalLayer::_preferredSize(int scale) const
+	SizeSPX ModalOverlay::_preferredSize(int scale) const
 	{
 		if( mainSlot._widget() )
 			return mainSlot._widget()->_preferredSize(scale);
@@ -232,7 +232,7 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo&	ModalLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	ModalOverlay::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &mainSlot)
 			return DynamicSlot::TYPEINFO;
@@ -242,7 +242,7 @@ namespace wg
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget *  ModalLayer::_findWidget( const CoordSPX& ofs, SearchMode mode )
+	Widget *  ModalOverlay::_findWidget( const CoordSPX& ofs, SearchMode mode )
 	{
 		// In search mode ACTION_TARGET we always return either the topmost non-hidden modal Widget (or its children),
 		// or us.
@@ -291,7 +291,7 @@ namespace wg
 
 	//____ _updateKeyboardFocus() _______________________________________________________
 
-	void ModalLayer::_updateKeyboardFocus()
+	void ModalOverlay::_updateKeyboardFocus()
 	{
 		// Get message handler, verify that we have a root
 
@@ -365,7 +365,7 @@ namespace wg
 
 	//____ _didAddSlots() __________________________________________________
 
-	void ModalLayer::_didAddSlots(StaticSlot * _pSlot, int nb)
+	void ModalOverlay::_didAddSlots(StaticSlot * _pSlot, int nb)
 	{
 		Slot * pSlot = (Slot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )
@@ -376,7 +376,7 @@ namespace wg
 
 	//____ _didMoveSlots() ___________________________________________________________
 
-	void ModalLayer::_didMoveSlots(StaticSlot * _pFrom, StaticSlot * _pTo, int nb)
+	void ModalOverlay::_didMoveSlots(StaticSlot * _pFrom, StaticSlot * _pTo, int nb)
 	{
 		if (nb > 1)
 		{
@@ -423,7 +423,7 @@ namespace wg
 
 	//____ _willEraseSlots() __________________________________________________
 
-	void ModalLayer::_willEraseSlots(StaticSlot * _pSlot, int nb)
+	void ModalOverlay::_willEraseSlots(StaticSlot * _pSlot, int nb)
 	{
 		Slot * pSlot = (Slot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )
@@ -437,36 +437,36 @@ namespace wg
 
 	//____ _hideSlots() _____________________________________________________________
 
-	void ModalLayer::_hideSlots(StaticSlot * _pSlot, int nb)
+	void ModalOverlay::_hideSlots(StaticSlot * _pSlot, int nb)
 	{
 		// TODO: Implement!!!
 	}
 
 	//____ _unhideSlots() _____________________________________________________________
 
-	void ModalLayer::_unhideSlots(StaticSlot * _pSlot, int nb)
+	void ModalOverlay::_unhideSlots(StaticSlot * _pSlot, int nb)
 	{
 		// TODO: Implement!!!
 	}
 
 
-	//____ _beginLayerSlots() __________________________________________________
+	//____ _beginOverlaySlots() __________________________________________________
 
-	const Layer::Layer::Slot * ModalLayer::_beginLayerSlots() const
+	const Overlay::Overlay::Slot * ModalOverlay::_beginOverlaySlots() const
 	{
 		return modalSlots._begin();
 	}
 
-	//____ _endLayerSlots() ____________________________________________________
+	//____ _endOverlaySlots() ____________________________________________________
 
-	const Layer::Layer::Slot *  ModalLayer::_endLayerSlots() const
+	const Overlay::Overlay::Slot *  ModalOverlay::_endOverlaySlots() const
 	{
 		return modalSlots._end();
 	}
 
-	//____ _sizeOfLayerSlot() __________________________________________________
+	//____ _sizeOfOverlaySlot() __________________________________________________
 
-	int ModalLayer::_sizeOfLayerSlot() const
+	int ModalOverlay::_sizeOfOverlaySlot() const
 	{
 		return sizeof(Slot);
 	}
@@ -474,9 +474,9 @@ namespace wg
 
 	//____ _resize() ___________________________________________________________
 
-	void ModalLayer::_resize( const SizeSPX& sz, int scale )
+	void ModalOverlay::_resize( const SizeSPX& sz, int scale )
 	{
-		Layer::_resize(sz,scale);
+		Overlay::_resize(sz,scale);
 
 		// Refresh modal widgets geometry, their positions might have changed.
 
@@ -486,16 +486,16 @@ namespace wg
 
 	//____ _cloneContent() ______________________________________________________
 
-	void ModalLayer::_cloneContent( const Widget * _pOrg )
+	void ModalOverlay::_cloneContent( const Widget * _pOrg )
 	{
-		Layer::_cloneContent( _pOrg );
+		Overlay::_cloneContent( _pOrg );
 	}
 
 	//____ _receive() ______________________________________________________________
 
-	void ModalLayer::_receive( Msg * _pMsg )
+	void ModalOverlay::_receive( Msg * _pMsg )
 	{
-		Layer::_receive(_pMsg);
+		Overlay::_receive(_pMsg);
 
 		if( _pMsg->isInstanceOf( InputMsg::TYPEINFO ) )
 		{

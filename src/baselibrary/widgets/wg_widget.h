@@ -921,7 +921,7 @@ namespace wg
 	 * @brief Set widgets tooltip string.
 	 *
 	 * Sets a string that is used as the tooltip for the widget. A tooltip with this
-	 * text will be displayed by the TooltipLayer (if one is present in the hierarchy) when 
+	 * text will be displayed by the TooltipOverlay (if one is present in the hierarchy) when 
 	 * the mouse hovers over the widget.
 	 *
 	 * Note: A widget may override the tooltip set by this method and display another 
