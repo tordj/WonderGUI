@@ -26,7 +26,7 @@
 
 #include <wg_geocomponent.h>
 #include <wg_textstyle.h>
-#include <wg_textmapper.h>
+#include <wg_textlayout.h>
 #include <wg_base.h>
 
 namespace wg
@@ -43,8 +43,8 @@ namespace wg
 
 	class CText : public GeoComponent, protected Text
 	{
-		friend class TextMapper;
-		friend class StdTextMapper;
+		friend class TextLayout;
+		friend class BasicTextLayout;
 	public:
 
 		CText(Holder * pHolder );
@@ -62,9 +62,9 @@ namespace wg
 		virtual void		clearStyle();
 		TextStyle_p			style() const { return m_pStyle; }
 
-		virtual void		setTextMapper(TextMapper * pTextMapper);
-		virtual void		clearTextMapper();
-		TextMapper_p		textMapper() const { return m_pTextMapper; }
+		virtual void		setLayout(TextLayout * pLayout);
+		virtual void		clearLayout();
+		TextLayout_p		layout() const { return m_pLayout; }
 
 		//.____ State _______________________________________________
 
@@ -78,9 +78,9 @@ namespace wg
 
 		virtual void		_clear();
 
-		virtual void		_set(const CharSeq& seq);
-		virtual void		_set(const CharBuffer * buffer);
-		virtual void		_set(const String& str);
+		virtual void		_setText(const CharSeq& seq);
+		virtual void		_setText(const CharBuffer * buffer);
+		virtual void		_setText(const String& str);
 
 		virtual int			_append(const CharSeq& seq);
 		virtual int			_insert(int ofs, const CharSeq& seq);
@@ -118,7 +118,7 @@ namespace wg
 
 		virtual RectSPX		_rectForRange( int ofs, int length ) const;
 
-		TextMapper *		_textMapper() const { return m_pTextMapper ? m_pTextMapper.rawPtr() : Base::defaultTextMapper().rawPtr(); }
+		TextLayout *		_layout() const { return m_pLayout ? m_pLayout.rawPtr() : Base::defaultTextLayout().rawPtr(); }
 		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 
 		// Needed by Text
@@ -149,7 +149,7 @@ namespace wg
 		State				m_state;
 		TextStyle_p			m_pStyle;
 		CharBuffer			m_charBuffer;
-		TextMapper_p		m_pTextMapper;
+		TextLayout_p		m_pLayout;
 
 		// Here so it can be shared by CTextEditor and CValueEditor
 

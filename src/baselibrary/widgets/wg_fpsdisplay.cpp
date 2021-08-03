@@ -26,7 +26,7 @@
 #include	<wg_color.h>
 #include	<wg_char.h>
 #include	<wg_base.h>
-#include	<wg_stdtextmapper.h>
+#include	<wg_basictextlayout.h>
 #include	<wg_msgrouter.h>
 #include	<wg_internal.h>
 
@@ -47,17 +47,17 @@ namespace wg
 
 		m_tickBufferOfs		= 0;
 
-		labels.set( "Now:\nMin:\nAvg:\nMax:" );
+		labels.setText( "Now:\nMin:\nAvg:\nMax:" );
 
 
 		// We set our own default text textMappers since we rely on text placement
 		// to present the information in a readable way.
 
-		labels.setTextMapper( StdTextMapper::create() );
+		labels.setLayout( BasicTextLayout::create() );
 
-		StdTextMapper_p pValueTextMapper = StdTextMapper::create();
-		pValueTextMapper->setPlacement( Placement::NorthEast );
-		values.setTextMapper(pValueTextMapper);
+		BasicTextLayout_p pValueTextLayout = BasicTextLayout::create();
+		pValueTextLayout->setPlacement( Placement::NorthEast );
+		values.setLayout(pValueTextLayout);
 
 		_startReceiveUpdates();
 	}
@@ -172,7 +172,7 @@ namespace wg
 
 		char	temp[100];
 		snprintf( temp, 100, "%.2f\n%.2f\n%.2f\n%.2f", fpsCurrent, fpsMin, fpsAvg, fpsMax );
-		OO(values)._set(temp);
+		OO(values)._setText(temp);
 
 		_requestRender();
 	}

@@ -45,9 +45,9 @@ namespace wg
 	class WeakPtrHub;
 	class MemStack;
 	class MsgRouter;
-	class ValuePresenter;
+	class NumberLayout;
 	class InputHandler;
-	class TextMapper;
+	class TextLayout;
 	class Caret;
 	class TextStyle;
 	class Context;
@@ -55,9 +55,9 @@ namespace wg
 	class Receiver;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
-	typedef	StrongPtr<ValuePresenter>	ValuePresenter_p;
+	typedef	StrongPtr<NumberLayout>	NumberLayout_p;
 	typedef	StrongPtr<InputHandler>		InputHandler_p;
-	typedef	StrongPtr<TextMapper>		TextMapper_p;
+	typedef	StrongPtr<TextLayout>		TextLayout_p;
 	typedef	StrongPtr<Caret>			Caret_p;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	StrongPtr<Context>			Context_p;
@@ -109,8 +109,8 @@ namespace wg
 		static MsgRouter_p	msgRouter();
 		static InputHandler_p	inputHandler();
 
-		static void			setDefaultTextMapper( TextMapper * pTextMapper );
-		static TextMapper_p defaultTextMapper();
+		static void			setDefaultTextLayout( TextLayout * pTextLayout );
+		static TextLayout_p defaultTextLayout();
 
 		static void			setDefaultCaret(Caret * pCaret);
 		static Caret_p		defaultCaret();
@@ -118,8 +118,8 @@ namespace wg
 		static void			setDefaultStyle( TextStyle * pStyle );
 		static TextStyle_p 	defaultStyle();
 
-		static void			setDefaultValuePresenter(ValuePresenter * pFormatter);
-		static ValuePresenter_p defaultValuePresenter();
+		static void			setDefaultNumberLayout(NumberLayout * pFormatter);
+		static NumberLayout_p defaultNumberLayout();
 
 		static void			setActiveContext(Context * pContext);
 		static Context_p	activeContext();
@@ -178,9 +178,9 @@ namespace wg
 #ifndef WG2_MODE
 			MsgRouter_p		pMsgRouter;
 			InputHandler_p	pInputHandler;
-			TextMapper_p		pDefaultTextMapper;
+			TextLayout_p		pDefaultTextLayout;
 			Caret_p				pDefaultCaret;
-			ValuePresenter_p	pDefaultValuePresenter;
+			NumberLayout_p	pDefaultNumberLayout;
 #endif
 
 			Context_p		pActiveContext;

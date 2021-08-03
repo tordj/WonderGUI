@@ -107,8 +107,8 @@ namespace wg
 		void			setEntryStyle(TextStyle * pStyle);
 		TextStyle_p		entryStyle() const { return m_pEntryStyle; }
 
-		void			setListTextMapper(TextMapper * pTextMapper);
-		TextMapper_p	listTextMapper() const { return m_pListTextMapper; }
+		void			setListTextLayout(TextLayout * pTextLayout);
+		TextLayout_p	listTextLayout() const { return m_pListTextLayout; }
 
 		void			setListSkin(Skin * pSkin);
 		Skin_p			listSkin() const { return m_pListCanvas->skin; }
@@ -155,8 +155,8 @@ namespace wg
 		void		_selectEntry(int idx);
 		int			_findEntry(const CoordSPX& ofsInListPanel, CoordSPX * pOfsOut = nullptr);
 
-		inline TextMapper * _listTextMapper() { return m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper(); }
-		inline const TextMapper * _listTextMapper() const { return m_pListTextMapper ? m_pListTextMapper: Base::defaultTextMapper();  }
+		inline TextLayout * _listTextLayout() { return m_pListTextLayout ? m_pListTextLayout : Base::defaultTextLayout(); }
+		inline const TextLayout * _listTextLayout() const { return m_pListTextLayout ? m_pListTextLayout: Base::defaultTextLayout();  }
 
 		//
 		
@@ -188,7 +188,7 @@ namespace wg
 	private:
 
 		MySideCanvas_p	m_pListCanvas;
-		TextMapper_p	m_pListTextMapper;
+		TextLayout_p	m_pListTextLayout;
 		int				m_selectedEntryIndex = -1;
 		int				m_markedEntryIndex = -1;		// Marked through mouse hover or keyboard input.
 

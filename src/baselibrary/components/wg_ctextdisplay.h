@@ -60,9 +60,9 @@ namespace wg
 
 		inline void			clear() { _clear(); }
 
-		inline void			set(const CharSeq& seq) { _set(seq); }
-		inline void			set(const CharBuffer * buffer) { _set(buffer); }
-		inline void			set(const String& str) { _set(str); }
+		inline void			setText(const CharSeq& seq) { _setText(seq); }
+		inline void			setText(const CharBuffer * buffer) { _setText(buffer); }
+		inline void			setText(const String& str) { _setText(str); }
 
 		inline int			append(const CharSeq& seq) { return _append(seq); }
 		inline int			insert(int ofs, const CharSeq& seq) { return _insert(ofs, seq); }

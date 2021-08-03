@@ -21,11 +21,11 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_cvalueeditor.h>
+#include <wg_cnumbereditor.h>
 
 namespace wg
 {
-	const TypeInfo CValueEditor::TYPEINFO = { "CValueEditor", &CValueDisplay::TYPEINFO };
+	const TypeInfo CValueEditor::TYPEINFO = { "CValueEditor", &CNumberDisplay::TYPEINFO };
 
 	//____ typeInfo() _________________________________________________________
 

@@ -345,7 +345,7 @@ namespace wg
 		auto pWidget = TextDisplay::create();
 		pWidget->skin = pSkin;
 
-		pWidget->text.set(pHovered->tooltip());
+		pWidget->display.setText(pHovered->tooltip());
 		return pWidget;
 	}
 }

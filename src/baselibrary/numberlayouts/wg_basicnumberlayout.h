@@ -19,11 +19,11 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_BASICVALUEPRESENTER_DOT_H
-#define WG_BASICVALUEPRESENTER_DOT_H
+#ifndef	WG_BASICNUMBERLAYOUT_DOT_H
+#define WG_BASICNUMBERLAYOUT_DOT_H
 #pragma once
 
-#include <wg_valuepresenter.h>
+#include <wg_numberlayout.h>
 #include <wg_textstyle.h>
 
 #include <vector>
@@ -32,13 +32,13 @@ namespace wg
 {
 
 
-	class BasicValuePresenter;
-	typedef	StrongPtr<BasicValuePresenter>	BasicValuePresenter_p;
-	typedef	WeakPtr<BasicValuePresenter>	BasicValuePresenter_wp;
+	class BasicNumberLayout;
+	typedef	StrongPtr<BasicNumberLayout>	BasicNumberLayout_p;
+	typedef	WeakPtr<BasicNumberLayout>		BasicNumberLayout_wp;
 
-	//____ BasicValuePresenter __________________________________________________________
+	//____ BasicNumberLayout __________________________________________________________
 
-	class BasicValuePresenter : public ValuePresenter
+	class BasicNumberLayout : public NumberLayout
 	{
 	public:
 
@@ -72,7 +72,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static BasicValuePresenter_p	create( const Blueprint& blueprint ) { return BasicValuePresenter_p(new BasicValuePresenter( blueprint )); }
+		static BasicNumberLayout_p	create( const Blueprint& blueprint ) { return BasicNumberLayout_p(new BasicNumberLayout( blueprint )); }
 
 		//.____ Identification __________________________________________
 
@@ -88,8 +88,8 @@ namespace wg
 		Blueprint blueprint() const;
 
 	protected:
-		BasicValuePresenter( const Blueprint& descriptor );
-		~BasicValuePresenter();
+		BasicNumberLayout( const Blueprint& descriptor );
+		~BasicNumberLayout();
 
 		CharBuffer	_valueToStr(double value ) const;
 		std::tuple<SizeSPX, spx> _strSizeBaseline(const Char * pChars, int scale, State state) const;
@@ -104,4 +104,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_BASICVALUEPRESENTER_DOT_H
+#endif //WG_BASICNUMBERLAYOUT_DOT_H

@@ -20,44 +20,44 @@
 
 =========================================================================*/
 
-#include <wg_textmapper.h>
+#include <wg_textlayout.h>
 #include <wg_base.h>
 
 namespace wg
 {
 
-	const TypeInfo TextMapper::TYPEINFO = { "TextMapper", &Receiver::TYPEINFO };
+	const TypeInfo TextLayout::TYPEINFO = { "TextLayout", &Receiver::TYPEINFO };
 
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& TextMapper::typeInfo(void) const
+	const TypeInfo& TextLayout::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ tooltip() _______________________________________________________________
 
-	String TextMapper::tooltip( const Text * pText ) const
+	String TextLayout::tooltip( const Text * pText ) const
 	{
 		return String();
 	}
 
 	//____ _chars() ___________________________________________________________
 
-	const Char * TextMapper::_chars( const Text * pText ) const
+	const Char * TextLayout::_chars( const Text * pText ) const
 	{
 		return pText->_textBegin();
 	}
 
 	//____ _dataBlock() _______________________________________________________
 
-	void * TextMapper::_dataBlock( Text * pText) const
+	void * TextLayout::_dataBlock( Text * pText) const
 	{
 		return pText->m_pMapperData;
 	}
 
-	const void * TextMapper::_dataBlock( const Text * pText) const
+	const void * TextLayout::_dataBlock( const Text * pText) const
 	{
 		return pText->m_pMapperData;
 	}
@@ -65,14 +65,14 @@ namespace wg
 
 	//____ _dataInt() _________________________________________________________
 
-	int TextMapper::_dataInt( const Text * pText ) const
+	int TextLayout::_dataInt( const Text * pText ) const
 	{
 		return pText->m_mapperData;
 	}
 
 	//____ _baseStyle() _________________________________________________________
 
-	const TextStyle * TextMapper::_baseStyle( const Text * pText ) const
+	const TextStyle * TextLayout::_baseStyle( const Text * pText ) const
 	{
 		TextStyle * pStyle = pText->_textStyle();
 		if( pStyle == 0 )
@@ -83,54 +83,54 @@ namespace wg
 
 	//____ _state() _________________________________________________________
 
-	State TextMapper::_state( const Text * pText ) const
+	State TextLayout::_state( const Text * pText ) const
 	{
 		return pText->_textState();
 	}
 
 	//____ _setTextDataBlock() ____________________________________________________
 
-	void  TextMapper::_setTextDataBlock( Text * pText, void * pBlock )
+	void  TextLayout::_setTextDataBlock( Text * pText, void * pBlock )
 	{
 		pText->m_pMapperData = pBlock;
 	}
 
 	//____ _setTextDataInt() ______________________________________________________
 
-	void  TextMapper::_setTextDataInt( Text * pText, int data )
+	void  TextLayout::_setTextDataInt( Text * pText, int data )
 	{
 		pText->m_mapperData = data;
 	}
 
 	//____ _setTextDirty() ____________________________________________________
 
-	void  TextMapper::_setTextDirty( Text * pText )
+	void  TextLayout::_setTextDirty( Text * pText )
 	{
 		pText->_mapperRequestRender();
 	}
 
-	void  TextMapper::_setTextDirty( Text * pText, const RectSPX& rect )
+	void  TextLayout::_setTextDirty( Text * pText, const RectSPX& rect )
 	{
 		pText->_mapperRequestRender( rect );
 	}
 
 	//____ _requestTextResize() _______________________________________________
 
-	void TextMapper::_requestTextResize( Text * pText )
+	void TextLayout::_requestTextResize( Text * pText )
 	{
 		pText->_mapperRequestResize();
 	}
 
 	//____ _size() _____________________________________________________________
 
-	SizeSPX TextMapper::_size( const Text * pText ) const
+	SizeSPX TextLayout::_size( const Text * pText ) const
 	{
 		return pText->_textSize();
 	}
 
 	//____ _length() ___________________________________________________________
 
-	int TextMapper::_length( const Text * pText ) const
+	int TextLayout::_length( const Text * pText ) const
 	{
 		return pText->_textLength();
 	}
@@ -138,28 +138,28 @@ namespace wg
 
 	//____ _caretVisible() _____________________________________________________
 
-	bool TextMapper::_caretVisible( const Text * pText ) const
+	bool TextLayout::_caretVisible( const Text * pText ) const
 	{
 		return pText->_caretVisible();
 	}
 
 	//____ _caretOfs() ____________________________________________________________
 
-	int TextMapper::_caretOfs( const Text * pText ) const
+	int TextLayout::_caretOfs( const Text * pText ) const
 	{
 		return pText->_caretOffset();
 	}
 
 	//____ _selection() ________________________________________________________
 	
-	std::tuple<int,int>	TextMapper::_selection( const Text * pText ) const
+	std::tuple<int,int>	TextLayout::_selection( const Text * pText ) const
 	{
 		return pText->_selectedText();
 	}
 
 	//____ _scale() ___________________________________________________________
 
-	int TextMapper::_scale(const Text* pText) const
+	int TextLayout::_scale(const Text* pText) const
 	{
 		return pText->_scale();
 	}

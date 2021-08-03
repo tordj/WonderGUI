@@ -118,7 +118,7 @@ protected:
 
 	Widget_p			g_pPerformanceDisplay = nullptr;
 	PackList_p			g_pPerformanceList = nullptr;
-	TextMapper_p		g_pPerformanceValueMapper = nullptr;
+	TextLayout_p		g_pPerformanceValueMapper = nullptr;
 	SizeBroker_p		g_pPerformanceEntryBroker = nullptr;
 
 	vector<Device*>		g_testdevices;
@@ -128,7 +128,7 @@ protected:
 	vector<RectI>		g_clipList;
 
 	TextStyle_p			g_pButtonLabelStyle = nullptr;
-	TextMapper_p		g_pButtonLabelMapper = nullptr;
+	TextLayout_p		g_pButtonLabelMapper = nullptr;
 
 	DisplayMode			g_displayMode = DisplayMode::Testee;
 	float				g_zoomFactor = 1.f;

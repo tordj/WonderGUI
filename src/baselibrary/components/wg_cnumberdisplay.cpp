@@ -21,46 +21,46 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_cvaluedisplay.h>
+#include <wg_cnumberdisplay.h>
 
 #include <limits>
 
 namespace wg
 {
-	const TypeInfo CValueDisplay::TYPEINFO = { "CValueDisplay", &CStaticValueDisplay::TYPEINFO };
+	const TypeInfo CNumberDisplay::TYPEINFO = { "CNumberDisplay", &CStaticNumberDisplay::TYPEINFO };
 
 	//____ constructor ________________________________________________________
 
-	CValueDisplay::CValueDisplay(GeoComponent::Holder * pHolder) : CStaticValueDisplay(pHolder), m_minValue(std::numeric_limits<double>::lowest()), m_maxValue(std::numeric_limits<double>::max())
+	CNumberDisplay::CNumberDisplay(GeoComponent::Holder * pHolder) : CStaticNumberDisplay(pHolder), m_minValue(std::numeric_limits<double>::lowest()), m_maxValue(std::numeric_limits<double>::max())
 	{
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CValueDisplay::typeInfo(void) const
+	const TypeInfo& CNumberDisplay::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ clear() _________________________________________________________________
 
-	void CValueDisplay::clear()
+	void CNumberDisplay::clear()
 	{
 		m_minValue = std::numeric_limits<double>::lowest();
 		m_maxValue = std::numeric_limits<double>::max();
-		CStaticValueDisplay::_set(0.0);
+		CStaticNumberDisplay::_set(0.0);
 	}
 
 	//____ set() ___________________________________________________________________
 
-	bool CValueDisplay::set(double value)
+	bool CNumberDisplay::set(double value)
 	{
 		return _set(value);
 	}
 
 	//____ setRange() ______________________________________________________________
 
-	bool CValueDisplay::setRange(double min, double max)
+	bool CNumberDisplay::setRange(double min, double max)
 	{
 		if (min > max)
 			return false;
@@ -72,19 +72,19 @@ namespace wg
 		limit(val, min, max);
 		m_value = val;
 		if (val != m_value)
-			CStaticValueDisplay::_set(val);
+			CStaticNumberDisplay::_set(val);
 		return true;
 	}
 
 	//____ _set() ___________________________________________________________________
 
-	bool CValueDisplay::_set( double value )
+	bool CNumberDisplay::_set( double value )
 	{
 		if( value > m_maxValue )
 			value = m_maxValue;
 		else if( value < m_minValue )
 			value = m_minValue;
-		return CStaticValueDisplay::_set(value);
+		return CStaticNumberDisplay::_set(value);
 	}
 
 } // namespace wg

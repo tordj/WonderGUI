@@ -37,9 +37,9 @@ namespace wg
 
 	//____ LineEditor() _________________________________________________________________
 
-	LineEditor::LineEditor() : text(this), m_textScrollOfs(0)
+	LineEditor::LineEditor() : editor(this), m_textScrollOfs(0)
 	{
-		text.setMaxLines(1);
+		editor.setMaxLines(1);
 	}
 
 
@@ -66,7 +66,7 @@ namespace wg
 
 		SizeSPX	contentSize;
 
-		TextStyle * pStyle = OO(text)._style();
+		TextStyle * pStyle = OO(editor)._style();
 
 		Font_p pFont = pStyle->font();
 
@@ -97,12 +97,12 @@ namespace wg
 
 		//
 
-		RectSPX textCanvas(canvas.x - m_textScrollOfs, canvas.y, OO(text)._preferredSize(m_scale));
+		RectSPX textCanvas(canvas.x - m_textScrollOfs, canvas.y, OO(editor)._preferredSize(m_scale));
 
 		// We need to clip to canvas since textCanvas can go outside our canvas.
 
 		auto pop = limitClipList(pDevice, canvas );
-		OO(text)._render(pDevice, textCanvas );
+		OO(editor)._render(pDevice, textCanvas );
 		popClipList(pDevice, pop);
 	}
 
@@ -110,7 +110,7 @@ namespace wg
 
 	void LineEditor::_refresh( void )
 	{
-		OO(text)._refresh();
+		OO(editor)._refresh();
 		Widget::_refresh();
 	}
 
@@ -120,7 +120,7 @@ namespace wg
 	{
 		Widget::_setState(state);
 
-		OO(text)._setState(state);
+		OO(editor)._setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 	}
 
@@ -130,7 +130,7 @@ namespace wg
 	void LineEditor::_receive( Msg * pMsg )
 	{
 		Widget::_receive( pMsg );
-		OO(text)._receive( pMsg );
+		OO(editor)._receive( pMsg );
 	}
 
 
@@ -150,14 +150,14 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		OO(text)._setSize( SizeSPX( OO(text)._preferredSize(m_scale).w, size.h - OO(skin)._contentPaddingSize(m_scale).h ), m_scale );
+		OO(editor)._setSize( SizeSPX( OO(editor)._preferredSize(m_scale).w, size.h - OO(skin)._contentPaddingSize(m_scale).h ), m_scale );
 	}
 
 	//____ _componentPos() __________________________________________________________
 
 	CoordSPX LineEditor::_componentPos( const GeoComponent * pComponent ) const
 	{
-		if (pComponent != &text)
+		if (pComponent != &editor)
 			return CoordSPX();
 
 		CoordSPX c(-m_textScrollOfs, 0);
@@ -169,22 +169,22 @@ namespace wg
 
 	SizeSPX LineEditor::_componentSize( const GeoComponent * pComponent ) const
 	{
-		if (pComponent != &text)
+		if (pComponent != &editor)
 			return m_size;
 
-		return SizeSPX( OO(text)._preferredSize(m_scale).w, m_size.h - OO(skin)._contentPaddingSize(m_scale).h );
+		return SizeSPX( OO(editor)._preferredSize(m_scale).w, m_size.h - OO(skin)._contentPaddingSize(m_scale).h );
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
 	RectSPX LineEditor::_componentGeo( const GeoComponent * pComponent ) const
 	{
-		if (pComponent != &text)
+		if (pComponent != &editor)
 			return m_size;
 
 		RectSPX r = OO(skin)._contentRect( m_size, m_scale, m_state );
 		r.x -= m_textScrollOfs;
-		r.w = OO(text)._preferredSize(m_scale).w;
+		r.w = OO(editor)._preferredSize(m_scale).w;
 		return r;
 	}
 
@@ -192,7 +192,7 @@ namespace wg
 
 	void LineEditor::_componentRequestRender(const GeoComponent * pComponent)
 	{
-		if (pComponent != &text)
+		if (pComponent != &editor)
 			return _requestRender();
 
 		_requestRender(OO(skin)._contentRect(m_size, m_scale, m_state));
@@ -200,7 +200,7 @@ namespace wg
 
 	void LineEditor::_componentRequestRender( const GeoComponent * pComponent, const RectSPX& rect )
 	{
-		if (pComponent != &text)
+		if (pComponent != &editor)
 			return _requestRender(rect);
 
 		RectSPX dirt = rect;
@@ -218,17 +218,17 @@ namespace wg
 
 	void LineEditor::_componentRequestResize( const GeoComponent * pComponent )
 	{
-		if (pComponent != &text)
+		if (pComponent != &editor)
 			return Widget::_componentRequestResize(pComponent);
 
-		SizeSPX preferred = OO(text)._preferredSize(m_scale);
+		SizeSPX preferred = OO(editor)._preferredSize(m_scale);
 
 		spx height = m_size.h - OO(skin)._contentPaddingSize(m_scale).h;
 
 		if( preferred.h != height )
 			_requestResize();
 
-		OO(text)._setSize( SizeSPX(preferred.w, height ),m_scale);	// Component gets the preferred width right away.
+		OO(editor)._setSize( SizeSPX(preferred.w, height ),m_scale);	// Component gets the preferred width right away.
 	}
 
 	//____ _componentRequestInView() ____________________________________________

@@ -28,7 +28,7 @@
 #include <wg_inputhandler.h>
 #include <wg_boxskin.h>
 #include <wg_packpanel.h>
-#include <wg_valuedisplay.h>
+#include <wg_numberdisplay.h>
 #include <wg_textdisplay.h>
 #include <wg_internal.h>
 
@@ -543,7 +543,7 @@ namespace wg
 
 		{
 			auto pLabel = TextDisplay::create();
-			pLabel->text.set("Position: ");
+			pLabel->display.setText("Position: ");
 
 			CoordF pos = slot.pos();
 
@@ -551,7 +551,7 @@ namespace wg
 			sprintf(buffer, "%.2f, %.2f", pos.x, pos.y);
 
 			auto pValue = TextDisplay::create();
-			pValue->text.set(buffer);
+			pValue->display.setText(buffer);
 
 			pHeaderColumn->slots << pLabel;
 			pValueColumn->slots << pValue;
@@ -561,7 +561,7 @@ namespace wg
 
 		{
 			auto pLabel = TextDisplay::create();
-			pLabel->text.set("Size: ");
+			pLabel->display.setText("Size: ");
 
 			SizeF size = slot.size();
 
@@ -569,7 +569,7 @@ namespace wg
 			sprintf(buffer, "%.2f, %.2f", size.w, size.h);
 
 			auto pValue = TextDisplay::create();
-			pValue->text.set(buffer);
+			pValue->display.setText(buffer);
 
 			pHeaderColumn->slots << pLabel;
 			pValueColumn->slots << pValue;
@@ -600,10 +600,10 @@ namespace wg
 
 		{
 			auto pNameLabel = TextDisplay::create();
-			pNameLabel->text.set("className: ");
+			pNameLabel->display.setText("className: ");
 
 			auto pName = TextDisplay::create();
-			pName->text.set(pWidget->typeInfo().className);
+			pName->display.setText(pWidget->typeInfo().className);
 
 			pHeaderColumn->slots << pNameLabel;
 			pValueColumn->slots << pName;
@@ -615,10 +615,10 @@ namespace wg
 //			char buffer[16];
 
 			auto pIdLabel = TextDisplay::create();
-			pIdLabel->text.set("id: ");
+			pIdLabel->display.setText("id: ");
 
 			auto pId = TextDisplay::create();
-			pId->text.set(std::to_string(pWidget->id()));
+			pId->display.setText(std::to_string(pWidget->id()));
 
 			pHeaderColumn->slots << pIdLabel;
 			pValueColumn->slots << pId;

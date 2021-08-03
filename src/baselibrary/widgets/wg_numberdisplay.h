@@ -20,34 +20,34 @@
 
 =========================================================================*/
 
-#ifndef	WG_VALUEDISPLAY_DOT_H
-#define	WG_VALUEDISPLAY_DOT_H
+#ifndef	WG_NUMBERDISPLAY_DOT_H
+#define	WG_NUMBERDISPLAY_DOT_H
 #pragma once
 
 #	include <wg_widget.h>
-#	include <wg_cvaluedisplay.h>
+#	include <wg_cnumberdisplay.h>
 
 namespace wg
 {
 
 
-	class ValueDisplay;
-	typedef	StrongPtr<ValueDisplay>		ValueDisplay_p;
-	typedef	WeakPtr<ValueDisplay>		ValueDisplay_wp;
+	class NumberDisplay;
+	typedef	StrongPtr<NumberDisplay>		NumberDisplay_p;
+	typedef	WeakPtr<NumberDisplay>		NumberDisplay_wp;
 
 	/**
 	* @brief Widget that displays a formatted value.
 	*/
-	class ValueDisplay : public Widget
+	class NumberDisplay : public Widget
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static ValueDisplay_p	create() { return ValueDisplay_p(new ValueDisplay()); }
+		static NumberDisplay_p	create() { return NumberDisplay_p(new NumberDisplay()); }
 
 		//.____ Components _______________________________________
 
-		CValueDisplay		value;
+		CNumberDisplay		display;
 
 		//.____ Identification __________________________________________
 
@@ -61,9 +61,9 @@ namespace wg
 
 
 	protected:
-		ValueDisplay();
-		virtual ~ValueDisplay();
-		virtual Widget* _newOfMyType() const override { return new ValueDisplay(); };
+		NumberDisplay();
+		virtual ~NumberDisplay();
+		virtual Widget* _newOfMyType() const override { return new NumberDisplay(); };
 
 		void	_refresh() override;
 		void	_cloneContent( const Widget * _pOrg ) override;
@@ -72,11 +72,11 @@ namespace wg
 
 	private:
 
-		class ValueAccess : public CValueDisplay { friend class ValueDisplay; };
-		const ValueAccess& _value() const { return static_cast<const ValueAccess&>(value); }
-		ValueAccess& _value() { return static_cast<ValueAccess&>(value); }
+		class DisplayAccess : public CNumberDisplay { friend class NumberDisplay; };
+		const DisplayAccess& _display() const { return static_cast<const DisplayAccess&>(display); }
+		DisplayAccess& _display() { return static_cast<DisplayAccess&>(display); }
 
 	};
 
 } // namespace wg
-#endif // WG_VALUEDISPLAY_DOT_H
+#endif // WG_NUMBERDISPLAY_DOT_H

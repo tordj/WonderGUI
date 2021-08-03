@@ -26,7 +26,7 @@
 #include <wg_container.h>
 #include <wg_sidecanvas.h>
 #include <wg_ctexteditor.h>
-#include <wg_cvaluedisplay.h>
+#include <wg_cnumberdisplay.h>
 #include <wg_skin.h>
 
 namespace wg
@@ -81,7 +81,7 @@ namespace wg
 	public:
 		using CStaticTextDisplay::_clear;
 
-		using CStaticTextDisplay::_set;
+		using CStaticTextDisplay::_setText;
 
 		using CStaticTextDisplay::_append;
 		using CStaticTextDisplay::_insert;
@@ -115,7 +115,7 @@ namespace wg
 
 		using CStaticTextDisplay::_rectForRange;
 
-		using CStaticTextDisplay::_textMapper;
+		using CStaticTextDisplay::_layout;
 		using CStaticTextDisplay::_style;
 
 		using CStaticTextDisplay::_receive;
@@ -127,7 +127,7 @@ namespace wg
 	public:
 		using CTextDisplay::_clear;
 
-		using CTextDisplay::_set;
+		using CTextDisplay::_setText;
 
 		using CTextDisplay::_append;
 		using CTextDisplay::_insert;
@@ -161,7 +161,7 @@ namespace wg
 
 		using CTextDisplay::_rectForRange;
 
-		using CTextDisplay::_textMapper;
+		using CTextDisplay::_layout;
 		using CTextDisplay::_style;
 
 		using CTextDisplay::_receive;
@@ -180,7 +180,7 @@ namespace wg
 
 		using CTextEditor::_receive;
 		using CTextEditor::_clear;
-		using CTextEditor::_set;
+		using CTextEditor::_setText;
 
 		using CTextEditor::_append;
 		using CTextEditor::_insert;

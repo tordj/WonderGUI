@@ -36,7 +36,7 @@ namespace wg
 
 	//____ TextEditor() _________________________________________________________________
 
-	TextEditor::TextEditor() : text(this)
+	TextEditor::TextEditor() : editor(this)
 	{
 	}
 
@@ -62,7 +62,7 @@ namespace wg
 		SizeSPX padding = _contentPaddingSize();
 
 		height -= padding.h;
-		spx textWidth = OO(text)._matchingWidth(height, scale);
+		spx textWidth = OO(editor)._matchingWidth(height, scale);
 		textWidth += padding.w;
 		return textWidth;
 	}
@@ -75,7 +75,7 @@ namespace wg
 		SizeSPX padding = _contentPaddingSize();
 
 		width -= padding.w;
-		spx textHeight = OO(text)._matchingHeight( width, scale );
+		spx textHeight = OO(editor)._matchingHeight( width, scale );
 		textHeight += padding.h;
 		return textHeight;
 	}
@@ -86,7 +86,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX contentSize = OO(text)._preferredSize(scale);
+		SizeSPX contentSize = OO(editor)._preferredSize(scale);
 
 		return OO(skin)._sizeForContent(contentSize,scale);
 	}
@@ -99,7 +99,7 @@ namespace wg
 
 		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
 
-		OO(text)._render( pDevice, canvas );
+		OO(editor)._render( pDevice, canvas );
 	}
 
 	//____ _refresh() _______________________________________________________
@@ -117,7 +117,7 @@ namespace wg
 	{
 		Widget::_setState(state);
 
-		OO(text)._setState(state);
+		OO(editor)._setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 	}
 
@@ -127,7 +127,7 @@ namespace wg
 	void TextEditor::_receive( Msg * pMsg )
 	{
 		Widget::_receive( pMsg );
-		OO(text)._receive( pMsg );
+		OO(editor)._receive( pMsg );
 	}
 
 
@@ -146,7 +146,7 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		OO(text)._setSize(size - OO(skin)._contentPaddingSize(m_scale), m_scale);
+		OO(editor)._setSize(size - OO(skin)._contentPaddingSize(m_scale), m_scale);
 	}
 
 } // namespace wg

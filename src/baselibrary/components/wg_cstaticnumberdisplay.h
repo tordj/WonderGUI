@@ -19,26 +19,25 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_CSTATICVALUEDISPLAY_DOT_H
-#define WG_CSTATICVALUEDISPLAY_DOT_H
+#ifndef	WG_CSTATICNUMBERDISPLAY_DOT_H
+#define WG_CSTATICNUMBERDISPLAY_DOT_H
 #pragma once
 
 #include <wg_ctext.h>
-#include <wg_valuepresenter.h>
+#include <wg_numberlayout.h>
 
 namespace wg
 {
+	class CStaticNumberDisplay;
+	typedef	StrongComponentPtr<CStaticNumberDisplay>	CStaticNumberDisplay_p;
+	typedef	WeakComponentPtr<CStaticNumberDisplay>	CStaticNumberDisplay_wp;
 
-	class CStaticValueDisplay;
-	typedef	StrongComponentPtr<CStaticValueDisplay>	CStaticValueDisplay_p;
-	typedef	WeakComponentPtr<CStaticValueDisplay>	CStaticValueDisplay_wp;
+	//____ CStaticNumberDisplay ____________________________________________________________
 
-	//____ CStaticValueDisplay ____________________________________________________________
-
-	class CStaticValueDisplay : public GeoComponent
+	class CStaticNumberDisplay : public GeoComponent
 	{
 	public:
-		CStaticValueDisplay(Holder * pHolder);
+		CStaticNumberDisplay(Holder * pHolder);
 
 
 		//.____ Identification _________________________________________________
@@ -48,9 +47,9 @@ namespace wg
 
 		//.____ Appearance _____________________________________________
 
-		void				setPresenter(ValuePresenter* pFormatter);
-		void				clearPresenter();
-		inline ValuePresenter_p	presenter() const { return m_pPresenter; }
+		void				setLayout(NumberLayout* pLayout);
+		void				clearLayout();
+		inline NumberLayout_p	layout() const { return m_pLayout; }
 
 		//.____ Content _______________________________________________
 
@@ -58,7 +57,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline CStaticValueDisplay_p	ptr() { return CStaticValueDisplay_p(this); }
+		inline CStaticNumberDisplay_p	ptr() { return CStaticNumberDisplay_p(this); }
 
 		//.____ Internal __________________________________________________
 
@@ -71,15 +70,15 @@ namespace wg
 
 	protected:
 		
-		ValuePresenter* _presenter() const { return m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultValuePresenter().rawPtr(); }
+		NumberLayout* _layout() const { return m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr(); }
 
 
 		double				m_value = 0.0;
 
-		ValuePresenter_p	m_pPresenter;
+		NumberLayout_p	m_pLayout;
 	};
 
 
 
 } // namespace wg
-#endif //WG_CSTATICVALUEDISPLAY_DOT_H
+#endif //WG_CSTATICNUMBERDISPLAY_DOT_H

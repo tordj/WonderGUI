@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_stdtextmapper.h>
+#include <wg_basictextlayout.h>
 #include <wg_textstyle.h>
 #include <wg_gfxdevice.h>
 #include <wg_char.h>
@@ -34,18 +34,18 @@ namespace wg
 {
 	using namespace Util;
 
-	const TypeInfo StdTextMapper::TYPEINFO = { "StdTextMapper", &TextMapper::TYPEINFO };
+	const TypeInfo BasicTextLayout::TYPEINFO = { "BasicTextLayout", &TextLayout::TYPEINFO };
 
 	//____ constructor _____________________________________________________________
 
-	StdTextMapper::StdTextMapper() : m_placement(Placement::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
+	BasicTextLayout::BasicTextLayout() : m_placement(Placement::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
 		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedText(nullptr), m_tickRouteId(0)
 	{
 	}
 
 	//____ Destructor ______________________________________________________________
 
-	StdTextMapper::~StdTextMapper()
+	BasicTextLayout::~BasicTextLayout()
 	{
 		if( m_bReceivingUpdates )
 		{
@@ -57,14 +57,14 @@ namespace wg
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& StdTextMapper::typeInfo(void) const
+	const TypeInfo& BasicTextLayout::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ addText() _________________________________________________________
 
-	void StdTextMapper::addText( Text * pText )
+	void BasicTextLayout::addText( Text * pText )
 	{
 		const Char * pChars = _chars(pText);
 		int nLines = _countLines( pText, pChars );
@@ -77,7 +77,7 @@ namespace wg
 
 	//____ removeText() _________________________________________________________
 
-	void StdTextMapper::removeText( Text * pText )
+	void BasicTextLayout::removeText( Text * pText )
 	{
 		free( _dataBlock(pText) );
 		_setTextDataBlock(pText, 0);
@@ -92,7 +92,7 @@ namespace wg
 
 	//____ setPlacement() __________________________________________________________
 
-	void StdTextMapper::setPlacement( Placement placement )
+	void BasicTextLayout::setPlacement( Placement placement )
 	{
 		if( placement != m_placement )
 		{
@@ -104,7 +104,7 @@ namespace wg
 
 	//____ setLineWrap() __________________________________________________________
 
-	void StdTextMapper::setLineWrap(bool bWrap)
+	void BasicTextLayout::setLineWrap(bool bWrap)
 	{
 		if (bWrap != m_bLineWrap)
 		{
@@ -117,7 +117,7 @@ namespace wg
 
 	//____ setCaret() __________________________________________________________
 
-	void StdTextMapper::setCaret( Caret * pCaret )
+	void BasicTextLayout::setCaret( Caret * pCaret )
 	{
 		if( m_pCaret.rawPtr() != pCaret )
 		{
@@ -129,7 +129,7 @@ namespace wg
 
 	//____ setSelectionBackColor() _________________________________________________
 
-	void StdTextMapper::setSelectionBack(HiColor color, BlendMode renderMode )
+	void BasicTextLayout::setSelectionBack(HiColor color, BlendMode renderMode )
 	{
 		m_selectionBackColor = color;
 		m_selectionBackRenderMode = renderMode;
@@ -137,7 +137,7 @@ namespace wg
 
 	//____ setSelectionCharColor() ____________________________________________
 
-	void StdTextMapper::setSelectionCharColor(HiColor color, BlendMode blend)
+	void BasicTextLayout::setSelectionCharColor(HiColor color, BlendMode blend)
 	{
 		m_selectionCharColor = color;
 		m_selectionCharBlend = blend;
@@ -145,7 +145,7 @@ namespace wg
 
 	//____ charAtPos() _________________________________________________________
 
-	int StdTextMapper::charAtPos( const Text * pText, CoordSPX pos ) const
+	int BasicTextLayout::charAtPos( const Text * pText, CoordSPX pos ) const
 	{
 		int line = _lineAtPosY(pText, pos.y, SelectMode::Marked );
 		if( line == -1 )
@@ -156,7 +156,7 @@ namespace wg
 
 	//_____ charPos() ______________________________________________________
 
-	CoordSPX StdTextMapper::charPos( const Text * pText, int charOfs ) const
+	CoordSPX BasicTextLayout::charPos( const Text * pText, int charOfs ) const
 	{
 		int line = charLine(pText, charOfs);
 
@@ -171,7 +171,7 @@ namespace wg
 
 	//____ charRect() ________________________________________________________
 
-	RectSPX StdTextMapper::charRect( const Text * pText, int charOfs ) const
+	RectSPX BasicTextLayout::charRect( const Text * pText, int charOfs ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -226,7 +226,7 @@ namespace wg
 
 	//____ charLine() ________________________________________________________
 
-	int StdTextMapper::charLine( const Text * pText, int charOfs ) const
+	int BasicTextLayout::charLine( const Text * pText, int charOfs ) const
 	{
 		if( charOfs < 0 )
 			return -1;
@@ -246,7 +246,7 @@ namespace wg
 
 	//____ lineBegin() ________________________________________________________
 
-	int StdTextMapper::lineBegin( const Text * pText, int lineNb ) const
+	int BasicTextLayout::lineBegin( const Text * pText, int lineNb ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -260,7 +260,7 @@ namespace wg
 
 	//____ lineEnd() ___________________________________________________________
 
-	int StdTextMapper::lineEnd( const Text * pText, int lineNb ) const
+	int BasicTextLayout::lineEnd( const Text * pText, int lineNb ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -274,7 +274,7 @@ namespace wg
 
 	//____ wordBegin() _________________________________________________________
 
-	int StdTextMapper::wordBegin( const Text * pText, int charOfs ) const
+	int BasicTextLayout::wordBegin( const Text * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -282,7 +282,7 @@ namespace wg
 
 	//____ wordEnd() ___________________________________________________________
 
-	int StdTextMapper::wordEnd( const Text * pText, int charOfs ) const
+	int BasicTextLayout::wordEnd( const Text * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs+1;
@@ -294,7 +294,7 @@ namespace wg
 	// Returns distance in points between beginning of first and beginning of last char.
 	// Chars should be on the same line (or pLast could be first char on next line)
 
-	spx StdTextMapper::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, int scale, State state ) const
+	spx BasicTextLayout::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, int scale, State state ) const
 	{
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -349,7 +349,7 @@ namespace wg
 
 	//____ _update() ___________________________________________________________
 
-	void StdTextMapper::_update(int microPassed, int64_t microsecTimestamp)
+	void BasicTextLayout::_update(int microPassed, int64_t microsecTimestamp)
 	{
 		if( _caretVisible(m_pFocusedText) )
 		{				
@@ -370,7 +370,7 @@ namespace wg
 
 	//____ _render()___________________________________________________________
 
-	void StdTextMapper::render( Text * pText, GfxDevice * pDevice, const RectSPX& canvas )
+	void BasicTextLayout::render( Text * pText, GfxDevice * pDevice, const RectSPX& canvas )
 	{
 
 		void * pBlock = _dataBlock(pText);
@@ -554,7 +554,7 @@ namespace wg
 
 	//____ _renderBack()___________________________________________________________
 
-	void StdTextMapper::_renderBack( Text * pText, GfxDevice * pDevice, const RectSPX& canvas )
+	void BasicTextLayout::_renderBack( Text * pText, GfxDevice * pDevice, const RectSPX& canvas )
 	{
 		const Char * pCharArray = _chars(pText);
 		const Char * pBeg = pCharArray;
@@ -596,7 +596,7 @@ namespace wg
 
 	//____ _renderBackSection() ________________________________________________
 
-	void StdTextMapper::_renderBackSection( Text * pText, GfxDevice * pDevice, const RectSPX& canvas,
+	void BasicTextLayout::_renderBackSection( Text * pText, GfxDevice * pDevice, const RectSPX& canvas,
 											int begChar, int endChar, HiColor color )
 	{
 
@@ -656,7 +656,7 @@ namespace wg
 
 	//____ caretMove() ________________________________________________________
 
-	void StdTextMapper::caretMove( Text * pText, int newOfs, int oldOfs )
+	void BasicTextLayout::caretMove( Text * pText, int newOfs, int oldOfs )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		if( _caretVisible(pText) && pCaret )
@@ -675,7 +675,7 @@ namespace wg
 
 	//____ selectionChange() __________________________________________________
 
-	void StdTextMapper::selectionChange( Text * pText, int selectOfs, int caretOfs, int oldSelectOfs, int oldCaretOfs )
+	void BasicTextLayout::selectionChange( Text * pText, int selectOfs, int caretOfs, int oldSelectOfs, int oldCaretOfs )
 	{
 		int oldBeg = std::min(oldSelectOfs,oldCaretOfs);
 		int oldEnd = std::max(oldSelectOfs,oldCaretOfs);
@@ -722,14 +722,14 @@ namespace wg
 
 	//____ onTextModified() ____________________________________________________
 
-	void StdTextMapper::onTextModified( Text * pText, int ofs, int charsRemoved, int charsAdded )
+	void BasicTextLayout::onTextModified( Text * pText, int ofs, int charsRemoved, int charsAdded )
 	{
 		onRefresh(pText);
 	}
 
 	//____ onResized() ___________________________________________________________
 
-	void StdTextMapper::onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale )
+	void BasicTextLayout::onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale )
 	{
 		if (m_bLineWrap || newScale != oldScale)
 			onRefresh(pText);
@@ -740,7 +740,7 @@ namespace wg
 
 	//____ onStateChanged() ______________________________________________________
 
-	void StdTextMapper::onStateChanged( Text * pText, State newState, State oldState )
+	void BasicTextLayout::onStateChanged( Text * pText, State newState, State oldState )
 	{
 		// TODO: Support for more than one input device, focusing different (or same) texts.
 
@@ -769,7 +769,7 @@ namespace wg
 
 	//____ onStyleChanged() ______________________________________________________
 
-	void StdTextMapper::onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
+	void BasicTextLayout::onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
 		onRefresh(pText);
 /*
@@ -785,7 +785,7 @@ namespace wg
 
 	//____ onCharStyleChanged() __________________________________________________
 
-	void StdTextMapper::onCharStyleChanged( Text * pText, int ofs, int len )
+	void BasicTextLayout::onCharStyleChanged( Text * pText, int ofs, int len )
 	{
 		onRefresh(pText);
 /*
@@ -799,7 +799,7 @@ namespace wg
 
 	//____ onRefresh() ___________________________________________________________
 
-	void StdTextMapper::onRefresh( Text * pText )
+	void BasicTextLayout::onRefresh( Text * pText )
 	{
 		const Char * pChars = _chars(pText);
 		int nLines = _countLines( pText, pChars );
@@ -814,7 +814,7 @@ namespace wg
 
 	//___ rectForRange() _________________________________________________________
 
-	RectSPX StdTextMapper::rectForRange( const Text * pText, int ofs, int length ) const
+	RectSPX BasicTextLayout::rectForRange( const Text * pText, int ofs, int length ) const
 	{
 		int begChar = ofs;
 		int endChar = ofs + length;
@@ -880,7 +880,7 @@ namespace wg
 
 	// Includes left/right margin where applicable.
 
-	RectSPX StdTextMapper::rectForCaret( const Text * pText ) const
+	RectSPX BasicTextLayout::rectForCaret( const Text * pText ) const
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		if( !_caretVisible(pText) || !pCaret )
@@ -892,14 +892,14 @@ namespace wg
 
 	//____ textDirection() ____________________________________________________
 
-	Direction StdTextMapper::textDirection( Text * pText, int charOfs ) const
+	Direction BasicTextLayout::textDirection( Text * pText, int charOfs ) const
 	{
 		return Direction::Right;
 	}
 
 	//____ caretToPos() _____________________________________________________
 
-	int StdTextMapper::caretToPos( Text * pText, CoordSPX pos, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretToPos( Text * pText, CoordSPX pos, spx& wantedLineOfs ) const
 	{
 		wantedLineOfs = -1;
 
@@ -909,7 +909,7 @@ namespace wg
 
 	//____ caretUp() ___________________________________________________________
 
-	int StdTextMapper::caretUp( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretUp( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine(pText, charOfs );
 
@@ -925,7 +925,7 @@ namespace wg
 
 	//____ caretDown() _________________________________________________________
 
-	int StdTextMapper::caretDown( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretDown( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine(pText, charOfs );
 
@@ -943,7 +943,7 @@ namespace wg
 
 	//____ caretLeft() _________________________________________________________
 
-	int StdTextMapper::caretLeft( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretLeft( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		if( charOfs > 0 )
 			charOfs--;
@@ -954,7 +954,7 @@ namespace wg
 
 	//____ caretRight() ________________________________________________________
 
-	int StdTextMapper::caretRight( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretRight( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		if( charOfs < _length(pText) )
 			charOfs++;
@@ -965,7 +965,7 @@ namespace wg
 
 	//____ caretHome() ________________________________________________________
 
-	int StdTextMapper::caretHome( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretHome( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine( pText, charOfs );
 
@@ -980,7 +980,7 @@ namespace wg
 
 	//____ caretEnd() ________________________________________________________
 
-	int StdTextMapper::caretEnd( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretEnd( Text * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine( pText, charOfs );
 
@@ -995,7 +995,7 @@ namespace wg
 
 	//____ caretPrevWord() _____________________________________________________
 
-	int StdTextMapper::caretPrevWord( Text * pText, int charOfs ) const
+	int BasicTextLayout::caretPrevWord( Text * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -1003,7 +1003,7 @@ namespace wg
 
 	//____ caretNextWord() _____________________________________________________
 
-	int StdTextMapper::caretNextWord( Text * pText, int charOfs ) const
+	int BasicTextLayout::caretNextWord( Text * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -1012,7 +1012,7 @@ namespace wg
 
 	//____ tooltip() _______________________________________________________________
 
-	String StdTextMapper::tooltip( const Text * pText ) const
+	String BasicTextLayout::tooltip( const Text * pText ) const
 	{
 		//TODO: Return the text if it overflows the mapped area?
 
@@ -1022,7 +1022,7 @@ namespace wg
 
 	//____ preferredSize() _________________________________________________________
 
-	SizeSPX StdTextMapper::preferredSize( const Text * pText, int scale ) const
+	SizeSPX BasicTextLayout::preferredSize( const Text * pText, int scale ) const
 	{
 		if (scale != _scale(pText))
 			assert(false);				//TODO: Implement!!!
@@ -1032,7 +1032,7 @@ namespace wg
 
 	//____ matchingWidth() _________________________________________________________
 
-	spx StdTextMapper::matchingWidth( const Text * pText, spx height, int scale ) const
+	spx BasicTextLayout::matchingWidth( const Text * pText, spx height, int scale ) const
 	{
 		if (scale != _scale(pText))
 			assert(false);				//TODO: Implement!!!
@@ -1042,7 +1042,7 @@ namespace wg
 
 	//____ matchingHeight() ________________________________________________________
 
-	spx StdTextMapper::matchingHeight( const Text * pText, spx width, int scale ) const
+	spx BasicTextLayout::matchingHeight( const Text * pText, spx width, int scale ) const
 	{
 		if (scale != _scale(pText))
 			assert(false);				//TODO: Implement!!!
@@ -1052,7 +1052,7 @@ namespace wg
 
 	//____ _countLines() ___________________________________________________________
 
-	int StdTextMapper::_countLines( Text * pText, const Char * pChars ) const
+	int BasicTextLayout::_countLines( Text * pText, const Char * pChars ) const
 	{
 		if (m_bLineWrap)
 			return _countWrapLines(pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
@@ -1062,7 +1062,7 @@ namespace wg
 
 	//____ _countFixedLines() ___________________________________________________________
 
-	int StdTextMapper::_countFixedLines(const Char * pChars) const
+	int BasicTextLayout::_countFixedLines(const Char * pChars) const
 	{
 		int lines = 0;
 		while (true)
@@ -1080,7 +1080,7 @@ namespace wg
 
 	//____ _countWrapLines() ________________________________________________
 
-	int StdTextMapper::_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const
+	int BasicTextLayout::_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const
 	{
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr(state, &baseAttr, scale);
@@ -1210,7 +1210,7 @@ namespace wg
 
 	//____ _calcMatchingHeight() ________________________________________________
 
-	spx StdTextMapper::_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const
+	spx BasicTextLayout::_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 
@@ -1406,7 +1406,7 @@ namespace wg
 
 	//____ _reallocBlock() _________________________________________________________
 
-	void * StdTextMapper::_reallocBlock( Text* pText, int nLines )
+	void * BasicTextLayout::_reallocBlock( Text* pText, int nLines )
 	{
 		void * pBlock = _dataBlock(pText);
 		if( pBlock )
@@ -1423,7 +1423,7 @@ namespace wg
 
 	//____ _updateLineInfo() _______________________________________________________
 
-	void StdTextMapper::_updateLineInfo( Text * pText, void * pBlock, const Char * pChars )
+	void BasicTextLayout::_updateLineInfo( Text * pText, void * pBlock, const Char * pChars )
 	{
 		BlockHeader * pHeader = _header(_dataBlock(pText));
 		SizeSPX preferredSize;
@@ -1452,7 +1452,7 @@ namespace wg
 
 	//____ _updateWrapLineInfo() ________________________________________________
 
-	SizeSPX StdTextMapper::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth )
+	SizeSPX BasicTextLayout::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		const Char * pTextStart = pChars;
@@ -1679,7 +1679,7 @@ namespace wg
 
 	//____ _updateFixedLineInfo() ________________________________________________
 
-	SizeSPX StdTextMapper::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle,
+	SizeSPX BasicTextLayout::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle,
 												int scale, State state )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
@@ -1825,7 +1825,7 @@ namespace wg
 
 	//____ _linePosX() _______________________________________________________________
 
-	spx StdTextMapper::_linePosX( const LineInfo * pLine, spx canvasWidth ) const
+	spx BasicTextLayout::_linePosX( const LineInfo * pLine, spx canvasWidth ) const
 	{
 		switch( m_placement )
 		{
@@ -1847,7 +1847,7 @@ namespace wg
 
 	//____ _linePosY() _______________________________________________________________
 
-	spx StdTextMapper::_linePosY( const void * pBlock, int line, spx canvasHeight ) const
+	spx BasicTextLayout::_linePosY( const void * pBlock, int line, spx canvasHeight ) const
 	{
 		spx ofsY = _textPosY( _header(pBlock), canvasHeight );
 
@@ -1860,7 +1860,7 @@ namespace wg
 
 	//____ _textPosY() _____________________________________________________________
 
-	spx	StdTextMapper::_textPosY( const BlockHeader * pHeader, spx canvasHeight ) const
+	spx	BasicTextLayout::_textPosY( const BlockHeader * pHeader, spx canvasHeight ) const
 	{
 		switch( m_placement )
 		{
@@ -1882,7 +1882,7 @@ namespace wg
 
 	//____ _charPosX() _________________________________________________________
 
-	spx StdTextMapper::_charPosX( const Text * pText, int charOfs ) const
+	spx BasicTextLayout::_charPosX( const Text * pText, int charOfs ) const
 	{
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + charLine(pText, charOfs);
 		const Char * pChars = _chars(pText);
@@ -1895,7 +1895,7 @@ namespace wg
 
 	//____ _lineAtPosY() _______________________________________________________
 
-	int StdTextMapper::_lineAtPosY( const Text * pText, spx posY, SelectMode mode ) const
+	int BasicTextLayout::_lineAtPosY( const Text * pText, spx posY, SelectMode mode ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHead = _header(pBlock);
@@ -1976,7 +1976,7 @@ namespace wg
 
 	//____ _charAtPosX() _______________________________________________________
 
-	int StdTextMapper::_charAtPosX( const Text * pText, int line, spx posX, SelectMode mode ) const
+	int BasicTextLayout::_charAtPosX( const Text * pText, int line, spx posX, SelectMode mode ) const
 	{
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 

@@ -36,7 +36,7 @@ namespace wg
 
 	//____ TextDisplay() _________________________________________________________________
 
-	TextDisplay::TextDisplay() : text(this)
+	TextDisplay::TextDisplay() : display(this)
 	{
 	}
 
@@ -58,7 +58,7 @@ namespace wg
 
 	PointerStyle TextDisplay::pointerStyle() const
 	{
-		if( text.markedLink() )
+		if( display.markedLink() )
 			return PointerStyle::Hand;
 
 		return m_pointerStyle;
@@ -71,7 +71,7 @@ namespace wg
 		if( !m_tooltip.isEmpty() )
 			return m_tooltip;
 		else
-			return OO(text)._tooltip();
+			return OO(display)._tooltip();
 	}
 
 	//____ _matchingWidth() _______________________________________________________
@@ -82,7 +82,7 @@ namespace wg
 		SizeSPX padding = _contentPaddingSize();
 
 		height -= padding.h;
-		spx textWidth = OO(text)._matchingWidth(height, scale);
+		spx textWidth = OO(display)._matchingWidth(height, scale);
 		textWidth += padding.w;
 		return textWidth;
 	}
@@ -95,7 +95,7 @@ namespace wg
 		SizeSPX padding = _contentPaddingSize();
 
 		width -= padding.w;
-		spx textHeight = OO(text)._matchingHeight(width, scale);
+		spx textHeight = OO(display)._matchingHeight(width, scale);
 		textHeight += padding.h;
 		return textHeight;
 	}
@@ -106,7 +106,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX contentSize = OO(text)._preferredSize(scale);
+		SizeSPX contentSize = OO(display)._preferredSize(scale);
 
 		return OO(skin)._sizeForContent(contentSize, scale);
 	}
@@ -119,7 +119,7 @@ namespace wg
 
 		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
 
-		OO(text)._render(pDevice, canvas);
+		OO(display)._render(pDevice, canvas);
 	}
 
 	//____ _refresh() _______________________________________________________
@@ -136,8 +136,8 @@ namespace wg
 	void TextDisplay::_setState( State state )
 	{
 		Widget::_setState(state);
-		OO(text)._setState(state);
-		_requestRender(); //TODO: Only requestRender if text appearance has changed (let OO(text).setState() return if rendering is needed)
+		OO(display)._setState(state);
+		_requestRender(); //TODO: Only requestRender if text appearance has changed (let OO(display).setState() return if rendering is needed)
 	}
 
 
@@ -151,7 +151,7 @@ namespace wg
 		if( m_pSkin )
 			canvas = m_pSkin->_contentRect(canvas, m_state);
 
-		OO(text).receive( pMsg, pHandler, canvas );
+		OO(display).receive( pMsg, pHandler, canvas );
 	*/
 	}
 
@@ -175,7 +175,7 @@ namespace wg
 
 		SizeSPX textSize = size - OO(skin)._contentPaddingSize(m_scale);		// Using m_scale here, since that has been fixed.
 
-		OO(text)._setSize( textSize, scale );
+		OO(display)._setSize( textSize, scale );
 	}
 
 

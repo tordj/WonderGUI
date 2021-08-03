@@ -34,7 +34,7 @@
 
 #include <wg_freetypefont.h>
 
-#define USE_OPEN_GL
+//#define USE_OPEN_GL
 
 
 using namespace wg;
@@ -472,12 +472,12 @@ int main(int argc, char** argv)
 	Base::setDefaultStyle(pStyle);
 
 	/*
-		StdTextMapper_p pMapper = StdTextMapper::create();
+		BasicTextLayout_p pMapper = BasicTextLayout::create();
 		pMapper->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
-		Base::setDefaultTextMapper(pMapper);
+		Base::setDefaultTextLayout(pMapper);
 	*/
 
-	wg_cast<StdTextMapper_p>(Base::defaultTextMapper())->setSelectionBack(Color::White, BlendMode::Invert);
+	wg_cast<BasicTextLayout_p>(Base::defaultTextLayout())->setSelectionBack(Color::White, BlendMode::Invert);
 
 	// Init skins
 
@@ -972,19 +972,19 @@ int main(int argc, char** argv)
 
 
 
-		auto pMapper = StdTextMapper::create();
+		auto pMapper = BasicTextLayout::create();
 		pMapper->setLineWrap(true);
 		pMapper->setPlacement(Placement::SouthEast);
 
 		TextEditor_p pText1 = TextEditor::create();
 		pText1->setSkin(ColorSkin::create(Color::SandyBrown));
 		pText1->text.set("Once upon a time in a land.");
-		pText1->text.setTextMapper(pMapper);
+		pText1->text.setTextLayout(pMapper);
 
 		TextEditor_p pText2 = TextEditor::create();
 		pText2->setSkin(ColorSkin::create(Color::Black));
 		pText2->text.set("Once upon a time in a land far, far away...");
-		pText2->text.setTextMapper(pMapper);
+		pText2->text.setTextLayout(pMapper);
 
 		auto pCapsule = SizeCapsule::create();
 		pCapsule->setMinSize({ 0, 10 } );
@@ -1177,11 +1177,11 @@ int main(int argc, char** argv)
 
 		TextEditor_p pText = TextEditor::create();
 
-		auto pMapper = StdTextMapper::create();
+		auto pMapper = BasicTextLayout::create();
 		pMapper->setLineWrap(true);
 		pMapper->setPlacement(Placement::North);
 
-		pText->text.setTextMapper(pMapper);
+		pText->text.setTextLayout(pMapper);
 
 
 		TextStyle_p pBig = TextStyle::create();
@@ -1270,7 +1270,7 @@ int main(int argc, char** argv)
 	pText->text.setPrinter( pPrinter );
 
 
-	ValueDisplay_p pValue = ValueDisplay::create();
+	NumberDisplay_p pValue = NumberDisplay::create();
 	pValue->value.setFormatter( TimeFormatter::create("%2H:%2M:%2S"));
 	pValue->value.set(3600+60+12);
 	pValue->value.setPrinter( pPrinter );
@@ -1766,7 +1766,7 @@ bool scrollIntoViewTest(CStandardSlot_p pEntry)
 {
 	auto pEditor = TextEditor::create();
 
-	pEditor->text.set("TEXT AREA.");
+	pEditor->editor.setText("TEXT AREA.");
 	pEditor->skin = ColorSkin::create(Color::YellowGreen);
 
 	auto pScrollPanel = ScrollPanel::create();
@@ -1791,7 +1791,7 @@ bool textClipTest(CStandardSlot_p pEntry)
 
 	auto pEditor = TextEditor::create();
 
-	pEditor->text.set("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.");
+	pEditor->editor.setText("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.");
 	pEditor->skin = pSkin;
 
 	auto pFlex = FlexPanel::create();
@@ -1811,7 +1811,7 @@ bool textEditorTest(CStandardSlot_p pEntry)
 
 	auto pEditor = TextEditor::create();
 
-	pEditor->text.set("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.");
+	pEditor->editor.setText("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.");
 	pEditor->skin = pSkin;
 
 	auto pFlex = FlexPanel::create();
@@ -1832,7 +1832,7 @@ bool lineEditorTest(CStandardSlot_p pEntry)
 
 	auto pEditor = LineEditor::create();
 
-	pEditor->text.set("TEXT.");
+	pEditor->editor.setText("TEXT.");
 	pEditor->skin = pSkin;
 
 	auto pFlex = FlexPanel::create();
@@ -1861,7 +1861,7 @@ bool popupOpenerTest(CStandardSlot_p pEntry)
 
 	auto  pOpener = PopupOpener::create();
 	pOpener->skin = pButtonSkin;
-	pOpener->text.set("OPEN POPUP");
+	pOpener->text.setText("OPEN POPUP");
 	pFlex->slots.pushBackMovable(pOpener, { 50,50,50,30 });
 
 	auto pOpened = Filler::create();
@@ -1882,7 +1882,7 @@ bool scrollbarTest(CStandardSlot_p pEntry)
 
 	auto pEditor = TextEditor::create();
 
-	pEditor->text.set("TEXT AREA.");
+	pEditor->editor.setText("TEXT AREA.");
 	pEditor->skin = ColorSkin::create(Color::YellowGreen);
 
 	auto pScrollPanel = ScrollPanel::create();
@@ -2677,7 +2677,7 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 		position.placement = Placement::South;
 		position.spacing = Border(0);
 
-		s_pTooltip->text.set(pHoveredWidget->tooltip());
+		s_pTooltip->display.setText(pHoveredWidget->tooltip());
 		return s_pTooltip;
 	});
 
@@ -2719,8 +2719,8 @@ bool kerningTest(CStandardSlot_p pSlot)
 	auto pBigStyle = Base::defaultStyle()->clone();
 	pBigStyle->setSize(32);
 
-	pDisplay1->text.set("HHTATHHWAW");
-	pDisplay1->text.setStyle(pBigStyle);
+	pDisplay1->display.setText("HHTATHHWAW");
+	pDisplay1->display.setStyle(pBigStyle);
 
 	pBaseLayer->slots.pushBackMovable(pDisplay1, Rect(10, 10, 300, 100));
 

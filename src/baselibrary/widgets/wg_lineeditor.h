@@ -44,7 +44,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CTextEditor		text;
+		CTextEditor		editor;
 
 		//.____ Identification __________________________________________
 

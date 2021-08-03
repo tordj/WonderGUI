@@ -19,36 +19,23 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
-#ifndef	WG_CSTATICTEXTDISPLAY_DOT_H
-#define WG_CSTATICTEXTDISPLAY_DOT_H
+#ifndef	WG_CNUMBERDISPLAY_DOT_H
+#define WG_CNUMBERDISPLAY_DOT_H
 #pragma once
 
-#include <wg_types.h>
-#include <wg_ctext.h>
-
-
-#include <wg_base.h>
+#include <wg_cstaticnumberdisplay.h>
 
 namespace wg
 {
 
-	class String;
-	class CharSeq;
-	class CharBuffer;
 
-	class CStaticTextDisplay;
-	typedef	StrongComponentPtr<CStaticTextDisplay>		CStaticTextDisplay_p;
-	typedef	WeakComponentPtr<CStaticTextDisplay>		CStaticTextDisplay_wp;
+	//____ CNumberDisplay ____________________________________________________________
 
-
-	//____ CStaticTextDisplay __________________________________________________________________
-
-	class CStaticTextDisplay : public CText
+	class CNumberDisplay : public CStaticNumberDisplay
 	{
 	public:
-
-		CStaticTextDisplay(Holder * pHolder );
+		CNumberDisplay(Holder * pHolder);
+		~CNumberDisplay() {}
 
 
 		//.____ Identification _________________________________________________
@@ -58,25 +45,23 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
-		inline 	String			text() const { return CText::_getString(); }
+		void				clear();
+		bool				set( double value );
 
-		inline int				length() const { return m_charBuffer.length(); }
-		inline bool				isEmpty() const { return length() == 0 ? true : false; }
+		bool				setRange( double min, double max );
+		inline double		min() const { return m_minValue; }
+		inline double		max() const { return m_maxValue; }
 
-		//.____ Misc __________________________________________________
-
-		inline CStaticTextDisplay_p		ptr() { return CStaticTextDisplay_p(this); }
-
-		TextLink_p			markedLink() const;
 
 	protected:
 
-		virtual void		_receive( Msg * pMsg );
+		bool				_set(double value) override;
 
-	protected:
-		TextLink_p			m_pMarkedLink;	// Character offset for beginning of marked or focused link
+		double				m_minValue;
+		double				m_maxValue;
 	};
 
 
+
 } // namespace wg
-#endif //WG_CSTATICTEXTDISPLAY_DOT_H
+#endif //WG_CNUMBERDISPLAY_DOT_H

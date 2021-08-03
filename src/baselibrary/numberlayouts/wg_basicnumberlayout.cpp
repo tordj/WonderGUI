@@ -20,20 +20,20 @@
 
 =========================================================================*/
 
-#include <wg_basicvaluepresenter.h>
+#include <wg_basicnumberlayout.h>
 #include <wg_base.h>
 #include <wg_util.h>
 
 namespace wg
 {
 
-	const TypeInfo BasicValuePresenter::TYPEINFO = { "BasicValuePresenter", &ValuePresenter::TYPEINFO };
+	const TypeInfo BasicNumberLayout::TYPEINFO = { "BasicNumberLayout", &NumberLayout::TYPEINFO };
 
 	using namespace Util;
 
 	//____ constructor ________________________________________________________
 
-	BasicValuePresenter::BasicValuePresenter( const Blueprint& blueprint )
+	BasicNumberLayout::BasicNumberLayout( const Blueprint& blueprint )
 	{
 		m_blueprint = blueprint;
 
@@ -124,13 +124,13 @@ namespace wg
 
 	//____ Destructor _________________________________________________________
 
-	BasicValuePresenter::~BasicValuePresenter()
+	BasicNumberLayout::~BasicNumberLayout()
 	{
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& BasicValuePresenter::typeInfo(void) const
+	const TypeInfo& BasicNumberLayout::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
@@ -138,7 +138,7 @@ namespace wg
 
 	//____ render() ___________________________________________________________
 
-	void BasicValuePresenter::render(GfxDevice* pDevice, const RectSPX& canvas, double value, int scale, State state)
+	void BasicNumberLayout::render(GfxDevice* pDevice, const RectSPX& canvas, double value, int scale, State state)
 	{
 		// Generate string from value
 
@@ -167,7 +167,7 @@ namespace wg
 
 	//____ preferredSize() ____________________________________________________
 
-	SizeSPX BasicValuePresenter::preferredSize(double value, int scale, State state) const
+	SizeSPX BasicNumberLayout::preferredSize(double value, int scale, State state) const
 	{
 		auto charBuffer = _valueToStr(value);
 		SizeSPX size;
@@ -178,7 +178,7 @@ namespace wg
 
 	//____ stateChangeNeedsRender() ___________________________________________
 
-	bool BasicValuePresenter::stateChangeNeedsRender(State newState, State oldState) const
+	bool BasicNumberLayout::stateChangeNeedsRender(State newState, State oldState) const
 	{
 		//TODO: This might fail if we have a Base::defaultStyle() that isn't static.
 
@@ -187,7 +187,7 @@ namespace wg
 
 	//____ blueprint() ________________________________________________________
 
-	BasicValuePresenter::Blueprint BasicValuePresenter::blueprint() const
+	BasicNumberLayout::Blueprint BasicNumberLayout::blueprint() const
 	{
 		Blueprint copy = m_blueprint;
 
@@ -212,7 +212,7 @@ namespace wg
 
 	//____ _valueToStr() ______________________________________________________
 
-	CharBuffer BasicValuePresenter::_valueToStr(double value) const
+	CharBuffer BasicNumberLayout::_valueToStr(double value) const
 	{
 		const static uint16_t	codeTab[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
@@ -290,7 +290,7 @@ namespace wg
 
 	//____ _strSize() _________________________________________________________
 
-	std::tuple<SizeSPX, spx> BasicValuePresenter::_strSizeBaseline(const Char * pChars, int scale, State state) const
+	std::tuple<SizeSPX, spx> BasicNumberLayout::_strSizeBaseline(const Char * pChars, int scale, State state) const
 	{
 		SizeSPX			size;
 
@@ -392,7 +392,7 @@ namespace wg
 
 	//____ _addStylesFromString() _____________________________________________
 
-	void BasicValuePresenter::_addStylesFromString(std::vector<TextStyle*>& stylesVector, const String& string) const
+	void BasicNumberLayout::_addStylesFromString(std::vector<TextStyle*>& stylesVector, const String& string) const
 	{
 		TextStyle_h prevStyle = 0;
 		auto pChars = string.chars();

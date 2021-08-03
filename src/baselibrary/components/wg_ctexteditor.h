@@ -106,9 +106,9 @@ namespace wg
 
 		void			_clear() override;
 
-		void			_set(const CharSeq& seq) override;
-		void			_set(const CharBuffer * buffer) override;
-		void			_set(const String& str) override;
+		void			_setText(const CharSeq& seq) override;
+		void			_setText(const CharBuffer * buffer) override;
+		void			_setText(const String& str) override;
 
 		int				_append(const CharSeq& seq) override;
 		int				_insert(int ofs, const CharSeq& seq) override;

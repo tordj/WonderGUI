@@ -21,50 +21,50 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_cstaticvaluedisplay.h>
+#include <wg_cstaticnumberdisplay.h>
 
 namespace wg
 {
-	const TypeInfo CStaticValueDisplay::TYPEINFO = { "CStaticValueDisplay", &CText::TYPEINFO };
+	const TypeInfo CStaticNumberDisplay::TYPEINFO = { "CStaticNumberDisplay", &CText::TYPEINFO };
 
 	//____ constructor ________________________________________________________
 
-	CStaticValueDisplay::CStaticValueDisplay(GeoComponent::Holder * pHolder) : GeoComponent(pHolder)
+	CStaticNumberDisplay::CStaticNumberDisplay(GeoComponent::Holder * pHolder) : GeoComponent(pHolder)
 	{
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CStaticValueDisplay::typeInfo(void) const
+	const TypeInfo& CStaticNumberDisplay::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
-	//____ setPresenter() _____________________________________________________
+	//____ setLayout() _____________________________________________________
 
-	void CStaticValueDisplay::setPresenter(ValuePresenter* pPresenter)
+	void CStaticNumberDisplay::setLayout(NumberLayout* pLayout)
 	{
-		if (m_pPresenter.rawPtr() != pPresenter)
+		if (m_pLayout.rawPtr() != pLayout)
 		{
-			m_pPresenter = pPresenter;
+			m_pLayout = pLayout;
 			_refresh();
 		}
 	}
 
-	//____ clearPresenter() ___________________________________________________
+	//____ clearLayout() ___________________________________________________
 
-	void CStaticValueDisplay::clearPresenter()
+	void CStaticNumberDisplay::clearLayout()
 	{
-		if (m_pPresenter)
+		if (m_pLayout)
 		{
-			m_pPresenter = 0;
+			m_pLayout = 0;
 			_refresh();
 		}
 	}
 
 	//____ _set() _____________________________________________________________
 
-	bool CStaticValueDisplay::_set( double value )
+	bool CStaticNumberDisplay::_set( double value )
 	{
 		if( m_value != value )
 		{
@@ -77,33 +77,33 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void CStaticValueDisplay::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state)
+	void CStaticNumberDisplay::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state)
 	{
-		ValuePresenter* pPresenter = m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultValuePresenter().rawPtr();
+		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
 
-		pPresenter->render(pDevice, canvas, m_value, scale, state);
+		pLayout->render(pDevice, canvas, m_value, scale, state);
 
 	}
 
 
 	//____ _preferredSize() ___________________________________________________
 
-	SizeSPX CStaticValueDisplay::_preferredSize(int scale) const
+	SizeSPX CStaticNumberDisplay::_preferredSize(int scale) const
 	{
-		ValuePresenter* pPresenter = m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultValuePresenter().rawPtr();
+		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
 
-		return pPresenter->preferredSize(m_value, scale, StateEnum::Normal);
+		return pLayout->preferredSize(m_value, scale, StateEnum::Normal);
 	}
 
 
 	//____ _refresh() _________________________________________________________
 
-	void CStaticValueDisplay::_refresh()
+	void CStaticNumberDisplay::_refresh()
 	{
-		ValuePresenter* pPresenter = m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultValuePresenter().rawPtr();
+		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
 
-//		if (m_pPresenter)
-//			m_charBuffer = pPresenter->format(m_value, m_scale);
+//		if (m_pLayout)
+//			m_charBuffer = pLayout->format(m_value, m_scale);
 
 		_requestRender();
 
@@ -112,11 +112,11 @@ namespace wg
 
 	//____ _stateChangeNeedsRender() __________________________________________
 
-	bool CStaticValueDisplay::_stateChangeNeedsRender(State newState, State oldState) const
+	bool CStaticNumberDisplay::_stateChangeNeedsRender(State newState, State oldState) const
 	{
-		ValuePresenter* pPresenter = m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultValuePresenter().rawPtr();
+		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
 
-		return pPresenter->stateChangeNeedsRender(newState, oldState);
+		return pLayout->stateChangeNeedsRender(newState, oldState);
 	}
 
 

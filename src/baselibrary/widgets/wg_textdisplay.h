@@ -45,7 +45,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		CTextDisplay			text;
+		CTextDisplay			display;
 
 		//.____ Identification __________________________________________
 

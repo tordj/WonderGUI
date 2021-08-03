@@ -20,27 +20,27 @@
 
 =========================================================================*/
 
-#ifndef	WG_STDTEXTMAPPER_DOT_H
-#define	WG_STDTEXTMAPPER_DOT_H
+#ifndef	WG_BASICTEXTLAYOUT_DOT_H
+#define	WG_BASICTEXTLAYOUT_DOT_H
 #pragma once
 
-#include <wg_textmapper.h>
+#include <wg_textlayout.h>
 #include <wg_textstyle.h>
 #include <wg_caret.h>
 
 namespace wg
 {
 
-	class StdTextMapper;
-	typedef	StrongPtr<StdTextMapper>		StdTextMapper_p;
-	typedef	WeakPtr<StdTextMapper>	StdTextMapper_wp;
+	class BasicTextLayout;
+	typedef	StrongPtr<BasicTextLayout>		BasicTextLayout_p;
+	typedef	WeakPtr<BasicTextLayout>	BasicTextLayout_wp;
 
-	class StdTextMapper : public TextMapper
+	class BasicTextLayout : public TextLayout
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static StdTextMapper_p create() { return StdTextMapper_p(new StdTextMapper()); }
+		static BasicTextLayout_p create() { return BasicTextLayout_p(new BasicTextLayout()); }
 
 		//.____ Identification __________________________________________
 
@@ -136,8 +136,8 @@ namespace wg
 
 
 	protected:
-		StdTextMapper();
-		virtual ~StdTextMapper();
+		BasicTextLayout();
+		virtual ~BasicTextLayout();
 
 
 		struct BlockHeader
@@ -222,7 +222,7 @@ namespace wg
 
 
 
-inline void StdTextMapper::_getGlyphWithoutBitmap( Font * pFont, uint16_t charCode, Glyph& glyph ) const
+inline void BasicTextLayout::_getGlyphWithoutBitmap( Font * pFont, uint16_t charCode, Glyph& glyph ) const
 {
 	if( charCode <= 32 )
 	{
@@ -241,7 +241,7 @@ inline void StdTextMapper::_getGlyphWithoutBitmap( Font * pFont, uint16_t charCo
 	}
 }
 
-inline void StdTextMapper::_getGlyphWithBitmap(Font* pFont, uint16_t charCode, Glyph& glyph) const
+inline void BasicTextLayout::_getGlyphWithBitmap(Font* pFont, uint16_t charCode, Glyph& glyph) const
 {
 	if (charCode <= 32)
 	{
@@ -262,4 +262,4 @@ inline void StdTextMapper::_getGlyphWithBitmap(Font* pFont, uint16_t charCode, G
 
 
 } // namespace wg
-#endif //WG_STDTEXTMAPPER_DOT_H
+#endif //WG_BASICTEXTLAYOUT_DOT_H

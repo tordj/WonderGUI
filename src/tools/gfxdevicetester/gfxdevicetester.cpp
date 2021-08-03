@@ -50,7 +50,7 @@ bool GfxDeviceTester::init( AppVisitor * pVisitor )
 
 	// Init textmappers
 
-	auto pMapper = StdTextMapper::create();
+	auto pMapper = BasicTextLayout::create();
 	pMapper->setPlacement(Placement::Center);
 	g_pButtonLabelMapper = pMapper;
 
@@ -245,7 +245,7 @@ void GfxDeviceTester::refresh_performance_display()
 			auto pLabel = TextDisplay::create();
 			pLabel->text.set(t.name);
 
-			//			auto pValue = ValueDisplay::create();
+			//			auto pValue = NumberDisplay::create();
 			//			pValue->value.set(t.devices[TESTEE].render_time*1000);
 
 			auto pValuePacker = PackPanel::create();
@@ -261,7 +261,7 @@ void GfxDeviceTester::refresh_performance_display()
 			sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
 #endif
 			pValueTestee->text.set(value);
-			pValueTestee->text.setTextMapper(g_pPerformanceValueMapper);
+			pValueTestee->text.setTextLayout(g_pPerformanceValueMapper);
 
 			auto pValueRef = TextDisplay::create();
 #ifdef WIN32			
@@ -270,7 +270,7 @@ void GfxDeviceTester::refresh_performance_display()
 			sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
 #endif
 			pValueRef->text.set(value);
-			pValueRef->text.setTextMapper(g_pPerformanceValueMapper);
+			pValueRef->text.setTextLayout(g_pPerformanceValueMapper);
 
 			pValuePacker->slots << pValueTestee;
 			pValuePacker->slots << pValueRef;
@@ -668,19 +668,19 @@ bool GfxDeviceTester::setup_chrome()
 	pNoClipButton->skin = pSimpleButtonSkin;
 	pNoClipButton->text.set("One");
 	pNoClipButton->text.setStyle(g_pButtonLabelStyle);
-	pNoClipButton->text.setTextMapper(g_pButtonLabelMapper);
+	pNoClipButton->text.setTextLayout(g_pButtonLabelMapper);
 
 	auto pFewButton = Button::create();
 	pFewButton->skin = pSimpleButtonSkin;
 	pFewButton->text.set("Few");
 	pFewButton->text.setStyle(g_pButtonLabelStyle);
-	pFewButton->text.setTextMapper(g_pButtonLabelMapper);
+	pFewButton->text.setTextLayout(g_pButtonLabelMapper);
 
 	auto pManyButton = Button::create();
 	pManyButton->skin = pSimpleButtonSkin;
 	pManyButton->text.set("Many");
 	pManyButton->text.setStyle(g_pButtonLabelStyle);
-	pManyButton->text.setTextMapper(g_pButtonLabelMapper);
+	pManyButton->text.setTextLayout(g_pButtonLabelMapper);
 
 	pClipSection->slots << pClipLabel;
 	pClipSection->slots << pNoClipButton;
@@ -701,32 +701,32 @@ bool GfxDeviceTester::setup_chrome()
 	pTesteeButton->skin = pSimpleButtonSkin;
 	pTesteeButton->text.set("Testee");
 	pTesteeButton->text.setStyle(g_pButtonLabelStyle);
-	pTesteeButton->text.setTextMapper(g_pButtonLabelMapper);
+	pTesteeButton->text.setTextLayout(g_pButtonLabelMapper);
 
 	auto pRefButton = Button::create();
 	pRefButton->skin = pSimpleButtonSkin;
 	pRefButton->text.set("Reference");
 	pRefButton->text.setStyle(g_pButtonLabelStyle);
-	pRefButton->text.setTextMapper(g_pButtonLabelMapper);
+	pRefButton->text.setTextLayout(g_pButtonLabelMapper);
 
 	auto pBothButton = Button::create();
 	pBothButton->skin = pSimpleButtonSkin;
 //	pBothButton->text = { "Both", g_pButtonLabelStyle, g_pButtonLabelMapper }
 	pBothButton->text.set("Both");
 	pBothButton->text.setStyle(g_pButtonLabelStyle);
-	pBothButton->text.setTextMapper(g_pButtonLabelMapper);
+	pBothButton->text.setTextLayout(g_pButtonLabelMapper);
 
 	auto pDiffButton = Button::create();
 	pDiffButton->skin = pSimpleButtonSkin;
 	pDiffButton->text.set("Diff");
 	pDiffButton->text.setStyle(g_pButtonLabelStyle);
-	pDiffButton->text.setTextMapper(g_pButtonLabelMapper);
+	pDiffButton->text.setTextLayout(g_pButtonLabelMapper);
 
 	auto pTimeButton = Button::create();
 	pTimeButton->skin = pSimpleButtonSkin;
 	pTimeButton->text.set("Time");
 	pTimeButton->text.setStyle(g_pButtonLabelStyle);
-	pTimeButton->text.setTextMapper(g_pButtonLabelMapper);
+	pTimeButton->text.setTextLayout(g_pButtonLabelMapper);
 
 	pDispModeSection->slots << pTesteeButton;
 	pDispModeSection->slots << pRefButton;
@@ -768,25 +768,25 @@ bool GfxDeviceTester::setup_chrome()
 	pX1Button->skin = pSimpleButtonSkin;
 	pX1Button->text.set(" X1 ");
 	pX1Button->text.setStyle(g_pButtonLabelStyle);
-	pX1Button->text.setTextMapper(g_pButtonLabelMapper);
+	pX1Button->text.setTextLayout(g_pButtonLabelMapper);
 
 	auto pX2Button = Button::create();
 	pX2Button->skin = pSimpleButtonSkin;
 	pX2Button->text.set(" X2 ");
 	pX2Button->text.setStyle(g_pButtonLabelStyle);
-	pX2Button->text.setTextMapper(g_pButtonLabelMapper);
+	pX2Button->text.setTextLayout(g_pButtonLabelMapper);
 
 	auto pX4Button = Button::create();
 	pX4Button->skin = pSimpleButtonSkin;
 	pX4Button->text.set(" X4 ");
 	pX4Button->text.setStyle(g_pButtonLabelStyle);
-	pX4Button->text.setTextMapper(g_pButtonLabelMapper);
+	pX4Button->text.setTextLayout(g_pButtonLabelMapper);
 
 	auto pX8Button = Button::create();
 	pX8Button->skin = pSimpleButtonSkin;
 	pX8Button->text.set(" X8 ");
 	pX8Button->text.setStyle(g_pButtonLabelStyle);
-	pX8Button->text.setTextMapper(g_pButtonLabelMapper);
+	pX8Button->text.setTextLayout(g_pButtonLabelMapper);
 
 	pDispZoomSection->slots << pX1Button;
 	pDispZoomSection->slots << pX2Button;
@@ -883,7 +883,7 @@ bool GfxDeviceTester::setup_chrome()
 	// Setup performance display
 
 	{
-		auto pMapper = StdTextMapper::create();
+		auto pMapper = BasicTextLayout::create();
 		pMapper->setPlacement(Placement::East);
 		g_pPerformanceValueMapper = pMapper;
 
@@ -917,7 +917,7 @@ bool GfxDeviceTester::setup_chrome()
 		pRefresh->skin = pSimpleButtonSkin;
 		pRefresh->text.set("REFRESH");
 		pRefresh->text.setStyle(g_pButtonLabelStyle);
-		pRefresh->text.setTextMapper(g_pButtonLabelMapper);
+		pRefresh->text.setTextLayout(g_pButtonLabelMapper);
 
 		Base::msgRouter()->addRoute(pRefresh, MsgType::Select, [this](Msg* pMsg) {
 			g_bRefreshPerformance = true;

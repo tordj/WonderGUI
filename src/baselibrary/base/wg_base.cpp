@@ -26,8 +26,8 @@
 
 #ifndef WG2_MODE
 	#include <wg_msgrouter.h>
-	#include <wg_stdtextmapper.h>
-	#include <wg_basicvaluepresenter.h>
+	#include <wg_basictextlayout.h>
+	#include <wg_basicnumberlayout.h>
 	#include <wg_inputhandler.h>
 #endif
 
@@ -91,10 +91,10 @@ namespace wg
 #ifndef WG2_MODE
 		s_pData->pDefaultCaret = Caret::create();
 
-		s_pData->pDefaultTextMapper = StdTextMapper::create();
+		s_pData->pDefaultTextLayout = BasicTextLayout::create();
 
 
-		s_pData->pDefaultValuePresenter = BasicValuePresenter::create( BasicValuePresenter::Blueprint() );
+		s_pData->pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
 
 		s_pData->pMsgRouter = MsgRouter::create();
       	s_pData->pInputHandler = InputHandler::create();
@@ -242,37 +242,37 @@ namespace wg
 		s_pData->pDefaultCaret = pCaret;
 	}
 
-	//_____ defaultTextMapper() ________________________________________________
+	//_____ defaultTextLayout() ________________________________________________
 
-	TextMapper_p Base::defaultTextMapper()
+	TextLayout_p Base::defaultTextLayout()
 	{
 		assert(s_pData!=0);
-		return s_pData->pDefaultTextMapper;
+		return s_pData->pDefaultTextLayout;
 	}
 
 
-	//____ setDefaultTextMapper() ___________________________________________________
+	//____ setDefaultTextLayout() ___________________________________________________
 
-	void Base::setDefaultTextMapper( TextMapper * pTextMapper )
+	void Base::setDefaultTextLayout( TextLayout * pTextLayout )
 	{
 		assert( s_pData != 0 );
-		s_pData->pDefaultTextMapper = pTextMapper;
+		s_pData->pDefaultTextLayout = pTextLayout;
 	}
 
-	//____ defaultValuePresenter() _____________________________________________
+	//____ defaultNumberLayout() _____________________________________________
 
-	ValuePresenter_p Base::defaultValuePresenter()
+	NumberLayout_p Base::defaultNumberLayout()
 	{
 		assert(s_pData != 0);
-		return s_pData->pDefaultValuePresenter;
+		return s_pData->pDefaultNumberLayout;
 	}
 
-	//____ setDefaultValuePresenter() _______________________________________________________
+	//____ setDefaultNumberLayout() _______________________________________________________
 
-	void Base::setDefaultValuePresenter(ValuePresenter * pFormatter)
+	void Base::setDefaultNumberLayout(NumberLayout * pFormatter)
 	{
 		assert(s_pData != 0);
-		s_pData->pDefaultValuePresenter = pFormatter;
+		s_pData->pDefaultNumberLayout = pFormatter;
 	}
 
 #endif

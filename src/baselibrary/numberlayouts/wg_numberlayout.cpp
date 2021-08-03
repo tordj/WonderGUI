@@ -20,28 +20,28 @@
 
 =========================================================================*/
 
-#include <wg_valuepresenter.h>
+#include <wg_numberlayout.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 
 namespace wg
 {
 
-	const TypeInfo ValuePresenter::TYPEINFO = { "ValuePresenter", &Object::TYPEINFO };
+	const TypeInfo NumberLayout::TYPEINFO = { "NumberLayout", &Object::TYPEINFO };
 
 	using namespace Util;
 
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& ValuePresenter::typeInfo(void) const
+	const TypeInfo& NumberLayout::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ _renderString() ____________________________________________________
 
-	void ValuePresenter::_renderString(GfxDevice* pDevice, const Char* pChar, TextStyle* pStyle, CoordSPX pos, int scale, State state)
+	void NumberLayout::_renderString(GfxDevice* pDevice, const Char* pChar, TextStyle* pStyle, CoordSPX pos, int scale, State state)
 	{
 		TextAttr		baseAttr;
 		pStyle->exportAttr(state, &baseAttr, scale);

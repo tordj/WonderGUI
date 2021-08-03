@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include	<wg_valuedisplay.h>
+#include	<wg_numberdisplay.h>
 #include	<wg_gfxdevice.h>
 #include	<wg_internal.h>
 
@@ -28,35 +28,35 @@ namespace wg
 {
 
 
-	const TypeInfo ValueDisplay::TYPEINFO = { "ValueDisplay", &Widget::TYPEINFO };
+	const TypeInfo NumberDisplay::TYPEINFO = { "NumberDisplay", &Widget::TYPEINFO };
 
 
-	//____ ValueDisplay() _________________________________________________________________
+	//____ NumberDisplay() _________________________________________________________________
 
-	ValueDisplay::ValueDisplay() : value(this)
+	NumberDisplay::NumberDisplay() : display(this)
 	{
 	}
 
-	//____ ~ValueDisplay() ___________________________________________________________
+	//____ ~NumberDisplay() ___________________________________________________________
 
-	ValueDisplay::~ValueDisplay()
+	NumberDisplay::~NumberDisplay()
 	{
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& ValueDisplay::typeInfo(void) const
+	const TypeInfo& NumberDisplay::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ _preferredSize() __________________________________________________________
 
-	SizeSPX ValueDisplay::_preferredSize(int scale) const
+	SizeSPX NumberDisplay::_preferredSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX size = value._preferredSize(scale);
+		SizeSPX size = display._preferredSize(scale);
 
 		return OO(skin)._sizeForContent(size, scale);
 	}
@@ -64,32 +64,32 @@ namespace wg
 
 	//____ _refresh() ____________________________________________________________
 
-	void ValueDisplay::_refresh( void )
+	void NumberDisplay::_refresh( void )
 	{
-		value._refresh();
+		display._refresh();
 		Widget::_refresh();
 	}
 
 	//____ _render() _____________________________________________________________
 
-	void ValueDisplay::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
+	void NumberDisplay::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
-		value._render(pDevice, _contentRect() + _canvas.pos(), m_scale, m_state);
+		display._render(pDevice, _contentRect() + _canvas.pos(), m_scale, m_state);
 	}
 
 	//____ _cloneContent() _______________________________________________________
 
-	void ValueDisplay::_cloneContent( const Widget * _pOrg )
+	void NumberDisplay::_cloneContent( const Widget * _pOrg )
 	{
 		Widget::_cloneContent( _pOrg );
 	}
 
 	//____ _setState() ______________________________________________________
 
-	void ValueDisplay::_setState( State state )
+	void NumberDisplay::_setState( State state )
 	{
-		if (value._stateChangeNeedsRender(m_state, state))
+		if (display._stateChangeNeedsRender(m_state, state))
 			_requestRender(_contentRect());
 
 		Widget::_setState(state);

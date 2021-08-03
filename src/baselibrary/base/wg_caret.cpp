@@ -111,7 +111,7 @@ namespace wg
 	 * Calculates the number of pixels needed for rendering an end-of-line caret.
 	 * 
 	 * Since the end-of-line caret is placed after the last character of the line, the
-	 * TextMapper needs to know how much extra space needs to be reserved past the end of
+	 * TextLayout needs to know how much extra space needs to be reserved past the end of
 	 * the line to fit the caret in an editable text-field.
 	 * 
 	 * @param eolCell The size of the last cell of the line in pixels. Typically the

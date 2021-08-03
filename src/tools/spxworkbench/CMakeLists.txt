@@ -11,8 +11,8 @@ source_group(Skins/Misc REGULAR_EXPRESSION "skins/misc//*")
 source_group(Skins/State REGULAR_EXPRESSION "skins/state//*")
 source_group(Skins/Static REGULAR_EXPRESSION "skins/static//*")
 
-source_group(TextMappers REGULAR_EXPRESSION "textmappers//*")
-source_group(ValuePresenters REGULAR_EXPRESSION "valuepresenters//*")
+source_group(TextMappers REGULAR_EXPRESSION "textlayouts//*")
+source_group(ValuePresenters REGULAR_EXPRESSION "valuelayouts//*")
 
 source_group(Widgets REGULAR_EXPRESSION "widgets//*")
 source_group(Widgets/Capsules REGULAR_EXPRESSION "widgets/capsules//*")
@@ -263,7 +263,7 @@ add_executable(spxworkbench
 	../../baselibrary/textmappers/wg_stdtextmapper.cpp
 	../../baselibrary/textmappers/wg_stdtextmapper.h
 	../../baselibrary/textmappers/wg_textmapper.cpp
-	../../baselibrary/textmappers/wg_textmapper.h
+	../../baselibrary/textmappers/wg_textlayout.h
 
 	../../baselibrary/valuepresenters/wg_basicvaluepresenter.cpp
 	../../baselibrary/valuepresenters/wg_basicvaluepresenter.h

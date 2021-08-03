@@ -18,8 +18,8 @@ include_directories(
 	baselibrary/skins/misc
 	baselibrary/skins/state
 	baselibrary/skins/static
-	baselibrary/textmappers
-	baselibrary/valuepresenter
+	baselibrary/textlayouts
+	baselibrary/numberlayouts
 	baselibrary/widgets
 	baselibrary/widgets/capsules
 	baselibrary/widgets/layers

@@ -50,14 +50,14 @@ namespace wg
 	 * A Caret object contains information about the graphical presentation
 	 * of a caret in an editable text-field and methods for rendering it.
 	 *
-	 * Displaying the caret in a text-field is the responsibility of a TextMapper
+	 * Displaying the caret in a text-field is the responsibility of a TextLayout
 	 * object, which might have a custom implementation, but typically use a Caret
 	 * object for this.
 	 *
 	 * The default Caret class displays a simple, vertical blinking line, but can
 	 * be subclassed to use animations or something else.
 	 *
-	 * Typically you create only one caret and provide it to the TextMapper(s) being
+	 * Typically you create only one caret and provide it to the TextLayout(s) being
 	 * used.
 	 */
 

@@ -19,49 +19,44 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_CVALUEDISPLAY_DOT_H
-#define WG_CVALUEDISPLAY_DOT_H
+#ifndef	WG_NUMBERLAYOUT_DOT_H
+#define WG_NUMBERLAYOUT_DOT_H
 #pragma once
 
-#include <wg_cstaticvaluedisplay.h>
+#include <wg_object.h>
+#include <wg_pointers.h>
+#include <wg_string.h>
 
 namespace wg
 {
 
+	class NumberLayout;
+	typedef	StrongPtr<NumberLayout>		NumberLayout_p;
+	typedef	WeakPtr<NumberLayout>		NumberLayout_wp;
 
-	//____ CValueDisplay ____________________________________________________________
+	//____ NumberLayout __________________________________________________________
 
-	class CValueDisplay : public CStaticValueDisplay
+	class NumberLayout : public Object
 	{
 	public:
-		CValueDisplay(Holder * pHolder);
-		~CValueDisplay() {}
 
+		//.____ Identification __________________________________________
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
+		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Content _____________________________________________
+		//.____ Misc __________________________________________________
 
-		void				clear();
-		bool				set( double value );
-
-		bool				setRange( double min, double max );
-		inline double		min() const { return m_minValue; }
-		inline double		max() const { return m_maxValue; }
-
+		virtual void 	render(GfxDevice* pDevice, const RectSPX& canvas, double value, int scale, State state) = 0;
+		virtual SizeSPX	preferredSize(double value, int scale, State state) const = 0;
+		virtual bool	stateChangeNeedsRender(State newState, State oldState) const = 0;
 
 	protected:
 
-		bool				_set(double value) override;
+		void	_renderString(GfxDevice * pDevice, const Char* pString, TextStyle* pStyle, CoordSPX pos, int scale, State state );
 
-		double				m_minValue;
-		double				m_maxValue;
 	};
 
 
-
 } // namespace wg
-#endif //WG_CVALUEDISPLAY_DOT_H
+#endif //WG_NUMBERLAYOUT_DOT_H

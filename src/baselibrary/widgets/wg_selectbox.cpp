@@ -113,11 +113,11 @@ namespace wg
 		m_pListCanvas->skin = pSkin;
 	}
 
-	//____ setListTextMapper() ______________________________________________
+	//____ setListTextLayout() ______________________________________________
 
-	void SelectBox::setListTextMapper(TextMapper * pTextMapper)
+	void SelectBox::setListTextLayout(TextLayout * pTextLayout)
 	{
-		m_pListTextMapper = pTextMapper;
+		m_pListTextLayout = pTextLayout;
 		m_pListCanvas->_requestResize();
 		m_pListCanvas->_requestRender();
 	}
@@ -201,7 +201,7 @@ namespace wg
 			spx contentWidth = width - contentPadding.w;
 			spx contentHeight = 0;
 
-			auto pMapper = _listTextMapper();
+			auto pMapper = _listTextLayout();
 			for (auto& entry : entries)
 			{
 				contentHeight = std::max(contentHeight, pMapper->matchingHeight(&entry, contentWidth, scale) );
@@ -361,7 +361,7 @@ namespace wg
 		{
 			State oldState = entries[m_markedEntryIndex].m_state;
 			entries[m_markedEntryIndex].m_state.setHovered(false);
-			_listTextMapper()->onStateChanged(&entries[m_markedEntryIndex], entries[m_markedEntryIndex].m_state, oldState);
+			_listTextLayout()->onStateChanged(&entries[m_markedEntryIndex], entries[m_markedEntryIndex].m_state, oldState);
 			_requestRenderEntry(&entries[m_markedEntryIndex]);
 		}
 
@@ -369,7 +369,7 @@ namespace wg
 		{
 			State oldState = entries[index].m_state;
 			entries[index].m_state.setHovered(true);
-			_listTextMapper()->onStateChanged(&entries[index], entries[index].m_state, oldState);
+			_listTextLayout()->onStateChanged(&entries[index], entries[index].m_state, oldState);
 			_requestRenderEntry(&entries[index]);
 		}
 
@@ -387,17 +387,17 @@ namespace wg
 		{
 			State oldState = entries[m_selectedEntryIndex].m_state;
 			entries[m_selectedEntryIndex].m_state.setSelected(false);
-			_listTextMapper()->onStateChanged(&entries[m_selectedEntryIndex], entries[m_selectedEntryIndex].m_state, oldState);
+			_listTextLayout()->onStateChanged(&entries[m_selectedEntryIndex], entries[m_selectedEntryIndex].m_state, oldState);
 			_requestRenderEntry(&entries[m_selectedEntryIndex]);
 		}
 
 		State oldState = entries[index].m_state;
 		entries[index].m_state.setSelected(true);
-		_listTextMapper()->onStateChanged(&entries[index], entries[index].m_state, oldState);
+		_listTextLayout()->onStateChanged(&entries[index], entries[index].m_state, oldState);
 		_requestRenderEntry(&entries[index]);
 		m_selectedEntryIndex = index;
 
-		text.set(entries[index].m_string);
+		text.setText(entries[index].m_string);
 		_requestRender();
 
 		Base::msgRouter()->post(SelectMsg::create(this));
@@ -435,7 +435,7 @@ namespace wg
 
 	void SelectBox::_didAddEntries(SelectBoxEntry * pEntry, int nb)
 	{
-		auto pMapper = _listTextMapper();
+		auto pMapper = _listTextLayout();
 
 		SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_contentPaddingSize(m_scale) : SizeSPX();
 		SizeSPX boxPadding = OO(skin)._contentPaddingSize(m_scale);
@@ -525,7 +525,7 @@ namespace wg
 
 			spx height = canvasPadding.h + entryPadding.h * entries.size();
 
-			auto pMapper = _listTextMapper();
+			auto pMapper = _listTextLayout();
 			for (auto& entry : entries)
 			{
 				height += pMapper->matchingHeight(&entry, contentWidth, scale);
@@ -557,7 +557,7 @@ namespace wg
 
 		RectSPX contentRect = pWidget->_contentRect(canvas);
 
-		TextMapper* pTextMapper = _listTextMapper();
+		TextLayout* pTextLayout = _listTextLayout();
 
 		CoordSPX pos = contentRect.pos();
 		for (auto& entry : entries )
@@ -568,7 +568,7 @@ namespace wg
 				m_pEntrySkin->_render(pDevice, entryRect, m_scale, entry.m_state);
 				entryRect = m_pEntrySkin->_contentRect(entryRect, m_scale, entry.m_state);
 			}
-			pTextMapper->render(&entry, pDevice, entryRect);
+			pTextLayout->render(&entry, pDevice, entryRect);
 			pos.y += entry.m_height;
 		}
 	}
@@ -586,7 +586,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		TextMapper* pMapper = _listTextMapper();
+		TextLayout* pMapper = _listTextLayout();
 
 		SizeSPX listCanvasPaddingSize = OO(m_pListCanvas->skin)._contentPaddingSize(scale);
 

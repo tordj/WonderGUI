@@ -72,7 +72,7 @@ namespace wg
 				// Get link from character properties
 
 				CoordSPX localPos = static_cast<InputMsg*>( pMsg )->_pointerPos() - _globalPos();
-				int markedChar = _textMapper()->charAtPos(this, localPos );
+				int markedChar = _layout()->charAtPos(this, localPos );
 				if( markedChar >= 0 )
 				{
 					TextStyle_p pStyle = m_charBuffer.chars()[markedChar].stylePtr();

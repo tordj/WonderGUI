@@ -32,7 +32,7 @@ namespace wg
 
 	CText::CText(Holder * pHolder ) : GeoComponent( pHolder )
 	{
-		_textMapper()->addText(this);
+		_layout()->addText(this);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -46,7 +46,7 @@ namespace wg
 
 	CText::~CText()
 	{
-		_textMapper()->removeText(this);
+		_layout()->removeText(this);
 	}
 
 	//____ setStyle() ______________________________________________________________
@@ -55,7 +55,7 @@ namespace wg
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = pStyle;
-		_textMapper()->onStyleChanged(this, pStyle, pOld);
+		_layout()->onStyleChanged(this, pStyle, pOld);
 	}
 
 	//____ clearStyle() ____________________________________________________________
@@ -64,31 +64,31 @@ namespace wg
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = 0;
-		_textMapper()->onStyleChanged(this, nullptr, pOld);
+		_layout()->onStyleChanged(this, nullptr, pOld);
 	}
 
-	//____ setTextMapper() __________________________________________________________
+	//____ setLayout() __________________________________________________________
 
-	void CText::setTextMapper( TextMapper * pTextMapper )
+	void CText::setLayout( TextLayout * pLayout )
 	{
-		if( pTextMapper == m_pTextMapper )
+		if( pLayout == m_pLayout )
 			return;
 
-		_textMapper()->removeText(this);
-		m_pTextMapper = pTextMapper;
-		_textMapper()->addText(this);
+		_layout()->removeText(this);
+		m_pLayout = pLayout;
+		_layout()->addText(this);
 	}
 
-	//____ clearTextMapper() ________________________________________________________
+	//____ clearLayout() ________________________________________________________
 
-	void CText::clearTextMapper()
+	void CText::clearLayout()
 	{
-		if( !m_pTextMapper )
+		if( !m_pLayout )
 			return;
 
-		_textMapper()->removeText(this);
-		m_pTextMapper = 0;
-		_textMapper()->addText(this);
+		_layout()->removeText(this);
+		m_pLayout = 0;
+		_layout()->addText(this);
 	}
 
 	//____ _setState() ______________________________________________________________
@@ -100,49 +100,49 @@ namespace wg
 
 		State old = m_state;
 		m_state = state;
-		_textMapper()->onStateChanged( this, state, old );
+		_layout()->onStateChanged( this, state, old );
 	}
 
 	//____ _preferredSize() _________________________________________________________
 
 	SizeSPX CText::_preferredSize(int scale) const
 	{
-		return _textMapper()->preferredSize(this, scale);
+		return _layout()->preferredSize(this, scale);
 	}
 
 	//____ _matchingWidth() _________________________________________________________
 
 	spx CText::_matchingWidth( spx height, int scale ) const
 	{
-		return _textMapper()->matchingWidth(this, height, scale);
+		return _layout()->matchingWidth(this, height, scale);
 	}
 
 	//____ _matchingHeight() ________________________________________________________
 
 	spx CText::_matchingHeight( spx width, int scale ) const
 	{
-		return _textMapper()->matchingHeight(this, width, scale);
+		return _layout()->matchingHeight(this, width, scale);
 	}
 
 	//____ _charAtPos() ___________________________________________________________
 
 	int CText::_charAtPos( CoordSPX pos ) const
 	{
-		return _textMapper()->charAtPos(this,pos);
+		return _layout()->charAtPos(this,pos);
 	}
 
 	//____ _charRect() ____________________________________________________________
 
 	RectSPX CText::_charRect( int charOfs ) const
 	{
-		return _textMapper()->charRect(this, charOfs);
+		return _layout()->charRect(this, charOfs);
 	}
 
 	//____ _charLine() ____________________________________________________________
 
 	int CText::_charLine( int charOfs ) const
 	{
-		return _textMapper()->charLine(this, charOfs);
+		return _layout()->charLine(this, charOfs);
 	}
 
 
@@ -150,7 +150,7 @@ namespace wg
 
 	void CText::_refresh()
 	{
-		_textMapper()->onRefresh(this);
+		_layout()->onRefresh(this);
 	}
 
 	//____ _setSize() _____________________________________________________________
@@ -164,28 +164,28 @@ namespace wg
 		int		oldScale = scale;
 		m_size = size;
 		m_scale = scale;
-		_textMapper()->onResized(this,size, oldSize, scale, oldScale);
+		_layout()->onResized(this,size, oldSize, scale, oldScale);
 	}
 
 	//_____ _render() _____________________________________________________________
 
 	void  CText::_render( GfxDevice * pDevice, const RectSPX& _canvas )
 	{
-		_textMapper()->render(this, pDevice, _canvas );
+		_layout()->render(this, pDevice, _canvas );
 	}
 
 	//____ _rectForRange() __________________________________________________________
 
 	RectSPX  CText::_rectForRange( int ofs, int length ) const
 	{
-		return _textMapper()->rectForRange(this, ofs, length);
+		return _layout()->rectForRange(this, ofs, length);
 	}
 
 	//____ _tooltip() _______________________________________________________________
 
 	String CText::_tooltip() const
 	{
-		return _textMapper()->tooltip(this);
+		return _layout()->tooltip(this);
 	}
 
 	//____ _getString() ___________________________________________________________________
@@ -201,36 +201,36 @@ namespace wg
 	{
 		int removed = m_charBuffer.length();
 		m_charBuffer.clear();
-		_textMapper()->onTextModified(this, 0, removed, 0);
+		_layout()->onTextModified(this, 0, removed, 0);
 	}
 
-	//___ _set() ____________________________________________________________________
+	//___ _setText() ____________________________________________________________________
 
-	void CText::_set(const CharSeq& seq)
+	void CText::_setText(const CharSeq& seq)
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
 		int removed = m_charBuffer.length();
 		m_charBuffer = seq;
-		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length());
+		_layout()->onTextModified(this, 0, removed, m_charBuffer.length());
 	}
 
-	void CText::_set(const CharBuffer * buffer)
+	void CText::_setText(const CharBuffer * buffer)
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
 		int removed = m_charBuffer.length();
 		m_charBuffer = *buffer;
-		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length());
+		_layout()->onTextModified(this, 0, removed, m_charBuffer.length());
 	}
 
-	void CText::_set(const String& str)
+	void CText::_setText(const String& str)
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
 		int removed = m_charBuffer.length();
 		m_charBuffer = str;
-		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length());
+		_layout()->onTextModified(this, 0, removed, m_charBuffer.length());
 	}
 
 	//____ _append() ________________________________________________________________
@@ -241,7 +241,7 @@ namespace wg
 
 		int ofs = m_charBuffer.length();
 		int len = m_charBuffer.pushBack(seq);
-		_textMapper()->onTextModified(this, ofs, 0, len);
+		_layout()->onTextModified(this, ofs, 0, len);
 		return len;
 	}
 
@@ -252,7 +252,7 @@ namespace wg
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
 		int len = m_charBuffer.insert(ofs, seq);
-		_textMapper()->onTextModified(this, ofs, 0, seq.length());
+		_layout()->onTextModified(this, ofs, 0, seq.length());
 		return len;
 	}
 
@@ -263,7 +263,7 @@ namespace wg
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
 		int diff = m_charBuffer.replace(ofs, nDelete, seq);
-		_textMapper()->onTextModified(this, ofs, nDelete, seq.length());
+		_layout()->onTextModified(this, ofs, nDelete, seq.length());
 		return diff;
 	}
 
@@ -274,7 +274,7 @@ namespace wg
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
 		int removed = m_charBuffer.remove(ofs, len);
-		_textMapper()->onTextModified(this, ofs, len, 0);
+		_layout()->onTextModified(this, ofs, len, 0);
 		return removed;
 	}
 
@@ -283,13 +283,13 @@ namespace wg
 	void CText::_setCharStyle(TextStyle * pStyle)
 	{
 		m_charBuffer.setStyle(pStyle);
-		_textMapper()->onCharStyleChanged(this);
+		_layout()->onCharStyleChanged(this);
 	}
 
 	void CText::_setCharStyle(TextStyle * pStyle, int ofs, int len)
 	{
 		m_charBuffer.setStyle(pStyle, ofs, len);
-		_textMapper()->onCharStyleChanged(this, ofs, len);
+		_layout()->onCharStyleChanged(this, ofs, len);
 	}
 
 	//____ _clearCharStyle() ____________________________________________________
@@ -297,13 +297,13 @@ namespace wg
 	void CText::_clearCharStyle()
 	{
 		m_charBuffer.clearStyle();
-		_textMapper()->onCharStyleChanged(this);
+		_layout()->onCharStyleChanged(this);
 	}
 
 	void CText::_clearCharStyle(int ofs, int len)
 	{
 		m_charBuffer.clearStyle(ofs, len);
-		_textMapper()->onCharStyleChanged(this, ofs, len);
+		_layout()->onCharStyleChanged(this, ofs, len);
 	}
 
 	//____ _mapperRequestRender() _______________________________________________

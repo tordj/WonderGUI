@@ -281,29 +281,29 @@ namespace wg
 		_updateDisplayArea();
 	}
 
-	//____ _set() ___________________________________________________________________
+	//____ _setText() ___________________________________________________________________
 
-	void CTextEditor::_set( const CharSeq& seq )
+	void CTextEditor::_setText( const CharSeq& seq )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
-		CTextDisplay::_set( seq );
+		CTextDisplay::_setText( seq );
 		_caretToEnd();
 	}
 
-	void CTextEditor::_set( const CharBuffer * pBuffer )
+	void CTextEditor::_setText( const CharBuffer * pBuffer )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
-		CTextDisplay::_set( pBuffer );
+		CTextDisplay::_setText( pBuffer );
 		_caretToEnd();
 	}
 
-	void CTextEditor::_set( const String& str )
+	void CTextEditor::_setText( const String& str )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
-		CTextDisplay::_set( str );
+		CTextDisplay::_setText( str );
 		_caretToEnd();
 	}
 
@@ -319,7 +319,7 @@ namespace wg
 		if( m_editState.caretOfs == m_editState.selectOfs && m_editState.caretOfs == m_charBuffer.length() )
 		{
 			int newOfs = m_editState.caretOfs + CTextDisplay::_append( seq );
-			_textMapper()->caretMove( this, newOfs, m_editState.caretOfs );
+			_layout()->caretMove( this, newOfs, m_editState.caretOfs );
 
 			m_editState.caretOfs = newOfs;
 			m_editState.selectOfs = newOfs;
@@ -373,9 +373,9 @@ namespace wg
 		if( caretOfs != m_editState.caretOfs || selectOfs != m_editState.selectOfs )
 		{
 			if( caretOfs == selectOfs )
-				_textMapper()->caretMove( this, caretOfs, m_editState.caretOfs );
+				_layout()->caretMove( this, caretOfs, m_editState.caretOfs );
 			else
-				_textMapper()->selectionChange( this, selectOfs, caretOfs, m_editState.caretOfs, m_editState.selectOfs );
+				_layout()->selectionChange( this, selectOfs, caretOfs, m_editState.caretOfs, m_editState.selectOfs );
 
 			m_editState.caretOfs = caretOfs;
 			m_editState.selectOfs = selectOfs;
@@ -450,9 +450,9 @@ namespace wg
 		if( caretOfs != m_editState.caretOfs || selectOfs != m_editState.selectOfs )
 		{
 			if( m_editState.caretOfs == m_editState.selectOfs )
-				_textMapper()->caretMove( this, caretOfs, m_editState.caretOfs );
+				_layout()->caretMove( this, caretOfs, m_editState.caretOfs );
 			else
-				_textMapper()->selectionChange( this, selectOfs, caretOfs, m_editState.selectOfs, m_editState.caretOfs );
+				_layout()->selectionChange( this, selectOfs, caretOfs, m_editState.selectOfs, m_editState.caretOfs );
 
 			m_editState.caretOfs = caretOfs;
 			m_editState.selectOfs = selectOfs;
@@ -496,7 +496,7 @@ namespace wg
 
 				// Restart caret animation
 
-				_textMapper()->caretMove(this, m_editState.caretOfs, m_editState.caretOfs);
+				_layout()->caretMove(this, m_editState.caretOfs, m_editState.caretOfs);
 			}
 			else
 			{
@@ -518,7 +518,7 @@ namespace wg
 
 	void CTextEditor::_render( GfxDevice * pDevice, const RectSPX& canvas )
 	{
-		_textMapper()->render(this, pDevice, canvas );
+		_layout()->render(this, pDevice, canvas );
 	}
 
 	//____ setEditMode() _______________________________________________________
@@ -556,7 +556,7 @@ namespace wg
 
 		if( beg != m_editState.selectOfs || end != m_editState.caretOfs )
 		{
-			_textMapper()->selectionChange( this, beg, end, m_editState.selectOfs, m_editState.caretOfs );
+			_layout()->selectionChange( this, beg, end, m_editState.selectOfs, m_editState.caretOfs );
 
 			m_editState.selectOfs = beg;
 			m_editState.caretOfs = end;
@@ -582,7 +582,7 @@ namespace wg
 
 		if( m_editState.selectOfs != m_editState.caretOfs )
 		{
-			_textMapper()->selectionChange( this, m_editState.caretOfs, m_editState.caretOfs, m_editState.selectOfs, m_editState.caretOfs );
+			_layout()->selectionChange( this, m_editState.caretOfs, m_editState.caretOfs, m_editState.selectOfs, m_editState.caretOfs );
 
 			m_editState.selectOfs = m_editState.caretOfs;
 		}
@@ -738,7 +738,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _textMapper()->caretUp(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _layout()->caretUp(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -749,7 +749,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _textMapper()->caretDown(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _layout()->caretDown(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -760,7 +760,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _textMapper()->caretLeft(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _layout()->caretLeft(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -771,7 +771,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _textMapper()->caretRight(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _layout()->caretRight(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -782,7 +782,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _textMapper()->caretNextWord(this, m_editState.caretOfs);
+		int caretOfs = _layout()->caretNextWord(this, m_editState.caretOfs);
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -793,7 +793,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _textMapper()->caretPrevWord(this, m_editState.caretOfs);
+		int caretOfs = _layout()->caretPrevWord(this, m_editState.caretOfs);
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -834,7 +834,7 @@ namespace wg
 		int caretOfs = m_editState.caretOfs;
 		if( caretOfs == 0 )
 		{
-			_textMapper()->caretMove(this, 0, 0);		// Force restart of the caret animation cycle.
+			_layout()->caretMove(this, 0, 0);		// Force restart of the caret animation cycle.
 			return false;
 		}
 		else
@@ -869,7 +869,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _textMapper()->caretHome(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _layout()->caretHome(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -880,7 +880,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _textMapper()->caretEnd(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _layout()->caretEnd(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -926,7 +926,7 @@ namespace wg
 
 	bool CTextEditor::caretToPos( CoordSPX pos)
 	{
-		int ofs = _textMapper()->caretToPos(this, pos, m_editState.wantedOfs );
+		int ofs = _layout()->caretToPos(this, pos, m_editState.wantedOfs );
 		return _moveCaret( ofs, MoveMethod::Mouse );
 	}
 
@@ -962,9 +962,9 @@ namespace wg
 		// Notify textmapper of caret and selection changes
 
 		if( m_editState.selectOfs == selectOfs || m_editState.selectOfs != m_editState.caretOfs )
-			_textMapper()->selectionChange( this, selectOfs, caretOfs, m_editState.selectOfs, m_editState.caretOfs );
+			_layout()->selectionChange( this, selectOfs, caretOfs, m_editState.selectOfs, m_editState.caretOfs );
 		else
-			_textMapper()->caretMove( this, caretOfs, m_editState.caretOfs );
+			_layout()->caretMove( this, caretOfs, m_editState.caretOfs );
 
 		// Set charStyle to first in selection or character left of caret if there is no selection.
 
@@ -1001,8 +1001,8 @@ namespace wg
 		if (end < beg)
 			std::swap(beg, end);
 
-		RectSPX niceToHave = _textMapper()->rectForRange(this, beg, end - beg);
-		RectSPX mustHave = _textMapper()->rectForCaret(this);
+		RectSPX niceToHave = _layout()->rectForRange(this, beg, end - beg);
+		RectSPX mustHave = _layout()->rectForCaret(this);
 
 		_requestVisibility(mustHave, niceToHave);
 	}

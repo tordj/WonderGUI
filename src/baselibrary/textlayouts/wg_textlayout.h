@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_TEXTMAPPER_DOT_H
-#define	WG_TEXTMAPPER_DOT_H
+#ifndef	WG_TEXTLAYOUT_DOT_H
+#define	WG_TEXTLAYOUT_DOT_H
 #pragma once
 
 #include <wg_userdefines.h>
@@ -41,7 +41,7 @@ namespace wg
 
 	class Text
 	{
-		friend class TextMapper;
+		friend class TextLayout;
 
 	private:
 		virtual SizeSPX		_textSize() const = 0;
@@ -72,11 +72,11 @@ namespace wg
 
 
 
-	class TextMapper;
-	typedef	StrongPtr<TextMapper>	TextMapper_p;
-	typedef	WeakPtr<TextMapper>	TextMapper_wp;
+	class TextLayout;
+	typedef	StrongPtr<TextLayout>	TextLayout_p;
+	typedef	WeakPtr<TextLayout>	TextLayout_wp;
 
-	class TextMapper : public Receiver
+	class TextLayout : public Receiver
 	{
 	public:
 		//.____ Identification __________________________________________
@@ -144,8 +144,8 @@ namespace wg
 
 
 	protected:
-		TextMapper() {}
-		virtual ~TextMapper() {};
+		TextLayout() {}
+		virtual ~TextLayout() {};
 
 		SizeSPX				_size( const Text * pText ) const;
 		int					_length( const Text * pText ) const;
@@ -178,4 +178,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_TEXTMAPPER_DOT_H
+#endif //WG_TEXTLAYOUT_DOT_H
