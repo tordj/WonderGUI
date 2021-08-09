@@ -437,9 +437,9 @@ namespace wg
 		return align(handleGeo);
 	}
 
-	//____ _state() _______________________________________________________
+	//____ _skinState() _______________________________________________________
 
-	State RangeSlider::_state(const SkinSlot* pSlot) const
+	State RangeSlider::_skinState(const SkinSlot* pSlot) const
 	{
 		if (pSlot == &m_beginHandleSkin)
 			return m_beginHandleState;
@@ -449,9 +449,9 @@ namespace wg
 			return m_state;
 	}
 
-	//____ _size() ___________________________________________________
+	//____ _skinSize() ___________________________________________________
 
-	SizeSPX RangeSlider::_size(const SkinSlot* pSlot) const
+	SizeSPX RangeSlider::_skinSize(const SkinSlot* pSlot) const
 	{
 		if (pSlot == &m_beginHandleSkin)
 			return _handleGeo(m_size, true).size();
@@ -461,9 +461,9 @@ namespace wg
 		return SizeSPX();
 	}
 
-	//____ _requestRender() _______________________________________________
+	//____ _skinRequestRender() _______________________________________________
 
-	void RangeSlider::_requestRender(const SkinSlot* pSlot)
+	void RangeSlider::_skinRequestRender(const SkinSlot* pSlot)
 	{
 		if (pSlot == &m_beginHandleSkin)
 			_requestRender(_handleGeo(m_size, true));
@@ -473,7 +473,7 @@ namespace wg
 			_requestRender();
 	}
 
-	void RangeSlider::_requestRender(const SkinSlot* pSlot, const RectSPX& rect)
+	void RangeSlider::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		CoordSPX ofs;
 

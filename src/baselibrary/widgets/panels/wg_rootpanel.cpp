@@ -778,23 +778,29 @@ namespace wg
 		return -1.f;
 	}
 
-	State RootPanel::_state(const SkinSlot* pSlot) const
+	//____ _skinState() _______________________________________________________
+
+	State RootPanel::_skinState(const SkinSlot* pSlot) const
 	{
 		return StateEnum::Normal;
 	}
 
-	SizeSPX RootPanel::_size(const SkinSlot* pSlot) const
+	//____ _skinSize() ________________________________________________________
+
+	SizeSPX RootPanel::_skinSize(const SkinSlot* pSlot) const
 	{
 		return m_geo;
 	}
 
-	void RootPanel::_requestRender(const SkinSlot* pSlot)
+	//____ _skinRequestRender() _______________________________________________
+
+	void RootPanel::_skinRequestRender(const SkinSlot* pSlot)
 	{
 		m_dirtyPatches.clear();
 		m_dirtyPatches.push(m_geo);
 	}
 
-	void RootPanel::_requestRender(const SkinSlot* pSlot, const RectSPX& rect)
+	void RootPanel::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		m_dirtyPatches.push(rect);
 	}

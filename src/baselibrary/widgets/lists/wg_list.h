@@ -119,15 +119,11 @@ namespace wg
 		virtual void	_onEntrySkinChanged( SizeSPX oldPadding, SizeSPX newPadding ) = 0;
 		virtual void	_onLassoUpdated( const RectSPX& oldLasso, const RectSPX& newLasso ) = 0;
 
-		using			Container::_state;
-		using			Container::_size;
-		using			Container::_requestRender;
+		State			_skinState(const SkinSlot* pSlot) const override;
+		SizeSPX			_skinSize(const SkinSlot* pSlot) const override;
 
-		State			_state(const SkinSlot* pSlot) const override;
-		SizeSPX			_size(const SkinSlot* pSlot) const override;
-
-		void			_requestRender(const SkinSlot* pComponent) override;
-		void			_requestRender(const SkinSlot* pComponent, const RectSPX& rect) override;
+		void			_skinRequestRender(const SkinSlot* pComponent) override;
+		void			_skinRequestRender(const SkinSlot* pComponent, const RectSPX& rect) override;
 
 
 		virtual Slot * _beginSlots() const = 0;

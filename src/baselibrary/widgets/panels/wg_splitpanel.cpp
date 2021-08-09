@@ -674,9 +674,9 @@ namespace wg
 			_requestRender(pSlot->m_geo);
 	}
 
-	//____ _state() _______________________________________________________
+	//____ _skinState() _______________________________________________________
 
-	State SplitPanel::_state(const SkinSlot* pSlot) const
+	State SplitPanel::_skinState(const SkinSlot* pSlot) const
 	{
 		if (pSlot == &m_handleSkin)
 			return m_handleState;
@@ -684,9 +684,9 @@ namespace wg
 			return m_state;
 	}
 
-	//____ _size() ___________________________________________________________
+	//____ _skinSize() ___________________________________________________________
 
-	SizeSPX SplitPanel::_size(const SkinSlot* pSlot) const
+	SizeSPX SplitPanel::_skinSize(const SkinSlot* pSlot) const
 	{
 		if (pSlot == &m_handleSkin)
 			return m_handleGeo.size();
@@ -694,9 +694,9 @@ namespace wg
 			return m_size;
 	}
 
-	//____ _requestRender() _______________________________________________
+	//____ _skinRequestRender() _______________________________________________
 
-	void SplitPanel::_requestRender(const SkinSlot* pSlot)
+	void SplitPanel::_skinRequestRender(const SkinSlot* pSlot)
 	{
 		if (pSlot == &m_handleSkin)
 			_requestRender(m_handleGeo);
@@ -704,7 +704,7 @@ namespace wg
 			_requestRender();
 	}
 
-	void SplitPanel::_requestRender(const SkinSlot* pSlot, const RectSPX& rect)
+	void SplitPanel::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		if (pSlot == &m_handleSkin)
 			_requestRender(rect + m_handleGeo.pos());

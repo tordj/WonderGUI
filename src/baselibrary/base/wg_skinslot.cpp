@@ -50,7 +50,7 @@ namespace wg
 
 		if (pSkin)
 		{
-			State state = m_pHolder->_state(this);
+			State state = m_pHolder->_skinState(this);
 
 			if (pSkin->_animationLength(state))
 			{
@@ -135,7 +135,7 @@ namespace wg
 
 		// Check if we need to update skin right away due to state change.
 
-		RectSPX	canvas		= m_pHolder->_size(this);
+		RectSPX	canvas		= m_pHolder->_skinSize(this);
 		float	value1		= static_cast<SkinSlot::Holder*>(m_pHolder)->_skinValue(this);
 		float	value2		= static_cast<SkinSlot::Holder*>(m_pHolder)->_skinValue2(this);
 
@@ -145,7 +145,7 @@ namespace wg
 
 		RectSPX dirtyRect = m_pSkin->_dirtyRect(canvas, m_pHolder->_scale(), oldState, newState, value1, value1, value2, value2, animPos, animPos, pStateFractions, pStateFractions);
 		if (!dirtyRect.isEmpty())
-			m_pHolder->_requestRender(this, dirtyRect);
+			m_pHolder->_skinRequestRender(this, dirtyRect);
 	}
 
 	//____ valueChanged() _____________________________________________________
@@ -155,15 +155,15 @@ namespace wg
 		if (!m_pSkin || m_pSkin->_ignoresValue())
 			return;
 
-		RectSPX	canvas = m_pHolder->_size(this);
-		State	state = m_pHolder->_state(this);
+		RectSPX	canvas = m_pHolder->_skinSize(this);
+		State	state = m_pHolder->_skinState(this);
 
 		int		animPos = m_pPocket ? m_pPocket->animationCounter : 0;
 		float*	pStateFractions = m_pPocket ? m_pPocket->fractionalState : nullptr;
 
 		RectSPX dirtyRect = m_pSkin->_dirtyRect(canvas, m_pHolder->_scale(), state, state, newValue, oldValue, newValue2, oldValue2, animPos, animPos, pStateFractions, pStateFractions);
 		if (!dirtyRect.isEmpty())
-			m_pHolder->_requestRender(this, dirtyRect);
+			m_pHolder->_skinRequestRender(this, dirtyRect);
 
 	}
 
@@ -245,8 +245,8 @@ namespace wg
 
 		// Request render if needed
 
-		RectSPX	canvas = m_pHolder->_size(this);
-		State	state = m_pHolder->_state(this);
+		RectSPX	canvas = m_pHolder->_skinSize(this);
+		State	state = m_pHolder->_skinState(this);
 		float	value1 = static_cast<SkinSlot::Holder*>(m_pHolder)->_skinValue(this);
 		float	value2 = static_cast<SkinSlot::Holder*>(m_pHolder)->_skinValue2(this);
 
@@ -255,7 +255,7 @@ namespace wg
 
 		RectSPX dirtyRect = m_pSkin->_dirtyRect(canvas, m_pHolder->_scale(), state, state, value1, value1, value2, value2, newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 		if (!dirtyRect.isEmpty())
-			m_pHolder->_requestRender(this, dirtyRect);
+			m_pHolder->_skinRequestRender(this, dirtyRect);
 
 		return (m_pPocket->bAnimated == false && m_pPocket->transitionFrom == m_pPocket->transitionTo);
 	}

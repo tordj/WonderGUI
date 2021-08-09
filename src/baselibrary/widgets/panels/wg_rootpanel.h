@@ -198,12 +198,12 @@ namespace wg
 		float			_skinValue(const SkinSlot* pSlot) const override;
 		float			_skinValue2(const SkinSlot* pSlot) const override;
 
-		State			_state(const SkinSlot* pSlot) const override;
+		State			_skinState(const SkinSlot* pSlot) const override;
 
-		SizeSPX			_size(const SkinSlot* pSlot) const override;
+		SizeSPX			_skinSize(const SkinSlot* pSlot) const override;
 
-		void			_requestRender(const SkinSlot* pComponent) override;
-		void			_requestRender(const SkinSlot* pComponent, const RectSPX& rect) override;
+		void			_skinRequestRender(const SkinSlot* pSlot) override;
+		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
 
 		inline void         _addPreRenderCall(Widget * pWidget) { m_preRenderCalls.push_back(pWidget); }

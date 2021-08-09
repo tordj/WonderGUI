@@ -852,22 +852,28 @@ namespace wg
 		return -1.f;
 	}
 
-	State Widget::_state(const SkinSlot* pSlot) const
+	//____ _skinState() _______________________________________________________
+
+	State Widget::_skinState(const SkinSlot* pSlot) const
 	{
 		return m_state;
 	}
 
-	SizeSPX Widget::_size(const SkinSlot* pSlot) const
+	//____ _skinSize() ________________________________________________________
+
+	SizeSPX Widget::_skinSize(const SkinSlot* pSlot) const
 	{
 		return m_size;
 	}
 
-	void Widget::_requestRender(const SkinSlot* pSlot)
+	//____ _skinRequestRender() _______________________________________________
+
+	void Widget::_skinRequestRender(const SkinSlot* pSlot)
 	{
 		_requestRender();
 	}
 
-	void Widget::_requestRender(const SkinSlot* pSlot, const RectSPX& rect)
+	void Widget::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		_requestRender(rect);
 	}

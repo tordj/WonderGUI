@@ -466,9 +466,9 @@ namespace wg
 		return nSelected + nDeselected;
 	}
 
-	//____ _state() __________________________________________________
+	//____ _skinState() __________________________________________________
 
-	State List::_state(const SkinSlot* pSlot) const
+	State List::_skinState(const SkinSlot* pSlot) const
 	{
 		if (pSlot == &m_lassoSkin)
 			return StateEnum::Normal;
@@ -476,9 +476,9 @@ namespace wg
 			return m_state;
 	}
 
-	//____ _size() ___________________________________________________
+	//____ _skinSize() ___________________________________________________
 
-	SizeSPX List::_size(const SkinSlot* pSlot) const
+	SizeSPX List::_skinSize(const SkinSlot* pSlot) const
 	{
 		if (pSlot == &m_lassoSkin)
 			return SizeSPX(m_lassoEnd - m_lassoBegin);
@@ -487,9 +487,9 @@ namespace wg
 
 	}
 
-	//____ _requestRender() __________________________________________
+	//____ _skinRequestRender() __________________________________________
 
-	void List::_requestRender(const SkinSlot* pSlot)
+	void List::_skinRequestRender(const SkinSlot* pSlot)
 	{
 		if (pSlot == &m_lassoSkin)
 			return _requestRender( RectSPX(m_lassoBegin, m_lassoEnd) );
@@ -498,7 +498,7 @@ namespace wg
 
 	}
 
-	void List::_requestRender(const SkinSlot* pSlot, const RectSPX& rect)
+	void List::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		if (pSlot == &m_lassoSkin)
 			return _requestRender( rect + m_lassoBegin );

@@ -40,14 +40,14 @@ namespace wg
 		public:
 			virtual float	_skinValue(const SkinSlot* pSlot) const = 0;
 			virtual float	_skinValue2(const SkinSlot* pSlot) const = 0;
-			virtual State	_state(const SkinSlot* pSlot) const = 0;
+			virtual State	_skinState(const SkinSlot* pSlot) const = 0;
 
-			virtual SizeSPX	_size(const SkinSlot* pSlot) const = 0;
+			virtual SizeSPX	_skinSize(const SkinSlot* pSlot) const = 0;
+
+			virtual void	_skinRequestRender(const SkinSlot* pComponent) = 0;
+			virtual void	_skinRequestRender(const SkinSlot* pComponent, const RectSPX& rect) = 0;
+
 			virtual int		_scale() const = 0;
-
-			virtual void	_requestRender(const SkinSlot* pComponent) = 0;
-			virtual void	_requestRender(const SkinSlot* pComponent, const RectSPX& rect) = 0;
-
 		};
 
 		SkinSlot(Holder* pHolder) : m_pHolder(pHolder) {}
