@@ -47,7 +47,7 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	CTextEditor::CTextEditor(Holder * pHolder ) : CTextDisplay(pHolder)
+	CTextEditor::CTextEditor(Widget * pWidget ) : CTextDisplay(pWidget)
 	{
 		m_editMode = TextEditMode::Editable;
 		m_maxLines = 0;

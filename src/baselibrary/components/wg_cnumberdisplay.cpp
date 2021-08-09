@@ -31,7 +31,7 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	CNumberDisplay::CNumberDisplay(GeoComponent::Holder * pHolder) : CStaticNumberDisplay(pHolder), m_minValue(std::numeric_limits<double>::lowest()), m_maxValue(std::numeric_limits<double>::max())
+	CNumberDisplay::CNumberDisplay(Widget * pWidget) : CStaticNumberDisplay(pWidget), m_minValue(std::numeric_limits<double>::lowest()), m_maxValue(std::numeric_limits<double>::max())
 	{
 	}
 

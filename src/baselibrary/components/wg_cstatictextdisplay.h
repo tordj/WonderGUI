@@ -48,7 +48,7 @@ namespace wg
 	{
 	public:
 
-		CStaticTextDisplay(Holder * pHolder );
+		CStaticTextDisplay(Widget * pWidget );
 
 
 		//.____ Identification _________________________________________________

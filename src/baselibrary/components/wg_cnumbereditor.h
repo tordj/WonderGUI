@@ -38,7 +38,7 @@ namespace wg
 	class CValueEditor : public CNumberDisplay
 	{
 	public:
-		CValueEditor(Holder * pHolder );
+		CValueEditor(Widget * pWidget );
 		~CValueEditor();
 
 		//.____ Identification _________________________________________________

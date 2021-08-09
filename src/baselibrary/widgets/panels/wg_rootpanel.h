@@ -53,7 +53,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected SlotHolder, protected SkinSlot::Holder, protected GeoComponent::Holder
+	class RootPanel : public Object, protected SlotHolder, protected SkinSlot::Holder
 	{
 		friend class Widget;
 		friend class Container;
@@ -192,25 +192,6 @@ namespace wg
 
 		void			_hideSlots(StaticSlot * pSlot, int nb) override;
 		void			_unhideSlots(StaticSlot * pSlot, int nb) override;
-
-		// CSkinSlot::Holder methods
-
-		State			_componentState(const GeoComponent* pComponent) const override;
-		CoordSPX		_componentPos(const GeoComponent* pComponent) const override;
-		SizeSPX			_componentSize(const GeoComponent* pComponent) const override;
-		RectSPX			_componentGeo(const GeoComponent* pComponent) const override;
-		CoordSPX		_globalComponentPos(const GeoComponent* pComponent) const override;
-		RectSPX			_globalComponentGeo(const GeoComponent* pComponent) const override;
-
-		void			_componentRequestRender(const GeoComponent* pComponent) override;
-		void			_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect) override;
-		void			_componentRequestResize(const GeoComponent* pComponent) override;
-
-		void			_componentRequestFocus(const GeoComponent* pComponent) override;
-		void			_componentRequestInView(const GeoComponent* pComponent) override;
-		void			_componentRequestInView(const GeoComponent* pComponent, const RectSPX& mustHave, const RectSPX& niceToHave) override;
-
-		void			_receiveComponentNotif(GeoComponent* pComponent, ComponentNotif notification, int value, void* pData) override;
 
 		// Methods for skin to access
 

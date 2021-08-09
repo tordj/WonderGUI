@@ -34,10 +34,10 @@ namespace wg
 
 	//____ CStaticNumberDisplay ____________________________________________________________
 
-	class CStaticNumberDisplay : public GeoComponent
+	class CStaticNumberDisplay : public WidgetComponent
 	{
 	public:
-		CStaticNumberDisplay(Holder * pHolder);
+		CStaticNumberDisplay(Widget * pHolder);
 
 
 		//.____ Identification _________________________________________________

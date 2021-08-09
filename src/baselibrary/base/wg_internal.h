@@ -71,11 +71,6 @@ namespace wg
 
 	};
 
-	class OGeoComponent : public GeoComponent
-	{
-	public:
-	};
-
 	class OCStaticTextDisplay : public CStaticTextDisplay
 	{
 	public:
@@ -207,9 +202,6 @@ namespace wg
 
 	inline OSlot&				OO(StaticSlot& slot) { return reinterpret_cast<OSlot&>(slot); }
 	inline const OSlot&			OO(const StaticSlot& slot) { return reinterpret_cast<const OSlot&>(slot); }
-
-	inline OGeoComponent&		OO(GeoComponent& component) { return reinterpret_cast<OGeoComponent&>(component); }
-	inline const OGeoComponent&	OO(const GeoComponent& component) { return reinterpret_cast<const OGeoComponent&>(component); }
 
 	inline OCStaticTextDisplay&	OO(CStaticTextDisplay& component) { return reinterpret_cast<OCStaticTextDisplay&>(component); }
 	inline const OCStaticTextDisplay&	OO(const CStaticTextDisplay& component) { return reinterpret_cast<const OCStaticTextDisplay&>(component); }

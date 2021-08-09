@@ -42,7 +42,7 @@ namespace wg
 	{
 	public:
 
-		CTextEditor(Holder * pHolder );
+		CTextEditor(Widget * pWidget );
 
 
 		//.____ Identification _________________________________________________

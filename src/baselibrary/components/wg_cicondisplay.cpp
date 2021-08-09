@@ -26,13 +26,13 @@
 
 namespace wg
 {
-	const TypeInfo CIconDisplay::TYPEINFO = { "CIconDisplay", &GeoComponent::TYPEINFO };
+	const TypeInfo CIconDisplay::TYPEINFO = { "CIconDisplay", &WidgetComponent::TYPEINFO };
 
 	using namespace Util;
 
 	//____ constructor ____________________________________________________________
 
-	CIconDisplay::CIconDisplay( GeoComponent::Holder * pHolder ) : GeoComponent(pHolder)
+	CIconDisplay::CIconDisplay( Widget * pWidget ) : WidgetComponent(pWidget)
 	{
 		m_placement		= Placement::NorthWest;
 		m_scaleFactor	= 0.f;

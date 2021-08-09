@@ -1487,7 +1487,7 @@ namespace wg
 
 	//____ _componentPos() ____________________________________________________________
 
-	CoordSPX PackList::_componentPos( const GeoComponent * pComponent ) const
+	CoordSPX PackList::_componentPos( const WidgetComponent * pComponent ) const
 	{
 		CoordSPX c = m_bHorizontal ? CoordSPX(_windowSection().x, 0 ) : CoordSPX(0, _windowSection().y );
 		return c;
@@ -1495,21 +1495,21 @@ namespace wg
 
 	//____ _componentSize() _________________________________________________________
 
-	SizeSPX PackList::_componentSize( const GeoComponent * pComponent ) const
+	SizeSPX PackList::_componentSize( const WidgetComponent * pComponent ) const
 	{
 		return _header()._size();		// We store size internally in the _header().
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
-	RectSPX PackList::_componentGeo( const GeoComponent * pComponent ) const
+	RectSPX PackList::_componentGeo( const WidgetComponent * pComponent ) const
 	{
 		return RectSPX( _componentPos(pComponent), _header()._size() );
 	}
 
 	//____ _receiveComponentNotif() _____________________________________________________
 
-	void PackList::_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData )
+	void PackList::_receiveComponentNotif( WidgetComponent * pComponent, ComponentNotif notification, int value, void * pData )
 	{
 		if( notification == ComponentNotif::SortOrderChanged )
 		{

@@ -33,7 +33,7 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	CStaticTextDisplay::CStaticTextDisplay(Holder * pHolder ) : CText( pHolder )
+	CStaticTextDisplay::CStaticTextDisplay(Widget * pWidget ) : CText( pWidget )
 	{
 	}
 

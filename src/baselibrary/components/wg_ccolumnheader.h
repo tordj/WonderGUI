@@ -31,24 +31,18 @@ namespace wg
 	class CColumnHeader;
 	typedef	StrongComponentPtr<CColumnHeader>	CColumnHeader_p;
 	typedef	WeakComponentPtr<CColumnHeader>		CColumnHeader_wp;
-
+	 
 	//____ CColumnHeader ___________________________________________________
 
-	class CColumnHeader : public GeoComponent, protected GeoComponent::Holder
+	class CColumnHeader : public WidgetComponent
 	{
 	public:
-		CColumnHeader(GeoComponent::Holder * pHolder);
+		CColumnHeader(Widget * pWidget);
 
 		//.____ Identification _________________________________________________
 
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Components ___________________________________________
-
-		CIconDisplay		icon;
-		CIconDisplay		arrow;
-		CTextDisplay		text;
 
 		//.____ Appearance ____________________________________________
 
@@ -79,33 +73,8 @@ namespace wg
 
 		void			_render(GfxDevice * pDevice, const RectSPX& _canvas);
 
-		inline Object *			_object() override { return GeoComponent::_object(); }
-		inline const Object *	_object() const override { return GeoComponent::_object(); }
-
-		int			_scale() const override { return m_scale; }
-
-		State		_componentState(const GeoComponent* pComponent) const override { return StateEnum::Normal; }
-		CoordSPX	_componentPos( const GeoComponent * pComponent ) const override;
-		SizeSPX		_componentSize( const GeoComponent * pComponent ) const override;
-		RectSPX		_componentGeo( const GeoComponent * pComponent ) const override;
-		CoordSPX	_globalComponentPos( const GeoComponent * pComponent ) const override;
-		RectSPX		_globalComponentGeo( const GeoComponent * pComponent ) const override;
-
-		void		_componentRequestRender( const GeoComponent * pComponent ) override;
-		void		_componentRequestRender( const GeoComponent * pComponent, const RectSPX& rect ) override;
-		void		_componentRequestResize( const GeoComponent * pComponent ) override;
-
-		void		_componentRequestFocus( const GeoComponent * pComponent ) override;
-		void		_componentRequestInView( const GeoComponent * pComponent ) override;
-		void		_componentRequestInView( const GeoComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave ) override;
-
-		void		_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
-
-		class IconAccess : public CIconDisplay { friend class CColumnHeader; };
-		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
-		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }
-		const IconAccess& _arrow() const { return static_cast<const IconAccess&>(arrow); }
-		IconAccess& _arrow() { return static_cast<IconAccess&>(arrow); }
+		inline Object *			_object() override { return WidgetComponent::_object(); }
+		inline const Object *	_object() const override { return WidgetComponent::_object(); }
 
 	private:
 		Skin_p			m_pSkin;

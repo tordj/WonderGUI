@@ -29,7 +29,7 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	CStaticNumberDisplay::CStaticNumberDisplay(GeoComponent::Holder * pHolder) : GeoComponent(pHolder)
+	CStaticNumberDisplay::CStaticNumberDisplay(Widget * pWidget) : WidgetComponent(pWidget)
 	{
 	}
 

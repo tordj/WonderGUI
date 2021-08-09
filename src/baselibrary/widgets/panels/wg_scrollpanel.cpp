@@ -1000,7 +1000,7 @@ namespace wg
 
 	//____ _componentPos() ____________________________________________________
 
-	CoordSPX ScrollPanel::_componentPos(const GeoComponent* pComponent) const
+	CoordSPX ScrollPanel::_componentPos(const WidgetComponent* pComponent) const
 	{
 		if (pComponent == &scrollbarX)
 			return m_scrollbarXRegion.pos();
@@ -1010,7 +1010,7 @@ namespace wg
 
 	//____ _componentSize() ___________________________________________________
 
-	SizeSPX ScrollPanel::_componentSize(const GeoComponent* pComponent) const
+	SizeSPX ScrollPanel::_componentSize(const WidgetComponent* pComponent) const
 	{
 		if (pComponent == &scrollbarX)
 			return m_scrollbarXRegion.size();
@@ -1021,7 +1021,7 @@ namespace wg
 
 	//____ _componentGeo() ____________________________________________________
 
-	RectSPX ScrollPanel::_componentGeo(const GeoComponent* pComponent) const
+	RectSPX ScrollPanel::_componentGeo(const WidgetComponent* pComponent) const
 	{
 		if (pComponent == &scrollbarX)
 			return m_scrollbarXRegion;

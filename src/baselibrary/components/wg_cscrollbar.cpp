@@ -25,14 +25,14 @@
 
 namespace wg
 {
-	const TypeInfo CScrollbar::TYPEINFO = { "CScrollbar", &GeoComponent::TYPEINFO };
+	const TypeInfo CScrollbar::TYPEINFO = { "CScrollbar", &WidgetComponent::TYPEINFO };
 
 	using namespace Util;
 
 	//____ constructor ____________________________________________________________
 
-	CScrollbar::CScrollbar(GeoComponent::Holder* pHolder, CScrollbar::Holder * pHolderInterface, Axis axis) : 
-		GeoComponent(pHolder),m_pHolderInterface(pHolderInterface), m_axis(axis)
+	CScrollbar::CScrollbar(Widget* pWidget, CScrollbar::Holder * pHolderInterface, Axis axis) : 
+		WidgetComponent(pWidget),m_pHolderInterface(pHolderInterface), m_axis(axis)
 	{
 	}
 

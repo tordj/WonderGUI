@@ -34,7 +34,7 @@ namespace wg
 	class CNumberDisplay : public CStaticNumberDisplay
 	{
 	public:
-		CNumberDisplay(Holder * pHolder);
+		CNumberDisplay(Widget * pHolder);
 		~CNumberDisplay() {}
 
 

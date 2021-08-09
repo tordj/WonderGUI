@@ -26,11 +26,11 @@ namespace wg
 {
 	using namespace Util;
 
-	const TypeInfo CText::TYPEINFO = { "CText", &GeoComponent::TYPEINFO };
+	const TypeInfo CText::TYPEINFO = { "CText", &WidgetComponent::TYPEINFO };
 
 	//____ constructor _____________________________________________________________
 
-	CText::CText(Holder * pHolder ) : GeoComponent( pHolder )
+	CText::CText(Widget * pWidget ) : WidgetComponent( pWidget )
 	{
 		_layout()->addText(this);
 	}

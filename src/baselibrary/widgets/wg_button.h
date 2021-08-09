@@ -83,9 +83,9 @@ namespace wg
 		void			_setState( State state ) override;
 
 
-		CoordSPX		_componentPos( const GeoComponent * pComponent ) const override;
-		SizeSPX			_componentSize( const GeoComponent * pComponent ) const override;
-		RectSPX			_componentGeo( const GeoComponent * pComponent ) const override;
+		CoordSPX		_componentPos( const WidgetComponent * pComponent ) const override;
+		SizeSPX			_componentSize( const WidgetComponent * pComponent ) const override;
+		RectSPX			_componentGeo( const WidgetComponent * pComponent ) const override;
 
 		class IconAccess : public CIconDisplay { friend class Button; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }

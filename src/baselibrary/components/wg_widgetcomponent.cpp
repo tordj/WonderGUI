@@ -20,30 +20,30 @@
 
 =========================================================================*/
 
-#include <wg_geocomponent.h>
+#include <wg_widgetcomponent.h>
 
 namespace wg
 {
 
-	const TypeInfo	GeoComponent::TYPEINFO = { "GeoComponent", &Component::TYPEINFO };
+	const TypeInfo	WidgetComponent::TYPEINFO = { "WidgetComponent", &Component::TYPEINFO };
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& GeoComponent::typeInfo(void) const
+	const TypeInfo& WidgetComponent::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ _object() __________________________________________________________
 
-	Object * GeoComponent::_object()
+	Object * WidgetComponent::_object()
 	{ 
-		return m_pHolder->_object(); 
+		return m_pWidget; 
 	}
 
-	const Object * GeoComponent::_object() const
+	const Object * WidgetComponent::_object() const
 	{ 
-		return m_pHolder->_object(); 
+		return m_pWidget; 
 	}
 
 } // namespace wg

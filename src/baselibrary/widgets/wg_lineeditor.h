@@ -68,14 +68,14 @@ namespace wg
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
 
-		CoordSPX		_componentPos( const GeoComponent * pComponent ) const override;
-		SizeSPX			_componentSize( const GeoComponent * pComponent ) const override;
-		RectSPX			_componentGeo( const GeoComponent * pComponent ) const override;
+		CoordSPX		_componentPos( const WidgetComponent * pComponent ) const override;
+		SizeSPX			_componentSize( const WidgetComponent * pComponent ) const override;
+		RectSPX			_componentGeo( const WidgetComponent * pComponent ) const override;
 
-		void			_componentRequestRender(const GeoComponent * pComponent) override;
-		void			_componentRequestRender( const GeoComponent * pComponent, const RectSPX& rect ) override;
-		void			_componentRequestResize( const GeoComponent * pComponent ) override;
-		void			_componentRequestInView(const GeoComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave) override;
+		void			_componentRequestRender(const WidgetComponent * pComponent) override;
+		void			_componentRequestRender( const WidgetComponent * pComponent, const RectSPX& rect ) override;
+		void			_componentRequestResize( const WidgetComponent * pComponent ) override;
+		void			_componentRequestInView(const WidgetComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave) override;
 
 	private:
 

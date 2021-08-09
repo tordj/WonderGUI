@@ -229,13 +229,13 @@ namespace wg
 		void			_unselectSlots(StaticSlot * pSlot, int nb) override;
 
 
-		// Overloaded from GeoComponent::Holder
+		// Overloaded from WidgetComponent::Holder
 
-		CoordSPX		_componentPos(const GeoComponent * pComponent) const override;
-		SizeSPX			_componentSize(const GeoComponent * pComponent) const override;
-		RectSPX			_componentGeo(const GeoComponent * pComponent) const override;
+		CoordSPX		_componentPos(const WidgetComponent * pComponent) const override;
+		SizeSPX			_componentSize(const WidgetComponent * pComponent) const override;
+		RectSPX			_componentGeo(const WidgetComponent * pComponent) const override;
 
-		void			_receiveComponentNotif(GeoComponent * pComponent, ComponentNotif notification, int value, void * pData) override;
+		void			_receiveComponentNotif(WidgetComponent * pComponent, ComponentNotif notification, int value, void * pData) override;
 
 
 		// Internal

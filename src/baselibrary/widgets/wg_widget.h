@@ -27,7 +27,6 @@
 #include <wg_types.h>
 #include <wg_string.h>
 #include <wg_receiver.h>
-#include <wg_geocomponent.h>
 #include <wg_slotholder.h>
 #include <wg_skinslot.h>
 
@@ -62,10 +61,10 @@ namespace wg
 	 * Widget is the base class for all widgets, providing common functionality.
 	 */
 
-	class Widget : public Receiver, protected SkinSlot::Holder, protected GeoComponent::Holder
+	class Widget : public Receiver, protected SkinSlot::Holder
 	{
 		friend class Container;
-		friend class GeoComponent;
+		friend class WidgetComponent;
 		friend class StaticSlot;
 		friend class DynamicSlot;
 		friend class Base;
@@ -285,25 +284,22 @@ namespace wg
 
 		// Methods for components to access
 
-		Object * 		_object() override;
-		const Object *	_object() const override;
+		virtual State		_componentState(const WidgetComponent* pComponent) const;
+		virtual CoordSPX	_componentPos( const WidgetComponent * pComponent ) const;
+		virtual SizeSPX		_componentSize( const WidgetComponent * pComponent ) const;
+		virtual RectSPX		_componentGeo( const WidgetComponent * pComponent ) const;
+		virtual CoordSPX	_globalComponentPos( const WidgetComponent * pComponent ) const;
+		virtual RectSPX		_globalComponentGeo( const WidgetComponent * pComponent ) const;
 
-		State			_componentState(const GeoComponent* pComponent) const override;
-		CoordSPX		_componentPos( const GeoComponent * pComponent ) const override;
-		SizeSPX			_componentSize( const GeoComponent * pComponent ) const override;
-		RectSPX			_componentGeo( const GeoComponent * pComponent ) const override;
-		CoordSPX		_globalComponentPos( const GeoComponent * pComponent ) const override;
-		RectSPX			_globalComponentGeo( const GeoComponent * pComponent ) const override;
+		virtual void		_componentRequestRender( const WidgetComponent * pComponent );
+		virtual void		_componentRequestRender( const WidgetComponent * pComponent, const RectSPX& rect );
+		virtual void		_componentRequestResize( const WidgetComponent * pComponent );
 
-		void			_componentRequestRender( const GeoComponent * pComponent ) override;
-		void			_componentRequestRender( const GeoComponent * pComponent, const RectSPX& rect ) override;
-		void			_componentRequestResize( const GeoComponent * pComponent ) override;
+		virtual void		_componentRequestFocus( const WidgetComponent * pComponent );
+		virtual void		_componentRequestInView( const WidgetComponent * pComponent );
+		virtual void		_componentRequestInView( const WidgetComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave );
 
- 		void			_componentRequestFocus( const GeoComponent * pComponent ) override;
-		void			_componentRequestInView( const GeoComponent * pComponent ) override;
-		void			_componentRequestInView( const GeoComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave ) override;
-
-		void			_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
+		virtual void		_receiveComponentNotif( WidgetComponent * pComponent, ComponentNotif notification, int value, void * pData );
 
 		// Methods for skin to access
 

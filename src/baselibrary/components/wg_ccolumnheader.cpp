@@ -27,12 +27,12 @@
 
 namespace wg
 {
-	const TypeInfo CColumnHeader::TYPEINFO = { "CColumnHeader", &GeoComponent::TYPEINFO };
+	const TypeInfo CColumnHeader::TYPEINFO = { "CColumnHeader", &WidgetComponent::TYPEINFO };
 
 
 	//____ constructor ___________________________________________________________
 
-	CColumnHeader::CColumnHeader(GeoComponent::Holder * pHolder) : GeoComponent(pHolder), icon(this), arrow(this), text(this)
+	CColumnHeader::CColumnHeader(Widget * pWidget) : WidgetComponent(pWidget)
 	{
 		m_bPressed = false;
 		m_sortOrder = SortOrder::None;
@@ -73,8 +73,6 @@ namespace wg
 
 		//TODO: Set state for icon and arrow when they allow for it.
 
-		OO(text)._setState(state);
-
 		_requestRender();			//TODO: Only request render if state change requires it.
 	}
 
@@ -94,28 +92,9 @@ namespace wg
 
 	SizeSPX CColumnHeader::_preferredSize(int scale) const
 	{
-		SizeSPX iconSize = _icon()._preferredSize(scale);
-		SizeSPX arrowSize = _arrow()._preferredSize(scale);
-		SizeSPX textSize = OO(text)._preferredSize(scale);
 
 		SizeSPX size;
 
-		//TODO: Assumes icon/arrow origos to not be NORTH, SOUTH or CENTER.
-		//TODO: Assumes text not wrapping.
-
-		size.h = wg::max(iconSize.h, arrowSize.h, textSize.h );
-		size.w = textSize.w;
-		if( icon.overlap() )
-			size.w = wg::max(size.w,iconSize.w);
-		else
-			size.w += iconSize.w;
-
-		if( arrow.overlap() )
-			size.w = wg::max(size.w,arrowSize.w);
-		else
-			size.w += arrowSize.w;
-
-		//
 
 		if( m_pSkin )
 			size = m_pSkin->_sizeForContent(size,scale);
@@ -246,101 +225,7 @@ namespace wg
 			m_pSkin->_render( pDevice, canvas, m_scale, m_state );
 			canvas = m_pSkin->_contentRect( canvas, m_scale, m_state );
 		}
-
-		RectSPX sortRect = _arrow()._getIconRect( canvas, m_scale );
-		RectSPX labelRect = _arrow()._getTextRect( canvas, sortRect, m_scale );
-		RectSPX iconRect = _icon()._getIconRect( labelRect, m_scale );
-		labelRect = _icon()._getTextRect( labelRect, iconRect, m_scale );
-
-		if( m_sortOrder != SortOrder::None && !arrow.isEmpty() )
-		{
-			State iconState = m_state;
-			iconState.setSelected( m_sortOrder == SortOrder::Descending );
-			arrow.skin()->_render( pDevice, sortRect, m_scale, iconState );
-		}
-
-		if( !icon.isEmpty() )
-			icon.skin()->_render( pDevice, iconRect, m_scale, m_state );
-
-		if( !text.isEmpty() )
-			OO(text)._render( pDevice, labelRect );
 	}
-
-
-	CoordSPX CColumnHeader::_componentPos( const GeoComponent * pComponent ) const
-	{
-		CoordSPX	p = _pos();
-		if( m_pSkin )
-			p += m_pSkin->_contentOfs(m_scale, m_state);
-		return p;
-	}
-
-	SizeSPX CColumnHeader::_componentSize( const GeoComponent * pComponent ) const
-	{
-		SizeSPX	s  = m_size;
-		if( m_pSkin )
-			s -= m_pSkin->_contentPaddingSize(m_scale);
-		return s;
-	}
-
-	RectSPX CColumnHeader::_componentGeo( const GeoComponent * pComponent ) const
-	{
-		if( m_pSkin )
-			return m_pSkin->_contentRect( m_size, m_scale, m_state );
-		else
-			return RectSPX( m_size );
-	}
-
-	CoordSPX CColumnHeader::_globalComponentPos( const GeoComponent * pComponent ) const
-	{
-		CoordSPX	p = _globalPos();
-		if( m_pSkin )
-			p += m_pSkin->_contentOfs(m_scale, m_state);
-		return p;
-	}
-
-	RectSPX CColumnHeader::_globalComponentGeo( const GeoComponent * pComponent ) const
-	{
-		RectSPX	geo = _globalGeo();
-		if( m_pSkin )
-			geo = m_pSkin->_contentRect(geo, m_scale, m_state);
-		return geo;
-	}
-
-	void CColumnHeader::_componentRequestRender( const GeoComponent * pComponent )
-	{
-		return _requestRender();		//TODO: Only request render on what is needed
-	}
-
-	void CColumnHeader::_componentRequestRender( const GeoComponent * pComponent, const RectSPX& rect )
-	{
-		return _requestRender(rect);	//TODO: Only request render on what is needed
-	}
-
-	void CColumnHeader::_componentRequestResize( const GeoComponent * pComponent )
-	{
-		return _requestResize();
-	}
-
-	void CColumnHeader::_componentRequestFocus( const GeoComponent * pComponent )
-	{
-		// Do nothing, our sub components are not expected to request or get focus.
-	}
-
-	void CColumnHeader::_componentRequestInView( const GeoComponent * pComponent )
-	{
-		// Do nothing, our sub components are not expected to request or get visibility.
-	}
-	void CColumnHeader::_componentRequestInView( const GeoComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave )
-	{
-		// Do nothing, our sub components are not expected to request or get visibility.
-	}
-
-	void CColumnHeader::_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData )
-	{
-		// Do nothing, our sub components are not expected to send notifications.
-	}
-
 
 
 } // namespace wg

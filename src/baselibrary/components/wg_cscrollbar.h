@@ -24,7 +24,7 @@
 #define WG_CSCROLLBAR_DOT_H
 #pragma once
 
-#include <wg_geocomponent.h>
+#include <wg_widgetcomponent.h>
 #include <wg_pointers.h>
 #include <wg_skin.h>
 #include <wg_msg.h>
@@ -38,7 +38,7 @@ namespace wg
 
 	//____ CScrollbar __________________________________________________________________
 
-	class CScrollbar : public GeoComponent
+	class CScrollbar : public WidgetComponent
 	{
 	public:
 
@@ -52,7 +52,7 @@ namespace wg
 			virtual std::tuple<spx, spx, spx> _scrollbarOfsLenContent(const CScrollbar* pComponent) = 0;
 		};
 
-		CScrollbar(GeoComponent::Holder* pHolder, CScrollbar::Holder * pHolderInterface, Axis axis);
+		CScrollbar(Widget* pWidget, CScrollbar::Holder * pHolderInterface, Axis axis);
 		virtual ~CScrollbar();
 
 
@@ -105,7 +105,7 @@ namespace wg
 
 		const static int Part_size = 4;			// None not included.
 
-		inline GeoComponent::Holder* _holder() const { return m_pHolder; }
+		inline Widget* _holder() const { return m_pWidget; }
 
 		void		_pointerMoved(CoordSPX pointerPos);
 		Part		_getMarkedPart(const RectSPX& canvas, CoordSPX pos) const;

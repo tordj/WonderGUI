@@ -270,7 +270,7 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	CoordSPX PopupOpener::_componentPos(const GeoComponent * pComponent) const
+	CoordSPX PopupOpener::_componentPos(const WidgetComponent * pComponent) const
 	{
 		RectSPX contentRect = m_skin.contentRect(m_size, m_scale, m_state);
 
@@ -287,7 +287,7 @@ namespace wg
 
 	//____ _componentSize() ______________________________________________________________
 
-	SizeSPX PopupOpener::_componentSize(const GeoComponent * pComponent) const
+	SizeSPX PopupOpener::_componentSize(const WidgetComponent * pComponent) const
 	{
 		SizeSPX sz = m_size - m_skin.contentPaddingSize(m_scale);
 
@@ -303,7 +303,7 @@ namespace wg
 
 	//____ _componentGeo() ______________________________________________________________
 
-	RectSPX PopupOpener::_componentGeo(const GeoComponent * pComponent) const
+	RectSPX PopupOpener::_componentGeo(const WidgetComponent * pComponent) const
 	{
 		RectSPX	contentRect = m_skin.contentRect(m_size, m_scale, m_state);
 

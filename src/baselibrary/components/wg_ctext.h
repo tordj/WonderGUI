@@ -24,7 +24,7 @@
 #define WG_CTEXT_DOT_H
 #pragma once
 
-#include <wg_geocomponent.h>
+#include <wg_widgetcomponent.h>
 #include <wg_textstyle.h>
 #include <wg_textlayout.h>
 #include <wg_base.h>
@@ -41,13 +41,13 @@ namespace wg
 
 	//____ CText __________________________________________________________________
 
-	class CText : public GeoComponent, protected Text
+	class CText : public WidgetComponent, protected Text
 	{
 		friend class TextLayout;
 		friend class BasicTextLayout;
 	public:
 
-		CText(Holder * pHolder );
+		CText(Widget * pWidget );
 		virtual ~CText();
 
 
@@ -138,7 +138,7 @@ namespace wg
 		virtual int			_caretOffset() const override { return 0; }
 		virtual std::tuple<int,int>	_selectedText() const override { return std::make_tuple(0,0); };		// Begin/end of selection
 
-		int					_scale() const override { return GeoComponent::_scale(); }
+		int					_scale() const override { return WidgetComponent::_scale(); }
 
 
 	protected:
