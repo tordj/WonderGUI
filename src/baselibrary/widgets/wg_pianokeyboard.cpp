@@ -364,7 +364,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		return align(ptsToSpx(m_preferredKeyboardSize,scale)) + OO(skin)._contentPaddingSize(scale);
+		return align(ptsToSpx(m_preferredKeyboardSize,scale)) + m_skin.contentPaddingSize(scale);
 	}
 
 	//____ _minSize() __________________________________________________________
@@ -373,7 +373,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		return align(ptsToSpx(m_preferredKeyboardSize, scale)) + OO(skin)._contentPaddingSize(scale);
+		return align(ptsToSpx(m_preferredKeyboardSize, scale)) + m_skin.contentPaddingSize(scale);
 	}
 
 	//____ _maxSize() __________________________________________________________
@@ -402,7 +402,7 @@ namespace wg
 
 		Widget::_render(pDevice, _canvas, _window);
 
-		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
+		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
 
 
 		spx whiteKeySpacing = canvas.w*64 / m_nbWhiteKeys;
@@ -664,7 +664,7 @@ namespace wg
 	{
 		// Convert coordinate from canvas to source
 
-		RectSPX canvas = OO(skin)._contentRect(m_size, m_scale, m_state);
+		RectSPX canvas = m_skin.contentRect(m_size, m_scale, m_state);
 
 		if (!canvas.contains(pos))
 			return -1;
@@ -708,7 +708,7 @@ namespace wg
 
 	RectSPX PianoKeyboard::_keyRect(int keyIdx)
 	{
-		RectSPX canvas = OO(skin)._contentRect(m_size, m_scale, m_state);
+		RectSPX canvas = m_skin.contentRect(m_size, m_scale, m_state);
 
 		spx whiteKeySpacing = float(canvas.w) / m_nbWhiteKeys;
 

@@ -102,7 +102,7 @@ namespace wg
 		if (m_pSurface)
 		{
 			scale = _fixScale(scale);
-			return OO(skin)._sizeForContent( align(ptsToSpx(m_rect.size(),scale)), scale );
+			return m_skin.sizeForContent( align(ptsToSpx(m_rect.size(),scale)), scale );
 		}
 		else
 			return Widget::_preferredSize(scale);
@@ -128,7 +128,7 @@ namespace wg
 
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			RectSPX dest = OO(skin)._contentRect( _canvas, m_scale, state() );
+			RectSPX dest = m_skin.contentRect( _canvas, m_scale, state() );
 
 			pDevice->setBlitSource(m_pSurface);
 			pDevice->stretchBlit( dest, m_rect*m_pSurface->scale() );		// Higher precision source coordinates than to use ptsToSpx().
@@ -141,7 +141,7 @@ namespace wg
 	{
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			RectSPX dest = OO(skin)._contentRect( m_size, m_scale, state() );
+			RectSPX dest = m_skin.contentRect( m_size, m_scale, state() );
 
 			if( Util::markTestStretchRect( ofs, m_pSurface, ptsToSpx(m_rect, m_pSurface->scale()), dest, m_markOpacity ) )
 				return true;

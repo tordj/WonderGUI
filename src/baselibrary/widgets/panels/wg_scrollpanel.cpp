@@ -755,7 +755,7 @@ namespace wg
 
 	void ScrollPanel::_maskPatches(Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
 	{
-		if (!skin.isEmpty() && OO(skin)._isOpaque())
+		if (!m_skin.isEmpty() && m_skin.isOpaque())
 			patches.sub(RectSPX(geo, clip));
 		else
 		{
@@ -772,7 +772,7 @@ namespace wg
 	{
 		// Test against our skin
 
-		if (!skin.isEmpty() && skin->_markTest(ofs, m_size, m_scale, m_state, m_markOpacity))
+		if (!m_skin.isEmpty() && m_skin.markTest(ofs, m_size, m_scale, m_state, m_markOpacity))
 			return true;
 
 		// Test against our scrollbars.
@@ -1002,9 +1002,7 @@ namespace wg
 
 	CoordSPX ScrollPanel::_componentPos(const GeoComponent* pComponent) const
 	{
-		if (pComponent == &skin)
-			return CoordSPX();
-		else if (pComponent == &scrollbarX)
+		if (pComponent == &scrollbarX)
 			return m_scrollbarXRegion.pos();
 		else
 			return m_scrollbarYRegion.pos();
@@ -1014,9 +1012,7 @@ namespace wg
 
 	SizeSPX ScrollPanel::_componentSize(const GeoComponent* pComponent) const
 	{
-		if (pComponent == &skin)
-			return m_size;
-		else if (pComponent == &scrollbarX)
+		if (pComponent == &scrollbarX)
 			return m_scrollbarXRegion.size();
 		else
 			return m_scrollbarYRegion.size();
@@ -1027,9 +1023,7 @@ namespace wg
 
 	RectSPX ScrollPanel::_componentGeo(const GeoComponent* pComponent) const
 	{
-		if (pComponent == &skin)
-			return m_size;
-		else if (pComponent == &scrollbarX)
+		if (pComponent == &scrollbarX)
 			return m_scrollbarXRegion;
 		else
 			return m_scrollbarYRegion;

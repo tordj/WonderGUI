@@ -38,7 +38,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	List::List() : lasso(this), m_selectMode(SelectMode::SingleEntry)
+	List::List() : m_lassoSkin(this), m_selectMode(SelectMode::SingleEntry)
 	{
 	}
 
@@ -54,6 +54,20 @@ namespace wg
 	{
 		return TYPEINFO;
 	}
+
+	//____ setLassoSkin() _____________________________________________________
+
+	void List::setLassoSkin(Skin* pSkin)
+	{
+		if (m_lassoSkin.get() != pSkin)
+		{
+			m_lassoSkin.set(pSkin);
+
+			RectSPX dirtyRect(m_lassoBegin, m_lassoEnd);
+			_requestRender(dirtyRect);
+		}
+	}
+
 
 	//____ setEntrySkin() _________________________________________________________
 
@@ -452,61 +466,41 @@ namespace wg
 		return nSelected + nDeselected;
 	}
 
-	//____ _componentState() __________________________________________________
+	//____ _state() __________________________________________________
 
-	State List::_componentState(const GeoComponent* pComponent) const
+	State List::_state(const SkinSlot* pSlot) const
 	{
-		if (pComponent == &lasso)
+		if (pSlot == &m_lassoSkin)
 			return StateEnum::Normal;
 		else
 			return m_state;
 	}
 
-	//____ _componentPos() ____________________________________________________
+	//____ _size() ___________________________________________________
 
-	CoordSPX List::_componentPos(const GeoComponent* pComponent) const
+	SizeSPX List::_size(const SkinSlot* pSlot) const
 	{
-		if (pComponent == &lasso)
-			return m_lassoBegin;
-		else
-			return CoordSPX();
-	}
-
-	//____ _componentSize() ___________________________________________________
-
-	SizeSPX List::_componentSize(const GeoComponent* pComponent) const
-	{
-		if (pComponent == &lasso)
+		if (pSlot == &m_lassoSkin)
 			return SizeSPX(m_lassoEnd - m_lassoBegin);
 		else
 			return m_size;
 
 	}
 
-	//____ _componentGeo() ____________________________________________________
+	//____ _requestRender() __________________________________________
 
-	RectSPX List::_componentGeo(const GeoComponent* pComponent) const
+	void List::_requestRender(const SkinSlot* pSlot)
 	{
-		if (pComponent == &lasso)
-			return RectSPX(m_lassoBegin, m_lassoEnd);
-		else
-			return m_size;
-	}
-
-	//____ _componentRequestRender() __________________________________________
-
-	void List::_componentRequestRender(const GeoComponent* pComponent)
-	{
-		if (pComponent == &lasso)
+		if (pSlot == &m_lassoSkin)
 			return _requestRender( RectSPX(m_lassoBegin, m_lassoEnd) );
 		else
 			return _requestRender();
 
 	}
 
-	void List::_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect)
+	void List::_requestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
-		if (pComponent == &lasso)
+		if (pSlot == &m_lassoSkin)
 			return _requestRender( rect + m_lassoBegin );
 		else
 			return _requestRender(rect);

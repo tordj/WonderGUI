@@ -80,7 +80,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	RootPanel::RootPanel() : slot(this), skin(this)
+	RootPanel::RootPanel() : slot(this), m_skin(this)
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
@@ -297,6 +297,17 @@ namespace wg
 		return true;
 	}
 
+	//____ setSkin() __________________________________________________________
+
+	void RootPanel::setSkin(Skin* pSkin)
+	{
+		//TODO: Possibly resize child.
+
+		m_skin.set(pSkin);
+		m_dirtyPatches.add(m_geo);
+	}
+
+
 	//____ setDebugMode() ______________________________________________________
 
 	void RootPanel::setDebugMode(bool onOff)
@@ -449,7 +460,7 @@ namespace wg
 			else
 				pGfxDevice->beginCanvasUpdate(m_canvas.ref, nRects, pRects, m_pCanvasLayers);
 
-			OO(skin)._render(pGfxDevice, geo, m_scale, StateEnum::Normal);
+			m_skin.render(pGfxDevice, geo, m_scale, StateEnum::Normal);
 
 			OO(slot._widget())->_render( pGfxDevice, geo, geo );
 
@@ -836,26 +847,39 @@ namespace wg
 	{
 	}
 
-	//____ _skinChanged() _____________________________________________________
-
-	void RootPanel::_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin)
-	{
-		m_dirtyPatches.clear();
-		m_dirtyPatches.push(m_geo);
-	}
-
 	//____ _skinValue() _______________________________________________________
 
-	float RootPanel::_skinValue(const CSkinSlot* pSlot) const
+	float RootPanel::_skinValue(const SkinSlot* pSlot) const
 	{
 		return 1.f;
 	}
 
 	//____ _skinValue2() ______________________________________________________
 
-	float RootPanel::_skinValue2(const CSkinSlot* pSlot) const
+	float RootPanel::_skinValue2(const SkinSlot* pSlot) const
 	{
 		return -1.f;
+	}
+
+	State RootPanel::_state(const SkinSlot* pSlot) const
+	{
+		return StateEnum::Normal;
+	}
+
+	SizeSPX RootPanel::_size(const SkinSlot* pSlot) const
+	{
+		return m_geo;
+	}
+
+	void RootPanel::_requestRender(const SkinSlot* pSlot)
+	{
+		m_dirtyPatches.clear();
+		m_dirtyPatches.push(m_geo);
+	}
+
+	void RootPanel::_requestRender(const SkinSlot* pSlot, const RectSPX& rect)
+	{
+		m_dirtyPatches.push(rect);
 	}
 
 

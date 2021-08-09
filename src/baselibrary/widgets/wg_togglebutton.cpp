@@ -109,7 +109,7 @@ namespace wg
 
 		SizeSPX preferredSize = SizeSPX::max( iconPreferredSize, textPreferredSize );
 
-		preferredSize = OO(skin)._sizeForContent( preferredSize, scale );
+		preferredSize = m_skin.sizeForContent( preferredSize, scale );
 
 		return preferredSize;
 	}
@@ -253,7 +253,7 @@ namespace wg
 
 		// Get the content rect and icon rect
 
-		RectSPX contentRect	= OO(skin)._contentRect(_canvas, m_scale, m_state );
+		RectSPX contentRect	= m_skin.contentRect(_canvas, m_scale, m_state );
 
 		RectSPX iconRect		= _icon()._getIconRect( contentRect, m_scale );
 
@@ -286,7 +286,7 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		RectSPX contentRect	= OO(skin)._contentRect(size, m_scale, m_state );
+		RectSPX contentRect	= m_skin.contentRect(size, m_scale, m_state );
 
 		OO(text)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale), m_scale );
 	}
@@ -310,7 +310,7 @@ namespace wg
 
 	bool ToggleButton::_markTestTextArea( const CoordSPX& pos )
 	{
-		RectSPX contentRect = OO(skin)._contentRect(m_size, m_scale, m_state );
+		RectSPX contentRect = m_skin.contentRect(m_size, m_scale, m_state );
 
 		contentRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale );
 
@@ -326,7 +326,7 @@ namespace wg
 	{
 		SizeSPX	bgSize		= m_size;
 
-		RectSPX	contentRect = OO(skin)._contentRect( bgSize, m_scale, m_state );
+		RectSPX	contentRect = m_skin.contentRect( bgSize, m_scale, m_state );
 
 		RectSPX	iconRect	= _icon()._getIconRect( contentRect, m_scale );
 
@@ -398,10 +398,7 @@ namespace wg
 
 	CoordSPX ToggleButton::_componentPos(const GeoComponent* pComponent) const
 	{
-		if (pComponent == &skin)
-			return CoordSPX();
-
-		RectSPX contentRect = OO(skin)._contentRect(contentRect, m_scale, m_state);
+		RectSPX contentRect = m_skin.contentRect(contentRect, m_scale, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -418,10 +415,7 @@ namespace wg
 
 	SizeSPX ToggleButton::_componentSize(const GeoComponent* pComponent) const
 	{
-		if (pComponent == &skin)
-			return m_size;
-
-		SizeSPX	sz = m_size - OO(skin)._contentPaddingSize(m_scale);
+		SizeSPX	sz = m_size - m_skin.contentPaddingSize(m_scale);
 
 		RectSPX iconRect = _icon()._getIconRect(sz, m_scale);
 
@@ -437,10 +431,7 @@ namespace wg
 
 	RectSPX ToggleButton::_componentGeo(const GeoComponent* pComponent) const
 	{
-		if (pComponent == &skin)
-			return m_size;
-
-		RectSPX	contentRect = OO(skin)._contentRect(m_size, m_scale, m_state);
+		RectSPX	contentRect = m_skin.contentRect(m_size, m_scale, m_state);
 
 		// Get icon and text rect from content rect
 

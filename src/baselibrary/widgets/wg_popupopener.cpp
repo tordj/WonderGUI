@@ -80,11 +80,11 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		spx height = OO(skin)._preferredSize(scale).h;
+		spx height = m_skin.preferredSize(scale).h;
 
 		if (!OO(text).isEmpty())
 		{
-			SizeSPX padding = OO(skin)._contentPaddingSize(scale);
+			SizeSPX padding = m_skin.contentPaddingSize(scale);
 
 			spx heightForText = OO(text)._matchingHeight(width - padding.w, scale) + padding.h;
 			if (heightForText > height)
@@ -108,7 +108,7 @@ namespace wg
 		if (!OO(text).isEmpty())
 			preferred = OO(text)._preferredSize(scale);
 
-		preferred = OO(skin)._sizeForContent(preferred,scale);
+		preferred = m_skin.sizeForContent(preferred,scale);
 
 		//TODO: Take icon into account.
 
@@ -128,7 +128,7 @@ namespace wg
 	{
 		Widget::_render(pDevice, _canvas, _window);
 
-		RectSPX	contentRect = OO(skin)._contentRect(_canvas, m_scale, m_state);
+		RectSPX	contentRect = m_skin.contentRect(_canvas, m_scale, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -155,7 +155,7 @@ namespace wg
 
 		RectSPX	contentRect(0, 0, _size);
 
-		contentRect -= OO(skin)._contentPaddingSize(m_scale);
+		contentRect -= m_skin.contentPaddingSize(m_scale);
 
 		RectSPX textRect = _icon()._getTextRect(contentRect, _icon()._getIconRect(contentRect,m_scale),m_scale);
 
@@ -272,10 +272,7 @@ namespace wg
 
 	CoordSPX PopupOpener::_componentPos(const GeoComponent * pComponent) const
 	{
-		if (pComponent == &skin)
-			return CoordSPX();
-
-		RectSPX contentRect = OO(skin)._contentRect(m_size, m_scale, m_state);
+		RectSPX contentRect = m_skin.contentRect(m_size, m_scale, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -292,10 +289,7 @@ namespace wg
 
 	SizeSPX PopupOpener::_componentSize(const GeoComponent * pComponent) const
 	{
-		if (pComponent == &skin)
-			return m_size;
-
-		SizeSPX sz = m_size - OO(skin)._contentPaddingSize(m_scale);
+		SizeSPX sz = m_size - m_skin.contentPaddingSize(m_scale);
 
 		RectSPX iconRect = _icon()._getIconRect(sz,m_scale);
 
@@ -311,10 +305,7 @@ namespace wg
 
 	RectSPX PopupOpener::_componentGeo(const GeoComponent * pComponent) const
 	{
-		if (pComponent == &skin)
-			return m_size;
-
-		RectSPX	contentRect = OO(skin)._contentRect(m_size, m_scale, m_state);
+		RectSPX	contentRect = m_skin.contentRect(m_size, m_scale, m_state);
 
 		// Get icon and text rect from content rect
 

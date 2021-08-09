@@ -20,22 +20,13 @@
 
 =========================================================================*/
 
-#include <wg_cskinslotmi.h>
+#include <wg_skinslotmi.h>
 
 namespace wg
 {
-	const TypeInfo CSkinSlotMI::TYPEINFO = { "CSkinSlotMI", &Component::TYPEINFO };
-
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& CSkinSlotMI::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
-
 	//____ set() ______________________________________________________________
 
-	void CSkinSlotMI::set(Skin* pSkin)
+	void SkinSlotMI::set(Skin* pSkin)
 	{
 		if (pSkin == m_pSkin)
 			return;
@@ -57,7 +48,7 @@ namespace wg
 
 	//____ _addInstance() ________________________________________________________
 
-	void CSkinSlotMI::_addInstance(SkinSlotPocket*& pPocket, void* instance, State state)
+	void SkinSlotMI::_addInstance(SkinSlotPocket*& pPocket, void* instance, State state)
 	{
 		// Check if we need a pocket and initialize or remove
 
@@ -70,7 +61,7 @@ namespace wg
 
 	//____ _changeInstance() _____________________________________________________
 
-	void CSkinSlotMI::_changeInstance(SkinSlotPocket*& pPocket, void* newInstance)
+	void SkinSlotMI::_changeInstance(SkinSlotPocket*& pPocket, void* newInstance)
 	{
 		if (pPocket)
 			pPocket->instance = newInstance;
@@ -78,7 +69,7 @@ namespace wg
 
 	//____ _stateChanged() _____________________________________________________
 
-	void CSkinSlotMI::_stateChanged(SkinSlotPocket*& pPocket, void* instance, State newState, State oldState)
+	void SkinSlotMI::_stateChanged(SkinSlotPocket*& pPocket, void* instance, State newState, State oldState)
 	{
 		if (!m_pSkin || newState == oldState || m_pSkin->_ignoresState() )
 			return;
@@ -166,7 +157,7 @@ namespace wg
 
 	//____ _valueChanged() _____________________________________________________
 
-	void CSkinSlotMI::_valueChanged(SkinSlotPocket*& pPocket, void* instance, float newValue, float oldValue, float newValue2, float oldValue2)
+	void SkinSlotMI::_valueChanged(SkinSlotPocket*& pPocket, void* instance, float newValue, float oldValue, float newValue2, float oldValue2)
 	{
 		if (!m_pSkin || m_pSkin->_ignoresValue())
 			return;
@@ -185,7 +176,7 @@ namespace wg
 
 	//____ _render() ___________________________________________________________
 
-	void CSkinSlotMI::_render(SkinSlotPocket* pPocket, GfxDevice* pDevice, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	void SkinSlotMI::_render(SkinSlotPocket* pPocket, GfxDevice* pDevice, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if (m_pSkin)
 		{
@@ -198,7 +189,7 @@ namespace wg
 
 	//____ _update() __________________________________________________________
 
-	bool CSkinSlotMI::_update(SkinSlotPocket* pPocket, int msPassed)
+	bool SkinSlotMI::_update(SkinSlotPocket* pPocket, int msPassed)
 	{
 		// Prepare our dirtyRect check
 
@@ -277,7 +268,7 @@ namespace wg
 
 	//____ willRemovePocket() ________________________________________________
 
-	void CSkinSlotMI::_willRemovePocket(SkinSlotPocket* pPocket)
+	void SkinSlotMI::_willRemovePocket(SkinSlotPocket* pPocket)
 	{
 		//TODO: Implement!
 	}
@@ -285,7 +276,7 @@ namespace wg
 
 	//____ _initPocket() ______________________________________________________
 
-	void CSkinSlotMI::_initPocket(SkinSlotPocket*& pPocket, void * instance, State state)
+	void SkinSlotMI::_initPocket(SkinSlotPocket*& pPocket, void * instance, State state)
 	{
 		if (!pPocket)
 		{
@@ -308,7 +299,7 @@ namespace wg
 
 	//____ _releasePocket() ___________________________________________________
 
-	void CSkinSlotMI::_releasePocket(SkinSlotPocket*& pPocket)
+	void SkinSlotMI::_releasePocket(SkinSlotPocket*& pPocket)
 	{
 		if (pPocket)
 		{

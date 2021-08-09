@@ -67,7 +67,7 @@ namespace wg
 	{
 		// Render our skin
 
-		OO(skin)._render(pDevice, _canvas, m_scale, m_state);
+		m_skin.render(pDevice, _canvas, m_scale, m_state);
 
 		if (!slot._widget())
 			return;
@@ -76,7 +76,7 @@ namespace wg
 		if( m_renderLayer >= 0 )
 			pDevice->setRenderLayer(m_renderLayer);
 
-		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
+		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
 		OO(slot._widget())->_render(pDevice, canvas, canvas);
 
 

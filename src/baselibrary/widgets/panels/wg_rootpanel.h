@@ -53,7 +53,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected SlotHolder, protected CSkinSlot::Holder
+	class RootPanel : public Object, protected SlotHolder, protected SkinSlot::Holder, protected GeoComponent::Holder
 	{
 		friend class Widget;
 		friend class Container;
@@ -70,7 +70,6 @@ namespace wg
 		//.____ Components ____________________________________
 
 		CStandardSlot		slot;
-		CSkinSlot			skin;				//TODO: Padding is not respected yet.
 
 		//.____ Identification __________________________________________
 
@@ -93,6 +92,11 @@ namespace wg
 		bool				isVisible() const { return m_bVisible; }
 
 		inline Widget_p		focusedChild() const { return _focusedChild(); }
+
+		//.____ Appearance ____________________________________________________
+
+		virtual void		setSkin(Skin* pSkin);
+		inline Skin_p		skin() const;
 
 		//.____ Rendering ________________________________________________
 
@@ -210,9 +214,15 @@ namespace wg
 
 		// Methods for skin to access
 
-		void			_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
-		float			_skinValue(const CSkinSlot* pSlot) const override;
-		float			_skinValue2(const CSkinSlot* pSlot) const override;
+		float			_skinValue(const SkinSlot* pSlot) const override;
+		float			_skinValue2(const SkinSlot* pSlot) const override;
+
+		State			_state(const SkinSlot* pSlot) const override;
+
+		SizeSPX			_size(const SkinSlot* pSlot) const override;
+
+		void			_requestRender(const SkinSlot* pComponent) override;
+		void			_requestRender(const SkinSlot* pComponent, const RectSPX& rect) override;
 
 
 		inline void         _addPreRenderCall(Widget * pWidget) { m_preRenderCalls.push_back(pWidget); }
@@ -245,6 +255,9 @@ namespace wg
 
 		bool				m_bVisible;
 
+		SkinSlot			m_skin;				//TODO: Padding is not respected yet.
+
+
 		Widget_wp			m_pFocusedChild;
 	};
 
@@ -260,6 +273,13 @@ namespace wg
 	bool RootPanel::isScaleSet() const
 	{
 		return m_bScaleSet;
+	}
+
+	//____ skin() _____________________________________________________________
+
+	Skin_p RootPanel::skin() const
+	{
+		return m_skin.get();
 	}
 
 } // namespace wg

@@ -152,7 +152,7 @@ namespace wg
 	{
 		int scale = _fixScale(_scale);
 
-		return OO(skin)._sizeForContent(align(ptsToSpx(frames.frameSize(),scale)),scale);
+		return m_skin.sizeForContent(align(ptsToSpx(frames.frameSize(),scale)),scale);
 	}
 
 	//____ _update() ______________________________________________________________

@@ -150,11 +150,11 @@ namespace wg
 
 		pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), pClipBuffer, m_pCanvasLayers, m_renderLayer);
 
-		OO(skin)._render(pDevice, _canvas.size(), m_scale, m_state);
+		m_skin.render(pDevice, _canvas.size(), m_scale, m_state);
 		
 		// Render children recursively
 
-		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
+		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
 
 		if (canvas != _canvas)
 		{

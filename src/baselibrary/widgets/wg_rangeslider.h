@@ -50,11 +50,6 @@ namespace wg
 
 		static RangeSlider_p	create() { return RangeSlider_p(new RangeSlider()); }
 
-		//.____ Components ____________________________________
-
-		CSkinSlot		beginHandleSkin;
-		CSkinSlot		endHandleSkin;
-
 		//.____ Identification __________________________________________
 
 		const TypeInfo&	typeInfo(void) const override;
@@ -70,6 +65,11 @@ namespace wg
 		void			setAxis(Axis axis);
 		Axis			axis() const { return m_axis; }
 
+		void			setBeginHandleSkin(Skin* pSkin);
+		inline Skin_p	beginHandleSkin() const { return m_beginHandleSkin.get();  }
+
+		void			setEndHandleSkin(Skin* pSkin);
+		inline Skin_p	endHandleSkin() const { return m_endHandleSkin.get(); }
 
 		//.____ Control _______________________________________________________
 
@@ -104,21 +104,21 @@ namespace wg
 		void		_setHandleState(State state, bool isBeginHandle);
 		RectSPX		_handleGeo(const RectSPX& widgetGeo, bool isbBeginHandle) const;
 
-		State		_componentState(const GeoComponent* pComponent) const override;
-		CoordSPX	_componentPos(const GeoComponent* pComponent) const override;
-		SizeSPX		_componentSize(const GeoComponent* pComponent) const override;
-		RectSPX		_componentGeo(const GeoComponent* pComponent) const override;
+		State		_state(const SkinSlot* pSlot) const override;
+		SizeSPX		_size(const SkinSlot * pSlot) const override;
 
-		void		_componentRequestRender(const GeoComponent* pComponent) override;
-		void		_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect) override;
+		using		Widget::_requestRender;
+		void		_requestRender(const SkinSlot* pSlot) override;
+		void		_requestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
-		void		_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
-
-		float		_skinValue(const CSkinSlot* pSlot) const override;
-		float		_skinValue2(const CSkinSlot* pSlot) const override;
+		float		_skinValue(const SkinSlot* pSlot) const override;
+		float		_skinValue2(const SkinSlot* pSlot) const override;
 
 
 	private:
+		SkinSlot	m_beginHandleSkin;
+		SkinSlot	m_endHandleSkin;
+
 		SizeSPX		m_preferredSize;
 		pts			m_preferredSlideLength;
 		float		m_rangeBegin = 0.f;

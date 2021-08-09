@@ -84,7 +84,7 @@ namespace wg
 
 		contentSize = alignUp(contentSize);
 
-		return OO(skin)._sizeForContent( contentSize, scale );
+		return m_skin.sizeForContent( contentSize, scale );
 	}
 
 	//____ _render() ________________________________________________________
@@ -93,7 +93,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
+		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
 
 		//
 
@@ -150,7 +150,7 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		OO(editor)._setSize( SizeSPX( OO(editor)._preferredSize(m_scale).w, size.h - OO(skin)._contentPaddingSize(m_scale).h ), m_scale );
+		OO(editor)._setSize( SizeSPX( OO(editor)._preferredSize(m_scale).w, size.h - m_skin.contentPaddingSize(m_scale).h ), m_scale );
 	}
 
 	//____ _componentPos() __________________________________________________________
@@ -162,7 +162,7 @@ namespace wg
 
 		CoordSPX c(-m_textScrollOfs, 0);
 
-		return OO(skin)._contentOfs( m_scale, m_state ) + c;
+		return m_skin.contentOfs( m_scale, m_state ) + c;
 	}
 
 	//____ _componentSize() _________________________________________________________
@@ -172,7 +172,7 @@ namespace wg
 		if (pComponent != &editor)
 			return m_size;
 
-		return SizeSPX( OO(editor)._preferredSize(m_scale).w, m_size.h - OO(skin)._contentPaddingSize(m_scale).h );
+		return SizeSPX( OO(editor)._preferredSize(m_scale).w, m_size.h - m_skin.contentPaddingSize(m_scale).h );
 	}
 
 	//____ _componentGeo() __________________________________________________________
@@ -182,7 +182,7 @@ namespace wg
 		if (pComponent != &editor)
 			return m_size;
 
-		RectSPX r = OO(skin)._contentRect( m_size, m_scale, m_state );
+		RectSPX r = m_skin.contentRect( m_size, m_scale, m_state );
 		r.x -= m_textScrollOfs;
 		r.w = OO(editor)._preferredSize(m_scale).w;
 		return r;
@@ -195,7 +195,7 @@ namespace wg
 		if (pComponent != &editor)
 			return _requestRender();
 
-		_requestRender(OO(skin)._contentRect(m_size, m_scale, m_state));
+		_requestRender(m_skin.contentRect(m_size, m_scale, m_state));
 	}
 
 	void LineEditor::_componentRequestRender( const GeoComponent * pComponent, const RectSPX& rect )
@@ -206,7 +206,7 @@ namespace wg
 		RectSPX dirt = rect;
 		dirt.x -= m_textScrollOfs;
 
-		RectSPX visible = OO(skin)._contentRect( m_size, m_scale, m_state );
+		RectSPX visible = m_skin.contentRect( m_size, m_scale, m_state );
 		dirt += visible.pos();
 
 		dirt.intersection( dirt, visible );
@@ -223,7 +223,7 @@ namespace wg
 
 		SizeSPX preferred = OO(editor)._preferredSize(m_scale);
 
-		spx height = m_size.h - OO(skin)._contentPaddingSize(m_scale).h;
+		spx height = m_size.h - m_skin.contentPaddingSize(m_scale).h;
 
 		if( preferred.h != height )
 			_requestResize();
@@ -238,7 +238,7 @@ namespace wg
 		spx scrollOfs = m_textScrollOfs;
 		SizeSPX canvas = _componentSize(pComponent);
 
-		SizeSPX window = m_size - OO(skin)._contentPaddingSize(m_scale);
+		SizeSPX window = m_size - m_skin.contentPaddingSize(m_scale);
 
 		if (scrollOfs > 0 && canvas.w - scrollOfs < window.w)
 			scrollOfs = canvas.w < window.w ? 0 : canvas.w - window.w;

@@ -34,7 +34,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	Widget::Widget(): skin(this), m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
+	Widget::Widget(): m_skin(this), m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false), m_bTabLock(false),
 						 m_bPressed(false), m_bSelectable(true), m_size(256,256),
 						m_bPickable(false), m_bDropTarget(false), m_pickCategory(0), m_bReceivingUpdates(false)
@@ -273,6 +273,22 @@ namespace wg
 		m_bSelectable = bSelectable;
 	}
 
+	//____ setSkin() __________________________________________________________
+
+	void Widget::setSkin(Skin* pNewSkin)
+	{
+		Skin_p pOldSkin = m_skin.get();
+
+		m_skin.set(pNewSkin);
+		_requestRender();
+
+		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
+
+		if (!pNewSkin || !pOldSkin || pNewSkin->_contentPaddingSize(m_scale) != pOldSkin->_contentPaddingSize(m_scale) ||
+			pNewSkin->_preferredSize(m_scale) != pOldSkin->_preferredSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
+			_requestResize();
+	}
+
 	//____ setBaggage() _______________________________________________________
 
 	void Widget::setBaggage(Object * pBaggage)
@@ -359,7 +375,7 @@ namespace wg
 
 		m_size			= pOrg->m_size;
 
-		skin.set(pOrg->skin);
+		m_skin.set(pOrg->skin());
 	}
 
 	//____ matchingHeight() _______________________________________________________
@@ -424,7 +440,7 @@ namespace wg
 	SizeSPX Widget::_preferredSize(int scale) const
 	{
 		scale = _fixScale(scale);
-		return OO(skin)._preferredSize(scale);
+		return m_skin.preferredSize(scale);
 	}
 
 	//____ minSize() ______________________________________________________________
@@ -446,7 +462,7 @@ namespace wg
 	SizeSPX Widget::_minSize(int scale) const
 	{
 		scale = _fixScale(scale);
-		return OO(skin)._minSize(scale);
+		return m_skin.minSize(scale);
 	}
 
 	//____ maxSize() ______________________________________________________________
@@ -612,7 +628,7 @@ namespace wg
 
 	void Widget::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )
 	{
-			OO(skin)._render( pDevice, _canvas, m_scale, m_state );
+			m_skin.render( pDevice, _canvas, m_scale, m_state );
 	}
 
 	//____ _resize() ___________________________________________________________
@@ -630,7 +646,7 @@ namespace wg
 
 	void Widget::_refresh()
 	{
-		m_bOpaque = OO(skin)._isOpaque(m_state);
+		m_bOpaque = m_skin.isOpaque(m_state);
 
 		_requestResize();
 		_requestRender();
@@ -643,8 +659,8 @@ namespace wg
 		State oldState = m_state;
 		m_state = state;
 
-		OO(skin)._stateChanged(state, oldState);
-		m_bOpaque = OO(skin)._isOpaque(state);
+		m_skin.stateChanged(state, oldState);
+		m_bOpaque = m_skin.isOpaque(state);
 	}
 
 	//____ _receive() _____________________________________________________________
@@ -721,7 +737,7 @@ namespace wg
 
 	bool Widget::_alphaTest( const CoordSPX& ofs )
 	{
-		return OO(skin)._markTest( ofs, RectSPX(m_size), m_scale, m_state, m_markOpacity );
+		return m_skin.markTest( ofs, RectSPX(m_size), m_scale, m_state, m_markOpacity );
 	}
 
 	//____ _windowPadding() _______________________________________________________
@@ -784,30 +800,21 @@ namespace wg
 
 	CoordSPX Widget::_componentPos( const GeoComponent * pComponent ) const
 	{
-		if (pComponent == &skin)
-			return CoordSPX();
-		else
-			return OO(skin)._contentOfs( m_scale, m_state );
+			return m_skin.contentOfs( m_scale, m_state );
 	}
 
 	//____ _componentSize() ______________________________________________________________
 
 	SizeSPX Widget::_componentSize( const GeoComponent * pComponent ) const
 	{
-		if (pComponent == &skin)
-			return m_size;
-		else
-			return m_size - OO(skin)._contentPaddingSize(m_scale);
+			return m_size - m_skin.contentPaddingSize(m_scale);
 	}
 
 	//____ _componentGeo() ____________________________________________________
 
 	RectSPX Widget::_componentGeo( const GeoComponent * pComponent ) const
 	{
-		if (pComponent == &skin)
-			return m_size;
-		else
-			return OO(skin)._contentRect( m_size, m_scale, m_state );
+			return m_skin.contentRect( m_size, m_scale, m_state );
 	}
 
 	//____ _globalComponentPos() ______________________________________________
@@ -843,29 +850,38 @@ namespace wg
 		// By default we do nothing
 	}
 
-	//____ _skinChanged() _____________________________________________________
-
-	void Widget::_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin)
-	{
-		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
-
-		if (!pNewSkin || !pOldSkin || pNewSkin->_contentPaddingSize(m_scale) != pOldSkin->_contentPaddingSize(m_scale) ||
-			pNewSkin->_preferredSize(m_scale) != pOldSkin->_preferredSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
-			_requestResize();
-	}
-
 	//____ _skinValue() _______________________________________________________
 
-	float Widget::_skinValue(const CSkinSlot* pSlot) const
+	float Widget::_skinValue(const SkinSlot* pSlot) const
 	{
 		return 1.f;
 	}
 
 	//____ _skinValue2() ______________________________________________________
 
-	float Widget::_skinValue2(const CSkinSlot* pSlot) const
+	float Widget::_skinValue2(const SkinSlot* pSlot) const
 	{
 		return -1.f;
+	}
+
+	State Widget::_state(const SkinSlot* pSlot) const
+	{
+		return m_state;
+	}
+
+	SizeSPX Widget::_size(const SkinSlot* pSlot) const
+	{
+		return m_size;
+	}
+
+	void Widget::_requestRender(const SkinSlot* pSlot)
+	{
+		_requestRender();
+	}
+
+	void Widget::_requestRender(const SkinSlot* pSlot, const RectSPX& rect)
+	{
+		_requestRender(rect);
 	}
 
 

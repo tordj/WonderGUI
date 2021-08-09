@@ -104,7 +104,6 @@ namespace wg
 		//.____ Components _______________________________________
 
 		CSlots			slots;
-		CSkinSlot		handleSkin;
 
 		//.____ Identification __________________________________________
 
@@ -117,6 +116,9 @@ namespace wg
 		Axis			axis() const { return m_bHorizontal ? Axis::X : Axis::Y; }
 
 		//.____ Appearance _________________________________________________
+
+		void			setHandleSkin(Skin* pSkin);
+		Skin_p			handleSkin() const { return m_handleSkin.get(); }
 
 		void			setHandleThickness(pts thickness);
 		pts				handleThickness() const { return m_handleThickness;  }
@@ -196,18 +198,20 @@ namespace wg
 
 		//
 
-		State			_componentState(const GeoComponent* pComponent) const override;
-		CoordSPX		_componentPos(const GeoComponent* pComponent) const override;
-		SizeSPX			_componentSize(const GeoComponent* pComponent) const override;
-		RectSPX			_componentGeo(const GeoComponent* pComponent) const override;
+		using		Widget::_state;
+		using		Widget::_size;
+		using		Widget::_requestRender;
 
-		void			_componentRequestRender(const GeoComponent* pComponent) override;
-		void			_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect) override;
+		State			_state(const SkinSlot* pSlot) const override;
+		SizeSPX			_size(const SkinSlot* pSlot) const override;
 
-		void			_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
+		void			_requestRender(const SkinSlot* pSlot) override;
+		void			_requestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
+
 
 		//
 
+		SkinSlot		m_handleSkin;
 		bool			m_bHorizontal;
 		SizeSPX			m_preferredSize;
 		float			m_splitFactor;			// fraction of available child length that goes to first child. Measured in 1/65536.

@@ -111,7 +111,7 @@ namespace wg
 		TextLayout_p	listTextLayout() const { return m_pListTextLayout; }
 
 		void			setListSkin(Skin * pSkin);
-		Skin_p			listSkin() const { return m_pListCanvas->skin; }
+		Skin_p			listSkin() const { return m_pListCanvas->skin(); }
 
 		//.___ Control _____________________________________________________________
 

@@ -146,7 +146,7 @@ namespace wg
 			return SizeSPX();
 		}
 		else
-			return m_preferredContentSize + OO(skin)._contentPaddingSize(scale);
+			return m_preferredContentSize + m_skin.contentPaddingSize(scale);
 	}
 
 	//____ _matchingHeight() _______________________________________________________
@@ -242,7 +242,7 @@ namespace wg
 			}
 		}
 
-		height += OO(skin)._contentPaddingSize(scale).h;
+		height += m_skin.contentPaddingSize(scale).h;
 
 		return height;
 	}
@@ -338,7 +338,7 @@ namespace wg
 			}
 		}
 
-		width += OO(skin)._contentPaddingSize(scale).w;
+		width += m_skin.contentPaddingSize(scale).w;
 
 		return width;
 	}
@@ -632,7 +632,7 @@ namespace wg
 		// Recalculate preferred sizes for widget and content.
 
 		SizeSPX newPreferredContentSize = _calcPreferredSize();
-		SizeSPX newPreferredSize = newPreferredContentSize + OO(skin)._contentPaddingSize(m_scale);
+		SizeSPX newPreferredSize = newPreferredContentSize + m_skin.contentPaddingSize(m_scale);
 
 		// request resize or just refresh child geo, depending on what is needed.
 
@@ -731,8 +731,8 @@ namespace wg
 		if( slots.isEmpty() )
 			return;
 
-		SizeSPX sz = m_size - OO(skin)._contentPaddingSize(m_scale);
-		CoordSPX contentOfs = OO(skin)._contentOfs(m_scale, StateEnum::Normal);			//TODO: Support offset changing in different states.
+		SizeSPX sz = m_size - m_skin.contentPaddingSize(m_scale);
+		CoordSPX contentOfs = m_skin.contentOfs(m_scale, StateEnum::Normal);			//TODO: Support offset changing in different states.
 
 		spx wantedLength = m_bHorizontal?m_preferredContentSize.w:m_preferredContentSize.h;
 		spx givenLength = m_bHorizontal?sz.w:sz.h;

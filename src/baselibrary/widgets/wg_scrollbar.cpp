@@ -149,8 +149,8 @@ namespace wg
 
 		SizeSPX preferred = scrollbar._preferredSize(scale);
 
-		if (!skin.isEmpty())
-			preferred += skin->_contentPaddingSize(scale);
+		if (!m_skin.isEmpty())
+			preferred += m_skin.contentPaddingSize(scale);
 
 		return preferred;
 	}
@@ -162,7 +162,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		RectSPX	contentCanvas = OO(skin)._contentRect(_canvas,m_scale, m_state);
+		RectSPX	contentCanvas = m_skin.contentRect(_canvas,m_scale, m_state);
 
 		scrollbar._render(pDevice, contentCanvas, m_scale);
 	}
@@ -171,7 +171,7 @@ namespace wg
 
 	bool Scrollbar::_alphaTest( const CoordSPX& ofs )
 	{
-		RectSPX	contentCanvas = OO(skin)._contentRect(m_size, m_scale, m_state);
+		RectSPX	contentCanvas = m_skin.contentRect(m_size, m_scale, m_state);
 
 		if (contentCanvas.contains(ofs) && scrollbar._alphaTest(ofs-contentCanvas.pos(),contentCanvas.size(),m_markOpacity))
 			return true;

@@ -408,7 +408,7 @@ namespace wg
 	{
 		// Render container itself
 
-		OO(skin)._render(pDevice, _canvas, m_scale, m_state);
+		m_skin.render(pDevice, _canvas, m_scale, m_state);
 
 		// Render children
 

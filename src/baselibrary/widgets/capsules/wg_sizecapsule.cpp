@@ -120,7 +120,7 @@ namespace wg
 		if (!slot._widget())
 		{
 			SizeSPX size = { std::max(0, preferred.w), std::max(0, preferred.h) };
-			size += OO(skin)._contentPaddingSize(scale);
+			size += m_skin.contentPaddingSize(scale);
 
 			return size;
 		}
@@ -264,7 +264,7 @@ namespace wg
 			}
 		}
 
-		pref += OO(skin)._contentPaddingSize(scale);
+		pref += m_skin.contentPaddingSize(scale);
 
 		return pref;
 	}

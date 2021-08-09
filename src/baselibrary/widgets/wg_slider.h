@@ -50,11 +50,6 @@ namespace wg
 
 		static Slider_p	create() { return Slider_p(new Slider()); }
 
-		//.____ Components ____________________________________
-
-		CSkinSlot		handleSkin;
-
-
 		//.____ Identification __________________________________________
 
 		const TypeInfo&	typeInfo(void) const override;
@@ -70,6 +65,9 @@ namespace wg
 
 		void			setAxis(Axis axis);
 		Axis			axis() const { return m_axis; }
+
+		void			setHandleSkin(Skin* pSkin);
+		inline Skin_p	handleSkin() const { return m_handleSkin.get(); }
 
 		//.____ Control _______________________________________________________
 
@@ -104,21 +102,21 @@ namespace wg
 		void		_setHandleState(State state);
 		RectSPX		_handleGeo(const RectSPX& widgetGeo) const;
 
-		State		_componentState(const GeoComponent* pComponent) const override;
-		CoordSPX	_componentPos(const GeoComponent* pComponent) const override;
-		SizeSPX		_componentSize(const GeoComponent* pComponent) const override;
-		RectSPX		_componentGeo(const GeoComponent* pComponent) const override;
+		float		_skinValue(const SkinSlot* pSlot) const override;
 
-		void		_componentRequestRender(const GeoComponent* pComponent) override;
-		void		_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect) override;
+		using		Widget::_state;
+		using		Widget::_size;
+		using		Widget::_requestRender;
 
-		void		_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
-		float		_skinValue(const CSkinSlot* pSlot) const override;
-
+		State		_state(const SkinSlot* pSlot) const override;
+		SizeSPX		_size(const SkinSlot* pSlot) const override;
+		void		_requestRender(const SkinSlot* pSlot) override;
+		void		_requestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
 
 
 	private:
+		SkinSlot	m_handleSkin;
 		SizeSPX		m_preferredSize;
 		pts			m_preferredSlideLength;
 		float		m_value = 0.f;

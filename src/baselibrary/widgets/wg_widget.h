@@ -29,7 +29,7 @@
 #include <wg_receiver.h>
 #include <wg_geocomponent.h>
 #include <wg_slotholder.h>
-#include <wg_cskinslot.h>
+#include <wg_skinslot.h>
 
 namespace wg
 {
@@ -62,7 +62,7 @@ namespace wg
 	 * Widget is the base class for all widgets, providing common functionality.
 	 */
 
-	class Widget : public Receiver, protected CSkinSlot::Holder
+	class Widget : public Receiver, protected SkinSlot::Holder, protected GeoComponent::Holder
 	{
 		friend class Container;
 		friend class GeoComponent;
@@ -93,8 +93,6 @@ namespace wg
 		 * the whole widget.
 		 *
 		 */
-
-		CSkinSlot			skin;
 
 		//.____ Identification ________________________________________________
 
@@ -158,6 +156,9 @@ namespace wg
 
 
 		//.____ Appearance ____________________________________________________
+
+		virtual void		setSkin(Skin* pSkin);
+		inline Skin_p		skin() const;
 
 		inline void			setTooltip(const String& str);
 		inline virtual String tooltip() const;
@@ -259,9 +260,9 @@ namespace wg
 
 		bool            	_requestPreRenderCall();
 
-		inline RectSPX		_contentRect() const { return OO(skin)._contentRect(m_size, m_scale, m_state); }
-		inline RectSPX		_contentRect(const RectSPX& canvas) const { return OO(skin)._contentRect(canvas, m_scale, m_state); }
-		inline SizeSPX		_contentPaddingSize() const { return OO(skin)._contentPaddingSize(m_scale); }
+		inline RectSPX		_contentRect() const { return m_skin.contentRect(m_size, m_scale, m_state); }
+		inline RectSPX		_contentRect(const RectSPX& canvas) const { return m_skin.contentRect(canvas, m_scale, m_state); }
+		inline SizeSPX		_contentPaddingSize() const { return m_skin.contentPaddingSize(m_scale); }
 
 		// Convenient calls to holder
 
@@ -306,12 +307,20 @@ namespace wg
 
 		// Methods for skin to access
 
-		void			_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
-		float			_skinValue(const CSkinSlot* pSlot) const override;
-		float			_skinValue2(const CSkinSlot* pSlot) const override;
+		float			_skinValue(const SkinSlot* pSlot) const override;
+		float			_skinValue2(const SkinSlot* pSlot) const override;
+
+		State			_state(const SkinSlot* pSlot) const override;
+
+		SizeSPX			_size(const SkinSlot* pSlot) const override;
+
+		void			_requestRender(const SkinSlot* pSlot) override;
+		void			_requestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
 		int				m_id;
 		Object_p		m_pBaggage;
+
+		SkinSlot		m_skin;
 
 		SlotHolder *	m_pHolder;
 		StaticSlot *	m_pSlot;
@@ -950,6 +959,13 @@ namespace wg
 	String Widget::tooltip() const 
 	{ 
 		return m_tooltip; 
+	}
+
+	//____ skin() _____________________________________________________________
+
+	Skin_p Widget::skin() const
+	{
+		return m_skin.get();
 	}
 
 	//____ setPointerStyle() __________________________________________________

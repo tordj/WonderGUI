@@ -88,7 +88,7 @@ namespace wg
 
 		SizeSPX contentSize = OO(editor)._preferredSize(scale);
 
-		return OO(skin)._sizeForContent(contentSize,scale);
+		return m_skin.sizeForContent(contentSize,scale);
 	}
 
 	//____ _render() ________________________________________________________
@@ -97,7 +97,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
+		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
 
 		OO(editor)._render( pDevice, canvas );
 	}
@@ -146,7 +146,7 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		OO(editor)._setSize(size - OO(skin)._contentPaddingSize(m_scale), m_scale);
+		OO(editor)._setSize(size - m_skin.contentPaddingSize(m_scale), m_scale);
 	}
 
 } // namespace wg

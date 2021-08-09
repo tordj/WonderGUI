@@ -170,7 +170,7 @@ namespace wg
 		//TODO: Support other scale than what we already have!
 		assert(scale == m_scale);
 
-		SizeSPX sz = OO(skin)._contentPaddingSize(scale);
+		SizeSPX sz = m_skin.contentPaddingSize(scale);
 		SizeSPX headerSize = _header()._preferredSize(scale);
 
 		if (m_bHorizontal)
@@ -200,13 +200,13 @@ namespace wg
 
 		if (m_bHorizontal)
 		{
-			spx height = m_contentPreferredBreadth + OO(skin)._contentPaddingSize(scale).h;
+			spx height = m_contentPreferredBreadth + m_skin.contentPaddingSize(scale).h;
 			return std::max(height, _header()._preferredSize(scale).h);
 		}
 		else
 		{
 			spx height = _header()._matchingHeight(width, scale);
-			SizeSPX pad = OO(skin)._contentPaddingSize(scale);
+			SizeSPX pad = m_skin.contentPaddingSize(scale);
 			width -= pad.w;
 			height += pad.h;
 
@@ -232,7 +232,7 @@ namespace wg
 		if (m_bHorizontal)
 		{
 			spx width = _header()._matchingWidth(height,scale);
-			SizeSPX pad = OO(skin)._contentPaddingSize(scale);
+			SizeSPX pad = m_skin.contentPaddingSize(scale);
 			height -= pad.w;
 			width += pad.h;
 
@@ -246,7 +246,7 @@ namespace wg
 		}
 		else
 		{
-			spx width = m_contentPreferredBreadth + OO(skin)._contentPaddingSize(scale).w;
+			spx width = m_contentPreferredBreadth + m_skin.contentPaddingSize(scale).w;
 
 			return std::max(width, _header()._preferredSize(scale).w);
 		}
@@ -257,7 +257,7 @@ namespace wg
 
 	void PackList::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
 	{
-		if( skin.isEmpty() )
+		if( m_skin.isEmpty() )
 		{
 			if (m_bHorizontal)
 				container.add(RectSPX(RectSPX(geo.x, geo.y, wg::min(geo.w, m_contentLength), geo.h), clip));
@@ -315,8 +315,8 @@ namespace wg
 
 		RectSPX clip = pDevice->clipBounds();
 
-		OO(skin)._render( pDevice, contentRect, m_scale, m_state );
-		contentRect = OO(skin)._contentRect( contentRect, m_scale, m_state );
+		m_skin.render( pDevice, contentRect, m_scale, m_state );
+		contentRect = m_skin.contentRect( contentRect, m_scale, m_state );
 
 		spx startOfs = m_bHorizontal ? clip.x-contentRect.x : clip.y-contentRect.y;
 		if( startOfs < 0 )
@@ -399,12 +399,12 @@ namespace wg
 
 		// Render Lasso
 
-		if( lasso && m_lassoBegin != m_lassoEnd )
+		if( !m_lassoSkin.isEmpty() && m_lassoBegin != m_lassoEnd )
 		{
 			RectSPX lassoRect( m_lassoBegin, m_lassoEnd );
 			lassoRect += _canvas.pos();
 
-			lasso->_render(pDevice, lassoRect, m_scale, m_state );
+			m_lassoSkin.render(pDevice, lassoRect, m_scale, m_state );
 		}
 	}
 
@@ -429,7 +429,7 @@ namespace wg
 		SizeSPX headerSize = m_bHorizontal ? SizeSPX(_header()._matchingWidth(_size.h,m_scale), _size.h) : SizeSPX( _size.w, _header()._matchingHeight( _size.w, m_scale ));
 		_header()._setSize( headerSize, m_scale );
 
-		SizeSPX size = _size - OO(skin)._contentPaddingSize(m_scale);
+		SizeSPX size = _size - m_skin.contentPaddingSize(m_scale);
 
 		spx newContentBreadth;
 
@@ -1344,7 +1344,7 @@ namespace wg
 
 	RectSPX PackList::_listArea() const
 	{
-		return OO(skin)._contentRect( _listCanvas(), m_scale, m_state );
+		return m_skin.contentRect( _listCanvas(), m_scale, m_state );
 	}
 
 	//____ _listWindow() ____________________________________________________________

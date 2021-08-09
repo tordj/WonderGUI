@@ -67,16 +67,15 @@ namespace wg
 		};
 
 
-		//.____ Components ____________________________________
-
-		CSkinSlot			lasso;
-
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Appearance _________________________________________________
+
+		void				setLassoSkin(Skin* pSkin);
+		Skin_p				lassoSkin() const { return m_lassoSkin.get(); }
 
 		virtual void		setEntrySkin( Skin * pSkin );
 		virtual bool		setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin );
@@ -120,14 +119,15 @@ namespace wg
 		virtual void	_onEntrySkinChanged( SizeSPX oldPadding, SizeSPX newPadding ) = 0;
 		virtual void	_onLassoUpdated( const RectSPX& oldLasso, const RectSPX& newLasso ) = 0;
 
+		using			Container::_state;
+		using			Container::_size;
+		using			Container::_requestRender;
 
-		State			_componentState(const GeoComponent* pComponent) const override;
-		CoordSPX		_componentPos(const GeoComponent* pComponent) const override;
-		SizeSPX			_componentSize(const GeoComponent* pComponent) const override;
-		RectSPX			_componentGeo(const GeoComponent* pComponent) const override;
+		State			_state(const SkinSlot* pSlot) const override;
+		SizeSPX			_size(const SkinSlot* pSlot) const override;
 
-		void			_componentRequestRender(const GeoComponent* pComponent) override;
-		void			_componentRequestRender(const GeoComponent* pComponent, const RectSPX& rect) override;
+		void			_requestRender(const SkinSlot* pComponent) override;
+		void			_requestRender(const SkinSlot* pComponent, const RectSPX& rect) override;
 
 
 		virtual Slot * _beginSlots() const = 0;
@@ -138,6 +138,8 @@ namespace wg
 
 		inline Slot * _prevSlot( Slot * pSlot ) const { return (Slot*) (((char*)pSlot)-m_sizeOfSlot); }
 		inline const Slot * _prevSlot( const Slot * pSlot ) const { return (const Slot*) (((char*)pSlot)-m_sizeOfSlot); }
+
+		SkinSlot		m_lassoSkin;
 
 		int				m_sizeOfSlot;
 

@@ -108,7 +108,7 @@ namespace wg
 
 		SizeSPX contentSize = OO(display)._preferredSize(scale);
 
-		return OO(skin)._sizeForContent(contentSize, scale);
+		return m_skin.sizeForContent(contentSize, scale);
 	}
 
 	//____ _render() ________________________________________________________
@@ -117,7 +117,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		RectSPX canvas = OO(skin)._contentRect(_canvas, m_scale, m_state);
+		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
 
 		OO(display)._render(pDevice, canvas);
 	}
@@ -173,7 +173,7 @@ namespace wg
 	{
 		Widget::_resize(size, scale);
 
-		SizeSPX textSize = size - OO(skin)._contentPaddingSize(m_scale);		// Using m_scale here, since that has been fixed.
+		SizeSPX textSize = size - m_skin.contentPaddingSize(m_scale);		// Using m_scale here, since that has been fixed.
 
 		OO(display)._setSize( textSize, scale );
 	}

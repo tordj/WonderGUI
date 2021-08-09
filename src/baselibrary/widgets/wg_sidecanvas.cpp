@@ -191,7 +191,7 @@ namespace wg
 
 	void SideCanvas::Holder::_sideCanvasSetSkin( SideCanvas * pCanvas,  Skin * pSkin ) 
 	{
-		pCanvas->skin = pSkin;
+		pCanvas->m_skin.set(pSkin);
 	}
 
 	//____ _Holder::_sideCanvasSetState() ____________________________________________

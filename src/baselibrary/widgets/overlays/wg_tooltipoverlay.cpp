@@ -343,7 +343,7 @@ namespace wg
 		BoxSkin_p pSkin = BoxSkin::create(1, Color::LightYellow, Color::Black);
 		pSkin->setContentPadding(2);
 		auto pWidget = TextDisplay::create();
-		pWidget->skin = pSkin;
+		pWidget->setSkin(pSkin);
 
 		pWidget->display.setText(pHovered->tooltip());
 		return pWidget;

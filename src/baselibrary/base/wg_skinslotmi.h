@@ -25,16 +25,11 @@
 #pragma once
 
 #include <wg_skin.h>
-#include <wg_component.h>
 #include <wg_skinslotmanager.h>
 
 namespace wg
 {
-	class CSkinSlotMI;
-	typedef	StrongComponentPtr<CSkinSlotMI>	CSkinSlotMI_p;
-	typedef	WeakComponentPtr<CSkinSlotMI>	CSkinSlotMI_wp;
-
-	class CSkinSlotMI : public Component, protected SkinSlotPocket::Holder
+	class SkinSlotMI : protected SkinSlotPocket::Holder
 	{
 	public:
 		class Holder
@@ -43,7 +38,7 @@ namespace wg
 			virtual Object* _object() = 0;
 			virtual const Object* _object() const = 0;
 
-			virtual void	_skinChanged(const CSkinSlotMI* pSlot, Skin* pNewSkin, Skin* pOldSkin) = 0;
+			virtual void	_skinChanged(const SkinSlotMI* pSlot, Skin* pNewSkin, Skin* pOldSkin) = 0;
 
 			virtual State	_skinInstanceState(void* instance) = 0;
 			virtual SizeSPX	_skinInstanceSize(void* instance) = 0;
@@ -54,29 +49,21 @@ namespace wg
 			virtual int		_scale() = 0;
 		};
 
-		CSkinSlotMI(Holder* pHolder) : m_pHolder(pHolder) {}
-		~CSkinSlotMI() { if (m_pSkin) m_pSkin->_decUseCount(); }
+		SkinSlotMI(Holder* pHolder) : m_pHolder(pHolder) {}
+		~SkinSlotMI() { if (m_pSkin) m_pSkin->_decUseCount(); }
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
 		virtual void	set(Skin* pSkin);
 		inline bool		isEmpty() const { return m_pSkin == nullptr; }
 
-		//.____ Misc __________________________________________________
-
-		inline CSkinSlotMI_p	ptr() { return CSkinSlotMI_p(this); }
-
 		//.____ Operators __________________________________________
 
 		inline const Skin* operator->() const { return m_pSkin; }
 		inline operator Skin* () const { return m_pSkin; }
 
-		inline CSkinSlotMI& operator=(Skin* pSkin) { set(pSkin); return *this; }
+		inline SkinSlotMI& operator=(Skin* pSkin) { set(pSkin); return *this; }
 		inline operator Skin_p() const { return m_pSkin; }
 
 	protected:
@@ -117,11 +104,6 @@ namespace wg
 
 		//
 
-		Object* _object() override { return m_pHolder->_object(); }
-		const Object* _object() const override { return m_pHolder->_object(); }
-
-		//
-
 		bool	_update(SkinSlotPocket * pPocket, int msPassed) override;
 		void	_willRemovePocket(SkinSlotPocket* pPocket) override;
 
@@ -134,30 +116,6 @@ namespace wg
 		Holder* m_pHolder;
 
 	};
-
-
-
-	class OCSkinSlotMI : public CSkinSlotMI			/** @private */
-	{
-	public:
-		using CSkinSlotMI::_addInstance;
-		using CSkinSlotMI::_removeInstance;
-		using CSkinSlotMI::_stateChanged;
-		using CSkinSlotMI::_valueChanged;
-		using CSkinSlotMI::_render;
-		using CSkinSlotMI::_minSize;
-		using CSkinSlotMI::_preferredSize;
-		using CSkinSlotMI::_contentPaddingSize;
-		using CSkinSlotMI::_sizeForContent;
-		using CSkinSlotMI::_contentOfs;
-		using CSkinSlotMI::_contentRect;
-		using CSkinSlotMI::_isOpaque;
-		using CSkinSlotMI::_markTest;
-		using CSkinSlotMI::_isContentShifting;
-	};
-
-	inline OCSkinSlotMI& OO(CSkinSlotMI& skin) { return reinterpret_cast<OCSkinSlotMI&>(skin); }
-	inline const OCSkinSlotMI& OO(const CSkinSlotMI& skin) { return reinterpret_cast<const OCSkinSlotMI&>(skin); }
 
 
 

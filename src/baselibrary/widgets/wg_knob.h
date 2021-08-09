@@ -86,7 +86,7 @@ namespace wg
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_setValue(float value, bool bPostMsg = true);
 
-		float		_skinValue(const CSkinSlot* pSlot) const override;
+		float		_skinValue(const SkinSlot* pSlot) const override;
 
 	private:
 		pts			m_dragRange = 200;

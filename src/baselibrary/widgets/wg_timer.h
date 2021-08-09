@@ -92,7 +92,7 @@ namespace wg
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void		_setValue(int millisec);
 
-		float		_skinValue(const CSkinSlot* pSlot) const override;
+		float		_skinValue(const SkinSlot* pSlot) const override;
 
 	private:
 

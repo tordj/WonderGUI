@@ -58,7 +58,7 @@ namespace wg
 
 		SizeSPX size = display._preferredSize(scale);
 
-		return OO(skin)._sizeForContent(size, scale);
+		return m_skin.sizeForContent(size, scale);
 	}
 
 

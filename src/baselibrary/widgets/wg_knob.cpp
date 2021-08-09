@@ -194,7 +194,7 @@ namespace wg
 
 	void Knob::_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window)
 	{
-			OO(skin)._render(pDevice, canvas, m_scale, m_state, m_value);
+			m_skin.render(pDevice, canvas, m_scale, m_state, m_value);
 	}
 
 //____ _cloneContent() _______________________________________________________
@@ -222,7 +222,7 @@ namespace wg
 		{
 			float oldValue = m_value;
 			m_value = value;
-			OO(skin)._valueChanged(value, oldValue);
+			m_skin.valueChanged(value, oldValue);
 
 			if( bPostMsg )
 				Base::msgRouter()->post(ValueUpdateMsg::create(this, 0, m_value, false));
@@ -231,7 +231,7 @@ namespace wg
 
 	//____ _skinValue() _______________________________________________________
 
-	float Knob::_skinValue(const CSkinSlot* pSlot) const
+	float Knob::_skinValue(const SkinSlot* pSlot) const
 	{
 		return m_value;
 	}
