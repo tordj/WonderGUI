@@ -98,6 +98,8 @@ bool scrollSkinTest(CStandardSlot_p pSlot);
 bool tooltipLayerTest(CStandardSlot_p pSlot);
 bool kerningTest(CStandardSlot_p pSlot);
 bool circleSkinTest(CStandardSlot_p pSlot);
+bool packListTest(CStandardSlot_p pSlot);
+
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -623,6 +625,7 @@ int main(int argc, char** argv)
 //	tooltipLayerTest(&pRoot->slot);
 //	kerningTest(&pRoot->slot);
 //	circleSkinTest(&pRoot->slot);
+	packListTest(&pRoot->slot);
 
 
 	// Test IChild and IChildIterator baseclasses
@@ -2753,6 +2756,50 @@ bool circleSkinTest(CStandardSlot_p pSlot)
 	return true;
 
 }
+
+//____ packListTest() ________________________________________________________
+
+bool packListTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pPackList = PackList::create();
+	pPackList->setSkin(ColorSkin::create(Color::Azure));
+
+	pPackList->header.setText("HEADER");
+//	pPackList->header.setSkin(ColorSkin::create(Color::Blue));
+	pPackList->header.setSkin(ColorSkin::create({ { StateEnum::Normal, Color::Yellow }, { StateEnum::Hovered, Color::Brown }, { StateEnum::Pressed, Color::Red } }));
+
+	pPackList->setSortFunction( [](const Widget * pW1, const Widget * pW2) { return pW2->id() - pW1->id(); });
+
+
+	for (int i = 0; i < 10; i++)
+	{
+		char label[20];
+		sprintf(label, "Value: %d", i);
+		auto pWidget = TextDisplay::create();
+		pWidget->display.setText(label);
+		pWidget->setId(i);
+
+
+		pPackList->slots << pWidget;
+
+	}
+
+
+
+
+
+	pBaseLayer->slots.pushBackMovable(pPackList, Rect(10, 10, 200, 400));
+
+
+	*pSlot = pBaseLayer;
+	return true;
+
+}
+
+
 
 
 //____

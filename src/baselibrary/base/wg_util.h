@@ -111,7 +111,7 @@ namespace wg
 
 		inline SizeSPX align(const SizeSPX& size)
 		{
-			return { (size.w + 32) & -64, (size.w + 32) & -64 };
+			return { (size.w + 32) & -64, (size.h + 32) & -64 };
 		}
 
 		inline BorderSPX align(const BorderSPX& border)

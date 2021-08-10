@@ -274,6 +274,20 @@ namespace wg
 	}
 
 	//____ setSkin() __________________________________________________________
+	/**
+	* @brief Set the skin of this widget.
+	*
+	* Set the skin used by this widget. The skin covers the
+	* whole widget and provide the background for any components placed
+	* on the widget (if any).
+	*
+	* A skin typically has different looks depending on the widgets state (normal,
+	* disabled, mouse inside, pressed, selected etc) and can also include padding,
+	* transitions and be animated.
+	*
+	* Some widgets have more than one skin, but this is always the background skin for
+	* the whole widget.
+	*/
 
 	void Widget::setSkin(Skin* pNewSkin)
 	{

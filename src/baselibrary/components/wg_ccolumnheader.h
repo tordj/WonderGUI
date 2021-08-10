@@ -23,8 +23,9 @@
 #define WG_CCOLUMNHEADER_DOT_H
 #pragma once
 
-#include <wg_cicondisplay.h>
-#include <wg_ctextdisplay.h>
+#include <wg_widgetcomponent.h>
+#include <wg_textlayout.h>
+#include <wg_base.h>
 
 namespace wg
 {
@@ -34,10 +35,11 @@ namespace wg
 	 
 	//____ CColumnHeader ___________________________________________________
 
-	class CColumnHeader : public WidgetComponent
+	class CColumnHeader : public WidgetComponent, protected Text, protected SkinSlot::Holder
 	{
 	public:
 		CColumnHeader(Widget * pWidget);
+		~CColumnHeader();
 
 		//.____ Identification _________________________________________________
 
@@ -47,7 +49,20 @@ namespace wg
 		//.____ Appearance ____________________________________________
 
 		void			setSkin(Skin * pSkin);
-		inline Skin_p	skin() const { return m_pSkin; }
+		inline Skin_p	skin() const { return m_skin.get(); }
+
+		void			setText(const CharSeq& seq);
+		void			setText(const String& str);
+		inline String	text() const { return m_text; }
+
+		void			setStyle(TextStyle* pStyle);
+		void			clearStyle();
+		TextStyle_p		style() const { return m_pStyle; }
+
+		void			setLayout(TextLayout* pLayout);
+		void			clearLayout();
+		TextLayout_p	layout() const { return m_pLayout; }
+
 
 		//.____ Misc __________________________________________________
 
@@ -70,14 +85,39 @@ namespace wg
 		spx				_matchingHeight(spx width, int scale) const;
 
 		bool			_receive(Msg * pMsg);
-
 		void			_render(GfxDevice * pDevice, const RectSPX& _canvas);
 
-		inline Object *			_object() override { return WidgetComponent::_object(); }
-		inline const Object *	_object() const override { return WidgetComponent::_object(); }
+		TextLayout* _layout() const { return m_pLayout ? m_pLayout.rawPtr() : Base::defaultTextLayout().rawPtr(); }
+		TextStyle* _style() const { if (m_pStyle) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
+
+
+		//
+
+		SizeSPX		_textSize() const override;
+		State		_textState() const override;
+		TextStyle* _textStyle() const override;
+		const Char* _textBegin() const override;
+		int 		_textLength() const override;
+		bool		_caretVisible() const override;
+		int			_caretOffset() const override;
+		std::tuple<int, int>	_selectedText() const override;		// Begin/end of selection
+		void		_mapperRequestRender() override;
+		void		_mapperRequestRender(const RectSPX& rect) override;
+		void		_mapperRequestResize() override;
+		int			_scale() const override;
+
+		float		_skinValue(const SkinSlot* pSlot) const override;
+		float		_skinValue2(const SkinSlot* pSlot) const override;
+		State		_skinState(const SkinSlot* pSlot) const override;
+		SizeSPX		_skinSize(const SkinSlot* pSlot) const override;
+		void		_skinRequestRender(const SkinSlot* pSlot) override;
+		void		_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
 	private:
-		Skin_p			m_pSkin;
+		SkinSlot		m_skin;
+		String			m_text;
+		TextLayout_p	m_pLayout;
+		TextStyle_p		m_pStyle;
 
 		State			m_state;
 		SizeSPX			m_size;
