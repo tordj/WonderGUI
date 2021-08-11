@@ -479,8 +479,6 @@ int main(int argc, char** argv)
 		Base::setDefaultTextLayout(pMapper);
 	*/
 
-	wg_cast<BasicTextLayout_p>(Base::defaultTextLayout())->setSelectionBack(Color::White, BlendMode::Invert);
-
 	// Init skins
 
 	SDL_Surface * pSDLSurf = IMG_Load("resources/simple_button.bmp");

@@ -91,7 +91,7 @@ namespace wg
 #ifndef WG2_MODE
 		s_pData->pDefaultCaret = Caret::create();
 
-		s_pData->pDefaultTextLayout = BasicTextLayout::create();
+		s_pData->pDefaultTextLayout = BasicTextLayout::create({});
 
 
 		s_pData->pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );

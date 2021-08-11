@@ -38,41 +38,31 @@ namespace wg
 	class BasicTextLayout : public TextLayout
 	{
 	public:
+
+		//____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+			Caret_p		caret = nullptr;
+
+			Placement	placement = Placement::NorthWest;
+
+			BlendMode	selectionBackBlend	= BlendMode::Invert;
+			HiColor		selectionBackColor	= Color::White;
+			BlendMode	selectionCharBlend	= BlendMode::Invert;
+			HiColor		selectionCharColor	= Color::White;
+
+			bool		wrap = false;
+		};
+
 		//.____ Creation __________________________________________
 
-		static BasicTextLayout_p create() { return BasicTextLayout_p(new BasicTextLayout()); }
+		static BasicTextLayout_p create( const Blueprint& blueprint ) { return BasicTextLayout_p(new BasicTextLayout(blueprint)); }
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Behavior __________________________________________________
-
-		void			setPlacement( Placement placement );
-		Placement		placement() const { return m_placement; }
-
-		void			setLineWrap(bool wrap);
-		bool			lineWrap() const { return m_bLineWrap; }
-
-
-		//.____ Misc __________________________________________________
-
-		void			setCaret( Caret * pCaret );
-		Caret_p			caret() const { return m_pCaret; }
-
-		//.____ Appearance _________________________________________________
-
-		void			setSelectionBack(HiColor color, BlendMode renderMode = BlendMode::Replace );
-
-		void			setSelectionCharColor(HiColor color, BlendMode blend = BlendMode::Replace );
-
-		HiColor			selectionBackColor() { return m_selectionBackColor;  }
-		BlendMode		selectionBackRenderMode() { return m_selectionBackRenderMode; }
-
-		HiColor			selectionCharColor() { return m_selectionCharColor; }
-		BlendMode		selectionCharColorBlend() { return m_selectionCharBlend; }
-
 
 		//.____ Internal __________________________________________
 
@@ -136,7 +126,7 @@ namespace wg
 
 
 	protected:
-		BasicTextLayout();
+		BasicTextLayout( const Blueprint& blueprint );
 		virtual ~BasicTextLayout();
 
 
@@ -210,14 +200,14 @@ namespace wg
 		bool			m_bReceivingUpdates = false;
 
 		HiColor			m_selectionBackColor;
-		BlendMode		m_selectionBackRenderMode;
+		BlendMode		m_selectionBackBlend;
 
 		HiColor			m_selectionCharColor;
 		BlendMode		m_selectionCharBlend;
 
 
-		Text *			m_pFocusedText;
-		RouteId			m_tickRouteId;
+		Text *			m_pFocusedText = nullptr;
+		RouteId			m_tickRouteId = 0;
 	};
 
 

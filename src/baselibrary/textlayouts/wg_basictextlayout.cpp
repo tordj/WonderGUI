@@ -38,9 +38,17 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	BasicTextLayout::BasicTextLayout() : m_placement(Placement::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
-		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedText(nullptr), m_tickRouteId(0)
+	BasicTextLayout::BasicTextLayout(const Blueprint& blueprint)
 	{
+		m_pCaret				= blueprint.caret;
+		m_placement				= blueprint.placement;
+
+		m_selectionBackBlend	= blueprint.selectionBackBlend;
+		m_selectionBackColor	= blueprint.selectionBackColor;
+		m_selectionCharBlend	= blueprint.selectionCharBlend;
+		m_selectionCharColor	= blueprint.selectionCharColor;
+
+		m_bLineWrap				= blueprint.wrap;
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -88,59 +96,6 @@ namespace wg
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 			m_tickRouteId = 0;
 		}
-	}
-
-	//____ setPlacement() __________________________________________________________
-
-	void BasicTextLayout::setPlacement( Placement placement )
-	{
-		if( placement != m_placement )
-		{
-			m_placement = placement;
-
-			//TODO: Make all Texts dirty
-		}
-	}
-
-	//____ setLineWrap() __________________________________________________________
-
-	void BasicTextLayout::setLineWrap(bool bWrap)
-	{
-		if (bWrap != m_bLineWrap)
-		{
-			m_bLineWrap = bWrap;
-
-			//TODO: Make all Texts dirty
-		}
-	}
-
-
-	//____ setCaret() __________________________________________________________
-
-	void BasicTextLayout::setCaret( Caret * pCaret )
-	{
-		if( m_pCaret.rawPtr() != pCaret )
-		{
-			m_pCaret = pCaret;
-
-			//TODO: Force update of field sizes etc if needed.
-		}
-	}
-
-	//____ setSelectionBackColor() _________________________________________________
-
-	void BasicTextLayout::setSelectionBack(HiColor color, BlendMode renderMode )
-	{
-		m_selectionBackColor = color;
-		m_selectionBackRenderMode = renderMode;
-	}
-
-	//____ setSelectionCharColor() ____________________________________________
-
-	void BasicTextLayout::setSelectionCharColor(HiColor color, BlendMode blend)
-	{
-		m_selectionCharColor = color;
-		m_selectionCharBlend = blend;
 	}
 
 	//____ charAtPos() _________________________________________________________
@@ -417,10 +372,10 @@ namespace wg
 
 		if( selBeg != selEnd )
 		{
-			if( m_selectionBackRenderMode != BlendMode::Ignore )
+			if( m_selectionBackBlend != BlendMode::Ignore )
 			{
-				if( m_selectionBackRenderMode != BlendMode::Undefined )
-					pDevice->setBlendMode( m_selectionBackRenderMode );
+				if( m_selectionBackBlend != BlendMode::Undefined )
+					pDevice->setBlendMode( m_selectionBackBlend );
 				_renderBackSection( pText, pDevice, canvas, selBeg, selEnd, m_selectionBackColor );
 				pDevice->setBlendMode( renderMode );
 			}

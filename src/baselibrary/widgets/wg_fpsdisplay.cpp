@@ -53,10 +53,12 @@ namespace wg
 		// We set our own default text textMappers since we rely on text placement
 		// to present the information in a readable way.
 
-		labels.setLayout( BasicTextLayout::create() );
+		labels.setLayout(BasicTextLayout::create({}));
 
-		BasicTextLayout_p pValueTextLayout = BasicTextLayout::create();
-		pValueTextLayout->setPlacement( Placement::NorthEast );
+		BasicTextLayout::Blueprint bp;
+		bp.placement = Placement::NorthEast;
+
+		BasicTextLayout_p pValueTextLayout = BasicTextLayout::create( bp );
 		values.setLayout(pValueTextLayout);
 
 		_startReceiveUpdates();
