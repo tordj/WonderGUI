@@ -413,7 +413,7 @@ namespace wg
 					if( pChar->styleHandle() != hStyle )
 					{
 						spx oldFontSize = attr.size;
-						HiColor oldBgColor = attr.bgColor;
+						HiColor oldBackColor = attr.backColor;
 
 						attr = baseAttr;
 
@@ -504,9 +504,6 @@ namespace wg
 		popClipList(pDevice, popData);
 	}
 
-
-
-
 	//____ _renderBack()___________________________________________________________
 
 	void BasicTextLayout::_renderBack( Text * pText, GfxDevice * pDevice, const RectSPX& canvas )
@@ -525,13 +522,11 @@ namespace wg
 			{
 				State state = _state(pText);
 
-				HiColor newColor;
-
 				TextStyle_p p = pChar->stylePtr();
-				if( p && p->isBgColorDefined(state) )
-					newColor = p->bgColor(state);
-				else
-					newColor = _baseStyle(pText)->bgColor(state);
+				HiColor newColor = p ? p->backColor(state) : HiColor::Undefined;
+
+				if( newColor == HiColor::Undefined )
+					newColor = _baseStyle(pText)->backColor(state);
 
 				if( newColor != color )
 				{

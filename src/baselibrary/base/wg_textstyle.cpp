@@ -33,15 +33,15 @@ namespace wg
 
     //____ create() ________________________________________________________________
 
-    TextStyle_p TextStyle::create()
+    TextStyle_p TextStyle::create( const Blueprint& blueprint)
     {
-        return TextStyle_p(new TextStyle());
+        return TextStyle_p(new TextStyle(blueprint));
     }
 
 
 	//____ constructor _____________________________________________________________
 
-	TextStyle::TextStyle()
+	TextStyle::TextStyle( const Blueprint& blueprint )
 	{
 		m_handle = TextStyleManager::_reserveHandle(this);
 
@@ -49,9 +49,55 @@ namespace wg
 		{
 			m_size[i]			= 0;
 			m_color[i]			= Color::Black;
-			m_bgColor[i]		= Color::Transparent;
+			m_backColor[i]		= Color::Transparent;
 			m_decoration[i]		= TextDecoration::Undefined;
 		}
+
+		// Setting everyting for State::Normal
+
+		m_pFont = blueprint.font;
+		m_pLink = blueprint.link;
+		m_blendMode = blueprint.blendMode;
+		m_backBlendMode = blueprint.backBlendMode;
+
+		int idx = _stateToIndex(StateEnum::Normal);
+
+		m_size[idx] = blueprint.size;
+		m_color[idx] = blueprint.color;
+		m_backColor[idx] = blueprint.backColor;
+		m_decoration[idx] = blueprint.decoration;
+
+		m_sizeSetMask.setBit(idx, blueprint.size > 0);
+		m_colorSetMask.setBit(idx, blueprint.color != HiColor::Undefined);
+		m_backColorSetMask.setBit(idx, blueprint.backColor != HiColor::Undefined);
+		m_decorationSetMask.setBit(idx, blueprint.decoration != TextDecoration::Undefined);
+
+		// Setting state specific parameters
+
+		for (int i = 0; i < StateEnum_Nb; i++)
+		{
+			if (blueprint.states[i].state != StateEnum::Normal)
+			{
+				idx = _stateToIndex(StateEnum::Normal);
+
+				m_size[idx] = blueprint.states[i].data.size;
+				m_color[idx] = blueprint.states[i].data.color;
+				m_backColor[idx] = blueprint.states[i].data.backColor;
+				m_decoration[idx] = blueprint.states[i].data.decoration;
+
+				m_sizeSetMask.setBit(idx, blueprint.states[i].data.size > 0);
+				m_colorSetMask.setBit(idx, blueprint.states[i].data.color != HiColor::Undefined );
+				m_backColorSetMask.setBit(idx, blueprint.states[i].data.backColor != HiColor::Undefined);
+				m_decorationSetMask.setBit(idx, blueprint.states[i].data.decoration != TextDecoration::Undefined);
+			}
+		}
+
+		//
+
+		_refreshSize();
+		_refreshColor();
+		_refreshBgColor();
+		_refreshDecoration();
 	}
 
 
@@ -69,165 +115,7 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setFont() _______________________________________________________________
 
-	void TextStyle::setFont( Font * pFont )
-	{
-		m_pFont = pFont;
-	}
-
-	//____ setLink() _______________________________________________________________
-
-	void TextStyle::setLink( TextLink * pLink )
-	{
-		m_pLink = pLink;
-	}
-
-	//____ setRenderMode() _________________________________________________________
-
-	void TextStyle::setRenderMode(BlendMode mode)
-	{
-		m_renderMode = mode;
-	}
-
-	//____ setBgRenderMode() _________________________________________________________
-
-	void TextStyle::setBgRenderMode(BlendMode mode)
-	{
-		m_bgRenderMode = mode;
-	}
-
-	//____ setColor() ______________________________________________________________
-
-	void TextStyle::setColor( HiColor color )
-	{
-		for (int i = 0; i < StateEnum_Nb; i++)
-			m_color[i] = color;
-
-		m_colorSetMask = 1;
-        m_colorDefinedMask = 0xFFFFFFFF;
-		m_bStaticColor = true;
-	}
-
-	void TextStyle::setColor( HiColor color, State state )
-	{
-		int i = Util::_stateToIndex(state);
-
-		m_color[i] = color;
-		m_colorSetMask.setBit(i);
-
-		_refreshColor();
-	}
-
-
-	//____ setBgColor() ______________________________________________________________
-
-	void TextStyle::setBgColor( HiColor color )
-	{
-		for (int i = 0; i < StateEnum_Nb; i++)
-			m_bgColor[i] = color;
-
-		m_bgColorSetMask = 1;
-        m_bgColorDefinedMask = 0xFFFFFFFF;
-		m_bStaticBgColor = true;
-	}
-
-	void TextStyle::setBgColor( HiColor color, State state )
-	{
-		int i = Util::_stateToIndex(state);
-
-		m_bgColor[i] = color;
-		m_bgColorSetMask.setBit(i);
-
-		_refreshBgColor();
-	}
-
-	//____ setSize() _______________________________________________________________
-
-	void TextStyle::setSize( pts size )
-	{
-		for (int i = 0; i < StateEnum_Nb; i++)
-			m_size[i] = size;
-
-		m_sizeSetMask = size == 0 ? 0 : 1;
-		m_bStaticSize = true;
-	}
-
-	void TextStyle::setSize( pts size, State state )
-	{
-		int i = Util::_stateToIndex(state);
-
-		m_size[i] = size;
-		m_sizeSetMask.setBit(i, size != 0);
-
-		_refreshSize();
-	}
-
-
-	//____ setDecoration() _________________________________________________________
-
-	void TextStyle::setDecoration( TextDecoration decoration )
-	{
-		for (int i = 1; i < StateEnum_Nb; i++)
-			m_decoration[i] = decoration;
-
-		m_decorationSetMask = decoration == TextDecoration::Undefined ? 0 : 1;
-		m_bStaticDecoration = true;
-	}
-
-	void TextStyle::setDecoration( TextDecoration decoration, State state )
-	{
-		int i = Util::_stateToIndex(state);
-
-		m_decoration[i] = decoration;
-		m_decorationSetMask.setBit(i,decoration != TextDecoration::Undefined);
-
-		_refreshDecoration();
-	}
-
-	//____ clearColor() __________________________________________________________
-
-	void TextStyle::clearColor()
-	{
-		for (int i = 0; i < StateEnum_Nb; i++)
-			m_color[i] = Color::Black;
-
-		m_colorSetMask = 0;
-        m_colorDefinedMask = 0;
-		m_bStaticColor = true;
-	}
-
-	void TextStyle::clearColor( State state)
-	{
-		int i = Util::_stateToIndex(state);
-
-		m_color[i] = Color::Black;
-		m_colorSetMask.clearBit(i);
-
-		_refreshColor();
-	}
-
-	//____ clearBgColor() __________________________________________________________
-
-	void TextStyle::clearBgColor()
-	{
-		for (int i = 0; i < StateEnum_Nb; i++)
-			m_bgColor[i] = Color::Transparent;
-
-		m_bgColorSetMask = 0;
-        m_bgColorDefinedMask = 0;
-		m_bStaticBgColor = true;
-	}
-
-	void TextStyle::clearBgColor(State state)
-	{
-		int i = Util::_stateToIndex(state);
-
-		m_bgColor[i] = Color::Transparent;
-		m_bgColorSetMask.clearBit(i);
-
-		_refreshBgColor();
-	}
 
 
 	//____ exportAttr() ____________________________________________________________
@@ -238,12 +126,12 @@ namespace wg
 
 		pDest->pFont 		= m_pFont;
 		pDest->pLink 		= m_pLink;
-		pDest->renderMode	= m_renderMode;
-		pDest->bgRenderMode = m_bgRenderMode;
+		pDest->blendMode	= m_blendMode;
+		pDest->backBlendMode = m_backBlendMode;
 
 		pDest->size 		= ptsToSpx(m_size[idx],scale);
 		pDest->color		= m_color[idx];
-		pDest->bgColor		= m_bgColor[idx];
+		pDest->backColor	= m_backColor[idx];
 		pDest->decoration	= m_decoration[idx];
 
 		if( pDest->size == 0 )
@@ -252,8 +140,8 @@ namespace wg
 		if( pDest->decoration == TextDecoration::Undefined )
 			pDest->decoration = TextDecoration::None;
 
-		if (pDest->renderMode == BlendMode::Undefined)
-			pDest->renderMode = BlendMode::Blend;			// Default to Blend.
+		if (pDest->blendMode == BlendMode::Undefined)
+			pDest->blendMode = BlendMode::Blend;			// Default to Blend.
 	}
 
 	//____ addToAttr() _____________________________________________________________
@@ -266,21 +154,21 @@ namespace wg
 			pDest->pFont = m_pFont;
 		if( m_pLink )
 			pDest->pLink = m_pLink;
-		if (m_renderMode != BlendMode::Undefined)
-			pDest->renderMode = m_renderMode;
-		if (m_bgRenderMode != BlendMode::Undefined)
-			pDest->bgRenderMode = m_bgRenderMode;
+		if (m_blendMode != BlendMode::Undefined)
+			pDest->blendMode = m_blendMode;
+		if (m_backBlendMode != BlendMode::Undefined)
+			pDest->backBlendMode = m_backBlendMode;
 
 		if( m_size[idx] != 0 )
 			pDest->size	= ptsToSpx(m_size[idx],scale);
 		if( m_decoration[idx] != TextDecoration::Undefined )
 			pDest->decoration = m_decoration[idx];
 
-		if( m_colorDefinedMask.bit(idx) )
+		if( m_color[idx] != HiColor::Undefined )
 			pDest->color = m_color[idx];
 
-		if (m_bgColorDefinedMask.bit(idx))
-			pDest->bgColor = m_bgColor[idx];
+		if (m_backColor[idx] != HiColor::Undefined)
+			pDest->backColor = m_backColor[idx];
 	}
 
     //____ isStateIdentical() ________________________________________________
@@ -292,7 +180,7 @@ namespace wg
 
         return ((m_size[idx1] == m_size[idx2]) &&
                 (m_color[idx1] == m_color[idx2]) &&
-                (m_bgColor[idx1] == m_bgColor[idx2]) &&
+                (m_backColor[idx1] == m_backColor[idx2]) &&
                 (m_decoration[idx1] == m_decoration[idx2]));
     }
 
@@ -301,7 +189,7 @@ namespace wg
 	bool TextStyle::isIdentical( TextStyle * pOther )
 	{
 		if (m_pFont != pOther->m_pFont || m_pLink != pOther->m_pLink ||
-			m_renderMode != pOther->m_renderMode || m_bgRenderMode != pOther->m_bgRenderMode)
+			m_blendMode != pOther->m_blendMode || m_backBlendMode != pOther->m_backBlendMode)
 			return false;
 
 		for (int i = 0; i < StateEnum_Nb; i++)
@@ -309,7 +197,7 @@ namespace wg
 			if (m_size[i] != pOther->m_size[i] ||
 				m_decoration[i] != pOther->m_decoration[i] ||
 				m_color[i] != pOther->m_color[i] ||
-				m_bgColor[i] != pOther->m_bgColor[i])
+				m_backColor[i] != pOther->m_backColor[i])
 				return false;
 		}
 
@@ -321,7 +209,7 @@ namespace wg
 	bool TextStyle::isIdenticalForState( TextStyle * pOther, State state )
 	{
 		if (m_pFont != pOther->m_pFont || m_pLink != pOther->m_pLink ||
-			m_renderMode != pOther->m_renderMode || m_bgRenderMode != pOther->m_bgRenderMode)
+			m_blendMode != pOther->m_blendMode || m_backBlendMode != pOther->m_backBlendMode)
 			return false;
 
 		int i = Util::_stateToIndex(state);
@@ -329,45 +217,53 @@ namespace wg
 		if (m_size[i] != pOther->m_size[i] ||
 			m_decoration[i] != pOther->m_decoration[i] ||
 			m_color[i] != pOther->m_color[i] ||
-			m_bgColor[i] != pOther->m_bgColor[i])
+			m_backColor[i] != pOther->m_backColor[i])
 			return false;
 
 		return true;
 	}
 
-	//____ clone() ____________________________________________________________
+	//____ blueprint() ____________________________________________________________
 
-	TextStyle_p TextStyle::clone() const
+	TextStyle::Blueprint TextStyle::blueprint() const
 	{
-		auto p = create();
+		Blueprint bp;
 
-		p->m_pFont = m_pFont;
-		p->m_pLink = m_pLink;
-		p->m_renderMode = m_renderMode;
-		p->m_bgRenderMode = m_bgRenderMode;
+		bp.backBlendMode = m_backBlendMode;
+		bp.blendMode = m_blendMode;
+		bp.link = m_pLink;
+		bp.font = m_pFont;
+		
+		int idx = Util::_stateToIndex(StateEnum::Normal);
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		bp.size = m_size[idx];
+		bp.backColor = m_backColor[idx];
+		bp.color = m_color[idx];
+		bp.decoration = m_decoration[idx];
+
+		int ofs = 0;
+
+		Bitmask<uint32_t> stateSetMask = m_sizeSetMask | m_colorSetMask | m_backColorSetMask | m_decorationSetMask;
+
+		for (int i = 1; i < StateEnum_Nb; i++)
 		{
-			p->m_size[i] = m_size[i];
-			p->m_color[i] = m_color[i];
-			p->m_bgColor[i] = m_bgColor[i];
-			p->m_decoration[i] = m_decoration[i];
+			if (stateSetMask.bit(i))
+			{
+				bp.states[ofs].state = _indexToState(i);
+				if (m_sizeSetMask.bit(i))
+					bp.states[ofs].data.size = m_size[i];
+				if (m_colorSetMask.bit(i))
+					bp.states[ofs].data.color = m_color[i];
+				if (m_backColorSetMask.bit(i))
+					bp.states[ofs].data.backColor = m_color[i];
+				if (m_decorationSetMask.bit(i))
+					bp.states[ofs].data.decoration = m_decoration[i];
+
+				ofs++;
+			}
 		}
 
-		p->m_sizeSetMask = m_sizeSetMask;
-		p->m_colorSetMask = m_colorSetMask;
-		p->m_bgColorSetMask = m_bgColorSetMask;
-		p->m_decorationSetMask = m_decorationSetMask;
-
-		p->m_colorDefinedMask = m_colorDefinedMask;
-		p->m_bgColorDefinedMask = m_bgColorDefinedMask;
-
-		p->m_bStaticColor = m_bStaticColor;
-		p->m_bStaticBgColor = m_bStaticBgColor;
-		p->m_bStaticSize = m_bStaticSize;
-		p->m_bStaticDecoration = m_bStaticDecoration;
-
-		return p;
+		return bp;
 	}
 
 	//____ _refreshSize() _____________________________________________________
@@ -400,7 +296,6 @@ namespace wg
 
 	void TextStyle::_refreshColor()
 	{
-		Bitmask<uint32_t> defined = m_colorSetMask;
 		Bitmask<uint32_t> mask = m_colorSetMask;
 		mask.setBit(0);
 
@@ -410,11 +305,9 @@ namespace wg
 			{
 				int idx = bestStateIndexMatch(i, mask);
 				m_color[i] = m_color[idx];
-				defined.setBit(i, m_colorSetMask.bit(idx));		// Set defined if we copy from a defined color.
 			}
 		}
 
-		m_colorDefinedMask = defined;
 
 		//
 
@@ -434,8 +327,7 @@ namespace wg
 
 	void TextStyle::_refreshBgColor()
 	{
-		Bitmask<uint32_t> defined = m_bgColorSetMask;
-		Bitmask<uint32_t> mask = m_bgColorSetMask;
+		Bitmask<uint32_t> mask = m_backColorSetMask;
 		mask.setBit(0);
 
 		for (int i = 1; i < StateEnum_Nb; i++)
@@ -443,18 +335,15 @@ namespace wg
 			if (!mask.bit(i))
 			{
 				int idx = bestStateIndexMatch(i, mask);
-				m_bgColor[i] = m_bgColor[idx];
-				defined.setBit(i, m_bgColorSetMask.bit(idx));		// Set defined if we copy from a defined color.
+				m_backColor[i] = m_backColor[idx];
 			}
 		}
 
-		m_bgColorDefinedMask = defined;
-
 		//
 
-		auto x = m_bgColor[0];
+		auto x = m_backColor[0];
 		for (int i = 1; i < StateEnum_Nb; i++)
-			if (m_bgColor[i] != x)
+			if (m_backColor[i] != x)
 			{
 				m_bStaticBgColor = false;
 				return;

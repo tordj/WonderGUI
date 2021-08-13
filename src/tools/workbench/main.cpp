@@ -467,10 +467,7 @@ int main(int argc, char** argv)
 
 	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 0);
 
-	TextStyle_p pStyle = TextStyle::create();
-	pStyle->setFont(pFont);
-	pStyle->setSize(16);
-	pStyle->setColor(Color::Black);
+	TextStyle_p pStyle = TextStyle::create( { .color = Color::Black, .font = pFont, .size = 16 } );
 	Base::setDefaultStyle(pStyle);
 
 	/*
@@ -478,6 +475,21 @@ int main(int argc, char** argv)
 		pMapper->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
 		Base::setDefaultTextLayout(pMapper);
 	*/
+
+
+	TextStyle::Blueprint bp =	{	.color = Color::White, .size = 16,
+									.states = { StateEnum::Hovered, {.color = Color::Red, .size = 18 },
+												StateEnum::Pressed, {.color = Color::Red, .size = 18 }
+											  }
+								};
+
+
+
+
+	bp.states[2] = { StateEnum::Disabled, {Color::Transparent, Color::Grey, TextDecoration::Underline, 16} };
+
+	bp.states[2] = { StateEnum::Disabled, { .color = Color::Grey } };
+
 
 	// Init skins
 
@@ -2716,15 +2728,15 @@ bool kerningTest(CStandardSlot_p pSlot)
 
 	auto pDisplay1 = TextDisplay::create();
 
+	auto bp = Base::defaultStyle()->blueprint();
+	bp.size = 32;
 
-	auto pBigStyle = Base::defaultStyle()->clone();
-	pBigStyle->setSize(32);
+	auto pBigStyle = TextStyle::create(bp);
 
 	pDisplay1->display.setText("HHTATHHWAW");
 	pDisplay1->display.setStyle(pBigStyle);
 
 	pBaseLayer->slots.pushBackMovable(pDisplay1, Rect(10, 10, 300, 100));
-
 
 	*pSlot = pBaseLayer;
 	return true;
@@ -2876,6 +2888,7 @@ void commonAncestorTest()
 
 void textStyleTest()
 {
+/*
 	auto pBase = TextStyle::create();
 	auto pAdded = TextStyle::create();
 
@@ -2899,5 +2912,6 @@ void textStyleTest()
 
 	pAdded->exportAttr(StateEnum::Hovered, &attr, 64);
 	assert(attr.size == 15*64);
+*/
 
 }

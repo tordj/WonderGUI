@@ -262,10 +262,12 @@ namespace wg
 		static HiColor	max(HiColor color1, HiColor color2);
 		static HiColor	blend(HiColor baseColor, HiColor blendColor, BlendMode operation);
 
-		inline bool isWhite() const { return argb == 0x0FFF0FFF0FFF0FFF; }
-		inline bool isBlack() const { return argb == 0x0FFF000000000000; }
+		inline bool isOpaqueWhite() const { return argb == 0x1000100010001000; }
+		inline bool isOpaqueBlack() const { return argb == 0x1000000000000000; }
 		inline bool isOpaque() const { return a == 4096; }
-		inline bool isTransparent() const { return a == 0; }
+		inline bool isFullyTransparent() const { return a == 0; }
+		inline bool isUndefined() const { return a < 0; }
+
 
 
 		//.____ Operators ___________________________________________
@@ -306,6 +308,7 @@ namespace wg
 
 		//.____ Definitions ___________________________________________________
 
+		const static HiColor	Undefined;			// -1
 		const static HiColor	Transparent;		// 0x000000
 		const static HiColor 	Black;  			// 0xffffff
 		const static HiColor 	White;  			// 0xffffff

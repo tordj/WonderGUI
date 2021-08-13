@@ -78,7 +78,7 @@ namespace wg
 			if (pChar->styleHandle() != hStyle)
 			{
 				spx oldFontSize = attr.size;
-				HiColor oldBgColor = attr.bgColor;
+				HiColor oldBackColor = attr.backColor;
 
 				attr = baseAttr;
 

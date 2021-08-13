@@ -2727,7 +2727,7 @@ namespace wg
 
 			if( (diffMaskX | diffMaskY) == 0 )
 			{
-				if (m_tintGradient.topLeft.isWhite() )
+				if (m_tintGradient.topLeft.isOpaqueWhite() )
 					tintMode = TintMode::None;
 				else
 				{
@@ -3546,7 +3546,7 @@ namespace wg
 
 		if (tintMode != TintMode::None)
 		{
-			bTintFlat = !m_tintColor.isWhite();
+			bTintFlat = !m_tintColor.isOpaqueWhite();
 
 			if (tintMode == TintMode::GradientXY || m_colTrans.mode == TintMode::GradientXY)
 			{

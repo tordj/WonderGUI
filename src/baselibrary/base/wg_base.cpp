@@ -86,7 +86,11 @@ namespace wg
 		s_pData->pMemStack = new MemStack( 4096 );
 
 		s_pData->pActiveContext = Context::create();
-		s_pData->pDefaultStyle = TextStyle::create();
+
+		TextStyle::Blueprint textStyleBP;
+		textStyleBP.font = DummyFont::create();
+
+		s_pData->pDefaultStyle = TextStyle::create( textStyleBP );
 
 #ifndef WG2_MODE
 		s_pData->pDefaultCaret = Caret::create();
@@ -99,9 +103,6 @@ namespace wg
 		s_pData->pMsgRouter = MsgRouter::create();
       	s_pData->pInputHandler = InputHandler::create();
 #endif
-
-		s_pData->pDefaultStyle = TextStyle::create();
-		s_pData->pDefaultStyle->setFont( DummyFont::create() );
 
 		TextTool::setDefaultBreakRules();
 		HiColor::_initTables();
