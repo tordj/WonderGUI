@@ -132,7 +132,6 @@ namespace wg
 		BlendMode			m_blendMode = BlendMode::Undefined;
 		HiColor				m_tintColor = Color::White;
 		Gradient			m_gradient;
-		bool				m_bGradient = false;
 		bool				m_bContentPaddingSet = false;
 		bool				m_bSkinInSkin = false;
 

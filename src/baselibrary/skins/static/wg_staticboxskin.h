@@ -38,20 +38,28 @@ namespace wg
 	class StaticBoxSkin : public Skin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			BlendMode	blendMode = BlendMode::Undefined;
+			Border		contentPadding;
+			HiColor		fillColor = HiColor::Undefined;
+			Border		frame;
+			HiColor		frameColor = HiColor::Undefined;
+			int			layer = -1;
+		};
+
 		//.____ Creation __________________________________________
 
+		static StaticBoxSkin_p create(const Blueprint& blueprint);
 		static StaticBoxSkin_p create(Border frame, HiColor fillColor, HiColor frameColor);
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Appearance _________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
 
 		//.____ Internal ____________________________________________________
 
@@ -66,13 +74,13 @@ namespace wg
 								float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticBoxSkin(Border frame, HiColor fillColor, HiColor frameColor);
+		StaticBoxSkin(const Blueprint& blueprint);
 		~StaticBoxSkin() {};
 
 		void		_updateOpaqueFlag();
 
 		Border		m_frame;							// In points
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode;
 
 		HiColor		m_fillColor;
 		HiColor		m_frameColor;

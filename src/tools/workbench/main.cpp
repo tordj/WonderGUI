@@ -2597,10 +2597,12 @@ bool renderLayerTest(CStandardSlot_p pSlot)
 	auto pBoxSkin = StaticBoxSkin::create(2, Color::Green, Color::Black);
 	pBoxSkin->setLayer(2);
 	
-	auto pShadowSkin = StaticBoxSkin::create(20,Color( 255,255,255,32), Color::Transparent);
-	pShadowSkin->setContentPadding({ 0,40,40,0 });
-	pShadowSkin->setLayer(1);
-	pShadowSkin->setBlendMode(BlendMode::Max);
+	auto pShadowSkin = StaticBoxSkin::create({	.blendMode = BlendMode::Max,
+												.contentPadding = { 0,40,40,0},
+												.fillColor = Color(255,255,255,32),
+												.frame = 20,
+												.frameColor = Color::Transparent,
+												.layer = 1 } );
 
 	auto pDaSkin = DoubleSkin::create(pBoxSkin, pShadowSkin);
 	pDaSkin->setSkinInSkin(true);
@@ -2678,9 +2680,13 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 	s_pTooltip = TextDisplay::create();
 
 	Surface_p pTooltipBg = loadSurface("resources/tooltip_under_bg.png");
-	auto pSkin = StaticBlockSkin::create(pTooltipBg, Border( 10,4,3,4 ) );
-	pSkin->setRigidPartX(5, 16, YSections::Top | YSections::Center | YSections::Bottom);
-	pSkin->setContentPadding({ 10,4,4,4 });
+	auto pSkin = StaticBlockSkin::create({
+		.contentPadding	= { 10,4,4,4 },
+		.frame			= Border(10,4,3,4),
+		.rigidPartX		= {5, 16, YSections::Top | YSections::Center | YSections::Bottom},
+		.surface		= pTooltipBg,
+		});
+		
 	s_pTooltip->setSkin( pSkin );
 
 
@@ -2693,7 +2699,6 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 		s_pTooltip->display.setText(pHoveredWidget->tooltip());
 		return s_pTooltip;
 	});
-
 
 	auto pTooltipSkin = BoxSkin::create(1, Color::White, Color::Black);
 	pTooltipSkin->setContentPadding(2);

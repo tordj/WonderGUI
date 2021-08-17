@@ -36,16 +36,29 @@ namespace wg
 
 	StaticBoxSkin_p StaticBoxSkin::create(Border frame, HiColor fillColor, HiColor frameColor)
 	{
-		return StaticBoxSkin_p(new StaticBoxSkin(frame, fillColor, frameColor));
+		Blueprint blueprint;
+		blueprint.frame = frame;
+		blueprint.fillColor = fillColor;
+		blueprint.frameColor = frameColor;
+		return StaticBoxSkin_p(new StaticBoxSkin(blueprint));
+	}
+
+	StaticBoxSkin_p StaticBoxSkin::create(const Blueprint& blueprint)
+	{
+		return StaticBoxSkin_p(new StaticBoxSkin(blueprint));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	StaticBoxSkin::StaticBoxSkin(Border frame, HiColor fillColor, HiColor frameColor)
+	StaticBoxSkin::StaticBoxSkin(const Blueprint& blueprint)
 	{
-		m_frame = frame;
-		m_fillColor = fillColor;
-		m_frameColor = frameColor;
+		m_frame				= blueprint.frame;
+		m_fillColor			= blueprint.fillColor;
+		m_frameColor		= blueprint.frameColor;
+		m_blendMode			= blueprint.blendMode;
+		m_contentPadding	= blueprint.contentPadding;
+		m_layer				= blueprint.layer;
+
 		_updateOpaqueFlag();
 	}
 
@@ -54,14 +67,6 @@ namespace wg
 	const TypeInfo& StaticBoxSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ setBlendMode() _____________________________________________________
-
-	void StaticBoxSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpaqueFlag();
 	}
 
 	//____ _minSize() __________________________________________________________

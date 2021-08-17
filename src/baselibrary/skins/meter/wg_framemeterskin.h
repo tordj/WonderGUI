@@ -104,7 +104,6 @@ namespace wg
 		BlendMode		m_blendMode = BlendMode::Undefined;
 		HiColor			m_color = Color::White;
 		Gradient		m_gradient;
-		bool			m_bGradient = false;
 	};
 
 

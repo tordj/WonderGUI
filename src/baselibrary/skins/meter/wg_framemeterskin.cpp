@@ -67,7 +67,6 @@ namespace wg
 	void FrameMeterSkin::setGradient(const Gradient& gradient)
 	{
 		m_gradient = gradient;
-		m_bGradient = true;
 		_updateOpacityFlag();
 	}
 
@@ -117,7 +116,7 @@ namespace wg
 		auto pFrame = _valueToFrame(value);
 		if (pFrame)
 		{
-			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
+			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
 			pDevice->setBlitSource(frames.surface());
 
@@ -176,7 +175,7 @@ namespace wg
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{
-			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+			if ((m_gradient.isValid && !m_gradient.isOpaque()) || m_color.a != 4096)
 				m_bOpaque = false;
 			else
 				m_bOpaque = frames._surface() ? frames._surface()->isOpaque() : false;

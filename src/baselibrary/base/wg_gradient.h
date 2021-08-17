@@ -33,13 +33,19 @@ namespace wg
 	{
 	public:
 
-		Gradient() {}
+		Gradient() :
+			topLeft(HiColor::Undefined),
+			topRight(HiColor::Undefined),
+			bottomRight(HiColor::Undefined),
+			bottomLeft(HiColor::Undefined),
+			isValid(false) {}
 
 		Gradient(HiColor topLeft, HiColor topRight, HiColor bottomRight, HiColor bottomLeft) :
 			topLeft(topLeft),
 			topRight(topRight),
 			bottomRight(bottomRight),
-			bottomLeft(bottomLeft) {}
+			bottomLeft(bottomLeft),
+			isValid(true) {}
 
 		Gradient(Placement start, HiColor startColor, HiColor endColor);
 
@@ -51,6 +57,8 @@ namespace wg
 			return	((topLeft.argb ^ other.topLeft.argb) | (topRight.argb ^ other.topRight.argb) |
 					 (bottomRight.argb ^ other.bottomRight.argb) | (bottomLeft.argb ^ other.bottomLeft.argb));
 		}
+
+		bool		isValid;
 
 		HiColor		topLeft;
 		HiColor		topRight;

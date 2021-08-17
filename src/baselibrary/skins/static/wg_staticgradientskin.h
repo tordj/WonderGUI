@@ -38,19 +38,26 @@ namespace wg
 	class StaticGradientSkin : public Skin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			BlendMode	blendMode = BlendMode::Undefined;
+			Border		contentPadding;
+			Gradient	gradient;
+			int			layer = -1;
+		};
+
 		//.____ Creation __________________________________________
 
-		static StaticGradientSkin_p create( const Gradient& gradient );
+		static StaticGradientSkin_p create(const Gradient& gradient);
+		static StaticGradientSkin_p create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Appearance _________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
 
 		//.____ Internal ____________________________________________________
 
@@ -61,11 +68,11 @@ namespace wg
 							float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticGradientSkin( const Gradient& gradient );
+		StaticGradientSkin( const Blueprint& blueprint );
 		~StaticGradientSkin() {};
 
 		Gradient	m_gradient;
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode;
 
 	};
 

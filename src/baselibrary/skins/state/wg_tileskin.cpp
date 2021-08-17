@@ -178,10 +178,8 @@ namespace wg
 	void TileSkin::setGradient(const Gradient& gradient)
 	{
 		m_gradient = gradient;
-		m_bGradient = true;
 		_updateOpaqueFlags();
 	}
-
 
 	//____ setBlendMode() _____________________________________________________
 
@@ -202,7 +200,7 @@ namespace wg
 		if( !pSurf )
 			return;
 
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient, m_bGradient);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
 
 		pDevice->setBlitSource(pSurf);
 		pDevice->scaleTile(canvas,scale/64.f);
@@ -273,7 +271,7 @@ namespace wg
 
 		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_bGradient && !m_gradient.isOpaque())
+		else if (m_gradient.isValid && !m_gradient.isOpaque())
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Blend)
 		{

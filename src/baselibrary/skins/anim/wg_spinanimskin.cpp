@@ -105,7 +105,6 @@ namespace wg
 	void SpinAnimSkin::setGradient(const Gradient& gradient)
 	{
 		m_gradient = gradient;
-		m_bGradient = true;
 		_updateOpacityFlag();
 	}
 
@@ -159,7 +158,7 @@ namespace wg
 		else if (degrees >= 360.f)
 			degrees = (float)fmod(degrees, 360.f);
 
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->rotScaleBlit(_canvas, degrees, zoom, m_srcCenter, m_dstCenter);
@@ -215,7 +214,7 @@ namespace wg
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{
-			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+			if ((m_gradient.isValid && !m_gradient.isOpaque()) || m_color.a != 4096)
 				m_bOpaque = false;
 			else
 				m_bOpaque = m_pSurface->isOpaque();

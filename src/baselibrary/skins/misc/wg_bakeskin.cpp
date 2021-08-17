@@ -105,7 +105,6 @@ namespace wg
 	void BakeSkin::setGradient(const Gradient& gradient)
 	{
 		m_gradient = gradient;
-		m_bGradient = true;
 		_onModified();
 	}
 
@@ -320,7 +319,7 @@ namespace wg
 
 		// Blit baked graphics to canvas.
 
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_tintColor, canvas, m_gradient, m_bGradient);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_tintColor, canvas, m_gradient);
 
 		pDevice->setBlitSource(m_pBakeSurface);
 		pDevice->blit(canvas.pos(), { 0,0,canvas.size()});
@@ -497,7 +496,7 @@ namespace wg
 			bOpaque = true;
 			opaqueStates = 0xFFFFFFFF;
 		}
-		else if (m_blendMode != BlendMode::Blend || m_tintColor.a < 4096 || (m_bGradient && !m_gradient.isOpaque()) )
+		else if (m_blendMode != BlendMode::Blend || m_tintColor.a < 4096 || (m_gradient.isValid && !m_gradient.isOpaque()) )
 		{
 			bOpaque = false;
 			opaqueStates = 0;

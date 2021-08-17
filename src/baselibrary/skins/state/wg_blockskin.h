@@ -131,7 +131,6 @@ namespace wg
 		NinePatch	m_ninePatch;		// Block offset is undefined.
 		Surface_p	m_pSurface;
 		Gradient	m_gradient;
-		bool		m_bGradient = false;
 
 		BlendMode	m_blendMode = BlendMode::Undefined;
 

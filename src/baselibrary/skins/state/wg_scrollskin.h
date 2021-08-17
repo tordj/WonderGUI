@@ -114,7 +114,6 @@ namespace wg
 		StateBits	m_scrollState = StateBits::Selected;
 
 		Gradient	m_gradient;
-		bool		m_bGradient = false;
 
 		BlendMode	m_blendMode = BlendMode::Undefined;
 

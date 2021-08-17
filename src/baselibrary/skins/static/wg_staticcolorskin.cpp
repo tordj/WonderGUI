@@ -37,15 +37,38 @@ namespace wg
 
 	StaticColorSkin_p StaticColorSkin::create( HiColor col )
 	{
-		return StaticColorSkin_p(new StaticColorSkin(col));
+		if (!col.isValid())
+			return nullptr;
+
+		Blueprint blueprint;
+		blueprint.color = col;
+		return StaticColorSkin_p(new StaticColorSkin(blueprint));
+	}
+
+	StaticColorSkin_p StaticColorSkin::create(const Blueprint& blueprint)
+	{
+		if (!blueprint.color.isValid())
+			return nullptr;
+
+		return StaticColorSkin_p(new StaticColorSkin(blueprint));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	StaticColorSkin::StaticColorSkin( HiColor col )
+	StaticColorSkin::StaticColorSkin( const Blueprint& blueprint )
 	{
-		m_color = col;
+		m_color = blueprint.color;
 		m_bOpaque = (m_color.a == 4096);
+		m_contentPadding = blueprint.contentPadding;
+		m_layer = blueprint.layer;
+
+		m_blendMode = blueprint.blendMode;
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode == BlendMode::Blend)
+			m_bOpaque = (m_color.a == 4096);
+		else
+			m_bOpaque = false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -53,19 +76,6 @@ namespace wg
 	const TypeInfo& StaticColorSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ setBlendMode() _____________________________________________________
-
-	void StaticColorSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		if (mode == BlendMode::Replace)
-			m_bOpaque = true;
-		else if (mode == BlendMode::Blend)
-			m_bOpaque = (m_color.a == 4096);
-		else
-			m_bOpaque = false;
 	}
 
 	//____ _render() ______________________________________________________________

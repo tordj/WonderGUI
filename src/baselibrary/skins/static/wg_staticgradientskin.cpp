@@ -35,17 +35,41 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	StaticGradientSkin_p StaticGradientSkin::create( const Gradient& gradient )
+	StaticGradientSkin_p StaticGradientSkin::create(const Gradient& gradient)
 	{
-		return StaticGradientSkin_p(new StaticGradientSkin(gradient));
+		if (!gradient.isValid)
+			return nullptr;
+
+		Blueprint blueprint;
+		blueprint.gradient = gradient;
+		return StaticGradientSkin_p(new StaticGradientSkin(blueprint));
+
+	}
+
+	StaticGradientSkin_p StaticGradientSkin::create( const Blueprint& blueprint )
+	{
+		if (!blueprint.gradient.isValid)
+			return nullptr;
+
+		return StaticGradientSkin_p(new StaticGradientSkin(blueprint));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	StaticGradientSkin::StaticGradientSkin( const Gradient& gradient )
+	StaticGradientSkin::StaticGradientSkin( const Blueprint& blueprint )
 	{
-		m_gradient = gradient;
-		m_bOpaque = m_gradient.isOpaque();
+		m_gradient			= blueprint.gradient;
+		m_bOpaque			= m_gradient.isOpaque();
+		m_blendMode			= blueprint.blendMode;
+		m_contentPadding	= blueprint.contentPadding;
+		m_layer				= blueprint.layer;
+
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode == BlendMode::Blend)
+			m_bOpaque = m_gradient.isOpaque();
+		else
+			m_bOpaque = false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -55,23 +79,11 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setBlendMode() _____________________________________________________
-
-	void StaticGradientSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		if (mode == BlendMode::Replace)
-			m_bOpaque = true;
-		else if (mode == BlendMode::Blend)
-			m_bOpaque = m_gradient.isOpaque();
-		else
-			m_bOpaque = false;
-	}
 	//____ _render() ______________________________________________________________
 
 	void StaticGradientSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, Color::White, canvas, m_gradient, true);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, Color::White, canvas, m_gradient);
 
 		pDevice->fill(canvas, Color::White);
 	}

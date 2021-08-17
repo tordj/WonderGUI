@@ -38,25 +38,30 @@ namespace wg
 	class StaticTileSkin : public Skin
 	{
 	public:
+	
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = Color::White;
+			Border		contentPadding;
+			Gradient	gradient;
+			int			layer = -1;
+			Surface_p	surface;
+		};
+
+		
 		//.____ Creation __________________________________________
 
-		static StaticTileSkin_p create(Surface* pSurface);
+
+		static StaticTileSkin_p create( Surface * pSurface );
+		static StaticTileSkin_p create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Appearance _________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void		setColor(HiColor tintColor);
-		HiColor		color() const { return m_color; }
-
-		void		setGradient(const Gradient& gradient);
-		Gradient	gradient() const { return m_gradient; }
 
 		//.____ Internal ____________________________________________________
 
@@ -70,16 +75,16 @@ namespace wg
 							float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticTileSkin(Surface* pSurface);
+		StaticTileSkin(const Blueprint& blueprint);
 		~StaticTileSkin() {};
 
 		void		_updateOpacityFlag();
 
 		Surface_p		m_pSurface;
-		BlendMode		m_blendMode = BlendMode::Undefined;
-		HiColor			m_color = Color::White;
+		BlendMode		m_blendMode;
+		HiColor			m_color;
 		Gradient		m_gradient;
-		bool			m_bGradient = false;
+		bool			m_bGradient;
 	};
 
 

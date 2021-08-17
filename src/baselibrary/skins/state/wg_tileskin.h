@@ -111,7 +111,6 @@ namespace wg
 		HiColor		m_stateColors[StateEnum_Nb];
 		bool		m_bStateOpaque[StateEnum_Nb];
 		Gradient	m_gradient;
-		bool		m_bGradient = false;
 	};
 
 

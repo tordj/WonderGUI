@@ -267,6 +267,7 @@ namespace wg
 		inline bool isOpaque() const { return a == 4096; }
 		inline bool isFullyTransparent() const { return a == 0; }
 		inline bool isUndefined() const { return a < 0; }
+		inline bool isValid() const { return (argb & 0xE000E000E000E000) == 0 && a <= 4096 && r <= 4096 && g <= 4096 && b <= 4096; }
 
 
 

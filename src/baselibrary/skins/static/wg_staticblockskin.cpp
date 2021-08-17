@@ -38,23 +38,55 @@ namespace wg
 
 	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const Border& frame)
 	{
-		return StaticBlockSkin_p(new StaticBlockSkin(pSurface,pSurface->pointSize(),frame));
+		Blueprint blueprint;
+		blueprint.surface = pSurface;
+		blueprint.frame = frame;
+
+		return StaticBlockSkin_p(new StaticBlockSkin(blueprint));
 	}
 
 	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const Rect& block, const Border& frame)
 	{
-		return StaticBlockSkin_p(new StaticBlockSkin(pSurface, block, frame));
+		Blueprint blueprint;
+		blueprint.surface = pSurface;
+		blueprint.block = block;
+		blueprint.frame = frame;
+
+		return StaticBlockSkin_p(new StaticBlockSkin(blueprint));
 	}
+
+	StaticBlockSkin_p StaticBlockSkin::create(const Blueprint& blueprint)
+	{
+		return StaticBlockSkin_p(new StaticBlockSkin(blueprint));
+	}
+
 
 	//____ constructor ____________________________________________________________
 
-	StaticBlockSkin::StaticBlockSkin(Surface* pSurface, const Rect& block, const Border& frame)
+	StaticBlockSkin::StaticBlockSkin( const Blueprint& blueprint )
 	{
-		m_pSurface = pSurface;
-		m_ninePatch.block = block;
-		m_ninePatch.frame = frame;
-		m_gfxFrame = frame;
-		m_bOpaque = m_pSurface->isOpaque();
+		m_pSurface = blueprint.surface;
+
+		if (blueprint.block.isEmpty())
+			m_ninePatch.block = m_pSurface->pointSize();
+		else
+			m_ninePatch.block = blueprint.block;
+
+		m_ninePatch.frame	= blueprint.frame;
+		m_gfxFrame			= blueprint.frame;
+
+		m_bOpaque			= m_pSurface->isOpaque();
+
+		m_blendMode			= blueprint.blendMode;
+		m_color				= blueprint.color;
+		m_contentPadding	= blueprint.contentPadding;
+		m_gradient			= blueprint.gradient;
+		m_layer				= blueprint.layer;
+
+		_setRigidPartX(blueprint.rigidPartX.ofs, blueprint.rigidPartX.length, blueprint.rigidPartX.sections);
+		_setRigidPartY(blueprint.rigidPartY.ofs, blueprint.rigidPartY.length, blueprint.rigidPartY.sections);
+
+		_updateOpacityFlag();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -64,34 +96,9 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setBlendMode() _____________________________________________________
+	//____ _setRigidPartX() _____________________________________________
 
-	void StaticBlockSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpacityFlag();
-	}
-
-	//____ setColor() __________________________________________________________
-
-	void StaticBlockSkin::setColor(HiColor color)
-	{
-		m_color = color;
-		_updateOpacityFlag();
-	}
-
-	//____ setGradient() ______________________________________________________
-
-	void StaticBlockSkin::setGradient(const Gradient& gradient)
-	{
-		m_gradient = gradient;
-		m_bGradient = true;
-		_updateOpacityFlag();
-	}
-
-	//____ setRigidPartX() _____________________________________________
-
-	bool StaticBlockSkin::setRigidPartX(pts _ofs, pts _length, YSections sections)
+	bool StaticBlockSkin::_setRigidPartX(pts _ofs, pts _length, YSections sections)
 	{
 		spx ofs = align(ptsToSpx(_ofs, m_pSurface->scale()));
 		spx length = align(ptsToSpx(_length, m_pSurface->scale()));
@@ -127,9 +134,9 @@ namespace wg
 		return true;
 	}
 
-	//____ setRigidPartY() _____________________________________________
+	//____ _setRigidPartY() _____________________________________________
 
-	bool StaticBlockSkin::setRigidPartY(pts _ofs, pts _length, XSections sections)
+	bool StaticBlockSkin::_setRigidPartY(pts _ofs, pts _length, XSections sections)
 	{
 		spx ofs = align(ptsToSpx(_ofs, m_pSurface->scale()));
 		spx length = align(ptsToSpx(_length, m_pSurface->scale()));
@@ -180,7 +187,7 @@ namespace wg
 		if (!m_pSurface)
 			return;
 
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->blitNinePatch(canvas, align(ptsToSpx(m_gfxFrame,scale)), m_ninePatch, scale);
@@ -201,7 +208,7 @@ namespace wg
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{
-			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+			if ((m_gradient.isValid && !m_gradient.isOpaque()) || m_color.a != 4096)
 				m_bOpaque = false;
 			else
 				m_bOpaque = m_pSurface->isOpaque();

@@ -292,7 +292,6 @@ namespace wg
 	void BlockSkin::setGradient(const Gradient& gradient)
 	{
 		m_gradient = gradient;
-		m_bGradient = true;
 		_updateOpaqueFlags();
 	}
 
@@ -406,7 +405,7 @@ namespace wg
 			return;
 
 		int idx = _stateToIndex(state);
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient, m_bGradient);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
 
 		pDevice->setBlitSource(m_pSurface);
 
@@ -499,7 +498,7 @@ namespace wg
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_bGradient && !m_gradient.isOpaque())
+		else if (m_gradient.isValid && !m_gradient.isOpaque())
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Blend )
 		{
