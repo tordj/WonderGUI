@@ -41,34 +41,34 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			float		angleBegin = 0.f;
+			float		angleEnd = 360.f;
+			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = HiColor::Undefined;
+			int			cycleDuration = 1000;
+			Border		contentPadding;
+			CoordF		destCenter = { 0.5f, 0.5f };
+			Border		destPadding;
+			Gradient	gradient;
+			int			layer = -1;
+			Size		preferredSize;
+			CoordF		sourceCenter = { 0.5f, 0.5f };
+			Surface_p	surface;
+			float		zoom = 1.f;
+		};
+
 		//.____ Creation __________________________________________
 
-		static SpinAnimSkin_p create(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter = CoordF(0.5f,0.5f), 
-										CoordF dstCenter = CoordF(0.5f,0.5f), float fromDegrees = 0.f, float toDegrees = 360.f, 
-										float zoom = 1.f, const Border& gfxPadding = Border(), const Border& contentPadding = Border() );
+		static SpinAnimSkin_p create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Control __________________________________________________
-
-		void	setCycleDuration(int millisec);
-		int		cycleDuration() const { return m_cycleDuration; }								/// Returns duration of one cycle of animation.
-
-
-
-		//.____ Appearance _________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void		setColor(HiColor tintColor);
-		HiColor		color() const { return m_color; }
-
-		void		setGradient(const Gradient& gradient);
-		Gradient	gradient() const { return m_gradient; }
 
 		//.____ Internal ________________________________________________________
 
@@ -88,9 +88,7 @@ namespace wg
 		int		_animationLength(State state) const override;
 
 	private:
-		SpinAnimSkin(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter = CoordF(0.5f, 0.5f),
-						CoordF dstCenter = CoordF(0.5f, 0.5f), float fromDegrees = 0.f, float toDegrees = 360.f,
-						float zoom = 1.f, const Border& gfxPadding = Border(), const Border& contentPadding = Border());
+		SpinAnimSkin( const Blueprint& blueprint );
 		~SpinAnimSkin();
 
 		void		_updateOpacityFlag();

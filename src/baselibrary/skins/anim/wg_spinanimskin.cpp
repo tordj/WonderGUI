@@ -39,34 +39,37 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	SpinAnimSkin_p SpinAnimSkin::create(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter,	CoordF dstCenter, 
-											float fromDegrees, float toDegrees, float zoom, const Border& gfxPadding, 
-											const Border& contentPadding)
+	SpinAnimSkin_p SpinAnimSkin::create( const Blueprint& blueprint )	
 	{
-		return SpinAnimSkin_p(new SpinAnimSkin(pSurface, preferredSize, cycleDuration, srcCenter, dstCenter, fromDegrees, toDegrees, zoom, gfxPadding, contentPadding));
+		return SpinAnimSkin_p(new SpinAnimSkin(blueprint));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	SpinAnimSkin::SpinAnimSkin(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter, CoordF dstCenter, float fromDegrees, 
-									float toDegrees, float zoom, const Border& gfxPadding, const Border& contentPadding) : 
-		m_pSurface(pSurface),
-		m_preferredSize(preferredSize),
-		m_srcCenter(srcCenter),
-		m_dstCenter(dstCenter),
-		m_fromDegrees(fromDegrees),
-		m_toDegrees(toDegrees),
-		m_zoom(zoom),
-		m_gfxPadding(gfxPadding),
-		m_cycleDuration(cycleDuration)
+	SpinAnimSkin::SpinAnimSkin(	const Blueprint& blueprint) : 
+		m_pSurface(blueprint.surface),
+		m_preferredSize(blueprint.preferredSize),
+		m_srcCenter(blueprint.sourceCenter),
+		m_dstCenter(blueprint.destCenter),
+		m_fromDegrees(blueprint.angleBegin),
+		m_toDegrees(blueprint.angleEnd),
+		m_zoom(blueprint.zoom),
+		m_gfxPadding(blueprint.destPadding),
+		m_cycleDuration(blueprint.cycleDuration),
+		m_color(blueprint.color),
+		m_gradient(blueprint.gradient),
+		m_blendMode(blueprint.blendMode)
 	{
 		//TODO: Also take frame opacity into account.
 
-		m_bOpaque = pSurface->isOpaque();
-		m_contentPadding = contentPadding;
+		m_layer = blueprint.layer;
+		m_bOpaque = m_pSurface->isOpaque();
+		m_contentPadding = blueprint.contentPadding;
 
 		for (int i = 0; i < StateBits_Nb; i++)
-			m_animationCycles[i] = cycleDuration;
+			m_animationCycles[i] = blueprint.cycleDuration;
+
+		_updateOpacityFlag();
 	}
 
 	//____ destructor _________________________________________________________
@@ -80,41 +83,6 @@ namespace wg
 	const TypeInfo& SpinAnimSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ setCycleDuration() _________________________________________________
-
-	void SpinAnimSkin::setCycleDuration(int millisec)
-	{
-		m_cycleDuration = millisec;
-
-		for (int i = 0; i < StateBits_Nb; i++)
-			m_animationCycles[i] = millisec;
-	}
-
-	//____ setColor() _____________________________________________________
-
-	void SpinAnimSkin::setColor(HiColor color)
-	{
-		m_color = color;
-		_updateOpacityFlag();
-	}
-
-	//____ setGradient() ______________________________________________________
-
-	void SpinAnimSkin::setGradient(const Gradient& gradient)
-	{
-		m_gradient = gradient;
-		_updateOpacityFlag();
-	}
-
-
-	//____ setBlendMode() _____________________________________________________
-
-	void SpinAnimSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpacityFlag();
 	}
 
 	//____ _render() ______________________________________________________________

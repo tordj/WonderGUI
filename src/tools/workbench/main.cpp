@@ -2559,10 +2559,12 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 	Surface_p pSplashSurf = loadSurface("resources/splash.png");
 
-	auto pAnimSkin = SpinAnimSkin::create(pSplashSurf, { 256,256 }, 10000 );
+
+
+	auto pAnimSkin = SpinAnimSkin::create({ .cycleDuration = 10000, .preferredSize = { 256,256 }, .surface = pSplashSurf });
 	pAnimSkin->setContentPadding(80);
 
-	auto pAnimSkin2 = SpinAnimSkin::create(pSplashSurf, { 256,256 }, 5000 );
+	auto pAnimSkin2 = SpinAnimSkin::create({ .cycleDuration = 5000, .preferredSize = { 256,256 }, .surface = pSplashSurf });
 	pAnimSkin2->setContentPadding(10);
 
 
