@@ -96,7 +96,7 @@ namespace wg
 		void    plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
 		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness = 1.f) override;
-		void	drawLine(CoordSPX begin, Direction dir, int length, HiColor col, float thickness = 1.f) override;
+		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, float thickness = 1.f) override;
 
 		bool	setBlitSource(Surface * pSource) override;
 		void	rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;

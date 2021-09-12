@@ -153,7 +153,7 @@ namespace wg
 		virtual void    plotPixels( int nCoords, const CoordSPX * pCoords, const HiColor * pColors) = 0;
 
 	 	virtual void	drawLine( CoordSPX begin, CoordSPX end, HiColor color, float thickness = 1.f ) = 0;
-		virtual void	drawLine( CoordSPX begin, Direction dir, int length, HiColor col, float thickness = 1.f);
+		virtual void	drawLine( CoordSPX begin, Direction dir, spx length, HiColor col, float thickness = 1.f);
 
 		// Blit methods
 

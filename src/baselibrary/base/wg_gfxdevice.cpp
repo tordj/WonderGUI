@@ -647,7 +647,7 @@ namespace wg
 
 	//____ drawLine() __________________________________________________
 
-	void GfxDevice::drawLine(CoordSPX begin, Direction dir, int length, HiColor color, float thickness)
+	void GfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, float thickness)
 	{
 		CoordSPX end;
 
@@ -1602,7 +1602,7 @@ namespace wg
 
 	//____ drawPieChart() _____________________________________________________
 
-	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
+	void GfxDevice::drawPieChart(const RectSPX& _canvas, float start, int nSlices, const float * _pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
 	{
 		static const int c_maxSlices = c_maxSegments - 2;
 

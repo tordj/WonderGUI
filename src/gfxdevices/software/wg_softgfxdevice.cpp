@@ -3282,7 +3282,7 @@ namespace wg
 	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
 	// where the outer pixels are faded.
 
-	void SoftGfxDevice::drawLine(CoordSPX _begin, Direction dir, int _length, HiColor _col, float thickness)
+	void SoftGfxDevice::drawLine(CoordSPX _begin, Direction dir, spx _length, HiColor _col, float thickness)
 	{
 		//TODO: Proper 26:6 support
 		_begin = roundToPixels(_begin);

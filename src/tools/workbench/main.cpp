@@ -34,7 +34,7 @@
 
 #include <wg_freetypefont.h>
 
-//#define USE_OPEN_GL
+#define USE_OPEN_GL
 
 
 using namespace wg;
@@ -425,7 +425,7 @@ int main(int argc, char** argv)
 	SurfaceFactory_p pSurfaceFactory	= Base::activeContext()->surfaceFactory();
 
 
-	RootPanel_p pRoot = RootPanel::create(CanvasRef::Default, pGfxDevice);
+	RootPanel_p pRoot = RootPanel::create(CanvasRef::Default, 64, pGfxDevice);
 
 	auto pCanvasLayers = CanvasLayers::create({ PixelFormat::A_8, PixelFormat::BGRA_8, PixelFormat::BGRA_8 });
 	pRoot->setCanvasLayers(pCanvasLayers);
