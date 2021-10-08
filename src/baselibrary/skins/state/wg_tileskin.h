@@ -43,36 +43,42 @@ namespace wg
 
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct StateData
+		{
+			HiColor			color = HiColor::Undefined;
+			Coord			contentShift;
+			Surface_p		surface;
+		};
+
+		struct StateBP
+		{
+			State			state = StateEnum::Normal;
+			StateData		data;
+		};
+
+		struct Blueprint
+		{
+			BlendMode		blendMode = BlendMode::Undefined;
+			HiColor			color = HiColor::Undefined;
+			Border			contentPadding;
+			Gradient		gradient;
+			int				layer = -1;
+
+			StateBP			states[StateEnum_Nb];
+			Surface_p		surface;
+		};
+
 		//.____ Creation __________________________________________
 
-		static TileSkin_p	create();
-		static TileSkin_p	create(Surface * pSurface );
-		static TileSkin_p	create(std::initializer_list<std::tuple<State,Surface_p>> stateSurfaces);
+		static TileSkin_p	create(Surface * pSurface, HiColor color = HiColor::Undefined, int layer = -1 );
+		static TileSkin_p	create(const Blueprint& blueprint);
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-
-		//.____ Appearance _________________________________________________
-
-		void	setSurface(Surface * pSurface);
-		void	setSurface(State state, Surface * pSurface);
-		void	setSurfaces(std::initializer_list<std::tuple<State, Surface_p>> stateSurfaces);
-
-		Surface_p surface(State state = StateEnum::Normal) const;
-
-		void	setColor(HiColor tint);
-		void	setColor(State state, HiColor tint);
-		void	setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints);
-		HiColor	color(State state) const;
-
-		void	setGradient(const Gradient& gradient);
-		Gradient gradient() const { return m_gradient; }
-
-		void			setBlendMode(BlendMode mode);
-		BlendMode		blendMode() const { return m_blendMode; }
 
 		//.____ Internal _________________________________________________
 
@@ -95,7 +101,8 @@ namespace wg
 	private:
 
 		TileSkin();
-		TileSkin(Surface * pSurface);
+		TileSkin(Surface * pSurface, HiColor color, int layer);
+		TileSkin(const Blueprint& blueprint);
 		~TileSkin() {};
 
 		void		_updateOpaqueFlags();

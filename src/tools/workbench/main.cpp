@@ -2486,7 +2486,7 @@ bool tileSkinTest(CStandardSlot_p pSlot)
 	auto pStaticSkin = TileSkin::create(pNormalSurf);
 	pStaticSkin->setContentPadding({ 10,10,10,10 });
 
-	auto pDynamicSkin = TileSkin::create({ {StateEnum::Normal, pNormalSurf}, {StateEnum::Hovered, pHoveredSurf} } );
+	auto pDynamicSkin = TileSkin::create( { .states = { {StateEnum::Hovered, {.surface = pHoveredSurf} } }, .surface = pNormalSurf  });
 	pDynamicSkin->setContentPadding({ 10,10,10,10 });
 
 	auto pFiller1 = Filler::create();
@@ -2519,7 +2519,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 	Surface_p pHoveredSurf = loadSurface("resources/tile_blocks_marked.png", PixelFormat::BGRA_8);
 	pHoveredSurf->setTiling(true);
 
-	auto pDynamicSkin = TileSkin::create({ {StateEnum::Normal, pNormalSurf}, {StateEnum::Hovered, pHoveredSurf} });
+	auto pDynamicSkin = TileSkin::create({ .states = { StateEnum::Hovered, {.surface = pHoveredSurf} }, .surface = pNormalSurf });
 	pDynamicSkin->setContentPadding({ 10,10,10,10 });
 
 

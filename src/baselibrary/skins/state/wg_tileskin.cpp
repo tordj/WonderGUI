@@ -35,55 +35,77 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	TileSkin_p TileSkin::create()
-	{
-		return TileSkin_p(new TileSkin());
-	}
 
-
-	TileSkin_p TileSkin::create(Surface * pSurface)
+	TileSkin_p TileSkin::create(Surface * pSurface, HiColor color, int layer )
 	{
 		if (pSurface == nullptr || !pSurface->isTiling() )
 			return nullptr;
 
-		return TileSkin_p( new TileSkin(pSurface) );
+		return TileSkin_p( new TileSkin(pSurface, color, layer) );
 	}
 
-	TileSkin_p TileSkin::create(std::initializer_list<std::tuple<State, Surface_p>> stateSurfaces)
+	TileSkin_p TileSkin::create(const Blueprint& blueprint)
 	{
-		if (stateSurfaces.size() < 1 )
+		if (blueprint.surface == nullptr || !blueprint.surface->isTiling())
 			return nullptr;
 
-		// Create the skin
 
-		TileSkin * p = new TileSkin();
-
-		p->setSurfaces(stateSurfaces);
-		return TileSkin_p(p);
+		return TileSkin_p(new TileSkin(blueprint));
 	}
 
 
 	//____ constructor ____________________________________________________________
 
-	TileSkin::TileSkin()
-	{
-		m_bOpaque = false;
-
-		for (int i = 0; i < StateEnum_Nb; i++)
-			m_stateColors[i] = Color::White;
-	}
-
-	TileSkin::TileSkin(Surface * pSurface)
+	TileSkin::TileSkin(Surface * pSurface, HiColor color, int layer)
 	{
 		m_bOpaque			= pSurface->isOpaque();
 		
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			m_stateSurfaces[i] = pSurface;
-			m_stateColors[i] = Color::White;
+			m_stateColors[i] = color;
 		}
+
+		m_layer = layer;
 	}
 
+	TileSkin::TileSkin(const Blueprint& blueprint)
+	{
+		int ofs = _stateToIndex(StateEnum::Normal);
+
+
+		m_layer = blueprint.layer;
+		m_blendMode = blueprint.blendMode;
+		m_gradient = blueprint.gradient;
+		m_contentPadding = blueprint.contentPadding;
+
+
+		m_stateSurfaces[ofs] = blueprint.surface;
+		m_stateColors[ofs] = blueprint.color;
+
+
+		for (int i = 0; i < StateEnum_Nb; i++)
+		{
+			if (blueprint.states[i].state != StateEnum::Normal)
+			{
+				ofs = _stateToIndex(blueprint.states[i].state);
+
+				m_stateSurfaces[ofs] = blueprint.states[i].data.surface;
+				m_stateColors[ofs] = blueprint.states[i].data.color;
+				m_contentShift[ofs] = blueprint.states[i].data.contentShift;
+
+				if (m_stateSurfaces[ofs])
+					m_stateSurfaceMask.setBit(ofs);
+
+				if( m_stateColors[ofs] != HiColor::Undefined )
+					m_stateColorMask.setBit(ofs);
+			}
+		}
+
+		_updateOpaqueFlags();
+		_updateUnsetStateSurfaces();
+		_updateUnsetStateColors();
+	}
 
 
 	//____ typeInfo() _________________________________________________________
@@ -93,101 +115,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setBlock() _____________________________________________________________
-
-	void TileSkin::setSurface(Surface * pSurface)
-	{
-		m_stateSurfaces[0] = pSurface;
-		m_stateSurfaceMask = 1;
-
-		_updateUnsetStateSurfaces();
-	}
-
-	void TileSkin::setSurface(State state, Surface * pSurface)
-	{
-		int i = _stateToIndex(state);
-
-		m_stateSurfaces[i] = pSurface;
-		m_stateSurfaceMask.setBit(i);
-		_updateUnsetStateSurfaces();
-	}
-
-	//____ setSurfaces() ________________________________________________________
-
-	void TileSkin::setSurfaces(std::initializer_list<std::tuple<State, Surface_p>> stateSurfaces)
-	{
-		for (auto& state : stateSurfaces)
-		{
-			int index = _stateToIndex(std::get<0>(state));
-			m_stateSurfaceMask.setBit(index);
-			m_stateSurfaces[index] = std::get<1>(state);
-		}
-		_updateUnsetStateSurfaces();
-	}
-
-	//____ surface() ____________________________________________________________
-
-	Surface_p TileSkin::surface(State state) const
-	{
-		return m_stateSurfaces[_stateToIndex(state)];
-	}
-
-	//____ setColor() __________________________________________________________
-
-	void TileSkin::setColor(HiColor tint)
-	{
-		m_stateColors[0] = tint;
-		m_stateColorMask = 1;
-
-		_updateUnsetStateColors();
-		_updateOpaqueFlags();
-	}
-
-	void TileSkin::setColor(State state, HiColor tint)
-	{
-		int i = _stateToIndex(state);
-
-		m_stateColors[i] = tint;
-		m_stateColorMask.setBit(i);
-		_updateUnsetStateColors();
-		_updateOpaqueFlags();
-	}
-
-	void TileSkin::setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints)
-	{
-		for (auto& state : stateTints)
-		{
-			int i = _stateToIndex(std::get<0>(state));
-			m_stateColorMask.setBit(i);
-			m_stateColors[i] = std::get<1>(state);
-		}
-
-		_updateUnsetStateColors();
-		_updateOpaqueFlags();
-	}
-
-	//____ color() _____________________________________________________________
-
-	HiColor TileSkin::color(State state) const
-	{
-		return m_stateColors[_stateToIndex(state)];
-	}
-
-	//____ setGradient() ______________________________________________________
-
-	void TileSkin::setGradient(const Gradient& gradient)
-	{
-		m_gradient = gradient;
-		_updateOpaqueFlags();
-	}
-
-	//____ setBlendMode() _____________________________________________________
-
-	void TileSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpaqueFlags();
-	}
 
 	//____ _render() _______________________________________________________________
 
