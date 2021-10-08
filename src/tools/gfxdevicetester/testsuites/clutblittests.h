@@ -78,7 +78,7 @@ public:
 
 	bool	stretchBlit(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->stretchBlit(canvas, RectI(0, 0, m_pLeaves->size()));
+		pDevice->stretchBlit(canvas, RectSPX(0, 0, m_pLeaves->pixelSize()*64));
 		return true;
 	}
 

@@ -32,7 +32,7 @@ public:
 
 		m_pAlphaOnly = pDevice->surfaceFactory()->createSurface({ 400,400 }, PixelFormat::A_8);
 
-		RectI	copySource = RectI(m_pClockFace->size()).center({ 400,400 });
+		RectI	copySource = RectI(m_pClockFace->pixelSize()).center({ 400,400 });
 		m_pAlphaOnly->copyFrom(m_pClockFace, copySource, { 0,0 });
 
 		return true;
@@ -103,7 +103,7 @@ public:
 
 	bool	stretchBlit(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->stretchBlit(canvas, RectI( 0,0, m_pSplash->size() ) );
+		pDevice->stretchBlit(canvas, RectI( 0,0, m_pSplash->pixelSize()*64 ) );
 		return true;
 	}
 

@@ -19,7 +19,7 @@ public:
 	SimpleApp() {};
 	virtual ~SimpleApp() {};
 
-	virtual wg::SizeI	startWindowSize() = 0;
+	virtual wg::Size	startWindowSize() = 0;
 
 	virtual bool	init(AppVisitor* pVisitor) = 0;
 	virtual bool	update() = 0;

@@ -486,14 +486,26 @@ namespace wg
 		inline RectT<Type> operator+(const BorderT<Type>& k) const;
 		inline RectT<Type> operator-(const BorderT<Type>& k) const;
 
+		template<typename Type2>
+		inline RectT<Type>& operator*=(SizeT<Type2> v) { x *= v.w; y *= v.h; w *= v.w; h *= v.h; return *this; }
+
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline RectT<Type>& operator*=(Type2 v) { x *= v; y *= v; w *= v; h *= v; return *this; }
+
+		template<typename Type2>
+		inline RectT<Type>& operator/=(SizeT<Type2> v) { x /= v.w; y /= v.h; w /= v.w; h /= v.h; return *this; }
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline RectT<Type>& operator/=(Type2 v) { x /= v; y /= v; w /= v; h /= v; return *this; }
 
+		template<typename Type2>
+		inline RectT<Type> operator*(SizeT<Type2> v) const { return { x * v.w, y * v.h, w * v.w, h * v.h }; }
+
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline RectT<Type> operator*(Type2 v) const { return { x * v, y * v, w * v, h * v }; }
+
+		template<typename Type2>
+		inline RectT<Type> operator/(SizeT<Type2> v) const { return { x / v.w, y / v.h, w / v.w, h / v.h }; }
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline RectT<Type> operator/(Type2 v) const { return { x / v, y / v, w / v, h / v }; }

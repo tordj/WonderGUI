@@ -228,7 +228,7 @@ namespace wg
 		virtual bool		pushPixels(const PixelBuffer& buffer, const RectI& bufferRect) = 0;
 
         inline void			pullPixels(const PixelBuffer& buffer);
-		virtual void		pullPixels(const PixelBuffer& buffer, const RectI& bufferRect) = 0;
+		virtual void		pullPixels(const PixelBuffer& buffer, const RectI& bufferRect);			// Needs to be overridden!
 
 		virtual void		freePixelBuffer(const PixelBuffer& buffer) = 0;
 
@@ -245,12 +245,23 @@ namespace wg
 		inline void			setBaggage(Object * pBaggage);
 		inline Object_p		baggage() const;
 
+		int					addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func);
+		bool				removeObserver( int observerId );
+
 	protected:
 		Surface( int flags );
 		virtual ~Surface();
 
+		struct Observer
+		{
+			int id;
+			std::function<void(int nRects, const RectSPX* pRects)>	func;
+			Observer* pNext;
+		};
+
 		static const uint8_t *	s_pixelConvTabs[9];
 
+		void				_notifyObservers(int nRects, const RectSPX* pRects);
 		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color8 * pCLUT = nullptr );
 
 		int                 m_id = 0;
@@ -268,7 +279,7 @@ namespace wg
 		Color8 *			m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.
 
 		Object_p			m_pBaggage;
-
+		Observer *			m_pObserver = nullptr;
 	};
 
 	//____ setIdentity() ____________________________________________________________

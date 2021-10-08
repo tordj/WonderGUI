@@ -16,7 +16,7 @@ public:
 	GfxDeviceTester();
 	~GfxDeviceTester();
 
-	wg::SizeI	startWindowSize() override { return { 1400, 900 }; }
+	wg::Size	startWindowSize() override { return { 1400, 900 }; }
 
 
 	// Pre-init configuration
@@ -99,7 +99,7 @@ protected:
 
 	void		setup_cliplist(ClipList list);
 
-	Canvas_p	create_canvas();
+	SurfaceDisplay_p	create_canvas();
 	void		refresh_performance_display();
 	void		refresh_performance_measurements();
 
@@ -113,8 +113,8 @@ protected:
 	Device* g_pTesteeDevice = nullptr;
 	Device* g_pReferenceDevice = nullptr;
 
-	Canvas_p			g_pTesteeCanvas = nullptr;
-	Canvas_p			g_pReferenceCanvas = nullptr;
+	SurfaceDisplay_p	g_pTesteeCanvas = nullptr;
+	SurfaceDisplay_p	g_pReferenceCanvas = nullptr;
 
 	Widget_p			g_pPerformanceDisplay = nullptr;
 	PackList_p			g_pPerformanceList = nullptr;

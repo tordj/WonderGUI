@@ -368,6 +368,80 @@ namespace wg
 		return ret;
 	}
 
+	//____ pullPixels() _______________________________________________________
+	/**
+	 * @brief Partial copy of pixels from PixelBuffer to Surface.
+	 *
+	 * Partial copy of pixels from PixelBuffer to Surface.
+	 *
+	 * @param buffer		PixelBuffer to copy pixels from.
+	 * @param bufferRect	The source rectangle withing the PixelBuffer.
+	 * @return 				True if operation could be performed.
+	 *
+	 * Only the specified rectangle within the PixelBuffer is copied to the Surface,
+	 * the rest of the surface is unaffected. To copy the whole PixelBuffer to Surface, use pullPixels(const PixelBuffer& buffer) instead.
+	 *
+	 * Please note that the rectangle specified is within the PixelBuffer, not the Surface. You should therefore not add
+	 * the offset of the PixelBuffer to bufferRect.
+	 *
+	 */
+	void Surface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+	{
+		RectSPX rect = (bufferRect + buffer.rect.pos())*64;
+
+		_notifyObservers(1, &rect);
+	}
+
+
+	//____ addObserver() ______________________________________________________
+
+	int Surface::addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func)
+	{
+		int id = m_pObserver ? m_pObserver->id + 1 : 1;
+		auto p = new Observer();
+
+		p->id = id;
+		p->func = func;
+		p->pNext = m_pObserver;
+
+		m_pObserver = p;
+		return id;
+	}
+
+	//____ removeObserver() ___________________________________________________
+
+	bool Surface::removeObserver(int observerId)
+	{
+		Observer** pPointer = &m_pObserver;
+
+		while (*pPointer != nullptr)
+		{
+			if ((*pPointer)->id == observerId)
+			{
+				auto p = (*pPointer);
+				(*pPointer) = p->pNext;
+				delete p;
+				return true;
+			}
+
+			pPointer = &(*pPointer)->pNext;
+		}
+
+		return false;
+	}
+
+	//____ _notifyObservers() _________________________________________________
+
+	void Surface::_notifyObservers(int nRects, const RectSPX* pRects)
+	{
+		Observer* p = m_pObserver;
+		while (p)
+		{
+			p->func(nRects, pRects);
+			p = p->pNext;
+		}
+	}
+
 	//_____ copyFrom() _____________________________________________________________
 	/**
 	 * Copy the content of the specified surface to given coordinate of this surface
@@ -1014,25 +1088,6 @@ namespace wg
 	 * 
 	 * Please note that the rectangle specified is within the PixelBuffer, not the Surface. You should therefore not add
 	 * the offset of the PixelBuffers mapping to bufferRect.
-	 * 
-	 */
-
-	/**
-	 * @fn virtual bool	Surface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
-	 * 
-	 * @brief Partial copy of pixels from PixelBuffer to Surface.
-	 * 
-	 * Partial copy of pixels from PixelBuffer to Surface.
-	 * 
-	 * @param buffer		PixelBuffer to copy pixels from.
-	 * @param bufferRect	The source rectangle withing the PixelBuffer. 
-	 * @return 				True if operation could be performed.
-	 * 
-	 * Only the specified rectangle within the PixelBuffer is copied to the Surface,
-	 * the rest of the surface is unaffected. To copy the whole PixelBuffer to Surface, use pullPixels(const PixelBuffer& buffer) instead.
-	 * 
-	 * Please note that the rectangle specified is within the PixelBuffer, not the Surface. You should therefore not add
-	 * the offset of the PixelBuffer to bufferRect.
 	 * 
 	 */
 

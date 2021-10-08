@@ -126,7 +126,7 @@ int main ( int argc, char** argv )
 		// of the FlexPanel.
 
 		Filler_p pBackground = Filler::create();
-		pBackground->skin = StaticColorSkin::create(Color::Bisque);
+		pBackground->setSkin( StaticColorSkin::create(Color::Bisque) );
 		pFlexPanel->slots.pushBackPinned(pBackground, Placement::NorthWest, Placement::SouthEast);
 
 		// Now we create the button, using a clickable skin built from the BMP
@@ -142,7 +142,7 @@ int main ( int argc, char** argv )
 		// For best performance you should add widgets from front to back and avoid insert.
 
 		Button_p pButton = Button::create();
-		pButton->skin = BlockSkin::create(pButtonSurface, { 0,0,10,10 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3,3,3,3), Axis::X );
+		pButton->setSkin( BlockSkin::create(pButtonSurface, { 0,0,10,10 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Border(3,3,3,3), Axis::X ) );
 		pFlexPanel->slots.insertMovable(0, pButton, { 0,0,80,33 }, Placement::Center, Placement::Center);
 
 		// Finally we add a callback to the click-event of the button.
@@ -215,8 +215,11 @@ void translateEvents( RootPanel_p pRoot )
 				break;
 
 			case SDL_MOUSEMOTION:
-				Base::inputHandler()->setPointer( pRoot, Coord(MU::fromPX(e.motion.x), MU::fromPX(e.motion.y)));
+			{
+				float scale = pRoot->scale()/64.f;
+				Base::inputHandler()->setPointer( pRoot, Coord(e.motion.x/scale, e.motion.y/scale));
 				break;
+			}
 
 			case SDL_MOUSEBUTTONDOWN:
 				Base::inputHandler()->setButton( translateMouseButton(e.button.button), true );
@@ -267,15 +270,15 @@ void updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow )
 	if( nRects == 0 )
 		return;
 
-	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+	const RectSPX * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
 	{
-		pSDLRects[i].x = pUpdatedRects[i].x.qpix/4;
-		pSDLRects[i].y = pUpdatedRects[i].y.qpix/4;
-		pSDLRects[i].w = pUpdatedRects[i].w.qpix/4;
-		pSDLRects[i].h = pUpdatedRects[i].h.qpix/4;
+		pSDLRects[i].x = pUpdatedRects[i].x/64;
+		pSDLRects[i].y = pUpdatedRects[i].y/64;
+		pSDLRects[i].w = pUpdatedRects[i].w/64;
+		pSDLRects[i].h = pUpdatedRects[i].h/64;
 	}
 
 	SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );

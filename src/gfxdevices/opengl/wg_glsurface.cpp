@@ -670,6 +670,8 @@ namespace wg
 
 		if (m_pAlphaMap)
 			_updateAlphaMap(buffer, bufferRect);
+
+		Surface::pullPixels(buffer, bufferRect);
 	}
 
 	//____ freePixelBuffer() ____________________________________________________

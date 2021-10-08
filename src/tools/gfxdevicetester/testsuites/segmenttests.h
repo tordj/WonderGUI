@@ -122,7 +122,7 @@ public:
 
 	bool largeCircle(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawElipse(static_cast<RectF>(canvas), 20.f, Color::Aquamarine, 2.f, Color::White);
+		pDevice->drawElipse(canvas*64, 20*64, Color::Aquamarine, 2*64, Color::White);
 		return true;
 	}
 
@@ -132,7 +132,11 @@ public:
 		{
 			for (int x = 0; x < 12; x++)
 			{
-				pDevice->drawElipse({ x*32.1f,y*26+y*y*1.5f+x*0.11f,y*15.01f+x*2.05f,y*15.01f+x*2.05f }, 4.f, Color::Aquamarine, 1.f, Color::White);
+				RectF geo = { x * 32.1f * 64,y * 26 + y * y * 1.5f + x * 0.11f,y * 15.01f + x * 2.05f,y * 15.01f + x * 2.05f };
+
+				RectSPX geospx = RectSPX(geo * 64);
+
+				pDevice->drawElipse(geospx, 4*64, Color::Aquamarine, 64, Color::White);
 			}
 		}
 
@@ -141,8 +145,12 @@ public:
 
 	bool elipses(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawElipse({ 0.f,0.f,canvas.w*3/4.f, canvas.w*3/4/3.f}, 20.f, Color::Aquamarine, 5.f, Color::White);
-		pDevice->drawElipse({ canvas.w*3/4.f,0.f,canvas.w/4.f, canvas.h*1.f }, 20.f, Color::Aquamarine, 5.f, Color::White);
+		RectF geo1 = { 0.f,0.f,canvas.w * 3 / 4.f, canvas.w * 3 / 4 / 3.f };
+		RectF geo2 = { canvas.w * 3 / 4.f,0.f,canvas.w / 4.f, canvas.h * 1.f };
+
+
+		pDevice->drawElipse( RectSPX(geo1*64), 20*64, Color::Aquamarine, 5*64, Color::White);
+		pDevice->drawElipse( RectSPX(geo2*64), 20*64, Color::Aquamarine, 5*64, Color::White);
 
 		return true;
 	}
@@ -153,7 +161,9 @@ public:
 		int x = 0;
 		int y = 1;
 
-		pDevice->drawElipse({ x*30.1f,y * 20 + y * y*1.5f + x * 0.11f,y*15.01f + x * 2.05f,y*10.01f + x * 2.05f }, 4.f, Color::Aquamarine, 1.f, Color::White);
+		RectF geo = { x * 30.1f,y * 20 + y * y * 1.5f + x * 0.11f,y * 15.01f + x * 2.05f,y * 10.01f + x * 2.05f };
+
+		pDevice->drawElipse( RectSPX(geo*64), 4*64, Color::Aquamarine, 1*64, Color::White);
 
 		return true;
 	}

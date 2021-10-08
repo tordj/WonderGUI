@@ -1807,6 +1807,8 @@ namespace wg
 		//TODO: Proper 26:6 support
 		RectI dest = roundToPixels(_dest);
 
+		src /= 64;
+
 		//
 
 		for (int i = 0; i < m_nClipRects; i++)

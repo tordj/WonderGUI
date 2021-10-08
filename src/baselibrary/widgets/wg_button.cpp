@@ -37,7 +37,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	Button::Button() : icon(this), text(this)
+	Button::Button() : icon(this), label(this)
 	{
 		m_bPressed 		 = false;
 		m_bReturnPressed = false;
@@ -64,11 +64,11 @@ namespace wg
 
 		spx height = m_skin.preferredSize(scale).h;
 
-		if( !OO(text).isEmpty() )
+		if( !OO(label).isEmpty() )
 		{
 			SizeSPX padding = m_skin.contentPaddingSize(scale);
 
-			spx heightForText = OO(text)._matchingHeight(width-padding.w,scale) + padding.h;
+			spx heightForText = OO(label)._matchingHeight(width-padding.w,scale) + padding.h;
 			if( heightForText > height )
 				height = heightForText;
 		}
@@ -87,8 +87,8 @@ namespace wg
 
 		SizeSPX preferred;
 
-		if( !OO(text).isEmpty() )
-			preferred = OO(text)._preferredSize(scale);
+		if( !OO(label).isEmpty() )
+			preferred = OO(label)._preferredSize(scale);
 
 		preferred = m_skin.sizeForContent(preferred, scale);
 
@@ -107,7 +107,7 @@ namespace wg
 			_requestRender();
 		}
 
-		OO(text)._setState(state);
+		OO(label)._setState(state);
 		Widget::_setState(state);
 	}
 
@@ -121,7 +121,7 @@ namespace wg
 
 		RectSPX textRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale );
 
-		OO(text)._setSize( textRect, m_scale );
+		OO(label)._setSize( textRect, m_scale );
 	}
 
 	//____ _render() _____________________________________________________________
@@ -144,8 +144,8 @@ namespace wg
 
 		// Print text
 
-	 	if( !OO(text).isEmpty() )
-			OO(text)._render( pDevice, textRect );
+	 	if( !OO(label).isEmpty() )
+			OO(label)._render( pDevice, textRect );
 	}
 
 	//____ _receive() ______________________________________________________________
@@ -237,7 +237,7 @@ namespace wg
 	void Button::_refresh( void )
 	{
 		Widget::_refresh();
-		OO(text)._refresh();
+		OO(label)._refresh();
 
 		//TODO: Handling of icon and text.
 	}

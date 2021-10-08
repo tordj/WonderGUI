@@ -294,6 +294,8 @@ namespace wg
 	void SoftSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
 		// Nothing to do here.
+
+		Surface::pullPixels(buffer, bufferRect);
 	}
 
 	//____ freePixelBuffer() __________________________________________________
