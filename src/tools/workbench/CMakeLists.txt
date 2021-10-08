@@ -1,3 +1,5 @@
+set(CMAKE_CXX_STANDARD 20)
+
 source_group(Files REGULAR_EXPRESSION ".*")
 
 add_executable(workbench
