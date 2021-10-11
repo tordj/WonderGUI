@@ -37,49 +37,75 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	CircleSkin_p CircleSkin::create()
+	CircleSkin_p CircleSkin::create( const Blueprint& blueprint )
 	{
-		return CircleSkin_p(new CircleSkin());
+		return CircleSkin_p(new CircleSkin( blueprint ));
 	}
 
-	CircleSkin_p CircleSkin::create(HiColor color, float size, pts thickness, pts outlineThickness, HiColor outlineColor, Border contentPadding)
-	{
-		return  new CircleSkin(color, size, thickness, outlineThickness, outlineColor, contentPadding);
-	}
 
 	//____ constructor ____________________________________________________________
 
-	CircleSkin::CircleSkin()
+	CircleSkin::CircleSkin(const Blueprint& blueprint)
 	{
-		m_stateInfoMask = 1;
-
-		for (int i = 0; i < StateEnum_Nb; i++)
-		{
-			m_stateInfo[i].color = Color::White;
-			m_stateInfo[i].size = 1.f;
-			m_stateInfo[i].thickness = 1.f;
-			m_stateInfo[i].outlineThickness = 0.f;
-			m_stateInfo[i].outlineColor = Color::Black;
-		}
+		m_blendMode = blueprint.blendMode;
+		m_contentPadding = blueprint.contentPadding;
+		m_layer = blueprint.layer;
 
 		m_bOpaque = false;
-	}
 
-	CircleSkin::CircleSkin(HiColor color, float size, pts thickness, pts outlineThickness, HiColor outlineColor, Border contentPadding)
-	{
-		m_stateInfoMask = 1;
+		m_stateInfo[0].color = blueprint.color;
+		m_stateInfo[0].outlineColor = blueprint.outlineColor;
+		m_stateInfo[0].outlineThickness = blueprint.outlineThickness;
+		m_stateInfo[0].size = blueprint.size;
+		m_stateInfo[0].thickness = blueprint.thickness;
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (auto& stateInfo : blueprint.states)
 		{
-			m_stateInfo[i].color = color;
-			m_stateInfo[i].size = size;
-			m_stateInfo[i].thickness = thickness;
-			m_stateInfo[i].outlineThickness = outlineThickness;
-			m_stateInfo[i].outlineColor = outlineColor;
+			if (stateInfo.state != StateEnum::Normal)
+			{
+				int index = _stateToIndex(stateInfo.state);
+
+				if (stateInfo.data.color != HiColor::Undefined)
+				{
+					m_stateColorMask.setBit(index);
+					m_stateInfo[index].color = stateInfo.data.color;
+				}
+
+				if (stateInfo.data.size >= 0)
+				{
+					m_stateSizeMask.setBit(index);
+					m_stateInfo[index].size = stateInfo.data.size;
+				}
+
+				if (stateInfo.data.thickness >= 0)
+				{
+					m_stateThicknessMask.setBit(index);
+					m_stateInfo[index].thickness = stateInfo.data.thickness;
+				}
+
+				if (stateInfo.data.outlineThickness >= 0)
+				{
+					m_stateOutlineThicknessMask.setBit(index);
+					m_stateInfo[index].outlineThickness = stateInfo.data.outlineThickness;
+				}
+
+				if (stateInfo.data.outlineColor != HiColor::Undefined)
+				{
+					m_stateOutlineColorMask.setBit(index);
+					m_stateInfo[index].outlineColor = stateInfo.data.outlineColor;
+				}
+
+				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
+				{
+					m_contentShiftStateMask.setBit(index);
+					m_contentShift[index] = stateInfo.data.contentShift;
+					m_bContentShifting = true;
+				}
+			}
 		}
 
-		m_contentPadding = contentPadding;
-		m_bOpaque = false;
+		_updateContentShift();
+		_updateUnsetStates();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -88,31 +114,6 @@ namespace wg
 	{
 		return TYPEINFO;
 	}
-
-	//____ setBlendMode() _____________________________________________________
-
-	void CircleSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-	}
-
-	//____ setAppearance() ________________________________________________________
-
-	void CircleSkin::setAppearance(State state, HiColor color, float size, pts thickness, pts outlineThickness, HiColor outlineColor)
-	{
-		int i = _stateToIndex(state);
-
-		m_stateInfoMask.setBit(i);
-
-		m_stateInfo[i].color = color;
-		m_stateInfo[i].size = size;
-		m_stateInfo[i].thickness = thickness;
-		m_stateInfo[i].outlineThickness = outlineThickness;
-		m_stateInfo[i].outlineColor = outlineColor;
-
-		_updateUnsetStates();
-	}
-
 
 	//____ _isOpaque() _____________________________________________________________
 
@@ -177,8 +178,8 @@ namespace wg
 
 		float radius = sideLength / 2;
 
-		float thickness = m_stateInfo[i].thickness;
-		float outlineThickness = m_stateInfo[i].outlineThickness;
+		float thickness = m_stateInfo[i].thickness*64;
+		float outlineThickness = m_stateInfo[i].outlineThickness*64;
 
 
 		if (distanceSquared > radius * radius)
@@ -231,10 +232,34 @@ namespace wg
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
-			if (!m_stateInfoMask.bit(i))
+			if (!m_stateColorMask.bit(i))
 			{
-				int bestAlternative = bestStateIndexMatch(i, m_stateInfoMask);
-				m_stateInfo[i] = m_stateInfo[bestAlternative];
+				int bestAlternative = bestStateIndexMatch(i, m_stateColorMask);
+				m_stateInfo[i].color = m_stateInfo[bestAlternative].color;
+			}
+
+			if (!m_stateSizeMask.bit(i))
+			{
+				int bestAlternative = bestStateIndexMatch(i, m_stateSizeMask);
+				m_stateInfo[i].size = m_stateInfo[bestAlternative].size;
+			}
+
+			if (!m_stateThicknessMask.bit(i))
+			{
+				int bestAlternative = bestStateIndexMatch(i, m_stateThicknessMask);
+				m_stateInfo[i].thickness = m_stateInfo[bestAlternative].thickness;
+			}
+
+			if (!m_stateOutlineThicknessMask.bit(i))
+			{
+				int bestAlternative = bestStateIndexMatch(i, m_stateOutlineThicknessMask);
+				m_stateInfo[i].outlineThickness = m_stateInfo[bestAlternative].outlineThickness;
+			}
+
+			if (!m_stateOutlineColorMask.bit(i))
+			{
+				int bestAlternative = bestStateIndexMatch(i, m_stateOutlineColorMask);
+				m_stateInfo[i].outlineColor = m_stateInfo[bestAlternative].outlineColor;
 			}
 		}
 	}

@@ -60,19 +60,19 @@ namespace wg
 		{
 			if( stateInfo.state != StateEnum::Normal )
 			{
-				int i = _stateToIndex(stateInfo.state);
+				int index = _stateToIndex(stateInfo.state);
 
 				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
 				{
-					m_contentShiftStateMask.setBit(i);
-					m_contentShift[i] = stateInfo.data.contentShift;
+					m_contentShiftStateMask.setBit(index);
+					m_contentShift[index] = stateInfo.data.contentShift;
 					m_bContentShifting = true;
 				}
 
 				if( stateInfo.data.color != HiColor::Undefined )
 				{
-					m_stateColorMask.setBit(i);
-					m_color[i] = stateInfo.data.color;
+					m_stateColorMask.setBit(index);
+					m_color[index] = stateInfo.data.color;
 				}
 			}
 		}

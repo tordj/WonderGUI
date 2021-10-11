@@ -631,10 +631,10 @@ int main(int argc, char** argv)
 //	animSkinTest(&pRoot->slot);
 //	renderLayerTest(&pRoot->slot);
 //	rigidPartNinePatchTest(&pRoot->slot);
-	scrollSkinTest(&pRoot->slot);
+//	scrollSkinTest(&pRoot->slot);
 //	tooltipLayerTest(&pRoot->slot);
 //	kerningTest(&pRoot->slot);
-//	circleSkinTest(&pRoot->slot);
+	circleSkinTest(&pRoot->slot);
 //	packListTest(&pRoot->slot);
 
 
@@ -2765,10 +2765,12 @@ bool circleSkinTest(CStandardSlot_p pSlot)
 
 	auto pWidget = Filler::create();
 
-	auto pSkin = CircleSkin::create(Color8::Green, 1.f, 5.f, 1.f);
-
-	pSkin->setAppearance(StateEnum::Hovered, Color8::Yellow, 1.f, 15.f, 1.f);
-	pSkin->setAppearance(StateEnum::Pressed, Color8::Red, 0.8f, 100.f, 1.f);
+	auto pSkin = CircleSkin::create({	.color = Color8::Green, 
+										.outlineThickness = 1.f, 
+										.size = 1.f, 
+										.states = { StateEnum::Hovered, {.color = Color8::Yellow, .size = 1.f, .thickness = 15.f },
+													StateEnum::Pressed, {.color = Color8::Red, .size = 0.8f, .thickness = 100.f } },
+										.thickness = 5.f });
 
 	pWidget->setSkin( pSkin );
 
