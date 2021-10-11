@@ -52,6 +52,7 @@ namespace wg
 
 		m_gradient = blueprint.gradient;
 		m_blendMode = blueprint.blendMode;
+		m_layer = blueprint.layer;
 
 		m_transitionTimes[int(m_scrollState)] = m_scrollDuration;
 
@@ -106,7 +107,13 @@ namespace wg
 			if (stateInfo.state != StateEnum::Normal)
 			{
 				int index = _stateToIndex(stateInfo.state);
-				m_contentShift[ofs] = stateInfo.data.contentShift;
+
+				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
+				{
+					m_contentShiftStateMask.setBit(index);
+					m_contentShift[index] = stateInfo.data.contentShift;
+					m_bContentShifting = true;
+				}
 
 				if (stateInfo.data.hasBlock == true)
 				{
@@ -124,6 +131,7 @@ namespace wg
 			}
 		}
 
+		_updateContentShift();
 		_updateUnsetStateBlocks();
 		_updateUnsetStateColors();
 		_updateOpaqueFlags();

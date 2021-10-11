@@ -1946,7 +1946,7 @@ bool splitPanelTest(CStandardSlot_p pEntry)
 {
 	auto pSplit = SplitPanel::create();
 
-	pSplit->setHandleSkin( ColorSkin::create({ { StateEnum::Normal, Color::Black }, { StateEnum::Hovered, Color::Brown }, { StateEnum::Pressed, Color::Red } }) );
+	pSplit->setHandleSkin(ColorSkin::create({ .color = Color::Black, .states = { StateEnum::Hovered, {.color = Color::Brown }, { StateEnum::Pressed, {.color = Color::Red } } } }));
 	pSplit->setHandleThickness(10);
 
 	auto pContent1 = TextEditor::create();
@@ -2185,7 +2185,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
-	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,Color8(0x7F808080)},{StateEnum::Hovered,Color8(0x7FA0A0A0)},{StateEnum::Pressed,Color8(0xFFF0F0F0)} });
+	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .states = {StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }, StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)} } });
 	pHandleSkin->setContentPadding(10);
 
 	auto pSliderX = Slider::create();
@@ -2221,7 +2221,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
-	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,Color8(0x7F808080)},{StateEnum::Hovered,Color8(0x7FA0A0A0)},{StateEnum::Pressed,Color8(0xFFF0F0F0)} });
+	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .states = {StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }, StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)} } });
 	pHandleSkin->setContentPadding(10);
 
 	auto pSliderX = RangeSlider::create();
@@ -2793,7 +2793,7 @@ bool packListTest(CStandardSlot_p pSlot)
 
 	pPackList->header.setText("HEADER");
 //	pPackList->header.setSkin(ColorSkin::create(Color::Blue));
-	pPackList->header.setSkin(ColorSkin::create({ { StateEnum::Normal, Color::Yellow }, { StateEnum::Hovered, Color::Brown }, { StateEnum::Pressed, Color::Red } }));
+	pPackList->header.setSkin(ColorSkin::create( {.color = Color::Yellow , .states = { StateEnum::Hovered, { Color::Brown }, StateEnum::Pressed, { Color::Red }} }));
 
 	pPackList->setSortFunction( [](const Widget * pW1, const Widget * pW2) { return pW2->id() - pW1->id(); });
 

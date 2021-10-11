@@ -71,7 +71,7 @@ namespace wg
 
 	TileSkin::TileSkin(const Blueprint& blueprint)
 	{
-		int ofs = _stateToIndex(StateEnum::Normal);
+		int index = _stateToIndex(StateEnum::Normal);
 
 
 		m_layer = blueprint.layer;
@@ -80,28 +80,38 @@ namespace wg
 		m_contentPadding = blueprint.contentPadding;
 
 
-		m_stateSurfaces[ofs] = blueprint.surface;
-		m_stateColors[ofs] = blueprint.color;
+		m_stateSurfaces[index] = blueprint.surface;
+		m_stateColors[index] = blueprint.color;
 
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (auto& stateInfo : blueprint.states)
 		{
-			if (blueprint.states[i].state != StateEnum::Normal)
+			if (stateInfo.state != StateEnum::Normal)
 			{
-				ofs = _stateToIndex(blueprint.states[i].state);
+				index = _stateToIndex(stateInfo.state);
 
-				m_stateSurfaces[ofs] = blueprint.states[i].data.surface;
-				m_stateColors[ofs] = blueprint.states[i].data.color;
-				m_contentShift[ofs] = blueprint.states[i].data.contentShift;
+				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
+				{
+					m_contentShiftStateMask.setBit(index);
+					m_contentShift[index] = stateInfo.data.contentShift;
+					m_bContentShifting = true;
+				}
 
-				if (m_stateSurfaces[ofs])
-					m_stateSurfaceMask.setBit(ofs);
+				if (stateInfo.data.surface)
+				{
+					m_stateSurfaces[index] = stateInfo.data.surface;
+					m_stateSurfaceMask.setBit(index);
+				}
 
-				if( m_stateColors[ofs] != HiColor::Undefined )
-					m_stateColorMask.setBit(ofs);
+				if(stateInfo.data.color != HiColor::Undefined )
+				{
+					m_stateColors[index] = stateInfo.data.color;
+					m_stateColorMask.setBit(index);
+				}
 			}
 		}
 
+		_updateContentShift();
 		_updateOpaqueFlags();
 		_updateUnsetStateSurfaces();
 		_updateUnsetStateColors();

@@ -35,62 +35,55 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	ColorSkin_p ColorSkin::create()
+	ColorSkin_p ColorSkin::create( const Blueprint& blueprint )
 	{
-		return ColorSkin_p(new ColorSkin());
+		return ColorSkin_p(new ColorSkin(blueprint));
 	}
 
 	ColorSkin_p ColorSkin::create(HiColor color, Border contentPadding )
 	{
-		auto p = new ColorSkin(color);
-		p->setContentPadding(contentPadding);
-		return p;
+		return ColorSkin_p(new ColorSkin(color, contentPadding));
 	}
-
-	ColorSkin_p ColorSkin::create(std::initializer_list< std::tuple<State, HiColor> > stateColors, Border contentPadding )
-	{
-		auto p = new ColorSkin();
-		p->setColor(stateColors);
-		p->setContentPadding(contentPadding);
-		return p;
-	}
-
 
 	//____ constructor ____________________________________________________________
 
-	ColorSkin::ColorSkin()
+	ColorSkin::ColorSkin(const Blueprint& blueprint)
 	{
-		m_stateColorMask = 1;
+		m_blendMode = blueprint.blendMode;
+		m_contentPadding = blueprint.contentPadding;
+		m_layer = blueprint.layer;
 
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			m_color[i] = Color::White;
+		m_color[0] = blueprint.color;
 
-		m_bOpaque = true;
-	}
 
-	ColorSkin::ColorSkin(HiColor color )
-	{
-		setColor(color);
-	}
+		for (auto& stateInfo : blueprint.states)
+		{
+			if( stateInfo.state != StateEnum::Normal )
+			{
+				int i = _stateToIndex(stateInfo.state);
 
-	//____ typeInfo() _________________________________________________________
+				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
+				{
+					m_contentShiftStateMask.setBit(i);
+					m_contentShift[i] = stateInfo.data.contentShift;
+					m_bContentShifting = true;
+				}
 
-	const TypeInfo& ColorSkin::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
+				if( stateInfo.data.color != HiColor::Undefined )
+				{
+					m_stateColorMask.setBit(i);
+					m_color[i] = stateInfo.data.color;
+				}
+			}
+		}
 
-	//____ setBlendMode() _____________________________________________________
-
-	void ColorSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
+		_updateContentShift();
 		_updateOpaqueFlag();
+		_updateUnsetColors();
+
 	}
 
-	//____ setColor() ________________________________________________________
-
-	void ColorSkin::setColor(HiColor color)
+	ColorSkin::ColorSkin(HiColor color, Border contentPadding )
 	{
 		m_stateColorMask = 1;
 
@@ -98,39 +91,15 @@ namespace wg
 			m_color[i] = color;
 
 		m_bOpaque = (color.a == 4096);
+
+		m_contentPadding = contentPadding;
 	}
 
-	void ColorSkin::setColor(State state, HiColor color)
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& ColorSkin::typeInfo(void) const
 	{
-		int i = _stateToIndex(state);
-
-		m_stateColorMask.setBit(i);
-
-		m_color[i] = color;
-
-		_updateOpaqueFlag();
-		_updateUnsetColors();
-	}
-
-	void ColorSkin::setColor(std::initializer_list< std::tuple<State, HiColor> > stateColors)
-	{
-		for (auto& state : stateColors)
-		{
-			int i = _stateToIndex(std::get<0>(state));
-			m_stateColorMask.setBit(i);
-			m_color[i] = std::get<1>(state);
-		}
-
-		_updateOpaqueFlag();
-		_updateUnsetColors();
-	}
-
-	//____ color() ______________________________________________________
-
-	HiColor ColorSkin::color(State state) const
-	{
-		int i = _stateToIndex(state);
-		return m_color[i];
+		return TYPEINFO;
 	}
 
 	//____ _isOpaque() _____________________________________________________________

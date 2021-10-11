@@ -39,11 +39,38 @@ namespace wg
 	class ColorSkin : public StateSkin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct StateData
+		{
+			HiColor			color = HiColor::Undefined;
+			Coord			contentShift;
+		};
+
+		struct StateBP
+		{
+			State			state = StateEnum::Normal;
+			StateData		data;
+		};
+
+		struct Blueprint
+		{
+			BlendMode		blendMode = BlendMode::Undefined;
+
+			HiColor			color = HiColor::White;
+			Border			contentPadding;
+
+			int				layer = -1;
+
+			StateBP			states[StateEnum_Nb];
+		};
+
+
 		//.____ Creation __________________________________________
 
-		static ColorSkin_p	create();
+		static ColorSkin_p	create( const Blueprint& blueprint );
 		static ColorSkin_p create(HiColor color,  Border contentPadding = Border() );
-		static ColorSkin_p	create(std::initializer_list< std::tuple<State,HiColor> > stateColors, Border contentPadding = Border() );
 
 		//.____ Identification __________________________________________
 
@@ -81,8 +108,8 @@ namespace wg
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
-		ColorSkin();
-		ColorSkin(HiColor color);
+		ColorSkin(const Blueprint& blueprint );
+		ColorSkin(HiColor color, Border contentPadding );
 		~ColorSkin() {};
 
 		void	_updateOpaqueFlag();

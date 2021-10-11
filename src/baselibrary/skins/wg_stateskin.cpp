@@ -60,7 +60,7 @@ namespace wg
 
 		m_bContentShifting = true;				// Making it easy for us, just assume something will be shifting when this method is called.
 
-		_refreshUnsetStates();
+		_updateContentShift();
 	}
 
 	//____ setContentShift() _____________________________________________________
@@ -76,7 +76,7 @@ namespace wg
 
 		m_bContentShifting = true;				// Making it easy for us, just assume something will be shifting when this method is called.
 
-		_refreshUnsetStates();
+		_updateContentShift();
 	}
 
 	//____ contentShift() ________________________________________________
@@ -130,9 +130,9 @@ namespace wg
 			return canvas;
 	}
 
-	//____ _refreshUnsetStates() _________________________________________________
+	//____ _updateContentShift() _________________________________________________
 
-	void StateSkin::_refreshUnsetStates()
+	void StateSkin::_updateContentShift()
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
