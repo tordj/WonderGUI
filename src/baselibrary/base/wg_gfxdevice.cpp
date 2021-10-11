@@ -1398,7 +1398,7 @@ namespace wg
 
 		// Adjusted clip
 
-		RectI clip(m_clipBounds, outerRect);
+		RectI clip(m_clipBounds / 64, outerRect);
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
@@ -1544,17 +1544,17 @@ namespace wg
 
 		// Split clip rectangles into upper and lower half, so we clip at the middle.
 
-		int split = min(clip.y + clip.h, outerRect.y + (yMid >> 8));
+		int split = min(clip.y + clip.h, outerRect.y + (yMid >> 8)) * 64;
 
-		int clipBufferSize = sizeof(RectI)*m_nClipRects * 2;
-		RectI * pTopClips = (RectI*)Base::memStackAlloc(clipBufferSize);
-		RectI * pBottomClips = pTopClips + m_nClipRects;
+		int clipBufferSize = sizeof(RectSPX)*m_nClipRects * 2;
+		RectSPX * pTopClips = (RectSPX*)Base::memStackAlloc(clipBufferSize);
+		RectSPX * pBottomClips = pTopClips + m_nClipRects;
 		int nTopClips = 0;
 		int nBottomClips = 0;
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			const RectI& clip = m_pClipRects[i];
+			const RectSPX& clip = m_pClipRects[i];
 
 			if (clip.y < split)
 			{
@@ -1588,9 +1588,9 @@ namespace wg
 		int nOldClipRects = m_nClipRects;
 
 		setClipList(nTopClips, pTopClips);
-		drawSegments({clip.x,outerRect.y,clip.w,outerRect.h}, 5, col, samplePoints, pBuffer, 4);
+		drawSegments( RectSPX(clip.x,outerRect.y,clip.w,outerRect.h)*64, 5, col, samplePoints, pBuffer, 4);
 		setClipList(nBottomClips, pBottomClips);
-		drawSegments({clip.x,outerRect.y,clip.w,outerRect.h}, 5, col, samplePoints, pBuffer + samplePoints * 4, 4);
+		drawSegments( RectSPX(clip.x,outerRect.y,clip.w,outerRect.h)*64, 5, col, samplePoints, pBuffer + samplePoints * 4, 4);
 		setClipList(nOldClipRects, pOldClipRects);
 
 		// Free temporary work memory
