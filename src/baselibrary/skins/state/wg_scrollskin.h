@@ -43,35 +43,52 @@ namespace wg
 
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct StateData
+		{
+			HiColor			color = HiColor::Undefined;
+			Coord			contentShift;
+			bool			hasBlock = true;
+		};
+
+		struct StateBP
+		{
+			State			state = StateEnum::Normal;
+			StateData		data;
+		};
+
+		struct Blueprint
+		{
+
+			BlendMode		blendMode = BlendMode::Undefined;
+
+			Rect			blockOne;
+			pts				blockSpacing = 0;
+			HiColor			color = HiColor::White;
+			Border			contentPadding;
+
+			Gradient		gradient;
+			int				layer = -1;
+
+			Direction		scrollDirection = Direction::Right;
+			pts				scrollDistance = 0;
+			int				scrollDuration = 250;
+			StateBits		scrollState = StateBits::Selected;			
+
+			StateBP			states[StateEnum_Nb];
+			Surface_p		surface;
+		};
+
 		//.____ Creation __________________________________________
 
-		static ScrollSkin_p	create();
-		static ScrollSkin_p	create(Surface* pSurface, pts windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, std::initializer_list<State> stateBlocks = { StateEnum::Normal}, pts spacing = 0);
-		static ScrollSkin_p	create(Surface* pSurface, pts windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, Rect firstBlock, std::initializer_list<State> stateBlocks = { StateEnum::Normal }, pts spacing = 0);
+		static ScrollSkin_p	create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-
-		//.____ Appearance _________________________________________________
-
-		void		setBlock(Coord ofs);
-		void		setBlock(State state, Coord ofs);
-		void		setBlocks(std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, pts spacing = 0, Coord blockStartOfs = { 0,0 });
-		Rect		block(State state) const;
-
-		void		setColor(HiColor tint);
-		void		setColor(State state, HiColor tint);
-		void		setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints);
-		HiColor		color(State state) const;
-
-		void		setGradient(const Gradient& gradient);
-		Gradient	gradient() const { return m_gradient; }
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
 
 		//.____ Internal _________________________________________________
 
@@ -97,7 +114,7 @@ namespace wg
 	private:
 
 		ScrollSkin();
-		ScrollSkin(Surface* pSurface, pts windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, Size blockSize);
+		ScrollSkin( const Blueprint& blueprint);
 		~ScrollSkin() {};
 
 		void		_updateOpaqueFlags();
@@ -109,8 +126,8 @@ namespace wg
 		Surface_p	m_pSurface;
 		Direction	m_scrollDirection = Direction::Right;
 		Size		m_blockSize;
-		pts			m_windowLength = 0;
-		int			m_scrollTime = 250;						// Millisec
+		pts			m_scrollDistance = 0;
+		int			m_scrollDuration = 250;						// Millisec
 		StateBits	m_scrollState = StateBits::Selected;
 
 		Gradient	m_gradient;

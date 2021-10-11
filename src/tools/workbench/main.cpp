@@ -631,11 +631,11 @@ int main(int argc, char** argv)
 //	animSkinTest(&pRoot->slot);
 //	renderLayerTest(&pRoot->slot);
 //	rigidPartNinePatchTest(&pRoot->slot);
-//	scrollSkinTest(&pRoot->slot);
+	scrollSkinTest(&pRoot->slot);
 //	tooltipLayerTest(&pRoot->slot);
 //	kerningTest(&pRoot->slot);
 //	circleSkinTest(&pRoot->slot);
-	packListTest(&pRoot->slot);
+//	packListTest(&pRoot->slot);
 
 
 	// Test IChild and IChildIterator baseclasses
@@ -2657,7 +2657,14 @@ bool scrollSkinTest(CStandardSlot_p pSlot)
 	Surface_p pSliderSurf = loadSurface("resources/sliding_statebutton.png");
 	Surface_p pCoverSurf = loadSurface("resources/sliding_statebutton_cover.png");
 
-	auto pSliderSkin = ScrollSkin::create(pSliderSurf, 84, StateBits::Selected, 300, Direction::Right, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Disabled }, 0);
+	auto pSliderSkin = ScrollSkin::create({ .blockSpacing = 0,
+											.scrollDirection = Direction::Left,
+											.scrollDistance = 48,
+											.scrollDuration = 100,
+											.scrollState = StateBits::Selected,
+											.states = { StateEnum::Normal, {}, StateEnum::Hovered, {}, StateEnum::Disabled, {} },
+											.surface = pSliderSurf });
+
 	auto pCoverSkin = StaticBlockSkin::create(pCoverSurf);
 
 	auto pComboSkin = DoubleSkin::create(pCoverSkin, pSliderSkin, false);
