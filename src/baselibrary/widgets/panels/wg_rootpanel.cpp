@@ -89,9 +89,16 @@ namespace wg
 
 		m_bDebugMode = false;
 
-		BoxSkin_p pDebugOverlay = BoxSkin::create(1, HiColor(4096, 0, 0, 2048), HiColor(4096, 0, 0, 2048));
-		pDebugOverlay->setColors(StateEnum::Focused, HiColor(4096, 0, 0, 2048), HiColor(4096, 0, 0, 4096));
-		m_pDebugOverlay = pDebugOverlay;
+		BoxSkin::Blueprint bp;
+		bp.color = HiColor(4096, 0, 0, 2048);
+		bp.frame = 1;
+		bp.frameColor = HiColor(4096, 0, 0, 2048);
+		
+		bp.states[0].state = StateEnum::Focused;
+		bp.states[0].data.color = HiColor(4096, 0, 0, 2048);
+		bp.states[0].data.frameColor = HiColor(4096, 0, 0, 4096);
+
+		m_pDebugOverlay = BoxSkin::create(bp);
 		m_afterglowFrames = 4;
 	}
 

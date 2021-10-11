@@ -80,7 +80,6 @@ namespace wg
 		_updateContentShift();
 		_updateOpaqueFlag();
 		_updateUnsetColors();
-
 	}
 
 	ColorSkin::ColorSkin(HiColor color, Border contentPadding )

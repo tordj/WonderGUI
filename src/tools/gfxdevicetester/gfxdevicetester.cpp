@@ -849,11 +849,10 @@ bool GfxDeviceTester::setup_chrome()
 	auto pSkin = BoxSkin::create(1, Color::White, Color::Black);
 	pSkin->setContentPadding(8);
 
-	auto pEntrySkin = BoxSkin::create(1, Color::White, Color::Black);
-	pEntrySkin->setContentPadding(8);
-	pEntrySkin->setColors(StateEnum::Hovered, Color::AntiqueWhite, Color::Black);
-	pEntrySkin->setColors(StateEnum::SelectedHovered, Color::Aquamarine, Color::Black);
-	pEntrySkin->setColors(StateEnum::Selected, Color::Aquamarine, Color::Black);
+	auto pEntrySkin = BoxSkin::create({ .color = Color::White, .contentPadding = 8, .frame = 1, .frameColor = Color::Black,
+										.states = { StateEnum::Hovered, {.color = Color::AntiqueWhite },
+													StateEnum::SelectedHovered, {.color = Color::AntiqueWhite },
+													StateEnum::Selected, {.color = Color::Aquamarine } } });
 
 	pTestList->setSkin( pSkin );
 	pTestList->setEntrySkin(pEntrySkin);

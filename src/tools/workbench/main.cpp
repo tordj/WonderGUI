@@ -625,7 +625,7 @@ int main(int argc, char** argv)
 //	doubleSkinTest(&pRoot->slot);
 //	timerTest(&pRoot->slot);
 //	animPlayerTest(&pRoot->slot);
-//	selectBoxTest(&pRoot->slot);
+	selectBoxTest(&pRoot->slot);
 //	tileSkinTest(&pRoot->slot);
 //	bakeSkinTest(&pRoot->slot);
 //	animSkinTest(&pRoot->slot);
@@ -634,7 +634,7 @@ int main(int argc, char** argv)
 //	scrollSkinTest(&pRoot->slot);
 //	tooltipLayerTest(&pRoot->slot);
 //	kerningTest(&pRoot->slot);
-	circleSkinTest(&pRoot->slot);
+//	circleSkinTest(&pRoot->slot);
 //	packListTest(&pRoot->slot);
 
 
@@ -2450,10 +2450,9 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	auto pListSkin = BoxSkin::create(1, Color::White, Color::Black);
 	pListSkin->setContentPadding(3);
 
-	auto pListEntrySkin = BoxSkin::create(1, { { StateEnum::Normal, Color::Transparent, Color::Transparent },
-													{ StateEnum::Hovered, Color::Yellow, Color::Orange },
-													{ StateEnum::Selected, Color::LightBlue, Color::White } });
-	pListEntrySkin->setContentPadding(3);
+	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .contentPadding = 3, .frame = 1, .frameColor = Color::Transparent,
+											 .states = { StateEnum::Hovered, {.color = Color::Yellow, .frameColor = Color::Orange },
+														 StateEnum::Selected, {.color = Color::LightBlue, .frameColor = Color::White } } });
 
 
 	pSelectBox->setListSkin(pListSkin);

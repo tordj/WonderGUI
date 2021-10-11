@@ -39,29 +39,45 @@ namespace wg
 	class BoxSkin : public StateSkin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct StateData
+		{
+			HiColor			color = HiColor::Undefined;
+			Coord			contentShift;
+			HiColor			frameColor = HiColor::Undefined;
+		};
+
+		struct StateBP
+		{
+			State			state = StateEnum::Normal;
+			StateData		data;
+		};
+
+		struct Blueprint
+		{
+			BlendMode		blendMode = BlendMode::Undefined;
+
+			HiColor			color = HiColor::White;
+			Border			contentPadding;
+
+			Border			frame;
+			HiColor			frameColor = HiColor::Black;
+
+			int				layer = -1;
+
+			StateBP			states[StateEnum_Nb];
+		};
 		//.____ Creation __________________________________________
 
-		static BoxSkin_p	create();
-		static BoxSkin_p 	create(Border frame, HiColor fillColor, HiColor frameColor );
-		static BoxSkin_p	create(Border frame, std::initializer_list< std::tuple<State,HiColor,HiColor> > stateColors );
+		static BoxSkin_p	create( const Blueprint& blueprint );
+		static BoxSkin_p 	create(Border frame, HiColor fillColor, HiColor frameColor, Border contentPadding = Border() );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-
-		//.____ Appearance _________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void		setFrame( Border frame );
-
-		void						setColors(HiColor fill, HiColor frame);
-		void						setColors(State state, HiColor fill, HiColor frame);
-		void						setColors(std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors);
-		std::tuple<HiColor, HiColor>	colors(State state) const;
 
 		//.____ Internal ________________________________________________________
 
@@ -85,8 +101,8 @@ namespace wg
 			float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
-		BoxSkin();
-		BoxSkin(Border frame, HiColor fillColor, HiColor frameColor  );
+		BoxSkin( const Blueprint& blueprint );
+		BoxSkin(Border frame, HiColor fillColor, HiColor frameColor, Border contentPadding );
 		~BoxSkin() {};
 
 		void	_updateOpaqueFlag();
@@ -96,6 +112,7 @@ namespace wg
 		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
+		Bitmask<uint32_t>	m_stateFrameColorMask = 1;
 
 		HiColor		m_fillColor[StateEnum_Nb];
 		HiColor		m_frameColor[StateEnum_Nb];
