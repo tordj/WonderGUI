@@ -985,9 +985,9 @@ namespace wg
 		pts end = 0;
 		for (int i = 0; i < nItems; i++)
 		{
-			end += pItems->output;
+			end += pItems[i].output;
 			spx conv = align(ptsToSpx(end, m_scale));
-			pItems->outSPX = conv - begin;
+			pItems[i].outSPX = conv - begin;
 			begin = conv;
 		}
 
@@ -1006,9 +1006,9 @@ namespace wg
 		pts end = 0;
 		for (int i = 0; i < nItems; i++)
 		{
-			end += pItems->output;
+			end += pItems[i].output;
 			spx conv = align(ptsToSpx(end, m_scale));
-			pItems->outSPX = conv - begin;
+			pItems[i].outSPX = conv - begin;
 			begin = conv;
 		}
 

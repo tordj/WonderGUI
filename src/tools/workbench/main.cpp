@@ -99,6 +99,7 @@ bool tooltipLayerTest(CStandardSlot_p pSlot);
 bool kerningTest(CStandardSlot_p pSlot);
 bool circleSkinTest(CStandardSlot_p pSlot);
 bool packListTest(CStandardSlot_p pSlot);
+bool packPanelTest(CStandardSlot_p pSlot);
 
 
 void nisBlendTest();
@@ -625,7 +626,7 @@ int main(int argc, char** argv)
 //	doubleSkinTest(&pRoot->slot);
 //	timerTest(&pRoot->slot);
 //	animPlayerTest(&pRoot->slot);
-	selectBoxTest(&pRoot->slot);
+//	selectBoxTest(&pRoot->slot);
 //	tileSkinTest(&pRoot->slot);
 //	bakeSkinTest(&pRoot->slot);
 //	animSkinTest(&pRoot->slot);
@@ -636,6 +637,7 @@ int main(int argc, char** argv)
 //	kerningTest(&pRoot->slot);
 //	circleSkinTest(&pRoot->slot);
 //	packListTest(&pRoot->slot);
+	packPanelTest(&pRoot->slot);
 
 
 	// Test IChild and IChildIterator baseclasses
@@ -2825,6 +2827,36 @@ bool packListTest(CStandardSlot_p pSlot)
 }
 
 
+//____ packPanelTest() ________________________________________________________
+
+bool packPanelTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pPackPanel = PackPanel::create();
+	pPackPanel->setSkin(ColorSkin::create(Color::Azure));
+	pPackPanel->setAxis(Axis::X);
+	pPackPanel->setSizeBroker(UniformSizeBroker::create());
+//	pPackPanel->setSizeBroker(ScalePreferredSizeBroker::create());
+
+	auto pText1 = TextDisplay::create();
+	pText1->display.setText("TEXT1");
+	pPackPanel->slots << pText1;
+
+	auto pText2 = TextDisplay::create();
+	pText2->display.setText("TEXT2");
+	pPackPanel->slots << pText2;
+
+	auto pText3 = TextDisplay::create();
+	pText3->display.setText("TEXT3");
+	pPackPanel->slots << pText3;
+
+	pBaseLayer->slots.pushBack(pPackPanel);
+	*pSlot = pBaseLayer;
+	return true;
+
+}
 
 
 //____
