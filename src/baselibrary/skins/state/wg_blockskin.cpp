@@ -40,6 +40,11 @@ namespace wg
 		return BlockSkin_p(new BlockSkin());
 	}
 
+	BlockSkin_p BlockSkin::create(const Blueprint& blueprint)
+	{
+		return BlockSkin_p(new BlockSkin(blueprint));
+	}
+
 
 	BlockSkin_p BlockSkin::create(Surface * pSurface, Border frame )
 	{
@@ -195,6 +200,138 @@ namespace wg
 		}
 	}
 
+	BlockSkin::BlockSkin(const Blueprint& blueprint)
+	{
+		m_pSurface = blueprint.surface;
+		m_ninePatch.frame = blueprint.frame;
+		m_bOpaque = blueprint.surface->isOpaque();
+		m_blendMode = blueprint.blendMode;
+		m_gradient = blueprint.gradient;
+		m_contentPadding = blueprint.contentPadding;
+		m_layer = blueprint.layer;
+
+		// Make sure we have a correct block
+
+		Rect block = blueprint.blockOne;
+
+		if (block.isEmpty())
+		{
+			int nStateBlocks = 1;
+			for (int i = 0; i < StateEnum_Nb; i++)
+			{
+				if (blueprint.states[i].state != StateEnum::Normal && blueprint.states[i].data.hasBlock == true)
+					nStateBlocks++;
+			}
+
+
+			if (blueprint.blockAxis == Axis::X)
+			{
+				block.w = (m_pSurface->pointWidth() - blueprint.blockSpacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.h = m_pSurface->pointHeight();
+			}
+			else
+			{
+				block.w = m_pSurface->pointWidth();
+				block.h = (m_pSurface->pointHeight() - blueprint.blockSpacing * (nStateBlocks - 1)) / nStateBlocks;
+			}
+		}
+
+		m_ninePatch.block.setSize(block.size());
+
+
+		// Default state
+
+		m_stateBlocks[0] = block;
+		m_stateColors[0] = blueprint.color;
+
+		// RigidPartX
+
+		{
+			pts ofs = blueprint.rigidPartX.begin;
+			pts length = blueprint.rigidPartX.length;
+
+			pts	midSecLen = m_ninePatch.block.w - m_ninePatch.frame.width();
+			ofs -= m_ninePatch.frame.left;
+
+			if (ofs < 0)
+			{
+				length += ofs;
+				ofs = 0;
+			}
+
+			if (ofs + length > midSecLen)
+				length = midSecLen - ofs;
+
+			m_ninePatch.rigidPartXOfs = ofs;
+			m_ninePatch.rigidPartXLength = length;
+			m_ninePatch.rigidPartXSections = blueprint.rigidPartX.sections;
+		}
+
+		// RigidPartY
+
+		{
+			pts ofs = blueprint.rigidPartY.begin;
+			pts length = blueprint.rigidPartY.length;
+			
+			pts	midSecLen = m_ninePatch.block.h - m_ninePatch.frame.height();
+			ofs -= m_ninePatch.frame.top;
+
+			if (ofs < 0)
+			{
+				length += ofs;
+				ofs = 0;
+			}
+
+			if (ofs + length > midSecLen)
+				length = midSecLen - ofs;
+
+			m_ninePatch.rigidPartYOfs = ofs;
+			m_ninePatch.rigidPartYLength = length;
+			m_ninePatch.rigidPartYSections = blueprint.rigidPartY.sections;
+		}
+
+		// States
+
+		Coord blockOfs = block.pos();
+
+		Coord pitch = blueprint.blockAxis == Axis::X ? Coord(block.w + blueprint.blockSpacing, 0) : Coord(0, block.h + blueprint.blockSpacing);
+
+		int ofs = 0;
+		for (auto& stateInfo : blueprint.states)
+		{
+			if (stateInfo.state != StateEnum::Normal)
+			{
+				int index = _stateToIndex(stateInfo.state);
+
+				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
+				{
+					m_contentShiftStateMask.setBit(index);
+					m_contentShift[index] = stateInfo.data.contentShift;
+					m_bContentShifting = true;
+				}
+
+				if (stateInfo.data.hasBlock == true)
+				{
+					ofs++;
+					m_stateBlockMask.setBit(index);
+					m_stateBlocks[index] = blockOfs + pitch * ofs;
+				}
+
+				if (stateInfo.data.color != HiColor::Undefined)
+				{
+					m_stateColorMask.setBit(index);
+					m_stateColors[index] = stateInfo.data.color;
+				}
+			}
+		}
+
+		//
+
+		_updateContentShift();
+		_updateUnsetStateBlocks();
+		_updateUnsetStateColors();
+		_updateOpaqueFlags();
+	}
 
 	//____ typeInfo() _________________________________________________________
 

@@ -69,6 +69,7 @@ namespace wg
 
 			StateBP			states[StateEnum_Nb];
 		};
+
 		//.____ Creation __________________________________________
 
 		static BoxSkin_p	create( const Blueprint& blueprint );

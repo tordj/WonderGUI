@@ -577,13 +577,11 @@ bool GfxDeviceTester::setup_chrome()
 
 	auto pPressablePlateSurface = m_pVisitor->loadSurface("resources/grey_pressable_plate.bmp");
 	assert(pPressablePlateSurface);
-	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Border(3), Axis::X);
-	pPressablePlateSkin->setContentPadding(Border(3));
+	BlockSkin_p pPressablePlateSkin = BlockSkin::create({ .blockAxis = Axis::X, .contentPadding = Border(3), .frame = Border(3), .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pPressablePlateSurface });
 
 	auto pButtonSurface = m_pVisitor->loadSurface("resources/simple_button.bmp");
 	assert(pButtonSurface);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Border(3), Axis::X);
-	pSimpleButtonSkin->setContentPadding(Border(5));
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({ .blockAxis = Axis::X, .contentPadding = Border(5), .frame = Border(3), .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pButtonSurface });
 
 
 

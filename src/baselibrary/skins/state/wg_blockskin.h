@@ -43,14 +43,66 @@ namespace wg
 
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct StateData
+		{
+			HiColor			color = HiColor::Undefined;
+			Coord			contentShift;
+			bool			hasBlock = true;
+		};
+
+		struct StateBP
+		{
+			State			state = StateEnum::Normal;
+			StateData		data;
+		};
+
+		struct RigidPartXBlueprint
+		{
+			pts			begin = 0;
+			pts			length = 0;
+			YSections	sections = YSections::None;
+		};
+
+		struct RigidPartYBlueprint
+		{
+			pts			begin = 0;
+			pts			length = 0;
+			XSections	sections = XSections::None;
+		};
+
+		struct Blueprint
+		{
+			BlendMode	blendMode = BlendMode::Undefined;
+			Axis		blockAxis = Axis::Y;
+			Rect		blockOne;
+			pts			blockSpacing = 0;
+			HiColor		color = HiColor::White;
+			Border		contentPadding;
+			Border		frame;
+			Gradient	gradient;
+			int			layer = -1;
+
+			RigidPartXBlueprint	rigidPartX;
+			RigidPartYBlueprint rigidPartY;
+
+			StateBP		states[StateEnum_Nb];
+
+			Surface_p	surface;
+		};
+
+
 		//.____ Creation __________________________________________
 
 		static BlockSkin_p	create();
-		static BlockSkin_p create(Surface * pSurface, Border frame = { 0 } );
+		static BlockSkin_p	create(const Blueprint& blueprint);
+		static BlockSkin_p  create(Surface * pSurface, Border frame = { 0 } );
 		static BlockSkin_p	create(Surface * pSurface, Rect block, Border frame = { 0 } );
+	//protected:
 		static BlockSkin_p	create(Surface * pSurface, Rect firstBlock, std::initializer_list<State> stateBlocks, Border frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
 		static BlockSkin_p	create(Surface * pSurface, std::initializer_list<State> stateBlocks, Border frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
-
+	//public:
 
 
 		//.____ Identification __________________________________________
@@ -61,6 +113,7 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
+	//protected:
 		void		setBlock(Coord ofs);
 		void		setBlock(State state, Coord ofs);
 		void		setBlocks(std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, Coord blockStartOfs = { 0,0 });
@@ -88,7 +141,7 @@ namespace wg
 
 		bool		setRigidPartX(pts ofs, pts length, YSections sections);
 		bool		setRigidPartY(pts ofs, pts length, XSections sections);
-
+	//public:
 
 		//.____ Deprecated ____________________________________________________
 
@@ -122,6 +175,7 @@ namespace wg
 
 		BlockSkin();
 		BlockSkin(Surface * pSurface, Rect block, Border frame);
+		BlockSkin(const Blueprint& blueprint);
 		~BlockSkin() {};
 
 		void		_updateOpaqueFlags();

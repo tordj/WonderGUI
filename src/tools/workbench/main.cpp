@@ -498,8 +498,7 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Border(3), Axis::X);
-	pSimpleButtonSkin->setContentPadding(Border(5));
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({ .blockAxis = Axis::X, .contentPadding = 5, .frame = 3, .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pButtonSurface });
 
 	pSDLSurf = IMG_Load("resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -631,13 +630,13 @@ int main(int argc, char** argv)
 //	bakeSkinTest(&pRoot->slot);
 //	animSkinTest(&pRoot->slot);
 //	renderLayerTest(&pRoot->slot);
-//	rigidPartNinePatchTest(&pRoot->slot);
+	rigidPartNinePatchTest(&pRoot->slot);
 //	scrollSkinTest(&pRoot->slot);
 //	tooltipLayerTest(&pRoot->slot);
 //	kerningTest(&pRoot->slot);
 //	circleSkinTest(&pRoot->slot);
 //	packListTest(&pRoot->slot);
-	packPanelTest(&pRoot->slot);
+//	packPanelTest(&pRoot->slot);
 
 
 	// Test IChild and IChildIterator baseclasses
@@ -2526,8 +2525,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 
 	Surface_p pSplashSurf = loadSurface("resources/splash.png" );
 
-	auto pSplashSkin = BlockSkin::create(pSplashSurf);
-	pSplashSkin->setBlendMode(BlendMode::Add);
+	auto pSplashSkin = BlockSkin::create({ .blendMode = BlendMode::Add, .surface = pSplashSurf });
 
 	Surface_p pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
 
@@ -2632,10 +2630,21 @@ bool rigidPartNinePatchTest(CStandardSlot_p pSlot)
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
 	Surface_p pSurf = loadSurface("resources/fixed_sections_alphatest.png");
-
+/*
 	auto pSkin = BlockSkin::create(pSurf, {StateEnum::Normal, StateEnum::Hovered}, 10, Axis::X);
 	pSkin->setRigidPartX(24, 16, YSections::Top | YSections::Center | YSections::Bottom);
 	pSkin->setRigidPartY(24, 16, XSections::Left | XSections::Center | XSections::Right);
+
+*/
+	auto pSkin = BlockSkin::create({
+								.blockAxis = Axis::X,
+								.frame = 10,
+								.rigidPartX = { 24, 16, YSections::Top | YSections::Center | YSections::Bottom },
+								.rigidPartY = { 24, 16,  XSections::Left | XSections::Center | XSections::Right },
+								.states = { StateEnum::Hovered, {} },
+								.surface = pSurf
+		});
+
 
 	auto pWidget = Filler::create();
 	pWidget->setSkin( pSkin );
