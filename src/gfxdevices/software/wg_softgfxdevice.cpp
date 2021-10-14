@@ -2650,7 +2650,7 @@ namespace wg
 	void SoftGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
 	{
 		GfxDevice::setTintGradient(rect, gradient);
-		m_colTrans.tintRect = rect;
+		m_colTrans.tintRect = Util::align(rect) / 64;
 		_updateTintSettings();
 	}
 
@@ -2710,15 +2710,17 @@ namespace wg
 			m_colTrans.topRightB = b[1];
 			m_colTrans.topRightA = a[1];
 
-			m_colTrans.leftIncR = int(r[3] - r[0]) / m_tintGradientRect.h;
-			m_colTrans.leftIncG = int(g[3] - g[0]) / m_tintGradientRect.h;
-			m_colTrans.leftIncB = int(b[3] - b[0]) / m_tintGradientRect.h;
-			m_colTrans.leftIncA = int(a[3] - a[0]) / m_tintGradientRect.h;
+			int width = Util::align(m_tintGradientRect.h)/64;
 
-			m_colTrans.rightIncR = int(r[2] - r[1]) / m_tintGradientRect.h;
-			m_colTrans.rightIncG = int(g[2] - g[1]) / m_tintGradientRect.h;
-			m_colTrans.rightIncB = int(b[2] - b[1]) / m_tintGradientRect.h;
-			m_colTrans.rightIncA = int(a[2] - a[1]) / m_tintGradientRect.h;
+			m_colTrans.leftIncR = int(r[3] - r[0]) / width;
+			m_colTrans.leftIncG = int(g[3] - g[0]) / width;
+			m_colTrans.leftIncB = int(b[3] - b[0]) / width;
+			m_colTrans.leftIncA = int(a[3] - a[0]) / width;
+
+			m_colTrans.rightIncR = int(r[2] - r[1]) / width;
+			m_colTrans.rightIncG = int(g[2] - g[1]) / width;
+			m_colTrans.rightIncB = int(b[2] - b[1]) / width;
+			m_colTrans.rightIncA = int(a[2] - a[1]) / width;
 
 			diffMaskX |= (m_tintGradient.topLeft.argb - m_tintGradient.topRight.argb) | (m_tintGradient.bottomRight.argb - m_tintGradient.bottomLeft.argb);
 			diffMaskY |= (m_tintGradient.topLeft.argb - m_tintGradient.bottomLeft.argb) | (m_tintGradient.topRight.argb - m_tintGradient.bottomRight.argb);

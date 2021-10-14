@@ -34,7 +34,7 @@
 
 #include <wg_freetypefont.h>
 
-#define USE_OPEN_GL
+//#define USE_OPEN_GL
 
 
 using namespace wg;
@@ -90,6 +90,7 @@ bool timerTest(CStandardSlot_p pSlot);
 bool animPlayerTest(CStandardSlot_p pSlot);
 bool selectBoxTest(CStandardSlot_p pSlot);
 bool tileSkinTest(CStandardSlot_p pSlot);
+bool gradientSkinTest(CStandardSlot_p pSlot);
 bool bakeSkinTest(CStandardSlot_p pSlot);
 bool animSkinTest(CStandardSlot_p pSlot);
 bool renderLayerTest(CStandardSlot_p pSlot);
@@ -627,10 +628,11 @@ int main(int argc, char** argv)
 //	animPlayerTest(&pRoot->slot);
 //	selectBoxTest(&pRoot->slot);
 //	tileSkinTest(&pRoot->slot);
+	gradientSkinTest(&pRoot->slot);
 //	bakeSkinTest(&pRoot->slot);
 //	animSkinTest(&pRoot->slot);
 //	renderLayerTest(&pRoot->slot);
-	rigidPartNinePatchTest(&pRoot->slot);
+//	rigidPartNinePatchTest(&pRoot->slot);
 //	scrollSkinTest(&pRoot->slot);
 //	tooltipLayerTest(&pRoot->slot);
 //	kerningTest(&pRoot->slot);
@@ -2504,6 +2506,37 @@ bool tileSkinTest(CStandardSlot_p pSlot)
 	*pSlot = pBaseLayer;
 	return true;
 }
+
+//____ gradientSkinTest() ____________________________________________________
+
+bool gradientSkinTest(CStandardSlot_p pSlot)
+{
+
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pSkin1 = StaticGradientSkin::create(wg::Gradient(wg::Placement::South, wg::HiColor(0.0f, 0.0f, 0.0f, 0.0f), wg::HiColor(0.0f, 0.0f, 0.0f, 0.2f)));
+
+	auto pSkin2 = StaticGradientSkin::create(wg::Gradient(wg::Placement::South, wg::HiColor(1.0f, 0.0f, 0.0f, 0.0f), wg::HiColor(0.0f, 0.0f, 0.0f, 0.2f)));
+
+
+	auto pFiller1 = Filler::create();
+	pFiller1->setSkin(pSkin1);
+
+	auto pFiller2 = Filler::create();
+	pFiller2->setSkin(pSkin2);
+
+
+
+
+	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pFiller2, Rect(10, 120, 400, 100));
+
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+
 
 //____ bakeSkinTest() ____________________________________________________
 
