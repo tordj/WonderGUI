@@ -239,7 +239,7 @@ bool WgRootPanel::Render( const WgRect& clip )
 {
 	// This early out hopefully solves the problem with Console1 taking GPU - time on some machines when not visible.
 	// It should prevent us from doing anything with the GPU
-	if (!m_bVisible)
+	if (!m_bVisible || m_dirtyPatches.isEmpty() )
 	{
 		m_updatedPatches.clear(); // Probably not necessary, but wanna make sure they don't fill up...
 		m_dirtyPatches.clear();   // Probably not necessary, but wanna make sure they don't fill up...
@@ -320,12 +320,12 @@ bool WgRootPanel::BeginRender()
 
 bool WgRootPanel::RenderSection( const WgRect& _clip )
 {
-	if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !m_hook.Widget() )
+    if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !m_hook.Widget() )
 		return false;						// No GFX-device or no widgets to render.
 
 	// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
-	WgRect canvas = PixelGeo();
+    WgRect canvas = m_bHasGeo ? WgRect(m_geo, WgRect(m_canvasSize)) : WgRect(m_canvasSize);
 	WgRect clip( _clip, canvas );
 	if( clip.w == 0 || clip.h == 0 )
 		return false;						// Invalid rect area.

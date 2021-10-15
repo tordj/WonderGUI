@@ -58,10 +58,8 @@ public:
 
 	WgSize          UnzoomedPreferredPixelSize() const;
 
-
-	void            SetInnerTransition(float scale);                                            // Zoom out level of the contained widget.
-	float           InnerTransition() const { return m_innerTransitionFactor; }
-
+    void            SetPickableContent(bool bPickable);
+    
 	void            SetInOutTransition(float factor );                                        // 0.0 -> 1.0. From non-existent (size 0,0) to full size and fully faded in.
 	float           InOutTransition() const { return m_transitionFactor; }
 
@@ -109,10 +107,6 @@ private:
 	wg::Skin_p   m_pButtonSkin;
 	wg::Skin_p   m_pOutlineSkin;
 
-	float       m_innerTransitionFactor = 1.f;
-	float       m_minInnerZoom = 0.5f;
-	float       m_innerZoom = 1.f;
-
 	float       m_transitionFactor = 1.f;
 	float       m_outerZoom = 1.f;
 	WgColor     m_tint = WgColor::White;
@@ -121,7 +115,7 @@ private:
 	bool        m_bButtonPressed = false;
 
 	bool        m_bOutlineMode = false;
-
+    bool        m_bPickableContent = false;
 	WgSize      m_minPointSize;
 };
 

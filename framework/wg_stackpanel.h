@@ -122,6 +122,7 @@ protected:
 	void	_onWidgetAppeared( WgVectorHook * pInserted );				// so parent can update geometry and possibly request render.
 	void    _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast );
 	void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+    void    _onWidgetsDisappeared( WgVectorHook * pFirst, WgVectorHook * pLast );
 	void	_onWidgetsReordered();
 	void	_refreshAllWidgets();
 	WgVectorHook * _newHook();

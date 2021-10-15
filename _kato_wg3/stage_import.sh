@@ -3,19 +3,20 @@
 rm -rf imports
 mkdir imports
 cd imports
-mkdir base
-mkdir components
+mkdir baselibrary
+mkdir baselibrary/base
+mkdir baselibrary/components
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
 mkdir gfxdevices/metal
-mkdir skins
-mkdir fonts
+mkdir baselibrary/skins
+mkdir fontengines
 cd ..
 
 cd ../../WonderGUI/src
 
-cd base
+cd baselibrary/base
 cp wg_base.* \
    wg_object.* \
    wg_bitmapfont.* \
@@ -57,16 +58,19 @@ cp wg_base.* \
    wg_util.* \
    wg_weakcomponentptr.* \
    wg_weakptr.* \
-   ../../../wg2/_kato_wg3/imports/base/
+   ../../../../wg2/_kato_wg3/imports/baselibrary/base
 
 cd ../components
 cp wg_component.* \
    wg_cstaticvector.* \
    wg_cdynamicvector.* \
    wg_canimframes.* \
-   ../../../wg2/_kato_wg3/imports/components
+   ../../../../wg2/_kato_wg3/imports/baselibrary/components
 
-cd ../gfxdevices/opengl
+cd ../skins
+cp -r * ../../../../wg2/_kato_wg3/imports/baselibrary/skins
+
+cd ../../gfxdevices/opengl
 cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/opengl
 
 cd ../metal
@@ -75,9 +79,6 @@ cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/metal
 cd ../software
 cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/software/
 
-cd ../../skins
-cp -r * ../../../wg2/_kato_wg3/imports/skins
-
-cd ../fonts
-cp -r * ../../../wg2/_kato_wg3/imports/fonts
+cd ../../fontengines
+cp -r * ../../../wg2/_kato_wg3/imports/fontengines
 

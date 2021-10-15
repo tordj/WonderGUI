@@ -396,6 +396,43 @@ void WgStackPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
 		_requestResize();
 }
 
+
+//____ _onWidgetsDisappeared() _________________________________________________
+
+void WgStackPanel::_onWidgetsDisappeared( WgVectorHook * pFirst, WgVectorHook * pLast )
+{
+    // Update m_preferredSize, skipping disappearing ones
+
+    WgSize    preferredSize;
+    WgStackHook * pHook = FirstHook();
+    while( pHook )
+    {
+        if( pHook == pFirst )
+        {
+            pHook = (WgStackHook *) pLast->Next();
+            if( pHook == nullptr )
+                break;
+        }
+        
+        if( pHook->m_bVisible )
+        {
+            WgSize sz = pHook->Widget()->PreferredPixelSize();
+            if( sz.w > preferredSize.w )
+                preferredSize.w = sz.w;
+            if( sz.h > preferredSize.h )
+                preferredSize.h = sz.h;
+        }
+        pHook = pHook->Next();
+    }
+
+    if (preferredSize != m_preferredSize)
+        m_preferredSize = preferredSize;
+
+    _requestRender();
+    _requestResize();
+}
+
+
 //____ _onWidgetsReordered() ___________________________________________________
 
 void WgStackPanel::_onWidgetsReordered()

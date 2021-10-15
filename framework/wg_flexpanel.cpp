@@ -259,6 +259,13 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 	else							// Move us backward
 	{
 		WgFlexHook * p = pLast->_prev();
+
+        if(p == pSibling)
+        {
+            // We are already in place - nothing more to do.
+            return true;
+        }
+
 		_moveAfter( pSibling );
 
 		// Request render on our siblings for the area we previously have covered.
@@ -297,6 +304,13 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 	if( pFirst == this )			// Move us forward
 	{
 		WgFlexHook * p = _next();
+
+        if(p == pSibling)
+        {
+            // We are already in place - nothing more to do.
+            return true;
+        }
+
 		_moveBefore( pSibling );
 
 		// Request render on all areas covered by siblings we have skipped in front of.
@@ -317,6 +331,7 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 	else							// Move us backward
 	{
 		WgFlexHook * p = _prev();
+
 		_moveBefore( pSibling );
 
 		// Request render on our siblings for the area we previously have covered.

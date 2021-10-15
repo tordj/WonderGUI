@@ -389,28 +389,31 @@ namespace WgEvent
 
 	//____ MouseWheelRoll __________________________________________________________
 
-	MouseWheelRoll::MouseWheelRoll( int wheel, int distance )
+	MouseWheelRoll::MouseWheelRoll( int wheel, int distance, bool bInvertScroll )
 	{
-		m_type = WG_EVENT_MOUSEWHEEL_ROLL;
-		m_wheel = wheel;
-		m_distance = distance;
+		m_type              = WG_EVENT_MOUSEWHEEL_ROLL;
+		m_wheel             = wheel;
+		m_distance          = distance;
+        m_bInvertScroll     = bInvertScroll;
 	}
 
-	MouseWheelRoll::MouseWheelRoll( int wheel, int distance, WgWidget * pWidget )
+	MouseWheelRoll::MouseWheelRoll( int wheel, int distance, bool bInvertScroll, WgWidget * pWidget )
 	{
-		m_type			= WG_EVENT_MOUSEWHEEL_ROLL;
-		m_wheel			= wheel;
-		m_distance		= distance;
-		m_bIsForWidget	= true;
-		m_pWidget		= pWidget;
+		m_type			    = WG_EVENT_MOUSEWHEEL_ROLL;
+		m_wheel			    = wheel;
+		m_distance		    = distance;
+        m_bInvertScroll     = bInvertScroll;
+		m_bIsForWidget	    = true;
+		m_pWidget		    = pWidget;
 	}
 
 	void MouseWheelRoll::_cloneContentFrom( const Event * _pOrg )
 	{
 		const MouseWheelRoll * pOrg = static_cast<const MouseWheelRoll*>(_pOrg);
 
-		m_wheel			= pOrg->m_wheel;
-		m_distance		= pOrg->m_distance;
+		m_wheel			    = pOrg->m_wheel;
+		m_distance		    = pOrg->m_distance;
+        m_bInvertScroll     = pOrg->m_bInvertScroll;
 		Event::_cloneContentFrom( pOrg );
 	}
 
@@ -424,6 +427,12 @@ namespace WgEvent
 	{
 		return m_distance;
 	}
+
+    bool MouseWheelRoll::InvertScroll() const
+    {
+        return m_bInvertScroll;
+    }
+
 
 	//____ Tick _______________________________________________________________
 
@@ -544,7 +553,7 @@ namespace WgEvent
 	void DropPick::setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone )
 	{
 		m_pDragWidget = pWidget;
-		m_dragWidgetPointerOfs = pixelPointerOfs;
+        m_dragWidgetPointerOfs = pixelPointerOfs;
 		m_bDeleteWhenDone = bDeleteWhenDone;
 	}
 
@@ -554,26 +563,34 @@ namespace WgEvent
 	{
 	}
 
-	DropEnter::DropEnter( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
+	DropEnter::DropEnter( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgCoord dragWidgetPointerOfs, bool bDeleteWhenDone, WgWidget * pFinalReceiver )
 	: DragNDrop( WG_EVENT_DROP_ENTER, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
-	m_pDragWidget(pDragWidget)
+	m_pDragWidget(pDragWidget),
+    m_dragWidgetPointerOfs(dragWidgetPointerOfs),
+    m_bDeleteWhenDone(bDeleteWhenDone)
 	{
 	}
 
-	void DropEnter::setDragWidget( WgWidget * pWidget )
+	void DropEnter::setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone )
 	{
 		m_pDragWidget = pWidget;
+        m_dragWidgetPointerOfs = pixelPointerOfs;
+        m_bDeleteWhenDone = bDeleteWhenDone;
 	}
 
-	DropMove::DropMove( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
+	DropMove::DropMove( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgCoord dragWidgetPointerOfs, bool bDeleteWhenDone, WgWidget * pFinalReceiver )
 	: DragNDrop( WG_EVENT_DROP_MOVE, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
-	m_pDragWidget(pDragWidget)
+	m_pDragWidget(pDragWidget),
+    m_dragWidgetPointerOfs(dragWidgetPointerOfs),
+    m_bDeleteWhenDone(bDeleteWhenDone)
 	{
 	}
 
-	void DropMove::setDragWidget( WgWidget * pWidget )
+	void DropMove::setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone )
 	{
 		m_pDragWidget = pWidget;
+        m_dragWidgetPointerOfs = pixelPointerOfs;
+        m_bDeleteWhenDone = bDeleteWhenDone;
 	}
 
 
@@ -593,9 +610,9 @@ namespace WgEvent
 		return m_pWidget.GetRealPtr();
 	}
 
-	DropCancel::DropCancel( WgWidget * pPickedFrom, int pickCategory, wg::BasicDataset * pPayload )
-	: DragNDrop( WG_EVENT_DROP_CANCEL, pPickedFrom, pickCategory, pPayload, pPickedFrom, nullptr )
-	{
+    DropCancel::DropCancel(WgWidget *pPickedFrom, int pickCategory, wg::BasicDataset *pPayload, WgWidgetWeakPtr pDropped)
+        : DragNDrop(WG_EVENT_DROP_CANCEL, pPickedFrom, pickCategory, pPayload, pPickedFrom, nullptr), m_pDropped{pDropped}
+    {
 	}
 
 	DropComplete::DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, wg::BasicDataset * pPayload )

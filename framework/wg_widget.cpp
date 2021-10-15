@@ -190,6 +190,28 @@ void WgWidget::_stopReceiveTicks()
 	m_bReceiveTick = false;
 }
 
+//____ LockPointer() __________________________________________________________
+
+bool WgWidget::LockPointer()
+{
+    WgRootPanel * pRoot = m_pHook->Root();
+    if( pRoot )
+        m_bPointerLocked = pRoot->EventHandler()->_widgetLockPointer(this);
+    
+    return m_bPointerLocked;
+}
+
+//____ ReleasePointer() __________________________________________________________
+
+void WgWidget::ReleasePointer()
+{
+    WgRootPanel * pRoot = m_pHook->Root();
+    if( pRoot )
+        pRoot->EventHandler()->_widgetReleasePointer(this);
+    
+    m_bPointerLocked = false;
+}
+
 //____ Local2absPixel() ____________________________________________________________
 
 WgCoord WgWidget::Local2absPixel( const WgCoord& cord ) const
@@ -245,17 +267,12 @@ wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
 	if( !bWasRendering )
         pDevice->beginRender();
 
-    WgColor oldTint = pDevice->tintColor();
-    WgBlendMode oldBlendMode = pDevice->blendMode();
-    pDevice->setTintColor( WgColor::White);
-    pDevice->setBlendMode(wg::BlendMode::Replace);
     pDevice->beginCanvasUpdate(pCanvas);
+    pDevice->setBlendMode(wg::BlendMode::Replace);
     pDevice->fill( WgColor::Transparent );
     pDevice->setBlendMode(wg::BlendMode::Blend);
     _renderPatches(pDevice, sz, sz, &patches);
     pDevice->endCanvasUpdate();
-    pDevice->setTintColor(oldTint);
-    pDevice->setBlendMode(oldBlendMode);
 
     if( !bWasRendering )
         pDevice->endRender();
@@ -712,6 +729,7 @@ void WgWidget::_onLostInputFocus()
 
     _queueEvent(new WgEvent::FocusLost(this));
 }
+
 
 bool WgWidget::TempIsInputField() const
 {

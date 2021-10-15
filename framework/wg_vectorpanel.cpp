@@ -346,6 +346,70 @@ void WgVectorPanel::SetSortFunction( WgWidgetSortFunc pSortFunc )
 	m_pSortFunc = pSortFunc;
 }
 
+//____ HideChildren() _________________________________________________________
+
+void WgVectorPanel::HideChildren( int index, int amount )
+{
+    if( index >= m_hooks.size() || index < 0 || amount <= 0 )
+        return;
+    
+    WgVectorHook * pHook = m_hooks.get(index);
+    if( pHook == nullptr )
+        return;
+
+    WgVectorHook * pFirst = pHook;
+    WgVectorHook * pLast = pHook;
+    
+    for( int i = 0 ; i < amount ; i++ )
+    {
+        pHook->m_bVisible = false;
+      
+        pHook = pHook->Next();
+        if( pHook == nullptr )
+            break;
+    
+        pLast = pHook;
+    }
+
+    //TODO: Shouldn't really mark any widgets as disappeared that already were hidden.
+    // But it will work for now...
+
+    _onWidgetsDisappeared( pFirst, pLast );
+}
+
+//____ UnhideChildren() _______________________________________________________
+
+void WgVectorPanel::UnhideChildren( int index, int amount )
+{
+    if( index >= m_hooks.size() || index < 0 || amount <= 0 )
+        return;
+    
+    WgVectorHook * pHook = m_hooks.get(index);
+    if( pHook == nullptr )
+        return;
+
+    WgVectorHook * pFirst = pHook;
+    WgVectorHook * pLast = pHook;
+    
+    for( int i = 0 ; i < amount ; i++ )
+    {
+        pHook->m_bVisible = true;
+
+        pHook = pHook->Next();
+        if( pHook == nullptr )
+            break;
+    
+        pLast = pHook;
+    }
+
+    //TODO: Shouldn't really mark any widgets as appeared that already were visible.
+    // But it will work for now...
+
+    _onWidgetsAppeared( pFirst, pLast );
+}
+
+
+
 //____ _onCloneContent() ______________________________________________________
 
 void WgVectorPanel::_onCloneContent( const WgWidget * _pOrg )

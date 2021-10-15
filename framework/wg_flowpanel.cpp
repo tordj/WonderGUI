@@ -379,6 +379,14 @@ void WgFlowPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
 	_refreshAllWidgets();
 }
 
+//____ _onWidgetsDisappeared() ___________________________________________________
+
+void WgFlowPanel::_onWidgetsDisappeared( WgVectorHook * pFirst, WgVectorHook * pLast )
+{
+    _refreshAllWidgets();
+}
+
+
 //____ _onWidgetsReordered() ____________________________________________________
 
 void WgFlowPanel::_onWidgetsReordered()

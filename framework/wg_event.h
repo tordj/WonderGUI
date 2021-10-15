@@ -248,16 +248,19 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	public:
-		MouseWheelRoll( int wheel, int distance );
+		MouseWheelRoll( int wheel, int distance, bool bInvertScroll = false );
 
 		int			Wheel() const;
 		int			Distance() const;
+        bool        InvertScroll() const;
 	protected:
-		MouseWheelRoll( int wheel, int distance, WgWidget * pWidget );
+		MouseWheelRoll( int wheel, int distance, bool bInvertScroll, WgWidget * pWidget );
 		virtual void 	_cloneContentFrom( const Event * pOrg );
 
 		int			m_wheel;
 		int			m_distance;
+        bool        m_bInvertScroll;        // Set if direction should be inverted for ScrollPanel and ScrollBar.
+                                            // Should be ignored by other widgets.
 	};
 
 	class Tick : public Event
@@ -330,13 +333,16 @@ namespace WgEvent
 		void                setPayload( wg::BasicDataset * pPayload );
 		bool                hasPayload() const { return m_pPayload; }
 
-		WgCoord               pickOfs() const { return m_pickOfs; }
+        void                setHidePointer(bool bHide) { m_bHidePointer = bHide; }
+        bool                isHidingPointer() const { return m_bHidePointer; }
+        
+		WgCoord             pickOfs() const { return m_pickOfs; }
 		bool                deleteDragWidgetWhenDone() const { return m_bDeleteWhenDone; }
 
 		void                setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone = true );
 		bool                hasDragWidget() const { return m_pDragWidget; }
 		WgWidget *          dragWidget() const { return m_pDragWidget; }
-		WgCoord               dragWidgetPointerOfs() const { return m_dragWidgetPointerOfs; }
+		WgCoord             dragWidgetPointerOfs() const { return m_dragWidgetPointerOfs; }
 
 	protected:
 		DropPick( WgWidget * pSource, WgCoord pickOfs, WgWidget * pFinalReceiver );
@@ -344,7 +350,8 @@ namespace WgEvent
 		WgWidget *            m_pDragWidget;
 		WgCoord               m_dragWidgetPointerOfs;
 		WgCoord               m_pickOfs;
-		bool                  m_bDeleteWhenDone;
+        bool                  m_bHidePointer;
+		bool                  m_bDeleteWhenDone;        // Set if m_pDragWidget should be deleted when not used anymore.
 	};
 
 	class DropProbe : public DragNDrop
@@ -366,13 +373,17 @@ namespace WgEvent
 		friend class ::WgDragNDropLayer;
 	public:
 
-		void                setDragWidget( WgWidget * pWidget );
+        void                setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone = true );
 		WgWidget *          dragWidget() const { return m_pDragWidget; }
+        WgCoord             dragWidgetPointerOfs() const { return m_dragWidgetPointerOfs; }
+        bool                deleteDragWidgetWhenDone() const { return m_bDeleteWhenDone; }
 
 	protected:
-		DropEnter( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
+		DropEnter( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgCoord dragWidgetPointerOfs, bool bDeleteWhenDone, WgWidget * pFinalReceiver );
 
 		WgWidget *          m_pDragWidget;
+        WgCoord             m_dragWidgetPointerOfs;
+        bool                m_bDeleteWhenDone;        // Set if m_pDragWidget should be deleted when not used anymore.
 	};
 
 	class DropMove : public DragNDrop
@@ -380,13 +391,17 @@ namespace WgEvent
 		friend class ::WgDragNDropLayer;
 	public:
 
-		void                setDragWidget( WgWidget * pWidget );
+        void                setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone = true );
 		WgWidget *          dragWidget() const { return m_pDragWidget; }
+        WgCoord             dragWidgetPointerOfs() const { return m_dragWidgetPointerOfs; }
+        bool                deleteDragWidgetWhenDone() const { return m_bDeleteWhenDone; }
 
 	protected:
-		DropMove( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
+		DropMove( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgCoord dragWidgetPointerOfs, bool bDeleteWhenDone, WgWidget * pFinalReceiver );
 
 		WgWidget *          m_pDragWidget;
+        WgCoord             m_dragWidgetPointerOfs;
+        bool                m_bDeleteWhenDone;        // Set if m_pDragWidget should be deleted when not used anymore.
 	};
 
 	class DropLeave : public DragNDrop
@@ -415,13 +430,16 @@ namespace WgEvent
 	class DropCancel : public DragNDrop
 	{
 		friend class ::WgDragNDropLayer;
+    public:
+        WgWidgetWeakPtr DroppedWidget() { return m_pDropped; };
 
-	protected:
-		DropCancel( WgWidget * pPickedFrom, int pickCategory, wg::BasicDataset * pPayload );
+    protected:
+        DropCancel( WgWidget * pPickedFrom, int pickCategory, wg::BasicDataset * pPayload, WgWidgetWeakPtr pDropped);
+    private:
+        WgWidgetWeakPtr m_pDropped;
+    };
 
-	};
-
-	class DropComplete : public DragNDrop
+    class DropComplete : public DragNDrop
 	{
 		friend class ::WgDragNDropLayer;
 	public:

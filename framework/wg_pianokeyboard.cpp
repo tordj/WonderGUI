@@ -420,7 +420,7 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
 
 	wg::RectI canvas = m_pSkin ? _skinContentRect(m_pSkin, _canvas, m_state, m_scale) : _canvas;
 
-	int whiteKeySpacing = canvas.w / m_nbWhiteKeys;
+    float whiteKeySpacing = canvas.w / (float) m_nbWhiteKeys;
 	int blackKeyHeight = canvas.h * m_blackKeySourceHeight / m_keyboardSourceSize.h;
 
 	float xScaleFactor = m_keyboardSourceSize.w / float(canvas.w);
@@ -440,7 +440,7 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
 			if (pKey->isBlack)
 			{
                 int i = pKey->keyPos;
-				wg::RectI dst = wg::RectI(i*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, blackKeyHeight);
+				wg::RectI dst = wg::RectI(int(i*whiteKeySpacing + whiteKeySpacing / 2), 0, int(whiteKeySpacing), blackKeyHeight);
 
                 // Apply tweaked geo. We only tweak X here to not distured srcOfsY. Should be fine that way.
 
@@ -475,7 +475,7 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
         else
             pDevice->setBlitSource(m_pEvenWhiteKeys);
 
-		wg::RectI dst = wg::RectI(i*whiteKeySpacing - whiteKeySpacing / 2, 0, whiteKeySpacing * 2, canvas.h);
+		wg::RectI dst = wg::RectI(int(i*whiteKeySpacing - whiteKeySpacing / 2), 0, int(whiteKeySpacing * 2), canvas.h);
 
         // Apply tweaked geo. We only tweak X here to not distured srcOfsY. Should be fine that way.
 
@@ -738,15 +738,15 @@ wg::RectI WgPianoKeyboard::_keyRect(int keyIdx)
 {
 	wg::RectI canvas = m_pSkin ? _skinContentRect(m_pSkin, PixelSize(), m_state, m_scale) : wg::RectI(0, 0, PixelSize());
 
-	int whiteKeySpacing = canvas.w / m_nbWhiteKeys;
+	float whiteKeySpacing = canvas.w / (float) m_nbWhiteKeys;
 	int blackKeyHeight = canvas.h * m_blackKeySourceHeight / m_keyboardSourceSize.h;
 
 	wg::RectI dst;
 
 	if( m_keyInfo[keyIdx].isBlack )
-		dst = { m_keyInfo[keyIdx].keyPos*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, blackKeyHeight };
+		dst = { int( m_keyInfo[keyIdx].keyPos*whiteKeySpacing + whiteKeySpacing / 2) , 0, int(whiteKeySpacing), blackKeyHeight };
 	else
-		dst = { m_keyInfo[keyIdx].keyPos*whiteKeySpacing - whiteKeySpacing / 2, 0, whiteKeySpacing * 2, canvas.h };
+		dst = { int( m_keyInfo[keyIdx].keyPos*whiteKeySpacing - whiteKeySpacing / 2), 0, int(whiteKeySpacing * 2), canvas.h };
 
     // Apply tweaked geo
 

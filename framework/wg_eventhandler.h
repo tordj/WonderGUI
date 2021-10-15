@@ -133,9 +133,18 @@ public:
 	bool	ForwardEvent( const WgEvent::Event * pEvent );
 	bool	ForwardEvent( const WgEvent::Event * pEvent, WgWidget * pRecipient );
 
+    void    HidePointer();
+    void    ShowPointer();
+    
+    bool    isPointerHidden() const { return m_pointerHideCount > 0; }
+    
+    bool    isPointerLocked() const { return m_pWidgetLockedPointer; }
+    
+    WgWidget * LockedPointerWidget() const { return m_pWidgetLockedPointer.GetRealPtr(); }
+    
 private:
 	class	Callback;
-
+    
 	void 	_postTickEvents( int ticks );
 	void 	_processEventQueue();
 
@@ -184,6 +193,9 @@ private:
 	void	_addTickReceiver( WgWidget * pWidget );
 	bool    _handleEavesdropping( WgWidget * pReceiver, WgEvent::Event * pEvent );
 
+    bool    _widgetLockPointer(WgWidget * pWidget);
+    void    _widgetReleasePointer(WgWidget * pWidget);
+
 	//
 
 	WgRootPanel *		m_pRoot;
@@ -210,6 +222,8 @@ private:
 
 	int                         m_markedLockCountdown = 0;      // Millisec left for which the mouse is locked to the marked widget.
 
+    int                         m_pointerHideCount = 0;          // 0 = pointer showing, 1+ pointer is hidden.
+    
 	// Current button states
 
 	bool						m_bButtonPressed[WG_MAX_BUTTONS+1];
@@ -220,7 +234,8 @@ private:
 	WgWidgetWeakPtr				m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
 	WgWidgetWeakPtr				m_previousPressWidgets[WG_MAX_BUTTONS+1];	// Widget that received the second latest press, for each button,
 																			// used for double-click handling.
-
+    WgWidgetWeakPtr             m_pWidgetLockedPointer;
+    
 	// Current keyboard state
 
 	struct KeyDownInfo

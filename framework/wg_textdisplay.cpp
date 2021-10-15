@@ -199,19 +199,19 @@ WgPointerStyle WgTextDisplay::GetPointerStyle() const
 
 //____ GetTooltipString() _____________________________________________________
 
-wg::String WgTextDisplay::GetTooltipString() const
-{
-	if( !m_tooltip.isEmpty() )
-		return m_tooltip;
-	else
-	{
-		WgSize sz = PixelSize();
-		if( sz.w < m_text.width() || sz.h < m_text.height() )
-			return m_text.getBuffer();
-	}
-
-	return 0;
-}
+//wg::String WgTextDisplay::GetTooltipString() const
+//{
+//	if( !m_tooltip.isEmpty() )
+//		return m_tooltip;
+//	else
+//	{
+//		WgSize sz = PixelSize();
+//		if( sz.w < m_text.width() || sz.h < m_text.height() )
+//			return m_text.getBuffer();
+//	}
+//
+//	return 0;
+//}
 
 //____ _onRender() ________________________________________________________
 
@@ -269,7 +269,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if (type == WG_EVENT_MOUSE_ENTER)
 	{
-		m_state.setHovered(true);
+        m_state.setHovered(true);
 	}
 
 	if (type == WG_EVENT_MOUSE_LEAVE)
@@ -486,15 +486,16 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if (oldState != m_state)
 	{
-        if( m_pSkin )
-        {
-            wg::RectI dirt = _skinDirtyRect( m_pSkin, PixelSize(), m_scale, m_state, oldState );
-            if( !dirt.isEmpty() )
-                _requestRender(dirt);
-        }
+        // If the state has changed we need to update since the
+        // font might have states without having a skin
+        //if( m_pSkin )
+        //{
+        //    _requestRender();
+        //}
         
 		m_text.setState(m_state);
-	}
+        _requestRender();
+    }
 
     // Forward event depending on rules.
 

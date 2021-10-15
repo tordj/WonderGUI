@@ -746,6 +746,17 @@ void WgPackPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
 		_refreshAllWidgets();
 }
 
+//____ _onWidgetsDisappeared() ___________________________________________________
+
+void WgPackPanel::_onWidgetsDisappeared( WgVectorHook * pFirst, WgVectorHook * pLast )
+{
+    if( m_bFreezeGeo )
+        m_bWantsGeoUpdate = true;
+    else
+        _refreshAllWidgets();
+}
+
+
 //____ _onWidgetsReordered() ____________________________________________________
 
 void WgPackPanel::_onWidgetsReordered()

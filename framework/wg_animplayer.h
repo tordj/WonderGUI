@@ -88,6 +88,7 @@ protected:
 	void			_onRefresh();
 	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	bool			_onAlphaTest( const WgCoord& ofs );
+    bool            _onAlphaTestWithGeo( const WgCoord& ofs, const WgRect& geo );
 	void			_onEnable();
 	void			_onDisable();
 

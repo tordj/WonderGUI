@@ -34,7 +34,7 @@ public:
 	~WgCapsule() {}
 
 	virtual WgHook * SetChild( WgWidget * pWidget );
-	WgWidget *		Child() { return m_hook.Widget(); }
+	WgWidget *		Child() const { return m_hook.Widget(); }
 	bool			DeleteChild();
 	WgWidget *		ReleaseChild();
 

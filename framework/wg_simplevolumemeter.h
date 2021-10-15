@@ -35,9 +35,14 @@ public:
 	void			SetPeakSkin(wg::Skin * pSkin);
 	wg::Skin_p		PeakSkin() const { return m_pPeakSkin;  }
 
+    void            SetGradientSkin(wg::Skin * pSkin);
+    wg::Skin_p      GradientSkin() const { return m_pGradientSkin; }
+
 	void			SetHoldSkin(wg::Skin * pSkin);
 	wg::Skin_p		HoldSkin() const { return m_pHoldSkin; }
 
+    void            SetBackgroundColor(WgColor background);
+    void            EnableBackgroundColor(bool enable) { m_bEnableBackgroundColor = enable; }
 
 	void			SetValue( float peak, float hold );
 	void			SetValue( float leftPeak, float leftHold, float rightPeak, float rightHold );
@@ -65,6 +70,7 @@ protected:
 	WgDirection		m_direction;
 	wg::Skin_p		m_pPeakSkin;
 	wg::Skin_p		m_pHoldSkin;
+    wg::Skin_p      m_pGradientSkin;
 	WgColor			m_sectionColors[3];
 	float			m_fSectionHeight[3];
 	float			m_fHoldHeight;
@@ -73,6 +79,9 @@ protected:
 	float 			m_fSidePadding;
 	float			m_fPeak[2];
 	float			m_fHold[2];
+
+    bool            m_bEnableBackgroundColor = false;
+    WgColor         m_backgroundColor;
 
 	// Pixel values calculated from relative values above
 

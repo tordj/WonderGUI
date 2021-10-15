@@ -69,7 +69,7 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const override { return new WgDragNDropLayer(); };
 
-	bool            Pick( WgWidget * pWidget, WgCoord pickOfs );
+	bool            Pick( WgWidget * pWidget, WgCoord pickOfs, bool bHidePointer = false );
 	void            SetSurfaceFactory( wg::SurfaceFactory * pFactory ) { m_pSurfaceFactory = pFactory; }
 
 	WgWidget *      FindWidget( const WgCoord& ofs, WgSearchMode mode ) override;
@@ -79,8 +79,12 @@ public:
 
 	bool            DeleteAllChildren() override { return 0; }
 	bool            ReleaseAllChildren() override { return 0; }
+        
+    void SetDragThreashold(int iTreshold) { m_dragStartTreshold = iTreshold; }
 
-	enum DragState
+    void LockDropHoverTarget( WgWidget * pLockedHoverTarget ) { m_pLockedDropHoverTarget = pLockedHoverTarget; };
+    
+    enum DragState
 	{
 		Idle,
 		Picking,    // Mouse button pressed, awaiting drag to pass treshold
@@ -126,7 +130,7 @@ protected:
 
 	void            _complete( WgWidget * pDeliveredTo);
 	void            _cancel();
-	void            _replaceDragWidget( WgWidget * pNewWidget );
+	void            _replaceDragWidget( WgWidget * pNewWidget, bool bDeleteWhenDone );
 
 	void            _updateDropHovered( WgCoord hoverPos );
 	void            _clearDropHovered();
@@ -148,13 +152,14 @@ protected:
 	WgWidgetWeakPtr   m_pTargeted;                   // Widget targeted while in state Targeting.
 	WgCoord           m_targetOfs;                  // Pointer ofs within targeted widget.
 
-	WgWidgetWeakPtr   m_pDropHovered;               // Widget curently hovered while in Dragging or Targeting stage.
+	WgWidgetWeakPtr   m_pLockedDropHoverTarget;          // Widget forced to be hovered until drop completed/canceled.
 	std::vector<WgWidgetWeakPtr>    m_vHoveredInside;    // All widgets that pointer is considered to be inside (= m_pDropHovered + its ancestors).
 
 
 	wg::SurfaceFactory_p m_pSurfaceFactory = nullptr;
 
 	bool            m_bDeleteDraggedWhenDone = false;
+    bool            m_bPointerHidden = false;
 };
 
 #endif //WG_DRAGNDROPLAYER_DOT_H

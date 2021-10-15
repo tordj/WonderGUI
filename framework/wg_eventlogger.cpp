@@ -307,7 +307,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "MouseWheelRoll";
 			const WgEvent::MouseWheelRoll * pEvent = static_cast<const WgEvent::MouseWheelRoll*>(_pEvent);
-			sprintf( params, "wheel=%d distance=%d", pEvent->Wheel(), pEvent->Distance() );
+			sprintf( params, "wheel=%d distance=%d invertScroll=%d", pEvent->Wheel(), pEvent->Distance(), (int) pEvent->InvertScroll() );
 			break;
 		}
 

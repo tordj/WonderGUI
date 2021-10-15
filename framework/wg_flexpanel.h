@@ -194,7 +194,6 @@ class WgFlexPanel : public WgPanel
 friend class WgFlexHook;
 
 public:
-
 	WgFlexPanel();
 	virtual ~WgFlexPanel();
 
@@ -221,8 +220,6 @@ public:
 	{
 		return AddChild(pWidget,static_cast<int>(anchorTopLeft),anchorBottomRight,padding);
 	}
-
-
 
 	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrigo origo = WgOrigo::NorthWest, WgBorders padding = 0 );
 	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, int anchor, WgOrigo hotspot, WgBorders padding = 0 );
@@ -253,7 +250,6 @@ public:
 		return InsertChild(pWidget,pSibling,static_cast<int>(anchorTopLeft),anchorBottomRight,padding);
 	}
 
-
 	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrigo origo = WgOrigo::NorthWest, WgBorders padding = 0  );
 	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, int anchor, WgOrigo hotspot, WgBorders padding = 0  );
 	WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrigo anchor, WgOrigo hotspot, WgBorders padding = 0  )
@@ -282,7 +278,6 @@ public:
 	int				NbAnchors() const { return m_anchors.size()+9; }
 	const WgFlexAnchor *	Anchor( int index );
 
-
 	WgFlexHook*		FirstHook() const { return m_hooks.first(); }
 	WgFlexHook*		LastHook() const { return m_hooks.last(); }
 
@@ -291,16 +286,16 @@ public:
 	WgSize			PreferredPixelSize() const;
 	void            SetPreferredPointSize( WgSize size );
 
-private:
+protected:
+    void _onEvent(const WgEvent::Event *pEvent, WgEventHandler *pHandler);
+    void            _onNewSize( const WgSize& size );
 
+private:
 	void			_onCloneContent( const WgWidget * _pOrg );
-	void			_onNewSize( const WgSize& size );
 	void			_setScale( int scale );
 
 	WgSize          _scaledPreferredPixelSize( WgWidget * pWidget );
 
-
-	void            _onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 
 	WgHook*			_firstHook() const { return FirstHook(); }

@@ -46,7 +46,7 @@ WgAnimPlayer::WgAnimPlayer()
 	m_bPlaying		= false;
 	m_speed			= 1.f;
 
-	m_kTintColor    = WgColor( 0xff, 0xff, 0xff, 0xff );
+	m_kTintColor    = WgColor( 0,0,0,0 );
 }
 
 //____ ~WgAnimPlayer() _______________________________________________________
@@ -448,21 +448,29 @@ void WgAnimPlayer::_onCloneContent( const WgWidget * _pOrg )
 	m_speed				= pOrg->m_speed;
 }
 
+
+
+
 //____ _onAlphaTest() ______________________________________________________
 
 bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs )
 {
-	WgSize sz = PixelSize();
+    return _onAlphaTestWithGeo( ofs, PixelSize() );
+}
 
+//____ _onAlphaTestWithGeo() _______________________________________________
+
+bool WgAnimPlayer::_onAlphaTestWithGeo( const WgCoord& ofs, const WgRect& geo )
+{
 	if( m_pAnim && m_bEnabled && m_animFrame.IsValid() )
-		return WgUtil::MarkTestBlock( ofs, m_animFrame, WgRect(0,0,sz), m_markOpacity );
+		return WgUtil::MarkTestBlock( ofs, m_animFrame, geo, m_markOpacity );
 	else if( m_pSkin )
 	{
 //		WgMode mode = WG_MODE_NORMAL;
 //		if( !m_bEnabled )
 //			mode = WG_MODE_DISABLED;
 
-		return _markTestSkin(m_pSkin, ofs, WgRect(0,0,sz), WgStateEnum::Normal, m_markOpacity, m_scale);
+		return _markTestSkin(m_pSkin, ofs, geo, WgStateEnum::Normal, m_markOpacity, m_scale);
 	}
 	return false;
 }

@@ -53,6 +53,7 @@ namespace wg
 {
 	class Object;
 	class MemStack;
+    class HostBridge;
 };
 
 
@@ -71,7 +72,7 @@ public:
 class WgBase
 {
 public:
-	static void Init();
+	static void Init( wg::HostBridge * pHostBridge );
 	static void Exit();
 
 	static void 	SetDefaultCursor( WgCursor * pCursor );

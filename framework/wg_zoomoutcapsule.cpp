@@ -145,6 +145,9 @@ WgSize WgZoomOutCapsule::UnzoomedPreferredPixelSize() const
 
 int WgZoomOutCapsule::MatchingPixelHeight(int pixelWidth) const
 {
+	if (pixelWidth == 0)
+		return 0;
+
 	int preferredWidth = WgCapsule::PreferredPixelSize().w;
 	int preferredScaled = int(preferredWidth * m_outerZoom);
 
@@ -164,6 +167,9 @@ int WgZoomOutCapsule::MatchingPixelHeight(int pixelWidth) const
 
 int WgZoomOutCapsule::MatchingPixelWidth(int pixelHeight) const
 {
+	if (pixelHeight == 0)
+		return 0;
+
 	int preferredHeight = WgCapsule::PreferredPixelSize().h;
 	int preferredScaled = int(preferredHeight * m_outerZoom);
 
@@ -179,26 +185,14 @@ int WgZoomOutCapsule::MatchingPixelWidth(int pixelHeight) const
 	return matching;
 }
 
-//____ SetInnerTransition() ______________________________________________________________
+//____ SetPickableContent() ______________________________________________________________
 
-void WgZoomOutCapsule::SetInnerTransition(float factor)
+void WgZoomOutCapsule::SetPickableContent(bool bPickable)
 {
-	wg::limit(factor, 0.f, 1.f);
-
-	m_innerTransitionFactor = factor;
-	float zoom = m_minInnerZoom + (1.f-m_minInnerZoom)*WgUtil::ParametricBlendInOut(factor);
-
-	if( zoom != m_innerZoom )
-	{
-		if( zoom == 1.f && !m_bStaticScreenshot )
-		{
-			m_pScreenshot = nullptr;
-		}
-
-		m_innerZoom = zoom;
-		_requestRender();
-	}
+    m_bPickableContent = bPickable;
 }
+
+
 
 //____ SetInOutTransition() ___________________________________________________________
 
@@ -241,16 +235,14 @@ void WgZoomOutCapsule::SetTint( WgColor tint )
 
 WgRect WgZoomOutCapsule::ContentAreaPixels() const
 {
-	return _screenshotArea(PixelSize());
+	return PixelSize();
 }
 
 //____ ContentAreaPoints() ____________________________________________________________
 
 WgRect WgZoomOutCapsule::ContentAreaPoints() const
 {
-	WgRect r = ContentAreaPixels();
-
-	return { r.x*WG_SCALE_BASE/m_scale, r.y*WG_SCALE_BASE/m_scale, r.w*WG_SCALE_BASE/m_scale, r.h*WG_SCALE_BASE/m_scale };
+	return PointSize();
 }
 
 
@@ -258,7 +250,7 @@ WgRect WgZoomOutCapsule::ContentAreaPoints() const
 
 WgWidget * WgZoomOutCapsule::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 {
-	if( m_innerZoom == 1.f )
+	if( m_bPickableContent == false )
 		return WgCapsule::FindWidget(ofs,mode);
 	else
 	{
@@ -322,7 +314,7 @@ WgRect WgZoomOutCapsule::_childGeo()
 
 void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
-	if( m_innerZoom == 1.f )
+	if( m_bPickableContent == false )
 	{
 		WgCapsule::_onEvent(pEvent, pHandler);
 		return;
@@ -370,13 +362,13 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 		{
 			auto * pEv = const_cast<WgEvent::DropPick*>(static_cast<const WgEvent::DropPick*>(pEvent));
 
+            pEv->setHidePointer(true);
+            
 			WgCoord pickOfs = pEv->pickOfs();
 
 			WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, PixelSize(), m_state, m_scale) : WgRect(PixelSize());
 
-			WgRect screenshotArea = _screenshotArea(canvas);
-
-			if( screenshotArea.contains(pickOfs) || m_innerZoom > 0.95f )
+//			if( screenshotArea.contains(pickOfs) || m_innerZoom > 0.95f )
 			{
 				pEv->setPayload(wg::Dataset<WgWidgetWeakPtr>::create(m_hook.Widget()));
 
@@ -403,7 +395,7 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 
 				//
 
-				WgSize sz = m_pScreenshot->size()*m_minInnerZoom;
+				WgSize sz = m_pScreenshot->size();
 
 
 				auto pDragWidget = new WgSizeCapsule();
@@ -412,14 +404,14 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 				//
 
 				auto pShader = new WgShaderCapsule();
-				pShader->SetColor( {255,255,255,64} );
+				pShader->SetColor( {255,255,255,128} );
 				pShader->SetChild(pImage);
 
 				pDragWidget->SetChild(pShader);
-				pEv->setDragWidget( pDragWidget, screenshotArea.pos() - pickOfs  );
+                pEv->setDragWidget( pDragWidget, pickOfs );
 			}
-			else
-				return;             // Prevent WgWidget from setting default payload.
+//			else
+//				return;             // Prevent WgWidget from setting default payload.
 		}
 		break;
 
@@ -496,12 +488,10 @@ void WgZoomOutCapsule::_onCollectPatches( WgPatches& container, const WgRect& ge
 
 void WgZoomOutCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-	if( m_innerZoom == 1.f )
-		WgCapsule::_onMaskPatches( patches, geo, clip, blendMode );
-	else
-	{
-		// Let's make this simple. We don't mask anything when zoomed out.
-	}
+    if( m_bOutlineMode == false )
+    {
+        WgCapsule::_onMaskPatches( patches, geo, clip, blendMode );
+    }
 }
 
 
@@ -509,7 +499,7 @@ void WgZoomOutCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, co
 
 void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
-	if( m_innerZoom == 1.f && m_outerZoom == 1.f )
+	if( m_bOutlineMode == false ) //&& m_outerZoom == 1.f )
 	{
 		WgColor oldTint;
 
@@ -526,13 +516,6 @@ void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _c
 	}
 	else
 	{
-
-//        if( (!m_bStaticScreenshot && !m_bOutlineMode && (m_pScreenshot == nullptr || _canvas.size() != m_pScreenshot->PixelSize()) && m_hook.Widget() ))
-		if( (!m_bStaticScreenshot && m_pScreenshot == nullptr && m_hook.Widget() ))
-		{
-			_regenScreenshot();
-		}
-
 		WgColor oldTint;
 
 		if( m_tint != WgColor::White )
@@ -557,11 +540,11 @@ void WgZoomOutCapsule::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas
 
 //	WgCapsule::_onRender(pDevice, _canvas, _window);
 
-	if( m_innerZoom < 1.f || m_outerZoom < 1.f )
+	if( m_bOutlineMode == true || m_outerZoom < 1.f )
 	{
 		WgColor oldTint = pDevice->tintColor();
 
-		uint8_t newTint = uint8_t(oldTint.a*WgUtil::ParametricBlendInOut(1.f-m_innerTransitionFactor));
+	    uint8_t newTint = uint8_t(oldTint.a*WgUtil::ParametricBlendInOut(1.f /*-m_innerTransitionFactor*/));
 
 		pDevice->setTintColor( wg::Color8(oldTint.r, oldTint.g, oldTint.b, newTint) );
 
@@ -577,18 +560,8 @@ void WgZoomOutCapsule::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas
 		}
 		pDevice->setTintColor(oldTint);
 
-
-
-		if( m_bOutlineMode )
-		{
-			if( m_pOutlineSkin )
-				_renderSkin( m_pOutlineSkin, pDevice, m_state, _screenshotArea(canvas), m_scale);
-		}
-		else if( m_pScreenshot )
-		{
-			pDevice->setBlitSource(m_pScreenshot);
-			pDevice->stretchBlit(_screenshotArea(canvas));
-		}
+		if( m_bOutlineMode && m_pOutlineSkin )
+			_renderSkin( m_pOutlineSkin, pDevice, m_state, _canvas, m_scale);
 	}
 }
 
@@ -599,21 +572,6 @@ bool WgZoomOutCapsule::_onAlphaTest( const WgCoord& ofs )
 	WgSize sz = PixelSize();
 
 	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, sz, m_state, m_scale) : WgRect(sz);
-
-	if( m_pScreenshot )
-	{
-		WgRect r = _screenshotArea(canvas);
-
-		if( r.contains(ofs) )
-		{
-
-			//TODO: Figure out what is wrong and fix.
-
-//            int alpha = m_pScreenshot->GetOpacity((ofs-r.pos())/m_zoomOutScale);
-//            if( alpha >= m_markOpacity )
-				return true;
-		}
-	}
 
 	if( m_pButtonSkin )
 	{
@@ -648,15 +606,6 @@ void WgZoomOutCapsule::_setScale( int scale )
 	{
 		m_pScreenshot = nullptr;
 	}
-}
-
-//____ _screenshotArea() _____________________________________________________
-
-WgRect WgZoomOutCapsule::_screenshotArea( WgRect canvas ) const
-{
-	WgSize sz = { int(canvas.w*m_innerZoom), int(canvas.h*m_innerZoom) };
-
-	return { canvas.x + (canvas.w-sz.w)/2, canvas.y + (canvas.h-sz.h)/2, sz.w, sz.h };
 }
 
 //____ _buttonArea() _____________________________________________________

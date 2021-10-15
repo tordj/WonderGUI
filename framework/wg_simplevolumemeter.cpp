@@ -68,6 +68,17 @@ void WgSimpleVolumeMeter::SetColors( WgColor bottom, WgColor middle, WgColor top
 	}
 }
 
+//____ SetColors() ___________________________________________________________
+
+void WgSimpleVolumeMeter::SetBackgroundColor(WgColor background)
+{
+    if( background != m_backgroundColor )
+    {
+        m_backgroundColor = background;
+        m_bEnableBackgroundColor = true;
+        _requestRender();
+    }
+}
 //____ SetSections() _________________________________________________________
 
 void WgSimpleVolumeMeter::SetSections( float bottomFraction, float topFraction )
@@ -127,6 +138,18 @@ void WgSimpleVolumeMeter::SetHoldSkin(wg::Skin * pSkin)
 	}
 }
 
+//____ SetGradientSkin() _________________________________________________________
+
+void WgSimpleVolumeMeter::SetGradientSkin(wg::Skin * pSkin)
+{
+    //TODO: Should request resize too...
+
+    if (pSkin != m_pGradientSkin)
+    {
+        m_pGradientSkin = pSkin;
+        _requestRender();
+    }
+}
 
 //____ SetValue() ______________________________________________________________
 
@@ -385,6 +408,8 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 	int holdOfs 	= m_iHold[nb];
 
 	// Possibly render Hold
+    if(m_bEnableBackgroundColor)
+        pDevice->fill(_rect, m_backgroundColor);
 
 	if( m_iHoldHeight > 0 )
 	{
@@ -498,7 +523,8 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 		}
 	}
 
-
+    if(m_pGradientSkin)
+        _renderSkin( m_pGradientSkin, pDevice, WgStateEnum::Normal, _rect, m_scale);
 }
 
 //____ _updateIValues() ______________________________________________________

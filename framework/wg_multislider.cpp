@@ -531,7 +531,7 @@ void WgMultiSlider::_setSliderStates(Slider& slider, WgState newSliderState, WgS
 
 	if (pSliderSkin && !_skinDirtyRect(pSliderSkin, {0,0,100,100}, m_scale, slider.sliderState, newSliderState).isEmpty())
 		_requestRenderSlider(&slider);
-	else if (pHandleSkin  && !_skinDirtyRect(pSliderSkin, {0,0,100,100}, m_scale, slider.handleState, newHandleState).isEmpty())
+	else if (pHandleSkin  && !_skinDirtyRect(pHandleSkin, {0,0,100,100}, m_scale, slider.handleState, newHandleState).isEmpty())
 		_requestRenderHandle(&slider);
 
 	// Possibly send messages

@@ -238,6 +238,12 @@ void WgPopupOpener::_onNewSize( const WgSize& size )
 	m_text.setLineWidth(textRect.w);
 }
 
+
+void WgPopupOpener::SetScale( int scale )
+{
+    if (m_scale != scale)
+        _setScale(scale);
+}
 //____ _setScale() _____________________________________________________________
 
 void WgPopupOpener::_setScale( int scale )

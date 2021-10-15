@@ -865,7 +865,9 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 
 			if( p->Wheel() == 1 )
 			{
-				int distance = p->Distance();
+                int inverter = static_cast<const WgEvent::MouseWheelRoll*>(pEvent)->InvertScroll() ? -1 : 1;
+
+				int distance = p->Distance()*inverter;
 				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 					SetSliderPos( m_pSliderTargetInterface->_wheelRolled(distance) );
 

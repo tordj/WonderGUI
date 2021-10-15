@@ -8,5 +8,5 @@ rm -rf ../framework/fonts
 
 
 cp -rf imports/* ../framework
-ruby flip_files.rb ../framework/base/* ../framework/components/* ../framework/gfxdevices/**/* ../framework/skins/*.cpp ../framework/skins/*.h ../framework/skins/**/*  ../framework/fonts/**/*
+ruby flip_files.rb ../framework/baselibrary/base/* ../framework/baselibrary/components/* ../framework/gfxdevices/**/* ../framework/baselibrary/skins/*.cpp ../framework/baselibrary/skins/*.h ../framework/baselibrary/skins/**/*  ../framework/fontengines/**/*
 

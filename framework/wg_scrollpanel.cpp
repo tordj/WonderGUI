@@ -68,8 +68,11 @@ WgScrollPanel::WgScrollPanel()
 	m_bAutoScrollX		= false;
 	m_bAutoScrollY		= false;
 
-	m_wheelForScrollX	= 2;
-	m_wheelForScrollY	= 1;
+    m_mouseWheelAxis[0] = wg::Axis::Undefined;
+    m_mouseWheelAxis[1] = wg::Axis::Y;
+    m_mouseWheelAxis[2] = wg::Axis::X;
+    m_mouseWheelAxis[3] = wg::Axis::Undefined;
+    m_mouseWheelAxis[4] = wg::Axis::Undefined;
 
 	m_bOverlayScrollbars = true;
 
@@ -1442,10 +1445,13 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 				m_rubberBorderPause = 300;
 				int wheel = pEvent->Wheel();
 
-				if( wheel == m_wheelForScrollY )
-					_wheelRollY( pEvent->Distance() );
-				else if( wheel == m_wheelForScrollX )
-					_wheelRollX( pEvent->Distance() );
+                auto axis = wheel >= 0 && wheel < 5 ? m_mouseWheelAxis[wheel] : wg::Axis::Undefined;
+                int inverter = pEvent->InvertScroll() ? -1 : 1;
+
+                if(axis == wg::Axis::X)
+                    _wheelRollX( pEvent->Distance()*inverter );
+                else if(axis == wg::Axis::Y)
+                    _wheelRollY( pEvent->Distance()*inverter );
 				else
 					bCallSuper = true;
 			}
@@ -1461,8 +1467,8 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 			{
 				WgCoord pos = _pEvent->PointerPixelPos();
 
-				if( !m_elements[WINDOW].m_windowGeo.contains(pos) )
-					break;
+//				if( !m_elements[WINDOW].m_windowGeo.contains(pos) )
+//					break;
 
 				WgBorders border = m_hoverScrollBorder.scale(m_scale);
 				WgRect center = m_elements[WINDOW].m_windowGeo - border;
@@ -1478,9 +1484,14 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 					dirY = pos.y - center.y;
 				else if( pos.y > center.y + center.h )
 					dirY = pos.y - (center.y + center.h);
+                
+                int maxScrollSpeed = m_hoverScrollSpeed * m_scale / WG_SCALE_BASE;
 
-				dirX = dirX * m_hoverScrollSpeed * m_scale / (border.left * WG_SCALE_BASE);
-				dirY = dirY * m_hoverScrollSpeed * m_scale / (border.top * WG_SCALE_BASE);
+				dirX = dirX * maxScrollSpeed / border.left;
+				dirY = dirY * maxScrollSpeed / border.top;
+               
+                wg::limit( dirX, -maxScrollSpeed, maxScrollSpeed );
+                wg::limit( dirY, -maxScrollSpeed, maxScrollSpeed );
 
 				if( dirX == 0 && dirY == 0 )
 				{
@@ -1740,12 +1751,15 @@ void WgScrollPanel::_onCloneContent( const WgWidget * _pOrg )
 	//
 }
 
+
 //______________________________________________________________________________
-bool WgScrollPanel::SetScrollWheels( int wheelForX, int wheelForY )
+bool WgScrollPanel::SetMouseWheelAxis(int wheelNb, wg::Axis axis)
 {
-	m_wheelForScrollX = wheelForX;
-	m_wheelForScrollY = wheelForY;
-	return true;
+    if( wheelNb < 0 || wheelNb > 4 )
+        return false;
+    
+    m_mouseWheelAxis[wheelNb] = axis;
+    return true;
 }
 
 //_____________________________________________________________________________

@@ -291,7 +291,7 @@ void WgTooltipLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pH
         WgCoord mousePos = pEvent->PointerScreenPixelPos() - ScreenPixelPos();
         WgWidget* pHovered = FindWidget(mousePos, WgSearchMode::ActionTarget);
 
-        if (pHovered->GetTooltipString().isEmpty())
+        if (pHovered && pHovered->GetTooltipString().isEmpty())
             pHovered = nullptr;
         
         if (m_tooltipHook.Widget())

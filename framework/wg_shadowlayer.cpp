@@ -89,14 +89,14 @@ WgContainer * WgShadowHook::_parent() const
 
 WgShadowLayer::WgShadowLayer() : m_frontHook(this)
 {
-	_startReceiveTicks();
+//	_startReceiveTicks();
 }
 
 //____ Destructor _____________________________________________________________
 
 WgShadowLayer::~WgShadowLayer()
 {
-	_stopReceiveTicks();
+//	_stopReceiveTicks();
 }
 
 //____ Type() _________________________________________________________________
@@ -458,7 +458,7 @@ void WgShadowLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 	{
 		case WgEventType::WG_EVENT_TICK:
 		{
-			_requestPreRenderCall();
+//			_requestPreRenderCall();
 			break;
 		}
 
@@ -574,90 +574,99 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		m_frontHook.Widget()->_onMaskPatches(patches, contentGeo, contentGeo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 	patches.clip(_canvas);
-	if (patches.isEmpty())
-		return;
-
-	// If we have a skin, render it
-
-	if (m_pSkin)
+	if (!patches.isEmpty())
 	{
-		pDevice->setClipList(patches.size(), patches.begin());
-		_renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale );
-	}
+		// If we have a skin, render it
 
-	// Render base slot widgets
-
-	if (m_baseHook.Widget() )
-		m_baseHook.Widget()->_renderPatches(pDevice, contentGeo, contentGeo, &patches);
-
-	// Update shadow layer
-
-	bool bFullSurfaceUpdate = !m_pShadowSurface;
-
-	if (!m_pShadowSurface)
-	{
-		auto pSurfaceFactory = wg::Base::activeContext()->surfaceFactory();
-
-		if (pSurfaceFactory)
-			m_pShadowSurface = pSurfaceFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8);
-	}
-
-	if (m_pShadowSurface)
-	{
-		WgPatches   shadowPatches;
-
-		if (bFullSurfaceUpdate)
-			shadowPatches.push({ 0,0, _canvas.size() });
-		else
+		if (m_pSkin)
 		{
-			const WgRect * pPatches = patches.begin();
-			for (int i = 0; i < patches.size(); i++)
-				shadowPatches.push(pPatches[i] - _canvas.pos());
+			pDevice->setClipList(patches.size(), patches.begin());
+			_renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale );
 		}
 
-		auto oldBlendMode = pDevice->blendMode();
-		auto oldTint = pDevice->tintColor();
+		// Render base slot widgets
 
-		if (!shadowPatches.isEmpty())
+		if (m_baseHook.Widget() )
+			m_baseHook.Widget()->_renderPatches(pDevice, contentGeo, contentGeo, &patches);
+
+		// Update shadow layer
+
+		bool bFullSurfaceUpdate = !m_pShadowSurface;
+
+		if (!m_pShadowSurface)
 		{
-			auto oldCanvas = pDevice->canvas();
+			auto pSurfaceFactory = wg::Base::activeContext()->surfaceFactory();
 
-			pDevice->beginCanvasUpdate(m_pShadowSurface,shadowPatches.size(), shadowPatches.begin());
-
-			pDevice->setTintColor(WgColor::White);
-			pDevice->setBlendMode(WgBlendMode::Replace);
-			pDevice->fill( wg::Color8(0,0,0,0) );
-
-			pDevice->setBlendMode(WgBlendMode::Max);
-
-			for (auto& shadow : m_shadows)
-				if( !shadow.m_geo.isEmpty() )
-					_renderSkin( shadow.shadow(), pDevice, WgStateEnum::Normal, shadow.m_geo, shadow.widget()->Scale());
-
-
-			pDevice->endCanvasUpdate();
+			if (pSurfaceFactory)
+			{
+				m_pShadowSurface = pSurfaceFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Canvas);
+				m_pShadowSurface->fill(WgColor::Transparent);
+			}
 		}
 
+		if (m_pShadowSurface)
+		{
+			WgPatches   shadowPatches;
 
-		// Render shadows
+			if (bFullSurfaceUpdate)
+				shadowPatches.push({ 0,0, _canvas.size() });
+			else
+			{
+				const WgRect * pPatches = patches.begin();
+				for (int i = 0; i < patches.size(); i++)
+					shadowPatches.push(pPatches[i] - _canvas.pos());
+			}
 
-		pDevice->setTintColor( wg::Color8(255,255,255,m_shadowTint) );
-		pDevice->setBlendMode(WgBlendMode::Blend);
-		pDevice->setBlitSource( m_pShadowSurface );
-		pDevice->blit( _canvas.pos() );
+			auto oldBlendMode = pDevice->blendMode();
+			auto oldTint = pDevice->tintColor();
 
-//        for (auto& shadow : m_shadows)
-//            pDevice->blit( shadow.m_geo.pos() + _canvas.pos(), shadow.m_geo );
+			if (!shadowPatches.isEmpty())
+			{
+				auto oldCanvas = pDevice->canvas();
 
-		pDevice->setTintColor(oldTint);
-		pDevice->setBlendMode(oldBlendMode);
+				pDevice->beginCanvasUpdate(m_pShadowSurface,shadowPatches.size(), shadowPatches.begin());
 
+				pDevice->setTintColor(WgColor::White);
+				pDevice->setBlendMode(WgBlendMode::Replace);
+				pDevice->fill( wg::Color8(0,0,0,0) );
+
+				pDevice->setBlendMode(WgBlendMode::Max);
+
+				for (auto& shadow : m_shadows)
+					if( !shadow.m_geo.isEmpty() && shadow.widget() )
+						_renderSkin( shadow.shadow(), pDevice, WgStateEnum::Normal, shadow.m_geo, shadow.widget()->Scale());
+
+
+				pDevice->endCanvasUpdate();
+			}
+
+        
+			// Render shadows
+
+			pDevice->setClipList(patches.size(), patches.begin());
+
+			pDevice->setTintColor( wg::Color8(255,255,255,m_shadowTint) );
+			pDevice->setBlendMode(WgBlendMode::Blend);
+			pDevice->setBlitSource( m_pShadowSurface );
+			pDevice->blit( _canvas.pos() );
+
+	//        for (auto& shadow : m_shadows)
+	//            pDevice->blit( shadow.m_geo.pos() + _canvas.pos(), shadow.m_geo );
+
+			pDevice->setTintColor(oldTint);
+			pDevice->setBlendMode(oldBlendMode);
+
+		}
 	}
 
 	//Render front slot widgets
 
 	if (m_frontHook.Widget() )
 		m_frontHook.Widget()->_renderPatches(pDevice, contentGeo, contentGeo, _pPatches);
+
+    // Request next PreRenderCall.
+    
+    _requestPreRenderCall();
 
 }
 

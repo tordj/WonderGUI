@@ -144,6 +144,9 @@ public:
 	WgCoord			ScreenPixelPos() const { if( m_pHook ) return m_pHook->ScreenPixelPos(); return WgCoord(0,0); }
 	WgRect			ScreenPixelGeo() const { if( m_pHook ) return m_pHook->ScreenPixelGeo(); return WgRect(0,0,256,256); }
 
+    bool            LockPointer();
+    void            ReleasePointer();
+    
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
 	bool			ReleaseFocus() { if( m_pHook && m_bFocused ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_bFocused; }
@@ -223,7 +226,7 @@ protected:
 	bool            _requestPreRenderCall();
 
     int             _listAncestors(WgWidget* array[], int max);
-    
+
 	// Convenient calls to hook
 
 	void			_requestRender() { if( m_pHook ) m_pHook->_requestRender(); }
@@ -304,6 +307,8 @@ protected:
 	uint8_t         m_pickCategory;     // Category of drag-n-drop operations. User defined.
 
 	bool            m_bDropTarget;      // Set if this widget accepts to be the target of drag-n-drop operations.
+    
+    bool            m_bPointerLocked = false;
 };
 
 typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;
@@ -332,4 +337,3 @@ template<typename T> const T* WgCast(const WgWidget * pWidget)
 
 
 #endif
-

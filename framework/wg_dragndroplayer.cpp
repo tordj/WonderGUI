@@ -115,7 +115,15 @@ const char * WgDragNDropLayer::GetClass()
 
 WgWidget * WgDragNDropLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 {
-	// Widget being dragged is totally transparent to the mouse, so we just
+    auto pEvHandler = _eventHandler();
+    if( pEvHandler && pEvHandler->isPointerLocked() )
+    {
+        //TODO: Should make sure widget is a descendant of us.
+        
+        return pEvHandler->LockedPointerWidget();
+    }
+    
+    // Widget being dragged is totally transparent to the mouse, so we just
 	// forward to our child.
 
 	WgWidget * pWidget = m_baseHook.Widget();
@@ -138,7 +146,7 @@ WgWidget * WgDragNDropLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 
 //____ Pick() _________________________________________________________________
 
-bool WgDragNDropLayer::Pick( WgWidget * pWidget, WgCoord pickOfs )
+bool WgDragNDropLayer::Pick( WgWidget * pWidget, WgCoord pickOfs, bool bHidePointer )
 {
 	// Pick is not allowed if a widget already is picked.
 
@@ -166,8 +174,11 @@ bool WgDragNDropLayer::Pick( WgWidget * pWidget, WgCoord pickOfs )
 	m_pPicked = pWidget;
 	m_pickCategory = pWidget->pickCategory();
 
-	_eventHandler()->QueueEvent(new WgEvent::DropPick(pWidget, pickOfs, this));
+    auto pEvent = new WgEvent::DropPick(pWidget, pickOfs, this);
+    pEvent->setHidePointer(bHidePointer);
+	_eventHandler()->QueueEvent( pEvent );
 	m_dragState = DragState::Picked;
+    m_pLockedDropHoverTarget = nullptr;
 
 	return true;
 }
@@ -352,7 +363,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 						if( targetOfs != m_targetOfs )
 						{
 							m_targetOfs = targetOfs;
-							pHandler->QueueEvent(new WgEvent::DropMove(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), m_dragHook.m_pWidget, this ));
+							pHandler->QueueEvent(new WgEvent::DropMove(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), m_dragHook.m_pWidget, m_dragWidgetOfs, m_bDeleteDraggedWhenDone, this ));
 						}
 					}
 					break;
@@ -385,6 +396,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 						WgCoord pickOfs = pEvent->StartPixelPos();
 						pHandler->QueueEvent(new WgEvent::DropPick(m_pPicked.GetRealPtr(), pickOfs, this));
 						m_dragState = DragState::Picked;
+                        m_pLockedDropHoverTarget = nullptr;
 					}
 					break;
 				}
@@ -508,6 +520,15 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 
 				m_pPayload = pEvent->payload();
 
+                // Possibly hide pointer
+                
+                if( pEvent->isHidingPointer() )
+                {
+                    m_bPointerHidden = true;
+                    _eventHandler()->HidePointer();
+                }
+                
+                
 				// Set/generate drag widget (widget actually dragged across the screen)
 
 				auto pDragWidget = pEvent->dragWidget();
@@ -564,7 +585,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 			{
 				WgWidget * pTargeted = pEvent->Widget();
 
-				pHandler->QueueEvent(new WgEvent::DropEnter(pTargeted, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), m_dragHook.m_pWidget,  this));
+				pHandler->QueueEvent(new WgEvent::DropEnter(pTargeted, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), m_dragHook.m_pWidget, m_dragWidgetOfs, m_bDeleteDraggedWhenDone, this));
 
 				m_pProbed = nullptr;
 				m_pTargeted = pTargeted;
@@ -582,7 +603,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 			// Check if we need to change drag widget
 
 			if( pEvent->dragWidget() != m_dragHook.m_pWidget )
-				_replaceDragWidget(pEvent->dragWidget());
+				_replaceDragWidget(pEvent->dragWidget(),pEvent->deleteDragWidgetWhenDone());
 			break;
 		}
 
@@ -593,8 +614,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 			// Check if we need to change drag widget
 
 			if( pEvent->dragWidget() != m_dragHook.m_pWidget )
-				_replaceDragWidget(pEvent->dragWidget());
-
+				_replaceDragWidget(pEvent->dragWidget(),pEvent->deleteDragWidgetWhenDone());
 			break;
 		}
 
@@ -637,10 +657,13 @@ void WgDragNDropLayer::_cancel()
 		m_pTargeted = nullptr;
 	}
 
-	_eventHandler()->QueueEvent(new WgEvent::DropCancel(m_pPicked.GetRealPtr(), m_pickCategory, nullptr));
-	m_pPicked = nullptr;
+    _eventHandler()->QueueEvent(new WgEvent::DropCancel(m_pPicked.GetRealPtr(), m_pickCategory, nullptr, m_pPicked));
+    m_pPicked = nullptr;
 	m_pPayload = nullptr;
 	m_dragState = DragState::Idle;
+    
+    if( m_bPointerHidden )
+        _eventHandler()->ShowPointer();
 }
 
 //____ _complete() _______________________________________________________________
@@ -661,19 +684,28 @@ void WgDragNDropLayer::_complete( WgWidget * pDeliveredTo )
 	m_pPicked = nullptr;
 	m_pPayload = nullptr;
 	m_dragState = DragState::Idle;
+
+    if( m_bPointerHidden )
+        _eventHandler()->ShowPointer();
 }
 
 //____ _replaceDragWidget() ______________________________________________________
 
-void WgDragNDropLayer::_replaceDragWidget( WgWidget * pNewWidget )
+void WgDragNDropLayer::_replaceDragWidget( WgWidget * pNewWidget, bool bDeleteWhenDone )
 {
 	WgSize newSize = pNewWidget->PreferredPixelSize();
 	WgSize maxSize = WgSize::max(m_dragHook.m_geo.size(),newSize);
 
+    WgWidget * pOld = m_dragHook.m_pWidget;
 	_replaceWidgetInHook( pNewWidget );
 	m_dragHook.m_geo.setSize(newSize);
+    _requestRender(maxSize);
 
-	_requestRender(maxSize);
+    if( pOld && m_bDeleteDraggedWhenDone )
+        delete pOld;
+    
+    m_bDeleteDraggedWhenDone = bDeleteWhenDone;
+    
 }
 
 
@@ -725,10 +757,11 @@ int WgDragNDropLayer::_widgetPosInList( const WgWidget * pWidget, const std::vec
 
 void WgDragNDropLayer::_updateDropHovered( WgCoord hoverPos )
 {
-	WgWidget * pMarkedWidget = FindWidget(hoverPos, wg::SearchMode::ActionTarget);
+
+	WgWidget * pMarkedWidget = m_pLockedDropHoverTarget ? m_pLockedDropHoverTarget.GetRealPtr() : FindWidget(hoverPos, wg::SearchMode::ActionTarget);
 
 	// Loop through our new widgets and check if they already
-	// were entered. Send MouseEnter to all new widgets and notice the first
+	// were entered. Send DropHoverEnter to all new widgets and notice the first
 	// common ancestor .
 
 	for( WgWidget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->Parent() )
@@ -743,7 +776,7 @@ void WgDragNDropLayer::_updateDropHovered( WgCoord hoverPos )
 			_queueEvent( new WgEvent::DropHoverEnter( pWidget, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
 	}
 
-	// Send MouseLeave to those that were left.
+	// Send DropHoverLeave to those that were left.
 
 	for( size_t i = 0 ; i < m_vHoveredInside.size() ; i++ )
 		if(m_vHoveredInside[i] )

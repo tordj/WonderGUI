@@ -81,7 +81,7 @@ public:
 	virtual WgSize	PreferredPixelSize() const;
 
 	bool			IsAutoEllipsisDefault() const { return false; };
-
+    void            SetScale(int scale);
 
 protected:
 

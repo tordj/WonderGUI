@@ -65,6 +65,8 @@ public:
 
     void SetDisplayTooltips(bool bDisplay);
     bool DisplayTooltips() const { return m_bDisplayTooltips;  }
+    
+    void SetPopupDelayTimer(int iMillisec) { m_hoverMillisec = iMillisec;}
 
     
     virtual WgWidget *     FindWidget( const WgCoord& ofs, WgSearchMode mode ) override;
@@ -85,7 +87,6 @@ protected:
         TooltipHook *    Next() const { return nullptr; }
 
         WgTooltipLayer *    Parent() const;
-
 
     protected:
         TooltipHook(WgTooltipLayer * pParent) : m_pParent(pParent) {}

@@ -53,6 +53,14 @@ WgEventHandler::WgEventHandler( WgRootPanel * pRoot )
 
 WgEventHandler::~WgEventHandler()
 {
+	while( !m_eventQueue.empty() )
+	{
+		// Delete all events in queue as we have ownership of them
+		WgEvent::Event * pEvent = m_eventQueue.front();
+		delete pEvent;
+
+		m_eventQueue.pop_front();		
+	}
 }
 
 //____ SetModKeyMap() _________________________________________________________
@@ -414,6 +422,30 @@ int WgEventHandler::DeleteDeadCallbacks()
 	}
 
 	return nDeleted;
+}
+
+//____ HidePointer() _________________________________________________________
+
+void WgEventHandler::HidePointer()
+{
+    if( m_pointerHideCount == 0 )
+    {
+        wg::Base::hostBridge()->hidePointer();
+    }
+    
+    m_pointerHideCount++;
+}
+
+//____ ShowPointer() __________________________________________________________
+
+void WgEventHandler::ShowPointer()
+{
+    m_pointerHideCount--;
+    
+    if( m_pointerHideCount == 0 )
+    {
+        wg::Base::hostBridge()->showPointer();
+    }
 }
 
 
@@ -790,6 +822,27 @@ bool WgEventHandler::_handleEavesdropping( WgWidget * pReceiver, WgEvent::Event 
 	}
 
 	return false;
+}
+
+//____ _widgetLockPointer() __________________________________________________
+
+bool WgEventHandler::_widgetLockPointer(WgWidget * pWidget)
+{
+    if( m_pWidgetLockedPointer )
+        return false;
+
+    m_pWidgetLockedPointer = pWidget;
+    return true;
+}
+
+//____ _widgetReleasePointer() _______________________________________________
+
+void WgEventHandler::_widgetReleasePointer(WgWidget * pWidget)
+{
+    if( pWidget == m_pWidgetLockedPointer.GetRealPtr() )
+    {
+        m_pWidgetLockedPointer = nullptr;
+    }
 }
 
 
@@ -1197,46 +1250,54 @@ void WgEventHandler::_updateMarkedWidget(bool bMouseMoved)
 	if( m_markedLockCountdown > 0 )
 		return;
 
-	WgWidget * pWidgetTarget = m_pRoot->FindWidget( m_pointerPos, WgSearchMode::ActionTarget );
+    // Figure out which button of currently pressed has been pressed the longest.
+    // Mouse is only allowed to mark Widgets that were marked on press of that button.
 
-	// Figure out which button of currently pressed has been pressed the longest.
-	// Mouse is only allowed to mark Widgets that were marked on press of that button.
+    int button = 0;                                // Button that has been pressed for longest, 0 = no button pressed
+    for( int i = 1 ; i <= WG_MAX_BUTTONS ; i++ )
+    {
+        if( m_bButtonPressed[i] && (button == 0 || m_pLatestPressEvents[i]->Timestamp() < m_pLatestPressEvents[button]->Timestamp()) )
+            button = i;
+    }
+    
+    //
+    
+    WgWidget*  pNowMarked = 0;
+    if( m_pWidgetLockedPointer )
+    {
+        pNowMarked = m_pWidgetLockedPointer.GetRealPtr();
+    }
+    else
+    {
+        WgWidget * pWidgetTarget = m_pRoot->FindWidget( m_pointerPos, WgSearchMode::ActionTarget );
 
-	int button = 0;								// Button that has been pressed for longest, 0 = no button pressed
-	for( int i = 1 ; i <= WG_MAX_BUTTONS ; i++ )
-	{
-		if( m_bButtonPressed[i] && (button == 0 || m_pLatestPressEvents[i]->Timestamp() < m_pLatestPressEvents[button]->Timestamp()) )
-			button = i;
-	}
+        // We are only marking the Widget if no mouse button is pressed or widget was marked when the first button was pressed
 
-	// We are only marking the Widget if no mouse button is pressed or widget was marked when the first button was pressed
+        if( button == 0 )
+            pNowMarked = pWidgetTarget;
+        else
+        {
+            // Checking widgets marked while the button was pressed recursively
+            //TODO: This check can fail if hierarchy has changed since button was pressed.
+            // We need to explicitly save all widgets receiving the press and check against that list.
+            // I believe we have the same problem inside _updateEnteredWidgets().
 
-	WgWidget*  pNowMarked = 0;
-
-	if( button == 0 )
-		pNowMarked = pWidgetTarget;
-	else
-	{
-		// Checking widgets marked while the button was pressed recursively
-		//TODO: This check can fail if hierarchy has changed since button was pressed.
-		// We need to explicitly save all widgets receiving the press and check against that list.
-		// I believe we have the same problem inside _updateEnteredWidgets().
-
-		while (pNowMarked == 0 && pWidgetTarget != 0)
-		{
-			WgWidget * pPressed = m_latestPressWidgets[button].GetRealPtr();
-			while (pPressed)
-			{
-				if (pWidgetTarget == pPressed)
-				{
-					pNowMarked = pWidgetTarget;
-					break;
-				}
-				pPressed = pPressed->Parent();
-			}
-			pWidgetTarget = pWidgetTarget->Parent();
-		}
-	}
+            while (pNowMarked == 0 && pWidgetTarget != 0)
+            {
+                WgWidget * pPressed = m_latestPressWidgets[button].GetRealPtr();
+                while (pPressed)
+                {
+                    if (pWidgetTarget == pPressed)
+                    {
+                        pNowMarked = pWidgetTarget;
+                        break;
+                    }
+                    pPressed = pPressed->Parent();
+                }
+                pWidgetTarget = pWidgetTarget->Parent();
+            }
+        }
+    }
 
 	// Post POINTER_EXIT events for widgets no longer marked,
 	// Post POINTER_ENTER events for new marked widgets
@@ -1488,7 +1549,7 @@ void WgEventHandler::_processMouseWheelRoll( WgEvent::MouseWheelRoll * pEvent )
 	WgWidget * pWidget = m_pMarkedWidget.GetRealPtr();
 
 	if( pWidget )
-		QueueEvent( new WgEvent::MouseWheelRoll( pEvent->Wheel(), pEvent->Distance(), pWidget ) );
+		QueueEvent( new WgEvent::MouseWheelRoll( pEvent->Wheel(), pEvent->Distance(), pEvent->InvertScroll(), pWidget ) );
 
 	m_markedLockCountdown = 120;
 }

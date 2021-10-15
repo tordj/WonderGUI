@@ -2,22 +2,23 @@ rm -rf exports
 mkdir exports
 
 cd exports
-mkdir base
-mkdir components
+mkdir baselibrary
+mkdir baselibrary/base
+mkdir baselibrary/components
+mkdir baselibrary/skins
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
 mkdir gfxdevices/metal
-mkdir skins
-mkdir fonts
+mkdir fontengines
 cd ..
 
 
-cp -r ../framework/base exports/
-cp -r ../framework/components exports/
+cp -r ../framework/baselibrary/base exports/baselibrary
+cp -r ../framework/baselibrary/components exports/baselibrary
 cp -r ../framework/gfxdevices exports/
-cp -r ../framework/skins exports/
-cp -r ../framework/fonts exports/ 
+cp -r ../framework/baselibrary/skins exports/baselibrary
+cp -r ../framework/fontengines exports/ 
 
 
-ruby flip_files.rb exports/**/*.cpp exports/**/*.h exports/gfxdevices/**/* exports/fonts/**/*.cpp exports/fonts/**/*.h exports/skins/**/*.cpp exports/skins/**/*.h
+ruby flip_files.rb exports/baselibrary/**/*.cpp exports/baselibrary/**/*.h exports/gfxdevices/**/* exports/fontengines/**/*.cpp exports/fontengines/**/*.h exports/baselibrary/skins/**/*.cpp exports/baselibrary/skins/**/*.h

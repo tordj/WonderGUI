@@ -103,7 +103,10 @@ public:
 	void			SetSortFunction( WgWidgetSortFunc pSortFunc );
 	WgWidgetSortFunc	SortFunction() const { return m_pSortFunc; }
 
+    void            HideChildren( int index, int amount );
+    void            UnhideChildren( int index, int amount );
 
+    
 protected:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
@@ -122,6 +125,7 @@ protected:
 	virtual void	_onWidgetAppeared( WgVectorHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.
 	virtual void    _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast ) = 0;                // so parent can update geometry and possibly request
 	virtual void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
+    virtual void    _onWidgetsDisappeared( WgVectorHook * pFirst, WgVectorHook * pLast ) = 0;        // so parent can update geometry and possibly request render.
 	virtual void	_onWidgetsReordered() = 0;
 	virtual void	_refreshAllWidgets() = 0;
 	virtual WgVectorHook * _newHook() = 0;

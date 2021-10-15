@@ -334,12 +334,12 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 	{
         pDevice->beginCanvasUpdate(m_pCanvas,renderStack.size(), renderStack.begin(), m_pCanvasLayers, m_renderLayer);
 
-//		pDevice->setBlendMode(WgBlendMode::Replace);
-//		pDevice->setTintColor(WgColor::White);
+		pDevice->setBlendMode(WgBlendMode::Replace);
+		pDevice->setTintColor(WgColor::White);
 
-//		pDevice->fill(m_canvasFillColor);
+		pDevice->fill(m_canvasFillColor);
 
-//		pDevice->setBlendMode(WgBlendMode::Blend);
+		pDevice->setBlendMode(WgBlendMode::Blend);
         
         if(m_hook.Widget())
             m_hook.Widget()->_renderPatches(pDevice, _canvas.size(), _canvas.size(), &renderStack);

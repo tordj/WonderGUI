@@ -40,13 +40,13 @@ int WgBase::s_iSoftubeNumberOfInstances = 0;
 
 //____ Init() __________________________________________________________________
 
-void WgBase::Init()
+void WgBase::Init( wg::HostBridge * pHostBridge)
 {
 	s_iSoftubeNumberOfInstances++;
 	if(s_iSoftubeNumberOfInstances != 1)
 		return;
 
-	wg::Base::init(nullptr);
+	wg::Base::init(pHostBridge);
 
 	assert( s_pData == 0 );
 	s_pData = new Data;

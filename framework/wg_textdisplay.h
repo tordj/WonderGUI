@@ -69,7 +69,7 @@ public:
     virtual WgTextEditMode  GetEditMode() const { return m_text.GetEditMode(); }
 
     WgPointerStyle        GetPointerStyle() const;
-    wg::String            GetTooltipString() const;
+//    wg::String            GetTooltipString() const;
 
     virtual bool TempIsInputField() const { return IsEditable(); }
     virtual Wg_Interface_TextHolder* TempGetText() { return this; }
