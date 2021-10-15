@@ -998,6 +998,9 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
+		if (dstRect.w <= 0 || dstRect.h <= 0)
+			return;
+
 		if (patch.block.w == dstRect.w && patch.block.h == dstRect.h && patch.frame == dstFrame)
 		{
 			blit(dstRect.pos(), patch.block);

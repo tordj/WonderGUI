@@ -519,6 +519,11 @@ namespace wg
 			if (!m_pBlob)
 				delete[] m_pClut;		// Clut is not part of the blob.
 		}
+
+		if (m_pAlphaMap)
+		{
+			delete[] m_pAlphaMap;
+		}
 	}
 
 	//____ typeInfo() _________________________________________________________

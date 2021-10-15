@@ -602,6 +602,8 @@ MetalGfxDevice::MetalGfxDevice()
         // Finalize rendering here & push the command buffer to the GPU.
         [m_metalCommandBuffer commit];
 
+        [m_metalCommandBuffer waitUntilCompleted];
+
         m_bRendering = false;
 
         // Restore previously active device and exit
@@ -1824,8 +1826,11 @@ MetalGfxDevice::MetalGfxDevice()
                 case Command::SetCanvas:
                 {
                     if( renderEncoder != nil )
+                    {
                         [renderEncoder endEncoding];
-
+                        renderEncoder = nil;
+                    }
+                    
                     if( pCmd[0] == 0 && pCmd[1] == 0)
                     {
                         m_pActiveCanvas = nullptr;
@@ -1992,7 +1997,8 @@ MetalGfxDevice::MetalGfxDevice()
             }
         }
 
-        [renderEncoder endEncoding];
+        if( renderEncoder != nil )
+            [renderEncoder endEncoding];
 
         //
         

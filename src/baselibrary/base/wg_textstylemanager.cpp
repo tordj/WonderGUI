@@ -26,7 +26,7 @@
 
 namespace wg
 {
-	TextStyle ** TextStyleManager::s_pLookupTable = 0;		// Pointer at handle->pointer lookup table.
+	TextStyle ** TextStyleManager::s_pLookupTable = nullptr;// Pointer at handle->pointer lookup table.
 	int			TextStyleManager::s_capacity = 0;			// SizeI in entries for lookup table.
 	int			TextStyleManager::s_size = 0;
 	int			TextStyleManager::s_nextAvailable = -1;		// Offset in table for next available entry.
@@ -52,14 +52,20 @@ namespace wg
 
 	void TextStyleManager::init()
 	{
-		int capacity = 16;
+		// If s_pLookupTable is set, we assume we have bailed out on an earlier exit, thus
+		// still have a lookup table with entries that are still alive.
+        
+		if( s_pLookupTable == nullptr )
+		{
+			int capacity = 16;
 
-		s_pLookupTable = new TextStyle*[capacity];
-		s_capacity = capacity;
-		s_nextAvailable = 0;
+			s_pLookupTable = new TextStyle*[capacity];
+			s_capacity = capacity;
+			s_nextAvailable = 0;
 
-		for( int i = 0 ; i < capacity ; i++ )
-			* (int*)(&s_pLookupTable[i]) = i+1;
+			for( int i = 0 ; i < capacity ; i++ )
+				* (int*)(&s_pLookupTable[i]) = i+1;
+		}
 	}
 
 	//____ exit()_______________________________________________________________
@@ -76,7 +82,7 @@ namespace wg
 
 		delete [] s_pLookupTable;
 
-		s_pLookupTable = 0;
+		s_pLookupTable = nullptr;
 		s_capacity = 0;
 		s_size = 0;
 		s_nextAvailable = -1;
