@@ -35,14 +35,14 @@ So, in order to be able to run and debug these programs from within your IDE
 you need to specify your debugger working path to the WonderGUI directory. 
 
 
-********************************************
-**** SATISFYING DEPENDENCIES FOR YOU OS ****
-********************************************
+*********************************************
+**** SATISFYING DEPENDENCIES FOR YOUR OS ****
+*********************************************
 
-WonderGUI and everyting related requires C++11 or higher.
+WonderGUI and everything related requires C++11 or higher.
 
-The WonderGUI base library (wondergui.lib) has no external dependencies, but 
-separate addon libraries, example files and tools do have dependencies though.
+The WonderGUI base library (wondergui.lib) doesn't have any external 
+dependencies, but separate addon libraries, example files and tools do.
 There is a list of all build targets and their dependencies at the end of this
 document.
 
@@ -55,6 +55,11 @@ Linux
 
 All dependencies should be satisfied by your package manager. Just search,
 download and install the following packages:
+
+libsdl2-dev
+libsdl2-image-dev
+libfreetype6-dev
+libglew-dev
 
 
 Windows
