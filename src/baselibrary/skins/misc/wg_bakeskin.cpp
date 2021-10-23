@@ -40,14 +40,9 @@ namespace wg
 
 	//____ create() ___________________________________________________________
 
-	BakeSkin_p BakeSkin::create()
+	BakeSkin_p BakeSkin::create( const Blueprint& blueprint )
 	{
-		return BakeSkin_p(new BakeSkin(nullptr));
-	}
-
-	BakeSkin_p BakeSkin::create(Surface* pBakeSurface)
-	{
-		return BakeSkin_p(new BakeSkin(pBakeSurface));
+		return BakeSkin_p(new BakeSkin(blueprint));
 	}
 
 	BakeSkin_p BakeSkin::create(Surface* pBakeSurface, std::initializer_list<Skin_p> skins)
@@ -57,16 +52,31 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	BakeSkin::BakeSkin(Surface* pBakeSurface) : skins(this)
+	BakeSkin::BakeSkin(const Blueprint& blueprint)
 	{
-		m_pBakeSurface = pBakeSurface;
+		m_pBakeSurface = blueprint.surface;
+
+		m_blendMode = blueprint.blendMode;
+		m_tintColor = blueprint.color;
+		m_gradient = blueprint.gradient;
+		m_bSkinInSkin = blueprint.skinInSkin;
+		m_layer = blueprint.layer;
+
+		m_contentPadding = blueprint.contentPadding;
+		m_bContentPaddingSet = !blueprint.contentPadding.isEmpty();
+
+		//TODO: CDynamicVector should have a pushBack( iterator begin, interator end ) which we should use.
+
+		m_skins = blueprint.skins;
+
+		_onModified();
 	}
 
-	BakeSkin::BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skinsIn) : skins(this)
+	BakeSkin::BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skinsIn)
 	{
 		m_pBakeSurface = pBakeSurface;
 
-		skins.pushBack(skinsIn);
+		m_skins = skinsIn;
 
 		_onModified();
 	}
@@ -82,40 +92,6 @@ namespace wg
 	const TypeInfo& BakeSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ setBlendMode() _____________________________________________________
-
-	void BakeSkin::setBlendMode(BlendMode blend)
-	{
-		m_blendMode = blend;
-		_onModified();
-	}
-
-	//____ setColor() _____________________________________________________
-
-	void BakeSkin::setColor(HiColor color)
-	{
-		m_tintColor = color;
-		_onModified();
-	}
-
-	//____ setGradient() ______________________________________________________
-
-	void BakeSkin::setGradient(const Gradient& gradient)
-	{
-		m_gradient = gradient;
-		_onModified();
-	}
-
-	//____ setSkinInSkin() ____________________________________________________
-
-	void BakeSkin::setSkinInSkin(bool bInside)
-	{
-		if( m_bSkinInSkin != bInside )
-			m_bSkinInSkin = bInside;
-
-		_onModified();
 	}
 
 	//____ _minSize() __________________________________________________________
@@ -138,22 +114,6 @@ namespace wg
 		return m_cachedPreferredSize;
 
 	}
-
-	//____ setContentPadding() ____________________________________________
-
-	void BakeSkin::setContentPadding(const Border& padding)
-	{
-		if (padding != m_contentPadding)
-		{
-			m_contentPadding = padding;
-			m_bContentPaddingSet = !padding.isEmpty();
-
-			// Invalidate our geo cache
-
-			m_cachedScale = 0;
-		}
-	}
-
 
 	//____ _contentPadding() _______________________________________________
 
@@ -198,13 +158,6 @@ namespace wg
 		return canvas - m_cachedContentPadding[_stateToIndex(state)];
 	}
 
-	//____ setBakeSurface() ______________________________________________________
-
-	void BakeSkin::setBakeSurface(Surface* pSurface)
-	{
-		m_pBakeSurface = pSurface;
-	}
-
 	//____ _isOpaque() _____________________________________________________________
 
 	bool BakeSkin::_isOpaque(State state) const
@@ -217,7 +170,7 @@ namespace wg
 		if (m_opaqueStates.bit(_stateToIndex(state)))
 			return true;
 
-		for (auto& pSkin : skins)
+		for (auto& pSkin : m_skins)
 		{
 			if (pSkin &&  pSkin->_isOpaque(rect, canvasSize, scale, state))
 				return true;
@@ -230,7 +183,7 @@ namespace wg
 
 	bool BakeSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
-		for (auto& pSkin : skins)
+		for (auto& pSkin : m_skins)
 		{
 			if (pSkin && pSkin->_markTest(ofs,canvas,scale,state,opacityTreshold,value,value2))
 				return true;
@@ -250,7 +203,7 @@ namespace wg
 			return;
 		}
 
-		if (skins.isEmpty())
+		if (m_skins.empty())
 			return;
 
 		// 
@@ -295,7 +248,7 @@ namespace wg
 		{
 			RectSPX canvas = bakeCanvas;
 
-			for (auto it = skins.rbegin(); it != skins.rend(); it++ )
+			for (auto it = m_skins.rbegin(); it != m_skins.rend(); it++ )
 			{
 				if ((*it) != nullptr)
 				{
@@ -306,7 +259,7 @@ namespace wg
 		}
 		else
 		{
-			for (auto it = skins.rbegin(); it != skins.rend(); it++)
+			for (auto it = m_skins.rbegin(); it != m_skins.rend(); it++)
 			{
 				if ((*it) != nullptr)
 					(*it)->_render(pDevice, bakeCanvas, scale, state, value, value2, animPos, pStateFractions);
@@ -334,7 +287,7 @@ namespace wg
 		RectSPX canvas = _canvas;
 		RectSPX r;
 
-		for (auto it = skins.rbegin(); it != skins.rend(); it++)
+		for (auto it = m_skins.rbegin(); it != m_skins.rend(); it++)
 		{
 			if ((*it) != nullptr)
 			{
@@ -389,7 +342,7 @@ namespace wg
 		SizeSPX preferred;
 		SizeSPX min;
 
-		for (auto& pSkin : skins)
+		for (auto& pSkin : m_skins)
 		{
 			if (pSkin)
 			{
@@ -403,7 +356,7 @@ namespace wg
 
 		// Update cached content padding.
 
-		if (m_bContentPaddingSet || skins.isEmpty())
+		if (m_bContentPaddingSet || m_skins.empty())
 		{
 			// Content padding is specified.
 
@@ -437,7 +390,7 @@ namespace wg
 
 				BorderSPX contentPadding;
 
-				for (auto& pSkin : skins)
+				for (auto& pSkin : m_skins)
 				{
 					if (pSkin)
 					{
@@ -458,7 +411,7 @@ namespace wg
 
 		BorderSPX padding;
 
-		for (auto& pSkin : skins)
+		for (auto& pSkin : m_skins)
 		{
 			if (pSkin)
 				padding += pSkin->_contentPadding(scale,state);
@@ -477,7 +430,7 @@ namespace wg
 		m_bContentShifting = false;
 		m_bIgnoresValue = true;
 
-		for (auto& pSkin : skins)
+		for (auto& pSkin : m_skins)
 		{
 			if (pSkin)
 			{
@@ -507,7 +460,7 @@ namespace wg
 
 			if (m_bSkinInSkin)
 			{
-				for (auto it = skins.end(); it != skins.begin(); )
+				for (auto it = m_skins.end(); it != m_skins.begin(); )
 				{
 					it--;
 					if ((*it) != nullptr)
@@ -529,7 +482,7 @@ namespace wg
 			}
 			else
 			{
-				for (auto& pSkin : skins)
+				for (auto& pSkin : m_skins)
 				{
 					if (pSkin)
 						bOpaque = bOpaque || pSkin->isOpaque();
@@ -547,7 +500,7 @@ namespace wg
 					State state = _indexToState(i);
 
 					bool bStateOpaque = false;
-					for (auto it = skins.end(); it != skins.begin(); )
+					for (auto it = m_skins.end(); it != m_skins.begin(); )
 					{
 						it--;
 						if ((*it) != nullptr)
@@ -581,7 +534,7 @@ namespace wg
 
 		m_transitioningStates = 0;
 
-		for (auto& pSkin : skins)
+		for (auto& pSkin : m_skins)
 		{
 			if (pSkin)
 			{
@@ -604,7 +557,7 @@ namespace wg
 
 			int		combinedLength = 0;
 
-			for (auto& pSkin : skins)
+			for (auto& pSkin : m_skins)
 			{
 				if (pSkin)
 				{
@@ -626,38 +579,11 @@ namespace wg
 		}
 	}
 
-	//____ didAddEntries() _______________________________________________________
-
-	void BakeSkin::_didAddEntries(Skin_p* pEntry, int nb)
-	{
-		_onModified();
-	}
-
-	// ____ _didMoveEntries() ____________________________________________________
-
-	void BakeSkin::_didMoveEntries(Skin_p* pFrom, Skin_p* pTo, int nb)
-	{
-		// Opacity might change when we have skin in skin.
-
-		if( !m_bSkinInSkin )
-			_onModified();
-	}
-
-	//____ _willEraseEntries() ________________________________________________
-
-	void BakeSkin::_willEraseEntries(Skin_p* pEntry, int nb)
-	{
-		for (int i = 0; i < nb; i++)
-			pEntry[i] = nullptr;
-
-		_onModified();
-	}
-
 	//____ _incUseCount() _________________________________________________________
 
 	void BakeSkin::_incUseCount()
 	{
-		for (auto& pSkin : skins)
+		for (auto& pSkin : m_skins)
 		{
 			if (pSkin)
                 _doIncUseCount(pSkin);
@@ -670,7 +596,7 @@ namespace wg
 
 	void BakeSkin::_decUseCount()
 	{
-		for (auto& pSkin : skins)
+		for (auto& pSkin : m_skins)
 		{
 			if (pSkin)
 				_doDecUseCount(pSkin);

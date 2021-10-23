@@ -36,9 +36,9 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	DoubleSkin_p DoubleSkin::create()
+	DoubleSkin_p DoubleSkin::create( const Blueprint& blueprint )
 	{
-		return DoubleSkin_p(new DoubleSkin());
+		return DoubleSkin_p(new DoubleSkin(blueprint));
 	}
 
 	DoubleSkin_p DoubleSkin::create(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin)
@@ -49,8 +49,17 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	DoubleSkin::DoubleSkin()
+	DoubleSkin::DoubleSkin( const Blueprint& blueprint )
 	{
+		m_pFrontSkin = blueprint.skins[0];
+		m_pBackSkin = blueprint.skins[1];
+		m_bSkinInSkin = blueprint.skinInSkin;
+
+		m_contentPadding = blueprint.contentPadding;
+		m_bContentPaddingSet = !blueprint.contentPadding.isEmpty();
+
+		m_layer = blueprint.layer;
+
 		_onModified();
 	}
 
@@ -75,46 +84,10 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setFrontSkin() _____________________________________________________
-
-	bool DoubleSkin::setFrontSkin(Skin * pSkin)
-	{
-		m_pFrontSkin = pSkin;
-		_onModified();
-		return true;
-	}
-
-	//____ setBackSkin() _____________________________________________________
-
-	bool DoubleSkin::setBackSkin(Skin* pSkin)
-	{
-		m_pBackSkin = pSkin;
-		_onModified();
-		return true;
-	}
-
-	//____ setSkinInSkin() _____________________________________________________
-
-	void DoubleSkin::setSkinInSkin(bool bInside)
-	{
-		m_bSkinInSkin = bInside;
-		_onModified();
-	}
-
-	//____ setContentPadding() ____________________________________________
-
-	void DoubleSkin::setContentPadding(const Border& padding)
-	{
-		m_contentPadding = padding;
-		m_bContentPaddingSet = !padding.isEmpty();
-	}
-
 	//____ _minSize() __________________________________________________________
 
 	SizeSPX DoubleSkin::_minSize(int scale) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		if (m_bSkinInSkin)
 			return m_pBackSkin->_sizeForContent(m_pFrontSkin->_minSize(scale),scale);
 		else
@@ -125,8 +98,6 @@ namespace wg
 
 	SizeSPX DoubleSkin::_preferredSize(int scale) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		if (m_bSkinInSkin)
 			return SizeSPX::max(m_pBackSkin->_sizeForContent(m_pFrontSkin->_preferredSize(scale),scale), m_pBackSkin->_preferredSize(scale));
 		else
@@ -137,8 +108,6 @@ namespace wg
 
 	SizeSPX DoubleSkin::_sizeForContent(const SizeSPX& contentSize, int scale) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		if (m_bSkinInSkin)
 			return m_pBackSkin->_sizeForContent(m_pFrontSkin->_sizeForContent(contentSize, scale), scale);
 		else
@@ -152,8 +121,6 @@ namespace wg
 
 	BorderSPX DoubleSkin::_contentPadding(int scale, State state) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		if (m_bContentPaddingSet)
 			return align(ptsToSpx(m_contentPadding,scale));
 		else if (m_bSkinInSkin)
@@ -167,8 +134,6 @@ namespace wg
 
 	SizeSPX DoubleSkin::_contentPaddingSize(int scale) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		if (m_bContentPaddingSet)
 			return align(ptsToSpx(m_contentPadding, scale));
 		else if (m_bSkinInSkin)
@@ -181,8 +146,6 @@ namespace wg
 
 	CoordSPX DoubleSkin::_contentOfs(int scale, State state) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		if( m_bContentPaddingSet )
 			return align(ptsToSpx(Coord(m_contentPadding.left, m_contentPadding.top),scale));
 		else if( m_bSkinInSkin )
@@ -195,8 +158,6 @@ namespace wg
 
 	RectSPX DoubleSkin::_contentRect(const RectSPX& canvas, int scale, State state) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		if (m_bContentPaddingSet)
 			return (canvas - align(ptsToSpx(m_contentPadding,scale)));
 
@@ -209,8 +170,6 @@ namespace wg
 
 	bool DoubleSkin::_isOpaque(State state) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		if (m_bOpaque)
 			return true;
 
@@ -222,8 +181,6 @@ namespace wg
 
 	bool DoubleSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		if (m_bOpaque)
 			return true;
 
@@ -240,8 +197,6 @@ namespace wg
 
 	bool DoubleSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		if (m_pBackSkin->_markTest(ofs, canvas, scale, state, opacityTreshold, value,value2))
 			return true;
 
@@ -253,8 +208,6 @@ namespace wg
 
 	void DoubleSkin::_render(GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
 		RectSPX canvas = _canvas;
 
 		int oldLayer = -1;

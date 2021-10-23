@@ -39,30 +39,27 @@ namespace wg
 	class DoubleSkin : public Skin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Border		contentPadding;
+			int			layer = -1;
+
+			bool		skinInSkin = true;
+			Skin_p		skins[2];
+		};
+
 		//.____ Creation __________________________________________
 
-		static DoubleSkin_p	create();
+		static DoubleSkin_p create( const Blueprint& blueprint );
 		static DoubleSkin_p create( Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin = true );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Appearance _________________________________________________
-
-		bool			setFrontSkin(Skin * pSkin);
-		Skin_p			frontSkin() const { return m_pFrontSkin; }
-
-		bool			setBackSkin(Skin * pSkin);
-		Skin_p			backSkin() const { return m_pBackSkin; }
-
-		void			setSkinInSkin(bool bInside);
-		bool			isSkinInSkin() const { return m_bSkinInSkin; }
-
-		//.____ Geometry _________________________________________________
-
-		void			setContentPadding(const Border& padding) override;
 
 		//.____ Misc ____________________________________________________
 
@@ -94,7 +91,7 @@ namespace wg
 		const int*		_transitionTimes() const override;
 
 	private:
-		DoubleSkin();
+		DoubleSkin( const Blueprint& blueprint );
 		DoubleSkin(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin = true);
 		~DoubleSkin();
 
@@ -104,7 +101,7 @@ namespace wg
 
 		Skin_p		m_pFrontSkin;
 		Skin_p		m_pBackSkin;
-		bool		m_bSkinInSkin = false;
+		bool		m_bSkinInSkin = true;
 		bool		m_bContentPaddingSet = false;
 
 		int			m_transitionTimes[StateBits_Nb];

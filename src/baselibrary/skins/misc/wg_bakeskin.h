@@ -23,7 +23,6 @@
 #define WG_BAKESKIN_DOT_H
 #pragma once
 
-#include <wg_cdynamicvector.h>
 #include <wg_surface.h>
 #include <wg_skin.h>
 #include <wg_color.h>
@@ -31,6 +30,7 @@
 
 #include <initializer_list>
 #include <utility>
+#include <vector>
 
 namespace wg
 {
@@ -38,47 +38,34 @@ namespace wg
 	typedef	StrongPtr<BakeSkin>	BakeSkin_p;
 	typedef	WeakPtr<BakeSkin>		BakeSkin_wp;
 
-	class BakeSkin : public Skin, protected CDynamicVector<Skin_p>::Holder
+	class BakeSkin : public Skin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Surface_p	surface;
+			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = HiColor::White;
+			Border		contentPadding;
+			Gradient	gradient;
+			int			layer = -1;
+
+			bool		skinInSkin = true;
+			std::vector<Skin_p>	skins;
+		};
+
 		//.____ Creation __________________________________________
 
-		static BakeSkin_p	create();
-		static BakeSkin_p	create(Surface* pBakeSurface);
+		static BakeSkin_p	create( const Blueprint& blueprint );
 		static BakeSkin_p	create( Surface * pBakeSurface, std::initializer_list<Skin_p> skins );
-
-		//.____ Components ____________________________________
-
-		CDynamicVector<Skin_p>	skins;
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Appearance _________________________________________________
-
-		void			setBlendMode( BlendMode blend );
-		BlendMode		blendMode() const { return m_blendMode; }
-
-		void			setColor(HiColor color);
-		HiColor			color() const { return m_tintColor; }
-
-		void			setGradient(const Gradient& gradient);
-		Gradient		gradient() const { return m_gradient; }
-
-
-		void			setSkinInSkin(bool bInside);
-		bool			isSkinInSkin() const { return m_bSkinInSkin; }
-
-		//.____ Geometry _________________________________________________
-
-		void			setContentPadding(const Border& padding) override;
-
-		//.____ Misc ____________________________________________________
-
-		void			setBakeSurface(Surface* pSurface);
-		Surface_p		bakeSurface() const { return m_pBakeSurface; }
 
 		//.____ Internal _________________________________________________
 
@@ -110,7 +97,7 @@ namespace wg
 
 
 	private:
-		BakeSkin(Surface * pBakeSurface);
+		BakeSkin(const Blueprint& blueprint);
 		BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skins);
 		~BakeSkin();
 
@@ -121,12 +108,7 @@ namespace wg
 		void			_onModified();
 		BorderSPX		_stateContentPadding(int scale, State state) const;
 
-		void			_didAddEntries(Skin_p* pEntry, int nb) override;
-		void			_didMoveEntries(Skin_p* pFrom, Skin_p* pTo, int nb) override;
-		void			_willEraseEntries(Skin_p* pEntry, int nb) override;
-
-		Object*			_object() override { return this; }
-
+		std::vector<Skin_p>	m_skins;
 
 		Surface_p			m_pBakeSurface;
 		BlendMode			m_blendMode = BlendMode::Undefined;

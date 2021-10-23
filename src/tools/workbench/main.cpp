@@ -628,9 +628,9 @@ int main(int argc, char** argv)
 //	animPlayerTest(&pRoot->slot);
 //	selectBoxTest(&pRoot->slot);
 //	tileSkinTest(&pRoot->slot);
-	gradientSkinTest(&pRoot->slot);
+//	gradientSkinTest(&pRoot->slot);
 //	bakeSkinTest(&pRoot->slot);
-//	animSkinTest(&pRoot->slot);
+	animSkinTest(&pRoot->slot);
 //	renderLayerTest(&pRoot->slot);
 //	rigidPartNinePatchTest(&pRoot->slot);
 //	scrollSkinTest(&pRoot->slot);
@@ -2562,11 +2562,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 
 	Surface_p pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
 
-	auto pBakedSkin = BakeSkin::create(pBakeSurface);
-
-	pBakedSkin->skins.pushBack(pSplashSkin);
-	pBakedSkin->skins.pushBack(pDynamicSkin);
-
+	auto pBakedSkin = BakeSkin::create({ .surface = pBakeSurface, .skins = { pSplashSkin, pDynamicSkin } });
 
 	auto pFiller1 = Filler::create();
 	pFiller1->setSkin( pBakedSkin );
@@ -2609,8 +2605,7 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 	auto pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
 
-	auto pBakeSkin = BakeSkin::create(pBakeSurface, {pAnimSkin2, pBoxSkin,pAnimSkin});
-	pBakeSkin->setSkinInSkin(true);
+	auto pBakeSkin = BakeSkin::create({ .surface = pBakeSurface, .skinInSkin = true, .skins = {pAnimSkin2, pBoxSkin,pAnimSkin} });
 
 	auto pFiller1 = Filler::create();
 	pFiller1->setSkin( pBakeSkin );
@@ -2638,8 +2633,7 @@ bool renderLayerTest(CStandardSlot_p pSlot)
 												.frameColor = Color::Transparent,
 												.layer = 1 } );
 
-	auto pDaSkin = DoubleSkin::create(pBoxSkin, pShadowSkin);
-	pDaSkin->setSkinInSkin(true);
+	auto pDaSkin = DoubleSkin::create({ .skinInSkin = true, .skins = { pBoxSkin, pShadowSkin } } );
 
 	for (int i = 0; i < 5; i++)
 	{
