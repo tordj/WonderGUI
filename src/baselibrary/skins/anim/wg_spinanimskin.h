@@ -51,13 +51,13 @@ namespace wg
 			HiColor		color = HiColor::Undefined;
 			int			cycleDuration = 1000;
 			Border		contentPadding;
-			CoordF		destCenter = { 0.5f, 0.5f };
 			Border		destPadding;
 			Gradient	gradient;
 			int			layer = -1;
-			Size		preferredSize;
-			CoordF		sourceCenter = { 0.5f, 0.5f };
-			Surface_p	surface;
+			CoordF		pivot = { 0.5f, 0.5f };
+			CoordF		placement = { 0.5f, 0.5f };
+			Size		preferredSize;							// Mandatory
+			Surface_p	surface;								// Mandatory
 			float		zoom = 1.f;
 		};
 
@@ -99,8 +99,8 @@ namespace wg
 
 		Surface_p	m_pSurface;
 		Size		m_preferredSize;
-		CoordF		m_srcCenter;
-		CoordF		m_dstCenter;
+		CoordF		m_pivot;
+		CoordF		m_placement;
 		float		m_fromDegrees;
 		float		m_toDegrees;
 		float		m_zoom;

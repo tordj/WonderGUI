@@ -2118,7 +2118,7 @@ bool spinKnobTest(CStandardSlot_p pSlot)
 
 	pSurfArrow->setScaleMode(ScaleMode::Interpolate);
 
-	auto pArrowSkin = SpinMeterSkin::create(pSurfArrow, { 400,400 }, { 0.5f, 540 / 600.f }, {0.5f,0.5f}, -135, 135 );
+	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .pivot = { 0.5f, 540 / 600.f }, .placement = {0.5f,0.5f}, .preferredSize = { 400,400 }, .surface = pSurfArrow });
 
 	auto pKnob1 = Knob::create();
 	pKnob1->setSkin( pArrowSkin );
@@ -2361,7 +2361,7 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 
 	pSurfArrow->setScaleMode(ScaleMode::Interpolate);
 
-	auto pArrowSkin = SpinMeterSkin::create(pSurfArrow, { 400,400 }, { 0.5f, 540 / 600.f }, { 0.5f,0.5f }, -135, 135);
+	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .pivot = { 0.5f, 540 / 600.f }, .placement = { 0.5f,0.5f }, .preferredSize = { 400,400 }, .surface = pSurfArrow });
 
 	auto pFillMeterSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green);
 

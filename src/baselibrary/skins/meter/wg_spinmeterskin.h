@@ -41,27 +41,37 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			float		angleBegin = 0.f;
+			float		angleEnd = 360.f;
+
+			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = HiColor::White;
+			Border		contentPadding;
+
+			Border		gfxPadding;
+			Gradient	gradient;
+			int			layer = -1;
+			CoordF		pivot = { 0.5f, 0.5f };
+			CoordF		placement = { 0.5f, 0.5f };
+			Size		preferredSize;						// Mandatory
+			float		zoom = 1.f;
+
+			Surface_p	surface;							// Mandatory
+
+		};
+
 		//.____ Creation __________________________________________
 
-		static SpinMeterSkin_p create(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f,0.5f), 
-										CoordF dstCenter = CoordF(0.5f,0.5f), float fromDegrees = 0.f, float toDegrees = 360.f, 
-										float zoom = 1.f, const Border& gfxPadding = Border(), const Border& contentPadding = Border() );
+		static SpinMeterSkin_p create(	const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Appearance _________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void		setColor(HiColor tintColor);
-		HiColor		color() const { return m_color; }
-
-		void		setGradient(const Gradient& gradient);
-		Gradient	gradient() const { return m_gradient; }
 
 		//.____ Internal ____________________________________________________
 
@@ -79,17 +89,15 @@ namespace wg
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
-		SpinMeterSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f, 0.5f),
-						CoordF dstCenter = CoordF(0.5f, 0.5f), float fromDegrees = 0.f, float toDegrees = 360.f,
-						float zoom = 1.f, const Border& gfxPadding = Border(), const Border& contentPadding = Border());
+		SpinMeterSkin(	const Blueprint& blueprint );
 		~SpinMeterSkin() {};
 
 		void		_updateOpacityFlag();
 
 		Surface_p	m_pSurface;
 		Size		m_preferredSize;
-		CoordF		m_srcCenter;
-		CoordF		m_dstCenter;
+		CoordF		m_pivot;
+		CoordF		m_placement;
 		float		m_fromDegrees;
 		float		m_toDegrees;
 		float		m_zoom;

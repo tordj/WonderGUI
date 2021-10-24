@@ -49,8 +49,8 @@ namespace wg
 	SpinAnimSkin::SpinAnimSkin(	const Blueprint& blueprint) : 
 		m_pSurface(blueprint.surface),
 		m_preferredSize(blueprint.preferredSize),
-		m_srcCenter(blueprint.sourceCenter),
-		m_dstCenter(blueprint.destCenter),
+		m_pivot(blueprint.pivot),
+		m_placement(blueprint.placement),
 		m_fromDegrees(blueprint.angleBegin),
 		m_toDegrees(blueprint.angleEnd),
 		m_zoom(blueprint.zoom),
@@ -129,7 +129,7 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->rotScaleBlit(_canvas, degrees, zoom, m_srcCenter, m_dstCenter);
+		pDevice->rotScaleBlit(_canvas, degrees, zoom, m_pivot, m_placement);
 	}
 
 	//____ _preferredSize() ______________________________________________________________

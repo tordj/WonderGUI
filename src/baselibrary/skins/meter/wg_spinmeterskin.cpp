@@ -39,31 +39,34 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	SpinMeterSkin_p SpinMeterSkin::create(	Surface * pSurface, Size preferredSize, CoordF srcCenter,	CoordF dstCenter, 
-											float fromDegrees, float toDegrees, float zoom, const Border& gfxPadding, 
-											const Border& contentPadding)
+	SpinMeterSkin_p SpinMeterSkin::create(	const Blueprint& blueprint )
 	{
-		return SpinMeterSkin_p(new SpinMeterSkin(pSurface, preferredSize, srcCenter, dstCenter, fromDegrees, toDegrees, zoom, gfxPadding, contentPadding));
+		return SpinMeterSkin_p(new SpinMeterSkin(blueprint));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	SpinMeterSkin::SpinMeterSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter, CoordF dstCenter, float fromDegrees, 
-									float toDegrees, float zoom, const Border& gfxPadding, const Border& contentPadding) : 
-		m_pSurface(pSurface),
-		m_preferredSize(preferredSize),
-		m_srcCenter(srcCenter),
-		m_dstCenter(dstCenter),
-		m_fromDegrees(fromDegrees),
-		m_toDegrees(toDegrees),
-		m_zoom(zoom),
-		m_gfxPadding(gfxPadding)
+	SpinMeterSkin::SpinMeterSkin( const Blueprint& blueprint ) : 
+		m_pSurface(blueprint.surface),
+		m_preferredSize(blueprint.preferredSize),
+		m_pivot(blueprint.pivot),
+		m_placement(blueprint.placement),
+		m_fromDegrees(blueprint.angleBegin),
+		m_toDegrees(blueprint.angleEnd),
+		m_zoom(blueprint.zoom),
+		m_gfxPadding(blueprint.gfxPadding),
+		m_color(blueprint.color),
+		m_gradient(blueprint.gradient),
+		m_blendMode(blueprint.blendMode)
 	{
 		//TODO: Also take frame opacity into account.
 
-		m_bOpaque = pSurface->isOpaque();
+		m_bOpaque = blueprint.surface->isOpaque();
 		m_bIgnoresValue = false;
-		m_contentPadding = contentPadding;
+		m_contentPadding = blueprint.contentPadding;
+		m_layer = blueprint.layer;
+
+		_updateOpacityFlag();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -71,31 +74,6 @@ namespace wg
 	const TypeInfo& SpinMeterSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ setColor() _____________________________________________________
-
-	void SpinMeterSkin::setColor(HiColor color)
-	{
-		m_color = color;
-		_updateOpacityFlag();
-	}
-
-	//____ setGradient() ______________________________________________________
-
-	void SpinMeterSkin::setGradient(const Gradient& gradient)
-	{
-		m_gradient = gradient;
-		_updateOpacityFlag();
-	}
-
-
-	//____ setBlendMode() _____________________________________________________
-
-	void SpinMeterSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpacityFlag();
 	}
 
 	//____ _render() ______________________________________________________________
@@ -143,7 +121,7 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->rotScaleBlit(_canvas, degrees, zoom, m_srcCenter, m_dstCenter);
+		pDevice->rotScaleBlit(_canvas, degrees, zoom, m_pivot, m_placement);
 	}
 
 	//____ _preferredSize() ______________________________________________________________
