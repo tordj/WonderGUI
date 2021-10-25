@@ -217,7 +217,7 @@ namespace wg
 						slided = -totalDrag.y;
 					}
 
-					float newValue = m_valueAtPress + slided / slideLen;
+					float newValue = m_valueAtPress + slided / (float) slideLen;
 					limit(newValue, 0.f, 1.f);
 					_setValue(newValue);
 				}
@@ -333,10 +333,10 @@ namespace wg
 
 	void Slider::_setHandleState(State state)
 	{
-		State oldState = m_state;
+		State oldState = m_handleState;
 		m_handleState = state;
 
-		m_handleSkin.stateChanged(m_state, oldState);
+		m_handleSkin.stateChanged(m_handleState, oldState);
 	}
 
 

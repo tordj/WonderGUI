@@ -249,7 +249,7 @@ namespace wg
 					slided = -totalDrag.y;
 				}
 
-				float newValue = m_valueAtPress + slided / slideLen;
+				float newValue = m_valueAtPress + slided / float(slideLen);
 				limit(newValue, 0.f, 1.f);
 
 				if (isBeginHandle)
