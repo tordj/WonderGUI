@@ -291,8 +291,8 @@ namespace wg
         
         // Active state data
 
-        MetalSurface *  m_pActiveBlitSource = nullptr;                  // Currently active blit source during buffer execution, not to confuse with m_pBlitSource which might not be active yet.
-        MetalSurface *  m_pActiveCanvas     = nullptr;                  // Currently active canvas during buffer execution, not to confuse with m_pCanvas which might not be active yet.
+        MetalSurface_p  m_pActiveBlitSource = nullptr;                  // Currently active blit source during buffer execution, not to confuse with m_pBlitSource which might not be active yet.
+        MetalSurface_p  m_pActiveCanvas     = nullptr;                  // Currently active canvas during buffer execution, not to confuse with m_pCanvas which might not be active yet.
         SizeI           m_activeCanvasSize;
         DestFormat      m_activeCanvasFormat;
         bool            m_bGradientActive   = false;
@@ -400,7 +400,7 @@ namespace wg
             for (int i = 0; i < m_nClipRects; i++)
             {
                 RectI clip = m_pClipRects[i];
-                clip.y = m_canvasSize.h - (clip.y + clip.h);
+//                clip.y = m_canvasSize.h - (clip.y + clip.h);
 
                 m_pClipListBuffer[m_clipWriteOfs++] = clip;
             }

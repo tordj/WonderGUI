@@ -210,6 +210,7 @@ public:
 
 	void                setDropTarget( bool bDropTarget );
 	bool                isDropTarget() const { return m_bDropTarget; }
+    WgState             State() { return m_state; }
 
 protected:
 

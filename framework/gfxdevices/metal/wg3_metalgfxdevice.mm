@@ -371,6 +371,56 @@ MetalGfxDevice::MetalGfxDevice()
         * (void**)(m_pCommandBuffer+m_commandOfs) = pRenderSurface;
         m_commandOfs += sizeof(void*)/sizeof(int);
 
+        //TODO: Ordering all these state changes is inefficient. We should be able to compare
+        // to previous state and only update what is necessary.
+        
+        // Update blit source
+        
+        _endCommand();
+        _beginStateCommand(Command::SetBlitSource, sizeof(void*)/sizeof(int));
+        * (void**)(m_pCommandBuffer+m_commandOfs) = m_pBlitSource;
+        m_commandOfs += sizeof(void*)/sizeof(int);
+        if( m_pBlitSource )
+            m_pBlitSource->retain();
+        
+        // Update blend mode
+        
+        _endCommand();
+        _beginStateCommand(Command::SetBlendMode, 1);
+        m_pCommandBuffer[m_commandOfs++] = (int) m_blendMode;
+        
+        // Update morph factor
+        
+        _endCommand();
+        _beginStateCommand(Command::SetMorphFactor, 1);
+        m_pCommandBuffer[m_commandOfs++] = (int)(m_morphFactor*1024);
+        
+        // Update tint color
+        
+        _endCommand();
+        _beginStateCommand(Command::SetTintColor, 2);
+        *(int64_t*)(&m_pCommandBuffer[m_commandOfs]) = m_tintColor.argb;
+        m_commandOfs += 2;
+        
+        // Update tint gradient
+        
+        if( m_bTintGradient )
+        {
+            _endCommand();
+            _beginStateCommand(Command::SetTintGradient, 12);
+            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.x;
+            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.y;
+            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.w;
+            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.h;
+            *(Gradient*)(&m_pCommandBuffer[m_commandOfs]) = m_tintGradient;
+            m_commandOfs += 8;
+        }
+        else
+        {
+            _endCommand();
+            _beginStateCommand(Command::ClearTintGradient, 0);
+        }
+        
         if(bClear)
             _clearRenderLayer();
     }
@@ -402,47 +452,65 @@ MetalGfxDevice::MetalGfxDevice()
 
     void MetalGfxDevice::setTintColor(HiColor color)
     {
+        if (color == m_tintColor)
+            return;
+
+        if (!m_bRendering)
+        {
+            //TODO: Error handling!
+            return;
+        }
+
         GfxDevice::setTintColor(color);
 
-        if( m_bRendering )
-        {
-            _endCommand();
-            _beginStateCommand(Command::SetTintColor, 2);
-            *(int64_t*)(&m_pCommandBuffer[m_commandOfs]) = color.argb;
-            m_commandOfs += 2;
-        }
+        _endCommand();
+        _beginStateCommand(Command::SetTintColor, 2);
+        *(int64_t*)(&m_pCommandBuffer[m_commandOfs]) = color.argb;
+        m_commandOfs += 2;
     }
 
     //____ setTintGradient() ______________________________________________________
 
     void MetalGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
     {
+        if (m_bTintGradient && gradient == m_tintGradient && rect == m_tintGradientRect)
+            return;
+
+        if (!m_bRendering)
+        {
+            //TODO: Error handling!
+            return;
+        }
+
         GfxDevice::setTintGradient(rect, gradient);
 
-        if (m_bRendering)
-        {
-            _endCommand();
-            _beginStateCommand(Command::SetTintGradient, 12);
-            m_pCommandBuffer[m_commandOfs++] = rect.x;
-            m_pCommandBuffer[m_commandOfs++] = rect.y;
-            m_pCommandBuffer[m_commandOfs++] = rect.w;
-            m_pCommandBuffer[m_commandOfs++] = rect.h;
-            *(Gradient*)(&m_pCommandBuffer[m_commandOfs]) = gradient;
-            m_commandOfs += 8;
-        }
+        _endCommand();
+        _beginStateCommand(Command::SetTintGradient, 12);
+        m_pCommandBuffer[m_commandOfs++] = rect.x;
+        m_pCommandBuffer[m_commandOfs++] = rect.y;
+        m_pCommandBuffer[m_commandOfs++] = rect.w;
+        m_pCommandBuffer[m_commandOfs++] = rect.h;
+        *(Gradient*)(&m_pCommandBuffer[m_commandOfs]) = gradient;
+        m_commandOfs += 8;
     }
 
     //____ clearTintGradient() _____________________________________________________
 
     void MetalGfxDevice::clearTintGradient()
     {
+        if (m_bTintGradient == false)
+            return;
+
+        if (!m_bRendering)
+        {
+            //TODO: Error handling!
+            return;
+        }
+
         GfxDevice::clearTintGradient();
 
-        if (m_bRendering)
-        {
-            _endCommand();
-            _beginStateCommand(Command::ClearTintGradient, 0);
-        }
+        _endCommand();
+        _beginStateCommand(Command::ClearTintGradient, 0);
     }
 
     //____ setBlendMode() ____________________________________________________________
@@ -452,14 +520,17 @@ MetalGfxDevice::MetalGfxDevice()
         if (blendMode == m_blendMode)
             return true;
 
+        if (!m_bRendering)
+        {
+            //TODO: Error handling!
+            return false;
+        }
+        
         GfxDevice::setBlendMode(blendMode);
 
-        if( m_bRendering )
-        {
-            _endCommand();
-            _beginStateCommand(Command::SetBlendMode, 1);
-            m_pCommandBuffer[m_commandOfs++] = (int) blendMode;
-        }
+        _endCommand();
+        _beginStateCommand(Command::SetBlendMode, 1);
+        m_pCommandBuffer[m_commandOfs++] = (int) blendMode;
 
         return true;
     }
@@ -468,6 +539,15 @@ MetalGfxDevice::MetalGfxDevice()
 
     bool MetalGfxDevice::setBlitSource(Surface * pSource)
     {
+        if (pSource == m_pBlitSource)
+            return true;
+
+        if (!m_bRendering)
+        {
+            //TODO: Error handling!
+            return false;
+        }
+
         if (!pSource || pSource->typeInfo() != MetalSurface::TYPEINFO)
         {
             Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Provided surface is NOT a MetalSurface", this, TYPEINFO, __func__, __FILE__, __LINE__);
@@ -476,17 +556,14 @@ MetalGfxDevice::MetalGfxDevice()
 
         m_pBlitSource = pSource;
 
-        if (m_bRendering)
-        {
-            //TODO: Check so that we don't overrun m_pSurfaceBuffer;
-            
-            _endCommand();
-            _beginStateCommand(Command::SetBlitSource, sizeof(void*)/sizeof(int));
-            * (void**)(m_pCommandBuffer+m_commandOfs) = pSource;
-            m_commandOfs += sizeof(void*)/sizeof(int);
-            if( pSource )
-                pSource->retain();
-        }
+        //TODO: Check so that we don't overrun m_pSurfaceBuffer;
+        
+        _endCommand();
+        _beginStateCommand(Command::SetBlitSource, sizeof(void*)/sizeof(int));
+        * (void**)(m_pCommandBuffer+m_commandOfs) = pSource;
+        m_commandOfs += sizeof(void*)/sizeof(int);
+        if( pSource )
+            pSource->retain();
 
         return true;
     }
@@ -495,16 +572,22 @@ MetalGfxDevice::MetalGfxDevice()
 
     void MetalGfxDevice::setMorphFactor(float factor)
     {
+        if (factor == m_morphFactor)
+            return;
+
+        if (!m_bRendering)
+        {
+            //TODO: Error handling!
+            return;
+        }
+
         limit(factor, 0.f, 1.f);
 
         m_morphFactor = factor;
 
-        if (m_bRendering)
-        {
-            _endCommand();
-            _beginStateCommand(Command::SetMorphFactor, 1);
-            m_pCommandBuffer[m_commandOfs++] = (int)(factor*1024);
-        }
+        _endCommand();
+        _beginStateCommand(Command::SetMorphFactor, 1);
+        m_pCommandBuffer[m_commandOfs++] = (int)(factor*1024);
     }
 
     //____ isCanvasReady() ___________________________________________________________
@@ -556,10 +639,26 @@ MetalGfxDevice::MetalGfxDevice()
         m_pActiveCanvas     = nullptr;
         m_activeCanvasSize  = {0,0};
         
+        // Set intial states in super
+        
+        GfxDevice::setBlitSource(nullptr);
+        GfxDevice::setBlendMode(BlendMode::Blend);
+        GfxDevice::setMorphFactor(0.5f);
+        GfxDevice::setTintColor(HiColor::White);
+        GfxDevice::clearTintGradient();
+        
         // Set initial active states
         
-        m_activeBlendMode   = m_blendMode;
-        m_activeMorphFactor = m_morphFactor;
+        m_pActiveBlitSource = nullptr;
+        m_activeBlendMode   = BlendMode::Blend;
+        m_activeMorphFactor = 0.5f;
+        
+        m_uniform.flatTint[0] = 1.f;
+        m_uniform.flatTint[1] = 1.f;
+        m_uniform.flatTint[2] = 1.f;
+        m_uniform.flatTint[3] = 1.f;
+
+        m_bGradientActive = false;
 
         // Wait for previous render pass to complete by doing a flushAndWait on what we have in buffer so far.
         
@@ -1882,6 +1981,23 @@ MetalGfxDevice::MetalGfxDevice()
                 case Command::SetBlitSource:
                 {
                     MetalSurface* pSurf = *((MetalSurface**)(pCmd));
+                    
+                    if( pSurf && pSurf->m_bMipmapStale )
+                    {
+                        if( renderEncoder != nil )
+                            [renderEncoder endEncoding];
+                            
+                        id<MTLBlitCommandEncoder> blitCommandEncoder = [m_metalCommandBuffer blitCommandEncoder];
+                        
+                        [blitCommandEncoder generateMipmapsForTexture:pSurf->m_texture];
+                        [blitCommandEncoder endEncoding];
+                            
+                        if( renderEncoder != nil )
+                            renderEncoder = _setCanvas( m_pActiveCanvas, m_activeCanvasSize.w, m_activeCanvasSize.h, CanvasInit::Keep, Color::White );
+
+                        pSurf->m_bMipmapStale = false;
+                    }
+                    
                     _setBlitSource(renderEncoder, pSurf);
                     if( pSurf )
                         pSurf->release();
@@ -1912,6 +2028,9 @@ MetalGfxDevice::MetalGfxDevice()
                         [renderEncoder setRenderPipelineState:m_blitPipelines[(int)shader][m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
+                        
+                        if( m_pActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = m_pActiveCanvas->m_bMipmapped;
                     }
                     break;
                 }
@@ -1924,6 +2043,9 @@ MetalGfxDevice::MetalGfxDevice()
                         [renderEncoder setRenderPipelineState:m_fillPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
+                        
+                        if( m_pActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = m_pActiveCanvas->m_bMipmapped;
                     }
                     break;
                 }
@@ -1936,6 +2058,9 @@ MetalGfxDevice::MetalGfxDevice()
                         [renderEncoder setRenderPipelineState:m_fillAAPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
+                        
+                        if( m_pActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = m_pActiveCanvas->m_bMipmapped;
                     }
                     break;
                 }
@@ -1960,6 +2085,9 @@ MetalGfxDevice::MetalGfxDevice()
                         [renderEncoder setScissorRect:orgClip];
 
                         vertexOfs += nVertices;
+                        
+                        if( m_pActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = m_pActiveCanvas->m_bMipmapped;
                     }
                     break;
                 }
@@ -1971,6 +2099,9 @@ MetalGfxDevice::MetalGfxDevice()
                          [renderEncoder setRenderPipelineState:m_plotPipelines[(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                          [renderEncoder drawPrimitives:MTLPrimitiveTypePoint vertexStart:vertexOfs vertexCount:nVertices];
                          vertexOfs += nVertices;
+                         
+                         if( m_pActiveCanvas )
+                             m_pActiveCanvas->m_bMipmapStale = m_pActiveCanvas->m_bMipmapped;
                      }
                      break;
 
@@ -1987,6 +2118,9 @@ MetalGfxDevice::MetalGfxDevice()
                         [renderEncoder setRenderPipelineState:m_segmentsPipelines[nEdges][m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
+                        
+                        if( m_pActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = m_pActiveCanvas->m_bMipmapped;
                     }
                     break;
                 }
@@ -2177,6 +2311,8 @@ MetalGfxDevice::MetalGfxDevice()
         {
             [renderEncoder setFragmentTexture:nil atIndex:(unsigned) TextureIndex::Texture];
             [renderEncoder setFragmentSamplerState: m_samplers[0][0][0] atIndex:0];
+            
+            m_pActiveBlitSource = nullptr;
         }
 
     }
@@ -2314,7 +2450,7 @@ MetalGfxDevice::MetalGfxDevice()
         switch( blendMode )
         {
             case BlendMode::Replace:
-                
+
                 if( bNoAlpha )
                 {
                     descriptor.colorAttachments[0].blendingEnabled = YES;
@@ -2326,6 +2462,7 @@ MetalGfxDevice::MetalGfxDevice()
                     descriptor.colorAttachments[0].blendingEnabled = NO;
                 break;
 
+            case BlendMode::Undefined:
             case BlendMode::Blend:
                 descriptor.colorAttachments[0].blendingEnabled = YES;
                 descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
@@ -2443,7 +2580,6 @@ MetalGfxDevice::MetalGfxDevice()
                 break;
 
             case BlendMode::Ignore:
-            case BlendMode::Undefined:
 
                 descriptor.colorAttachments[0].blendingEnabled = YES;
                 descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;

@@ -83,7 +83,7 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgPackPanel(); };
 
-	inline WgPackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChild(pWidget)); }
+    virtual inline WgPackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChild(pWidget)); }
 	inline WgPackHook * AddChildren( WgWidget * pWidgets[], int nb ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChildren(pWidgets, nb)); }
 	inline WgPackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
 	inline WgPackHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }

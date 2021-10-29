@@ -45,6 +45,9 @@ public:
 	void            SetTunerColors(WgColor indicator, WgColor correct) { m_TunerIndicatorCol = indicator; m_TunerCorrectCol = correct; }
 	void            SetTunerCorrect(bool b) { if(b != m_bTunerCorrect) { _requestRender(); } m_bTunerCorrect = b; }
 
+    void            SetUseBackgroundColor(bool bUse) { m_bUseBackgroundColor = bUse; }
+    void            SetBackgroundColor(WgColor kColor) { m_BackgroundColor = kColor; }
+
 protected:
 
 	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
@@ -82,6 +85,8 @@ protected:
 	std::vector<float> m_LEDStates;
 
 	bool            m_bUseFades;
+    bool            m_bUseBackgroundColor;
+    WgColor         m_BackgroundColor;
 };
 
 

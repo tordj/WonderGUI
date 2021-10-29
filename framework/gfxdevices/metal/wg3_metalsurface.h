@@ -120,6 +120,7 @@ namespace wg
 		uint32_t	    m_pixelSize;		// Size in bytes of a pixel.
 		static SizeI	s_maxSize;
 
+        bool            m_bMipmapStale = false;
 
 	};
 } // namespace wg

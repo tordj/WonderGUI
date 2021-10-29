@@ -450,21 +450,21 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 	const int value_index = GetValueIndex();
 
 	// Set up colors
-	WgColor kForeground = { 255,255,255,255 };
-	WgColor kBackground = { 255,255,255, uint8_t(255 * m_fBackgroundAlpha) };
+	//WgColor kForeground = { 255,255,255,255 };
+	//WgColor kBackground = { 255,255,255, uint8_t(255 * m_fBackgroundAlpha) };
 
 	/*    if(m_bPressed)
 	kForeground = Blend(m_kForeground, WgColor::white, 0.1f);
 	else if(m_bPointerInside)
 	kForeground = Blend(m_kForeground, WgColor::white, 0.5f);
 	*/
-	WgColor kBackTransp = { 255,255,255,0 };
+	//WgColor kBackTransp = { 255,255,255,0 };
 
-	int background = (kBackground.b) | ((kBackground.g) << 8) | ((kBackground.r) << 16) | ((kBackground.a) << 24);
-	int foreground = (kForeground.b) | ((kForeground.g) << 8) | ((kForeground.r) << 16) | ((kForeground.a) << 24);
-	int backtransp = (kBackTransp.b) | ((kBackTransp.g) << 8) | ((kBackTransp.r) << 16) | ((kBackTransp.a) << 24);
+    int background = (m_kBackground.b) | ((m_kBackground.g) << 8) | ((m_kBackground.r) << 16) | ((m_kBackground.a) << 24);
+    int foreground = (m_kForeground.b) | ((m_kForeground.g) << 8) | ((m_kForeground.r) << 16) | ((m_kForeground.a) << 24);
+    int backtransp = (m_kBackTransp.b) | ((m_kBackTransp.g) << 8) | ((m_kBackTransp.r) << 16) | ((m_kBackTransp.a) << 24);
 
-	WgColor col;
+    WgColor col;
 
     auto pixbuf = m_pSurf->allocPixelBuffer(region);
     unsigned char* dest = (unsigned char*) pixbuf.pPixels;
@@ -818,7 +818,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 					{
 						// Draw nothing.
 						// -------------------------------------------------
-						col = kBackTransp;
+						col = m_kBackTransp;
 						break;
 					}
 					case DrawState::eDrawForegroundAALeftEdge:
@@ -830,11 +830,11 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 						if (m_bPressed | m_bPointerInside)
 							col = WgColor(255, 255, 255, 255);
 						else
-							col = kForeground;
+							col = m_kForeground;
 
-						col = Blend(col, kBackground, ww);
+						col = Blend(col, m_kBackground, ww);
 
-						col = Blend(col, kBackTransp, weight); // CIRCLE AA
+						col = Blend(col, m_kBackTransp, weight); // CIRCLE AA
 						break;
 					}
 
@@ -843,14 +843,14 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 						// Draw anti-alias of beginning of foreground.
 						// -------------------------------------------------
 						if (m_bPressed | m_bPointerInside)
-							col = Blend(WgColor(255, 255, 255, 255), kForeground, (a - a_start) / (a_value - a_start));
+							col = Blend(WgColor(255, 255, 255, 255), m_kForeground, (a - a_start) / (a_value - a_start));
 						else
-							col = kForeground;
+							col = m_kForeground;
 
 						const float ww = (a - a_start) * (1.0f / ANGLE_AA_WIDTH);
-						col = Blend(col, kBackTransp, ww);
+						col = Blend(col, m_kBackTransp, ww);
 
-						col = Blend(col, kBackTransp, weight); // CIRCLE AA
+						col = Blend(col, m_kBackTransp, weight); // CIRCLE AA
 						break;
 					}
 					case DrawState::eDrawForeground:
@@ -858,11 +858,11 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 						// Draw foreground.
 						// -------------------------------------------------
 						if (m_bPressed | m_bPointerInside)
-							col = Blend(WgColor(255, 255, 255, 255), kForeground, (a - a_start) / (a_value - a_start));
+							col = Blend(WgColor(255, 255, 255, 255), m_kForeground, (a - a_start) / (a_value - a_start));
 						else
-							col = kForeground;
+							col = m_kForeground;
 
-						col = Blend(col, kBackTransp, weight); // CIRCLE AA
+						col = Blend(col, m_kBackTransp, weight); // CIRCLE AA
 						break;
 					}
 					case DrawState::eDrawForegroundAAEnd:
@@ -879,10 +879,10 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 						if (m_bPressed | m_bPointerInside)
 							col = WgColor(255, 255, 255, 255);
 						else
-							col = kForeground;
+							col = m_kForeground;
 
-						col = Blend(kBackground, col, ww);
-						col = Blend(col, kBackTransp, weight); // CIRCLE AA
+						col = Blend(m_kBackground, col, ww);
+						col = Blend(col, m_kBackTransp, weight); // CIRCLE AA
 						break;
 					}
 					case DrawState::eDrawForegroundAARightEdge:
@@ -896,10 +896,10 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 						if (m_bPressed | m_bPointerInside)
 							col = WgColor(255, 255, 255, 255);
 						else
-							col = kForeground;
+							col = m_kForeground;
 
-						col = Blend(kBackground, col, ww);
-						col = Blend(col, kBackTransp, weight); // CIRCLE AA
+						col = Blend(m_kBackground, col, ww);
+						col = Blend(col, m_kBackTransp, weight); // CIRCLE AA
 						break;
 					}
 					case DrawState::eDrawBackgroundAABegin:
@@ -907,26 +907,26 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 						// Draw anti-alias of beginning of background.
 						// -------------------------------------------------
 						const float ww = (a - a_start) * (1.0f / ANGLE_AA_WIDTH);
-						col = Blend(kBackground, kBackTransp, ww);
+						col = Blend(m_kBackground, m_kBackTransp, ww);
 
-						col = Blend(col, kBackTransp, weight); // CIRCLE AA
+						col = Blend(col, m_kBackTransp, weight); // CIRCLE AA
 						break;
 					}
 					case DrawState::eDrawBackground:
 					{
 						// Draw background.
 						// -------------------------------------------------
-						col = Blend(kBackground, kBackTransp, weight); // CIRCLE AA
+						col = Blend(m_kBackground, m_kBackTransp, weight); // CIRCLE AA
 						break;
 					}
 					case DrawState::eDrawBackgroundAAEnd:
 					{
 						// Draw anti-alias of end of background.
 						// -------------------------------------------------
-						col = Blend(kBackground, kBackTransp, weight); // CIRCLE AA
+						col = Blend(m_kBackground, m_kBackTransp, weight); // CIRCLE AA
 
 						const float ww = (a_end - a) * (1.0f / ANGLE_AA_WIDTH);
-						col = Blend(col, kBackTransp, ww);
+						col = Blend(col, m_kBackTransp, ww);
 						break;
 					}
 					}
@@ -938,20 +938,20 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 					// ========================================================================
 
 					bool colorize = false;
-					WgColor set_col = kBackground;
+					WgColor set_col = m_kBackground;
 					for (int i = 0; i<m_iNumSteps; i++)
 					{
 						if ((a > m_AngleStart[i] && (a < m_AngleEnd[i])))
 						{
 							colorize = true;
 							if (value_index == i)
-								set_col = kForeground;
+								set_col = m_kForeground;
 						}
 					}
 					if (colorize)
-						col = Blend(set_col, kBackTransp, weight);
+						col = Blend(set_col, m_kBackTransp, weight);
 					else
-						col = kBackTransp;
+						col = m_kBackTransp;
 				}
 
 				color = (col.b) | ((col.g) << 8) | ((col.r) << 16) | ((col.a) << 24);

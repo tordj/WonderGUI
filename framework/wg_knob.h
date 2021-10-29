@@ -81,8 +81,9 @@ public:
 		if(m_fBackgroundAlpha != alpha)
 		{
 			m_fBackgroundAlpha = alpha;
-			_requestRenderBackBuffer();
-		}
+            m_kBackground.a = uint8_t(255 * m_fBackgroundAlpha);
+            _requestRenderBackBuffer();
+        }
 	};
 
 	void	SetKnobScale(float scale);
@@ -112,6 +113,22 @@ public:
 	int		MatchingPixelHeight(int pixelWidth) const;
 	int		MatchingPixelWidth(int pixelHeight) const;
 
+    void SetForgroundolor(WgColor kColor)
+    {
+        m_kForeground = kColor;
+        _requestRenderBackBuffer();
+    }
+    void SetBackgroundColor(WgColor kColor)
+    {
+        m_kBackground = kColor;
+        m_kBackground.a = uint8_t(255 * m_fBackgroundAlpha);
+        _requestRenderBackBuffer();
+    }
+    void SetBackTransparancyColor(WgColor kColor)
+    {
+        m_kBackTransp = kColor;
+        _requestRenderBackBuffer();
+    }
 
 protected:
 	void    _onCloneContent( const WgWidget * _pOrg );
@@ -166,7 +183,11 @@ private:
 	float	m_fBackgroundAlpha = 0.25f;							// Alpha of background, relative alpha of foreground.
 	WgColor m_kColor = WgColor( 38,  169, 224, 255 );
 
-	float m_fAngleStart = 0.1f;
+    WgColor m_kForeground = {255, 255, 255, 255};
+    WgColor m_kBackground = {255, 255, 255, uint8_t(255 * m_fBackgroundAlpha)};
+    WgColor m_kBackTransp = {255, 255, 255, 0};
+
+    float m_fAngleStart = 0.1f;
 	float m_fAngleEnd = 0.9f;
 	std::vector<float> m_AngleStart;
 	std::vector<float> m_AngleEnd;

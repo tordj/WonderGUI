@@ -2506,6 +2506,7 @@ namespace wg
 			glDisable(GL_BLEND);
 			break;
 
+        case BlendMode::Undefined:
 		case BlendMode::Blend:
 			glBlendEquation(GL_FUNC_ADD);
 			glEnable(GL_BLEND);

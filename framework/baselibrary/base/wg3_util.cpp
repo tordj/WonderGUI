@@ -312,13 +312,13 @@ int Util::gcd(int a, int b)
 		}
 		else
 		{
-			// top section
+			// bottom section
 			markedSectionY = YSections::Bottom;
 
 			source.y = _source.y + _source.h - sourceFrame.bottom;
 			source.h = sourceFrame.bottom;
 			dest.y = _dest.y + _dest.h - destFrame.bottom;
-			dest.h = destFrame.right;
+			dest.h = destFrame.bottom;
 		}
 
 		// Make coordinates relative area.

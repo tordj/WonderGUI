@@ -581,7 +581,8 @@ namespace wg
                             destinationOrigin:  textureOrigin];
 
         if(m_bMipmapped)
-            [blitCommandEncoder generateMipmapsForTexture:m_texture];
+            m_bMipmapStale = true;
+//            [blitCommandEncoder generateMipmapsForTexture:m_texture];
         
         [blitCommandEncoder endEncoding];
 

@@ -256,7 +256,7 @@ wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
 
 	WgSize sz = PixelSize();
 
-	auto pCanvas = pFactory->createSurface(sz,wg::PixelFormat::BGRA_8, surfaceFlags );
+	auto pCanvas = pFactory->createSurface(sz,wg::PixelFormat::BGRA_8, surfaceFlags | wg::SurfaceFlag::Canvas );
 	pCanvas->setScale(m_scale/4096.f);
 
 	WgPatches patches;

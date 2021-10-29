@@ -171,8 +171,9 @@ public:
 	float	SetSliderValue(int id, float value, float value2 = NAN);
 
 	void    SetSliderVisible( int id, bool bVisible );
+    bool    GetSliderVisible(int id);
 
-	WgCoord HandlePointPos( int sliderId );
+    WgCoord HandlePointPos( int sliderId );
 	WgCoord HandlePixelPos( int sliderId );
 
     int     NbSliders() const { return m_sliders.size(); }
@@ -216,6 +217,11 @@ public:
 	int GetAxisLockState() { return m_axisLockState; }
 	void SetAxisLockState(int iLockState) { m_axisLockState = (AxisLockState)iLockState; }
 
+    void SetSliderLast(int iSliderID);
+
+    void SetSliderState(int iSliderID, bool bEnabled);
+    bool GetSliderEnabled(int iSliderID);
+    void SetSliderCheckState(bool bState) { m_CheckStateForMove = bState; }
 
 protected:
 
@@ -298,11 +304,12 @@ protected:
 
 	Slider *	_findSlider(int sliderId);
 	const Slider *	_findSlider(int sliderId) const;
+    void RefreshSliderGeo() { _refreshSliderGeo(); }
+    int HoveredSliderHandleIndex() { return m_hoveredSliderHandle; }
+    int SelectedSliderHandleIndex() { return m_selectedSliderHandle; }
 
 private:
-
-
-	wg::Skin_p			m_pDefaultBgSkin;
+    wg::Skin_p			m_pDefaultBgSkin;
 	wg::Skin_p			m_pDefaultHandleSkin;
 	WgCoordF			m_defaultHandleHotspot = { 0.5f, 0.5f };
 	WgBorders			m_defaultHandleMarkExtension;
@@ -318,7 +325,8 @@ private:
     bool                   m_bGhostHandle = false;
     bool                   m_bDeltaDrag = false;
     bool                   m_bPointAlignSliders = false;
-    
+    bool                   m_CheckStateForMove = false;
+
     WgModifierKeys         m_axisLockModifier = WG_MODKEY_ALT;
     WgModifierKeys         m_finetuneModifier = WG_MODKEY_CTRL;
     WgModifierKeys         m_overrideModifier = WG_MODKEY_NONE;             // If pressed, we only do callback and send event, we don't grab or move slider.

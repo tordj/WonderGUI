@@ -20,7 +20,10 @@ WgVolumeMeter::WgVolumeMeter()
 	m_LEDColors[1][1] = WgColor::Yellow;
 	m_LEDColors[2][1] = WgColor::Red;
 
-	m_nSectionLEDs[0] = 8;
+    m_bUseBackgroundColor = false;
+    m_BackgroundColor = WgColor::Black;
+
+    m_nSectionLEDs[0] = 8;
 	m_nSectionLEDs[1] = 2;
 	m_nSectionLEDs[2] = 1;
 
@@ -387,6 +390,11 @@ void WgVolumeMeter::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 	if( ledRect.w <= 0.f || ledRect.h <= 0.f )
 		return;
+
+    if(m_bUseBackgroundColor)
+    {
+        pDevice->fill(_canvas, m_BackgroundColor);
+    }
 
 	for( int i = 0 ; i < m_nLEDs ; i++ )
 	{

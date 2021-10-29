@@ -285,7 +285,15 @@ void WgMultiSlider::SetSliderVisible( int id, bool bVisible )
 		}
 	}
 }
+//____ GetSliderVisible() ______________________________________________________
 
+bool WgMultiSlider::GetSliderVisible(int id)
+{
+    Slider *pSlider = _findSlider(id);
+    if (pSlider && pSlider->bVisible == true)
+        return true;
+    return false;
+}
 //____ HandlePointPos() ________________________________________________________
 
 WgCoord WgMultiSlider::HandlePointPos( int sliderId )
@@ -625,6 +633,33 @@ void WgMultiSlider::_updatePointerStyle(WgCoord pointerOfs)
 		m_pointerStyle = WgPointerStyle::Default;
 }
 
+bool WgMultiSlider::GetSliderEnabled(int iSliderID)
+{
+    for (auto &slider : m_sliders)
+    {
+        if (slider.id == iSliderID)
+        {
+            return slider.sliderState.isEnabled();
+        }
+    }
+    return false;
+}
+
+void WgMultiSlider::SetSliderState(int iSliderID, bool bEnabled)
+{
+    for (auto &slider : m_sliders)
+    {
+        if (slider.id == iSliderID)
+        {
+            if(!bEnabled)
+                _setSliderStates(slider, WgStateEnum::Disabled, WgStateEnum::Disabled);
+            else
+                _setSliderStates(slider, WgStateEnum::Normal, WgStateEnum::Normal);
+            break;
+        }
+    }
+}
+
 //____ _updateSliderStates() __________________________________________________
 
 void WgMultiSlider::_updateSliderStates()
@@ -827,6 +862,14 @@ void WgMultiSlider::_updateSliderStates()
 	}
 }
 
+void WgMultiSlider::SetSliderLast(int iSliderID)
+{
+    auto kSliderIter = std::find_if(std::begin(m_sliders), std::end(m_sliders), [=](Slider kSlider)
+                                 { return kSlider.id == iSliderID; });
+
+    std::iter_swap(kSliderIter, m_sliders.end()-1);
+  
+}
 
 //____ _onEvent() _____________________________________________________________
 
@@ -1861,8 +1904,12 @@ WgCoordF WgMultiSlider::_calcSendValue(Slider& slider, WgCoordF pos)
 
 void WgMultiSlider::_sendValue(Slider& slider, float value, float value2)
 {
-	// Callback
+    if(m_CheckStateForMove && !GetSliderEnabled(slider.id))
+    {
+        return;
+    }
 
+    // Callback
 	if (m_callback)
 		m_callback(slider.id, value, value2);
 
