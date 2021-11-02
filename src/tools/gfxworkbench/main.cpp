@@ -41,7 +41,7 @@ int main ( int argc, char** argv )
 
 	Base::init(nullptr);
 
-	PixelFormat format = PixelFormat::Unknown;
+	PixelFormat format = PixelFormat::Undefined;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
 		format = PixelFormat::BGRA_8;

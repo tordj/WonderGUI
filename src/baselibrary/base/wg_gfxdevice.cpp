@@ -754,7 +754,7 @@ namespace wg
 
 			float	mtx[2][2];
 
-			if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+			if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 			{
 	//			src.x += 0.5f;
 	//			src.y += 0.5f;
@@ -793,7 +793,7 @@ namespace wg
 
 		float	mtx[2][2];
 
-		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 		{
 			mtx[0][0] = src.w / dest.w;
 			mtx[0][1] = 0;
@@ -827,7 +827,7 @@ namespace wg
 		float scaleX, scaleY;
 		float ofsX, ofsY;
 
-		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 		{
 			float srcW = (float)(src.w - 64);
 			float srcH = (float)(src.h - 64);

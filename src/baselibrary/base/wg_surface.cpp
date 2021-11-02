@@ -74,14 +74,9 @@ namespace wg
 
 	//____ Surface() ____________________________________________________________
 
-	Surface::Surface( int flags )
+	Surface::Surface()
 	{
-		m_flags = flags;
-		
-		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );
-        
-        if( flags & SurfaceFlag::Scale200 )
-            m_scale = 128;
+		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );        
     }
 
 	//____ ~Surface() ____________________________________________________________
@@ -95,19 +90,6 @@ namespace wg
 	const TypeInfo& Surface::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ setScaleMode() __________________________________________________________
-	/**
-	 * @brief Set how graphics blitted from Surface is scaled.
-	 * @param mode	The way graphics should be scaled, either Nearest or Interpolate.
-	 * 
-	 * Sets how graphics blitted from the Surface should be scaled.
-	 */
-
-	void Surface::setScaleMode( ScaleMode mode )
-	{
-		m_scaleMode = mode;
 	}
 
 	//____ setTiling() ________________________________________________________
@@ -129,29 +111,13 @@ namespace wg
 	 * transparency around.
 	 * 
 	 * A Surface set to tiling can be used in normal blit operatons as well, but 
-	 * colors from one edge tend to bleed to the one across when using BlendMode::Interpolate
+	 * colors from one edge tend to bleed to the one across when using SampleMethod::Bilinear
 	 * since they are considered neighbors.
 	 * 
 	 * Also worth noting is that SoftSurface puts extra restrictions on tiling Surfaces -
 	 * their length and height must be a power of two. Calling this method to enable tiling for 
 	 * a SoftSurface where not both dimension are a power of two will fail.
 	 */
-
-	bool Surface::setTiling(bool bTiling)
-	{
-		m_bTiling = bTiling;
-		return true;
-	}
-
-	//____ setScale() _______________________________________________________________
-
-	bool Surface::setScale( int scale )
-	{
-		//TODO: Error check, only allow certain values.
-
-		m_scale = scale;
-		return true;
-	}
 
 	//____ colorToPixel() ____________________________________________________________
 	/**
@@ -484,7 +450,7 @@ namespace wg
 	 **/
 	bool Surface::copyFrom( Surface * pSrcSurface, const RectI& _srcRect, CoordI _dst )
 	{
-		if( !pSrcSurface || pSrcSurface->m_pixelDescription.format == PixelFormat::Unknown || m_pixelDescription.format == PixelFormat::Unknown )
+		if( !pSrcSurface || pSrcSurface->m_pixelDescription.format == PixelFormat::Undefined || m_pixelDescription.format == PixelFormat::Undefined )
 			return false;
 
 

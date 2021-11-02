@@ -58,10 +58,10 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GlSurface_p	create( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr);
-		static GlSurface_p	create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr);
-		static GlSurface_p	create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr);
-		static GlSurface_p	create( Surface * pOther, int flags = SurfaceFlag::Static );
+		static GlSurface_p	create(const Blueprint& blueprint);
+		static GlSurface_p	create(const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
+		static GlSurface_p	create(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
+		static GlSurface_p	create(const Blueprint& blueprint, Surface* pOther);
 
 		//.____ Identification __________________________________________
 
@@ -71,12 +71,6 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 		static SizeI	maxSize();
-
-		//.____ Appearance ____________________________________________________
-
-		void		setScaleMode(ScaleMode mode) override;
-		bool		isOpaque() const override;
-		bool		setTiling(bool bTiling) override;
 
 		//.____ Content _______________________________________________________
 
@@ -102,16 +96,25 @@ namespace wg
         static unsigned int totalTexturePixels() { return g_texturePixels; }
         static unsigned int totalBackingPixels() { return g_backingPixels; }
 
+		//.____ Deprecated ____________________________________________________
+
+		static GlSurface_p	create(SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static GlSurface_p	create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static GlSurface_p	create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static GlSurface_p	create(Surface* pOther, int flags = SurfaceFlag::Static);
+
+
 	private:
-		GlSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr);
-		GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr);
-		GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr);
-		GlSurface( Surface * pOther, int flags = SurfaceFlag::Static );
+		GlSurface(const Blueprint& blueprint);
+		GlSurface(const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
+		GlSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
+		GlSurface(const Blueprint& blueprint, Surface* pOther);
+
 		~GlSurface();
 
-
+		static bool	_isBlueprintValid( const Blueprint& bp, Surface * pOther = nullptr );
 		void		_setPixelDetails( PixelFormat format );
-		void		_setupGlTexture( void * pPixelsToUpload, int pitch, int flags);
+		void		_setupGlTexture(const Blueprint& bp, void * pPixelsToUpload, int pitch);
 		void		_updateAlphaMap(const PixelBuffer& buffer, const RectI& bufferRect);
 
 		int			m_bPendingReads = false;					// Set if there are queued GL commands that will use surface as source. Active GlGfxDevice needs to be flushed before we modify.

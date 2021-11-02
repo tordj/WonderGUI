@@ -270,11 +270,12 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(ScaleMode i)
+	const char * toString(SampleMethod i)
 	{
 		static const char * names[] = { 
+			"Undefined",
 			"Nearest",
-			"Interpolate" };
+			"Bilinear" };
 
 		return names[(int)i];
 	}

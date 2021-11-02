@@ -1875,7 +1875,7 @@ namespace wg
 			}
 		}
 
-		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 		{
 			m_extrasBufferData[m_extrasOfs++] = src.x + 0.5f;
 			m_extrasBufferData[m_extrasOfs++] = src.y + 0.5f;
@@ -2381,7 +2381,7 @@ namespace wg
 						if (nVertices > 0 && m_pActiveBlitSource)
 						{
 							GlSurface* pSurf = m_pActiveBlitSource;
-							glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->scaleMode()][m_bGradientActive][m_bActiveCanvasIsA8]);
+							glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->sampleMethod()][m_bGradientActive][m_bActiveCanvasIsA8]);
 
 							glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 

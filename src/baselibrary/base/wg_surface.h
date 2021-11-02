@@ -171,6 +171,24 @@ namespace wg
 		friend class GfxDevice;
 
 	public:
+
+		//.____ Blueprint _________________________________________
+
+		struct Blueprint
+		{
+			bool				buffered = false;
+			bool				canvas = false;
+			const Color8* clut = nullptr;
+			bool				dynamic = false;
+			PixelFormat			format = PixelFormat::Undefined;
+			int					id = 0;
+			bool				mipmap = false;
+			SampleMethod		sampleMethod = SampleMethod::Undefined;
+			int					scale = 64;
+			SizeI				size;					// Mandatory, except when creating from other surface.
+			bool				tiling = false;
+		};
+
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
@@ -189,18 +207,14 @@ namespace wg
 		inline pts			pointWidth() const;
 		inline pts			pointHeight() const;
 
-		bool                setScale( int scale );
+		inline void			setScale(int scale);
 		inline int			scale() const;
 
 
 		//.____ Appearance ____________________________________________________
 
-		virtual void		setScaleMode( ScaleMode mode );
-		inline ScaleMode	scaleMode() const;
-
-		virtual bool		setTiling(bool bTiling);
-		inline bool			isTiling() const { return m_bTiling; }
-		
+		inline SampleMethod	sampleMethod() const;
+		inline bool			isTiling() const;
 		inline bool			isMipmapped() const;
 
 		//.____ Content _______________________________________________________
@@ -216,7 +230,7 @@ namespace wg
 		inline PixelFormat	pixelFormat() const;
 		inline int			pixelBytes() const;
 
-		virtual bool		isOpaque() const = 0;				///< @brief Check if surface is entirely opaque.
+		inline bool			isOpaque() const;				///< @brief Check if surface is guaranteed to be entirely opaque.
 
 		//.____ Control _______________________________________________________
 
@@ -249,7 +263,7 @@ namespace wg
 		bool				removeObserver( int observerId );
 
 	protected:
-		Surface( int flags );
+		Surface();
 		virtual ~Surface();
 
 		struct Observer
@@ -266,15 +280,15 @@ namespace wg
 
 		int                 m_id = 0;
 
-        int             	m_flags;                            // The flags provided to the constructor.
-		int					m_scale = 64;
+ 		int					m_scale = 64;
 
 		PixelDescription	m_pixelDescription;
 		SizeI				m_size;								// Width and height in pixels.
 
-		ScaleMode			m_scaleMode = ScaleMode::Nearest;
+		SampleMethod		m_sampleMethod = SampleMethod::Nearest;
 		bool				m_bMipmapped = false;
 		bool				m_bTiling = false;
+		bool				m_bOpaque = false;
 
 		Color8 *			m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.
 
@@ -378,6 +392,12 @@ namespace wg
 		return pts(m_size.h*64)/m_scale;
 	}
 
+	//____ setScale() _________________________________________________________
+
+	void Surface::setScale( int scale )
+	{
+		m_scale = scale;
+	}
 
 	//____ scale() ____________________________________________________________
 
@@ -386,11 +406,18 @@ namespace wg
 		return m_scale;
 	}
 
-	//____ scaleMode() ________________________________________________________
+	//____ sampleMethod() ________________________________________________________
 
-	ScaleMode Surface::scaleMode() const
+	SampleMethod Surface::sampleMethod() const
 	{
-		return m_scaleMode;
+		return m_sampleMethod;
+	}
+
+	//____ isTiling() _________________________________________________________
+
+	bool Surface::isTiling() const 
+	{ 
+		return m_bTiling; 
 	}
 
 	//____ isMipmapped() ______________________________________________________
@@ -398,6 +425,15 @@ namespace wg
 	bool Surface::isMipmapped() const
 	{
 		return m_bMipmapped;
+	}
+
+	//____ isOpaque() _________________________________________________________
+
+	bool Surface::isOpaque() const
+	{
+		//TODO: Indexed can also be opaque. Check their alpha on init instead?
+
+		return m_pixelDescription.A_bits == 0 && !m_pixelDescription.bIndexed ? true : false;
 	}
 
 	//____ clut() _____________________________________________________________

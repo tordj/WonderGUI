@@ -53,9 +53,9 @@ namespace wg
 	const static SortOrder       SortOrder_min       = SortOrder::None;
 	const static SelectMode      SelectMode_min      = SelectMode::Unselectable;
 	const static TextEditMode    TextEditMode_min    = TextEditMode::Static;
-	const static ScaleMode       ScaleMode_min       = ScaleMode::Nearest;
+	const static SampleMethod    SampleMethod_min    = SampleMethod::Undefined;
 	const static CanvasInit      CanvasInit_min      = CanvasInit::Keep;
-	const static PixelFormat     PixelFormat_min     = PixelFormat::Unknown;
+	const static PixelFormat     PixelFormat_min     = PixelFormat::Undefined;
 	const static MaskOp          MaskOp_min          = MaskOp::Recurse;
 	const static GfxFlip         GfxFlip_min         = GfxFlip::Normal;
 	const static CanvasRef       CanvasRef_min       = CanvasRef::None;
@@ -75,7 +75,7 @@ namespace wg
 	const static SortOrder       SortOrder_max       = SortOrder::Descending;
 	const static SelectMode      SelectMode_max      = SelectMode::FlipOnSelect;
 	const static TextEditMode    TextEditMode_max    = TextEditMode::Editable;
-	const static ScaleMode       ScaleMode_max       = ScaleMode::Interpolate;
+	const static SampleMethod       ScaleMode_max    = SampleMethod::Bilinear;
 	const static CanvasInit      CanvasInit_max      = CanvasInit::Clear;
 	const static PixelFormat     PixelFormat_max     = PixelFormat::A_8;
 	const static MaskOp          MaskOp_max          = MaskOp::Mask;
@@ -97,7 +97,7 @@ namespace wg
 	const static int             SortOrder_size      = (int)SortOrder::Descending + 1;
 	const static int             SelectMode_size     = (int)SelectMode::FlipOnSelect + 1;
 	const static int             TextEditMode_size   = (int)TextEditMode::Editable + 1;
-	const static int             ScaleMode_size      = (int)ScaleMode::Interpolate + 1;
+	const static int             SampleMethod_size   = (int)SampleMethod::Bilinear + 1;
 	const static int             CanvasInit_size     = (int)CanvasInit::Clear + 1;
 	const static int             PixelFormat_size    = (int)PixelFormat::A_8 + 1;
 	const static int             MaskOp_size         = (int)MaskOp::Mask + 1;
@@ -119,7 +119,7 @@ namespace wg
 	const char * toString(SortOrder);
 	const char * toString(SelectMode);
 	const char * toString(TextEditMode);
-	const char * toString(ScaleMode);
+	const char * toString(SampleMethod);
 	const char * toString(CanvasInit);
 	const char * toString(PixelFormat);
 	const char * toString(MaskOp);

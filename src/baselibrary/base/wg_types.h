@@ -673,12 +673,13 @@ namespace wg
 		Other
 	};
 
-	//____ ScaleMode ____________________________________________________________
+	//____ SampleMethod ____________________________________________________________
 
-	enum class ScaleMode	//. autoExtras
+	enum class SampleMethod	//. autoExtras
 	{
+		Undefined,			// Default to Bilinear if it is accelerated, otherwise Nearest.
 		Nearest,
-		Interpolate,
+		Bilinear,
 	};
 
 
@@ -708,8 +709,8 @@ enum class CanvasInit 		//. autoExtras
 
 	enum class PixelFormat	//. autoExtras
 	{
-		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelDescription struct.
-		Custom,				///< Pixelformat has no PixelFormat enum, but is fully specified through the PixelDescription struct.
+		Undefined,			///< Pixelformat is undefined.
+		Custom,				///< Pixelformat has no enum, but can be fully specified through a PixelDescription struct.
 		BGR_8,				///< One byte of blue, green and red in exactly that order in memory.
 		BGR_8_sRGB,			///< One byte of blue, green and red in exactly that order in memory.
 		BGR_8_linear,		///< One byte of blue, green and red in exactly that order in memory.

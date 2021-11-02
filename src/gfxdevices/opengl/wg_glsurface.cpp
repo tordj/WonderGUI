@@ -58,117 +58,186 @@ namespace wg
 		return s_maxSize;
 	}
 
-	//____ create ______________________________________________________________
+	//____ Create ______________________________________________________________
 
-	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, int flags, const Color8 * pClut )
+	GlSurface_p GlSurface::create(const Blueprint& bp)
 	{
-		SizeI max = maxSize();
-		if (size.w > max.w || size.h > max.h)
+		if( !_isBlueprintValid(bp) )
 			return GlSurface_p();
 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
-			return GlSurface_p();
-        
-		return GlSurface_p(new GlSurface(size,format,flags,pClut));
+		return GlSurface_p(new GlSurface(bp));
 	}
 
-	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut )
+	GlSurface_p GlSurface::create(const Blueprint& bp, Blob* pBlob, int pitch)
 	{
-		SizeI max = maxSize();
-		if (size.w > max.w || size.h > max.h)
+		if (!_isBlueprintValid(bp) )
 			return GlSurface_p();
 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0)
+		if ( !pBlob || (pitch > 0 && pitch % 4 != 0))
 			return GlSurface_p();
 
-		return GlSurface_p(new GlSurface(size,format,pBlob,pitch,flags,pClut));
+
+		return GlSurface_p(new GlSurface(bp, pBlob, pitch));
 	}
 
-	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut )
+	GlSurface_p GlSurface::create(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription)
 	{
-		SizeI max = maxSize();
-		if (size.w > max.w || size.h > max.h)
+		if (!_isBlueprintValid(bp))
 			return GlSurface_p();
 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
-			((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
+		return GlSurface_p(new GlSurface(bp, pPixels, pitch, pPixelDescription));
+	}
+
+	GlSurface_p GlSurface::create(const Blueprint& bp, Surface* pOther)
+	{
+		if (!_isBlueprintValid(bp))
 			return GlSurface_p();
 
-		return  GlSurface_p(new GlSurface(size,format,pPixels,pitch, pPixelDescription,flags,pClut));
+		return GlSurface_p(new GlSurface(bp, pOther));
+	}
+
+	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, int flags, const Color8* pClut)
+	{
+		Blueprint bp;
+
+		bp.size = size;
+		bp.format = format;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+		bp.clut = pClut;
+
+		if (!_isBlueprintValid(bp))
+			return GlSurface_p();
+
+		return GlSurface_p(new GlSurface(bp));
+	}
+
+	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags, const Color8* pClut)
+	{
+		Blueprint bp;
+
+		bp.size = size;
+		bp.format = format;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+		bp.clut = pClut;
+
+		if (!_isBlueprintValid(bp))
+			return GlSurface_p();
+
+		return GlSurface_p(new GlSurface(bp, pBlob, pitch));
+	}
+
+	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription, int flags, const Color8* pClut)
+	{
+		Blueprint bp;
+
+		bp.size = size;
+		bp.format = format;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+		bp.clut = pClut;
+
+		if (!_isBlueprintValid(bp))
+			return GlSurface_p();
+
+		return  GlSurface_p(new GlSurface(bp, pPixels, pitch, pPixelDescription));
 	};
 
-	GlSurface_p	GlSurface::create( Surface * pOther, int flags )
+	GlSurface_p GlSurface::create(Surface* pOther, int flags)
 	{
 		if (!pOther)
 			return GlSurface_p();
 
-		SizeI max = maxSize();
-		SizeI size = pOther->pixelSize();
-		if (size.w > max.w || size.h > max.h)
+		Blueprint bp;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+
+		if (!_isBlueprintValid(bp))
 			return GlSurface_p();
 
-		return GlSurface_p(new GlSurface( pOther,flags ));
+		return GlSurface_p(new GlSurface(bp, pOther));
 	}
-
-
 
 	//____ constructor _____________________________________________________________
 
 
-	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut ) : Surface(flags)
+	GlSurface::GlSurface( const Blueprint& bp )
 	{
-//        flags |= (int) SurfaceFlag::Buffered;
 		HANDLE_GLERROR(glGetError());
 
+		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
+
 		_setPixelDetails(format);
-		m_scaleMode = ScaleMode::Interpolate;
-		m_size	= size;
+		m_sampleMethod = bp.sampleMethod == SampleMethod::Undefined ? SampleMethod::Bilinear : bp.sampleMethod;
+		m_size	= bp.size;
+		m_scale = bp.scale;
 		m_pClut = nullptr;
 
-		if ((flags & SurfaceFlag::Buffered) || m_pixelDescription.bits <= 8)
+		if (bp.buffered || m_pixelDescription.bits <= 8)
         {
             g_backingPixels += m_size.w*m_size.h;
-            m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-            m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
+            m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
 
-            if (pClut)
+            if (bp.clut)
             {
-                m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-                memcpy(m_pClut, pClut, 1024);
+                m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
+                memcpy(m_pClut, bp.clut, 1024);
             }
         }
         else
 		{
 			m_pitch = 0;
 
-			if (pClut)
+			if (bp.clut)
 			{
 				m_pClut = new Color8[256];
-				memcpy(m_pClut, pClut, 1024);
+				memcpy(m_pClut, bp.clut, 1024);
 			}
 
 			if (m_pixelDescription.A_bits > 0)
-				m_pAlphaMap = new uint8_t[size.w * size.h];
+				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
 		}
 
-		_setupGlTexture(nullptr, 0, flags);
+		_setupGlTexture(bp, nullptr, 0);
 
 		HANDLE_GLERROR(glGetError());
 	}
 
 
-	GlSurface::GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut ) : Surface(flags)
+	GlSurface::GlSurface(const Blueprint& bp, Blob* pBlob, int pitch)
 	{
-//        flags |= (int) SurfaceFlag::Buffered;
 		// Set general information
 
+		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
+
 		_setPixelDetails(format);
-		m_scaleMode = ScaleMode::Interpolate;
-		m_size = size;
-		m_pClut = const_cast<Color8*>(pClut);
+		m_sampleMethod = bp.sampleMethod == SampleMethod::Undefined ? SampleMethod::Bilinear : bp.sampleMethod;
+		m_size = bp.size;
+		m_scale = bp.scale;
+		m_pClut = const_cast<Color8*>(bp.clut);
 
+		if (pitch == 0)
+			pitch = bp.size.w * m_pixelDescription.bits / 8;
 
-        if ((flags & SurfaceFlag::Buffered) || m_pixelDescription.bits <= 8)
+        if ((bp.buffered) || m_pixelDescription.bits <= 8)
         {
             g_backingPixels += m_size.w*m_size.h;
             m_pitch = pitch;
@@ -178,15 +247,15 @@ namespace wg
 		{
 			m_pitch = 0;
 
-			if (pClut)
+			if (bp.clut)
 			{
 				m_pClut = new Color8[256];
-				memcpy(m_pClut, pClut, 1024);
+				memcpy(m_pClut, bp.clut, 1024);
 			}
 
 			if (m_pixelDescription.A_bits > 0)
 			{
-				m_pAlphaMap = new uint8_t[size.w * size.h];
+				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
 
 				// Setup a fake PixelBuffer for call to _updateAlphaMap
 				PixelBuffer buf;
@@ -194,73 +263,77 @@ namespace wg
 				buf.pClut = m_pClut;
 				buf.pitch = pitch;
 				buf.pPixels = (uint8_t*) pBlob->data();
-				buf.rect = size;
+				buf.rect = m_size;
 
-				_updateAlphaMap( buf, size );
+				_updateAlphaMap( buf, m_size );
 			}
 		}
 
 		//TODO: Support pitch
 		
-		_setupGlTexture(pBlob->data(), pitch, flags);
+		_setupGlTexture(bp, pBlob->data(), pitch);
 	}
 
-	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut ) : Surface(flags)
+	GlSurface::GlSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription )
 	{
-//       flags |= (int) SurfaceFlag::Buffered;
+		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
 
-        _setPixelDetails(format);
-		m_scaleMode = ScaleMode::Interpolate;
-		m_size	= size;
+		_setPixelDetails(format);
+		m_sampleMethod = bp.sampleMethod == SampleMethod::Undefined ? SampleMethod::Bilinear : bp.sampleMethod;
+		m_size = bp.size;
+		m_scale = bp.scale;
 		m_pClut = nullptr;
 
-        if ((flags & SurfaceFlag::Buffered) || m_pixelDescription.bits <= 8)
+		if (pitch == 0)
+			pitch = bp.size.w * m_pixelDescription.bits / 8;
+
+        if (bp.buffered || m_pixelDescription.bits <= 8)
         {
             g_backingPixels += m_size.w*m_size.h;
 
-            m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-            m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
+            m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
 
-            _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
+            _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size, m_size);
 
 			// Setup CLUT before calling _setupGlTexture().
 
-			if (pClut)
+			if (bp.clut)
 			{
-				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-				memcpy(m_pClut, pClut, 1024);
+				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
+				memcpy(m_pClut, bp.clut, 1024);
 			}
 
-            _setupGlTexture(m_pBlob->data(), m_pitch, flags);
+            _setupGlTexture(bp, m_pBlob->data(), m_pitch);
         }
         else
 		{
 			// Setup CLUT before calling _setupGlTexture().
 
-			if (pClut)
+			if (bp.clut)
 			{
 				m_pClut = new Color8[256];
-				memcpy(m_pClut, pClut, 1024);
+				memcpy(m_pClut, bp.clut, 1024);
 			}
 
 			if( pPixelDescription->format == PixelFormat::Custom )
             {
-                m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-                m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
+                m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+                m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
 
-                _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
+                _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size, m_size);
 
-                _setupGlTexture(m_pBlob->data(), m_pitch, flags);
+                _setupGlTexture(bp, m_pBlob->data(), m_pitch);
             }
             else
-                _setupGlTexture(pPixels, pitch, flags);
+                _setupGlTexture(bp, pPixels, pitch);
 
             m_pBlob = nullptr;
             m_pitch = 0;
 
 			if (m_pixelDescription.A_bits > 0)
 			{
-				m_pAlphaMap = new uint8_t[size.w * size.h];
+				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
 
 				// Setup a fake PixelBuffer for call to _updateAlphaMap
 				PixelBuffer buf;
@@ -268,37 +341,39 @@ namespace wg
 				buf.pClut = m_pClut;
 				buf.pitch = pitch;
 				buf.pPixels = pPixels;
-				buf.rect = size;
+				buf.rect = m_size;
 
-				_updateAlphaMap(buf, size);
+				_updateAlphaMap(buf, m_size);
 			}
 		}
 	}
 
 
-	GlSurface::GlSurface( Surface * pOther, int flags ) : Surface(flags)
+	GlSurface::GlSurface(const Blueprint& bp, Surface* pOther)
 	{
-//        flags |= (int) SurfaceFlag::Buffered;
-		_setPixelDetails(pOther->pixelFormat());
-		m_scaleMode = ScaleMode::Interpolate;
+		PixelFormat format = bp.format == PixelFormat::Undefined ? pOther->pixelFormat() : bp.format;
+
+		_setPixelDetails(format);
+		m_sampleMethod = bp.sampleMethod == SampleMethod::Undefined ? pOther->sampleMethod() : bp.sampleMethod;
 		m_size	= pOther->pixelSize();
+		m_scale = bp.scale;
 		m_pClut = nullptr;
 
 		auto pixbuf = pOther->allocPixelBuffer();
 		if( !pOther->pushPixels(pixbuf) )
 		{
-			// Error handling
+			//TODO: Error handling
 		}
 
-        if ((flags & SurfaceFlag::Buffered) || m_pixelDescription.bits <= 8)
+        if (bp.buffered || m_pixelDescription.bits <= 8)
         {
             g_backingPixels += m_size.w*m_size.h;
 
             m_pitch = m_size.w * m_pixelSize;
-            m_pBlob = Blob::create(m_pitch * m_size.h + (pOther->clut() ? 1024 : 0));
+            m_pBlob = Blob::create(m_pitch * m_size.h + (m_pixelDescription.bIndexed ? 1024 : 0));
             _copyFrom(pOther->pixelDescription(), pixbuf.pPixels, pixbuf.pitch, m_size, m_size);
 
-            if (pOther->clut())
+            if (m_pixelDescription.bIndexed)
             {
                 m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
                 memcpy(m_pClut, pOther->clut(), 1024);
@@ -308,7 +383,7 @@ namespace wg
 		{
 			m_pitch = 0;
 
-			if (pOther->clut())
+			if (m_pixelDescription.bIndexed)
 			{
 				m_pClut = new Color8[256];
 				memcpy(m_pClut, pOther->clut(), 1024);
@@ -323,27 +398,35 @@ namespace wg
 
 		//TODO: Support pitch
 
-        _setupGlTexture(pixbuf.pPixels, pixbuf.pitch, flags);
+        _setupGlTexture(bp, pixbuf.pPixels, pixbuf.pitch);
 
 		pOther->freePixelBuffer(pixbuf);
 	}
 
-	void GlSurface::_setupGlTexture(void * pPixelsToUpload, int pitch, int flags)
+	//____ _setupGlTexture() __________________________________________________
+
+	void GlSurface::_setupGlTexture(const Blueprint& bp, void* pPixelsToUpload, int pitch)
 	{
 		GLint oldBinding;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 
         g_texturePixels += m_size.w*m_size.h;
 
+		// Create and bind texture
 
 		glGenTextures(1, &m_texture);
 		glBindTexture(GL_TEXTURE_2D, m_texture);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+		// Set tiling
+
+		GLint mode = bp.tiling ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
+
+		m_bTiling = bp.tiling;
+
+		// Push pixels
 
 		HANDLE_GLERROR(glGetError());
         glPixelStorei(GL_UNPACK_ROW_LENGTH, pitch/m_pixelSize);
@@ -351,6 +434,7 @@ namespace wg
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 		HANDLE_GLERROR(glGetError());
 
+		//
 
 		if (m_pClut)
 		{
@@ -375,21 +459,68 @@ namespace wg
 
 			HANDLE_GLERROR(glGetError());
 		}
-		else if (flags & SurfaceFlag::Mipmapped)
+		else
 		{
-			m_bMipmapped = true;
-			m_bMipmapStale = true;
+			switch (m_sampleMethod)
+			{
+			case SampleMethod::Bilinear:
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_bMipmapped ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				break;
+
+			case SampleMethod::Nearest:
+			default:
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				break;
+			}
+
+			if (bp.mipmap)
+			{
+				m_bMipmapped = true;
+				m_bMipmapStale = true;
+			}
 		}
 
-
-		setScaleMode(m_scaleMode);
+		//
 
 		glBindTexture(GL_TEXTURE_2D, oldBinding);
 
 		HANDLE_GLERROR(glGetError());
 	}
 
+	//____ _isBlueprintValid() ________________________________________________
 
+	bool GlSurface::_isBlueprintValid(const Blueprint& bp, Surface * pOther)
+	{
+		SizeI size = pOther ? pOther->pixelSize() :bp.size;
+
+		PixelFormat format = bp.format;
+		if( format == PixelFormat::Undefined )
+			format = pOther ? pOther->pixelFormat() : PixelFormat::BGRA_8;
+
+		SizeI max = maxSize();
+		if (size.w > max.w || size.h > max.h)
+			return false;
+
+		bool bIsIndexed = (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear);
+
+		if (format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.clut == nullptr))
+			return false;
+
+		if (bp.canvas && (bIsIndexed || format == PixelFormat::Custom))
+			return false;
+
+		if( bIsIndexed && bp.mipmap )
+			return false;			// Indexed can't be mipmapped.
+
+		if (bIsIndexed && pOther && !pOther->pixelDescription()->bIndexed)
+			return false;			// Can't create indexed from non-indexed source.
+
+		return true;
+	}
+
+	//____ _setPixelDetails() ____________________________________________________
 
 	void GlSurface::_setPixelDetails( PixelFormat format )
 	{
@@ -531,63 +662,6 @@ namespace wg
 	const TypeInfo& GlSurface::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ setScaleMode() __________________________________________________________
-
-	void GlSurface::setScaleMode( ScaleMode mode )
-	{
-		HANDLE_GLERROR(glGetError());
-
-		if (m_pClut == nullptr)
-		{
-			GLint oldBinding;
-			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
-			glBindTexture(GL_TEXTURE_2D, m_texture);
-
-			switch (mode)
-			{
-			case ScaleMode::Interpolate:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_bMipmapped ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				break;
-
-			case ScaleMode::Nearest:
-			default:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				break;
-			}
-
-			glBindTexture(GL_TEXTURE_2D, oldBinding);
-		}
-
-		Surface::setScaleMode(mode);
-		HANDLE_GLERROR(glGetError());
-	}
-
-	//____ isOpaque() ______________________________________________________________
-
-	bool GlSurface::isOpaque() const
-	{
-		if( m_internalFormat == GL_RGB )
-			return true;
-
-		return false;
-	}
-
-	//____ setTiling() ________________________________________________________
-
-	bool GlSurface::setTiling(bool bTiling)
-	{
-		GLint mode = bTiling ? GL_REPEAT : GL_CLAMP_TO_EDGE;
-
-		glBindTexture(GL_TEXTURE_2D, m_texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
-
-		m_bTiling = bTiling;
-		return true;
 	}
 
 	//____ allocPixelBuffer() _________________________________________________
@@ -771,14 +845,14 @@ namespace wg
 		glGenTextures( 1, &m_texture );
 		glBindTexture( GL_TEXTURE_2D, m_texture );
 
-		switch (m_scaleMode)
+		switch (m_sampleMethod)
 		{
-		case ScaleMode::Interpolate:
+		case SampleMethod::Bilinear:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			break;
 
-		case ScaleMode::Nearest:
+		case SampleMethod::Nearest:
 		default:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

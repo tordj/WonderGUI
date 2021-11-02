@@ -327,7 +327,7 @@ int main(int argc, char** argv)
 	{
 		SDL_Surface * pScreen = SDL_GetWindowSurface(pWin);
 
-		PixelFormat type = PixelFormat::Unknown;
+		PixelFormat type = PixelFormat::Undefined;
 
 		if (pScreen->format->BitsPerPixel == 32)
 			type = PixelFormat::BGRA_8;
