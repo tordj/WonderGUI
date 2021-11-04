@@ -767,7 +767,7 @@ namespace wg
 				mtx[0][1] = 0;
 				mtx[1][0] = 0;
 
-				if( dest.h == 1)
+				if( dest.h == 64)
 					mtx[1][1] = 0;
 				else
 					mtx[1][1] = (src.h-64) / (dest.h-64);
@@ -777,10 +777,10 @@ namespace wg
 				// We want last src sample to be taken as close to the end of the source
 				// rectangle as possible in order to get a more balanced representation.
 
-				mtx[0][0] = src.w / (dest.w-0.99f);
+				mtx[0][0] = src.w / (dest.w-63.9f);
 				mtx[0][1] = 0;
 				mtx[1][0] = 0;
-				mtx[1][1] = src.h / (dest.h-0.99f);
+				mtx[1][1] = src.h / (dest.h-63.9f);
 			}
 
 			_transformBlit(dest, { src.x, src.y }, mtx);
@@ -795,20 +795,20 @@ namespace wg
 
 		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 		{
-			mtx[0][0] = src.w / dest.w;
+			mtx[0][0] = src.w*64 / dest.w;
 			mtx[0][1] = 0;
 			mtx[1][0] = 0;
-			mtx[1][1] = src.h / dest.h;
+			mtx[1][1] = src.h*64 / dest.h;
 		}
 		else
 		{
-			mtx[0][0] = src.w / dest.w;
+			mtx[0][0] = src.w*64 / dest.w;
 			mtx[0][1] = 0;
 			mtx[1][0] = 0;
-			mtx[1][1] = src.h / dest.h;
+			mtx[1][1] = src.h*64 / dest.h;
 		}
 
-		_transformBlit(dest, { src.x,src.y }, mtx );
+		_transformBlit(dest, CoordF( src.x,src.y )*64, mtx );
 	}
 
 	//____ stretchFlipBlit() _____________________________________________________

@@ -389,7 +389,90 @@ namespace wg
 		m_bAutoscrollY = autoscrollY;
 	}
 
+	//____ _matchingHeight() __________________________________________________
 
+	spx ScrollPanel::_matchingHeight(spx width, int scale) const
+	{
+		switch (m_widthConstraint)
+		{
+			case SizeConstraint::None:
+				return _preferredSize(scale).h;
+			case SizeConstraint::LessOrEqual:
+			{
+				//TODO: Implement!!!
+
+				return _preferredSize(scale).h;
+			}
+			case SizeConstraint::Equal:
+			{
+				//TODO: Implement!!!
+
+				return _preferredSize(scale).h;
+			}
+			case SizeConstraint::GreaterOrEqual:
+			{
+				//TODO: Implement!!!
+
+				return _preferredSize(scale).h;
+			}
+		}
+
+		return 0;
+	}
+
+	//____ _matchingWidth() ___________________________________________________
+
+	spx ScrollPanel::_matchingWidth(spx height, int scale) const
+	{
+		switch (m_heightConstraint)
+		{
+			case SizeConstraint::None:
+				return _preferredSize(scale).w;
+			case SizeConstraint::LessOrEqual:
+			{
+				//TODO: Implement!!!
+
+				return _preferredSize(scale).w;
+			}
+			case SizeConstraint::Equal:
+			{
+				//TODO: Implement!!!
+
+				return _preferredSize(scale).w;
+			}
+			case SizeConstraint::GreaterOrEqual:
+			{
+				//TODO: Implement!!!
+
+				return _preferredSize(scale).w;
+			}
+		}
+
+		return 0;
+	}
+
+	//____ _preferredSize() ___________________________________________________
+
+	SizeSPX ScrollPanel::_preferredSize(int scale) const
+	{
+		scale = _fixScale(scale);
+
+		SizeSPX sz;
+			
+		if( slot._widget() )
+			sz = slot._widget()->_preferredSize(scale);
+
+		if (scrollbarY.inWorkingOrder() && !m_bAutohideScrollbarY && !m_bOverlayScrollbarY)
+			sz.w += scrollbarY._preferredSize(scale).w;
+
+		if (scrollbarX.inWorkingOrder() && !m_bAutohideScrollbarX && !m_bOverlayScrollbarX)
+			sz.h += scrollbarX._preferredSize(scale).h;
+
+
+		sz += m_skin.contentPaddingSize(scale);
+
+		return sz;
+	}
 
 	//____ _updateRegions() ___________________________________________________
 
@@ -532,7 +615,7 @@ namespace wg
 			// Calc viewMaxSize & viewMinSize
 
 			SizeSPX viewMaxSize = _contentRect().size();
-			SizeSPX viewMinSize;
+			SizeSPX viewMinSize = viewMaxSize;
 
 			if (scrollbarX.inWorkingOrder() && !m_bOverlayScrollbarX)
 			{
@@ -1095,6 +1178,8 @@ namespace wg
 
 	spx ScrollPanel::_scrollbarMove(const CScrollbar* pComponent, spx pos)
 	{
+		pos = align(pos);
+
 		if (pComponent == &scrollbarX)
 		{
 			m_childCanvas.x = m_childWindow.x - pos;

@@ -20,88 +20,88 @@ public:
 	}
 
 
-	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectSPX& canvas, AppVisitor * pAppVisitor)
 	{
 		return true;
 	}
 
-	bool exit(GfxDevice * pDevice, const RectI& canvas)
+	bool exit(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		return true;
 	}
 
 
-	bool cleanup(GfxDevice * pDevice, const RectI& canvas)
+	bool cleanup(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Blend);
 		return true;
 	}
 
-	bool setReplace(GfxDevice * pDevice, const RectI& canvas)
+	bool setReplace(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Replace);
 		return true;
 	}
 
-	bool setBlend(GfxDevice * pDevice, const RectI& canvas)
+	bool setBlend(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Blend);
 		return true;
 	}
 
-	bool setAdd(GfxDevice * pDevice, const RectI& canvas)
+	bool setAdd(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Add);
 		return true;
 	}
 
-	bool setSubtract(GfxDevice * pDevice, const RectI& canvas)
+	bool setSubtract(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Subtract);
 		return true;
 	}
 
-	bool setMultiply(GfxDevice * pDevice, const RectI& canvas)
+	bool setMultiply(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Multiply);
 		return true;
 	}
 
-	bool setMin(GfxDevice * pDevice, const RectI& canvas)
+	bool setMin(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Min);
 		return true;
 	}
 
-	bool setMax(GfxDevice * pDevice, const RectI& canvas)
+	bool setMax(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Max);
 		return true;
 	}
 
-	bool setInvert(GfxDevice * pDevice, const RectI& canvas)
+	bool setInvert(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Invert);
 		return true;
 	}
 
-	bool setIgnore(GfxDevice * pDevice, const RectI& canvas)
+	bool setIgnore(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Ignore);
 		return true;
 	}
 
-	bool setUndefined(GfxDevice * pDevice, const RectI& canvas)
+	bool setUndefined(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Undefined);
 		return true;
 	}
 
-	bool draw(GfxDevice * pDevice, const RectI& canvas)
+	bool draw(GfxDevice * pDevice, const RectSPX& canvas)
 	{
-		pDevice->fill( RectI(100, 100, 100, 100), Color8(255, 0, 0, 255));
-		pDevice->fill( RectI(150, 100, 100, 100), Color8(0, 255, 0, 255));
-		pDevice->fill( RectI(100, 150, 100, 100), Color8(0, 0, 255, 255));
+		pDevice->fill( RectSPX(100, 100, 100, 100)*64, Color8(255, 0, 0, 255));
+		pDevice->fill( RectSPX(150, 100, 100, 100)*64, Color8(0, 255, 0, 255));
+		pDevice->fill( RectSPX(100, 150, 100, 100)*64, Color8(0, 0, 255, 255));
 		return true;
 	}
 

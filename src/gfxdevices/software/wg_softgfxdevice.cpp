@@ -4337,7 +4337,7 @@ namespace wg
 			return;
 
 		for (int i = 0; i < m_nClipRects; i++)
-			pOp(m_pClipRects[i]/64, nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch, m_colTrans);
+			pOp(m_pClipRects[i], nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch, m_colTrans);
 	}
 
 	//____ setBlitSource() ____________________________________________________

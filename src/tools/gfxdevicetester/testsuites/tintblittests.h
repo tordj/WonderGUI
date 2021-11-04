@@ -96,7 +96,7 @@ public:
 
 	bool	offsetBlit(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->stretchBlit(RectI(200,200,100,100));
+		pDevice->stretchBlit(RectI(200,200,100,100)*64);
 		return true;
 	}
 

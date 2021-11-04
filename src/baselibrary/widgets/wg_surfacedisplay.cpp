@@ -219,7 +219,7 @@ namespace wg
 		else
 			canvas = _canvas;
 
-		SizeSPX destRect = _surfaceDisplayRect(m_scale) + canvas.pos();
+		RectSPX destRect = _surfaceDisplayRect(m_scale) + canvas.pos();
 
 
 		pDevice->setBlitSource(m_pSurface);
@@ -278,7 +278,7 @@ namespace wg
 			Size surfSize = m_pSurface->pointSize();
 
 			SizeSPX size = align(ptsToSpx(surfSize * m_zoom, scale));
-			CoordSPX pos = align( CoordSPX( size.w/2 -(m_offset.x * size.w / surfSize.w), size.h/2 -(m_offset.y * size.h / surfSize.h) ) );
+			CoordSPX pos = align( CoordSPX( m_size.w/2 - (size.w/2 + m_offset.x * size.w / surfSize.w), m_size.h/2 -(size.h/2 + m_offset.y * size.h / surfSize.h) ) );
 
 			return { pos, size };
 		}

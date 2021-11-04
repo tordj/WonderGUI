@@ -104,37 +104,37 @@ public:
 
 	bool	tileShift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->tile(canvas, { 20,10 } );
+		pDevice->tile(canvas, { 20*64,10*64 } );
 		return true;
 	}
 
 	bool	tileRot90Shift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->flipTile(canvas, GfxFlip::Rot90, { 20,10 });
+		pDevice->flipTile(canvas, GfxFlip::Rot90, { 20 * 64,10 * 64 });
 		return true;
 	}
 
 	bool	tileRot180Shift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->flipTile(canvas, GfxFlip::Rot180, { 20,10 });
+		pDevice->flipTile(canvas, GfxFlip::Rot180, { 20 * 64,10 * 64 });
 		return true;
 	}
 
 	bool	tileRot270Shift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->flipTile(canvas, GfxFlip::Rot270, { 20,10 });
+		pDevice->flipTile(canvas, GfxFlip::Rot270, { 20 * 64,10 * 64 });
 		return true;
 	}
 
 	bool	tileFlipXShift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->flipTile(canvas, GfxFlip::FlipX, { 20,10 });
+		pDevice->flipTile(canvas, GfxFlip::FlipX, { 20 * 64,10 * 64 });
 		return true;
 	}
 
 	bool	tileFlipYShift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->flipTile(canvas, GfxFlip::FlipY, { 20,10 });
+		pDevice->flipTile(canvas, GfxFlip::FlipY, { 20 * 64,10 * 64 });
 		return true;
 	}
 
@@ -176,37 +176,37 @@ public:
 
 	bool	tileScaleShift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->scaleTile(canvas, 1.5f, { 20,10 });
+		pDevice->scaleTile(canvas, 1.5f, { 20 * 64,10 * 64 });
 		return true;
 	}
 
 	bool	tileScaleRot90Shift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->scaleFlipTile(canvas, 1.5f, GfxFlip::Rot90, { 20,10 });
+		pDevice->scaleFlipTile(canvas, 1.5f, GfxFlip::Rot90, { 20 * 64,10 * 64 });
 		return true;
 	}
 
 	bool	tileScaleRot180Shift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->scaleFlipTile(canvas, 1.5f, GfxFlip::Rot180, { 20,10 });
+		pDevice->scaleFlipTile(canvas, 1.5f, GfxFlip::Rot180, { 20 * 64,10 * 64 });
 		return true;
 	}
 
 	bool	tileScaleRot270Shift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->scaleFlipTile(canvas, 1.5f, GfxFlip::Rot270, { 20,10 });
+		pDevice->scaleFlipTile(canvas, 1.5f, GfxFlip::Rot270, { 20 * 64,10 * 64 });
 		return true;
 	}
 
 	bool	tileScaleFlipXShift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->scaleFlipTile(canvas, 1.5f, GfxFlip::FlipX, { 20,10 });
+		pDevice->scaleFlipTile(canvas, 1.5f, GfxFlip::FlipX, { 20 * 64,10 * 64 });
 		return true;
 	}
 
 	bool	tileScaleFlipYShift(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->scaleFlipTile(canvas, 1.5f, GfxFlip::FlipY, { 20,10 });
+		pDevice->scaleFlipTile(canvas, 1.5f, GfxFlip::FlipY, { 20 * 64,10 * 64 });
 		return true;
 	}
 

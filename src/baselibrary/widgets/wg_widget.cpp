@@ -36,7 +36,7 @@ namespace wg
 
 	Widget::Widget(): m_skin(this), m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false), m_bTabLock(false),
-						 m_bPressed(false), m_bSelectable(true), m_size(256,256),
+						 m_bPressed(false), m_bSelectable(true), m_size(256*64,256*64),
 						m_bPickable(false), m_bDropTarget(false), m_pickCategory(0), m_bReceivingUpdates(false)
 	{
 	}

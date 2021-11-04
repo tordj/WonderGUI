@@ -125,7 +125,7 @@ protected:
 	vector<SuiteEntry>	g_testsuites;
 	vector<TestEntry>	g_tests;
 
-	vector<RectI>		g_clipList;
+	vector<RectSPX>		g_clipList;
 
 	TextStyle_p			g_pButtonLabelStyle = nullptr;
 	TextLayout_p		g_pButtonLabelMapper = nullptr;

@@ -55,7 +55,7 @@ public:
 
 	bool	blit_040(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->stretchBlit({ 0,0,int(256 * 0.4),int(256 * 0.4) });
+		pDevice->stretchBlit({ 0,0,int(256 * 0.4)*64,int(256 * 0.4)*64 });
 		return true;
 	}
 

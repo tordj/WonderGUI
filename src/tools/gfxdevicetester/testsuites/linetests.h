@@ -10,19 +10,19 @@ public:
 		addTest("SolarisLines", &LineTests::solarisLines );
 	}
 
-	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectSPX& canvas, AppVisitor * pAppVisitor)
 	{
 		const double PI = 3.1415;
 
-		CoordI center = { canvas.w / 2, canvas.h / 2 };
+		CoordSPX center = { canvas.w / 2, canvas.h / 2 };
 
 		for (int i = 0; i < c_nbSolarisLines; i++)
 		{
 			float xFactor = (float) sin(i * PI * 2 / c_nbSolarisLines  );
 			float yFactor = (float) cos(i * PI * 2 / c_nbSolarisLines );
 
-			CoordI beg = center + CoordI(int(50 * xFactor), int(50 * yFactor) );
-			CoordI end = center + CoordI( int(250 * xFactor), int(250 * yFactor) );
+			CoordSPX beg = center + CoordSPX(int(50*64 * xFactor), int(50*64 * yFactor) );
+			CoordSPX end = center + CoordSPX( int(250*64 * xFactor), int(250*64 * yFactor) );
 
 			m_begCoordsSolaris[i] = beg;
 			m_endCoordsSolaris[i] = end;
@@ -33,7 +33,7 @@ public:
 
 	
 
-	bool solarisLines(GfxDevice * pDevice, const RectI& canvas)
+	bool solarisLines(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		for (int i = 0; i < c_nbSolarisLines; i++)
 		{
@@ -46,7 +46,7 @@ public:
 
 	const static int c_nbSolarisLines = 30;
 
-	CoordI	m_begCoordsSolaris[c_nbSolarisLines];
-	CoordI	m_endCoordsSolaris[c_nbSolarisLines];
+	CoordSPX	m_begCoordsSolaris[c_nbSolarisLines];
+	CoordSPX	m_endCoordsSolaris[c_nbSolarisLines];
 
 };

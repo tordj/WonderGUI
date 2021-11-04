@@ -24,7 +24,7 @@ public:
 
 	}
 
-	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectSPX& canvas, AppVisitor * pAppVisitor)
 	{
 		m_pPalette = pAppVisitor->loadSurface("resources/stretchblit_consistency.png", pDevice->surfaceFactory());
 		if (!m_pPalette)
@@ -41,7 +41,7 @@ public:
 		return true;
 	}
 	 
-	bool exit(GfxDevice * pDevice, const RectI& canvas)
+	bool exit(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		m_pPalette = nullptr;
 		m_pFrame = nullptr;
@@ -49,103 +49,104 @@ public:
 	}
 
 
-	bool cleanup(GfxDevice * pDevice, const RectI& canvas)
+	bool cleanup(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		pDevice->setBlitSource(nullptr);
 		return true;
 	}
 
-	bool setPaletteInterpolate(GfxDevice * pDevice, const RectI& canvas)
+	bool setPaletteInterpolate(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		m_pPalette->setScaleMode(ScaleMode::Interpolate);
 		pDevice->setBlitSource(m_pPalette);
 		return true;
 	}
 
-	bool setPaletteNearest(GfxDevice * pDevice, const RectI& canvas)
+	bool setPaletteNearest(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		m_pPalette->setScaleMode(ScaleMode::Nearest);
 		pDevice->setBlitSource(m_pPalette);
 		return true;
 	}
 
-	bool setFrameInterpolate(GfxDevice * pDevice, const RectI& canvas)
+	bool setFrameInterpolate(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		m_pFrame->setScaleMode(ScaleMode::Interpolate);
 		pDevice->setBlitSource(m_pFrame);
 		return true;
 	}
 
-	bool setFrameNearest(GfxDevice * pDevice, const RectI& canvas)
+	bool setFrameNearest(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		m_pFrame->setScaleMode(ScaleMode::Nearest);
 		pDevice->setBlitSource(m_pFrame);
 		return true;
 	}
 
-    bool setGridInterpolate(GfxDevice * pDevice, const RectI& canvas)
+    bool setGridInterpolate(GfxDevice * pDevice, const RectSPX& canvas)
     {
         m_pGrid->setScaleMode(ScaleMode::Interpolate);
         pDevice->setBlitSource(m_pGrid);
         return true;
     }
     
-    bool setGridNearest(GfxDevice * pDevice, const RectI& canvas)
+    bool setGridNearest(GfxDevice * pDevice, const RectSPX& canvas)
     {
         m_pGrid->setScaleMode(ScaleMode::Nearest);
         pDevice->setBlitSource(m_pGrid);
         return true;
     }
 
-	bool	blitPalette(GfxDevice * pDevice, const RectI& canvas)
+	bool	blitPalette(GfxDevice * pDevice, const RectSPX& canvas)
 	{
-		pDevice->stretchBlit({ 64,0,190,64 }, RectI( 1,1,3,3 ) );
-		pDevice->stretchBlit({ 0,64,64,190 }, RectI( 5,1,3,3 ) );
-		pDevice->stretchBlit({ 1,1,60,60 }, RectI(1,5,1,1) );
+		pDevice->stretchBlit( RectSPX( 64,0,190,64 )*64, RectSPX( 1,1,3,3 )*64 );
+		pDevice->stretchBlit( RectSPX( 0,64,64,190 )*64, RectSPX( 5,1,3,3 )*64 );
+		pDevice->stretchBlit( RectSPX( 1,1,60,60 )*64, RectSPX(1,5,1,1)*64 );
 
-        pDevice->stretchBlit({ 80,80,30,3 }, RectI(1, 1, 3, 3));
+        pDevice->stretchBlit( RectSPX( 80,80,30,3 )*64, RectSPX(1, 1, 3, 3)*64);
 
         for( int i = 0 ; i < 10 ; i++ )
-            pDevice->stretchBlit({ 80,100+i*5,i,3 }, RectI(1, 1, 3, 3));
+            pDevice->stretchBlit( RectSPX( 80,100+i*5,i,3 )*64, RectSPX(1, 1, 3, 3)*64);
 
         return true;
 	}
 
-	bool	blitFrame(GfxDevice * pDevice, const RectI& canvas)
+	bool	blitFrame(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		for( int i = 0 ; i < 82 ; i++ )
-			pDevice->stretchBlit({ i*3,i*3,512-i*6,512-i*6 }, RectI(0, 0, 256, 256));
+			pDevice->stretchBlit( RectSPX( i*3,i*3,512-i*6,512-i*6 )*64, RectSPX(0, 0, 256, 256)*64);
 
 		return true;
 	}
 
-	bool	blitInsideFrame(GfxDevice * pDevice, const RectI& canvas)
+	bool	blitInsideFrame(GfxDevice * pDevice, const RectSPX& canvas)
 	{
 		for (int i = 0; i < 82 ; i++)
-			pDevice->stretchBlit({ i * 3,i * 3,512 - i * 6,512 - i * 6 }, RectI(1, 1, 254, 254));
+			pDevice->stretchBlit( RectSPX( i * 3,i * 3,512 - i * 6,512 - i * 6 )*64, RectSPX(1, 1, 254, 254)*64);
 
 		return true;
 	}
 
-	bool	blitX(GfxDevice * pDevice, const RectI& canvas)
+	bool	blitX(GfxDevice * pDevice, const RectSPX& canvas)
 	{
-		pDevice->stretchBlit({ 10,10,3,3 }, RectI(1, 1, 3, 3));
+		pDevice->stretchBlit( RectSPX( 10,10,3,3 )*64, RectSPX(1, 1, 3, 3)*64);
 		return true;
 	}
 
-    bool    blitGrid(GfxDevice * pDevice, const RectI& canvas)
+    bool    blitGrid(GfxDevice * pDevice, const RectSPX& canvas)
     {
-        pDevice->stretchBlit({ 0,0, canvas.w, 31 });
+		int width = canvas.w / 64;
+		pDevice->stretchBlit( RectSPX( 0,0, width, 31 )*64 );
 
         int ofsY = 31;
         for( int y = 40; y > 0 ; y-- )
         {
-            for( int i = 0; i < canvas.w ; i+=y )
+            for( int i = 0; i < width ; i+=y )
             {
                 if( m_pGrid->scaleMode() == ScaleMode::Interpolate )
-                    pDevice->stretchBlit( {i,ofsY,y,10}, RectF(i*30.f/(canvas.w-1), 0, y*30.f/(canvas.w-1), 10) );
+                    pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*30.f/(width-1), 0, y*30.f/(width-1), 10) );
                 else
-                    pDevice->stretchBlit( {i,ofsY,y,10}, RectF(i*31.f/(canvas.w-0.99f), 0, y*31.f/(canvas.w-0.99f), 10) );
+                    pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*31.f/(width-0.99f), 0, y*31.f/(width-0.99f), 10) );
 
             }
             ofsY += 10;

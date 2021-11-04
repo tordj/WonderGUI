@@ -43,9 +43,11 @@ public:
 	}
 
 
-	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectI& _canvas, AppVisitor * pAppVisitor)
 	{
 		// Generate rainbow segments
+
+		RectI canvas = _canvas / 64;
 
 		float val = 0;
 		int ofs = -canvas.h / 4 * 256;

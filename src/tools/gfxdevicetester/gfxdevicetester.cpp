@@ -349,26 +349,27 @@ void GfxDeviceTester::setup_cliplist(ClipList list)
 {
 	g_clipList.clear();
 
-	SizeI rectSize;
+	SizeSPX rectSize;
+	SizeSPX canvasSize = g_canvasSize * 64;
 
 	switch (list)
 	{
 	case ClipList::One:
-		rectSize = g_canvasSize;
+		rectSize = canvasSize;
 		break;
 	case ClipList::Few:
-		rectSize = g_canvasSize / 8;
+		rectSize = canvasSize / 8;
 		break;
 	case ClipList::Many:
-		rectSize = g_canvasSize / 32;
+		rectSize = canvasSize / 32;
 		break;
 	}
 
-	CoordI rectOfs;
+	CoordSPX rectOfs;
 
-	while (rectOfs.y + rectSize.h <= g_canvasSize.h)
+	while (rectOfs.y + rectSize.h <= canvasSize.h)
 	{
-		while (rectOfs.x + rectSize.w <= g_canvasSize.w)
+		while (rectOfs.x + rectSize.w <= canvasSize.w)
 		{
 			g_clipList.push_back({ rectOfs, rectSize });
 			rectOfs.x += rectSize.w * 2;
@@ -397,7 +398,7 @@ void GfxDeviceTester::run_tests(Device* pDevice, DeviceEnum device)
 	auto pGfxDevice = pDevice->beginRender();
 	//	pDevice->setClip(g_canvasSize);
 
-	pGfxDevice->fill(g_canvasSize, Color::Black);
+	pGfxDevice->fill(g_canvasSize*64, Color::Black);
 	pGfxDevice->setClipList((int)g_clipList.size(), &g_clipList[0]);
 
 	for (auto& test : g_tests)
@@ -405,12 +406,12 @@ void GfxDeviceTester::run_tests(Device* pDevice, DeviceEnum device)
 		if (test.bActive)
 		{
 			if (test.devices[device].pTest->init != nullptr)
-				test.devices[device].pTest->init(pGfxDevice, g_canvasSize);
+				test.devices[device].pTest->init(pGfxDevice, g_canvasSize*64);
 
-			test.devices[device].pTest->run(pGfxDevice, g_canvasSize);
+			test.devices[device].pTest->run(pGfxDevice, g_canvasSize*64);
 
 			if (test.devices[device].pTest->exit != nullptr)
-				test.devices[device].pTest->exit(pGfxDevice, g_canvasSize);
+				test.devices[device].pTest->exit(pGfxDevice, g_canvasSize*64);
 		}
 	}
 
@@ -508,8 +509,8 @@ bool GfxDeviceTester::add_testsuite(TestSuite* pTesteeSuite, TestSuite* pReferen
 	se.pTesteeSuite = pTesteeSuite;
 	se.pRefSuite = pReferenceSuite;
 
-	bool bTesteeWorking = pTesteeSuite->init(g_pTesteeDevice->gfxDevice(), g_canvasSize, m_pVisitor);
-	bool bRefWorking = pReferenceSuite->init(g_pReferenceDevice->gfxDevice(), g_canvasSize, m_pVisitor);
+	bool bTesteeWorking = pTesteeSuite->init(g_pTesteeDevice->gfxDevice(), g_canvasSize*64, m_pVisitor);
+	bool bRefWorking = pReferenceSuite->init(g_pReferenceDevice->gfxDevice(), g_canvasSize*64, m_pVisitor);
 
 	bool bWorking = (bTesteeWorking && bRefWorking);
 
