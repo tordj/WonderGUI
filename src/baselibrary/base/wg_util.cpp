@@ -642,7 +642,7 @@ RectI sourceOfs;
 				return true;
 
 			default:
-				output.format = PixelFormat::Unknown;
+				output.format = PixelFormat::Undefined;
 				output.bits = 0;
 				output.bIndexed = false;
 
@@ -668,6 +668,75 @@ RectI sourceOfs;
 				return false;
 		}
 	}
+
+	//____ pixelDescriptionToFormat() _________________________________________
+
+	PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
+	{
+		switch (description.bits)
+		{
+
+		case 8:
+
+			if (description.A_mask == 0xFF)
+				return PixelFormat::A_8;
+			if (description.bIndexed && description.bLinear)
+				return PixelFormat::CLUT_8_linear;
+			if (description.bIndexed && !description.bLinear)
+				return PixelFormat::CLUT_8_sRGB;
+
+			break;
+
+		case 16:
+
+#if IS_LITTLE_ENDIAN
+			if (description.A_mask == 0x00 && description.R_mask == 0xF800 && description.G_mask == 0x07E0 && description.B_mask == 0x001F)
+				return description.bLinear ? PixelFormat::BGR_565_linear : PixelFormat::Custom;
+
+			if (description.A_mask == 0xF000 && description.R_mask == 0x0F00 && description.G_mask == 0x00F0 && description.B_mask == 0x000F)
+				return description.bLinear ? PixelFormat::BGRA_4_linear : PixelFormat::Custom;
+#else
+			if (description.A_mask == 0x00 && description.R_mask == 0xF8 && description.G_mask == 0x0E007 && description.B_mask == 0x1F00)
+				return description.bLinear ? PixelFormat::BGR_565_linear : PixelFormat::Custom;
+
+			if (description.A_mask == 0x00F0 && description.R_mask == 0x000F && description.G_mask == 0xF000 && description.B_mask == 0x0F00)
+				return description.bLinear ? PixelFormat::BGRA_4_linear : PixelFormat::Custom;
+#endif
+			break;
+
+		case 24:
+
+#if IS_LITTLE_ENDIAN
+			if (description.A_mask == 0x00000000 && description.R_mask == 0xFF0000 && description.G_mask == 0xFF00 && description.B_mask == 0xFF)
+				return description.bLinear ? PixelFormat::BGR_8_linear : PixelFormat::BGR_8_sRGB;
+#else
+			if (description.A_mask == 0x00000000 && description.R_mask == 0xFF00 && description.G_mask == 0xFF0000 && description.B_mask == 0xFF000000)
+				return description.bLinear ? PixelFormat::BGR_8_linear : PixelFormat::BGR_8_sRGB;
+#endif
+			break;
+
+
+		case 32:
+
+#if IS_LITTLE_ENDIAN
+			if (description.A_mask == 0xFF000000 && description.R_mask == 0xFF0000 && description.G_mask == 0xFF00 && description.B_mask == 0xFF)
+				return description.bLinear ? PixelFormat::BGRA_8_linear : PixelFormat::BGRA_8_sRGB;
+
+			if (description.A_mask == 0x00000000 && description.R_mask == 0xFF0000 && description.G_mask == 0xFF00 && description.B_mask == 0xFF)
+				return description.bLinear ? PixelFormat::BGRX_8_linear : PixelFormat::BGRX_8_sRGB;
+#else
+			if (description.A_mask == 0xFF && description.R_mask == 0xFF00 && description.G_mask == 0xFF0000 && description.B_mask == 0xFF000000)
+				return description.bLinear ? PixelFormat::BGRA_8_linear : PixelFormat::BGRA_8_sRGB;
+
+			if (description.A_mask == 0x00000000 && description.R_mask == 0xFF00 && description.G_mask == 0xFF0000 && description.B_mask == 0xFF000000)
+				return description.bLinear ? PixelFormat::BGRX_8_linear : PixelFormat::BGRX_8_sRGB;
+#endif
+			break;
+		}
+
+		return PixelFormat::Custom;
+	}
+
 
 	//____ sizeFromConstraint() __________________________________________________________
 

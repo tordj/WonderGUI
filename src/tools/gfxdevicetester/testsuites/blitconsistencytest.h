@@ -34,9 +34,13 @@ public:
 		if (!m_pFrame)
 			return false;
 
-        m_pGrid = pAppVisitor->loadSurface("resources/grid_31x31.png", pDevice->surfaceFactory());
-        if (!m_pFrame)
+		m_pGrid = pAppVisitor->loadSurface("resources/grid_31x31.png", pDevice->surfaceFactory());
+        if (!m_pGrid)
             return false;
+
+		m_pPaletteBilinear = pDevice->surfaceFactory()->createSurface({ .sampleMethod = SampleMethod::Bilinear }, m_pPalette);
+		m_pFrameBilinear = pDevice->surfaceFactory()->createSurface({ .sampleMethod = SampleMethod::Bilinear }, m_pFrame);
+		m_pGridBilinear = pDevice->surfaceFactory()->createSurface({ .sampleMethod = SampleMethod::Bilinear }, m_pGrid);
 
 		return true;
 	}
@@ -57,42 +61,36 @@ public:
 
 	bool setPaletteInterpolate(GfxDevice * pDevice, const RectSPX& canvas)
 	{
-		m_pPalette->setScaleMode(ScaleMode::Interpolate);
-		pDevice->setBlitSource(m_pPalette);
+		pDevice->setBlitSource(m_pPaletteBilinear);
 		return true;
 	}
 
 	bool setPaletteNearest(GfxDevice * pDevice, const RectSPX& canvas)
 	{
-		m_pPalette->setScaleMode(ScaleMode::Nearest);
 		pDevice->setBlitSource(m_pPalette);
 		return true;
 	}
 
 	bool setFrameInterpolate(GfxDevice * pDevice, const RectSPX& canvas)
 	{
-		m_pFrame->setScaleMode(ScaleMode::Interpolate);
-		pDevice->setBlitSource(m_pFrame);
+		pDevice->setBlitSource(m_pFrameBilinear);
 		return true;
 	}
 
 	bool setFrameNearest(GfxDevice * pDevice, const RectSPX& canvas)
 	{
-		m_pFrame->setScaleMode(ScaleMode::Nearest);
 		pDevice->setBlitSource(m_pFrame);
 		return true;
 	}
 
     bool setGridInterpolate(GfxDevice * pDevice, const RectSPX& canvas)
     {
-        m_pGrid->setScaleMode(ScaleMode::Interpolate);
-        pDevice->setBlitSource(m_pGrid);
+        pDevice->setBlitSource(m_pGridBilinear);
         return true;
     }
     
     bool setGridNearest(GfxDevice * pDevice, const RectSPX& canvas)
     {
-        m_pGrid->setScaleMode(ScaleMode::Nearest);
         pDevice->setBlitSource(m_pGrid);
         return true;
     }
@@ -143,7 +141,7 @@ public:
         {
             for( int i = 0; i < width ; i+=y )
             {
-                if( m_pGrid->scaleMode() == ScaleMode::Interpolate )
+                if( m_pGrid->sampleMethod() == SampleMethod::Bilinear )
                     pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*30.f/(width-1), 0, y*30.f/(width-1), 10) );
                 else
                     pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*31.f/(width-0.99f), 0, y*31.f/(width-0.99f), 10) );
@@ -158,6 +156,9 @@ public:
 
 private:
 	Surface_p	m_pPalette;
+	Surface_p	m_pPaletteBilinear;
 	Surface_p	m_pFrame;
-    Surface_p   m_pGrid;
+	Surface_p	m_pFrameBilinear;
+	Surface_p   m_pGrid;
+	Surface_p   m_pGridBilinear;
 };

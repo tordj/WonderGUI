@@ -49,25 +49,24 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p GlSurfaceFactory::createSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut )
+	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint) const
 	{
-		return GlSurface::create(size,format,flags | m_flags,pClut);
+		return GlSurface::create(blueprint);
 	}
 
-
-	Surface_p GlSurfaceFactory::createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut )
+	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch) const
 	{
-		return GlSurface::create(size, format, pBlob, pitch, flags | m_flags, pClut);
+		return GlSurface::create(blueprint, pBlob, pitch);
 	}
 
-	Surface_p GlSurfaceFactory::createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut )
+	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription) const
 	{
-		return GlSurface::create(size,format, pPixels, pitch, pPixelDescription, flags | m_flags, pClut);
+		return GlSurface::create(blueprint, pPixels, pitch, pPixelDescription);
 	}
 
-	Surface_p GlSurfaceFactory::createSurface( Surface * pOther, int flags )
+	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Surface* pOther) const
 	{
-		return GlSurface::create( pOther,flags | m_flags);
+		return GlSurface::create( blueprint, pOther );
 	}
 
 

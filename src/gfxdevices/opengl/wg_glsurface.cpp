@@ -276,7 +276,16 @@ namespace wg
 
 	GlSurface::GlSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription )
 	{
-		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
+		PixelFormat format = bp.format;
+		if (format == PixelFormat::Undefined)
+		{
+			if (pPixelDescription->format != PixelFormat::Custom && pPixelDescription->format != PixelFormat::Undefined)
+				format = pPixelDescription->format;
+			else
+				format = PixelFormat::BGRA_8;
+		}
+		
+//		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
 
 		_setPixelDetails(format);
 		m_sampleMethod = bp.sampleMethod == SampleMethod::Undefined ? SampleMethod::Bilinear : bp.sampleMethod;

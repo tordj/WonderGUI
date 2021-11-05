@@ -36,4 +36,73 @@ namespace wg
 	}
 
 
+
+	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, int flags, const Color8* pClut) const
+	{
+		Surface::Blueprint bp;
+
+		bp.size = size;
+		bp.format = format;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+		bp.clut = pClut;
+
+		return createSurface(bp);
+	}
+
+
+	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags, const Color8* pClut) const
+	{
+		Surface::Blueprint bp;
+
+		bp.size = size;
+		bp.format = format;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+		bp.clut = pClut;
+
+		return createSurface(bp, pBlob, pitch);
+	}
+
+	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch,
+		const PixelDescription* pPixelDescription, int flags, const Color8* pClut) const
+	{
+		Surface::Blueprint bp;
+
+		bp.size = size;
+		bp.format = format;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+		bp.clut = pClut;
+
+		return  createSurface(bp, pPixels, pitch, pPixelDescription);
+	}
+
+	Surface_p SurfaceFactory::createSurface(Surface* pOther, int flags) const
+	{
+		Surface::Blueprint bp;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+
+		return createSurface(bp, pOther);
+	}
+
+
+
 } // namespace wg

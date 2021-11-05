@@ -218,6 +218,7 @@ namespace wg
 
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );
+		PixelFormat	pixelDescriptionToFormat(const PixelDescription& description);
 
 		CoordSPX 	placementToOfs( Placement placement, SizeSPX base );
 		RectSPX		placementToRect( Placement placement, SizeSPX base, SizeSPX rect );

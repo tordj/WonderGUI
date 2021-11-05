@@ -17,16 +17,13 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pLeaves = pAppVisitor->loadSurface("resources/blaetter.gif", pDevice->surfaceFactory());
+		m_pLeaves = pAppVisitor->loadSurface("resources/blaetter.gif", pDevice->surfaceFactory(), { .sampleMethod = SampleMethod::Nearest } );
 		if (!m_pLeaves)
 			return false;
 
-		m_pLeavesInterpolated = pAppVisitor->loadSurface("resources/blaetter.gif", pDevice->surfaceFactory());
+		m_pLeavesInterpolated = pAppVisitor->loadSurface("resources/blaetter.gif", pDevice->surfaceFactory(), { .sampleMethod = SampleMethod::Bilinear } );
 		if (!m_pLeavesInterpolated)
 			return false;
-
-		m_pLeavesInterpolated->setScaleMode(ScaleMode::Interpolate);
-		m_pLeaves->setScaleMode(ScaleMode::Nearest);
 
 		return true;
 	}

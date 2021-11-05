@@ -75,7 +75,7 @@ int main ( int argc, char** argv )
 	// The software renderer needs a SoftSurface as its canvas,
 	// so we wrap the SDL WindowSurface into a SoftSurface.
 
-	PixelFormat format = PixelFormat::Unknown;
+	PixelFormat format = PixelFormat::Undefined;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
 		format = PixelFormat::BGRA_8;
