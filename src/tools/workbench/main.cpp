@@ -1638,7 +1638,13 @@ Surface_p loadSurface(const std::string& path, const Surface::Blueprint& bluepri
 	}
 
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pImgSurface = Base::activeContext()->surfaceFactory()->createSurface( blueprint, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	
+	Surface::Blueprint bp = blueprint;
+	bp.size.w = pSDLSurf->w;
+	bp.size.h = pSDLSurf->h;
+	bp.format = Util::pixelDescriptionToFormat(pixelDesc);
+
+	Surface_p pImgSurface = Base::activeContext()->surfaceFactory()->createSurface( bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 
 	return pImgSurface;
