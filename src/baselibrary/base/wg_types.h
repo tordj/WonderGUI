@@ -677,9 +677,9 @@ namespace wg
 
 	enum class SampleMethod	//. autoExtras
 	{
-		Undefined,			// Default to Bilinear if it is accelerated, otherwise Nearest.
 		Nearest,
 		Bilinear,
+		Undefined = -1			// Default to Bilinear if it is accelerated, otherwise Nearest.
 	};
 
 

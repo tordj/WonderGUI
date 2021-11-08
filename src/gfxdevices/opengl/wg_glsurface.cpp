@@ -473,7 +473,7 @@ namespace wg
 			switch (m_sampleMethod)
 			{
 			case SampleMethod::Bilinear:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_bMipmapped ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bp.mipmap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				break;
 

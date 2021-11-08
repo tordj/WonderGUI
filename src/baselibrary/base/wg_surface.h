@@ -288,7 +288,7 @@ namespace wg
 		SampleMethod		m_sampleMethod = SampleMethod::Nearest;
 		bool				m_bMipmapped = false;
 		bool				m_bTiling = false;
-		bool				m_bOpaque = false;
+//		bool				m_bOpaque = false;
 
 		Color8 *			m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.
 

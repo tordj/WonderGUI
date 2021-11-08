@@ -34,7 +34,7 @@
 
 #include <wg_freetypefont.h>
 
-//#define USE_OPEN_GL
+#define USE_OPEN_GL
 
 
 using namespace wg;
@@ -625,11 +625,11 @@ int main(int argc, char** argv)
 //	doubleSkinTest(&pRoot->slot);
 //	timerTest(&pRoot->slot);
 //	animPlayerTest(&pRoot->slot);
-//	selectBoxTest(&pRoot->slot);
+	selectBoxTest(&pRoot->slot);
 //	tileSkinTest(&pRoot->slot);
 //	gradientSkinTest(&pRoot->slot);
 //	bakeSkinTest(&pRoot->slot);
-	animSkinTest(&pRoot->slot);
+//	animSkinTest(&pRoot->slot);
 //	renderLayerTest(&pRoot->slot);
 //	rigidPartNinePatchTest(&pRoot->slot);
 //	scrollSkinTest(&pRoot->slot);
@@ -1642,7 +1642,11 @@ Surface_p loadSurface(const std::string& path, const Surface::Blueprint& bluepri
 	Surface::Blueprint bp = blueprint;
 	bp.size.w = pSDLSurf->w;
 	bp.size.h = pSDLSurf->h;
-	bp.format = Util::pixelDescriptionToFormat(pixelDesc);
+
+	if (pixelDesc.A_bits == 0)
+		bp.format = PixelFormat::BGRA_8;
+	else
+		bp.format = PixelFormat::BGRX_8;
 
 	Surface_p pImgSurface = Base::activeContext()->surfaceFactory()->createSurface( bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
