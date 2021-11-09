@@ -26,15 +26,15 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectSPX& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pPalette = pAppVisitor->loadSurface("resources/stretchblit_consistency.png", pDevice->surfaceFactory());
+		m_pPalette = pAppVisitor->loadSurface("resources/stretchblit_consistency.png", pDevice->surfaceFactory(), { .sampleMethod = SampleMethod::Nearest });
 		if (!m_pPalette)
 			return false;
 
-		m_pFrame = pAppVisitor->loadSurface("resources/white_frame_256x256.png", pDevice->surfaceFactory());
+		m_pFrame = pAppVisitor->loadSurface("resources/white_frame_256x256.png", pDevice->surfaceFactory(), { .sampleMethod = SampleMethod::Nearest });
 		if (!m_pFrame)
 			return false;
 
-		m_pGrid = pAppVisitor->loadSurface("resources/grid_31x31.png", pDevice->surfaceFactory());
+		m_pGrid = pAppVisitor->loadSurface("resources/grid_31x31.png", pDevice->surfaceFactory(), { .sampleMethod = SampleMethod::Nearest });
         if (!m_pGrid)
             return false;
 
@@ -141,7 +141,7 @@ public:
         {
             for( int i = 0; i < width ; i+=y )
             {
-                if( m_pGrid->sampleMethod() == SampleMethod::Bilinear )
+                if( pDevice->blitSource()->sampleMethod() == SampleMethod::Bilinear )
                     pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*30.f/(width-1), 0, y*30.f/(width-1), 10) );
                 else
                     pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*31.f/(width-0.99f), 0, y*31.f/(width-0.99f), 10) );
