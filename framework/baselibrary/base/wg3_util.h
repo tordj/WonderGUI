@@ -156,6 +156,29 @@ namespace wg
 		{
 			return _limitUint8Table[value+256];
 		}
+
+		inline uint32_t endianSwap( uint32_t in )
+		{
+			return ((in & 0xff000000) >> 24) | ((in & 0x00ff0000) >> 8) | ((in & 0x0000ff00) << 8) | (in << 24);
+		}
+
+		inline uint16_t endianSwap( uint16_t in )
+		{
+			return ((in & 0xff00) >> 8) | (in << 8);
+		}
+
+		inline bool isSystemBigEndian()
+		{
+	#if IS_LITTLE_ENDIAN
+			return false;
+	#else
+			return true;
+	#endif
+		}
+
+
+
+
 	}
 
 

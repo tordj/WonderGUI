@@ -307,6 +307,7 @@ namespace wg
 			"CLUT_8",
 			"CLUT_8_sRGB",
 			"CLUT_8_linear",
+			"RGB_565_bigendian",
 			"A_8" };
 
 		return names[(int)i];

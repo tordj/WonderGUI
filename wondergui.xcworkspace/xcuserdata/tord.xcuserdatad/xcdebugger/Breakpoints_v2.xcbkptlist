@@ -51,7 +51,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "861"
             endingLineNumber = "861"
-            landmarkName = "SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans&amp; tint)"
+            landmarkName = "SoftGfxDevice::_color_tint_init(tintMode, tint, bits, inB, inG, inR, inA, outB, outG, outR, outA, leftB, leftG, leftR, leftA, rightB, rightG, rightR, rightA, leftIncB, leftIncG, leftIncR, leftIncA, rightIncB, rightIncG, rightIncR, rightIncA, xIncB, xIncG, xIncR, xIncA, patchPos)"
             landmarkType = "7">
             <Locations>
                <Location
@@ -3525,7 +3525,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "502"
             endingLineNumber = "502"
-            landmarkName = "WgWidget::_queueEvent(pEvent)"
+            landmarkName = "WgWidget::_listAncestors(array, max)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

@@ -439,7 +439,7 @@ namespace wg
 		// Calculate both angles now before we destroy precision
 
 		int angleX = ((p2->y.qpix - p1->y.qpix) << precision) / (1 + p2->x.qpix - p1->x.qpix);		// Change in Y for each increase of X.
-		int angleY = ((p2->x.qpix - p1->x.qpix) << precision) / (1 + abs(p2->y.qpix - p1->y.qpix));		// Change in X for each increase of Y.
+		int angleY = ((p2->x.qpix - p1->x.qpix) << precision) / (1 + abs(int(p2->y.qpix) - int(p1->y.qpix)));		// Change in X for each increase of Y.
 
 		// Clip line so no coord is outside rectangles x-dimensions
 

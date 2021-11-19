@@ -250,10 +250,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
 				HEADER_SEARCH_PATHS = (
-					../framework/,
-					../framework/gfxdevices/software/,
-					../framework/base/,
-					../framework/components/,
+					"../../../framework/**",
+					../../framework/gfxdevices/software/,
+					../framework/baselibrary/base/,
+					../framework/bnaselibrary/components/,
+					"../../framework/**",
+					"../framework/**",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -266,10 +268,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
 				HEADER_SEARCH_PATHS = (
-					../framework/,
-					../framework/gfxdevices/software/,
-					../framework/base/,
-					../framework/components/,
+					"../../../framework/**",
+					../../framework/gfxdevices/software/,
+					../framework/baselibrary/base/,
+					../framework/bnaselibrary/components/,
+					"../../framework/**",
+					"../framework/**",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

@@ -23,6 +23,7 @@
 #define	WG3_POINTERS_DOT_H
 #pragma once
 
+#include <wg3_object.h>
 #include <wg3_strongptr.h>
 #include <wg3_weakptr.h>
 #include <wg3_strongcomponentptr.h>

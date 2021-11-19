@@ -1,10 +1,10 @@
 
 
-rm -rf ../framework/base
-rm -rf ../framework/components
+rm -rf ../framework/baselibrary/base
+rm -rf ../framework/baselibrary/components
+rm -rf ../framework/baselibrary/skins
 rm -rf ../framework/gfxdevices
-rm -rf ../framework/skins
-rm -rf ../framework/fonts
+rm -rf ../framework/fontengines
 
 
 cp -rf imports/* ../framework

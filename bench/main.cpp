@@ -203,7 +203,7 @@ int main ( int argc, char** argv )
 
 	// Init WonderGUI
 
-	WgBase::Init();
+	WgBase::Init( nullptr );
 	sdl_wglib::MapKeys();
 
 
