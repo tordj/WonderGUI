@@ -826,6 +826,7 @@
 					"/usr/local/Cellar/freetype/2.10.2/include/freetype2/**",
 					"../../framework/**",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -841,6 +842,7 @@
 					"/usr/local/Cellar/freetype/2.10.2/include/freetype2/**",
 					"../../framework/**",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};

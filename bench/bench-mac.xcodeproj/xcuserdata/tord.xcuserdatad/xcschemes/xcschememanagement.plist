@@ -4,12 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>bench.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>0</integer>
-		</dict>
-		<key>bench.xcscheme_^#shared#^_</key>
+		<key>bench-mac.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>1</integer>
@@ -17,7 +12,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>170F7A53220073C300B70B56</key>
+		<key>1701E08F2747DA2A0066335C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
