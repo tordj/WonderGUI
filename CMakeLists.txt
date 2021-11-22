@@ -87,6 +87,7 @@ endfunction()
 
 add_subdirectory(framework)
 add_subdirectory(framework/gfxdevices/software)
+add_subdirectory(framework/gfxdevices/stream)
 #add_subdirectory(framework/gfxdevices/opengl)
 #if(APPLE)
 #	add_subdirectory(gfxdevices/metal)

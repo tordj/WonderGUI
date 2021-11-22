@@ -10,6 +10,7 @@ mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
 mkdir gfxdevices/metal
+mkdir gfxdevices/stream
 mkdir fontengines
 cd ..
 
@@ -21,4 +22,5 @@ cp -r ../framework/baselibrary/skins exports/baselibrary
 cp -r ../framework/fontengines exports/ 
 
 
-ruby flip_files.rb exports/baselibrary/**/*.cpp exports/baselibrary/**/*.h exports/gfxdevices/**/* exports/fontengines/**/*.cpp exports/fontengines/**/*.h exports/baselibrary/skins/**/*.cpp exports/baselibrary/skins/**/*.h
+ruby flip_files.rb exports/baselibrary/**/*.cpp exports/baselibrary/**/*.h exports/gfxdevices/**/* exports/fontengines/**/* exports/baselibrary/skins/**/*.cpp exports/baselibrary/skins/**/*.h
+ 

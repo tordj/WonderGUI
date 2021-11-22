@@ -32,6 +32,12 @@
 #include <wg_knob.h>
 #include <iostream>
 
+#include <wg3_streamsurface.h>
+#include <wg3_streamsurfacefactory.h>
+#include <wg3_streamgfxdevice.h>
+#include <wg3_gfxstreamplayer.h>
+#include <wg3_gfxstreamplug.h>
+
 #include <wg3_softsurface.h>
 #include <wg3_softsurfacefactory.h>
 #include <wg3_softgfxdevice.h>
@@ -77,14 +83,18 @@ bool canvasCapsuleTest(WgRootPanel* pRoot);
 bool tooltipLayerTest(WgRootPanel* pRoot);
 bool flowPanelTest(WgRootPanel* pRoot);
 bool fullStateSupportTest(WgRootPanel* pRoot);
+bool gfxStreamingTest(WgRootPanel* pRoot);
 
 
 //#define USE_OPEN_GL
 
-
-wg::SurfaceFactory_p	g_pSurfaceFactory;
-wg::GfxDevice_p		    g_pGfxDevice;
-wg::Surface_p           g_pCanvas;
+wg::GfxStreamPlug_p         g_pGfxStreamPlug;
+wg::GfxStreamPlayer_p       g_pGfxStreamPlayer;
+wg::StreamGfxDevice_p       g_pStreamGfxDevice;
+wg::StreamSurfaceFactory_p  g_pStreamSurfaceFactory;
+wg::SurfaceFactory_p	    g_pSurfaceFactory;
+wg::GfxDevice_p		        g_pGfxDevice;
+wg::Surface_p               g_pCanvas;
 //wg::SurfaceFactory_p g_pModernSurfaceFactory = nullptr;
 
 
@@ -232,9 +242,17 @@ int main ( int argc, char** argv )
 //    g_pModernSurfaceFactory = wg::SoftSurfaceFactory::create();
 #endif
 
+    g_pGfxStreamPlug = wg::GfxStreamPlug::create();
+    g_pStreamSurfaceFactory = wg::StreamSurfaceFactory::create(g_pGfxStreamPlug->input);
+
+    g_pStreamGfxDevice = wg::StreamGfxDevice::create(g_pGfxStreamPlug->input);
+    g_pGfxStreamPlayer = wg::GfxStreamPlayer::create(g_pGfxStreamPlug->output[0], g_pGfxDevice, g_pStreamSurfaceFactory);
+    
+    g_pGfxStreamPlug->openOutput(0);
+    
     auto pContext = wg::Context::create();
     pContext->setScale(1.00f);
-    pContext->setGfxDevice(g_pGfxDevice);
+    pContext->setGfxDevice(g_pStreamGfxDevice);
     pContext->setSurfaceFactory(g_pSurfaceFactory);
     wg::Base::setActiveContext(pContext);
 
@@ -295,7 +313,7 @@ int main ( int argc, char** argv )
     wg::Base::setDefaultStyle( pTextStyle );
 
 
-	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
+	WgRootPanel * pRoot = setupGUI( g_pStreamGfxDevice );
 
 
 //    packPanelPaddingTest( pRoot );
@@ -314,8 +332,8 @@ int main ( int argc, char** argv )
 //    canvasCapsuleTest(pRoot);
 //    tooltipLayerTest(pRoot);
 //    flowPanelTest(pRoot);
-    fullStateSupportTest(pRoot);
-
+//    fullStateSupportTest(pRoot);
+    gfxStreamingTest(pRoot);
 
 	// Setup debug overlays
 	
@@ -343,6 +361,10 @@ int main ( int argc, char** argv )
 #ifndef USE_OPEN_GL
 		SDL_UnlockSurface( pScreen );
 
+        
+        if( g_pGfxStreamPlayer )
+            g_pGfxStreamPlayer->playAll();
+        
         // DRAWING ENDS HERE
 
         // finally, update the screen :)
@@ -1170,6 +1192,16 @@ bool fullStateSupportTest(WgRootPanel* pRoot)
 
 }
 
+//____ gfxStreamingTest() _________________________________________________________
+
+bool gfxStreamingTest(WgRootPanel* pRoot)
+{
+    auto pFiller  = new WgFiller();
+    pFiller->SetSkin(wg::ColorSkin::create(wg::Color::Red));
+
+    pRoot->SetChild(pFiller);
+    return true;
+}
 
 
 //____ setupGUI() ______________________________________________________________

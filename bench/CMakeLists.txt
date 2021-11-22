@@ -14,6 +14,7 @@ target_working_directory(workbench ${WG_ROOT} )
 
 target_link_libraries(workbench PRIVATE
 	wgsoftgfx
+	wgstreamgfx
 #	wgopenglgfx
 	wgfreetypefont
 	wondergui 

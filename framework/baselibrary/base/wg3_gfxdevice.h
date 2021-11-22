@@ -67,7 +67,6 @@ namespace wg
 	class GfxDevice : public Object
 	{
 	public:
-		friend class GfxStreamPlayer;
 
 		//.____ Identification __________________________________________
 
@@ -82,19 +81,16 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		inline bool			beginCanvasUpdate( const RectI& canvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
-		inline bool			beginCanvasUpdate(Surface * pCanvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
-		void				endCanvasUpdate();
 		inline Surface_p	canvas() const { return m_pCanvas; }
 		inline SizeI		canvasSize() const { return m_canvasSize; }
 		inline CanvasLayers_p canvasLayers() const { return m_pCanvasLayers; }
 
 		//.____ State _________________________________________________
 
-		bool				setClipList(int nRectangles, const RectI * pRectangles);
-		void				clearClipList();
-		bool				pushClipList(int nRectangles, const RectI* pRectangles);
-		bool				popClipList();
+		virtual bool		setClipList(int nRectangles, const RectI * pRectangles);
+		virtual void		clearClipList();
+		virtual bool		pushClipList(int nRectangles, const RectI* pRectangles);
+		virtual bool		popClipList();
 
 		inline const RectI*	clipList() const { return m_pClipRects; }
 		inline int			clipListSize() const { return m_nClipRects; }
@@ -115,7 +111,7 @@ namespace wg
 		virtual void		setMorphFactor(float factor);
 		float				morphFactor() const { return m_morphFactor; }
 
-		void				setRenderLayer(int layer);
+		virtual void		setRenderLayer(int layer);
 		int					renderLayer() const { return m_renderLayer; }
 
 		//.____ Rendering ________________________________________________
@@ -126,6 +122,11 @@ namespace wg
 		virtual bool	isIdle();
 		virtual void	flush();
 
+        inline bool     beginCanvasUpdate( const RectI& canvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
+        inline bool     beginCanvasUpdate(Surface * pCanvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
+        virtual void    endCanvasUpdate();
+
+        
 		// Draw methods.
 
 		virtual void	fill(HiColor col);
@@ -221,7 +222,7 @@ namespace wg
 		void	_genCurveTab();
 		void	_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset);
 
-		bool	_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer);
+		virtual bool _beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer);
 		void	_clearRenderLayer();						// Initializes and possibly clear render layer. 
 
 

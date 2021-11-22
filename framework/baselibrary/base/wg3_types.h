@@ -819,65 +819,6 @@ enum class CanvasInit 		//. autoExtras
 		Mask			///< Mask background against whole container.
 	};
 
-	//____ GfxChunkId ____________________________________________________
-
-	enum class GfxChunkId : uint16_t	//. autoExtras
-	{
-		OutOfData,
-
-		BeginRender,
-		EndRender,
-		SetCanvas,
-		SetClip,
-		SetTintColor,
-		SetBlendMode,
-		SetBlitSource,
-
-		Fill,
-		FillSubpixel,
-		PlotPixels,
-		DrawLineFromTo,
-		DrawLineStraight,
-
-
-		Blit,
-//		FlipBlit,
-		StretchBlit,
-//		StretchBlitSubpixel,
-
-//		StretchFlipBlit,
-//		StretchFlipBlitSubpixel,
-
-//		RotScaleBlit,
-
-
-//		DrawWave,
-//		FlipDrawWave,
-
-//		DrawElipse,
-
-//		DrawSegments,
-//		FlipDrawSegments,
-
-		SimpleTransformBlit,
-		ComplexTransformBlit,
-
-		TransformDrawSegments,
-		EdgeSamples,
-
-//		BlitNinePatch,
-
-
-		CreateSurface,
-		SetSurfaceScaleMode,
-		BeginSurfaceUpdate,
-		SurfaceData,
-		EndSurfaceUpdate,
-		FillSurface,
-		CopySurface,
-		DeleteSurface
-	};
-
 	//____ GfxFlip ____________________________________________________________
 
 	enum class GfxFlip : uint8_t	//. autoExtras

@@ -10,6 +10,7 @@ mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
 mkdir gfxdevices/metal
+mkdir gfxdevices/stream
 mkdir baselibrary/skins
 mkdir fontengines
 cd ..
@@ -78,6 +79,9 @@ cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/metal
 
 cd ../software
 cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/software/
+
+cd ../stream
+cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/stream/
 
 cd ../../fontengines
 cp -r * ../../../wg2/_kato_wg3/imports/fontengines
