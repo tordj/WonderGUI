@@ -1,6 +1,6 @@
-
+build/
+freetype/
 .vs
-Debug/
 
 *.user
 
@@ -8,8 +8,6 @@ Debug/
 
 bench/log\.txt
 
-bench/Release/
 
-Release/
 _kato_wg3/
 .DS_Store

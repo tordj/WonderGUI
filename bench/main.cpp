@@ -245,7 +245,7 @@ int main ( int argc, char** argv )
 
 	// Load TTF-font
 
-	char	ttfname[] = { "../resources/DroidSans.ttf" };
+	char	ttfname[] = { "resources/DroidSans.ttf" };
 
 	int size = sdl_wglib::FileSize( ttfname );
 	char * pFontFile = (char*) sdl_wglib::LoadFile( ttfname );
@@ -256,11 +256,11 @@ int main ( int argc, char** argv )
 	
 	// Load bitmap font
 
-//	auto pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", g_pSurfaceFactory );
+//	auto pFont = sdl_wglib::LoadBitmapFont( "resources/anuvverbubbla_8x8.png", "resources/anuvverbubbla_8x8.fnt", g_pSurfaceFactory );
 
 	// Load and setup cursor
 
-	auto pCursorImg = sdl_wglib::LoadSurface("../resources/cursors.png", g_pSurfaceFactory );
+	auto pCursorImg = sdl_wglib::LoadSurface("resources/cursors.png", g_pSurfaceFactory );
 
 	WgGfxAnim * pCursorEOL = new WgGfxAnim();
 	pCursorEOL->SetSize( WgSize(8,8) );
@@ -443,8 +443,8 @@ void manuBlendTest()
 
 	WgSurfaceFactory * pFactory = new WgSurfaceFactorySoft();
 
-	WgSurface * pBackImg = sdl_wglib::LoadSurface("../resources/BlendModes-layer1.png", *pFactory);
-	WgSurface * pFrontImg = sdl_wglib::LoadSurface("../resources/BlendModes-layer2.png", *pFactory);
+	WgSurface * pBackImg = sdl_wglib::LoadSurface("resources/BlendModes-layer1.png", *pFactory);
+	WgSurface * pFrontImg = sdl_wglib::LoadSurface("resources/BlendModes-layer2.png", *pFactory);
 
 
 	WgGfxDevice * pDevice = new WgGfxDeviceSoft(pCanvas);
@@ -818,7 +818,7 @@ void scrollPanelTest( WgRootPanel * pRoot )
 
 void shadowLayerTest( WgRootPanel * pRoot )
 {
-    auto pImgSurface = sdl_wglib::LoadSurface("../resources/shadow.png", g_pSurfaceFactory );
+    auto pImgSurface = sdl_wglib::LoadSurface("resources/shadow.png", g_pSurfaceFactory );
     
     auto pShadowSkin = wg::BlockSkin::createStaticFromSurface(pImgSurface, {0,128,128,0});
     pShadowSkin->setContentPadding({0,128,128,0});
@@ -895,9 +895,9 @@ bool pianoKeyboardTest(WgRootPanel * pRoot)
 
 	{
 
-		wg::Surface_p pOddWhiteKeys		= sdl_wglib::LoadSurface("../resources/whiteoddkeys.png", g_pSurfaceFactory);
-		wg::Surface_p pEvenWhiteKeys	= sdl_wglib::LoadSurface("../resources/whiteevenkeys.png", g_pSurfaceFactory);
-		wg::Surface_p pBlackKeys		= sdl_wglib::LoadSurface("../resources/blackkeys.png", g_pSurfaceFactory);
+		wg::Surface_p pOddWhiteKeys		= sdl_wglib::LoadSurface("resources/whiteoddkeys.png", g_pSurfaceFactory);
+		wg::Surface_p pEvenWhiteKeys	= sdl_wglib::LoadSurface("resources/whiteevenkeys.png", g_pSurfaceFactory);
+		wg::Surface_p pBlackKeys		= sdl_wglib::LoadSurface("resources/blackkeys.png", g_pSurfaceFactory);
 
 		auto pSimplePiano = new WgPianoKeyboard();
 
@@ -909,9 +909,9 @@ bool pianoKeyboardTest(WgRootPanel * pRoot)
 	}
 
 	{
-		wg::Surface_p pOddWhiteKeys = sdl_wglib::LoadSurface("../resources/NisOddWhite.png", g_pSurfaceFactory);
-		wg::Surface_p pEvenWhiteKeys = sdl_wglib::LoadSurface("../resources/NisEvenWhite.png", g_pSurfaceFactory);
-		wg::Surface_p pBlackKeys = sdl_wglib::LoadSurface("../resources/NisBlack.png", g_pSurfaceFactory);
+		wg::Surface_p pOddWhiteKeys = sdl_wglib::LoadSurface("resources/NisOddWhite.png", g_pSurfaceFactory);
+		wg::Surface_p pEvenWhiteKeys = sdl_wglib::LoadSurface("resources/NisEvenWhite.png", g_pSurfaceFactory);
+		wg::Surface_p pBlackKeys = sdl_wglib::LoadSurface("resources/NisBlack.png", g_pSurfaceFactory);
 
 		auto pNisPiano = new WgPianoKeyboard();
 		pNisPiano->SetSkin(pSkin);
@@ -1010,7 +1010,7 @@ bool tooltipLayerTest(WgRootPanel * pRoot)
 {
     auto pTooltipLayer = new WgTooltipLayer();
 
-    wg::Surface_p pTooltipBg = sdl_wglib::LoadSurface("../resources/tooltip_under_bg.png", g_pSurfaceFactory);
+    wg::Surface_p pTooltipBg = sdl_wglib::LoadSurface("resources/tooltip_under_bg.png", g_pSurfaceFactory);
     auto pSkin = wg::StaticBlockSkin::create(pTooltipBg, wg::BorderI( 10,4,3,4 ) );
 //        pSkin->setRigidPartX(5, 16, wg::YSections::Top | wg::YSections::Center | wg::YSections::Bottom);
     pSkin->setContentPadding({ 10,4,4,4 });
@@ -1176,7 +1176,7 @@ bool fullStateSupportTest(WgRootPanel* pRoot)
 
 WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 {
-    std::map<std::string,WgWidget*> * pDB = sdl_wglib::LoadStdWidgets("../resources/blocks.png", "../resources/blocks_x2.png", "../resources/blocks_x4.png", g_pSurfaceFactory);
+    std::map<std::string,WgWidget*> * pDB = sdl_wglib::LoadStdWidgets("resources/blocks.png", "resources/blocks_x2.png", "resources/blocks_x4.png", g_pSurfaceFactory);
 	if (!pDB)
 		return 0;
 
@@ -1203,28 +1203,28 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 	// Load images and specify blocks
 
-	auto pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", g_pSurfaceFactory);
+	auto pBackImg = sdl_wglib::LoadSurface("resources/What-Goes-Up-3.bmp", g_pSurfaceFactory);
 	auto pBackBlock = WgBlockset::CreateFromSurface(pBackImg, WG_TILE_ALL);
 
-	auto pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", g_pSurfaceFactory);
+	auto pFlagImg = sdl_wglib::LoadSurface("bench/cb2.bmp", g_pSurfaceFactory);
 	auto pFlagBlock = WgBlockset::CreateFromSurface(pFlagImg);
 
-	auto pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", g_pSurfaceFactory);
+	auto pSplashImg = sdl_wglib::LoadSurface("resources/splash.png", g_pSurfaceFactory);
 	auto pSplashBlock = WgBlockset::CreateFromSurface(pSplashImg);
 
-	auto pBigImg = sdl_wglib::LoadSurface("../resources/frog.jpg", g_pSurfaceFactory);
+	auto pBigImg = sdl_wglib::LoadSurface("resources/frog.jpg", g_pSurfaceFactory);
 	auto pBigBlock = WgBlockset::CreateFromSurface(pBigImg);
 
-	auto pPlateImg = sdl_wglib::LoadSurface("../resources/grey_pressable_plate.bmp", g_pSurfaceFactory);
+	auto pPlateImg = sdl_wglib::LoadSurface("resources/grey_pressable_plate.bmp", g_pSurfaceFactory);
 
-	auto pAnimSurf = sdl_wglib::LoadSurface("../resources/dummy_anim.png", g_pSurfaceFactory);
+	auto pAnimSurf = sdl_wglib::LoadSurface("resources/dummy_anim.png", g_pSurfaceFactory);
 
-	auto pPlateImg_x2 = sdl_wglib::LoadSurface("../resources/grey_pressable_plate_x2.bmp", g_pSurfaceFactory);
+	auto pPlateImg_x2 = sdl_wglib::LoadSurface("resources/grey_pressable_plate_x2.bmp", g_pSurfaceFactory);
 	pPlateImg_x2->setScale(2.f);
 
     auto pPressablePlateSkin = wg::BlockSkin::create(pPlateImg, {0,0,pPlateImg->pointSize().w/3,pPlateImg->pointSize().h}, {wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed} , WgBorders(3), wg::Axis::X );
 
-//	WgSurface * pInjectWidget = sdl_wglib::LoadSurface("../resources/IDR_MOD_INJECT_WIDGET_CHROME.2x.png", *g_pSurfaceFactory);
+//	WgSurface * pInjectWidget = sdl_wglib::LoadSurface("resources/IDR_MOD_INJECT_WIDGET_CHROME.2x.png", *g_pSurfaceFactory);
 //	pInjectWidget->SetScaleFactor(4096 * 2);
 
 	
