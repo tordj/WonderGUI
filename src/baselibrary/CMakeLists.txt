@@ -36,17 +36,6 @@ add_library( wondergui
 	base/wg_geo.h
 	base/wg_gfxdevice.cpp
 	base/wg_gfxdevice.h
-	base/wg_gfxstream.h
-	base/wg_gfxstreamlogger.cpp
-	base/wg_gfxstreamlogger.h
-	base/wg_gfxstreamplayer.cpp
-	base/wg_gfxstreamplayer.h
-	base/wg_gfxstreamplug.cpp
-	base/wg_gfxstreamplug.h
-	base/wg_gfxstreamreader.cpp
-	base/wg_gfxstreamreader.h
-	base/wg_gfxstreamwriter.cpp
-	base/wg_gfxstreamwriter.h
 	base/wg_gradient.cpp
 	base/wg_gradient.h
 	base/wg_hostbridge.h
@@ -128,10 +117,6 @@ add_library( wondergui
 	components/wg_cdynamicslotvector.impl.h
 	components/wg_cdynamicvector.h
 	components/wg_cdynamicvector.impl.h
-	components/wg_cgfxinstream.cpp
-	components/wg_cgfxinstream.h
-	components/wg_cgfxoutstream.cpp
-	components/wg_cgfxoutstream.h
 	components/wg_cicondisplay.cpp
 	components/wg_cicondisplay.h
 	components/wg_component.cpp
