@@ -155,6 +155,9 @@ namespace wg
 		StreamGfxDevice( CGfxOutStream& stream );
 		~StreamGfxDevice();
 
+        void    _streamEdgeSamples( int nSamples, int samplesPerLine, int linePitch, const int * pSamples );
+
+        
         bool _beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;

@@ -94,6 +94,7 @@ namespace wg
         
         BlitNinePatch,
         
+        EdgeSamples,
 
         CreateSurface,
         SetSurfaceScaleMode,

@@ -162,6 +162,12 @@ namespace wg
 		return *this;
 	}
 
+    CGfxInStream& CGfxInStream::operator>> (TintMode& tintMode)
+    {
+        tintMode = (TintMode) m_pHolder->_pullShort();
+        return *this;
+    }
+
 	CGfxInStream& CGfxInStream::operator>> (Axis& o)
 	{
 		o = (Axis)m_pHolder->_pullShort();
@@ -179,6 +185,12 @@ namespace wg
 		m = (ScaleMode)m_pHolder->_pullShort();
 		return *this;
 	}
+
+    CGfxInStream& CGfxInStream::operator>> (GfxFlip& f)
+    {
+        f = (GfxFlip)m_pHolder->_pullShort();
+        return *this;
+    }
 
 	CGfxInStream& CGfxInStream::operator>> (const DataChunk& data)
 	{

@@ -137,6 +137,13 @@ namespace wg
 		return *this;
 	}
 
+    CGfxOutStream&  CGfxOutStream::operator<< (TintMode t)
+    {
+        m_pHolder->_pushShort((short) t);
+        return *this;
+    }
+
+
 	CGfxOutStream&  CGfxOutStream::operator<< (Axis o)
 	{
 		m_pHolder->_pushShort((short)o);
@@ -154,6 +161,12 @@ namespace wg
 		m_pHolder->_pushShort((short)m);
 		return *this;
 	}
+
+    CGfxOutStream&  CGfxOutStream::operator<< (GfxFlip f)
+    {
+        m_pHolder->_pushShort((short)f);
+        return *this;
+    }
 
 	CGfxOutStream&  CGfxOutStream::operator<< (HiColor color)
 	{

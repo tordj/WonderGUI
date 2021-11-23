@@ -313,41 +313,305 @@ namespace wg
         (*m_pStream) << thickness;
     }
 
-// Blit methods
+    //____ blit() __________________________________________________________________
 
-void    blit(CoordI dest) override;
-void    blit(CoordI dest, const RectI& src) override;
+    void StreamGfxDevice::blit(CoordI dest)
+    {
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::Blit, 8 };
+        (*m_pStream) << dest;
+    }
 
-void    flipBlit(CoordI dest, GfxFlip flip ) override;
-void    flipBlit(CoordI dest, const RectI& src, GfxFlip flip ) override;
+    void StreamGfxDevice::blit(CoordI dest, const RectI& _src)
+    {
+        if (_src.w < 1 || _src.h < 1)
+            return;
 
-void    stretchBlit(const RectI& dest) override;
-void    stretchBlit(const RectI& dest, const RectI& src) override;
-void    stretchBlit(const RectI& dest, const RectF& src) override;
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::BlitRectI, 24 };
+        (*m_pStream) << dest;
+        (*m_pStream) << _src;
+    }
 
-void    stretchFlipBlit(const RectI& dest, GfxFlip flip) override;
-void    stretchFlipBlit(const RectI& dest, const RectI& src, GfxFlip flip) override;
-void    stretchFlipBlit(const RectI& dest, const RectF& src, GfxFlip flip) override;
+    void StreamGfxDevice::flipBlit(CoordI dest, GfxFlip flip )
+    {
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::FlipBlit, 10 };
+        (*m_pStream) << dest;
+        (*m_pStream) << flip;
+    }
 
-void    rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f }) override;
+    void StreamGfxDevice::flipBlit(CoordI dest, const RectI& src, GfxFlip flip )
+    {
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::FlipBlitRectI, 26 };
+        (*m_pStream) << dest;
+        (*m_pStream) << src;
+        (*m_pStream) << flip;
+    }
 
-void    tile(const RectI& dest, CoordI shift = { 0,0 }) override;
-void    flipTile(const RectI& dest, GfxFlip flip, CoordI shift = { 0,0 }) override;
+    //____ stretchBlit() ___________________________________________________
 
-void    scaleTile(const RectI& dest, float scale, CoordI shift = { 0,0 }) override;
-void    scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift = { 0,0 }) override;
+    void StreamGfxDevice::stretchBlit(const RectI& dest)
+    {
 
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::StretchBlit, 16 };
+        (*m_pStream) << dest;
+    }
 
-// Draw segments methods
+    void StreamGfxDevice::stretchBlit(const RectI& dest, const RectI& source)
+    {
 
-void    drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill) override;
-void    flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip) override;
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::StretchBlitRectI, 32 };
+        (*m_pStream) << dest;
+        (*m_pStream) << source;
+    }
 
-void    drawElipse(const RectF& canvas, float thickness, HiColor color, float outlineThickness = 0.f, HiColor outlineColor = Color::Black) override;
+    void StreamGfxDevice::stretchBlit(const RectI& dest, const RectF& source)
+    {
 
-void    drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize = 0.f, HiColor hubColor = Color::Transparent, HiColor backColor = Color::Transparent, bool bRectangular = false) override;
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::StretchBlitRectF, 32 };
+        (*m_pStream) << dest;
+        (*m_pStream) << source;
+    }
 
-void    drawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat ) override;
+    //____ stretchFlipBlit() ___________________________________________________
+
+    void StreamGfxDevice::stretchFlipBlit(const RectI& dest, GfxFlip flip)
+    {
+
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::StretchFlipBlit, 18 };
+        (*m_pStream) << dest;
+        (*m_pStream) << flip;
+    }
+
+    void StreamGfxDevice::stretchFlipBlit(const RectI& dest, const RectI& source, GfxFlip flip)
+    {
+
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::StretchBlitRectI, 34 };
+        (*m_pStream) << dest;
+        (*m_pStream) << source;
+        (*m_pStream) << flip;
+    }
+
+    void StreamGfxDevice::stretchFlipBlit(const RectI& dest, const RectF& source, GfxFlip flip)
+    {
+
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::StretchBlitRectF, 34 };
+        (*m_pStream) << dest;
+        (*m_pStream) << source;
+        (*m_pStream) << flip;
+    }
+
+    //____ rotScaleBlit() ___________________________________________________________
+
+    void StreamGfxDevice::rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
+    {
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::RotScaleBlit, 40 };
+        (*m_pStream) << dest;
+        (*m_pStream) << rotationDegrees;
+        (*m_pStream) << scale;
+        (*m_pStream) << srcCenter;
+        (*m_pStream) << destCenter;
+    }
+
+    //____ tile() _____________________________________________________________________
+
+    void StreamGfxDevice::tile(const RectI& dest, CoordI shift)
+    {
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::Tile, 24 };
+        (*m_pStream) << dest;
+        (*m_pStream) << shift;
+    }
+
+    void StreamGfxDevice::flipTile(const RectI& dest, GfxFlip flip, CoordI shift)
+    {
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::FlipTile, 26 };
+        (*m_pStream) << dest;
+        (*m_pStream) << flip;
+        (*m_pStream) << shift;
+    }
+
+    void StreamGfxDevice::scaleTile(const RectI& dest, float scale, CoordI shift)
+    {
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::ScaleTile, 28 };
+        (*m_pStream) << dest;
+        (*m_pStream) << scale;
+        (*m_pStream) << shift;
+    }
+
+    void StreamGfxDevice::scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift)
+    {
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::ScaleFlipTile, 30 };
+        (*m_pStream) << dest;
+        (*m_pStream) << scale;
+        (*m_pStream) << flip;
+        (*m_pStream) << shift;
+    }
+
+    //____ drawWave() ___________________________________________________________________
+
+    void StreamGfxDevice::drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill)
+    {
+        int size = 16 + 20 + 20 + 8 + 8;
+        
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::DrawWave, size };
+        (*m_pStream) << dest;
+
+        (*m_pStream) << pTopBorder->length;
+        (*m_pStream) << pTopBorder->thickness;
+        (*m_pStream) << pTopBorder->color;
+        (*m_pStream) << pTopBorder->hold;
+
+        (*m_pStream) << pBottomBorder->length;
+        (*m_pStream) << pBottomBorder->thickness;
+        (*m_pStream) << pBottomBorder->color;
+        (*m_pStream) << pBottomBorder->hold;
+
+        (*m_pStream) << frontFill;
+        (*m_pStream) << backFill;
+
+        if( pTopBorder->length > 0 )
+            _streamEdgeSamples( pTopBorder->length, 1, 1, pTopBorder->pWave );
+        
+        if( pBottomBorder->length > 0 )
+            _streamEdgeSamples( pBottomBorder->length, 1, 1, pBottomBorder->pWave );
+    }
+
+    //____ flipDrawWave() ___________________________________________________________________
+
+    void StreamGfxDevice::flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip)
+    {
+        int size = 16 + 20 + 20 + 8 + 8 + 2;
+        
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::FlipDrawWave, size };
+        (*m_pStream) << dest;
+
+        (*m_pStream) << pTopBorder->length;
+        (*m_pStream) << pTopBorder->thickness;
+        (*m_pStream) << pTopBorder->color;
+        (*m_pStream) << pTopBorder->hold;
+
+        (*m_pStream) << pBottomBorder->length;
+        (*m_pStream) << pBottomBorder->thickness;
+        (*m_pStream) << pBottomBorder->color;
+        (*m_pStream) << pBottomBorder->hold;
+
+        (*m_pStream) << frontFill;
+        (*m_pStream) << backFill;
+        (*m_pStream) << flip;
+
+        if( pTopBorder->length > 0 )
+            _streamEdgeSamples( pTopBorder->length, 1, 1, pTopBorder->pWave );
+        
+        if( pBottomBorder->length > 0 )
+            _streamEdgeSamples( pBottomBorder->length, 1, 1, pBottomBorder->pWave );
+    }
+
+    //____ _streamEdgeSamples() ______________________________________________________
+
+    void StreamGfxDevice::_streamEdgeSamples( int nLines, int samplesPerLine, int linePitch, const int * pSamples )
+    {
+        int maxSamplesPerChunk = (GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)) / 4;
+        int allocSize = 0;
+        
+        if( samplesPerLine != linePitch )
+        {
+            allocSize = nLines * samplesPerLine * 4;
+
+            int * pSampleBuffer = (int*) Base::memStackAlloc(allocSize);
+            int * wp = pSampleBuffer;
+
+            for (int line = 0; line < nLines; line++)
+            {
+                for (int i = 0; i < samplesPerLine; i++)
+                    *wp++ = pSamples[i];
+                pSamples += linePitch;
+            }
+
+            pSamples = pSampleBuffer;
+        }
+        
+        int nSamples = nLines * samplesPerLine;
+        
+        while (nSamples > 0)
+        {
+            int chunkSamples = min(nSamples, maxSamplesPerChunk);
+
+            (*m_pStream) << GfxStream::Header{ GfxChunkId::EdgeSamples ,chunkSamples*4 };
+            (*m_pStream) << GfxStream::DataChunk{ chunkSamples*4, pSamples };
+
+            pSamples += chunkSamples;
+            nSamples -= chunkSamples;
+        }
+        
+        if( allocSize > 0 )
+            Base::memStackRelease(allocSize);
+
+    }
+
+    //____ _drawElipse() _______________________________________________________________
+
+    void StreamGfxDevice::drawElipse(const RectF& canvas, float thickness, HiColor color, float outlineThickness, HiColor outlineColor )
+    {
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::DrawElipse, 40 };
+        (*m_pStream) << canvas;
+        (*m_pStream) << thickness;
+        (*m_pStream) << color;
+        (*m_pStream) << outlineThickness;
+        (*m_pStream) << outlineColor;
+    }
+
+    //____ drawPieChart() ______________________________________________________________
+
+    void StreamGfxDevice::drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
+    {
+        int size = 16 + 4 + 4 + 4 + 8 + 8 + 2 + nSlices*(4+8);
+        
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::DrawElipse, size };
+        (*m_pStream) << canvas;
+        (*m_pStream) << start;
+        (*m_pStream) << nSlices;
+        (*m_pStream) << hubSize;
+        (*m_pStream) << hubColor;
+        (*m_pStream) << backColor;
+        (*m_pStream) << bRectangular;
+        
+        (*m_pStream) << GfxStream::DataChunk{ nSlices*4, pSliceSizes };
+        (*m_pStream) << GfxStream::DataChunk{ nSlices*8, pSliceColors };
+    }
+
+    //____ drawSegments() _________________________________________________________________
+
+    void StreamGfxDevice::drawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
+    {
+        
+        int nColors;
+        switch( tintMode )
+        {
+            case TintMode::None:
+            case TintMode::Flat:
+                nColors = nSegments;
+                break;
+            case TintMode::GradientX:
+            case TintMode::GradientY:
+                nColors = nSegments*2;
+                break;
+            case TintMode::GradientXY:
+                nColors = nSegments*4;
+                break;
+        }
+
+        int size = 16 + 4 + 4 + 2 + nColors*8;
+
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::DrawSegments, size };
+        (*m_pStream) << dest;
+        (*m_pStream) << nSegments;
+        (*m_pStream) << nEdgeStrips;
+        (*m_pStream) << tintMode;
+
+        (*m_pStream) << GfxStream::DataChunk{ nColors*8, pSegmentColors };
+
+        _streamEdgeSamples( nEdgeStrips, nSegments-1, edgeStripPitch, pEdgeStrips );
+        
+    }
+
 void    flipDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat) override;
 
 
@@ -368,27 +632,9 @@ void    blitVertBar( const RectI& _src, const BorderI& _borders, bool _bTile, Co
 
 
 
-	//____ blit() __________________________________________________________________
 
-	void StreamGfxDevice::blit(CoordI dest, const RectI& _src)
-	{
-		if (_src.w < 1 || _src.h < 1)
-			return;
 
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::Blit, 12 };
-		(*m_pStream) << dest;
-		(*m_pStream) << _src;
-	}
 
-	//____ stretchBlit() ___________________________________________________
-
-	void StreamGfxDevice::stretchBlit(const RectI& dest, const RectF& source)
-	{
-
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::StretchBlit, 24 };
-		(*m_pStream) << dest;
-		(*m_pStream) << source;
-	}
 
 	//____ _clipListWasChanged() ______________________________________________
 
@@ -400,24 +646,6 @@ void    blitVertBar( const RectI& _src, const BorderI& _borders, bool _bTile, Co
 			(*m_pStream) << m_pClipRects[i];
 	}
 
-
-	//____ _transformBlit() _____________________________________________
-
-	void StreamGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
-	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::SimpleTransformBlit, 18 };
-		(*m_pStream) << dest;
-		(*m_pStream) << src;
-		(*m_pStream) << simpleTransform;
-	}
-
-	void StreamGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
-	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::ComplexTransformBlit, 34 };
-		(*m_pStream) << dest;
-		(*m_pStream) << src;
-		(*m_pStream) << complexTransform;
-	}
 
 	//____ _transformDrawSegments() ______________________________________
 
