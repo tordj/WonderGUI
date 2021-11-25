@@ -157,11 +157,14 @@ namespace wg
 
         void    _streamEdgeSamples( int nSamples, int samplesPerLine, int linePitch, const int * pSamples );
 
-        
-        bool _beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;
+        bool    _beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;
 
-		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
-		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
+        
+        void    _canvasWasChanged() override;
+        void    _renderLayerWasChanged() override;
+
+        void    _transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
+        void    _transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
 		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 

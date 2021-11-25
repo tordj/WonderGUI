@@ -33,7 +33,7 @@ namespace wg
 
 	class StreamSurface;
 	typedef	StrongPtr<StreamSurface>	StreamSurface_p;
-	typedef	WeakPtr<StreamSurface>	StreamSurface_wp;
+	typedef	WeakPtr<StreamSurface>	    StreamSurface_wp;
 
 	//____ StreamSurface _____________________________________________________________
 
@@ -63,11 +63,14 @@ namespace wg
 		//.____ Appearance ____________________________________________________
 
 		void		setScaleMode(ScaleMode mode) override;
-		bool		isOpaque() const override;
 
-		//.____ Content _______________________________________________________
+        bool        setTiling(bool bTiling) override;
+
+        //.____ Content _______________________________________________________
 
 		uint8_t		alpha(CoordI coord) override;
+
+        bool        isOpaque() const override;
 
 		//.____ Control _______________________________________________________
 

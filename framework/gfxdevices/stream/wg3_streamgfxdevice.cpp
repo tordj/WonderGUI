@@ -87,28 +87,38 @@ namespace wg
 
     bool StreamGfxDevice::setClipList(int nRectangles, const RectI * pRectangles)
     {
+        GfxDevice::setClipList(nRectangles, pRectangles);
         
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::SetClipList, nRectangles * 16 };
+        (*m_pStream) << GfxStream::DataChunk{ nRectangles * 16, pRectangles };
     }
 
     //____ clearClipList() _______________________________________________________
 
     void StreamGfxDevice::clearClipList()
     {
+        GfxDevice::clearClipList();
         
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::ClearClipList, 0 };
     }
 
     //____ pushClipList() ________________________________________________________
 
     bool StreamGfxDevice::pushClipList(int nRectangles, const RectI* pRectangles)
     {
+        GfxDevice::pushClipList(nRectangles, pRectangles);
         
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::PushClipList, nRectangles * 16 };
+        (*m_pStream) << GfxStream::DataChunk{ nRectangles * 16, pRectangles };
     }
 
     //____ popClipList() __________________________________________________________
 
     bool StreamGfxDevice::popClipList()
     {
+        GfxDevice::popClipList();
         
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::PopClipList, 0 };
     }
 
     //____ setTintColor() __________________________________________________________
@@ -125,14 +135,23 @@ namespace wg
 
     void StreamGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
     {
+        GfxDevice::setTintGradient(rect, gradient);
         
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::SetTintGradient, 16 + 4*8 };
+        (*m_pStream) << rect;
+        (*m_pStream) << gradient.topLeft;
+        (*m_pStream) << gradient.topRight;
+        (*m_pStream) << gradient.bottomRight;
+        (*m_pStream) << gradient.bottomLeft;
     }
 
     //____ clearTintGradient() _____________________________________________________
 
     void StreamGfxDevice::clearTintGradient()
     {
+        GfxDevice::clearTintGradient();
         
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::ClearTintGradient, 0 };
     }
 
     //____ setBlendMode() __________________________________________________________
@@ -215,14 +234,16 @@ namespace wg
 
     void StreamGfxDevice::flush()
     {
-        
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::Flush, 0 };
+        m_pStream->flush();
     }
 
     //____ endCanvasUpdate() _________________________________________________________
 
     void StreamGfxDevice::endCanvasUpdate()
     {
-        
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::EndCanvasUpdate, 0 };
+
     }
 
     //____ fill() __________________________________________________________________
@@ -281,9 +302,9 @@ namespace wg
 
         while (nCoords > 0)
         {
-            *m_pStream << GfxStream::Header{ GfxChunkId::PlotPixels, chunkCoords * 16 };
-            *m_pStream << GfxStream::DataChunk{ chunkCoords * 8, pCoords };
-            *m_pStream << GfxStream::DataChunk{ chunkCoords * 8, pColors };
+            (*m_pStream) << GfxStream::Header{ GfxChunkId::PlotPixels, chunkCoords * 16 };
+            (*m_pStream) << GfxStream::DataChunk{ chunkCoords * 8, pCoords };
+            (*m_pStream) << GfxStream::DataChunk{ chunkCoords * 8, pColors };
 
             nCoords -= chunkCoords;
             pCoords += chunkCoords;
@@ -609,97 +630,140 @@ namespace wg
         (*m_pStream) << GfxStream::DataChunk{ nColors*8, pSegmentColors };
 
         _streamEdgeSamples( nEdgeStrips, nSegments-1, edgeStripPitch, pEdgeStrips );
-        
     }
 
-void    flipDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat) override;
+    //____ flipDrawSegments() _______________________________________________________
+
+    void StreamGfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
+    {
+        int nColors;
+        switch( tintMode )
+        {
+            case TintMode::None:
+            case TintMode::Flat:
+                nColors = nSegments;
+                break;
+            case TintMode::GradientX:
+            case TintMode::GradientY:
+                nColors = nSegments*2;
+                break;
+            case TintMode::GradientXY:
+                nColors = nSegments*4;
+                break;
+        }
+
+        int size = 16 + 4 + 4 + 2 + 2 + nColors*8;
+
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::FlipDrawSegments, size };
+        (*m_pStream) << dest;
+        (*m_pStream) << nSegments;
+        (*m_pStream) << nEdgeStrips;
+        (*m_pStream) << flip;
+        (*m_pStream) << tintMode;
+
+        (*m_pStream) << GfxStream::DataChunk{ nColors*8, pSegmentColors };
+
+        _streamEdgeSamples( nEdgeStrips, nSegments-1, edgeStripPitch, pEdgeStrips );
+    }
 
 
-// Special draw/blit methods
+    //.____ blitNinePatch() ___________________________________________
 
-void    blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const NinePatch& patch) override;
+    void StreamGfxDevice::blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const NinePatch& patch)
+    {
+        int size = 16 + 16 + ( 16 + 16 + 10 + 10 );
+
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::BlitNinePatch, size };
+        (*m_pStream) << dstRect;
+        (*m_pStream) << dstFrame;
+
+        (*m_pStream) << patch.block;
+        (*m_pStream) << patch.frame;
+
+        (*m_pStream) << patch.rigidPartXOfs;
+        (*m_pStream) << patch.rigidPartXLength;
+        (*m_pStream) << patch.rigidPartXSections;
+
+        (*m_pStream) << patch.rigidPartYOfs;
+        (*m_pStream) << patch.rigidPartYLength;
+        (*m_pStream) << patch.rigidPartYSections;
+    }
+
+    //.____ blitHorrBar() ________________________________________________
+
+    void StreamGfxDevice::blitHorrBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len )
+    {
+        // This method is deprecated and should not be used. Let's fix the calling code instead.
+        
+        assert(false);
+    }
+
+    //.____ blitVertBar() ________________________________________________
+
+    void StreamGfxDevice::blitVertBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len )
+    {
+        // This method is deprecated and should not be used. Let's fix the calling code instead.
+
+        assert(false);
+    }
+
+    //.____ _beginCanvasUpdate() __________________________________________
+
+    bool StreamGfxDevice::_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
+    {
+        if( pLayers )
+        {
+            // No support for canvas layers yet!
+            
+            return false;
+        }
+        
+        int size = 16 + 2 + 4 + nUpdateRects * 16;
+
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::BeginCanvasUpdate, size };
+        (*m_pStream) << canvas;
+		(*m_pStream) << (pCanvas ? static_cast<StreamSurface*>(pCanvas)->m_inStreamId : (uint16_t) 0);
+        (*m_pStream) << nUpdateRects;
+        (*m_pStream) << GfxStream::DataChunk{ nUpdateRects*16, pUpdateRects };
+    }
 
 
 
+    void StreamGfxDevice::_canvasWasChanged()
+    {
+        //This method should never be called, but is pure virtual in super class.
+        
+        assert(false);
+    }
 
-//.____ Deprecated ________________________________________________
+    void StreamGfxDevice::_renderLayerWasChanged()
+    {
+        //This method should never be called, but is pure virtual in super class.
+        
+        assert(false);
+    }
 
-void    blitHorrBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len ) override;
+    void StreamGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+    {
+        //This method should never be called, but is pure virtual in super class.
+        
+        assert(false);
+    }
 
-void    blitVertBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len ) override;
-
-
-
-
-
-
-
-
-
-	//____ _clipListWasChanged() ______________________________________________
-
-	void StreamGfxDevice::_clipListWasChanged()
-	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetClip, 8 * m_nClipRects };
-
-		for (int i = 0; i < m_nClipRects; i++)
-			(*m_pStream) << m_pClipRects[i];
-	}
-
+    void StreamGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
+    {
+        //This method should never be called, but is pure virtual in super class.
+        
+        assert(false);
+    }
 
 	//____ _transformDrawSegments() ______________________________________
 
 	void StreamGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
-		//TODO: TintMode not accounted for.
-
-		//NOTE: Precision of edge data is scaled down to 4 binals and there is a limitation of 4095 pixels height of the segment waveform to keep data compact.
-
-		// Generate the TransformDrawSegmentPatches chunk.
-
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::TransformDrawSegments, 18 + nSegments * 8 };
-		(*m_pStream) << dest;
-		(*m_pStream) << (uint16_t) nSegments;
-		(*m_pStream) << (uint16_t) nEdgeStrips;
-		(*m_pStream) << simpleTransform;
-
-		for( int i = 0 ; i < nSegments; i++ )
-			(*m_pStream) << pSegmentColors[i];
-
-		// Compress our edge data
-
-		int nEdges = nSegments - 1;
-		int nEdgeEntries = nEdgeStrips * nEdges;
-		int allocSize = nEdgeEntries * 2;
-
-		int16_t * pPackedEdges = (int16_t*) Base::memStackAlloc(allocSize);
-		int16_t * wp = pPackedEdges;
-
-		for (int strip = 0; strip < nEdgeStrips; strip++)
-		{
-			for (int i = 0; i < nEdges; i++)
-				*wp++ = (int16_t) (pEdgeStrips[i] >> 4);
-			pEdgeStrips += edgeStripPitch;
-		}
-
-		// Write the chunks of edge samples
-
-		int maxEntriesPerChunk = (GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)) / 2;
-
-		while (nEdgeEntries > 0)
-		{
-			int chunkEntries = min(nEdgeEntries, maxEntriesPerChunk);
-
-			(*m_pStream) << GfxStream::Header{ GfxChunkId::EdgeSamples, chunkEntries*2 };
-			(*m_pStream) << GfxStream::DataChunk{ chunkEntries*2, pPackedEdges };
-
-			pPackedEdges += chunkEntries;
-			nEdgeEntries -= chunkEntries;
-		}
-
-		// Clean up
-
-		Base::memStackRelease(allocSize);
+        //This method should never be called, but is pure virtual in super class.
+        
+        assert(false);
 	}
 
 

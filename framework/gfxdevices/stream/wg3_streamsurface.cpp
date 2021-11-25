@@ -260,6 +260,21 @@ namespace wg
 		}
 	}
 
+    //____ setTiling() __________________________________________________________
+
+    bool StreamSurface::setTiling( bool bTiling )
+    {
+        if (bTiling != m_bTiling)
+        {
+            *m_pStream << GfxStream::Header{ GfxChunkId::SetSurfaceTiling, 4 };
+            *m_pStream << m_inStreamId;
+            *m_pStream << bTiling;
+
+            Surface::setTiling(bTiling);
+        }
+        return true;
+    }
+
 	//____ isOpaque() ______________________________________________________________
 
 	bool StreamSurface::isOpaque() const
@@ -542,7 +557,7 @@ namespace wg
 			int chunkSize = min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
 			dataSize -= chunkSize;
 
-			*m_pStream << GfxStream::Header{ GfxChunkId::SurfaceData, chunkSize };
+			*m_pStream << GfxStream::Header{ GfxChunkId::SurfacePixels, chunkSize };
 
 			while (chunkSize > 0)
 			{

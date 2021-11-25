@@ -79,6 +79,13 @@ namespace wg
 		return *this;
 	}
 
+	CGfxOutStream&  CGfxOutStream::operator<< (bool b)
+	{
+		int16_t	myBool = (int16_t) b;
+		m_pHolder->_pushShort(myBool);
+		return *this;
+	}
+
 	CGfxOutStream&  CGfxOutStream::operator<< (const CoordI& c)
 	{
 		m_pHolder->_pushInt(c.x);
@@ -125,6 +132,15 @@ namespace wg
 		return *this;
 	}
 
+	CGfxOutStream&  CGfxOutStream::operator<< (const BorderI& border)
+	{
+		m_pHolder->_pushShort(border.top);
+		m_pHolder->_pushShort(border.right);
+		m_pHolder->_pushShort(border.bottom);
+		m_pHolder->_pushShort(border.left);
+		return *this;
+	}
+
 	CGfxOutStream&  CGfxOutStream::operator<< (Direction d)
 	{
 		m_pHolder->_pushShort((short)d);
@@ -165,6 +181,18 @@ namespace wg
     CGfxOutStream&  CGfxOutStream::operator<< (GfxFlip f)
     {
         m_pHolder->_pushShort((short)f);
+        return *this;
+    }
+
+    CGfxOutStream&  CGfxOutStream::operator<< (XSections x)
+    {
+        m_pHolder->_pushShort((short)x);
+        return *this;
+    }
+
+    CGfxOutStream&  CGfxOutStream::operator<< (YSections y)
+    {
+        m_pHolder->_pushShort((short)y);
         return *this;
     }
 

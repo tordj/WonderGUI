@@ -95,6 +95,13 @@ namespace wg
 		return *this;
 	}
 
+	CGfxInStream& CGfxInStream::operator>> (bool& b)
+	{
+		int16_t myBool = m_pHolder->_pullShort();
+		b = (bool) myBool;
+		return *this;
+	}
+
 	CGfxInStream& CGfxInStream::operator>> (CoordI& coord)
 	{
         coord.x = m_pHolder->_pullInt();
@@ -138,6 +145,15 @@ namespace wg
 		rect.y = m_pHolder->_pullFloat();
 		rect.w = m_pHolder->_pullFloat();
 		rect.h = m_pHolder->_pullFloat();
+		return *this;
+	}
+
+	CGfxInStream& CGfxInStream::operator>> (BorderI& border)
+	{
+		border.top 		= m_pHolder->_pullShort();
+		border.right 	= m_pHolder->_pullShort();
+		border.bottom	= m_pHolder->_pullShort();
+		border.left		= m_pHolder->_pullShort();
 		return *this;
 	}
 
@@ -189,6 +205,18 @@ namespace wg
     CGfxInStream& CGfxInStream::operator>> (GfxFlip& f)
     {
         f = (GfxFlip)m_pHolder->_pullShort();
+        return *this;
+    }
+
+    CGfxInStream& CGfxInStream::operator>> (XSections& x)
+    {
+        x = (XSections)m_pHolder->_pullShort();
+        return *this;
+    }
+
+    CGfxInStream& CGfxInStream::operator>> (YSections& y)
+    {
+        y = (YSections)m_pHolder->_pullShort();
         return *this;
     }
 

@@ -94,44 +94,76 @@ namespace wg
 		case GfxChunkId::OutOfData:
 			return false;
 
-		case GfxChunkId::BeginRender:
-			m_pDevice->beginRender();
-			break;
+        case GfxChunkId::BeginRender:
+            m_pDevice->beginRender();
+            break;
 
-		case GfxChunkId::EndRender:
-			m_pDevice->endRender();
-			break;
-
-		case GfxChunkId::SetCanvas:
+        case GfxChunkId::EndRender:
+            m_pDevice->endRender();
+            break;
+                
+        case GfxChunkId::Flush:
+            m_pDevice->flush();
+            break;
+             
+		case GfxChunkId::BeginCanvasUpdate:
 		{
-/*
+			RectI		canvasRect;
 			uint16_t	surfaceId;
-			uint16_t	bResetClipList;
-			uint16_t 	initOperation;
-			
+			int			nUpdateRects;
+				
+			*m_pStream >> canvasRect;
 			*m_pStream >> surfaceId;
-			*m_pStream >> initOperation;
-			*m_pStream >> bResetClipList;
+			*m_pStream >> nUpdateRects;
+
+			RectI * pRects = (RectI*)Base::memStackAlloc(nUpdateRects*16);
+			
+			*m_pStream >> GfxStream::DataChunk{ nUpdateRects*16, pRects };
 
 			if( surfaceId > 0 )
-				m_pDevice->setCanvas(m_vSurfaces[surfaceId], (CanvasInit) initOperation, (bool) bResetClipList );
+				m_pDevice->beginCanvasUpdate(m_vSurfaces[surfaceId], nUpdateRects, pRects );
 			else
-				m_pDevice->setCanvas(nullptr, (CanvasInit) initOperation, (bool) bResetClipList);
+				m_pDevice->beginCanvasUpdate(canvasRect, nUpdateRects, pRects );
 
+			Base::memStackRelease(nUpdateRects*16);
 			break;
-*/
 		}
+				
+		case GfxChunkId::EndCanvasUpdate:
+			m_pDevice->endCanvasUpdate();
+			break;
 
-		case GfxChunkId::SetClip:
+		case GfxChunkId::SetClipList:
 		{
-			int nRectangles = header.size / 8;
+			int nRects = header.size / 16;
+			RectI * pRects = (RectI*) Base::memStackAlloc(header.size);
+			
+			*m_pStream >> GfxStream::DataChunk{ header.size, pRects };
 
-			for (int i = 0; i < nRectangles; i++)
-				*m_pStream >> m_clipRects[i];
-
-			m_pDevice->setClipList(nRectangles, m_clipRects);
+			m_pDevice->setClipList(nRects, pRects);
+			Base::memStackRelease(header.size);
 			break;
 		}
+
+		case GfxChunkId::ClearClipList:
+			m_pDevice->clearClipList();
+			break;
+
+		case GfxChunkId::PushClipList:
+		{
+			int nRects = header.size / 16;
+			RectI * pRects = (RectI*) Base::memStackAlloc(header.size);
+			
+			*m_pStream >> GfxStream::DataChunk{ header.size, pRects };
+
+			m_pDevice->pushClipList(nRects, pRects);
+			Base::memStackRelease(header.size);
+			break;
+		}
+			
+		case GfxChunkId::PopClipList:
+			m_pDevice->popClipList();
+			break;
 
 		case GfxChunkId::SetTintColor:
 		{
@@ -140,6 +172,25 @@ namespace wg
 			m_pDevice->setTintColor(col);
 			break;
 		}
+
+		case GfxChunkId::SetTintGradient:
+		{
+			RectI rect;
+			Gradient gradient;
+			
+			*m_pStream >> rect;
+			*m_pStream >> gradient.topLeft;
+			*m_pStream >> gradient.topRight;
+			*m_pStream >> gradient.bottomRight;
+			*m_pStream >> gradient.bottomLeft;
+			
+			m_pDevice->setTintGradient(rect, gradient );
+		   break;
+		}
+
+		case GfxChunkId::ClearTintGradient:
+			m_pDevice->clearTintGradient();
+			break;
 
 		case GfxChunkId::SetBlendMode:
 		{
@@ -158,7 +209,37 @@ namespace wg
 			break;
 		}
 
+		case GfxChunkId::SetMorphFactor:
+		{
+			float	factor;
+
+			*m_pStream >> factor;
+			
+			m_pDevice->setRenderLayer(factor);
+			break;
+		}
+
+		case GfxChunkId::SetRenderLayer:
+		{
+			uint16_t	layer;
+
+			*m_pStream >> layer;
+			
+			m_pDevice->setRenderLayer(layer);
+			break;
+		}
+
 		case GfxChunkId::Fill:
+		{
+			HiColor	col;
+
+			*m_pStream >> col;
+
+			m_pDevice->fill(col);
+			break;
+		}
+			
+		case GfxChunkId::FillRectI:
 		{
 			RectI	rect;
 			HiColor	col;
@@ -170,7 +251,7 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::FillSubpixel:
+		case GfxChunkId::FillRectF:
 		{
 			RectF	rect;
 			HiColor	col;
@@ -184,25 +265,14 @@ namespace wg
 
 		case GfxChunkId::PlotPixels:
 		{
-			int nPixels = header.size / 8;
+			int nPixels = header.size / 16;
 
-			int bufferSize = header.size*3/2;			// Pixels needs to be expanded, but not colors
+			int bufferSize = header.size;
 			char * pBuffer = reinterpret_cast<char*>(Base::memStackAlloc(bufferSize));
 
-			// Load all data to end of buffer
+			// Load all data to buffer
 
-			*m_pStream >> GfxStream::DataChunk{ header.size, pBuffer + bufferSize - header.size };
-
-			// Unpack Coordinates
-
-			CoordI * pDest = (CoordI*)pBuffer;
-			int16_t * pSrc = (int16_t*) (pBuffer + bufferSize - header.size);
-
-			for (int i = 0; i < nPixels; i++)
-			{
-				pDest[i].x = *pSrc++;
-				pDest[i].y = *pSrc++;
-			}
+			*m_pStream >> GfxStream::DataChunk{ header.size, pBuffer };
 
 			//
 
@@ -249,6 +319,16 @@ namespace wg
 		case GfxChunkId::Blit:
 		{
 			CoordI		dest;
+
+			*m_pStream >> dest;
+
+			m_pDevice->blit(dest);
+			break;
+		}
+
+		case GfxChunkId::BlitRectI:
+		{
+			CoordI		dest;
 			RectI		source;
 
 			*m_pStream >> dest;
@@ -258,7 +338,55 @@ namespace wg
 			break;
 		}
 
+		case GfxChunkId::FlipBlit:
+		{
+			CoordI		dest;
+			GfxFlip		flip;
+
+			*m_pStream >> dest;
+			*m_pStream >> flip;
+
+			m_pDevice->flipBlit(dest,flip);
+			break;
+		}
+
+		case GfxChunkId::FlipBlitRectI:
+		{
+			CoordI		dest;
+			RectI		source;
+			GfxFlip		flip;
+
+			*m_pStream >> dest;
+			*m_pStream >> source;
+			*m_pStream >> flip;
+
+			m_pDevice->flipBlit(dest,source,flip);
+			break;
+		}
+
 		case GfxChunkId::StretchBlit:
+		{
+			RectI		dest;
+
+			*m_pStream >> dest;
+
+			m_pDevice->stretchBlit(dest);
+			break;
+		}
+
+		case GfxChunkId::StretchBlitRectI:
+		{
+			RectI		dest;
+			RectI		source;
+
+			*m_pStream >> dest;
+			*m_pStream >> source;
+
+			m_pDevice->stretchBlit(dest, source);
+			break;
+		}
+			
+		case GfxChunkId::StretchBlitRectF:
 		{
 			RectI		dest;
 			RectF		source;
@@ -270,98 +398,294 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::SimpleTransformBlit:
+		case GfxChunkId::StretchFlipBlit:
 		{
-			RectI dest;
-			CoordI src;
-			int transform[2][2];
+			RectI		dest;
+			GfxFlip		flip;
 
 			*m_pStream >> dest;
-			*m_pStream >> src;
-			*m_pStream >> transform;
+			*m_pStream >> flip;
 
-			m_pDevice->_transformBlit(dest, src, transform);
+			m_pDevice->stretchFlipBlit(dest, flip);
 			break;
 		}
 
-		case GfxChunkId::ComplexTransformBlit:
+		case GfxChunkId::StretchFlipBlitRectI:
 		{
-			RectI dest;
-			CoordF src;
-			float transform[2][2];
+			RectI		dest;
+			RectI		source;
+			GfxFlip		flip;
 
 			*m_pStream >> dest;
-			*m_pStream >> src;
-			*m_pStream >> transform;
+			*m_pStream >> source;
+			*m_pStream >> flip;
 
-			m_pDevice->_transformBlit(dest, src, transform);
+			m_pDevice->stretchFlipBlit(dest, source, flip);
+			break;
+		}
+			
+		case GfxChunkId::StretchFlipBlitRectF:
+		{
+			RectI		dest;
+			RectF		source;
+			GfxFlip		flip;
+
+			*m_pStream >> dest;
+			*m_pStream >> source;
+			*m_pStream >> flip;
+
+			m_pDevice->stretchFlipBlit(dest, source, flip);
 			break;
 		}
 
-		case GfxChunkId::TransformDrawSegments:
+		case GfxChunkId::RotScaleBlit:
 		{
+			RectI		dest;
+			float		rotationDegrees;
+			float		scale;
+			CoordF		srcCenter;
+			CoordF		destCenter;
+			
+			*m_pStream >> dest;
+			*m_pStream >> rotationDegrees;
+			*m_pStream >> scale;
+			*m_pStream >> srcCenter;
+			*m_pStream >> destCenter;
+
+			m_pDevice->rotScaleBlit(dest, rotationDegrees, scale, srcCenter, destCenter );
+			break;
+		}
+
+		case GfxChunkId::Tile:
+		{
+			RectI		dest;
+			CoordI		shift;
+			
+			*m_pStream >> dest;
+			*m_pStream >> shift;
+
+			m_pDevice->tile(dest, shift);
+			break;
+		}
+
+		case GfxChunkId::FlipTile:
+		{
+			RectI		dest;
+			GfxFlip		flip;
+			CoordI		shift;
+			
+			*m_pStream >> dest;
+			*m_pStream >> flip;
+			*m_pStream >> shift;
+
+			m_pDevice->flipTile(dest, flip, shift);
+			break;
+		}
+			
+		case GfxChunkId::ScaleTile:
+		{
+			RectI		dest;
+			float		scale;
+			CoordI		shift;
+			
+			*m_pStream >> dest;
+			*m_pStream >> scale;
+			*m_pStream >> shift;
+
+			m_pDevice->scaleTile(dest, scale, shift);
+			break;
+		}
+
+		case GfxChunkId::ScaleFlipTile:
+		{
+			RectI		dest;
+			float		scale;
+			GfxFlip		flip;
+			CoordI		shift;
+			
+			*m_pStream >> dest;
+			*m_pStream >> scale;
+			*m_pStream >> flip;
+			*m_pStream >> shift;
+
+			m_pDevice->scaleFlipTile(dest, scale, flip, shift);
+			break;
+		}
+
+		case GfxChunkId::DrawWave:
+			//TODO: Implement!!!
+			break;
+			
+		case GfxChunkId::FlipDrawWave:
+			//TODO: Implement!!!
+			break;
+			
+		case GfxChunkId::DrawElipse:
+		{
+			RectF 	canvas;
+			float 	thickness;
+			HiColor	color;
+			float	outlineThickness;
+			HiColor	outlineColor;
+			
+			m_pDevice->drawElipse(canvas, thickness, color);
+			break;
+		}
+				
+		case GfxChunkId::DrawPieChart:
+		{
+			float sliceSizes[32];
+			HiColor sliceColors[32];
+			
+			RectI 	canvas;
+			float 	start;
+			int 	nSlices;
+			float 	hubSize;
+			HiColor hubColor;
+			HiColor backColor;
+			bool	bRectangular;
+			
+			*m_pStream >> canvas;
+			*m_pStream >> start;
+			*m_pStream >> nSlices;
+			*m_pStream >> hubSize;
+			*m_pStream >> hubColor;
+			*m_pStream >> backColor;
+			*m_pStream >> bRectangular;
+
+			assert(nSlices <= 32);
+			
+			*m_pStream >> GfxStream::DataChunk{ nSlices*4, sliceSizes };
+			*m_pStream >> GfxStream::DataChunk{ nSlices*8, sliceColors };
+
+			m_pDevice->drawPieChart(canvas, start, nSlices, sliceSizes, sliceColors, hubSize, hubColor, backColor, bRectangular );
+			break;
+		}
+
+		case GfxChunkId::DrawSegments:
+		{
+			m_drawTypeInProgress = GfxChunkId::DrawSegments;
+			
 			RectI		dest;
 			uint16_t	nSegments;
 			uint16_t	nEdgeStrips;
-
+			TintMode	tintMode;
+			
 			*m_pStream >> dest;
 			*m_pStream >> nSegments;
 			*m_pStream >> nEdgeStrips;
-			*m_pStream >> m_seg.transform;
-
-			for (int i = 0; i < nSegments; i++)
-				* m_pStream >> m_seg.colors[i];
+			*m_pStream >> tintMode;
 
 			int nTotalSamples = (nSegments - 1)*nEdgeStrips;
 
+			int nColors;
+			switch( tintMode )
+			{
+				case TintMode::None:
+				case TintMode::Flat:
+					nColors = nSegments;
+					break;
+				case TintMode::GradientX:
+				case TintMode::GradientY:
+					nColors = nSegments*2;
+					break;
+				case TintMode::GradientXY:
+					nColors = nSegments*4;
+					break;
+			}
+
 			m_seg.dest = dest;
 			m_seg.nSegments = nSegments;
+			m_seg.pSegmentColors = new HiColor[nColors];
 			m_seg.nEdgeStrips = nEdgeStrips;
 			m_seg.pEdgeStrips = new int[nTotalSamples];
-			m_seg.nLoadedSamples = 0;
-			m_seg.nTotalSamples = nTotalSamples;
+			m_seg.edgeStripPitch = nEdgeStrips;
+			
+			m_nLoadedSamples = 0;
+			m_nTotalSamples = nTotalSamples;
+			m_pSamples = m_seg.pEdgeStrips;
+						
+			for (int i = 0; i < nSegments; i++)
+				* m_pStream >> m_seg.pSegmentColors[i];
 
 			break;
 		}
 
+		case GfxChunkId::FlipDrawSegments:
+			//TODO: Implement!!!
+			break;
+
+		case GfxChunkId::BlitNinePatch:
+		{
+			RectI 		dstRect;
+			BorderI 	dstFrame;
+			NinePatch 	patch;
+				
+			*m_pStream >> dstRect;
+			*m_pStream >> dstFrame;
+
+			*m_pStream >> patch.block;
+			*m_pStream >> patch.frame;
+
+			*m_pStream >> patch.rigidPartXOfs;
+			*m_pStream >> patch.rigidPartXLength;
+			*m_pStream >> patch.rigidPartXSections;
+
+			*m_pStream >> patch.rigidPartYOfs;
+			*m_pStream >> patch.rigidPartYLength;
+			*m_pStream >> patch.rigidPartYSections;
+
+			m_pDevice->blitNinePatch(dstRect, dstFrame, patch);
+			break;
+		}
 		case GfxChunkId::EdgeSamples:
 		{
-			//TODO: Properly support TintMode
+			int nSamples = header.size/4;
 
-			int nSamples = header.size/2;
-
-			assert(nSamples <= m_seg.nTotalSamples - m_seg.nLoadedSamples);
+			assert(m_pSamples != nullptr && nSamples <= m_nTotalSamples - m_nLoadedSamples);
 
 			// Stream the compressed samples to end of destination and unpack them.
 
-			*m_pStream >> GfxStream::DataChunk{ header.size, ((char*)(&m_seg.pEdgeStrips[m_seg.nLoadedSamples])) + nSamples*2 };
-
-			int * wp = &m_seg.pEdgeStrips[m_seg.nLoadedSamples];
-			int16_t * rp = ((int16_t*)&m_seg.pEdgeStrips[m_seg.nLoadedSamples]) + nSamples;
-
-			for (int i = 0; i < nSamples; i++)
-				* wp++ = ((int)(*rp++)) << 4;
-
+			*m_pStream >> GfxStream::DataChunk{ header.size, (char*)(&m_pSamples[m_nLoadedSamples]) };
+			
 			// Increase counter and possibly render the segment
 
-			m_seg.nLoadedSamples += nSamples;
-			if (m_seg.nLoadedSamples == m_seg.nTotalSamples)
+			m_nLoadedSamples += nSamples;
+			if (m_nLoadedSamples == m_nTotalSamples)
 			{
-				m_pDevice->_transformDrawSegments(m_seg.dest, m_seg.nSegments, m_seg.colors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, (m_seg.nSegments - 1), TintMode::Flat, m_seg.transform);
-				delete [] m_seg.pEdgeStrips;
+				switch( m_drawTypeInProgress )
+				{
+					case GfxChunkId::DrawSegments:
+						m_pDevice->drawSegments(m_seg.dest, m_seg.nSegments, m_seg.pSegmentColors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, m_seg.edgeStripPitch, m_seg.tintMode);
+						delete [] m_seg.pSegmentColors;	//NOT GOOD! Make one buffer!!!
+						break;
+					case GfxChunkId::FlipDrawSegments:
+						delete [] m_seg.pSegmentColors;
+						break;
+					case GfxChunkId::DrawWave:
+						break;
+					case GfxChunkId::FlipDrawWave:
+						break;
+					default:
+						assert(false);
+				}
+								
+				delete [] m_pSamples;
+				m_pSamples = nullptr;
 			}
 			break;
 		}
 
+				
 		case GfxChunkId::CreateSurface:
 		{
 			uint16_t	surfaceId;
-			PixelFormat	type;
+			PixelFormat	format;
 			SizeI		size;
 			uint16_t	flags;
 
 			*m_pStream >> surfaceId;
-			*m_pStream >> type;
+			*m_pStream >> format;
 			*m_pStream >> size;
 			*m_pStream >> flags;
 
@@ -377,24 +701,14 @@ namespace wg
 			if (m_vSurfaces.size() <= surfaceId)
 				m_vSurfaces.resize(surfaceId + 1, nullptr);
 
-			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, type, flags & ~SurfaceFlag::Buffered, pClut);
+			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, format, flags & ~SurfaceFlag::Buffered, pClut);
 
 			if (pClut)
 				Base::memStackRelease(4096);
 
 			break;
 		}
-
-		case GfxChunkId::DeleteSurface:
-		{
-			uint16_t	surfaceId;
-
-			*m_pStream >> surfaceId;
-
-			m_vSurfaces[surfaceId] = nullptr;
-			break;
-		}
-
+			
 		case GfxChunkId::SetSurfaceScaleMode:
 		{
 			uint16_t	surfaceId;
@@ -406,7 +720,19 @@ namespace wg
 			m_vSurfaces[surfaceId]->setScaleMode(scaleMode);
 			break;
 		}
+			
+		case GfxChunkId::SetSurfaceTiling:
+		{
+			uint16_t	surfaceId;
+			bool		bTiling;
 
+			*m_pStream >> surfaceId;
+			*m_pStream >> bTiling;
+
+			m_vSurfaces[surfaceId]->setTiling(bTiling);
+			break;
+		}
+			
 		case GfxChunkId::BeginSurfaceUpdate:
 		{
 			uint16_t	surfaceId;
@@ -422,7 +748,7 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::SurfaceData:
+		case GfxChunkId::SurfacePixels:
 		{
 			//TODO: Take width and pitch of pixelbuffer into account.
 
@@ -438,7 +764,7 @@ namespace wg
 			m_pUpdatingSurface = nullptr;
 			break;
 		}
-
+			
 		case GfxChunkId::FillSurface:
 		{
 			uint16_t	surfaceId;
@@ -452,6 +778,34 @@ namespace wg
 			m_vSurfaces[surfaceId]->fill(col, region);
 			break;
 		}
+
+		case GfxChunkId::CopySurface:
+				
+			//TODO: Implement!!!
+			break;
+			
+		case GfxChunkId::DeleteSurface:
+		{
+			uint16_t	surfaceId;
+
+			*m_pStream >> surfaceId;
+
+			m_vSurfaces[surfaceId] = nullptr;
+			break;
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		case GfxChunkId::CopySurface:
 		{

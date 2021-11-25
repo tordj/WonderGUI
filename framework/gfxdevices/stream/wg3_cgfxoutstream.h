@@ -102,6 +102,7 @@ namespace wg
 		CGfxOutStream&	operator<< (uint16_t);
 		CGfxOutStream&	operator<< (int32_t);
 		CGfxOutStream&	operator<< (float);
+		CGfxOutStream&	operator<< (bool);
 
 		CGfxOutStream&	operator<< (const CoordI&);
 		CGfxOutStream&	operator<< (const CoordF&);
@@ -109,6 +110,7 @@ namespace wg
 		CGfxOutStream&	operator<< (const SizeF&);
 		CGfxOutStream&	operator<< (const RectI&);
 		CGfxOutStream&	operator<< (const RectF&);
+		CGfxOutStream&	operator<< (const BorderI&);
 
 		CGfxOutStream&	operator<< (HiColor);
 		CGfxOutStream&	operator<< (Direction);
@@ -118,6 +120,8 @@ namespace wg
 		CGfxOutStream&	operator<< (PixelFormat);
 		CGfxOutStream&	operator<< (ScaleMode);
         CGfxOutStream&  operator<< (GfxFlip);
+        CGfxOutStream&  operator<< (XSections);
+        CGfxOutStream&  operator<< (YSections);
 		CGfxOutStream&	operator<< (const DataChunk&);
 
 		CGfxOutStream&	operator<< (const int[2][2]);
