@@ -94,7 +94,7 @@ wg::StreamGfxDevice_p       g_pStreamGfxDevice;
 wg::StreamSurfaceFactory_p  g_pStreamSurfaceFactory;
 wg::SurfaceFactory_p	    g_pSurfaceFactory;
 wg::GfxDevice_p		        g_pGfxDevice;
-wg::Surface_p               g_pCanvas;
+wg::Surface_p               g_pCanvas;  
 //wg::SurfaceFactory_p g_pModernSurfaceFactory = nullptr;
 
 

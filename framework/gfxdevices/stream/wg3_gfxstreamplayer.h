@@ -107,9 +107,9 @@ namespace wg
 		SegmentInfo		m_seg;
 		WaveInfo		m_wave;
 
-		int * 	m_pSamples = nullptr;
-		int		m_nLoadedSamples;
-		int		m_nTotalSamples;
+		char * 	m_pTempBuffer = nullptr;
+		int		m_bytesLoaded;
+		int		m_bufferSize;
 		
 	};
 

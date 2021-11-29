@@ -63,6 +63,12 @@ namespace wg
 		~GfxStreamLogger();
 
 		int		_readPrintPatches();
+		
+		void	_readPrintRects( const char * header, int amount );
+		void	_printRect( const char * header, const RectI& rect );
+		void	_printRect( const char * header, const RectF& rect );
+		void	_printColor( const char * header, HiColor color );
+		void	_printBorder( const char * header, const BorderI& border );
 
 		CGfxInStream_p	m_pGfxStream;
 		std::ostream&	m_charStream;

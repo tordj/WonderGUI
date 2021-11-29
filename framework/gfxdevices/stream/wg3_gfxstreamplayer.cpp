@@ -112,7 +112,7 @@ namespace wg
 			uint16_t	surfaceId;
 			int			nUpdateRects;
 				
-			*m_pStream >> canvasRect;
+ 			*m_pStream >> canvasRect;
 			*m_pStream >> surfaceId;
 			*m_pStream >> nUpdateRects;
 
@@ -527,8 +527,15 @@ namespace wg
 			HiColor	color;
 			float	outlineThickness;
 			HiColor	outlineColor;
+
+			*m_pStream >> canvas;
+			*m_pStream >> thickness;
+			*m_pStream >> color;
+			*m_pStream >> outlineThickness;
+			*m_pStream >> outlineColor;
+
 			
-			m_pDevice->drawElipse(canvas, thickness, color);
+			m_pDevice->drawElipse(canvas, thickness, color, outlineThickness, outlineColor);
 			break;
 		}
 				
@@ -594,16 +601,18 @@ namespace wg
 					break;
 			}
 
+			int bufferSize = sizeof(HiColor)*nColors+sizeof(int)*nTotalSamples;
+			
+			m_pTempBuffer = new char[bufferSize];
+			m_bytesLoaded = sizeof(HiColor)*nColors;
+			m_bufferSize = bufferSize;
+
 			m_seg.dest = dest;
 			m_seg.nSegments = nSegments;
-			m_seg.pSegmentColors = new HiColor[nColors];
+			m_seg.pSegmentColors = (HiColor*) m_pTempBuffer;
 			m_seg.nEdgeStrips = nEdgeStrips;
-			m_seg.pEdgeStrips = new int[nTotalSamples];
+			m_seg.pEdgeStrips = (int*) &m_pTempBuffer[sizeof(HiColor)*nColors];
 			m_seg.edgeStripPitch = nEdgeStrips;
-			
-			m_nLoadedSamples = 0;
-			m_nTotalSamples = nTotalSamples;
-			m_pSamples = m_seg.pEdgeStrips;
 						
 			for (int i = 0; i < nSegments; i++)
 				* m_pStream >> m_seg.pSegmentColors[i];
@@ -640,24 +649,23 @@ namespace wg
 		}
 		case GfxChunkId::EdgeSamples:
 		{
-			int nSamples = header.size/4;
+			int nBytes = header.size;
 
-			assert(m_pSamples != nullptr && nSamples <= m_nTotalSamples - m_nLoadedSamples);
+			assert(m_pTempBuffer != nullptr && nBytes <= m_bufferSize - m_bytesLoaded);
 
 			// Stream the compressed samples to end of destination and unpack them.
 
-			*m_pStream >> GfxStream::DataChunk{ header.size, (char*)(&m_pSamples[m_nLoadedSamples]) };
+			*m_pStream >> GfxStream::DataChunk{ nBytes, &m_pTempBuffer[m_bytesLoaded] };
 			
 			// Increase counter and possibly render the segment
 
-			m_nLoadedSamples += nSamples;
-			if (m_nLoadedSamples == m_nTotalSamples)
+			m_bytesLoaded += nBytes;
+			if (m_bytesLoaded == m_bufferSize)
 			{
 				switch( m_drawTypeInProgress )
 				{
 					case GfxChunkId::DrawSegments:
 						m_pDevice->drawSegments(m_seg.dest, m_seg.nSegments, m_seg.pSegmentColors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, m_seg.edgeStripPitch, m_seg.tintMode);
-						delete [] m_seg.pSegmentColors;	//NOT GOOD! Make one buffer!!!
 						break;
 					case GfxChunkId::FlipDrawSegments:
 						delete [] m_seg.pSegmentColors;
@@ -670,8 +678,9 @@ namespace wg
 						assert(false);
 				}
 								
-				delete [] m_pSamples;
-				m_pSamples = nullptr;
+				delete [] m_pTempBuffer;
+				m_pTempBuffer = nullptr;
+				m_drawTypeInProgress = GfxChunkId::OutOfData;
 			}
 			break;
 		}
@@ -778,35 +787,7 @@ namespace wg
 			m_vSurfaces[surfaceId]->fill(col, region);
 			break;
 		}
-
-		case GfxChunkId::CopySurface:
-				
-			//TODO: Implement!!!
-			break;
-			
-		case GfxChunkId::DeleteSurface:
-		{
-			uint16_t	surfaceId;
-
-			*m_pStream >> surfaceId;
-
-			m_vSurfaces[surfaceId] = nullptr;
-			break;
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
 		case GfxChunkId::CopySurface:
 		{
 			uint16_t	destSurfaceId;
@@ -823,6 +804,16 @@ namespace wg
 			Surface * pSource = m_vSurfaces[sourceSurfaceId];
 
 			pDest->copyFrom(pSource, sourceRect, dest);
+			break;
+		}
+*/
+		case GfxChunkId::DeleteSurface:
+		{
+			uint16_t	surfaceId;
+
+			*m_pStream >> surfaceId;
+
+			m_vSurfaces[surfaceId] = nullptr;
 			break;
 		}
 

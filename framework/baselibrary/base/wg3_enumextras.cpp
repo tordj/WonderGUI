@@ -323,40 +323,6 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(GfxChunkId i)
-	{
-		static const char * names[] = { 
-			"OutOfData",
-			"BeginRender",
-			"EndRender",
-			"SetCanvas",
-			"SetClip",
-			"SetTintColor",
-			"SetBlendMode",
-			"SetBlitSource",
-			"Fill",
-			"FillSubpixel",
-			"PlotPixels",
-			"DrawLineFromTo",
-			"DrawLineStraight",
-			"Blit",
-			"StretchBlit",
-			"SimpleTransformBlit",
-			"ComplexTransformBlit",
-			"TransformDrawSegments",
-			"EdgeSamples",
-			"CreateSurface",
-			"SetSurfaceScaleMode",
-			"BeginSurfaceUpdate",
-			"SurfaceData",
-			"EndSurfaceUpdate",
-			"FillSurface",
-			"CopySurface",
-			"DeleteSurface" };
-
-		return names[(int)i];
-	}
-
 	const char * toString(GfxFlip i)
 	{
 		static const char * names[] = { 
