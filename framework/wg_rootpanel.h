@@ -46,17 +46,17 @@ class WgRootPanel : public WgWidgetHolder
 
 public:
 	WgRootPanel();
-	WgRootPanel( wg::Surface * pCanvas, wg::GfxDevice * pGfxDevice = nullptr );
-    WgRootPanel( const WgSize pixelSize, wg::GfxDevice * pGfxDevice = nullptr );
+	WgRootPanel( wg::Surface * pCanvasSurface, wg::GfxDevice * pGfxDevice = nullptr );
+    WgRootPanel( wg::CanvasRef canvasRef, wg::GfxDevice * pGfxDevice = nullptr );
 	~WgRootPanel();
 
 	bool					SetGfxDevice( wg::GfxDevice * pDevice );
 	inline wg::GfxDevice_p 	GfxDevice() const { return m_pGfxDevice; };
 
-    bool                    SetCanvas(wg::Surface* pCanvas);
-    bool                    SetCanvas(const wg::SizeI& pixelSize);
-    inline wg::Surface_p    Canvas() const { return m_pCanvas; }
-    inline wg::SizeI        CanvasSize() const { return m_canvasSize; }
+    bool                    SetCanvas(wg::Surface* pCanvasSurface);
+    bool                    SetCanvas(wg::CanvasRef canvasRef);
+    inline const wg::CanvasInfo&   CanvasInfo() const { return m_canvas; }
+    inline wg::SizeI        CanvasSize() const { return m_canvas.size; }
     
 	inline WgEventHandler *	EventHandler() const { return m_pEventHandler; }
 
@@ -165,8 +165,7 @@ protected:
 
 
 	wg::GfxDevice_p		m_pGfxDevice;
-    wg::Surface_p       m_pCanvas;
-    wg::SizeI           m_canvasSize;        // Size of canvas in pixels, when m_pCanvas is null.
+    wg::CanvasInfo		m_canvas;
 	WgEventHandler *	m_pEventHandler;
 	Hook				m_hook;
 	WgRect				m_geo;

@@ -54,6 +54,10 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
+		//.____ Geometry _________________________________________________
+
+		SizeI		canvasSize(CanvasRef ref) const override;
+
 		//.____ Rendering ________________________________________________
 
 		void	fill(const RectI& rect, HiColor col) override;

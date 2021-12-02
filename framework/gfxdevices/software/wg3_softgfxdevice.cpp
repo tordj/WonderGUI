@@ -2521,7 +2521,6 @@ namespace wg
 
 	SoftGfxDevice::SoftGfxDevice()
 	{
-		m_pCanvas = nullptr;
 		m_pCanvasPixels = nullptr;
 		m_pRenderLayerSurface = nullptr;
 		m_canvasPixelBits = 0;
@@ -2551,6 +2550,40 @@ namespace wg
 		return SoftSurface::TYPEINFO;
 	}
 
+	//____ defineCanvas() ____________________________________________________
+
+	bool SoftGfxDevice::defineCanvas( CanvasRef ref, SoftSurface * pSurface )
+	{
+		if( (pSurface->m_flags & SurfaceFlag::Canvas) == 0 )
+		{
+			//TODO: Error handling!
+			return false;
+		}
+		
+		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (CanvasInfo& entry) { return (ref == entry.ref); } );
+
+		if( it == m_definedCanvases.end() )
+		{
+			if( pSurface )
+				m_definedCanvases.push_back( CanvasInfo( ref, pSurface, pSurface->size() ) );
+		}
+		else
+		{
+			if( pSurface )
+			{
+				it->pSurface = pSurface;
+				it->size = pSurface->size();
+			}
+			else
+			{
+				m_definedCanvases.erase(it);
+			}
+		}
+
+		return true;
+	}
+
+
 	//____ surfaceFactory() _______________________________________________________
 
 	SurfaceFactory_p SoftGfxDevice::surfaceFactory()
@@ -2559,6 +2592,18 @@ namespace wg
 			m_pSurfaceFactory = SoftSurfaceFactory::create();
 
 		return m_pSurfaceFactory;
+	}
+
+	//____ canvasSize() _____________________________________________________
+
+	SizeI SoftGfxDevice::canvasSize(CanvasRef ref) const
+	{
+		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (const CanvasInfo& entry) { return (ref == entry.ref); } );
+
+		if( it != m_definedCanvases.end() )
+			return it->pSurface->size();
+		
+		return SizeI();
 	}
 
 	//____ setTintColor() _____________________________________________________
@@ -4250,11 +4295,26 @@ namespace wg
 
 	void SoftGfxDevice::_canvasWasChanged()
 	{
-		if (m_pCanvas)
+		Surface * pCanvasSurface;
+		
+		if(m_canvas.pSurface)
+			pCanvasSurface = m_canvas.pSurface;
+		else if(m_canvas.ref != CanvasRef::None)
+		{
+			CanvasRef ref = m_canvas.ref;
+			
+			auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (CanvasInfo& entry) { return (ref == entry.ref); } );
+			
+			if( it != m_definedCanvases.end() )
+				pCanvasSurface = it->pSurface;
+		}
+		
+		
+		if (pCanvasSurface)
 		{
 			_renderLayerWasChanged();
 		}
-		if (!m_pCanvas)
+		else
 		{
 			// Clean up.
 
@@ -4290,7 +4350,7 @@ namespace wg
 		bool	bClear = false;
 		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer] == nullptr)
 		{
-			m_layerSurfaces[m_renderLayer] = SoftSurface::create(m_canvasSize, m_pCanvasLayers->layerFormat(m_renderLayer));
+			m_layerSurfaces[m_renderLayer] = SoftSurface::create(m_canvas.size, m_pCanvasLayers->layerFormat(m_renderLayer));
 			bClear = true;
 		}
 

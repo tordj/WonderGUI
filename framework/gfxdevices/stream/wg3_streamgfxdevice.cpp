@@ -73,6 +73,65 @@ namespace wg
 		return StreamSurface::TYPEINFO;
 	}
 
+	//____ defineCanvas() ____________________________________________________
+
+	bool StreamGfxDevice::defineCanvas( CanvasRef ref, StreamSurface * pSurface )
+	{
+		if( (pSurface->m_flags & SurfaceFlag::Canvas) == 0 )
+		{
+			//TODO: Error handling!
+			return false;
+		}
+		
+		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (CanvasInfo& entry) { return (ref == entry.ref); } );
+
+		if( it == m_definedCanvases.end() )
+		{
+			if( pSurface )
+				m_definedCanvases.push_back( CanvasInfo( ref, pSurface, pSurface->size() ) );
+		}
+		else
+		{
+			if( pSurface )
+			{
+				it->pSurface = pSurface;
+				it->size = pSurface->size();
+			}
+			else
+			{
+				m_definedCanvases.erase(it);
+			}
+		}
+
+		return true;
+	}
+
+	bool StreamGfxDevice::defineCanvas( CanvasRef ref, const SizeI& size )
+	{
+	
+		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (CanvasInfo& entry) { return (ref == entry.ref); } );
+
+		if( it == m_definedCanvases.end() )
+		{
+			if( !size.isEmpty() )
+				m_definedCanvases.push_back( CanvasInfo( ref, nullptr, size ) );
+		}
+		else
+		{
+			if( !size.isEmpty() )
+			{
+				it->pSurface = nullptr;
+				it->size = size;
+			}
+			else
+			{
+				m_definedCanvases.erase(it);
+			}
+		}
+
+		return true;
+	}
+
 	//____ surfaceFactory() ______________________________________________________
 
 	SurfaceFactory_p StreamGfxDevice::surfaceFactory()
@@ -81,6 +140,18 @@ namespace wg
 			m_pSurfaceFactory = StreamSurfaceFactory::create(*m_pStream);
 
 		return m_pSurfaceFactory;
+	}
+
+	//____ canvasSize() _____________________________________________________
+
+	SizeI StreamGfxDevice::canvasSize(CanvasRef ref) const
+	{
+		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (const CanvasInfo& entry) { return (ref == entry.ref); } );
+
+		if( it != m_definedCanvases.end() )
+			return it->pSurface->size();
+		
+		return SizeI();
 	}
 
     //____ setClipList() _________________________________________________________
@@ -709,7 +780,7 @@ namespace wg
 
     //.____ _beginCanvasUpdate() __________________________________________
 
-    bool StreamGfxDevice::_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
+    bool StreamGfxDevice::_beginCanvasUpdate(CanvasRef canvasRef, Surface * pCanvasSurface, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
     {
         if( pLayers )
         {
@@ -718,16 +789,35 @@ namespace wg
             return false;
         }
         
-        int size = 16 + 2 + 4 + nUpdateRects * 16;
+		if( (canvasRef == CanvasRef::None && pCanvasSurface == nullptr) ||
+		    (canvasRef != CanvasRef::None && pCanvasSurface != nullptr )  )
+		{
+			//TODO: Error handling!
+			return false;
+		}
+		
+		SizeI sz = (canvasRef != CanvasRef::None) ? canvasSize(canvasRef) : pCanvasSurface->size();
+		if( sz.isEmpty() )
+		{
+			// TODO: Error handling!
+			return false;
+		}
+		
+        int size = 4 + 2 + 4 + nUpdateRects * 16;
 
         (*m_pStream) << GfxStream::Header{ GfxChunkId::BeginCanvasUpdate, size };
-        (*m_pStream) << canvas;
-		(*m_pStream) << (pCanvas ? static_cast<StreamSurface*>(pCanvas)->m_inStreamId : (uint16_t) 0);
+        (*m_pStream) << canvasRef;
+		(*m_pStream) << (pCanvasSurface ? static_cast<StreamSurface*>(pCanvasSurface)->m_inStreamId : (uint16_t) 0);
         (*m_pStream) << nUpdateRects;
         (*m_pStream) << GfxStream::DataChunk{ nUpdateRects*16, pUpdateRects };
+		
+		m_canvas.ref = canvasRef;
+		m_canvas.pSurface = pCanvasSurface;
+		
+		m_canvas.size = sz;
+		
+		
     }
-
-
 
     void StreamGfxDevice::_canvasWasChanged()
     {

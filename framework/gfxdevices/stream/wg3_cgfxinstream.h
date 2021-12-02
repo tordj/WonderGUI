@@ -124,6 +124,7 @@ namespace wg
         CGfxInStream& operator>> (GfxFlip&);
         CGfxInStream& operator>> (XSections&);
         CGfxInStream& operator>> (YSections&);
+		CGfxInStream& operator>> (CanvasRef&);
 
         CGfxInStream& operator>> (const DataChunk&);
 

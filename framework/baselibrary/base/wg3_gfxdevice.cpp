@@ -132,7 +132,7 @@ namespace wg
 		for (int i = 1; i < nRectangles; i++)
 			bounds.growToContain(pRectangles[i]);
 
-		if (bounds.x < 0 || bounds.y < 0 || bounds.w > m_canvasSize.w || bounds.h > m_canvasSize.h)
+		if (bounds.x < 0 || bounds.y < 0 || bounds.w > m_canvas.size.w || bounds.h > m_canvas.size.h)
 			return false;
 
 		m_pClipRects = pRectangles;
@@ -384,10 +384,27 @@ namespace wg
 
 	//____ _beginCanvasUpdate() ________________________________________________
 
-	bool GfxDevice::_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pCanvasLayers, int startLayer )
+	bool GfxDevice::_beginCanvasUpdate(CanvasRef ref, Surface * pSurface, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pCanvasLayers, int startLayer )
 	{
-		SizeI sz = canvas.size();
+		
+		SizeI sz;
+		
+		if( ref != CanvasRef::None )
+			sz = canvasSize(ref);
+		else if( pSurface )
+			sz = pSurface->size();
+		else
+		{
+			//TODO: Error handling!
+			return false;
+		}
 
+		if( sz.isEmpty() )
+		{
+			//TODO: Error handling!
+			return false;
+		}
+		
 		RectI bounds;
 
 		if (nUpdateRects > 0)
@@ -412,36 +429,36 @@ namespace wg
 
 		// Push old values onto stack, if we have a canvas.
 
-		if( !m_canvasSize.isEmpty() )
-		{
-			m_canvasStack.emplace_back();
-			auto& back = m_canvasStack.back();
+		m_canvasStack.emplace_back();
+		auto& back = m_canvasStack.back();
 
-			back.pCanvasLayers = m_pCanvasLayers;
-			back.pCanvas = m_pCanvas;
-			back.updateRects.pClipRects = m_pCanvasUpdateRects;
-			back.updateRects.nClipRects = m_nCanvasUpdateRects;
-			back.updateRects.clipBounds = m_canvasUpdateBounds;
-			back.clipRects.pClipRects = m_pClipRects;
-			back.clipRects.nClipRects = m_nClipRects;
-			back.clipRects.clipBounds = m_clipBounds;
-			back.renderLayer = m_renderLayer;
-			back.tintColor = m_tintColor;
-			back.tintGradient = m_tintGradient;
-			back.tintGradientRect = m_tintGradientRect;
-			back.bTintGradient = m_bTintGradient;
-			back.blendMode = m_blendMode;
-			back.morphFactor = m_morphFactor;
-			back.canvasSize = m_canvasSize;
+		back.pCanvasLayers = m_pCanvasLayers;
+		back.canvas = m_canvas;
+		back.updateRects.pClipRects = m_pCanvasUpdateRects;
+		back.updateRects.nClipRects = m_nCanvasUpdateRects;
+		back.updateRects.clipBounds = m_canvasUpdateBounds;
+		back.clipRects.pClipRects = m_pClipRects;
+		back.clipRects.nClipRects = m_nClipRects;
+		back.clipRects.clipBounds = m_clipBounds;
+		back.renderLayer = m_renderLayer;
+		back.tintColor = m_tintColor;
+		back.tintGradient = m_tintGradient;
+		back.tintGradientRect = m_tintGradientRect;
+		back.bTintGradient = m_bTintGradient;
+		back.blendMode = m_blendMode;
+		back.morphFactor = m_morphFactor;
 
-			memcpy(back.layerSurfaces, m_layerSurfaces, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
-			memset(m_layerSurfaces, 0, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
-		}
+		memcpy(back.layerSurfaces, m_layerSurfaces, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+		memset(m_layerSurfaces, 0, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
 
 		// Set values
 
+		m_canvas.ref = ref;
+		m_canvas.pSurface = pSurface;
+		m_canvas.size = sz;
+		
 		m_pCanvasLayers = pCanvasLayers;
-		m_pCanvas = pCanvas;
+
 		m_pCanvasUpdateRects = pUpdateRects;
 		m_nCanvasUpdateRects = nUpdateRects;
 		m_canvasUpdateBounds = bounds;
@@ -454,7 +471,7 @@ namespace wg
 		if (pCanvasLayers)
 			layer = (startLayer > 0 && startLayer <= pCanvasLayers->size()) ? startLayer : pCanvasLayers->defaultLayer();
 
-        m_layerSurfaces[0] = pCanvas;
+        m_layerSurfaces[0] = pSurface;
 
 		m_renderLayer = layer;
 		m_tintColor = Color::White;
@@ -463,7 +480,6 @@ namespace wg
 		m_bTintGradient = false;
 		m_blendMode = BlendMode::Blend;
 		m_morphFactor = 0.5f;
-		m_canvasSize = sz;
 		_canvasWasChanged();
         
         // Call Canvas Initializer
@@ -570,7 +586,7 @@ namespace wg
 			auto& back = m_canvasStack.back();
 
 			m_pCanvasLayers = back.pCanvasLayers;
-			m_pCanvas = back.pCanvas;
+			m_canvas = back.canvas;
 			m_pCanvasUpdateRects = back.updateRects.pClipRects;
 			m_nCanvasUpdateRects = back.updateRects.nClipRects;
 			m_canvasUpdateBounds = back.updateRects.clipBounds;
@@ -584,7 +600,6 @@ namespace wg
 			m_bTintGradient = back.bTintGradient;
 			m_blendMode = back.blendMode;
 			m_morphFactor = back.morphFactor;
-			m_canvasSize = back.canvasSize;
 
 
 			// Move surface pointers from stack without referencing/dereferencing.
@@ -596,8 +611,11 @@ namespace wg
 		}
 		else
 		{
+			m_canvas.ref = CanvasRef::None;
+			m_canvas.pSurface = nullptr;
+			m_canvas.size.clear();
+
 			m_pCanvasLayers = nullptr;
-			m_pCanvas = nullptr;
 			m_pCanvasUpdateRects = nullptr;
 			m_nCanvasUpdateRects = 0;
 			m_canvasUpdateBounds.clear();
@@ -605,8 +623,6 @@ namespace wg
 			m_nClipRects = 0;
 			m_clipBounds.clear();
 			m_renderLayer = 0;
-			m_canvasSize.clear();
-
 		}
 
 		_canvasWasChanged();
@@ -625,7 +641,7 @@ namespace wg
 
 	void GfxDevice::fill(HiColor col)
 	{
-		fill(m_canvasSize, col);
+		fill(m_canvas.size, col);
 	}
 
 	//____ drawLine() __________________________________________________

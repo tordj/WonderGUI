@@ -52,7 +52,14 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		SurfaceFactory_p		surfaceFactory() override;
+		bool		defineCanvas( CanvasRef ref, StreamSurface * pSurface );
+		bool		defineCanvas( CanvasRef ref, const SizeI& size );
+
+		SurfaceFactory_p surfaceFactory() override;
+
+		//.____ Geometry _________________________________________________
+		
+		SizeI		canvasSize(CanvasRef ref) const override;
 
 
 		//.____ State _________________________________________________
@@ -141,15 +148,11 @@ namespace wg
         void    blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const NinePatch& patch) override;
 
 
-
-
         //.____ Deprecated ________________________________________________
 
         void    blitHorrBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len ) override;
 
         void    blitVertBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len ) override;
-
-        
 
 	protected:
 		StreamGfxDevice( CGfxOutStream& stream );
@@ -157,7 +160,7 @@ namespace wg
 
         void    _streamEdgeSamples( int nSamples, int samplesPerLine, int linePitch, const int * pSamples );
 
-        bool    _beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;
+        bool    _beginCanvasUpdate( CanvasRef canvasRef, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;
 
         
         void    _canvasWasChanged() override;
@@ -168,6 +171,7 @@ namespace wg
 
 		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
+		std::vector<CanvasInfo>	m_definedCanvases;
 
 		SurfaceFactory_p	m_pSurfaceFactory;
 		CGfxOutStream_p		m_pStream;

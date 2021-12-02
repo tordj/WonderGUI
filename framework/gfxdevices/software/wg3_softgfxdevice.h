@@ -63,7 +63,13 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		SurfaceFactory_p		surfaceFactory() override;
+		bool		defineCanvas( CanvasRef ref, SoftSurface * pSurface );
+		
+		SurfaceFactory_p	surfaceFactory() override;
+
+		//.____ Geometry _________________________________________________
+		
+		SizeI		canvasSize(CanvasRef ref) const override;
 
 
 		//.____ State _________________________________________________
@@ -395,6 +401,8 @@ namespace wg
 		SimpleBlitOp_p		m_pBlitSecondPassOp				= nullptr;		// Second pass is same for simple and complex blits (always a simple blit).
 
 		//
+		
+		std::vector<CanvasInfo>	m_definedCanvases;
 
 		int				m_lineThicknessTable[17];
 

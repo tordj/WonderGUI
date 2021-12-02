@@ -196,6 +196,12 @@ namespace wg
         return *this;
     }
 
+	CGfxOutStream&  CGfxOutStream::operator<< (CanvasRef r)
+	{
+		m_pHolder->_pushShort((short)r);
+		return *this;
+	}
+
 	CGfxOutStream&  CGfxOutStream::operator<< (HiColor color)
 	{
 		m_pHolder->_pushShort(color.a);

@@ -220,6 +220,12 @@ namespace wg
         return *this;
     }
 
+	CGfxInStream& CGfxInStream::operator>> (CanvasRef& r)
+	{
+		r = (CanvasRef)m_pHolder->_pullShort();
+		return *this;
+	}
+
 	CGfxInStream& CGfxInStream::operator>> (const DataChunk& data)
 	{
 		m_pHolder->_pullBytes(data.bytes, (char*) data.pBuffer);

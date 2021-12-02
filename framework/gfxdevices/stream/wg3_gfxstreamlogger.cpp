@@ -111,16 +111,16 @@ namespace wg
 			{
 				m_charStream << "BeginCanvasUpdate" << std::endl;
 
-				RectI		canvasRect;
+				CanvasRef	canvasRef;
 				uint16_t	surfaceId;
 				int			nUpdateRects;
 					
-				*m_pGfxStream >> canvasRect;
+				*m_pGfxStream >> canvasRef;
 				*m_pGfxStream >> surfaceId;
 				*m_pGfxStream >> nUpdateRects;
 
 				if( surfaceId > 0 )
-					_printRect( "    canvasRect     ", canvasRect );
+					m_charStream << "    canvasRef       = " << "[no toString() for canvasRef yet]" << std::endl;
 				else
 					m_charStream << "    surfaceId       = " << surfaceId << std::endl;
 

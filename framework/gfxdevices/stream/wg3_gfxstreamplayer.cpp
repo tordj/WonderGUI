@@ -108,11 +108,11 @@ namespace wg
              
 		case GfxChunkId::BeginCanvasUpdate:
 		{
-			RectI		canvasRect;
+			CanvasRef	canvasRef;
 			uint16_t	surfaceId;
 			int			nUpdateRects;
 				
- 			*m_pStream >> canvasRect;
+ 			*m_pStream >> canvasRef;
 			*m_pStream >> surfaceId;
 			*m_pStream >> nUpdateRects;
 
@@ -123,7 +123,7 @@ namespace wg
 			if( surfaceId > 0 )
 				m_pDevice->beginCanvasUpdate(m_vSurfaces[surfaceId], nUpdateRects, pRects );
 			else
-				m_pDevice->beginCanvasUpdate(canvasRect, nUpdateRects, pRects );
+				m_pDevice->beginCanvasUpdate(canvasRef, nUpdateRects, pRects );
 
 			Base::memStackRelease(nUpdateRects*16);
 			break;
