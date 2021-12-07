@@ -4295,7 +4295,7 @@ namespace wg
 
 	void SoftGfxDevice::_canvasWasChanged()
 	{
-		Surface * pCanvasSurface;
+		Surface * pCanvasSurface = nullptr;
 		
 		if(m_canvas.pSurface)
 			pCanvasSurface = m_canvas.pSurface;
@@ -4312,6 +4312,7 @@ namespace wg
 		
 		if (pCanvasSurface)
 		{
+            m_layerSurfaces[0] = pCanvasSurface;
 			_renderLayerWasChanged();
 		}
 		else

@@ -97,13 +97,13 @@ namespace wg
 		StreamSurface( CGfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
 		~StreamSurface();
 
-		short		_sendCreateSurface(SizeI size, PixelFormat format, int flags, const Color8 * pClut);
+		uint16_t	_sendCreateSurface(SizeI size, PixelFormat format, int flags, const Color8 * pClut);
 		void		_sendPixels(RectI rect, const uint8_t * pSource, int pitch);
 		void		_sendDeleteSurface();
 		uint8_t*	_genAlphaLayer(const char * pSource, int pitch);
 
 		CGfxOutStream_p	m_pStream;
-		short			m_inStreamId;		// Id of this surface in the stream.
+		uint16_t		m_inStreamId;		// Id of this surface in the stream.
 
 		Blob_p			m_pBlob;
 		uint8_t*		m_pAlphaLayer;		// Separate alpha layer if whole blob was not kept.

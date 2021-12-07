@@ -92,6 +92,7 @@ wg::GfxStreamPlug_p         g_pGfxStreamPlug;
 wg::GfxStreamPlayer_p       g_pGfxStreamPlayer;
 wg::StreamGfxDevice_p       g_pStreamGfxDevice;
 wg::StreamSurfaceFactory_p  g_pStreamSurfaceFactory;
+wg::SoftSurfaceFactory_p    g_pSoftSurfaceFactory;
 wg::SurfaceFactory_p	    g_pSurfaceFactory;
 wg::GfxDevice_p		        g_pGfxDevice;
 wg::Surface_p               g_pCanvas;  
@@ -235,18 +236,24 @@ int main ( int argc, char** argv )
 	else if (pScreen->format->BitsPerPixel == 24)
 		type = WgPixelType::BGR_8;
 
-    g_pCanvas = wg::SoftSurface::create( WgSize(width,height), type, wg::Blob::create(pScreen->pixels, nullptr), pScreen->pitch, wg::SurfaceFlag::Canvas );
-    g_pGfxDevice = wg::SoftGfxDevice::create();
-
-    g_pSurfaceFactory = wg::SoftSurfaceFactory::create();
-//    g_pModernSurfaceFactory = wg::SoftSurfaceFactory::create();
+    auto pCanvas = wg::SoftSurface::create( WgSize(width,height), type, wg::Blob::create(pScreen->pixels, nullptr), pScreen->pitch, wg::SurfaceFlag::Canvas );
+    auto pGfxDevice = wg::SoftGfxDevice::create();
+    pGfxDevice->defineCanvas( wg::CanvasRef::Default, pCanvas );
+    
+    g_pGfxDevice = pGfxDevice;
+    g_pCanvas = pCanvas;
+    
+    g_pSoftSurfaceFactory = wg::SoftSurfaceFactory::create();
 #endif
 
     g_pGfxStreamPlug = wg::GfxStreamPlug::create();
     g_pStreamSurfaceFactory = wg::StreamSurfaceFactory::create(g_pGfxStreamPlug->input);
-
+    g_pSurfaceFactory = g_pStreamSurfaceFactory;
+    
     g_pStreamGfxDevice = wg::StreamGfxDevice::create(g_pGfxStreamPlug->input);
-    g_pGfxStreamPlayer = wg::GfxStreamPlayer::create(g_pGfxStreamPlug->output[0], g_pGfxDevice, g_pStreamSurfaceFactory);
+    g_pGfxStreamPlayer = wg::GfxStreamPlayer::create(g_pGfxStreamPlug->output[0], g_pGfxDevice, g_pSoftSurfaceFactory);
+    
+    g_pStreamGfxDevice->defineCanvas(wg::CanvasRef::Default, g_pCanvas->size() );
     
     g_pGfxStreamPlug->openOutput(0);
     
@@ -333,7 +340,7 @@ int main ( int argc, char** argv )
 //    tooltipLayerTest(pRoot);
 //    flowPanelTest(pRoot);
 //    fullStateSupportTest(pRoot);
-    gfxStreamingTest(pRoot);
+//    gfxStreamingTest(pRoot);
 
 	// Setup debug overlays
 	
@@ -1196,10 +1203,22 @@ bool fullStateSupportTest(WgRootPanel* pRoot)
 
 bool gfxStreamingTest(WgRootPanel* pRoot)
 {
+//    rangeSliderTest(pRoot);
+//    fullStateSupportTest(pRoot);
+  
+//    pianoKeyboardTest(pRoot);
+    
+/*
+    wg::Surface_p pSurf  = sdl_wglib::LoadSurface("resources/splash.png", g_pSurfaceFactory);
+
+    auto pSkin = wg::StaticBlockSkin::create( pSurf );
+    
     auto pFiller  = new WgFiller();
-    pFiller->SetSkin(wg::ColorSkin::create(wg::Color::Red));
+    pFiller->SetSkin( pSkin );
+//    pFiller->SetSkin(wg::ColorSkin::create(wg::Color::Red));
 
     pRoot->SetChild(pFiller);
+*/
     return true;
 }
 
@@ -1212,7 +1231,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 	if (!pDB)
 		return 0;
 
-	WgRootPanel * pRoot = new WgRootPanel(g_pCanvas, pDevice);
+	WgRootPanel * pRoot = new WgRootPanel( wg::CanvasRef::Default, pDevice);
 
     pRoot->SetScale(wg::Base::activeContext()->scale()*4096);
 

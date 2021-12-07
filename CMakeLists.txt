@@ -32,6 +32,7 @@ include_directories(
 	../SDL2/include
 	../SDL2_image/include
 	../glew/include
+	freetype/include
 )
 
 link_directories(

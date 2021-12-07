@@ -149,7 +149,7 @@ namespace wg
 		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (const CanvasInfo& entry) { return (ref == entry.ref); } );
 
 		if( it != m_definedCanvases.end() )
-			return it->pSurface->size();
+            return it->size;
 		
 		return SizeI();
 	}
@@ -803,7 +803,7 @@ namespace wg
 			return false;
 		}
 		
-        int size = 4 + 2 + 4 + nUpdateRects * 16;
+        int size = 2 + 2 + 4 + nUpdateRects * 16;
 
         (*m_pStream) << GfxStream::Header{ GfxChunkId::BeginCanvasUpdate, size };
         (*m_pStream) << canvasRef;

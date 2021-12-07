@@ -35,9 +35,9 @@ public:
 	WgSizeCapsule();
 	~WgSizeCapsule();
 
-	virtual const char *Type( void ) const;
+	virtual const char *Type( void ) const override;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgSizeCapsule(); };
+	virtual WgWidget * NewOfMyType() const override { return new WgSizeCapsule(); };
 
 	void	SetSizes( WgSize min, WgSize preferred, WgSize max );   // Measured in points
 
@@ -54,7 +54,7 @@ public:
 	int		MatchingPixelWidth( int height ) const override;
 
 private:
-	void	_setScale(int scale);
+	void	_setScale(int scale) override;
 
 	WgSize          m_pixelsMin;              // Measured in pixels
 	WgSize          m_pixelsMax;              // Measured in pixels

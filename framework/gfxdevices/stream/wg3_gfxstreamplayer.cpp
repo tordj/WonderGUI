@@ -708,7 +708,7 @@ namespace wg
 			}
 
 			if (m_vSurfaces.size() <= surfaceId)
-				m_vSurfaces.resize(surfaceId + 1, nullptr);
+				m_vSurfaces.resize(surfaceId + 16, nullptr);
 
 			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, format, flags & ~SurfaceFlag::Buffered, pClut);
 
@@ -759,10 +759,32 @@ namespace wg
 
 		case GfxChunkId::SurfacePixels:
 		{
-			//TODO: Take width and pitch of pixelbuffer into account.
+            int line = (m_pWritePixels - m_pixelBuffer.pPixels) / m_pixelBuffer.pitch;
+            int ofs = (m_pWritePixels - m_pixelBuffer.pPixels) % m_pixelBuffer.pitch;
 
-			*m_pStream >> GfxStream::DataChunk{ header.size, m_pWritePixels };
-			m_pWritePixels += header.size;
+            int bytesPerLine = m_pixelBuffer.rect.w * m_pUpdatingSurface->pixelBytes();
+            
+            int bytesLeft = header.size;
+            
+            while( bytesLeft > 0 )
+            {
+                int toRead = min(bytesLeft, bytesPerLine - ofs);
+                *m_pStream >> GfxStream::DataChunk{ toRead, m_pWritePixels };
+                bytesLeft -= toRead;
+
+                if(toRead + ofs == bytesPerLine)
+                {
+                    m_pWritePixels += m_pixelBuffer.pitch - ofs;
+                    ofs = 0;
+                }
+                else
+                {
+                    m_pWritePixels += toRead;
+                    ofs += toRead;
+                }
+
+            }
+                        
 			break;
 		}
 

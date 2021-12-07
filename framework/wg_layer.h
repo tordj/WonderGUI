@@ -57,9 +57,9 @@ class WgLayer : public WgContainer
 	friend class WgLayerHook;
 
 public:
-	bool			IsLayer() const;
-	WgLayer *		CastToLayer();
-	const WgLayer *	CastToLayer() const;
+	bool			IsLayer() const override;
+	WgLayer *		CastToLayer() override;
+	const WgLayer *	CastToLayer() const override;
 
 	WgHook *		SetBase( WgWidget * pWidget );
 	WgWidget *		Base();
@@ -72,10 +72,10 @@ public:
 
 	// Overloaded from WgWidget
 
-	int				MatchingPixelHeight( int width ) const;
-	int				MatchingPixelWidth( int height ) const;
+	int				MatchingPixelHeight( int width ) const override;
+	int				MatchingPixelWidth( int height ) const override;
 
-	WgSize			PreferredPixelSize() const;
+	WgSize			PreferredPixelSize() const override;
 
 protected:
 	WgLayer();

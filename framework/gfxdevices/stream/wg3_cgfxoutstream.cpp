@@ -238,7 +238,7 @@ namespace wg
 
 	//____ allocObjectId() ____________________________________________________
 
-	short CGfxOutStream::allocObjectId()
+	uint16_t CGfxOutStream::allocObjectId()
 	{
 		if (m_freeIdStackSize > 0)
 			return m_pFreeIdStack[--m_freeIdStackSize];
@@ -248,12 +248,12 @@ namespace wg
 
 	//____ freeObjectId() _____________________________________________________
 
-	void CGfxOutStream::freeObjectId(short id)
+	void CGfxOutStream::freeObjectId(uint16_t id)
 	{
 		if (m_freeIdStackSize == m_freeIdStackCapacity)
 		{
 			int capacity = min(16, m_freeIdStackCapacity * 2);
-			short * pBuffer = new short[capacity];
+			uint16_t * pBuffer = new uint16_t[capacity];
 
 			for (int i = 0; i < m_freeIdStackSize; i++)
 				pBuffer[i] = m_pFreeIdStack[i];
@@ -266,7 +266,6 @@ namespace wg
 
 		m_pFreeIdStack[m_freeIdStackSize++] = id;
 	}
-
 
 
 } // namespace wg

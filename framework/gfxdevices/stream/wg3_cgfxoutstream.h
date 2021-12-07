@@ -92,8 +92,8 @@ namespace wg
 
 		inline CGfxOutStream_p	ptr() { return CGfxOutStream_p(this); }
 
-		short			allocObjectId();
-		void			freeObjectId(short id);
+		uint16_t		allocObjectId();
+		void			freeObjectId(uint16_t id);
 
 		//.____ Operators _____________________________________________________
 
@@ -136,9 +136,9 @@ namespace wg
 
 		short					m_idCounter;
 
-		short *					m_pFreeIdStack;
+		uint16_t *				m_pFreeIdStack;
 		int						m_freeIdStackCapacity;
-		uint8_t					m_freeIdStackSize;
+		int					    m_freeIdStackSize;
 
 
 		Holder * 	m_pHolder;
