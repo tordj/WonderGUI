@@ -1,4 +1,25 @@
 
+source_group(Base REGULAR_EXPRESSION "base/*")
+source_group(Components REGULAR_EXPRESSION "components/*")
+source_group(SizeBrokers REGULAR_EXPRESSION "sizebrokers/*")
+
+source_group(Skins REGULAR_EXPRESSION "skins/*")
+source_group(Skins/Anim REGULAR_EXPRESSION "skins/anim/*")
+source_group(Skins/Meter REGULAR_EXPRESSION "skins/meter/*")
+source_group(Skins/Misc REGULAR_EXPRESSION "skins/misc/*")
+source_group(Skins/State REGULAR_EXPRESSION "skins/state/*")
+source_group(Skins/Static REGULAR_EXPRESSION "skins/static/*")
+
+source_group(TextMappers REGULAR_EXPRESSION "textmappers/*")
+source_group(ValueFormatters REGULAR_EXPRESSION "valueformatters/*")
+
+source_group(Widgets REGULAR_EXPRESSION "widgets/*")
+source_group(Widgets/Capsules REGULAR_EXPRESSION "widgets/capsules/*")
+source_group(Widgets/Layers REGULAR_EXPRESSION "widgets/layers/*")
+source_group(Widgets/Lists REGULAR_EXPRESSION "widgets/lists/*")
+source_group(Widgets/Panels REGULAR_EXPRESSION "widgets/panels/*")
+
+
 add_library( wondergui
 			
 	base/wg_base.cpp
