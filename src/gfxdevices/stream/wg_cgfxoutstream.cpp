@@ -79,10 +79,17 @@ namespace wg
 		return *this;
 	}
 
+	CGfxOutStream&  CGfxOutStream::operator<< (bool b)
+	{
+		int16_t	myBool = (int16_t) b;
+		m_pHolder->_pushShort(myBool);
+		return *this;
+	}
+
 	CGfxOutStream&  CGfxOutStream::operator<< (const CoordI& c)
 	{
-		m_pHolder->_pushShort(c.x);
-		m_pHolder->_pushShort(c.y);
+		m_pHolder->_pushInt(c.x);
+		m_pHolder->_pushInt(c.y);
 		return *this;
 	}
 
@@ -95,8 +102,8 @@ namespace wg
 
 	CGfxOutStream&  CGfxOutStream::operator<< (const SizeI& sz)
 	{
-		m_pHolder->_pushShort(sz.w);
-		m_pHolder->_pushShort(sz.h);
+		m_pHolder->_pushInt(sz.w);
+		m_pHolder->_pushInt(sz.h);
 		return *this;
 	}
 
@@ -109,10 +116,10 @@ namespace wg
 
 	CGfxOutStream&  CGfxOutStream::operator<< (const RectI& rect)
 	{
-		m_pHolder->_pushShort(rect.x);
-		m_pHolder->_pushShort(rect.y);
-		m_pHolder->_pushShort(rect.w);
-		m_pHolder->_pushShort(rect.h);
+		m_pHolder->_pushInt(rect.x);
+		m_pHolder->_pushInt(rect.y);
+		m_pHolder->_pushInt(rect.w);
+		m_pHolder->_pushInt(rect.h);
 		return *this;
 	}
 
@@ -122,6 +129,15 @@ namespace wg
 		m_pHolder->_pushFloat(rect.y);
 		m_pHolder->_pushFloat(rect.w);
 		m_pHolder->_pushFloat(rect.h);
+		return *this;
+	}
+
+	CGfxOutStream&  CGfxOutStream::operator<< (const BorderI& border)
+	{
+		m_pHolder->_pushShort(border.top);
+		m_pHolder->_pushShort(border.right);
+		m_pHolder->_pushShort(border.bottom);
+		m_pHolder->_pushShort(border.left);
 		return *this;
 	}
 
@@ -136,6 +152,13 @@ namespace wg
 		m_pHolder->_pushShort((short) b);
 		return *this;
 	}
+
+    CGfxOutStream&  CGfxOutStream::operator<< (TintMode t)
+    {
+        m_pHolder->_pushShort((short) t);
+        return *this;
+    }
+
 
 	CGfxOutStream&  CGfxOutStream::operator<< (Axis o)
 	{
@@ -152,6 +175,30 @@ namespace wg
 	CGfxOutStream&  CGfxOutStream::operator<< (ScaleMode m)
 	{
 		m_pHolder->_pushShort((short)m);
+		return *this;
+	}
+
+    CGfxOutStream&  CGfxOutStream::operator<< (GfxFlip f)
+    {
+        m_pHolder->_pushShort((short)f);
+        return *this;
+    }
+
+    CGfxOutStream&  CGfxOutStream::operator<< (XSections x)
+    {
+        m_pHolder->_pushShort((short)x);
+        return *this;
+    }
+
+    CGfxOutStream&  CGfxOutStream::operator<< (YSections y)
+    {
+        m_pHolder->_pushShort((short)y);
+        return *this;
+    }
+
+	CGfxOutStream&  CGfxOutStream::operator<< (CanvasRef r)
+	{
+		m_pHolder->_pushShort((short)r);
 		return *this;
 	}
 
@@ -191,7 +238,7 @@ namespace wg
 
 	//____ allocObjectId() ____________________________________________________
 
-	short CGfxOutStream::allocObjectId()
+	uint16_t CGfxOutStream::allocObjectId()
 	{
 		if (m_freeIdStackSize > 0)
 			return m_pFreeIdStack[--m_freeIdStackSize];
@@ -201,12 +248,12 @@ namespace wg
 
 	//____ freeObjectId() _____________________________________________________
 
-	void CGfxOutStream::freeObjectId(short id)
+	void CGfxOutStream::freeObjectId(uint16_t id)
 	{
 		if (m_freeIdStackSize == m_freeIdStackCapacity)
 		{
 			int capacity = min(16, m_freeIdStackCapacity * 2);
-			short * pBuffer = new short[capacity];
+			uint16_t * pBuffer = new uint16_t[capacity];
 
 			for (int i = 0; i < m_freeIdStackSize; i++)
 				pBuffer[i] = m_pFreeIdStack[i];
@@ -219,7 +266,6 @@ namespace wg
 
 		m_pFreeIdStack[m_freeIdStackSize++] = id;
 	}
-
 
 
 } // namespace wg

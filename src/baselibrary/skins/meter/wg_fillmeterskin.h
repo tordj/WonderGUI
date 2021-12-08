@@ -41,7 +41,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static FillMeterSkin_p create();
-		static FillMeterSkin_p create(Direction direction, HiColor fillColorEmpty, HiColor fillColorFull, HiColor backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bFillStartOutside = false);
+		static FillMeterSkin_p create(Direction direction, HiColor fillColorEmpty, HiColor fillColorFull, HiColor backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI(), int minFillLength = 0);
 
 		//.____ Identification __________________________________________
 
@@ -73,9 +73,12 @@ namespace wg
 		void	setFillColorFull(HiColor full);
 		HiColor	fillColorFull() const { return m_barColorFull; }
 
-		void	setFillStartOutside(bool bStartOutside);
-		bool	isFillStartOutside() const { return m_bBarStartOutside; }
+		void	setMinFillLength(int minFillLength);
+		int     minFillLength() const { return m_minFillLength; }
 
+        void    setCenteredBarOrigin(bool bCenter);
+        bool    centeredBarOrigin() const { return m_bCenteredBarOrigin; }
+        
 		//.____ Misc ____________________________________________________
 
 		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
@@ -91,7 +94,7 @@ namespace wg
 	private:
 		FillMeterSkin();
 		FillMeterSkin(	Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, 
-						const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside );
+						const BorderI& barPadding, const BorderI& contentPadding, int minFillLength );
 		~FillMeterSkin() {};
 
 		Rect		_barFillArea(const Rect& canvas, float value, float value2) const;
@@ -101,11 +104,12 @@ namespace wg
 		BlendMode	m_blendMode = BlendMode::Undefined;
 		Direction	m_direction;
 		BorderI		m_barPadding;
-		bool		m_bBarStartOutside;
+        int		    m_minFillLength;
 		HiColor		m_barColorEmpty;
 		HiColor		m_barColorFull;
 		HiColor		m_backColor;
 		Size		m_preferredSize;
+        bool        m_bCenteredBarOrigin = false;
 	};
 
 

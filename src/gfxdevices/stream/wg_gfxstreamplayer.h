@@ -63,8 +63,6 @@ namespace wg
 		GfxStreamPlayer(CGfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();
 
-		RectI				m_clipRects[GfxStream::c_maxClipRects];
-
 		CGfxInStream_p		m_pStream;
 		GfxDevice_p			m_pDevice;
 		SurfaceFactory_p	m_pSurfaceFactory;
@@ -75,23 +73,44 @@ namespace wg
 		PixelBuffer			m_pixelBuffer;
 		uint8_t *			m_pWritePixels;
 
-
-		// Temporary storage for incoming segment
+		// For multi-chunk drawing operations (DrawSegments, FlipDrawSegments, DrawWave and FlipDrawWave), telling which one we are receiving edge samples for.
+		
+		GfxChunkId			m_drawTypeInProgress = GfxChunkId::OutOfData;
+		
+		// Temporary storage for DrawSegments and FlipDrawSegments.
 
 		struct SegmentInfo
 		{
-			RectI	dest;
-			int		nSegments;
-			HiColor	colors[GfxDevice::c_maxSegments];
-			int		nEdgeStrips;
-			int *	pEdgeStrips;
-			int		transform[2][2];
-
-			int		nLoadedSamples;
-			int		nTotalSamples;
+			RectI		dest;
+			int			nSegments;
+			HiColor *	pSegmentColors;
+			int			nEdgeStrips;
+			int *		pEdgeStrips;
+			int			edgeStripPitch;
+			GfxFlip		flip;				// Only used when m_drawTypeInProgress == flipDrawSegments
+			TintMode	tintMode;
+			
 		};
 
+		// Temporary storage for DrawWave and FlipDrawWave.
+		
+		struct WaveInfo
+		{
+			RectI		dest;
+			WaveLine	topBorder;
+			WaveLine	bottomBorder;
+			HiColor		frontFill;
+			HiColor		backFill;
+			GfxFlip		flip;			// Onlu used when m_drawTypeInProgress == flipDrawWave.
+		};
+		
 		SegmentInfo		m_seg;
+		WaveInfo		m_wave;
+
+		char * 	m_pTempBuffer = nullptr;
+		int		m_bytesLoaded;
+		int		m_bufferSize;
+		
 	};
 
 }

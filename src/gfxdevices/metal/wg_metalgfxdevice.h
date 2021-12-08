@@ -63,9 +63,13 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
+		//.____ Geometry _________________________________________________
+		
+		SizeI		canvasSize(CanvasRef ref) const override;
+
         //.____ State _________________________________________________
 
-        bool    setBaseCanvasFormat( MTLRenderPassDescriptor* renderPassDesc, PixelFormat pixelFormat );
+        bool    setDefaultCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI pixelSize, PixelFormat pixelFormat );
         
         void    setTintColor(HiColor color) override;
         void    setTintGradient(const RectI& rect, const Gradient& gradient) override;
@@ -76,8 +80,7 @@ namespace wg
         void    setMorphFactor(float factor) override;
 
         bool    isCanvasReady() const;
-        
-        
+            
         //.____ Rendering ________________________________________________
         
         bool    beginRender() override;
@@ -291,21 +294,21 @@ namespace wg
         
         // Active state data
 
-        MetalSurface *  m_pActiveBlitSource = nullptr;                  // Currently active blit source during buffer execution, not to confuse with m_pBlitSource which might not be active yet.
-        MetalSurface *  m_pActiveCanvas     = nullptr;                  // Currently active canvas during buffer execution, not to confuse with m_pCanvas which might not be active yet.
+        MetalSurface_p  m_pActiveBlitSource = nullptr;                  // Currently active blit source during buffer execution, not to confuse with m_pBlitSource which might not be active yet.
+        MetalSurface_p  m_pActiveCanvas     = nullptr;                  // Currently active canvas during buffer execution, not to confuse with m_pCanvas which might not be active yet.
         SizeI           m_activeCanvasSize;
         DestFormat      m_activeCanvasFormat;
         bool            m_bGradientActive   = false;
         BlendMode       m_activeBlendMode   = BlendMode::Blend;
         float           m_activeMorphFactor = 0.5f;
                 
-        SizeI                       m_viewportSize;
         
         id<MTLLibrary>              m_library;
         id<MTLDrawable>             m_drawableToAutoPresent = nil;
-        MTLRenderPassDescriptor*    m_baseCanvasRenderPassDesc;
-        PixelFormat                 m_baseCanvasPixelFormat;
-        
+        MTLRenderPassDescriptor*    m_defaultCanvasRenderPassDesc;
+        PixelFormat                 m_defaultCanvasPixelFormat;
+		SizeI                       m_defaultCanvasSize;
+
         id<MTLCommandBuffer>        m_metalCommandBuffer;
 
         bool                        m_bRendering = false;               // Set to true while between beginRender() and endRender() calls.
@@ -346,8 +349,8 @@ namespace wg
         m_cmdBeginVertexOfs = m_vertexOfs;
         m_pCommandBuffer[m_commandOfs++] = cmd;
         
-        if (m_pCanvas)
-            static_cast<MetalSurface*>(m_pCanvas.rawPtr())->m_bBufferNeedsSync = true;
+        if (m_canvas.pSurface)
+            static_cast<MetalSurface*>(m_canvas.pSurface.rawPtr())->m_bBufferNeedsSync = true;
     }
 
     //____ _beginDrawCommandWithSource() ________________________________________________
@@ -365,8 +368,8 @@ namespace wg
         if( m_pBlitSource )
             static_cast<MetalSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
 
-        if( m_pCanvas)
-            static_cast<MetalSurface*>(m_pCanvas.rawPtr())->m_bBufferNeedsSync = true;
+        if( m_canvas.pSurface)
+            static_cast<MetalSurface*>(m_canvas.pSurface.rawPtr())->m_bBufferNeedsSync = true;
     }
 
     //____ _beginDrawCommandWithInt() ________________________________________________
@@ -382,8 +385,8 @@ namespace wg
         m_pCommandBuffer[m_commandOfs++] = cmd;
         m_pCommandBuffer[m_commandOfs++] = data;
 
-        if (m_pCanvas)
-            static_cast<MetalSurface*>(m_pCanvas.rawPtr())->m_bBufferNeedsSync = true;
+        if (m_canvas.pSurface)
+            static_cast<MetalSurface*>(m_canvas.pSurface.rawPtr())->m_bBufferNeedsSync = true;
     }
 
     //____ _beginClippedDrawCommand() ________________________________________________
@@ -400,7 +403,7 @@ namespace wg
             for (int i = 0; i < m_nClipRects; i++)
             {
                 RectI clip = m_pClipRects[i];
-                clip.y = m_canvasSize.h - (clip.y + clip.h);
+//                clip.y = m_canvasSize.h - (clip.y + clip.h);
 
                 m_pClipListBuffer[m_clipWriteOfs++] = clip;
             }
@@ -413,8 +416,8 @@ namespace wg
         m_pCommandBuffer[m_commandOfs++] = m_clipCurrOfs;
         m_pCommandBuffer[m_commandOfs++] = m_nClipRects;
 
-        if (m_pCanvas)
-            static_cast<MetalSurface*>(m_pCanvas.rawPtr())->m_bBufferNeedsSync = true;
+        if (m_canvas.pSurface)
+            static_cast<MetalSurface*>(m_canvas.pSurface.rawPtr())->m_bBufferNeedsSync = true;
     }
 
 

@@ -720,6 +720,8 @@ enum class CanvasInit 		//. autoExtras
 		CLUT_8_sRGB,		///< 8 bits of index into the CLUT (Color Lookup Table).
 		CLUT_8_linear,		///< 8 bits of index into the CLUT (Color Lookup Table).
 
+		RGB_565_bigendian,	///< 3 high bits of green, 5 bits of blue, 5 bits of red and 3 low bits of green in exactly that order in memory.
+
 		A_8,				///< 8 bits of alpha only.
 	};
 
@@ -783,6 +785,7 @@ enum class CanvasInit 		//. autoExtras
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
 		bool		bIndexed;		///< True if pixels are index into CLUT, no RGB values in pixel.
 		bool		bLinear;		///< True if RGB values are linear (as opposed to in sRGB format, e.g. logarithmic with gamma 2.2).
+		bool 		bBigEndian;		///< Set if 16- or 32-bit pixel is in big-endian format.
 
 		uint32_t	R_mask;			///< bitmask for getting the red bits out of the pixel
 		uint32_t	G_mask;			///< bitmask for getting the green bits out of the pixel
@@ -816,65 +819,6 @@ enum class CanvasInit 		//. autoExtras
 		Mask			///< Mask background against whole container.
 	};
 
-	//____ GfxChunkId ____________________________________________________
-
-	enum class GfxChunkId : uint16_t	//. autoExtras
-	{
-		OutOfData,
-
-		BeginRender,
-		EndRender,
-		SetCanvas,
-		SetClip,
-		SetTintColor,
-		SetBlendMode,
-		SetBlitSource,
-
-		Fill,
-		FillSubpixel,
-		PlotPixels,
-		DrawLineFromTo,
-		DrawLineStraight,
-
-
-		Blit,
-//		FlipBlit,
-		StretchBlit,
-//		StretchBlitSubpixel,
-
-//		StretchFlipBlit,
-//		StretchFlipBlitSubpixel,
-
-//		RotScaleBlit,
-
-
-//		DrawWave,
-//		FlipDrawWave,
-
-//		DrawElipse,
-
-//		DrawSegments,
-//		FlipDrawSegments,
-
-		SimpleTransformBlit,
-		ComplexTransformBlit,
-
-		TransformDrawSegments,
-		EdgeSamples,
-
-//		BlitNinePatch,
-
-
-		CreateSurface,
-		SetSurfaceScaleMode,
-		BeginSurfaceUpdate,
-		SurfaceData,
-		EndSurfaceUpdate,
-		FillSurface,
-		CopySurface,
-		DeleteSurface
-	};
-
 	//____ GfxFlip ____________________________________________________________
 
 	enum class GfxFlip : uint8_t	//. autoExtras
@@ -893,6 +837,45 @@ enum class CanvasInit 		//. autoExtras
 		Rot270FlipY,
 	};
 
+//____ CanvasRef ____________________________________________________________
+
+	enum class CanvasRef			//.autoExtras
+	{
+		None,
+		Default,
+		Canvas_1,
+		Canvas_2,
+		Canvas_3,
+		Canvas_4,
+		Canvas_5,
+		Canvas_6,
+		Canvas_7,
+		Canvas_8,
+		Canvas_9,
+		Canvas_10,
+		Canvas_11,
+		Canvas_12,
+		Canvas_13,
+		Canvas_14,
+		Canvas_15,
+		Canvas_16,
+		Canvas_17,
+		Canvas_18,
+		Canvas_19,
+		Canvas_20,
+		Canvas_21,
+		Canvas_22,
+		Canvas_23,
+		Canvas_24,
+		Canvas_25,
+		Canvas_26,
+		Canvas_27,
+		Canvas_28,
+		Canvas_29,
+		Canvas_30,
+		Canvas_31,
+		Canvas_32
+	};
 
 } // namespace wg
 

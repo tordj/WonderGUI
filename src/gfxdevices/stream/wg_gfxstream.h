@@ -28,6 +28,84 @@
 
 namespace wg
 {
+
+    //____ GfxChunkId ____________________________________________________
+
+    enum class GfxChunkId : uint16_t    //. autoExtras
+    {
+        OutOfData,
+
+        BeginRender,
+        EndRender,
+        Flush,
+        BeginCanvasUpdate,
+        EndCanvasUpdate,
+        SetClipList,
+        ClearClipList,
+        PushClipList,
+        PopClipList,
+        SetTintColor,
+        SetTintGradient,
+        ClearTintGradient,
+        SetBlendMode,
+        SetBlitSource,
+        SetMorphFactor,
+        SetRenderLayer,
+
+        Fill,
+        FillRectI,
+        FillRectF,
+        PlotPixels,
+        DrawLineFromTo,
+        DrawLineStraight,
+
+
+        Blit,
+        BlitRectI,
+        FlipBlit,
+        FlipBlitRectI,
+        
+        StretchBlit,
+        StretchBlitRectI,
+        StretchBlitRectF,
+        
+        StretchFlipBlit,
+        StretchFlipBlitRectI,
+        StretchFlipBlitRectF,
+        
+        RotScaleBlit,
+        Tile,
+        FlipTile,
+        
+        ScaleTile,
+        ScaleFlipTile,
+        
+
+        DrawWave,
+        FlipDrawWave,
+
+        DrawElipse,
+        DrawPieChart,
+        
+        DrawSegments,
+        FlipDrawSegments,
+        
+        BlitNinePatch,
+        
+        EdgeSamples,
+
+        CreateSurface,
+        SetSurfaceScaleMode,
+        SetSurfaceTiling,
+        BeginSurfaceUpdate,
+        SurfacePixels,
+        EndSurfaceUpdate,
+        FillSurface,
+        CopySurface,
+        DeleteSurface
+    };
+
+
 	class GfxStream
 	{
 	public:
@@ -50,6 +128,10 @@ namespace wg
 
 
 	};
+
+
+
+
 
 };
 

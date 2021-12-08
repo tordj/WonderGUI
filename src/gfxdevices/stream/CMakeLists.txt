@@ -1,29 +1,29 @@
 
 add_library( wgstreamgfx 
 
-	wg_streamgfxdevice.cpp
-	wg_streamgfxdevice.h
-	wg_streamsurface.cpp
-	wg_streamsurface.h
-	wg_streamsurfacefactory.cpp
-	wg_streamsurfacefactory.h
+	wg3_streamgfxdevice.cpp
+	wg3_streamgfxdevice.h
+	wg3_streamsurface.cpp
+	wg3_streamsurface.h
+	wg3_streamsurfacefactory.cpp
+	wg3_streamsurfacefactory.h
 
-	wg_gfxstream.h
-	wg_gfxstreamlogger.cpp
-	wg_gfxstreamlogger.h
-	wg_gfxstreamplayer.cpp
-	wg_gfxstreamplayer.h
-	wg_gfxstreamplug.cpp
-	wg_gfxstreamplug.h
-	wg_gfxstreamreader.cpp
-	wg_gfxstreamreader.h
-	wg_gfxstreamwriter.cpp
-	wg_gfxstreamwriter.h
+	wg3_gfxstream.h
+	wg3_gfxstreamlogger.cpp
+	wg3_gfxstreamlogger.h
+	wg3_gfxstreamplayer.cpp
+	wg3_gfxstreamplayer.h
+	wg3_gfxstreamplug.cpp
+	wg3_gfxstreamplug.h
+	wg3_gfxstreamreader.cpp
+	wg3_gfxstreamreader.h
+	wg3_gfxstreamwriter.cpp
+	wg3_gfxstreamwriter.h
 
-	wg_cgfxinstream.cpp
-	wg_cgfxinstream.h
-	wg_cgfxoutstream.cpp
-	wg_cgfxoutstream.h
+	wg3_cgfxinstream.cpp
+	wg3_cgfxinstream.h
+	wg3_cgfxoutstream.cpp
+	wg3_cgfxoutstream.h
 
 )
 

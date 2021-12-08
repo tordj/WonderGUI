@@ -23,6 +23,7 @@
 #define	WG_POINTERS_DOT_H
 #pragma once
 
+#include <wg_object.h>
 #include <wg_strongptr.h>
 #include <wg_weakptr.h>
 #include <wg_strongcomponentptr.h>

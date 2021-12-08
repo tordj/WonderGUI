@@ -162,6 +162,7 @@ namespace wg
 	const char * toString(Axis i)
 	{
 		static const char * names[] = { 
+			"Undefined",
 			"X",
 			"Y" };
 
@@ -307,6 +308,7 @@ namespace wg
 			"CLUT_8",
 			"CLUT_8_sRGB",
 			"CLUT_8_linear",
+			"RGB_565_bigendian",
 			"A_8" };
 
 		return names[(int)i];
@@ -318,40 +320,6 @@ namespace wg
 			"Recurse",
 			"Skip",
 			"Mask" };
-
-		return names[(int)i];
-	}
-
-	const char * toString(GfxChunkId i)
-	{
-		static const char * names[] = { 
-			"OutOfData",
-			"BeginRender",
-			"EndRender",
-			"SetCanvas",
-			"SetClip",
-			"SetTintColor",
-			"SetBlendMode",
-			"SetBlitSource",
-			"Fill",
-			"FillSubpixel",
-			"PlotPixels",
-			"DrawLineFromTo",
-			"DrawLineStraight",
-			"Blit",
-			"StretchBlit",
-			"SimpleTransformBlit",
-			"ComplexTransformBlit",
-			"TransformDrawSegments",
-			"EdgeSamples",
-			"CreateSurface",
-			"SetSurfaceScaleMode",
-			"BeginSurfaceUpdate",
-			"SurfaceData",
-			"EndSurfaceUpdate",
-			"FillSurface",
-			"CopySurface",
-			"DeleteSurface" };
 
 		return names[(int)i];
 	}
@@ -371,6 +339,47 @@ namespace wg
 			"Rot270",
 			"Rot270FlipX",
 			"Rot270FlipY" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(CanvasRef i)
+	{
+		static const char * names[] = { 
+			"None",
+			"Default",
+			"Canvas_1",
+			"Canvas_2",
+			"Canvas_3",
+			"Canvas_4",
+			"Canvas_5",
+			"Canvas_6",
+			"Canvas_7",
+			"Canvas_8",
+			"Canvas_9",
+			"Canvas_10",
+			"Canvas_11",
+			"Canvas_12",
+			"Canvas_13",
+			"Canvas_14",
+			"Canvas_15",
+			"Canvas_16",
+			"Canvas_17",
+			"Canvas_18",
+			"Canvas_19",
+			"Canvas_20",
+			"Canvas_21",
+			"Canvas_22",
+			"Canvas_23",
+			"Canvas_24",
+			"Canvas_25",
+			"Canvas_26",
+			"Canvas_27",
+			"Canvas_28",
+			"Canvas_29",
+			"Canvas_30",
+			"Canvas_31",
+			"Canvas_32" };
 
 		return names[(int)i];
 	}

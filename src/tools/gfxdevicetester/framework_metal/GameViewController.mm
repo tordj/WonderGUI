@@ -148,10 +148,6 @@ protected:
     MetalGfxDevice::setMetalDevice( _view.device );
     m_pDevice = MetalGfxDevice::create();
 
-    MTLRenderPassDescriptor * pDesc = _view.currentRenderPassDescriptor;
-    pDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
-    m_pDevice->setBaseCanvasFormat( pDesc, PixelFormat::BGRA_8_sRGB );
-
     
     auto pContext = Context::create();
     pContext->setGammaCorrection(true);
@@ -165,7 +161,11 @@ protected:
     m_pApp = new GfxDeviceTester();
     m_windowSize = m_pApp->startWindowSize();
 
-    m_pRoot = RootPanel::create(m_windowSize, m_pDevice);
+	MTLRenderPassDescriptor * pDesc = _view.currentRenderPassDescriptor;
+	pDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
+	m_pDevice->setDefaultCanvas( pDesc, m_windowSize, PixelFormat::BGRA_8_sRGB );
+	
+    m_pRoot = RootPanel::create( CanvasRef::Default, m_pDevice);
     
     // Create app and visitor, make any app-specif initialization
 

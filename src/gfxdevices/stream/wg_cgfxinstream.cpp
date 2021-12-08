@@ -95,10 +95,17 @@ namespace wg
 		return *this;
 	}
 
+	CGfxInStream& CGfxInStream::operator>> (bool& b)
+	{
+		int16_t myBool = m_pHolder->_pullShort();
+		b = (bool) myBool;
+		return *this;
+	}
+
 	CGfxInStream& CGfxInStream::operator>> (CoordI& coord)
 	{
-		coord.x = m_pHolder->_pullShort();
-		coord.y = m_pHolder->_pullShort();
+        coord.x = m_pHolder->_pullInt();
+		coord.y = m_pHolder->_pullInt();
 		return *this;
 	}
 
@@ -111,8 +118,8 @@ namespace wg
 
 	CGfxInStream& CGfxInStream::operator>> (SizeI& sz)
 	{
-		sz.w = m_pHolder->_pullShort();
-		sz.h = m_pHolder->_pullShort();
+		sz.w = m_pHolder->_pullInt();
+		sz.h = m_pHolder->_pullInt();
 		return *this;
 	}
 
@@ -125,10 +132,10 @@ namespace wg
 
 	CGfxInStream& CGfxInStream::operator>> (RectI& rect)
 	{
-		rect.x = m_pHolder->_pullShort();
-		rect.y = m_pHolder->_pullShort();
-		rect.w = m_pHolder->_pullShort();
-		rect.h = m_pHolder->_pullShort();
+		rect.x = m_pHolder->_pullInt();
+		rect.y = m_pHolder->_pullInt();
+		rect.w = m_pHolder->_pullInt();
+		rect.h = m_pHolder->_pullInt();
 		return *this;
 	}
 
@@ -138,6 +145,15 @@ namespace wg
 		rect.y = m_pHolder->_pullFloat();
 		rect.w = m_pHolder->_pullFloat();
 		rect.h = m_pHolder->_pullFloat();
+		return *this;
+	}
+
+	CGfxInStream& CGfxInStream::operator>> (BorderI& border)
+	{
+		border.top 		= m_pHolder->_pullShort();
+		border.right 	= m_pHolder->_pullShort();
+		border.bottom	= m_pHolder->_pullShort();
+		border.left		= m_pHolder->_pullShort();
 		return *this;
 	}
 
@@ -162,6 +178,12 @@ namespace wg
 		return *this;
 	}
 
+    CGfxInStream& CGfxInStream::operator>> (TintMode& tintMode)
+    {
+        tintMode = (TintMode) m_pHolder->_pullShort();
+        return *this;
+    }
+
 	CGfxInStream& CGfxInStream::operator>> (Axis& o)
 	{
 		o = (Axis)m_pHolder->_pullShort();
@@ -177,6 +199,30 @@ namespace wg
 	CGfxInStream& CGfxInStream::operator>> (ScaleMode& m)
 	{
 		m = (ScaleMode)m_pHolder->_pullShort();
+		return *this;
+	}
+
+    CGfxInStream& CGfxInStream::operator>> (GfxFlip& f)
+    {
+        f = (GfxFlip)m_pHolder->_pullShort();
+        return *this;
+    }
+
+    CGfxInStream& CGfxInStream::operator>> (XSections& x)
+    {
+        x = (XSections)m_pHolder->_pullShort();
+        return *this;
+    }
+
+    CGfxInStream& CGfxInStream::operator>> (YSections& y)
+    {
+        y = (YSections)m_pHolder->_pullShort();
+        return *this;
+    }
+
+	CGfxInStream& CGfxInStream::operator>> (CanvasRef& r)
+	{
+		r = (CanvasRef)m_pHolder->_pullShort();
 		return *this;
 	}
 

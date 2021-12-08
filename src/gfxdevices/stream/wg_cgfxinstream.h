@@ -104,7 +104,7 @@ namespace wg
 		CGfxInStream& operator>> (uint16_t&);
 		CGfxInStream& operator>> (int32_t&);
 		CGfxInStream& operator>> (float&);
-
+		CGfxInStream& operator>> (bool&);
 
 		CGfxInStream& operator>> (CoordI&);
 		CGfxInStream& operator>> (CoordF&);
@@ -112,13 +112,21 @@ namespace wg
 		CGfxInStream& operator>> (SizeF&);
 		CGfxInStream& operator>> (RectI&);
 		CGfxInStream& operator>> (RectF&);
+		CGfxInStream& operator>> (BorderI&);
+		
 		CGfxInStream& operator>> (HiColor&);
 		CGfxInStream& operator>> (Direction&);
 		CGfxInStream& operator>> (BlendMode&);
+        CGfxInStream& operator>> (TintMode&);
 		CGfxInStream& operator>> (Axis&);
 		CGfxInStream& operator>> (PixelFormat&);
 		CGfxInStream& operator>> (ScaleMode&);
-		CGfxInStream& operator>> (const DataChunk&);
+        CGfxInStream& operator>> (GfxFlip&);
+        CGfxInStream& operator>> (XSections&);
+        CGfxInStream& operator>> (YSections&);
+		CGfxInStream& operator>> (CanvasRef&);
+
+        CGfxInStream& operator>> (const DataChunk&);
 
 		CGfxInStream& operator>> (int[2][2]);
 		CGfxInStream& operator>> (float[2][2]);

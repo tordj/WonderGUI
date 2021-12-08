@@ -2,10 +2,10 @@
 # Update wg_enumextras.h/cpp with functions for all enums in wg_types.h marked "autoExtras".
 
 
-	inputFiles = [ 'src/base/wg_types.h' ]
+	inputFiles = [ 'src/baselibrary/base/wg_types.h' ]
 
-	headerPath = 'src/base/wg_enumextras.h'
-	sourcePath = 'src/base/wg_enumextras.cpp'
+	headerPath = 'src/baselibrary/base/wg_enumextras.h'
+	sourcePath = 'src/baselibrary/base/wg_enumextras.cpp'
 
 
 def replaceAutoSection( path, newContent )

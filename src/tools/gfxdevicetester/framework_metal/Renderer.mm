@@ -67,9 +67,9 @@ using namespace wg;
     
     pDevice->autopresent(view.currentDrawable);
 
-    pDevice->setBaseCanvasFormat( pDesc, PixelFormat::BGRA_8_sRGB );
+	pDevice->setDefaultCanvas( pDesc, {(int)_viewportSize.x,(int)_viewportSize.y}, PixelFormat::BGRA_8_sRGB );
     
-    m_pRootPanel->setCanvas( {(int)_viewportSize.x,(int)_viewportSize.y} );
+    m_pRootPanel->setCanvas( CanvasRef::Default );
     
     // Render. We do this outside the app since we might want to
     // handle updated rectangles in a system specific way.

@@ -47,7 +47,7 @@ namespace wg
 		//.____ Components _______________________________________
 
 		CGfxOutStream		input;
-		CGfxInStream			output[c_maxOutputs];
+		CGfxInStream		output[c_maxOutputs];
 
 
 		//.____ Identification __________________________________________

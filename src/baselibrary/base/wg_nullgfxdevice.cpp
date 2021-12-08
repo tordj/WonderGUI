@@ -65,6 +65,12 @@ namespace wg
 		return SurfaceFactory_p();
 	}
 
+	SizeI NullGfxDevice::canvasSize(CanvasRef ref) const
+	{
+		return SizeI();
+	}
+
+
 	void NullGfxDevice::_canvasWasChanged()
 	{
 	}

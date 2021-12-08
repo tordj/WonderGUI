@@ -46,7 +46,7 @@ namespace wg
 	const static SearchMode      SearchMode_min      = SearchMode::MarkPolicy;
 	const static Placement       Placement_min       = Placement::NorthWest;
 	const static Direction       Direction_min       = Direction::Up;
-	const static Axis            Axis_min            = Axis::X;
+	const static Axis            Axis_min            = Axis::Undefined;
 	const static SizePolicy      SizePolicy_min      = SizePolicy::Default;
 	const static SizePolicy2D    SizePolicy2D_min    = SizePolicy2D::Original;
 	const static MsgType         MsgType_min         = MsgType::Dummy;
@@ -57,8 +57,8 @@ namespace wg
 	const static CanvasInit      CanvasInit_min      = CanvasInit::Keep;
 	const static PixelFormat     PixelFormat_min     = PixelFormat::Unknown;
 	const static MaskOp          MaskOp_min          = MaskOp::Recurse;
-	const static GfxChunkId      GfxChunkId_min      = GfxChunkId::OutOfData;
 	const static GfxFlip         GfxFlip_min         = GfxFlip::Normal;
+	const static CanvasRef       CanvasRef_min       = CanvasRef::None;
 
 	const static CodePage        CodePage_max        = CodePage::_874;
 	const static BlendMode       BlendMode_max       = BlendMode::Morph;
@@ -79,8 +79,8 @@ namespace wg
 	const static CanvasInit      CanvasInit_max      = CanvasInit::Clear;
 	const static PixelFormat     PixelFormat_max     = PixelFormat::A_8;
 	const static MaskOp          MaskOp_max          = MaskOp::Mask;
-	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::DeleteSurface;
 	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
+	const static CanvasRef       CanvasRef_max       = CanvasRef::Canvas_32;
 
 	const static int             CodePage_size       = (int)CodePage::_874 + 1;
 	const static int             BlendMode_size      = (int)BlendMode::Morph + 1;
@@ -101,8 +101,8 @@ namespace wg
 	const static int             CanvasInit_size     = (int)CanvasInit::Clear + 1;
 	const static int             PixelFormat_size    = (int)PixelFormat::A_8 + 1;
 	const static int             MaskOp_size         = (int)MaskOp::Mask + 1;
-	const static int             GfxChunkId_size     = (int)GfxChunkId::DeleteSurface + 1;
 	const static int             GfxFlip_size        = (int)GfxFlip::Rot270FlipY + 1;
+	const static int             CanvasRef_size      = (int)CanvasRef::Canvas_32 + 1;
 
 	const char * toString(CodePage);
 	const char * toString(BlendMode);
@@ -123,8 +123,8 @@ namespace wg
 	const char * toString(CanvasInit);
 	const char * toString(PixelFormat);
 	const char * toString(MaskOp);
-	const char * toString(GfxChunkId);
 	const char * toString(GfxFlip);
+	const char * toString(CanvasRef);
 
 //=========================================================================
 //. endAutoSection

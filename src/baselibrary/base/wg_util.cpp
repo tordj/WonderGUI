@@ -312,13 +312,13 @@ int Util::gcd(int a, int b)
 		}
 		else
 		{
-			// top section
+			// bottom section
 			markedSectionY = YSections::Bottom;
 
 			source.y = _source.y + _source.h - sourceFrame.bottom;
 			source.h = sourceFrame.bottom;
 			dest.y = _dest.y + _dest.h - destFrame.bottom;
-			dest.h = destFrame.right;
+			dest.h = destFrame.bottom;
 		}
 
 		// Make coordinates relative area.
@@ -399,6 +399,7 @@ int Util::gcd(int a, int b)
 				output.bits = 24;
 				output.bIndexed = false;
 				output.bLinear = format == PixelFormat::BGR_8_linear ? true : false;
+				output.bBigEndian = false;
 
 				output.R_bits = 8;
 				output.G_bits = 8;
@@ -410,7 +411,6 @@ int Util::gcd(int a, int b)
 				output.B_loss = 0;
 				output.A_loss = 8;
 
-	#if IS_LITTLE_ENDIAN
 				output.R_mask = 0xFF0000;
 				output.G_mask = 0xFF00;
 				output.B_mask = 0xFF;
@@ -420,17 +420,7 @@ int Util::gcd(int a, int b)
 				output.G_shift = 8;
 				output.B_shift = 0;
 				output.A_shift = 0;
-	#else
-				output.R_mask = 0xFF;
-				output.G_mask = 0xFF00;
-				output.B_mask = 0xFF0000;
-				output.A_mask = 0x0;
 
-				output.R_shift = 0;
-				output.G_shift = 8;
-				output.B_shift = 16;
-				output.A_shift = 0;
-	#endif
 				return true;
 
 			case PixelFormat::BGRX_8:
@@ -441,6 +431,7 @@ int Util::gcd(int a, int b)
 				output.bits = 32;
 				output.bIndexed = false;
 				output.bLinear = format == PixelFormat::BGRX_8_linear ? true : false;
+				output.bBigEndian = false;
 
 				output.R_bits = 8;
 				output.G_bits = 8;
@@ -452,7 +443,6 @@ int Util::gcd(int a, int b)
 				output.B_loss = 0;
 				output.A_loss = 8;
 
-#if IS_LITTLE_ENDIAN
 				output.A_mask = 0x00000000;
 				output.R_mask = 0xFF0000;
 				output.G_mask = 0xFF00;
@@ -462,17 +452,7 @@ int Util::gcd(int a, int b)
 				output.R_shift = 16;
 				output.G_shift = 8;
 				output.B_shift = 0;
-#else
-				output.A_mask = 0x00;
-				output.R_mask = 0xFF00;
-				output.G_mask = 0xFF0000;
-				output.B_mask = 0xFF000000;
 
-				output.A_shift = 0;
-				output.R_shift = 8;
-				output.G_shift = 16;
-				output.B_shift = 24;
-#endif
 				return true;
 
 
@@ -484,6 +464,7 @@ int Util::gcd(int a, int b)
 				output.bits = 32;
 				output.bIndexed = false;
 				output.bLinear = format == PixelFormat::BGRA_8_linear ? true : false;
+				output.bBigEndian = false;
 
 				output.R_bits = 8;
 				output.G_bits = 8;
@@ -495,7 +476,6 @@ int Util::gcd(int a, int b)
 				output.B_loss = 0;
 				output.A_loss = 0;
 
-	#if IS_LITTLE_ENDIAN
 				output.A_mask = 0xFF000000;
 				output.R_mask = 0xFF0000;
 				output.G_mask = 0xFF00;
@@ -505,17 +485,7 @@ int Util::gcd(int a, int b)
 				output.R_shift = 16;
 				output.G_shift = 8;
 				output.B_shift = 0;
-	#else
-				output.A_mask = 0xFF;
-				output.R_mask = 0xFF00;
-				output.G_mask = 0xFF0000;
-				output.B_mask = 0xFF000000;
 
-				output.A_shift = 0;
-				output.R_shift = 8;
-				output.G_shift = 16;
-				output.B_shift = 24;
-	#endif
 				return true;
 
 			case PixelFormat::BGRA_4_linear:
@@ -523,6 +493,7 @@ int Util::gcd(int a, int b)
 				output.bits = 16;
 				output.bIndexed = false;
 				output.bLinear = true;
+				output.bBigEndian = false;
 
 				output.R_bits = 4;
 				output.G_bits = 4;
@@ -534,7 +505,6 @@ int Util::gcd(int a, int b)
 				output.B_loss = 4;
 				output.A_loss = 4;
 
-#if IS_LITTLE_ENDIAN
 				output.A_mask = 0xF000;
 				output.R_mask = 0x0F00;
 				output.G_mask = 0x00F0;
@@ -544,17 +514,7 @@ int Util::gcd(int a, int b)
 				output.R_shift = 8;
 				output.G_shift = 4;
 				output.B_shift = 0;
-#else
-				output.A_mask = 0x00F0;
-				output.R_mask = 0x000F;
-				output.G_mask = 0xF000;
-				output.B_mask = 0x0F00;
 
-				output.A_shift = 4;
-				output.R_shift = 0;
-				output.G_shift = 12;
-				output.B_shift = 8;
-#endif
 				return true;
 
 			case PixelFormat::BGR_565_linear:
@@ -562,6 +522,7 @@ int Util::gcd(int a, int b)
 				output.bits = 16;
 				output.bIndexed = false;
 				output.bLinear = true;
+				output.bBigEndian = false;
 
 				output.R_bits = 5;
 				output.G_bits = 6;
@@ -573,7 +534,6 @@ int Util::gcd(int a, int b)
 				output.B_loss = 3;
 				output.A_loss = 8;
 
-#if IS_LITTLE_ENDIAN
 				output.A_mask = 0x0000;
 				output.R_mask = 0xF800;
 				output.G_mask = 0x07E0;
@@ -583,24 +543,45 @@ int Util::gcd(int a, int b)
 				output.R_shift = 11;
 				output.G_shift = 5;
 				output.B_shift = 0;
-#else
+
+				return true;
+
+			case PixelFormat::RGB_565_bigendian:
+				output.format = format;
+				output.bits = 16;
+				output.bIndexed = false;
+				output.bLinear = true;
+				output.bBigEndian = true;
+
+				output.R_bits = 5;
+				output.G_bits = 6;
+				output.B_bits = 5;
+				output.A_bits = 0;
+
+				output.R_loss = 3;
+				output.G_loss = 2;
+				output.B_loss = 3;
+				output.A_loss = 8;
+
 				output.A_mask = 0x0000;
-				output.R_mask = 0x00F8;
-				output.G_mask = 0xE007;
-				output.B_mask = 0x1F00;
+				output.R_mask = 0x001F;
+				output.G_mask = 0x07E0;
+				output.B_mask = 0xF100;
 
 				output.A_shift = 0;
-				output.R_shift = 3;
-				output.G_shift = 13;
-				output.B_shift = 8;
-#endif
+				output.R_shift = 0;
+				output.G_shift = 5;
+				output.B_shift = 13;
+
 				return true;
+
 
 
 			case PixelFormat::A_8:
 				output.format = format;
 				output.bits = 8;
 				output.bIndexed = false;
+				output.bBigEndian = false;
 
 				output.R_bits = 0;
 				output.G_bits = 0;
@@ -631,6 +612,7 @@ int Util::gcd(int a, int b)
 				output.bits = 8;
 				output.bIndexed = true;
 				output.bLinear = format == PixelFormat::CLUT_8_linear ? true : false;
+				output.bBigEndian = false;
 
 				output.R_bits = 8;
 				output.G_bits = 8;

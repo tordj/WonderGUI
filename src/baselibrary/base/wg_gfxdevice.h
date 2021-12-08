@@ -62,12 +62,25 @@ namespace wg
 		int		hold;      // Value for extending the line if it is too short (or completely missing).
 	};
 
+	struct CanvasInfo
+	{
+		CanvasInfo() {};
+		CanvasInfo( CanvasRef _ref, Surface_p _pSurface, SizeI _size ) :
+			ref(_ref),
+			pSurface(_pSurface),
+		size(_size) {}
+		
+		CanvasRef	ref = CanvasRef::None;
+		Surface_p	pSurface = nullptr;
+		SizeI		size;
+	};
+
+
 	//____ GfxDevice __________________________________________________________
 
 	class GfxDevice : public Object
 	{
 	public:
-		friend class GfxStreamPlayer;
 
 		//.____ Identification __________________________________________
 
@@ -79,22 +92,22 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		virtual SurfaceFactory_p	surfaceFactory() = 0;
-
+		
 		//.____ Geometry _________________________________________________
 
-		inline bool			beginCanvasUpdate( const RectI& canvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
-		inline bool			beginCanvasUpdate(Surface * pCanvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
-		void				endCanvasUpdate();
-		inline Surface_p	canvas() const { return m_pCanvas; }
-		inline SizeI		canvasSize() const { return m_canvasSize; }
-		inline CanvasLayers_p canvasLayers() const { return m_pCanvasLayers; }
+		virtual const CanvasInfo&	canvas() const { return m_canvas; }
+
+		inline 	SizeI	canvasSize() const { return m_canvas.size; }
+		virtual SizeI	canvasSize(CanvasRef ref) const = 0;
+
+		inline CanvasLayers_p 		canvasLayers() const { return m_pCanvasLayers; }
 
 		//.____ State _________________________________________________
 
-		bool				setClipList(int nRectangles, const RectI * pRectangles);
-		void				clearClipList();
-		bool				pushClipList(int nRectangles, const RectI* pRectangles);
-		bool				popClipList();
+		virtual bool		setClipList(int nRectangles, const RectI * pRectangles);
+		virtual void		clearClipList();
+		virtual bool		pushClipList(int nRectangles, const RectI* pRectangles);
+		virtual bool		popClipList();
 
 		inline const RectI*	clipList() const { return m_pClipRects; }
 		inline int			clipListSize() const { return m_nClipRects; }
@@ -115,7 +128,7 @@ namespace wg
 		virtual void		setMorphFactor(float factor);
 		float				morphFactor() const { return m_morphFactor; }
 
-		void				setRenderLayer(int layer);
+		virtual void		setRenderLayer(int layer);
 		int					renderLayer() const { return m_renderLayer; }
 
 		//.____ Rendering ________________________________________________
@@ -126,6 +139,11 @@ namespace wg
 		virtual bool	isIdle();
 		virtual void	flush();
 
+        inline bool     beginCanvasUpdate( CanvasRef canvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
+        inline bool     beginCanvasUpdate( Surface * pCanvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
+        virtual void    endCanvasUpdate();
+
+        
 		// Draw methods.
 
 		virtual void	fill(HiColor col);
@@ -221,7 +239,7 @@ namespace wg
 		void	_genCurveTab();
 		void	_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset);
 
-		bool	_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer);
+		virtual bool _beginCanvasUpdate(CanvasRef ref, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer);
 		void	_clearRenderLayer();						// Initializes and possibly clear render layer. 
 
 
@@ -237,14 +255,14 @@ namespace wg
 		struct StashedClipList
 		{
 			int				nClipRects;
-			const RectI* pClipRects;
+			const RectI* 	pClipRects;
 			RectI			clipBounds;
 		};
 
 		struct StashedCanvas
 		{
+			CanvasInfo		canvas;
 			CanvasLayers_p	pCanvasLayers;
-			Surface_p		pCanvas;
 			StashedClipList	updateRects;
 			StashedClipList	clipRects;
 			int				renderLayer;
@@ -255,7 +273,6 @@ namespace wg
 			bool			bTintGradient;
 			BlendMode		blendMode;
 			float			morphFactor;
-			SizeI			canvasSize;
 
 			Surface_p		layerSurfaces[CanvasLayers::c_maxLayers];		// Should maybe be a separate stack...
 		};
@@ -265,9 +282,10 @@ namespace wg
 
 		//
 
+		CanvasInfo		m_canvas;
+		CanvasInfo		m_dummyCanvas;			// Returned when calling canvas() with an undefined reference.
 		CanvasLayers_p	m_pCanvasLayers;
 
-		Surface_p	m_pCanvas;
 		Surface_p	m_pBlitSource;
 
 		int			m_renderLayer = 0;
@@ -290,19 +308,18 @@ namespace wg
 		RectI		m_tintGradientRect = { 0,0,0,0 };
 		bool		m_bTintGradient = false;
 
-		SizeI		m_canvasSize = { 0,0 };
 		bool        m_bRendering = false;
 	};
 
 
-	bool GfxDevice::beginCanvasUpdate(const RectI& canvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
+	bool GfxDevice::beginCanvasUpdate(CanvasRef ref, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
 	{
-		return _beginCanvasUpdate(canvas, nullptr, nUpdateRects, pUpdateRects, pLayers, startLayer);
+		return _beginCanvasUpdate(ref, nullptr, nUpdateRects, pUpdateRects, pLayers, startLayer);
 	}
 
-	bool GfxDevice::beginCanvasUpdate(Surface* pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
+	bool GfxDevice::beginCanvasUpdate(Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
 	{
-		return _beginCanvasUpdate(pCanvas->size(), pCanvas, nUpdateRects, pUpdateRects, pLayers, startLayer);
+		return _beginCanvasUpdate( CanvasRef::None, pCanvas, nUpdateRects, pUpdateRects, pLayers, startLayer);
 	}
 
 

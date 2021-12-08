@@ -110,7 +110,7 @@ namespace wg
 			else
 			{
 				m_pAlphaLayer = new uint8_t[size.w*size.h];
-				std::memset(m_pAlphaLayer, 0, size.w*size.h*2);
+				std::memset(m_pAlphaLayer, 0, size.w*size.h);
 			}
 		}
 	}
@@ -158,7 +158,8 @@ namespace wg
 		Blob_p pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 4096 : 0) );
 
 		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
-		_sendPixels(size, (uint8_t*)pBlob->data(), pitch);
+
+        // No _sendPixels() needed here, _copyFrom() calls pullPixels() which calls _sendPixels().
 
 
 		if (m_pixelDescription.bits <= 8 || (flags & SurfaceFlag::Buffered))
@@ -203,10 +204,13 @@ namespace wg
 
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
+        m_inStreamId = _sendCreateSurface(size, format, flags, pOther->clut());
+        
 		if (m_pixelDescription.bits <= 8 || (flags & SurfaceFlag::Buffered))
 		{
 			m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 4096 : 0));
 
+            // _copyFrom() implicitly calls _sendPixels().
 			_copyFrom(&m_pixelDescription, pixelbuffer.pPixels, pitch, RectI(size), RectI(size));
 
 			if (pOther->clut())
@@ -219,15 +223,15 @@ namespace wg
 		}
 		else
 		{
-			if (m_pixelDescription.A_bits == 0)
+            _sendPixels(size, pixelbuffer.pPixels, pitch);
+
+            if (m_pixelDescription.A_bits == 0)
 				m_pAlphaLayer = nullptr;
 			else
 				m_pAlphaLayer = _genAlphaLayer((char*)pixelbuffer.pPixels, pitch);
 		}
 
-		m_inStreamId = _sendCreateSurface(size, format, flags, pOther->clut());
 
-		_sendPixels(size, pixelbuffer.pPixels, pitch);
 		pOther->freePixelBuffer(pixelbuffer);
 	}
 
@@ -259,6 +263,21 @@ namespace wg
 			Surface::setScaleMode(mode);
 		}
 	}
+
+    //____ setTiling() __________________________________________________________
+
+    bool StreamSurface::setTiling( bool bTiling )
+    {
+        if (bTiling != m_bTiling)
+        {
+            *m_pStream << GfxStream::Header{ GfxChunkId::SetSurfaceTiling, 4 };
+            *m_pStream << m_inStreamId;
+            *m_pStream << bTiling;
+
+            Surface::setTiling(bTiling);
+        }
+        return true;
+    }
 
 	//____ isOpaque() ______________________________________________________________
 
@@ -310,7 +329,7 @@ namespace wg
 
 	void StreamSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		_sendPixels(buffer.rect.size(), buffer.pPixels, buffer.pitch);
+		_sendPixels(buffer.rect, buffer.pPixels, buffer.pitch);
 
 	}
 
@@ -481,7 +500,7 @@ namespace wg
 
 	//____ _sendCreateSurface() _______________________________________________
 
-	short StreamSurface::_sendCreateSurface(SizeI size, PixelFormat format, int flags, const Color8 * pClut )
+	uint16_t StreamSurface::_sendCreateSurface(SizeI size, PixelFormat format, int flags, const Color8 * pClut )
 	{
 		uint16_t surfaceId = m_pStream->allocObjectId();
 
@@ -508,7 +527,7 @@ namespace wg
 
 		//TODO: Support more than 8 bit alpha.
 
-		uint8_t * pDest = m_pAlphaLayer;
+		uint8_t * pDest = pAlphaLayer;
 		int pixelPitch = m_pixelDescription.bits / 8;
 		for (int y = 0; y < m_size.h; y++)
 		{
@@ -542,7 +561,7 @@ namespace wg
 			int chunkSize = min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
 			dataSize -= chunkSize;
 
-			*m_pStream << GfxStream::Header{ GfxChunkId::SurfaceData, chunkSize };
+			*m_pStream << GfxStream::Header{ GfxChunkId::SurfacePixels, chunkSize };
 
 			while (chunkSize > 0)
 			{

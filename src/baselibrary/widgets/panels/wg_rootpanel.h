@@ -64,8 +64,8 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static RootPanel_p	create();
-		static RootPanel_p	create(Surface* pCanvas, GfxDevice* pDevice = nullptr);
-		static RootPanel_p	create(const SizeI& pixelSize, GfxDevice* pDevice = nullptr);
+		static RootPanel_p	create(Surface* pCanvasSurface, GfxDevice* pDevice = nullptr);
+		static RootPanel_p	create(CanvasRef canvasRef, GfxDevice* pDevice = nullptr);
 
 		//.____ Components ____________________________________
 
@@ -114,10 +114,10 @@ namespace wg
 		bool				setGfxDevice( GfxDevice * pDevice );
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 
-		bool				setCanvas(Surface* pCanvas);
-		bool				setCanvas(const SizeI& pixelSize);
-		inline Surface_p	canvas() const { return m_pCanvas; }
-		inline SizeI		canvasSize() const { return m_canvasSize; }
+		bool				setCanvas(Surface* pCanvasSurface);
+		bool				setCanvas(CanvasRef canvasRef);
+		inline const CanvasInfo& canvasInfo() const { return m_canvas; }
+		inline SizeI		canvasSize() const { return m_canvas.size; }
 
 		void				setCanvasLayers( CanvasLayers * pLayers );
 		CanvasLayers_p		canvasLayers() const { return m_pCanvasLayers; }
@@ -135,8 +135,8 @@ namespace wg
 
 	protected:
 		RootPanel();
-		RootPanel(Surface* pCanvas, GfxDevice* pGfxDevice );
-		RootPanel(const SizeI& pixelSize, GfxDevice* pGfxDevice);
+		RootPanel(Surface* pCanvasSurface, GfxDevice* pGfxDevice );
+		RootPanel(CanvasRef canvasRef, GfxDevice* pGfxDevice);
 		~RootPanel();
 
 		// SlotHolder methods
@@ -227,8 +227,7 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 
 		GfxDevice_p			m_pGfxDevice;
-		Surface_p			m_pCanvas;
-		SizeI				m_canvasSize;		// Size of canvas in pixels, when m_pCanvas is null.
+		CanvasInfo			m_canvas;
 		CanvasLayers_p		m_pCanvasLayers;
 		Rect				m_geo;
 		bool				m_bHasGeo;

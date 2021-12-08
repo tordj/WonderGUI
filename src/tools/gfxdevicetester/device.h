@@ -144,7 +144,7 @@ public:
 
 	Surface_p canvas() const
 	{
-		return m_pOutputDevice->canvas();
+		return m_pOutputDevice->canvas().pSurface;
 	}
 
 private:

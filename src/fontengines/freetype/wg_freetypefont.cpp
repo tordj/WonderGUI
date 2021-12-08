@@ -24,16 +24,13 @@
    TODO: Separate glyph bitmap from glyph struct, not render or prio cache slot until bitmap is accessed (probably has more to do with Pen).
 */
 
-#include <array>
-#include <algorithm>
-#include <assert.h>
-
 #include <wg_mu.h>
 #include <wg_freetypefont.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
 #include <wg_base.h>
 #include <wg_context.h>
+#include <assert.h>
 
 
 #include <ft2build.h>
@@ -53,35 +50,18 @@ namespace wg
 
 	const TypeInfo FreeTypeFont::TYPEINFO = { "FreeTypeFont", &Font::TYPEINFO };
 
-	std::vector<FreeTypeFont*>	FreeTypeFont::s_instances;
-
+	int 				FreeTypeFont::s_instanceCounter = 0;
 	FT_Library			FreeTypeFont::s_freeTypeLibrary;
 
-	std::vector<FreeTypeFont::CacheSurf>	FreeTypeFont::s_cacheSurfaces[10];
-
-
-	uint32_t			FreeTypeFont::s_cacheSurfacesCreated = 0;
-	int					FreeTypeFont::s_cacheSize = 0;
-	int					FreeTypeFont::s_cacheLimit = 0;
-
-	const uint8_t		FreeTypeFont::s_categoryHeight[9] = { 8, 12, 16, 24, 32, 48, 64, 96, 128 };
-
-	const uint8_t		FreeTypeFont::s_sizeToCategory[129] = { 0,0,0,0,0,0,0,0,0,
-																1,1,1,1,
-																2,2,2,2,
-																3,3,3,3,3,3,3,3,
-																4,4,4,4,4,4,4,4,
-																5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
-																6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
-																7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
-																8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8 };
+	Chain<FreeTypeFont::CacheSlot>	FreeTypeFont::s_cacheSlots[c_glyphSlotSizes];
+	Chain<FreeTypeFont::CacheSurf>	FreeTypeFont::s_cacheSurfaces;
 
 
 	//____ constructor ____________________________________________________________
 
 	FreeTypeFont::FreeTypeFont( Blob_p pFontFile, int faceIndex )
 	{
-        if( s_instances.empty() )
+        if( s_instanceCounter == 0 )
         {
             FT_Error err = FT_Init_FreeType(&s_freeTypeLibrary);
             if (err != 0)
@@ -89,12 +69,17 @@ namespace wg
                 //TODO: Error handling!
             }
         }
-        s_instances.push_back(this);
+        s_instanceCounter++;
 
 		m_pFontFile = pFontFile;
+		m_accessCounter = 0;
 		m_size 			= 0;
 
-//		_growCachedFontSizes(c_maxFontSize);
+		for( int i = 0 ; i <= c_maxFontSize ; i++ )
+		{
+			m_cachedGlyphsIndex[i] = 0;
+			m_whitespaceAdvance[i] = 0;
+		}
 
 		FT_Error err = FT_New_Memory_Face(	s_freeTypeLibrary,
 											(const FT_Byte *)pFontFile->data(),
@@ -130,16 +115,24 @@ namespace wg
 
 	FreeTypeFont::~FreeTypeFont()
 	{
-		for( int size = 0 ; size < m_nCachedFontSizes ; size++ )
+		for( int size = 0 ; size <= c_maxFontSize ; size++ )
 		{
-			if (m_pCachedFontSizes[size] != nullptr)
-				delete m_pCachedFontSizes[size];
+			if( m_cachedGlyphsIndex[size] != 0 )
+			{
+				for( int page = 0 ; page < 256 ; page++ )
+				{
+					if( m_cachedGlyphsIndex[size][page] != 0 )
+						delete [] m_cachedGlyphsIndex[size][page];
+				}
+
+				delete [] m_cachedGlyphsIndex[size];
+			}
 		}
 
 		FT_Done_Face( m_ftFace );
 
-		std::remove(s_instances.begin(), s_instances.end(), this);
-        if( s_instances.empty() )
+        s_instanceCounter--;
+        if( s_instanceCounter == 0 )
         {
             clearCache();
             FT_Done_FreeType(s_freeTypeLibrary);
@@ -158,31 +151,26 @@ namespace wg
 
 	bool FreeTypeFont::setSize( MU size )
 	{
-		if( size == m_size )
+			if( size == m_size )
+				return true;
+
+			// Sanity check
+
+			if( size > c_maxFontSize || size < 0 )
+				return 0;
+
+			FT_Error err = FT_Set_Char_Size( m_ftFace, size.px()*64, 0, 0,0 );
+	//		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
+			if( err )
+			{
+				m_size = 0;
+				return false;
+			}
+
+
+			m_size = size;
+			_refreshRenderFlags();
 			return true;
-
-		if (size < 0)
-			return false;
-
-		int pxSize = size.px();
-
-		// Sanity check
-
-
-		FT_Error err = FT_Set_Char_Size( m_ftFace, pxSize*64, 0, 0,0 );
-//		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
-		if( err )
-		{
-			m_size = 0;
-			return false;
-		}
-
-
-		if (pxSize >= m_nCachedFontSizes)
-			_growCachedFontSizes(pxSize + 1);
-
-		m_size = size;
-		return true;
 	}
 
 
@@ -190,7 +178,7 @@ namespace wg
 
 	void FreeTypeFont::_refreshRenderFlags()
 	{
-		switch( m_renderMode )
+		switch( m_renderMode[m_size.px()] )
 		{
 			case RenderMode::Monochrome:
 				m_renderFlags = FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
@@ -210,11 +198,21 @@ namespace wg
 
 	//____ setRenderMode() ________________________________________________________
 
-	bool FreeTypeFont::setRenderMode( RenderMode mode )
+	bool FreeTypeFont::setRenderMode( RenderMode mode, int startSize, int endSize )
 	{
-		m_renderMode = mode;
+		if( startSize < 0 || startSize > endSize || startSize > c_maxFontSize )
+			return false;
+
+		if( endSize > c_maxFontSize )
+			endSize = c_maxFontSize;
+
+		for( int i = startSize ; i <= endSize ; i++ )
+			m_renderMode[i] =mode;
+
+		// Force update of m_renderFlags since current size might be affected
+
 		_refreshRenderFlags();
-		clearCache();
+
 		return true;
 	}
 
@@ -239,13 +237,7 @@ namespace wg
 	{
         int pxSize = m_size.px();
         
-		if (m_pCachedFontSizes[pxSize] == nullptr)
-		{
-			m_pCachedFontSizes[pxSize] = new CachedFontSize();
-		}
-
-
-		if( !m_pCachedFontSizes[pxSize]->whitespaceAdvance.qpix )
+		if( !m_whitespaceAdvance[pxSize].qpix )
 		{
 			FT_Error err;
 
@@ -256,10 +248,10 @@ namespace wg
 				return 0;
 
 			// Get and return advance
-			m_pCachedFontSizes[pxSize]->whitespaceAdvance = MU::fromPX(int(m_ftFace->glyph->advance.x >> 6));
+			m_whitespaceAdvance[pxSize] = MU::fromPX(int(m_ftFace->glyph->advance.x >> 6));
 		}
 
-        return m_pCachedFontSizes[pxSize]->whitespaceAdvance;
+        return m_whitespaceAdvance[pxSize];
 	}
 
 	//____ lineGap() ____________________________________________________________
@@ -377,11 +369,85 @@ namespace wg
 	}
 
 
+	/*
+	Glyph_p FreeTypeFont::getGlyph( uint16_t ch, int size )
+	{
+		size += m_sizeOffset;
 
+		// Sanity check
 
-	//____ _generateBitmap() _______________________________________________________
+		if( size > c_maxFontSize || size < 0 )
+			return 0;
 
-	void FreeTypeFont::_generateBitmap( MyGlyph * pGlyph )
+		// Get cached glyph if we have one
+
+		CacheSlot * pSlot = FindSlotInIndex( ch, size );
+		if( pSlot == 0 )
+		{
+			FT_Error err;
+
+			//-----------------------------------------
+			// Get empty cache slot and fill with glyph
+			//-----------------------------------------
+
+			// Set size for FreeType
+
+			if( m_ftCharSize != size )
+				if( !SetCharSize( size ) )
+					return 0;
+
+			// Load MyGlyph
+
+			FT_UInt char_index = FT_Get_Char_Index( m_ftFace, ch );
+			if( char_index == 0 )
+				return 0;			// We got index for missing glyph.
+
+			err = FT_Load_Glyph( m_ftFace, char_index, m_renderFlags );
+			if( err )
+				return 0;
+
+			// Get some details about the glyph
+
+			int width = m_ftFace->glyph->bitmap.width;
+			int height = m_ftFace->glyph->bitmap.rows;
+
+			int advance = m_ftFace->glyph->advance.x >> 6;
+			int xBearing = m_ftFace->glyph->bitmap_left;
+			int yBearing = -m_ftFace->glyph->bitmap_top;
+
+			// Get a cache slot
+
+			pSlot = getCacheSlot( width, height );
+			if( pSlot == 0 )
+				return 0;
+
+			// Fill in glyph details
+
+			pSlot->pOwner = this;
+			pSlot->size = size;
+			pSlot->character = ch;
+
+			pSlot->glyph.advance = advance;
+			pSlot->glyph.bearingX = xBearing;
+			pSlot->glyph.bearingY = yBearing;
+			pSlot->glyph.kerningIndex = char_index;
+			pSlot->glyph.pSurf = pSlot->pSurf->pSurf;
+			pSlot->glyph.rect = RectI(pSlot->rect.x, pSlot->rect.y, width, height);
+
+			//
+
+			CopyBitmap( &m_ftFace->glyph->bitmap, pSlot );	// Copy our glyph bitmap to the slot
+			AddSlotToIndex( ch, size, pSlot );				// Put a pointer in our index
+		}
+
+		TouchSlot( pSlot );								// Notify cache that we have accessed this one
+		return &pSlot->glyph;
+	}
+	*/
+
+	//____ _______________________________________________________
+
+	FreeTypeFont::CacheSlot * FreeTypeFont::_generateBitmap( MyGlyph * pGlyph )
 	{
 		FT_Error err;
 
@@ -394,14 +460,12 @@ namespace wg
 
 		// Load MyGlyph
 
-		err = FT_Load_Glyph( m_ftFace, pGlyph->kerningIndex(), FT_LOAD_RENDER | FT_LOAD_COLOR | m_renderFlags );
+		err = FT_Load_Glyph( m_ftFace, pGlyph->kerningIndex(), FT_LOAD_RENDER | m_renderFlags );
 		if( err )
         {
-			//TODO: Error handling!
-			
             if( bDifferentSize )
                 FT_Set_Char_Size( m_ftFace, m_size.px()*64, 0, 0,0 );
-            return;
+            return 0;
         }
 
 		// Get some details about the glyph
@@ -411,104 +475,138 @@ namespace wg
 
 		// Get a cache slot
 
-		_getCacheSlot( width, height, &pGlyph->bitmap );
+		CacheSlot * pSlot = getCacheSlot( width, height );
 
-		pGlyph->bitmap.bearingX = MU::fromPX(m_ftFace->glyph->bitmap_left);
-		pGlyph->bitmap.bearingY = MU::fromPX(-m_ftFace->glyph->bitmap_top);
+		if( pSlot )
+		{
+			// Fill in missing slot details
 
+			pSlot->pGlyph = pGlyph;
+			pSlot->bitmap.rect = RectI(pSlot->rect.x, pSlot->rect.y, width, height);
+			pSlot->bitmap.bearingX = MU::fromPX(m_ftFace->glyph->bitmap_left);
+			pSlot->bitmap.bearingY = MU::fromPX(-m_ftFace->glyph->bitmap_top);
 
-		_copyBitmap( &m_ftFace->glyph->bitmap, &pGlyph->bitmap );	// Copy our glyph bitmap to the slot
+			//
+
+			_copyBitmap( &m_ftFace->glyph->bitmap, pSlot );	// Copy our glyph bitmap to the slot
+		}
 
         if( bDifferentSize )
             FT_Set_Char_Size( m_ftFace, m_size.px()*64, 0, 0,0 );
+
+
+		return pSlot;
 	}
+
 
 
 	//____ _copyBitmap() ____________________________________________________________
 
 	// Currently only supports 32-bit RGBA surfaces!
 
-	void FreeTypeFont::_copyBitmap( FT_Bitmap * pFTBitmap, GlyphBitmap * pGlyphBitmap )
+	void FreeTypeFont::_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 	{
-		Surface_p pSurf = pGlyphBitmap->pSurface;
+		Surface_p pSurf = pSlot->bitmap.pSurface;
 
-		auto pixbuf = pSurf->allocPixelBuffer(pGlyphBitmap->rect);
+		auto pixbuf = pSurf->allocPixelBuffer(pSlot->rect);
 
-		assert( pSurf->pixelDescription()->format == PixelFormat::A_8);
+		assert( pSurf->pixelDescription()->format == PixelFormat::BGRA_8_sRGB || pSurf->pixelDescription()->format == PixelFormat::BGRA_8_linear);
 
 		// Copy glyph bitmap into alpha channel of slot, making sure to clear any
 		// left over area of slots alpha channel.
 
 
-		switch( pFTBitmap->pixel_mode )
+		switch( m_renderFlags )
 		{
-			case (FT_PIXEL_MODE_MONO):
-				_copyA1ToA8( pFTBitmap->buffer, pFTBitmap->width, pFTBitmap->rows, pFTBitmap->pitch, pixbuf.pPixels, pixbuf.pitch );
+			case (FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO):
+				_copyA1ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, (uint32_t*)pixbuf.pPixels, pSlot->rect.w, pSlot->rect.h, pixbuf.pitch );
 				break;
-			case (FT_PIXEL_MODE_GRAY):
-				_copyA8ToA8( pFTBitmap->buffer, pFTBitmap->width, pFTBitmap->rows, pFTBitmap->pitch, pixbuf.pPixels, pixbuf.pitch );
+			case (FT_LOAD_TARGET_NORMAL):
+			case (FT_LOAD_TARGET_LIGHT):
+				_copyA8ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, (uint32_t*)pixbuf.pPixels, pSlot->rect.w, pSlot->rect.h, pixbuf.pitch );
 				break;
-			case (FT_PIXEL_MODE_BGRA):
-				_copyBGRA8ToBGRA8(pFTBitmap->buffer, pFTBitmap->width, pFTBitmap->rows, pFTBitmap->pitch, pixbuf.pPixels, pixbuf.pitch);
-				break;
+
 			default:
 				assert( false );
 		}
+
+
+		// Testcode
+	/*
+		int i = 128;
+		for( unsigned int y = 0 ; y < pSurf->getHeight() ; y++ )
+		{
+			for( unsigned int x = 0 ; x < pSurf->GetWidth() ; x++ )
+				pBuffer[y*dest_pitch + x] = i++;
+		}
+	*/
 
 		pSurf->pullPixels(pixbuf);
 		pSurf->freePixelBuffer(pixbuf);
 	}
 
 
-	//____ _copyA8ToA8() _____________________________________________________
+	//____ _copyA8ToRGBA8() _____________________________________________________
 
-	void FreeTypeFont::_copyA8ToA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
-										uint8_t * pDest, int dest_pitch )
+	void FreeTypeFont::_copyA8ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
+										uint32_t * pDest, int dest_width, int dest_height, int dest_pitch )
 	{
-		for( int y = 0 ; y < src_height ; y++ )
+
+		int y = 0;
+		for( ; y < src_height ; y++ )
 		{
-			for( int x = 0 ; x < src_width ; x++ )
-				pDest[x] = pSrc[x];
+			int x = 0;
+			for( ; x < src_width ; x++ )
+				pDest[x] = (int(pSrc[x]) << 24) | 0x00FFFFFF;
+
+			for( ; x < dest_width ; x++ )
+				pDest[x] = 0;
 
 			pSrc  += src_pitch;
-			pDest += dest_pitch;
+			pDest += dest_pitch/4;
 		}
 
+		for( ; y < dest_height ; y++ )
+		{
+			for( int x = 0 ; x < dest_width ; x++ )
+				pDest[x] = 0;
+
+			pDest += dest_pitch/4;
+		}
 	}
 
-	//____ _copyA1ToA8() _____________________________________________________
+	//____ _copyA1ToRGBA8() _____________________________________________________
 
-	void FreeTypeFont::_copyA1ToA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
-										uint8_t * pDest, int dest_pitch )
+	void FreeTypeFont::_copyA1ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
+										uint32_t * pDest, int dest_width, int dest_height, int dest_pitch )
 	{
 		uint8_t lookup[2] = { 0, 255 };
 
-		for( int y = 0 ; y < src_height ; y++ )
+		int y = 0;
+		for( ; y < src_height ; y++ )
 		{
-			for( int x = 0 ; x < src_width ; x++ )
-				pDest[x] = lookup[(((pSrc[x>>3])<<(x&7))&0xFF)>>7];
-		
+
+			int x = 0;
+			for( ; x < src_width ; x++ )
+			{
+				pDest[x] = (int(lookup[(((pSrc[x>>3])<<(x&7))&0xFF)>>7]) << 24) | 0xFFFFFF;
+			}
+
+			for( ; x < dest_width ; x++ )
+				pDest[x] = 0;
+
 			pSrc  += src_pitch;
-			pDest += dest_pitch;
+			pDest += dest_pitch/4;
 		}
-	}
 
-	//____ _copyBGRA8ToBGRA8() _____________________________________________________
-
-	void FreeTypeFont::_copyBGRA8ToBGRA8(const uint8_t* pSrc, int src_width, int src_height, int src_pitch,
-		uint8_t* pDest, int dest_pitch)
-	{
-		for (int y = 0; y < src_height; y++)
+		for( ; y < dest_height ; y++ )
 		{
-			for (int x = 0; x < src_width*4; x++)
-				pDest[x] = pSrc[x];
+			for( int x = 0 ; x < dest_width ; x++ )
+				pDest[x] = 0;
 
-			pSrc += src_pitch;
-			pDest += dest_pitch;
+			pDest += dest_pitch/4;
 		}
-
 	}
-
 
 	//___ _addGlyph() ________________________________________________________
 
@@ -516,234 +614,162 @@ namespace wg
 	{
 		int szOfs = size.px();
 
-		if (m_pCachedFontSizes[szOfs] == nullptr)
-			m_pCachedFontSizes[szOfs] = new CachedFontSize();
-
-		if (m_pCachedFontSizes[szOfs]->page[ch >> 7] == nullptr)
-			m_pCachedFontSizes[szOfs]->page[ch >> 7] = new MyGlyph[128];
-
-		assert( !m_pCachedFontSizes[szOfs]->page[ch>>7][ch & 0x7F].isInitialized() );
-
-		m_pCachedFontSizes[szOfs]->page[ch >> 7][ch & 0x7F] = MyGlyph( ch, size, advance, kerningIndex, this );
-
-		return &m_pCachedFontSizes[szOfs]->page[ch >> 7][ch & 0x7F];
-	}
-
-	//____ setCacheLimit() ________________________________________________________
-
-	void FreeTypeFont::setCacheLimit(int maxBytes)
-	{
-		if (maxBytes < 0)
+		if( m_cachedGlyphsIndex[szOfs] == 0 )
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "You can not set cache to a negative size!", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
-			return;
+			MyGlyph ** p = new MyGlyph*[256];
+			memset( p, 0, 256*sizeof(MyGlyph*) );
+
+			m_cachedGlyphsIndex[szOfs] = p;
 		}
 
-		s_cacheLimit = maxBytes;
+		if( m_cachedGlyphsIndex[szOfs][ch>>8] == 0 )
+		{
+			MyGlyph * p = new MyGlyph[256];
 
-		if (s_cacheLimit > 0 && s_cacheSize > s_cacheLimit)
-			_truncateCache(s_cacheLimit);
+			m_cachedGlyphsIndex[szOfs][ch>>8] = p;
+		}
+
+		assert( !m_cachedGlyphsIndex[szOfs][ch>>8][ch&0xFF].isInitialized() );
+
+		m_cachedGlyphsIndex[szOfs][ch>>8][ch&0xFF] = MyGlyph( ch, size, advance, kerningIndex, this );
+
+		return &m_cachedGlyphsIndex[szOfs][ch>>8][ch&0xFF];
 	}
 
 	//____ clearCache() ___________________________________________________________
 
 	void FreeTypeFont::clearCache()
 	{
-		// Forget all cache references
+		for( int i = 0 ; i < c_glyphSlotSizes ; i++ )
+		{
+			CacheSlot * p = s_cacheSlots[i].first();
+			while( p )
+			{
+				if( p->pGlyph )
+					p->pGlyph->slotLost();
+				p = p->next();
+			}
 
-		for (auto pFont : s_instances)
-			pFont->_forgetAllCacheReferences();
+			s_cacheSlots[i].clear();
+		}
 
-		// Clear cache
-
-		for (int i = 0; i < 10; i++)
-			s_cacheSurfaces[i].clear();
-
-		s_cacheSize = 0;
-
+		s_cacheSurfaces.clear();
 	}
 
-	//____ _forgetAllCacheReferences() _____________________________________________
 
-	void FreeTypeFont::_forgetAllCacheReferences()
+	//____ getCacheSlot() _________________________________________________________
+
+	FreeTypeFont::CacheSlot * FreeTypeFont::getCacheSlot( int width, int height )
 	{
-		auto pSizes = m_pCachedFontSizes;
+		// Calculate size and index
 
-		for (int size = 0; size < m_nCachedFontSizes; size++)
+		int size = ((width>height ? width:height)+c_glyphPixelSizeQuantization-1);
+
+		if( size < c_minGlyphPixelSize )
+			size = c_minGlyphPixelSize;
+
+		assert( size <= c_maxGlyphPixelSize );
+
+		int index = (size-c_minGlyphPixelSize) / c_glyphPixelSizeQuantization;
+
+		// Make sure we have
+
+		CacheSlot * pSlot = s_cacheSlots[index].last();
+		if( pSlot == 0 || pSlot->pGlyph != 0 )
 		{
-			if (m_pCachedFontSizes[size] != nullptr)
-			{
-				auto pPages = m_pCachedFontSizes[size]->page;
+			addCacheSlots( &s_cacheSlots[index], SizeI(size,size), 16 );
+			pSlot = s_cacheSlots[index].last();
+		}
 
-				for (int page = 0; page < 512; page++)
-				{
-					if (pPages[page] != nullptr)
-					{
-						auto pGlyphs = pPages[page];
-						for( int glyph = 0 ; glyph < 128 ; glyph++ )
-							pGlyphs[glyph].bitmapLost();
-					}
-				}
+		return pSlot;
+	}
+
+
+	//____ addCacheSlots() ___________________________________________________
+	/*
+		Creates a new cache surface of 2^x size big enough to at least hold the
+		specified minimum amount of slots. Fills the surface with white and alpha 0.
+		Creates all slots that can fit into this surface and adds them to the specified chain.
+	*/
+
+	int FreeTypeFont::addCacheSlots( Chain<CacheSlot> * pChain, const SizeI& slotSize, int minSlots )
+	{
+		// Create and add the cache surface
+
+		SizeI texSize = calcTextureSize( slotSize, 16 );
+
+		Surface_p pSurf = Base::activeContext()->surfaceFactory()->createSurface( texSize, wg::PixelFormat::BGRA_8 );
+
+		CacheSurf * pCache = new CacheSurf( pSurf );
+		s_cacheSurfaces.pushBack( pCache );
+
+		// Create the slots
+
+		RectI	slot( 0, 0, slotSize );
+		int		nSlots = 0;
+
+		for( slot.y = 0 ; slot.y + slotSize.h < texSize.h ; slot.y += slotSize.h + 1 )
+		{
+			for( slot.x = 0 ; slot.x + slotSize.w < texSize.w ; slot.x += slotSize.w + 1 )
+			{
+				CacheSlot * pSlot = new CacheSlot( pCache, slot );
+				pChain->pushBack(pSlot);
+				nSlots++;
 			}
 		}
-	}
 
-	//____ _forgetCacheReferences() _____________________________________________
-
-	void FreeTypeFont::_forgetCacheReferences( int nRemovedSurfaces, Surface * pRemovedSurfaces[] )
-	{
-		auto pSizes = m_pCachedFontSizes;
-
-		for (int size = 0; size < m_nCachedFontSizes; size++)
-		{
-			if (m_pCachedFontSizes[size] != nullptr)
-			{
-				auto pPages = m_pCachedFontSizes[size]->page;
-
-				for (int page = 0; page < 512; page++)
-				{
-					if (pPages[page] != nullptr)
-					{
-						auto pGlyphs = pPages[page];
-						for (int glyph = 0; glyph < 128; glyph++)
-						{
-							Surface* pGlyphSurf = pGlyphs[glyph].bitmap.pSurface;
-							if (pGlyphSurf)
-							{
-								for (int i = 0; i < nRemovedSurfaces; i++)
-								{
-									if (pGlyphSurf == pRemovedSurfaces[i])
-									{
-										pGlyphs[glyph].bitmapLost();
-										break;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		return nSlots;
 	}
 
 
-	//____ _getCacheSlot() _________________________________________________________
 
-	void FreeTypeFont::_getCacheSlot( int width, int height, GlyphBitmap * pBitmap )
+	//____ maxSlotsInSurface() ____________________________________________________
+
+	int FreeTypeFont::maxSlotsInSurface( const SizeI& surf, const SizeI& slot )
 	{
-		int category = height > 128 ? 9 : s_sizeToCategory[height];
+		int rows = (surf.w+1)/(slot.w+1);			// +1 since we need one pixel spacing between each slot.
+		int columns = (surf.h+1)/(slot.h+1);
 
-		CacheSurf * pCacheSurf;
+		return rows*columns;
+	}
 
-		if( category == 9  )
-			pCacheSurf = _addCacheSurface( category, width, height );
-		else if(s_cacheSurfaces[category].empty())
-			pCacheSurf = _addCacheSurface(category, 1024, s_categoryHeight[category]);
-		else 
+
+	//____ calcTextureSize() ______________________________________________________
+
+	SizeI FreeTypeFont::calcTextureSize( const SizeI& slotSize, int nSlots )
+	{
+		SizeI	surfSize( 128, 128 );
+
+		while( maxSlotsInSurface(surfSize, slotSize) < nSlots )
 		{
-			auto& ref = s_cacheSurfaces[category].back();
-			
-			if( ref.capacity - ref.used >= width )
-				pCacheSurf = &ref;
+			if( surfSize.w > surfSize.h )
+				surfSize.h *= 2;
+			else if( surfSize.w < surfSize.h )
+				surfSize.w *= 2;
 			else
-				pCacheSurf = _addCacheSurface( category, 1024, s_categoryHeight[category]);
-		}
-		
-		pBitmap->pSurface = pCacheSurf->pSurface;
-		pBitmap->rect.x = pCacheSurf->used;
-		pBitmap->rect.y = 0;
-		pBitmap->rect.w = width;
-		pBitmap->rect.h = height;
-		
-		pCacheSurf->used += width;
-	}
-
-	//____ _addCacheSurface() __________________________________________________
-
-	FreeTypeFont::CacheSurf * FreeTypeFont::_addCacheSurface( int category, int width, int height )
-	{
-		auto pFactory = Base::activeContext()->surfaceFactory();
-		
-		Surface_p pSurf;
-		
-		if( category == 9 )
-			pSurf = pFactory->createSurface( {width,height}, PixelFormat::A_8 );
-		else
-			pSurf = pFactory->createSurface( {width,s_categoryHeight[category]}, PixelFormat::A_8 );
-	
-		s_cacheSize += width * height;
-
-		s_cacheSurfaces[category].emplace_back(pSurf,width);
-		return &s_cacheSurfaces[category].back();
-	}
-
-	//____ _truncateCache() ___________________________________________________
-
-	void FreeTypeFont::_truncateCache(int maxSize)
-	{
-		Surface*	removedSurfaces[32];
-		int			nRemovedSurfaces = 0;
-
-		// Remove cache entries
-
-		while (s_cacheSize > maxSize && nRemovedSurfaces < 32 )
-		{
-			// Find category with oldest cache entry
-
-			uint32_t lowestCreationNb = s_cacheSurfacesCreated;
-			int oldestCat = -1;
-			for (int cat = 0; cat < 10; cat++)
 			{
-				if (!s_cacheSurfaces[cat].empty() && s_cacheSurfaces[cat].front().creationNb < lowestCreationNb)
-					oldestCat = cat;
+				if( maxSlotsInSurface( SizeI( surfSize.w, surfSize.h*2 ), slotSize ) >
+					maxSlotsInSurface( SizeI( surfSize.w*2, surfSize.h ), slotSize ) )
+					surfSize.h *= 2;
+				else
+					surfSize.w *= 2;
 			}
-
-			auto& toRemove = s_cacheSurfaces[oldestCat].front();
-
-			// Decreaste s_cacheSize
-
-			SizeI pixels = toRemove.pSurface->size();
-			s_cacheSize -= pixels.w * pixels.h;
-
-			// Remove surface and add to list of removed.
-
-			removedSurfaces[nRemovedSurfaces++] = toRemove.pSurface;
-			s_cacheSurfaces[oldestCat].erase(s_cacheSurfaces[oldestCat].begin());
 		}
 
-		// Remove references to bitmaps in removed cache surfaces
-
-		for (auto pFont : s_instances)
-			pFont->_forgetCacheReferences(nRemovedSurfaces, removedSurfaces);
-
-		// Continue recursively if we need to remove more than we could in this round.
-
-		if (s_cacheSize > maxSize)
-			_truncateCache(maxSize);
+		return surfSize;
 	}
 
 
-	//____ _growCachedFontSizes() ________________________________________________
 
-	void FreeTypeFont::_growCachedFontSizes(int newSize)
+
+	FreeTypeFont::CacheSurf::~CacheSurf()
 	{
-		auto pNew = new CachedFontSize*[newSize];
-
-		for (int i = 0; i < m_nCachedFontSizes; i++)
-			pNew[i] = m_pCachedFontSizes[i];
-
-		for (int i = m_nCachedFontSizes; i < newSize; i++)
-			pNew[i] = nullptr;
-
-		delete m_pCachedFontSizes;
-		m_pCachedFontSizes = pNew;
-		m_nCachedFontSizes = newSize;
 	}
-
 
 	FreeTypeFont::MyGlyph::MyGlyph()
-	: Glyph( 0, 0, nullptr )
+	: Glyph( 0, 0, 0 )
 	{
+		m_pSlot = 0;
 		m_size = 0;
 		m_character = 0;
 	}
@@ -752,19 +778,31 @@ namespace wg
 	FreeTypeFont::MyGlyph::MyGlyph( uint16_t character, MU size, MU advance, uint32_t kerningIndex, Font * pFont )
 	: Glyph( advance, kerningIndex, pFont )
 	{
+		m_pSlot = 0;
 		m_size = size;
 		m_character = character;
 	}
 
+	FreeTypeFont::MyGlyph::~MyGlyph()
+	{
+		if(  m_pSlot != 0 )
+		{
+			m_pSlot->pGlyph = 0;
+			m_pSlot->access = 0;
+
+			m_pSlot->moveLast();
+		}
+	}
 
 	const GlyphBitmap * FreeTypeFont::MyGlyph::getBitmap()
 	{
-		if( bitmap.pSurface == nullptr )
+		if( !m_pSlot )
 		{
-			((FreeTypeFont*)m_pFont)->_generateBitmap( this );
+			m_pSlot = ((FreeTypeFont*)m_pFont)->_generateBitmap( this );
 		}
 
-		return &bitmap;
+		((FreeTypeFont*)m_pFont)->_touchSlot(m_pSlot);
+		return &m_pSlot->bitmap;
 	}
 
 } // namespace wg

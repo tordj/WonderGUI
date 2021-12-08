@@ -24,9 +24,12 @@
 #include <memory.h>
 #include <wg_surface.h>
 #include <wg_dataset.h>
+#include <wg_util.h>
 
 namespace wg
 {
+	using namespace Util;
+
 
 	const TypeInfo Surface::TYPEINFO = { "Surface", &Object::TYPEINFO };
 
@@ -225,6 +228,15 @@ namespace wg
 					((col.g >> m_pixelDescription.G_loss) << m_pixelDescription.G_shift) |
 					((col.b >> m_pixelDescription.B_loss) << m_pixelDescription.B_shift) |
 					((col.a >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
+
+			if( m_pixelDescription.bBigEndian == isSystemBigEndian() )
+			{
+
+				if( m_pixelDescription.bits == 16 )
+					pix = endianSwap( (uint16_t) pix );
+				else if( m_pixelDescription.bits == 16 )
+					pix = endianSwap( pix );
+			}
 		}
 		return pix;
 	}
@@ -248,6 +260,15 @@ namespace wg
 	{
 		if (m_pixelDescription.bIndexed)
 			return m_pClut[pixel];
+
+		if( m_pixelDescription.bBigEndian == isSystemBigEndian() )
+		{
+
+			if( m_pixelDescription.bits == 16 )
+				pixel = endianSwap( (uint16_t) pixel );
+			else if( m_pixelDescription.bits == 16 )
+				pixel = endianSwap( pixel );
+		}
 
 		Color8 col;
 
@@ -443,6 +464,8 @@ namespace wg
 
 	bool Surface::_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color8 * pCLUT )
 	{
+		//TODO: Support endian-swap.
+
 
 		if( srcRect.w <= 0 || dstRect.w <= 0 )
 			return false;
