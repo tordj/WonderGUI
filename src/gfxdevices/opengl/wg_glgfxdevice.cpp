@@ -564,6 +564,27 @@ namespace wg
 		return m_pSurfaceFactory;
 	}
 
+	//____ setDefaultCanvas() ___________________________________________
+
+	bool GlGfxDevice::setDefaultCanvas(SizeI pixelSize)
+	{
+		m_defaultCanvasSize = pixelSize;
+		return true;
+	}
+
+	//____ canvasSize() _________________________________________________
+
+	SizeI GlGfxDevice::canvasSize(CanvasRef ref) const
+	{
+		if (ref == CanvasRef::Default)
+			return m_defaultCanvasSize;
+		else
+		{
+			//TODO: Error handling!
+			return SizeI();
+		}
+	}
+
 	//____ _canvasWasChanged() ________________________________________________
 
 	void GlGfxDevice::_canvasWasChanged()
@@ -581,13 +602,13 @@ namespace wg
 		bool bClear = false;
 		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer] == nullptr)
 		{
-			m_layerSurfaces[m_renderLayer] = GlSurface::create(m_canvasSize, m_pCanvasLayers->layerFormat(m_renderLayer), SurfaceFlag::Canvas);
+			m_layerSurfaces[m_renderLayer] = GlSurface::create(m_canvas.size, m_pCanvasLayers->layerFormat(m_renderLayer), SurfaceFlag::Canvas);
 			bClear = true;
 		}
 
-		if (!m_pCanvas && m_renderLayer == 0)
+		if (!m_canvas.pSurface && m_renderLayer == 0)
 		{
-			m_canvasYstart = m_canvasSize.h;
+			m_canvasYstart = m_canvas.size.h;
 			m_canvasYmul = -1;
 			pRenderSurface = nullptr;
 		}
@@ -635,7 +656,7 @@ namespace wg
 
 		//
 
-		_setCanvas(static_cast<GlSurface*>(pRenderSurface), m_canvasSize.w, m_canvasSize.h);
+		_setCanvas(static_cast<GlSurface*>(pRenderSurface), m_canvas.size.w, m_canvas.size.h);
 
 //		if( m_blendMode != m_activeBlendMode)
 			_setBlendMode(m_blendMode);

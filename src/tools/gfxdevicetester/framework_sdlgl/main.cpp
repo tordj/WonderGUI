@@ -233,7 +233,9 @@ bool init_wondergui()
 
 	auto pGfxDevice = GlGfxDevice::create(0);
 
-	g_pRoot = RootPanel::create(g_windowSize*pContext->scale(), pGfxDevice);
+	pGfxDevice->setDefaultCanvas(g_windowSize * pContext->scale());
+
+	g_pRoot = RootPanel::create( CanvasRef::Default, pGfxDevice);
 
 //	g_pRoot->setDebugMode(true);
 

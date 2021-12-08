@@ -315,7 +315,10 @@ int main(int argc, char** argv)
 
 #ifdef USE_OPEN_GL
 	pCanvas = nullptr;
-	pDevice = GlGfxDevice::create();
+	auto pGlDevice = GlGfxDevice::create();
+	pGlDevice->setDefaultCanvas({ width,height });
+	pDevice = pGlDevice;
+
 	pFactory = GlSurfaceFactory::create();
 
 #else
@@ -332,9 +335,11 @@ int main(int argc, char** argv)
 		Blob_p pBlob = Blob::create(pScreen->pixels, nullptr);
 
 		pCanvas = SoftSurface::create( SizeI(width, height), type, pBlob, pScreen->pitch, SurfaceFlag::Canvas);
-		pDevice = SoftGfxDevice::create();
-		pFactory = SoftSurfaceFactory::create();
+		auto pSoftDevice = SoftGfxDevice::create();
+		pSoftDevice->defineCanvas(CanvasRef::Default, pCanvas);
+		pDevice = pSoftDevice;
 
+		pFactory = SoftSurfaceFactory::create();
 	}
 #endif
 
@@ -420,11 +425,7 @@ int main(int argc, char** argv)
 	SurfaceFactory_p pSurfaceFactory	= Base::activeContext()->surfaceFactory();
 
 
-	RootPanel_p pRoot;
-	if( pCanvas )
-		pRoot = RootPanel::create(pCanvas, pGfxDevice);
-	else
-		pRoot = RootPanel::create({ width,height }, pGfxDevice);
+	RootPanel_p pRoot = RootPanel::create(CanvasRef::Default, pGfxDevice);
 
 	auto pCanvasLayers = CanvasLayers::create({ PixelFormat::A_8, PixelFormat::BGRA_8, PixelFormat::BGRA_8 });
 	pRoot->setCanvasLayers(pCanvasLayers);
