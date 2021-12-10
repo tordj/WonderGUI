@@ -98,7 +98,7 @@ namespace wg
 	{
 		int sizeOfs = (m_readOfs + 2) % c_bufferSize;
 
-		return { (GfxChunkId)(*(short*)&m_pBuffer[m_readOfs]), *(short*)&m_pBuffer[sizeOfs] };
+		return { (GfxChunkId)(*(uint16_t*)&m_pBuffer[m_readOfs]), *(uint16_t*)&m_pBuffer[sizeOfs] };
 	}
 
 

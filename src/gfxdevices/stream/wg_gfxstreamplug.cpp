@@ -225,7 +225,7 @@ namespace wg
 	//____ _pushShort() _______________________________________________________
 
 	void GfxStreamPlug::_pushShort(short s)
-	{
+	{        
 		*(short*)(&m_pBuffer[m_writeOfs]) = s;
 		m_writeOfs = (m_writeOfs + 2) % m_bufferSize;
 	}
@@ -337,7 +337,7 @@ namespace wg
 	{
 		int sizeOfs = (readOfs + 2) % pObj->m_bufferSize;
 
-		return { (GfxChunkId)(*(short*)&pObj->m_pBuffer[readOfs]), *(short*)&pObj->m_pBuffer[sizeOfs] };
+		return { (GfxChunkId)(*(uint16_t*)&pObj->m_pBuffer[readOfs]), *(uint16_t*)&pObj->m_pBuffer[sizeOfs] };
 	}
 
 	//____ OutStreamProxy::_pullChar() ______________________________________________________

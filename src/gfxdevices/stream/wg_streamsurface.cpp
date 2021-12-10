@@ -504,7 +504,7 @@ namespace wg
 	{
 		uint16_t surfaceId = m_pStream->allocObjectId();
 
-		int blockSize = 10 + (pClut ? 4096 : 0);
+		uint16_t blockSize = 10 + (pClut ? 4096 : 0);
 
 		*m_pStream << GfxStream::Header{ GfxChunkId::CreateSurface, blockSize };
 		*m_pStream << surfaceId;
@@ -558,7 +558,7 @@ namespace wg
 
 		while( dataSize > 0 )
 		{
-			int chunkSize = min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
+			uint16_t chunkSize = min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
 			dataSize -= chunkSize;
 
 			*m_pStream << GfxStream::Header{ GfxChunkId::SurfacePixels, chunkSize };
