@@ -117,7 +117,7 @@ namespace wg
 		struct Header
 		{
 			GfxChunkId	type;
-			int			size;
+			uint16_t	size;
 		};
 
 		struct DataChunk

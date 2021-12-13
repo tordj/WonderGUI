@@ -75,7 +75,7 @@ namespace wg
 		SurfaceFactory_p	m_pSurfaceFactory;				// SurfaceFactory that can be used by Widgets when needed.
 
 		float				m_scale				= 1.f;		// Valid values are 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2, 2.25, etc <= 8.0
-		bool				m_bGammaCorrection = false;		// 
+		bool				m_bGammaCorrection = true;		// 
 	};
 
 } //namespace

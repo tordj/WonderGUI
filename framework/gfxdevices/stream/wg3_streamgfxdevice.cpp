@@ -160,7 +160,7 @@ namespace wg
     {
         GfxDevice::setClipList(nRectangles, pRectangles);
         
-        (*m_pStream) << GfxStream::Header{ GfxChunkId::SetClipList, nRectangles * 16 };
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::SetClipList, (uint16_t) (nRectangles * 16) };
         (*m_pStream) << GfxStream::DataChunk{ nRectangles * 16, pRectangles };
     }
 
@@ -179,7 +179,7 @@ namespace wg
     {
         GfxDevice::pushClipList(nRectangles, pRectangles);
         
-        (*m_pStream) << GfxStream::Header{ GfxChunkId::PushClipList, nRectangles * 16 };
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::PushClipList, (uint16_t) (nRectangles * 16) };
         (*m_pStream) << GfxStream::DataChunk{ nRectangles * 16, pRectangles };
     }
 
@@ -373,7 +373,7 @@ namespace wg
 
         while (nCoords > 0)
         {
-            (*m_pStream) << GfxStream::Header{ GfxChunkId::PlotPixels, chunkCoords * 16 };
+            (*m_pStream) << GfxStream::Header{ GfxChunkId::PlotPixels, (uint16_t) (chunkCoords * 16) };
             (*m_pStream) << GfxStream::DataChunk{ chunkCoords * 8, pCoords };
             (*m_pStream) << GfxStream::DataChunk{ chunkCoords * 8, pColors };
 
@@ -543,7 +543,7 @@ namespace wg
     {
         int size = 16 + 20 + 20 + 8 + 8;
         
-        (*m_pStream) << GfxStream::Header{ GfxChunkId::DrawWave, size };
+        (*m_pStream) << GfxStream::Header{ GfxChunkId::DrawWave, (uint16_t) size };
         (*m_pStream) << dest;
 
         (*m_pStream) << pTopBorder->length;
@@ -570,7 +570,7 @@ namespace wg
 
     void StreamGfxDevice::flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip)
     {
-        int size = 16 + 20 + 20 + 8 + 8 + 2;
+        uint16_t size = 16 + 20 + 20 + 8 + 8 + 2;
         
         (*m_pStream) << GfxStream::Header{ GfxChunkId::FlipDrawWave, size };
         (*m_pStream) << dest;
@@ -624,9 +624,9 @@ namespace wg
         
         while (nSamples > 0)
         {
-            int chunkSamples = min(nSamples, maxSamplesPerChunk);
+            uint16_t chunkSamples = min(nSamples, maxSamplesPerChunk);
 
-            (*m_pStream) << GfxStream::Header{ GfxChunkId::EdgeSamples ,chunkSamples*4 };
+            (*m_pStream) << GfxStream::Header{ GfxChunkId::EdgeSamples , (uint16_t) (chunkSamples*4) };
             (*m_pStream) << GfxStream::DataChunk{ chunkSamples*4, pSamples };
 
             pSamples += chunkSamples;
@@ -654,7 +654,7 @@ namespace wg
 
     void StreamGfxDevice::drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
     {
-        int size = 16 + 4 + 4 + 4 + 8 + 8 + 2 + nSlices*(4+8);
+        uint16_t size = 16 + 4 + 4 + 4 + 8 + 8 + 2 + nSlices*(4+8);
         
         (*m_pStream) << GfxStream::Header{ GfxChunkId::DrawElipse, size };
         (*m_pStream) << canvas;
@@ -690,7 +690,7 @@ namespace wg
                 break;
         }
 
-        int size = 16 + 4 + 4 + 2 + nColors*8;
+        uint16_t size = 16 + 4 + 4 + 2 + nColors*8;
 
         (*m_pStream) << GfxStream::Header{ GfxChunkId::DrawSegments, size };
         (*m_pStream) << dest;
@@ -723,7 +723,7 @@ namespace wg
                 break;
         }
 
-        int size = 16 + 4 + 4 + 2 + 2 + nColors*8;
+        uint16_t size = 16 + 4 + 4 + 2 + 2 + nColors*8;
 
         (*m_pStream) << GfxStream::Header{ GfxChunkId::FlipDrawSegments, size };
         (*m_pStream) << dest;
@@ -742,7 +742,7 @@ namespace wg
 
     void StreamGfxDevice::blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const NinePatch& patch)
     {
-        int size = 16 + 16 + ( 16 + 16 + 10 + 10 );
+        uint16_t size = 16 + 16 + ( 16 + 16 + 10 + 10 );
 
         (*m_pStream) << GfxStream::Header{ GfxChunkId::BlitNinePatch, size };
         (*m_pStream) << dstRect;
@@ -803,7 +803,7 @@ namespace wg
 			return false;
 		}
 		
-        int size = 2 + 2 + 4 + nUpdateRects * 16;
+        uint16_t size = 2 + 2 + 4 + nUpdateRects * 16;
 
         (*m_pStream) << GfxStream::Header{ GfxChunkId::BeginCanvasUpdate, size };
         (*m_pStream) << canvasRef;

@@ -839,7 +839,7 @@ enum class CanvasInit 		//. autoExtras
 
 //____ CanvasRef ____________________________________________________________
 
-	enum class CanvasRef
+	enum class CanvasRef			//.autoExtras
 	{
 		None,
 		Default,

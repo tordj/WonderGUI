@@ -69,9 +69,7 @@ MetalGfxDevice::MetalGfxDevice()
         _initTables();
         
         //
-        
-        m_viewportSize = {0,0};
-        
+                
         NSError *error = nil;
         NSString *shaderSource = [[NSString alloc] initWithUTF8String:shaders];
                 
@@ -331,6 +329,20 @@ MetalGfxDevice::MetalGfxDevice()
         return m_pSurfaceFactory;
 	}
 
+	//____ canvasSize() ____________________________________________________________
+
+	SizeI MetalGfxDevice::canvasSize(CanvasRef ref) const
+	{
+		if( ref == CanvasRef::Default )
+			return m_defaultCanvasSize;
+		else
+		{
+			//TODO: Error handling!
+			return SizeI();
+		}
+	}
+
+
     //____ _canvasWasChanged() ________________________________________________________
 
     void MetalGfxDevice::_canvasWasChanged()
@@ -347,11 +359,11 @@ MetalGfxDevice::MetalGfxDevice()
         bool bClear = false;
         if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer] == nullptr)
         {
-            m_layerSurfaces[m_renderLayer] = MetalSurface::create(m_canvasSize, m_pCanvasLayers->layerFormat(m_renderLayer), SurfaceFlag::Canvas);
+            m_layerSurfaces[m_renderLayer] = MetalSurface::create(m_canvas.size, m_pCanvasLayers->layerFormat(m_renderLayer), SurfaceFlag::Canvas);
             bClear = true;
         }
 
-        if (!m_pCanvas && m_renderLayer == 0)
+        if (!m_canvas.pSurface && m_renderLayer == 0)
         {
             pRenderSurface = nullptr;
         }
@@ -364,8 +376,8 @@ MetalGfxDevice::MetalGfxDevice()
 
         _endCommand();
         _beginStateCommand(Command::SetCanvas, 4 + sizeof(void*)/sizeof(int));
-        m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
-        m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
+        m_pCommandBuffer[m_commandOfs++] = m_canvas.size.w;
+        m_pCommandBuffer[m_commandOfs++] = m_canvas.size.h;
         m_pCommandBuffer[m_commandOfs++] = bClear ? (int) CanvasInit::Discard : (int) CanvasInit::Keep;
         m_pCommandBuffer[m_commandOfs++] = Color::Black.argb;
         * (void**)(m_pCommandBuffer+m_commandOfs) = pRenderSurface;
@@ -432,9 +444,9 @@ MetalGfxDevice::MetalGfxDevice()
         m_clipCurrOfs = -1;
     }
 
-    //____ _setRenderPassDescriptor() ___________________________________________________
+    //____ _setDefaultCanvas() ___________________________________________________
 
-    bool MetalGfxDevice::setBaseCanvasFormat( MTLRenderPassDescriptor* renderPassDesc, PixelFormat pixelFormat )
+    bool MetalGfxDevice::setDefaultCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI pixelSize, PixelFormat pixelFormat )
     {
         if( pixelFormat != PixelFormat::BGRA_8_linear && pixelFormat != PixelFormat::BGRA_8_sRGB && pixelFormat != PixelFormat::A_8 )
         {
@@ -442,8 +454,9 @@ MetalGfxDevice::MetalGfxDevice()
             return false;
         }
 
-        m_baseCanvasRenderPassDesc = renderPassDesc;
-        m_baseCanvasPixelFormat = pixelFormat;
+        m_defaultCanvasRenderPassDesc = renderPassDesc;
+        m_defaultCanvasPixelFormat = pixelFormat;
+		m_defaultCanvasSize = pixelSize;
         
         return true;
     }
@@ -2203,10 +2216,10 @@ MetalGfxDevice::MetalGfxDevice()
         else
         {
            
-            renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_baseCanvasRenderPassDesc];
+            renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_defaultCanvasRenderPassDesc];
             renderEncoder.label = @"GfxDeviceMetal Render Pass";
            
-            pixelFormat = m_baseCanvasPixelFormat;
+            pixelFormat = m_defaultCanvasPixelFormat;
         }
 
         [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double) width, (double) height, 0.0, 1.0 }];

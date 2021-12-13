@@ -337,7 +337,7 @@ namespace wg
 	{
 		int sizeOfs = (readOfs + 2) % pObj->m_bufferSize;
 
-		return { (GfxChunkId)(*(short*)&pObj->m_pBuffer[readOfs]), *(short*)&pObj->m_pBuffer[sizeOfs] };
+		return { (GfxChunkId)(*(uint16_t*)&pObj->m_pBuffer[readOfs]), *(uint16_t*)&pObj->m_pBuffer[sizeOfs] };
 	}
 
 	//____ OutStreamProxy::_pullChar() ______________________________________________________

@@ -66,7 +66,13 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		SurfaceFactory_p		surfaceFactory() override;
+		SurfaceFactory_p	surfaceFactory() override;
+
+		bool	setDefaultCanvas(SizeI pixelSize);
+
+		//.____ Geometry _________________________________________________
+
+		SizeI		canvasSize(CanvasRef ref) const override;
 
 		//.____ State _________________________________________________
 
@@ -201,6 +207,7 @@ namespace wg
 
 		CoordF			m_blitSourceSize;
 
+		SizeI			m_defaultCanvasSize;
 
 		// Device programs
 
@@ -396,8 +403,8 @@ namespace wg
 		m_cmdBeginVertexOfs = m_vertexOfs;
 		m_commandBuffer[m_commandOfs++] = (int) cmd;
 
-		if (m_pCanvas)
-			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
+		if (m_canvas.pSurface)
+			static_cast<GlSurface*>(m_canvas.pSurface.rawPtr())->m_bBackingBufferStale = true;
 	}
 
 	//____ _beginDrawCommandWithSource() ________________________________________________
@@ -415,8 +422,8 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		if( m_pBlitSource )
 			static_cast<GlSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
 
-		if( m_pCanvas)
-			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
+		if( m_canvas.pSurface)
+			static_cast<GlSurface*>(m_canvas.pSurface.rawPtr())->m_bBackingBufferStale = true;
 	}
 
 	//____ _beginDrawCommandWithInt() ________________________________________________
@@ -432,8 +439,8 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_commandBuffer[m_commandOfs++] = (int) cmd;
 		m_commandBuffer[m_commandOfs++] = data;
 
-		if (m_pCanvas)
-			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
+		if (m_canvas.pSurface)
+			static_cast<GlSurface*>(m_canvas.pSurface.rawPtr())->m_bBackingBufferStale = true;
 	}
 
 	//____ _beginClippedDrawCommand() ________________________________________________
@@ -451,7 +458,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 			{
 				RectI clip = m_pClipRects[i];
 				if( m_canvasYstart != 0 )
-					clip.y = m_canvasSize.h - (clip.y + clip.h);
+					clip.y = m_canvas.size.h - (clip.y + clip.h);
 
 				m_clipListBuffer[m_clipWriteOfs++] = clip;
 			}
@@ -464,8 +471,8 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_commandBuffer[m_commandOfs++] = m_clipCurrOfs;
 		m_commandBuffer[m_commandOfs++] = m_nClipRects;
 
-		if (m_pCanvas)
-			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
+		if (m_canvas.pSurface)
+			static_cast<GlSurface*>(m_canvas.pSurface.rawPtr())->m_bBackingBufferStale = true;
 	}
 
 
