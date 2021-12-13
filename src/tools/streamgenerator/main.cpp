@@ -43,7 +43,7 @@ void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, cons
 
 void playDelayFrames(GfxDevice_p pDevice, int nFrames);
 
-void playRectangleDance(GfxDevice_p pDevice, RectI canvas);
+void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvas);
 void playScroll(GfxDevice_p pDevice, RectI canvas );
 
 void playInitButtonRow(GfxDevice_p pDevice, RectI canvas);
@@ -220,21 +220,21 @@ int main ( int argc, char** argv )
 
     auto pOutput = Image::create();
     pOutput->skin = BoxSkin::create(2, Color8::Black, Color8::HotPink);
-    pBasePanel->slots.pushBack(pOutput, [](Widget * pWidget, Size sz) { return RectI(10,10,200,200); } );
+    pBasePanel->slots.pushBack(pOutput, [](Widget * pWidget, Size sz) { return RectI(10,10,244,244); } );
 
 
 	//------------------------------------------------------
 	// Setup streaming
 	//------------------------------------------------------
     
-    auto pStreamOutputCanvas = SoftSurface::create( {200,200}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
+    auto pStreamOutputCanvas = SoftSurface::create( {240,240}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
     pGfxDevice->defineCanvas(CanvasRef::Canvas_1, pStreamOutputCanvas );
 
     
 	auto pStreamPlug = GfxStreamPlug::create();
 
 	auto pStreamDevice = StreamGfxDevice::create(pStreamPlug->input);
-    pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {200,200} );
+    pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {240,240} );
 
 	auto pSurfaceFactory = StreamSurfaceFactory::create(pStreamPlug->input);
 
@@ -261,7 +261,7 @@ int main ( int argc, char** argv )
 	// Record stream
 	//------------------------------------------------------
 
-    playRectangleDance( pStreamDevice, SizeI(200,200) );
+    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
     
 /*
 	char * pWaxBeg = pWrite;
@@ -652,21 +652,22 @@ void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSD
 
 //____ playRectangleDance() _________________________________________________
 
-void playRectangleDance(GfxDevice_p pDevice, RectI canvas )
+void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvasRef )
 {
 	int ticker = 0;
 	SizeI spriteSize(30, 30);
-	SizeI moveDim(canvas.w - spriteSize.w, canvas.h - spriteSize.h);
+    SizeI canvasSize = pDevice->canvasSize(canvasRef);
+	SizeI moveDim(canvasSize.w - spriteSize.w, canvasSize.h - spriteSize.h);
 
 	while (ticker < 600)
 	{
 		pDevice->beginRender();
-        pDevice->beginCanvasUpdate(CanvasRef::Canvas_1);
+        pDevice->beginCanvasUpdate(canvasRef);
         
-		pDevice->fill( canvas, Color::Black);
-		pDevice->fill({ canvas.pos() + positionSprite(moveDim, ticker, 0, 3),spriteSize }, Color::Red);
-		pDevice->fill({ canvas.pos() + positionSprite(moveDim, ticker, 1, 3),spriteSize }, Color::Green);
-		pDevice->fill({ canvas.pos() + positionSprite(moveDim, ticker, 2, 3),spriteSize }, Color::Blue);
+		pDevice->fill(Color::Black);
+		pDevice->fill({ positionSprite(moveDim, ticker, 0, 3),spriteSize }, Color::Red);
+		pDevice->fill({ positionSprite(moveDim, ticker, 1, 3),spriteSize }, Color::Green);
+		pDevice->fill({ positionSprite(moveDim, ticker, 2, 3),spriteSize }, Color::Blue);
 
         pDevice->endCanvasUpdate();
 		pDevice->endRender();
