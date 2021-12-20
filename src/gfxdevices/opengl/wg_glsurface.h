@@ -114,7 +114,7 @@ namespace wg
 
 		static bool	_isBlueprintValid( const Blueprint& bp, Surface * pOther = nullptr );
 		void		_setPixelDetails( PixelFormat format );
-		void		_setupGlTexture(const Blueprint& bp, void * pPixelsToUpload, int pitch);
+		void		_setupGlTexture(void * pPixelsToUpload, int pitch);
 		void		_updateAlphaMap(const PixelBuffer& buffer, const RectI& bufferRect);
 
 		int			m_bPendingReads = false;					// Set if there are queued GL commands that will use surface as source. Active GlGfxDevice needs to be flushed before we modify.

@@ -33,7 +33,7 @@
 #include "../app.h"
 
 
-bool		init_system( Rect windowGeo );
+bool		init_system( Rect windowGeo, float scale );
 void		exit_system();
 
 bool		process_system_events(const RootPanel_p& pRoot);
@@ -46,7 +46,9 @@ void		exit_wondergui();
 MouseButton translateSDLMouseButton(Uint8 button);
 
 
-SizeI				g_windowSize;
+Size				g_windowPointSize;
+SizeI				g_windowPixelSize;
+float				g_scale;
 
 SDL_Window *		g_pSDLWindow = nullptr;
 
@@ -131,7 +133,7 @@ public:
 	}
 
 	wg::Blob_p		loadBlob(const char* pPath) override;
-	wg::Surface_p	loadSurface(const char* pPath, SurfaceFactory* pFactory, int flags = 0) override;
+	wg::Surface_p	loadSurface(const char* pPath, SurfaceFactory* pFactory, const Surface::Blueprint& bp = Surface::Blueprint() ) override;
 
 protected:
 	void			convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat);
@@ -150,9 +152,12 @@ int main(int argc, char *argv[] )
 
 	// Get apps window size before we continue
 
-	g_windowSize = pApp->startWindowSize();
+	g_windowPointSize = pApp->startWindowSize();
+	g_scale = 1.f;
+	g_windowPixelSize = SizeI(g_windowPointSize * g_scale);
 
-	if (!init_system({ 20,20, g_windowSize }))
+
+	if (!init_system({ 20,20, g_windowPointSize }, g_scale ))
 		return -1;
 	
 	if (!init_wondergui() )
@@ -227,14 +232,15 @@ bool init_wondergui()
 	Base::init(nullptr);
 
 	Context_p pContext = Context::create();
-    pContext->setScale(1.0);
     pContext->setSurfaceFactory(GlSurfaceFactory::create());
 	pContext->setGammaCorrection(true);
 	Base::setActiveContext(pContext);
 
 	auto pGfxDevice = GlGfxDevice::create(0);
 
-	pGfxDevice->setDefaultCanvas(g_windowSize * pContext->scale());
+	int scale = 64;
+
+	pGfxDevice->setDefaultCanvas(g_windowPixelSize*64,  scale);
 
 	g_pRoot = RootPanel::create( CanvasRef::Default, pGfxDevice);
 
@@ -255,7 +261,7 @@ void exit_wondergui()
 
 //____ init_system() _______________________________________________________
 
-bool init_system( Rect windowGeo )
+bool init_system( Rect windowGeo, float scale )
 {
 	// initialize SDL video
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -274,7 +280,7 @@ bool init_system( Rect windowGeo )
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
 
     
-	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x.px(), windowGeo.y.px(), windowGeo.w.px(), windowGeo.h.px(), SDL_WINDOW_OPENGL /*| SDL_WINDOW_ALLOW_HIGHDPI*/);
+	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x, windowGeo.y, windowGeo.w, windowGeo.h, SDL_WINDOW_OPENGL /* | SDL_WINDOW_ALLOW_HIGHDPI */);
 	if( pWin == nullptr )
 	{
 		printf("Unable to create SDL window: %s\n", SDL_GetError());
@@ -357,7 +363,7 @@ void update_window_rects(const Rect* pRects, int nRects)
 
 	for (int i = 0; i < nRects; i++)
 	{
-		SDL_Rect r = { pRects[i].x.px(), pRects[i].y.px(), pRects[i].w.px(), pRects[i].h.px() };
+		SDL_Rect r = { (int) pRects[i].x, (int) pRects[i].y, (int) pRects[i].w, (int) pRects[i].h };
 		rects.push_back(r);
 	}
 
@@ -382,7 +388,7 @@ bool process_system_events(const RootPanel_p& pRoot)
 			return false;
 
 		case SDL_MOUSEMOTION:
-			pInput->setPointer(pRoot, Coord(MU::fromPX(e.motion.x), MU::fromPX(e.motion.y)));
+			pInput->setPointer(pRoot, Coord(e.motion.x, e.motion.y));
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
@@ -515,8 +521,11 @@ Blob_p MyAppVisitor::loadBlob(const char* pPath)
 
 //____ loadSurface() ______________________________________________________
 
-Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory, int flags)
+Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory, const Surface::Blueprint& _bp)
 {
+	Surface::Blueprint bp = _bp;
+
+
 	PixelDescription format;
 
 	auto pSDLSurf = IMG_Load(pPath);
@@ -549,7 +558,11 @@ Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory,
 	if (!pFactory)
 		pFactory = Base::activeContext()->surfaceFactory();
 
-	auto pSurface = pFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), px, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format, flags, pClut);
+	bp.format = px;
+	bp.clut = pClut;
+	bp.size = { pSDLSurf->w, pSDLSurf->h };
+
+	auto pSurface = pFactory->createSurface(bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
 	SDL_FreeSurface(pSDLSurf);
 	return pSurface;
 }

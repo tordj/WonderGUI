@@ -679,7 +679,7 @@ namespace wg
 	{
 		Nearest,
 		Bilinear,
-		Undefined = -1			// Default to Bilinear if it is accelerated, otherwise Nearest.
+		Undefined			// Default to Bilinear if it is accelerated, otherwise Nearest.
 	};
 
 

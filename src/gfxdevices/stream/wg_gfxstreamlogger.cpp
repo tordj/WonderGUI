@@ -621,10 +621,10 @@ namespace wg
 			{
 				m_charStream << "DrawElipse" << std::endl;
 
-				RectF 	canvas;
-				float 	thickness;
+				RectSPX	canvas;
+				spx 	thickness;
 				HiColor	color;
-				float	outlineThickness;
+				spx		outlineThickness;
 				HiColor	outlineColor;
 
 				*m_pDecoder >> canvas;
@@ -709,6 +709,7 @@ namespace wg
 				RectI 		dstRect;
 				BorderI 	dstFrame;
 				NinePatch 	patch;
+				int			scale;
 					
 				*m_pDecoder >> dstRect;
 				*m_pDecoder >> dstFrame;
@@ -724,11 +725,14 @@ namespace wg
 				*m_pDecoder >> patch.rigidPartYLength;
 				*m_pDecoder >> patch.rigidPartYSections;
 
+				*m_pGfxStream >> scale;
+
 				_printRect(     "    dstRect        ", dstRect );
 				_printBorder(   "    dstRect        ", dstFrame );
 				_printRect(     "    patch.block    ", patch.block );
 				_printBorder(   "    patch.frame    ", patch.frame );
 				m_charStream << "    (rigid parts not printed)" << std::endl;
+				m_charStream << "    scale          = " << scale << std::endl;
 				break;
 			}
 				
@@ -746,50 +750,29 @@ namespace wg
 				m_charStream << "CreateSurface" << std::endl;
 
 				uint16_t	surfaceId;
-				PixelFormat	type;
-				SizeI		size;
-				uint16_t	flags;
+				Surface::Blueprint	bp;
 
 				*m_pDecoder >> surfaceId;
-				*m_pDecoder >> type;
-				*m_pDecoder >> size;
-				*m_pDecoder >> flags;
-
-
-				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
-				m_charStream << "    type        = " << toString(type) << std::endl;
-				m_charStream << "    size        = " << size.w << ", " << size.h << std::endl;
-				m_charStream << "    flags       = " << flags << std::endl;
-				break;
-			}
-
-			case GfxChunkId::SetSurfaceScaleMode:
-			{
-				m_charStream << "SetSurfaceScaleMode" << std::endl;
-
-				uint16_t	surfaceId;
-				ScaleMode	scaleMode;
-
-				*m_pDecoder >> surfaceId;
-				*m_pDecoder >> scaleMode;
+				*m_pDecoder >> bp.canvas;
+				*m_pDecoder >> bp.dynamic;
+				*m_pDecoder >> bp.format;
+				*m_pDecoder >> bp.id;
+				*m_pDecoder >> bp.mipmap;
+				*m_pDecoder >> bp.sampleMethod;
+				*m_pDecoder >> bp.scale;
+				*m_pDecoder >> bp.size;
+				*m_pDecoder >> bp.tiling;
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
-				m_charStream << "    scaleMode   = " << toString(scaleMode) << std::endl;
-				break;
-			}
-
-			case GfxChunkId::SetSurfaceTiling:
-			{
-				m_charStream << "SetSurfaceTiling" << std::endl;
-
-				uint16_t	surfaceId;
-				bool		bTiling;
-
-				*m_pDecoder >> surfaceId;
-				*m_pDecoder >> bTiling;
-
-				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
-				m_charStream << "    tiling      = " << bTiling << std::endl;
+				m_charStream << "    canvas      = " << bp.canvas << std::endl;
+				m_charStream << "    dynamic     = " << bp.dynamic << std::endl;
+				m_charStream << "    format      = " << toString(bp.format) << std::endl;
+				m_charStream << "    id          = " << bp.id << std::endl;
+				m_charStream << "    mipmap      = " << bp.mipmap << std::endl;
+				m_charStream << "    sampleMethod= " << toString(bp.sampleMethod) << std::endl;
+				m_charStream << "    scale       = " << bp.scale << std::endl;
+				m_charStream << "    size        = " << bp.size.w << ", " << bp.size.h << std::endl;
+				m_charStream << "    tiling      = " << bp.tiling << std::endl;
 				break;
 			}
 
@@ -1033,6 +1016,10 @@ namespace wg
 		m_charStream << header << " = " << border.top << ", " << border.right << ", " << border.bottom << ", " << border.left << std::endl;
 	}
 
+	void GfxStreamLogger::_printBorder(const char* header, const Border& border)
+	{
+		m_charStream << header << " = " << border.top << ", " << border.right << ", " << border.bottom << ", " << border.left << std::endl;
+	}
 
 
 } //namespace wg

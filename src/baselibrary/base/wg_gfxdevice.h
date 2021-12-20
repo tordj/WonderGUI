@@ -65,14 +65,16 @@ namespace wg
 	struct CanvasInfo
 	{
 		CanvasInfo() {};
-		CanvasInfo( CanvasRef _ref, Surface_p _pSurface, SizeI _size ) :
+		CanvasInfo( CanvasRef _ref, Surface_p _pSurface, SizeI _size, int _scale ) :
 			ref(_ref),
 			pSurface(_pSurface),
-		size(_size) {}
+			size(_size),
+			scale(_scale) {}
 		
 		CanvasRef	ref = CanvasRef::None;
 		Surface_p	pSurface = nullptr;
-		SizeI		size;
+		SizeSPX		size;
+		int			scale = 64;
 	};
 
 
@@ -91,16 +93,17 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
+		inline const CanvasInfo& canvas() const { return m_canvas; }
+		virtual const CanvasInfo& canvas(CanvasRef ref) const = 0;
+
+		inline CanvasLayers_p 		canvasLayers() const { return m_pCanvasLayers; }
+
 		virtual SurfaceFactory_p	surfaceFactory() = 0;
 		
 		//.____ Geometry _________________________________________________
 
-		virtual const CanvasInfo&	canvas() const { return m_canvas; }
-
 		inline 	SizeSPX	canvasSize() const { return m_canvas.size; }
-		virtual SizeSPX	canvasSize(CanvasRef ref) const = 0;
 
-		inline CanvasLayers_p 		canvasLayers() const { return m_pCanvasLayers; }
 
 		//.____ State _________________________________________________
 

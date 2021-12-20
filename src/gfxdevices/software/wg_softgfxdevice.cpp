@@ -2558,25 +2558,21 @@ namespace wg
 
 	bool SoftGfxDevice::defineCanvas( CanvasRef ref, SoftSurface * pSurface )
 	{
-		if( (pSurface->m_flags & SurfaceFlag::Canvas) == 0 )
-		{
-			//TODO: Error handling!
-			return false;
-		}
-		
+	
 		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (CanvasInfo& entry) { return (ref == entry.ref); } );
 
 		if( it == m_definedCanvases.end() )
 		{
 			if( pSurface )
-				m_definedCanvases.push_back( CanvasInfo( ref, pSurface, pSurface->size() ) );
+				m_definedCanvases.push_back( CanvasInfo( ref, pSurface, pSurface->pixelSize()*64, pSurface->scale() ) );
 		}
 		else
 		{
 			if( pSurface )
 			{
 				it->pSurface = pSurface;
-				it->size = pSurface->size();
+				it->size = pSurface->pixelSize()*64;
+				it->scale = pSurface->scale();
 			}
 			else
 			{
@@ -2587,6 +2583,17 @@ namespace wg
 		return true;
 	}
 
+	//____ canvas() _____________________________________________________
+
+	const CanvasInfo& SoftGfxDevice::canvas(CanvasRef ref) const
+	{
+		auto it = std::find_if(m_definedCanvases.begin(), m_definedCanvases.end(), [ref](const CanvasInfo& entry) { return (ref == entry.ref); });
+
+		if (it != m_definedCanvases.end())
+			return *it;
+
+		return m_dummyCanvas;
+	}
 
 	//____ surfaceFactory() _______________________________________________________
 
@@ -2596,18 +2603,6 @@ namespace wg
 			m_pSurfaceFactory = SoftSurfaceFactory::create();
 
 		return m_pSurfaceFactory;
-	}
-
-	//____ canvasSize() _____________________________________________________
-
-	SizeI SoftGfxDevice::canvasSize(CanvasRef ref) const
-	{
-		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (const CanvasInfo& entry) { return (ref == entry.ref); } );
-
-		if( it != m_definedCanvases.end() )
-			return it->pSurface->size();
-		
-		return SizeI();
 	}
 
 	//____ setTintColor() _____________________________________________________
@@ -6144,427 +6139,427 @@ namespace wg
 
 		// Init Blit Pass 2 Operation Table (4096 version)
 
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Blend, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Blend, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Add, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Add, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Add, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Add, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Add, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Subtract, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Subtract, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Subtract, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Subtract, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Subtract, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Multiply, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Multiply, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Multiply, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Multiply, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Multiply, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Min, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Min, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Min, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Min, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Min, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Max, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Max, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Max, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Max, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Max, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::A_8, false>;
-
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Blend, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Blend, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Blend, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Blend, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Add, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Add, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Add, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Add, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Add, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Subtract, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Subtract, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Multiply, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Multiply, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Min, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Min, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Min, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Min, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Min, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Max, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Max, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Max, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Max, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Max, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::A_8, false>;
-
-
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Replace, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Replace, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Blend, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Blend, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Blend, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Blend, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Blend, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Add, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Add, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Add, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Add, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Add, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Subtract, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Subtract, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Subtract, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Subtract, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Subtract, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Multiply, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Multiply, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Multiply, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Multiply, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Multiply, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Min, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Min, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Min, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Min, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Min, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Max, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Max, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Max, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Max, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Max, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::A_8, false>;
-
-
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Blend, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Blend, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Blend, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Blend, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Blend, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Add, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Add, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Add, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Add, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Add, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Subtract, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Subtract, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Subtract, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Subtract, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Subtract, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Multiply, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Multiply, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Multiply, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Multiply, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Multiply, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Min, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Min, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Min, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Min, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Min, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Max, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Max, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Max, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Max, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Max, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::A_8, false>;
-
-
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Blend, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Blend, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Blend, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Blend, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Blend, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Add, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Add, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Add, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Add, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Add, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Min, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Min, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Min, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Min, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Min, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Max, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Max, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Max, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Max, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Max, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::A_8, false>;
-
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGRA_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_565_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::RGB_565_bigendian, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGRA_4_linear, false>;
-		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::A_8, false>;
-
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Add, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Add, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Add, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Subtract, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Subtract, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Subtract, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Multiply, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Multiply, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Multiply, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Min, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Min, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Min, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Max, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Max, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Max, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_sRGB, false>;
-
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Add, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Add, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Add, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGR_8_sRGB, false>;
-
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGRA_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGR_8_sRGB, false>;
-		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Replace, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Replace, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Blend, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Blend, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Add, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Add, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Add, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Add, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Add, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Subtract, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Subtract, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Subtract, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Subtract, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Subtract, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Multiply, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Multiply, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Multiply, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Multiply, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Multiply, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Min, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Min, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Min, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Min, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Min, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Max, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Max, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Max, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Max, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Max, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Invert, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Invert, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::RGB_565_bigendian] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Invert, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Invert, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Invert, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Morph, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Morph, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Morph, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Morph, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Morph, PixelFormat::A_8, false>;
+
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Replace, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Replace, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Replace, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Blend, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Blend, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Blend, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Blend, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Add, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Add, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Add, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Add, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Add, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Subtract, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Subtract, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Multiply, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Multiply, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Min, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Min, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Min, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Min, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Min, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Max, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Max, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Max, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Max, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Max][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Max, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Invert, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Invert, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Invert, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Invert, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Morph, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Morph, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Morph, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Morph, PixelFormat::A_8, false>;
+
+
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Replace, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Replace, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Blend, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Blend, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Blend, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Blend, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Blend][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Blend, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Add, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Add, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Add, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Add, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Add][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Add, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Subtract, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Subtract, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Subtract, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Subtract, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Subtract][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Subtract, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Multiply, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Multiply, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Multiply, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Multiply, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Multiply][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Multiply, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Min, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Min, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Min, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Min, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Min][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Min, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Max, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Max, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Max, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Max, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Max][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Max, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Invert, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Invert, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Morph, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientX, BlendMode::Morph, PixelFormat::A_8, false>;
+
+
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Replace, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Replace, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Blend, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Blend, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Blend, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Blend, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Blend][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Blend, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Add, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Add, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Add, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Add, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Add][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Add, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Subtract, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Subtract, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Subtract, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Subtract, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Subtract][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Subtract, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Multiply, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Multiply, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Multiply, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Multiply, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Multiply][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Multiply, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Min, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Min, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Min, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Min, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Min][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Min, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Max, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Max, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Max, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Max, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Max][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Max, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Invert, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Invert, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Morph, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientY, BlendMode::Morph, PixelFormat::A_8, false>;
+
+
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Replace, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Replace, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Blend, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Blend, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Blend, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Blend, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Blend, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Blend][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Blend, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Add, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Add, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Add, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Add, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Add, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Add][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Add, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Subtract][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Subtract, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Multiply][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Multiply, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Min, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Min, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Min, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Min, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Min, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Min][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Min, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Max, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Max, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Max, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Max, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Max, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Max][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Max, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Invert, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Invert, PixelFormat::A_8, false>;
+
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGRA_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_565_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::RGB_565_bigendian] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Morph, PixelFormat::RGB_565_bigendian, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGRA_4_linear, false>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Undefined, TintMode::GradientXY, BlendMode::Morph, PixelFormat::A_8, false>;
+
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Add, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Add, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Add][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Add, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Subtract, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Subtract, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Subtract, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Multiply, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Multiply, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Multiply, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Min, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Min, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Min][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Min, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Max, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Max, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Max][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Max, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Invert, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Morph, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_sRGB, false>;
+
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Blend][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Blend, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Add, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Add, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Add][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Add, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Subtract, PixelFormat::BGR_8_sRGB, false>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGRA_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGR_8_sRGB, false>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Multiply, PixelFormat::BGR_8_sRGB, false>;
 
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Min, PixelFormat::BGRA_8_sRGB, false>;
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Min][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Undefined, TintMode::Flat, BlendMode::Min, PixelFormat::BGR_8_sRGB, false>;
@@ -7248,33 +7243,33 @@ namespace wg
 		// Init straight move to internal Operation Table
 		// (used as pass 1 Operation Table for straight blit)
 
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_8_linear][0] = _simple_blit < PixelFormat::BGRA_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_8_sRGB][0] = _simple_blit < PixelFormat::BGRA_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGRX_8_linear][0] = _simple_blit < PixelFormat::BGR_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGRX_8_sRGB][0] = _simple_blit < PixelFormat::BGR_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_8_linear][0] = _simple_blit < PixelFormat::BGR_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_8_sRGB][0] = _simple_blit < PixelFormat::BGR_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_565_linear][0] = _simple_blit < PixelFormat::BGR_565_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][0] = _simple_blit < PixelFormat::RGB_565_bigendian, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][0] = _simple_blit < PixelFormat::BGRA_4_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::CLUT_8_linear][0] = _simple_blit < PixelFormat::CLUT_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::CLUT_8_sRGB][0] = _simple_blit < PixelFormat::CLUT_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::A_8][0] = _simple_blit < PixelFormat::A_8, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_8_linear][0] = _simple_blit < PixelFormat::BGRA_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_8_sRGB][0] = _simple_blit < PixelFormat::BGRA_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGRX_8_linear][0] = _simple_blit < PixelFormat::BGR_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGRX_8_sRGB][0] = _simple_blit < PixelFormat::BGR_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_8_linear][0] = _simple_blit < PixelFormat::BGR_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_8_sRGB][0] = _simple_blit < PixelFormat::BGR_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_565_linear][0] = _simple_blit < PixelFormat::BGR_565_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][0] = _simple_blit < PixelFormat::RGB_565_bigendian, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][0] = _simple_blit < PixelFormat::BGRA_4_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::CLUT_8_linear][0] = _simple_blit < PixelFormat::CLUT_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::CLUT_8_sRGB][0] = _simple_blit < PixelFormat::CLUT_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::A_8][0] = _simple_blit < PixelFormat::A_8, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false>;
 
 		// Tiled versions
 
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_8_linear][1] = _simple_blit < PixelFormat::BGRA_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_8_sRGB][1] = _simple_blit < PixelFormat::BGRA_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGRX_8_linear][1] = _simple_blit < PixelFormat::BGR_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGRX_8_sRGB][1] = _simple_blit < PixelFormat::BGR_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_8_linear][1] = _simple_blit < PixelFormat::BGR_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_8_sRGB][1] = _simple_blit < PixelFormat::BGR_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_565_linear][1] = _simple_blit < PixelFormat::BGR_565_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][1] = _simple_blit < PixelFormat::RGB_565_bigendian, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][1] = _simple_blit < PixelFormat::BGRA_4_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::CLUT_8_linear][1] = _simple_blit < PixelFormat::CLUT_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::CLUT_8_sRGB][1] = _simple_blit < PixelFormat::CLUT_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
-		s_moveTo_internal_OpTab[(int)PixelFormat::A_8][1] = _simple_blit < PixelFormat::A_8, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_8_linear][1] = _simple_blit < PixelFormat::BGRA_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_8_sRGB][1] = _simple_blit < PixelFormat::BGRA_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGRX_8_linear][1] = _simple_blit < PixelFormat::BGR_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGRX_8_sRGB][1] = _simple_blit < PixelFormat::BGR_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_8_linear][1] = _simple_blit < PixelFormat::BGR_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_8_sRGB][1] = _simple_blit < PixelFormat::BGR_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGR_565_linear][1] = _simple_blit < PixelFormat::BGR_565_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][1] = _simple_blit < PixelFormat::RGB_565_bigendian, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][1] = _simple_blit < PixelFormat::BGRA_4_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::CLUT_8_linear][1] = _simple_blit < PixelFormat::CLUT_8_linear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::CLUT_8_sRGB][1] = _simple_blit < PixelFormat::CLUT_8_sRGB, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
+		s_moveTo_internal_OpTab[(int)PixelFormat::A_8][1] = _simple_blit < PixelFormat::A_8, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true>;
 
 
 		// Init straight move to BGRA_8_linear Operation Table
@@ -7549,11 +7544,11 @@ namespace wg
 		s_transformTo_internal_OpTab[(int)PixelFormat::BGR_565_linear][0][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::None>;
 		s_transformTo_internal_OpTab[(int)PixelFormat::BGR_565_linear][1][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::None>;
 
-		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::None>;
-		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::None>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::None>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::None>;
 
-		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::None>;
-		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::None>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::None>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::None>;
 
 		s_transformTo_internal_OpTab[(int)PixelFormat::CLUT_8_linear][0][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::None>;
 		s_transformTo_internal_OpTab[(int)PixelFormat::CLUT_8_linear][1][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::None>;
@@ -7587,11 +7582,11 @@ namespace wg
 		s_transformTo_internal_OpTab[(int)PixelFormat::BGR_565_linear][0][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Clip>;
 		s_transformTo_internal_OpTab[(int)PixelFormat::BGR_565_linear][1][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Clip>;
 
-		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::Clip>;
-		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::Clip>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Clip>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Clip>;
 
-		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::Clip>;
-		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::Clip>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Clip>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Clip>;
 
 		s_transformTo_internal_OpTab[(int)PixelFormat::CLUT_8_linear][0][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Clip>;
 		s_transformTo_internal_OpTab[(int)PixelFormat::CLUT_8_linear][1][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Clip>;
@@ -7625,11 +7620,11 @@ namespace wg
 		s_transformTo_internal_OpTab[(int)PixelFormat::BGR_565_linear][0][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Tile>;
 		s_transformTo_internal_OpTab[(int)PixelFormat::BGR_565_linear][1][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Tile>;
 
-		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::Tile>;
-		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::Tile>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Tile>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Tile>;
 
-		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::Tile>;
-		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::Unknown, EdgeOp::Tile>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Tile>;
+		s_transformTo_internal_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Tile>;
 
 		s_transformTo_internal_OpTab[(int)PixelFormat::CLUT_8_linear][0][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Tile>;
 		s_transformTo_internal_OpTab[(int)PixelFormat::CLUT_8_linear][1][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, EdgeOp::Tile>;
@@ -7664,11 +7659,11 @@ namespace wg
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
 
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
 
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
 
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;
@@ -7702,11 +7697,11 @@ namespace wg
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
 
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
 
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
 
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
@@ -7740,11 +7735,11 @@ namespace wg
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
 
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
 
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
-		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
+		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
 
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
 		s_transformTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
@@ -7779,11 +7774,11 @@ namespace wg
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
 
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
 
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
 
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::None>;
@@ -7817,11 +7812,11 @@ namespace wg
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
 
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
 
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
 
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;
@@ -7855,11 +7850,11 @@ namespace wg
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
 
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
 
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
-		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
+		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
 
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
 		s_transformBlendTo_BGRA_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;
@@ -7894,11 +7889,11 @@ namespace wg
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
 
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
 
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
 
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
@@ -7932,11 +7927,11 @@ namespace wg
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
 
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
 
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
 
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
@@ -7970,11 +7965,11 @@ namespace wg
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
 
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
 
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
-		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
+		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
 
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
 		s_transformTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
@@ -8009,11 +8004,11 @@ namespace wg
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
 
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
 
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
 
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::None>;
@@ -8047,11 +8042,11 @@ namespace wg
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
 
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
 
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
 
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Clip>;
@@ -8085,11 +8080,11 @@ namespace wg
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
 
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
 
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
-		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
+		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
 
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
 		s_transformBlendTo_BGRA_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_sRGB, EdgeOp::Tile>;
@@ -8124,11 +8119,11 @@ namespace wg
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
 
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
 
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
 
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::None>;
@@ -8162,11 +8157,11 @@ namespace wg
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
 
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
 
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
 
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
@@ -8200,11 +8195,11 @@ namespace wg
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
 
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
 
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
-		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
+		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
 
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
 		s_transformTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
@@ -8239,11 +8234,11 @@ namespace wg
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
 
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
 
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
 
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::None>;
@@ -8277,11 +8272,11 @@ namespace wg
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
 
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
 
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
 
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Clip>;
@@ -8315,11 +8310,11 @@ namespace wg
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][0][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGR_565_linear][1][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
 
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
 
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
-		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
+		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
 
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][0][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
 		s_transformBlendTo_BGR_8_linear_OpTab[(int)PixelFormat::CLUT_8_linear][1][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_linear, EdgeOp::Tile>;
@@ -8354,11 +8349,11 @@ namespace wg
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
 
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
 
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
 
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
@@ -8392,11 +8387,11 @@ namespace wg
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
 
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
 
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
 
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
@@ -8430,11 +8425,11 @@ namespace wg
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
 
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
 
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
-		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
+		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
 
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
 		s_transformTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
@@ -8469,11 +8464,11 @@ namespace wg
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][0] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
 
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][0] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
 
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][0] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
 
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][0] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::None>;
@@ -8507,11 +8502,11 @@ namespace wg
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][1] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
 
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][1] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
 
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][1] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
 
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][1] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Clip>;
@@ -8545,11 +8540,11 @@ namespace wg
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][0][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGR_565_linear][1][2] = _complex_blit < PixelFormat::BGR_565_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
 
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][0][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::RGB_565_bigendian][1][2] = _complex_blit < PixelFormat::RGB_565_bigendian, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
 
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
-		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, ScaleMode::Interpolate, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][0][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
+		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::BGRA_4_linear][1][2] = _complex_blit < PixelFormat::BGRA_4_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
 
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][0][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;
 		s_transformBlendTo_BGR_8_sRGB_OpTab[(int)PixelFormat::CLUT_8_linear][1][2] = _complex_blit < PixelFormat::CLUT_8_linear, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGR_8_sRGB, EdgeOp::Tile>;

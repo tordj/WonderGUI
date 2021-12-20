@@ -95,8 +95,6 @@ namespace wg
         EdgeSamples,
 
         CreateSurface,
-        SetSurfaceScaleMode,
-        SetSurfaceTiling,
         BeginSurfaceUpdate,
         SurfacePixels,
         EndSurfaceUpdate,

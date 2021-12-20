@@ -629,10 +629,10 @@ namespace wg
 			
 		case GfxChunkId::DrawElipse:
 		{
-			RectF 	canvas;
-			float 	thickness;
+			RectSPX	canvas;
+			spx 	thickness;
 			HiColor	color;
-			float	outlineThickness;
+			spx		outlineThickness;
 			HiColor	outlineColor;
 
 			*m_pDecoder >> canvas;
@@ -780,6 +780,7 @@ namespace wg
 			RectI 		dstRect;
 			BorderI 	dstFrame;
 			NinePatch 	patch;
+			int			scale;
 				
 			*m_pDecoder >> dstRect;
 			*m_pDecoder >> dstFrame;
@@ -795,7 +796,9 @@ namespace wg
 			*m_pDecoder >> patch.rigidPartYLength;
 			*m_pDecoder >> patch.rigidPartYSections;
 
-			m_pDevice->blitNinePatch(dstRect, dstFrame, patch);
+			*m_pStream >> scale;
+
+			m_pDevice->blitNinePatch(dstRect, dstFrame, patch, scale);
 			break;
 		}
 
@@ -803,30 +806,34 @@ namespace wg
 		case GfxChunkId::CreateSurface:
 		{
 			uint16_t	surfaceId;
-			PixelFormat	format;
-			SizeI		size;
-			uint16_t	flags;
+			Surface::Blueprint	bp;
 
 			*m_pDecoder >> surfaceId;
-			*m_pDecoder >> format;
-			*m_pDecoder >> size;
-			*m_pDecoder >> flags;
+			*m_pDecoder >> bp.canvas;
+			*m_pDecoder >> bp.dynamic;
+			*m_pDecoder >> bp.format;
+			*m_pDecoder >> bp.id;
+			*m_pDecoder >> bp.mipmap;
+			*m_pDecoder >> bp.sampleMethod;
+			*mm_pDecoder >> bp.scale;
+			*m_pDecoder >> bp.size;
+			*m_pDecoder >> bp.tiling;
 
-
-			Color8 * pClut = nullptr;
+			bp.buffered = false;
+			bp.clut = nullptr;
 
 			if (header.size > 1024)
 			{
-				pClut = (Color8*) Base::memStackAlloc(1024);
-				*m_pDecoder >> GfxStream::DataChunk{ 1024, pClut };
+				bp.clut = (Color8*) Base::memStackAlloc(1024);
+				*m_pStream >> GfxStream::DataChunk{ 1024, bp.clut };
 			}
 
 			if (m_vSurfaces.size() <= surfaceId)
 				m_vSurfaces.resize(surfaceId + 16, nullptr);
 
-			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, format, flags & ~SurfaceFlag::Buffered, pClut);
+			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(bp);
 
-			if (pClut)
+			if (bp.clut)
 				Base::memStackRelease(1024);
 
 			break;

@@ -1,23 +1,23 @@
 
-source_group(Base REGULAR_EXPRESSION "base/*")
-source_group(Components REGULAR_EXPRESSION "components/*")
-source_group(SizeBrokers REGULAR_EXPRESSION "sizebrokers/*")
+source_group(Base REGULAR_EXPRESSION "base//*")
+source_group(Components REGULAR_EXPRESSION "components//*")
+source_group(SizeBrokers REGULAR_EXPRESSION "sizebrokers//*")
 
-source_group(Skins REGULAR_EXPRESSION "skins/*")
-source_group(Skins/Anim REGULAR_EXPRESSION "skins/anim/*")
-source_group(Skins/Meter REGULAR_EXPRESSION "skins/meter/*")
-source_group(Skins/Misc REGULAR_EXPRESSION "skins/misc/*")
-source_group(Skins/State REGULAR_EXPRESSION "skins/state/*")
-source_group(Skins/Static REGULAR_EXPRESSION "skins/static/*")
+source_group(Skins REGULAR_EXPRESSION "skins//*")
+source_group(Skins/Anim REGULAR_EXPRESSION "skins/anim//*")
+source_group(Skins/Meter REGULAR_EXPRESSION "skins/meter//*")
+source_group(Skins/Misc REGULAR_EXPRESSION "skins/misc//*")
+source_group(Skins/State REGULAR_EXPRESSION "skins/state//*")
+source_group(Skins/Static REGULAR_EXPRESSION "skins/static//*")
 
-source_group(TextMappers REGULAR_EXPRESSION "textmappers/*")
-source_group(ValueFormatters REGULAR_EXPRESSION "valueformatters/*")
+source_group(TextLayouts REGULAR_EXPRESSION "textlayouts//*")
+source_group(NumberLayouts REGULAR_EXPRESSION "numberlayouts//*")
 
-source_group(Widgets REGULAR_EXPRESSION "widgets/*")
-source_group(Widgets/Capsules REGULAR_EXPRESSION "widgets/capsules/*")
-source_group(Widgets/Layers REGULAR_EXPRESSION "widgets/layers/*")
-source_group(Widgets/Lists REGULAR_EXPRESSION "widgets/lists/*")
-source_group(Widgets/Panels REGULAR_EXPRESSION "widgets/panels/*")
+source_group(Widgets REGULAR_EXPRESSION "widgets//*")
+source_group(Widgets/Capsules REGULAR_EXPRESSION "widgets/capsules//*")
+source_group(Widgets/Overlays REGULAR_EXPRESSION "widgets/overlays//*")
+source_group(Widgets/Lists REGULAR_EXPRESSION "widgets/lists//*")
+source_group(Widgets/Panels REGULAR_EXPRESSION "widgets/panels//*")
 
 
 add_library( wondergui
@@ -57,6 +57,8 @@ add_library( wondergui
 	base/wg_geo.h
 	base/wg_gfxdevice.cpp
 	base/wg_gfxdevice.h
+	base/wg_gridwalker.cpp
+	base/wg_gridwalker.h
 	base/wg_gradient.cpp
 	base/wg_gradient.h
 	base/wg_hostbridge.h
@@ -89,8 +91,12 @@ add_library( wondergui
 	base/wg_resloader.h
 	base/wg_selectableslot.h
 	base/wg_shadow.h
+	base/wg_skinslot.cpp
+	base/wg_skinslot.h
 	base/wg_skinslotmanager.cpp
 	base/wg_skinslotmanager.h
+	base/wg_skinslotmi.cpp
+	base/wg_skinslotmi.h
 	base/wg_slot.cpp
 	base/wg_slot.h
 	base/wg_slotholder.h
@@ -124,8 +130,6 @@ add_library( wondergui
 
 	components/wg_canimframes.cpp
 	components/wg_canimframes.h
-	components/wg_ccanvas.cpp
-	components/wg_ccanvas.h
 	components/wg_ccolumnheader.cpp
 	components/wg_ccolumnheader.h
 	components/wg_cdynamicslotcollection.cpp
@@ -136,18 +140,20 @@ add_library( wondergui
 	components/wg_cdynamicvector.impl.h
 	components/wg_cicondisplay.cpp
 	components/wg_cicondisplay.h
+	components/wg_cnumberdisplay.cpp
+	components/wg_cnumberdisplay.h
+	components/wg_cnumbereditor.cpp
+	components/wg_cnumbereditor.h
 	components/wg_component.cpp
 	components/wg_component.h
 	components/wg_cpaddedslotvector.h
 	components/wg_cpaddedslotvector.impl.h
 	components/wg_cselectableslotvector.h
 	components/wg_cselectableslotvector.impl.h
+	components/wg_cscrollbar.cpp
+	components/wg_cscrollbar.h
 	components/wg_cshadows.cpp
 	components/wg_cshadows.h
-	components/wg_cskinslot.cpp
-	components/wg_cskinslot.h
-	components/wg_cskinslotmi.cpp
-	components/wg_cskinslotmi.h
 	components/wg_cslot.cpp
 	components/wg_cslot.h
 	components/wg_cslotarray.h
@@ -159,8 +165,8 @@ add_library( wondergui
 	components/wg_cstaticslotvector.impl.h
 	components/wg_cstatictextdisplay.cpp
 	components/wg_cstatictextdisplay.h
-	components/wg_cstaticvaluedisplay.cpp
-	components/wg_cstaticvaluedisplay.h
+	components/wg_cstaticnumberdisplay.cpp
+	components/wg_cstaticnumberdisplay.h
 	components/wg_cstaticvector.h
 	components/wg_cstaticvector.impl.h
 	components/wg_ctext.cpp
@@ -169,12 +175,8 @@ add_library( wondergui
 	components/wg_ctextdisplay.h
 	components/wg_ctexteditor.cpp
 	components/wg_ctexteditor.h
-	components/wg_cvaluedisplay.cpp
-	components/wg_cvaluedisplay.h
-	components/wg_cvalueeditor.cpp
-	components/wg_cvalueeditor.h
-	components/wg_geocomponent.cpp
-	components/wg_geocomponent.h
+	components/wg_widgetcomponent.cpp
+	components/wg_widgetcomponent.h
 
 	sizebrokers/wg_scalepreferred_sizebroker.cpp
 	sizebrokers/wg_scalepreferred_sizebroker.h
@@ -212,8 +214,6 @@ add_library( wondergui
 	skins/state/wg_circleskin.h
 	skins/state/wg_colorskin.cpp
 	skins/state/wg_colorskin.h
-	skins/state/wg_lambdaskin.cpp
-	skins/state/wg_lambdaskin.h
 	skins/state/wg_multiblockskin.cpp
 	skins/state/wg_multiblockskin.h
 	skins/state/wg_scrollskin.cpp
@@ -231,24 +231,20 @@ add_library( wondergui
 	skins/static/wg_statictileskin.cpp
 	skins/static/wg_statictileskin.h
 
-	textmappers/wg_stdtextmapper.cpp
-	textmappers/wg_stdtextmapper.h
-	textmappers/wg_textmapper.cpp
-	textmappers/wg_textmapper.h
+	textlayouts/wg_basictextlayout.cpp
+	textlayouts/wg_basictextlayout.h
+	textlayouts/wg_textlayout.cpp
+	textlayouts/wg_textlayout.h
 
-	valueformatters/wg_standardformatter.cpp
-	valueformatters/wg_standardformatter.h
-	valueformatters/wg_timeformatter.cpp
-	valueformatters/wg_timeformatter.h
-	valueformatters/wg_valueformatter.cpp
-	valueformatters/wg_valueformatter.h
+	numberlayouts/wg_basicnumberlayout.cpp
+	numberlayouts/wg_basicnumberlayout.h
+	numberlayouts/wg_numberlayout.cpp
+	numberlayouts/wg_numberlayout.h
 
 	widgets/wg_animplayer.cpp
 	widgets/wg_animplayer.h
 	widgets/wg_button.cpp
 	widgets/wg_button.h
-	widgets/wg_canvas.cpp
-	widgets/wg_canvas.h
 	widgets/wg_container.cpp
 	widgets/wg_container.h
 	widgets/wg_filler.cpp
@@ -267,18 +263,16 @@ add_library( wondergui
 	widgets/wg_popupopener.h
 	widgets/wg_rangeslider.cpp
 	widgets/wg_rangeslider.h
-	widgets/wg_rulerlabels.cpp
-	widgets/wg_rulerlabels.h
 	widgets/wg_scrollbar.cpp
 	widgets/wg_scrollbar.h
 	widgets/wg_selectbox.cpp
 	widgets/wg_selectbox.h
 	widgets/wg_sidecanvas.cpp
 	widgets/wg_sidecanvas.h
-	widgets/wg_simplevolumemeter.cpp
-	widgets/wg_simplevolumemeter.h
 	widgets/wg_slider.cpp
 	widgets/wg_slider.h
+	widgets/wg_surfacedisplay.cpp
+	widgets/wg_surfacedisplay.h
 	widgets/wg_textdisplay.cpp
 	widgets/wg_textdisplay.h
 	widgets/wg_texteditor.cpp
@@ -287,10 +281,8 @@ add_library( wondergui
 	widgets/wg_timer.h
 	widgets/wg_togglebutton.cpp
 	widgets/wg_togglebutton.h
-	widgets/wg_valuedisplay.cpp
-	widgets/wg_valuedisplay.h
-	widgets/wg_volumemeter.cpp
-	widgets/wg_volumemeter.h
+	widgets/wg_numberdisplay.cpp
+	widgets/wg_numberdisplay.h
 	widgets/wg_widget.cpp
 	widgets/wg_widget.h
 
@@ -304,18 +296,18 @@ add_library( wondergui
 	widgets/capsules/wg_shadercapsule.h
 	widgets/capsules/wg_sizecapsule.cpp
 	widgets/capsules/wg_sizecapsule.h
-	widgets/layers/wg_designlayer.cpp
-	widgets/layers/wg_designlayer.h
-	widgets/layers/wg_dragndroplayer.cpp
-	widgets/layers/wg_dragndroplayer.h
-	widgets/layers/wg_layer.cpp
-	widgets/layers/wg_layer.h
-	widgets/layers/wg_modallayer.cpp
-	widgets/layers/wg_modallayer.h
-	widgets/layers/wg_popuplayer.cpp
-	widgets/layers/wg_popuplayer.h
-	widgets/layers/wg_tooltiplayer.cpp
-	widgets/layers/wg_tooltiplayer.h
+	widgets/overlays/wg_designoverlay.cpp
+	widgets/overlays/wg_designoverlay.h
+	widgets/overlays/wg_dragndropoverlay.cpp
+	widgets/overlays/wg_dragndropoverlay.h
+	widgets/overlays/wg_overlay.cpp
+	widgets/overlays/wg_overlay.h
+	widgets/overlays/wg_modaloverlay.cpp
+	widgets/overlays/wg_modaloverlay.h
+	widgets/overlays/wg_popupoverlay.cpp
+	widgets/overlays/wg_popupoverlay.h
+	widgets/overlays/wg_tooltipoverlay.cpp
+	widgets/overlays/wg_tooltipoverlay.h
 	widgets/lists/wg_list.cpp
 	widgets/lists/wg_list.h
 	widgets/lists/wg_packlist.cpp

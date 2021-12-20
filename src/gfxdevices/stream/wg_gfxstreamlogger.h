@@ -73,6 +73,7 @@ namespace wg
 		void	_printRect( const char * header, const RectF& rect );
 		void	_printColor( const char * header, HiColor color );
 		void	_printBorder( const char * header, const BorderI& border );
+		void	_printBorder(const char* header, const Border& border);
 
 		std::ostream&	m_charStream;
 

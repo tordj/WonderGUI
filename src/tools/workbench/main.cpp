@@ -427,7 +427,7 @@ int main(int argc, char** argv)
 	SurfaceFactory_p pSurfaceFactory	= Base::activeContext()->surfaceFactory();
 
 
-	RootPanel_p pRoot = RootPanel::create(CanvasRef::Default, 64, pGfxDevice);
+	RootPanel_p pRoot = RootPanel::create(CanvasRef::Default, pGfxDevice);
 
 	auto pCanvasLayers = CanvasLayers::create({ PixelFormat::A_8, PixelFormat::BGRA_8, PixelFormat::BGRA_8 });
 	pRoot->setCanvasLayers(pCanvasLayers);
@@ -1701,7 +1701,7 @@ bool shadowLayerTest(CStandardSlot_p pEntry )
 	BlockStateSkin_p pShadowSkin = BlockSkin::createStaticFromSurface(pImgSurface);
 	pShadowSkin->setFrame({ 0,128,128,0 });
 	pShadowSkin->setContentPadding({ 0,128,128,0 });
-	pImgSurface->setScaleMode(ScaleMode::Nearest);
+	pImgSurface->setSampleMethod(SampleMethod::Nearest);
 
 
 	auto pShadowLayer = ShadowLayer::create();
@@ -2389,7 +2389,7 @@ bool timerTest(CStandardSlot_p pSlot)
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
 //	Surface_p pSurfClockFace = loadSurface("resources/clockface.png", PixelFormat::BGRA_8);
-//	pSurfClockFace->setScaleMode(ScaleMode::Interpolate);
+//	pSurfClockFace->setSampleMethod(SampleMethod::Bilinear);
 //	auto pSkin = SpinMeterSkin::create(pSurfClockFace, { 419,419 } );
 
 	auto pSkin = FillMeterSkin::create();

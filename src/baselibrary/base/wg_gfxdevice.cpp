@@ -391,9 +391,9 @@ namespace wg
 		SizeSPX sz;
 		
 		if( ref != CanvasRef::None )
-			sz = canvasSize(ref)*64;
+			sz = canvas(ref).size;
 		else if( pSurface )
-			sz = pSurface->size()*64;
+			sz = pSurface->pixelSize()*64;
 		else
 		{
 			//TODO: Error handling!

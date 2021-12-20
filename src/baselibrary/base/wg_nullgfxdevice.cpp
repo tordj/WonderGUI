@@ -51,25 +51,27 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ surfaceType() _______________________________________________________
+	//____ surfaceType() ______________________________________________________
 
 	const TypeInfo& NullGfxDevice::surfaceType( void ) const
 	{
 		return SURFACETYPEINFO;
 	}
 
-	//____ surfaceFactory() _______________________________________________________
+	//____ canvas() ___________________________________________________________
+
+	const CanvasInfo& NullGfxDevice::canvas(CanvasRef ref) const
+	{
+		return m_dummyCanvas;
+	}
+
+
+	//____ surfaceFactory() ___________________________________________________
 
 	SurfaceFactory_p NullGfxDevice::surfaceFactory()
 	{
 		return SurfaceFactory_p();
 	}
-
-	SizeI NullGfxDevice::canvasSize(CanvasRef ref) const
-	{
-		return SizeI();
-	}
-
 
 	void NullGfxDevice::_canvasWasChanged()
 	{

@@ -66,6 +66,18 @@ namespace wg
 		return TYPEINFO;
 	}
 
+    //____ canvas() ___________________________________________________________
+
+    const CanvasInfo& StreamGfxDevice::canvas(CanvasRef ref) const
+    {
+        auto it = std::find_if(m_definedCanvases.begin(), m_definedCanvases.end(), [ref](const CanvasInfo& entry) { return (ref == entry.ref); });
+
+        if (it != m_definedCanvases.end())
+            return *it;
+
+        return m_dummyCanvas;
+    }
+
 	//____ surfaceType() _______________________________________________________
 
 	const TypeInfo& StreamGfxDevice::surfaceType( void ) const
@@ -76,37 +88,32 @@ namespace wg
 	//____ defineCanvas() ____________________________________________________
 
 	bool StreamGfxDevice::defineCanvas( CanvasRef ref, StreamSurface * pSurface )
-	{
-		if( (pSurface->m_flags & SurfaceFlag::Canvas) == 0 )
-		{
-			//TODO: Error handling!
-			return false;
-		}
-		
-		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (CanvasInfo& entry) { return (ref == entry.ref); } );
+	{ 
+        auto it = std::find_if(m_definedCanvases.begin(), m_definedCanvases.end(), [ref](CanvasInfo& entry) { return (ref == entry.ref); });
 
-		if( it == m_definedCanvases.end() )
-		{
-			if( pSurface )
-				m_definedCanvases.push_back( CanvasInfo( ref, pSurface, pSurface->size() ) );
-		}
-		else
-		{
-			if( pSurface )
-			{
-				it->pSurface = pSurface;
-				it->size = pSurface->size();
-			}
-			else
-			{
-				m_definedCanvases.erase(it);
-			}
-		}
+        if (it == m_definedCanvases.end())
+        {
+            if (pSurface)
+                m_definedCanvases.push_back(CanvasInfo(ref, pSurface, pSurface->pixelSize() * 64, pSurface->scale()));
+        }
+        else
+        {
+            if (pSurface)
+            {
+                it->pSurface = pSurface;
+                it->size = pSurface->pixelSize() * 64;
+                it->scale = pSurface->scale();
+            }
+            else
+            {
+                m_definedCanvases.erase(it);
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	bool StreamGfxDevice::defineCanvas( CanvasRef ref, const SizeI& size )
+	bool StreamGfxDevice::defineCanvas( CanvasRef ref, const SizeSPX& size, int scale )
 	{
 	
 		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (CanvasInfo& entry) { return (ref == entry.ref); } );
@@ -114,7 +121,7 @@ namespace wg
 		if( it == m_definedCanvases.end() )
 		{
 			if( !size.isEmpty() )
-				m_definedCanvases.push_back( CanvasInfo( ref, nullptr, size ) );
+				m_definedCanvases.push_back( CanvasInfo( ref, nullptr, size, scale ) );
 		}
 		else
 		{
@@ -122,6 +129,7 @@ namespace wg
 			{
 				it->pSurface = nullptr;
 				it->size = size;
+                it->scale = scale;
 			}
 			else
 			{
@@ -142,21 +150,9 @@ namespace wg
 		return m_pSurfaceFactory;
 	}
 
-	//____ canvasSize() _____________________________________________________
-
-	SizeI StreamGfxDevice::canvasSize(CanvasRef ref) const
-	{
-		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (const CanvasInfo& entry) { return (ref == entry.ref); } );
-
-		if( it != m_definedCanvases.end() )
-            return it->size;
-		
-		return SizeI();
-	}
-
     //____ setClipList() _________________________________________________________
 
-    bool StreamGfxDevice::setClipList(int nRectangles, const RectI * pRectangles)
+    bool StreamGfxDevice::setClipList(int nRectangles, const RectSPX * pRectangles)
     {
         GfxDevice::setClipList(nRectangles, pRectangles);
         
@@ -176,7 +172,7 @@ namespace wg
 
     //____ pushClipList() ________________________________________________________
 
-    bool StreamGfxDevice::pushClipList(int nRectangles, const RectI* pRectangles)
+    bool StreamGfxDevice::pushClipList(int nRectangles, const RectSPX* pRectangles)
     {
         GfxDevice::pushClipList(nRectangles, pRectangles);
         
@@ -207,7 +203,7 @@ namespace wg
 
     //____ setTintGradient() _______________________________________________________
 
-    void StreamGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
+    void StreamGfxDevice::setTintGradient(const RectSPX& rect, const Gradient& gradient)
     {
         GfxDevice::setTintGradient(rect, gradient);
         
@@ -333,7 +329,7 @@ namespace wg
         return;
     }
 
-    void StreamGfxDevice::fill( const RectI& _rect, HiColor _col )
+    void StreamGfxDevice::fill( const RectSPX& _rect, HiColor _col )
     {
         if( _col.a  == 0 || _rect.w < 1 || _rect.h < 1 )
             return;
@@ -359,7 +355,7 @@ namespace wg
 
     //____ plotPixels() ________________________________________________________
 
-    void StreamGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors)
+    void StreamGfxDevice::plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors)
     {
         // Each pixel is 8 + 8 bytes: int32_t x, int32_t y, HiColor
         // All coordinates comes first, then all colors.
@@ -389,7 +385,7 @@ namespace wg
 
     //____ drawLine() __________________________________________________________
 
-    void StreamGfxDevice::drawLine(CoordI begin, CoordI end, HiColor color, float thickness)
+    void StreamGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness)
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineFromTo, 28 };
         (*m_pEncoder) << begin;
@@ -398,7 +394,7 @@ namespace wg
         (*m_pEncoder) << thickness;
     }
 
-    void StreamGfxDevice::drawLine(CoordI begin, Direction dir, int length, HiColor col, float thickness)
+    void StreamGfxDevice::drawLine(CoordSPX begin, Direction dir, int length, HiColor col, float thickness)
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineStraight, 26 };
         (*m_pEncoder) << begin;
@@ -410,13 +406,13 @@ namespace wg
 
     //____ blit() __________________________________________________________________
 
-    void StreamGfxDevice::blit(CoordI dest)
+    void StreamGfxDevice::blit(CoordSPX dest)
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Blit, 8 };
         (*m_pEncoder) << dest;
     }
 
-    void StreamGfxDevice::blit(CoordI dest, const RectI& _src)
+    void StreamGfxDevice::blit(CoordSPX dest, const RectSPX& _src)
     {
         if (_src.w < 1 || _src.h < 1)
             return;
@@ -426,14 +422,16 @@ namespace wg
         (*m_pEncoder) << _src;
     }
 
-    void StreamGfxDevice::flipBlit(CoordI dest, GfxFlip flip )
+    //____ flipBlit() _________________________________________________________
+
+    void StreamGfxDevice::flipBlit(CoordSPX dest, GfxFlip flip )
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlit, 10 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << flip;
     }
 
-    void StreamGfxDevice::flipBlit(CoordI dest, const RectI& src, GfxFlip flip )
+    void StreamGfxDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip )
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlitRectI, 26 };
         (*m_pEncoder) << dest;
@@ -443,14 +441,14 @@ namespace wg
 
     //____ stretchBlit() ___________________________________________________
 
-    void StreamGfxDevice::stretchBlit(const RectI& dest)
+    void StreamGfxDevice::stretchBlit(const RectSPX& dest)
     {
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlit, 16 };
         (*m_pEncoder) << dest;
     }
 
-    void StreamGfxDevice::stretchBlit(const RectI& dest, const RectI& source)
+    void StreamGfxDevice::stretchBlit(const RectSPX& dest, const RectSPX& source)
     {
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectI, 32 };
@@ -458,7 +456,7 @@ namespace wg
         (*m_pEncoder) << source;
     }
 
-    void StreamGfxDevice::stretchBlit(const RectI& dest, const RectF& source)
+    void StreamGfxDevice::stretchBlit(const RectSPX& dest, const RectF& source)
     {
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectF, 32 };
@@ -468,7 +466,7 @@ namespace wg
 
     //____ stretchFlipBlit() ___________________________________________________
 
-    void StreamGfxDevice::stretchFlipBlit(const RectI& dest, GfxFlip flip)
+    void StreamGfxDevice::stretchFlipBlit(const RectSPX& dest, GfxFlip flip)
     {
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchFlipBlit, 18 };
@@ -476,7 +474,7 @@ namespace wg
         (*m_pEncoder) << flip;
     }
 
-    void StreamGfxDevice::stretchFlipBlit(const RectI& dest, const RectI& source, GfxFlip flip)
+    void StreamGfxDevice::stretchFlipBlit(const RectSPX& dest, const RectSPX& source, GfxFlip flip)
     {
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectI, 34 };
@@ -485,7 +483,7 @@ namespace wg
         (*m_pEncoder) << flip;
     }
 
-    void StreamGfxDevice::stretchFlipBlit(const RectI& dest, const RectF& source, GfxFlip flip)
+    void StreamGfxDevice::stretchFlipBlit(const RectSPX& dest, const RectF& source, GfxFlip flip)
     {
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectF, 34 };
@@ -496,7 +494,7 @@ namespace wg
 
     //____ rotScaleBlit() ___________________________________________________________
 
-    void StreamGfxDevice::rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
+    void StreamGfxDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::RotScaleBlit, 40 };
         (*m_pEncoder) << dest;
@@ -508,14 +506,14 @@ namespace wg
 
     //____ tile() _____________________________________________________________________
 
-    void StreamGfxDevice::tile(const RectI& dest, CoordI shift)
+    void StreamGfxDevice::tile(const RectSPX& dest, CoordSPX shift)
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Tile, 24 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << shift;
     }
 
-    void StreamGfxDevice::flipTile(const RectI& dest, GfxFlip flip, CoordI shift)
+    void StreamGfxDevice::flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift)
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipTile, 26 };
         (*m_pEncoder) << dest;
@@ -523,7 +521,7 @@ namespace wg
         (*m_pEncoder) << shift;
     }
 
-    void StreamGfxDevice::scaleTile(const RectI& dest, float scale, CoordI shift)
+    void StreamGfxDevice::scaleTile(const RectSPX& dest, float scale, CoordSPX shift)
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleTile, 28 };
         (*m_pEncoder) << dest;
@@ -531,7 +529,7 @@ namespace wg
         (*m_pEncoder) << shift;
     }
 
-    void StreamGfxDevice::scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift)
+    void StreamGfxDevice::scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift)
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleFlipTile, 30 };
         (*m_pEncoder) << dest;
@@ -542,7 +540,7 @@ namespace wg
 
     //____ drawWave() ___________________________________________________________________
 
-    void StreamGfxDevice::drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill)
+    void StreamGfxDevice::drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill)
     {
         int size = 16 + 20 + 20 + 8 + 8;
         
@@ -571,7 +569,7 @@ namespace wg
 
     //____ flipDrawWave() ___________________________________________________________________
 
-    void StreamGfxDevice::flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip)
+    void StreamGfxDevice::flipDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip)
     {
         uint16_t size = 16 + 20 + 20 + 8 + 8 + 2;
         
@@ -643,7 +641,7 @@ namespace wg
 
     //____ _drawElipse() _______________________________________________________________
 
-    void StreamGfxDevice::drawElipse(const RectF& canvas, float thickness, HiColor color, float outlineThickness, HiColor outlineColor )
+    void StreamGfxDevice::drawElipse(const RectSPX& canvas, spx thickness, HiColor color, spx outlineThickness, HiColor outlineColor )
     {
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawElipse, 40 };
         (*m_pEncoder) << canvas;
@@ -655,7 +653,7 @@ namespace wg
 
     //____ drawPieChart() ______________________________________________________________
 
-    void StreamGfxDevice::drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
+    void StreamGfxDevice::drawPieChart(const RectSPX& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
     {
         uint16_t size = 16 + 4 + 4 + 4 + 8 + 8 + 2 + nSlices*(4+8);
         
@@ -674,7 +672,7 @@ namespace wg
 
     //____ drawSegments() _________________________________________________________________
 
-    void StreamGfxDevice::drawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
+    void StreamGfxDevice::drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
     {
         
         int nColors;
@@ -708,7 +706,7 @@ namespace wg
 
     //____ flipDrawSegments() _______________________________________________________
 
-    void StreamGfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
+    void StreamGfxDevice::flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
     {
         int nColors;
         switch( tintMode )
@@ -743,9 +741,9 @@ namespace wg
 
     //.____ blitNinePatch() ___________________________________________
 
-    void StreamGfxDevice::blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const NinePatch& patch)
+    void StreamGfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)
     {
-        uint16_t size = 16 + 16 + ( 16 + 16 + 10 + 10 );
+        uint16_t size = 16 + 16 + ( 16 + 16 + 10 + 10 ) + 4;
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitNinePatch, size };
         (*m_pEncoder) << dstRect;
@@ -761,29 +759,13 @@ namespace wg
         (*m_pEncoder) << patch.rigidPartYOfs;
         (*m_pEncoder) << patch.rigidPartYLength;
         (*m_pEncoder) << patch.rigidPartYSections;
-    }
 
-    //.____ blitHorrBar() ________________________________________________
-
-    void StreamGfxDevice::blitHorrBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len )
-    {
-        // This method is deprecated and should not be used. Let's fix the calling code instead.
-        
-        assert(false);
-    }
-
-    //.____ blitVertBar() ________________________________________________
-
-    void StreamGfxDevice::blitVertBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len )
-    {
-        // This method is deprecated and should not be used. Let's fix the calling code instead.
-
-        assert(false);
+        (*m_pEncoder) << scale;
     }
 
     //.____ _beginCanvasUpdate() __________________________________________
 
-    bool StreamGfxDevice::_beginCanvasUpdate(CanvasRef canvasRef, Surface * pCanvasSurface, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
+    bool StreamGfxDevice::_beginCanvasUpdate(CanvasRef canvasRef, Surface * pCanvasSurface, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer)
     {
         if( pLayers )
         {
@@ -799,7 +781,7 @@ namespace wg
 			return false;
 		}
 		
-		SizeI sz = (canvasRef != CanvasRef::None) ? canvasSize(canvasRef) : pCanvasSurface->size();
+		SizeI sz = (canvasRef != CanvasRef::None) ? canvas(canvasRef).size : pCanvasSurface->pixelSize();
 		if( sz.isEmpty() )
 		{
 			// TODO: Error handling!

@@ -74,10 +74,20 @@ namespace wg
 
 	//____ Surface() ____________________________________________________________
 
-	Surface::Surface()
+	Surface::Surface(const Blueprint& bp, PixelFormat defaultPixelFormat, SampleMethod defaultSampleMethod )
 	{
-		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );        
-    }
+		PixelFormat format = bp.format == PixelFormat::Undefined ? defaultPixelFormat : bp.format;
+		SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? defaultSampleMethod : bp.sampleMethod;
+
+		Util::pixelFormatToDescription(format, m_pixelDescription);
+
+		m_size = bp.size;
+		m_scale = bp.scale;
+		m_sampleMethod = method;
+		m_bTiling = bp.tiling;
+		m_id = bp.id;
+	}
+
 
 	//____ ~Surface() ____________________________________________________________
 
@@ -946,6 +956,50 @@ namespace wg
 		pullPixels(pixbuf);
 		freePixelBuffer(pixbuf);
 		return true;
+	}
+
+	//____ _alpha() ___________________________________________________________
+
+	int Surface::_alpha(CoordSPX _coord, const PixelBuffer& buffer)
+	{
+		//TODO: Take endianess into account.
+		//TODO: Take advantage of subpixel precision and interpolate alpha value if surface set to interpolate.
+
+		CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
+
+		switch (m_pixelDescription.format)
+		{
+		case PixelFormat::CLUT_8_sRGB:
+		case PixelFormat::CLUT_8_linear:
+		{
+			uint8_t index = buffer.pPixels[buffer.pitch * coord.y + coord.x];
+			return HiColor::unpackLinearTab[buffer.pClut[index].a];
+		}
+		case PixelFormat::A_8:
+		{
+			uint8_t* pPixel = buffer.pPixels + buffer.pitch * coord.y + coord.x;
+			return HiColor::unpackLinearTab[pPixel[0]];
+		}
+		case PixelFormat::BGRA_4_linear:
+		{
+			uint16_t pixel = *(uint16_t*)(buffer.pPixels + buffer.pitch * coord.y + coord.x * 2);
+			const uint8_t* pConvTab = s_pixelConvTabs[4];
+
+			return HiColor::unpackLinearTab[((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift)];
+		}
+		case PixelFormat::BGRA_8_sRGB:
+		case PixelFormat::BGRA_8_linear:
+		{
+			uint8_t* pPixel = buffer.pPixels + buffer.pitch * coord.y + coord.x * 4;
+			return HiColor::unpackLinearTab[pPixel[3]];
+		}
+		case PixelFormat::Custom:
+		{
+			//TODO: Implement!
+		}
+		default:
+			return 4096;
+		}
 	}
 
 

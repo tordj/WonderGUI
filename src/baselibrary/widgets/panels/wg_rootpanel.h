@@ -65,7 +65,7 @@ namespace wg
 
 		static RootPanel_p	create();
 		static RootPanel_p	create(Surface* pCanvasSurface, GfxDevice* pDevice = nullptr);
-		static RootPanel_p	create(CanvasRef canvasRef, int scale = 64, GfxDevice* pDevice = nullptr);
+		static RootPanel_p	create(CanvasRef canvasRef, GfxDevice* pDevice = nullptr);
 
 		//.____ Components ____________________________________
 
@@ -145,7 +145,7 @@ namespace wg
 	protected:
 		RootPanel();
 		RootPanel(Surface* pCanvasSurface, GfxDevice* pGfxDevice );
-		RootPanel(CanvasRef canvasRef, int scale, GfxDevice* pGfxDevice);
+		RootPanel(CanvasRef canvasRef, GfxDevice* pGfxDevice);
 		~RootPanel();
 
 		// SlotHolder methods
@@ -225,7 +225,6 @@ namespace wg
 
 		GfxDevice_p			m_pGfxDevice;
 		CanvasInfo			m_canvas;			// Size of canvas in subpixels, when m_pCanvas is null.
-		int					m_canvasScale;		// Scale of canvas, needed when m_pCanvas is null.
 		CanvasLayers_p		m_pCanvasLayers;
 
 		RectSPX				m_geo;

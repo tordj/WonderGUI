@@ -41,7 +41,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static FillMeterSkin_p create();
-		static FillMeterSkin_p create(Direction direction, HiColor fillColorEmpty, HiColor fillColorFull, HiColor backColor = Color::Transparent, const Border& gfxPadding = Border(), const Border& contentPadding = Border(), int minFillLength = 0);
+		static FillMeterSkin_p create(Direction direction, HiColor fillColorEmpty, HiColor fillColorFull, HiColor backColor = Color::Transparent, const Border& gfxPadding = Border(), const Border& contentPadding = Border(), pts minFillLength = 0);
 
 		//.____ Identification __________________________________________
 
@@ -95,17 +95,17 @@ namespace wg
 	private:
 		FillMeterSkin();
 		FillMeterSkin(	Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, 
-						const Border& barPadding, const Border& contentPadding, int minFillLength );
+						const Border& barPadding, const Border& contentPadding, pts minFillLength );
 		~FillMeterSkin() {};
 
 		RectSPX		_barFillArea(const RectSPX& canvas, int scale, float value, float value2) const;
 		void		_updateOpacity();
-		RectSPX		_valueChangeRect(const RectSPX& canvas, State state, float oldFraction, float newFraction) const;
+		RectSPX		_valueChangeRect(const RectSPX& canvas, int scale, State state, float oldFraction, float newFraction) const;
 
 		BlendMode	m_blendMode = BlendMode::Undefined;
 		Direction	m_direction;
 		Border		m_barPadding;
-        int		    m_minFillLength;
+        pts		    m_minFillLength;
 		HiColor		m_barColorEmpty;
 		HiColor		m_barColorFull;
 		HiColor		m_backColor;

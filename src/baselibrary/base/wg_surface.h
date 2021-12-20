@@ -263,7 +263,7 @@ namespace wg
 		bool				removeObserver( int observerId );
 
 	protected:
-		Surface();
+		Surface(const Blueprint& bp, PixelFormat defaultPixelFormat, SampleMethod defaultSampleMethod );
 		virtual ~Surface();
 
 		struct Observer
@@ -277,6 +277,7 @@ namespace wg
 
 		void				_notifyObservers(int nRects, const RectSPX* pRects);
 		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color8 * pCLUT = nullptr );
+		int					_alpha(CoordSPX coord, const PixelBuffer& buffer);
 
 		int                 m_id = 0;
 

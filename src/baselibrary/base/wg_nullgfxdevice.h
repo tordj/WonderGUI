@@ -52,11 +52,10 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
+		using GfxDevice::canvas;
+		const CanvasInfo& canvas(CanvasRef ref) const override;
+
 		SurfaceFactory_p		surfaceFactory() override;
-
-		//.____ Geometry _________________________________________________
-
-		SizeI		canvasSize(CanvasRef ref) const override;
 
 		//.____ Rendering ________________________________________________
 

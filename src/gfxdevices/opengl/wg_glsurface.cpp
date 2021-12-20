@@ -178,16 +178,11 @@ namespace wg
 	//____ constructor _____________________________________________________________
 
 
-	GlSurface::GlSurface( const Blueprint& bp )
+	GlSurface::GlSurface( const Blueprint& bp ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
 	{
 		HANDLE_GLERROR(glGetError());
 
-		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
-
-		_setPixelDetails(format);
-		m_sampleMethod = bp.sampleMethod == SampleMethod::Undefined ? SampleMethod::Bilinear : bp.sampleMethod;
-		m_size	= bp.size;
-		m_scale = bp.scale;
+		_setPixelDetails(m_pixelDescription.format);
 		m_pClut = nullptr;
 
 		if (bp.buffered || m_pixelDescription.bits <= 8)
@@ -216,22 +211,18 @@ namespace wg
 				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
 		}
 
-		_setupGlTexture(bp, nullptr, 0);
+		_setupGlTexture(nullptr, 0);
 
 		HANDLE_GLERROR(glGetError());
 	}
 
 
-	GlSurface::GlSurface(const Blueprint& bp, Blob* pBlob, int pitch)
+	GlSurface::GlSurface(const Blueprint& bp, Blob* pBlob, int pitch) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
 	{
 		// Set general information
 
-		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
 
-		_setPixelDetails(format);
-		m_sampleMethod = bp.sampleMethod == SampleMethod::Undefined ? SampleMethod::Bilinear : bp.sampleMethod;
-		m_size = bp.size;
-		m_scale = bp.scale;
+		_setPixelDetails(m_pixelDescription.format);
 		m_pClut = const_cast<Color8*>(bp.clut);
 
 		if (pitch == 0)
@@ -259,7 +250,7 @@ namespace wg
 
 				// Setup a fake PixelBuffer for call to _updateAlphaMap
 				PixelBuffer buf;
-				buf.format = format;
+				buf.format = m_pixelDescription.format;
 				buf.pClut = m_pClut;
 				buf.pitch = pitch;
 				buf.pPixels = (uint8_t*) pBlob->data();
@@ -271,26 +262,16 @@ namespace wg
 
 		//TODO: Support pitch
 		
-		_setupGlTexture(bp, pBlob->data(), pitch);
+		_setupGlTexture(pBlob->data(), pitch);
 	}
 
-	GlSurface::GlSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription )
+	GlSurface::GlSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription ) 
+		: Surface(bp, (pPixelDescription->format != PixelFormat::Custom && pPixelDescription->format != PixelFormat::Undefined) ? pPixelDescription->format : PixelFormat::BGRA_8, SampleMethod::Bilinear)
 	{
-		PixelFormat format = bp.format;
-		if (format == PixelFormat::Undefined)
-		{
-			if (pPixelDescription->format != PixelFormat::Custom && pPixelDescription->format != PixelFormat::Undefined)
-				format = pPixelDescription->format;
-			else
-				format = PixelFormat::BGRA_8;
-		}
 		
 //		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
 
-		_setPixelDetails(format);
-		m_sampleMethod = bp.sampleMethod == SampleMethod::Undefined ? SampleMethod::Bilinear : bp.sampleMethod;
-		m_size = bp.size;
-		m_scale = bp.scale;
+		_setPixelDetails(m_pixelDescription.format);
 		m_pClut = nullptr;
 
 		if (pitch == 0)
@@ -313,7 +294,7 @@ namespace wg
 				memcpy(m_pClut, bp.clut, 1024);
 			}
 
-            _setupGlTexture(bp, m_pBlob->data(), m_pitch);
+            _setupGlTexture(m_pBlob->data(), m_pitch);
         }
         else
 		{
@@ -332,10 +313,10 @@ namespace wg
 
                 _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size, m_size);
 
-                _setupGlTexture(bp, m_pBlob->data(), m_pitch);
+                _setupGlTexture(m_pBlob->data(), m_pitch);
             }
             else
-                _setupGlTexture(bp, pPixels, pitch);
+                _setupGlTexture(pPixels, pitch);
 
             m_pBlob = nullptr;
             m_pitch = 0;
@@ -346,7 +327,7 @@ namespace wg
 
 				// Setup a fake PixelBuffer for call to _updateAlphaMap
 				PixelBuffer buf;
-				buf.format = format;
+				buf.format = m_pixelDescription.format;
 				buf.pClut = m_pClut;
 				buf.pitch = pitch;
 				buf.pPixels = pPixels;
@@ -358,14 +339,10 @@ namespace wg
 	}
 
 
-	GlSurface::GlSurface(const Blueprint& bp, Surface* pOther)
+	GlSurface::GlSurface(const Blueprint& bp, Surface* pOther) : Surface(bp, pOther->pixelFormat(), pOther->sampleMethod() )
 	{
-		PixelFormat format = bp.format == PixelFormat::Undefined ? pOther->pixelFormat() : bp.format;
-
-		_setPixelDetails(format);
-		m_sampleMethod = bp.sampleMethod == SampleMethod::Undefined ? pOther->sampleMethod() : bp.sampleMethod;
+		_setPixelDetails(m_pixelDescription.format);
 		m_size	= pOther->pixelSize();
-		m_scale = bp.scale;
 		m_pClut = nullptr;
 
 		auto pixbuf = pOther->allocPixelBuffer();
@@ -407,14 +384,14 @@ namespace wg
 
 		//TODO: Support pitch
 
-        _setupGlTexture(bp, pixbuf.pPixels, pixbuf.pitch);
+        _setupGlTexture(pixbuf.pPixels, pixbuf.pitch);
 
 		pOther->freePixelBuffer(pixbuf);
 	}
 
 	//____ _setupGlTexture() __________________________________________________
 
-	void GlSurface::_setupGlTexture(const Blueprint& bp, void* pPixelsToUpload, int pitch)
+	void GlSurface::_setupGlTexture(void* pPixelsToUpload, int pitch)
 	{
 		GLint oldBinding;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
@@ -428,12 +405,12 @@ namespace wg
 
 		// Set tiling
 
-		GLint mode = bp.tiling ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+		GLint mode = m_bTiling ? GL_REPEAT : GL_CLAMP_TO_EDGE;
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
 
-		m_bTiling = bp.tiling;
+		m_bTiling = m_bTiling;
 
 		// Push pixels
 
@@ -473,7 +450,7 @@ namespace wg
 			switch (m_sampleMethod)
 			{
 			case SampleMethod::Bilinear:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bp.mipmap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_bMipmapped ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				break;
 
@@ -484,11 +461,8 @@ namespace wg
 				break;
 			}
 
-			if (bp.mipmap)
-			{
-				m_bMipmapped = true;
+			if (m_bMipmapped)
 				m_bMipmapStale = true;
-			}
 		}
 
 		//
@@ -634,8 +608,6 @@ namespace wg
 				break;
 
 		}
-
-		Util::pixelFormatToDescription(format, m_pixelDescription);
 	}
 
 	//____ Destructor ______________________________________________________________

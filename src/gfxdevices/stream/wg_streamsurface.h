@@ -46,10 +46,10 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static StreamSurface_p	create( GfxStreamEncoder * pEncoder, SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
-		static StreamSurface_p	create( GfxStreamEncoder * pEncoder, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
-		static StreamSurface_p	create( GfxStreamEncoder * pEncoder, SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
-		static StreamSurface_p	create( GfxStreamEncoder * pEncoder, Surface * pOther, int flags = SurfaceFlag::Static );
+		static StreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint);
+		static StreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
+		static StreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
+		static StreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Surface* pOther);
 
 		//.____ Identification __________________________________________
 
@@ -60,17 +60,9 @@ namespace wg
 
 		static SizeI	maxSize();
 
-		//.____ Appearance ____________________________________________________
-
-		void		setScaleMode(ScaleMode mode) override;
-
-        bool        setTiling(bool bTiling) override;
-
         //.____ Content _______________________________________________________
 
-		uint8_t		alpha(CoordI coord) override;
-
-        bool        isOpaque() const override;
+		int			alpha(CoordSPX coord) override;
 
 		//.____ Control _______________________________________________________
 
@@ -83,19 +75,29 @@ namespace wg
 
 		bool		fill(HiColor col) override;
 		bool		fill(HiColor col, const RectI& region) override;
+		bool		copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst) override;
+		bool		copyFrom(Surface * pSrcSurf, CoordI dst) override;
+
+		//.____ Deprecated ____________________________________________________
+
+		static StreamSurface_p	create(CGfxOutStream& stream, SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static StreamSurface_p	create(CGfxOutStream& stream, SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static StreamSurface_p	create(CGfxOutStream& stream, SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static StreamSurface_p	create(CGfxOutStream& stream, Surface* pOther, int flags = SurfaceFlag::Static);
 
 		//.____ Misc __________________________________________________________
 
 		bool		streamAsNew(GfxStreamEncoder* pEncoder);
 
 	private:
-		StreamSurface( GfxStreamEncoder * pEncoder, SizeI size, PixelFormat format, int flags, const Color8 * pClut );
-		StreamSurface( GfxStreamEncoder * pEncoder, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut );
-		StreamSurface( GfxStreamEncoder * pEncoder, SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut );
-		StreamSurface( GfxStreamEncoder * pEncoder, Surface * pOther, int flags = SurfaceFlag::Static );
+		StreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint);
+		StreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
+		StreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
+		StreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Surface* pOther);
+
 		~StreamSurface();
 
-		uint16_t	_sendCreateSurface(SizeI size, PixelFormat format, int flags, const Color8 * pClut);
+		uint16_t	_sendCreateSurface(const Blueprint& bp);
 		void		_sendPixels(GfxStreamEncoder* pEncoder, RectI rect, const uint8_t * pSource, int pitch);
 		void		_sendDeleteSurface();
 		uint8_t*	_genAlphaLayer(const char * pSource, int pitch);

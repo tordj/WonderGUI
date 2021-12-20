@@ -68,7 +68,7 @@ namespace wg
 			return nullptr;
 		}
 
-		if( pDevice == nullptr || pDevice->canvasSize(ref).isEmpty() )
+		if( pDevice == nullptr || pDevice->canvas(ref).size.isEmpty() )
 		{
 			//TODO: Error handling!
 			return nullptr;
@@ -85,7 +85,6 @@ namespace wg
 		m_bVisible = true;
 		m_bHasGeo = false;
 		m_bScaleSet = false;
-		m_canvasScale = 64;
 
 		m_bDebugMode = false;
 
@@ -107,21 +106,20 @@ namespace wg
 		m_canvas.ref = CanvasRef::None;
 		m_canvas.pSurface = pSurface;
 		m_canvas.size = pSurface->pixelSize()*64;
+		m_canvas.scale = pSurface->scale();
 
 		m_geo = m_canvas.size;
 		m_pGfxDevice = pGfxDevice;
-		m_scale = m_canvasScale;
+		m_scale = m_canvas.scale;
 	}
 
-	RootPanel::RootPanel(CanvasRef ref, int scale, GfxDevice* pGfxDevice) : RootPanel()
+	RootPanel::RootPanel(CanvasRef ref, GfxDevice* pGfxDevice) : RootPanel()
 	{
-		m_canvas.ref = ref;
-		m_canvas.pSurface = nullptr;
-		m_canvas.size = pGfxDevice->canvasSize(ref)*64;
+		m_canvas = pGfxDevice->canvas(ref);
 
 		m_geo = m_canvas.size;
 		m_pGfxDevice = pGfxDevice;
-		m_scale = scale;
+		m_scale = m_canvas.scale;
 	}
 
 
@@ -163,13 +161,13 @@ namespace wg
 		m_canvas.ref = CanvasRef::None;
 		m_canvas.pSurface = pSurface;
 		m_canvas.size = pSurface->pixelSize()*64;
-		m_canvasScale = pSurface->scale();
+		m_canvas.scale = pSurface->scale();
 
 		if (!m_bScaleSet)
-			m_scale = m_canvasScale;
+			m_scale = m_canvas.scale;
 
 		if (!m_bHasGeo)
-			m_geo = m_canvasSize;
+			m_geo = m_canvas.size;
 
 		if ((m_scale != oldScale || oldSize != m_geo.size()) && slot._widget())
 			OO(slot._widget())->_resize(m_geo.size(),m_scale);
@@ -180,7 +178,7 @@ namespace wg
 
 	bool RootPanel::setCanvas(CanvasRef canvasRef, int scale)
 	{
-		if( !m_pGfxDevice || m_pGfxDevice->canvasSize(canvasRef).isEmpty() )
+		if( !m_pGfxDevice || m_pGfxDevice->canvas(canvasRef).size.isEmpty() )
 		{
 			//TODO: Error handling!
 			return false;
@@ -189,16 +187,13 @@ namespace wg
 		int oldScale = m_scale;
 		SizeSPX oldSize = m_geo.size();
 
-		m_canvas.ref = canvasRef;
-		m_canvas.pSurface = nullptr;
-		m_canvas.size = m_pGfxDevice->canvasSize(canvasRef)*64;
-		m_canvasScale = scale;
+		m_canvas = m_pGfxDevice->canvas(canvasRef);
 
 		if (!m_bScaleSet)
-			m_scale = m_canvasScale;
+			m_scale = m_canvas.scale;
 
 		if (!m_bHasGeo)
-			m_geo = m_canvasSize;
+			m_geo = m_canvas.size;
 
 		if ((m_scale != oldScale || oldSize != m_geo.size()) && slot._widget())
 			OO(slot._widget())->_resize(m_geo.size(), m_scale);
@@ -243,7 +238,7 @@ namespace wg
 		if (m_bScaleSet)
 		{
 			m_bScaleSet = false;
-			m_scale = m_canvasScale;
+			m_scale = m_canvas.scale;
 			if (slot._widget())
 			{
 				OO(slot)._setSize(m_geo.size(), m_scale);
@@ -257,15 +252,16 @@ namespace wg
 
 	bool RootPanel::setGeo(const Rect& _geo)
 	{
-		RectSPX geoSpx(m_canvasSize, align(ptsToSpx(_geo,m_scale)));
-
-		if (m_geo == geoSpx)
-			return true;
+		RectSPX geoSpx(m_canvas.size, align(ptsToSpx(_geo,m_scale)));
 
 		m_bHasGeo = !_geo.isEmpty();
 
-		if (slot._widget())
-			OO(slot)._setSize(m_geo.size());
+		if (m_geo != geoSpx)
+		{
+			m_geo = geoSpx;
+			if (slot._widget())
+				OO(slot)._setSize(m_geo.size());
+		}
 
 		return true;
 	}
@@ -275,7 +271,7 @@ namespace wg
 	Rect RootPanel::geo() const
 	{
 		if (m_bHasGeo)
-			return m_geo;
+			return spxToPts(m_geo,m_scale);
 		else
 			return spxToPts(m_canvas.size,m_scale);
 	}
@@ -462,7 +458,7 @@ namespace wg
 			int nRects = dirtyPatches.size();
 			const RectSPX* pRects = dirtyPatches.begin();
 
-			if (m_canvas.pSurface)
+			if (m_canvas.ref == CanvasRef::None )
 				pGfxDevice->beginCanvasUpdate(m_canvas.pSurface, nRects, pRects, m_pCanvasLayers);
 			else
 				pGfxDevice->beginCanvasUpdate(m_canvas.ref, nRects, pRects, m_pCanvasLayers);
@@ -480,7 +476,7 @@ namespace wg
 		{
 			// Set clipping rectangle.
 
-			if (m_canvas.pSurface)
+			if (m_canvas.ref == CanvasRef::None )
 				pGfxDevice->beginCanvasUpdate(m_canvas.pSurface, 1, &clip, nullptr, 0);
 			else
 				pGfxDevice->beginCanvasUpdate(m_canvas.ref, 1, &clip, nullptr, 0);

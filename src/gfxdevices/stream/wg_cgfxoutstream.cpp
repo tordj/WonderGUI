@@ -42,5 +42,19 @@ namespace wg
 	}
 
 
+	//____ setDefaultPixelFormat() ____________________________________________
+
+	void CGfxOutStream::setDefaultPixelFormat(PixelFormat pixelFormat)
+	{
+		m_defaultPixelFormat = pixelFormat;
+	}
+
+	//____ setDefaultSampleMethod() ___________________________________________
+
+	void CGfxOutStream::setDefaultSampleMethod(SampleMethod sampleMethod)
+	{
+		m_defaultSampleMethod = sampleMethod;
+	}
+
 
 } // namespace wg

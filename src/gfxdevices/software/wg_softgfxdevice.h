@@ -64,13 +64,11 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		bool		defineCanvas( CanvasRef ref, SoftSurface * pSurface );
-		
+
+		using GfxDevice::canvas;
+		const CanvasInfo& canvas(CanvasRef ref) const override;
+
 		SurfaceFactory_p	surfaceFactory() override;
-
-		//.____ Geometry _________________________________________________
-		
-		SizeI		canvasSize(CanvasRef ref) const override;
-
 
 		//.____ State _________________________________________________
 
@@ -352,17 +350,17 @@ namespace wg
 		static SimpleBlitOp_p	s_blendTo_BGR_8_linear_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
 		static SimpleBlitOp_p	s_blendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
 
-		static ComplexBlitOp_p	s_transformTo_internal_OpTab[PixelFormat_size][2][3];				// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_internal_OpTab[PixelFormat_size][2][3];				// [SourceFormat][SampleMethod][Normal/Clip/Tile]
 
-		static ComplexBlitOp_p	s_transformTo_BGRA_8_linear_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformTo_BGR_8_linear_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_linear_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_linear_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
 
-		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_linear_OpTab[PixelFormat_size][2][3];			// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][3];			// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_linear_OpTab[PixelFormat_size][2][3];				// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][3];				// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_linear_OpTab[PixelFormat_size][2][3];			// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][3];			// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_linear_OpTab[PixelFormat_size][2][3];				// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][3];				// [SourceFormat][SampleMethod][Normal/Clip/Tile]
 
 
 		static int			s_mulTab[256];

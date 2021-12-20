@@ -145,20 +145,9 @@ namespace wg
 
 	//____ constructor ________________________________________________________________
 
-	SoftSurface::SoftSurface( const Blueprint& bp )
+	SoftSurface::SoftSurface( const Blueprint& bp ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest )
 	{
-		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
-		SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? SampleMethod::Nearest : bp.sampleMethod;
-
-		assert( format != PixelFormat::Custom );
-		Util::pixelFormatToDescription(format, m_pixelDescription);
-
 		m_pitch = ((bp.size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
-		m_size = bp.size;
-		m_sampleMethod = method;
-		m_bTiling = bp.tiling;
-		m_scale = bp.scale;
-		m_id = bp.id;
 		m_pBlob = Blob::create( m_pitch*bp.size.h + (bp.clut ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
@@ -174,20 +163,9 @@ namespace wg
 		_initTiling();
 	}
 
-	SoftSurface::SoftSurface(const Blueprint& bp, Blob * pBlob, int pitch )
+	SoftSurface::SoftSurface(const Blueprint& bp, Blob * pBlob, int pitch ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
 	{
-		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
-		SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? SampleMethod::Nearest : bp.sampleMethod;
-
-		assert(format != PixelFormat::Custom && pBlob );
-		Util::pixelFormatToDescription(format, m_pixelDescription);
-
 		m_pitch = pitch > 0 ? pitch : bp.size.w * m_pixelDescription.bits/8;
-		m_size = bp.size;
-		m_sampleMethod = method;
-		m_bTiling = bp.tiling;
-		m_scale = bp.scale;
-		m_id = bp.id;
 		m_pBlob = pBlob;
 		m_pData = (uint8_t*) m_pBlob->data();
 		m_pClut = const_cast<Color8*>(bp.clut);
@@ -198,21 +176,11 @@ namespace wg
 	}
 
 	SoftSurface::SoftSurface(const Blueprint& bp, uint8_t * pPixels, int pitch,
-							 const PixelDescription * pPixelDescription)
+							 const PixelDescription * pPixelDescription) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
 	{
 		//TODO: Convert pixeldescription to format and use that if bp.format == Undefined && pixeldesc is valid.
 
-		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
-		SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? SampleMethod::Nearest : bp.sampleMethod;
-
-		Util::pixelFormatToDescription(format, m_pixelDescription);
-
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
-		m_size = bp.size;
-		m_sampleMethod = method;
-		m_bTiling = bp.tiling;
-		m_scale = bp.scale;
-		m_id = bp.id;
 		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.clut ? 1024 : 0) );
 		m_pData = (uint8_t*)m_pBlob->data();
 
@@ -230,12 +198,9 @@ namespace wg
 		_initTiling();
 	}
 
-
-	SoftSurface::SoftSurface( const Blueprint& bp, Surface * pOther )
+	 
+	SoftSurface::SoftSurface( const Blueprint& bp, Surface * pOther ) : Surface(bp, pOther->pixelFormat(), pOther->sampleMethod())
 	{
-		PixelFormat format = bp.format == PixelFormat::Undefined ? pOther->pixelFormat() : bp.format;
-		SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? pOther->sampleMethod() : bp.sampleMethod;
-
 		assert( pOther );
 
 		auto pixelbuffer = pOther->allocPixelBuffer();
@@ -248,14 +213,8 @@ namespace wg
 		int pitch = pixelbuffer.pitch;
 		SizeI size = pixelbuffer.rect.size();
 
-		Util::pixelFormatToDescription(format, m_pixelDescription);
-
-		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
-		m_sampleMethod = method;
-		m_bTiling = bp.tiling;
-		m_scale = bp.scale;
-		m_id = bp.id;
+		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
@@ -291,46 +250,16 @@ namespace wg
 
 	//____ alpha() _______________________________________________________________
 
-	int SoftSurface::alpha( CoordSPX _coord )
+	int SoftSurface::alpha( CoordSPX coord )
 	{
-		//TODO: Take endianess into account.
-		//TODO: Take advantage of subpixel precision and interpolate alpha value if surface set to interpolate.
+		PixelBuffer	buffer;
+		buffer.format = m_pixelDescription.format;
+		buffer.pClut = m_pClut;
+		buffer.pitch = m_pitch;
+		buffer.pPixels = m_pData;
+		buffer.rect = { 0,0,m_size };
 
-		CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
-
-		switch (m_pixelDescription.format)
-		{
-			case PixelFormat::CLUT_8_sRGB:
-			case PixelFormat::CLUT_8_linear:
-			{
-				uint8_t index = m_pData[m_pitch * coord.y + coord.x];
-				return m_pClut4096[index].a;
-			}
-			case PixelFormat::A_8:
-			{
-				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x;
-				return HiColor::unpackLinearTab[pPixel[0]];
-			}
-			case PixelFormat::BGRA_4_linear:
-			{
-				uint16_t pixel = * (uint16_t *)(m_pData + m_pitch * coord.y + coord.x*2);
-				const uint8_t * pConvTab = s_pixelConvTabs[4];
-
-				return HiColor::unpackLinearTab[((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift)];
-			}
-			case PixelFormat::BGRA_8_sRGB:
-			case PixelFormat::BGRA_8_linear:
-			{
-				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x * 4;
-				return HiColor::unpackLinearTab[pPixel[3]];
-			}
-			case PixelFormat::Custom:
-			{
-				//TODO: Implement!
-			}
-			default:
-				return 4096;
-		}
+		return _alpha(coord, buffer);
 	}
 
 	//____ _initTiling() ________________________________________________________

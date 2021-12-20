@@ -69,11 +69,10 @@ namespace wg
 
 		SurfaceFactory_p	surfaceFactory() override;
 
-		bool	setDefaultCanvas(SizeI pixelSize);
+		bool	setDefaultCanvas(SizeSPX size, int scale = 64);
 
-		//.____ Geometry _________________________________________________
-
-		SizeI		canvasSize(CanvasRef ref) const override;
+		using GfxDevice::canvas;
+		const CanvasInfo& canvas(CanvasRef ref) const override;
 
 		//.____ State _________________________________________________
 
@@ -209,6 +208,7 @@ namespace wg
 		CoordF			m_blitSourceSize;
 
 		SizeI			m_defaultCanvasSize;
+		int				m_defaultCanvasScale = 64;
 
 		// Device programs
 
@@ -239,7 +239,7 @@ namespace wg
 
 		//
 
-		struct CanvasInfo
+		struct ShaderCanvasInfo
 		{
 			GLfloat	canvasDimX;			// Becomes X in shader
 			GLfloat	canvasDimY;			// Becomes Y in shader
@@ -280,7 +280,9 @@ namespace wg
 
 		//
 
-		CanvasInfo			m_canvasInfo;
+		CanvasInfo			m_defaultCanvas;
+
+		ShaderCanvasInfo	m_canvasInfo;
 		GradientTintInfo	m_tintInfo;
 		
 

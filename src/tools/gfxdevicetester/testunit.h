@@ -269,7 +269,7 @@ namespace test
 
 			if (m_pSource)
 			{
-				m_pSource->setScaleMode(ScaleMode::Interpolate);
+				m_pSource->setSampleMethod(SampleMethod::Bilinear);
 				return true;
 			}
 

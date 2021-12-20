@@ -48,7 +48,7 @@ protected:
 		REFERENCE = 1
 	};
 
-	enum ClipList
+	enum class ClipList
 	{
 		One,
 		Few,

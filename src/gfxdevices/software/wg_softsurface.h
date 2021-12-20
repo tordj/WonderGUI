@@ -86,7 +86,7 @@ namespace wg
 		SoftSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
 		SoftSurface(const Blueprint& blueprint, Surface* pOther);
 
-		virtual		~SoftSurface();
+		~SoftSurface();
 
 		void		_makeClut4096();
 		void		_initTiling();

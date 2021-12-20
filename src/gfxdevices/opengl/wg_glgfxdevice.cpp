@@ -568,22 +568,24 @@ namespace wg
 
 	//____ setDefaultCanvas() ___________________________________________
 
-	bool GlGfxDevice::setDefaultCanvas(SizeI pixelSize)
+	bool GlGfxDevice::setDefaultCanvas(SizeSPX size, int scale)
 	{
-		m_defaultCanvasSize = pixelSize;
+		m_defaultCanvas.ref = CanvasRef::Default;		// Starts as Undefined until this method is called.
+		m_defaultCanvas.size = size;
+		m_defaultCanvas.scale = scale;
 		return true;
 	}
 
-	//____ canvasSize() _________________________________________________
+	//____ canvas() ___________________________________________________________
 
-	SizeI GlGfxDevice::canvasSize(CanvasRef ref) const
+	const CanvasInfo& GlGfxDevice::canvas(CanvasRef ref) const
 	{
 		if (ref == CanvasRef::Default)
-			return m_defaultCanvasSize;
+			return m_defaultCanvas;
 		else
 		{
 			//TODO: Error handling!
-			return SizeI();
+			return m_dummyCanvas;
 		}
 	}
 

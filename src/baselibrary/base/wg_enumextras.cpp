@@ -222,6 +222,7 @@ namespace wg
 			"DropComplete",
 			"Select",
 			"Toggle",
+			"ScrollbarMove",
 			"ValueUpdate",
 			"RangeUpdate",
 			"TextEdit",
@@ -273,9 +274,9 @@ namespace wg
 	const char * toString(SampleMethod i)
 	{
 		static const char * names[] = { 
-			"Undefined",
 			"Nearest",
-			"Bilinear" };
+			"Bilinear",
+			"Undefined" };
 
 		return names[(int)i];
 	}
@@ -293,7 +294,7 @@ namespace wg
 	const char * toString(PixelFormat i)
 	{
 		static const char * names[] = { 
-			"Unknown",
+			"Undefined",
 			"Custom",
 			"BGR_8",
 			"BGR_8_sRGB",

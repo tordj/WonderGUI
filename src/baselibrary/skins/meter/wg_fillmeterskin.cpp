@@ -40,9 +40,9 @@ namespace wg
 		return FillMeterSkin_p(new FillMeterSkin());
 	}
 
-	FillMeterSkin_p FillMeterSkin::create(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const Border& barPadding, const Border& contentPadding, int minFillLength )
+	FillMeterSkin_p FillMeterSkin::create(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const Border& barPadding, const Border& contentPadding, pts minFillLength)
 	{
-		return FillMeterSkin_p(new FillMeterSkin(direction, barColorEmpty, barColorFull, backColor, barPadding, contentPadding, minFillLength ));
+		return FillMeterSkin_p(new FillMeterSkin(direction, barColorEmpty, barColorFull, backColor, barPadding, contentPadding, minFillLength));
 	}
 
 	//____ constructor ________________________________________________________
@@ -54,12 +54,12 @@ namespace wg
 		m_barColorFull(Color::LightBlue),
 		m_backColor(Color::Transparent)
 	{
-		m_preferredSize = Size::max(Size( 50,10 ),m_contentPadding.size());
+		m_preferredSize = Size::max(Size(50, 10), m_contentPadding.size());
 		m_bIgnoresValue = false;
 		_updateOpacity();
 	}
 
-	FillMeterSkin::FillMeterSkin(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const Border& barPadding, const Border& contentPadding, int minFillLength ) :
+	FillMeterSkin::FillMeterSkin(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const Border& barPadding, const Border& contentPadding, pts minFillLength) :
 		m_direction(direction),
 		m_barColorEmpty(barColorEmpty),
 		m_barColorFull(barColorFull),
@@ -161,32 +161,34 @@ namespace wg
 		else
 			return _minSize(scale);
 	}
-	
-    //____ setCenteredBarOrigin() ____________________________________________
 
-    void FillMeterSkin::setCenteredBarOrigin(bool bCenter)
-    {
-        m_bCenteredBarOrigin = bCenter;
-    }
+	//____ setCenteredBarOrigin() ____________________________________________
+
+	void FillMeterSkin::setCenteredBarOrigin(bool bCenter)
+	{
+		m_bCenteredBarOrigin = bCenter;
+	}
 
 
 
 	//____ render() ______________________________________________________________
 
-	void FillMeterSkin::_render(GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void FillMeterSkin::_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		HiColor barColor = HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096 * value));
 
-		RectSPX barCanvas = _barFillArea(_canvas,value, value2).px();
+		RectSPX barCanvas = align(_barFillArea(_canvas, scale, value, value2));
 		pDevice->fill(barCanvas, barColor);
+
+		BorderSPX	barPadding = align(ptsToSpx(m_barPadding, scale));
 
 		if (m_backColor.a != 0)
 		{
-			RectI backCanvas = (_canvas - m_barPadding).px();
-			RectI backCanvas1 = backCanvas;
-			RectI backCanvas2 = backCanvas;
+			RectSPX backCanvas = (_canvas - barPadding);
+			RectSPX backCanvas1 = backCanvas;
+			RectSPX backCanvas2 = backCanvas;
 
 			switch (m_direction)
 			{
@@ -194,7 +196,7 @@ namespace wg
 			case Direction::Down:
 			{
 				backCanvas1.h = barCanvas.y - backCanvas.y;
-	
+
 				backCanvas2.h = backCanvas.bottom() - barCanvas.bottom();
 				backCanvas2.y = barCanvas.bottom();
 				break;
@@ -216,41 +218,41 @@ namespace wg
 		}
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool FillMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool FillMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
 
-		if( _barFillArea(canvas, value, value2).contains(ofs) )
-			return (((int)HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096*value)).a*255/4096) >= opacityTreshold);
+		if( _barFillArea(canvas, scale, value, value2).contains(ofs) )
+			return (HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096*value)).a >= opacityTreshold);
 
-		return (((int)m_backColor.a) >= opacityTreshold);
+		return (m_backColor.a >= opacityTreshold);
 	}
 
-	//____ dirtyRect() ________________________________________________________
+	//____ _dirtyRect() ________________________________________________________
 
-	Rect FillMeterSkin::dirtyRect(const Rect& _canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX FillMeterSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (newValue == oldValue)
-			return Rect();
+			return RectSPX();
 
 		if (m_barColorFull != m_barColorEmpty)
 			return _canvas;
 
-		Rect canvas = _canvas - m_contentPadding;
+		RectSPX canvas = _canvas - align(ptsToSpx(m_contentPadding, scale));
 
-		Rect result1;
-		Rect result2;
+		RectSPX result1;
+		RectSPX result2;
 
 		if (oldValue != newValue)
-			result1 = _valueChangeRect(canvas, newState, oldValue, newValue);
+			result1 = _valueChangeRect(canvas, scale, newState, oldValue, newValue);
 
 		if (oldValue2 != newValue2)
-			result2 = _valueChangeRect(canvas, newState, oldValue2, newValue2);
+			result2 = _valueChangeRect(canvas, scale, newState, oldValue2, newValue2);
 
 		if (result2.isEmpty())
 			return result1;
@@ -258,110 +260,113 @@ namespace wg
 		if (result1.isEmpty())
 			return result2;
 
-		return Rect::getUnion(result1, result2);
+		return RectSPX::getUnion(result1, result2);
 	}
 
 
-	Rect FillMeterSkin::_valueChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction ) const
+	RectSPX FillMeterSkin::_valueChangeRect(const RectSPX& canvas, int scale, State state, float oldFraction, float newFraction ) const
 	{
-        
-        if( m_bCenteredBarOrigin )
-        {
-            // If we start from center we ignore value2.
 
-            bool bHorizontal = ( m_direction == Direction::Left || m_direction == Direction::Right );
-            bool bInverted = ( m_direction == Direction::Left || m_direction == Direction::Up );
-            
-            //
-            
-            MU totalLen = bHorizontal ? canvas.w : canvas.h;
-            
-            MU sideLen = totalLen - m_minFillLength / 2;
-            MU centerLen = totalLen - sideLen * 2;
-            
-            // Invert value if direction is inverted
-            
-            if( bInverted )
-            {
-                oldFraction = 1.f - oldFraction;
-                newFraction = 1.f - newFraction;
-            }
-            
-            // Calculate offsets.
-            
-            MU ofs1, ofs2;
-            
-            if( oldFraction < 0.5f )
-                ofs1 = oldFraction / 2.f * sideLen;
-            else
-                ofs1 = sideLen + centerLen + (oldFraction-0.5f) * 2.f * sideLen;
+		if (m_bCenteredBarOrigin)
+		{
+			// If we start from center we ignore value2.
 
-            if( newFraction < 0.5f )
-                ofs2 = newFraction / 2.f * sideLen;
-            else
-                ofs2 = sideLen + centerLen + (newFraction-0.5f) * 2.f * sideLen;
+			bool bHorizontal = (m_direction == Direction::Left || m_direction == Direction::Right);
+			bool bInverted = (m_direction == Direction::Left || m_direction == Direction::Up);
 
-            if (ofs1 > ofs2)
-                std::swap(ofs1, ofs2);
+			//
 
-            // Convert ofs & len to a rectangle.
-            
-            if( bHorizontal )
-                return Rect(canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h).aligned();
-            else
-                return Rect(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1).aligned();
-        }
-        else
-        {
-            switch (m_direction)
-            {
-                case Direction::Up:
-                {
-                    MU len = canvas.h - m_minFillLength;
-                    MU ofs1 = len - len * oldFraction;
-                    MU ofs2 = len - len * newFraction;
-                    if (ofs1 > ofs2)
-                        std::swap(ofs1, ofs2);
+			spx totalLen = bHorizontal ? canvas.w : canvas.h;
+			spx minFillLength = ptsToSpx(m_minFillLength, scale);
 
-                    return Rect(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1).aligned();
-                }
+			spx sideLen = totalLen - minFillLength / 2;
+			spx centerLen = totalLen - sideLen * 2;
 
-                case Direction::Down:
-                {
-                    MU len = canvas.h - m_minFillLength;
-                    MU ofs1 = len * oldFraction;
-                    MU ofs2 = len * newFraction;
-                    if (ofs1 > ofs2)
-                        std::swap(ofs1, ofs2);
+			// Invert value if direction is inverted
 
-                    return Rect(canvas.x, canvas.y + m_minFillLength + ofs1, canvas.w, ofs2 - ofs1).aligned();
-                }
+			if (bInverted)
+			{
+				oldFraction = 1.f - oldFraction;
+				newFraction = 1.f - newFraction;
+			}
 
-                case Direction::Left:
-                {
-                    MU len = canvas.w - m_minFillLength;
-                    MU ofs1 = len - len * oldFraction;
-                    MU ofs2 = len - len * newFraction;
-                    if (ofs1 > ofs2)
-                        std::swap(ofs1, ofs2);
+			// Calculate offsets.
 
-                    return Rect(canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h).aligned();
-                }
+			spx ofs1, ofs2;
 
-                case Direction::Right:
-                {
-                    MU len = canvas.w - m_minFillLength;
-                    MU ofs1 = len * oldFraction;
-                    MU ofs2 = len * newFraction;
-                    if (ofs1 > ofs2)
-                        std::swap(ofs1, ofs2);
+			if (oldFraction < 0.5f)
+				ofs1 = oldFraction / 2.f * sideLen;
+			else
+				ofs1 = sideLen + centerLen + (oldFraction - 0.5f) * 2.f * sideLen;
 
-                    return Rect(canvas.x + m_minFillLength, canvas.y, ofs2 - ofs1, canvas.h).aligned();
-                }
+			if (newFraction < 0.5f)
+				ofs2 = newFraction / 2.f * sideLen;
+			else
+				ofs2 = sideLen + centerLen + (newFraction - 0.5f) * 2.f * sideLen;
 
-                default:
-                    return Rect();			// Just to avoid compiler warnings.
-            }
+			if (ofs1 > ofs2)
+				std::swap(ofs1, ofs2);
+
+			// Convert ofs & len to a rectangle.
+
+			if (bHorizontal)
+				return align(RectSPX(canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h));
+			else
+				return align(RectSPX(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1));
+		}
+		else
+		{
+			spx minFillLength = ptsToSpx(m_minFillLength, scale);
+
+			switch (m_direction)
+			{
+			case Direction::Up:
+			{
+				spx len = canvas.h - minFillLength;
+				spx ofs1 = len - len * oldFraction;
+				spx ofs2 = len - len * newFraction;
+				if (ofs1 > ofs2)
+					std::swap(ofs1, ofs2);
+
+				return align(RectSPX(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1));
+			}
+
+			case Direction::Down:
+			{
+				spx len = canvas.h - minFillLength;
+				spx ofs1 = len * oldFraction;
+				spx ofs2 = len * newFraction;
+				if (ofs1 > ofs2)
+					std::swap(ofs1, ofs2);
+
+				return align(RectSPX(canvas.x, canvas.y + minFillLength + ofs1, canvas.w, ofs2 - ofs1));
+			}
+
+			case Direction::Left:
+			{
+				spx len = canvas.w - minFillLength;
+				spx ofs1 = len - len * oldFraction;
+				spx ofs2 = len - len * newFraction;
+				if (ofs1 > ofs2)
+					std::swap(ofs1, ofs2);
+
+				return align(RectSPX(canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h));
+			}
+
+			case Direction::Right:
+			{
+				spx len = canvas.w - minFillLength;
+				spx ofs1 = len * oldFraction;
+				spx ofs2 = len * newFraction;
+				if (ofs1 > ofs2)
+					std::swap(ofs1, ofs2);
+
+				return align(RectSPX(canvas.x + minFillLength, canvas.y, ofs2 - ofs1, canvas.h));
+			}
+
+			default:
+				return RectSPX();			// Just to avoid compiler warnings.
+			}
 		}
 	}
 
@@ -369,97 +374,99 @@ namespace wg
 
 	//____ _barFillArea() _____________________________________________________
 
-	Rect FillMeterSkin::_barFillArea(const Rect& _canvas, float value, float value2) const
+	RectSPX FillMeterSkin::_barFillArea(const RectSPX& _canvas, int scale, float value, float value2) const
 	{
-		Rect canvas = (_canvas - m_barPadding);
+		RectSPX canvas = (_canvas - align(ptsToSpx(m_barPadding,scale)));
 
-        if( m_bCenteredBarOrigin )
-        {
-            // If we start from center we ignore value2.
+		spx minFillLength = ptsToSpx(m_minFillLength, scale);
 
-            bool bHorizontal = ( m_direction == Direction::Left || m_direction == Direction::Right );
-            bool bInverted = ( m_direction == Direction::Left || m_direction == Direction::Up );
-            
-            //
-            
-            MU totalLen =  bHorizontal ? canvas.w : canvas.h;
-            
-            MU sideLen = totalLen - m_minFillLength / 2;
-            MU centerLen = totalLen - sideLen * 2;
-            
-            // Invert value if direction is inverted
-            
-            if( bInverted )
-                value = 1.f - value;
-            
-            // Calculate offset and length of bar.
-            
-            MU ofs, len;
-            
-            if( value < 0.5f )
-            {
-                ofs = value / 2.f * sideLen;
-                len = sideLen + centerLen - ofs;
-            }
-            else
-            {
-                ofs = sideLen;
-                len = centerLen + (value-0.5f) * 2.f * sideLen;
-            }
-    
-            // Convert ofs & len to a rectangle.
-            
-            if( bHorizontal )
-                return { canvas.x + ofs, canvas.y, len, canvas.h };
-            else
-                return { canvas.x, canvas.y + ofs, canvas.w, len };
+		if (m_bCenteredBarOrigin)
+		{
+			// If we start from center we ignore value2.
 
-        }
-        else
-        {
-            float beg = value2 >= 0.f ? value : 0.f;
-            float end = value2 >= 0.f ? value2 : value;
+			bool bHorizontal = (m_direction == Direction::Left || m_direction == Direction::Right);
+			bool bInverted = (m_direction == Direction::Left || m_direction == Direction::Up);
 
-            switch (m_direction)
-            {
-                case Direction::Up:
-                {
-                    MU ofs = (canvas.h - m_minFillLength) - (canvas.h - m_minFillLength) * end;
-                    MU len = (canvas.h - m_minFillLength) * (end-beg);
+			//
 
-                    return { canvas.x, canvas.y + ofs, canvas.w, len + m_minFillLength };
-                }
+			spx totalLen = bHorizontal ? canvas.w : canvas.h;
 
-                case Direction::Down:
-                {
-                    MU ofs = (canvas.h - m_minFillLength) * beg;
-                    MU len = (canvas.h - m_minFillLength) * (end - beg);
+			spx sideLen = totalLen - minFillLength / 2;
+			spx centerLen = totalLen - sideLen * 2;
 
-                    return { canvas.x, canvas.y + ofs, canvas.w, len + m_minFillLength };
-                }
+			// Invert value if direction is inverted
 
-                case Direction::Left:
-                {
-                    MU ofs = (canvas.w - m_minFillLength) - (canvas.w - m_minFillLength) * end;
-                    MU len = (canvas.w - m_minFillLength) * (end - beg);
+			if (bInverted)
+				value = 1.f - value;
 
-                    return { canvas.x + ofs, canvas.y, len + m_minFillLength, canvas.h };
-                }
+			// Calculate offset and length of bar.
 
-                case Direction::Right:
-                {
-                    MU ofs = (canvas.w - m_minFillLength) * beg;
-                    MU len = (canvas.w - m_minFillLength) * (end - beg);
+			spx ofs, len;
 
-                    return { canvas.x + ofs, canvas.y, len + m_minFillLength, canvas.h };
-                }
+			if (value < 0.5f)
+			{
+				ofs = value / 2.f * sideLen;
+				len = sideLen + centerLen - ofs;
+			}
+			else
+			{
+				ofs = sideLen;
+				len = centerLen + (value - 0.5f) * 2.f * sideLen;
+			}
 
-                default:
-                    return Rect();            // Just to avoid compiler warnings.
-            }
-        }
+			// Convert ofs & len to a rectangle.
+
+			if (bHorizontal)
+				return { canvas.x + ofs, canvas.y, len, canvas.h };
+			else
+				return { canvas.x, canvas.y + ofs, canvas.w, len };
+
+		}
+		else
+		{
+			float beg = value2 >= 0.f ? value : 0.f;
+			float end = value2 >= 0.f ? value2 : value;
+
+			switch (m_direction)
+			{
+			case Direction::Up:
+			{
+				spx ofs = (canvas.h - minFillLength) - (canvas.h - minFillLength) * end;
+				spx len = (canvas.h - minFillLength) * (end - beg);
+
+				return { canvas.x, canvas.y + ofs, canvas.w, len + minFillLength };
+			}
+
+			case Direction::Down:
+			{
+				spx ofs = (canvas.h - minFillLength) * beg;
+				spx len = (canvas.h - minFillLength) * (end - beg);
+
+				return { canvas.x, canvas.y + ofs, canvas.w, len + minFillLength };
+			}
+
+			case Direction::Left:
+			{
+				spx ofs = (canvas.w - minFillLength) - (canvas.w - minFillLength) * end;
+				spx len = (canvas.w - minFillLength) * (end - beg);
+
+				return { canvas.x + ofs, canvas.y, len + minFillLength, canvas.h };
+			}
+
+			case Direction::Right:
+			{
+				spx ofs = (canvas.w - minFillLength) * beg;
+				spx len = (canvas.w - minFillLength) * (end - beg);
+
+				return { canvas.x + ofs, canvas.y, len + minFillLength, canvas.h };
+			}
+
+			default:
+				return RectSPX();			// Just to avoid compiler warnings.
+			}
+		}
 	}
-	 
+
 	//____ _updateOpacity() ______________________________________________________________
 
 	void FillMeterSkin::_updateOpacity()
