@@ -162,6 +162,7 @@ namespace wg
         
         (*m_pStream) << GfxStream::Header{ GfxChunkId::SetClipList, (uint16_t) (nRectangles * 16) };
         (*m_pStream) << GfxStream::DataChunk{ nRectangles * 16, pRectangles };
+        return true;
     }
 
     //____ clearClipList() _______________________________________________________
@@ -181,6 +182,7 @@ namespace wg
         
         (*m_pStream) << GfxStream::Header{ GfxChunkId::PushClipList, (uint16_t) (nRectangles * 16) };
         (*m_pStream) << GfxStream::DataChunk{ nRectangles * 16, pRectangles };
+        return true;
     }
 
     //____ popClipList() __________________________________________________________
@@ -190,6 +192,7 @@ namespace wg
         GfxDevice::popClipList();
         
         (*m_pStream) << GfxStream::Header{ GfxChunkId::PopClipList, 0 };
+        return true;
     }
 
     //____ setTintColor() __________________________________________________________
@@ -816,7 +819,7 @@ namespace wg
 		
 		m_canvas.size = sz;
 		
-		
+        return true;
     }
 
     void StreamGfxDevice::_canvasWasChanged()

@@ -513,12 +513,39 @@ namespace wg
 		}
 
 		case GfxChunkId::DrawWave:
-			//TODO: Implement!!!
-			break;
-			
 		case GfxChunkId::FlipDrawWave:
-			//TODO: Implement!!!
+		{
+			m_drawTypeInProgress = header.type;
+
+			*m_pStream >> m_wave.dest;
+			*m_pStream >> m_wave.topBorder.length;
+			*m_pStream >> m_wave.topBorder.thickness;
+			*m_pStream >> m_wave.topBorder.color;
+			*m_pStream >> m_wave.topBorder.hold;
+
+			*m_pStream >> m_wave.bottomBorder.length;
+			*m_pStream >> m_wave.bottomBorder.thickness;
+			*m_pStream >> m_wave.bottomBorder.color;
+			*m_pStream >> m_wave.bottomBorder.hold;
+
+			*m_pStream >> m_wave.frontFill;
+			*m_pStream >> m_wave.backFill;
+
+			if (header.type == GfxChunkId::FlipDrawWave)
+				*m_pStream >> m_wave.flip;
+
+			int nTotalSamples = m_wave.topBorder.length + m_wave.bottomBorder.length;
+
+			int bufferSize = sizeof(int) * nTotalSamples;
+
+			m_pTempBuffer = new char[bufferSize];
+			m_bytesLoaded = 0;
+			m_bufferSize = bufferSize;
+
+			m_wave.topBorder.pWave = (int*) m_pTempBuffer;
+			m_wave.bottomBorder.pWave = reinterpret_cast<int*>(m_pTempBuffer) + m_wave.topBorder.length;
 			break;
+		}
 			
 		case GfxChunkId::DrawElipse:
 		{
@@ -570,17 +597,21 @@ namespace wg
 		}
 
 		case GfxChunkId::DrawSegments:
+		case GfxChunkId::FlipDrawSegments:
 		{
-			m_drawTypeInProgress = GfxChunkId::DrawSegments;
+			m_drawTypeInProgress = header.type;
 			
 			RectI		dest;
 			uint16_t	nSegments;
 			uint16_t	nEdgeStrips;
+			GfxFlip		flip = GfxFlip::Normal;
 			TintMode	tintMode;
 			
 			*m_pStream >> dest;
 			*m_pStream >> nSegments;
 			*m_pStream >> nEdgeStrips;
+			if (header.type == GfxChunkId::FlipDrawSegments)
+				*m_pStream >> flip;
 			*m_pStream >> tintMode;
 
 			int nTotalSamples = (nSegments - 1)*nEdgeStrips;
@@ -613,6 +644,8 @@ namespace wg
 			m_seg.nEdgeStrips = nEdgeStrips;
 			m_seg.pEdgeStrips = (int*) &m_pTempBuffer[sizeof(HiColor)*nColors];
 			m_seg.edgeStripPitch = nEdgeStrips;
+			m_seg.flip = flip;
+			m_seg.tintMode = tintMode;
 						
 			for (int i = 0; i < nSegments; i++)
 				* m_pStream >> m_seg.pSegmentColors[i];
@@ -620,9 +653,47 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::FlipDrawSegments:
-			//TODO: Implement!!!
+
+		case GfxChunkId::EdgeSamples:
+		{
+			int nBytes = header.size;
+
+			assert(m_pTempBuffer != nullptr && nBytes <= m_bufferSize - m_bytesLoaded);
+
+			// Stream the compressed samples to end of destination and unpack them.
+
+			*m_pStream >> GfxStream::DataChunk{ nBytes, &m_pTempBuffer[m_bytesLoaded] };
+
+			// Increase counter and possibly render the segment
+
+			m_bytesLoaded += nBytes;
+			if (m_bytesLoaded == m_bufferSize)
+			{
+				switch (m_drawTypeInProgress)
+				{
+				case GfxChunkId::DrawSegments:
+					m_pDevice->drawSegments(m_seg.dest, m_seg.nSegments, m_seg.pSegmentColors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, m_seg.edgeStripPitch, m_seg.tintMode);
+					break;
+				case GfxChunkId::FlipDrawSegments:
+					m_pDevice->flipDrawSegments(m_seg.dest, m_seg.nSegments, m_seg.pSegmentColors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, m_seg.edgeStripPitch, m_seg.flip, m_seg.tintMode);
+					break;
+				case GfxChunkId::DrawWave:
+					m_pDevice->drawWave(m_wave.dest, &m_wave.topBorder, &m_wave.bottomBorder, m_wave.frontFill, m_wave.backFill);
+					break;
+				case GfxChunkId::FlipDrawWave:
+					m_pDevice->flipDrawWave(m_wave.dest, &m_wave.topBorder, &m_wave.bottomBorder, m_wave.frontFill, m_wave.backFill, m_wave.flip);
+					break;
+				default:
+					assert(false);
+				}
+
+				delete[] m_pTempBuffer;
+				m_pTempBuffer = nullptr;
+				m_drawTypeInProgress = GfxChunkId::OutOfData;
+			}
 			break;
+		}
+
 
 		case GfxChunkId::BlitNinePatch:
 		{
@@ -645,43 +716,6 @@ namespace wg
 			*m_pStream >> patch.rigidPartYSections;
 
 			m_pDevice->blitNinePatch(dstRect, dstFrame, patch);
-			break;
-		}
-		case GfxChunkId::EdgeSamples:
-		{
-			int nBytes = header.size;
-
-			assert(m_pTempBuffer != nullptr && nBytes <= m_bufferSize - m_bytesLoaded);
-
-			// Stream the compressed samples to end of destination and unpack them.
-
-			*m_pStream >> GfxStream::DataChunk{ nBytes, &m_pTempBuffer[m_bytesLoaded] };
-			
-			// Increase counter and possibly render the segment
-
-			m_bytesLoaded += nBytes;
-			if (m_bytesLoaded == m_bufferSize)
-			{
-				switch( m_drawTypeInProgress )
-				{
-					case GfxChunkId::DrawSegments:
-						m_pDevice->drawSegments(m_seg.dest, m_seg.nSegments, m_seg.pSegmentColors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, m_seg.edgeStripPitch, m_seg.tintMode);
-						break;
-					case GfxChunkId::FlipDrawSegments:
-						delete [] m_seg.pSegmentColors;
-						break;
-					case GfxChunkId::DrawWave:
-						break;
-					case GfxChunkId::FlipDrawWave:
-						break;
-					default:
-						assert(false);
-				}
-								
-				delete [] m_pTempBuffer;
-				m_pTempBuffer = nullptr;
-				m_drawTypeInProgress = GfxChunkId::OutOfData;
-			}
 			break;
 		}
 
