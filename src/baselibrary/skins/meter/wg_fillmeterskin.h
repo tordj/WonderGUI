@@ -25,6 +25,7 @@
 
 #include <wg_skin.h>
 #include <wg_color.h>
+#include <wg_gradient.h>
 
 namespace wg
 {
@@ -38,45 +39,35 @@ namespace wg
 	class FillMeterSkin : public Skin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			HiColor		backColor = Color::Transparent;
+			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = Color::Blue;
+			Border		contentPadding;
+			Direction	direction = Direction::Right;
+			Border		gfxPadding;
+			Gradient	gradient;
+
+			int			layer = -1;
+			HiColor		minColor = HiColor::Undefined;		// Overrides barColor when both min/max are set
+			HiColor		maxColor = HiColor::Undefined;
+			Size		preferredSize;						// Mandatory
+			bool		startFromCenter = false;
+			pts			startLength = 0;
+		};
+
 		//.____ Creation __________________________________________
 
-		static FillMeterSkin_p create();
-		static FillMeterSkin_p create(Direction direction, HiColor fillColorEmpty, HiColor fillColorFull, HiColor backColor = Color::Transparent, const Border& gfxPadding = Border(), const Border& contentPadding = Border(), pts minFillLength = 0);
+		static FillMeterSkin_p create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Geometry _________________________________________________
-
-		void	setPreferredSize(const Size& preferred);
-
-		//.____ Appearance ____________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void	setDirection(Direction dir);
-		Direction direction() const { return m_direction; }
-
-		void	setGfxPadding(Border padding);
-		Border	gfxPadding() const { return m_barPadding; }
-
-		void	setBackColor(HiColor back);
-		HiColor	backColor() const { return m_backColor; }
-
-		void	setFillColors(HiColor empty, HiColor full);
-		void	setFillColorEmpty(HiColor empty);
-		HiColor	fillColorEmpty() const { return m_barColorEmpty; }
-		void	setFillColorFull(HiColor full);
-		HiColor	fillColorFull() const { return m_barColorFull; }
-
-		void	setMinFillLength(int minFillLength);
-		int     minFillLength() const { return m_minFillLength; }
-
-        void    setCenteredBarOrigin(bool bCenter);
-        bool    centeredBarOrigin() const { return m_bCenteredBarOrigin; }
         
 		//.____ Internal ____________________________________________________
 
@@ -94,8 +85,7 @@ namespace wg
 
 	private:
 		FillMeterSkin();
-		FillMeterSkin(	Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, 
-						const Border& barPadding, const Border& contentPadding, pts minFillLength );
+		FillMeterSkin(	const Blueprint& blueprint );
 		~FillMeterSkin() {};
 
 		RectSPX		_barFillArea(const RectSPX& canvas, int scale, float value, float value2) const;
@@ -104,13 +94,16 @@ namespace wg
 
 		BlendMode	m_blendMode = BlendMode::Undefined;
 		Direction	m_direction;
-		Border		m_barPadding;
-        pts		    m_minFillLength;
+		Border		m_gfxPadding;
+        pts		    m_minBarLength;
 		HiColor		m_barColorEmpty;
 		HiColor		m_barColorFull;
 		HiColor		m_backColor;
 		Size		m_preferredSize;
         bool        m_bCenteredBarOrigin = false;
+
+		Gradient	m_gradient;
+		bool		m_bGradient = false;
 	};
 
 

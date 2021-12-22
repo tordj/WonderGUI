@@ -34,7 +34,7 @@
 
 #include <wg_freetypefont.h>
 
-#define USE_OPEN_GL
+//#define USE_OPEN_GL
 
 
 using namespace wg;
@@ -618,14 +618,14 @@ int main(int argc, char** argv)
 //	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
 //	rangeSliderTest(&pRoot->slot);
-//	pieKnobTest(&pRoot->slot);
+	pieKnobTest(&pRoot->slot);
 //	spinKnobTest(&pRoot->slot);
 //  animKnobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
 //	doubleSkinTest(&pRoot->slot);
 //	timerTest(&pRoot->slot);
 //	animPlayerTest(&pRoot->slot);
-	selectBoxTest(&pRoot->slot);
+//	selectBoxTest(&pRoot->slot);
 //	tileSkinTest(&pRoot->slot);
 //	gradientSkinTest(&pRoot->slot);
 //	bakeSkinTest(&pRoot->slot);
@@ -2065,17 +2065,51 @@ bool pieKnobTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
-	auto pBgSkin1 = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black);
-	auto pBgSkin2 = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black);
+	auto pBgSkin1 = FillMeterSkin::create({ .backColor = Color::Black, .color = Color::Green, .direction = Direction::Up });
+	auto pBgSkin2 = FillMeterSkin::create({ .backColor = Color::Black, .color = Color::Green, .direction = Direction::Right });
 
-	auto pBgSkin3 = PieMeterSkin::create(10.f / 12.f, 0.05f, 4.f / 12.f, Color::Green, Color::Red, Color::DarkGray, 0.75f, Color::Transparent, Color::Black);
 
-	auto pBgSkin4 = PieMeterSkin::create(10.f / 12.f, 1 / 24.f, 4.f / 12.f, Color::Green, Color::Red, Color::DarkGray, 0.25f, Color::Yellow, Color::Black);
-	pBgSkin4->setSlices({ {0.2f,Color::Red,Color::Red},{0.2f,Color::Orange,Color::Orange},{0.6f,Color::Blue,Color::Green} });
+//	auto pBgSkin3 = PieMeterSkin::create(10.f / 12.f, 0.05f, 4.f / 12.f, Color::Green, Color::Red, Color::DarkGray, 0.75f, Color::Transparent, Color::Black);
+	auto pBgSkin3 = PieMeterSkin::create({	
+											.backColor = Color::Black,
+											.emptyColor = Color::DarkGrey,
+											.hubColor = Color::Transparent,
+											.hubSize = 0.75f,
+											.maxLength = 4.f / 12.f,
+											.minLength = 0.05f,
+											.rotation = 10.f / 12.f,
+											.slices = { 1.f, Color::Green, Color::Red } 
+										});
 
-	auto pBgSkin5 = PieMeterSkin::create(10.f / 12.f, 0 / 24.f, 4.f / 12.f, Color::Blue, Color::Blue, Color::DarkGray, 0.25f, Color::Yellow, Color::Black );
-	pBgSkin5->setSlices({ {0.7f,Color::DarkBlue,Color::DarkBlue},{0.2f,Color::Blue,Color::Blue},{0.1f,Color::LightBlue,Color::LightBlue} });
-	pBgSkin5->setStaticSections(false);
+
+	auto pBgSkin4 = PieMeterSkin::create({
+										.backColor = Color::Black,
+										.emptyColor = Color::DarkGrey,
+										.hubColor = Color::Transparent,
+										.hubSize = 0.75f,
+										.maxLength = 4.f / 12.f,
+										.minLength = 1 / 24.f,
+										.rotation = 10.f / 12.f,
+										.slices = { {0.2f, Color::Red, Color::Red}, 
+													{0.2f, Color::Orange, Color::Orange}, 
+													{0.6f,Color::Blue,Color::Green} }
+										});
+
+	auto pBgSkin5 = PieMeterSkin::create({
+									.backColor = Color::Black,
+									.emptyColor = Color::DarkGrey,
+									.hubColor = Color::Yellow,
+									.hubSize = 0.25f,
+									.maxLength = 4.f / 12.f,
+									.minLength = 0 / 24.f,
+									.movingSlices = false,
+									.rotation = 10.f / 12.f,
+									.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
+												{0.2f,Color::Blue,Color::Blue},
+												{0.1f,Color::LightBlue,Color::LightBlue}
+									}
+		});
+
 
 	auto pKnob1 = Knob::create();
 	pKnob1->setSkin( pBgSkin1 );
@@ -2199,7 +2233,8 @@ bool sliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderX = Slider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, Border(0,10,0,10), Border(), true );
+//		auto pBgSkin = FillMeterSkin::create( Direction::Right, Color::Green, Color::Green, Color::Black, Border(0,10,0,10), Border(), true );
+		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black, .color = Color::Green, .gfxPadding = Border(0,10,0,10) } );
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->setSkin( pBgSkin );
@@ -2209,7 +2244,11 @@ bool sliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderY = Slider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, Border(10, 0, 10, 0), Border(), false);
+//		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, Border(10, 0, 10, 0), Border(), false);
+		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black,
+												.color = Color::Green,
+												.direction = Direction::Up,
+												.gfxPadding = Border(10,0,10,0) });
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin( pBgSkin );
@@ -2235,7 +2274,10 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderX = RangeSlider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, Border(0, 10, 0, 10), Border(), true);
+		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black,
+										.color = Color::Green,
+										.direction = Direction::Right,
+										.gfxPadding = Border(0,10,0,10) });
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->setSkin( pBgSkin );
@@ -2246,7 +2288,10 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderY = RangeSlider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, Border(10, 0, 10, 0), Border(), false);
+		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black,
+												.color = Color::Green,
+												.direction = Direction::Up,
+												.gfxPadding = Border(10,0,10,0) });
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin( pBgSkin );
@@ -2367,7 +2412,7 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 
 	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .pivot = { 0.5f, 540 / 600.f }, .placement = { 0.5f,0.5f }, .preferredSize = { 400,400 }, .surface = pSurfArrow });
 
-	auto pFillMeterSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green);
+	auto pFillMeterSkin = FillMeterSkin::create({ .color = Color::Green, .direction = Direction::Up });
 
 	auto pDoubleSkin = DoubleSkin::create(pArrowSkin, pFillMeterSkin);
 
@@ -2392,7 +2437,7 @@ bool timerTest(CStandardSlot_p pSlot)
 //	pSurfClockFace->setSampleMethod(SampleMethod::Bilinear);
 //	auto pSkin = SpinMeterSkin::create(pSurfClockFace, { 419,419 } );
 
-	auto pSkin = FillMeterSkin::create();
+	auto pSkin = FillMeterSkin::create({});
 
 	auto pTimer1 = Timer::create();
 	pTimer1->setSkin( pSkin );

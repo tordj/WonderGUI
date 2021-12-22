@@ -39,67 +39,66 @@ namespace wg
 	{
 	public:
 
+		const static int c_maxSlices = 12;
+
+		//____ Blueprint ______________________________________________________
+
 		struct Slice
 		{
-			float	size;
+			float	size = -1.f;
 			HiColor	minColor;
 			HiColor	maxColor;
 		};
 
+		struct Blueprint
+		{
+			HiColor		backColor = Color::Transparent;
+
+			BlendMode	blendMode = BlendMode::Undefined;
+
+			Border		contentPadding;
+
+			HiColor		emptyColor = Color::DarkBlue;
+
+			Border		gfxPadding;
+
+			HiColor		hubColor = Color::Transparent;
+			float		hubSize = 0.75f;
+
+			int			layer = -1;
+
+			float		maxLength = 0.9f;
+			float		minLength = 0.01f;
+
+			bool		movingSlices = false;
+
+			Size		preferredSize;
+
+			bool		rectangular = false;
+
+			float		rotation = 0.f;
+
+			Slice		slices[c_maxSlices];
+
+
+
+
+
+
+
+
+
+
+		};
+
 		//.____ Creation __________________________________________
 
-		static PieMeterSkin_p create();
-		static PieMeterSkin_p create(	float startAngle, float minLength, float maxLength, HiColor minColor, HiColor maxColor, HiColor emptyColor = Color::Transparent,
-										float hubSize = 0.f, HiColor hubColor = Color::Transparent, 
-										HiColor backColor = Color::Transparent, const Border& gfxPadding = Border(), 
-										const Border& contentPadding = Border(), bool bStaticSlices = true, bool bRectangular = false);
+		static PieMeterSkin_p create( const Blueprint& bp );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Appearance ____________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		bool	setSlices(std::initializer_list<Slice> slices);
-
-		void	setRange(float min, float max);
-		void	setStartAngle(float start);
-		float	startAngle() const { return m_rangeStart; }
-		void	setMinLength(float min);
-		float	minLength() const { return m_minRange;  }
-		void	setMaxLength(float max);
-		float	maxLength() const { return m_maxRange; }
-
-		void	setRectangular(bool bRectangular);
-		bool	isRectangular() const { return m_bRectangular;  }
-
-		void	setStaticSections(bool bStatic);
-		bool	isStaticSections() const { return m_bStaticSections; }
-
-		void	setGfxPadding(Border padding);
-		Border	gfxPadding() const { return m_gfxPadding; }
-
-		void	setEmptyColor(HiColor empty);
-		HiColor	emptyColor() const { return m_emptyColor; }
-
-		void	setHub(float size, HiColor color);
-		void	setHubSize(float hubSize);
-		float	hubSize() const { return m_hubSize; }
-		void	setHubColor(HiColor hubColor);
-		HiColor	hubColor() const { return m_hubColor; }
-
-		void	setBackColor(HiColor back);
-		HiColor	backColor() const { return m_backColor; }
-
-
-		//.____ Geometry _________________________________________________
-
-		void	setPreferredSize(const Size& preferred);
-		Size	preferredSize() const { return m_preferredSize; }
 
 		//.____ Internal ____________________________________________________
 
@@ -119,8 +118,7 @@ namespace wg
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
-		PieMeterSkin();
-		PieMeterSkin(float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor, float hubSize, HiColor hubColor, HiColor backColor, const Border& piePadding, const Border& contentPadding, bool bStaticSections, bool bSquare);
+		PieMeterSkin( const Blueprint& bp );
 		~PieMeterSkin() {};
 
 		void		_updateOpacity();
@@ -141,7 +139,6 @@ namespace wg
 		HiColor		m_backColor = Color::Transparent;
 		HiColor		m_emptyColor = Color::DarkBlue;
 
-		const static int c_maxSlices = 12;
 		Slice		m_slices[c_maxSlices];
 		int			m_nSlices;
 	};

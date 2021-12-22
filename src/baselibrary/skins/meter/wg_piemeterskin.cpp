@@ -35,60 +35,59 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	PieMeterSkin_p PieMeterSkin::create()
+	PieMeterSkin_p PieMeterSkin::create( const Blueprint& bp )
 	{
-		return PieMeterSkin_p(new PieMeterSkin());
-	}
-
-
-	PieMeterSkin_p PieMeterSkin::create(float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor,
-										float hubSize, HiColor hubColor, HiColor backColor, const Border& piePadding, const Border& contentPadding,
-										bool bStaticSections, bool bRectangular)
-	{
-		return PieMeterSkin_p(new PieMeterSkin(start, min, max, minColor, maxColor, emptyColor, hubSize, hubColor, backColor, piePadding, contentPadding, bStaticSections, bRectangular));
+		return PieMeterSkin_p(new PieMeterSkin(bp));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	PieMeterSkin::PieMeterSkin()
+	PieMeterSkin::PieMeterSkin( const Blueprint& bp )
 	{
-		m_slices[0].size = 1.f;
-		m_slices[0].minColor = Color::Green;
-		m_slices[0].maxColor = Color::Green;
-		m_nSlices = 1;
 
-		_updateOpacity();
-
-		m_preferredSize = { 64,64 };
-		m_bIgnoresValue = false;
-	}
-
-	PieMeterSkin::PieMeterSkin(	float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor, float hubSize,
-								HiColor hubColor, HiColor backColor, const Border& piePadding, const Border& contentPadding,
-								bool bStaticSections, bool bRectangular)
-	{
-		m_rangeStart = start;
-		m_minRange = min;
-		m_maxRange = max;
-		m_hubSize = hubSize;
+		m_rangeStart = bp.rotation;
+		m_minRange = bp.minLength;
+		m_maxRange = bp.maxLength;
+		m_hubSize = bp.hubSize;
 		
-		m_hubColor = hubColor;
-		m_backColor = backColor;
-		m_emptyColor = emptyColor;
+		m_hubColor = bp.hubColor;
+		m_backColor = bp.backColor;
+		m_emptyColor = bp.emptyColor;
 
-		m_slices[0].size = 1.f;
-		m_slices[0].minColor = minColor;
-		m_slices[0].maxColor = maxColor;
-		m_nSlices = 1;
+		m_gfxPadding = bp.gfxPadding;
+		m_contentPadding = bp.contentPadding;
+		m_bStaticSections = !bp.movingSlices;
+		m_bRectangular = bp.rectangular;
 
-		m_gfxPadding = piePadding;
-		m_contentPadding = contentPadding;
-		m_bStaticSections = bStaticSections;
-		m_bRectangular = bRectangular;
+		// Copy slices
 
+		m_nSlices = 0;
+		float	pieSize = 0.f;
+
+		for (auto& slice : bp.slices)
+		{
+			if (slice.size <= 0)
+				break;
+
+			m_slices[m_nSlices++] = slice;
+			pieSize += slice.size;
+		}
+
+		// Normalize slice sizes
+
+		if (pieSize > 0 && pieSize != 1.f)
+		{
+			float factor = 1.f / pieSize;
+
+			for (int i = 0; i < m_nSlices; i++)
+				m_slices[i].size *= factor;
+		}
+		
 		_updateOpacity();
 		
-		m_preferredSize = Size(64, 64);
+		m_layer = bp.layer;
+		m_blendMode = bp.blendMode;
+		m_preferredSize = bp.preferredSize.isEmpty() ? Size(64, 64) : bp.preferredSize;
 		m_bIgnoresValue = false;
 	}
 
@@ -97,140 +96,6 @@ namespace wg
 	const TypeInfo& PieMeterSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ setBlendMode() _____________________________________________________
-
-	void PieMeterSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpacity();
-	}
-
-
-	//____ setSlices() ________________________________________________________
-
-	bool PieMeterSkin::setSlices(std::initializer_list<Slice> slices)
-	{
-		// Sanity checking
-
-		if (slices.size() > c_maxSlices)
-		{
-			//TODO: Error handling!
-			return false;
-		}
-
-		// Copy slices
-
-		m_nSlices = 0;
-		float	pieSize = 0.f;
-
-		for (auto& slice : slices)
-		{
-			m_slices[m_nSlices++] = slice;
-			pieSize += slice.size;
-		}
-
-		// Normalize slice sizes
-
-		if (pieSize != 1.f)
-		{
-			float factor = pieSize / 1.f;
-
-			for (int i = 0; i < m_nSlices; i++)
-				m_slices[i].size *= factor;
-		}
-
-		//
-
-		_updateOpacity();
-		return true;
-	}
-
-	//____ setMeter() _________________________________________________________
-
-	void PieMeterSkin::setRange(float min, float max)
-	{
-		m_minRange = min;
-		m_maxRange = max;
-	}
-
-	//____ setStartAngle() ____________________________________________________
-
-	void PieMeterSkin::setStartAngle(float start)
-	{
-		m_rangeStart = start;
-	}
-
-	//____ setMinLength() _____________________________________________________
-
-	void PieMeterSkin::setMinLength(float min)
-	{
-		m_minRange = min;
-	}
-
-	//____ setMaxLength() _____________________________________________________
-
-	void PieMeterSkin::setMaxLength(float max)
-	{
-		m_maxRange = max;
-	}
-
-	//____ setRectangular() _____________________________________________________
-
-	void PieMeterSkin::setRectangular(bool bRectangular)
-	{
-		m_bRectangular = bRectangular;
-	}
-
-	//____ setStaticSections() _____________________________________________________
-
-	void PieMeterSkin::setStaticSections(bool bStatic)
-	{
-		m_bStaticSections = bStatic;
-	}
-
-	//____ setGfxPadding() _____________________________________________________
-
-	void PieMeterSkin::setGfxPadding(Border padding)
-	{
-		m_gfxPadding = padding;
-	}
-
-	//____ setEmptyColor() _____________________________________________________
-
-	void PieMeterSkin::setEmptyColor(HiColor empty)
-	{
-		m_emptyColor = empty;
-	}
-
-	//____ setHub() _____________________________________________________
-
-	void PieMeterSkin::setHub(float size, HiColor color)
-	{
-		m_hubSize = size;
-		m_hubColor = color;
-	}
-
-	//____ setHubSize() _____________________________________________________
-
-	void PieMeterSkin::setHubSize(float hubSize)
-	{
-		m_hubSize = hubSize;
-	}
-
-	//____ setHubColor() _____________________________________________________
-
-	void PieMeterSkin::setHubColor(HiColor hubColor)
-	{
-		m_hubColor = hubColor;
-	}
-
-	//____ setBackColor() _____________________________________________________
-
-	void PieMeterSkin::setBackColor(HiColor back)
-	{
-		m_backColor = back;
 	}
 
 	//____ _render() ______________________________________________________________
@@ -357,19 +222,6 @@ namespace wg
 		}
 
 		pDevice->drawPieChart(canvas, m_rangeStart, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
-	}
-
-	//____ setPreferredSize() _________________________________________________
-
-	void PieMeterSkin::setPreferredSize(const Size& preferred)
-	{
-		if (preferred.w < 0 || preferred.h < 0)
-		{
-			//TODO: Error handling
-			return;
-		}
-
-		m_preferredSize = preferred;
 	}
 
 	//____  _preferredSize() ___________________________________________________
