@@ -2102,7 +2102,7 @@ bool pieKnobTest(CStandardSlot_p pSlot)
 									.hubSize = 0.25f,
 									.maxLength = 4.f / 12.f,
 									.minLength = 0 / 24.f,
-									.movingSlices = false,
+									.movingSlices = true,
 									.rotation = 10.f / 12.f,
 									.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
 												{0.2f,Color::Blue,Color::Blue},

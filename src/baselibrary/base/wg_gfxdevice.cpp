@@ -1615,7 +1615,7 @@ namespace wg
 		//TODO: Early out if no slices, no hud and no background
 		//TODO: Replace with fill if no hub, no slices.
 
-		RectI canvas = _canvas;
+		RectI canvas = _canvas/64;
 		canvas.w = canvas.w + 1 & 0xFFFFFFFC;
 		canvas.h = canvas.h + 1 & 0xFFFFFFFC;
 
@@ -1935,7 +1935,7 @@ namespace wg
 			if (nSegments == 1)
 				fill(quadCanvas[quad], pColors[0]);
 			else
-				_transformDrawSegments(quadCanvas[quad], nSegments, pColors, quadW+1, pEdges, edgePitch, TintMode::Flat, blitFlipTransforms[(int)quadFlip[quad]]);
+				_transformDrawSegments(quadCanvas[quad]*64, nSegments, pColors, quadW+1, pEdges, edgePitch, TintMode::Flat, blitFlipTransforms[(int)quadFlip[quad]]);
 		}
 
 		if( hubBufferSize != 0 )
