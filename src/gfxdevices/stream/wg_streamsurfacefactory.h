@@ -25,6 +25,7 @@
 #pragma once
 
 #include <wg_surfacefactory.h>
+#include <wg_cgfxoutstream.h>
 
 namespace wg
 {
