@@ -24,8 +24,8 @@
 #pragma once
 
 #include <wg_skin.h>
-#include <wg_canimframes.h>
 #include <wg_gradient.h>
+#include <vector>
 
 namespace wg
 {
@@ -36,35 +36,40 @@ namespace wg
 	typedef	WeakPtr<FrameMeterSkin>		FrameMeterSkin_wp;
 
 
-	class FrameMeterSkin : public Skin, protected CAnimFrames::Holder
+	class FrameMeterSkin : public Skin
 	{
 	public:
+		//____ Blueprint ______________________________________________________
+
+		struct FrameBP
+		{
+			Coord	coord;
+			int		duration;					// Millisec
+			GfxFlip	flip = GfxFlip::Normal;
+		};
+
+		struct Blueprint
+		{
+			BlendMode				blendMode = BlendMode::Undefined;
+			HiColor					color = HiColor::Undefined;
+			Border					contentPadding;
+			std::vector<FrameBP>	frames;			// Mandatory
+			Border					gfxPadding;
+			Gradient				gradient;
+			int						layer = -1;
+			Size					size;			// Mandatory
+			Surface_p				surface;		// Mandatory
+
+		};
+
 		//.____ Creation __________________________________________
 
-		static FrameMeterSkin_p create();
-
-		//.____ Components _______________________________________
-
-		CAnimFrames		frames;
+		static FrameMeterSkin_p create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Appearance ____________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void		setColor(HiColor tintColor);
-		HiColor		color() const { return m_color; }
-
-		void		setGradient(const Gradient& gradient);
-		Gradient	gradient() const { return m_gradient; }
-
-		void		setGfxPadding(Border padding);
-		Border		gfxPadding() const { return m_gfxPadding; }
 
 		//.____ Internal ____________________________________________________
 
@@ -83,27 +88,35 @@ namespace wg
 								float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
-		FrameMeterSkin();
+		FrameMeterSkin( const Blueprint& bp );
 		~FrameMeterSkin() {};
+
+		struct Frame
+		{
+			Coord	coord;
+			int		duration;					// Millisec
+			int		timestamp;					// Millisec
+			GfxFlip	flip = GfxFlip::Normal;
+
+		};
+
+
 
 		void		_updateOpacityFlag();
 
-		const AnimFrame * _valueToFrame(float value) const;
-
-		void		_didAddEntries(AnimFrame* pEntry, int nb) override;
-		void		_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb) override;
-		void		_willEraseEntries(AnimFrame* pEntry, int nb) override;
-		void		_didSetAnimFrameSize(CAnimFrames* pComponent) override;
-		void		_didSetAnimSurface(CAnimFrames* pComponent) override;
-
-		Object*		_object() override;
+		const Frame * _valueToFrame(float value) const;
 
 		Border			m_gfxPadding;
 		bool			m_bAllFramesOpaque = false;
 
-		BlendMode		m_blendMode = BlendMode::Undefined;
-		HiColor			m_color = Color::White;
+		BlendMode		m_blendMode;
+		HiColor			m_color;
 		Gradient		m_gradient;
+
+		int					m_duration;		// Millisec
+		Size				m_size;
+		Surface_p			m_pSurface;
+		std::vector<Frame>	m_frames;
 	};
 
 

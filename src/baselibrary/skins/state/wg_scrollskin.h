@@ -65,7 +65,7 @@ namespace wg
 
 			Rect			blockOne;
 			pts				blockSpacing = 0;
-			HiColor			color = HiColor::White;
+			HiColor			color = HiColor::Undefined;
 			Border			contentPadding;
 
 			Gradient		gradient;
@@ -132,7 +132,7 @@ namespace wg
 
 		Gradient	m_gradient;
 
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode;
 
 		Bitmask<uint32_t>	m_stateBlockMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;

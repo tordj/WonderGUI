@@ -26,6 +26,8 @@
 #include <wg_util.h>
 #include <wg_skin.impl.h>
 
+#include <algorithm>
+
 namespace wg
 {
 
@@ -35,16 +37,38 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	FrameMeterSkin_p FrameMeterSkin::create()
+	FrameMeterSkin_p FrameMeterSkin::create( const Blueprint& bp )
 	{
-		return FrameMeterSkin_p(new FrameMeterSkin());
+		return FrameMeterSkin_p(new FrameMeterSkin(bp));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	FrameMeterSkin::FrameMeterSkin() : frames(this)
+	FrameMeterSkin::FrameMeterSkin( const Blueprint& bp)
 	{
+		m_blendMode			= bp.blendMode;
+		m_color				= bp.color;
+		m_contentPadding	= bp.contentPadding;
+		m_gfxPadding		= bp.gfxPadding;
+		m_gradient			= bp.gradient;
+		m_layer				= bp.layer;
+		m_size				= bp.size;
+		m_pSurface			= bp.surface;
+
+		m_frames.reserve(bp.frames.size());
+		
+		int timestamp = 0;
+		for (auto& frame : bp.frames)
+		{
+			m_frames.push_back({ frame.coord, frame.duration, timestamp, frame.flip });
+			timestamp += frame.duration;
+		}
+
+		m_frames.shrink_to_fit();
+
+		m_duration = timestamp;
 		m_bIgnoresValue = false;
+		_updateOpacityFlag();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -54,56 +78,18 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setColor() _____________________________________________________
-
-	void FrameMeterSkin::setColor(HiColor color)
-	{
-		m_color = color;
-		_updateOpacityFlag();
-	}
-
-	//____ setGradient() ______________________________________________________
-
-	void FrameMeterSkin::setGradient(const Gradient& gradient)
-	{
-		m_gradient = gradient;
-		_updateOpacityFlag();
-	}
-
-
-	//____ setBlendMode() _____________________________________________________
-
-	void FrameMeterSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpacityFlag();
-	}
-
-	//____ setGfxPadding() ____________________________________________________
-
-	void FrameMeterSkin::setGfxPadding(Border padding)
-	{
-		m_gfxPadding = padding;
-	}
-
 	//____ _preferredSize() ______________________________________________________________
 
 	SizeSPX FrameMeterSkin::_preferredSize(int scale) const
 	{
-		if (!frames.isEmpty())
-			return SizeSPX::max(align(ptsToSpx(frames.frameSize(),scale)), align(ptsToSpx(m_contentPadding,scale)));
-		else
-			return Skin::_minSize(scale);
+		return SizeSPX::max(align(ptsToSpx(m_size,scale)), align(ptsToSpx(m_contentPadding,scale)));
 	}
 
 	//____ _minSize() ______________________________________________________________
 
 	SizeSPX FrameMeterSkin::_minSize(int scale) const
 	{
-		if (!frames.isEmpty())
-			return SizeSPX::max(SizeSPX(align(ptsToSpx(m_gfxPadding,scale))), SizeSPX(align(ptsToSpx(m_contentPadding,scale))));
-		else
-			return Skin::_minSize(scale);
+		return SizeSPX::max(SizeSPX(align(ptsToSpx(m_gfxPadding,scale))), SizeSPX(align(ptsToSpx(m_contentPadding,scale))));
 	}
 
 
@@ -118,10 +104,10 @@ namespace wg
 		{
 			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
-			pDevice->setBlitSource(frames.surface());
+			pDevice->setBlitSource(m_pSurface);
 
 			NinePatch patch;
-			patch.block = Rect(pFrame->source(), frames.frameSize());
+			patch.block = Rect(pFrame->coord, m_size);
 			patch.frame = m_gfxPadding;
 			pDevice->blitNinePatch(canvas, align(ptsToSpx(m_gfxPadding,scale)), patch,scale);
 		}
@@ -141,9 +127,9 @@ namespace wg
 		if (pFrame)
 		{
 			NinePatch patch;
-			patch.block = Rect(pFrame->source(), frames.frameSize());
+			patch.block = Rect(pFrame->coord, m_size);
 			patch.frame = m_gfxPadding;
-			return Util::markTestNinePatch(ofs, frames._surface(), patch, canvas, scale, opacityTreshold);
+			return Util::markTestNinePatch(ofs, m_pSurface, patch, canvas, scale, opacityTreshold);
 		}
 
 		return false;
@@ -178,7 +164,7 @@ namespace wg
 			if ((m_gradient.isValid && !m_gradient.isOpaque()) || m_color.a != 4096)
 				m_bOpaque = false;
 			else
-				m_bOpaque = frames._surface() ? frames._surface()->isOpaque() : false;
+				m_bOpaque = m_pSurface->isOpaque();
 		}
 		else
 			m_bOpaque = false;
@@ -186,50 +172,35 @@ namespace wg
 
 	//____ _valueToFrame() _________________________________________________
 
-	const AnimFrame* FrameMeterSkin::_valueToFrame(float fraction) const
+	const FrameMeterSkin::Frame* FrameMeterSkin::_valueToFrame(float fraction) const
 	{
-		if (frames.isEmpty())
-			return nullptr;
+		int timestamp = int(fraction * m_duration);
 
-		return frames.find(int(fraction * frames.duration()));
-	}
+		const Frame* pFirst = &m_frames.front();
+		const Frame* pLast = &m_frames.back();
+		const Frame* pFrame = pFirst + (pLast - pFirst);
 
-	//____ _didAddEntries() ___________________________________________________
+		if (timestamp < pFirst->duration)
+			return pFirst;
 
-	void FrameMeterSkin::_didAddEntries(AnimFrame* pEntry, int nb)
-	{
-	}
+		if (timestamp >= pLast->timestamp)
+			return pLast;
 
-	//____ _didMoveEntries() __________________________________________________
-
-	void FrameMeterSkin::_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb)
-	{
-	}
-
-	//____ _willEraseEntries() ________________________________________________
-
-	void FrameMeterSkin::_willEraseEntries(AnimFrame* pEntry, int nb)
-	{
-	}
-
-	//____ _didSetAnimFrameSize() _____________________________________________
-
-	void FrameMeterSkin::_didSetAnimFrameSize(CAnimFrames* pComponent)
-	{
-	}
-
-	//____ _didSetAnimSurface() _______________________________________________
-
-	void FrameMeterSkin::_didSetAnimSurface(CAnimFrames* pComponent)
-	{
-		_updateOpacityFlag();
-	}
-
-	//____ _object() __________________________________________________________
-
-	Object* FrameMeterSkin::_object()
-	{
-		return this;
+		while (true)
+		{
+			if (timestamp < pFrame->timestamp)
+			{
+				pLast = pFrame;
+				pFrame -= (pFrame - pFirst + 1) / 2;
+			}
+			else if (timestamp < pFrame->timestamp + pFrame->duration)
+				return pFrame;
+			else
+			{
+				pFirst = pFrame;
+				pFrame += (pLast - pFrame + 1) / 2;
+			}
+		}
 	}
 
 } // namespace wg

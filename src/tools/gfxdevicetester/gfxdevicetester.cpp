@@ -573,8 +573,7 @@ bool GfxDeviceTester::setup_chrome()
 
 	auto pPlateSurface = m_pVisitor->loadSurface("resources/grey_plate.bmp");
 	assert(pPlateSurface);
-	BlockSkin_p pPlateSkin = BlockSkin::create(pPlateSurface, Border(3));
-	pPlateSkin->setContentPadding(Border(5));
+	BlockSkin_p pPlateSkin = BlockSkin::create({ .contentPadding = 5, .frame = 3, .surface = pPlateSurface } );
 
 	auto pPressablePlateSurface = m_pVisitor->loadSurface("resources/grey_pressable_plate.bmp");
 	assert(pPressablePlateSurface);
@@ -845,8 +844,7 @@ bool GfxDeviceTester::setup_chrome()
 
 
 
-	auto pSkin = BoxSkin::create(1, Color::White, Color::Black);
-	pSkin->setContentPadding(8);
+	auto pSkin = BoxSkin::create(1, Color::White, Color::Black, 8);
 
 	auto pEntrySkin = BoxSkin::create({ .color = Color::White, .contentPadding = 8, .frame = 1, .frameColor = Color::Black,
 										.states = { StateEnum::Hovered, {.color = Color::AntiqueWhite },
@@ -892,10 +890,7 @@ bool GfxDeviceTester::setup_chrome()
 		pList->setSkin( StaticColorSkin::create(Color::White) );
 
 		auto pOddEntrySkin = BoxSkin::create(0, Color::White, Color::White);
-		pOddEntrySkin->setContentPadding(Border(0));
-
 		auto pEvenEntrySkin = BoxSkin::create(0, Color::PaleGreen, Color::PaleGreen);
-		pEvenEntrySkin->setContentPadding(Border(0));
 
 		pList->setEntrySkin(pOddEntrySkin, pEvenEntrySkin);
 

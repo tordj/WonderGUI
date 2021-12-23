@@ -41,7 +41,12 @@ namespace wg
 		if (pSurface == nullptr || !pSurface->isTiling() )
 			return nullptr;
 
-		return TileSkin_p( new TileSkin(pSurface, color, layer) );
+		Blueprint bp;
+		bp.surface = pSurface;
+		bp.color = color;
+		bp.layer = layer;
+
+		return TileSkin_p( new TileSkin(bp) );
 	}
 
 	TileSkin_p TileSkin::create(const Blueprint& blueprint)
@@ -55,19 +60,6 @@ namespace wg
 
 
 	//____ constructor ____________________________________________________________
-
-	TileSkin::TileSkin(Surface * pSurface, HiColor color, int layer)
-	{
-		m_bOpaque			= pSurface->isOpaque();
-		
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
-		{
-			m_stateSurfaces[i] = pSurface;
-			m_stateColors[i] = color;
-		}
-
-		m_layer = layer;
-	}
 
 	TileSkin::TileSkin(const Blueprint& blueprint)
 	{

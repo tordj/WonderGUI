@@ -42,7 +42,11 @@ namespace wg
 
 	ColorSkin_p ColorSkin::create(HiColor color, Border contentPadding )
 	{
-		return ColorSkin_p(new ColorSkin(color, contentPadding));
+		Blueprint bp;
+		bp.color = color;
+		bp.contentPadding = contentPadding;
+
+		return ColorSkin_p(new ColorSkin(bp));
 	}
 
 	//____ constructor ____________________________________________________________
@@ -80,18 +84,6 @@ namespace wg
 		_updateContentShift();
 		_updateOpaqueFlag();
 		_updateUnsetColors();
-	}
-
-	ColorSkin::ColorSkin(HiColor color, Border contentPadding )
-	{
-		m_stateColorMask = 1;
-
-		for (int i = 0; i < StateEnum_Nb; i++)
-			m_color[i] = color;
-
-		m_bOpaque = (color.a == 4096);
-
-		m_contentPadding = contentPadding;
 	}
 
 	//____ typeInfo() _________________________________________________________

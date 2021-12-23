@@ -45,9 +45,9 @@ namespace wg
 		{
 			BlendMode	blendMode = BlendMode::Undefined;
 			Border		contentPadding;
-			HiColor		fillColor = HiColor::Undefined;
+			HiColor		fillColor = HiColor::White;
 			Border		frame;
-			HiColor		frameColor = HiColor::Undefined;
+			HiColor		frameColor = HiColor::Black;
 			int			layer = -1;
 		};
 

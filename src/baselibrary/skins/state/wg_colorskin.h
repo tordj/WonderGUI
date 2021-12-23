@@ -77,19 +77,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-
-		//.____ Appearance _________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-
-		void		setColor(HiColor fill);
-		void		setColor(State state, HiColor fill);
-		void		setColor(std::initializer_list< std::tuple<State, HiColor> > stateColors);
-		HiColor		color(State state) const;
-
-
 		//.____ Internal ____________________________________________________
 
 
@@ -109,7 +96,6 @@ namespace wg
 
 	private:
 		ColorSkin(const Blueprint& blueprint );
-		ColorSkin(HiColor color, Border contentPadding );
 		~ColorSkin() {};
 
 		void	_updateOpaqueFlag();

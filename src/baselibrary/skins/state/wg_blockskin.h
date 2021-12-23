@@ -78,7 +78,7 @@ namespace wg
 			Axis		blockAxis = Axis::Y;
 			Rect		blockOne;
 			pts			blockSpacing = 0;
-			HiColor		color = HiColor::White;
+			HiColor		color = HiColor::Undefined;
 			Border		contentPadding;
 			Border		frame;
 			Gradient	gradient;
@@ -113,7 +113,7 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-	//protected:
+	protected:
 		void		setBlock(Coord ofs);
 		void		setBlock(State state, Coord ofs);
 		void		setBlocks(std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, Coord blockStartOfs = { 0,0 });
@@ -141,7 +141,7 @@ namespace wg
 
 		bool		setRigidPartX(pts ofs, pts length, YSections sections);
 		bool		setRigidPartY(pts ofs, pts length, XSections sections);
-	//public:
+	public:
 
 		//.____ Deprecated ____________________________________________________
 

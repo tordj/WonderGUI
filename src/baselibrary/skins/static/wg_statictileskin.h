@@ -44,7 +44,7 @@ namespace wg
 		struct Blueprint
 		{
 			BlendMode	blendMode = BlendMode::Undefined;
-			HiColor		color = Color::White;
+			HiColor		color = HiColor::Undefined;
 			Border		contentPadding;
 			Gradient	gradient;
 			int			layer = -1;

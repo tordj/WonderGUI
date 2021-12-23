@@ -49,7 +49,7 @@ namespace wg
 			float		angleEnd = 360.f;
 
 			BlendMode	blendMode = BlendMode::Undefined;
-			HiColor		color = HiColor::White;
+			HiColor		color = HiColor::Undefined;
 			Border		contentPadding;
 
 			Border		gfxPadding;

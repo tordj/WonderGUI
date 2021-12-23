@@ -110,11 +110,14 @@ namespace wg
 				m_bGradient = true;
 			}
 			
-			if (tintColor != Color::White)
+			if (tintColor != HiColor::Undefined)
 			{
 				m_prevTintColor = pDevice->tintColor();
-				pDevice->setTintColor(tintColor);
-				m_bTintChanged = true;
+				if (tintColor != m_prevTintColor)
+				{
+					pDevice->setTintColor(tintColor);
+					m_bTintChanged = true;
+				}
 			}
 
 		}

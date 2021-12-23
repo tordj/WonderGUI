@@ -340,8 +340,7 @@ namespace wg
 
 	Widget_p TooltipOverlay::_defaultTooltipGenerator(Position& position, const Widget* pHovered, const Border& margin)
 	{
-		BoxSkin_p pSkin = BoxSkin::create(1, Color::LightYellow, Color::Black);
-		pSkin->setContentPadding(2);
+		BoxSkin_p pSkin = BoxSkin::create(1, Color::LightYellow, Color::Black, 2);
 		auto pWidget = TextDisplay::create();
 		pWidget->setSkin(pSkin);
 

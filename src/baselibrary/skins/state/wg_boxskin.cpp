@@ -42,7 +42,13 @@ namespace wg
 
 	BoxSkin_p BoxSkin::create(Border frame, HiColor fillColor, HiColor frameColor, Border contentPadding )
 	{
-		return BoxSkin_p(new BoxSkin(frame, fillColor, frameColor, contentPadding));
+		Blueprint bp;
+		bp.frame = frame;
+		bp.color = fillColor;
+		bp.frameColor = frameColor;
+		bp.contentPadding = contentPadding;
+
+		return BoxSkin_p(new BoxSkin(bp));
 	}
 
 
@@ -89,24 +95,6 @@ namespace wg
 		_updateContentShift();
 		_updateOpaqueFlag();
 		_updateUnsetColors();
-	}
-
-	BoxSkin::BoxSkin(Border frame, HiColor fillColor, HiColor frameColor, Border contentPadding )
-	{
-		m_frame = frame;
-		m_contentPadding = contentPadding;
-
-		for (int i = 0; i < StateEnum_Nb; i++)
-		{
-			m_fillColor[i] = fillColor;
-			m_frameColor[i] = frameColor;
-		}
-
-		bool hasFrame = (m_frame.width() + m_frame.height() > 0);
-		if (fillColor.a == 4096 && (!hasFrame || frameColor.a == 4096))
-			m_bOpaque = true;
-		else
-			m_bOpaque = false;
 	}
 
 	//____ typeInfo() _________________________________________________________

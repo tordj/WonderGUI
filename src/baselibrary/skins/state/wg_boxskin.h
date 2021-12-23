@@ -103,14 +103,13 @@ namespace wg
 
 	private:
 		BoxSkin( const Blueprint& blueprint );
-		BoxSkin(Border frame, HiColor fillColor, HiColor frameColor, Border contentPadding );
 		~BoxSkin() {};
 
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();
 
 		Border		m_frame;
-		BlendMode	m_blendMode = BlendMode::Blend;
+		BlendMode	m_blendMode = BlendMode::Undefined;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 		Bitmask<uint32_t>	m_stateFrameColorMask = 1;

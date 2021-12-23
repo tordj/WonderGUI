@@ -48,7 +48,7 @@ namespace wg
 		{
 			Surface_p	surface;
 			BlendMode	blendMode = BlendMode::Undefined;
-			HiColor		color = HiColor::White;
+			HiColor		color = HiColor::Undefined;
 			Border		contentPadding;
 			Gradient	gradient;
 			int			layer = -1;

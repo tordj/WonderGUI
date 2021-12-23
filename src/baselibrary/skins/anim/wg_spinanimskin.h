@@ -49,8 +49,8 @@ namespace wg
 			float		angleEnd = 360.f;
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
-			int			cycleDuration = 1000;
 			Border		contentPadding;
+			int			cycleDuration = 1000;
 			Border		destPadding;
 			Gradient	gradient;
 			int			layer = -1;

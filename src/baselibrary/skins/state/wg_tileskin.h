@@ -100,8 +100,6 @@ namespace wg
 
 	private:
 
-		TileSkin();
-		TileSkin(Surface * pSurface, HiColor color, int layer);
 		TileSkin(const Blueprint& blueprint);
 		~TileSkin() {};
 
@@ -109,7 +107,7 @@ namespace wg
 		void		_updateUnsetStateSurfaces();
 		void		_updateUnsetStateColors();
 
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode;
 
 		Bitmask<uint32_t>	m_stateSurfaceMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;

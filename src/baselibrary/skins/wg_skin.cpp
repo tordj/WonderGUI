@@ -37,27 +37,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setContentPadding() ____________________________________________________
-
-	void Skin::setContentPadding(const Border& padding)
-	{
-		m_contentPadding = padding;
-	}
-
-	//____ contentPadding() ______________________________________________________________
-
-	Border Skin::contentPadding() const
-	{
-		return m_contentPadding;
-	}
-
-	//____ setLayer() _________________________________________________________
-
-	void Skin::setLayer(int layer)
-	{
-		m_layer = layer;
-	}
-
 	//____ _minSize() ______________________________________________________________
 
 	SizeSPX Skin::_minSize(int scale) const

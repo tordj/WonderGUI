@@ -52,16 +52,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
-
-		virtual void	setContentPadding(const Border& padding);
-		virtual Border	contentPadding() const;
-
-		//.____ Rendering ______________________________________________________
-
-		void			setLayer(int layer);
-		int				layer() const { return m_layer; }
-
 		//.____ Misc ____________________________________________________
 
 		inline bool		isOpaque() const { return m_bOpaque; }
@@ -72,6 +62,7 @@ namespace wg
 		virtual SizeSPX		_minSize(int scale) const;
 		virtual SizeSPX		_preferredSize(int scale) const;
 
+		inline  bool		_hasContentPadding() const { return m_contentPadding.isEmpty();  }
 		virtual BorderSPX	_contentPadding(int scale, State state) const;
 		virtual SizeSPX		_contentPaddingSize(int scale) const;
 		virtual SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const;

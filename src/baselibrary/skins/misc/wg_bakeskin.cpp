@@ -471,7 +471,7 @@ namespace wg
 							break;
 						}
 
-						if (!(*it)->contentPadding().isEmpty())
+						if (!(*it)->_hasContentPadding())
 						{
 							// Skin is not opaque and padds child, thus we are not opaque.
 							bOpaque = false;
@@ -511,7 +511,7 @@ namespace wg
 								break;
 							}
 
-							if (m_bSkinInSkin && !(*it)->contentPadding().isEmpty())
+							if (m_bSkinInSkin && !(*it)->_hasContentPadding())
 								break;			// is padding inner/upper skins, thus they are irrelevant.
 						}
 					}

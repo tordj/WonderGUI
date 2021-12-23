@@ -61,7 +61,7 @@ namespace wg
 		{
 			BlendMode	blendMode = BlendMode::Undefined;
 			Rect		block;
-			HiColor		color = HiColor::White;
+			HiColor		color = HiColor::Undefined;
 			Border		contentPadding;
 			Border		frame;
 			Gradient	gradient;

@@ -176,7 +176,7 @@ namespace wg
 		if (m_pBackSkin->_isOpaque(state))
 			return true;
 
-		return m_pFrontSkin->_isOpaque(state) && (!m_bSkinInSkin || m_pBackSkin->contentPadding().isEmpty() );
+		return m_pFrontSkin->_isOpaque(state) && (!m_bSkinInSkin || m_pBackSkin->_hasContentPadding() );
 	}
 
 	bool DoubleSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
@@ -321,7 +321,7 @@ namespace wg
 
 		if (m_pFrontSkin)
 		{
-			if (m_pFrontSkin->isOpaque() && (!m_pBackSkin || !m_bSkinInSkin || m_pBackSkin->contentPadding().isEmpty() ))
+			if (m_pFrontSkin->isOpaque() && (!m_pBackSkin || !m_bSkinInSkin || m_pBackSkin->_hasContentPadding() ))
 				m_bOpaque = true;
 
 			if (!m_pFrontSkin->_ignoresValue())
