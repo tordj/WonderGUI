@@ -28,13 +28,14 @@
 #include <wg_gfxdevice.h>
 #include <wg_internal.h>
 
-#include <wg_cselectableslotvector.impl.h>
+#include <wg_cdynamicslotvector.impl.h>
+#include <wg_slotextras.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
-	template class CSelectableSlotVector<PackList::Slot>;
+	template class SelectableSlotCollectionMethods<PackList::Slot, PackList>;
 	template class CDynamicSlotVector<PackList::Slot>;
 
 	const TypeInfo PackList::TYPEINFO = { "PackList", &List::TYPEINFO };
@@ -827,7 +828,7 @@ namespace wg
 
 		while( first <= last )
 		{
-			Slot * pSlot = slots._slot(middle);
+			const Slot * pSlot = slots._slot(middle);
 
 			if( pSlot->m_ofs + pSlot->m_length < ofs )
 				first = middle + 1;
@@ -853,7 +854,7 @@ namespace wg
 
 		while( first <= last )
 		{
-			Slot * pSlot = slots._slot(middle);
+			const Slot * pSlot = slots._slot(middle);
 
 			int cmpRes = m_sortFunc( pSlot->_widget(), pWidget )*negator;
 

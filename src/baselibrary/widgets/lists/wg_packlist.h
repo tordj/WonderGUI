@@ -27,8 +27,8 @@
 
 #include <wg_list.h>
 #include <wg_ccolumnheader.h>
-#include <wg_cselectableslotvector.h>
-
+#include <wg_cdynamicslotvector.h>
+#include <wg_slotextras.h>
 
 
 namespace wg
@@ -94,7 +94,8 @@ namespace wg
 		typedef	StrongComponentPtr<CSlots>	CSlots_p;
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
-		class CSlots : public CSelectableSlotVector<Slot>
+		class CSlots : public CDynamicSlotVector<Slot>,
+			 public SelectableSlotCollectionMethods< PackList::Slot, PackList >
 		{
 			friend class PackList;
 		public:
@@ -117,12 +118,20 @@ namespace wg
 
 			//____ Holder _________________________________________________________
 
-			CSlots(SlotHolder * pHolder) : CSelectableSlotVector<Slot>(pHolder) {}
+			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
 
 
-			inline const PackList *	_holder() const { return static_cast<const PackList*>(CSelectableSlotVector<Slot>::_holder()); }
-			inline PackList *		_holder() { return static_cast<PackList*>(CSelectableSlotVector<Slot>::_holder()); }
+			inline const PackList *	_holder() const { return static_cast<const PackList*>(CDynamicSlotVector<Slot>::_holder()); }
+			inline PackList *		_holder() { return static_cast<PackList*>(CDynamicSlotVector<Slot>::_holder()); }
+
+			inline Slot* _slot(int index) override { return CDynamicSlotVector::_slot(index); }
+			inline const Slot* _slot(int index) const { return CDynamicSlotVector::_slot(index); }
+
+			inline int _size() const override {	return CDynamicSlotVector<Slot>::size(); }
+
 		};
+
+		friend class SelectableSlotCollectionMethods<PackList::Slot, PackList>;
 
 
 		//.____ Creation __________________________________________

@@ -148,8 +148,6 @@ add_library( wondergui
 	components/wg_cnumbereditor.h
 	components/wg_component.cpp
 	components/wg_component.h
-	components/wg_cselectableslotvector.h
-	components/wg_cselectableslotvector.impl.h
 	components/wg_cscrollbar.cpp
 	components/wg_cscrollbar.h
 	components/wg_cshadows.cpp
