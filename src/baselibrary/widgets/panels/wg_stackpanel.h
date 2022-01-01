@@ -26,8 +26,8 @@
 
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_cpaddedslotvector.h>
-
+#include <wg_cdynamicslotvector.h>
+#include <wg_slotextras.h>
 
 namespace wg
 {
@@ -43,9 +43,7 @@ namespace wg
 	*/
 
 	class StackPanel : public Panel
-	{
-		friend class Slot;
-		friend class CSlots;
+	{ 
 
 	public:
 
@@ -97,7 +95,8 @@ namespace wg
 		typedef	StrongComponentPtr<CSlots>	CSlots_p;
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
-		class CSlots : public CPaddedSlotVector<Slot>
+		class CSlots : public CDynamicSlotVector<Slot>, 
+			public PaddedSlotCollectionMethods<Slot,StackPanel>
 		{
 			friend class StackPanel;
 		public:
@@ -107,10 +106,18 @@ namespace wg
 			inline CSlots_p	ptr() { return CSlots_p(this); }
 
 		protected:
+			
+			inline StackPanel* _holder() { return static_cast<StackPanel*>(CDynamicSlotVector<Slot>::_holder()); }
+			inline const StackPanel* _holder() const { return static_cast<const StackPanel*>(CDynamicSlotVector<Slot>::_holder()); }
 
-			CSlots(SlotHolder * pHolder) : CPaddedSlotVector<Slot>(pHolder) {}
+			Slot* _slot(int index) { return CDynamicSlotVector<Slot>::_slot(index); }
+
+			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
 		};
 
+		friend class Slot;
+		friend class CSlots;
+		friend class PaddedSlotCollectionMethods<StackPanel::Slot, StackPanel>;
 
 		//.____ Creation __________________________________________
 

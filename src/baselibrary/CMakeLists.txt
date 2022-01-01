@@ -99,6 +99,8 @@ add_library( wondergui
 	base/wg_skinslotmi.h
 	base/wg_slot.cpp
 	base/wg_slot.h
+	base/wg_slotextras.h
+	base/wg_slotextras.impl.h	
 	base/wg_slotholder.h
 	base/wg_slotiterator.h
 #	base/wg_state.cpp
@@ -146,8 +148,6 @@ add_library( wondergui
 	components/wg_cnumbereditor.h
 	components/wg_component.cpp
 	components/wg_component.h
-	components/wg_cpaddedslotvector.h
-	components/wg_cpaddedslotvector.impl.h
 	components/wg_cselectableslotvector.h
 	components/wg_cselectableslotvector.impl.h
 	components/wg_cscrollbar.cpp

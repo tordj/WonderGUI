@@ -26,7 +26,9 @@
 #include <wg_sizebroker.h>
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_cpaddedslotvector.h>
+#include <wg_cdynamicslotvector.h>
+#include <wg_slotextras.h>
+
 
 namespace wg
 {
@@ -93,7 +95,8 @@ namespace wg
 		typedef	StrongComponentPtr<CSlots>	CSlots_p;
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
-		class CSlots : public CPaddedSlotVector<Slot>
+		class CSlots : public CDynamicSlotVector<Slot>, 
+			public PaddedSlotCollectionMethods<Slot,PackPanel>
 		{ 
 			friend class PackPanel;
 		public:
@@ -110,12 +113,15 @@ namespace wg
 			inline CSlots_p	ptr() { return CSlots_p(this); }
 
 		protected:
-			CSlots(SlotHolder * pHolder) : CPaddedSlotVector<Slot>(pHolder) {}
+			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
 
-			inline PackPanel *		_holder() { return static_cast<PackPanel*>(CPaddedSlotVector<Slot>::_holder()); }
-			inline const PackPanel *	_holder() const { return static_cast<const PackPanel*>(CPaddedSlotVector<Slot>::_holder()); }
+			inline PackPanel *		_holder() { return static_cast<PackPanel*>(CDynamicSlotVector<Slot>::_holder()); }
+			inline const PackPanel *	_holder() const { return static_cast<const PackPanel*>(CDynamicSlotVector<Slot>::_holder()); }
+
+			Slot* _slot(int index) { return CDynamicSlotVector<Slot>::_slot(index); }
 		};
 
+		friend class PaddedSlotCollectionMethods<PackPanel::Slot, PackPanel>;
 
 		//.____ Creation __________________________________________
 
@@ -133,7 +139,7 @@ namespace wg
 		//.____ Geometry ____________________________________________
 
 		void			setAxis( Axis orientaiton );
-		Axis		axis() const { return m_bHorizontal?Axis::X:Axis::Y; }
+		Axis			axis() const { return m_bHorizontal?Axis::X:Axis::Y; }
 
 		//.____ Behavior ________________________________________________________
 

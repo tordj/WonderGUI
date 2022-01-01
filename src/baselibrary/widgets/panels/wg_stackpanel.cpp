@@ -26,14 +26,15 @@
 #include <wg_patches.h>
 #include <wg_internal.h>
 
-#include <wg_cpaddedslotvector.impl.h>
+#include <wg_cdynamicslotvector.impl.h>
+#include <wg_slotextras.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
 	template class CDynamicSlotVector<StackPanel::Slot>;
-	template class CPaddedSlotVector<StackPanel::Slot>;
+	template class PaddedSlotCollectionMethods<StackPanel::Slot,StackPanel>;
 
 	const TypeInfo StackPanel::TYPEINFO = { "StackPanel", &Panel::TYPEINFO };
 	const TypeInfo StackPanel::Slot::TYPEINFO = { "StackPanel::Slot", &PaddedSlot::TYPEINFO };
