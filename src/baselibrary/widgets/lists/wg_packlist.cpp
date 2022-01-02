@@ -35,7 +35,7 @@ namespace wg
 {
 	using namespace Util;
 
-	template class SelectableSlotCollectionMethods<PackList::Slot, PackList>;
+	template class SelectableSlotCollectionMethods<PackList::Slot, PackList::iterator, PackList>;
 	template class CDynamicSlotVector<PackList::Slot>;
 
 	const TypeInfo PackList::TYPEINFO = { "PackList", &List::TYPEINFO };

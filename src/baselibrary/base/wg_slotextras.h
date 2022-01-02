@@ -30,14 +30,14 @@
 
 namespace wg
 {
-	template<class SlotType, class HolderType> class PaddedSlotCollectionMethods
+	template<class SlotType, class IteratorType, class HolderType> class PaddedSlotCollectionMethods
 	{
 	public:
 
 		bool		setPadding(int index, int amount, Border padding);
-		bool		setPadding(const SlotArrayIterator<SlotType>& beg, const SlotArrayIterator<SlotType>& end, Border padding);
+		bool		setPadding(const IteratorType& beg, const IteratorType& end, Border padding);
 		bool		setPadding(int index, int amount, std::initializer_list<Border> padding);
-		bool		setPadding(const SlotArrayIterator<SlotType>& beg, const SlotArrayIterator<SlotType>& end, std::initializer_list<Border> padding);
+		bool		setPadding(const IteratorType& beg, const IteratorType& end, std::initializer_list<Border> padding);
 
 	protected:
 
@@ -49,15 +49,15 @@ namespace wg
 //		virtual SlotType* _end() const = 0;
 	};
 
-	template<class SlotType, class HolderType> class SelectableSlotCollectionMethods
+	template<class SlotType, class IteratorType, class HolderType> class SelectableSlotCollectionMethods
 	{
 	public:
 
 		void	select(int index, int amount);
-		void	select(const  SlotArrayIterator<SlotType>& beg, const  SlotArrayIterator<SlotType>& end);
+		void	select(const   IteratorType& beg, const   IteratorType& end);
 
 		void	unselect(int index, int amount);
-		void	unselect(const  SlotArrayIterator<SlotType>& beg, const  SlotArrayIterator<SlotType>& end);
+		void	unselect(const   IteratorType& beg, const   IteratorType& end);
 
 		void	selectAll();
 		void	unselectAll();

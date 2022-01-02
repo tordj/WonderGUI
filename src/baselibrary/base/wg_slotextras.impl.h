@@ -31,8 +31,8 @@ namespace wg
 {
 	//____ setPadding() _______________________________________________________
 
-	template <class SlotType, class HolderType>
-	bool PaddedSlotCollectionMethods<SlotType,HolderType>::setPadding(int index, int amount, Border padding)
+	template<class SlotType, class IteratorType, class HolderType>
+	bool PaddedSlotCollectionMethods<SlotType,IteratorType,HolderType>::setPadding(int index, int amount, Border padding)
 	{
 		//TODO: Assert
 
@@ -40,8 +40,8 @@ namespace wg
 		return true;
 	}
 
-	template <class SlotType, class HolderType>
-	bool PaddedSlotCollectionMethods<SlotType,HolderType>::setPadding(const SlotArrayIterator<SlotType>& beg, const SlotArrayIterator<SlotType>& end, Border padding)
+	template<class SlotType, class IteratorType, class HolderType>
+	bool PaddedSlotCollectionMethods<SlotType,IteratorType,HolderType>::setPadding(const IteratorType& beg, const IteratorType& end, Border padding)
 	{
 		//TODO: Assert
 
@@ -51,8 +51,8 @@ namespace wg
 		return true;
 	}
 
-	template <class SlotType, class HolderType>
-	bool PaddedSlotCollectionMethods<SlotType,HolderType>::setPadding(int index, int amount, std::initializer_list<Border> padding)
+	template<class SlotType, class IteratorType, class HolderType>
+	bool PaddedSlotCollectionMethods<SlotType,IteratorType,HolderType>::setPadding(int index, int amount, std::initializer_list<Border> padding)
 	{
 		//TODO: Assert
 
@@ -60,8 +60,8 @@ namespace wg
 		return true;
 	}
 
-	template <class SlotType, class HolderType>
-	bool PaddedSlotCollectionMethods<SlotType,HolderType>::setPadding(const SlotArrayIterator<SlotType>& beg, const SlotArrayIterator<SlotType>& end, std::initializer_list<Border> padding)
+	template<class SlotType, class IteratorType, class HolderType>
+	bool PaddedSlotCollectionMethods<SlotType,IteratorType,HolderType>::setPadding(const IteratorType& beg, const IteratorType& end, std::initializer_list<Border> padding)
 	{
 		//TODO: Assert
 
@@ -74,16 +74,16 @@ namespace wg
 
 	//____ select() ___________________________________________________________
 
-	template <class SlotType, class HolderType>
-	void SelectableSlotCollectionMethods<SlotType,HolderType>::select(int index, int amount)
+	template<class SlotType, class IteratorType, class HolderType>
+	void SelectableSlotCollectionMethods<SlotType,IteratorType,HolderType>::select(int index, int amount)
 	{
 		//TODO: Error handling!
 
 		_holder()->_selectSlots(_slot(index), amount);
 	};
 
-	template <class SlotType, class HolderType>
-	void SelectableSlotCollectionMethods<SlotType,HolderType>::select(const SlotArrayIterator<SlotType>& beg, const SlotArrayIterator<SlotType>& end)
+	template<class SlotType, class IteratorType, class HolderType>
+	void SelectableSlotCollectionMethods<SlotType,IteratorType,HolderType>::select(const IteratorType& beg, const IteratorType& end)
 	{
 		//TODO: Error handling!
 
@@ -94,24 +94,24 @@ namespace wg
 
 	//____ selectAll() ________________________________________________________
 
-	template <class SlotType, class HolderType>
-	void SelectableSlotCollectionMethods<SlotType, HolderType>::selectAll()
+	template<class SlotType, class IteratorType, class HolderType>
+	void SelectableSlotCollectionMethods<SlotType,IteratorType,HolderType>::selectAll()
 	{
 		_holder()->_selectSlots(_slot(0), _size());
 	};
 
 	//____ unselect() _________________________________________________________
 
-	template <class SlotType, class HolderType>
-	void SelectableSlotCollectionMethods<SlotType, HolderType>::unselect(int index, int amount)
+	template<class SlotType, class IteratorType, class HolderType>
+	void SelectableSlotCollectionMethods<SlotType,IteratorType,HolderType>::unselect(int index, int amount)
 	{
 		//TODO: Error handling!
 
 		_holder()->_unselectSlots(_slot(index), amount);
 	};
 
-	template <class SlotType, class HolderType>
-	void SelectableSlotCollectionMethods<SlotType, HolderType>::unselect(const SlotArrayIterator<SlotType>& beg, const SlotArrayIterator<SlotType>& end)
+	template<class SlotType, class IteratorType, class HolderType>
+	void SelectableSlotCollectionMethods<SlotType,IteratorType,HolderType>::unselect(const IteratorType& beg, const IteratorType& end)
 	{
 		//TODO: Error handling!
 
@@ -122,8 +122,8 @@ namespace wg
 
 	//____ unselectAll() ______________________________________________________
 
-	template <class SlotType, class HolderType>
-	void SelectableSlotCollectionMethods<SlotType, HolderType>::unselectAll()
+	template<class SlotType, class IteratorType, class HolderType>
+	void SelectableSlotCollectionMethods<SlotType,IteratorType,HolderType>::unselectAll()
 	{
 		_holder()->_unselectSlots( _slot(0), _size() );
 	};

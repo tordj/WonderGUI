@@ -88,6 +88,7 @@ namespace wg
 			SizeSPX			m_preferredSize;			// Cached padded preferred size from the child.
 		};
 
+		using		iterator = SlotArrayIterator<Slot>;
 
 		//____ CSlots ________________________________________________________
 
@@ -96,7 +97,7 @@ namespace wg
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
 		class CSlots : public CDynamicSlotVector<Slot>, 
-			public PaddedSlotCollectionMethods<Slot,PackPanel>
+			public PaddedSlotCollectionMethods<Slot, iterator, PackPanel>
 		{ 
 			friend class PackPanel;
 		public:
@@ -121,7 +122,7 @@ namespace wg
 			Slot* _slot(int index) { return CDynamicSlotVector<Slot>::_slot(index); }
 		};
 
-		friend class PaddedSlotCollectionMethods<PackPanel::Slot, PackPanel>;
+		friend class PaddedSlotCollectionMethods<PackPanel::Slot, iterator, PackPanel>;
 
 		//.____ Creation __________________________________________
 

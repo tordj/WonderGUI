@@ -87,6 +87,7 @@ namespace wg
 			spx				m_prefBreadth;		// Prefereed breadth of this widget.
 		};
 
+		using		iterator = SlotArrayIterator<Slot>;
 
 		//____ CSlots ______________________________________________________
 
@@ -95,12 +96,10 @@ namespace wg
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
 		class CSlots : public CDynamicSlotVector<Slot>,
-			 public SelectableSlotCollectionMethods< PackList::Slot, PackList >
+			 public SelectableSlotCollectionMethods< PackList::Slot, iterator, PackList >
 		{
 			friend class PackList;
 		public:
-
-			using		iterator = SlotArrayIterator<Slot>;
 
 			//.____ Misc __________________________________________________________
 
@@ -131,7 +130,7 @@ namespace wg
 
 		};
 
-		friend class SelectableSlotCollectionMethods<PackList::Slot, PackList>;
+		friend class SelectableSlotCollectionMethods<PackList::Slot, iterator, PackList>;
 
 
 		//.____ Creation __________________________________________

@@ -88,6 +88,7 @@ namespace wg
 			CoordSPX			m_position;
 		};
 
+		using		iterator = SlotArrayIterator<Slot>;
 
 		//____ CSlots ________________________________________________________
 
@@ -96,7 +97,7 @@ namespace wg
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
 		class CSlots : public CDynamicSlotVector<Slot>, 
-			public PaddedSlotCollectionMethods<Slot,StackPanel>
+			public PaddedSlotCollectionMethods<Slot,iterator,StackPanel>
 		{
 			friend class StackPanel;
 		public:
@@ -117,7 +118,7 @@ namespace wg
 
 		friend class Slot;
 		friend class CSlots;
-		friend class PaddedSlotCollectionMethods<StackPanel::Slot, StackPanel>;
+		friend class PaddedSlotCollectionMethods<StackPanel::Slot, iterator, StackPanel>;
 
 		//.____ Creation __________________________________________
 
