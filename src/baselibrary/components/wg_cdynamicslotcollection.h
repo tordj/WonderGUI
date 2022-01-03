@@ -118,17 +118,6 @@ namespace wg
 		virtual void		moveBefore(int index, int sibling) = 0;
 		inline  iterator	moveBefore(const iterator& it, const iterator& sibling)				{ return _moveBefore(it,sibling); }
 
-		//.____ Appearance ____________________________________________________
-
-		virtual void		hide(int index, int amount) = 0;
-		virtual void		hide(const iterator& beg, const iterator& end) = 0;
-
-		virtual void		unhide(int index, int amount) = 0;
-		virtual void		unhide(const iterator& beg, const iterator& end) = 0;
-
-		virtual void		hideAll() = 0;
-		virtual void		unhideAll() = 0;
-
 		//.____ Misc _______________________________________________________
 
 		inline CDynamicSlotCollection_p ptr() { return CDynamicSlotCollection_p(this); }

@@ -129,6 +129,63 @@ namespace wg
 	};
 
 
+	//____ hide() ________________________________________________________________
+
+	template<class SlotType, class IteratorType, class HolderType>
+	void HideableSlotCollectionMethods<SlotType, IteratorType, HolderType>::hide(int index, int amount)
+	{
+		//TODO: Error handling!
+
+		_holder()->_hideSlots(_slot(index), amount);
+	};
+
+	template<class SlotType, class IteratorType, class HolderType>
+	void HideableSlotCollectionMethods<SlotType, IteratorType, HolderType>::hide(const IteratorType& beg, const IteratorType& end)
+	{
+		//TODO: Error handling!
+
+		SlotType* pBeg = static_cast<SlotType*>(beg._slot());
+		SlotType* pEnd = static_cast<SlotType*>(end._slot());
+		_holder()->_hideSlots(pBeg, int(pEnd - pBeg));
+	};
+
+	//____ hideAll() _____________________________________________________________
+
+	template<class SlotType, class IteratorType, class HolderType>
+	void HideableSlotCollectionMethods<SlotType, IteratorType, HolderType>::hideAll()
+	{
+		_holder()->_hideSlots(_slot(0), _size());
+	};
+
+	//____ unhide() ______________________________________________________________
+
+	template<class SlotType, class IteratorType, class HolderType>
+	void HideableSlotCollectionMethods<SlotType, IteratorType, HolderType>::unhide(int index, int amount)
+	{
+		//TODO: Error handling!
+
+		_holder()->_unhideSlots(_slot(index), amount);
+	};
+
+	template<class SlotType, class IteratorType, class HolderType>
+	void HideableSlotCollectionMethods<SlotType, IteratorType, HolderType>::unhide(const IteratorType& beg, const IteratorType& end)
+	{
+		//TODO: Error handling!
+
+		SlotType* pBeg = static_cast<SlotType*>(beg._slot());
+		SlotType* pEnd = static_cast<SlotType*>(end._slot());
+		_holder()->_unhideSlots(pBeg, int(pEnd - pBeg));
+	};
+
+	//____ unhideAll() ________________________________________________________
+
+	template<class SlotType, class IteratorType, class HolderType>
+	void HideableSlotCollectionMethods<SlotType, IteratorType, HolderType>::unhideAll()
+	{
+		_holder()->_unhideSlots(_slot(0), _size());
+	};
+
+
 }
 
 

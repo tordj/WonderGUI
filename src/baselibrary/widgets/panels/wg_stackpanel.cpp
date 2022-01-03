@@ -35,6 +35,7 @@ namespace wg
 
 	template class CDynamicSlotVector<StackPanel::Slot>;
 	template class PaddedSlotCollectionMethods<StackPanel::Slot,StackPanel::iterator,StackPanel>;
+	template class HideableSlotCollectionMethods<StackPanel::Slot, StackPanel::iterator, StackPanel>;
 
 	const TypeInfo StackPanel::TYPEINFO = { "StackPanel", &Panel::TYPEINFO };
 	const TypeInfo StackPanel::Slot::TYPEINFO = { "StackPanel::Slot", &PaddedSlot::TYPEINFO };

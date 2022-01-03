@@ -315,62 +315,6 @@ namespace wg
 		return iterator(pTo);
 	}
 
-	//____ hide() ________________________________________________________________
-
-	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::hide(int index, int amount)
-	{
-		//TODO: Assert
-
-		m_pHolder->_hideSlots(_slot(index), amount);
-	};
-
-	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::hide(const SlotIterator& beg, const SlotIterator& end)
-	{
-		//TODO: Assert
-
-		SlotType * pBeg = static_cast<SlotType*>(beg._slot());
-		SlotType * pEnd = static_cast<SlotType*>(end._slot());
-		m_pHolder->_hideSlots(pBeg, int(pEnd-pBeg) );
-	};
-
-	//____ hideAll() _____________________________________________________________
-
-	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::hideAll()
-	{
-		m_pHolder->_hideSlots(_begin(), size());
-	};
-
-	//____ unhide() ______________________________________________________________
-
-	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::unhide(int index, int amount)
-	{
-		//TODO: Assert
-
-		m_pHolder->_unhideSlots(_slot(index), amount);
-	};
-
-	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::unhide(const SlotIterator& beg, const SlotIterator& end)
-	{
-		//TODO: Assert
-
-		SlotType * pBeg = static_cast<SlotType*>(beg._slot());
-		SlotType * pEnd = static_cast<SlotType*>(end._slot());
-		m_pHolder->_unhideSlots(pBeg, int(pEnd-pBeg) );
-	};
-
-	//____ unhideAll() ________________________________________________________
-
-	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::unhideAll()
-	{
-		m_pHolder->_unhideSlots(_begin(), size());
-	};
-
 	//____ _begin_iterator() ___________________________________________________________
 
 	template < class SlotType>

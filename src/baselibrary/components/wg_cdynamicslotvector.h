@@ -142,18 +142,6 @@ namespace wg
 		void			moveBefore(int index, int sibling) override;
 		iterator		moveBefore(const SlotIterator& it, const SlotIterator& sibling);
 
-		//.____ Appearance ____________________________________________________
-
-		void			hide(int index, int amount) override;
-		void			hide(const SlotIterator& beg, const SlotIterator& end) override;
-
-		void			unhide(int index, int amount) override;
-		void			unhide(const SlotIterator& beg, const SlotIterator& end) override;
-
-		void			hideAll() override;
-
-		void			unhideAll() override;
-
 
 		//.____ Misc _______________________________________________________
 

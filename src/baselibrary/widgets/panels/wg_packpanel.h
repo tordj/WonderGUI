@@ -97,8 +97,9 @@ namespace wg
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
 		class CSlots : public CDynamicSlotVector<Slot>, 
-			public PaddedSlotCollectionMethods<Slot, iterator, PackPanel>
-		{ 
+			public PaddedSlotCollectionMethods<Slot, iterator, PackPanel>,
+			public HideableSlotCollectionMethods<Slot, iterator, PackPanel>
+		{
 			friend class PackPanel;
 		public:
 
@@ -120,9 +121,12 @@ namespace wg
 			inline const PackPanel *	_holder() const { return static_cast<const PackPanel*>(CDynamicSlotVector<Slot>::_holder()); }
 
 			Slot* _slot(int index) { return CDynamicSlotVector<Slot>::_slot(index); }
+
+			inline int _size() const override { return CDynamicSlotVector<Slot>::size(); }
 		};
 
 		friend class PaddedSlotCollectionMethods<PackPanel::Slot, iterator, PackPanel>;
+		friend class HideableSlotCollectionMethods<PackPanel::Slot, iterator, PackPanel>;
 
 		//.____ Creation __________________________________________
 

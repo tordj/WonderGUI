@@ -73,6 +73,30 @@ namespace wg
 	};
 
 
+	template<class SlotType, class IteratorType, class HolderType> class HideableSlotCollectionMethods
+	{
+	public:
+
+		void			hide(int index, int amount);
+		void			hide(const IteratorType& beg, const IteratorType& end);
+
+		void			unhide(int index, int amount);
+		void			unhide(const IteratorType& beg, const IteratorType& end);
+
+		void			hideAll();
+
+		void			unhideAll();
+
+	protected:
+
+		virtual HolderType* _holder() = 0;
+
+		virtual SlotType* _slot(int index) = 0;
+		virtual int			_size() const = 0;
+
+		//		virtual SlotType* _begin() const = 0;
+		//		virtual SlotType* _end() const = 0;
+	};
 
 }
 

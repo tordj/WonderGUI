@@ -26,6 +26,7 @@
 
 #include <wg_panel.h>
 #include <wg_cdynamicslotvector.h>
+#include <wg_slotextras.h>
 
 namespace wg
 {
@@ -193,6 +194,8 @@ namespace wg
 
 		};
 
+		using		iterator = SlotArrayIterator<Slot>;
+
 
 		//____ CSlots ________________________________________________________
 
@@ -200,7 +203,8 @@ namespace wg
 		typedef	StrongComponentPtr<CSlots>	CSlots_p;
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
-		class CSlots : public CDynamicSlotVector<Slot>
+		class CSlots : public CDynamicSlotVector<Slot>,
+			public HideableSlotCollectionMethods<Slot, iterator, FlexPanel>
 		{
 			friend class FlexPanel;
 		public:
@@ -233,9 +237,15 @@ namespace wg
 
 			inline FlexPanel * _holder() { return static_cast<FlexPanel*>(CDynamicSlotVector<Slot>::_holder()); }
 			inline const FlexPanel * _holder() const { return static_cast<const FlexPanel*>(CDynamicSlotVector<Slot>::_holder()); }
+
+			inline Slot* _slot(int index) override { return CDynamicSlotVector::_slot(index); }
+			inline const Slot* _slot(int index) const { return CDynamicSlotVector::_slot(index); }
+
+			inline int _size() const override {	return CDynamicSlotVector<Slot>::size(); }
+
 		};
 
-
+		friend class HideableSlotCollectionMethods<FlexPanel::Slot, iterator, FlexPanel>;
 
 		//.____ Creation __________________________________________
 

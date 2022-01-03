@@ -26,6 +26,7 @@
 #include <wg_internal.h>
 
 #include <wg_cdynamicslotvector.impl.h>
+#include <wg_slotextras.impl.h>
 #include <assert.h>
 
 
@@ -34,6 +35,7 @@ namespace wg
 	using namespace Util;
 
 	template class CDynamicSlotVector<LambdaPanel::Slot>;
+	template class HideableSlotCollectionMethods<LambdaPanel::Slot, LambdaPanel::iterator, LambdaPanel>;
 
 
 	const TypeInfo LambdaPanel::TYPEINFO = { "LambdaPanel", &Panel::TYPEINFO };
