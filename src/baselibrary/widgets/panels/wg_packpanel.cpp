@@ -38,7 +38,7 @@ namespace wg
 	template class HideableSlotCollectionMethods<PackPanel::Slot, PackPanel::iterator, PackPanel>;
 
 	const TypeInfo PackPanel::TYPEINFO = { "PackPanel", &Panel::TYPEINFO };
-	const TypeInfo PackPanel::Slot::TYPEINFO = { "PackPanel::Slot", &PaddedSlot::TYPEINFO };
+	const TypeInfo PackPanel::Slot::TYPEINFO = { "PackPanel::Slot", &DynamicSlot::TYPEINFO };
 
 
 	void PackPanel::Slot::setWeight(float weight) 

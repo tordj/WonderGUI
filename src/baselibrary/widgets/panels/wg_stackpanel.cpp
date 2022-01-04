@@ -38,7 +38,7 @@ namespace wg
 	template class HideableSlotCollectionMethods<StackPanel::Slot, StackPanel::iterator, StackPanel>;
 
 	const TypeInfo StackPanel::TYPEINFO = { "StackPanel", &Panel::TYPEINFO };
-	const TypeInfo StackPanel::Slot::TYPEINFO = { "StackPanel::Slot", &PaddedSlot::TYPEINFO };
+	const TypeInfo StackPanel::Slot::TYPEINFO = { "StackPanel::Slot", &DynamicSlot::TYPEINFO };
 
 
 	//____ constructor ____________________________________________________________

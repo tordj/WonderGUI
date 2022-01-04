@@ -25,9 +25,9 @@
 #pragma once
 
 #include <wg_panel.h>
-#include <wg_paddedslot.h>
-#include <wg_cdynamicslotvector.h>
+#include <wg_slot.h>
 #include <wg_slotextras.h>
+#include <wg_cdynamicslotvector.h>
 
 namespace wg
 {
@@ -49,7 +49,7 @@ namespace wg
 
 		//____ Slot ____________________________________________________________
 
-		class Slot : public PaddedSlot
+		class Slot : public DynamicSlot
 		{
 			friend class StackPanel;
 			friend class CSlots;
@@ -60,6 +60,14 @@ namespace wg
 			//.____ Identification ________________________________________________
 
 			const static TypeInfo	TYPEINFO;
+
+			//.____ Geometry ______________________________________________________
+
+			SLOT_PADDING_METHODS
+
+			//.____ Appearance ________________________________________________
+
+			SLOT_HIDING_METHODS
 
 			//.____ Properties _________________________________________________
 
@@ -75,13 +83,17 @@ namespace wg
 
 		protected:
 
-			Slot(SlotHolder * pHolder) : PaddedSlot(pHolder) {}
+			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder) {}
 			Slot(Slot&& o) = default;
 			Slot& operator=(Slot&& o) = default;
 
+			StackPanel* _holder() { return static_cast<StackPanel*>(DynamicSlot::_holder()); }
+			const StackPanel* _holder() const { return static_cast<const StackPanel*>(DynamicSlot::_holder()); }
 
-			StackPanel *		_holder() { return static_cast<StackPanel*>(PaddedSlot::_holder()); }
-			const StackPanel *	_holder() const { return static_cast<const StackPanel*>(PaddedSlot::_holder()); }
+			SLOT_PADDING_HELPER_METHODS
+
+			Border				m_padding;
+			bool				m_bVisible;
 
 			Placement			m_placement = Placement::Center;
 			SizePolicy2D		m_sizePolicy = SizePolicy2D::Original;

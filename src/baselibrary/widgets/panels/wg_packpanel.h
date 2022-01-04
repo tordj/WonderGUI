@@ -25,9 +25,9 @@
 
 #include <wg_sizebroker.h>
 #include <wg_panel.h>
-#include <wg_paddedslot.h>
-#include <wg_cdynamicslotvector.h>
+#include <wg_slot.h>
 #include <wg_slotextras.h>
+#include <wg_cdynamicslotvector.h>
 
 
 namespace wg
@@ -51,7 +51,7 @@ namespace wg
 
 		//____ Slot ____________________________________________________________
 
-		class Slot : public PaddedSlot
+		class Slot : public DynamicSlot
 		{
 			friend class PackPanel;
 			friend class CSlots;
@@ -72,20 +72,31 @@ namespace wg
 			inline Size		size() const { return Util::spxToPts(m_geo.size(), _holder()->_scale()); }
 			inline Rect		geo() const { return Util::spxToPts(m_geo, _holder()->_scale()); }
 
+			SLOT_PADDING_METHODS
+
+			//.____ Appearance ________________________________________________
+
+			SLOT_HIDING_METHODS
+
 			//.____ Operators __________________________________________
 
 			inline void operator=(Widget * pWidget) { setWidget(pWidget); }
 
 		protected:
 
-			Slot(SlotHolder *pHolder) : PaddedSlot(pHolder) {}
+			Slot(SlotHolder *pHolder) : DynamicSlot(pHolder) {}
 			Slot(Slot&& o) = default;
 			Slot& operator=(Slot&& o) = default;
 
-			bool			m_bResizeRequired = false;
-			float			m_weight = 1.f;				// Weight for space allocation.
-			RectSPX			m_geo;						// Real geo of child (no padding included).
-			SizeSPX			m_preferredSize;			// Cached padded preferred size from the child.
+			SLOT_PADDING_HELPER_METHODS
+
+			Border		m_padding;
+			bool		m_bVisible;
+
+			bool		m_bResizeRequired = false;
+			float		m_weight = 1.f;				// Weight for space allocation.
+			RectSPX		m_geo;						// Real geo of child (no padding included).
+			SizeSPX		m_preferredSize;			// Cached padded preferred size from the child.
 		};
 
 		using		iterator = SlotArrayIterator<Slot>;

@@ -80,7 +80,6 @@ add_library( wondergui
 	base/wg_nullgfxdevice.h
 	base/wg_object.cpp
 	base/wg_object.h
-	base/wg_paddedslot.h
 	base/wg_patches.cpp
 	base/wg_patches.h
 	base/wg_pointers.h
