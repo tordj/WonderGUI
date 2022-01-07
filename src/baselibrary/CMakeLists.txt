@@ -88,8 +88,6 @@ add_library( wondergui
 	base/wg_resdb.cpp
 	base/wg_resdb.h
 	base/wg_resloader.h
-	base/wg_selectableslot.h
-	base/wg_shadow.h
 	base/wg_skinslot.cpp
 	base/wg_skinslot.h
 	base/wg_skinslotmanager.cpp
@@ -149,8 +147,6 @@ add_library( wondergui
 	components/wg_component.h
 	components/wg_cscrollbar.cpp
 	components/wg_cscrollbar.h
-	components/wg_cshadows.cpp
-	components/wg_cshadows.h
 	components/wg_cslot.cpp
 	components/wg_cslot.h
 	components/wg_cslotarray.h

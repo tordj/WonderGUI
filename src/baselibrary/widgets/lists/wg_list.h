@@ -27,7 +27,8 @@
 #include <wg_widget.h>
 #include <wg_container.h>
 #include <wg_skin.h>
-#include <wg_selectableslot.h>
+#include <wg_slot.h>
+#include <wg_slotextras.h>
 
 namespace wg
 {
@@ -52,7 +53,7 @@ namespace wg
 
 		//____ Slot ____________________________________________________________
 
-		class Slot : public SelectableSlot
+		class Slot : public DynamicSlot
 		{
 			friend class List;
 		public:
@@ -61,8 +62,19 @@ namespace wg
 
 			const static TypeInfo	TYPEINFO;
 
+			//.____ State __________________________________________________________
+
+			SLOT_SELECTING_METHODS
+
+			//.____ Appearance _________________________________________________
+
+			SLOT_HIDING_METHODS
+
 		protected:
-			Slot(SlotHolder * pHolder) : SelectableSlot(pHolder) {}
+			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder) {}
+
+			bool		m_bVisible = false;
+			bool		m_bSelected = false;
 		};
 
 

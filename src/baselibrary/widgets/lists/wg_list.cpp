@@ -32,7 +32,7 @@ namespace wg
 
 
 	const TypeInfo List::TYPEINFO = { "List", &Container::TYPEINFO };
-	const TypeInfo List::Slot::TYPEINFO = { "List::Slot", &SelectableSlot::TYPEINFO };
+	const TypeInfo List::Slot::TYPEINFO = { "List::Slot", &DynamicSlot::TYPEINFO };
 
 
 

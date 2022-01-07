@@ -66,8 +66,6 @@
 #include <wg_receiver.h>
 #include <wg_resdb.h>
 #include <wg_resloader.h>
-#include <wg_selectableslot.h>
-#include <wg_shadow.h>
 #include <wg_skinslot.h>
 #include <wg_skinslotmanager.h>
 #include <wg_skinslotmi.h>
@@ -102,7 +100,6 @@
 #include <wg_cnumbereditor.h>
 #include <wg_component.h>
 #include <wg_cscrollbar.h>
-#include <wg_cshadows.h>
 #include <wg_cslot.h>
 #include <wg_cslotarray.h>
 #include <wg_cstandardslot.h>

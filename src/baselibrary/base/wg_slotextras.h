@@ -50,6 +50,11 @@
 											return m_pWidget->_matchingHeight(paddedWidth - paddingSize.w) + paddingSize.h; \
 										} 
 
+#define		SLOT_SELECTING_METHODS	inline void	select() { _holder()->_selectSlots(this, 1); } \
+									inline void	unselect() { _holder()->_selectSlots(this, 1); } \
+									inline void	setSelected(bool bSelected) { if (bSelected) _holder()->_selectSlots(this, 1); else _holder()->_unselectSlots(this, 1); } \
+									inline bool isSelected() const { return m_bSelected; }
+
 
 namespace wg
 {

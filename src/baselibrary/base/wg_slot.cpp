@@ -28,6 +28,4 @@ namespace wg
 	const TypeInfo	StaticSlot::TYPEINFO = { "StaticSlot", nullptr };
 
 	const TypeInfo	DynamicSlot::TYPEINFO = { "DynamicSlot", &StaticSlot::TYPEINFO };
-
-	const TypeInfo	SelectableSlot::TYPEINFO = { "SelectableSlot", &DynamicSlot::TYPEINFO };
 }
