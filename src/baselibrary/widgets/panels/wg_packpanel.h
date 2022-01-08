@@ -72,11 +72,11 @@ namespace wg
 			inline Size		size() const { return Util::spxToPts(m_geo.size(), _holder()->_scale()); }
 			inline Rect		geo() const { return Util::spxToPts(m_geo, _holder()->_scale()); }
 
-			SLOT_PADDING_METHODS
+			SLOT_PADDING_METHODS(PackPanel)
 
 			//.____ Appearance ________________________________________________
 
-			SLOT_HIDING_METHODS
+			SLOT_HIDING_METHODS(PackPanel)
 
 			//.____ Operators __________________________________________
 
@@ -205,10 +205,11 @@ namespace wg
 		void		_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
-		void		_hideSlots(StaticSlot *, int nb) override;
-		void		_unhideSlots(StaticSlot *, int nb) override;
-		void		_repadSlots(StaticSlot *, int nb, Border padding) override;
-		void		_repadSlots(StaticSlot *, int nb, const Border * pPaddings) override;
+
+		void		_hideSlots(StaticSlot *, int nb);
+		void		_unhideSlots(StaticSlot *, int nb);
+		void		_repadSlots(StaticSlot *, int nb, Border padding);
+		void		_repadSlots(StaticSlot *, int nb, const Border * pPaddings);
 
 		// Needed by CSlots
 

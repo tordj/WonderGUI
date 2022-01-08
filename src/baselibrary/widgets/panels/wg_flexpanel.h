@@ -161,6 +161,10 @@ namespace wg
 			inline Size		size() const { return Util::spxToPts(m_realGeo.size(), _holder()->_scale()); }
 			inline Rect		geo() const { return Util::spxToPts(m_realGeo, _holder()->_scale()); }
 
+			//.____ Appearance ________________________________________________
+
+			SLOT_HIDING_METHODS(FlexPanel)
+
 			//.____ Operators __________________________________________
 
 			inline void operator=(Widget * pWidget) { setWidget(pWidget); }
@@ -300,8 +304,8 @@ namespace wg
 		void		_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
-		void		_hideSlots(StaticSlot *, int nb) override;
-		void		_unhideSlots(StaticSlot *, int nb) override;
+		void		_hideSlots(StaticSlot *, int nb);
+		void		_unhideSlots(StaticSlot *, int nb);
 
 	private:
 		void		_refreshRealGeo(Slot * pSlot, bool bForceRefresh = false);

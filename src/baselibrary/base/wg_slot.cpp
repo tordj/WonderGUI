@@ -21,7 +21,6 @@
 =========================================================================*/
 
 #include <wg_slot.h>
-#include <wg_selectableslot.h>
 
 namespace wg
 {

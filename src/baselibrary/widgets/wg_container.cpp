@@ -182,32 +182,6 @@ namespace wg
 		}
 	}
 
-	//____ _selectSlots() _____________________________________________________
-
-	void Container::_selectSlots(StaticSlot * pSlot, int nb)
-	{
-		return;				// By default we don't support selection
-	}
-
-	//____ _unselectSlots() ___________________________________________________
-
-	void Container::_unselectSlots(StaticSlot * pSlot, int nb)
-	{
-		return;				// By default we don't support selection
-	}
-
-	//____ _repadSlots() ______________________________________________________
-
-	void Container::_repadSlots(StaticSlot * pSlot, int nb, Border padding)
-	{
-		return;				// By default we don't support padding
-	}
-
-	void Container::_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding)
-	{
-		return;				// By default we don't support padding
-	}
-
 	//____ _didAddSlots() _____________________________________________________
 
 	void Container::_didAddSlots(StaticSlot * pSlot, int nb)
@@ -227,20 +201,6 @@ namespace wg
 	void Container::_willEraseSlots(StaticSlot * pSlot, int nb)
 	{
 		return;				// By default we don't support adding/moving/erasing slots
-	}
-
-	//____ _hideSlots() _______________________________________________________
-
-	void Container::_hideSlots(StaticSlot * pSlot, int nb)
-	{
-		return;				// By default we don't support hiding
-	}
-
-	//____ _unhideSlots() _____________________________________________________
-
-	void Container::_unhideSlots(StaticSlot * pSlot, int nb)
-	{
-		return;				// By default we don't support hiding
 	}
 
 	//____ _isPanel() ______________________________________________________________

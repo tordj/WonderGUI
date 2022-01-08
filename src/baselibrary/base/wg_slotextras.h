@@ -28,13 +28,15 @@
 #include <wg_geo.h>
 
 
-#define		SLOT_PADDING_METHODS	inline void		setPadding(Border padding) { _holder()->_repadSlots(this, 1, padding); } \
-									inline Border	padding() const { return m_padding; }
+#define		SLOT_PADDING_METHODS(HOLDERTYPE) \
+	inline void		setPadding(Border padding) { static_cast<HOLDERTYPE*>(_holder())->_repadSlots(this, 1, padding); } \
+	inline Border	padding() const { return m_padding; }
 
-#define		SLOT_HIDING_METHODS		inline void		hide() { _holder()->_hideSlots(this, 1); } \
-									inline void		unhide() { _holder()->_unhideSlots(this, 1); } \
-									inline void		setVisible(bool bVisible) { if (bVisible) _holder()->_unhideSlots(this, 1); else _holder()->_unhideSlots(this, 1); } \
-									inline bool		isVisible() const { return m_bVisible; }
+#define		SLOT_HIDING_METHODS(HOLDERTYPE) \
+	inline void		hide() { static_cast<HOLDERTYPE*>(_holder())->_hideSlots(this, 1); } \
+	inline void		unhide() { static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); } \
+	inline void		setVisible(bool bVisible) { if (bVisible) static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); else static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); } \
+	inline bool		isVisible() const { return m_bVisible; }
 
 #define		SLOT_PADDING_HELPER_METHODS	SizeSPX		_paddedPreferredSize(int scale) const { return m_pWidget->_preferredSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); } \
 										SizeSPX		_paddedMinSize(int scale) const { return m_pWidget->_minSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); } \
@@ -50,10 +52,11 @@
 											return m_pWidget->_matchingHeight(paddedWidth - paddingSize.w) + paddingSize.h; \
 										} 
 
-#define		SLOT_SELECTING_METHODS	inline void	select() { _holder()->_selectSlots(this, 1); } \
-									inline void	unselect() { _holder()->_selectSlots(this, 1); } \
-									inline void	setSelected(bool bSelected) { if (bSelected) _holder()->_selectSlots(this, 1); else _holder()->_unselectSlots(this, 1); } \
-									inline bool isSelected() const { return m_bSelected; }
+#define		SLOT_SELECTING_METHODS(HOLDERTYPE) \
+	inline void	select() { static_cast<HOLDERTYPE*>(_holder())->_selectSlots(this, 1); } \
+	inline void	unselect() { static_cast<HOLDERTYPE*>(_holder())->_selectSlots(this, 1); } \
+	inline void	setSelected(bool bSelected) { if (bSelected) static_cast<HOLDERTYPE*>(_holder())->_selectSlots(this, 1); else static_cast<HOLDERTYPE*>(_holder())->_unselectSlots(this, 1); } \
+	inline bool isSelected() const { return m_bSelected; }
 
 
 namespace wg

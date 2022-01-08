@@ -180,18 +180,9 @@ namespace wg
 		void			_releaseChild( StaticSlot * pSlot ) override;
 		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override;
 
-		void			_selectSlots(StaticSlot * pSlot, int nb) override;
-		void			_unselectSlots(StaticSlot * pSlot, int nb) override;
-
-		void			_repadSlots(StaticSlot * pSlot, int nb, Border padding) override;
-		void			_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding) override;
-
 		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 		void			_willEraseSlots(StaticSlot * pSlot, int nb) override;
-
-		void			_hideSlots(StaticSlot * pSlot, int nb) override;
-		void			_unhideSlots(StaticSlot * pSlot, int nb) override;
 
 		// Methods for skin to access
 

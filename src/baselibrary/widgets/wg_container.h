@@ -105,18 +105,9 @@ namespace wg
 			virtual void			_releaseChild(StaticSlot * pSlot) override = 0;
 			virtual void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override = 0;
 
-			virtual void			_selectSlots(StaticSlot * pSlot, int nb) override;
-			virtual void			_unselectSlots(StaticSlot * pSlot, int nb) override;
-
-			virtual void			_repadSlots(StaticSlot * pSlot, int nb, Border padding) override;
-			virtual void			_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding) override;
-
 			virtual void			_didAddSlots(StaticSlot * pSlot, int nb) override;
 			virtual void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 			virtual void			_willEraseSlots(StaticSlot * pSlot, int nb) override;
-
-			virtual void			_hideSlots(StaticSlot * pSlot, int nb) override;
-			virtual void			_unhideSlots(StaticSlot * pSlot, int nb) override;
 
 			//
 

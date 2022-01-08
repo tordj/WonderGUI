@@ -63,11 +63,11 @@ namespace wg
 
 			//.____ Geometry ______________________________________________________
 
-			SLOT_PADDING_METHODS
+			SLOT_PADDING_METHODS(StackPanel)
 
 			//.____ Appearance ________________________________________________
 
-			SLOT_HIDING_METHODS
+			SLOT_HIDING_METHODS(StackPanel)
 
 			//.____ Properties _________________________________________________
 
@@ -191,10 +191,10 @@ namespace wg
 		void		_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
-		void		_hideSlots(StaticSlot *, int nb) override;
-		void		_unhideSlots(StaticSlot *, int nb) override;
-		void		_repadSlots(StaticSlot *, int nb, Border padding) override;
-		void		_repadSlots(StaticSlot *, int nb, const Border * pPaddings) override;
+		void		_hideSlots(StaticSlot *, int nb);
+		void		_unhideSlots(StaticSlot *, int nb);
+		void		_repadSlots(StaticSlot *, int nb, Border padding);
+		void		_repadSlots(StaticSlot *, int nb, const Border * pPaddings);
 
 		//
 

@@ -706,32 +706,6 @@ namespace wg
 		}
 	}
 
-	//____ _selectSlots() _____________________________________________________
-
-	void RootPanel::_selectSlots(StaticSlot* pSlot, int nb)
-	{
-		return;				// RootPanel doesn't support selection
-	}
-
-	//____ _unselectSlots() ___________________________________________________
-
-	void RootPanel::_unselectSlots(StaticSlot* pSlot, int nb)
-	{
-		return;				// RootPanel doesn't support selection
-	}
-
-	//____ _repadSlots() ______________________________________________________
-
-	void RootPanel::_repadSlots(StaticSlot* pSlot, int nb, Border padding)
-	{
-		return;				// RootPanel doesn't support padding
-	}
-
-	void RootPanel::_repadSlots(StaticSlot* pSlot, int nb, const Border* pPadding)
-	{
-		return;				// RootPanel doesn't support padding
-	}
-
 	//____ _didAddSlots() _____________________________________________________
 
 	void RootPanel::_didAddSlots(StaticSlot* pSlot, int nb)
@@ -751,20 +725,6 @@ namespace wg
 	void RootPanel::_willEraseSlots(StaticSlot* pSlot, int nb)
 	{
 		return;				// RootPanel doesn't support adding/moving/erasing slots
-	}
-
-	//____ _hideSlots() _______________________________________________________
-
-	void RootPanel::_hideSlots(StaticSlot* pSlot, int nb)
-	{
-		return;				// RootPanel doesn't support hiding
-	}
-
-	//____ _unhideSlots() _____________________________________________________
-
-	void RootPanel::_unhideSlots(StaticSlot* pSlot, int nb)
-	{
-		return;				// RootPanel doesn't support hiding
 	}
 
 	//____ _skinValue() _______________________________________________________

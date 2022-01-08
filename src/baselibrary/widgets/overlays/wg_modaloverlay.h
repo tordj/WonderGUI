@@ -178,8 +178,8 @@ namespace wg
 		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 		void			_willEraseSlots(StaticSlot * pSlot, int nb) override;
-		void			_hideSlots(StaticSlot *, int nb) override;
-		void			_unhideSlots(StaticSlot *, int nb) override;
+		void			_hideSlots(StaticSlot *, int nb);
+		void			_unhideSlots(StaticSlot *, int nb);
 
 		// Overloaded from Overlay
 

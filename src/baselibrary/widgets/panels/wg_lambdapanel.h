@@ -188,8 +188,8 @@ namespace wg
 		void		_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
-		void		_hideSlots(StaticSlot * pSlot, int nb) override;
-		void		_unhideSlots(StaticSlot * pSlot, int nb) override;
+		void		_hideSlots(StaticSlot * pSlot, int nb);
+		void		_unhideSlots(StaticSlot * pSlot, int nb);
 
 	private:
 		void		_updateSlotGeo(StaticSlot * pSlot, int nb);

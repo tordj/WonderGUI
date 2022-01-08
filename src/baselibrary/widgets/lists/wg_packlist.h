@@ -71,6 +71,14 @@ namespace wg
 
 			const static TypeInfo	TYPEINFO;
 
+			//.____ State __________________________________________________________
+
+			SLOT_SELECTING_METHODS(PackList)
+
+			//.____ Appearance _________________________________________________
+
+			SLOT_HIDING_METHODS(PackList)
+
 			//.____ Operators __________________________________________
 
 			inline void operator=(Widget * pWidget) { setWidget(pWidget); }
@@ -230,11 +238,11 @@ namespace wg
 		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 		void			_willEraseSlots(StaticSlot * pSlot, int nb) override;
 
-		void			_hideSlots(StaticSlot * pSlot, int nb) override;
-		void			_unhideSlots(StaticSlot * pSlot, int nb) override;
+		void			_hideSlots(StaticSlot * pSlot, int nb);
+		void			_unhideSlots(StaticSlot * pSlot, int nb);
 
-		void			_selectSlots(StaticSlot * pSlot, int nb) override;
-		void			_unselectSlots(StaticSlot * pSlot, int nb) override;
+		void			_selectSlots(StaticSlot * pSlot, int nb);
+		void			_unselectSlots(StaticSlot * pSlot, int nb);
 
 
 		// Overloaded from WidgetComponent::Holder

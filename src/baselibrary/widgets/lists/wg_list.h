@@ -28,7 +28,6 @@
 #include <wg_container.h>
 #include <wg_skin.h>
 #include <wg_slot.h>
-#include <wg_slotextras.h>
 
 namespace wg
 {
@@ -61,14 +60,6 @@ namespace wg
 			//.____ Identification ________________________________________________
 
 			const static TypeInfo	TYPEINFO;
-
-			//.____ State __________________________________________________________
-
-			SLOT_SELECTING_METHODS
-
-			//.____ Appearance _________________________________________________
-
-			SLOT_HIDING_METHODS
 
 		protected:
 			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder) {}

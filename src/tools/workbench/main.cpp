@@ -2975,6 +2975,7 @@ void nisBlendTest()
 void commonAncestorTest()
 {
 	auto pBrother = PackPanel::create();
+
 	auto pMe = PackPanel::create();
 	auto pParent = PackPanel::create();
 	auto pUncle = PackPanel::create();
