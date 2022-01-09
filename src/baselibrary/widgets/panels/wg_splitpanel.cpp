@@ -181,13 +181,13 @@ namespace wg
 		if (m_bHorizontal)
 		{
 			sz.w = firstSz.w + secondSz.w + _handleThickness(scale);
-			sz.h = max(firstSz.h, secondSz.h);
+			sz.h = std::max(firstSz.h, secondSz.h);
 			if (m_handleSkin.preferredSize(scale).h > sz.h)
 				sz.h = m_handleSkin.preferredSize(scale).h;
 		}
 		else
 		{
-			sz.w = max(firstSz.w, secondSz.w);
+			sz.w = std::max(firstSz.w, secondSz.w);
 			sz.h = firstSz.h + secondSz.h + _handleThickness(scale);
 			if (m_handleSkin.preferredSize(scale).w > sz.w)
 				sz.w = m_handleSkin.preferredSize(scale).w;

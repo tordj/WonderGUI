@@ -646,7 +646,7 @@ namespace wg
 		spx maxLen = m_axis == Axis::X ? availableArea.w : availableArea.h;
 		spx minLen = m_axis == Axis::X ? m_skins[Part::Bar]->_preferredSize(scale).w : m_skins[Part::Bar]->_preferredSize(scale).h;
 
-		spx length = max(minLen,align(maxLen * fracLen));
+		spx length = std::max(minLen,align(maxLen * fracLen));
 		spx ofs = align((maxLen - length) * fracOfs);
 
 		if (m_axis == Axis::X)

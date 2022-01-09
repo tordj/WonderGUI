@@ -970,7 +970,7 @@ namespace wg
 
 		int ofs;
 		if( selectOfs != caretOfs )
-			ofs = min( selectOfs, caretOfs );
+			ofs = std::min( selectOfs, caretOfs );
 		else
 			ofs = caretOfs > 0 ? caretOfs-1 : 0;
 

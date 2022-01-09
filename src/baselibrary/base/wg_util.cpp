@@ -883,7 +883,7 @@ RectI sourceOfs;
 		float wScale = object.w / (float)boundaries.w;
 		float hScale = object.h / (float)boundaries.h;
 
-		float useScale = max(wScale, hScale);
+		float useScale = std::max(wScale, hScale);
 
 		return object / useScale;
 	}

@@ -733,7 +733,7 @@ namespace wg
 					}
 					else
 					{
-						int nMoveToNew = min(entries, nToMove);
+						int nMoveToNew = std::min(entries, nToMove);
 						int nMoveToExisting = nToMove - nMoveToNew;
 
 						SlotType * pFrom = _end();
@@ -765,7 +765,7 @@ namespace wg
 					}
 					else
 					{
-						int nMoveToNew = min(entries, nToMove);
+						int nMoveToNew = std::min(entries, nToMove);
 						int nMoveToExisting = nToMove - nMoveToNew;
 
 						SlotType * pFrom = m_pArray;

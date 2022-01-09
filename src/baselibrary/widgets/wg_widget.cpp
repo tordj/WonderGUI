@@ -177,7 +177,7 @@ namespace wg
 			return nullptr;
 		}
 
-		int maxSearchDepth = min(nb1, nb2);
+		int maxSearchDepth = std::min(nb1, nb2);
 
 		int i = 0;
 		while (i < maxSearchDepth && list1[nb1-1 - i] == list2[nb2-1 - i])

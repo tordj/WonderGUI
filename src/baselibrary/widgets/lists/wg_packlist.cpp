@@ -261,9 +261,9 @@ namespace wg
 		if( m_skin.isEmpty() )
 		{
 			if (m_bHorizontal)
-				container.add(RectSPX(RectSPX(geo.x, geo.y, wg::min(geo.w, m_contentLength), geo.h), clip));
+				container.add(RectSPX(RectSPX(geo.x, geo.y, std::min(geo.w, m_contentLength), geo.h), clip));
 			else
-				container.add(RectSPX(RectSPX(geo.x, geo.y, geo.w, wg::min(geo.h, m_contentLength)), clip));
+				container.add(RectSPX(RectSPX(geo.x, geo.y, geo.w, std::min(geo.h, m_contentLength)), clip));
 		}
 		else
 			container.add( RectSPX( geo, clip ) );
@@ -278,9 +278,9 @@ namespace wg
 		else if( m_bOpaqueEntries && blendMode == BlendMode::Blend )
 		{
 			if( m_bHorizontal )
-				patches.sub( RectSPX( RectSPX( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
+				patches.sub( RectSPX( RectSPX( geo.x, geo.y, std::min(geo.w,m_contentLength), geo.h ), clip ) );
 			else
-				patches.sub( RectSPX( RectSPX( geo.x, geo.y, geo.w, wg::min(geo.h,m_contentLength) ), clip ) );
+				patches.sub( RectSPX( RectSPX( geo.x, geo.y, geo.w, std::min(geo.h,m_contentLength) ), clip ) );
 		}
 		else
 		{
@@ -654,16 +654,16 @@ namespace wg
 		{
 			if( oldFirst != newFirst )
 			{
-				int beg = wg::min(oldFirst,newFirst);
-				int end = wg::max(oldFirst,newFirst);
+				int beg = std::min(oldFirst,newFirst);
+				int end = std::max(oldFirst,newFirst);
 
 				_flipSelection( slots._slot(beg), slots._slot(end), true );
 			}
 
 			if( oldLast != newLast )
 			{
-				int beg = wg::min(oldLast,newLast)+1;
-				int end = wg::max(oldLast,newLast)+1;
+				int beg = std::min(oldLast,newLast)+1;
+				int end = std::max(oldLast,newLast)+1;
 
 				_flipSelection( slots._slot(beg), slots._slot(end), true );
 			}
@@ -681,7 +681,7 @@ namespace wg
 
 	void PackList::_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb)
 	{
-		StaticSlot * pBeg = min(pFrom, pTo);
+		StaticSlot * pBeg = std::min(pFrom, pTo);
 		StaticSlot * pEnd = pFrom == pBeg ? pTo + 1 : pFrom + nb;
 
 		_requestRenderChildren((Slot*)pBeg, (Slot*)pEnd);	// Request render on dirty area

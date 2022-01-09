@@ -298,7 +298,7 @@ namespace wg
 			float widthScaling = canvas.w / (float)destRectSize.w;
 			float heightScaling = canvas.h / (float)destRectSize.h;
 
-			float zoom = min(widthScaling, heightScaling);
+			float zoom = std::min(widthScaling, heightScaling);
 			if (zoom != m_zoom)
 			{
 				m_zoom = zoom;

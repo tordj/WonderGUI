@@ -101,7 +101,7 @@ namespace wg
 			{
 				float xScale = float(_canvas.w) / float(prefSize.w);
 				float yScale = float(_canvas.h) / float(prefSize.h);
-				float scaleSrc = min(xScale, yScale);
+				float scaleSrc = std::min(xScale, yScale);
 
 				spx w = prefSize.w * scaleSrc;
 				spx h = prefSize.h * scaleSrc;

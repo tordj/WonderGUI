@@ -26,9 +26,6 @@
 
 #include <cstdint>
 
-#undef min
-#undef max
-
 namespace wg
 {
 
@@ -75,13 +72,6 @@ namespace wg
 
 
 	static const int spx_max = 0x7FFFFFC0;	// On pixel boundary with margin for rounding operation.
-
-
-
-	template<typename T> inline T min(const T &a, const T &b) { return a < b ? a : b; }
-	template<typename T> inline T min(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
-	template<typename T> inline T max(const T &a, const T &b) { return a > b ? a : b; }
-	template<typename T> inline T max(const T &a, const T &b, const T &c) { if( a > b ) return a > c ? a : c; else return b > c ? b : c; }
 
 	template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T3 max) { if( x < min) x = min; if( x > max) x = max; }
 

@@ -122,7 +122,7 @@ namespace wg
 
 	spx Caret::eolWidth( const SizeSPX& eolCell, int scale ) const
 	{
-		return wg::max( 1*scale, eolCell.h / 16);
+		return std::max( 1*scale, eolCell.h / 16);
 	}
 
 	//____ tick() __________________________________________________________________
@@ -160,9 +160,9 @@ namespace wg
 			case CaretMode::Overwrite:
 				return cell;
 			case CaretMode::Eol:
-				return RectSPX( cell.x, cell.y, wg::max(1*scale, cell.h/ 16), cell.h );
+				return RectSPX( cell.x, cell.y, std::max(1*scale, cell.h/ 16), cell.h );
 			default: // CaretMode::Insert:
-				return RectSPX( cell.x, cell.y, wg::max(1*scale, cell.h/ 16), cell.h );
+				return RectSPX( cell.x, cell.y, std::max(1*scale, cell.h/ 16), cell.h );
 		}
 	}
 

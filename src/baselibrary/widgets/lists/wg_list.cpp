@@ -209,8 +209,8 @@ namespace wg
 									// Select range from focused to clicked entry.
 
 									Slot * pFocused = (Slot*) OO(m_pFocusedChild)->_slot();
-									Slot * pBeginSel = wg::min( pEntry, pFocused );
-									Slot * pEndSel = _nextSlot(wg::max( pEntry, pFocused ));
+									Slot * pBeginSel = std::min( pEntry, pFocused );
+									Slot * pEndSel = _nextSlot(std::max( pEntry, pFocused ));
 									_selectSlots( pBeginSel, pEndSel, true );
 
 									// Unselect the rest if not CTRL-click.

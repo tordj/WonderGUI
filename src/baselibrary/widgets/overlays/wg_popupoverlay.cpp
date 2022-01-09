@@ -868,7 +868,7 @@ namespace wg
 
 		Slot * pSlot = popupSlots._slot(ofs);
 
-		nb = min(nb, popupSlots.size());
+		nb = std::min(nb, popupSlots.size());
 
 		for(int i = 0 ; i < nb ; i++ )
 		{
