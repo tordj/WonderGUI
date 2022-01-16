@@ -46,7 +46,7 @@ namespace wg
 		{
 			HiColor			color = HiColor::Undefined;
 			Coord			contentShift;
-			HiColor			frameColor = HiColor::Undefined;
+			HiColor			outlineColor = HiColor::Undefined;
 		};
 
 		struct StateBP
@@ -62,10 +62,12 @@ namespace wg
 			HiColor			color = HiColor::White;
 			Border			contentPadding;
 
-			Border			frame;
-			HiColor			frameColor = HiColor::Black;
+			Border			outline;
+			HiColor			outlineColor = HiColor::Black;
 
 			int				layer = -1;
+			int				markAlpha = 1;
+			Border			overflow;
 
 			StateBP			states[StateEnum_Nb];
 		};
@@ -89,7 +91,7 @@ namespace wg
 		bool		_isOpaque(State state) const override;
 		bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
 
-		bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
+		bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
 			float value = 1.f, float value2 = -1.f) const override;
 
 		void		_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
@@ -108,14 +110,14 @@ namespace wg
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();
 
-		Border		m_frame;
+		Border		m_outline;
 		BlendMode	m_blendMode = BlendMode::Undefined;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
-		Bitmask<uint32_t>	m_stateFrameColorMask = 1;
+		Bitmask<uint32_t>	m_stateOutlineColorMask = 1;
 
 		HiColor		m_fillColor[StateEnum_Nb];
-		HiColor		m_frameColor[StateEnum_Nb];
+		HiColor		m_outlineColor[StateEnum_Nb];
 	};
 
 

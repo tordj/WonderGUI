@@ -48,6 +48,8 @@ namespace wg
 			Border		contentPadding;
 			Gradient	gradient;
 			int			layer = -1;
+			int			markAlpha = 1;
+			Border		overflow;
 			Surface_p	surface;
 		};
 
@@ -67,7 +69,7 @@ namespace wg
 
 		SizeSPX		_preferredSize(int scale) const override;
 
-		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
 								float value = 1.f, float value2 = -1.f) const override;
 
 		void		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 

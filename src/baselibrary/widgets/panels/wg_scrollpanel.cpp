@@ -855,13 +855,13 @@ namespace wg
 	{
 		// Test against our skin
 
-		if (!m_skin.isEmpty() && m_skin.markTest(ofs, m_size, m_scale, m_state, m_markOpacity))
+		if (!m_skin.isEmpty() && m_skin.markTest(ofs, m_size, m_scale, m_state))
 			return true;
 
 		// Test against our scrollbars.
 
-		if (scrollbarX._alphaTest(ofs, m_scrollbarXRegion, m_markOpacity) ||
-			scrollbarY._alphaTest(ofs, m_scrollbarYRegion, m_markOpacity))
+		if (scrollbarX._alphaTest(ofs, m_scrollbarXRegion) ||
+			scrollbarY._alphaTest(ofs, m_scrollbarYRegion))
 			return true;
 
 		return false;

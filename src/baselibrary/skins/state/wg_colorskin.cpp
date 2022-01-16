@@ -53,9 +53,11 @@ namespace wg
 
 	ColorSkin::ColorSkin(const Blueprint& blueprint)
 	{
-		m_blendMode = blueprint.blendMode;
-		m_contentPadding = blueprint.contentPadding;
-		m_layer = blueprint.layer;
+		m_blendMode		= blueprint.blendMode;
+		m_contentPadding= blueprint.contentPadding;
+		m_layer			= blueprint.layer;
+		m_markAlpha		= blueprint.markAlpha;
+		m_overflow		= blueprint.overflow;
 
 		m_color[0] = blueprint.color;
 
@@ -117,12 +119,12 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool ColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool ColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
 
-		return ( m_color[_stateToIndex(state)].a >= opacityTreshold);
+		return ( m_color[_stateToIndex(state)].a >= m_markAlpha);
 	}
 
 	//____ _dirtyRect() ______________________________________________________

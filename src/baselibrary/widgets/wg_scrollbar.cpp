@@ -173,7 +173,7 @@ namespace wg
 	{
 		RectSPX	contentCanvas = m_skin.contentRect(m_size, m_scale, m_state);
 
-		if (contentCanvas.contains(ofs) && scrollbar._alphaTest(ofs-contentCanvas.pos(),contentCanvas.size(),m_markOpacity))
+		if (contentCanvas.contains(ofs) && scrollbar._alphaTest(ofs-contentCanvas.pos(),contentCanvas.size()))
 			return true;
 
 		return Widget::_alphaTest(ofs);

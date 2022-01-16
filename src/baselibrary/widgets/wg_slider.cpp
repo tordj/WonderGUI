@@ -253,10 +253,10 @@ namespace wg
 
 	bool Slider::_alphaTest(const CoordSPX& ofs)
 	{
-		bool bMarked = m_skin.markTest(ofs, RectSPX(m_size), m_scale, m_state, m_markOpacity, m_value);
+		bool bMarked = m_skin.markTest(ofs, RectSPX(m_size), m_scale, m_state, m_value);
 
 		if (!bMarked && !m_handleSkin.isEmpty())
-			bMarked = m_handleSkin.markTest(ofs, _handleGeo(m_size), m_scale, m_handleState, m_markOpacity, m_value);
+			bMarked = m_handleSkin.markTest(ofs, _handleGeo(m_size), m_scale, m_handleState, m_value);
 
 		return bMarked;
 	}

@@ -210,7 +210,7 @@ namespace wg
 		if (m_cycleDuration > 0 && m_state.isEnabled())
 		{
 			Rect source = Rect(frames.find(_playPosToTimestamp(m_playPos))->source(), frames.frameSize());
-			return Util::markTestStretchRect(ofs, frames._surface(), align(ptsToSpx(source, m_scale)), RectSPX(m_size), m_markOpacity);
+			return Util::markTestStretchRect(ofs, frames._surface(), align(ptsToSpx(source, m_scale)), RectSPX(m_size), m_animMarkAlpha);
 		}
 
 		return false;

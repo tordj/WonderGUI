@@ -67,11 +67,13 @@ namespace wg
 			HiColor			color = HiColor::White;
 			Border			contentPadding;
 
-			int				layer = -1;
-
 			HiColor			outlineColor = HiColor::Black;
 			pts				outlineThickness = 0;
 
+			int				layer = -1;
+			int				markAlpha = 1;
+
+			Border			overflow;
 			float			size = 1;
 
 			StateBP			states[StateEnum_Nb];
@@ -94,7 +96,7 @@ namespace wg
 		bool		_isOpaque(State state) const override;
 		bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
 
-		bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
+		bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
 								float value = 1.f, float value2 = -1.f) const override;
 
 		void		_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,

@@ -54,6 +54,8 @@ namespace wg
 		m_layer				= bp.layer;
 		m_size				= bp.size;
 		m_pSurface			= bp.surface;
+		m_markAlpha			= bp.markAlpha;
+		m_overflow			= bp.overflow;
 
 		m_frames.reserve(bp.frames.size());
 		
@@ -115,7 +117,7 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool FrameMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool FrameMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		//TODO: Support flip!
 		//TODO: Support tint!
@@ -129,7 +131,7 @@ namespace wg
 			NinePatch patch;
 			patch.block = Rect(pFrame->coord, m_size);
 			patch.frame = m_gfxPadding;
-			return Util::markTestNinePatch(ofs, m_pSurface, patch, canvas, scale, opacityTreshold);
+			return Util::markTestNinePatch(ofs, m_pSurface, patch, canvas, scale, m_markAlpha);
 		}
 
 		return false;

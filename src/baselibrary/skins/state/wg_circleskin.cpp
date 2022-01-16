@@ -47,9 +47,11 @@ namespace wg
 
 	CircleSkin::CircleSkin(const Blueprint& blueprint)
 	{
-		m_blendMode = blueprint.blendMode;
-		m_contentPadding = blueprint.contentPadding;
-		m_layer = blueprint.layer;
+		m_blendMode		= blueprint.blendMode;
+		m_contentPadding= blueprint.contentPadding;
+		m_layer			= blueprint.layer;
+		m_markAlpha		= blueprint.markAlpha;
+		m_overflow		= blueprint.overflow;
 
 		m_bOpaque = false;
 
@@ -155,7 +157,7 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool CircleSkin::_markTest(const CoordSPX& _ofs, const RectSPX& _canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool CircleSkin::_markTest(const CoordSPX& _ofs, const RectSPX& _canvas, int scale, State state, float value, float value2) const
 	{
 		int i = _stateToIndex(state);
 
@@ -188,17 +190,17 @@ namespace wg
 		float fillRadius = radius - outlineThickness;
 
 		if( distanceSquared > fillRadius * fillRadius )
-			return (m_stateInfo[i].outlineColor.a >= opacityTreshold);
+			return (m_stateInfo[i].outlineColor.a >= m_markAlpha);
 
 		float innerOutlineRadius = fillRadius - thickness;
 
 		if( innerOutlineRadius < 0 || distanceSquared > innerOutlineRadius * innerOutlineRadius )
-			return (m_stateInfo[i].color.a >= opacityTreshold);
+			return (m_stateInfo[i].color.a >= m_markAlpha);
 
 		float holeRadius = innerOutlineRadius - outlineThickness;
 
 		if( holeRadius < 0 || distanceSquared > holeRadius*holeRadius )
-			return (m_stateInfo[i].outlineColor.a >= opacityTreshold);
+			return (m_stateInfo[i].outlineColor.a >= m_markAlpha);
 
 		return false;
 	}

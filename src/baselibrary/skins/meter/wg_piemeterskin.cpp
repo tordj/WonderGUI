@@ -87,6 +87,8 @@ namespace wg
 		
 		m_layer = bp.layer;
 		m_blendMode = bp.blendMode;
+		m_markAlpha = bp.markAlpha;
+		m_overflow = bp.overflow;
 		m_preferredSize = bp.preferredSize.isEmpty() ? Size(64, 64) : bp.preferredSize;
 		m_bIgnoresValue = false;
 	}
@@ -233,7 +235,7 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool PieMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool PieMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;

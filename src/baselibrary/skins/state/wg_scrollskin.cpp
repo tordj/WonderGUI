@@ -50,9 +50,11 @@ namespace wg
 		m_scrollDuration = blueprint.scrollDuration;
 		m_scrollState = blueprint.scrollState;
 
-		m_gradient = blueprint.gradient;
+		m_gradient	= blueprint.gradient;
 		m_blendMode = blueprint.blendMode;
-		m_layer = blueprint.layer;
+		m_layer		= blueprint.layer;
+		m_markAlpha	= blueprint.markAlpha;
+		m_overflow	= blueprint.overflow;
 
 		m_transitionTimes[int(m_scrollState)] = m_scrollDuration;
 
@@ -236,7 +238,7 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool ScrollSkin::_markTest(const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool ScrollSkin::_markTest(const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 

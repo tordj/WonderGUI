@@ -88,7 +88,7 @@ namespace wg
 		void		_setState(State state);
 		void		_setAxis(Axis axis);
 		Axis		_axis() const { return m_axis; }
-		bool		_alphaTest(CoordSPX ofs, SizeSPX canvas, int markOpacity);
+		bool		_alphaTest(CoordSPX ofs, SizeSPX canvas);
 		void		_update(spx newViewPos, spx oldViewPos, spx newViewLen, spx oldViewLen, spx newContentLen, spx oldContentLen );
 
 

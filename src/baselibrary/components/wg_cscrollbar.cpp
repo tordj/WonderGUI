@@ -442,11 +442,12 @@ namespace wg
 
 	//____ _alphaTest() _______________________________________________________
 
-	bool CScrollbar::_alphaTest(CoordSPX ofs, SizeSPX canvas, int markOpacity)
+	bool CScrollbar::_alphaTest(CoordSPX ofs, SizeSPX canvas)
 	{
 		//TODO: Support rounded outer corners on buttons?
+		//TODO: Check against the skins?
 
-		return (markOpacity > 0);
+		return true;
 	}
 
 	//____ _update() __________________________________________________________

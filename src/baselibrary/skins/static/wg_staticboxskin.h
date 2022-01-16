@@ -44,11 +44,13 @@ namespace wg
 		struct Blueprint
 		{
 			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = HiColor::White;
 			Border		contentPadding;
-			HiColor		fillColor = HiColor::White;
-			Border		frame;
-			HiColor		frameColor = HiColor::Black;
+			Border		outline;
+			HiColor		outlineColor = HiColor::Black;
 			int			layer = -1;
+			int			markAlpha = 1;
+			Border		overflow;
 		};
 
 		//.____ Creation __________________________________________
@@ -66,7 +68,7 @@ namespace wg
 		SizeSPX		_minSize(int scale) const override;
 		SizeSPX		_preferredSize(int scale) const override;
 
-		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 								float value = 1.f, float value2 = -1.f) const override;
 
 		void		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
@@ -79,11 +81,11 @@ namespace wg
 
 		void		_updateOpaqueFlag();
 
-		Border		m_frame;							// In points
+		Border		m_outline;
 		BlendMode	m_blendMode;
 
 		HiColor		m_fillColor;
-		HiColor		m_frameColor;
+		HiColor		m_outlineColor;
 	};
 
 

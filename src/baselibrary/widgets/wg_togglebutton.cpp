@@ -366,7 +366,7 @@ namespace wg
 			case ALPHA:			// Alpha test on background and icon.
 			{
 				if( Widget::_alphaTest( ofs ) ||
-					( !_icon().isEmpty() && _icon().skin()->_markTest( ofs, iconRect, m_scale, m_state, m_markOpacity )) )
+					( !_icon().isEmpty() && _icon().skin()->_markTest( ofs, iconRect, m_scale, m_state )) )
 					return true;
 
 				return false;
@@ -375,7 +375,7 @@ namespace wg
 				return true;
 			case ICON:			// Only the icon (alpha test) is clickable.
 			{
-				if( !_icon().isEmpty() && _icon().skin()->_markTest( ofs, iconRect, m_scale, m_state, m_markOpacity ) )
+				if( !_icon().isEmpty() && _icon().skin()->_markTest( ofs, iconRect, m_scale, m_state ) )
 					return true;
 
 				return false;

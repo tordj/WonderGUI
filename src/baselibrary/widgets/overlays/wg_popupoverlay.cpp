@@ -641,7 +641,7 @@ namespace wg
 				Slot * pSlot = popupSlots._first();
 				if (pSlot->m_pOpener)
 				{
-					OWidget * pOpener = OO(pSlot->m_pOpener.rawPtr());
+					Widget * pOpener = pSlot->m_pOpener.rawPtr();
 
 					Coord 	absPos = static_cast<MouseReleaseMsg*>(_pMsg)->pointerPos();
 					Rect	openerGeo = pOpener->globalGeo();

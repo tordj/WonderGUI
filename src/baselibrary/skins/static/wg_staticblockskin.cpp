@@ -82,6 +82,8 @@ namespace wg
 		m_contentPadding	= blueprint.contentPadding;
 		m_gradient			= blueprint.gradient;
 		m_layer				= blueprint.layer;
+		m_markAlpha			= blueprint.markAlpha;
+		m_overflow			= blueprint.overflow;
 
 		_setRigidPartX(blueprint.rigidPartX.ofs, blueprint.rigidPartX.length, blueprint.rigidPartX.sections);
 		_setRigidPartY(blueprint.rigidPartY.ofs, blueprint.rigidPartY.length, blueprint.rigidPartY.sections);
@@ -195,9 +197,9 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
-		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, scale, opacityTreshold);
+		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, scale, m_markAlpha);
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________

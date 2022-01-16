@@ -66,10 +66,12 @@ namespace wg
 		int index = _stateToIndex(StateEnum::Normal);
 
 
-		m_layer = blueprint.layer;
-		m_blendMode = blueprint.blendMode;
-		m_gradient = blueprint.gradient;
-		m_contentPadding = blueprint.contentPadding;
+		m_layer			= blueprint.layer;
+		m_blendMode		= blueprint.blendMode;
+		m_gradient		= blueprint.gradient;
+		m_contentPadding= blueprint.contentPadding;
+		m_markAlpha		= blueprint.markAlpha;
+		m_overflow		= blueprint.overflow;
 
 
 		m_stateSurfaces[index] = blueprint.surface;
@@ -151,13 +153,13 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool TileSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool TileSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		//TODO: Take gradient and tintColor into account.
 
 		Surface * pSurf = m_stateSurfaces[_stateToIndex(state)];
 
-		return markTestTileRect(_ofs, pSurf, canvas, scale, opacityTreshold);
+		return markTestTileRect(_ofs, pSurf, canvas, scale, m_markAlpha);
 	}
 
 	//____ _isOpaque() _____________________________________________________________

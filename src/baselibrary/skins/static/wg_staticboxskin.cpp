@@ -34,12 +34,12 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	StaticBoxSkin_p StaticBoxSkin::create(Border frame, HiColor fillColor, HiColor frameColor)
+	StaticBoxSkin_p StaticBoxSkin::create(Border outline, HiColor fillColor, HiColor outlineColor)
 	{
 		Blueprint blueprint;
-		blueprint.frame = frame;
-		blueprint.fillColor = fillColor;
-		blueprint.frameColor = frameColor;
+		blueprint.outline = outline;
+		blueprint.color = fillColor;
+		blueprint.outlineColor = outlineColor;
 		return StaticBoxSkin_p(new StaticBoxSkin(blueprint));
 	}
 
@@ -52,12 +52,14 @@ namespace wg
 
 	StaticBoxSkin::StaticBoxSkin(const Blueprint& blueprint)
 	{
-		m_frame				= blueprint.frame;
-		m_fillColor			= blueprint.fillColor;
-		m_frameColor		= blueprint.frameColor;
+		m_outline				= blueprint.outline;
+		m_fillColor			= blueprint.color;
+		m_outlineColor		= blueprint.outlineColor;
 		m_blendMode			= blueprint.blendMode;
 		m_contentPadding	= blueprint.contentPadding;
 		m_layer				= blueprint.layer;
+		m_markAlpha			= blueprint.markAlpha;
+		m_overflow			= blueprint.overflow;
 
 		_updateOpaqueFlag();
 	}
@@ -74,9 +76,9 @@ namespace wg
 	SizeSPX StaticBoxSkin::_minSize(int scale) const
 	{
 		SizeSPX content = Skin::_minSize(scale);
-		SizeSPX frame = align(ptsToSpx(m_frame,scale));
+		SizeSPX outline = align(ptsToSpx(m_outline,scale));
 
-		return SizeSPX::max(content, frame);
+		return SizeSPX::max(content, outline);
 	}
 
 
@@ -85,14 +87,14 @@ namespace wg
 	SizeSPX StaticBoxSkin::_preferredSize(int scale) const
 	{
 		SizeSPX content = Skin::_minSize(scale);
-		SizeSPX frame = align(ptsToSpx(m_frame,scale));
+		SizeSPX outline = align(ptsToSpx(m_outline,scale));
 
-		return SizeSPX::max(content, frame);
+		return SizeSPX::max(content, outline);
 	}
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticBoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool StaticBoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -103,11 +105,11 @@ namespace wg
 			opacity = 4096;
 		else
 		{
-			RectSPX center = canvas - align(ptsToSpx(m_frame,scale));
-			opacity =  center.contains(ofs) ? m_fillColor.a : m_frameColor.a;
+			RectSPX center = canvas - align(ptsToSpx(m_outline,scale));
+			opacity =  center.contains(ofs) ? m_fillColor.a : m_outlineColor.a;
 		}
 
-		return (opacity >= opacityTreshold);
+		return (opacity >= m_markAlpha);
 	}
 
 	//____ _render() ______________________________________________________________
@@ -118,30 +120,30 @@ namespace wg
 
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		BorderSPX frame = align(ptsToSpx(m_frame,scale));
+		BorderSPX outline = align(ptsToSpx(m_outline,scale));
 
-		if (frame.isEmpty() || m_frameColor == m_fillColor)
+		if (outline.isEmpty() || m_outlineColor == m_fillColor)
 		{
 			pDevice->fill(canvas, m_fillColor);
 		}
 		else
 		{
-			if (frame.width() >= canvas.w || frame.height() >= canvas.h)
+			if (outline.width() >= canvas.w || outline.height() >= canvas.h)
 			{
-				pDevice->fill(canvas, m_frameColor);
+				pDevice->fill(canvas, m_outlineColor);
 			}
 			else
 			{
-				RectI top(canvas.x, canvas.y, canvas.w, frame.top);
-				RectI left(canvas.x, canvas.y + frame.top, frame.left, canvas.h - frame.height());
-				RectI right(canvas.x + canvas.w - frame.right, canvas.y + frame.top, frame.right, canvas.h - frame.height());
-				RectI bottom(canvas.x, canvas.y + canvas.h - frame.bottom, canvas.w, frame.bottom);
-				RectI center(canvas - frame);
+				RectI top(canvas.x, canvas.y, canvas.w, outline.top);
+				RectI left(canvas.x, canvas.y + outline.top, outline.left, canvas.h - outline.height());
+				RectI right(canvas.x + canvas.w - outline.right, canvas.y + outline.top, outline.right, canvas.h - outline.height());
+				RectI bottom(canvas.x, canvas.y + canvas.h - outline.bottom, canvas.w, outline.bottom);
+				RectI center(canvas - outline);
 
-				pDevice->fill(top, m_frameColor);
-				pDevice->fill(left, m_frameColor);
-				pDevice->fill(right, m_frameColor);
-				pDevice->fill(bottom, m_frameColor);
+				pDevice->fill(top, m_outlineColor);
+				pDevice->fill(left, m_outlineColor);
+				pDevice->fill(right, m_outlineColor);
+				pDevice->fill(bottom, m_outlineColor);
 
 				if (center.w > 0 || center.h > 0)
 					pDevice->fill(center, m_fillColor);
@@ -162,7 +164,7 @@ namespace wg
 
 		case BlendMode::Blend:
 		{
-			m_bOpaque = (m_fillColor.a == 4096 && (m_frame.isEmpty() || m_frameColor.a == 4096));
+			m_bOpaque = (m_fillColor.a == 4096 && (m_outline.isEmpty() || m_outlineColor.a == 4096));
 			break;
 		}
 

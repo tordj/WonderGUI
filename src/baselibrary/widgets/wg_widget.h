@@ -150,8 +150,8 @@ namespace wg
 
 		//.____ Behavior ______________________________________________________
 
-		inline void			setMarkOpacity(int opacity);
-		inline int			markOpacity() const;
+		inline void			setMarkPolicy(MarkPolicy policy);
+		inline MarkPolicy	markPolicy() const;
 
 		inline void			setTabLock(bool bLock);
 		inline bool			isTabLocked() const;
@@ -303,28 +303,28 @@ namespace wg
 		SlotHolder *	m_pHolder;
 		StaticSlot *	m_pSlot;
 
-		PointerStyle	m_pointerStyle;
+		PointerStyle	m_pointerStyle = PointerStyle::Default;
 
 		String			m_tooltip;
-		int				m_markOpacity;
+		MarkPolicy		m_markPolicy = MarkPolicy::AlphaTest;
 
-		bool			m_bOpaque;			// Set if widget is totally opaque, no need to render anything behind.
-		bool			m_bTabLock;			// If set, the widget prevents focus shifting away from it with tab.
-		bool			m_bSelectable;		// Set if widget is allowed to be selected.
-		bool			m_bReceivingUpdates;//
+		bool			m_bOpaque = false;				// Set if widget is totally opaque, no need to render anything behind.
+		bool			m_bTabLock = false;				// If set, the widget prevents focus shifting away from it with tab.
+		bool			m_bSelectable = true;			// Set if widget is allowed to be selected.
+		bool			m_bReceivingUpdates = false;	//
 
-		State			m_state;			// Current state of widget.
-		SizeSPX			m_size;				// Current size of widget.
+		State			m_state;						// Current state of widget.
+		SizeSPX			m_size = { 256 * 64,256 * 64 };	// Current size of widget.
 		int				m_scale = 64;
-		bool			m_bScaleSet = false;// Set when scale is explicitly specified and not just inherited.
+		bool			m_bScaleSet = false;			// Set when scale is explicitly specified and not just inherited.
 
-		bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.
-		uint8_t         m_pickCategory;     // Category of drag-n-drop operations. User defined.
+		bool            m_bPickable = false;        // Set if this widget accepts to be the source of drag-n-drop operations.
+		uint8_t         m_pickCategory = 0;     // Category of drag-n-drop operations. User defined.
 
-		bool            m_bDropTarget;      // Set if this widget accepts to be the target of drag-n-drop operations.
+		bool            m_bDropTarget = false;      // Set if this widget accepts to be the target of drag-n-drop operations.
 
 //	private:
-		bool			m_bPressed;			// Keeps track of pressed button when mouse leaves/re-enters widget.
+		bool			m_bPressed = false;			// Keeps track of pressed button when mouse leaves/re-enters widget.
 
 	};
 
@@ -953,18 +953,18 @@ namespace wg
 		m_pointerStyle = style; 
 	}
 
-	//____ setMarkOpacity() ___________________________________________________
+	//____ setMarkPolicy() ___________________________________________________
 
-	void Widget::setMarkOpacity(int opacity) 
+	void Widget::setMarkPolicy(MarkPolicy policy) 
 	{ 
-		m_markOpacity = opacity; 
+		m_markPolicy = policy; 
 	}
 
-	//____ markOpacity() ______________________________________________________
+	//____ markPolicy() ______________________________________________________
 
-	int Widget::markOpacity() const 
+	MarkPolicy Widget::markPolicy() const 
 	{ 
-		return m_markOpacity; 
+		return m_markPolicy; 
 	}
 
 	//____ setTabLock() _______________________________________________________

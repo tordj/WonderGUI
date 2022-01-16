@@ -80,7 +80,7 @@ namespace wg
 		bool			_isOpaque( State state ) const override;
 		bool			_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
 
-		bool			_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
+		bool			_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 									float value = 1.f, float value2 = -1.f) const override;
 
 		void			_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 

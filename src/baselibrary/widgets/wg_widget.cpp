@@ -34,10 +34,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	Widget::Widget(): m_skin(this), m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
-						m_markOpacity( 1 ), m_bOpaque(false), m_bTabLock(false),
-						 m_bPressed(false), m_bSelectable(true), m_size(256*64,256*64),
-						m_bPickable(false), m_bDropTarget(false), m_pickCategory(0), m_bReceivingUpdates(false)
+	Widget::Widget(): m_skin(this), m_id(0), m_pHolder(0), m_pSlot(0)
 	{
 	}
 
@@ -354,13 +351,16 @@ namespace wg
 
 	bool Widget::_markTest(const CoordSPX& ofs)
 	{
-		if (m_markOpacity >= 256 || ofs.x < 0 || ofs.y < 0 || ofs.x >= m_size.w || ofs.y >= m_size.h)
-			return false;
-
-		if (m_markOpacity <= 0)
-			return true;
-
-		return _alphaTest(ofs);
+		switch (m_markPolicy)
+		{
+			case MarkPolicy::Ignore:
+				return false;
+			case MarkPolicy::Geometry:
+				return (ofs.x >= 0 && ofs.y >= 0 && ofs.x < m_size.w&& ofs.y < m_size.h);
+			case MarkPolicy::AlphaTest:
+			default:
+				return _alphaTest(ofs);
+		}
 	}
 
 
@@ -382,7 +382,6 @@ namespace wg
 		m_pointerStyle 	= pOrg->m_pointerStyle;
 
 		m_tooltip		= pOrg->m_tooltip;
-		m_markOpacity	= pOrg->m_markOpacity;
 
 		m_bOpaque		= pOrg->m_bOpaque;
 		m_bTabLock		= pOrg->m_bTabLock;
@@ -751,7 +750,7 @@ namespace wg
 
 	bool Widget::_alphaTest( const CoordSPX& ofs )
 	{
-		return m_skin.markTest( ofs, RectSPX(m_size), m_scale, m_state, m_markOpacity );
+		return m_skin.markTest( ofs, RectSPX(m_size), m_scale, m_state );
 	}
 
 	//____ _windowPadding() _______________________________________________________

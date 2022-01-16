@@ -413,9 +413,18 @@ namespace wg
 
 	enum class SearchMode	//. autoExtras
 	{
-		MarkPolicy,			///< Perform a mark test on Widget.
-		Geometry,				///< Goes strictly on geometry, ignores alpha.
-		ActionTarget,		///< Like MARKPOLICY, but takes modality into account.
+		MarkPolicy,			///< Perform a mark test on widget according to widgets MarkPolicyh.
+		Geometry,			///< Goes strictly on geometry, ignores markPolicy.
+		ActionTarget,		///< Like MarkPolicy, but takes modality into account.
+	};
+
+	//____ MarkPolicy ____________________________________________________________
+
+	enum class MarkPolicy : uint8_t	//. autoExtras
+	{
+		Ignore,				///< Widget can not be marked, hovered or pressed by pointer.
+		AlphaTest,			///< An alpha-test is performed to determine if widget is marked.
+		Geometry			///< Widget is marked if pointer is within its geometry.
 	};
 
 	//____ Placement _____________________________________________________________

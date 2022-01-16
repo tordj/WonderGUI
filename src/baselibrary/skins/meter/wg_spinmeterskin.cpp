@@ -65,6 +65,9 @@ namespace wg
 		m_bIgnoresValue = false;
 		m_contentPadding = blueprint.contentPadding;
 		m_layer = blueprint.layer;
+		m_markAlpha = blueprint.markAlpha;
+		m_overflow = blueprint.overflow;
+
 
 		_updateOpacityFlag();
 	}
@@ -133,7 +136,7 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool SpinMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool SpinMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;

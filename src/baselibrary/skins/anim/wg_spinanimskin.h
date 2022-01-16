@@ -54,6 +54,8 @@ namespace wg
 			Border		destPadding;
 			Gradient	gradient;
 			int			layer = -1;
+			int			markAlpha = 1;
+			Border		overflow;
 			CoordF		pivot = { 0.5f, 0.5f };
 			CoordF		placement = { 0.5f, 0.5f };
 			Size		preferredSize;							// Mandatory
@@ -75,7 +77,7 @@ namespace wg
 		SizeSPX	_preferredSize(int scale) const override;
 
 		bool	
-			_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
+			_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
 			float value = 1.f, float value2 = -1.f) const override;
 
 		void 	_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,

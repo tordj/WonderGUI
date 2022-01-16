@@ -65,6 +65,8 @@ namespace wg
 		m_layer = blueprint.layer;
 		m_bOpaque = m_pSurface->isOpaque();
 		m_contentPadding = blueprint.contentPadding;
+		m_markAlpha = blueprint.markAlpha;
+		m_overflow = blueprint.overflow;
 
 		for (int i = 0; i < StateBits_Nb; i++)
 			m_animationCycles[i] = blueprint.cycleDuration;
@@ -141,7 +143,7 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool SpinAnimSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool SpinAnimSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;

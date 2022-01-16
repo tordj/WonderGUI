@@ -65,6 +65,8 @@ namespace wg
 		m_gradient = blueprint.gradient;
 		m_contentPadding = blueprint.contentPadding;
 		m_layer = blueprint.layer;
+		m_markAlpha = blueprint.markAlpha;
+		m_overflow = blueprint.overflow;
 
 		_updateOpacityFlag();
 	}
@@ -101,11 +103,11 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticTileSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool StaticTileSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		//TODO: Take tint into account.
 
-		return markTestTileRect(ofs, m_pSurface, canvas, scale, opacityTreshold);
+		return markTestTileRect(ofs, m_pSurface, canvas, scale, m_markAlpha);
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________

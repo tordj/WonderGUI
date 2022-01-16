@@ -660,7 +660,7 @@ namespace wg
 				RectSPX contentRect = m_pListCanvas->_contentRect();
 				RectSPX entryGeo = { 0,0,contentRect.w,entries[entryIdx].m_height };
 
-				return m_pEntrySkin->_markTest(ofsInEntry, entryGeo, m_scale, entries[entryIdx].m_state, m_pListCanvas->m_markOpacity);
+				return m_pEntrySkin->_markTest(ofsInEntry, entryGeo, m_scale, entries[entryIdx].m_state);
 			}
 		}
 

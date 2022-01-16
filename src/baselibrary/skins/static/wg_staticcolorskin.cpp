@@ -57,12 +57,14 @@ namespace wg
 
 	StaticColorSkin::StaticColorSkin( const Blueprint& blueprint )
 	{
-		m_color = blueprint.color;
-		m_bOpaque = (m_color.a == 4096);
-		m_contentPadding = blueprint.contentPadding;
-		m_layer = blueprint.layer;
+		m_color				= blueprint.color;
+		m_bOpaque			= (m_color.a == 4096);
+		m_contentPadding	= blueprint.contentPadding;
+		m_layer				= blueprint.layer;
+		m_markAlpha			= blueprint.markAlpha;
+		m_overflow			= blueprint.overflow;
+		m_blendMode			= blueprint.blendMode;
 
-		m_blendMode = blueprint.blendMode;
 		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
@@ -89,9 +91,9 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool StaticColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
-		return ( canvas.contains(ofs) && m_color.a >= opacityTreshold );
+		return ( canvas.contains(ofs) && m_color.a >= m_markAlpha );
 	}
 
 

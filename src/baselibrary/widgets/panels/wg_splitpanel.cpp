@@ -514,7 +514,7 @@ namespace wg
 		bool bHit = Panel::_alphaTest(ofs);
 
 		if( !bHit )
-			bHit = m_handleSkin.markTest(ofs, m_handleGeo, m_scale, m_handleState, m_markOpacity);
+			bHit = m_handleSkin.markTest(ofs, m_handleGeo, m_scale, m_handleState);
 
 		return bHit;
 	}

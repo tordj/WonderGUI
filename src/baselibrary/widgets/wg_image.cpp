@@ -143,7 +143,7 @@ namespace wg
 		{
 			RectSPX dest = m_skin.contentRect( m_size, m_scale, state() );
 
-			if( Util::markTestStretchRect( ofs, m_pSurface, ptsToSpx(m_rect, m_pSurface->scale()), dest, m_markOpacity ) )
+			if( Util::markTestStretchRect( ofs, m_pSurface, ptsToSpx(m_rect, m_pSurface->scale()), dest, m_imageMarkAlpha ) )
 				return true;
 		}
 

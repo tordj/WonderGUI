@@ -66,12 +66,14 @@ namespace wg
 			float		hubSize = 0.75f;
 
 			int			layer = -1;
+			int			markAlpha = 1;
 
 			float		maxLength = 0.9f;
 			float		minLength = 0.01f;
 
 			bool		movingSlices = false;
 
+			Border		overflow;
 			Size		preferredSize;
 
 			bool		rectangular = false;
@@ -106,7 +108,7 @@ namespace wg
 
 		SizeSPX	_preferredSize(int scale) const override;
 
-		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, 
+		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f) const override;
 
 		void 	_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 

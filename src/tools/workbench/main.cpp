@@ -2520,9 +2520,9 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 
 	auto pListSkin = BoxSkin::create(1, Color::White, Color::Black, 3);
 
-	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .contentPadding = 3, .frame = 1, .frameColor = Color::Transparent,
-											 .states = { StateEnum::Hovered, {.color = Color::Yellow, .frameColor = Color::Orange },
-														 StateEnum::Selected, {.color = Color::LightBlue, .frameColor = Color::White } } });
+	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .contentPadding = 3, .outline = 1, .outlineColor = Color::Transparent,
+											 .states = { StateEnum::Hovered, {.color = Color::Yellow, .outlineColor = Color::Orange },
+														 StateEnum::Selected, {.color = Color::LightBlue, .outlineColor = Color::White } } });
 
 
 	pSelectBox->setListSkin(pListSkin);
@@ -2679,13 +2679,13 @@ bool renderLayerTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::SlateGrey) );
 
-	auto pBoxSkin = StaticBoxSkin::create({ .fillColor = Color::Green, .frame = 2, .frameColor = Color::Black, .layer = 2 });
+	auto pBoxSkin = StaticBoxSkin::create({ .color = Color::Green, .outline = 2, .outlineColor = Color::Black, .layer = 2 });
 	
 	auto pShadowSkin = StaticBoxSkin::create({	.blendMode = BlendMode::Max,
+												.color = Color(255,255,255,32),
 												.contentPadding = { 0,40,40,0},
-												.fillColor = Color(255,255,255,32),
-												.frame = 20,
-												.frameColor = Color::Transparent,
+												.outline = 20,
+												.outlineColor = Color::Transparent,
 												.layer = 1 } );
 
 	auto pDaSkin = DoubleSkin::create({ .skinInSkin = true, .skins = { pBoxSkin, pShadowSkin } } );

@@ -63,6 +63,8 @@ namespace wg
 		m_blendMode			= blueprint.blendMode;
 		m_contentPadding	= blueprint.contentPadding;
 		m_layer				= blueprint.layer;
+		m_markAlpha			= blueprint.markAlpha;
+		m_overflow			= blueprint.overflow;
 
 		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
@@ -90,7 +92,7 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticGradientSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool StaticGradientSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if (!canvas.contains(ofs) )
 			return false;
@@ -103,7 +105,7 @@ namespace wg
 
 		int val = xVal1 + (xVal2 - xVal1) * yFrac / 4096;
 
-		return (val >= opacityTreshold);
+		return (val >= m_markAlpha);
 	}
 
 

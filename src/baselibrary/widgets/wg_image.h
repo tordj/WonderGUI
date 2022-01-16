@@ -63,6 +63,12 @@ namespace wg
 		inline Surface_p	imageSurface() const;								///< @brief Get surface of image displayed.
 		inline Rect			imageRect() const;									///< @brief Get area of surface rectangle of image displayed.
 
+		//.____ Behavior ______________________________________________________
+
+		inline void			setImageMarkAlpha( int markAlpha );
+		inline int			imageMarkAlpha() const;
+
+
 		//.____ Internal ____________________________________________
 
 		SizeSPX	_preferredSize(int scale = -1) const override;
@@ -81,7 +87,7 @@ namespace wg
 
 		Surface_p	m_pSurface;
 		Rect		m_rect;
-
+		int			m_imageMarkAlpha = 1;
 	};
 
 
@@ -95,6 +101,15 @@ namespace wg
 		return m_rect;
 	}
 
+	void Image::setImageMarkAlpha(int markAlpha)
+	{
+		m_imageMarkAlpha = markAlpha;
+	}
+
+	int Image::imageMarkAlpha() const
+	{
+		return m_imageMarkAlpha;
+	}
 
 
 } // namespace wg

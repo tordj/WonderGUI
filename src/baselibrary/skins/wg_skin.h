@@ -73,7 +73,7 @@ namespace wg
 		virtual bool		_isOpaque(State state) const;
 		virtual bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const;
 
-		virtual bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
+		virtual bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
 									float value = 1.f, float value2 = -1.f) const = 0;
 
 		virtual void 		_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
@@ -105,6 +105,9 @@ namespace wg
 
 		virtual void	_incUseCount() { m_useCount++; }
 		virtual void	_decUseCount() { m_useCount--; }
+
+		Border			m_overflow;
+		int				m_markAlpha = 1;
 
 		Border			m_contentPadding;
 		bool			m_bContentShifting = false;

@@ -209,6 +209,8 @@ namespace wg
 		m_gradient = blueprint.gradient;
 		m_contentPadding = blueprint.contentPadding;
 		m_layer = blueprint.layer;
+		m_markAlpha = blueprint.markAlpha;
+		m_overflow = blueprint.overflow;
 
 		// Make sure we have a correct block
 
@@ -583,14 +585,14 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool BlockSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool BlockSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
 		NinePatch	patch = m_ninePatch;
 		patch.block.setPos(m_stateBlocks[_stateToIndex(state)]);
 
-		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, scale, opacityTreshold);
+		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, scale, m_markAlpha);
 	}
 
 	//____ _isOpaque() _____________________________________________________________

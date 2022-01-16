@@ -81,10 +81,10 @@ namespace wg
 			return m_pSkin ? m_pSkin->_isOpaque(rect, canvasSize, scale, state) : false;
 		}
 
-		inline bool		markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold,
-			float value = 1.f, float value2 = -1.f) const
+		inline bool		markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
+								float value = 1.f, float value2 = -1.f) const
 		{
-			return m_pSkin ? m_pSkin->_markTest(ofs, canvas, scale, state, opacityTreshold, value, value2) : false;
+			return m_pSkin ? m_pSkin->_markTest(ofs, canvas, scale, state, value, value2) : false;
 		}
 
 		inline bool		isContentShifting() { return m_pSkin ? m_pSkin->_isContentShifting() : false; }

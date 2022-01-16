@@ -53,8 +53,12 @@ namespace wg
 			Gradient	gradient;
 
 			int			layer = -1;
-			HiColor		minColor = HiColor::Undefined;		// Overrides barColor when both min/max are set
-			HiColor		maxColor = HiColor::Undefined;
+			int			markAlpha = 1;
+
+			HiColor		maxColor = HiColor::Undefined;		// Overrides barColor when both min/max are set
+			HiColor		minColor = HiColor::Undefined;
+
+			Border		overflow;
 			Size		preferredSize;						// Mandatory
 			bool		startFromCenter = false;
 			pts			startLength = 0;
@@ -73,7 +77,7 @@ namespace wg
 
 		SizeSPX	_preferredSize(int scale) const override;
 
-		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int sale, State state, int opacityTreshold, 
+		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int sale, State state, 
 							float value = 1.f, float value2 = -1.f) const override;
 
 		void 	_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value = 1.f, 

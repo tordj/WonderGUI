@@ -296,13 +296,13 @@ namespace wg
 
 	bool RangeSlider::_alphaTest(const CoordSPX& ofs)
 	{
-		bool bMarked = m_skin.markTest(ofs, RectSPX(m_size), m_scale, m_state, m_markOpacity, m_rangeBegin, m_rangeEnd);
+		bool bMarked = m_skin.markTest(ofs, RectSPX(m_size), m_scale, m_state, m_rangeBegin, m_rangeEnd);
 
 		if (!bMarked)
-			bMarked = m_beginHandleSkin.markTest(ofs, _handleGeo(m_size, true), m_scale, m_beginHandleState, m_markOpacity, m_rangeBegin);
+			bMarked = m_beginHandleSkin.markTest(ofs, _handleGeo(m_size, true), m_scale, m_beginHandleState, m_rangeBegin);
 
 		if (!bMarked)
-			bMarked = m_endHandleSkin.markTest(ofs, _handleGeo(m_size, false), m_scale, m_endHandleState, m_markOpacity, m_rangeEnd);
+			bMarked = m_endHandleSkin.markTest(ofs, _handleGeo(m_size, false), m_scale, m_endHandleState, m_rangeEnd);
 
 		return bMarked;
 	}

@@ -79,6 +79,12 @@ namespace wg
 		void			stop();
 		bool			isPlaying() const { return m_bPlaying; };
 
+		//.____ Behavior ______________________________________________________
+
+		inline void		setMarkAlpha(int markAlpha);
+		inline int		markAlpha() const;
+
+
 	protected:
 		AnimPlayer();
 		virtual ~AnimPlayer();
@@ -114,9 +120,19 @@ namespace wg
 
 		bool		m_bPlaying	= false;
 		float		m_speed		= 1.f;
+
+		int			m_animMarkAlpha = 1;
 	};
 
+	void AnimPlayer::setMarkAlpha(int markAlpha)
+	{
+		m_animMarkAlpha = markAlpha;
+	}
 
+	int AnimPlayer::markAlpha() const
+	{
+		return m_animMarkAlpha;
+	}
 
 } // namespace wg
 #endif //	WG_ANIMPLAYER_DOT_H

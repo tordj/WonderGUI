@@ -62,6 +62,9 @@ namespace wg
 		m_direction			= bp.direction;
 		m_gradient			= bp.gradient;
 		m_layer				= bp.layer;
+		m_markAlpha			= bp.markAlpha;
+		m_overflow			= bp.overflow;
+
 		m_minBarLength		= bp.startLength;
 
 		if (bp.preferredSize.isEmpty())
@@ -140,15 +143,15 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool FillMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, int opacityTreshold, float value, float value2) const
+	bool FillMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
 
 		if( _barFillArea(canvas, scale, value, value2).contains(ofs) )
-			return (HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096*value)).a >= opacityTreshold);
+			return (HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096*value)).a >= m_markAlpha);
 
-		return (m_backColor.a >= opacityTreshold);
+		return (m_backColor.a >= m_markAlpha);
 	}
 
 	//____ _dirtyRect() ________________________________________________________
