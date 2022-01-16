@@ -466,13 +466,6 @@ namespace wg
 		}
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void LambdaPanel::_cloneContent( const Widget * _pOrg )
-	{
-		//TODO: Implement
-	}
-
 	//____ _resize() ____________________________________________________________
 
 	void LambdaPanel::_resize( const SizeSPX& size, int scale )

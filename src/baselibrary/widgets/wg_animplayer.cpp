@@ -189,15 +189,6 @@ namespace wg
 		Widget::_refresh();
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void AnimPlayer::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-//		AnimPlayer * pOrg = (AnimPlayer *) _pOrg;
-	}
-
 	//____ _alphaTest() ______________________________________________________
 
 	bool AnimPlayer::_alphaTest( const CoordSPX& ofs )

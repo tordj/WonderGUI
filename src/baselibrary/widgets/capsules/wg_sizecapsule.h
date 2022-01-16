@@ -81,7 +81,6 @@ namespace wg
 	protected:
 		SizeCapsule();
 		virtual ~SizeCapsule();
-		virtual Widget* _newOfMyType() const override { return new SizeCapsule(); };
 
 
 	private:

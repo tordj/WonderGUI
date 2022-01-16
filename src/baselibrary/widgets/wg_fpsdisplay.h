@@ -65,12 +65,10 @@ namespace wg
 	protected:
 		FpsDisplay();
 		virtual ~FpsDisplay();
-		virtual Widget* _newOfMyType() const override { return new FpsDisplay(); };
 
 		void		_setState( State state ) override;
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
-		void		_cloneContent( const Widget * _pOrg ) override;
 
 	private:
 

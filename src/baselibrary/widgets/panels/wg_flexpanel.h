@@ -277,7 +277,6 @@ namespace wg
 	protected:
 		FlexPanel();
 		virtual ~FlexPanel();
-		virtual Widget* _newOfMyType() const override{ return new FlexPanel(); };
 
 
 		// Overloaded from Container
@@ -311,7 +310,6 @@ namespace wg
 		void		_refreshRealGeo(Slot * pSlot, bool bForceRefresh = false);
 		SizeSPX		_size() const { return m_size; }
 
-		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_resize( const SizeSPX& size, int scale = -1 ) override;
 
 		void		_onRequestRender( const RectSPX& rect, const Slot * pSlot );

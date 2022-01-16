@@ -79,11 +79,9 @@ namespace wg
 	protected:
 		Knob();
 		virtual ~Knob();
-		virtual Widget* _newOfMyType() const override { return new Knob(); };
-		void 			_receive(Msg* pMsg) override;
 
+		void		_receive(Msg* pMsg) override;
 		void 		_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window) override;
-		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_setValue(float value, bool bPostMsg = true);
 
 		float		_skinValue(const SkinSlot* pSlot) const override;

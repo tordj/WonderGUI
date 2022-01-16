@@ -157,7 +157,6 @@ namespace wg
 	protected:
 		LambdaPanel();
 		virtual ~LambdaPanel();
-		virtual Widget* _newOfMyType() const override { return new LambdaPanel(); };
 
 		// Overloaded from Container
 
@@ -194,8 +193,6 @@ namespace wg
 	private:
 		void		_updateSlotGeo(StaticSlot * pSlot, int nb);
 
-
-		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_resize( const SizeSPX& size, int scale = -1 ) override;
 		void		_updateGeo(Slot * pSlot, bool bForceResize = false);
 

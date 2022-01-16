@@ -228,18 +228,6 @@ namespace wg
 		}
 	}
 
-
-	//____ _cloneContent() _______________________________________________________
-
-	void Slider::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-		Slider * pOrg = (Slider*) _pOrg;
-
-		m_preferredSize = pOrg->m_preferredSize;
-	}
-
 	//____ _render() __________________________________________________________
 
 	void Slider::_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window)

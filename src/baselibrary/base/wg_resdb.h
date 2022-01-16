@@ -61,7 +61,6 @@ namespace wg
 		{
 		public:
 			virtual ~MetaData() {}
-			virtual MetaData* clone() const = 0;
 
 			virtual std::string getAttribute(const std::string& name) const = 0;
 			virtual bool		setAttribute(const std::string& name, const std::string& value) = 0;
@@ -189,7 +188,6 @@ namespace wg
 		Skin_p				getSkin( const std::string& id ) const;
 		Widget_p			getWidget( const std::string& id ) const;
 		MetaData*			getDataSet( const std::string& id ) const;
-		Widget_p			cloneWidget( const std::string& id ) const;
 
 
 		ResDBRes *			getResDbRes( const std::string& id ) const;

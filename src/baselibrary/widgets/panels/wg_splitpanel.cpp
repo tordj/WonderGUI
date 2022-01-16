@@ -519,13 +519,6 @@ namespace wg
 		return bHit;
 	}
 
-	//____ _cloneContent() ____________________________________________________
-
-	void SplitPanel::_cloneContent(const Widget * _pOrg)
-	{
-		//TODO: Implement!!!
-	}
-
 	//____ _resize() _________________________________________________________
 
 	void SplitPanel::_resize(const SizeSPX& size, int scale)

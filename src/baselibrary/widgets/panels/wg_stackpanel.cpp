@@ -118,15 +118,6 @@ namespace wg
 			return _calcPreferredSize(scale);
 	}
 
-	//____ _cloneContent() ______________________________________________________
-
-	void StackPanel::_cloneContent( const Widget * _pOrg )
-	{
-		Panel::_cloneContent( _pOrg );
-
-		//TODO: Implement
-	}
-
 	//____ _resize() ___________________________________________________________
 
 	void StackPanel::_resize( const SizeSPX& size, int scale )

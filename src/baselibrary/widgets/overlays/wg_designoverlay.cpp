@@ -426,13 +426,6 @@ namespace wg
 			_refreshRealGeo( pSlot );
 	}
 
-	//____ _cloneContent() ______________________________________________________
-
-	void DesignOverlay::_cloneContent( const Widget * _pOrg )
-	{
-		Overlay::_cloneContent( _pOrg );
-	}
-
 	//____ _receive() ______________________________________________________________
 
 	void DesignOverlay::_receive( Msg * _pMsg )

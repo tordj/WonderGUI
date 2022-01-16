@@ -74,9 +74,7 @@ namespace wg
 	protected:
 		PopupOpener();
 		virtual ~PopupOpener();
-		virtual Widget* _newOfMyType() const override { return new PopupOpener(); };
 
-		void			_cloneContent(const Widget * _pOrg) override;
 		void			_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void			_resize(const SizeSPX& size, int scale = -1) override;
 		void			_refresh() override;

@@ -396,16 +396,6 @@ namespace wg
 		}
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void Container::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-		const Container * pOrg = static_cast<const Container*>(_pOrg);
-		m_bSiblingsOverlap 	= pOrg->m_bSiblingsOverlap;
-	}
-
 	//____ _collectPatches() _______________________________________________________
 
 	void Container::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )

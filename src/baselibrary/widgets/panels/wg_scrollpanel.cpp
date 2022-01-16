@@ -867,13 +867,6 @@ namespace wg
 		return false;
 	}
 
-	//____ _cloneContent() ____________________________________________________
-
-	void ScrollPanel::_cloneContent(const Widget* pOrg)
-	{
-
-	}
-
 	//____ _slotTypeInfo() ____________________________________________________
 
 	const TypeInfo& ScrollPanel::_slotTypeInfo(const StaticSlot* pSlot) const

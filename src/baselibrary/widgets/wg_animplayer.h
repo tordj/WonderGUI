@@ -88,9 +88,6 @@ namespace wg
 	protected:
 		AnimPlayer();
 		virtual ~AnimPlayer();
-		virtual Widget* _newOfMyType() const override { return new AnimPlayer(); };
-
-		void			_cloneContent( const Widget * _pOrg ) override;
 
 		SizeSPX			_preferredSize(int scale = -1) const override;
 

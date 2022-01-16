@@ -70,14 +70,12 @@ namespace wg
 	protected:
 		DragNDropOverlay();
 		virtual ~DragNDropOverlay();
-		virtual Widget* _newOfMyType() const override { return new DragNDropOverlay(); };
 
 
 //        DragNDropOverlay *    _getDragNDropOverlay() const { return const_cast<DragNDropOverlay*>(this); }
 
 		// Overloaded from Widget
 
-		void            _cloneContent(const Widget * _pOrg) override;
 		void            _receive(Msg * pMsg) override;
 		void            _render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 

@@ -297,15 +297,6 @@ namespace wg
 
 	}
 
-	//____ _cloneContent() ______________________________________________________
-
-	void PackList::_cloneContent( const Widget * _pOrg )
-	{
-		List::_cloneContent( _pOrg );
-
-		//TODO: Implement!!!
-	}
-
 	//____ _render() _______________________________________________________
 
 	void PackList::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )

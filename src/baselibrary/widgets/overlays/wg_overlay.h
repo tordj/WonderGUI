@@ -134,7 +134,6 @@ namespace wg
 		// Overloaded from Widget
 
 		void		_resize(const SizeSPX& size, int scale = -1) override;
-		void		_cloneContent( const Widget * _pOrg ) override;
 
 
 

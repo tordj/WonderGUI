@@ -174,13 +174,6 @@ namespace wg
 		pDevice->blit(_canvas);
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void CanvasCapsule::_cloneContent(const Widget* _pOrg)
-	{
-
-	}
-
 	//____ _resize() _____________________________________________________________
 
 	void CanvasCapsule::_resize(const SizeSPX& size, int scale)

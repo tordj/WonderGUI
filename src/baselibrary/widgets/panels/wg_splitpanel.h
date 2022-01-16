@@ -151,7 +151,6 @@ namespace wg
 	protected:
 		SplitPanel();
 		virtual ~SplitPanel();
-		virtual Widget* _newOfMyType() const override { return new SplitPanel(); };
 
 		spx			_handleThickness(int scale) const;					// Takes both m_handleThickness and m_pHandleSkin into account.
 		void		_updatePreferredSize();
@@ -172,7 +171,6 @@ namespace wg
 		void		_maskPatches(Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode) override;
 
 		bool		_alphaTest(const CoordSPX& ofs) override;
-		void		_cloneContent(const Widget * _pOrg) override;
 
 		// Overloaded from Container
 

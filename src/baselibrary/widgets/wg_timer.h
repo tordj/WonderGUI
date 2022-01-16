@@ -85,9 +85,7 @@ namespace wg
 
 
 	protected:
-		virtual Widget* _newOfMyType() const override { return new Timer(); };
 
-		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void		_setValue(int millisec);

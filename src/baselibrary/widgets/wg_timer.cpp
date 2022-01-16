@@ -174,15 +174,6 @@ namespace wg
 		_setValue(value);
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void Timer::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-//		Timer * pOrg = (Timer*) _pOrg;
-	}
-
 	//____ _render() __________________________________________________________
 
 	void Timer::_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window)

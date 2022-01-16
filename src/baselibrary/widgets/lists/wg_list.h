@@ -97,8 +97,6 @@ namespace wg
 
 		virtual void	_receive( Msg * pMsg ) override;
 
-		void			_cloneContent( const Widget * _pOrg ) override;
-
 		int				_selectSlot(Slot * pSlot, bool bPostMsg) { return _setSlotSelection(pSlot, _nextSlot(pSlot), true, bPostMsg); }
 		int				_selectSlots(Slot * pBegin, Slot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, true, bPostMsg); }
 		int				_unselectSlots(Slot * pBegin, Slot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, false, bPostMsg); }

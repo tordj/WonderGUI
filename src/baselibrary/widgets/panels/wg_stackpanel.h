@@ -159,11 +159,9 @@ namespace wg
 	protected:
 		StackPanel();
 		virtual ~StackPanel();
-		virtual Widget* _newOfMyType() const override { return new StackPanel(); };
 
 		// Overloaded from Widget
 
-		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_resize( const SizeSPX& size, int scale = -1 ) override;
 
 		// Overloaded from Container

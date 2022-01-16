@@ -131,15 +131,6 @@ namespace wg
 	}
 
 
-	//____ _cloneContent() _______________________________________________________
-
-	void TextEditor::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-//		const TextEditor * pOrg = static_cast<const TextEditor*>(_pOrg);
-	}
-
 	//____ _resize() ________________________________________________
 
 	void TextEditor::_resize( const SizeSPX& size, int scale )

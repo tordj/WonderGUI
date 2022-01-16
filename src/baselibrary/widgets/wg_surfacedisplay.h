@@ -107,7 +107,6 @@ namespace wg
 	protected:
 		SurfaceDisplay();
 		virtual ~SurfaceDisplay();
-		virtual Widget* _newOfMyType() const override { return new SurfaceDisplay(); };
 
 		void			_surfaceModified(int nRects, const RectSPX* pRects);
 		RectSPX			_surfaceRectToCanvasRect(const RectSPX& surfaceRect);
@@ -115,7 +114,6 @@ namespace wg
 		bool			_adjustZoom();
 		bool			_adjustOffset();
 
-		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_resize(const SizeSPX& size, int scale = -1) override;
 		void			_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		bool			_alphaTest(const CoordSPX& ofs) override;

@@ -73,16 +73,4 @@ namespace wg
 			return Widget::_preferredSize(_scale);
 	}
 
-
-	//____ _cloneContent() _______________________________________________________
-
-	void Filler::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-		Filler * pOrg = (Filler*) _pOrg;
-
-		m_preferredSize = pOrg->m_preferredSize;
-	}
-
 } // namespace wg

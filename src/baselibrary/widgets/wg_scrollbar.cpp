@@ -108,23 +108,6 @@ namespace wg
 		}
 	}
 
-	//____ _cloneContent() ____________________________________________________
-
-	void Scrollbar::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-		Scrollbar * pOrg = (Scrollbar *) _pOrg;
-
-		m_singleStep	= pOrg->m_singleStep;
-		m_wheelRoll		= pOrg->m_wheelRoll;
-		m_pageOverlap	= pOrg->m_pageOverlap;
-
-	  	m_viewPos		= pOrg->m_viewPos;
-		m_viewLen		= pOrg->m_viewLen;
-		m_contentLen	= pOrg->m_contentLen;
-	}
-
 	//____ _setState() ______________________________________________________
 
 	void Scrollbar::_setState( State state )

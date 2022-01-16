@@ -62,10 +62,8 @@ namespace wg
 	protected:
 		RenderLayerCapsule();
 		virtual ~RenderLayerCapsule();
-		virtual Widget* _newOfMyType() const override { return new RenderLayerCapsule(); };
 
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
-		void		_cloneContent(const Widget* _pOrg) override;
 
 		int			m_renderLayer = -1;
 	};

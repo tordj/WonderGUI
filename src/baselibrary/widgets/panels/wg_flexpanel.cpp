@@ -470,15 +470,6 @@ namespace wg
 			_requestRender( * pRect );
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void FlexPanel::_cloneContent( const Widget * _pOrg )
-	{
-		Panel::_cloneContent( _pOrg );
-
-		//TODO: Implement
-	}
-
 	//____ _resize() ____________________________________________________________
 
 	void FlexPanel::_resize( const SizeSPX& size, int scale )

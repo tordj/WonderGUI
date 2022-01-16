@@ -108,18 +108,6 @@ namespace wg
 			return Widget::_preferredSize(scale);
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void Image::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-		Image * pOrg = (Image*) _pOrg;
-
-		m_pSurface	= pOrg->m_pSurface;
-		m_rect		= pOrg->m_rect;
-	}
-
 	//____ _render() _____________________________________________________________
 
 	void Image::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )

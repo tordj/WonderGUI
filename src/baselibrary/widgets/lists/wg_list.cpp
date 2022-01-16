@@ -117,14 +117,6 @@ namespace wg
 		return true;
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void List::_cloneContent( const Widget * _pOrg )
-	{
-		Container::_cloneContent( _pOrg );
-	}
-
-
 	//____ _receive() _____________________________________________________________
 
 	void List::_receive( Msg * _pMsg )

@@ -142,7 +142,6 @@ namespace wg
 	protected:
 		PopupOverlay();
 		virtual ~PopupOverlay();
-		virtual Widget* _newOfMyType() const override { return new PopupOverlay(); };
 
 		PopupOverlay *	_getPopupOverlay() const override { return const_cast<PopupOverlay*>(this); }
 
@@ -180,7 +179,6 @@ namespace wg
 		// Overloaded from Widget
 
 		void            _render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
-		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_resize( const SizeSPX& size, int scale = -1 ) override;
 		void			_receive( Msg * pMsg ) override;
 		void			_update(int microPassed, int64_t microsecTimestamp) override;

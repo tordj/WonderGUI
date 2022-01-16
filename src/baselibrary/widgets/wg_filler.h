@@ -67,11 +67,8 @@ namespace wg
 	protected:
 		Filler();
 		virtual ~Filler();
-		virtual Widget* _newOfMyType() const override { return new Filler(); };
 
 		SizeSPX	_preferredSize(int scale = -1) const override;
-
-		void	_cloneContent( const Widget * _pOrg ) override;
 
 	private:
 		Size			m_preferredSize;

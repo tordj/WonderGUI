@@ -87,7 +87,6 @@ namespace wg
 
 		virtual SizeSPX	_preferredSize(int scale = -1) const override;
 
-		void	_cloneContent( const Widget * _pOrg ) override;
 		void	_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void	_receive( Msg * pMsg ) override;
 		void	_refresh() override;
@@ -95,8 +94,6 @@ namespace wg
 		void	_setState( State state ) override;
 		void	_setViewPos(pts pos);
 		void	_sendMessage();
-
-		virtual Widget* _newOfMyType() const override { return new Scrollbar(); };
 
 		void	_scrollbarStep(const CScrollbar* pComponent, int dir) override;
 		void	_scrollbarPage(const CScrollbar* pComponent, int dir) override;

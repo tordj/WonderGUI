@@ -291,21 +291,6 @@ namespace wg
 		OO(text)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale), m_scale );
 	}
 
-
-	//____ _cloneContent() _______________________________________________________
-
-	void ToggleButton::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-		ToggleButton * pOrg = (ToggleButton *) _pOrg;
-
-		m_bFlipOnRelease	= pOrg->m_bFlipOnRelease;
-		m_clickArea			= pOrg->m_clickArea;
-
-//		_icon().onCloneContent( &pOrg->m_icon );
-	}
-
 	//____ _markTestTextArea() ______________________________________________________
 
 	bool ToggleButton::_markTestTextArea( const CoordSPX& pos )

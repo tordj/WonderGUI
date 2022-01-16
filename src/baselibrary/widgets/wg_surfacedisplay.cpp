@@ -179,13 +179,6 @@ namespace wg
 		return width;
 	}
 
-	//____ _cloneContent() ____________________________________________________
-
-	void SurfaceDisplay::_cloneContent(const Widget* _pOrg)
-	{
-
-	}
-
 	//____ _resize() __________________________________________________________
 
 	void SurfaceDisplay::_resize(const SizeSPX& size, int scale)

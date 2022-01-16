@@ -78,13 +78,6 @@ namespace wg
 		display._render(pDevice, _contentRect() + _canvas.pos(), m_scale, m_state);
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void NumberDisplay::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-	}
-
 	//____ _setState() ______________________________________________________
 
 	void NumberDisplay::_setState( State state )

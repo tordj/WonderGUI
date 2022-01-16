@@ -183,13 +183,11 @@ namespace wg
 	protected:
 		PackList();
 		virtual ~PackList();
-		Widget*			_newOfMyType() const override { return new PackList(); }
 
 		// Overloaded from Widget
 
 		void			_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip ) override;
 		void			_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
-		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void			_resize( const SizeSPX& size, int scale = -1) override;
 		void			_refresh() override;

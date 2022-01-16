@@ -383,17 +383,6 @@ namespace wg
 		return SizeSPX(spx_max, spx_max);
 	}
 
-
-	//____ _cloneContent() _______________________________________________________
-
-	void PianoKeyboard::_cloneContent(const Widget * _pOrg)
-	{
-		Widget::_cloneContent(_pOrg);
-
-//		PianoKeyboard * pOrg = (PianoKeyboard*)_pOrg;
-
-	}
-
 	//____ _render() __________________________________________________________
 
 	void PianoKeyboard::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)

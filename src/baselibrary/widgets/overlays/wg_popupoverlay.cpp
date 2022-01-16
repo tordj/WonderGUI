@@ -510,13 +510,6 @@ namespace wg
 		Overlay::_resize(sz, scale);
 	}
 
-	//____ _cloneContent() ______________________________________________________
-
-	void PopupOverlay::_cloneContent( const Widget * _pOrg )
-	{
-		Overlay::_cloneContent( _pOrg );
-	}
-
 	//____ _receive() ______________________________________________________________
 
 	void PopupOverlay::_receive( Msg * _pMsg )

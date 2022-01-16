@@ -173,11 +173,10 @@ namespace wg
 	protected:
 		PackPanel();
 		virtual ~PackPanel();
-		virtual Widget* _newOfMyType() const  override { return new PackPanel(); };
 
 		// Overloaded from Widget
 
-		void			_resize( const SizeSPX& size, int scale = -1 ) override;
+		void		_resize( const SizeSPX& size, int scale = -1 ) override;
 
 
 		// Overloaded from Container
@@ -190,7 +189,7 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		CoordSPX		_childPos(const StaticSlot * pSlot) const override;
+		CoordSPX	_childPos(const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender(StaticSlot * pSlot) override;
 		void		_childRequestRender(StaticSlot * pSlot, const RectSPX& rect) override;

@@ -247,17 +247,6 @@ namespace wg
 		return align(textRect);
 	}
 
-	//____ _onCloneContent() ________________________________________________________
-
-	void CIconDisplay::_onCloneContent( const CIconDisplay * _pOrg )
-	{
-		m_placement			= _pOrg->m_placement;
-		m_scaleFactor		= _pOrg->m_scaleFactor;
-		m_bOverlap			= _pOrg->m_bOverlap;
-		m_padding			= _pOrg->m_padding;
-		m_pSkin				= _pOrg->m_pSkin;
-	}
-
 	//____ _preferredSize() ________________________________________________________
 
 	SizeSPX CIconDisplay::_preferredSize(int scale) const

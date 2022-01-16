@@ -124,17 +124,4 @@ namespace wg
 		pDevice->setTintColor(oldTC);
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void ShaderCapsule::_cloneContent( const Widget * _pOrg )
-	{
-		Capsule::_cloneContent( _pOrg );
-
-		ShaderCapsule * pOrg = (ShaderCapsule*) _pOrg;
-
-		m_tintColor		= pOrg->m_tintColor;
-		m_renderMode	= pOrg->m_renderMode;
-		m_tintMode		= pOrg->m_tintMode;
-	}
-
 } // namespace wg

@@ -68,7 +68,6 @@ namespace wg
 	protected:
 		Button();
 		virtual ~Button();
-		virtual Widget* _newOfMyType() const override { return new Button(); };
 
 		//	virtual int		_matchingWidth( int height ) const override;
 
@@ -77,7 +76,6 @@ namespace wg
 		void			_receive( Msg * pMsg ) override;
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void			_refresh() override;
-		void			_cloneContent( const Widget * _pOrg ) override;
 		bool			_alphaTest( const CoordSPX& ofs ) override;
 		void			_resize( const SizeSPX& size, int scale = -1 ) override;
 		void			_setState( State state ) override;

@@ -78,7 +78,6 @@ namespace wg
 	
 		SideCanvas( Holder * pHolder );
 		virtual ~SideCanvas();
-		virtual Widget* _newOfMyType() const override { return nullptr; };
 
 		spx			_matchingHeight(spx width, int scale = -1) const override;
 		spx			_matchingWidth(spx height, int scale = -1) const override;

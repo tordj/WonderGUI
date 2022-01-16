@@ -162,13 +162,6 @@ namespace wg
 		_requestRender( RectSPX( rect, RectSPX(0,0,m_size) ));
 	}
 
-	//____ _cloneContent() ____________________________________________________
-
-	void DragNDropOverlay::_cloneContent( const Widget * _pOrg )
-	{
-
-	}
-
 	//____ _receive() __________________________________________________________
 
 	void DragNDropOverlay::_receive( Msg * _pMsg )

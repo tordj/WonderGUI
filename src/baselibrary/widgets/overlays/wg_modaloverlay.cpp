@@ -484,13 +484,6 @@ namespace wg
 			_refreshRealGeo( pSlot );
 	}
 
-	//____ _cloneContent() ______________________________________________________
-
-	void ModalOverlay::_cloneContent( const Widget * _pOrg )
-	{
-		Overlay::_cloneContent( _pOrg );
-	}
-
 	//____ _receive() ______________________________________________________________
 
 	void ModalOverlay::_receive( Msg * _pMsg )

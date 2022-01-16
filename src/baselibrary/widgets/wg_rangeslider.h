@@ -90,10 +90,8 @@ namespace wg
 	protected:
 		RangeSlider();
 		virtual ~RangeSlider();
-		virtual Widget* _newOfMyType() const override { return new RangeSlider(); };
-		void 			_receive(Msg* pMsg) override;
 
-		void		_cloneContent( const Widget * _pOrg ) override;
+		void 		_receive(Msg* pMsg) override;
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		bool		_alphaTest(const CoordSPX& ofs) override;
 

@@ -63,19 +63,6 @@ namespace wg
 		}
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void Panel::_cloneContent( const Widget * _pOrg )
-	{
-		const Panel * pOrg = static_cast<const Panel*>(_pOrg);
-
-		m_bTooltipGroup 	= pOrg->m_bTooltipGroup;
-		m_maskOp 			= pOrg->m_maskOp;
-
-		Container::_cloneContent( pOrg );
-	}
-
-
 	//____ _maskPatches() __________________________________________________________
 
 	void Panel::_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )

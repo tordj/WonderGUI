@@ -171,9 +171,6 @@ namespace wg
 
 		inline void			refresh();
 
-		inline Widget_p		clone() const;
-		inline Widget_p		newOfMyType() const;
-
 		inline bool			isOpaque() const;
 
 		void				setBaggage(Object * pBaggage);
@@ -207,8 +204,6 @@ namespace wg
 		virtual void		_collectPatches(Patches& container, const RectSPX& geo, const RectSPX& clip);
 		virtual void		_maskPatches(Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode);
 
-		Widget*				_clone() const;
-
 		virtual void    	_preRender();
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window);
 
@@ -235,7 +230,6 @@ namespace wg
 		int					_listAncestors(Widget* array[], int max);
 		inline int			_fixScale(int scale) const;
 
-		virtual Widget* 	_newOfMyType() const = 0;
 		int64_t				_startReceiveUpdates();
 		void				_stopReceiveUpdates();
 
@@ -258,10 +252,6 @@ namespace wg
 		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_container(); else return nullptr; }
 
 		inline RectSPX		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return RectSPX(); }
-
-		// To be overloaded by Widget
-
-		virtual void		_cloneContent( const Widget * _pOrg );
 
 
 		// Methods for components to access
@@ -1007,23 +997,6 @@ namespace wg
 	void Widget::refresh() 
 	{ 
 		_refresh(); 
-	}
-
-	//____ clone() ____________________________________________________________
-
-	Widget_p Widget::clone() const 
-	{ 
-		return _clone(); 
-	}
-
-	//____ newOfMyType() ______________________________________________________
-	/**
-	 * @brief Create and return a new widget of the same type.
-	 */
-
-	Widget_p Widget::newOfMyType() const 
-	{ 
-		return _newOfMyType(); 
 	}
 
 	//____ isOpaque() _________________________________________________________

@@ -72,7 +72,6 @@ namespace wg
 	protected:
 		TooltipOverlay();
 		virtual ~TooltipOverlay();
-		virtual Widget* _newOfMyType() const override { return new TooltipOverlay(); };
 
 
 		class Slot : public Overlay::Slot

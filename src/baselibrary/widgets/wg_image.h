@@ -77,9 +77,7 @@ namespace wg
 	protected:
 		Image();
 		virtual ~Image();
-		virtual Widget* _newOfMyType() const override { return new Image(); };
 
-		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		bool		_alphaTest( const CoordSPX& ofs ) override;
 

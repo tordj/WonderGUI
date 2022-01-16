@@ -444,19 +444,6 @@ namespace wg
 
 	//____ () _________________________________________________________
 
-	Widget_p ResDB::cloneWidget( const std::string& id ) const
-	{
-		WidgetRes* widgetRes = getResWidget(id);
-
-		if( !widgetRes )
-			return 0;
-
-		Widget_p pWidget = widgetRes->res;
-		return pWidget->clone();
-	}
-
-	//____ () _________________________________________________________
-
 	ResDB::ResDBRes * ResDB::getResDbRes( const std::string& id ) const
 	{
 		for(ResDBRes* res = getFirstResDbRes(); res; res = res->next())

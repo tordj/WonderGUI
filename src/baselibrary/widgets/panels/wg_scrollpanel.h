@@ -92,7 +92,6 @@ namespace wg
 	protected:
 		ScrollPanel();
 		virtual ~ScrollPanel();
-		virtual Widget* _newOfMyType() const override { return new ScrollPanel(); };
 
 		void		_updateRegions();
 
@@ -114,7 +113,6 @@ namespace wg
 		void		_maskPatches(Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode) override;
 
 		bool		_alphaTest(const CoordSPX& ofs) override;
-		void		_cloneContent(const Widget * _pOrg) override;
 
 		// Overloaded from Container
 

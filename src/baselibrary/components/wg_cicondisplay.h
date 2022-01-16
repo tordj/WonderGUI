@@ -95,7 +95,6 @@ namespace wg
 		RectSPX			_getIconRect( const RectSPX& contentRect, int scale ) const;
 		RectSPX			_getIconRect( const RectSPX& contentRect, const SizeSPX& iconSize, int scale ) const;
 		RectSPX			_getTextRect( const RectSPX& contentRect, const RectSPX& iconRect, int scale ) const;
-		void			_onCloneContent( const CIconDisplay * _pOrg );
 		SizeSPX			_preferredSize(int scale) const;
 
 	private:

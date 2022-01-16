@@ -197,22 +197,4 @@ namespace wg
 		Widget::_setState(state);
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void FpsDisplay::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-		FpsDisplay * pOrg		= (FpsDisplay *) _pOrg;
-
-//		OO(labels).clone( &pOrg->m_labelsText );
-//		OO(values).clone( &pOrg->m_valuesText );
-
-		m_tickBufferOfs	= pOrg->m_tickBufferOfs;
-
-		for( int i = 0 ; i < c_tickBuffer ; i++ )
-			m_pTickBuffer[i] = pOrg->m_pTickBuffer[i];
-	}
-
-
 } // namespace wg

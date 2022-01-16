@@ -63,10 +63,8 @@ namespace wg
 	protected:
 		NumberDisplay();
 		virtual ~NumberDisplay();
-		virtual Widget* _newOfMyType() const override { return new NumberDisplay(); };
 
 		void	_refresh() override;
-		void	_cloneContent( const Widget * _pOrg ) override;
 		void	_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void	_setState( State state ) override;
 

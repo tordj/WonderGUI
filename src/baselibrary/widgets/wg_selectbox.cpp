@@ -252,16 +252,6 @@ namespace wg
 
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void SelectBox::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-//		SelectBox * pOrg = (SelectBox*) _pOrg;
-
-	}
-
 	//____ _render() _____________________________________________________________
 
 	void SelectBox::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )

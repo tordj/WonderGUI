@@ -115,13 +115,6 @@ namespace wg
 		return preferred;
 	}
 
-	//____ _cloneContent() ____________________________________________________
-
-	void PopupOpener::_cloneContent(const Widget * _pOrg)
-	{
-
-	}
-
 	//____ _render() __________________________________________________________
 
 	void PopupOpener::_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window)

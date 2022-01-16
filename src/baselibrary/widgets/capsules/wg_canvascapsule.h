@@ -83,10 +83,8 @@ namespace wg
 	protected:
 		CanvasCapsule();
 		virtual ~CanvasCapsule();
-		virtual Widget*		_newOfMyType() const override { return new CanvasCapsule(); };
 
 		void				_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
-		void				_cloneContent(const Widget* _pOrg) override;
 		void				_resize(const SizeSPX& size, int scale) override;
 
 		void				_childRequestRender(StaticSlot* pSlot) override;

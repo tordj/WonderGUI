@@ -146,7 +146,6 @@ namespace wg
 	protected:
 		ModalOverlay();
 		virtual ~ModalOverlay();
-		virtual Widget* _newOfMyType() const  override { return new ModalOverlay(); };
 
 
 	private:
@@ -159,7 +158,6 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void			_cloneContent(const Widget * _pOrg) override;
 		void			_resize(const SizeSPX& size, int scale = -1) override;
 		void			_receive(Msg * pMsg) override;
 

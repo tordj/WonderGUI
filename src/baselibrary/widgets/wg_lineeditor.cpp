@@ -133,17 +133,6 @@ namespace wg
 		OO(editor)._receive( pMsg );
 	}
 
-
-	//____ _cloneContent() _______________________________________________________
-
-	void LineEditor::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-//		const LineEditor * pOrg = static_cast<const LineEditor*>(_pOrg);
-
-	}
-
 	//____ _resize() ________________________________________________
 
 	void LineEditor::_resize( const SizeSPX& size, int scale )

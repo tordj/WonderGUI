@@ -84,15 +84,4 @@ namespace wg
 			pDevice->setRenderLayer(oldLayer);
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void RenderLayerCapsule::_cloneContent(const Widget* _pOrg)
-	{
-		Capsule::_cloneContent(_pOrg);
-
-		RenderLayerCapsule* pOrg = (RenderLayerCapsule*)_pOrg;
-
-		m_renderLayer = pOrg->m_renderLayer;
-	}
-
 } // namespace wg

@@ -138,7 +138,6 @@ namespace wg
 
 			virtual void			_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 			virtual void			_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip ) override;
-			virtual void			_cloneContent( const Widget * _pOrg ) override;
 
 			bool				m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
 

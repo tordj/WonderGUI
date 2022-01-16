@@ -197,15 +197,6 @@ namespace wg
 			m_skin.render(pDevice, canvas, m_scale, m_state, m_value);
 	}
 
-//____ _cloneContent() _______________________________________________________
-
-	void Knob::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-//		Knob * pOrg = (Knob*) _pOrg;
-	}
-
 	//____ _setValue() __________________________________________________________
 
 	void Knob::_setValue(float value, bool bPostMsg)

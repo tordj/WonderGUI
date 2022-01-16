@@ -183,13 +183,6 @@ namespace wg
 			package.pSlot = nullptr;
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void Overlay::_cloneContent( const Widget * _pOrg )
-	{
-		Container::_cloneContent( _pOrg );
-	}
-
 	//____ _releaseChild() ____________________________________________________
 
 	void Overlay::_releaseChild(StaticSlot * pSlot)

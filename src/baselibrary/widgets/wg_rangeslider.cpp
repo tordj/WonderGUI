@@ -271,18 +271,6 @@ namespace wg
 		}
 	}
 
-
-	//____ _cloneContent() _______________________________________________________
-
-	void RangeSlider::_cloneContent(const Widget* _pOrg)
-	{
-		Widget::_cloneContent(_pOrg);
-
-		RangeSlider* pOrg = (RangeSlider*)_pOrg;
-
-		m_preferredSize = pOrg->m_preferredSize;
-	}
-
 	//____ _render() __________________________________________________________
 
 	void RangeSlider::_render(GfxDevice* pDevice, const RectSPX& canvas, const RectSPX& window)

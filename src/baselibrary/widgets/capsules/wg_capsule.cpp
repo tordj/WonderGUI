@@ -162,13 +162,6 @@ namespace wg
 			OO( slot._widget())->_maskPatches( patches, geo, clip, blendMode );
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void Capsule::_cloneContent( const Widget * _pOrg )
-	{
-		Container::_cloneContent( _pOrg );
-	}
-
 	//____ _resize() ____________________________________________________________
 
 	void Capsule::_resize( const SizeSPX& size, int scale )

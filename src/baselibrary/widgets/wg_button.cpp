@@ -242,21 +242,6 @@ namespace wg
 		//TODO: Handling of icon and text.
 	}
 
-	//____ _cloneContent() _______________________________________________________
-
-	void Button::_cloneContent( const Widget * _pOrg )
-	{
-		Widget::_cloneContent( _pOrg );
-
-//		Button * pOrg = (Button *) _pOrg;
-
-//		_icon().onCloneContent( &pOrg->m_icon );
-
-		//TODO: Support cloning for text components.
-	//	OO(text).clone(&pOrg->m_text);
-
-	}
-
 	//____ _alphaTest() ___________________________________________________________
 
 	bool Button::_alphaTest( const CoordSPX& ofs )

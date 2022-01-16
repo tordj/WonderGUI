@@ -363,34 +363,6 @@ namespace wg
 		}
 	}
 
-
-	//____ clone() _________________________________________________________
-
-	Widget * Widget::_clone() const
-	{
-		Widget * p = _newOfMyType();
-		p->_cloneContent( this );
-		return p;
-	}
-
-	//____ _cloneContent() _____________________________________________________
-
-	void Widget::_cloneContent( const Widget * pOrg )
-	{
-		m_id			= pOrg->m_id;
-
-		m_pointerStyle 	= pOrg->m_pointerStyle;
-
-		m_tooltip		= pOrg->m_tooltip;
-
-		m_bOpaque		= pOrg->m_bOpaque;
-		m_bTabLock		= pOrg->m_bTabLock;
-
-		m_size			= pOrg->m_size;
-
-		m_skin.set(pOrg->skin());
-	}
-
 	//____ matchingHeight() _______________________________________________________
 	/**
 	 * @brief Get the widgets preferred height for the specified width.
