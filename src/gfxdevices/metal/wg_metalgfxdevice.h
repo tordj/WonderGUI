@@ -63,14 +63,13 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
-		//.____ Geometry _________________________________________________
-		
-		SizeI		canvasSize(CanvasRef ref) const override;
+        bool    setDefaultCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI pixelSize, PixelFormat pixelFormat, int scale = 64 );
+ 
+        using GfxDevice::canvas;
+        const CanvasInfo& canvas(CanvasRef ref) const override;
 
         //.____ State _________________________________________________
 
-        bool    setDefaultCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI pixelSize, PixelFormat pixelFormat );
-        
         void    setTintColor(HiColor color) override;
         void    setTintGradient(const RectI& rect, const Gradient& gradient) override;
         void    clearTintGradient() override;
@@ -307,7 +306,7 @@ namespace wg
         id<MTLDrawable>             m_drawableToAutoPresent = nil;
         MTLRenderPassDescriptor*    m_defaultCanvasRenderPassDesc;
         PixelFormat                 m_defaultCanvasPixelFormat;
-		SizeI                       m_defaultCanvasSize;
+		CanvasInfo                  m_defaultCanvas;
 
         id<MTLCommandBuffer>        m_metalCommandBuffer;
 

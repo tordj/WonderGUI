@@ -31,6 +31,7 @@
 
 namespace wg
 {
+    using namespace Util;
 
 	const TypeInfo MetalGfxDevice::TYPEINFO = { "MetalGfxDevice", &GfxDevice::TYPEINFO };
 
@@ -62,6 +63,8 @@ namespace wg
 
 MetalGfxDevice::MetalGfxDevice()
 	{
+        m_defaultCanvas.ref = CanvasRef::Default;
+    
         m_bFullyInitialized = true;
 
         m_flushesInProgress = 0;
@@ -327,21 +330,21 @@ MetalGfxDevice::MetalGfxDevice()
         return m_pSurfaceFactory;
 	}
 
-	//____ canvasSize() ____________________________________________________________
+	//____ canvas() ______________________________________________________________
 
-	SizeI MetalGfxDevice::canvasSize(CanvasRef ref) const
+    const CanvasInfo& MetalGfxDevice::canvas(CanvasRef ref) const
 	{
 		if( ref == CanvasRef::Default )
-			return m_defaultCanvasSize;
+			return m_defaultCanvas;
 		else
 		{
 			//TODO: Error handling!
-			return SizeI();
+			return m_dummyCanvas;
 		}
 	}
 
 
-    //____ _canvasWasChanged() ________________________________________________________
+    //____ _canvasWasChanged() ________________________________________________
 
     void MetalGfxDevice::_canvasWasChanged()
     {
@@ -357,7 +360,11 @@ MetalGfxDevice::MetalGfxDevice()
         bool bClear = false;
         if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer] == nullptr)
         {
-            m_layerSurfaces[m_renderLayer] = MetalSurface::create(m_canvas.size, m_pCanvasLayers->layerFormat(m_renderLayer), SurfaceFlag::Canvas);
+            Surface::Blueprint bp;
+            bp.canvas = true;
+            bp.format = m_pCanvasLayers->layerFormat(m_renderLayer);
+            bp.size = m_canvas.size;
+            m_layerSurfaces[m_renderLayer] = MetalSurface::create(bp);
             bClear = true;
         }
 
@@ -444,7 +451,7 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _setDefaultCanvas() ___________________________________________________
 
-    bool MetalGfxDevice::setDefaultCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI pixelSize, PixelFormat pixelFormat )
+    bool MetalGfxDevice::setDefaultCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI pixelSize, PixelFormat pixelFormat, int scale )
     {
         if( pixelFormat != PixelFormat::BGRA_8_linear && pixelFormat != PixelFormat::BGRA_8_sRGB && pixelFormat != PixelFormat::A_8 )
         {
@@ -454,7 +461,8 @@ MetalGfxDevice::MetalGfxDevice()
 
         m_defaultCanvasRenderPassDesc = renderPassDesc;
         m_defaultCanvasPixelFormat = pixelFormat;
-		m_defaultCanvasSize = pixelSize;
+		m_defaultCanvas.size = pixelSize*64;
+        m_defaultCanvas.scale = scale;
         
         return true;
     }
@@ -797,61 +805,74 @@ MetalGfxDevice::MetalGfxDevice()
 
         //
 
-        if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 4)
-            _resizeBuffers();
-        
-        if (m_cmd != Command::Fill)
+        if (((rect.x | rect.y | rect.w | rect.h) & 0x3F) == 0)
         {
-            _endCommand();
-            _beginDrawCommand(Command::Fill);
-        }
+            // No subpixel precision, make it quick and easy
 
-        for (int i = 0; i < m_nClipRects; i++)
-        {
-            RectI patch(m_pClipRects[i], rect);
-            if (patch.w > 0 && patch.h > 0)
+            if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 4)
+                _resizeBuffers();
+            
+            if (m_cmd != Command::Fill)
             {
-                int    dx1 = patch.x;
-                int    dy1 = patch.y;
-                int dx2 = patch.x + patch.w;
-                int dy2 = patch.y + patch.h;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
+                _endCommand();
+                _beginDrawCommand(Command::Fill);
             }
-        }
 
-        m_pExtrasBuffer[m_extrasOfs++] = col.r / 4096.f;
-        m_pExtrasBuffer[m_extrasOfs++] = col.g / 4096.f;
-        m_pExtrasBuffer[m_extrasOfs++] = col.b / 4096.f;
-        m_pExtrasBuffer[m_extrasOfs++] = col.a / 4096.f;
+            for (int i = 0; i < m_nClipRects; i++)
+            {
+                RectI patch = roundToPixels(RectSPX(m_pClipRects[i], rect));
+                if (patch.w > 0 && patch.h > 0)
+                {
+                    int    dx1 = patch.x;
+                    int    dy1 = patch.y;
+                    int dx2 = patch.x + patch.w;
+                    int dy2 = patch.y + patch.h;
+
+                    m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+                    m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+                    m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                    m_vertexOfs++;
+
+                    m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+                    m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+                    m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                    m_vertexOfs++;
+
+                    m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+                    m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+                    m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                    m_vertexOfs++;
+
+                    m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+                    m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+                    m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                    m_vertexOfs++;
+
+                    m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+                    m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+                    m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                    m_vertexOfs++;
+
+                    m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+                    m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+                    m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                    m_vertexOfs++;
+                }
+            }
+
+            m_pExtrasBuffer[m_extrasOfs++] = col.r / 4096.f;
+            m_pExtrasBuffer[m_extrasOfs++] = col.g / 4096.f;
+            m_pExtrasBuffer[m_extrasOfs++] = col.b / 4096.f;
+            m_pExtrasBuffer[m_extrasOfs++] = col.a / 4096.f;
+        }
+        else
+        {
+            // We have subpixel precision
+
+            //TODO: Implement!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+            
+        }
     }
 
     //____ fill() ____ [subpixel] __________________________________________________
@@ -945,7 +966,7 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ plotPixels() _________________________________________________________________
 
-	void MetalGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const HiColor * pColors)
+	void MetalGfxDevice::plotPixels(int nPixels, const CoordSPX * pCoords, const HiColor * pColors)
 	{
         if (nPixels == 0)
             return;
@@ -966,7 +987,7 @@ MetalGfxDevice::MetalGfxDevice()
             {
                 if (clip.contains(pCoords[pixel]))
                 {
-                    m_pVertexBuffer[m_vertexOfs].coord = pCoords[pixel];
+                    m_pVertexBuffer[m_vertexOfs].coord = pCoords[pixel] / 64;
                     m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
                     m_vertexOfs++;
 
@@ -981,8 +1002,12 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ drawLine() ____ [from/to] __________________________________________________
 
-	void MetalGfxDevice::drawLine(CoordI begin, CoordI end, HiColor color, float thickness)
+	void MetalGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness)
 	{
+        //TODO: Proper 26:6 support
+        begin = roundToPixels(begin);
+        end = roundToPixels(end);
+        
         // Skip calls that won't affect destination
 
         if (color.a == 0 && (m_blendMode == BlendMode::Blend))
@@ -1109,8 +1134,12 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ drawLine() ____ [start/direction] __________________________________________________
 
-    void MetalGfxDevice::drawLine(CoordI begin, Direction dir, int length, HiColor color, float thickness)
+    void MetalGfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, float thickness)
     {
+        //TODO: Proper 26:6 support
+        begin = roundToPixels(begin);
+        length = roundToPixels(length);
+        
         // Skip calls that won't affect destination
 
         if (color.a == 0 && (m_blendMode == BlendMode::Blend))
@@ -1239,12 +1268,12 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _transformBlit() ____ [simple] __________________________________________________
 
-	void MetalGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+	void MetalGfxDevice::_transformBlit(const RectSPX& _dest, CoordSPX src, const int simpleTransform[2][2])
 	{
         if (m_pBlitSource == nullptr)
             return;
 
-        if (!dest.intersectsWith(m_clipBounds))
+        if (!_dest.intersectsWith(m_clipBounds))
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8 )
@@ -1255,6 +1284,9 @@ MetalGfxDevice::MetalGfxDevice()
             _endCommand();
             _beginDrawCommandWithSource(Command::Blit);
         }
+
+        //TODO: Proper 26:6 support
+        RectI dest = roundToPixels(_dest);
 
         for (int i = 0; i < m_nClipRects; i++)
         {
@@ -1302,8 +1334,8 @@ MetalGfxDevice::MetalGfxDevice()
             }
         }
 
-        m_pExtrasBuffer[m_extrasOfs++] = (float) src.x;
-        m_pExtrasBuffer[m_extrasOfs++] = (float) src.y;
+        m_pExtrasBuffer[m_extrasOfs++] = (float) roundToPixels(src.x);
+        m_pExtrasBuffer[m_extrasOfs++] = (float) roundToPixels(src.y);
         m_pExtrasBuffer[m_extrasOfs++] = (float) dest.x;
         m_pExtrasBuffer[m_extrasOfs++] = (float) dest.y;
 
@@ -1315,12 +1347,12 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _transformBlit() ____ [complex] __________________________________________________
 
-	void MetalGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
+	void MetalGfxDevice::_transformBlit(const RectSPX& _dest, CoordF src, const float complexTransform[2][2])
 	{
         if (m_pBlitSource == nullptr)
             return;
 
-        if (!dest.intersectsWith(m_clipBounds))
+        if (!_dest.intersectsWith(m_clipBounds))
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
@@ -1332,6 +1364,13 @@ MetalGfxDevice::MetalGfxDevice()
             _beginDrawCommandWithSource(Command::Blit);
         }
 
+        //
+        
+        //TODO: Proper 26:6 support
+        RectI dest = roundToPixels(_dest);
+
+        src /= 64;
+        
         //
 
         for (int i = 0; i < m_nClipRects; i++)
@@ -1380,17 +1419,17 @@ MetalGfxDevice::MetalGfxDevice()
             }
         }
 
-        if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+        if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
         {
-            m_pExtrasBuffer[m_extrasOfs++] = src.x + 0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = src.y + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.x) + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.y) + 0.5f;
             m_pExtrasBuffer[m_extrasOfs++] = float(dest.x) + 0.5f;
             m_pExtrasBuffer[m_extrasOfs++] = float(dest.y) + 0.5f;
         }
         else
         {
-            m_pExtrasBuffer[m_extrasOfs++] = src.x - 0.002f;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
-            m_pExtrasBuffer[m_extrasOfs++] = src.y - 0.002f;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
+            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.x) - 0.002f;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
+            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.y) - 0.002f;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
             m_pExtrasBuffer[m_extrasOfs++] = float(dest.x) +0.5f;
             m_pExtrasBuffer[m_extrasOfs++] = float(dest.y) +0.5f;
         }
@@ -2026,7 +2065,7 @@ MetalGfxDevice::MetalGfxDevice()
 
                         if(pSurf->m_pixelDescription.bIndexed)
                         {
-                            if( pSurf->scaleMode() == ScaleMode::Interpolate )
+                            if( pSurf->sampleMethod() == SampleMethod::Bilinear )
                                 shader = BlitFragShader::ClutInterpolated;
                             else
                                 shader = BlitFragShader::ClutNearest;
@@ -2305,12 +2344,12 @@ MetalGfxDevice::MetalGfxDevice()
             if(pSurf->pixelDescription()->bIndexed)
                 [renderEncoder setFragmentSamplerState: m_samplers[0][0][pSurf->isTiling()] atIndex:0];
             else
-                [renderEncoder setFragmentSamplerState: m_samplers[pSurf->isMipmapped()][pSurf->scaleMode() == ScaleMode::Interpolate][pSurf->isTiling()] atIndex:0];
+                [renderEncoder setFragmentSamplerState: m_samplers[pSurf->isMipmapped()][pSurf->sampleMethod() == SampleMethod::Bilinear][pSurf->isTiling()] atIndex:0];
 
             m_pActiveBlitSource = pSurf;
             pSurf->m_bPendingReads = false;            // Clear this as we pass it by. All pending reads will have encoded before _executeBuffer() ends.
 
-            m_uniform.textureSize = pSurf->size();
+            m_uniform.textureSize = pSurf->pixelSize();
             [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
 
             if (pSurf->m_pClut)

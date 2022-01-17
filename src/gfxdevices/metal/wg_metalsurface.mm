@@ -58,128 +58,106 @@ namespace wg
 
 	//____ create ______________________________________________________________
 
-	MetalSurface_p	MetalSurface::create( SizeI size, PixelFormat format, int flags, const Color * pClut )
+	MetalSurface_p	MetalSurface::create( const Blueprint& bp )
 	{
-		SizeI max = maxSize();
-		if (size.w > max.w || size.h > max.h)
-			return MetalSurface_p();
+        if( !_isBlueprintValid(bp, maxSize()) )
+            return MetalSurface_p();
 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
-			return MetalSurface_p();
-
-		return MetalSurface_p(new MetalSurface(size,format,flags,pClut));
+		return MetalSurface_p(new MetalSurface(bp));
 	}
 
-	MetalSurface_p	MetalSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
+	MetalSurface_p	MetalSurface::create( const Blueprint& bp, Blob* pBlob, int pitch )
 	{
-		SizeI max = maxSize();
-		if (size.w > max.w || size.h > max.h)
-			return MetalSurface_p();
+        if (!_isBlueprintValid(bp, maxSize()) )
+            return MetalSurface_p();
 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0)
-			return MetalSurface_p();
+        if ( !pBlob || (pitch > 0 && pitch % 4 != 0))
+            return MetalSurface_p();
 
-		return MetalSurface_p(new MetalSurface(size,format,pBlob,pitch,flags,pClut));
+		return MetalSurface_p(new MetalSurface(bp,pBlob,pitch));
 	}
 
-	MetalSurface_p	MetalSurface::create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
+	MetalSurface_p	MetalSurface::create( const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription )
 	{
-		SizeI max = maxSize();
-		if (size.w > max.w || size.h > max.h)
-			return MetalSurface_p();
+        if (!_isBlueprintValid(bp, maxSize()))
+            return MetalSurface_p();
 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
-			((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
-			return MetalSurface_p();
-
-		return  MetalSurface_p(new MetalSurface(size,format,pPixels,pitch, pPixelDescription,flags,pClut));
+		return  MetalSurface_p(new MetalSurface(bp, pPixels, pitch, pPixelDescription));
 	};
 
-	MetalSurface_p	MetalSurface::create( Surface * pOther, int flags )
+	MetalSurface_p	MetalSurface::create( const Blueprint& bp, Surface* pOther )
 	{
 		if (!pOther)
 			return MetalSurface_p();
 
-		SizeI max = maxSize();
-		SizeI size = pOther->size();
-		if (size.w > max.w || size.h > max.h)
-			return MetalSurface_p();
+        if (!_isBlueprintValid(bp, maxSize(), pOther))
+            return MetalSurface_p();
 
-		return MetalSurface_p(new MetalSurface( pOther,flags ));
+		return MetalSurface_p(new MetalSurface( bp, pOther ));
 	}
 
 
 
 	//____ constructor _____________________________________________________________
 
+    MetalSurface::MetalSurface(const Blueprint& bp) : Surface( bp, PixelFormat::BGRA_8, SampleMethod::Bilinear )
+    {
+        _setPixelDetails(m_pixelDescription.format);
+        m_bMipmapped = bp.mipmap;
+        _setupMetalTexture( nullptr, 0, nullptr, bp.clut );
 
-	MetalSurface::MetalSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
-	{
-		_setPixelDetails(format);
-		m_scaleMode = ScaleMode::Interpolate;
-		m_size	= size;
-        
-        _setupMetalTexture( nullptr, 0, nullptr, flags, pClut );
-	}
+    }
 
+    MetalSurface::MetalSurface(const Blueprint& bp, Blob* pBlob, int pitch) : Surface( bp, PixelFormat::BGRA_8, SampleMethod::Bilinear )
+    {
+        // Set general information
 
-	MetalSurface::MetalSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) : Surface(flags)
-	{
-		// Set general information
-
-		_setPixelDetails(format);
-		m_scaleMode = ScaleMode::Interpolate;
-		m_size	= size;
+        _setPixelDetails(m_pixelDescription.format);
+        m_bMipmapped = bp.mipmap;
 
         PixelDescription srcFormat;
-        Util::pixelFormatToDescription(format, srcFormat);
+        Util::pixelFormatToDescription(m_pixelDescription.format, srcFormat);
 
-		_setupMetalTexture(pBlob->data(), pitch, &srcFormat, flags, pClut);
-	}
+        _setupMetalTexture(pBlob->data(), pitch, &srcFormat, bp.clut);
+    }
+    
+    MetalSurface::MetalSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription) : Surface(bp, (pPixelDescription->format != PixelFormat::Custom && pPixelDescription->format != PixelFormat::Undefined) ? pPixelDescription->format : PixelFormat::BGRA_8, SampleMethod::Bilinear)
+    {
+        _setPixelDetails(m_pixelDescription.format);
+        m_bMipmapped = bp.mipmap;
+         PixelDescription srcFormat;
+         
+         if( pPixelDescription == nullptr )
+         {
+             Util::pixelFormatToDescription(m_pixelDescription.format, srcFormat);
+             pPixelDescription = &srcFormat;
+         }
+         
+         _setupMetalTexture( pPixels, pitch, pPixelDescription, bp.clut);
 
-	MetalSurface::MetalSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) : Surface(flags)
-	{
-	   _setPixelDetails(format);
-		m_scaleMode = ScaleMode::Interpolate;
-		m_size	= size;
+    }
 
-        PixelDescription srcFormat;
-        
-        if( pPixelDescription == nullptr )
-        {
-            Util::pixelFormatToDescription(format, srcFormat);
-            pPixelDescription = &srcFormat;
-        }
-        
-		_setupMetalTexture( pPixels, pitch, pPixelDescription, flags, pClut);
-	}
-
-
-	MetalSurface::MetalSurface( Surface * pOther, int flags ) : Surface(flags)
-	{
-		_setPixelDetails(pOther->pixelFormat());
-		m_scaleMode = ScaleMode::Interpolate;
-		m_size	= pOther->size();
-
+    MetalSurface::MetalSurface(const Blueprint& bp, Surface* pOther) : Surface(bp, pOther->pixelFormat(), pOther->sampleMethod() )
+    {
+        _setPixelDetails(m_pixelDescription.format);
+        m_bMipmapped = bp.mipmap;
+        m_size    = pOther->pixelSize();
         
         auto pixbuf = pOther->allocPixelBuffer();
         if( pOther->pushPixels(pixbuf) )
-            _setupMetalTexture(pixbuf.pPixels, pixbuf.pitch, pOther->pixelDescription(), flags, pOther->clut());
+            _setupMetalTexture(pixbuf.pPixels, pixbuf.pitch, pOther->pixelDescription(), pOther->clut());
         else
         {
             // Error handling
         }
 
         pOther->freePixelBuffer(pixbuf);
-	}
+    }
 
     //____ _setupMetalTexture() __________________________________________________________________
 
-    void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
+    void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut )
     {
-        if(flags & SurfaceFlag::Mipmapped)
-            m_bMipmapped = true;
-        
         // Create our shared buffer
         
         int     bufferLength = m_size.w * m_size.h * m_pixelSize;
@@ -207,7 +185,7 @@ namespace wg
         
         _createAndSyncTextures();
         
-        setScaleMode(m_scaleMode);
+//        setScaleMode(m_scaleMode);
     }
 
     //____ _createAndSyncTextures() __________________________________________________
@@ -222,7 +200,7 @@ namespace wg
         textureDescriptor.width         = m_size.w;
         textureDescriptor.height        = m_size.h;
         textureDescriptor.storageMode   = MTLStorageModePrivate;
-        textureDescriptor.usage         = (m_flags & SurfaceFlag::Canvas) ? (MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead) : MTLTextureUsageShaderRead;
+        textureDescriptor.usage         = m_bCanvas ? (MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead) : MTLTextureUsageShaderRead;
         
         if(m_bMipmapped)
         {
@@ -380,25 +358,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setScaleMode() __________________________________________________________
-
-	void MetalSurface::setScaleMode( ScaleMode mode )
-	{
-		Surface::setScaleMode(mode);
-	}
-
-	//____ isOpaque() ______________________________________________________________
-
-	bool MetalSurface::isOpaque() const
-	{
-//		if( m_internalFormat == GL_RGB )
-//			return true;
-
-        //TODO: Implement!
-        
-		return false;
-	}
-
     //____ allocPixelBuffer() ______________________________________________________
 
     const PixelBuffer MetalSurface::allocPixelBuffer(const RectI& rect)
@@ -447,12 +406,15 @@ namespace wg
 
 	//____ alpha() ____________________________________________________________
 
-	uint8_t MetalSurface::alpha( CoordI coord )
+	int MetalSurface::alpha( CoordSPX _coord )
 	{
         if( m_bBufferNeedsSync )
             _syncBufferAndWait();
 
         //TODO: Take endianess into account.
+        //TODO: Take advantage of subpixel precision and interpolate alpha value if surface set to interpolate.
+
+        CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
 
         uint8_t * p = (uint8_t*) [m_textureBuffer contents];
 
@@ -464,19 +426,19 @@ namespace wg
             case PixelFormat::CLUT_8_linear:
             {
                 uint8_t index = p[pitch * coord.y + coord.x];
-                return m_pClut[index].a;
+                return HiColor::unpackLinearTab[m_pClut[index].a];
             }
             case PixelFormat::A_8:
             {
                 uint8_t * pPixel = p + pitch * coord.y + coord.x;
-                return pPixel[0];
+                return HiColor::unpackLinearTab[pPixel[0]];
             }
             case PixelFormat::BGRA_4_linear:
             {
                 uint16_t pixel = * (uint16_t *)(p + pitch * coord.y + coord.x);
                 const uint8_t * pConvTab = s_pixelConvTabs[4];
 
-                return pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
+                return HiColor::unpackLinearTab[pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift]];
             }
             case PixelFormat::BGRA_8_sRGB:
             case PixelFormat::BGRA_8_linear:
@@ -485,7 +447,7 @@ namespace wg
                 return pPixel[3];
             }
             default:
-                return 0xFF;
+                return 4096;
         }
 	}
 

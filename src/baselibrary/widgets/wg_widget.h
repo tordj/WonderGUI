@@ -41,6 +41,7 @@ namespace wg
 	class MsgRouter;
 	class Patches;
 	class SlotHolder;
+    class WidgetComponent;
 
 	class Widget;
 	typedef	StrongPtr<Widget>	Widget_p;

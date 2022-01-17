@@ -46,10 +46,10 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static MetalSurface_p	create( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-		static MetalSurface_p	create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-		static MetalSurface_p	create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-		static MetalSurface_p	create( Surface * pOther, int flags = SurfaceFlag::Static );
+        static MetalSurface_p    create(const Blueprint& blueprint);
+        static MetalSurface_p    create(const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
+        static MetalSurface_p    create(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
+        static MetalSurface_p    create(const Blueprint& blueprint, Surface* pOther);
 
 		//.____ Identification __________________________________________
 
@@ -60,14 +60,9 @@ namespace wg
 
 		static SizeI	maxSize();
 
-		//.____ Appearance ____________________________________________________
-
-		void		setScaleMode(ScaleMode mode) override;
-		bool		isOpaque() const override;
-
 		//.____ Content _______________________________________________________
 
-		uint8_t		alpha(CoordI coord) override;
+		int		    alpha(CoordSPX coord) override;
 
         //.____ Control _______________________________________________________
 
@@ -87,15 +82,16 @@ namespace wg
 		inline	id<MTLTexture>	getClutTexture() const { return m_clutTexture; }
 
 	private:
-		MetalSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-		MetalSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-		MetalSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-		MetalSurface( Surface * pOther, int flags = SurfaceFlag::Static );
+
+        MetalSurface(const Blueprint& blueprint);
+        MetalSurface(const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
+        MetalSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
+        MetalSurface(const Blueprint& blueprint, Surface* pOther);
+
 		~MetalSurface();
 
-
 		void		    _setPixelDetails( PixelFormat format );
-        void            _setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
+        void            _setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut );
 
         void            _createAndSyncTextures();
         

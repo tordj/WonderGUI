@@ -62,7 +62,7 @@ namespace wg
 		int timestamp = 0;
 		for (auto& frame : bp.frames)
 		{
-			m_frames.push_back({ frame.coord, frame.duration, timestamp, frame.flip });
+			m_frames.push_back({frame.coord, frame.duration, timestamp, frame.flip });
 			timestamp += frame.duration;
 		}
 

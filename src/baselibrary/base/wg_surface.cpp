@@ -85,6 +85,7 @@ namespace wg
 		m_scale = bp.scale;
 		m_sampleMethod = method;
 		m_bTiling = bp.tiling;
+        m_bCanvas = bp.canvas;
 		m_id = bp.id;
 	}
 
@@ -1001,6 +1002,42 @@ namespace wg
 			return 4096;
 		}
 	}
+
+    //____ _isBlueprintValid() ________________________________________________
+
+    bool Surface::_isBlueprintValid(const Blueprint& bp, SizeI maxSize, Surface * pOther)
+    {
+        SizeI size = pOther ? pOther->pixelSize() :bp.size;
+
+        PixelFormat format = bp.format;
+        if( format == PixelFormat::Undefined )
+            format = pOther ? pOther->pixelFormat() : PixelFormat::BGRA_8;
+
+        if (size.w > maxSize.w || size.h > maxSize.h)
+            return false;
+
+        bool bIsIndexed = (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear);
+
+        if (format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.clut == nullptr))
+            return false;
+
+        if (bp.canvas && (bIsIndexed || format == PixelFormat::Custom))
+            return false;
+
+        if( bIsIndexed )
+        {
+            if( bp.mipmap )
+                return false;            // Indexed can't be mipmapped.
+
+            if ( pOther && !pOther->pixelDescription()->bIndexed)
+                return false;            // Can't create indexed from non-indexed source.
+            
+            if( bp.clut == nullptr && ( !pOther || pOther->clut() == nullptr ) )
+                return false;           // Indexed but clut is missing.
+        }
+                
+        return true;
+    }
 
 
 	/**

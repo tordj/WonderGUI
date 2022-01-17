@@ -94,8 +94,12 @@ namespace wg
 		FrameMeterSkin( const Blueprint& bp );
 		~FrameMeterSkin() {};
 
-		struct Frame
+		class Frame
 		{
+        public:
+            Frame( Coord _coord, int _duration, int _timestamp, GfxFlip _flip )
+            : coord(_coord), duration(_duration), timestamp(_timestamp), flip(_flip) {}
+            
 			Coord	coord;
 			int		duration;					// Millisec
 			int		timestamp;					// Millisec

@@ -112,7 +112,6 @@ namespace wg
 
 		~GlSurface();
 
-		static bool	_isBlueprintValid( const Blueprint& bp, Surface * pOther = nullptr );
 		void		_setPixelDetails( PixelFormat format );
 		void		_setupGlTexture(void * pPixelsToUpload, int pitch);
 		void		_updateAlphaMap(const PixelBuffer& buffer, const RectI& bufferRect);

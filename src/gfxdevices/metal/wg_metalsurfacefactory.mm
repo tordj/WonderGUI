@@ -49,26 +49,24 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p MetalSurfaceFactory::createSurface( SizeI size, PixelFormat format, int flags, const Color * pClut )
-	{
-		return MetalSurface::create(size,format,flags | m_flags,pClut);
-	}
+    Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint)
+    {
+        return MetalSurface::create(blueprint);
+    }
 
+    Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch)
+    {
+        return MetalSurface::create(blueprint, pBlob, pitch);
+    }
 
-	Surface_p MetalSurfaceFactory::createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
-	{
-		return MetalSurface::create(size, format, pBlob, pitch, flags | m_flags, pClut);
-	}
+    Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription)
+    {
+        return MetalSurface::create(blueprint, pPixels, pitch, pPixelDescription);
+    }
 
-	Surface_p MetalSurfaceFactory::createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
-	{
-		return MetalSurface::create(size,format, pPixels, pitch, pPixelDescription, flags | m_flags, pClut);
-	}
-
-	Surface_p MetalSurfaceFactory::createSurface( Surface * pOther, int flags )
-	{
-		return MetalSurface::create( pOther,flags | m_flags);
-	}
-
+    Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Surface* pOther)
+    {
+        return MetalSurface::create( blueprint, pOther );
+    }
 
 } // namespace wg

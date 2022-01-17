@@ -62,7 +62,7 @@ namespace wg
 
 	GlSurface_p GlSurface::create(const Blueprint& bp)
 	{
-		if( !_isBlueprintValid(bp) )
+		if( !_isBlueprintValid(bp, maxSize()) )
 			return GlSurface_p();
 
 		return GlSurface_p(new GlSurface(bp));
@@ -70,7 +70,7 @@ namespace wg
 
 	GlSurface_p GlSurface::create(const Blueprint& bp, Blob* pBlob, int pitch)
 	{
-		if (!_isBlueprintValid(bp) )
+		if (!_isBlueprintValid(bp, maxSize()) )
 			return GlSurface_p();
 
 		if ( !pBlob || (pitch > 0 && pitch % 4 != 0))
@@ -82,7 +82,7 @@ namespace wg
 
 	GlSurface_p GlSurface::create(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription)
 	{
-		if (!_isBlueprintValid(bp))
+		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
 
 		return GlSurface_p(new GlSurface(bp, pPixels, pitch, pPixelDescription));
@@ -90,7 +90,7 @@ namespace wg
 
 	GlSurface_p GlSurface::create(const Blueprint& bp, Surface* pOther)
 	{
-		if (!_isBlueprintValid(bp))
+		if (!_isBlueprintValid(bp, maxSize(), pOther))
 			return GlSurface_p();
 
 		return GlSurface_p(new GlSurface(bp, pOther));
@@ -110,7 +110,7 @@ namespace wg
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
 		bp.clut = pClut;
 
-		if (!_isBlueprintValid(bp))
+		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
 
 		return GlSurface_p(new GlSurface(bp));
@@ -130,7 +130,7 @@ namespace wg
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
 		bp.clut = pClut;
 
-		if (!_isBlueprintValid(bp))
+		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
 
 		return GlSurface_p(new GlSurface(bp, pBlob, pitch));
@@ -150,7 +150,7 @@ namespace wg
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
 		bp.clut = pClut;
 
-		if (!_isBlueprintValid(bp))
+		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
 
 		return  GlSurface_p(new GlSurface(bp, pPixels, pitch, pPixelDescription));
@@ -169,7 +169,7 @@ namespace wg
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
 
-		if (!_isBlueprintValid(bp))
+		if (!_isBlueprintValid(bp, maxSize(), pOther))
 			return GlSurface_p();
 
 		return GlSurface_p(new GlSurface(bp, pOther));
@@ -470,37 +470,6 @@ namespace wg
 		glBindTexture(GL_TEXTURE_2D, oldBinding);
 
 		HANDLE_GLERROR(glGetError());
-	}
-
-	//____ _isBlueprintValid() ________________________________________________
-
-	bool GlSurface::_isBlueprintValid(const Blueprint& bp, Surface * pOther)
-	{
-		SizeI size = pOther ? pOther->pixelSize() :bp.size;
-
-		PixelFormat format = bp.format;
-		if( format == PixelFormat::Undefined )
-			format = pOther ? pOther->pixelFormat() : PixelFormat::BGRA_8;
-
-		SizeI max = maxSize();
-		if (size.w > max.w || size.h > max.h)
-			return false;
-
-		bool bIsIndexed = (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear);
-
-		if (format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.clut == nullptr))
-			return false;
-
-		if (bp.canvas && (bIsIndexed || format == PixelFormat::Custom))
-			return false;
-
-		if( bIsIndexed && bp.mipmap )
-			return false;			// Indexed can't be mipmapped.
-
-		if (bIsIndexed && pOther && !pOther->pixelDescription()->bIndexed)
-			return false;			// Can't create indexed from non-indexed source.
-
-		return true;
 	}
 
 	//____ _setPixelDetails() ____________________________________________________

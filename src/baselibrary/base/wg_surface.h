@@ -279,6 +279,8 @@ namespace wg
 		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color8 * pCLUT = nullptr );
 		int					_alpha(CoordSPX coord, const PixelBuffer& buffer);
 
+        static bool         _isBlueprintValid( const Blueprint& bp, SizeI maxSize, Surface * pOther = nullptr );
+
 		int                 m_id = 0;
 
  		int					m_scale = 64;
@@ -289,6 +291,7 @@ namespace wg
 		SampleMethod		m_sampleMethod = SampleMethod::Nearest;
 		bool				m_bMipmapped = false;
 		bool				m_bTiling = false;
+        bool                m_bCanvas = false;
 //		bool				m_bOpaque = false;
 
 		Color8 *			m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.

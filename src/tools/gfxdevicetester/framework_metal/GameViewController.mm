@@ -35,7 +35,12 @@ public:
 
     bool init(SizeI canvasSize, PixelFormat canvasFormat)
     {
-        m_pCanvas = MetalSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
+        Surface::Blueprint bp;
+        bp.size = canvasSize;
+        bp.format = canvasFormat;
+        bp.canvas = true;
+        
+        m_pCanvas = MetalSurface::create(bp);
         m_pDevice = MetalGfxDevice::create();              // Needs a UBO binding point separate from other GfxDevice.
         return true;
     }
@@ -97,8 +102,8 @@ public:
     }
 
     wg::Blob_p       loadBlob(const char* pPath) override;
-    wg::Surface_p    loadSurface(const char* pPath, SurfaceFactory* pFactory, int flags = 0) override;
-
+    Surface_p        loadSurface(const char* pPath, SurfaceFactory* pFactory = nullptr,
+                                 const Surface::Blueprint& blueprint = wg::Surface::Blueprint() ) override;
 protected:
     RootPanel_p          m_pRoot;
 
@@ -120,7 +125,7 @@ protected:
     wg::MetalGfxDevice_p    m_pDevice;
 
 
-    SizeI                   m_windowSize;
+    wg::Size                m_windowSize;
 
     
 }
@@ -163,7 +168,7 @@ protected:
 
 	MTLRenderPassDescriptor * pDesc = _view.currentRenderPassDescriptor;
 	pDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
-	m_pDevice->setDefaultCanvas( pDesc, m_windowSize, PixelFormat::BGRA_8_sRGB );
+    m_pDevice->setDefaultCanvas( pDesc, wg::SizeI(m_windowSize.w,m_windowSize.h), PixelFormat::BGRA_8_sRGB );
 	
     m_pRoot = RootPanel::create( CanvasRef::Default, m_pDevice);
     
@@ -267,7 +272,7 @@ protected:
         iDeltaY *= -1;
     }
         
-    Base::inputHandler()->setWheelRoll(1, {iDeltaX,iDeltaY}, bInverted );
+    Base::inputHandler()->setWheelRoll(1, Coord(iDeltaX,iDeltaY), bInverted );
         
 }
 
@@ -385,7 +390,7 @@ Blob_p MyAppVisitor::loadBlob(const char* pPath)
 
 //____ loadSurface() ______________________________________________________
 
-Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory, int flags)
+Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory, const Surface::Blueprint& _bp)
 {
     NSString * nsPath = [[NSString alloc] initWithUTF8String:pPath];
     
@@ -473,7 +478,15 @@ Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory,
     if (!pFactory)
         pFactory = Base::activeContext()->surfaceFactory();
 
-    auto pSurface = pFactory->createSurface(SizeI(width, height), px, (uint8_t*)pixel, pitch, &output, flags);
+//    auto pSurface = pFactory->createSurface(SizeI(width, height), px, (uint8_t*)pixel, pitch, &output, flags);
+
+    Surface::Blueprint bp;
+    bp.size.w = width;
+    bp.size.h = height;
+    bp.format = px;
+
+    
+    auto pSurface = pFactory->createSurface( bp, (uint8_t*)pixel, pitch, &output);
 
     // Clean up
 
