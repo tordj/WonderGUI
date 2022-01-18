@@ -83,9 +83,6 @@ namespace wg
 
 		bool		fill(HiColor col) override;
 		bool		fill(HiColor col, const RectI& region) override;
-		bool		copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst) override;
-		bool		copyFrom(Surface * pSrcSurf, CoordI dst) override;
-
 
 		//.____ Misc __________________________________________________________
 

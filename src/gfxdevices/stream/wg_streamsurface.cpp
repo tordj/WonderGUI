@@ -442,62 +442,6 @@ namespace wg
 		return true;
 	}
 
-	//____ _copyFrom() ________________________________________________________
-
-	bool StreamSurface::copyFrom(Surface * pSrcSurface, CoordI dst)
-	{
-		if (!pSrcSurface)
-			return false;
-
-		return copyFrom(pSrcSurface, RectI(0, 0, pSrcSurface->size()), dst);
-	}
-
-	bool StreamSurface::copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst)
-	{
-		//TODO: Implement!!!
-
-		assert(false);
-		return true;
-/*
-		// First we update local data without streaming anything (no lock/unlock)
-
-		if (m_pBlob)
-		{
-			m_pPixels = (uint8_t*)m_pBlob->data();	// Simulate a lock
-			_copyFrom(pSrcSurf->pixelDescription(), pPixels, pitch, size, size);
-			_sendPixels(size, m_pPixels, pitch);
-			m_pPixels = 0;
-		}
-		else
-		{
-
-		}
-
-
-		// Stream command or modified content
-
-		if (pSrcSurf->className() == StreamSurface::CLASSNAME)
-		{
-			// Since they both are stream surfaces, we just need to order a copy.
-
-			*m_pStream << GfxStream::Header{ GfxChunkId::CopySurface, 16 };
-			*m_pStream << m_inStreamId;
-			*m_pStream << static_cast<StreamSurface*>(pSrcSurf)->m_inStreamId;
-			*m_pStream << srcRect;
-			*m_pStream << dst;
-		}
-		else
-		{
-			// Source is not a stream surface, so we need to stream modified content
-
-
-			_sendPixels(m_lockRegion, m_pPixels, m_pitch);
-
-		}
-*/
-
-	}
-
 	//____ _sendCreateSurface() _______________________________________________
 
 	uint16_t StreamSurface::_sendCreateSurface(SizeI size, PixelFormat format, int flags, const Color8 * pClut )
