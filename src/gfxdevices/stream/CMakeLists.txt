@@ -1,3 +1,4 @@
+source_group(Files REGULAR_EXPRESSION ".*")
 
 add_library( wgstreamgfx 
 
