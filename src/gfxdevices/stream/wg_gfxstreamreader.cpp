@@ -80,13 +80,15 @@ namespace wg
 
 		int size = (m_writeOfs - m_readOfs + c_bufferSize) % c_bufferSize;
 
-		if (size < 4 || size - 4 < *(uint16_t*)&m_pBuffer[m_readOfs+2])
+        int chunkSizeOfs = (m_readOfs + 2) % c_bufferSize;
+
+		if (size < 4 || size - 4 < *(uint16_t*)&m_pBuffer[chunkSizeOfs])
 		{
 			_fetchData();
 			size = (m_writeOfs - m_readOfs + c_bufferSize) % c_bufferSize;
 		}
 
-		if (size < 4 || size - 4 < *(uint16_t*)&m_pBuffer[m_readOfs+2])
+		if (size < 4 || size - 4 < *(uint16_t*)&m_pBuffer[chunkSizeOfs])
 			return false;
 
 		return true;

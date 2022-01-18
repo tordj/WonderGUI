@@ -83,7 +83,7 @@ namespace wg
 		return *this;
 	}
 
-	CGfxInStream& CGfxInStream::operator>> (int32_t& i)
+	CGfxInStream& CGfxInStream::operator>> (int& i)
 	{
 		i = m_pHolder->_pullInt();
 		return *this;

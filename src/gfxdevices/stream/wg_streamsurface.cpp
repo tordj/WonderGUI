@@ -448,7 +448,7 @@ namespace wg
 	{
 		uint16_t surfaceId = m_pStream->allocObjectId();
 
-		uint16_t blockSize = 10 + (pClut ? 4096 : 0);
+		uint16_t blockSize = 14 + (pClut ? 4096 : 0);
 
 		*m_pStream << GfxStream::Header{ GfxChunkId::CreateSurface, blockSize };
 		*m_pStream << surfaceId;

@@ -35,7 +35,7 @@ void 			translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot 
 MouseButton 	translateMouseButton( Uint8 button );
 void 			updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const Msg_p& pMsg );
-void *          loadFile( const char * pPath, int * bytesLoaded )
+void *          loadFile( const char * pPath, int * bytesLoaded );
 Blob_p 			loadBlob( const char * pPath );
 void			convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
@@ -61,7 +61,7 @@ int main ( int argc, char** argv )
 
     // Load stream
 
-    g_pStreamBuffer = loadFile( argv[1], &streamSize );
+    g_pStreamBuffer = (char*) loadFile( /*argv[1]*/ "output.wax", &g_streamSize );
 
     if( g_pStreamBuffer == NULL )
         return -1;
@@ -202,21 +202,21 @@ int main ( int argc, char** argv )
     auto pSkin = BoxSkin::create(2, Color8::Black, Color8::HotPink);
     pSkin->setContentPadding(2);
     g_pDisplay->skin = pSkin;
-    pBasePanel->slots.pushBack(g_pDisplay, [](Widget * pWidget, Size sz) { return RectI(10,10,200,200); } );
+    pBasePanel->slots.pushBack(g_pDisplay, [](Widget * pWidget, Size sz) { return RectI(10,10,240,240); } );
 
 
 	//------------------------------------------------------
 	// Setup streaming
 	//------------------------------------------------------
-    
-    auto pStreamOutputCanvas = SoftSurface::create( {200,200}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
+/*
+    auto pStreamOutputCanvas = SoftSurface::create( {240,240}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
     pGfxDevice->defineCanvas(CanvasRef::Canvas_1, pStreamOutputCanvas );
 
-    
+
 	auto pStreamPlug = GfxStreamPlug::create();
 
 	auto pStreamDevice = StreamGfxDevice::create(pStreamPlug->input);
-    pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {200,200} );
+    pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {240,240} );
 
 	auto pSurfaceFactory = StreamSurfaceFactory::create(pStreamPlug->input);
 
@@ -225,145 +225,35 @@ int main ( int argc, char** argv )
 
 	pStreamPlug->openOutput(1);
 	auto pGfxPlayer = GfxStreamPlayer::create(pStreamPlug->output[1], pGfxDevice, SoftSurfaceFactory::create());
-
-    //------------------------------------------------------
-    // Setup stream saving
-    //------------------------------------------------------
-
-    char * pBigBuffer = new char[10000000];
-
-    char * pWrite = pBigBuffer;
-    char * pRead = pBigBuffer;
-
-    pStreamPlug->openOutput(2);
-    
-    auto pSaveInStream = &pStreamPlug->output[2];
-   
-	//------------------------------------------------------
-	// Record stream
-	//------------------------------------------------------
-
-    playRectangleDance( pStreamDevice, SizeI(200,200) );
-    
-/*
-	char * pWaxBeg = pWrite;
-
-	playInitButtonRow(pStreamDevice, { 0,0,width,height });
-	ofstream save("indicators_init.wax", ios::out | ios::binary | ios::trunc);
-	save.write(pWaxBeg, pWrite - pWaxBeg);
-	save.close();
-
-	{
-		char * pWaxBeg = pWrite;
-		playSetSlider(pStreamDevice, 1.f);
-		ofstream save("set_slider.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-*/	
-	/*
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonPress(pStreamDevice, 0);
-		ofstream save("buttonrow_press_1.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonPress(pStreamDevice, 1);
-		ofstream save("buttonrow_press_2.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonPress(pStreamDevice, 2);
-		ofstream save("buttonrow_press_3.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonPress(pStreamDevice, 3);
-		ofstream save("buttonrow_press_4.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonRelease(pStreamDevice, 0);
-		ofstream save("buttonrow_release_1.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonRelease(pStreamDevice, 1);
-		ofstream save("buttonrow_release_2.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonRelease(pStreamDevice, 2);
-		ofstream save("buttonrow_release_3.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonRelease(pStreamDevice, 3);
-		ofstream save("buttonrow_release_4.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
 */
-	//------------------------------------------------------
-	// Save stream to file
-	//------------------------------------------------------
 
-	ofstream save("output.wax", ios::out | ios::binary | ios::trunc);
+    auto pStreamOutputCanvas = SoftSurface::create( {240,240}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
+    pGfxDevice->defineCanvas(CanvasRef::Canvas_1, pStreamOutputCanvas );
 
-    char chunkBuffer[GfxStream::c_maxBlockSize];
     
-    GfxStream::Header header;
-    while( !pSaveInStream->isEmpty() )
-    {
-        * pSaveInStream >> header;
-        save.write( (char*) &header, 4);
-        if( header.size > 0 )
+    GfxStreamReader_p pStreamReader = GfxStreamReader::create( [](int nBytes, void * pDest)
         {
-            * pSaveInStream >> GfxStream::DataChunk{ header.size, chunkBuffer };
-            save.write( chunkBuffer, header.size );
-        }
-    }
+            int bytesLeft = g_streamSize - (g_pStreamReader - g_pStreamBuffer);
+        
+        int bytesToRead = std::min( {nBytes,bytesLeft,200} );
+        
+            memcpy( pDest, g_pStreamReader, bytesToRead );
+            g_pStreamReader+= bytesToRead;
+            return bytesToRead;
+        
+        } );
+
+    GfxStreamPlayer_p pStreamPlayer;
+    GfxStreamLogger_p pStreamLogger;
     
-	save.close();
+    pStreamPlayer = GfxStreamPlayer::create(pStreamReader->stream, pGfxDevice, SoftSurfaceFactory::create());
+
+//    pStreamLogger = GfxStreamLogger::create(pStreamReader->stream, std::cout);
+
 
 	//------------------------------------------------------
 	// Setup graphics
 	//------------------------------------------------------
-
-//	auto pSoftSurfaceFactory = SoftSurfaceFactory::create();
-
-
-	PixelDescription	format;
-
-	auto pSDLSurf = IMG_Load("resources/splash.png");
-	convertSDLFormat(&format, pSDLSurf->format);
-	Surface_p pSplashSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
-	SDL_FreeSurface(pSDLSurf);
-
-
 
 /*
 	pStreamDevice->beginRender();
@@ -395,10 +285,14 @@ int main ( int argc, char** argv )
 		translateEvents( pInput, pRoot );
         
         
-        pGfxPlayer->playFrame();
+        if( pStreamPlayer )
+            pStreamPlayer->playFrame();
+        
+        if( pStreamLogger )
+            pStreamLogger->logFrame();
 
-        pOutput->setImage(nullptr);
-        pOutput->setImage(pStreamOutputCanvas);
+        g_pDisplay->setImage(nullptr);
+        g_pDisplay->setImage(pStreamOutputCanvas);
         
 		SDL_LockSurface(pWinSurf);
 		pRoot->render();

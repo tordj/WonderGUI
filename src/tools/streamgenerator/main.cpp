@@ -264,8 +264,8 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 //    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
-//    playSoftubeLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
-    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+    playSoftubeLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+//    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
 /*
 	char * pWaxBeg = pWrite;

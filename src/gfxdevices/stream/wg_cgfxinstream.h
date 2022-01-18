@@ -102,7 +102,7 @@ namespace wg
 
 		CGfxInStream& operator>> (int16_t&);
 		CGfxInStream& operator>> (uint16_t&);
-		CGfxInStream& operator>> (int32_t&);
+		CGfxInStream& operator>> (int&);
 		CGfxInStream& operator>> (float&);
 		CGfxInStream& operator>> (bool&);
 
@@ -113,7 +113,7 @@ namespace wg
 		CGfxInStream& operator>> (RectI&);
 		CGfxInStream& operator>> (RectF&);
 		CGfxInStream& operator>> (BorderI&);
-		
+
 		CGfxInStream& operator>> (HiColor&);
 		CGfxInStream& operator>> (Direction&);
 		CGfxInStream& operator>> (BlendMode&);
