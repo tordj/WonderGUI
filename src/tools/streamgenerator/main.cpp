@@ -45,6 +45,8 @@ void playDelayFrames(GfxDevice_p pDevice, int nFrames);
 
 void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvas);
 void playScroll(GfxDevice_p pDevice, RectI canvas );
+void playSoftubeLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
+void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
 
 void playInitButtonRow(GfxDevice_p pDevice, RectI canvas);
 void playButtonPress(GfxDevice_p pDevice, int button);
@@ -243,7 +245,7 @@ int main ( int argc, char** argv )
 
 	pStreamPlug->openOutput(1);
 	auto pGfxPlayer = GfxStreamPlayer::create(pStreamPlug->output[1], pGfxDevice, SoftSurfaceFactory::create());
-
+    
     //------------------------------------------------------
     // Setup stream saving
     //------------------------------------------------------
@@ -261,8 +263,10 @@ int main ( int argc, char** argv )
 	// Record stream
 	//------------------------------------------------------
 
-    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
-    
+//    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
+//    playSoftubeLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+
 /*
 	char * pWaxBeg = pWrite;
 
@@ -648,6 +652,117 @@ void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSD
 	pWGFormat->G_bits = 8 - pSDLFormat->Gloss;
 	pWGFormat->B_bits = 8 - pSDLFormat->Bloss;
 	pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
+}
+
+//____ playSurfaceStressTest() _________________________________________________
+
+void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory )
+{
+    SDL_Surface * pLogoImg = IMG_Load( "softube_logo_transparent_small.png" );
+//    convertSDLFormat( &format, pFontSurf->format );
+
+    SizeI logoSize = SizeI(pLogoImg->w,pLogoImg->h);
+
+    SoftSurface_p pOrgSurf = SoftSurface::create( logoSize, PixelFormat::BGRA_8, (unsigned char*) pLogoImg->pixels, pLogoImg->pitch);
+    
+    SDL_FreeSurface( pLogoImg );
+
+    Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::A_8 );
+
+    pLogoSurf->copyFrom(pOrgSurf, CoordI());
+    
+    SizeI canvasSize = pDevice->canvasSize(canvasRef);
+
+    int ticker = 0;
+    int length = 600;
+    
+    Surface_p pOldCanvas;
+    
+    SizeI backCanvasSize( 256,256 );
+    
+    while (ticker < length)
+    {
+        auto pCanvas = pFactory->createSurface( backCanvasSize, PixelFormat::RGB_565_bigendian );
+        
+        
+        
+        pDevice->beginRender();
+        pDevice->beginCanvasUpdate(pCanvas);
+        
+        pDevice->fill(Color::Black);
+
+        if( pOldCanvas )
+        {
+            pDevice->setBlitSource(pOldCanvas);
+            pDevice->setTintColor(HiColor(4096,3800,3500,3930));
+//            pDevice->blit( CoordI( (canvasSize.w - logoSize.w)/2, (canvasSize.h - logoSize.h)/2 ));
+            pDevice->rotScaleBlit( backCanvasSize, 3, 1.02f );
+        }
+
+        
+        pDevice->setBlitSource(pLogoSurf);
+        pDevice->setTintColor(HiColor(4096,4096,4096,4096));
+//        pDevice->rotScaleBlit( canvasSize, -ticker, 1.f );
+//        pDevice->blit( CoordI( (canvasSize.w - logoSize.w)/2, (canvasSize.h - logoSize.h)/2 ));
+
+        float val = sin(ticker*0.1f);
+        
+        SizeI wantedSize( logoSize.w + (logoSize.w/2 * val), logoSize.h );
+        
+        pDevice->stretchBlit( RectI( (canvasSize.w - wantedSize.w)/2, (canvasSize.h - wantedSize.h)/2, wantedSize ));
+        
+        pDevice->endCanvasUpdate();
+        pOldCanvas = pCanvas;
+
+        pDevice->beginCanvasUpdate(canvasRef);
+        
+        
+        pDevice->setBlitSource(pCanvas);
+        pDevice->blit( {0,0}, RectI((backCanvasSize.w-canvasSize.w)/2,(backCanvasSize.h-canvasSize.h)/2, canvasSize) );
+        
+        pDevice->endCanvasUpdate();
+        
+        pDevice->endRender();
+        ticker++;
+    }
+}
+
+//____ playSoftubeLogoFadeIn() _________________________________________________
+
+void playSoftubeLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory )
+{
+    SDL_Surface * pLogoImg = IMG_Load( "softube_logo_transparent_small.png" );
+//    convertSDLFormat( &format, pFontSurf->format );
+
+    SizeI logoSize = SizeI(pLogoImg->w,pLogoImg->h);
+
+    SoftSurface_p pOrgSurf = SoftSurface::create( logoSize, PixelFormat::BGRA_8, (unsigned char*) pLogoImg->pixels, pLogoImg->pitch);
+    
+    SDL_FreeSurface( pLogoImg );
+
+    Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::A_8 );
+
+    pLogoSurf->copyFrom(pOrgSurf, CoordI());
+    
+    SizeI canvasSize = pDevice->canvasSize(canvasRef);
+
+    int ticker = 0;
+    int length = 30;
+    while (ticker < length)
+    {
+        pDevice->beginRender();
+        pDevice->beginCanvasUpdate(canvasRef);
+        
+        pDevice->fill(Color::Black);
+        
+        pDevice->setBlitSource(pLogoSurf);
+        pDevice->setTintColor(HiColor(4096,4096,4096,ticker*4096/length));
+        pDevice->blit( CoordI( (canvasSize.w - logoSize.w)/2, (canvasSize.h - logoSize.h)/2 ));
+        
+        pDevice->endCanvasUpdate();
+        pDevice->endRender();
+        ticker++;
+    }
 }
 
 //____ playRectangleDance() _________________________________________________
