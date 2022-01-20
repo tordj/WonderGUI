@@ -837,7 +837,7 @@ enum class CanvasInit 		//. autoExtras
 		Rot270FlipY,
 	};
 
-//____ CanvasRef ____________________________________________________________
+	//____ CanvasRef ____________________________________________________________
 
 	enum class CanvasRef			//.autoExtras
 	{
@@ -875,6 +875,14 @@ enum class CanvasInit 		//. autoExtras
 		Canvas_30,
 		Canvas_31,
 		Canvas_32
+	};
+
+	//____ DataSegment ________________________________________________________
+
+	struct DataSegment
+	{
+		uint8_t*	pBytes;
+		int			nBytes;
 	};
 
 } // namespace wg

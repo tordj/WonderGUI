@@ -26,7 +26,7 @@
 #include <wg_geo.h>
 
 #include <wg_gfxdevice.h>
-#include <wg_cgfxoutstream.h>
+#include <wg_gfxstreamencoder.h>
 
 namespace wg
 {
@@ -41,7 +41,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static StreamGfxDevice_p	create( CGfxOutStream& stream );
+		static StreamGfxDevice_p	create( GfxStreamEncoder * pEncoder );
 
 		//.____ Identification __________________________________________
 
@@ -155,7 +155,7 @@ namespace wg
         void    blitVertBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len ) override;
 
 	protected:
-		StreamGfxDevice( CGfxOutStream& stream );
+		StreamGfxDevice( GfxStreamEncoder * pEncoder );
 		~StreamGfxDevice();
 
         void    _streamEdgeSamples( int nSamples, int samplesPerLine, int linePitch, const int * pSamples );
@@ -174,7 +174,7 @@ namespace wg
 		std::vector<CanvasInfo>	m_definedCanvases;
 
 		SurfaceFactory_p	m_pSurfaceFactory;
-		CGfxOutStream_p		m_pStream;
+		GfxStreamEncoder_p	m_pEncoder;
 		bool	m_bRendering;
 	};
 } // namespace wg

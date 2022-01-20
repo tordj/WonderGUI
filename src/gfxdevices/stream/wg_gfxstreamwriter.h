@@ -41,7 +41,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamWriter_p	create( std::function<void(int nBytes, const void * pData)> dispatcher, int maxPackageSize = GfxStream::c_maxBlockSize*2 );
+		static GfxStreamWriter_p	create( std::function<void(int nBytes, const void * pData)> dispatcher );
 
 		//.____ Components _______________________________________
 
@@ -52,38 +52,17 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Content _______________________________________________________
-
-		inline int	packageSpace() const { return m_capacity - m_size; }
-		inline int	packageSize() const { return m_size; }
-
 	protected:
 
-		GfxStreamWriter(std::function<void(int nBytes, const void * pData)> packageDispatcher, int packageSize );
+		GfxStreamWriter(std::function<void(int nBytes, const void * pData)> packageDispatcher );
 		~GfxStreamWriter();
 
+		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
 
 		Object *	_object() override;
 		const Object *	_object() const override;
 
-		void		_flushStream() override;
-		void		_reserveStream(int bytes) override;
-		void		_closeStream() override;
-		bool		_reopenStream() override;
-		bool		_isStreamOpen() override;
-
-
-		void		_pushChar(char c) override;
-		void		_pushShort(short s) override;
-		void		_pushInt(int i) override;
-		void		_pushFloat(float f) override;
-		void		_pushBytes(int nBytes, char * pBytes) override;
-
 		std::function<void(int nBytes, const void * pData)>	m_dispatcher;
-
-		char *		m_pBuffer;
-		int			m_capacity;
-		int			m_size;
 	};
 
 

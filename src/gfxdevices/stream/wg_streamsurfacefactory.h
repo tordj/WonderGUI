@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_surfacefactory.h>
-#include <wg_cgfxoutstream.h>
+#include <wg_gfxstreamencoder.h>
 
 namespace wg
 {
@@ -41,7 +41,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static StreamSurfaceFactory_p	create( CGfxOutStream& stream ) { return StreamSurfaceFactory_p(new StreamSurfaceFactory(stream)); }
+		static StreamSurfaceFactory_p	create( GfxStreamEncoder * pEncoder ) { return StreamSurfaceFactory_p(new StreamSurfaceFactory(pEncoder)); }
 
 		//.____ Identification __________________________________________
 
@@ -60,10 +60,10 @@ namespace wg
 		Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) const override;
 
 	protected:
-		StreamSurfaceFactory( CGfxOutStream& stream);
+		StreamSurfaceFactory( GfxStreamEncoder * pEncoder);
 
 
-		CGfxOutStream_p	m_pStream;
+		GfxStreamEncoder_p	m_pEncoder;
 	};
 }
 

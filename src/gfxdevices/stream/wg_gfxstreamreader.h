@@ -28,6 +28,7 @@
 #include <wg_object.h>
 #include <wg_pointers.h>
 #include <wg_cgfxinstream.h>
+#include <wg_gfxstream.h>
 
 #include <functional>
 
@@ -63,31 +64,29 @@ namespace wg
 		Object *    _object() override { return this; }
 		const Object * _object() const override { return this; }
 
-		bool		_hasChunk() override;
-		GfxStream::Header	_peekChunk() override;
-		char		_pullChar() override;
-		short		_pullShort() override;
-		int			_pullInt() override;
-		float		_pullFloat() override;
-		void		_pullBytes(int nBytes, char * pBytes) override;
-		void		_skipBytes(int nBytes) override;
-
-		bool		_isStreamOpen() override;
-		bool		_reopenStream() override;
-		void		_closeStream() override;
+		std::tuple<int, const DataSegment*> _showChunks() override;
+		void _discardChunks(int bytes) override;
+		bool _fetchChunks() override;
 
 
 		void		_fetchData();
 
 		std::function<int(int nBytes, void * pDest)>	m_fetcher;
 
-		static const int c_bufferSize = 8192;		// Needs to be 2^x
-		static const int c_bufferMargin = 4;		// Bytes of margin at the end for long reads before looping
+		static constexpr int c_bufferStartSize = 8192;							// Must be power of two.
+		static constexpr int c_bufferMargin = GfxStream::c_maxBlockSize;
 
 		char *		m_pBuffer;
+		int			m_bufferSize;
 		int			m_readOfs;
 		int			m_writeOfs;
-		bool		m_bOpen;
+
+		int			m_processedOfs;			// Offset of end of full chunks. 
+		int			m_bufferOverflow;		// How much processed data overflows the buffer with in order to hold a
+											// complete chunk. Overflowing data is a copy of data from beginning of buffer.
+
+		DataSegment	m_dataSegments[2];
+
 	};
 
 

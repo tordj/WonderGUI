@@ -34,17 +34,19 @@ namespace wg
 
 	//____ create() ___________________________________________________________
 
-	GfxStreamLogger_p GfxStreamLogger::create(CGfxInStream& in, std::ostream& out)
+	GfxStreamLogger_p GfxStreamLogger::create(std::ostream& out)
 	{
-		return new GfxStreamLogger(in, out);
+		return new GfxStreamLogger(out);
 	}
 
 	//____ constructor _____________________________________________________________
 
-	GfxStreamLogger::GfxStreamLogger(CGfxInStream& in, std::ostream& out) : m_charStream(out)
+	GfxStreamLogger::GfxStreamLogger(std::ostream& out) : m_charStream(out), stream(this)
 	{
-		m_pGfxStream = in.ptr();
 		out << std::boolalpha;
+
+		m_pDecoder = GfxStreamDecoder::create();
+
 	}
 
 	//____ Destructor _________________________________________________________
@@ -60,19 +62,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ isEmpty() __________________________________________________________
-
-	bool GfxStreamLogger::isEmpty() const
-	{
-		return m_pGfxStream->isEmpty();
-	}
-
-	//____ peekChunk() ________________________________________________________
-
-	GfxStream::Header GfxStreamLogger::peekChunk() const
-	{
-		return m_pGfxStream->peek();
-	}
 
 	//____ logAll() ___________________________________________________________
 
@@ -81,13 +70,13 @@ namespace wg
 		while (logChunk() == true);
 	}
 
-	//____ logChunk() ____________________________________________________________
+	//____ _logChunk() ____________________________________________________________
 
-	bool GfxStreamLogger::logChunk()
+	bool GfxStreamLogger::_logChunk()
 	{
 		GfxStream::Header header;
 
-		*m_pGfxStream >> header;
+		*m_pDecoder >> header;
 
 		if (header.type == GfxChunkId::OutOfData)
 			return false;
@@ -115,9 +104,9 @@ namespace wg
 				uint16_t	surfaceId;
 				int			nUpdateRects;
 					
-				*m_pGfxStream >> canvasRef;
-				*m_pGfxStream >> surfaceId;
-				*m_pGfxStream >> nUpdateRects;
+				*m_pDecoder >> canvasRef;
+				*m_pDecoder >> surfaceId;
+				*m_pDecoder >> nUpdateRects;
 
 				if( surfaceId > 0 )
 					m_charStream << "    canvasRef       = " << "[no toString() for canvasRef yet]" << std::endl;
@@ -171,7 +160,7 @@ namespace wg
 				m_charStream << "SetTintColor" << std::endl;
 
 				HiColor	col;
-				*m_pGfxStream >> col;
+				*m_pDecoder >> col;
 
 				_printColor( "    color       ", col );
 				break;
@@ -184,11 +173,11 @@ namespace wg
 				RectI rect;
 				Gradient gradient;
 				
-				*m_pGfxStream >> rect;
-				*m_pGfxStream >> gradient.topLeft;
-				*m_pGfxStream >> gradient.topRight;
-				*m_pGfxStream >> gradient.bottomRight;
-				*m_pGfxStream >> gradient.bottomLeft;
+				*m_pDecoder >> rect;
+				*m_pDecoder >> gradient.topLeft;
+				*m_pDecoder >> gradient.topRight;
+				*m_pDecoder >> gradient.bottomRight;
+				*m_pDecoder >> gradient.bottomLeft;
 
 				_printRect(  "    rect         ", rect );
 				_printColor( "    topLeft      ", gradient.topLeft );
@@ -209,7 +198,7 @@ namespace wg
 				m_charStream << "SetBlendMode" << std::endl;
 
 				BlendMode	blendMode;
-				*m_pGfxStream >> blendMode;
+				*m_pDecoder >> blendMode;
 
 				m_charStream << "    mode        = " << (int)blendMode << std::endl;
 				break;
@@ -220,7 +209,7 @@ namespace wg
 				m_charStream << "SetBlitSource" << std::endl;
 
 				uint16_t	surfaceId;
-				*m_pGfxStream >> surfaceId;
+				*m_pDecoder >> surfaceId;
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
 				break;
@@ -231,7 +220,7 @@ namespace wg
 				m_charStream << "SetMorphFactor" << std::endl;
 
 				float	factor;
-				*m_pGfxStream >> factor;
+				*m_pDecoder >> factor;
 
 				m_charStream << "    factor      = " << factor << std::endl;
 				break;
@@ -242,7 +231,7 @@ namespace wg
 				m_charStream << "SetRenderLayer" << std::endl;
 
 				uint16_t	layer;
-				*m_pGfxStream >> layer;
+				*m_pDecoder >> layer;
 
 				m_charStream << "    layer       = " << layer << std::endl;
 				break;
@@ -254,7 +243,7 @@ namespace wg
 
 				HiColor	col;
 
-				*m_pGfxStream >> col;
+				*m_pDecoder >> col;
 
 				_printColor( "    color      ", col );
 				break;
@@ -267,8 +256,8 @@ namespace wg
 				RectI	rect;
 				HiColor	col;
 
-				*m_pGfxStream >> rect;
-				*m_pGfxStream >> col;
+				*m_pDecoder >> rect;
+				*m_pDecoder >> col;
 
 				_printRect( "    dest       ", rect );
 				_printColor( "    color      ", col );
@@ -282,8 +271,8 @@ namespace wg
 				RectF	rect;
 				HiColor	col;
 
-				*m_pGfxStream >> rect;
-				*m_pGfxStream >> col;
+				*m_pDecoder >> rect;
+				*m_pDecoder >> col;
 
 				_printRect( "    dest       ", rect );
 				_printColor( "    color      ", col );
@@ -294,7 +283,7 @@ namespace wg
 			{
 				m_charStream << "PlotPixels" << std::endl;
 
-				m_pGfxStream->skip(header.size);
+				m_pDecoder->skip(header.size);
 
 				m_charStream << "    number of pixels: " << header.size/16 << std::endl;
 				break;
@@ -309,10 +298,10 @@ namespace wg
 				HiColor	color;
 				float	thickness;
 
-				*m_pGfxStream >> begin;
-				*m_pGfxStream >> end;
-				*m_pGfxStream >> color;
-				*m_pGfxStream >> thickness;
+				*m_pDecoder >> begin;
+				*m_pDecoder >> end;
+				*m_pDecoder >> color;
+				*m_pDecoder >> thickness;
 
 				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
 				m_charStream << "    end         = " << end.x << ", " << end.y << std::endl;
@@ -333,11 +322,11 @@ namespace wg
 				HiColor		color;
 				float		thickness;
 
-				*m_pGfxStream >> begin;
-				*m_pGfxStream >> dir;
-				*m_pGfxStream >> length;
-				*m_pGfxStream >> color;
-				*m_pGfxStream >> thickness;
+				*m_pDecoder >> begin;
+				*m_pDecoder >> dir;
+				*m_pDecoder >> length;
+				*m_pDecoder >> color;
+				*m_pDecoder >> thickness;
 
 				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
 				m_charStream << "    direction   = " << toString(dir) << std::endl;
@@ -354,7 +343,7 @@ namespace wg
 
 				CoordI		dest;
 
-				*m_pGfxStream >> dest;
+				*m_pDecoder >> dest;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				break;
@@ -367,8 +356,8 @@ namespace wg
 				CoordI		dest;
 				RectI		source;
 
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> source;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> source;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				_printRect( "    source     ", source );
@@ -382,8 +371,8 @@ namespace wg
 				CoordI		dest;
 				GfxFlip		flip;
 
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> flip;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> flip;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				m_charStream << "    flip        = " << toString(flip) << std::endl;
@@ -399,9 +388,9 @@ namespace wg
 				RectI		source;
 				GfxFlip		flip;
 
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> source;
-				*m_pGfxStream >> flip;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> source;
+				*m_pDecoder >> flip;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				_printRect( "    source     ", source );
@@ -415,7 +404,7 @@ namespace wg
 
 				CoordI		dest;
 
-				*m_pGfxStream >> dest;
+				*m_pDecoder >> dest;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				break;
@@ -428,8 +417,8 @@ namespace wg
 				CoordI		dest;
 				RectF		source;
 
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> source;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> source;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				_printRect( "    source     ", source );
@@ -443,8 +432,8 @@ namespace wg
 				CoordI		dest;
 				RectF		source;
 
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> source;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> source;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				_printRect( "    source     ", source );
@@ -458,8 +447,8 @@ namespace wg
 				CoordI		dest;
 				GfxFlip		flip;
 
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> flip;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> flip;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				m_charStream << "    flip        = " << toString(flip) << std::endl;
@@ -474,9 +463,9 @@ namespace wg
 				RectF		source;
 				GfxFlip		flip;
 
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> source;
-				*m_pGfxStream >> flip;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> source;
+				*m_pDecoder >> flip;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				_printRect(     "    source     ", source );
@@ -492,9 +481,9 @@ namespace wg
 				RectF		source;
 				GfxFlip		flip;
 
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> source;
-				*m_pGfxStream >> flip;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> source;
+				*m_pDecoder >> flip;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				_printRect( "    source     ", source );
@@ -512,11 +501,11 @@ namespace wg
 				CoordF		srcCenter;
 				CoordF		destCenter;
 				
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> rotationDegrees;
-				*m_pGfxStream >> scale;
-				*m_pGfxStream >> srcCenter;
-				*m_pGfxStream >> destCenter;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> rotationDegrees;
+				*m_pDecoder >> scale;
+				*m_pDecoder >> srcCenter;
+				*m_pDecoder >> destCenter;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				m_charStream << "    rotation    = " << rotationDegrees << " degrees" << std::endl;
@@ -534,8 +523,8 @@ namespace wg
 				RectI		dest;
 				CoordI		shift;
 				
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> shift;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> shift;
 
 				_printRect( "    dest       ", dest );
 				m_charStream << "    shift       = " << shift.x << ", " << shift.y << std::endl;
@@ -550,9 +539,9 @@ namespace wg
 				GfxFlip		flip;
 				CoordI		shift;
 				
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> flip;
-				*m_pGfxStream >> shift;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> flip;
+				*m_pDecoder >> shift;
 
 				_printRect( "    dest       ", dest );
 				m_charStream << "    flip        = " << toString(flip) << std::endl;
@@ -568,9 +557,9 @@ namespace wg
 				float		scale;
 				CoordI		shift;
 				
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> scale;
-				*m_pGfxStream >> shift;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> scale;
+				*m_pDecoder >> shift;
 
 				_printRect( "    dest       ", dest );
 				m_charStream << "    scale       = " << scale << std::endl;
@@ -587,10 +576,10 @@ namespace wg
 				GfxFlip		flip;
 				CoordI		shift;
 				
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> scale;
-				*m_pGfxStream >> flip;
-				*m_pGfxStream >> shift;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> scale;
+				*m_pDecoder >> flip;
+				*m_pDecoder >> shift;
 
 				_printRect( "    dest       ", dest );
 				m_charStream << "    scale       = " << scale << std::endl;
@@ -603,7 +592,7 @@ namespace wg
 			{
 				m_charStream << "DrawWave" << std::endl;
 				m_charStream << "    no data printout implemented yet." << std::endl;
-				m_pGfxStream->skip(header.size);
+				m_pDecoder->skip(header.size);
 				break;
 			}
 
@@ -611,7 +600,7 @@ namespace wg
 			{
 				m_charStream << "FlipDrawWave" << std::endl;
 				m_charStream << "    no data printout implemented yet." << std::endl;
-				m_pGfxStream->skip(header.size);
+				m_pDecoder->skip(header.size);
 				break;
 			}
 
@@ -625,11 +614,11 @@ namespace wg
 				float	outlineThickness;
 				HiColor	outlineColor;
 
-				*m_pGfxStream >> canvas;
-				*m_pGfxStream >> thickness;
-				*m_pGfxStream >> color;
-				*m_pGfxStream >> outlineThickness;
-				*m_pGfxStream >> outlineColor;
+				*m_pDecoder >> canvas;
+				*m_pDecoder >> thickness;
+				*m_pDecoder >> color;
+				*m_pDecoder >> outlineThickness;
+				*m_pDecoder >> outlineColor;
 
 				_printRect(     "    canvas          ", canvas );
 				m_charStream << "    thickness        = " << thickness << std::endl;
@@ -654,18 +643,18 @@ namespace wg
 				HiColor backColor;
 				bool	bRectangular;
 				
-				*m_pGfxStream >> canvas;
-				*m_pGfxStream >> start;
-				*m_pGfxStream >> nSlices;
-				*m_pGfxStream >> hubSize;
-				*m_pGfxStream >> hubColor;
-				*m_pGfxStream >> backColor;
-				*m_pGfxStream >> bRectangular;
+				*m_pDecoder >> canvas;
+				*m_pDecoder >> start;
+				*m_pDecoder >> nSlices;
+				*m_pDecoder >> hubSize;
+				*m_pDecoder >> hubColor;
+				*m_pDecoder >> backColor;
+				*m_pDecoder >> bRectangular;
 
 				assert(nSlices <= 32);
 				
-				*m_pGfxStream >> GfxStream::DataChunk{ nSlices*4, sliceSizes };
-				*m_pGfxStream >> GfxStream::DataChunk{ nSlices*8, sliceColors };
+				*m_pDecoder >> GfxStream::DataChunk{ nSlices*4, sliceSizes };
+				*m_pDecoder >> GfxStream::DataChunk{ nSlices*8, sliceColors };
 
 				_printRect(     "    canvas          ", canvas );
 				m_charStream << "    start           = " << start << std::endl;
@@ -688,7 +677,7 @@ namespace wg
 			{
 				m_charStream << "DrawSegments" << std::endl;
 				m_charStream << "    no data printout implemented yet." << std::endl;
-				m_pGfxStream->skip(header.size);
+				m_pDecoder->skip(header.size);
 				break;
 			}
 
@@ -696,7 +685,7 @@ namespace wg
 			{
 				m_charStream << "FlipDrawSegments" << std::endl;
 				m_charStream << "    no data printout implemented yet." << std::endl;
-				m_pGfxStream->skip(header.size);
+				m_pDecoder->skip(header.size);
 				break;
 			}
 				
@@ -708,19 +697,19 @@ namespace wg
 				BorderI 	dstFrame;
 				NinePatch 	patch;
 					
-				*m_pGfxStream >> dstRect;
-				*m_pGfxStream >> dstFrame;
+				*m_pDecoder >> dstRect;
+				*m_pDecoder >> dstFrame;
 
-				*m_pGfxStream >> patch.block;
-				*m_pGfxStream >> patch.frame;
+				*m_pDecoder >> patch.block;
+				*m_pDecoder >> patch.frame;
 
-				*m_pGfxStream >> patch.rigidPartXOfs;
-				*m_pGfxStream >> patch.rigidPartXLength;
-				*m_pGfxStream >> patch.rigidPartXSections;
+				*m_pDecoder >> patch.rigidPartXOfs;
+				*m_pDecoder >> patch.rigidPartXLength;
+				*m_pDecoder >> patch.rigidPartXSections;
 
-				*m_pGfxStream >> patch.rigidPartYOfs;
-				*m_pGfxStream >> patch.rigidPartYLength;
-				*m_pGfxStream >> patch.rigidPartYSections;
+				*m_pDecoder >> patch.rigidPartYOfs;
+				*m_pDecoder >> patch.rigidPartYLength;
+				*m_pDecoder >> patch.rigidPartYSections;
 
 				_printRect(     "    dstRect        ", dstRect );
 				_printBorder(   "    dstRect        ", dstFrame );
@@ -734,7 +723,7 @@ namespace wg
 			{
 				m_charStream << "EdgeSamples" << std::endl;
 
-				m_pGfxStream->skip(header.size);
+				m_pDecoder->skip(header.size);
 				m_charStream << "    nSamples    = " << (int)header.size/2 << std::endl;
 				break;
 			}
@@ -748,10 +737,10 @@ namespace wg
 				SizeI		size;
 				uint16_t	flags;
 
-				*m_pGfxStream >> surfaceId;
-				*m_pGfxStream >> type;
-				*m_pGfxStream >> size;
-				*m_pGfxStream >> flags;
+				*m_pDecoder >> surfaceId;
+				*m_pDecoder >> type;
+				*m_pDecoder >> size;
+				*m_pDecoder >> flags;
 
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
@@ -768,8 +757,8 @@ namespace wg
 				uint16_t	surfaceId;
 				ScaleMode	scaleMode;
 
-				*m_pGfxStream >> surfaceId;
-				*m_pGfxStream >> scaleMode;
+				*m_pDecoder >> surfaceId;
+				*m_pDecoder >> scaleMode;
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
 				m_charStream << "    scaleMode   = " << toString(scaleMode) << std::endl;
@@ -783,8 +772,8 @@ namespace wg
 				uint16_t	surfaceId;
 				bool		bTiling;
 
-				*m_pGfxStream >> surfaceId;
-				*m_pGfxStream >> bTiling;
+				*m_pDecoder >> surfaceId;
+				*m_pDecoder >> bTiling;
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
 				m_charStream << "    tiling      = " << bTiling << std::endl;
@@ -798,8 +787,8 @@ namespace wg
 				uint16_t	surfaceId;
 				RectI		region;
 
-				*m_pGfxStream >> surfaceId;
-				*m_pGfxStream >> region;
+				*m_pDecoder >> surfaceId;
+				*m_pDecoder >> region;
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
 				_printRect( "    region     ", region );
@@ -810,7 +799,7 @@ namespace wg
 			{
 				m_charStream << "SurfacePixels" << std::endl;
 
-				m_pGfxStream->skip(header.size);
+				m_pDecoder->skip(header.size);
 
 				m_charStream << "    size: " << header.size << " bytes." << std::endl;
 				break;
@@ -831,9 +820,9 @@ namespace wg
 				RectI		region;
 				HiColor		col;
 
-				*m_pGfxStream >> surfaceId;
-				*m_pGfxStream >> region;
-				*m_pGfxStream >> col;
+				*m_pDecoder >> surfaceId;
+				*m_pDecoder >> region;
+				*m_pDecoder >> col;
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
 				_printRect( "    region     ", region );
@@ -850,10 +839,10 @@ namespace wg
 				RectI		sourceRect;
 				CoordI		dest;
 
-				*m_pGfxStream >> destSurfaceId;
-				*m_pGfxStream >> sourceSurfaceId;
-				*m_pGfxStream >> sourceRect;
-				*m_pGfxStream >> dest;
+				*m_pDecoder >> destSurfaceId;
+				*m_pDecoder >> sourceSurfaceId;
+				*m_pDecoder >> sourceRect;
+				*m_pDecoder >> dest;
 
 				m_charStream << "    destSurface = " << destSurfaceId << std::endl;
 				m_charStream << "    srcSurface  = " << sourceSurfaceId << std::endl;
@@ -867,7 +856,7 @@ namespace wg
 				m_charStream << "DeleteSurface" << std::endl;
 
 				uint16_t	surfaceId;
-				*m_pGfxStream >> surfaceId;
+				*m_pDecoder >> surfaceId;
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
 				break;
@@ -881,9 +870,9 @@ namespace wg
 				CoordI		src;
 				int			transform[2][2];
 
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> src;
-				*m_pGfxStream >> transform;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> src;
+				*m_pDecoder >> transform;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << ", " << dest.w << ", " << dest.h << std::endl;
 				m_charStream << "    src         = " << src.x << ", " << src.y << std::endl;
@@ -898,9 +887,9 @@ namespace wg
 				CoordF		src;
 				float		transform[2][2];
 
-				*m_pGfxStream >> dest;
-				*m_pGfxStream >> src;
-				*m_pGfxStream >> transform;
+				*m_pDecoder >> dest;
+				*m_pDecoder >> src;
+				*m_pDecoder >> transform;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << ", " << dest.w << ", " << dest.h << std::endl;
 				m_charStream << "    src         = " << src.x << ", " << src.y << std::endl;
@@ -917,10 +906,10 @@ namespace wg
 				int			transform[2][2];
 
 
-				(*m_pGfxStream) >> dest;
-				(*m_pGfxStream) >> nSegments;
-				(*m_pGfxStream) >> nEdgeStrips;
-				(*m_pGfxStream) >> transform;
+				(*m_pDecoder) >> dest;
+				(*m_pDecoder) >> nSegments;
+				(*m_pDecoder) >> nEdgeStrips;
+				(*m_pDecoder) >> transform;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << ", " << dest.w << ", " << dest.h << std::endl;
 				m_charStream << "    nSegments   = " << nSegments << std::endl;
@@ -933,7 +922,7 @@ namespace wg
 				for (int i = 0; i < nSegments; i++)
 				{
 					HiColor color;
-					(*m_pGfxStream) >> color;
+					(*m_pDecoder) >> color;
 
 					m_charStream << "{ " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << " } ";
 
@@ -948,27 +937,12 @@ namespace wg
 				m_charStream << "Unknown Chunk Type: " << (int) header.type << std::endl;
 				m_charStream << "    size: " << (int)header.size << std::endl;
 
-				m_pGfxStream->skip(header.size);
+				m_pDecoder->skip(header.size);
 				break;
 			}
 		}
 
 		return true;
-	}
-
-	//____ logFrame() _________________________________________________________
-
-	bool GfxStreamLogger::logFrame()
-	{
-		GfxStream::Header	header = peekChunk();
-
-		while (header.type != GfxChunkId::OutOfData)
-		{
-			logChunk();
-			if (header.type == GfxChunkId::EndRender)
-				return true;
-		}
-		return false;
 	}
 
 	//____ readPrintPatches() _________________________________________________
@@ -978,7 +952,7 @@ namespace wg
 		uint16_t	nPatches;
 		RectI		patch;
 
-		*m_pGfxStream >> nPatches;
+		*m_pDecoder >> nPatches;
 
 		if (nPatches == 0)
 		{
@@ -986,12 +960,12 @@ namespace wg
 			return 0;
 		}
 
-		*m_pGfxStream >> patch;
+		*m_pDecoder >> patch;
 		m_charStream << "    patches     = " << patch.x << ", " << patch.y << ", " << patch.w << ", " << patch.h << std::endl;
 
 		for (int i = 1; i < nPatches; i++)
 		{
-			*m_pGfxStream >> patch;
+			*m_pDecoder >> patch;
 			m_charStream << "                  " << patch.x << ", " << patch.y << ", " << patch.w << ", " << patch.h << std::endl;
 		}
 
@@ -1010,12 +984,12 @@ namespace wg
 			return;
 		}
 
-		*m_pGfxStream >> rect;
+		*m_pDecoder >> rect;
 		m_charStream << label << " = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
 
 		for (int i = 1; i < nRects; i++)
 		{
-			*m_pGfxStream >> rect;
+			*m_pDecoder >> rect;
 			m_charStream << "                  " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
 		}
 	}

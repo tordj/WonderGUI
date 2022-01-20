@@ -25,6 +25,7 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 #pragma once
 
 #include <wg_object.h>
+#include <wg_gfxstream.h>
 #include <wg_cgfxinstream.h>
 #include <wg_gfxdevice.h>
 

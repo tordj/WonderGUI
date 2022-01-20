@@ -27,7 +27,9 @@
 #include <iostream>
 
 #include <wg_object.h>
-#include <wg_cgfxinstream.h>
+#include <wg_cgfxoutstream.h>
+#include <wg_gfxstream.h>
+#include <wg_gfxstreamdecoder.h>
 
 namespace wg
 {
@@ -36,13 +38,17 @@ namespace wg
 	typedef	StrongPtr<GfxStreamLogger>	GfxStreamLogger_p;
 	typedef	WeakPtr<GfxStreamLogger>	GfxStreamLogger_wp;
 
-	class GfxStreamLogger : public Object
+	class GfxStreamLogger : public Object, protected CGfxOutStream::Holder
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamLogger_p	create( CGfxInStream& in, std::ostream& out );
+		static GfxStreamLogger_p	create( std::ostream& out );
+
+		//.____ Components _______________________________________
+
+		CGfxOutStream		stream;
 
 		//.____ Identification __________________________________________
 
@@ -54,13 +60,17 @@ namespace wg
 		bool		isEmpty() const;
 		GfxStream::Header	peekChunk() const;
 
-		void		logAll();
-		bool		logChunk();
-		bool		logFrame();
 
 	protected:
-		GfxStreamLogger( CGfxInStream& in, std::ostream& out );
+		GfxStreamLogger( std::ostream& out );
 		~GfxStreamLogger();
+
+		Object* _object() override;
+		const Object* _object() const override;
+
+		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
+
+		bool	_logChunk();
 
 		int		_readPrintPatches();
 		
@@ -70,8 +80,9 @@ namespace wg
 		void	_printColor( const char * header, HiColor color );
 		void	_printBorder( const char * header, const BorderI& border );
 
-		CGfxInStream_p	m_pGfxStream;
 		std::ostream&	m_charStream;
+
+		GfxStreamDecoder_p m_pDecoder;
 	};
 
 }

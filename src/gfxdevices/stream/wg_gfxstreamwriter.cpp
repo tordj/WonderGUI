@@ -33,26 +33,22 @@ namespace wg
 
 	//____ create() ___________________________________________________________
 
-	GfxStreamWriter_p GfxStreamWriter::create(std::function<void(int nBytes, const void * pData)> dispatcher, int maxPackageSize )
+	GfxStreamWriter_p GfxStreamWriter::create(std::function<void(int nBytes, const void * pData)> dispatcher )
 	{
-		return new GfxStreamWriter(dispatcher, maxPackageSize);
+		return new GfxStreamWriter(dispatcher);
 	}
 
 	//____ constructor _____________________________________________________________
 
-	GfxStreamWriter::GfxStreamWriter(std::function<void(int nBytes, const void * pData)> dispatcher, int maxPackageSize) : stream(this)
+	GfxStreamWriter::GfxStreamWriter(std::function<void(int nBytes, const void * pData)> dispatcher) : stream(this)
 	{
 		m_dispatcher = dispatcher;
-		m_pBuffer	= new char[maxPackageSize];
-		m_capacity	= maxPackageSize;
-		m_size		= 0;
 	}
 
 	//____ Destructor _________________________________________________________
 
 	GfxStreamWriter::~GfxStreamWriter()
 	{
-		delete[] m_pBuffer;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -61,6 +57,14 @@ namespace wg
 	{
 		return TYPEINFO;
 	}
+
+	//____ _processStreamChunks() _____________________________________________
+
+	void GfxStreamWriter::_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd)
+	{
+		m_dispatcher(pEnd - pBegin, pBegin);
+	}
+
 
 	//____ _object() __________________________________________________________
 
@@ -72,104 +76,6 @@ namespace wg
 	const Object * GfxStreamWriter::_object() const
 	{
 		return this;
-	}
-
-	//____ _flushStream() ____________________________________________________________
-
-	void GfxStreamWriter::_flushStream()
-	{
-		m_dispatcher(m_size, m_pBuffer);
-		m_size = 0;
-	}
-
-	//____ _closeStream() ____________________________________________________
-
-	void GfxStreamWriter::_closeStream()
-	{
-		_flushStream();						// GfxStreamWriter is never closed, so we just flush.
-
-		delete[] m_pBuffer;
-		m_pBuffer = nullptr;
-	}
-
-	//____ _reopenStream() ______________________________________________________
-
-	bool GfxStreamWriter::_reopenStream()
-	{
-		if (!m_pBuffer)
-			m_pBuffer = new char[m_capacity];
-		return true;
-	}
-
-	//____ _isStreamOpen() ____________________________________________________
-
-	bool GfxStreamWriter::_isStreamOpen()
-	{
-		return m_pBuffer;
-	}
-
-	//____ _reserveStream() _________________________________________________________
-
-	void GfxStreamWriter::_reserveStream(int bytes)
-	{
-		if (bytes <= m_capacity - m_size)
-			return;
-
-		_flushStream();
-
-		if (bytes > m_capacity)
-		{
-			delete[] m_pBuffer;
-			m_pBuffer = new char[bytes];
-			m_capacity = bytes;
-		}
-	}
-
-	//____ _pushChar() ________________________________________________________
-
-	void GfxStreamWriter::_pushChar(char c)
-	{
-		m_pBuffer[m_size++] = c;
-	}
-
-	//____ _pushShort() ________________________________________________________
-
-	void GfxStreamWriter::_pushShort(short s)
-	{
-		*(short*)(&m_pBuffer[m_size]) = s;
-		m_size += 2;
-	}
-
-	//____ _pushInt() _________________________________________________________
-
-	void GfxStreamWriter::_pushInt(int i)
-	{
-//		*(int*)(&m_pBuffer[m_size]) = i;
-
-		*(short*)(&m_pBuffer[m_size]) = (short)i;
-		*(short*)(&m_pBuffer[m_size+2]) = (short)(i >> 16);
-		m_size += 4;
-	}
-
-	//____ _pushFloat() _______________________________________________________
-
-	void GfxStreamWriter::_pushFloat(float f)
-	{
-//		*(float*)(&m_pBuffer[m_size]) = f;
-
-		int i = *((int*)&f);
-
-		*(short*)(&m_pBuffer[m_size]) = (short)i;
-		*(short*)(&m_pBuffer[m_size + 2]) = (short)(i >> 16);
-		m_size += 4;
-	}
-
-	//____ _pushBytes() _________________________________________________________
-
-	void GfxStreamWriter::_pushBytes(int nBytes, char * pBytes)
-	{
-		std::memcpy(&m_pBuffer[m_size], pBytes, nBytes);
-		m_size += nBytes;
 	}
 
 

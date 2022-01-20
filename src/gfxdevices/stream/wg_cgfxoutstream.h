@@ -54,26 +54,10 @@ namespace wg
 			virtual Object * _object() = 0;
 			virtual const Object * _object() const = 0;
 
-			virtual void	_flushStream() = 0;
-			virtual void	_reserveStream(int bytes) = 0;
-			virtual void	_closeStream() = 0;
-			virtual bool	_reopenStream() = 0;
-			virtual bool	_isStreamOpen() = 0;
-
-			virtual void	_pushChar(char c) = 0;
-			virtual void	_pushShort(short s) = 0;
-			virtual void	_pushInt(int i) = 0;
-			virtual void	_pushFloat(float f) = 0;
-			virtual void	_pushBytes(int nBytes, char * pBytes) = 0;
+			virtual void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) = 0;
 		};
-
 
 		CGfxOutStream(Holder * pHolder);
-
-		enum Command
-		{
-			HeaderEnd
-		};
 
 		//.____ Identification _________________________________________________
 
@@ -82,64 +66,15 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		inline void		flush() { m_pHolder->_flushStream(); }
-		inline void		reserve(int bytes) { m_pHolder->_reserveStream(bytes); }
-		inline void		close() { m_pHolder->_closeStream(); }
-		inline bool		isOpen() { return m_pHolder->_isStreamOpen(); }
-		inline bool		reopen() { return m_pHolder->_reopenStream(); }
+		inline void	processChunks(const uint8_t* pBegin, const uint8_t* pEnd) { m_pHolder->_processStreamChunks(pBegin, pEnd); }
 
 		//.____ Misc __________________________________________________
 
 		inline CGfxOutStream_p	ptr() { return CGfxOutStream_p(this); }
 
-		uint16_t		allocObjectId();
-		void			freeObjectId(uint16_t id);
-
-		//.____ Operators _____________________________________________________
-
-		CGfxOutStream&	operator<< (Header);
-		CGfxOutStream&	operator<< (int16_t);
-		CGfxOutStream&	operator<< (uint16_t);
-		CGfxOutStream&	operator<< (int32_t);
-		CGfxOutStream&	operator<< (float);
-		CGfxOutStream&	operator<< (bool);
-
-		CGfxOutStream&	operator<< (const CoordI&);
-		CGfxOutStream&	operator<< (const CoordF&);
-		CGfxOutStream&	operator<< (const SizeI&);
-		CGfxOutStream&	operator<< (const SizeF&);
-		CGfxOutStream&	operator<< (const RectI&);
-		CGfxOutStream&	operator<< (const RectF&);
-		CGfxOutStream&	operator<< (const BorderI&);
-
-		CGfxOutStream&	operator<< (HiColor);
-		CGfxOutStream&	operator<< (Direction);
-		CGfxOutStream&	operator<< (BlendMode);
-        CGfxOutStream&  operator<< (TintMode);
-		CGfxOutStream&	operator<< (Axis);
-		CGfxOutStream&	operator<< (PixelFormat);
-		CGfxOutStream&	operator<< (ScaleMode);
-        CGfxOutStream&  operator<< (GfxFlip);
-        CGfxOutStream&  operator<< (XSections);
-        CGfxOutStream&  operator<< (YSections);
-		CGfxOutStream&  operator<< (CanvasRef);
-
-		CGfxOutStream&	operator<< (const DataChunk&);
-
-		CGfxOutStream&	operator<< (const int[2][2]);
-		CGfxOutStream&	operator<< (const float[2][2]);
-
-
 	protected:
 		Object *				_object() override { return m_pHolder->_object(); }
 		const Object *			_object() const  override { return m_pHolder->_object(); }
-
-		short					m_idCounter;
-
-		uint16_t *				m_pFreeIdStack;
-		int						m_freeIdStackCapacity;
-		int					    m_freeIdStackSize;
-
 
 		Holder * 	m_pHolder;
 	};
