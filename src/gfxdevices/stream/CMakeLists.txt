@@ -17,6 +17,13 @@ add_library( wgstreamgfx
 	wg_gfxstreamdecoder.cpp
 	wg_gfxstreamdecoder.h
 
+	wg_gfxstreamsplitter.cpp
+	wg_gfxstreamsplitter.h
+
+	wg_gfxstreambuffer.cpp
+	wg_gfxstreambuffer.h
+
+
 	wg_gfxstreamlogger.cpp
 	wg_gfxstreamlogger.h
 	wg_gfxstreamplayer.cpp
@@ -31,8 +38,8 @@ add_library( wgstreamgfx
 	wg_cgfxoutstream.cpp
 	wg_cgfxoutstream.h
 
-	wg_streampump.cpp
-	wg_streampump.h
+	wg_gfxstreampump.cpp
+	wg_gfxstreampump.h
 
 )
 

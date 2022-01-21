@@ -66,7 +66,6 @@
 #include <wg_caret.h>
 #include <wg_texttool.h>
 #include <wg_util.h>
-#include <wg_gfxstreamplug.h>
 #include <wg_msg.h>
 #include <wg_receiver.h>
 #include <wg_types.h>

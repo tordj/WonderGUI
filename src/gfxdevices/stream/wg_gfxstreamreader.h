@@ -49,7 +49,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxInStream		stream;
+		CGfxInStream		output;
 
 		//.____ Identification __________________________________________
 
@@ -64,16 +64,17 @@ namespace wg
 		Object *    _object() override { return this; }
 		const Object * _object() const override { return this; }
 
-		std::tuple<int, const DataSegment*> _showChunks() override;
-		void _discardChunks(int bytes) override;
-		bool _fetchChunks() override;
+		bool _hasStreamChunks() const override;
+		std::tuple<int, const DataSegment*> _showStreamChunks() override;
+		void _discardStreamChunks(int bytes) override;
+		bool _fetchStreamChunks() override;
 
 
 		void		_fetchData();
 
 		std::function<int(int nBytes, void * pDest)>	m_fetcher;
 
-		static constexpr int c_bufferStartSize = 8192;							// Must be power of two.
+		static constexpr int c_bufferStartSize = 8192;
 		static constexpr int c_bufferMargin = GfxStream::c_maxBlockSize;
 
 		char *		m_pBuffer;

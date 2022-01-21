@@ -26,7 +26,8 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 #include <wg_object.h>
 #include <wg_gfxstream.h>
-#include <wg_cgfxinstream.h>
+#include <wg_cgfxoutstream.h>
+#include <wg_gfxstreamdecoder.h>
 #include <wg_gfxdevice.h>
 
 #include <vector>
@@ -38,33 +39,36 @@ namespace wg
 	typedef	StrongPtr<GfxStreamPlayer>	GfxStreamPlayer_p;
 	typedef	WeakPtr<GfxStreamPlayer>	GfxStreamPlayer_wp;
 
-	class GfxStreamPlayer : public Object
+	class GfxStreamPlayer : public Object, protected CGfxOutStream::Holder
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamPlayer_p	create(CGfxInStream& In, GfxDevice * pDevice, SurfaceFactory * pFactory);
+		static GfxStreamPlayer_p	create(GfxDevice * pDevice, SurfaceFactory * pFactory);
+
+		//.____ Components _______________________________________
+
+		CGfxOutStream		input;
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Control _______________________________________________________
-
-		bool		isEmpty() const;
-		GfxStream::Header	peekChunk() const;
-
-		void		playAll();
-		bool		playChunk();
-		bool		playFrame();
-
 	protected:
-		GfxStreamPlayer(CGfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory);
+		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();
 
-		CGfxInStream_p		m_pStream;
+		Object* _object() override;
+		const Object* _object() const override;
+
+		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
+
+		bool	_playChunk();
+
+
+		GfxStreamDecoder_p	m_pDecoder;
 		GfxDevice_p			m_pDevice;
 		SurfaceFactory_p	m_pSurfaceFactory;
 

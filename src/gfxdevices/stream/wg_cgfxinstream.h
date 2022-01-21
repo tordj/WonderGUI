@@ -54,9 +54,10 @@ namespace wg
 			virtual Object * _object() = 0;
 			virtual const Object * _object() const = 0;
 
-			virtual std::tuple<int, const DataSegment *> _showChunks() = 0;
-			virtual	void _discardChunks(int bytes) = 0;
-			virtual bool _fetchChunks() = 0;
+			virtual bool _hasStreamChunks() const = 0;
+			virtual std::tuple<int, const DataSegment *> _showStreamChunks() = 0;
+			virtual	void _discardStreamChunks(int bytes) = 0;
+			virtual bool _fetchStreamChunks() = 0;
 		};
 
 
@@ -69,9 +70,10 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		inline std::tuple<int, const DataSegment*> showChunks() { return m_pHolder->_showChunks(); }
-		inline void discardChunks(int bytes) { return m_pHolder->_discardChunks(bytes); }
-		inline bool fetchChunks() { return m_pHolder->_fetchChunks(); }
+		inline bool hasChunks() const { return m_pHolder->_hasStreamChunks(); }
+		inline std::tuple<int, const DataSegment*> showChunks() { return m_pHolder->_showStreamChunks(); }
+		inline void discardChunks(int bytes) { return m_pHolder->_discardStreamChunks(bytes); }
+		inline bool fetchChunks() { return m_pHolder->_fetchStreamChunks(); }
 
 		//.____ Misc __________________________________________________
 

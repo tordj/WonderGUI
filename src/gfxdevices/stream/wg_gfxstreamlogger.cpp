@@ -41,7 +41,7 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	GfxStreamLogger::GfxStreamLogger(std::ostream& out) : m_charStream(out), stream(this)
+	GfxStreamLogger::GfxStreamLogger(std::ostream& out) : m_charStream(out), input(this)
 	{
 		out << std::boolalpha;
 
@@ -62,12 +62,25 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ _object() _____________________________________________________________
 
-	//____ logAll() ___________________________________________________________
-
-	void GfxStreamLogger::logAll()
+	Object* GfxStreamLogger::_object()
 	{
-		while (logChunk() == true);
+		return this;
+	}
+
+	const Object* GfxStreamLogger::_object() const
+	{
+		return this;
+	}
+
+	//____ _processStreamChunks() _____________________________________________
+
+	void GfxStreamLogger::_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd)
+	{
+		m_pDecoder->setInput(pBegin, pEnd);
+
+		while (_logChunk() == true);
 	}
 
 	//____ _logChunk() ____________________________________________________________

@@ -48,18 +48,12 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxOutStream		stream;
+		CGfxOutStream		input;
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Control _______________________________________________________
-
-		bool		isEmpty() const;
-		GfxStream::Header	peekChunk() const;
-
 
 	protected:
 		GfxStreamLogger( std::ostream& out );

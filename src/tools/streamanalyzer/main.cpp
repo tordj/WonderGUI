@@ -246,7 +246,7 @@ int main ( int argc, char** argv )
     GfxStreamPlayer_p pStreamPlayer;
     GfxStreamLogger_p pStreamLogger;
     
-    pStreamPlayer = GfxStreamPlayer::create(pStreamReader->stream, pGfxDevice, SoftSurfaceFactory::create());
+ //   pStreamPlayer = GfxStreamPlayer::create(pStreamReader->stream, pGfxDevice, SoftSurfaceFactory::create());
 
 //    pStreamLogger = GfxStreamLogger::create(pStreamReader->stream, std::cout);
 
@@ -284,12 +284,13 @@ int main ( int argc, char** argv )
 	{
 		translateEvents( pInput, pRoot );
         
-        
+ /*
         if( pStreamPlayer )
             pStreamPlayer->playFrame();
         
         if( pStreamLogger )
             pStreamLogger->logFrame();
+ */
 
         g_pDisplay->setImage(nullptr);
         g_pDisplay->setImage(pStreamOutputCanvas);

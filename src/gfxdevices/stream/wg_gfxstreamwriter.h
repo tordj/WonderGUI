@@ -45,7 +45,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxOutStream		stream;
+		CGfxOutStream		input;
 
 		//.____ Identification __________________________________________
 

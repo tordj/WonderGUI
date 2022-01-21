@@ -40,7 +40,7 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	GfxStreamWriter::GfxStreamWriter(std::function<void(int nBytes, const void * pData)> dispatcher) : stream(this)
+	GfxStreamWriter::GfxStreamWriter(std::function<void(int nBytes, const void * pData)> dispatcher) : input(this)
 	{
 		m_dispatcher = dispatcher;
 	}

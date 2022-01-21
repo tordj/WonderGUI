@@ -24,6 +24,10 @@
 #include <wg_streamsurfacefactory.h>
 #include <wg_streamgfxdevice.h>
 
+#include <wg_gfxstreambuffer.h>
+#include <wg_gfxstreamsplitter.h>
+#include <wg_gfxstreampump.h>
+
 #include <wg_freetypefont.h>
 #include <wg_packlist.h>
 #include <wg_popupopener.h>
@@ -233,23 +237,68 @@ int main ( int argc, char** argv )
     pGfxDevice->defineCanvas(CanvasRef::Canvas_1, pStreamOutputCanvas );
 
     
-	auto pStreamPlug = GfxStreamPlug::create();
+//	auto pStreamPlug = GfxStreamPlug::create();
 
-	auto pStreamDevice = StreamGfxDevice::create(pStreamPlug->input);
+//	auto pGfxPlayer = GfxStreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create());
+
+	// Writer
+
+	char* pBigBuffer = new char[10000000];
+	char* pWrite = pBigBuffer;
+
+	auto pStreamWriter = GfxStreamWriter::create([&pWrite](int nBytes, const void* pData) 
+		{
+			memcpy(pWrite, pData, nBytes);
+			pWrite += nBytes;
+		});
+
+	// Buffer
+
+	auto pStreamBuffer = GfxStreamBuffer::create();
+	
+	// Encoder with splitter, feeding writer and buffer.
+
+//	auto pEncoder = GfxStreamEncoder::create(pGfxPlayer->stream.ptr());
+//	auto pEncoder = GfxStreamEncoder::create(pStreamLogger->stream.ptr());
+
+	auto pFirstSplitter = GfxStreamSplitter::create( { pStreamBuffer->input.ptr(), pStreamWriter->input.ptr() });
+
+	auto pEncoder = GfxStreamEncoder::create(pFirstSplitter->input.ptr());
+
+	// Logger
+
+	auto pStreamLogger = GfxStreamLogger::create(std::cout);
+
+	// Player
+
+	auto pStreamPlayer = GfxStreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create());
+
+
+	// Streampump taking from buffer and feeding logger and/or player
+
+	auto pAfterBufferSplitter = GfxStreamSplitter::create({ pStreamLogger->input.ptr(), pStreamPlayer->input.ptr() });
+
+	auto pStreamPump = GfxStreamPump::create(pStreamBuffer->output.ptr(), pAfterBufferSplitter->input.ptr());
+
+	// StreamGfxDevice and StreamSurfaceFactory feeding encoder
+
+	auto pStreamDevice = StreamGfxDevice::create(pEncoder);
     pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {240,240} );
 
-	auto pSurfaceFactory = StreamSurfaceFactory::create(pStreamPlug->input);
+	auto pSurfaceFactory = StreamSurfaceFactory::create(pEncoder);
 
-	pStreamPlug->openOutput(0);
-	auto pStreamLogger = GfxStreamLogger::create(pStreamPlug->output[0], std::cout);
 
-	pStreamPlug->openOutput(1);
-	auto pGfxPlayer = GfxStreamPlayer::create(pStreamPlug->output[1], pGfxDevice, SoftSurfaceFactory::create());
+//	pStreamPlug->openOutput(0);
+//	auto pStreamLogger = GfxStreamLogger::create(pStreamPlug->output[0], std::cout);
+
+//	pStreamPlug->openOutput(1);
+//	auto pGfxPlayer = GfxStreamPlayer::create(pStreamPlug->output[1], pGfxDevice, SoftSurfaceFactory::create());
     
     //------------------------------------------------------
     // Setup stream saving
     //------------------------------------------------------
 
+/*
     char * pBigBuffer = new char[10000000];
 
     char * pWrite = pBigBuffer;
@@ -258,118 +307,26 @@ int main ( int argc, char** argv )
     pStreamPlug->openOutput(2);
     
     auto pSaveInStream = &pStreamPlug->output[2];
+*/
    
 	//------------------------------------------------------
 	// Record stream
 	//------------------------------------------------------
 
-//    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
-    playSoftubeLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
+//    playSoftubeLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 //    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
-/*
-	char * pWaxBeg = pWrite;
-
-	playInitButtonRow(pStreamDevice, { 0,0,width,height });
-	ofstream save("indicators_init.wax", ios::out | ios::binary | ios::trunc);
-	save.write(pWaxBeg, pWrite - pWaxBeg);
-	save.close();
-
-	{
-		char * pWaxBeg = pWrite;
-		playSetSlider(pStreamDevice, 1.f);
-		ofstream save("set_slider.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-*/	
-	/*
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonPress(pStreamDevice, 0);
-		ofstream save("buttonrow_press_1.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonPress(pStreamDevice, 1);
-		ofstream save("buttonrow_press_2.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonPress(pStreamDevice, 2);
-		ofstream save("buttonrow_press_3.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonPress(pStreamDevice, 3);
-		ofstream save("buttonrow_press_4.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonRelease(pStreamDevice, 0);
-		ofstream save("buttonrow_release_1.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonRelease(pStreamDevice, 1);
-		ofstream save("buttonrow_release_2.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonRelease(pStreamDevice, 2);
-		ofstream save("buttonrow_release_3.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-	playDelayFrames(pStreamDevice, 100);
-	{
-		char * pWaxBeg = pWrite;
-		playButtonRelease(pStreamDevice, 3);
-		ofstream save("buttonrow_release_4.wax", ios::out | ios::binary | ios::trunc);
-		save.write(pWaxBeg, pWrite - pWaxBeg);
-		save.close();
-	}
-*/
 	//------------------------------------------------------
 	// Save stream to file
 	//------------------------------------------------------
 
 	ofstream save("output.wax", ios::out | ios::binary | ios::trunc);
 
-    char chunkBuffer[GfxStream::c_maxBlockSize];
-    
-    GfxStream::Header header;
-    while( !pSaveInStream->isEmpty() )
-    {
-        * pSaveInStream >> header;
-        save.write( (char*) &header, 4);
-        if( header.size > 0 )
-        {
-            * pSaveInStream >> GfxStream::DataChunk{ header.size, chunkBuffer };
-            save.write( chunkBuffer, header.size );
-        }
-    }
+    save.write( (char*) pBigBuffer, pWrite - pBigBuffer);
     
 	save.close();
+
 
 	//------------------------------------------------------
 	// Setup graphics
@@ -417,7 +374,7 @@ int main ( int argc, char** argv )
 		translateEvents( pInput, pRoot );
         
         
-        pGfxPlayer->playFrame();
+        pStreamPump->pumpFrame();
 
         pOutput->setImage(nullptr);
         pOutput->setImage(pStreamOutputCanvas);

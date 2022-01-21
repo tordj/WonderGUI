@@ -881,8 +881,8 @@ enum class CanvasInit 		//. autoExtras
 
 	struct DataSegment
 	{
-		uint8_t*	pBytes;
-		int			nBytes;
+		uint8_t*	pBegin;
+		uint8_t*	pEnd;
 	};
 
 } // namespace wg

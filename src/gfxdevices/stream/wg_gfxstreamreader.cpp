@@ -39,7 +39,7 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	GfxStreamReader::GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder) : stream(this)
+	GfxStreamReader::GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder) : output(this)
 	{
 		m_fetcher = dataFeeder;
 
@@ -85,14 +85,9 @@ namespace wg
 
 		m_writeOfs = (m_writeOfs + written) % m_bufferSize;
 
-		// Handle case where we got less data than requested
+		// Fetch data to second chunk if we filled first chunk
 
-		if (written < chunk1)
-			return;
-
-		// Fetch data to second chunk
-
-		if (chunk2 > 0)
+		if (written == chunk1 && chunk2 > 0)
 		{
 			written = m_fetcher(chunk2, m_pBuffer);
 			m_writeOfs = written;
@@ -122,45 +117,55 @@ namespace wg
 		}
 	}
 
-	//____ _showChunks() ______________________________________________________
+	//____ _hasStreamChunks() _________________________________________________
 
-	std::tuple<int, const DataSegment*> GfxStreamReader::_showChunks()
+	bool GfxStreamReader::_hasStreamChunks() const
 	{
+		return (m_processedOfs != m_readOfs);
+	}
+
+	//____ _showStreamChunks() ________________________________________________
+
+	std::tuple<int, const DataSegment*> GfxStreamReader::_showStreamChunks()
+	{
+		if (m_processedOfs == m_readOfs)
+			return std::make_tuple(int(0), nullptr);
+
 		if (m_processedOfs < m_readOfs)
 		{
-			m_dataSegments[0].pBytes = (uint8_t*)m_pBuffer + m_readOfs;
-			m_dataSegments[0].nBytes = m_bufferSize + m_bufferOverflow - m_readOfs;
+			m_dataSegments[0].pBegin = (uint8_t*)m_pBuffer + m_readOfs;
+			m_dataSegments[0].pEnd = (uint8_t*)m_pBuffer + m_bufferSize + m_bufferOverflow;
 
 
 
 			if (m_processedOfs == m_bufferOverflow )
 				return std::make_tuple(int(1), m_dataSegments);
 
-			m_dataSegments[1].pBytes = (uint8_t*)m_pBuffer + m_bufferOverflow;
-			m_dataSegments[1].nBytes = m_processedOfs - m_bufferOverflow;
+			m_dataSegments[1].pBegin = (uint8_t*)m_pBuffer + m_bufferOverflow;
+			m_dataSegments[1].pEnd = (uint8_t*)m_pBuffer + m_processedOfs;
 			return std::make_tuple(int(2), m_dataSegments);
 
 		}
 		else
 		{
-			m_dataSegments[0].pBytes = (uint8_t*)m_pBuffer + m_readOfs;
-			m_dataSegments[0].nBytes = m_processedOfs - m_readOfs;
+			m_dataSegments[0].pBegin = (uint8_t*)m_pBuffer + m_readOfs;
+			m_dataSegments[0].pEnd = (uint8_t*)m_pBuffer + m_processedOfs;
 			return std::make_tuple(int(1), m_dataSegments);
 		}
 	}
 	 
-	//____ _discardChunks() ___________________________________________________
+	//____ _discardStreamChunks() _____________________________________________
 
-	void GfxStreamReader::_discardChunks(int bytes)
+	void GfxStreamReader::_discardStreamChunks(int bytes)
 	{
 		m_readOfs = (m_readOfs + bytes) % m_bufferSize;
 		if (m_readOfs < m_processedOfs)
 			m_bufferOverflow = 0;
 	}
 
-	//____ _fetchChunks() _________________________________________________
+	//____ _fetchStreamChunks() _______________________________________________
 
-	bool GfxStreamReader::_fetchChunks()
+	bool GfxStreamReader::_fetchStreamChunks()
 	{
 		int dataInBuffer = (m_writeOfs - m_readOfs + m_bufferSize) % m_bufferSize;
 		int maxFetch = m_bufferSize - dataInBuffer - 2;		// -2 since we may not catch up to readOfs
@@ -216,7 +221,7 @@ namespace wg
 			{
 				// Call ourselves recursively to grow the buffer and refetch.
 
-				return _fetchChunks();
+				return _fetchStreamChunks();
 			}
 
 			return false;
