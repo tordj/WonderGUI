@@ -24,6 +24,11 @@
 #include <wg_streamsurfacefactory.h>
 #include <wg_streamgfxdevice.h>
 
+#include <wg_gfxstreambuffer.h>
+#include <wg_gfxstreamsplitter.h>
+#include <wg_gfxstreampump.h>
+
+
 #include <wg_freetypefont.h>
 #include <wg_packlist.h>
 #include <wg_popupopener.h>
@@ -235,7 +240,7 @@ int main ( int argc, char** argv )
         {
             int bytesLeft = g_streamSize - (g_pStreamReader - g_pStreamBuffer);
         
-        int bytesToRead = std::min( {nBytes,bytesLeft,200} );
+        int bytesToRead = std::min( {nBytes,bytesLeft, 130} );
         
             memcpy( pDest, g_pStreamReader, bytesToRead );
             g_pStreamReader+= bytesToRead;
@@ -243,12 +248,14 @@ int main ( int argc, char** argv )
         
         } );
 
-    GfxStreamPlayer_p pStreamPlayer;
-    GfxStreamLogger_p pStreamLogger;
-    
- //   pStreamPlayer = GfxStreamPlayer::create(pStreamReader->stream, pGfxDevice, SoftSurfaceFactory::create());
+	auto pStreamPlayer = GfxStreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create());
 
-//    pStreamLogger = GfxStreamLogger::create(pStreamReader->stream, std::cout);
+    auto pStreamLogger = GfxStreamLogger::create(std::cout);
+
+
+	auto pStreamSplitter = GfxStreamSplitter::create({ pStreamPlayer->input.ptr(), pStreamLogger->input.ptr() });
+
+	auto pStreamPump = GfxStreamPump::create(pStreamReader->output.ptr(), pStreamSplitter->input.ptr() );
 
 
 	//------------------------------------------------------
@@ -283,16 +290,10 @@ int main ( int argc, char** argv )
 	while( !bQuit )
 	{
 		translateEvents( pInput, pRoot );
-        
- /*
-        if( pStreamPlayer )
-            pStreamPlayer->playFrame();
-        
-        if( pStreamLogger )
-            pStreamLogger->logFrame();
- */
+   
+		pStreamPump->pumpFrame();
 
-        g_pDisplay->setImage(nullptr);
+		g_pDisplay->setImage(nullptr);
         g_pDisplay->setImage(pStreamOutputCanvas);
         
 		SDL_LockSurface(pWinSurf);

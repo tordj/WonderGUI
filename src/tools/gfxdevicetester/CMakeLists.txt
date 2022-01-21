@@ -41,6 +41,7 @@ target_working_directory(gfxdevicetester ${WG_ROOT} )
 target_link_libraries(gfxdevicetester PRIVATE
 	wgsoftgfx
 	wgopenglgfx
+	wgstreamgfx
 	wgfreetypefont
 	wondergui 
 	${SDL2_LIBS}

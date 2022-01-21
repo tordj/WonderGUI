@@ -5,7 +5,6 @@
 #include <wg_softgfxdevice.h>
 #include <wg_streamgfxdevice.h>
 #include <wg_streamsurface.h>
-#include <wg_gfxstreamplug.h>
 #include <wg_gfxstreamplayer.h>
 
 using namespace wg;
@@ -101,21 +100,21 @@ public:
 
 	bool init(SizeI canvasSize, PixelFormat canvasFormat)
 	{
-		m_pStreamBuffer = GfxStreamPlug::create();
 
 		m_pOutputDevice = SoftGfxDevice::create();
-		m_pStreamPlayer = GfxStreamPlayer::create(m_pStreamBuffer->output[0], m_pOutputDevice, m_pOutputDevice->surfaceFactory());
-		m_pStreamBuffer->openOutput(0);
+		m_pStreamPlayer = GfxStreamPlayer::create(m_pOutputDevice, m_pOutputDevice->surfaceFactory());
 
-		m_pStreamDevice = StreamGfxDevice::create(m_pStreamBuffer->input);
-		m_pStreamCanvas = StreamSurface::create(m_pStreamBuffer->input, canvasSize, canvasFormat);
+		m_pStreamEncoder = GfxStreamEncoder::create(m_pStreamPlayer->input.ptr());
+
+		m_pStreamDevice = StreamGfxDevice::create(m_pStreamEncoder);
+		m_pStreamCanvas = StreamSurface::create(m_pStreamEncoder, canvasSize, canvasFormat, SurfaceFlag::Canvas);
 
 		return true;
 	}
 
 	void exit()
 	{
-		m_pStreamBuffer = nullptr;
+		m_pStreamEncoder = nullptr;
 		m_pStreamDevice = nullptr;
 		m_pStreamCanvas = nullptr;
 		m_pOutputDevice = nullptr;
@@ -133,7 +132,7 @@ public:
 	{
 		m_pStreamDevice->endCanvasUpdate();
 		m_pStreamDevice->endRender();
-		m_pStreamPlayer->playAll();
+		m_pStreamEncoder->flush();
 		return;
 	}
 
@@ -151,7 +150,7 @@ private:
 
 	const char * m_pName = { "StreamToSoftware" };
 
-	GfxStreamPlug_p		m_pStreamBuffer;
+	GfxStreamEncoder_p	m_pStreamEncoder;
 
 	StreamSurface_p		m_pStreamCanvas;
 	StreamGfxDevice_p	m_pStreamDevice;
