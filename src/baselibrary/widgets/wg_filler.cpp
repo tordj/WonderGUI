@@ -36,6 +36,13 @@ namespace wg
 		m_preferredSize = Size(-1,-1);
 	}
 
+	Filler::Filler( const Blueprint& bp )
+	{
+		_initFromBlueprint(bp); 
+		m_preferredSize = bp.preferredSize;
+	}
+
+
 	//____ Destructor _____________________________________________________________
 
 	Filler::~Filler()

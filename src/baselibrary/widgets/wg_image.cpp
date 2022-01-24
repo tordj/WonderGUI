@@ -37,6 +37,16 @@ namespace wg
 	{
 	}
 
+	Image::Image(const Blueprint& bp)
+	{
+		_initFromBlueprint(bp);
+
+		m_pSurface	= bp.image;
+		m_rect = bp.imageRect;
+		m_imageMarkAlpha = bp.imageMarkAlpha;
+	}
+
+
 	//____ Destructor _____________________________________________________________
 
 	Image::~Image()

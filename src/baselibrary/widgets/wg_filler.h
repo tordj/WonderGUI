@@ -51,9 +51,32 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			Size			preferredSize = { -1,-1 };
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
+
 		//.____ Creation __________________________________________
 
 		static Filler_p	create() { return Filler_p(new Filler()); }
+		static Filler_p	create( const Blueprint& blueprint ) { return Filler_p(new Filler( blueprint )); }
 
 		//.____ Identification __________________________________________
 
@@ -66,6 +89,7 @@ namespace wg
 
 	protected:
 		Filler();
+		Filler(const Blueprint& blueprint);
 		virtual ~Filler();
 
 		SizeSPX	_preferredSize(int scale = -1) const override;

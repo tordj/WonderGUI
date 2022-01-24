@@ -46,9 +46,34 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			int				duration = 1000;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PlayMode		playMode = PlayMode::Forward;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			int				stepSize = 1;
+			bool			tabLock = false;
+			String			tooltip;
+			int				value = 0;
+		};
+
 		//.____ Creation __________________________________________
 
 		static Timer_p	create() { return Timer_p(new Timer()); }
+		static Timer_p	create( const Blueprint& blueprint ) { return Timer_p(new Timer(blueprint)); }
 
 		//.____ Identification __________________________________________
 
@@ -85,6 +110,8 @@ namespace wg
 
 
 	protected:
+		Timer() {};
+		Timer(const Blueprint& bp);
 
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

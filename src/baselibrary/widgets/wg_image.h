@@ -45,9 +45,34 @@ namespace wg
 	class Image : public Widget
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			Surface_p		image;
+			Rect			imageRect;
+			int				imageMarkAlpha = 1;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
 		//.____ Creation __________________________________________
 
 		static Image_p	create() { return Image_p(new Image()); }
+		static Image_p	create( const Blueprint& blueprint ) { return Image_p(new Image( blueprint )); }
 
 		//.____ Identification __________________________________________
 
@@ -76,6 +101,7 @@ namespace wg
 
 	protected:
 		Image();
+		Image( const Blueprint& bp );
 		virtual ~Image();
 
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;

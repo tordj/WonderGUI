@@ -32,6 +32,18 @@ namespace wg
 
 	const TypeInfo Timer::TYPEINFO = { "Timer", &Widget::TYPEINFO };
 
+	//____ constructor ________________________________________________________
+
+	Timer::Timer(const Blueprint& bp)
+	{
+		_initFromBlueprint(bp);
+
+		m_duration	= bp.duration;
+		m_stepSize	= bp.stepSize;
+		m_playMode	= bp.playMode;
+		m_value		= bp.value;
+	}
+
 
 	//____ typeInfo() _________________________________________________________
 

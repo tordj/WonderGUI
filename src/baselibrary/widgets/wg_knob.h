@@ -46,6 +46,8 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
 		struct Blueprint
 		{
 			Object_p		baggage;
@@ -68,7 +70,6 @@ namespace wg
 			float			value = 0.f;
 			float			wheelStepSize = 0.01f;
 		};
-
 
 		//.____ Creation __________________________________________
 
