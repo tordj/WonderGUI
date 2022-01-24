@@ -284,7 +284,8 @@ namespace wg
 				if (ofs1 > ofs2)
 					std::swap(ofs1, ofs2);
 
-				return align(RectSPX(canvas.x + minFillLength, canvas.y, ofs2 - ofs1, canvas.h));
+				return align(RectSPX(canvas.x + minFillLength + ofs1, canvas.y, ofs2 - ofs1, canvas.h));
+
 			}
 
 			default:

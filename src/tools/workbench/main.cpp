@@ -637,9 +637,9 @@ int main(int argc, char** argv)
 //	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
 //	rangeSliderTest(&pRoot->slot);
-//	pieKnobTest(&pRoot->slot);
+	pieKnobTest(&pRoot->slot);
 //	spinKnobTest(&pRoot->slot);
-  animKnobTest(&pRoot->slot);
+//  animKnobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
 //	doubleSkinTest(&pRoot->slot);
 //	timerTest(&pRoot->slot);
@@ -2128,29 +2128,10 @@ bool pieKnobTest(CStandardSlot_p pSlot)
 
 
 	auto pKnob1 = Knob::create( { .skin = pBgSkin1, .value = 0.5f } );
-//	pKnob1->setSkin( pBgSkin1 );
-//	pKnob1->setValue(0.5f);
-
-	auto pKnob2 = Knob::create();
-	pKnob2->setSkin( pBgSkin2 );
-	pKnob2->setValue(0.5f);
-	pKnob2->setDragAxis(Axis::X);
-
-	auto pKnob3 = Knob::create();
-	pKnob3->setSkin( pBgSkin3 );
-	pKnob3->setValue(0.5f);
-	pKnob3->setDragAxis(Axis::Y);
-
-	auto pKnob4 = Knob::create();
-	pKnob4->setSkin( pBgSkin4 );
-	pKnob4->setValue(0.5f);
-	pKnob4->setDragAxis(Axis::Y);
-
-	auto pKnob5 = Knob::create();
-	pKnob5->setSkin( pBgSkin5 );
-	pKnob5->setValue(0.5f);
-	pKnob5->setDragAxis(Axis::Y);
-
+	auto pKnob2 = Knob::create( { .dragAxis = Axis::X, .skin = pBgSkin2, .value = 0.5f });
+	auto pKnob3 = Knob::create( { .dragAxis = Axis::X, .skin = pBgSkin3, .value = 0.5f });
+	auto pKnob4 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin4, .value = 0.5f });
+	auto pKnob5 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin5, .value = 0.5f });
 
 	pBaseLayer->slots.pushBackMovable(pKnob1, Rect(10, 10, 100, 100));
 	pBaseLayer->slots.pushBackMovable(pKnob2, Rect(120, 10, 100, 100));
