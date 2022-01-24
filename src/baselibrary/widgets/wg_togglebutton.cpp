@@ -39,18 +39,31 @@ namespace wg
 	using namespace Util;
 
 
-	//____ ToggleButton() _________________________________________________________________
+	//____ constructor _________________________________________________________________
 
-	ToggleButton::ToggleButton() : text(this), icon(this)
+	ToggleButton::ToggleButton() : label(this), icon(this)
 	{
 		m_bPressed			= false;
 		m_bReturnPressed	= false;
 		m_bFlipOnRelease	= false;
 
-		m_clickArea			= DEFAULT;
+		m_clickArea			= ClickArea::Default;
 	}
 
-	//____ Destructor _____________________________________________________________
+	ToggleButton::ToggleButton(const Blueprint& bp) : ToggleButton()
+	{
+		_initFromBlueprint(bp);
+
+		label._initFromBlueprint(bp.label);
+
+		m_clickArea		= bp.clickArea;
+		m_bFlipOnRelease = bp.flipOnRelease;
+
+		if (bp.selected)
+			setSelected(true);
+	}
+
+	//____ destructor _____________________________________________________________
 
 	ToggleButton::~ToggleButton()
 	{
@@ -95,8 +108,8 @@ namespace wg
 		SizeSPX iconPreferredSize;
 		SizeSPX textPreferredSize;
 
-		if( !OO(text).isEmpty() )
-			textPreferredSize = OO(text)._preferredSize(scale);
+		if( !OO(label).isEmpty() )
+			textPreferredSize = OO(label)._preferredSize(scale);
 
 		if( !_icon().isEmpty() )
 		{
@@ -229,7 +242,7 @@ namespace wg
 		State oldState = state;
 		Widget::_setState(state);
 
-		OO(text)._setState( state );
+		OO(label)._setState( state );
 
 		if (!_icon().isEmpty())
 		{
@@ -264,10 +277,10 @@ namespace wg
 
 		// Print text
 
-	 	if( !OO(text).isEmpty() )
+	 	if( !OO(label).isEmpty() )
 		{
 			RectSPX	textRect = _icon()._getTextRect( contentRect, iconRect, m_scale );
-			OO(text)._render( pDevice, textRect );
+			OO(label)._render( pDevice, textRect );
 		}
 	}
 
@@ -288,7 +301,7 @@ namespace wg
 
 		RectSPX contentRect	= m_skin.contentRect(size, m_scale, m_state );
 
-		OO(text)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale), m_scale );
+		OO(label)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale), m_scale );
 	}
 
 	//____ _markTestTextArea() ______________________________________________________
@@ -299,7 +312,7 @@ namespace wg
 
 		contentRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale );
 
-		if( OO(text)._charAtPos( pos - contentRect.pos() ) != -1 )
+		if( OO(label)._charAtPos( pos - contentRect.pos() ) != -1 )
 			return true;
 
 		return false;
@@ -317,7 +330,7 @@ namespace wg
 
 		switch( m_clickArea )
 		{
-			case DEFAULT:		// Full geometry of icon (no alpha test) + text + area between + alpha test on background.
+			case ClickArea::Default:		// Full geometry of icon (no alpha test) + text + area between + alpha test on background.
 			{
 				// Extend iconRect so it connects with textArea before we compare
 
@@ -348,7 +361,7 @@ namespace wg
 
 				return false;
 			}
-			case ALPHA:			// Alpha test on background and icon.
+			case ClickArea::Alpha:			// Alpha test on background and icon.
 			{
 				if( Widget::_alphaTest( ofs ) ||
 					( !_icon().isEmpty() && _icon().skin()->_markTest( ofs, iconRect, m_scale, m_state )) )
@@ -356,16 +369,16 @@ namespace wg
 
 				return false;
 			}
-			case GEO:			// Full geometry of Widget is clickable.
+			case ClickArea::Geo:			// Full geometry of Widget is clickable.
 				return true;
-			case ICON:			// Only the icon (alpha test) is clickable.
+			case ClickArea::Icon:			// Only the icon (alpha test) is clickable.
 			{
 				if( !_icon().isEmpty() && _icon().skin()->_markTest( ofs, iconRect, m_scale, m_state ) )
 					return true;
 
 				return false;
 			}
-			case TEXT:			// Only the text is clickable.
+			case ClickArea::Text:			// Only the text is clickable.
 			{
 				if( _markTestTextArea( ofs ) )
 					return true;

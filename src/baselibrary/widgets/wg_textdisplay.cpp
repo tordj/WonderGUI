@@ -40,6 +40,11 @@ namespace wg
 	{
 	}
 
+	TextDisplay::TextDisplay(const Blueprint& bp) : display(this)
+	{
+		_initFromBlueprint(bp);
+		display._initFromBlueprint(bp.display);
+	}
 
 	//____ Destructor _____________________________________________________________
 

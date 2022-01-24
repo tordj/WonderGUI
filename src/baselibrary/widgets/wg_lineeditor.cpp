@@ -42,6 +42,13 @@ namespace wg
 		editor.setMaxLines(1);
 	}
 
+	LineEditor::LineEditor(const Blueprint& bp) : editor(this), m_textScrollOfs(0)
+	{
+		_initFromBlueprint(bp);
+		editor._initFromBlueprint(bp.editor);
+
+		editor.setMaxLines(1);
+	}
 
 	//____ Destructor _____________________________________________________________
 

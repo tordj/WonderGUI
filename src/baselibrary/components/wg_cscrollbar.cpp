@@ -126,6 +126,25 @@ namespace wg
 		m_bJumpToPress = bJump;
 	}
 
+	//____ _initFromBlueprint() _______________________________________________
+
+	void CScrollbar::_initFromBlueprint(const Blueprint& bp)
+	{
+		if( bp.background )
+			m_skins[Part::Back] = bp.background;
+
+		if (bp.backwardButton)
+			m_skins[Part::Prev] = bp.backwardButton;
+
+		if (bp.bar)
+			m_skins[Part::Bar] = bp.bar;
+
+		if (bp.forwardButton)
+			m_skins[Part::Next] = bp.forwardButton;
+
+		m_bJumpToPress = bp.jumpToPress;
+	}
+
 	//____ _preferredSize() ___________________________________________________
 
 	SizeSPX CScrollbar::_preferredSize(int scale) const

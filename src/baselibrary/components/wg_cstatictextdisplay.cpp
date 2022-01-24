@@ -53,6 +53,17 @@ namespace wg
 		return TextLink_p();
 	}
 
+	//____ initFromBlueprint() ________________________________________________
+
+	void CStaticTextDisplay::_initFromBlueprint(const Blueprint& bp)
+	{
+		if (bp.style)
+			setStyle(bp.style);
+
+		if (bp.layout)
+			setLayout(bp.layout);
+	}
+
 	//____ _receive() ___________________________________________________________
 
 	void CStaticTextDisplay::_receive( Msg * _pMsg )

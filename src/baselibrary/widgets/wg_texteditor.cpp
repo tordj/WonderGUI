@@ -40,6 +40,11 @@ namespace wg
 	{
 	}
 
+	TextEditor::TextEditor(const Blueprint& bp) : editor(this)
+	{
+		_initFromBlueprint(bp);
+		editor._initFromBlueprint(bp.editor);
+	}
 
 	//____ Destructor _____________________________________________________________
 

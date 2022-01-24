@@ -39,9 +39,31 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			CTextDisplay::Blueprint	display;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
 		//.____ Creation __________________________________________
 
 		static TextDisplay_p	create() { return TextDisplay_p(new TextDisplay()); }
+		static TextDisplay_p	create(const Blueprint& blueprint) { return TextDisplay_p(new TextDisplay(blueprint)); }
 
 		//.____ Components ____________________________________
 
@@ -66,6 +88,7 @@ namespace wg
 
 	protected:
 		TextDisplay();
+		TextDisplay(const Blueprint& bp);
 		virtual ~TextDisplay();
 
 

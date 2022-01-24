@@ -41,9 +41,32 @@ namespace wg
 	class TextEditor:public Widget
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			CTextEditor::Blueprint	editor;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
 		//.____ Creation __________________________________________
 
 		static TextEditor_p	create() { return TextEditor_p(new TextEditor()); }
+		static TextEditor_p	create(const Blueprint& blueprint) { return TextEditor_p(new TextEditor(blueprint)); }
 
 		//.____ Components ____________________________________
 
@@ -62,6 +85,7 @@ namespace wg
 
 	protected:
 		TextEditor();
+		TextEditor(const Blueprint& bp);
 		virtual ~TextEditor();
 
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;

@@ -627,7 +627,7 @@ int main(int argc, char** argv)
 //	stretchBlitTest(pRoot->child.ptr());
 //	scrollIntoViewTest(pRoot->child.ptr());
 //	textClipTest(&pRoot->slot);
-//	textEditorTest(&pRoot->slot);
+	textEditorTest(&pRoot->slot);
 //	lineEditorTest(&pRoot->slot);
 //	popupOpenerTest(&pRoot->slot);
 //	scrollbarTest(&pRoot->slot);
@@ -637,7 +637,7 @@ int main(int argc, char** argv)
 //	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
 //	rangeSliderTest(&pRoot->slot);
-	pieKnobTest(&pRoot->slot);
+//	pieKnobTest(&pRoot->slot);
 //	spinKnobTest(&pRoot->slot);
 //  animKnobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
@@ -1853,10 +1853,8 @@ bool textEditorTest(CStandardSlot_p pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen, 2);
 
-	auto pEditor = TextEditor::create();
-
-	pEditor->editor.setText("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.");
-	pEditor->setSkin( pSkin );
+	auto pEditor = TextEditor::create( {	.editor = { .text = String("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.") }, 
+											.skin = pSkin});
 
 	auto pFlex = FlexPanel::create();
 	pFlex->slots.pushBackMovable(pEditor, { 10,10,150,0 });

@@ -61,22 +61,47 @@ namespace wg
 	{
 	friend class ToggleGroup;
 	public:
-		enum ClickArea
+		enum class ClickArea
 		{
-			DEFAULT,		///< Full geometry of icon (no alpha test) + text + area between + alpha test on background.
-			ALPHA,			///< Alpha test on background and icon.
-			GEO,			///< Full geometry of Widget is clickable.
-			ICON,			///< Only the icon (alpha test) is clickable.
-			TEXT			///< Only the text (no alpha test) is clickable.
+			Default,		///< Full geometry of icon (no alpha test) + text + area between + alpha test on background.
+			Alpha,			///< Alpha test on background and icon.
+			Geo,			///< Full geometry of Widget is clickable.
+			Icon,			///< Only the icon (alpha test) is clickable.
+			Text			///< Only the text (no alpha test) is clickable.
+		};
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			ClickArea		clickArea = ClickArea::Default;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			bool			flipOnRelease = false;
+			int				id = 0;
+			CTextDisplay::Blueprint	label;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = 64;
+			bool			selected = false;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
 		};
 
 		//.____ Creation __________________________________________
 
 		static ToggleButton_p	create() { return ToggleButton_p(new ToggleButton()); }
+		static ToggleButton_p	create(const Blueprint& blueprint) { return ToggleButton_p(new ToggleButton(blueprint)); }
 
 		//.____ Components ____________________________________
 
-		CTextDisplay		text;
+		CTextDisplay		label;
 		CIconDisplay		icon;
 
 		//.____ Identification __________________________________________
@@ -108,6 +133,7 @@ namespace wg
 
 	protected:
 		ToggleButton();
+		ToggleButton(const Blueprint& bp);
 		virtual ~ToggleButton();
 
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;

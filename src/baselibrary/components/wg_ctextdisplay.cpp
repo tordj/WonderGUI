@@ -34,4 +34,17 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ initFromBlueprint() ________________________________________________
+
+	void CTextDisplay::_initFromBlueprint(const Blueprint& bp)
+	{
+		if (bp.style)
+			setStyle(bp.style);
+
+		if (bp.layout)
+			setLayout(bp.layout);
+
+		if (!bp.text.isEmpty())
+			_setText(bp.text);
+	}
 }

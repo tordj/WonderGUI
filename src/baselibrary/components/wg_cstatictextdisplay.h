@@ -48,6 +48,14 @@ namespace wg
 	{
 	public:
 
+		//.____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			TextLayout_p	layout;
+			TextStyle_p		style;
+		};
+
 		CStaticTextDisplay(Widget * pWidget );
 
 
@@ -68,6 +76,11 @@ namespace wg
 		inline CStaticTextDisplay_p		ptr() { return CStaticTextDisplay_p(this); }
 
 		TextLink_p			markedLink() const;
+
+		//.____ Internal ______________________________________________________
+
+		void				_initFromBlueprint(const Blueprint& blueprint);
+
 
 	protected:
 

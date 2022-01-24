@@ -51,9 +51,38 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Axis			axis = Axis::X;
+			Object_p		baggage;
+			pts				contentLength = 0;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			pts				pageOverlap = 8;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = 64;
+			CScrollbar::Blueprint	scrollbar;
+			bool			selectable = true;
+			pts				singleStepMovement = 8;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+			pts				viewLength = 0;
+			pts				viewPos = 0;
+			pts				wheelRollMovement = 8 * 3;
+		};
+
 		//.____ Creation __________________________________________
 
 		static Scrollbar_p	create() { return Scrollbar_p(new Scrollbar()); }
+		static Scrollbar_p	create(const Blueprint& blueprint) { return Scrollbar_p(new Scrollbar(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -83,6 +112,7 @@ namespace wg
 
 	protected:
 		Scrollbar();
+		Scrollbar(const Blueprint& bp);
 		virtual	~Scrollbar();
 
 		virtual SizeSPX	_preferredSize(int scale = -1) const override;

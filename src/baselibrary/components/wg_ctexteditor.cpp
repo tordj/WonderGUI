@@ -49,9 +49,6 @@ namespace wg
 
 	CTextEditor::CTextEditor(Widget * pWidget ) : CTextDisplay(pWidget)
 	{
-		m_editMode = TextEditMode::Editable;
-		m_maxLines = 0;
-		m_maxChars = 0;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -88,6 +85,25 @@ namespace wg
 
 		return true;
 	}
+
+	//____ _initFromBlueprint() _______________________________________________
+
+	void CTextEditor::_initFromBlueprint(const Blueprint& bp)
+	{
+		if (bp.style)
+			setStyle(bp.style);
+
+		if (bp.layout)
+			setLayout(bp.layout);
+
+		if (!bp.text.isEmpty())
+			_setText(bp.text);
+
+		m_editMode = bp.editMode;
+		m_maxChars = bp.maxChars;
+		m_maxLines = bp.maxLines;
+	}
+
 
 
 	//____ _receive() ___________________________________________________________

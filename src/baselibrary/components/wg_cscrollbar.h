@@ -56,6 +56,18 @@ namespace wg
 		virtual ~CScrollbar();
 
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Skin_p	background;
+			Skin_p	backwardButton;
+			Skin_p	bar;
+			Skin_p	forwardButton;
+			bool	jumpToPress = false;
+		};
+
+
 		//.____ Identification _________________________________________________
 
 		const TypeInfo& typeInfo(void) const override;
@@ -81,6 +93,8 @@ namespace wg
 		inline bool				inWorkingOrder() const { return m_skins[Part::Bar] != nullptr || m_skins[Part::Prev] != nullptr || m_skins[Part::Next] != nullptr; }
 
 		//.____ Internal ______________________________________________
+
+		void		_initFromBlueprint(const Blueprint& bp);
 
 		SizeSPX		_preferredSize(int scale) const;
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale);

@@ -48,6 +48,15 @@ namespace wg
 	{
 	public:
 
+		//.____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			TextLayout_p	layout;
+			TextStyle_p		style;
+			String			text;
+		};
+
 		CTextDisplay(Widget * pWidget) : CStaticTextDisplay(pWidget) {}
 
 
@@ -79,7 +88,11 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline CTextDisplay_p		ptr() { return CTextDisplay_p(this); }
+		inline CTextDisplay_p	ptr() { return CTextDisplay_p(this); }
+
+		//.____ Internal ______________________________________________________
+
+		void				_initFromBlueprint(const Blueprint& blueprint);
 
 	};
 

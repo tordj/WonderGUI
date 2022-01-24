@@ -42,6 +42,19 @@ namespace wg
 	{
 	public:
 
+		//.____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			TextEditMode	editMode = TextEditMode::Editable;
+			TextLayout_p	layout;
+			int				maxChars = 0;
+			int				maxLines = 0;
+			TextStyle_p		style;
+			String			text;
+
+		};
+
 		CTextEditor(Widget * pWidget );
 
 
@@ -98,6 +111,9 @@ namespace wg
 
 		inline CTextEditor_p		ptr() { return CTextEditor_p(this); }
 
+		//.____ Internal ______________________________________________________
+
+		void			_initFromBlueprint(const Blueprint& blueprint);
 
 	protected:
 		void			_receive( Msg * pMsg ) override;
@@ -167,10 +183,11 @@ namespace wg
 
 		void			_caretToEnd();
 
-		TextEditMode	m_editMode;
+
+		TextEditMode	m_editMode = TextEditMode::Editable;
 		EditState		m_editState;
-		int				m_maxLines;
-		int				m_maxChars;
+		int				m_maxLines = 0;
+		int				m_maxChars = 0;
 	};
 
 } // namespace wg
