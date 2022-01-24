@@ -56,6 +56,25 @@ namespace wg
 	typedef	WeakPtr<Msg>			Msg_wp;
 
 
+/*	Common blueprint content for all Widgets.
+
+	Object_p		baggage;
+	bool			dropTarget = false;
+	bool			enabled = true;
+	Finalizer_p		finalizer;
+	int				id = 0;
+	MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+	bool			pickable = false;
+	int				pickCategory = 0;
+	PointerStyle	pointer = PointerStyle::Default;
+	int				scale = 64;
+	bool			selectable = true;
+	Skin_p			skin;
+	bool			tabLock = false;
+	String			tooltip;
+*/
+
+
 	/**
 	 * @brief Base class for widgets.
 	 *
@@ -221,6 +240,39 @@ namespace wg
 		Widget();
 		virtual ~Widget();
 
+		template<class BP>
+		void				_initFromBlueprint( const BP& bp) 
+		{
+			m_pBaggage		= bp.baggage;
+			m_bDropTarget	= bp.dropTarget;
+			m_id			= bp.id;
+			m_markPolicy	= bp.markPolicy;
+			m_bPickable		= bp.pickable;
+			m_pickCategory	= bp.pickCategory;
+			m_pointerStyle	= bp.pointer;
+			m_bSelectable	= bp.selectable;
+			m_bTabLock		= bp.tabLock;
+			m_tooltip		= bp.tooltip;
+			
+			if( bp.finalizer )
+				setFinalizer(bp.finalizer);
+
+			if (bp.scale > 0)
+			{
+				m_scale = bp.scale;
+				m_bScaleSet = true;
+			}
+
+			if (bp.skin)
+			{
+				m_skin.set(bp.skin);
+				m_bOpaque = bp.skin->isOpaque(m_state);
+			}
+
+			if( bp.enabled )
+				setEnabled(bp.enabled);
+		};
+
 		void				_setSlot(StaticSlot * pSlot);
 		SlotHolder *		_holder() { return m_pHolder; }
 		const SlotHolder *	_holder() const { return m_pHolder; }
@@ -286,13 +338,13 @@ namespace wg
 		void			_skinRequestRender(const SkinSlot* pSlot) override;
 		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
-		int				m_id;
+		int				m_id = 0;
 		Object_p		m_pBaggage;
 
 		SkinSlot		m_skin;
 
-		SlotHolder *	m_pHolder;
-		StaticSlot *	m_pSlot;
+		SlotHolder *	m_pHolder = nullptr;
+		StaticSlot *	m_pSlot = nullptr;
 
 		PointerStyle	m_pointerStyle = PointerStyle::Default;
 

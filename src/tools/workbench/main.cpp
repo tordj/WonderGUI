@@ -2127,9 +2127,9 @@ bool pieKnobTest(CStandardSlot_p pSlot)
 		});
 
 
-	auto pKnob1 = Knob::create();
-	pKnob1->setSkin( pBgSkin1 );
-	pKnob1->setValue(0.5f);
+	auto pKnob1 = Knob::create( { .skin = pBgSkin1, .value = 0.5f } );
+//	pKnob1->setSkin( pBgSkin1 );
+//	pKnob1->setValue(0.5f);
 
 	auto pKnob2 = Knob::create();
 	pKnob2->setSkin( pBgSkin2 );

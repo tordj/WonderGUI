@@ -46,9 +46,34 @@ namespace wg
 	{
 	public:
 
+		struct Blueprint
+		{
+			Object_p		baggage;
+			Axis			dragAxis = Axis::Y;
+			pts				dragRange = 200;
+			bool			dropTarget	= false;
+			bool			enabled		= true;
+			Finalizer_p		finalizer;
+			int				id			= 0;
+			MarkPolicy		markPolicy	= MarkPolicy::AlphaTest;
+			bool			pickable	= false;
+			int				pickCategory= 0;
+			PointerStyle	pointer		= PointerStyle::Default;
+			int				scale		= 0;
+			int				steps = 0;
+			bool			selectable	= true;
+			Skin_p			skin;
+			bool			tabLock		= false;
+			String			tooltip;
+			float			value = 0.f;
+			float			wheelStepSize = 0.01f;
+		};
+
+
 		//.____ Creation __________________________________________
 
 		static Knob_p	create() { return Knob_p(new Knob()); }
+		static Knob_p	create( const Blueprint& blueprint ) { return Knob_p(new Knob(blueprint)); }
 
 		//.____ Identification __________________________________________
 
@@ -78,6 +103,7 @@ namespace wg
 
 	protected:
 		Knob();
+		Knob(const Blueprint& bp);
 		virtual ~Knob();
 
 		void		_receive(Msg* pMsg) override;

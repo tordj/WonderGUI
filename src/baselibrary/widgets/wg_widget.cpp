@@ -34,7 +34,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	Widget::Widget(): m_skin(this), m_id(0), m_pHolder(0), m_pSlot(0)
+	Widget::Widget(): m_skin(this)
 	{
 	}
 

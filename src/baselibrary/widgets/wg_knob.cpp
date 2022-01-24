@@ -38,6 +38,18 @@ namespace wg
 	{
 	}
 
+	Knob::Knob(const Blueprint& bp)
+	{
+		_initFromBlueprint(bp);
+
+		m_nbSteps = bp.steps;
+		m_dragAxis = bp.dragAxis;
+		m_dragRange = bp.dragRange;
+		m_value		= bp.value;
+		m_wheelStepSize = bp.wheelStepSize;
+	}
+
+
 	//____ Destructor _____________________________________________________________
 
 	Knob::~Knob()
