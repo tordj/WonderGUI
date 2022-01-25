@@ -36,6 +36,31 @@ namespace wg
 	{
 	}
 
+	SurfaceDisplay::SurfaceDisplay(const Blueprint& bp)
+	{
+		_initFromBlueprint(bp);
+
+		m_placement = bp.surfacePlacement;
+		m_offset = bp.surfaceOffset;
+
+		if (bp.zoomToFit)
+		{
+			m_bZoomToFit = true;
+		}
+		else 
+		{
+			m_bZoomToFit = false;
+			m_zoom = bp.zoom;
+
+			m_minZoom = bp.minUserZoom;
+			m_maxZoom = bp.maxUserZoom;
+		}
+
+		if (bp.surface)
+			setSurface(bp.surface);
+	}
+
+
 	//____ Destructor _____________________________________________________________
 
 	SurfaceDisplay::~SurfaceDisplay()
@@ -61,6 +86,7 @@ namespace wg
 
 		m_pSurface = pSurface;
 
+		_adjustZoom();
 		_adjustOffset();
 
 		if (pSurface)

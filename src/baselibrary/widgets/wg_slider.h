@@ -45,10 +45,36 @@ namespace wg
 	class Slider : public Widget
 	{
 	public:
+		
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Axis			axis = Axis::X;
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			Skin_p			handle;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			pts				preferredSlideLength = 64;
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			int				steps = 0;
+			bool			tabLock = false;
+			String			tooltip;
+			float			value = 0.f;
+		};
 
 		//.____ Creation __________________________________________
 
 		static Slider_p	create() { return Slider_p(new Slider()); }
+		static Slider_p	create(const Blueprint& bp ) { return Slider_p(new Slider(bp)); }
 
 		//.____ Identification __________________________________________
 
@@ -86,6 +112,7 @@ namespace wg
 
 	protected:
 		Slider();
+		Slider(const Blueprint& bp);
 		virtual ~Slider();
 		void 			_receive(Msg* pMsg) override;
 
@@ -112,7 +139,7 @@ namespace wg
 	private:
 		SkinSlot	m_handleSkin;
 		SizeSPX		m_preferredSize;
-		pts			m_preferredSlideLength;
+		pts			m_preferredSlideLength = 64;
 		float		m_value = 0.f;
 		float		m_valueAtPress = 0.f;
 		int			m_nbSteps = 0;

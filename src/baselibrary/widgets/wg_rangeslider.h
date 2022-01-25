@@ -46,9 +46,37 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Axis			axis = Axis::X;
+			Object_p		baggage;
+			Skin_p			beginHandle;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Skin_p			endHandle;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			pts				preferredSlideLength = 64;
+			float			rangeBegin = 0.f;
+			float			rangeEnd = 1.f;
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			int				steps = 0;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
 		//.____ Creation __________________________________________
 
 		static RangeSlider_p	create() { return RangeSlider_p(new RangeSlider()); }
+		static RangeSlider_p	create(const Blueprint& bp) { return RangeSlider_p(new RangeSlider(bp)); }
 
 		//.____ Identification __________________________________________
 
@@ -89,6 +117,7 @@ namespace wg
 
 	protected:
 		RangeSlider();
+		RangeSlider(const Blueprint& bp);
 		virtual ~RangeSlider();
 
 		void 		_receive(Msg* pMsg) override;
@@ -117,7 +146,7 @@ namespace wg
 		SkinSlot	m_endHandleSkin;
 
 		SizeSPX		m_preferredSize;
-		pts			m_preferredSlideLength;
+		pts			m_preferredSlideLength = 64;
 		float		m_rangeBegin = 0.f;
 		float		m_rangeEnd = 1.f;
 		float		m_minRange = 0.f;

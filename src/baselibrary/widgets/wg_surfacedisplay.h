@@ -65,9 +65,37 @@ namespace wg
 
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			float			maxUserZoom = 1.f;
+			float			minUserZoom = 1.f;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			Surface_p		surface;
+			Coord			surfaceOffset;
+			Placement		surfacePlacement = Placement::Center;
+			bool			tabLock = false;
+			String			tooltip;
+			float			zoom = 1.f;
+			bool			zoomToFit = false;
+		};
+
 		//.____ Creation ______________________________________________________
 
 		static SurfaceDisplay_p	create() { return SurfaceDisplay_p(new SurfaceDisplay()); }
+		static SurfaceDisplay_p	create(const Blueprint& blueprint ) { return SurfaceDisplay_p(new SurfaceDisplay(blueprint)); }
 
 		//.____ Identification ________________________________________________
 
@@ -106,6 +134,7 @@ namespace wg
 
 	protected:
 		SurfaceDisplay();
+		SurfaceDisplay(const Blueprint& bp);
 		virtual ~SurfaceDisplay();
 
 		void			_surfaceModified(int nRects, const RectSPX* pRects);

@@ -38,6 +38,21 @@ namespace wg
 	{
 	}
 
+	Slider::Slider(const Blueprint& bp) : m_handleSkin(this)
+	{
+		_initFromBlueprint(bp);
+
+		m_axis = bp.axis;
+		m_handleSkin.set(bp.handle);
+
+		m_preferredSlideLength = bp.preferredSlideLength;
+		m_nbSteps = bp.steps;
+
+		_updatePreferredSize();
+		_setValue(bp.value);
+	}
+
+
 	//____ Destructor _____________________________________________________________
 
 	Slider::~Slider()
