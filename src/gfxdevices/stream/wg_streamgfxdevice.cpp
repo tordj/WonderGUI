@@ -697,8 +697,8 @@ namespace wg
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawSegments, size };
         (*m_pEncoder) << dest;
-        (*m_pEncoder) << nSegments;
-        (*m_pEncoder) << nEdgeStrips;
+        (*m_pEncoder) << (uint16_t) nSegments;
+        (*m_pEncoder) << (uint16_t) nEdgeStrips;
         (*m_pEncoder) << tintMode;
 
         (*m_pEncoder) << GfxStream::DataChunk{ nColors*8, pSegmentColors };

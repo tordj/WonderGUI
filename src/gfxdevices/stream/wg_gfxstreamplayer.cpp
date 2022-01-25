@@ -45,12 +45,17 @@ namespace wg
 		m_pSurfaceFactory = pFactory;
 
 		m_pDecoder = GfxStreamDecoder::create();
+
+		m_clipListBuffer.pRects = new RectI[c_clipListBufferSize];
+		m_clipListBuffer.nRects = 0;
+		m_clipListBuffer.capacity = c_clipListBufferSize;
 	}
 
 	//____ Destructor _________________________________________________________
 
 	GfxStreamPlayer::~GfxStreamPlayer()
 	{
+		delete[] m_clipListBuffer.pRects;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -101,6 +106,7 @@ namespace wg
             break;
 
         case GfxChunkId::EndRender:
+			assert(m_clipListBufferStack.empty() && m_clipListSizes.empty() && m_clipListBuffer.nRects == 0);
             m_pDevice->endRender();
             break;
                 
@@ -118,32 +124,28 @@ namespace wg
 			*m_pDecoder >> surfaceId;
 			*m_pDecoder >> nUpdateRects;
 
-			RectI * pRects = (RectI*)Base::memStackAlloc(nUpdateRects*16);
-			
-			*m_pDecoder >> GfxStream::DataChunk{ nUpdateRects*16, pRects };
+			auto pRects = _pushClipList(nUpdateRects);
 
 			if( surfaceId > 0 )
 				m_pDevice->beginCanvasUpdate(m_vSurfaces[surfaceId], nUpdateRects, pRects );
 			else
 				m_pDevice->beginCanvasUpdate(canvasRef, nUpdateRects, pRects );
-
-			Base::memStackRelease(nUpdateRects*16);
 			break;
 		}
 				
 		case GfxChunkId::EndCanvasUpdate:
+
 			m_pDevice->endCanvasUpdate();
+			_popClipList();
 			break;
 
 		case GfxChunkId::SetClipList:
 		{
 			int nRects = header.size / 16;
-			RectI * pRects = (RectI*) Base::memStackAlloc(header.size);
-			
-			*m_pDecoder >> GfxStream::DataChunk{ header.size, pRects };
+
+			auto pRects = _setClipList(nRects);
 
 			m_pDevice->setClipList(nRects, pRects);
-			Base::memStackRelease(header.size);
 			break;
 		}
 
@@ -154,16 +156,14 @@ namespace wg
 		case GfxChunkId::PushClipList:
 		{
 			int nRects = header.size / 16;
-			RectI * pRects = (RectI*) Base::memStackAlloc(header.size);
-			
-			*m_pDecoder >> GfxStream::DataChunk{ header.size, pRects };
 
+			auto pRects = _pushClipList(nRects);
 			m_pDevice->pushClipList(nRects, pRects);
-			Base::memStackRelease(header.size);
 			break;
 		}
 			
 		case GfxChunkId::PopClipList:
+			_popClipList();
 			m_pDevice->popClipList();
 			break;
 
@@ -884,6 +884,124 @@ namespace wg
 
 		return true;
 	}
+
+	//____ _pushClipList() ____________________________________________________
+
+	RectI * GfxStreamPlayer::_pushClipList(int nRects)
+	{
+		m_clipListSizes.push_back(m_currentClipListSize);
+		m_currentClipListSize = 0;			// Prevent overwriting of pushed clip list by _setClipList().
+		return _setClipList(nRects);
+	}
+
+	//____ _setClipList() _____________________________________________________
+
+	RectI * GfxStreamPlayer::_setClipList(int nRects)
+	{
+		assert(nRects <= c_clipListBufferSize);
+
+		// We overwrite previous clipList
+
+		m_clipListBuffer.nRects -= m_currentClipListSize;
+
+		// Puts values in clipList-buffer 
+
+		if (m_clipListBuffer.capacity < m_clipListBuffer.nRects + nRects)
+		{
+			m_clipListBufferStack.push_back(m_clipListBuffer);
+			
+			m_clipListBuffer.pRects = new RectI[c_clipListBufferSize];
+			m_clipListBuffer.nRects = 0;
+			m_clipListBuffer.capacity = c_clipListBufferSize;
+		}
+
+		auto pRects = m_clipListBuffer.pRects + m_clipListBuffer.nRects;
+
+		*m_pDecoder >> GfxStream::DataChunk{ nRects * 16, pRects };
+
+		m_clipListBuffer.nRects += nRects;
+		m_currentClipListSize = nRects;
+		return pRects;
+	}
+
+	//____ _popClipList() _____________________________________________________
+
+	void GfxStreamPlayer::_popClipList()
+	{
+		assert(m_clipListBuffer.nRects >= m_currentClipListSize);
+
+		if (m_clipListBuffer.nRects == m_currentClipListSize && !m_clipListBufferStack.empty() )
+		{
+			delete[] m_clipListBuffer.pRects;
+			m_clipListBuffer = m_clipListBufferStack.back();
+			m_clipListBufferStack.pop_back();
+		}
+		else
+		{
+			m_clipListBuffer.nRects -= m_currentClipListSize;
+		}
+
+		m_currentClipListSize = m_clipListSizes.back();
+		m_clipListSizes.pop_back();
+	}
+
+/*
+	//____ _pushClipRects() _____________________________________________________
+
+	void GfxStreamPlayer::_pushClipRects(int nRects, const RectI* pRects)
+	{
+
+
+		m_clipRectsBuffer.erase(m_clipRectsBuffer.begin() + m_activeClipList.offset, m_clipRectsBuffer.end());
+
+		for (int i = 0; i < nRects; i++)
+			m_clipRectsBuffer.push_back(pRects[i]);
+
+		m_activeClipList.size = nRects;
+
+		if (bounds.w < 0)
+		{
+			m_activeClipList.bounds = *pRects;
+			for (int i = 1; i < nRects; i++)
+				m_activeClipList.bounds.growToContain(pRects[i]);
+		}
+		else
+			m_activeClipList.bounds = bounds;
+	}
+
+	//____ _pushClipList() ____________________________________________________
+
+	void GfxStreamPlayer::_pushClipList(int nRects, const RectI* pRects, const RectI& bounds)
+	{
+		for (int i = 0; i < nRects; i++)
+			m_clipRectsBuffer.push_back(pRects[i]);
+
+		m_clipListStack.push_back(m_activeClipList);
+
+		m_activeClipList.offset += m_activeClipList.size;
+		m_activeClipList.size = nRects;
+
+		if (bounds.w < 0)
+		{
+			m_activeClipList.bounds = *pRects;
+			for (int i = 1; i < nRects; i++)
+				m_activeClipList.bounds.growToContain(pRects[i]);
+		}
+		else
+			m_activeClipList.bounds = bounds;
+	}
+
+	//____ _popClipList() _____________________________________________________
+
+	void GfxStreamPlayer::_popClipList()
+	{
+		m_clipRectsBuffer.erase(m_clipRectsBuffer.begin() + m_activeClipList.offset, m_clipRectsBuffer.end());
+
+		m_activeClipList = m_clipListStack.back();
+		m_clipListStack.pop_back();
+	}
+*/
+
 
 
 } //namespace wg
