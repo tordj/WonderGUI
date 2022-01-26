@@ -709,21 +709,39 @@ WgSize WgFlexHook::_sizeNeededForGeo()
 		int belowAnchor = offset.y + geo.h;
 
 		if( leftOfAnchor > 0 )
-			sz.w = (int) (leftOfAnchor / pa->RelativeX());
+        {
+            if( pa->RelativeX() == 0.f )
+                sz.w = 0;
+            else
+                sz.w = (int) (leftOfAnchor / pa->RelativeX());
+        }
 
 		if( rightOfAnchor > 0 )
 		{
-			int w = (int) (rightOfAnchor / (1.f - pa->RelativeX()) );
+            int w;
+            if( pa->RelativeX() == 1.f )
+                w = 0;
+            else
+                w = (int) (rightOfAnchor / (1.f - pa->RelativeX()) );
 			if( sz.w < w )
 				sz.w = w;
 		}
 
-		if( aboveAnchor > 0 )
-			sz.h = (int) (aboveAnchor / pa->RelativeY());
-
-		if( belowAnchor > 0 )
+		if( aboveAnchor > 0 && pa->RelativeY() > 0.f )
+        {
+            if( pa->RelativeY() == 0.f )
+                sz.h = 0;
+            else
+                sz.h = (int) (aboveAnchor / pa->RelativeY());
+        }
+            
+		if( belowAnchor > 0 && pa->RelativeY() < 1.f )
 		{
-			int h = (int) (belowAnchor / (1.f - pa->RelativeY()) );
+            int h;
+            if( pa->RelativeY() == 1.f )
+                h = 0;
+            else
+                h = (int) (belowAnchor / (1.f - pa->RelativeY()) );
 			if( sz.h < h )
 				sz.h = h;
 		}

@@ -314,9 +314,7 @@ MetalGfxDevice::MetalGfxDevice()
 
 	const TypeInfo& MetalGfxDevice::surfaceType( void ) const
 	{
-        //TODO: RETURN SURFACES TYPEINFO INSTEAD OF OURS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        
-		return MetalGfxDevice::TYPEINFO;
+		return MetalSurface::TYPEINFO;
 	}
 
 	//____ surfaceFactory() _______________________________________________________

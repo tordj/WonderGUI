@@ -36,7 +36,6 @@
 #include <wg3_streamsurfacefactory.h>
 #include <wg3_streamgfxdevice.h>
 #include <wg3_gfxstreamplayer.h>
-#include <wg3_gfxstreamplug.h>
 
 #include <wg3_softsurface.h>
 #include <wg3_softsurfacefactory.h>
@@ -87,11 +86,12 @@ bool gfxStreamingTest(WgRootPanel* pRoot);
 
 
 //#define USE_OPEN_GL
-
-wg::GfxStreamPlug_p         g_pGfxStreamPlug;
+/*
+ wg::GfxStreamPlug_p         g_pGfxStreamPlug;
 wg::GfxStreamPlayer_p       g_pGfxStreamPlayer;
 wg::StreamGfxDevice_p       g_pStreamGfxDevice;
 wg::StreamSurfaceFactory_p  g_pStreamSurfaceFactory;
+ */
 wg::SoftSurfaceFactory_p    g_pSoftSurfaceFactory;
 wg::SurfaceFactory_p	    g_pSurfaceFactory;
 wg::GfxDevice_p		        g_pGfxDevice;
@@ -244,8 +244,11 @@ int main ( int argc, char** argv )
     g_pCanvas = pCanvas;
     
     g_pSoftSurfaceFactory = wg::SoftSurfaceFactory::create();
+	g_pSurfaceFactory = g_pSoftSurfaceFactory;
+
 #endif
 
+/*
     g_pGfxStreamPlug = wg::GfxStreamPlug::create();
     g_pStreamSurfaceFactory = wg::StreamSurfaceFactory::create(g_pGfxStreamPlug->input);
     g_pSurfaceFactory = g_pStreamSurfaceFactory;
@@ -256,10 +259,10 @@ int main ( int argc, char** argv )
     g_pStreamGfxDevice->defineCanvas(wg::CanvasRef::Default, g_pCanvas->size() );
     
     g_pGfxStreamPlug->openOutput(0);
-    
+*/
     auto pContext = wg::Context::create();
     pContext->setScale(1.00f);
-    pContext->setGfxDevice(g_pStreamGfxDevice);
+    pContext->setGfxDevice(g_pGfxDevice);
     pContext->setSurfaceFactory(g_pSurfaceFactory);
     wg::Base::setActiveContext(pContext);
 
@@ -320,7 +323,7 @@ int main ( int argc, char** argv )
     wg::Base::setDefaultStyle( pTextStyle );
 
 
-	WgRootPanel * pRoot = setupGUI( g_pStreamGfxDevice );
+	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
 
 
 //    packPanelPaddingTest( pRoot );
@@ -369,8 +372,8 @@ int main ( int argc, char** argv )
 		SDL_UnlockSurface( pScreen );
 
         
-        if( g_pGfxStreamPlayer )
-            g_pGfxStreamPlayer->playAll();
+//        if( g_pGfxStreamPlayer )
+//            g_pGfxStreamPlayer->playAll();
         
         // DRAWING ENDS HERE
 

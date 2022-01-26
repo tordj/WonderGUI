@@ -2129,7 +2129,7 @@ namespace wg
 
 			// Check brush's coverage from following points
 
-			end = min(nPoints - i, brushSteps + 1);
+			end = min(nTracePoints - i, brushSteps + 1);
 
 			for (int j = 1; j < end; j++)
 			{

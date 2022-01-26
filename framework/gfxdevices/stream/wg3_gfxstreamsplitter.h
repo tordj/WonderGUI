@@ -20,31 +20,28 @@
 
 =========================================================================*/
 
-#ifndef	WG3_GFXSTREAMLOGGER_DOT_H
-#define	WG3_GFXSTREAMLOGGER_DOT_H
+#ifndef	WG3_GFXSTREAMSPLITTER_DOT_H
+#define	WG3_GFXSTREAMSPLITTER_DOT_H
 #pragma once
 
-#include <iostream>
-
-#include <wg3_object.h>
 #include <wg3_cgfxoutstream.h>
-#include <wg3_gfxstream.h>
-#include <wg3_gfxstreamdecoder.h>
+
+#include <vector>
 
 namespace wg
 {
 
-	class GfxStreamLogger;
-	typedef	StrongPtr<GfxStreamLogger>	GfxStreamLogger_p;
-	typedef	WeakPtr<GfxStreamLogger>	GfxStreamLogger_wp;
+	class GfxStreamSplitter;
+	typedef	StrongPtr<GfxStreamSplitter>	GfxStreamSplitter_p;
+	typedef	WeakPtr<GfxStreamSplitter>	GfxStreamSplitter_wp;
 
-	class GfxStreamLogger : public Object, protected CGfxOutStream::Holder
+	class GfxStreamSplitter : public Object, protected CGfxOutStream::Holder
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamLogger_p	create( std::ostream& out );
+		static GfxStreamSplitter_p	create( const std::initializer_list<CGfxOutStream_p>& outputs );
 
 		//.____ Components _______________________________________
 
@@ -56,29 +53,18 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 	protected:
-		GfxStreamLogger( std::ostream& out );
-		~GfxStreamLogger();
 
-		Object* _object() override;
-		const Object* _object() const override;
+		GfxStreamSplitter(const std::initializer_list<CGfxOutStream_p>& outputs);
+		~GfxStreamSplitter();
 
 		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
 
-		bool	_logChunk();
+		Object *	_object() override;
+		const Object *	_object() const override;
 
-		int		_readPrintPatches();
-		
-		void	_readPrintRects( const char * header, int amount );
-		void	_printRect( const char * header, const RectI& rect );
-		void	_printRect( const char * header, const RectF& rect );
-		void	_printColor( const char * header, HiColor color );
-		void	_printBorder( const char * header, const BorderI& border );
-
-		std::ostream&	m_charStream;
-
-		GfxStreamDecoder_p m_pDecoder;
+		std::vector<CGfxOutStream_p> m_pOutputs;
 	};
 
-}
 
-#endif // WG3_GFXSTREAMLOGGER_DOT_H
+} // namespace wg
+#endif //WG3_GFXSTREAMSPLITTER_DOT_H

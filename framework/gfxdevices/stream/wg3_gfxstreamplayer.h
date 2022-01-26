@@ -25,7 +25,9 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 #pragma once
 
 #include <wg3_object.h>
-#include <wg3_cgfxinstream.h>
+#include <wg3_gfxstream.h>
+#include <wg3_cgfxoutstream.h>
+#include <wg3_gfxstreamdecoder.h>
 #include <wg3_gfxdevice.h>
 
 #include <vector>
@@ -37,33 +39,39 @@ namespace wg
 	typedef	StrongPtr<GfxStreamPlayer>	GfxStreamPlayer_p;
 	typedef	WeakPtr<GfxStreamPlayer>	GfxStreamPlayer_wp;
 
-	class GfxStreamPlayer : public Object
+	class GfxStreamPlayer : public Object, protected CGfxOutStream::Holder
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamPlayer_p	create(CGfxInStream& In, GfxDevice * pDevice, SurfaceFactory * pFactory);
+		static GfxStreamPlayer_p	create(GfxDevice * pDevice, SurfaceFactory * pFactory);
+
+		//.____ Components _______________________________________
+
+		CGfxOutStream		input;
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Control _______________________________________________________
-
-		bool		isEmpty() const;
-		GfxStream::Header	peekChunk() const;
-
-		void		playAll();
-		bool		playChunk();
-		bool		playFrame();
-
 	protected:
-		GfxStreamPlayer(CGfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory);
+		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();
 
-		CGfxInStream_p		m_pStream;
+		Object* _object() override;
+		const Object* _object() const override;
+
+		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
+
+		bool	_playChunk();
+
+		RectI *	_pushClipList(int nRects);
+		RectI *	_setClipList(int nRects);
+		void	_popClipList();
+
+		GfxStreamDecoder_p	m_pDecoder;
 		GfxDevice_p			m_pDevice;
 		SurfaceFactory_p	m_pSurfaceFactory;
 
@@ -110,7 +118,22 @@ namespace wg
 		char *	m_pTempBuffer = nullptr;
 		int		m_bytesLoaded;
 		int		m_bufferSize;
-		
+
+		struct ClipRectsBuffer
+		{
+			RectI*	pRects;
+			int		nRects;
+			int		capacity;
+		};
+
+		constexpr static int c_clipListBufferSize = 512;
+
+		std::vector<int>	m_clipListSizes;		// Number of rects for each clipList pushed.
+
+		ClipRectsBuffer		m_clipListBuffer = { nullptr, 0, 0 };
+		int					m_currentClipListSize = 0;
+
+		std::vector<ClipRectsBuffer>	m_clipListBufferStack;
 	};
 
 }

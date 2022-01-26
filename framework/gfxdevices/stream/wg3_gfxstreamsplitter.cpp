@@ -22,58 +22,58 @@
 
 #include <cstring>
 
-#include <wg3_gfxstreamwriter.h>
+#include <wg3_gfxstreamsplitter.h>
 #include <assert.h>
 
 namespace wg
 {
 
-	const TypeInfo GfxStreamWriter::TYPEINFO = { "GfxStreamWriter", &Object::TYPEINFO };
+	const TypeInfo GfxStreamSplitter::TYPEINFO = { "GfxStreamSplitter", &Object::TYPEINFO };
 
 
 	//____ create() ___________________________________________________________
 
-	GfxStreamWriter_p GfxStreamWriter::create(std::function<void(int nBytes, const void * pData)> dispatcher )
+	GfxStreamSplitter_p GfxStreamSplitter::create(const std::initializer_list<CGfxOutStream_p>& outputs)
 	{
-		return new GfxStreamWriter(dispatcher);
+		return new GfxStreamSplitter(outputs);
 	}
 
 	//____ constructor _____________________________________________________________
 
-	GfxStreamWriter::GfxStreamWriter(std::function<void(int nBytes, const void * pData)> dispatcher) : input(this)
+	GfxStreamSplitter::GfxStreamSplitter(const std::initializer_list<CGfxOutStream_p>& outputs) : input(this)
 	{
-		m_dispatcher = dispatcher;
+		m_pOutputs = outputs;
 	}
 
 	//____ Destructor _________________________________________________________
 
-	GfxStreamWriter::~GfxStreamWriter()
+	GfxStreamSplitter::~GfxStreamSplitter()
 	{
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& GfxStreamWriter::typeInfo(void) const
+	const TypeInfo& GfxStreamSplitter::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ _processStreamChunks() _____________________________________________
 
-	void GfxStreamWriter::_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd)
+	void GfxStreamSplitter::_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd)
 	{
-		m_dispatcher(pEnd - pBegin, pBegin);
+		for (auto& pOutput : m_pOutputs)
+			pOutput->processChunks(pBegin, pEnd);
 	}
-
 
 	//____ _object() __________________________________________________________
 
-	Object * GfxStreamWriter::_object()
+	Object * GfxStreamSplitter::_object()
 	{
 		return this;
 	}
 
-	const Object * GfxStreamWriter::_object() const
+	const Object * GfxStreamSplitter::_object() const
 	{
 		return this;
 	}

@@ -20,64 +20,63 @@
 
 =========================================================================*/
 
-#ifndef	WG3_GFXSTREAMREADER_DOT_H
-#define	WG3_GFXSTREAMREADER_DOT_H
+#ifndef	WG3_GFXSTREAMBUFFER_DOT_H
+#define	WG3_GFXSTREAMBUFFER_DOT_H
 #pragma once
 
-#include <wg3_types.h>
-#include <wg3_object.h>
-#include <wg3_pointers.h>
-#include <wg3_cgfxinstream.h>
 #include <wg3_gfxstream.h>
+#include <wg3_cgfxinstream.h>
+#include <wg3_cgfxoutstream.h>
 
-#include <functional>
+#include <vector>
+#include <tuple>
 
 namespace wg
 {
 
-	class GfxStreamReader;
-	typedef	StrongPtr<GfxStreamReader>	GfxStreamReader_p;
-	typedef	WeakPtr<GfxStreamReader>	GfxStreamReader_wp;
+	class GfxStreamBuffer;
+	typedef	StrongPtr<GfxStreamBuffer>	GfxStreamBuffer_p;
+	typedef	WeakPtr<GfxStreamBuffer>	GfxStreamBuffer_wp;
 
-	class GfxStreamReader : public Object, protected CGfxInStream::Holder
+	class GfxStreamBuffer : public Object, protected CGfxOutStream::Holder, protected CGfxInStream::Holder
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamReader_p	create( std::function<int(int nBytes, void * pDest)> dataFetcher );
+		static GfxStreamBuffer_p	create( int initialCapacity = GfxStream::c_maxBlockSize * 4 );
 
 		//.____ Components _______________________________________
 
+		CGfxOutStream		input;
 		CGfxInStream		output;
 
 		//.____ Identification __________________________________________
 
-		const TypeInfo&		typeInfo(void) const override;
+		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
 	protected:
 
-		GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder );
-		~GfxStreamReader();
+		GfxStreamBuffer( int initialCapacity );
+		~GfxStreamBuffer();
 
-		Object *    _object() override { return this; }
-		const Object * _object() const override { return this; }
+		void			_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
 
-		bool _hasStreamChunks() const override;
+		bool			_hasStreamChunks() const override;
 		std::tuple<int, const DataSegment*> _showStreamChunks() override;
-		void _discardStreamChunks(int bytes) override;
-		bool _fetchStreamChunks() override;
+		void			_discardStreamChunks(int bytes) override;
+		bool			_fetchStreamChunks() override;
+
+		void			_resizeBuffer( int newSize );
 
 
-		void		_fetchData();
+		Object *		_object() override;
+		const Object *	_object() const override;
 
-		std::function<int(int nBytes, void * pDest)>	m_fetcher;
-
-		static constexpr int c_bufferStartSize = 8192;
 		static constexpr int c_bufferMargin = GfxStream::c_maxBlockSize;
 
-		char *		m_pBuffer;
+		char*		m_pBuffer;
 		int			m_bufferSize;
 		int			m_readOfs;
 		int			m_writeOfs;
@@ -87,11 +86,9 @@ namespace wg
 											// complete chunk. Overflowing data is a copy of data from beginning of buffer.
 
 		DataSegment	m_dataSegments[2];
-
+		
 	};
 
 
-
 } // namespace wg
-#endif //WG3_GFXSTREAMREADER_DOT_H
-#pragma once
+#endif //WG3_GFXSTREAMBUFFER_DOT_H
