@@ -90,13 +90,13 @@ namespace wg
 
 		if (m_pixelDescription.bits <= 8 || (flags & SurfaceFlag::Buffered))
 		{
-			m_pBlob = Blob::create(m_pitch*size.h + (pClut ? 4096 : 0) );
+			m_pBlob = Blob::create(m_pitch*size.h + (pClut ? 1024 : 0) );
 			std::memset(m_pBlob->data(), 0, m_pitch*size.h);
 
 			if (pClut)
 			{
 				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-				memcpy(m_pClut, pClut, 4096);
+				memcpy(m_pClut, pClut, 1024);
 			}
 			else
 				m_pClut = nullptr;
@@ -155,7 +155,7 @@ namespace wg
 		// We always convert the data even if we throw it away, since we need to stream the converted data.
 		// (but we could optimize and skip conversion if format already is correct)
 
-		Blob_p pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 4096 : 0) );
+		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 1024 : 0) );
 
 		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
 
@@ -164,12 +164,10 @@ namespace wg
 
 		if (m_pixelDescription.bits <= 8 || (flags & SurfaceFlag::Buffered))
 		{
-			m_pBlob = pBlob;
-
 			if (pClut)
 			{
 				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-				memcpy(m_pClut, pClut, 4096);
+				memcpy(m_pClut, pClut, 1024);
 			}
 			else
 				m_pClut = nullptr;
@@ -178,6 +176,8 @@ namespace wg
 		}
 		else
 		{
+			m_pBlob = nullptr;
+
 			if (m_pixelDescription.A_bits == 0)
 				m_pAlphaLayer = nullptr;
 			else
@@ -208,7 +208,7 @@ namespace wg
         
 		if (m_pixelDescription.bits <= 8 || (flags & SurfaceFlag::Buffered))
 		{
-			m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 4096 : 0));
+			m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0));
 
             // _copyFrom() implicitly calls _sendPixels().
 			_copyFrom(&m_pixelDescription, pixelbuffer.pPixels, pitch, RectI(size), RectI(size));
@@ -216,7 +216,7 @@ namespace wg
 			if (pOther->clut())
 			{
 				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-				memcpy(m_pClut, pOther->clut(), 4096);
+				memcpy(m_pClut, pOther->clut(), 1024);
 			}
 			else
 				m_pClut = nullptr;
@@ -449,7 +449,7 @@ namespace wg
 	{
 		uint16_t surfaceId = m_pEncoder->allocObjectId();
 
-		uint16_t blockSize = 14 + (pClut ? 4096 : 0);
+		uint16_t blockSize = 14 + (pClut ? 1024 : 0);
 
 		*m_pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, blockSize };
 		*m_pEncoder << surfaceId;
@@ -459,7 +459,7 @@ namespace wg
 
 
 		if(pClut)
-			*m_pEncoder << GfxStream::DataChunk{ 4096, pClut };
+			*m_pEncoder << GfxStream::DataChunk{ 1024, pClut };
 
 		return surfaceId;
 	}

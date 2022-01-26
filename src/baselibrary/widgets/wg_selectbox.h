@@ -99,8 +99,8 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		Size		preferredSize() const override;
-		MU			matchingHeight(MU width) const override;
+		Size			preferredSize() const override;
+		MU				matchingHeight(MU width) const override;
 
 		//.____ Appearance ________________________________________________________
 

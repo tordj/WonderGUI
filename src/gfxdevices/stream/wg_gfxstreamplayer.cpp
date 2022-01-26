@@ -645,11 +645,11 @@ namespace wg
 			m_seg.pSegmentColors = (HiColor*) m_pTempBuffer;
 			m_seg.nEdgeStrips = nEdgeStrips;
 			m_seg.pEdgeStrips = (int*) &m_pTempBuffer[sizeof(HiColor)*nColors];
-			m_seg.edgeStripPitch = nEdgeStrips;
+			m_seg.edgeStripPitch = nSegments-1;
 			m_seg.flip = flip;
 			m_seg.tintMode = tintMode;
 						
-			for (int i = 0; i < nSegments; i++)
+			for (int i = 0; i < nColors; i++)
 				*m_pDecoder >> m_seg.pSegmentColors[i];
 
 			break;
@@ -737,10 +737,10 @@ namespace wg
 
 			Color8 * pClut = nullptr;
 
-			if (header.size > 4096)
+			if (header.size > 1024)
 			{
-				pClut = (Color8*) Base::memStackAlloc(4096);
-				*m_pDecoder >> GfxStream::DataChunk{ 4096, pClut };
+				pClut = (Color8*) Base::memStackAlloc(1024);
+				*m_pDecoder >> GfxStream::DataChunk{ 1024, pClut };
 			}
 
 			if (m_vSurfaces.size() <= surfaceId)
@@ -749,7 +749,7 @@ namespace wg
 			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, format, flags & ~SurfaceFlag::Buffered, pClut);
 
 			if (pClut)
-				Base::memStackRelease(4096);
+				Base::memStackRelease(1024);
 
 			break;
 		}

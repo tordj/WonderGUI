@@ -40,6 +40,9 @@ public:
 			m_simpleWaveBottomSamples[i] = (int)((300 + sin(i / 20.0) * 6) * 256);
 		}
 
+		m_simpleWaveBottomSamples[30] = 0;
+		m_simpleWaveBottomSamples[31] = 0;
+
 		// Generate backface wave
 
 		m_backfaceWaveTopLine.color = Color::White;

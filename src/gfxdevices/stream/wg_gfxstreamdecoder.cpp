@@ -188,10 +188,10 @@ namespace wg
 
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (HiColor& color)
 	{
-		color.a = _pullShort();
-		color.r = _pullShort();
-		color.g = _pullShort();
 		color.b = _pullShort();
+		color.g = _pullShort();
+		color.r = _pullShort();
+		color.a = _pullShort();
 		return *this;
 	}
 

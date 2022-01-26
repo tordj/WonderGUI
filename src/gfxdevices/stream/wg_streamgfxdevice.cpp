@@ -659,7 +659,7 @@ namespace wg
     {
         uint16_t size = 16 + 4 + 4 + 4 + 8 + 8 + 2 + nSlices*(4+8);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawElipse, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawPieChart, size };
         (*m_pEncoder) << canvas;
         (*m_pEncoder) << start;
         (*m_pEncoder) << nSlices;
@@ -693,7 +693,7 @@ namespace wg
                 break;
         }
 
-        uint16_t size = 16 + 4 + 4 + 2 + nColors*8;
+        uint16_t size = 16 + 2 + 2 + 2 + nColors*8;
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawSegments, size };
         (*m_pEncoder) << dest;
@@ -726,12 +726,12 @@ namespace wg
                 break;
         }
 
-        uint16_t size = 16 + 4 + 4 + 2 + 2 + nColors*8;
+        uint16_t size = 16 + 2 + 2 + 2 + 2 + nColors*8;
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawSegments, size };
         (*m_pEncoder) << dest;
-        (*m_pEncoder) << nSegments;
-        (*m_pEncoder) << nEdgeStrips;
+        (*m_pEncoder) << (uint16_t) nSegments;
+        (*m_pEncoder) << (uint16_t) nEdgeStrips;
         (*m_pEncoder) << flip;
         (*m_pEncoder) << tintMode;
 

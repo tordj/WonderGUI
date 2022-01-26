@@ -259,10 +259,10 @@ namespace wg
 
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (HiColor color)
 	{
-		_pushShort(color.a);
-		_pushShort(color.r);
-		_pushShort(color.g);
 		_pushShort(color.b);
+		_pushShort(color.g);
+		_pushShort(color.r);
+		_pushShort(color.a);
 		return *this;
 	}
 
