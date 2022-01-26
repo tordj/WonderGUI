@@ -85,7 +85,7 @@ namespace wg
 	{
 		if (m_freeIdStackSize == m_freeIdStackCapacity)
 		{
-			int capacity = min(16, m_freeIdStackCapacity * 2);
+			int capacity = max(16, m_freeIdStackCapacity * 2);
 			uint16_t* pBuffer = new uint16_t[capacity];
 
 			for (int i = 0; i < m_freeIdStackSize; i++)
