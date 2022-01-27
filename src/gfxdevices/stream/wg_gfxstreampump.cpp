@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_gfxstreampump.h>
+#include <wg_patches.h>
 
 using namespace std;
 
@@ -66,6 +67,20 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ setInput() _________________________________________________________
+
+	void GfxStreamPump::setInput(CGfxInStream* pStream)
+	{
+		m_pInput = pStream;
+	}
+
+	//____ setOutput() ________________________________________________________
+
+	void GfxStreamPump::setOutput(CGfxOutStream* pStream)
+	{
+		m_pOutput = pStream;
+	}
+
 	//____ pumpChunk() ________________________________________________________
 
 	bool GfxStreamPump::pumpChunk()
@@ -93,21 +108,30 @@ namespace wg
 		return false;
 	}
 
-	//____ pumpFrame() ________________________________________________________
+	//____ pumpUntilFrame() ________________________________________________________
 
-	int frameCounter = 0;
-
-	bool GfxStreamPump::pumpFrame()
+	bool GfxStreamPump::pumpUntilFrame()
 	{
-		frameCounter++;
-		if (frameCounter == 275)
-		{
-			int dummy = 0;
-		}
-
 		if (!m_pInput || !m_pOutput)
 			return false;
 
+		return _pumpUntilChunk(GfxChunkId::BeginRender, false);
+	}
+
+	//____ pumpFrame() ________________________________________________________
+
+	bool GfxStreamPump::pumpFrame()
+	{
+		if (!m_pInput || !m_pOutput)
+			return false;
+
+		return _pumpUntilChunk(GfxChunkId::EndRender, true);
+	}
+
+	//____ _pumpUntilChunk() ___________________________________________________
+
+	bool GfxStreamPump::_pumpUntilChunk(GfxChunkId id, bool bInclusive)
+	{
 		int	nSegments;
 		const DataSegment* pSegments;
 
@@ -115,7 +139,7 @@ namespace wg
 			m_pInput->fetchChunks();
 
 		std::tie(nSegments, pSegments) = m_pInput->showChunks();
-		const uint8_t* pEndRenderPos = _findChunk(GfxChunkId::EndRender, nSegments, pSegments);
+		const uint8_t* pEndRenderPos = _findChunk(id, nSegments, pSegments);
 
 		while ( pEndRenderPos == nullptr)
 		{
@@ -123,14 +147,14 @@ namespace wg
 				return false;
 
 			std::tie(nSegments, pSegments) = m_pInput->showChunks();
-			pEndRenderPos = _findChunk(GfxChunkId::EndRender, nSegments, pSegments);
+			pEndRenderPos = _findChunk(id, nSegments, pSegments);
 		}
 
 		//
 
 		auto header = _decodeHeader(pEndRenderPos);
 
-		const uint8_t* pEnd = pEndRenderPos + header.size + 4;
+		const uint8_t* pEnd = pEndRenderPos + (bInclusive ? header.size + 4 : 0);
 
 		int	bytesProcessed = 0;
 		for (int i = 0; i < nSegments; i++)
@@ -151,6 +175,41 @@ namespace wg
 		m_pInput->discardChunks(bytesProcessed);
 		return true;
 	}
+
+	//____ pumpAllFramesWithOptimization() ____________________________________________________
+/*
+	bool GfxStreamPump::pumpAllFramesWithOptimization()
+	{
+		// Fetch all data
+
+		while (m_pInput->fetchChunks());
+
+		// Show all chunks
+
+		int	nSegments;
+		const DataSegment* pSegments;
+		std::tie(nSegments, pSegments) = m_pInput->showChunks();
+
+		// Make a list of all complete frames.
+
+		struct BeginCanvasInfo
+		{
+			const uint8_t*	pOrgChunk;
+			int				orgChunkLength;
+
+			uint8_t*		pFixedChunk;
+
+
+			Patches			dirtyRects;
+
+		};
+
+
+
+	}
+*/
+
+
 
 	//____ pumpAll() __________________________________________________________
 

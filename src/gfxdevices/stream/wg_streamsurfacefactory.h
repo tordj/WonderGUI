@@ -27,6 +27,8 @@
 #include <wg_surfacefactory.h>
 #include <wg_gfxstreamencoder.h>
 
+#include <vector>
+
 namespace wg
 {
 
@@ -54,14 +56,22 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr ) const override;
-		Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr ) const override;
-		Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr ) const override;
-		Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) const override;
+		Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr ) override;
+		Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr ) override;
+		Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr ) override;
+		Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) override;
+
+		void		setRememberSurfacesCreated(bool bRemember);
+
+		inline std::vector<Surface_p> surfacesCreated();
 
 	protected:
 		StreamSurfaceFactory( GfxStreamEncoder * pEncoder);
 
+		void	_addReference(Surface* pSurface);
+
+		bool					m_bKeepReferences = false;
+		std::vector<Surface_wp>	m_surfaceReferences;
 
 		GfxStreamEncoder_p	m_pEncoder;
 	};

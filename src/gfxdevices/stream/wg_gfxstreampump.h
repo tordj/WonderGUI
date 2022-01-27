@@ -54,10 +54,10 @@ namespace wg
 		void	setInput(CGfxInStream* pStream);
 		void	setOutput(CGfxOutStream* pStream);
 
-
-
 		bool	pumpChunk();
-		bool	pumpFrame();
+		bool	pumpUntilFrame();
+		bool	pumpFrame();	
+//		bool	pumpAllFramesWithOptimization();
 		bool	pumpAll();
 
 
@@ -72,6 +72,8 @@ namespace wg
 		}
 
 		const uint8_t* _findChunk(GfxChunkId id, int nSegments, const DataSegment * pSegments);
+
+		bool _pumpUntilChunk(GfxChunkId id, bool bInclusive);
 
 
 		CGfxInStream_p		m_pInput;

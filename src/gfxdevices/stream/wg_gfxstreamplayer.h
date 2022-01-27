@@ -29,8 +29,10 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 #include <wg_cgfxoutstream.h>
 #include <wg_gfxstreamdecoder.h>
 #include <wg_gfxdevice.h>
+#include <wg_patches.h>
 
 #include <vector>
+#include <tuple>
 
 namespace wg
 {
@@ -55,6 +57,14 @@ namespace wg
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
+
+		//.____ Misc _____________________________________________________
+
+		void	setStoreDirtyRects(bool bStore);
+		void	setMaxDirtyRects(int max);
+
+		std::tuple<int, const RectI*> dirtyRects(CanvasRef canvas);
+		void	clearDirtyRects();
 
 	protected:
 		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pFactory);
@@ -134,6 +144,10 @@ namespace wg
 		int					m_currentClipListSize = 0;
 
 		std::vector<ClipRectsBuffer>	m_clipListBufferStack;
+
+		bool				m_bStoreDirtyRects = false;
+		int					m_maxDirtyRects = 64;
+		Patches				m_dirtyRects[CanvasRef_size];
 	};
 
 }

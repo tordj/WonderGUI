@@ -52,10 +52,10 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		virtual Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = 0, const Color8 * pClut = nullptr) const override;
-		virtual Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = 0, const Color8 * pClut = nullptr) const override;
-		virtual Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = 0, const Color8 * pClut = nullptr) const override;
-		virtual Surface_p	createSurface( Surface * pOther, int flags = 0 ) const override;
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = 0, const Color8 * pClut = nullptr) override;
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = 0, const Color8 * pClut = nullptr) override;
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = 0, const Color8 * pClut = nullptr) override;
+		virtual Surface_p	createSurface( Surface * pOther, int flags = 0 ) override;
 
 	protected:
 		SoftSurfaceFactory(int flags) : m_flags(flags) {}
