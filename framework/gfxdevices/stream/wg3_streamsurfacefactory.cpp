@@ -56,24 +56,75 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut ) const
+	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut )
 	{
-		return StreamSurface::create(m_pEncoder,size,format,flags,pClut);
+		auto p = StreamSurface::create(m_pEncoder,size,format,flags,pClut);
+		_addReference( p );
+		return p;
 	}
 
-	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut ) const
+	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut )
 	{
-		return StreamSurface::create(m_pEncoder,size,format, pBlob,pitch,flags,pClut);
+		auto p = StreamSurface::create(m_pEncoder,size,format, pBlob,pitch,flags,pClut);
+		_addReference( p );
+		return p;
 	}
 
-	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut ) const
+	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut )
 	{
-		return StreamSurface::create(m_pEncoder,size,format, pPixels, pitch, pPixelDescription,flags,pClut);
+		auto p = StreamSurface::create(m_pEncoder,size,format, pPixels, pitch, pPixelDescription,flags,pClut);
+		_addReference(p);
+		return p;
 	}
 
-	Surface_p StreamSurfaceFactory::createSurface( Surface * pOther, int flags ) const
+	Surface_p StreamSurfaceFactory::createSurface( Surface * pOther, int flags )
 	{
-		return StreamSurface::create(m_pEncoder,pOther, flags );
+		auto p = StreamSurface::create(m_pEncoder,pOther, flags );
+		_addReference(p);
+		return p;
+	}
+
+	//____ setRememberSurfacesCreated() _________________________________________
+
+	void StreamSurfaceFactory::setRememberSurfacesCreated(bool bKeep )
+	{
+		m_bKeepReferences = bKeep;
+		if (!m_bKeepReferences)
+			m_surfaceReferences.clear();
+	}
+
+	//____ surfacesCreated() __________________________________________________
+
+	inline std::vector<Surface_p> StreamSurfaceFactory::surfacesCreated()
+	{
+		std::vector<Surface_p> vec;
+		vec.reserve(m_surfaceReferences.size());
+
+		for (auto& wp : m_surfaceReferences)
+		{
+			if (wp)
+				vec.push_back(wp.rawPtr());
+		}
+		return vec;
+	}
+
+	//____ _addReference() ____________________________________________________
+
+	void StreamSurfaceFactory::_addReference(Surface* pSurface)
+	{
+		if (m_bKeepReferences)
+		{
+			for (auto& p : m_surfaceReferences)
+			{
+				if (!p)
+				{
+					p = pSurface;
+					return;
+				}
+			}
+
+			m_surfaceReferences.push_back(pSurface);
+		}
 	}
 
 

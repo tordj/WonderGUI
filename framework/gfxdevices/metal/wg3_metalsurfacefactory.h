@@ -53,10 +53,10 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = 0, const Color * pClut = nullptr ) const override;
-		Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = 0, const Color * pClut = nullptr ) const override;
-		Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = 0, const Color * pClut = nullptr ) const override;
-		Surface_p	createSurface( Surface * pOther, int flags = 0 ) const override;
+		Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = 0, const Color * pClut = nullptr ) override;
+		Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = 0, const Color * pClut = nullptr ) override;
+		Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = 0, const Color * pClut = nullptr ) override;
+		Surface_p	createSurface( Surface * pOther, int flags = 0 ) override;
 
 	protected:
 		MetalSurfaceFactory(int flags) : m_flags(flags) {}

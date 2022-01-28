@@ -86,6 +86,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
+		bool		streamAsNew(GfxStreamEncoder* pEncoder);
 
 	private:
 		StreamSurface( GfxStreamEncoder * pEncoder, SizeI size, PixelFormat format, int flags, const Color8 * pClut );
@@ -95,7 +96,7 @@ namespace wg
 		~StreamSurface();
 
 		uint16_t	_sendCreateSurface(SizeI size, PixelFormat format, int flags, const Color8 * pClut);
-		void		_sendPixels(RectI rect, const uint8_t * pSource, int pitch);
+		void		_sendPixels(GfxStreamEncoder* pEncoder, RectI rect, const uint8_t * pSource, int pitch);
 		void		_sendDeleteSurface();
 		uint8_t*	_genAlphaLayer(const char * pSource, int pitch);
 

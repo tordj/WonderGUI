@@ -65,6 +65,44 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ setStoreDirtyRects() _______________________________________________
+
+	void GfxStreamPlayer::setStoreDirtyRects(bool bStore)
+	{
+		if (bStore == m_bStoreDirtyRects)
+			return;
+
+		m_bStoreDirtyRects = bStore;
+		if (!bStore)
+			clearDirtyRects();
+	}
+
+	//____ setMaxDirtyRects() ____________________________________________________
+
+	void GfxStreamPlayer::setMaxDirtyRects(int max)
+	{
+		m_maxDirtyRects = max;
+	}
+
+	//____ dirtyRects() __________________________________________________________
+
+	std::tuple<int, const RectI*> GfxStreamPlayer::dirtyRects(CanvasRef canvas)
+	{
+		const Patches& patches = m_dirtyRects[(int)canvas];
+
+		int size = patches.size();
+		const RectI* pRects = (const RectI*) patches.begin();
+		return std::tie(size, pRects);
+	}
+
+	//____ clearDirtyRects() _____________________________________________________
+
+	void GfxStreamPlayer::clearDirtyRects()
+	{
+		for (int i = 0; i < CanvasRef_size; i++)
+			m_dirtyRects[i].clear();
+	}
+
 	//____ _object() _____________________________________________________________
 
 	Object* GfxStreamPlayer::_object()
@@ -130,14 +168,54 @@ namespace wg
 				m_pDevice->beginCanvasUpdate(m_vSurfaces[surfaceId], nUpdateRects, pRects );
 			else
 				m_pDevice->beginCanvasUpdate(canvasRef, nUpdateRects, pRects );
+
 			break;
 		}
 				
 		case GfxChunkId::EndCanvasUpdate:
+		{
+
+			const CanvasInfo& canvasInfo = m_pDevice->canvas();
+
+			if (m_bStoreDirtyRects && canvasInfo.ref != CanvasRef::None )
+			{
+				m_pDevice->clearClipList();								// Returns cliplist to that of canvas.
+
+				int nDirtyRects = m_pDevice->clipListSize();
+				const RectI* pDirtyRects = m_pDevice->clipList();
+
+				Patches& patches = m_dirtyRects[(int)canvasInfo.ref];
+				if (patches.isEmpty())
+				{
+					if (nDirtyRects > m_maxDirtyRects)
+					{
+						patches.clear();
+						patches.push(m_pDevice->clipBounds());
+					}
+					else
+					{
+						for (int i = 0; i < nDirtyRects; i++)
+							patches.push(pDirtyRects[i]);
+					}
+				}
+				else
+				{
+					for (int i = 0; i < nDirtyRects; i++)
+						patches.add(pDirtyRects[i]);
+
+					if (patches.size() > m_maxDirtyRects)
+					{
+						RectI u = patches.getUnion();
+						patches.clear();
+						patches.push(u);
+					}
+				}
+			}
 
 			m_pDevice->endCanvasUpdate();
 			_popClipList();
 			break;
+		}
 
 		case GfxChunkId::SetClipList:
 		{
