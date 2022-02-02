@@ -100,7 +100,7 @@ namespace wg
 		BlendMode			m_tintMode = BlendMode::Replace;
 		BlendMode			m_renderMode = BlendMode::Blend;
 
-		Patches				m_patches;
+		PatchesSPX			m_patches;
 	};
 
 

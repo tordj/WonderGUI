@@ -204,15 +204,15 @@ namespace wg
 //		void				_setFocusedChild( Widget * pWidget );
 		Widget *			_focusedChild() const;
 
-		Patches				m_dirtyPatches;		// Dirty patches that needs to be rendered.
-		Patches				m_updatedPatches;	// Patches that were updated in last rendering session.
+		PatchesSPX			m_dirtyPatches;		// Dirty patches that needs to be rendered.
+		PatchesSPX			m_updatedPatches;	// Patches that were updated in last rendering session.
 
 		std::vector<Widget_p>   m_preRenderCalls;
 
 		bool				m_bDebugMode;
 		Skin_p				m_pDebugOverlay;
 		int					m_afterglowFrames;
-		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
+		std::deque<PatchesSPX>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 
 		GfxDevice_p			m_pGfxDevice;
 		CanvasInfo			m_canvas;			// Size of canvas in subpixels, when m_pCanvas is null.

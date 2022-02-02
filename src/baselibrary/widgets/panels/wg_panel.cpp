@@ -65,7 +65,7 @@ namespace wg
 
 	//____ _maskPatches() __________________________________________________________
 
-	void Panel::_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void Panel::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		//TODO: Should m_maskOp be moved to Container instead? Could remove many versions of _maskPatches()...

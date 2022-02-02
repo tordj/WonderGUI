@@ -139,7 +139,7 @@ namespace wg
 
 	//____ _collectPatches() _____________________________________________________
 
-	void Capsule::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
+	void Capsule::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
 		if( !m_skin.isEmpty() )
 			container.add(RectSPX(geo, clip));
@@ -149,7 +149,7 @@ namespace wg
 
 	//____ _maskPatches() ________________________________________________________
 
-	void Capsule::_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void Capsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		if (!m_skin.isEmpty())
 		{

@@ -81,7 +81,7 @@ namespace wg
 	{
 		// Clip our geometry and put it in a dirtyrect-list
 
-		Patches patches;
+		PatchesSPX patches;
 		patches.add( RectSPX( rect, RectSPX(0,0,m_size)) );
 
 		// Remove portions of dirty rect that are covered by opaque upper siblings,

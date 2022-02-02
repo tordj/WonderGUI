@@ -81,6 +81,7 @@ add_library( wondergui
 	base/wg_object.cpp
 	base/wg_object.h
 	base/wg_patches.cpp
+	base/wg_patches.impl.h
 	base/wg_patches.h
 	base/wg_pointers.h
 	base/wg_receiver.cpp

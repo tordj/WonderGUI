@@ -828,7 +828,7 @@ namespace wg
 
 	//____ _collectPatches() __________________________________________________
 
-	void ScrollPanel::_collectPatches(Patches& container, const RectSPX& geo, const RectSPX& clip)
+	void ScrollPanel::_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip)
 	{
 //		if( !skin.isEmpty() )
 			container.add(RectSPX(geo, clip));
@@ -836,7 +836,7 @@ namespace wg
 
 	//____ _maskPatches() _____________________________________________________
 
-	void ScrollPanel::_maskPatches(Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
+	void ScrollPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
 	{
 		if (!m_skin.isEmpty() && m_skin.isOpaque())
 			patches.sub(RectSPX(geo, clip));

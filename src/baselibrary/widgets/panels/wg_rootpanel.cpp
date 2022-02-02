@@ -393,12 +393,12 @@ namespace wg
 		{
 			// Remove from afterglow queue patches that are overlapped by our new dirty patches.
 
-			for (std::deque<Patches>::iterator it = m_afterglowRects.begin(); it != m_afterglowRects.end(); ++it)
+			for (std::deque<PatchesSPX>::iterator it = m_afterglowRects.begin(); it != m_afterglowRects.end(); ++it)
 				it->sub(&m_dirtyPatches);
 
 			// Add our new dirty patches to the top of the afterglow queue.
 
-			m_afterglowRects.push_front(Patches());
+			m_afterglowRects.push_front(PatchesSPX());
 			m_afterglowRects.front().add(&m_dirtyPatches);
 
 			// Possibly remove overlays from the back, put them into dirty rects for re-render
@@ -449,7 +449,7 @@ namespace wg
 
 		// Copy and clip our dirty patches
 
-		Patches dirtyPatches(m_dirtyPatches, clip);
+		PatchesSPX dirtyPatches(m_dirtyPatches, clip);
 
 		// Render the dirty patches recursively
 

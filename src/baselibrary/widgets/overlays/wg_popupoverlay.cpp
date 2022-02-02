@@ -362,7 +362,7 @@ namespace wg
 
 		// Clip our geometry and put it in a dirtyrect-list
 
-		Patches patches;
+		PatchesSPX patches;
 		patches.add( RectSPX( rect, RectSPX(0,0,m_size)) );
 
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
@@ -430,7 +430,7 @@ namespace wg
 
 		int nClipRects = pDevice->clipListSize();
 		auto pClipRects = pDevice->clipList();
-		Patches patches( nClipRects );
+		PatchesSPX patches( nClipRects );
 
 		for( int i = 0 ; i < nClipRects ; i++ )
 			patches.push(pClipRects[i]);

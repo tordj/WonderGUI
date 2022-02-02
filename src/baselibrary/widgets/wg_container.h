@@ -31,7 +31,6 @@
 namespace wg
 {
 
-	class Patches;
 	class ModalOverlay;
 	class PopupOverlay;
 
@@ -136,8 +135,8 @@ namespace wg
 			virtual ModalOverlay *	_getModalOverlay() const;
 			virtual PopupOverlay*		_getPopupOverlay() const;
 
-			virtual void			_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
-			virtual void			_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip ) override;
+			virtual void			_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
+			virtual void			_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip ) override;
 
 			bool				m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
 

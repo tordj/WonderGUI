@@ -27,12 +27,12 @@
 #include <wg_geo.h>
 #include <wg_types.h>
 #include <wg_surface.h>
+#include <wg_patches.h>
 
 namespace wg
 {
 
 	class GfxDevice;
-	class Patches;
 
 	//____ Util _________________________________________________________________
 
@@ -263,8 +263,8 @@ namespace wg
 			bool bInitialized;
 		};
 
-		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectSPX& clip, const Patches& patches );
-		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Patches& patches );
+		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectSPX& clip, const PatchesSPX& patches );
+		ClipPopData	patchesToClipList( GfxDevice * pDevice, const PatchesSPX& patches );
 		ClipPopData limitClipList( GfxDevice * pDevice, const RectSPX& clip );
 		ClipPopData pushClipList(GfxDevice * pDevice);
 		void 		popClipList( GfxDevice * pDevice, const ClipPopData& popData );

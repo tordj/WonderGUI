@@ -84,14 +84,14 @@ namespace wg
 
 	//____ _collectPatches() _________________________________________________________________
 
-	void SideCanvas::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
+	void SideCanvas::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
 		m_pHolder->_sideCanvasCollectPatches(this,container, geo, clip);
 	}
 
 	//____ _maskPatches() _________________________________________________________________
 
-	void SideCanvas::_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void SideCanvas::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		m_pHolder->_sideCanvasMaskPatches(this,patches,geo,clip,blendMode);
 	}
@@ -168,14 +168,14 @@ namespace wg
 
 	//____ _Holder::_sideCanvasCollectPatches() ____________________________________________
 
-	void SideCanvas::Holder::_sideCanvasCollectPatches( SideCanvas * pCanvas, Patches& container, const RectSPX& geo, const RectSPX& clip )
+	void SideCanvas::Holder::_sideCanvasCollectPatches( SideCanvas * pCanvas, PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
 		return pCanvas->Widget::_collectPatches(container, geo, clip);
 	}
 
 	//____ _Holder::_sideCanvasMaskPatches() ____________________________________________
 
-	void SideCanvas::Holder::_sideCanvasMaskPatches( SideCanvas * pCanvas, Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void SideCanvas::Holder::_sideCanvasMaskPatches( SideCanvas * pCanvas, PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		return pCanvas->Widget::_maskPatches(patches,geo,clip,blendMode);
 	}

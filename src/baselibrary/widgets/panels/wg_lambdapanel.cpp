@@ -499,7 +499,7 @@ namespace wg
 			{
 				// Clip our geometry and put it in a dirtyrect-list
 
-				Patches patches;
+				PatchesSPX patches;
 				patches.add(RectSPX(pSlot->m_geo, RectSPX(0, 0, m_size)));
 				patches.add(RectSPX(geo, RectSPX(0, 0, m_size)));
 
@@ -538,7 +538,7 @@ namespace wg
 
 		// Clip our geometry and put it in a dirtyrect-list
 
-		Patches patches;
+		PatchesSPX patches;
 		patches.add(RectSPX(rect, RectSPX(0, 0, m_size)));
 
 		// Remove portions of patches that are covered by opaque upper siblings

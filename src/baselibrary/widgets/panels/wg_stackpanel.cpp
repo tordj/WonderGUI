@@ -323,7 +323,7 @@ namespace wg
 
 		RectSPX rect = _rect + pSlot->m_position;
 
-		Patches patches;
+		PatchesSPX patches;
 		patches.add( rect );
 
 		// Remove portions of patches that are covered by opaque upper siblings

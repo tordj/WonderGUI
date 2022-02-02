@@ -346,7 +346,7 @@ namespace wg
 
 			int nClipRects = pDevice->clipListSize();
 			auto pClipRects = pDevice->clipList();
-			Patches patches( nClipRects );
+			PatchesSPX patches( nClipRects );
 
 			for( int i = 0 ; i < nClipRects ; i++ )
 				patches.push(pClipRects[i]);
@@ -398,7 +398,7 @@ namespace wg
 
 	//____ _collectPatches() _______________________________________________________
 
-	void Container::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
+	void Container::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
 		if( m_skin.isEmpty() )
 		{
@@ -417,7 +417,7 @@ namespace wg
 
 	//____ _maskPatches() __________________________________________________________
 
-	void Container::_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void Container::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)

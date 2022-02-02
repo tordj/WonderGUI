@@ -29,6 +29,7 @@
 #include <wg_receiver.h>
 #include <wg_slotholder.h>
 #include <wg_skinslot.h>
+#include <wg_patches.h>
 
 namespace wg
 {
@@ -39,7 +40,6 @@ namespace wg
 	class Capsule;
 	class Layer;
 	class MsgRouter;
-	class Patches;
 	class SlotHolder;
     class WidgetComponent;
 
@@ -221,8 +221,8 @@ namespace wg
 
 		virtual	bool		_markTest(const CoordSPX& ofs);
 
-		virtual void		_collectPatches(Patches& container, const RectSPX& geo, const RectSPX& clip);
-		virtual void		_maskPatches(Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode);
+		virtual void		_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip);
+		virtual void		_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode);
 
 		virtual void    	_preRender();
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window);

@@ -256,7 +256,7 @@ namespace wg
 
 	//____ _collectPatches() ____________________________________________________
 
-	void PackList::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
+	void PackList::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
 		if( m_skin.isEmpty() )
 		{
@@ -271,7 +271,7 @@ namespace wg
 
 	//____ _maskPatches() _______________________________________________________
 
-	void PackList::_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void PackList::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
 			patches.sub( RectSPX(geo,clip) );

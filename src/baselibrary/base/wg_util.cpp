@@ -911,7 +911,7 @@ RectI sourceOfs;
 
 	//____ patchesToClipList() ____________________________________________________________________
 
-	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const RectSPX& clip, const Patches& patches )
+	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const RectSPX& clip, const PatchesSPX& patches )
 	{
 		int nOldRects 				= pDevice->clipListSize();
 		const RectSPX * pOldRects 	= pDevice->clipList();
@@ -935,7 +935,7 @@ RectI sourceOfs;
 		return { nOldRects, pOldRects, allocSize };
 	}
 
-	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const Patches& patches )
+	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const PatchesSPX& patches )
 	{
 		int nOldRects 				= pDevice->clipListSize();
 		const RectI * pOldRects 	= pDevice->clipList();

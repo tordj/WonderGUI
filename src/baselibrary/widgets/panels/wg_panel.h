@@ -67,7 +67,7 @@ namespace wg
 		virtual ~Panel() {};
 
 		bool			_isPanel() const override;
-		virtual void	_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
+		virtual void	_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 
 
 		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.

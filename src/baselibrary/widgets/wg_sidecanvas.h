@@ -54,8 +54,8 @@ namespace wg
 			virtual SizeSPX		_sideCanvasMinSize( const SideCanvas * pCanvas, int scale = -1) const;
 			virtual SizeSPX		_sideCanvasMaxSize( const SideCanvas * pCanvas, int scale = -1) const;
 
-			virtual void		_sideCanvasCollectPatches( SideCanvas * pCanvas, Patches& container, const RectSPX& geo, const RectSPX& clip );
-			virtual void		_sideCanvasMaskPatches( SideCanvas * pCanvas, Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode );
+			virtual void		_sideCanvasCollectPatches( SideCanvas * pCanvas, PatchesSPX& container, const RectSPX& geo, const RectSPX& clip );
+			virtual void		_sideCanvasMaskPatches( SideCanvas * pCanvas, PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode );
 
 			virtual void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) = 0;
 
@@ -86,8 +86,8 @@ namespace wg
 		SizeSPX		_minSize(int scale = -1) const override;
 		SizeSPX		_maxSize(int scale = -1) const override;
 
-		void		_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip ) override;
-		void		_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
+		void		_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip ) override;
+		void		_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 

@@ -468,7 +468,7 @@ namespace wg
 
 	//____ _collectPatches() __________________________________________________
 
-	void SplitPanel::_collectPatches(Patches& container, const RectSPX& geo, const RectSPX& clip)
+	void SplitPanel::_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip)
 	{
 		if (m_skin.isEmpty())
 		{
@@ -487,7 +487,7 @@ namespace wg
 
 	//____ _maskPatches() _____________________________________________________
 
-	void SplitPanel::_maskPatches(Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
+	void SplitPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
 	{
 		{
 			//TODO: Don't just check isOpaque() globally, check rect by rect.

@@ -548,14 +548,14 @@ namespace wg
 
 	//____ _collectPatches()  ____________________________________________________
 
-	void Widget::_collectPatches( Patches& container, const RectSPX& geo, const RectSPX& clip )
+	void Widget::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
 			container.add( RectSPX( geo, clip ) );
 	}
 
 	//____ _maskPatches() _______________________________________________________
 
-	void Widget::_maskPatches( Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
+	void Widget::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{

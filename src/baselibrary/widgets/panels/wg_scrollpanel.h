@@ -109,8 +109,8 @@ namespace wg
 
 		void		_receive(Msg * pMsg) override;
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
-		void		_collectPatches(Patches& container, const RectSPX& geo, const RectSPX& clip) override;
-		void		_maskPatches(Patches& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode) override;
+		void		_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip) override;
+		void		_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode) override;
 
 		bool		_alphaTest(const CoordSPX& ofs) override;
 
