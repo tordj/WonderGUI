@@ -37,7 +37,7 @@ namespace wg
 
 
 
-	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, int flags, const Color8* pClut) const
+	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, int flags, const Color8* pClut)
 	{
 		Surface::Blueprint bp;
 
@@ -55,7 +55,7 @@ namespace wg
 	}
 
 
-	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags, const Color8* pClut) const
+	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags, const Color8* pClut)
 	{
 		Surface::Blueprint bp;
 
@@ -73,7 +73,7 @@ namespace wg
 	}
 
 	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch,
-		const PixelDescription* pPixelDescription, int flags, const Color8* pClut) const
+		const PixelDescription* pPixelDescription, int flags, const Color8* pClut)
 	{
 		Surface::Blueprint bp;
 
@@ -90,7 +90,7 @@ namespace wg
 		return  createSurface(bp, pPixels, pitch, pPixelDescription);
 	}
 
-	Surface_p SurfaceFactory::createSurface(Surface* pOther, int flags) const
+	Surface_p SurfaceFactory::createSurface(Surface* pOther, int flags)
 	{
 		Surface::Blueprint bp;
 

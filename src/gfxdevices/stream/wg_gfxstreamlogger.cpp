@@ -725,7 +725,7 @@ namespace wg
 				*m_pDecoder >> patch.rigidPartYLength;
 				*m_pDecoder >> patch.rigidPartYSections;
 
-				*m_pGfxStream >> scale;
+				*m_pDecoder >> scale;
 
 				_printRect(     "    dstRect        ", dstRect );
 				_printBorder(   "    dstRect        ", dstFrame );

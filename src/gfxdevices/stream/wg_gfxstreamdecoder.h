@@ -77,6 +77,7 @@ namespace wg
 		GfxStreamDecoder& operator>> (RectI&);
 		GfxStreamDecoder& operator>> (RectF&);
 		GfxStreamDecoder& operator>> (BorderI&);
+		GfxStreamDecoder& operator>> (Border&);
 
 		GfxStreamDecoder& operator>> (HiColor&);
 		GfxStreamDecoder& operator>> (Direction&);
@@ -84,7 +85,7 @@ namespace wg
 		GfxStreamDecoder& operator>> (TintMode&);
 		GfxStreamDecoder& operator>> (Axis&);
 		GfxStreamDecoder& operator>> (PixelFormat&);
-		GfxStreamDecoder& operator>> (ScaleMode&);
+		GfxStreamDecoder& operator>> (SampleMethod&);
 		GfxStreamDecoder& operator>> (GfxFlip&);
 		GfxStreamDecoder& operator>> (XSections&);
 		GfxStreamDecoder& operator>> (YSections&);

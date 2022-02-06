@@ -55,7 +55,7 @@ namespace wg
 
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint) override;
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch) override;
-		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch, PixelDescription* pPixelDescription) const override;
+		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription) override;
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Surface* pOther) override;
 
 	protected:

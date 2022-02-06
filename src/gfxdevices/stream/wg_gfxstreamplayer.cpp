@@ -86,12 +86,12 @@ namespace wg
 
 	//____ dirtyRects() __________________________________________________________
 
-	std::tuple<int, const RectI*> GfxStreamPlayer::dirtyRects(CanvasRef canvas)
+	std::tuple<int, const RectSPX*> GfxStreamPlayer::dirtyRects(CanvasRef canvas)
 	{
-		const Patches& patches = m_dirtyRects[(int)canvas];
+		const PatchesSPX& patches = m_dirtyRects[(int)canvas];
 
 		int size = patches.size();
-		const RectI* pRects = (const RectI*) patches.begin();
+		const RectSPX* pRects = patches.begin();
 		return std::tie(size, pRects);
 	}
 
@@ -184,7 +184,7 @@ namespace wg
 				int nDirtyRects = m_pDevice->clipListSize();
 				const RectI* pDirtyRects = m_pDevice->clipList();
 
-				Patches& patches = m_dirtyRects[(int)canvasInfo.ref];
+				PatchesSPX& patches = m_dirtyRects[(int)canvasInfo.ref];
 				if (patches.isEmpty())
 				{
 					if (nDirtyRects > m_maxDirtyRects)
@@ -796,7 +796,7 @@ namespace wg
 			*m_pDecoder >> patch.rigidPartYLength;
 			*m_pDecoder >> patch.rigidPartYSections;
 
-			*m_pStream >> scale;
+			*m_pDecoder >> scale;
 
 			m_pDevice->blitNinePatch(dstRect, dstFrame, patch, scale);
 			break;
@@ -815,7 +815,7 @@ namespace wg
 			*m_pDecoder >> bp.id;
 			*m_pDecoder >> bp.mipmap;
 			*m_pDecoder >> bp.sampleMethod;
-			*mm_pDecoder >> bp.scale;
+			*m_pDecoder >> bp.scale;
 			*m_pDecoder >> bp.size;
 			*m_pDecoder >> bp.tiling;
 
@@ -825,7 +825,7 @@ namespace wg
 			if (header.size > 1024)
 			{
 				bp.clut = (Color8*) Base::memStackAlloc(1024);
-				*m_pStream >> GfxStream::DataChunk{ 1024, bp.clut };
+				*m_pDecoder >> GfxStream::DataChunk{ 1024, bp.clut };
 			}
 
 			if (m_vSurfaces.size() <= surfaceId)
@@ -838,31 +838,7 @@ namespace wg
 
 			break;
 		}
-			
-		case GfxChunkId::SetSurfaceScaleMode:
-		{
-			uint16_t	surfaceId;
-			ScaleMode	scaleMode;
 
-			*m_pDecoder >> surfaceId;
-			*m_pDecoder >> scaleMode;
-
-			m_vSurfaces[surfaceId]->setScaleMode(scaleMode);
-			break;
-		}
-			
-		case GfxChunkId::SetSurfaceTiling:
-		{
-			uint16_t	surfaceId;
-			bool		bTiling;
-
-			*m_pDecoder >> surfaceId;
-			*m_pDecoder >> bTiling;
-
-			m_vSurfaces[surfaceId]->setTiling(bTiling);
-			break;
-		}
-			
 		case GfxChunkId::BeginSurfaceUpdate:
 		{
 			uint16_t	surfaceId;
@@ -889,7 +865,7 @@ namespace wg
             
             while( bytesLeft > 0 )
             {
-                int toRead = min(bytesLeft, bytesPerLine - ofs);
+                int toRead = std::min(bytesLeft, bytesPerLine - ofs);
                 *m_pDecoder >> GfxStream::DataChunk{ toRead, m_pWritePixels };
                 bytesLeft -= toRead;
 

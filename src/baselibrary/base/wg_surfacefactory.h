@@ -62,20 +62,20 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint) const = 0;
-		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch = 0) const = 0;
-		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr) const = 0;
-		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Surface* pOther) const = 0;
+		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint) = 0;
+		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch = 0) = 0;
+		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr) = 0;
+		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Surface* pOther) = 0;
 
 
 		//.____ Deprecated ____________________________________________________
 
-		Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr ) const;
-		Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr) const;
+		Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
+		Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr);
 		Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch,
 										   const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static,
-										   const Color8 * pClut = nullptr) const;
-		Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) const;
+										   const Color8 * pClut = nullptr);
+		Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static );
 
 	protected:
 		virtual ~SurfaceFactory() {}

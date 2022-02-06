@@ -30,8 +30,6 @@
 namespace wg
 {
 
-	class Patches;
-
 	class Panel;
 	typedef	StrongPtr<Panel>	Panel_p;
 	typedef	WeakPtr<Panel>		Panel_wp;

@@ -56,29 +56,30 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p StreamSurfaceFactory::createSurface(const Surface::Blueprint& blueprint) const
+	Surface_p StreamSurfaceFactory::createSurface(const Surface::Blueprint& blueprint)
 	{
-		return StreamSurface::create(m_pEncoder,blueprint);
+		auto p = StreamSurface::create(m_pEncoder,blueprint);
 		_addReference( p );
+		return p;
 	}
 
 	Surface_p StreamSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Blob * pBlob, int pitch )
 	{
-		auto p = StreamSurface::create(m_pEncoder,size,format, pBlob,pitch,flags,pClut);
+		auto p = StreamSurface::create(m_pEncoder, blueprint, pBlob ,pitch );
 		_addReference( p );
 		return p;
 	}
 
 	Surface_p StreamSurfaceFactory::createSurface( const Surface::Blueprint& blueprint, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription )
 	{
-		auto p = StreamSurface::create(m_pEncoder,size,format, pPixels, pitch, pPixelDescription,flags,pClut);
+		auto p = StreamSurface::create(m_pEncoder, blueprint, pPixels, pitch, pPixelDescription);
 		_addReference(p);
 		return p;
 	}
 
 	Surface_p StreamSurfaceFactory::createSurface( const Surface::Blueprint& blueprint, Surface* pOther )
 	{
-		auto p = StreamSurface::create(m_pEncoder,pOther, flags );
+		auto p = StreamSurface::create(m_pEncoder,pOther );
 		_addReference(p);
 		return p;
 	}

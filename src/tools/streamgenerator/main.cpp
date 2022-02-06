@@ -49,16 +49,11 @@ void playDelayFrames(GfxDevice_p pDevice, int nFrames);
 
 void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvas);
 void playScroll(GfxDevice_p pDevice, RectI canvas );
-void playSoftubeLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
+void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
 void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
 
-void playInitButtonRow(GfxDevice_p pDevice, RectI canvas);
-void playButtonPress(GfxDevice_p pDevice, int button);
-void playButtonRelease(GfxDevice_p pDevice, int button);
-void playSetSlider(GfxDevice_p pDevice, float percentage);
 
-
-Coord positionSprite(SizeI dimensions, int tick, int nb, int amount);
+CoordSPX positionSprite(SizeSPX dimensions, int tick, int nb, int amount);
 
 
 
@@ -159,7 +154,7 @@ int main ( int argc, char** argv )
 	pInput->mapCommand( SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo );
 
 
-	PixelFormat type = PixelFormat::Unknown;
+	PixelFormat type = PixelFormat::Undefined;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
 		type = PixelFormat::BGRA_8;
@@ -172,7 +167,7 @@ int main ( int argc, char** argv )
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
 
 	RootPanel_p pRoot = RootPanel::create( pCanvas, pGfxDevice );
-    pRoot->setGeo( pCanvas->size() );
+//    pRoot->setGeo( pCanvas->size() );
 
 //	pRoot->setDebugMode(true);
 	
@@ -215,18 +210,18 @@ int main ( int argc, char** argv )
 	// a button using scaled bitmaps.
 	//------------------------------------------------------
 
-	PopupLayer_p pPopupLayer = PopupLayer::create();
+	PopupOverlay_p pPopupLayer = PopupOverlay::create();
 	pRoot->slot = pPopupLayer;
 
 
 
 	LambdaPanel_p pBasePanel = LambdaPanel::create();
-	pBasePanel->skin = ColorSkin::create(Color::Burlywood);
+	pBasePanel->setSkin( ColorSkin::create(Color::Burlywood) );
 	pPopupLayer->mainSlot = pBasePanel;
 
     auto pOutput = Image::create();
-    pOutput->skin = BoxSkin::create(2, Color8::Black, Color8::HotPink);
-    pBasePanel->slots.pushBack(pOutput, [](Widget * pWidget, Size sz) { return RectI(10,10,244,244); } );
+    pOutput->setSkin( BoxSkin::create(2, Color8::Black, Color8::HotPink) );
+    pBasePanel->slots.pushBack(pOutput, [](Widget * pWidget, Size sz) { return Rect(10,10,244,244); } );
 
 
 	//------------------------------------------------------
@@ -313,8 +308,8 @@ int main ( int argc, char** argv )
 	// Record stream
 	//------------------------------------------------------
 
-    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
-//    playSoftubeLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+//    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
+    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 //    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
 	//------------------------------------------------------
@@ -339,7 +334,7 @@ int main ( int argc, char** argv )
 
 	auto pSDLSurf = IMG_Load("resources/splash.png");
 	convertSDLFormat(&format, pSDLSurf->format);
-	Surface_p pSplashSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
+	Surface_p pSplashSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGRA_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (uint8_t *)pSDLSurf->pixels, pSDLSurf->pitch, &format);
 	SDL_FreeSurface(pSDLSurf);
 
 
@@ -434,7 +429,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pInput->setPointer( pRoot, CoordI(e.motion.x,e.motion.y) );
+				pInput->setPointer( pRoot, Coord(e.motion.x,e.motion.y) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
@@ -447,7 +442,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				
 			case SDL_MOUSEWHEEL:
 			{
-				CoordI distance( e.wheel.x, e.wheel.y );
+				Coord distance( e.wheel.x, e.wheel.y );
 				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
 					distance *= -1;
 			
@@ -512,15 +507,15 @@ void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 	if( nRects == 0 )
 		return;
 	
-	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+	const RectSPX * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
 	{
-		pSDLRects[i].x = pUpdatedRects[i].x;
-		pSDLRects[i].y = pUpdatedRects[i].y;
-		pSDLRects[i].w = pUpdatedRects[i].w;
-		pSDLRects[i].h = pUpdatedRects[i].h;
+		pSDLRects[i].x = pUpdatedRects[i].x / 64;
+		pSDLRects[i].y = pUpdatedRects[i].y / 64;
+		pSDLRects[i].w = pUpdatedRects[i].w / 64;
+		pSDLRects[i].h = pUpdatedRects[i].h / 64;
 	}
 
 	SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );
@@ -628,7 +623,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
 
     pLogoSurf->copyFrom(pOrgSurf, CoordI());
     
-    SizeI canvasSize = pDevice->canvasSize(canvasRef);
+    SizeI canvasSize = pDevice->canvas(canvasRef).size;
 
     int ticker = 0;
     int length = 600;
@@ -684,11 +679,11 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
     }
 }
 
-//____ playSoftubeLogoFadeIn() _________________________________________________
+//____ playLogoFadeIn() _________________________________________________
 
-void playSoftubeLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory )
+void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory )
 {
-    SDL_Surface * pLogoImg = IMG_Load( "softube_logo_transparent_small.png" );
+    SDL_Surface * pLogoImg = IMG_Load( "resources/logo-200.png" );
 //    convertSDLFormat( &format, pFontSurf->format );
 
     SizeI logoSize = SizeI(pLogoImg->w,pLogoImg->h);
@@ -701,7 +696,7 @@ void playSoftubeLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
 
     pLogoSurf->copyFrom(pOrgSurf, CoordI());
     
-    SizeI canvasSize = pDevice->canvasSize(canvasRef);
+    SizeI canvasSize = pDevice->canvas(canvasRef).size;
 
     int ticker = 0;
     int length = 30;
@@ -714,7 +709,7 @@ void playSoftubeLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
         
         pDevice->setBlitSource(pLogoSurf);
         pDevice->setTintColor(HiColor(4096,4096,4096,ticker*4096/length));
-        pDevice->blit( CoordI( (canvasSize.w - logoSize.w)/2, (canvasSize.h - logoSize.h)/2 ));
+        pDevice->blit( CoordSPX( (canvasSize.w - logoSize.w)/2*64, (canvasSize.h - logoSize.h)/2*64 ));
         
         pDevice->endCanvasUpdate();
         pDevice->endRender();
@@ -727,9 +722,9 @@ void playSoftubeLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
 void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvasRef )
 {
 	int ticker = 0;
-	SizeI spriteSize(30, 30);
-    SizeI canvasSize = pDevice->canvasSize(canvasRef);
-	SizeI moveDim(canvasSize.w - spriteSize.w, canvasSize.h - spriteSize.h);
+	SizeSPX spriteSize(30*64, 30*64);
+    SizeSPX canvasSize = pDevice->canvas(canvasRef).size*64;
+	SizeSPX moveDim(canvasSize.w - spriteSize.w, canvasSize.h - spriteSize.h);
 
 	while (ticker < 600)
 	{
@@ -775,11 +770,11 @@ void playScroll(GfxDevice_p pDevice, RectI canvas )
 }
 
 
-Coord positionSprite(SizeI dimensions, int tick, int nb, int amount)
+CoordSPX positionSprite(SizeSPX dimensions, int tick, int nb, int amount)
 {
 	const float PI = 3.14159265f;
 
-	CoordI	radius = { dimensions.w / 2, dimensions.h / 2 };
+	CoordSPX	radius = { dimensions.w / 2, dimensions.h / 2 };
 
 	if (tick < 90)
 		radius *= sin(tick*PI / 180);
@@ -788,7 +783,7 @@ Coord positionSprite(SizeI dimensions, int tick, int nb, int amount)
 		radius *= 1.f - sin((tick - (600 - 90))*PI / 180);
 
 
-	CoordI c;
+	CoordSPX c;
 	c.x = (int)(cos((tick + nb*360.f / amount)*PI / 180)*radius.x + dimensions.w / 2);
 	c.y = (int)(sin((tick + nb*360.f / amount)*PI / 180)*radius.y + dimensions.h / 2);
 	return c;
@@ -805,67 +800,4 @@ void playDelayFrames(GfxDevice_p pDevice, int nFrames)
 	}
 }
 
-
-//____ button row play functions ______________________________________________
-
-
-RectI	buttonRect;
-Coord	buttonPitch;
-RectI	sliderRect;
-
-void playInitButtonRow(GfxDevice_p pDevice, RectI canvas)
-{
-	// Init lamps
-
-	buttonRect = { canvas.w / 32, canvas.h / 32,canvas.size() / 4 - canvas.size() / 16 };
-	buttonPitch = { canvas.w / 4, 0 };
-
-	pDevice->beginRender();
-
-	pDevice->fill( RectI( 0,0,canvas.w,canvas.h / 4 ), Color::LightGray);
-
-	RectI r = buttonRect;
-	for (int i = 0; i < 4; i++)
-	{
-		pDevice->fill(r, Color::White);
-		pDevice->fill(r - BorderI(4), Color::DarkBlue);
-		r += buttonPitch;
-	}
-
-	// Init slider
-
-	sliderRect = { canvas.w / 32,canvas.h / 4, 263, canvas.h / 8 - canvas.h / 32 };
-
-	pDevice->fill( RectI( 0, canvas.h / 4, canvas.w, canvas.h / 8 ), Color::LightGray);
-
-	pDevice->fill( sliderRect, Color::White);
-	sliderRect -= BorderI(4);
-	pDevice->fill( sliderRect, Color::DarkBlue);
-
-	pDevice->endRender();
-}
-
-void playButtonPress(GfxDevice_p pDevice, int button)
-{
-	pDevice->beginRender();
-	pDevice->fill(buttonRect + buttonPitch*button - BorderI(4), Color::LightBlue);
-	pDevice->endRender();
-}
-
-void playButtonRelease(GfxDevice_p pDevice, int button)
-{
-	pDevice->beginRender();
-	pDevice->fill(buttonRect + buttonPitch*button - BorderI(4), Color::DarkBlue);
-	pDevice->endRender();
-}
-void playSetSlider(GfxDevice_p pDevice, float percentage)
-{
-	int w = (int) (sliderRect.w*percentage);
-
-	pDevice->beginRender();
-	pDevice->fill( sliderRect, Color::DarkBlue);
-	pDevice->fill( RectI( sliderRect.x,sliderRect.y,w,sliderRect.h ), Color::Yellow);
-	pDevice->endRender();
-
-}
 

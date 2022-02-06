@@ -129,7 +129,7 @@ namespace wg
 			RectSPX dest = m_skin.contentRect( _canvas, m_scale, state() );
 
 			pDevice->setBlitSource(m_pSurface);
-			pDevice->stretchBlit( dest, m_rect*m_pSurface->scale() );		// Higher precision source coordinates than to use ptsToSpx().
+			pDevice->stretchBlit( dest, m_rect );		// Higher precision source coordinates than to use ptsToSpx().
 		}
 	}
 

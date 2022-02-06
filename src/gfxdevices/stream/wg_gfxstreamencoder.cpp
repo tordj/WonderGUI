@@ -59,6 +59,21 @@ namespace wg
 		m_pStream = pStream;
 	}
 
+	//____ setDefaultPixelFormat() ____________________________________________
+
+	void GfxStreamEncoder::setDefaultPixelFormat(PixelFormat pixelFormat)
+	{
+		m_defaultPixelFormat = pixelFormat;
+	}
+
+	//____ setDefaultSampleMethod() ___________________________________________
+
+	void GfxStreamEncoder::setDefaultSampleMethod(SampleMethod sampleMethod)
+	{
+		m_defaultSampleMethod = sampleMethod;
+	}
+
+
 	//____ flush() ____________________________________________________________
 
 	void GfxStreamEncoder::flush()
@@ -85,7 +100,7 @@ namespace wg
 	{
 		if (m_freeIdStackSize == m_freeIdStackCapacity)
 		{
-			int capacity = max(16, m_freeIdStackCapacity * 2);
+			int capacity = std::max(16, m_freeIdStackCapacity * 2);
 			uint16_t* pBuffer = new uint16_t[capacity];
 
 			for (int i = 0; i < m_freeIdStackSize; i++)
@@ -196,6 +211,15 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const Border& border)
+	{
+		_pushFloat(border.top);
+		_pushFloat(border.right);
+		_pushFloat(border.bottom);
+		_pushFloat(border.left);
+		return *this;
+	}
+
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (Direction d)
 	{
 		_pushShort((short)d);
@@ -227,7 +251,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxStreamEncoder& GfxStreamEncoder::operator<< (ScaleMode m)
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (SampleMethod m)
 	{
 		_pushShort((short)m);
 		return *this;

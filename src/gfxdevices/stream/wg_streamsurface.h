@@ -75,15 +75,15 @@ namespace wg
 
 		bool		fill(HiColor col) override;
 		bool		fill(HiColor col, const RectI& region) override;
-		bool		copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst) override;
-		bool		copyFrom(Surface * pSrcSurf, CoordI dst) override;
+//		bool		copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst) override;
+//		bool		copyFrom(Surface * pSrcSurf, CoordI dst) override;
 
 		//.____ Deprecated ____________________________________________________
 
-		static StreamSurface_p	create(CGfxOutStream& stream, SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
-		static StreamSurface_p	create(CGfxOutStream& stream, SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
-		static StreamSurface_p	create(CGfxOutStream& stream, SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
-		static StreamSurface_p	create(CGfxOutStream& stream, Surface* pOther, int flags = SurfaceFlag::Static);
+		static StreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static StreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static StreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static StreamSurface_p	create(GfxStreamEncoder* pEncoder, Surface* pOther, int flags = SurfaceFlag::Static);
 
 		//.____ Misc __________________________________________________________
 
@@ -104,6 +104,7 @@ namespace wg
 
 		GfxStreamEncoder_p	m_pEncoder;
 		uint16_t		m_inStreamId;		// Id of this surface in the stream.
+		bool			m_bDynamic;
 
 		Blob_p			m_pBlob;
 		uint8_t*		m_pAlphaLayer;		// Separate alpha layer if whole blob was not kept.

@@ -147,7 +147,7 @@ namespace wg
 
 		bool				m_bStoreDirtyRects = false;
 		int					m_maxDirtyRects = 64;
-		Patches				m_dirtyRects[CanvasRef_size];
+		PatchesSPX			m_dirtyRects[CanvasRef_size];
 	};
 
 }

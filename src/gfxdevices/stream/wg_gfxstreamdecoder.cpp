@@ -186,6 +186,16 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (Border& border)
+	{
+		border.top = _pullFloat();
+		border.right = _pullFloat();
+		border.bottom = _pullFloat();
+		border.left = _pullFloat();
+		return *this;
+	}
+
+
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (HiColor& color)
 	{
 		color.b = _pullShort();
@@ -225,9 +235,9 @@ namespace wg
 		return *this;
 	}
 
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (ScaleMode& m)
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (SampleMethod& m)
 	{
-		m = (ScaleMode)_pullShort();
+		m = (SampleMethod)_pullShort();
 		return *this;
 	}
 

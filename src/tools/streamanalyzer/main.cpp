@@ -148,7 +148,7 @@ int main ( int argc, char** argv )
 	pInput->mapCommand( SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo );
 
 
-	PixelFormat type = PixelFormat::Unknown;
+	PixelFormat type = PixelFormat::Undefined;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
 		type = PixelFormat::BGRA_8;
@@ -161,7 +161,7 @@ int main ( int argc, char** argv )
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
 
 	RootPanel_p pRoot = RootPanel::create( pCanvas, pGfxDevice );
-    pRoot->setGeo( pCanvas->size() );
+//    pRoot->setGeo( pCanvas->size() );
 	
 	Base::inputHandler()->setFocusedWindow( pRoot );
 	
@@ -194,20 +194,19 @@ int main ( int argc, char** argv )
 	// Setup the GUI
 	//------------------------------------------------------
 
-	PopupLayer_p pPopupLayer = PopupLayer::create();
+	PopupOverlay_p pPopupLayer = PopupOverlay::create();
 	pRoot->slot = pPopupLayer;
 
 
 
 	LambdaPanel_p pBasePanel = LambdaPanel::create();
-	pBasePanel->skin = ColorSkin::create(Color::Burlywood);
+	pBasePanel->setSkin( ColorSkin::create(Color::Burlywood) );
 	pPopupLayer->mainSlot = pBasePanel;
 
     g_pDisplay = Image::create();
-    auto pSkin = BoxSkin::create(2, Color8::Black, Color8::HotPink);
-    pSkin->setContentPadding(2);
-    g_pDisplay->skin = pSkin;
-    pBasePanel->slots.pushBack(g_pDisplay, [](Widget * pWidget, Size sz) { return RectI(10,10,240,240); } );
+	auto pSkin = BoxSkin::create({ .color = Color::Black, .contentPadding = 2, .outline = 2, .outlineColor = Color::HotPink });
+    g_pDisplay->setSkin(pSkin);
+    pBasePanel->slots.pushBack(g_pDisplay, [](Widget * pWidget, Size sz) { return Rect(10,10,240,240); } );
 
 
 	//------------------------------------------------------
@@ -351,7 +350,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pInput->setPointer( pRoot, CoordI(e.motion.x,e.motion.y) );
+				pInput->setPointer( pRoot, Coord(e.motion.x,e.motion.y) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
@@ -364,7 +363,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				
 			case SDL_MOUSEWHEEL:
 			{
-				CoordI distance( e.wheel.x, e.wheel.y );
+				Coord distance( e.wheel.x, e.wheel.y );
 				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
 					distance *= -1;
 			
@@ -429,15 +428,15 @@ void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 	if( nRects == 0 )
 		return;
 	
-	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+	const RectSPX * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
 	{
-		pSDLRects[i].x = pUpdatedRects[i].x;
-		pSDLRects[i].y = pUpdatedRects[i].y;
-		pSDLRects[i].w = pUpdatedRects[i].w;
-		pSDLRects[i].h = pUpdatedRects[i].h;
+		pSDLRects[i].x = pUpdatedRects[i].x / 64;
+		pSDLRects[i].y = pUpdatedRects[i].y / 64;
+		pSDLRects[i].w = pUpdatedRects[i].w / 64;
+		pSDLRects[i].h = pUpdatedRects[i].h / 64;
 	}
 
 	SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );

@@ -90,7 +90,7 @@ endfunction()
 
 add_subdirectory(baselibrary)
 add_subdirectory(gfxdevices/software)
-#add_subdirectory(gfxdevices/stream)
+add_subdirectory(gfxdevices/stream)
 add_subdirectory(gfxdevices/opengl)
 if(APPLE)
 	add_subdirectory(gfxdevices/metal)

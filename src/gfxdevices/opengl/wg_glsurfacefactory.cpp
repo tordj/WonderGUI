@@ -49,22 +49,22 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint) const
+	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint)
 	{
 		return GlSurface::create(blueprint);
 	}
 
-	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch) const
+	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch)
 	{
 		return GlSurface::create(blueprint, pBlob, pitch);
 	}
 
-	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription) const
+	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription)
 	{
 		return GlSurface::create(blueprint, pPixels, pitch, pPixelDescription);
 	}
 
-	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Surface* pOther) const
+	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Surface* pOther)
 	{
 		return GlSurface::create( blueprint, pOther );
 	}

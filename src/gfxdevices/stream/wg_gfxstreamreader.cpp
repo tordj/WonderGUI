@@ -74,7 +74,7 @@ namespace wg
 
 		int size = m_bufferSize - ((m_writeOfs - m_readOfs + m_bufferSize) % m_bufferSize) -2;		// -2 since we may not catch up to readOfs
 
-		int chunk1 = min(size, m_bufferSize - m_writeOfs);		// Until readPos or end of buffer
+		int chunk1 = std::min(size, m_bufferSize - m_writeOfs);		// Until readPos or end of buffer
 		int chunk2 = size - chunk1;								// From start of buffer
 
 		// Fetch data to first chunk

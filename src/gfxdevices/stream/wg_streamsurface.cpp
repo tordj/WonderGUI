@@ -143,11 +143,11 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	StreamSurface::StreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp) : Surface(bp, stream.defaultPixelFormat(), stream.defaultSampleMethod() )
+	StreamSurface::StreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp) : Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod() )
 	{
 		m_pEncoder = pEncoder;
-
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
+		m_bDynamic = bp.dynamic;
 
 		m_inStreamId = _sendCreateSurface(bp);
 
@@ -179,11 +179,11 @@ namespace wg
 	}
 
 	StreamSurface::StreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp, Blob* pBlob, int pitch )
-		: Surface(bp, stream.defaultPixelFormat(), stream.defaultSampleMethod())
+		: Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod())
 	{
-
 		m_pEncoder = pEncoder;
 		m_pitch = pitch;
+		m_bDynamic = bp.dynamic;
 
 		m_inStreamId = _sendCreateSurface(bp);
 
@@ -205,19 +205,18 @@ namespace wg
 	}
 
 	StreamSurface::StreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription )
-		: Surface(bp, stream.defaultPixelFormat(), stream.defaultSampleMethod())
+		: Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod())
 	{
-		Util::pixelFormatToDescription(format, m_pixelDescription);
-
 		m_pEncoder = pEncoder;
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
+		m_bDynamic = bp.dynamic;
 
 		m_inStreamId = _sendCreateSurface(bp);
 
 		// We always convert the data even if we throw it away, since we need to stream the converted data.
 		// (but we could optimize and skip conversion if format already is correct)
 
-		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.pClut ? 1024 : 0) );
+		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.clut ? 1024 : 0) );
 
 		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, bp.size, bp.size);
 
@@ -228,7 +227,7 @@ namespace wg
 		{
 			if (bp.clut)
 			{
-				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * sbp.size.h);
+				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * bp.size.h);
 				memcpy(m_pClut, bp.clut, 1024);
 			}
 			else
@@ -250,7 +249,7 @@ namespace wg
 
 
 	StreamSurface::StreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& bp, Surface* pOther)
-		: Surface(bp, stream.defaultPixelFormat(), stream.defaultSampleMethod())
+		: Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod())
 	{
 		//TODO: This only works now if blueprint and pOther agrees on size, pixelformat, etc.
 
@@ -266,6 +265,7 @@ namespace wg
 		m_pEncoder = pEncoder;
 		m_size = size;
 		m_pitch = ((size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
+		m_bDynamic = bp.dynamic;
 
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
@@ -489,9 +489,15 @@ namespace wg
 
 		*pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, blockSize };
 		*pEncoder << m_inStreamId;
+		*pEncoder << m_bCanvas;
+		*pEncoder << m_bDynamic;
 		*pEncoder << m_pixelDescription.format;
+		*pEncoder << m_id;
+		*pEncoder << m_bMipmapped;
+		*pEncoder << m_sampleMethod;
+		*pEncoder << m_scale;
 		*pEncoder << m_size;
-		*pEncoder << (uint16_t) m_flags;
+		*pEncoder << m_bTiling;
 
 		if (m_pClut)
 			*pEncoder << GfxStream::DataChunk{ 1024, m_pClut };
@@ -522,7 +528,7 @@ namespace wg
 		*m_pEncoder << bp.tiling;
 
 		if(bp.clut)
-			*m_pStream << GfxStream::DataChunk{ 1024, bp.clut };
+			*m_pEncoder << GfxStream::DataChunk{ 1024, bp.clut };
 
 		return surfaceId;
 	}
@@ -566,7 +572,7 @@ namespace wg
 
 		while( dataSize > 0 )
 		{
-			uint16_t chunkSize = min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
+			uint16_t chunkSize = std::min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
 			dataSize -= chunkSize;
 
 			*pEncoder << GfxStream::Header{ GfxChunkId::SurfacePixels, chunkSize };
