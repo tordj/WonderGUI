@@ -154,7 +154,7 @@ namespace wg
 	 		{
 	 			if( newR.y <= pR->y && newR.y + newR.h > pR->y )
 	 			{
-	 				spx diff = newR.y + newR.h - pR->y;
+	 				T diff = newR.y + newR.h - pR->y;
 	 				pR->y += diff;
 	 				pR->h -= diff;
 					continue;
@@ -162,7 +162,7 @@ namespace wg
 
 	 			if( newR.y < pR->y + pR->h && newR.y + newR.h >= pR->y + pR->h )
 	 			{
-	 				spx diff = pR->y + pR->h - newR.y;
+	 				T diff = pR->y + pR->h - newR.y;
 	 				pR->h -= diff;
 					continue;
 	 			}
@@ -172,7 +172,7 @@ namespace wg
 	 		{
 	 			if( newR.x <= pR->x && newR.x + newR.w > pR->x )
 	 			{
-	 				spx diff = newR.x + newR.w - pR->x;
+	 				T diff = newR.x + newR.w - pR->x;
 	 				pR->x += diff;
 	 				pR->w -= diff;
 					continue;
@@ -180,7 +180,7 @@ namespace wg
 
 	 			if( newR.x < pR->x + pR->w && newR.x + newR.w >= pR->x + pR->w )
 				{
-					spx diff = pR->x + pR->w - newR.x;
+					T diff = pR->x + pR->w - newR.x;
 	 				pR->w -= diff;
 					continue;
 	 			}

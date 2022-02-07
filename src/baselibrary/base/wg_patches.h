@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_PatchesT_DOT_H
-#define WG_PatchesT_DOT_H
+#ifndef WG_PATCHES_DOT_H
+#define WG_PATCHES_DOT_H
 #pragma once
 
 #include <limits.h>
@@ -117,4 +117,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_PatchesT_DOT_H
+#endif //WG_PATCHES_DOT_H
