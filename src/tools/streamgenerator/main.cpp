@@ -309,8 +309,8 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 //    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
-    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
-//    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+//    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
 	//------------------------------------------------------
 	// Save stream to file
@@ -610,7 +610,7 @@ void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSD
 
 void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory )
 {
-    SDL_Surface * pLogoImg = IMG_Load( "softube_logo_transparent_small.png" );
+    SDL_Surface * pLogoImg = IMG_Load( "resources/logo-200.png" );
 //    convertSDLFormat( &format, pFontSurf->format );
 
     SizeI logoSize = SizeI(pLogoImg->w,pLogoImg->h);
@@ -648,7 +648,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
             pDevice->setBlitSource(pOldCanvas);
             pDevice->setTintColor(HiColor(4096,3800,3500,3930));
 //            pDevice->blit( CoordI( (canvasSize.w - logoSize.w)/2, (canvasSize.h - logoSize.h)/2 ));
-            pDevice->rotScaleBlit( backCanvasSize, 3, 1.02f );
+            pDevice->rotScaleBlit( backCanvasSize*64, 3, 1.02f );
         }
 
         
@@ -661,7 +661,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
         
         SizeI wantedSize( logoSize.w + (logoSize.w/2 * val), logoSize.h );
         
-        pDevice->stretchBlit( RectI( (canvasSize.w - wantedSize.w)/2, (canvasSize.h - wantedSize.h)/2, wantedSize ));
+        pDevice->stretchBlit( RectI( (canvasSize.w - wantedSize.w)/2, (canvasSize.h - wantedSize.h)/2, wantedSize )*64 );
         
         pDevice->endCanvasUpdate();
         pOldCanvas = pCanvas;
@@ -670,7 +670,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
         
         
         pDevice->setBlitSource(pCanvas);
-        pDevice->blit( {0,0}, RectI((backCanvasSize.w-canvasSize.w)/2,(backCanvasSize.h-canvasSize.h)/2, canvasSize) );
+        pDevice->blit( {0,0}, RectI((backCanvasSize.w-canvasSize.w)/2,(backCanvasSize.h-canvasSize.h)/2, canvasSize)*64 );
         
         pDevice->endCanvasUpdate();
         

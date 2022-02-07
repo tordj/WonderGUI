@@ -405,9 +405,17 @@ namespace wg
 
 	//____ _didAddSlots() _____________________________________________________
 
-	void PackPanel::_didAddSlots(StaticSlot * pSlot, int nb)
+	void PackPanel::_didAddSlots(StaticSlot * _pSlot, int nb)
 	{
-		_unhideChildren((Slot*) pSlot, nb);
+		PackPanel::Slot* pSlot = static_cast<PackPanel::Slot*>(_pSlot);
+
+		for (int i = 0; i < nb; i++)
+		{
+			if (pSlot[i].m_bVisible == true)
+				pSlot[i].m_preferredSize = pSlot[i]._paddedPreferredSize(m_scale);
+		}
+
+		_refreshGeometries();
 	}
 
 	//____ _didMoveSlots() _____________________________________________________

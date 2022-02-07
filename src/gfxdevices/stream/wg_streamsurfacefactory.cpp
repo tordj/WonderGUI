@@ -79,7 +79,7 @@ namespace wg
 
 	Surface_p StreamSurfaceFactory::createSurface( const Surface::Blueprint& blueprint, Surface* pOther )
 	{
-		auto p = StreamSurface::create(m_pEncoder,pOther );
+		auto p = StreamSurface::create(m_pEncoder, blueprint,pOther );
 		_addReference(p);
 		return p;
 	}

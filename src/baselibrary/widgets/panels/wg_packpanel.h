@@ -91,7 +91,7 @@ namespace wg
 			SLOT_PADDING_HELPER_METHODS
 
 			Border		m_padding;
-			bool		m_bVisible;
+			bool		m_bVisible = true;
 
 			bool		m_bResizeRequired = false;
 			float		m_weight = 1.f;				// Weight for space allocation.

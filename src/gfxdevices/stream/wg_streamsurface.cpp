@@ -257,7 +257,9 @@ namespace wg
 
 		PixelFormat format = pOther->pixelFormat();
 		auto pixelbuffer = pOther->allocPixelBuffer();
-		pOther->pushPixels(pixelbuffer);
+		bool bPushed = pOther->pushPixels(pixelbuffer);
+
+		//TODO: Fail in a good way (return nullptr from create()) if we can't push pixels from pOther.
 
 		int pitch = pixelbuffer.pitch;
 		SizeI size = pixelbuffer.rect.size();
@@ -269,7 +271,12 @@ namespace wg
 
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
-        m_inStreamId = _sendCreateSurface(bp);
+		Blueprint myBP = bp;
+		myBP.size = m_size;
+		myBP.sampleMethod = m_sampleMethod;
+		myBP.format = m_pixelDescription.format;
+
+        m_inStreamId = _sendCreateSurface(myBP);
         
 		if (m_pixelDescription.bits <= 8 || bp.buffered)
 		{
@@ -485,7 +492,7 @@ namespace wg
 		if (!m_pBlob)
 			return false;
 
-		uint16_t blockSize = 14 + (m_pClut ? 1024 : 0);
+		uint16_t blockSize = 30 + (m_pClut ? 1024 : 0);
 
 		*pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, blockSize };
 		*pEncoder << m_inStreamId;
@@ -513,7 +520,7 @@ namespace wg
 	{
 		uint16_t surfaceId = m_pEncoder->allocObjectId();
 
-		uint16_t blockSize = 14 + (bp.clut ? 1024 : 0);
+		uint16_t blockSize = 30 + (bp.clut ? 1024 : 0);
 
 		*m_pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, blockSize };
 		*m_pEncoder << surfaceId;
