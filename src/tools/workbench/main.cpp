@@ -627,14 +627,14 @@ int main(int argc, char** argv)
 //	stretchBlitTest(pRoot->child.ptr());
 //	scrollIntoViewTest(pRoot->child.ptr());
 //	textClipTest(&pRoot->slot);
-	textEditorTest(&pRoot->slot);
+//	textEditorTest(&pRoot->slot);
 //	lineEditorTest(&pRoot->slot);
 //	popupOpenerTest(&pRoot->slot);
 //	scrollbarTest(&pRoot->slot);
 //	modalLayerTest(&pRoot->slot);
 //	splitPanelTest(&pRoot->slot);
 //	designLayerTest(&pRoot->slot);
-//	pianoKeyboardTest(&pRoot->slot);
+	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
 //	rangeSliderTest(&pRoot->slot);
 //	pieKnobTest(&pRoot->slot);
@@ -2036,11 +2036,25 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 		Surface_p pEvenWhiteKeys = loadSurface("resources/whiteevenkeys.png" );
 		Surface_p pBlackKeys = loadSurface("resources/blackkeys.png" );
 
+
+		auto pSimplePiano = PianoKeyboard::create({ 
+													.blackKeys		= pBlackKeys,
+													.evenWhiteKeys	= pEvenWhiteKeys,
+													.keyLayout		= std::bitset<7>("1101110"),
+													.keyStates		= { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed },
+													.nbWhiteKeys	= 7,
+													.oddWhiteKeys	= pOddWhiteKeys,
+													.skin			= ColorSkin::create(Color::Black, { 60,10,10,10 })
+			});
+
+
+
+/*
 		auto pSimplePiano = PianoKeyboard::create();
 		pSimplePiano->setSkin( ColorSkin::create(Color::Black, { 60,10,10,10 }) );
 		pSimplePiano->setLayout(7, std::bitset<7>("1101110"));
 		pSimplePiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed });
-
+*/
 		pBaseLayer->slots.pushFrontMovable(pSimplePiano, { 20,20,0,0 });
 
 		pSimplePiano->selectKey(3);

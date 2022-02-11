@@ -47,9 +47,40 @@ namespace wg
 	class PianoKeyboard : public Widget
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+
+			Object_p		baggage;
+			Surface_p		blackKeys;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Surface_p		evenWhiteKeys;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			bool			keyFlipOnPress = false;
+			std::bitset<7>	keyLayout = 0b1011011;
+			std::initializer_list<State>	keyStates;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			int				nbWhiteKeys = 52;
+			Surface_p		oddWhiteKeys;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+
+		};
+
 		//.____ Creation __________________________________________
 
 		static PianoKeyboard_p	create() { return PianoKeyboard_p(new PianoKeyboard()); }
+		static PianoKeyboard_p	create( const Blueprint& blueprint ) { return PianoKeyboard_p(new PianoKeyboard(blueprint)); }
 
 		//.____ Identification __________________________________________
 
@@ -60,7 +91,7 @@ namespace wg
 
 		void		setLayout(int nbWhiteKeys, const std::bitset<7>& blackKeyPositions );
 
-		void		setSurfaces(const Surface_p& pOddWhiteKeys, const Surface_p& pEvenWhiteKeys, const Surface_p& pBlackKeys, std::initializer_list<State> states);
+		void		setSurfaces(const Surface_p& pOddWhiteKeys, const Surface_p& pEvenWhiteKeys, const Surface_p& pBlackKeys, const std::initializer_list<State>& states);
 
 		//.____ Control _______________________________________________________
 
@@ -94,6 +125,7 @@ namespace wg
 
 	protected:
 		PianoKeyboard();
+		PianoKeyboard(const Blueprint& blueprint);
 		virtual ~PianoKeyboard();
 
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

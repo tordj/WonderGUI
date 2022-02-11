@@ -40,6 +40,16 @@ namespace wg
 	{
 	}
 
+	PianoKeyboard::PianoKeyboard(const Blueprint& bp)
+	{
+		_initFromBlueprint(bp);
+
+		setLayout(bp.nbWhiteKeys, bp.keyLayout);
+		setSurfaces(bp.oddWhiteKeys, bp.evenWhiteKeys, bp.blackKeys, bp.keyStates);
+
+		m_bFlipOnPress = bp.keyFlipOnPress;
+	}
+
 	//____ Destructor _____________________________________________________________
 
 	PianoKeyboard::~PianoKeyboard()
@@ -104,8 +114,11 @@ namespace wg
 	//____ setSurfaces() ______________________________________________________
 
 	void PianoKeyboard::setSurfaces(const Surface_p& pOddWhiteKeys, const Surface_p& pEvenWhiteKeys, 
-									const Surface_p& pBlackKeys, std::initializer_list<State> states)
+									const Surface_p& pBlackKeys, const std::initializer_list<State>& states)
 	{
+		if (states.size() == 0)
+			return;
+
 		if (!pOddWhiteKeys || !pEvenWhiteKeys || (!pBlackKeys && m_blackKeyPositions.count() > 0))
 		{
 			//TODO: Error handling!
@@ -130,7 +143,7 @@ namespace wg
 		m_preferredKeyboardSize	= pointSize;
 		m_keyboardSourceSize	= align(ptsToSpx(pointSize, pOddWhiteKeys->scale()));
 
-		m_blackKeyHeight		= m_pBlackKeys ? m_pBlackKeys->pointSize().h / pointSize.h : 0;
+		m_blackKeyHeight		= m_pBlackKeys ? (m_pBlackKeys->pointSize().h / states.size()) / pointSize.h : 0;
 		m_blackKeySourceHeight	= m_pBlackKeys ? (m_pBlackKeys->pixelSize().h / states.size())*64 : 0;
 
 		// Fill in state offsets
@@ -394,7 +407,7 @@ namespace wg
 		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
 
 
-		spx whiteKeySpacing = canvas.w*64 / m_nbWhiteKeys;
+		spx whiteKeySpacing = canvas.w / m_nbWhiteKeys;
 
 		float xScaleFactor = m_keyboardSourceSize.w / float(canvas.w);
 		float yScaleFactor = m_keyboardSourceSize.h / float(canvas.h);
@@ -417,7 +430,7 @@ namespace wg
 
 					float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_blackKeySourceHeight);
 
-					pDevice->stretchBlit(dst + canvas.pos(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
+					pDevice->stretchBlit(dst + canvas.pos(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, m_blackKeySourceHeight)/64);
 					pKey++;
 				}
 			}
@@ -454,7 +467,7 @@ namespace wg
 
 			float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_keyboardSourceSize.h);
 
-			pDevice->stretchBlit(dst + canvas.pos(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
+			pDevice->stretchBlit(dst + canvas.pos(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor)/64);
 
 			if (bForward)
 			{
