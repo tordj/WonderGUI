@@ -50,6 +50,9 @@ add_library( wondergui STATIC
 	baselibrary/base/wg3_nullgfxdevice.h
 	baselibrary/base/wg3_object.cpp
 	baselibrary/base/wg3_object.h
+	baselibrary/base/wg3_patches_t.cpp
+	baselibrary/base/wg3_patches_t.impl.h
+	baselibrary/base/wg3_patches_t.h
 	baselibrary/base/wg3_patches.cpp
 	baselibrary/base/wg3_patches.h
 	baselibrary/base/wg3_pointers.h

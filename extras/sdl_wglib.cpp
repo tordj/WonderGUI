@@ -156,7 +156,7 @@ namespace sdl_wglib
 
 	//____ LoadSurface() __________________________________________________________
 
-    wg::Surface_p LoadSurface( const char * path, const wg::SurfaceFactory * factory )
+    wg::Surface_p LoadSurface( const char * path, wg::SurfaceFactory * factory )
 	{
 		SDL_Surface* bmp = IMG_Load(path);
 		if (!bmp)
@@ -193,7 +193,7 @@ namespace sdl_wglib
 
 	//____ LoadStdWidgets() _____________________________________________________
 
-    std::map<std::string,WgWidget*> * LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const wg::SurfaceFactory* factory )
+    std::map<std::string,WgWidget*> * LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, wg::SurfaceFactory* factory )
 	{
 		const int HSLIDER_BTN_OFS 		= 1;
 		const int VSLIDER_BTN_OFS 		= HSLIDER_BTN_OFS + 19;
@@ -421,7 +421,7 @@ namespace sdl_wglib
 
 	//____ LoadBitmapFont() ____________________________________________________
 
-    wg::Font_p LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const wg::SurfaceFactory * factory )
+    wg::Font_p LoadBitmapFont( const char * pImgPath, const char * pSpecPath, wg::SurfaceFactory * factory )
 	{
 		//TODO: This leaks memory until we have ref-counted
 

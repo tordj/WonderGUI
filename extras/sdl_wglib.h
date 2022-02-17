@@ -36,12 +36,12 @@ namespace sdl_wglib
 	void 		TranslateEvent( SDL_Event& event );
 	void 		EndEvents();
 
-    wg::Surface_p LoadSurface( const char * path, const wg::SurfaceFactory * factory );
+    wg::Surface_p LoadSurface( const char * path, wg::SurfaceFactory * factory );
     bool		SavePNG( wg::Surface * pSurface, const char * path);
 
-    std::map<std::string,WgWidget*> *	LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const wg::SurfaceFactory * factory );
+    std::map<std::string,WgWidget*> *	LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, wg::SurfaceFactory * factory );
 
-    wg::Font_p	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const wg::SurfaceFactory * factory );
+    wg::Font_p	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, wg::SurfaceFactory * factory );
 	
 	int 		FileSize( const char * pPath );
 	void * 		LoadFile( const char * pPath );

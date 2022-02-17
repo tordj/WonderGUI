@@ -9,5 +9,6 @@ freetype/
 bench/log\.txt
 
 
-_kato_wg3/
+_kato_wg3/exports
+_kato_wg3/imports
 .DS_Store

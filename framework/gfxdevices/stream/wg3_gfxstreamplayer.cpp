@@ -88,7 +88,7 @@ namespace wg
 
 	std::tuple<int, const RectI*> GfxStreamPlayer::dirtyRects(CanvasRef canvas)
 	{
-		const Patches& patches = m_dirtyRects[(int)canvas];
+		const PatchesI& patches = m_dirtyRects[(int)canvas];
 
 		int size = patches.size();
 		const RectI* pRects = (const RectI*) patches.begin();
@@ -184,7 +184,7 @@ namespace wg
 				int nDirtyRects = m_pDevice->clipListSize();
 				const RectI* pDirtyRects = m_pDevice->clipList();
 
-				Patches& patches = m_dirtyRects[(int)canvasInfo.ref];
+				PatchesI& patches = m_dirtyRects[(int)canvasInfo.ref];
 				if (patches.isEmpty())
 				{
 					if (nDirtyRects > m_maxDirtyRects)

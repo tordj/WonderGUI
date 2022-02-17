@@ -140,6 +140,7 @@ namespace wg
 		}
 
 		_sendPixels(m_pEncoder, size, (uint8_t*) pBlob->data(), pitch);
+		m_pEncoder->flush();
 	}
 
 	StreamSurface::StreamSurface( GfxStreamEncoder * pEncoder,SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut) : Surface(flags)
@@ -159,8 +160,7 @@ namespace wg
 
 		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
 
-        // No _sendPixels() needed here, _copyFrom() calls pullPixels() which calls _sendPixels().
-
+		// No _sendPixels() needed here, _copyFrom() calls pullPixels() which calls _sendPixels().
 
 		if (m_pixelDescription.bits <= 8 || (flags & SurfaceFlag::Buffered))
 		{
@@ -184,6 +184,7 @@ namespace wg
 				m_pAlphaLayer = _genAlphaLayer((char*)pPixels, pitch);
 		}
 
+		m_pEncoder->flush();
 	}
 
 
@@ -231,8 +232,8 @@ namespace wg
 				m_pAlphaLayer = _genAlphaLayer((char*)pixelbuffer.pPixels, pitch);
 		}
 
-
 		pOther->freePixelBuffer(pixelbuffer);
+		m_pEncoder->flush();
 	}
 
 
@@ -242,6 +243,7 @@ namespace wg
 	{
 		_sendDeleteSurface();
 		m_pEncoder->freeObjectId(m_inStreamId);
+		m_pEncoder->flush();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -262,6 +264,7 @@ namespace wg
 			*m_pEncoder << mode;
 
 			Surface::setScaleMode(mode);
+			m_pEncoder->flush();
 		}
 	}
 
@@ -276,6 +279,7 @@ namespace wg
             *m_pEncoder << bTiling;
 
             Surface::setTiling(bTiling);
+			m_pEncoder->flush();
         }
         return true;
     }
@@ -331,7 +335,7 @@ namespace wg
 	void StreamSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
 		_sendPixels(m_pEncoder, buffer.rect, buffer.pPixels, buffer.pitch);
-
+		m_pEncoder->flush();
 	}
 
 	//____ freePixelBuffer() __________________________________________________
@@ -374,6 +378,7 @@ namespace wg
 		*m_pEncoder << m_inStreamId;
 		*m_pEncoder << region;
 		*m_pEncoder << col;
+		m_pEncoder->flush();
 
 		// Update local copy or alpha channel (if any)
 
@@ -462,6 +467,7 @@ namespace wg
 			*pEncoder << GfxStream::DataChunk{ 1024, m_pClut };
 
 		_sendPixels(pEncoder, m_size, (uint8_t*)m_pBlob->data(), m_pitch);
+		m_pEncoder->flush();
 		return true;
 	}
 
