@@ -745,7 +745,7 @@ namespace wg
 
     void StreamGfxDevice::blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const NinePatch& patch)
     {
-        uint16_t size = 16 + 16 + ( 16 + 16 + 10 + 10 );
+        uint16_t size = 16 + 8 + ( 16 + 8 + 10 + 10 );
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitNinePatch, size };
         (*m_pEncoder) << dstRect;
