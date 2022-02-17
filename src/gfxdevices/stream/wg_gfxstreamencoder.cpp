@@ -22,6 +22,8 @@
 
 #include <wg_gfxstreamencoder.h>
 
+#include <algorithm>
+
 namespace wg
 {
 	const TypeInfo GfxStreamEncoder::TYPEINFO = { "GfxStreamEncoder", &Object::TYPEINFO };

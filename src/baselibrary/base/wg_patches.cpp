@@ -24,8 +24,8 @@
 
 namespace wg
 {
-	template class PatchesT<pts>;
-	template class PatchesT<spx>;
+//	template class PatchesT<pts>;
+//	template class PatchesT<spx>;
 	template class PatchesT<int>;
 	template class PatchesT<float>;
 

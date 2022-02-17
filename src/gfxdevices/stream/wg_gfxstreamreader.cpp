@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <cstring>
+#include <algorithm>
 
 #include <wg_gfxstreamreader.h>
 #include <assert.h>
