@@ -63,7 +63,7 @@ namespace wg
 
 		void		setRememberSurfacesCreated(bool bRemember);
 
-		inline std::vector<Surface_p> surfacesCreated();
+		std::vector<Surface_p> surfacesCreated();
 
 	protected:
 		StreamSurfaceFactory( GfxStreamEncoder * pEncoder);
