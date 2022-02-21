@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <cstring>
+#include <algorithm>
 
 #include <wg_gfxstreamsplitter.h>
 #include <assert.h>
@@ -33,6 +34,11 @@ namespace wg
 
 	//____ create() ___________________________________________________________
 
+	GfxStreamSplitter_p GfxStreamSplitter::create()
+	{
+		return new GfxStreamSplitter();
+	}
+
 	GfxStreamSplitter_p GfxStreamSplitter::create(const std::initializer_list<CGfxOutStream_p>& outputs)
 	{
 		return new GfxStreamSplitter(outputs);
@@ -40,9 +46,13 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
+	GfxStreamSplitter::GfxStreamSplitter() : input(this)
+	{
+	}
+
 	GfxStreamSplitter::GfxStreamSplitter(const std::initializer_list<CGfxOutStream_p>& outputs) : input(this)
 	{
-		m_pOutputs = outputs;
+		m_outputs = outputs;
 	}
 
 	//____ Destructor _________________________________________________________
@@ -58,11 +68,33 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ clearOutputs() ________________________________________________________
+
+	void GfxStreamSplitter::clearOutputs()
+	{
+		m_outputs.clear();
+	}
+
+	//____ addOutput() ___________________________________________________________
+
+	void GfxStreamSplitter::addOutput( CGfxOutStream * pOutput )
+	{
+		m_outputs.push_back(pOutput);
+	}
+
+	//____ removeOutput() ________________________________________________________
+
+	void GfxStreamSplitter::removeOutput( CGfxOutStream * pOutput )
+	{
+		auto newEnd = std::remove( m_outputs.begin(), m_outputs.end(), pOutput );
+		m_outputs.erase(newEnd, m_outputs.end());
+	}
+
 	//____ _processStreamChunks() _____________________________________________
 
 	void GfxStreamSplitter::_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd)
 	{
-		for (auto& pOutput : m_pOutputs)
+		for (auto& pOutput : m_outputs)
 			pOutput->processChunks(pBegin, pEnd);
 	}
 

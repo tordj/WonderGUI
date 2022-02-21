@@ -95,7 +95,7 @@ namespace wg
 
 	//____ surfacesCreated() __________________________________________________
 
-	inline std::vector<Surface_p> StreamSurfaceFactory::surfacesCreated()
+	std::vector<Surface_p> StreamSurfaceFactory::surfacesCreated()
 	{
 		std::vector<Surface_p> vec;
 		vec.reserve(m_surfaceReferences.size());

@@ -51,6 +51,7 @@ void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvas);
 void playScroll(GfxDevice_p pDevice, RectI canvas );
 void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
 void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
+void playImageStreamingTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
 
 
 CoordSPX positionSprite(SizeSPX dimensions, int tick, int nb, int amount);
@@ -311,6 +312,8 @@ int main ( int argc, char** argv )
 //    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
 //    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
     playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+
+	playImageStreamingTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
 	//------------------------------------------------------
 	// Save stream to file
@@ -605,6 +608,38 @@ void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSD
 	pWGFormat->B_bits = 8 - pSDLFormat->Bloss;
 	pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
 }
+
+//____ playImageStreamingTest() _______________________________________________
+
+void playImageStreamingTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory )
+{
+	SDL_Surface * pLogoImg = IMG_Load( "IDR_TOPLOGO_NARROW_SUMMIT.png" );
+//    convertSDLFormat( &format, pFontSurf->format );
+
+	SizeI logoSize = SizeI(pLogoImg->w,pLogoImg->h);
+
+	SoftSurface_p pOrgSurf = SoftSurface::create( logoSize, PixelFormat::BGRA_8, (unsigned char*) pLogoImg->pixels, pLogoImg->pitch);
+	
+	SDL_FreeSurface( pLogoImg );
+
+	Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::BGRA_8 );
+
+	pLogoSurf->copyFrom(pOrgSurf, CoordI());
+	
+	SizeI canvasSize = pDevice->canvas(canvasRef).size;
+
+	
+	pDevice->beginRender();
+	pDevice->beginCanvasUpdate(canvasRef);
+	
+	pDevice->setBlitSource(pLogoSurf);
+	pDevice->blit( {0,0} );
+	
+	pDevice->endCanvasUpdate();
+	
+	pDevice->endRender();
+}
+
 
 //____ playSurfaceStressTest() _________________________________________________
 

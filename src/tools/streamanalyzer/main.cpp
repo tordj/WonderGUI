@@ -66,7 +66,9 @@ int main ( int argc, char** argv )
 
     // Load stream
 
-    g_pStreamBuffer = (char*) loadFile( /*argv[1]*/ "output.wax", &g_streamSize );
+//    g_pStreamBuffer = (char*) loadFile( argv[1], &g_streamSize );
+//	g_pStreamBuffer = (char*) loadFile( "output.wax", &g_streamSize );
+	g_pStreamBuffer = (char*) loadFile( "softubehwstream.dat", &g_streamSize );
 
     if( g_pStreamBuffer == NULL )
         return -1;
@@ -239,7 +241,7 @@ int main ( int argc, char** argv )
         {
             int bytesLeft = g_streamSize - (g_pStreamReader - g_pStreamBuffer);
         
-        int bytesToRead = std::min( {nBytes,bytesLeft, 130} );
+        int bytesToRead = std::min( {nBytes,bytesLeft} );
         
             memcpy( pDest, g_pStreamReader, bytesToRead );
             g_pStreamReader+= bytesToRead;
@@ -290,7 +292,8 @@ int main ( int argc, char** argv )
 	{
 		translateEvents( pInput, pRoot );
    
-		pStreamPump->pumpFrame();
+//		pStreamPump->pumpFrame();
+		pStreamPump->pumpAll();
 
 		g_pDisplay->setImage(nullptr);
         g_pDisplay->setImage(pStreamOutputCanvas);

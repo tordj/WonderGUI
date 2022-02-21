@@ -41,6 +41,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
+		static GfxStreamSplitter_p	create();
 		static GfxStreamSplitter_p	create( const std::initializer_list<CGfxOutStream_p>& outputs );
 
 		//.____ Components _______________________________________
@@ -52,8 +53,16 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Control ________________________________________________
+		
+		void	clearOutputs();
+		void	addOutput( CGfxOutStream * pOutput );
+		void	removeOutput( CGfxOutStream * pOutput );
+		
+		
 	protected:
 
+		GfxStreamSplitter();
 		GfxStreamSplitter(const std::initializer_list<CGfxOutStream_p>& outputs);
 		~GfxStreamSplitter();
 
@@ -62,7 +71,7 @@ namespace wg
 		Object *	_object() override;
 		const Object *	_object() const override;
 
-		std::vector<CGfxOutStream_p> m_pOutputs;
+		std::vector<CGfxOutStream_p> m_outputs;
 	};
 
 

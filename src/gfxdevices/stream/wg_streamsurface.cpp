@@ -203,6 +203,7 @@ namespace wg
 		}
 
 		_sendPixels(m_pEncoder, bp.size, (uint8_t*) pBlob->data(), pitch);
+		m_pEncoder->flush();
 	}
 
 	StreamSurface::StreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription )
@@ -221,8 +222,7 @@ namespace wg
 
 		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, bp.size, bp.size);
 
-        // No _sendPixels() needed here, _copyFrom() calls pullPixels() which calls _sendPixels().
-
+		// No _sendPixels() needed here, _copyFrom() calls pullPixels() which calls _sendPixels().
 
 		if (m_pixelDescription.bits <= 8 || bp.buffered)
 		{
@@ -246,6 +246,7 @@ namespace wg
 				m_pAlphaLayer = _genAlphaLayer((char*)pPixels, pitch);
 		}
 
+		m_pEncoder->flush();
 	}
 
 
@@ -304,8 +305,8 @@ namespace wg
 				m_pAlphaLayer = _genAlphaLayer((char*)pixelbuffer.pPixels, pitch);
 		}
 
-
 		pOther->freePixelBuffer(pixelbuffer);
+		m_pEncoder->flush();
 	}
 
 
@@ -315,6 +316,7 @@ namespace wg
 	{
 		_sendDeleteSurface();
 		m_pEncoder->freeObjectId(m_inStreamId);
+		m_pEncoder->flush();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -365,7 +367,7 @@ namespace wg
 	void StreamSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
 		_sendPixels(m_pEncoder, buffer.rect, buffer.pPixels, buffer.pitch);
-
+		m_pEncoder->flush();
 	}
 
 	//____ freePixelBuffer() __________________________________________________
@@ -417,6 +419,7 @@ namespace wg
 		*m_pEncoder << m_inStreamId;
 		*m_pEncoder << region;
 		*m_pEncoder << col;
+		m_pEncoder->flush();
 
 		// Update local copy or alpha channel (if any)
 
@@ -511,6 +514,7 @@ namespace wg
 			*pEncoder << GfxStream::DataChunk{ 1024, m_pClut };
 
 		_sendPixels(pEncoder, m_size, (uint8_t*)m_pBlob->data(), m_pitch);
+		m_pEncoder->flush();
 		return true;
 	}
 
