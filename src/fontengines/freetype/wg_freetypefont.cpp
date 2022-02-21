@@ -666,7 +666,7 @@ namespace wg
 		
 		BitmapCache * pCache = m_pCache ? m_pCache : Base::defaultBitmapCache();
 		
-		std::tie(pSurface,ofs) = pCache->getCacheSlot(width,height);
+		std::tie(pSurface,ofs) = pCache->getCacheSlot( {width,height} );
 				
 		pGlyph->pSurface = pSurface;
 		pGlyph->rect.x = ofs.x*64;

@@ -43,17 +43,18 @@ namespace wg
 
 	//____ Create _________________________________________________________________
 
-	BitmapCache_p BitmapCache::create( int maxSize )
+	BitmapCache_p BitmapCache::create( int maxSize, SurfaceFactory * pFactory )
 	{
-		auto * pCache = new BitmapCache( maxSize );
+		auto * pCache = new BitmapCache( maxSize, pFactory );
 		return BitmapCache_p(pCache);
 	}
 
 	//____ constructor ____________________________________________________________
 
-	BitmapCache::BitmapCache( int size )
+	BitmapCache::BitmapCache( int size, SurfaceFactory * pFactory )
 	{
-		m_cacheLimit = size;
+		m_cacheLimit	= size;
+		m_pFactory		= pFactory;
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -123,28 +124,28 @@ namespace wg
 
 	//____ getCacheSlot() _________________________________________________________
 
-	std::tuple<Surface_p, CoordI> BitmapCache::getCacheSlot( int width, int height )
+	std::tuple<Surface_p, CoordI> BitmapCache::getCacheSlot( SizeI size )
 	{
-		int category = height > 128 ? 9 : s_sizeToCategory[height];
+		int category = size.h > 128 ? 9 : s_sizeToCategory[size.h];
 
 		CacheSurf * pCacheSurf;
 
 		if( category == 9  )
-			pCacheSurf = _addCacheSurface( category, width, height );
+			pCacheSurf = _addCacheSurface( category, size.w, size.h );
 		else if(m_cacheSurfaces[category].empty())
 			pCacheSurf = _addCacheSurface(category, 1024, s_categoryHeight[category]);
 		else
 		{
 			auto& ref = m_cacheSurfaces[category].back();
 			
-			if( ref.capacity - ref.used >= width )
+			if( ref.capacity - ref.used >= size.w )
 				pCacheSurf = &ref;
 			else
 				pCacheSurf = _addCacheSurface( category, 1024, s_categoryHeight[category]);
 		}
 		
 		int ofs = pCacheSurf->used;
-		pCacheSurf->used += width;
+		pCacheSurf->used += size.w;
 		return std::make_tuple(pCacheSurf->pSurface, CoordI(ofs,0));
 	}
 

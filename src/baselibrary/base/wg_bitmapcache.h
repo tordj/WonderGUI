@@ -53,7 +53,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static BitmapCache_p	create( int maxSize );
+		static BitmapCache_p	create( int maxSize, SurfaceFactory * pFactory = nullptr );
 
 		//.____ Identification __________________________________________
 
@@ -74,10 +74,10 @@ namespace wg
 		void		addListener( BitmapCacheListener * pListener );
 		void		removeListener( BitmapCacheListener * pListener );
 		
-		std::tuple<Surface_p, CoordI> 	getCacheSlot(int width, int height);
+		std::tuple<Surface_p, CoordI> 	getCacheSlot( SizeI size );
 
 	protected:
-		BitmapCache( int maxSize );
+		BitmapCache( int maxSize, SurfaceFactory * pFactory );
 		virtual ~BitmapCache();
 
 		struct CacheSurf

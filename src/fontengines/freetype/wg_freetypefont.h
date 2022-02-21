@@ -93,7 +93,7 @@ namespace wg
 		//.____ Appearance ___________________________________________
 
 		inline bool 		setRenderMode( RenderMode mode );
-		inline RenderMode	renderMode( int size ) const { return m_renderMode; }
+		inline RenderMode	renderMode() const { return m_renderMode; }
 
 
 	private:
