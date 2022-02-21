@@ -24,6 +24,8 @@ add_library( wondergui
 			
 	base/wg_base.cpp
 	base/wg_base.h
+	base/wg_bitmapcache.cpp
+	base/wg_bitmapcache.h
 	base/wg_bitmapfont.cpp
 	base/wg_bitmapfont.h
 	base/wg_blob.cpp

@@ -39,6 +39,7 @@
 #include <wg_texttool.h>
 #include <wg_textstylemanager.h>
 #include <wg_skinslotmanager.h>
+#include <wg_bitmapcache.h>
 
 #include <iostream>
 #include <algorithm>
@@ -48,6 +49,8 @@ namespace wg
 	const TypeInfo	Base::TYPEINFO = { "Base", nullptr };
 
 	HostBridge*					Base::s_pHostBridge = nullptr;
+
+	BitmapCache_p				Base::s_pDefaultBitmapCache;
 
 	Base::Data *				Base::s_pData = 0;
 
@@ -136,10 +139,16 @@ namespace wg
 		delete s_pData->pMemStack;
 		delete s_pData;
 		s_pData = nullptr;
-
+				
 		SkinSlotManager::exit();
 		TextStyleManager::exit();
 
+		if( s_pDefaultBitmapCache )
+		{
+			s_pDefaultBitmapCache->clear();
+			s_pDefaultBitmapCache = nullptr;
+		}
+		
 		if (s_objectsCreated != s_objectsDestroyed)
 			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 
@@ -226,6 +235,17 @@ namespace wg
 	{
 		return s_pData->pInputHandler;
 	}
+
+	//____ defaultBitmapCache() __________________________________________________
+
+	BitmapCache_p Base::defaultBitmapCache()
+	{
+		if( s_pDefaultBitmapCache == nullptr )
+			s_pDefaultBitmapCache = BitmapCache::create(16*1024*1024);
+		
+		return s_pDefaultBitmapCache;
+	}
+
 
 	//____ defaultCaret() ______________________________________________________
 
@@ -382,7 +402,7 @@ namespace wg
 
 	void Base::_stopReceiveUpdates(Receiver* pReceiver)
 	{
-		s_updateReceivers.erase(std::remove(s_updateReceivers.begin(), s_updateReceivers.end(), pReceiver), s_updateReceivers.end());
+		s_updateReceivers.erase(std::remove(s_updateReceivers.begin(), s_updateReceivers.end(), pReceiver));
 	}
 
 

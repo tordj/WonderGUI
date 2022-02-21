@@ -53,6 +53,7 @@ namespace wg
 	class Context;
 	class Object;
 	class Receiver;
+	class BitmapCache;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
 	typedef	StrongPtr<NumberLayout>	NumberLayout_p;
@@ -61,6 +62,7 @@ namespace wg
 	typedef	StrongPtr<Caret>			Caret_p;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	StrongPtr<Context>			Context_p;
+	typedef	StrongPtr<BitmapCache>		BitmapCache_p;
 
 
 	class Error
@@ -108,7 +110,8 @@ namespace wg
 
 		static MsgRouter_p	msgRouter();
 		static InputHandler_p	inputHandler();
-
+		static BitmapCache_p	defaultBitmapCache();
+		
 		static void			setDefaultTextLayout( TextLayout * pTextLayout );
 		static TextLayout_p defaultTextLayout();
 
@@ -202,6 +205,7 @@ namespace wg
 
 		static std::vector<Receiver*>		s_updateReceivers;
 
+		static BitmapCache_p				s_pDefaultBitmapCache;
 
 		struct ObjectInfo
 		{

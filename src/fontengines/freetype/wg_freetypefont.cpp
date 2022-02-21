@@ -54,35 +54,15 @@ namespace wg
 
 	const TypeInfo FreeTypeFont::TYPEINFO = { "FreeTypeFont", &Font::TYPEINFO };
 
-	std::vector<FreeTypeFont*>	FreeTypeFont::s_instances;
+	int				FreeTypeFont::s_nInstances = 0;
 
-	FT_Library			FreeTypeFont::s_freeTypeLibrary;
-
-	std::vector<FreeTypeFont::CacheSurf>	FreeTypeFont::s_cacheSurfaces[10];
-
-
-	uint32_t			FreeTypeFont::s_cacheSurfacesCreated = 0;
-	int					FreeTypeFont::s_cacheSize = 0;
-	int					FreeTypeFont::s_cacheLimit = 0;
-
-	const uint8_t		FreeTypeFont::s_categoryHeight[9] = { 8, 12, 16, 24, 32, 48, 64, 96, 128 };
-
-	const uint8_t		FreeTypeFont::s_sizeToCategory[129] = { 0,0,0,0,0,0,0,0,0,
-																1,1,1,1,
-																2,2,2,2,
-																3,3,3,3,3,3,3,3,
-																4,4,4,4,4,4,4,4,
-																5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
-																6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
-																7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
-																8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8 };
-
+	FT_Library		FreeTypeFont::s_freeTypeLibrary;
 
 	//____ constructor ____________________________________________________________
 
-	FreeTypeFont::FreeTypeFont( Blob_p pFontFile, int faceIndex )
+	FreeTypeFont::FreeTypeFont( Blob_p pFontFile, int faceIndex, BitmapCache * pCache )
 	{
-        if( s_instances.empty() )
+        if( s_nInstances == 0 )
         {
             FT_Error err = FT_Init_FreeType(&s_freeTypeLibrary);
             if (err != 0)
@@ -90,9 +70,10 @@ namespace wg
                 //TODO: Error handling!
             }
         }
-        s_instances.push_back(this);
+        s_nInstances++;
 
 		m_pFontFile = pFontFile;
+		m_pCache 	= pCache;
 		m_size 			= 0;
 
 //		_growCachedFontSizes(c_maxFontSize);
@@ -125,6 +106,9 @@ namespace wg
 			FT_Face_Properties(m_ftFace, 1, properties);
 		}
 #endif
+		if( pCache == nullptr )
+			pCache = Base::defaultBitmapCache();
+		pCache->addListener(this);
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -139,13 +123,12 @@ namespace wg
 
 		FT_Done_Face( m_ftFace );
 
-		std::remove(s_instances.begin(), s_instances.end(), this);
-        if( s_instances.empty() )
-        {
-            clearCache();
+		s_nInstances--;
+        if( s_nInstances == 0 )
             FT_Done_FreeType(s_freeTypeLibrary);
-        }
 
+		BitmapCache * pCache = m_pCache ? m_pCache : Base::defaultBitmapCache();
+		pCache->removeListener(this);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -217,7 +200,7 @@ namespace wg
 	{
 		m_renderMode = mode;
 		_refreshRenderFlags();
-		clearCache();
+		_cacheCleared();
 		return true;
 	}
 
@@ -610,43 +593,9 @@ namespace wg
 		return &m_pCachedFontSizes[szOfs]->page[ch >> 7][ch & 0x7F];
 	}
 
-	//____ setCacheLimit() ________________________________________________________
+	//____ _cacheCleared() _____________________________________________
 
-	void FreeTypeFont::setCacheLimit(int maxBytes)
-	{
-		if (maxBytes < 0)
-		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "You can not set cache to a negative size!", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
-			return;
-		}
-
-		s_cacheLimit = maxBytes;
-
-		if (s_cacheLimit > 0 && s_cacheSize > s_cacheLimit)
-			_truncateCache(s_cacheLimit);
-	}
-
-	//____ clearCache() ___________________________________________________________
-
-	void FreeTypeFont::clearCache()
-	{
-		// Forget all cache references
-
-		for (auto pFont : s_instances)
-			pFont->_forgetAllCacheReferences();
-
-		// Clear cache
-
-		for (int i = 0; i < 10; i++)
-			s_cacheSurfaces[i].clear();
-
-		s_cacheSize = 0;
-
-	}
-
-	//____ _forgetAllCacheReferences() _____________________________________________
-
-	void FreeTypeFont::_forgetAllCacheReferences()
+	void FreeTypeFont::_cacheCleared()
 	{
 		auto pSizes = m_pCachedFontSizes;
 
@@ -669,9 +618,9 @@ namespace wg
 		}
 	}
 
-	//____ _forgetCacheReferences() _____________________________________________
+	//____ _cacheSurfacesRemoved() _____________________________________________
 
-	void FreeTypeFont::_forgetCacheReferences( int nRemovedSurfaces, Surface * pRemovedSurfaces[] )
+	void FreeTypeFont::_cacheSurfacesRemoved( int nRemovedSurfaces, Surface * pRemovedSurfaces[] )
 	{
 		auto pSizes = m_pCachedFontSizes;
 
@@ -712,97 +661,19 @@ namespace wg
 
 	void FreeTypeFont::_getCacheSlot( int width, int height, MyGlyph * pGlyph )
 	{
-		int category = height > 128 ? 9 : s_sizeToCategory[height];
-
-		CacheSurf * pCacheSurf;
-
-		if( category == 9  )
-			pCacheSurf = _addCacheSurface( category, width, height );
-		else if(s_cacheSurfaces[category].empty())
-			pCacheSurf = _addCacheSurface(category, 1024, s_categoryHeight[category]);
-		else 
-		{
-			auto& ref = s_cacheSurfaces[category].back();
-			
-			if( ref.capacity - ref.used >= width )
-				pCacheSurf = &ref;
-			else
-				pCacheSurf = _addCacheSurface( category, 1024, s_categoryHeight[category]);
-		}
+		Surface_p	pSurface;
+		CoordI		ofs;
 		
-		pGlyph->pSurface = pCacheSurf->pSurface;
-		pGlyph->rect.x = pCacheSurf->used*64;
-		pGlyph->rect.y = 0;
+		BitmapCache * pCache = m_pCache ? m_pCache : Base::defaultBitmapCache();
+		
+		std::tie(pSurface,ofs) = pCache->getCacheSlot(width,height);
+				
+		pGlyph->pSurface = pSurface;
+		pGlyph->rect.x = ofs.x*64;
+		pGlyph->rect.y = ofs.y*64;
 		pGlyph->rect.w = width*64;
 		pGlyph->rect.h = height*64;
-		
-		pCacheSurf->used += width;
 	}
-
-	//____ _addCacheSurface() __________________________________________________
-
-	FreeTypeFont::CacheSurf * FreeTypeFont::_addCacheSurface( int category, int width, int height )
-	{
-		auto pFactory = Base::activeContext()->surfaceFactory();
-		
-		Surface_p pSurf;
-		
-		if( category == 9 )
-			pSurf = pFactory->createSurface( {width,height}, PixelFormat::A_8 );
-		else
-			pSurf = pFactory->createSurface( {width,s_categoryHeight[category]}, PixelFormat::A_8 );
-	
-		s_cacheSize += width * height;
-
-		s_cacheSurfaces[category].emplace_back(pSurf,width);
-		return &s_cacheSurfaces[category].back();
-	}
-
-	//____ _truncateCache() ___________________________________________________
-
-	void FreeTypeFont::_truncateCache(int maxSize)
-	{
-		Surface*	removedSurfaces[32];
-		int			nRemovedSurfaces = 0;
-
-		// Remove cache entries
-
-		while (s_cacheSize > maxSize && nRemovedSurfaces < 32 )
-		{
-			// Find category with oldest cache entry
-
-			uint32_t lowestCreationNb = s_cacheSurfacesCreated;
-			int oldestCat = -1;
-			for (int cat = 0; cat < 10; cat++)
-			{
-				if (!s_cacheSurfaces[cat].empty() && s_cacheSurfaces[cat].front().creationNb < lowestCreationNb)
-					oldestCat = cat;
-			}
-
-			auto& toRemove = s_cacheSurfaces[oldestCat].front();
-
-			// Decreaste s_cacheSize
-
-			SizeI pixels = toRemove.pSurface->pixelSize();
-			s_cacheSize -= pixels.w * pixels.h;
-
-			// Remove surface and add to list of removed.
-
-			removedSurfaces[nRemovedSurfaces++] = toRemove.pSurface;
-			s_cacheSurfaces[oldestCat].erase(s_cacheSurfaces[oldestCat].begin());
-		}
-
-		// Remove references to bitmaps in removed cache surfaces
-
-		for (auto pFont : s_instances)
-			pFont->_forgetCacheReferences(nRemovedSurfaces, removedSurfaces);
-
-		// Continue recursively if we need to remove more than we could in this round.
-
-		if (s_cacheSize > maxSize)
-			_truncateCache(maxSize);
-	}
-
 
 	//____ _growCachedFontSizes() ________________________________________________
 
