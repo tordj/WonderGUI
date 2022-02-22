@@ -21,6 +21,7 @@ cd baselibrary/base
 cp wg_base.* \
    wg_object.* \
    wg_bitmapfont.* \
+   wg_bitmapcache.* \
    wg_blob.* \
    wg_canvaslayers.* \
    wg_chain.* \

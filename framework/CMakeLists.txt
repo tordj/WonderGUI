@@ -5,6 +5,8 @@ add_library( wondergui STATIC
 
 	baselibrary/base/wg3_base.cpp
 	baselibrary/base/wg3_base.h
+	baselibrary/base/wg3_bitmapcache.cpp
+	baselibrary/base/wg3_bitmapcache.h
 	baselibrary/base/wg3_bitmapfont.cpp
 	baselibrary/base/wg3_bitmapfont.h
 	baselibrary/base/wg3_blob.cpp
