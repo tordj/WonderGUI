@@ -83,7 +83,7 @@ int main ( int argc, char** argv )
 	SDL_Init(SDL_INIT_VIDEO);
 
 	int posX = 100, posY = 100, width = 640, height = 480;
-	SDL_Window * pWin = SDL_CreateWindow("WonderGUI Stream Generator", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
+	SDL_Window * pWin = SDL_CreateWindow("WonderGUI Stream Analyzer", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
 
@@ -245,6 +245,8 @@ int main ( int argc, char** argv )
         
             memcpy( pDest, g_pStreamReader, bytesToRead );
             g_pStreamReader+= bytesToRead;
+		
+//			std::cout << "Dispatcher: asked: " << nBytes << " gave: " << bytesToRead << std::endl;
             return bytesToRead;
         
         } );
@@ -294,9 +296,9 @@ int main ( int argc, char** argv )
    
 		bool pumpAgain = true;
 //		while( pumpAgain )
-//			pumpAgain = pStreamPump->pumpFrame();
+			pumpAgain = pStreamPump->pumpFrame();
 		
-		pStreamPump->pumpAll();
+//		pStreamPump->pumpAll();
 
 		g_pDisplay->setImage(nullptr);
         g_pDisplay->setImage(pStreamOutputCanvas);
@@ -313,6 +315,16 @@ int main ( int argc, char** argv )
 		SDL_UpdateWindowSurfaceRects(pWin, &r, 1);
 
 
+		int nRects;
+		const RectI* pRects;
+
+		std::tie(nRects, pRects) = pStreamPlayer->dirtyRects(CanvasRef::Canvas_1);
+
+//		for(int i = 0 ; i < nRects ; i++ )
+//			std::cout << "" << pRects[i].x << " " << pRects[i].y << " " << pRects[i].w << " " << pRects[i].h << std::endl;
+
+//		std::cout << "Bytes in buffer:" << pStreamReader->bytesInBuffer() << std::endl;
+		
 //		updateWindowRects( pRoot, pWin );
 
 //		pStreamLogger->logAll();

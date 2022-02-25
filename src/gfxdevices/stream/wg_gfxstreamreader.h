@@ -56,6 +56,12 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Misc _____________________________________________________
+		
+		inline int	bufferCapacity() const { return m_bufferSize; };
+		inline bool	chunkInBuffer() const { return _hasStreamChunks(); };
+		int			bytesInBuffer() const;
+		
 	protected:
 
 		GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder );
@@ -64,10 +70,10 @@ namespace wg
 		Object *    _object() override { return this; }
 		const Object * _object() const override { return this; }
 
-		bool _hasStreamChunks() const override;
+		bool 	_hasStreamChunks() const override;
 		std::tuple<int, const DataSegment*> _showStreamChunks() override;
-		void _discardStreamChunks(int bytes) override;
-		bool _fetchStreamChunks() override;
+		void 	_discardStreamChunks(int bytes) override;
+		bool 	_fetchStreamChunks() override;
 
 
 		void		_fetchData();

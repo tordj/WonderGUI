@@ -62,6 +62,16 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ bytesInBuffer() ____________________________________________________
+
+	int GfxStreamBuffer::bytesInBuffer() const
+	{
+		if( m_readOfs <= m_writeOfs )
+			return m_writeOfs - m_readOfs;
+		else
+			return m_writeOfs + m_bufferSize - m_readOfs;
+	}
+
 	//____ _processStreamChunks() _____________________________________________
 
 	void GfxStreamBuffer::_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd)

@@ -30,6 +30,8 @@
 #include <wg_color.h>
 #include <wg_cgfxinstream.h>
 
+#include <cstring>
+
 namespace wg
 {
 	class GfxStreamDecoder;

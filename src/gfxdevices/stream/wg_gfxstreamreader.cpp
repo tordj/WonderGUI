@@ -65,6 +65,15 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ bytesInBuffer() ____________________________________________________
+
+	int GfxStreamReader::bytesInBuffer() const
+	{
+		if( m_readOfs <= m_writeOfs )
+			return m_writeOfs - m_readOfs;
+		else
+			return m_writeOfs + m_bufferSize - m_readOfs;
+	}
 
 	//____ _fetchData() _______________________________________________________
 
@@ -160,7 +169,7 @@ namespace wg
 	void GfxStreamReader::_discardStreamChunks(int bytes)
 	{
 		m_readOfs = (m_readOfs + bytes) % m_bufferSize;
-		if (m_readOfs < m_processedOfs)
+		if (m_readOfs <= m_processedOfs)
 			m_bufferOverflow = 0;
 	}
 

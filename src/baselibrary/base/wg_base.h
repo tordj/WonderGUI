@@ -136,6 +136,8 @@ namespace wg
 
 		const static TypeInfo	TYPEINFO;
 
+		static bool			isInitialized() { return s_pData != 0; }
+
 		static void			update( int64_t timestamp_microseconds );
 
 		static char *		memStackAlloc( int bytes );
