@@ -292,7 +292,10 @@ int main ( int argc, char** argv )
 	{
 		translateEvents( pInput, pRoot );
    
-//		pStreamPump->pumpFrame();
+		bool pumpAgain = true;
+//		while( pumpAgain )
+//			pumpAgain = pStreamPump->pumpFrame();
+		
 		pStreamPump->pumpAll();
 
 		g_pDisplay->setImage(nullptr);

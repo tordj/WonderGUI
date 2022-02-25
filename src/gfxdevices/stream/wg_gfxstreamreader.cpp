@@ -98,7 +98,7 @@ namespace wg
 
 		int unprocessedData = ((m_writeOfs - m_processedOfs + m_bufferSize) % m_bufferSize);
 
-		while (unprocessedData > 4)
+		while (unprocessedData >= 4)
 		{
 			int chunkSize = (* (uint16_t*)&m_pBuffer[(m_processedOfs + 2) % m_bufferSize]) + 4;
 
