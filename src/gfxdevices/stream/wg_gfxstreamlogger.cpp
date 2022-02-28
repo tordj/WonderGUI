@@ -187,12 +187,10 @@ namespace wg
 				Gradient gradient;
 				
 				*m_pDecoder >> rect;
-				*m_pDecoder >> gradient.topLeft;
-				*m_pDecoder >> gradient.topRight;
-				*m_pDecoder >> gradient.bottomRight;
-				*m_pDecoder >> gradient.bottomLeft;
+				*m_pDecoder >> gradient;
 
 				_printRect(  "    rect         ", rect );
+				m_charStream << "    isValid      " << gradient.isValid << std::endl;
 				_printColor( "    topLeft      ", gradient.topLeft );
 				_printColor( "    topRight     ", gradient.topRight );
 				_printColor( "    bottomRight  ", gradient.bottomRight );
