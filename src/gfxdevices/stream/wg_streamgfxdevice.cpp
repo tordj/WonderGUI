@@ -207,12 +207,9 @@ namespace wg
     {
         GfxDevice::setTintGradient(rect, gradient);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, 16 + 4*8 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, 16 + 34 };
         (*m_pEncoder) << rect;
-        (*m_pEncoder) << gradient.topLeft;
-        (*m_pEncoder) << gradient.topRight;
-        (*m_pEncoder) << gradient.bottomRight;
-        (*m_pEncoder) << gradient.bottomLeft;
+        (*m_pEncoder) << gradient;
     }
 
     //____ clearTintGradient() _____________________________________________________

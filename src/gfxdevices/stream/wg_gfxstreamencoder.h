@@ -25,6 +25,10 @@
 #pragma once
 
 #include <wg_cgfxoutstream.h>
+#include <wg_types.h>
+#include <wg_geo.h>
+#include <wg_color.h>
+#include <wg_gradient.h>
 
 namespace wg
 {
@@ -80,6 +84,7 @@ namespace wg
 		GfxStreamEncoder& operator<< (const RectF&);
 		GfxStreamEncoder& operator<< (const BorderI&);
 		GfxStreamEncoder& operator<< (const Border&);
+		GfxStreamEncoder& operator<< (const Gradient&);
 
 		GfxStreamEncoder& operator<< (HiColor);
 		GfxStreamEncoder& operator<< (Direction);

@@ -259,10 +259,7 @@ namespace wg
 			Gradient gradient;
 			
 			*m_pDecoder >> rect;
-			*m_pDecoder >> gradient.topLeft;
-			*m_pDecoder >> gradient.topRight;
-			*m_pDecoder >> gradient.bottomRight;
-			*m_pDecoder >> gradient.bottomLeft;
+			*m_pDecoder >> gradient;
 			
 			m_pDevice->setTintGradient(rect, gradient );
 		   break;

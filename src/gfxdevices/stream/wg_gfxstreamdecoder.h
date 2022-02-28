@@ -28,6 +28,7 @@
 #include <wg_types.h>
 #include <wg_geo.h>
 #include <wg_color.h>
+#include <wg_gradient.h>
 #include <wg_cgfxinstream.h>
 
 #include <cstring>
@@ -80,6 +81,7 @@ namespace wg
 		GfxStreamDecoder& operator>> (RectF&);
 		GfxStreamDecoder& operator>> (BorderI&);
 		GfxStreamDecoder& operator>> (Border&);
+		GfxStreamDecoder& operator>> (Gradient&);
 
 		GfxStreamDecoder& operator>> (HiColor&);
 		GfxStreamDecoder& operator>> (Direction&);

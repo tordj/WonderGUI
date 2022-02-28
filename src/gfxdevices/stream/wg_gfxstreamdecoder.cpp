@@ -195,6 +195,15 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (Gradient& gradient)
+	{
+		* this >> gradient.topLeft;
+		* this >> gradient.topRight;
+		* this >> gradient.bottomRight;
+		* this >> gradient.bottomLeft;
+		* this >> gradient.isValid;
+		return *this;
+	}
 
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (HiColor& color)
 	{

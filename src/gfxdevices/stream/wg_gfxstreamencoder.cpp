@@ -222,6 +222,17 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const Gradient& gradient)
+	{
+		* this << gradient.topLeft;
+		* this << gradient.topRight;
+		* this << gradient.bottomRight;
+		* this << gradient.bottomLeft;
+		* this << gradient.isValid;
+		return *this;
+	}
+
+
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (Direction d)
 	{
 		_pushShort((short)d);
