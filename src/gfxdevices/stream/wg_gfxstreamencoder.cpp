@@ -167,6 +167,13 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const CoordS& c)
+	{
+		_pushShort(c.x);
+		_pushShort(c.y);
+		return *this;
+	}
+
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const CoordI& c)
 	{
 		_pushInt(c.x);
@@ -181,6 +188,13 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const SizeS& sz)
+	{
+		_pushShort(sz.w);
+		_pushShort(sz.h);
+		return *this;
+	}
+
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const SizeI& sz)
 	{
 		_pushInt(sz.w);
@@ -192,6 +206,15 @@ namespace wg
 	{
 		_pushFloat(sz.w);
 		_pushFloat(sz.h);
+		return *this;
+	}
+
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const RectS& rect)
+	{
+		_pushShort(rect.x);
+		_pushShort(rect.y);
+		_pushShort(rect.w);
+		_pushShort(rect.h);
 		return *this;
 	}
 
@@ -210,6 +233,15 @@ namespace wg
 		_pushFloat(rect.y);
 		_pushFloat(rect.w);
 		_pushFloat(rect.h);
+		return *this;
+	}
+
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const BorderS& border)
+	{
+		_pushShort(border.top);
+		_pushShort(border.right);
+		_pushShort(border.bottom);
+		_pushShort(border.left);
 		return *this;
 	}
 

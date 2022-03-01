@@ -39,21 +39,25 @@ namespace wg
 
 	typedef CoordT<pts>		Coord;
 	typedef CoordT<spx>		CoordSPX;
+	typedef	CoordT<short>	CoordS;
 	typedef	CoordT<int>		CoordI;
 	typedef CoordT<float>	CoordF;
 
 	typedef BorderT<pts>	Border;
 	typedef BorderT<spx>	BorderSPX;
+	typedef BorderT<short>	BorderS;
 	typedef BorderT<int>	BorderI;
 	typedef BorderT<float>	BorderF;
 
 	typedef	SizeT<pts>		Size;
 	typedef	SizeT<spx>		SizeSPX;
+	typedef	SizeT<short>	SizeS;
 	typedef	SizeT<int>		SizeI;
 	typedef SizeT<float>	SizeF;
 
 	typedef	RectT<pts>		Rect;
 	typedef	RectT<spx>		RectSPX;
+	typedef	RectT<short>	RectS;
 	typedef	RectT<int>		RectI;
 	typedef RectT<float>	RectF;
 

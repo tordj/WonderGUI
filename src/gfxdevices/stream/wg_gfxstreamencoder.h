@@ -77,12 +77,16 @@ namespace wg
 		GfxStreamEncoder& operator<< (float);
 		GfxStreamEncoder& operator<< (bool);
 
+		GfxStreamEncoder& operator<< (const CoordS&);
 		GfxStreamEncoder& operator<< (const CoordI&);
 		GfxStreamEncoder& operator<< (const CoordF&);
+		GfxStreamEncoder& operator<< (const SizeS&);
 		GfxStreamEncoder& operator<< (const SizeI&);
 		GfxStreamEncoder& operator<< (const SizeF&);
+		GfxStreamEncoder& operator<< (const RectS&);
 		GfxStreamEncoder& operator<< (const RectI&);
 		GfxStreamEncoder& operator<< (const RectF&);
+		GfxStreamEncoder& operator<< (const BorderS&);
 		GfxStreamEncoder& operator<< (const BorderI&);
 		GfxStreamEncoder& operator<< (const Border&);
 		GfxStreamEncoder& operator<< (const Gradient&);

@@ -74,12 +74,16 @@ namespace wg
 		GfxStreamDecoder& operator>> (float&);
 		GfxStreamDecoder& operator>> (bool&);
 
+		GfxStreamDecoder& operator>> (CoordS&);
 		GfxStreamDecoder& operator>> (CoordI&);
 		GfxStreamDecoder& operator>> (CoordF&);
+		GfxStreamDecoder& operator>> (SizeS&);
 		GfxStreamDecoder& operator>> (SizeI&);
 		GfxStreamDecoder& operator>> (SizeF&);
+		GfxStreamDecoder& operator>> (RectS&);
 		GfxStreamDecoder& operator>> (RectI&);
 		GfxStreamDecoder& operator>> (RectF&);
+		GfxStreamDecoder& operator>> (BorderS&);
 		GfxStreamDecoder& operator>> (BorderI&);
 		GfxStreamDecoder& operator>> (Border&);
 		GfxStreamDecoder& operator>> (Gradient&);

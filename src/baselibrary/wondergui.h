@@ -45,7 +45,6 @@
 #include <wg_gfxstream.h>
 #include <wg_gfxstreamlogger.h>
 #include <wg_gfxstreamplayer.h>
-#include <wg_gfxstreamplug.h>
 #include <wg_gfxstreamreader.h>
 #include <wg_gfxstreamwriter.h>
 #include <wg_gradient.h>

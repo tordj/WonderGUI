@@ -139,6 +139,13 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordS& coord)
+	{
+		coord.x = _pullShort();
+		coord.y = _pullShort();
+		return *this;
+	}
+
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordI& coord)
 	{
 		coord.x = _pullInt();
@@ -153,6 +160,13 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (SizeS& sz)
+	{
+		sz.w = _pullShort();
+		sz.h = _pullShort();
+		return *this;
+	}
+
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (SizeI& sz)
 	{
 		sz.w = _pullInt();
@@ -164,6 +178,15 @@ namespace wg
 	{
 		sz.w = _pullFloat();
 		sz.h = _pullFloat();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (RectS& rect)
+	{
+		rect.x = _pullShort();
+		rect.y = _pullShort();
+		rect.w = _pullShort();
+		rect.h = _pullShort();
 		return *this;
 	}
 
@@ -182,6 +205,15 @@ namespace wg
 		rect.y = _pullFloat();
 		rect.w = _pullFloat();
 		rect.h = _pullFloat();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (BorderS& border)
+	{
+		border.top = _pullShort();
+		border.right = _pullShort();
+		border.bottom = _pullShort();
+		border.left = _pullShort();
 		return *this;
 	}
 
