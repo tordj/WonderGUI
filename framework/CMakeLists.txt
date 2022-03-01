@@ -40,6 +40,8 @@ add_library( wondergui STATIC
 	baselibrary/base/wg3_gfxdevice.h
 	baselibrary/base/wg3_gradient.cpp
 	baselibrary/base/wg3_gradient.h
+	baselibrary/base/wg3_gridwalker.cpp
+	baselibrary/base/wg3_gridwalker.h
 	baselibrary/base/wg3_hostbridge.h
 	baselibrary/base/wg3_internal.h
 	baselibrary/base/wg3_mempool.cpp

@@ -47,7 +47,7 @@ namespace wg
 		inline void setPixel(int pixelValue) { qpix = pixelValue << 2; }
 		inline void setPoint(int pointValue) { qpix = pointValue * MU::qpixPerPoint(); }
 
-		static inline MU fromPX(int pixel) { MU p; p.qpix = pixel << 2; return p; }
+		static inline MU fromPX(int pixel) { MU p; p.qpix = (int)(pixel * 4); return p; }
 		static inline MU fromPX(float pixel) { MU p; p.qpix = (int)(pixel * 4); return p; }
 		static inline MU fromPX(double pixel) { MU p; p.qpix = (int)(pixel * 4); return p; }
 		static inline MU fromQpix(int qpixValue) { MU p; p.qpix = qpixValue; return p; }

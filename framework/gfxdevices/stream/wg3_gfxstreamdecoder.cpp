@@ -81,6 +81,14 @@ namespace wg
 		_skipBytes(bytes);
 	}
 
+	//____ skip() _____________________________________________________________
+
+	void GfxStreamDecoder::align()
+	{
+		if( ( std::intptr_t(m_pDataRead) & 0x1) == 1 )
+			_skipBytes(1);
+	}
+
 
 	//____ operator>> _________________________________________________________
 

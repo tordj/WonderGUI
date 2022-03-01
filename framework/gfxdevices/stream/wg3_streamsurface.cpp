@@ -520,7 +520,7 @@ namespace wg
 
 	void StreamSurface::_sendPixels(GfxStreamEncoder* pEncoder, RectI rect, const uint8_t * pSource, int pitch)
 	{
-		*pEncoder << GfxStream::Header{ GfxChunkId::BeginSurfaceUpdate, 10 };
+		*pEncoder << GfxStream::Header{ GfxChunkId::BeginSurfaceUpdate, 18 };
 		*pEncoder << m_inStreamId;
 		*pEncoder << rect;
 
@@ -535,7 +535,7 @@ namespace wg
 			uint16_t chunkSize = min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
 			dataSize -= chunkSize;
 
-			*pEncoder << GfxStream::Header{ GfxChunkId::SurfacePixels, chunkSize };
+			*pEncoder << GfxStream::Header{ GfxChunkId::SurfacePixels, uint16_t((chunkSize+1)&0xFFFE) };
 
 			while (chunkSize > 0)
 			{
@@ -554,6 +554,8 @@ namespace wg
 					pLine += pitch;
 				}
 			}
+			
+			pEncoder->align();
 		}
 
 		*pEncoder << GfxStream::Header{ GfxChunkId::EndSurfaceUpdate, 0 };

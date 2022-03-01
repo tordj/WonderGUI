@@ -49,17 +49,18 @@ namespace wg
 
 		//.____ Rendering ____________________________________________
 
-		bool			setSize( MU size ) override;
-		MU				size() override;
+		bool			setSize( spx size ) override;
+		spx				size() override;
 
-		MU				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
-		Glyph_p			getGlyph( uint16_t chr ) override;
+		void				getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) override;
+		void				getGlyphWithBitmap(uint16_t chr, Glyph& glyph) override;
+		spx					kerning(Glyph& leftGlyph, Glyph& rightGlyph) override;
 
-		MU				lineGap() override;
-		MU				whitespaceAdvance() override;
-		MU				maxAdvance() override;
-		MU				maxAscend() override;
-		MU				maxDescend() override;
+		spx				lineGap() override;
+		spx				whitespaceAdvance() override;
+		spx 			maxAdvance() override;
+		spx				maxAscend() override;
+		spx				maxDescend() override;
 
 		//.____ Misc ___________________________________________________________
 
@@ -69,23 +70,9 @@ namespace wg
 		bool			isMonochrome() override;
 		bool			hasGlyph( uint16_t chr ) override;
 
-
-
-
 	protected:
 		DummyFont();
 		~DummyFont();
-
-		class DummyGlyph : public Glyph
-		{
-		public:
-			DummyGlyph( Font * pFont );
-
-			const GlyphBitmap * getBitmap() override { return &m_src; }
-			GlyphBitmap	m_src;
-		};
-
-		DummyGlyph	m_glyph;
 
 	};
 

@@ -69,6 +69,15 @@ namespace wg
 		m_size = 0;
 	}
 
+	//____ align() ____________________________________________________________
+
+	void GfxStreamEncoder::align()
+	{
+		if( (m_size & 0x1) == 1 )
+			_pushChar(0);
+
+	}
+
 	//____ allocObjectId() ____________________________________________________
 
 	uint16_t GfxStreamEncoder::allocObjectId()

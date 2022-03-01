@@ -234,7 +234,8 @@ namespace wg
         }
 
         m_texture = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:textureDescriptor];
-
+        [textureDescriptor release];
+        
         // Create the clut texture
         
         if( m_pClut )
@@ -247,6 +248,8 @@ namespace wg
             clutDescriptor.storageMode   = MTLStorageModePrivate;
 
             m_clutTexture = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:clutDescriptor];
+            
+            [clutDescriptor release];
         }
 
         // Copy from buffers to textures (pixels and cluts)
@@ -287,6 +290,7 @@ namespace wg
             [blitCommandEncoder generateMipmapsForTexture:m_texture];
         
         [blitCommandEncoder endEncoding];
+        blitCommandEncoder = nil;
 
         m_bTextureSyncInProgress = true;
         
@@ -297,6 +301,7 @@ namespace wg
             m_bTextureSyncInProgress = false;
         }];
         [commandBuffer commit];
+        commandBuffer = nil;
     }
 
     //____ _setPixelDetails() __________________________________________________________
@@ -366,11 +371,11 @@ namespace wg
 	{
 		// Free the stuff
 
-        m_texture = nil;
-        m_textureBuffer = nil;
+        [m_texture release];
+        [m_textureBuffer release];
         
-		m_clutTexture = nil;
-        m_clutBuffer = nil;
+        [m_clutTexture release];
+        [m_clutBuffer release];
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -542,11 +547,12 @@ namespace wg
                                 destinationBytesPerRow: m_pixelSize * m_size.w
                                 destinationBytesPerImage: m_pixelSize * m_size.w * m_size.h ];
         [blitCommandEncoder endEncoding];
+        blitCommandEncoder = nil;
 
         [commandBuffer commit];
 
         [commandBuffer waitUntilCompleted];
-
+        commandBuffer = nil;
         m_bBufferNeedsSync = false;
 
     }
@@ -585,7 +591,8 @@ namespace wg
 //            [blitCommandEncoder generateMipmapsForTexture:m_texture];
         
         [blitCommandEncoder endEncoding];
-
+        blitCommandEncoder = nil;
+        
         m_bTextureSyncInProgress = true;
         
         // Add a completion handler and commit the command buffer.
@@ -595,6 +602,7 @@ namespace wg
             m_bTextureSyncInProgress = false;
         }];
         [commandBuffer commit];
+        commandBuffer = nil;
         
         _waitForSyncedTexture();
     }

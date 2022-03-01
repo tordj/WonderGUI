@@ -1475,8 +1475,9 @@ int WgText::_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextL
 					// Check so a hyphen will fit on the line as well, otherwise we can't break here.
 					// We don't take kerning into account here, not so important.
 
-					wg::Glyph_p pHyphen = pen.GetFont()->getGlyph( '-' );
-                    if( !pHyphen || (pen.GetPosX() + pHyphen->advance().px()) > maxWidth )
+					wg::Glyph hyphen;
+					pen.GetFont()->getGlyphWithoutBitmap( '-', hyphen );
+                    if( !hyphen.pFont || (pen.GetPosX() + hyphen.advance/64) > maxWidth )
 						break;			// Can't break here, hyphen wouldn't fit on line.
 				}
 
@@ -1507,7 +1508,7 @@ int WgText::_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextL
 			// Check if we need to put a softbreak.
 
 //			Uint32 len = pen.GetBlitPosX() + pen.GetGlyph()->rect.w; // No advance on last character of line, just bearingX + width
-            int len = pen.GetPosX() + pen.GetGlyph()->advance().px();
+            int len = pen.GetPosX() + pen.GetGlyph().advance/64;
 			if( len > maxWidth )
 			{
 				if( pbp != 0 && pbp != pLineStart )

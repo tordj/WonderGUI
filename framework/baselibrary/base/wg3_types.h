@@ -70,6 +70,12 @@ namespace wg
 	#define IS_LITTLE_ENDIAN 0
 	#endif
 
+	typedef	float	pts;
+	typedef int		spx;
+
+
+	static const int spx_max = 0x7FFFFFC0;	// On pixel boundary with margin for rounding operation.
+
 	template<typename T> inline T min(const T &a, const T &b) { return a < b ? a : b; }
 	template<typename T> inline T min(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
 	template<typename T> inline T max(const T &a, const T &b) { return a > b ? a : b; }
@@ -415,9 +421,18 @@ namespace wg
 
 	enum class SearchMode	//. autoExtras
 	{
-		MarkPolicy,			///< Perform a mark test on Widget.
-		Geometry,				///< Goes strictly on geometry, ignores alpha.
-		ActionTarget,		///< Like MARKPOLICY, but takes modality into account.
+		MarkPolicy,			///< Perform a mark test on widget according to widgets MarkPolicyh.
+		Geometry,			///< Goes strictly on geometry, ignores markPolicy.
+		ActionTarget,		///< Like MarkPolicy, but takes modality into account.
+	};
+
+	//____ MarkPolicy ____________________________________________________________
+
+	enum class MarkPolicy : uint8_t	//. autoExtras
+	{
+		Ignore,				///< Widget can not be marked, hovered or pressed by pointer.
+		AlphaTest,			///< An alpha-test is performed to determine if widget is marked.
+		Geometry			///< Widget is marked if pointer is within its geometry.
 	};
 
 	//____ Placement _____________________________________________________________
@@ -565,6 +580,7 @@ namespace wg
 
 		Select,						// Non-value widget triggered, like a button being pressed.
 		Toggle,						// Boolean value widget toggled, like for checkboxes, radiobuttons etc.
+		ScrollbarMove,
 		ValueUpdate,					// Value of widget changed, like for editvalue, animations, sliders etc
 		RangeUpdate,					// Range widget updated, such as scrollbar, scrollpanel, rangesliders etc.
 

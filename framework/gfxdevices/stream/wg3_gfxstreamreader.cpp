@@ -64,6 +64,15 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ bytesInBuffer() ____________________________________________________
+
+	int GfxStreamReader::bytesInBuffer() const
+	{
+		if( m_readOfs <= m_writeOfs )
+			return m_writeOfs - m_readOfs;
+		else
+			return m_writeOfs + m_bufferSize - m_readOfs;
+	}
 
 	//____ _fetchData() _______________________________________________________
 
@@ -97,7 +106,7 @@ namespace wg
 
 		int unprocessedData = ((m_writeOfs - m_processedOfs + m_bufferSize) % m_bufferSize);
 
-		while (unprocessedData > 4)
+		while (unprocessedData >= 4)
 		{
 			int chunkSize = (* (uint16_t*)&m_pBuffer[(m_processedOfs + 2) % m_bufferSize]) + 4;
 
@@ -159,7 +168,7 @@ namespace wg
 	void GfxStreamReader::_discardStreamChunks(int bytes)
 	{
 		m_readOfs = (m_readOfs + bytes) % m_bufferSize;
-		if (m_readOfs < m_processedOfs)
+		if (m_readOfs <= m_processedOfs)
 			m_bufferOverflow = 0;
 	}
 

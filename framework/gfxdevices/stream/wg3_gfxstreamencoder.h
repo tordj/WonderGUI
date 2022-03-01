@@ -51,6 +51,7 @@ namespace wg
 
 		void		setStream(CGfxOutStream* pStream);
 		void		flush();
+		void		align();
 
 		uint16_t	allocObjectId();
 		void		freeObjectId(uint16_t id);

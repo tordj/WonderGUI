@@ -30,6 +30,8 @@
 #include <wg3_color.h>
 #include <wg3_cgfxinstream.h>
 
+#include <cstring>
+
 namespace wg
 {
 	class GfxStreamDecoder;
@@ -59,6 +61,7 @@ namespace wg
 		GfxStream::Header	peek();
 
 		void				skip(int bytes);
+		void				align();
 
 		//.____ Operators _____________________________________________
 

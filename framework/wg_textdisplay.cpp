@@ -519,8 +519,8 @@ void WgTextDisplay::_bringCursorInView()
 	int size = int(attr.size) * m_scale >> WG_SCALE_BINALS;
 
     attr.pFont->setSize(wg::MU::fromPX(size));
-    int glyphHeight = attr.pFont->maxAdvance().px() + attr.pFont->maxDescend().px();
-    int glyphWidth = attr.pFont->whitespaceAdvance().px();
+    int glyphHeight = attr.pFont->maxAdvance()/64 + attr.pFont->maxDescend()/64;
+    int glyphWidth = attr.pFont->whitespaceAdvance()/64;
 
 	if(m_pSkin)
 		cursorPos += _skinContentOfs( m_pSkin, m_state, m_scale);

@@ -44,9 +44,7 @@ cp wg_base.* \
    wg_memstack.* \
    wg_nullgfxdevice.* \
    wg_patches.* \
-   wg_patches_t.* \
    wg_pointers.* \
-   wg_mu.* \
    wg_skinslotmanager.* \
    wg_string.* \
    wg_strongcomponentptr.* \

@@ -92,7 +92,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		virtual SurfaceFactory_p	surfaceFactory() = 0;
-		
+
 		//.____ Geometry _________________________________________________
 
 		virtual const CanvasInfo&	canvas() const { return m_canvas; }

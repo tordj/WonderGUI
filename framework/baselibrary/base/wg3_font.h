@@ -36,53 +36,22 @@ namespace wg
 
 
 
-	//____ GlyphBitmap _____________________________________________________________
+	//____ Glyph Info _________________________________________________________
 
-	struct GlyphBitmap
+	struct Glyph
 	{
-	public:
+		spx			advance = 0;			// Set to zero if glyph do not exist.
+		uint32_t	kerningIndex = 0;		//
+		Font*		pFont = nullptr;			//
 
-		//.____ Properties _________________________________
+		// These below are not updated by getGlyphWithoutBitmap().
 
-		Surface_p 	pSurface;
-		RectI		rect;
-		MU			bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
-		MU			bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
+		Surface_p 	pSurface;		// Set to null if no bitmap for glyph could be found.
+		RectSPX		rect;
+		spx			bearingX = 0;		// x offset when rendering the glyph (negated offset to glyph origo)
+		spx			bearingY = 0;		// y offset when rendering the glyph (negated offset to glyph origo)
 	};
 
-
-	//____ Glyph ________________________________________________________________
-
-	class Glyph
-	{
-	friend class Font;
-
-	public:
-
-		//.____ Rendering ___________________________________________________________
-
-		virtual const GlyphBitmap * getBitmap() = 0;
-
-		//.____ Misc ___________________________________________________________
-
-		inline MU		advance() { return m_advance; }
-		inline int		kerningIndex() { return m_kerningIndex; }
-
-        //.____ Internal _______________________________________________________
-
-        inline Font *   _font() { return m_pFont; }
-
-	protected:
-		Glyph();
-		Glyph( MU advance, int _kerningIndex, Font * pFont );
-		virtual ~Glyph() {}
-
-		Font *			m_pFont;		// glyphset that this glyph belongs to
-		MU				m_advance;		// spacing to next glyph
-		int				m_kerningIndex;	// index into kerning table (BitmapFont) or glyph_index (FreeTypeFont)
-	};
-
-	typedef Glyph*	Glyph_p;
 
 	class Font;
 	typedef	StrongPtr<Font>		Font_p;
@@ -110,16 +79,17 @@ namespace wg
 
 		//.____ Rendering ____________________________________________
 
-		virtual bool			setSize( MU size ) = 0;		    ///@brief Set the font size for subsequent calls.
-		virtual MU				size() = 0;
-		virtual MU				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) = 0;
-		virtual Glyph_p			getGlyph( uint16_t chr ) = 0;
+		virtual bool			setSize( spx size ) = 0;	///@brief Set the font size for subsequent calls.
+		virtual spx				size() = 0;
+		virtual void			getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) = 0;
+		virtual void			getGlyphWithBitmap(uint16_t chr, Glyph& glyph) = 0;
+		virtual spx				kerning( Glyph& leftGlyph, Glyph& rightGlyph ) = 0;
 
-		virtual MU				lineGap() = 0;					///@brief Returns distance between two lines of this font and current size.
-		virtual MU				whitespaceAdvance() = 0;		///@brief Returns width of a whitespace for current size.
-		virtual MU				maxAdvance() = 0;				///@brief Returns largets occupied width of a character for current size.
-		virtual MU				maxAscend() = 0;				///@brief Returns largets height from baseline of a character for current size.
-		virtual MU				maxDescend() = 0;				///@brief Returns largets depth from baseline of a character for current size.
+		virtual spx				lineGap() = 0;					///@brief Returns distance between two lines of this font and current size.
+		virtual spx				whitespaceAdvance() = 0;		///@brief Returns width of a whitespace for current size.
+		virtual spx				maxAdvance() = 0;				///@brief Returns largets occupied width of a character for current size.
+		virtual spx				maxAscend() = 0;				///@brief Returns largets height from baseline of a character for current size.
+		virtual spx 			maxDescend() = 0;				///@brief Returns largets depth from baseline of a character for current size.
 
 		//.____ Misc ___________________________________________________________
 

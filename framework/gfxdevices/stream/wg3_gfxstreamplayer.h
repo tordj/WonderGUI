@@ -90,6 +90,7 @@ namespace wg
 		Surface_p			m_pUpdatingSurface;
 		PixelBuffer			m_pixelBuffer;
 		uint8_t *			m_pWritePixels;
+		int					m_surfaceBytesLeft = 0;
 
 		// For multi-chunk drawing operations (DrawSegments, FlipDrawSegments, DrawWave and FlipDrawWave), telling which one we are receiving edge samples for.
 		

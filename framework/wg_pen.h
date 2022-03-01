@@ -77,14 +77,14 @@ public:
 
 	void					SetTab( int width ) { m_tabWidth = width; }
 	bool					SetChar( Uint32 chr );
-	void					FlushChar() { m_pGlyph = &m_dummyGlyph; m_dummyGlyph.SetAdvance(0); }
-    void					ApplyKerning() { if( m_pPrevGlyph != &m_dummyGlyph && m_pGlyph != &m_dummyGlyph ) m_pos.x += m_pFont->kerning( m_pPrevGlyph, m_pGlyph).px(); }
+	void					FlushChar() { m_glyph = m_dummyGlyph; m_dummyGlyph.advance = 0; }
+    void					ApplyKerning() { if( m_glyph.pFont && m_glyph.pFont == m_prevGlyph.pFont ) m_pos.x += (m_pFont->kerning( m_prevGlyph, m_glyph)+32)/64; }
 
-    inline void				AdvancePos() { m_pos.x += m_pGlyph->advance().px(); }							///< Advances position past current character.
-    inline void				AdvancePosMonospaced() { m_pos.x += m_pFont->maxAdvance().px(); }	///< Advances position past current character using monospace spacing.
+    inline void				AdvancePos() { m_pos.x += m_glyph.advance/64; }							///< Advances position past current character.
+    inline void				AdvancePosMonospaced() { m_pos.x += m_pFont->maxAdvance()/64; }	///< Advances position past current character using monospace spacing.
 	void					AdvancePosCursor( const WgCursorInstance& instance );
 
-	inline wg::Glyph_p		GetGlyph() const { return m_pGlyph; }
+	inline const wg::Glyph&	GetGlyph() const { return m_glyph; }
 	inline WgCoord			GetPos() const { return m_pos; }
 	inline int				GetPosX() const { return m_pos.x; }
 	inline int				GetPosY() const { return m_pos.y; }
@@ -97,9 +97,9 @@ public:
 	inline int				GetSize() const { return m_size; }
 	inline WgColor			GetColor() const { return m_color; }
 
-    inline int				GetLineSpacing() const { return m_pFont->maxAscend().px() + m_pFont->maxDescend() + m_pFont->lineGap().px(); }
-    inline int				GetLineHeight() const { return m_pFont->maxAscend().px() + m_pFont->maxDescend().px(); }
-    inline int				GetBaseline() const { return m_pFont->maxAscend().px(); }
+    inline int				GetLineSpacing() const { return m_pFont->maxAscend()/64 + m_pFont->maxDescend()/64 + m_pFont->lineGap()/64; }
+    inline int				GetLineHeight() const { return m_pFont->maxAscend()/64 + m_pFont->maxDescend()/64; }
+    inline int				GetBaseline() const { return m_pFont->maxAscend()/64; }
 
 	void					BlitChar() const;
 	bool					BlitCursor( const WgCursorInstance& instance ) const;
@@ -111,23 +111,14 @@ private:
 
 	WgCursor * _getCursor(const WgText * pText) const;
 
-	class DummyGlyph : public wg::Glyph
-	{
-	public:
-		DummyGlyph() : wg::Glyph( 0, 0, 0 ) {}
-		const wg::GlyphBitmap * getBitmap() { return nullptr; }
-
-		void SetAdvance( wg::MU advance ) { m_advance = advance; }
-	};
-
 	//
 
 	//
 
 	wg::Font_p      m_pFont;		// Pointer at our glyphs.
 
-	wg::Glyph_p		m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
-	wg::Glyph_p		m_pGlyph;		// Current glyph.
+	wg::Glyph		m_prevGlyph;	// Previous glyph, saved to allow for kerning.
+	wg::Glyph		m_glyph;		// Current glyph.
 
 	int				m_wantedSize;	// Size we requested.
 	int				m_size;			// Fontsize we got a glyphset for, which might be smaller than what we requested.
@@ -139,7 +130,7 @@ private:
 	WgCoord			m_origo;		// Origo position, from where we start printing and count tab-positions.
 	WgCoord			m_pos;			// Position of this pen in screen pixels.
 
-	DummyGlyph		m_dummyGlyph;	// Dummy glyph used for whitespace, tab etc
+	wg::Glyph		m_dummyGlyph;	// Dummy glyph used for whitespace, tab etc
 
 	int				m_tabWidth;		// Tab width in pixels.
 

@@ -25,14 +25,15 @@
 #define WG3_FREETYPEFONT_DOT_H
 #pragma once
 
+#include <vector>
 
 #include <wg3_types.h>
 #include <wg3_chain.h>
 
 
 #include <wg3_font.h>
-#include <wg3_surfacefactory.h>
 #include <wg3_blob.h>
+#include <wg3_bitmapcache.h>
 
 
 typedef struct FT_LibraryRec_  *FT_Library;
@@ -47,7 +48,7 @@ namespace wg
 	typedef	StrongPtr<FreeTypeFont>		FreeTypeFont_p;
 	typedef	WeakPtr<FreeTypeFont>	FreeTypeFont_wp;
 
-	class FreeTypeFont : public Font
+	class FreeTypeFont : public Font, protected BitmapCacheListener
 	{
 	public:
 
@@ -60,7 +61,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static FreeTypeFont_p	create( Blob_p pFontFile, int faceIndex = 0 ) { return FreeTypeFont_p(new FreeTypeFont(pFontFile,faceIndex)); }
+		static FreeTypeFont_p	create( Blob_p pFontFile, int faceIndex = 0, BitmapCache * pBitmapCache = nullptr ) { return FreeTypeFont_p(new FreeTypeFont(pFontFile,faceIndex,pBitmapCache)); }
 
 		//.____ Identification __________________________________________
 
@@ -69,17 +70,18 @@ namespace wg
 
 		//.____ Rendering ______________________________________________________
 
-		bool		setSize( MU size ) override;
-		inline MU	size() override { return m_size; }
+		bool		setSize( spx size ) override;
+		inline spx	size() override { return m_size; }
 
-		MU			kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
-		Glyph_p		getGlyph( uint16_t chr ) override;
+		void		getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) override;
+		void		getGlyphWithBitmap(uint16_t chr, Glyph& glyph) override;
+		spx			kerning(Glyph& leftGlyph, Glyph& rightGlyph) override;
 
-		MU			lineGap() override;
-		MU			whitespaceAdvance() override;
-		MU			maxAdvance() override;
-		MU			maxAscend() override;
-		MU			maxDescend() override;
+		spx			lineGap() override;
+		spx			whitespaceAdvance() override;
+		spx			maxAdvance() override;
+		spx			maxAscend() override;
+		spx			maxDescend() override;
 
 		//.____ Misc ___________________________________________________________
 
@@ -88,145 +90,110 @@ namespace wg
 		bool		hasGlyph( uint16_t chr ) override;
 		bool		isMonospace() override;
 
-		static void	clearCache();
-
 		//.____ Appearance ___________________________________________
 
-		inline bool setRenderMode( RenderMode mode ) { return setRenderMode( mode, 0, 0xFFFF ); }
-		inline bool setRenderMode( RenderMode mode, int size ) { return setRenderMode(mode,size,size); }
-		bool		setRenderMode( RenderMode mode, int startSize, int endSize );
-		inline RenderMode	renderMode( int size ) const { if( size >= 0 && size <= c_maxFontSize ) return m_renderMode[size]; else return RenderMode::Monochrome; }
+		inline bool 		setRenderMode( RenderMode mode );
+		inline RenderMode	renderMode() const { return m_renderMode; }
 
 
 	private:
-		FreeTypeFont( Blob_p pFontFile, int faceIndex );
+		FreeTypeFont( Blob_p pFontFile, int faceIndex, BitmapCache * pCache );
 		~FreeTypeFont();
 
-		const static int	c_maxFontSize = 2048;	// Max size (pixels) for font.
-		const static int	c_minGlyphPixelSize = 12;
-		const static int	c_maxGlyphPixelSize = c_maxFontSize*2;
-		const static int	c_glyphPixelSizeQuantization = 4;
-		const static int	c_glyphSlotSizes = ((c_maxGlyphPixelSize-c_minGlyphPixelSize)/c_glyphPixelSizeQuantization)+1;
-
-		class CacheSlot;
-
-		class MyGlyph : public Glyph
+		class MyGlyph
 		{
 		public:
-			MyGlyph();
-			MyGlyph( uint16_t character, MU size, MU advance, uint32_t kerningIndex, Font * pFont );
-			~MyGlyph();
-			const GlyphBitmap * getBitmap();
+			inline void	bitmapLost() { pSurface = nullptr; }
+			inline bool isInitialized() { return pFont != nullptr; }
 
-			void	slotLost() { m_pSlot = 0; }
-			bool	isInitialized() { return m_pFont?true:false; }
+			Font*		pFont = nullptr;	// Set to null if glyph not initialized.
+			uint16_t	character = 0;			// Unicode for character.
+			spx			size = 0;				// size of character.
 
-			CacheSlot * m_pSlot;
-			MU			m_size;			// size of character.
-			uint16_t	m_character;	// Unicode for character.
+			spx			advance = 0;
+			uint32_t	kerningIndex = 0;		//
+
+			Surface_p 	pSurface;			// Set to null if no bitmap for glyph could be found.
+			RectSPX		rect;
+			spx			bearingX = 0;			// x offset when rendering the glyph (negated offset to glyph origo)
+			spx			bearingY = 0;			// y offset when rendering the glyph (negated offset to glyph origo)
 		};
 
-		class CacheSurf : public Link
+		struct CachedFontSize
 		{
-		public:
-			CacheSurf( Surface * _pSurf ) { pSurf = _pSurf; access = 0; }
-			~CacheSurf();
+			CachedFontSize() 
+			{
+				whitespaceAdvance = 0;
+				for (int i = 0; i < 512; i++)
+					page[i] = nullptr;
+			}
 
-			LINK_METHODS( CacheSurf );
+			~CachedFontSize()
+			{
+				for (int i = 0; i < 512; i++)
+					if( page[i] )
+						delete [] page[i];
+			}
 
-			uint32_t			access;			// Timestamp of last access.
-			Surface_p	pSurf;
+			spx			whitespaceAdvance;
+			MyGlyph*	page[512];
 		};
 
+		void 				_cacheSurfacesRemoved(int nSurfaces, Surface* pSurfaces[]) override;
+		void 				_cacheCleared() override;
 
-		class CacheSlot : public Link
-		{
-		public:
-			CacheSlot( CacheSurf * _pSurf, const RectI& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; bitmap.pSurface = pSurf->pSurf; pGlyph = 0; }
+		
+		void 				_getCacheSlot(int width, int height, MyGlyph* pBitmap);
 
-			LINK_METHODS( CacheSlot );
+		void				_copyA8ToA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint8_t * pDest, int dest_pitch );
+		void				_copyA1ToA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint8_t * pDest, int dest_pitch );
+		void				_copyBGRA8ToBGRA8(const uint8_t* pSrc, int src_width, int src_height, int src_pitch, uint8_t* pDest, int dest_pitch);
 
-			uint32_t			access;			// Timestamp of last access.
+		void				_generateBitmap( MyGlyph * pGlyph );
+		void				_copyBitmap( FT_Bitmap * pBitmap, MyGlyph * pSlot );
 
-			GlyphBitmap	bitmap;
-			MyGlyph *			pGlyph;
+		MyGlyph *			_addGlyph( uint16_t ch, spx size, spx advance, uint32_t kerningIndex );
+		inline MyGlyph *	_findGlyph( uint16_t glyph, spx size ) const;
 
-			CacheSurf *		pSurf;
-			RectI			rect;				// RectI for the slot - not the glyph itself as in GlyphBitmap which might be smaller.
-		};
-
-
-		void				_copyA8ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint32_t * pDest, int dest_width, int dest_height, int dest_pitch );
-		void				_copyA1ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint32_t * pDest, int dest_width, int dest_height, int dest_pitch );
-
-
-		bool				_setCharSize( int size );
-
-		CacheSlot *			_generateBitmap( MyGlyph * pGlyph );
-		void				_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot );
-
-		MyGlyph *			_addGlyph( uint16_t ch, MU size, MU advance, uint32_t kerningIndex );
-		inline MyGlyph *	_findGlyph( uint16_t glyph, MU size ) const;
-
-		inline void			_touchSlot( CacheSlot * pSlot );
 		void				_refreshRenderFlags();
+
+		void				_growCachedFontSizes(int newSize);
 
 
 		FT_Face				m_ftFace;
 		Blob_p				m_pFontFile;
-		char*				m_pData;
-		MyGlyph **			m_cachedGlyphsIndex[c_maxFontSize+1];
-		uint32_t			m_accessCounter;
+		
+		BitmapCache_p		m_pCache;
+
+		CachedFontSize **	m_pCachedFontSizes = nullptr;				//	[X sizes][512 codepages][128 glyphs/codepage]
+		int					m_nCachedFontSizes = 0;
+
+		uint32_t			m_surfCreationNb = 0;
+
 		int					m_renderFlags;
-		RenderMode			m_renderMode[c_maxFontSize+1];
-		MU					m_whitespaceAdvance[c_maxFontSize+1];
-		MU					m_size;
+		RenderMode			m_renderMode;
+		spx					m_size;
 
 		//____ Static stuff __________________________________________________________
 
+		static int 				s_nInstances;		// List of alive FreeTypeFont-objects.
 
-
-
-		static CacheSlot *	getCacheSlot( int width, int height );
-		static int			addCacheSlots( Chain<CacheSlot> * pChain, const SizeI& slotSize, int minSlots );
-		static int			maxSlotsInSurface( const SizeI& surf, const SizeI& slot );
-		static SizeI			calcTextureSize( const SizeI& slotSize, int nSlots );
-
-		static int			s_instanceCounter;
-		static FT_Library	s_freeTypeLibrary;
-
-		static Chain<CacheSlot>	s_cacheSlots[c_glyphSlotSizes];
-		static Chain<CacheSurf>	s_cacheSurfaces;
-		static SurfaceFactory_p	s_pSurfaceFactory;
-
-		//____
-
-
-
+		static FT_Library		s_freeTypeLibrary;
+		static BitmapCache_p	s_defaultCache;
 	};
 
 	//____ _findGlyphInIndex() _______________________________________________________
 
-	FreeTypeFont::MyGlyph * FreeTypeFont::_findGlyph( uint16_t ch, MU size ) const
+	FreeTypeFont::MyGlyph * FreeTypeFont::_findGlyph( uint16_t ch, spx size ) const
 	{
-		int sizeOfs = size.px();
+		int sizeOfs = (size+32)/64;
 
-		if( m_cachedGlyphsIndex[sizeOfs] != 0 && m_cachedGlyphsIndex[sizeOfs][ch>>8] != 0 && m_cachedGlyphsIndex[sizeOfs][ch>>8][ch&0xFF].isInitialized() )
-			return &m_cachedGlyphsIndex[sizeOfs][ch>>8][ch&0xFF];
+		if( m_pCachedFontSizes[sizeOfs] != nullptr && m_pCachedFontSizes[sizeOfs]->page[ch>>7] != nullptr && m_pCachedFontSizes[sizeOfs]->page[ch >> 7][ch&0x7F].isInitialized() )
+			return &m_pCachedFontSizes[sizeOfs]->page[ch >> 7][ch & 0x7F];
 
 		return 0;
 	}
 
-	//____ _touchSlot() _________________________________________________________
-
-	void FreeTypeFont::_touchSlot( CacheSlot * pSlot )
-	{
-		pSlot->moveFirst();								// Move slot to the top
-
-		pSlot->access = m_accessCounter;				// Increase access counter.
-		pSlot->pSurf->access = m_accessCounter++;		// We don't sort the surfaces, probably faster to just compare access when
-														// we need to destroy one?
-	}
 
 } // namespace wg
 

@@ -53,8 +53,8 @@ void WgPen::_init()
 	m_size = 0;
 	m_wantedSize = 0;
 
-	m_pGlyph = &m_dummyGlyph;
-	m_pPrevGlyph = &m_dummyGlyph;
+	m_glyph = m_dummyGlyph;
+	m_prevGlyph = m_dummyGlyph;
 	m_color = 0xFFFFFFFF;
 
 	m_bShowSpace = false;
@@ -85,7 +85,7 @@ void WgPen::_onAttrChanged()
 	}
 
 	m_size = m_wantedSize * m_scale >> WG_SCALE_BINALS;
-	m_pFont->setSize(wg::MU::fromPX(m_size));
+	m_pFont->setSize(m_size*64);
 }
 
 //____ SetAttributes() ________________________________________________________
@@ -96,7 +96,7 @@ bool WgPen::SetAttributes( const wg::TextAttr& attr )
 		return false;
 
 	if( attr.pFont != m_pFont || attr.size != m_wantedSize )
-		m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
+		m_prevGlyph = m_dummyGlyph;                           // Can't do kerning with character of different font or size.
 
 	m_pFont			= attr.pFont;
 	m_wantedSize	= attr.size;
@@ -114,7 +114,7 @@ bool WgPen::SetSize( int size )
 
 	if( size != m_wantedSize )
 	{
-		m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
+		m_prevGlyph = m_dummyGlyph;                           // Can't do kerning with character of different font or size.
 		m_wantedSize = size;
 		_onAttrChanged();
 	}
@@ -127,7 +127,7 @@ void WgPen::SetFont( wg::Font * pFont )
 {
 	if( pFont != m_pFont )
 	{
-		m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
+		m_prevGlyph = m_dummyGlyph;                           // Can't do kerning with character of different font or size.
 		m_pFont = pFont;
 		_onAttrChanged();
 	}
@@ -146,7 +146,7 @@ void WgPen::SetColor( WgColor color )
 
 bool WgPen::SetChar( Uint32 chr )
 {
-	m_pPrevGlyph = m_pGlyph;
+	m_prevGlyph = m_glyph;
 
 	// Special handling of some characters
 
@@ -154,41 +154,36 @@ bool WgPen::SetChar( Uint32 chr )
 	{
 		if( chr == ' ' && !m_bShowSpace )
 		{
+			m_glyph = m_dummyGlyph;
 			if(m_pFont)
-                m_dummyGlyph.SetAdvance( m_pFont->whitespaceAdvance() );
-			else
-				m_dummyGlyph.SetAdvance(0);
-			m_pGlyph = &m_dummyGlyph;
+                m_glyph.advance = m_pFont->whitespaceAdvance();
 			return false;
 		}
 
 		if( chr == '\n' && !m_bShowCRLF )
 		{
-			m_dummyGlyph.SetAdvance(0);
-			m_pGlyph = &m_dummyGlyph;
+			m_glyph = m_dummyGlyph;
 			return false;
 		}
 
 		if( chr == 0 )
 		{
-			m_dummyGlyph.SetAdvance(0);
-			m_pGlyph = &m_dummyGlyph;
+			m_glyph = m_dummyGlyph;
 			return false;
 		}
 
 		if( chr == '\t' )
 		{
 			int newPos = m_origo.x + ((m_pos.x - m_origo.x + m_tabWidth) / m_tabWidth) * m_tabWidth;
-			m_dummyGlyph.SetAdvance(newPos - m_pos.x);
-			m_pGlyph = &m_dummyGlyph;
+			m_glyph = m_dummyGlyph;
+			m_glyph.advance = (newPos - m_pos.x)*64;
 			return false;
 		}
 	}
 
 	if( chr == int(WgExtChar::BreakPermitted) || chr == int(WgExtChar::HyphenBreakPermitted) )
 	{
-		m_dummyGlyph.SetAdvance(0);
-		m_pGlyph = &m_dummyGlyph;
+		m_glyph = m_dummyGlyph;
 		return false;
 	}
 
@@ -196,37 +191,38 @@ bool WgPen::SetChar( Uint32 chr )
 
 	if( !m_pFont )
 	{
-		m_pGlyph = &m_dummyGlyph;
+		m_glyph = m_dummyGlyph;
 		return false;
 	}
 
 	// First we try to get the glyph from our Glyphset.
 
-	wg::Glyph_p p = m_pFont->getGlyph( chr );
-	if( !p )
+	wg::Glyph glyph;
+	
+	m_pFont->getGlyphWithBitmap( chr, glyph );
+	if( !glyph.pSurface )
 	{
 		// The glyph doesn't exist in this font, try to get the unicode
 		// WHITE_BOX as a replacement glyph.
 
-		p = m_pFont->getGlyph( 0xFFFD );
-		if( !p )
+		m_pFont->getGlyphWithBitmap( 0xFFFD, glyph );
+		if( !glyph.pSurface )
 		{
 			// We don't have the white box, try with the most suitable
 			// common ascii character instead...
 
-			p = m_pFont->getGlyph( '*' );
-			if( !p )
+			m_pFont->getGlyphWithBitmap( '*', glyph );
+			if( !glyph.pSurface )
 			{
 				// Total failure, nothing to render...
 
-				m_pGlyph = &m_dummyGlyph;
-				m_dummyGlyph.SetAdvance(0);
+				m_glyph = m_dummyGlyph;
 				return false;
 			}
 		}
 	}
 
-	m_pGlyph = p;
+	m_glyph = glyph;
 	return true;
 }
 
@@ -234,16 +230,14 @@ bool WgPen::SetChar( Uint32 chr )
 
 void WgPen::BlitChar() const
 {
-	const wg::GlyphBitmap * pSrc = m_pGlyph->getBitmap();
-
-	if( pSrc )
+	if( m_glyph.pSurface )
 	{
-        int x = m_pos.x + pSrc->bearingX.px();
-        int y = m_pos.y + pSrc->bearingY.px();
+        int x = m_pos.x + m_glyph.bearingX/64;
+        int y = m_pos.y + m_glyph.bearingY/64;
 
-		m_pDevice->setBlitSource(pSrc->pSurface);            //TODO: Optimize!!!!
+		m_pDevice->setBlitSource(m_glyph.pSurface);            //TODO: Optimize!!!!
 
-		m_pDevice->blit( WgCoord(x,y), pSrc->rect);
+		m_pDevice->blit( WgCoord(x,y), m_glyph.rect/64);
 	}
 }
 

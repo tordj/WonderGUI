@@ -289,24 +289,21 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 	Uint16	ellipsisChar = int(WgExtChar::Ellipsis);
 	ellipsisWidth = 0;
-	wg::Glyph_p pEllipsis = pen.GetFont()->getGlyph( int(WgExtChar::Ellipsis) );
+	wg::Glyph ellipsis;
+	pen.GetFont()->getGlyphWithBitmap( int(WgExtChar::Ellipsis), ellipsis );
 
-	if( !pEllipsis )
+	if( !ellipsis.pFont )
 	{
-		pEllipsis = pen.GetFont()->getGlyph( '.' );
+		pen.GetFont()->getGlyphWithBitmap( '.', ellipsis );
 		ellipsisChar = '.';
 	}
 
-	if( pEllipsis )
+	if( ellipsis.pSurface )
 	{
-		const wg::GlyphBitmap * pBitmap = pEllipsis->getBitmap();
-		if( pBitmap )
-		{
-			if( ellipsisChar == int(WgExtChar::Ellipsis) )
-                ellipsisWidth = pBitmap->rect.w + pBitmap->bearingX.px();
-			else
-                ellipsisWidth = pEllipsis->advance().px()*2+pBitmap->rect.w + pBitmap->bearingX.px();
-		}
+		if( ellipsisChar == int(WgExtChar::Ellipsis) )
+			ellipsisWidth = ellipsis.rect.w/64 + ellipsis.bearingX/64;
+		else
+			ellipsisWidth = ellipsis.advance/64*2 + ellipsis.rect.w/64 + ellipsis.bearingX/64;
 	}
 
 	// Print loop
@@ -350,8 +347,8 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 		WgCoord savedPos = pen.GetPos();
 		pen.ApplyKerning();
-		wg::Glyph_p pGlyph = pen.GetGlyph();
-        if( pen.GetPosX() +  pGlyph->advance().px() + ellipsisWidth > endX )
+		wg::Glyph glyph = pen.GetGlyph();
+        if( pen.GetPosX() +  glyph.advance/64 + ellipsisWidth > endX )
 		{
 			pen.SetPos( savedPos );
 			break;

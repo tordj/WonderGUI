@@ -24,16 +24,13 @@
 
 namespace wg
 {
-
-
 	const TypeInfo DummyFont::TYPEINFO = { "DummyFont", &Font::TYPEINFO };
 
 	//____ constructor ____________________________________________________________
 
-	DummyFont::DummyFont() : m_glyph(this)
+	DummyFont::DummyFont()
 	{
 	}
-
 
 	//____ Destructor _____________________________________________________________
 
@@ -85,74 +82,77 @@ namespace wg
 
 	//____ setSize() _________________________________________________________
 
-	bool DummyFont::setSize( MU size )
+	bool DummyFont::setSize( spx size )
 	{
 		return false;
 	}
 
 	//____ size() _____________________________________________________________
 
-	MU DummyFont::size()
+	spx DummyFont::size()
 	{
-		return 1;
+		return 64;
 	}
+
+	//____ getGlyphWithoutBitmap() ____________________________________________
+
+	void DummyFont::getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph)
+	{
+		glyph.pFont = nullptr;
+		glyph.advance = 0;
+		glyph.kerningIndex = 0;
+	}
+
+	//____ getGlyphWithBitmap() _______________________________________________
+
+	void DummyFont::getGlyphWithBitmap(uint16_t chr, Glyph& glyph)
+	{
+		glyph.pFont = nullptr;
+		glyph.advance = 0;
+		glyph.kerningIndex = 0;
+		glyph.pSurface = nullptr;
+	}
+
 
 	//____ kerning() __________________________________________________________
 
-	MU DummyFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
+	spx DummyFont::kerning( Glyph& leftGlyph, Glyph& rightGlyph )
 	{
 		return 0;
-	}
-
-	//____ getGlyph() _________________________________________________________
-
-	Glyph_p DummyFont::getGlyph( uint16_t chr )
-	{
-		return &m_glyph;
 	}
 
 	//____ lineGap() __________________________________________________________
 
-	MU DummyFont::lineGap()
+	spx DummyFont::lineGap()
 	{
-		return 1;
+		return 64;
 	}
 
 	//____ whitespaceAdvance() ________________________________________________
 
-	MU DummyFont::whitespaceAdvance()
+	spx DummyFont::whitespaceAdvance()
 	{
-		return 1;
+		return 64;
 	}
 
 	//____ maxAdvance() _______________________________________________________
 
-	MU DummyFont::maxAdvance()
+	spx DummyFont::maxAdvance()
 	{
-		return 1;
+		return 64;
 	}
 
 	//____ maxAscend() ________________________________________________________
 
-	MU DummyFont::maxAscend()
+	spx DummyFont::maxAscend()
 	{
-		return 1;
+		return 64;
 	}
 
 	//____ maxDescend() _______________________________________________________
 
-	MU DummyFont::maxDescend()
+	spx DummyFont::maxDescend()
 	{
 		return 0;
-	}
-
-	//____ DummyGlyph::Constructor ____________________________________________
-
-	DummyFont::DummyGlyph::DummyGlyph( Font * pFont )
-	: Glyph( 1, 0, pFont )
-	{
-			m_src.pSurface	= 0;
-			m_src.bearingX	= 0;
-			m_src.bearingY	= 0;
 	}
 }

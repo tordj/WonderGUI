@@ -38,6 +38,11 @@ namespace wg
 
 	namespace Util		/** @private */
 	{
+		inline RectI roundToPixels(const RectSPX& r);
+		inline CoordI roundToPixels(const CoordSPX& r);
+		inline SizeI roundToPixels(const SizeSPX& r);
+		inline BorderI roundToPixels(const BorderSPX& r);
+		inline int roundToPixels(spx r);
 
 		//____ pointsToPixels() _______________________________________________
 
@@ -64,6 +69,141 @@ namespace wg
 		}
 
 
+		inline spx ptsToSpx(pts value, int scale)
+		{
+			return spx(value * scale);
+		}
+
+		inline CoordSPX ptsToSpx(const Coord& coord, int scale)
+		{
+			return CoordSPX(spx(coord.x * scale), spx(coord.y * scale));
+		}
+
+		inline SizeSPX ptsToSpx(const Size& size, int scale)
+		{
+			return SizeSPX(spx(size.w * scale), spx(size.h * scale));
+		}
+
+		inline BorderSPX ptsToSpx(const Border& border, int scale)
+		{
+			return BorderSPX(spx(border.top * scale), spx(border.right * scale),
+				spx(border.bottom * scale), spx(border.left * scale));
+		}
+
+		inline RectSPX ptsToSpx(const Rect& rect, int scale)
+		{
+			return RectSPX(spx(rect.x * scale), spx(rect.y * scale),
+				spx(rect.w * scale), spx(rect.h * scale));
+		}
+
+		inline spx align(spx x)
+		{
+			return (x + 32) & 0xFFFFFFC0;
+		}
+
+		inline CoordSPX align(const CoordSPX& coord)
+		{
+			return { (coord.x + 32) & -64, (coord.y + 32) & -64 };
+		}
+
+		inline SizeSPX align(const SizeSPX& size)
+		{
+			return { (size.w + 32) & -64, (size.h + 32) & -64 };
+		}
+
+		inline BorderSPX align(const BorderSPX& border)
+		{
+			return { (border.top + 32) & -64, (border.right + 32) & -64,
+					 (border.bottom + 32) & -64, (border.left + 32) & -64 };
+		}
+
+		inline RectSPX align(const RectSPX& rect)
+		{
+			RectSPX out;
+
+			out.x = (rect.x + 32) & -64;
+			out.y = (rect.y + 32) & -64;
+
+			out.w = ((rect.x + rect.w + 32) & -64) - out.x;
+			out.h = ((rect.y + rect.h + 32) & -64) - out.y;
+
+			return out;
+		}
+
+		inline spx alignUp(spx x)
+		{
+			return (x + 63) & 0xFFFFFFC0;
+		}
+
+		inline CoordSPX alignUp(const CoordSPX& coord)
+		{
+			return { (coord.x + 63) & -64, (coord.y + 63) & -64 };
+		}
+
+		inline SizeSPX alignUp(const SizeSPX& size)
+		{
+			return { (size.w + 63) & -64, (size.h + 63) & -64 };
+		}
+
+		inline BorderSPX alignUp(const BorderSPX& border)
+		{
+			return { (border.top + 63) & -64, (border.right + 63) & -64,
+					 (border.bottom + 63) & -64, (border.left + 63) & -64 };
+		}
+
+		inline RectSPX alignUp(const RectSPX& rect)
+		{
+			//NOTE: Actually aligns down position in order to expand rectangle outwards.
+
+			RectSPX out;
+
+			out.x = (rect.x) & -64;
+			out.y = (rect.y) & -64;
+
+			out.w = ((rect.x + rect.w + 63) & -64) - out.x;
+			out.h = ((rect.y + rect.h + 63) & -64) - out.y;
+
+			return out;
+		}
+
+		inline spx alignDown(spx x)
+		{
+			return (x) & 0xFFFFFFC0;
+		}
+
+		inline CoordSPX alignDown(const CoordSPX& coord)
+		{
+			return { (coord.x) & -64, (coord.y) & -64 };
+		}
+
+		inline SizeSPX alignDown(const SizeSPX& size)
+		{
+			return { (size.w) & -64, (size.h) & -64 };
+		}
+
+		inline BorderSPX alignDown(const BorderSPX& border)
+		{
+			return { (border.top) & -64, (border.right) & -64,
+					 (border.bottom) & -64, (border.left) & -64 };
+		}
+
+		inline RectSPX alignDown(const RectSPX& rect)
+		{
+			//NOTE: Actually aligns down position in order to expand rectangle outwards.
+
+			RectSPX out;
+
+			out.x = (rect.x + 63) & -64;
+			out.y = (rect.y + 63) & -64;
+
+			out.w = ((rect.x + rect.w) & -64) - out.x;
+			out.h = ((rect.y + rect.h) & -64) - out.y;
+
+			return out;
+		}
+
+
+
 
 		double	squareRoot(double a);
 		double	powerOfTen(int num);
@@ -75,6 +215,7 @@ namespace wg
 
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );
+		PixelFormat	pixelDescriptionToFormat(const PixelDescription& description);
 
 		Coord 		placementToOfs( Placement placement, Size base );
 		Rect		placementToRect( Placement placement, Size base, Size rect );
@@ -181,8 +322,42 @@ namespace wg
 
 	}
 
+	RectI Util::roundToPixels(const RectSPX& r)
+	{
+		int x2 = r.x + r.w;
+		int y2 = r.y + r.h;
+
+		RectI out;
+
+		out.x = (r.x + 32) >> 6;
+		out.y = (r.y + 32) >> 6;
+
+		out.w = ((x2 + 32) >> 6) - out.x;
+		out.h = ((y2 + 32) >> 6) - out.y;
+
+		return out;
+	}
+
+	CoordI Util::roundToPixels(const CoordSPX& r)
+	{
+		return { (r.x + 32) >> 6, (r.y + 32) >> 6 };
+	}
+
+	SizeI Util::roundToPixels(const SizeSPX& r)
+	{
+		return { (r.w + 32) >> 6, (r.h + 32) >> 6 };
+	}
+
+	BorderI Util::roundToPixels(const BorderSPX& r)
+	{
+		return { (r.top + 32) >> 6, (r.right + 32) >> 6, (r.bottom + 32) >> 6, (r.left + 32) >> 6 };
+	}
 
 
+	int Util::roundToPixels(spx r)
+	{
+		return (r + 32) >> 6;
+	}
 
 
 } // namespace wg

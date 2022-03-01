@@ -336,7 +336,7 @@ int main ( int argc, char** argv )
 //	manuBlendTest();
 
 
-//    cursorInViewTest( pRoot );
+    cursorInViewTest( pRoot );
 //	pianoKeyboardTest(pRoot);
 //	rangeSliderTest(pRoot);
 //    canvasCapsuleTest(pRoot);
@@ -439,6 +439,8 @@ int main ( int argc, char** argv )
     g_pGfxDevice = nullptr;
 
     pTextStyle = nullptr;
+	pFont = nullptr;
+	pFontBlob = nullptr;
     
 	WgBase::Exit();
 

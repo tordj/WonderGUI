@@ -56,6 +56,12 @@ namespace wg
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Misc _____________________________________________________
+		
+		inline int	bufferCapacity() const { return m_bufferSize; };
+		inline bool	chunkInBuffer() const { return _hasStreamChunks(); };
+		int			bytesInBuffer() const;
+		
 	protected:
 
 		GfxStreamBuffer( int initialCapacity );

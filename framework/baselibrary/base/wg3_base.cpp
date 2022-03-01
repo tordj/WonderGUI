@@ -237,17 +237,6 @@ namespace wg
 		return s_pData->pInputHandler;
 	}
 
-	//____ defaultBitmapCache() __________________________________________________
-
-	BitmapCache_p Base::defaultBitmapCache()
-	{
-		if( s_pDefaultBitmapCache == nullptr )
-			s_pDefaultBitmapCache = BitmapCache::create(16*1024*1024);
-		
-		return s_pDefaultBitmapCache;
-	}
-
-
 	//____ defaultCaret() ______________________________________________________
 
 	Caret_p Base::defaultCaret()
@@ -299,6 +288,15 @@ namespace wg
 
 #endif
 
+	//____ defaultBitmapCache() __________________________________________________
+
+	BitmapCache_p Base::defaultBitmapCache()
+	{
+		if( s_pDefaultBitmapCache == nullptr )
+			s_pDefaultBitmapCache = BitmapCache::create(16*1024*1024);
+		
+		return s_pDefaultBitmapCache;
+	}
 
 	//____ defaultStyle() ______________________________________________________
 

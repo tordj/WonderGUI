@@ -51,21 +51,21 @@ namespace wg
 
 		//.____ Rendering ______________________________________________________
 
-		inline bool			setSize( MU size ) override { return (size == m_size);};						// SizeI is just a dummy for BitmapFont...
-		inline MU			size() override { return m_size; }
+		inline bool			setSize( spx size ) override { return (size == m_size);};						// SizeI is just a dummy for BitmapFont...
+		inline spx			size() override { return m_size; }
 
-		Glyph_p				getGlyph( uint16_t chr ) override;
-		MU					kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
+		void				getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) override;
+		void				getGlyphWithBitmap(uint16_t chr, Glyph& glyph) override;
+		spx					kerning(Glyph& leftGlyph, Glyph& rightGlyph) override;
 
-		inline MU			lineGap() override { return m_lineGap; }
-		inline MU			whitespaceAdvance() override { return m_spaceAdvance; }
-		inline MU			maxAdvance() override { return m_maxAdvance; }
-		inline MU 			maxAscend() override { return m_maxAscend; }
-		inline MU 			maxDescend() override { return m_maxDescend; }
+		inline spx			lineGap() override { return m_lineGap; }
+		inline spx			whitespaceAdvance() override { return m_spaceAdvance; }
+		inline spx			maxAdvance() override { return m_maxAdvance; }
+		inline spx 			maxAscend() override { return m_maxAscend; }
+		inline spx 			maxDescend() override { return m_maxDescend; }
 
 		//.____ Misc ___________________________________________________________
 
-		void				insertGlyphs( Surface * pSurf, char* pGlyphSpec );
 
 		inline int			nbGlyphs() override { return m_nGlyphs; }
 		inline bool			hasGlyphs() override { return m_nGlyphs?true:false; }
@@ -77,17 +77,21 @@ namespace wg
 		BitmapFont( Surface * pSurf, char * pGlyphSpec );
 		~BitmapFont();
 
-		class MyGlyph : public Glyph
+		void _insertGlyphs(Surface* pSurf, const char* pGlyphSpec);
+
+		class MyGlyph
 		{
 		public:
-			MyGlyph();
-			MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectI& rect );
+//			MyGlyph();
+//			MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectSPX& rect );
 
-			const GlyphBitmap * getBitmap() override { return &m_src; }
+			spx			advance = 0;
+			uint32_t	kerningIndex = 0;		//
 
-			void setAdvance( short advance ) { m_advance = advance; }
-
-			GlyphBitmap	m_src;
+			Surface_p 	pSurface;			// Set to null if no bitmap for glyph could be found.
+			RectSPX		rect;
+			spx			bearingX = 0;			// x offset when rendering the glyph (negated offset to glyph origo)
+			spx			bearingY = 0;			// y offset when rendering the glyph (negated offset to glyph origo)
 		};
 
 
@@ -99,13 +103,12 @@ namespace wg
 		int			m_nGlyphs;
 		bool		m_bMonospace;
 		bool		m_bMonochrome;
-		int			m_lineGap;
-		float		m_avgAdvance;
-		int			m_spaceAdvance;
-		int			m_maxAdvance;
-		int			m_maxAscend;
-		int			m_maxDescend;
-		MU			m_size;						// Fontsize for this font.
+		spx			m_lineGap;
+		spx			m_spaceAdvance;
+		spx			m_maxAdvance;
+		spx			m_maxAscend;
+		spx			m_maxDescend;
+		spx			m_size;						// Fontsize for this font.
 	};
 
 
