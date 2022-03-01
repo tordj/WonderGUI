@@ -886,7 +886,7 @@ namespace wg
                 }
 
             }
-                        
+			m_pDecoder->align();
 			break;
 		}
 
