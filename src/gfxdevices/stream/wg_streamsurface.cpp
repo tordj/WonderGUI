@@ -572,7 +572,7 @@ namespace wg
 
 	void StreamSurface::_sendPixels(GfxStreamEncoder* pEncoder, RectI rect, const uint8_t * pSource, int pitch)
 	{
-		*pEncoder << GfxStream::Header{ GfxChunkId::BeginSurfaceUpdate, 10 };
+		*pEncoder << GfxStream::Header{ GfxChunkId::BeginSurfaceUpdate, 18 };
 		*pEncoder << m_inStreamId;
 		*pEncoder << rect;
 
