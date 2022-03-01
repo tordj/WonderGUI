@@ -587,7 +587,7 @@ namespace wg
 			uint16_t chunkSize = std::min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
 			dataSize -= chunkSize;
 
-			*pEncoder << GfxStream::Header{ GfxChunkId::SurfacePixels, chunkSize };
+			*pEncoder << GfxStream::Header{ GfxChunkId::SurfacePixels, uint16_t((chunkSize+1)&0xFFFE) };
 
 			while (chunkSize > 0)
 			{
@@ -606,6 +606,8 @@ namespace wg
 					pLine += pitch;
 				}
 			}
+			
+			pEncoder->align();
 		}
 
 		*pEncoder << GfxStream::Header{ GfxChunkId::EndSurfaceUpdate, 0 };

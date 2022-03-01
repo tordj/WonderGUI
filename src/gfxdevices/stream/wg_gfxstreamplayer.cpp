@@ -848,6 +848,8 @@ namespace wg
 			m_pixelBuffer = m_pUpdatingSurface->allocPixelBuffer(rect);
 
 			m_pWritePixels = m_pixelBuffer.pPixels;
+			
+			m_surfaceBytesLeft = rect.w * rect.h * m_pUpdatingSurface->pixelBytes();
 			break;
 		}
 
@@ -858,13 +860,19 @@ namespace wg
 
             int bytesPerLine = m_pixelBuffer.rect.w * m_pUpdatingSurface->pixelBytes();
             
-            int bytesLeft = header.size;
+            int chunkBytesLeft = header.size;
+			
+			if( chunkBytesLeft > m_surfaceBytesLeft )
+				chunkBytesLeft = m_surfaceBytesLeft;		// Last chunk was padded with an extra byte.
+			
+			m_surfaceBytesLeft -= chunkBytesLeft;
+			
             
-            while( bytesLeft > 0 )
+            while( chunkBytesLeft > 0 )
             {
-                int toRead = std::min(bytesLeft, bytesPerLine - ofs);
+                int toRead = std::min(chunkBytesLeft, bytesPerLine - ofs);
                 *m_pDecoder >> GfxStream::DataChunk{ toRead, m_pWritePixels };
-                bytesLeft -= toRead;
+                chunkBytesLeft -= toRead;
 
                 if(toRead + ofs == bytesPerLine)
                 {
@@ -884,6 +892,8 @@ namespace wg
 
 		case GfxChunkId::EndSurfaceUpdate:
 		{
+			assert(m_surfaceBytesLeft == 0);
+			
 			m_pUpdatingSurface->pullPixels(m_pixelBuffer);
 			m_pUpdatingSurface->freePixelBuffer(m_pixelBuffer);
 			m_pUpdatingSurface = nullptr;

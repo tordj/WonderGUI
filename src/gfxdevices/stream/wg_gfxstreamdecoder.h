@@ -62,6 +62,7 @@ namespace wg
 		GfxStream::Header	peek();
 
 		void				skip(int bytes);
+		void				align();
 
 		//.____ Operators _____________________________________________
 

@@ -62,6 +62,7 @@ namespace wg
 		inline SampleMethod defaultSampleMethod() const { return m_defaultSampleMethod; }
 
 		void		flush();
+		void		align();
 
 		uint16_t	allocObjectId();
 		void		freeObjectId(uint16_t id);
