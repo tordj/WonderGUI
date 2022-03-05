@@ -54,28 +54,27 @@ namespace wg
 
 		struct Blueprint
 		{
-			Widget_p		child;
-			SurfaceFactory_p surfaceFactory;
-			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
-			CanvasLayers_p	layers			= nullptr;
-			int				renderLayer		= -1;
-			BlendMode		blendMode		= BlendMode::Blend;
-			HiColor			tintColor		= HiColor::Undefined;
-			BlendMode		tintColorBlend	= BlendMode::Replace;
-
 			Object_p		baggage;
-			bool			dropTarget = false;
-			bool			enabled = true;
+			BlendMode		blendMode		= BlendMode::Blend;
+			Widget_p		child;
+			bool			dropTarget		= false;
+			bool			enabled			= true;
 			Finalizer_p		finalizer;
 			int				id = 0;
-			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
-			bool			pickable = false;
-			int				pickCategory = 0;
-			PointerStyle	pointer = PointerStyle::Default;
-			int				scale = 64;
-			bool			selectable = true;
+			CanvasLayers_p	layers			= nullptr;
+			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
+			bool			pickable		= false;
+			int				pickCategory	= 0;
+			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
+			PointerStyle	pointer			= PointerStyle::Default;
+			int				renderLayer		= -1;
+			int				scale			= 64;
+			bool			selectable		= true;
 			Skin_p			skin;
-			bool			tabLock = false;
+			SurfaceFactory_p surfaceFactory;
+			bool			tabLock			= false;
+			HiColor			tintColor		= HiColor::Undefined;
+			BlendMode		tintColorBlend	= BlendMode::Replace;
 			String			tooltip;
 		};
 
