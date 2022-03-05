@@ -39,6 +39,25 @@ namespace wg
 	{
 	}
 
+	CanvasCapsule::CanvasCapsule(const Blueprint& bp)
+
+	{
+		_initFromBlueprint(bp);
+
+		m_pFactory		= bp.surfaceFactory;
+		m_canvasFormat	= bp.pixelFormat;
+		m_pCanvasLayers = bp.layers;
+		m_renderLayer	= bp.renderLayer;
+
+		m_renderMode	= bp.blendMode;
+		m_tintColor		= bp.tintColor;
+		m_tintMode		= bp.tintColorBlend;
+
+		if( bp.child )
+			slot.setWidget(bp.child);
+	}
+
+
 	//____ Destructor _____________________________________________________________
 
 	CanvasCapsule::~CanvasCapsule()
@@ -170,8 +189,27 @@ namespace wg
 		
 		// Blit our canvas
 
+		int		rl = pDevice->renderLayer();
+		BlendMode bm = pDevice->blendMode();
+		HiColor c = pDevice->tintColor();	
+
+		if (m_renderLayer != -1)
+			pDevice->setRenderLayer(m_renderLayer);
+
+		pDevice->setBlendMode(m_renderMode);
+
+		if (m_tintColor != HiColor::Undefined)
+		{
+			HiColor newCol = HiColor::blend(c, m_tintColor, m_tintMode);
+			pDevice->setTintColor(newCol);
+		}
+
 		pDevice->setBlitSource(m_pCanvas);
 		pDevice->blit(_canvas);
+
+		pDevice->setTintColor(c);
+		pDevice->setBlendMode(bm);
+		pDevice->setRenderLayer(rl);
 	}
 
 	//____ _resize() _____________________________________________________________

@@ -32,15 +32,6 @@ namespace wg
 	typedef	WeakPtr<RenderLayerCapsule>		RenderLayerCapsule_wp;
 
 	//____ RenderLayerCapsule ______________________________________________________
-	/**
-	* @brief	A widget that sets the tint color and blend mode of a single child.
-	*
-	* The RenderLayerCapsule sets the tint color and blend mode, which is inherited by its
-	* sub-widgets branch during the rendering process.
-	*
-	* This can for example be used to create fading effects when parts of the UI (dis)appears.
-	*
-	*/
 
 	class RenderLayerCapsule : public Capsule
 	{

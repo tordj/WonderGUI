@@ -49,9 +49,40 @@ namespace wg
 	class CanvasCapsule : public Capsule
 	{
 	public:
+
+		//____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+			Widget_p		child;
+			SurfaceFactory_p surfaceFactory;
+			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
+			CanvasLayers_p	layers			= nullptr;
+			int				renderLayer		= -1;
+			BlendMode		blendMode		= BlendMode::Blend;
+			HiColor			tintColor		= HiColor::Undefined;
+			BlendMode		tintColorBlend	= BlendMode::Replace;
+
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
 		//.____ Creation __________________________________________
 
 		static CanvasCapsule_p	create() { return CanvasCapsule_p(new CanvasCapsule()); }
+		static CanvasCapsule_p	create( const Blueprint& bp ) { return CanvasCapsule_p(new CanvasCapsule(bp)); }
 
 		//.____ Identification __________________________________________
 
@@ -82,6 +113,7 @@ namespace wg
 
 	protected:
 		CanvasCapsule();
+		CanvasCapsule(const Blueprint& bp);
 		virtual ~CanvasCapsule();
 
 		void				_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
@@ -96,7 +128,7 @@ namespace wg
 		PixelFormat			m_canvasFormat = PixelFormat::BGR_8;
 		int					m_renderLayer = -1;
 
-		HiColor				m_tintColor = HiColor::White;
+		HiColor				m_tintColor = HiColor::Undefined;
 		BlendMode			m_tintMode = BlendMode::Replace;
 		BlendMode			m_renderMode = BlendMode::Blend;
 
