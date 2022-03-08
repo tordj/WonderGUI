@@ -49,7 +49,7 @@ namespace wg
 		{
 			HiColor			color = HiColor::Undefined;
 			Coord			contentShift;
-			bool			hasBlock = true;
+			bool			blockless = false;
 		};
 
 		struct StateBP
@@ -74,11 +74,10 @@ namespace wg
 
 		struct Blueprint
 		{
+			Axis		axis = Axis::Y;
 			BlendMode	blendMode = BlendMode::Undefined;
-			Axis		blockAxis = Axis::Y;
-			Rect		blockOne;
-			pts			blockSpacing = 0;
 			HiColor		color = HiColor::Undefined;
+			Rect		firstBlock;
 			Border		frame;
 			Gradient	gradient;
 			int			layer = -1;
@@ -89,6 +88,7 @@ namespace wg
 			RigidPartXBlueprint	rigidPartX;
 			RigidPartYBlueprint rigidPartY;
 
+			pts			spacing = 0;
 			StateBP		states[StateEnum_Nb];
 
 			Surface_p	surface;

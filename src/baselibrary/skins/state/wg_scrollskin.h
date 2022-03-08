@@ -49,7 +49,7 @@ namespace wg
 		{
 			HiColor			color = HiColor::Undefined;
 			Coord			contentShift;
-			bool			hasBlock = true;
+			bool			blockless = false;
 		};
 
 		struct StateBP
@@ -63,10 +63,9 @@ namespace wg
 
 			BlendMode		blendMode = BlendMode::Undefined;
 
-			Rect			blockOne;
-			pts				blockSpacing = 0;
 			HiColor			color = HiColor::Undefined;
 
+			Rect			firstBlock;
 			Gradient		gradient;
 			int				layer = -1;
 			int				markAlpha = 1;
@@ -78,6 +77,7 @@ namespace wg
 			int				scrollDuration = 250;
 			StateBits		scrollState = StateBits::Selected;			
 
+			pts				spacing = 0;
 			StateBP			states[StateEnum_Nb];
 			Surface_p		surface;
 		};

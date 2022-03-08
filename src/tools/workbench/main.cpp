@@ -480,9 +480,10 @@ int main(int argc, char** argv)
 
 
 	TextStyle::Blueprint bp =	{	.color = Color::White, .size = 16,
-									.states = { StateEnum::Hovered, {.color = Color::Red, .size = 18 },
-												StateEnum::Pressed, {.color = Color::Red, .size = 18 }
-											  }
+									.states = {
+										{ StateEnum::Hovered, {.color = Color::Red, .size = 18 } },
+										{ StateEnum::Pressed, {.color = Color::Red, .size = 18 } }
+									}
 								};
 
 
@@ -499,7 +500,13 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({ .blockAxis = Axis::X, .frame = 3, .padding = 5, .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pButtonSurface });
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({
+		.axis = wg::Axis::X,
+		.frame = 3,
+		.padding = 5,
+		.states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} },
+		.surface = pButtonSurface
+	});
 
 	pSDLSurf = IMG_Load("resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -522,7 +529,7 @@ int main(int argc, char** argv)
 //	BlockSkin_p pStateButtonSkin = BlockSkin::create(pStateButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, Border(3), Axis::X);
 	auto pStateButtonSkin = BlockSkin::create( BlockSkin::Blueprint
 		{
-			.blockAxis = Axis::X,
+			.axis = Axis::X,
 			.frame = 3,
 			.padding = 5,
 			.states = {	StateEnum::Normal, {}, StateEnum::Hovered, {},
@@ -539,7 +546,7 @@ int main(int argc, char** argv)
 //	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Border(3), Axis::X);
 	auto pPressablePlateSkin = BlockSkin::create(BlockSkin::Blueprint
 		{
-			.blockAxis = Axis::X,
+			.axis = Axis::X,
 			.frame = 3,
 			.padding = 3,
 			.states = {	StateEnum::Normal, {}, StateEnum::Hovered, {},
@@ -2503,7 +2510,7 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	Surface_p pMainSurf = loadSurface("resources/selectbox.png");
 
 //	auto pMainSkin = BlockSkin::create(pMainSurf, { 0,0,32,16 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed }, { 3,23,3,3 });
-	auto pMainSkin = BlockSkin::create(BlockSkin::Blueprint{ .blockOne = { 0,0,32,16 }, .frame = { 3,23,3,3 }, .padding = { 3,23,3,3 }, .states = { StateEnum::Normal, {}, StateEnum::Hovered, {}, StateEnum::Pressed }, .surface = pMainSurf
+	auto pMainSkin = BlockSkin::create(BlockSkin::Blueprint{ .firstBlock = { 0,0,32,16 }, .frame = { 3,23,3,3 }, .padding = { 3,23,3,3 }, .states = { StateEnum::Normal, {}, StateEnum::Hovered, {}, StateEnum::Pressed }, .surface = pMainSurf
 });
 
 
@@ -2712,7 +2719,7 @@ bool rigidPartNinePatchTest(CStandardSlot_p pSlot)
 
 */
 	auto pSkin = BlockSkin::create({
-								.blockAxis = Axis::X,
+								.axis = Axis::X,
 								.frame = 10,
 								.rigidPartX = { 24, 16, YSections::Top | YSections::Center | YSections::Bottom },
 								.rigidPartY = { 24, 16,  XSections::Left | XSections::Center | XSections::Right },
@@ -2742,11 +2749,12 @@ bool scrollSkinTest(CStandardSlot_p pSlot)
 	Surface_p pSliderSurf = loadSurface("resources/sliding_statebutton.png");
 	Surface_p pCoverSurf = loadSurface("resources/sliding_statebutton_cover.png");
 
-	auto pSliderSkin = ScrollSkin::create({ .blockSpacing = 0,
+	auto pSliderSkin = ScrollSkin::create({
 											.scrollDirection = Direction::Left,
 											.scrollDistance = 48,
 											.scrollDuration = 100,
 											.scrollState = StateBits::Selected,
+											.spacing = 0,
 											.states = { StateEnum::Normal, {}, StateEnum::Hovered, {}, StateEnum::Disabled, {} },
 											.surface = pSliderSurf });
 

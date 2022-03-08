@@ -65,7 +65,7 @@ namespace wg
 		Axis scrollAxis = blueprint.scrollDirection == Direction::Up || blueprint.scrollDirection == Direction::Down ? Axis::Y : Axis::X;
 
 
-		Rect block = blueprint.blockOne;
+		Rect block = blueprint.firstBlock;
 
 		if (block.isEmpty())
 		{
@@ -73,7 +73,7 @@ namespace wg
 			int nStateBlocks = 1;
 			for (int i = 0; i < StateEnum_Nb; i++)
 			{
-				if (blueprint.states[i].state != StateEnum::Normal && blueprint.states[i].data.hasBlock == true)
+				if (blueprint.states[i].state != StateEnum::Normal && blueprint.states[i].data.blockless == false)
 					nStateBlocks++;
 			}
 
@@ -81,11 +81,11 @@ namespace wg
 			if (scrollAxis == Axis::X)
 			{
 				block.w = m_pSurface->pointWidth() - blueprint.scrollDistance;
-				block.h = (m_pSurface->pointHeight() - blueprint.blockSpacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.h = (m_pSurface->pointHeight() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
 			}
 			else
 			{
-				block.w = (m_pSurface->pointWidth() - blueprint.blockSpacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.w = (m_pSurface->pointWidth() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
 				block.h = m_pSurface->pointHeight() - blueprint.scrollDistance;
 			}
 		}
@@ -101,7 +101,7 @@ namespace wg
 		m_stateBlocks[0] = block.pos();
 
 
-		Coord pitch = scrollAxis == Axis::X ? Coord(0, block.h + blueprint.blockSpacing) : Coord(block.w + blueprint.blockSpacing, 0);
+		Coord pitch = scrollAxis == Axis::X ? Coord(0, block.h + blueprint.spacing) : Coord(block.w + blueprint.spacing, 0);
 
 		int ofs = 0;
 		for ( auto& stateInfo : blueprint.states )
@@ -117,7 +117,7 @@ namespace wg
 					m_bContentShifting = true;
 				}
 
-				if (stateInfo.data.hasBlock == true)
+				if (stateInfo.data.blockless == false)
 				{
 					ofs++;
 					m_stateBlockMask.setBit(index);

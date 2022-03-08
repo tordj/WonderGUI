@@ -214,27 +214,27 @@ namespace wg
 
 		// Make sure we have a correct block
 
-		Rect block = blueprint.blockOne;
+		Rect block = blueprint.firstBlock;
 
 		if (block.isEmpty())
 		{
 			int nStateBlocks = 1;
 			for (int i = 0; i < StateEnum_Nb; i++)
 			{
-				if (blueprint.states[i].state != StateEnum::Normal && blueprint.states[i].data.hasBlock == true)
+				if (blueprint.states[i].state != StateEnum::Normal && blueprint.states[i].data.blockless == false)
 					nStateBlocks++;
 			}
 
 
-			if (blueprint.blockAxis == Axis::X)
+			if (blueprint.axis == Axis::X)
 			{
-				block.w = (m_pSurface->pointWidth() - blueprint.blockSpacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.w = (m_pSurface->pointWidth() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
 				block.h = m_pSurface->pointHeight();
 			}
 			else
 			{
 				block.w = m_pSurface->pointWidth();
-				block.h = (m_pSurface->pointHeight() - blueprint.blockSpacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.h = (m_pSurface->pointHeight() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
 			}
 		}
 
@@ -296,7 +296,7 @@ namespace wg
 
 		Coord blockOfs = block.pos();
 
-		Coord pitch = blueprint.blockAxis == Axis::X ? Coord(block.w + blueprint.blockSpacing, 0) : Coord(0, block.h + blueprint.blockSpacing);
+		Coord pitch = blueprint.axis == Axis::X ? Coord(block.w + blueprint.spacing, 0) : Coord(0, block.h + blueprint.spacing);
 
 		int ofs = 0;
 		for (auto& stateInfo : blueprint.states)
@@ -312,7 +312,7 @@ namespace wg
 					m_bContentShifting = true;
 				}
 
-				if (stateInfo.data.hasBlock == true)
+				if (stateInfo.data.blockless == false)
 				{
 					ofs++;
 					m_stateBlockMask.setBit(index);
