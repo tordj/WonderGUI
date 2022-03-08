@@ -49,9 +49,9 @@ namespace wg
 			Surface_p	surface;
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
-			Border		contentPadding;
 			Gradient	gradient;
 			int			layer = -1;
+			Border		padding;
 
 			bool		skinInSkin = true;
 			std::vector<Skin_p>	skins;

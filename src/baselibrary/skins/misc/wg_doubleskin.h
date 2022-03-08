@@ -44,8 +44,8 @@ namespace wg
 
 		struct Blueprint
 		{
-			Border		contentPadding;
 			int			layer = -1;
+			Border		padding;
 
 			bool		skinInSkin = true;
 			Skin_p		skins[2];

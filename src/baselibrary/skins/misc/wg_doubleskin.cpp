@@ -55,8 +55,8 @@ namespace wg
 		m_pBackSkin = blueprint.skins[1];
 		m_bSkinInSkin = blueprint.skinInSkin;
 
-		m_contentPadding = blueprint.contentPadding;
-		m_bContentPaddingSet = !blueprint.contentPadding.isEmpty();
+		m_contentPadding = blueprint.padding;
+		m_bContentPaddingSet = !blueprint.padding.isEmpty();
 
 		m_layer = blueprint.layer;
 

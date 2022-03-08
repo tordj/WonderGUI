@@ -55,7 +55,7 @@ namespace wg
 		m_emptyColor = bp.emptyColor;
 
 		m_gfxPadding = bp.gfxPadding;
-		m_contentPadding = bp.contentPadding;
+		m_contentPadding = bp.padding;
 		m_bStaticSections = !bp.movingSlices;
 		m_bRectangular = bp.rectangular;
 

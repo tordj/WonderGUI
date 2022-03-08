@@ -44,11 +44,11 @@ namespace wg
 		struct Blueprint
 		{
 			BlendMode	blendMode = BlendMode::Undefined;
-			Border		contentPadding;
 			Gradient	gradient;
 			int			layer = -1;
 			int			markAlpha = 1;
 			Border		overflow;
+			Border		padding;
 		};
 
 		//.____ Creation __________________________________________

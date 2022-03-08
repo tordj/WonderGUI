@@ -40,13 +40,13 @@ namespace wg
 		return BoxSkin_p(new BoxSkin(blueprint));
 	}
 
-	BoxSkin_p BoxSkin::create(Border outline, HiColor fillColor, HiColor outlineColor, Border contentPadding )
+	BoxSkin_p BoxSkin::create(Border outline, HiColor fillColor, HiColor outlineColor, Border padding )
 	{
 		Blueprint bp;
 		bp.outline = outline;
 		bp.color = fillColor;
 		bp.outlineColor = outlineColor;
-		bp.contentPadding = contentPadding;
+		bp.padding = padding;
 
 		return BoxSkin_p(new BoxSkin(bp));
 	}
@@ -58,7 +58,7 @@ namespace wg
 	{
 		m_outline			= blueprint.outline;
 		m_blendMode		= blueprint.blendMode;
-		m_contentPadding= blueprint.contentPadding;
+		m_contentPadding= blueprint.padding;
 		m_layer			= blueprint.layer;
 		m_markAlpha		= blueprint.markAlpha;
 		m_overflow		= blueprint.overflow;

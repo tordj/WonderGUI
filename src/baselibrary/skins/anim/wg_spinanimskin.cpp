@@ -64,7 +64,7 @@ namespace wg
 
 		m_layer = blueprint.layer;
 		m_bOpaque = m_pSurface->isOpaque();
-		m_contentPadding = blueprint.contentPadding;
+		m_contentPadding = blueprint.padding;
 		m_markAlpha = blueprint.markAlpha;
 		m_overflow = blueprint.overflow;
 

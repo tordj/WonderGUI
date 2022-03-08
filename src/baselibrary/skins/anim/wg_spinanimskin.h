@@ -49,13 +49,13 @@ namespace wg
 			float		angleEnd = 360.f;
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
-			Border		contentPadding;
 			int			cycleDuration = 1000;
 			Border		destPadding;
 			Gradient	gradient;
 			int			layer = -1;
 			int			markAlpha = 1;
 			Border		overflow;
+			Border		padding;
 			CoordF		pivot = { 0.5f, 0.5f };
 			CoordF		placement = { 0.5f, 0.5f };
 			Size		preferredSize;							// Mandatory

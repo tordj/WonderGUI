@@ -69,7 +69,7 @@ namespace wg
 		m_layer			= blueprint.layer;
 		m_blendMode		= blueprint.blendMode;
 		m_gradient		= blueprint.gradient;
-		m_contentPadding= blueprint.contentPadding;
+		m_contentPadding= blueprint.padding;
 		m_markAlpha		= blueprint.markAlpha;
 		m_overflow		= blueprint.overflow;
 

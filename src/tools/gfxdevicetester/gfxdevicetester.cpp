@@ -573,15 +573,15 @@ bool GfxDeviceTester::setup_chrome()
 
 	auto pPlateSurface = m_pVisitor->loadSurface("resources/grey_plate.bmp");
 	assert(pPlateSurface);
-	BlockSkin_p pPlateSkin = BlockSkin::create({ .contentPadding = 5, .frame = 3, .surface = pPlateSurface } );
+	BlockSkin_p pPlateSkin = BlockSkin::create({ .frame = 3, .padding = 5, .surface = pPlateSurface } );
 
 	auto pPressablePlateSurface = m_pVisitor->loadSurface("resources/grey_pressable_plate.bmp");
 	assert(pPressablePlateSurface);
-	BlockSkin_p pPressablePlateSkin = BlockSkin::create({ .blockAxis = Axis::X, .contentPadding = Border(3), .frame = Border(3), .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pPressablePlateSurface });
+	BlockSkin_p pPressablePlateSkin = BlockSkin::create({ .blockAxis = Axis::X, .frame = Border(3), .padding = Border(3), .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pPressablePlateSurface });
 
 	auto pButtonSurface = m_pVisitor->loadSurface("resources/simple_button.bmp");
 	assert(pButtonSurface);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({ .blockAxis = Axis::X, .contentPadding = Border(5), .frame = Border(3), .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pButtonSurface });
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({ .blockAxis = Axis::X, .frame = Border(3), .padding = Border(5), .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pButtonSurface });
 
 
 
@@ -846,7 +846,7 @@ bool GfxDeviceTester::setup_chrome()
 
 	auto pSkin = BoxSkin::create(1, Color::White, Color::Black, 8);
 
-	auto pEntrySkin = BoxSkin::create({ .color = Color::White, .contentPadding = 8, .outline = 1, .outlineColor = Color::Black,
+	auto pEntrySkin = BoxSkin::create({ .color = Color::White, .outline = 1, .outlineColor = Color::Black, .padding = 8,
 										.states = { StateEnum::Hovered, {.color = Color::AntiqueWhite },
 													StateEnum::SelectedHovered, {.color = Color::AntiqueWhite },
 													StateEnum::Selected, {.color = Color::Aquamarine } } });

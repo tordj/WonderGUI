@@ -52,13 +52,13 @@ namespace wg
 		{
 			BlendMode				blendMode = BlendMode::Undefined;
 			HiColor					color = HiColor::Undefined;
-			Border					contentPadding;
 			std::vector<FrameBP>	frames;			// Mandatory
 			Border					gfxPadding;
 			Gradient				gradient;
 			int						layer = -1;
 			int						markAlpha = 1;
 			Border					overflow;
+			Border					padding;
 
 			Size					size;			// Mandatory
 			Surface_p				surface;		// Mandatory

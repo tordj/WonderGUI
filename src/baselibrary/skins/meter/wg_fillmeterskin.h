@@ -47,7 +47,6 @@ namespace wg
 			HiColor		backColor = Color::Transparent;
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = Color::Blue;
-			Border		contentPadding;
 			Direction	direction = Direction::Right;
 			Border		gfxPadding;
 			Gradient	gradient;
@@ -59,6 +58,7 @@ namespace wg
 			HiColor		minColor = HiColor::Undefined;
 
 			Border		overflow;
+			Border		padding;
 			Size		preferredSize;						// Mandatory
 			bool		startFromCenter = false;
 			pts			startLength = 0;

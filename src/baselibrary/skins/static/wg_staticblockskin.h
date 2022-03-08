@@ -62,12 +62,12 @@ namespace wg
 			BlendMode	blendMode = BlendMode::Undefined;
 			Rect		block;
 			HiColor		color = HiColor::Undefined;
-			Border		contentPadding;
 			Border		frame;
 			Gradient	gradient;
 			int			layer = -1;
 			int			markAlpha = 1;
 			Border		overflow;
+			Border		padding;
 
 			RigidPartXBlueprint	rigidPartX;
 			RigidPartYBlueprint rigidPartY;

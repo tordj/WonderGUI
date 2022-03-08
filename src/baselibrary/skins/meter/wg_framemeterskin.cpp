@@ -48,7 +48,7 @@ namespace wg
 	{
 		m_blendMode			= bp.blendMode;
 		m_color				= bp.color;
-		m_contentPadding	= bp.contentPadding;
+		m_contentPadding	= bp.padding;
 		m_gfxPadding		= bp.gfxPadding;
 		m_gradient			= bp.gradient;
 		m_layer				= bp.layer;

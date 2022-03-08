@@ -499,7 +499,7 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({ .blockAxis = Axis::X, .contentPadding = 5, .frame = 3, .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pButtonSurface });
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({ .blockAxis = Axis::X, .frame = 3, .padding = 5, .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pButtonSurface });
 
 	pSDLSurf = IMG_Load("resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -523,8 +523,8 @@ int main(int argc, char** argv)
 	auto pStateButtonSkin = BlockSkin::create( BlockSkin::Blueprint
 		{
 			.blockAxis = Axis::X,
-			.contentPadding = 5,
 			.frame = 3,
+			.padding = 5,
 			.states = {	StateEnum::Normal, {}, StateEnum::Hovered, {},
 							StateEnum::Selected, {}, StateEnum::SelectedHovered, {},
 							StateEnum::Disabled, {}
@@ -540,8 +540,8 @@ int main(int argc, char** argv)
 	auto pPressablePlateSkin = BlockSkin::create(BlockSkin::Blueprint
 		{
 			.blockAxis = Axis::X,
-			.contentPadding = 3,
 			.frame = 3,
+			.padding = 3,
 			.states = {	StateEnum::Normal, {}, StateEnum::Hovered, {},
 							StateEnum::Pressed, {}, StateEnum::Disabled, {}
 						},
@@ -2239,7 +2239,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
-	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .contentPadding = 10, .states = {StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }, StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)} } });
+	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .padding = 10, .states = {StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }, StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)} } });
 
 	auto pSliderX = Slider::create();
 	{
@@ -2279,7 +2279,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
-	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .contentPadding = 10, .states = {StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }, StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)} } });
+	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .padding = 10, .states = {StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }, StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)} } });
 
 	auto pSliderX = RangeSlider::create();
 	{
@@ -2503,7 +2503,7 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	Surface_p pMainSurf = loadSurface("resources/selectbox.png");
 
 //	auto pMainSkin = BlockSkin::create(pMainSurf, { 0,0,32,16 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed }, { 3,23,3,3 });
-	auto pMainSkin = BlockSkin::create(BlockSkin::Blueprint{ .blockOne = { 0,0,32,16 }, .contentPadding = { 3,23,3,3 }, .frame = { 3,23,3,3 }, .states = { StateEnum::Normal, {}, StateEnum::Hovered, {}, StateEnum::Pressed }, .surface = pMainSurf
+	auto pMainSkin = BlockSkin::create(BlockSkin::Blueprint{ .blockOne = { 0,0,32,16 }, .frame = { 3,23,3,3 }, .padding = { 3,23,3,3 }, .states = { StateEnum::Normal, {}, StateEnum::Hovered, {}, StateEnum::Pressed }, .surface = pMainSurf
 });
 
 
@@ -2513,7 +2513,7 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 
 	auto pListSkin = BoxSkin::create(1, Color::White, Color::Black, 3);
 
-	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .contentPadding = 3, .outline = 1, .outlineColor = Color::Transparent,
+	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .outline = 1, .outlineColor = Color::Transparent, .padding = 3,
 											 .states = { StateEnum::Hovered, {.color = Color::Yellow, .outlineColor = Color::Orange },
 														 StateEnum::Selected, {.color = Color::LightBlue, .outlineColor = Color::White } } });
 
@@ -2543,9 +2543,9 @@ bool tileSkinTest(CStandardSlot_p pSlot)
 
 	Surface_p pHoveredSurf = loadSurface("resources/tile_blocks_marked.png", { .tiling = true } );
 
-	auto pStaticSkin = TileSkin::create({ .contentPadding = 10, .surface = pNormalSurf });
+	auto pStaticSkin = TileSkin::create({ .padding = 10, .surface = pNormalSurf });
 
-	auto pDynamicSkin = TileSkin::create( { .contentPadding = 10, .states = { {StateEnum::Hovered, {.surface = pHoveredSurf} } }, .surface = pNormalSurf  });
+	auto pDynamicSkin = TileSkin::create( { .padding = 10, .states = { {StateEnum::Hovered, {.surface = pHoveredSurf} } }, .surface = pNormalSurf  });
 
 	auto pFiller1 = Filler::create();
 	pFiller1->setSkin( pStaticSkin );
@@ -2606,7 +2606,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 
 	Surface_p pHoveredSurf = loadSurface("resources/tile_blocks_marked.png", { .tiling = true } );
 
-	auto pDynamicSkin = TileSkin::create({ .contentPadding = 10, .states = { StateEnum::Hovered, {.surface = pHoveredSurf} }, .surface = pNormalSurf });
+	auto pDynamicSkin = TileSkin::create({ .padding = 10, .states = { StateEnum::Hovered, {.surface = pHoveredSurf} }, .surface = pNormalSurf });
 
 
 	Surface_p pSplashSurf = loadSurface("resources/splash.png" );
@@ -2642,9 +2642,9 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 
 
-	auto pAnimSkin = SpinAnimSkin::create({ .contentPadding = 80, .cycleDuration = 10000, .preferredSize = { 256,256 }, .surface = pSplashSurf });
+	auto pAnimSkin = SpinAnimSkin::create({ .cycleDuration = 10000, .padding = 80, .preferredSize = { 256,256 }, .surface = pSplashSurf });
 
-	auto pAnimSkin2 = SpinAnimSkin::create({ .contentPadding = 10, .cycleDuration = 5000, .preferredSize = { 256,256 }, .surface = pSplashSurf });
+	auto pAnimSkin2 = SpinAnimSkin::create({ .cycleDuration = 5000, .padding = 10, .preferredSize = { 256,256 }, .surface = pSplashSurf });
 
 	auto pBoxSkin = BoxSkin::create(2, Color::Red, Color::Black);
 
@@ -2676,7 +2676,7 @@ bool renderLayerTest(CStandardSlot_p pSlot)
 	
 	auto pShadowSkin = StaticBoxSkin::create({	.blendMode = BlendMode::Max,
 												.color = Color(255,255,255,32),
-												.contentPadding = { 0,40,40,0},
+												.padding = { 0,40,40,0},
 												.outline = 20,
 												.outlineColor = Color::Transparent,
 												.layer = 1 } );
@@ -2775,10 +2775,10 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 
 	Surface_p pTooltipBg = loadSurface("resources/tooltip_under_bg.png");
 	auto pSkin = StaticBlockSkin::create({
-		.contentPadding	= { 10,4,4,4 },
-		.frame			= Border(10,4,3,4),
-		.rigidPartX		= {5, 16, YSections::Top | YSections::Center | YSections::Bottom},
-		.surface		= pTooltipBg,
+		.frame		= Border(10,4,3,4),
+		.padding	= { 10,4,4,4 },
+		.rigidPartX	= {5, 16, YSections::Top | YSections::Center | YSections::Bottom},
+		.surface	= pTooltipBg,
 		});
 		
 	s_pTooltip->setSkin( pSkin );

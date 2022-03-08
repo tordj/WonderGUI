@@ -206,7 +206,7 @@ int main ( int argc, char** argv )
 	pPopupLayer->mainSlot = pBasePanel;
 
     g_pDisplay = Image::create();
-	auto pSkin = BoxSkin::create({ .color = Color::Black, .contentPadding = 2, .outline = 2, .outlineColor = Color::HotPink });
+	auto pSkin = BoxSkin::create({ .color = Color::Black, .outline = 2, .outlineColor = Color::HotPink, .padding = 2 });
     g_pDisplay->setSkin(pSkin);
     pBasePanel->slots.pushBack(g_pDisplay, [](Widget * pWidget, Size sz) { return Rect(10,10,240,240); } );
 

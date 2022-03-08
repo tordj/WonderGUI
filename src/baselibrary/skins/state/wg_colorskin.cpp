@@ -40,11 +40,11 @@ namespace wg
 		return ColorSkin_p(new ColorSkin(blueprint));
 	}
 
-	ColorSkin_p ColorSkin::create(HiColor color, Border contentPadding )
+	ColorSkin_p ColorSkin::create(HiColor color, Border padding )
 	{
 		Blueprint bp;
 		bp.color = color;
-		bp.contentPadding = contentPadding;
+		bp.padding = padding;
 
 		return ColorSkin_p(new ColorSkin(bp));
 	}
@@ -54,7 +54,7 @@ namespace wg
 	ColorSkin::ColorSkin(const Blueprint& blueprint)
 	{
 		m_blendMode		= blueprint.blendMode;
-		m_contentPadding= blueprint.contentPadding;
+		m_contentPadding= blueprint.padding;
 		m_layer			= blueprint.layer;
 		m_markAlpha		= blueprint.markAlpha;
 		m_overflow		= blueprint.overflow;

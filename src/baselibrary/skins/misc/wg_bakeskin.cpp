@@ -62,8 +62,8 @@ namespace wg
 		m_bSkinInSkin = blueprint.skinInSkin;
 		m_layer = blueprint.layer;
 
-		m_contentPadding = blueprint.contentPadding;
-		m_bContentPaddingSet = !blueprint.contentPadding.isEmpty();
+		m_contentPadding = blueprint.padding;
+		m_bContentPaddingSet = !blueprint.padding.isEmpty();
 
 		//TODO: CDynamicVector should have a pushBack( iterator begin, interator end ) which we should use.
 

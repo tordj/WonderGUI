@@ -50,13 +50,13 @@ namespace wg
 
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
-			Border		contentPadding;
 
 			Border		gfxPadding;
 			Gradient	gradient;
 			int			layer = -1;
 			int			markAlpha = 1;
 			Border		overflow;
+			Border		padding;
 
 			CoordF		pivot = { 0.5f, 0.5f };
 			CoordF		placement = { 0.5f, 0.5f };

@@ -59,7 +59,7 @@ namespace wg
 	{
 		m_color				= blueprint.color;
 		m_bOpaque			= (m_color.a == 4096);
-		m_contentPadding	= blueprint.contentPadding;
+		m_contentPadding	= blueprint.padding;
 		m_layer				= blueprint.layer;
 		m_markAlpha			= blueprint.markAlpha;
 		m_overflow			= blueprint.overflow;

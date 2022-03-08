@@ -59,11 +59,11 @@ namespace wg
 			BlendMode		blendMode = BlendMode::Undefined;
 
 			HiColor			color = HiColor::White;
-			Border			contentPadding;
 
 			int				layer = -1;
 			int				markAlpha = 1;
 			Border			overflow;
+			Border			padding;
 
 			StateBP			states[StateEnum_Nb];
 		};

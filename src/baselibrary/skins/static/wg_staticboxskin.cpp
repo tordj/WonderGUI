@@ -56,7 +56,7 @@ namespace wg
 		m_fillColor			= blueprint.color;
 		m_outlineColor		= blueprint.outlineColor;
 		m_blendMode			= blueprint.blendMode;
-		m_contentPadding	= blueprint.contentPadding;
+		m_contentPadding	= blueprint.padding;
 		m_layer				= blueprint.layer;
 		m_markAlpha			= blueprint.markAlpha;
 		m_overflow			= blueprint.overflow;

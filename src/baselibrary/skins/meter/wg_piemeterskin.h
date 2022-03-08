@@ -56,7 +56,6 @@ namespace wg
 
 			BlendMode	blendMode = BlendMode::Undefined;
 
-			Border		contentPadding;
 
 			HiColor		emptyColor = Color::DarkBlue;
 
@@ -74,6 +73,7 @@ namespace wg
 			bool		movingSlices = false;
 
 			Border		overflow;
+			Border		padding;
 			Size		preferredSize;
 
 			bool		rectangular = false;
