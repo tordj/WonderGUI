@@ -31,6 +31,35 @@ namespace wg
 	const TypeInfo TextStyle::TYPEINFO = { "TextStyle", &Object::TYPEINFO };
 
 
+	//____ Blueprint::modifyState() ___________________________________________________
+
+	void TextStyle::Blueprint::modifyState( State _state, const TextStyle::StateData& data )
+	{
+		for( auto& entry : states )
+		{
+			if( entry.state == _state )
+			{
+				if( data.size != -1 )
+					entry.data.size = data.size;
+				if( data.color != HiColor::Undefined )
+					entry.data.color = data.color;
+				if( data.backColor != HiColor::Undefined )
+					entry.data.backColor = data.backColor;
+				if( data.decoration != TextDecoration::Undefined )
+					entry.data.decoration = data.decoration;
+				
+				return;
+			}
+		}
+		
+		TextStyle::StateBP sbp;
+		sbp.state = _state;
+		sbp.data = data;
+		states.push_back( sbp );
+	}
+
+
+
     //____ create() ________________________________________________________________
 
     TextStyle_p TextStyle::create( const Blueprint& blueprint)
@@ -74,22 +103,19 @@ namespace wg
 
 		// Setting state specific parameters
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for ( auto& entry : blueprint.states )
 		{
-			if (blueprint.states[i].state != StateEnum::Normal)
-			{
-				idx = _stateToIndex(StateEnum::Normal);
+			idx = _stateToIndex(entry.state);
 
-				m_size[idx] = blueprint.states[i].data.size;
-				m_color[idx] = blueprint.states[i].data.color;
-				m_backColor[idx] = blueprint.states[i].data.backColor;
-				m_decoration[idx] = blueprint.states[i].data.decoration;
+			m_size[idx] = entry.data.size;
+			m_color[idx] = entry.data.color;
+			m_backColor[idx] = entry.data.backColor;
+			m_decoration[idx] = entry.data.decoration;
 
-				m_sizeSetMask.setBit(idx, blueprint.states[i].data.size > 0);
-				m_colorSetMask.setBit(idx, blueprint.states[i].data.color != HiColor::Undefined );
-				m_backColorSetMask.setBit(idx, blueprint.states[i].data.backColor != HiColor::Undefined);
-				m_decorationSetMask.setBit(idx, blueprint.states[i].data.decoration != TextDecoration::Undefined);
-			}
+			m_sizeSetMask.setBit(idx, entry.data.size > 0);
+			m_colorSetMask.setBit(idx, entry.data.color != HiColor::Undefined );
+			m_backColorSetMask.setBit(idx, entry.data.backColor != HiColor::Undefined);
+			m_decorationSetMask.setBit(idx, entry.data.decoration != TextDecoration::Undefined);
 		}
 
 		//
@@ -241,25 +267,24 @@ namespace wg
 		bp.color = m_color[idx];
 		bp.decoration = m_decoration[idx];
 
-		int ofs = 0;
-
 		Bitmask<uint32_t> stateSetMask = m_sizeSetMask | m_colorSetMask | m_backColorSetMask | m_decorationSetMask;
 
 		for (int i = 1; i < StateEnum_Nb; i++)
 		{
 			if (stateSetMask.bit(i))
 			{
-				bp.states[ofs].state = _indexToState(i);
+				StateBP bps;
+				bps.state = _indexToState(i);
 				if (m_sizeSetMask.bit(i))
-					bp.states[ofs].data.size = m_size[i];
+					bps.data.size = m_size[i];
 				if (m_colorSetMask.bit(i))
-					bp.states[ofs].data.color = m_color[i];
+					bps.data.color = m_color[i];
 				if (m_backColorSetMask.bit(i))
-					bp.states[ofs].data.backColor = m_color[i];
+					bps.data.backColor = m_color[i];
 				if (m_decorationSetMask.bit(i))
-					bp.states[ofs].data.decoration = m_decoration[i];
+					bps.data.decoration = m_decoration[i];
 
-				ofs++;
+				bp.states.push_back(bps);
 			}
 		}
 

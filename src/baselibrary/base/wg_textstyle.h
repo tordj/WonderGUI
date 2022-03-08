@@ -23,6 +23,8 @@
 #define WG_TEXTSTYLE_DOT_H
 #pragma once
 
+#include <vector>
+
 #include <wg_pointers.h>
 #include <wg_color.h>
 #include <wg_util.h>
@@ -95,7 +97,9 @@ namespace wg
 			TextLink_p		link = nullptr;
 			pts				size = -1;
 
-			StateBP			states[StateEnum_Nb];
+			std::vector<StateBP>	states;
+			
+			void 			modifyState( State state, const StateData& data );
 		};
 
 		//.____ Creation __________________________________________
