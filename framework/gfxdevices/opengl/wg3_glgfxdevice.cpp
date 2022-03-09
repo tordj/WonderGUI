@@ -32,12 +32,14 @@
 #include <wg3_util.h>
 
 using namespace std;
+using namespace wg::Util;
 
 namespace wg
 {
 	const TypeInfo GlGfxDevice::TYPEINFO = { "GlGfxDevice", &GfxDevice::TYPEINFO };
 
 	GlGfxDevice *	GlGfxDevice::s_pActiveDevice = nullptr;
+
 
 
 #define LOG_GLERROR(check) { GLenum err = check; if(err != 0) onGlError(err, this, TYPEINFO, __func__, __FILE__, __LINE__ ); }
@@ -566,22 +568,24 @@ namespace wg
 
 	//____ setDefaultCanvas() ___________________________________________
 
-	bool GlGfxDevice::setDefaultCanvas(SizeI pixelSize)
+	bool GlGfxDevice::setDefaultCanvas(SizeSPX size, int scale)
 	{
-		m_defaultCanvasSize = pixelSize;
+		m_defaultCanvas.ref = CanvasRef::Default;		// Starts as Undefined until this method is called.
+		m_defaultCanvas.size = size;
+		m_defaultCanvas.scale = scale;
 		return true;
 	}
 
-	//____ canvasSize() _________________________________________________
+	//____ canvas() ___________________________________________________________
 
-	SizeI GlGfxDevice::canvasSize(CanvasRef ref) const
+	const CanvasInfo& GlGfxDevice::canvas(CanvasRef ref) const
 	{
 		if (ref == CanvasRef::Default)
-			return m_defaultCanvasSize;
+			return m_defaultCanvas;
 		else
 		{
 			//TODO: Error handling!
-			return SizeI();
+			return m_dummyCanvas;
 		}
 	}
 
@@ -602,13 +606,13 @@ namespace wg
 		bool bClear = false;
 		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer] == nullptr)
 		{
-			m_layerSurfaces[m_renderLayer] = GlSurface::create(m_canvas.size, m_pCanvasLayers->layerFormat(m_renderLayer), SurfaceFlag::Canvas);
+			m_layerSurfaces[m_renderLayer] = GlSurface::create(roundToPixels(m_canvas.size), m_pCanvasLayers->layerFormat(m_renderLayer), SurfaceFlag::Canvas);
 			bClear = true;
 		}
 
 		if (!m_canvas.pSurface && m_renderLayer == 0)
 		{
-			m_canvasYstart = m_canvas.size.h;
+			m_canvasYstart = roundToPixels(m_canvas.size.h);
 			m_canvasYmul = -1;
 			pRenderSurface = nullptr;
 		}
@@ -625,7 +629,7 @@ namespace wg
 		m_tintInfo.flatTint[2] = m_tintColor.b / 4096.f;
 		m_tintInfo.flatTint[3] = m_tintColor.a / 4096.f;
 
-		m_tintInfo.tintRect = (RectF) m_tintGradientRect;
+		m_tintInfo.tintRect = (RectF) roundToPixels(m_tintGradientRect);
 
 		m_tintInfo.topLeftTint[0] = m_tintGradient.topLeft.r / 4096.f;
 		m_tintInfo.topLeftTint[1] = m_tintGradient.topLeft.g / 4096.f;
@@ -656,7 +660,7 @@ namespace wg
 
 		//
 
-		_setCanvas(static_cast<GlSurface*>(pRenderSurface), m_canvas.size.w, m_canvas.size.h);
+		_setCanvas(static_cast<GlSurface*>(pRenderSurface), roundToPixels(m_canvas.size.w), roundToPixels(m_canvas.size.h));
 
 //		if( m_blendMode != m_activeBlendMode)
 			_setBlendMode(m_blendMode);
@@ -712,7 +716,7 @@ namespace wg
 
 	//____ setTintGradient() __________________________________________________________________
 
-	void GlGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
+	void GlGfxDevice::setTintGradient(const RectSPX& rect, const Gradient& gradient)
 	{
 		if (m_bTintGradient && gradient == m_tintGradient && rect == m_tintGradientRect)
 			return;
@@ -725,7 +729,7 @@ namespace wg
 
 		GfxDevice::setTintGradient(rect, gradient);
 
-		m_tintInfo.tintRect = (RectF)rect;
+		m_tintInfo.tintRect = (RectF) roundToPixels(rect);
 
 		m_tintInfo.topLeftTint[0] = gradient.topLeft.r / 4096.f;
 		m_tintInfo.topLeftTint[1] = gradient.topLeft.g / 4096.f;
@@ -816,7 +820,7 @@ namespace wg
 			return false;
 
 		m_pBlitSource = pSource;
-		m_blitSourceSize = CoordF(pSource->size().w, pSource->size().h);
+		m_blitSourceSize = CoordF(pSource->pixelSize().w, pSource->pixelSize().h);
 
         //TODO: Check so that we don't overrun m_surfaceBuffer;
 
@@ -1041,7 +1045,7 @@ namespace wg
 
 	//____ fill() ____ [standard] __________________________________________________
 
-	void GlGfxDevice::fill(const RectI& rect, HiColor col)
+	void GlGfxDevice::fill(const RectSPX& rect, HiColor col)
 	{
 		// Skip calls that won't affect destination
 
@@ -1053,76 +1057,174 @@ namespace wg
 
 		//
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4)
+		if (((rect.x | rect.y | rect.w | rect.h) & 0x3F) == 0)
 		{
-			_endCommand();
-			_executeBuffer();
-			_beginDrawCommand(Command::Fill);
-		}
-		else if (m_cmd != Command::Fill)
-		{
-			_endCommand();
-			_beginDrawCommand(Command::Fill);
-		}
+			// No subpixel precision, make it quick and easy
 
-		for (int i = 0; i < m_nClipRects; i++)
-		{
-			RectI patch(m_pClipRects[i], rect);
-			if (patch.w > 0 && patch.h > 0)
+			if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4)
 			{
-				int	dx1 = patch.x;
-				int	dy1 = patch.y;
-				int dx2 = patch.x + patch.w;
-				int dy2 = patch.y + patch.h;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
+				_endCommand();
+				_executeBuffer();
+				_beginDrawCommand(Command::Fill);
 			}
-		}
+			else if (m_cmd != Command::Fill)
+			{
+				_endCommand();
+				_beginDrawCommand(Command::Fill);
+			}
 
-		m_extrasBufferData[m_extrasOfs++] = col.r / 4096.f;
-		m_extrasBufferData[m_extrasOfs++] = col.g / 4096.f;
-		m_extrasBufferData[m_extrasOfs++] = col.b / 4096.f;
-		m_extrasBufferData[m_extrasOfs++] = col.a / 4096.f;
+			for (int i = 0; i < m_nClipRects; i++)
+			{
+				RectI patch = roundToPixels(RectSPX(m_pClipRects[i], rect));
+				if (patch.w > 0 && patch.h > 0)
+				{
+					int	dx1 = patch.x;
+					int	dy1 = patch.y;
+					int dx2 = patch.x + patch.w;
+					int dy2 = patch.y + patch.h;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+				}
+			}
+
+			m_extrasBufferData[m_extrasOfs++] = col.r / 4096.f;
+			m_extrasBufferData[m_extrasOfs++] = col.g / 4096.f;
+			m_extrasBufferData[m_extrasOfs++] = col.b / 4096.f;
+			m_extrasBufferData[m_extrasOfs++] = col.a / 4096.f;
+		}
+		else
+		{
+			// We have subpixel precision
+
+			// Create our outer rectangle
+
+			RectI outerRect(rect.x >> 6, rect.y >> 6, ((rect.x + rect.w + 63) >> 6) - (rect.x >> 6), ((rect.y + rect.h + 63) >> 6) - (rect.y >> 6));
+
+			//
+
+			if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
+			{
+				_endCommand();
+				_executeBuffer();
+				_beginDrawCommand(Command::FillSubPixel);
+			}
+			else if (m_cmd != Command::FillSubPixel)
+			{
+				_endCommand();
+				_beginDrawCommand(Command::FillSubPixel);
+			}
+
+			for (int i = 0; i < m_nClipRects; i++)
+			{
+				RectI patch(roundToPixels(m_pClipRects[i]), outerRect);
+				if (patch.w > 0 && patch.h > 0)
+				{
+					int	dx1 = patch.x;
+					int	dy1 = patch.y;
+					int dx2 = patch.x + patch.w;
+					int dy2 = patch.y + patch.h;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+
+					m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+					m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
+					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
+					m_vertexOfs++;
+				}
+			}
+
+			// Provide color	
+
+			m_extrasBufferData[m_extrasOfs++] = col.r / 4096.f;
+			m_extrasBufferData[m_extrasOfs++] = col.g / 4096.f;
+			m_extrasBufferData[m_extrasOfs++] = col.b / 4096.f;
+			m_extrasBufferData[m_extrasOfs++] = col.a / 4096.f;
+
+			// Provide rectangle center and radius
+
+			SizeF	radius(rect.w / 2, rect.h / 2);
+			CoordF	center(rect.x + radius.w, rect.y + radius.h);
+
+			m_extrasBufferData[m_extrasOfs++] = center.x;
+			m_extrasBufferData[m_extrasOfs++] = center.y;
+			m_extrasBufferData[m_extrasOfs++] = radius.w;
+			m_extrasBufferData[m_extrasOfs++] = radius.h;
+		}
 	}
 
 	//____ fill() ____ [subpixel] __________________________________________________
@@ -1231,7 +1333,7 @@ namespace wg
 
 	//____ plotPixels() ______________________________________________________
 
-	void GlGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const HiColor * pColors)
+	void GlGfxDevice::plotPixels(int nPixels, const CoordSPX * pCoords, const HiColor * pColors)
 	{
 		if (nPixels == 0)
 			return;
@@ -1257,7 +1359,7 @@ namespace wg
 			{
 				if (clip.contains(pCoords[pixel]))
 				{
-					m_vertexBufferData[m_vertexOfs].coord = pCoords[pixel];
+					m_vertexBufferData[m_vertexOfs].coord = pCoords[pixel] / 64;
 					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 					m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
 					m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
@@ -1283,8 +1385,12 @@ namespace wg
 
 	//____ drawLine() ____ [from/to] __________________________________________________
 
-	void GlGfxDevice::drawLine(CoordI begin, CoordI end, HiColor color, float thickness)
+	void GlGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness)
 	{
+		//TODO: Proper 26:6 support
+		begin = roundToPixels(begin);
+		end = roundToPixels(end);
+
 		if (m_vertexOfs > c_vertexBufferSize - 6 || m_extrasOfs > c_extrasBufferSize - 8 || m_clipCurrOfs == -1 )
 		{
 			_endCommand();
@@ -1419,8 +1525,12 @@ namespace wg
 
 	//____ drawLine() ____ [start/direction] __________________________________________________
 
-	void GlGfxDevice::drawLine(CoordI begin, Direction dir, int length, HiColor color, float thickness)
+	void GlGfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, float thickness)
 	{
+		//TODO: Proper 26:6 support
+		begin = roundToPixels(begin);
+		length = roundToPixels(length);
+
 		// Skip calls that won't affect destination
 
 		if (color.a == 0 && (m_blendMode == BlendMode::Blend))
@@ -1468,7 +1578,7 @@ namespace wg
 
 		// Clip our rectangle
 
-		if (!outerRect.intersectsWith(m_clipBounds))
+		if (!outerRect.intersectsWith(m_clipBounds/64))
 			return;
 
 		//
@@ -1490,7 +1600,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			RectI patch(m_pClipRects[i], outerRect);
+			RectI patch(m_pClipRects[i]/64, outerRect);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				int	dx1 = patch.x;
@@ -1562,12 +1672,12 @@ namespace wg
 
 	//____ _transformBlit() ____ [simple] __________________________________________________
 
-	void GlGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+	void GlGfxDevice::_transformBlit(const RectSPX& _dest, CoordSPX src, const int simpleTransform[2][2])
 	{
 		if (m_pBlitSource == nullptr)
 			return;
 
-		if (!dest.intersectsWith(m_clipBounds))
+		if (!_dest.intersectsWith(m_clipBounds))
 			return;
 
 		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8 )
@@ -1582,9 +1692,12 @@ namespace wg
 			_beginDrawCommandWithSource(Command::Blit);
 		}
 
+		//TODO: Proper 26:6 support
+		RectI dest = roundToPixels(_dest);
+
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			RectI patch(m_pClipRects[i], dest);
+			RectI patch(m_pClipRects[i]/64, dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				int		dx1 = patch.x;
@@ -1660,8 +1773,8 @@ namespace wg
 			}
 		}
 
-		m_extrasBufferData[m_extrasOfs++] = (GLfloat) src.x;
-		m_extrasBufferData[m_extrasOfs++] = (GLfloat) src.y;
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) roundToPixels(src.x);
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) roundToPixels(src.y);
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) dest.x;
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) dest.y;
 
@@ -1673,12 +1786,12 @@ namespace wg
 
 	//____ _transformBlit() ____ [complex] __________________________________________________
 
-	void GlGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
+	void GlGfxDevice::_transformBlit(const RectSPX& _dest, CoordF src, const float complexTransform[2][2])
 	{
 		if (m_pBlitSource == nullptr)
 			return;
 
-		if (!dest.intersectsWith(m_clipBounds))
+		if (!_dest.intersectsWith(m_clipBounds))
 			return;
 
 		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
@@ -1693,11 +1806,16 @@ namespace wg
 			_beginDrawCommandWithSource(Command::Blit);
 		}
 
+		//TODO: Proper 26:6 support
+		RectI dest = roundToPixels(_dest);
+
+		src /= 64;
+
 		//
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			RectI patch(m_pClipRects[i], dest);
+			RectI patch(m_pClipRects[i]/64, dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
@@ -1759,7 +1877,7 @@ namespace wg
 			}
 		}
 
-		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 		{
 			m_extrasBufferData[m_extrasOfs++] = src.x + 0.5f;
 			m_extrasBufferData[m_extrasOfs++] = src.y + 0.5f;
@@ -1782,10 +1900,13 @@ namespace wg
 
 	//____ _transformDrawSegments() ______________________________________________________
 
-	void GlGfxDevice::_transformDrawSegments( const RectI& _dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2] )
+	void GlGfxDevice::_transformDrawSegments( const RectSPX& _destIn, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2] )
 	{
-		if (!_dest.intersectsWith(m_clipBounds))
+		if (!_destIn.intersectsWith(m_clipBounds))
 			return;
+
+		//TODO: Proper 26:6 support
+		RectI _dest = roundToPixels(_destIn);
 
 		//
 
@@ -1857,7 +1978,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			RectI patch(m_pClipRects[i], dest);
+			RectI patch(m_pClipRects[i]/64, dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
@@ -2262,7 +2383,7 @@ namespace wg
 						if (nVertices > 0 && m_pActiveBlitSource)
 						{
 							GlSurface* pSurf = m_pActiveBlitSource;
-							glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->scaleMode()][m_bGradientActive][m_bActiveCanvasIsA8]);
+							glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->sampleMethod()][m_bGradientActive][m_bActiveCanvasIsA8]);
 
 							glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 

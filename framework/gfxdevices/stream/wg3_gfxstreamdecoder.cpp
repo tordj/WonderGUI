@@ -139,6 +139,13 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordS& coord)
+	{
+		coord.x = _pullShort();
+		coord.y = _pullShort();
+		return *this;
+	}
+
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordI& coord)
 	{
 		coord.x = _pullInt();
@@ -153,6 +160,13 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (SizeS& sz)
+	{
+		sz.w = _pullShort();
+		sz.h = _pullShort();
+		return *this;
+	}
+
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (SizeI& sz)
 	{
 		sz.w = _pullInt();
@@ -164,6 +178,15 @@ namespace wg
 	{
 		sz.w = _pullFloat();
 		sz.h = _pullFloat();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (RectS& rect)
+	{
+		rect.x = _pullShort();
+		rect.y = _pullShort();
+		rect.w = _pullShort();
+		rect.h = _pullShort();
 		return *this;
 	}
 
@@ -185,12 +208,40 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (BorderS& border)
+	{
+		border.top = _pullShort();
+		border.right = _pullShort();
+		border.bottom = _pullShort();
+		border.left = _pullShort();
+		return *this;
+	}
+
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (BorderI& border)
 	{
 		border.top = _pullShort();
 		border.right = _pullShort();
 		border.bottom = _pullShort();
 		border.left = _pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (Border& border)
+	{
+		border.top = _pullFloat();
+		border.right = _pullFloat();
+		border.bottom = _pullFloat();
+		border.left = _pullFloat();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (Gradient& gradient)
+	{
+		* this >> gradient.topLeft;
+		* this >> gradient.topRight;
+		* this >> gradient.bottomRight;
+		* this >> gradient.bottomLeft;
+		* this >> gradient.isValid;
 		return *this;
 	}
 
@@ -233,9 +284,9 @@ namespace wg
 		return *this;
 	}
 
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (ScaleMode& m)
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (SampleMethod& m)
 	{
-		m = (ScaleMode)_pullShort();
+		m = (SampleMethod)_pullShort();
 		return *this;
 	}
 

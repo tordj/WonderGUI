@@ -311,8 +311,11 @@ bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, floa
 
 void WgChart::SetSampleLabelColor(WgColor col)
 {
-    m_sampleLabelStyle.pTextStyle->setColor(col);
+	auto bp = m_sampleLabelStyle.pTextStyle->blueprint();
+	bp.color = col;
+		m_sampleLabelStyle.pTextStyle = wg::TextStyle::create(bp);
 }
+
 void WgChart::SetSampleGridLineColor(WgColor col)
 {
     for(auto &p : m_sampleGridLines)
@@ -322,9 +325,11 @@ void WgChart::SetSampleGridLineColor(WgColor col)
 }
 void WgChart::SetValueLabelColor(WgColor col)
 {
-    m_valueLabelStyle.pTextStyle->setColor(col);
-
+	auto bp = m_valueLabelStyle.pTextStyle->blueprint();
+	bp.color = col;
+	m_valueLabelStyle.pTextStyle = wg::TextStyle::create(bp);
 }
+
 void WgChart::SetValueGridLineColor(WgColor col)
 {
     for(auto &p : m_valueGridLines)
@@ -836,7 +841,7 @@ void WgChart::_updateBitmapCache( wg::GfxDevice * pDevice )
 
 	pDevice->setBlendMode(WgBlendMode::Blend);
 
-	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, m_pCacheBitmap->size(), WgStateEnum::Normal, m_scale) : WgRect(0,0,m_pCacheBitmap->size());
+	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, m_pCacheBitmap->pixelSize(), WgStateEnum::Normal, m_scale) : WgRect(0,0,m_pCacheBitmap->pixelSize());
 	WgRect waveCanvas = canvas - m_pixelPadding;
 
 
@@ -891,9 +896,9 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 				WgPen	pen(pDevice, _canvas);
 				wg::TextAttr attr;
 
-				wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
+				wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr, m_scale >> 6);
 				if( m_sampleLabelStyle.pTextStyle )
-					m_sampleLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
+					m_sampleLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr, m_scale >> 6);
 
                 pen.SetScale(m_scale);
                 pen.SetAttributes(attr);
@@ -942,9 +947,9 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 				WgPen	pen(pDevice, _canvas);
 				wg::TextAttr attr;
 
-				wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
+				wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr, m_scale >> 6);
 				if( m_valueLabelStyle.pTextStyle )
-					m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
+					m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr, m_scale >> 6);
 
                 pen.SetScale(m_scale);
 				pen.SetAttributes(attr);
@@ -1549,7 +1554,7 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 void WgChart::_requestRenderInCache()
 {
 	if( m_pCacheBitmap )
-		m_cacheDirt.add( m_pCacheBitmap->size() );
+		m_cacheDirt.add( m_pCacheBitmap->pixelSize() );
 	_requestRender();
 }
 

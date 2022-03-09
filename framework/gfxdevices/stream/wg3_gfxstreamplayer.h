@@ -29,7 +29,7 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 #include <wg3_cgfxoutstream.h>
 #include <wg3_gfxstreamdecoder.h>
 #include <wg3_gfxdevice.h>
-#include <wg3_patches_t.h>
+#include <wg3_patches.h>
 
 #include <vector>
 #include <tuple>
@@ -148,7 +148,7 @@ namespace wg
 
 		bool				m_bStoreDirtyRects = false;
 		int					m_maxDirtyRects = 64;
-		PatchesI			m_dirtyRects[CanvasRef_size];
+		PatchesSPX			m_dirtyRects[CanvasRef_size];
 	};
 
 }

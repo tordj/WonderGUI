@@ -96,7 +96,8 @@ public:
 	inline wg::Font *		GetFont() const { return m_pFont; }
 	inline int				GetSize() const { return m_size; }
 	inline WgColor			GetColor() const { return m_color; }
-
+	inline int				GetScale() const { return m_scale; }
+	
     inline int				GetLineSpacing() const { return m_pFont->maxAscend()/64 + m_pFont->maxDescend()/64 + m_pFont->lineGap()/64; }
     inline int				GetLineHeight() const { return m_pFont->maxAscend()/64 + m_pFont->maxDescend()/64; }
     inline int				GetBaseline() const { return m_pFont->maxAscend()/64; }

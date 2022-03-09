@@ -29,19 +29,19 @@
 
 namespace wg
 {
-
-	class Patches
+	template<class T>
+	class PatchesT
 	{
 	public:
 
 		//.____ Creation ______________________________________________________
 
-		Patches();
-		Patches( int startCapacity );
-		Patches( Rect * pArray, int capacity );
-		Patches(const Patches& source);
-		Patches(const Patches& source, const Rect& trim);
-		~Patches();
+		PatchesT();
+		PatchesT( int startCapacity );
+		PatchesT( RectT<T> * pArray, int capacity );
+		PatchesT(const PatchesT<T>& source);
+		PatchesT(const PatchesT<T>& source, const RectT<T>& trim);
+		~PatchesT();
 
 		//.____ Control ________________________________________________________
 
@@ -49,33 +49,33 @@ namespace wg
 //		bool			setArray( Rect * pArray, int capacity );
 		inline void		clear() { m_size = 0; }
 
-		inline void		add( const Rect& rect ) { if( rect.w.qpix > 0 && rect.h.qpix > 0 ) _add( rect, 0 ); }						// Adds the area
-		void			add( const Patches * pSource, int ofs = 0, int len = INT_MAX );
+		inline void		add( const RectT<T>& rect ) { if( rect.w > 0 && rect.h > 0 ) _add( rect, 0 ); }						// Adds the area
+		void			add( const PatchesT<T> * pSource, int ofs = 0, int len = INT_MAX );
 
-		void			sub( const Rect& rect );											// Subtracts the area
-		void			sub( const Patches * pSource, int ofs = 0, int len = INT_MAX );
+		void			sub( const RectT<T>& rect );											// Subtracts the area
+		void			sub( const PatchesT<T> * pSource, int ofs = 0, int len = INT_MAX );
 
-		inline void		push( const Rect& rect );											// Adds the rect (no optimizations, overlap may occur).
-		int				push( const Patches * pSource, int ofs = 0, int len = INT_MAX );
-		inline Rect	pop();																// Pops last rect from the patches.
+		inline void		push( const RectT<T>& rect );											// Adds the rect (no optimizations, overlap may occur).
+		int				push( const PatchesT<T> * pSource, int ofs = 0, int len = INT_MAX );
+		inline RectT<T>	pop();																// Pops last rect from the PatchesT.
 
-		void			trimPush(const Patches& source, const Rect& trim);					// Adds the rects (no optimizations, overlap may occur).
+		void			trimPush(const PatchesT<T>& source, const RectT<T>& trim);					// Adds the rects (no optimizations, overlap may occur).
 
-		void			remove( int ofs );													// Deletes specific rect from the patches.
-		int				remove( int ofs, int len );											// Deletes range of rects from the patches.
+		void			remove( int ofs );													// Deletes specific rect from the PatchesT.
+		int				remove( int ofs, int len );											// Deletes range of rects from the PatchesT.
 
 		//.____ Misc __________________________________________________________
 
-		void			clip( const Rect& clip );
-		Rect			getUnion() const;
+		void			clip( const RectT<T>& clip );
+		RectT<T>		getUnion() const;
 
 		int				repair();															// Fixes any overlap that might have resulted from push()
-		int				optimize();															// Combines small patches into larger ones where possible
+		int				optimize();															// Combines small PatchesT into larger ones where possible
 
 		//.____ Content ________________________________________________________
 
-		const Rect *	begin() const { return m_pFirst; }
-		const Rect *	end() const { return m_pFirst + m_size; }
+		const RectT<T>* begin() const { return m_pFirst; }
+		const RectT<T>* end() const { return m_pFirst + m_size; }
 		int				size() const { return m_size; }
 		int				capacity() const { return m_capacity; }
 		bool			isEmpty() const { return (m_size == 0); }
@@ -83,32 +83,37 @@ namespace wg
 	private:
 		const static int	c_defaultCapacity = 64;
 
-		void		_add( const Rect& rect, int startOffset );
+		void		_add( const RectT<T>& rect, int startOffset );
 		void		_expandMem( int spaceNeeded );
 
-		Rect * 		m_pFirst;
+		RectT<T> * 	m_pFirst;
 		int			m_size;
 		int			m_capacity;
 		bool		m_bOwnsArray;
 	};
 
 
-
-	void Patches::push( const Rect& rect )
+	template <class T>
+	void PatchesT<T>::push( const RectT<T>& rect )
 	{
 		if(m_size==m_capacity)
 			_expandMem(1);
 		m_pFirst[m_size++]=rect;
 	}
 
-	Rect Patches::pop()
+	template <class T>
+	RectT<T> PatchesT<T>::pop()
 	{
 		if( m_size > 0 )
 			return m_pFirst[--m_size];
 		else
-			return Rect();
+			return RectT<T>();
 	}
 
+	typedef PatchesT<pts>	PatchesPTS;
+	typedef PatchesT<spx>	PatchesSPX;
+	typedef	PatchesT<int>	PatchesI;
+	typedef PatchesT<float>	PatchesF;
 
 
 } // namespace wg

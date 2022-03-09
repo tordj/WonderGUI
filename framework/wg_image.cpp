@@ -89,7 +89,7 @@ WgSize WgImage::PreferredPixelSize() const
 {
 	if( m_pImage )
 	{
-		WgSize sz = (m_pImage->size() * m_scale) / (m_pImage->scale()*4096);
+		WgSize sz = (m_pImage->pixelSize() * m_scale) / (m_pImage->scale()*4096);
 
 		if( m_pSkin )
 			sz += _skinContentPadding( m_pSkin, m_scale);
@@ -111,7 +111,7 @@ int  WgImage::MatchingPixelHeight(int pixelWidth) const
 
 	if( m_pImage )
 	{
-		imageSize = (m_pImage->size() * m_scale) / (m_pImage->scale()*4096);
+		imageSize = (m_pImage->pixelSize() * m_scale) / (m_pImage->scale()*4096);
 		if( m_pSkin )
 			paddingSize = _skinContentPadding( m_pSkin, m_scale);
 	}
@@ -135,7 +135,7 @@ int  WgImage::MatchingPixelWidth(int pixelHeight) const
 
 	if( m_pImage )
 	{
-		imageSize = (m_pImage->size() * m_scale) / (m_pImage->scale()*4096);
+		imageSize = (m_pImage->pixelSize() * m_scale) / (m_pImage->scale()*4096);
 		if( m_pSkin )
 			paddingSize = _skinContentPadding( m_pSkin, m_scale);
 	}
@@ -190,7 +190,7 @@ bool WgImage::_onAlphaTest( const WgCoord& ofs )
 		WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, sz, m_state, m_scale) : WgRect(sz);
 		if( canvas.contains(ofs) )
 		{
-			WgSize imgSize = m_pImage->size();
+			WgSize imgSize = m_pImage->pixelSize();
 
 			WgCoord surfOfs = { (ofs.x - canvas.x)*imgSize.w/canvas.w, (ofs.y - canvas.y)*imgSize.h/canvas.h };
 			m_pImage->alpha(surfOfs);

@@ -169,13 +169,13 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(SizePolicy i)
+	const char * toString(SizeConstraint i)
 	{
 		static const char * names[] = { 
-			"Default = 0",
-			"Bound",
-			"Confined",
-			"Expanded" };
+			"None = 0",
+			"Equal",
+			"LessOrEqual",
+			"GreaterOrEqual" };
 
 		return names[(int)i];
 	}
@@ -222,6 +222,7 @@ namespace wg
 			"DropComplete",
 			"Select",
 			"Toggle",
+			"ScrollbarMove",
 			"ValueUpdate",
 			"RangeUpdate",
 			"TextEdit",
@@ -270,11 +271,12 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(ScaleMode i)
+	const char * toString(SampleMethod i)
 	{
 		static const char * names[] = { 
 			"Nearest",
-			"Interpolate" };
+			"Bilinear",
+			"Undefined" };
 
 		return names[(int)i];
 	}
@@ -292,7 +294,7 @@ namespace wg
 	const char * toString(PixelFormat i)
 	{
 		static const char * names[] = { 
-			"Unknown",
+			"Undefined",
 			"Custom",
 			"BGR_8",
 			"BGR_8_sRGB",

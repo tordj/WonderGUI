@@ -27,12 +27,12 @@
 #include <wg3_geo.h>
 #include <wg3_types.h>
 #include <wg3_surface.h>
+#include <wg3_patches.h>
 
 namespace wg
 {
 
 	class GfxDevice;
-	class Patches;
 
 	//____ Util _________________________________________________________________
 
@@ -44,28 +44,31 @@ namespace wg
 		inline BorderI roundToPixels(const BorderSPX& r);
 		inline int roundToPixels(spx r);
 
-		//____ pointsToPixels() _______________________________________________
-
-		inline CoordI pointsToPixels(const CoordI& points)
+		inline pts spxToPts(spx value, int scale)
 		{
-			return { (points.x * MU::qpixPerPoint()) >> 2, (points.y * MU::qpixPerPoint()) >> 2 };
+			return pts(value)/scale;
 		}
 
-		inline SizeI pointsToPixels(const SizeI& points)
+		inline Coord spxToPts(const CoordSPX& coord, int scale)
 		{
-			return { (points.w * MU::qpixPerPoint()) >> 2, (points.h * MU::qpixPerPoint()) >> 2 };
+			return Coord(pts(coord.x) / scale, pts(coord.y) / scale);
 		}
 
-		inline BorderI pointsToPixels(const BorderI& points)
+		inline Size spxToPts(const SizeSPX& size, int scale)
 		{
-			return { (points.top * MU::qpixPerPoint()) >> 2, (points.right * MU::qpixPerPoint()) >> 2,
-					 (points.bottom * MU::qpixPerPoint()) >> 2, (points.left * MU::qpixPerPoint()) >> 2 };
+			return Size(pts(size.w) / scale, pts(size.h) / scale);
 		}
 
-		inline RectI pointsToPixels(const RectI& points)
+		inline Border spxToPts(const BorderSPX& border, int scale)
 		{
-			return { (points.x * MU::qpixPerPoint()) >> 2, (points.y * MU::qpixPerPoint()) >> 2,
-					 (points.w * MU::qpixPerPoint()) >> 2, (points.h * MU::qpixPerPoint()) >> 2 };
+			return Border(	pts(border.top) / scale, pts(border.right) / scale,
+							pts(border.bottom) / scale, pts(border.left) / scale);
+		}
+
+		inline Rect spxToPts(const RectSPX& rect, int scale)
+		{
+			return Rect(pts(rect.x) / scale, pts(rect.y) / scale,
+						pts(rect.w) / scale, pts(rect.h) / scale);
 		}
 
 
@@ -209,20 +212,20 @@ namespace wg
 		double	powerOfTen(int num);
 		int		gcd(int a, int b);
 
-		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const RectI& source, const Rect& area, int opacityTreshold );
-		bool		markTestTileRect(Coord ofs, Surface* pSurface, const Rect& area, int opacityTreshold);
-		bool		markTestNinePatch(Coord ofs, Surface* pSurface, const NinePatch& patch, const Rect& _dest, int opacityTreshold);
+		bool		markTestStretchRect( CoordSPX ofs, Surface * pSurface, const RectSPX& source, const RectSPX& area, int opacityTreshold );
+		bool		markTestTileRect(CoordSPX ofs, Surface* pSurface, const RectSPX& area, int scale, int opacityTreshold);
+		bool		markTestNinePatch(CoordSPX ofs, Surface* pSurface, const NinePatch& patch, const RectSPX& _dest, int scale, int opacityTreshold);
 
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );
 		PixelFormat	pixelDescriptionToFormat(const PixelDescription& description);
 
-		Coord 		placementToOfs( Placement placement, Size base );
-		Rect		placementToRect( Placement placement, Size base, Size rect );
+		CoordSPX 	placementToOfs( Placement placement, SizeSPX base );
+		RectSPX		placementToRect( Placement placement, SizeSPX base, SizeSPX rect );
 
-		Size		scaleToFit(Size object, Size boundaries);
+		SizeSPX		scaleToFit(SizeSPX object, SizeSPX boundaries);
 
-		MU 			sizeFromPolicy( MU defaultSize, MU specifiedSize, SizePolicy policy );
+		spx 		sizeFromConstraint( spx defaultSize, spx specifiedSize, SizeConstraint policy );
 
 		inline Axis dirToAxis( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Axis::Y : Axis::X; }
 
@@ -252,17 +255,17 @@ namespace wg
 		struct ClipPopData				/** @private */
 		{
 			ClipPopData() : bInitialized(false) {}
-			ClipPopData(int _nRects, const RectI * _pRects, int _reservedMem ) : nRects(_nRects), pRects(_pRects), reservedMem(_reservedMem), bInitialized(true) {}
+			ClipPopData(int _nRects, const RectSPX * _pRects, int _reservedMem ) : nRects(_nRects), pRects(_pRects), reservedMem(_reservedMem), bInitialized(true) {}
 
 			int nRects;
-			const RectI * pRects;
+			const RectSPX * pRects;
 			int reservedMem;
 			bool bInitialized;
 		};
 
-		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Rect& clip, const Patches& patches );
-		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Patches& patches );
-		ClipPopData limitClipList( GfxDevice * pDevice, const Rect& clip );
+		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectSPX& clip, const PatchesSPX& patches );
+		ClipPopData	patchesToClipList( GfxDevice * pDevice, const PatchesSPX& patches );
+		ClipPopData limitClipList( GfxDevice * pDevice, const RectSPX& clip );
 		ClipPopData pushClipList(GfxDevice * pDevice);
 		void 		popClipList( GfxDevice * pDevice, const ClipPopData& popData );
 

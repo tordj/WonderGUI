@@ -25,6 +25,10 @@
 #pragma once
 
 #include <wg3_cgfxoutstream.h>
+#include <wg3_types.h>
+#include <wg3_geo.h>
+#include <wg3_color.h>
+#include <wg3_gradient.h>
 
 namespace wg
 {
@@ -50,11 +54,19 @@ namespace wg
 		//.____ Control _______________________________________________________
 
 		void		setStream(CGfxOutStream* pStream);
+
+		void		setDefaultPixelFormat(PixelFormat pixelFormat);
+		inline PixelFormat defaultPixelFormat() const { return m_defaultPixelFormat; }
+
+		void		setDefaultSampleMethod(SampleMethod sampleMethod);
+		inline SampleMethod defaultSampleMethod() const { return m_defaultSampleMethod; }
+
 		void		flush();
 		void		align();
 
 		uint16_t	allocObjectId();
 		void		freeObjectId(uint16_t id);
+
 
 		//.____ Operators _____________________________________________________
 
@@ -65,13 +77,19 @@ namespace wg
 		GfxStreamEncoder& operator<< (float);
 		GfxStreamEncoder& operator<< (bool);
 
+		GfxStreamEncoder& operator<< (const CoordS&);
 		GfxStreamEncoder& operator<< (const CoordI&);
 		GfxStreamEncoder& operator<< (const CoordF&);
+		GfxStreamEncoder& operator<< (const SizeS&);
 		GfxStreamEncoder& operator<< (const SizeI&);
 		GfxStreamEncoder& operator<< (const SizeF&);
+		GfxStreamEncoder& operator<< (const RectS&);
 		GfxStreamEncoder& operator<< (const RectI&);
 		GfxStreamEncoder& operator<< (const RectF&);
+		GfxStreamEncoder& operator<< (const BorderS&);
 		GfxStreamEncoder& operator<< (const BorderI&);
+		GfxStreamEncoder& operator<< (const Border&);
+		GfxStreamEncoder& operator<< (const Gradient&);
 
 		GfxStreamEncoder& operator<< (HiColor);
 		GfxStreamEncoder& operator<< (Direction);
@@ -79,7 +97,7 @@ namespace wg
 		GfxStreamEncoder& operator<< (TintMode);
 		GfxStreamEncoder& operator<< (Axis);
 		GfxStreamEncoder& operator<< (PixelFormat);
-		GfxStreamEncoder& operator<< (ScaleMode);
+		GfxStreamEncoder& operator<< (SampleMethod);
 		GfxStreamEncoder& operator<< (GfxFlip);
 		GfxStreamEncoder& operator<< (XSections);
 		GfxStreamEncoder& operator<< (YSections);
@@ -104,6 +122,9 @@ namespace wg
 		inline void	_pushBytes(int nBytes, char* pBytes);
 
 		short		m_idCounter = 1;
+
+		PixelFormat	m_defaultPixelFormat = PixelFormat::BGRA_8;
+		SampleMethod m_defaultSampleMethod = SampleMethod::Nearest;
 
 		uint16_t*	m_pFreeIdStack = nullptr;
 		int			m_freeIdStackCapacity = 0;

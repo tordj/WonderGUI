@@ -518,7 +518,7 @@ void WgTextDisplay::_bringCursorInView()
 
 	int size = int(attr.size) * m_scale >> WG_SCALE_BINALS;
 
-    attr.pFont->setSize(wg::MU::fromPX(size));
+    attr.pFont->setSize(size*64);
     int glyphHeight = attr.pFont->maxAdvance()/64 + attr.pFont->maxDescend()/64;
     int glyphWidth = attr.pFont->whitespaceAdvance()/64;
 

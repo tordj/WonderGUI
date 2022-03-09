@@ -26,9 +26,6 @@
 
 #include <cstdint>
 
-#undef min
-#undef max
-
 namespace wg
 {
 
@@ -75,11 +72,6 @@ namespace wg
 
 
 	static const int spx_max = 0x7FFFFFC0;	// On pixel boundary with margin for rounding operation.
-
-	template<typename T> inline T min(const T &a, const T &b) { return a < b ? a : b; }
-	template<typename T> inline T min(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
-	template<typename T> inline T max(const T &a, const T &b) { return a > b ? a : b; }
-	template<typename T> inline T max(const T &a, const T &b, const T &c) { if( a > b ) return a > c ? a : c; else return b > c ? b : c; }
 
 	template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T3 max) { if( x < min) x = min; if( x > max) x = max; }
 
@@ -512,9 +504,9 @@ namespace wg
 
 
 
-	//____ SizePolicy ___________________________________________________________
+	//____ SizeConstraint ___________________________________________________________
 	/**
-		SizePolicy is used by certain containers, including FlexPanel and ScrollPanel,
+		SizeConstraint is used by certain containers, including FlexPanel and ScrollPanel,
 		to limit/control the geometry of children. Different SizePolicies can be set
 		for horizontal and vertical size.
 
@@ -522,12 +514,12 @@ namespace wg
 		ScrollPanel it is the size of the window to the scrollarea. In the case of
 		FlexPanel, it is a size specified for the child.
 	*/
-	enum class SizePolicy : uint8_t		//. autoExtras
+	enum class SizeConstraint : uint8_t		//. autoExtras
 	{
-		Default = 0,			///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
-		Bound,				///< Child is bound to the exact size specified by parent.
-		Confined,			///< Childs size is limited to the size specified by parent.
-		Expanded,			///< Childs size is set to at least the size specified by parent.
+		None = 0,				///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
+		Equal,					///< Child is bound to the exact size specified by parent.
+		LessOrEqual,			///< Childs size is limited to the size specified by parent.
+		GreaterOrEqual			///< Childs size is set to at least the size specified by parent.
 	};
 
 
@@ -680,12 +672,13 @@ namespace wg
 		Other
 	};
 
-	//____ ScaleMode ____________________________________________________________
+	//____ SampleMethod ____________________________________________________________
 
-	enum class ScaleMode	//. autoExtras
+	enum class SampleMethod	//. autoExtras
 	{
 		Nearest,
-		Interpolate,
+		Bilinear,
+		Undefined			// Default to Bilinear if it is accelerated, otherwise Nearest.
 	};
 
 
@@ -715,8 +708,8 @@ enum class CanvasInit 		//. autoExtras
 
 	enum class PixelFormat	//. autoExtras
 	{
-		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelDescription struct.
-		Custom,				///< Pixelformat has no PixelFormat enum, but is fully specified through the PixelDescription struct.
+		Undefined,			///< Pixelformat is undefined.
+		Custom,				///< Pixelformat has no enum, but can be fully specified through a PixelDescription struct.
 		BGR_8,				///< One byte of blue, green and red in exactly that order in memory.
 		BGR_8_sRGB,			///< One byte of blue, green and red in exactly that order in memory.
 		BGR_8_linear,		///< One byte of blue, green and red in exactly that order in memory.

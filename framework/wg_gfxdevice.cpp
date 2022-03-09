@@ -41,7 +41,7 @@ using namespace wg::Util;
 
 //____ BlitBlock() ________________________________________________________
 
-void WgGfxDevice::BlitBlock( wg::GfxDevice * pDevice, const WgBlock& _block, const WgRect& _canvas, bool bTriLinear, float mipmapbias)
+void WgGfxDevice::BlitBlock( wg::GfxDevice * pDevice, const WgBlock& _block, const WgRect& _canvas, int scale, bool bTriLinear, float mipmapbias)
 {
 	if( !_block.Surface() )
 		return;
@@ -63,9 +63,9 @@ void WgGfxDevice::BlitBlock( wg::GfxDevice * pDevice, const WgBlock& _block, con
 	pDevice->setBlitSource(pSurf);
     
     wg::NinePatch patch;
-    patch.block = src;
-    patch.frame = sourceBorders;
-	pDevice->blitNinePatch(canvas, canvasBorders, patch);
+    patch.block = wg::Rect(src);
+    patch.frame = wg::Border(sourceBorders);
+	pDevice->blitNinePatch(canvas, canvasBorders, patch, scale >> 6 );
 
 }
 
@@ -98,7 +98,7 @@ bool WgGfxDevice::PrintText( wg::GfxDevice * pDevice, const WgText * pText, cons
 	ClipPopData pop;
 
 	if( textSize.w > dest.w || textSize.h > dest.h )
-	   pop = limitClipList( pDevice, wg::Rect::fromPX(dest) );
+	   pop = limitClipList( pDevice, dest*64 );
 
 //	if( dest.h < (int) textSize.h || dest.w < (int) textSize.w || !clip.contains( dest ) || pText->isCursorShowing() )
 
@@ -414,7 +414,7 @@ void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, co
 	if( !pStyle )
 		pStyle = wg::Base::defaultStyle();
 
-    wg::Color selectionBgColor = pStyle->bgColor(state + wg::StateEnum::Selected);
+    wg::Color selectionBgColor = pStyle->backColor(state + wg::StateEnum::Selected);
     
 	if( selStart != selEnd && selectionBgColor.a != 0 )
 	{
@@ -556,7 +556,7 @@ void WgGfxDevice::PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const wg::Text
 			attr = baseAttr;
 
 			if(_pLine[i].styleHandle())
-				_pLine[i].stylePtr()->addToAttr(state, &attr);
+				_pLine[i].stylePtr()->addToAttr(state, &attr, pen.GetScale() >> 6);
 
 			hStyle = _pLine[i].styleHandle();
 

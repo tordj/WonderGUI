@@ -138,15 +138,15 @@ namespace wg
 
 	struct NinePatch
 	{
-		RectI		block;
-		BorderI		frame;
+		Rect		block;
+		Border		frame;
 
-		int			rigidPartXOfs = 0;
-		int			rigidPartXLength = 0;
+		pts			rigidPartXOfs = 0;
+		pts			rigidPartXLength = 0;
 		YSections	rigidPartXSections = YSections::None;
 
-		int			rigidPartYOfs = 0;
-		int			rigidPartYLength = 0;
+		pts			rigidPartYOfs = 0;
+		pts			rigidPartYLength = 0;
 		XSections	rigidPartYSections = XSections::None;
 	};
 
@@ -171,6 +171,24 @@ namespace wg
 		friend class GfxDevice;
 
 	public:
+
+		//.____ Blueprint _________________________________________
+
+		struct Blueprint
+		{
+			bool				buffered = false;
+			bool				canvas = false;
+			const Color8* clut = nullptr;
+			bool				dynamic = false;
+			PixelFormat			format = PixelFormat::Undefined;
+			int					id = 0;
+			bool				mipmap = false;
+			SampleMethod		sampleMethod = SampleMethod::Undefined;
+			int					scale = 64;
+			SizeI				size;					// Mandatory, except when creating from other surface.
+			bool				tiling = false;
+		};
+
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
@@ -181,30 +199,27 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		inline SizeI		size() const;						///< @brief Get the size in pixels of the surface.
-		virtual	int			width() const;						///< @brief Get the width of the surface.
-		virtual	int			height() const;						///< @brief Get the height of the surface.
+		inline SizeI		pixelSize() const;						///< @brief Get the size in pixels of the surface.
+		inline	int			pixelWidth() const;						///< @brief Get the width of the surface.
+		inline	int			pixelHeight() const;						///< @brief Get the height of the surface.
 
-		bool                setScale( float scale );
-		inline float        scale() const;
+		inline Size			pointSize() const;
+		inline pts			pointWidth() const;
+		inline pts			pointHeight() const;
 
-		inline SizeI        pointSize() const;
-		inline int			qpixPerPoint() const;
+		inline void			setScale(int scale);
+		inline int			scale() const;
+
 
 		//.____ Appearance ____________________________________________________
 
-		virtual void		setScaleMode( ScaleMode mode );
-		inline ScaleMode	scaleMode() const;
-
-		virtual bool		setTiling(bool bTiling);
-		inline bool			isTiling() const { return m_bTiling; }
-		
+		inline SampleMethod	sampleMethod() const;
+		inline bool			isTiling() const;
 		inline bool			isMipmapped() const;
 
 		//.____ Content _______________________________________________________
 
-		virtual uint8_t		alpha( CoordI coord ) = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
-		inline uint8_t		alpha( int x, int y );		///< @brief Get Alpha value of pixel at specified coordinate.
+		virtual int			alpha( CoordSPX coord ) = 0;	///< @brief Get Alpha value of subpixel at specified coordinate.
 
 		virtual	uint32_t	colorToPixel( const HiColor& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
 		virtual	HiColor		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
@@ -215,7 +230,7 @@ namespace wg
 		inline PixelFormat	pixelFormat() const;
 		inline int			pixelBytes() const;
 
-		virtual bool		isOpaque() const = 0;				///< @brief Check if surface is entirely opaque.
+		inline bool			isOpaque() const;				///< @brief Check if surface is guaranteed to be entirely opaque.
 
 		//.____ Control _______________________________________________________
 
@@ -227,7 +242,7 @@ namespace wg
 		virtual bool		pushPixels(const PixelBuffer& buffer, const RectI& bufferRect) = 0;
 
         inline void			pullPixels(const PixelBuffer& buffer);
-		virtual void		pullPixels(const PixelBuffer& buffer, const RectI& bufferRect) = 0;
+		virtual void		pullPixels(const PixelBuffer& buffer, const RectI& bufferRect);			// Needs to be overridden!
 
 		virtual void		freePixelBuffer(const PixelBuffer& buffer) = 0;
 
@@ -244,31 +259,45 @@ namespace wg
 		inline void			setBaggage(Object * pBaggage);
 		inline Object_p		baggage() const;
 
+		int					addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func);
+		bool				removeObserver( int observerId );
+
 	protected:
-		Surface( int flags );
+		Surface(const Blueprint& bp, PixelFormat defaultPixelFormat, SampleMethod defaultSampleMethod );
 		virtual ~Surface();
+
+		struct Observer
+		{
+			int id;
+			std::function<void(int nRects, const RectSPX* pRects)>	func;
+			Observer* pNext;
+		};
 
 		static const uint8_t *	s_pixelConvTabs[9];
 
+		void				_notifyObservers(int nRects, const RectSPX* pRects);
 		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color8 * pCLUT = nullptr );
+		int					_alpha(CoordSPX coord, const PixelBuffer& buffer);
+
+        static bool         _isBlueprintValid( const Blueprint& bp, SizeI maxSize, Surface * pOther = nullptr );
 
 		int                 m_id = 0;
 
-        int             	m_flags;                              // The flags provided to the constructor.
-		
-		PixelDescription	m_pixelDescription;
-		SizeI				m_size;				// Width and height in pixels.
+ 		int					m_scale = 64;
 
-		ScaleMode			m_scaleMode = ScaleMode::Nearest;
+		PixelDescription	m_pixelDescription;
+		SizeI				m_size;								// Width and height in pixels.
+
+		SampleMethod		m_sampleMethod = SampleMethod::Nearest;
 		bool				m_bMipmapped = false;
 		bool				m_bTiling = false;
+        bool                m_bCanvas = false;
+//		bool				m_bOpaque = false;
 
 		Color8 *			m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.
 
 		Object_p			m_pBaggage;
-
-		// This is currently here just as metadata for WG2 compatibility, but needs to be factored in correctly in the future
-		int                 m_qpixPerPoint = 4;
+		Observer *			m_pObserver = nullptr;
 	};
 
 	//____ setIdentity() ____________________________________________________________
@@ -301,43 +330,98 @@ namespace wg
 		return m_id;
 	}
 
-	//____ size() _____________________________________________________________
+	//____ pixelSize() _____________________________________________________________
 	/**
 	 * Get the width and height of the surface in a SizeI structure.
 	 *
 	 * @return Size of the suface measured in pixels.
 	 */
-	SizeI Surface::size() const
+	SizeI Surface::pixelSize() const
 	{
 		return m_size;
 	}
 
+	//____ pixelWidth() ________________________________________________________________
+	/**
+	 * Get the width of the surface.
+	 *
+	 * @return The width of the surface, measured in pixels.
+	 **/
+	int Surface::pixelWidth() const
+	{
+		return m_size.w;
+	}
+
+	//____ pixelHeight() _______________________________________________________________
+	/**
+	 * Get the height of the surface.
+	 *
+	 * @return The height of the surface, measured in pixels.
+	 **/
+	int Surface::pixelHeight() const
+	{
+		return m_size.h;
+	}
+
+	//____ pointSize() _____________________________________________________________
+	/**
+	 * Get the width and height of the surface in a Size structure.
+	 *
+	 * @return Size of the suface measured in points.
+	 */
+	Size Surface::pointSize() const
+	{
+		return Size(m_size*64)/m_scale;
+	}
+
+	//____ pointWidth() ________________________________________________________________
+	/**
+	 * Get the width of the surface.
+	 *
+	 * @return The width of the surface, measured in points.
+	 **/
+	pts Surface::pointWidth() const
+	{
+		return pts(m_size.w*64)/m_scale;
+	}
+
+	//____ pointHeight() _______________________________________________________________
+	/**
+	 * Get the height of the surface.
+	 *
+	 * @return The height of the surface, measured in points.
+	 **/
+	pts Surface::pointHeight() const
+	{
+		return pts(m_size.h*64)/m_scale;
+	}
+
+	//____ setScale() _________________________________________________________
+
+	void Surface::setScale( int scale )
+	{
+		m_scale = scale;
+	}
+
 	//____ scale() ____________________________________________________________
 
-	float Surface::scale() const
+	int Surface::scale() const
 	{
-		return m_qpixPerPoint / 4.f;
+		return m_scale;
 	}
 
-	//____ pointSize() ________________________________________________________
+	//____ sampleMethod() ________________________________________________________
 
-	SizeI Surface::pointSize() const
+	SampleMethod Surface::sampleMethod() const
 	{
-		return (m_size * 4) / m_qpixPerPoint;
+		return m_sampleMethod;
 	}
 
-	//____ qpixPerPoint() ____________________________________________
+	//____ isTiling() _________________________________________________________
 
-	int Surface::qpixPerPoint() const
-	{
-		return m_qpixPerPoint;
-	}
-
-	//____ scaleMode() ________________________________________________________
-
-	ScaleMode Surface::scaleMode() const
-	{
-		return m_scaleMode;
+	bool Surface::isTiling() const 
+	{ 
+		return m_bTiling; 
 	}
 
 	//____ isMipmapped() ______________________________________________________
@@ -345,6 +429,15 @@ namespace wg
 	bool Surface::isMipmapped() const
 	{
 		return m_bMipmapped;
+	}
+
+	//____ isOpaque() _________________________________________________________
+
+	bool Surface::isOpaque() const
+	{
+		//TODO: Indexed can also be opaque. Check their alpha on init instead?
+
+		return m_pixelDescription.A_bits == 0 && !m_pixelDescription.bIndexed ? true : false;
 	}
 
 	//____ clut() _____________________________________________________________
@@ -373,26 +466,6 @@ namespace wg
 	int Surface::pixelBytes() const
 	{
 		return m_pixelDescription.bits / 8;
-	}
-
-	//____ alpha() ____________________________________________________________
-	/**
-	 * Get the alpha value from the specified coordinate of the surface.
-	 *
-	 * @param x X-coordinate of pixel.
-	 * @param y Y-coordinate of pixel.
-	 *
-	 * Gets the alpha value of the pixel at the specified coordinate in the range of 0-255.
-	 * The alpha value is by default used for opacity level,
-	 * where 0 is a fully transparent pixel and 255 is opaque.
-	 * The coordinate specified must be within the surface boundaries. A coordinate outside
-	 * the surface will result in undefined behavior.
-	 *
-	 * @return Alpha value of pixel at coordinate.
-	 */
-	uint8_t Surface::alpha( int x, int y )
-	{
-		return alpha( CoordI(x,y) );
 	}
 
 	//____ allocPixelBuffer() __________________________________________________

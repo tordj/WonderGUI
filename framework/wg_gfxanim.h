@@ -102,10 +102,10 @@ public:
 		if( m_sourceFrame.left || m_sourceFrame.right || m_sourceFrame.top || m_sourceFrame.bottom )
 			m_flags |= WG_HAS_BORDERS;
 
-		if(m_rect.x + m_rect.w > (int)m_pSurf->size().w)
-			m_rect.w = m_pSurf->size().w - m_rect.x;
-		if(m_rect.y + m_rect.h > (int)m_pSurf->size().h)
-			m_rect.h = m_pSurf->size().h - m_rect.y;
+		if(m_rect.x + m_rect.w > (int)m_pSurf->pixelSize().w)
+			m_rect.w = m_pSurf->pixelSize().w - m_rect.x;
+		if(m_rect.y + m_rect.h > (int)m_pSurf->pixelSize().h)
+			m_rect.h = m_pSurf->pixelSize().h - m_rect.y;
 	}
 
 

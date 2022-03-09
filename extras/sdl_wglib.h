@@ -36,7 +36,7 @@ namespace sdl_wglib
 	void 		TranslateEvent( SDL_Event& event );
 	void 		EndEvents();
 
-    wg::Surface_p LoadSurface( const char * path, wg::SurfaceFactory * factory );
+wg::Surface_p LoadSurface( const char * path, wg::SurfaceFactory * factory, const wg::Surface::Blueprint& bp = {} );
     bool		SavePNG( wg::Surface * pSurface, const char * path);
 
     std::map<std::string,WgWidget*> *	LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, wg::SurfaceFactory * factory );

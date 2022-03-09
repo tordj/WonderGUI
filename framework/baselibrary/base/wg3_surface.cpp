@@ -74,15 +74,21 @@ namespace wg
 
 	//____ Surface() ____________________________________________________________
 
-	Surface::Surface( int flags )
+	Surface::Surface(const Blueprint& bp, PixelFormat defaultPixelFormat, SampleMethod defaultSampleMethod )
 	{
-		m_flags = flags;
-		
-		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );
-        
-        if( flags & SurfaceFlag::Scale200 )
-            m_qpixPerPoint = 8;            // TODO: Add error handling if size not divisable.
-    }
+		PixelFormat format = bp.format == PixelFormat::Undefined ? defaultPixelFormat : bp.format;
+		SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? defaultSampleMethod : bp.sampleMethod;
+
+		Util::pixelFormatToDescription(format, m_pixelDescription);
+
+		m_size = bp.size;
+		m_scale = bp.scale;
+		m_sampleMethod = method;
+		m_bTiling = bp.tiling;
+        m_bCanvas = bp.canvas;
+		m_id = bp.id;
+	}
+
 
 	//____ ~Surface() ____________________________________________________________
 
@@ -95,19 +101,6 @@ namespace wg
 	const TypeInfo& Surface::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ setScaleMode() __________________________________________________________
-	/**
-	 * @brief Set how graphics blitted from Surface is scaled.
-	 * @param mode	The way graphics should be scaled, either Nearest or Interpolate.
-	 * 
-	 * Sets how graphics blitted from the Surface should be scaled.
-	 */
-
-	void Surface::setScaleMode( ScaleMode mode )
-	{
-		m_scaleMode = mode;
 	}
 
 	//____ setTiling() ________________________________________________________
@@ -129,52 +122,13 @@ namespace wg
 	 * transparency around.
 	 * 
 	 * A Surface set to tiling can be used in normal blit operatons as well, but 
-	 * colors from one edge tend to bleed to the one across when using BlendMode::Interpolate
+	 * colors from one edge tend to bleed to the one across when using SampleMethod::Bilinear
 	 * since they are considered neighbors.
 	 * 
 	 * Also worth noting is that SoftSurface puts extra restrictions on tiling Surfaces -
 	 * their length and height must be a power of two. Calling this method to enable tiling for 
 	 * a SoftSurface where not both dimension are a power of two will fail.
 	 */
-
-	bool Surface::setTiling(bool bTiling)
-	{
-		m_bTiling = bTiling;
-		return true;
-	}
-
-	//____ width() ________________________________________________________________
-	/**
-	 * Get the width of the surface.
-	 *
-	 * @return The width of the surface, measured in pixels.
-	 **/
-	int Surface::width() const
-	{
-		return size().w;
-	}
-
-	//____ height() _______________________________________________________________
-	/**
-	 * Get the height of the surface.
-	 *
-	 * @return The height of the surface, measured in pixels.
-	 **/
-	int Surface::height() const
-	{
-		return size().h;
-	}
-
-	//____ setScale() _______________________________________________________________
-
-	bool Surface::setScale( float scale )
-	{
-		//TODO: Error check, only allow certain factors.
-
-		m_qpixPerPoint = (int)(scale*4);
-		return true;
-	}
-
 
 	//____ colorToPixel() ____________________________________________________________
 	/**
@@ -304,7 +258,7 @@ namespace wg
 
 	bool Surface::fill( HiColor col )
 	{
-		return fill( col, RectI(0,0,size()) );
+		return fill( col, RectI(0,0,pixelSize()) );
 	}
 
 	/**
@@ -391,6 +345,80 @@ namespace wg
 		return ret;
 	}
 
+	//____ pullPixels() _______________________________________________________
+	/**
+	 * @brief Partial copy of pixels from PixelBuffer to Surface.
+	 *
+	 * Partial copy of pixels from PixelBuffer to Surface.
+	 *
+	 * @param buffer		PixelBuffer to copy pixels from.
+	 * @param bufferRect	The source rectangle withing the PixelBuffer.
+	 * @return 				True if operation could be performed.
+	 *
+	 * Only the specified rectangle within the PixelBuffer is copied to the Surface,
+	 * the rest of the surface is unaffected. To copy the whole PixelBuffer to Surface, use pullPixels(const PixelBuffer& buffer) instead.
+	 *
+	 * Please note that the rectangle specified is within the PixelBuffer, not the Surface. You should therefore not add
+	 * the offset of the PixelBuffer to bufferRect.
+	 *
+	 */
+	void Surface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+	{
+		RectSPX rect = (bufferRect + buffer.rect.pos())*64;
+
+		_notifyObservers(1, &rect);
+	}
+
+
+	//____ addObserver() ______________________________________________________
+
+	int Surface::addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func)
+	{
+		int id = m_pObserver ? m_pObserver->id + 1 : 1;
+		auto p = new Observer();
+
+		p->id = id;
+		p->func = func;
+		p->pNext = m_pObserver;
+
+		m_pObserver = p;
+		return id;
+	}
+
+	//____ removeObserver() ___________________________________________________
+
+	bool Surface::removeObserver(int observerId)
+	{
+		Observer** pPointer = &m_pObserver;
+
+		while (*pPointer != nullptr)
+		{
+			if ((*pPointer)->id == observerId)
+			{
+				auto p = (*pPointer);
+				(*pPointer) = p->pNext;
+				delete p;
+				return true;
+			}
+
+			pPointer = &(*pPointer)->pNext;
+		}
+
+		return false;
+	}
+
+	//____ _notifyObservers() _________________________________________________
+
+	void Surface::_notifyObservers(int nRects, const RectSPX* pRects)
+	{
+		Observer* p = m_pObserver;
+		while (p)
+		{
+			p->func(nRects, pRects);
+			p = p->pNext;
+		}
+	}
+
 	//_____ copyFrom() _____________________________________________________________
 	/**
 	 * Copy the content of the specified surface to given coordinate of this surface
@@ -412,7 +440,7 @@ namespace wg
 		if( !pSrcSurface )
 			return false;
 
-		return copyFrom( pSrcSurface, RectI(0,0,pSrcSurface->size()), dst );
+		return copyFrom( pSrcSurface, RectI(0,0,pSrcSurface->pixelSize()), dst );
 	}
 
 	/**
@@ -433,7 +461,7 @@ namespace wg
 	 **/
 	bool Surface::copyFrom( Surface * pSrcSurface, const RectI& _srcRect, CoordI _dst )
 	{
-		if( !pSrcSurface || pSrcSurface->m_pixelDescription.format == PixelFormat::Unknown || m_pixelDescription.format == PixelFormat::Unknown )
+		if( !pSrcSurface || pSrcSurface->m_pixelDescription.format == PixelFormat::Undefined || m_pixelDescription.format == PixelFormat::Undefined )
 			return false;
 
 
@@ -931,6 +959,86 @@ namespace wg
 		return true;
 	}
 
+	//____ _alpha() ___________________________________________________________
+
+	int Surface::_alpha(CoordSPX _coord, const PixelBuffer& buffer)
+	{
+		//TODO: Take endianess into account.
+		//TODO: Take advantage of subpixel precision and interpolate alpha value if surface set to interpolate.
+
+		CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
+
+		switch (m_pixelDescription.format)
+		{
+		case PixelFormat::CLUT_8_sRGB:
+		case PixelFormat::CLUT_8_linear:
+		{
+			uint8_t index = buffer.pPixels[buffer.pitch * coord.y + coord.x];
+			return HiColor::unpackLinearTab[buffer.pClut[index].a];
+		}
+		case PixelFormat::A_8:
+		{
+			uint8_t* pPixel = buffer.pPixels + buffer.pitch * coord.y + coord.x;
+			return HiColor::unpackLinearTab[pPixel[0]];
+		}
+		case PixelFormat::BGRA_4_linear:
+		{
+			uint16_t pixel = *(uint16_t*)(buffer.pPixels + buffer.pitch * coord.y + coord.x * 2);
+			const uint8_t* pConvTab = s_pixelConvTabs[4];
+
+			return HiColor::unpackLinearTab[((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift)];
+		}
+		case PixelFormat::BGRA_8_sRGB:
+		case PixelFormat::BGRA_8_linear:
+		{
+			uint8_t* pPixel = buffer.pPixels + buffer.pitch * coord.y + coord.x * 4;
+			return HiColor::unpackLinearTab[pPixel[3]];
+		}
+		case PixelFormat::Custom:
+		{
+			//TODO: Implement!
+		}
+		default:
+			return 4096;
+		}
+	}
+
+    //____ _isBlueprintValid() ________________________________________________
+
+    bool Surface::_isBlueprintValid(const Blueprint& bp, SizeI maxSize, Surface * pOther)
+    {
+        SizeI size = pOther ? pOther->pixelSize() :bp.size;
+
+        PixelFormat format = bp.format;
+        if( format == PixelFormat::Undefined )
+            format = pOther ? pOther->pixelFormat() : PixelFormat::BGRA_8;
+
+        if (size.w > maxSize.w || size.h > maxSize.h)
+            return false;
+
+        bool bIsIndexed = (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear);
+
+        if (format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.clut == nullptr))
+            return false;
+
+        if (bp.canvas && (bIsIndexed || format == PixelFormat::Custom))
+            return false;
+
+        if( bIsIndexed )
+        {
+            if( bp.mipmap )
+                return false;            // Indexed can't be mipmapped.
+
+            if ( pOther && !pOther->pixelDescription()->bIndexed)
+                return false;            // Can't create indexed from non-indexed source.
+            
+            if( bp.clut == nullptr && ( !pOther || pOther->clut() == nullptr ) )
+                return false;           // Indexed but clut is missing.
+        }
+                
+        return true;
+    }
+
 
 	/**
 	 * @fn virtual uint32_t	Surface::pixel( CoordI coord ) const
@@ -1040,24 +1148,22 @@ namespace wg
 	 * 
 	 */
 
-	/**
-	 * @fn virtual bool	Surface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
-	 * 
-	 * @brief Partial copy of pixels from PixelBuffer to Surface.
-	 * 
-	 * Partial copy of pixels from PixelBuffer to Surface.
-	 * 
-	 * @param buffer		PixelBuffer to copy pixels from.
-	 * @param bufferRect	The source rectangle withing the PixelBuffer. 
-	 * @return 				True if operation could be performed.
-	 * 
-	 * Only the specified rectangle within the PixelBuffer is copied to the Surface,
-	 * the rest of the surface is unaffected. To copy the whole PixelBuffer to Surface, use pullPixels(const PixelBuffer& buffer) instead.
-	 * 
-	 * Please note that the rectangle specified is within the PixelBuffer, not the Surface. You should therefore not add
-	 * the offset of the PixelBuffer to bufferRect.
-	 * 
-	 */
+	 //____ alpha() ____________________________________________________________
+	 /**
+	  * @fn virtual int	Surface::alpha( CoordSPX coord )
+	  *
+	  * Get the alpha value from the specified coordinate of the surface.
+	  *
+	  * @param coord Coordinate, specified in subpixels.
+	  *
+	  * Gets the alpha value of the pixel at the specified coordinate in the range of 0-4096.
+	  * The alpha value is by default used for opacity level,
+	  * where 0 is a fully transparent pixel and 4096 is opaque.
+	  * The coordinate specified must be within the surface boundaries. A coordinate outside
+	  * the surface will result in undefined behavior.
+	  *
+	  * @return Alpha value of pixel at coordinate.
+	  */
 
 
 } // namespace wg

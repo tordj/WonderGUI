@@ -28,6 +28,7 @@
 #include <wg3_types.h>
 #include <wg3_geo.h>
 #include <wg3_color.h>
+#include <wg3_gradient.h>
 #include <wg3_cgfxinstream.h>
 
 #include <cstring>
@@ -73,13 +74,19 @@ namespace wg
 		GfxStreamDecoder& operator>> (float&);
 		GfxStreamDecoder& operator>> (bool&);
 
+		GfxStreamDecoder& operator>> (CoordS&);
 		GfxStreamDecoder& operator>> (CoordI&);
 		GfxStreamDecoder& operator>> (CoordF&);
+		GfxStreamDecoder& operator>> (SizeS&);
 		GfxStreamDecoder& operator>> (SizeI&);
 		GfxStreamDecoder& operator>> (SizeF&);
+		GfxStreamDecoder& operator>> (RectS&);
 		GfxStreamDecoder& operator>> (RectI&);
 		GfxStreamDecoder& operator>> (RectF&);
+		GfxStreamDecoder& operator>> (BorderS&);
 		GfxStreamDecoder& operator>> (BorderI&);
+		GfxStreamDecoder& operator>> (Border&);
+		GfxStreamDecoder& operator>> (Gradient&);
 
 		GfxStreamDecoder& operator>> (HiColor&);
 		GfxStreamDecoder& operator>> (Direction&);
@@ -87,7 +94,7 @@ namespace wg
 		GfxStreamDecoder& operator>> (TintMode&);
 		GfxStreamDecoder& operator>> (Axis&);
 		GfxStreamDecoder& operator>> (PixelFormat&);
-		GfxStreamDecoder& operator>> (ScaleMode&);
+		GfxStreamDecoder& operator>> (SampleMethod&);
 		GfxStreamDecoder& operator>> (GfxFlip&);
 		GfxStreamDecoder& operator>> (XSections&);
 		GfxStreamDecoder& operator>> (YSections&);

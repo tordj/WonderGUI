@@ -37,15 +37,40 @@ namespace wg
 
 	StaticColorSkin_p StaticColorSkin::create( HiColor col )
 	{
-		return StaticColorSkin_p(new StaticColorSkin(col));
+		if (!col.isValid())
+			return nullptr;
+
+		Blueprint blueprint;
+		blueprint.color = col;
+		return StaticColorSkin_p(new StaticColorSkin(blueprint));
+	}
+
+	StaticColorSkin_p StaticColorSkin::create(const Blueprint& blueprint)
+	{
+		if (!blueprint.color.isValid())
+			return nullptr;
+
+		return StaticColorSkin_p(new StaticColorSkin(blueprint));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	StaticColorSkin::StaticColorSkin( HiColor col )
+	StaticColorSkin::StaticColorSkin( const Blueprint& blueprint )
 	{
-		m_color = col;
-		m_bOpaque = (m_color.a == 4096);
+		m_color				= blueprint.color;
+		m_bOpaque			= (m_color.a == 4096);
+		m_contentPadding	= blueprint.padding;
+		m_layer				= blueprint.layer;
+		m_markAlpha			= blueprint.markAlpha;
+		m_overflow			= blueprint.overflow;
+		m_blendMode			= blueprint.blendMode;
+
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode == BlendMode::Blend)
+			m_bOpaque = (m_color.a == 4096);
+		else
+			m_bOpaque = false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -55,33 +80,20 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setBlendMode() _____________________________________________________
+	//____ _render() ______________________________________________________________
 
-	void StaticColorSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		if (mode == BlendMode::Replace)
-			m_bOpaque = true;
-		else if (mode == BlendMode::Blend)
-			m_bOpaque = (m_color.a == 4096);
-		else
-			m_bOpaque = false;
-	}
-
-	//____ render() ______________________________________________________________
-
-	void StaticColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void StaticColorSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		pDevice->fill(canvas.px(), m_color);
+		pDevice->fill(canvas, m_color);
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool StaticColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool StaticColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
-		return ( canvas.contains(ofs) && ((int)m_color.a)/16 >= opacityTreshold );
+		return ( canvas.contains(ofs) && m_color.a >= m_markAlpha );
 	}
 
 

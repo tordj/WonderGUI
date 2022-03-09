@@ -24,6 +24,7 @@
 #pragma once
 
 #include <wg3_geo.h>
+#include <wg3_util.h>
 
 #ifdef WIN32
 #	include <GL/glew.h>
@@ -68,16 +69,15 @@ namespace wg
 
 		SurfaceFactory_p	surfaceFactory() override;
 
-		bool	setDefaultCanvas(SizeI pixelSize);
+		bool	setDefaultCanvas(SizeSPX size, int scale = 64);
 
-		//.____ Geometry _________________________________________________
-
-		SizeI		canvasSize(CanvasRef ref) const override;
+		using GfxDevice::canvas;
+		const CanvasInfo& canvas(CanvasRef ref) const override;
 
 		//.____ State _________________________________________________
 
 		void	setTintColor(HiColor color) override;
-		void	setTintGradient(const RectI& rect, const Gradient& gradient) override;
+		void	setTintGradient(const RectSPX& rect, const Gradient& gradient) override;
 		void	clearTintGradient() override;
 
 		bool	setBlendMode(BlendMode blendMode) override;
@@ -94,13 +94,13 @@ namespace wg
 		void	flush() override;
 
 		using 	GfxDevice::fill;
-		void	fill(const RectI& rect, HiColor col) override;
+		void	fill(const RectSPX& rect, HiColor col) override;
 		void	fill(const RectF& rect, HiColor col) override;
 
-		void    plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
+		void    plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordI begin, CoordI end, HiColor color, float thickness) override;
-		void	drawLine(CoordI begin, Direction dir, int length, HiColor col, float thickness) override;
+		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness = 1.f ) override;
+		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, float thickness = 1.f ) override;
 
 
 
@@ -112,10 +112,10 @@ namespace wg
 		void	_renderLayerWasChanged() override;
 		void	_clipListWasChanged() override;
 
-		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
-		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
+		void	_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
+		void	_transformBlit(const RectSPX& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 
 				enum class Command
@@ -208,6 +208,7 @@ namespace wg
 		CoordF			m_blitSourceSize;
 
 		SizeI			m_defaultCanvasSize;
+		int				m_defaultCanvasScale = 64;
 
 		// Device programs
 
@@ -238,7 +239,7 @@ namespace wg
 
 		//
 
-		struct CanvasInfo
+		struct ShaderCanvasInfo
 		{
 			GLfloat	canvasDimX;			// Becomes X in shader
 			GLfloat	canvasDimY;			// Becomes Y in shader
@@ -279,7 +280,9 @@ namespace wg
 
 		//
 
-		CanvasInfo			m_canvasInfo;
+		CanvasInfo			m_defaultCanvas;
+
+		ShaderCanvasInfo	m_canvasInfo;
 		GradientTintInfo	m_tintInfo;
 		
 
@@ -456,9 +459,9 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 
 			for (int i = 0; i < m_nClipRects; i++)
 			{
-				RectI clip = m_pClipRects[i];
+				RectI clip = Util::roundToPixels(m_pClipRects[i]);
 				if( m_canvasYstart != 0 )
-					clip.y = m_canvas.size.h - (clip.y + clip.h);
+					clip.y = Util::roundToPixels(m_canvas.size.h) - (clip.y + clip.h);
 
 				m_clipListBuffer[m_clipWriteOfs++] = clip;
 			}

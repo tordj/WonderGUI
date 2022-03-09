@@ -42,5 +42,4 @@ namespace wg
 	}
 
 
-
 } // namespace wg

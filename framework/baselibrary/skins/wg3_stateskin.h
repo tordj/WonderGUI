@@ -43,31 +43,29 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
-
-		Border			contentPadding(State state) const override;
-		Coord			contentOfs(State state) const override;
-		Rect			contentRect(const Rect& canvas, State state) const override;
-
 		//.____ Behavior _______________________________________________________
 
 		void			clearContentShift();
-		void			setContentShift(State state, CoordI shift);
-		void			setContentShift(std::initializer_list< std::pair<State, CoordI> > StateShifts);
-		CoordI			contentShift(State state) const;
+		void			setContentShift(State state, Coord shift);
+		void			setContentShift(std::initializer_list< std::pair<State, Coord> > StateShifts);
+		Coord			contentShift(State state) const;
 
-		//.____ Misc ____________________________________________________
+		//.____ Internal ________________________________________________________
 
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
-							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
-							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
+		BorderSPX		_contentPadding(int scale, State state) const override;
+		CoordSPX		_contentOfs(int scale, State state) const override;
+		RectSPX			_contentRect(const RectSPX& canvas, int scale, State state) const override;
+
+		RectSPX			_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	protected:
 		StateSkin() { m_bIgnoresState = false; }
 
-		void _refreshUnsetStates();
+		void			_updateContentShift();
 
-        CoordI				m_contentShift[StateEnum_Nb];       // Unit: Points
+        Coord				m_contentShift[StateEnum_Nb];
 		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
 	};
 

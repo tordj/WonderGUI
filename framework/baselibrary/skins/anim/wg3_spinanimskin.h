@@ -41,55 +41,56 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			float		angleBegin = 0.f;
+			float		angleEnd = 360.f;
+			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = HiColor::Undefined;
+			int			cycleDuration = 1000;
+			Border		destPadding;
+			Gradient	gradient;
+			int			layer = -1;
+			int			markAlpha = 1;
+			Border		overflow;
+			Border		padding;
+			CoordF		pivot = { 0.5f, 0.5f };
+			CoordF		placement = { 0.5f, 0.5f };
+			Size		preferredSize;							// Mandatory
+			Surface_p	surface;								// Mandatory
+			float		zoom = 1.f;
+		};
+
 		//.____ Creation __________________________________________
 
-		static SpinAnimSkin_p create(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter = CoordF(0.5f,0.5f), 
-										CoordF dstCenter = CoordF(0.5f,0.5f), float fromDegrees = 0.f, float toDegrees = 360.f, 
-										float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI() );
+		static SpinAnimSkin_p create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Control __________________________________________________
+		//.____ Internal ________________________________________________________
 
-		void	setCycleDuration(int millisec);
-		int		cycleDuration() const { return m_cycleDuration; }								/// Returns duration of one cycle of animation.
+		SizeSPX	_preferredSize(int scale) const override;
 
-		//.____ Geometry _________________________________________________
+		bool	
+			_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
+			float value = 1.f, float value2 = -1.f) const override;
 
-		Size	preferredSize() const override;
+		void 	_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
+			float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
-		//.____ Appearance _________________________________________________
+		RectSPX	_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+			float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+			float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void		setColor(HiColor tintColor);
-		HiColor		color() const { return m_color; }
-
-		void		setGradient(const Gradient& gradient);
-		Gradient	gradient() const { return m_gradient; }
-
-		//.____ Misc ____________________________________________________
-
-		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-							float value = 1.f, float value2 = -1.f) const override;
-
-		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-						float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr ) const override;
-
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
-							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
-							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
-
-		int		animationLength(State state) const override;
+		int		_animationLength(State state) const override;
 
 	private:
-		SpinAnimSkin(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter = CoordF(0.5f, 0.5f),
-						CoordF dstCenter = CoordF(0.5f, 0.5f), float fromDegrees = 0.f, float toDegrees = 360.f,
-						float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI());
+		SpinAnimSkin( const Blueprint& blueprint );
 		~SpinAnimSkin();
 
 		void		_updateOpacityFlag();
@@ -100,17 +101,16 @@ namespace wg
 
 		Surface_p	m_pSurface;
 		Size		m_preferredSize;
-		CoordF		m_srcCenter;
-		CoordF		m_dstCenter;
+		CoordF		m_pivot;
+		CoordF		m_placement;
 		float		m_fromDegrees;
 		float		m_toDegrees;
 		float		m_zoom;
-		BorderI		m_gfxPadding;
+		Border		m_gfxPadding;
 
 		BlendMode		m_blendMode = BlendMode::Undefined;
 		HiColor			m_color = Color::White;
 		Gradient		m_gradient;
-		bool			m_bGradient = false;
 	};
 
 

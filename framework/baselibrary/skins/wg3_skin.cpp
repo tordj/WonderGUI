@@ -28,6 +28,8 @@ namespace wg
 
 	const TypeInfo Skin::TYPEINFO = { "Skin", &Object::TYPEINFO };
 
+	using namespace Util;
+
 	//____ typeInfo() _________________________________________________________
 
 	const TypeInfo& Skin::typeInfo(void) const
@@ -35,108 +37,93 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ minSize() ______________________________________________________________
+	//____ _minSize() ______________________________________________________________
 
-	Size Skin::minSize() const
+	SizeSPX Skin::_minSize(int scale) const
 	{
-		return Size(Border(m_contentPadding).aligned());
+		return SizeSPX(align(ptsToSpx(m_contentPadding,scale)));
 	}
 
 	//____ _preferredSize() ______________________________________________________________
 
-	Size Skin::preferredSize() const
+	SizeSPX Skin::_preferredSize(int scale) const
 	{
-		return Size(Border(m_contentPadding).aligned());
+		return SizeSPX(align(ptsToSpx(m_contentPadding, scale)));
 	}
 
-	//____ setContentPadding() ____________________________________________________
+	//____ _contentPadding() ______________________________________________________________
 
-	void Skin::setContentPadding(const BorderI& padding)
+	BorderSPX Skin::_contentPadding(int scale, State state) const
 	{
-		m_contentPadding = padding;
+		return align(ptsToSpx(m_contentPadding, scale));
 	}
 
-	//____ contentPadding() ______________________________________________________________
+	//____ _contentPaddingSize() ______________________________________________________________
 
-	Border Skin::contentPadding(State state) const
+	SizeSPX Skin::_contentPaddingSize(int scale) const
 	{
-		return Border(m_contentPadding).aligned();
+		return SizeSPX(align(ptsToSpx(m_contentPadding, scale)));
 	}
 
-	//____ contentPaddingSize() ______________________________________________________________
+	//____ _contentOfs() ______________________________________________________________
 
-	Size Skin::contentPaddingSize() const
+	CoordSPX Skin::_contentOfs(int scale, State state) const
 	{
-		return Size(Border(m_contentPadding).aligned());
+		return align(ptsToSpx(Coord(m_contentPadding.left, m_contentPadding.top), scale));
 	}
 
-	//____ contentOfs() ______________________________________________________________
+	//____ _sizeForContent() ___________________________________________________
 
-	Coord Skin::contentOfs(State state) const
+	SizeSPX Skin::_sizeForContent(const SizeSPX& contentSize, int scale) const
 	{
-		return Coord(m_contentPadding.left, m_contentPadding.top).aligned();
+		return contentSize + SizeSPX(align(ptsToSpx(m_contentPadding, scale)));
 	}
 
-	//____ sizeForContent() ___________________________________________________
+	//____ _contentRect() ______________________________________________________
 
-	Size Skin::sizeForContent(const Size& contentSize) const
+	RectSPX Skin::_contentRect(const RectSPX& canvas, int scale, State state) const
 	{
-		return contentSize + Size(Border(m_contentPadding).aligned());
+		return canvas - align(ptsToSpx(m_contentPadding, scale));
 	}
 
-	//____ contentRect() ______________________________________________________
+	//____ _isOpaque() ________________________________________________________
 
-	Rect Skin::contentRect(const Rect& canvas, State state) const
-	{
-		return (canvas - Border(m_contentPadding).aligned()).aligned();
-	}
-
-	//____ setLayer() _________________________________________________________
-
-	void Skin::setLayer(int layer)
-	{
-		m_layer = layer;
-	}
-
-
-	//____ isOpaque() _________________________________________________________
-
-	bool Skin::isOpaque(State state) const
+	bool Skin::_isOpaque(State state) const
 	{
 		return m_bOpaque;
 	}
 
-	bool Skin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	bool Skin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
 		return m_bOpaque;
 	}
 
-	//____ dirtyRect() ________________________________________________________
+	//____ _dirtyRect() ________________________________________________________
 
-	Rect Skin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX Skin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos, float* pNewStateFractions,
 		float* pOldStateFractions) const
 	{
-		return Rect();
+		return RectSPX();
 	}
 
-	//____ animationLength() ____________________________________________
+	//____ _animationLength() ____________________________________________
 
-	int Skin::animationLength(State state) const
+	int Skin::_animationLength(State state) const
 	{
 		return 0;
 	}
 
-	//____ transitioningStates() __________________________________________________
+	//____ _transitioningStates() __________________________________________________
 
-	Bitmask<uint8_t> Skin::transitioningStates() const
+	Bitmask<uint8_t> Skin::_transitioningStates() const
 	{
 		return Bitmask<uint8_t>(0);
 	}
 
-	//____ transitionTimes() ____________________________________________
+	//____ _transitionTimes() ____________________________________________
 
-	const int* Skin::transitionTimes() const
+	const int* Skin::_transitionTimes() const
 	{
 		const static int	transitionTimes[StateBits_Nb] = { 0,0,0,0,0,0 };
 

@@ -728,7 +728,7 @@ void WgScrollChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 		m_scrollFraction += ticks;
 
-		float samplesPerPixel = m_sampleTTL / (float) m_pCanvas->size().w;
+		float samplesPerPixel = m_sampleTTL / (float) m_pCanvas->pixelSize().w;
 
 		int scrollAmount =  (int) ((m_scrollFraction-1) / samplesPerPixel);
 
@@ -770,7 +770,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 	if (m_pCanvas)
 	{
-		WgSize sz = m_pCanvas->size();
+		WgSize sz = m_pCanvas->pixelSize();
 		double	timestampInc = m_sampleTTL / (double)sz.w;
 
 		if (m_bRefreshCanvas || m_scrollAmount >= sz.w)
@@ -902,7 +902,7 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 
 	// Calculate yOfs, chart floor and valueFactor
 
-	int canvasHeight = m_pCanvas->size().h;
+	int canvasHeight = m_pCanvas->pixelSize().h;
 	float valueFactor = canvasHeight / (m_bottomValue - m_topValue);
 
 	float graphFloor;
@@ -987,7 +987,7 @@ void WgScrollChart::_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop,
 
 	//
 
-	int canvasHeight = m_pCanvas->size().h;
+	int canvasHeight = m_pCanvas->pixelSize().h;
 	float valueFactor = canvasHeight / (m_bottomValue - m_topValue);
 
 	float floor;
@@ -1138,14 +1138,14 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 	if (m_pCanvas)
 	{
-		assert(m_pCanvas->size() == scrollCanvas.size());
+		assert(m_pCanvas->pixelSize() == scrollCanvas.size());
 
 		pDevice->setBlitSource(m_pCanvas);
 		if( m_windowBegin == 0 )
 			pDevice->blit( WgCoord(scrollCanvas.x, scrollCanvas.y), { 0, 0, scrollCanvas.w, scrollCanvas.h });
 		else
 		{
-			int firstPartLen = m_pCanvas->size().w - m_canvasOfs;
+			int firstPartLen = m_pCanvas->pixelSize().w - m_canvasOfs;
 
 			pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y), { m_canvasOfs, 0, firstPartLen, scrollCanvas.h });
 			pDevice->blit(WgCoord(scrollCanvas.x + firstPartLen, scrollCanvas.y), { 0, 0, scrollCanvas.w - firstPartLen, scrollCanvas.h });
@@ -1175,9 +1175,9 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 				WgPen	pen(pDevice, _canvas);
 				wg::TextAttr attr;
 
-				wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
+				wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr, m_scale >> 6);
 				if( m_valueLabelStyle.pTextStyle )
-					m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
+					m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr, m_scale >> 6);
 
                 pen.SetScale(m_scale);
 				pen.SetAttributes(attr);

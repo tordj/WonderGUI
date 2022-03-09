@@ -47,9 +47,9 @@ typedef wg::PointerStyle WgPointerStyle;
 typedef wg::SearchMode  WgSearchMode;
 typedef wg::Placement   WgOrigo;
 typedef wg::Direction   WgDirection;
-typedef wg::SizePolicy  WgSizePolicy;
+typedef wg::SizeConstraint  WgSizePolicy;
 
-typedef wg::ScaleMode   WgScaleMode;
+typedef wg::SampleMethod   WgScaleMode;
 typedef wg::PixelFormat WgPixelType;
 
 typedef wg::SortOrder   WgSortOrder;

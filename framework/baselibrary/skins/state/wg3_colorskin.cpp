@@ -35,42 +35,57 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	ColorSkin_p ColorSkin::create()
+	ColorSkin_p ColorSkin::create( const Blueprint& blueprint )
 	{
-		return ColorSkin_p(new ColorSkin());
+		return ColorSkin_p(new ColorSkin(blueprint));
 	}
 
-	ColorSkin_p ColorSkin::create(HiColor color, BorderI contentPadding )
+	ColorSkin_p ColorSkin::create(HiColor color, Border padding )
 	{
-		auto p = new ColorSkin(color);
-		p->setContentPadding(contentPadding);
-		return p;
-	}
+		Blueprint bp;
+		bp.color = color;
+		bp.padding = padding;
 
-	ColorSkin_p ColorSkin::create(std::initializer_list< std::tuple<State, HiColor> > stateColors, BorderI contentPadding )
-	{
-		auto p = new ColorSkin();
-		p->setColor(stateColors);
-		p->setContentPadding(contentPadding);
-		return p;
+		return ColorSkin_p(new ColorSkin(bp));
 	}
-
 
 	//____ constructor ____________________________________________________________
 
-	ColorSkin::ColorSkin()
+	ColorSkin::ColorSkin(const Blueprint& blueprint)
 	{
-		m_stateColorMask = 1;
+		m_blendMode		= blueprint.blendMode;
+		m_contentPadding= blueprint.padding;
+		m_layer			= blueprint.layer;
+		m_markAlpha		= blueprint.markAlpha;
+		m_overflow		= blueprint.overflow;
 
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			m_color[i] = Color::White;
+		m_color[0] = blueprint.color;
 
-		m_bOpaque = true;
-	}
 
-	ColorSkin::ColorSkin(HiColor color )
-	{
-		setColor(color);
+		for (auto& stateInfo : blueprint.states)
+		{
+			if( stateInfo.state != StateEnum::Normal )
+			{
+				int index = _stateToIndex(stateInfo.state);
+
+				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
+				{
+					m_contentShiftStateMask.setBit(index);
+					m_contentShift[index] = stateInfo.data.contentShift;
+					m_bContentShifting = true;
+				}
+
+				if( stateInfo.data.color != HiColor::Undefined )
+				{
+					m_stateColorMask.setBit(index);
+					m_color[index] = stateInfo.data.color;
+				}
+			}
+		}
+
+		_updateContentShift();
+		_updateOpaqueFlag();
+		_updateUnsetColors();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -80,99 +95,46 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setBlendMode() _____________________________________________________
+	//____ _isOpaque() _____________________________________________________________
 
-	void ColorSkin::setBlendMode(BlendMode mode)
+	bool ColorSkin::_isOpaque(State state) const
 	{
-		m_blendMode = mode;
-		_updateOpaqueFlag();
+		return (m_color[_stateToIndex(state)].a == 4096);
 	}
 
-	//____ setColor() ________________________________________________________
-
-	void ColorSkin::setColor(HiColor color)
+	bool ColorSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
-		m_stateColorMask = 1;
-
-		for (int i = 0; i < StateEnum_Nb; i++)
-			m_color[i] = color;
-
-		m_bOpaque = (color.a == 4096);
+		return (m_color[_stateToIndex(state)].a == 4096);
 	}
 
-	void ColorSkin::setColor(State state, HiColor color)
-	{
-		int i = _stateToIndex(state);
+	//____ _render() _______________________________________________________________
 
-		m_stateColorMask.setBit(i);
-
-		m_color[i] = color;
-
-		_updateOpaqueFlag();
-		_updateUnsetColors();
-	}
-
-	void ColorSkin::setColor(std::initializer_list< std::tuple<State, HiColor> > stateColors)
-	{
-		for (auto& state : stateColors)
-		{
-			int i = _stateToIndex(std::get<0>(state));
-			m_stateColorMask.setBit(i);
-			m_color[i] = std::get<1>(state);
-		}
-
-		_updateOpaqueFlag();
-		_updateUnsetColors();
-	}
-
-	//____ color() ______________________________________________________
-
-	HiColor ColorSkin::color(State state) const
-	{
-		int i = _stateToIndex(state);
-		return m_color[i];
-	}
-
-	//____ isOpaque() _____________________________________________________________
-
-	bool ColorSkin::isOpaque(State state) const
-	{
-		return (m_color[_stateToIndex(state)].a == 255);
-	}
-
-	bool ColorSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
-	{
-		return (m_color[_stateToIndex(state)].a == 255);
-	}
-
-	//____ render() _______________________________________________________________
-
-	void ColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void ColorSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		int i = _stateToIndex(state);
-		pDevice->fill( canvas.px(), m_color[i] );
+		pDevice->fill( canvas, m_color[i] );
 	}
 
-	//____ markTest() _____________________________________________________________
+	//____ _markTest() _____________________________________________________________
 
-	bool ColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool ColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
 
-		return ( m_color[_stateToIndex(state)].a >= opacityTreshold);
+		return ( m_color[_stateToIndex(state)].a >= m_markAlpha);
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect ColorSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
-		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+	RectSPX ColorSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, 
+		float newValue, float oldValue, float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (oldState == newState)
-			return Rect();
+			return RectSPX();
 
 		int i1 = _stateToIndex(newState);
 		int i2 = _stateToIndex(oldState);
@@ -180,7 +142,7 @@ namespace wg
 		if (m_color[i1] != m_color[i2])
 			return canvas;
 
-		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+		return StateSkin::_dirtyRect(canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 

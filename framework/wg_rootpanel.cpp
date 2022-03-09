@@ -51,11 +51,11 @@ WgRootPanel::WgRootPanel( wg::Surface * pCanvasSurface, wg::GfxDevice * pGfxDevi
 {
 	m_canvas.ref = wg::CanvasRef::None;
 	m_canvas.pSurface = pCanvasSurface;
-	m_canvas.size = pCanvasSurface->size();
+	m_canvas.size = pCanvasSurface->pixelSize();
 
 	m_bVisible = true;
 	m_bHasGeo = false;
-    m_geo = pCanvasSurface->size();
+    m_geo = pCanvasSurface->pixelSize();
 	m_pGfxDevice = pGfxDevice;
 	m_pEventHandler = new WgEventHandler(this);
 	m_hook.m_pRoot = this;
@@ -66,7 +66,7 @@ WgRootPanel::WgRootPanel( wg::CanvasRef ref, wg::GfxDevice * pGfxDevice )
 {
 	m_canvas.ref = ref;
 	m_canvas.pSurface = nullptr;
-	m_canvas.size = pGfxDevice->canvasSize(ref);
+	m_canvas.size = pGfxDevice->canvas(ref).size;
 
     m_bVisible = true;
     m_bHasGeo = false;
@@ -108,7 +108,7 @@ bool WgRootPanel::SetCanvas(wg::Surface* pSurface)
 
 	m_canvas.ref = wg::CanvasRef::None;
     m_canvas.pSurface = pSurface;
-    m_canvas.size = pSurface->size();
+    m_canvas.size = pSurface->pixelSize();
 
     if( !m_bHasGeo && m_hook.Widget() )
         m_hook.Widget()->_onNewSize(m_canvas.size);
@@ -121,7 +121,7 @@ bool WgRootPanel::SetCanvas(wg::CanvasRef ref)
 {
 	m_canvas.ref = ref;
     m_canvas.pSurface = nullptr;
-    m_canvas.size = m_pGfxDevice->canvasSize(ref);
+    m_canvas.size = m_pGfxDevice->canvas(ref).size;
 
     if( !m_bHasGeo && m_hook.Widget() )
         m_hook.Widget()->_onNewSize(m_canvas.size);
@@ -387,7 +387,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 		for( const WgRect * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
 		{
-			m_pUpdatedRectOverlay->render( m_pGfxDevice, wg::Rect::fromPX(*pRect), WgStateEnum::Focused );
+			m_pUpdatedRectOverlay->_render( m_pGfxDevice,(*pRect)*64, m_scale >> 6, WgStateEnum::Focused );
 		}
 
 		// Render overlays that have turned into afterglow
@@ -396,7 +396,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 		{
 			for( const WgRect * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
 			{
-				m_pUpdatedRectOverlay->render( m_pGfxDevice, wg::Rect::fromPX(*pRect), WgStateEnum::Normal );
+				m_pUpdatedRectOverlay->_render( m_pGfxDevice, (*pRect)*64, m_scale >> 6, WgStateEnum::Normal );
 			}
 		}
         

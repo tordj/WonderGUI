@@ -96,8 +96,6 @@ public:
 	static int		DoubleClickTimeTreshold() { assert(s_pData!=0); return s_pData->doubleClickTimeTreshold; }
 	static int		DoubleClickDistanceTreshold() { assert(s_pData!=0); return s_pData->doubleClickDistanceTreshold; }
 
-	static void     _setQuartersPerPoint( int quarterPixels );
-
 
 private:
 

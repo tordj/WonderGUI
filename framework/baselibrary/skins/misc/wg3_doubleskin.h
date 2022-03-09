@@ -39,9 +39,21 @@ namespace wg
 	class DoubleSkin : public Skin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			int			layer = -1;
+			Border		padding;
+
+			bool		skinInSkin = true;
+			Skin_p		skins[2];
+		};
+
 		//.____ Creation __________________________________________
 
-		static DoubleSkin_p	create();
+		static DoubleSkin_p create( const Blueprint& blueprint );
 		static DoubleSkin_p create( Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin = true );
 
 		//.____ Identification __________________________________________
@@ -49,51 +61,37 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Appearance _________________________________________________
-
-		bool			setFrontSkin(Skin * pSkin);
-		Skin_p			frontSkin() const { return m_pFrontSkin; }
-
-		bool			setBackSkin(Skin * pSkin);
-		Skin_p			backSkin() const { return m_pBackSkin; }
-
-		void			setSkinInSkin(bool bInside);
-		bool			isSkinInSkin() const { return m_bSkinInSkin; }
-
-		//.____ Geometry _________________________________________________
-
-		Size			minSize() const override;
-		Size			preferredSize() const override;
-		Size			sizeForContent(const Size& contentSize) const override;
-
-		void			setContentPadding(const BorderI& padding) override;
-		Border			contentPadding(State state) const override;
-		Size			contentPaddingSize() const override;
-		Coord			contentOfs(State state) const override;
-		Rect			contentRect(const Rect& canvas, State state) const override;
-
 		//.____ Misc ____________________________________________________
 
-		bool			isOpaque( State state ) const override;
-		bool			isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
+		SizeSPX			_minSize(int scale) const override;
+		SizeSPX			_preferredSize(int scale) const override;
+		SizeSPX			_sizeForContent(const SizeSPX& contentSize, int scale) const override;
 
-		bool			markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		BorderSPX		_contentPadding(int scale, State state) const override;
+		SizeSPX			_contentPaddingSize(int scale) const override;
+		CoordSPX		_contentOfs(int scale, State state) const override;
+		RectSPX			_contentRect(const RectSPX& canvas, int scale, State state) const override;
+
+		bool			_isOpaque( State state ) const override;
+		bool			_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
+
+		bool			_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 									float value = 1.f, float value2 = -1.f) const override;
 
-		void			render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-								float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
+		void			_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+									float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
-		Rect			dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX			_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
-		int				animationLength(State state) const override;
+		int				_animationLength(State state) const override;
 
-		Bitmask<uint8_t>transitioningStates() const override;
-		const int*		transitionTimes() const override;
+		Bitmask<uint8_t>_transitioningStates() const override;
+		const int*		_transitionTimes() const override;
 
 	private:
-		DoubleSkin();
+		DoubleSkin( const Blueprint& blueprint );
 		DoubleSkin(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin = true);
 		~DoubleSkin();
 
@@ -103,7 +101,7 @@ namespace wg
 
 		Skin_p		m_pFrontSkin;
 		Skin_p		m_pBackSkin;
-		bool		m_bSkinInSkin = false;
+		bool		m_bSkinInSkin = true;
 		bool		m_bContentPaddingSet = false;
 
 		int			m_transitionTimes[StateBits_Nb];

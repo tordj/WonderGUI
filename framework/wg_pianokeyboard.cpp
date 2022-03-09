@@ -132,7 +132,7 @@ void WgPianoKeyboard::setSurfaces(const wg::Surface_p& pOddWhiteKeys, const wg::
 		return;
 	}
 
-	if (pOddWhiteKeys->size() != pEvenWhiteKeys->size() || (pBlackKeys && pBlackKeys->size().w != pOddWhiteKeys->size().w) )
+	if (pOddWhiteKeys->pixelSize() != pEvenWhiteKeys->pixelSize() || (pBlackKeys && pBlackKeys->pixelSize().w != pOddWhiteKeys->pixelSize().w) )
 	{
 		//TODO: Error handling!
 
@@ -143,15 +143,16 @@ void WgPianoKeyboard::setSurfaces(const wg::Surface_p& pOddWhiteKeys, const wg::
 	m_pEvenWhiteKeys	= pEvenWhiteKeys;
 	m_pBlackKeys		= pBlackKeys;
 
-	wg::SizeI pointSize = pOddWhiteKeys->pointSize();
+	auto ptsSize = pOddWhiteKeys->pointSize();
+	wg::SizeI pointSize = { (int) ptsSize.w, (int) ptsSize.h };
 	pointSize.h /= states.size();
 	m_preferredKeyboardSize	= pointSize;
 
-	wg::SizeI pixelSize = pOddWhiteKeys->size();
+	wg::SizeI pixelSize = pOddWhiteKeys->pixelSize();
 	pixelSize.h /= states.size();
 	m_keyboardSourceSize = pixelSize;
 
-	m_blackKeySourceHeight	= m_pBlackKeys ? m_pBlackKeys->size().h  / states.size() : 0;
+	m_blackKeySourceHeight	= m_pBlackKeys ? m_pBlackKeys->pixelSize().h  / states.size() : 0;
 
 	// Fill in state offsets
 
@@ -713,7 +714,7 @@ int WgPianoKeyboard::_markTestKey(const wg::CoordI& pos)
 		keyPos = int((srcPos.x + whiteKeySpacing / 2) / (whiteKeySpacing * 2)) * 2;
 	else if (m_pEvenWhiteKeys->alpha(srcPos))
 		keyPos = int((srcPos.x - whiteKeySpacing / 2) / (whiteKeySpacing * 2)) * 2 + 1;
-	else if (m_pBlackKeys && (srcPos.y < m_pBlackKeys->size().h) && m_pBlackKeys->alpha(srcPos))
+	else if (m_pBlackKeys && (srcPos.y < m_pBlackKeys->pixelSize().h) && m_pBlackKeys->alpha(srcPos))
 	{
 		keyPos = int((srcPos.x - whiteKeySpacing / 2) / whiteKeySpacing);
 		isBlack = true;

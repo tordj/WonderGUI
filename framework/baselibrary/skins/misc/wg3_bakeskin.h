@@ -23,7 +23,6 @@
 #define WG3_BAKESKIN_DOT_H
 #pragma once
 
-#include <wg3_cdynamicvector.h>
 #include <wg3_surface.h>
 #include <wg3_skin.h>
 #include <wg3_color.h>
@@ -31,6 +30,7 @@
 
 #include <initializer_list>
 #include <utility>
+#include <vector>
 
 namespace wg
 {
@@ -38,105 +38,89 @@ namespace wg
 	typedef	StrongPtr<BakeSkin>	BakeSkin_p;
 	typedef	WeakPtr<BakeSkin>		BakeSkin_wp;
 
-	class BakeSkin : public Skin, protected CDynamicVector<Skin_p>::Holder
+	class BakeSkin : public Skin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Surface_p	surface;
+			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = HiColor::Undefined;
+			Gradient	gradient;
+			int			layer = -1;
+			Border		padding;
+
+			bool		skinInSkin = true;
+			std::vector<Skin_p>	skins;
+		};
+
 		//.____ Creation __________________________________________
 
-		static BakeSkin_p	create();
-		static BakeSkin_p	create(Surface* pBakeSurface);
+		static BakeSkin_p	create( const Blueprint& blueprint );
 		static BakeSkin_p	create( Surface * pBakeSurface, std::initializer_list<Skin_p> skins );
-
-		//.____ Components ____________________________________
-
-		CDynamicVector<Skin_p>	skins;
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Appearance _________________________________________________
+		//.____ Internal _________________________________________________
 
-		void			setBlendMode( BlendMode blend );
-		BlendMode		blendMode() const { return m_blendMode; }
+		SizeSPX			_minSize(int scale) const override;
+		SizeSPX			_preferredSize(int scale) const override;
 
-		void			setColor(HiColor color);
-		HiColor			color() const { return m_tintColor; }
+		BorderSPX		_contentPadding(int scale, State state) const override;
+		SizeSPX			_contentPaddingSize(int scale) const override;
+		CoordSPX		_contentOfs(int scale, State state) const override;
+		RectSPX			_contentRect(const RectSPX& canvas, int scale, State state) const override;
 
-		void			setGradient(const Gradient& gradient);
-		Gradient		gradient() const { return m_gradient; }
+		bool			_isOpaque( State state ) const override;
+		bool			_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
 
-
-		void			setSkinInSkin(bool bInside);
-		bool			isSkinInSkin() const { return m_bSkinInSkin; }
-
-		//.____ Geometry _________________________________________________
-
-		Size			minSize() const override;
-		Size			preferredSize() const override;
-
-		void			setContentPadding(const BorderI& padding) override;
-		Border			contentPadding(State state) const override;
-		Size			contentPaddingSize() const override;
-		Coord			contentOfs(State state) const override;
-		Rect			contentRect(const Rect& canvas, State state) const override;
-
-		//.____ Misc ____________________________________________________
-
-		void			setBakeSurface(Surface* pSurface);
-		Surface_p		bakeSurface() const { return m_pBakeSurface; }
-
-		bool			isOpaque( State state ) const override;
-		bool			isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
-
-		bool			markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		bool			_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 									float value = 1.f, float value2 = -1.f) const override;
 
-		void			render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-								float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
+		void			_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+									float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
-		Rect			dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX			_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
-		int				animationLength(State state) const override;
+		int				_animationLength(State state) const override;
 
-		Bitmask<uint8_t>transitioningStates() const override;
-		const int*		transitionTimes() const override;
+		Bitmask<uint8_t>_transitioningStates() const override;
+		const int*		_transitionTimes() const override;
 
 
 	private:
-		BakeSkin(Surface * pBakeSurface);
+		BakeSkin(const Blueprint& blueprint);
 		BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skins);
 		~BakeSkin();
 
 		void			_incUseCount() override;
 		void			_decUseCount() override;
 
-		void			_updateCachedGeo() const;
+		void			_updateCachedGeo(int scale) const;
 		void			_onModified();
-		Border			_stateContentPadding(State state) const;
+		BorderSPX		_stateContentPadding(int scale, State state) const;
 
-		void			_didAddEntries(Skin_p* pEntry, int nb) override;
-		void			_didMoveEntries(Skin_p* pFrom, Skin_p* pTo, int nb) override;
-		void			_willEraseEntries(Skin_p* pEntry, int nb) override;
-
-		Object*			_object() override { return this; }
-
+		std::vector<Skin_p>	m_skins;
 
 		Surface_p			m_pBakeSurface;
 		BlendMode			m_blendMode = BlendMode::Undefined;
 		HiColor				m_tintColor = Color::White;
 		Gradient			m_gradient;
-		bool				m_bGradient = false;
 		bool				m_bContentPaddingSet = false;
 		bool				m_bSkinInSkin = false;
 
-		mutable int			m_cachedQPixPerPoint = 0;
-		mutable Size		m_cachedMinSize;						// Calculated minSize for scale represented by m_cachedQPixPerPoint;
-		mutable Size		m_cachedPreferredSize;					// Calculated preferredSize for scale represented by m_cachedQPixPerPoint;
-		mutable Border		m_cachedContentPadding[StateEnum_Nb];
+		mutable int			m_cachedScale = 0;
+		mutable SizeSPX		m_cachedMinSize;						// Calculated minSize for scale represented by m_cachedScale;
+		mutable SizeSPX		m_cachedPreferredSize;					// Calculated preferredSize for scale represented by m_cachedScale;
+		mutable BorderSPX	m_cachedContentPadding[StateEnum_Nb];
 
 		Bitmask<uint32_t>	m_opaqueStates;
 

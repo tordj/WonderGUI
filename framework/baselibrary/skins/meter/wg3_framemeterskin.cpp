@@ -26,6 +26,8 @@
 #include <wg3_util.h>
 #include <wg3_skin.impl.h>
 
+#include <algorithm>
+
 namespace wg
 {
 
@@ -35,16 +37,40 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	FrameMeterSkin_p FrameMeterSkin::create()
+	FrameMeterSkin_p FrameMeterSkin::create( const Blueprint& bp )
 	{
-		return FrameMeterSkin_p(new FrameMeterSkin());
+		return FrameMeterSkin_p(new FrameMeterSkin(bp));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	FrameMeterSkin::FrameMeterSkin() : frames(this)
+	FrameMeterSkin::FrameMeterSkin( const Blueprint& bp)
 	{
+		m_blendMode			= bp.blendMode;
+		m_color				= bp.color;
+		m_contentPadding	= bp.padding;
+		m_gfxPadding		= bp.gfxPadding;
+		m_gradient			= bp.gradient;
+		m_layer				= bp.layer;
+		m_size				= bp.size;
+		m_pSurface			= bp.surface;
+		m_markAlpha			= bp.markAlpha;
+		m_overflow			= bp.overflow;
+
+		m_frames.reserve(bp.frames.size());
+		
+		int timestamp = 0;
+		for (auto& frame : bp.frames)
+		{
+			m_frames.push_back({frame.coord, frame.duration, timestamp, frame.flip });
+			timestamp += frame.duration;
+		}
+
+		m_frames.shrink_to_fit();
+
+		m_duration = timestamp;
 		m_bIgnoresValue = false;
+		_updateOpacityFlag();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -54,82 +80,44 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() ______________________________________________________________
+	//____ _preferredSize() ______________________________________________________________
 
-	Size FrameMeterSkin::preferredSize() const
+	SizeSPX FrameMeterSkin::_preferredSize(int scale) const
 	{
-		if (!frames.isEmpty())
-			return Size::max( frames.frameSize(), Size(Border(m_contentPadding).aligned()) );
-		else
-			return Skin::minSize();
+		return SizeSPX::max(align(ptsToSpx(m_size,scale)), align(ptsToSpx(m_contentPadding,scale)));
 	}
 
-	//____ minSize() ______________________________________________________________
+	//____ _minSize() ______________________________________________________________
 
-	Size FrameMeterSkin::minSize() const
+	SizeSPX FrameMeterSkin::_minSize(int scale) const
 	{
-		if (!frames.isEmpty())
-			return Size::max(Size(Border(m_gfxPadding).aligned()), Size(Border(m_contentPadding).aligned()));
-		else
-			return Skin::minSize();
-	}
-
-	//____ setColor() _____________________________________________________
-
-	void FrameMeterSkin::setColor(HiColor color)
-	{
-		m_color = color;
-		_updateOpacityFlag();
-	}
-
-	//____ setGradient() ______________________________________________________
-
-	void FrameMeterSkin::setGradient(const Gradient& gradient)
-	{
-		m_gradient = gradient;
-		m_bGradient = true;
-		_updateOpacityFlag();
+		return SizeSPX::max(SizeSPX(align(ptsToSpx(m_gfxPadding,scale))), SizeSPX(align(ptsToSpx(m_contentPadding,scale))));
 	}
 
 
-	//____ setBlendMode() _____________________________________________________
+	//____ _render() ______________________________________________________________
 
-	void FrameMeterSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpacityFlag();
-	}
-
-	//____ setGfxPadding() ____________________________________________________
-
-	void FrameMeterSkin::setGfxPadding(BorderI padding)
-	{
-		m_gfxPadding = padding;
-	}
-
-	//____ render() ______________________________________________________________
-
-	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void FrameMeterSkin::_render(GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Support flip!
 
 		auto pFrame = _valueToFrame(value);
 		if (pFrame)
 		{
-			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
+			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
-			pDevice->setBlitSource(frames.surface());
+			pDevice->setBlitSource(m_pSurface);
 
 			NinePatch patch;
-			patch.block = RectI(pFrame->source(), frames.frameSize());
+			patch.block = Rect(pFrame->coord, m_size);
 			patch.frame = m_gfxPadding;
-			pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_gfxPadding), patch);
+			pDevice->blitNinePatch(canvas, align(ptsToSpx(m_gfxPadding,scale)), patch,scale);
 		}
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool FrameMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool FrameMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		//TODO: Support flip!
 		//TODO: Support tint!
@@ -141,28 +129,28 @@ namespace wg
 		if (pFrame)
 		{
 			NinePatch patch;
-			patch.block = RectI(pFrame->source(), frames.frameSize());
+			patch.block = Rect(pFrame->coord, m_size);
 			patch.frame = m_gfxPadding;
-			return Util::markTestNinePatch(ofs, frames._surface(), patch, canvas, opacityTreshold);
+			return Util::markTestNinePatch(ofs, m_pSurface, patch, canvas, scale, m_markAlpha);
 		}
 
 		return false;
 	}
 
-	//____ dirtyRect() ________________________________________________________
+	//____ _dirtyRect() ________________________________________________________
 
-	Rect FrameMeterSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX FrameMeterSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (newValue == oldValue)
-			return Rect();
+			return RectSPX();
 
 		auto pOldFrame = _valueToFrame(oldValue);
 		auto pNewFrame = _valueToFrame(newValue);
 
 		if (pOldFrame == pNewFrame)
-			return Rect();
+			return RectSPX();
 		else
 			return canvas;
 	}
@@ -175,10 +163,10 @@ namespace wg
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{
-			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+			if ((m_gradient.isValid && !m_gradient.isOpaque()) || m_color.a != 4096)
 				m_bOpaque = false;
 			else
-				m_bOpaque = frames._surface() ? frames._surface()->isOpaque() : false;
+				m_bOpaque = m_pSurface->isOpaque();
 		}
 		else
 			m_bOpaque = false;
@@ -186,50 +174,35 @@ namespace wg
 
 	//____ _valueToFrame() _________________________________________________
 
-	const AnimFrame* FrameMeterSkin::_valueToFrame(float fraction) const
+	const FrameMeterSkin::Frame* FrameMeterSkin::_valueToFrame(float fraction) const
 	{
-		if (frames.isEmpty())
-			return nullptr;
+		int timestamp = int(fraction * m_duration);
 
-		return frames.find(int(fraction * frames.duration()));
-	}
+		const Frame* pFirst = &m_frames.front();
+		const Frame* pLast = &m_frames.back();
+		const Frame* pFrame = pFirst + (pLast - pFirst);
 
-	//____ _didAddEntries() ___________________________________________________
+		if (timestamp < pFirst->duration)
+			return pFirst;
 
-	void FrameMeterSkin::_didAddEntries(AnimFrame* pEntry, int nb)
-	{
-	}
+		if (timestamp >= pLast->timestamp)
+			return pLast;
 
-	//____ _didMoveEntries() __________________________________________________
-
-	void FrameMeterSkin::_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb)
-	{
-	}
-
-	//____ _willEraseEntries() ________________________________________________
-
-	void FrameMeterSkin::_willEraseEntries(AnimFrame* pEntry, int nb)
-	{
-	}
-
-	//____ _didSetAnimFrameSize() _____________________________________________
-
-	void FrameMeterSkin::_didSetAnimFrameSize(CAnimFrames* pComponent)
-	{
-	}
-
-	//____ _didSetAnimSurface() _______________________________________________
-
-	void FrameMeterSkin::_didSetAnimSurface(CAnimFrames* pComponent)
-	{
-		_updateOpacityFlag();
-	}
-
-	//____ _object() __________________________________________________________
-
-	Object* FrameMeterSkin::_object()
-	{
-		return this;
+		while (true)
+		{
+			if (timestamp < pFrame->timestamp)
+			{
+				pLast = pFrame;
+				pFrame -= (pFrame - pFirst + 1) / 2;
+			}
+			else if (timestamp < pFrame->timestamp + pFrame->duration)
+				return pFrame;
+			else
+			{
+				pFirst = pFrame;
+				pFrame += (pLast - pFrame + 1) / 2;
+			}
+		}
 	}
 
 } // namespace wg

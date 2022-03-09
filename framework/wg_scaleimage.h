@@ -456,7 +456,7 @@ public:
 								unsigned int c = *dsrc2++;//dsrc[y*w1 + x];
 
 								//NO: Check if we're in the padded area:
-								if(x >= m_pOrgSurface->size().w)
+								if(x >= m_pOrgSurface->pixelSize().w)
 									c = 0;
 
 								unsigned int r_src = (c    ) & 0xFF;

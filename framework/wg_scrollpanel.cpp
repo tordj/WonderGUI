@@ -47,8 +47,8 @@ WgScrollPanel::WgScrollPanel()
 
 	m_bgColor = WgColor::White;
 	m_contentOrigo = WgOrigo::NorthWest;
-	m_widthPolicy = WgSizePolicy::Default;
-	m_heightPolicy = WgSizePolicy::Default;
+	m_widthPolicy = WgSizePolicy::None;
+	m_heightPolicy = WgSizePolicy::None;
 
 
 	m_stepSizeX		= 1;

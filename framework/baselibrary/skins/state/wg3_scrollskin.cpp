@@ -36,83 +36,107 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	ScrollSkin_p ScrollSkin::create()
+	ScrollSkin_p ScrollSkin::create( const Blueprint& blueprint )
 	{
-		return ScrollSkin_p(new ScrollSkin());
+		return ScrollSkin_p(new ScrollSkin(blueprint));
 	}
-
-	ScrollSkin_p ScrollSkin::create(Surface* pSurface, int windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, 
-									std::initializer_list<State> stateBlocks, int spacing)
-	{
-		//TODO: Sanity checks and error handling
-
-		RectI firstBlock = pSurface->size();
-		int nBlocks = stateBlocks.size();
-
-		int totalSpacing = spacing * (nBlocks - 1);
-
-		if (scrollDirection == Direction::Up || scrollDirection == Direction::Down)
-			firstBlock.w = (firstBlock.w - totalSpacing) / nBlocks;
-		else
-			firstBlock.h = (firstBlock.h - totalSpacing) / nBlocks;
-
-		auto pSkin = ScrollSkin_p(new ScrollSkin(pSurface, windowLength, scrollState, scrollTime, scrollDirection, firstBlock.size()) );
-
-		Axis axis = scrollDirection == Direction::Up || scrollDirection == Direction::Down ? Axis::X : Axis::Y;
-		pSkin->setBlocks(stateBlocks, axis, spacing, firstBlock.pos());
-
-		return pSkin;
-	}
-
-	ScrollSkin_p ScrollSkin::create(Surface* pSurface, int windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection,
-									RectI firstBlock, std::initializer_list<State> stateBlocks, int spacing)
-	{
-		//TODO: Sanity checks and error handling
-
-		auto pSkin = ScrollSkin_p(new ScrollSkin(pSurface, windowLength, scrollState, scrollTime, scrollDirection, firstBlock.size()) );
-
-		Axis axis = scrollDirection == Direction::Up || scrollDirection == Direction::Down ? Axis::X : Axis::Y;
-		pSkin->setBlocks(stateBlocks, axis, spacing, firstBlock.pos());
-
-		return pSkin;
-	}
-
-
 
 	//____ constructor ________________________________________________________
 
-	ScrollSkin::ScrollSkin()
-	{
-		//TODO: Add methods for everything not yet set!
-
-		m_bOpaque = false;
-
-		for (int i = 0; i < StateEnum_Nb; i++)
-		{
-			m_bStateOpaque[i] = false;
-			m_stateColors[i] = Color::White;
-		}
-	}
-
-	ScrollSkin::ScrollSkin(Surface* pSurface, int windowLength, StateBits scrollState, int scrollTime, Direction scrollDirection, 
-							SizeI blockSize) :
-		m_pSurface(pSurface),
-		m_windowLength(windowLength),
-		m_scrollState(scrollState),
-		m_scrollTime(scrollTime),
-		m_scrollDirection(scrollDirection),
-		m_blockSize(blockSize)
+	ScrollSkin::ScrollSkin( const Blueprint& blueprint)
 	{	
-		m_bOpaque = pSurface->isOpaque();
+		m_pSurface = blueprint.surface;
+		m_scrollDirection = blueprint.scrollDirection;
+		m_scrollDuration = blueprint.scrollDuration;
+		m_scrollState = blueprint.scrollState;
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		m_gradient	= blueprint.gradient;
+		m_blendMode = blueprint.blendMode;
+		m_layer		= blueprint.layer;
+		m_markAlpha	= blueprint.markAlpha;
+		m_overflow	= blueprint.overflow;
+
+		m_transitionTimes[int(m_scrollState)] = m_scrollDuration;
+
+		m_stateColors[0] = blueprint.color;
+
+
+
+		Axis scrollAxis = blueprint.scrollDirection == Direction::Up || blueprint.scrollDirection == Direction::Down ? Axis::Y : Axis::X;
+
+
+		Rect block = blueprint.firstBlock;
+
+		if (block.isEmpty())
 		{
-			m_bStateOpaque[i] = m_bOpaque;
-			m_stateColors[i] = Color::White;
+
+			int nStateBlocks = 1;
+			for (int i = 0; i < StateEnum_Nb; i++)
+			{
+				if (blueprint.states[i].state != StateEnum::Normal && blueprint.states[i].data.blockless == false)
+					nStateBlocks++;
+			}
+
+
+			if (scrollAxis == Axis::X)
+			{
+				block.w = m_pSurface->pointWidth() - blueprint.scrollDistance;
+				block.h = (m_pSurface->pointHeight() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
+			}
+			else
+			{
+				block.w = (m_pSurface->pointWidth() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.h = m_pSurface->pointHeight() - blueprint.scrollDistance;
+			}
 		}
 
-		m_transitionTimes[int(scrollState)] = scrollTime;
+		m_blockSize = block.size();
+		m_scrollDistance = blueprint.scrollDistance;
 
+		if (m_scrollDirection == Direction::Up)
+			block.y += m_scrollDistance;
+		else if (m_scrollDirection == Direction::Left)
+			block.x += m_scrollDistance;
+
+		m_stateBlocks[0] = block.pos();
+
+
+		Coord pitch = scrollAxis == Axis::X ? Coord(0, block.h + blueprint.spacing) : Coord(block.w + blueprint.spacing, 0);
+
+		int ofs = 0;
+		for ( auto& stateInfo : blueprint.states )
+		{
+			if (stateInfo.state != StateEnum::Normal)
+			{
+				int index = _stateToIndex(stateInfo.state);
+
+				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
+				{
+					m_contentShiftStateMask.setBit(index);
+					m_contentShift[index] = stateInfo.data.contentShift;
+					m_bContentShifting = true;
+				}
+
+				if (stateInfo.data.blockless == false)
+				{
+					ofs++;
+					m_stateBlockMask.setBit(index);
+					m_stateBlocks[index] = block.pos() + pitch * ofs;
+				}
+
+				if (stateInfo.data.color != HiColor::Undefined)
+				{
+					m_stateColorMask.setBit(index);
+					m_stateColors[index] = stateInfo.data.color;
+				}
+
+			}
+		}
+
+		_updateContentShift();
+		_updateUnsetStateBlocks();
+		_updateUnsetStateColors();
+		_updateOpaqueFlags();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -122,154 +146,42 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setBlock() _____________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	void ScrollSkin::setBlock(CoordI ofs)
-	{
-		ofs = ofs * m_pSurface->qpixPerPoint() / 4;
-
-		m_stateBlocks[0] = ofs;
-		m_stateBlockMask = 1;
-
-		_updateUnsetStateBlocks();
-	}
-
-	void ScrollSkin::setBlock(State state, CoordI ofs)
-	{
-		ofs = ofs * m_pSurface->qpixPerPoint() / 4;
-
-		int i = _stateToIndex(state);
-
-		m_stateBlocks[i] = ofs;
-		m_stateBlockMask.setBit(i);
-		_updateUnsetStateBlocks();
-	}
-
-	//____ setBlocks() ________________________________________________________
-
-	void ScrollSkin::setBlocks(std::initializer_list<State> stateBlocks, Axis axis, int _spacing, CoordI _blockStartOfs)
-	{
-		CoordI blockStartOfs = _blockStartOfs * m_pSurface->qpixPerPoint() / 4;
-		int spacing = _spacing * m_pSurface->qpixPerPoint() / 4;
-
-		CoordI pitch = axis == Axis::X ? CoordI(m_blockSize.w + spacing, 0) : CoordI(0, m_blockSize.h + spacing);
-
-		int ofs = 0;
-		for (StateEnum state : stateBlocks)
-		{
-			int index = _stateToIndex(state);
-			m_stateBlockMask.setBit(index);
-			m_stateBlocks[index] = blockStartOfs + pitch * ofs;
-			ofs++;
-		}
-		_updateUnsetStateBlocks();
-	}
-
-	//____ block() ____________________________________________________________
-
-	RectI ScrollSkin::block(State state) const
-	{
-		return { m_stateBlocks[_stateToIndex(state)], m_blockSize };
-	}
-
-	//____ setColor() __________________________________________________________
-
-	void ScrollSkin::setColor(HiColor tint)
-	{
-		m_stateColors[0] = tint;
-		m_stateColorMask = 1;
-
-		_updateUnsetStateColors();
-		_updateOpaqueFlags();
-	}
-
-	void ScrollSkin::setColor(State state, HiColor tint)
-	{
-		int i = _stateToIndex(state);
-
-		m_stateColors[i] = tint;
-		m_stateColorMask.setBit(i);
-		_updateUnsetStateColors();
-		_updateOpaqueFlags();
-	}
-
-	void ScrollSkin::setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints)
-	{
-		for (auto& state : stateTints)
-		{
-			int i = _stateToIndex(std::get<0>(state));
-			m_stateColorMask.setBit(i);
-			m_stateColors[i] = std::get<1>(state);
-		}
-
-		_updateUnsetStateColors();
-		_updateOpaqueFlags();
-	}
-
-	//____ color() _____________________________________________________________
-
-	HiColor ScrollSkin::color(State state) const
-	{
-		return m_stateColors[_stateToIndex(state)];
-	}
-
-	//____ setGradient() ______________________________________________________
-
-	void ScrollSkin::setGradient(const Gradient& gradient)
-	{
-		m_gradient = gradient;
-		m_bGradient = true;
-		_updateOpaqueFlags();
-	}
-
-
-	//____ setBlendMode() _____________________________________________________
-
-	void ScrollSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpaqueFlags();
-	}
-
-	//____ preferredSize() ________________________________________________________
-
-	Size ScrollSkin::preferredSize() const
+	SizeSPX ScrollSkin::_preferredSize(int scale) const
 	{
 		// Preferred size is to map each point of the surface to a point of the skinarea,
 		// independent of differences in scale.
 
-		if (m_scrollDirection == Direction::Up || m_scrollDirection == Direction::Down)
-			return { m_blockSize.w, m_windowLength };
-		else
-			return { m_windowLength, m_blockSize.h };
+		return align(ptsToSpx(m_blockSize, scale));
 	}
 
-	//____ render() _______________________________________________________________
+	//____ _render() _______________________________________________________________
 
-	void ScrollSkin::render(GfxDevice* pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void ScrollSkin::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pSurface)
 			return;
 
 		int idx = _stateToIndex(state);
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient, m_bGradient);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
 
-		CoordI blockOfs = m_stateBlocks[idx];
+		Coord blockOfs = m_stateBlocks[idx];
 		pDevice->setBlitSource(m_pSurface);
 
-		RectF source = _partInCanvas(state, pStateFractions);
+		RectSPX source = _partInCanvas(scale, state, pStateFractions);
 
-		pDevice->stretchBlit(canvas.px(), source);
+		pDevice->stretchBlit(canvas, source);
 	}
 
 	//____ _partInCanvas() _______________________________________________________
 
-	RectF ScrollSkin::_partInCanvas(State state, float* pStateFractions) const
+	RectSPX ScrollSkin::_partInCanvas(int scale, State state, float* pStateFractions) const
 	{
 		int idx = _stateToIndex(state);
-		CoordI blockOfs = m_stateBlocks[idx];
+		Coord blockOfs = m_stateBlocks[idx];
 
-		RectF source = { CoordF(blockOfs), SizeF(m_blockSize) };
+		Rect source = { blockOfs, m_blockSize };
 
 		State	scrollStateMask;
 		switch (m_scrollState)
@@ -304,25 +216,29 @@ namespace wg
 		else if (bMaximized)
 			offset = 1.f;
 
-
-		if (m_scrollDirection == Direction::Up || m_scrollDirection == Direction::Down)
+		switch (m_scrollDirection)
 		{
-			source.h = float(m_windowLength * m_pSurface->qpixPerPoint() / 4);
-			source.y += offset * (m_blockSize.h - m_windowLength);
-		}
-		else
-		{
-			source.w = float(m_windowLength * m_pSurface->qpixPerPoint() / 4);
-			source.x += offset * (m_blockSize.w - m_windowLength);
+		case Direction::Up:
+			source.y -= offset * m_scrollDistance;
+			break;
+		case Direction::Down:
+			source.y += offset * m_scrollDistance;
+			break;
+		case Direction::Left:
+			source.x -= offset * m_scrollDistance;
+			break;
+		case Direction::Right:
+			source.x += offset * m_scrollDistance;
+			break;
 		}
 
-		return source;
+		return ptsToSpx(source,scale);
 	}
 
 
-	//____ markTest() _____________________________________________________________
+	//____ _markTest() _____________________________________________________________
 
-	bool ScrollSkin::markTest(const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool ScrollSkin::_markTest(const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
@@ -331,21 +247,21 @@ namespace wg
 		return true;
 	}
 
-	//____ isOpaque() _____________________________________________________________
+	//____ _isOpaque() _____________________________________________________________
 
-	bool ScrollSkin::isOpaque(State state) const
+	bool ScrollSkin::_isOpaque(State state) const
 	{
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	bool ScrollSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	bool ScrollSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect ScrollSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX ScrollSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
@@ -368,9 +284,9 @@ namespace wg
 */
 	}
 
-	//____ transitioningStates() ______________________________________________
+	//____ _transitioningStates() ______________________________________________
 
-	Bitmask<uint8_t> ScrollSkin::transitioningStates() const
+	Bitmask<uint8_t> ScrollSkin::_transitioningStates() const
 	{
 		Bitmask<uint8_t> states;
 		states.setBit(int(m_scrollState));
@@ -378,9 +294,9 @@ namespace wg
 		return states;
 	}
 
-	//____ transitionTimes() __________________________________________________
+	//____ _transitionTimes() __________________________________________________
 
-	const int* ScrollSkin::transitionTimes() const
+	const int* ScrollSkin::_transitionTimes() const
 	{
 		return m_transitionTimes;
 	}
@@ -395,7 +311,7 @@ namespace wg
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_bGradient && !m_gradient.isOpaque())
+		else if (m_gradient.isValid && !m_gradient.isOpaque())
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Blend)
 		{

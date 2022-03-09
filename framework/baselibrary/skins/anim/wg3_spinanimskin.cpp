@@ -39,34 +39,39 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	SpinAnimSkin_p SpinAnimSkin::create(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter,	CoordF dstCenter, 
-											float fromDegrees, float toDegrees, float zoom, const BorderI& gfxPadding, 
-											const BorderI& contentPadding)
+	SpinAnimSkin_p SpinAnimSkin::create( const Blueprint& blueprint )	
 	{
-		return SpinAnimSkin_p(new SpinAnimSkin(pSurface, preferredSize, cycleDuration, srcCenter, dstCenter, fromDegrees, toDegrees, zoom, gfxPadding, contentPadding));
+		return SpinAnimSkin_p(new SpinAnimSkin(blueprint));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	SpinAnimSkin::SpinAnimSkin(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter, CoordF dstCenter, float fromDegrees, 
-									float toDegrees, float zoom, const BorderI& gfxPadding, const BorderI& contentPadding) : 
-		m_pSurface(pSurface),
-		m_preferredSize(preferredSize),
-		m_srcCenter(srcCenter),
-		m_dstCenter(dstCenter),
-		m_fromDegrees(fromDegrees),
-		m_toDegrees(toDegrees),
-		m_zoom(zoom),
-		m_gfxPadding(gfxPadding),
-		m_cycleDuration(cycleDuration)
+	SpinAnimSkin::SpinAnimSkin(	const Blueprint& blueprint) : 
+		m_pSurface(blueprint.surface),
+		m_preferredSize(blueprint.preferredSize),
+		m_pivot(blueprint.pivot),
+		m_placement(blueprint.placement),
+		m_fromDegrees(blueprint.angleBegin),
+		m_toDegrees(blueprint.angleEnd),
+		m_zoom(blueprint.zoom),
+		m_gfxPadding(blueprint.destPadding),
+		m_cycleDuration(blueprint.cycleDuration),
+		m_color(blueprint.color),
+		m_gradient(blueprint.gradient),
+		m_blendMode(blueprint.blendMode)
 	{
 		//TODO: Also take frame opacity into account.
 
-		m_bOpaque = pSurface->isOpaque();
-		m_contentPadding = contentPadding;
+		m_layer = blueprint.layer;
+		m_bOpaque = m_pSurface->isOpaque();
+		m_contentPadding = blueprint.padding;
+		m_markAlpha = blueprint.markAlpha;
+		m_overflow = blueprint.overflow;
 
 		for (int i = 0; i < StateBits_Nb; i++)
-			m_animationCycles[i] = cycleDuration;
+			m_animationCycles[i] = blueprint.cycleDuration;
+
+		_updateOpacityFlag();
 	}
 
 	//____ destructor _________________________________________________________
@@ -82,95 +87,63 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setCycleDuration() _________________________________________________
+	//____ _render() ______________________________________________________________
 
-	void SpinAnimSkin::setCycleDuration(int millisec)
+	void SpinAnimSkin::_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		m_cycleDuration = millisec;
-
-		for (int i = 0; i < StateBits_Nb; i++)
-			m_animationCycles[i] = millisec;
-	}
-
-	//____ render() ______________________________________________________________
-
-	void SpinAnimSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
-	{
-		float	zoom = m_zoom * Base::activeContext()->scale();
+		float	zoom = m_zoom * scale / 64.f;
 
 		// Scale zoom to fit content of preferred size into canvas size.
 
-		Rect canvas = _canvas;
-		if (!m_preferredSize.isEmpty() && canvas.size() != m_preferredSize)
+		RectSPX canvas = _canvas;
+		if (!m_preferredSize.isEmpty())
 		{
-			float xScale = float(_canvas.w) / float(m_preferredSize.w);
-			float yScale = float(_canvas.h) / float(m_preferredSize.h);
-			float scale = min(xScale, yScale);
+			SizeSPX prefSize = align(ptsToSpx(m_preferredSize, scale));
+			if (canvas.size() != prefSize)
+			{
+				float xScale = float(_canvas.w) / float(prefSize.w);
+				float yScale = float(_canvas.h) / float(prefSize.h);
+				float scaleSrc = std::min(xScale, yScale);
 
-			MU w = m_preferredSize.w * scale;
-			MU h = m_preferredSize.h * scale;
+				spx w = prefSize.w * scaleSrc;
+				spx h = prefSize.h * scaleSrc;
 
-			canvas.x += (w - canvas.w) / 2;
-			canvas.y += (h - canvas.h) / 2;
-			canvas.w = w;
-			canvas.h = h;
+				canvas.x += (w - canvas.w) / 2;
+				canvas.y += (h - canvas.h) / 2;
+				canvas.w = w;
+				canvas.h = h;
 
-			zoom *= scale;
+				zoom *= scaleSrc;
+			}
 		}
 
 		//
 
-		canvas -= m_gfxPadding;
+		canvas -= align(ptsToSpx(m_gfxPadding, scale));
 
-		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees)*animPos/(float)m_cycleDuration;
+		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees) * animPos / (float)m_cycleDuration;
 
 		if (degrees < 0.f)
-			degrees = 360.f + (float) fmod(degrees, 360.f);
+			degrees = 360.f + (float)fmod(degrees, 360.f);
 		else if (degrees >= 360.f)
-			degrees = (float) fmod(degrees, 360.f);
+			degrees = (float)fmod(degrees, 360.f);
 
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->rotScaleBlit(_canvas.px(), degrees, zoom, m_srcCenter, m_dstCenter);
+		pDevice->rotScaleBlit(_canvas, degrees, zoom, m_pivot, m_placement);
 	}
 
-	//____ preferredSize() ______________________________________________________________
+	//____ _preferredSize() ______________________________________________________________
 
-	Size SpinAnimSkin::preferredSize() const
+	SizeSPX SpinAnimSkin::_preferredSize(int scale) const
 	{
-		return m_preferredSize;
+		return align(ptsToSpx(m_preferredSize, scale));
 	}
 
-	//____ setColor() _____________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	void SpinAnimSkin::setColor(HiColor color)
-	{
-		m_color = color;
-		_updateOpacityFlag();
-	}
-
-	//____ setGradient() ______________________________________________________
-
-	void SpinAnimSkin::setGradient(const Gradient& gradient)
-	{
-		m_gradient = gradient;
-		m_bGradient = true;
-		_updateOpacityFlag();
-	}
-
-
-	//____ setBlendMode() _____________________________________________________
-
-	void SpinAnimSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpacityFlag();
-	}
-
-	//____ markTest() _________________________________________________________
-
-	bool SpinAnimSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool SpinAnimSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -184,21 +157,21 @@ namespace wg
 	}
 
 
-	//____ dirtyRect() ________________________________________________________
+	//____ _dirtyRect() ________________________________________________________
 
-	Rect SpinAnimSkin::dirtyRect(const Rect& _canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX SpinAnimSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (newAnimPos == oldAnimPos)
-			return Rect();
+			return RectSPX();
 
 		return _canvas;
 	}
 
-	//____ animationLength() __________________________________________________
+	//____ _animationLength() __________________________________________________
 
-	int SpinAnimSkin::animationLength(State state) const
+	int SpinAnimSkin::_animationLength(State state) const
 	{
 		return m_cycleDuration;
 	}
@@ -211,7 +184,7 @@ namespace wg
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{
-			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+			if ((m_gradient.isValid && !m_gradient.isOpaque()) || m_color.a != 4096)
 				m_bOpaque = false;
 			else
 				m_bOpaque = m_pSurface->isOpaque();
@@ -219,6 +192,5 @@ namespace wg
 		else
 			m_bOpaque = false;
 	}
-
 
 } // namespace wg

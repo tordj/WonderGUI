@@ -27,9 +27,7 @@
 #include <wg3_component.h>
 #include <wg3_pointers.h>
 #include <wg3_gfxstream.h>
-#include <wg3_types.h>
-#include <wg3_geo.h>
-#include <wg3_color.h>
+
 
 
 namespace wg

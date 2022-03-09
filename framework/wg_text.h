@@ -404,7 +404,7 @@ protected:
 
 	int				_cursorMaxWidth() const;
 
-    wg::TextStyle_p     _cloneBaseStyle() const;
+//    wg::TextStyle_p     _cloneBaseStyle() const;
 
 	wg::CharBuffer	m_buffer;
 	WgCursor*		m_pCursorStyle;

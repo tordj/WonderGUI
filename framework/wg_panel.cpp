@@ -174,16 +174,16 @@ WgSize WgPanelHook::_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPol
 
 	switch( widthPolicy )
 	{
-		case WgSizePolicy::Default:
+		case wg::SizeConstraint::None:
 		{
 			sz.h = WgUtil::SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
 			sz.w = _paddedMatchingPixelWidth(sz.h, scale);
 			break;
-		case WgSizePolicy::Bound:
+		case wg::SizeConstraint::Equal:
 			sz.w = specifiedSize.w;
 			sz.h = WgUtil::SizeFromPolicy( _paddedMatchingPixelHeight(sz.w, scale), specifiedSize.h, heightPolicy );
 			break;
-		case WgSizePolicy::Confined:
+		case wg::SizeConstraint::LessOrEqual:
 			if( defaultSize.w > specifiedSize.w )
 			{
 				sz.w = specifiedSize.w;
@@ -197,7 +197,7 @@ WgSize WgPanelHook::_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPol
 					sz.w = specifiedSize.w;
 			}
 			break;
-		case WgSizePolicy::Expanded:
+		case wg::SizeConstraint::GreaterOrEqual:
 			if( defaultSize.w < specifiedSize.w )
 			{
 				sz.w = specifiedSize.w;

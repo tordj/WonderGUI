@@ -44,29 +44,85 @@ namespace wg
 
 	//____ Create ______________________________________________________________
 
+	SoftSurface_p SoftSurface::create(const Blueprint& blueprint)
+	{
+		return SoftSurface_p(new SoftSurface(blueprint));
+	}
+
+	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, Blob* pBlob, int pitch)
+	{
+		return SoftSurface_p(new SoftSurface(blueprint, pBlob, pitch));
+	}
+
+	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription)
+	{
+		return SoftSurface_p(new SoftSurface(blueprint, pPixels, pitch, pPixelDescription));
+	}
+
+	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, Surface* pOther)
+	{
+		return SoftSurface_p(new SoftSurface(blueprint, pOther));
+	}
+
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, int flags, const Color8 * pClut )
 	{
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) )
+		if (format == PixelFormat::Undefined || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
 			return SoftSurface_p();
 
-		return SoftSurface_p(new SoftSurface(size,format,flags,pClut));
+		Blueprint bp;
+
+		bp.size = size;
+		bp.format = format;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+		bp.clut = pClut;
+
+		return SoftSurface_p(new SoftSurface(bp));
 	}
 
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut)
 	{
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0 )
+		if (format == PixelFormat::Undefined || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0 )
 			return SoftSurface_p();
 
-		return SoftSurface_p(new SoftSurface(size,format,pBlob,pitch,flags,pClut));
+		Blueprint bp;
+
+		bp.size = size;
+		bp.format = format;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+		bp.clut = pClut;
+
+		return SoftSurface_p(new SoftSurface(bp, pBlob, pitch));
 	}
 
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut )
 	{
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
+		if (format == PixelFormat::Undefined || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
 			 ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
 			return SoftSurface_p();
 
-		return  SoftSurface_p(new SoftSurface( size, format, pPixels, pitch, pPixelDescription, flags, pClut ));
+		Blueprint bp;
+
+		bp.size = size;
+		bp.format = format;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+		bp.clut = pClut;
+
+		return  SoftSurface_p(new SoftSurface( bp, pPixels, pitch, pPixelDescription ));
 	};
 
 	SoftSurface_p SoftSurface::create( Surface * pOther, int flags )
@@ -74,76 +130,78 @@ namespace wg
 		if( !pOther )
 			return SoftSurface_p();
 
-		return SoftSurface_p(new SoftSurface( pOther, flags ));
+		Blueprint bp;
+
+		bp.buffered = (flags & SurfaceFlag::Buffered);
+		bp.canvas = (flags & SurfaceFlag::Canvas);
+		bp.dynamic = (flags & SurfaceFlag::Dynamic);
+		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
+		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+
+		return SoftSurface_p(new SoftSurface( bp, pOther ));
 	}
 
 
 
 	//____ constructor ________________________________________________________________
 
-	SoftSurface::SoftSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut ) : Surface(flags)
+	SoftSurface::SoftSurface( const Blueprint& bp ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest )
 	{
-		assert( format != PixelFormat::Unknown && format != PixelFormat::Custom );
-		Util::pixelFormatToDescription(format, m_pixelDescription);
-
-		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
-		m_size = size;
-		m_pBlob = Blob::create( m_pitch*size.h + (pClut ? 1024 : 0) );
+		m_pitch = ((bp.size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
+		m_pBlob = Blob::create( m_pitch*bp.size.h + (bp.clut ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
-		if (pClut)
+		if (bp.clut)
 		{
-			m_pClut = (Color8*)(m_pData + m_pitch * size.h);
-			memcpy(m_pClut, pClut, 1024);
+			m_pClut = (Color8*)(m_pData + m_pitch * bp.size.h);
+			memcpy(m_pClut, bp.clut, 1024);
 			_makeClut4096();
 		}
 		else
 			m_pClut = nullptr;
+
+		_initTiling();
 	}
 
-	SoftSurface::SoftSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut ) : Surface(flags)
+	SoftSurface::SoftSurface(const Blueprint& bp, Blob * pBlob, int pitch ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
 	{
-		assert(format != PixelFormat::Unknown && format != PixelFormat::Custom && pBlob );
-		Util::pixelFormatToDescription(format, m_pixelDescription);
-
-		m_pitch = pitch;
-		m_size = size;
+		m_pitch = pitch > 0 ? pitch : bp.size.w * m_pixelDescription.bits/8;
 		m_pBlob = pBlob;
 		m_pData = (uint8_t*) m_pBlob->data();
-		m_pClut = const_cast<Color8*>(pClut);
+		m_pClut = const_cast<Color8*>(bp.clut);
 		if( m_pClut )
 			_makeClut4096();
+
+		_initTiling();
 	}
 
-	SoftSurface::SoftSurface(SizeI size, PixelFormat format, uint8_t * pPixels, int pitch,
-							 const PixelDescription * pPixelDescription, int flags, const Color8 * pClut)
-	: Surface(flags)
+	SoftSurface::SoftSurface(const Blueprint& bp, uint8_t * pPixels, int pitch,
+							 const PixelDescription * pPixelDescription) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
 	{
-		Util::pixelFormatToDescription(format, m_pixelDescription);
+		//TODO: Convert pixeldescription to format and use that if bp.format == Undefined && pixeldesc is valid.
 
-		m_pitch = ((size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
-		m_size = size;
-		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 1024 : 0) );
+		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
+		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.clut ? 1024 : 0) );
 		m_pData = (uint8_t*)m_pBlob->data();
 
-		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
+		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, bp.size, bp.size);
 
-		if (pClut)
+		if (bp.clut)
 		{
-			m_pClut = (Color8*)(m_pData + m_pitch * size.h);
-			memcpy(m_pClut, pClut, 1024);
+			m_pClut = (Color8*)(m_pData + m_pitch * bp.size.h);
+			memcpy(m_pClut, bp.clut, 1024);
 			_makeClut4096();
 		}
 		else
 			m_pClut = nullptr;
+
+		_initTiling();
 	}
 
-
-	SoftSurface::SoftSurface( Surface * pOther, int flags ) : Surface(flags)
+	 
+	SoftSurface::SoftSurface( const Blueprint& bp, Surface * pOther ) : Surface(bp, pOther->pixelFormat(), pOther->sampleMethod())
 	{
 		assert( pOther );
-
-		PixelFormat format = pOther->pixelFormat();
 
 		auto pixelbuffer = pOther->allocPixelBuffer();
 		bool bPushed = pOther->pushPixels(pixelbuffer);
@@ -155,10 +213,8 @@ namespace wg
 		int pitch = pixelbuffer.pitch;
 		SizeI size = pixelbuffer.rect.size();
 
-		Util::pixelFormatToDescription(format, m_pixelDescription);
-
-		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
+		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
@@ -174,6 +230,8 @@ namespace wg
 			m_pClut = nullptr;
 
 		pOther->freePixelBuffer(pixelbuffer);
+
+		_initTiling();
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -192,57 +250,23 @@ namespace wg
 
 	//____ alpha() _______________________________________________________________
 
-	uint8_t SoftSurface::alpha( CoordI coord )
+	int SoftSurface::alpha( CoordSPX coord )
 	{
-		//TODO: Take endianess into account.
+		PixelBuffer	buffer;
+		buffer.format = m_pixelDescription.format;
+		buffer.pClut = m_pClut;
+		buffer.pitch = m_pitch;
+		buffer.pPixels = m_pData;
+		buffer.rect = { 0,0,m_size };
 
-		switch (m_pixelDescription.format)
-		{
-			case PixelFormat::CLUT_8_sRGB:
-			case PixelFormat::CLUT_8_linear:
-			{
-				uint8_t index = m_pData[m_pitch * coord.y + coord.x];
-				return m_pClut[index].a;
-			}
-			case PixelFormat::A_8:
-			{
-				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x;
-				return pPixel[0];
-			}
-			case PixelFormat::BGRA_4_linear:
-			{
-				uint16_t pixel = * (uint16_t *)(m_pData + m_pitch * coord.y + coord.x);
-				const uint8_t * pConvTab = s_pixelConvTabs[4];
-
-				return ((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
-			}
-			case PixelFormat::BGRA_8_sRGB:
-			case PixelFormat::BGRA_8_linear:
-			{
-				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x * 4;
-				return pPixel[3];
-			}
-			case PixelFormat::Custom:
-			{
-				//TODO: Implement!
-			}
-			default:
-				return 0xFF;
-		}
+		return _alpha(coord, buffer);
 	}
 
-	//____ isOpaque() ______________________________________________________________
+	//____ _initTiling() ________________________________________________________
 
-	bool SoftSurface::isOpaque() const
+	void SoftSurface::_initTiling()
 	{
-		return m_pixelDescription.A_bits==0?true:false;
-	}
-
-	//____ setTiling() ________________________________________________________
-
-	bool SoftSurface::setTiling(bool bTiling)
-	{
-		if (bTiling)
+		if (m_bTiling)
 		{
 			int xBits = Util::mostSignificantBit(m_size.w);
 			int yBits = Util::mostSignificantBit(m_size.h);
@@ -250,7 +274,6 @@ namespace wg
 			if (m_size.w != 1 << xBits || m_size.h != 1 << yBits)
 			{
 				Base::handleError(ErrorSeverity::Warning, ErrorCode::FailedPrerequisite, "Surface of non-two-factor size set to tile. Tiling will happen at largest two-factor boundary.", this, SoftSurface::TYPEINFO, __func__, __FILE__, __LINE__);
-				return false;
 			}
 
 			m_srcPosMaskX = (1 << xBits) -1;
@@ -261,9 +284,6 @@ namespace wg
 			m_srcPosMaskX = 0;
 			m_srcPosMaskY = 0;
 		}
-
-		Surface::setTiling(bTiling);
-		return true;
 	}
 
 	//____ allocPixelBuffer() _________________________________________________
@@ -291,6 +311,8 @@ namespace wg
 	void SoftSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
 		// Nothing to do here.
+
+		Surface::pullPixels(buffer, bufferRect);
 	}
 
 	//____ freePixelBuffer() __________________________________________________
@@ -344,18 +366,17 @@ namespace wg
 
 	void SoftSurface::_makeClut4096()
 	{
-		m_pClut4096 = new int16_t[256 * 4];
+		m_pClut4096 = new HiColor[256];
 
-		int16_t * p = m_pClut4096;
+		HiColor * p = m_pClut4096;
 		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		for (int i = 0; i < 256; i++)
 		{
-			*p++ = pUnpackTab[m_pClut[i].r];
-			*p++ = pUnpackTab[m_pClut[i].g];
-			*p++ = pUnpackTab[m_pClut[i].b];
-			*p++ = HiColor::unpackLinearTab[m_pClut[i].a];
-
+			p[i].r = pUnpackTab[m_pClut[i].r];
+			p[i].g = pUnpackTab[m_pClut[i].g];
+			p[i].b = pUnpackTab[m_pClut[i].b];
+			p[i].a = HiColor::unpackLinearTab[m_pClut[i].a];
 		}
 	}
 

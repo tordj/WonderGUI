@@ -38,34 +38,43 @@ namespace wg
 	class StaticColorSkin : public Skin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = HiColor::White;
+			int			layer = -1;
+			int			markAlpha = 1;
+			Border		overflow;
+			Border		padding;
+		};
+
 		//.____ Creation __________________________________________
 
-		static StaticColorSkin_p create( HiColor col );
+		static StaticColorSkin_p create( HiColor color );
+		static StaticColorSkin_p create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Appearance _________________________________________________
+		//.____ Internal ____________________________________________________
 
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		//.____ Misc ____________________________________________________
-
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 								float value = 1.f, float value2 = -1.f) const override;
 
-		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+		void		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticColorSkin( HiColor col );
+		StaticColorSkin( const Blueprint& blueprint );
 		~StaticColorSkin() {};
 
 		HiColor		m_color;
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode;
 
 	};
 

@@ -39,7 +39,7 @@ WgFlexAnchor		WgFlexPanel::g_baseAnchors[9] = { WgFlexAnchor(0.f, 0.f, WgCoord(0
 //____ WgFlexHook::Constructor ________________________________________________
 
 WgFlexHook::WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo, WgBorders padding ) : m_pParent(pParent),
-	m_bFloating(false), m_widthPolicy(WgSizePolicy::Bound), m_heightPolicy(WgSizePolicy::Bound),
+	m_bFloating(false), m_widthPolicy(WgSizePolicy::Equal), m_heightPolicy(WgSizePolicy::Equal),
 	m_anchor(int(WgOrigo::NorthWest)), m_hotspot(WgOrigo::NorthWest),
 	m_placementGeo(placementGeo), m_anchorTopLeft(int(WgOrigo::NorthWest)),
 	m_anchorBottomRight(int(WgOrigo::SouthEast))
@@ -109,8 +109,8 @@ bool WgFlexHook::SetFloating( const WgCoord& pos, int anchor, WgOrigo hotspot )
 	if( anchor >= m_pParent->NbAnchors() )
 		return false;
 
-	m_widthPolicy	= WgSizePolicy::Default;
-	m_heightPolicy	= WgSizePolicy::Default;
+	m_widthPolicy	= WgSizePolicy::None;
+	m_heightPolicy	= WgSizePolicy::None;
 	m_bFloating		= true;
 	m_anchor		= anchor;
 	m_hotspot		= hotspot;
@@ -130,8 +130,8 @@ bool WgFlexHook::SetFloating( const WgRect& geometry, int anchor, WgOrigo hotspo
 	if( anchor >= m_pParent->NbAnchors() )
 		return false;
 
-	m_widthPolicy	= WgSizePolicy::Bound;
-	m_heightPolicy	= WgSizePolicy::Bound;
+	m_widthPolicy	= WgSizePolicy::Equal;
+	m_heightPolicy	= WgSizePolicy::Equal;
 	m_bFloating		= true;
 	m_anchor		= anchor;
 	m_hotspot		= hotspot;
@@ -782,7 +782,7 @@ void WgFlexHook::_requestRender( const WgRect& rect )
 
 void WgFlexHook::_requestResize()
 {
-	if( m_widthPolicy != WgSizePolicy::Bound || m_heightPolicy != WgSizePolicy::Bound )
+	if( m_widthPolicy != WgSizePolicy::Equal || m_heightPolicy != WgSizePolicy::Equal )
 		_refreshRealGeo();
 }
 

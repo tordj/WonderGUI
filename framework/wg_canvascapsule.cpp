@@ -396,7 +396,7 @@ void WgCanvasCapsule::_onCloneContent( const WgWidget * _pOrg )
 
 void WgCanvasCapsule::_onNewSize(const WgSize& size)
 {
-	if (m_pCanvas && size != m_pCanvas->size() )
+	if (m_pCanvas && size != m_pCanvas->pixelSize() )
 	{
 		m_pCanvas = nullptr;
 		_requestRender();

@@ -43,68 +43,73 @@ namespace wg
 
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct StateData
+		{
+			HiColor			color = HiColor::Undefined;
+			Coord			contentShift;
+			Surface_p		surface;
+		};
+
+		struct StateBP
+		{
+			State			state = StateEnum::Normal;
+			StateData		data;
+		};
+
+		struct Blueprint
+		{
+			BlendMode		blendMode = BlendMode::Undefined;
+			HiColor			color = HiColor::Undefined;
+			Gradient		gradient;
+			int				layer = -1;
+			int				markAlpha = 1;
+			Border			overflow;
+			Border			padding;
+
+			StateBP			states[StateEnum_Nb];
+			Surface_p		surface;
+		};
+
 		//.____ Creation __________________________________________
 
-		static TileSkin_p	create();
-		static TileSkin_p	create(Surface * pSurface );
-		static TileSkin_p	create(std::initializer_list<std::tuple<State,Surface_p>> stateSurfaces);
+		static TileSkin_p	create(Surface * pSurface, HiColor color = HiColor::Undefined, int layer = -1 );
+		static TileSkin_p	create(const Blueprint& blueprint);
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Internal _________________________________________________
 
-		//.____ Appearance _________________________________________________
+		SizeSPX	_preferredSize(int scale) const override;
 
-		void	setSurface(Surface * pSurface);
-		void	setSurface(State state, Surface * pSurface);
-		void	setSurfaces(std::initializer_list<std::tuple<State, Surface_p>> stateSurfaces);
+		bool	_isOpaque( State state ) const override;
+		bool	_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
 
-		Surface_p surface(State state = StateEnum::Normal) const;
-
-		void	setColor(HiColor tint);
-		void	setColor(State state, HiColor tint);
-		void	setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints);
-		HiColor	color(State state) const;
-
-		void	setGradient(const Gradient& gradient);
-		Gradient gradient() const { return m_gradient; }
-
-		void			setBlendMode(BlendMode mode);
-		BlendMode		blendMode() const { return m_blendMode; }
-
-		//.____ Geometry _________________________________________________
-
-		Size	preferredSize() const override;
-
-		//.____ Misc ____________________________________________________
-
-		bool	isOpaque( State state ) const override;
-		bool	isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
-
-		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f) const override;
 
-		void	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-						float value = 1.f, float value2 = -1.f, int animPos = 0,
-						float* pStateFractions = nullptr) const override;
+		void	_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
 
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX	_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 
-		TileSkin();
-		TileSkin(Surface * pSurface);
+		TileSkin(const Blueprint& blueprint);
 		~TileSkin() {};
 
 		void		_updateOpaqueFlags();
 		void		_updateUnsetStateSurfaces();
 		void		_updateUnsetStateColors();
 
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode;
 
 		Bitmask<uint32_t>	m_stateSurfaceMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;
@@ -113,7 +118,6 @@ namespace wg
 		HiColor		m_stateColors[StateEnum_Nb];
 		bool		m_bStateOpaque[StateEnum_Nb];
 		Gradient	m_gradient;
-		bool		m_bGradient = false;
 	};
 
 

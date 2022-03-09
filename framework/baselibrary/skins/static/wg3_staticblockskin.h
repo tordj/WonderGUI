@@ -40,57 +40,80 @@ namespace wg
 	class StaticBlockSkin : public Skin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct RigidPartXBlueprint
+		{
+			pts			ofs = 0;
+			pts			length = 0;
+			YSections	sections = YSections::None;
+		};
+
+		struct RigidPartYBlueprint
+		{
+			pts			ofs = 0;
+			pts			length = 0;
+			XSections	sections = XSections::None;
+		};
+
+		struct Blueprint
+		{
+			BlendMode	blendMode = BlendMode::Undefined;
+			Rect		block;
+			HiColor		color = HiColor::Undefined;
+			Border		frame;
+			Gradient	gradient;
+			int			layer = -1;
+			int			markAlpha = 1;
+			Border		overflow;
+			Border		padding;
+
+			RigidPartXBlueprint	rigidPartX;
+			RigidPartYBlueprint rigidPartY;
+
+			Surface_p	surface;
+		};
+
 		//.____ Creation __________________________________________
 
-		static StaticBlockSkin_p create(Surface* pSurface, const BorderI& frame = { 0 });
-		static StaticBlockSkin_p create(Surface* pSurface, const RectI& block, const BorderI& frame = { 0 });
+		static StaticBlockSkin_p create(Surface* pSurface, const Border& frame = { 0 });
+		static StaticBlockSkin_p create(Surface* pSurface, const Rect& block, const Border& frame = { 0 });
+		static StaticBlockSkin_p create( const Blueprint& blueprint );
+
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
+		//.____ Internal ____________________________________________________
 
-		Size	preferredSize() const override;
+		SizeSPX		_preferredSize(int scale) const override;
 
-		//.____ Appearance _________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void		setColor(HiColor color);
-		void		setGradient(const Gradient& gradient);
-
-		HiColor		color() const { return m_color; }
-		Gradient	gradient() const { return m_gradient; }
-
-		bool		setRigidPartX(int ofs, int length, YSections sections);
-		bool		setRigidPartY(int ofs, int length, XSections sections);
-
-
-		//.____ Misc ____________________________________________________
-
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 								float value = 1.f, float value2 = -1.f) const override;
 
-		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+		void		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f, int animPos = 0,
 							float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticBlockSkin(Surface* pSurface, const RectI& block, const BorderI& frame = { 0 });
+		StaticBlockSkin( const Blueprint& blueprint );
 		~StaticBlockSkin() {};
 
 		void _updateOpacityFlag();
+		bool _setRigidPartY(pts _ofs, pts _length, XSections sections);
+		bool _setRigidPartX(pts _ofs, pts _length, YSections sections);
+
 
 		Surface_p		m_pSurface;
 		NinePatch		m_ninePatch;
+		Border			m_gfxFrame;
 
-		BlendMode		m_blendMode = BlendMode::Undefined;
-		HiColor			m_color = Color::White;
+		BlendMode		m_blendMode;
+		HiColor			m_color;
 		Gradient		m_gradient;
-		bool			m_bGradient = false;
 
 	};
 

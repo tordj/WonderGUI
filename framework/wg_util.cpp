@@ -182,14 +182,14 @@ int WgUtil::SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy pol
 {
 	switch( policy )
 	{
-		case WgSizePolicy::Default:
+		case WgSizePolicy::None:
 			return defaultSize;
-		case WgSizePolicy::Bound:
+		case WgSizePolicy::Equal:
 			return specifiedSize;
-		case WgSizePolicy::Confined:
+		case WgSizePolicy::LessOrEqual:
 			if( defaultSize > specifiedSize )
 				return specifiedSize;
-		case WgSizePolicy::Expanded:
+		case WgSizePolicy::GreaterOrEqual:
 			if( defaultSize < specifiedSize )
 				return specifiedSize;
 	}
@@ -345,7 +345,7 @@ uint32_t WgUtil::lineWidth( void * pNode, const wg::TextAttr& attr, wg::State st
 			auto pStyle = pString->stylePtr();
 
 			if( pStyle )
-				pStyle->addToAttr( state, &attr2 );
+				pStyle->addToAttr( state, &attr2, scale );
 			pen.SetAttributes( attr2 );
 		}
 		pen.SetChar( pString->code() );

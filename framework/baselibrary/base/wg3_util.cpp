@@ -172,10 +172,10 @@ int Util::gcd(int a, int b)
 
 	//____ markTestStretchRect() __________________________________________________
 
-	bool Util::markTestStretchRect( Coord ofs, Surface * pSurface, const RectI& source, const Rect& area, int opacityTreshold )
+	bool Util::markTestStretchRect( CoordSPX ofs, Surface * pSurface, const RectSPX& source, const RectSPX& area, int opacityTreshold )
 	{
 		// Sanity check & shortcuts.
-		if( !pSurface || !area.contains(ofs) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )
+		if( !pSurface || !area.contains(ofs) || source.isEmpty() || area.isEmpty() || opacityTreshold > 4096 )
 			return false;
 
 		if( pSurface->isOpaque() || opacityTreshold <= 0 )
@@ -188,24 +188,24 @@ int Util::gcd(int a, int b)
 
 		// Convert offset in area to offset in bitmap.
 
-		CoordI sourceOfs;
+		CoordSPX sourceOfs;
 
-		sourceOfs.x = (int) (ofs.x.qpix/((double)area.w.qpix) * source.w);
-		sourceOfs.y = (int) (ofs.y.qpix/((double)area.h.qpix) * source.h);
+		sourceOfs.x = (int) (ofs.x/((double)area.w) * source.w);
+		sourceOfs.y = (int) (ofs.y/((double)area.h) * source.h);
 
 		// Do alpha test
 
-		int alpha = pSurface->alpha(source.x+sourceOfs.x, source.y+sourceOfs.y);
+		int alpha = pSurface->alpha( sourceOfs );
 
 		return (alpha >= opacityTreshold);
 	}
 
 	//____ markTestTileRect() __________________________________________________
 
-	bool Util::markTestTileRect(Coord ofs, Surface* pSurface, const Rect& area, int opacityTreshold)
+	bool Util::markTestTileRect(CoordSPX ofs, Surface* pSurface, const RectSPX& area, int scale, int opacityTreshold)
 	{
 		// Sanity check & shortcuts.
-		if (!pSurface || !area.contains(ofs) || area.isEmpty() || opacityTreshold > 255)
+		if (!pSurface || !area.contains(ofs) || area.isEmpty() || opacityTreshold > 4096)
 			return false;
 
 		if (pSurface->isOpaque() || opacityTreshold <= 0)
@@ -218,9 +218,11 @@ int Util::gcd(int a, int b)
 
 		// Convert offset in area to offset in bitmap.
 
-		CoordI sourceOfs = ofs.px() * pSurface->qpixPerPoint() / MU::qpixPerPoint();
+		SizeSPX tileOnScreen = pSurface->pixelSize() * 64 * scale / pSurface->scale();
 
-		SizeI size = pSurface->size();
+		CoordSPX sourceOfs = ofs * pSurface->scale() / scale;
+
+		SizeI size = pSurface->pixelSize()*64;
 
 		sourceOfs.x %= size.w;
 		sourceOfs.y %= size.h;
@@ -232,17 +234,20 @@ int Util::gcd(int a, int b)
 		return (alpha >= opacityTreshold);
 	}
 
-	bool Util::markTestNinePatch(Coord ofs, Surface* pSurface, const NinePatch& patch, const Rect& _dest, int opacityTreshold)
+	bool Util::markTestNinePatch(CoordSPX ofs, Surface* pSurface, const NinePatch& patch, const RectSPX& _dest, int scale, int opacityTreshold)
 	{
-		const BorderI& sourceFrame = patch.frame;
-		const RectI& _source = patch.block;
+		const BorderSPX destFrame = align(ptsToSpx(patch.frame, scale));
+		const BorderSPX sourceFrame = align(ptsToSpx(patch.frame,pSurface->scale()));
+		const RectSPX _source = align(ptsToSpx(patch.block, pSurface->scale()));
+
+
 
 		// Sanity check & shortcuts.
 
 		if (sourceFrame.isEmpty() && patch.rigidPartXSections == YSections::None && patch.rigidPartYSections == XSections::None )
 			return markTestStretchRect(ofs, pSurface, _source, _dest, opacityTreshold);
 
-		if (!pSurface || !_dest.contains(ofs) || _source.isEmpty() || _dest.isEmpty() || opacityTreshold > 255)
+		if (!pSurface || !_dest.contains(ofs) || _source.isEmpty() || _dest.isEmpty() || opacityTreshold > 4096)
 			return false;
 
 		if (pSurface->isOpaque() || opacityTreshold <= 0)
@@ -250,10 +255,8 @@ int Util::gcd(int a, int b)
 
 		//
 
-		BorderI destFrame = sourceFrame; // pointsToPixels(sourceFrame);
-
-		RectI source;
-		Rect dest;
+		RectSPX source;
+		RectSPX dest;
 
 		XSections markedSectionX;
 		YSections markedSectionY;
@@ -261,7 +264,7 @@ int Util::gcd(int a, int b)
 		if (ofs.x < _dest.x + destFrame.left)
 		{
 			// left section
-			markedSectionX = XSections::Left;
+			markedSectionX = XSections::Left; 
 
 			source.x = _source.x;
 			source.w = sourceFrame.left;
@@ -289,7 +292,6 @@ int Util::gcd(int a, int b)
 			dest.w = destFrame.right;
 		}
 
-		MU	test = _dest.y + destFrame.top;
 		if (ofs.y < _dest.y + destFrame.top)
 		{
 			// top section
@@ -328,8 +330,10 @@ int Util::gcd(int a, int b)
 
 
 		// Convert offset in area to offset in bitmap.
+/*
+		TJFIX!!!
 
-		RectI sourceOfs;
+RectI sourceOfs;
 
 		if (markedSectionX == XSections::Center && (patch.rigidPartXSections & markedSectionY) != YSections::None)
 		{
@@ -381,6 +385,8 @@ int Util::gcd(int a, int b)
 		int alpha = pSurface->alpha(source.x + sourceOfs.x, source.y + sourceOfs.y);
 
 		return (alpha >= opacityTreshold);
+*/
+		return true;
 	}
 
 
@@ -636,7 +642,7 @@ int Util::gcd(int a, int b)
 				return true;
 
 			default:
-				output.format = PixelFormat::Unknown;
+				output.format = PixelFormat::Undefined;
 				output.bits = 0;
 				output.bIndexed = false;
 
@@ -663,20 +669,89 @@ int Util::gcd(int a, int b)
 		}
 	}
 
-	//____ sizeFromPolicy() __________________________________________________________
+	//____ pixelDescriptionToFormat() _________________________________________
 
-	MU Util::sizeFromPolicy( MU defaultSize, MU specifiedSize, SizePolicy policy )
+	PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
+	{
+		switch (description.bits)
+		{
+
+		case 8:
+
+			if (description.A_mask == 0xFF)
+				return PixelFormat::A_8;
+			if (description.bIndexed && description.bLinear)
+				return PixelFormat::CLUT_8_linear;
+			if (description.bIndexed && !description.bLinear)
+				return PixelFormat::CLUT_8_sRGB;
+
+			break;
+
+		case 16:
+
+#if IS_LITTLE_ENDIAN
+			if (description.A_mask == 0x00 && description.R_mask == 0xF800 && description.G_mask == 0x07E0 && description.B_mask == 0x001F)
+				return description.bLinear ? PixelFormat::BGR_565_linear : PixelFormat::Custom;
+
+			if (description.A_mask == 0xF000 && description.R_mask == 0x0F00 && description.G_mask == 0x00F0 && description.B_mask == 0x000F)
+				return description.bLinear ? PixelFormat::BGRA_4_linear : PixelFormat::Custom;
+#else
+			if (description.A_mask == 0x00 && description.R_mask == 0xF8 && description.G_mask == 0x0E007 && description.B_mask == 0x1F00)
+				return description.bLinear ? PixelFormat::BGR_565_linear : PixelFormat::Custom;
+
+			if (description.A_mask == 0x00F0 && description.R_mask == 0x000F && description.G_mask == 0xF000 && description.B_mask == 0x0F00)
+				return description.bLinear ? PixelFormat::BGRA_4_linear : PixelFormat::Custom;
+#endif
+			break;
+
+		case 24:
+
+#if IS_LITTLE_ENDIAN
+			if (description.A_mask == 0x00000000 && description.R_mask == 0xFF0000 && description.G_mask == 0xFF00 && description.B_mask == 0xFF)
+				return description.bLinear ? PixelFormat::BGR_8_linear : PixelFormat::BGR_8_sRGB;
+#else
+			if (description.A_mask == 0x00000000 && description.R_mask == 0xFF00 && description.G_mask == 0xFF0000 && description.B_mask == 0xFF000000)
+				return description.bLinear ? PixelFormat::BGR_8_linear : PixelFormat::BGR_8_sRGB;
+#endif
+			break;
+
+
+		case 32:
+
+#if IS_LITTLE_ENDIAN
+			if (description.A_mask == 0xFF000000 && description.R_mask == 0xFF0000 && description.G_mask == 0xFF00 && description.B_mask == 0xFF)
+				return description.bLinear ? PixelFormat::BGRA_8_linear : PixelFormat::BGRA_8_sRGB;
+
+			if (description.A_mask == 0x00000000 && description.R_mask == 0xFF0000 && description.G_mask == 0xFF00 && description.B_mask == 0xFF)
+				return description.bLinear ? PixelFormat::BGRX_8_linear : PixelFormat::BGRX_8_sRGB;
+#else
+			if (description.A_mask == 0xFF && description.R_mask == 0xFF00 && description.G_mask == 0xFF0000 && description.B_mask == 0xFF000000)
+				return description.bLinear ? PixelFormat::BGRA_8_linear : PixelFormat::BGRA_8_sRGB;
+
+			if (description.A_mask == 0x00000000 && description.R_mask == 0xFF00 && description.G_mask == 0xFF0000 && description.B_mask == 0xFF000000)
+				return description.bLinear ? PixelFormat::BGRX_8_linear : PixelFormat::BGRX_8_sRGB;
+#endif
+			break;
+		}
+
+		return PixelFormat::Custom;
+	}
+
+
+	//____ sizeFromConstraint() __________________________________________________________
+
+	spx Util::sizeFromConstraint( spx defaultSize, spx specifiedSize, SizeConstraint policy )
 	{
 		switch( policy )
 		{
-			case SizePolicy::Default:
+			case SizeConstraint::None:
 				return defaultSize;
-			case SizePolicy::Bound:
+			case SizeConstraint::Equal:
 				return specifiedSize;
-			case SizePolicy::Confined:
+			case SizeConstraint::LessOrEqual:
 				if( defaultSize > specifiedSize )
 					return specifiedSize;
-			case SizePolicy::Expanded:
+			case SizeConstraint::GreaterOrEqual:
 				if( defaultSize < specifiedSize )
 					return specifiedSize;
 		}
@@ -731,84 +806,84 @@ int Util::gcd(int a, int b)
 
 	//____ placementToOfs() ________________________________________________________
 
-	Coord Util::placementToOfs( Placement placement, Size base )
+	CoordSPX Util::placementToOfs( Placement placement, SizeSPX base )
 	{
 		switch( placement )
 		{
 			default:
 			case Placement::NorthWest:
-				return Coord();
+				return CoordSPX();
 
 			case Placement::North:
-				return Coord( base.w/2,0 );
+				return CoordSPX( align(base.w/2),0 );
 
 			case Placement::NorthEast:
-				return Coord( base.w,0 );
+				return CoordSPX( base.w,0 );
 
 			case Placement::East:
-				return Coord( base.w, base.h/2 );
+				return CoordSPX( base.w, align(base.h/2) );
 
 			case Placement::SouthEast:
-				return Coord( base.w, base.h );
+				return CoordSPX( base.w, base.h );
 
 			case Placement::South:
-				return Coord( base.w/2, base.h );
+				return CoordSPX( align(base.w/2), base.h );
 
 			case Placement::SouthWest:
-				return Coord( 0, base.h );
+				return CoordSPX( 0, base.h );
 
 			case Placement::West:
-				return Coord( 0, base.h/2 );
+				return CoordSPX( 0, align(base.h/2) );
 
 			case Placement::Center:
-				return Coord( base.w/2, base.h/2 );
+				return CoordSPX( align(base.w/2), align(base.h/2) );
 		}
 	}
 
 	//____ placementToRect() ________________________________________________________
 
-	Rect Util::placementToRect( Placement placement, Size base, Size rect )
+	RectSPX Util::placementToRect( Placement placement, SizeSPX base, SizeSPX rect )
 	{
 		switch( placement )
 		{
 			default:
 			case Placement::NorthWest:
-				return Rect(0,0, rect);
+				return RectSPX(0,0, rect);
 
 			case Placement::North:
-				return Rect( base.w/2 - rect.w/2, 0, rect );
+				return RectSPX( align(base.w/2 - rect.w/2), 0, rect );
 
 			case Placement::NorthEast:
-				return Rect( base.w - rect.w, 0, rect );
+				return RectSPX( base.w - rect.w, 0, rect );
 
 			case Placement::East:
-				return Rect( base.w - rect.w, base.h/2 - rect.h/2, rect );
+				return RectSPX( base.w - rect.w, align(base.h/2 - rect.h/2), rect );
 
 			case Placement::SouthEast:
-				return Rect( base.w - rect.w, base.h - rect.h, rect );
+				return RectSPX( base.w - rect.w, base.h - rect.h, rect );
 
 			case Placement::South:
-				return Rect( base.w/2 - rect.w/2, base.h - rect.h, rect );
+				return RectSPX( align(base.w/2 - rect.w/2), base.h - rect.h, rect );
 
 			case Placement::SouthWest:
-				return Rect( 0, base.h - rect.h, rect );
+				return RectSPX( 0, base.h - rect.h, rect );
 
 			case Placement::West:
-				return Rect( 0, base.h/2 - rect.h/2, rect );
+				return RectSPX( 0, align(base.h/2 - rect.h/2), rect );
 
 			case Placement::Center:
-				return Rect( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
+				return RectSPX( align(base.w/2 - rect.w/2), align(base.h/2 - rect.h/2), rect );
 		}
 	}
 
 	//____ scaleToFit() _______________________________________________________
 
-	Size Util::scaleToFit(Size object, Size boundaries)
+	SizeSPX Util::scaleToFit(SizeSPX object, SizeSPX boundaries)
 	{
-		float wScale = object.w.qpix / (float)boundaries.w.qpix;
-		float hScale = object.h.qpix / (float)boundaries.h.qpix;
+		float wScale = object.w / (float)boundaries.w;
+		float hScale = object.h / (float)boundaries.h;
 
-		float useScale = max(wScale, hScale);
+		float useScale = std::max(wScale, hScale);
 
 		return object / useScale;
 	}
@@ -836,22 +911,22 @@ int Util::gcd(int a, int b)
 
 	//____ patchesToClipList() ____________________________________________________________________
 
-	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const Rect& clip, const Patches& patches )
+	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const RectSPX& clip, const PatchesSPX& patches )
 	{
 		int nOldRects 				= pDevice->clipListSize();
-		const RectI * pOldRects 	= pDevice->clipList();
+		const RectSPX * pOldRects 	= pDevice->clipList();
 
 		int nRects = patches.size();
-		const Rect * pRects = patches.begin();
+		const RectSPX * pRects = patches.begin();
 
-		int allocSize = nRects * sizeof(RectI);
+		int allocSize = nRects * sizeof(RectSPX);
 
-		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
+		RectSPX * pNewRects = (RectSPX*) Base::memStackAlloc(allocSize);
 		int nNewRects = 0;
 
 		for( int i = 0 ; i < nRects ; i++ )
 		{
-			pNewRects[nNewRects] = Rect(pRects[i], clip).px();
+			pNewRects[nNewRects] = RectSPX(pRects[i], clip);
 			if( !pNewRects[nNewRects].isEmpty() )
 				nNewRects++;
 		}
@@ -860,20 +935,20 @@ int Util::gcd(int a, int b)
 		return { nOldRects, pOldRects, allocSize };
 	}
 
-	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const Patches& patches )
+	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const PatchesSPX& patches )
 	{
 		int nOldRects 				= pDevice->clipListSize();
 		const RectI * pOldRects 	= pDevice->clipList();
 
 		int nRects = patches.size();
-		const Rect * pRects = patches.begin();
+		const RectSPX * pRects = patches.begin();
 
-		int allocSize = nRects * sizeof(RectI);
+		int allocSize = nRects * sizeof(RectSPX);
 
-		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
+		RectSPX * pNewRects = (RectSPX*) Base::memStackAlloc(allocSize);
 
 		for( int i = 0 ; i < nRects ; i++ )
-			pNewRects[i] = pRects[i].px();
+			pNewRects[i] = pRects[i];
 
 		pDevice->setClipList(nRects, pNewRects);
 		return { nOldRects, pOldRects, allocSize };
@@ -881,18 +956,18 @@ int Util::gcd(int a, int b)
 
 	//____ limitClipList() ____________________________________________________________________
 
-	Util::ClipPopData Util::limitClipList( GfxDevice * pDevice, const Rect& _clip )
+	Util::ClipPopData Util::limitClipList( GfxDevice * pDevice, const RectSPX& _clip )
 	{
-		RectI clip = _clip.px();
+		RectSPX clip = _clip;
 
 		if( clip.contains(pDevice->clipBounds()))
 			return { 0, nullptr, 0 };
 
 		int nRects 				= pDevice->clipListSize();
-		const RectI * pRects 	= pDevice->clipList();
-		int allocSize = nRects * sizeof(RectI);
+		const RectSPX * pRects 	= pDevice->clipList();
+		int allocSize = nRects * sizeof(RectSPX);
 
-		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
+		RectSPX * pNewRects = (RectSPX*) Base::memStackAlloc(allocSize);
 		int nNewRects = 0;
 
 		for( int i = 0 ; i < nRects ; i++ )

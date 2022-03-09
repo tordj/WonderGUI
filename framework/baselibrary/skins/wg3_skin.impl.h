@@ -47,7 +47,7 @@ namespace wg
 				pDevice->setRenderLayer(layer);
 			}
 
-			if (blendMode != BlendMode::Undefined)
+			if (blendMode != BlendMode::Undefined && blendMode != pDevice->blendMode())
 			{
 				m_prevBlendMode = pDevice->blendMode();
 				pDevice->setBlendMode(blendMode);
@@ -88,7 +88,7 @@ namespace wg
 	class RenderSettingsWithGradient
 	{
 	public:
-		RenderSettingsWithGradient(GfxDevice* pDevice, int layer, BlendMode blendMode, HiColor tintColor, const Rect& rect, const Gradient& tintGradient, bool bGradient )
+		RenderSettingsWithGradient(GfxDevice* pDevice, int layer, BlendMode blendMode, HiColor tintColor, const RectSPX& rect, const Gradient& tintGradient )
 		{
 			m_pDevice = pDevice;
 
@@ -104,17 +104,20 @@ namespace wg
 				pDevice->setBlendMode(blendMode);
 			}
 
-			if (bGradient)
+			if (tintGradient.isValid)
 			{
 				pDevice->setTintGradient(rect, tintGradient);
 				m_bGradient = true;
 			}
 			
-			if (tintColor != Color::White)
+			if (tintColor != HiColor::Undefined)
 			{
 				m_prevTintColor = pDevice->tintColor();
-				pDevice->setTintColor(tintColor);
-				m_bTintChanged = true;
+				if (tintColor != m_prevTintColor)
+				{
+					pDevice->setTintColor(tintColor);
+					m_bTintChanged = true;
+				}
 			}
 
 		}

@@ -22,6 +22,8 @@
 
 #include <wg3_gfxstreamencoder.h>
 
+#include <algorithm>
+
 namespace wg
 {
 	const TypeInfo GfxStreamEncoder::TYPEINFO = { "GfxStreamEncoder", &Object::TYPEINFO };
@@ -59,6 +61,21 @@ namespace wg
 		m_pStream = pStream;
 	}
 
+	//____ setDefaultPixelFormat() ____________________________________________
+
+	void GfxStreamEncoder::setDefaultPixelFormat(PixelFormat pixelFormat)
+	{
+		m_defaultPixelFormat = pixelFormat;
+	}
+
+	//____ setDefaultSampleMethod() ___________________________________________
+
+	void GfxStreamEncoder::setDefaultSampleMethod(SampleMethod sampleMethod)
+	{
+		m_defaultSampleMethod = sampleMethod;
+	}
+
+
 	//____ flush() ____________________________________________________________
 
 	void GfxStreamEncoder::flush()
@@ -94,7 +111,7 @@ namespace wg
 	{
 		if (m_freeIdStackSize == m_freeIdStackCapacity)
 		{
-			int capacity = max(16, m_freeIdStackCapacity * 2);
+			int capacity = std::max(16, m_freeIdStackCapacity * 2);
 			uint16_t* pBuffer = new uint16_t[capacity];
 
 			for (int i = 0; i < m_freeIdStackSize; i++)
@@ -150,6 +167,13 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const CoordS& c)
+	{
+		_pushShort(c.x);
+		_pushShort(c.y);
+		return *this;
+	}
+
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const CoordI& c)
 	{
 		_pushInt(c.x);
@@ -164,6 +188,13 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const SizeS& sz)
+	{
+		_pushShort(sz.w);
+		_pushShort(sz.h);
+		return *this;
+	}
+
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const SizeI& sz)
 	{
 		_pushInt(sz.w);
@@ -175,6 +206,15 @@ namespace wg
 	{
 		_pushFloat(sz.w);
 		_pushFloat(sz.h);
+		return *this;
+	}
+
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const RectS& rect)
+	{
+		_pushShort(rect.x);
+		_pushShort(rect.y);
+		_pushShort(rect.w);
+		_pushShort(rect.h);
 		return *this;
 	}
 
@@ -196,6 +236,15 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const BorderS& border)
+	{
+		_pushShort(border.top);
+		_pushShort(border.right);
+		_pushShort(border.bottom);
+		_pushShort(border.left);
+		return *this;
+	}
+
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const BorderI& border)
 	{
 		_pushShort(border.top);
@@ -204,6 +253,26 @@ namespace wg
 		_pushShort(border.left);
 		return *this;
 	}
+
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const Border& border)
+	{
+		_pushFloat(border.top);
+		_pushFloat(border.right);
+		_pushFloat(border.bottom);
+		_pushFloat(border.left);
+		return *this;
+	}
+
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const Gradient& gradient)
+	{
+		* this << gradient.topLeft;
+		* this << gradient.topRight;
+		* this << gradient.bottomRight;
+		* this << gradient.bottomLeft;
+		* this << gradient.isValid;
+		return *this;
+	}
+
 
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (Direction d)
 	{
@@ -236,7 +305,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxStreamEncoder& GfxStreamEncoder::operator<< (ScaleMode m)
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (SampleMethod m)
 	{
 		_pushShort((short)m);
 		return *this;

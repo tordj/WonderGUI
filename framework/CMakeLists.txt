@@ -48,16 +48,12 @@ add_library( wondergui STATIC
 	baselibrary/base/wg3_mempool.h
 	baselibrary/base/wg3_memstack.cpp
 	baselibrary/base/wg3_memstack.h
-	baselibrary/base/wg3_mu.cpp
-	baselibrary/base/wg3_mu.h
 	baselibrary/base/wg3_nullgfxdevice.cpp
 	baselibrary/base/wg3_nullgfxdevice.h
 	baselibrary/base/wg3_object.cpp
 	baselibrary/base/wg3_object.h
-	baselibrary/base/wg3_patches_t.cpp
-	baselibrary/base/wg3_patches_t.impl.h
-	baselibrary/base/wg3_patches_t.h
 	baselibrary/base/wg3_patches.cpp
+	baselibrary/base/wg3_patches.impl.h
 	baselibrary/base/wg3_patches.h
 	baselibrary/base/wg3_pointers.h
 	baselibrary/base/wg3_skinslotmanager.cpp
@@ -124,8 +120,6 @@ add_library( wondergui STATIC
 	baselibrary/skins/state/wg3_circleskin.h
 	baselibrary/skins/state/wg3_colorskin.cpp
 	baselibrary/skins/state/wg3_colorskin.h
-	baselibrary/skins/state/wg3_lambdaskin.cpp
-	baselibrary/skins/state/wg3_lambdaskin.h
 	baselibrary/skins/state/wg3_multiblockskin.cpp
 	baselibrary/skins/state/wg3_multiblockskin.h
 	baselibrary/skins/state/wg3_scrollskin.cpp

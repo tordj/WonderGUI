@@ -234,18 +234,7 @@ void WgIconHolder::_onCloneContent( const WgIconHolder * _pOrg )
 
 wg::SizeI WgIconHolder::_skinPrefSize( wg::Skin * pSkin, int scale ) const
 {
-	int pixelQuarters = (scale * 4) / 4096;
-
-	int globalPixelQuarters = wg::MU::qpixPerPoint();
-	if( pixelQuarters == globalPixelQuarters )
-		return pSkin->preferredSize().px();
-	else
-	{
-		WgBase::_setQuartersPerPoint(pixelQuarters);
-		wg::SizeI ret = pSkin->preferredSize().px();
-		WgBase::_setQuartersPerPoint(globalPixelQuarters);
-		return ret;
-	}
+	return pSkin->_preferredSize(scale >> 6) / 64;
 }
 
 

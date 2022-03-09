@@ -544,8 +544,9 @@ bool WgText::setColor( const WgColor color )
 	if( m_pBaseStyle && m_pBaseStyle->isColorStatic() && m_pBaseStyle->color(wg::StateEnum::Normal) == color )
 		return false;
 
-	m_pBaseStyle = _cloneBaseStyle();
-	m_pBaseStyle->setColor(color);
+	auto bp = m_pBaseStyle->blueprint();
+	bp.color = color;
+	m_pBaseStyle = wg::TextStyle::create(bp);
 	return true;
 }
 
@@ -554,24 +555,32 @@ bool WgText::setColor( const WgColor color, wg::State state )
 	if( m_pBaseStyle && m_pBaseStyle->color(state) == color )
 		return false;
 
-	m_pBaseStyle = _cloneBaseStyle();
-	m_pBaseStyle->setColor(color,state);
+	auto bp = m_pBaseStyle->blueprint();
+	
+	int stateOfs = 0;
+	while( bp.states[stateOfs].state != wg::StateEnum::Normal )
+		stateOfs++;
+	
+	bp.states[stateOfs].state = state;
+	bp.states[stateOfs].data.color = color;
+	m_pBaseStyle = wg::TextStyle::create(bp);
 	return true;
 }
 
 void WgText::setFont( wg::Font * pFont )
 {
-	m_pBaseStyle = _cloneBaseStyle();
-	m_pBaseStyle->setFont(pFont);
+	auto bp = m_pBaseStyle->blueprint();
+	bp.font = pFont;
+	m_pBaseStyle = wg::TextStyle::create(bp);
 	_regenSoftLines();
 	_refreshAllLines();
 }
 
 void WgText::setLink( wg::TextLink * pLink )
 {
-	m_pBaseStyle = _cloneBaseStyle();
-	m_pBaseStyle->setLink(pLink);
-
+	auto bp = m_pBaseStyle->blueprint();
+	bp.link = pLink;
+	m_pBaseStyle = wg::TextStyle::create(bp);
 	_regenSoftLines();
 	_refreshAllLines();
 }
@@ -588,28 +597,42 @@ void WgText::clearStyle()
 
 void WgText::clearColor()
 {
-	m_pBaseStyle = _cloneBaseStyle();
-	m_pBaseStyle->clearColor();
+	auto bp = m_pBaseStyle->blueprint();
+	bp.color = wg::HiColor::Undefined;
+
+	for( auto& state : bp.states )
+		state.data.color = wg::HiColor::Undefined;
+	
+	m_pBaseStyle = wg::TextStyle::create(bp);
 }
 
 void WgText::clearColor( wg::State state )
 {
-	m_pBaseStyle = _cloneBaseStyle();
-	m_pBaseStyle->clearColor(state);
+	auto bp = m_pBaseStyle->blueprint();
+
+	for( auto& stat : bp.states )
+		if(stat.state == state )
+			stat.data.color = wg::HiColor::Undefined;
+	
+	m_pBaseStyle = wg::TextStyle::create(bp);
 }
 
 void WgText::clearFont()
 {
-	m_pBaseStyle = _cloneBaseStyle();
-	m_pBaseStyle->clearFont();
+	auto bp = m_pBaseStyle->blueprint();
+	bp.font = nullptr;
+	m_pBaseStyle = wg::TextStyle::create(bp);
+
 	_regenSoftLines();
 	_refreshAllLines();
 }
 
 void WgText::clearLink()
 {
-	m_pBaseStyle = _cloneBaseStyle();
-	m_pBaseStyle->clearLink();
+	auto bp = m_pBaseStyle->blueprint();
+	bp.link = nullptr;
+	m_pBaseStyle = wg::TextStyle::create(bp);
+	
 	_regenSoftLines();
 	_refreshAllLines();
 }
@@ -2362,7 +2385,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 }
 
 //____ _cloneBaseStyle() _____________________________________________________
-
+/*
 wg::TextStyle_p WgText::_cloneBaseStyle() const
 {
     if( m_pBaseStyle )
@@ -2373,7 +2396,7 @@ wg::TextStyle_p WgText::_cloneBaseStyle() const
 
     return wg::TextStyle::create();
 }
-
+*/
 
 //____ OnAction() _____________________________________________________________
 /*
@@ -2499,7 +2522,7 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 
 void WgText::GetBaseAttr( wg::TextAttr& attr ) const
 {
-	wg::Base::defaultStyle()->exportAttr(m_state, &attr);
+	wg::Base::defaultStyle()->exportAttr(m_state, &attr, m_scale >> 6);
 
 	WgMode mode = WgUtil::StateToMode(m_state);
 	if( m_pBgBlockColors )
@@ -2509,7 +2532,7 @@ void WgText::GetBaseAttr( wg::TextAttr& attr ) const
 		attr.color = m_pBaseColors->Color(mode);
 
 	if( m_pBaseStyle )
-		m_pBaseStyle->addToAttr(m_state, &attr);
+		m_pBaseStyle->addToAttr(m_state, &attr, m_scale);
 }
 
 //____ GetCharAttr() __________________________________________________________
@@ -2530,7 +2553,7 @@ bool WgText::GetCharAttr( wg::TextAttr& attr, int charOfs ) const
 			state.setSelected(true);
 	}
 
-	wg::Base::defaultStyle()->exportAttr(state, &attr);
+	wg::Base::defaultStyle()->exportAttr(state, &attr, m_scale);
 
 	WgMode mode = WgUtil::StateToMode(state);
 
@@ -2541,14 +2564,14 @@ bool WgText::GetCharAttr( wg::TextAttr& attr, int charOfs ) const
 		attr.color = m_pBaseColors->Color(mode);
 
 	if( m_pBaseStyle )
-		m_pBaseStyle->addToAttr(state, &attr);
+		m_pBaseStyle->addToAttr(state, &attr, m_scale);
 
 	// Add characters own properties
 
 	wg::TextStyle * pCharStyle = m_buffer.chars()[charOfs].stylePtr();
 
 	if( pCharStyle )
-		pCharStyle->addToAttr(state, &attr);
+		pCharStyle->addToAttr(state, &attr, m_scale);
 
 	return true;
 }
@@ -2574,7 +2597,7 @@ WgColor WgText::GetCharBgColor( int charOfs ) const
 	//TODO: Optimize
 	wg::TextAttr	attr;
 	GetCharAttr(attr,charOfs);
-	return attr.bgColor;
+	return attr.backColor;
 }
 
 int WgText::GetCharSize( int charOfs ) const

@@ -40,44 +40,51 @@ namespace wg
 		return BlockSkin_p(new BlockSkin());
 	}
 
-
-	BlockSkin_p BlockSkin::create(Surface * pSurface, BorderI frame )
+	BlockSkin_p BlockSkin::create(const Blueprint& blueprint)
 	{
-		BorderI pixelFrame = (frame*pSurface->qpixPerPoint()) / 4;
-
-		if (pSurface == nullptr || pixelFrame.width() >= pSurface->size().w || pixelFrame.height() >= pSurface->size().h  )
-			return nullptr;
-
-		return BlockSkin_p( new BlockSkin(pSurface, pSurface->size(), pixelFrame) );
+		return BlockSkin_p(new BlockSkin(blueprint));
 	}
 
-	BlockSkin_p BlockSkin::create(Surface * pSurface, RectI block, BorderI frame)
+
+	BlockSkin_p BlockSkin::create(Surface * pSurface, Border frame )
+	{
+		BorderI pixelFrame = roundToPixels(ptsToSpx(frame,pSurface->scale()));
+
+		if (pSurface == nullptr || pixelFrame.width() >= pSurface->pixelSize().w || pixelFrame.height() >= pSurface->pixelSize().h  )
+			return nullptr;
+
+		return BlockSkin_p( new BlockSkin(pSurface, pSurface->pointSize(), frame) );
+	}
+
+	BlockSkin_p BlockSkin::create(Surface * pSurface, Rect block, Border frame)
 	{
 		if (pSurface == nullptr)
 			return nullptr;
 
-		SizeI surfSize = pSurface->size();
-		BorderI pixelFrame = frame*pSurface->qpixPerPoint() / 4;
-		RectI pixelBlock = block*pSurface->qpixPerPoint() / 4;
+		SizeI surfSize = pSurface->pixelSize();
+		BorderI pixelFrame = roundToPixels(ptsToSpx(frame, pSurface->scale()));
+		RectI pixelBlock = roundToPixels(ptsToSpx(block, pSurface->scale()));
 
 		if( pixelFrame.width() >= surfSize.w || pixelFrame.height() >= surfSize.h ||
 			pixelBlock.x < 0 || pixelBlock.y < 0 || pixelBlock.right() > surfSize.w || pixelBlock.bottom() > surfSize.h )
 			return nullptr;
 
-		return BlockSkin_p(new BlockSkin(pSurface, pixelBlock, pixelFrame));
+		return BlockSkin_p(new BlockSkin(pSurface, block, frame));
 	}
 
-	BlockSkin_p	BlockSkin::create(Surface * pSurface, RectI _firstBlock, std::initializer_list<State> stateBlocks, BorderI _frame, Axis axis, int _spacing)
+	BlockSkin_p	BlockSkin::create(Surface * pSurface, Rect _firstBlock, std::initializer_list<State> stateBlocks, Border _frame, Axis axis, int _spacing)
 	{
 		if (pSurface == nullptr || stateBlocks.size() < 1 )
 			return nullptr;
 
 		// Get pixel values
 
-		SizeI surfSize = pSurface->size();
-		RectI firstBlock = _firstBlock*pSurface->qpixPerPoint() / 4;
-		BorderI frame = _frame*pSurface->qpixPerPoint() / 4;
-		int   spacing = _spacing*pSurface->qpixPerPoint() / 4;
+		int scale = pSurface->scale();
+
+		SizeI surfSize = pSurface->pixelSize();
+		RectI firstBlock = roundToPixels(ptsToSpx(_firstBlock, scale));
+		BorderI frame = roundToPixels(ptsToSpx(_frame, scale));
+		int   spacing = roundToPixels(ptsToSpx(_spacing, scale));
 
 		// Check so all blocks fit
 
@@ -94,22 +101,23 @@ namespace wg
 
 		// Create the skin
 
-		BlockSkin * p = new BlockSkin(pSurface, firstBlock, frame);
+		BlockSkin * p = new BlockSkin(pSurface, _firstBlock, _frame);
 
 		p->setBlocks(stateBlocks, axis, _spacing, _firstBlock.pos());
 		return BlockSkin_p(p);
 	}
 
-	BlockSkin_p BlockSkin::create(Surface * pSurface, std::initializer_list<State> stateBlocks, BorderI _frame, Axis axis, int _spacing)
+	BlockSkin_p BlockSkin::create(Surface * pSurface, std::initializer_list<State> stateBlocks, Border _frame, Axis axis, int _spacing)
 	{
 		if (pSurface == nullptr || stateBlocks.size() < 1)
 			return nullptr;
 
+		int scale = pSurface->scale();
 
-		SizeI	surfSize = pSurface->size();
+		SizeI	surfSize = pSurface->pixelSize();
 		int		nBlocks = (int) stateBlocks.size();
-		BorderI frame = _frame * pSurface->qpixPerPoint() / 4;
-		int   spacing = _spacing * pSurface->qpixPerPoint() / 4;
+		BorderI frame = roundToPixels(ptsToSpx(_frame, scale));
+		int   spacing = roundToPixels(ptsToSpx(_spacing, scale));
 
 		// Check so blocks fit evenly
 
@@ -124,18 +132,18 @@ namespace wg
 
 		SizeI blockSize = axis == Axis::X ? SizeI(blockLen, surfSize.h) : SizeI(surfSize.w, blockLen);
 
-		BlockSkin * p = new BlockSkin(pSurface, blockSize, frame);
-		p->setBlocks(stateBlocks, axis, spacing, CoordI(0, 0));
+		BlockSkin * p = new BlockSkin(pSurface, spxToPts(blockSize*64, scale), _frame);
+		p->setBlocks(stateBlocks, axis, spacing, Coord(0, 0));
 		return BlockSkin_p(p);
 	}
 
-	BlockSkin_p BlockSkin::createStatic( Surface * pSurface, RectI block, BorderI frame )
+	BlockSkin_p BlockSkin::createStatic( Surface * pSurface, Rect block, Border frame )
 	{
 		return create(pSurface, block, frame);
 	}
 
 
-	BlockSkin_p BlockSkin::createClickable( Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame )
+	BlockSkin_p BlockSkin::createClickable( Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame )
 	{
 		auto p = create(pSurface, blockGeo, blockFrame);
 		if (p)
@@ -158,7 +166,7 @@ namespace wg
 		return BlockSkin_p(p);
 	}
 
-	BlockSkin_p BlockSkin::createStaticFromSurface( Surface * pSurface, BorderI frame )
+	BlockSkin_p BlockSkin::createStaticFromSurface( Surface * pSurface, Border frame )
 	{
 		return create(pSurface, frame);
 	}
@@ -177,7 +185,7 @@ namespace wg
 		}
 	}
 
-	BlockSkin::BlockSkin(Surface * pSurface, RectI block, BorderI frame)
+	BlockSkin::BlockSkin(Surface * pSurface, Rect block, Border frame)
 	{
 		m_pSurface			= pSurface;
 		m_ninePatch.block.setSize( block.size() );
@@ -192,6 +200,140 @@ namespace wg
 		}
 	}
 
+	BlockSkin::BlockSkin(const Blueprint& blueprint)
+	{
+		m_pSurface = blueprint.surface;
+		m_ninePatch.frame = blueprint.frame;
+		m_bOpaque = blueprint.surface->isOpaque();
+		m_blendMode = blueprint.blendMode;
+		m_gradient = blueprint.gradient;
+		m_contentPadding = blueprint.padding;
+		m_layer = blueprint.layer;
+		m_markAlpha = blueprint.markAlpha;
+		m_overflow = blueprint.overflow;
+
+		// Make sure we have a correct block
+
+		Rect block = blueprint.firstBlock;
+
+		if (block.isEmpty())
+		{
+			int nStateBlocks = 1;
+			for (int i = 0; i < StateEnum_Nb; i++)
+			{
+				if (blueprint.states[i].state != StateEnum::Normal && blueprint.states[i].data.blockless == false)
+					nStateBlocks++;
+			}
+
+
+			if (blueprint.axis == Axis::X)
+			{
+				block.w = (m_pSurface->pointWidth() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.h = m_pSurface->pointHeight();
+			}
+			else
+			{
+				block.w = m_pSurface->pointWidth();
+				block.h = (m_pSurface->pointHeight() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
+			}
+		}
+
+		m_ninePatch.block.setSize(block.size());
+
+
+		// Default state
+
+		m_stateBlocks[0] = block;
+		m_stateColors[0] = blueprint.color;
+
+		// RigidPartX
+
+		{
+			pts ofs = blueprint.rigidPartX.begin;
+			pts length = blueprint.rigidPartX.length;
+
+			pts	midSecLen = m_ninePatch.block.w - m_ninePatch.frame.width();
+			ofs -= m_ninePatch.frame.left;
+
+			if (ofs < 0)
+			{
+				length += ofs;
+				ofs = 0;
+			}
+
+			if (ofs + length > midSecLen)
+				length = midSecLen - ofs;
+
+			m_ninePatch.rigidPartXOfs = ofs;
+			m_ninePatch.rigidPartXLength = length;
+			m_ninePatch.rigidPartXSections = blueprint.rigidPartX.sections;
+		}
+
+		// RigidPartY
+
+		{
+			pts ofs = blueprint.rigidPartY.begin;
+			pts length = blueprint.rigidPartY.length;
+			
+			pts	midSecLen = m_ninePatch.block.h - m_ninePatch.frame.height();
+			ofs -= m_ninePatch.frame.top;
+
+			if (ofs < 0)
+			{
+				length += ofs;
+				ofs = 0;
+			}
+
+			if (ofs + length > midSecLen)
+				length = midSecLen - ofs;
+
+			m_ninePatch.rigidPartYOfs = ofs;
+			m_ninePatch.rigidPartYLength = length;
+			m_ninePatch.rigidPartYSections = blueprint.rigidPartY.sections;
+		}
+
+		// States
+
+		Coord blockOfs = block.pos();
+
+		Coord pitch = blueprint.axis == Axis::X ? Coord(block.w + blueprint.spacing, 0) : Coord(0, block.h + blueprint.spacing);
+
+		int ofs = 0;
+		for (auto& stateInfo : blueprint.states)
+		{
+			if (stateInfo.state != StateEnum::Normal)
+			{
+				int index = _stateToIndex(stateInfo.state);
+
+				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
+				{
+					m_contentShiftStateMask.setBit(index);
+					m_contentShift[index] = stateInfo.data.contentShift;
+					m_bContentShifting = true;
+				}
+
+				if (stateInfo.data.blockless == false)
+				{
+					ofs++;
+					m_stateBlockMask.setBit(index);
+					m_stateBlocks[index] = blockOfs + pitch * ofs;
+				}
+
+				if (stateInfo.data.color != HiColor::Undefined)
+				{
+					m_stateColorMask.setBit(index);
+					m_stateColors[index] = stateInfo.data.color;
+				}
+			}
+		}
+
+		//
+
+		_updateContentShift();
+		_updateUnsetStateBlocks();
+		_updateUnsetStateColors();
+		_updateOpaqueFlags();
+	}
 
 	//____ typeInfo() _________________________________________________________
 
@@ -202,20 +344,16 @@ namespace wg
 
 	//____ setBlock() _____________________________________________________________
 
-	void BlockSkin::setBlock(CoordI ofs)
+	void BlockSkin::setBlock(Coord ofs)
 	{
-		ofs = ofs*m_pSurface->qpixPerPoint() / 4;
-
 		m_stateBlocks[0] = ofs;
 		m_stateBlockMask = 1;
 
 		_updateUnsetStateBlocks();
 	}
 
-	void BlockSkin::setBlock(State state, CoordI ofs)
+	void BlockSkin::setBlock(State state, Coord ofs)
 	{
-		ofs = ofs*m_pSurface->qpixPerPoint() / 4;
-
 		int i = _stateToIndex(state);
 
 		m_stateBlocks[i] = ofs;
@@ -225,12 +363,9 @@ namespace wg
 
 	//____ setBlocks() ________________________________________________________
 
-	void BlockSkin::setBlocks(std::initializer_list<State> stateBlocks, Axis axis, int _spacing, CoordI _blockStartOfs )
+	void BlockSkin::setBlocks(std::initializer_list<State> stateBlocks, Axis axis, int spacing, Coord blockStartOfs )
 	{
-		CoordI blockStartOfs = _blockStartOfs*m_pSurface->qpixPerPoint() / 4;
-		int spacing = _spacing*m_pSurface->qpixPerPoint() / 4;
-
-		CoordI pitch = axis == Axis::X ? CoordI(m_ninePatch.block.w + spacing, 0 ) : CoordI(0, m_ninePatch.block.h + spacing);
+		Coord pitch = axis == Axis::X ? Coord(m_ninePatch.block.w + spacing, 0 ) : Coord(0, m_ninePatch.block.h + spacing);
 
 		int ofs = 0;
 		for (StateEnum state : stateBlocks)
@@ -245,9 +380,9 @@ namespace wg
 
 	//____ block() ____________________________________________________________
 
-	RectI BlockSkin::block(State state) const
+	Rect BlockSkin::block(State state) const
 	{
-		return { m_stateBlocks[_stateToIndex(state)], m_ninePatch.block.size()*4/m_pSurface->qpixPerPoint() };
+		return { m_stateBlocks[_stateToIndex(state)], m_ninePatch.block.size() };
 	}
 
 	//____ setColor() __________________________________________________________
@@ -296,7 +431,6 @@ namespace wg
 	void BlockSkin::setGradient(const Gradient& gradient)
 	{
 		m_gradient = gradient;
-		m_bGradient = true;
 		_updateOpaqueFlags();
 	}
 
@@ -319,23 +453,23 @@ namespace wg
 
 	//____ setBlockSize() _____________________________________________________
 
-	void BlockSkin::setBlockSize(SizeI size)
+	void BlockSkin::setBlockSize(Size size)
 	{
-		m_ninePatch.block.setSize( size*m_pSurface->qpixPerPoint() / 4 );
+		m_ninePatch.block.setSize( size );
 	}
 
 	//____ setFrame() ____________________________________________________________
 
-	void BlockSkin::setFrame(BorderI frame)
+	void BlockSkin::setFrame(Border frame)
 	{
-		m_ninePatch.frame = frame*m_pSurface->qpixPerPoint() / 4;
+		m_ninePatch.frame = frame;
 	}
 
 	//____ setRigidPartX() _____________________________________________
 
-	bool BlockSkin::setRigidPartX(int ofs, int length, YSections sections)
+	bool BlockSkin::setRigidPartX(pts ofs, pts length, YSections sections)
 	{
-		int	midSecLen = m_ninePatch.block.w - m_ninePatch.frame.width();
+		pts	midSecLen = m_ninePatch.block.w - m_ninePatch.frame.width();
 		ofs -= m_ninePatch.frame.left;
 
 		// Sanity check
@@ -368,9 +502,9 @@ namespace wg
 
 	//____ setRigidPartY() _____________________________________________
 
-	bool BlockSkin::setRigidPartY(int ofs, int length, XSections sections)
+	bool BlockSkin::setRigidPartY(pts ofs, pts length, XSections sections)
 	{
-		int	midSecLen = m_ninePatch.block.h - m_ninePatch.frame.height();
+		pts	midSecLen = m_ninePatch.block.h - m_ninePatch.frame.height();
 		ofs -= m_ninePatch.frame.top;
 
 		// Sanity check
@@ -404,84 +538,83 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void BlockSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if( !m_pSurface )
 			return;
 
 		int idx = _stateToIndex(state);
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient, m_bGradient);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
 
-		CoordI blockOfs = m_stateBlocks[idx];
 		pDevice->setBlitSource(m_pSurface);
 
 		NinePatch	patch = m_ninePatch;
 		patch.block.setPos(m_stateBlocks[idx]);
 
-		pDevice->blitNinePatch(canvas.px(), pointsToPixels(patch.frame * 4 / m_pSurface->qpixPerPoint()), patch);
+		pDevice->blitNinePatch(canvas, ptsToSpx(patch.frame,scale), patch, scale);
 	}
 
-	//____ minSize() ______________________________________________________________
+	//____ _minSize() ______________________________________________________________
 
-	Size BlockSkin::minSize() const
+	SizeSPX BlockSkin::_minSize(int scale) const
 	{
-		Size content = Border(m_contentPadding).aligned();
-		Size frame = Border(m_ninePatch.frame*4/m_pSurface->qpixPerPoint()).aligned();
-		return Size::max( content, frame );
+		SizeSPX content = align(ptsToSpx(m_contentPadding,scale));
+		SizeSPX frame = align(ptsToSpx(m_ninePatch.frame,scale));
+		return SizeSPX::max( content, frame );
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	Size BlockSkin::preferredSize() const
+	SizeSPX BlockSkin::_preferredSize(int scale) const
 	{
         //This takes the scale of the surface into account
         // Preferred size is to map each point of the surface to a point of the skinarea.
         
-        return Size((m_ninePatch.block.size()*4)/m_pSurface->qpixPerPoint());
+        return align(ptsToSpx(m_ninePatch.block.size(),scale));
 	}
 
-	//____ sizeForContent() _______________________________________________________
+	//____ _sizeForContent() _______________________________________________________
 
-	Size BlockSkin::sizeForContent( const Size& contentSize ) const
+	SizeSPX BlockSkin::_sizeForContent( const SizeSPX& contentSize, int scale ) const
 	{
-		Size sz = StateSkin::sizeForContent(contentSize);
-		Size min = Border(m_ninePatch.frame *4/m_pSurface->qpixPerPoint()).aligned();
+		SizeSPX sz = StateSkin::_sizeForContent(contentSize,scale);
+		SizeSPX min = align(ptsToSpx(m_ninePatch.frame,scale));
 
-		return Size::max(sz, min);
+		return SizeSPX::max(sz, min);
 	}
 
-	//____ markTest() _____________________________________________________________
+	//____ _markTest() _____________________________________________________________
 
-	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool BlockSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
 		NinePatch	patch = m_ninePatch;
 		patch.block.setPos(m_stateBlocks[_stateToIndex(state)]);
 
-		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, opacityTreshold);
+		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, scale, m_markAlpha);
 	}
 
-	//____ isOpaque() _____________________________________________________________
+	//____ _isOpaque() _____________________________________________________________
 
-	bool BlockSkin::isOpaque( State state ) const
+	bool BlockSkin::_isOpaque( State state ) const
 	{
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	bool BlockSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
+	bool BlockSkin::_isOpaque( const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state ) const
 	{
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect BlockSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX BlockSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (oldState == newState)
-			return Rect();
+			return RectSPX();
 
 		int i1 = _stateToIndex(newState);
 		int i2 = _stateToIndex(oldState);
@@ -489,7 +622,7 @@ namespace wg
 		if (m_stateBlocks[i1] != m_stateBlocks[i2])
 			return canvas;
 
-		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+		return StateSkin::_dirtyRect(canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
@@ -504,7 +637,7 @@ namespace wg
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_bGradient && !m_gradient.isOpaque())
+		else if (m_gradient.isValid && !m_gradient.isOpaque())
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Blend )
 		{

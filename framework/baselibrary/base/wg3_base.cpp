@@ -26,8 +26,8 @@
 
 #ifndef WG2_MODE
 	#include <wg_msgrouter.h>
-	#include <wg_stdtextmapper.h>
-	#include <wg_standardformatter.h>
+	#include <wg_basictextlayout.h>
+	#include <wg_basicnumberlayout.h>
 	#include <wg_inputhandler.h>
 #endif
 
@@ -89,28 +89,27 @@ namespace wg
 		s_pData->pMemStack = new MemStack( 4096 );
 
 		s_pData->pActiveContext = Context::create();
-		s_pData->pDefaultStyle = TextStyle::create();
+
+		TextStyle::Blueprint textStyleBP;
+		textStyleBP.font = DummyFont::create();
+
+		s_pData->pDefaultStyle = TextStyle::create( textStyleBP );
 
 #ifndef WG2_MODE
 		s_pData->pDefaultCaret = Caret::create();
 
-		s_pData->pDefaultTextMapper = StdTextMapper::create();
+		s_pData->pDefaultTextLayout = BasicTextLayout::create({});
 
 
-		s_pData->pDefaultValueFormatter = StandardFormatter::create();
+		s_pData->pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
 
 		s_pData->pMsgRouter = MsgRouter::create();
       	s_pData->pInputHandler = InputHandler::create();
 #endif
 
-		s_pData->pDefaultStyle = TextStyle::create();
-		s_pData->pDefaultStyle->setFont( DummyFont::create() );
-
 		TextTool::setDefaultBreakRules();
 		HiColor::_initTables();
 
-		MU::s_scale = 1.f;
-		MU::s_qpixPerPoint = 4;
 		return true;
 	}
 
@@ -253,37 +252,37 @@ namespace wg
 		s_pData->pDefaultCaret = pCaret;
 	}
 
-	//_____ defaultTextMapper() ________________________________________________
+	//_____ defaultTextLayout() ________________________________________________
 
-	TextMapper_p Base::defaultTextMapper()
+	TextLayout_p Base::defaultTextLayout()
 	{
 		assert(s_pData!=0);
-		return s_pData->pDefaultTextMapper;
+		return s_pData->pDefaultTextLayout;
 	}
 
 
-	//____ setDefaultTextMapper() ___________________________________________________
+	//____ setDefaultTextLayout() ___________________________________________________
 
-	void Base::setDefaultTextMapper( TextMapper * pTextMapper )
+	void Base::setDefaultTextLayout( TextLayout * pTextLayout )
 	{
 		assert( s_pData != 0 );
-		s_pData->pDefaultTextMapper = pTextMapper;
+		s_pData->pDefaultTextLayout = pTextLayout;
 	}
 
-	//____ defaultValueFormatter() _____________________________________________
+	//____ defaultNumberLayout() _____________________________________________
 
-	ValueFormatter_p Base::defaultValueFormatter()
+	NumberLayout_p Base::defaultNumberLayout()
 	{
 		assert(s_pData != 0);
-		return s_pData->pDefaultValueFormatter;
+		return s_pData->pDefaultNumberLayout;
 	}
 
-	//____ setDefaultValueFormatter() _______________________________________________________
+	//____ setDefaultNumberLayout() _______________________________________________________
 
-	void Base::setDefaultValueFormatter(ValueFormatter * pFormatter)
+	void Base::setDefaultNumberLayout(NumberLayout * pFormatter)
 	{
 		assert(s_pData != 0);
-		s_pData->pDefaultValueFormatter = pFormatter;
+		s_pData->pDefaultNumberLayout = pFormatter;
 	}
 
 #endif
@@ -320,17 +319,6 @@ namespace wg
 	{
 		assert(s_pData != 0);
 		s_pData->pActiveContext = pContext;
-
-        if( pContext )
-        {
-            MU::s_scale = pContext->scale();
-            MU::s_qpixPerPoint = int(pContext->scale() * 4.f);
-        }
-        else
-        {
-            MU::s_scale = 1.f;
-            MU::s_qpixPerPoint = 4;
-        }
 
 	}
 

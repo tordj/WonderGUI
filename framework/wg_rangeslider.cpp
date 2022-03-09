@@ -344,7 +344,7 @@ void WgRangeSlider::_updatePreferredSize()
 
 	if (m_pSkin)
 	{
-		sz += m_pSkin->contentPaddingSize();
+		sz += m_pSkin->_contentPaddingSize(m_scale >> 6);
 		sz = WgSize::max(sz, _skinPreferredSize(m_pSkin, m_scale));
 	}
 
@@ -374,7 +374,7 @@ void WgRangeSlider::_setRange(float begin, float end)
 	{
 		WgRect changeRect;
 
-		if (m_pSkin && !m_pSkin->ignoresValue())
+		if (m_pSkin && !m_pSkin->_ignoresValue())
 		{
 			changeRect = PixelSize();
 			m_rangeBegin = begin;

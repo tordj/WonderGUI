@@ -35,46 +35,68 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	BoxSkin_p BoxSkin::create()
+	BoxSkin_p BoxSkin::create( const Blueprint& blueprint )
 	{
-		return BoxSkin_p(new BoxSkin());
+		return BoxSkin_p(new BoxSkin(blueprint));
 	}
 
-	BoxSkin_p BoxSkin::create(BorderI frame, HiColor fillColor, HiColor frameColor )
+	BoxSkin_p BoxSkin::create(Border outline, HiColor fillColor, HiColor outlineColor, Border padding )
 	{
-		return BoxSkin_p(new BoxSkin(frame, fillColor, frameColor));
-	}
+		Blueprint bp;
+		bp.outline = outline;
+		bp.color = fillColor;
+		bp.outlineColor = outlineColor;
+		bp.padding = padding;
 
-	BoxSkin_p BoxSkin::create(BorderI frame, std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors )
-	{
-		BoxSkin_p p = new BoxSkin();
-
-		p->setFrame(frame);
-		p->setColors(stateColors);
-
-		return p;
+		return BoxSkin_p(new BoxSkin(bp));
 	}
 
 
 	//____ constructor ____________________________________________________________
 
-	BoxSkin::BoxSkin()
+	BoxSkin::BoxSkin( const Blueprint& blueprint )
 	{
-		m_stateColorMask = 1;
+		m_outline			= blueprint.outline;
+		m_blendMode		= blueprint.blendMode;
+		m_contentPadding= blueprint.padding;
+		m_layer			= blueprint.layer;
+		m_markAlpha		= blueprint.markAlpha;
+		m_overflow		= blueprint.overflow;
 
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		m_fillColor[0] = blueprint.color;
+		m_outlineColor[0] = blueprint.outlineColor;
+
+
+		for (auto& stateInfo : blueprint.states)
 		{
-			m_fillColor[i] = Color::White;
-			m_frameColor[i] = Color::White;
+			if (stateInfo.state != StateEnum::Normal)
+			{
+				int index = _stateToIndex(stateInfo.state);
+
+				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
+				{
+					m_contentShiftStateMask.setBit(index);
+					m_contentShift[index] = stateInfo.data.contentShift;
+					m_bContentShifting = true;
+				}
+
+				if (stateInfo.data.color != HiColor::Undefined)
+				{
+					m_stateColorMask.setBit(index);
+					m_fillColor[index] = stateInfo.data.color;
+				}
+
+				if (stateInfo.data.outlineColor != HiColor::Undefined)
+				{
+					m_stateOutlineColorMask.setBit(index);
+					m_outlineColor[index] = stateInfo.data.outlineColor;
+				}
+			}
 		}
 
-		m_bOpaque = true;
-	}
-
-	BoxSkin::BoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor )
-	{
-		m_frame = frame;
-		setColors(fillColor, frameColor);
+		_updateContentShift();
+		_updateOpaqueFlag();
+		_updateUnsetColors();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -84,117 +106,40 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setBlendMode() _____________________________________________________
-
-	void BoxSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpaqueFlag();
-	}
-
-	//____ setFrame() ____________________________________________________
-
-	void BoxSkin::setFrame(BorderI frame)
-	{
-		bool hadFrame = (m_frame.width() + m_frame.height() > 0);
-		bool hasFrame = (frame.width() + frame.height() > 0);
-
-		m_frame = frame;
-
-		if (hadFrame != hasFrame)
-			_updateOpaqueFlag();
-	}
-
-	//____ setColors() ________________________________________________________
-
-	void BoxSkin::setColors(HiColor fill, HiColor frame)
-	{
-		m_stateColorMask = 1;
-
-		for (int i = 0; i < StateEnum_Nb; i++)
-		{
-			m_fillColor[i] = fill;
-			m_frameColor[i] = frame;
-		}
-
-		bool hasFrame = (m_frame.width() + m_frame.height() > 0);
-		if (fill.a == 4096 && (!hasFrame || frame.a == 4096))
-			m_bOpaque = true;
-		else
-			m_bOpaque = false;
-	}
-
-	void BoxSkin::setColors(State state, HiColor fill, HiColor frame)
-	{
-		int i = _stateToIndex(state);
-
-		m_stateColorMask.setBit(i);
-
-		m_fillColor[i] = fill;
-		m_frameColor[i] = frame;
-
-		_updateUnsetColors();
-		_updateOpaqueFlag();
-	}
-
-	void BoxSkin::setColors(std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors)
-	{
-		for (auto& state : stateColors)
-		{
-			int i = _stateToIndex(std::get<0>(state));
-			m_stateColorMask.setBit(i);
-			m_fillColor[i] = std::get<1>(state);
-			m_frameColor[i] = std::get<2>(state);
-		}
-
-		_updateUnsetColors();
-		_updateOpaqueFlag();
-	}
-
-	//____ colors() ______________________________________________________
-
-	std::tuple<HiColor, HiColor> BoxSkin::colors(State state) const
-	{
-		int i = _stateToIndex(state);
-		return std::make_tuple(m_fillColor[i], m_frameColor[i]);
-	}
-
 	//____ _render() _______________________________________________________________
 
-	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void BoxSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		RectI canvas = _canvas.px();
-
 		int i = _stateToIndex(state);
 
-		if( m_frame.width() + m_frame.height() == 0 || m_frameColor[i] == m_fillColor[i] )
+		BorderSPX outline = align(ptsToSpx(m_outline, scale));
+
+		if( outline.width() + outline.height() == 0 || m_outlineColor[i] == m_fillColor[i] )
 		{
 			pDevice->fill( canvas, m_fillColor[i] );
 		}
 		else
 		{
-			BorderI frame = pointsToPixels(m_frame);
-
-			if (frame.width() >= canvas.w || frame.height() >= canvas.h)
+			if (outline.width() >= canvas.w || outline.height() >= canvas.h)
 			{
-				pDevice->fill(canvas, m_frameColor[i]);
+				pDevice->fill(canvas, m_outlineColor[i]);
 			}
 			else
 			{
-				RectI top( canvas.x, canvas.y, canvas.w, frame.top );
-				RectI left( canvas.x, canvas.y+frame.top, frame.left, canvas.h - frame.height() );
-				RectI right( canvas.x + canvas.w - frame.right, canvas.y+frame.top, frame.right, canvas.h - frame.height() );
-				RectI bottom( canvas.x, canvas.y + canvas.h - frame.bottom, canvas.w, frame.bottom );
-				RectI center( canvas - frame );
+				RectSPX top( canvas.x, canvas.y, canvas.w, outline.top );
+				RectSPX left( canvas.x, canvas.y+outline.top, outline.left, canvas.h - outline.height() );
+				RectSPX right( canvas.x + canvas.w - outline.right, canvas.y+outline.top, outline.right, canvas.h - outline.height() );
+				RectSPX bottom( canvas.x, canvas.y + canvas.h - outline.bottom, canvas.w, outline.bottom );
+				RectSPX center( canvas - outline );
 
-				pDevice->fill( top, m_frameColor[i] );
-				pDevice->fill( left, m_frameColor[i] );
-				pDevice->fill( right, m_frameColor[i] );
-				pDevice->fill( bottom, m_frameColor[i] );
+				pDevice->fill( top, m_outlineColor[i] );
+				pDevice->fill( left, m_outlineColor[i] );
+				pDevice->fill( right, m_outlineColor[i] );
+				pDevice->fill( bottom, m_outlineColor[i] );
 
 				if( center.w > 0 || center.h > 0 )
 					pDevice->fill( center, m_fillColor[i] );
@@ -203,39 +148,39 @@ namespace wg
 
 	}
 
-	//____ minSize() ______________________________________________________________
+	//____ _minSize() ______________________________________________________________
 
-	Size BoxSkin::minSize() const
+	SizeSPX BoxSkin::_minSize(int scale) const
 	{
-		Size content = StateSkin::minSize();
-		Size frame = Border(m_frame).aligned();
+		SizeSPX content = StateSkin::_minSize(scale);
+		SizeSPX outline = align(ptsToSpx(m_outline,scale));
 
-		return Size::max(content,frame);
+		return SizeSPX::max(content,outline);
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	Size BoxSkin::preferredSize() const
+	SizeSPX BoxSkin::_preferredSize(int scale) const
 	{
-		Size content = StateSkin::minSize();
-		Size frame = Border(m_frame).aligned();
+		SizeSPX content = StateSkin::_minSize(scale);
+		SizeSPX outline = align(ptsToSpx(m_outline, scale));
 
-		return Size::max(content, frame);
+		return SizeSPX::max(content, outline);
 	}
 
-	//____ sizeForContent() _______________________________________________________
+	//____ _sizeForContent() _______________________________________________________
 
-	Size BoxSkin::sizeForContent( const Size& contentSize ) const
+	SizeSPX BoxSkin::_sizeForContent( const SizeSPX& contentSize, int scale ) const
 	{
-		Size content = StateSkin::sizeForContent(contentSize);
-		Size frame = Border(m_frame).aligned();
+		SizeSPX content = StateSkin::_sizeForContent(contentSize,scale);
+		SizeSPX outline = align(ptsToSpx(m_outline, scale));
 
-		return Size::max(content, frame);
+		return SizeSPX::max(content, outline);
 	}
 
-	//____ markTest() _____________________________________________________________
+	//____ _markTest() _____________________________________________________________
 
-	bool BoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool BoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
@@ -248,58 +193,58 @@ namespace wg
 		{
 			int i = _stateToIndex(state);
 
-			Rect center = canvas - Border(m_frame).aligned();
+			RectSPX center = canvas - align(ptsToSpx(m_outline,scale));
 			if( center.contains(ofs) )
-				opacity = m_fillColor[i].a * 4096/255;
+				opacity = m_fillColor[i].a;
 			else
-				opacity = m_frameColor[i].a * 4096/255;
+				opacity = m_outlineColor[i].a;
 		}
 
-		return ( opacity >= opacityTreshold );
+		return ( opacity >= m_markAlpha);
 	}
 
-	//____ isOpaque() _____________________________________________________________
+	//____ _isOpaque() _____________________________________________________________
 
-	bool BoxSkin::isOpaque( State state ) const
+	bool BoxSkin::_isOpaque( State state ) const
 	{
 		int i = _stateToIndex(state);
-		if( m_bOpaque || (m_fillColor[i].a == 4096 && (m_frameColor[i].a == 4096 || (m_frame.width() + m_frame.height() == 0))) )
+		if( m_bOpaque || (m_fillColor[i].a == 4096 && (m_outlineColor[i].a == 4096 || (m_outline.width() + m_outline.height() == 0))) )
 			return true;
 
 		return false;
 	}
 
-	bool BoxSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
+	bool BoxSkin::_isOpaque( const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state ) const
 	{
 		if( m_bOpaque )
 			return true;
 
-		Rect center = Rect(canvasSize) - Border(m_frame).aligned();
+		RectSPX center = RectSPX(canvasSize) - align(ptsToSpx(m_outline,scale));
 		int i = _stateToIndex(state);
 		if( center.contains(rect) )
 			return m_fillColor[i].a == 4096;
 		else if( !center.intersectsWith(rect) )
-			return m_frameColor[i].a == 4096;
+			return m_outlineColor[i].a == 4096;
 
-		return m_fillColor[i].a == 4096 && m_frameColor[i].a == 4096;
+		return m_fillColor[i].a == 4096 && m_outlineColor[i].a == 4096;
 	}
 
-	//____ dirtyRect() ______________________________________________________
+	//____ _dirtyRect() ______________________________________________________
 
-	Rect BoxSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+	RectSPX BoxSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (oldState == newState)
-			return Rect();
+			return RectSPX();
 
 		int i1 = _stateToIndex(newState);
 		int i2 = _stateToIndex(oldState);
 
-		if (m_fillColor[i1] != m_fillColor[i2] || (!m_frame.isEmpty() && m_frameColor[i1] != m_frameColor[i2]))
+		if (m_fillColor[i1] != m_fillColor[i2] || (!m_outline.isEmpty() && m_outlineColor[i1] != m_outlineColor[i2]))
 			return canvas;
 
-		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+		return StateSkin::_dirtyRect(canvas, scale, newState, oldState, newValue, oldValue, newValue2, oldValue2,
 			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
@@ -316,17 +261,17 @@ namespace wg
 			case BlendMode::Blend:
 			{
 				int alpha = 0;
-				int frameAlpha = 0;
+				int outlineAlpha = 0;
 
 				for (int i = 0; i < StateEnum_Nb; i++)
 				{
 					alpha += (int)m_fillColor[i].a;
-					frameAlpha += (int)m_frameColor[i].a;
+					outlineAlpha += (int)m_outlineColor[i].a;
 				}
 
-				bool hasFrame = (m_frame.width() + m_frame.height() > 0);
+				bool hasFrame = (m_outline.width() + m_outline.height() > 0);
 
-				if (alpha == 4096 * StateEnum_Nb && (!hasFrame || frameAlpha == 4096 * StateEnum_Nb))
+				if (alpha == 4096 * StateEnum_Nb && (!hasFrame || outlineAlpha == 4096 * StateEnum_Nb))
 					m_bOpaque = true;
 				else
 					m_bOpaque = false;
@@ -349,7 +294,12 @@ namespace wg
 			{
 				int bestAlternative = bestStateIndexMatch(i, m_stateColorMask);
 				m_fillColor[i] = m_fillColor[bestAlternative];
-				m_frameColor[i] = m_frameColor[bestAlternative];
+			}
+
+			if (!m_stateOutlineColorMask.bit(i))
+			{
+				int bestAlternative = bestStateIndexMatch(i, m_stateOutlineColorMask);
+				m_outlineColor[i] = m_outlineColor[bestAlternative];
 			}
 		}
 	}

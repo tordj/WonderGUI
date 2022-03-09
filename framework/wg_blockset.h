@@ -41,11 +41,6 @@ class WgBlockset
 {
 
 public:
-	static wg::BlockSkin_p CreateFromSurface( wg::Surface * pSurf, int flags = 0 );
-	static wg::BlockSkin_p CreateFromRect( wg::Surface * pSurf, const WgRect& normal, int flags = 0 );
-	static wg::BlockSkin_p CreateFromRects( wg::Surface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, int flags = 0 );
-	static wg::BlockSkin_p CreateFromRects( wg::Surface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, int flags = 0 );
-	static wg::BlockSkin_p CreateFromRects( wg::Surface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, const WgCoord& special, int flags = 0 );
 	static wg::BlockSkin_p CreateFromRow( wg::Surface * pSurf, const WgRect& rect, int nBlocks, int spacing=0, int flags = 0 );
 	static wg::BlockSkin_p CreateFromColumn( wg::Surface * pSurf, const WgRect& rect, int nBlocks, int spacing=0, int flags = 0 );
 

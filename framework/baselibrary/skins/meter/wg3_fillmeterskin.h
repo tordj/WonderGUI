@@ -25,6 +25,7 @@
 
 #include <wg3_skin.h>
 #include <wg3_color.h>
+#include <wg3_gradient.h>
 
 namespace wg
 {
@@ -38,78 +39,75 @@ namespace wg
 	class FillMeterSkin : public Skin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			HiColor		backColor = Color::Transparent;
+			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = Color::Blue;
+			Direction	direction = Direction::Right;
+			Border		gfxPadding;
+			Gradient	gradient;
+
+			int			layer = -1;
+			int			markAlpha = 1;
+
+			HiColor		maxColor = HiColor::Undefined;		// Overrides barColor when both min/max are set
+			HiColor		minColor = HiColor::Undefined;
+
+			Border		overflow;
+			Border		padding;
+			Size		preferredSize;						// Mandatory
+			bool		startFromCenter = false;
+			pts			startLength = 0;
+		};
+
 		//.____ Creation __________________________________________
 
-		static FillMeterSkin_p create();
-		static FillMeterSkin_p create(Direction direction, HiColor fillColorEmpty, HiColor fillColorFull, HiColor backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI(), int minFillLength = 0);
+		static FillMeterSkin_p create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Geometry _________________________________________________
-
-		void	setPreferredSize(const SizeI& preferred);
-		Size	preferredSize() const override;
-
-		//.____ Appearance ____________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void	setDirection(Direction dir);
-		Direction direction() const { return m_direction; }
-
-		void	setGfxPadding(BorderI padding);
-		Border	gfxPadding() const { return m_barPadding; }
-
-		void	setBackColor(HiColor back);
-		HiColor	backColor() const { return m_backColor; }
-
-		void	setFillColors(HiColor empty, HiColor full);
-		void	setFillColorEmpty(HiColor empty);
-		HiColor	fillColorEmpty() const { return m_barColorEmpty; }
-		void	setFillColorFull(HiColor full);
-		HiColor	fillColorFull() const { return m_barColorFull; }
-
-		void	setMinFillLength(int minFillLength);
-		int     minFillLength() const { return m_minFillLength; }
-
-        void    setCenteredBarOrigin(bool bCenter);
-        bool    centeredBarOrigin() const { return m_bCenteredBarOrigin; }
         
-		//.____ Misc ____________________________________________________
+		//.____ Internal ____________________________________________________
 
-		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		SizeSPX	_preferredSize(int scale) const override;
+
+		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int sale, State state, 
 							float value = 1.f, float value2 = -1.f) const override;
 
-		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, float value = 1.f, 
-						float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
+		void 	_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value = 1.f, 
+							float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX	_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 		FillMeterSkin();
-		FillMeterSkin(	Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, 
-						const BorderI& barPadding, const BorderI& contentPadding, int minFillLength );
+		FillMeterSkin(	const Blueprint& blueprint );
 		~FillMeterSkin() {};
 
-		Rect		_barFillArea(const Rect& canvas, float value, float value2) const;
+		RectSPX		_barFillArea(const RectSPX& canvas, int scale, float value, float value2) const;
 		void		_updateOpacity();
-		Rect		_valueChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
+		RectSPX		_valueChangeRect(const RectSPX& canvas, int scale, State state, float oldFraction, float newFraction) const;
 
 		BlendMode	m_blendMode = BlendMode::Undefined;
 		Direction	m_direction;
-		BorderI		m_barPadding;
-        int		    m_minFillLength;
+		Border		m_gfxPadding;
+        pts		    m_minBarLength;
 		HiColor		m_barColorEmpty;
 		HiColor		m_barColorFull;
 		HiColor		m_backColor;
 		Size		m_preferredSize;
         bool        m_bCenteredBarOrigin = false;
+
+		Gradient	m_gradient;
+		bool		m_bGradient = false;
 	};
 
 

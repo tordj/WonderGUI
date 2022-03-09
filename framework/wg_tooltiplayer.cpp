@@ -448,8 +448,13 @@ WgHook * WgTooltipLayer::_prevHookWithGeo(WgRect& geo, WgHook * pHook) const
 
 WgWidget * WgTooltipLayer::_defaultTooltipGenerator(Placement& placement, const WgWidget* pHovered, const WgBorders& margin)
 {
-    BoxSkin_p pSkin = BoxSkin::create(1, Color::LightYellow, Color::Black);
-    pSkin->setContentPadding(2);
+	BoxSkin::Blueprint bp;
+	bp.color = Color::LightYellow;
+	bp.outlineColor = Color::Black;
+	bp.outline = 1;
+	bp.padding = 2;
+	
+	BoxSkin_p pSkin = BoxSkin::create( bp );
     auto pWidget = new WgTextDisplay();
     pWidget->SetSkin(pSkin);
 

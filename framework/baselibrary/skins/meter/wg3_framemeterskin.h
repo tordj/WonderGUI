@@ -24,8 +24,8 @@
 #pragma once
 
 #include <wg3_skin.h>
-#include <wg3_canimframes.h>
 #include <wg3_gradient.h>
+#include <vector>
 
 namespace wg
 {
@@ -36,77 +36,94 @@ namespace wg
 	typedef	WeakPtr<FrameMeterSkin>		FrameMeterSkin_wp;
 
 
-	class FrameMeterSkin : public Skin, protected CAnimFrames::Holder
+	class FrameMeterSkin : public Skin
 	{
 	public:
+		//____ Blueprint ______________________________________________________
+
+		struct FrameBP
+		{
+			Coord	coord;
+			int		duration;					// Millisec
+			GfxFlip	flip = GfxFlip::Normal;
+		};
+
+		struct Blueprint
+		{
+			BlendMode				blendMode = BlendMode::Undefined;
+			HiColor					color = HiColor::Undefined;
+			std::vector<FrameBP>	frames;			// Mandatory
+			Border					gfxPadding;
+			Gradient				gradient;
+			int						layer = -1;
+			int						markAlpha = 1;
+			Border					overflow;
+			Border					padding;
+
+			Size					size;			// Mandatory
+			Surface_p				surface;		// Mandatory
+
+		};
+
 		//.____ Creation __________________________________________
 
-		static FrameMeterSkin_p create();
-
-		//.____ Components _______________________________________
-
-		CAnimFrames		frames;
+		static FrameMeterSkin_p create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
+		//.____ Internal ____________________________________________________
 
-		Size		preferredSize() const override;
-		Size		minSize() const override;
+		SizeSPX		_preferredSize(int scale) const override;
+		SizeSPX		_minSize(int scale) const override;
 
-		//.____ Appearance ____________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void		setColor(HiColor tintColor);
-		HiColor		color() const { return m_color; }
-
-		void		setGradient(const Gradient& gradient);
-		Gradient	gradient() const { return m_gradient; }
-
-		void		setGfxPadding(BorderI padding);
-		Border		gfxPadding() const { return m_gfxPadding; }
-
-		//.____ Misc ____________________________________________________
-
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 								float value = 1.f, float value2 = -1.f) const override;
 
-		void 		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float value = 1.f, float value2 = -1.f, int animPos = 0,
-							float* pStateFractions = nullptr) const override;
+		void 		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+								float value = 1.f, float value2 = -1.f, int animPos = 0,
+								float* pStateFractions = nullptr) const override;
 
-		Rect		dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX		_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 								float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 								float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
-		FrameMeterSkin();
+		FrameMeterSkin( const Blueprint& bp );
 		~FrameMeterSkin() {};
+
+		class Frame
+		{
+        public:
+            Frame( Coord _coord, int _duration, int _timestamp, GfxFlip _flip )
+            : coord(_coord), duration(_duration), timestamp(_timestamp), flip(_flip) {}
+            
+			Coord	coord;
+			int		duration;					// Millisec
+			int		timestamp;					// Millisec
+			GfxFlip	flip = GfxFlip::Normal;
+
+		};
+
+
 
 		void		_updateOpacityFlag();
 
-		const AnimFrame * _valueToFrame(float value) const;
+		const Frame * _valueToFrame(float value) const;
 
-		void		_didAddEntries(AnimFrame* pEntry, int nb) override;
-		void		_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb) override;
-		void		_willEraseEntries(AnimFrame* pEntry, int nb) override;
-		void		_didSetAnimFrameSize(CAnimFrames* pComponent) override;
-		void		_didSetAnimSurface(CAnimFrames* pComponent) override;
+		Border			m_gfxPadding;
+		bool			m_bAllFramesOpaque = false;
 
-		Object*		_object() override;
-
-		BorderI		m_gfxPadding;
-		bool		m_bAllFramesOpaque = false;
-
-		BlendMode		m_blendMode = BlendMode::Undefined;
-		HiColor			m_color = Color::White;
+		BlendMode		m_blendMode;
+		HiColor			m_color;
 		Gradient		m_gradient;
-		bool			m_bGradient = false;
+
+		int					m_duration;		// Millisec
+		Size				m_size;
+		Surface_p			m_pSurface;
+		std::vector<Frame>	m_frames;
 	};
 
 

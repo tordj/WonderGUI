@@ -23,6 +23,8 @@
 #define WG3_TEXTSTYLE_DOT_H
 #pragma once
 
+#include <vector>
+
 #include <wg3_pointers.h>
 #include <wg3_color.h>
 #include <wg3_util.h>
@@ -33,7 +35,7 @@ namespace wg
 {
 
 	class TextStyle;
-	typedef	StrongPtr<TextStyle>		TextStyle_p;
+	typedef	StrongPtr<TextStyle>	TextStyle_p;
 	typedef	WeakPtr<TextStyle>		TextStyle_wp;
 
 	struct TextAttr
@@ -43,11 +45,11 @@ namespace wg
 			//.____ Properties ___________________________________________________________
 
 			Font_p			pFont;
-			MU				size;
+			spx				size;
 			HiColor			color;
-			BlendMode		renderMode;
-			HiColor			bgColor;
-			BlendMode		bgRenderMode;
+			BlendMode		blendMode;
+			HiColor			backColor;
+			BlendMode		backBlendMode;
 			TextDecoration	decoration;
 			TextLink_p		pLink;
 
@@ -65,11 +67,44 @@ namespace wg
 		friend class CharBuffer;
 		friend class TextTool;
 
-
+		 
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct StateData
+		{
+			HiColor			backColor = HiColor::Undefined;
+			HiColor			color = HiColor::Undefined;
+			TextDecoration	decoration = TextDecoration::Undefined;
+			pts				size = -1;
+		};
+
+		struct StateBP
+		{
+			State			state = StateEnum::Normal;
+			StateData		data;
+		};
+
+		struct Blueprint
+		{
+			HiColor			backColor = HiColor::Transparent;
+			BlendMode		backBlendMode = BlendMode::Undefined;
+			BlendMode		blendMode = BlendMode::Undefined;
+			HiColor			color = HiColor::Undefined;
+			TextDecoration	decoration = TextDecoration::Undefined;
+			Font_p			font = nullptr;
+			TextLink_p		link = nullptr;
+			pts				size = -1;
+
+			std::vector<StateBP>	states;
+			
+			void 			modifyState( State state, const StateData& data );
+		};
+
 		//.____ Creation __________________________________________
 
-        static TextStyle_p	create();
+        static TextStyle_p	create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
@@ -78,68 +113,36 @@ namespace wg
 
 		//.____ Content _______________________________________________
 
-		void			setFont( Font * pFont );
-		void			setLink( TextLink * pLink );
-		void			setRenderMode(BlendMode mode);
-		void			setBgRenderMode(BlendMode mode);
-
-		void			setColor( HiColor color );
-		void			setColor(HiColor color, State state);
-		void			setBgColor( HiColor color );
-		void			setBgColor(HiColor color, State state);
-		void			setSize( int size );
-		void			setSize(int size, State state);
-		void			setDecoration( TextDecoration decoration );
-		void			setDecoration( TextDecoration decoration, State state );
-
-		inline void		clearFont() { setFont(nullptr); }
-		inline void		clearLink() { setLink(nullptr); }
-		inline void		clearRenderMode() { setRenderMode(BlendMode::Undefined); }
-		inline void		clearBgRenderMode() { setBgRenderMode(BlendMode::Undefined); }
-
-		void		    clearColor();
-		void		    clearColor(State state);
-		void		    clearBgColor();
-		void		    clearBgColor(State state);
-		inline void		clearSize() { setSize(0); }
-		inline void		clearSize(State state) { setSize(0, state); }
-		inline void		clearDecoration() { setDecoration(TextDecoration::Underline); }
-		inline void		clearDecoration( State state ) { setDecoration(TextDecoration::Underline, state); }
-
 		inline Font_p			font() const;
 		inline TextLink_p		link() const;
-		inline BlendMode		renderMode() const;
-		inline BlendMode		bgRenderMode() const;
+		inline BlendMode		blendMode() const;
+		inline BlendMode		backBlendMode() const;
 		inline HiColor			color( State state ) const;
-		inline HiColor			bgColor( State state ) const;
-		inline int				size( State state ) const;
+		inline HiColor			backColor( State state ) const;
+		inline pts				size( State state ) const;
 		inline TextDecoration 	decoration( State state ) const;
 
 		inline bool             isColorStatic() const { return m_bStaticColor; }
-		inline bool             isBgColorStatic() const { return m_bStaticBgColor; }
+		inline bool             isBackColorStatic() const { return m_bStaticBgColor; }
 		inline bool             isSizeStatic() const { return m_bStaticSize; }
 		inline bool             isDecorationStatic() const { return m_bStaticDecoration; }
-
-		inline bool             isColorDefined(State state) const;
-		inline bool             isBgColorDefined(State state) const;
-
 
 
 		//.____ Misc __________________________________________________________
 
 		inline TextStyle_h	handle() { return m_handle; }
 
-		void			exportAttr( State state, TextAttr * pDest ) const;
-		void			addToAttr( State state, TextAttr * pDest ) const;
+		void			exportAttr( State state, TextAttr * pDest, int scale ) const;
+		void			addToAttr( State state, TextAttr * pDest, int scale ) const;
 
         bool            isStateIdentical( State state1, State state2 ) const;
 		bool			isIdentical( TextStyle * pOther );
 		bool			isIdenticalForState( TextStyle * pOther, State state );
 
-		TextStyle_p     clone() const;
+		Blueprint		blueprint() const;
 
 	protected:
-		TextStyle();
+		TextStyle( const Blueprint& blueprint );
 		virtual ~TextStyle();
 
 		void		_refreshSize();
@@ -147,25 +150,20 @@ namespace wg
 		void		_refreshBgColor();
 		void		_refreshDecoration();
 
-
 		Font_p				m_pFont;
 		TextLink_p			m_pLink;
-		BlendMode			m_renderMode = BlendMode::Blend;
-		BlendMode			m_bgRenderMode = BlendMode::Blend;
+		BlendMode			m_blendMode = BlendMode::Blend;
+		BlendMode			m_backBlendMode = BlendMode::Blend;
 
-		int					m_size[StateEnum_Nb];
+		pts					m_size[StateEnum_Nb];
 		HiColor				m_color[StateEnum_Nb];
-		HiColor				m_bgColor[StateEnum_Nb];
+		HiColor				m_backColor[StateEnum_Nb];
 		TextDecoration		m_decoration[StateEnum_Nb];
 
 		Bitmask<uint32_t>	m_sizeSetMask = 0;
 		Bitmask<uint32_t>	m_colorSetMask = 0;
-		Bitmask<uint32_t>	m_bgColorSetMask = 0;
+		Bitmask<uint32_t>	m_backColorSetMask = 0;
 		Bitmask<uint32_t>	m_decorationSetMask = 0;
-
-		Bitmask<uint32_t>	m_colorDefinedMask = 0;
-		Bitmask<uint32_t>	m_bgColorDefinedMask = 0;
-
 
 		bool				m_bStaticColor = true;         // Combined color is identical in all states.
 		bool				m_bStaticBgColor = true;       // Combined background color is identical in all states.
@@ -196,13 +194,13 @@ namespace wg
 	}
 
 	//______________________________________________________________________________
-	inline 	HiColor TextStyle::bgColor( State state ) const
+	inline 	HiColor TextStyle::backColor( State state ) const
 	{
-		return m_bgColor[Util::_stateToIndex(state)];
+		return m_backColor[Util::_stateToIndex(state)];
 	}
 
 	//______________________________________________________________________________
-	inline int TextStyle::size( State state ) const
+	inline pts TextStyle::size( State state ) const
 	{
 		return m_size[Util::_stateToIndex(state)];
 	}
@@ -214,27 +212,15 @@ namespace wg
 	}
 
 	//______________________________________________________________________________
-	inline BlendMode TextStyle::renderMode() const
+	inline BlendMode TextStyle::blendMode() const
 	{
-		return m_renderMode;
+		return m_blendMode;
 	}
 
 	//______________________________________________________________________________
-	inline BlendMode TextStyle::bgRenderMode() const
+	inline BlendMode TextStyle::backBlendMode() const
 	{
-		return m_bgRenderMode;
-	}
-
-	//______________________________________________________________________________
-	inline bool TextStyle::isColorDefined(State state) const
-	{
-		return m_colorDefinedMask.bit(Util::_stateToIndex(state));
-	}
-
-	//______________________________________________________________________________
-	inline bool TextStyle::isBgColorDefined(State state) const
-	{
-		return m_bgColorDefinedMask.bit(Util::_stateToIndex(state));
+		return m_backBlendMode;
 	}
 
 

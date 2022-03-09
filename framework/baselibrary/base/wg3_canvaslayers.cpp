@@ -117,7 +117,7 @@ namespace wg
 		if (layer < 1 || layer > m_nbLayers)
 		{
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
-			return PixelFormat::Unknown;
+			return PixelFormat::Undefined;
 		}
 
 		return m_layers[layer-1].format;

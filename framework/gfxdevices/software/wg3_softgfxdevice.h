@@ -64,19 +64,17 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		bool		defineCanvas( CanvasRef ref, SoftSurface * pSurface );
-		
+
+		using GfxDevice::canvas;
+		const CanvasInfo& canvas(CanvasRef ref) const override;
+
 		SurfaceFactory_p	surfaceFactory() override;
-
-		//.____ Geometry _________________________________________________
-		
-		SizeI		canvasSize(CanvasRef ref) const override;
-
 
 		//.____ State _________________________________________________
 
 		void		setTintColor(HiColor color) override;
 
-		void		setTintGradient(const RectI& rect, const Gradient& gradient) override;
+		void		setTintGradient(const RectSPX& rect, const Gradient& gradient) override;
 		void		clearTintGradient() override;
 
 		bool		setBlendMode(BlendMode blendMode) override;
@@ -90,22 +88,22 @@ namespace wg
 		//
 
 		using 	GfxDevice::fill;
-		void	fill(const RectI& rect, HiColor col) override;
+		void	fill(const RectSPX& rect, HiColor col) override;
 		void	fill(const RectF& rect, HiColor col) override;
 
-		void    plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
+		void    plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordI begin, CoordI end, HiColor color, float thickness = 1.f) override;
-		void	drawLine(CoordI begin, Direction dir, int length, HiColor col, float thickness = 1.f) override;
+		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness = 1.f) override;
+		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, float thickness = 1.f) override;
 
 		bool	setBlitSource(Surface * pSource) override;
-		void	rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
+		void	rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
 
-		void	tile(const RectI& dest, CoordI shift = { 0,0 }) override;
-		void	flipTile(const RectI& dest, GfxFlip flip, CoordI shift = { 0,0 }) override;
+		void	tile(const RectSPX& dest, CoordSPX shift = { 0,0 }) override;
+		void	flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
-		void	scaleTile(const RectI& dest, float scale, CoordI shift = { 0,0 }) override;
-		void	scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift = { 0,0 }) override;
+		void	scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 }) override;
+		void	scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
 
 	protected:
@@ -116,10 +114,10 @@ namespace wg
 		void	_renderLayerWasChanged() override;
 
 
-		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
-		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
+		void	_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
+		void	_transformBlit(const RectSPX& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 		const static TintMode      TintMode_min = TintMode::None;
 		const static TintMode      TintMode_max = TintMode::GradientXY;
@@ -188,7 +186,7 @@ namespace wg
 			int dstY;			// Pitch in bytes from end of line to beginning of next for each line written.
 		};
 
-		inline static void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+		inline static void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 		inline static void _write_pixel_fast8(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
 
 		inline static void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat,
@@ -197,7 +195,7 @@ namespace wg
 			int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 
 
-		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color8 * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color8 * pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
 
 		inline static void	_blend_pixels(	BlendMode mode, int morphFactor, PixelFormat destFormat,
@@ -286,7 +284,7 @@ namespace wg
 		template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool TILE>
 		static void	_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
 
-		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, EdgeOp EDGEOP>
+		template<PixelFormat SRCFORMAT, SampleMethod SAMPLEMETHOD, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, EdgeOp EDGEOP>
 		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos);
 
 		template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
@@ -352,17 +350,17 @@ namespace wg
 		static SimpleBlitOp_p	s_blendTo_BGR_8_linear_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
 		static SimpleBlitOp_p	s_blendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
 
-		static ComplexBlitOp_p	s_transformTo_internal_OpTab[PixelFormat_size][2][3];				// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_internal_OpTab[PixelFormat_size][2][3];				// [SourceFormat][SampleMethod][Normal/Clip/Tile]
 
-		static ComplexBlitOp_p	s_transformTo_BGRA_8_linear_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformTo_BGR_8_linear_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_linear_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_linear_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
 
-		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_linear_OpTab[PixelFormat_size][2][3];			// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][3];			// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_linear_OpTab[PixelFormat_size][2][3];				// [SourceFormat][ScaleMode][Normal/Clip/Tile]
-		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][3];				// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_linear_OpTab[PixelFormat_size][2][3];			// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][3];			// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_linear_OpTab[PixelFormat_size][2][3];				// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][3];				// [SourceFormat][SampleMethod][Normal/Clip/Tile]
 
 
 		static int			s_mulTab[256];

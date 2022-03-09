@@ -193,7 +193,7 @@ namespace wg
 
 			// Decreaste s_cacheSize
 
-			SizeI pixels = toRemove.pSurface->size();
+			SizeI pixels = toRemove.pSurface->pixelSize();
 			m_cacheSize -= pixels.w * pixels.h;
 
 			// Remove surface and add to list of removed.

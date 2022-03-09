@@ -43,12 +43,12 @@ namespace wg
 
 	 public:
 
-		 //.____ Creation __________________________________________
+		//.____ Creation __________________________________________
 
-		static SoftSurface_p	create( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
-		static SoftSurface_p	create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
-		static SoftSurface_p	create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr);
-		static SoftSurface_p	create( Surface * pOther, int flags = SurfaceFlag::Static );
+		static SoftSurface_p	create(const Blueprint& blueprint);
+		static SoftSurface_p	create(const Blueprint& blueprint, Blob* pBlob, int pitch = 0 );
+		static SoftSurface_p	create(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
+		static SoftSurface_p	create(const Blueprint& blueprint, Surface* pOther);
 
 		//.____ Identification __________________________________________
 
@@ -59,14 +59,9 @@ namespace wg
 
 		static SizeI	maxSize();
 
-		//.____ Appearance ____________________________________________________
-
-		bool		isOpaque() const override;
-		bool		setTiling(bool bTiling) override;
-
 		//.____ Content _______________________________________________________
 
-		uint8_t		alpha( CoordI coord ) override;
+		int				alpha( CoordSPX coord ) override;
 
 		//.____ Control _______________________________________________________
 
@@ -75,20 +70,26 @@ namespace wg
 		void				pullPixels(const PixelBuffer& buffer, const RectI& bufferRect) override;
 		void				freePixelBuffer(const PixelBuffer& buffer) override;
 
-		//.____  Internal ____________________________________________________
+		//.____ Deprecated ____________________________________________________
+
+		static SoftSurface_p	create(SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static SoftSurface_p	create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static SoftSurface_p	create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static SoftSurface_p	create(Surface* pOther, int flags = SurfaceFlag::Static);
 
 		void putPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<uint32_t> &col, int length, bool replace);
 
 
 	protected:
-		SoftSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut );
-		SoftSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut );
-		SoftSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut );
-		SoftSurface( Surface * pOther, int flags );
+		SoftSurface(const Blueprint& blueprint);
+		SoftSurface(const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
+		SoftSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
+		SoftSurface(const Blueprint& blueprint, Surface* pOther);
 
-		virtual ~SoftSurface();
+		~SoftSurface();
 
 		void		_makeClut4096();
+		void		_initTiling();
 
 		int			m_srcPosMaskX = 0;
 		int			m_srcPosMaskY = 0;
@@ -98,7 +99,7 @@ namespace wg
 		Blob_p		m_pBlob;
 		uint8_t*	m_pData;
 
-		int16_t*	m_pClut4096 = nullptr;
+		HiColor*	m_pClut4096 = nullptr;
 	};
 
 

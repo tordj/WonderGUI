@@ -85,7 +85,7 @@ void WgPen::_onAttrChanged()
 	}
 
 	m_size = m_wantedSize * m_scale >> WG_SCALE_BINALS;
-	m_pFont->setSize(m_size*64);
+	m_pFont->setSize(m_size);
 }
 
 //____ SetAttributes() ________________________________________________________
@@ -294,7 +294,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 	//
 
-	WgGfxDevice::BlitBlock(m_pDevice, block, WgRect(m_pos + bearing, size));
+	WgGfxDevice::BlitBlock(m_pDevice, block, WgRect(m_pos + bearing, size), 4096);
 
 	// Restore tintcolor/blendmode.
 

@@ -104,8 +104,8 @@ void WgScaleImage::SetImageMaxSize( WgSize max )
 
 void WgScaleImage::_recalcImageRect( WgSize widgetSize )
 {
-	int w = m_pOrgSurface->size().w;
-	int h = m_pOrgSurface->size().h;
+	int w = m_pOrgSurface->pixelSize().w;
+	int h = m_pOrgSurface->pixelSize().h;
 
 	if( w > 0 && h > 0 )
 	{
@@ -223,7 +223,7 @@ void WgScaleImage::SetImageOrigo( WgOrigo origo )
 WgSize WgScaleImage::PreferredPixelSize() const
 {
 	if( m_pOrgSurface )
-		return m_pOrgSurface->size();
+		return m_pOrgSurface->pixelSize();
 
 	return WgSize(1,1);
 }

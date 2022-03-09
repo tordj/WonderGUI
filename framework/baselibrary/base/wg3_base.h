@@ -29,6 +29,7 @@
 #include <wg3_strongptr.h>
 #include <wg3_types.h>
 #include <wg3_hostbridge.h>
+#include <wg3_bitmapcache.h>
 
 #include <string>
 #include <functional>
@@ -45,24 +46,24 @@ namespace wg
 	class WeakPtrHub;
 	class MemStack;
 	class MsgRouter;
-	class ValueFormatter;
+	class NumberLayout;
 	class InputHandler;
-	class TextMapper;
+	class TextLayout;
 	class Caret;
 	class TextStyle;
 	class Context;
 	class Object;
 	class Receiver;
-	class BitmapCache;
+//	class BitmapCache;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
-	typedef	StrongPtr<ValueFormatter>	ValueFormatter_p;
+	typedef	StrongPtr<NumberLayout>	NumberLayout_p;
 	typedef	StrongPtr<InputHandler>		InputHandler_p;
-	typedef	StrongPtr<TextMapper>		TextMapper_p;
+	typedef	StrongPtr<TextLayout>		TextLayout_p;
 	typedef	StrongPtr<Caret>			Caret_p;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	StrongPtr<Context>			Context_p;
-	typedef	StrongPtr<BitmapCache>		BitmapCache_p;
+//	typedef	StrongPtr<BitmapCache>		BitmapCache_p;
 
 
 	class Error
@@ -111,9 +112,9 @@ namespace wg
 		static MsgRouter_p	msgRouter();
 		static InputHandler_p	inputHandler();
 		static BitmapCache_p	defaultBitmapCache();
-
-		static void			setDefaultTextMapper( TextMapper * pTextMapper );
-		static TextMapper_p defaultTextMapper();
+		
+		static void			setDefaultTextLayout( TextLayout * pTextLayout );
+		static TextLayout_p defaultTextLayout();
 
 		static void			setDefaultCaret(Caret * pCaret);
 		static Caret_p		defaultCaret();
@@ -121,8 +122,8 @@ namespace wg
 		static void			setDefaultStyle( TextStyle * pStyle );
 		static TextStyle_p 	defaultStyle();
 
-		static void			setDefaultValueFormatter(ValueFormatter * pFormatter);
-		static ValueFormatter_p defaultValueFormatter();
+		static void			setDefaultNumberLayout(NumberLayout * pFormatter);
+		static NumberLayout_p defaultNumberLayout();
 
 		static void			setActiveContext(Context * pContext);
 		static Context_p	activeContext();
@@ -135,6 +136,8 @@ namespace wg
 		//.____ Misc ________________________________________________
 
 		const static TypeInfo	TYPEINFO;
+
+		static bool			isInitialized() { return s_pData != 0; }
 
 		static void			update( int64_t timestamp_microseconds );
 
@@ -181,9 +184,9 @@ namespace wg
 #ifndef WG2_MODE
 			MsgRouter_p		pMsgRouter;
 			InputHandler_p	pInputHandler;
-			TextMapper_p		pDefaultTextMapper;
+			TextLayout_p		pDefaultTextLayout;
 			Caret_p				pDefaultCaret;
-			ValueFormatter_p	pDefaultValueFormatter;
+			NumberLayout_p	pDefaultNumberLayout;
 #endif
 
 			Context_p		pActiveContext;

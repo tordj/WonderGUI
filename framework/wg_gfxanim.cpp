@@ -100,7 +100,7 @@ void WgGfxAnim::SetBlockFlags( Uint32 flags )
 
 bool WgGfxAnim::InsertFrame( int pos, wg::Surface * pSurf, WgCoord ofs, int duration )
 {
-	if( pSurf->size().w < (int)(ofs.x + m_size[0].w) || pSurf->size().h < (int)(ofs.y + m_size[0].h) )
+	if( pSurf->pixelSize().w < (int)(ofs.x + m_size[0].w) || pSurf->pixelSize().h < (int)(ofs.y + m_size[0].h) )
 		return false;
 
 
@@ -136,7 +136,7 @@ bool WgGfxAnim::InsertFrame( WgGfxFrame * pBefore, wg::Surface * pSurf, WgCoord 
 
 bool WgGfxAnim::AddFrame( wg::Surface * pSurf, WgCoord ofs, int duration )
 {
-	if( pSurf->size().w < (int)(ofs.x + m_size[0].w) || pSurf->size().h < (int)(ofs.y + m_size[0].h) )
+	if( pSurf->pixelSize().w < (int)(ofs.x + m_size[0].w) || pSurf->pixelSize().h < (int)(ofs.y + m_size[0].h) )
 		return false;
 
 	WgGfxFrame * pFrame = new WgGfxFrame;
@@ -175,8 +175,8 @@ int WgGfxAnim::AddFrames( wg::Surface * pSurf, int duration, int nFrames, WgSize
 
 	WgSize arraySize;
 
-	arraySize.w = (pSurf->size().w+spacing.w) / (m_size[0].w+spacing.w);
-	arraySize.h = (pSurf->size().h+spacing.h) / (m_size[0].h+spacing.h);
+	arraySize.w = (pSurf->pixelSize().w+spacing.w) / (m_size[0].w+spacing.w);
+	arraySize.h = (pSurf->pixelSize().h+spacing.h) / (m_size[0].h+spacing.h);
 
 	return AddFrames( pSurf, WgCoord(0,0), arraySize, duration, nFrames, spacing );
 }
@@ -188,8 +188,8 @@ int WgGfxAnim::AddFrames( wg::Surface * pSurf, WgCoord arrayOfs, WgSize arraySiz
 	int nFramesY = arraySize.h;
 
 	if( pSurf == 0 || nFrames < 0 || nFrames > nFramesX*nFramesY || nFramesX <= 0 || nFramesY <= 0 ||
-		((nFramesX*m_size[0].w+(nFramesX-1)*spacing.w ) > pSurf->size().w - arrayOfs.x ) ||
-		((nFramesY*m_size[0].h+(nFramesY-1)*spacing.h ) > pSurf->size().h - arrayOfs.y ) )
+		((nFramesX*m_size[0].w+(nFramesX-1)*spacing.w ) > pSurf->pixelSize().w - arrayOfs.x ) ||
+		((nFramesY*m_size[0].h+(nFramesY-1)*spacing.h ) > pSurf->pixelSize().h - arrayOfs.y ) )
 		return 0;
 
 	if( nFrames == 0 )

@@ -26,26 +26,12 @@
 #include <wg3_container.h>
 #include <wg3_sidecanvas.h>
 #include <wg3_ctexteditor.h>
-#include <wg3_ccanvas.h>
-#include <wg3_cvaluedisplay.h>
+#include <wg3_cnumberdisplay.h>
 #include <wg3_skin.h>
 
 namespace wg
 {
 
-	class OWidget : public Widget
-	{
-	public:
-		using Widget::_resize;
-		using Widget::_collectPatches;
-		using Widget::_maskPatches;
-		using Widget::_render;
-		using Widget::_parent;
-		using Widget::_slot;
-		using Widget::_windowPadding;
-		using Widget::_preRender;
-		using Widget::_setState;
-	};
 
 	class OSideCanvas : public SideCanvas
 	{
@@ -72,8 +58,8 @@ namespace wg
 
 
 		using Container::_findWidget;
-		using Container::_getPopupLayer;
-		using Container::_getModalLayer;
+		using Container::_getPopupOverlay;
+		using Container::_getModalOverlay;
 	};
 
 	class OSlot : public StaticSlot
@@ -85,30 +71,12 @@ namespace wg
 
 	};
 
-	class OGeoComponent : public GeoComponent
-	{
-	public:
-	};
-
-	class OCCanvas : public CCanvas
-	{
-	public:
-		using CCanvas::_render;
-		using CCanvas::_alphaTest;
-
-		using CCanvas::_regenSurface;
-		using CCanvas::_calcPresentationArea;
-
-		using CCanvas::_setComponentSize;
-		using CCanvas::_preferredSize;
-	};
-
 	class OCStaticTextDisplay : public CStaticTextDisplay
 	{
 	public:
 		using CStaticTextDisplay::_clear;
 
-		using CStaticTextDisplay::_set;
+		using CStaticTextDisplay::_setText;
 
 		using CStaticTextDisplay::_append;
 		using CStaticTextDisplay::_insert;
@@ -142,7 +110,7 @@ namespace wg
 
 		using CStaticTextDisplay::_rectForRange;
 
-		using CStaticTextDisplay::_textMapper;
+		using CStaticTextDisplay::_layout;
 		using CStaticTextDisplay::_style;
 
 		using CStaticTextDisplay::_receive;
@@ -154,7 +122,7 @@ namespace wg
 	public:
 		using CTextDisplay::_clear;
 
-		using CTextDisplay::_set;
+		using CTextDisplay::_setText;
 
 		using CTextDisplay::_append;
 		using CTextDisplay::_insert;
@@ -188,7 +156,7 @@ namespace wg
 
 		using CTextDisplay::_rectForRange;
 
-		using CTextDisplay::_textMapper;
+		using CTextDisplay::_layout;
 		using CTextDisplay::_style;
 
 		using CTextDisplay::_receive;
@@ -207,7 +175,7 @@ namespace wg
 
 		using CTextEditor::_receive;
 		using CTextEditor::_clear;
-		using CTextEditor::_set;
+		using CTextEditor::_setText;
 
 		using CTextEditor::_append;
 		using CTextEditor::_insert;
@@ -215,15 +183,6 @@ namespace wg
 		using CTextEditor::_erase;
 
 		using CTextEditor::_setState;
-	};
-
-	class OCValueDisplay : public CValueDisplay
-	{
-	public:
-		using CValueDisplay::_preferredSize;
-		using CValueDisplay::_refresh;
-		using CValueDisplay::_render;
-		using CValueDisplay::_setState;
 	};
 
 
@@ -235,9 +194,6 @@ namespace wg
 	};
 
 
-	inline OWidget *			OO(Widget* pWidget) { return reinterpret_cast<OWidget*>(pWidget); }
-	inline const OWidget *		OO(const Widget* pWidget) { return reinterpret_cast<const OWidget*>(pWidget); }
-
 	inline OContainer *			OO(Container* pContainer) { return reinterpret_cast<OContainer*>(pContainer); }
 	inline const OContainer *	OO(const Container* pContainer) { return reinterpret_cast<const OContainer*>(pContainer); }
 
@@ -247,12 +203,6 @@ namespace wg
 	inline OSlot&				OO(StaticSlot& slot) { return reinterpret_cast<OSlot&>(slot); }
 	inline const OSlot&			OO(const StaticSlot& slot) { return reinterpret_cast<const OSlot&>(slot); }
 
-	inline OGeoComponent&		OO(GeoComponent& component) { return reinterpret_cast<OGeoComponent&>(component); }
-	inline const OGeoComponent&	OO(const GeoComponent& component) { return reinterpret_cast<const OGeoComponent&>(component); }
-
-	inline OCCanvas&			OO(CCanvas& component) { return reinterpret_cast<OCCanvas&>(component); }
-	inline const OCCanvas&		OO(const CCanvas& component) { return reinterpret_cast<const OCCanvas&>(component); }
-
 	inline OCStaticTextDisplay&	OO(CStaticTextDisplay& component) { return reinterpret_cast<OCStaticTextDisplay&>(component); }
 	inline const OCStaticTextDisplay&	OO(const CStaticTextDisplay& component) { return reinterpret_cast<const OCStaticTextDisplay&>(component); }
 
@@ -261,9 +211,6 @@ namespace wg
 
 	inline OCTextEditor&		OO(CTextEditor& component) { return reinterpret_cast<OCTextEditor&>(component); }
 	inline const OCTextEditor&	OO(const CTextEditor& component) { return reinterpret_cast<const OCTextEditor&>(component); }
-
-	inline OCValueDisplay&		OO(CValueDisplay& component) { return reinterpret_cast<OCValueDisplay&>(component); }
-	inline const OCValueDisplay& OO(const CValueDisplay& component) { return reinterpret_cast<const OCValueDisplay&>(component); }
 
 	inline OSideCanvas *		OO(SideCanvas* pWidget) { return reinterpret_cast<OSideCanvas*>(pWidget); }
 	inline const OSideCanvas *	OO(const SideCanvas* pWidget) { return reinterpret_cast<const OSideCanvas*>(pWidget); }

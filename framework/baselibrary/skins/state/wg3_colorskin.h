@@ -39,50 +39,65 @@ namespace wg
 	class ColorSkin : public StateSkin
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct StateData
+		{
+			HiColor			color = HiColor::Undefined;
+			Coord			contentShift;
+		};
+
+		struct StateBP
+		{
+			State			state = StateEnum::Normal;
+			StateData		data;
+		};
+
+		struct Blueprint
+		{
+			BlendMode		blendMode = BlendMode::Undefined;
+
+			HiColor			color = HiColor::White;
+
+			int				layer = -1;
+			int				markAlpha = 1;
+			Border			overflow;
+			Border			padding;
+
+			StateBP			states[StateEnum_Nb];
+		};
+
+
 		//.____ Creation __________________________________________
 
-		static ColorSkin_p	create();
-		static ColorSkin_p create(HiColor color,  BorderI contentPadding = BorderI() );
-		static ColorSkin_p	create(std::initializer_list< std::tuple<State,HiColor> > stateColors, BorderI contentPadding = BorderI() );
+		static ColorSkin_p	create( const Blueprint& blueprint );
+		static ColorSkin_p create(HiColor color,  Border contentPadding = Border() );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-
-		//.____ Appearance _________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
+		//.____ Internal ____________________________________________________
 
 
-		void		setColor(HiColor fill);
-		void		setColor(State state, HiColor fill);
-		void		setColor(std::initializer_list< std::tuple<State, HiColor> > stateColors);
-		HiColor		color(State state) const;
+		bool		_isOpaque( State state ) const override;
+		bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
 
-
-		//.____ Misc ____________________________________________________
-
-
-		bool		isOpaque( State state ) const override;
-		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
-
-		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold,
+		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
 								float value = 1.f, float value2 = -1.f) const override;
 
-		void		render(	GfxDevice* pDevice, const Rect& canvas, State state,
+		void		_render(	GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
 							float value = 1.f, float value2 = -1.f, int animPos = 0,
 							float* pStateFractions = nullptr) const override;
 
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX	_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
-		ColorSkin();
-		ColorSkin(HiColor color);
+		ColorSkin(const Blueprint& blueprint );
 		~ColorSkin() {};
 
 		void	_updateOpaqueFlag();

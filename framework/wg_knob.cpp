@@ -1001,8 +1001,8 @@ void WgKnob::_downsample(wg::Surface* pSurf, const int oversample)
 	if(oversample == 1)
 		return;
 
-	int w = pSurf->size().w; //Width();
-	int h = pSurf->size().h; //Height();
+	int w = pSurf->pixelSize().w; //Width();
+	int h = pSurf->pixelSize().h; //Height();
 	unsigned int col = (255) | (2<<8) | (1<<16) | (192<<24);
 
     auto pixbuf = pSurf->allocPixelBuffer();

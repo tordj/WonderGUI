@@ -41,61 +41,69 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			float		angleBegin = 0.f;
+			float		angleEnd = 360.f;
+
+			BlendMode	blendMode = BlendMode::Undefined;
+			HiColor		color = HiColor::Undefined;
+
+			Border		gfxPadding;
+			Gradient	gradient;
+			int			layer = -1;
+			int			markAlpha = 1;
+			Border		overflow;
+			Border		padding;
+
+			CoordF		pivot = { 0.5f, 0.5f };
+			CoordF		placement = { 0.5f, 0.5f };
+			Size		preferredSize;						// Mandatory
+			float		zoom = 1.f;
+
+			Surface_p	surface;							// Mandatory
+		};
+
 		//.____ Creation __________________________________________
 
-		static SpinMeterSkin_p create(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f,0.5f), 
-										CoordF dstCenter = CoordF(0.5f,0.5f), float fromDegrees = 0.f, float toDegrees = 360.f, 
-										float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI() );
+		static SpinMeterSkin_p create(	const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
+		//.____ Internal ____________________________________________________
 
-		Size	preferredSize() const override;
+		SizeSPX	_preferredSize(int scale) const override;
 
-		//.____ Appearance _________________________________________________
-
-		void		setBlendMode(BlendMode mode);
-		BlendMode	blendMode() const { return m_blendMode; }
-
-		void		setColor(HiColor tintColor);
-		HiColor		color() const { return m_color; }
-
-		void		setGradient(const Gradient& gradient);
-		Gradient	gradient() const { return m_gradient; }
-
-		//.____ Misc ____________________________________________________
-
-		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f) const override;
 
-		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-						float value = 1.f, float value2 = -1.f, int animPos = 0,
-						float* pStateFractions = nullptr) const override;
+		void 	_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
 
-		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+		RectSPX	_dirtyRect(	const RectSPX& canvas, int scale, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
 							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
 							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
-		SpinMeterSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f, 0.5f),
-						CoordF dstCenter = CoordF(0.5f, 0.5f), float fromDegrees = 0.f, float toDegrees = 360.f,
-						float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI());
+		SpinMeterSkin(	const Blueprint& blueprint );
 		~SpinMeterSkin() {};
 
 		void		_updateOpacityFlag();
 
 		Surface_p	m_pSurface;
 		Size		m_preferredSize;
-		CoordF		m_srcCenter;
-		CoordF		m_dstCenter;
+		CoordF		m_pivot;
+		CoordF		m_placement;
 		float		m_fromDegrees;
 		float		m_toDegrees;
 		float		m_zoom;
-		BorderI		m_gfxPadding;
+		Border		m_gfxPadding;
 
 		BlendMode		m_blendMode = BlendMode::Undefined;
 		HiColor			m_color = Color::White;

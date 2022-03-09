@@ -36,24 +36,59 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const BorderI& frame)
+	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const Border& frame)
 	{
-		return StaticBlockSkin_p(new StaticBlockSkin(pSurface,pSurface->size(),frame));
+		Blueprint blueprint;
+		blueprint.surface = pSurface;
+		blueprint.frame = frame;
+
+		return StaticBlockSkin_p(new StaticBlockSkin(blueprint));
 	}
 
-	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const RectI& block, const BorderI& frame)
+	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const Rect& block, const Border& frame)
 	{
-		return StaticBlockSkin_p(new StaticBlockSkin(pSurface, block, frame));
+		Blueprint blueprint;
+		blueprint.surface = pSurface;
+		blueprint.block = block;
+		blueprint.frame = frame;
+
+		return StaticBlockSkin_p(new StaticBlockSkin(blueprint));
 	}
+
+	StaticBlockSkin_p StaticBlockSkin::create(const Blueprint& blueprint)
+	{
+		return StaticBlockSkin_p(new StaticBlockSkin(blueprint));
+	}
+
 
 	//____ constructor ____________________________________________________________
 
-	StaticBlockSkin::StaticBlockSkin(Surface* pSurface, const RectI& block, const BorderI& frame)
+	StaticBlockSkin::StaticBlockSkin( const Blueprint& blueprint )
 	{
-		m_pSurface = pSurface;
-		m_ninePatch.block = block;
-		m_ninePatch.frame = frame;
-		m_bOpaque = m_pSurface->isOpaque();
+		m_pSurface = blueprint.surface;
+
+		if (blueprint.block.isEmpty())
+			m_ninePatch.block = m_pSurface->pointSize();
+		else
+			m_ninePatch.block = blueprint.block;
+
+		m_ninePatch.frame	= blueprint.frame;
+		m_gfxFrame			= blueprint.frame;
+
+		m_bOpaque			= m_pSurface->isOpaque();
+
+		m_blendMode			= blueprint.blendMode;
+		m_color				= blueprint.color;
+		m_contentPadding	= blueprint.padding;
+		m_gradient			= blueprint.gradient;
+		m_layer				= blueprint.layer;
+		m_markAlpha			= blueprint.markAlpha;
+		m_overflow			= blueprint.overflow;
+
+		_setRigidPartX(blueprint.rigidPartX.ofs, blueprint.rigidPartX.length, blueprint.rigidPartX.sections);
+		_setRigidPartY(blueprint.rigidPartY.ofs, blueprint.rigidPartY.length, blueprint.rigidPartY.sections);
+
+		_updateOpacityFlag();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -63,42 +98,13 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() ______________________________________________________________
+	//____ _setRigidPartX() _____________________________________________
 
-	Size StaticBlockSkin::preferredSize() const
+	bool StaticBlockSkin::_setRigidPartX(pts _ofs, pts _length, YSections sections)
 	{
-		return sizeForContent(m_ninePatch.block.size());
-	}
+		spx ofs = align(ptsToSpx(_ofs, m_pSurface->scale()));
+		spx length = align(ptsToSpx(_length, m_pSurface->scale()));
 
-	//____ setBlendMode() _____________________________________________________
-
-	void StaticBlockSkin::setBlendMode(BlendMode mode)
-	{
-		m_blendMode = mode;
-		_updateOpacityFlag();
-	}
-
-	//____ setColor() __________________________________________________________
-
-	void StaticBlockSkin::setColor(HiColor color)
-	{
-		m_color = color;
-		_updateOpacityFlag();
-	}
-
-	//____ setGradient() ______________________________________________________
-
-	void StaticBlockSkin::setGradient(const Gradient& gradient)
-	{
-		m_gradient = gradient;
-		m_bGradient = true;
-		_updateOpacityFlag();
-	}
-
-	//____ setRigidPartX() _____________________________________________
-
-	bool StaticBlockSkin::setRigidPartX(int ofs, int length, YSections sections)
-	{
 		int	midSecLen = m_ninePatch.block.w - m_ninePatch.frame.width();
 		ofs -= m_ninePatch.frame.left;
 
@@ -130,10 +136,13 @@ namespace wg
 		return true;
 	}
 
-	//____ setRigidPartY() _____________________________________________
+	//____ _setRigidPartY() _____________________________________________
 
-	bool StaticBlockSkin::setRigidPartY(int ofs, int length, XSections sections)
+	bool StaticBlockSkin::_setRigidPartY(pts _ofs, pts _length, XSections sections)
 	{
+		spx ofs = align(ptsToSpx(_ofs, m_pSurface->scale()));
+		spx length = align(ptsToSpx(_length, m_pSurface->scale()));
+
 		int	midSecLen = m_ninePatch.block.h - m_ninePatch.frame.height();
 		ofs -= m_ninePatch.frame.top;
 
@@ -165,25 +174,32 @@ namespace wg
 		return true;
 	}
 
-	//____ render() ______________________________________________________________
+	//____ _preferredSize() ______________________________________________________________
 
-	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, 
+	SizeSPX StaticBlockSkin::_preferredSize(int scale) const
+	{
+		return SizeSPX::max(align(ptsToSpx(m_ninePatch.block.size(),scale)),_sizeForContent( SizeSPX(), scale));
+	}
+
+	//____ _render() ______________________________________________________________
+
+	void StaticBlockSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, 
 								  float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pSurface)
 			return;
 
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_ninePatch.frame * 4 / m_pSurface->qpixPerPoint()), m_ninePatch);
+		pDevice->blitNinePatch(canvas, align(ptsToSpx(m_gfxFrame,scale)), m_ninePatch, scale);
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool StaticBlockSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
+	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
 	{
-		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, opacityTreshold );
+		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, scale, m_markAlpha);
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________
@@ -194,7 +210,7 @@ namespace wg
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{
-			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+			if ((m_gradient.isValid && !m_gradient.isOpaque()) || m_color.a != 4096)
 				m_bOpaque = false;
 			else
 				m_bOpaque = m_pSurface->isOpaque();

@@ -48,30 +48,29 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+        using GfxDevice::canvas;
+        const CanvasInfo& canvas(CanvasRef ref) const override;
+
 		const TypeInfo&		surfaceType( void ) const override;
 
 		//.____ Misc _______________________________________________________
 
 		bool		defineCanvas( CanvasRef ref, StreamSurface * pSurface );
-		bool		defineCanvas( CanvasRef ref, const SizeI& size );
+		bool		defineCanvas( CanvasRef ref, const SizeSPX& size, int scale = 64 );
 
 		SurfaceFactory_p surfaceFactory() override;
-
-		//.____ Geometry _________________________________________________
-		
-		SizeI		canvasSize(CanvasRef ref) const override;
 
 
 		//.____ State _________________________________________________
         
-        bool        setClipList(int nRectangles, const RectI * pRectangles) override;
+        bool        setClipList(int nRectangles, const RectSPX * pRectangles) override;
         void        clearClipList() override;
-        bool        pushClipList(int nRectangles, const RectI* pRectangles) override;
+        bool        pushClipList(int nRectangles, const RectSPX* pRectangles) override;
         bool        popClipList() override;
 
         void        setTintColor( HiColor color ) override;
 
-        void        setTintGradient(const RectI& rect, const Gradient& gradient) override;
+        void        setTintGradient(const RectSPX& rect, const Gradient& gradient) override;
         void        clearTintGradient() override;
 
         bool        setBlendMode( BlendMode blendMode ) override;
@@ -97,63 +96,57 @@ namespace wg
         // Draw methods.
 
         void    fill(HiColor col) override;
-        void    fill( const RectI& rect, HiColor col ) override;
+        void    fill( const RectSPX& rect, HiColor col ) override;
         void    fill(const RectF& rect, HiColor col) override;
 
-        void    plotPixels( int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
+        void    plotPixels( int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
-        void    drawLine( CoordI begin, CoordI end, HiColor color, float thickness = 1.f ) override;
-        void    drawLine( CoordI begin, Direction dir, int length, HiColor col, float thickness = 1.f) override;
+        void    drawLine( CoordSPX begin, CoordSPX end, HiColor color, float thickness = 1.f ) override;
+        void    drawLine( CoordSPX begin, Direction dir, int length, HiColor col, float thickness = 1.f) override;
 
         // Blit methods
 
-        void    blit(CoordI dest) override;
-        void    blit(CoordI dest, const RectI& src) override;
+        void    blit(CoordSPX dest) override;
+        void    blit(CoordSPX dest, const RectI& src) override;
 
-        void    flipBlit(CoordI dest, GfxFlip flip ) override;
-        void    flipBlit(CoordI dest, const RectI& src, GfxFlip flip ) override;
+        void    flipBlit(CoordSPX dest, GfxFlip flip ) override;
+        void    flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip ) override;
 
-        void    stretchBlit(const RectI& dest) override;
-        void    stretchBlit(const RectI& dest, const RectI& src) override;
-        void    stretchBlit(const RectI& dest, const RectF& src) override;
+        void    stretchBlit(const RectSPX& dest) override;
+        void    stretchBlit(const RectSPX& dest, const RectSPX& src) override;
+        void    stretchBlit(const RectSPX& dest, const RectF& src) override;
 
-        void    stretchFlipBlit(const RectI& dest, GfxFlip flip) override;
-        void    stretchFlipBlit(const RectI& dest, const RectI& src, GfxFlip flip) override;
-        void    stretchFlipBlit(const RectI& dest, const RectF& src, GfxFlip flip) override;
+        void    stretchFlipBlit(const RectSPX& dest, GfxFlip flip) override;
+        void    stretchFlipBlit(const RectSPX& dest, const RectSPX& src, GfxFlip flip) override;
+        void    stretchFlipBlit(const RectSPX& dest, const RectF& src, GfxFlip flip) override;
 
-        void    rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f }) override;
+        void    rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f }) override;
 
-        void    tile(const RectI& dest, CoordI shift = { 0,0 }) override;
-        void    flipTile(const RectI& dest, GfxFlip flip, CoordI shift = { 0,0 }) override;
+        void    tile(const RectSPX& dest, CoordSPX shift = { 0,0 }) override;
+        void    flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
-        void    scaleTile(const RectI& dest, float scale, CoordI shift = { 0,0 }) override;
-        void    scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift = { 0,0 }) override;
+        void    scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 }) override;
+        void    scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
 
         // Draw segments methods
 
-        void    drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill) override;
-        void    flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip) override;
+        void    drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill) override;
+        void    flipDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip) override;
 
-        void    drawElipse(const RectF& canvas, float thickness, HiColor color, float outlineThickness = 0.f, HiColor outlineColor = Color::Black) override;
+        void    drawElipse(const RectSPX& canvas, spx thickness, HiColor color, spx outlineThickness = 0, HiColor outlineColor = Color::Black) override;
 
-        void    drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize = 0.f, HiColor hubColor = Color::Transparent, HiColor backColor = Color::Transparent, bool bRectangular = false) override;
+        void    drawPieChart(const RectSPX& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize = 0.f, HiColor hubColor = Color::Transparent, HiColor backColor = Color::Transparent, bool bRectangular = false) override;
 
-        void    drawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat ) override;
-        void    flipDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat) override;
+        void    drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat ) override;
+        void    flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat) override;
 
 
         // Special draw/blit methods
 
-        void    blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const NinePatch& patch) override;
+        void    blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale) override;
 
-
-        //.____ Deprecated ________________________________________________
-
-        void    blitHorrBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len ) override;
-
-        void    blitVertBar( const RectI& _src, const BorderI& _borders, bool _bTile, CoordI dest, int _len ) override;
-
+ 
 	protected:
 		StreamGfxDevice( GfxStreamEncoder * pEncoder );
 		~StreamGfxDevice();
