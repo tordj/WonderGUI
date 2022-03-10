@@ -169,7 +169,7 @@ namespace wg
 		int	bytesProcessed = 0;
 		for (int i = 0; i < nSegments; i++)
 		{
-			if (pEnd > pSegments[i].pBegin && pEnd <= pSegments[i].pEnd)
+			if (pEnd >= pSegments[i].pBegin && pEnd <= pSegments[i].pEnd)
 			{
 				m_pOutput->processChunks(pSegments[i].pBegin, pEnd);
 				bytesProcessed += pEnd - pSegments[i].pBegin;
