@@ -329,7 +329,7 @@ namespace wg
 
 				CoordI		begin;
 				Direction	dir;
-				uint16_t	length;
+				int			length;
 				HiColor		color;
 				float		thickness;
 

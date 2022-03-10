@@ -228,6 +228,7 @@ protected:
 
     int             _listAncestors(WgWidget* array[], int max);
 
+	
 	// Convenient calls to hook
 
 	void			_requestRender() { if( m_pHook ) m_pHook->_requestRender(); }
@@ -241,6 +242,9 @@ protected:
 	// To be overloaded by Widget
 
 	virtual void    _preRender();
+
+	int				_convertAndPushClipList( wg::GfxDevice * pDevice, int nRects, const WgRect * pRects );
+	void			_popAndReleaseClipList( wg::GfxDevice * pDevice, int bytesToRelease );
 
 	virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );

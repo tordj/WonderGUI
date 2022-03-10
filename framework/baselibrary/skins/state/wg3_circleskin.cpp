@@ -63,46 +63,43 @@ namespace wg
 
 		for (auto& stateInfo : blueprint.states)
 		{
-			if (stateInfo.state != StateEnum::Normal)
+			int index = _stateToIndex(stateInfo.state);
+
+			if (stateInfo.data.color != HiColor::Undefined)
 			{
-				int index = _stateToIndex(stateInfo.state);
+				m_stateColorMask.setBit(index);
+				m_stateInfo[index].color = stateInfo.data.color;
+			}
 
-				if (stateInfo.data.color != HiColor::Undefined)
-				{
-					m_stateColorMask.setBit(index);
-					m_stateInfo[index].color = stateInfo.data.color;
-				}
+			if (stateInfo.data.size >= 0)
+			{
+				m_stateSizeMask.setBit(index);
+				m_stateInfo[index].size = stateInfo.data.size;
+			}
 
-				if (stateInfo.data.size >= 0)
-				{
-					m_stateSizeMask.setBit(index);
-					m_stateInfo[index].size = stateInfo.data.size;
-				}
+			if (stateInfo.data.thickness >= 0)
+			{
+				m_stateThicknessMask.setBit(index);
+				m_stateInfo[index].thickness = stateInfo.data.thickness;
+			}
 
-				if (stateInfo.data.thickness >= 0)
-				{
-					m_stateThicknessMask.setBit(index);
-					m_stateInfo[index].thickness = stateInfo.data.thickness;
-				}
+			if (stateInfo.data.outlineThickness >= 0)
+			{
+				m_stateOutlineThicknessMask.setBit(index);
+				m_stateInfo[index].outlineThickness = stateInfo.data.outlineThickness;
+			}
 
-				if (stateInfo.data.outlineThickness >= 0)
-				{
-					m_stateOutlineThicknessMask.setBit(index);
-					m_stateInfo[index].outlineThickness = stateInfo.data.outlineThickness;
-				}
+			if (stateInfo.data.outlineColor != HiColor::Undefined)
+			{
+				m_stateOutlineColorMask.setBit(index);
+				m_stateInfo[index].outlineColor = stateInfo.data.outlineColor;
+			}
 
-				if (stateInfo.data.outlineColor != HiColor::Undefined)
-				{
-					m_stateOutlineColorMask.setBit(index);
-					m_stateInfo[index].outlineColor = stateInfo.data.outlineColor;
-				}
-
-				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
-				{
-					m_contentShiftStateMask.setBit(index);
-					m_contentShift[index] = stateInfo.data.contentShift;
-					m_bContentShifting = true;
-				}
+			if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
+			{
+				m_contentShiftStateMask.setBit(index);
+				m_contentShift[index] = stateInfo.data.contentShift;
+				m_bContentShifting = true;
 			}
 		}
 

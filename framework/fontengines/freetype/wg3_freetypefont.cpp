@@ -73,7 +73,7 @@ namespace wg
         s_nInstances++;
 
 		m_pFontFile = pFontFile;
-		m_pCache 	= pCache;
+		m_pCache 	=  pCache ? BitmapCache_p(pCache) : Base::defaultBitmapCache();
 		m_size 			= 0;
 
 //		_growCachedFontSizes(c_maxFontSize);
@@ -127,8 +127,7 @@ namespace wg
         if( s_nInstances == 0 )
             FT_Done_FreeType(s_freeTypeLibrary);
 
-		BitmapCache * pCache = m_pCache ? m_pCache : Base::defaultBitmapCache();
-		pCache->removeListener(this);
+		m_pCache->removeListener(this);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -663,10 +662,8 @@ namespace wg
 	{
 		Surface_p	pSurface;
 		CoordI		ofs;
-		
-		BitmapCache * pCache = m_pCache ? m_pCache : Base::defaultBitmapCache();
-		
-		std::tie(pSurface,ofs) = pCache->getCacheSlot( {width,height} );
+				
+		std::tie(pSurface,ofs) = m_pCache->getCacheSlot( {width,height} );
 				
 		pGlyph->pSurface = pSurface;
 		pGlyph->rect.x = ofs.x*64;

@@ -80,28 +80,25 @@ namespace wg
 
 		for (auto& stateInfo : blueprint.states)
 		{
-			if (stateInfo.state != StateEnum::Normal)
+			index = _stateToIndex(stateInfo.state);
+
+			if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
 			{
-				index = _stateToIndex(stateInfo.state);
+				m_contentShiftStateMask.setBit(index);
+				m_contentShift[index] = stateInfo.data.contentShift;
+				m_bContentShifting = true;
+			}
 
-				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
-				{
-					m_contentShiftStateMask.setBit(index);
-					m_contentShift[index] = stateInfo.data.contentShift;
-					m_bContentShifting = true;
-				}
+			if (stateInfo.data.surface)
+			{
+				m_stateSurfaces[index] = stateInfo.data.surface;
+				m_stateSurfaceMask.setBit(index);
+			}
 
-				if (stateInfo.data.surface)
-				{
-					m_stateSurfaces[index] = stateInfo.data.surface;
-					m_stateSurfaceMask.setBit(index);
-				}
-
-				if(stateInfo.data.color != HiColor::Undefined )
-				{
-					m_stateColors[index] = stateInfo.data.color;
-					m_stateColorMask.setBit(index);
-				}
+			if(stateInfo.data.color != HiColor::Undefined )
+			{
+				m_stateColors[index] = stateInfo.data.color;
+				m_stateColorMask.setBit(index);
 			}
 		}
 

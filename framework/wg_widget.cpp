@@ -552,12 +552,34 @@ void WgWidget::_preRender()
 	// By default we do nothing.
 }
 
+//____ _convertAndPushClipList() ________________________________________________
+
+int WgWidget::_convertAndPushClipList( wg::GfxDevice * pDevice, int nRects, const WgRect * pRects )
+{
+	wg::RectSPX * pClipRects = (wg::RectSPX*) wg::Base::memStackAlloc(nRects*sizeof(wg::RectSPX));
+	
+	for(int i = 0 ; i < nRects ; i++)
+		pClipRects[i] = pRects[i]*64;
+	
+	pDevice->pushClipList(nRects, pClipRects);
+}
+
+//____ _popAndReleaseClipList() _______________________________________________
+
+void WgWidget::_popAndReleaseClipList( wg::GfxDevice * pDevice, int bytesToRelease)
+{
+	pDevice->popClipList();
+	wg::Base::memStackRelease(bytesToRelease);
+}
+
+
 //____ _renderPatches() ________________________________________________________
 
 void WgWidget::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
-	pDevice->setClipList(_pPatches->size(), _pPatches->begin());
+	int bytesToRelease = _convertAndPushClipList(pDevice, _pPatches->size(), _pPatches->begin());
 	_onRender( pDevice, _canvas, _window );
+	_popAndReleaseClipList(pDevice, bytesToRelease);
 }
 
 //____ Fillers _______________________________________________________________

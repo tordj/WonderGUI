@@ -26,8 +26,7 @@
 #include <wg3_stateskin.h>
 #include <wg3_color.h>
 
-#include <initializer_list>
-#include <utility>
+#include <vector>
 
 namespace wg
 {
@@ -65,7 +64,7 @@ namespace wg
 			Border			overflow;
 			Border			padding;
 
-			StateBP			states[StateEnum_Nb];
+			std::vector<StateBP> states;
 		};
 
 

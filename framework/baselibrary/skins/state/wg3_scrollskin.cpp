@@ -71,9 +71,9 @@ namespace wg
 		{
 
 			int nStateBlocks = 1;
-			for (int i = 0; i < StateEnum_Nb; i++)
+			for ( auto& entry : blueprint.states)
 			{
-				if (blueprint.states[i].state != StateEnum::Normal && blueprint.states[i].data.blockless == false)
+				if (entry.state != StateEnum::Normal && entry.data.blockless == false)
 					nStateBlocks++;
 			}
 
@@ -106,7 +106,6 @@ namespace wg
 		int ofs = 0;
 		for ( auto& stateInfo : blueprint.states )
 		{
-			if (stateInfo.state != StateEnum::Normal)
 			{
 				int index = _stateToIndex(stateInfo.state);
 
@@ -117,7 +116,7 @@ namespace wg
 					m_bContentShifting = true;
 				}
 
-				if (stateInfo.data.blockless == false)
+				if ( !stateInfo.data.blockless && stateInfo.state != StateEnum::Normal )
 				{
 					ofs++;
 					m_stateBlockMask.setBit(index);

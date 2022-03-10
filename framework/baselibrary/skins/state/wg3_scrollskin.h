@@ -27,6 +27,8 @@
 #include <wg3_surface.h>
 #include <wg3_gradient.h>
 
+#include <vector>
+
 namespace wg
 {
 
@@ -54,6 +56,12 @@ namespace wg
 
 		struct StateBP
 		{
+			StateBP() {}
+			StateBP( State s ) : state(s) {}
+			StateBP( StateEnum s ) : state(s) {}
+			StateBP( State s, StateData d ) : state(s), data(d) {}
+			StateBP( StateEnum s, StateData d ) : state(s), data(d) {}
+
 			State			state = StateEnum::Normal;
 			StateData		data;
 		};
@@ -78,7 +86,7 @@ namespace wg
 			StateBits		scrollState = StateBits::Selected;			
 
 			pts				spacing = 0;
-			StateBP			states[StateEnum_Nb];
+			std::vector<StateBP> states;
 			Surface_p		surface;
 		};
 

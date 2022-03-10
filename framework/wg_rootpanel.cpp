@@ -27,6 +27,8 @@
 #	include <wg_gfxdevice.h>
 #endif
 
+#include <wg3_base.h>
+
 #include <wg_eventhandler.h>
 
 static const char	c_hookType[] = {"RootHook"};
@@ -51,7 +53,7 @@ WgRootPanel::WgRootPanel( wg::Surface * pCanvasSurface, wg::GfxDevice * pGfxDevi
 {
 	m_canvas.ref = wg::CanvasRef::None;
 	m_canvas.pSurface = pCanvasSurface;
-	m_canvas.size = pCanvasSurface->pixelSize();
+	m_canvas.size = pCanvasSurface->pixelSize()*64;
 
 	m_bVisible = true;
 	m_bHasGeo = false;
@@ -70,7 +72,7 @@ WgRootPanel::WgRootPanel( wg::CanvasRef ref, wg::GfxDevice * pGfxDevice )
 
     m_bVisible = true;
     m_bHasGeo = false;
-    m_geo = m_canvas.size;
+    m_geo = m_canvas.size/64;
     m_pGfxDevice = pGfxDevice;
     m_pEventHandler = new WgEventHandler(this);
     m_hook.m_pRoot = this;
@@ -108,10 +110,10 @@ bool WgRootPanel::SetCanvas(wg::Surface* pSurface)
 
 	m_canvas.ref = wg::CanvasRef::None;
     m_canvas.pSurface = pSurface;
-    m_canvas.size = pSurface->pixelSize();
+    m_canvas.size = pSurface->pixelSize()*64;
 
     if( !m_bHasGeo && m_hook.Widget() )
-        m_hook.Widget()->_onNewSize(m_canvas.size);
+        m_hook.Widget()->_onNewSize(m_canvas.size/64);
 
     m_dirtyPatches.add(PixelGeo());
     return true;
@@ -124,7 +126,7 @@ bool WgRootPanel::SetCanvas(wg::CanvasRef ref)
     m_canvas.size = m_pGfxDevice->canvas(ref).size;
 
     if( !m_bHasGeo && m_hook.Widget() )
-        m_hook.Widget()->_onNewSize(m_canvas.size);
+        m_hook.Widget()->_onNewSize(m_canvas.size/64);
 
     m_dirtyPatches.add(PixelGeo());
     return true;
@@ -153,7 +155,7 @@ WgRect WgRootPanel::PixelGeo() const
 	if( m_bHasGeo )
 		return m_geo;
 	else
-        return m_canvas.size;
+        return m_canvas.size/64;
 }
 
 
@@ -332,7 +334,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 	// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
-    WgRect canvas = m_bHasGeo ? WgRect(m_geo, WgRect(m_canvas.size)) : WgRect(m_canvas.size);
+    WgRect canvas = m_bHasGeo ? WgRect(m_geo, WgRect(m_canvas.size/64)) : WgRect(m_canvas.size/64);
 	WgRect clip( _clip, canvas );
 	if( clip.w == 0 || clip.h == 0 )
 		return false;						// Invalid rect area.
@@ -361,14 +363,22 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
         int nRects = dirtyPatches.size();
         const WgRect* pRects = dirtyPatches.begin();
 
+		wg::RectSPX * pClipRects = (wg::RectSPX*) wg::Base::memStackAlloc(nRects*sizeof(wg::RectSPX));
+		
+		for(int i = 0 ; i < nRects ; i++)
+			pClipRects[i] = pRects[i]*64;
+				
         if (m_canvas.pSurface)
-            m_pGfxDevice->beginCanvasUpdate(m_canvas.pSurface, nRects, pRects);
+            m_pGfxDevice->beginCanvasUpdate(m_canvas.pSurface, nRects, pClipRects);
         else
-            m_pGfxDevice->beginCanvasUpdate(m_canvas.ref, nRects, pRects);
+            m_pGfxDevice->beginCanvasUpdate(m_canvas.ref, nRects, pClipRects);
 
         m_hook.Widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches );
         
         m_pGfxDevice->endCanvasUpdate();
+		
+		wg::Base::memStackRelease(nRects*sizeof(wg::RectSPX));
+		
     }
 	// Handle updated rect overlays
 

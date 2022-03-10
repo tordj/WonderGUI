@@ -334,8 +334,8 @@ int main ( int argc, char** argv )
 //	manuBlendTest();
 
 
-    cursorInViewTest( pRoot );
-//	pianoKeyboardTest(pRoot);
+//    cursorInViewTest( pRoot );
+	pianoKeyboardTest(pRoot);
 //	rangeSliderTest(pRoot);
 //    canvasCapsuleTest(pRoot);
 //    tooltipLayerTest(pRoot);
@@ -965,8 +965,8 @@ bool rangeSliderTest(WgRootPanel* pRoot)
 		.color = wg::Color8(0x7F808080),
 		.padding = 10,
 		.states = {
-			wg::StateEnum::Hovered, { .color = wg::Color8(0x7FA0A0A0)},
-			wg::StateEnum::Pressed, { .color = wg::Color8(0xFFF0F0F0)}
+			{ wg::StateEnum::Hovered, { .color = wg::Color8(0x7FA0A0A0)}},
+			{ wg::StateEnum::Pressed, { .color = wg::Color8(0xFFF0F0F0)}}
 		}
 	});
 		
@@ -1167,10 +1167,10 @@ bool fullStateSupportTest(WgRootPanel* pRoot)
 	auto pTextSkin = wg::ColorSkin::create( {
 	   .padding = {10,10,10,30},
 	   .states = {
-		   WgStateEnum::Normal, { .color = wg::HiColor(0,4096,0) },
-		   WgStateEnum::Hovered, { .color = wg::HiColor(4096,4096,0) },
-		   WgStateEnum::Focused, { .color = wg::HiColor(4096,0,0) },
-		   WgStateEnum::HoveredFocused, { .color = wg::HiColor(4096,0,0) }
+		   {WgStateEnum::Normal, { .color = wg::HiColor(0,4096,0) }},
+		   {WgStateEnum::Hovered, { .color = wg::HiColor(4096,4096,0) }},
+		   {WgStateEnum::Focused, { .color = wg::HiColor(4096,0,0) }},
+		   {WgStateEnum::HoveredFocused, { .color = wg::HiColor(4096,0,0) }}
 	   }
     });
     

@@ -451,7 +451,7 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
 
 				float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_blackKeySourceHeight);
 
-				pDevice->stretchBlit(dst + canvas.pos(), wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
+				pDevice->stretchBlit((dst + canvas.pos()) * 64, wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 			}
 
             pKey++;
@@ -495,7 +495,7 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
 
 		float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_keyboardSourceSize.h);
 
-		pDevice->stretchBlit(dst + canvas.pos(), wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
+		pDevice->stretchBlit((dst + canvas.pos()) * 64, wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 
 		if (bForward)
 		{
@@ -710,11 +710,11 @@ int WgPianoKeyboard::_markTestKey(const wg::CoordI& pos)
 
 	// alpha test on keys
 
-	if (m_pOddWhiteKeys->alpha(srcPos))
+	if (m_pOddWhiteKeys->alpha(srcPos*64))
 		keyPos = int((srcPos.x + whiteKeySpacing / 2) / (whiteKeySpacing * 2)) * 2;
-	else if (m_pEvenWhiteKeys->alpha(srcPos))
+	else if (m_pEvenWhiteKeys->alpha(srcPos*64))
 		keyPos = int((srcPos.x - whiteKeySpacing / 2) / (whiteKeySpacing * 2)) * 2 + 1;
-	else if (m_pBlackKeys && (srcPos.y < m_pBlackKeys->pixelSize().h) && m_pBlackKeys->alpha(srcPos))
+	else if (m_pBlackKeys && (srcPos.y < m_pBlackKeys->pixelSize().h) && m_pBlackKeys->alpha(srcPos*64))
 	{
 		keyPos = int((srcPos.x - whiteKeySpacing / 2) / whiteKeySpacing);
 		isBlack = true;

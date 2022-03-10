@@ -21,10 +21,11 @@
 =========================================================================*/
 
 #include <vector>
+
 #include <wg_container.h>
 #include <wg_panel.h>
-
 #include <wg_patches.h>
+#include <wg_base.h>
 
 #ifndef WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
@@ -349,7 +350,7 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 	// We start by eliminating dirt outside our geometry
 
 	WgPatches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
-
+	
 	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
 		if( _canvas.intersectsWith( *pRect ) )
@@ -359,7 +360,11 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 
 	// Render container itself
 
-	pDevice->setClipList(patches.size(), patches.begin());
+	const WgRect * pRects = patches.begin();
+	int nRects = patches.size();
+
+	int bytesToRelease = _convertAndPushClipList( pDevice, patches.size(), patches.begin() );
+	
 	_onRender(pDevice, _canvas, _window );
 
 
@@ -427,6 +432,8 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 		}
 
 	}
+	
+	_popAndReleaseClipList( pDevice, bytesToRelease );
 }
 
 //____ _onCloneContent() _______________________________________________________

@@ -71,6 +71,7 @@ namespace wg
 
 		bool			_hasStreamChunks() const override;
 		std::tuple<int, const DataSegment*> _showStreamChunks() override;
+		GfxChunkId 		_peekStreamChunk() override;
 		void			_discardStreamChunks(int bytes) override;
 		bool			_fetchStreamChunks() override;
 
