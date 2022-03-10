@@ -56,6 +56,12 @@ namespace wg
 
 		struct StateBP
 		{
+			StateBP() {}
+			StateBP( State s ) : state(s) {}
+			StateBP( StateEnum s ) : state(s) {}
+			StateBP( State s, StateData d ) : state(s), data(d) {}
+			StateBP( StateEnum s, StateData d ) : state(s), data(d) {}
+
 			State			state = StateEnum::Normal;
 			StateData		data;
 		};
