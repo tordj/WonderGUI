@@ -23,11 +23,11 @@
 #define WG_CIRCLESKIN_DOT_H
 #pragma once
 
+
 #include <wg_stateskin.h>
 #include <wg_color.h>
 
-#include <initializer_list>
-#include <utility>
+#include <vector>
 
 namespace wg
 {
@@ -75,7 +75,7 @@ namespace wg
 			Border			padding;
 			float			size = 1;
 
-			StateBP			states[StateEnum_Nb];
+			std::vector<StateBP>	states;
 
 			pts				thickness = 1;
 		};

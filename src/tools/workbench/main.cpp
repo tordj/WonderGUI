@@ -479,21 +479,6 @@ int main(int argc, char** argv)
 	*/
 
 
-	TextStyle::Blueprint bp =	{	.color = Color::White, .size = 16,
-									.states = {
-										{ StateEnum::Hovered, {.color = Color::Red, .size = 18 } },
-										{ StateEnum::Pressed, {.color = Color::Red, .size = 18 } }
-									}
-								};
-
-
-
-
-	bp.states[2] = { StateEnum::Disabled, {Color::Transparent, Color::Grey, TextDecoration::Underline, 16} };
-
-	bp.states[2] = { StateEnum::Disabled, { .color = Color::Grey } };
-
-
 	// Init skins
 
 	SDL_Surface * pSDLSurf = IMG_Load("resources/simple_button.bmp");

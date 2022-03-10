@@ -219,9 +219,9 @@ namespace wg
 		if (block.isEmpty())
 		{
 			int nStateBlocks = 1;
-			for (int i = 0; i < StateEnum_Nb; i++)
+			for ( auto& entry : blueprint.states )
 			{
-				if (blueprint.states[i].state != StateEnum::Normal && blueprint.states[i].data.blockless == false)
+				if( entry.state != StateEnum::Normal && entry.data.blockless == false)
 					nStateBlocks++;
 			}
 
@@ -301,29 +301,26 @@ namespace wg
 		int ofs = 0;
 		for (auto& stateInfo : blueprint.states)
 		{
-			if (stateInfo.state != StateEnum::Normal)
+			int index = _stateToIndex(stateInfo.state);
+
+			if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
 			{
-				int index = _stateToIndex(stateInfo.state);
+				m_contentShiftStateMask.setBit(index);
+				m_contentShift[index] = stateInfo.data.contentShift;
+				m_bContentShifting = true;
+			}
 
-				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
-				{
-					m_contentShiftStateMask.setBit(index);
-					m_contentShift[index] = stateInfo.data.contentShift;
-					m_bContentShifting = true;
-				}
+			if ( !stateInfo.data.blockless && stateInfo.state != StateEnum::Normal )
+			{
+				ofs++;
+				m_stateBlockMask.setBit(index);
+				m_stateBlocks[index] = blockOfs + pitch * ofs;
+			}
 
-				if (stateInfo.data.blockless == false)
-				{
-					ofs++;
-					m_stateBlockMask.setBit(index);
-					m_stateBlocks[index] = blockOfs + pitch * ofs;
-				}
-
-				if (stateInfo.data.color != HiColor::Undefined)
-				{
-					m_stateColorMask.setBit(index);
-					m_stateColors[index] = stateInfo.data.color;
-				}
+			if (stateInfo.data.color != HiColor::Undefined)
+			{
+				m_stateColorMask.setBit(index);
+				m_stateColors[index] = stateInfo.data.color;
 			}
 		}
 

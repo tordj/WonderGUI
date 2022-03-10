@@ -56,7 +56,7 @@ namespace wg
 
 	BoxSkin::BoxSkin( const Blueprint& blueprint )
 	{
-		m_outline			= blueprint.outline;
+		m_outline		= blueprint.outline;
 		m_blendMode		= blueprint.blendMode;
 		m_contentPadding= blueprint.padding;
 		m_layer			= blueprint.layer;
@@ -69,28 +69,25 @@ namespace wg
 
 		for (auto& stateInfo : blueprint.states)
 		{
-			if (stateInfo.state != StateEnum::Normal)
+			int index = _stateToIndex(stateInfo.state);
+
+			if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
 			{
-				int index = _stateToIndex(stateInfo.state);
+				m_contentShiftStateMask.setBit(index);
+				m_contentShift[index] = stateInfo.data.contentShift;
+				m_bContentShifting = true;
+			}
 
-				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
-				{
-					m_contentShiftStateMask.setBit(index);
-					m_contentShift[index] = stateInfo.data.contentShift;
-					m_bContentShifting = true;
-				}
+			if (stateInfo.data.color != HiColor::Undefined)
+			{
+				m_stateColorMask.setBit(index);
+				m_fillColor[index] = stateInfo.data.color;
+			}
 
-				if (stateInfo.data.color != HiColor::Undefined)
-				{
-					m_stateColorMask.setBit(index);
-					m_fillColor[index] = stateInfo.data.color;
-				}
-
-				if (stateInfo.data.outlineColor != HiColor::Undefined)
-				{
-					m_stateOutlineColorMask.setBit(index);
-					m_outlineColor[index] = stateInfo.data.outlineColor;
-				}
+			if (stateInfo.data.outlineColor != HiColor::Undefined)
+			{
+				m_stateOutlineColorMask.setBit(index);
+				m_outlineColor[index] = stateInfo.data.outlineColor;
 			}
 		}
 

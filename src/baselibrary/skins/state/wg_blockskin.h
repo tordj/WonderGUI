@@ -27,6 +27,8 @@
 #include <wg_surface.h>
 #include <wg_gradient.h>
 
+#include <vector>
+
 namespace wg
 {
 
@@ -89,8 +91,8 @@ namespace wg
 			RigidPartYBlueprint rigidPartY;
 
 			pts			spacing = 0;
-			StateBP		states[StateEnum_Nb];
-
+			std::vector<StateBP>	states;
+			
 			Surface_p	surface;
 		};
 

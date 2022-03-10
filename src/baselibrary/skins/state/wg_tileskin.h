@@ -27,6 +27,8 @@
 #include <wg_surface.h>
 #include <wg_gradient.h>
 
+#include <vector>
+
 namespace wg
 {
 
@@ -68,7 +70,7 @@ namespace wg
 			Border			overflow;
 			Border			padding;
 
-			StateBP			states[StateEnum_Nb];
+			std::vector<StateBP>	states;
 			Surface_p		surface;
 		};
 

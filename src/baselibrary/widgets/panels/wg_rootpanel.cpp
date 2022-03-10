@@ -93,9 +93,11 @@ namespace wg
 		bp.outline = 1;
 		bp.outlineColor = HiColor(4096, 0, 0, 2048);
 		
-		bp.states[0].state = StateEnum::Focused;
-		bp.states[0].data.color = HiColor(4096, 0, 0, 2048);
-		bp.states[0].data.outlineColor = HiColor(4096, 0, 0, 4096);
+		BoxSkin::StateBP sbp;
+		sbp.state = StateEnum::Focused;
+		sbp.data.color = HiColor(4096, 0, 0, 2048);
+		sbp.data.outlineColor = HiColor(4096, 0, 0, 4096);
+		bp.states.push_back(sbp);
 
 		m_pDebugOverlay = BoxSkin::create(bp);
 		m_afterglowFrames = 4;
