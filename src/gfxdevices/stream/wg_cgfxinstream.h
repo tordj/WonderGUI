@@ -27,6 +27,7 @@
 #include <wg_component.h>
 #include <wg_types.h>
 #include <wg_pointers.h>
+#include <wg_gfxstream.h>
 
 #include <tuple>
 
@@ -58,6 +59,7 @@ namespace wg
 			virtual std::tuple<int, const DataSegment *> _showStreamChunks() = 0;
 			virtual	void _discardStreamChunks(int bytes) = 0;
 			virtual bool _fetchStreamChunks() = 0;
+			virtual GfxChunkId _peekStreamChunk() = 0;
 		};
 
 
@@ -74,6 +76,7 @@ namespace wg
 		inline std::tuple<int, const DataSegment*> showChunks() { return m_pHolder->_showStreamChunks(); }
 		inline void discardChunks(int bytes) { return m_pHolder->_discardStreamChunks(bytes); }
 		inline bool fetchChunks() { return m_pHolder->_fetchStreamChunks(); }
+		inline GfxChunkId peekChunk() { return m_pHolder->_peekStreamChunk(); }
 
 		//.____ Misc __________________________________________________
 

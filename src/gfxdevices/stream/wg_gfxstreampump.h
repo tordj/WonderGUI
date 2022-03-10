@@ -51,14 +51,15 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		void	setInput(CGfxInStream* pStream);
-		void	setOutput(CGfxOutStream* pStream);
+		void		setInput(CGfxInStream* pStream);
+		void		setOutput(CGfxOutStream* pStream);
 
-		bool	pumpChunk();
-		bool	pumpUntilFrame();
-		bool	pumpFrame();	
-//		bool	pumpAllFramesWithOptimization();
-		bool	pumpAll();
+		GfxChunkId	peekChunk();
+		bool		pumpChunk();
+		bool		pumpUntilFrame();
+		bool		pumpFrame();
+//		bool		pumpAllFramesWithOptimization();
+		bool		pumpAll();
 
 
 	protected:

@@ -187,6 +187,16 @@ namespace wg
 		}
 	}
 
+	//____ _peekStreamChunk() __________________________________________________________
+
+	GfxChunkId GfxStreamBuffer:: _peekStreamChunk()
+	{
+		if(m_processedOfs == m_readOfs )
+			return GfxChunkId::OutOfData;
+
+		return (GfxChunkId) * (uint16_t*) &m_pBuffer[m_readOfs];
+	}
+
 	//____ _discardStreamChunks() _____________________________________________
 
 	void GfxStreamBuffer::_discardStreamChunks(int bytes)

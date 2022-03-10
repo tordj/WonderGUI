@@ -163,7 +163,17 @@ namespace wg
 			return std::make_tuple(int(1), m_dataSegments);
 		}
 	}
-	 
+
+	//____ _peekStreamChunk() __________________________________________________________
+
+	GfxChunkId GfxStreamReader:: _peekStreamChunk()
+	{
+		if(m_processedOfs == m_readOfs )
+			return GfxChunkId::OutOfData;
+
+		return (GfxChunkId) * (uint16_t*) &m_pBuffer[m_readOfs];
+	}
+
 	//____ _discardStreamChunks() _____________________________________________
 
 	void GfxStreamReader::_discardStreamChunks(int bytes)
@@ -205,7 +215,7 @@ namespace wg
 				int chunkSize1 = oldBufferSize - m_readOfs;
 				int chunkSize2 = m_writeOfs;
 
-				memcpy(m_pBuffer, pOldBuffer + m_readOfs, oldBufferSize - m_readOfs);
+				memcpy(m_pBuffer, pOldBuffer + m_readOfs, chunkSize1);
 				memcpy(m_pBuffer + chunkSize1, pOldBuffer, chunkSize2);
 
 				m_readOfs = 0;

@@ -81,6 +81,16 @@ namespace wg
 		m_pOutput = pStream;
 	}
 
+	//____ peekChunk() ________________________________________________________
+
+	GfxChunkId GfxStreamPump::peekChunk()
+	{
+		if (!m_pInput)
+			return GfxChunkId::OutOfData;
+
+		return m_pInput->peekChunk();
+	}
+
 	//____ pumpChunk() ________________________________________________________
 
 	bool GfxStreamPump::pumpChunk()

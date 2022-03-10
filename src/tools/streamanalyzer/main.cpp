@@ -293,7 +293,8 @@ int main ( int argc, char** argv )
 	while( !bQuit )
 	{
 		translateEvents( pInput, pRoot );
-   
+
+		pStreamPump->pumpUntilFrame();
 		bool pumpAgain = true;
 //		while( pumpAgain )
 			pumpAgain = pStreamPump->pumpFrame();
@@ -330,6 +331,8 @@ int main ( int argc, char** argv )
 //		pStreamLogger->logAll();
 
 		SDL_Delay(10);
+
+		pStreamPlayer->clearDirtyRects();
     }
 
 	// Exit WonderGUI

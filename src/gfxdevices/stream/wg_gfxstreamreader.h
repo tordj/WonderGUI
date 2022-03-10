@@ -67,16 +67,16 @@ namespace wg
 		GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder );
 		~GfxStreamReader();
 
-		Object *    _object() override { return this; }
-		const Object * _object() const override { return this; }
+		Object *    	_object() override { return this; }
+		const Object * 	_object() const override { return this; }
 
-		bool 	_hasStreamChunks() const override;
+		bool 			_hasStreamChunks() const override;
 		std::tuple<int, const DataSegment*> _showStreamChunks() override;
-		void 	_discardStreamChunks(int bytes) override;
-		bool 	_fetchStreamChunks() override;
+		GfxChunkId 		_peekStreamChunk() override;
+		void 			_discardStreamChunks(int bytes) override;
+		bool 			_fetchStreamChunks() override;
 
-
-		void		_fetchData();
+		void			_fetchData();
 
 		std::function<int(int nBytes, void * pDest)>	m_fetcher;
 
