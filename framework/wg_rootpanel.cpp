@@ -386,7 +386,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 	{
         // Set clipping rectangle.
 
-        wg::RectI myClip = clip;
+        wg::RectI myClip = clip*64;
 
         if (m_canvas.pSurface)
             m_pGfxDevice->beginCanvasUpdate(m_canvas.pSurface, 1, &myClip, 0);

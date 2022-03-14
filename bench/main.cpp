@@ -167,7 +167,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 700, height = 500;
+	int posX = 10, posY = 10, width = 700, height = 500;
 
 	int flags = 0;
 
@@ -335,12 +335,12 @@ int main ( int argc, char** argv )
 
 
 //    cursorInViewTest( pRoot );
-	pianoKeyboardTest(pRoot);
+//	pianoKeyboardTest(pRoot);
 //	rangeSliderTest(pRoot);
 //    canvasCapsuleTest(pRoot);
 //    tooltipLayerTest(pRoot);
 //    flowPanelTest(pRoot);
-//    fullStateSupportTest(pRoot);
+    fullStateSupportTest(pRoot);
 //    gfxStreamingTest(pRoot);
 
 	// Setup debug overlays
@@ -994,7 +994,7 @@ bool rangeSliderTest(WgRootPanel* pRoot)
 			.color = wg::Color::Green,
 			.padding = wg::Border(),
 			.direction = wg::Direction::Up,
-			.gfxPadding = wg::Border(0, 10, 0, 10)
+			.gfxPadding = wg::Border(10, 0, 10, 0)
 		});
 		
 		pSliderY->SetAxis(wg::Axis::Y);
