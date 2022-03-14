@@ -556,12 +556,15 @@ void WgWidget::_preRender()
 
 int WgWidget::_convertAndPushClipList( wg::GfxDevice * pDevice, int nRects, const WgRect * pRects )
 {
-	wg::RectSPX * pClipRects = (wg::RectSPX*) wg::Base::memStackAlloc(nRects*sizeof(wg::RectSPX));
+	int nBytes = nRects*sizeof(wg::RectSPX);
+	
+	wg::RectSPX * pClipRects = (wg::RectSPX*) wg::Base::memStackAlloc(nBytes);
 	
 	for(int i = 0 ; i < nRects ; i++)
 		pClipRects[i] = pRects[i]*64;
 	
 	pDevice->pushClipList(nRects, pClipRects);
+	return nBytes;
 }
 
 //____ _popAndReleaseClipList() _______________________________________________

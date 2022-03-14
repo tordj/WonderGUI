@@ -65,7 +65,7 @@ void WgGfxDevice::BlitBlock( wg::GfxDevice * pDevice, const WgBlock& _block, con
     wg::NinePatch patch;
     patch.block = wg::Rect(src);
     patch.frame = wg::Border(sourceBorders);
-	pDevice->blitNinePatch(canvas, canvasBorders, patch, scale >> 6 );
+	pDevice->blitNinePatch(canvas*64, canvasBorders, patch, scale >> 6 );
 
 }
 

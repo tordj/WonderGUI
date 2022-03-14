@@ -2532,7 +2532,7 @@ void WgText::GetBaseAttr( wg::TextAttr& attr ) const
 		attr.color = m_pBaseColors->Color(mode);
 
 	if( m_pBaseStyle )
-		m_pBaseStyle->addToAttr(m_state, &attr, m_scale);
+		m_pBaseStyle->addToAttr(m_state, &attr, m_scale >> 6);
 }
 
 //____ GetCharAttr() __________________________________________________________
@@ -2553,7 +2553,7 @@ bool WgText::GetCharAttr( wg::TextAttr& attr, int charOfs ) const
 			state.setSelected(true);
 	}
 
-	wg::Base::defaultStyle()->exportAttr(state, &attr, m_scale);
+	wg::Base::defaultStyle()->exportAttr(state, &attr, m_scale >> 6);
 
 	WgMode mode = WgUtil::StateToMode(state);
 
@@ -2564,14 +2564,14 @@ bool WgText::GetCharAttr( wg::TextAttr& attr, int charOfs ) const
 		attr.color = m_pBaseColors->Color(mode);
 
 	if( m_pBaseStyle )
-		m_pBaseStyle->addToAttr(state, &attr, m_scale);
+		m_pBaseStyle->addToAttr(state, &attr, m_scale >> 6);
 
 	// Add characters own properties
 
 	wg::TextStyle * pCharStyle = m_buffer.chars()[charOfs].stylePtr();
 
 	if( pCharStyle )
-		pCharStyle->addToAttr(state, &attr, m_scale);
+		pCharStyle->addToAttr(state, &attr, m_scale >> 6);
 
 	return true;
 }

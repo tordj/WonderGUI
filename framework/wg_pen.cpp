@@ -237,7 +237,7 @@ void WgPen::BlitChar() const
 
 		m_pDevice->setBlitSource(m_glyph.pSurface);            //TODO: Optimize!!!!
 
-		m_pDevice->blit( WgCoord(x,y), m_glyph.rect/64);
+		m_pDevice->blit( wg::CoordSPX(x*64,y*64), m_glyph.rect);
 	}
 }
 

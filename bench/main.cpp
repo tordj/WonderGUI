@@ -336,7 +336,7 @@ int main ( int argc, char** argv )
 
 //    cursorInViewTest( pRoot );
 //	pianoKeyboardTest(pRoot);
-//	rangeSliderTest(pRoot);
+	rangeSliderTest(pRoot);
 //    canvasCapsuleTest(pRoot);
 //    tooltipLayerTest(pRoot);
 //    flowPanelTest(pRoot);
