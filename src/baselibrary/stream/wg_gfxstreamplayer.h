@@ -77,9 +77,11 @@ namespace wg
 
 		bool	_playChunk();
 
+		RectI *	_pushClipListCanvas(int nRects);
 		RectI *	_pushClipList(int nRects);
-		RectI *	_setClipList(int nRects);
+		RectI *	_setClipList(int nRects, bool bCanvas = false);
 		void	_popClipList();
+		void	_popClipListCanvas();
 
 		GfxStreamDecoder_p	m_pDecoder;
 		GfxDevice_p			m_pDevice;
@@ -137,12 +139,18 @@ namespace wg
 			int		capacity;
 		};
 
+		struct ClipListInfo
+		{
+			int nRects;
+			bool bCanvas;
+		};
+		
 		constexpr static int c_clipListBufferSize = 512;
 
-		std::vector<int>	m_clipListSizes;		// Number of rects for each clipList pushed.
+		std::vector<ClipListInfo>	m_clipListInfoStack;		// Number of rects for each clipList pushed.
 
 		ClipRectsBuffer		m_clipListBuffer = { nullptr, 0, 0 };
-		int					m_currentClipListSize = 0;
+		ClipListInfo		m_clipList = { 0, false };
 
 		std::vector<ClipRectsBuffer>	m_clipListBufferStack;
 

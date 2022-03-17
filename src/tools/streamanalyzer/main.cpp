@@ -308,19 +308,42 @@ int main ( int argc, char** argv )
 		pRoot->render();
 		SDL_UnlockSurface(pWinSurf);
 
-		SDL_Rect	r;
-		r.x = 0;
-		r.y = 0;
-		r.w = width;
-		r.h = height;
-		SDL_UpdateWindowSurfaceRects(pWin, &r, 1);
+		bool bUpdateAll = false;
+		
+		if( bUpdateAll )
+		{
+			SDL_Rect	r;
+			r.x = 0;
+			r.y = 0;
+			r.w = width;
+			r.h = height;
+			SDL_UpdateWindowSurfaceRects(pWin, &r, 1);
+
+		}
+		else
+		{
+			CoordI ofs = g_pDisplay->globalPos().px();
+			
+			int nRects;
+			const RectI* pRects;
+
+			std::tie(nRects, pRects) = pStreamPlayer->dirtyRects(CanvasRef::Canvas_1);
+
+			SDL_Rect	dirt[nRects];
+			
+			for( int i = 0 ; i < nRects ; i++ )
+			{
+				dirt[i].x = ofs.x + pRects[i].x;
+				dirt[i].y = ofs.y + pRects[i].y;
+				dirt[i].w = pRects[i].w;
+				dirt[i].h = pRects[i].h;
+			}
+			
+			SDL_UpdateWindowSurfaceRects(pWin, dirt, nRects);
+		}
 
 
-		int nRects;
-		const RectI* pRects;
-
-		std::tie(nRects, pRects) = pStreamPlayer->dirtyRects(CanvasRef::Canvas_1);
-
+		
 //		for(int i = 0 ; i < nRects ; i++ )
 //			std::cout << "" << pRects[i].x << " " << pRects[i].y << " " << pRects[i].w << " " << pRects[i].h << std::endl;
 
