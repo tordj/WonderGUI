@@ -168,7 +168,7 @@ protected:
 
 	MTLRenderPassDescriptor * pDesc = _view.currentRenderPassDescriptor;
 	pDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
-    m_pDevice->setDefaultCanvas( pDesc, wg::SizeI(m_windowSize.w,m_windowSize.h), PixelFormat::BGRA_8_sRGB );
+    m_pDevice->setDefaultCanvas( pDesc, wg::SizeI(m_windowSize.w,m_windowSize.h), PixelFormat::BGRA_8_sRGB, 128 );
 	
     m_pRoot = RootPanel::create( CanvasRef::Default, m_pDevice);
     
