@@ -168,26 +168,29 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		//TODO: Support other scale than what we already have!
-		assert(scale == m_scale);
-
-		SizeSPX sz = m_skin.contentPaddingSize(scale);
-		SizeSPX headerSize = _header()._preferredSize(scale);
-
-		if (m_bHorizontal)
+		if( scale == m_scale )
 		{
-			sz += SizeSPX(m_contentPreferredLength + headerSize.w, m_contentPreferredBreadth);
-			if (headerSize.h > sz.h)
-				sz.h = headerSize.h;
+			SizeSPX sz = m_skin.contentPaddingSize(scale);
+			SizeSPX headerSize = _header()._preferredSize(scale);
+
+			if (m_bHorizontal)
+			{
+				sz += SizeSPX(m_contentPreferredLength + headerSize.w, m_contentPreferredBreadth);
+				if (headerSize.h > sz.h)
+					sz.h = headerSize.h;
+			}
+			else
+			{
+				sz += SizeSPX(m_contentPreferredBreadth, m_contentPreferredLength + headerSize.h);
+				if (headerSize.w > sz.w)
+					sz.w = headerSize.w;
+			}
+			return sz;
 		}
 		else
-		{
-			sz += SizeSPX(m_contentPreferredBreadth, m_contentPreferredLength + headerSize.h);
-			if (headerSize.w > sz.w)
-				sz.w = headerSize.w;
-		}
+		 return _calcPreferredSize(scale);
 
-		return sz;
+
 	}
 
 	//____ _matchingHeight() _______________________________________________________
@@ -412,6 +415,9 @@ namespace wg
 		{
 			m_minEntrySizeSPX = align(ptsToSpx(m_minEntrySize, scale));
 			m_maxEntrySizeSPX = align(ptsToSpx(m_maxEntrySize, scale));
+			
+			if( m_pEntrySkin[0] )
+				m_entryPadding = m_pEntrySkin[0]->_contentPaddingSize(scale);
 		}
 
 		//
@@ -446,7 +452,7 @@ namespace wg
 					pSlot->m_length = newEntryLength;
 					ofs += newEntryLength;
 
-					OO(pWidget)->_resize( SizeSPX(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					OO(pWidget)->_resize( SizeSPX(newEntryLength, newContentBreadth), m_scale );	//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 				else
 				{
@@ -455,7 +461,7 @@ namespace wg
 					pSlot->m_length = newEntryLength;
 					ofs += newEntryLength;
 
-					OO(pWidget)->_resize( SizeSPX(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					OO(pWidget)->_resize( SizeSPX(newContentBreadth, newEntryLength), m_scale );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 			}
 			m_contentLength = ofs;
@@ -472,6 +478,67 @@ namespace wg
 		_refreshList();
 		Widget::_refresh();
 	}
+
+	//____ _calcPreferredSize() __________________________________________________
+
+	SizeSPX PackList::_calcPreferredSize( int scale ) const
+	{
+		SizeSPX entryPadding;
+		
+		if( m_pEntrySkin[0] )
+			entryPadding = m_pEntrySkin[0]->_contentPaddingSize(scale);
+
+		SizeSPX 	preferred;
+
+		SizeSPX		minEntrySize = align(ptsToSpx(m_minEntrySize, scale));
+		SizeSPX		maxEntrySize = align(ptsToSpx(m_maxEntrySize, scale));
+
+		
+		for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
+		{
+			// Calc "_paddedLimitedPreferredSize" for slot
+		
+			SizeSPX sz = pSlot->_widget()->_preferredSize(scale);
+			sz += entryPadding;
+
+			// Apply limits
+
+			if( sz.w < minEntrySize.w )
+				sz.w = minEntrySize.w;
+			if( sz.h < minEntrySize.h )
+				sz.h = minEntrySize.h;
+
+			if( sz.w > maxEntrySize.w )
+			{
+				sz.h = pSlot->_widget()->_matchingHeight(maxEntrySize.w-entryPadding.w, scale) + entryPadding.h;
+				limit(sz.h, minEntrySize.h, maxEntrySize.h );
+			}
+			else if( sz.h > maxEntrySize.h )
+			{
+				sz.w = pSlot->_widget()->_matchingWidth(maxEntrySize.h-entryPadding.h, scale) + entryPadding.w;
+				limit(sz.w, minEntrySize.w, maxEntrySize.w );
+			}
+			
+			SizeSPX pref = sz;
+
+			//
+			
+			if( m_bHorizontal )
+			{
+				preferred.w += pref.w;
+				if( pref.h > preferred.h )
+					preferred.h = pref.h;
+			}
+			else
+			{
+				preferred.h += pref.h;
+				if( pref.w > preferred.w )
+					preferred.w = pref.w;
+			}
+		}
+		return preferred;
+	}
+
 
 	//____ _refreshList() _______________________________________________________
 
@@ -766,7 +833,7 @@ namespace wg
 
 				RectSPX childGeo;
 				_getChildGeo(childGeo, pSlot + i);
-				OO(pChild)->_resize(childGeo);
+				OO(pChild)->_resize(childGeo, m_scale);
 			}
 		}
 
@@ -1144,11 +1211,13 @@ namespace wg
 		{
 			spx h = pSlot->_widget()->_matchingHeight(m_maxEntrySizeSPX.w-m_entryPadding.w, m_scale) + m_entryPadding.h;
 			limit(h, m_minEntrySizeSPX.h, m_maxEntrySizeSPX.h );
+			sz.h = h;
 		}
 		else if( sz.h > m_maxEntrySizeSPX.h )
 		{
 			spx w = pSlot->_widget()->_matchingWidth(m_maxEntrySizeSPX.h-m_entryPadding.h, m_scale) + m_entryPadding.w;
 			limit(w, m_minEntrySizeSPX.w, m_maxEntrySizeSPX.w );
+			sz.w = w;
 		}
 
 		return sz;
@@ -1240,7 +1309,7 @@ namespace wg
 
 				RectSPX childGeo;
 				_getChildGeo(childGeo,pSlot);
-				OO(pSlot->_widget())->_resize(childGeo);
+				OO(pSlot->_widget())->_resize(childGeo, m_scale);
 			}
 		}
 

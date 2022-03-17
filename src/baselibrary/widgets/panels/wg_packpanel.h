@@ -224,7 +224,7 @@ namespace wg
 		void		_unhideChildren(Slot * pSlot, int nb);
 
 		void		_refreshGeometries();
-		SizeSPX		_calcPreferredSize();
+		SizeSPX		_calcPreferredSize( int scale ) const;
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, spx forcedBreadth ) const;
 

@@ -124,7 +124,7 @@ namespace wg
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 
 		bool				setCanvas(Surface* pCanvasSurface);
-		bool				setCanvas(CanvasRef canvasRef, int scale = 64);
+		bool				setCanvas(CanvasRef canvasRef);
 		inline const CanvasInfo& canvasInfo() const { return m_canvas; }
 		inline SizeI		canvasSize() const { return m_canvas.size; }
 

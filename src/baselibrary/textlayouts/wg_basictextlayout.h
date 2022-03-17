@@ -162,8 +162,9 @@ namespace wg
 
 		void			_updateLineInfo(Text * pText, void * pBlock, const Char * pChars );
 
-		SizeSPX			_updateFixedLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state);
-		SizeSPX			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth);
+		SizeSPX			_updateFixedLineInfo(LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state );
+		SizeSPX			_updateWrapLineInfo(LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth);
+		SizeSPX			_calcPreferredSize(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state ) const;
 
 
 		spx				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, int scale, State state ) const;

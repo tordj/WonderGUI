@@ -142,11 +142,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 		if (scale != m_scale)
-		{
-			//TODO: Implement!
-			assert(false);
-			return SizeSPX();
-		}
+			return _calcPreferredSize(scale);
 		else
 			return m_preferredContentSize + m_skin.contentPaddingSize(scale);
 	}
@@ -641,7 +637,7 @@ namespace wg
 	{
 		// Recalculate preferred sizes for widget and content.
 
-		SizeSPX newPreferredContentSize = _calcPreferredSize();
+		SizeSPX newPreferredContentSize = _calcPreferredSize(m_scale);
 		SizeSPX newPreferredSize = newPreferredContentSize + m_skin.contentPaddingSize(m_scale);
 
 		// request resize or just refresh child geo, depending on what is needed.
@@ -660,13 +656,22 @@ namespace wg
 
 	void PackPanel::_resize( const SizeSPX& size, int scale )
 	{
+		if( scale != m_scale )
+		{
+			for (auto pSlot = slots._begin(); pSlot != slots._end(); pSlot++)
+			{
+				pSlot->m_bResizeRequired = true;
+				pSlot->m_preferredSize = pSlot->_paddedPreferredSize(scale);
+			}
+		}
+		
 		Panel::_resize(size, scale);
 		_refreshChildGeo(false);
 	}
 
 	//____ _calcPreferredSize() ______________________________________________________
 
-	SizeSPX PackPanel::_calcPreferredSize()
+	SizeSPX PackPanel::_calcPreferredSize( int scale ) const
 	{
 		spx length = 0;
 		spx breadth = 0;
@@ -689,7 +694,7 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					spx b = m_bHorizontal?pS->_paddedMatchingHeight(pI->outSPX, m_scale):pS->_paddedMatchingWidth(pI->outSPX, m_scale);
+					spx b = m_bHorizontal?pS->_paddedMatchingHeight(pI->outSPX, scale):pS->_paddedMatchingWidth(pI->outSPX, scale);
 					if( b > breadth )
 						breadth = b;
 					pI++;
@@ -703,30 +708,63 @@ namespace wg
 		}
 		else
 		{
-			if( m_bHorizontal )
+			if( scale == m_scale )
 			{
-				for (auto p = slots._begin(); p != slots._end(); p++)
+				if( m_bHorizontal )
 				{
-					if( p->m_bVisible )
+					for (auto p = slots._begin(); p != slots._end(); p++)
 					{
-						length += p->m_preferredSize.w;
-						if( p->m_preferredSize.h > breadth )
-							breadth = p->m_preferredSize.h;
+						if( p->m_bVisible )
+						{
+							length += p->m_preferredSize.w;
+							if( p->m_preferredSize.h > breadth )
+								breadth = p->m_preferredSize.h;
+						}
+					}
+				}
+				else
+				{
+					for (auto p = slots._begin(); p != slots._end(); p++)
+					{
+						if( p->m_bVisible )
+						{
+							length += p->m_preferredSize.h;
+							if( p->m_preferredSize.w > breadth )
+								breadth = p->m_preferredSize.w;
+						}
 					}
 				}
 			}
 			else
 			{
-				for (auto p = slots._begin(); p != slots._end(); p++)
+				if( m_bHorizontal )
 				{
-					if( p->m_bVisible )
+					for (auto p = slots._begin(); p != slots._end(); p++)
 					{
-						length += p->m_preferredSize.h;
-						if( p->m_preferredSize.w > breadth )
-							breadth = p->m_preferredSize.w;
+						if( p->m_bVisible )
+						{
+							SizeSPX defaultSize = p->_widget()->_preferredSize();
+							length += defaultSize.w;
+							if( defaultSize.h > breadth )
+								breadth = defaultSize.h;
+						}
+					}
+				}
+				else
+				{
+					for (auto p = slots._begin(); p != slots._end(); p++)
+					{
+						if( p->m_bVisible )
+						{
+							SizeSPX defaultSize = p->_widget()->_preferredSize();
+							length += defaultSize.h;
+							if( defaultSize.w > breadth )
+								breadth = defaultSize.w;
+						}
 					}
 				}
 			}
+			
 		}
 
 		//
@@ -789,7 +827,7 @@ namespace wg
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
-							OO(p->_widget())->_resize( geo.size() );
+							OO(p->_widget())->_resize( geo.size(), m_scale );
 							p->m_bResizeRequired = false;
 						}
 
@@ -816,7 +854,7 @@ namespace wg
 
 				if( p->m_bResizeRequired )
 				{
-					OO(p->_widget())->_resize(geo.size());
+					OO(p->_widget())->_resize(geo.size(), m_scale);
 					p->m_bResizeRequired = false;
 				}
 			}
@@ -871,7 +909,7 @@ namespace wg
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
-							OO(p->_widget())->_resize( geo.size() );
+							OO(p->_widget())->_resize( geo.size(), m_scale );
 							p->m_bResizeRequired = false;
 						}
 					}
@@ -898,7 +936,7 @@ namespace wg
 
 				if (p->m_bResizeRequired)
 				{
-					OO(p->_widget())->_resize(geo.size());
+					OO(p->_widget())->_resize(geo.size(), m_scale);
 					p->m_bResizeRequired = false;
 				}
 			}

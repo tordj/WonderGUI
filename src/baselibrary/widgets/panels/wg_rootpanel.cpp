@@ -178,7 +178,7 @@ namespace wg
 		return true;
 	}
 
-	bool RootPanel::setCanvas(CanvasRef canvasRef, int scale)
+	bool RootPanel::setCanvas(CanvasRef canvasRef)
 	{
 		if( !m_pGfxDevice || m_pGfxDevice->canvas(canvasRef).size.isEmpty() )
 		{

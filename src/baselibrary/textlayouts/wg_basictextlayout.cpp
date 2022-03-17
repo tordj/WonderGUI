@@ -323,7 +323,7 @@ namespace wg
 		}
 	}
 
-	//____ _render()___________________________________________________________
+	//____ render()___________________________________________________________
 
 	void BasicTextLayout::render( Text * pText, GfxDevice * pDevice, const RectSPX& canvas )
 	{
@@ -975,7 +975,7 @@ namespace wg
 	SizeSPX BasicTextLayout::preferredSize( const Text * pText, int scale ) const
 	{
 		if (scale != _scale(pText))
-			assert(false);				//TODO: Implement!!!
+			return _calcPreferredSize(_chars(pText),_baseStyle(pText), scale, _state(pText));
 
 		return _header(_dataBlock(pText))->preferredSize;
 	}
@@ -985,7 +985,7 @@ namespace wg
 	spx BasicTextLayout::matchingWidth( const Text * pText, spx height, int scale ) const
 	{
 		if (scale != _scale(pText))
-			assert(false);				//TODO: Implement!!!
+			return _calcPreferredSize(_chars(pText),_baseStyle(pText), scale, _state(pText)).w;
 
 		return	_header(_dataBlock(pText))->preferredSize.w;
 	}
@@ -994,10 +994,7 @@ namespace wg
 
 	spx BasicTextLayout::matchingHeight( const Text * pText, spx width, int scale ) const
 	{
-		if (scale != _scale(pText))
-			assert(false);				//TODO: Implement!!!
-
-		return _calcMatchingHeight(_chars(pText), _baseStyle(pText), _scale(pText), _state(pText), width);
+		return _calcMatchingHeight(_chars(pText), _baseStyle(pText), scale, _state(pText), width);
 	}
 
 	//____ _countLines() ___________________________________________________________
@@ -1383,12 +1380,12 @@ namespace wg
 		{
 			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update preferredSize.
 
-			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
-			textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
+			preferredSize = _updateFixedLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
+			textSize = _updateWrapLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
 		}
 		else
 		{
-			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
+			preferredSize = _updateFixedLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
 			textSize = preferredSize;
 		}
 
@@ -1402,7 +1399,7 @@ namespace wg
 
 	//____ _updateWrapLineInfo() ________________________________________________
 
-	SizeSPX BasicTextLayout::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth )
+	SizeSPX BasicTextLayout::_updateWrapLineInfo( LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		const Char * pTextStart = pChars;
@@ -1629,7 +1626,7 @@ namespace wg
 
 	//____ _updateFixedLineInfo() ________________________________________________
 
-	SizeSPX BasicTextLayout::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle,
+	SizeSPX BasicTextLayout::_updateFixedLineInfo( LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle,
 												int scale, State state )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
@@ -1771,6 +1768,144 @@ namespace wg
 		}
 		return alignUp(size);
 	}
+
+//____ _calcPreferredSize() ________________________________________________
+/*
+	Should be identical to _updateFixedLineInfo() except that it doesn't write
+	any line info.
+ */
+
+
+SizeSPX BasicTextLayout::_calcPreferredSize( const Char * pChars, const TextStyle * pBaseStyle,
+											int scale, State state ) const
+{
+	Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+	const Char * pTextStart = pChars;
+
+	SizeSPX			size;
+
+	TextAttr		baseAttr;
+	pBaseStyle->exportAttr( state, &baseAttr, scale );
+
+	TextAttr		attr;
+	Font_p 			pFont;
+
+	TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
+
+	Glyph glyph[2];
+	Glyph* pGlyph = &glyph[0];
+	Glyph* pPrevGlyph = &glyph[1];
+
+	spx maxAscend = 0;
+	spx maxDescend = 0;
+	spx maxDescendGap = 0;							// Including the line gap.
+	spx spaceAdv = 0;
+	spx width = 0;
+
+	while( true )
+	{
+		if( pChars->styleHandle() != hCharStyle )
+		{
+
+			spx oldFontSize = attr.size;
+
+			attr = baseAttr;
+			if( pChars->styleHandle() != 0 )
+				pChars->stylePtr()->addToAttr( state, &attr, scale );
+
+			if( pFont != attr.pFont || attr.size != oldFontSize )
+			{
+				pFont = attr.pFont;
+				pFont->setSize(attr.size);
+				pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
+			}
+
+			spx ascend = pFont->maxAscend();
+			if( ascend > maxAscend )
+				maxAscend = ascend;
+
+			spx descend = pFont->maxDescend();
+			if( descend > maxDescend )
+				maxDescend = descend;
+
+			spx descendGap = descend + pFont->lineGap();
+			if( descendGap > maxDescendGap )
+				maxDescendGap = descendGap;
+
+			spaceAdv = pFont->whitespaceAdvance();
+
+			hCharStyle = pChars->styleHandle();
+		}
+
+		// TODO: Include handling of special characters
+		// TODO: Support sub/superscript.
+
+		_getGlyphWithoutBitmap( pFont.rawPtr(), pChars->code(), * pGlyph );
+
+		if( pGlyph->pFont )
+		{
+			width += pFont->kerning(* pPrevGlyph, * pGlyph);
+			width += pGlyph->advance;
+		}
+		else if( pChars->code() == 32 )
+			width += spaceAdv;
+
+		std::swap( pPrevGlyph, pGlyph);
+
+		// Handle end of line
+
+		if( pChars->isEndOfLine() )
+		{
+			// Make sure we have space for eol caret
+
+			if( pCaret )
+			{
+				SizeSPX eolCellSize( pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend() );
+				spx w = pCaret->eolWidth( eolCellSize, scale );
+				if( w > eolCellSize.w )
+					width += w - eolCellSize.w;
+			}
+
+			// Update size
+
+			if (width > size.w)
+				size.w = width;
+
+			size.h += pChars->isEndOfText() ? maxAscend + maxDescend : maxAscend + maxDescendGap;
+
+			//
+
+			if( pChars->isEndOfText() )
+				break;
+
+			// Prepare for next line
+
+			pChars++;			// Line terminator belongs to previous line.
+
+			width = 0;
+			pPrevGlyph->pFont = nullptr;
+
+			if (pChars->styleHandle() == hCharStyle)
+			{
+				// Still need to reset these, don't include data from styles only on previous line.
+
+				maxAscend = pFont->maxAscend();
+				maxDescend = pFont->maxDescend();
+				maxDescendGap = maxDescend + pFont->lineGap();
+			}
+			else
+			{
+				maxAscend = 0;
+				maxDescend = 0;
+				maxDescendGap = 0;
+			}
+		}
+		else
+			pChars++;
+	}
+	return alignUp(size);
+}
+
 
 
 	//____ _linePosX() _______________________________________________________________

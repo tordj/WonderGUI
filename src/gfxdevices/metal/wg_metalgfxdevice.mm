@@ -1268,12 +1268,12 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _transformBlit() ____ [simple] __________________________________________________
 
-	void MetalGfxDevice::_transformBlit(const RectSPX& _dest, CoordSPX src, const int simpleTransform[2][2])
+	void MetalGfxDevice::_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2])
 	{
         if (m_pBlitSource == nullptr)
             return;
 
-        if (!_dest.intersectsWith(m_clipBounds))
+        if (!dest.intersectsWith(m_clipBounds))
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8 )
@@ -1286,11 +1286,11 @@ MetalGfxDevice::MetalGfxDevice()
         }
 
         //TODO: Proper 26:6 support
-        RectI dest = roundToPixels(_dest);
+//        RectI dest = roundToPixels(_dest);
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch(m_pClipRects[i], dest);
+            RectI patch( roundToPixels(RectI(m_pClipRects[i], dest)) );
             if (patch.w > 0 && patch.h > 0)
             {
                 int        dx1 = patch.x;
@@ -1336,8 +1336,8 @@ MetalGfxDevice::MetalGfxDevice()
 
         m_pExtrasBuffer[m_extrasOfs++] = (float) roundToPixels(src.x);
         m_pExtrasBuffer[m_extrasOfs++] = (float) roundToPixels(src.y);
-        m_pExtrasBuffer[m_extrasOfs++] = (float) dest.x;
-        m_pExtrasBuffer[m_extrasOfs++] = (float) dest.y;
+        m_pExtrasBuffer[m_extrasOfs++] = (float) roundToPixels(dest.x);
+        m_pExtrasBuffer[m_extrasOfs++] = (float) roundToPixels(dest.y);
 
         m_pExtrasBuffer[m_extrasOfs++] = (float) simpleTransform[0][0];
         m_pExtrasBuffer[m_extrasOfs++] = (float) simpleTransform[0][1];
@@ -1347,12 +1347,12 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _transformBlit() ____ [complex] __________________________________________________
 
-	void MetalGfxDevice::_transformBlit(const RectSPX& _dest, CoordF src, const float complexTransform[2][2])
+	void MetalGfxDevice::_transformBlit(const RectSPX& dest, CoordF src, const float complexTransform[2][2])
 	{
         if (m_pBlitSource == nullptr)
             return;
 
-        if (!_dest.intersectsWith(m_clipBounds))
+        if (!dest.intersectsWith(m_clipBounds))
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
@@ -1367,15 +1367,15 @@ MetalGfxDevice::MetalGfxDevice()
         //
         
         //TODO: Proper 26:6 support
-        RectI dest = roundToPixels(_dest);
+//        RectI dest = roundToPixels(_dest);
+		
+//		src /= 64;
 
-        src /= 64;
-        
-        //
+		//
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch(m_pClipRects[i], dest);
+            RectI patch(roundToPixels(RectI(m_pClipRects[i], dest)));
             if (patch.w > 0 && patch.h > 0)
             {
                 Vertex * pVertex = m_pVertexBuffer + m_vertexOfs;
@@ -1423,15 +1423,15 @@ MetalGfxDevice::MetalGfxDevice()
         {
             m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.x) + 0.5f;
             m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.y) + 0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = float(dest.x) + 0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = float(dest.y) + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(dest.x) + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(dest.y) + 0.5f;
         }
         else
         {
             m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.x) - 0.002f;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
             m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.y) - 0.002f;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
-            m_pExtrasBuffer[m_extrasOfs++] = float(dest.x) +0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = float(dest.y) +0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(dest.x) +0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(dest.y) +0.5f;
         }
 
         m_pExtrasBuffer[m_extrasOfs++] = complexTransform[0][0];

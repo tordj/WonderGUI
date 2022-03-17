@@ -157,11 +157,11 @@ namespace wg
 
 	void CText::_setSize( SizeSPX size, int scale )
 	{
-		if( size == m_size )
+		if( size == m_size && scale && m_scale )
 			return;
 
 		SizeSPX oldSize = m_size;
-		int		oldScale = scale;
+		int		oldScale = m_scale;
 		m_size = size;
 		m_scale = scale;
 		_layout()->onResized(this,size, oldSize, scale, oldScale);

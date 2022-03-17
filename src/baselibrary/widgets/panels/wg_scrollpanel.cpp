@@ -483,8 +483,8 @@ namespace wg
 		spx scrollbarYwidth = scrollbarY._preferredSize(m_scale).w;
 		spx scrollbarXheight = scrollbarX._preferredSize(m_scale).h;
 
-		bool bShowScrollbarY = scrollbarX.inWorkingOrder() && (!m_bAutohideScrollbarY || content.h < m_childCanvas.h);
-		bool bShowScrollbarX = scrollbarY.inWorkingOrder() && (!m_bAutohideScrollbarX || content.w < m_childCanvas.w);
+		bool bShowScrollbarY = scrollbarY.inWorkingOrder() && (!m_bAutohideScrollbarY || content.h < m_childCanvas.h);
+		bool bShowScrollbarX = scrollbarX.inWorkingOrder() && (!m_bAutohideScrollbarX || content.w < m_childCanvas.w);
 
 
 		if (bShowScrollbarY && !m_bOverlayScrollbarY && !bShowScrollbarX)
@@ -725,7 +725,7 @@ namespace wg
 				auto childSize = pChild->_preferredSize(scale);
 				m_childCanvas.setSize(childSize);
 				pChild->_resize(childSize, scale);
-			}
+			}			
 		}
 
 		_updateRegions();

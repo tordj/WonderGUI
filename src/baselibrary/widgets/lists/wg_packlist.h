@@ -275,6 +275,8 @@ namespace wg
 		spx				_paddedLimitedMatchingHeight( StaticSlot * pSlot, spx paddedWidth );
 		spx				_paddedLimitedMatchingWidth( StaticSlot * pSlot, spx paddedHeight );
 
+		SizeSPX			_calcPreferredSize( int scale ) const;
+		
 		void			_addToContentPreferredSize(spx length, spx breadth);
 		void			_subFromContentPreferredSize(spx length, spx breadth);
 
