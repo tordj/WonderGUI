@@ -179,7 +179,7 @@ namespace wg
 
 			if (m_bStoreDirtyRects && canvasInfo.ref != CanvasRef::None )
 			{
-				m_pDevice->clearClipList();								// Returns cliplist to that of canvas.
+				m_pDevice->resetClipList();								// Returns cliplist to that of canvas.
 
 				int nDirtyRects = m_pDevice->clipListSize();
 				const RectI* pDirtyRects = m_pDevice->clipList();
@@ -227,8 +227,8 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::ClearClipList:
-			m_pDevice->clearClipList();
+		case GfxChunkId::ResetClipList:
+			m_pDevice->resetClipList();
 			break;
 
 		case GfxChunkId::PushClipList:

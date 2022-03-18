@@ -125,7 +125,7 @@ namespace wg
 	{
 		if (nRectangles == 0)
 		{
-			clearClipList();
+			resetClipList();
 			return true;
 		}
 
@@ -143,9 +143,9 @@ namespace wg
 		return true;
 	}
 
-	//____ clearClipList() __________________________________________________________
+	//____ resetClipList() __________________________________________________________
 
-	void GfxDevice::clearClipList()
+	void GfxDevice::resetClipList()
 	{
 		m_clipBounds = m_canvasUpdateBounds;
 		m_pClipRects = m_pCanvasUpdateRects;

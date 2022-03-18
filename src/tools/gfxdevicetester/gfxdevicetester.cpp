@@ -415,7 +415,7 @@ void GfxDeviceTester::run_tests(Device* pDevice, DeviceEnum device)
 		}
 	}
 
-	pGfxDevice->clearClipList();
+	pGfxDevice->resetClipList();
 	pDevice->endRender();
 }
 

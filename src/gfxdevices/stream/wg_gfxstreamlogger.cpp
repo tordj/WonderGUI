@@ -145,7 +145,7 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::ClearClipList:
+			case GfxChunkId::ResetClipList:
 			{
 				m_charStream << "ClearClipList" << std::endl;
 				break;
