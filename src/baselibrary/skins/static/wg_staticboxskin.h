@@ -45,10 +45,10 @@ namespace wg
 		{
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::White;
-			Border		outline;
-			HiColor		outlineColor = HiColor::Black;
 			int			layer = -1;
 			int			markAlpha = 1;
+			Border		outline;
+			HiColor		outlineColor = HiColor::Black;
 			Border		overflow;
 			Border		padding;
 		};

@@ -1963,7 +1963,13 @@ bool splitPanelTest(CStandardSlot_p pEntry)
 {
 	auto pSplit = SplitPanel::create();
 
-	pSplit->setHandleSkin(ColorSkin::create({ .color = Color::Black, .states = { StateEnum::Hovered, {.color = Color::Brown }, { StateEnum::Pressed, {.color = Color::Red } } } }));
+	pSplit->setHandleSkin(ColorSkin::create({ 
+		.color = Color::Black, 
+		.states = {{ StateEnum::Hovered, {.color = Color::Brown }},
+					{ StateEnum::Pressed, {.color = Color::Red }}
+		} 
+	}));
+
 	pSplit->setHandleThickness(10);
 
 	auto pContent1 = TextEditor::create();
@@ -2231,7 +2237,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
-	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .padding = 10, .states = {StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }, StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)} } });
+	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .padding = 10, .states = {{StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }}, {StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)}} } });
 
 	auto pSliderX = Slider::create();
 	{
@@ -2271,7 +2277,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
-	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .padding = 10, .states = {StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }, StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)} } });
+	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .padding = 10, .states = {{StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }}, {StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)}} } });
 
 	auto pSliderX = RangeSlider::create();
 	{
@@ -2506,8 +2512,8 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	auto pListSkin = BoxSkin::create(1, Color::White, Color::Black, 3);
 
 	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .outline = 1, .outlineColor = Color::Transparent, .padding = 3,
-											 .states = { StateEnum::Hovered, {.color = Color::Yellow, .outlineColor = Color::Orange },
-														 StateEnum::Selected, {.color = Color::LightBlue, .outlineColor = Color::White } } });
+											 .states = {{StateEnum::Hovered, {.color = Color::Yellow, .outlineColor = Color::Orange }},
+														{StateEnum::Selected, {.color = Color::LightBlue, .outlineColor = Color::White }} } });
 
 
 	pSelectBox->setListSkin(pListSkin);
@@ -2598,7 +2604,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 
 	Surface_p pHoveredSurf = loadSurface("resources/tile_blocks_marked.png", { .tiling = true } );
 
-	auto pDynamicSkin = TileSkin::create({ .padding = 10, .states = { StateEnum::Hovered, {.surface = pHoveredSurf} }, .surface = pNormalSurf });
+	auto pDynamicSkin = TileSkin::create({ .padding = 10, .states = {{ StateEnum::Hovered, {.surface = pHoveredSurf} }}, .surface = pNormalSurf });
 
 
 	Surface_p pSplashSurf = loadSurface("resources/splash.png" );
@@ -2664,14 +2670,15 @@ bool renderLayerTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::SlateGrey) );
 
-	auto pBoxSkin = StaticBoxSkin::create({ .color = Color::Green, .outline = 2, .outlineColor = Color::Black, .layer = 2 });
+	auto pBoxSkin = StaticBoxSkin::create({ .color = Color::Green, .layer = 2, .outline = 2, .outlineColor = Color::Black });
 	
 	auto pShadowSkin = StaticBoxSkin::create({	.blendMode = BlendMode::Max,
 												.color = Color(255,255,255,32),
-												.padding = { 0,40,40,0},
+												.layer = 1,
 												.outline = 20,
 												.outlineColor = Color::Transparent,
-												.layer = 1 } );
+												.padding = { 0,40,40,0},
+											} );
 
 	auto pDaSkin = DoubleSkin::create({ .skinInSkin = true, .skins = { pBoxSkin, pShadowSkin } } );
 
@@ -2842,11 +2849,11 @@ bool circleSkinTest(CStandardSlot_p pSlot)
 
 	auto pWidget = Filler::create();
 
-	auto pSkin = CircleSkin::create({	.color = Color8::Green, 
-										.outlineThickness = 1.f, 
-										.size = 1.f, 
-										.states = { StateEnum::Hovered, {.color = Color8::Yellow, .size = 1.f, .thickness = 15.f },
-													StateEnum::Pressed, {.color = Color8::Red, .size = 0.8f, .thickness = 100.f } },
+	auto pSkin = CircleSkin::create({ .color = Color8::Green,
+										.outlineThickness = 1.f,
+										.size = 1.f,
+										.states = { {StateEnum::Hovered, {.color = Color8::Yellow, .size = 1.f, .thickness = 15.f }},
+													{StateEnum::Pressed, {.color = Color8::Red, .size = 0.8f, .thickness = 100.f } } },
 										.thickness = 5.f });
 
 	pWidget->setSkin( pSkin );
@@ -2872,7 +2879,7 @@ bool packListTest(CStandardSlot_p pSlot)
 
 	pPackList->header.setText("HEADER");
 //	pPackList->header.setSkin(ColorSkin::create(Color::Blue));
-	pPackList->header.setSkin(ColorSkin::create( {.color = Color::Yellow , .states = { StateEnum::Hovered, { Color::Brown }, StateEnum::Pressed, { Color::Red }} }));
+	pPackList->header.setSkin(ColorSkin::create({ .color = Color::Yellow , .states = { { StateEnum::Hovered, { Color::Brown }},{ StateEnum::Pressed, {Color::Red}} } }));
 
 	pPackList->setSortFunction( [](const Widget * pW1, const Widget * pW2) { return pW2->id() - pW1->id(); });
 
