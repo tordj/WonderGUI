@@ -71,7 +71,7 @@ namespace wg
         //.____ State _________________________________________________
 
         void    setTintColor(HiColor color) override;
-        void    setTintGradient(const RectI& rect, const Gradient& gradient) override;
+        void    setTintGradient(const RectSPX& rect, const Gradient& gradient) override;
         void    clearTintGradient() override;
 
         bool    setBlendMode(BlendMode blendMode) override;
@@ -91,13 +91,13 @@ namespace wg
         void    autopresent( id<MTLDrawable> drawable );           // endRender() will clear this, so needs to be set for each begin/end render cycle.
 
         using   GfxDevice::fill;
-		void	fill(const RectI& rect, HiColor col) override;
+		void	fill(const RectSPX& rect, HiColor col) override;
 		void	fill(const RectF& rect, HiColor col) override;
 
-		void    plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
+		void    plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordI begin, CoordI end, HiColor color, float thickness) override;
-        void    drawLine(CoordI begin, Direction dir, int length, HiColor color, float thickness) override;
+		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness) override;
+        void    drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, float thickness) override;
 
 
 	protected:
@@ -108,10 +108,10 @@ namespace wg
         void    _renderLayerWasChanged() override;    // Checked for errors before we get here.
         void    _clipListWasChanged() override;            // Called when cliplist has been changed.
         
-		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
-		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
+		void	_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
+		void	_transformBlit(const RectSPX& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
         enum class VertexInputIndex
         {

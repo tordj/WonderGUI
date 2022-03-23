@@ -777,10 +777,10 @@ namespace wg
 				// We want last src sample to be taken as close to the end of the source
 				// rectangle as possible in order to get a more balanced representation.
 
-				mtx[0][0] = src.w / (dest.w-63.9f);
+				mtx[0][0] = src.w / dest.w;
 				mtx[0][1] = 0;
 				mtx[1][0] = 0;
-				mtx[1][1] = src.h / (dest.h-63.9f);
+				mtx[1][1] = src.h / dest.h;
 			}
 
 			_transformBlit(dest, { src.x, src.y }, mtx);
@@ -1203,13 +1203,14 @@ namespace wg
 
 	//____ _transformDrawWave() ______________________________________________________
 
-	void GfxDevice::_transformDrawWave(const RectSPX& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, const int simpleTransform[2][2] )
+	void GfxDevice::_transformDrawWave(const RectSPX& _destIn, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, const int simpleTransform[2][2] )
 	{
 		//TODO: If borders have different colors and cross, colors are not swapped.
 
 		// Make a bounding box around all clip rectangles
 
-		RectI bounds( m_clipBounds, _dest );
+		RectI _dest = _destIn/64;
+		RectI bounds( m_clipBounds/64, _dest );
 
 		if (bounds.w == 0 || bounds.h == 0)
 			return;
@@ -1319,7 +1320,7 @@ namespace wg
 			col[3] = pBottomBorder->color;
 			col[4] = Color::Transparent;
 
-			_transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, TintMode::Flat, simpleTransform );
+			_transformDrawSegments(dest*64, 5, col, length + 1, pEdgeBuffer, 4, TintMode::Flat, simpleTransform );
 
 		}
 		else
@@ -1365,7 +1366,7 @@ namespace wg
 			col[4] = pBottomBorder->color;
 			col[5] = Color::Transparent;
 
-			_transformDrawSegments(dest, 6, col, length + 1, pEdgeBuffer, 5, TintMode::Flat, simpleTransform);
+			_transformDrawSegments(dest*64, 6, col, length + 1, pEdgeBuffer, 5, TintMode::Flat, simpleTransform);
 		}
 
 

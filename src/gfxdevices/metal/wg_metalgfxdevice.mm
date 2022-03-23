@@ -63,6 +63,8 @@ namespace wg
 
 MetalGfxDevice::MetalGfxDevice()
 	{
+		assert(sizeof(Gradient) % 4 == 0);		// Buffering will fail if not!
+	
         m_defaultCanvas.ref = CanvasRef::Default;
     
         m_bFullyInitialized = true;
@@ -424,13 +426,13 @@ MetalGfxDevice::MetalGfxDevice()
         if( m_bTintGradient )
         {
             _endCommand();
-            _beginStateCommand(Command::SetTintGradient, 12);
-            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.x;
-            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.y;
-            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.w;
-            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.h;
+            _beginStateCommand(Command::SetTintGradient, 4 + sizeof(Gradient)/4);
+            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.x / 64;
+            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.y / 64;
+            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.w / 64;
+            m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.h / 64;
             *(Gradient*)(&m_pCommandBuffer[m_commandOfs]) = m_tintGradient;
-            m_commandOfs += 8;
+            m_commandOfs += sizeof(Gradient)/4;
         }
         else
         {
@@ -490,7 +492,7 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ setTintGradient() ______________________________________________________
 
-    void MetalGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
+    void MetalGfxDevice::setTintGradient(const RectSPX& rect, const Gradient& gradient)
     {
         if (m_bTintGradient && gradient == m_tintGradient && rect == m_tintGradientRect)
             return;
@@ -504,13 +506,13 @@ MetalGfxDevice::MetalGfxDevice()
         GfxDevice::setTintGradient(rect, gradient);
 
         _endCommand();
-        _beginStateCommand(Command::SetTintGradient, 12);
-        m_pCommandBuffer[m_commandOfs++] = rect.x;
-        m_pCommandBuffer[m_commandOfs++] = rect.y;
-        m_pCommandBuffer[m_commandOfs++] = rect.w;
-        m_pCommandBuffer[m_commandOfs++] = rect.h;
+        _beginStateCommand(Command::SetTintGradient, 4 + sizeof(Gradient)/4);
+        m_pCommandBuffer[m_commandOfs++] = rect.x / 64;
+        m_pCommandBuffer[m_commandOfs++] = rect.y / 64;
+        m_pCommandBuffer[m_commandOfs++] = rect.w / 64;
+        m_pCommandBuffer[m_commandOfs++] = rect.h / 64;
         *(Gradient*)(&m_pCommandBuffer[m_commandOfs]) = gradient;
-        m_commandOfs += 8;
+        m_commandOfs += sizeof(Gradient)/4;
     }
 
     //____ clearTintGradient() _____________________________________________________
@@ -793,7 +795,7 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ fill() ____ [standard] __________________________________________________
 
-    void MetalGfxDevice::fill(const RectI& rect, HiColor col)
+    void MetalGfxDevice::fill(const RectSPX& rect, HiColor col)
     {
         // Skip calls that won't affect destination
 
@@ -1347,12 +1349,12 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _transformBlit() ____ [complex] __________________________________________________
 
-	void MetalGfxDevice::_transformBlit(const RectSPX& dest, CoordF src, const float complexTransform[2][2])
+	void MetalGfxDevice::_transformBlit(const RectSPX& _dest, CoordF src, const float complexTransform[2][2])
 	{
         if (m_pBlitSource == nullptr)
             return;
 
-        if (!dest.intersectsWith(m_clipBounds))
+        if (!_dest.intersectsWith(m_clipBounds))
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
@@ -1367,15 +1369,16 @@ MetalGfxDevice::MetalGfxDevice()
         //
         
         //TODO: Proper 26:6 support
-//        RectI dest = roundToPixels(_dest);
-		
-//		src /= 64;
+		//TODO: Proper 26:6 support
+		RectI dest = roundToPixels(_dest);
 
+		src /= 64;
+		
 		//
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch(roundToPixels(RectI(m_pClipRects[i], dest)));
+			RectI patch(m_pClipRects[i]/64, dest);
             if (patch.w > 0 && patch.h > 0)
             {
                 Vertex * pVertex = m_pVertexBuffer + m_vertexOfs;
@@ -1421,17 +1424,17 @@ MetalGfxDevice::MetalGfxDevice()
 
         if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
         {
-            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.x) + 0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.y) + 0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(dest.x) + 0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(dest.y) + 0.5f;
+			m_pExtrasBuffer[m_extrasOfs++] = src.x + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = src.y + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = dest.x + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = dest.y + 0.5f;
         }
         else
         {
-            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.x) - 0.002f;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
-            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(src.y) - 0.002f;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
-            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(dest.x) +0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = roundToPixels(dest.y) +0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = src.x;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
+            m_pExtrasBuffer[m_extrasOfs++] = src.y;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
+            m_pExtrasBuffer[m_extrasOfs++] = dest.x +0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = dest.y +0.5f;
         }
 
         m_pExtrasBuffer[m_extrasOfs++] = complexTransform[0][0];
@@ -1442,13 +1445,16 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _transformDrawSegments() ___________________________________________________
 
-	void MetalGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
+	void MetalGfxDevice::_transformDrawSegments(const RectSPX& _destIn, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
-        if (!_dest.intersectsWith(m_clipBounds))
+        if (!_destIn.intersectsWith(m_clipBounds))
             return;
 
         //
 
+		//TODO: Proper 26:6 support
+		RectI _dest = roundToPixels(_destIn);
+		
         int segEdgeSpaceNeeded = 4 * (nEdgeStrips - 1)*(nSegments - 1);
                 
         if( m_segPalOfs == m_segPalBufferSize )
@@ -1520,7 +1526,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch(m_pClipRects[i], dest);
+            RectI patch(m_pClipRects[i]/64, dest);
             if (patch.w > 0 && patch.h > 0)
             {
                 Vertex * pVertex = m_pVertexBuffer + m_vertexOfs;
@@ -2018,7 +2024,7 @@ MetalGfxDevice::MetalGfxDevice()
                     RectI& rect = *(RectI*)pCmd;
                     pCmd += 4;
                     Gradient* pGradient = (Gradient*)pCmd;
-                    pCmd += 8;
+                    pCmd += sizeof(Gradient)/4;
 
                     _setTintGradient(renderEncoder, rect, * pGradient);
                     break;
@@ -2126,12 +2132,12 @@ MetalGfxDevice::MetalGfxDevice()
                         for (int i = 0; i < clipListLen; i++)
                         {
                             RectI& clip = m_pClipListBuffer[clipListOfs++];
-                            MTLScissorRect metalClip = {(unsigned) clip.x, (unsigned) clip.y, (unsigned) clip.w, (unsigned) clip.h};
+                            MTLScissorRect metalClip = {(unsigned) clip.x/64, (unsigned) clip.y/64, (unsigned) clip.w/64, (unsigned) clip.h/64};
                             [renderEncoder setScissorRect:metalClip];
                             [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         }
 
-                        MTLScissorRect orgClip = {0, 0, (unsigned) m_activeCanvasSize.w, (unsigned) m_activeCanvasSize.h};
+                        MTLScissorRect orgClip = {0, 0, (unsigned) m_activeCanvasSize.w/64, (unsigned) m_activeCanvasSize.h/64};
                         [renderEncoder setScissorRect:orgClip];
 
                         vertexOfs += nVertices;
