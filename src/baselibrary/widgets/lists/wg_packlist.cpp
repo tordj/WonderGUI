@@ -418,6 +418,26 @@ namespace wg
 			
 			if( m_pEntrySkin[0] )
 				m_entryPadding = m_pEntrySkin[0]->_contentPaddingSize(scale);
+			
+			m_contentPreferredLength = 0;
+			m_contentPreferredBreadth = 0;
+			m_nbPreferredBreadthEntries = 0;
+
+			for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
+			{
+				SizeSPX pref = _paddedLimitedPreferredSize( pSlot, scale );
+
+				if( m_bHorizontal )
+				{
+					_addToContentPreferredSize( pref.w, pref.h );
+					pSlot->m_prefBreadth = pref.h;
+				}
+				else
+				{
+					_addToContentPreferredSize( pref.h, pref.w );
+					pSlot->m_prefBreadth = pref.w;
+				}
+			}
 		}
 
 		//
@@ -445,24 +465,25 @@ namespace wg
 			{
 				Widget * pWidget = pSlot->_widget();
 
+				SizeSPX newEntrySize;
+				spx newEntryLength;
+
 				if( m_bHorizontal )
 				{
-					spx newEntryLength = _paddedLimitedMatchingWidth(pSlot, newContentBreadth );
-					pSlot->m_ofs = ofs;
-					pSlot->m_length = newEntryLength;
-					ofs += newEntryLength;
-
-					OO(pWidget)->_resize( SizeSPX(newEntryLength, newContentBreadth), m_scale );	//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					newEntryLength = _paddedLimitedMatchingWidth(pSlot, newContentBreadth );
+					newEntrySize = SizeSPX(newEntryLength, newContentBreadth);
 				}
 				else
 				{
-					spx newEntryLength = _paddedLimitedMatchingHeight(pSlot, newContentBreadth );
-					pSlot->m_ofs = ofs;
-					pSlot->m_length = newEntryLength;
-					ofs += newEntryLength;
-
-					OO(pWidget)->_resize( SizeSPX(newContentBreadth, newEntryLength), m_scale );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					newEntryLength = _paddedLimitedMatchingHeight(pSlot, newContentBreadth );
+					newEntrySize = SizeSPX(newContentBreadth, newEntryLength);
 				}
+				
+				pSlot->m_ofs = ofs;
+				pSlot->m_length = newEntryLength;
+				ofs += newEntryLength;
+
+				OO(pWidget)->_resize( newEntrySize, m_scale );
 			}
 			m_contentLength = ofs;
 		}
@@ -554,7 +575,7 @@ namespace wg
 
 		for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
 		{
-			SizeSPX pref = _paddedLimitedPreferredSize( pSlot );
+			SizeSPX pref = _paddedLimitedPreferredSize( pSlot, m_scale );
 
 			if( m_bHorizontal )
 			{
@@ -773,7 +794,7 @@ namespace wg
 			{
 				pSlot[i].m_bVisible = false;
 
-				SizeSPX pref = _paddedLimitedPreferredSize(pSlot);
+				SizeSPX pref = _paddedLimitedPreferredSize(pSlot, m_scale);
 				if (m_bHorizontal)
 					_subFromContentPreferredSize(pref.w, pref.h);
 				else
@@ -801,7 +822,7 @@ namespace wg
 				pSlot[i].m_bVisible = true;
 
 				Widget * pChild = pSlot[i]._widget();
-				SizeSPX pref = _paddedLimitedPreferredSize(pSlot);
+				SizeSPX pref = _paddedLimitedPreferredSize(pSlot, m_scale);
 
 				if (m_bHorizontal)
 				{
@@ -1193,11 +1214,11 @@ namespace wg
 
 	//____ _paddedLimitedPreferredSize() __________________________________________
 
-	SizeSPX PackList::_paddedLimitedPreferredSize( StaticSlot * _pSlot )
+	SizeSPX PackList::_paddedLimitedPreferredSize( StaticSlot * _pSlot, int scale )
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
-		SizeSPX sz = pSlot->_widget()->_preferredSize(m_scale);
+		SizeSPX sz = pSlot->_widget()->_preferredSize(scale);
 		sz += m_entryPadding;
 
 		// Apply limits
@@ -1209,13 +1230,13 @@ namespace wg
 
 		if( sz.w > m_maxEntrySizeSPX.w )
 		{
-			spx h = pSlot->_widget()->_matchingHeight(m_maxEntrySizeSPX.w-m_entryPadding.w, m_scale) + m_entryPadding.h;
+			spx h = pSlot->_widget()->_matchingHeight(m_maxEntrySizeSPX.w-m_entryPadding.w, scale) + m_entryPadding.h;
 			limit(h, m_minEntrySizeSPX.h, m_maxEntrySizeSPX.h );
 			sz.h = h;
 		}
 		else if( sz.h > m_maxEntrySizeSPX.h )
 		{
-			spx w = pSlot->_widget()->_matchingWidth(m_maxEntrySizeSPX.h-m_entryPadding.h, m_scale) + m_entryPadding.w;
+			spx w = pSlot->_widget()->_matchingWidth(m_maxEntrySizeSPX.h-m_entryPadding.h, scale) + m_entryPadding.w;
 			limit(w, m_minEntrySizeSPX.w, m_maxEntrySizeSPX.w );
 			sz.w = w;
 		}
@@ -1269,7 +1290,7 @@ namespace wg
 
 		if (pSlot->m_bVisible && m_minEntrySizeSPX != m_maxEntrySizeSPX)
 		{
-			SizeSPX prefEntrySize = _paddedLimitedPreferredSize(pSlot);
+			SizeSPX prefEntrySize = _paddedLimitedPreferredSize(pSlot, m_scale);
 
 			spx prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
 			spx prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;

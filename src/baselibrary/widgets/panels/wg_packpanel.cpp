@@ -743,7 +743,7 @@ namespace wg
 					{
 						if( p->m_bVisible )
 						{
-							SizeSPX defaultSize = p->_widget()->_preferredSize();
+							SizeSPX defaultSize = p->_widget()->_preferredSize(scale);
 							length += defaultSize.w;
 							if( defaultSize.h > breadth )
 								breadth = defaultSize.h;
@@ -756,7 +756,7 @@ namespace wg
 					{
 						if( p->m_bVisible )
 						{
-							SizeSPX defaultSize = p->_widget()->_preferredSize();
+							SizeSPX defaultSize = p->_widget()->_preferredSize(scale);
 							length += defaultSize.h;
 							if( defaultSize.w > breadth )
 								breadth = defaultSize.w;

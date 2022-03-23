@@ -271,7 +271,7 @@ namespace wg
 		void			_refreshHeader();
 		void			_refreshList();
 
-		SizeSPX			_paddedLimitedPreferredSize( StaticSlot * pSlot );
+		SizeSPX			_paddedLimitedPreferredSize( StaticSlot * pSlot, int scale );
 		spx				_paddedLimitedMatchingHeight( StaticSlot * pSlot, spx paddedWidth );
 		spx				_paddedLimitedMatchingWidth( StaticSlot * pSlot, spx paddedHeight );
 
