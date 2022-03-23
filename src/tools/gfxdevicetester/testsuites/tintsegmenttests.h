@@ -16,6 +16,8 @@ public:
 		addTest("SegmentsTintY", &TintSegmentTests::segmentsTintY);
 		addTest("SegmentsTintXY", &TintSegmentTests::segmentsTintXY);
 		addTest("SegmentsTintYBaseTintX", &TintSegmentTests::setBaseGradientX, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetTint);
+		addTest("SegmentsTintYBaseTintY", &TintSegmentTests::setBaseGradientY, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetTint);
+		addTest("SegmentsTintXBaseTintX", &TintSegmentTests::setBaseGradientX, &TintSegmentTests::segmentsTintX, &TintSegmentTests::resetTint);
 
 		addTest("SegmentsTintXRot90", &TintSegmentTests::rot90, &TintSegmentTests::segmentsTintX, &TintSegmentTests::resetFlip);
 		addTest("SegmentsTintYRot90", &TintSegmentTests::rot90, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetFlip);

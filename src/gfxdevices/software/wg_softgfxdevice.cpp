@@ -552,10 +552,10 @@ namespace wg
 
 			if (mode == BlendMode::Blend)
 			{
-				int alpha = srcA;
-				int invAlpha = 255 - alpha;
+				int alpha = s_mulTab[srcA];
+				int invAlpha = 65536 - alpha;
 
-				outA = (backA * invAlpha + 255 * alpha) >> 12;
+				outA = (backA * invAlpha + 255 * alpha) >> 16;
 			}
 
 			if (mode == BlendMode::Add)

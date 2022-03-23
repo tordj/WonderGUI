@@ -140,7 +140,7 @@ protected:
 {
 	
 	m_OSXScale = 2.f;
-	m_WGScale = 3.f;
+	m_WGScale = 2.f;
 	
     [super viewDidLoad];
 

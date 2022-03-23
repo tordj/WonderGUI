@@ -60,7 +60,7 @@ public:
 
 	bool	fills(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->fill(canvas - BorderI(64), Color8(0,0,0,64) );
+		pDevice->fill(canvas - BorderSPX(64*64), Color8(0,0,0,64) );
 
 		int ofs = 0;
 
