@@ -98,7 +98,10 @@ public:
 
     int64_t            time() override
     {
-        return 1;
+		
+		dispatch_time_t now = dispatch_time(DISPATCH_TIME_NOW, 0);
+		
+        return now;
     }
 
     wg::Blob_p       loadBlob(const char* pPath) override;
@@ -127,13 +130,18 @@ protected:
 
     wg::Size                m_windowSize;
 
-    
+	float					m_OSXScale;
+	float					m_WGScale;
 }
 
 //____ viewDidLoad _______________________________________________________
 
 - (void)viewDidLoad
 {
+	
+	m_OSXScale = 2.f;
+	m_WGScale = 3.f;
+	
     [super viewDidLoad];
 
     _view = (MTKView *)self.view;
@@ -168,7 +176,7 @@ protected:
 
 	MTLRenderPassDescriptor * pDesc = _view.currentRenderPassDescriptor;
 	pDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
-    m_pDevice->setDefaultCanvas( pDesc, wg::SizeI(m_windowSize.w,m_windowSize.h), PixelFormat::BGRA_8_sRGB, 128 );
+    m_pDevice->setDefaultCanvas( pDesc, wg::SizeI(m_windowSize.w,m_windowSize.h), PixelFormat::BGRA_8_sRGB, int(m_WGScale*64) );
 	
     m_pRoot = RootPanel::create( CanvasRef::Default, m_pDevice);
     
@@ -316,7 +324,7 @@ protected:
 
     //     mouseLoc = pkCocoaAPI->ConvertMousePos(mouseLoc);
 
-        Base::inputHandler()->setPointer(m_pRoot, {(float)mouseLoc.x, (float)mouseLoc.y} );
+        Base::inputHandler()->setPointer(m_pRoot, { wg::pts(mouseLoc.x)*m_OSXScale/m_WGScale, wg::pts(mouseLoc.y)*m_OSXScale/m_WGScale } );
 
 }
 
@@ -340,7 +348,7 @@ protected:
 
 //     mouseLoc = pkCocoaAPI->ConvertMousePos(mouseLoc);
 
-    Base::inputHandler()->setPointer(m_pRoot, {(float)mouseLoc.x, (float)mouseLoc.y} );
+    Base::inputHandler()->setPointer(m_pRoot, { wg::pts(mouseLoc.x)*m_OSXScale/m_WGScale, wg::pts(mouseLoc.y)*m_OSXScale/m_WGScale } );
 }
 
 //____ mouseDragged ________________________________________________________
@@ -355,7 +363,7 @@ protected:
 
         //     mouseLoc = pkCocoaAPI->ConvertMousePos(mouseLoc);
 
-            Base::inputHandler()->setPointer(m_pRoot, {(float)mouseLoc.x, (float)mouseLoc.y} );
+            Base::inputHandler()->setPointer(m_pRoot, { wg::pts(mouseLoc.x)*m_OSXScale/m_WGScale, wg::pts(mouseLoc.y)*m_OSXScale/m_WGScale} );
 
 }
 
@@ -480,7 +488,7 @@ Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory,
 
 //    auto pSurface = pFactory->createSurface(SizeI(width, height), px, (uint8_t*)pixel, pitch, &output, flags);
 
-    Surface::Blueprint bp;
+    Surface::Blueprint bp = _bp;
     bp.size.w = width;
     bp.size.h = height;
     bp.format = px;

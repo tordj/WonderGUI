@@ -144,7 +144,7 @@ public:
                 if( pDevice->blitSource()->sampleMethod() == SampleMethod::Bilinear )
                     pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*30.f/(width-1), 0, y*30.f/(width-1), 10) );
                 else
-                    pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*31.f/(width-0.99f), 0, y*31.f/(width-0.99f), 10) );
+                    pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*31.f/width, 0, y*31.f/width, 10) );
 
             }
             ofsY += 10;
