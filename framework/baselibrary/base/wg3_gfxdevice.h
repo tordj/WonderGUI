@@ -108,7 +108,7 @@ namespace wg
 		//.____ State _________________________________________________
 
 		virtual bool		setClipList(int nRectangles, const RectSPX * pRectangles);
-		virtual void		clearClipList();
+		virtual void		resetClipList();
 		virtual bool		pushClipList(int nRectangles, const RectSPX* pRectangles);
 		virtual bool		popClipList();
 

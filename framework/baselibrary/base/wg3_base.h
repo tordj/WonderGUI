@@ -29,7 +29,6 @@
 #include <wg3_strongptr.h>
 #include <wg3_types.h>
 #include <wg3_hostbridge.h>
-#include <wg3_bitmapcache.h>
 
 #include <string>
 #include <functional>
@@ -54,7 +53,7 @@ namespace wg
 	class Context;
 	class Object;
 	class Receiver;
-//	class BitmapCache;
+	class BitmapCache;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
 	typedef	StrongPtr<NumberLayout>	NumberLayout_p;
@@ -63,7 +62,7 @@ namespace wg
 	typedef	StrongPtr<Caret>			Caret_p;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	StrongPtr<Context>			Context_p;
-//	typedef	StrongPtr<BitmapCache>		BitmapCache_p;
+	typedef	StrongPtr<BitmapCache>		BitmapCache_p;
 
 
 	class Error

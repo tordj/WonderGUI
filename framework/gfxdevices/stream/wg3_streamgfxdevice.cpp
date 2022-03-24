@@ -161,13 +161,13 @@ namespace wg
         return true;
     }
 
-    //____ clearClipList() _______________________________________________________
+    //____ resetClipList() _______________________________________________________
 
-    void StreamGfxDevice::clearClipList()
+    void StreamGfxDevice::resetClipList()
     {
-        GfxDevice::clearClipList();
+        GfxDevice::resetClipList();
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ClearClipList, 0 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ResetClipList, 0 };
     }
 
     //____ pushClipList() ________________________________________________________

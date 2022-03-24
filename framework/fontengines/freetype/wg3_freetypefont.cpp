@@ -106,9 +106,7 @@ namespace wg
 			FT_Face_Properties(m_ftFace, 1, properties);
 		}
 #endif
-		if( pCache == nullptr )
-			pCache = Base::defaultBitmapCache();
-		pCache->addListener(this);
+		m_pCache->addListener(this);
 	}
 
 	//____ Destructor _____________________________________________________________

@@ -41,7 +41,7 @@ namespace wg
         BeginCanvasUpdate,
         EndCanvasUpdate,
         SetClipList,
-        ClearClipList,
+        ResetClipList,
         PushClipList,
         PopClipList,
         SetTintColor,

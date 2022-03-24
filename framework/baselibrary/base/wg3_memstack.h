@@ -25,7 +25,7 @@
 
 #include <wg3_chain.h>
 
-#include <vector>
+//#include <vector>
 
 namespace wg
 {

@@ -64,7 +64,7 @@ namespace wg
 		//.____ State _________________________________________________
         
         bool        setClipList(int nRectangles, const RectSPX * pRectangles) override;
-        void        clearClipList() override;
+        void        resetClipList() override;
         bool        pushClipList(int nRectangles, const RectSPX* pRectangles) override;
         bool        popClipList() override;
 
