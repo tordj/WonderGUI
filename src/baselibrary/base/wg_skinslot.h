@@ -67,7 +67,7 @@ namespace wg
 		void 			render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state, float value = 1.f, float value2 = -1.f) const;
 
 		inline SizeSPX	minSize(int scale) const { return m_pSkin ? m_pSkin->_minSize(scale) : SizeSPX(); }
-		inline SizeSPX	preferredSize(int scale) const { return m_pSkin ? m_pSkin->_preferredSize(scale) : SizeSPX(); }
+		inline SizeSPX	defaultSize(int scale) const { return m_pSkin ? m_pSkin->_defaultSize(scale) : SizeSPX(); }
 
 		inline SizeSPX	contentPaddingSize(int scale) const { return m_pSkin ? m_pSkin->_contentPaddingSize(scale) : SizeSPX(); }
 		inline SizeSPX	sizeForContent(const SizeSPX& contentSize, int scale) const { return m_pSkin ? m_pSkin->_sizeForContent(contentSize, scale) : contentSize; }

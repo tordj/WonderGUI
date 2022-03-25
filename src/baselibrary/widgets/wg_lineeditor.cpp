@@ -63,13 +63,13 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _defaultSize() _____________________________________________________________
 
-	SizeSPX LineEditor::_preferredSize(int scale) const
+	SizeSPX LineEditor::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		//TODO: Use real text size as preferred size instead. They should use a SizeCapsule to limit the size if needed.
+		//TODO: Use real text size as default size instead. They should use a SizeCapsule to limit the size if needed.
 
 		SizeSPX	contentSize;
 
@@ -104,7 +104,7 @@ namespace wg
 
 		//
 
-		RectSPX textCanvas(canvas.x - m_textScrollOfs, canvas.y, OO(editor)._preferredSize(m_scale));
+		RectSPX textCanvas(canvas.x - m_textScrollOfs, canvas.y, OO(editor)._defaultSize(m_scale));
 
 		// We need to clip to canvas since textCanvas can go outside our canvas.
 
@@ -146,7 +146,7 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		OO(editor)._setSize( SizeSPX( OO(editor)._preferredSize(m_scale).w, size.h - m_skin.contentPaddingSize(m_scale).h ), m_scale );
+		OO(editor)._setSize( SizeSPX( OO(editor)._defaultSize(m_scale).w, size.h - m_skin.contentPaddingSize(m_scale).h ), m_scale );
 	}
 
 	//____ _componentPos() __________________________________________________________
@@ -168,7 +168,7 @@ namespace wg
 		if (pComponent != &editor)
 			return m_size;
 
-		return SizeSPX( OO(editor)._preferredSize(m_scale).w, m_size.h - m_skin.contentPaddingSize(m_scale).h );
+		return SizeSPX( OO(editor)._defaultSize(m_scale).w, m_size.h - m_skin.contentPaddingSize(m_scale).h );
 	}
 
 	//____ _componentGeo() __________________________________________________________
@@ -180,7 +180,7 @@ namespace wg
 
 		RectSPX r = m_skin.contentRect( m_size, m_scale, m_state );
 		r.x -= m_textScrollOfs;
-		r.w = OO(editor)._preferredSize(m_scale).w;
+		r.w = OO(editor)._defaultSize(m_scale).w;
 		return r;
 	}
 
@@ -217,14 +217,14 @@ namespace wg
 		if (pComponent != &editor)
 			return Widget::_componentRequestResize(pComponent);
 
-		SizeSPX preferred = OO(editor)._preferredSize(m_scale);
+		SizeSPX defaultSize = OO(editor)._defaultSize(m_scale);
 
 		spx height = m_size.h - m_skin.contentPaddingSize(m_scale).h;
 
-		if( preferred.h != height )
+		if(defaultSize.h != height )
 			_requestResize();
 
-		OO(editor)._setSize( SizeSPX(preferred.w, height ),m_scale);	// Component gets the preferred width right away.
+		OO(editor)._setSize( SizeSPX(defaultSize.w, height ),m_scale);	// Component gets the default width right away.
 	}
 
 	//____ _componentRequestInView() ____________________________________________

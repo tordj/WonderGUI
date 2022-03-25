@@ -96,7 +96,7 @@ namespace wg
 
 		//.____ Internal ____________________________________________
 
-		SizeSPX	_preferredSize(int scale = -1) const override;
+		SizeSPX	_defaultSize(int scale = -1) const override;
 
 
 	protected:

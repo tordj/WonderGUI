@@ -145,7 +145,7 @@ namespace wg
 
 		//.____ Internal _______________________________________________________
 
-		SizeSPX			_preferredSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale = -1) const override;
 
 
 	protected:
@@ -153,8 +153,8 @@ namespace wg
 		virtual ~SplitPanel();
 
 		spx			_handleThickness(int scale) const;					// Takes both m_handleThickness and m_pHandleSkin into account.
-		void		_updatePreferredSize();
-		SizeSPX		_calcPreferredSize(int scale) const;
+		void		_updateDefaultSize();
+		SizeSPX		_calcDefaultSize(int scale) const;
 		bool		_updateGeo(spx handleMovement=0);
 		spx			_defaultBroker(Widget * pFirst, Widget * pSecond, spx totalLength, float splitFactor, spx handleMovement);
 
@@ -207,7 +207,7 @@ namespace wg
 
 		SkinSlot		m_handleSkin;
 		bool			m_bHorizontal;
-		SizeSPX			m_preferredSize;
+		SizeSPX			m_defaultSize;
 		float			m_splitFactor;			// fraction of available child length that goes to first child. Measured in 1/65536.
 		ScaleBehavior	m_scaleBehavior;
 

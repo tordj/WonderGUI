@@ -103,11 +103,11 @@ namespace wg
 		_layout()->onStateChanged( this, state, old );
 	}
 
-	//____ _preferredSize() _________________________________________________________
+	//____ _defaultSize() _________________________________________________________
 
-	SizeSPX CText::_preferredSize(int scale) const
+	SizeSPX CText::_defaultSize(int scale) const
 	{
-		return _layout()->preferredSize(this, scale);
+		return _layout()->defaultSize(this, scale);
 	}
 
 	//____ _matchingWidth() _________________________________________________________

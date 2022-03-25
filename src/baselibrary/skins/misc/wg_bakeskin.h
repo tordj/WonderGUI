@@ -70,7 +70,7 @@ namespace wg
 		//.____ Internal _________________________________________________
 
 		SizeSPX			_minSize(int scale) const override;
-		SizeSPX			_preferredSize(int scale) const override;
+		SizeSPX			_defaultSize(int scale) const override;
 
 		BorderSPX		_contentPadding(int scale, State state) const override;
 		SizeSPX			_contentPaddingSize(int scale) const override;
@@ -119,7 +119,7 @@ namespace wg
 
 		mutable int			m_cachedScale = 0;
 		mutable SizeSPX		m_cachedMinSize;						// Calculated minSize for scale represented by m_cachedScale;
-		mutable SizeSPX		m_cachedPreferredSize;					// Calculated preferredSize for scale represented by m_cachedScale;
+		mutable SizeSPX		m_cachedDefaultSize;					// Calculated defaultSize for scale represented by m_cachedScale;
 		mutable BorderSPX	m_cachedContentPadding[StateEnum_Nb];
 
 		Bitmask<uint32_t>	m_opaqueStates;

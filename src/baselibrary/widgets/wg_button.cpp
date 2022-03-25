@@ -62,7 +62,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		spx height = m_skin.preferredSize(scale).h;
+		spx height = m_skin.defaultSize(scale).h;
 
 		if( !OO(label).isEmpty() )
 		{
@@ -79,22 +79,22 @@ namespace wg
 	}
 
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _defaultSize() _____________________________________________________________
 
-	SizeSPX Button::_preferredSize(int scale) const
+	SizeSPX Button::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX preferred;
+		SizeSPX defaultSize;
 
 		if( !OO(label).isEmpty() )
-			preferred = OO(label)._preferredSize(scale);
+			defaultSize = OO(label)._defaultSize(scale);
 
-		preferred = m_skin.sizeForContent(preferred, scale);
+		defaultSize = m_skin.sizeForContent(defaultSize, scale);
 
 		//TODO: Take icon into account.
 
-		return preferred;
+		return defaultSize;
 	}
 
 	//____ _setState() ______________________________________________________

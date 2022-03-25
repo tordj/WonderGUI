@@ -106,16 +106,16 @@ namespace wg
 	}
 
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _defaultSize() _____________________________________________________________
 
-	SizeSPX StackPanel::_preferredSize(int scale) const
+	SizeSPX StackPanel::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
 		if (scale == m_scale)
-			return m_preferredSize;
+			return m_defaultSize;
 		else
-			return _calcPreferredSize(scale);
+			return _calcDefaultSize(scale);
 	}
 
 	//____ _resize() ___________________________________________________________
@@ -228,8 +228,8 @@ namespace wg
 		_requestRender();				// This is needed here since children might have repositioned.
 										//TODO: Optimize! Only render what really is needed due to changes.
 
-		SizeSPX newPreferred =_calcPreferredSize(m_scale);
-		if (newPreferred != m_preferredSize || m_preferredSize != m_size)
+		SizeSPX newDefault =_calcDefaultSize(m_scale);
+		if (newDefault != m_defaultSize || m_defaultSize != m_size)
 			_requestResize();
 	}
 
@@ -244,8 +244,8 @@ namespace wg
 		_requestRender();				// This is needed here since children might have repositioned.
 										//TODO: Optimize! Only render what really is needed due to changes.
 
-		SizeSPX newPreferred = _calcPreferredSize(m_scale);
-		if (newPreferred != m_preferredSize || m_preferredSize != m_size)
+		SizeSPX newDefault = _calcDefaultSize(m_scale);
+		if (newDefault != m_defaultSize || m_defaultSize != m_size)
 			_requestResize();
 	}
 
@@ -347,11 +347,11 @@ namespace wg
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
-		SizeSPX newPreferred = _calcPreferredSize(m_scale);
+		SizeSPX newDefault = _calcDefaultSize(m_scale);
 
-		if( newPreferred != m_preferredSize || m_preferredSize != m_size )
+		if(newDefault != m_defaultSize || m_defaultSize != m_size )
 		{
-			m_preferredSize = newPreferred;
+			m_defaultSize = newDefault;
 			_requestResize();
 		}
 		else
@@ -420,20 +420,20 @@ namespace wg
 
 		while( pSlot != pEnd )
 		{
-			// Update m_preferredSize
+			// Update m_defaultSize
 
 			if( !pSlot->m_bVisible )
 			{
-				SizeSPX preferred = pSlot->_paddedPreferredSize(m_scale);
+				SizeSPX defaultSize = pSlot->_paddedDefaultSize(m_scale);
 
-				if( preferred.w > m_preferredSize.w )
+				if(defaultSize.w > m_defaultSize.w )
 				{
-					m_preferredSize.w = preferred.w;
+					m_defaultSize.w = defaultSize.w;
 					bRequestResize = true;
 				}
-				if( preferred.h > m_preferredSize.h )
+				if(defaultSize.h > m_defaultSize.h )
 				{
-					m_preferredSize.h = preferred.h;
+					m_defaultSize.h = defaultSize.h;
 					bRequestResize = true;
 				}
 
@@ -470,28 +470,28 @@ namespace wg
 			}
 			pSlot++;
 		}
-		// Update m_preferredSize
+		// Update m_defaultSize
 
-		SizeSPX	preferredSize;
+		SizeSPX	defaultSize;
 		Slot * p = slots._begin();
 
 		while( p != slots._end() )
 		{
 			if( p->m_bVisible )
 			{
-				SizeSPX sz = p->_paddedPreferredSize(m_scale);
-				if( sz.w > preferredSize.w )
-					preferredSize.w = sz.w;
-				if( sz.h > preferredSize.h )
-					preferredSize.h = sz.h;
+				SizeSPX sz = p->_paddedDefaultSize(m_scale);
+				if( sz.w > defaultSize.w )
+					defaultSize.w = sz.w;
+				if( sz.h > defaultSize.h )
+					defaultSize.h = sz.h;
 				p++;
 			}
 		}
 
-		if( preferredSize != m_preferredSize )
+		if( defaultSize != m_defaultSize )
 			bRequestResize = true;
 
-		m_preferredSize = preferredSize;
+		m_defaultSize = defaultSize;
 
 		// Check if removal might affect height for current width
 /*
@@ -510,17 +510,17 @@ namespace wg
 /*
 	void StackPanel::_refreshAllWidgets()
 	{
-		_refreshPreferredSize();
+		_refreshDefaultSize();
 		_adaptChildrenToSize();
 		_requestRender();
 	}
 */
 
-	//____ _calcPreferredSize() _____________________________________________________
+	//____ _calcDefaultSize() _____________________________________________________
 
-	SizeSPX StackPanel::_calcPreferredSize(int scale) const
+	SizeSPX StackPanel::_calcDefaultSize(int scale) const
 	{
-		SizeSPX	preferredSize;
+		SizeSPX	defaultSize;
 
 		auto * pSlot = slots._begin();
 		auto * pEnd = slots._end();
@@ -529,16 +529,16 @@ namespace wg
 		{
 			if( pSlot->m_bVisible )
 			{
-				SizeSPX sz = pSlot->_paddedPreferredSize(scale);
-				if( sz.w > preferredSize.w )
-					preferredSize.w = sz.w;
-				if( sz.h > preferredSize.h )
-					preferredSize.h = sz.h;
+				SizeSPX sz = pSlot->_paddedDefaultSize(scale);
+				if( sz.w > defaultSize.w )
+					defaultSize.w = sz.w;
+				if( sz.h > defaultSize.h )
+					defaultSize.h = sz.h;
 			}
 			pSlot++;
 		}
 
-		return preferredSize;
+		return defaultSize;
 	}
 
 	//____ _updateChildGeo() ___________________________________________________________
@@ -571,7 +571,7 @@ namespace wg
 			default:
 		case SizePolicy2D::Original:
 			{
-				SizeSPX	size = pSlot->_widget()->_preferredSize(m_scale);
+				SizeSPX	size = pSlot->_widget()->_defaultSize(m_scale);
 				RectSPX geo = Util::placementToRect( pSlot->m_placement, base, size );
 
 				if( geo.w > base.w )
@@ -593,7 +593,7 @@ namespace wg
 			}
 			case SizePolicy2D::Scale:
 			{
-				SizeSPX	orgSize = pSlot->_widget()->_preferredSize(m_scale);
+				SizeSPX	orgSize = pSlot->_widget()->_defaultSize(m_scale);
 				SizeSPX	size;
 
 				float	fracX = orgSize.w / (float) base.w;

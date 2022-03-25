@@ -45,10 +45,10 @@ namespace wg
 		m_axis = bp.axis;
 		m_handleSkin.set(bp.handle);
 
-		m_preferredSlideLength = bp.preferredSlideLength;
+		m_defaultSlideLength = bp.defaultSlideLength;
 		m_nbSteps = bp.steps;
 
-		_updatePreferredSize();
+		_updateDefaultSize();
 		_setValue(bp.value);
 	}
 
@@ -66,9 +66,9 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _setPreferredSlideLength() _________________________________________
+	//____ _setDefaultSlideLength() _________________________________________
 
-	void Slider::setPreferredSlideLength(pts length)
+	void Slider::setDefaultSlideLength(pts length)
 	{
 		if (length < 0)
 		{
@@ -76,8 +76,8 @@ namespace wg
 			return;
 		}
 
-		m_preferredSlideLength = length;
-		_updatePreferredSize();
+		m_defaultSlideLength = length;
+		_updateDefaultSize();
 	}
 
 	//____ setAxis() _________________________________________________________
@@ -88,7 +88,7 @@ namespace wg
 		{
 			m_axis = axis;
 			_requestRender();
-			_updatePreferredSize();
+			_updateDefaultSize();
 		}
 	}
 
@@ -99,7 +99,7 @@ namespace wg
 		m_handleSkin.set(pSkin);
 
 		_requestRender();
-		_updatePreferredSize();
+		_updateDefaultSize();
 	}
 
 
@@ -129,14 +129,14 @@ namespace wg
 		_setValue(value,false);
 	}
 
-	//____ _preferredSize() __________________________________________________________
+	//____ _defaultSize() __________________________________________________________
 
-	SizeSPX Slider::_preferredSize(int scale) const
+	SizeSPX Slider::_defaultSize(int scale) const
 	{
-		if( scale == m_scale && m_preferredSize.w >= 0 && m_preferredSize.h >= 0)
-			return m_preferredSize;
+		if( scale == m_scale && m_defaultSize.w >= 0 && m_defaultSize.h >= 0)
+			return m_defaultSize;
 		else
-			return _calcPreferredSize(scale);
+			return _calcDefaultSize(scale);
 	}
 
 	//____ _receive() __________________________________________________________
@@ -264,32 +264,32 @@ namespace wg
 		return bMarked;
 	}
 
-	//____ _updatePreferredSize() ________________________________________________
+	//____ _updateDefaultSize() ________________________________________________
 
-	void Slider::_updatePreferredSize(bool bRequestResize)
+	void Slider::_updateDefaultSize(bool bRequestResize)
 	{	
-		SizeSPX sz = _calcPreferredSize(m_scale);
-		if (sz != m_preferredSize)
+		SizeSPX sz = _calcDefaultSize(m_scale);
+		if (sz != m_defaultSize)
 		{
-			m_preferredSize = sz;
+			m_defaultSize = sz;
 			if( bRequestResize )
 				_requestResize();
 		}
 	}
 
-	//____ _calcPreferredSize() ________________________________________________
+	//____ _calcDefaultSize() ________________________________________________
 
-	SizeSPX Slider::_calcPreferredSize(int scale) const
+	SizeSPX Slider::_calcDefaultSize(int scale) const
 	{
-		SizeSPX sz = m_handleSkin.isEmpty() ? SizeSPX(4, 4) : m_handleSkin.preferredSize(scale);
+		SizeSPX sz = m_handleSkin.isEmpty() ? SizeSPX(4, 4) : m_handleSkin.defaultSize(scale);
 
 		if (m_axis == Axis::X)
-			sz.w += align(ptsToSpx(m_preferredSlideLength,scale));
+			sz.w += align(ptsToSpx(m_defaultSlideLength,scale));
 		else
-			sz.h += align(ptsToSpx(m_preferredSlideLength,scale));
+			sz.h += align(ptsToSpx(m_defaultSlideLength,scale));
 
 		sz += m_skin.contentPaddingSize(scale);
-		sz = SizeSPX::max(sz, m_skin.preferredSize(scale));
+		sz = SizeSPX::max(sz, m_skin.defaultSize(scale));
 
 		return sz;
 	}
@@ -300,7 +300,7 @@ namespace wg
 	void Slider::_resize(const SizeSPX& size, int scale)
 	{
 		Widget::_resize(size, scale);
-		_updatePreferredSize(false);			// Size is already decided for us, we just need to update m_preferredSize.
+		_updateDefaultSize(false);			// Size is already decided for us, we just need to update m_defaultSize.
 	}
 
 
@@ -351,7 +351,7 @@ namespace wg
 
 		RectSPX handleGeo;
 
-		SizeSPX handlePrefSize = m_handleSkin.preferredSize(m_scale);
+		SizeSPX handlePrefSize = m_handleSkin.defaultSize(m_scale);
 
 		if (m_axis == Axis::X)
 		{

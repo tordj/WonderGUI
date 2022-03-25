@@ -160,12 +160,12 @@ namespace wg
 		}
 	}
 
-	//____ _preferredSize() _______________________________________________________
+	//____ _defaultSize() _______________________________________________________
 
-	SizeSPX CColumnHeader::_preferredSize(int scale) const
+	SizeSPX CColumnHeader::_defaultSize(int scale) const
 	{
 
-		SizeSPX size = _layout()->preferredSize(this, scale);
+		SizeSPX size = _layout()->defaultSize(this, scale);
 		size = m_skin.sizeForContent(size,scale);
 
 		return size;

@@ -331,9 +331,9 @@ namespace wg
 		}
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _defaultSize() _____________________________________________________________
 
-	SizeSPX FlexPanel::_preferredSize(int scale) const
+	SizeSPX FlexPanel::_defaultSize(int scale) const
 	{
 		SizeSPX minSize;
 
@@ -651,7 +651,7 @@ namespace wg
 		{
 			// Calculate size
 
-			SizeSPX sz = pSlot->m_placementGeo.isEmpty() ? pSlot->_widget()->_preferredSize(m_scale) : align(ptsToSpx(pSlot->m_placementGeo.size(),m_scale));
+			SizeSPX sz = pSlot->m_placementGeo.isEmpty() ? pSlot->_widget()->_defaultSize(m_scale) : align(ptsToSpx(pSlot->m_placementGeo.size(),m_scale));
 			sz.limit( pSlot->_widget()->_minSize(m_scale), pSlot->_widget()->_maxSize(m_scale) );		// Respect widgets limits.
 
 			// Calculate position
@@ -701,7 +701,7 @@ namespace wg
 
 		if( pSlot->m_bPinned )
 		{
-			sz = pSlot->_widget()->_preferredSize(m_scale);
+			sz = pSlot->_widget()->_defaultSize(m_scale);
 
 			sz += SizeSPX( pSlot->m_topLeftPin.offset.x, pSlot->m_topLeftPin.offset.y );
 			sz -= SizeSPX( pSlot->m_bottomRightPin.offset.x, pSlot->m_bottomRightPin.offset.y );

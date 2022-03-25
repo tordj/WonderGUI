@@ -108,7 +108,7 @@ namespace wg
 		{
 			m_tooltipSlot._setWidget(pWidget);
 
-			SizeSPX tooltipSize = pWidget->_preferredSize(m_scale);
+			SizeSPX tooltipSize = pWidget->_defaultSize(m_scale);
 
 			Position& position = m_activePosition;
 

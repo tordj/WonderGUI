@@ -96,7 +96,7 @@ namespace wg
 
 		void		_initFromBlueprint(const Blueprint& bp);
 
-		SizeSPX		_preferredSize(int scale) const;
+		SizeSPX		_defaultSize(int scale) const;
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale);
 		bool		_receive(Msg* pMsg);
 		void		_setState(State state);

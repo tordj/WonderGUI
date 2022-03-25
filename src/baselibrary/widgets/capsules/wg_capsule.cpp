@@ -81,17 +81,17 @@ namespace wg
 			return Widget::_matchingWidth(height);
 	}
 
-	//____ _preferredSize() ___________________________________________________________
+	//____ _defaultSize() ___________________________________________________________
 
-	SizeSPX Capsule::_preferredSize( int scale ) const
+	SizeSPX Capsule::_defaultSize( int scale ) const
 	{
 		if (slot._widget())
 		{
 			scale = _fixScale(scale);
-			return slot._widget()->_preferredSize(scale) + m_skin.contentPaddingSize(scale);
+			return slot._widget()->_defaultSize(scale) + m_skin.contentPaddingSize(scale);
 		}
 
-		return Widget::_preferredSize(scale);
+		return Widget::_defaultSize(scale);
 	}
 
 	//____ _childPos() ___________________________________________________________

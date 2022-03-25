@@ -61,7 +61,7 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
-			pts				preferredSlideLength = 64;
+			pts				defaultSlideLength = 64;
 			int				scale = 64;
 			bool			selectable = true;
 			Skin_p			skin;
@@ -84,8 +84,8 @@ namespace wg
 		//.____ Geometry ____________________________________________
 
 
-		void			setPreferredSlideLength(pts length);
-		inline pts		preferredSlideLength() const { return m_preferredSlideLength; }
+		void			setDefaultSlideLength(pts length);
+		inline pts		defaultSlideLength() const { return m_defaultSlideLength; }
 
 		//.____ Appearance _____________________________________________
 
@@ -107,7 +107,7 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
-		SizeSPX			_preferredSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale = -1) const override;
 
 
 	protected:
@@ -120,8 +120,8 @@ namespace wg
 		bool		_alphaTest(const CoordSPX& ofs) override;
         void        _resize(const SizeSPX& size, int scale = -1) override;
 
-		SizeSPX		_calcPreferredSize(int scale) const;
-		void		_updatePreferredSize(bool bRequestResize = true);
+		SizeSPX		_calcDefaultSize(int scale) const;
+		void		_updateDefaultSize(bool bRequestResize = true);
 
 		void		_setValue(float value, bool bPostMsg = true);
 		void		_setHandleState(State state);
@@ -138,8 +138,8 @@ namespace wg
 
 	private:
 		SkinSlot	m_handleSkin;
-		SizeSPX		m_preferredSize;
-		pts			m_preferredSlideLength = 64;
+		SizeSPX		m_defaultSize;
+		pts			m_defaultSlideLength = 64;
 		float		m_value = 0.f;
 		float		m_valueAtPress = 0.f;
 		int			m_nbSteps = 0;

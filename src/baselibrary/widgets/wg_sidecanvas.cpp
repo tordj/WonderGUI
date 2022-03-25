@@ -61,11 +61,11 @@ namespace wg
 		return m_pHolder->_sideCanvasMatchingWidth(this,height,scale);
 	}
 
-	//____ _preferredSize() _________________________________________________________________
+	//____ _defaultSize() _________________________________________________________________
 
-	SizeSPX SideCanvas::_preferredSize(int scale) const
+	SizeSPX SideCanvas::_defaultSize(int scale) const
 	{
-		return m_pHolder->_sideCanvasPreferredSize(this, scale);
+		return m_pHolder->_sideCanvasDefaultSize(this, scale);
 	}
 	
 	//____ _minSize() _________________________________________________________________
@@ -142,14 +142,14 @@ namespace wg
 	
 	spx SideCanvas::Holder::_sideCanvasMatchingHeight( const SideCanvas * pCanvas, spx width, int scale ) const
 	{
-		return _sideCanvasPreferredSize(pCanvas,scale).h;
+		return _sideCanvasDefaultSize(pCanvas,scale).h;
 	}
 	
 	//____ _Holder::_sideCanvasMatchingWidth() ____________________________________________
 
 	spx SideCanvas::Holder::_sideCanvasMatchingWidth( const SideCanvas * pCanvas, spx height, int scale ) const
 	{
-		return _sideCanvasPreferredSize(pCanvas,scale).w;		
+		return _sideCanvasDefaultSize(pCanvas,scale).w;		
 	}
 
 	//____ _Holder::_sideCanvasMinSize() ____________________________________________

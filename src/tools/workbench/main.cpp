@@ -1897,7 +1897,7 @@ bool popupOpenerTest(CStandardSlot_p pEntry)
 
 	auto pOpened = Filler::create();
 	pOpened->setSkin( pButtonSkin );
-	pOpened->setPreferredSize({ 50,100 });
+	pOpened->setDefaultSize({ 50,100 });
 	pOpener->setPopup(pOpened);
 
 	return true;
@@ -1998,15 +1998,15 @@ bool designLayerTest(CStandardSlot_p pSlot)
 
 	auto pFiller1 = Filler::create();
 	pFiller1->setSkin( ColorSkin::create(Color::Azure) );
-	pFiller1->setPreferredSize({ 20,20 });
+	pFiller1->setDefaultSize({ 20,20 });
 
 	auto pFiller2 = Filler::create();
 	pFiller2->setSkin( ColorSkin::create(Color::Maroon) );
-	pFiller2->setPreferredSize({ 20,20 });
+	pFiller2->setDefaultSize({ 20,20 });
 
 	auto pFiller3 = Filler::create();
 	pFiller3->setSkin( ColorSkin::create(Color::CadetBlue) );
-	pFiller3->setPreferredSize({ 20,20 });
+	pFiller3->setDefaultSize({ 20,20 });
 
 	pFlexPanel->slots.pushFrontMovable(pFiller1, Rect(10, 10, 50, 50));
 	pFlexPanel->slots.pushFrontMovable(pFiller2, Rect(20, 20, 50, 50));
@@ -2165,7 +2165,7 @@ bool spinKnobTest(CStandardSlot_p pSlot)
 	Surface_p pSurfArrow = loadSurface("resources/dialarrow_small.png", { .sampleMethod = SampleMethod::Bilinear } );
 	Surface_p pSurfClockFace = loadSurface("resources/clockface.png" );
 
-	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .pivot = { 0.5f, 540 / 600.f }, .placement = {0.5f,0.5f}, .preferredSize = { 400,400 }, .surface = pSurfArrow });
+	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .pivot = { 0.5f, 540 / 600.f }, .placement = {0.5f,0.5f}, .defaultSize = { 400,400 }, .surface = pSurfArrow });
 
 	auto pKnob1 = Knob::create();
 	pKnob1->setSkin( pArrowSkin );
@@ -2247,7 +2247,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 		pSliderX->setAxis(Axis::X);
 		pSliderX->setSkin( pBgSkin );
 		pSliderX->setHandleSkin( pHandleSkin );
-		pSliderX->setPreferredSlideLength(100);
+		pSliderX->setDefaultSlideLength(100);
 	}
 
 	auto pSliderY = Slider::create();
@@ -2261,7 +2261,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin( pBgSkin );
 		pSliderY->setHandleSkin( pHandleSkin );
-		pSliderY->setPreferredSlideLength(100);
+		pSliderY->setDefaultSlideLength(100);
 	}
 
 	pBaseLayer->slots.pushBackMovable(pSliderY, Coord(10, 10));
@@ -2290,7 +2290,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 		pSliderX->setSkin( pBgSkin );
 		pSliderX->setBeginHandleSkin( pHandleSkin );
 		pSliderX->setEndHandleSkin( pHandleSkin );
-		pSliderX->setPreferredSlideLength(100);
+		pSliderX->setDefaultSlideLength(100);
 	}
 
 	auto pSliderY = RangeSlider::create();
@@ -2304,7 +2304,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 		pSliderY->setSkin( pBgSkin );
 		pSliderY->setBeginHandleSkin( pHandleSkin );
 		pSliderY->setEndHandleSkin( pHandleSkin );
-		pSliderY->setPreferredSlideLength(100);
+		pSliderY->setDefaultSlideLength(100);
 	}
 
 	pBaseLayer->slots.pushBackMovable(pSliderY, Coord(10, 10));
@@ -2325,7 +2325,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 
 	auto pCanvasStack = CanvasStack::create();
 
-	pCanvasStack->setPreferredSize({ 1280, 1600 });
+	pCanvasStack->setDefaultSize({ 1280, 1600 });
 	pCanvasStack->setCanvases(2);
 
 	Surface_p pBgSurf = loadSurface("resources/parallels/background0001.png", PixelFormat::BGR_8);
@@ -2417,7 +2417,7 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 	Surface_p pSurfArrow = loadSurface("resources/dialarrow_small.png", { .sampleMethod = SampleMethod::Bilinear });
 	Surface_p pSurfClockFace = loadSurface("resources/clockface.png");
 
-	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .pivot = { 0.5f, 540 / 600.f }, .placement = { 0.5f,0.5f }, .preferredSize = { 400,400 }, .surface = pSurfArrow });
+	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .pivot = { 0.5f, 540 / 600.f }, .placement = { 0.5f,0.5f }, .defaultSize = { 400,400 }, .surface = pSurfArrow });
 
 	auto pFillMeterSkin = FillMeterSkin::create({ .color = Color::Green, .direction = Direction::Up });
 
@@ -2640,9 +2640,9 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 
 
-	auto pAnimSkin = SpinAnimSkin::create({ .cycleDuration = 10000, .padding = 80, .preferredSize = { 256,256 }, .surface = pSplashSurf });
+	auto pAnimSkin = SpinAnimSkin::create({ .cycleDuration = 10000, .padding = 80, .defaultSize = { 256,256 }, .surface = pSplashSurf });
 
-	auto pAnimSkin2 = SpinAnimSkin::create({ .cycleDuration = 5000, .padding = 10, .preferredSize = { 256,256 }, .surface = pSplashSurf });
+	auto pAnimSkin2 = SpinAnimSkin::create({ .cycleDuration = 5000, .padding = 10, .defaultSize = { 256,256 }, .surface = pSplashSurf });
 
 	auto pBoxSkin = BoxSkin::create(2, Color::Red, Color::Black);
 

@@ -83,13 +83,13 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _preferredSize() __________________________________________________________
+	//____ _defaultSize() __________________________________________________________
 
-	SizeSPX FpsDisplay::_preferredSize(int scale) const
+	SizeSPX FpsDisplay::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX contentSize = OO(labels)._preferredSize(scale);
+		SizeSPX contentSize = OO(labels)._defaultSize(scale);
 
 		TextAttr attr;
 		OO(values)._style()->exportAttr( State(StateEnum::Normal), &attr, scale );
@@ -99,7 +99,7 @@ namespace wg
 		contentSize.w += attr.pFont->maxAdvance() * 7;			// Reserve space for: ' 999.99' after longest label.
 		attr.pFont->setSize(prevSize);
 
-		int valueHeight = OO(values)._preferredSize(scale).h;
+		int valueHeight = OO(values)._defaultSize(scale).h;
 		if( valueHeight > contentSize.h )
 			contentSize.h = valueHeight;
 

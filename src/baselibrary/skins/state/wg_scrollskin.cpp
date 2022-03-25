@@ -145,11 +145,11 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ _defaultSize() ________________________________________________________
 
-	SizeSPX ScrollSkin::_preferredSize(int scale) const
+	SizeSPX ScrollSkin::_defaultSize(int scale) const
 	{
-		// Preferred size is to map each point of the surface to a point of the skinarea,
+		// Default size is when each point of the surface maps to a point of the skinarea,
 		// independent of differences in scale.
 
 		return align(ptsToSpx(m_blockSize, scale));

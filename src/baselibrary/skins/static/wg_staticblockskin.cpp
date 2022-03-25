@@ -174,9 +174,9 @@ namespace wg
 		return true;
 	}
 
-	//____ _preferredSize() ______________________________________________________________
+	//____ _defaultSize() ______________________________________________________________
 
-	SizeSPX StaticBlockSkin::_preferredSize(int scale) const
+	SizeSPX StaticBlockSkin::_defaultSize(int scale) const
 	{
 		return SizeSPX::max(align(ptsToSpx(m_ninePatch.block.size(),scale)),_sizeForContent( SizeSPX(), scale));
 	}

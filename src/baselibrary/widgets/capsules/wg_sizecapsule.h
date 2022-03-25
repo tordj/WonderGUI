@@ -39,10 +39,10 @@ namespace wg
 	* @brief	A widget that controls the size of a single child.
 	*
 	* The SizeCapsule is used to change the size of a widget. This is done either by imposing
-	* limits on its minimum and maximum size or by setting a specific preferred size.
+	* limits on its minimum and maximum size or by setting a specific default size.
 	*
 	* Width and height can be controlled separately
-	* The SizeCapsule overrides the min, max and preferred size reported by its child, thus
+	* The SizeCapsule overrides the min, max and default size reported by its child, thus
 	* affecting its geometry. Exactly how the geometry is affected depends on the parent widget.
 	*
 	*/
@@ -62,9 +62,9 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 
-		bool	setSizes( Size min, Size preferred, Size max );
+		bool	setSizes( Size minSize, Size defaultSize, Size maxSize );
 
-		void	setPreferredSize( Size size );
+		void	setDefaultSize( Size size );
 		void	setMinSize( Size size );
 		void	setMaxSize( Size size );
 
@@ -73,7 +73,7 @@ namespace wg
 		spx		_matchingHeight(spx width, int scale = -1) const override;
 		spx		_matchingWidth(spx height, int scale = -1) const override;
 
-		SizeSPX	_preferredSize(int scale = -1) const override;
+		SizeSPX	_defaultSize(int scale = -1) const override;
 		SizeSPX	_minSize(int scale = -1) const override;
 		SizeSPX	_maxSize(int scale = -1) const override;
 
@@ -85,9 +85,9 @@ namespace wg
 
 	private:
 
-		Size			m_min;
-		Size			m_max = { 1000000, 1000000 };
-		Size			m_preferred = { -1, -1 };
+		Size			m_minSize;
+		Size			m_maxSize = { 1000000, 1000000 };
+		Size			m_defaultSize = { -1, -1 };
 	};
 
 

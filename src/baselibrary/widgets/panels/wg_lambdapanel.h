@@ -149,10 +149,10 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		bool				setMinSize(Size min);
-		bool				setMaxSize(Size max);
-		bool				setSizeLimits( Size min, Size max );
-		bool				setPreferredSize(Size pref);
+		bool				setMinSize(Size minSize);
+		bool				setMaxSize(Size maxSize);
+		bool				setSizeLimits( Size minSize, Size maxSize );
+		bool				setDefaultSize(Size defaultSize);
 
 	protected:
 		LambdaPanel();
@@ -162,7 +162,7 @@ namespace wg
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		SizeSPX		_preferredSize(int scale = -1) const override;
+		SizeSPX		_defaultSize(int scale = -1) const override;
 		SizeSPX		_minSize(int scale = -1) const override;
 		SizeSPX		_maxSize(int scale = -1) const override;
 
@@ -200,7 +200,7 @@ namespace wg
 
 		Size		m_minSize;
 		Size		m_maxSize;
-		Size		m_preferredSize;
+		Size		m_defaultSize;
 	};
 
 

@@ -80,7 +80,7 @@ namespace wg
 		void			_setSize(SizeSPX size, int scale);
 		inline SizeSPX	_size() const { return m_size; }
 
-		SizeSPX			_preferredSize(int scale) const;
+		SizeSPX			_defaultSize(int scale) const;
 		spx				_matchingWidth(spx height, int scale) const;
 		spx				_matchingHeight(spx width, int scale) const;
 

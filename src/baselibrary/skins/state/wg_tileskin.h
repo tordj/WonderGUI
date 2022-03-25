@@ -86,7 +86,7 @@ namespace wg
 
 		//.____ Internal _________________________________________________
 
-		SizeSPX	_preferredSize(int scale) const override;
+		SizeSPX	_defaultSize(int scale) const override;
 
 		bool	_isOpaque( State state ) const override;
 		bool	_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;

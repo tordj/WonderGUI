@@ -155,9 +155,9 @@ namespace wg
 		return SizeSPX::max(content,outline);
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ _defaultSize() ________________________________________________________
 
-	SizeSPX BoxSkin::_preferredSize(int scale) const
+	SizeSPX BoxSkin::_defaultSize(int scale) const
 	{
 		SizeSPX content = StateSkin::_minSize(scale);
 		SizeSPX outline = align(ptsToSpx(m_outline, scale));

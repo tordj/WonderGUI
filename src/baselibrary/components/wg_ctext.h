@@ -102,7 +102,7 @@ namespace wg
 		virtual void		_setSize( SizeSPX size, int scale );
 		inline SizeSPX		_size() const { return m_size; }
 
-		virtual SizeSPX		_preferredSize(int scale) const;
+		virtual SizeSPX		_defaultSize(int scale) const;
 		virtual spx			_matchingWidth( spx height, int scale ) const;
 		virtual spx			_matchingHeight( spx width, int scale ) const;
 

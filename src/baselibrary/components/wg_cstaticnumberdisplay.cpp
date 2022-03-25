@@ -86,13 +86,13 @@ namespace wg
 	}
 
 
-	//____ _preferredSize() ___________________________________________________
+	//____ _defaultSize() ___________________________________________________
 
-	SizeSPX CStaticNumberDisplay::_preferredSize(int scale) const
+	SizeSPX CStaticNumberDisplay::_defaultSize(int scale) const
 	{
 		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
 
-		return pLayout->preferredSize(m_value, scale, StateEnum::Normal);
+		return pLayout->defaultSize(m_value, scale, StateEnum::Normal);
 	}
 
 

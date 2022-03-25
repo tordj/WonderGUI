@@ -296,7 +296,7 @@ namespace wg
 		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
 
 		if (!pNewSkin || !pOldSkin || pNewSkin->_contentPaddingSize(m_scale) != pOldSkin->_contentPaddingSize(m_scale) ||
-			pNewSkin->_preferredSize(m_scale) != pOldSkin->_preferredSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
+			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
 			_requestResize();
 	}
 
@@ -365,67 +365,67 @@ namespace wg
 
 	//____ matchingHeight() _______________________________________________________
 	/**
-	 * @brief Get the widgets preferred height for the specified width.
+	 * @brief Get the height recommended for the widget given specified width.
 	 *
-	 * Get the widgets preferred height for the specified width.
+	 * Get the height recommended for the widget given specified width.
 	 *
 	 * @param width		Width in pixels.
 	 *
-	 * This method is used by containers to get the preferred height of a widget for which
+	 * This method is used by containers to get the recommended height of a widget for which
 	 * it has already decided the width.
 	 *
-	 * @return The preferred height for the given width.
+	 * @return The recommended height for the given width.
 	 */
 
 
 	spx Widget::_matchingHeight( spx width, int scale ) const
 	{
 		scale = _fixScale(scale);
-		return _preferredSize(scale).h;		// Default is to stick with preferred height no matter what width.
+		return _defaultSize(scale).h;		// Default is to stick with default height no matter what width.
 	}
 
 	//____ matchingWidth() _______________________________________________________
 	/**
-	 * @brief Get the widgets preferred width for the specified height.
+	 * @brief Get the width recommended for the widget given specified height.
 	 *
-	 * Get the widgets preferred width for the specified height.
+	 * Get the width recommended for the widget given specified height.
 	 *
 	 * @param height	Height in pixels.
 	 *
-	 * This method is used by containers to get the preferred width of a widget for which
+	 * This method is used by containers to get the recommended width of a widget for which
 	 * it has already decided the height.
 	 *
-	 * @return The preferred width for the given height.
+	 * @return The recommended width for the given height.
 	 */
 	 
 	spx Widget::_matchingWidth( spx height, int scale ) const
 	{
 		scale = _fixScale(scale);
-		return _preferredSize(scale).w;		// Default is to stick with preferred width no matter what height.
+		return _defaultSize(scale).w;		// Default behavior is to stick with default width no matter what height.
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ defaultSize() ________________________________________________________
 	/**
-	 * @brief Get the widgets preferred size.
+	 * @brief Get the widgets default size.
 	 *
-	 * Get the widgets preferred size.
+	 * Get the widgets default size.
 	 *
-	 * Each widget has its own preferred size, which is depending on things such as
+	 * Each widget has its own recommended default size, which is depending on things such as
 	 * skinning, content and (in the case of containers) size and layout of children.
 	 *
-	 * A container holding a widget will strive to provide the widget its preferred size, given
+	 * A container holding a widget will strive to provide the widget its default size, given
 	 * the constraints and limitations the container needs to work with. If a container can't
-	 * provide a widget its preferred size, it is likely to decide the closest width or height
+	 * provide a widget its default size, it is likely to decide the closest width or height
 	 * that it can provide and then make a second call to either matchingWidth() or matchingHeight()
 	 * after which it will decide the size of the child.
 	 *
-	 * @return The preferred size of the widget.
+	 * @return The default size of the widget.
 	 */
 
-	SizeSPX Widget::_preferredSize(int scale) const
+	SizeSPX Widget::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
-		return m_skin.preferredSize(scale);
+		return m_skin.defaultSize(scale);
 	}
 
 	//____ minSize() ______________________________________________________________

@@ -165,9 +165,9 @@ namespace wg
 		popClipList(pDevice, popData);
 	}
 
-	//____ preferredSize() ____________________________________________________
+	//____ defaultSize() ____________________________________________________
 
-	SizeSPX BasicNumberLayout::preferredSize(double value, int scale, State state) const
+	SizeSPX BasicNumberLayout::defaultSize(double value, int scale, State state) const
 	{
 		auto charBuffer = _valueToStr(value);
 		SizeSPX size;

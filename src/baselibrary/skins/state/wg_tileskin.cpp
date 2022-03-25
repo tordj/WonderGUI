@@ -134,9 +134,9 @@ namespace wg
 		pDevice->scaleTile(canvas,scale/64.f);
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ _defaultSize() ________________________________________________________
 
-	SizeSPX TileSkin::_preferredSize(int scale) const
+	SizeSPX TileSkin::_defaultSize(int scale) const
 	{
 		SizeSPX content = align(ptsToSpx(m_contentPadding,scale));
 		SizeSPX surface;

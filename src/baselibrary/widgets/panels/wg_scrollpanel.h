@@ -87,7 +87,7 @@ namespace wg
 		spx				_matchingHeight(spx width, int scale = -1) const override;
 		spx				_matchingWidth(spx height, int scale = -1) const override;
 
-		SizeSPX			_preferredSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale = -1) const override;
 
 	protected:
 		ScrollPanel();

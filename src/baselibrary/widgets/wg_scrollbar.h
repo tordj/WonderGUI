@@ -115,7 +115,7 @@ namespace wg
 		Scrollbar(const Blueprint& bp);
 		virtual	~Scrollbar();
 
-		virtual SizeSPX	_preferredSize(int scale = -1) const override;
+		virtual SizeSPX	_defaultSize(int scale = -1) const override;
 
 		void	_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void	_receive( Msg * pMsg ) override;

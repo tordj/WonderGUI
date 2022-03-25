@@ -140,7 +140,7 @@ namespace wg
 		Size pointSize = pOddWhiteKeys->pointSize();
 		pointSize.h /= states.size();
 
-		m_preferredKeyboardSize	= pointSize;
+		m_defaultKeyboardSize = pointSize;
 		m_keyboardSourceSize	= align(ptsToSpx(pointSize, pOddWhiteKeys->scale()));
 
 		m_blackKeyHeight		= m_pBlackKeys ? (m_pBlackKeys->pointSize().h / states.size()) / pointSize.h : 0;
@@ -371,13 +371,13 @@ namespace wg
 		}
 	}
 
-	//____ _preferredSize() __________________________________________________________
+	//____ _defaultSize() __________________________________________________________
 
-	SizeSPX PianoKeyboard::_preferredSize(int scale) const
+	SizeSPX PianoKeyboard::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		return align(ptsToSpx(m_preferredKeyboardSize,scale)) + m_skin.contentPaddingSize(scale);
+		return align(ptsToSpx(m_defaultKeyboardSize,scale)) + m_skin.contentPaddingSize(scale);
 	}
 
 	//____ _minSize() __________________________________________________________
@@ -386,7 +386,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		return align(ptsToSpx(m_preferredKeyboardSize, scale)) + m_skin.contentPaddingSize(scale);
+		return align(ptsToSpx(m_defaultKeyboardSize, scale)) + m_skin.contentPaddingSize(scale);
 	}
 
 	//____ _maxSize() __________________________________________________________

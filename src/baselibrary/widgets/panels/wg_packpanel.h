@@ -96,7 +96,7 @@ namespace wg
 			bool		m_bResizeRequired = false;
 			float		m_weight = 1.f;				// Weight for space allocation.
 			RectSPX		m_geo;						// Real geo of child (no padding included).
-			SizeSPX		m_preferredSize;			// Cached padded preferred size from the child.
+			SizeSPX		m_defaultSize;			// Cached padded default size from the child.
 		};
 
 		using		iterator = SlotArrayIterator<Slot>;
@@ -167,7 +167,7 @@ namespace wg
 		spx				_matchingHeight(spx width, int scale = -1) const override;
 		spx				_matchingWidth(spx height, int scale = -1) const override;
 
-		SizeSPX			_preferredSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale = -1) const override;
 
 
 	protected:
@@ -224,16 +224,16 @@ namespace wg
 		void		_unhideChildren(Slot * pSlot, int nb);
 
 		void		_refreshGeometries();
-		SizeSPX		_calcPreferredSize( int scale ) const;
+		SizeSPX		_calcDefaultSize( int scale ) const;
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, spx forcedBreadth ) const;
 
 		spx			_setItemLengths(SizeBrokerItem * pItems, int nItems, spx totalLength) const;
-		spx			_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const;
+		spx			_setDefaultLengths(SizeBrokerItem * pItems, int nItems) const;
 
 		bool			m_bHorizontal;
 		SizeBroker_p	m_pSizeBroker;
-		SizeSPX			m_preferredContentSize;
+		SizeSPX			m_defaultContentSize;
 
 	};
 

@@ -76,7 +76,7 @@ namespace wg
 
 		//.____ Internal _________________________________________________
 
-		SizeSPX			_preferredSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale = -1) const override;
 
 	protected:
 		LineEditor();

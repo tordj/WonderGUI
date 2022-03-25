@@ -64,12 +64,12 @@ namespace wg
 			return Widget::_matchingWidth(height, scale);
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _defaultSize() _____________________________________________________________
 
-	SizeSPX Overlay::_preferredSize(int scale) const
+	SizeSPX Overlay::_defaultSize(int scale) const
 	{
 		if( mainSlot._widget() )
-			return mainSlot._widget()->_preferredSize(scale);
+			return mainSlot._widget()->_defaultSize(scale);
 		else
 			return SizeSPX(64,64);
 	}

@@ -516,7 +516,7 @@ namespace wg
 	*/
 	enum class SizeConstraint : uint8_t		//. autoExtras
 	{
-		None = 0,				///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
+		None = 0,				///< Childs size is unaffected by size specified by parent, so it gets its default size.
 		Equal,					///< Child is bound to the exact size specified by parent.
 		LessOrEqual,			///< Childs size is limited to the size specified by parent.
 		GreaterOrEqual			///< Childs size is set to at least the size specified by parent.

@@ -97,7 +97,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	LambdaPanel::LambdaPanel() : slots(this), m_minSize(0,0), m_preferredSize(512,512), m_maxSize(16000000, 16000000)
+	LambdaPanel::LambdaPanel() : slots(this), m_minSize(0,0), m_defaultSize(512,512), m_maxSize(16000000, 16000000)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -127,10 +127,10 @@ namespace wg
 				return false;
 
 			m_minSize = min;
-			if( m_preferredSize.w < min.w )
-				m_preferredSize.w = min.w;
-			if( m_preferredSize.h < min.h )
-				m_preferredSize.h = min.h;
+			if( m_defaultSize.w < min.w )
+				m_defaultSize.w = min.w;
+			if( m_defaultSize.h < min.h )
+				m_defaultSize.h = min.h;
 
 			_requestResize();
 		}
@@ -150,10 +150,10 @@ namespace wg
 				return false;
 
 			m_maxSize = max;
-			if( m_preferredSize.w > max.w )
-				m_preferredSize.w = max.w;
-			if( m_preferredSize.h > max.h )
-				m_preferredSize.h = max.h;
+			if( m_defaultSize.w > max.w )
+				m_defaultSize.w = max.w;
+			if( m_defaultSize.h > max.h )
+				m_defaultSize.h = max.h;
 
 			_requestResize();
 		}
@@ -171,34 +171,34 @@ namespace wg
 
 		m_minSize = min;
 		m_maxSize = max;
-		limit( m_preferredSize.w, m_minSize.w, m_maxSize.w );
-		limit( m_preferredSize.h, m_minSize.h, m_maxSize.h );
+		limit( m_defaultSize.w, m_minSize.w, m_maxSize.w );
+		limit( m_defaultSize.h, m_minSize.h, m_maxSize.h );
 
 		_requestResize();
 		return true;
 	}
 
-	//____ setPreferredSize() __________________________________________________
+	//____ setDefaultSize() __________________________________________________
 
-	bool LambdaPanel::setPreferredSize(Size pref)
+	bool LambdaPanel::setDefaultSize(Size defaultSize)
 	{
 		//TODO: Assert >= 0.
 
-		if( pref.w > m_maxSize.w || pref.h > m_maxSize.h || pref.w < m_minSize.w || pref.h < m_minSize.h )
+		if(defaultSize.w > m_maxSize.w || defaultSize.h > m_maxSize.h || defaultSize.w < m_minSize.w || defaultSize.h < m_minSize.h )
 			return false;
 
-		m_preferredSize = pref;
+		m_defaultSize = defaultSize;
 		_requestResize();
 		return true;
 	}
 
-	//____ _preferredSize() _____________________________________________________
+	//____ _defaultSize() _____________________________________________________
 
-	SizeSPX LambdaPanel::_preferredSize(int _scale) const
+	SizeSPX LambdaPanel::_defaultSize(int _scale) const
 	{
 		int scale = _fixScale(_scale);
 
-		return SizeSPX(m_preferredSize*scale);
+		return SizeSPX(m_defaultSize*scale);
 	}
 
 	//____ _minSize() _____________________________________________________
@@ -491,7 +491,7 @@ namespace wg
 			geo = align(ptsToSpx(ptsGeo,m_scale));
 		}
 		else
-			geo = { 0,0, align(pSlot->_widget()->_preferredSize()) };
+			geo = { 0,0, align(pSlot->_widget()->_defaultSize()) };
 
 		if (geo != pSlot->m_geo)
 		{

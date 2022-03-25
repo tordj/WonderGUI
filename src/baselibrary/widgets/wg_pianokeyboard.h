@@ -118,7 +118,7 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
-		SizeSPX		_preferredSize(int scale = -1) const override;
+		SizeSPX		_defaultSize(int scale = -1) const override;
 		SizeSPX		_minSize(int scale = -1) const override;
 		SizeSPX		_maxSize(int scale = -1) const override;
 
@@ -148,7 +148,7 @@ namespace wg
 		std::bitset<7>	m_blackKeyPositions;
 		int				m_nbKeys = 0;
 		SizeSPX			m_keyboardSourceSize;
-		Size			m_preferredKeyboardSize;
+		Size			m_defaultKeyboardSize;
 		float			m_blackKeyHeight = 0;			// Relative to canvas content height.
 		spx				m_blackKeySourceHeight = 0;
 

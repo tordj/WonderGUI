@@ -137,18 +137,18 @@ namespace wg
 		Widget::_refresh();
 	}
 
-	//____ _preferredSize() ___________________________________________________
+	//____ _defaultSize() ___________________________________________________
 
-	SizeSPX Scrollbar::_preferredSize(int scale) const
+	SizeSPX Scrollbar::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX preferred = scrollbar._preferredSize(scale);
+		SizeSPX defaultSize = scrollbar._defaultSize(scale);
 
 		if (!m_skin.isEmpty())
-			preferred += m_skin.contentPaddingSize(scale);
+			defaultSize += m_skin.contentPaddingSize(scale);
 
-		return preferred;
+		return defaultSize;
 	}
 
 

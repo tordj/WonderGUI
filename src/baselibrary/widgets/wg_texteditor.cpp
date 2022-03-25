@@ -85,13 +85,13 @@ namespace wg
 		return textHeight;
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _defaultSize() _____________________________________________________________
 
-	SizeSPX TextEditor::_preferredSize(int scale) const
+	SizeSPX TextEditor::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX contentSize = OO(editor)._preferredSize(scale);
+		SizeSPX contentSize = OO(editor)._defaultSize(scale);
 
 		return m_skin.sizeForContent(contentSize,scale);
 	}

@@ -143,7 +143,7 @@ namespace wg
 	RectSPX CIconDisplay::_getIconRect( const RectSPX& contentRect, int scale ) const
 	{
 		if( m_pSkin )
-			return _getIconRect(contentRect, m_pSkin->_preferredSize(scale), scale);
+			return _getIconRect(contentRect, m_pSkin->_defaultSize(scale), scale);
 		else
 			return RectSPX();
 	}
@@ -247,12 +247,12 @@ namespace wg
 		return align(textRect);
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ _defaultSize() ________________________________________________________
 
-	SizeSPX CIconDisplay::_preferredSize(int scale) const
+	SizeSPX CIconDisplay::_defaultSize(int scale) const
 	{
 		if( m_pSkin )
-			return m_pSkin->_preferredSize(scale) + align(ptsToSpx(m_padding,scale));
+			return m_pSkin->_defaultSize(scale) + align(ptsToSpx(m_padding,scale));
 
 		return SizeSPX();
 	}

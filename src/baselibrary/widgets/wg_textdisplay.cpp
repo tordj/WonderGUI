@@ -105,13 +105,13 @@ namespace wg
 		return textHeight;
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ defaultSize() _____________________________________________________________
 
-	SizeSPX TextDisplay::_preferredSize(int scale) const
+	SizeSPX TextDisplay::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX contentSize = OO(display)._preferredSize(scale);
+		SizeSPX contentSize = OO(display)._defaultSize(scale);
 
 		return m_skin.sizeForContent(contentSize, scale);
 	}

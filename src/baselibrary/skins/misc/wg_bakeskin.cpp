@@ -104,14 +104,14 @@ namespace wg
 		return m_cachedMinSize;
 	}
 
-	//____ _preferredSize() ____________________________________________________
+	//____ _defaultSize() ____________________________________________________
 
-	SizeSPX BakeSkin::_preferredSize(int scale) const
+	SizeSPX BakeSkin::_defaultSize(int scale) const
 	{
 		if (m_cachedScale != scale)
 			_updateCachedGeo(scale);
 
-		return m_cachedPreferredSize;
+		return m_cachedDefaultSize;
 
 	}
 
@@ -337,22 +337,22 @@ namespace wg
 	{
 		m_cachedScale = scale;
 
-		// Update cached preferred and min size.
+		// Update cached default and min size.
 
-		SizeSPX preferred;
-		SizeSPX min;
+		SizeSPX defaultSize;
+		SizeSPX minSize;
 
 		for (auto& pSkin : m_skins)
 		{
 			if (pSkin)
 			{
-				preferred = SizeSPX::max(preferred, pSkin->_preferredSize(scale));
-				min = SizeSPX::max(min, pSkin->_minSize(scale));
+				defaultSize = SizeSPX::max(defaultSize, pSkin->_defaultSize(scale));
+				minSize = SizeSPX::max(minSize, pSkin->_minSize(scale));
 			}
 		}
 
-		m_cachedPreferredSize = preferred;
-		m_cachedMinSize = min;
+		m_cachedDefaultSize = defaultSize;
+		m_cachedMinSize = minSize;
 
 		// Update cached content padding.
 

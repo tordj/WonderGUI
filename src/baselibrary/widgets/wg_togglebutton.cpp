@@ -99,32 +99,32 @@ namespace wg
 		m_bFlipOnRelease = bFlipOnRelease;
 	}
 
-	//____ _preferredSize() __________________________________________________
+	//____ _defaultSize() __________________________________________________
 
-	SizeSPX ToggleButton::_preferredSize(int scale) const
+	SizeSPX ToggleButton::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX iconPreferredSize;
-		SizeSPX textPreferredSize;
+		SizeSPX iconDefaultSize;
+		SizeSPX textDefaultSize;
 
 		if( !OO(label).isEmpty() )
-			textPreferredSize = OO(label)._preferredSize(scale);
+			textDefaultSize = OO(label)._defaultSize(scale);
 
 		if( !_icon().isEmpty() )
 		{
-			iconPreferredSize = _icon().skin()->_preferredSize(scale) + align(ptsToSpx(_icon().padding().size(),scale));
+			iconDefaultSize = _icon().skin()->_defaultSize(scale) + align(ptsToSpx(_icon().padding().size(),scale));
 
-			//TODO: Add magic for how icon influences textPreferredSize based on placement, iconBorder, iconScale and bgPreferredSize
+			//TODO: Add magic for how icon influences textDefaultSize based on placement, iconBorder, iconScale and bgDefaultSize
 		}
 
 		// Apply the skin
 
-		SizeSPX preferredSize = SizeSPX::max( iconPreferredSize, textPreferredSize );
+		SizeSPX defaultSize = SizeSPX::max(iconDefaultSize, textDefaultSize);
 
-		preferredSize = m_skin.sizeForContent( preferredSize, scale );
+		defaultSize = m_skin.sizeForContent( defaultSize, scale );
 
-		return preferredSize;
+		return defaultSize;
 	}
 
 	//____ _setToggleGroup() ________________________________________________________

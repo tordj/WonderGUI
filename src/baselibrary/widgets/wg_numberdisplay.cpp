@@ -50,13 +50,13 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _preferredSize() __________________________________________________________
+	//____ _defaultSize() __________________________________________________________
 
-	SizeSPX NumberDisplay::_preferredSize(int scale) const
+	SizeSPX NumberDisplay::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX size = display._preferredSize(scale);
+		SizeSPX size = display._defaultSize(scale);
 
 		return m_skin.sizeForContent(size, scale);
 	}

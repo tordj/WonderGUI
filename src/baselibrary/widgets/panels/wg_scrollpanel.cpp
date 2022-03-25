@@ -22,7 +22,7 @@
 /*
 	TODO: Do not draw skin behind content if content is opaque.
 	TODO: Minimize amount and size of _requestRender/redraws in general.
-	TODO: Common flow through _updateRegions(), _updateCanvasSize() etc can probably be optimized, i.e. we are calling preferredSize on dragbars twice.
+	TODO: Common flow through _updateRegions(), _updateCanvasSize() etc can probably be optimized, i.e. we are calling defaultSize on dragbars twice.
 */
 
 
@@ -396,24 +396,24 @@ namespace wg
 		switch (m_widthConstraint)
 		{
 			case SizeConstraint::None:
-				return _preferredSize(scale).h;
+				return _defaultSize(scale).h;
 			case SizeConstraint::LessOrEqual:
 			{
 				//TODO: Implement!!!
 
-				return _preferredSize(scale).h;
+				return _defaultSize(scale).h;
 			}
 			case SizeConstraint::Equal:
 			{
 				//TODO: Implement!!!
 
-				return _preferredSize(scale).h;
+				return _defaultSize(scale).h;
 			}
 			case SizeConstraint::GreaterOrEqual:
 			{
 				//TODO: Implement!!!
 
-				return _preferredSize(scale).h;
+				return _defaultSize(scale).h;
 			}
 		}
 
@@ -427,46 +427,46 @@ namespace wg
 		switch (m_heightConstraint)
 		{
 			case SizeConstraint::None:
-				return _preferredSize(scale).w;
+				return _defaultSize(scale).w;
 			case SizeConstraint::LessOrEqual:
 			{
 				//TODO: Implement!!!
 
-				return _preferredSize(scale).w;
+				return _defaultSize(scale).w;
 			}
 			case SizeConstraint::Equal:
 			{
 				//TODO: Implement!!!
 
-				return _preferredSize(scale).w;
+				return _defaultSize(scale).w;
 			}
 			case SizeConstraint::GreaterOrEqual:
 			{
 				//TODO: Implement!!!
 
-				return _preferredSize(scale).w;
+				return _defaultSize(scale).w;
 			}
 		}
 
 		return 0;
 	}
 
-	//____ _preferredSize() ___________________________________________________
+	//____ _defaultSize() ___________________________________________________
 
-	SizeSPX ScrollPanel::_preferredSize(int scale) const
+	SizeSPX ScrollPanel::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
 		SizeSPX sz;
 			
 		if( slot._widget() )
-			sz = slot._widget()->_preferredSize(scale);
+			sz = slot._widget()->_defaultSize(scale);
 
 		if (scrollbarY.inWorkingOrder() && !m_bAutohideScrollbarY && !m_bOverlayScrollbarY)
-			sz.w += scrollbarY._preferredSize(scale).w;
+			sz.w += scrollbarY._defaultSize(scale).w;
 
 		if (scrollbarX.inWorkingOrder() && !m_bAutohideScrollbarX && !m_bOverlayScrollbarX)
-			sz.h += scrollbarX._preferredSize(scale).h;
+			sz.h += scrollbarX._defaultSize(scale).h;
 
 
 		sz += m_skin.contentPaddingSize(scale);
@@ -480,8 +480,8 @@ namespace wg
 	{
 		auto content = _contentRect();
 
-		spx scrollbarYwidth = scrollbarY._preferredSize(m_scale).w;
-		spx scrollbarXheight = scrollbarX._preferredSize(m_scale).h;
+		spx scrollbarYwidth = scrollbarY._defaultSize(m_scale).w;
+		spx scrollbarXheight = scrollbarX._defaultSize(m_scale).h;
 
 		bool bShowScrollbarY = scrollbarY.inWorkingOrder() && (!m_bAutohideScrollbarY || content.h < m_childCanvas.h);
 		bool bShowScrollbarX = scrollbarX.inWorkingOrder() && (!m_bAutohideScrollbarX || content.w < m_childCanvas.w);
@@ -619,7 +619,7 @@ namespace wg
 
 			if (scrollbarX.inWorkingOrder() && !m_bOverlayScrollbarX)
 			{
-				spx scrollbarXheight = scrollbarX._preferredSize(m_scale).h;
+				spx scrollbarXheight = scrollbarX._defaultSize(m_scale).h;
 				if (m_bAutohideScrollbarX)
 					viewMinSize.h = viewMaxSize.h - scrollbarXheight;
 				else
@@ -631,7 +631,7 @@ namespace wg
 
 			if (scrollbarY.inWorkingOrder() && !m_bOverlayScrollbarY)
 			{
-				spx scrollbarYwidth = scrollbarY._preferredSize(m_scale).w;
+				spx scrollbarYwidth = scrollbarY._defaultSize(m_scale).w;
 				if (m_bAutohideScrollbarY)
 					viewMinSize.w = viewMaxSize.w - scrollbarYwidth;
 				else
@@ -722,7 +722,7 @@ namespace wg
 
 			if (pChild)
 			{
-				auto childSize = pChild->_preferredSize(scale);
+				auto childSize = pChild->_defaultSize(scale);
 				m_childCanvas.setSize(childSize);
 				pChild->_resize(childSize, scale);
 			}			
@@ -1207,7 +1207,7 @@ namespace wg
 		if (!pWidget)
 			return SizeSPX();
 
-		auto prefSize = pWidget->_preferredSize(m_scale);
+		auto prefSize = pWidget->_defaultSize(m_scale);
 		auto size = prefSize;
 
 		auto viewSize = viewMaxSize;

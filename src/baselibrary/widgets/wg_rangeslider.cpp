@@ -46,10 +46,10 @@ namespace wg
 		m_beginHandleSkin.set(bp.beginHandle);
 		m_endHandleSkin.set(bp.endHandle);
 
-		m_preferredSlideLength = bp.preferredSlideLength;
+		m_defaultSlideLength = bp.defaultSlideLength;
 		m_nbSteps = bp.steps;
 
-		_updatePreferredSize();
+		_updateDefaultSize();
 		_setRange(bp.rangeBegin,bp.rangeEnd);
 	}
 
@@ -67,9 +67,9 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setPreferredSlideLength() _________________________________________
+	//____ setDefaultSlideLength() _________________________________________
 
-	void RangeSlider::setPreferredSlideLength(pts length)
+	void RangeSlider::setDefaultSlideLength(pts length)
 	{
 		if (length < 0)
 		{
@@ -77,8 +77,8 @@ namespace wg
 			return;
 		}
 
-		m_preferredSlideLength = length;
-		_updatePreferredSize();
+		m_defaultSlideLength = length;
+		_updateDefaultSize();
 	}
 
 	//____ setAxis() _________________________________________________________
@@ -89,7 +89,7 @@ namespace wg
 		{
 			m_axis = axis;
 			_requestRender();
-			_updatePreferredSize();
+			_updateDefaultSize();
 		}
 	}
 
@@ -101,7 +101,7 @@ namespace wg
 		{
 			m_beginHandleSkin.set(pSkin);
 			_requestRender();
-			_updatePreferredSize();
+			_updateDefaultSize();
 		}
 	}
 
@@ -113,7 +113,7 @@ namespace wg
 		{
 			m_endHandleSkin.set(pSkin);
 			_requestRender();
-			_updatePreferredSize();
+			_updateDefaultSize();
 		}
 	}
 
@@ -145,14 +145,14 @@ namespace wg
 		_setRange(begin, end, false);
 	}
 
-	//____ _preferredSize() __________________________________________________________
+	//____ _defaultSize() __________________________________________________________
 
-	SizeSPX RangeSlider::_preferredSize(int scale) const
+	SizeSPX RangeSlider::_defaultSize(int scale) const
 	{
-		if (m_preferredSize.w >= 0 && m_preferredSize.h >= 0)
-			return m_preferredSize;
+		if (m_defaultSize.w >= 0 && m_defaultSize.h >= 0)
+			return m_defaultSize;
 		else
-			return Widget::_preferredSize(scale);
+			return Widget::_defaultSize(scale);
 	}
 
 	//____ _receive() __________________________________________________________
@@ -312,33 +312,33 @@ namespace wg
 	}
 
 
-	//____ _updatePreferredSize() ________________________________________________
+	//____ _updateDefaultSize() ________________________________________________
 
-	void RangeSlider::_updatePreferredSize()
+	void RangeSlider::_updateDefaultSize()
 	{
-		SizeSPX sz = _calcPreferredSize(m_scale);
-		if (sz != m_preferredSize)
+		SizeSPX sz = _calcDefaultSize(m_scale);
+		if (sz != m_defaultSize)
 		{
-			m_preferredSize = sz;
+			m_defaultSize = sz;
 			_requestResize();
 		}
 
 	}
 
-	//____ _calcPreferredSize() __________________________________________________
+	//____ _calcDefaultSize() __________________________________________________
 
-	SizeSPX RangeSlider::_calcPreferredSize(int scale) const
+	SizeSPX RangeSlider::_calcDefaultSize(int scale) const
 	{
-		SizeSPX sz = m_beginHandleSkin.preferredSize(scale);
-		SizeSPX sz2 = m_endHandleSkin.preferredSize(scale);
+		SizeSPX sz = m_beginHandleSkin.defaultSize(scale);
+		SizeSPX sz2 = m_endHandleSkin.defaultSize(scale);
 
 		if (m_axis == Axis::X)
-			sz.w += align(ptsToSpx(m_preferredSlideLength,scale)) + sz2.w;
+			sz.w += align(ptsToSpx(m_defaultSlideLength,scale)) + sz2.w;
 		else
-			sz.h += align(ptsToSpx(m_preferredSlideLength,scale)) + sz2.h;
+			sz.h += align(ptsToSpx(m_defaultSlideLength,scale)) + sz2.h;
 
 		sz += m_skin.contentPaddingSize(scale);
-		sz = SizeSPX::max(sz, m_skin.preferredSize(scale));
+		sz = SizeSPX::max(sz, m_skin.defaultSize(scale));
 
 		return sz;
 	}
@@ -418,7 +418,7 @@ namespace wg
 
 		RectSPX handleGeo;
 
-		SizeSPX handlePrefSize = isBeginHandle ? m_beginHandleSkin.preferredSize(m_scale) : m_endHandleSkin.preferredSize(m_scale);
+		SizeSPX handlePrefSize = isBeginHandle ? m_beginHandleSkin.defaultSize(m_scale) : m_endHandleSkin.defaultSize(m_scale);
 		float value = isBeginHandle ? m_rangeBegin : m_rangeEnd;
 
 		if (m_axis == Axis::X)

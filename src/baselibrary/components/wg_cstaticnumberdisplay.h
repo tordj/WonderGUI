@@ -64,7 +64,7 @@ namespace wg
 
 		virtual bool		_set(double value);
 		void 				_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state);
-		SizeSPX				_preferredSize(int scale) const;
+		SizeSPX				_defaultSize(int scale) const;
 		void				_refresh();
 		bool				_stateChangeNeedsRender(State newState, State oldState) const;
 

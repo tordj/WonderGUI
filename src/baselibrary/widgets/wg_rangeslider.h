@@ -62,7 +62,7 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
-			pts				preferredSlideLength = 64;
+			pts				defaultSlideLength = 64;
 			float			rangeBegin = 0.f;
 			float			rangeEnd = 1.f;
 			int				scale = 64;
@@ -85,8 +85,8 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		void			setPreferredSlideLength(pts length);
-		inline pts		preferredSlideLength() const { return m_preferredSlideLength; }
+		void			setDefaultSlideLength(pts length);
+		inline pts		defaultSlideLength() const { return m_defaultSlideLength; }
 
 		//.____ Appearance _____________________________________________
 
@@ -113,7 +113,7 @@ namespace wg
 
 		//.____ Internal _______________________________________________________
 
-		SizeSPX			_preferredSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale = -1) const override;
 
 	protected:
 		RangeSlider();
@@ -124,8 +124,8 @@ namespace wg
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		bool		_alphaTest(const CoordSPX& ofs) override;
 
-		void		_updatePreferredSize();
-		SizeSPX		_calcPreferredSize(int scale) const;
+		void		_updateDefaultSize();
+		SizeSPX		_calcDefaultSize(int scale) const;
 
 		void		_setRange(float begin, float end, bool bPostMsg = true);
 		void		_setHandleState(State state, bool isBeginHandle);
@@ -145,8 +145,8 @@ namespace wg
 		SkinSlot	m_beginHandleSkin;
 		SkinSlot	m_endHandleSkin;
 
-		SizeSPX		m_preferredSize;
-		pts			m_preferredSlideLength = 64;
+		SizeSPX		m_defaultSize;
+		pts			m_defaultSlideLength = 64;
 		float		m_rangeBegin = 0.f;
 		float		m_rangeEnd = 1.f;
 		float		m_minRange = 0.f;

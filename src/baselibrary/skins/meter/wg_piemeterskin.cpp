@@ -89,7 +89,7 @@ namespace wg
 		m_blendMode = bp.blendMode;
 		m_markAlpha = bp.markAlpha;
 		m_overflow = bp.overflow;
-		m_preferredSize = bp.preferredSize.isEmpty() ? Size(64, 64) : bp.preferredSize;
+		m_defaultSize = bp.defaultSize.isEmpty() ? Size(64, 64) : bp.defaultSize;
 		m_bIgnoresValue = false;
 	}
 
@@ -226,11 +226,11 @@ namespace wg
 		pDevice->drawPieChart(canvas, m_rangeStart, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
 	}
 
-	//____  _preferredSize() ___________________________________________________
+	//____  _defaultSize() ___________________________________________________
 
-	SizeSPX	PieMeterSkin::_preferredSize(int scale) const
+	SizeSPX	PieMeterSkin::_defaultSize(int scale) const
 	{
-		return align(ptsToSpx(m_preferredSize, scale));
+		return align(ptsToSpx(m_defaultSize, scale));
 	}
 
 	//____ _markTest() _________________________________________________________

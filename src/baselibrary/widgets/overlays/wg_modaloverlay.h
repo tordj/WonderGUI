@@ -83,7 +83,7 @@ namespace wg
 
 			bool		m_bVisible = true;
 			Placement	m_origo = Placement::NorthWest;
-			Rect		m_placementGeo;			// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
+			Rect		m_placementGeo;			// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets defaultSize() dynamically.
 												// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
 			Widget_wp	m_pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
 
@@ -141,7 +141,7 @@ namespace wg
 		spx				_matchingHeight(spx width, int scale = -1) const override;
 		spx				_matchingWidth(spx height, int scale = -1) const override;
 
-		SizeSPX			_preferredSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale = -1) const override;
 
 	protected:
 		ModalOverlay();

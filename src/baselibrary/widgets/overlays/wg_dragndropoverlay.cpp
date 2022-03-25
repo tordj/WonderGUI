@@ -108,7 +108,7 @@ namespace wg
 		{
 			auto p = static_cast<Slot*>(pSlot);
 
-			SizeSPX pref = p->_widget()->_preferredSize(m_scale);
+			SizeSPX pref = p->_widget()->_defaultSize(m_scale);
 			SizeSPX max = SizeSPX::max(pref, p->m_geo.size());
 
 			_requestRender(RectSPX({ 0,0,m_size }, { p->m_geo.pos(), max }));
@@ -348,7 +348,7 @@ namespace wg
 						pDragWidget->releaseFromParent();
 						m_dragWidgetOfs = ptsToSpx(pMsg->dragWidgetPointerOfs(),m_scale);
 						m_dragSlot._setWidget(pDragWidget);
-						dragWidgetSize = m_dragSlot._widget()->_preferredSize(m_scale);
+						dragWidgetSize = m_dragSlot._widget()->_defaultSize(m_scale);
 					}
 					else
 					{
@@ -482,7 +482,7 @@ namespace wg
 			pNewWidget->releaseFromParent();
 		m_dragSlot._setWidget(pNewWidget );
 
-		SizeSPX newSize = pNewWidget ? m_dragSlot._widget()->_preferredSize(m_scale) : SizeSPX();
+		SizeSPX newSize = pNewWidget ? m_dragSlot._widget()->_defaultSize(m_scale) : SizeSPX();
 		SizeSPX maxSize = SizeSPX::max(m_dragSlot.m_geo.size(), newSize);
 
 		m_dragSlot.m_geo.setSize(newSize);

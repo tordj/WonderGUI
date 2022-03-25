@@ -73,8 +73,8 @@ namespace wg
 		{
 			if (skin[i] != m_skins[i])
 			{
-				SizeSPX oldPref = m_skins[i] ? m_skins[i]->_preferredSize(scale) : SizeSPX();
-				SizeSPX newPref = skin[i] ? skin[i]->_preferredSize(scale) : SizeSPX();
+				SizeSPX oldPref = m_skins[i] ? m_skins[i]->_defaultSize(scale) : SizeSPX();
+				SizeSPX newPref = skin[i] ? skin[i]->_defaultSize(scale) : SizeSPX();
 
 				m_skins[i] = skin[i];
 				bRequestRender = true;
@@ -145,11 +145,11 @@ namespace wg
 		m_bJumpToPress = bp.jumpToPress;
 	}
 
-	//____ _preferredSize() ___________________________________________________
+	//____ _defaultSize() ___________________________________________________
 
-	SizeSPX CScrollbar::_preferredSize(int scale) const
+	SizeSPX CScrollbar::_defaultSize(int scale) const
 	{
-		SizeSPX prefSize = m_skins[Part::Bar] ? m_skins[Part::Bar]->_preferredSize(scale) : SizeSPX();
+		SizeSPX prefSize = m_skins[Part::Bar] ? m_skins[Part::Bar]->_defaultSize(scale) : SizeSPX();
 
 		if (m_skins[Part::Back])
 			prefSize += m_skins[Part::Back]->_contentPaddingSize(scale);
@@ -158,14 +158,14 @@ namespace wg
 		{
 			if (m_skins[Part::Next])
 			{
-				SizeSPX pref = m_skins[Part::Next]->_preferredSize(scale);
+				SizeSPX pref = m_skins[Part::Next]->_defaultSize(scale);
 				prefSize.h = std::max(prefSize.h, pref.h);
 				prefSize.w += pref.w;
 			}
 
 			if (m_skins[Part::Prev])
 			{
-				SizeSPX pref = m_skins[Part::Prev]->_preferredSize(scale);
+				SizeSPX pref = m_skins[Part::Prev]->_defaultSize(scale);
 				prefSize.h = std::max(prefSize.h, pref.h);
 				prefSize.w += pref.w;
 			}
@@ -176,14 +176,14 @@ namespace wg
 		{
 			if (m_skins[Part::Next])
 			{
-				SizeSPX pref = m_skins[Part::Next]->_preferredSize(scale);
+				SizeSPX pref = m_skins[Part::Next]->_defaultSize(scale);
 				prefSize.w = std::max(prefSize.w, pref.w);
 				prefSize.h += pref.h;
 			}
 
 			if (m_skins[Part::Prev])
 			{
-				SizeSPX pref = m_skins[Part::Prev]->_preferredSize(scale);
+				SizeSPX pref = m_skins[Part::Prev]->_defaultSize(scale);
 				prefSize.w = std::max(prefSize.w, pref.w);
 				prefSize.h += pref.h;
 			}
@@ -608,8 +608,8 @@ namespace wg
 		if (pNew != pOld)
 		{
 			int scale = _scale();
-			SizeSPX oldPref = pOld ? pOld->_preferredSize(scale) : SizeSPX();
-			SizeSPX newPref = pNew ? pNew->_preferredSize(scale) : SizeSPX();
+			SizeSPX oldPref = pOld ? pOld->_defaultSize(scale) : SizeSPX();
+			SizeSPX newPref = pNew ? pNew->_defaultSize(scale) : SizeSPX();
 
 			pOld = pNew;
 			_requestRender();
@@ -625,7 +625,7 @@ namespace wg
 	{
 		if (m_skins[button])
 		{
-			SizeSPX buttonSize = m_skins[button]->_preferredSize(scale);
+			SizeSPX buttonSize = m_skins[button]->_defaultSize(scale);
 
 			if (m_axis == Axis::X)
 			{
@@ -664,7 +664,7 @@ namespace wg
 		float fracOfs = contentLen == viewLen ? 0 : float(viewOfs) / float(contentLen - viewLen);
 
 		spx maxLen = m_axis == Axis::X ? availableArea.w : availableArea.h;
-		spx minLen = m_axis == Axis::X ? m_skins[Part::Bar]->_preferredSize(scale).w : m_skins[Part::Bar]->_preferredSize(scale).h;
+		spx minLen = m_axis == Axis::X ? m_skins[Part::Bar]->_defaultSize(scale).w : m_skins[Part::Bar]->_defaultSize(scale).h;
 
 		spx length = std::max(minLen,align(maxLen * fracLen));
 		spx ofs = align((maxLen - length) * fracOfs);

@@ -118,7 +118,7 @@ namespace wg
 		virtual void	onRefresh( Text * pText ) = 0;
 
 
-		virtual SizeSPX	preferredSize( const Text * pText, int scale ) const = 0;
+		virtual SizeSPX	defaultSize( const Text * pText, int scale ) const = 0;
 		virtual spx		matchingWidth( const Text * pText, spx height, int scale ) const = 0;
 		virtual spx		matchingHeight( const Text * pText, spx width, int scale ) const = 0;
 

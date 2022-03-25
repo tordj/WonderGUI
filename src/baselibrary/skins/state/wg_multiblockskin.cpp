@@ -305,11 +305,11 @@ namespace wg
 		return SizeSPX::max(content, frame);
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ _defaultSize() ________________________________________________________
 
-	SizeSPX MultiBlockSkin::_preferredSize(int scale) const
+	SizeSPX MultiBlockSkin::_defaultSize(int scale) const
 	{
-        // Preferred size is to map each point of the surface to a pixel of the skinarea.
+        // Default size is when each point of the surface maps to a pixel of the skinarea.
         
         return align(ptsToSpx(m_blockSizePoints,scale));
 	}

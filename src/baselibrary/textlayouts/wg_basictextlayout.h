@@ -102,7 +102,7 @@ namespace wg
 
 
 
-		virtual SizeSPX	preferredSize( const Text * pText, int scale ) const override;
+		virtual SizeSPX	defaultSize( const Text * pText, int scale ) const override;
 		virtual spx		matchingWidth( const Text * pText, spx height, int scale ) const override;
 		virtual spx		matchingHeight( const Text * pText, spx width, int scale ) const override;
 
@@ -133,7 +133,7 @@ namespace wg
 		struct BlockHeader
 		{
 			int nbLines;
-			SizeSPX preferredSize;
+			SizeSPX defaultSize;
 			SizeSPX textSize;
 		};
 
@@ -164,7 +164,7 @@ namespace wg
 
 		SizeSPX			_updateFixedLineInfo(LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state );
 		SizeSPX			_updateWrapLineInfo(LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth);
-		SizeSPX			_calcPreferredSize(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state ) const;
+		SizeSPX			_calcDefaultSize(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state ) const;
 
 
 		spx				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, int scale, State state ) const;

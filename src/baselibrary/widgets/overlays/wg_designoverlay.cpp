@@ -136,12 +136,12 @@ namespace wg
 			return Widget::_matchingWidth(height,scale);
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ defaultSize() _____________________________________________________________
 
-	SizeSPX DesignOverlay::_preferredSize(int scale) const
+	SizeSPX DesignOverlay::_defaultSize(int scale) const
 	{
 		if (mainSlot._widget())
-			return mainSlot._widget()->_preferredSize(scale);
+			return mainSlot._widget()->_defaultSize(scale);
 		else
 			return SizeSPX(1, 1);
 	}
@@ -229,7 +229,7 @@ namespace wg
 			Placement placement = pSlot->m_placement;
 			BorderSPX palettePadding = m_pToolboxSkin ? m_pToolboxSkin->_contentPadding(m_scale, StateEnum::Normal) : BorderSPX();
 
-			SizeSPX wantedSize = pSlot->_widget()->_preferredSize() + palettePadding;
+			SizeSPX wantedSize = pSlot->_widget()->_defaultSize() + palettePadding;
 
 			RectSPX selectedGeo = m_pSelectedWidget->_globalGeo() - _globalPos();
 			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->_contentPadding(m_scale, StateEnum::Normal) : BorderSPX();

@@ -51,31 +51,31 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setPreferredSize() _____________________________________________________
+	//____ setDefaultSize() _____________________________________________________
 
-	void SizeCapsule::setPreferredSize( Size size )
+	void SizeCapsule::setDefaultSize( Size size )
 	{
-		if( size != m_preferred )
+		if( size != m_defaultSize )
 		{
-			m_preferred = size;
+			m_defaultSize = size;
 			_requestResize();
 		}
 	}
 
 	//____ setSizes() _____________________________________________________________
 
-	bool SizeCapsule::setSizes( Size min, Size preferred, Size max )
+	bool SizeCapsule::setSizes( Size minSize, Size defaultSize, Size maxSize )
 	{
 
-		if ( (preferred.w >= 0 && (preferred.w > max.w || preferred.w < min.w )) ||
-			 (preferred.h >= 0 && (preferred.h > max.h || preferred.h < min.h )) )
+		if ( (defaultSize.w >= 0 && (defaultSize.w > maxSize.w || defaultSize.w < minSize.w )) ||
+			 (defaultSize.h >= 0 && (defaultSize.h > maxSize.h || defaultSize.h < minSize.h )) )
 			return false;
 
-		if (min != m_min || preferred != m_preferred || max != m_max)
+		if (minSize != m_minSize || defaultSize != m_defaultSize || maxSize != m_maxSize)
 		{
-			m_min = min;
-			m_preferred = preferred;
-			m_max = max;
+			m_minSize = minSize;
+			m_defaultSize = defaultSize;
+			m_maxSize = maxSize;
 			_requestResize();
 		}
 		return true;
@@ -87,9 +87,9 @@ namespace wg
 	{
 		//TODO: Add error handling.
 
-		if( size != m_min )
+		if( size != m_minSize )
 		{
-			m_min = size;
+			m_minSize = size;
 			_requestResize();
 		}
 	}
@@ -100,26 +100,26 @@ namespace wg
 	{
 		//TODO: Add error handling.
 
-		if( size != m_max )
+		if( size != m_maxSize )
 		{
-			m_max = size;
+			m_maxSize = size;
 			_requestResize();
 		}
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ _defaultSize() ________________________________________________________
 
-	SizeSPX SizeCapsule::_preferredSize(int _scale) const
+	SizeSPX SizeCapsule::_defaultSize(int _scale) const
 	{
 		int scale = _fixScale(_scale);
 
-		SizeSPX preferred	= align(ptsToSpx(m_preferred, scale));
-		SizeSPX min			= align(ptsToSpx(m_min, scale));
-		SizeSPX max			= align(ptsToSpx(m_max, scale));
+		SizeSPX defaultSize	= align(ptsToSpx(m_defaultSize, scale));
+		SizeSPX minSize		= align(ptsToSpx(m_minSize, scale));
+		SizeSPX maxSize		= align(ptsToSpx(m_maxSize, scale));
 
 		if (!slot._widget())
 		{
-			SizeSPX size = { std::max(0, preferred.w), std::max(0, preferred.h) };
+			SizeSPX size = { std::max(0, defaultSize.w), std::max(0, defaultSize.h) };
 			size += m_skin.contentPaddingSize(scale);
 
 			return size;
@@ -129,69 +129,69 @@ namespace wg
 
 		SizeSPX pref;
 
-		if (preferred.w >= 0)
+		if (defaultSize.w >= 0)
 		{
-			// Preferred width is forced, we only need to adapt height.
+			// Default width is forced, we only need to adapt height.
 
-			pref.w = preferred.w;
-			if (preferred.h >= 0)
-				pref.h = preferred.h;
+			pref.w = defaultSize.w;
+			if (defaultSize.h >= 0)
+				pref.h = defaultSize.h;
 			else
 			{
 				pref.h = _matchingHeight(pref.w, scale);
 
-				if (pref.h > max.h)
-					pref.h = max.h;
-				if (pref.h < min.h)
-					pref.h = min.h;
+				if (pref.h > maxSize.h)
+					pref.h = maxSize.h;
+				if (pref.h < minSize.h)
+					pref.h = minSize.h;
 			}
 		}
-		else if (preferred.h >= 0)
+		else if (defaultSize.h >= 0)
 		{
-			// Preferred height is forced, we only need to adapt width.
+			// Default height is forced, we only need to adapt width.
 
-			pref.h = preferred.w;
+			pref.h = defaultSize.w;
 			pref.w = _matchingWidth(pref.h, scale);
 
-			if (pref.w > max.w)
-				pref.w = max.w;
-			if (pref.w < min.w)
-				pref.w = min.w;
+			if (pref.w > maxSize.w)
+				pref.w = maxSize.w;
+			if (pref.w < minSize.w)
+				pref.w = minSize.w;
 		}
 		else
 		{
-			// Preferred size not set in size capsule.
-			// We take preferred from child and check against our min/max.
+			// Default size not set in size capsule.
+			// We take default from child and check against our min/max.
 
-			pref = slot._widget()->_preferredSize(_scale);
+			pref = slot._widget()->_defaultSize(_scale);
 
-			if (pref.w > max.w && pref.h > max.h)
+			if (pref.w > maxSize.w && pref.h > maxSize.h)
 			{
 				// Both width and height surpasses our max, get matching values for both and limit them to our min.
 
-				spx matchW = _matchingWidth(max.h,scale);
-				spx matchH = _matchingHeight(max.w,scale);
+				spx matchW = _matchingWidth(maxSize.h,scale);
+				spx matchH = _matchingHeight(maxSize.w,scale);
 
-				matchW = std::max(matchW, min.w);
-				matchH = std::max(matchH, min.h);
+				matchW = std::max(matchW, minSize.w);
+				matchH = std::max(matchH, minSize.h);
 
 				//
 
-				if (matchW > max.w && matchH > max.h)
-					pref = max;							// Both matching values are too big, so we will max in both dimensions.
-				else if (matchW <= max.w && matchH <= max.h)
+				if (matchW > maxSize.w && matchH > maxSize.h)
+					pref = maxSize;							// Both matching values are too big, so we will max in both dimensions.
+				else if (matchW <= maxSize.w && matchH <= maxSize.h)
 				{
 					// Both matching values are below max, so we can go either way here.
 					// Lets choose the one that gives the largest area.
 
-					if (matchW*max.h > matchH*max.w)
+					if (matchW*maxSize.h > matchH*maxSize.w)
 					{
 						pref.w = matchW;
-						pref.h = max.h;
+						pref.h = maxSize.h;
 					}
 					else
 					{
-						pref.w = max.w;
+						pref.w = maxSize.w;
 						pref.h = matchH;
 					}
 				}
@@ -199,67 +199,67 @@ namespace wg
 				{
 					// If we get here, only one matching value is small enough.
 
-					if (matchW <= max.w)
+					if (matchW <= maxSize.w)
 					{
 						pref.w = matchW;
-						pref.h = max.h;
+						pref.h = maxSize.h;
 					}
 					else
 					{
-						pref.w = max.w;
-						pref.h = max.h;
+						pref.w = maxSize.w;
+						pref.h = maxSize.h;
 					}
 				}
 
 			}
-			else if (pref.w > max.w)
+			else if (pref.w > maxSize.w)
 			{
 				// Only width surpasses our max.
 
-				pref.w = max.w;
+				pref.w = maxSize.w;
 				pref.h = _matchingHeight(pref.w,scale);
 
-				if (pref.h > max.h)
-					pref.h = max.h;
-				if (pref.h < min.h)
-					pref.h = min.h;
+				if (pref.h > maxSize.h)
+					pref.h = maxSize.h;
+				if (pref.h < minSize.h)
+					pref.h = minSize.h;
 			}
-			else if (pref.h > max.h)
+			else if (pref.h > maxSize.h)
 			{
 				// Only height surpasses our max
 
-				pref.h = max.h;
+				pref.h = maxSize.h;
 				pref.w = _matchingWidth(pref.h,scale);
 
-				if (pref.w > max.w)
-					pref.w = max.w;
-				if (pref.w < min.w)
-					pref.w = min.w;
+				if (pref.w > maxSize.w)
+					pref.w = maxSize.w;
+				if (pref.w < minSize.w)
+					pref.w = minSize.w;
 
 			}
 			else
 			{
 				// Neither dimension surpasses our max, let's check against our min values.
 
-				if (pref.w < min.w)
+				if (pref.w < minSize.w)
 				{
-					pref.w = min.w;
+					pref.w = minSize.w;
 					pref.h = _matchingHeight(pref.w,scale);
 
-					if (pref.h > max.h)
-						pref.h = max.h;
-					if (pref.h < min.h)
-						pref.h = min.h;
+					if (pref.h > maxSize.h)
+						pref.h = maxSize.h;
+					if (pref.h < minSize.h)
+						pref.h = minSize.h;
 				}
-				else if (pref.h < min.h)
+				else if (pref.h < minSize.h)
 				{
-					pref.h = min.h;
+					pref.h = minSize.h;
 					pref.w = _matchingWidth(pref.h,scale);
 
-					if (pref.w > max.w)
-						pref.w = max.w;
-					if (pref.w < min.w)
-						pref.w = min.w;
+					if (pref.w > maxSize.w)
+						pref.w = maxSize.w;
+					if (pref.w < minSize.w)
+						pref.w = minSize.w;
 				}
 			}
 		}
@@ -276,9 +276,9 @@ namespace wg
 		scale = _fixScale(scale);
 
 		if( slot._widget() )
-			return SizeSPX::max(align(ptsToSpx(m_min,scale)),slot._widget()->_minSize(scale));
+			return SizeSPX::max(align(ptsToSpx(m_minSize,scale)),slot._widget()->_minSize(scale));
 		else
-			return align(ptsToSpx(m_min, scale));
+			return align(ptsToSpx(m_minSize, scale));
 	}
 
 	//____ _maxSize() ______________________________________________________________
@@ -288,20 +288,20 @@ namespace wg
 		scale = _fixScale(scale);
 
 		if( slot._widget() )
-			return SizeSPX::min(align(ptsToSpx(m_max, scale)),slot._widget()->_maxSize(scale));
+			return SizeSPX::min(align(ptsToSpx(m_maxSize, scale)),slot._widget()->_maxSize(scale));
 		else
-			return align(ptsToSpx(m_max, scale));
+			return align(ptsToSpx(m_maxSize, scale));
 	}
 
 	//____ _matchingHeight() _______________________________________________________
 
 	spx SizeCapsule::_matchingHeight( spx width, int scale ) const
 	{
-		if( m_preferred.h >= 0 )
+		if( m_defaultSize.h >= 0 )
 		{
 			scale = _fixScale(scale);
 
-			pts h = m_preferred.h;
+			pts h = m_defaultSize.h;
 
 			if( slot._widget() )
 			{
@@ -314,11 +314,11 @@ namespace wg
 		else if( slot._widget() )
 		{
 			pts h = slot._widget()->_matchingHeight(width,scale);
-			limit( h, m_min.h, m_max.h );
+			limit( h, m_minSize.h, m_maxSize.h );
 			return h;
 		}
 		else
-			return m_min.h;
+			return m_minSize.h;
 	}
 
 	//____ _matchingWidth() _______________________________________________________
@@ -326,11 +326,11 @@ namespace wg
 	spx SizeCapsule::_matchingWidth( spx height, int scale ) const
 	{
 
-		if( m_preferred.w >= 0 )
+		if( m_defaultSize.w >= 0 )
 		{
 			scale = _fixScale(scale);
 
-			pts w = m_preferred.w;
+			pts w = m_defaultSize.w;
 
 			if( slot._widget() )
 			{
@@ -343,11 +343,11 @@ namespace wg
 		else if( slot._widget() )
 		{
 			pts w = slot._widget()->_matchingWidth(height,scale);
-			limit( w, m_min.w, m_max.w );
+			limit( w, m_minSize.w, m_maxSize.w );
 			return w;
 		}
 		else
-			return m_min.w;
+			return m_minSize.w;
 	}
 
 

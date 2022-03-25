@@ -60,7 +60,7 @@ namespace wg
 		//.____ Internal ________________________________________________________
 
 		virtual SizeSPX		_minSize(int scale) const;
-		virtual SizeSPX		_preferredSize(int scale) const;
+		virtual SizeSPX		_defaultSize(int scale) const;
 
 		inline  bool		_hasContentPadding() const { return m_contentPadding.isEmpty();  }
 		virtual BorderSPX	_contentPadding(int scale, State state) const;

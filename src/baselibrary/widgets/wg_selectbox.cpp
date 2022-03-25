@@ -74,8 +74,8 @@ namespace wg
 			for (auto& entry : entries)
 				entry.m_height += newPadding.h - oldPadding.h;
 
-			m_listCanvasPreferredSize.w += newPadding.w - oldPadding.w;
-			m_listCanvasPreferredSize.h += (newPadding.h - oldPadding.h) * entries.size();
+			m_listCanvasDefaultSize.w += newPadding.w - oldPadding.w;
+			m_listCanvasDefaultSize.h += (newPadding.h - oldPadding.h) * entries.size();
 
 			m_entryContentPaddingSize = newPadding;
 			m_pListCanvas->_requestResize();
@@ -108,7 +108,7 @@ namespace wg
 		SizeSPX newPadding = pSkin ? pSkin->_contentPaddingSize(m_scale) : SizeSPX();
 
 		if (oldPadding != newPadding)
-			m_listCanvasPreferredSize += newPadding - oldPadding;
+			m_listCanvasDefaultSize += newPadding - oldPadding;
 
 		m_pListCanvas->m_skin.set(pSkin);
 	}
@@ -175,15 +175,15 @@ namespace wg
 			return -1;
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _defaultSize() _____________________________________________________________
 
-	SizeSPX SelectBox::_preferredSize(int scale) const
+	SizeSPX SelectBox::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		//TODO: Handle preferredSize in other scale than our current.
+		//TODO: Handle defaultSize in other scale than our current.
 
-		return m_preferredSize;
+		return m_defaultSize;
 	}
 
 	//____ _matchingHeight() ____________________________________________________________
@@ -431,7 +431,7 @@ namespace wg
 		SizeSPX boxPadding = m_skin.contentPaddingSize(m_scale);
 		SizeSPX listPadding = m_pListCanvas->m_skin.contentPaddingSize(m_scale);
 
-		SizeSPX	oldPreferred		= m_preferredSize;
+		SizeSPX	oldDefaultSize		= m_defaultSize;
 //		int		oldMatchingHeight = m_matchingHeight;
 
 		for (int i = 0; i < nb; i++)
@@ -455,27 +455,27 @@ namespace wg
 			if (boxHeight < m_matchingHeight)
 				m_matchingHeight = boxHeight;
 
-			// Update m_preferredSize and m_listCanvasPreferredSize
+			// Update m_defaultSize and m_listCanvasDefaultSize
 
-			SizeSPX contentPreferred = pMapper->preferredSize(pEntry, m_scale);
-			SizeSPX entryPreferred = contentPreferred + entryPadding;
-			SizeSPX boxPreferred = contentPreferred + boxPadding;
+			SizeSPX contentDefault = pMapper->defaultSize(pEntry, m_scale);
+			SizeSPX entryDefault = contentDefault + entryPadding;
+			SizeSPX boxDefault = contentDefault + boxPadding;
 
-			if (entryPreferred.w + listPadding.w > m_listCanvasPreferredSize.w)
-				m_listCanvasPreferredSize.w = entryPreferred.w + listPadding.w;
-			m_listCanvasPreferredSize.h += entryPreferred.h;
+			if (entryDefault.w + listPadding.w > m_listCanvasDefaultSize.w)
+				m_listCanvasDefaultSize.w = entryDefault.w + listPadding.w;
+			m_listCanvasDefaultSize.h += entryDefault.h;
 
-			if (m_preferredSize.w < boxPreferred.w)
-				m_preferredSize.w = boxPreferred.w;
-			if (m_preferredSize.h < boxPreferred.h)
-				m_preferredSize.h = boxPreferred.h;
+			if (m_defaultSize.w < boxDefault.w)
+				m_defaultSize.w = boxDefault.w;
+			if (m_defaultSize.h < boxDefault.h)
+				m_defaultSize.h = boxDefault.h;
 
 			pEntry++;
 		}
 
-		// Check if we need to adjust preferredSize for the SelectBox.
+		// Check if we need to adjust defaultSize for the SelectBox.
 
-		if (m_preferredSize != oldPreferred)
+		if (m_defaultSize != oldDefaultSize)
 			_requestResize();
 
 		// No use to requestRender here, added content is outside canvas content rect.
@@ -528,14 +528,14 @@ namespace wg
 
 	spx SelectBox::_sideCanvasMatchingWidth(const SideCanvas * pCanvas, spx height, int scale) const
 	{
-		return std::max(m_listCanvasPreferredSize.w, m_preferredSize.w);
+		return std::max(m_listCanvasDefaultSize.w, m_defaultSize.w);
 	}
 
-	//____ _sideCanvasPreferredSize() _________________________________________
+	//____ _sideCanvasDefaultSize() _________________________________________
 
-	SizeSPX SelectBox::_sideCanvasPreferredSize(const SideCanvas * pCanvas, int scale) const
+	SizeSPX SelectBox::_sideCanvasDefaultSize(const SideCanvas * pCanvas, int scale) const
 	{
-		return { std::max(m_listCanvasPreferredSize.w, m_preferredSize.w), m_listCanvasPreferredSize.h };
+		return { std::max(m_listCanvasDefaultSize.w, m_defaultSize.w), m_listCanvasDefaultSize.h };
 	}
 
 	//____ _sideCanvasRender() ________________________________________________

@@ -78,9 +78,9 @@ namespace wg
 
 		m_contentBreadth = 0;
 		m_contentLength = 0;
-		m_contentPreferredLength = 0;
-		m_contentPreferredBreadth = 0;
-		m_nbPreferredBreadthEntries = 0;
+		m_contentDefaultLength = 0;
+		m_contentDefaultBreadth = 0;
+		m_nbEntriesOfDefaultBreadth = 0;
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -162,33 +162,33 @@ namespace wg
 		return true;
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ _defaultSize() ________________________________________________________
 
-	SizeSPX PackList::_preferredSize(int scale) const
+	SizeSPX PackList::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
 		if( scale == m_scale )
 		{
 			SizeSPX sz = m_skin.contentPaddingSize(scale);
-			SizeSPX headerSize = _header()._preferredSize(scale);
+			SizeSPX headerSize = _header()._defaultSize(scale);
 
 			if (m_bHorizontal)
 			{
-				sz += SizeSPX(m_contentPreferredLength + headerSize.w, m_contentPreferredBreadth);
+				sz += SizeSPX(m_contentDefaultLength + headerSize.w, m_contentDefaultBreadth);
 				if (headerSize.h > sz.h)
 					sz.h = headerSize.h;
 			}
 			else
 			{
-				sz += SizeSPX(m_contentPreferredBreadth, m_contentPreferredLength + headerSize.h);
+				sz += SizeSPX(m_contentDefaultBreadth, m_contentDefaultLength + headerSize.h);
 				if (headerSize.w > sz.w)
 					sz.w = headerSize.w;
 			}
 			return sz;
 		}
 		else
-		 return _calcPreferredSize(scale);
+		 return _calcDefaultSize(scale);
 
 
 	}
@@ -204,8 +204,8 @@ namespace wg
 
 		if (m_bHorizontal)
 		{
-			spx height = m_contentPreferredBreadth + m_skin.contentPaddingSize(scale).h;
-			return std::max(height, _header()._preferredSize(scale).h);
+			spx height = m_contentDefaultBreadth + m_skin.contentPaddingSize(scale).h;
+			return std::max(height, _header()._defaultSize(scale).h);
 		}
 		else
 		{
@@ -250,9 +250,9 @@ namespace wg
 		}
 		else
 		{
-			spx width = m_contentPreferredBreadth + m_skin.contentPaddingSize(scale).w;
+			spx width = m_contentDefaultBreadth + m_skin.contentPaddingSize(scale).w;
 
-			return std::max(width, _header()._preferredSize(scale).w);
+			return std::max(width, _header()._defaultSize(scale).w);
 		}
 	}
 
@@ -419,22 +419,22 @@ namespace wg
 			if( m_pEntrySkin[0] )
 				m_entryPadding = m_pEntrySkin[0]->_contentPaddingSize(scale);
 			
-			m_contentPreferredLength = 0;
-			m_contentPreferredBreadth = 0;
-			m_nbPreferredBreadthEntries = 0;
+			m_contentDefaultLength = 0;
+			m_contentDefaultBreadth = 0;
+			m_nbEntriesOfDefaultBreadth = 0;
 
 			for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
 			{
-				SizeSPX pref = _paddedLimitedPreferredSize( pSlot, scale );
+				SizeSPX pref = _paddedLimitedDefaultSize( pSlot, scale );
 
 				if( m_bHorizontal )
 				{
-					_addToContentPreferredSize( pref.w, pref.h );
+					_addToContentDefaultSize( pref.w, pref.h );
 					pSlot->m_prefBreadth = pref.h;
 				}
 				else
 				{
-					_addToContentPreferredSize( pref.h, pref.w );
+					_addToContentDefaultSize( pref.h, pref.w );
 					pSlot->m_prefBreadth = pref.w;
 				}
 			}
@@ -500,16 +500,16 @@ namespace wg
 		Widget::_refresh();
 	}
 
-	//____ _calcPreferredSize() __________________________________________________
+	//____ _calcDefaultSize() __________________________________________________
 
-	SizeSPX PackList::_calcPreferredSize( int scale ) const
+	SizeSPX PackList::_calcDefaultSize( int scale ) const
 	{
 		SizeSPX entryPadding;
 		
 		if( m_pEntrySkin[0] )
 			entryPadding = m_pEntrySkin[0]->_contentPaddingSize(scale);
 
-		SizeSPX 	preferred;
+		SizeSPX 	defaultSize;
 
 		SizeSPX		minEntrySize = align(ptsToSpx(m_minEntrySize, scale));
 		SizeSPX		maxEntrySize = align(ptsToSpx(m_maxEntrySize, scale));
@@ -517,9 +517,9 @@ namespace wg
 		
 		for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
 		{
-			// Calc "_paddedLimitedPreferredSize" for slot
+			// Calc "_paddedLimitedDefaultSize" for slot
 		
-			SizeSPX sz = pSlot->_widget()->_preferredSize(scale);
+			SizeSPX sz = pSlot->_widget()->_defaultSize(scale);
 			sz += entryPadding;
 
 			// Apply limits
@@ -546,18 +546,18 @@ namespace wg
 			
 			if( m_bHorizontal )
 			{
-				preferred.w += pref.w;
-				if( pref.h > preferred.h )
-					preferred.h = pref.h;
+				defaultSize.w += pref.w;
+				if( pref.h > defaultSize.h )
+					defaultSize.h = pref.h;
 			}
 			else
 			{
-				preferred.h += pref.h;
-				if( pref.w > preferred.w )
-					preferred.w = pref.w;
+				defaultSize.h += pref.h;
+				if( pref.w > defaultSize.w )
+					defaultSize.w = pref.w;
 			}
 		}
-		return preferred;
+		return defaultSize;
 	}
 
 
@@ -568,18 +568,18 @@ namespace wg
 		if( m_pEntrySkin[0] )
 			m_entryPadding = m_pEntrySkin[0]->_contentPaddingSize(m_scale);
 
-		m_contentPreferredLength = 0;
-		m_contentPreferredBreadth = 0;
-		m_nbPreferredBreadthEntries = 0;
+		m_contentDefaultLength = 0;
+		m_contentDefaultBreadth = 0;
+		m_nbEntriesOfDefaultBreadth = 0;
 		spx ofs = 0;
 
 		for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
 		{
-			SizeSPX pref = _paddedLimitedPreferredSize( pSlot, m_scale );
+			SizeSPX pref = _paddedLimitedDefaultSize( pSlot, m_scale );
 
 			if( m_bHorizontal )
 			{
-				_addToContentPreferredSize( pref.w, pref.h );
+				_addToContentDefaultSize( pref.w, pref.h );
 				pSlot->m_ofs = ofs;
 
 				// Get entry length and breadth
@@ -594,7 +594,7 @@ namespace wg
 			}
 			else
 			{
-				_addToContentPreferredSize( pref.h, pref.w );
+				_addToContentDefaultSize( pref.h, pref.w );
 				pSlot->m_ofs = ofs;
 
 				// Get entry length and breadth
@@ -794,11 +794,11 @@ namespace wg
 			{
 				pSlot[i].m_bVisible = false;
 
-				SizeSPX pref = _paddedLimitedPreferredSize(pSlot, m_scale);
+				SizeSPX pref = _paddedLimitedDefaultSize(pSlot, m_scale);
 				if (m_bHorizontal)
-					_subFromContentPreferredSize(pref.w, pref.h);
+					_subFromContentDefaultSize(pref.w, pref.h);
 				else
-					_subFromContentPreferredSize(pref.h, pref.w);
+					_subFromContentDefaultSize(pref.h, pref.w);
 
 				m_contentLength -= pSlot[i].m_length;
 				pSlot[i].m_length = 0;
@@ -822,11 +822,11 @@ namespace wg
 				pSlot[i].m_bVisible = true;
 
 				Widget * pChild = pSlot[i]._widget();
-				SizeSPX pref = _paddedLimitedPreferredSize(pSlot, m_scale);
+				SizeSPX pref = _paddedLimitedDefaultSize(pSlot, m_scale);
 
 				if (m_bHorizontal)
 				{
-					_addToContentPreferredSize(pref.w, pref.h);
+					_addToContentDefaultSize(pref.w, pref.h);
 
 					// Get entry length and breadth
 
@@ -838,7 +838,7 @@ namespace wg
 				}
 				else
 				{
-					_addToContentPreferredSize(pref.h, pref.w);
+					_addToContentDefaultSize(pref.h, pref.w);
 
 					// Get entry length and breadth
 
@@ -1019,31 +1019,31 @@ namespace wg
 		return pResult;
 	}
 
-	//____ _addToContentPreferredSize() ___________________________________________
+	//____ _addToContentDefaultSize() ___________________________________________
 
-	void  PackList::_addToContentPreferredSize( spx length, spx breadth )
+	void  PackList::_addToContentDefaultSize( spx length, spx breadth )
 	{
-		m_contentPreferredLength += length;
+		m_contentDefaultLength += length;
 
-		if( breadth == m_contentPreferredBreadth )
-			m_nbPreferredBreadthEntries++;
-		else if( breadth > m_contentPreferredBreadth )
+		if( breadth == m_contentDefaultBreadth )
+			m_nbEntriesOfDefaultBreadth++;
+		else if( breadth > m_contentDefaultBreadth )
 		{
-			m_contentPreferredBreadth = breadth;
-			m_nbPreferredBreadthEntries = 1;
+			m_contentDefaultBreadth = breadth;
+			m_nbEntriesOfDefaultBreadth = 1;
 		}
 	}
 
-	//____ _subFromContentPreferredSize() _________________________________________
+	//____ _subFromContentDefaultSize() _________________________________________
 
-	void  PackList::_subFromContentPreferredSize( spx length, spx breadth )
+	void  PackList::_subFromContentDefaultSize( spx length, spx breadth )
 	{
-		m_contentPreferredLength -= length;
+		m_contentDefaultLength -= length;
 
-		if( breadth == m_contentPreferredBreadth )
+		if( breadth == m_contentDefaultBreadth )
 		{
-			m_nbPreferredBreadthEntries--;
-			if( m_nbPreferredBreadthEntries == 0 )
+			m_nbEntriesOfDefaultBreadth--;
+			if( m_nbEntriesOfDefaultBreadth == 0 )
 			{
 				spx highest = 0;
 				for( Slot * p = slots._begin() ; p < slots._end() ; p++ )
@@ -1052,14 +1052,14 @@ namespace wg
 						continue;
 
 					if( p->m_prefBreadth == highest )
-						m_nbPreferredBreadthEntries++;
+						m_nbEntriesOfDefaultBreadth++;
 					else if( p->m_prefBreadth > highest )
 					{
 						highest = p->m_prefBreadth;
-						m_nbPreferredBreadthEntries = 1;
+						m_nbEntriesOfDefaultBreadth = 1;
 					}
 				}
-				m_contentPreferredBreadth = highest;
+				m_contentDefaultBreadth = highest;
 			}
 		}
 	}
@@ -1134,8 +1134,8 @@ namespace wg
 				m_contentLength += lengthDiff;
 				m_contentBreadth += breadthDiff;
 
-				m_contentPreferredLength += lengthDiff;
-				m_contentPreferredBreadth += breadthDiff;
+				m_contentDefaultLength += lengthDiff;
+				m_contentDefaultBreadth += breadthDiff;
 
 				_requestResize();
 			}
@@ -1212,13 +1212,13 @@ namespace wg
 		return width;
 	}
 
-	//____ _paddedLimitedPreferredSize() __________________________________________
+	//____ _paddedLimitedDefaultSize() __________________________________________
 
-	SizeSPX PackList::_paddedLimitedPreferredSize( StaticSlot * _pSlot, int scale )
+	SizeSPX PackList::_paddedLimitedDefaultSize( StaticSlot * _pSlot, int scale )
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
-		SizeSPX sz = pSlot->_widget()->_preferredSize(scale);
+		SizeSPX sz = pSlot->_widget()->_defaultSize(scale);
 		sz += m_entryPadding;
 
 		// Apply limits
@@ -1290,21 +1290,21 @@ namespace wg
 
 		if (pSlot->m_bVisible && m_minEntrySizeSPX != m_maxEntrySizeSPX)
 		{
-			SizeSPX prefEntrySize = _paddedLimitedPreferredSize(pSlot, m_scale);
+			SizeSPX prefEntrySize = _paddedLimitedDefaultSize(pSlot, m_scale);
 
 			spx prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
 			spx prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
 
-			// Update preferred sizes
+			// Update default sizes
 
 			if( prefBreadth != pSlot->m_prefBreadth || prefLength != pSlot->m_length )
 			{
 				// NOTE: Order here is important!
 
-				_addToContentPreferredSize( prefLength, prefBreadth );
+				_addToContentDefaultSize( prefLength, prefBreadth );
 				spx oldPrefBreadth = pSlot->m_prefBreadth;
 				pSlot->m_prefBreadth = prefBreadth;
-				_subFromContentPreferredSize( pSlot->m_length, oldPrefBreadth );
+				_subFromContentDefaultSize( pSlot->m_length, oldPrefBreadth );
 
 				bReqResize = true;
 			}
@@ -1484,7 +1484,7 @@ namespace wg
 
 	void PackList::_refreshHeader()
 	{
-		SizeSPX wantedSize = _header()._preferredSize(m_scale);
+		SizeSPX wantedSize = _header()._defaultSize(m_scale);
 		SizeSPX currentSize = _header()._size();
 
 		bool	bRequestResize = false;
@@ -1493,13 +1493,13 @@ namespace wg
 
 		if( wantedSize.h != currentSize.h )
 		{
-			if( !m_bHorizontal || (wantedSize.h > m_contentPreferredBreadth || currentSize.h > m_contentPreferredBreadth) )
+			if( !m_bHorizontal || (wantedSize.h > m_contentDefaultBreadth || currentSize.h > m_contentDefaultBreadth) )
 				bRequestResize = true;
 		}
 
 		if( wantedSize.w != currentSize.w )
 		{
-			if( m_bHorizontal || (wantedSize.w > m_contentPreferredBreadth || currentSize.w > m_contentPreferredBreadth) )
+			if( m_bHorizontal || (wantedSize.w > m_contentDefaultBreadth || currentSize.w > m_contentDefaultBreadth) )
 				bRequestResize = true;
 		}
 

@@ -38,7 +38,7 @@
 	inline void		setVisible(bool bVisible) { if (bVisible) static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); else static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); } \
 	inline bool		isVisible() const { return m_bVisible; }
 
-#define		SLOT_PADDING_HELPER_METHODS	SizeSPX		_paddedPreferredSize(int scale) const { return m_pWidget->_preferredSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); } \
+#define		SLOT_PADDING_HELPER_METHODS	SizeSPX		_paddedDefaultSize(int scale) const { return m_pWidget->_defaultSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); } \
 										SizeSPX		_paddedMinSize(int scale) const { return m_pWidget->_minSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); } \
 										SizeSPX		_paddedMaxSize(int scale) const { return m_pWidget->_maxSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); } \
 										spx			_paddedMatchingWidth(spx paddedHeight, int scale) const \

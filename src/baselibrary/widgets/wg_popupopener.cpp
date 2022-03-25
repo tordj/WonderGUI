@@ -80,7 +80,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		spx height = m_skin.preferredSize(scale).h;
+		spx height = m_skin.defaultSize(scale).h;
 
 		if (!OO(text).isEmpty())
 		{
@@ -97,22 +97,22 @@ namespace wg
 	}
 
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _defaultSize() _____________________________________________________________
 
-	SizeSPX PopupOpener::_preferredSize(int scale) const
+	SizeSPX PopupOpener::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX preferred;
+		SizeSPX defaultSize;
 
 		if (!OO(text).isEmpty())
-			preferred = OO(text)._preferredSize(scale);
+			defaultSize = OO(text)._defaultSize(scale);
 
-		preferred = m_skin.sizeForContent(preferred,scale);
+		defaultSize = m_skin.sizeForContent(defaultSize,scale);
 
 		//TODO: Take icon into account.
 
-		return preferred;
+		return defaultSize;
 	}
 
 	//____ _render() __________________________________________________________

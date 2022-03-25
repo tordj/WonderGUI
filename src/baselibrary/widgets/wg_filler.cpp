@@ -33,13 +33,13 @@ namespace wg
 
 	Filler::Filler()
 	{
-		m_preferredSize = Size(-1,-1);
+		m_defaultSize = Size(-1,-1);
 	}
 
 	Filler::Filler( const Blueprint& bp )
 	{
 		_initFromBlueprint(bp); 
-		m_preferredSize = bp.preferredSize;
+		m_defaultSize = bp.defaultSize;
 	}
 
 
@@ -56,28 +56,28 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setPreferredSize() _______________________________________________________
+	//____ setDefaultSize() _______________________________________________________
 
-	void Filler::setPreferredSize( const Size& size )
+	void Filler::setDefaultSize( const Size& size )
 	{
-		if( size != m_preferredSize )
+		if( size != m_defaultSize )
 		{
-			m_preferredSize = size;
+			m_defaultSize = size;
 			_requestResize();
 		}
 	}
 
-	//____ preferredSize() __________________________________________________________
+	//____ defaultSize() __________________________________________________________
 
-	SizeSPX Filler::_preferredSize(int _scale) const
+	SizeSPX Filler::_defaultSize(int _scale) const
 	{
-		if (m_preferredSize.w >= 0 && m_preferredSize.h >= 0)
+		if (m_defaultSize.w >= 0 && m_defaultSize.h >= 0)
 		{
 			int scale = _fixScale(_scale);
-			return SizeSPX(m_preferredSize*scale);
+			return SizeSPX(m_defaultSize*scale);
 		}
 		else
-			return Widget::_preferredSize(_scale);
+			return Widget::_defaultSize(_scale);
 	}
 
 } // namespace wg

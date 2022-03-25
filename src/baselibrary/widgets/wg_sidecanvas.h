@@ -50,7 +50,7 @@ namespace wg
 			virtual spx			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, spx width, int scale = -1 ) const;
 			virtual spx			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, spx height, int scale = -1 ) const;
 
-			virtual SizeSPX		_sideCanvasPreferredSize( const SideCanvas * pCanvas, int scale = -1) const = 0;
+			virtual SizeSPX		_sideCanvasDefaultSize( const SideCanvas * pCanvas, int scale = -1) const = 0;
 			virtual SizeSPX		_sideCanvasMinSize( const SideCanvas * pCanvas, int scale = -1) const;
 			virtual SizeSPX		_sideCanvasMaxSize( const SideCanvas * pCanvas, int scale = -1) const;
 
@@ -82,7 +82,7 @@ namespace wg
 		spx			_matchingHeight(spx width, int scale = -1) const override;
 		spx			_matchingWidth(spx height, int scale = -1) const override;
 
-		SizeSPX		_preferredSize(int scale = -1) const override;
+		SizeSPX		_defaultSize(int scale = -1) const override;
 		SizeSPX		_minSize(int scale = -1) const override;
 		SizeSPX		_maxSize(int scale = -1) const override;
 

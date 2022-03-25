@@ -104,9 +104,9 @@ namespace wg
 		}
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _defaultSize() _____________________________________________________________
 
-	SizeSPX Image::_preferredSize(int scale) const
+	SizeSPX Image::_defaultSize(int scale) const
 	{
 
 		if (m_pSurface)
@@ -115,7 +115,7 @@ namespace wg
 			return m_skin.sizeForContent( align(ptsToSpx(m_rect.size(),scale)), scale );
 		}
 		else
-			return Widget::_preferredSize(scale);
+			return Widget::_defaultSize(scale);
 	}
 
 	//____ _render() _____________________________________________________________

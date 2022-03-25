@@ -94,14 +94,14 @@ namespace wg
 			return SizeSPX::max(m_pFrontSkin->_minSize(scale), m_pBackSkin->_minSize(scale));
 	}
 
-	//____ _preferredSize() _________________________________________________
+	//____ _defaultSize() _________________________________________________
 
-	SizeSPX DoubleSkin::_preferredSize(int scale) const
+	SizeSPX DoubleSkin::_defaultSize(int scale) const
 	{
 		if (m_bSkinInSkin)
-			return SizeSPX::max(m_pBackSkin->_sizeForContent(m_pFrontSkin->_preferredSize(scale),scale), m_pBackSkin->_preferredSize(scale));
+			return SizeSPX::max(m_pBackSkin->_sizeForContent(m_pFrontSkin->_defaultSize(scale),scale), m_pBackSkin->_defaultSize(scale));
 		else
-			return SizeSPX::max(m_pFrontSkin->_preferredSize(scale), m_pBackSkin->_preferredSize(scale));
+			return SizeSPX::max(m_pFrontSkin->_defaultSize(scale), m_pBackSkin->_defaultSize(scale));
 	}
 
 	//____ _sizeForContent() ________________________________________________

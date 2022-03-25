@@ -970,14 +970,14 @@ namespace wg
 	}
 
 
-	//____ preferredSize() _________________________________________________________
+	//____ defaultSize() _________________________________________________________
 
-	SizeSPX BasicTextLayout::preferredSize( const Text * pText, int scale ) const
+	SizeSPX BasicTextLayout::defaultSize( const Text * pText, int scale ) const
 	{
 		if (scale != _scale(pText))
-			return _calcPreferredSize(_chars(pText),_baseStyle(pText), scale, _state(pText));
+			return _calcDefaultSize(_chars(pText),_baseStyle(pText), scale, _state(pText));
 
-		return _header(_dataBlock(pText))->preferredSize;
+		return _header(_dataBlock(pText))->defaultSize;
 	}
 
 	//____ matchingWidth() _________________________________________________________
@@ -985,9 +985,9 @@ namespace wg
 	spx BasicTextLayout::matchingWidth( const Text * pText, spx height, int scale ) const
 	{
 		if (scale != _scale(pText))
-			return _calcPreferredSize(_chars(pText),_baseStyle(pText), scale, _state(pText)).w;
+			return _calcDefaultSize(_chars(pText),_baseStyle(pText), scale, _state(pText)).w;
 
-		return	_header(_dataBlock(pText))->preferredSize.w;
+		return	_header(_dataBlock(pText))->defaultSize.w;
 	}
 
 	//____ matchingHeight() ________________________________________________________
@@ -1373,26 +1373,26 @@ namespace wg
 	void BasicTextLayout::_updateLineInfo( Text * pText, void * pBlock, const Char * pChars )
 	{
 		BlockHeader * pHeader = _header(_dataBlock(pText));
-		SizeSPX preferredSize;
+		SizeSPX defaultSize;
 		SizeSPX textSize;
 
 		if (m_bLineWrap)
 		{
-			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update preferredSize.
+			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update defaultSize.
 
-			preferredSize = _updateFixedLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
+			defaultSize = _updateFixedLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
 			textSize = _updateWrapLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
 		}
 		else
 		{
-			preferredSize = _updateFixedLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
-			textSize = preferredSize;
+			defaultSize = _updateFixedLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
+			textSize = defaultSize;
 		}
 
-		if (preferredSize != pHeader->preferredSize || textSize != pHeader->textSize)
+		if (defaultSize != pHeader->defaultSize || textSize != pHeader->textSize)
 		{
 			pHeader->textSize = textSize;
-			pHeader->preferredSize = preferredSize;
+			pHeader->defaultSize = defaultSize;
 			_requestTextResize(pText);
 		}
 	}
@@ -1769,14 +1769,14 @@ namespace wg
 		return alignUp(size);
 	}
 
-//____ _calcPreferredSize() ________________________________________________
+//____ _calcDefaultSize() ________________________________________________
 /*
 	Should be identical to _updateFixedLineInfo() except that it doesn't write
 	any line info.
  */
 
 
-SizeSPX BasicTextLayout::_calcPreferredSize( const Char * pChars, const TextStyle * pBaseStyle,
+SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle * pBaseStyle,
 											int scale, State state ) const
 {
 	Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();

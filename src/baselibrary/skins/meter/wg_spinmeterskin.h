@@ -60,7 +60,7 @@ namespace wg
 
 			CoordF		pivot = { 0.5f, 0.5f };
 			CoordF		placement = { 0.5f, 0.5f };
-			Size		preferredSize;						// Mandatory
+			Size		defaultSize;						// Mandatory
 			float		zoom = 1.f;
 
 			Surface_p	surface;							// Mandatory
@@ -77,7 +77,7 @@ namespace wg
 
 		//.____ Internal ____________________________________________________
 
-		SizeSPX	_preferredSize(int scale) const override;
+		SizeSPX	_defaultSize(int scale) const override;
 
 		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f) const override;
@@ -97,7 +97,7 @@ namespace wg
 		void		_updateOpacityFlag();
 
 		Surface_p	m_pSurface;
-		Size		m_preferredSize;
+		Size		m_defaultSize;
 		CoordF		m_pivot;
 		CoordF		m_placement;
 		float		m_fromDegrees;

@@ -82,7 +82,7 @@ namespace wg
 		//.____ Misc __________________________________________________
 
 		void 	render(GfxDevice* pDevice, const RectSPX& canvas, double value, int scale, State state) override;
-		SizeSPX	preferredSize(double value, int scale, State state) const override;
+		SizeSPX	defaultSize(double value, int scale, State state) const override;
 		bool	stateChangeNeedsRender(State newState, State oldState) const override;
 
 		Blueprint blueprint() const;

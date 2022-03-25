@@ -175,7 +175,7 @@ namespace wg
 
 		//.____ Internal _________________________________________________________
 
-		SizeSPX				_preferredSize(int scale = -1) const override;
+		SizeSPX				_defaultSize(int scale = -1) const override;
 		spx					_matchingHeight(spx width, int scale = -1) const override;
 		spx					_matchingWidth(spx height, int scale = -1) const override;
 
@@ -271,14 +271,14 @@ namespace wg
 		void			_refreshHeader();
 		void			_refreshList();
 
-		SizeSPX			_paddedLimitedPreferredSize( StaticSlot * pSlot, int scale );
+		SizeSPX			_paddedLimitedDefaultSize( StaticSlot * pSlot, int scale );
 		spx				_paddedLimitedMatchingHeight( StaticSlot * pSlot, spx paddedWidth );
 		spx				_paddedLimitedMatchingWidth( StaticSlot * pSlot, spx paddedHeight );
 
-		SizeSPX			_calcPreferredSize( int scale ) const;
+		SizeSPX			_calcDefaultSize( int scale ) const;
 		
-		void			_addToContentPreferredSize(spx length, spx breadth);
-		void			_subFromContentPreferredSize(spx length, spx breadth);
+		void			_addToContentDefaultSize(spx length, spx breadth);
+		void			_subFromContentDefaultSize(spx length, spx breadth);
 
 		class ColumnHeaderAccess : public CColumnHeader { friend class PackList; };
 		const ColumnHeaderAccess& _header() const { return static_cast<const ColumnHeaderAccess&>(header); }
@@ -303,9 +303,9 @@ namespace wg
 
 		//----
 
-		spx				m_contentPreferredLength;
-		spx				m_contentPreferredBreadth;
-		int				m_nbPreferredBreadthEntries;			// Number of entries whose preferred breadth are the same as m_preferredSize.
+		spx				m_contentDefaultLength;
+		spx				m_contentDefaultBreadth;
+		int				m_nbEntriesOfDefaultBreadth;			// Number of entries whose default breadth are the same as m_defaultSize.
 	};
 
 

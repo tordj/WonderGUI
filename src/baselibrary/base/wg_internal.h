@@ -94,7 +94,7 @@ namespace wg
 		using CStaticTextDisplay::_setSize;
 		using CStaticTextDisplay::_size;
 
-		using CStaticTextDisplay::_preferredSize;
+		using CStaticTextDisplay::_defaultSize;
 		using CStaticTextDisplay::_matchingWidth;
 		using CStaticTextDisplay::_matchingHeight;
 
@@ -140,7 +140,7 @@ namespace wg
 		using CTextDisplay::_setSize;
 		using CTextDisplay::_size;
 
-		using CTextDisplay::_preferredSize;
+		using CTextDisplay::_defaultSize;
 		using CTextDisplay::_matchingWidth;
 		using CTextDisplay::_matchingHeight;
 
@@ -166,7 +166,7 @@ namespace wg
 	{
 	public:
 		using CTextEditor::_style;
-		using CTextEditor::_preferredSize;
+		using CTextEditor::_defaultSize;
 		using CTextEditor::_matchingHeight;
 		using CTextEditor::_matchingWidth;
 		using CTextEditor::_render;

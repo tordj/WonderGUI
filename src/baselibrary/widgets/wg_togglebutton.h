@@ -128,7 +128,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		SizeSPX			_preferredSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale = -1) const override;
 
 
 	protected:

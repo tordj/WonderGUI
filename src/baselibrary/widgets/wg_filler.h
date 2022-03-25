@@ -64,7 +64,7 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
-			Size			preferredSize = { -1,-1 };
+			Size			defaultSize = { -1,-1 };
 			int				scale = 64;
 			bool			selectable = true;
 			Skin_p			skin;
@@ -85,17 +85,17 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		void	setPreferredSize( const Size& size );
+		void	setDefaultSize( const Size& size );
 
 	protected:
 		Filler();
 		Filler(const Blueprint& blueprint);
 		virtual ~Filler();
 
-		SizeSPX	_preferredSize(int scale = -1) const override;
+		SizeSPX	_defaultSize(int scale = -1) const override;
 
 	private:
-		Size			m_preferredSize;
+		Size			m_defaultSize;
 	};
 
 

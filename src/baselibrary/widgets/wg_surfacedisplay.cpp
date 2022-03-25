@@ -153,9 +153,9 @@ namespace wg
 	}
 
 
-	//____ _preferredSize() ___________________________________________________
+	//____ _defaultSize() ___________________________________________________
 
-	SizeSPX SurfaceDisplay::_preferredSize(int scale) const
+	SizeSPX SurfaceDisplay::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 		return _surfaceDisplayRect(scale) + m_skin.contentPaddingSize(scale);

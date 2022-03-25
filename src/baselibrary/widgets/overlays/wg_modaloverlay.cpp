@@ -40,7 +40,7 @@ namespace wg
 	const TypeInfo ModalOverlay::TYPEINFO = { "ModalOverlay", &Overlay::TYPEINFO };
 	const TypeInfo ModalOverlay::Slot::TYPEINFO = { "ModalOverlay::Slot", &Overlay::Slot::TYPEINFO };
 
-	//TODO: Improve Modal geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
+	//TODO: Improve Modal geometry handling, should be able to run on DefaultSize by default, answering to resize-requests.
 
 
 	//____ Slot::setOrigo() ____________________________________________________
@@ -127,7 +127,7 @@ namespace wg
 		SizeSPX sz = placementGeo.size();
 
 		if( sz.w == 0 && sz.h == 0 )
-			sz = pSlot->_widget()->_preferredSize(m_scale);
+			sz = pSlot->_widget()->_defaultSize(m_scale);
 		else if( sz.w == 0 )
 			sz.w = pSlot->_widget()->_matchingWidth(sz.h,m_scale);
 		else if( sz.h == 0 )
@@ -220,12 +220,12 @@ namespace wg
 			return Widget::_matchingWidth(height, scale);
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ _defaultSize() _____________________________________________________________
 
-	SizeSPX ModalOverlay::_preferredSize(int scale) const
+	SizeSPX ModalOverlay::_defaultSize(int scale) const
 	{
 		if( mainSlot._widget() )
-			return mainSlot._widget()->_preferredSize(scale);
+			return mainSlot._widget()->_defaultSize(scale);
 		else
 			return SizeSPX(64,64);
 	}

@@ -153,7 +153,7 @@ namespace wg
 		spx			_matchingHeight(spx width, int scale = -1) const override;
 		spx			_matchingWidth(spx height, int scale = -1) const override;
 
-		SizeSPX		_preferredSize(int scale = -1) const override;
+		SizeSPX		_defaultSize(int scale = -1) const override;
 
 
 	protected:
@@ -202,7 +202,7 @@ namespace wg
 
 		// Internal to StackPanel
 
-		SizeSPX _calcPreferredSize(int scale) const;
+		SizeSPX _calcDefaultSize(int scale) const;
 		void	_updateChildGeo(Slot * pBegin, Slot * pEnd);
 
 		void	_hideChildren( Slot * pBegin, Slot * pEnd );
@@ -211,7 +211,7 @@ namespace wg
 
 		RectSPX	_childGeo( const Slot * pSlot ) const;
 
-		SizeSPX	m_preferredSize;
+		SizeSPX	m_defaultSize;
 	};
 
 

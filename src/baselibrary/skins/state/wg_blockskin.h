@@ -162,7 +162,7 @@ namespace wg
 		//.____ Internal ________________________________________________________
 
 		SizeSPX		_minSize(int scale) const override;
-		SizeSPX		_preferredSize(int scale) const override;
+		SizeSPX		_defaultSize(int scale) const override;
 
 		SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const override;
 

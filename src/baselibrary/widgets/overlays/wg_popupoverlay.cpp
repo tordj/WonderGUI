@@ -118,7 +118,7 @@ namespace wg
 
 		//
 
-		RectSPX geo(0,0,SizeSPX::min(pSlot->_widget()->_preferredSize(m_scale),SizeSPX::min(pSlot->m_maxSize,m_size)));
+		RectSPX geo(0,0,SizeSPX::min(pSlot->_widget()->_defaultSize(m_scale),SizeSPX::min(pSlot->m_maxSize,m_size)));
 
 		switch( pSlot->m_attachPoint )
 		{

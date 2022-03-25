@@ -124,7 +124,7 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
-		SizeSPX		_preferredSize(int scale = -1) const override;
+		SizeSPX		_defaultSize(int scale = -1) const override;
 		spx			_matchingHeight(spx width, int scale = -1) const override;
 
 	protected:
@@ -169,7 +169,7 @@ namespace wg
 		spx			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, spx width, int scale = -1 ) const override;
 		spx			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, spx height, int scale = -1 ) const override;
 
-		SizeSPX		_sideCanvasPreferredSize( const SideCanvas * pCanvas, int scale = -1 ) const  override;
+		SizeSPX		_sideCanvasDefaultSize( const SideCanvas * pCanvas, int scale = -1 ) const  override;
 		void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 
 		void		_sideCanvasRefresh( SideCanvas * pCanvas) override;
@@ -196,11 +196,11 @@ namespace wg
 		spx				m_entryContentWidth;			// Width of content of an entry in the list.
 		SizeSPX			m_entryContentPaddingSize;		// Size of padding of content of an entry in the list.
 
-		SizeSPX			m_preferredSize;
+		SizeSPX			m_defaultSize;
 		spx				m_matchingHeight = 0;			// Matching height for current width.
 
 		spx				m_listCanvasMatchingHeight = 0;
-		SizeSPX			m_listCanvasPreferredSize;
+		SizeSPX			m_listCanvasDefaultSize;
 
 		bool			m_bOpen = false;
 		State			m_closeState;

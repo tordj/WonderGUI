@@ -146,9 +146,9 @@ namespace wg
 		_stopReceiveUpdates();
 	}
 
-	//____ _preferredSize() ___________________________________________________________
+	//____ _defaultSize() ___________________________________________________________
 
-	SizeSPX AnimPlayer::_preferredSize(int _scale) const
+	SizeSPX AnimPlayer::_defaultSize(int _scale) const
 	{
 		int scale = _fixScale(_scale);
 

@@ -79,7 +79,7 @@ namespace wg
 		if( m_handleSkin.get() != pSkin )
 		{
 			m_handleSkin.set(pSkin);
-			_updatePreferredSize();
+			_updateDefaultSize();
 			_updateGeo();
 		}
 	}
@@ -94,7 +94,7 @@ namespace wg
 		if (thickness != m_handleThickness)
 		{
 			m_handleThickness = thickness;
-			_updatePreferredSize();
+			_updateDefaultSize();
 			_updateGeo();
 		}
 	}
@@ -126,16 +126,16 @@ namespace wg
 		_updateGeo();
 	}
 
-	//____ _preferredSize() _______________________________________________________
+	//____ _defaultSize() _______________________________________________________
 
-	SizeSPX  SplitPanel::_preferredSize(int scale) const
+	SizeSPX  SplitPanel::_defaultSize(int scale) const
 	{
 		scale = _fixScale(scale);
 
 		if (scale == m_scale)
-			return m_preferredSize;
+			return m_defaultSize;
 		else
-			return _calcPreferredSize(scale);
+			return _calcDefaultSize(scale);
 	}
 
 	//____ _handleThickness() ____________________________________________________
@@ -144,28 +144,28 @@ namespace wg
 	{
 		spx thickness = align(ptsToSpx(m_handleThickness,scale));
 		if (thickness == 0 )
-			thickness = m_bHorizontal ? m_handleSkin.preferredSize(scale).w : m_handleSkin.preferredSize(scale).h;
+			thickness = m_bHorizontal ? m_handleSkin.defaultSize(scale).w : m_handleSkin.defaultSize(scale).h;
 		return thickness;
 	}
 
 
-	//____ _updatePreferredSize() ________________________________________________
+	//____ _updateDefaultSize() ________________________________________________
 
-	void SplitPanel::_updatePreferredSize()
+	void SplitPanel::_updateDefaultSize()
 	{
-		SizeSPX sz = _calcPreferredSize(m_scale);
-		//TODO: We can't trust that same preferredSize results in same matchingHeight. We need to find a more robust optimization.
-//		if (sz != m_preferredSize)
+		SizeSPX sz = _calcDefaultSize(m_scale);
+		//TODO: We can't trust that same defaultSize results in same matchingHeight. We need to find a more robust optimization.
+//		if (sz != m_defaultSize)
 		{
-			m_preferredSize = sz;
+			m_defaultSize = sz;
 			_requestResize();
 		}
 
 	}
 	
-	//____ _calcPreferredSize() _______________________________________________
+	//____ _calcDefaultSize() _______________________________________________
 
-	SizeSPX SplitPanel::_calcPreferredSize(int scale) const
+	SizeSPX SplitPanel::_calcDefaultSize(int scale) const
 	{
 		SizeSPX firstSz;
 		SizeSPX secondSz;
@@ -173,32 +173,32 @@ namespace wg
 		SizeSPX sz;
 
 		if (slots[0]._widget())
-			firstSz = slots[0]._widget()->_preferredSize(scale);
+			firstSz = slots[0]._widget()->_defaultSize(scale);
 
 		if (slots[1]._widget())
-			secondSz = slots[1]._widget()->_preferredSize(scale);
+			secondSz = slots[1]._widget()->_defaultSize(scale);
 
 		if (m_bHorizontal)
 		{
 			sz.w = firstSz.w + secondSz.w + _handleThickness(scale);
 			sz.h = std::max(firstSz.h, secondSz.h);
-			if (m_handleSkin.preferredSize(scale).h > sz.h)
-				sz.h = m_handleSkin.preferredSize(scale).h;
+			if (m_handleSkin.defaultSize(scale).h > sz.h)
+				sz.h = m_handleSkin.defaultSize(scale).h;
 		}
 		else
 		{
 			sz.w = std::max(firstSz.w, secondSz.w);
 			sz.h = firstSz.h + secondSz.h + _handleThickness(scale);
-			if (m_handleSkin.preferredSize(scale).w > sz.w)
-				sz.w = m_handleSkin.preferredSize(scale).w;
+			if (m_handleSkin.defaultSize(scale).w > sz.w)
+				sz.w = m_handleSkin.defaultSize(scale).w;
 		}
 
-		// Take skins padding and preferred size into account
+		// Take skins padding and default size into account
 
 		if (!m_skin.isEmpty())
 		{
 			sz += m_skin.contentPaddingSize(scale);
-			SizeSPX skinSz = m_skin.preferredSize(scale);
+			SizeSPX skinSz = m_skin.defaultSize(scale);
 			if (skinSz.w > sz.w)
 				sz.w = skinSz.w;
 			if (skinSz.h > sz.h)
@@ -661,7 +661,7 @@ namespace wg
 
 		pSlot->_setWidget(pNewWidget);
 		OO(pNewWidget)->_resize(pSlot->m_geo, m_scale);
-		_updatePreferredSize();
+		_updateDefaultSize();
 		bool bGeoChanged = _updateGeo();
 		if (!bGeoChanged)
 			_requestRender(pSlot->m_geo);

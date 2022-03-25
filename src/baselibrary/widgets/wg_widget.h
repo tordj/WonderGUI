@@ -126,7 +126,7 @@ namespace wg
 		inline pts			matchingHeight( pts width ) const;
 		inline pts			matchingWidth( pts height ) const;
 
-		inline Size			preferredSize() const;
+		inline Size			defaultSize() const;
 		inline Size			minSize() const;
 		inline Size			maxSize() const;
 
@@ -202,7 +202,7 @@ namespace wg
 		virtual spx			_matchingHeight(spx width, int scale = -1) const;
 		virtual spx			_matchingWidth(spx height, int scale = -1) const;
 
-		virtual SizeSPX		_preferredSize(int scale = -1) const;
+		virtual SizeSPX		_defaultSize(int scale = -1) const;
 		virtual SizeSPX		_minSize(int scale = -1) const;
 		virtual SizeSPX		_maxSize(int scale = -1) const;
 
@@ -626,16 +626,16 @@ namespace wg
 
 	//____ matchingHeight() _______________________________________________________
 	/**
-	 * @brief Get the widgets preferred height for the specified width.
+	 * @brief Get the height recommended by the widget for the specified width.
 	 *
-	 * Get the widgets preferred height for the specified width.
+	 * Get the height wanted by the widget for the specified width.
 	 *
 	 * @param width		Width in points.
 	 *
-	 * This method is used by containers to get the preferred height of a widget for which
+	 * This method is used by containers to get the recommended height of a widget for which
 	 * it has already decided the width.
 	 *
-	 * @return The preferred height for the given width.
+	 * @return The recommended height for the given width.
 	 */
 
 	pts Widget::matchingHeight( pts width ) const
@@ -645,44 +645,44 @@ namespace wg
 
 	//____ matchingWidth() _______________________________________________________
 	/**
-	 * @brief Get the widgets preferred width for the specified height.
+	 * @brief Get the width recommended by the widget for the specified height.
 	 *
-	 * Get the widgets preferred width for the specified height.
+	 * Get the width wanted by the widget for the specified height.
 	 *
 	 * @param height	Height in points.
 	 *
-	 * This method is used by containers to get the preferred width of a widget for which
+	 * This method is used by containers to get the recommended width of a widget for which
 	 * it has already decided the height.
 	 *
-	 * @return The preferred width for the given height.
+	 * @return The recommended width for the given height.
 	 */
 	 
 	pts Widget::matchingWidth( pts height ) const
 	{
-		return Util::spxToPts(_matchingWidth(Util::ptsToSpx(height, m_scale)), m_scale);		// Default is to stick with preferred height no matter what width.
+		return Util::spxToPts(_matchingWidth(Util::ptsToSpx(height, m_scale)), m_scale);		// Default is to stick with default height no matter what width.
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ defaultSize() ________________________________________________________
 	/**
-	 * @brief Get the widgets preferred size.
+	 * @brief Get the widgets default size.
 	 *
-	 * Get the widgets preferred size.
+	 * Get the widgets default size.
 	 *
-	 * Each widget has its own preferred size, which is depending on things such as
+	 * Each widget has its own default size, which is depending on things such as
 	 * skinning, content and (in the case of containers) size and layout of children.
 	 *
-	 * A container holding a widget will strive to provide the widget its preferred size, given
+	 * A container holding a widget will strive to provide the widget its default size, given
 	 * the constraints and limitations the container needs to work with. If a container can't
-	 * provide a widget its preferred size, it is likely to decide the closest width or height
+	 * provide a widget its default size, it is likely to decide the closest width or height
 	 * that it can provide and then make a second call to either matchingWidth() or matchingHeight()
 	 * after which it will decide the size of the child.
 	 *
-	 * @return The preferred size of the widget.
+	 * @return The default size of the widget.
 	 */
 
-	Size Widget::preferredSize() const
+	Size Widget::defaultSize() const
 	{
-		return Util::spxToPts(_preferredSize(), m_scale);
+		return Util::spxToPts(_defaultSize(), m_scale);
 	}
 
 	//____ minSize() ______________________________________________________________
