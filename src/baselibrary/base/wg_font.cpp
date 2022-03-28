@@ -26,6 +26,8 @@
 #include <string.h>
 #include <wg_font.h>
 #include <wg_texttool.h>
+#include <wg_base.h>
+#include <wg_context.h>
 
 namespace wg
 {
@@ -56,5 +58,31 @@ namespace wg
         return true;
     }
 
+	//____ getGlyphAsSurface() ___________________________________________________
+
+	Surface_p Font::getGlyphAsSurface(uint16_t chr, const Surface::Blueprint& _bp, SurfaceFactory * pFactory )
+	{
+		Glyph glyph;
+		getGlyphWithBitmap(chr, glyph);
+		
+		if( glyph.pSurface == nullptr )
+			return nullptr;
+		
+		if( pFactory == nullptr )
+			pFactory = Base::activeContext()->surfaceFactory();
+		
+		if( !pFactory )
+			return nullptr;
+		
+		RectI pixelRect = glyph.rect/64;
+		
+		Surface::Blueprint bp = _bp;
+		if( bp.size.isEmpty() )
+			bp.size = pixelRect.size();
+		
+		auto pSurface = pFactory->createSurface(bp);
+		pSurface->copyFrom( glyph.pSurface, pixelRect, {0,0} );
+		return pSurface;
+	}
 
 } // namespace wg

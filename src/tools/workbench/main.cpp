@@ -101,6 +101,7 @@ bool kerningTest(CStandardSlot_p pSlot);
 bool circleSkinTest(CStandardSlot_p pSlot);
 bool packListTest(CStandardSlot_p pSlot);
 bool packPanelTest(CStandardSlot_p pSlot);
+bool glyphAsSurfaceTest(CStandardSlot_p pSlot, Font_p pFont );
 
 
 void nisBlendTest();
@@ -634,7 +635,7 @@ int main(int argc, char** argv)
 //	modalLayerTest(&pRoot->slot);
 //	splitPanelTest(&pRoot->slot);
 //	designLayerTest(&pRoot->slot);
-	pianoKeyboardTest(&pRoot->slot);
+//	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
 //	rangeSliderTest(&pRoot->slot);
 //	pieKnobTest(&pRoot->slot);
@@ -657,7 +658,7 @@ int main(int argc, char** argv)
 //	circleSkinTest(&pRoot->slot);
 //	packListTest(&pRoot->slot);
 //	packPanelTest(&pRoot->slot);
-
+	glyphAsSurfaceTest(&pRoot->slot, pFont);
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -2950,6 +2951,25 @@ bool packPanelTest(CStandardSlot_p pSlot)
 
 }
 
+
+//____ glyphAsSurfaceTest() ________________________________________________________
+
+bool glyphAsSurfaceTest(CStandardSlot_p pSlot, Font_p pFont )
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::Red));
+
+	pFont->setSize(80*64);
+	
+	auto pSurface = pFont->getGlyphAsSurface('Q');
+	
+	auto pImage = Image::create( { .image = pSurface } );
+
+	pBaseLayer->slots.pushBack(pImage);
+
+	*pSlot = pBaseLayer;
+	return true;
+}
 
 //____
 
