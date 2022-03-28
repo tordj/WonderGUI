@@ -50,6 +50,9 @@ namespace wg
 
 	char * MemStack::allocBytes( int bytes )
 	{
+		if( bytes == 0 )
+			return nullptr;
+		
 		BlockHeader * p = m_blocks.last();
 
 		if( !p || p->size - p->allocated < bytes )
@@ -61,6 +64,8 @@ namespace wg
 
 		char * pBytes = p->pBlock + p->allocated;
 		p->allocated += bytes;
+		
+//		m_allocSizes.push_back(bytes);		// Debug code, should be disabled by default.
 		return pBytes;
 	}
 
@@ -71,6 +76,9 @@ namespace wg
 		if (bytes == 0)
 			return;
 
+//		assert( bytes == m_allocSizes.back() );	// Debug code, should be disabled by default.
+//		m_allocSizes.pop_back();				// Debug coce, should be disabled by default.
+		
 		assert( !m_blocks.isEmpty() && bytes <= m_blocks.last()->allocated && bytes > 0 );
 
 		m_blocks.last()->allocated -= bytes;

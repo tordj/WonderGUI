@@ -25,6 +25,8 @@
 
 #include <wg_chain.h>
 
+//#include <vector>
+
 namespace wg
 {
 
@@ -58,6 +60,9 @@ namespace wg
 
 		int					m_blockSize;
 		Chain<BlockHeader>	m_blocks;
+		
+//		std::vector<int>	m_allocSizes;	// Debug code, should be disabled by default.
+		
 	};
 
 
