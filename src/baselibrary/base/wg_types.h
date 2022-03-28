@@ -76,6 +76,10 @@ namespace wg
 	template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T3 max) { if( x < min) x = min; if( x > max) x = max; }
 
 
+//#define WGLIST(...) { __VA_ARGS__ }
+
+#define WGBP(T, ...)\
+	([&]{ wg::T::Blueprint ${}; __VA_ARGS__; return $; }())
 
 #define WGTRACK(pObj) wg::Base::_trackObj(pObj, __FILE__, __LINE__ ) 
 

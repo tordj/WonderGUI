@@ -472,6 +472,14 @@ int main(int argc, char** argv)
 	TextStyle_p pStyle = TextStyle::create( { .color = Color::Black, .font = pFont, .size = 16 } );
 	Base::setDefaultStyle(pStyle);
 
+	
+	TextStyle_p pStyle2 = TextStyle::create( { 	.color = Color::Black,
+												.font = pFont,
+												.size = 16,
+												.states = { {StateEnum::Hovered, {.color = Color::Grey, .size = 17} }, {StateEnum::Pressed, {.color = Color::Red }} }
+	} );
+
+	
 	/*
 		BasicTextLayout_p pMapper = BasicTextLayout::create();
 		pMapper->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
@@ -2253,10 +2261,11 @@ bool sliderTest(CStandardSlot_p pSlot)
 	auto pSliderY = Slider::create();
 	{
 //		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, Border(10, 0, 10, 0), Border(), false);
-		auto pBgSkin = FillMeterSkin::create({ .backColor = Color::Black,
-												.color = Color::Green,
-												.direction = Direction::Up,
-												.gfxPadding = Border(10,0,10,0) });
+		auto pBgSkin = FillMeterSkin::create( WGBP(FillMeterSkin,
+											    $.color = Color::Green,
+												$.backColor = Color::Black,
+												$.direction = Direction::Up,
+												$.gfxPadding = Border(10,0,10,0) ));
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin( pBgSkin );

@@ -25,7 +25,7 @@ public:
 		if (!m_pClockFace)
 			return false;
 
-		m_pSplash = pAppVisitor->loadSurface("resources/splash.png", pDevice->surfaceFactory());
+		m_pSplash = pAppVisitor->loadSurface("resources/splash.png", pDevice->surfaceFactory(), { .buffered = true, .sampleMethod = SampleMethod::Bilinear });
 		if (!m_pSplash)
 			return false;
 
