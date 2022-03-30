@@ -61,7 +61,7 @@ namespace wg
 			bool			pickable	= false;
 			int				pickCategory= 0;
 			PointerStyle	pointer		= PointerStyle::Default;
-			int				scale		= 0;
+			int				scale		= -1;
 			int				steps = 0;
 			bool			selectable	= true;
 			Skin_p			skin;

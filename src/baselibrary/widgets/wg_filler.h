@@ -65,7 +65,7 @@ namespace wg
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
 			Size			defaultSize = { -1,-1 };
-			int				scale = 64;
+			int				scale = -1;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			tabLock = false;

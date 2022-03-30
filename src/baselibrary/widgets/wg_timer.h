@@ -61,7 +61,7 @@ namespace wg
 			int				pickCategory = 0;
 			PlayMode		playMode = PlayMode::Forward;
 			PointerStyle	pointer = PointerStyle::Default;
-			int				scale = 64;
+			int				scale = -1;
 			bool			selectable = true;
 			Skin_p			skin;
 			int				stepSize = 1;

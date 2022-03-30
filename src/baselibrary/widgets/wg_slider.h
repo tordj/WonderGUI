@@ -62,7 +62,7 @@ namespace wg
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
 			pts				defaultSlideLength = 64;
-			int				scale = 64;
+			int				scale = -1;
 			bool			selectable = true;
 			Skin_p			skin;
 			int				steps = 0;
