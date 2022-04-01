@@ -87,7 +87,9 @@ def processInputFile( path, header, source )
 			if( stop != nil )
 				params = enumBlock.split( ',')
 
-				minDeclarations << "\tconst static #{enumName} ".ljust(30," ") + "#{enumName}_min".ljust(20," ") + "= #{enumName}::#{params.first.gsub( /\s*=.*$/, '')};"
+				params.each { |param| param.gsub!( /\s*=.*$/, '') }
+
+				minDeclarations << "\tconst static #{enumName} ".ljust(30," ") + "#{enumName}_min".ljust(20," ") + "= #{enumName}::#{params.first};"
 				maxDeclarations << "\tconst static #{enumName} ".ljust(30," ") + "#{enumName}_max".ljust(20," ") + "= #{enumName}::#{params.last};"
 				sizeDeclarations << "\tconst static int ".ljust(30," ") + "#{enumName}_size".ljust(20," ") + "= (int)#{enumName}::#{params.last} + 1;"
 

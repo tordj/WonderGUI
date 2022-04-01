@@ -139,7 +139,7 @@ namespace wg
 
 	GfxStream::Header GfxStreamDecoder::_peekChunk()
 	{
-		return { (GfxChunkId)(*(uint16_t*)m_pDataRead), *(uint16_t*)(m_pDataRead + 2) };
+		return * (GfxStream::Header *) m_pDataRead;
 	}
 
 

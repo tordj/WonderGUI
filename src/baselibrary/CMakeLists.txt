@@ -10,6 +10,7 @@ source_group(Skins/Misc REGULAR_EXPRESSION "skins/misc//*")
 source_group(Skins/State REGULAR_EXPRESSION "skins/state//*")
 source_group(Skins/Static REGULAR_EXPRESSION "skins/static//*")
 
+source_group(Stream REGULAR_EXPRESSION "stream//*")
 source_group(TextLayouts REGULAR_EXPRESSION "textlayouts//*")
 source_group(NumberLayouts REGULAR_EXPRESSION "numberlayouts//*")
 
@@ -140,6 +141,10 @@ add_library( wondergui
 	components/wg_cdynamicslotvector.impl.h
 	components/wg_cdynamicvector.h
 	components/wg_cdynamicvector.impl.h
+	components/wg_cgfxinstream.cpp
+	components/wg_cgfxinstream.h
+	components/wg_cgfxoutstream.cpp
+	components/wg_cgfxoutstream.h
 	components/wg_cicondisplay.cpp
 	components/wg_cicondisplay.h
 	components/wg_cnumberdisplay.cpp
@@ -226,6 +231,27 @@ add_library( wondergui
 	skins/static/wg_staticgradientskin.h
 	skins/static/wg_statictileskin.cpp
 	skins/static/wg_statictileskin.h
+
+	stream/wg_gfxstream.h
+	stream/wg_gfxstreambuffer.cpp
+	stream/wg_gfxstreambuffer.h
+	stream/wg_gfxstreamdecoder.cpp
+	stream/wg_gfxstreamdecoder.h
+	stream/wg_gfxstreamencoder.cpp
+	stream/wg_gfxstreamencoder.h
+	stream/wg_gfxstreamlogger.cpp
+	stream/wg_gfxstreamlogger.h
+	stream/wg_gfxstreamplayer.cpp
+	stream/wg_gfxstreamplayer.h
+	stream/wg_gfxstreampump.cpp
+	stream/wg_gfxstreampump.h
+	stream/wg_gfxstreamreader.cpp
+	stream/wg_gfxstreamreader.h
+	stream/wg_gfxstreamsplitter.cpp
+	stream/wg_gfxstreamsplitter.h
+	stream/wg_gfxstreamwriter.cpp
+	stream/wg_gfxstreamwriter.h
+
 
 	textlayouts/wg_basictextlayout.cpp
 	textlayouts/wg_basictextlayout.h

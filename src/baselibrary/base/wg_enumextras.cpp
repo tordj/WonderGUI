@@ -75,7 +75,7 @@ namespace wg
 	{
 		static const char * names[] = { 
 			"Arrow",
-			"Default = Arrow",
+			"Default",
 			"Hourglass",
 			"Hand",
 			"OpenHand",
@@ -99,7 +99,7 @@ namespace wg
 	const char * toString(MouseButton i)
 	{
 		static const char * names[] = { 
-			"None = 0",
+			"None",
 			"Left",
 			"Middle",
 			"Right",
@@ -128,6 +128,16 @@ namespace wg
 			"MarkPolicy",
 			"Geometry",
 			"ActionTarget" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(MarkPolicy i)
+	{
+		static const char * names[] = { 
+			"Ignore",
+			"AlphaTest",
+			"Geometry" };
 
 		return names[(int)i];
 	}
@@ -172,7 +182,7 @@ namespace wg
 	const char * toString(SizeConstraint i)
 	{
 		static const char * names[] = { 
-			"None = 0",
+			"None",
 			"Equal",
 			"LessOrEqual",
 			"GreaterOrEqual" };
@@ -193,7 +203,7 @@ namespace wg
 	const char * toString(MsgType i)
 	{
 		static const char * names[] = { 
-			"Dummy = 0",
+			"Dummy",
 			"PointerChange",
 			"FocusGained",
 			"FocusLost",
@@ -329,7 +339,7 @@ namespace wg
 	const char * toString(GfxFlip i)
 	{
 		static const char * names[] = { 
-			"Normal = 0",
+			"Normal",
 			"FlipX",
 			"FlipY",
 			"Rot90",
@@ -382,6 +392,68 @@ namespace wg
 			"Canvas_30",
 			"Canvas_31",
 			"Canvas_32" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(GfxChunkId i)
+	{
+		static const char * names[] = { 
+			"OutOfData",
+			"BeginRender",
+			"EndRender",
+			"Flush",
+			"BeginCanvasUpdate",
+			"EndCanvasUpdate",
+			"SetClipList",
+			"ResetClipList",
+			"PushClipList",
+			"PopClipList",
+			"SetTintColor",
+			"SetTintGradient",
+			"ClearTintGradient",
+			"SetBlendMode",
+			"SetBlitSource",
+			"SetMorphFactor",
+			"SetRenderLayer",
+			"Fill",
+			"FillRectI",
+			"FillRectF",
+			"PlotPixels",
+			"DrawLineFromTo",
+			"DrawLineStraight",
+			"Blit",
+			"BlitRectI",
+			"FlipBlit",
+			"FlipBlitRectI",
+			"StretchBlit",
+			"StretchBlitRectI",
+			"StretchBlitRectF",
+			"StretchFlipBlit",
+			"StretchFlipBlitRectI",
+			"StretchFlipBlitRectF",
+			"RotScaleBlit",
+			"Tile",
+			"FlipTile",
+			"ScaleTile",
+			"ScaleFlipTile",
+			"DrawWave",
+			"FlipDrawWave",
+			"DrawElipse",
+			"DrawPieChart",
+			"DrawSegments",
+			"FlipDrawSegments",
+			"BlitNinePatch",
+			"EdgeSamples",
+			"CreateSurface",
+			"BeginSurfaceUpdate",
+			"SurfacePixels",
+			"EndSurfaceUpdate",
+			"FillSurface",
+			"CopySurface",
+			"DeleteSurface",
+			"ProtocolVersion",
+			"TimeStampMS" };
 
 		return names[(int)i];
 	}

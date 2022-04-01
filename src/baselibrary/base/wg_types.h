@@ -898,6 +898,92 @@ enum class CanvasInit 		//. autoExtras
 		uint8_t*	pEnd;
 	};
 
+	//____ GfxChunkId ____________________________________________________
+
+	enum class GfxChunkId : uint8_t    //. autoExtras
+	{
+		OutOfData = 0,
+		BeginRender = 1,
+		EndRender = 2,
+		Flush = 3,
+
+		BeginCanvasUpdate = 4,
+		EndCanvasUpdate = 5,
+
+		SetClipList = 6,
+		ResetClipList = 7,
+		PushClipList = 8,
+		PopClipList = 9,
+
+		SetTintColor = 10,
+		SetTintGradient = 11,
+		ClearTintGradient = 12,
+
+		SetBlendMode = 13,
+		SetBlitSource = 14,
+		SetMorphFactor = 15,
+		SetRenderLayer = 16,
+
+		Fill = 17,
+		FillRectI = 18,
+		FillRectF = 19,
+		PlotPixels = 20,
+		DrawLineFromTo = 21,
+		DrawLineStraight = 22,
+
+		Blit = 23,
+		BlitRectI = 24,
+		FlipBlit = 25,
+		FlipBlitRectI = 26,
+
+		StretchBlit = 27,
+		StretchBlitRectI = 28,
+		StretchBlitRectF = 29,
+
+		StretchFlipBlit = 30,
+		StretchFlipBlitRectI = 31,
+		StretchFlipBlitRectF = 32,
+
+		RotScaleBlit = 33,
+		Tile = 34,
+		FlipTile = 35,
+
+		ScaleTile = 36,
+		ScaleFlipTile = 37,
+
+		DrawWave = 38,
+		FlipDrawWave = 39,
+
+		DrawElipse = 40,
+		DrawPieChart = 41,
+
+		DrawSegments = 42,
+		FlipDrawSegments = 43,
+
+		BlitNinePatch = 44,
+
+		EdgeSamples = 45,
+
+		CreateSurface = 46,
+		BeginSurfaceUpdate = 47,
+		SurfacePixels = 48,
+		EndSurfaceUpdate = 49,
+		FillSurface = 50,
+		CopySurface = 51,
+		DeleteSurface = 52,
+
+		ProtocolVersion = 53,
+		TimeStampMS = 54
+	};
+
+	struct GfxChunkFlags
+	{
+		uint8_t     supix : 1;
+		uint8_t     packed : 1;
+	};
+
+
+
 } // namespace wg
 
 #include <wg_enumextras.h>

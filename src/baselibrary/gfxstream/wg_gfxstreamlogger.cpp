@@ -94,25 +94,42 @@ namespace wg
 		if (header.type == GfxChunkId::OutOfData)
 			return false;
 
+		if (header.type >= GfxChunkId_min && header.type <= GfxChunkId_max)
+		{
+			m_charStream << toString(header.type);
+
+			if (*(char*)&header.flags != 0)
+			{
+				m_charStream << " (";
+				if (header.flags.supix)
+					m_charStream << " supix";
+				if (header.flags.packed)
+					m_charStream << " packed";
+				m_charStream << " )";
+			}
+			m_charStream << std::endl;
+		}
 
 		switch (header.type)
 		{
+			case GfxChunkId::ProtocolVersion:
+				uint16_t	version;
+
+				*m_pDecoder >> version;
+				m_charStream << "    version     = " << (version / 256) << "." << (version%256) << std::endl;
+				break;
+
 			case GfxChunkId::BeginRender:
-				m_charStream << "BeginRender" << std::endl;
 				break;
 
 			case GfxChunkId::EndRender:
-				m_charStream << "EndRender" << std::endl;
 				break;
 
 			case GfxChunkId::Flush:
-				m_charStream << "Flush" << std::endl;
 				break;
 
 			case GfxChunkId::BeginCanvasUpdate:
 			{
-				m_charStream << "BeginCanvasUpdate" << std::endl;
-
 				CanvasRef	canvasRef;
 				uint16_t	surfaceId;
 				int			nUpdateRects;
@@ -122,39 +139,33 @@ namespace wg
 				*m_pDecoder >> nUpdateRects;
 
 				if( surfaceId > 0 )
-					m_charStream << "    canvasRef       = " << "[no toString() for canvasRef yet]" << std::endl;
+					m_charStream << "    surfaceId   = " << surfaceId << std::endl;
 				else
-					m_charStream << "    surfaceId       = " << surfaceId << std::endl;
-
-				_readPrintRects( "    clip rects     ", nUpdateRects );
+					m_charStream << "    canvasRef   = " << toString(canvasRef) << std::endl;
+				
+				_readPrintRects( "    clip rects ", nUpdateRects );
 				break;
 			}
 				
 			case GfxChunkId::EndCanvasUpdate:
-				m_charStream << "EndCanvasUpdate" << std::endl;
 				break;
 
 			case GfxChunkId::SetClipList:
 			{
-				m_charStream << "SetClipList" << std::endl;
-
 				int		nRects = header.size / 16;
 				m_charStream << "    number of rects: " << nRects << std::endl;
 
-				_readPrintRects( "    clip rects     ", nRects );
+				_readPrintRects( "    clip rects ", nRects );
 				break;
 			}
 
 			case GfxChunkId::ResetClipList:
 			{
-				m_charStream << "ClearClipList" << std::endl;
 				break;
 			}
 
 			case GfxChunkId::PushClipList:
 			{
-				m_charStream << "PushClipList" << std::endl;
-
 				int		nRects = header.size / 16;
 				m_charStream << "    number of rects: " << nRects << std::endl;
 
@@ -164,25 +175,20 @@ namespace wg
 
 			case GfxChunkId::PopClipList:
 			{
-				m_charStream << "PopClipList" << std::endl;
 				break;
 			}
 
 			case GfxChunkId::SetTintColor:
 			{
-				m_charStream << "SetTintColor" << std::endl;
-
 				HiColor	col;
 				*m_pDecoder >> col;
 
-				_printColor( "    color       ", col );
+				_printColor( "    color      ", col );
 				break;
 			}
 
 			case GfxChunkId::SetTintGradient:
 			{
-				m_charStream << "SetTintGradient" << std::endl;
-
 				RectI rect;
 				Gradient gradient;
 				
@@ -200,14 +206,11 @@ namespace wg
 
 			case GfxChunkId::ClearTintGradient:
 			{
-				m_charStream << "ClearTintGradient" << std::endl;
 				break;
 			}
 
 			case GfxChunkId::SetBlendMode:
 			{
-				m_charStream << "SetBlendMode" << std::endl;
-
 				BlendMode	blendMode;
 				*m_pDecoder >> blendMode;
 
@@ -217,8 +220,6 @@ namespace wg
 
 			case GfxChunkId::SetBlitSource:
 			{
-				m_charStream << "SetBlitSource" << std::endl;
-
 				uint16_t	surfaceId;
 				*m_pDecoder >> surfaceId;
 
@@ -228,8 +229,6 @@ namespace wg
 
 			case GfxChunkId::SetMorphFactor:
 			{
-				m_charStream << "SetMorphFactor" << std::endl;
-
 				float	factor;
 				*m_pDecoder >> factor;
 
@@ -239,8 +238,6 @@ namespace wg
 
 			case GfxChunkId::SetRenderLayer:
 			{
-				m_charStream << "SetRenderLayer" << std::endl;
-
 				uint16_t	layer;
 				*m_pDecoder >> layer;
 
@@ -250,8 +247,6 @@ namespace wg
 
 			case GfxChunkId::Fill:
 			{
-				m_charStream << "Fill" << std::endl;
-
 				HiColor	col;
 
 				*m_pDecoder >> col;
@@ -262,8 +257,6 @@ namespace wg
 
 			case GfxChunkId::FillRectI:
 			{
-				m_charStream << "FillRectI" << std::endl;
-
 				RectI	rect;
 				HiColor	col;
 
@@ -277,8 +270,6 @@ namespace wg
 
 			case GfxChunkId::FillRectF:
 			{
-				m_charStream << "FillRectF" << std::endl;
-
 				RectF	rect;
 				HiColor	col;
 
@@ -292,8 +283,6 @@ namespace wg
 
 			case GfxChunkId::PlotPixels:
 			{
-				m_charStream << "PlotPixels" << std::endl;
-
 				m_pDecoder->skip(header.size);
 
 				m_charStream << "    number of pixels: " << header.size/16 << std::endl;
@@ -302,8 +291,6 @@ namespace wg
 
 			case GfxChunkId::DrawLineFromTo:
 			{
-				m_charStream << "DrawLineFromTo" << std::endl;
-
 				CoordI	begin;
 				CoordI	end;
 				HiColor	color;
@@ -325,8 +312,6 @@ namespace wg
 
 			case GfxChunkId::DrawLineStraight:
 			{
-				m_charStream << "DrawLineStraight" << std::endl;
-
 				CoordI		begin;
 				Direction	dir;
 				int			length;
@@ -350,8 +335,6 @@ namespace wg
 
 			case GfxChunkId::Blit:
 			{
-				m_charStream << "Blit" << std::endl;
-
 				CoordI		dest;
 
 				*m_pDecoder >> dest;
@@ -362,8 +345,6 @@ namespace wg
 				
 			case GfxChunkId::BlitRectI:
 			{
-				m_charStream << "BlitRectI" << std::endl;
-
 				CoordI		dest;
 				RectI		source;
 
@@ -377,8 +358,6 @@ namespace wg
 
 			case GfxChunkId::FlipBlit:
 			{
-				m_charStream << "FlipBlit" << std::endl;
-
 				CoordI		dest;
 				GfxFlip		flip;
 
@@ -393,8 +372,6 @@ namespace wg
 				
 			case GfxChunkId::FlipBlitRectI:
 			{
-				m_charStream << "FlipBlitRectI" << std::endl;
-
 				CoordI		dest;
 				RectI		source;
 				GfxFlip		flip;
@@ -411,8 +388,6 @@ namespace wg
 
 			case GfxChunkId::StretchBlit:
 			{
-				m_charStream << "StretchBlit" << std::endl;
-
 				CoordI		dest;
 
 				*m_pDecoder >> dest;
@@ -423,8 +398,6 @@ namespace wg
 
 			case GfxChunkId::StretchBlitRectI:
 			{
-				m_charStream << "StretchBlitRectI" << std::endl;
-
 				CoordI		dest;
 				RectF		source;
 
@@ -438,8 +411,6 @@ namespace wg
 
 			case GfxChunkId::StretchBlitRectF:
 			{
-				m_charStream << "StretchBlitRectF" << std::endl;
-
 				CoordI		dest;
 				RectF		source;
 
@@ -453,8 +424,6 @@ namespace wg
 
 			case GfxChunkId::StretchFlipBlit:
 			{
-				m_charStream << "StretchFlipBlit" << std::endl;
-
 				CoordI		dest;
 				GfxFlip		flip;
 
@@ -468,8 +437,6 @@ namespace wg
 
 			case GfxChunkId::StretchFlipBlitRectI:
 			{
-				m_charStream << "StretchFlipBlitRectI" << std::endl;
-
 				CoordI		dest;
 				RectF		source;
 				GfxFlip		flip;
@@ -486,8 +453,6 @@ namespace wg
 
 			case GfxChunkId::StretchFlipBlitRectF:
 			{
-				m_charStream << "StretchFlipBlitRectF" << std::endl;
-
 				CoordI		dest;
 				RectF		source;
 				GfxFlip		flip;
@@ -504,8 +469,6 @@ namespace wg
 
 			case GfxChunkId::RotScaleBlit:
 			{
-				m_charStream << "RotScaleBlit" << std::endl;
-
 				RectI		dest;
 				float		rotationDegrees;
 				float		scale;
@@ -529,8 +492,6 @@ namespace wg
 
 			case GfxChunkId::Tile:
 			{
-				m_charStream << "Tile" << std::endl;
-
 				RectI		dest;
 				CoordI		shift;
 				
@@ -544,8 +505,6 @@ namespace wg
 
 			case GfxChunkId::FlipTile:
 			{
-				m_charStream << "FlipTile" << std::endl;
-
 				RectI		dest;
 				GfxFlip		flip;
 				CoordI		shift;
@@ -562,8 +521,6 @@ namespace wg
 
 			case GfxChunkId::ScaleTile:
 			{
-				m_charStream << "ScaleTile" << std::endl;
-
 				RectI		dest;
 				float		scale;
 				CoordI		shift;
@@ -580,8 +537,6 @@ namespace wg
 
 			case GfxChunkId::ScaleFlipTile:
 			{
-				m_charStream << "ScaleFlipTile" << std::endl;
-
 				RectI		dest;
 				float		scale;
 				GfxFlip		flip;
@@ -601,7 +556,6 @@ namespace wg
 				
 			case GfxChunkId::DrawWave:
 			{
-				m_charStream << "DrawWave" << std::endl;
 				m_charStream << "    no data printout implemented yet." << std::endl;
 				m_pDecoder->skip(header.size);
 				break;
@@ -609,7 +563,6 @@ namespace wg
 
 			case GfxChunkId::FlipDrawWave:
 			{
-				m_charStream << "FlipDrawWave" << std::endl;
 				m_charStream << "    no data printout implemented yet." << std::endl;
 				m_pDecoder->skip(header.size);
 				break;
@@ -617,8 +570,6 @@ namespace wg
 
 			case GfxChunkId::DrawElipse:
 			{
-				m_charStream << "DrawElipse" << std::endl;
-
 				RectSPX	canvas;
 				spx 	thickness;
 				HiColor	color;
@@ -641,8 +592,6 @@ namespace wg
 
 			case GfxChunkId::DrawPieChart:
 			{
-				m_charStream << "DrawPieChart" << std::endl;
-
 				float sliceSizes[32];
 				HiColor sliceColors[32];
 				
@@ -686,7 +635,6 @@ namespace wg
 
 			case GfxChunkId::DrawSegments:
 			{
-				m_charStream << "DrawSegments" << std::endl;
 				m_charStream << "    no data printout implemented yet." << std::endl;
 				m_pDecoder->skip(header.size);
 				break;
@@ -694,7 +642,6 @@ namespace wg
 
 			case GfxChunkId::FlipDrawSegments:
 			{
-				m_charStream << "FlipDrawSegments" << std::endl;
 				m_charStream << "    no data printout implemented yet." << std::endl;
 				m_pDecoder->skip(header.size);
 				break;
@@ -702,8 +649,6 @@ namespace wg
 				
 			case GfxChunkId::BlitNinePatch:
 			{
-				m_charStream << "BlitNinePatch" << std::endl;
-
 				RectI 		dstRect;
 				BorderI 	dstFrame;
 				NinePatch 	patch;
@@ -736,8 +681,6 @@ namespace wg
 				
 			case GfxChunkId::EdgeSamples:
 			{
-				m_charStream << "EdgeSamples" << std::endl;
-
 				m_pDecoder->skip(header.size);
 				m_charStream << "    nSamples    = " << (int)header.size/2 << std::endl;
 				break;
@@ -745,8 +688,6 @@ namespace wg
 
 			case GfxChunkId::CreateSurface:
 			{
-				m_charStream << "CreateSurface" << std::endl;
-
 				uint16_t	surfaceId;
 				Surface::Blueprint	bp;
 
@@ -776,8 +717,6 @@ namespace wg
 
 			case GfxChunkId::BeginSurfaceUpdate:
 			{
-				m_charStream << "BeginSurfaceUpdate" << std::endl;
-
 				uint16_t	surfaceId;
 				RectI		region;
 
@@ -791,8 +730,6 @@ namespace wg
 
 			case GfxChunkId::SurfacePixels:
 			{
-				m_charStream << "SurfacePixels" << std::endl;
-
 				m_pDecoder->skip(header.size);
 
 				m_charStream << "    size: " << header.size << " bytes." << std::endl;
@@ -801,15 +738,11 @@ namespace wg
 
 			case GfxChunkId::EndSurfaceUpdate:
 			{
-				m_charStream << "EndSurfaceUpdate" << std::endl;
-
 				break;
 			}
 
 			case GfxChunkId::FillSurface:
 			{
-				m_charStream << "FillSurface" << std::endl;
-
 				uint16_t	surfaceId;
 				RectI		region;
 				HiColor		col;
@@ -826,8 +759,6 @@ namespace wg
 
 			case GfxChunkId::CopySurface:
 			{
-				m_charStream << "CopySurface" << std::endl;
-
 				uint16_t	destSurfaceId;
 				uint16_t	sourceSurfaceId;
 				RectI		sourceRect;
@@ -847,8 +778,6 @@ namespace wg
 
 			case GfxChunkId::DeleteSurface:
 			{
-				m_charStream << "DeleteSurface" << std::endl;
-
 				uint16_t	surfaceId;
 				*m_pDecoder >> surfaceId;
 

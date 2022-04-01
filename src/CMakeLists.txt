@@ -18,6 +18,7 @@ include_directories(
 	baselibrary/skins/misc
 	baselibrary/skins/state
 	baselibrary/skins/static
+	baselibrary/stream
 	baselibrary/textlayouts
 	baselibrary/numberlayouts
 	baselibrary/widgets

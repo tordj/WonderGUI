@@ -130,8 +130,9 @@ namespace wg
 
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (GfxStream::Header header)
 	{
-		_reserveStream(header.size + 4);
-		_pushShort((short)header.type);
+		_reserveStream(header.size + sizeof(GfxStream::Header));
+		_pushChar((char)header.type);
+		_pushChar(*(char*)&header.flags);
 		_pushShort((short)header.size);
 		return *this;
 	}

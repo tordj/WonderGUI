@@ -415,7 +415,7 @@ namespace wg
 	{
 		// Stream the call
 
-		*m_pEncoder << GfxStream::Header{ GfxChunkId::FillSurface, 14 };
+		*m_pEncoder << GfxStream::Header{ GfxChunkId::FillSurface, {}, 14 };
 		*m_pEncoder << m_inStreamId;
 		*m_pEncoder << region;
 		*m_pEncoder << col;
@@ -498,7 +498,7 @@ namespace wg
 
 		uint16_t blockSize = 30 + (m_pClut ? 1024 : 0);
 
-		*pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, blockSize };
+		*pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, {}, blockSize };
 		*pEncoder << m_inStreamId;
 		*pEncoder << m_bCanvas;
 		*pEncoder << m_bDynamic;
@@ -527,7 +527,7 @@ namespace wg
 
 		uint16_t blockSize = 30 + (bp.clut ? 1024 : 0);
 
-		*m_pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, blockSize };
+		*m_pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, {}, blockSize };
 		*m_pEncoder << surfaceId;
 		*m_pEncoder << bp.canvas;
 		*m_pEncoder << bp.dynamic;
@@ -572,7 +572,7 @@ namespace wg
 
 	void StreamSurface::_sendPixels(GfxStreamEncoder* pEncoder, RectI rect, const uint8_t * pSource, int pitch)
 	{
-		*pEncoder << GfxStream::Header{ GfxChunkId::BeginSurfaceUpdate, 18 };
+		*pEncoder << GfxStream::Header{ GfxChunkId::BeginSurfaceUpdate, {}, 18 };
 		*pEncoder << m_inStreamId;
 		*pEncoder << rect;
 
@@ -587,7 +587,7 @@ namespace wg
 			uint16_t chunkSize = std::min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
 			dataSize -= chunkSize;
 
-			*pEncoder << GfxStream::Header{ GfxChunkId::SurfacePixels, uint16_t((chunkSize+1)&0xFFFE) };
+			*pEncoder << GfxStream::Header{ GfxChunkId::SurfacePixels, {}, uint16_t((chunkSize+1)&0xFFFE) };
 
 			while (chunkSize > 0)
 			{
@@ -610,14 +610,14 @@ namespace wg
 			pEncoder->align();
 		}
 
-		*pEncoder << GfxStream::Header{ GfxChunkId::EndSurfaceUpdate, 0 };
+		*pEncoder << GfxStream::Header{ GfxChunkId::EndSurfaceUpdate, {}, 0 };
 	}
 
 	//____ _sendDeleteSurface() _______________________________________________
 
 	void StreamSurface::_sendDeleteSurface()
 	{
-		*m_pEncoder << GfxStream::Header{ GfxChunkId::DeleteSurface, 2 };
+		*m_pEncoder << GfxStream::Header{ GfxChunkId::DeleteSurface, {}, 2 };
 		*m_pEncoder << m_inStreamId;
 
 	}

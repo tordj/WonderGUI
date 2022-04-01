@@ -69,7 +69,7 @@ namespace wg
 
 		inline GfxStream::Header _decodeHeader(const uint8_t* pHeader) const
 		{
-			return { (GfxChunkId) * (uint16_t*)pHeader, *(uint16_t*) (pHeader+2) };
+			return { * (GfxStream::Header *) pHeader };
 		}
 
 		const uint8_t* _findChunk(GfxChunkId id, int nSegments, const DataSegment * pSegments);

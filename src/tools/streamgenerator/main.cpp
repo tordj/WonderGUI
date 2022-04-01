@@ -313,7 +313,7 @@ int main ( int argc, char** argv )
 //    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
     playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
-	playImageStreamingTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+//	playImageStreamingTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
 	//------------------------------------------------------
 	// Save stream to file
