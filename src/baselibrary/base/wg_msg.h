@@ -625,13 +625,13 @@ namespace wg
 		//.____ Content ________________________________________________________
 
 		int			wheel() const;
-		Coord		distance() const;
+		pts			distance() const;
 		bool		invertScroll() const;
 	protected:
-		WheelRollMsg( char inputId, int wheel, Coord distance, bool bInvertScroll, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp );
+		WheelRollMsg( char inputId, int wheel, pts distance, bool bInvertScroll, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp );
 
 		int			m_wheel;
-		Coord		m_distance;
+		pts			m_distance;
 		bool		m_bInvertScroll;
 	};
 

@@ -70,7 +70,7 @@ namespace wg
 
 		void 		setPointer(RootPanel * pRoot, Coord pos, int64_t timestamp = 0);
 		void 		setButton(MouseButton button, bool bPressed, int64_t timestamp = 0);
-		void 		setWheelRoll(int wheel, Coord distance, bool bInvertScroll = false, int64_t timestamp = 0);
+		void 		setWheelRoll(int wheel, pts distance, bool bInvertScroll = false, int64_t timestamp = 0);
 
 		void 		setFocusedWindow(RootPanel * pRoot);
 

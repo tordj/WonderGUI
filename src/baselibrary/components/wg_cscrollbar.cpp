@@ -411,9 +411,10 @@ namespace wg
 			case MsgType::WheelRoll:
 			{
 				auto pMsg = static_cast<WheelRollMsg*>(_pMsg);
-				int dir = pMsg->distance().y;
+				int dir = pMsg->distance();
+				int wheel = pMsg->wheel();
 
-				if (dir != 0 && m_markedPart != Part::None)
+				if( wheel == 1 && dir != 0 && m_markedPart != Part::None)
 				{
 					m_pHolderInterface->_scrollbarWheel(this, dir);
 					_pMsg->swallow();

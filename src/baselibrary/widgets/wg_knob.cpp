@@ -130,11 +130,11 @@ namespace wg
 
 				float value;
 				if (m_wheelStepSize != 0.f)
-					value = m_value + float(pMsg->distance().y) * m_wheelStepSize;
+					value = m_value + float(pMsg->distance()) * m_wheelStepSize;
 				else if (m_nbSteps > 0)
-					value = m_value + float(pMsg->distance().y) / m_nbSteps;
+					value = m_value + float(pMsg->distance()) / m_nbSteps;
 				else
-					value = m_value + float(pMsg->distance().y) / 20.f;				// Default increase step is 5%.
+					value = m_value + float(pMsg->distance()) / 20.f;				// Default increase step is 5%.
 
 				_setValue(value);
 

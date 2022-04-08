@@ -445,11 +445,19 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				
 			case SDL_MOUSEWHEEL:
 			{
-				Coord distance( e.wheel.x, e.wheel.y );
-				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
+				bool bInvertScroll = false;
+				Coord distance(e.wheel.x, e.wheel.y);
+				if (e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
+				{
+					bInvertScroll = true;
 					distance *= -1;
-			
-				pInput->setWheelRoll( 1, distance );
+				}
+
+				if (e.wheel.y != 0)
+					pInput->setWheelRoll(1, distance.y, bInvertScroll);
+
+				if (e.wheel.x != 0)
+					pInput->setWheelRoll(2, distance.x, bInvertScroll);
 				break;
 			}	
 			

@@ -696,7 +696,7 @@ namespace wg
 
 	//____ setWheelRoll() __________________________________________________________
 
-	void InputHandler::setWheelRoll( int wheel, Coord distance, bool bInvertScroll, int64_t timestamp )
+	void InputHandler::setWheelRoll( int wheel, pts distance, bool bInvertScroll, int64_t timestamp )
 	{
 		if( m_pMarkedWidget )
 		{

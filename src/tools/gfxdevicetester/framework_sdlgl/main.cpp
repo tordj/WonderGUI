@@ -409,7 +409,11 @@ bool process_system_events(const RootPanel_p& pRoot)
 				distance *= -1;
 			}
 
-			pInput->setWheelRoll(1, distance, bInvertScroll);
+			if (e.wheel.y != 0)
+				pInput->setWheelRoll(1, distance.y, bInvertScroll);
+
+			if (e.wheel.x != 0)
+				pInput->setWheelRoll(2, distance.x, bInvertScroll);
 			break;
 		}
 

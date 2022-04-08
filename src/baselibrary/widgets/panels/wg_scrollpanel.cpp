@@ -773,12 +773,12 @@ namespace wg
 
 				if( p->wheel() == wheelX )
 				{
-					movement = p->distance().y * align(ptsToSpx(m_wheelStepSizeX, m_scale));
+					movement = p->distance() * align(ptsToSpx(m_wheelStepSizeX, m_scale));
 					m_childCanvas.x += movement;
 				}
 				else if( p->wheel() == wheelY )
 				{
-					movement = p->distance().y * align(ptsToSpx(m_wheelStepSizeY, m_scale));
+					movement = p->distance() * align(ptsToSpx(m_wheelStepSizeY, m_scale));
 					m_childCanvas.y += movement;
 				}
 

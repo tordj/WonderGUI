@@ -285,7 +285,7 @@ namespace wg
 			case MsgType::WheelRoll:
 			{
 				WheelRollMsg_p pMsg = static_cast<WheelRollMsg*>(_pMsg);
-				snprintf(params, c_paramLen, "wheel=%d distance=(%.2f,%.2f) invertScroll=%s", pMsg->wheel(), (float) pMsg->distance().x, (float) pMsg->distance().y, pMsg->invertScroll()?"true":"false");
+				snprintf(params, c_paramLen, "wheel=%d distance=%.2f invertScroll=%s", pMsg->wheel(), (float) pMsg->distance(), pMsg->invertScroll()?"true":"false");
 				break;
 			}
 
