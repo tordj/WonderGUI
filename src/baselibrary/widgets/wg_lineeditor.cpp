@@ -205,9 +205,8 @@ namespace wg
 		RectSPX visible = m_skin.contentRect( m_size, m_scale, m_state );
 		dirt += visible.pos();
 
-		dirt.intersection( dirt, visible );
-		if( !dirt.isEmpty() )
-			_requestRender( dirt );
+		if (dirt.intersectsWith(visible))
+			_requestRender(RectSPX::getIntersection(dirt, visible));
 	}
 
 	//____ _componentRequestResize() ______________________________________________

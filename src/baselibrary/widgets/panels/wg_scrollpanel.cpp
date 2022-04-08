@@ -831,7 +831,7 @@ namespace wg
 	void ScrollPanel::_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip)
 	{
 //		if( !skin.isEmpty() )
-			container.add(RectSPX(geo, clip));
+			container.add(RectSPX::getIntersection(geo, clip));
 	}
 
 	//____ _maskPatches() _____________________________________________________
@@ -839,13 +839,13 @@ namespace wg
 	void ScrollPanel::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
 	{
 		if (!m_skin.isEmpty() && m_skin.isOpaque())
-			patches.sub(RectSPX(geo, clip));
+			patches.sub(RectSPX::getIntersection(geo, clip));
 		else
 		{
 			// Lets make it easy, only mask against our child, not the scrollbars with all their details.
 
 			if (slot._widget())
-				OO(slot._widget())->_maskPatches(patches, m_childCanvas + geo.pos(), RectSPX(clip, m_childWindow + geo.pos()), blendMode);
+				OO(slot._widget())->_maskPatches(patches, m_childCanvas + geo.pos(), RectSPX::getIntersection(clip, m_childWindow + geo.pos()), blendMode);
 		}
 	}
 
@@ -954,7 +954,7 @@ namespace wg
 
 	void ScrollPanel::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)
 	{
-		RectSPX visible(rect + m_childCanvas.pos(), m_viewRegion);
+		RectSPX visible = RectSPX::getIntersection(rect + m_childCanvas.pos(), m_viewRegion);
 		if (!visible.isEmpty())
 			_requestRender(visible);
 	}

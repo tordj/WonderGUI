@@ -264,12 +264,12 @@ namespace wg
 		if( m_skin.isEmpty() )
 		{
 			if (m_bHorizontal)
-				container.add(RectSPX(RectSPX(geo.x, geo.y, std::min(geo.w, m_contentLength), geo.h), clip));
+				container.add(RectSPX::getIntersection(RectSPX(geo.x, geo.y, std::min(geo.w, m_contentLength), geo.h), clip));
 			else
-				container.add(RectSPX(RectSPX(geo.x, geo.y, geo.w, std::min(geo.h, m_contentLength)), clip));
+				container.add(RectSPX::getIntersection(RectSPX(geo.x, geo.y, geo.w, std::min(geo.h, m_contentLength)), clip));
 		}
 		else
-			container.add( RectSPX( geo, clip ) );
+			container.add( RectSPX::getIntersection( geo, clip ) );
 	}
 
 	//____ _maskPatches() _______________________________________________________
@@ -277,17 +277,17 @@ namespace wg
 	void PackList::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-			patches.sub( RectSPX(geo,clip) );
+			patches.sub( RectSPX::getIntersection(geo,clip) );
 		else if( m_bOpaqueEntries && blendMode == BlendMode::Blend )
 		{
 			if( m_bHorizontal )
-				patches.sub( RectSPX( RectSPX( geo.x, geo.y, std::min(geo.w,m_contentLength), geo.h ), clip ) );
+				patches.sub( RectSPX::getIntersection( RectSPX( geo.x, geo.y, std::min(geo.w,m_contentLength), geo.h ), clip ) );
 			else
-				patches.sub( RectSPX( RectSPX( geo.x, geo.y, geo.w, std::min(geo.h,m_contentLength) ), clip ) );
+				patches.sub( RectSPX::getIntersection( RectSPX( geo.x, geo.y, geo.w, std::min(geo.h,m_contentLength) ), clip ) );
 		}
 		else
 		{
-			RectSPX	myClip(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't.
+			RectSPX	myClip = RectSPX::getIntersection(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't.
 			SlotWithGeo child;
 			_firstSlotWithGeo( child );
 

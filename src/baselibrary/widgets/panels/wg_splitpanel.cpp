@@ -476,13 +476,13 @@ namespace wg
 				OO(slots[0]._widget())->_collectPatches(container, slots[0].m_geo + geo.pos(), clip);
 
 			if (!m_handleSkin.isEmpty())
-				container.add(RectSPX(m_handleGeo, clip));
+				container.add(RectSPX::getIntersection(m_handleGeo, clip));
 
 			if (slots[1]._widget())
 				OO(slots[1]._widget())->_collectPatches(container, slots[1].m_geo + geo.pos(), clip);
 		}
 		else
-			container.add(RectSPX(geo, clip));
+			container.add(RectSPX::getIntersection(geo, clip));
 	}
 
 	//____ _maskPatches() _____________________________________________________
@@ -492,14 +492,14 @@ namespace wg
 		{
 			//TODO: Don't just check isOpaque() globally, check rect by rect.
 			if ((m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-				patches.sub(RectSPX(geo, clip));
+				patches.sub(RectSPX::getIntersection(geo, clip));
 			else
 			{
 				if (slots[0]._widget())
 					OO(slots[0]._widget())->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip, blendMode );
 
 				if (m_handleSkin.isOpaque() )
-					patches.sub(RectSPX(m_handleGeo, clip));
+					patches.sub(RectSPX::getIntersection(m_handleGeo, clip));
 
 				if (slots[1]._widget())
 					OO(slots[1]._widget())->_maskPatches(patches, slots[1].m_geo + geo.pos(), clip, blendMode );

@@ -369,7 +369,7 @@ namespace wg
 				Slot * p = pTo+1;
 				while (p <= pFrom)
 				{
-					RectSPX cover(pTo->m_realGeo, p->m_realGeo);
+					RectSPX cover = RectSPX::getIntersection(pTo->m_realGeo, p->m_realGeo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -383,7 +383,7 @@ namespace wg
 				Slot * p = pFrom;
 				while (p < pTo)
 				{
-					RectSPX cover(pTo->m_realGeo, p->m_realGeo);
+					RectSPX cover = RectSPX::getIntersection(pTo->m_realGeo, p->m_realGeo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -454,7 +454,7 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		PatchesSPX patches;
-		patches.add( RectSPX( rect, RectSPX(0,0,m_size)) );
+		patches.add( RectSPX::getIntersection( rect, RectSPX(0,0,m_size)) );
 
 		// Remove portions of patches that are covered by opaque upper siblings
 

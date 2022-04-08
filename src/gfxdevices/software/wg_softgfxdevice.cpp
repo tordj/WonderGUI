@@ -2853,7 +2853,7 @@ namespace wg
 
 			for (int i = 0; i < m_nClipRects; i++)
 			{
-				RectI patch(m_pClipRects[i]/64, pixelRect);
+				RectI patch =  RectI::getIntersection(m_pClipRects[i]/64, pixelRect);
 				if (patch.w == 0 || patch.h == 0)
 					continue;
 
@@ -2874,7 +2874,7 @@ namespace wg
 			{
 				HiColor color = col;
 
-				RectI  patch(rect, m_pClipRects[i]);
+				RectI  patch = RectI::getIntersection(rect, m_pClipRects[i]);
 				if (patch.w == 0 || patch.h == 0)
 					continue;
 
@@ -2999,7 +2999,7 @@ namespace wg
 
 		// Clipping
 
-		RectF clip(rect, RectF(m_clipBounds));
+		RectF clip = RectF::getIntersection(rect, RectF(m_clipBounds));
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
@@ -3028,7 +3028,7 @@ namespace wg
 		{
 			HiColor color = col;
 
-			RectF  patch(rect, RectF(m_pClipRects[i]));
+			RectF  patch = RectF::getIntersection(rect, RectF(m_pClipRects[i]));
 			if (patch.w == 0.f || patch.h == 0.f)
 				continue;
 
@@ -3833,7 +3833,7 @@ namespace wg
 		{
 			// Clip patch
 
-			RectI patch(dest, m_pClipRects[patchIdx]/64);
+			RectI patch = RectI::getIntersection(dest, m_pClipRects[patchIdx]/64);
 			if (patch.w == 0 || patch.h == 0)
 				continue;
 

@@ -412,7 +412,7 @@ namespace wg
 			}
 		}
 		else
-			container.add( RectSPX( geo, clip ) );
+			container.add( RectSPX::getIntersection( geo, clip ) );
 	}
 
 	//____ _maskPatches() __________________________________________________________
@@ -421,7 +421,7 @@ namespace wg
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-			patches.sub( RectSPX(geo,clip) );
+			patches.sub( RectSPX::getIntersection(geo,clip) );
 		else
 		{
 			SlotWithGeo child;

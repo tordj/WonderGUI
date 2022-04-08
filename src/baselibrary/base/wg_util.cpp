@@ -926,7 +926,7 @@ RectI sourceOfs;
 
 		for( int i = 0 ; i < nRects ; i++ )
 		{
-			pNewRects[nNewRects] = RectSPX(pRects[i], clip);
+			pNewRects[nNewRects] = RectSPX::getIntersection(pRects[i], clip);
 			if( !pNewRects[nNewRects].isEmpty() )
 				nNewRects++;
 		}
@@ -972,8 +972,8 @@ RectI sourceOfs;
 
 		for( int i = 0 ; i < nRects ; i++ )
 		{
-			if( pNewRects[nNewRects].intersection( pRects[i], clip ) )
-				nNewRects++;
+			if (clip.intersectsWith(pRects[i]))
+				pNewRects[nNewRects++] = RectSPX::getIntersection(pRects[i], clip);
 		}
 
 		pDevice->setClipList(nNewRects, pNewRects);

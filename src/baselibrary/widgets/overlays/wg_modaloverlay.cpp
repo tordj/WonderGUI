@@ -397,7 +397,7 @@ namespace wg
 			Slot * p = pTo+1;
 			while (p <= pFrom)
 			{
-				RectSPX cover(pTo->m_geo, p->m_geo);
+				RectSPX cover = RectSPX::getIntersection(pTo->m_geo, p->m_geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, pTo);
@@ -411,7 +411,7 @@ namespace wg
 			Slot * p = pFrom;
 			while (p < pTo)
 			{
-				RectSPX cover(pTo->m_geo, p->m_geo);
+				RectSPX cover = RectSPX::getIntersection(pTo->m_geo, p->m_geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, p);
