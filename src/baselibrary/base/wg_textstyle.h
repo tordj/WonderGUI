@@ -30,6 +30,7 @@
 #include <wg_util.h>
 #include <wg_font.h>
 #include <wg_textlink.h>
+#include <wg_state.h>
 
 namespace wg
 {
@@ -95,7 +96,7 @@ namespace wg
 			}
 
 			
-			State			state = StateEnum::Normal;
+			State			state = State::Normal;
 			StateData		data;
 		};
 
@@ -168,10 +169,10 @@ namespace wg
 		BlendMode			m_blendMode = BlendMode::Blend;
 		BlendMode			m_backBlendMode = BlendMode::Blend;
 
-		pts					m_size[StateEnum_Nb];
-		HiColor				m_color[StateEnum_Nb];
-		HiColor				m_backColor[StateEnum_Nb];
-		TextDecoration		m_decoration[StateEnum_Nb];
+		pts					m_size[State::IndexAmount];
+		HiColor				m_color[State::IndexAmount];
+		HiColor				m_backColor[State::IndexAmount];
+		TextDecoration		m_decoration[State::IndexAmount];
 
 		Bitmask<uint32_t>	m_sizeSetMask = 0;
 		Bitmask<uint32_t>	m_colorSetMask = 0;
@@ -203,25 +204,25 @@ namespace wg
 	//______________________________________________________________________________
 	inline HiColor TextStyle::color( State state ) const
 	{
-		return m_color[Util::_stateToIndex(state)];
+		return m_color[state];
 	}
 
 	//______________________________________________________________________________
 	inline 	HiColor TextStyle::backColor( State state ) const
 	{
-		return m_backColor[Util::_stateToIndex(state)];
+		return m_backColor[state];
 	}
 
 	//______________________________________________________________________________
 	inline pts TextStyle::size( State state ) const
 	{
-		return m_size[Util::_stateToIndex(state)];
+		return m_size[state];
 	}
 
 	//______________________________________________________________________________
 	inline TextDecoration TextStyle::decoration( State state ) const
 	{
-		return m_decoration[Util::_stateToIndex(state)];
+		return m_decoration[state];
 	}
 
 	//______________________________________________________________________________

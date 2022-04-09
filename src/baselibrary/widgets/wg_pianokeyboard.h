@@ -156,7 +156,7 @@ namespace wg
 		Surface_p		m_pEvenWhiteKeys;
 		Surface_p		m_pBlackKeys;
 
-		int				m_stateOfsY[StateEnum_Nb];	
+		int				m_stateOfsY[State::IndexAmount];	
 
 		struct KeyInfo
 		{

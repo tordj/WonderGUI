@@ -26,6 +26,7 @@
 #include <wg_pointers.h>
 #include <wg_geo.h>
 #include <wg_types.h>
+#include <wg_state.h>
 #include <wg_util.h>
 
 namespace wg

@@ -63,7 +63,7 @@ namespace wg
 
 		for (auto& stateInfo : blueprint.states)
 		{
-			int index = _stateToIndex(stateInfo.state);
+			int index = stateInfo.state;
 
 			if (stateInfo.data.color != HiColor::Undefined)
 			{
@@ -132,7 +132,7 @@ namespace wg
 	{
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		int i = _stateToIndex(state);
+		int i = state;
 
 		RectSPX canvas = _canvas;
 		if (canvas.w != canvas.h || m_stateInfo[i].size != 1.f )
@@ -156,7 +156,7 @@ namespace wg
 
 	bool CircleSkin::_markTest(const CoordSPX& _ofs, const RectSPX& _canvas, int scale, State state, float value, float value2) const
 	{
-		int i = _stateToIndex(state);
+		int i = state;
 
 		RectSPX	canvas = _canvas;
 		CoordSPX ofs = _ofs;
@@ -211,8 +211,8 @@ namespace wg
 		if (oldState == newState)
 			return RectSPX();
 
-		int i1 = _stateToIndex(newState);
-		int i2 = _stateToIndex(oldState);
+		int i1 = newState;
+		int i2 = oldState;
 
 
 		if ( m_stateInfo[i1].color != m_stateInfo[i2].color || m_stateInfo[i1].size != m_stateInfo[i2].size ||
@@ -229,7 +229,7 @@ namespace wg
 
 	void CircleSkin::_updateUnsetStates()
 	{
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!m_stateColorMask.bit(i))
 			{

@@ -73,7 +73,7 @@ namespace wg
 			int nStateBlocks = 1;
 			for ( auto& entry : blueprint.states)
 			{
-				if (entry.state != StateEnum::Normal && entry.data.blockless == false)
+				if (entry.state != State::Normal && entry.data.blockless == false)
 					nStateBlocks++;
 			}
 
@@ -107,7 +107,7 @@ namespace wg
 		for ( auto& stateInfo : blueprint.states )
 		{
 			{
-				int index = _stateToIndex(stateInfo.state);
+				int index = stateInfo.state;
 
 				if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
 				{
@@ -116,7 +116,7 @@ namespace wg
 					m_bContentShifting = true;
 				}
 
-				if ( !stateInfo.data.blockless && stateInfo.state != StateEnum::Normal )
+				if ( !stateInfo.data.blockless && stateInfo.state != State::Normal )
 				{
 					ofs++;
 					m_stateBlockMask.setBit(index);
@@ -162,7 +162,7 @@ namespace wg
 		if (!m_pSurface)
 			return;
 
-		int idx = _stateToIndex(state);
+		int idx = state;
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
 
 		Coord blockOfs = m_stateBlocks[idx];
@@ -177,7 +177,7 @@ namespace wg
 
 	RectSPX ScrollSkin::_partInCanvas(int scale, State state, float* pStateFractions) const
 	{
-		int idx = _stateToIndex(state);
+		int idx = state;
 		Coord blockOfs = m_stateBlocks[idx];
 
 		Rect source = { blockOfs, m_blockSize };
@@ -186,22 +186,22 @@ namespace wg
 		switch (m_scrollState)
 		{
 		case StateBits::Focused:
-			scrollStateMask = StateEnum::Focused;
+			scrollStateMask = State::Focused;
 			break;
 		case StateBits::Hovered:
-			scrollStateMask = StateEnum::Hovered;
+			scrollStateMask = State::Hovered;
 			break;
 		case StateBits::Pressed:
-			scrollStateMask = StateEnum::Pressed;
+			scrollStateMask = State::Pressed;
 			break;
 		case StateBits::Selected:
-			scrollStateMask = StateEnum::Selected;
+			scrollStateMask = State::Selected;
 			break;
 		case StateBits::Targeted:
-			scrollStateMask = StateEnum::Targeted;
+			scrollStateMask = State::Targeted;
 			break;
 		case StateBits::Disabled:
-			scrollStateMask = StateEnum::Disabled;
+			scrollStateMask = State::Disabled;
 			break;
 		default:
 			assert(false);
@@ -250,12 +250,12 @@ namespace wg
 
 	bool ScrollSkin::_isOpaque(State state) const
 	{
-		return m_bStateOpaque[_stateToIndex(state)];
+		return m_bStateOpaque[state];
 	}
 
 	bool ScrollSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
-		return m_bStateOpaque[_stateToIndex(state)];
+		return m_bStateOpaque[state];
 	}
 
 	//____ _dirtyRect() ______________________________________________________
@@ -322,7 +322,7 @@ namespace wg
 
 		if (bTintDecides)
 		{
-			for (int i = 0; i < StateEnum_Nb; i++)
+			for (int i = 0; i < State::IndexAmount; i++)
 			{
 				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
 				if (m_stateColors[i].a != 4096)
@@ -331,7 +331,7 @@ namespace wg
 		}
 		else
 		{
-			for (int i = 0; i < StateEnum_Nb; i++)
+			for (int i = 0; i < State::IndexAmount; i++)
 				m_bStateOpaque[i] = m_bOpaque;
 		}
 	}
@@ -340,7 +340,7 @@ namespace wg
 
 	void ScrollSkin::_updateUnsetStateBlocks()
 	{
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!m_stateBlockMask.bit(i))
 			{
@@ -354,7 +354,7 @@ namespace wg
 
 	void ScrollSkin::_updateUnsetStateColors()
 	{
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!m_stateColorMask.bit(i))
 			{

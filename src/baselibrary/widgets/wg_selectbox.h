@@ -70,7 +70,7 @@ namespace wg
 		spx			m_height;
 		String 		m_string;
 		SelectBox * m_pParent = nullptr;
-		State		m_state = StateEnum::Normal;
+		State		m_state = State::Normal;
 	};
 		
 

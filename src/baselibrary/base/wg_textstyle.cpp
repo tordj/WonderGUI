@@ -74,7 +74,7 @@ namespace wg
 	{
 		m_handle = TextStyleManager::_reserveHandle(this);
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			m_size[i]			= 0;
 			m_color[i]			= Color::Black;
@@ -89,7 +89,7 @@ namespace wg
 		m_blendMode = blueprint.blendMode;
 		m_backBlendMode = blueprint.backBlendMode;
 
-		int idx = _stateToIndex(StateEnum::Normal);
+		int idx = State::Normal;
 
 		m_size[idx] = blueprint.size;
 		m_color[idx] = blueprint.color;
@@ -105,7 +105,7 @@ namespace wg
 
 		for ( auto& entry : blueprint.states )
 		{
-			idx = _stateToIndex(entry.state);
+			idx = entry.state;
 
 			m_size[idx] = entry.data.size;
 			m_color[idx] = entry.data.color;
@@ -148,7 +148,7 @@ namespace wg
 
 	void TextStyle::exportAttr( State state, TextAttr * pDest, int scale ) const
 	{
-		int idx = Util::_stateToIndex(state);
+		int idx = state;
 
 		pDest->pFont 		= m_pFont;
 		pDest->pLink 		= m_pLink;
@@ -174,7 +174,7 @@ namespace wg
 
 	void TextStyle::addToAttr( State state, TextAttr * pDest, int scale ) const
 	{
-		int idx = Util::_stateToIndex(state);
+		int idx = state;
 
 		if( m_pFont )
 			pDest->pFont = m_pFont;
@@ -201,8 +201,8 @@ namespace wg
 
     bool TextStyle::isStateIdentical( State state1, State state2 ) const
     {
-        int idx1 = Util::_stateToIndex(state1);
-        int idx2 = Util::_stateToIndex(state2);
+        int idx1 = state1;
+        int idx2 = state2;
 
         return ((m_size[idx1] == m_size[idx2]) &&
                 (m_color[idx1] == m_color[idx2]) &&
@@ -218,7 +218,7 @@ namespace wg
 			m_blendMode != pOther->m_blendMode || m_backBlendMode != pOther->m_backBlendMode)
 			return false;
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (m_size[i] != pOther->m_size[i] ||
 				m_decoration[i] != pOther->m_decoration[i] ||
@@ -238,7 +238,7 @@ namespace wg
 			m_blendMode != pOther->m_blendMode || m_backBlendMode != pOther->m_backBlendMode)
 			return false;
 
-		int i = Util::_stateToIndex(state);
+		int i = state;
 
 		if (m_size[i] != pOther->m_size[i] ||
 			m_decoration[i] != pOther->m_decoration[i] ||
@@ -260,7 +260,7 @@ namespace wg
 		bp.link = m_pLink;
 		bp.font = m_pFont;
 		
-		int idx = Util::_stateToIndex(StateEnum::Normal);
+		int idx = State::Normal;
 
 		bp.size = m_size[idx];
 		bp.backColor = m_backColor[idx];
@@ -269,12 +269,12 @@ namespace wg
 
 		Bitmask<uint32_t> stateSetMask = m_sizeSetMask | m_colorSetMask | m_backColorSetMask | m_decorationSetMask;
 
-		for (int i = 1; i < StateEnum_Nb; i++)
+		for (int i = 1; i < State::IndexAmount; i++)
 		{
 			if (stateSetMask.bit(i))
 			{
 				StateBP bps;
-				bps.state = _indexToState(i);
+				bps.state = i;
 				if (m_sizeSetMask.bit(i))
 					bps.data.size = m_size[i];
 				if (m_colorSetMask.bit(i))
@@ -297,7 +297,7 @@ namespace wg
 	{
 		Bitmask<uint32_t> mask = m_sizeSetMask;
 		mask.setBit(0);
-		for (int i = 1; i < StateEnum_Nb; i++)
+		for (int i = 1; i < State::IndexAmount; i++)
 		{
 			if (!mask.bit(i))
 				m_size[i] = m_size[bestStateIndexMatch(i, mask)];
@@ -306,7 +306,7 @@ namespace wg
 		//
 
 		auto x = m_size[0];
-		for (int i = 1; i < StateEnum_Nb; i++)
+		for (int i = 1; i < State::IndexAmount; i++)
 			if (m_size[i] != x)
 			{
 				m_bStaticSize = false;
@@ -324,7 +324,7 @@ namespace wg
 		Bitmask<uint32_t> mask = m_colorSetMask;
 		mask.setBit(0);
 
-		for (int i = 1; i < StateEnum_Nb; i++)
+		for (int i = 1; i < State::IndexAmount; i++)
 		{
 			if (!mask.bit(i))
 			{
@@ -337,7 +337,7 @@ namespace wg
 		//
 
 		auto x = m_color[0];
-		for (int i = 1; i < StateEnum_Nb; i++)
+		for (int i = 1; i < State::IndexAmount; i++)
 			if (m_color[i] != x)
 			{
 				m_bStaticColor = false;
@@ -355,7 +355,7 @@ namespace wg
 		Bitmask<uint32_t> mask = m_backColorSetMask;
 		mask.setBit(0);
 
-		for (int i = 1; i < StateEnum_Nb; i++)
+		for (int i = 1; i < State::IndexAmount; i++)
 		{
 			if (!mask.bit(i))
 			{
@@ -367,7 +367,7 @@ namespace wg
 		//
 
 		auto x = m_backColor[0];
-		for (int i = 1; i < StateEnum_Nb; i++)
+		for (int i = 1; i < State::IndexAmount; i++)
 			if (m_backColor[i] != x)
 			{
 				m_bStaticBgColor = false;
@@ -385,7 +385,7 @@ namespace wg
 	{
 		Bitmask<uint32_t> mask = m_decorationSetMask;
 		mask.setBit(0);
-		for (int i = 1; i < StateEnum_Nb; i++)
+		for (int i = 1; i < State::IndexAmount; i++)
 		{
 			if (!mask.bit(i))
 				m_decoration[i] = m_decoration[bestStateIndexMatch(i, mask)];
@@ -394,7 +394,7 @@ namespace wg
 		//
 
 		auto x = m_decoration[0];
-		for (int i = 1; i < StateEnum_Nb; i++)
+		for (int i = 1; i < State::IndexAmount; i++)
 			if (m_decoration[i] != x)
 			{
 				m_bStaticDecoration = false;

@@ -69,7 +69,7 @@ namespace wg
 
 		for (auto& stateInfo : blueprint.states)
 		{
-			int index = _stateToIndex(stateInfo.state);
+			int index = stateInfo.state;
 
 			if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
 			{
@@ -111,7 +111,7 @@ namespace wg
 
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		int i = _stateToIndex(state);
+		int i = state;
 
 		BorderSPX outline = align(ptsToSpx(m_outline, scale));
 
@@ -188,7 +188,7 @@ namespace wg
 			opacity = 255;
 		else
 		{
-			int i = _stateToIndex(state);
+			int i = state;
 
 			RectSPX center = canvas - align(ptsToSpx(m_outline,scale));
 			if( center.contains(ofs) )
@@ -204,7 +204,7 @@ namespace wg
 
 	bool BoxSkin::_isOpaque( State state ) const
 	{
-		int i = _stateToIndex(state);
+		int i = state;
 		if( m_bOpaque || (m_fillColor[i].a == 4096 && (m_outlineColor[i].a == 4096 || (m_outline.width() + m_outline.height() == 0))) )
 			return true;
 
@@ -217,7 +217,7 @@ namespace wg
 			return true;
 
 		RectSPX center = RectSPX(canvasSize) - align(ptsToSpx(m_outline,scale));
-		int i = _stateToIndex(state);
+		int i = state;
 		if( center.contains(rect) )
 			return m_fillColor[i].a == 4096;
 		else if( !center.intersectsWith(rect) )
@@ -235,8 +235,8 @@ namespace wg
 		if (oldState == newState)
 			return RectSPX();
 
-		int i1 = _stateToIndex(newState);
-		int i2 = _stateToIndex(oldState);
+		int i1 = newState;
+		int i2 = oldState;
 
 		if (m_fillColor[i1] != m_fillColor[i2] || (!m_outline.isEmpty() && m_outlineColor[i1] != m_outlineColor[i2]))
 			return canvas;
@@ -260,7 +260,7 @@ namespace wg
 				int alpha = 0;
 				int outlineAlpha = 0;
 
-				for (int i = 0; i < StateEnum_Nb; i++)
+				for (int i = 0; i < State::IndexAmount; i++)
 				{
 					alpha += (int)m_fillColor[i].a;
 					outlineAlpha += (int)m_outlineColor[i].a;
@@ -268,7 +268,7 @@ namespace wg
 
 				bool hasFrame = (m_outline.width() + m_outline.height() > 0);
 
-				if (alpha == 4096 * StateEnum_Nb && (!hasFrame || outlineAlpha == 4096 * StateEnum_Nb))
+				if (alpha == 4096 * State::IndexAmount && (!hasFrame || outlineAlpha == 4096 * State::IndexAmount))
 					m_bOpaque = true;
 				else
 					m_bOpaque = false;
@@ -285,7 +285,7 @@ namespace wg
 
 	void BoxSkin::_updateUnsetColors()
 	{
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!m_stateColorMask.bit(i))
 			{

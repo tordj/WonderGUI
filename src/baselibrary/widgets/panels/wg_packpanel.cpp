@@ -780,7 +780,7 @@ namespace wg
 			return;
 
 		SizeSPX sz = m_size - m_skin.contentPaddingSize(m_scale);
-		CoordSPX contentOfs = m_skin.contentOfs(m_scale, StateEnum::Normal);			//TODO: Support offset changing in different states.
+		CoordSPX contentOfs = m_skin.contentOfs(m_scale, State::Normal);			//TODO: Support offset changing in different states.
 
 		spx wantedLength = m_bHorizontal?m_defaultContentSize.w:m_defaultContentSize.h;
 		spx givenLength = m_bHorizontal?sz.w:sz.h;

@@ -161,7 +161,7 @@ namespace wg
 				spacing = blockPitch.h - blockGeo.h;
 			}
 
-			p->setBlocks({ StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, o, spacing, blockStartOfs);
+			p->setBlocks({ State::Normal, State::Hovered, State::Pressed, State::Disabled }, o, spacing, blockStartOfs);
 		}
 		return BlockSkin_p(p);
 	}
@@ -178,7 +178,7 @@ namespace wg
 		m_pSurface = nullptr;
 		m_bOpaque = false;
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			m_bStateOpaque[i] = false;
 			m_stateColors[i] = Color::White;
@@ -192,7 +192,7 @@ namespace wg
 		m_ninePatch.frame	= frame;
 		m_bOpaque			= pSurface->isOpaque();
 
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		for( int i = 0 ; i < State::IndexAmount ; i++ )
 		{
 			m_bStateOpaque[i] = m_bOpaque;
 			m_stateBlocks[i] = block.pos();
@@ -221,7 +221,7 @@ namespace wg
 			int nStateBlocks = 1;
 			for ( auto& entry : blueprint.states )
 			{
-				if( entry.state != StateEnum::Normal && entry.data.blockless == false)
+				if( entry.state != State::Normal && entry.data.blockless == false)
 					nStateBlocks++;
 			}
 
@@ -301,7 +301,7 @@ namespace wg
 		int ofs = 0;
 		for (auto& stateInfo : blueprint.states)
 		{
-			int index = _stateToIndex(stateInfo.state);
+			int index = stateInfo.state;
 
 			if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
 			{
@@ -310,7 +310,7 @@ namespace wg
 				m_bContentShifting = true;
 			}
 
-			if ( !stateInfo.data.blockless && stateInfo.state != StateEnum::Normal )
+			if ( !stateInfo.data.blockless && stateInfo.state != State::Normal )
 			{
 				ofs++;
 				m_stateBlockMask.setBit(index);
@@ -351,7 +351,7 @@ namespace wg
 
 	void BlockSkin::setBlock(State state, Coord ofs)
 	{
-		int i = _stateToIndex(state);
+		int i = state;
 
 		m_stateBlocks[i] = ofs;
 		m_stateBlockMask.setBit(i);
@@ -365,9 +365,9 @@ namespace wg
 		Coord pitch = axis == Axis::X ? Coord(m_ninePatch.block.w + spacing, 0 ) : Coord(0, m_ninePatch.block.h + spacing);
 
 		int ofs = 0;
-		for (StateEnum state : stateBlocks)
+		for (State state : stateBlocks)
 		{
-			int index = _stateToIndex(state);
+			int index = state;
 			m_stateBlockMask.setBit(index);
 			m_stateBlocks[index] = blockStartOfs + pitch * ofs;
 			ofs++;
@@ -379,7 +379,7 @@ namespace wg
 
 	Rect BlockSkin::block(State state) const
 	{
-		return { m_stateBlocks[_stateToIndex(state)], m_ninePatch.block.size() };
+		return { m_stateBlocks[state], m_ninePatch.block.size() };
 	}
 
 	//____ setColor() __________________________________________________________
@@ -395,7 +395,7 @@ namespace wg
 
 	void BlockSkin::setColor(State state, HiColor tint)
 	{
-		int i = _stateToIndex(state);
+		int i = state;
 
 		m_stateColors[i] = tint;
 		m_stateColorMask.setBit(i);
@@ -407,7 +407,7 @@ namespace wg
 	{
 		for (auto& state : stateTints)
 		{
-			int i = _stateToIndex(std::get<0>(state));
+			int i = std::get<0>(state);
 			m_stateColorMask.setBit(i);
 			m_stateColors[i] = std::get<1>(state);
 		}
@@ -420,7 +420,7 @@ namespace wg
 
 	HiColor BlockSkin::color(State state) const
 	{
-		return m_stateColors[_stateToIndex(state)];
+		return m_stateColors[state];
 	}
 
 	//____ setGradient() ______________________________________________________
@@ -540,7 +540,7 @@ namespace wg
 		if( !m_pSurface )
 			return;
 
-		int idx = _stateToIndex(state);
+		int idx = state;
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
 
 		pDevice->setBlitSource(m_pSurface);
@@ -587,7 +587,7 @@ namespace wg
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
 		NinePatch	patch = m_ninePatch;
-		patch.block.setPos(m_stateBlocks[_stateToIndex(state)]);
+		patch.block.setPos(m_stateBlocks[state]);
 
 		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, scale, m_markAlpha);
 	}
@@ -596,12 +596,12 @@ namespace wg
 
 	bool BlockSkin::_isOpaque( State state ) const
 	{
-		return m_bStateOpaque[_stateToIndex(state)];
+		return m_bStateOpaque[state];
 	}
 
 	bool BlockSkin::_isOpaque( const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state ) const
 	{
-		return m_bStateOpaque[_stateToIndex(state)];
+		return m_bStateOpaque[state];
 	}
 
 	//____ _dirtyRect() ______________________________________________________
@@ -613,8 +613,8 @@ namespace wg
 		if (oldState == newState)
 			return RectSPX();
 
-		int i1 = _stateToIndex(newState);
-		int i2 = _stateToIndex(oldState);
+		int i1 = newState;
+		int i2 = oldState;
 
 		if (m_stateBlocks[i1] != m_stateBlocks[i2])
 			return canvas;
@@ -646,7 +646,7 @@ namespace wg
 
 		if (bTintDecides)
 		{
-			for (int i = 0; i < StateEnum_Nb; i++)
+			for (int i = 0; i < State::IndexAmount; i++)
 			{
 				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
 				if (m_stateColors[i].a != 4096)
@@ -655,7 +655,7 @@ namespace wg
 		}
 		else
 		{
-			for (int i = 0; i < StateEnum_Nb; i++)
+			for (int i = 0; i < State::IndexAmount; i++)
 				m_bStateOpaque[i] = m_bOpaque;
 		}
 	}
@@ -664,7 +664,7 @@ namespace wg
 
 	void BlockSkin::_updateUnsetStateBlocks()
 	{
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!m_stateBlockMask.bit(i))
 			{
@@ -678,7 +678,7 @@ namespace wg
 
 	void BlockSkin::_updateUnsetStateColors()
 	{
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!m_stateColorMask.bit(i))
 			{

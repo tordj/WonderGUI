@@ -152,14 +152,14 @@ namespace wg
 				CoordSPX pos = _toLocal(pMsg->_pointerPos());
 				if( _handleGeo(m_size).contains(pos) != m_handleState.isHovered() )
 				{
-					_setHandleState(m_handleState + StateEnum::Hovered);
+					_setHandleState(m_handleState + State::Hovered);
 				}
 				break;
 			}
 
 			case MsgType::MouseLeave:
 				if (m_handleState.isHovered() && !m_handleState.isPressed() )
-					_setHandleState(m_handleState - StateEnum::Hovered);
+					_setHandleState(m_handleState - State::Hovered);
 				break;
 
 			case MsgType::MousePress:
@@ -173,7 +173,7 @@ namespace wg
 				RectSPX  handle = _handleGeo(m_size);
 				if (handle.contains(pos))
 				{
-					_setHandleState(m_handleState + StateEnum::Pressed);
+					_setHandleState(m_handleState + State::Pressed);
 					m_valueAtPress = m_value;
 				}
 				else
@@ -192,7 +192,7 @@ namespace wg
 
 				if (m_handleState.isPressed())
 				{
-					_setHandleState(m_handleState - StateEnum::Pressed);
+					_setHandleState(m_handleState - State::Pressed);
 				}
 				else
 				{

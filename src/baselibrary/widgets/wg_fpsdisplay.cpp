@@ -92,7 +92,7 @@ namespace wg
 		SizeSPX contentSize = OO(labels)._defaultSize(scale);
 
 		TextAttr attr;
-		OO(values)._style()->exportAttr( State(StateEnum::Normal), &attr, scale );
+		OO(values)._style()->exportAttr( State(State::Normal), &attr, scale );
 
 		int prevSize = attr.pFont->size();
 		attr.pFont->setSize(attr.size);

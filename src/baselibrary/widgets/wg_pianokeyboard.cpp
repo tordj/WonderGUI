@@ -155,12 +155,12 @@ namespace wg
 		int ofs = 0;
 		for (auto state : states)
 		{
-			int i = _stateToIndex(state);
+			int i = state;
 			stateMask.setBit(i);
 			m_stateOfsY[i] = ofs++;
 		}
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!stateMask.bit(i))
 			{
@@ -428,7 +428,7 @@ namespace wg
 				{
 					RectSPX dst = align(RectSPX(i*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, m_blackKeyHeight*canvas.h));
 
-					float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_blackKeySourceHeight);
+					float srcOfsY = float(m_stateOfsY[pKey->state] * m_blackKeySourceHeight);
 
 					pDevice->stretchBlit(dst + canvas.pos(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, m_blackKeySourceHeight)/64);
 					pKey++;
@@ -465,7 +465,7 @@ namespace wg
 			if (dst.x + dst.w > canvas.w )
 				dst.w = canvas.w - dst.x;
 
-			float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_keyboardSourceSize.h);
+			float srcOfsY = float(m_stateOfsY[pKey->state] * m_keyboardSourceSize.h);
 
 			pDevice->stretchBlit(dst + canvas.pos(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor)/64);
 
@@ -561,7 +561,7 @@ namespace wg
 			if (m_bIsHoveredPressed)
 				Base::msgRouter()->post(new PianoKeyReleaseMsg(this, m_hoveredKey, timestamp));
 
-			if (m_stateOfsY[_stateToIndex(oldState)] != m_stateOfsY[_stateToIndex(state)])
+			if (m_stateOfsY[oldState] != m_stateOfsY[state])
 				_requestRenderKey(m_hoveredKey);
 		}
 
@@ -579,7 +579,7 @@ namespace wg
 				Base::msgRouter()->post(new PianoKeyPressMsg(this, m_hoveredKey, timestamp));
 			}
 
-			if (m_stateOfsY[_stateToIndex(oldState)] != m_stateOfsY[_stateToIndex(state)])
+			if (m_stateOfsY[oldState] != m_stateOfsY[state])
 				_requestRenderKey(m_hoveredKey);
 		}
 	}

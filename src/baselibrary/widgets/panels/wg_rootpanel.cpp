@@ -94,7 +94,7 @@ namespace wg
 		bp.outlineColor = HiColor(4096, 0, 0, 2048);
 		
 		BoxSkin::StateBP sbp;
-		sbp.state = StateEnum::Focused;
+		sbp.state = State::Focused;
 		sbp.data.color = HiColor(4096, 0, 0, 2048);
 		sbp.data.outlineColor = HiColor(4096, 0, 0, 4096);
 		bp.states.push_back(sbp);
@@ -465,7 +465,7 @@ namespace wg
 			else
 				pGfxDevice->beginCanvasUpdate(m_canvas.ref, nRects, pRects, m_pCanvasLayers);
 
-			m_skin.render(pGfxDevice, geo, m_scale, StateEnum::Normal);
+			m_skin.render(pGfxDevice, geo, m_scale, State::Normal);
 
 			OO(slot._widget())->_render( pGfxDevice, geo, geo );
 
@@ -487,7 +487,7 @@ namespace wg
 
 			for (const RectSPX* pRect = m_afterglowRects[0].begin(); pRect != m_afterglowRects[0].end(); pRect++)
 			{
-				m_pDebugOverlay->_render(pGfxDevice, *pRect, m_scale, StateEnum::Focused);
+				m_pDebugOverlay->_render(pGfxDevice, *pRect, m_scale, State::Focused);
 			}
 
 			// Render overlays that have turned into afterglow
@@ -496,7 +496,7 @@ namespace wg
 			{
 				for (const RectSPX* pRect = m_afterglowRects[1].begin(); pRect != m_afterglowRects[1].end(); pRect++)
 				{
-					m_pDebugOverlay->_render(pGfxDevice, *pRect, m_scale, StateEnum::Normal);
+					m_pDebugOverlay->_render(pGfxDevice, *pRect, m_scale, State::Normal);
 				}
 			}
 
@@ -747,7 +747,7 @@ namespace wg
 
 	State RootPanel::_skinState(const SkinSlot* pSlot) const
 	{
-		return StateEnum::Normal;
+		return State::Normal;
 	}
 
 	//____ _skinSize() ________________________________________________________

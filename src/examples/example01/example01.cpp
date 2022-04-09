@@ -142,7 +142,7 @@ int main ( int argc, char** argv )
 		// For best performance you should add widgets from front to back and avoid insert.
 
 		Button_p pButton = Button::create();
-		pButton->setSkin(BlockSkin::create( { .axis = Axis::X, .frame = Border(3,3,3,3), .states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} }, .surface = pButtonSurface }));
+		pButton->setSkin(BlockSkin::create( { .axis = Axis::X, .frame = Border(3,3,3,3), .states = { State::Hovered, {}, State::Pressed, {}, State::Disabled, {} }, .surface = pButtonSurface }));
 		pFlexPanel->slots.insertMovable(0, pButton, { 0,0,80,33 }, Placement::Center, Placement::Center);
 
 		// Finally we add a callback to the click-event of the button.

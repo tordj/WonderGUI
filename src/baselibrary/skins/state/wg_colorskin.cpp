@@ -64,7 +64,7 @@ namespace wg
 
 		for (auto& stateInfo : blueprint.states)
 		{
-			int index = _stateToIndex(stateInfo.state);
+			int index = stateInfo.state;
 
 			if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
 			{
@@ -96,12 +96,12 @@ namespace wg
 
 	bool ColorSkin::_isOpaque(State state) const
 	{
-		return (m_color[_stateToIndex(state)].a == 4096);
+		return (m_color[state].a == 4096);
 	}
 
 	bool ColorSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
-		return (m_color[_stateToIndex(state)].a == 4096);
+		return (m_color[state].a == 4096);
 	}
 
 	//____ _render() _______________________________________________________________
@@ -110,7 +110,7 @@ namespace wg
 	{
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		int i = _stateToIndex(state);
+		int i = state;
 		pDevice->fill( canvas, m_color[i] );
 	}
 
@@ -121,7 +121,7 @@ namespace wg
 		if( !canvas.contains(ofs) )
 			return false;
 
-		return ( m_color[_stateToIndex(state)].a >= m_markAlpha);
+		return ( m_color[state].a >= m_markAlpha);
 	}
 
 	//____ _dirtyRect() ______________________________________________________
@@ -133,8 +133,8 @@ namespace wg
 		if (oldState == newState)
 			return RectSPX();
 
-		int i1 = _stateToIndex(newState);
-		int i2 = _stateToIndex(oldState);
+		int i1 = newState;
+		int i2 = oldState;
 
 		if (m_color[i1] != m_color[i2])
 			return canvas;
@@ -157,10 +157,10 @@ namespace wg
 			{
 				int alpha = 0;
 
-				for (int i = 0; i < StateEnum_Nb; i++)
+				for (int i = 0; i < State::IndexAmount; i++)
 					alpha += (int)m_color[i].a;
 
-				m_bOpaque = (alpha == 4096 * StateEnum_Nb);
+				m_bOpaque = (alpha == 4096 * State::IndexAmount);
 				break;
 			}
 
@@ -173,7 +173,7 @@ namespace wg
 
 	void ColorSkin::_updateUnsetColors()
 	{
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!m_stateColorMask.bit(i))
 			{

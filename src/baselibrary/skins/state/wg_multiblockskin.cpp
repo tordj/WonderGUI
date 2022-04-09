@@ -49,7 +49,7 @@ namespace wg
 		m_frame				= frame;
 		m_bOpaque			= false;
 
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		for( int i = 0 ; i < State::IndexAmount ; i++ )
 		m_bStateOpaque[i] = false;
 	}
 
@@ -77,7 +77,7 @@ namespace wg
 			m_bOpaque = true;
 
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			layer.blockOfs[i] = ofs;
 			layer.tintColor[i] = Color::White;
@@ -105,15 +105,15 @@ namespace wg
 
 		//
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 			layer.tintColor[i] = Color::White;
 
 		//
 
 		int ofs = 0;
-		for (StateEnum state : stateBlocks)
+		for (State state : stateBlocks)
 		{
-			int index = _stateToIndex(state);
+			int index = state;
 
 			layer.stateBlockMask.setBit(index);
 			layer.blockOfs[index] = blockStartOfs + Coord( blockPitch.w*ofs, blockPitch.h*ofs );
@@ -126,7 +126,7 @@ namespace wg
 
 		// Fill in fallback states and update opacity flag
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!layer.stateBlockMask.bit(i))
 			{
@@ -162,7 +162,7 @@ namespace wg
 	{
 		auto& layer = m_layers.at(layerIdx-1);
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			int16_t		oldAlpha = layer.tintColor[i].a;
 
@@ -187,7 +187,7 @@ namespace wg
 
 		for (auto& stateColor : stateColors)
 		{
-			int index = _stateToIndex(stateColor.first);
+			int index = stateColor.first;
 
 			int16_t		oldAlpha = layer.tintColor[index].a;
 
@@ -201,7 +201,7 @@ namespace wg
 
 		// Fill in fallback states and update opacity flag
 
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!layer.stateColorMask.bit(i))
 			{
@@ -230,7 +230,7 @@ namespace wg
 		{
 			layer.blendMode = blendMode;
 
-			for (int i = 0; i < StateEnum_Nb; i++)
+			for (int i = 0; i < State::IndexAmount; i++)
 				_updateStateOpacity(i);
 		}
 
@@ -246,7 +246,7 @@ namespace wg
 		if (m_layers.empty() || blockSize.w <= 0 || blockSize.h <= 0 )
 			return;
 
-		int stateIndex = _stateToIndex(state);
+		int stateIndex = state;
 
 		int orgLayer;
 		if (m_layer != -1)
@@ -336,7 +336,7 @@ namespace wg
 		if( m_bOpaque )
 			return true;
 
-		int stateIndex = _stateToIndex(state);
+		int stateIndex = state;
 
 		for (auto& layer : m_layers)
 		{
@@ -362,8 +362,8 @@ namespace wg
 		if (oldState == newState)
 			return RectSPX();
 
-		int i1 = _stateToIndex(newState);
-		int i2 = _stateToIndex(oldState);
+		int i1 = newState;
+		int i2 = oldState;
 
 		for (auto& layer : m_layers)
 		{
@@ -397,7 +397,7 @@ namespace wg
 			if (bOpaque != m_bOpaque)
 			{
 				m_bOpaque = true;
-				for( int i = 0 ; i < StateEnum_Nb ; i++ )
+				for( int i = 0 ; i < State::IndexAmount ; i++ )
 					if (m_bStateOpaque[i] )
 					{
 						m_bOpaque = false;

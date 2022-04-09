@@ -220,12 +220,12 @@ namespace wg
 			int scale = _scale();
 
 			if (m_markedPart != Part::None)
-				_setPartState(m_markedPart, m_states[m_markedPart] - StateEnum::Hovered,
+				_setPartState(m_markedPart, m_states[m_markedPart] - State::Hovered,
 					m_states[m_markedPart], geo, scale);
 
 			if (markedPart != Part::None)
 			{
-				State newState = m_states[markedPart] + (markedPart == m_pressedPart ? StateEnum::Pressed : StateEnum::Hovered);
+				State newState = m_states[markedPart] + (markedPart == m_pressedPart ? State::Pressed : State::Hovered);
 				_setPartState(markedPart, newState, m_states[markedPart], geo, scale);
 			}
 
@@ -296,7 +296,7 @@ namespace wg
 						break;
 				}
 
-				_setPartState(m_pressedPart, m_states[m_pressedPart] + StateEnum::Pressed,
+				_setPartState(m_pressedPart, m_states[m_pressedPart] + State::Pressed,
 					m_states[m_pressedPart], geo, scale);
 				_pMsg->swallow();
 				bProcessed = true;
@@ -351,7 +351,7 @@ namespace wg
 				RectSPX geo = _size();
 				int scale = _scale();
 
-				_setPartState(m_pressedPart, m_states[m_pressedPart] - StateEnum::Pressed,
+				_setPartState(m_pressedPart, m_states[m_pressedPart] - State::Pressed,
 					m_states[m_pressedPart], geo, scale);
 
 				m_pressedPart = Part::None;

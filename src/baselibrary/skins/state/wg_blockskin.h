@@ -58,11 +58,9 @@ namespace wg
 		{
 			StateBP() {}
 			StateBP( State s ) : state(s) {}
-			StateBP( StateEnum s ) : state(s) {}
 			StateBP( State s, StateData d ) : state(s), data(d) {}
-			StateBP( StateEnum s, StateData d ) : state(s), data(d) {}
 			
-			State			state = StateEnum::Normal;
+			State			state = State::Normal;
 			StateData		data;
 		};
 
@@ -201,9 +199,9 @@ namespace wg
 		Bitmask<uint32_t>	m_stateBlockMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		Coord		m_stateBlocks[StateEnum_Nb];
-		HiColor		m_stateColors[StateEnum_Nb];
-		bool		m_bStateOpaque[StateEnum_Nb];
+		Coord		m_stateBlocks[State::IndexAmount];
+		HiColor		m_stateColors[State::IndexAmount];
+		bool		m_bStateOpaque[State::IndexAmount];
 	};
 
 

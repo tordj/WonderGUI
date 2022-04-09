@@ -63,7 +63,7 @@ namespace wg
 
 	TileSkin::TileSkin(const Blueprint& blueprint)
 	{
-		int index = _stateToIndex(StateEnum::Normal);
+		int index = State::Normal;
 
 
 		m_layer			= blueprint.layer;
@@ -80,7 +80,7 @@ namespace wg
 
 		for (auto& stateInfo : blueprint.states)
 		{
-			index = _stateToIndex(stateInfo.state);
+			index = stateInfo.state;
 
 			if (stateInfo.data.contentShift.x != 0 || stateInfo.data.contentShift.y != 0)
 			{
@@ -121,7 +121,7 @@ namespace wg
 
 	void TileSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float * pStateFractions) const
 	{
-		int idx = _stateToIndex(state);
+		int idx = state;
 
 		Surface * pSurf = m_stateSurfaces[idx];
 
@@ -154,7 +154,7 @@ namespace wg
 	{
 		//TODO: Take gradient and tintColor into account.
 
-		Surface * pSurf = m_stateSurfaces[_stateToIndex(state)];
+		Surface * pSurf = m_stateSurfaces[state];
 
 		return markTestTileRect(_ofs, pSurf, canvas, scale, m_markAlpha);
 	}
@@ -163,12 +163,12 @@ namespace wg
 
 	bool TileSkin::_isOpaque( State state ) const
 	{
-		return m_bStateOpaque[_stateToIndex(state)];
+		return m_bStateOpaque[state];
 	}
 
 	bool TileSkin::_isOpaque( const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state ) const
 	{
-		return m_bStateOpaque[_stateToIndex(state)];
+		return m_bStateOpaque[state];
 	}
 
 	//____ _dirtyRect() ______________________________________________________
@@ -180,8 +180,8 @@ namespace wg
 		if (oldState == newState)
 			return RectSPX();
 
-		int i1 = _stateToIndex(newState);
-		int i2 = _stateToIndex(oldState);
+		int i1 = newState;
+		int i2 = oldState;
 
 		if(m_stateSurfaces[i1] != m_stateSurfaces[i2])
 			return canvas;
@@ -205,7 +205,7 @@ namespace wg
 		{
 			bool bOpaque = true;
 
-			for (int i = 0; i < StateEnum_Nb; i++)
+			for (int i = 0; i < State::IndexAmount; i++)
 			{
 				if (!m_stateSurfaces[i] || !m_stateSurfaces[i]->isOpaque())
 				{
@@ -222,12 +222,12 @@ namespace wg
 
 		if (bTintDecides)
 		{
-			for (int i = 0; i < StateEnum_Nb; i++)
+			for (int i = 0; i < State::IndexAmount; i++)
 				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
 		}
 		else
 		{
-			for (int i = 0; i < StateEnum_Nb; i++)
+			for (int i = 0; i < State::IndexAmount; i++)
 				m_bStateOpaque[i] = m_bOpaque;
 		}
 	}
@@ -236,7 +236,7 @@ namespace wg
 
 	void TileSkin::_updateUnsetStateSurfaces()
 	{
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!m_stateSurfaceMask.bit(i))
 			{
@@ -250,7 +250,7 @@ namespace wg
 
 	void TileSkin::_updateUnsetStateColors()
 	{
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if (!m_stateColorMask.bit(i))
 			{

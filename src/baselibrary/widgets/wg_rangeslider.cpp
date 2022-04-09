@@ -168,19 +168,19 @@ namespace wg
 			CoordSPX pos = _toLocal(pMsg->_pointerPos());
 
 			if (_handleGeo(m_size, true).contains(pos) != m_beginHandleState.isHovered())
-				_setHandleState(m_beginHandleState + StateEnum::Hovered, true);
+				_setHandleState(m_beginHandleState + State::Hovered, true);
 
 			if (_handleGeo(m_size, false).contains(pos) != m_endHandleState.isHovered())
-				_setHandleState(m_endHandleState + StateEnum::Hovered, false);
+				_setHandleState(m_endHandleState + State::Hovered, false);
 			break;
 		}
 
 		case MsgType::MouseLeave:
 			if (m_beginHandleState.isHovered() && !m_beginHandleState.isPressed())
-				_setHandleState(m_beginHandleState - StateEnum::Hovered, true);
+				_setHandleState(m_beginHandleState - State::Hovered, true);
 
 			if (m_endHandleState.isHovered() && !m_endHandleState.isPressed())
-				_setHandleState(m_endHandleState - StateEnum::Hovered, false);
+				_setHandleState(m_endHandleState - State::Hovered, false);
 
 			break;
 
@@ -196,12 +196,12 @@ namespace wg
 			RectSPX  endHandle = _handleGeo(m_size, false);
 			if (beginHandle.contains(pos))
 			{
-				_setHandleState(m_beginHandleState + StateEnum::Pressed, true);
+				_setHandleState(m_beginHandleState + State::Pressed, true);
 				m_valueAtPress = m_rangeBegin;
 			}
 			else if (endHandle.contains(pos))
 			{
-				_setHandleState(m_endHandleState + StateEnum::Pressed, false);
+				_setHandleState(m_endHandleState + State::Pressed, false);
 				m_valueAtPress = m_rangeEnd;
 			}
 			else
@@ -222,11 +222,11 @@ namespace wg
 			//				Rect  handle = _handleGeo(m_size);
 			if (m_beginHandleState.isPressed())
 			{
-				_setHandleState(m_beginHandleState - StateEnum::Pressed, true);
+				_setHandleState(m_beginHandleState - State::Pressed, true);
 			}
 			else if (m_endHandleState.isPressed())
 			{
-				_setHandleState(m_endHandleState - StateEnum::Pressed, false);
+				_setHandleState(m_endHandleState - State::Pressed, false);
 			}
 			else
 			{

@@ -100,12 +100,12 @@ namespace wg
 		if (!blueprint.suffixNegative.isEmpty())
 			_addStylesFromString(styles, blueprint.suffixNegative);
 
-		for (int state1 = 0; state1 < StateEnum_Nb; state1++)
+		for (int state1 = 0; state1 < State::IndexAmount; state1++)
 		{
-			for (int state2 = 0; state2 < StateEnum_Nb; state2++)
+			for (int state2 = 0; state2 < State::IndexAmount; state2++)
 			{
-				State one = Util::_indexToState(state1);
-				State two = Util::_indexToState(state2);
+				State one = state1;
+				State two = state2;
 
 				m_bStatesIdentical[state1][state2] = true;
 
@@ -182,7 +182,7 @@ namespace wg
 	{
 		//TODO: This might fail if we have a Base::defaultStyle() that isn't static.
 
-		return !m_bStatesIdentical[_stateToIndex(newState), _stateToIndex(oldState)];
+		return !m_bStatesIdentical[newState, oldState];
 	}
 
 	//____ blueprint() ________________________________________________________

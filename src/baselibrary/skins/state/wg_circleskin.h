@@ -56,7 +56,7 @@ namespace wg
 
 		struct StateBP
 		{
-			State			state = StateEnum::Normal;
+			State			state = State::Normal;
 			StateData		data;
 		};
 
@@ -131,7 +131,7 @@ namespace wg
 		};
 
 
-		StateInfo		m_stateInfo[StateEnum_Nb];
+		StateInfo		m_stateInfo[State::IndexAmount];
 	};
 
 

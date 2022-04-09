@@ -104,8 +104,8 @@ add_library( wondergui
 	base/wg_slotextras.impl.h	
 	base/wg_slotholder.h
 	base/wg_slotiterator.h
-#	base/wg_state.cpp
-#	base/wg_state.h
+	base/wg_state.cpp
+	base/wg_state.h
 	base/wg_string.cpp
 	base/wg_string.h
 	base/wg_strongcomponentptr.h

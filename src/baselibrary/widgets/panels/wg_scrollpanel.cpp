@@ -46,8 +46,8 @@ namespace wg
 
 	ScrollPanel::ScrollPanel() : slot(this), scrollbarX(this, this, Axis::X), scrollbarY(this, this, Axis::Y)
 	{
-		scrollbarX._setState(StateEnum::Disabled);
-		scrollbarY._setState(StateEnum::Disabled);
+		scrollbarX._setState(State::Disabled);
+		scrollbarY._setState(State::Disabled);
 
 	}
 
@@ -678,9 +678,9 @@ namespace wg
 				scrollbarX._update(m_viewXOfs, oldViewOfs, m_viewXLen, oldViewLen, m_canvasXLen, oldCanvasLen);
 
 			if (m_viewXLen == m_canvasXLen && oldViewLen != oldCanvasLen)
-				scrollbarX._setState(StateEnum::Disabled);
+				scrollbarX._setState(State::Disabled);
 			else if (m_viewXLen != m_canvasXLen && oldViewLen == oldCanvasLen)
-				scrollbarX._setState(StateEnum::Normal);
+				scrollbarX._setState(State::Normal);
 		}
 
 		if (scrollbarY.inWorkingOrder())
@@ -697,9 +697,9 @@ namespace wg
 				scrollbarY._update(m_viewYOfs, oldViewOfs, m_viewYLen, oldViewLen, m_canvasYLen, oldCanvasLen);
 
 			if (m_viewYLen == m_canvasYLen && oldViewLen != oldCanvasLen)
-				scrollbarY._setState(StateEnum::Disabled);
+				scrollbarY._setState(State::Disabled);
 			else if (m_viewYLen != m_canvasYLen && oldViewLen == oldCanvasLen)
-				scrollbarY._setState(StateEnum::Normal);
+				scrollbarY._setState(State::Normal);
 		}
 
 	}

@@ -477,7 +477,7 @@ int main(int argc, char** argv)
 	TextStyle_p pStyle2 = TextStyle::create( { 	.color = Color::Black,
 												.font = pFont,
 												.size = 16,
-												.states = { {StateEnum::Hovered, {.color = Color::Grey, .size = 17} }, {StateEnum::Pressed, {.color = Color::Red }} }
+												.states = { {State::Hovered, {.color = Color::Grey, .size = 17} }, {State::Pressed, {.color = Color::Red }} }
 	} );
 
 	
@@ -498,7 +498,7 @@ int main(int argc, char** argv)
 		.axis = wg::Axis::X,
 		.frame = 3,
 		.padding = 5,
-		.states = { StateEnum::Hovered, {}, StateEnum::Pressed, {}, StateEnum::Disabled, {} },
+		.states = { State::Hovered, {}, State::Pressed, {}, State::Disabled, {} },
 		.surface = pButtonSurface
 	});
 
@@ -520,15 +520,15 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-//	BlockSkin_p pStateButtonSkin = BlockSkin::create(pStateButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, Border(3), Axis::X);
+//	BlockSkin_p pStateButtonSkin = BlockSkin::create(pStateButtonSurface, { State::Normal, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }, Border(3), Axis::X);
 	auto pStateButtonSkin = BlockSkin::create( BlockSkin::Blueprint
 		{
 			.axis = Axis::X,
 			.frame = 3,
 			.padding = 5,
-			.states = {	StateEnum::Normal, {}, StateEnum::Hovered, {},
-							StateEnum::Selected, {}, StateEnum::SelectedHovered, {},
-							StateEnum::Disabled, {}
+			.states = {	State::Normal, {}, State::Hovered, {},
+							State::Selected, {}, State::SelectedHovered, {},
+							State::Disabled, {}
 						},
 			.surface = pStateButtonSurface
 		});
@@ -537,14 +537,14 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-//	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Border(3), Axis::X);
+//	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { State::Normal, State::Hovered, State::Pressed, State::Disabled }, Border(3), Axis::X);
 	auto pPressablePlateSkin = BlockSkin::create(BlockSkin::Blueprint
 		{
 			.axis = Axis::X,
 			.frame = 3,
 			.padding = 3,
-			.states = {	StateEnum::Normal, {}, StateEnum::Hovered, {},
-							StateEnum::Pressed, {}, StateEnum::Disabled, {}
+			.states = {	State::Normal, {}, State::Hovered, {},
+							State::Pressed, {}, State::Disabled, {}
 						},
 			.surface = pPressablePlateSurface
 		});
@@ -553,7 +553,7 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pListEntrySurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pListEntrySkin = BlockSkin::create(pListEntrySurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, Border(2), Axis::X);
+	Skin_p pListEntrySkin = BlockSkin::create(pListEntrySurface, { State::Normal, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }, Border(2), Axis::X);
 
 	pSDLSurf = IMG_Load("resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -566,7 +566,7 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pUpDownArrowSkin = BlockSkin::create(pUpDownArrowSurface, { StateEnum::Normal, StateEnum::Selected }, Border(0));
+	Skin_p pUpDownArrowSkin = BlockSkin::create(pUpDownArrowSurface, { State::Normal, State::Selected }, Border(0));
 
 	pSDLSurf = IMG_Load("resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -596,16 +596,16 @@ int main(int argc, char** argv)
 	*/
 
 
-//		auto pTestSkin = BoxSkin::create( Border(5), {{StateEnum::Normal, Color::Red, Color::Black}, {StateEnum::Pressed, Color::Red, Color::Pink} , {StateEnum::Hovered, Color::Green, Color::LightGreen} });
+//		auto pTestSkin = BoxSkin::create( Border(5), {{State::Normal, Color::Red, Color::Black}, {State::Pressed, Color::Red, Color::Pink} , {State::Hovered, Color::Green, Color::LightGreen} });
 //		pTestSkin->setBlendMode(BlendMode::Add);
 
 	auto pTestSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
 
-	int layer1 = pTestSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Axis::X);
+	int layer1 = pTestSkin->addLayer(pPressablePlateSurface, { State::Normal, State::Hovered, State::Pressed, State::Disabled }, Axis::X);
 	pTestSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
 		int layer2 = pTestSkin->addLayer(pBackgroundSurface, { 0,0 });
-		pTestSkin->setLayerColor(layer2, { {StateEnum::Normal, Color::Transparent}, {StateEnum::Hovered, HiColor(255,255,255,64) } });
+		pTestSkin->setLayerColor(layer2, { {State::Normal, Color::Transparent}, {State::Hovered, HiColor(255,255,255,64) } });
 
 	Button_p pImage0 = Button::create();
 	pImage0->setSkin( pTestSkin );
@@ -694,7 +694,7 @@ int main(int argc, char** argv)
 
 		auto pDropTargetSkin = MultiBlockStateSkin::create({ 10,10 }, BorderI(4));
 
-		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Axis::X);
+		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { State::Normal, State::Targeted, State::Pressed, State::Disabled }, Axis::X);
 		pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
 
@@ -753,7 +753,7 @@ int main(int argc, char** argv)
 	{
 		auto pDropTargetSkin = MultiBlockStateSkin::create({ 10,10 }, BorderI(4));
 
-		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Axis::X);
+		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { State::Normal, State::Targeted, State::Pressed, State::Disabled }, Axis::X);
 		pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
 
@@ -1979,8 +1979,8 @@ bool splitPanelTest(CStandardSlot_p pEntry)
 
 	pSplit->setHandleSkin(ColorSkin::create({ 
 		.color = Color::Black, 
-		.states = {{ StateEnum::Hovered, {.color = Color::Brown }},
-					{ StateEnum::Pressed, {.color = Color::Red }}
+		.states = {{ State::Hovered, {.color = Color::Brown }},
+					{ State::Pressed, {.color = Color::Red }}
 		} 
 	}));
 
@@ -2053,7 +2053,7 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 													.blackKeys		= pBlackKeys,
 													.evenWhiteKeys	= pEvenWhiteKeys,
 													.keyLayout		= std::bitset<7>("1101110"),
-													.keyStates		= { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed },
+													.keyStates		= { State::Normal, State::Hovered, State::Pressed },
 													.nbWhiteKeys	= 7,
 													.oddWhiteKeys	= pOddWhiteKeys,
 													.skin			= ColorSkin::create(Color::Black, { 60,10,10,10 })
@@ -2065,7 +2065,7 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 		auto pSimplePiano = PianoKeyboard::create();
 		pSimplePiano->setSkin( ColorSkin::create(Color::Black, { 60,10,10,10 }) );
 		pSimplePiano->setLayout(7, std::bitset<7>("1101110"));
-		pSimplePiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed });
+		pSimplePiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { State::Normal, State::Hovered, State::Pressed });
 */
 		pBaseLayer->slots.pushFrontMovable(pSimplePiano, { 20,20,0,0 });
 
@@ -2082,7 +2082,7 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 		auto pNisPiano = PianoKeyboard::create();
 		pNisPiano->setSkin(ColorSkin::create(Color::Black, { 0,0,0,0 }));
 		pNisPiano->setLayout(26, std::bitset<7>("1110110"));
-		pNisPiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { StateEnum::Normal, StateEnum::Pressed });
+		pNisPiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { State::Normal, State::Pressed });
 
 		pBaseLayer->slots.pushFrontMovable(pNisPiano, { 20,220,0,0 });
 
@@ -2251,7 +2251,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
-	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .padding = 10, .states = {{StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }}, {StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)}} } });
+	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .padding = 10, .states = {{State::Hovered, {.color = Color8(0x7FA0A0A0) }}, {State::Pressed, {.color = Color8(0xFFF0F0F0)}} } });
 
 	auto pSliderX = Slider::create();
 	{
@@ -2292,7 +2292,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
-	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .padding = 10, .states = {{StateEnum::Hovered, {.color = Color8(0x7FA0A0A0) }}, {StateEnum::Pressed, {.color = Color8(0xFFF0F0F0)}} } });
+	auto pHandleSkin = ColorSkin::create({ .color = Color8(0x7F808080), .padding = 10, .states = {{State::Hovered, {.color = Color8(0x7FA0A0A0) }}, {State::Pressed, {.color = Color8(0xFFF0F0F0)}} } });
 
 	auto pSliderX = RangeSlider::create();
 	{
@@ -2515,8 +2515,8 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 
 	Surface_p pMainSurf = loadSurface("resources/selectbox.png");
 
-//	auto pMainSkin = BlockSkin::create(pMainSurf, { 0,0,32,16 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed }, { 3,23,3,3 });
-	auto pMainSkin = BlockSkin::create(BlockSkin::Blueprint{ .firstBlock = { 0,0,32,16 }, .frame = { 3,23,3,3 }, .padding = { 3,23,3,3 }, .states = { StateEnum::Normal, {}, StateEnum::Hovered, {}, StateEnum::Pressed }, .surface = pMainSurf
+//	auto pMainSkin = BlockSkin::create(pMainSurf, { 0,0,32,16 }, { State::Normal, State::Hovered, State::Pressed }, { 3,23,3,3 });
+	auto pMainSkin = BlockSkin::create(BlockSkin::Blueprint{ .firstBlock = { 0,0,32,16 }, .frame = { 3,23,3,3 }, .padding = { 3,23,3,3 }, .states = { State::Normal, {}, State::Hovered, {}, State::Pressed }, .surface = pMainSurf
 });
 
 
@@ -2527,8 +2527,8 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	auto pListSkin = BoxSkin::create(1, Color::White, Color::Black, 3);
 
 	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .outline = 1, .outlineColor = Color::Transparent, .padding = 3,
-											 .states = {{StateEnum::Hovered, {.color = Color::Yellow, .outlineColor = Color::Orange }},
-														{StateEnum::Selected, {.color = Color::LightBlue, .outlineColor = Color::White }} } });
+											 .states = {{State::Hovered, {.color = Color::Yellow, .outlineColor = Color::Orange }},
+														{State::Selected, {.color = Color::LightBlue, .outlineColor = Color::White }} } });
 
 
 	pSelectBox->setListSkin(pListSkin);
@@ -2558,7 +2558,7 @@ bool tileSkinTest(CStandardSlot_p pSlot)
 
 	auto pStaticSkin = TileSkin::create({ .padding = 10, .surface = pNormalSurf });
 
-	auto pDynamicSkin = TileSkin::create( { .padding = 10, .states = { {StateEnum::Hovered, {.surface = pHoveredSurf} } }, .surface = pNormalSurf  });
+	auto pDynamicSkin = TileSkin::create( { .padding = 10, .states = { {State::Hovered, {.surface = pHoveredSurf} } }, .surface = pNormalSurf  });
 
 	auto pFiller1 = Filler::create();
 	pFiller1->setSkin( pStaticSkin );
@@ -2619,7 +2619,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 
 	Surface_p pHoveredSurf = loadSurface("resources/tile_blocks_marked.png", { .tiling = true } );
 
-	auto pDynamicSkin = TileSkin::create({ .padding = 10, .states = {{ StateEnum::Hovered, {.surface = pHoveredSurf} }}, .surface = pNormalSurf });
+	auto pDynamicSkin = TileSkin::create({ .padding = 10, .states = {{ State::Hovered, {.surface = pHoveredSurf} }}, .surface = pNormalSurf });
 
 
 	Surface_p pSplashSurf = loadSurface("resources/splash.png" );
@@ -2720,7 +2720,7 @@ bool rigidPartNinePatchTest(CStandardSlot_p pSlot)
 
 	Surface_p pSurf = loadSurface("resources/fixed_sections_alphatest.png");
 /*
-	auto pSkin = BlockSkin::create(pSurf, {StateEnum::Normal, StateEnum::Hovered}, 10, Axis::X);
+	auto pSkin = BlockSkin::create(pSurf, {State::Normal, State::Hovered}, 10, Axis::X);
 	pSkin->setRigidPartX(24, 16, YSections::Top | YSections::Center | YSections::Bottom);
 	pSkin->setRigidPartY(24, 16, XSections::Left | XSections::Center | XSections::Right);
 
@@ -2730,7 +2730,7 @@ bool rigidPartNinePatchTest(CStandardSlot_p pSlot)
 								.frame = 10,
 								.rigidPartX = { 24, 16, YSections::Top | YSections::Center | YSections::Bottom },
 								.rigidPartY = { 24, 16,  XSections::Left | XSections::Center | XSections::Right },
-								.states = { StateEnum::Hovered, {} },
+								.states = { State::Hovered, {} },
 								.surface = pSurf
 		});
 
@@ -2762,7 +2762,7 @@ bool scrollSkinTest(CStandardSlot_p pSlot)
 											.scrollDuration = 100,
 											.scrollState = StateBits::Selected,
 											.spacing = 0,
-											.states = { StateEnum::Normal, {}, StateEnum::Hovered, {}, StateEnum::Disabled, {} },
+											.states = { State::Normal, {}, State::Hovered, {}, State::Disabled, {} },
 											.surface = pSliderSurf });
 
 	auto pCoverSkin = StaticBlockSkin::create(pCoverSurf);
@@ -2867,8 +2867,8 @@ bool circleSkinTest(CStandardSlot_p pSlot)
 	auto pSkin = CircleSkin::create({ .color = Color8::Green,
 										.outlineThickness = 1.f,
 										.size = 1.f,
-										.states = { {StateEnum::Hovered, {.color = Color8::Yellow, .size = 1.f, .thickness = 15.f }},
-													{StateEnum::Pressed, {.color = Color8::Red, .size = 0.8f, .thickness = 100.f } } },
+										.states = { {State::Hovered, {.color = Color8::Yellow, .size = 1.f, .thickness = 15.f }},
+													{State::Pressed, {.color = Color8::Red, .size = 0.8f, .thickness = 100.f } } },
 										.thickness = 5.f });
 
 	pWidget->setSkin( pSkin );
@@ -2894,7 +2894,7 @@ bool packListTest(CStandardSlot_p pSlot)
 
 	pPackList->header.setText("HEADER");
 //	pPackList->header.setSkin(ColorSkin::create(Color::Blue));
-	pPackList->header.setSkin(ColorSkin::create({ .color = Color::Yellow , .states = { { StateEnum::Hovered, { Color::Brown }},{ StateEnum::Pressed, {Color::Red}} } }));
+	pPackList->header.setSkin(ColorSkin::create({ .color = Color::Yellow , .states = { { State::Hovered, { Color::Brown }},{ State::Pressed, {Color::Red}} } }));
 
 	pPackList->setSortFunction( [](const Widget * pW1, const Widget * pW2) { return pW2->id() - pW1->id(); });
 
@@ -3057,25 +3057,25 @@ void textStyleTest()
 	auto pBase = TextStyle::create();
 	auto pAdded = TextStyle::create();
 
-	assert(pBase->bgColor(StateEnum::Selected) == Color::Transparent);
-	assert(pBase->color(StateEnum::Hovered) == Color::Black);
+	assert(pBase->bgColor(State::Selected) == Color::Transparent);
+	assert(pBase->color(State::Hovered) == Color::Black);
 
-	pBase->setColor(Color::Red, StateEnum::Hovered);
-	assert(pBase->color(StateEnum::Normal) == Color::Black);
-	assert(pBase->color(StateEnum::Hovered) == Color::Red);
-	assert(pBase->color(StateEnum::Pressed) == Color::Red);
-	assert(pBase->color(StateEnum::SelectedHoveredFocused) == Color::Red);
-	assert(pBase->color(StateEnum::SelectedFocused) == Color::Black);
+	pBase->setColor(Color::Red, State::Hovered);
+	assert(pBase->color(State::Normal) == Color::Black);
+	assert(pBase->color(State::Hovered) == Color::Red);
+	assert(pBase->color(State::Pressed) == Color::Red);
+	assert(pBase->color(State::SelectedHoveredFocused) == Color::Red);
+	assert(pBase->color(State::SelectedFocused) == Color::Black);
 
-	pBase->setSize(16, StateEnum::Hovered);
+	pBase->setSize(16, State::Hovered);
 	pAdded->setSize(15);
 
 	TextAttr attr;
 	
-	pBase->exportAttr(StateEnum::Hovered, &attr, 64);
+	pBase->exportAttr(State::Hovered, &attr, 64);
 	assert(attr.size == 16*64);
 
-	pAdded->exportAttr(StateEnum::Hovered, &attr, 64);
+	pAdded->exportAttr(State::Hovered, &attr, 64);
 	assert(attr.size == 15*64);
 */
 

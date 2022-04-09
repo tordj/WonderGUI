@@ -463,7 +463,7 @@ namespace wg
 	State List::_skinState(const SkinSlot* pSlot) const
 	{
 		if (pSlot == &m_lassoSkin)
-			return StateEnum::Normal;
+			return State::Normal;
 		else
 			return m_state;
 	}

@@ -27,6 +27,7 @@
 #include <wg_patches.h>
 #include <wg_base.h>
 #include <wg_context.h>
+#include <wg_state.h>
 
 #include <algorithm>
 
@@ -762,7 +763,7 @@ RectI sourceOfs;
 
 	int Util::bestStateIndexMatch(int wantedStateIndex, Bitmask<uint32_t> availableStateIndices)
 	{
-		static uint32_t mask[StateEnum_Nb] = {	1,
+		static uint32_t mask[State::IndexAmount] = {	1,
 											2+1,
 											4+1,
 											8 + 4 + 2 + 1,

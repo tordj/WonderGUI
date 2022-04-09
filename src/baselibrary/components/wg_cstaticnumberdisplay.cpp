@@ -92,7 +92,7 @@ namespace wg
 	{
 		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
 
-		return pLayout->defaultSize(m_value, scale, StateEnum::Normal);
+		return pLayout->defaultSize(m_value, scale, State::Normal);
 	}
 
 
