@@ -435,7 +435,7 @@ namespace wg
 
 	//____ _cancel() ________________________________________________________________
 
-	void DragNDropOverlay::_cancel( ModifierKeys modKeys, Coord pointerPos )
+	void DragNDropOverlay::_cancel( ModKeys modKeys, Coord pointerPos )
 	{
 		if( m_dragSlot._widget())
 		{
@@ -457,7 +457,7 @@ namespace wg
 
 	//____ _complete() _______________________________________________________________
 
-	void DragNDropOverlay::_complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos )
+	void DragNDropOverlay::_complete( Widget * pDeliveredTo, ModKeys modKeys, Coord pointerPos )
 	{
 		assert( !m_pTargeted );
 

@@ -631,7 +631,7 @@ namespace wg
 						break;
 
 					Key keyCode = static_cast<KeyPressMsg*>(_pMsg)->translatedKeyCode();
-//					ModifierKeys	modKeys = KeyPressMsg::cast(_pMsg)->modKeys();
+//					ModKeys	modKeys = KeyPressMsg::cast(_pMsg)->modKeys();
 					if( (m_bHorizontal && (keyCode == Key::Left || keyCode == Key::Right)) ||
 						(!m_bHorizontal && (keyCode == Key::Up || keyCode == Key::Down || keyCode == Key::PageUp || keyCode == Key::PageDown)) ||
 						keyCode == Key::Home || keyCode == Key::End ||
@@ -647,7 +647,7 @@ namespace wg
 						break;
 
 					Key keyCode = static_cast<KeyMsg*>(_pMsg)->translatedKeyCode();
-//					ModifierKeys	modKeys = KeyMsg::cast(_pMsg)->modKeys();
+//					ModKeys	modKeys = KeyMsg::cast(_pMsg)->modKeys();
 					if( (m_bHorizontal && (keyCode == Key::Left || keyCode == Key::Right)) ||
 						(!m_bHorizontal && (keyCode == Key::Up || keyCode == Key::Down || keyCode == Key::PageUp || keyCode == Key::PageDown)) ||
 						keyCode == Key::Home || keyCode == Key::End ||

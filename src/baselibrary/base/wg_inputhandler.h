@@ -84,8 +84,8 @@ namespace wg
 		void		unmapKey(int native_keycode);
 		void		clearKeyMap();
 
-		void		mapCommand(int native_keycode, ModifierKeys modKeys, EditCmd command);
-		void		unmapCommand(int native_keycode, ModifierKeys modKeys);
+		void		mapCommand(int native_keycode, ModKeys modKeys, EditCmd command);
+		void		unmapCommand(int native_keycode, ModKeys modKeys);
 		void		clearCommandMap();
 
 		bool		setButtonRepeat(int delay, int rate);
@@ -110,14 +110,14 @@ namespace wg
 		bool		isAnyButtonPressed() const;
 
 		bool		isKeyPressed(int nativeKeyCode) const;
-		ModifierKeys modifierKeys() const { return m_modKeys; }
+		ModKeys modifierKeys() const { return m_modKeys; }
 
 		//.____ Misc _______________________________________________________
 
 
 		Key			translateKey( int native_keycode );
 
-		EditCmd		translateCommand( int native_keycode, ModifierKeys modKeys );
+		EditCmd		translateCommand( int native_keycode, ModKeys modKeys );
 
 		//.____ Internal ______________________________________________________
 
@@ -166,7 +166,7 @@ namespace wg
 
 
 		PointerStyle	m_pointerStyle;
-		ModifierKeys	m_modKeys;
+		ModKeys	m_modKeys;
 
 
 		// Current button states
@@ -207,7 +207,7 @@ namespace wg
 
 		struct CommandEntry
 		{
-			ModifierKeys	modKeys;
+			ModKeys	modKeys;
 			EditCmd			command;
 		};
 

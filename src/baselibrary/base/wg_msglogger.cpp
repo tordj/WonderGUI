@@ -439,11 +439,11 @@ namespace wg
 
 	string MsgLogger::_formatModkeys( InputMsg * _pMsg ) const
 	{
-		ModifierKeys keys = _pMsg->modKeys();
+		ModKeys keys = _pMsg->modKeys();
 
 		string	out;
 
-		if( keys != MODKEY_NONE )
+		if( keys != ModKeys::None )
 		{
 			char	temp[64];
 			snprintf( temp, 64, " modkeys=%X", keys );

@@ -338,9 +338,9 @@ namespace wg
 	* 
 	*	@param axisShift	Modifier keys to shift axis of mouse wheel.
 	* 
-	*	Default axisShift modifier key is ALT. To disable this feature, set axisShift to MODKEY_NONE.
+	*	Default axisShift modifier key is ALT. To disable this feature, set axisShift to ModKeys::None.
 	*/
-	void ScrollPanel::setScrollWheelAxisShift(ModifierKeys axisShift)
+	void ScrollPanel::setScrollWheelAxisShift(ModKeys axisShift)
 	{
 		m_wheelAxisShiftCombo = axisShift;
 	}
@@ -766,7 +766,7 @@ namespace wg
 				int wheelX = m_wheelForScrollX;
 				int wheelY = m_wheelForScrollY;
 
-				if (m_wheelAxisShiftCombo == p->modKeys() && m_wheelAxisShiftCombo != ModifierKeys::MODKEY_NONE)
+				if (m_wheelAxisShiftCombo == p->modKeys() && m_wheelAxisShiftCombo != ModKeys::None)
 					std::swap(wheelX, wheelY);
 
 				spx movement = 0;

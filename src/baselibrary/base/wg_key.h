@@ -27,31 +27,38 @@ namespace wg
 {
 
 
-	//____ enum ModifierKeys ____________________________________________________
+	//____ ModKeys ____________________________________________________
 
-	enum ModifierKeys
+	namespace ModifierKeysNS
 	{
-		// Don't touch, needs to be first!
-		MODKEY_NONE = 0,			// = 0
+		enum ModKeys
+		{
+			// Don't touch, needs to be first!
+			None = 0,			// = 0
 
-		MODKEY_SHIFT = 1,
-		MODKEY_ALT = 2,
-		MODKEY_ALT_SHIFT = MODKEY_ALT | MODKEY_SHIFT,
-		MODKEY_CTRL = 4,
-		MODKEY_CTRL_SHIFT = MODKEY_CTRL | MODKEY_SHIFT,
-		MODKEY_CTRL_ALT = MODKEY_CTRL | MODKEY_ALT,
-		MODKEY_CTRL_ALT_SHIFT = MODKEY_CTRL | MODKEY_ALT | MODKEY_SHIFT,
-		MODKEY_SUPER = 8,
+			Shift = 1,
+			Alt = 2,
+			AltShift = 3,
+			Ctrl = 4,
+			CtrlShift = 5,
+			CtrlAlt = 6,
+			CtrlAltShift = 7,
+			Super = 8,
 
-		MODKEY_SUPER_SHIFT = 9,
-		MODKEY_SUPER_ALT = 10,
-		MODKEY_SUPER_ALT_SHIFT = 11,
-		MODKEY_SUPER_CTRL = 12,
-		MODKEY_SUPER_CTRL_SHIFT = 13,
-		MODKEY_SUPER_CTRL_ALT = 14,
-		MODKEY_SUPER_CTRL_ALT_SHIFT = 15,
-	};
+			SuperShift = 9,
+			SuperAlt = 10,
+			SuperAltShift = 11,
+			SuperCtrl = 12,
+			SuperCtrlShift = 13,
+			SuperCtrlAlt = 14,
+			SuperCtrlAltShift = 15,
+		};
 
+	}
+
+	using ModKeys = ModifierKeysNS::ModKeys;
+
+	//____ Key ________________________________________________________________
 
 	enum class Key
 	{

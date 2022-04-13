@@ -122,7 +122,7 @@ namespace wg
 				if( m_editState.bCaret )
 				{
 					KeyMsg * p = static_cast<KeyMsg*>(pMsg);
-					ModifierKeys modKeys = p->modKeys();
+					ModKeys modKeys = p->modKeys();
 
 					switch( p->translatedKeyCode() )
 					{
@@ -130,13 +130,13 @@ namespace wg
 						m_editState.bShiftDown = true;
 						break;
 					case Key::Left:
-						if( modKeys & MODKEY_CTRL )
+						if( modKeys & ModKeys::Ctrl )
 							caretPrevWord();
 						else
 							caretLeft();
 						break;
 					case Key::Right:
-						if( modKeys & MODKEY_CTRL )
+						if( modKeys & ModKeys::Ctrl)
 							caretNextWord();
 						else
 							caretRight();
@@ -153,7 +153,7 @@ namespace wg
 					case Key::Backspace:
 						if( hasSelection() )
 							eraseSelected();
-						else if( modKeys & MODKEY_CTRL )
+						else if( modKeys & ModKeys::Ctrl)
 							caretErasePrevWord();
 						else
 							caretErasePrevChar();
@@ -162,21 +162,21 @@ namespace wg
 					case Key::Delete:
 						if( hasSelection() )
 							eraseSelected();
-						else if( modKeys & MODKEY_CTRL )
+						else if( modKeys & ModKeys::Ctrl)
 							caretEraseNextWord();
 						else
 							caretEraseNextChar();
 						break;
 
 					case Key::Home:
-						if( modKeys & MODKEY_CTRL )
+						if( modKeys & ModKeys::Ctrl)
 							caretTextBegin();
 						else
 							caretLineBegin();
 						break;
 
 					case Key::End:
-						if( modKeys & MODKEY_CTRL )
+						if( modKeys & ModKeys::Ctrl)
 							caretTextEnd();
 						else
 							caretLineEnd();
@@ -503,9 +503,9 @@ namespace wg
 
 				// Check modifier keys, update status
 
-				ModifierKeys modKeys = Base::inputHandler()->modifierKeys();
+				ModKeys modKeys = Base::inputHandler()->modifierKeys();
 
-				if( modKeys & MODKEY_SHIFT )
+				if( modKeys & ModKeys::Shift )
 					m_editState.bShiftDown = true;
 				else
 					m_editState.bShiftDown = false;

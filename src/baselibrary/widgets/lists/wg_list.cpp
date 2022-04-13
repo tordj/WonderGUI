@@ -196,7 +196,7 @@ namespace wg
 								m_pFocusedChild = pEntry->_widget();
 								break;
 							case SelectMode::MultiEntries:
-								if( pMsg->modKeys() & MODKEY_SHIFT && m_pFocusedChild )
+								if( pMsg->modKeys() & ModKeys::Shift && m_pFocusedChild )
 								{
 									// Select range from focused to clicked entry.
 
@@ -207,7 +207,7 @@ namespace wg
 
 									// Unselect the rest if not CTRL-click.
 
-									if( !(pMsg->modKeys() & MODKEY_CTRL) )
+									if( !(pMsg->modKeys() & ModKeys::Ctrl) )
 									{
 										Slot * pBegin = _beginSlots();
 										Slot * pEnd = _endSlots();
@@ -219,7 +219,7 @@ namespace wg
 								}
 								else
 								{
-									if( pMsg->modKeys() & MODKEY_CTRL )
+									if( pMsg->modKeys() & ModKeys::Ctrl)
 									{
 										// CTRL-click: We just flip the entry.
 										_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->m_bSelected, true );

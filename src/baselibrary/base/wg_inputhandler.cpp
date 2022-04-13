@@ -38,7 +38,7 @@ namespace wg
 
 		m_timeStamp 	= 0;
 		m_pointerStyle 	= PointerStyle::Default;
-		m_modKeys 		= MODKEY_NONE;
+		m_modKeys 		= ModKeys::None;
 
 		m_doubleClickTimeTreshold 		= 250;
 		m_doubleClickDistanceTreshold 	= 2;
@@ -145,7 +145,7 @@ namespace wg
 
 	//____ mapCommand() ________________________________________________________
 
-	void InputHandler::mapCommand( int native_keycode, ModifierKeys modKeys, EditCmd command )
+	void InputHandler::mapCommand( int native_keycode, ModKeys modKeys, EditCmd command )
 	{
 		auto& vCommands = m_commandMap[native_keycode];
 
@@ -167,7 +167,7 @@ namespace wg
 
 	//____ unmapCommand() ______________________________________________________
 
-	void InputHandler::unmapCommand( int native_keycode, ModifierKeys modKeys )
+	void InputHandler::unmapCommand( int native_keycode, ModKeys modKeys )
 	{
 		auto it = m_commandMap.find(native_keycode);
 		if( it != m_commandMap.end() )
@@ -196,7 +196,7 @@ namespace wg
 
 	//____ translateCommand() __________________________________________________
 
-	EditCmd InputHandler::translateCommand( int native_keycode, ModifierKeys modKeys )
+	EditCmd InputHandler::translateCommand( int native_keycode, ModKeys modKeys )
 	{
 		auto it = m_commandMap.find(native_keycode);
 		if( it != m_commandMap.end() )
@@ -631,16 +631,16 @@ namespace wg
 		switch( translatedKeyCode )
 		{
 			case Key::Shift:
-				m_modKeys = (ModifierKeys) (m_modKeys | MODKEY_SHIFT);
+				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Shift);
 				break;
 			case Key::Control:
-				m_modKeys = (ModifierKeys) (m_modKeys | MODKEY_CTRL);
+				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Ctrl);
 				break;
 			case Key::Alt:
-				m_modKeys = (ModifierKeys) (m_modKeys | MODKEY_ALT);
+				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Alt);
 				break;
 			case Key::Super:
-				m_modKeys = (ModifierKeys) (m_modKeys | MODKEY_SUPER);
+				m_modKeys = (ModKeys) (m_modKeys | ModKeys::Super);
 				break;
 			default:
 				break;
@@ -677,16 +677,16 @@ namespace wg
 		switch( translatedKeyCode )
 		{
 			case Key::Shift:
-				m_modKeys = (ModifierKeys) (m_modKeys & ~MODKEY_SHIFT);
+				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::Shift);
 				break;
 			case Key::Control:
-				m_modKeys = (ModifierKeys) (m_modKeys & ~MODKEY_CTRL);
+				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::Ctrl);
 				break;
 			case Key::Alt:
-				m_modKeys = (ModifierKeys) (m_modKeys & ~MODKEY_ALT);
+				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::Alt);
 				break;
 			case Key::Super:
-				m_modKeys = (ModifierKeys) (m_modKeys & ~MODKEY_SUPER);
+				m_modKeys = (ModKeys) (m_modKeys & ~ModKeys::Super);
 				break;
 			default:
 				break;

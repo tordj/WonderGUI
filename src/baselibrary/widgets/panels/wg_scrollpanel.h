@@ -76,11 +76,11 @@ namespace wg
 		void			setPageOverlap(pts x, pts y);
 
 		void			setScrollWheels(int wheelForX, int wheelForY);
-		void			setScrollWheelAxisShift(ModifierKeys axisShift);
+		void			setScrollWheelAxisShift(ModKeys axisShift);
 		void			setStealWheelFromScrollbars(bool bSteal);
 		void			setAutoscroll(bool autoscrollX, bool autoscrollY);
 
-		//void			setDragCombo(MouseButton button, ModifierKeys modkeys); // NOT POSSIBLE YET, NEEDS TO BE ABLE TO INTERCEPT MESSAGES.
+		//void			setDragCombo(MouseButton button, ModKeys modkeys); // NOT POSSIBLE YET, NEEDS TO BE ABLE TO INTERCEPT MESSAGES.
 
 		//.____ Internal ______________________________________________________
 
@@ -185,7 +185,7 @@ namespace wg
 
 		int				m_wheelForScrollX = 2;		// What wheel should be used for horizontal scrolling. (0=none)
 		int				m_wheelForScrollY = 1;		// What wheel should be used for vertical scrolling. (0=none)
-		ModifierKeys	m_wheelAxisShiftCombo = ModifierKeys::MODKEY_ALT;
+		ModKeys	m_wheelAxisShiftCombo = ModKeys::Alt;
 		bool			m_bStealWheelFromScrollbars = false;
 
 		bool			m_bAutoscrollX = false;
