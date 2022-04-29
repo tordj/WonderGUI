@@ -45,9 +45,32 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			CIconDisplay::Blueprint	icon;
+			int				id = 0;
+			CTextDisplay::Blueprint label;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = -1;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
 		//.____ Creation __________________________________________
 
 		static Button_p	create() { return Button_p(new Button()); }
+		static Button_p	create( const Blueprint& blueprint ) { return Button_p(new Button(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -67,6 +90,7 @@ namespace wg
 
 	protected:
 		Button();
+		Button( const Blueprint& blueprint );
 		virtual ~Button();
 
 		//	virtual int		_matchingWidth( int height ) const override;

@@ -35,7 +35,6 @@ namespace wg
 	CIconDisplay::CIconDisplay( Widget * pWidget ) : WidgetComponent(pWidget)
 	{
 		m_placement		= Placement::NorthWest;
-		m_scaleFactor	= 0.f;
 		m_bOverlap		= true;
 	}
 
@@ -48,12 +47,11 @@ namespace wg
 
 	//____ set() ___________________________________________________________________
 
-	bool CIconDisplay::set( Skin * pSkin, Placement placement, Border padding, float scaleFactor, bool bOverlap )
+	bool CIconDisplay::set( Skin * pSkin, Placement placement, Border padding, bool bOverlap )
 	{
 		m_pSkin 	= pSkin;
 		m_placement	= placement;
 		m_padding 	= padding;
-		m_scaleFactor = scaleFactor;
 		m_bOverlap 	= bOverlap;
 
 		_requestResize();
@@ -67,26 +65,19 @@ namespace wg
 		m_pSkin 	= 0;
 		m_placement	= Placement::West;
 		m_padding 	= Border();
-		m_scaleFactor	= 0.f;
 		m_bOverlap 	= false;
 
 		_requestResize();
 	}
 
-	//____ _setScaleFactor() _________________________________________________________
+	//____ _initFromBlueprint() ______________________________________________
 
-	bool CIconDisplay::_setScaleFactor( float scaleFactor )
+	void CIconDisplay::_initFromBlueprint(const Blueprint& bp)
 	{
-		if( scaleFactor > 1.f || scaleFactor < 0.f )
-			return false;
-
-		if( scaleFactor != m_scaleFactor )
-		{
-			m_scaleFactor = scaleFactor;
-			_requestResize();
-		}
-
-		return true;
+		m_pSkin = bp.skin;
+		m_placement = bp.placement;
+		m_padding = bp.padding;
+		m_bOverlap = bp.overlap;
 	}
 
 	//____ _setPlacement() ___________________________________________________
@@ -161,20 +152,6 @@ namespace wg
 		{
 			spx bgW = contentRect.w - padding.width();
 			spx bgH = contentRect.h - padding.height();
-
-			if( m_scaleFactor != 0.f )
-			{
-				if( (w / (float) bgW) > (h / (float) bgH) )
-				{
-					h = (spx) ((h * bgW * m_scaleFactor) / w);
-					w = (spx) (bgW * m_scaleFactor);
-				}
-				else
-				{
-					w = (spx) ((w * bgH * m_scaleFactor) / h);
-					h = (spx) (bgH * m_scaleFactor);
-				}
-			}
 
 			//
 

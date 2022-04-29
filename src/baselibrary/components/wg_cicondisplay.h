@@ -45,6 +45,17 @@ namespace wg
 		CIconDisplay( Widget * pWidget );
 		virtual ~CIconDisplay() {};
 
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Skin_p			skin;
+			Placement		placement = Placement::West;
+			Border			padding;
+			bool			overlap = false;
+		};
+
 		//.____ Identification _________________________________________________
 
 		const TypeInfo& typeInfo(void) const override;
@@ -53,19 +64,17 @@ namespace wg
 		//.____ Content _____________________________________________
 
 		bool			set(Skin * pIconGfx, Placement placement = Placement::West, Border padding = Border(0),
-							float _scaleFactor = 0.f, bool _bOverlap = false);
+							bool _bOverlap = false);
 		void			clear();
 
 		inline bool		isEmpty() const { return !m_pSkin; }
 
 		//.____ Appearance _____________________________________________
 
-		inline bool			setScale(float scaleFactor) { return _setScaleFactor(scaleFactor); }
 		inline void			setPlacement(Placement placement) { _setPlacement(placement); }
 		inline void			setPadding(Border padding) { _setPadding(padding); }
 		inline void			setOverlap(bool bOverlap) { _setOverlap(bOverlap); }
 		inline void			setSkin(Skin * pSkin) { _setSkin(pSkin); }
-		inline float		scaleFactor() const { return _scaleFactor(); }
 		inline Placement	placement() const { return _placement(); }
 		inline Border		padding() const { return m_padding; }
 		inline bool			overlap() const { return _overlap(); }
@@ -75,17 +84,17 @@ namespace wg
 
 		inline CIconDisplay_p		ptr() { return CIconDisplay_p(this); }
 
+		//.____ Internal ______________________________________________________
+
+		void			_initFromBlueprint(const Blueprint& blueprint);
 
 	protected:
 
-
-		bool			_setScaleFactor( float scaleFactor );
 		void			_setPlacement( Placement placement );
 		void			_setPadding( Border borders );
 		void			_setOverlap( bool bOverlap );
 		void			_setSkin( Skin * pSkin );
 
-		float			_scaleFactor() const { return m_scaleFactor; }
 		Placement		_placement() const { return m_placement; }
 		BorderSPX		_padding(int scale) const { return Util::align(Util::ptsToSpx(m_padding,scale)); }
 		bool			_overlap() const { return m_bOverlap; }
@@ -99,7 +108,6 @@ namespace wg
 
 	private:
 		Placement		m_placement;
-		float			m_scaleFactor;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 		bool			m_bOverlap;
 		Border			m_padding;
 		Skin_p			m_pSkin;

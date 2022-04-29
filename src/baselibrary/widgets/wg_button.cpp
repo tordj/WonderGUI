@@ -43,6 +43,16 @@ namespace wg
 		m_bReturnPressed = false;
 	}
 
+	Button::Button(const Blueprint& bp) : icon(this), label(this)
+	{
+		_initFromBlueprint(bp);
+		icon._initFromBlueprint(bp.icon);
+		label._initFromBlueprint(bp.label);
+
+		m_bPressed = false;
+		m_bReturnPressed = false;
+	}
+
 	//____ Destructor _____________________________________________________________
 
 	Button::~Button()

@@ -39,13 +39,40 @@ namespace wg
 	{
 	public:
 
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			CIconDisplay::Blueprint	icon;
+			int				id = 0;
+			CTextDisplay::Blueprint label;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = -1;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+
+			Widget_p		popup;
+			bool			openOnHover = false;
+			Placement		attachPoint = Placement::SouthWest;
+		};
+
 		//.____ Creation __________________________________________
 
 		static PopupOpener_p	create() { return PopupOpener_p(new PopupOpener()); }
+		static PopupOpener_p	create( const Blueprint& blueprint ) { return PopupOpener_p(new PopupOpener(blueprint)); }
 
 		//.____ Components _______________________________________
 
-		CTextDisplay			text;
+		CTextDisplay			label;
 		CIconDisplay			icon;
 
 		//.____ Identification __________________________________________
@@ -73,6 +100,7 @@ namespace wg
 
 	protected:
 		PopupOpener();
+		PopupOpener( const Blueprint& blueprint );
 		virtual ~PopupOpener();
 
 		void			_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

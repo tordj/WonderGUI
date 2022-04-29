@@ -80,6 +80,7 @@ namespace wg
 			bool			enabled = true;
 			Finalizer_p		finalizer;
 			bool			flipOnRelease = false;
+			CIconDisplay::Blueprint	icon;
 			int				id = 0;
 			CTextDisplay::Blueprint	label;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;

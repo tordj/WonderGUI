@@ -35,9 +35,21 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	PopupOpener::PopupOpener() : text(this), icon(this)
+	PopupOpener::PopupOpener() : label(this), icon(this)
 	{
 		m_bSelectable = false;
+	}
+
+	PopupOpener::PopupOpener( const Blueprint& bp ) : label(this), icon(this)
+	{
+		_initFromBlueprint(bp);
+		icon._initFromBlueprint(bp.icon);
+		label._initFromBlueprint(bp.label);
+
+		m_bSelectable = false;
+		m_pPopup = bp.popup;
+		m_bOpenOnHover = bp.openOnHover;
+		m_attachPoint = bp.attachPoint;
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -82,11 +94,11 @@ namespace wg
 
 		spx height = m_skin.defaultSize(scale).h;
 
-		if (!OO(text).isEmpty())
+		if (!label.isEmpty())
 		{
 			SizeSPX padding = m_skin.contentPaddingSize(scale);
 
-			spx heightForText = OO(text)._matchingHeight(width - padding.w, scale) + padding.h;
+			spx heightForText = OO(label)._matchingHeight(width - padding.w, scale) + padding.h;
 			if (heightForText > height)
 				height = heightForText;
 		}
@@ -105,8 +117,8 @@ namespace wg
 
 		SizeSPX defaultSize;
 
-		if (!OO(text).isEmpty())
-			defaultSize = OO(text)._defaultSize(scale);
+		if (!label.isEmpty())
+			defaultSize = OO(label)._defaultSize(scale);
 
 		defaultSize = m_skin.sizeForContent(defaultSize,scale);
 
@@ -135,8 +147,8 @@ namespace wg
 
 		// Print text
 
-		if (!OO(text).isEmpty())
-			OO(text)._render(pDevice, textRect);
+		if (!OO(label).isEmpty())
+			OO(label)._render(pDevice, textRect);
 	}
 
 
@@ -152,7 +164,7 @@ namespace wg
 
 		RectSPX textRect = _icon()._getTextRect(contentRect, _icon()._getIconRect(contentRect,m_scale),m_scale);
 
-		OO(text)._setSize(textRect,m_scale);
+		OO(label)._setSize(textRect,m_scale);
 	}
 
 	//____ _refresh() _________________________________________________________
@@ -160,7 +172,7 @@ namespace wg
 	void PopupOpener::_refresh()
 	{
 		Widget::_refresh();
-		OO(text)._refresh();
+		OO(label)._refresh();
 
 		//TODO: Handling of icon and text.
 	}
@@ -233,7 +245,7 @@ namespace wg
 			state.setPressed(true);			// Force pressed state when popup is open.
 		}
 		Widget::_setState(state);
-		OO(text)._setState(state);
+		OO(label)._setState(state);
 		_requestRender(); //TODO: Only requestRender if text appearance has changed (let OO(text).setState() return if rendering is needed)
 	}
 

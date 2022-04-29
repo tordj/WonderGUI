@@ -55,6 +55,7 @@ namespace wg
 		_initFromBlueprint(bp);
 
 		label._initFromBlueprint(bp.label);
+		icon._initFromBlueprint(bp.icon);
 
 		m_clickArea		= bp.clickArea;
 		m_bFlipOnRelease = bp.flipOnRelease;
