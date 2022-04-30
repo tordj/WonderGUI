@@ -170,6 +170,7 @@ namespace wg
 			error.function = function;
 			error.file = file;
 			error.line = line;
+			error.severity = severity;
 
 			s_pErrorHandler(error);
 		}
