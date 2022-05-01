@@ -119,5 +119,12 @@ namespace wg
 		return pLayout->stateChangeNeedsRender(newState, oldState);
 	}
 
+	//____ _initFromBlueprint() _______________________________________________
+
+	void CStaticNumberDisplay::_initFromBlueprint(const Blueprint& blueprint)
+	{
+		m_pLayout = blueprint.layout;
+	}
+
 
 } // namespace wg

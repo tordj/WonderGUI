@@ -23,7 +23,6 @@
 #include <wg_widget.h>
 #include <wg_cnumberdisplay.h>
 
-#include <limits>
 
 namespace wg
 {
@@ -58,7 +57,7 @@ namespace wg
 		return _set(value);
 	}
 
-	//____ setRange() ______________________________________________________________
+	//____ setRange() _________________________________________________________
 
 	bool CNumberDisplay::setRange(double min, double max)
 	{
@@ -76,7 +75,17 @@ namespace wg
 		return true;
 	}
 
-	//____ _set() ___________________________________________________________________
+	//____ _initFromBlueprint() _______________________________________________
+
+	void CNumberDisplay::_initFromBlueprint(const Blueprint& bp)
+	{
+		m_pLayout = bp.layout;
+		m_maxValue = bp.maxValue;
+		m_minValue = bp.minValue;
+		m_maxValue = bp.maxValue;
+	}
+
+	//____ _set() _____________________________________________________________
 
 	bool CNumberDisplay::_set( double value )
 	{
@@ -86,5 +95,7 @@ namespace wg
 			value = m_minValue;
 		return CStaticNumberDisplay::_set(value);
 	}
+
+
 
 } // namespace wg

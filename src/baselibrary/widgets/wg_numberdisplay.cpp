@@ -37,6 +37,12 @@ namespace wg
 	{
 	}
 
+	NumberDisplay::NumberDisplay(const Blueprint& bp) : display(this)
+	{
+		_initFromBlueprint(bp);
+		display._initFromBlueprint(bp.display);
+	}
+
 	//____ ~NumberDisplay() ___________________________________________________________
 
 	NumberDisplay::~NumberDisplay()

@@ -23,6 +23,7 @@
 #define WG_CNUMBERDISPLAY_DOT_H
 #pragma once
 
+#include <limits>
 #include <wg_cstaticnumberdisplay.h>
 
 namespace wg
@@ -37,6 +38,15 @@ namespace wg
 		CNumberDisplay(Widget * pHolder);
 		~CNumberDisplay() {}
 
+		//.____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			NumberLayout_p	layout;
+			double			maxValue = std::numeric_limits<double>::max();
+			double			minValue = std::numeric_limits<double>::lowest();
+			double			value = 0.0;
+		};
 
 		//.____ Identification _________________________________________________
 
@@ -52,6 +62,9 @@ namespace wg
 		inline double		min() const { return m_minValue; }
 		inline double		max() const { return m_maxValue; }
 
+		//.____ Internal __________________________________________________
+
+		void				_initFromBlueprint(const Blueprint& blueprint);
 
 	protected:
 

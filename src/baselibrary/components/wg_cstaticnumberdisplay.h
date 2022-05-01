@@ -39,6 +39,12 @@ namespace wg
 	public:
 		CStaticNumberDisplay(Widget * pHolder);
 
+		//.____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			NumberLayout_p	layout;
+		};
 
 		//.____ Identification _________________________________________________
 
@@ -67,10 +73,11 @@ namespace wg
 		SizeSPX				_defaultSize(int scale) const;
 		void				_refresh();
 		bool				_stateChangeNeedsRender(State newState, State oldState) const;
+		void				_initFromBlueprint(const Blueprint& blueprint);
 
 	protected:
 		
-		NumberLayout* _layout() const { return m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr(); }
+		NumberLayout*		_layout() const { return m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr(); }
 
 
 		double				m_value = 0.0;

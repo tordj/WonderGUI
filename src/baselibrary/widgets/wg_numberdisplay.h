@@ -41,9 +41,32 @@ namespace wg
 	class NumberDisplay : public Widget
 	{
 	public:
+
+		//____ Blueprint ______________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			CNumberDisplay::Blueprint	display;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = -1;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
 		//.____ Creation __________________________________________
 
 		static NumberDisplay_p	create() { return NumberDisplay_p(new NumberDisplay()); }
+		static NumberDisplay_p	create( const Blueprint& blueprint ) { return NumberDisplay_p(new NumberDisplay(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -62,6 +85,7 @@ namespace wg
 
 	protected:
 		NumberDisplay();
+		NumberDisplay( const Blueprint& blueprint );
 		virtual ~NumberDisplay();
 
 		void	_refresh() override;
