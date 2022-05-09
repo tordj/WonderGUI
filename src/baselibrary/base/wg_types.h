@@ -220,7 +220,7 @@ namespace wg
 
 	//____ TintMode ___________________________________________________________
 
-	enum class TintMode
+	enum class TintMode //.autoExtras
 	{
 		None = 0,
 		Flat,

@@ -105,6 +105,7 @@ namespace wg
 		RectSPX			_getIconRect( const RectSPX& contentRect, const SizeSPX& iconSize, int scale ) const;
 		RectSPX			_getTextRect( const RectSPX& contentRect, const RectSPX& iconRect, int scale ) const;
 		SizeSPX			_defaultSize(int scale) const;
+		SizeSPX			_defaultSize(int scale, SizeSPX& textSize) const;
 
 	private:
 		Placement		m_placement;

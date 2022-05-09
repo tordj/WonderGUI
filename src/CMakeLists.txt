@@ -34,6 +34,7 @@ include_directories(
 
 	fontengines/freetype
 
+
 	../SDL2/include
 	../SDL2_image/include
 	../glew/include
@@ -98,12 +99,13 @@ if(APPLE)
 endif()
 add_subdirectory(fontengines/freetype)
 add_subdirectory(examples)
-add_subdirectory(tools/gfxworkbench)
-add_subdirectory(tools/workbench)
 add_subdirectory(tools/gfxdevicetester)
-add_subdirectory(tools/streamgenerator)
+add_subdirectory(tools/gfxworkbench)
+add_subdirectory(tools/softkernelgenerator)
 add_subdirectory(tools/streamanalyzer)
+add_subdirectory(tools/streamgenerator)
 #add_subdirectory(tools/unittester)
+add_subdirectory(tools/workbench)
 
 if(MSVC)
 	target_compile_options(gfxdevicetester PRIVATE "/MP")

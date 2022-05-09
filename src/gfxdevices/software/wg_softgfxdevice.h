@@ -119,10 +119,6 @@ namespace wg
 
 		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
-		const static TintMode      TintMode_min = TintMode::None;
-		const static TintMode      TintMode_max = TintMode::GradientXY;
-		const static int           TintMode_size = (int)TintMode::GradientXY + 1;
-
 		enum EdgeOp
 		{
 			None,

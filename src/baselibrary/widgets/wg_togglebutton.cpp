@@ -106,22 +106,19 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX iconDefaultSize;
-		SizeSPX textDefaultSize;
+		SizeSPX defaultSize;
+
+		// Get size of text
 
 		if( !OO(label).isEmpty() )
-			textDefaultSize = OO(label)._defaultSize(scale);
+			defaultSize = OO(label)._defaultSize(scale);
 
-		if( !_icon().isEmpty() )
-		{
-			iconDefaultSize = _icon().skin()->_defaultSize(scale) + align(ptsToSpx(_icon().padding().size(),scale));
+		// Wrap text in icon if availabe
 
-			//TODO: Add magic for how icon influences textDefaultSize based on placement, iconBorder, iconScale and bgDefaultSize
-		}
+		if (!_icon().isEmpty())
+			defaultSize = _icon()._defaultSize(scale, defaultSize);
 
 		// Apply the skin
-
-		SizeSPX defaultSize = SizeSPX::max(iconDefaultSize, textDefaultSize);
 
 		defaultSize = m_skin.sizeForContent( defaultSize, scale );
 
@@ -273,7 +270,7 @@ namespace wg
 
 		// Blit icon
 
-		if( _icon().isEmpty() && iconRect.w > 0 && iconRect.h > 0 )
+		if( !_icon().isEmpty() && iconRect.w > 0 && iconRect.h > 0 )
 			_icon().skin()->_render( pDevice, iconRect, m_scale, m_state );
 
 		// Print text

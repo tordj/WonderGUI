@@ -39,6 +39,7 @@ namespace wg
 =========================================================================*/
 
 	const static CodePage        CodePage_min        = CodePage::Latin1;
+	const static TintMode        TintMode_min        = TintMode::None;
 	const static BlendMode       BlendMode_min       = BlendMode::Undefined;
 	const static PointerStyle    PointerStyle_min    = PointerStyle::Arrow;
 	const static MouseButton     MouseButton_min     = MouseButton::None;
@@ -63,6 +64,7 @@ namespace wg
 	const static GfxChunkId      GfxChunkId_min      = GfxChunkId::OutOfData;
 
 	const static CodePage        CodePage_max        = CodePage::_874;
+	const static TintMode        TintMode_max        = TintMode::GradientXY;
 	const static BlendMode       BlendMode_max       = BlendMode::Morph;
 	const static PointerStyle    PointerStyle_max    = PointerStyle::ResizeBeamWE;
 	const static MouseButton     MouseButton_max     = MouseButton::X2;
@@ -87,6 +89,7 @@ namespace wg
 	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::TimeStampMS;
 
 	const static int             CodePage_size       = (int)CodePage::_874 + 1;
+	const static int             TintMode_size       = (int)TintMode::GradientXY + 1;
 	const static int             BlendMode_size      = (int)BlendMode::Morph + 1;
 	const static int             PointerStyle_size   = (int)PointerStyle::ResizeBeamWE + 1;
 	const static int             MouseButton_size    = (int)MouseButton::X2 + 1;
@@ -111,6 +114,7 @@ namespace wg
 	const static int             GfxChunkId_size     = (int)GfxChunkId::TimeStampMS + 1;
 
 	const char * toString(CodePage);
+	const char * toString(TintMode);
 	const char * toString(BlendMode);
 	const char * toString(PointerStyle);
 	const char * toString(MouseButton);

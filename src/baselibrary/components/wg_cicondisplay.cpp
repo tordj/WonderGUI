@@ -34,8 +34,8 @@ namespace wg
 
 	CIconDisplay::CIconDisplay( Widget * pWidget ) : WidgetComponent(pWidget)
 	{
-		m_placement		= Placement::NorthWest;
-		m_bOverlap		= true;
+		m_placement		= Placement::West;
+		m_bOverlap		= false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -233,6 +233,37 @@ namespace wg
 
 		return SizeSPX();
 	}
+
+	SizeSPX CIconDisplay::_defaultSize(int scale, SizeSPX& textSize) const
+	{
+		SizeSPX defaultSize = m_pSkin->_defaultSize(scale) + align(ptsToSpx(m_padding.size(), scale));
+
+		if( m_bOverlap )
+			defaultSize = SizeSPX::max(defaultSize, textSize);
+		else
+		{
+			switch( m_placement)
+			{
+				case Placement::North:
+				case Placement::Center:
+				case Placement::South:
+				{
+					defaultSize.h += textSize.h;
+					defaultSize.w = std::max(defaultSize.w, textSize.w);
+					break;
+				}
+				default:
+				{
+					defaultSize.w += textSize.w;
+					defaultSize.h = std::max(defaultSize.h, textSize.h);
+					break;
+				}
+
+			}
+		}
+		return defaultSize;
+	}
+
 
 
 } // namespace wg

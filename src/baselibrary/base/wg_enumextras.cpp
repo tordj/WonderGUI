@@ -53,6 +53,18 @@ namespace wg
 		return names[(int)i];
 	}
 
+	const char * toString(TintMode i)
+	{
+		static const char * names[] = { 
+			"None",
+			"Flat",
+			"GradientX",
+			"GradientY",
+			"GradientXY" };
+
+		return names[(int)i];
+	}
+
 	const char * toString(BlendMode i)
 	{
 		static const char * names[] = { 
