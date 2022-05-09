@@ -97,12 +97,19 @@ namespace wg
 
 		SizeSPX defaultSize;
 
-		if( !OO(label).isEmpty() )
+		// Get size of text
+
+		if (!OO(label).isEmpty())
 			defaultSize = OO(label)._defaultSize(scale);
 
-		defaultSize = m_skin.sizeForContent(defaultSize, scale);
+		// Wrap text in icon if availabe
 
-		//TODO: Take icon into account.
+		if (!_icon().isEmpty())
+			defaultSize = _icon()._defaultSize(scale, defaultSize);
+
+		// Apply the skin
+
+		defaultSize = m_skin.sizeForContent(defaultSize, scale);
 
 		return defaultSize;
 	}
