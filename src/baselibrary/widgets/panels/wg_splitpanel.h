@@ -125,23 +125,16 @@ namespace wg
 
 		//.____ Behavior _______________________________________________________
 
-		enum ScaleBehavior
-		{
-			ScaleBoth,
-			ScaleFirst,
-			ScaleSecond
-		};
+		void			setResizeRatio( float resizeRatioFirstWidget );
+		float			resizeRatio() const { return m_resizeRatio; }
 
-		void			setScaleBehavior(ScaleBehavior behavior);
-		ScaleBehavior	scaleBehavior() const { return m_scaleBehavior; }
-
-		void			setBrokerFunction(std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float splitFactor, pts handleMovement)> func);
-		std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float splitFactor, pts handleMovement)> brokerFunction() const { return m_brokerFunc;  }
+		void			setResizeFunction(std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float splitFactor, pts handleMovement)> func);
+		std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float splitFactor, pts handleMovement)> resizeFunction() const { return m_resizeFunc;  }
 
 		//.____ Control ________________________________________________________
 
-		void		setSplitFactor(float fraction);
-		float		splitFactor() const { return m_splitFactor; }
+		void			setSplitFactor(float fraction);
+		float			splitFactor() const { return m_splitFactor; }
 
 		//.____ Internal _______________________________________________________
 
@@ -156,7 +149,7 @@ namespace wg
 		void		_updateDefaultSize();
 		SizeSPX		_calcDefaultSize(int scale) const;
 		bool		_updateGeo(spx handleMovement=0);
-		spx			_defaultBroker(Widget * pFirst, Widget * pSecond, spx totalLength, float splitFactor, spx handleMovement);
+		spx			_defaultResizeFunc(Widget * pFirst, Widget * pSecond, spx totalLength, float splitFactor, spx handleMovement);
 
 		// Overloaded from Widget
 
@@ -208,15 +201,15 @@ namespace wg
 		SkinSlot		m_handleSkin;
 		bool			m_bHorizontal;
 		SizeSPX			m_defaultSize;
-		float			m_splitFactor;			// fraction of available child length that goes to first child. Measured in 1/65536.
-		ScaleBehavior	m_scaleBehavior;
+		float			m_splitFactor;			// fraction of available child length that goes to first child.
+		float			m_resizeRatio;
 
 		pts				m_handleThickness;			// Set to 0 to use default from handleSkin.
 		RectSPX			m_handleGeo;
 		State			m_handleState;
 		spx				m_handlePressOfs;
 
-		std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float splitFactor, pts handleMovement)>	m_brokerFunc;
+		std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float splitFactor, pts handleMovement)>	m_resizeFunc;
 	};
 
 }

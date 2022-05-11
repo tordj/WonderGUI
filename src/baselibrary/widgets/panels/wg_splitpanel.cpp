@@ -41,7 +41,7 @@ namespace wg
 		m_bHorizontal = false;
 		m_handleThickness = 0;
 		m_splitFactor = 0.5f;
-		m_scaleBehavior = ScaleBehavior::ScaleBoth;
+		m_resizeRatio = 0.5f;
 
 		m_bSiblingsOverlap = false;
 	}
@@ -99,21 +99,21 @@ namespace wg
 		}
 	}
 
-	//____ setScaleBehavior() ___________________________________________________
+	//____ setResizeRatio() ___________________________________________________
 
-	void SplitPanel::setScaleBehavior(ScaleBehavior behavior)
+	void SplitPanel::setResizeRatio(float ratio)
 	{
-		if (behavior != m_scaleBehavior)
+		if (ratio != m_resizeRatio)
 		{
-			m_scaleBehavior = behavior;
+			m_resizeRatio = ratio;
 		}
 	}
 
-	//____ setBrokerFunction() ___________________________________________________
+	//____ setResizeFunction() ___________________________________________________
 
-	void SplitPanel::setBrokerFunction(std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float fraction, pts handleMovement)> func)
+	void SplitPanel::setResizeFunction(std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float fraction, pts handleMovement)> func)
 	{
-		m_brokerFunc = func;
+		m_resizeFunc = func;
 		_updateGeo();
 	}
 
@@ -228,13 +228,13 @@ namespace wg
 		spx firstChildLength;
 		spx secondChildLength;
 
-		if (m_brokerFunc)
+		if (m_resizeFunc)
 		{
-			pts len = m_brokerFunc(slots[0]._widget(), slots[1]._widget(), spxToPts(totalLength,m_scale), m_splitFactor, spxToPts(handleMovement,m_scale));
+			pts len = m_resizeFunc(slots[0]._widget(), slots[1]._widget(), spxToPts(totalLength,m_scale), m_splitFactor, spxToPts(handleMovement,m_scale));
 			length = ptsToSpx(len, m_scale);
 		}
 		else
-			length = _defaultBroker(slots[0]._widget(), slots[1]._widget(), totalLength, m_splitFactor, handleMovement);
+			length = _defaultResizeFunc(slots[0]._widget(), slots[1]._widget(), totalLength, m_splitFactor, handleMovement);
 
 		firstChildLength = align(length);
 
@@ -283,25 +283,23 @@ namespace wg
 		return false;
 	}
 
-	//____ _defaultBroker() ___________________________________________________
+	//____ _defaultResizeFunc() ___________________________________________________
 
-	spx SplitPanel::_defaultBroker(Widget * pFirst, Widget * pSecond, spx totalLength, float splitFactor, spx handleMovement)
+	spx SplitPanel::_defaultResizeFunc(Widget * pFirst, Widget * pSecond, spx totalLength, float splitFactor, spx handleMovement)
 	{
 		spx firstLength;
 
 		if (handleMovement == 0)
 		{
-			switch (m_scaleBehavior)
+			if (m_bHorizontal)
 			{
-			case ScaleBehavior::ScaleFirst:
-				firstLength = totalLength - (m_bHorizontal ? slots[1].m_geo.w : slots[1].m_geo.h);
-				break;
-			case ScaleBehavior::ScaleSecond:
-				firstLength = m_bHorizontal ? slots[0].m_geo.w : slots[0].m_geo.h;
-				break;
-			case ScaleBehavior::ScaleBoth:
-				firstLength = (splitFactor * totalLength) + 0.5f;
-				break;
+				spx extraLength = totalLength - slots[0].m_geo.w - slots[1].m_geo.w;
+				firstLength = slots[0].m_geo.w + extraLength * m_resizeRatio;
+			}
+			else
+			{
+				spx extraLength = totalLength - slots[0].m_geo.h - slots[1].m_geo.h;
+				firstLength = slots[0].m_geo.h + extraLength * m_resizeRatio;
 			}
 		}
 		else
