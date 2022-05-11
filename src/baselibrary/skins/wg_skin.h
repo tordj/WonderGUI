@@ -117,6 +117,7 @@ namespace wg
 		bool			m_bOpaque = false;
 		int				m_useCount = 0;						// Counter of instances of this skin in use.
 		int				m_layer = -1;
+		Size			m_defaultSize;
 	};
 
 

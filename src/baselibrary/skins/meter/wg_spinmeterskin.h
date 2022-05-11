@@ -50,6 +50,7 @@ namespace wg
 
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
+			Size		defaultSize;						// Mandatory
 
 			Border		gfxPadding;
 			Gradient	gradient;
@@ -60,7 +61,6 @@ namespace wg
 
 			CoordF		pivot = { 0.5f, 0.5f };
 			CoordF		placement = { 0.5f, 0.5f };
-			Size		defaultSize;						// Mandatory
 			float		zoom = 1.f;
 
 			Surface_p	surface;							// Mandatory

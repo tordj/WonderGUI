@@ -13,6 +13,130 @@ KernelDB::~KernelDB()
 
 }
 
+KernelDB::StraightBlitSpec::StraightBlitSpec()
+{
+	for (auto& e : tintModes)
+		e = false;
+
+	for (auto& e : blendModes)
+		e = false;
+
+	for (auto& e : sourceFormats)
+		e = false;
+
+	for (auto& e : destFormats)
+		e = false;
+
+	for (auto& e : blitAndTile)
+		e = false;
+}
+
+KernelDB::TransformBlitSpec::TransformBlitSpec()
+{
+	for (auto& e : tintModes)
+		e = false;
+
+	for (auto& e : blendModes)
+		e = false;
+
+	for (auto& e : sourceFormats)
+		e = false;
+
+	for (auto& e : destFormats)
+		e = false;
+
+	for (auto& e : sampleMethods)
+		e = false;
+
+	for (auto& e : blitClipAndTile)
+		e = false;
+}
+
+
+//____ setTintMode() __________________________________________________________
+
+void KernelDB::setTintMode(TintMode mode, bool bOn)
+{
+	if (mode >= TintMode_min && mode <= TintMode_max && mode != TintMode::None)
+		m_tintModes[int(mode)] = bOn;
+}
+
+//____ setBlendMode() _________________________________________________________
+
+void KernelDB::setBlendMode(BlendMode mode, bool bOn)
+{
+	if (mode >= BlendMode_min && mode <= BlendMode_max && 
+		mode != BlendMode::Undefined && mode != BlendMode::Ignore && 
+		mode != BlendMode::Blend && mode != BlendMode::Replace )
+		m_blendModes[int(mode)] = bOn;
+}
+
+//____ setSrcFormat() _________________________________________________________
+
+void KernelDB::setSrcFormat(PixelFormat format, bool bOn)
+{
+	if (format >= PixelFormat_min && format <= PixelFormat_max &&
+		format != PixelFormat::Undefined && format != PixelFormat::Custom &&
+		format != PixelFormat::BGRA_8 && format != PixelFormat::BGRX_8 &&
+		format != PixelFormat::BGR_8 && format != PixelFormat::CLUT_8)
+		m_srcFormats[int(format)] = bOn;
+}
+
+//____ setDestFormat() ________________________________________________________
+
+void KernelDB::setDestFormat(PixelFormat format, bool bOn)
+{
+	if (format >= PixelFormat_min && format <= PixelFormat_max &&
+		format != PixelFormat::Undefined && format != PixelFormat::Custom &&
+		format != PixelFormat::BGRA_8 && format != PixelFormat::BGRX_8 &&
+		format != PixelFormat::BGR_8 && format != PixelFormat::CLUT_8 &&
+		format != PixelFormat::CLUT_8_linear && format != PixelFormat::CLUT_8_sRGB )
+		m_destFormats[int(format)] = bOn;
+}
+
+//____ countKernels() _________________________________________________________
+
+KernelDB::KernelCount KernelDB::countKernels()
+{
+	int nTintModes = 0;
+	int nBlendModes = 0;
+	int nSourceFormats = 0;
+	int nDestFormats = 0;
+
+	for (auto& e : m_tintModes)
+		if (e) nTintModes++;
+
+	for (auto& e : m_blendModes)
+		if (e) nBlendModes++;
+	
+	for (auto& e : m_srcFormats)
+		if (e) nSourceFormats++;
+
+	for (auto& e : m_destFormats)
+		if (e) nDestFormats++;
+
+
+
+
+	KernelCount count;
+
+	count.plot = nBlendModes * nDestFormats;
+	count.fill = nTintModes * nBlendModes * nDestFormats;
+	count.line = nBlendModes * nDestFormats;
+	count.clipLine = nBlendModes * nDestFormats;
+	count.plotList = nBlendModes * nDestFormats;
+	count.segment = nBlendModes * nDestFormats * ((m_tintModes[int(TintMode::GradientY)] || m_tintModes[int(TintMode::GradientXY)]) ? 2 : 1);
+
+	count.pass1blits		= nSourceFormats * 2;
+	count.pass1blits_fast8	= nSourceFormats * 2;
+
+	count.pass2blits = nTintModes * nBlendModes * nDestFormats;
+	count.pass2blits_fast8 = nTintModes * nBlendModes * nDestFormats;		// Room for improvement?
+
+	return count;
+}
+
+
 //____ generateSource() _______________________________________________________
 
 bool KernelDB::generateSource(std::ostream& out)
@@ -363,14 +487,6 @@ void KernelDB::_resetDB()
 	for (bool& b : m_destFormats)
 		b = false;
 
-	// Clear all optimized blits (specifics will be set later)
-
-	int simpleBlitMapSize = TintMode_size * BlendMode_size * PixelFormat_size * PixelFormat_size * 2;
-	memset(m_simpleBlitMap, 0, simpleBlitMapSize);
-
-	int complexBlitMapSize = TintMode_size * BlendMode_size * PixelFormat_size * PixelFormat_size * 2 * 3;
-	memset(m_complexBlitMap, 0, complexBlitMapSize);
-
 	// Set standard source formats
 
 	m_srcFormats[int(PixelFormat::BGR_8_sRGB)] = true;
@@ -400,52 +516,65 @@ void KernelDB::_resetDB()
 	m_destFormats[int(PixelFormat::A_8)] = true;
 
 	// Set optimized SimpleBlit methods
-	
-	for (int srcFormat = 0; srcFormat < PixelFormat_size; srcFormat++)
 	{
-		if (m_srcFormats[srcFormat])
+		StraightBlitSpec spec;
+
+		spec.blitAndTile[0] = true;
+		spec.blitAndTile[1] = true;
+
+		spec.tintModes[int(TintMode::None)] = true;
+		spec.blendModes[int(BlendMode::Blend)] = true;
+		spec.blendModes[int(BlendMode::Replace)] = true;
+
+		spec.destFormats[int(PixelFormat::BGRA_8_linear)] = true;
+		spec.destFormats[int(PixelFormat::BGRA_8_sRGB)] = true;
+
+		spec.destFormats[int(PixelFormat::BGR_8_linear)] = true;
+		spec.destFormats[int(PixelFormat::BGR_8_sRGB)] = true;
+
+		spec.destFormats[int(PixelFormat::BGRX_8_linear)] = true;
+		spec.destFormats[int(PixelFormat::BGRX_8_sRGB)] = true;
+
+		for (int srcFormat = 0; srcFormat < PixelFormat_size; srcFormat++)
 		{
-			for (int normTile = 0; normTile < 2; normTile++)
-			{
-				m_simpleBlitMap[int(TintMode::None)][int(BlendMode::Replace)][srcFormat][int(PixelFormat::BGRA_8_linear)][normTile] = true;
-				m_simpleBlitMap[int(TintMode::None)][int(BlendMode::Replace)][srcFormat][int(PixelFormat::BGRA_8_sRGB)][normTile] = true;
-
-				m_simpleBlitMap[int(TintMode::None)][int(BlendMode::Replace)][srcFormat][int(PixelFormat::BGR_8_linear)][normTile] = true;
-				m_simpleBlitMap[int(TintMode::None)][int(BlendMode::Replace)][srcFormat][int(PixelFormat::BGR_8_sRGB)][normTile] = true;
-
-				m_simpleBlitMap[int(TintMode::None)][int(BlendMode::Blend)][srcFormat][int(PixelFormat::BGRA_8_linear)][normTile] = true;
-				m_simpleBlitMap[int(TintMode::None)][int(BlendMode::Blend)][srcFormat][int(PixelFormat::BGRA_8_sRGB)][normTile] = true;
-
-				m_simpleBlitMap[int(TintMode::None)][int(BlendMode::Blend)][srcFormat][int(PixelFormat::BGR_8_linear)][normTile] = true;
-				m_simpleBlitMap[int(TintMode::None)][int(BlendMode::Blend)][srcFormat][int(PixelFormat::BGR_8_sRGB)][normTile] = true;
-			}
+			if (m_srcFormats[srcFormat])
+				spec.sourceFormats[srcFormat] = true;
 		}
+
+		m_straightBlits.push_back(spec);
 	}
 
 	// Set optimized ComplexBlit methods
 
-	for (int srcFormat = 0; srcFormat < PixelFormat_size; srcFormat++)
 	{
-		if (m_srcFormats[srcFormat])
+		TransformBlitSpec spec;
+
+		spec.blitClipAndTile[0] = true;
+		spec.blitClipAndTile[1] = true;
+		spec.blitClipAndTile[2] = true;
+
+		spec.tintModes[int(TintMode::None)] = true;
+		spec.blendModes[int(BlendMode::Blend)] = true;
+		spec.blendModes[int(BlendMode::Replace)] = true;
+
+		spec.sampleMethods[int(SampleMethod::Nearest)] = true;
+		spec.sampleMethods[int(SampleMethod::Bilinear)] = true;
+
+		spec.destFormats[int(PixelFormat::BGRA_8_linear)] = true;
+		spec.destFormats[int(PixelFormat::BGRA_8_sRGB)] = true;
+
+		spec.destFormats[int(PixelFormat::BGR_8_linear)] = true;
+		spec.destFormats[int(PixelFormat::BGR_8_sRGB)] = true;
+
+		spec.destFormats[int(PixelFormat::BGRX_8_linear)] = true;
+		spec.destFormats[int(PixelFormat::BGRX_8_sRGB)] = true;
+
+		for (int srcFormat = 0; srcFormat < PixelFormat_size; srcFormat++)
 		{
-			for (int sampleMethod = 0; sampleMethod < 2; sampleMethod++)
-			{
-				for (int normClipTile = 0; normClipTile < 2; normClipTile++)
-				{
-					m_complexBlitMap[int(TintMode::None)][int(BlendMode::Replace)][srcFormat][int(PixelFormat::BGRA_8_linear)][sampleMethod][normClipTile] = true;
-					m_complexBlitMap[int(TintMode::None)][int(BlendMode::Replace)][srcFormat][int(PixelFormat::BGRA_8_sRGB)][sampleMethod][normClipTile] = true;
-
-					m_complexBlitMap[int(TintMode::None)][int(BlendMode::Replace)][srcFormat][int(PixelFormat::BGR_8_linear)][sampleMethod][normClipTile] = true;
-					m_complexBlitMap[int(TintMode::None)][int(BlendMode::Replace)][srcFormat][int(PixelFormat::BGR_8_sRGB)][sampleMethod][normClipTile] = true;
-
-					m_complexBlitMap[int(TintMode::None)][int(BlendMode::Blend)][srcFormat][int(PixelFormat::BGRA_8_linear)][sampleMethod][normClipTile] = true;
-					m_complexBlitMap[int(TintMode::None)][int(BlendMode::Blend)][srcFormat][int(PixelFormat::BGRA_8_sRGB)][sampleMethod][normClipTile] = true;
-
-					m_complexBlitMap[int(TintMode::None)][int(BlendMode::Blend)][srcFormat][int(PixelFormat::BGR_8_linear)][sampleMethod][normClipTile] = true;
-					m_complexBlitMap[int(TintMode::None)][int(BlendMode::Blend)][srcFormat][int(PixelFormat::BGR_8_sRGB)][sampleMethod][normClipTile] = true;
-				}
-			}
+			if (m_srcFormats[srcFormat])
+				spec.sourceFormats[srcFormat] = true;
 		}
-	}
 
+		m_transformBlits.push_back(spec);
+	}
 }

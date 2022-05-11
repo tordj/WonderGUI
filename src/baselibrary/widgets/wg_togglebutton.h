@@ -142,7 +142,8 @@ namespace wg
 		void		_refresh() override;
 		void		_resize( const SizeSPX& size, int scale = -1 ) override;
 		bool		_alphaTest( const CoordSPX& ofs ) override;
-		void		_setState( State state ) override;
+		void		_setState(State state) override { _setState(state, false); }
+		void		_setState( State state, bool bPostMsg );
 
 		void		_setToggleGroup( ToggleGroup * pGroup );
 		ToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }

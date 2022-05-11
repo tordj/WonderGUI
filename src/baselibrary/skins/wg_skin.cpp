@@ -48,7 +48,7 @@ namespace wg
 
 	SizeSPX Skin::_defaultSize(int scale) const
 	{
-		return SizeSPX(align(ptsToSpx(m_contentPadding, scale)));
+		return SizeSPX(align(ptsToSpx(m_defaultSize, scale)));
 	}
 
 	//____ _contentPadding() ______________________________________________________________

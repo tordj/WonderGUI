@@ -448,20 +448,34 @@ namespace wg
 
 	//____ _repadSlots() ______________________________________________________
 
-	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, Border padding)
+	void PackPanel::_repadSlots(StaticSlot * _pSlot, int nb, Border padding)
 	{
 //		TJFIX!!!  Also set m_paddingSPX and use that for geometry instead!
 
+	//TODO: Optimize. No need to ask widget for defaultSize, just recalc padding in spx
+
+		Slot* pSlot = static_cast<Slot*>(_pSlot);
+
 		for (int i = 0; i < nb; i++)
-			((Slot*)pSlot)[i].m_padding = padding;
+		{
+			pSlot[i].m_padding = padding;
+			pSlot[i].m_defaultSize = pSlot[i]._paddedDefaultSize(m_scale);
+		}
 
 		_refreshGeometries();
 	}
 
-	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, const Border * pPaddings)
+	void PackPanel::_repadSlots(StaticSlot * _pSlot, int nb, const Border * pPaddings)
 	{
+		//TODO: Optimize. No need to ask widget for defaultSize, just recalc padding in spx
+
+		Slot* pSlot = static_cast<Slot*>(_pSlot);
+
 		for (int i = 0; i < nb; i++)
-			((Slot*)pSlot)[i].m_padding = * pPaddings++;
+		{
+			pSlot[i].m_padding = * pPaddings++;
+			pSlot[i].m_defaultSize = pSlot[i]._paddedDefaultSize(m_scale);
+		}
 
 		_refreshGeometries();
 	}
@@ -656,6 +670,8 @@ namespace wg
 
 	void PackPanel::_resize( const SizeSPX& size, int scale )
 	{
+		scale = _fixScale(scale);
+
 		if( scale != m_scale )
 		{
 			for (auto pSlot = slots._begin(); pSlot != slots._end(); pSlot++)

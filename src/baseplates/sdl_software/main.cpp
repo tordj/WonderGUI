@@ -200,7 +200,7 @@ bool init_system( Rect windowGeo, float scale )
 	// make sure SDL cleans up before exit
 	atexit(SDL_Quit);
  
-	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x, windowGeo.y, windowGeo.w, windowGeo.h , SDL_WINDOW_SHOWN /* SDL_WINDOW_ALLOW_HIGHDPI */);
+	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x, windowGeo.y, windowGeo.w, windowGeo.h , SDL_WINDOW_SHOWN /* | SDL_WINDOW_ALLOW_HIGHDPI */ );
 	if( pWin == nullptr )
 	{
 		printf("Unable to create SDL window: %s\n", SDL_GetError());

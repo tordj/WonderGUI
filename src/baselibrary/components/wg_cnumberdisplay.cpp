@@ -79,10 +79,10 @@ namespace wg
 
 	void CNumberDisplay::_initFromBlueprint(const Blueprint& bp)
 	{
-		m_pLayout = bp.layout;
-		m_maxValue = bp.maxValue;
-		m_minValue = bp.minValue;
-		m_maxValue = bp.maxValue;
+		m_pLayout	= bp.layout;
+		m_maxValue	= bp.maxValue;
+		m_minValue	= bp.minValue;
+		m_value		= bp.value;
 	}
 
 	//____ _set() _____________________________________________________________

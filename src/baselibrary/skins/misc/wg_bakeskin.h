@@ -46,7 +46,6 @@ namespace wg
 
 		struct Blueprint
 		{
-			Surface_p	surface;
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
 			Gradient	gradient;
@@ -55,6 +54,8 @@ namespace wg
 
 			bool		skinInSkin = true;
 			std::vector<Skin_p>	skins;
+
+			Surface_p	surface;
 		};
 
 		//.____ Creation __________________________________________

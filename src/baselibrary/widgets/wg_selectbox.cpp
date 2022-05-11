@@ -267,8 +267,9 @@ namespace wg
 
 	void SelectBox::_resize(const SizeSPX& size, int scale)
 	{
-		m_matchingHeight = _matchingHeight(size.w,scale);
 		Widget::_resize(size, scale);
+
+		m_matchingHeight = _matchingHeight(size.w,m_scale);
 	}
 
 	//____ _setState() ________________________________________________________

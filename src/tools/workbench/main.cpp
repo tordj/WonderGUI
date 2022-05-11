@@ -2179,7 +2179,7 @@ bool spinKnobTest(CStandardSlot_p pSlot)
 	Surface_p pSurfArrow = loadSurface("resources/dialarrow_small.png", { .sampleMethod = SampleMethod::Bilinear } );
 	Surface_p pSurfClockFace = loadSurface("resources/clockface.png" );
 
-	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .pivot = { 0.5f, 540 / 600.f }, .placement = {0.5f,0.5f}, .defaultSize = { 400,400 }, .surface = pSurfArrow });
+	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .defaultSize = { 400,400 }, .pivot = { 0.5f, 540 / 600.f }, .placement = {0.5f,0.5f}, .surface = pSurfArrow });
 
 	auto pKnob1 = Knob::create();
 	pKnob1->setSkin( pArrowSkin );
@@ -2432,7 +2432,7 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 	Surface_p pSurfArrow = loadSurface("resources/dialarrow_small.png", { .sampleMethod = SampleMethod::Bilinear });
 	Surface_p pSurfClockFace = loadSurface("resources/clockface.png");
 
-	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .pivot = { 0.5f, 540 / 600.f }, .placement = { 0.5f,0.5f }, .defaultSize = { 400,400 }, .surface = pSurfArrow });
+	auto pArrowSkin = SpinMeterSkin::create({ .angleBegin = -135, .angleEnd = 135, .defaultSize = { 400,400 }, .pivot = { 0.5f, 540 / 600.f }, .placement = { 0.5f,0.5f }, .surface = pSurfArrow });
 
 	auto pFillMeterSkin = FillMeterSkin::create({ .color = Color::Green, .direction = Direction::Up });
 
@@ -2628,7 +2628,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 
 	Surface_p pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
 
-	auto pBakedSkin = BakeSkin::create({ .surface = pBakeSurface, .skins = { pSplashSkin, pDynamicSkin } });
+	auto pBakedSkin = BakeSkin::create({ .skins = { pSplashSkin, pDynamicSkin }, .surface = pBakeSurface });
 
 	auto pFiller1 = Filler::create();
 	pFiller1->setSkin( pBakedSkin );
@@ -2667,7 +2667,7 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 	auto pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
 
-	auto pBakeSkin = BakeSkin::create({ .surface = pBakeSurface, .skinInSkin = true, .skins = {pAnimSkin2, pBoxSkin,pAnimSkin} });
+	auto pBakeSkin = BakeSkin::create({ .skinInSkin = true, .skins = {pAnimSkin2, pBoxSkin,pAnimSkin}, .surface = pBakeSurface });
 
 	auto pFiller1 = Filler::create();
 	pFiller1->setSkin( pBakeSkin );

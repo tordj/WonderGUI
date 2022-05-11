@@ -123,6 +123,8 @@ namespace wg
 
 		m_widthConstraint = width;
 		m_heightConstraint = height;
+		_updateCanvasSize();
+		_childWindowCorrection();
 		return true;
 	}
 
@@ -729,6 +731,7 @@ namespace wg
 		}
 
 		_updateRegions();
+		_updateCanvasSize();
 		_childWindowCorrection();
 		_updateScrollbars();
 	}

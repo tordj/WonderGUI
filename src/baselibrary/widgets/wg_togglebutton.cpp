@@ -88,7 +88,7 @@ namespace wg
 		{
 			State state = m_state;
 			state.setSelected(bSelected);
-			_setState(state);
+			_setState(state, false);
 		}
 		return true;
 	}
@@ -223,12 +223,12 @@ namespace wg
 		//
 
 		if( state != m_state )
-			_setState(state);
+			_setState(state, true);
 	}
 
 	//____ _setState() ______________________________________________________
 
-	void ToggleButton::_setState( State state )
+	void ToggleButton::_setState( State state, bool bPostMsg )
 	{
 		// If state has changed from selected to unselected we need to check with Togglegroup
 
@@ -237,7 +237,7 @@ namespace wg
 
 		//
 
-		State oldState = state;
+		State oldState = m_state;
 		Widget::_setState(state);
 
 		OO(label)._setState( state );
@@ -249,7 +249,8 @@ namespace wg
 		}
 		if( state.isSelected() != oldState.isSelected() )
 		{
-			Base::msgRouter()->post( ToggleMsg::create(this, state.isSelected() ) );
+			if( bPostMsg )
+				Base::msgRouter()->post( ToggleMsg::create(this, state.isSelected() ) );
 
 			if( m_pToggleGroup && state.isSelected() )
 				m_pToggleGroup->_select(this);

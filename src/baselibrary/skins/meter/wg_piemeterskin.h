@@ -53,10 +53,8 @@ namespace wg
 		struct Blueprint
 		{
 			HiColor		backColor = Color::Transparent;
-
 			BlendMode	blendMode = BlendMode::Undefined;
-
-
+			Size		defaultSize;
 			HiColor		emptyColor = Color::DarkBlue;
 
 			Border		gfxPadding;
@@ -74,23 +72,12 @@ namespace wg
 
 			Border		overflow;
 			Border		padding;
-			Size		defaultSize;
 
 			bool		rectangular = false;
 
 			float		rotation = 0.f;
 
 			Slice		slices[c_maxSlices];
-
-
-
-
-
-
-
-
-
-
 		};
 
 		//.____ Creation __________________________________________
