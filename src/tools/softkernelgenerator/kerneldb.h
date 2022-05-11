@@ -53,6 +53,8 @@ public:
 	};
 
 
+	void	reset();
+	void	clear();
 
 	bool	generateSource( std::ostream& filename );
 	KernelCount	countKernels();
@@ -67,9 +69,8 @@ public:
 	bool	srcFormat(wg::PixelFormat format) { return m_srcFormats[int(format)]; }
 	bool	destFormat(wg::PixelFormat format) { return m_destFormats[int(format)]; }
 
-private:
 
-	void	_resetDB();
+private:
 
 	bool	m_tintModes[wg::TintMode_size];
 	bool	m_blendModes[wg::BlendMode_size];

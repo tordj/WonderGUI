@@ -4,6 +4,7 @@
 #include <wondergui.h>
 #include <wg_freetypefont.h>
 #include <string>
+#include <fstream>
 
 using namespace wg;
 using namespace std;
@@ -156,6 +157,47 @@ void MyApp::destFormatToggled(Msg* _pMsg)
 	_refreshSummary();
 }
 
+//____ generateSource() _______________________________________________________
+
+void MyApp::generateSource()
+{
+	ofstream	myStream;
+	myStream.open("wg_softkernel.cpp");
+	m_pDB->generateSource(myStream);
+	myStream.close();
+}
+
+//____ clear() _________________________________________________________________
+
+void MyApp::clear()
+{
+	m_pDB->clear();
+	_refreshList();
+}
+
+//____ reset() ________________________________________________________________
+
+void MyApp::reset()
+{
+	m_pDB->reset();
+	_refreshList();
+}
+
+//____ load() _________________________________________________________________
+
+void MyApp::load()
+{
+
+}
+
+//____ save() _________________________________________________________________
+
+void MyApp::save()
+{
+
+}
+
+
 //____ _loadSkins() ___________________________________________________________
 
 bool MyApp::_loadSkins(Visitor * pVisitor)
@@ -197,7 +239,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		$.surface = pCheckBoxSurf,
 		$.axis = Axis::Y,
 		$.frame = 3,
-		$.defaultSize = { 12,12 },
+//		$.defaultSize = { 12,12 },
 		$.states = { State::Normal, State::Selected }
 	));
 
@@ -209,13 +251,19 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 
 void MyApp::_refreshSummary()
 {
-	m_pWindow->slot.clear();
-	
-	m_pWindow->slot = _buildList();
-
-//	m_pList->slots.erase(2, 1);
-//	m_pList->slots.insert(2, _buildListSummarySection() );
+	_refreshList();
+	//	m_pList->slots.erase(2, 1);
+	//	m_pList->slots.insert(2, _buildListSummarySection() );
 }
+
+//____ _refreshList() _________________________________________________________
+
+void MyApp::_refreshList()
+{
+	m_pWindow->slot.clear();
+	m_pWindow->slot = _buildList();
+}
+
 
 
 //____ _buildButtonRow() ______________________________________________________
@@ -230,6 +278,10 @@ Widget_p	MyApp::_buildButtonRow()
 		$.skin = m_pButtonSkin,
 		$.label.text = "Clear"));
 
+	auto pResetButton = Button::create(WGBP(Button,
+		$.skin = m_pButtonSkin,
+		$.label.text = "Reset"));
+
 	auto pLoadButton = Button::create(WGBP(Button,
 		$.skin = m_pButtonSkin,
 		$.label.text = "Load"));
@@ -238,8 +290,14 @@ Widget_p	MyApp::_buildButtonRow()
 		$.skin = m_pButtonSkin,
 		$.label.text = "Save"));
 
+	Base::msgRouter()->addRoute( pClearButton, MsgType::Select, [this](Msg*) {this->clear(); });
+	Base::msgRouter()->addRoute( pResetButton, MsgType::Select, [this](Msg*) {this->reset(); });
+	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*) {this->load(); });
+	Base::msgRouter()->addRoute( pSaveButton, MsgType::Select, [this](Msg*) {this->save(); });
+
 
 	pButtonRow->slots << pClearButton;
+	pButtonRow->slots << pResetButton;
 	pButtonRow->slots << pLoadButton;
 	pButtonRow->slots << pSaveButton;
 	pButtonRow->slots.setPadding(pButtonRow->slots.begin(), pButtonRow->slots.end(), Border( 0, 2, 0, 2 ) );
@@ -286,7 +344,7 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 												$.display.text = "Tint Modes",
 												$.display.style = m_pLabelStyle));
 
-	TintMode tintModes[] = { TintMode::Flat, TintMode::GradientX, TintMode::GradientY, TintMode::GradientXY };
+	TintMode tintModes[] = { TintMode::None, TintMode::Flat, TintMode::GradientX, TintMode::GradientY, TintMode::GradientXY };
 
 	for (auto tintMode : tintModes)
 	{
@@ -296,6 +354,9 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 												$.icon.padding = { 0,4,0,0 },
 												$.label.text = toString(tintMode),
 												$.selected = m_pDB->tintMode(tintMode)));
+
+		if (tintMode == TintMode::None)
+			pWidget->setEnabled(false);
 
 		auto pObj = this;
 		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, [pObj](Msg* pMsg) {pObj->tintModeToggled(pMsg); });
@@ -313,7 +374,7 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 												$.display.text = "Blend Modes",
 												$.display.style = m_pLabelStyle ));
 
-	BlendMode blendModes[] = { BlendMode::Add, BlendMode::Subtract, BlendMode::Multiply, BlendMode::Max, BlendMode::Min, BlendMode::Invert, BlendMode::Morph };
+	BlendMode blendModes[] = { BlendMode::Replace, BlendMode::Blend, BlendMode::Add, BlendMode::Subtract, BlendMode::Multiply, BlendMode::Max, BlendMode::Min, BlendMode::Invert, BlendMode::Morph };
 
 	for (auto blendMode : blendModes)
 	{
@@ -323,6 +384,9 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 												$.icon.padding = { 0,4,0,0 },
 												$.label.text = toString(blendMode),
 												$.selected = m_pDB->blendMode(blendMode)));
+
+		if (blendMode == BlendMode::Replace || blendMode == BlendMode::Blend)
+			pWidget->setEnabled(false);
 
 		auto pObj = this;
 		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, [pObj](Msg* pMsg) {pObj->blendModeToggled(pMsg); });
@@ -532,7 +596,7 @@ wg::Widget_p MyApp::_buildExportSection()
 
 	pSection->slots << Button::create(WGBP(Button,
 		$.skin = m_pButtonSkin,
-		$.label.text = "Export"
+		$.label.text = "Generate Source Code"
 	));
 
 	pSection->slots << Filler::create();
@@ -540,6 +604,8 @@ wg::Widget_p MyApp::_buildExportSection()
 	pSection->slots[1].setWeight(0);
 
 	pSection->setSizeBroker(UniformSizeBroker::create());
+
+	Base::msgRouter()->addRoute(MsgType::Select, [this](Msg* pMsg) {this->generateSource(); });
 
 	return pSection;
 }

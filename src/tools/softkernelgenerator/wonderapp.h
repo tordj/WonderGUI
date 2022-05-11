@@ -23,6 +23,12 @@ public:
 	void		sourceFormatToggled(wg::Msg* pMsg);
 	void		destFormatToggled(wg::Msg* pMsg);
 
+	void		generateSource();
+	void		clear();
+	void		reset();
+	void		load();
+	void		save();
+
 
 private:
 
@@ -39,6 +45,7 @@ private:
 	wg::Widget_p	_buildLabeledList(int nColumns, std::initializer_list < std::pair<std::string, int>> list);
 
 	void			_refreshSummary();
+	void			_refreshList();
 
 
 	KernelDB *	m_pDB = nullptr;

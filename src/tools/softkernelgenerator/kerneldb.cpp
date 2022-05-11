@@ -5,7 +5,7 @@ using namespace std;
 
 KernelDB::KernelDB()
 {
-	_resetDB();
+	reset();
 }
 
 KernelDB::~KernelDB()
@@ -51,6 +51,8 @@ KernelDB::TransformBlitSpec::TransformBlitSpec()
 	for (auto& e : blitClipAndTile)
 		e = false;
 }
+
+
 
 
 //____ setTintMode() __________________________________________________________
@@ -463,9 +465,36 @@ bool KernelDB::generateSource(std::ostream& out)
 }
 
 
-//____ _resetDB() _____________________________________________________________
+//____ clear() _____________________________________________________________
 
-void KernelDB::_resetDB()
+void KernelDB::clear()
+{
+	// Set all TintModes and BlendModes
+
+	for (bool& b : m_tintModes)
+		b = false;
+
+	for (bool& b : m_blendModes)
+		b = false;
+
+	m_blendModes[int(BlendMode::Replace)] = true;
+	m_blendModes[int(BlendMode::Blend)] = true;
+
+	m_tintModes[int(TintMode::None)] = true;
+
+	// Clear all Source and Dest formats (specifics will be set later).
+
+	for (bool& b : m_srcFormats)
+		b = false;
+
+	for (bool& b : m_destFormats)
+		b = false;
+}
+
+
+//____ _reset() _____________________________________________________________
+
+void KernelDB::reset()
 {
 	// Set all TintModes and BlendModes
 
