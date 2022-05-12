@@ -389,12 +389,12 @@ namespace wg
 					goto no_glyph;
 
 				if (m_pBackupFont->size() == m_size)
-					m_pBackupFont->getGlyphWithoutBitmap(ch, glyph);
+					m_pBackupFont->getGlyphWithBitmap(ch, glyph);
 				else
 				{
 					spx sz = m_pBackupFont->size();
 					m_pBackupFont->setSize(m_size);
-					m_pBackupFont->getGlyphWithoutBitmap(ch, glyph);
+					m_pBackupFont->getGlyphWithBitmap(ch, glyph);
 					m_pBackupFont->setSize(sz);
 				}
 				return;

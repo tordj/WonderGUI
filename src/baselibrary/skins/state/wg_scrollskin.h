@@ -57,9 +57,11 @@ namespace wg
 		struct StateBP
 		{
 			StateBP() {}
-			StateBP( State s ) : state(s) {}
-			StateBP( State s, StateData d ) : state(s), data(d) {}
-	
+			StateBP( State state ) : state(state) {}
+			StateBP( State state, StateData data ) : state(state), data(data) {}
+			StateBP( State state, Color color, bool blockless = false ) : state(state) { data.color = color; data.blockless = blockless; }
+			StateBP( State state, Coord contentShift, bool blockless = false ) : state(state)	{ data.contentShift = contentShift; data.blockless = blockless; }
+			
 			State			state = State::Normal;
 			StateData		data;
 		};

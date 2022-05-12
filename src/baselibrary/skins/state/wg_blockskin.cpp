@@ -35,11 +35,6 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	BlockSkin_p BlockSkin::create()
-	{
-		return BlockSkin_p(new BlockSkin());
-	}
-
 	BlockSkin_p BlockSkin::create(const Blueprint& blueprint)
 	{
 		return BlockSkin_p(new BlockSkin(blueprint));
@@ -181,7 +176,7 @@ namespace wg
 		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			m_bStateOpaque[i] = false;
-			m_stateColors[i] = Color::White;
+			m_stateColors[i] = HiColor::Undefined;
 		}
 	}
 
@@ -196,7 +191,7 @@ namespace wg
 		{
 			m_bStateOpaque[i] = m_bOpaque;
 			m_stateBlocks[i] = block.pos();
-			m_stateColors[i] = Color::White;
+			m_stateColors[i] = HiColor::Undefined;
 		}
 	}
 
@@ -221,7 +216,7 @@ namespace wg
 			int nStateBlocks = 1;
 			for ( auto& entry : blueprint.states )
 			{
-				if( entry.state != State::Normal && entry.data.blockless == false)
+				if( entry.state != State::Normal && entry.data.reuseBlock == false)
 					nStateBlocks++;
 			}
 
@@ -310,7 +305,12 @@ namespace wg
 				m_bContentShifting = true;
 			}
 
-			if ( !stateInfo.data.blockless && stateInfo.state != State::Normal )
+			if( stateInfo.data.reuseBlock )
+			{
+				m_stateBlockMask.setBit(index);
+				m_stateBlocks[index] = m_stateBlocks[stateInfo.data.reuseBlockFrom];
+			}
+			else if ( stateInfo.state != State::Normal )
 			{
 				ofs++;
 				m_stateBlockMask.setBit(index);

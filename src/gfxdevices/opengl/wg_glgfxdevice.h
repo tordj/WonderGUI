@@ -158,8 +158,10 @@ namespace wg
 				void	_drawCmdFinalizer();
 
 
+		void	_loadPrograms(int uboBindingPoint);
+		Blob_p	_generateProgramBlob();
+		GLuint  _loadOrCompileProgram(int programNb, const char* pVertexShaderSource, const char* pFragmentShaderSource);
 
-		GLuint  _createGLProgram(const char * pVertexShader, const char * pFragmentShader);
 		void	_setDrawUniforms(GLuint progId, int uboBindingPoint);
 		void	_setBlitUniforms(GLuint progId, int uboBindingPoint);
 		void	_setClutBlitUniforms(GLuint progId, int uboBindingPoint);
@@ -180,6 +182,8 @@ namespace wg
 		float	m_linearToLinearTable[256];
 
 		//
+
+		bool	m_bProgramBinariesSupported ;
 
 
 		static const int c_commandBufferSize = 512*10;
@@ -236,6 +240,26 @@ namespace wg
 		GLuint	m_segmentsProg[c_maxSegments][2][2];			// [nb segments][base tint gradient][RGB/A_8 dest]
 
 		GLuint	m_blitProgMatrix[PixelFormat_size][2][2][2];	// [source format][interpolation][tintgradient][RGB/A_8 dest]
+
+		//
+
+		const static int c_nbPrograms = 28 + (c_maxSegments-1) * 4;
+		const static int c_versionNb = 100;					//
+
+		struct ProgramBlobEntry
+		{
+			int		offset;
+			GLsizei	size;
+			GLenum	binaryFormat;
+		};
+
+		struct ProgramBlobHeader
+		{
+			int					version;
+			int					nbPrograms;
+			ProgramBlobEntry	programs[c_nbPrograms];
+		};
+
 
 		//
 
@@ -341,6 +365,8 @@ namespace wg
 		GLint		m_glDrawFrameBuffer;
 
 		//
+
+		static Blob_p	s_pShaderPrograms;
 
 		static int s_bindingPointCanvasUBO;
 

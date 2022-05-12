@@ -53,6 +53,14 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry _________________________________________________
+		
+//		virtual Size		defaultSize() const;
+
+		//TODO: Replace this quick n dirty implementation with a correct one.
+
+		inline Size			defaultSize() const { return Size(_defaultSize(64))/64.f; }
+		
 		//.____ Misc ____________________________________________________
 
 		inline bool		isOpaque() const { return m_bOpaque; }
@@ -117,7 +125,6 @@ namespace wg
 		bool			m_bOpaque = false;
 		int				m_useCount = 0;						// Counter of instances of this skin in use.
 		int				m_layer = -1;
-		Size			m_defaultSize;
 	};
 
 

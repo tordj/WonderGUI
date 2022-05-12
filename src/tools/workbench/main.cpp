@@ -2268,10 +2268,10 @@ bool sliderTest(CStandardSlot_p pSlot)
 	{
 //		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, Border(10, 0, 10, 0), Border(), false);
 		auto pBgSkin = FillMeterSkin::create( WGBP(FillMeterSkin,
-											    $.color = Color::Green,
-												$.backColor = Color::Black,
-												$.direction = Direction::Up,
-												$.gfxPadding = Border(10,0,10,0) ));
+											    _.color = Color::Green,
+												_.backColor = Color::Black,
+												_.direction = Direction::Up,
+												_.gfxPadding = Border(10,0,10,0) ));
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin( pBgSkin );

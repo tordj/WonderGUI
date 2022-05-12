@@ -40,6 +40,7 @@ namespace wg
 
 	GlGfxDevice *	GlGfxDevice::s_pActiveDevice = nullptr;
 
+	Blob_p			GlGfxDevice::s_pShaderPrograms = nullptr;
 
 
 #define LOG_GLERROR(check) { GLenum err = check; if(err != 0) onGlError(err, this, TYPEINFO, __func__, __FILE__, __LINE__ ); }
@@ -152,125 +153,25 @@ namespace wg
 
 	GlGfxDevice::GlGfxDevice( int uboBindingPoint )
 	{
+		// Get version number, set flags
+
+		GLint major, minor;
+		glGetIntegerv(GL_MAJOR_VERSION, &major);
+		glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+		bool m_bProgramBinariesSupported = ((major == 4 && minor >= 1) || major > 4);
+
+		//
+
 		m_bFullyInitialized = true;
 
 		_initTables();
 
-		// Create and init Fill shader
+		_loadPrograms(uboBindingPoint);
 
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId			= _createGLProgram(fillVertexShader, i == 0 ? fillFragmentShader : fillFragmentShader_A8);
-			_setDrawUniforms(progId, uboBindingPoint);
-			m_fillProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
+		if (!s_pShaderPrograms && m_bProgramBinariesSupported)
+			s_pShaderPrograms = _generateProgramBlob();
 
-		// Create and init Fill Gradient shader
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(fillGradientVertexShader, i == 0 ? fillFragmentShader : fillFragmentShader_A8);
-			_setDrawUniforms(progId, uboBindingPoint);
-			m_fillGradientProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		// Create and init AA-Fill shader
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(aaFillVertexShader, i == 0 ? aaFillFragmentShader : aaFillFragmentShader_A8);
-			_setDrawUniforms(progId, uboBindingPoint);
-			m_aaFillProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		// Create and init AA-Fill gradient shader
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(aaFillGradientVertexShader, i == 0 ? aaFillFragmentShader : aaFillFragmentShader_A8);
-			_setDrawUniforms(progId, uboBindingPoint);
-			m_aaFillGradientProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		// Create and init Blit shader
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(blitVertexShader, i == 0 ? blitFragmentShader : blitFragmentShader_A8);
-			_setBlitUniforms(progId, uboBindingPoint);
-			m_blitProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		// Create and init Gradient Blit shader
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(blitGradientVertexShader, i == 0 ? blitFragmentShader : blitFragmentShader_A8);
-			_setBlitUniforms(progId, uboBindingPoint);
-			m_blitGradientProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		// Create and init AlphaBlit shader (shader program for blitting from alpha-only texture)
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(blitVertexShader, i == 0 ? alphaBlitFragmentShader : alphaBlitFragmentShader_A8);
-			_setBlitUniforms(progId, uboBindingPoint);
-			m_alphaBlitProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		// Create and init AlphaBlit gradient shader (shader program for blitting from alpha-only texture)
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(blitGradientVertexShader, i == 0 ? alphaBlitFragmentShader : alphaBlitFragmentShader_A8);
-			_setBlitUniforms(progId, uboBindingPoint);
-			m_alphaBlitGradientProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		// Create and init Clut Blit shaders
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(clutBlitNearestVertexShader, i == 0 ? clutBlitNearestFragmentShader : clutBlitNearestFragmentShader_A8);
-			_setClutBlitUniforms(progId, uboBindingPoint);
-			m_clutBlitNearestProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(clutBlitInterpolateVertexShader, i == 0 ? clutBlitInterpolateFragmentShader : clutBlitInterpolateFragmentShader_A8);
-			_setClutBlitUniforms(progId, uboBindingPoint);
-			m_clutBlitInterpolateProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		// Create and init Clut Blit gradient shaders
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(clutBlitNearestGradientVertexShader, i == 0 ? clutBlitNearestFragmentShader : clutBlitNearestFragmentShader_A8);
-			_setClutBlitUniforms(progId, uboBindingPoint);
-			m_clutBlitNearestGradientProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(clutBlitInterpolateGradientVertexShader, i == 0 ? clutBlitInterpolateFragmentShader : clutBlitInterpolateFragmentShader_A8);
-			_setClutBlitUniforms(progId, uboBindingPoint);
-			m_clutBlitInterpolateGradientProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
 
 		// Fill in our m_blitProgMatrix
 
@@ -323,62 +224,6 @@ namespace wg
 
 		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][1][1] = m_clutBlitNearestGradientProg[1];
 		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][1][1] = m_clutBlitInterpolateGradientProg[1];
-
-
-		// Create and init Plot shader
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(plotVertexShader, i == 0 ? plotFragmentShader : plotFragmentShader_A8);
-			_setDrawUniforms(progId, uboBindingPoint);
-			m_plotProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		// Create and init Line shader
-
-		for (int i = 0; i < 2; i++)
-		{
-			GLuint progId = _createGLProgram(lineFromToVertexShader, i == 0 ? lineFromToFragmentShader : lineFromToFragmentShader_A8);
-			_setDrawUniforms(progId, uboBindingPoint);
-			m_lineFromToProg[i] = progId;
-			LOG_INIT_GLERROR(glGetError());
-		}
-
-		// Create and init Segment shaders
-
-		for (int i = 1; i < c_maxSegments ; i++)
-		{
-			for (int canvType = 0; canvType < 2; canvType++)
-			{
-				std::string fragShader = canvType == 0 ? segmentsFragmentShader : segmentsFragmentShader_A8;
-				auto edgesPos = fragShader.find("$EDGES");
-				fragShader.replace(edgesPos, 6, std::to_string(i));
-
-				auto maxsegPos = fragShader.find("$MAXSEG");
-				fragShader.replace(maxsegPos, 7, std::to_string(c_maxSegments));
-
-				const char* pVertexShader = segmentsVertexShader;
-				for (int j = 0; j < 2; j++)
-				{
-					GLuint prog = _createGLProgram(pVertexShader, fragShader.c_str());
-					m_segmentsProg[i][j][canvType] = prog;
-
-					GLint extrasIdLoc = glGetUniformLocation(prog, "extrasId");
-					GLint colorsIdLoc = glGetUniformLocation(prog, "colorsId");
-					GLint stripesIdLoc = glGetUniformLocation(prog, "stripesId");
-					GLint paletteIdLoc = glGetUniformLocation(prog, "paletteId");
-
-					glUseProgram(prog);
-					glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
-					glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
-					glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 1 is used for segment stripes buffer.
-					glUniform1i(paletteIdLoc, 3);		// Needs to be set. Texture unit 3 is used for segment stripes buffer.
-
-					pVertexShader = segmentsVertexShaderGradient;
-				}
-			}
-		}
 
 		LOG_INIT_GLERROR(glGetError());
 
@@ -2792,56 +2637,362 @@ namespace wg
 		LOG_GLERROR(glGetError());
 	}
 
-	//____ _createGlProgram() ___________________________________________________
+	//____ _loadPrograms() ______________________________________________________________
 
-	GLuint GlGfxDevice::_createGLProgram(const char * pVertexShader, const char * pFragmentShader)
+	void GlGfxDevice::_loadPrograms(int uboBindingPoint)
 	{
-		GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-		GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+		int programNb = 0;
 
-		glShaderSource(vertexShaderID, 1, &pVertexShader, NULL);
-		glCompileShader(vertexShaderID);
+		// Create and init Fill shader
 
-		glShaderSource(fragmentShaderID, 1, &pFragmentShader, NULL);
-		glCompileShader(fragmentShaderID);
-
-		GLuint  programID = glCreateProgram();
-		glAttachShader(programID, vertexShaderID);
-		glAttachShader(programID, fragmentShaderID);
-		glLinkProgram(programID);
-
-		// glLinkProgram doesn't use glGetError
-		int mess = 0;
-		glGetProgramiv(programID, GL_LINK_STATUS, &mess);
-		if (mess != GL_TRUE)
+		for (int i = 0; i < 2; i++)
 		{
-			GLchar	vertexShaderLog[2048];
-			GLchar	fragmentShaderLog[2048];
-			GLchar	programInfoLog[2048];
-
-			GLsizei vertexShaderLogLength;
-			GLsizei fragmentShaderLogLength;
-			GLsizei programInfoLogLength;
-
-			glGetShaderInfoLog(vertexShaderID, 2048, &vertexShaderLogLength, vertexShaderLog );
-			glGetShaderInfoLog(fragmentShaderID, 2048, &fragmentShaderLogLength, fragmentShaderLog);
-			glGetProgramInfoLog(programID, 2048, &programInfoLogLength, programInfoLog);
-
-			char	buffer[2048*3+256];
-
-			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OpenGL, buffer, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			GLuint progId = _loadOrCompileProgram(programNb++, fillVertexShader, i == 0 ? fillFragmentShader : fillFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_fillProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
 		}
 
-		glDetachShader(programID, vertexShaderID);
-		glDetachShader(programID, fragmentShaderID);
+		// Create and init Fill Gradient shader
 
-		glDeleteShader(vertexShaderID);
-		glDeleteShader(fragmentShaderID);
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, fillGradientVertexShader, i == 0 ? fillFragmentShader : fillFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_fillGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
-		LOG_GLERROR(glGetError());
+		// Create and init AA-Fill shader
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, aaFillVertexShader, i == 0 ? aaFillFragmentShader : aaFillFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_aaFillProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init AA-Fill gradient shader
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, aaFillGradientVertexShader, i == 0 ? aaFillFragmentShader : aaFillFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_aaFillGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init Blit shader
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, blitVertexShader, i == 0 ? blitFragmentShader : blitFragmentShader_A8);
+			_setBlitUniforms(progId, uboBindingPoint);
+			m_blitProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init Gradient Blit shader
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, blitGradientVertexShader, i == 0 ? blitFragmentShader : blitFragmentShader_A8);
+			_setBlitUniforms(progId, uboBindingPoint);
+			m_blitGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init AlphaBlit shader (shader program for blitting from alpha-only texture)
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, blitVertexShader, i == 0 ? alphaBlitFragmentShader : alphaBlitFragmentShader_A8);
+			_setBlitUniforms(progId, uboBindingPoint);
+			m_alphaBlitProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init AlphaBlit gradient shader (shader program for blitting from alpha-only texture)
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, blitGradientVertexShader, i == 0 ? alphaBlitFragmentShader : alphaBlitFragmentShader_A8);
+			_setBlitUniforms(progId, uboBindingPoint);
+			m_alphaBlitGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init Clut Blit shaders
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, clutBlitNearestVertexShader, i == 0 ? clutBlitNearestFragmentShader : clutBlitNearestFragmentShader_A8);
+			_setClutBlitUniforms(progId, uboBindingPoint);
+			m_clutBlitNearestProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, clutBlitInterpolateVertexShader, i == 0 ? clutBlitInterpolateFragmentShader : clutBlitInterpolateFragmentShader_A8);
+			_setClutBlitUniforms(progId, uboBindingPoint);
+			m_clutBlitInterpolateProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init Clut Blit gradient shaders
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, clutBlitNearestGradientVertexShader, i == 0 ? clutBlitNearestFragmentShader : clutBlitNearestFragmentShader_A8);
+			_setClutBlitUniforms(progId, uboBindingPoint);
+			m_clutBlitNearestGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, clutBlitInterpolateGradientVertexShader, i == 0 ? clutBlitInterpolateFragmentShader : clutBlitInterpolateFragmentShader_A8);
+			_setClutBlitUniforms(progId, uboBindingPoint);
+			m_clutBlitInterpolateGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init Plot shader
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, plotVertexShader, i == 0 ? plotFragmentShader : plotFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_plotProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init Line shader
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, lineFromToVertexShader, i == 0 ? lineFromToFragmentShader : lineFromToFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_lineFromToProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init Segment shaders
+
+		for (int i = 1; i < c_maxSegments; i++)
+		{
+			for (int canvType = 0; canvType < 2; canvType++)
+			{
+				std::string fragShader = canvType == 0 ? segmentsFragmentShader : segmentsFragmentShader_A8;
+				auto edgesPos = fragShader.find("$EDGES");
+				fragShader.replace(edgesPos, 6, std::to_string(i));
+
+				auto maxsegPos = fragShader.find("$MAXSEG");
+				fragShader.replace(maxsegPos, 7, std::to_string(c_maxSegments));
+
+				const char* pVertexShader = segmentsVertexShader;
+				for (int j = 0; j < 2; j++)
+				{
+					GLuint prog = _loadOrCompileProgram(programNb++, pVertexShader, fragShader.c_str());
+					m_segmentsProg[i][j][canvType] = prog;
+
+					GLint extrasIdLoc = glGetUniformLocation(prog, "extrasId");
+					GLint colorsIdLoc = glGetUniformLocation(prog, "colorsId");
+					GLint stripesIdLoc = glGetUniformLocation(prog, "stripesId");
+					GLint paletteIdLoc = glGetUniformLocation(prog, "paletteId");
+
+					glUseProgram(prog);
+					glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+					glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
+					glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 1 is used for segment stripes buffer.
+					glUniform1i(paletteIdLoc, 3);		// Needs to be set. Texture unit 3 is used for segment stripes buffer.
+
+					pVertexShader = segmentsVertexShaderGradient;
+				}
+			}
+		}
+
+		LOG_INIT_GLERROR(glGetError());
+	}
+
+	//____ _loadOrCompileProgram() __________________________________________________________
+
+	GLuint GlGfxDevice::_loadOrCompileProgram(int programNb, const char* pVertexShaderSource, const char* pFragmentShaderSource)
+	{
+		GLuint  programID = glCreateProgram();
+
+		if (s_pShaderPrograms)
+		{
+			char* pBuffer = (char*)s_pShaderPrograms->data();
+			ProgramBlobHeader* pHeader = (ProgramBlobHeader*)pBuffer;
+
+			if (pHeader->version == c_versionNb || pHeader->nbPrograms == c_nbPrograms)
+			{
+				ProgramBlobEntry& prg = pHeader->programs[programNb];
+				glProgramBinary(programID, prg.binaryFormat, pBuffer + prg.offset, prg.size);
+			}
+		}
+
+		GLint linkStatus = 0;
+		glGetProgramiv(programID, GL_LINK_STATUS, &linkStatus);
+
+		if (linkStatus == false)
+		{
+			// Since a program failed to load we discard the whole programs blob.
+
+			s_pShaderPrograms = nullptr;
+
+			GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+			GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+			glShaderSource(vertexShaderID, 1, &pVertexShaderSource, NULL);
+			glCompileShader(vertexShaderID);
+
+			glShaderSource(fragmentShaderID, 1, &pFragmentShaderSource, NULL);
+			glCompileShader(fragmentShaderID);
+
+			glAttachShader(programID, vertexShaderID);
+			glAttachShader(programID, fragmentShaderID);
+			glLinkProgram(programID);
+
+			// glLinkProgram doesn't use glGetError
+			int mess = 0;
+			glGetProgramiv(programID, GL_LINK_STATUS, &mess);
+			if (mess != GL_TRUE)
+			{
+				GLchar	vertexShaderLog[2048];
+				GLchar	fragmentShaderLog[2048];
+				GLchar	programInfoLog[2048];
+
+				GLsizei vertexShaderLogLength;
+				GLsizei fragmentShaderLogLength;
+				GLsizei programInfoLogLength;
+
+				glGetShaderInfoLog(vertexShaderID, 2048, &vertexShaderLogLength, vertexShaderLog);
+				glGetShaderInfoLog(fragmentShaderID, 2048, &fragmentShaderLogLength, fragmentShaderLog);
+				glGetProgramInfoLog(programID, 2048, &programInfoLogLength, programInfoLog);
+
+				char	buffer[2048 * 3 + 256];
+
+				sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
+				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OpenGL, buffer, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			}
+
+			glDetachShader(programID, vertexShaderID);
+			glDetachShader(programID, fragmentShaderID);
+
+			glDeleteShader(vertexShaderID);
+			glDeleteShader(fragmentShaderID);
+
+			LOG_GLERROR(glGetError());
+		}
 
 		return programID;
+	}
+
+	//____ _generateProgramBlob() __________________________________________________________
+
+	Blob_p GlGfxDevice::_generateProgramBlob()
+	{
+		GLuint	programs[c_nbPrograms];
+
+		// Collect the programs
+
+		int prg = 0;
+
+		programs[prg++] = m_fillProg[0];
+		programs[prg++] = m_fillProg[1];
+
+		programs[prg++] = m_fillGradientProg[0];
+		programs[prg++] = m_fillGradientProg[1];
+
+		programs[prg++] = m_aaFillProg[0];
+		programs[prg++] = m_aaFillProg[1];
+
+		programs[prg++] = m_aaFillGradientProg[0];
+		programs[prg++] = m_aaFillGradientProg[1];
+
+		programs[prg++] = m_blitProg[0];
+		programs[prg++] = m_blitProg[1];
+
+		programs[prg++] = m_blitGradientProg[0];
+		programs[prg++] = m_blitGradientProg[1];
+
+		programs[prg++] = m_alphaBlitProg[0];
+		programs[prg++] = m_alphaBlitProg[1];
+
+		programs[prg++] = m_alphaBlitGradientProg[0];
+		programs[prg++] = m_alphaBlitGradientProg[1];
+
+		programs[prg++] = m_clutBlitNearestProg[0];
+		programs[prg++] = m_clutBlitNearestProg[1];
+
+		programs[prg++] = m_clutBlitInterpolateProg[0];
+		programs[prg++] = m_clutBlitInterpolateProg[1];
+
+		programs[prg++] = m_clutBlitNearestGradientProg[0];
+		programs[prg++] = m_clutBlitNearestGradientProg[1];
+
+		programs[prg++] = m_clutBlitInterpolateGradientProg[0];
+		programs[prg++] = m_clutBlitInterpolateGradientProg[1];
+
+		programs[prg++] = m_plotProg[0];
+		programs[prg++] = m_plotProg[1];
+
+		programs[prg++] = m_lineFromToProg[0];
+		programs[prg++] = m_lineFromToProg[1];
+
+		for (int i = 1; i < c_maxSegments; i++)
+		{
+			for (int canvType = 0; canvType < 2; canvType++)
+			{
+				programs[prg++] = m_segmentsProg[i][0][canvType];
+				programs[prg++] = m_segmentsProg[i][1][canvType];
+			}
+		}
+
+		assert(prg == c_nbPrograms);
+
+		// Store sizes and calculate space needed
+
+		int totalSize = 0;
+		int	programSize[c_nbPrograms];
+
+		for (int i = 0; i < c_nbPrograms; i++)
+		{
+			GLint	size;
+			glGetProgramiv(programs[i], GL_PROGRAM_BINARY_LENGTH, &size);
+			programSize[i] = size;
+			totalSize += size;
+		}
+
+		// Create our Blob
+
+		auto pBlob = Blob::create(sizeof(ProgramBlobHeader) + totalSize);
+
+		char* pBuffer = (char*)pBlob->data();
+
+		ProgramBlobHeader* pHeader = (ProgramBlobHeader*)pBuffer;
+
+		pHeader->version = c_versionNb;
+		pHeader->nbPrograms = c_nbPrograms;
+
+		// Get our program binaries
+
+		char* wpBinary = pBuffer + sizeof(ProgramBlobHeader);
+		int offset = sizeof(ProgramBlobHeader);
+		for (int i = 0; i < c_nbPrograms; i++)
+		{
+			pHeader->programs[i].offset = offset;
+			glGetProgramBinary(programs[i], programSize[i], &pHeader->programs[i].size, &pHeader->programs[i].binaryFormat, pBuffer + offset);
+			offset += pHeader->programs[i].size;
+		}
+
+		assert(wpBinary = pBuffer + sizeof(ProgramBlobHeader) + totalSize);
+
+		return pBlob;
 	}
 
 	//____ _initTables() ___________________________________________________________

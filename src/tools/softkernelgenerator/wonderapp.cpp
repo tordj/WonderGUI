@@ -66,14 +66,14 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	auto pFont = FreeTypeFont::create(pFontBlob);
 
 	m_pTextStyle = TextStyle::create(WGBP(TextStyle,
-									$.font = pFont,
-									$.size = 12,
-									$.color = Color8::Black ));
+									_.font = pFont,
+									_.size = 12,
+									_.color = Color8::Black ));
 
 	m_pLabelStyle = TextStyle::create(WGBP(TextStyle,
-									$.font = pFont,
-									$.size = 14,
-									$.color = Color8::Black));
+									_.font = pFont,
+									_.size = 14,
+									_.color = Color8::Black));
 
 
 	Base::setDefaultStyle(m_pTextStyle);
@@ -93,9 +93,9 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	auto pWindow = ScrollPanel::create();
 	pWindow->setSkin(ColorSkin::create(Color8::AntiqueWhite));
 	pWindow->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
-		$.color = Color8::DarkOliveGreen,
-		$.outline = 1,
-		$.outlineColor = Color8::Black)));
+		_.color = Color8::DarkOliveGreen,
+		_.outline = 1,
+		_.outlineColor = Color8::Black)));
 	pWindow->scrollbarY.setBar(m_pPlateSkin);
 	pWindow->setAutohideScrollbars(true, false);
 	pWindow->setSizeConstraints(SizeConstraint::Equal, SizeConstraint::GreaterOrEqual);
@@ -213,34 +213,34 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		return false;
 
 	m_pPlateSkin = BlockSkin::create(WGBP(BlockSkin,
-		$.surface = pPlateSurf,
-		$.axis = Axis::X,
-		$.frame = 4,
-		$.padding = 4
+		_.surface = pPlateSurf,
+		_.axis = Axis::X,
+		_.frame = 4,
+		_.padding = 4
 	));
 
 	m_pButtonSkin = BlockSkin::create(WGBP(BlockSkin,
-		$.surface = pButtonSurf,
-		$.axis = Axis::X,
-		$.frame = 4,
-		$.padding = { 4,6,4,6 },
-		$.states = { State::Normal, State::Hovered, State::Pressed, State::Disabled }
+		_.surface = pButtonSurf,
+		_.axis = Axis::X,
+		_.frame = 4,
+		_.padding = { 4,6,4,6 },
+		_.states = { State::Normal, State::Hovered, State::Pressed, State::Disabled }
 	));
 
 	m_pToggleButtonSkin = BlockSkin::create(WGBP(BlockSkin,
-		$.surface = pStateButtonSurf,
-		$.axis = Axis::X,
-		$.frame = 4,
-		$.padding = 4,
-		$.states = { State::Normal, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }
+		_.surface = pStateButtonSurf,
+		_.axis = Axis::X,
+		_.frame = 4,
+		_.padding = 4,
+		_.states = { State::Normal, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }
 	));
 
 	m_pCheckBoxSkin = BlockSkin::create(WGBP(BlockSkin,
-		$.surface = pCheckBoxSurf,
-		$.axis = Axis::Y,
-		$.frame = 3,
-//		$.defaultSize = { 12,12 },
-		$.states = { State::Normal, State::Selected }
+		_.surface = pCheckBoxSurf,
+		_.axis = Axis::Y,
+		_.frame = 3,
+//		_.defaultSize = { 12,12 },
+		_.states = { State::Normal, State::Selected }
 	));
 
 	return true;
@@ -275,20 +275,20 @@ Widget_p	MyApp::_buildButtonRow()
 	pButtonRow->setSkin(m_pPlateSkin);
 
 	auto pClearButton = Button::create(WGBP(Button,
-		$.skin = m_pButtonSkin,
-		$.label.text = "Clear"));
+		_.skin = m_pButtonSkin,
+		_.label.text = "Clear"));
 
 	auto pResetButton = Button::create(WGBP(Button,
-		$.skin = m_pButtonSkin,
-		$.label.text = "Reset"));
+		_.skin = m_pButtonSkin,
+		_.label.text = "Reset"));
 
 	auto pLoadButton = Button::create(WGBP(Button,
-		$.skin = m_pButtonSkin,
-		$.label.text = "Load"));
+		_.skin = m_pButtonSkin,
+		_.label.text = "Load"));
 
 	auto pSaveButton = Button::create(WGBP(Button,
-		$.skin = m_pButtonSkin,
-		$.label.text = "Save"));
+		_.skin = m_pButtonSkin,
+		_.label.text = "Save"));
 
 	Base::msgRouter()->addRoute( pClearButton, MsgType::Select, [this](Msg*) {this->clear(); });
 	Base::msgRouter()->addRoute( pResetButton, MsgType::Select, [this](Msg*) {this->reset(); });
@@ -330,10 +330,10 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 	auto pTopSection = PackPanel::create();
 	pTopSection->setAxis(Axis::X);
 	pTopSection->setSkin(BoxSkin::create(WGBP(BoxSkin,
-		$.color = HiColor::White,
-		$.outline = 1,
-		$.outlineColor = Color8::Black,
-		$.padding = { 4,2,4,2 }
+		_.color = HiColor::White,
+		_.outline = 1,
+		_.outlineColor = Color8::Black,
+		_.padding = { 4,2,4,2 }
 	)));
 
 	// Togglebuttons for TintModes
@@ -341,19 +341,19 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 	auto pColumn = PackPanel::create();
 	pColumn->setAxis(Axis::Y);
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
-												$.display.text = "Tint Modes",
-												$.display.style = m_pLabelStyle));
+												_.display.text = "Tint Modes",
+												_.display.style = m_pLabelStyle));
 
 	TintMode tintModes[] = { TintMode::None, TintMode::Flat, TintMode::GradientX, TintMode::GradientY, TintMode::GradientXY };
 
 	for (auto tintMode : tintModes)
 	{
 		auto pWidget = ToggleButton::create(WGBP(ToggleButton,
-												$.id = (int)tintMode;
-												$.icon.skin = m_pCheckBoxSkin,
-												$.icon.padding = { 0,4,0,0 },
-												$.label.text = toString(tintMode),
-												$.selected = m_pDB->tintMode(tintMode)));
+												_.id = (int)tintMode;
+												_.icon.skin = m_pCheckBoxSkin,
+												_.icon.padding = { 0,4,0,0 },
+												_.label.text = toString(tintMode),
+												_.selected = m_pDB->tintMode(tintMode)));
 
 		if (tintMode == TintMode::None)
 			pWidget->setEnabled(false);
@@ -371,19 +371,19 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 	pColumn = PackPanel::create();
 	pColumn->setAxis(Axis::Y);
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
-												$.display.text = "Blend Modes",
-												$.display.style = m_pLabelStyle ));
+												_.display.text = "Blend Modes",
+												_.display.style = m_pLabelStyle ));
 
 	BlendMode blendModes[] = { BlendMode::Replace, BlendMode::Blend, BlendMode::Add, BlendMode::Subtract, BlendMode::Multiply, BlendMode::Max, BlendMode::Min, BlendMode::Invert, BlendMode::Morph };
 
 	for (auto blendMode : blendModes)
 	{
 		auto pWidget = ToggleButton::create(WGBP(ToggleButton,
-												$.id = (int)blendMode;
-												$.icon.skin = m_pCheckBoxSkin,
-												$.icon.padding = { 0,4,0,0 },
-												$.label.text = toString(blendMode),
-												$.selected = m_pDB->blendMode(blendMode)));
+												_.id = (int)blendMode;
+												_.icon.skin = m_pCheckBoxSkin,
+												_.icon.padding = { 0,4,0,0 },
+												_.label.text = toString(blendMode),
+												_.selected = m_pDB->blendMode(blendMode)));
 
 		if (blendMode == BlendMode::Replace || blendMode == BlendMode::Blend)
 			pWidget->setEnabled(false);
@@ -402,8 +402,8 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 	pColumn = PackPanel::create();
 	pColumn->setAxis(Axis::Y);
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
-		$.display.text = "Source Format",
-		$.display.style = m_pLabelStyle));
+		_.display.text = "Source Format",
+		_.display.style = m_pLabelStyle));
 
 	PixelFormat sourceFormats[] = { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB, PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
 								PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
@@ -412,11 +412,11 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 	for (auto format : sourceFormats)
 	{
 		auto pWidget = ToggleButton::create(WGBP(ToggleButton,
-			$.id = (int)format;
-			$.icon.skin = m_pCheckBoxSkin,
-			$.icon.padding = { 0,4,0,0 },
-			$.label.text = toString(format),
-			$.selected = m_pDB->srcFormat(format) ));
+			_.id = (int)format;
+			_.icon.skin = m_pCheckBoxSkin,
+			_.icon.padding = { 0,4,0,0 },
+			_.label.text = toString(format),
+			_.selected = m_pDB->srcFormat(format) ));
 
 		auto pObj = this;
 		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, [pObj](Msg* pMsg) {pObj->sourceFormatToggled(pMsg); });
@@ -430,8 +430,8 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 	pColumn = PackPanel::create();
 	pColumn->setAxis(Axis::Y);
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
-		$.display.text = "Dest Format",
-		$.display.style = m_pLabelStyle));
+		_.display.text = "Dest Format",
+		_.display.style = m_pLabelStyle));
 
 	PixelFormat destFormats[] = { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB, PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
 								PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
@@ -440,11 +440,11 @@ wg::Widget_p MyApp::_buildGlobalSettingsSection()
 	for (auto format : destFormats)
 	{
 		auto pWidget = ToggleButton::create(WGBP(ToggleButton,
-			$.id = (int)format;
-			$.icon.skin = m_pCheckBoxSkin,
-			$.icon.padding = { 0,4,0,0 },
-			$.label.text = toString(format),
-			$.selected = m_pDB->destFormat(format)));
+			_.id = (int)format;
+			_.icon.skin = m_pCheckBoxSkin,
+			_.icon.padding = { 0,4,0,0 },
+			_.label.text = toString(format),
+			_.selected = m_pDB->destFormat(format)));
 
 		auto pObj = this;
 		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, [pObj](Msg* pMsg) {pObj->destFormatToggled(pMsg); });
@@ -465,10 +465,10 @@ wg::Widget_p MyApp::_buildOptimizedBlitsSection()
 	auto pSection = PackPanel::create();
 	pSection->setAxis(Axis::Y);
 	pSection->setSkin(BoxSkin::create(WGBP(BoxSkin,
-		$.color = HiColor::White,
-		$.outline = 1,
-		$.outlineColor = Color8::Black,
-		$.padding = { 4,2,4,2 }
+		_.color = HiColor::White,
+		_.outline = 1,
+		_.outlineColor = Color8::Black,
+		_.padding = { 4,2,4,2 }
 	)));
 
 	return pSection;
@@ -481,17 +481,17 @@ wg::Widget_p MyApp::_buildListSummarySection()
 	auto pSection = PackPanel::create();
 	pSection->setAxis(Axis::Y);
 	pSection->setSkin(BoxSkin::create(WGBP(BoxSkin,
-		$.color = HiColor::White,
-		$.outline = 1,
-		$.outlineColor = Color8::Black,
-		$.padding = { 4,2,4,2 }
+		_.color = HiColor::White,
+		_.outline = 1,
+		_.outlineColor = Color8::Black,
+		_.padding = { 4,2,4,2 }
 	)));
 
 	auto kernelCount = m_pDB->countKernels();
 
 	pSection->slots << TextDisplay::create(WGBP(TextDisplay,
-		$.display.text = "Kernels to be generated:",
-		$.display.style = m_pLabelStyle));
+		_.display.text = "Kernels to be generated:",
+		_.display.style = m_pLabelStyle));
 
 	pSection->slots << _buildLabeledList(4, { {"Plot: ", kernelCount.plot},
 												{"Fill: ", kernelCount.fill},
@@ -518,8 +518,8 @@ wg::Widget_p MyApp::_buildListSummarySection()
 	std::string amount = "Total amount: " + std::to_string(total);
 
 	pSection->slots << TextDisplay::create(WGBP(TextDisplay,
-		$.display.text = amount.c_str(),
-		$.display.style = m_pLabelStyle));
+		_.display.text = amount.c_str(),
+		_.display.style = m_pLabelStyle));
 
 
 
@@ -564,10 +564,10 @@ wg::Widget_p MyApp::_buildLabeledList(int nColumns, std::initializer_list < std:
 	for (auto& entry : list)
 	{
 		columns[column][0]->slots << TextDisplay::create(WGBP(TextDisplay,
-									$.display.text = entry.first.c_str() ));
+									_.display.text = entry.first.c_str() ));
 
 		columns[column][1]->slots << NumberDisplay::create(WGBP(NumberDisplay,
-			$.display.value = entry.second ));
+			_.display.value = entry.second ));
 
 		column = (column + 1) % (nColumns);
 	}
@@ -586,17 +586,17 @@ wg::Widget_p MyApp::_buildExportSection()
 	auto pSection = PackPanel::create();
 	pSection->setAxis(Axis::X);
 	pSection->setSkin(BoxSkin::create(WGBP(BoxSkin,
-		$.color = HiColor::White,
-		$.outline = 1,
-		$.outlineColor = Color8::Black,
-		$.padding = { 4,2,4,2 }
+		_.color = HiColor::White,
+		_.outline = 1,
+		_.outlineColor = Color8::Black,
+		_.padding = { 4,2,4,2 }
 	)));
 
 	pSection->slots << Filler::create();
 
 	pSection->slots << Button::create(WGBP(Button,
-		$.skin = m_pButtonSkin,
-		$.label.text = "Generate Source Code"
+		_.skin = m_pButtonSkin,
+		_.label.text = "Generate Source Code"
 	));
 
 	pSection->slots << Filler::create();

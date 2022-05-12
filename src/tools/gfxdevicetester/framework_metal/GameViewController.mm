@@ -279,9 +279,13 @@ protected:
         iDeltaX *= -1;
         iDeltaY *= -1;
     }
-        
-    Base::inputHandler()->setWheelRoll(1, Coord(iDeltaX,iDeltaY), bInverted );
-        
+    
+	if( iDeltaX != 0 )
+		Base::inputHandler()->setWheelRoll(1, iDeltaX, bInverted );
+
+	if( iDeltaY != 0 )
+		Base::inputHandler()->setWheelRoll(1, iDeltaY, bInverted );
+
 }
 
 //____ mouseDown ___________________________________________________________
