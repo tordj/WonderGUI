@@ -79,7 +79,7 @@ namespace wg
 //#define WGLIST(...) { __VA_ARGS__ }
 
 #define WGBP(T, ...)\
-	([&]{ wg::T::Blueprint ${}; __VA_ARGS__; return $; }())
+	([&]{ wg::T::Blueprint _{}; __VA_ARGS__; return _; }())
 
 #define WGTRACK(pObj) wg::Base::_trackObj(pObj, __FILE__, __LINE__ ) 
 
@@ -599,6 +599,7 @@ namespace wg
 		const int Mipmapped = 4;	// Surface should be Mipmapped. Better downscaling, but takes more memory and time to initialize and unlock Write-access.
 		const int Scale200 = 8;
 		const int Canvas = 16;		// Surface may be used as Canvas.
+		const int Bilinear = 32;	// Force SampleMethod::Bilinear.
 	};
 
 	//____ CanvasInit ______________________________________________________________

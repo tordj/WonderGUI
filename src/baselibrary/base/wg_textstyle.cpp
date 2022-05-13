@@ -76,7 +76,7 @@ namespace wg
 
 		for (int i = 0; i < State::IndexAmount; i++)
 		{
-			m_size[i]			= 0;
+			m_size[i]			= -1;
 			m_color[i]			= Color::Black;
 			m_backColor[i]		= Color::Transparent;
 			m_decoration[i]		= TextDecoration::Undefined;
@@ -96,7 +96,7 @@ namespace wg
 		m_backColor[idx] = blueprint.backColor;
 		m_decoration[idx] = blueprint.decoration;
 
-		m_sizeSetMask.setBit(idx, blueprint.size > 0);
+		m_sizeSetMask.setBit(idx, blueprint.size >= 0);
 		m_colorSetMask.setBit(idx, blueprint.color != HiColor::Undefined);
 		m_backColorSetMask.setBit(idx, blueprint.backColor != HiColor::Undefined);
 		m_decorationSetMask.setBit(idx, blueprint.decoration != TextDecoration::Undefined);
@@ -107,15 +107,29 @@ namespace wg
 		{
 			idx = entry.state;
 
-			m_size[idx] = entry.data.size;
-			m_color[idx] = entry.data.color;
-			m_backColor[idx] = entry.data.backColor;
-			m_decoration[idx] = entry.data.decoration;
+			if( entry.data.size >= 0 )
+			{
+				m_size[idx] = entry.data.size;
+				m_sizeSetMask.setBit(idx, true);
+			}
 
-			m_sizeSetMask.setBit(idx, entry.data.size > 0);
-			m_colorSetMask.setBit(idx, entry.data.color != HiColor::Undefined );
-			m_backColorSetMask.setBit(idx, entry.data.backColor != HiColor::Undefined);
-			m_decorationSetMask.setBit(idx, entry.data.decoration != TextDecoration::Undefined);
+			if( entry.data.color != HiColor::Undefined )
+			{
+				m_color[idx] = entry.data.color;
+				m_colorSetMask.setBit(idx, true );
+			}
+			
+			if( entry.data.backColor != HiColor::Undefined )
+			{
+				m_backColor[idx] = entry.data.backColor;
+				m_backColorSetMask.setBit(idx, true);
+			}
+			
+			if( entry.data.decoration != TextDecoration::Undefined )
+			{
+				m_decoration[idx] = entry.data.decoration;
+				m_decorationSetMask.setBit(idx, true);
+			}
 		}
 
 		//
@@ -160,9 +174,12 @@ namespace wg
 		pDest->backColor	= m_backColor[idx];
 		pDest->decoration	= m_decoration[idx];
 
-		if( pDest->size == 0 )
+		if( pDest->size == -1 )
 			pDest->size = ptsToSpx(12,scale);				// Default to size 12.
 
+		if( pDest->color == HiColor::Undefined )
+			pDest->color = HiColor::Black;
+		
 		if( pDest->decoration == TextDecoration::Undefined )
 			pDest->decoration = TextDecoration::None;
 
@@ -185,7 +202,7 @@ namespace wg
 		if (m_backBlendMode != BlendMode::Undefined)
 			pDest->backBlendMode = m_backBlendMode;
 
-		if( m_size[idx] != 0 )
+		if( m_size[idx] >= 0 )
 			pDest->size	= ptsToSpx(m_size[idx],scale);
 		if( m_decoration[idx] != TextDecoration::Undefined )
 			pDest->decoration = m_decoration[idx];

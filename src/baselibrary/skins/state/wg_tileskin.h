@@ -56,6 +56,14 @@ namespace wg
 
 		struct StateBP
 		{
+
+			StateBP() {}
+			StateBP( State state ) : state(state) {}
+			StateBP( State state, StateData data ) : state(state), data(data) {}
+			StateBP( State state, Color color ) : state(state) { data.color = color; }
+			StateBP( State state, Coord contentShift ) : state(state)	{ data.contentShift = contentShift; }
+			StateBP( State state, Surface_p surface ) : state(state)	{ data.surface = surface; }
+
 			State			state = State::Normal;
 			StateData		data;
 		};

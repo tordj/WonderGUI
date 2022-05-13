@@ -93,7 +93,7 @@ namespace wg
 		void		    _setPixelDetails( PixelFormat format );
         void            _setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut );
 
-        void            _createAndSyncTextures();
+        void            _createAndSyncTextures( bool bHasTextureData );
         
         void            _syncBufferAndWait();
         void            _syncTexture( RectI region );

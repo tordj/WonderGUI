@@ -63,10 +63,20 @@ namespace wg
 
 		inline operator int() const { return s_stateToIndexTable[m_state]; }
 
-		inline State operator+(State state) const { int s = m_state | state.m_state; if (s & Disabled.m_state) s &= DisabledSelected.m_state; return *this; }
+		inline State operator+(State state) const
+		{
+			int s = m_state | state.m_state;
+			if (s & Disabled.m_state)
+				s &= DisabledSelected.m_state;
+
+			State st;
+			st.m_state = s;
+			return st;
+		}
+		
 		inline State operator-(State _state) const
 		{
-			int state = (int)_state;
+			int state = _state.m_state;
 			int hovered = Hovered.m_state;
 			int hoverDependant = (Pressed.m_state | Targeted.m_state) & ~hovered;
 
@@ -75,10 +85,20 @@ namespace wg
 			int s = (m_state & ~state);
 			if ((s & hovered) == 0)
 				s &= ~hoverDependant;			// If we remove hovered we can't keep a state dependant on it.
-			return State(s);
+
+			State st;
+			st.m_state = s;
+			return st;
 		}
 
-		inline State& operator+=(State state) { m_state |= state.m_state; if (m_state & Disabled.m_state) m_state &= DisabledSelected.m_state; return *this; }
+		inline State& operator+=(State state)
+		{
+			m_state |= state.m_state;
+			if (m_state & Disabled.m_state)
+				m_state &= DisabledSelected.m_state;
+			return *this;
+		}
+		
 		inline State& operator-=(State _state)
 		{
 			int state = _state.m_state;

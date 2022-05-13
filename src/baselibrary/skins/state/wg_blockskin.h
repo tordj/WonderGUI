@@ -51,15 +51,18 @@ namespace wg
 		{
 			HiColor			color = HiColor::Undefined;
 			Coord			contentShift;
-			bool			blockless = false;
+			bool			reuseBlock = false;
+			State			reuseBlockFrom = State::Normal;
 		};
 
 		struct StateBP
 		{
 			StateBP() {}
-			StateBP( State s ) : state(s) {}
-			StateBP( State s, StateData d ) : state(s), data(d) {}
-			
+			StateBP( State state ) : state(state) {}
+			StateBP( State state, StateData data ) : state(state), data(data) {}
+			StateBP( State state, Color color, bool reuseBlock = false, State reuseBlockFrom = State::Normal ) : state(state) { data.color = color; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
+			StateBP( State state, Coord contentShift, bool reuseBlock = false, State reuseBlockFrom = State::Normal ) : state(state)	{ data.contentShift = contentShift; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
+
 			State			state = State::Normal;
 			StateData		data;
 		};
@@ -103,7 +106,6 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static BlockSkin_p	create();
 		static BlockSkin_p	create(const Blueprint& blueprint);
 		static BlockSkin_p  create(Surface * pSurface, Border frame = { 0 } );
 		static BlockSkin_p	create(Surface * pSurface, Rect block, Border frame = { 0 } );

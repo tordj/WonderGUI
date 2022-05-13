@@ -2812,7 +2812,7 @@ namespace wg
 
 	//____ fill() ______________________________________________________
 
-	void SoftGfxDevice::fill(const RectI& rect, HiColor col)
+	void SoftGfxDevice::fill(const RectSPX& rect, HiColor col)
 	{
 		if (!m_pRenderLayerSurface || !m_pCanvasPixels )
 			return;
@@ -2999,7 +2999,7 @@ namespace wg
 
 		// Clipping
 
-		RectF clip = RectF::getIntersection(rect, RectF(m_clipBounds));
+		RectF clip = RectF::getIntersection(rect, RectF(m_clipBounds/64));
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
@@ -3028,7 +3028,7 @@ namespace wg
 		{
 			HiColor color = col;
 
-			RectF  patch = RectF::getIntersection(rect, RectF(m_pClipRects[i]));
+			RectF  patch = RectF::getIntersection(rect, RectF(m_pClipRects[i]/64));
 			if (patch.w == 0.f || patch.h == 0.f)
 				continue;
 
