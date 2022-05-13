@@ -13,8 +13,11 @@ KernelDB::~KernelDB()
 
 }
 
-KernelDB::StraightBlitSpec::StraightBlitSpec()
+KernelDB::CustomBlitSpec::CustomBlitSpec()
 {
+	for (auto& e : blitTypes)
+		e = false;
+
 	for (auto& e : tintModes)
 		e = false;
 
@@ -27,29 +30,6 @@ KernelDB::StraightBlitSpec::StraightBlitSpec()
 	for (auto& e : destFormats)
 		e = false;
 
-	for (auto& e : blitAndTile)
-		e = false;
-}
-
-KernelDB::TransformBlitSpec::TransformBlitSpec()
-{
-	for (auto& e : tintModes)
-		e = false;
-
-	for (auto& e : blendModes)
-		e = false;
-
-	for (auto& e : sourceFormats)
-		e = false;
-
-	for (auto& e : destFormats)
-		e = false;
-
-	for (auto& e : sampleMethods)
-		e = false;
-
-	for (auto& e : blitClipAndTile)
-		e = false;
 }
 
 
@@ -80,7 +60,8 @@ void KernelDB::setSrcFormat(PixelFormat format, bool bOn)
 	if (format >= PixelFormat_min && format <= PixelFormat_max &&
 		format != PixelFormat::Undefined && format != PixelFormat::Custom &&
 		format != PixelFormat::BGRA_8 && format != PixelFormat::BGRX_8 &&
-		format != PixelFormat::BGR_8 && format != PixelFormat::CLUT_8)
+		format != PixelFormat::BGR_8 && format != PixelFormat::CLUT_8 &&
+		format != PixelFormat::BGRX_8_linear && format != PixelFormat::BGRX_8_sRGB )
 		m_srcFormats[int(format)] = bOn;
 }
 
@@ -92,7 +73,8 @@ void KernelDB::setDestFormat(PixelFormat format, bool bOn)
 		format != PixelFormat::Undefined && format != PixelFormat::Custom &&
 		format != PixelFormat::BGRA_8 && format != PixelFormat::BGRX_8 &&
 		format != PixelFormat::BGR_8 && format != PixelFormat::CLUT_8 &&
-		format != PixelFormat::CLUT_8_linear && format != PixelFormat::CLUT_8_sRGB )
+		format != PixelFormat::CLUT_8_linear && format != PixelFormat::CLUT_8_sRGB &&
+		format != PixelFormat::BGRX_8_linear && format != PixelFormat::BGRX_8_sRGB )
 		m_destFormats[int(format)] = bOn;
 }
 
@@ -118,9 +100,9 @@ KernelDB::KernelCount KernelDB::countKernels()
 		if (e) nDestFormats++;
 
 
-
-
 	KernelCount count;
+
+	// Fill in values for draw kernels and fundamental blit kernels.
 
 	count.plot = nBlendModes * nDestFormats;
 	count.fill = nTintModes * nBlendModes * nDestFormats;
@@ -129,11 +111,50 @@ KernelDB::KernelCount KernelDB::countKernels()
 	count.plotList = nBlendModes * nDestFormats;
 	count.segment = nBlendModes * nDestFormats * ((m_tintModes[int(TintMode::GradientY)] || m_tintModes[int(TintMode::GradientXY)]) ? 2 : 1);
 
-	count.pass1blits		= nSourceFormats * 2;
-	count.pass1blits_fast8	= nSourceFormats * 2;
+	count.pass1blits_straight		= nSourceFormats * 2;
+	count.pass1blits_straight_fast8	= nSourceFormats * 2;
+
+	count.pass1blits_transform		= nSourceFormats * 2 * 3;
+	count.pass1blits_transform_fast8 = nSourceFormats * 2 * 3;
 
 	count.pass2blits = nTintModes * nBlendModes * nDestFormats;
 	count.pass2blits_fast8 = nTintModes * nBlendModes * nDestFormats;		// Room for improvement?
+
+	// Fill in values for transform custom kernels
+
+	int nTransformBlitKernels = 0;
+	for (auto& spec : m_customBlits)
+	{
+		int blitAndTile = 0;
+		int nBlitTypes = 0;
+		int nTintModes = 0;
+		int nBlendModes = 0;
+		int nSourceFormats = 0;
+		int nDestFormats = 0;
+
+
+		for (int i = 0; i < TintMode_size; i++)
+			if (spec.tintModes[i] && m_tintModes[i])
+				nTintModes++;
+
+		for (int i = 0; i < BlendMode_size; i++)
+			if (spec.blendModes[i] && m_blendModes[i])
+				nBlendModes++;
+
+		for (int i = 0; i < PixelFormat_size; i++)
+			if (spec.sourceFormats[i] && m_srcFormats[i])
+				nSourceFormats++;
+
+		for (int i = 0; i < PixelFormat_size; i++)
+			if (spec.destFormats[i] && m_destFormats[i])
+				nDestFormats++;
+
+		for (int i = 0; i < BlitType_size; i++)
+			if (spec.blitTypes[i] )
+				nBlitTypes++;
+
+		count.customBlits += nBlitTypes * nTintModes * nBlendModes * nSourceFormats * nDestFormats;
+	}
 
 	return count;
 }
@@ -148,7 +169,6 @@ bool KernelDB::generateSource(std::ostream& out)
 
 	bool bHasLinearSource = m_srcFormats[(int)PixelFormat::BGRA_4_linear] ||
 							m_srcFormats[(int)PixelFormat::BGRA_8_linear] ||
-							m_srcFormats[(int)PixelFormat::BGRX_8_linear] ||
 							m_srcFormats[(int)PixelFormat::BGR_565_linear] ||
 							m_srcFormats[(int)PixelFormat::BGR_8_linear] ||
 							m_srcFormats[(int)PixelFormat::CLUT_8_linear] ||
@@ -157,19 +177,16 @@ bool KernelDB::generateSource(std::ostream& out)
 
 	bool bHasLinearDest =   m_destFormats[(int)PixelFormat::BGRA_4_linear] ||
 							m_destFormats[(int)PixelFormat::BGRA_8_linear] ||
-							m_destFormats[(int)PixelFormat::BGRX_8_linear] ||
 							m_destFormats[(int)PixelFormat::BGR_565_linear] ||
 							m_destFormats[(int)PixelFormat::BGR_8_linear] ||
 							m_destFormats[(int)PixelFormat::RGB_565_bigendian] ||
 							m_destFormats[(int)PixelFormat::A_8];
 
 	bool bHasSRGBSource =	m_srcFormats[(int)PixelFormat::BGRA_8_sRGB] ||
-							m_srcFormats[(int)PixelFormat::BGRX_8_sRGB] ||
 							m_srcFormats[(int)PixelFormat::BGR_8_sRGB] ||
 							m_srcFormats[(int)PixelFormat::CLUT_8_sRGB];
 
 	bool bHasSRGBDest =		m_destFormats[(int)PixelFormat::BGRA_8_sRGB] ||
-							m_destFormats[(int)PixelFormat::BGRX_8_sRGB] ||
 							m_destFormats[(int)PixelFormat::BGR_8_sRGB];
 
 	bool bUseFast8Blits = bHasLinearSource && bHasLinearDest;
@@ -469,7 +486,7 @@ bool KernelDB::generateSource(std::ostream& out)
 
 void KernelDB::clear()
 {
-	// Set all TintModes and BlendModes
+	// Set all BlitTypes, TintModes and BlendModes
 
 	for (bool& b : m_tintModes)
 		b = false;
@@ -520,8 +537,6 @@ void KernelDB::reset()
 
 	m_srcFormats[int(PixelFormat::BGR_8_sRGB)] = true;
 	m_srcFormats[int(PixelFormat::BGR_8_linear)] = true;
-	m_srcFormats[int(PixelFormat::BGRX_8_sRGB)] = true;
-	m_srcFormats[int(PixelFormat::BGRX_8_linear)] = true;
 	m_srcFormats[int(PixelFormat::BGRA_8_sRGB)] = true;
 	m_srcFormats[int(PixelFormat::BGRA_8_linear)] = true;
 	m_srcFormats[int(PixelFormat::BGRA_4_linear)] = true;
@@ -535,8 +550,6 @@ void KernelDB::reset()
 
 	m_destFormats[int(PixelFormat::BGR_8_sRGB)] = true;
 	m_destFormats[int(PixelFormat::BGR_8_linear)] = true;
-	m_destFormats[int(PixelFormat::BGRX_8_sRGB)] = true;
-	m_destFormats[int(PixelFormat::BGRX_8_linear)] = true;
 	m_destFormats[int(PixelFormat::BGRA_8_sRGB)] = true;
 	m_destFormats[int(PixelFormat::BGRA_8_linear)] = true;
 	m_destFormats[int(PixelFormat::BGRA_4_linear)] = true;
@@ -544,14 +557,15 @@ void KernelDB::reset()
 	m_destFormats[int(PixelFormat::RGB_565_bigendian)] = true;
 	m_destFormats[int(PixelFormat::A_8)] = true;
 
-	// Set optimized SimpleBlit methods
+	// Set custom blit methods
 	{
-		StraightBlitSpec spec;
+		CustomBlitSpec spec;
 
-		spec.blitAndTile[0] = true;
-		spec.blitAndTile[1] = true;
+		for (bool& b : spec.blitTypes)
+			b = true;
 
 		spec.tintModes[int(TintMode::None)] = true;
+
 		spec.blendModes[int(BlendMode::Blend)] = true;
 		spec.blendModes[int(BlendMode::Replace)] = true;
 
@@ -561,49 +575,12 @@ void KernelDB::reset()
 		spec.destFormats[int(PixelFormat::BGR_8_linear)] = true;
 		spec.destFormats[int(PixelFormat::BGR_8_sRGB)] = true;
 
-		spec.destFormats[int(PixelFormat::BGRX_8_linear)] = true;
-		spec.destFormats[int(PixelFormat::BGRX_8_sRGB)] = true;
-
 		for (int srcFormat = 0; srcFormat < PixelFormat_size; srcFormat++)
 		{
 			if (m_srcFormats[srcFormat])
 				spec.sourceFormats[srcFormat] = true;
 		}
 
-		m_straightBlits.push_back(spec);
-	}
-
-	// Set optimized ComplexBlit methods
-
-	{
-		TransformBlitSpec spec;
-
-		spec.blitClipAndTile[0] = true;
-		spec.blitClipAndTile[1] = true;
-		spec.blitClipAndTile[2] = true;
-
-		spec.tintModes[int(TintMode::None)] = true;
-		spec.blendModes[int(BlendMode::Blend)] = true;
-		spec.blendModes[int(BlendMode::Replace)] = true;
-
-		spec.sampleMethods[int(SampleMethod::Nearest)] = true;
-		spec.sampleMethods[int(SampleMethod::Bilinear)] = true;
-
-		spec.destFormats[int(PixelFormat::BGRA_8_linear)] = true;
-		spec.destFormats[int(PixelFormat::BGRA_8_sRGB)] = true;
-
-		spec.destFormats[int(PixelFormat::BGR_8_linear)] = true;
-		spec.destFormats[int(PixelFormat::BGR_8_sRGB)] = true;
-
-		spec.destFormats[int(PixelFormat::BGRX_8_linear)] = true;
-		spec.destFormats[int(PixelFormat::BGRX_8_sRGB)] = true;
-
-		for (int srcFormat = 0; srcFormat < PixelFormat_size; srcFormat++)
-		{
-			if (m_srcFormats[srcFormat])
-				spec.sourceFormats[srcFormat] = true;
-		}
-
-		m_transformBlits.push_back(spec);
+		m_customBlits.push_back(spec);
 	}
 }

@@ -25,6 +25,7 @@
 #pragma once
 
 #include <wg_base.h>
+#include <wg_bitmapcache.h>
 #include <wg_bitmapfont.h>
 #include <wg_blob.h>
 #include <wg_canvaslayers.h>
@@ -42,11 +43,6 @@
 #include <wg_font.h>
 #include <wg_geo.h>
 #include <wg_gfxdevice.h>
-#include <wg_gfxstream.h>
-#include <wg_gfxstreamlogger.h>
-#include <wg_gfxstreamplayer.h>
-#include <wg_gfxstreamreader.h>
-#include <wg_gfxstreamwriter.h>
 #include <wg_gradient.h>
 #include <wg_gridwalker.h>
 #include <wg_hostbridge.h>
@@ -72,6 +68,7 @@
 #include <wg_slotextras.h>
 #include <wg_slotholder.h>
 #include <wg_slotiterator.h>
+#include <wg_state.h>
 #include <wg_string.h>
 #include <wg_strongcomponentptr.h>
 #include <wg_strongptr.h>
@@ -111,6 +108,8 @@
 #include <wg_ctextdisplay.h>
 #include <wg_ctexteditor.h>
 #include <wg_widgetcomponent.h>
+#include <wg_basicnumberlayout.h>
+#include <wg_numberlayout.h>
 #include <wg_scalepreferred_sizebroker.h>
 #include <wg_sizebroker.h>
 #include <wg_uniform_sizebroker.h>
@@ -136,6 +135,19 @@
 #include <wg_animskin.h>
 #include <wg_skin.h>
 #include <wg_stateskin.h>
+#include <wg_gfxstream.h>
+#include <wg_gfxstreambuffer.h>
+#include <wg_gfxstreamdecoder.h>
+#include <wg_gfxstreamencoder.h>
+#include <wg_gfxstreamlogger.h>
+#include <wg_gfxstreamplayer.h>
+#include <wg_gfxstreampump.h>
+#include <wg_gfxstreamreader.h>
+#include <wg_gfxstreamsplitter.h>
+#include <wg_gfxstreamwriter.h>
+#include <wg_basictextlayout.h>
+#include <wg_textlayout.h>
+#include <wg_userdefines.h>
 #include <wg_canvascapsule.h>
 #include <wg_capsule.h>
 #include <wg_renderlayercapsule.h>

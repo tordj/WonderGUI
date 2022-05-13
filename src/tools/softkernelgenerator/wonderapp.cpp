@@ -78,6 +78,10 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 	Base::setDefaultStyle(m_pTextStyle);
 
+	m_pTextLayoutCentered = BasicTextLayout::create(WGBP(BasicTextLayout,
+		_.placement = Placement::Center));
+
+
 	//
 
 	if (!_loadSkins(pVisitor))
@@ -155,6 +159,70 @@ void MyApp::destFormatToggled(Msg* _pMsg)
 
 	m_pDB->setDestFormat((PixelFormat)pWidget->id(), pMsg->isSet());
 	_refreshSummary();
+}
+
+//____ customBlitTypeToggled() __________________________________________
+
+void MyApp::customBlitTypeToggled(int index, wg::Msg* _pMsg)
+{
+	auto pMsg = static_cast<ToggleMsg*>(_pMsg);
+	auto pWidget = static_cast<Widget*>(pMsg->sourceRawPtr());
+
+	m_pDB->customBlitEntry(index)->blitTypes[pWidget->id()] = pMsg->isSet();
+	_refreshList();
+}
+
+//____ customBlitTintModeToggled() __________________________________________
+
+void MyApp::customBlitTintModeToggled(int index, wg::Msg* _pMsg)
+{
+	auto pMsg = static_cast<ToggleMsg*>(_pMsg);
+	auto pWidget = static_cast<Widget*>(pMsg->sourceRawPtr());
+
+	m_pDB->customBlitEntry(index)->tintModes[pWidget->id()] = pMsg->isSet();
+	_refreshList();
+}
+
+//____ customBlitBlendModeToggled() __________________________________________
+
+void MyApp::customBlitBlendModeToggled(int index, wg::Msg* _pMsg)
+{
+	auto pMsg = static_cast<ToggleMsg*>(_pMsg);
+	auto pWidget = static_cast<Widget*>(pMsg->sourceRawPtr());
+
+	m_pDB->customBlitEntry(index)->blendModes[pWidget->id()] = pMsg->isSet();
+	_refreshList();
+}
+
+//____ customBlitSourceFormatToggled() __________________________________________
+
+void MyApp::customBlitSourceFormatToggled(int index, wg::Msg* _pMsg)
+{
+	auto pMsg = static_cast<ToggleMsg*>(_pMsg);
+	auto pWidget = static_cast<Widget*>(pMsg->sourceRawPtr());
+
+	m_pDB->customBlitEntry(index)->sourceFormats[pWidget->id()] = pMsg->isSet();
+	_refreshList();
+}
+
+//____ customBlitDestFormatToggled() __________________________________________
+
+void MyApp::customBlitDestFormatToggled(int index, wg::Msg* _pMsg)
+{
+	auto pMsg = static_cast<ToggleMsg*>(_pMsg);
+	auto pWidget = static_cast<Widget*>(pMsg->sourceRawPtr());
+
+	m_pDB->customBlitEntry(index)->destFormats[pWidget->id()] = pMsg->isSet();
+	_refreshList();
+}
+
+
+//____ eraseCustomBlitEntry() _______________________________________________
+
+void MyApp::eraseCustomBlitEntry(int index)
+{
+	m_pDB->deleteCustomBlitEntry(index);
+	_refreshList();
 }
 
 //____ generateSource() _______________________________________________________
@@ -243,6 +311,15 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.states = { State::Normal, State::Selected }
 	));
 
+	m_pSectionSkin = BoxSkin::create(WGBP(BoxSkin,
+		_.color = HiColor::White,
+		_.outline = 1,
+		_.outlineColor = Color8::Black,
+		_.padding = { 4,2,4,2 }
+	));
+
+
+
 	return true;
 }
 
@@ -323,153 +400,271 @@ Widget_p MyApp::_buildList()
 	return pList;
 }
 
-//____ _buildGlobalSettingsSection() __________________________________________
+//____ _buildToggleButtonRow() _________________________________________________
 
-wg::Widget_p MyApp::_buildGlobalSettingsSection()
+
+PackPanel_p MyApp::_buildToggleButtonRow(std::string title, std::vector<KernelDB::BlitType> blitTypes, const bool selected[], std::function<void(wg::Msg*)> pressCallback)
 {
-	auto pTopSection = PackPanel::create();
-	pTopSection->setAxis(Axis::X);
-	pTopSection->setSkin(BoxSkin::create(WGBP(BoxSkin,
-		_.color = HiColor::White,
-		_.outline = 1,
-		_.outlineColor = Color8::Black,
-		_.padding = { 4,2,4,2 }
-	)));
-
-	// Togglebuttons for TintModes
-
 	auto pColumn = PackPanel::create();
 	pColumn->setAxis(Axis::Y);
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
-												_.display.text = "Tint Modes",
-												_.display.style = m_pLabelStyle));
+		_.display.text = title,
+		_.display.style = m_pLabelStyle));
 
-	TintMode tintModes[] = { TintMode::None, TintMode::Flat, TintMode::GradientX, TintMode::GradientY, TintMode::GradientXY };
+	const static string labels[] = {	"Straight Blit", "Straight Tile", "Trans Blit Nearest", "Trans Clip Blit Nearest", "Trans Tile Nearest",
+										"Trans Blit Bilinear", "Trans Clip Blit Bilinear", "Trans Tile Bilinear" };
 
-	for (auto tintMode : tintModes)
+	for (auto blitType : blitTypes)
 	{
 		auto pWidget = ToggleButton::create(WGBP(ToggleButton,
-												_.id = (int)tintMode;
-												_.icon.skin = m_pCheckBoxSkin,
-												_.icon.padding = { 0,4,0,0 },
-												_.label.text = toString(tintMode),
-												_.selected = m_pDB->tintMode(tintMode)));
-
-		if (tintMode == TintMode::None)
-			pWidget->setEnabled(false);
+			_.id = (int)blitType;
+		_.icon.skin = m_pCheckBoxSkin,
+			_.icon.padding = { 0,4,0,0 },
+			_.label.text = labels[int(blitType)],
+			_.selected = selected[int(blitType)]));
 
 		auto pObj = this;
-		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, [pObj](Msg* pMsg) {pObj->tintModeToggled(pMsg); });
+		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback);
 		pColumn->slots << pWidget;
 	}
 
-	pColumn->slots.setPadding(0, pColumn->slots.size(), Border(1, 0, 1, 0));
-	pTopSection->slots << pColumn;
+	return pColumn;
+}
 
-	// Togglebuttons for BlendModes
 
-	pColumn = PackPanel::create();
+PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<BlendMode> blendModes, const bool selected[], function<void(Msg*)> pressCallback )
+{
+	auto pColumn = PackPanel::create();
 	pColumn->setAxis(Axis::Y);
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
-												_.display.text = "Blend Modes",
-												_.display.style = m_pLabelStyle ));
-
-	BlendMode blendModes[] = { BlendMode::Replace, BlendMode::Blend, BlendMode::Add, BlendMode::Subtract, BlendMode::Multiply, BlendMode::Max, BlendMode::Min, BlendMode::Invert, BlendMode::Morph };
+			_.display.text = title,
+			_.display.style = m_pLabelStyle));
 
 	for (auto blendMode : blendModes)
 	{
 		auto pWidget = ToggleButton::create(WGBP(ToggleButton,
-												_.id = (int)blendMode;
-												_.icon.skin = m_pCheckBoxSkin,
-												_.icon.padding = { 0,4,0,0 },
-												_.label.text = toString(blendMode),
-												_.selected = m_pDB->blendMode(blendMode)));
-
-		if (blendMode == BlendMode::Replace || blendMode == BlendMode::Blend)
-			pWidget->setEnabled(false);
+			_.id = (int)blendMode;
+			_.icon.skin = m_pCheckBoxSkin,
+			_.icon.padding = { 0,4,0,0 },
+			_.label.text = toString(blendMode),
+			_.selected = selected[int(blendMode)] ));
 
 		auto pObj = this;
-		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, [pObj](Msg* pMsg) {pObj->blendModeToggled(pMsg); });
+		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback );
 		pColumn->slots << pWidget;
 	}
 
-	pTopSection->slots << pColumn;
-	pTopSection->setSizeBroker(UniformSizeBroker::create());
+	return pColumn;
+}
 
-
-	// Togglebuttons for Source Format
-
-	pColumn = PackPanel::create();
+PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<TintMode> tintModes, const bool selected[], function<void(Msg*)> pressCallback)
+{
+	auto pColumn = PackPanel::create();
 	pColumn->setAxis(Axis::Y);
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
-		_.display.text = "Source Format",
+		_.display.text = title,
 		_.display.style = m_pLabelStyle));
 
-	PixelFormat sourceFormats[] = { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB, PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
-								PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
-								PixelFormat::CLUT_8_linear, PixelFormat::CLUT_8_sRGB, PixelFormat::A_8, PixelFormat::RGB_565_bigendian };
 
-	for (auto format : sourceFormats)
+	for (auto tintMode : tintModes)
+	{
+		auto pWidget = ToggleButton::create(WGBP(ToggleButton,
+			_.id = (int)tintMode;
+			_.icon.skin = m_pCheckBoxSkin,
+			_.icon.padding = { 0,4,0,0 },
+			_.label.text = toString(tintMode),
+			_.selected = selected[int(tintMode)] ));
+
+		auto pObj = this;
+		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback );
+		pColumn->slots << pWidget;
+	}
+
+	return pColumn;
+}
+
+PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<PixelFormat> formats, const bool selected[], function<void(Msg*)> pressCallback)
+{
+	auto pColumn = PackPanel::create();
+	pColumn->setAxis(Axis::Y);
+	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
+		_.display.text = title,
+		_.display.style = m_pLabelStyle));
+
+	for (auto format : formats)
 	{
 		auto pWidget = ToggleButton::create(WGBP(ToggleButton,
 			_.id = (int)format;
 			_.icon.skin = m_pCheckBoxSkin,
 			_.icon.padding = { 0,4,0,0 },
 			_.label.text = toString(format),
-			_.selected = m_pDB->srcFormat(format) ));
+			_.selected = selected[int(format)]));
 
 		auto pObj = this;
-		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, [pObj](Msg* pMsg) {pObj->sourceFormatToggled(pMsg); });
+		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback );
 		pColumn->slots << pWidget;
 	}
+
+	return pColumn;
+}
+
+
+//____ _buildGlobalSettingsSection() __________________________________________
+
+Widget_p MyApp::_buildGlobalSettingsSection()
+{
+	auto pTopSection = PackPanel::create();
+	pTopSection->setAxis(Axis::X);
+	pTopSection->setSkin(m_pSectionSkin);
+	pTopSection->setSizeBroker(UniformSizeBroker::create());
+
+
+	// Togglebuttons for TintModes
+
+	auto pColumn = _buildToggleButtonRow("Tint Modes", { TintMode::None, TintMode::Flat, TintMode::GradientX, TintMode::GradientY, TintMode::GradientXY },
+		m_pDB->tintModes(), [this](Msg* pMsg) {this->tintModeToggled(pMsg); });
+
+	for (auto& p : pColumn->slots)
+		if (p->id() == int(TintMode::None) )
+			p->setEnabled(false);
+
+	pTopSection->slots << pColumn;
+
+	// Togglebuttons for BlendModes
+
+	pColumn = _buildToggleButtonRow("Blend Modes", { BlendMode::Replace, BlendMode::Blend, BlendMode::Add, BlendMode::Subtract, BlendMode::Multiply, BlendMode::Max, BlendMode::Min, BlendMode::Invert, BlendMode::Morph },
+		m_pDB->blendModes(), [this](Msg* pMsg) {this->blendModeToggled(pMsg); });
+
+	for (auto& p : pColumn->slots)
+		if (p->id() == int(BlendMode::Replace) || p->id() == int(BlendMode::Blend))
+			p->setEnabled(false);
+
+	pTopSection->slots << pColumn;
+
+	// Togglebuttons for Source Format
+
+	pColumn = _buildToggleButtonRow("Source Formats", { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
+							PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
+							PixelFormat::CLUT_8_linear, PixelFormat::CLUT_8_sRGB, PixelFormat::A_8, PixelFormat::RGB_565_bigendian },
+		m_pDB->srcFormats(), [this](Msg* pMsg) {this->sourceFormatToggled(pMsg); });
 
 	pTopSection->slots << pColumn;
 
 	// Togglebuttons for Dest Format
 
-	pColumn = PackPanel::create();
-	pColumn->setAxis(Axis::Y);
-	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
-		_.display.text = "Dest Format",
-		_.display.style = m_pLabelStyle));
-
-	PixelFormat destFormats[] = { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB, PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
+	pColumn = _buildToggleButtonRow("Dest Formats", { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
 								PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
-								PixelFormat::A_8, PixelFormat::RGB_565_bigendian };
-
-	for (auto format : destFormats)
-	{
-		auto pWidget = ToggleButton::create(WGBP(ToggleButton,
-			_.id = (int)format;
-			_.icon.skin = m_pCheckBoxSkin,
-			_.icon.padding = { 0,4,0,0 },
-			_.label.text = toString(format),
-			_.selected = m_pDB->destFormat(format)));
-
-		auto pObj = this;
-		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, [pObj](Msg* pMsg) {pObj->destFormatToggled(pMsg); });
-		pColumn->slots << pWidget;
-	}
+								PixelFormat::A_8, PixelFormat::RGB_565_bigendian },
+		m_pDB->destFormats(), [this](Msg* pMsg) {this->destFormatToggled(pMsg); });
 
 	pTopSection->slots << pColumn;
 
-	pTopSection->slots.setPadding(0, pTopSection->slots.size(), Border( 0, 5, 0, 5 ) );
+	//
 
+	pTopSection->slots.setPadding(0, pTopSection->slots.size(), Border( 0, 5, 0, 5 ) );
 	return pTopSection;
 }
 
+//____ _buildHeaderWithCloseButton() __________________________________________
+
+Widget_p MyApp::_buildHeaderWithCloseButton(std::string title, std::function<void(wg::Msg*)> pressCallback)
+{
+	auto pRow = PackPanel::create();
+	pRow->setAxis(Axis::X);
+
+	pRow->slots << TextDisplay::create(WGBP(TextDisplay,
+		_.display.text = title,
+		_.display.style = m_pLabelStyle,
+		_.display.layout = m_pTextLayoutCentered;
+	));
+
+	auto pButton =  Button::create(WGBP(Button,
+		_.label.text = "CLOSE",
+		_.skin = m_pButtonSkin));
+
+	Base::msgRouter()->addRoute(pButton, MsgType::Select, pressCallback);
+
+	pRow->slots << pButton;
+
+	pRow->slots[1].setWeight(0.f);
+	pRow->setSizeBroker(UniformSizeBroker::create());
+
+	return pRow;
+}
+
+
 //____ _buildOptimizedBlitsSection() __________________________________________
 
-wg::Widget_p MyApp::_buildOptimizedBlitsSection()
+Widget_p MyApp::_buildOptimizedBlitsSection()
 {
 	auto pSection = PackPanel::create();
 	pSection->setAxis(Axis::Y);
-	pSection->setSkin(BoxSkin::create(WGBP(BoxSkin,
-		_.color = HiColor::White,
-		_.outline = 1,
-		_.outlineColor = Color8::Black,
-		_.padding = { 4,2,4,2 }
-	)));
+
+	vector<KernelDB::BlitType>	activeBlitTypes = { KernelDB::BlitType::StraightBlit, KernelDB::BlitType::StraightTile,
+		KernelDB::BlitType::TransformBlitNearest, KernelDB::BlitType::TransformClipBlitNearest, KernelDB::BlitType::TransformTileNearest,
+		KernelDB::BlitType::TransformBlitBilinear, KernelDB::BlitType::TransformClipBlitBilinear, KernelDB::BlitType::TransformTileBilinear };
+
+	vector<TintMode>	activeTintModes;
+	vector<BlendMode>	activeBlendModes;
+	vector<PixelFormat>	activeSourceFormats;
+	vector<PixelFormat>	activeDestFormats;
+
+	for (int i = 0; i < TintMode_size; i++)
+		if (m_pDB->tintMode(TintMode(i)))
+			activeTintModes.push_back(TintMode(i));
+
+	for (int i = 0; i < BlendMode_size; i++)
+		if (m_pDB->blendMode(BlendMode(i)))
+			activeBlendModes.push_back(BlendMode(i));
+
+	for (int i = 0; i < PixelFormat_size; i++)
+		if (m_pDB->srcFormat(PixelFormat(i)))
+			activeSourceFormats.push_back(PixelFormat(i));
+
+	for (int i = 0; i < PixelFormat_size; i++)
+		if (m_pDB->srcFormat(PixelFormat(i)))
+			activeDestFormats.push_back(PixelFormat(i));
+
+	// CUSTOM BLITS
+
+	int index = 0;
+	for (auto it = m_pDB->beginCustomBlits(); it < m_pDB->endCustomBlits(); it++)
+	{
+		auto pEntry = PackPanel::create();
+		pEntry->setAxis(Axis::Y);
+		pEntry->setSkin(m_pSectionSkin);
+
+		// Top Row
+
+		auto pTopRow = _buildHeaderWithCloseButton("CUSTOM BLIT KERNELS", [this, index](Msg* pMsg) {  this->eraseCustomBlitEntry(index); });
+
+		// Body Row
+
+		auto pBodyRow = PackPanel::create();
+		pBodyRow->setAxis(Axis::X);
+		pBodyRow->setSizeBroker(UniformSizeBroker::create());
+
+		pBodyRow->slots << _buildToggleButtonRow("Operations", activeBlitTypes, it->blitTypes, [this, index](Msg* pMsg) { this->customBlitTypeToggled(index, pMsg); });
+		pBodyRow->slots << _buildToggleButtonRow("Tint Modes", activeTintModes, it->tintModes, [this, index](Msg* pMsg) { this->customBlitTintModeToggled(index,pMsg); });
+		pBodyRow->slots << _buildToggleButtonRow("Blend Modes", activeBlendModes, it->blendModes, [this, index](Msg* pMsg) { this->customBlitBlendModeToggled(index, pMsg); });
+		pBodyRow->slots << _buildToggleButtonRow("Source Formats", activeSourceFormats, it->sourceFormats, [this, index](Msg* pMsg) { this->customBlitSourceFormatToggled(index, pMsg); });
+		pBodyRow->slots << _buildToggleButtonRow("Dest Formats", activeDestFormats, it->destFormats, [this, index](Msg* pMsg) { this->customBlitDestFormatToggled(index, pMsg); });
+
+		// Bottom Row
+
+		auto pBottomRow = PackPanel::create();
+		pBottomRow->setAxis(Axis::Y);
+
+
+		// Tie everything together
+
+		pEntry->slots << pTopRow;
+		pEntry->slots << pBodyRow;
+		pEntry->slots << pBottomRow;
+
+		pSection->slots << pEntry;
+		index++;
+	}
 
 	return pSection;
 }
@@ -499,19 +694,20 @@ wg::Widget_p MyApp::_buildListSummarySection()
 												{"ClipLine: ", kernelCount.clipLine},
 												{"PlotList: ", kernelCount.plotList},
 												{"Segments: ", kernelCount.segment},
-												{"Pass 1 blits: ", kernelCount.pass1blits},
-												{"Pass 1 blits (fast8): ", kernelCount.pass1blits_fast8},
+												{"Pass 1 blits - strght:", kernelCount.pass1blits_straight},
+												{"Pass 1 blits - strght 8: ", kernelCount.pass1blits_straight_fast8},
+												{"Pass 1 blits - transf:", kernelCount.pass1blits_transform},
+												{"Pass 1 blits - transf 8: ", kernelCount.pass1blits_transform_fast8},
 												{"Pass 2 blits: ", kernelCount.pass2blits},
-												{"Pass 2 blits (fast8): ", kernelCount.pass2blits_fast8},
-												{"Custom straight blits: ", kernelCount.optimizedStraightBlits},
-												{"Custom transform blits: ", kernelCount.optimizedTransformBlits}
+												{"Pass 2 blits - fast 8: ", kernelCount.pass2blits_fast8},
+												{"Custom blits: ", kernelCount.customBlits}
 										});
 
 
 	int total = kernelCount.plot + kernelCount.fill + kernelCount.line + kernelCount.clipLine +
-		kernelCount.plotList + kernelCount.segment + kernelCount.pass1blits + kernelCount.pass1blits_fast8 +
-		kernelCount.pass2blits + kernelCount.pass2blits_fast8 + kernelCount.optimizedStraightBlits +
-		kernelCount.optimizedTransformBlits;
+		kernelCount.plotList + kernelCount.segment + kernelCount.pass1blits_straight + kernelCount.pass1blits_straight_fast8 +
+		kernelCount.pass1blits_transform + kernelCount.pass1blits_transform_fast8 +
+		kernelCount.pass2blits + kernelCount.pass2blits_fast8 + kernelCount.customBlits;
 
 
 

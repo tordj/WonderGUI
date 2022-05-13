@@ -130,6 +130,11 @@ namespace wg
 		inline Size			minSize() const;
 		inline Size			maxSize() const;
 
+		inline CoordSPX			spxPos() const { return _pos(); }
+		inline const SizeSPX& spxSize() const { return _size(); }
+		inline RectSPX			spxGeo() const { return _geo(); }
+		inline CoordSPX			spxGlobalPos() const { return _globalPos(); }
+		inline RectSPX			spxGlobalGeo() const { return _globalGeo(); }
 
 		//.____ Hierarchy _____________________________________________________
 

@@ -10,27 +10,32 @@ public:
 	KernelDB();
 	~KernelDB();
 
-	struct StraightBlitSpec
+	enum class BlitType
 	{
-		StraightBlitSpec();
+		StraightBlit,
+		StraightTile,
 
-		bool		tintModes[wg::TintMode_size];
-		bool		blendModes[wg::BlendMode_size];
-		bool		sourceFormats[wg::PixelFormat_size];
-		bool		destFormats[wg::PixelFormat_size];
-		bool		blitAndTile[2];
+		TransformBlitNearest,
+		TransformClipBlitNearest,
+		TransformTileNearest,
+
+		TransformBlitBilinear,
+		TransformClipBlitBilinear,
+		TransformTileBilinear,
 	};
 
-	struct TransformBlitSpec
-	{
-		TransformBlitSpec();
+	const static int BlitType_size = 8;
 
+
+	struct CustomBlitSpec
+	{
+		CustomBlitSpec();
+
+		bool			blitTypes[BlitType_size];
 		bool			tintModes[wg::TintMode_size];
 		bool			blendModes[wg::BlendMode_size];
 		bool			sourceFormats[wg::PixelFormat_size];
 		bool			destFormats[wg::PixelFormat_size];
-		bool			sampleMethods[wg::SampleMethod_size];
-		bool			blitClipAndTile[3];
 	};
 
 	struct KernelCount
@@ -42,14 +47,16 @@ public:
 		int plotList = 0;
 		int segment = 0;
 
-		int	pass1blits = 0;
-		int pass1blits_fast8 = 0;
+		int	pass1blits_straight = 0;
+		int pass1blits_straight_fast8 = 0;
+
+		int	pass1blits_transform = 0;
+		int pass1blits_transform_fast8 = 0;
 
 		int pass2blits = 0;
 		int pass2blits_fast8 = 0;
 
-		int	optimizedStraightBlits = 0;
-		int optimizedTransformBlits = 0;
+		int	customBlits = 0;
 	};
 
 
@@ -69,6 +76,18 @@ public:
 	bool	srcFormat(wg::PixelFormat format) { return m_srcFormats[int(format)]; }
 	bool	destFormat(wg::PixelFormat format) { return m_destFormats[int(format)]; }
 
+	const bool*	tintModes() { return m_tintModes; }
+	const bool* blendModes() { return m_blendModes; }
+	const bool* srcFormats() { return m_srcFormats; }
+	const bool* destFormats() { return m_destFormats; }
+
+	std::vector<CustomBlitSpec>::const_iterator beginCustomBlits() const { return m_customBlits.begin(); }
+	std::vector<CustomBlitSpec>::const_iterator endCustomBlits() const { return m_customBlits.end(); }
+
+	CustomBlitSpec* customBlitEntry(int index) { return &m_customBlits.at(index); };
+
+	void	deleteCustomBlitEntry(int index) { m_customBlits.erase( m_customBlits.begin()+index ); }
+
 
 private:
 
@@ -77,8 +96,7 @@ private:
 	bool	m_srcFormats[wg::PixelFormat_size];
 	bool	m_destFormats[wg::PixelFormat_size];
 
-	std::vector<StraightBlitSpec>	m_straightBlits;
-	std::vector<TransformBlitSpec>	m_transformBlits;
+	std::vector<CustomBlitSpec>	m_customBlits;
 
 
 

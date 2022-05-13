@@ -322,14 +322,14 @@ int main ( int argc, char** argv )
 		}
 		else
 		{
-			CoordI ofs = g_pDisplay->globalPos().px();
+			CoordSPX ofs = g_pDisplay->spxGlobalPos()/64;
 			
 			int nRects;
 			const RectI* pRects;
 
 			std::tie(nRects, pRects) = pStreamPlayer->dirtyRects(CanvasRef::Canvas_1);
 
-			SDL_Rect	dirt[nRects];
+			SDL_Rect	dirt[1000];
 			
 			for( int i = 0 ; i < nRects ; i++ )
 			{

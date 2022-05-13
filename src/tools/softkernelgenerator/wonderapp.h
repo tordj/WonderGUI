@@ -23,6 +23,15 @@ public:
 	void		sourceFormatToggled(wg::Msg* pMsg);
 	void		destFormatToggled(wg::Msg* pMsg);
 
+	void		customBlitTypeToggled(int index, wg::Msg* pMsg);
+	void		customBlitTintModeToggled(int index, wg::Msg* pMsg);
+	void		customBlitBlendModeToggled(int index, wg::Msg* pMsg);
+	void		customBlitSourceFormatToggled(int index, wg::Msg* pMsg);
+	void		customBlitDestFormatToggled(int index, wg::Msg* pMsg);
+
+
+	void		eraseCustomBlitEntry(int index);
+
 	void		generateSource();
 	void		clear();
 	void		reset();
@@ -43,6 +52,11 @@ private:
 	wg::Widget_p	_buildExportSection();
 
 	wg::Widget_p	_buildLabeledList(int nColumns, std::initializer_list < std::pair<std::string, int>> list);
+	wg::PackPanel_p	_buildToggleButtonRow(std::string title, std::vector<KernelDB::BlitType> blitTypes, const bool selected[], std::function<void(wg::Msg*)> pressCallback);
+	wg::PackPanel_p	_buildToggleButtonRow(std::string title, std::vector<wg::BlendMode> blendModes, const bool selected[], std::function<void(wg::Msg*)> pressCallback);
+	wg::PackPanel_p	_buildToggleButtonRow(std::string title, std::vector<wg::TintMode> blendModes, const bool selected[], std::function<void(wg::Msg*)> pressCallback);
+	wg::PackPanel_p	_buildToggleButtonRow(std::string title, std::vector<wg::PixelFormat> blendModes, const bool selected[], std::function<void(wg::Msg*)> pressCallback);
+	wg::Widget_p	_buildHeaderWithCloseButton(std::string title, std::function<void(wg::Msg*)> pressCallback);
 
 	void			_refreshSummary();
 	void			_refreshList();
@@ -54,9 +68,12 @@ private:
 	wg::Skin_p			m_pButtonSkin;
 	wg::Skin_p			m_pToggleButtonSkin;
 	wg::Skin_p			m_pCheckBoxSkin;
+	wg::Skin_p			m_pSectionSkin;
 
 	wg::TextStyle_p		m_pTextStyle;
 	wg::TextStyle_p		m_pLabelStyle;
+
+	wg::TextLayout_p	m_pTextLayoutCentered;
 
 	wg::ScrollPanel_p	m_pWindow;
 	wg::PackPanel_p		m_pList;
