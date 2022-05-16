@@ -122,41 +122,49 @@ KernelDB::KernelCount KernelDB::countKernels()
 
 	// Fill in values for transform custom kernels
 
-	int nTransformBlitKernels = 0;
-	for (auto& spec : m_customBlits)
-	{
-		int blitAndTile = 0;
-		int nBlitTypes = 0;
-		int nTintModes = 0;
-		int nBlendModes = 0;
-		int nSourceFormats = 0;
-		int nDestFormats = 0;
+	for (int i = 0; i < m_customBlits.size() ; i++ )
+		count.customBlits += countEntryKernels(i);
 
-
-		for (int i = 0; i < TintMode_size; i++)
-			if (spec.tintModes[i] && m_tintModes[i])
-				nTintModes++;
-
-		for (int i = 0; i < BlendMode_size; i++)
-			if (spec.blendModes[i] && m_blendModes[i])
-				nBlendModes++;
-
-		for (int i = 0; i < PixelFormat_size; i++)
-			if (spec.sourceFormats[i] && m_srcFormats[i])
-				nSourceFormats++;
-
-		for (int i = 0; i < PixelFormat_size; i++)
-			if (spec.destFormats[i] && m_destFormats[i])
-				nDestFormats++;
-
-		for (int i = 0; i < BlitType_size; i++)
-			if (spec.blitTypes[i] )
-				nBlitTypes++;
-
-		count.customBlits += nBlitTypes * nTintModes * nBlendModes * nSourceFormats * nDestFormats;
-	}
 
 	return count;
+}
+
+
+//____ countEntryKernels() ____________________________________________________
+
+int KernelDB::countEntryKernels( int entry )
+{
+	auto& spec = m_customBlits[entry];
+
+	int blitAndTile = 0;
+	int nBlitTypes = 0;
+	int nTintModes = 0;
+	int nBlendModes = 0;
+	int nSourceFormats = 0;
+	int nDestFormats = 0;
+
+
+	for (int i = 0; i < TintMode_size; i++)
+		if (spec.tintModes[i] && m_tintModes[i])
+			nTintModes++;
+
+	for (int i = 0; i < BlendMode_size; i++)
+		if (spec.blendModes[i] && m_blendModes[i])
+			nBlendModes++;
+
+	for (int i = 0; i < PixelFormat_size; i++)
+		if (spec.sourceFormats[i] && m_srcFormats[i])
+			nSourceFormats++;
+
+	for (int i = 0; i < PixelFormat_size; i++)
+		if (spec.destFormats[i] && m_destFormats[i])
+			nDestFormats++;
+
+	for (int i = 0; i < BlitType_size; i++)
+		if (spec.blitTypes[i])
+			nBlitTypes++;
+
+	return  nBlitTypes * nTintModes * nBlendModes * nSourceFormats * nDestFormats;
 }
 
 

@@ -65,6 +65,7 @@ public:
 
 	bool	generateSource( std::ostream& filename );
 	KernelCount	countKernels();
+	int		countEntryKernels(int entry);
 
 	void	setTintMode(wg::TintMode mode, bool bOn);
 	void	setBlendMode(wg::BlendMode mode, bool bOn);
@@ -86,6 +87,7 @@ public:
 
 	CustomBlitSpec* customBlitEntry(int index) { return &m_customBlits.at(index); };
 
+	void	addCustomBlitEntry() { m_customBlits.push_back( CustomBlitSpec() ); }
 	void	deleteCustomBlitEntry(int index) { m_customBlits.erase( m_customBlits.begin()+index ); }
 
 

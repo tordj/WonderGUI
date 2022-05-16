@@ -68,7 +68,8 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	m_pTextStyle = TextStyle::create(WGBP(TextStyle,
 									_.font = pFont,
 									_.size = 12,
-									_.color = Color8::Black ));
+									_.color = Color8::Black,
+									_.states = {{State::Disabled, Color8::DarkGrey}} ));
 
 	m_pLabelStyle = TextStyle::create(WGBP(TextStyle,
 									_.font = pFont,
@@ -235,6 +236,15 @@ void MyApp::generateSource()
 	myStream.close();
 }
 
+//____ addOptimizedBlitEntry() ________________________________________________
+
+void MyApp::addOptimizedBlitEntry()
+{
+	m_pDB->addCustomBlitEntry();
+	_refreshList();
+}
+
+
 //____ clear() _________________________________________________________________
 
 void MyApp::clear()
@@ -337,7 +347,7 @@ void MyApp::_refreshSummary()
 
 void MyApp::_refreshList()
 {
-	m_pWindow->slot.clear();
+//	m_pWindow->slot.clear();
 	m_pWindow->slot = _buildList();
 }
 
@@ -361,11 +371,14 @@ Widget_p	MyApp::_buildButtonRow()
 
 	auto pLoadButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
-		_.label.text = "Load"));
+		_.label.text = "Load",
+		_.enabled = false ));
 
 	auto pSaveButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
-		_.label.text = "Save"));
+		_.label.text = "Save",
+		_.enabled = false ));
+
 
 	Base::msgRouter()->addRoute( pClearButton, MsgType::Select, [this](Msg*) {this->clear(); });
 	Base::msgRouter()->addRoute( pResetButton, MsgType::Select, [this](Msg*) {this->reset(); });
@@ -545,7 +558,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 
 	pColumn = _buildToggleButtonRow("Source Formats", { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
 							PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
-							PixelFormat::CLUT_8_linear, PixelFormat::CLUT_8_sRGB, PixelFormat::A_8, PixelFormat::RGB_565_bigendian },
+							PixelFormat::CLUT_8_linear, PixelFormat::CLUT_8_sRGB, PixelFormat::RGB_565_bigendian, PixelFormat::A_8 },
 		m_pDB->srcFormats(), [this](Msg* pMsg) {this->sourceFormatToggled(pMsg); });
 
 	pTopSection->slots << pColumn;
@@ -554,7 +567,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 
 	pColumn = _buildToggleButtonRow("Dest Formats", { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
 								PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
-								PixelFormat::A_8, PixelFormat::RGB_565_bigendian },
+								PixelFormat::RGB_565_bigendian, PixelFormat::A_8 },
 		m_pDB->destFormats(), [this](Msg* pMsg) {this->destFormatToggled(pMsg); });
 
 	pTopSection->slots << pColumn;
@@ -622,7 +635,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 			activeSourceFormats.push_back(PixelFormat(i));
 
 	for (int i = 0; i < PixelFormat_size; i++)
-		if (m_pDB->srcFormat(PixelFormat(i)))
+		if (m_pDB->destFormat(PixelFormat(i)))
 			activeDestFormats.push_back(PixelFormat(i));
 
 	// CUSTOM BLITS
@@ -653,7 +666,15 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 		// Bottom Row
 
 		auto pBottomRow = PackPanel::create();
-		pBottomRow->setAxis(Axis::Y);
+		pBottomRow->setAxis(Axis::X);
+
+		pBottomRow->slots << TextDisplay::create(WGBP(TextDisplay,
+			_.display.style = m_pTextStyle,
+			_.display.text = "Number of kernels: "));
+
+		pBottomRow->slots << NumberDisplay::create(WGBP(NumberDisplay,
+			_.display.value = m_pDB->countEntryKernels(index) ));
+
 
 
 		// Tie everything together
@@ -665,6 +686,36 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 		pSection->slots << pEntry;
 		index++;
 	}
+
+	// "Add Entry" button
+
+	auto pRow = PackPanel::create();
+	pRow->setAxis(Axis::X);
+	pRow->setSkin(BoxSkin::create(WGBP(BoxSkin,
+		_.color = HiColor::White,
+		_.outline = 1,
+		_.outlineColor = Color8::Black,
+		_.padding = { 4,2,4,2 }
+	)));
+
+
+	auto pButton = Button::create(WGBP(Button,
+		_.skin = m_pButtonSkin,
+		_.label.text = "Add Entry"
+	));
+
+	pRow->slots << Filler::create();
+	pRow->slots << pButton;
+	pRow->slots << Filler::create();
+
+	pRow->slots[1].setWeight(0);
+
+	pRow->setSizeBroker(UniformSizeBroker::create());
+
+	Base::msgRouter()->addRoute(pButton, MsgType::Select, [this](Msg* pMsg) {this->addOptimizedBlitEntry(); });
+
+	pSection->slots << pRow;
+
 
 	return pSection;
 }
@@ -787,21 +838,21 @@ wg::Widget_p MyApp::_buildExportSection()
 		_.outlineColor = Color8::Black,
 		_.padding = { 4,2,4,2 }
 	)));
-
-	pSection->slots << Filler::create();
-
-	pSection->slots << Button::create(WGBP(Button,
+	
+	auto pButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
 		_.label.text = "Generate Source Code"
 	));
 
+	pSection->slots << Filler::create();
+	pSection->slots << pButton;
 	pSection->slots << Filler::create();
 
 	pSection->slots[1].setWeight(0);
 
 	pSection->setSizeBroker(UniformSizeBroker::create());
 
-	Base::msgRouter()->addRoute(MsgType::Select, [this](Msg* pMsg) {this->generateSource(); });
+	Base::msgRouter()->addRoute(pButton, MsgType::Select, [this](Msg* pMsg) {this->generateSource(); });
 
 	return pSection;
 }

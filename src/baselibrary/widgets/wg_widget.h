@@ -274,7 +274,7 @@ namespace wg
 				m_bOpaque = bp.skin->isOpaque(m_state);
 			}
 
-			if( bp.enabled )
+			if( !bp.enabled )
 				setEnabled(bp.enabled);
 		};
 

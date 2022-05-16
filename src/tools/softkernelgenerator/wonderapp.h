@@ -32,6 +32,7 @@ public:
 
 	void		eraseCustomBlitEntry(int index);
 
+	void		addOptimizedBlitEntry();
 	void		generateSource();
 	void		clear();
 	void		reset();

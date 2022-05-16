@@ -1862,8 +1862,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 			{
 				SizeSPX eolCellSize( pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend() );
 				spx w = pCaret->eolWidth( eolCellSize, scale );
-				if( w > eolCellSize.w )
-					width += w - eolCellSize.w;
+				width += std::max(w, eolCellSize.w);
 			}
 
 			// Update size
