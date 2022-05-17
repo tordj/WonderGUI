@@ -231,7 +231,7 @@ void MyApp::eraseCustomBlitEntry(int index)
 void MyApp::generateSource()
 {
 	ofstream	myStream;
-	myStream.open("wg_softkernel.cpp");
+	myStream.open("wg_softkernels.cpp");
 	m_pDB->generateSource(myStream);
 	myStream.close();
 }
@@ -557,6 +557,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 	// Togglebuttons for Source Format
 
 	pColumn = _buildToggleButtonRow("Source Formats", { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
+							PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
 							PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
 							PixelFormat::CLUT_8_linear, PixelFormat::CLUT_8_sRGB, PixelFormat::RGB_565_bigendian, PixelFormat::A_8 },
 		m_pDB->srcFormats(), [this](Msg* pMsg) {this->sourceFormatToggled(pMsg); });
@@ -566,6 +567,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 	// Togglebuttons for Dest Format
 
 	pColumn = _buildToggleButtonRow("Dest Formats", { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
+								PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
 								PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
 								PixelFormat::RGB_565_bigendian, PixelFormat::A_8 },
 		m_pDB->destFormats(), [this](Msg* pMsg) {this->destFormatToggled(pMsg); });

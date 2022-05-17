@@ -323,9 +323,24 @@ namespace wg
 
 		//
 
+		void	_populateOpTab();
+
+
+		//
+
+		static const int16_t	s_channel_4_1[256];
+		static const int16_t	s_channel_4_2[256];
+		static const int16_t	s_channel_5[256];
+		static const int16_t	s_channel_6[256];
+
+		static const uint8_t	s_fast8_channel_4_1[256];
+		static const uint8_t	s_fast8_channel_4_2[256];
+		static const uint8_t	s_fast8_channel_5[256];
+		static const uint8_t	s_fast8_channel_6[256];
+
 
 		static PlotOp_p			s_plotOpTab[BlendMode_size][PixelFormat_size];
-		static LineOp_p			s_LineOpTab[BlendMode_size][PixelFormat_size];
+		static LineOp_p			s_lineOpTab[BlendMode_size][PixelFormat_size];
 		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelFormat_size];
 		static FillOp_p			s_fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size];		//[BlendMode][TintMode][DestFormat]
 		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelFormat_size];
