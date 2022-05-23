@@ -52,10 +52,10 @@ namespace wg
 		{
 			StateBP() {}
 			StateBP( State state, StateData data ) : state(state), data(data) {}
-			StateBP( State state, Color color ) : state(state) { data.color = color; }
+			StateBP( State state, HiColor color ) : state(state) { data.color = color; }
 			StateBP( State state, Coord contentShift ) : state(state)	{ data.contentShift = contentShift; }
 
-			StateBP( State state, Color color, Color outlineColor ) : state(state)
+			StateBP( State state, HiColor color, HiColor outlineColor ) : state(state)
 			{
 				data.color = color;
 				data.outlineColor = color;

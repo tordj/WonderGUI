@@ -53,6 +53,7 @@ namespace wg
 		struct Blueprint
 		{
 			HiColor		backColor = Color::Transparent;
+
 			BlendMode	blendMode = BlendMode::Undefined;
 			Size		defaultSize;
 			HiColor		emptyColor = Color::DarkBlue;

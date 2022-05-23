@@ -936,7 +936,8 @@ namespace wg
 			if (length == 0)
 				return;											// TODO: Should stil draw the caps!
 
-			slope = ((end.x - beg.x) << 16) / length;
+			// Need multiplication instead of shift as operand might be negative
+			slope = ((end.x - beg.x) * 65536) / length;
 			width = _scaleLineThickness(thickness, slope);
 			pos = (beg.x << 16) - width / 2 + 32768;
 
@@ -1671,8 +1672,8 @@ namespace wg
 				}
 
 				//
-
-				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, pGradientsY + skippedSegments, transparentSegments + skippedSegments, opaqueSegments + skippedSegments, int(m_morphFactor*4096));
+				auto gradientPointer = pGradientsY != nullptr ? pGradientsY + skippedSegments : nullptr;
+				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, gradientPointer, transparentSegments + skippedSegments, opaqueSegments + skippedSegments, int(m_morphFactor*4096));
 				pEdgeStrips += edgeStripPitch;
 				pStripStart += colPitch;
 				columnOfs++;
@@ -5493,10 +5494,10 @@ namespace wg
 		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
 		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
 		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
-}
+	}
 
 		
-}
+	}
 
 	//____ _scaleLineThickness() ___________________________________________________
 

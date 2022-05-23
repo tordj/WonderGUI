@@ -177,8 +177,8 @@ namespace wg
 
 		float radius = sideLength / 2;
 
-		float thickness = m_stateInfo[i].thickness*64;
-		float outlineThickness = m_stateInfo[i].outlineThickness*64;
+		float thickness = m_stateInfo[i].thickness*scale;
+		float outlineThickness = m_stateInfo[i].outlineThickness*scale;
 
 
 		if (distanceSquared > radius * radius)

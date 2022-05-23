@@ -119,6 +119,9 @@ namespace wg
 				delete m_pCachedFontSizes[size];
 		}
 
+        if(m_pCachedFontSizes != nullptr)
+            delete [] m_pCachedFontSizes;
+
 		FT_Done_Face( m_ftFace );
 
 		s_nInstances--;

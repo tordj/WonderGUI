@@ -148,7 +148,7 @@ namespace wg
 			s_pDefaultBitmapCache->clear();
 			s_pDefaultBitmapCache = nullptr;
 		}
-		
+
 		if (s_objectsCreated != s_objectsDestroyed)
 			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 
@@ -205,7 +205,7 @@ namespace wg
             stream << std::endl;
             stream << "Tracked objects: " << s_trackedObjects.size() << std::endl;
             stream << "---------------------------------------" << std::endl;
-		
+
 			for (auto& tracked : s_trackedObjects)
 			{
 				const char* pClassName = tracked.first->typeInfo().className;
@@ -294,7 +294,7 @@ namespace wg
 	{
 		if( s_pDefaultBitmapCache == nullptr )
 			s_pDefaultBitmapCache = BitmapCache::create(16*1024*1024);
-		
+
 		return s_pDefaultBitmapCache;
 	}
 

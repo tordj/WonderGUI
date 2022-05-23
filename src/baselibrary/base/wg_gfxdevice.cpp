@@ -2008,8 +2008,10 @@ namespace wg
 		int nFillPoints = nPoints - nTracePoints;
 
 		// Trace...
+		int * pSrc = nullptr;
+		if(pWave->pWave != nullptr)
+			pSrc = pWave->pWave + offset;
 
-		int * pSrc = pWave->pWave + offset;
 		for (int i = 0; i < nTracePoints; i++)
 		{
 			// Start with top and bottom for current point
