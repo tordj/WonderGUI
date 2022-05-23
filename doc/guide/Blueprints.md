@@ -31,7 +31,7 @@ There are three ways to create and use a Blueprint depending on conditions and p
    style.font = pMyFont;
    style.size = 12;
    style.color = Color::Black;
-   auto pMyStyle = TextStyle::create(bp);
+   auto pMyStyle = TextStyle::create(style);
    ```
 
    This works in any C++ environment and can easily be understood by any programmer with no prior exposure to WonderGUI or C++20 designated initializers.
@@ -97,7 +97,7 @@ It is worth pointing out that you can use designated initializers or the WGBP ma
 ```c++
 TextStyle::Blueprint bp1 = {	.color = Color::Black, 
 															.font = pMyFont,
-                              .size = 12 };
+                                             .size = 12 };
 
 TextStyle::Blueprint bp2 = WGBP(TextStyle,
 															_.font = pMyFont,
