@@ -56,7 +56,18 @@ namespace wg
 
 		struct StateBP
 		{
-			State			state = StateEnum::Normal;
+			StateBP() {}
+			StateBP( State state, StateData data ) : state(state), data(data) {}
+			StateBP( State state, HiColor color ) : state(state) { data.color = color; }
+			StateBP( State state, Coord contentShift ) : state(state)	{ data.contentShift = contentShift; }
+
+			StateBP( State state, HiColor color, HiColor outlineColor ) : state(state)
+			{
+				data.color = color;
+				data.outlineColor = outlineColor;
+			}
+
+			State			state = State::Normal;
 			StateData		data;
 		};
 
@@ -131,7 +142,7 @@ namespace wg
 		};
 
 
-		StateInfo		m_stateInfo[StateEnum_Nb];
+		StateInfo		m_stateInfo[State::IndexAmount];
 	};
 
 

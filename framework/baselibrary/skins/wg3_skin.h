@@ -26,6 +26,7 @@
 #include <wg3_pointers.h>
 #include <wg3_geo.h>
 #include <wg3_types.h>
+#include <wg3_state.h>
 #include <wg3_util.h>
 
 namespace wg
@@ -52,6 +53,14 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry _________________________________________________
+		
+//		virtual Size		defaultSize() const;
+
+		//TODO: Replace this quick n dirty implementation with a correct one.
+
+		inline Size			defaultSize() const { return Size(_defaultSize(64))/64.f; }
+		
 		//.____ Misc ____________________________________________________
 
 		inline bool		isOpaque() const { return m_bOpaque; }
@@ -60,7 +69,7 @@ namespace wg
 		//.____ Internal ________________________________________________________
 
 		virtual SizeSPX		_minSize(int scale) const;
-		virtual SizeSPX		_preferredSize(int scale) const;
+		virtual SizeSPX		_defaultSize(int scale) const;
 
 		inline  bool		_hasContentPadding() const { return m_contentPadding.isEmpty();  }
 		virtual BorderSPX	_contentPadding(int scale, State state) const;

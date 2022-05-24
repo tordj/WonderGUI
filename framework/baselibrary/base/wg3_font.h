@@ -27,6 +27,7 @@
 #include <wg3_geo.h>
 #include <wg3_pointers.h>
 #include <wg3_surface.h>
+#include <wg3_surfacefactory.h>
 
 namespace wg
 {
@@ -102,6 +103,7 @@ namespace wg
         bool                    setBackupFont(Font * pFont);    ///@brief Font used when glyph can't be found in our font.
         inline Font_p           backupFont() const;             ///@brief Font used when glyph can't be found in our font.
 
+		Surface_p				getGlyphAsSurface(uint16_t chr, const Surface::Blueprint& blueprint = Surface::Blueprint() , SurfaceFactory * pFactory = nullptr );
 
 	protected:
 		Font() {}

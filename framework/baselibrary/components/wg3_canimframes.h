@@ -27,6 +27,8 @@
 #include <wg3_cdynamicvector.h>
 #include <wg3_surface.h>
 #include <wg3_geo.h>
+#include <wg3_cstaticvector.h>
+#include <wg3_cstaticvector.impl.h>
 
 namespace wg
 {

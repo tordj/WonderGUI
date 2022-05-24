@@ -6,12 +6,13 @@ cd imports
 mkdir baselibrary
 mkdir baselibrary/base
 mkdir baselibrary/components
+mkdir baselibrary/skins
+mkdir baselibrary/stream
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
 mkdir gfxdevices/metal
 mkdir gfxdevices/stream
-mkdir baselibrary/skins
 mkdir fontengines
 cd ..
 
@@ -47,6 +48,7 @@ cp wg_base.* \
    wg_patches.* \
    wg_pointers.* \
    wg_skinslotmanager.* \
+   wg_state.*\
    wg_string.* \
    wg_strongcomponentptr.* \
    wg_strongptr.* \
@@ -67,7 +69,13 @@ cp wg_component.* \
    wg_cstaticvector.* \
    wg_cdynamicvector.* \
    wg_canimframes.* \
+   wg_cgfxoutstream.* \
+   wg_cgfxinstream.* \
    ../../../../wg2/_kato_wg3/imports/baselibrary/components
+
+
+cd  ../stream
+cp * ../../../../wg2/_kato_wg3/imports/baselibrary/stream
 
 cd ../skins
 cp -r * ../../../../wg2/_kato_wg3/imports/baselibrary/skins

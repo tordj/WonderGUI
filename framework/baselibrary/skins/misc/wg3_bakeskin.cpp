@@ -104,14 +104,14 @@ namespace wg
 		return m_cachedMinSize;
 	}
 
-	//____ _preferredSize() ____________________________________________________
+	//____ _defaultSize() ____________________________________________________
 
-	SizeSPX BakeSkin::_preferredSize(int scale) const
+	SizeSPX BakeSkin::_defaultSize(int scale) const
 	{
 		if (m_cachedScale != scale)
 			_updateCachedGeo(scale);
 
-		return m_cachedPreferredSize;
+		return m_cachedDefaultSize;
 
 	}
 
@@ -122,7 +122,7 @@ namespace wg
 		if (m_cachedScale != scale)
 			_updateCachedGeo(scale);
 
-		return m_cachedContentPadding[_stateToIndex(state)];
+		return m_cachedContentPadding[state];
 	}
 
 
@@ -143,7 +143,7 @@ namespace wg
 		if (m_cachedScale != scale)
 			_updateCachedGeo(scale);
 
-		int index = _stateToIndex(state);
+		int index = state;
 
 		return CoordSPX(m_cachedContentPadding[index].left, m_cachedContentPadding[index].top);
 	}
@@ -155,19 +155,19 @@ namespace wg
 		if (m_cachedScale != scale)
 			_updateCachedGeo(scale);
 
-		return canvas - m_cachedContentPadding[_stateToIndex(state)];
+		return canvas - m_cachedContentPadding[state];
 	}
 
 	//____ _isOpaque() _____________________________________________________________
 
 	bool BakeSkin::_isOpaque(State state) const
 	{
-		return m_opaqueStates.bit(_stateToIndex(state));
+		return m_opaqueStates.bit(state);
 	}
 
 	bool BakeSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
-		if (m_opaqueStates.bit(_stateToIndex(state)))
+		if (m_opaqueStates.bit(state))
 			return true;
 
 		for (auto& pSkin : m_skins)
@@ -221,7 +221,7 @@ namespace wg
 			auto pOldClip = pDevice->clipList();
 
 			for( int i = 0 ; i < nClipRects ; i++ )
-				clip[i] = RectSPX( pOldClip[i] - canvas.pos(), bakeCanvas );
+				clip[i] = RectSPX::getIntersection( pOldClip[i] - canvas.pos(), bakeCanvas );
 		}
 		else
 		{
@@ -313,7 +313,7 @@ namespace wg
 
 	int BakeSkin::_animationLength(State state) const
 	{
-		return m_animationLengths[_stateToIndex(state)];
+		return m_animationLengths[state];
 	}
 
 	//____ _transitioningStates() _______________________________________________
@@ -337,22 +337,22 @@ namespace wg
 	{
 		m_cachedScale = scale;
 
-		// Update cached preferred and min size.
+		// Update cached default and min size.
 
-		SizeSPX preferred;
-		SizeSPX min;
+		SizeSPX defaultSize;
+		SizeSPX minSize;
 
 		for (auto& pSkin : m_skins)
 		{
 			if (pSkin)
 			{
-				preferred = SizeSPX::max(preferred, pSkin->_preferredSize(scale));
-				min = SizeSPX::max(min, pSkin->_minSize(scale));
+				defaultSize = SizeSPX::max(defaultSize, pSkin->_defaultSize(scale));
+				minSize = SizeSPX::max(minSize, pSkin->_minSize(scale));
 			}
 		}
 
-		m_cachedPreferredSize = preferred;
-		m_cachedMinSize = min;
+		m_cachedDefaultSize = defaultSize;
+		m_cachedMinSize = minSize;
 
 		// Update cached content padding.
 
@@ -362,7 +362,7 @@ namespace wg
 
 			BorderSPX padding = align(ptsToSpx(m_contentPadding,scale));
 
-			for (int index = 0; index < StateEnum_Nb; index++)
+			for (int index = 0; index < State::IndexAmount; index++)
 				m_cachedContentPadding[index] = padding;
 		}
 		else
@@ -373,14 +373,14 @@ namespace wg
 
 				if (m_bContentShifting)
 				{
-					for (int index = 0; index < StateEnum_Nb; index++)
-						m_cachedContentPadding[index] = _stateContentPadding(scale,_indexToState(index));
+					for (int index = 0; index < State::IndexAmount; index++)
+						m_cachedContentPadding[index] = _stateContentPadding(scale,State(index));
 				}
 				else
 				{
-					BorderSPX padding = _stateContentPadding(scale,StateEnum::Normal);
+					BorderSPX padding = _stateContentPadding(scale,State::Normal);
 
-					for (int index = 0; index < StateEnum_Nb; index++)
+					for (int index = 0; index < State::IndexAmount; index++)
 						m_cachedContentPadding[index] = padding;
 				}
 			}
@@ -394,8 +394,8 @@ namespace wg
 				{
 					if (pSkin)
 					{
-						for (int index = 0; index < StateEnum_Nb; index++)
-							m_cachedContentPadding[index] = pSkin->_contentPadding(scale,_indexToState(index));
+						for (int index = 0; index < State::IndexAmount; index++)
+							m_cachedContentPadding[index] = pSkin->_contentPadding(scale,State(index));
 						break;
 					}
 				}
@@ -495,9 +495,9 @@ namespace wg
 				opaqueStates = 0xFFFFFFFF;
 			else
 			{
-				for (int i = 0; i < StateEnum_Nb; i++)
+				for (int i = 0; i < State::IndexAmount; i++)
 				{
-					State state = _indexToState(i);
+					State state = State(i);
 
 					bool bStateOpaque = false;
 					for (auto it = m_skins.end(); it != m_skins.begin(); )
@@ -551,9 +551,9 @@ namespace wg
 
 		// Update animation lengths
 
-		for (int index = 0; index < StateEnum_Nb; index++)
+		for (int index = 0; index < State::IndexAmount; index++)
 		{
-			State state = _indexToState(index);
+			State state = State(index);
 
 			int		combinedLength = 0;
 

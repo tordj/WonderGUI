@@ -178,7 +178,7 @@ bool WgFlexHook::Up()
 
 	// Get area potentially exposed
 
-	WgRect cover( m_realGeo, pNext->m_realGeo );
+	WgRect cover = WgRect::getIntersection( m_realGeo, pNext->m_realGeo );
 
 	// Move up
 
@@ -205,7 +205,7 @@ bool WgFlexHook::Down()
 
 	// Get area of sibling potentially exposed
 
-	WgRect cover( m_realGeo, pPrev->m_realGeo );
+	WgRect cover = WgRect::getIntersection( m_realGeo, pPrev->m_realGeo );
 
 	// Move down
 
@@ -248,7 +248,7 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 		{
 			while( p != this )
 			{
-				WgRect cover( m_realGeo, p->m_realGeo );
+				WgRect cover = WgRect::getIntersection( m_realGeo, p->m_realGeo );
 
 				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, this );
@@ -274,7 +274,7 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 		{
 			while( p != this )
 			{
-				WgRect cover( m_realGeo, p->m_realGeo );
+				WgRect cover = WgRect::getIntersection( m_realGeo, p->m_realGeo );
 
 				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, p );
@@ -319,7 +319,7 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 		{
 			while( p != this )
 			{
-				WgRect cover( m_realGeo, p->m_realGeo );
+				WgRect cover = WgRect::getIntersection( m_realGeo, p->m_realGeo );
 
 				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, this );
@@ -340,7 +340,7 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 		{
 			while( p != this )
 			{
-				WgRect cover( m_realGeo, p->m_realGeo );
+				WgRect cover = WgRect::getIntersection( m_realGeo, p->m_realGeo );
 
 				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, p );
@@ -1257,7 +1257,7 @@ void WgFlexPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		{
-			int button = static_cast<const WgEvent::MouseButtonPress*>(_pEvent)->Button();
+			int button = static_cast<const WgEvent::MouseButtonRelease*>(_pEvent)->Button();
 			if( button == 1 )
 				state.setPressed(false);
 			break;
@@ -1292,7 +1292,7 @@ void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook
 	// Clip our geometry and put it in a dirtyrect-list
 
 	WgPatches patches;
-	patches.add( WgRect( rect, WgRect(0,0,PixelSize())) );
+	patches.add( WgRect::getIntersection( rect, WgRect(0,0,PixelSize())) );
 
 	// Remove portions of patches that are covered by opaque upper siblings
 

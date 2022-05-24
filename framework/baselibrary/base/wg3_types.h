@@ -76,6 +76,10 @@ namespace wg
 	template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T3 max) { if( x < min) x = min; if( x > max) x = max; }
 
 
+//#define WGLIST(...) { __VA_ARGS__ }
+
+#define WGBP(T, ...)\
+	([&]{ wg::T::Blueprint _{}; __VA_ARGS__; return _; }())
 
 #define WGTRACK(pObj) wg::Base::_trackObj(pObj, __FILE__, __LINE__ ) 
 
@@ -121,103 +125,6 @@ namespace wg
 	static const int	StateBits_Nb = 6;
 	static const int	StateBits_MaxValue = 5;
 
-	//____ StateEnum ____________________________________________________
-
-	enum class StateEnum : uint8_t
-	{
-		Normal					= 0,			///< Element is neither hovered, pressed, selected or focused.
-		Focused					= 1,			///< Element has keyboard focus
-		Hovered					= 4,			///< Mouse pointer is hovering over element.
-		HoveredFocused			= 4+1,
-		Pressed					= 4+2,			///< Mouse button (usually left one) is pressed on element.
-		PressedFocused			= 4+2+1,
-		Selected				= 8,			///< Element is in a selected state, like a selected checkbox or item in a list.
-		SelectedFocused			= 8+1,
-		SelectedHovered			= 8+4,
-		SelectedHoveredFocused	= 8+4+1,
-		SelectedPressed			= 8+4+2,
-		SelectedPressedFocused	= 8+4+2+1,
-		Targeted				= 16+4,
-		TargetedFocused			= 16+4+1,
-		TargetedSelected		= 16+8+4,
-		TargetedSelectedFocused = 16+8+4+1,
-		Disabled				= 32,			///< Element is disabled and can't be focused or pressed.
-		DisabledSelected		= 32+8,
-	};
-
-	static const int	StateEnum_Nb	= 18;			// Number of states
-	static const int	StateEnum_MaxValue	= 40;		// Highest value for StateEnum
-
-	class State
-	{
-	public:
-
-		//.____ Creation _______________________________________________________
-
-		State() { m_state = (uint8_t) StateEnum::Normal; }
-		State( StateEnum state ) { m_state = (uint8_t) state; }
-
-		//.____ State __________________________________________________________
-
-		inline bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~ ((uint8_t)StateEnum::Disabled); else m_state = (m_state & ((uint8_t)StateEnum::Selected)) | ((uint8_t)StateEnum::Disabled); return true; }
-		inline bool	setSelected(bool bSelected) { if(bSelected) m_state |= ((uint8_t)StateEnum::Selected); else m_state &= ~((uint8_t)StateEnum::Selected); return true; }
-		inline bool	setFocused(bool bFocused) { if( m_state & ((uint8_t)StateEnum::Disabled) ) return false; if(bFocused) m_state |= ((uint8_t)StateEnum::Focused); else m_state &= ~((uint8_t)StateEnum::Focused); return true; }
-		inline bool	setHovered(bool bHovered) { if( m_state & ((uint8_t)StateEnum::Disabled) ) return false; if(bHovered) m_state |= ((uint8_t)StateEnum::Hovered); else m_state &= ~(uint8_t(StateEnum::Pressed)|uint8_t(StateEnum::Targeted)); return true; }
-		inline bool	setPressed(bool bPressed) { if( m_state & ((uint8_t)StateEnum::Disabled) ) return false; if(bPressed) m_state |= ((uint8_t)StateEnum::Pressed); else m_state &= ~(((uint8_t)StateEnum::Pressed) - ((uint8_t)StateEnum::Hovered)); return true; }
-		inline bool	setTargeted(bool bTargeted) { if (m_state & ((uint8_t)StateEnum::Disabled)) return false; if (bTargeted) m_state |= ((uint8_t)StateEnum::Targeted); else m_state &= ~((uint8_t)StateEnum::Targeted); return true; }
-
-
-		inline bool	isEnabled() const { return (m_state & ((uint8_t)StateEnum::Disabled)) == ((uint8_t)StateEnum::Normal); }
-		inline bool	isSelected() const { return (m_state & ((uint8_t)StateEnum::Selected)) == ((uint8_t)StateEnum::Selected); }
-		inline bool	isFocused() const { return (m_state & ((uint8_t)StateEnum::Focused)) == ((uint8_t)StateEnum::Focused); }
-		inline bool	isHovered() const { return (m_state & ((uint8_t)StateEnum::Hovered)) == ((uint8_t)StateEnum::Hovered); }
-		inline bool	isPressed() const { return (m_state & ((uint8_t)StateEnum::Pressed)) == ((uint8_t)StateEnum::Pressed); }
-		inline bool	isTargeted() const { return (m_state & ((uint8_t)StateEnum::Targeted)) == ((uint8_t)StateEnum::Targeted); }
-
-		//._____ Operators _____________________________________________________
-
-		inline bool operator==(StateEnum state) const { return m_state == ((uint8_t)state); }
-		inline bool operator!=(StateEnum state) const { return m_state != ((uint8_t)state); }
-
-		inline StateEnum operator=(StateEnum state) { m_state = ((uint8_t)state); return *this; }
-
-		operator StateEnum() const { return (StateEnum) m_state; }
-
-		inline State operator+(StateEnum state) const { int s = m_state | (uint8_t) state; if (s & (int) StateEnum::Disabled) s &= (int) StateEnum::DisabledSelected; return (StateEnum) s; }
-		inline State operator-(StateEnum _state) const
-		{
-			int state = (int)_state;
-			int hovered = int(StateEnum::Hovered);
-			int hoverDependant = (int(StateEnum::Pressed) | int(StateEnum::Targeted)) & ~hovered;
-
-			if ((state & int(StateEnum::Pressed)) == int(StateEnum::Pressed))
-				state &= ~hovered;				// Special case: Don't remove hovered just because we remove pressed.
-			int s = (m_state & ~state);
-			if ((s & hovered) == 0)
-				s &= ~hoverDependant;			// If we remove hovered we can't keep a state dependant on it.
-			return (StateEnum)s;
-		}
-
-		inline State& operator+=(StateEnum state) { m_state |= (uint8_t) state; if (int(m_state) & int(StateEnum::Disabled)) m_state &= int(StateEnum::DisabledSelected); return *this; }
-		inline State& operator-=(StateEnum _state)
-		{
-			int state = (int)_state;
-			int hovered = int(StateEnum::Hovered);
-			int hoverDependant = (int(StateEnum::Pressed) | int(StateEnum::Targeted)) & ~hovered;
-
-			if ((state & int(StateEnum::Pressed)) == int(StateEnum::Pressed))
-				state &= ~hovered;				// Special case: Don't remove hovered just because we remove pressed.
-			m_state &= ~state;
-			if ((m_state & hovered) == 0)
-				m_state &= ~hoverDependant;			// If we remove hovered we can't keep a state dependant on it.
-			return *this;
-		}
-
-		inline uint8_t mask() { return m_state; }
-
-	private:
-		uint8_t		m_state;
-	};
 
 	//____ Bitmask ____________________________________________________
 
@@ -313,7 +220,7 @@ namespace wg
 
 	//____ TintMode ___________________________________________________________
 
-	enum class TintMode
+	enum class TintMode //.autoExtras
 	{
 		None = 0,
 		Flat,
@@ -516,7 +423,7 @@ namespace wg
 	*/
 	enum class SizeConstraint : uint8_t		//. autoExtras
 	{
-		None = 0,				///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
+		None = 0,				///< Childs size is unaffected by size specified by parent, so it gets its default size.
 		Equal,					///< Child is bound to the exact size specified by parent.
 		LessOrEqual,			///< Childs size is limited to the size specified by parent.
 		GreaterOrEqual			///< Childs size is set to at least the size specified by parent.
@@ -692,6 +599,7 @@ namespace wg
 		const int Mipmapped = 4;	// Surface should be Mipmapped. Better downscaling, but takes more memory and time to initialize and unlock Write-access.
 		const int Scale200 = 8;
 		const int Canvas = 16;		// Surface may be used as Canvas.
+		const int Bilinear = 32;	// Force SampleMethod::Bilinear.
 	};
 
 	//____ CanvasInit ______________________________________________________________
@@ -893,6 +801,92 @@ enum class CanvasInit 		//. autoExtras
 		uint8_t*	pBegin;
 		uint8_t*	pEnd;
 	};
+
+	//____ GfxChunkId ____________________________________________________
+
+	enum class GfxChunkId : uint8_t    //. autoExtras
+	{
+		OutOfData = 0,
+		BeginRender = 1,
+		EndRender = 2,
+		Flush = 3,
+
+		BeginCanvasUpdate = 4,
+		EndCanvasUpdate = 5,
+
+		SetClipList = 6,
+		ResetClipList = 7,
+		PushClipList = 8,
+		PopClipList = 9,
+
+		SetTintColor = 10,
+		SetTintGradient = 11,
+		ClearTintGradient = 12,
+
+		SetBlendMode = 13,
+		SetBlitSource = 14,
+		SetMorphFactor = 15,
+		SetRenderLayer = 16,
+
+		Fill = 17,
+		FillRectI = 18,
+		FillRectF = 19,
+		PlotPixels = 20,
+		DrawLineFromTo = 21,
+		DrawLineStraight = 22,
+
+		Blit = 23,
+		BlitRectI = 24,
+		FlipBlit = 25,
+		FlipBlitRectI = 26,
+
+		StretchBlit = 27,
+		StretchBlitRectI = 28,
+		StretchBlitRectF = 29,
+
+		StretchFlipBlit = 30,
+		StretchFlipBlitRectI = 31,
+		StretchFlipBlitRectF = 32,
+
+		RotScaleBlit = 33,
+		Tile = 34,
+		FlipTile = 35,
+
+		ScaleTile = 36,
+		ScaleFlipTile = 37,
+
+		DrawWave = 38,
+		FlipDrawWave = 39,
+
+		DrawElipse = 40,
+		DrawPieChart = 41,
+
+		DrawSegments = 42,
+		FlipDrawSegments = 43,
+
+		BlitNinePatch = 44,
+
+		EdgeSamples = 45,
+
+		CreateSurface = 46,
+		BeginSurfaceUpdate = 47,
+		SurfacePixels = 48,
+		EndSurfaceUpdate = 49,
+		FillSurface = 50,
+		CopySurface = 51,
+		DeleteSurface = 52,
+
+		ProtocolVersion = 53,
+		TimeStampMS = 54
+	};
+
+	struct GfxChunkFlags
+	{
+		uint8_t     supix : 1;
+		uint8_t     packed : 1;
+	};
+
+
 
 } // namespace wg
 

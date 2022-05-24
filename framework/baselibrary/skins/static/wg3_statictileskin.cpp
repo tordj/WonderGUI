@@ -78,14 +78,14 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _preferredSize() ______________________________________________________________
+	//____ _defaultSize() ______________________________________________________________
 
-	SizeSPX StaticTileSkin::_preferredSize(int scale) const
+	SizeSPX StaticTileSkin::_defaultSize(int scale) const
 	{
 		if (!m_pSurface)
 			return SizeSPX();
 
-		return SizeSPX::max(ptsToSpx(m_pSurface->pointSize(), scale),Skin::_preferredSize(scale));
+		return SizeSPX::max(ptsToSpx(m_pSurface->pointSize(), scale),Skin::_defaultSize(scale));
 	}
 
 	//____ _render() ______________________________________________________________

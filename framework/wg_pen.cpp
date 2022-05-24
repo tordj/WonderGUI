@@ -84,7 +84,7 @@ void WgPen::_onAttrChanged()
 		return;
 	}
 
-	m_size = m_wantedSize * m_scale >> WG_SCALE_BINALS;
+	m_size = m_wantedSize;
 	m_pFont->setSize(m_size);
 }
 

@@ -334,8 +334,8 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 	// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
-    WgRect canvas = m_bHasGeo ? WgRect(m_geo, WgRect(m_canvas.size/64)) : WgRect(m_canvas.size/64);
-	WgRect clip( _clip, canvas );
+    WgRect canvas = m_bHasGeo ? WgRect::getIntersection(m_geo, WgRect(m_canvas.size/64)) : WgRect(m_canvas.size/64);
+	WgRect clip = WgRect::getIntersection( _clip, canvas );
 	if( clip.w == 0 || clip.h == 0 )
 		return false;						// Invalid rect area.
 
@@ -349,11 +349,10 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 	WgPatches dirtyPatches( m_dirtyPatches.size() );
 
-	WgRect clipped;
 	for( const WgRect * pRect = m_dirtyPatches.begin() ; pRect != m_dirtyPatches.end() ; pRect++ )
 	{
-		if( clipped.intersection( *pRect, clip ) )
-			dirtyPatches.push( clipped );
+		if( clip.intersectsWith(*pRect) )
+			dirtyPatches.push( WgRect::getIntersection(*pRect, clip) );
 	}
 
 	// Render the dirty patches recursively

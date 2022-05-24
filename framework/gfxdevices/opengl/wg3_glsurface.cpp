@@ -110,6 +110,9 @@ namespace wg
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
 		bp.clut = pClut;
 
+		if( flags & SurfaceFlag::Bilinear )
+			bp.sampleMethod = SampleMethod::Bilinear;
+		
 		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
 
@@ -129,6 +132,9 @@ namespace wg
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
 		bp.clut = pClut;
+
+		if( flags & SurfaceFlag::Bilinear )
+			bp.sampleMethod = SampleMethod::Bilinear;
 
 		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
@@ -150,6 +156,9 @@ namespace wg
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
 		bp.clut = pClut;
 
+		if( flags & SurfaceFlag::Bilinear )
+			bp.sampleMethod = SampleMethod::Bilinear;
+
 		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
 
@@ -168,6 +177,9 @@ namespace wg
 		bp.dynamic = (flags & SurfaceFlag::Dynamic);
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
+
+		if( flags & SurfaceFlag::Bilinear )
+			bp.sampleMethod = SampleMethod::Bilinear;
 
 		if (!_isBlueprintValid(bp, maxSize(), pOther))
 			return GlSurface_p();

@@ -777,7 +777,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		{
             pDevice->beginCanvasUpdate(m_pCanvas);
 
-			pDevice->fill(sz, m_chartColor);
+			pDevice->fill(sz*64, m_chartColor);
 			_renderGridLines(pDevice, sz, sz );
 
 /*
@@ -823,8 +823,9 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				double windowEnd = m_windowEnd;
 
 				WgRect canvas(m_canvasOfs, 0, m_scrollAmount, sz.h);
-				pDevice->setClipList( 1, &canvas );
-				pDevice->fill(canvas, m_chartColor);
+				WgRect canvasClip = canvas * 64;
+				pDevice->setClipList( 1, &canvasClip );
+				pDevice->fill(canvas*64, m_chartColor);
 				_renderGridLines(pDevice, canvas, canvas);
 				_renderWaveSegment(pDevice, canvas, windowBegin, windowEnd, timestampInc);
 			}
@@ -837,8 +838,9 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				double windowEnd = m_windowEnd - width2*timestampInc;
 
 				WgRect canvas(m_canvasOfs, 0, width1, sz.h);
-				pDevice->setClipList( 1, &canvas );
-				pDevice->fill(canvas, m_chartColor);
+				WgRect canvasClip = canvas * 64;
+				pDevice->setClipList( 1, &canvasClip );
+				pDevice->fill(canvas*64, m_chartColor);
 				_renderGridLines(pDevice, canvas, canvas);
 				_renderWaveSegment(pDevice, canvas, windowBegin, windowEnd, timestampInc);
 
@@ -846,8 +848,9 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				windowEnd = m_windowEnd;
 
 				WgRect canvas2(0, 0, width2, sz.h);
-				pDevice->setClipList( 1, &canvas2 );
-				pDevice->fill(canvas2, m_chartColor);
+				WgRect canvas2Clip = canvas2 * 64;
+				pDevice->setClipList( 1, &canvas2Clip );
+				pDevice->fill(canvas2*64, m_chartColor);
 				_renderGridLines(pDevice, canvas2, canvas2);
 				_renderWaveSegment(pDevice, canvas2, windowBegin, windowEnd, timestampInc);
 			}
@@ -944,11 +947,11 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 			case WaveType::Simple:
 				bottomLine.length = 0;
 				bottomLine.pWave = nullptr;
-				pDevice->drawWave({ _canvas.x - margin + waveSamplesOffset,_canvas.y, waveSamples-1,_canvas.h }, &topLine, &bottomLine, wave.frontFill, wave.backFill);
+				pDevice->drawWave( WgRect( _canvas.x - margin + waveSamplesOffset,_canvas.y, waveSamples-1,_canvas.h )*64, &topLine, &bottomLine, wave.frontFill, wave.backFill);
 //                pDevice->ClipDrawHorrWave(_canvas, { _canvas.x - margin + waveSamplesOffset,_canvas.y }, waveSamples-1, topLine, bottomLine, wave.frontFill, wave.backFill);
 				break;
 			case WaveType::Complex:
-				pDevice->drawWave({ _canvas.x - margin + waveSamplesOffset,_canvas.y, waveSamples-1,_canvas.h }, &topLine, &bottomLine, wave.frontFill, wave.backFill);
+				pDevice->drawWave( WgRect( _canvas.x - margin + waveSamplesOffset,_canvas.y, waveSamples-1,_canvas.h )*64, &topLine, &bottomLine, wave.frontFill, wave.backFill);
 //				pDevice->ClipDrawHorrWave(_canvas, { _canvas.x - margin + waveSamplesOffset,_canvas.y }, waveSamples-1, topLine, bottomLine, wave.frontFill, wave.backFill);
 				break;
 			}
@@ -1060,7 +1063,7 @@ void WgScrollChart::_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _can
 		for (auto& line : m_valueGridLines)
 		{
 			int yOfs = int(startOfs) + (int)((line.pos - top) * mul + 0.5f);
-			pDevice->drawLine({ _canvas.x, yOfs }, WgDirection::Right, _canvas.w, line.color, line.thickness * m_scale / WG_SCALE_BASE);
+			pDevice->drawLine( WgCoord( _canvas.x, yOfs )*64, WgDirection::Right, _canvas.w*64, line.color, line.thickness * m_scale / WG_SCALE_BASE);
 		}
 	}
 }
@@ -1079,13 +1082,17 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 			WgRect& coverage = canvas;
 
-			if ( !coverage.contains( pDevice->clipBounds() ) )
+			if ( !coverage.contains( pDevice->clipBounds()/64 ) )
 			{
 				WgRect topSection(canvas.x, canvas.y, canvas.w, coverage.y - canvas.y);
 				WgRect leftSection(canvas.x, coverage.y, coverage.x - canvas.x, coverage.h);
 				WgRect rightSection(coverage.x + coverage.w, coverage.y, canvas.x + canvas.w - (coverage.x + coverage.w), coverage.h);
 				WgRect bottomSection(canvas.x, coverage.y + coverage.h, canvas.w, canvas.y + canvas.h - (coverage.y + coverage.h));
 
+				topSection *= 64;
+				leftSection *= 64;
+				rightSection *= 64;
+				bottomSection *= 64;
 
 				const WgRect * pOldClipList = pDevice->clipList();
 				int     oldClipListSize = pDevice->clipListSize();
@@ -1097,16 +1104,16 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 				for( int i = 0 ; i < oldClipListSize ; i++ )
 				{
 					if( pOldClipList[i].intersectsWith(topSection) )
-						pRects[nRects++] = WgRect(pOldClipList[i], topSection );
+						pRects[nRects++] = WgRect::getIntersection(pOldClipList[i], topSection );
 
 					if( pOldClipList[i].intersectsWith(leftSection) )
-						pRects[nRects++] = WgRect(pOldClipList[i], leftSection );
+						pRects[nRects++] = WgRect::getIntersection(pOldClipList[i], leftSection );
 
 					if( pOldClipList[i].intersectsWith(bottomSection) )
-						pRects[nRects++] = WgRect(pOldClipList[i], bottomSection );
+						pRects[nRects++] = WgRect::getIntersection(pOldClipList[i], bottomSection );
 
 					if( pOldClipList[i].intersectsWith(rightSection) )
-						pRects[nRects++] = WgRect(pOldClipList[i], rightSection );
+						pRects[nRects++] = WgRect::getIntersection(pOldClipList[i], rightSection );
 				}
 
 				pDevice->setClipList(nRects, pRects);
@@ -1142,13 +1149,13 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 		pDevice->setBlitSource(m_pCanvas);
 		if( m_windowBegin == 0 )
-			pDevice->blit( WgCoord(scrollCanvas.x, scrollCanvas.y), { 0, 0, scrollCanvas.w, scrollCanvas.h });
+			pDevice->blit( WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( 0, 0, scrollCanvas.w, scrollCanvas.h )*64 );
 		else
 		{
 			int firstPartLen = m_pCanvas->pixelSize().w - m_canvasOfs;
 
-			pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y), { m_canvasOfs, 0, firstPartLen, scrollCanvas.h });
-			pDevice->blit(WgCoord(scrollCanvas.x + firstPartLen, scrollCanvas.y), { 0, 0, scrollCanvas.w - firstPartLen, scrollCanvas.h });
+			pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( m_canvasOfs, 0, firstPartLen, scrollCanvas.h )*64 );
+			pDevice->blit(WgCoord(scrollCanvas.x + firstPartLen, scrollCanvas.y)*64, WgRect( 0, 0, scrollCanvas.w - firstPartLen, scrollCanvas.h )*64 );
 		}
 	}
 

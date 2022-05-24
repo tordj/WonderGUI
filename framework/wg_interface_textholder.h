@@ -127,6 +127,8 @@ public:
 	inline Uint32		TextWidth() const { return m_pText->width(); }
 	inline Uint32		TextHeight() const { return m_pText->height(); }
 
+    std::string         GetStdString() const;
+
 protected:
 	Wg_Interface_TextHolder();
 

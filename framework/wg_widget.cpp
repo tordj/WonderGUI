@@ -257,7 +257,7 @@ wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
 	WgSize sz = PixelSize();
 
 	auto pCanvas = pFactory->createSurface(sz,wg::PixelFormat::BGRA_8, surfaceFlags | wg::SurfaceFlag::Canvas );
-	pCanvas->setScale(m_scale/4096.f);
+	pCanvas->setScale(m_scale/4096.f*64);
 
 	WgPatches patches;
 	patches.add( sz );
@@ -589,14 +589,14 @@ void WgWidget::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 void WgWidget::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-		container.add( WgRect( geo, clip ) );
+		container.add( WgRect::getIntersection( geo, clip ) );
 }
 
 void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	if( (m_bOpaque && blendMode == WgBlendMode::Blend) || blendMode == WgBlendMode::Replace )
 	{
-		patches.sub( WgRect( geo, clip ) );
+		patches.sub( WgRect::getIntersection( geo, clip ) );
 	}
 }
 
@@ -793,7 +793,7 @@ wg::SizeI WgWidget::_skinMinSize( wg::Skin * pSkin, int scale ) const
 
 wg::SizeI WgWidget::_skinPreferredSize( wg::Skin * pSkin, int scale ) const
 {
-	return pSkin->_preferredSize(scale >> 6) / 64;
+	return pSkin->_defaultSize(scale >> 6) / 64;
 }
 
 //____ _skinSizeForContent() __________________________________________________________

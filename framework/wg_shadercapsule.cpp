@@ -106,7 +106,7 @@ WgBlendMode WgShaderCapsule::_getBlendMode() const
 
 void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
-	pDevice->setClipList(_pPatches->size(), _pPatches->begin());
+	int bytesToRelease = _convertAndPushClipList( pDevice, _pPatches->size(), _pPatches->begin() );
 
 	if( m_pSkin )
 		_renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale );
@@ -148,6 +148,8 @@ void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 		pDevice->setBlendMode(oldBM);
 		pDevice->setTintColor(oldTC);
 	}
+	
+	_popAndReleaseClipList( pDevice, bytesToRelease );
 }
 
 //____ _onCollectPatches() _____________________________________________________

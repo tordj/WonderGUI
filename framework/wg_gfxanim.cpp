@@ -54,7 +54,7 @@ WgGfxAnim::WgGfxAnim( WgSize size, WgBorders gfxBorders, Uint32 blockFlags )
 WgSize WgGfxAnim::Size(int scale) const
 {
 	WgGfxFrame * pFrame = (WgGfxFrame *) WgAnim::_firstKeyFrame();
-	int factor = pFrame ? pFrame->pSurf[0]->scale()*4096 : WG_SCALE_BASE;
+	int factor = pFrame ? pFrame->pSurf[0]->scale()*4096/64 : WG_SCALE_BASE;
 
 	return m_size[0]*scale/factor;
 }

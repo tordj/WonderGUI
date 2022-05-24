@@ -49,7 +49,12 @@ namespace wg
 
 		struct StateBP
 		{
-			State			state = StateEnum::Normal;
+			StateBP() {}
+			StateBP( State state, StateData data ) : state(state), data(data) {}
+			StateBP( State state, HiColor color ) : state(state) { data.color = color; }
+			StateBP( State state, Coord contentShift ) : state(state)	{ data.contentShift = contentShift; }
+			
+			State			state = State::Normal;
 			StateData		data;
 		};
 
@@ -106,7 +111,7 @@ namespace wg
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		HiColor		m_color[StateEnum_Nb];
+		HiColor		m_color[State::IndexAmount];
 	};
 
 

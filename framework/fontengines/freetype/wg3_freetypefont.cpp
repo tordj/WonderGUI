@@ -119,6 +119,9 @@ namespace wg
 				delete m_pCachedFontSizes[size];
 		}
 
+        if(m_pCachedFontSizes != nullptr)
+            delete [] m_pCachedFontSizes;
+
 		FT_Done_Face( m_ftFace );
 
 		s_nInstances--;
@@ -389,12 +392,12 @@ namespace wg
 					goto no_glyph;
 
 				if (m_pBackupFont->size() == m_size)
-					m_pBackupFont->getGlyphWithoutBitmap(ch, glyph);
+					m_pBackupFont->getGlyphWithBitmap(ch, glyph);
 				else
 				{
 					spx sz = m_pBackupFont->size();
 					m_pBackupFont->setSize(m_size);
-					m_pBackupFont->getGlyphWithoutBitmap(ch, glyph);
+					m_pBackupFont->getGlyphWithBitmap(ch, glyph);
 					m_pBackupFont->setSize(sz);
 				}
 				return;

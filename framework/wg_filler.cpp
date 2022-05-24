@@ -115,7 +115,7 @@ void WgFiller::_onCloneContent( const WgWidget * _pOrg )
 void WgFiller::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	if( m_pColors )
-		pDevice->fill( _canvas, m_pColors->Color(m_mode) );
+		pDevice->fill( _canvas*64, m_pColors->Color(m_mode) );
     else if( m_pSkin )
         _renderSkin(m_pSkin, pDevice, m_state, _canvas, m_scale);
 }

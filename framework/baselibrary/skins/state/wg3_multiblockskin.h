@@ -69,7 +69,7 @@ namespace wg
 		//.____ Internal _________________________________________________
 
 		SizeSPX	_minSize(int scale) const override;
-		SizeSPX	_preferredSize(int scale) const override;
+		SizeSPX	_defaultSize(int scale) const override;
 		SizeSPX	_sizeForContent(const SizeSPX& contentSize, int scale) const override;
 
 		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
@@ -92,8 +92,8 @@ namespace wg
 			Bitmask<uint32_t>   stateBlockMask = 0;
 			Bitmask<uint32_t>   stateColorMask = 1;         // Normal state always exist for colors and is by default white.
 
-			Coord				blockOfs[StateEnum_Nb];		// Block for each state
-			HiColor				tintColor[StateEnum_Nb];
+			Coord				blockOfs[State::IndexAmount];		// Block for each state
+			HiColor				tintColor[State::IndexAmount];
 	//		Placement			placementOrigo;
 	//		CoordI			placementOfs;
 	//		SizeI			dimensions;                   // Stored in pixels
@@ -111,7 +111,7 @@ namespace wg
 
 		std::vector<LayerData>	m_layers;
 
-		bool			m_bStateOpaque[StateEnum_Nb];
+		bool			m_bStateOpaque[State::IndexAmount];
 
 	};
 

@@ -299,7 +299,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 	for (const WgRect * pScreenRect = _pPatches->begin(); pScreenRect != _pPatches->end(); pScreenRect++)
 	{
-		WgRect r( _canvas, *pScreenRect );
+		WgRect r = WgRect::getIntersection( _canvas, *pScreenRect );
 
 		if( r.w > 0 && r.h > 0 )
 		{
@@ -311,7 +311,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 			{
 				if (pLocalDirt->intersectsWith(r))
 				{
-					renderStack.push(WgRect(*pLocalDirt,r));
+					renderStack.push(WgRect::getIntersection(*pLocalDirt,r));
 					bIntersected = true;
 				}
 			}
@@ -332,7 +332,8 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 	if (!renderStack.isEmpty())
 	{
-        pDevice->beginCanvasUpdate(m_pCanvas,renderStack.size(), renderStack.begin(), m_pCanvasLayers, m_renderLayer);
+        pDevice->beginCanvasUpdate(m_pCanvas, 0, nullptr, m_pCanvasLayers, m_renderLayer);
+		int bytesToRelease = _convertAndPushClipList( pDevice, renderStack.size(), renderStack.begin() );
 
 		pDevice->setBlendMode(WgBlendMode::Replace);
 		pDevice->setTintColor(WgColor::White);
@@ -344,6 +345,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
         if(m_hook.Widget())
             m_hook.Widget()->_renderPatches(pDevice, _canvas.size(), _canvas.size(), &renderStack);
 
+		_popAndReleaseClipList( pDevice, bytesToRelease);
         pDevice->endCanvasUpdate();
 	}
 
@@ -377,7 +379,7 @@ void WgCanvasCapsule::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, 
 	// Copy from our back canvas to the screen canvas
 
 	pDevice->setBlitSource(m_pCanvas);
-	pDevice->blit( WgCoord(_canvas.x, _canvas.y), { 0,0,_canvas.w,_canvas.h });
+	pDevice->blit( WgCoord(_canvas.x, _canvas.y)*64, { 0,0,_canvas.w*64,_canvas.h*64 });
 }
 
 
@@ -425,7 +427,7 @@ void WgCanvasCapsule::_onRenderRequested(const WgRect& rect)
 void WgCanvasCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	if (m_tintColor.a > 0 || m_blendMode == WgBlendMode::Replace)
-		container.add( WgRect( geo, clip ) );
+		container.add( WgRect::getIntersection( geo, clip ) );
 }
 
 //____ _onMaskPatches() _______________________________________________________
@@ -435,7 +437,7 @@ void WgCanvasCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, con
 	//TODO: Support recursive masking.
 
 	if( m_pCanvas && ((m_tintColor.a == 255 && m_pCanvas->pixelDescription()->A_bits == 0) || m_blendMode == WgBlendMode::Replace) )
-		patches.sub(WgRect(geo, clip));
+		patches.sub(WgRect::getIntersection(geo, clip));
 
 	return;
 }

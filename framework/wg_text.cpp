@@ -544,7 +544,7 @@ bool WgText::setColor( const WgColor color )
 	if( m_pBaseStyle && m_pBaseStyle->isColorStatic() && m_pBaseStyle->color(wg::StateEnum::Normal) == color )
 		return false;
 
-	auto bp = m_pBaseStyle->blueprint();
+	auto bp = m_pBaseStyle ? m_pBaseStyle->blueprint() : wg::TextStyle::Blueprint();
 	bp.color = color;
 	m_pBaseStyle = wg::TextStyle::create(bp);
 	return true;
@@ -556,13 +556,7 @@ bool WgText::setColor( const WgColor color, wg::State state )
 		return false;
 
 	auto bp = m_pBaseStyle->blueprint();
-	
-	int stateOfs = 0;
-	while( bp.states[stateOfs].state != wg::StateEnum::Normal )
-		stateOfs++;
-	
-	bp.states[stateOfs].state = state;
-	bp.states[stateOfs].data.color = color;
+	bp.states.push_back( {state, color} );
 	m_pBaseStyle = wg::TextStyle::create(bp);
 	return true;
 }

@@ -169,7 +169,7 @@ public:
 
 	void Resize_HQ_4ch( unsigned char* src, int w1, int h1,
 					   unsigned char* dest, int w2, int h2,
-					   volatile bool* pQuitFlag )
+					   bool* pQuitFlag)
 	{
 
 		int* g_px1a    = NULL;

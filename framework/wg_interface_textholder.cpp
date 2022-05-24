@@ -63,6 +63,17 @@ bool Wg_Interface_TextHolder::SetAutoEllipsis( bool bAutoEllipsis )
 	return true;
 }
 
+//____ GetStdString() _____________________________________________________
+
+std::string Wg_Interface_TextHolder::GetStdString() const
+{
+    char* buf = m_pText->getTextUTF8(); // This calls new, we need to explicitly call delete[] below.
+    std::string str = std::string(buf);
+    delete[] buf;
+
+    return str;
+}
+
 //____ SetTextAlignment() _____________________________________________________
 
 void Wg_Interface_TextHolder::SetTextAlignment( const WgOrigo alignment )

@@ -80,9 +80,9 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _preferredSize() ______________________________________________________________
+	//____ _defaultSize() ______________________________________________________________
 
-	SizeSPX FrameMeterSkin::_preferredSize(int scale) const
+	SizeSPX FrameMeterSkin::_defaultSize(int scale) const
 	{
 		return SizeSPX::max(align(ptsToSpx(m_size,scale)), align(ptsToSpx(m_contentPadding,scale)));
 	}

@@ -565,6 +565,11 @@ bool WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect& _dest, wg::Skin * pSk
 	return retVal;
 }
 
+WgState WgWidgetSlider::GetStateFromMode(unsigned int eComponent)
+{
+	return WgUtil::ModeToState(m_mode[eComponent]);
+}
+
 //____ _findMarkedComponent() __________________________________________________
 
 WgWidgetSlider::Component WgWidgetSlider::_findMarkedComponent( WgCoord ofs )

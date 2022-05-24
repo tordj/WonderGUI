@@ -57,12 +57,12 @@ namespace wg
 		struct StateBP
 		{
 			StateBP() {}
-			StateBP( State s ) : state(s) {}
-			StateBP( StateEnum s ) : state(s) {}
-			StateBP( State s, StateData d ) : state(s), data(d) {}
-			StateBP( StateEnum s, StateData d ) : state(s), data(d) {}
-
-			State			state = StateEnum::Normal;
+			StateBP( State state ) : state(state) {}
+			StateBP( State state, StateData data ) : state(state), data(data) {}
+			StateBP( State state, HiColor color, bool blockless = false ) : state(state) { data.color = color; data.blockless = blockless; }
+			StateBP( State state, Coord contentShift, bool blockless = false ) : state(state)	{ data.contentShift = contentShift; data.blockless = blockless; }
+			
+			State			state = State::Normal;
 			StateData		data;
 		};
 
@@ -102,7 +102,7 @@ namespace wg
 
 		//.____ Internal _________________________________________________
 
-		SizeSPX		_preferredSize(int scale) const override;
+		SizeSPX		_defaultSize(int scale) const override;
 
 		bool		_isOpaque(State state) const override;
 		bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const override;
@@ -147,9 +147,9 @@ namespace wg
 		Bitmask<uint32_t>	m_stateBlockMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		Coord		m_stateBlocks[StateEnum_Nb];
-		HiColor		m_stateColors[StateEnum_Nb];
-		bool		m_bStateOpaque[StateEnum_Nb];
+		Coord		m_stateBlocks[State::IndexAmount];
+		HiColor		m_stateColors[State::IndexAmount];
+		bool		m_bStateOpaque[State::IndexAmount];
 
 		int			m_transitionTimes[StateBits_Nb] = { 0,0,0,0,0,0 };
 	};

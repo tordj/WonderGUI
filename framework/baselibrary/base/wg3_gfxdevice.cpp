@@ -1210,7 +1210,7 @@ namespace wg
 		// Make a bounding box around all clip rectangles
 
 		RectI _dest = _destIn/64;
-		RectI bounds( m_clipBounds/64, _dest );
+		RectI bounds = RectI::getIntersection( m_clipBounds/64, _dest );
 
 		if (bounds.w == 0 || bounds.h == 0)
 			return;
@@ -1399,7 +1399,7 @@ namespace wg
 
 		// Adjusted clip
 
-		RectI clip(m_clipBounds / 64, outerRect);
+		RectI clip = RectI::getIntersection(m_clipBounds / 64, outerRect);
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
@@ -2008,8 +2008,10 @@ namespace wg
 		int nFillPoints = nPoints - nTracePoints;
 
 		// Trace...
+		int * pSrc = nullptr;
+		if(pWave->pWave != nullptr)
+			pSrc = pWave->pWave + offset;
 
-		int * pSrc = pWave->pWave + offset;
 		for (int i = 0; i < nTracePoints; i++)
 		{
 			// Start with top and bottom for current point

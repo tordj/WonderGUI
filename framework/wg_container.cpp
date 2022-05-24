@@ -354,7 +354,7 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
 		if( _canvas.intersectsWith( *pRect ) )
-			patches.push( WgRect(*pRect,_canvas) );
+			patches.push( WgRect::getIntersection(*pRect,_canvas) );
 	}
 
 

@@ -120,7 +120,7 @@ public:
 	inline int                    Height() const { return m_rect.h; }
 	inline WgSize                Size() const { return WgSize(m_rect.w, m_rect.h); }
 	inline int                     OutputScale() const { return m_scale; }
-	inline int                     SurfaceScale() const { return (int) m_pSurf->scale()*4096; }
+	inline int                     SurfaceScale() const { return (int) m_pSurf->scale()*4096/64; }
 
 	inline int                    MinWidth() const { return m_canvasFrame.width(); }
 	inline int                    MinHeight() const { return m_canvasFrame.height(); }

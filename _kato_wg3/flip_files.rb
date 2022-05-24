@@ -28,6 +28,24 @@ def flip_includes( lines )
 end
 
 
+def flip_cmakelist( lines )
+
+  output = []
+
+  for line in lines
+    if( line =~ /wg_/ )
+      line.sub! /wg_/, 'wg3_'
+    elsif( line =~ /wg3_/ )
+      line.sub! /wg3_/, 'wg_'
+    end
+    output << line
+  end
+
+  return output
+
+end
+
+
 
 if( $*.length < 1 )
   printUsage()
@@ -36,7 +54,12 @@ end
 
 for fileName in $*
 
-  content = flip_includes( IO.readlines(fileName) )
+  if( fileName =~ /CMakeLists.txt/ )
+    content = flip_cmakelist( IO.readlines(fileName) )
+  else
+    content = flip_includes( IO.readlines(fileName) )
+  end
+
 
   if( fileName =~ /wg3_/ )
   	newFileName = fileName.sub( /wg3_/, 'wg_' )

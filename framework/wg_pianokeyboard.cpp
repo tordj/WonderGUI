@@ -163,12 +163,12 @@ void WgPianoKeyboard::setSurfaces(const wg::Surface_p& pOddWhiteKeys, const wg::
 	int ofs = 0;
 	for (auto state : states)
 	{
-		int i = _stateToIndex(state);
+		int i = state;
 		stateMask.setBit(i);
 		m_stateOfsY[i] = ofs++;
 	}
 
-	for (int i = 0; i < wg::StateEnum_Nb; i++)
+	for (int i = 0; i < wg::State::IndexAmount; i++)
 	{
 		if (!stateMask.bit(i))
 		{
@@ -449,7 +449,7 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
                 dst.x += int( pKey->geoTweak.x * scaleX);
                 dst.w += int( pKey->geoTweak.w * scaleX);
 
-				float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_blackKeySourceHeight);
+				float srcOfsY = float(m_stateOfsY[pKey->state] * m_blackKeySourceHeight);
 
 				pDevice->stretchBlit((dst + canvas.pos()) * 64, wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 			}
@@ -493,7 +493,7 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
 		if (dst.x + dst.w > canvas.w)
 			dst.w = canvas.w - dst.x;
 
-		float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_keyboardSourceSize.h);
+		float srcOfsY = float(m_stateOfsY[pKey->state] * m_keyboardSourceSize.h);
 
 		pDevice->stretchBlit((dst + canvas.pos()) * 64, wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 
@@ -588,7 +588,7 @@ void WgPianoKeyboard::_setHoveredKey(int keyIdx, uint64_t timestamp)
 		if (m_bIsHoveredPressed)
 		_eventHandler()->QueueEvent(new WgEvent::PianoKeyRelease(this, m_hoveredKey, timestamp));
 
-		if (m_stateOfsY[_stateToIndex(oldState)] != m_stateOfsY[_stateToIndex(state)])
+		if (m_stateOfsY[oldState] != m_stateOfsY[state])
 			_requestRenderKey(m_hoveredKey);
 	}
 
@@ -606,7 +606,7 @@ void WgPianoKeyboard::_setHoveredKey(int keyIdx, uint64_t timestamp)
 			_eventHandler()->QueueEvent(new WgEvent::PianoKeyPress(this, m_hoveredKey, timestamp));
 		}
 
-		if (m_stateOfsY[_stateToIndex(oldState)] != m_stateOfsY[_stateToIndex(state)])
+		if (m_stateOfsY[oldState] != m_stateOfsY[state])
 			_requestRenderKey(m_hoveredKey);
 	}
 }

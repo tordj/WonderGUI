@@ -39,11 +39,13 @@ namespace wg
 =========================================================================*/
 
 	const static CodePage        CodePage_min        = CodePage::Latin1;
+	const static TintMode        TintMode_min        = TintMode::None;
 	const static BlendMode       BlendMode_min       = BlendMode::Undefined;
 	const static PointerStyle    PointerStyle_min    = PointerStyle::Arrow;
 	const static MouseButton     MouseButton_min     = MouseButton::None;
 	const static PlayMode        PlayMode_min        = PlayMode::Forward;
 	const static SearchMode      SearchMode_min      = SearchMode::MarkPolicy;
+	const static MarkPolicy      MarkPolicy_min      = MarkPolicy::Ignore;
 	const static Placement       Placement_min       = Placement::NorthWest;
 	const static Direction       Direction_min       = Direction::Up;
 	const static Axis            Axis_min            = Axis::Undefined;
@@ -59,13 +61,16 @@ namespace wg
 	const static MaskOp          MaskOp_min          = MaskOp::Recurse;
 	const static GfxFlip         GfxFlip_min         = GfxFlip::Normal;
 	const static CanvasRef       CanvasRef_min       = CanvasRef::None;
+	const static GfxChunkId      GfxChunkId_min      = GfxChunkId::OutOfData;
 
 	const static CodePage        CodePage_max        = CodePage::_874;
+	const static TintMode        TintMode_max        = TintMode::GradientXY;
 	const static BlendMode       BlendMode_max       = BlendMode::Morph;
 	const static PointerStyle    PointerStyle_max    = PointerStyle::ResizeBeamWE;
 	const static MouseButton     MouseButton_max     = MouseButton::X2;
 	const static PlayMode        PlayMode_max        = PlayMode::BackwardPingPong;
 	const static SearchMode      SearchMode_max      = SearchMode::ActionTarget;
+	const static MarkPolicy      MarkPolicy_max      = MarkPolicy::Geometry;
 	const static Placement       Placement_max       = Placement::Center;
 	const static Direction       Direction_max       = Direction::Left;
 	const static Axis            Axis_max            = Axis::Y;
@@ -81,13 +86,16 @@ namespace wg
 	const static MaskOp          MaskOp_max          = MaskOp::Mask;
 	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
 	const static CanvasRef       CanvasRef_max       = CanvasRef::Canvas_32;
+	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::TimeStampMS;
 
 	const static int             CodePage_size       = (int)CodePage::_874 + 1;
+	const static int             TintMode_size       = (int)TintMode::GradientXY + 1;
 	const static int             BlendMode_size      = (int)BlendMode::Morph + 1;
 	const static int             PointerStyle_size   = (int)PointerStyle::ResizeBeamWE + 1;
 	const static int             MouseButton_size    = (int)MouseButton::X2 + 1;
 	const static int             PlayMode_size       = (int)PlayMode::BackwardPingPong + 1;
 	const static int             SearchMode_size     = (int)SearchMode::ActionTarget + 1;
+	const static int             MarkPolicy_size     = (int)MarkPolicy::Geometry + 1;
 	const static int             Placement_size      = (int)Placement::Center + 1;
 	const static int             Direction_size      = (int)Direction::Left + 1;
 	const static int             Axis_size           = (int)Axis::Y + 1;
@@ -103,13 +111,16 @@ namespace wg
 	const static int             MaskOp_size         = (int)MaskOp::Mask + 1;
 	const static int             GfxFlip_size        = (int)GfxFlip::Rot270FlipY + 1;
 	const static int             CanvasRef_size      = (int)CanvasRef::Canvas_32 + 1;
+	const static int             GfxChunkId_size     = (int)GfxChunkId::TimeStampMS + 1;
 
 	const char * toString(CodePage);
+	const char * toString(TintMode);
 	const char * toString(BlendMode);
 	const char * toString(PointerStyle);
 	const char * toString(MouseButton);
 	const char * toString(PlayMode);
 	const char * toString(SearchMode);
+	const char * toString(MarkPolicy);
 	const char * toString(Placement);
 	const char * toString(Direction);
 	const char * toString(Axis);
@@ -125,6 +136,7 @@ namespace wg
 	const char * toString(MaskOp);
 	const char * toString(GfxFlip);
 	const char * toString(CanvasRef);
+	const char * toString(GfxChunkId);
 
 //=========================================================================
 //. endAutoSection

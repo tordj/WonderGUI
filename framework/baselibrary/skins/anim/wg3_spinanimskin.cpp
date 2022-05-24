@@ -48,7 +48,7 @@ namespace wg
 
 	SpinAnimSkin::SpinAnimSkin(	const Blueprint& blueprint) : 
 		m_pSurface(blueprint.surface),
-		m_preferredSize(blueprint.preferredSize),
+		m_defaultSize(blueprint.defaultSize),
 		m_pivot(blueprint.pivot),
 		m_placement(blueprint.placement),
 		m_fromDegrees(blueprint.angleBegin),
@@ -93,12 +93,12 @@ namespace wg
 	{
 		float	zoom = m_zoom * scale / 64.f;
 
-		// Scale zoom to fit content of preferred size into canvas size.
+		// Scale zoom to fit content of default size into canvas size.
 
 		RectSPX canvas = _canvas;
-		if (!m_preferredSize.isEmpty())
+		if (!m_defaultSize.isEmpty())
 		{
-			SizeSPX prefSize = align(ptsToSpx(m_preferredSize, scale));
+			SizeSPX prefSize = align(ptsToSpx(m_defaultSize, scale));
 			if (canvas.size() != prefSize)
 			{
 				float xScale = float(_canvas.w) / float(prefSize.w);
@@ -134,11 +134,11 @@ namespace wg
 		pDevice->rotScaleBlit(_canvas, degrees, zoom, m_pivot, m_placement);
 	}
 
-	//____ _preferredSize() ______________________________________________________________
+	//____ _defaultSize() ______________________________________________________________
 
-	SizeSPX SpinAnimSkin::_preferredSize(int scale) const
+	SizeSPX SpinAnimSkin::_defaultSize(int scale) const
 	{
-		return align(ptsToSpx(m_preferredSize, scale));
+		return align(ptsToSpx(m_defaultSize, scale));
 	}
 
 	//____ _markTest() _________________________________________________________

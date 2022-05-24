@@ -434,14 +434,14 @@ void WgOscilloscope::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 	for( int i = 0; i < m_nHGridLines; i++ )
 	{
 		int ofsY = (int) (m_pHGridLines[i] * scaleY + centerY);
-		pDevice->drawLine( WgCoord(_canvas.x,ofsY), WgDirection::Right, _canvas.w, m_gridColor );
+		pDevice->drawLine( WgCoord(_canvas.x,ofsY)*64, WgDirection::Right, _canvas.w*64, m_gridColor );
 	}
 
 	// Draw VGridLines
 	for( int i = 0; i < m_nVGridLines; i++ )
 	{
 		int ofsX = (int) (m_pVGridLines[i] * scaleX + centerX);
-		pDevice->drawLine( WgCoord(ofsX,_canvas.y), WgDirection::Down, _canvas.h, m_gridColor );
+		pDevice->drawLine( WgCoord(ofsX,_canvas.y)*64, WgDirection::Down, _canvas.h*64, m_gridColor );
 	}
 
 	// Nothing to draw (yet)
@@ -486,7 +486,7 @@ void WgOscilloscope::plot(const int x, const int y, const float alpha)
 {
   if(m_iNextPixel < WG_OSC_PIXEL_BUFFER_SIZE-1)
   {
-	  m_pAAPix[m_iNextPixel] = WgCoord(x, y);
+	  m_pAAPix[m_iNextPixel] = WgCoord(x, y)*64;
 	  m_pAACol[m_iNextPixel] = m_lineColor;
 	  m_pAACol[m_iNextPixel].a = (4096*alpha);
 

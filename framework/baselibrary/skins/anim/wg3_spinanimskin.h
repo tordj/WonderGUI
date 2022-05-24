@@ -58,7 +58,7 @@ namespace wg
 			Border		padding;
 			CoordF		pivot = { 0.5f, 0.5f };
 			CoordF		placement = { 0.5f, 0.5f };
-			Size		preferredSize;							// Mandatory
+			Size		defaultSize;							// Mandatory
 			Surface_p	surface;								// Mandatory
 			float		zoom = 1.f;
 		};
@@ -74,7 +74,7 @@ namespace wg
 
 		//.____ Internal ________________________________________________________
 
-		SizeSPX	_preferredSize(int scale) const override;
+		SizeSPX	_defaultSize(int scale) const override;
 
 		bool	
 			_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
@@ -100,7 +100,7 @@ namespace wg
 		int			m_cycleDuration;			// In millisec
 
 		Surface_p	m_pSurface;
-		Size		m_preferredSize;
+		Size		m_defaultSize;
 		CoordF		m_pivot;
 		CoordF		m_placement;
 		float		m_fromDegrees;

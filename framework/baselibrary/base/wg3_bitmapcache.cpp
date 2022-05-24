@@ -116,13 +116,7 @@ namespace wg
 	{
 		if( pListener )
 		{
-			auto it = std::remove(m_listeners.begin(), m_listeners.end(), pListener);
-			
-			assert( it == m_listeners.begin() );
-			assert( it != m_listeners.end() );
-			m_listeners.erase(it);
-
-//			m_listeners.erase(std::remove(m_listeners.begin(), m_listeners.end(), pListener));
+			m_listeners.erase(std::remove(m_listeners.begin(), m_listeners.end(), pListener));
 			if( m_listeners.empty() )
 				clear();
 		}

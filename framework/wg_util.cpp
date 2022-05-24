@@ -169,7 +169,7 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect canvas, in
 
 	WgCoord srcOfs = block.Rect().pos();
 
-	alpha = block.Surface()->alpha( {srcOfs.x+ofs.x, srcOfs.y+ofs.y} );
+	alpha = block.Surface()->alpha( WgCoord(srcOfs.x+ofs.x, srcOfs.y+ofs.y)*64 );
 
 	return ( alpha >= opacityTreshold);
 }
@@ -182,14 +182,14 @@ int WgUtil::SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy pol
 {
 	switch( policy )
 	{
-		case WgSizePolicy::None:
+		case wg::SizeConstraint::None:
 			return defaultSize;
-		case WgSizePolicy::Equal:
+		case wg::SizeConstraint::Equal:
 			return specifiedSize;
-		case WgSizePolicy::LessOrEqual:
+		case wg::SizeConstraint::LessOrEqual:
 			if( defaultSize > specifiedSize )
 				return specifiedSize;
-		case WgSizePolicy::GreaterOrEqual:
+		case wg::SizeConstraint::GreaterOrEqual:
 			if( defaultSize < specifiedSize )
 				return specifiedSize;
 	}

@@ -48,7 +48,7 @@ namespace wg
 
 	SpinMeterSkin::SpinMeterSkin( const Blueprint& blueprint ) : 
 		m_pSurface(blueprint.surface),
-		m_preferredSize(blueprint.preferredSize),
+		m_defaultSize(blueprint.defaultSize),
 		m_pivot(blueprint.pivot),
 		m_placement(blueprint.placement),
 		m_fromDegrees(blueprint.angleBegin),
@@ -85,21 +85,21 @@ namespace wg
 	{
 		float	zoom = m_zoom * scale / 64.f;
 
-		// Scale zoom to fit content of preferred size into canvas size.
+		// Scale zoom to fit content of default size into canvas size.
 
 
 		RectSPX canvas = _canvas;
-		if (!m_preferredSize.isEmpty() )
+		if (!m_defaultSize.isEmpty() )
 		{
-			SizeSPX preferred = align(ptsToSpx(m_preferredSize, scale));
-			if (canvas.size() != preferred)
+			SizeSPX defaultSize = align(ptsToSpx(m_defaultSize, scale));
+			if (canvas.size() != defaultSize)
 			{
-				float xScale = float(_canvas.w) / float(preferred.w);
-				float yScale = float(_canvas.h) / float(preferred.h);
+				float xScale = float(_canvas.w) / float(defaultSize.w);
+				float yScale = float(_canvas.h) / float(defaultSize.h);
 				float scaleSrc = std::min(xScale, yScale);
 
-				spx w = preferred.w * scaleSrc;
-				spx h = preferred.h * scaleSrc;
+				spx w = defaultSize.w * scaleSrc;
+				spx h = defaultSize.h * scaleSrc;
 
 				canvas.x += (w - canvas.w) / 2;
 				canvas.y += (h - canvas.h) / 2;
@@ -127,11 +127,11 @@ namespace wg
 		pDevice->rotScaleBlit(_canvas, degrees, zoom, m_pivot, m_placement);
 	}
 
-	//____ _preferredSize() ______________________________________________________________
+	//____ _defaultSize() ______________________________________________________________
 
-	SizeSPX SpinMeterSkin::_preferredSize(int scale) const
+	SizeSPX SpinMeterSkin::_defaultSize(int scale) const
 	{
-		return align(ptsToSpx(m_preferredSize, scale));
+		return align(ptsToSpx(m_defaultSize, scale));
 	}
 
 	//____ _markTest() _________________________________________________________

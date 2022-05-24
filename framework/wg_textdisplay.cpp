@@ -529,7 +529,7 @@ void WgTextDisplay::_bringCursorInView()
 	WgRect niceToHaveArea = { mustHaveArea.x, mustHaveArea.y - glyphHeight/2, mustHaveArea.w, mustHaveArea.h + glyphHeight };
 
 	WgRect canvas = WgRect( 0,0, PixelSize() );
-	_requestInView( WgRect(mustHaveArea,canvas), WgRect(niceToHaveArea, canvas) );
+	_requestInView( WgRect::getIntersection(mustHaveArea,canvas), WgRect::getIntersection(niceToHaveArea, canvas) );
 }
 
 //____ _onCloneContent() _______________________________________________________

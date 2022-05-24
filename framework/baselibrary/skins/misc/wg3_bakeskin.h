@@ -46,7 +46,6 @@ namespace wg
 
 		struct Blueprint
 		{
-			Surface_p	surface;
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
 			Gradient	gradient;
@@ -55,6 +54,8 @@ namespace wg
 
 			bool		skinInSkin = true;
 			std::vector<Skin_p>	skins;
+
+			Surface_p	surface;
 		};
 
 		//.____ Creation __________________________________________
@@ -70,7 +71,7 @@ namespace wg
 		//.____ Internal _________________________________________________
 
 		SizeSPX			_minSize(int scale) const override;
-		SizeSPX			_preferredSize(int scale) const override;
+		SizeSPX			_defaultSize(int scale) const override;
 
 		BorderSPX		_contentPadding(int scale, State state) const override;
 		SizeSPX			_contentPaddingSize(int scale) const override;
@@ -119,15 +120,15 @@ namespace wg
 
 		mutable int			m_cachedScale = 0;
 		mutable SizeSPX		m_cachedMinSize;						// Calculated minSize for scale represented by m_cachedScale;
-		mutable SizeSPX		m_cachedPreferredSize;					// Calculated preferredSize for scale represented by m_cachedScale;
-		mutable BorderSPX	m_cachedContentPadding[StateEnum_Nb];
+		mutable SizeSPX		m_cachedDefaultSize;					// Calculated defaultSize for scale represented by m_cachedScale;
+		mutable BorderSPX	m_cachedContentPadding[State::IndexAmount];
 
 		Bitmask<uint32_t>	m_opaqueStates;
 
 		Bitmask<uint8_t>	m_transitioningStates;
 		int					m_transitionTimes[StateBits_Nb];
 
-		int					m_animationLengths[StateEnum_Nb];
+		int					m_animationLengths[State::IndexAmount];
 	};
 
 } // namespace wg

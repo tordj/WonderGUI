@@ -24,13 +24,20 @@
 #define WG_TYPES_DOT_H
 
 #include <wg3_types.h>
+#include <wg3_state.h>
 
-typedef wg::StateEnum           WgStateEnum;
 
-static const int    WG_NB_STATES = wg::StateEnum_Nb;
-static const int    WG_MAX_STATE_VALUE = wg::StateEnum_MaxValue;
+typedef wg::State          		WgStateEnum;
 
-typedef wg::State               WgState;
+namespace wg
+{
+	typedef State           	StateEnum;
+}
+
+static const int    WG_NB_STATES = wg::State::IndexAmount;
+static const int    WG_MAX_STATE_VALUE = wg::State::MaxValue;
+
+typedef wg::State       WgState;
 
 typedef wg::ExtChar     WgExtChar;
 

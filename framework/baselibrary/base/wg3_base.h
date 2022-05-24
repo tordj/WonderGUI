@@ -56,7 +56,7 @@ namespace wg
 	class BitmapCache;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
-	typedef	StrongPtr<NumberLayout>	NumberLayout_p;
+	typedef	StrongPtr<NumberLayout>		NumberLayout_p;
 	typedef	StrongPtr<InputHandler>		InputHandler_p;
 	typedef	StrongPtr<TextLayout>		TextLayout_p;
 	typedef	StrongPtr<Caret>			Caret_p;
@@ -111,7 +111,7 @@ namespace wg
 		static MsgRouter_p	msgRouter();
 		static InputHandler_p	inputHandler();
 		static BitmapCache_p	defaultBitmapCache();
-		
+
 		static void			setDefaultTextLayout( TextLayout * pTextLayout );
 		static TextLayout_p defaultTextLayout();
 
@@ -183,8 +183,8 @@ namespace wg
 #ifndef WG2_MODE
 			MsgRouter_p		pMsgRouter;
 			InputHandler_p	pInputHandler;
-			TextLayout_p		pDefaultTextLayout;
-			Caret_p				pDefaultCaret;
+			TextLayout_p	pDefaultTextLayout;
+			Caret_p			pDefaultCaret;
 			NumberLayout_p	pDefaultNumberLayout;
 #endif
 
@@ -197,7 +197,7 @@ namespace wg
 			MemPool *		pPtrPool;
 			MemStack *		pMemStack;
 		};
-		
+
 		static HostBridge*					s_pHostBridge;
 
 		static Data *						s_pData;

@@ -44,9 +44,9 @@ namespace wg
 		return SizeSPX(align(ptsToSpx(m_contentPadding,scale)));
 	}
 
-	//____ _preferredSize() ______________________________________________________________
+	//____ _defaultSize() ______________________________________________________________
 
-	SizeSPX Skin::_preferredSize(int scale) const
+	SizeSPX Skin::_defaultSize(int scale) const
 	{
 		return SizeSPX(align(ptsToSpx(m_contentPadding, scale)));
 	}

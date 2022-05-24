@@ -51,18 +51,19 @@ namespace wg
 		{
 			HiColor			color = HiColor::Undefined;
 			Coord			contentShift;
-			bool			blockless = false;
+			bool			reuseBlock = false;
+			State			reuseBlockFrom = State::Normal;
 		};
 
 		struct StateBP
 		{
 			StateBP() {}
-			StateBP( State s ) : state(s) {}
-			StateBP( StateEnum s ) : state(s) {}
-			StateBP( State s, StateData d ) : state(s), data(d) {}
-			StateBP( StateEnum s, StateData d ) : state(s), data(d) {}
-			
-			State			state = StateEnum::Normal;
+			StateBP( State state ) : state(state) {}
+			StateBP( State state, StateData data ) : state(state), data(data) {}
+			StateBP( State state, Color color, bool reuseBlock = false, State reuseBlockFrom = State::Normal ) : state(state) { data.color = color; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
+			StateBP( State state, Coord contentShift, bool reuseBlock = false, State reuseBlockFrom = State::Normal ) : state(state)	{ data.contentShift = contentShift; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
+
+			State			state = State::Normal;
 			StateData		data;
 		};
 
@@ -105,7 +106,6 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static BlockSkin_p	create();
 		static BlockSkin_p	create(const Blueprint& blueprint);
 		static BlockSkin_p  create(Surface * pSurface, Border frame = { 0 } );
 		static BlockSkin_p	create(Surface * pSurface, Rect block, Border frame = { 0 } );
@@ -162,7 +162,7 @@ namespace wg
 		//.____ Internal ________________________________________________________
 
 		SizeSPX		_minSize(int scale) const override;
-		SizeSPX		_preferredSize(int scale) const override;
+		SizeSPX		_defaultSize(int scale) const override;
 
 		SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const override;
 
@@ -201,9 +201,9 @@ namespace wg
 		Bitmask<uint32_t>	m_stateBlockMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		Coord		m_stateBlocks[StateEnum_Nb];
-		HiColor		m_stateColors[StateEnum_Nb];
-		bool		m_bStateOpaque[StateEnum_Nb];
+		Coord		m_stateBlocks[State::IndexAmount];
+		HiColor		m_stateColors[State::IndexAmount];
+		bool		m_bStateOpaque[State::IndexAmount];
 	};
 
 

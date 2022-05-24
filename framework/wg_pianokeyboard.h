@@ -115,7 +115,7 @@ private:
 	wg::Surface_p		m_pEvenWhiteKeys;
 	wg::Surface_p		m_pBlackKeys;
 
-	int				m_stateOfsY[wg::StateEnum_Nb];
+	int				m_stateOfsY[wg::State::IndexAmount];
 
 	struct KeyInfo
 	{

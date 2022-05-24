@@ -393,7 +393,7 @@ void WgVolumeMeter::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
     if(m_bUseBackgroundColor)
     {
-        pDevice->fill(_canvas, m_BackgroundColor);
+        pDevice->fill(_canvas*64, m_BackgroundColor);
     }
 
 	for( int i = 0 ; i < m_nLEDs ; i++ )

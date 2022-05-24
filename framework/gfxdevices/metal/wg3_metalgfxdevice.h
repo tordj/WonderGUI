@@ -185,6 +185,7 @@ namespace wg
         inline void    _beginDrawCommandWithInt(Command cmd, int data);
         inline void    _beginClippedDrawCommand(Command cmd );
         inline void    _beginStateCommand(Command cmd, int dataSize);
+		inline void    _beginStateCommandWithAlignedData(Command cmd, int dataSize);
         inline void    _endCommand();
 
 
@@ -304,7 +305,7 @@ namespace wg
         
         id<MTLLibrary>              m_library;
         id<MTLDrawable>             m_drawableToAutoPresent = nil;
-        MTLRenderPassDescriptor*    m_defaultCanvasRenderPassDesc;
+        MTLRenderPassDescriptor*    m_defaultCanvasRenderPassDesc = nil;
         PixelFormat                 m_defaultCanvasPixelFormat;
 		CanvasInfo                  m_defaultCanvas;
 
@@ -432,6 +433,23 @@ namespace wg
 
         m_pCommandBuffer[m_commandOfs++] = cmd;
     }
+
+//____ _beginStateCommandWithAlignedData() _______________________________________
+
+inline void MetalGfxDevice::_beginStateCommandWithAlignedData(Command cmd, int dataSize)
+{
+	if (m_commandOfs > m_commandBufferSize - dataSize - 1 - 1 )
+		_resizeBuffers();
+
+	m_cmd = cmd;
+	m_pCmdFinalizer = &MetalGfxDevice::_dummyFinalizer;
+
+	m_pCommandBuffer[m_commandOfs] = Command::None;
+	m_commandOfs = (m_commandOfs & 0xFFFFFFFE) + 1;
+
+	m_pCommandBuffer[m_commandOfs++] = cmd;
+}
+
 
     //____ _endCommand() ______________________________________________________
 

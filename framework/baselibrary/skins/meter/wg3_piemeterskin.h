@@ -55,8 +55,7 @@ namespace wg
 			HiColor		backColor = Color::Transparent;
 
 			BlendMode	blendMode = BlendMode::Undefined;
-
-
+			Size		defaultSize;
 			HiColor		emptyColor = Color::DarkBlue;
 
 			Border		gfxPadding;
@@ -74,23 +73,12 @@ namespace wg
 
 			Border		overflow;
 			Border		padding;
-			Size		preferredSize;
 
 			bool		rectangular = false;
 
 			float		rotation = 0.f;
 
 			Slice		slices[c_maxSlices];
-
-
-
-
-
-
-
-
-
-
 		};
 
 		//.____ Creation __________________________________________
@@ -104,9 +92,9 @@ namespace wg
 
 		//.____ Internal ____________________________________________________
 
-		//TODO: We probably need all kind of size related methods, taking set preferred size and content + padding into account.
+		//TODO: We probably need all kind of size related methods, taking set default size and content + padding into account.
 
-		SizeSPX	_preferredSize(int scale) const override;
+		SizeSPX	_defaultSize(int scale) const override;
 
 		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 
 							float value = 1.f, float value2 = -1.f) const override;
@@ -125,7 +113,7 @@ namespace wg
 
 		void		_updateOpacity();
 
-		Size		m_preferredSize;
+		Size		m_defaultSize;
 
 		float		m_rangeStart = 0.55f;
 		float		m_minRange = 0.01f;

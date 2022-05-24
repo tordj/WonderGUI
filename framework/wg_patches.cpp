@@ -67,7 +67,8 @@ bool WgPatches::setCapacity( int capacity )
 	if( capacity > 0 )
 	{
 		pNew = new WgRect[capacity];
-		memcpy( pNew, m_pFirst, sizeof(WgRect)*m_size );
+        if(m_pFirst != nullptr)
+		    memcpy( pNew, m_pFirst, sizeof(WgRect)*m_size );
 	}
 	
 	if( m_bOwnsArray )
@@ -395,14 +396,10 @@ void WgPatches::clip( const WgRect& clip )
 {
 	for( WgRect * pRect = m_pFirst ; pRect < m_pFirst + m_size ; pRect++ )
 	{
-
-		if( pRect->x < clip.x || pRect->y < clip.y ||
-			pRect->x + pRect->w > clip.x + clip.w ||
-			pRect->y + pRect->h > clip.y + clip.h )
-		{
-			if( !pRect->intersection( *pRect, clip ) )
-				*pRect-- = m_pFirst[--m_size];				// Delete the rectangle
-		}
+		if( clip.intersectsWith(*pRect) )
+			*pRect = WgRect::getIntersection(*pRect, clip);
+		else
+			*pRect-- = m_pFirst[--m_size];				// Remove the rectangle
 	}
 }
 

@@ -244,7 +244,7 @@ void WgSimpleKnob::drawLine(float x0, float y0, float x1, float y1)
 
 void WgSimpleKnob::plot(const int x, const int y, const float alpha)
 {
-	m_pAAPix[m_iNextPixel] = WgCoord(x, y);
+	m_pAAPix[m_iNextPixel] = WgCoord(x, y)*64;
 	m_pAACol[m_iNextPixel] = m_lineColor;
 	m_pAACol[m_iNextPixel].a = (uint16_t)(m_lineColor.a * alpha);
 

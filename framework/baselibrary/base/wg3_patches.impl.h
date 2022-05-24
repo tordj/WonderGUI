@@ -78,7 +78,7 @@ namespace wg
 		{
 			const RectT<T>& rect = source.m_pFirst[i];
 			if (rect.intersectsWith(trim))
-				m_pFirst[m_size++].intersection(rect, trim);
+				m_pFirst[m_size++] = RectT<T>::getIntersection(rect, trim);
 		}
 	}
 
@@ -413,7 +413,7 @@ namespace wg
 			{
 				if (m_size == m_capacity)
 					_expandMem(1);
-				m_pFirst[m_size++].intersection(rect, trim);
+				m_pFirst[m_size++] = RectT<T>::getIntersection(rect, trim);
 			}
 		}
 	}
@@ -461,13 +461,11 @@ namespace wg
 		for( RectT<T> * pRect = m_pFirst ; pRect < m_pFirst + m_size ; pRect++ )
 		{
 
-			if( pRect->x < clip.x || pRect->y < clip.y ||
-				pRect->x + pRect->w > clip.x + clip.w ||
-				pRect->y + pRect->h > clip.y + clip.h )
-			{
-				if( !pRect->intersection( *pRect, clip ) )
-					*pRect-- = m_pFirst[--m_size];				// Remove the rectangle
-			}
+			if( clip.intersectsWith(*pRect) )
+				*pRect = RectT<T>::getIntersection(*pRect, clip);
+			else
+				*pRect-- = m_pFirst[--m_size];				// Remove the rectangle
+
 		}
 	}
 

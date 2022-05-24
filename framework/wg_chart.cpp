@@ -812,7 +812,7 @@ void WgChart::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 		if( !m_pCacheBitmap )
 		{
 			m_pCacheBitmap = m_pSurfaceFactory->createSurface( _canvas.size(), wg::PixelFormat::BGRA_8 );
-			m_cacheDirt.add( _canvas.size() );
+			m_cacheDirt.add( _canvas.size()*64 );
 		}
 
 		if( !m_cacheDirt.isEmpty() )
@@ -843,7 +843,7 @@ void WgChart::_updateBitmapCache( wg::GfxDevice * pDevice )
 	WgRect waveCanvas = canvas - m_pixelPadding;
 
 
-	m_cacheDirt.clip( { waveCanvas.x, canvas.y, waveCanvas.w, canvas.h } );
+	m_cacheDirt.clip( WgRect( waveCanvas.x, canvas.y, waveCanvas.w, canvas.h )*64 );
 
 	for( int i = m_cacheFirst-1 ; i <= m_cacheLast-1 ; i++ )
 		_renderWave( m_waves[i], pDevice, waveCanvas );
@@ -886,7 +886,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 		for (auto& line : m_sampleGridLines)
 		{
 			int xOfs = waveCanvas.x + (int) ((line.pos - m_firstSample) * sampleScale);
-			pDevice->drawLine({ xOfs, canvas.y }, WgDirection::Down, canvas.h, line.color, line.thickness * m_scale / WG_SCALE_BASE);
+			pDevice->drawLine( WgCoord( xOfs, canvas.y )*64, WgDirection::Down, canvas.h*64, line.color, line.thickness * m_scale / WG_SCALE_BASE);
 
 			if (!line.label.isEmpty())
 			{
@@ -937,7 +937,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 		for (auto& line : m_valueGridLines)
 		{
 			int yOfs = startOfs + (int)((line.pos - top) * mul); // +0.5f);
-			pDevice->drawLine({ canvas.x, yOfs }, WgDirection::Right, canvas.w, line.color, line.thickness * m_scale / WG_SCALE_BASE );
+			pDevice->drawLine( WgCoord( canvas.x, yOfs )*64, WgDirection::Right, canvas.w*64, line.color, line.thickness * m_scale / WG_SCALE_BASE );
 
 			if (!line.label.isEmpty())
 			{
@@ -979,7 +979,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 	const WgRect * pOldClipList = pDevice->clipList();
 	int     oldClipListSize = pDevice->clipListSize();
 
-	WgRect waveClip( waveCanvas.x, canvas.y, waveCanvas.w, canvas.h );		// Samples stay within padding, values may stretch outside.
+	WgRect waveClip = WgRect( waveCanvas.x, canvas.y, waveCanvas.w, canvas.h )*64;	// Samples stay within padding, values may stretch outside.
 
 	int allocSize = oldClipListSize*sizeof(WgRect);
 	WgRect * pRects = (WgRect*) wg::Base::memStackAlloc( allocSize );
@@ -987,7 +987,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 
 	for( int i = 0 ; i < oldClipListSize ; i++ )
 	{
-		pRects[nRects] = WgRect(pOldClipList[i], waveClip );
+		pRects[nRects] = WgRect::getIntersection(pOldClipList[i], waveClip );
 		if( !pRects[nRects].isEmpty() )
 			nRects++;
 	}
@@ -999,7 +999,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 		if( i == m_cacheFirst-1 )
 		{
 			pDevice->setBlitSource(m_pCacheBitmap);
-			pDevice->blit( WgCoord(_canvas.x, _canvas.y), _canvas.size() );
+			pDevice->blit( WgCoord(_canvas.x, _canvas.y)*64, _canvas.size()*64 );
 			i = m_cacheLast-1;
 		}
 		else
@@ -1037,7 +1037,7 @@ void WgChart::_renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& wa
 
 	if(length >= 1)
 	{
-		pDevice->drawWave(WgRect(waveCanvas.x + xOfs, waveCanvas.y, length, waveCanvas.h), &top, &bottom, wave.frontFill, wave.backFill);
+		pDevice->drawWave(WgRect(waveCanvas.x + xOfs, waveCanvas.y, length, waveCanvas.h)*64, &top, &bottom, wave.frontFill, wave.backFill);
 //        pDevice->ClipDrawHorrWave(waveClip, WgCoord(waveCanvas.x + xOfs, waveCanvas.y), length, top, bottom, wave.frontFill, wave.backFill);
 	}
 }
@@ -1321,7 +1321,9 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 
 		bool bInCache = (pWave >= _getWave(m_cacheFirst) && pWave < _getWave(m_cacheLast) );
 
-		_requestRenderOnNewSamples(	begOrgSamples, pWave->resampledTop.size(), &pWave->resampledTop[0], pWave->resampledBottom.size(), &pWave->resampledBottom[0],
+		auto topPointer    = pWave->resampledTop.size() > 0    ? &pWave->resampledTop[0] : nullptr;
+		auto bottomPointer = pWave->resampledBottom.size() > 0 ? &pWave->resampledBottom[0] : nullptr;
+		_requestRenderOnNewSamples(	begOrgSamples, pWave->resampledTop.size(), topPointer, pWave->resampledBottom.size(), bottomPointer,
 									begNewSamples, nbNewTopSamples, pNewTopSamples, nbNewBottomSamples, pNewBottomSamples,
 									pWave->resampledDefault, newDefault, maxLineThickness, bInCache );
 
@@ -1551,14 +1553,14 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 void WgChart::_requestRenderInCache()
 {
 	if( m_pCacheBitmap )
-		m_cacheDirt.add( m_pCacheBitmap->pixelSize() );
+		m_cacheDirt.add( m_pCacheBitmap->pixelSize()*64 );
 	_requestRender();
 }
 
 void WgChart::_requestRenderInCache( const WgRect& rect )
 {
 	if( m_pCacheBitmap )
-		m_cacheDirt.add( rect );
+		m_cacheDirt.add( rect*64 );
 	_requestRender(rect);
 }
 

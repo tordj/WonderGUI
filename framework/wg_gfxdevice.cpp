@@ -62,9 +62,11 @@ void WgGfxDevice::BlitBlock( wg::GfxDevice * pDevice, const WgBlock& _block, con
 
 	pDevice->setBlitSource(pSurf);
     
+	int srcScale =_block.Surface()->scale();
+	
     wg::NinePatch patch;
-    patch.block = wg::Rect(src);
-    patch.frame = wg::Border(sourceBorders);
+    patch.block = wg::Rect(src*64/srcScale);
+    patch.frame = wg::Border(sourceBorders*64/srcScale);
 	pDevice->blitNinePatch(canvas*64, canvasBorders, patch, scale >> 6 );
 
 }

@@ -67,13 +67,13 @@ namespace wg
 
 		m_minBarLength		= bp.startLength;
 
-		if (bp.preferredSize.isEmpty())
+		if (bp.defaultSize.isEmpty())
 		{
 			Size pref = (bp.direction == Direction::Up || bp.direction == Direction::Down) ? Size(10, 50) : Size(50, 10);
-			m_preferredSize = Size::max(pref, m_contentPadding.size());
+			m_defaultSize = Size::max(pref, m_contentPadding.size());
 		}
 		else
-			m_preferredSize = bp.preferredSize;
+			m_defaultSize = bp.defaultSize;
 
 		m_bIgnoresValue = false;
 		_updateOpacity();
@@ -86,11 +86,11 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _preferredSize() ____________________________________________________
+	//____ _defaultSize() ____________________________________________________
 
-	SizeSPX FillMeterSkin::_preferredSize(int scale) const
+	SizeSPX FillMeterSkin::_defaultSize(int scale) const
 	{
-		return ptsToSpx(m_preferredSize, scale);
+		return ptsToSpx(m_defaultSize, scale);
 	}
 
 

@@ -481,7 +481,7 @@ void WgZoomOutCapsule::_onCollectPatches( WgPatches& container, const WgRect& ge
 {
 	// Do the simple thing here
 
-	container.add( WgRect( geo, clip ) );
+	container.add( WgRect::getIntersection( geo, clip ) );
 }
 
 //____ _onMaskPatches() _________________________________________________________
@@ -524,8 +524,9 @@ void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _c
 			pDevice->setTintColor( oldTint * m_tint );
 		}
 
-		pDevice->setClipList(_pPatches->size(), _pPatches->begin());
+		int bytesToRelease = _convertAndPushClipList( pDevice, _pPatches->size(), _pPatches->begin() );
 		_onRender( pDevice, _canvas, _window );
+		_popAndReleaseClipList( pDevice, bytesToRelease);
 
 		if( m_tint != WgColor::White )
 			pDevice->setTintColor( oldTint );

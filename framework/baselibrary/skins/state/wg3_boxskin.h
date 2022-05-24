@@ -50,7 +50,18 @@ namespace wg
 
 		struct StateBP
 		{
-			State			state = StateEnum::Normal;
+			StateBP() {}
+			StateBP( State state, StateData data ) : state(state), data(data) {}
+			StateBP( State state, HiColor color ) : state(state) { data.color = color; }
+			StateBP( State state, Coord contentShift ) : state(state)	{ data.contentShift = contentShift; }
+
+			StateBP( State state, HiColor color, HiColor outlineColor ) : state(state)
+			{
+				data.color = color;
+				data.outlineColor = color;
+			}
+			
+			State			state = State::Normal;
 			StateData		data;
 		};
 
@@ -81,7 +92,7 @@ namespace wg
 		//.____ Internal ________________________________________________________
 
 		SizeSPX		_minSize(int scale) const override;
-		SizeSPX		_preferredSize(int scale) const override;
+		SizeSPX		_defaultSize(int scale) const override;
 		SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const override;
 
 		bool		_isOpaque(State state) const override;
@@ -112,8 +123,8 @@ namespace wg
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 		Bitmask<uint32_t>	m_stateOutlineColorMask = 1;
 
-		HiColor		m_fillColor[StateEnum_Nb];
-		HiColor		m_outlineColor[StateEnum_Nb];
+		HiColor		m_fillColor[State::IndexAmount];
+		HiColor		m_outlineColor[State::IndexAmount];
 	};
 
 

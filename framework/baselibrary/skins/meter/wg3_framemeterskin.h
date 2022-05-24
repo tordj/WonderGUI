@@ -76,7 +76,7 @@ namespace wg
 
 		//.____ Internal ____________________________________________________
 
-		SizeSPX		_preferredSize(int scale) const override;
+		SizeSPX		_defaultSize(int scale) const override;
 		SizeSPX		_minSize(int scale) const override;
 
 		bool		_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, 

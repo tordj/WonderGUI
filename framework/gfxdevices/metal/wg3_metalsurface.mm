@@ -152,7 +152,7 @@ namespace wg
         }
 
         pOther->freePixelBuffer(pixbuf);
-    }
+	}
 
     //____ _setupMetalTexture() __________________________________________________________________
 
@@ -183,14 +183,14 @@ namespace wg
         
         //
         
-        _createAndSyncTextures();
+        _createAndSyncTextures( pPixels != nullptr );
         
 //        setScaleMode(m_scaleMode);
     }
 
     //____ _createAndSyncTextures() __________________________________________________
 
-    void MetalSurface::_createAndSyncTextures()
+    void MetalSurface::_createAndSyncTextures( bool bHasTextureData )
     {
         // Create the private texture
         
@@ -212,7 +212,8 @@ namespace wg
         }
 
         m_texture = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:textureDescriptor];
-
+        [textureDescriptor release];
+        
         // Create the clut texture
         
         if( m_pClut )
@@ -225,56 +226,67 @@ namespace wg
             clutDescriptor.storageMode   = MTLStorageModePrivate;
 
             m_clutTexture = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:clutDescriptor];
+            
+            [clutDescriptor release];
         }
 
         // Copy from buffers to textures (pixels and cluts)
         
-        MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h, 1};
-        MTLOrigin textureOrigin = {0,0,0};
-        
-        id<MTLCommandBuffer> commandBuffer = [MetalGfxDevice::s_metalCommandQueue commandBuffer];
-        
-        id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
-        [blitCommandEncoder copyFromBuffer:     m_textureBuffer
-                            sourceOffset:       0
-                            sourceBytesPerRow:  m_size.w * m_pixelSize
-                            sourceBytesPerImage:0
-                            sourceSize:         textureSize
-                            toTexture:          m_texture
-                            destinationSlice:   0
-                            destinationLevel:   0
-                            destinationOrigin:  textureOrigin];
+		if( bHasTextureData || m_pClut )
+		{
+			id<MTLCommandBuffer> commandBuffer = [MetalGfxDevice::s_metalCommandQueue commandBuffer];
+			id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
 
-        if( m_pClut )
-        {
-            MTLSize clutSize = { 256, 1, 1 };
-            MTLOrigin clutOrigin = {0,0,0};
+			if( bHasTextureData )
+			{
+				MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h, 1};
+				MTLOrigin textureOrigin = {0,0,0};
 
-            [blitCommandEncoder copyFromBuffer:     m_clutBuffer
-                                sourceOffset:       0
-                                sourceBytesPerRow:  1024
-                                sourceBytesPerImage:0
-                                sourceSize:         clutSize
-                                toTexture:          m_clutTexture
-                                destinationSlice:   0
-                                destinationLevel:   0
-                                destinationOrigin:  clutOrigin];
-        }
 
-        if(m_bMipmapped)
-            [blitCommandEncoder generateMipmapsForTexture:m_texture];
-        
-        [blitCommandEncoder endEncoding];
+				[blitCommandEncoder copyFromBuffer:     m_textureBuffer
+									sourceOffset:       0
+									sourceBytesPerRow:  m_size.w * m_pixelSize
+									sourceBytesPerImage:0
+									sourceSize:         textureSize
+									toTexture:          m_texture
+									destinationSlice:   0
+									destinationLevel:   0
+									destinationOrigin:  textureOrigin];
+			}
+			
+			if( m_pClut )
+			{
+				MTLSize clutSize = { 256, 1, 1 };
+				MTLOrigin clutOrigin = {0,0,0};
 
-        m_bTextureSyncInProgress = true;
-        
-        // Add a completion handler and commit the command buffer.
-        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
-            // Private texture is populated.
-            
-            m_bTextureSyncInProgress = false;
-        }];
-        [commandBuffer commit];
+				[blitCommandEncoder copyFromBuffer:     m_clutBuffer
+									sourceOffset:       0
+									sourceBytesPerRow:  1024
+									sourceBytesPerImage:0
+									sourceSize:         clutSize
+									toTexture:          m_clutTexture
+									destinationSlice:   0
+									destinationLevel:   0
+									destinationOrigin:  clutOrigin];
+			}
+
+			if(m_bMipmapped)
+				[blitCommandEncoder generateMipmapsForTexture:m_texture];
+			
+			[blitCommandEncoder endEncoding];
+			blitCommandEncoder = nil;
+
+			m_bTextureSyncInProgress = true;
+			
+			// Add a completion handler and commit the command buffer.
+			[commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+				// Private texture is populated.
+				
+				m_bTextureSyncInProgress = false;
+			}];
+			[commandBuffer commit];
+			commandBuffer = nil;
+		}
     }
 
     //____ _setPixelDetails() __________________________________________________________
@@ -344,11 +356,11 @@ namespace wg
 	{
 		// Free the stuff
 
-        m_texture = nil;
-        m_textureBuffer = nil;
+        [m_texture release];
+        [m_textureBuffer release];
         
-		m_clutTexture = nil;
-        m_clutBuffer = nil;
+        [m_clutTexture release];
+        [m_clutBuffer release];
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -475,7 +487,7 @@ namespace wg
 
 	void MetalSurface::reload()
 	{
-        _createAndSyncTextures();
+        _createAndSyncTextures(true);
 	}
 
 	//____ _syncBufferAndWait() ____________________________________________
@@ -504,11 +516,12 @@ namespace wg
                                 destinationBytesPerRow: m_pixelSize * m_size.w
                                 destinationBytesPerImage: m_pixelSize * m_size.w * m_size.h ];
         [blitCommandEncoder endEncoding];
+        blitCommandEncoder = nil;
 
         [commandBuffer commit];
 
         [commandBuffer waitUntilCompleted];
-
+        commandBuffer = nil;
         m_bBufferNeedsSync = false;
 
     }
@@ -547,7 +560,8 @@ namespace wg
 //            [blitCommandEncoder generateMipmapsForTexture:m_texture];
         
         [blitCommandEncoder endEncoding];
-
+        blitCommandEncoder = nil;
+        
         m_bTextureSyncInProgress = true;
         
         // Add a completion handler and commit the command buffer.
@@ -557,6 +571,7 @@ namespace wg
             m_bTextureSyncInProgress = false;
         }];
         [commandBuffer commit];
+        commandBuffer = nil;
         
         _waitForSyncedTexture();
     }

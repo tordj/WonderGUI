@@ -391,7 +391,7 @@ void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 
 	if( !m_backBufferDirtyRect.isEmpty() )
 	{
-		_redrawBackBuffer(WgRect({ 0, 0, m_size.w, m_size.h}, m_backBufferDirtyRect));
+		_redrawBackBuffer(WgRect::getIntersection({ 0, 0, m_size.w, m_size.h}, m_backBufferDirtyRect));
 		m_backBufferDirtyRect.clear();
 	}
 
@@ -399,8 +399,9 @@ void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 
 	pDevice->setTintColor(m_kColor * orgTintColor);
 
-	pDevice->setClipList(_pPatches->size(), _pPatches->begin());
+	int bytesToRelease = _convertAndPushClipList( pDevice, _pPatches->size(), _pPatches->begin() );
 	_onRender(pDevice, _canvas, _window);
+	_popAndReleaseClipList( pDevice, bytesToRelease );
 
 	pDevice->setTintColor(orgTintColor);
 
@@ -415,7 +416,7 @@ void WgKnob::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const Wg
 	WgRect contentRect = WgUtil::OrigoToRect(m_origo, canvas.size(), surfRect) + canvas.pos();
 
 	pDevice->setBlitSource(m_pSurf);
-	pDevice->blit(WgCoord(contentRect.x,contentRect.y),{0,0,m_size});
+	pDevice->blit(WgCoord(contentRect.x,contentRect.y)*64, {0,0,m_size*64});
 }
 
 //____ _redrawBackBuffer() ____________________________________________________
@@ -1082,7 +1083,7 @@ void  WgKnob::_requestRenderBackBuffer(const WgRect& rect)
 	WgRect surfRect = m_size;
 	WgRect contentRect = WgUtil::OrigoToRect(m_origo, canvas.size(), surfRect) + canvas.pos();
 
-	WgRect dirtyCanvasRect(contentRect, rect + contentRect.pos());
+	WgRect dirtyCanvasRect = WgRect::getIntersection(contentRect, rect + contentRect.pos());
 	_requestRender(dirtyCanvasRect);
 
 	//	_requestRender();

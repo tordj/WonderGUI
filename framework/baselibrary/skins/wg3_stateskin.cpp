@@ -44,7 +44,7 @@ namespace wg
 	{
 		m_contentShiftStateMask = 1;			// Mode normal is set by default
 
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		for( int i = 0 ; i < State::IndexAmount ; i++ )
 			m_contentShift[i] = { 0,0 };
 
 		m_bContentShifting = false;
@@ -54,7 +54,7 @@ namespace wg
 
 	void StateSkin::setContentShift(State state, Coord shift)
 	{
-		int index = _stateToIndex(state);
+		int index = state;
 		m_contentShift[index] = shift;
 		m_contentShiftStateMask.setBit(index);
 
@@ -69,7 +69,7 @@ namespace wg
 	{
 		for (auto& shift : stateShifts)
 		{
-			int index = _stateToIndex(shift.first);
+			int index = shift.first;
 			m_contentShift[index] = shift.second;
 			m_contentShiftStateMask.setBit(index);
 		}
@@ -83,7 +83,7 @@ namespace wg
 
 	Coord StateSkin::contentShift(State state) const
 	{
-		int index = _stateToIndex(state);
+		int index = state;
 		if (m_contentShiftStateMask.bit(index))
 			return m_contentShift[index];
 
@@ -95,7 +95,7 @@ namespace wg
 	BorderSPX StateSkin::_contentPadding(int scale, State state) const
 	{
 		BorderSPX b = align(ptsToSpx(m_contentPadding,scale));
-		CoordSPX ofs = align(ptsToSpx(m_contentShift[_stateToIndex(state)], scale));
+		CoordSPX ofs = align(ptsToSpx(m_contentShift[state], scale));
 
 		b.left += ofs.x;
 		b.top += ofs.y;
@@ -107,7 +107,7 @@ namespace wg
 
 	RectSPX StateSkin::_contentRect( const RectSPX& canvas, int scale, State state ) const
 	{
-		return canvas - align(ptsToSpx(m_contentPadding,scale)) + align(ptsToSpx(m_contentShift[_stateToIndex(state)],scale));
+		return canvas - align(ptsToSpx(m_contentPadding,scale)) + align(ptsToSpx(m_contentShift[state],scale));
 	}
 
 	//____ _contentofs() __________________________________________________________
@@ -115,7 +115,7 @@ namespace wg
 	CoordSPX StateSkin::_contentOfs( int scale, State state ) const
 	{
 		return align(ptsToSpx(Coord(m_contentPadding.left, m_contentPadding.top), scale)) + 
-			   align(ptsToSpx(m_contentShift[_stateToIndex(state)], scale));
+			   align(ptsToSpx(m_contentShift[state], scale));
 	}
 
 	//____ _dirtyRect() ______________________________________________________
@@ -124,7 +124,7 @@ namespace wg
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		if (m_contentShift[_stateToIndex(newState)] == m_contentShift[_stateToIndex(oldState)])
+		if (m_contentShift[newState] == m_contentShift[oldState])
 			return RectSPX();
 		else
 			return canvas;
@@ -134,7 +134,7 @@ namespace wg
 
 	void StateSkin::_updateContentShift()
 	{
-		for (int i = 0; i < StateEnum_Nb; i++)
+		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			if ( !m_contentShiftStateMask.bit(i) )
 			{

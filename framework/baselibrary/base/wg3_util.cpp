@@ -27,6 +27,7 @@
 #include <wg3_patches.h>
 #include <wg3_base.h>
 #include <wg3_context.h>
+#include <wg3_state.h>
 
 #include <algorithm>
 
@@ -762,7 +763,7 @@ RectI sourceOfs;
 
 	int Util::bestStateIndexMatch(int wantedStateIndex, Bitmask<uint32_t> availableStateIndices)
 	{
-		static uint32_t mask[StateEnum_Nb] = {	1,
+		static uint32_t mask[State::IndexAmount] = {	1,
 											2+1,
 											4+1,
 											8 + 4 + 2 + 1,
@@ -926,7 +927,7 @@ RectI sourceOfs;
 
 		for( int i = 0 ; i < nRects ; i++ )
 		{
-			pNewRects[nNewRects] = RectSPX(pRects[i], clip);
+			pNewRects[nNewRects] = RectSPX::getIntersection(pRects[i], clip);
 			if( !pNewRects[nNewRects].isEmpty() )
 				nNewRects++;
 		}
@@ -972,8 +973,8 @@ RectI sourceOfs;
 
 		for( int i = 0 ; i < nRects ; i++ )
 		{
-			if( pNewRects[nNewRects].intersection( pRects[i], clip ) )
-				nNewRects++;
+			if (clip.intersectsWith(pRects[i]))
+				pNewRects[nNewRects++] = RectSPX::getIntersection(pRects[i], clip);
 		}
 
 		pDevice->setClipList(nNewRects, pNewRects);

@@ -59,7 +59,7 @@ namespace wg
 
 			Border		overflow;
 			Border		padding;
-			Size		preferredSize;						// Mandatory
+			Size		defaultSize;						// Mandatory
 			bool		startFromCenter = false;
 			pts			startLength = 0;
 		};
@@ -75,7 +75,7 @@ namespace wg
         
 		//.____ Internal ____________________________________________________
 
-		SizeSPX	_preferredSize(int scale) const override;
+		SizeSPX	_defaultSize(int scale) const override;
 
 		bool	_markTest(	const CoordSPX& ofs, const RectSPX& canvas, int sale, State state, 
 							float value = 1.f, float value2 = -1.f) const override;
@@ -103,7 +103,7 @@ namespace wg
 		HiColor		m_barColorEmpty;
 		HiColor		m_barColorFull;
 		HiColor		m_backColor;
-		Size		m_preferredSize;
+		Size		m_defaultSize;
         bool        m_bCenteredBarOrigin = false;
 
 		Gradient	m_gradient;

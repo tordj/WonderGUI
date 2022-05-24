@@ -46,6 +46,8 @@ namespace wg
     {
         s_metalDevice = device;
         
+        [s_metalCommandQueue release];
+        
         if( device == nil )
             s_metalCommandQueue = nil;
         else
@@ -72,14 +74,27 @@ MetalGfxDevice::MetalGfxDevice()
         m_flushesInProgress = 0;
         
         _initTables();
-        
-        //
-                
-        NSError *error = nil;
-        NSString *shaderSource = [[NSString alloc] initWithUTF8String:shaders];
-                
-        m_library = [s_metalDevice newLibraryWithSource:shaderSource options:nil error:&error];
 
+		// Modify shader source
+			
+		std::string shaderSource = shaders;
+		auto maxSegPos = shaderSource.find("$MAXSEG");
+
+		while(maxSegPos != std::string::npos )
+		{
+			shaderSource.replace(maxSegPos, 7, std::to_string(c_maxSegments));
+			maxSegPos = shaderSource.find("$MAXSEG");
+		}
+	
+		// Create shader library
+	
+		NSError *error = nil;
+        NSString *shaderString = [[NSString alloc] initWithUTF8String:shaderSource.c_str()];
+        m_library = [s_metalDevice newLibraryWithSource:shaderString options:nil error:&error];
+
+		[error release];
+        [shaderString release];
+    
         // Create and init Plot & Line pipelines
 
         for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
@@ -216,8 +231,10 @@ MetalGfxDevice::MetalGfxDevice()
                                             @"segmentsFragmentShader8_A8", @"segmentsFragmentShader9_A8", @"segmentsFragmentShader10_A8", @"segmentsFragmentShader11_A8",
                                             @"segmentsFragmentShader12_A8", @"segmentsFragmentShader13_A8", @"segmentsFragmentShader14_A8", @"segmentsFragmentShader15_A8" };
 
-        
-        for( int shader = 1 ; shader < 16 ; shader++ )
+		int maxSegments = c_maxSegments;				// std::min can't operate on static const only present in header. Does some introspection that fails then.
+		int nbShaders = std::min(maxSegments, 16);
+	
+        for( int shader = 1 ; shader < nbShaders ; shader++ )
         {
             for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
             {
@@ -265,7 +282,7 @@ MetalGfxDevice::MetalGfxDevice()
             }
         }
         
-        desc = nil;
+        [desc release];
         
         // Initialize our buffers
         
@@ -296,7 +313,8 @@ MetalGfxDevice::MetalGfxDevice()
         textureDescriptor.storageMode   = MTLStorageModePrivate;
 
         m_segPalTextureId = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:textureDescriptor];
-
+        [textureDescriptor release];
+    
         // Initialize our shader environment
 
         m_uniform.flatTint = { 1.f, 1.f, 1.f, 1.f };
@@ -306,6 +324,159 @@ MetalGfxDevice::MetalGfxDevice()
 
 	MetalGfxDevice::~MetalGfxDevice()
 	{
+        [m_defaultCanvasRenderPassDesc release];
+		m_drawableToAutoPresent = nil;
+		
+		m_metalCommandBuffer = nil;
+		
+		delete [] m_pCommandBuffer;
+		
+		for( int mipmapped = 0 ; mipmapped < 2 ; mipmapped++ )
+		{
+			for( int interpolated = 0 ; interpolated < 2 ; interpolated++ )
+			{
+				for( int tiled = 0 ; tiled < 2 ; tiled++ )
+				{
+					[m_samplers[mipmapped][interpolated][tiled] release];
+				}
+			}
+		}
+		
+		
+		for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+		{
+				[m_plotPipelines[blendMode][(int)DestFormat::BGRA8_linear] release];
+				[m_plotPipelines[blendMode][(int)DestFormat::BGRX8_linear] release];
+				[m_plotPipelines[blendMode][(int)DestFormat::BGRA8_sRGB] release];
+				[m_plotPipelines[blendMode][(int)DestFormat::BGRX8_sRGB] release];
+				[m_plotPipelines[blendMode][(int)DestFormat::A_8] release];
+				
+				[m_lineFromToPipelines[blendMode][(int)DestFormat::BGRA8_linear] release];
+				[m_lineFromToPipelines[blendMode][(int)DestFormat::BGRX8_linear] release];
+				[m_lineFromToPipelines[blendMode][(int)DestFormat::BGRA8_sRGB] release];
+				[m_lineFromToPipelines[blendMode][(int)DestFormat::BGRX8_sRGB] release];
+				[m_lineFromToPipelines[blendMode][(int)DestFormat::A_8] release];
+		}
+		
+		for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+		{
+			[m_fillPipelines[0][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_fillPipelines[0][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_fillPipelines[0][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_fillPipelines[0][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_fillPipelines[0][blendMode][(int)DestFormat::A_8] release];
+
+			[m_fillPipelines[1][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_fillPipelines[1][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_fillPipelines[1][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_fillPipelines[1][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_fillPipelines[1][blendMode][(int)DestFormat::A_8] release];
+
+			[m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_fillAAPipelines[0][blendMode][(int)DestFormat::A_8] release];
+
+			[m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_fillAAPipelines[1][blendMode][(int)DestFormat::A_8] release];
+		}
+		
+		// Create and init Blit pipelines
+
+		for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+		{
+			[m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::A_8] release];
+
+			[m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::A_8] release];
+
+			[m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::A_8] release];
+
+			[m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::A_8] release];
+
+			[m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::A_8] release];
+
+			[m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::A_8] release];
+
+			[m_blitPipelines[(int)BlitFragShader::A8Source][0][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::A8Source][0][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::A8Source][0][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::A8Source][0][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::A8Source][0][blendMode][(int)DestFormat::A_8] release];
+
+			[m_blitPipelines[(int)BlitFragShader::A8Source][1][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::A8Source][1][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::A8Source][1][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::A8Source][1][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::A8Source][1][blendMode][(int)DestFormat::A_8] release];
+
+			[m_blitPipelines[(int)BlitFragShader::RGBXSource][0][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::RGBXSource][0][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::RGBXSource][0][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::RGBXSource][0][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::RGBXSource][0][blendMode][(int)DestFormat::A_8] release];
+
+			[m_blitPipelines[(int)BlitFragShader::RGBXSource][1][blendMode][(int)DestFormat::BGRA8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::RGBXSource][1][blendMode][(int)DestFormat::BGRX8_linear] release];
+			[m_blitPipelines[(int)BlitFragShader::RGBXSource][1][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::RGBXSource][1][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+			[m_blitPipelines[(int)BlitFragShader::RGBXSource][1][blendMode][(int)DestFormat::A_8] release];
+		}
+
+		
+		
+        int maxSegments = c_maxSegments;                // std::min can't operate on static const only present in header. Does some introspection that fails then.
+        int nbShaders = std::min(maxSegments, 16);
+        for( int shader = 1 ; shader < nbShaders ; shader++ )
+		{
+			for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+			{
+				[m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRA8_linear] release];
+				[m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRX8_linear] release];
+
+				[m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+				[m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+
+				[m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::A_8] release];
+
+				[m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRA8_linear] release];
+				[m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRX8_linear] release];
+
+				[m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRA8_sRGB] release];
+				[m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRX8_sRGB] release];
+
+				[m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::A_8] release];
+			}
+		}
+		
+		[m_library release];
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -332,7 +503,7 @@ MetalGfxDevice::MetalGfxDevice()
         return m_pSurfaceFactory;
 	}
 
-	//____ canvas() ______________________________________________________________
+	//____ canvas() ____________________________________________________________
 
     const CanvasInfo& MetalGfxDevice::canvas(CanvasRef ref) const
 	{
@@ -346,7 +517,7 @@ MetalGfxDevice::MetalGfxDevice()
 	}
 
 
-    //____ _canvasWasChanged() ________________________________________________
+    //____ _canvasWasChanged() ________________________________________________________
 
     void MetalGfxDevice::_canvasWasChanged()
     {
@@ -365,7 +536,7 @@ MetalGfxDevice::MetalGfxDevice()
             Surface::Blueprint bp;
             bp.canvas = true;
             bp.format = m_pCanvasLayers->layerFormat(m_renderLayer);
-            bp.size = m_canvas.size;
+            bp.size = m_canvas.size/64;
             m_layerSurfaces[m_renderLayer] = MetalSurface::create(bp);
             bClear = true;
         }
@@ -382,9 +553,9 @@ MetalGfxDevice::MetalGfxDevice()
         
 
         _endCommand();
-        _beginStateCommand(Command::SetCanvas, 4 + sizeof(void*)/sizeof(int));
-        m_pCommandBuffer[m_commandOfs++] = m_canvas.size.w;
-        m_pCommandBuffer[m_commandOfs++] = m_canvas.size.h;
+        _beginStateCommandWithAlignedData(Command::SetCanvas, 4 + sizeof(void*)/sizeof(int));
+        m_pCommandBuffer[m_commandOfs++] = m_canvas.size.w/64;
+        m_pCommandBuffer[m_commandOfs++] = m_canvas.size.h/64;
         m_pCommandBuffer[m_commandOfs++] = bClear ? (int) CanvasInit::Discard : (int) CanvasInit::Keep;
         m_pCommandBuffer[m_commandOfs++] = Color::Black.argb;
         * (void**)(m_pCommandBuffer+m_commandOfs) = pRenderSurface;
@@ -396,7 +567,7 @@ MetalGfxDevice::MetalGfxDevice()
         // Update blit source
         
         _endCommand();
-        _beginStateCommand(Command::SetBlitSource, sizeof(void*)/sizeof(int));
+        _beginStateCommandWithAlignedData(Command::SetBlitSource, sizeof(void*)/sizeof(int));
         * (void**)(m_pCommandBuffer+m_commandOfs) = m_pBlitSource;
         m_commandOfs += sizeof(void*)/sizeof(int);
         if( m_pBlitSource )
@@ -417,7 +588,7 @@ MetalGfxDevice::MetalGfxDevice()
         // Update tint color
         
         _endCommand();
-        _beginStateCommand(Command::SetTintColor, 2);
+        _beginStateCommandWithAlignedData(Command::SetTintColor, 2);
         *(int64_t*)(&m_pCommandBuffer[m_commandOfs]) = m_tintColor.argb;
         m_commandOfs += 2;
         
@@ -426,7 +597,7 @@ MetalGfxDevice::MetalGfxDevice()
         if( m_bTintGradient )
         {
             _endCommand();
-            _beginStateCommand(Command::SetTintGradient, 4 + sizeof(Gradient)/4);
+            _beginStateCommandWithAlignedData(Command::SetTintGradient, 4 + sizeof(Gradient)/4);
             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.x / 64;
             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.y / 64;
             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.w / 64;
@@ -455,14 +626,20 @@ MetalGfxDevice::MetalGfxDevice()
 
     bool MetalGfxDevice::setDefaultCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI pixelSize, PixelFormat pixelFormat, int scale )
     {
-        if( pixelFormat != PixelFormat::BGRA_8_linear && pixelFormat != PixelFormat::BGRA_8_sRGB && pixelFormat != PixelFormat::A_8 )
+        if( pixelFormat != PixelFormat::BGRA_8 && pixelFormat != PixelFormat::BGRA_8_linear && pixelFormat != PixelFormat::BGRA_8_sRGB && pixelFormat != PixelFormat::A_8 )
         {
-            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "pixelFormat must be BGRA_8_linear, BGRA_8_sRGB or A_8", this, TYPEINFO, __func__, __FILE__, __LINE__);
+            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "pixelFormat must be BGRA_8, BGRA_8_linear, BGRA_8_sRGB or A_8", this, TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
         }
 
+		if( pixelFormat == PixelFormat::BGRA_8 )
+			pixelFormat = Base::activeContext()->gammaCorrection() ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
+		
+        if( m_defaultCanvasRenderPassDesc )
+            [m_defaultCanvasRenderPassDesc release];
         m_defaultCanvasRenderPassDesc = renderPassDesc;
         m_defaultCanvasPixelFormat = pixelFormat;
+        [m_defaultCanvasRenderPassDesc retain];
 		m_defaultCanvas.size = pixelSize*64;
         m_defaultCanvas.scale = scale;
         
@@ -485,7 +662,7 @@ MetalGfxDevice::MetalGfxDevice()
         GfxDevice::setTintColor(color);
 
         _endCommand();
-        _beginStateCommand(Command::SetTintColor, 2);
+        _beginStateCommandWithAlignedData(Command::SetTintColor, 2);
         *(int64_t*)(&m_pCommandBuffer[m_commandOfs]) = color.argb;
         m_commandOfs += 2;
     }
@@ -506,7 +683,7 @@ MetalGfxDevice::MetalGfxDevice()
         GfxDevice::setTintGradient(rect, gradient);
 
         _endCommand();
-        _beginStateCommand(Command::SetTintGradient, 4 + sizeof(Gradient)/4);
+        _beginStateCommandWithAlignedData(Command::SetTintGradient, 4 + sizeof(Gradient)/4);
         m_pCommandBuffer[m_commandOfs++] = rect.x / 64;
         m_pCommandBuffer[m_commandOfs++] = rect.y / 64;
         m_pCommandBuffer[m_commandOfs++] = rect.w / 64;
@@ -580,7 +757,7 @@ MetalGfxDevice::MetalGfxDevice()
         //TODO: Check so that we don't overrun m_pSurfaceBuffer;
         
         _endCommand();
-        _beginStateCommand(Command::SetBlitSource, sizeof(void*)/sizeof(int));
+        _beginStateCommandWithAlignedData(Command::SetBlitSource, sizeof(void*)/sizeof(int));
         * (void**)(m_pCommandBuffer+m_commandOfs) = pSource;
         m_commandOfs += sizeof(void*)/sizeof(int);
         if( pSource )
@@ -822,7 +999,7 @@ MetalGfxDevice::MetalGfxDevice()
 
             for (int i = 0; i < m_nClipRects; i++)
             {
-                RectI patch = roundToPixels(RectSPX(m_pClipRects[i], rect));
+                RectI patch = roundToPixels(RectSPX::getIntersection(m_pClipRects[i], rect));
                 if (patch.w > 0 && patch.h > 0)
                 {
                     int    dx1 = patch.x;
@@ -891,7 +1068,7 @@ MetalGfxDevice::MetalGfxDevice()
         RectI outerRect( (int) rect.x, (int) rect.y, ((int) (rect.x+rect.w+0.999f)) - (int) rect.x, ((int) (rect.y + rect.h + 0.999f)) - (int) rect.y );
 
 
-        RectI clip(outerRect, m_clipBounds);
+        RectI clip = RectI::getIntersection(outerRect, m_clipBounds/64);
         if (clip.w == 0 || clip.h == 0)
             return;
 
@@ -908,7 +1085,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch(m_pClipRects[i], outerRect);
+            RectI patch = RectI::getIntersection(m_pClipRects[i]/64, outerRect);
             if (patch.w > 0 && patch.h > 0)
             {
                 int    dx1 = patch.x;
@@ -1189,7 +1366,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         // Clip our rectangle
 
-        if (!outerRect.intersectsWith(m_clipBounds))
+        if (!outerRect.intersectsWith(m_clipBounds/64))
             return;
 
         //
@@ -1208,7 +1385,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch(m_pClipRects[i], outerRect);
+            RectI patch = RectI::getIntersection(m_pClipRects[i]/64, outerRect);
             if (patch.w > 0 && patch.h > 0)
             {
                 int    dx1 = patch.x;
@@ -1292,7 +1469,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch( roundToPixels(RectI(m_pClipRects[i], dest)) );
+            RectI patch = roundToPixels(RectI::getIntersection(m_pClipRects[i], dest));
             if (patch.w > 0 && patch.h > 0)
             {
                 int        dx1 = patch.x;
@@ -1378,7 +1555,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-			RectI patch(m_pClipRects[i]/64, dest);
+			RectI patch = RectI::getIntersection(m_pClipRects[i]/64, dest);
             if (patch.w > 0 && patch.h > 0)
             {
                 Vertex * pVertex = m_pVertexBuffer + m_vertexOfs;
@@ -1526,7 +1703,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch(m_pClipRects[i]/64, dest);
+            RectI patch = RectI::getIntersection(m_pClipRects[i]/64, dest);
             if (patch.w > 0 && patch.h > 0)
             {
                 Vertex * pVertex = m_pVertexBuffer + m_vertexOfs;
@@ -1945,6 +2122,7 @@ MetalGfxDevice::MetalGfxDevice()
                                 destinationOrigin:  textureOrigin];
 
             [blitCommandEncoder endEncoding];
+            blitCommandEncoder = nil;
             
             //TODO: We need to sync this, don't start drawing segments until this has been fully uploaded.
         }
@@ -1978,6 +2156,9 @@ MetalGfxDevice::MetalGfxDevice()
 
             switch (cmd)
             {
+				case Command::None:
+					break;
+					
                 case Command::SetCanvas:
                 {
                     if( renderEncoder != nil )
@@ -2188,7 +2369,10 @@ MetalGfxDevice::MetalGfxDevice()
         }
 
         if( renderEncoder != nil )
+        {
             [renderEncoder endEncoding];
+            renderEncoder = nil;
+        }
 
         //
         
@@ -2253,6 +2437,7 @@ MetalGfxDevice::MetalGfxDevice()
             
             renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:pDescriptor];
             renderEncoder.label = @"GfxDeviceMetal Render to Surface Pass";
+            [pDescriptor release];
             
             pixelFormat = pCanvas->pixelFormat();
         }
@@ -2657,8 +2842,16 @@ MetalGfxDevice::MetalGfxDevice()
             descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
             descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
         }
+
+        id<MTLRenderPipelineState> pipelineState = [s_metalDevice newRenderPipelineStateWithDescriptor:descriptor error:&error];
+        [error release];
         
-        return [s_metalDevice newRenderPipelineStateWithDescriptor:descriptor error:&error];
+        [descriptor.vertexFunction release];
+        [descriptor.fragmentFunction release];
+        
+        [descriptor release];
+        
+        return pipelineState;
     }
 
 

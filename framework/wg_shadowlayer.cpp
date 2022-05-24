@@ -580,8 +580,9 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 		if (m_pSkin)
 		{
-			pDevice->setClipList(patches.size(), patches.begin());
+			int bytesToRelease = _convertAndPushClipList( pDevice, patches.size(), patches.begin() );
 			_renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale );
+			_popAndReleaseClipList( pDevice, bytesToRelease );
 		}
 
 		// Render base slot widgets
@@ -609,12 +610,12 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 			WgPatches   shadowPatches;
 
 			if (bFullSurfaceUpdate)
-				shadowPatches.push({ 0,0, _canvas.size() });
+				shadowPatches.push({ 0,0, _canvas.size()*64 });
 			else
 			{
 				const WgRect * pPatches = patches.begin();
 				for (int i = 0; i < patches.size(); i++)
-					shadowPatches.push(pPatches[i] - _canvas.pos());
+					shadowPatches.push((pPatches[i] - _canvas.pos())*64);
 			}
 
 			auto oldBlendMode = pDevice->blendMode();
@@ -643,19 +644,17 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
         
 			// Render shadows
 
-			pDevice->setClipList(patches.size(), patches.begin());
+			int bytesToRelease = _convertAndPushClipList( pDevice, patches.size(), patches.begin() );
 
 			pDevice->setTintColor( wg::Color8(255,255,255,m_shadowTint) );
 			pDevice->setBlendMode(WgBlendMode::Blend);
 			pDevice->setBlitSource( m_pShadowSurface );
 			pDevice->blit( _canvas.pos() );
-
-	//        for (auto& shadow : m_shadows)
-	//            pDevice->blit( shadow.m_geo.pos() + _canvas.pos(), shadow.m_geo );
-
+ 
 			pDevice->setTintColor(oldTint);
 			pDevice->setBlendMode(oldBlendMode);
 
+			_popAndReleaseClipList( pDevice, bytesToRelease );
 		}
 	}
 

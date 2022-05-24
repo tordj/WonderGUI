@@ -409,7 +409,7 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 
 	// Possibly render Hold
     if(m_bEnableBackgroundColor)
-        pDevice->fill(_rect, m_backgroundColor);
+        pDevice->fill(_rect*64, m_backgroundColor);
 
 	if( m_iHoldHeight > 0 )
 	{
@@ -448,7 +448,7 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 			if (m_pHoldSkin)
 				_renderSkin( m_pHoldSkin, pDevice, WgStateEnum::Normal, _rect, m_scale);
 			else
-				pDevice->fill( r, c );
+				pDevice->fill( r*64, c );
 		}
 		else if( holdOfs > peakHeight )
 			peakHeight = m_iHold[nb];							// Hold and Peak are connected, so we let Hold extend the peakHeight.
@@ -516,7 +516,7 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 				break;
 			}
 
-			pDevice->fill(r, m_sectionColors[i]);
+			pDevice->fill(r*64, m_sectionColors[i]);
 
 			ofs += sectionHeight;
 			peakHeight -= sectionHeight;

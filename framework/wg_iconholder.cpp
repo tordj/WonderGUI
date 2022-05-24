@@ -234,7 +234,7 @@ void WgIconHolder::_onCloneContent( const WgIconHolder * _pOrg )
 
 wg::SizeI WgIconHolder::_skinPrefSize( wg::Skin * pSkin, int scale ) const
 {
-	return pSkin->_preferredSize(scale >> 6) / 64;
+	return pSkin->_defaultSize(scale >> 6) / 64;
 }
 
 

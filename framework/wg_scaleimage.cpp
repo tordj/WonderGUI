@@ -258,7 +258,7 @@ void WgScaleImage::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 		return;
 
 	pDevice->setBlitSource(m_pGenSurface);
-	pDevice->blit( { _canvas.x + m_imgRect.x, _canvas.y + m_imgRect.y } );
+	pDevice->blit( WgCoord( _canvas.x + m_imgRect.x, _canvas.y + m_imgRect.y )*64 );
 }
 
 //____ _onAlphaTest() ___________________________________________________________
@@ -272,7 +272,7 @@ bool WgScaleImage::_onAlphaTest( const WgCoord& ofs )
 	if (m_imgRect.contains(ofs))
 	{
 		WgCoord ofs2 = ofs - m_imgRect.pos();
-		Uint8 opacity = m_pGenSurface->alpha(ofs2);
+		Uint8 opacity = m_pGenSurface->alpha(ofs2*64);
 		if (opacity > 0)
 			return true;
 	}

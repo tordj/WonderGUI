@@ -58,6 +58,8 @@ add_library( wondergui STATIC
 	baselibrary/base/wg3_pointers.h
 	baselibrary/base/wg3_skinslotmanager.cpp
 	baselibrary/base/wg3_skinslotmanager.h
+	baselibrary/base/wg3_state.cpp
+	baselibrary/base/wg3_state.h
 	baselibrary/base/wg3_string.cpp
 	baselibrary/base/wg3_string.h
 	baselibrary/base/wg3_strongcomponentptr.h

@@ -475,7 +475,7 @@ void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pSl
 	// Clip our geometry and put it in a dirtyrect-list
 
 	WgPatches patches;
-	patches.add( WgRect( rect, WgRect(0,0,m_size)) );
+	patches.add( WgRect::getIntersection( rect, WgRect(0,0,m_size)) );
 
 	// Remove portions of dirty rect that are covered by opaque upper siblings,
 	// possibly filling list with many small dirty rects instead.
@@ -526,12 +526,12 @@ void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas
 	for (const WgRect * pRect = _pPatches->begin(); pRect != _pPatches->end(); pRect++)
 	{
 		if (_canvas.intersectsWith(*pRect))
-			patches.push(WgRect(*pRect, _canvas));
+			patches.push(WgRect::getIntersection(*pRect, _canvas));
 	}
 
 	// Render container itself
 
-	pDevice->setClipList(patches.size(), patches.begin());
+	int bytesToRelease = _convertAndPushClipList( pDevice, patches.size(), patches.begin() );
 	_onRender(pDevice, _canvas, _window);
 
 
@@ -600,6 +600,7 @@ void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas
 			pDevice->setTintColor(oldTint);
 		}
 	}
+	_popAndReleaseClipList( pDevice, bytesToRelease );
 }
 
 

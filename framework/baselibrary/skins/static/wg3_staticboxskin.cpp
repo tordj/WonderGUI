@@ -82,9 +82,9 @@ namespace wg
 	}
 
 
-	//____ _preferredSize() ____________________________________________________
+	//____ _defaultSize() ____________________________________________________
 
-	SizeSPX StaticBoxSkin::_preferredSize(int scale) const
+	SizeSPX StaticBoxSkin::_defaultSize(int scale) const
 	{
 		SizeSPX content = Skin::_minSize(scale);
 		SizeSPX outline = align(ptsToSpx(m_outline,scale));

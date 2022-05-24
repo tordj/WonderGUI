@@ -395,16 +395,16 @@ void WgAnimPlayer::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
     {
         if(m_bInterpolation)
         {
-            WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas, m_scale >> 6 );
+            WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas, m_scale );
             pDevice->setMorphFactor(m_fInterpolationWeight);
             pDevice->setBlendMode(wg::BlendMode::Morph);
-            WgGfxDevice::BlitBlock( pDevice, m_animFrame2, _canvas, m_scale >> 6 );
+            WgGfxDevice::BlitBlock( pDevice, m_animFrame2, _canvas, m_scale );
             pDevice->setBlendMode(wg::BlendMode::Blend);
 
         }
         else
         {
-            WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas, m_scale >> 6 );
+            WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas, m_scale );
         }
     }
     else if( m_pSkin )
