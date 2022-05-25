@@ -303,13 +303,13 @@ namespace wg
         float           m_activeMorphFactor = 0.5f;
                 
         
-        id<MTLLibrary>              m_library;
+        id<MTLLibrary>              m_library = nil;
         id<MTLDrawable>             m_drawableToAutoPresent = nil;
         MTLRenderPassDescriptor*    m_defaultCanvasRenderPassDesc = nil;
         PixelFormat                 m_defaultCanvasPixelFormat;
 		CanvasInfo                  m_defaultCanvas;
 
-        id<MTLCommandBuffer>        m_metalCommandBuffer;
+        id<MTLCommandBuffer>        m_metalCommandBuffer = nil;
 
         bool                        m_bRendering = false;               // Set to true while between beginRender() and endRender() calls.
         

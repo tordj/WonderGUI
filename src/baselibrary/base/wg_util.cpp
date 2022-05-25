@@ -588,6 +588,7 @@ RectI sourceOfs;
 				output.format = format;
 				output.bits = 8;
 				output.bIndexed = false;
+				output.bLinear = false;
 				output.bBigEndian = false;
 
 				output.R_bits = 0;
@@ -646,7 +647,9 @@ RectI sourceOfs;
 				output.format = PixelFormat::Undefined;
 				output.bits = 0;
 				output.bIndexed = false;
-
+				output.bLinear = false;
+				output.bBigEndian = false;
+				
 				output.R_bits = 0;
 				output.G_bits = 0;
 				output.B_bits = 0;

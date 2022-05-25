@@ -309,9 +309,9 @@ int main ( int argc, char** argv )
 	// Record stream
 	//------------------------------------------------------
 
-//    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
+    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
 //    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
-    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+//    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
 //	playImageStreamingTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
@@ -727,7 +727,9 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
 void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory )
 {
     SDL_Surface * pLogoImg = IMG_Load( "resources/logo-200.png" );
-//    convertSDLFormat( &format, pFontSurf->format );
+//	SDL_Surface * pLogoImg = IMG_Load( "softube_logo_transparent_small.png" );
+
+	//    convertSDLFormat( &format, pFontSurf->format );
 
     SizeI logoSize = SizeI(pLogoImg->w,pLogoImg->h);
 
