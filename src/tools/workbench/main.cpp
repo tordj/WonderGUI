@@ -2894,7 +2894,10 @@ bool packListTest(CStandardSlot_p pSlot)
 
 	pPackList->header.setText("HEADER");
 //	pPackList->header.setSkin(ColorSkin::create(Color::Blue));
-	pPackList->header.setSkin(ColorSkin::create({ .color = Color::Yellow , .states = { { State::Hovered, { Color::Brown }},{ State::Pressed, {Color::Red}} } }));
+	pPackList->header.setSkin(ColorSkin::create({	.color = Color::Yellow , 
+													.states = { { State::Hovered, Color::Brown },
+																{ State::Pressed, { .color = Color::Red }} } 
+												} ));
 
 	pPackList->setSortFunction( [](const Widget * pW1, const Widget * pW2) { return pW2->id() - pW1->id(); });
 

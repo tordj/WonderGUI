@@ -40,7 +40,6 @@ namespace wg
 	}
 
 	CanvasCapsule::CanvasCapsule(const Blueprint& bp)
-
 	{
 		_initFromBlueprint(bp);
 
@@ -125,6 +124,17 @@ namespace wg
 		if( pLayers != m_pCanvasLayers )
 		{
 			m_pCanvasLayers = pLayers;
+			_requestRender();
+		}
+	}
+
+	//____ setRenderLayer() ___________________________________________________
+
+	void CanvasCapsule::setRenderLayer(int renderLayer)
+	{
+		if (renderLayer != m_renderLayer)
+		{
+			m_renderLayer = renderLayer;
 			_requestRender();
 		}
 	}

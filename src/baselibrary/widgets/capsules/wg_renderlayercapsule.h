@@ -36,9 +36,34 @@ namespace wg
 	class RenderLayerCapsule : public Capsule
 	{
 	public:
+		//____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+
+			Object_p		baggage;
+			Widget_p		child;
+			bool			dropTarget		= false;
+			bool			enabled			= true;
+			Finalizer_p		finalizer;
+			int				id				= 0;
+			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
+			bool			pickable		= false;
+			int				pickCategory	= 0;
+			PointerStyle	pointer			= PointerStyle::Default;
+			int				renderLayer		= -1;
+			int				scale			= 64;
+			bool			selectable		= true;
+			Skin_p			skin;
+			bool			tabLock			= false;
+			String			tooltip;
+		};
+
+
 		//.____ Creation __________________________________________
 
-		static RenderLayerCapsule_p	create() { return RenderLayerCapsule_p(new RenderLayerCapsule()); }
+		static RenderLayerCapsule_p	create();
+		static RenderLayerCapsule_p	create(const Blueprint& blueprint);
 
 		//.____ Identification __________________________________________
 
@@ -52,6 +77,7 @@ namespace wg
 
 	protected:
 		RenderLayerCapsule();
+		RenderLayerCapsule( const Blueprint& blueprint );
 		virtual ~RenderLayerCapsule();
 
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

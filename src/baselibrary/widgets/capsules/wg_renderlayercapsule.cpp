@@ -31,11 +31,36 @@ namespace wg
 
 	const TypeInfo RenderLayerCapsule::TYPEINFO = { "RenderLayerCapsule", &Capsule::TYPEINFO };
 
+	//____ create() ______________________________________________________________
+
+	RenderLayerCapsule_p RenderLayerCapsule::create() 
+	{ 
+		return RenderLayerCapsule_p(new RenderLayerCapsule()); 
+ 	}
+
+	RenderLayerCapsule_p RenderLayerCapsule::create(const Blueprint& blueprint) 
+	{ 
+		return RenderLayerCapsule_p(new RenderLayerCapsule(blueprint)); 
+	}
+
 	//____ constructor ____________________________________________________________
 
 	RenderLayerCapsule::RenderLayerCapsule()
 	{
 	}
+
+	//____ constructor ____________________________________________________________
+
+	RenderLayerCapsule::RenderLayerCapsule( const Blueprint& bp )
+	{
+		_initFromBlueprint(bp);
+
+		m_renderLayer = bp.renderLayer;
+
+		if (bp.child)
+			slot.setWidget(bp.child);
+	}
+
 
 	//____ Destructor _____________________________________________________________
 

@@ -50,9 +50,36 @@ namespace wg
 	class SizeCapsule : public Capsule
 	{
 	public:
+
+		//____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+
+			Object_p		baggage;
+			Widget_p		child;
+			Size			defaultSize = { -1,-1 };
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			Size			maxSize = { 10000000,10000000 };
+			Size			minSize = { 0,0 };
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			int				scale = 64;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
 		//.____ Creation __________________________________________
 
 		static SizeCapsule_p	create() { return SizeCapsule_p(new SizeCapsule()); }
+		static SizeCapsule_p	create(const Blueprint& blueprint) { return SizeCapsule_p(new SizeCapsule(blueprint)); }
 
 		//.____ Identification __________________________________________
 
@@ -80,13 +107,14 @@ namespace wg
 
 	protected:
 		SizeCapsule();
+		SizeCapsule( const Blueprint& bp );
 		virtual ~SizeCapsule();
 
 
 	private:
 
 		Size			m_minSize;
-		Size			m_maxSize = { 1000000, 1000000 };
+		Size			m_maxSize = { 10000000, 10000000 };
 		Size			m_defaultSize = { -1, -1 };
 	};
 

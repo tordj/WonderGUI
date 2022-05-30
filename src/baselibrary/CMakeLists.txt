@@ -314,8 +314,6 @@ add_library( wondergui
 	widgets/capsules/wg_capsule.h
 	widgets/capsules/wg_renderlayercapsule.cpp
 	widgets/capsules/wg_renderlayercapsule.h
-	widgets/capsules/wg_shadercapsule.cpp
-	widgets/capsules/wg_shadercapsule.h
 	widgets/capsules/wg_sizecapsule.cpp
 	widgets/capsules/wg_sizecapsule.h
 	widgets/overlays/wg_designoverlay.cpp

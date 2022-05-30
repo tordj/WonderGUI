@@ -151,7 +151,6 @@
 #include <wg_canvascapsule.h>
 #include <wg_capsule.h>
 #include <wg_renderlayercapsule.h>
-#include <wg_shadercapsule.h>
 #include <wg_sizecapsule.h>
 #include <wg_list.h>
 #include <wg_packlist.h>

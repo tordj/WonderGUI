@@ -31,10 +31,35 @@ namespace wg
 
 	const TypeInfo SizeCapsule::TYPEINFO = { "SizeCapsule", &Capsule::TYPEINFO };
 
+	//____ create() _______________________________________________________________
+
+	SizeCapsule_p SizeCapsule::create() 
+	{ 
+		return SizeCapsule_p(new SizeCapsule()); 
+	}
+
+	SizeCapsule_p SizeCapsule::create(const Blueprint& blueprint)
+	{ 
+		return SizeCapsule_p(new SizeCapsule(blueprint));
+	}
+
+
 	//____ constructor ____________________________________________________________
 
 	SizeCapsule::SizeCapsule()
 	{
+	}
+
+	SizeCapsule::SizeCapsule( const Blueprint& bp )
+	{
+		_initFromBlueprint(bp);
+
+		m_minSize		= bp.minSize;
+		m_maxSize		= bp.maxSize;
+		m_defaultSize	= bp.defaultSize;
+
+		if (bp.child)
+			slot.setWidget(bp.child);
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -42,7 +67,6 @@ namespace wg
 	SizeCapsule::~SizeCapsule()
 	{
 	}
-
 
 	//____ typeInfo() _________________________________________________________
 
@@ -66,7 +90,6 @@ namespace wg
 
 	bool SizeCapsule::setSizes( Size minSize, Size defaultSize, Size maxSize )
 	{
-
 		if ( (defaultSize.w >= 0 && (defaultSize.w > maxSize.w || defaultSize.w < minSize.w )) ||
 			 (defaultSize.h >= 0 && (defaultSize.h > maxSize.h || defaultSize.h < minSize.h )) )
 			return false;
