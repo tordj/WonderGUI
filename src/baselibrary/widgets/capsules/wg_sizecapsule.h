@@ -78,8 +78,8 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static SizeCapsule_p	create() { return SizeCapsule_p(new SizeCapsule()); }
-		static SizeCapsule_p	create(const Blueprint& blueprint) { return SizeCapsule_p(new SizeCapsule(blueprint)); }
+		static SizeCapsule_p	create();
+		static SizeCapsule_p	create(const Blueprint& blueprint);
 
 		//.____ Identification __________________________________________
 

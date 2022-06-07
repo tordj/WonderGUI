@@ -384,6 +384,8 @@ bool KernelDB::generateSource(std::ostream& out)
 										pBlend, pFormat, pBlend, pFormat);
 					}
 
+					out << temp;
+
 					if (m_tintModes[(int)TintMode::GradientY] || m_tintModes[(int)TintMode::GradientXY])
 					{
 						sprintf(temp, "s_segmentOpTab[1][(int)BlendMode::%s][(int)PixelFormat::%s] = _draw_segment_strip<1, BlendMode::%s, PixelFormat::%s>;\n",
@@ -500,6 +502,29 @@ bool KernelDB::generateSource(std::ostream& out)
 	}
 	out << endl;
 
+	// print out fast8 version of simple blit pass 1 kernels
+
+	if (bUseFast8Blits)
+	{
+		for (int srcFormat = 0; srcFormat < PixelFormat_size; srcFormat++)
+		{
+			if (m_srcFormats[srcFormat])
+			{
+				auto pFormat = toString((PixelFormat)srcFormat);
+
+				sprintf(temp, "s_moveTo_internal_fast8_OpTab[(int)PixelFormat::%s][0] = _simple_blit<PixelFormat::%s, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, false>;\n",
+					pFormat, pFormat);
+				out << temp;
+
+				sprintf(temp, "s_moveTo_internal_fast8_OpTab[(int)PixelFormat::%s][1] = _simple_blit<PixelFormat::%s, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, true>;\n",
+					pFormat, pFormat);
+				out << temp;
+			}
+		}
+		out << endl;
+	}
+
+
 	// print out the complex blit pass 1 kernels
 
 	for (int srcFormat = 0; srcFormat < PixelFormat_size; srcFormat++)
@@ -535,10 +560,216 @@ bool KernelDB::generateSource(std::ostream& out)
 	}
 	out << endl;
 
+	// print out fast8 version of the complex blit pass 1 kernels
+
+	if (bUseFast8Blits)
+	{
+		for (int srcFormat = 0; srcFormat < PixelFormat_size; srcFormat++)
+		{
+			if (m_srcFormats[srcFormat])
+			{
+				auto pFormat = toString((PixelFormat)srcFormat);
+
+				sprintf(temp, "s_transformTo_internal_fast8_OpTab[(int)PixelFormat::%s][0][0] = _complex_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;\n",
+					pFormat, pFormat);
+				out << temp;
+
+				sprintf(temp, "s_transformTo_internal_fast8_OpTab[(int)PixelFormat::%s][0][1] = _complex_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;\n",
+					pFormat, pFormat);
+				out << temp;
+
+				sprintf(temp, "s_transformTo_internal_fast8_OpTab[(int)PixelFormat::%s][0][2] = _complex_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;\n",
+					pFormat, pFormat);
+				out << temp;
+
+				sprintf(temp, "s_transformTo_internal_fast8_OpTab[(int)PixelFormat::%s][1][0] = _complex_blit<PixelFormat::%s, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::None>;\n",
+					pFormat, pFormat);
+				out << temp;
+
+				sprintf(temp, "s_transformTo_internal_fast8_OpTab[(int)PixelFormat::%s][1][1] = _complex_blit<PixelFormat::%s, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Clip>;\n",
+					pFormat, pFormat);
+				out << temp;
+
+				sprintf(temp, "s_transformTo_internal_fast8_OpTab[(int)PixelFormat::%s][1][2] = _complex_blit<PixelFormat::%s, SampleMethod::Bilinear, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, EdgeOp::Tile>;\n",
+					pFormat, pFormat);
+				out << temp;
+			}
+		}
+		out << endl;
+
+	}
+
 	// Print end of method
 
 	out << "}" << endl;
 
+
+	// Print out straight blit kernel list
+
+
+	out << "static straightBlitKernels = StraightBlitKernelEntry[] = {" << endl;
+
+	for (auto& entry : m_customBlits)
+	{
+		for (int tintMode = 0; tintMode < TintMode_size; tintMode++)
+		{
+			for (int blendMode = 0; blendMode < BlendMode_size; blendMode++)
+			{
+				for (int srcFmt = 0; srcFmt < PixelFormat_size; srcFmt++)
+				{
+					for (int dstFmt = 0; dstFmt < PixelFormat_size; dstFmt++)
+					{
+						if (entry.tintModes[tintMode] && entry.blendModes[blendMode] && entry.sourceFormats[srcFmt] && entry.destFormats[dstFmt])
+						{
+							if (entry.blitTypes[(int)BlitType::StraightBlit])
+							{
+								sprintf(temp, "    { PixelFormat::%s, false, TintMode::%s, BlendMode::%s, PixelFormat::%s, _simple_blit<PixelFormat::%s, TintMode::%s, BlendMode::%s, PixelFormat::%s, false> },\n",
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt),
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt));
+							}
+
+							if (entry.blitTypes[(int)BlitType::StraightTile])
+							{
+								sprintf(temp, "    { PixelFormat::%s, false, TintMode::%s, BlendMode::%s, PixelFormat::%s, _simple_blit<PixelFormat::%s, TintMode::%s, BlendMode::%s, PixelFormat::%s, false> },\n",
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt),
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt));
+							}
+
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+	out << "    { PixelFormat::Undefined, false, TintMode::None, BlendMode::Undefined, PixelFormat::Undefined, nullptr }" << endl;
+	out << "};" << endl;
+
+	// Print out transform blit kernel list
+
+
+	out << "static SoftGfxDevice::TransformBlitKernelEntry transformBlitKernels[] = {" << endl;
+
+	for (auto& entry : m_customBlits)
+	{
+		for (int tintMode = 0; tintMode < TintMode_size; tintMode++)
+		{
+			for (int blendMode = 0; blendMode < BlendMode_size; blendMode++)
+			{
+				for (int srcFmt = 0; srcFmt < PixelFormat_size; srcFmt++)
+				{
+					for (int dstFmt = 0; dstFmt < PixelFormat_size; dstFmt++)
+					{
+						if (entry.tintModes[tintMode] && entry.blendModes[blendMode] && entry.sourceFormats[srcFmt] && entry.destFormats[dstFmt])
+						{
+							if (entry.blitTypes[(int)BlitType::TransformBlitNearest])
+							{
+								sprintf(temp, "    { PixelFormat::%s, SampleMethod::Nearest, 0, TintMode::%s, BlendMode::%s, PixelFormat::%s, _complex_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::%s, BlendMode::%s, PixelFormat::%s, EdgeOp::None> },\n",
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt),
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt));
+							}
+
+							if (entry.blitTypes[(int)BlitType::TransformBlitBilinear])
+							{
+								sprintf(temp, "    { PixelFormat::%s, SampleMethod::Bilinear, 0, TintMode::%s, BlendMode::%s, PixelFormat::%s, _complex_blit<PixelFormat::%s, SampleMethod::Bilinear, TintMode::%s, BlendMode::%s, PixelFormat::%s, EdgeOp::None> },\n",
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt),
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt));
+							}
+
+
+							if (entry.blitTypes[(int)BlitType::TransformClipBlitNearest])
+							{
+								sprintf(temp, "    { PixelFormat::%s, SampleMethod::Nearest, 1, TintMode::%s, BlendMode::%s, PixelFormat::%s, _complex_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::%s, BlendMode::%s, PixelFormat::%s, EdgeOp::Clip> },\n",
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt),
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt));
+							}
+
+							if (entry.blitTypes[(int)BlitType::TransformClipBlitBilinear])
+							{
+								sprintf(temp, "    { PixelFormat::%s, SampleMethod::Bilinear, 1, TintMode::%s, BlendMode::%s, PixelFormat::%s, _complex_blit<PixelFormat::%s, SampleMethod::Bilinear, TintMode::%s, BlendMode::%s, PixelFormat::%s, EdgeOp::Clip> },\n",
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt),
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt));
+							}
+
+							if (entry.blitTypes[(int)BlitType::TransformTileNearest])
+							{
+								sprintf(temp, "    { PixelFormat::%s, SampleMethod::Nearest, 2, TintMode::%s, BlendMode::%s, PixelFormat::%s, _complex_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::%s, BlendMode::%s, PixelFormat::%s, EdgeOp::Tile> },\n",
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt),
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt));
+							}
+
+							if (entry.blitTypes[(int)BlitType::TransformClipBlitBilinear])
+							{
+								sprintf(temp, "    { PixelFormat::%s, SampleMethod::Bilinear, 2, TintMode::%s, BlendMode::%s, PixelFormat::%s, _complex_blit<PixelFormat::%s, SampleMethod::Bilinear, TintMode::%s, BlendMode::%s, PixelFormat::%s, EdgeOp::Tile> },\n",
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt),
+									toString((PixelFormat)srcFmt),
+									toString((TintMode)tintMode),
+									toString((BlendMode)blendMode),
+									toString((PixelFormat)dstFmt));
+							}
+
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+	out << "    { PixelFormat::Undefined, SampleMethod::Nearest, 0, TintMode::None, BlendMode::Undefined, PixelFormat::Undefined, nullptr }" << endl;
+	out << "};" << endl;
+
+	//
+
+
+	out << "SoftGfxDevice::StraightBlitKernelEntry* SoftGfxDevice::_getStraightBlitKernels() const { return straightBlitKernels; }" << endl;
+	out << "SoftGfxDevice::TransformBlitKernelEntry* SoftGfxDevice::_getTransformBlitKernels() const { return transformBlitKernels; }" << endl;
 
 	return true;
 }
@@ -568,6 +799,10 @@ void KernelDB::clear()
 
 	for (bool& b : m_destFormats)
 		b = false;
+
+	// Clear all custom blits.
+
+	m_customBlits.clear();
 }
 
 
@@ -614,8 +849,8 @@ void KernelDB::reset()
 
 	m_destFormats[int(PixelFormat::BGR_8_sRGB)] = true;
 	m_destFormats[int(PixelFormat::BGR_8_linear)] = true;
-	m_srcFormats[int(PixelFormat::BGRX_8_sRGB)] = true;
-	m_srcFormats[int(PixelFormat::BGRX_8_linear)] = true;
+	m_destFormats[int(PixelFormat::BGRX_8_sRGB)] = true;
+	m_destFormats[int(PixelFormat::BGRX_8_linear)] = true;
 	m_destFormats[int(PixelFormat::BGRA_8_sRGB)] = true;
 	m_destFormats[int(PixelFormat::BGRA_8_linear)] = true;
 	m_destFormats[int(PixelFormat::BGRA_4_linear)] = true;
@@ -625,6 +860,8 @@ void KernelDB::reset()
 
 	// Set custom blit methods
 	{
+		m_customBlits.clear();
+
 		CustomBlitSpec spec;
 
 		for (bool& b : spec.blitTypes)

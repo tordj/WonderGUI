@@ -220,7 +220,7 @@ namespace wg
 
 	//____ TintMode ___________________________________________________________
 
-	enum class TintMode //.autoExtras
+	enum class TintMode : uint8_t //.autoExtras
 	{
 		None = 0,
 		Flat,
@@ -581,7 +581,7 @@ namespace wg
 
 	//____ SampleMethod ____________________________________________________________
 
-	enum class SampleMethod	//. autoExtras
+	enum class SampleMethod : uint8_t	//. autoExtras
 	{
 		Nearest,
 		Bilinear,
@@ -614,7 +614,7 @@ enum class CanvasInit 		//. autoExtras
 
 	//____ PixelFormat _____________________________________________________________
 
-	enum class PixelFormat	//. autoExtras
+	enum class PixelFormat : uint8_t	//. autoExtras
 	{
 		Undefined,			///< Pixelformat is undefined.
 		Custom,				///< Pixelformat has no enum, but can be fully specified through a PixelDescription struct.

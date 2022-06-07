@@ -21,7 +21,7 @@ WonderApp_p WonderApp::create()
 
 wg::Size MyApp::startWindowSize()
 {
-	return { 640,480 };
+	return { 720,600 };
 }
 
 //____ init() _________________________________________________________________
