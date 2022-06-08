@@ -107,6 +107,7 @@ namespace wg
 		SystemIntegrity,
 		IllegalCall,
 		ResourceExhausted,			// A limited internal resource has been exhausted
+		RenderFailure,
 		Other
 	};
 

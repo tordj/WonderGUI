@@ -405,7 +405,20 @@ namespace wg
 			int pixelBytes = m_canvasPixelBits / 8;
 			FillOp_p pFunc = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 			if (pFunc == nullptr)
+			{
+				if( m_blendMode == BlendMode::Ignore )
+					return;
+				
+				char errorMsg[1024];
+				
+				sprintf(errorMsg, "Failed fill operation. SoftGfxDevice is missing fill kernel for TintMode::%s, BlendMode::%s onto surface of PixelFormat:%s.",
+					toString(m_colTrans.mode),
+					toString(m_blendMode),
+					toString(m_pRenderLayerSurface->pixelFormat()) );
+				
+				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
 				return;
+			}
 
 			for (int i = 0; i < m_nClipRects; i++)
 			{
@@ -426,6 +439,23 @@ namespace wg
 			FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 	//		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
+			if (pFillOp == nullptr || pEdgeOp == nullptr )
+			{
+				if( m_blendMode == BlendMode::Ignore )
+					return;
+				
+				char errorMsg[1024];
+				
+				sprintf(errorMsg, "Failed fill operation. SoftGfxDevice is missing fill kernel for TintMode::%s, BlendMode::%s onto surface of PixelFormat:%s.",
+					toString(m_colTrans.mode),
+					toString(m_blendMode),
+					toString(m_pRenderLayerSurface->pixelFormat()) );
+				
+				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+				return;
+			}
+
+			
 			for (int i = 0; i < m_nClipRects; i++)
 			{
 				HiColor color = col;
@@ -580,6 +610,24 @@ namespace wg
 		FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 //		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
+		if (pFillOp == nullptr || pEdgeOp == nullptr )
+		{
+			if( m_blendMode == BlendMode::Ignore )
+				return;
+			
+			char errorMsg[1024];
+			
+			sprintf(errorMsg, "Failed fill operation. SoftGfxDevice is missing fill kernel for TintMode::%s, BlendMode::%s onto surface of PixelFormat:%s.",
+				toString(m_colTrans.mode),
+				toString(m_blendMode),
+				toString(m_pRenderLayerSurface->pixelFormat()) );
+			
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
+		
+		
 		for (int i = 0; i < m_nClipRects; i++)
 		{
 			HiColor color = col;
@@ -718,9 +766,23 @@ namespace wg
 		//
 
 		ClipLineOp_p pOp = s_clipLineOpTab[(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
-		if (pOp == nullptr)
-			return;
 
+		if (pOp == nullptr )
+		{
+			if( m_blendMode == BlendMode::Ignore )
+				return;
+			
+			char errorMsg[1024];
+			
+			sprintf(errorMsg, "Failed drawLine operation. SoftGfxDevice is missing clipLine kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+				toString(m_blendMode),
+				toString(m_pRenderLayerSurface->pixelFormat()) );
+			
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
+		
 		uint8_t *	pRow;
 		int		rowInc, pixelInc;
 		int 	length, width;
@@ -860,6 +922,23 @@ namespace wg
 		FillOp_p	pCenterOp = s_fillOpTab[(int)TintMode::None][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		FillOp_p	pEdgeOp = s_fillOpTab[(int)TintMode::None][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
+		if (pCenterOp == nullptr || pEdgeOp == nullptr )
+		{
+			if( m_blendMode == BlendMode::Ignore )
+				return;
+			
+			char errorMsg[1024];
+			
+			sprintf(errorMsg, "Failed drawLine operation. SoftGfxDevice is missing fill kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+				toString(m_blendMode),
+				toString(m_pRenderLayerSurface->pixelFormat()) );
+			
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
+		
+		
 		for (int i = 0; i < m_nClipRects; i++)
 		{
 			const RectI& clip = m_pClipRects[i]/64;
@@ -1381,8 +1460,21 @@ namespace wg
 			return;
 
 		SegmentOp_p	pOp = s_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
-		if (pOp == nullptr)
+		if (pOp == nullptr )
+		{
+			if( m_blendMode == BlendMode::Ignore )
+				return;
+			
+			char errorMsg[1024];
+			
+			sprintf(errorMsg, "Failed draw segments operation. SoftGfxDevice is missing segments kernel %s Y-tint for BlendMode::%s onto surface of PixelFormat:%s.",
+				bTintY ? "with" : "without",
+				toString(m_blendMode),
+				toString(m_pRenderLayerSurface->pixelFormat()) );
+			
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
+		}
 
 		// Loop through patches
 
@@ -1886,7 +1978,19 @@ namespace wg
 		PlotListOp_p pOp = s_plotListOpTab[(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 		if (pOp == nullptr )
+		{
+			if( m_blendMode == BlendMode::Ignore )
+				return;
+			
+			char errorMsg[1024];
+			
+			sprintf(errorMsg, "Failed plotPixels operation. SoftGfxDevice is missing plotList kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+				toString(m_blendMode),
+				toString(m_pRenderLayerSurface->pixelFormat()) );
+			
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
+		}
 
 		for (int i = 0; i < m_nClipRects; i++)
 			pOp(m_pClipRects[i], nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch, m_colTrans);
@@ -2237,9 +2341,9 @@ namespace wg
 		}
 	}
 
-	//____ _onePassSimpleBlit() _____________________________________________
+	//____ _onePassStraightBlit() _____________________________________________
 
-	void SoftGfxDevice::_onePassSimpleBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp)
+	void SoftGfxDevice::_onePassStraightBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp)
 	{
 		const SoftSurface * pSource = m_pBlitSource;
 
@@ -2259,9 +2363,9 @@ namespace wg
 		pPassOneOp(pSrc, pDst, pSource, pitches, dest.h, dest.w, m_colTrans, patchPos, simpleTransform);
 	}
 
-	//____ _twoPassSimpleBlit() _____________________________________________
+	//____ _twoPassStraightBlit() _____________________________________________
 
-	void SoftGfxDevice::_twoPassSimpleBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp)
+	void SoftGfxDevice::_twoPassStraightBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp)
 	{
 		SoftSurface * pSource = m_pBlitSource;
 
@@ -2313,9 +2417,9 @@ namespace wg
 		Base::memStackRelease(memBufferSize);
 	}
 
-	//____ _onePassComplexBlit() ____________________________________________
+	//____ _onePassTransforBlit() ____________________________________________
 
-	void SoftGfxDevice::_onePassComplexBlit(const RectI& dest, CoordF pos, const float transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
+	void SoftGfxDevice::_onePassTransformBlit(const RectI& dest, CoordF pos, const float transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
 	{
 		const SoftSurface * pSource = m_pBlitSource;
 
@@ -2327,9 +2431,9 @@ namespace wg
 	}
 
 
-	//____ _twoPassComplexBlit() ____________________________________________
+	//____ _twoPassTransformBlit() ____________________________________________
 
-	void SoftGfxDevice::_twoPassComplexBlit(const RectI& dest, CoordF pos, const float transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
+	void SoftGfxDevice::_twoPassTransformBlit(const RectI& dest, CoordF pos, const float transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
 	{
 		const SoftSurface * pSource = m_pBlitSource;
 
@@ -2376,18 +2480,42 @@ namespace wg
 		Base::memStackRelease(memBufferSize);
 	}
 
-	//____ _dummySimpleBlit() _________________________________________________
+	//____ _dummyStraightBlit() _________________________________________________
 
-	void SoftGfxDevice::_dummySimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp)
+	void SoftGfxDevice::_dummyStraightBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp)
 	{
-		// Do nothing but prevent crashing or need to check for nullpointer ;)
+		if( m_blendMode == BlendMode::Ignore )
+			return;
+			
+		char errorMsg[1024];
+		
+		sprintf(errorMsg, "Failed blit operation. SoftGfxDevice is missing straight blit kernel for:\n source format = %s\n tile = %s\n tint mode = %s\n blend mode = %s\n, dest format = %s\n", toString(m_pBlitSource->pixelFormat()),
+			m_bTileSource ? "true" : "false",
+			toString(m_colTrans.mode),
+			toString(m_blendMode),
+			toString(m_pRenderLayerSurface->pixelFormat()) );
+		
+		Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
 	}
 
-	//____ _dummyComplexBlit() ________________________________________________
+	//____ _dummyTransformBlit() ________________________________________________
 
-	void SoftGfxDevice::_dummyComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
+	void SoftGfxDevice::_dummyTransformBlit(const RectI& dest, CoordF pos, const float matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
 	{
-		// Do nothing but prevent crashing or need to check for nullpointer ;)
+		if( m_blendMode == BlendMode::Ignore )
+			return;
+
+		char errorMsg[1024];
+		
+		sprintf(errorMsg, "Failed blit operation. SoftGfxDevice is missing transform blit kernel for:\n source format = %s\n sample method = %s\n tile = %s\n clip = %s\n tint mode = %s\n blend mode = %s\n, dest format = %s\n", toString(m_pBlitSource->pixelFormat()),
+			toString(m_pBlitSource->sampleMethod()),
+			m_bTileSource ? "true" : "false",
+			m_bClipSource ? "true" : "false",
+			toString(m_colTrans.mode),
+			toString(m_blendMode),
+			toString(m_pRenderLayerSurface->pixelFormat()) );
+		
+		Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
 	}
 
 
@@ -2399,12 +2527,12 @@ namespace wg
 
 		if (!m_pRenderLayerSurface || !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData)
 		{
-			m_pStraightBlitOp = &SoftGfxDevice::_dummySimpleBlit;
-			m_pStraightTileOp = &SoftGfxDevice::_dummySimpleBlit;
+			m_pStraightBlitOp = &SoftGfxDevice::_dummyStraightBlit;
+			m_pStraightTileOp = &SoftGfxDevice::_dummyStraightBlit;
 
-			m_pTransformBlitOp = &SoftGfxDevice::_dummyComplexBlit;
-			m_pTransformClipBlitOp = &SoftGfxDevice::_dummyComplexBlit;
-			m_pTransformTileOp = &SoftGfxDevice::_dummyComplexBlit;
+			m_pTransformBlitOp = &SoftGfxDevice::_dummyTransformBlit;
+			m_pTransformClipBlitOp = &SoftGfxDevice::_dummyTransformBlit;
+			m_pTransformTileOp = &SoftGfxDevice::_dummyTransformBlit;
 			return;
 		}
 
@@ -2456,63 +2584,63 @@ namespace wg
 
 		if (straightBlitIndex >= 1)
 		{
-			m_pStraightBlitOp = &SoftGfxDevice::_onePassSimpleBlit;
+			m_pStraightBlitOp = &SoftGfxDevice::_onePassStraightBlit;
 			m_pStraightBlitFirstPassOp = m_pStraightBlitKernels[straightBlitIndex - 1].pKernel;
 		}
 		else if (srcFormat == PixelFormat::BGRA_8_linear && m_pRenderLayerSurface->pixelDescription()->bLinear &&
 			s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()] )
 		{
-			m_pStraightBlitOp = &SoftGfxDevice::_onePassSimpleBlit;
+			m_pStraightBlitOp = &SoftGfxDevice::_onePassStraightBlit;
 			m_pStraightBlitFirstPassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		}
 		else if (m_pStraightBlitFirstPassOp && m_pBlitSecondPassOp)
-			m_pStraightBlitOp = &SoftGfxDevice::_twoPassSimpleBlit;
+			m_pStraightBlitOp = &SoftGfxDevice::_twoPassStraightBlit;
 		else
-			m_pStraightBlitOp = &SoftGfxDevice::_dummySimpleBlit;
+			m_pStraightBlitOp = &SoftGfxDevice::_dummyStraightBlit;
 
 
 		if (straightTileIndex >= 1)
 		{
-			m_pStraightTileOp = &SoftGfxDevice::_onePassSimpleBlit;
+			m_pStraightTileOp = &SoftGfxDevice::_onePassStraightBlit;
 			m_pStraightTileFirstPassOp = m_pStraightBlitKernels[straightTileIndex - 1].pKernel;
 		}
 		else if (m_pStraightTileFirstPassOp && m_pBlitSecondPassOp)
-			m_pStraightTileOp = &SoftGfxDevice::_twoPassSimpleBlit;
+			m_pStraightTileOp = &SoftGfxDevice::_twoPassStraightBlit;
 		else
-			m_pStraightTileOp = &SoftGfxDevice::_dummySimpleBlit;
+			m_pStraightTileOp = &SoftGfxDevice::_dummyStraightBlit;
 
 
 		if (transformBlitIndex >= 1)
 		{
-			m_pTransformBlitOp = &SoftGfxDevice::_onePassComplexBlit;
+			m_pTransformBlitOp = &SoftGfxDevice::_onePassTransformBlit;
 			m_pTransformBlitFirstPassOp = m_pTransformBlitKernels[transformBlitIndex - 1].pKernel;
 		}
 		else if (m_pTransformBlitFirstPassOp && m_pBlitSecondPassOp)
-			m_pTransformBlitOp = &SoftGfxDevice::_twoPassComplexBlit;
+			m_pTransformBlitOp = &SoftGfxDevice::_twoPassTransformBlit;
 		else
-			m_pTransformBlitOp = &SoftGfxDevice::_dummyComplexBlit;
+			m_pTransformBlitOp = &SoftGfxDevice::_dummyTransformBlit;
 
 
 		if (transformClipBlitIndex >= 1)
 		{
-			m_pTransformClipBlitOp = &SoftGfxDevice::_onePassComplexBlit;
+			m_pTransformClipBlitOp = &SoftGfxDevice::_onePassTransformBlit;
 			m_pTransformClipBlitFirstPassOp = m_pTransformBlitKernels[transformClipBlitIndex - 1].pKernel;
 		}
 		else if (m_pTransformClipBlitFirstPassOp && m_pBlitSecondPassOp)
-			m_pTransformClipBlitOp = &SoftGfxDevice::_twoPassComplexBlit;
+			m_pTransformClipBlitOp = &SoftGfxDevice::_twoPassTransformBlit;
 		else
-			m_pTransformClipBlitOp = &SoftGfxDevice::_dummyComplexBlit;
+			m_pTransformClipBlitOp = &SoftGfxDevice::_dummyTransformBlit;
 
 
 		if (transformTileIndex >= 1)
 		{
-			m_pTransformTileOp = &SoftGfxDevice::_onePassComplexBlit;
+			m_pTransformTileOp = &SoftGfxDevice::_onePassTransformBlit;
 			m_pTransformTileFirstPassOp = m_pTransformBlitKernels[transformTileIndex - 1].pKernel;
 		}
 		else if (m_pTransformTileFirstPassOp && m_pBlitSecondPassOp)
-			m_pTransformTileOp = &SoftGfxDevice::_twoPassComplexBlit;
+			m_pTransformTileOp = &SoftGfxDevice::_twoPassTransformBlit;
 		else
-			m_pTransformTileOp = &SoftGfxDevice::_dummyComplexBlit;
+			m_pTransformTileOp = &SoftGfxDevice::_dummyTransformBlit;
 	}
 
 	//____ _initTables() ___________________________________________________________
