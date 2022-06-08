@@ -130,16 +130,24 @@ int main(int argc, char** argv)
 //	printf("Slot is safe to relocate: %d\n", StaticSlot::safe_to_relocate);
 //	printf("PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
 //	printf("LambdaSlot is safe to relocate: %d\n", LambdaSlot::safe_to_relocate);
-/*
+
+
 	auto pPackPanel = PackPanel::create();
 
-	auto pBase = wg_cast<Widget_p>(pPackPanel);
+	auto pBase = wg_static_cast<Widget_p>(pPackPanel);
 
-	auto pPanel = wg_cast<Panel_p>(pBase);
-	auto pCapsule = wg_cast<Capsule_p>(pBase);
+	auto pPanel = wg_static_cast<Panel_p>(pBase);
+	auto pCapsule = wg_static_cast<Capsule_p>(pBase);
 
-	auto pBlob = wg_cast<Blob_p>(pBase);
-*/
+//	auto pBlob = wg_static_cast<Blob_p>(pBase);
+
+	Panel_p p = static_cast<Panel*>(pBase.rawPtr());
+
+	p->firstChild();
+
+	p->setFinalizer([](Object * p) { /* Do something here */ });
+
+
 //	pPackPanel->slots[0].
 
 //	auto it = pPackPanel->slots.begin();

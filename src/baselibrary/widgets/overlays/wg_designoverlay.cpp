@@ -466,7 +466,7 @@ namespace wg
 
 						if (m_pressedToolbox == -1)
 						{
-							auto pContainer = wg_cast<Container_p>(mainSlot._widget());
+							auto pContainer = wg_dynamic_cast<Container_p>(mainSlot._widget());
 							if (pContainer)
 							{
 								Widget * pWidget = pContainer->_findWidget(mousePos, SearchMode::MarkPolicy);

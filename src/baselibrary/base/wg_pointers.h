@@ -33,12 +33,18 @@ namespace wg
 {
 
 	template <class Type_p>
-	Type_p wg_cast(Object* pObject) {
+	Type_p wg_dynamic_cast(Object* pObject) {
 
 		if (pObject && pObject->isInstanceOf(Type_p::typeInfo()) )
 			return static_cast<typename Type_p::raw_type>(pObject);
 
 		return nullptr;
+	}
+
+	template <class Type_p, class From>
+	Type_p wg_static_cast(From pObject) {
+
+		return static_cast<typename Type_p::raw_type>(pObject.rawPtr());
 	}
 }
 
