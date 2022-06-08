@@ -46,7 +46,7 @@ There are three ways to create and use a Blueprint depending on conditions and p
 
    ```c++
    auto pMyStyle = TextStyle::create({	.color = Color::Black, 
-   																		.font = pMyFont,
+   									.font = pMyFont,
                                        .size = 12 });
    ```
 
@@ -66,9 +66,9 @@ There are three ways to create and use a Blueprint depending on conditions and p
 
    ```c++
     auto pMyStyle = TextStyle::create( WGBP(TextStyle,
-   																		_.font = pMyFont,
-   																		_.size = 12,
-   																		_.color = Color::Black ));
+   									_.font = pMyFont,
+   									_.size = 12,
+   									_.color = Color::Black ));
    ```
 
    This is looks very similar to designated initializers, but is a bit more convoluted. The changes needed are:
@@ -95,14 +95,14 @@ There are three ways to create and use a Blueprint depending on conditions and p
 It is worth pointing out that you can use designated initializers or the WGBP macro also when creating a blueprint for repeated use. Like:
 
 ```c++
-TextStyle::Blueprint bp1 = {	.color = Color::Black, 
-															.font = pMyFont,
-                                             .size = 12 };
+TextStyle::Blueprint bp1 = { .color = Color::Black, 
+							 .font = pMyFont,
+                             .size = 12 };
 
 TextStyle::Blueprint bp2 = WGBP(TextStyle,
-															_.font = pMyFont,
-															_.size = 12,
-															_.color = Color::Black );
+								_.font = pMyFont,
+								_.size = 12,
+								_.color = Color::Black );
 ```
 
 
@@ -131,7 +131,7 @@ State specific data is added to a vector named "states" in the blueprint. Each e
 ```c++
 struct StateBP
 {
-	State			state;
+	State		state;
 	StateData	data;
 }
 ```
@@ -142,7 +142,7 @@ This pattern is identical for all blueprints supporting states, only the format 
 		struct StateData
 		{
 			HiColor		color = HiColor::Undefined;
-			Coord			contentShift = {0,0};
+			Coord		contentShift = {0,0};
 			HiColor		outlineColor = HiColor::Undefined;
 		};
 ```
@@ -200,7 +200,7 @@ This makes adding several states very clean and simple:
 
 ```c++
 bp.states = {	{State::Hovered, Color::Yellow},
-							{State::Pressed, Color::Red} }
+				{State::Pressed, Color::Red} }
 ```
 
 Intializer lists also have one big advantage over push_back() - they can be inlined in the blueprint intialization. This in turn allows us to inline everyting into the call to BoxSkin::create() like this:
@@ -211,8 +211,8 @@ auto pMySkin = BoxSkin::create( WGBP(BoxSkin,
                              _.outline = 1.f, 
                              _.outlineColor = Color::Black,
                              _.states = {	{State::Hovered, Color::Yellow},
-																					{State::Pressed, Color::Red} }
-														));
+											{State::Pressed, Color::Red} }
+								));
 ```
 
 
@@ -227,14 +227,14 @@ There are a few more things related to blueprints that is worth pointing out.
 
   ```c++
   TextStyle::Blueprint bp1 = WGBP(TextStyle,
-  																_.color = Color::White,
-  																_.states = {{State::Hovered, Color::Pink}}
-  																);
+  								_.color = Color::White,
+  								_.states = {{State::Hovered, Color::Pink}}
+  								);
   																
   TextStyle::Blueprint bp2 = WGBP(TextStyle,
-  																_.states = {{State::Normal, Color::White}
-  																						{State::Hovered, Color::Pink}}
-  																);					
+  								_.states = {{State::Normal, Color::White}
+  											{State::Hovered, Color::Pink}}
+  								);					
   ```
 
 * All objects that can be created using a blueprint are meant to have a method called blueprint() which returns a blueprint for it, but currently only TextStyle supports that. This is meant as a way to clone an object or make a modified version of it by extracting a blueprint, modifying it and using it to create a new object. The blueprint returned is generated from the objects data and can therefore be different from the one used to create it.
