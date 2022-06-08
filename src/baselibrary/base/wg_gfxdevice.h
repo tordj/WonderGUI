@@ -100,6 +100,8 @@ namespace wg
 
 		virtual SurfaceFactory_p	surfaceFactory() = 0;
 		
+		static constexpr int		maxSegments() { return c_maxSegments; }
+		
 		//.____ Geometry _________________________________________________
 
 		inline 	SizeSPX	canvasSize() const { return m_canvas.size; }

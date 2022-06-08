@@ -105,28 +105,8 @@ namespace wg
 		void	scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 }) override;
 		void	scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
-
-	protected:
-		SoftGfxDevice();
-		~SoftGfxDevice();
-
-		void	_canvasWasChanged() override;
-		void	_renderLayerWasChanged() override;
-
-
-		void	_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
-		void	_transformBlit(const RectSPX& dest, CoordF src, const float complexTransform[2][2]) override;
-
-		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
-
-		enum EdgeOp
-		{
-			None,
-			Clip,
-			Tile
-		};
-
-
+		//.____ Internal _____________________________________________________
+		
 		struct ColTrans
 		{
 			TintMode mode;
@@ -160,6 +140,15 @@ namespace wg
 			int			morphFactor;	// Scale: 0 -> 4096
 		};
 
+		enum EdgeOp
+		{
+			None,
+			Clip,
+			Tile
+		};
+
+
+
 		struct SegmentGradient
 		{
 			int			begR;		// Blue value at top of segment column. 0-255 << 16;
@@ -181,6 +170,22 @@ namespace wg
 			int dstX;			// Pitch in bytes for each pixel written.
 			int dstY;			// Pitch in bytes from end of line to beginning of next for each line written.
 		};
+
+		
+		
+	protected:
+		SoftGfxDevice();
+		~SoftGfxDevice();
+
+		void	_canvasWasChanged() override;
+		void	_renderLayerWasChanged() override;
+
+
+		void	_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
+		void	_transformBlit(const RectSPX& dest, CoordF src, const float complexTransform[2][2]) override;
+
+		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+
 
 		inline static void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 		inline static void _write_pixel_fast8(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
@@ -262,30 +267,6 @@ namespace wg
 											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA );
 */
 
-		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _plot(uint8_t * pDst, HiColor col, const ColTrans& tint, CoordI patchOfs);
-
-		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const HiColor * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
-
-		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
-
-		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
-
-		template<TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos);
-
-		template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool TILE>
-		static void	_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
-
-		template<PixelFormat SRCFORMAT, SampleMethod SAMPLEMETHOD, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, EdgeOp EDGEOP>
-		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos);
-
-		template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void	_draw_segment_strip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);
-
 		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
 
 		void	_initTables();
@@ -364,24 +345,13 @@ namespace wg
 
 		void	_populateOpTab();
 
-		static StraightBlitKernelEntry straightBlitKernels[];
-		static TransformBlitKernelEntry transformBlitKernels[];
+		static StraightBlitKernelEntry s_straightBlitKernels[];
+		static TransformBlitKernelEntry s_transformBlitKernels[];
 
 		StraightBlitKernelEntry*	_getStraightBlitKernels() const;
 		TransformBlitKernelEntry*	_getTransformBlitKernels() const;
 
 		//
-
-		static const int16_t	s_channel_4_1[256];
-		static const int16_t	s_channel_4_2[256];
-		static const int16_t	s_channel_5[256];
-		static const int16_t	s_channel_6[256];
-
-		static const uint8_t	s_fast8_channel_4_1[256];
-		static const uint8_t	s_fast8_channel_4_2[256];
-		static const uint8_t	s_fast8_channel_5[256];
-		static const uint8_t	s_fast8_channel_6[256];
-
 
 		static PlotOp_p			s_plotOpTab[BlendMode_size][PixelFormat_size];
 		static LineOp_p			s_lineOpTab[BlendMode_size][PixelFormat_size];
@@ -398,11 +368,6 @@ namespace wg
 
 		static StraightBlitOp_p	s_moveTo_internal_fast8_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
 		static TransformBlitOp_p	s_transformTo_internal_fast8_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
-
-
-		static int			s_mulTab[256];
-
-		static int16_t		s_limit4096Tab[4097 * 3];
 
 
 		SurfaceFactory_p	m_pSurfaceFactory;

@@ -70,6 +70,14 @@ namespace wg
 		void				pullPixels(const PixelBuffer& buffer, const RectI& bufferRect) override;
 		void				freePixelBuffer(const PixelBuffer& buffer) override;
 
+		//.____ Internal ______________________________________________________
+		
+		inline int			pitch() const { return m_pitch; }
+		inline uint8_t *	pixels() const { return m_pData; }
+		inline int			tileMaskX() const { return m_srcPosMaskX; }
+		inline int			tileMaskY() const { return m_srcPosMaskY; }
+		inline const HiColor * clut4096() const { return m_pClut4096; }
+		
 		//.____ Deprecated ____________________________________________________
 
 		static SoftSurface_p	create(SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);

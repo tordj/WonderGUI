@@ -7,9 +7,181 @@
 using namespace wg;
 using namespace wg::Util;
 
+int 	s_mulTab[256];
+
+int16_t	s_limit4096Tab[4097 * 3];
+
+bool	s_bTablesInitialized = false;
+
+const int16_t s_channel_4_1[256] =    { 0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+										0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15 };
+
+const int16_t s_channel_4_2[256] =    { 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15,
+										4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15,
+										4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15,
+										4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15,
+										4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15,
+										4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15,
+										4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15,
+										4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15,
+										4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15,
+										4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15,
+										4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15,
+										4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15,
+										4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15,
+										4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15,
+										4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15,
+										4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15 };
+
+
+const int16_t s_channel_5[256] =      { 4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+										4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+										4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+										4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+										4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+										4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+										4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+										4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+										4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+										4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+										4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+										4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+										4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+										4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+										4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+										4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31 };
+
+const int16_t s_channel_6[256] =      { 4096*0/63, 4096*1/63, 4096*2/63, 4096*3/63, 4096*4/63, 4096*5/63, 4096*6/63, 4096*7/63, 4096*8/63, 4096*9/63, 4096*10/63, 4096*11/63, 4096*12/63, 4096*13/63, 4096*14/63, 4096*15/63,
+										4096*32/63, 4096*33/63, 4096*34/63, 4096*35/63, 4096*36/63, 4096*37/63, 4096*38/63, 4096*39/63, 4096*40/63, 4096*41/63, 4096*42/63, 4096*43/63, 4096*44/63, 4096*45/63, 4096*46/63, 4096*47/63,
+										4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
+										4096*48/63, 4096*49/63, 4096*50/63, 4096*51/63, 4096*52/63, 4096*53/63, 4096*54/63, 4096*55/63, 4096*56/63, 4096*57/63, 4096*58/63, 4096*59/63, 4096*60/63, 4096*61/63, 4096*62/63, 4096*63/63,
+										4096*0/63, 4096*1/63, 4096*2/63, 4096*3/63, 4096*4/63, 4096*5/63, 4096*6/63, 4096*7/63, 4096*8/63, 4096*9/63, 4096*10/63, 4096*11/63, 4096*12/63, 4096*13/63, 4096*14/63, 4096*15/63,
+										4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
+										4096*32/63, 4096*33/63, 4096*34/63, 4096*35/63, 4096*36/63, 4096*37/63, 4096*38/63, 4096*39/63, 4096*40/63, 4096*41/63, 4096*42/63, 4096*43/63, 4096*44/63, 4096*45/63, 4096*46/63, 4096*47/63,
+										4096*48/63, 4096*49/63, 4096*50/63, 4096*51/63, 4096*52/63, 4096*53/63, 4096*54/63, 4096*55/63, 4096*56/63, 4096*57/63, 4096*58/63, 4096*59/63, 4096*60/63, 4096*61/63, 4096*62/63, 4096*63/63,
+										4096*0/63, 4096*1/63, 4096*2/63, 4096*3/63, 4096*4/63, 4096*5/63, 4096*6/63, 4096*7/63, 4096*8/63, 4096*9/63, 4096*10/63, 4096*11/63, 4096*12/63, 4096*13/63, 4096*14/63, 4096*15/63,
+										4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
+										4096*32/63, 4096*33/63, 4096*34/63, 4096*35/63, 4096*36/63, 4096*37/63, 4096*38/63, 4096*39/63, 4096*40/63, 4096*41/63, 4096*42/63, 4096*43/63, 4096*44/63, 4096*45/63, 4096*46/63, 4096*47/63,
+										4096*48/63, 4096*49/63, 4096*50/63, 4096*51/63, 4096*52/63, 4096*53/63, 4096*54/63, 4096*55/63, 4096*56/63, 4096*57/63, 4096*58/63, 4096*59/63, 4096*60/63, 4096*61/63, 4096*62/63, 4096*63/63,
+										4096*0/63, 4096*1/63, 4096*2/63, 4096*3/63, 4096*4/63, 4096*5/63, 4096*6/63, 4096*7/63, 4096*8/63, 4096*9/63, 4096*10/63, 4096*11/63, 4096*12/63, 4096*13/63, 4096*14/63, 4096*15/63,
+										4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
+										4096*32/63, 4096*33/63, 4096*34/63, 4096*35/63, 4096*36/63, 4096*37/63, 4096*38/63, 4096*39/63, 4096*40/63, 4096*41/63, 4096*42/63, 4096*43/63, 4096*44/63, 4096*45/63, 4096*46/63, 4096*47/63,
+										4096*48/63, 4096*49/63, 4096*50/63, 4096*51/63, 4096*52/63, 4096*53/63, 4096*54/63, 4096*55/63, 4096*56/63, 4096*57/63, 4096*58/63, 4096*59/63, 4096*60/63, 4096*61/63, 4096*62/63, 4096*63/63 };
+
+
+
+const uint8_t s_fast8_channel_4_1[256] = {	0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+										0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
+
+const uint8_t s_fast8_channel_4_2[256] = {	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+										0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11,
+										0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,
+										0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33,
+										0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
+										0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+										0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
+										0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77,
+										0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88,
+										0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99,
+										0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+										0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb,
+										0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc,
+										0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
+										0xee, 0xee, 0xee, 0xee, 0xee, 0xee, 0xee, 0xee, 0xee, 0xee, 0xee, 0xee, 0xee, 0xee, 0xee, 0xee,
+										0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+
+const uint8_t s_fast8_channel_5[256]	= {		0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
+										0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
+										0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
+										0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
+										0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
+										0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
+										0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
+										0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
+										0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
+										0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
+										0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
+										0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
+										0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
+										0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
+										0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
+										0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff };
+
+const uint8_t s_fast8_channel_6[256] = {		0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 0x3c,
+										0x40, 0x44, 0x48, 0x4c, 0x50, 0x55, 0x59, 0x5d, 0x61, 0x65, 0x69, 0x6d, 0x71, 0x75, 0x79, 0x7d,
+										0x81, 0x85, 0x89, 0x8d, 0x91, 0x95, 0x99, 0x9d, 0xa1, 0xa5, 0xaa, 0xae, 0xb2, 0xb6, 0xba, 0xbe,
+										0xc2, 0xc6, 0xca, 0xce, 0xd2, 0xd6, 0xda, 0xde, 0xe2, 0xe6, 0xea, 0xee, 0xf2, 0xf6, 0xfa, 0xff,
+										0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 0x3c,
+										0x40, 0x44, 0x48, 0x4c, 0x50, 0x55, 0x59, 0x5d, 0x61, 0x65, 0x69, 0x6d, 0x71, 0x75, 0x79, 0x7d,
+										0x81, 0x85, 0x89, 0x8d, 0x91, 0x95, 0x99, 0x9d, 0xa1, 0xa5, 0xaa, 0xae, 0xb2, 0xb6, 0xba, 0xbe,
+										0xc2, 0xc6, 0xca, 0xce, 0xd2, 0xd6, 0xda, 0xde, 0xe2, 0xe6, 0xea, 0xee, 0xf2, 0xf6, 0xfa, 0xff,
+										0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 0x3c,
+										0x40, 0x44, 0x48, 0x4c, 0x50, 0x55, 0x59, 0x5d, 0x61, 0x65, 0x69, 0x6d, 0x71, 0x75, 0x79, 0x7d,
+										0x81, 0x85, 0x89, 0x8d, 0x91, 0x95, 0x99, 0x9d, 0xa1, 0xa5, 0xaa, 0xae, 0xb2, 0xb6, 0xba, 0xbe,
+										0xc2, 0xc6, 0xca, 0xce, 0xd2, 0xd6, 0xda, 0xde, 0xe2, 0xe6, 0xea, 0xee, 0xf2, 0xf6, 0xfa, 0xff,
+										0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 0x3c,
+										0x40, 0x44, 0x48, 0x4c, 0x50, 0x55, 0x59, 0x5d, 0x61, 0x65, 0x69, 0x6d, 0x71, 0x75, 0x79, 0x7d,
+										0x81, 0x85, 0x89, 0x8d, 0x91, 0x95, 0x99, 0x9d, 0xa1, 0xa5, 0xaa, 0xae, 0xb2, 0xb6, 0xba, 0xbe,
+										0xc2, 0xc6, 0xca, 0xce, 0xd2, 0xd6, 0xda, 0xde, 0xe2, 0xe6, 0xea, 0xee, 0xf2, 0xf6, 0xfa, 0xff	};
+
+
+//____ _initStanzaTables() ____________________________________________________
+
+void	_initStanzaTables()
+{
+	if( !s_bTablesInitialized)
+	{
+		// Init sRGBtoLinearTab
+
+		for (int i = 0; i <= 4096; i++)
+			s_limit4096Tab[i] = 0;
+
+		for (int i = 0; i <= 4096; i++)
+			s_limit4096Tab[4097+i] = i;
+
+		for (int i = 0; i <= 4096; i++)
+			s_limit4096Tab[4097*2 + i] = 4096;
+
+		// Init mulTab
+
+		for (int i = 0; i < 256; i++)
+			s_mulTab[i] = 65536 * i / 255;
+
+		s_bTablesInitialized = true;
+	}
+}
+	
 //____ read_pixel_fast8() _______________________________________________________
 
-inline void SoftGfxDevice::_read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 {
 	if (format == PixelFormat::Undefined)
 	{
@@ -91,7 +263,7 @@ inline void SoftGfxDevice::_read_pixel_fast8(const uint8_t* pPixel, PixelFormat 
 
 //____ read_pixel() _______________________________________________________
 
-inline void SoftGfxDevice::_read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+inline void _read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 {
 	if (format == PixelFormat::Undefined)
 	{
@@ -188,7 +360,7 @@ inline void SoftGfxDevice::_read_pixel(const uint8_t* pPixel, PixelFormat format
 
 //____ write_pixel_fast8() _______________________________________________________
 
-inline void SoftGfxDevice::_write_pixel_fast8(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a)
+inline void _write_pixel_fast8(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a)
 {
 	//TODO: support BigEndian systems!
 
@@ -248,7 +420,7 @@ inline void SoftGfxDevice::_write_pixel_fast8(uint8_t* pPixel, PixelFormat forma
 
 //____ write_pixel() _______________________________________________________
 
-inline void SoftGfxDevice::_write_pixel(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a)
+inline void _write_pixel(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a)
 {
 	//TODO: support BigEndian systems!
 
@@ -318,7 +490,7 @@ inline void SoftGfxDevice::_write_pixel(uint8_t* pPixel, PixelFormat format, int
 
 //____ _blend_pixels_fast8() ____________________________________________________
 
-inline void	SoftGfxDevice::_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat,
+inline void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat,
 	int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 	int16_t backB, int16_t backG, int16_t backR, int16_t backA,
 	int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
@@ -462,7 +634,7 @@ inline void	SoftGfxDevice::_blend_pixels_fast8(BlendMode mode, int morphFactor, 
 
 //____ _blend_pixels() ____________________________________________________
 
-inline void	SoftGfxDevice::_blend_pixels(BlendMode mode, int morphFactor, PixelFormat destFormat,
+inline void	_blend_pixels(BlendMode mode, int morphFactor, PixelFormat destFormat,
 	int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 	int16_t backB, int16_t backG, int16_t backR, int16_t backA,
 	int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
@@ -600,7 +772,7 @@ inline void	SoftGfxDevice::_blend_pixels(BlendMode mode, int morphFactor, PixelF
 
 //____ _color_tint_init() _________________________________________________
 
-inline void SoftGfxDevice::_color_tint_init(TintMode tintMode, const ColTrans& tint, int bits, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
+inline void _color_tint_init(TintMode tintMode, const SoftGfxDevice::ColTrans& tint, int bits, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
 	int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 	uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 	uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
@@ -702,7 +874,7 @@ inline void SoftGfxDevice::_color_tint_init(TintMode tintMode, const ColTrans& t
 
 //____ _color_tint_line() _________________________________________________
 
-inline void SoftGfxDevice::_color_tint_line(TintMode tintMode, const ColTrans& tint, int bits, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
+inline void _color_tint_line(TintMode tintMode, const SoftGfxDevice::ColTrans& tint, int bits, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
 	int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 	uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 	uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
@@ -761,7 +933,7 @@ inline void SoftGfxDevice::_color_tint_line(TintMode tintMode, const ColTrans& t
 
 //____ _color_tint_pixel() ______________________________________________________
 
-inline void SoftGfxDevice::_color_tint_pixel(TintMode tintMode, int bits,
+inline void _color_tint_pixel(TintMode tintMode, int bits,
 	int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 	uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 	uint32_t& pixelB, uint32_t& pixelG, uint32_t& pixelR, uint32_t& pixelA)
@@ -783,7 +955,7 @@ inline void SoftGfxDevice::_color_tint_pixel(TintMode tintMode, int bits,
 
 //____ _texel_tint_init() _________________________________________________
 
-inline void SoftGfxDevice::_texel_tint_init(TintMode tintMode, const ColTrans& tint, int bits,
+inline void _texel_tint_init(TintMode tintMode, const SoftGfxDevice::ColTrans& tint, int bits,
 	uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 	uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
 	uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
@@ -858,7 +1030,7 @@ inline void SoftGfxDevice::_texel_tint_init(TintMode tintMode, const ColTrans& t
 
 //____ _texel_tint_line() _________________________________________________
 
-inline void SoftGfxDevice::_texel_tint_line(TintMode tintMode, const ColTrans& tint, int bits,
+inline void _texel_tint_line(TintMode tintMode, const SoftGfxDevice::ColTrans& tint, int bits,
 	uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 	uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
 	uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
@@ -908,7 +1080,7 @@ inline void SoftGfxDevice::_texel_tint_line(TintMode tintMode, const ColTrans& t
 
 //____ _texel_tint_pixel() ________________________________________________
 
-inline void SoftGfxDevice::_texel_tint_pixel(TintMode tintMode, int bits, int16_t& pixelB, int16_t& pixelG, int16_t& pixelR, int16_t& pixelA,
+inline void _texel_tint_pixel(TintMode tintMode, int bits, int16_t& pixelB, int16_t& pixelG, int16_t& pixelR, int16_t& pixelA,
 	uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 	uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA)
 {
@@ -936,7 +1108,7 @@ inline void SoftGfxDevice::_texel_tint_pixel(TintMode tintMode, int bits, int16_
 //____ _plot() ____________________________________________________________
 
 template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-void SoftGfxDevice::_plot(uint8_t* pDst, HiColor color, const ColTrans& tint, CoordI patchPos)
+void _plot(uint8_t* pDst, HiColor color, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
 {
 	bool bFast8 = false;
 
@@ -1003,7 +1175,7 @@ void SoftGfxDevice::_plot(uint8_t* pDst, HiColor color, const ColTrans& tint, Co
 //____ plot_list() ________________________________________________________
 
 template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-void SoftGfxDevice::_plot_list(const RectI& clip, int nCoords, const CoordI* pCoords, const HiColor* pColors, uint8_t* pCanvas, int pitchX, int pitchY, const ColTrans& tint)
+void _plot_list(const RectI& clip, int nCoords, const CoordI* pCoords, const HiColor* pColors, uint8_t* pCanvas, int pitchX, int pitchY, const SoftGfxDevice::ColTrans& tint)
 {
 	bool bFast8 = false;
 
@@ -1092,7 +1264,7 @@ void SoftGfxDevice::_plot_list(const RectI& clip, int nCoords, const CoordI* pCo
 //____ _draw_line() _______________________________________________________
 
 template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-void SoftGfxDevice::_draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos)
+void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
 {
 	bool bFast8 = false;
 
@@ -1259,7 +1431,7 @@ void SoftGfxDevice::_draw_line(uint8_t* pRow, int rowInc, int pixelInc, int leng
 //____ _clip_draw_line() __________________________________________________
 
 template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos)
+void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
 {
 	bool bFast8 = false;
 
@@ -1440,7 +1612,7 @@ void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, i
 //____ _fill() ____________________________________________________________
 
 template<TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
-void SoftGfxDevice::_fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos)
+void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
 {
 	bool bFast8 = false;
 	int		bits = 12;
@@ -1537,7 +1709,7 @@ void SoftGfxDevice::_fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int
 
 //____ _add_segment_color() _______________________________________________
 
-inline void SoftGfxDevice::_add_segment_color(bool GRADIENT, int blendFraction, int offset, const int16_t* pSegmentColor, const SegmentGradient* pSegmentGradient, int& accB, int& accG, int& accR, int& accA)
+inline void _add_segment_color(bool GRADIENT, int blendFraction, int offset, const int16_t* pSegmentColor, const SoftGfxDevice::SegmentGradient* pSegmentGradient, int& accB, int& accG, int& accR, int& accA)
 {
 	if (GRADIENT)
 	{
@@ -1557,7 +1729,7 @@ inline void SoftGfxDevice::_add_segment_color(bool GRADIENT, int blendFraction, 
 
 //____ _segment_alpha() _______________________________________________
 
-inline int SoftGfxDevice::_segment_alpha(bool GRADIENT, int offset, const int16_t* pSegmentColor, const SegmentGradient* pSegmentGradient)
+inline int _segment_alpha(bool GRADIENT, int offset, const int16_t* pSegmentColor, const SoftGfxDevice::SegmentGradient* pSegmentGradient)
 {
 	if (GRADIENT)
 		return (pSegmentGradient->begA + pSegmentGradient->incA * offset) >> 12;
@@ -1569,7 +1741,7 @@ inline int SoftGfxDevice::_segment_alpha(bool GRADIENT, int offset, const int16_
 //____ _draw_segment_strip() _______________________________________________
 
 template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
-void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixelPitch, int nEdges, SegmentEdge* pEdges, const int16_t* pSegmentColors, const SoftGfxDevice::SegmentGradient* pSegmentGradients, const bool* pTransparentSegments, const bool* pOpaqueSegments, int morphFactor)
+void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixelPitch, int nEdges, SegmentEdge* pEdges, const int16_t* pSegmentColors, const SoftGfxDevice::SegmentGradient* pSegmentGradients, const bool* pTransparentSegments, const bool* pOpaqueSegments, int morphFactor)
 {
 
 	bool bFast8 = false;
@@ -1709,7 +1881,7 @@ void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripS
 			{
 				int edge = 0;
 
-				int	segmentFractions[c_maxSegments];
+				int	segmentFractions[SoftGfxDevice::maxSegments()];
 				int remainingFractions = 65536;
 
 				while (edge < nEdges && offset + 255 >= pEdges[edge].begin)
@@ -1932,10 +2104,10 @@ void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripS
 	}
 }
 
-//_____ _simple_blit() ____________________________________________________________
+//_____ _straight_blit() ____________________________________________________________
 
 template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool TILE>
-void SoftGfxDevice::_simple_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
+void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
 {
 	bool	bFast8 = false;
 	int		bits = 12;
@@ -1968,16 +2140,19 @@ void SoftGfxDevice::_simple_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftS
 
 	if (TILE)
 	{
-		xPitch = pSrcSurf->m_pixelDescription.bits / 8;
-		yPitch = pSrcSurf->m_pitch;
+		xPitch = pSrcSurf->pixelBytes();
+		yPitch = pSrcSurf->pitch();
 
-		int ofs = int(pSrc - pSrcSurf->m_pData);
+		int ofs = int(pSrc - pSrcSurf->pixels());
 		srcY = ofs / yPitch;
 		srcX = (ofs % yPitch) / xPitch;
-		pSrc = pSrcSurf->m_pData;
-		maskX = pSrcSurf->m_srcPosMaskX;
-		maskY = pSrcSurf->m_srcPosMaskY;
+		pSrc = pSrcSurf->pixels();
+		maskX = pSrcSurf->tileMaskX();
+		maskY = pSrcSurf->tileMaskY();
 	}
+
+	const Color8 * pClut = pSrcSurf->clut();
+	const HiColor * pClut4096 = pSrcSurf->clut4096();
 
 
 	// Step 1: Prepare any tint gradient
@@ -2006,14 +2181,14 @@ void SoftGfxDevice::_simple_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftS
 			{
 				srcX &= maskX;
 				srcY &= maskY;
-				pSrc = pSrcSurf->m_pData + srcY * yPitch + srcX * xPitch;
+				pSrc = pSrcSurf->pixels() + srcY * yPitch + srcX * xPitch;
 			}
 
 			int16_t srcB, srcG, srcR, srcA;
 			if (bFast8)
-				_read_pixel_fast8(pSrc, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
+				_read_pixel_fast8(pSrc, SRCFORMAT, pClut, pClut4096, srcB, srcG, srcR, srcA);
 			else
-				_read_pixel(pSrc, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
+				_read_pixel(pSrc, SRCFORMAT, pClut, pClut4096, srcB, srcG, srcR, srcA);
 
 			// Step 3: Apply any tint
 
@@ -2065,10 +2240,10 @@ void SoftGfxDevice::_simple_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftS
 	}
 }
 
-//____ _complex_blit __________________________________________
+//____ _transform_blit __________________________________________
 
 template<PixelFormat SRCFORMAT, SampleMethod SAMPLEMETHOD, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, SoftGfxDevice::EdgeOp EDGEOP >
-void SoftGfxDevice::_complex_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t* pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
+void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t* pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
 {
 	bool	bFast8 = false;
 	int		bits = 12;
@@ -2092,9 +2267,9 @@ void SoftGfxDevice::_complex_blit(const SoftSurface* pSrcSurf, CoordF pos, const
 		}
 	}
 
-	int srcPixelBytes = pSrcSurf->m_pixelDescription.bits / 8;
-	int	srcPitch = pSrcSurf->m_pitch;
-	SizeI srcMax = pSrcSurf->m_size * 32768;
+	int srcPixelBytes = pSrcSurf->pixelBytes();
+	int	srcPitch = pSrcSurf->pitch();
+	SizeI srcMax = pSrcSurf->pixelSize() * 32768;
 
 	int pixelIncX = (int)(matrix[0][0] * 32768);
 	int pixelIncY = (int)(matrix[0][1] * 32768);
@@ -2102,12 +2277,16 @@ void SoftGfxDevice::_complex_blit(const SoftSurface* pSrcSurf, CoordF pos, const
 	int lineIncX = (int)(matrix[1][0] * 32768);
 	int lineIncY = (int)(matrix[1][1] * 32768);
 
-	int	srcPosMaskX = pSrcSurf->m_srcPosMaskX;
-	int	srcPosMaskY = pSrcSurf->m_srcPosMaskY;
+	int	srcPosMaskX = pSrcSurf->tileMaskX();
+	int	srcPosMaskY = pSrcSurf->tileMaskY();
 
-	int	srcPosMaskX_15binals = (pSrcSurf->m_srcPosMaskX << 15) | 0x7FFF;
-	int	srcPosMaskY_15binals = (pSrcSurf->m_srcPosMaskY << 15) | 0x7FFF;
+	int	srcPosMaskX_15binals = (srcPosMaskX << 15) | 0x7FFF;
+	int	srcPosMaskY_15binals = (srcPosMaskY << 15) | 0x7FFF;
 
+	const Color8 * pClut = pSrcSurf->clut();
+	const HiColor * pClut4096 = pSrcSurf->clut4096();
+
+	
 	for (int y = 0; y < nLines; y++)
 	{
 		int ofsX = (int)(pos.x * 32768 + lineIncX * y);
@@ -2125,7 +2304,7 @@ void SoftGfxDevice::_complex_blit(const SoftSurface* pSrcSurf, CoordF pos, const
 			// Step 1: Read source color.
 
 			int16_t srcB, srcG, srcR, srcA;
-			uint8_t* p = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch + (ofsX >> 15) * srcPixelBytes;
+			uint8_t* p = pSrcSurf->pixels() + (ofsY >> 15) * srcPitch + (ofsX >> 15) * srcPixelBytes;
 
 			if (SAMPLEMETHOD == SampleMethod::Bilinear)
 			{
@@ -2154,44 +2333,44 @@ void SoftGfxDevice::_complex_blit(const SoftSurface* pSrcSurf, CoordF pos, const
 						if (bFast8)
 						{
 							if (ofsX >= 0 && ofsY >= 0 && ofsX < srcMax.w && ofsY < srcMax.h)
-								_read_pixel_fast8(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
+								_read_pixel_fast8(p, SRCFORMAT, pClut, pClut4096, src11_b, src11_g, src11_r, src11_a);
 							else
 								src11_b = src11_g = src11_r = src11_a = 0;
 
 							if ((ofsX + 32768) >= 0 && ofsY >= 0 && (ofsX + 32768) < srcMax.w && ofsY < srcMax.h)
-								_read_pixel_fast8(p + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
+								_read_pixel_fast8(p + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src12_b, src12_g, src12_r, src12_a);
 							else
 								src12_b = src12_g = src12_r = src12_a = 0;
 
 							if (ofsX >= 0 && (ofsY + 32768) >= 0 && ofsX < srcMax.w && (ofsY + 32768) < srcMax.h)
-								_read_pixel_fast8(p + srcPitch, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
+								_read_pixel_fast8(p + srcPitch, SRCFORMAT, pClut, pClut4096, src21_b, src21_g, src21_r, src21_a);
 							else
 								src21_b = src21_g = src21_r = src21_a = 0;
 
 							if ((ofsX + 32768) >= 0 && (ofsY + 32768) >= 0 && (ofsX + 32768) < srcMax.w && (ofsY + 32768) < srcMax.h)
-								_read_pixel_fast8(p + srcPitch + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
+								_read_pixel_fast8(p + srcPitch + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src22_b, src22_g, src22_r, src22_a);
 							else
 								src22_b = src22_g = src22_r = src22_a = 0;
 						}
 						else
 						{
 							if (ofsX >= 0 && ofsY >= 0 && ofsX < srcMax.w && ofsY < srcMax.h)
-								_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
+								_read_pixel(p, SRCFORMAT, pClut, pClut4096, src11_b, src11_g, src11_r, src11_a);
 							else
 								src11_b = src11_g = src11_r = src11_a = 0;
 
 							if ((ofsX + 32768) >= 0 && ofsY >= 0 && (ofsX + 32768) < srcMax.w && ofsY < srcMax.h)
-								_read_pixel(p + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
+								_read_pixel(p + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src12_b, src12_g, src12_r, src12_a);
 							else
 								src12_b = src12_g = src12_r = src12_a = 0;
 
 							if (ofsX >= 0 && (ofsY + 32768) >= 0 && ofsX < srcMax.w && (ofsY + 32768) < srcMax.h)
-								_read_pixel(p + srcPitch, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
+								_read_pixel(p + srcPitch, SRCFORMAT, pClut, pClut4096, src21_b, src21_g, src21_r, src21_a);
 							else
 								src21_b = src21_g = src21_r = src21_a = 0;
 
 							if ((ofsX + 32768) >= 0 && (ofsY + 32768) >= 0 && (ofsX + 32768) < srcMax.w && (ofsY + 32768) < srcMax.h)
-								_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
+								_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src22_b, src22_g, src22_r, src22_a);
 							else
 								src22_b = src22_g = src22_r = src22_a = 0;
 						}
@@ -2205,9 +2384,9 @@ void SoftGfxDevice::_complex_blit(const SoftSurface* pSrcSurf, CoordF pos, const
 					{
 						int x = (ofsX >> 15), y = (ofsY >> 15);
 
-						p2 = pSrcSurf->m_pData + y * srcPitch + ((x + 1) & srcPosMaskX) * srcPixelBytes;
-						p3 = pSrcSurf->m_pData + ((y + 1) & srcPosMaskY) * srcPitch + x * srcPixelBytes;
-						p4 = pSrcSurf->m_pData + ((y + 1) & srcPosMaskY) * srcPitch + ((x + 1) & srcPosMaskX) * srcPixelBytes;
+						p2 = pSrcSurf->pixels() + y * srcPitch + ((x + 1) & srcPosMaskX) * srcPixelBytes;
+						p3 = pSrcSurf->pixels() + ((y + 1) & srcPosMaskY) * srcPitch + x * srcPixelBytes;
+						p4 = pSrcSurf->pixels() + ((y + 1) & srcPosMaskY) * srcPitch + ((x + 1) & srcPosMaskX) * srcPixelBytes;
 					}
 					else
 					{
@@ -2223,17 +2402,17 @@ void SoftGfxDevice::_complex_blit(const SoftSurface* pSrcSurf, CoordF pos, const
 
 					if (bFast8)
 					{
-						_read_pixel_fast8(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
-						_read_pixel_fast8(p2, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
-						_read_pixel_fast8(p3, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
-						_read_pixel_fast8(p4, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
+						_read_pixel_fast8(p, SRCFORMAT, pClut, pClut4096, src11_b, src11_g, src11_r, src11_a);
+						_read_pixel_fast8(p2, SRCFORMAT, pClut, pClut4096, src12_b, src12_g, src12_r, src12_a);
+						_read_pixel_fast8(p3, SRCFORMAT, pClut, pClut4096, src21_b, src21_g, src21_r, src21_a);
+						_read_pixel_fast8(p4, SRCFORMAT, pClut, pClut4096, src22_b, src22_g, src22_r, src22_a);
 					}
 					else
 					{
-						_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
-						_read_pixel(p2, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
-						_read_pixel(p3, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
-						_read_pixel(p4, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
+						_read_pixel(p, SRCFORMAT, pClut, pClut4096, src11_b, src11_g, src11_r, src11_a);
+						_read_pixel(p2, SRCFORMAT, pClut, pClut4096, src12_b, src12_g, src12_r, src12_a);
+						_read_pixel(p3, SRCFORMAT, pClut, pClut4096, src21_b, src21_g, src21_r, src21_a);
+						_read_pixel(p4, SRCFORMAT, pClut, pClut4096, src22_b, src22_g, src22_r, src22_a);
 					}
 				}
 
@@ -2269,9 +2448,9 @@ void SoftGfxDevice::_complex_blit(const SoftSurface* pSrcSurf, CoordF pos, const
 				{
 					assert((ofsX | ofsY | (srcMax.w - 1 - ofsX) | (srcMax.h - 1 - ofsY)) >= 0);
 					if (bFast8)
-						_read_pixel_fast8(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
+						_read_pixel_fast8(p, SRCFORMAT, pClut, pClut4096, srcB, srcG, srcR, srcA);
 					else
-						_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
+						_read_pixel(p, SRCFORMAT, pClut, pClut4096, srcB, srcG, srcR, srcA);
 				}
 			}
 

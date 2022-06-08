@@ -21,7 +21,7 @@ WonderApp_p WonderApp::create()
 
 wg::Size MyApp::startWindowSize()
 {
-	return { 720,600 };
+	return { 800,700 };
 }
 
 //____ init() _________________________________________________________________
@@ -67,13 +67,13 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 	m_pTextStyle = TextStyle::create(WGBP(TextStyle,
 									_.font = pFont,
-									_.size = 12,
+									_.size = 14,
 									_.color = Color8::Black,
 									_.states = {{State::Disabled, Color8::DarkGrey}} ));
 
 	m_pLabelStyle = TextStyle::create(WGBP(TextStyle,
 									_.font = pFont,
-									_.size = 14,
+									_.size = 16,
 									_.color = Color8::Black));
 
 
@@ -665,6 +665,8 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 		pBodyRow->slots << _buildToggleButtonRow("Source Formats", activeSourceFormats, it->sourceFormats, [this, index](Msg* pMsg) { this->customBlitSourceFormatToggled(index, pMsg); });
 		pBodyRow->slots << _buildToggleButtonRow("Dest Formats", activeDestFormats, it->destFormats, [this, index](Msg* pMsg) { this->customBlitDestFormatToggled(index, pMsg); });
 
+		pBodyRow->slots.setPadding(0, pBodyRow->slots.size(), Border( 0, 5, 0, 5 ) );
+
 		// Bottom Row
 
 		auto pBottomRow = PackPanel::create();
@@ -770,6 +772,7 @@ wg::Widget_p MyApp::_buildListSummarySection()
 		_.display.text = amount.c_str(),
 		_.display.style = m_pLabelStyle));
 
+	pSection->slots.setPadding(0, pSection->slots.size(), Border( 0, 5, 0, 5 ) );
 
 
 
