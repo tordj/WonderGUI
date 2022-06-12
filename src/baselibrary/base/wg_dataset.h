@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_PAYLOAD_DOT_H
-#define	WG_PAYLOAD_DOT_H
+#ifndef WG_DATASET_DOT_H
+#define	WG_DATASET_DOT_H
 #pragma once
 
 #include <cstdint>
@@ -61,6 +61,17 @@ namespace wg
 
 	template<class Type> using Dataset_p = StrongPtr<Dataset<Type>>;
 	template<class Type> using Dataset_wp = WeakPtr<Dataset<Type>>;
+
+/**
+	@Template class for embedding any class into a WonderGUI object.
+
+	Dataset is a template class that can be used to embedd a class or struct
+	into a reference counted WonderGUI object. The main purpose is to allow
+	any arbitrary class to be used as baggage for a Widget or Surface, providing
+	additional application specific data, but it can be used for anything.
+
+	The embedded class is provided as a public member named "data".
+*/
 
 	template<class Type> class Dataset : public BasicDataset
 	{
@@ -107,4 +118,4 @@ namespace wg
 	}(s_className);
 
 } // namespace wg
-#endif //WG_PAYLOAD_DOT_H
+#endif //WG_DATASET_DOT_H

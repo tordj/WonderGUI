@@ -27,6 +27,14 @@
 
 namespace wg
 {
+	/**
+		@brief Visitor class for WG to make callbacks to host platform.
+
+		HostBridge is an abstract class used by WonderGUI to make callbacks
+		to host platform. It is provided as a parameter to Base::init() and
+		used throughout the GUI lifecycle until Base::exit() is called.
+	*/
+
 	class HostBridge
 	{
 	public:
