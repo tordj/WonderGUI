@@ -102,7 +102,7 @@ namespace wg
 		int			    m_bPendingReads = false;					// Set if there are queued commands that will use surface as source. Active MetalGfxDevice needs to be flushed before we modify.
 
         bool            m_bBufferNeedsSync = false;                 // Texture has changes that have not been synced to buffer yet.
-        volatile bool   m_bTextureSyncInProgress = false;           // Texture is being updated with changes from buffer.
+        std::atomic<bool>  m_bTextureSyncInProgress;           // Texture is being updated with changes from buffer.
 
 
 		id<MTLTexture>	m_clutTexture = nil;	    // Private texture with clut data, only accessed by GPU.

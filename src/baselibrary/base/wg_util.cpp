@@ -649,7 +649,7 @@ RectI sourceOfs;
 				output.bIndexed = false;
 				output.bLinear = false;
 				output.bBigEndian = false;
-				
+
 				output.R_bits = 0;
 				output.G_bits = 0;
 				output.B_bits = 0;

@@ -685,7 +685,7 @@ namespace wg
 		for (int i = m_nCachedFontSizes; i < newSize; i++)
 			pNew[i] = nullptr;
 
-		delete m_pCachedFontSizes;
+		delete [] m_pCachedFontSizes;
 		m_pCachedFontSizes = pNew;
 		m_nCachedFontSizes = newSize;
 	}

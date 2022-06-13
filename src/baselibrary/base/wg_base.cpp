@@ -56,8 +56,8 @@ namespace wg
 
 	std::function<void(Error&)>	Base::s_pErrorHandler = nullptr;
 
-	unsigned int				Base::s_objectsCreated = 0;
-	unsigned int				Base::s_objectsDestroyed = 0;
+	std::atomic<unsigned int>	Base::s_objectsCreated = 0;
+	std::atomic<unsigned int>	Base::s_objectsDestroyed = 0;
 
 	int64_t						Base::s_timestamp = 0;
 	std::vector<Receiver*>		Base::s_updateReceivers;

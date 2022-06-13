@@ -34,6 +34,7 @@
 #include <functional>
 #include <unordered_map>
 #include <vector>
+#include <atomic>
 
 
 //#define WG2_MODE
@@ -173,8 +174,8 @@ namespace wg
 		static WeakPtrHub *	_allocWeakPtrHub();
 		static void			_freeWeakPtrHub(WeakPtrHub * pHub);
 
-		inline static void	_objectWasCreated(Object* pObject) { s_objectsCreated++; if (s_bTrackingObjects) _trackObject(pObject, nullptr, -1); }
-		inline static void	_objectWillDestroy(Object* pObject) { s_objectsDestroyed++; if (s_bTrackingObjects) s_trackedObjects.erase(pObject); }
+        inline static void	_objectWasCreated(Object* pObject) { s_objectsCreated.fetch_add(1, std::memory_order_relaxed); if (s_bTrackingObjects) _trackObject(pObject, nullptr, -1); }
+        inline static void	_objectWillDestroy(Object* pObject) { s_objectsDestroyed.fetch_add(1, std::memory_order_relaxed); if (s_bTrackingObjects) s_trackedObjects.erase(pObject); }
 
 
 		struct Data
@@ -218,8 +219,8 @@ namespace wg
 			unsigned int	serialNb;
 		};
 
-		static unsigned int	s_objectsCreated;
-		static unsigned int	s_objectsDestroyed;
+		static std::atomic<unsigned int>	s_objectsCreated;
+		static std::atomic<unsigned int>	s_objectsDestroyed;
 
 		static bool			s_bTrackingObjects;
 		static std::unordered_map<Object*, ObjectInfo>	s_trackedObjects;
