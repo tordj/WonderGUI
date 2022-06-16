@@ -10,7 +10,7 @@ source_group(Skins/Misc REGULAR_EXPRESSION "skins/misc//*")
 source_group(Skins/State REGULAR_EXPRESSION "skins/state//*")
 source_group(Skins/Static REGULAR_EXPRESSION "skins/static//*")
 
-source_group(Stream REGULAR_EXPRESSION "stream//*")
+source_group(GfxStream REGULAR_EXPRESSION "gfxstream//*")
 source_group(TextLayouts REGULAR_EXPRESSION "textlayouts//*")
 source_group(NumberLayouts REGULAR_EXPRESSION "numberlayouts//*")
 
@@ -232,25 +232,25 @@ add_library( wondergui
 	skins/static/wg_statictileskin.cpp
 	skins/static/wg_statictileskin.h
 
-	stream/wg_gfxstream.h
-	stream/wg_gfxstreambuffer.cpp
-	stream/wg_gfxstreambuffer.h
-	stream/wg_gfxstreamdecoder.cpp
-	stream/wg_gfxstreamdecoder.h
-	stream/wg_gfxstreamencoder.cpp
-	stream/wg_gfxstreamencoder.h
-	stream/wg_gfxstreamlogger.cpp
-	stream/wg_gfxstreamlogger.h
-	stream/wg_gfxstreamplayer.cpp
-	stream/wg_gfxstreamplayer.h
-	stream/wg_gfxstreampump.cpp
-	stream/wg_gfxstreampump.h
-	stream/wg_gfxstreamreader.cpp
-	stream/wg_gfxstreamreader.h
-	stream/wg_gfxstreamsplitter.cpp
-	stream/wg_gfxstreamsplitter.h
-	stream/wg_gfxstreamwriter.cpp
-	stream/wg_gfxstreamwriter.h
+	gfxstream/wg_gfxstream.h
+	gfxstream/wg_gfxstreambuffer.cpp
+	gfxstream/wg_gfxstreambuffer.h
+	gfxstream/wg_gfxstreamdecoder.cpp
+	gfxstream/wg_gfxstreamdecoder.h
+	gfxstream/wg_gfxstreamencoder.cpp
+	gfxstream/wg_gfxstreamencoder.h
+	gfxstream/wg_gfxstreamlogger.cpp
+	gfxstream/wg_gfxstreamlogger.h
+	gfxstream/wg_gfxstreamplayer.cpp
+	gfxstream/wg_gfxstreamplayer.h
+	gfxstream/wg_gfxstreampump.cpp
+	gfxstream/wg_gfxstreampump.h
+	gfxstream/wg_gfxstreamreader.cpp
+	gfxstream/wg_gfxstreamreader.h
+	gfxstream/wg_gfxstreamsplitter.cpp
+	gfxstream/wg_gfxstreamsplitter.h
+	gfxstream/wg_gfxstreamwriter.cpp
+	gfxstream/wg_gfxstreamwriter.h
 
 
 	textlayouts/wg_basictextlayout.cpp

@@ -48,6 +48,7 @@ void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, cons
 void playDelayFrames(GfxDevice_p pDevice, int nFrames);
 
 void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvas);
+void playRectangleDanceDualScreen(GfxDevice_p pDevice, CanvasRef canvasRef1, CanvasRef canvasRef2 );
 void playScroll(GfxDevice_p pDevice, RectI canvas );
 void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
 void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
@@ -220,17 +221,24 @@ int main ( int argc, char** argv )
 	pBasePanel->setSkin( ColorSkin::create(Color::Burlywood) );
 	pPopupLayer->mainSlot = pBasePanel;
 
-    auto pOutput = Image::create();
-    pOutput->setSkin( BoxSkin::create(2, Color8::Black, Color8::HotPink) );
-    pBasePanel->slots.pushBack(pOutput, [](Widget * pWidget, Size sz) { return Rect(10,10,244,244); } );
+    auto pOutput1 = Image::create();
+    pOutput1->setSkin( BoxSkin::create(2, Color8::Black, Color8::HotPink) );
+    pBasePanel->slots.pushBack(pOutput1, [](Widget * pWidget, Size sz) { return Rect(10,10,244,244); } );
+
+	auto pOutput2 = Image::create();
+	pOutput2->setSkin( BoxSkin::create(2, Color8::Black, Color8::HotPink) );
+	pBasePanel->slots.pushBack(pOutput2, [](Widget * pWidget, Size sz) { return Rect(244+20,10,244,244); } );
 
 
 	//------------------------------------------------------
 	// Setup streaming
 	//------------------------------------------------------
     
-    auto pStreamOutputCanvas = SoftSurface::create( {240,240}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
-    pGfxDevice->defineCanvas(CanvasRef::Canvas_1, pStreamOutputCanvas );
+    auto pStreamOutputCanvas1 = SoftSurface::create( {240,240}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
+	auto pStreamOutputCanvas2 = SoftSurface::create( {240,240}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
+
+	pGfxDevice->defineCanvas(CanvasRef::Canvas_1, pStreamOutputCanvas1);
+	pGfxDevice->defineCanvas(CanvasRef::Canvas_2, pStreamOutputCanvas2);
 
     
 //	auto pStreamPlug = GfxStreamPlug::create();
@@ -280,6 +288,7 @@ int main ( int argc, char** argv )
 
 	auto pStreamDevice = StreamGfxDevice::create(pEncoder);
     pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {240,240} );
+	pStreamDevice->defineCanvas(CanvasRef::Canvas_2, {240,240} );
 
 	auto pSurfaceFactory = StreamSurfaceFactory::create(pEncoder);
 
@@ -309,7 +318,8 @@ int main ( int argc, char** argv )
 	// Record stream
 	//------------------------------------------------------
 
-    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
+//    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
+	  playRectangleDanceDualScreen( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
 //    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 //    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
@@ -367,6 +377,8 @@ int main ( int argc, char** argv )
 	// Program Main Loop
 	//------------------------------------------------------
 
+	pStreamPlayer->setStoreDirtyRects(true);
+	
 	while( !bQuit )
 	{
 		translateEvents( pInput, pRoot );
@@ -374,13 +386,26 @@ int main ( int argc, char** argv )
         
         pStreamPump->pumpFrame();
 
-        pOutput->setImage(nullptr);
-        pOutput->setImage(pStreamOutputCanvas);
-        
+        pOutput1->setImage(nullptr);
+        pOutput1->setImage(pStreamOutputCanvas1);
+
+		pOutput2->setImage(nullptr);
+		pOutput2->setImage(pStreamOutputCanvas2);
+
+		
 		SDL_LockSurface(pWinSurf);
 		pRoot->render();
 		SDL_UnlockSurface(pWinSurf);
 
+		int				nRects1,nRects2;
+		const RectI	* pRects1, *pRects2;
+		
+		std::tie(nRects1,pRects1) = pStreamPlayer->dirtyRects(wg::CanvasRef::Canvas_1);
+		std::tie(nRects2,pRects2) = pStreamPlayer->dirtyRects(wg::CanvasRef::Canvas_2);
+
+		
+		
+		
 		SDL_Rect	r;
 		r.x = 0;
 		r.y = 0;
@@ -786,6 +811,54 @@ void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvasRef )
 		ticker++;
 	}
 }
+
+//____ playDRectangleDanceDualScreen() _________________________________________________
+
+void playRectangleDanceDualScreen(GfxDevice_p pDevice, CanvasRef canvasRef1, CanvasRef canvasRef2 )
+{
+	int ticker = 0;
+	SizeSPX spriteSize1(40*64, 40*64);
+	SizeSPX canvasSize1 = pDevice->canvas(canvasRef1).size*64;
+	SizeSPX moveDim1(canvasSize1.w - spriteSize1.w, canvasSize1.h - spriteSize1.h);
+
+	SizeSPX spriteSize2(20*64, 20*64);
+	SizeSPX canvasSize2 = pDevice->canvas(canvasRef2).size*64;
+	SizeSPX moveDim2(canvasSize2.w - spriteSize2.w, canvasSize2.h - spriteSize2.h);
+
+	while (ticker < 600)
+	{
+		pDevice->beginRender();
+
+		pDevice->beginCanvasUpdate(canvasRef1);
+		
+		pDevice->fill(Color::Black);
+		pDevice->fill({ positionSprite(moveDim1, ticker, 0, 3),spriteSize1 }, Color::Red);
+		pDevice->fill({ positionSprite(moveDim1, ticker, 1, 3),spriteSize1 }, Color::Green);
+		pDevice->fill({ positionSprite(moveDim1, ticker, 2, 3),spriteSize1 }, Color::Blue);
+
+		pDevice->endCanvasUpdate();
+
+		pDevice->beginCanvasUpdate(canvasRef2);
+		
+		pDevice->fill(Color::Black);
+		pDevice->fill({ positionSprite(moveDim2, ticker, 8, 9),spriteSize2 }, Color(255,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, 7, 9),spriteSize2 }, Color(224,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, 6, 9),spriteSize2 }, Color(192,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, 5, 9),spriteSize2 }, Color(160,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, 4, 9),spriteSize2 }, Color(128,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, 3, 9),spriteSize2 }, Color(96,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, 2, 9),spriteSize2 }, Color(64,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, 1, 9),spriteSize2 }, Color(32,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, 0, 9),spriteSize2 }, Color(0,0,0) );
+
+		pDevice->endCanvasUpdate();
+
+
+		pDevice->endRender();
+		ticker++;
+	}
+}
+
 
 //____ playScroll() _________________________________________________
 

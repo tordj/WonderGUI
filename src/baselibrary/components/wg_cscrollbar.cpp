@@ -422,6 +422,9 @@ namespace wg
 				}
 				break;
 			}
+				
+			default:
+				break;
 		}
 		return bProcessed;
 	}

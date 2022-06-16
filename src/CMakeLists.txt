@@ -18,7 +18,7 @@ include_directories(
 	baselibrary/skins/misc
 	baselibrary/skins/state
 	baselibrary/skins/static
-	baselibrary/stream
+	baselibrary/gfxstream
 	baselibrary/textlayouts
 	baselibrary/numberlayouts
 	baselibrary/widgets
@@ -34,19 +34,22 @@ include_directories(
 
 	fontengines/freetype
 
-
 	../SDL2/include
 	../SDL2_image/include
 	../glew/include
 )
 
+
 link_directories(
+
+    ../freetype/lib
+
+	../freetype/lib/x64
 	../SDL2/lib/x64
 	../SDL2_image/lib/x64
-	../freetype/lib/x64
 	../glew/lib/Release/x64
-    ../freetype/lib
 )
+
 
 if(WIN32)
 

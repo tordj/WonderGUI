@@ -182,7 +182,7 @@ namespace wg
 	{
 		//TODO: This might fail if we have a Base::defaultStyle() that isn't static.
 
-		return !m_bStatesIdentical[newState, oldState];
+		return !m_bStatesIdentical[newState][oldState];
 	}
 
 	//____ blueprint() ________________________________________________________
