@@ -32,14 +32,22 @@ namespace wg
 	//____ Class Color8 _______________________________________________________________________
 
 	/**
+		@brief Color with RGBA components in the range of 0-255.
 
 		Specifies a color in ARGB-format, where the alpha component controls transparency.
 		Range for the individual color components is 0-255.
 
 		Setting alpha to 0 gives full transparency while 255 gives full opacity.
 
-		The different components can be accessed individually through the r, g, b, and a members,
+		The different components can be accessed individually through the r, g, b and a members,
 		or as a group through the argb member.
+
+		WonderGUI uses HiColor for all API calls and internal operations, so Color8 is only provided
+		for developer convenience since colors often are expressed in this range.
+
+		The gammaCorrection-flag or the active Context decides how WonderGUI understands the color ranges
+		in a Color8 object. If gammaCorrection is set, the range is believed to be in standard non-linear
+		sRGB-format, otherwise in linear color format. The alpha channel is always linear.
 
 		For convenience, the color class also provides static, predefined colors matching the standard web-palette.
 
@@ -241,6 +249,24 @@ namespace wg
 
 	//____ HiColor ____________________________________________________________
 
+	/**
+		@brief Color with RGBA components in linear range from 0 to 4096.
+
+		Specifies a color in ARGB - format, where the alpha component controls transparency.
+		Range for the individual color components is 0 - 4096.
+		Setting alpha to 0 gives full transparency while 4096 gives full opacity.
+
+		Color range is linear, meaning that 2048 is half the maximum color intensity and
+		that mathematical operations on colors gives expected results.
+
+		The different components can be accessed individually through the r, g, b, and a members.
+
+		For convenience, the color class also provides static, predefined colors matching the standard web - palette.
+
+		This is the color format used internally by WonderGUI.
+	*/
+
+
 	class HiColor
 	{
 		friend class Base;
@@ -268,7 +294,6 @@ namespace wg
 		inline bool isFullyTransparent() const { return a == 0; }
 		inline bool isUndefined() const { return a < 0; }
 		inline bool isValid() const { return (argb & 0xE000E000E000E000) == 0 && a <= 4096 && r <= 4096 && g <= 4096 && b <= 4096; }
-
 
 
 		//.____ Operators ___________________________________________

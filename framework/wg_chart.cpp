@@ -1391,8 +1391,10 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 		int newSampleOfs = sectionBeg - begNewSamples - margin;
 		int nSamples = m_renderSectionWidth + margin * 2;
 
-		int min1, max1;
-		int min2, max2;
+		int min1=0;
+		int max1=0;
+		int min2=0;
+		int max2=0;
 
 		// Create dirty rect covering all old and new top samples
 

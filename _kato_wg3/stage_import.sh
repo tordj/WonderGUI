@@ -7,7 +7,7 @@ mkdir baselibrary
 mkdir baselibrary/base
 mkdir baselibrary/components
 mkdir baselibrary/skins
-mkdir baselibrary/stream
+mkdir baselibrary/gfxstream
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
@@ -74,8 +74,8 @@ cp wg_component.* \
    ../../../../wg2/_kato_wg3/imports/baselibrary/components
 
 
-cd  ../stream
-cp * ../../../../wg2/_kato_wg3/imports/baselibrary/stream
+cd  ../gfxstream
+cp * ../../../../wg2/_kato_wg3/imports/baselibrary/gfxstream
 
 cd ../skins
 cp -r * ../../../../wg2/_kato_wg3/imports/baselibrary/skins

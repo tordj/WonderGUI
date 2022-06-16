@@ -158,6 +158,8 @@ namespace wg
 
     void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut )
     {
+		m_bTextureSyncInProgress = false;
+
         // Create our shared buffer
         
         int     bufferLength = m_size.w * m_size.h * m_pixelSize;

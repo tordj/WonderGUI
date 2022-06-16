@@ -85,14 +85,14 @@ namespace wg
 		{
 			StateBP() {}
 			StateBP( State state, StateData data ) : state(state), data(data) {}
-			StateBP( State state, Color color ) : state(state) { data.color = color; }
+			StateBP( State state, HiColor color ) : state(state) { data.color = color; }
 			StateBP( State state, pts size ) : state(state)	{ data.size = size; }
 			StateBP( State state, TextDecoration decoration ) : state(state)	{ data.decoration = decoration; }
 
-			StateBP( State state, Color color, Color backColor ) : state(state)
+			StateBP( State state, HiColor color, HiColor backColor ) : state(state)
 			{
 				data.color = color;
-				data.backColor = color;
+				data.backColor = backColor;
 			}
 
 			

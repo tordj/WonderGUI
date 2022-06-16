@@ -20,29 +20,45 @@
 
 =========================================================================*/
 
-
-#ifndef WG3_HOSTBRIDGE_DOT_H
-#define WG3_HOSTBRIDGE_DOT_H
+#ifndef	WG3_GFXSTREAM_DOT_H
+#define	WG3_GFXSTREAM_DOT_H
 #pragma once
+
+#include <wg3_types.h>
 
 namespace wg
 {
-	/**
-		@brief Visitor class for WG to make callbacks to host platform.
 
-		HostBridge is an abstract class used by WonderGUI to make callbacks
-		to host platform. It is provided as a parameter to Base::init() and
-		used throughout the GUI lifecycle until Base::exit() is called.
-	*/
 
-	class HostBridge
+	class GfxStream
 	{
 	public:
-		virtual void	hidePointer() = 0;
-		virtual void	showPointer() = 0;
+		static constexpr int	c_maxBlockSize = 4096+256;		// Includes the block headers!	Must be at least 4096+14+block_header_size due to CLUT possibly included in CreateSurface-chunks.
+
+		static constexpr int	c_maxClipRects = 256;		// Largest number of patches allowed for a drawing primitive.
+
+
+		struct Header
+		{
+			GfxChunkId      type;
+            GfxChunkFlags   flags;
+    		uint16_t        size;
+		};
+
+		struct DataChunk
+		{
+			int				bytes;
+			const void *	pBuffer;
+		};
+
+
 	};
-}
 
 
 
-#endif //WG3_HOSTBRIDGE_DOT_H
+
+
+};
+
+
+#endif //WG3_GFXSTREAM_DOT_H

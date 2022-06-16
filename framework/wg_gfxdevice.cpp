@@ -65,8 +65,8 @@ void WgGfxDevice::BlitBlock( wg::GfxDevice * pDevice, const WgBlock& _block, con
 	int srcScale =_block.Surface()->scale();
 	
     wg::NinePatch patch;
-    patch.block = wg::Rect(src*64/srcScale);
-    patch.frame = wg::Border(sourceBorders*64/srcScale);
+    patch.block = wg::Rect(src)*64/srcScale;
+    patch.frame = wg::Border(sourceBorders)*64/srcScale;
 	pDevice->blitNinePatch(canvas*64, canvasBorders, patch, scale >> 6 );
 
 }
@@ -502,7 +502,7 @@ void WgGfxDevice::_drawTextSectionBg( wg::GfxDevice * pDevice, const WgText * pT
 		r.y = dstPosY + pText->getLineOfsY(startPos.line);
 		r.w = xe - xs;
 		r.h = pLines[startPos.line].height;
-		pDevice->fill(r, color);
+		pDevice->fill(wg::RectI::getIntersection(r, dstRect)*64, color);
 	}
 	else
 	{
@@ -510,7 +510,7 @@ void WgGfxDevice::_drawTextSectionBg( wg::GfxDevice * pDevice, const WgText * pT
 		r.y = dstPosY + pText->getLineOfsY(startPos.line);
 		r.w = pText->LineStartX(startPos.line, dstRect) + pText->getSoftLineSelectionWidth(startPos.line) - xs;
 		r.h = pLines[startPos.line].height;
-		pDevice->fill(r, color);
+		pDevice->fill(wg::RectI::getIntersection(r, dstRect)*64, color);
 		r.y += pLines[startPos.line].lineSpacing;
 
 		++startPos.line;
@@ -519,14 +519,14 @@ void WgGfxDevice::_drawTextSectionBg( wg::GfxDevice * pDevice, const WgText * pT
 			r.x = pText->LineStartX( startPos.line, dstRect );
 			r.w = pText->getSoftLineSelectionWidth(startPos.line);
 			r.h = pLines[startPos.line].height;
-			pDevice->fill(r, color);
+			pDevice->fill(wg::RectI::getIntersection(r,dstRect)*64, color);
 			r.y += pLines[startPos.line].lineSpacing;
 		}
 
 		r.x = pText->LineStartX( startPos.line, dstRect );
 		r.w = xe - r.x;
 		r.h = pLines[startPos.line].height;
-		pDevice->fill(r, color);
+		pDevice->fill(wg::RectI::getIntersection(r,dstRect)*64, color);
 	}
 }
 

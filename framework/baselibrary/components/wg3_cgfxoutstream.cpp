@@ -20,29 +20,26 @@
 
 =========================================================================*/
 
-
-#ifndef WG3_HOSTBRIDGE_DOT_H
-#define WG3_HOSTBRIDGE_DOT_H
-#pragma once
+#include <wg3_cgfxoutstream.h>
+#include <assert.h>
 
 namespace wg
 {
-	/**
-		@brief Visitor class for WG to make callbacks to host platform.
+	const TypeInfo CGfxOutStream::TYPEINFO = { "CGfxOutStream", &Component::TYPEINFO };
 
-		HostBridge is an abstract class used by WonderGUI to make callbacks
-		to host platform. It is provided as a parameter to Base::init() and
-		used throughout the GUI lifecycle until Base::exit() is called.
-	*/
+	//____ constructor ________________________________________________________
 
-	class HostBridge
+	CGfxOutStream::CGfxOutStream(CGfxOutStream::Holder * pHolder) :
+		m_pHolder(pHolder)
 	{
-	public:
-		virtual void	hidePointer() = 0;
-		virtual void	showPointer() = 0;
-	};
-}
+	}
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CGfxOutStream::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
 
 
-
-#endif //WG3_HOSTBRIDGE_DOT_H
+} // namespace wg

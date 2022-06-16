@@ -2228,6 +2228,7 @@ MetalGfxDevice::MetalGfxDevice()
                         
                         [blitCommandEncoder generateMipmapsForTexture:pSurf->m_texture];
                         [blitCommandEncoder endEncoding];
+						blitCommandEncoder = nil;
                             
                         if( renderEncoder != nil )
                             renderEncoder = _setCanvas( m_pActiveCanvas, m_activeCanvasSize.w, m_activeCanvasSize.h, CanvasInit::Keep, Color::White );
@@ -2318,7 +2319,7 @@ MetalGfxDevice::MetalGfxDevice()
                             [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         }
 
-                        MTLScissorRect orgClip = {0, 0, (unsigned) m_activeCanvasSize.w/64, (unsigned) m_activeCanvasSize.h/64};
+                        MTLScissorRect orgClip = {0, 0, (unsigned) m_activeCanvasSize.w, (unsigned) m_activeCanvasSize.h};
                         [renderEncoder setScissorRect:orgClip];
 
                         vertexOfs += nVertices;

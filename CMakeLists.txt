@@ -15,7 +15,7 @@ include_directories(
 	framework/baselibrary/base
 	framework/baselibrary/components
 	framework/baselibrary/sizebrokers
-	framework/baselibrary/stream
+	framework/baselibrary/gfxstream
 	framework/baselibrary/skins/anim
 	framework/baselibrary/skins/meter
 	framework/baselibrary/skins

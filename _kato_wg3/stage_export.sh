@@ -6,7 +6,7 @@ mkdir baselibrary
 mkdir baselibrary/base
 mkdir baselibrary/components
 mkdir baselibrary/skins
-mkdir baselibrary/stream
+mkdir baselibrary/gfxstream
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
@@ -18,7 +18,7 @@ cd ..
 
 cp -r ../framework/baselibrary/base exports/baselibrary
 cp -r ../framework/baselibrary/components exports/baselibrary
-cp -r ../framework/baselibrary/stream exports/stream
+cp -r ../framework/baselibrary/gfxstream exports/baselibrary
 cp -r ../framework/gfxdevices exports/
 cp -r ../framework/baselibrary/skins exports/baselibrary
 cp -r ../framework/fontengines exports/ 

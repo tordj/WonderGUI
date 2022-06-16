@@ -546,6 +546,9 @@ bool WgText::setColor( const WgColor color )
 
 	auto bp = m_pBaseStyle ? m_pBaseStyle->blueprint() : wg::TextStyle::Blueprint();
 	bp.color = color;
+	for( auto& state : bp.states )
+		state.data.color = wg::HiColor::Undefined;
+	
 	m_pBaseStyle = wg::TextStyle::create(bp);
 	return true;
 }
@@ -1426,6 +1429,9 @@ int WgText::_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextL
 
 	WgPen		pen;
 	wg::TextAttr	attr;
+
+	// Need to init size to avoid valgrind warnings later
+	attr.size = 0;
 
 	maxWidth -= _cursorMaxWidth();
 
