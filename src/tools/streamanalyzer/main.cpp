@@ -66,8 +66,8 @@ int main ( int argc, char** argv )
 
     // Load stream
 
-//    g_pStreamBuffer = (char*) loadFile( argv[1], &g_streamSize );
-	g_pStreamBuffer = (char*) loadFile( "output.wax", &g_streamSize );
+    g_pStreamBuffer = (char*) loadFile( argv[1], &g_streamSize );
+//	g_pStreamBuffer = (char*) loadFile( "output.wax", &g_streamSize );
 //	g_pStreamBuffer = (char*) loadFile( "softubehwstream.dat", &g_streamSize );
 
     if( g_pStreamBuffer == NULL )
@@ -252,6 +252,7 @@ int main ( int argc, char** argv )
         } );
 
 	auto pStreamPlayer = GfxStreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create());
+	pStreamPlayer->setStoreDirtyRects(true);
 
     auto pStreamLogger = GfxStreamLogger::create(std::cout);
 
@@ -322,7 +323,7 @@ int main ( int argc, char** argv )
 		}
 		else
 		{
-			CoordSPX ofs = g_pDisplay->spxGlobalPos()/64;
+			CoordSPX ofs = g_pDisplay->spxGlobalPos();
 			
 			int nRects;
 			const RectI* pRects;
@@ -333,10 +334,10 @@ int main ( int argc, char** argv )
 			
 			for( int i = 0 ; i < nRects ; i++ )
 			{
-				dirt[i].x = ofs.x + pRects[i].x;
-				dirt[i].y = ofs.y + pRects[i].y;
-				dirt[i].w = pRects[i].w;
-				dirt[i].h = pRects[i].h;
+				dirt[i].x = (ofs.x + pRects[i].x) / 64;
+				dirt[i].y = (ofs.y + pRects[i].y) / 64;
+				dirt[i].w = pRects[i].w / 64;
+				dirt[i].h = pRects[i].h / 64;
 			}
 			
 			SDL_UpdateWindowSurfaceRects(pWin, dirt, nRects);

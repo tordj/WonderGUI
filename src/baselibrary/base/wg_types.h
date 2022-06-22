@@ -881,12 +881,7 @@ enum class CanvasInit 		//. autoExtras
 		TimeStampMS = 54
 	};
 
-	struct GfxChunkFlags
-	{
-		uint8_t     supix : 1;
-		uint8_t     packed : 1;
-	};
-
+	typedef uint8_t GfxChunkFlags;
 
 
 } // namespace wg

@@ -97,7 +97,7 @@ namespace wg
 		if (header.type >= GfxChunkId_min && header.type <= GfxChunkId_max)
 		{
 			m_charStream << toString(header.type);
-
+/*
 			if (*(char*)&header.flags != 0)
 			{
 				m_charStream << " (";
@@ -107,6 +107,7 @@ namespace wg
 					m_charStream << " packed";
 				m_charStream << " )";
 			}
+*/
 			m_charStream << std::endl;
 		}
 
