@@ -103,6 +103,14 @@ namespace wg
 			m_dirtyRects[i].clear();
 	}
 
+	//____ setCanvasInfoCallback() ________________________________________________
+
+	void GfxStreamPlayer::setCanvasInfoCallback( std::function<void(const CanvasInfo * pBegin, const CanvasInfo * pEnd)>& callback )
+	{
+		m_canvasInfoCallback = callback;
+	}
+
+
 	//____ _object() _____________________________________________________________
 
 	Object* GfxStreamPlayer::_object()
@@ -138,6 +146,43 @@ namespace wg
 
 		case GfxChunkId::OutOfData:
 			return false;
+
+		case GfxChunkId::ProtocolVersion:
+		{
+			uint16_t	version;
+			*m_pDecoder >> version;
+			
+			//TODO: Something if version isn't supported.
+
+			break;
+		}
+
+		case GfxChunkId::CanvasList:
+		{
+			uint16_t nbCanvases;
+			
+			*m_pDecoder >> nbCanvases;
+			
+			CanvasInfo	canvas[CanvasRef_size];
+			
+			for( int i = 0 ; i < nbCanvases ; i++ )
+			{
+				uint16_t 	ref;
+				SizeSPX		size;
+				uint16_t	scale;
+
+				*m_pDecoder >> ref;
+				*m_pDecoder >> size;
+				*m_pDecoder >> scale;
+				
+				canvas[i].ref = (CanvasRef) ref;
+				canvas[i].size = size;
+				canvas[i].scale = scale;
+			}
+
+			if( m_canvasInfoCallback )
+				m_canvasInfoCallback(canvas, canvas+nbCanvases);
+		}
 
         case GfxChunkId::BeginRender:
             m_pDevice->beginRender();

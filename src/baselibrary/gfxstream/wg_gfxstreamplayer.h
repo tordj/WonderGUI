@@ -66,6 +66,8 @@ namespace wg
 		std::tuple<int, const RectI*> dirtyRects(CanvasRef canvas);
 		void	clearDirtyRects();
 
+		void	setCanvasInfoCallback( std::function<void(const CanvasInfo * pBegin, const CanvasInfo * pEnd)>& callback );
+		
 	protected:
 		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();
@@ -157,6 +159,8 @@ namespace wg
 		bool				m_bStoreDirtyRects = false;
 		int					m_maxDirtyRects = 64;
 		PatchesSPX			m_dirtyRects[CanvasRef_size];
+		
+		std::function<void(const CanvasInfo * pBegin, const CanvasInfo * pEnd)>	m_canvasInfoCallback;
 	};
 
 }

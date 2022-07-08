@@ -878,7 +878,8 @@ enum class CanvasInit 		//. autoExtras
 		DeleteSurface = 52,
 
 		ProtocolVersion = 53,
-		TimeStampMS = 54
+		TimeStampMS = 54,
+		CanvasList = 55
 	};
 
 	typedef uint8_t GfxChunkFlags;

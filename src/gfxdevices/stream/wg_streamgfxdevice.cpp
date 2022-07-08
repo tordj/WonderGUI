@@ -53,7 +53,7 @@ namespace wg
 		m_bRendering = false;
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ProtocolVersion, 0, 2 };
-        (*m_pEncoder) << (unsigned short) 0x0100;
+        (*m_pEncoder) << (uint16_t) 0x0100;
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -141,6 +141,22 @@ namespace wg
 		}
 
 		return true;
+	}
+
+	//____ encodeCanvasList() ______________________________________________________
+
+	void StreamGfxDevice::encodeCanvasList()
+	{
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetClipList, 0, (uint16_t)(m_definedCanvases.size()*12) };
+
+		(*m_pEncoder) << (uint16_t) m_definedCanvases.size();
+		
+		for( auto& canvas : m_definedCanvases )
+		{
+			(*m_pEncoder) << (uint16_t) canvas.ref;
+			(*m_pEncoder) << canvas.size;
+			(*m_pEncoder) << (uint16_t) canvas.scale;
+		}		
 	}
 
 	//____ surfaceFactory() ______________________________________________________
