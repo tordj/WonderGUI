@@ -199,7 +199,7 @@ namespace wg
 					((col.b >> m_pixelDescription.B_loss) << m_pixelDescription.B_shift) |
 					((col.a >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
 
-			if( m_pixelDescription.bBigEndian == isSystemBigEndian() )
+			if( m_pixelDescription.bBigEndian != isSystemBigEndian() )
 			{
 
 				if( m_pixelDescription.bits == 16 )
@@ -231,7 +231,7 @@ namespace wg
 		if (m_pixelDescription.bIndexed)
 			return m_pClut[pixel];
 
-		if( m_pixelDescription.bBigEndian == isSystemBigEndian() )
+		if( m_pixelDescription.bBigEndian != isSystemBigEndian() )
 		{
 
 			if( m_pixelDescription.bits == 16 )
