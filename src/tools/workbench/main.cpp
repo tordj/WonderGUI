@@ -17,6 +17,7 @@
 
 
 #include <wondergui.h>
+#include <wg_memheap.h>
 
 #include <bitset>
 #include <string>
@@ -38,6 +39,8 @@
 
 
 using namespace wg;
+
+void			unitTestMemHeap();
 
 void 			translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot );
 MouseButton 	translateMouseButton( Uint8 button );
@@ -102,6 +105,7 @@ bool circleSkinTest(CStandardSlot_p pSlot);
 bool packListTest(CStandardSlot_p pSlot);
 bool packPanelTest(CStandardSlot_p pSlot);
 bool glyphAsSurfaceTest(CStandardSlot_p pSlot, Font_p pFont );
+bool memHeapFragmentationTest(CStandardSlot_p pSlot);
 
 
 void nisBlendTest();
@@ -112,6 +116,14 @@ void textStyleTest();
 
 int main(int argc, char** argv)
 {
+
+
+/*	Base::init(nullptr);
+	unitTestMemHeap();
+	Base::exit();
+*/
+	
+	
 	SoftSurface_p		pCanvas;
 	GfxDevice_p			pDevice;
 	SurfaceFactory_p	pFactory;
@@ -675,7 +687,8 @@ int main(int argc, char** argv)
 //	circleSkinTest(&pRoot->slot);
 //	packListTest(&pRoot->slot);
 //	packPanelTest(&pRoot->slot);
-	glyphAsSurfaceTest(&pRoot->slot, pFont);
+//	glyphAsSurfaceTest(&pRoot->slot, pFont);
+	memHeapFragmentationTest(&pRoot->slot);
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -2976,6 +2989,83 @@ bool packPanelTest(CStandardSlot_p pSlot)
 
 }
 
+//____ memHeapFragmentationTest() ________________________________________________________
+
+bool memHeapFragmentationTest(CStandardSlot_p pSlot)
+{
+	Base::setErrorHandler( [](Error& error)  {
+		
+		int x = 0;
+		
+	});
+	
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	int x = rand();
+	
+	//---
+	
+	MemHeap heap;
+	
+	int heapSize = 1024*1024;
+	
+	auto * pBuffer = new char[heapSize];
+	
+	heap.init(pBuffer, heapSize );
+	heap.setDebugLevel(3);
+
+	void * areas[100];
+
+	// Randomly allocate some areas.
+	
+	for( int i = 0 ; i < 100 ; i++ )
+	{
+		int size = rand() % 8000;
+		areas[i] = heap.malloc(size);
+	}
+	
+	// Randomly free and reallocate areas
+	
+	for( int i = 0 ; i < 100000 ; i++ )
+	{
+		int entry = rand() % 100;
+
+		heap.free(areas[entry]);
+		
+		areas[entry] = heap.malloc( rand() % 6000 );
+	}
+	
+	
+	auto pSurface = Base::activeContext()->surfaceFactory()->createSurface( { .format = PixelFormat::RGB_565_bigendian, .size = SizeI(512,512) } );
+	
+	uint16_t sectionTable[1024*4];
+	
+	heap.drawFragmentMap(1024*4, sectionTable, pSurface);
+	
+	
+	// Free all areas.
+	
+	for( int i = 0 ; i < 100 ; i++ )
+	{
+		heap.free(areas[i]);
+	}
+
+	heap.exit();
+	delete [] pBuffer;
+	
+	Base::setErrorHandler( nullptr );
+	
+	auto pImage = Image::create( { .image = pSurface } );
+//	pImage->setImage(pSurface);
+
+	pBaseLayer->slots.pushBack(pImage);
+	*pSlot = pBaseLayer;
+	return true;
+
+}
+
+
 
 //____ glyphAsSurfaceTest() ________________________________________________________
 
@@ -3100,3 +3190,57 @@ void textStyleTest()
 */
 
 }
+
+void unitTestMemHeap()
+{
+	Base::setErrorHandler( [](Error& error)  {
+		
+		int x = 0;
+		
+	});
+	
+	
+	MemHeap heap;
+	
+	int heapSize = 1024*1024;
+	
+	auto * pBuffer = new char[heapSize];
+	
+	heap.init(pBuffer, heapSize );
+	heap.setDebugLevel(3);
+
+	void * areas[100];
+
+	// Randomly allocate some areas.
+	
+	for( int i = 0 ; i < 100 ; i++ )
+	{
+		int size = rand() % 8000;
+		areas[i] = heap.malloc(size);
+	}
+	
+	// Randomly free and reallocate areas
+	
+	for( int i = 0 ; i < 100000 ; i++ )
+	{
+		int entry = rand() % 100;
+
+		heap.free(areas[entry]);
+		
+		areas[entry] = heap.malloc( rand() % 6000 );
+	}
+	
+	// Free all areas.
+	
+	for( int i = 0 ; i < 100 ; i++ )
+	{
+		heap.free(areas[i]);
+	}
+
+	
+	
+	heap.exit();
+	delete [] pBuffer;
+}
+
+

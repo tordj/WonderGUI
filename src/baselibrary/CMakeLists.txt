@@ -69,6 +69,8 @@ add_library( wondergui
 	base/wg_inputhandler.cpp
 	base/wg_inputhandler.h
 	base/wg_key.h
+	base/wg_memheap.cpp
+	base/wg_memheap.h
 	base/wg_mempool.cpp
 	base/wg_mempool.h
 	base/wg_memstack.cpp
