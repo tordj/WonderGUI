@@ -238,7 +238,8 @@ namespace wg
 		{
 			id<MTLCommandBuffer> commandBuffer = [MetalGfxDevice::s_metalCommandQueue commandBuffer];
 			id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
-
+			commandBuffer.label = @"_createAndSyncTextures Command Buffer";
+			
 			if( bHasTextureData )
 			{
 				MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h, 1};
@@ -506,7 +507,9 @@ namespace wg
         MTLOrigin textureOrigin = { 0, 0, 0};
         
         id<MTLCommandBuffer> commandBuffer = [MetalGfxDevice::s_metalCommandQueue commandBuffer];
+		commandBuffer.label = @"_syncBufferAndWait Command Buffer";
 
+		
         id <MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
         [blitCommandEncoder     copyFromTexture:    m_texture
                                 sourceSlice:        0
@@ -545,7 +548,8 @@ namespace wg
         int     sourceOffset = region.y * m_size.w * m_pixelSize + region.x * m_pixelSize;
         
         id<MTLCommandBuffer> commandBuffer = [MetalGfxDevice::s_metalCommandQueue commandBuffer];
-        
+		commandBuffer.label = @"_syncTexture Command Buffer";
+
         id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
         [blitCommandEncoder copyFromBuffer:     m_textureBuffer
                             sourceOffset:       sourceOffset
