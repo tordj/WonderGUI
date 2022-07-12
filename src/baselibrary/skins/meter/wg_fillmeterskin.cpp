@@ -66,6 +66,7 @@ namespace wg
 		m_overflow			= bp.overflow;
 
 		m_minBarLength		= bp.startLength;
+		m_bCenteredBarOrigin = bp.startFromCenter;
 
 		if (bp.defaultSize.isEmpty())
 		{

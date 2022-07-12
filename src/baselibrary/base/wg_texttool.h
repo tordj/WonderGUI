@@ -35,7 +35,6 @@ namespace wg
 	class Font;
 	class Font;
 	class Char;
-	class ResDB;
 	class TextNode;
 
 	//____ TextTool _____________________________________________________________
