@@ -30,7 +30,6 @@
 #include <wg_packpanel.h>
 #include <wg_numberdisplay.h>
 #include <wg_textdisplay.h>
-#include <wg_internal.h>
 
 #include <wg_cstaticslotvector.impl.h>
 
@@ -174,7 +173,7 @@ namespace wg
 
 		if (!mainSlot.isEmpty())
 		{
-			OO(mainSlot._widget())->_render(pDevice, contentRect, contentRect);
+			mainSlot._widget()->_render(pDevice, contentRect, contentRect);
 		}
 
 		if (m_bEditMode)
@@ -196,7 +195,7 @@ namespace wg
 				if (pDevice->clipBounds().intersectsWith(pxPaletteGeo))
 				{
 					ClipPopData popData = limitClipList(pDevice, palette.m_geo);
-					OO(palette._widget())->_render(pDevice, geo, geo);
+					palette._widget()->_render(pDevice, geo, geo);
 
 					popClipList(pDevice, popData);
 				}
@@ -324,7 +323,7 @@ namespace wg
 		if (m_pSelectedWidget)
 		{
 			m_pSlotToolbox->slots.clear();
-			m_pSlotToolbox->slots << _createGenericSlotTool(*OO(m_pSelectedWidget)->_slot());
+			m_pSlotToolbox->slots << _createGenericSlotTool(*m_pSelectedWidget->_slot());
 
 			m_pWidgetToolbox->slots.clear();
 			m_pWidgetToolbox->slots << _createGenericWidgetTool(m_pSelectedWidget);
@@ -470,7 +469,7 @@ namespace wg
 							auto pContainer = wg_cast<Container_p>(mainSlot._widget());
 							if (pContainer)
 							{
-								Widget * pWidget = OO(pContainer)->_findWidget(mousePos, SearchMode::MarkPolicy);
+								Widget * pWidget = pContainer->_findWidget(mousePos, SearchMode::MarkPolicy);
 								if (pWidget)
 									_selectWidget(pWidget);
 							}

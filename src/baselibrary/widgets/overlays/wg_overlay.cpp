@@ -22,7 +22,6 @@
 
 #include <wg_overlay.h>
 #include <wg_patches.h>
-#include <wg_internal.h>
 
 namespace wg
 {
@@ -95,7 +94,7 @@ namespace wg
 		while( pCover <  pEnd )
 		{
 			if( pCover->m_geo.intersectsWith( rect ) )
-				OO(pCover->_widget())->_maskPatches( patches, pCover->m_geo, RectSPX(0,0, m_size ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectSPX(0,0, m_size ), _getBlendMode() );
 
 			pCover = _incOverlaySlot(pCover,incNext);
 		}
@@ -189,7 +188,7 @@ namespace wg
 	{
 		if (pSlot == &mainSlot)
 		{
-			OO(mainSlot)._setWidget(nullptr);
+			mainSlot._setWidget(nullptr);
 			_onRequestRender(RectSPX(0, 0, m_size), 0);
 			_requestResize();
 		}
@@ -201,9 +200,9 @@ namespace wg
 	{
 		if (pSlot == &mainSlot)
 		{
-			OO(mainSlot)._setWidget(pNewWidget);
+			mainSlot._setWidget(pNewWidget);
 			if( pNewWidget )
-				OO(pNewWidget)->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
+				pNewWidget->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
 			_onRequestRender(RectSPX(0, 0, m_size), 0);
 			_requestResize();
 		}
@@ -216,7 +215,7 @@ namespace wg
 		Container::_resize(size, scale);
 
 		if ( mainSlot._widget())
-			OO(mainSlot._widget())->_resize(size, scale);
+			mainSlot._widget()->_resize(size, scale);
 
 		//TODO: Update size and scale of other children
 	}

@@ -34,6 +34,7 @@ namespace wg
 	class StaticSlot
 	{
 		friend class Widget;
+		friend class RootPanel;
 		friend class SlotIterator;
 		friend class SlotHolder;
 
@@ -69,6 +70,27 @@ namespace wg
 		//.____ Internal ______________________________________________________
 
 		inline Widget * _widget() const { return m_pWidget; }
+
+		inline void _setWidget(Widget* pWidget)
+		{
+			if (m_pWidget)
+			{
+				if (m_pWidget == pWidget)
+					return;
+
+				m_pWidget->_setSlot(nullptr);
+				m_pWidget->_decRefCount();
+			}
+
+			m_pWidget = pWidget;
+
+			if (pWidget)
+			{
+				pWidget->_incRefCount();
+				pWidget->releaseFromParent();
+				pWidget->_setSlot(this);
+			}
+		}
 
 
 	protected:
@@ -122,26 +144,6 @@ namespace wg
 
 		inline void _relink() { m_pWidget->_setSlot( this ); }
 
-		inline void _setWidget( Widget * pWidget )
-		{
-			if( m_pWidget )
-			{
-				if (m_pWidget == pWidget)
-					return;
-
-				m_pWidget->_setSlot( nullptr );
-				m_pWidget->_decRefCount();
-			}
-
-			m_pWidget = pWidget;
-
-			if( pWidget )
-			{
-				pWidget->_incRefCount();
-				pWidget->releaseFromParent();
-				pWidget->_setSlot( this );
-			}
-		}
 
 		inline SlotHolder * _holder() { return m_pHolder; }
 		inline const SlotHolder * _holder() const { return m_pHolder; }

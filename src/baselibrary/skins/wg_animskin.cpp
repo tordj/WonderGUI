@@ -51,24 +51,5 @@ namespace wg
 	}
 
 
-	//____ _requestRender() ___________________________________________________
-/*
-	void AnimSkin::_requestRender()
-	{
-		if (m_pSuperSkin)
-		{
-			for (auto pSlot : m_mySlots)
-			{
-				Rect myGeo = OO(m_pSuperSkin)->_subSkinGeo(this, pSlot->size(), pSlot->state() );
-				pSlot->requestRender(myGeo);
-			}
-		}
-		else
-		{
-			for (auto pSlot : m_mySlots)
-				pSlot->requestRender();
-		}
 
-	}
-*/
 }

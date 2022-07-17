@@ -22,7 +22,6 @@
 
 #include <wg_tooltipoverlay.h>
 #include <wg_msg.h>
-#include <wg_internal.h>
 #include <wg_base.h>
 #include <wg_inputhandler.h>
 #include <wg_boxskin.h>
@@ -290,9 +289,9 @@ namespace wg
 			{
 				//TODO: Take padding into account
 
-				Widget* pChild = OO(mainSlot)._widget();			
+				Widget* pChild = mainSlot._widget();			
 				if (pChild->isContainer())
-					return OO(static_cast<Container*>(pChild))->_findWidget(ofs, mode);
+					return static_cast<Container*>(pChild)->_findWidget(ofs, mode);
 				else if (pChild->_markTest(ofs))
 					return pChild;
 			}

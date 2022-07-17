@@ -28,7 +28,6 @@
 #include	<wg_base.h>
 #include	<wg_basictextlayout.h>
 #include	<wg_msgrouter.h>
-#include	<wg_internal.h>
 
 namespace wg
 {
@@ -89,17 +88,17 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX contentSize = OO(labels)._defaultSize(scale);
+		SizeSPX contentSize = labels._defaultSize(scale);
 
 		TextAttr attr;
-		OO(values)._style()->exportAttr( State(State::Normal), &attr, scale );
+		values._style()->exportAttr( State(State::Normal), &attr, scale );
 
 		int prevSize = attr.pFont->size();
 		attr.pFont->setSize(attr.size);
 		contentSize.w += attr.pFont->maxAdvance() * 7;			// Reserve space for: ' 999.99' after longest label.
 		attr.pFont->setSize(prevSize);
 
-		int valueHeight = OO(values)._defaultSize(scale).h;
+		int valueHeight = values._defaultSize(scale).h;
 		if( valueHeight > contentSize.h )
 			contentSize.h = valueHeight;
 
@@ -114,8 +113,8 @@ namespace wg
 
 		RectSPX content = m_skin.contentRect( _canvas, m_scale, m_state );
 
-		OO(labels)._render( pDevice, content );
-		OO(values)._render( pDevice, content );
+		labels._render( pDevice, content );
+		values._render( pDevice, content );
 	}
 
 	//____ _receive() _____________________________________________________________
@@ -174,7 +173,7 @@ namespace wg
 
 		char	temp[100];
 		snprintf( temp, 100, "%.2f\n%.2f\n%.2f\n%.2f", fpsCurrent, fpsMin, fpsAvg, fpsMax );
-		OO(values)._setText(temp);
+		values._setText(temp);
 
 		_requestRender();
 	}
@@ -184,8 +183,8 @@ namespace wg
 	void FpsDisplay::_setState( State state )
 	{
 
-		OO(labels)._setState(state);
-		OO(values)._setState(state);
+		labels._setState(state);
+		values._setState(state);
 		_requestRender();							//TODO: Check if there has been changes to text appearance.
 
 		if (state.isEnabled() && !m_state.isEnabled())

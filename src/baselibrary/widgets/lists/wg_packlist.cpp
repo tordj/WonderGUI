@@ -26,7 +26,6 @@
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 #include <wg_gfxdevice.h>
-#include <wg_internal.h>
 
 #include <wg_cdynamicslotvector.impl.h>
 #include <wg_slotextras.impl.h>
@@ -293,7 +292,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				OO(static_cast<const Slot*>(child.pSlot)->_widget())->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
+				static_cast<const Slot*>(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
 				_nextSlotWithGeo( child );
 			}
 		}
@@ -375,7 +374,7 @@ namespace wg
 				{
 					ClipPopData clipPop = limitClipList(pDevice, canvas );
 					if( pDevice->clipListSize() > 0 )
-						OO(static_cast<const Slot*>(child.pSlot)->_widget())->_render(pDevice, canvas, canvas);
+						static_cast<const Slot*>(child.pSlot)->_widget()->_render(pDevice, canvas, canvas);
 					popClipList(pDevice,clipPop);
 				}
 				_nextSlotWithGeo( child );
@@ -483,7 +482,7 @@ namespace wg
 				pSlot->m_length = newEntryLength;
 				ofs += newEntryLength;
 
-				OO(pWidget)->_resize( newEntrySize, m_scale );
+				pWidget->_resize( newEntrySize, m_scale );
 			}
 			m_contentLength = ofs;
 		}
@@ -854,7 +853,7 @@ namespace wg
 
 				RectSPX childGeo;
 				_getChildGeo(childGeo, pSlot + i);
-				OO(pChild)->_resize(childGeo, m_scale);
+				pChild->_resize(childGeo, m_scale);
 			}
 		}
 
@@ -997,7 +996,7 @@ namespace wg
 				{
 					if( pSlot->_widget()->isContainer() )
 					{
-						pResult = static_cast<OContainer*>(pSlot->_widget())->_findWidget( ofs - childGeo.pos(), mode );
+						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 					}
 					else if( mode == SearchMode::Geometry || pSlot->_widget()->_markTest( ofs - childGeo.pos() ) )
 					{
@@ -1330,7 +1329,7 @@ namespace wg
 
 				RectSPX childGeo;
 				_getChildGeo(childGeo,pSlot);
-				OO(pSlot->_widget())->_resize(childGeo, m_scale);
+				pSlot->_widget()->_resize(childGeo, m_scale);
 			}
 		}
 

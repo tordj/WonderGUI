@@ -23,7 +23,6 @@
 #include <wg_ccolumnheader.h>
 #include <wg_msg.h>
 #include <wg_inputhandler.h>
-#include <wg_internal.h>
 
 namespace wg
 {

@@ -25,7 +25,6 @@
 #include <wg_font.h>
 #include <wg_gfxdevice.h>
 #include <wg_msgrouter.h>
-#include <wg_internal.h>
 
 namespace wg
 {
@@ -76,7 +75,7 @@ namespace wg
 		if( !m_tooltip.isEmpty() )
 			return m_tooltip;
 		else
-			return OO(display)._tooltip();
+			return display._tooltip();
 	}
 
 	//____ _matchingWidth() _______________________________________________________
@@ -87,7 +86,7 @@ namespace wg
 		SizeSPX padding = _contentPaddingSize();
 
 		height -= padding.h;
-		spx textWidth = OO(display)._matchingWidth(height, scale);
+		spx textWidth = display._matchingWidth(height, scale);
 		textWidth += padding.w;
 		return textWidth;
 	}
@@ -100,7 +99,7 @@ namespace wg
 		SizeSPX padding = _contentPaddingSize();
 
 		width -= padding.w;
-		spx textHeight = OO(display)._matchingHeight(width, scale);
+		spx textHeight = display._matchingHeight(width, scale);
 		textHeight += padding.h;
 		return textHeight;
 	}
@@ -111,7 +110,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX contentSize = OO(display)._defaultSize(scale);
+		SizeSPX contentSize = display._defaultSize(scale);
 
 		return m_skin.sizeForContent(contentSize, scale);
 	}
@@ -124,7 +123,7 @@ namespace wg
 
 		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
 
-		OO(display)._render(pDevice, canvas);
+		display._render(pDevice, canvas);
 	}
 
 	//____ _refresh() _______________________________________________________
@@ -141,8 +140,8 @@ namespace wg
 	void TextDisplay::_setState( State state )
 	{
 		Widget::_setState(state);
-		OO(display)._setState(state);
-		_requestRender(); //TODO: Only requestRender if text appearance has changed (let OO(display).setState() return if rendering is needed)
+		display._setState(state);
+		_requestRender(); //TODO: Only requestRender if text appearance has changed (let display.setState() return if rendering is needed)
 	}
 
 
@@ -169,7 +168,7 @@ namespace wg
 
 		SizeSPX textSize = size - m_skin.contentPaddingSize(m_scale);		// Using m_scale here, since that has been fixed.
 
-		OO(display)._setSize( textSize, scale );
+		display._setSize( textSize, scale );
 	}
 
 

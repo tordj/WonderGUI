@@ -26,7 +26,6 @@
 #include <wg_boxskin.h>
 #include <wg_inputhandler.h>
 #include <wg_util.h>
-#include <wg_internal.h>
 #include <wg_context.h>
 
 #include <new>
@@ -172,7 +171,7 @@ namespace wg
 			m_geo = m_canvas.size;
 
 		if ((m_scale != oldScale || oldSize != m_geo.size()) && slot._widget())
-			OO(slot._widget())->_resize(m_geo.size(),m_scale);
+			slot._setSize(m_geo.size(),m_scale);
 
 		m_dirtyPatches.add(m_geo);
 		return true;
@@ -198,7 +197,7 @@ namespace wg
 			m_geo = m_canvas.size;
 
 		if ((m_scale != oldScale || oldSize != m_geo.size()) && slot._widget())
-			OO(slot._widget())->_resize(m_geo.size(), m_scale);
+			slot._setSize(m_geo.size(), m_scale);
 
 		m_dirtyPatches.add(m_geo);
 		return true;
@@ -225,7 +224,7 @@ namespace wg
 			m_bScaleSet = true;
 			if (slot._widget())
 			{
-				OO(slot)._setSize(m_geo.size(),m_scale);
+				slot._setSize(m_geo.size(),m_scale);
 				m_dirtyPatches.add(m_geo);
 			}
 		}
@@ -243,7 +242,7 @@ namespace wg
 			m_scale = m_canvas.scale;
 			if (slot._widget())
 			{
-				OO(slot)._setSize(m_geo.size(), m_scale);
+				slot._setSize(m_geo.size(), m_scale);
 				m_dirtyPatches.add(m_geo);
 			}
 		}
@@ -262,7 +261,7 @@ namespace wg
 		{
 			m_geo = geoSpx;
 			if (slot._widget())
-				OO(slot)._setSize(m_geo.size());
+				slot._setSize(m_geo.size());
 		}
 
 		return true;
@@ -385,7 +384,7 @@ namespace wg
 		// Handle preRender calls.
 
 		for (auto& pWidget : m_preRenderCalls)
-			OO(pWidget)->_preRender();
+			pWidget->_preRender();
 
 		m_preRenderCalls.clear();
 
@@ -467,7 +466,7 @@ namespace wg
 
 			m_skin.render(pGfxDevice, geo, m_scale, State::Normal);
 
-			OO(slot._widget())->_render( pGfxDevice, geo, geo );
+			slot._widget()->_render( pGfxDevice, geo, geo );
 
 			pGfxDevice->endCanvasUpdate();
 		}
@@ -537,7 +536,7 @@ namespace wg
 			return 0;
 
 		if (slot._widget() && slot._widget()->isContainer())
-			return OO(static_cast<Container*>(slot._widget()))->_findWidget(ofs, mode);
+			return static_cast<Container*>(slot._widget())->_findWidget(ofs, mode);
 
 		return slot._widget();
 	}
@@ -628,7 +627,7 @@ namespace wg
 
 	void RootPanel::_childRequestResize(StaticSlot* pSlot)
 	{
-		OO(slot)._setSize(m_geo.size());
+		slot._setSize(m_geo.size());
 	}
 
 	//____ _childRequestFocus() __________________________________________________
@@ -697,14 +696,14 @@ namespace wg
 		RectSPX myGeo = m_geo;
 
 		if (slot._widget())
-			OO(slot._widget())->_collectPatches(m_dirtyPatches, myGeo, myGeo);
+			slot._widget()->_collectPatches(m_dirtyPatches, myGeo, myGeo);
 
-		OO(slot)._setWidget(pNewWidget);
+		slot._setWidget(pNewWidget);
 
 		if (pNewWidget)
 		{
-			OO(pNewWidget)->_resize(myGeo.size(),m_scale);
-			OO(pNewWidget)->_collectPatches(m_dirtyPatches, myGeo, myGeo);
+			pNewWidget->_resize(myGeo.size(),m_scale);
+			pNewWidget->_collectPatches(m_dirtyPatches, myGeo, myGeo);
 		}
 	}
 

@@ -28,7 +28,6 @@
 #include <wg_key.h>
 #include <wg_msg.h>
 #include <wg_msgrouter.h>
-#include <wg_internal.h>
 
 namespace wg
 {
@@ -74,11 +73,11 @@ namespace wg
 
 		spx height = m_skin.defaultSize(scale).h;
 
-		if( !OO(label).isEmpty() )
+		if( !label.isEmpty() )
 		{
 			SizeSPX padding = m_skin.contentPaddingSize(scale);
 
-			spx heightForText = OO(label)._matchingHeight(width-padding.w,scale) + padding.h;
+			spx heightForText = label._matchingHeight(width-padding.w,scale) + padding.h;
 			if( heightForText > height )
 				height = heightForText;
 		}
@@ -99,8 +98,8 @@ namespace wg
 
 		// Get size of text
 
-		if (!OO(label).isEmpty())
-			defaultSize = OO(label)._defaultSize(scale);
+		if (!label.isEmpty())
+			defaultSize = label._defaultSize(scale);
 
 		// Wrap text in icon if availabe
 
@@ -124,7 +123,7 @@ namespace wg
 			_requestRender();
 		}
 
-		OO(label)._setState(state);
+		label._setState(state);
 		Widget::_setState(state);
 	}
 
@@ -138,7 +137,7 @@ namespace wg
 
 		RectSPX textRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale );
 
-		OO(label)._setSize( textRect, m_scale );
+		label._setSize( textRect, m_scale );
 	}
 
 	//____ _render() _____________________________________________________________
@@ -161,8 +160,8 @@ namespace wg
 
 		// Print text
 
-	 	if( !OO(label).isEmpty() )
-			OO(label)._render( pDevice, textRect );
+	 	if( !label.isEmpty() )
+			label._render( pDevice, textRect );
 	}
 
 	//____ _receive() ______________________________________________________________
@@ -254,7 +253,7 @@ namespace wg
 	void Button::_refresh( void )
 	{
 		Widget::_refresh();
-		OO(label)._refresh();
+		label._refresh();
 
 		//TODO: Handling of icon and text.
 	}

@@ -25,7 +25,6 @@
 #include <wg_gfxdevice.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
-#include <wg_internal.h>
 
 namespace wg
 {
@@ -67,7 +66,7 @@ namespace wg
 		SizeSPX padding = _contentPaddingSize();
 
 		height -= padding.h;
-		spx textWidth = OO(editor)._matchingWidth(height, scale);
+		spx textWidth = editor._matchingWidth(height, scale);
 		textWidth += padding.w;
 		return textWidth;
 	}
@@ -80,7 +79,7 @@ namespace wg
 		SizeSPX padding = _contentPaddingSize();
 
 		width -= padding.w;
-		spx textHeight = OO(editor)._matchingHeight( width, scale );
+		spx textHeight = editor._matchingHeight( width, scale );
 		textHeight += padding.h;
 		return textHeight;
 	}
@@ -91,7 +90,7 @@ namespace wg
 	{
 		scale = _fixScale(scale);
 
-		SizeSPX contentSize = OO(editor)._defaultSize(scale);
+		SizeSPX contentSize = editor._defaultSize(scale);
 
 		return m_skin.sizeForContent(contentSize,scale);
 	}
@@ -104,7 +103,7 @@ namespace wg
 
 		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
 
-		OO(editor)._render( pDevice, canvas );
+		editor._render( pDevice, canvas );
 	}
 
 	//____ _refresh() _______________________________________________________
@@ -122,7 +121,7 @@ namespace wg
 	{
 		Widget::_setState(state);
 
-		OO(editor)._setState(state);
+		editor._setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 	}
 
@@ -132,7 +131,7 @@ namespace wg
 	void TextEditor::_receive( Msg * pMsg )
 	{
 		Widget::_receive( pMsg );
-		OO(editor)._receive( pMsg );
+		editor._receive( pMsg );
 	}
 
 
@@ -142,7 +141,7 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		OO(editor)._setSize(size - m_skin.contentPaddingSize(m_scale), m_scale);
+		editor._setSize(size - m_skin.contentPaddingSize(m_scale), m_scale);
 	}
 
 } // namespace wg

@@ -22,7 +22,6 @@
 
 #include	<wg_numberdisplay.h>
 #include	<wg_gfxdevice.h>
-#include	<wg_internal.h>
 
 namespace wg
 {

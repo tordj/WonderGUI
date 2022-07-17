@@ -43,7 +43,8 @@ namespace wg
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-	protected:
+		//.____ Internal _______________________________________________________
+
 		inline CoordSPX	_pos() const { return m_pWidget->_componentPos(this); }
 		inline int		_scale() const { return m_pWidget->_scale(); }
 		inline SizeSPX	_size() const { return m_pWidget->_componentSize(this); }
@@ -51,6 +52,7 @@ namespace wg
 		inline CoordSPX	_globalPos() const { return m_pWidget->_globalComponentPos(this); }
 		inline RectSPX	_globalGeo() const { return m_pWidget->_globalComponentGeo(this); }
 
+	protected:
 
 		inline void		_requestRender() const { m_pWidget->_componentRequestRender(this); }
 		inline void		_requestRender(const RectSPX& rect) const { m_pWidget->_componentRequestRender(this, rect); }

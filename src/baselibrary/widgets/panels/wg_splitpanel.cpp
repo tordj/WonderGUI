@@ -23,7 +23,6 @@
 #include <wg_splitpanel.h>
 #include <wg_patches.h>
 #include <wg_msg.h>
-#include <wg_internal.h>
 
 //TODO: Set opaque if there is no skin (or skin has no borders) and both children and the handle are opaque.
 
@@ -269,11 +268,11 @@ namespace wg
 
 			slots[0].m_geo = firstChildGeo;
 			if( slots[0]._widget() )
-				OO(slots[0]._widget())->_resize(firstChildGeo);
+				slots[0]._setSize(firstChildGeo);
 
 			slots[1].m_geo = secondChildGeo;
 			if (slots[1]._widget())
-				OO(slots[1]._widget())->_resize(secondChildGeo);
+				slots[1]._setSize(secondChildGeo);
 
 			m_handleGeo = handleGeo;
 
@@ -471,13 +470,13 @@ namespace wg
 		if (m_skin.isEmpty())
 		{
 			if (slots[0]._widget())
-				OO(slots[0]._widget())->_collectPatches(container, slots[0].m_geo + geo.pos(), clip);
+				slots[0]._widget()->_collectPatches(container, slots[0].m_geo + geo.pos(), clip);
 
 			if (!m_handleSkin.isEmpty())
 				container.add(RectSPX::getIntersection(m_handleGeo, clip));
 
 			if (slots[1]._widget())
-				OO(slots[1]._widget())->_collectPatches(container, slots[1].m_geo + geo.pos(), clip);
+				slots[1]._widget()->_collectPatches(container, slots[1].m_geo + geo.pos(), clip);
 		}
 		else
 			container.add(RectSPX::getIntersection(geo, clip));
@@ -494,13 +493,13 @@ namespace wg
 			else
 			{
 				if (slots[0]._widget())
-					OO(slots[0]._widget())->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip, blendMode );
+					slots[0]._widget()->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip, blendMode );
 
 				if (m_handleSkin.isOpaque() )
 					patches.sub(RectSPX::getIntersection(m_handleGeo, clip));
 
 				if (slots[1]._widget())
-					OO(slots[1]._widget())->_maskPatches(patches, slots[1].m_geo + geo.pos(), clip, blendMode );
+					slots[1]._widget()->_maskPatches(patches, slots[1].m_geo + geo.pos(), clip, blendMode );
 			}
 		}
 	}
@@ -658,7 +657,7 @@ namespace wg
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
 		pSlot->_setWidget(pNewWidget);
-		OO(pNewWidget)->_resize(pSlot->m_geo, m_scale);
+		pNewWidget->_resize(pSlot->m_geo, m_scale);
 		_updateDefaultSize();
 		bool bGeoChanged = _updateGeo();
 		if (!bGeoChanged)

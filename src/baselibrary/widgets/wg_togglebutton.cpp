@@ -27,7 +27,6 @@
 #include <wg_rootpanel.h>
 #include <wg_msgrouter.h>
 #include <wg_togglegroup.h>
-#include <wg_internal.h>
 
 #include <assert.h>
 
@@ -110,8 +109,8 @@ namespace wg
 
 		// Get size of text
 
-		if( !OO(label).isEmpty() )
-			defaultSize = OO(label)._defaultSize(scale);
+		if( !label.isEmpty() )
+			defaultSize = label._defaultSize(scale);
 
 		// Wrap text in icon if availabe
 
@@ -240,7 +239,7 @@ namespace wg
 		State oldState = m_state;
 		Widget::_setState(state);
 
-		OO(label)._setState( state );
+		label._setState( state );
 
 		if (!_icon().isEmpty())
 		{
@@ -276,10 +275,10 @@ namespace wg
 
 		// Print text
 
-	 	if( !OO(label).isEmpty() )
+	 	if( !label.isEmpty() )
 		{
 			RectSPX	textRect = _icon()._getTextRect( contentRect, iconRect, m_scale );
-			OO(label)._render( pDevice, textRect );
+			label._render( pDevice, textRect );
 		}
 	}
 
@@ -300,7 +299,7 @@ namespace wg
 
 		RectSPX contentRect	= m_skin.contentRect(size, m_scale, m_state );
 
-		OO(label)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale), m_scale );
+		label._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale), m_scale );
 	}
 
 	//____ _markTestTextArea() ______________________________________________________
@@ -311,7 +310,7 @@ namespace wg
 
 		contentRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect, m_scale ), m_scale );
 
-		if( OO(label)._charAtPos( pos - contentRect.pos() ) != -1 )
+		if( label._charAtPos( pos - contentRect.pos() ) != -1 )
 			return true;
 
 		return false;

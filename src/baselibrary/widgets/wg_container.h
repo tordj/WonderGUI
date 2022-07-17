@@ -62,10 +62,18 @@ namespace wg
 			inline Widget_p			firstChild() const { return Widget_p(_firstChild()); }
 			inline Widget_p			lastChild() const { return Widget_p(_lastChild()); }
 
-			//.____ Misc _________________________________________________________________
+			//.____ Misc ______________________________________________________
 
 			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(Util::ptsToSpx(ofs,m_scale),mode)); }
 			bool					contains(const Widget * pWidget) const;
+
+			//.____ Internal __________________________________________________
+
+			virtual Widget* _findWidget(const CoordSPX& ofs, SearchMode mode);
+
+			virtual ModalOverlay* _getModalOverlay() const;
+			virtual PopupOverlay* _getPopupOverlay() const;
+
 
 		protected:
 			Container();
@@ -117,8 +125,6 @@ namespace wg
 			virtual Widget *		_firstChild() const = 0;
 			virtual Widget *		_lastChild() const = 0;
 
-
-			virtual Widget * 		_findWidget( const CoordSPX& ofs, SearchMode mode );
 			virtual void			_setState( State state ) override;
 
 			virtual void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
@@ -131,9 +137,6 @@ namespace wg
 
 			virtual void			_firstSlotWithGeo( SlotWithGeo& package ) const = 0;
 			virtual void			_nextSlotWithGeo( SlotWithGeo& package ) const = 0;
-
-			virtual ModalOverlay *	_getModalOverlay() const;
-			virtual PopupOverlay*		_getPopupOverlay() const;
 
 			virtual void			_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 			virtual void			_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip ) override;

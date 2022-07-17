@@ -27,7 +27,6 @@
 #include <wg_panel.h>
 #include <wg_base.h>
 #include <wg_inputhandler.h>
-#include <wg_internal.h>
 #include <wg_cstaticslotvector.impl.h>
 
 #include <algorithm>
@@ -313,7 +312,7 @@ namespace wg
 				if( pSlot->m_geo.contains( ofs ) )
 				{
 					if( pSlot->_widget()->isContainer() )
-						pResult = static_cast<OContainer*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
+						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
 					else if( pSlot->_widget()->_markTest( ofs - pSlot->m_geo.pos() ) )
 						pResult = pSlot->_widget();
 				}
@@ -380,7 +379,7 @@ namespace wg
 			while (pCover >= popupSlots._begin())
 			{
 				if (pCover->m_geo.intersectsWith(rect) && pCover->m_state != Slot::State::OpeningDelay && pCover->m_state != Slot::State::Opening && pCover->m_state != Slot::State::Closing)
-					OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, spx_max, spx_max), _getBlendMode());
+					pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, spx_max, spx_max), _getBlendMode());
 
 				pCover--;
 			}
@@ -443,7 +442,7 @@ namespace wg
 
 			p->clipPop = patchesToClipList(pDevice, p->geo, patches);
 			if( p->pSlot->m_state != Slot::State::Opening && p->pSlot->m_state != Slot::State::Closing )
-				OO(p->pSlot->_widget())->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				p->pSlot->_widget()->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 			if (patches.isEmpty())
 				break;
@@ -454,7 +453,7 @@ namespace wg
 		if ( mainSlot._widget() && !patches.isEmpty())
 		{
 			ClipPopData popData = patchesToClipList(pDevice, _window, patches);
-			OO(mainSlot._widget())->_render(pDevice, _canvas, _window);
+			mainSlot._widget()->_render(pDevice, _canvas, _window);
 			popClipList(pDevice, popData);
 		}
 
@@ -473,12 +472,12 @@ namespace wg
 				tint.a = 4096 - (4096 * p->pSlot->m_stateCounter / m_closingFadeMs);
 
 			if (tint.a == 4096)
-				OO(p->pSlot->_widget())->_render(pDevice, p->geo, p->geo);
+				p->pSlot->_widget()->_render(pDevice, p->geo, p->geo);
 			else
 			{
 				HiColor oldTint = pDevice->tintColor();
 				pDevice->setTintColor(oldTint*tint);
-				OO(p->pSlot->_widget())->_render(pDevice, p->geo, p->geo);
+				p->pSlot->_widget()->_render(pDevice, p->geo, p->geo);
 				pDevice->setTintColor(oldTint);
 			}
 			popClipList(pDevice,p->clipPop);
@@ -585,8 +584,8 @@ namespace wg
 				{
 					// Trace hierarchy from marked to one of our children.
 
-					while (OO(pMarked)->_parent() != this)
-						pMarked = OO(pMarked)->_parent();
+					while (pMarked->_parent() != this)
+						pMarked = pMarked->_parent();
 
 					//
 

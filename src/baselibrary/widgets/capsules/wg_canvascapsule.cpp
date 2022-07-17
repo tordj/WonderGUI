@@ -24,7 +24,6 @@
 #include <wg_gfxdevice.h>
 #include <wg_base.h>
 #include <wg_context.h>
-#include <wg_internal.h>
 #include <wg_util.h>
 
 namespace wg
@@ -188,11 +187,11 @@ namespace wg
 		if (canvas != _canvas)
 		{
 			auto savedClipData = Util::limitClipList(pDevice, canvas);
-			OO(slot._widget())->_render(pDevice, canvas, canvas);
+			slot._widget()->_render(pDevice, canvas, canvas);
 			Util::popClipList(pDevice, savedClipData);
 		}
 		else
-			OO(slot._widget())->_render(pDevice, canvas, canvas);
+			slot._widget()->_render(pDevice, canvas, canvas);
 
 		pDevice->endCanvasUpdate();
 		Base::memStackRelease(allocSize);

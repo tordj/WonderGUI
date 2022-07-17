@@ -204,6 +204,10 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
+		inline Container* _parent() const { return m_pHolder ? m_pHolder->_container() : nullptr; }
+		inline Widget* _nextSibling() const { return m_pHolder ? m_pHolder->_nextChild(m_pSlot) : nullptr; }
+		inline Widget* _prevSibling() const { return m_pHolder ? m_pHolder->_prevChild(m_pSlot) : nullptr; }
+
 		virtual spx			_matchingHeight(spx width, int scale = -1) const;
 		virtual spx			_matchingWidth(spx height, int scale = -1) const;
 
@@ -240,6 +244,8 @@ namespace wg
 		virtual	bool		_alphaTest(const CoordSPX& ofs);
 
 		virtual SizeSPX		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
+
+		StaticSlot* _slot() const { return m_pSlot; }
 
 	protected:
 		Widget();
@@ -281,7 +287,6 @@ namespace wg
 		void				_setSlot(StaticSlot * pSlot);
 		SlotHolder *		_holder() { return m_pHolder; }
 		const SlotHolder *	_holder() const { return m_pHolder; }
-		StaticSlot *		_slot() const { return m_pSlot; }
 
 		virtual BlendMode	_getBlendMode() const;
 
@@ -304,10 +309,6 @@ namespace wg
 		inline void			_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
 		inline void			_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
 		inline void			_requestInView( const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
-
-		inline Widget *		_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pSlot ); else return nullptr; }
-		inline Widget *		_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pSlot ); else return nullptr; }
-		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_container(); else return nullptr; }
 
 		inline RectSPX		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return RectSPX(); }
 
@@ -375,23 +376,6 @@ namespace wg
 		bool			m_bPressed = false;			// Keeps track of pressed button when mouse leaves/re-enters widget.
 
 	};
-
-	class OWidget : public Widget
-	{
-	public:
-		using Widget::_resize;
-		using Widget::_collectPatches;
-		using Widget::_maskPatches;
-		using Widget::_render;
-		using Widget::_parent;
-		using Widget::_slot;
-		using Widget::_windowPadding;
-		using Widget::_preRender;
-		using Widget::_setState;
-	};
-
-	inline OWidget* OO(Widget* pWidget) { return reinterpret_cast<OWidget*>(pWidget); }
-	inline const OWidget* OO(const Widget* pWidget) { return reinterpret_cast<const OWidget*>(pWidget); }
 
 
 	//____ Inline methods __________________________________________________________

@@ -22,7 +22,6 @@
 
 #include <wg_capsule.h>
 #include <wg_patches.h>
-#include <wg_internal.h>
 
 namespace wg
 {
@@ -144,7 +143,7 @@ namespace wg
 		if( !m_skin.isEmpty() )
 			container.add(RectSPX::getIntersection(geo, clip));
 		else if( slot._widget() )
-			OO(slot._widget())->_collectPatches(container, _contentRect(geo), clip);
+			slot._widget()->_collectPatches(container, _contentRect(geo), clip);
 	}
 
 	//____ _maskPatches() ________________________________________________________
@@ -156,10 +155,10 @@ namespace wg
 			if(m_skin.isOpaque( clip, geo.size(), m_scale, m_state ) )
 				patches.sub(RectSPX::getIntersection(geo, clip));
 			else if( slot._widget() )
-				OO(slot._widget())->_maskPatches(patches, _contentRect(geo), clip, blendMode);
+				slot._widget()->_maskPatches(patches, _contentRect(geo), clip, blendMode);
 		}
 		else if( slot._widget() )
-			OO( slot._widget())->_maskPatches( patches, geo, clip, blendMode );
+			slot._widget()->_maskPatches( patches, geo, clip, blendMode );
 	}
 
 	//____ _resize() ____________________________________________________________
@@ -171,7 +170,7 @@ namespace wg
 		if ( slot._widget())
 		{
 			SizeSPX sz = size - m_skin.contentPaddingSize(m_scale);
-			OO( slot._widget())->_resize(sz);
+			slot._widget()->_resize(sz);
 		}
 	}
 
@@ -222,7 +221,7 @@ namespace wg
 
 	void Capsule::_releaseChild(StaticSlot * _pSlot)
 	{
-		OO(slot)._setWidget(nullptr);
+		slot._setWidget(nullptr);
 		_requestRender();
 		_requestResize();
 	}
@@ -231,12 +230,12 @@ namespace wg
 
 	void Capsule::_replaceChild( StaticSlot * pSlot, Widget * pWidget )
 	{
-		OO(slot)._setWidget(pWidget );
+		slot._setWidget(pWidget );
 
 		if (pWidget)
 		{
 			SizeSPX sz = m_size - m_skin.contentPaddingSize(m_scale);
-			OO(pWidget)->_resize(sz);
+			pWidget->_resize(sz);
 		}
 
 		_requestRender();

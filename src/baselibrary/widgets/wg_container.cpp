@@ -27,7 +27,6 @@
 #include <wg_patches.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
-#include <wg_internal.h>
 
 namespace wg
 {
@@ -221,7 +220,7 @@ namespace wg
 		{
 			if( child.geo.contains( ofs ) )
 			{
-				Widget * pWidget = OO(child.pSlot)->_widget();
+				Widget * pWidget = child.pSlot->_widget();
 
 				if (pWidget->isContainer())
 				{
@@ -337,7 +336,7 @@ namespace wg
 				RectSPX geo = child.geo + _canvas.pos();
 
 				if( geo.intersectsWith( dirtBounds ) )
-					renderList.push_back( WidgetRenderContext(OO(child.pSlot)->_widget(), geo ) );
+					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), geo ) );
 
 				_nextSlotWithGeo( child );
 			}
@@ -386,7 +385,7 @@ namespace wg
 					ClipPopData popData = limitClipList(pDevice, canvas );
 
 					if( pDevice->clipListSize() > 0 )
-						OO(child.pSlot)->_widget()->_render(pDevice, canvas, canvas);
+						child.pSlot->_widget()->_render(pDevice, canvas, canvas);
 
 					popClipList( pDevice, popData );
 				}
@@ -407,7 +406,7 @@ namespace wg
 
 			while (child.pSlot)
 			{
-				OO(child.pSlot)->_widget()->_collectPatches(container, child.geo + geo.pos(), clip);
+				child.pSlot->_widget()->_collectPatches(container, child.geo + geo.pos(), clip);
 				_nextSlotWithGeo(child);
 			}
 		}
@@ -429,7 +428,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				OO(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
+				child.pSlot->_widget()->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
 				_nextSlotWithGeo( child );
 			}
 		}

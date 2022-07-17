@@ -23,7 +23,6 @@
 #include <wg_renderlayercapsule.h>
 #include <wg_gfxdevice.h>
 #include <wg_patches.h>
-#include <wg_internal.h>
 
 namespace wg
 {
@@ -102,7 +101,7 @@ namespace wg
 			pDevice->setRenderLayer(m_renderLayer);
 
 		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
-		OO(slot._widget())->_render(pDevice, canvas, canvas);
+		slot._widget()->_render(pDevice, canvas, canvas);
 
 
 		if( m_renderLayer >= 0 )

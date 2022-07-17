@@ -27,9 +27,7 @@
 #include <wg_base.h>
 #include <wg_popupoverlay.h>
 #include <wg_inputhandler.h>
-#include <wg_internal.h>
 #include <wg_cdynamicvector.impl.h>
-#include <wg_internal.h>
 
 #include <algorithm>
 
@@ -260,7 +258,7 @@ namespace wg
 
 		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
 
-		OO(text)._render(pDevice, canvas);
+		text._render(pDevice, canvas);
 	}
 
 	//____ _resize() _______________________________________________________________
@@ -282,15 +280,15 @@ namespace wg
 			state.setPressed(true);			// Force pressed state when popup is open.
 		}
 		Widget::_setState(state);
-		OO(text)._setState(state);
-		_requestRender(); //TODO: Only requestRender if text appearance has changed (let OO(text).setState() return if rendering is needed)
+		text._setState(state);
+		_requestRender(); //TODO: Only requestRender if text appearance has changed (let text._setState() return if rendering is needed)
 	}
 
 	//____ _open() ____________________________________________________________
 
 	void SelectBox::_open()
 	{
-		auto pLayer = OO(_parent())->_getPopupOverlay();
+		auto pLayer = _parent()->_getPopupOverlay();
 		if (pLayer && m_pListCanvas)
 		{
 			pLayer->popupSlots.pushFront(m_pListCanvas, this, globalGeo(), Placement::SouthWest, false);
@@ -303,7 +301,7 @@ namespace wg
 
 	void SelectBox::_close()
 	{
-		auto pLayer = OO(_parent())->_getPopupOverlay();
+		auto pLayer = _parent()->_getPopupOverlay();
 		if (pLayer && m_pListCanvas)
 		{
 			pLayer->popupSlots.pop(m_pListCanvas.rawPtr());

@@ -67,7 +67,6 @@ add_library( wondergui
 	base/wg_hostbridge.h
 	base/wg_inputhandler.cpp
 	base/wg_inputhandler.h
-	base/wg_internal.h
 	base/wg_key.h
 	base/wg_mempool.cpp
 	base/wg_mempool.h

@@ -26,7 +26,6 @@
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 #include <wg_inputhandler.h>
-#include <wg_internal.h>
 
 #include <wg_cdynamicslotvector.impl.h>
 
@@ -255,7 +254,7 @@ namespace wg
 
 				if( pSlot->_widget()->isContainer() )
 				{
-					Widget * pResult = static_cast<OContainer*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
+					Widget * pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
 					if( pResult )
 						return pResult;
 				}
@@ -273,7 +272,7 @@ namespace wg
 
 				if( pWidget->isContainer() )
 				{
-					Widget * pResult = static_cast<OContainer*>(pWidget)->_findWidget( ofs, mode );
+					Widget * pResult = static_cast<Container*>(pWidget)->_findWidget( ofs, mode );
 					if( pResult )
 						return pResult;
 				}
@@ -304,9 +303,9 @@ namespace wg
 
 		Widget * p = pFocused;
 		while( p && p->parent() && p->parent().rawPtr() != this )
-			p = OO(p)->_parent();
+			p = p->_parent();
 
-		if( p && OO(p)->_parent() != this )
+		if( p && p->_parent() != this )
 			return;								// Focus belongs to a Widget that is not a descendant to us,
 												// so we can't save and shouldn't steal focus.
 
@@ -317,7 +316,7 @@ namespace wg
 				m_pBaseKeyFocus = pFocused;
 			else
 			{
-				Slot * pSlot = static_cast<Slot*>(OO(p)->_slot());
+				Slot * pSlot = static_cast<Slot*>(p->_slot());
 				pSlot->m_pKeyFocus = pFocused;
 			}
 		}
@@ -348,12 +347,12 @@ namespace wg
 		// Verify that saved focus still is within branch and is not hidden
 
 		Widget * pW = pSavedFocus;
-		while( pW && OO(pW)->_parent() != this )
-			pW = OO(pW)->_parent();
+		while( pW && pW->_parent() != this )
+			pW = pW->_parent();
 
 		if( pW )
 		{
-			StaticSlot * pSlot = (StaticSlot*) OO(pW)->_slot();
+			StaticSlot * pSlot = (StaticSlot*) pW->_slot();
 			if( pSlot != pBranch )
 				pSavedFocus = 0;				// Previously focused Widget is no longer a child of focused branch.
 		}

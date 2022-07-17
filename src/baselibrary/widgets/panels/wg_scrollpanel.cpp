@@ -32,7 +32,7 @@
 #include <wg_patches.h>
 #include <wg_msg.h>
 #include <wg_msgrouter.h>
-#include <wg_internal.h>
+#include <wg_base.h>
 
 #include <algorithm>
 
@@ -611,7 +611,7 @@ namespace wg
 
 	void ScrollPanel::_updateCanvasSize()
 	{
-		auto pWidget = OO(slot)._widget();
+		auto pWidget = slot._widget();
 		if (pWidget)
 		{
 			// Calc viewMaxSize & viewMinSize
@@ -848,7 +848,7 @@ namespace wg
 			// Lets make it easy, only mask against our child, not the scrollbars with all their details.
 
 			if (slot._widget())
-				OO(slot._widget())->_maskPatches(patches, m_childCanvas + geo.pos(), RectSPX::getIntersection(clip, m_childWindow + geo.pos()), blendMode);
+				slot._widget()->_maskPatches(patches, m_childCanvas + geo.pos(), RectSPX::getIntersection(clip, m_childWindow + geo.pos()), blendMode);
 		}
 	}
 
@@ -887,7 +887,7 @@ namespace wg
 		{
 			auto pChild = slot._widget();
 			if (pChild->isContainer())
-				pFound = OO(static_cast<Container*>(pChild))->_findWidget(pos - m_childCanvas.pos(), mode);
+				pFound = static_cast<Container*>(pChild)->_findWidget(pos - m_childCanvas.pos(), mode);
 			else if (mode == SearchMode::Geometry || pChild->_alphaTest(pos - m_childCanvas.pos()))
 				pFound = pChild;
 		}
@@ -1053,7 +1053,7 @@ namespace wg
 
 	void ScrollPanel::_releaseChild(StaticSlot* pSlot)
 	{
-		OO(slot)._setWidget(nullptr);
+		slot._setWidget(nullptr);
 
 		m_childCanvas.clear();
 		_childWindowCorrection();
@@ -1067,7 +1067,7 @@ namespace wg
 
 	void ScrollPanel::_replaceChild(StaticSlot* pSlot, Widget* pWidget)
 	{
-		OO(slot)._setWidget(pWidget);
+		slot._setWidget(pWidget);
 
 		_updateCanvasSize();
 		_childWindowCorrection();
@@ -1206,7 +1206,7 @@ namespace wg
 
 	SizeSPX ScrollPanel::_calcCanvasSize(SizeSPX viewMinSize, SizeSPX viewMaxSize)
 	{
-		auto pWidget = OO(slot)._widget();
+		auto pWidget = slot._widget();
 		if (!pWidget)
 			return SizeSPX();
 

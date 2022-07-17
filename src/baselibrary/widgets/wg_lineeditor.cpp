@@ -25,7 +25,6 @@
 #include <wg_gfxdevice.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
-#include <wg_internal.h>
 
 namespace wg
 {
@@ -73,7 +72,7 @@ namespace wg
 
 		SizeSPX	contentSize;
 
-		TextStyle * pStyle = OO(editor)._style();
+		TextStyle * pStyle = editor._style();
 
 		Font_p pFont = pStyle->font();
 
@@ -104,12 +103,12 @@ namespace wg
 
 		//
 
-		RectSPX textCanvas(canvas.x - m_textScrollOfs, canvas.y, OO(editor)._defaultSize(m_scale));
+		RectSPX textCanvas(canvas.x - m_textScrollOfs, canvas.y, editor._defaultSize(m_scale));
 
 		// We need to clip to canvas since textCanvas can go outside our canvas.
 
 		auto pop = limitClipList(pDevice, canvas );
-		OO(editor)._render(pDevice, textCanvas );
+		editor._render(pDevice, textCanvas );
 		popClipList(pDevice, pop);
 	}
 
@@ -117,7 +116,7 @@ namespace wg
 
 	void LineEditor::_refresh( void )
 	{
-		OO(editor)._refresh();
+		editor._refresh();
 		Widget::_refresh();
 	}
 
@@ -127,7 +126,7 @@ namespace wg
 	{
 		Widget::_setState(state);
 
-		OO(editor)._setState(state);
+		editor._setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 	}
 
@@ -137,7 +136,7 @@ namespace wg
 	void LineEditor::_receive( Msg * pMsg )
 	{
 		Widget::_receive( pMsg );
-		OO(editor)._receive( pMsg );
+		editor._receive( pMsg );
 	}
 
 	//____ _resize() ________________________________________________
@@ -146,7 +145,7 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		OO(editor)._setSize( SizeSPX( OO(editor)._defaultSize(m_scale).w, size.h - m_skin.contentPaddingSize(m_scale).h ), m_scale );
+		editor._setSize( SizeSPX( editor._defaultSize(m_scale).w, size.h - m_skin.contentPaddingSize(m_scale).h ), m_scale );
 	}
 
 	//____ _componentPos() __________________________________________________________
@@ -168,7 +167,7 @@ namespace wg
 		if (pComponent != &editor)
 			return m_size;
 
-		return SizeSPX( OO(editor)._defaultSize(m_scale).w, m_size.h - m_skin.contentPaddingSize(m_scale).h );
+		return SizeSPX( editor._defaultSize(m_scale).w, m_size.h - m_skin.contentPaddingSize(m_scale).h );
 	}
 
 	//____ _componentGeo() __________________________________________________________
@@ -180,7 +179,7 @@ namespace wg
 
 		RectSPX r = m_skin.contentRect( m_size, m_scale, m_state );
 		r.x -= m_textScrollOfs;
-		r.w = OO(editor)._defaultSize(m_scale).w;
+		r.w = editor._defaultSize(m_scale).w;
 		return r;
 	}
 
@@ -216,14 +215,14 @@ namespace wg
 		if (pComponent != &editor)
 			return Widget::_componentRequestResize(pComponent);
 
-		SizeSPX defaultSize = OO(editor)._defaultSize(m_scale);
+		SizeSPX defaultSize = editor._defaultSize(m_scale);
 
 		spx height = m_size.h - m_skin.contentPaddingSize(m_scale).h;
 
 		if(defaultSize.h != height )
 			_requestResize();
 
-		OO(editor)._setSize( SizeSPX(defaultSize.w, height ),m_scale);	// Component gets the default width right away.
+		editor._setSize( SizeSPX(defaultSize.w, height ),m_scale);	// Component gets the default width right away.
 	}
 
 	//____ _componentRequestInView() ____________________________________________

@@ -74,13 +74,37 @@ namespace wg
 
 		inline CText_p		ptr() { return CText_p(this); }
 
+		//.____ Internal _______________________________________________
+
+		inline State		_state() const { return m_state; }
+		virtual void		_setState(State state);
+
+		virtual void		_setSize(SizeSPX size, int scale);
+		inline SizeSPX		_size() const { return m_size; }
+
+		virtual SizeSPX		_defaultSize(int scale) const;
+		virtual spx			_matchingWidth(spx height, int scale) const;
+		virtual spx			_matchingHeight(spx width, int scale) const;
+
+		virtual void		_refresh();
+
+		virtual String		_tooltip() const;
+
+		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas);
+
+		TextLayout*			_layout() const { return m_pLayout ? m_pLayout.rawPtr() : Base::defaultTextLayout().rawPtr(); }
+		TextStyle*			_style() const { if (m_pStyle) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
+
+		virtual void		_setText(const CharSeq& seq);
+		virtual void		_setText(const CharBuffer* buffer);
+		virtual void		_setText(const String& str);
+
+		virtual int			_charAtPos(CoordSPX pos) const;
+
 	protected:
 
 		virtual void		_clear();
 
-		virtual void		_setText(const CharSeq& seq);
-		virtual void		_setText(const CharBuffer * buffer);
-		virtual void		_setText(const String& str);
 
 		virtual int			_append(const CharSeq& seq);
 		virtual int			_insert(int ofs, const CharSeq& seq);
@@ -96,30 +120,12 @@ namespace wg
 
 		virtual String		_getString() const;
 
-		inline State		_state() const { return m_state; }
-		virtual void		_setState( State state );
-
-		virtual void		_setSize( SizeSPX size, int scale );
-		inline SizeSPX		_size() const { return m_size; }
-
-		virtual SizeSPX		_defaultSize(int scale) const;
-		virtual spx			_matchingWidth( spx height, int scale ) const;
-		virtual spx			_matchingHeight( spx width, int scale ) const;
-
-		virtual int			_charAtPos( CoordSPX pos ) const;
 		virtual RectSPX		_charRect( int charOfs ) const;
 		virtual int			_charLine( int charOfs ) const;
 
-		virtual void		_refresh();
-
-		virtual String		_tooltip() const;
-
-		virtual void		_render( GfxDevice * pDevice, const RectSPX& _canvas );
 
 		virtual RectSPX		_rectForRange( int ofs, int length ) const;
 
-		TextLayout *		_layout() const { return m_pLayout ? m_pLayout.rawPtr() : Base::defaultTextLayout().rawPtr(); }
-		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 
 		// Needed by Text
 

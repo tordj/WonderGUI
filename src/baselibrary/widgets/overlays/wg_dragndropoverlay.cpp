@@ -28,7 +28,6 @@
 #include <wg_surfacefactory.h>
 #include <wg_patches.h>
 #include <wg_image.h>
-#include <wg_internal.h>
 
 
 
@@ -85,7 +84,7 @@ namespace wg
 
 			if (pWidget->isContainer())
 			{
-				Widget * pRes = static_cast<OContainer*>(pWidget)->_findWidget(ofs, mode);
+				Widget * pRes = static_cast<Container*>(pWidget)->_findWidget(ofs, mode);
 				if (pRes)
 					return pRes;
 			}
@@ -506,7 +505,7 @@ namespace wg
 			pCanvas->fill( Color::Transparent );
 
 			pDevice->beginCanvasUpdate(pCanvas);
-			OO(m_pPicked)->_render(pDevice, sz, sz);
+			m_pPicked->_render(pDevice, sz, sz);
 			pDevice->endCanvasUpdate();
 
 			auto pImage = Image::create();

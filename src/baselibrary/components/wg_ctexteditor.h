@@ -114,9 +114,11 @@ namespace wg
 		//.____ Internal ______________________________________________________
 
 		void			_initFromBlueprint(const Blueprint& blueprint);
+		void			_render(GfxDevice* pDevice, const RectSPX& _canvas) override;
+		void			_receive(Msg* pMsg) override;
+		void			_setState(State state) override;
 
 	protected:
-		void			_receive( Msg * pMsg ) override;
 
 		// Overloaded so we can update caret and selection
 
@@ -132,8 +134,6 @@ namespace wg
 		int				_erase(int ofs, int len) override;
 
 
-		void			_setState( State state ) override;
-		void			_render( GfxDevice * pDevice, const RectSPX& _canvas ) override;
 
 		//
 

@@ -23,7 +23,6 @@
 #include <wg_lambdapanel.h>
 #include <wg_patches.h>
 #include <wg_util.h>
-#include <wg_internal.h>
 
 #include <wg_cdynamicslotvector.impl.h>
 #include <wg_slotextras.impl.h>
@@ -509,7 +508,7 @@ namespace wg
 				while (pCover < slots._end())
 				{
 					if (pCover->m_bVisible && (pCover->m_geo.intersectsWith(pSlot->m_geo) || pCover->m_geo.intersectsWith(geo)) )
-						OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
+						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
 
 					pCover++;
 				}
@@ -546,7 +545,7 @@ namespace wg
 		for (Slot * pCover = slots._begin(); pCover < pSlot ; pCover++)
 		{
 			if (pCover->m_bVisible && pCover->m_geo.intersectsWith(rect))
-				OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
+				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
 		}
 
 		// Make request render calls

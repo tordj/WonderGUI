@@ -25,7 +25,6 @@
 #include <wg_popupoverlay.h>
 #include <wg_msg.h>
 #include <wg_inputhandler.h>
-#include <wg_internal.h>
 
 namespace wg
 {
@@ -98,7 +97,7 @@ namespace wg
 		{
 			SizeSPX padding = m_skin.contentPaddingSize(scale);
 
-			spx heightForText = OO(label)._matchingHeight(width - padding.w, scale) + padding.h;
+			spx heightForText = label._matchingHeight(width - padding.w, scale) + padding.h;
 			if (heightForText > height)
 				height = heightForText;
 		}
@@ -118,7 +117,7 @@ namespace wg
 		SizeSPX defaultSize;
 
 		if (!label.isEmpty())
-			defaultSize = OO(label)._defaultSize(scale);
+			defaultSize = label._defaultSize(scale);
 
 		defaultSize = m_skin.sizeForContent(defaultSize,scale);
 
@@ -147,8 +146,8 @@ namespace wg
 
 		// Print text
 
-		if (!OO(label).isEmpty())
-			OO(label)._render(pDevice, textRect);
+		if (!label.isEmpty())
+			label._render(pDevice, textRect);
 	}
 
 
@@ -164,7 +163,7 @@ namespace wg
 
 		RectSPX textRect = _icon()._getTextRect(contentRect, _icon()._getIconRect(contentRect,m_scale),m_scale);
 
-		OO(label)._setSize(textRect,m_scale);
+		label._setSize(textRect,m_scale);
 	}
 
 	//____ _refresh() _________________________________________________________
@@ -172,7 +171,7 @@ namespace wg
 	void PopupOpener::_refresh()
 	{
 		Widget::_refresh();
-		OO(label)._refresh();
+		label._refresh();
 
 		//TODO: Handling of icon and text.
 	}
@@ -245,15 +244,15 @@ namespace wg
 			state.setPressed(true);			// Force pressed state when popup is open.
 		}
 		Widget::_setState(state);
-		OO(label)._setState(state);
-		_requestRender(); //TODO: Only requestRender if text appearance has changed (let OO(text).setState() return if rendering is needed)
+		label._setState(state);
+		_requestRender(); //TODO: Only requestRender if text appearance has changed (let text.setState() return if rendering is needed)
 	}
 
 	//____ _open() ____________________________________________________________
 
 	void PopupOpener::_open()
 	{
-		auto pLayer = OO(_parent())->_getPopupOverlay();
+		auto pLayer = _parent()->_getPopupOverlay();
 		if (pLayer && m_pPopup)
 		{
 			pLayer->popupSlots.pushFront(m_pPopup, this, globalGeo(), m_attachPoint, m_bOpenOnHover );
@@ -266,7 +265,7 @@ namespace wg
 
 	void PopupOpener::_close()
 	{
-		auto pLayer = OO(_parent())->_getPopupOverlay();
+		auto pLayer = _parent()->_getPopupOverlay();
 		if (pLayer && m_pPopup)
 		{
 			pLayer->popupSlots.pop(m_pPopup.rawPtr());

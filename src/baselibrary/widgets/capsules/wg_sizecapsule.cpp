@@ -21,7 +21,6 @@
 =========================================================================*/
 
 #include <wg_sizecapsule.h>
-#include <wg_internal.h>
 
 #include <algorithm>
 

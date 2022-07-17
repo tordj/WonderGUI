@@ -24,7 +24,6 @@
 #include <wg_stackpanel.h>
 #include <wg_util.h>
 #include <wg_patches.h>
-#include <wg_internal.h>
 
 #include <wg_cdynamicslotvector.impl.h>
 #include <wg_slotextras.impl.h>
@@ -332,7 +331,7 @@ namespace wg
 		{
 			RectSPX geo = { pCover->m_position, pCover->_widget()->_size() };
 			if( pCover->m_bVisible && geo.intersectsWith( rect ) )
-				OO(pCover->_widget())->_maskPatches( patches, geo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, geo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
 		}
 
 		// Make request render calls
@@ -551,7 +550,7 @@ namespace wg
 			{
 				RectSPX geo = _childGeo(pSlot);
 				pSlot->m_position = geo.pos();
-				OO(pSlot->_widget())->_resize( geo.size(),m_scale );
+				pSlot->_setSize( geo.size(),m_scale );
 			}
 			pSlot++;
 		}

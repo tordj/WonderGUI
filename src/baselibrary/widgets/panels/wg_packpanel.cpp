@@ -24,7 +24,6 @@
 
 #include <wg_packpanel.h>
 #include <wg_base.h>
-#include <wg_internal.h>
 
 #include <wg_cdynamicslotvector.impl.h>
 #include <wg_slotextras.impl.h>
@@ -843,7 +842,7 @@ namespace wg
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
-							OO(p->_widget())->_resize( geo.size(), m_scale );
+							p->_widget()->_resize( geo.size(), m_scale );
 							p->m_bResizeRequired = false;
 						}
 
@@ -870,7 +869,7 @@ namespace wg
 
 				if( p->m_bResizeRequired )
 				{
-					OO(p->_widget())->_resize(geo.size(), m_scale);
+					p->_widget()->_resize(geo.size(), m_scale);
 					p->m_bResizeRequired = false;
 				}
 			}
@@ -925,7 +924,7 @@ namespace wg
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
-							OO(p->_widget())->_resize( geo.size(), m_scale );
+							p->_widget()->_resize( geo.size(), m_scale );
 							p->m_bResizeRequired = false;
 						}
 					}
@@ -952,7 +951,7 @@ namespace wg
 
 				if (p->m_bResizeRequired)
 				{
-					OO(p->_widget())->_resize(geo.size(), m_scale);
+					p->_widget()->_resize(geo.size(), m_scale);
 					p->m_bResizeRequired = false;
 				}
 			}
