@@ -578,176 +578,9 @@ namespace wg
 
 	}
 	
-	void SoftGfxDevice::fill(const RectF& rect, HiColor col)
-	{
-		if (!m_pRenderLayerSurface || !m_pCanvasPixels)
-			return;
-
-		// Clipping
-
-		RectF clip = RectF::getIntersection(rect, RectF(m_clipBounds/64));
-		if (clip.w == 0 || clip.h == 0)
-			return;
-
-		// Skip calls that won't affect destination
-
-		if ((col.a == 0 || m_tintColor.a == 0) && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract))
-			return;
-
-		// Optimize calls
-
-		BlendMode blendMode = m_blendMode;
-		if (blendMode == BlendMode::Blend && col.a == 4096 && m_bTintOpaque)
-		{
-			blendMode = BlendMode::Replace;
-		}
-
-
-		BlendMode	edgeBlendMode = (m_blendMode == BlendMode::Replace) ? BlendMode::Blend : m_blendMode; // Need to blend edges and corners even if fill is replace
-
-		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p pFillOp = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
-		FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
-//		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
-
-		if (pFillOp == nullptr || pEdgeOp == nullptr )
-		{
-			if( m_blendMode == BlendMode::Ignore )
-				return;
-			
-			char errorMsg[1024];
-			
-			sprintf(errorMsg, "Failed fill operation. SoftGfxDevice is missing fill kernel for TintMode::%s, BlendMode::%s onto surface of PixelFormat:%s.",
-				toString(m_colTrans.mode),
-				toString(m_blendMode),
-				toString(m_pRenderLayerSurface->pixelFormat()) );
-			
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
-			return;
-		}
-
-		
-		
-		for (int i = 0; i < m_nClipRects; i++)
-		{
-			HiColor color = col;
-
-			RectF  patch = RectF::getIntersection(rect, RectF(m_pClipRects[i]/64));
-			if (patch.w == 0.f || patch.h == 0.f)
-				continue;
-
-			// Fill all but anti-aliased edges
-
-			int x1 = (int)(patch.x + 0.999f);
-			int y1 = (int)(patch.y + 0.999f);
-			int x2 = (int)(patch.x + patch.w);
-			int y2 = (int)(patch.y + patch.h);
-
-
-			uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + x1 * pixelBytes;
-			pFillOp(pDst, pixelBytes, m_canvasPitch - (x2 - x1)*pixelBytes, y2 - y1, x2 - x1, color, m_colTrans, { x1,y1 });
-
-			// Draw the sides
-
-			int aaLeft = (4096 - (int)(patch.x * 4096)) & 0xFFF;
-			int aaTop = (4096 - (int)(patch.y * 4096)) & 0xFFF;
-			int aaRight = ((int)((patch.x + patch.w) * 4096)) & 0xFFF;
-			int aaBottom = ((int)((patch.y + patch.h) * 4096)) & 0xFFF;
-
-			int aaTopLeft = aaTop * aaLeft / 4096;
-			int aaTopRight = aaTop * aaRight / 4096;
-			int aaBottomLeft = aaBottom * aaLeft / 4096;
-			int aaBottomRight = aaBottom * aaRight / 4096;
-
-
-			if (m_blendMode != BlendMode::Replace)
-			{
-				int alpha = color.a;
-
-				aaLeft = aaLeft * alpha >> 12;
-				aaTop = aaTop * alpha >> 12;
-				aaRight = aaRight * alpha >> 12;
-				aaBottom = aaBottom * alpha >> 12;
-
-				aaTopLeft = aaTopLeft * alpha >> 12;
-				aaTopRight = aaTopRight * alpha >> 12;
-				aaBottomLeft = aaBottomLeft * alpha >> 12;
-				aaBottomRight = aaBottomRight * alpha >> 12;
-			}
-
-
-			if (aaTop != 0)
-			{
-				uint8_t * pDst = m_pCanvasPixels + ((int)patch.y) * m_canvasPitch + x1 * pixelBytes;
-				int length = x2 - x1;
-				color.a = aaTop;
-				pEdgeOp(pDst, pixelBytes, 0, 1, length, color, m_colTrans, { x1,(int)patch.y });
-			}
-
-			if (aaBottom != 0)
-			{
-				uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + x1 * pixelBytes;
-				int length = x2 - x1;
-				color.a = aaBottom;
-				pEdgeOp(pDst, pixelBytes, 0, 1, length, color, m_colTrans, { x1,y2 });
-			}
-
-			if (aaLeft != 0)
-			{
-				uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + ((int)patch.x) * pixelBytes;
-				int length = y2 - y1;
-				color.a = aaLeft;
-				pEdgeOp(pDst, m_canvasPitch, 0, 1, length, color, m_colTrans, { (int)patch.x, y1 });
-			}
-
-			if (aaRight != 0)
-			{
-				uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + x2 * pixelBytes;
-				int length = y2 - y1;
-				color.a = aaRight;
-				pEdgeOp(pDst, m_canvasPitch, 0, 1, length, color, m_colTrans, { x2, y1 });
-			}
-
-			// Draw corner pieces
-
-
-			if (aaTopLeft != 0)
-			{
-				uint8_t * pDst = m_pCanvasPixels + ((int)patch.y) * m_canvasPitch + ((int)patch.x) * pixelBytes;
-				color.a = aaTopLeft;
-				pEdgeOp(pDst, 0, 0, 1, 1, color, m_colTrans, { (int)patch.x, (int)patch.y } );
-//				pPlotOp(pDst, color, m_colTrans, { (int)patch.x, (int)patch.y } );
-			}
-
-			if (aaTopRight != 0)
-			{
-				uint8_t * pDst = m_pCanvasPixels + ((int)patch.y) * m_canvasPitch + x2 * pixelBytes;
-				color.a = aaTopRight;
-				pEdgeOp(pDst, 0, 0, 1, 1, color, m_colTrans, { x2, (int)patch.y });
-//				pPlotOp(pDst, color, m_colTrans, { x2, (int)patch.y });
-			}
-
-			if (aaBottomLeft != 0)
-			{
-				uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + ((int)patch.x) * pixelBytes;
-				color.a = aaBottomLeft;
-				pEdgeOp(pDst, 0, 0, 1, 1, color, m_colTrans, { (int)patch.x, y2 });
-//				pPlotOp(pDst, color, m_colTrans, { (int)patch.x, y2 } );
-			}
-
-			if (aaBottomRight != 0)
-			{
-				uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + x2 * pixelBytes;
-				color.a = aaBottomRight;
-				pEdgeOp(pDst, 0, 0, 1, 1, color, m_colTrans, { x2, y2 });
-//				pPlotOp(pDst, color, m_colTrans, { x2,y2 });
-			}
-		}
-	}
-
 	//____ drawLine() ____ [from/to] __________________________________________
 
-	void SoftGfxDevice::drawLine(CoordSPX beg, CoordSPX end, HiColor color, float thickness)
+	void SoftGfxDevice::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thickness)
 	{
 		//TODO: Proper 26:6 support
 		beg = roundToPixels(beg);
@@ -799,7 +632,7 @@ namespace wg
 			length = end.x - beg.x;
 			slope = ((end.y - beg.y) << 16) / length;
 
-			width = _scaleLineThickness(thickness, slope);
+			width = _scaleLineThickness(thickness/64.f, slope);
 			pos = (beg.y << 16) - width / 2 + 32768;
 
 			rowInc = m_canvasPixelBits / 8;
@@ -851,7 +684,7 @@ namespace wg
 
 			// Need multiplication instead of shift as operand might be negative
 			slope = ((end.x - beg.x) * 65536) / length;
-			width = _scaleLineThickness(thickness, slope);
+			width = _scaleLineThickness(thickness/64.f, slope);
 			pos = (beg.x << 16) - width / 2 + 32768;
 
 			rowInc = m_canvasPitch;
@@ -898,8 +731,11 @@ namespace wg
 	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
 	// where the outer pixels are faded.
 
-	void SoftGfxDevice::drawLine(CoordSPX _begin, Direction dir, spx _length, HiColor _col, float thickness)
+	void SoftGfxDevice::drawLine(CoordSPX _begin, Direction dir, spx _length, HiColor _col, spx _thickness)
 	{
+
+		float thickness = _thickness / 64.f;
+
 		//TODO: Proper 26:6 support
 		_begin = roundToPixels(_begin);
 		_length = roundToPixels(_length);

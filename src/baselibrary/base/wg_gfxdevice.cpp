@@ -385,7 +385,7 @@ namespace wg
 
 	//____ _beginCanvasUpdate() ________________________________________________
 
-	bool GfxDevice::_beginCanvasUpdate(CanvasRef ref, Surface * pSurface, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pCanvasLayers, int startLayer )
+	bool GfxDevice::_beginCanvasUpdate(CanvasRef ref, Surface * pSurface, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pCanvasLayers, int startLayer )
 	{
 		
 		SizeSPX sz;
@@ -647,7 +647,7 @@ namespace wg
 
 	//____ drawLine() __________________________________________________
 
-	void GfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, float thickness)
+	void GfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness)
 	{
 		CoordSPX end;
 
@@ -787,29 +787,6 @@ namespace wg
 		}
 	}
 
-	void GfxDevice::stretchBlit(const RectSPX& dest, const RectF& src)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		float	mtx[2][2];
-
-		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
-		{
-			mtx[0][0] = src.w*64 / dest.w;
-			mtx[0][1] = 0;
-			mtx[1][0] = 0;
-			mtx[1][1] = src.h*64 / dest.h;
-		}
-		else
-		{
-			mtx[0][0] = src.w*64 / dest.w;
-			mtx[0][1] = 0;
-			mtx[1][0] = 0;
-			mtx[1][1] = src.h*64 / dest.h;
-		}
-
-		_transformBlit(dest, CoordF( src.x,src.y )*64, mtx );
-	}
 
 	//____ stretchFlipBlit() _____________________________________________________
 
@@ -849,26 +826,6 @@ namespace wg
 			ofsX = src.x + (srcW - scaleX) * blitFlipOffsets[(int)flip][0];
 			ofsY = src.y + (srcH - scaleY) * blitFlipOffsets[(int)flip][1];
 		}
-
-		float	mtx[2][2];
-
-		mtx[0][0] = scaleX * blitFlipTransforms[(int)flip][0][0];
-		mtx[0][1] = scaleY * blitFlipTransforms[(int)flip][0][1];
-		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
-		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
-
-		_transformBlit(dest, { ofsX, ofsY }, mtx);
-	}
-
-	void GfxDevice::stretchFlipBlit(const RectSPX& dest, const RectF& src, GfxFlip flip)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		float	scaleX = src.w / dest.w;
-		float	scaleY = src.h / dest.h;
-
-		float ofsX = src.x + (src.w-scaleX) * blitFlipOffsets[(int)flip][0];
-		float ofsY = src.y + (src.h-scaleY) * blitFlipOffsets[(int)flip][1];
 
 		float	mtx[2][2];
 

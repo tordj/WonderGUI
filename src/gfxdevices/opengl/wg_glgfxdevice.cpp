@@ -1072,110 +1072,6 @@ namespace wg
 		}
 	}
 
-	//____ fill() ____ [subpixel] __________________________________________________
-
-	void GlGfxDevice::fill(const RectF& rect, HiColor col)
-	{
-		// Skip calls that won't affect destination
-
-		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
-			return;
-
-		// Create our outer rectangle
-
-		RectI outerRect( (int) rect.x, (int) rect.y, ((int) (rect.x+rect.w+0.999f)) - (int) rect.x, ((int) (rect.y + rect.h + 0.999f)) - (int) rect.y );
-
-
-		RectI clip = RectI::getIntersection(outerRect, m_clipBounds/64);
-		if (clip.w == 0 || clip.h == 0)
-			return;
-
-		//
-
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
-		{
-			_endCommand();
-			_executeBuffer();
-			_beginDrawCommand(Command::FillSubPixel);
-		}
-		else if (m_cmd != Command::FillSubPixel)
-		{
-			_endCommand();
-			_beginDrawCommand(Command::FillSubPixel);
-		}
-
-		for (int i = 0; i < m_nClipRects; i++)
-		{
-			RectI patch = RectI::getIntersection(m_pClipRects[i]/64, outerRect);
-			if (patch.w > 0 && patch.h > 0)
-			{
-				int	dx1 = patch.x;
-				int	dy1 = patch.y;
-				int dx2 = patch.x + patch.w;
-				int dy2 = patch.y + patch.h;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-			}
-		}
-
-		// Provide color	
-
-		m_extrasBufferData[m_extrasOfs++] = col.r / 4096.f;
-		m_extrasBufferData[m_extrasOfs++] = col.g / 4096.f;
-		m_extrasBufferData[m_extrasOfs++] = col.b / 4096.f;
-		m_extrasBufferData[m_extrasOfs++] = col.a / 4096.f;
-
-		// Provide rectangle center and radius
-
-		SizeF	radius(rect.w / 2, rect.h / 2);
-		CoordF	center(rect.x + radius.w, rect.y + radius.h);
-
-		m_extrasBufferData[m_extrasOfs++] = center.x;
-		m_extrasBufferData[m_extrasOfs++] = center.y;
-		m_extrasBufferData[m_extrasOfs++] = radius.w;
-		m_extrasBufferData[m_extrasOfs++] = radius.h;
-	}
-
 	//____ plotPixels() ______________________________________________________
 
 	void GlGfxDevice::plotPixels(int nPixels, const CoordSPX * pCoords, const HiColor * pColors)
@@ -1230,8 +1126,10 @@ namespace wg
 
 	//____ drawLine() ____ [from/to] __________________________________________________
 
-	void GlGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness)
+	void GlGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx _thickness)
 	{
+		float thickness = _thickness / 64.f;
+
 		//TODO: Proper 26:6 support
 		begin = roundToPixels(begin);
 		end = roundToPixels(end);
@@ -1370,8 +1268,10 @@ namespace wg
 
 	//____ drawLine() ____ [start/direction] __________________________________________________
 
-	void GlGfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, float thickness)
+	void GlGfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx _thickness)
 	{
+		float thickness = _thickness / 64.f;
+
 		//TODO: Proper 26:6 support
 		begin = roundToPixels(begin);
 		length = roundToPixels(length);

@@ -430,7 +430,7 @@ namespace wg
 
 					float srcOfsY = float(m_stateOfsY[pKey->state] * m_blackKeySourceHeight);
 
-					pDevice->stretchBlit(dst + canvas.pos(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, m_blackKeySourceHeight)/64);
+					pDevice->stretchBlit(dst + canvas.pos(), RectSPX(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, m_blackKeySourceHeight) );
 					pKey++;
 				}
 			}
@@ -467,7 +467,7 @@ namespace wg
 
 			float srcOfsY = float(m_stateOfsY[pKey->state] * m_keyboardSourceSize.h);
 
-			pDevice->stretchBlit(dst + canvas.pos(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor)/64);
+			pDevice->stretchBlit(dst + canvas.pos(), RectSPX(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor) );
 
 			if (bForward)
 			{

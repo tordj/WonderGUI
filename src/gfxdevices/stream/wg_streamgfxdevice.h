@@ -97,28 +97,25 @@ namespace wg
 
         void    fill(HiColor col) override;
         void    fill( const RectSPX& rect, HiColor col ) override;
-        void    fill(const RectF& rect, HiColor col) override;
 
         void    plotPixels( int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
-        void    drawLine( CoordSPX begin, CoordSPX end, HiColor color, float thickness = 1.f ) override;
-        void    drawLine( CoordSPX begin, Direction dir, int length, HiColor col, float thickness = 1.f) override;
+        void    drawLine( CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64 ) override;
+        void    drawLine( CoordSPX begin, Direction dir, int length, HiColor col, spx thickness = 64 ) override;
 
         // Blit methods
 
         void    blit(CoordSPX dest) override;
-        void    blit(CoordSPX dest, const RectI& src) override;
+        void    blit(CoordSPX dest, const RectSPX& src) override;
 
         void    flipBlit(CoordSPX dest, GfxFlip flip ) override;
         void    flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip ) override;
 
         void    stretchBlit(const RectSPX& dest) override;
         void    stretchBlit(const RectSPX& dest, const RectSPX& src) override;
-        void    stretchBlit(const RectSPX& dest, const RectF& src) override;
-
+ 
         void    stretchFlipBlit(const RectSPX& dest, GfxFlip flip) override;
         void    stretchFlipBlit(const RectSPX& dest, const RectSPX& src, GfxFlip flip) override;
-        void    stretchFlipBlit(const RectSPX& dest, const RectF& src, GfxFlip flip) override;
 
         void    rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f }) override;
 
