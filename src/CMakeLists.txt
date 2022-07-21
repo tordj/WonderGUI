@@ -10,6 +10,7 @@ set(WG_ROOT ${PROJECT_SOURCE_DIR}/..)
 include_directories( 
 	baselibrary
 	baselibrary/base
+	baselibrary/c-interface
 	baselibrary/components
 	baselibrary/sizebrokers
 	baselibrary/skins/anim

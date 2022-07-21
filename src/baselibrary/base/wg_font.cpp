@@ -81,7 +81,7 @@ namespace wg
 			bp.size = pixelRect.size();
 		
 		auto pSurface = pFactory->createSurface(bp);
-		pSurface->copyFrom( glyph.pSurface, pixelRect, {0,0} );
+		pSurface->copy({ 0,0 }, glyph.pSurface, pixelRect );
 		return pSurface;
 	}
 

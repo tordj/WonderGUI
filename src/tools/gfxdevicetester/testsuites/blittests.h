@@ -32,7 +32,7 @@ public:
 		m_pAlphaOnly = pDevice->surfaceFactory()->createSurface({ 400,400 }, PixelFormat::A_8);
 
 		RectI	copySource = RectI(m_pClockFace->pixelSize()).center({ 400,400 });
-		m_pAlphaOnly->copyFrom(m_pClockFace, copySource, { 0,0 });
+		m_pAlphaOnly->copy({ 0,0 },m_pClockFace, copySource );
 
 		return true;
 	}

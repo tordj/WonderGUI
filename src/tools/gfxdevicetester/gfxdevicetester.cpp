@@ -318,20 +318,20 @@ void GfxDeviceTester::display_test_results()
 	switch (g_displayMode)
 	{
 	case DisplayMode::Testee:
-		g_pTesteeCanvas->surface()->copyFrom(g_pTesteeDevice->canvas(), { 0,0 });
+		g_pTesteeCanvas->surface()->copy( { 0,0 }, g_pTesteeDevice->canvas() );
 //		g_pTesteeCanvas->canvas.present();
 		break;
 
 	case DisplayMode::Reference:
-		g_pReferenceCanvas->surface()->copyFrom(g_pReferenceDevice->canvas(), { 0,0 });
+		g_pReferenceCanvas->surface()->copy( { 0,0 }, g_pReferenceDevice->canvas() );
 //		g_pReferenceCanvas->canvas.present();
 		break;
 
 	case DisplayMode::Both:
-		g_pTesteeCanvas->surface()->copyFrom(g_pTesteeDevice->canvas(), { 0,0 });
+		g_pTesteeCanvas->surface()->copy( { 0,0 }, g_pTesteeDevice->canvas() );
 //		g_pTesteeCanvas->canvas.present();
 
-		g_pReferenceCanvas->surface()->copyFrom(g_pReferenceDevice->canvas(), { 0,0 });
+		g_pReferenceCanvas->surface()->copy( { 0,0 }, g_pReferenceDevice->canvas() );
 //		g_pReferenceCanvas->canvas.present();
 		break;
 

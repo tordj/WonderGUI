@@ -657,7 +657,7 @@ void playImageStreamingTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFac
 
 	Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::BGRA_8 );
 
-	pLogoSurf->copyFrom(pOrgSurf, CoordI());
+	pLogoSurf->copy( CoordI(), pOrgSurf );
 	
 	SizeI canvasSize = pDevice->canvas(canvasRef).size;
 
@@ -689,7 +689,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
 
     Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::A_8 );
 
-    pLogoSurf->copyFrom(pOrgSurf, CoordI());
+    pLogoSurf->copy( CoordI(), pOrgSurf );
     
     SizeI canvasSize = pDevice->canvas(canvasRef).size;
 
@@ -764,7 +764,7 @@ void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p p
 
     Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::A_8 );
 
-    pLogoSurf->copyFrom(pOrgSurf, CoordI());
+    pLogoSurf->copy( CoordI(), pOrgSurf );
     
     SizeI canvasSize = pDevice->canvas(canvasRef).size;
 

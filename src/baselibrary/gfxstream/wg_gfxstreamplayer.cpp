@@ -872,7 +872,7 @@ namespace wg
 			*m_pDecoder >> region;
 			*m_pDecoder >> col;
 
-			m_vSurfaces[surfaceId]->fill(col, region);
+			m_vSurfaces[surfaceId]->fill(region, col);
 			break;
 		}
 /*

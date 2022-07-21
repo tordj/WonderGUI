@@ -1,5 +1,6 @@
 
 source_group(Base REGULAR_EXPRESSION "base//*")
+source_group(C-Interface REGULAR_EXPRESSION "c-interface//*")
 source_group(Components REGULAR_EXPRESSION "components//*")
 source_group(SizeBrokers REGULAR_EXPRESSION "sizebrokers//*")
 
@@ -128,6 +129,24 @@ add_library( wondergui
 	base/wg_util.h
 	base/wg_weakcomponentptr.h
 	base/wg_weakptr.h
+
+	c-interface/wg_c_canvaslayers.cpp
+	c-interface/wg_c_canvaslayers.h
+	c-interface/wg_c_color.cpp
+	c-interface/wg_c_color.h
+	c-interface/wg_c_geo.cpp
+	c-interface/wg_c_geo.h
+	c-interface/wg_c_gradient.cpp
+	c-interface/wg_c_gradient.h
+	c-interface/wg_c_gfxdevice.cpp
+	c-interface/wg_c_gfxdevice.h
+	c-interface/wg_c_object.cpp
+	c-interface/wg_c_object.h
+	c-interface/wg_c_surface.cpp
+	c-interface/wg_c_surface.h
+	c-interface/wg_c_surfacefactory.cpp
+	c-interface/wg_c_surfacefactory.h
+	c-interface/wg_c_types.h
 
 
 	components/wg_canimframes.cpp

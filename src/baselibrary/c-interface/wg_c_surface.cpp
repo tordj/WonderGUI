@@ -1,0 +1,255 @@
+/*=========================================================================
+
+						 >>> WonderGUI <<<
+
+  This file is part of Tord Jansson's WonderGUI Graphics Toolkit
+  and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
+
+							-----------
+
+  The WonderGUI Graphics Toolkit is free software; you can redistribute
+  this file and/or modify it under the terms of the GNU General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+							-----------
+
+  The WonderGUI Graphics Toolkit is also available for use in commercial
+  closed-source projects under a separate license. Interested parties
+  should contact Tord Jansson [tord.jansson@gmail.com] for details.
+
+=========================================================================*/
+
+#include <wg_c_surface.h>
+#include <wg_surface.h>
+
+using namespace wg;
+
+inline Surface* getPtr(wg_obj obj) {
+	return static_cast<Surface*>(reinterpret_cast<Object*>(obj));
+}
+
+
+
+
+void wg_setSurfaceIdentity(wg_obj surface, int id)
+{
+	getPtr(surface)->setIdentity(id);
+}
+
+
+int wg_surfaceIdentity(wg_obj surface)
+{
+	return getPtr(surface)->identity();
+}
+
+
+wg_sizeI wg_surfacePixelSize(wg_obj surface)
+{
+	return * (wg_sizeI*) &getPtr(surface)->pixelSize();
+}
+
+
+int wg_surfacePixelWidth(wg_obj surface)
+{
+	return getPtr(surface)->pixelWidth();
+}
+
+
+int wg_surfacePixelHeight(wg_obj surface)
+{
+	return getPtr(surface)->pixelHeight();
+}
+
+
+wg_size wg_surfacePointSize(wg_obj surface)
+{
+	return *(wg_size*)&getPtr(surface)->pointSize();
+}
+
+
+wg_pts wg_surfacePointWidth(wg_obj surface)
+{
+	return getPtr(surface)->pointWidth();
+}
+
+
+wg_pts wg_surfacePointHeight(wg_obj surface)
+{
+	return getPtr(surface)->pointHeight();
+}
+
+
+void wg_setSurfaceScale(wg_obj surface, int scale)
+{
+	getPtr(surface)->setScale(scale);
+}
+
+
+int wg_surfaceScale(wg_obj surface)
+{
+	return getPtr(surface)->scale();
+}
+
+
+wg_sampleMethod	wg_surfaceSampleMethod(wg_obj surface)
+{
+	return (wg_sampleMethod) getPtr(surface)->sampleMethod();
+
+}
+
+
+int wg_surfaceIsTiling(wg_obj surface)
+{
+	return getPtr(surface)->isTiling();
+}
+
+
+int wg_surfaceIsMipmapped(wg_obj surface)
+{
+	return getPtr(surface)->isMipmapped();
+}
+
+
+int wg_surfaceAlpha(wg_obj surface, wg_coordSPX coord)
+{
+	return getPtr(surface)->alpha( * (CoordSPX*) &coord );
+}
+
+
+uint32_t wg_colorToPixel(wg_obj surface, const wg_color* color)
+{
+	return getPtr(surface)->colorToPixel(*(HiColor*)&color);
+}
+
+
+wg_color wg_pixelToColor(wg_obj surface, uint32_t pixel)
+{
+	auto color = getPtr(surface)->pixelToColor(pixel);
+	return *(wg_color*)&color;
+}
+
+
+const wg_color* wg_surfaceClut(wg_obj surface)
+{
+	return (const wg_color *) getPtr(surface)->clut();
+}
+
+
+const wg_pixelDescription* wg_surfacePixelDescription(wg_obj surface)
+{
+	return (const wg_pixelDescription*)getPtr(surface)->pixelDescription();
+}
+
+
+wg_pixelFormat wg_surfacePixelFormat(wg_obj surface)
+{
+	return (wg_pixelFormat) getPtr(surface)->pixelFormat();
+}
+
+
+int wg_surfacePixelBytes(wg_obj surface)
+{
+	return getPtr(surface)->pixelBytes();
+}
+
+
+int wg_isSurfaceOpaque(wg_obj surface)
+{
+	return getPtr(surface)->isOpaque();
+}
+
+
+wg_pixelBuffer wg_allocPixelBuffer(wg_obj surface)
+{
+	auto pixbuf = getPtr(surface)->allocPixelBuffer();
+	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color*)pixbuf.pClut, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
+}
+
+
+wg_pixelBuffer	wg_allocPixelBufferFromRect(wg_obj surface, const wg_rectI* rect)
+{
+	auto pixbuf = getPtr(surface)->allocPixelBuffer(* (RectI*) rect);
+	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color*)pixbuf.pClut, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
+}
+
+
+int wg_pushPixels(wg_obj surface, const wg_pixelBuffer* buffer)
+{
+	return getPtr(surface)->pushPixels( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pClut, * (RectI*)&buffer->rect, buffer->pitch });
+}
+
+
+int wg_pushPixelsFromRect(wg_obj surface, const wg_pixelBuffer* buffer, const wg_rectI* bufferRect)
+{
+	return getPtr(surface)->pushPixels( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pClut, * (RectI*)&buffer->rect, buffer->pitch }, * (const RectI*) bufferRect );
+}
+
+
+void wg_pullPixels(wg_obj surface, const wg_pixelBuffer* buffer)
+{
+	getPtr(surface)->pullPixels({ (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pClut, *(RectI*)&buffer->rect, buffer->pitch });
+}
+
+
+void wg_pullPixelsFromRect(wg_obj surface, const wg_pixelBuffer* buffer, const wg_rectI* bufferRect)
+{
+	getPtr(surface)->pullPixels({ (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pClut, *(RectI*)&buffer->rect, buffer->pitch }, *(const RectI*)bufferRect);
+}
+
+
+void wg_freePixelBuffer(wg_obj surface, const wg_pixelBuffer* buffer)
+{
+	getPtr(surface)->freePixelBuffer( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pClut, *(RectI*)&buffer->rect, buffer->pitch } );
+}
+
+
+int wg_fillSurface(wg_obj surface, wg_color color)
+{
+	return getPtr(surface)->fill(*(HiColor*)&color);
+}
+
+
+int wg_fillSurfaceRect(wg_obj surface, const wg_rectI* region, wg_color color )
+{
+	return getPtr(surface)->fill( * (const RectI*) region, * (HiColor*)&color);
+}
+
+
+int wg_copySurfaceRect(wg_obj destSurface, wg_coordI dest, wg_obj sourceSurface, const wg_rectI* srcRect )
+{
+	return getPtr(destSurface)->copy(*(CoordI*) &dest, getPtr(sourceSurface), * (const RectI*) srcRect );
+
+}
+
+
+int wg_copySurface(wg_obj destSurface, wg_coordI dest, wg_obj sourceSurface)
+{
+	return getPtr(destSurface)->copy( *(CoordI*) &dest, getPtr(sourceSurface) );
+
+}
+
+
+void wg_setSurfaceBaggage(wg_obj surface, wg_obj baggage)
+{
+	getPtr(surface)->setBaggage(reinterpret_cast<Object*>(baggage));
+}
+
+
+wg_obj wg_surfaceBaggage(wg_obj surface)
+{
+	return (wg_obj)getPtr(surface)->baggage().rawPtr();
+}
+
+
+int wg_addSurfaceObserver(wg_obj surface, wg_surfaceObserver_func func)
+{
+	return getPtr(surface)->addObserver([func](int nRects, const RectSPX* pRects) { func(nRects, (const wg_rectSPX*)pRects); } );
+
+}
+
+
+int	wg_removeSurfaceObserver(wg_obj surface, int observerId)
+{
+	return getPtr(surface)->removeObserver(observerId);
+}

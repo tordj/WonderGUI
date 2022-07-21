@@ -85,9 +85,8 @@ namespace wg
 	 * them into another as a way of copying content between them. Use Surface::copyFrom() for that.
 	 */
 
-	class PixelBuffer
+	struct PixelBuffer
 	{
-	public:
 		PixelFormat		format;
 		uint8_t*		pPixels;
 		const Color8*	pClut;
@@ -249,10 +248,10 @@ namespace wg
 
 		//.____  Rendering ____________________________________________________
 
-		virtual bool		fill( HiColor col );								///< @brief Fill surface with specified color.
-		virtual bool		fill( HiColor col, const RectI& region );			///< @brief Fill section of surface with specified color
-		virtual bool		copyFrom( Surface * pSrcSurf, const RectI& srcRect, CoordI dst );	///< @brief Copy block of graphics from other surface
-		virtual bool		copyFrom( Surface * pSrcSurf, CoordI dst );		///< @brief Copy other surface as a block
+		virtual bool		fill( HiColor color );								///< @brief Fill surface with specified color.
+		virtual bool		fill(const RectI& region, HiColor color );			///< @brief Fill section of surface with specified color
+		virtual bool		copy( CoordI dest, Surface * pSrcSurf, const RectI& srcRect );	///< @brief Copy block of graphics from other surface
+		virtual bool		copy( CoordI dest, Surface * pSrcSurf );		///< @brief Copy other surface as a block
 
 		//.____ Misc _________________________________________________________
 
@@ -268,15 +267,15 @@ namespace wg
 
 		struct Observer
 		{
-			int id;
+			int id = 0;
 			std::function<void(int nRects, const RectSPX* pRects)>	func;
-			Observer* pNext;
+			Observer* pNext = nullptr;
 		};
 
 		static const uint8_t *	s_pixelConvTabs[9];
 
 		void				_notifyObservers(int nRects, const RectSPX* pRects);
-		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color8 * pCLUT = nullptr );
+		bool 				_copy(const RectI& dstRect, const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const Color8 * pCLUT = nullptr );
 		int					_alpha(CoordSPX coord, const PixelBuffer& buffer);
 
         static bool         _isBlueprintValid( const Blueprint& bp, SizeI maxSize, Surface * pOther = nullptr );

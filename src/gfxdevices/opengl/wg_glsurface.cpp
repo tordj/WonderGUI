@@ -296,7 +296,7 @@ namespace wg
             m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
             m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
 
-            _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size, m_size);
+            _copy(m_size, pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size);
 
 			// Setup CLUT before calling _setupGlTexture().
 
@@ -323,7 +323,7 @@ namespace wg
                 m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
                 m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
 
-                _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size, m_size);
+                _copy(m_size, pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size);
 
                 _setupGlTexture(m_pBlob->data(), m_pitch);
             }
@@ -369,7 +369,7 @@ namespace wg
 
             m_pitch = m_size.w * m_pixelSize;
             m_pBlob = Blob::create(m_pitch * m_size.h + (m_pixelDescription.bIndexed ? 1024 : 0));
-            _copyFrom(pOther->pixelDescription(), pixbuf.pPixels, pixbuf.pitch, m_size, m_size);
+            _copy(m_size, pOther->pixelDescription(), pixbuf.pPixels, pixbuf.pitch, m_size);
 
             if (m_pixelDescription.bIndexed)
             {

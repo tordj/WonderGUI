@@ -232,7 +232,7 @@ namespace wg
 
 		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.clut ? 1024 : 0) );
 
-		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, bp.size, bp.size);
+		_copy(bp.size, pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, bp.size);
 
 		// No _sendPixels() needed here, _copyFrom() calls pullPixels() which calls _sendPixels().
 
@@ -296,8 +296,8 @@ namespace wg
 		{
 			m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0));
 
-            // _copyFrom() implicitly calls _sendPixels().
-			_copyFrom(&m_pixelDescription, pixelbuffer.pPixels, pitch, RectI(size), RectI(size));
+            // _copy() implicitly calls _sendPixels().
+			_copy(RectI(size), &m_pixelDescription, pixelbuffer.pPixels, pitch, RectI(size));
 
 			if (pOther->clut())
 			{
@@ -418,26 +418,26 @@ namespace wg
 
 	//____ fill() _____________________________________________________________
 
-	bool StreamSurface::fill(HiColor col)
+	bool StreamSurface::fill(HiColor color)
 	{
-		return fill(col, RectI(0, 0, pixelSize()));
+		return fill(RectI(0, 0, pixelSize()), color );
 	}
 
-	bool StreamSurface::fill(HiColor col, const RectI& region)
+	bool StreamSurface::fill(const RectI& region, HiColor color )
 	{
 		// Stream the call
 
 		*m_pEncoder << GfxStream::Header{ GfxChunkId::FillSurface, 0, 14 };
 		*m_pEncoder << m_inStreamId;
 		*m_pEncoder << region;
-		*m_pEncoder << col;
+		*m_pEncoder << color;
 		m_pEncoder->flush();
 
 		// Update local copy or alpha channel (if any)
 
 		if (m_pBlob)
 		{
-			uint32_t pixel = colorToPixel(col);
+			uint32_t pixel = colorToPixel(color);
 			int w = region.w;
 			int h = region.h;
 			int p = m_pitch;
@@ -494,7 +494,7 @@ namespace wg
 		else if (m_pAlphaLayer)
 		{
 			for (int i = 0; i < m_size.w*m_size.h; i++)
-				m_pAlphaLayer[i] = col.a;
+				m_pAlphaLayer[i] = color.a;
 		}
 
 		//
