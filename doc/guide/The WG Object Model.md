@@ -1,6 +1,6 @@
 ### The WG Object Model
 
-*WonderGUI uses its own system of smart pointers and reference counted objects. From a user perspective It is in many ways similar to, STL's shared_ptr and weak_ptr but it is very different under the hood and more tightly integrated with WonderGUI.*
+*WonderGUI uses its own system of reference counted objects with smart pointers. From a user perspective It is in many ways similar to, STL's shared_ptr and weak_ptr but it is very different under the hood and more tightly integrated with WonderGUI.*
 
 
 
@@ -18,7 +18,7 @@ wg::Object is the base class for all reference counted objects. It contains the 
 
 #### Creating objects
 
-Every class derived from Object that can be instantiated has a static method called create(). To create a Button (one of the simplest widgets) you simply call Button::create(). A shared pointer to the object is returned if object could be created. A error is sent to the error handler registered in wg::Base and a nullptr is returned if the object could not be created.
+Every class derived from Object that can be instantiated has a static method called create(). To create a Button (one of the simplest widgets) you simply call Button::create(). A shared pointer to the object is returned if object could be created. An error is sent to the error handler (registered in wg::Base) and a nullptr is returned if the object could not be created.
 
 Object creation in WonderGUI will fail more often than when using new, because WonderGUI will rather fail and return a nullptr than return a broken object due to invalid construction parameters.
 
@@ -44,7 +44,7 @@ Button_wp	pMyButton2;
 
 The only overhead of a StrongPtr compared to a raw C-pointer is the increment or "decrement with compare" of the reference count when creating, copying and destroying pointers. The StrongPtr is the same size as a normal C-pointer and there is no extra data allocated.
 
-A WeakPtr on the other hand has some extra overhead, since a separate struct is needed to contain reference count and pointer to the Object. Having more than one WeakPtr pointing to the same Object doesn't cost extra, they share the same struct.
+A WeakPtr on the other hand adds some extra overhead. A separate, small struct is allocated and linked to the object, containing  count of weak pointers and a pointer to the Object. Having more than one WeakPtr pointing to the same Object doesn't cost extra, they share the same struct.
 
 
 
