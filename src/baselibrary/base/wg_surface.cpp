@@ -81,12 +81,14 @@ namespace wg
 
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
-		m_size = bp.size;
-		m_scale = bp.scale;
-		m_sampleMethod = method;
-		m_bTiling = bp.tiling;
-        m_bCanvas = bp.canvas;
-		m_id = bp.id;
+		m_size			= bp.size;
+		m_scale			= bp.scale;
+		m_sampleMethod	= method;
+		m_bTiling		= bp.tiling;
+        m_bCanvas		= bp.canvas;
+		m_bBuffered		= bp.buffered;
+		m_bDynamic		= bp.dynamic;
+		m_id			= bp.id;
 	}
 
 
@@ -101,6 +103,20 @@ namespace wg
 	const TypeInfo& Surface::typeInfo(void) const
 	{
 		return TYPEINFO;
+	}
+
+	//____ setScale() _________________________________________________________
+
+	void Surface::setScale(int scale)
+	{
+		m_scale = scale;
+	}
+
+	//____ scale() ____________________________________________________________
+
+	int Surface::scale() const
+	{
+		return m_scale;
 	}
 
 	//____ setTiling() ________________________________________________________
@@ -418,6 +434,28 @@ namespace wg
 			p = p->pNext;
 		}
 	}
+
+	//____ blueprint() ________________________________________________________
+
+	Surface::Blueprint Surface::blueprint() const
+	{
+		Blueprint bp;
+
+		bp.buffered = m_bBuffered;
+		bp.canvas = m_bCanvas;
+		bp.clut = m_pClut;
+		bp.dynamic = m_bDynamic;
+		bp.format = m_pixelDescription.format;
+		bp.id = m_id;
+		bp.mipmap = m_bMipmapped;
+		bp.sampleMethod = m_sampleMethod;
+		bp.scale = m_scale;
+		bp.size = m_size;
+		bp.tiling = m_bTiling;
+
+		return bp;
+	}
+
 
 	//_____ copy() _____________________________________________________________
 	/**

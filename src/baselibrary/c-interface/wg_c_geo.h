@@ -26,96 +26,103 @@
 
 #include <stdint.h>
 
-typedef int		wg_spx;
-typedef float	wg_pts;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
-struct wg_coordI
-{
-	int	x, y;
-};
-
-struct wg_coordF
-{
-	float	x, y;
-};
-
-struct wg_coord
-{
-	wg_pts	x, y;
-};
+	typedef int		wg_spx;
+	typedef float	wg_pts;
 
 
-struct wg_coordSPX
-{
-	wg_spx	x, y;
-};
+	struct wg_coordI
+	{
+		int	x, y;
+	};
+
+	struct wg_coordF
+	{
+		float	x, y;
+	};
+
+	struct wg_coord
+	{
+		wg_pts	x, y;
+	};
 
 
-struct wg_sizeI
-{
-	int	w, h;
-};
-
-struct wg_sizeF
-{
-	float	w, h;
-};
-
-struct wg_size
-{
-	wg_pts	w, h;
-};
+	struct wg_coordSPX
+	{
+		wg_spx	x, y;
+	};
 
 
-struct wg_sizeSPX
-{
-	wg_spx	w, h;
-};
+	struct wg_sizeI
+	{
+		int	w, h;
+	};
+
+	struct wg_sizeF
+	{
+		float	w, h;
+	};
+
+	struct wg_size
+	{
+		wg_pts	w, h;
+	};
 
 
-struct wg_borderI
-{
-	int	top, right, bottom, left;
-};
-
-struct wg_borderF
-{
-	float	top, right, bottom, left;
-};
-
-struct wg_border
-{
-	wg_pts	top, right, bottom, left;
-};
-
-struct wg_borderSPX
-{
-	wg_spx	top, right, bottom, left;
-};
+	struct wg_sizeSPX
+	{
+		wg_spx	w, h;
+	};
 
 
-struct wg_rectI
-{
-	int	x, y, w, h;
-};
+	struct wg_borderI
+	{
+		int	top, right, bottom, left;
+	};
 
-struct wg_rectF
-{
-	float	x, y, w, h;
-};
+	struct wg_borderF
+	{
+		float	top, right, bottom, left;
+	};
 
-struct wg_rect
-{
-	wg_pts	x, y, w, h;
-};
+	struct wg_border
+	{
+		wg_pts	top, right, bottom, left;
+	};
+
+	struct wg_borderSPX
+	{
+		wg_spx	top, right, bottom, left;
+	};
 
 
-struct wg_rectSPX
-{
-	wg_spx	x, y, w, h;
-};
+	struct wg_rectI
+	{
+		int	x, y, w, h;
+	};
+
+	struct wg_rectF
+	{
+		float	x, y, w, h;
+	};
+
+	struct wg_rect
+	{
+		wg_pts	x, y, w, h;
+	};
 
 
+	struct wg_rectSPX
+	{
+		wg_spx	x, y, w, h;
+	};
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif 

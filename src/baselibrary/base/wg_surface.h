@@ -193,8 +193,8 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		inline void         setIdentity(int id);
-		inline int          identity() const;
+		inline void			setIdentity(int id);
+		inline int			identity() const;
 
 		//.____ Geometry _________________________________________________
 
@@ -206,8 +206,8 @@ namespace wg
 		inline pts			pointWidth() const;
 		inline pts			pointHeight() const;
 
-		inline void			setScale(int scale);
-		inline int			scale() const;
+		virtual void		setScale(int scale);		// Why do we need setScale? Should preferably only be in blueprint.
+		virtual int			scale() const;				// Need to be virtual for CAPISurface as long as we have setScale().
 
 
 		//.____ Appearance ____________________________________________________
@@ -230,6 +230,7 @@ namespace wg
 		inline int			pixelBytes() const;
 
 		inline bool			isOpaque() const;				///< @brief Check if surface is guaranteed to be entirely opaque.
+		inline bool			canBeCanvas() const;				///< @brief Check if surface can be used as canvas.
 
 		//.____ Control _______________________________________________________
 
@@ -258,8 +259,10 @@ namespace wg
 		inline void			setBaggage(Object * pBaggage);
 		inline Object_p		baggage() const;
 
-		int					addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func);
-		bool				removeObserver( int observerId );
+		virtual int			addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func);
+		virtual bool		removeObserver( int observerId );
+
+		Blueprint			blueprint() const;
 
 	protected:
 		Surface(const Blueprint& bp, PixelFormat defaultPixelFormat, SampleMethod defaultSampleMethod );
@@ -291,6 +294,8 @@ namespace wg
 		bool				m_bMipmapped = false;
 		bool				m_bTiling = false;
         bool                m_bCanvas = false;
+		bool				m_bBuffered = false;
+		bool				m_bDynamic = false;
 //		bool				m_bOpaque = false;
 
 		Color8 *			m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.
@@ -300,14 +305,14 @@ namespace wg
 	};
 
 	//____ setIdentity() ____________________________________________________________
-	/**
-	 * @brief Set the ID of this Surface
-	 * 
-	 * @param id	An integer to be saved in the Surface as its ID.
-	 * 
-	 * The ID is not used internally by WonderGUI and doesn't affect anything. It just
-	 * provides a simple way for you to tag a Surface for later identification.
-	 */
+/**
+ * @brief Set the ID of this Surface
+ *
+ * @param id	An integer to be saved in the Surface as its ID.
+ *
+ * The ID is not used internally by WonderGUI and doesn't affect anything. It just
+ * provides a simple way for you to tag a Surface for later identification.
+ */
 
 	void Surface::setIdentity(int id)
 	{
@@ -317,9 +322,9 @@ namespace wg
 	//____ identity() _______________________________________________________________
 	/**
 	 * @brief Get the ID of this Surface
-	 * 
+	 *
 	 * @return ID of this Surface. Default ID for all surfaces is 0.
-	 * 
+	 *
 	 * The ID is not used internally by WonderGUI and doesn't affect anything. It just
 	 * provides a simple way for you to tag a Surface for later identification.
 	 */
@@ -395,20 +400,6 @@ namespace wg
 		return pts(m_size.h*64)/m_scale;
 	}
 
-	//____ setScale() _________________________________________________________
-
-	void Surface::setScale( int scale )
-	{
-		m_scale = scale;
-	}
-
-	//____ scale() ____________________________________________________________
-
-	int Surface::scale() const
-	{
-		return m_scale;
-	}
-
 	//____ sampleMethod() ________________________________________________________
 
 	SampleMethod Surface::sampleMethod() const
@@ -437,6 +428,13 @@ namespace wg
 		//TODO: Indexed can also be opaque. Check their alpha on init instead?
 
 		return m_pixelDescription.A_bits == 0 && !m_pixelDescription.bIndexed ? true : false;
+	}
+
+	//____ canBeCanvas() ______________________________________________________
+
+	bool Surface::canBeCanvas() const
+	{
+		return m_bCanvas;
 	}
 
 	//____ clut() _____________________________________________________________

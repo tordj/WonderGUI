@@ -26,6 +26,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void* wg_obj;
 
 typedef void* wg_component;

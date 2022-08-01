@@ -26,21 +26,29 @@
 
 #include <wg_c_types.h>
 
-typedef	void(*wg_finalizer_func)(void*);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
-const wg_typeInfo * wg_getTypeInfo(wg_obj);
-int					wg_isInstanceOf(wg_obj, const wg_typeInfo * pTypeInfo);
-
-void				wg_setFinalizer(wg_obj, wg_finalizer_func pFinalizer);
-wg_finalizer_func	wg_finalizer(wg_obj);
-
-void				wg_retain(wg_obj);
-void				wg_release(wg_obj);
-
-int					wg_refcount(wg_obj);
+	typedef	void(*wg_finalizer_func)(void*);
 
 
+	const wg_typeInfo* wg_getTypeInfo(wg_obj);
+	int					wg_isInstanceOf(wg_obj, const wg_typeInfo* pTypeInfo);
+
+	void				wg_setFinalizer(wg_obj, wg_finalizer_func pFinalizer);
+	wg_finalizer_func	wg_finalizer(wg_obj);
+
+	void				wg_retain(wg_obj);
+	void				wg_release(wg_obj);
+
+	int					wg_refcount(wg_obj);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

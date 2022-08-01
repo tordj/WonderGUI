@@ -38,7 +38,7 @@ void wg_setSurfaceIdentity(wg_obj surface, int id)
 }
 
 
-int wg_surfaceIdentity(wg_obj surface)
+int wg_getSurfaceIdentity(wg_obj surface)
 {
 	return getPtr(surface)->identity();
 }
@@ -88,7 +88,7 @@ void wg_setSurfaceScale(wg_obj surface, int scale)
 }
 
 
-int wg_surfaceScale(wg_obj surface)
+int wg_getSurfaceScale(wg_obj surface)
 {
 	return getPtr(surface)->scale();
 }
@@ -156,9 +156,15 @@ int wg_surfacePixelBytes(wg_obj surface)
 }
 
 
-int wg_isSurfaceOpaque(wg_obj surface)
+int wg_surfaceIsOpaque(wg_obj surface)
 {
 	return getPtr(surface)->isOpaque();
+}
+
+
+int wg_surfaceCanBeCanvas(wg_obj surface)
+{
+	return getPtr(surface)->canBeCanvas();
 }
 
 
@@ -238,7 +244,7 @@ void wg_setSurfaceBaggage(wg_obj surface, wg_obj baggage)
 }
 
 
-wg_obj wg_surfaceBaggage(wg_obj surface)
+wg_obj wg_getSurfaceBaggage(wg_obj surface)
 {
 	return (wg_obj)getPtr(surface)->baggage().rawPtr();
 }
@@ -247,11 +253,33 @@ wg_obj wg_surfaceBaggage(wg_obj surface)
 int wg_addSurfaceObserver(wg_obj surface, wg_surfaceObserver_func func)
 {
 	return getPtr(surface)->addObserver([func](int nRects, const RectSPX* pRects) { func(nRects, (const wg_rectSPX*)pRects); } );
-
 }
 
 
 int	wg_removeSurfaceObserver(wg_obj surface, int observerId)
 {
 	return getPtr(surface)->removeObserver(observerId);
+}
+
+
+wg_surfaceBP wg_getSurfaceBlueprint(wg_obj surface)
+{
+	wg_surfaceBP dest{};
+
+	Surface::Blueprint src = getPtr(surface)->blueprint();
+
+	dest.buffered		= src.buffered;
+	dest.canvas			= src.canvas;
+	dest.clut			= (wg_color*)src.clut;
+	dest.dynamic		= src.dynamic;
+	dest.format			= (wg_pixelFormat) src.format;
+	dest.id				= src.id;
+	dest.mipmap			= src.mipmap;
+	dest.sampleMethod	= (wg_sampleMethod) src.sampleMethod;
+	dest.scale			= src.scale;
+	dest.size.w			= src.size.w;
+	dest.size.h			= src.size.h;
+	dest.tiling			= src.tiling;
+
+	return dest;
 }

@@ -54,7 +54,7 @@ wg_sizeI wg_maxSurfaceSize(wg_obj surfaceFactory)
 }
 
 
-wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint)
+wg_obj wg_createSurface(wg_obj factory, const wg_surfaceBP* blueprint)
 {
 	Surface::Blueprint	bp;
 	convertBlueprint(&bp, blueprint);
@@ -62,7 +62,7 @@ wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint)
 }
 
 
-wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj blob, int pitch)
+wg_obj wg_createSurfaceFromBlob(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj blob, int pitch)
 {
 	Surface::Blueprint	bp;
 	convertBlueprint(&bp, blueprint);
@@ -70,7 +70,7 @@ wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj blob,
 }
 
 
-wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription)
+wg_obj wg_createSurfaceFromBitmap(wg_obj factory, const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription)
 {
 	Surface::Blueprint	bp;
 	convertBlueprint(&bp, blueprint);
@@ -78,7 +78,7 @@ wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint, uint8_t* pPi
 }
 
 
-wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj fromSurface)
+wg_obj wg_createSurfaceFromSurface(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj fromSurface)
 {
 	Surface::Blueprint	bp;
 	convertBlueprint(&bp, blueprint);

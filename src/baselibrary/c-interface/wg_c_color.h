@@ -26,20 +26,27 @@
 
 #include <stdint.h>
 
-struct wg_color
-{
-	union
-	{
-		struct
-		{
-			int16_t b;
-			int16_t g;
-			int16_t r;
-			int16_t a;
-		};
-		int64_t argb;
-	};
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+	struct wg_color
+	{
+		union
+		{
+			struct
+			{
+				int16_t b;
+				int16_t g;
+				int16_t r;
+				int16_t a;
+			};
+			int64_t argb;
+		};
+	};
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

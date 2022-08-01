@@ -87,7 +87,7 @@ There are three ways to create and use a Blueprint depending on conditions and p
 
    1. It results in more typing and text than using designated initializers.
    2. It uses a macro, which is very short and simple but might be against project/company policy.
-   3. It is a WonderGUI-specific construct, developers not familiar with WonderGUI will go "WTF?!" the first time they see it.
+   3. It is a WonderGUI-specific construct, developers not familiar with WonderGUI might be confused the first time they see it.
    4. Error messages will get more confusing and intellisense/autocomplete-features of your IDE might not list the name of the parameters due to the macro.
 
 

@@ -48,19 +48,19 @@ namespace wg
 	 */
 
 
-	CanvasLayers_p CanvasLayers::create(const std::initializer_list<PixelFormat>& extraLayers)
+	CanvasLayers_p CanvasLayers::create(const Blueprint& bp)
 	{
 		// Sanity check
 		
-		if( extraLayers.size() > c_maxLayers )
+		if( bp.layers.size() > c_maxLayers )
 		{
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Number of layers exceeds maximum", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 		
-		for (auto& layer : extraLayers)
+		for (auto& layer : bp.layers)
 		{
-			PixelFormat format = layer;
+			PixelFormat format = layer.format;
 
 			if (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
 			{
@@ -76,22 +76,26 @@ namespace wg
 			
 		}
 
+		if (bp.defaultLayer < 0 || bp.defaultLayer > bp.layers.size())
+		{
+			Base::handleError(ErrorSeverity::Critical, ErrorCode::InvalidParam, "Default layer is out of bounds.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			return nullptr;
+		}
+
 		//
 
-		return CanvasLayers_p(new CanvasLayers(extraLayers));
+		return CanvasLayers_p(new CanvasLayers(bp));
 	}
 
 	//____ constructor() ______________________________________________________
 
-	CanvasLayers::CanvasLayers(const std::initializer_list<PixelFormat>& extraLayers)
+	CanvasLayers::CanvasLayers(const Blueprint& bp)
 	{
-		m_nbLayers = (int) extraLayers.size();
+		m_defaultLayer = bp.defaultLayer;
+		m_canvasInitializer = bp.canvasInitializer;
+		m_canvasFinalizer = bp.canvasFinalizer;
 
-		int ofs = 0;
-		for (auto& layer : extraLayers)
-		{
-			m_layers[ofs++].format = layer;
-		}
+		m_layers = bp.layers;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -114,7 +118,7 @@ namespace wg
 
 	PixelFormat CanvasLayers::layerFormat(int layer) const
 	{
-		if (layer < 1 || layer > m_nbLayers)
+		if (layer < 1 || layer > m_layers.size() )
 		{
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 			return PixelFormat::Undefined;
@@ -135,16 +139,6 @@ namespace wg
 	 * @param layer		The layer to be set as default. 0 = Base layer, 1 = First specified layer in this CanvasLayer specification.
 	 */
 
-	void CanvasLayers::setDefaultLayer(int layer)
-	{
-		if (layer < 0 || layer > m_nbLayers)
-		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
-			return;
-		}
-
-		m_defaultLayer = layer;
-	}
 
 	//____ setLayerInitializer() _______________________________________________
 	/**
@@ -171,17 +165,6 @@ namespace wg
 	 * 
 	 */
 
-    void CanvasLayers::setLayerInitializer(int layer, const std::function<void(GfxDevice*)>& func)
-    {
-		if (layer < 1 || layer > m_nbLayers)
-		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
-			return;
-		}
-
-        m_layers[layer-1].initializer = func;
-    }
-
 	//____ setLayerFinalizer() _________________________________________________
 	/**
 	 * @brief Set a lambda function to finalize the layers surface.
@@ -205,24 +188,13 @@ namespace wg
 	 * 
 	 */
 
-    void CanvasLayers::setLayerFinalizer(int layer, const std::function<void(GfxDevice*)>& func)
-    {
-		if (layer < 1 || layer > m_nbLayers)
-		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
-			return;
-		}
-
-        m_layers[layer-1].finalizer = func;
-    }
-
 	//____ setLayerBlender() ____________________________________________________
 	/**
 	 * @brief Set the lambda function for blending a layer onto base layer.
 	 * 
 	 * Sets the lambda function for blending the specified layer onto the base layer (the specified canvas surface). 
 	 * 
-	 * By default the layer is blended onto the canvas surface using the BlendMode::Blend operation. If a blend function
+	 * By default the layer is blitted onto the canvas surface using BlendMode::Blend. If a blend function
 	 * is specified, that is used instead.
 	 * 
 	 * 
@@ -241,17 +213,6 @@ namespace wg
 	 * No GfxDevice settings are saved or restored. Any settings you change will have to be saved and restored within the lambda.
 	 * 
 	 */
-
-    void CanvasLayers::setLayerBlender(int layer, const std::function<void(GfxDevice*)>& func)
-    {
-		if (layer < 1 || layer > m_nbLayers)
-		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
-			return;
-		}
-
-        m_layers[layer-1].blender = func;
-    }
 
 	//____ setCanvasInitializer() ______________________________________________
 	/**
@@ -274,11 +235,6 @@ namespace wg
 	 * 
 	 */
 
-    void CanvasLayers::setCanvasInitializer(const std::function<void(GfxDevice*)>& func)
-    {
-        m_canvasInitializer = func;
-    }
-
 	//____ setCanvasFinalizer() ________________________________________________
 	/**
 	 * @brief Set a lambda function to finalize the canvas.
@@ -299,11 +255,6 @@ namespace wg
 	 * No GfxDevice settings are saved or restored. Any settings you change will have to be saved and restored within the lambda.
 	 * 
 	 */
-
-    void CanvasLayers::setCanvasFinalizer(const std::function<void(GfxDevice*)>& func)
-    {
-        m_canvasFinalizer = func;
-    }
 
 	//____ setCanvasModifier() _________________________________________________
 	/**
@@ -327,16 +278,5 @@ namespace wg
 	 * No GfxDevice settings are saved or restored. Any settings you change will have to be saved and restored within the lambda.
 	 * 
 	 */
-
-    void CanvasLayers::setCanvasModifier(int layer, const std::function<void(GfxDevice*)>& func)
-    {
-        if (layer < 1 || layer > m_nbLayers)
-        {
-            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
-            return;
-        }
-
-        m_canvasModifiers[layer-1] = func;
-    }
 
 }

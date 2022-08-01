@@ -28,118 +28,128 @@
 #include <wg_c_geo.h>
 #include <wg_c_color.h>
 
-
-typedef void(*wg_surfaceObserver_func)(int nRects, const wg_rectSPX* pRects);
-
-
-struct wg_pixelBuffer	// NOT BINARY EQUIVALENT!
-{
-	wg_pixelFormat	format;
-	uint8_t*		pPixels;
-	const wg_color*	pClut;
-	wg_rectI		rect;
-	int				pitch;
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
-struct wg_ninePatch
-{
-	wg_rect		block;
-	wg_border	frame;
-
-	wg_pts			rigidPartXOfs;
-	wg_pts			rigidPartXLength;
-	uint8_t			rigidPartXSections;
-
-	wg_pts			rigidPartYOfs;
-	wg_pts			rigidPartYLength;
-	uint8_t			rigidPartYSections;
-};
+	typedef void(*wg_surfaceObserver_func)(int nRects, const wg_rectSPX* pRects);
 
 
-struct wg_surfaceBP				// NOT BINARY EQUIVALENT!
-{
-	uint8_t				buffered;
-	uint8_t				canvas;
-	const wg_color*		clut;
-	uint8_t				dynamic;
-	wg_pixelFormat		format;
-	int					id;
-	uint8_t				mipmap;
-	wg_sampleMethod		sampleMethod;
-	int					scale;
-	wg_sizeI			size;					// Mandatory, except when creating from other surface.
-	uint8_t				tiling;
-};
-
-//____ Identification __________________________________________
-
-void			wg_setSurfaceIdentity(wg_obj surface, int id);
-int				wg_surfaceIdentity(wg_obj surface);
-
-//____ Geometry _________________________________________________
-
-wg_sizeI		wg_surfacePixelSize(wg_obj surface);						///< @brief Get the size in pixels of the surface.
-int				wg_surfacePixelWidth(wg_obj surface);						///< @brief Get the width of the surface.
-int				wg_surfacePixelHeight(wg_obj surface);						///< @brief Get the height of the surface.
-
-wg_size			wg_surfacePointSize(wg_obj surface);
-wg_pts			wg_surfacePointWidth(wg_obj surface);
-wg_pts			wg_surfacePointHeight(wg_obj surface);
-
-void			wg_setSurfaceScale(wg_obj surface, int scale);
-int				wg_surfaceScale(wg_obj surface);
+	struct wg_pixelBuffer	// NOT BINARY EQUIVALENT!
+	{
+		wg_pixelFormat	format;
+		uint8_t* pPixels;
+		const wg_color* pClut;
+		wg_rectI		rect;
+		int				pitch;
+	};
 
 
-//____ Appearance ____________________________________________________
+	struct wg_ninePatch
+	{
+		wg_rect		block;
+		wg_border	frame;
 
-wg_sampleMethod	wg_surfaceSampleMethod(wg_obj surface);
-int				wg_surfaceIsTiling(wg_obj surface);
-int				wg_surfaceIsMipmapped(wg_obj surface);
+		wg_pts			rigidPartXOfs;
+		wg_pts			rigidPartXLength;
+		uint8_t			rigidPartXSections;
 
-//____ Content _______________________________________________________
-
-int				wg_surfaceAlpha(wg_obj surface, wg_coordSPX coord);	///< @brief Get Alpha value of subpixel at specified coordinate.
-
-uint32_t		wg_colorToPixel(wg_obj surface, const wg_color* col);		///< @brief Convert specified color to a pixel in surface's native format.
-wg_color		wg_pixelToColor(wg_obj surface, uint32_t pixel);		///< @brief Get the color and alpha values of a pixel.
-
-const wg_color* wg_surfaceClut(wg_obj surface);
-
-const wg_pixelDescription* wg_surfacePixelDescription(wg_obj surface); ///< @brief Get the pixel description for the surface.
-wg_pixelFormat	wg_surfacePixelFormat(wg_obj surface);
-int				wg_surfacePixelBytes(wg_obj surface);
-
-int				wg_isSurfaceOpaque(wg_obj surface);				///< @brief Check if surface is guaranteed to be entirely opaque.
-
-//____ Control _______________________________________________________
-
-wg_pixelBuffer	wg_allocPixelBuffer(wg_obj surface);
-wg_pixelBuffer	wg_allocPixelBufferFromRect(wg_obj surface, const wg_rectI* rect);
-
-int				wg_pushPixels(wg_obj surface, const wg_pixelBuffer* buffer);
-int				wg_pushPixelsFromRect(wg_obj surface, const wg_pixelBuffer* buffer, const wg_rectI* bufferRect);
-
-void			wg_pullPixels(wg_obj surface, const wg_pixelBuffer* buffer);
-void			wg_pullPixelsFromRect(wg_obj surface, const wg_pixelBuffer* buffer, const wg_rectI* bufferRect);			// Needs to be overridden!
-
-void			wg_freePixelBuffer(wg_obj surface, const wg_pixelBuffer* buffer);
+		wg_pts			rigidPartYOfs;
+		wg_pts			rigidPartYLength;
+		uint8_t			rigidPartYSections;
+	};
 
 
-//____  Rendering ____________________________________________________
+	struct wg_surfaceBP				// NOT BINARY EQUIVALENT!
+	{
+		uint8_t				buffered;
+		uint8_t				canvas;
+		const wg_color* clut;
+		uint8_t				dynamic;
+		wg_pixelFormat		format;
+		int					id;
+		uint8_t				mipmap;
+		wg_sampleMethod		sampleMethod;
+		int					scale;
+		wg_sizeI			size;					// Mandatory, except when creating from other surface.
+		uint8_t				tiling;
+	};
 
-int				wg_fillSurface(wg_obj surface, wg_color col);								///< @brief Fill surface with specified color.
-int				wg_fillSurfaceRect(wg_obj surface, wg_color col, const wg_rectI* region);			///< @brief Fill section of surface with specified color
-int				wg_copySurfaceRect(wg_obj destSurface, wg_coordI dst, wg_obj sourceSurface, const wg_rectI* srcRect );	///< @brief Copy block of graphics from other surface
-int				wg_copySurface(wg_obj destSurface, wg_coordI dst, wg_obj sourceSurface );		///< @brief Copy other surface as a block
+	//____ Identification __________________________________________
 
-//____ Misc _________________________________________________________
+	void			wg_setSurfaceIdentity(wg_obj surface, int id);
+	int				wg_getSurfaceIdentity(wg_obj surface);
 
-void			wg_setSurfaceBaggage(wg_obj surface, wg_obj baggage);
-wg_obj			wg_surfaceBaggage(wg_obj surface);
+	//____ Geometry _________________________________________________
 
-int				wg_addSurfaceObserver(wg_obj surface, wg_surfaceObserver_func);
-int				wg_removeSurfaceObserver(wg_obj surface, int observerId);
+	wg_sizeI		wg_surfacePixelSize(wg_obj surface);						///< @brief Get the size in pixels of the surface.
+	int				wg_surfacePixelWidth(wg_obj surface);						///< @brief Get the width of the surface.
+	int				wg_surfacePixelHeight(wg_obj surface);						///< @brief Get the height of the surface.
 
+	wg_size			wg_surfacePointSize(wg_obj surface);
+	wg_pts			wg_surfacePointWidth(wg_obj surface);
+	wg_pts			wg_surfacePointHeight(wg_obj surface);
+
+	void			wg_setSurfaceScale(wg_obj surface, int scale);
+	int				wg_getSurfaceScale(wg_obj surface);
+
+
+	//____ Appearance ____________________________________________________
+
+	wg_sampleMethod	wg_surfaceSampleMethod(wg_obj surface);
+	int				wg_surfaceIsTiling(wg_obj surface);
+	int				wg_surfaceIsMipmapped(wg_obj surface);
+
+	//____ Content _______________________________________________________
+
+	int				wg_surfaceAlpha(wg_obj surface, wg_coordSPX coord);	///< @brief Get Alpha value of subpixel at specified coordinate.
+
+	uint32_t		wg_colorToPixel(wg_obj surface, const wg_color* col);		///< @brief Convert specified color to a pixel in surface's native format.
+	wg_color		wg_pixelToColor(wg_obj surface, uint32_t pixel);		///< @brief Get the color and alpha values of a pixel.
+
+	const wg_color* wg_surfaceClut(wg_obj surface);
+
+	const wg_pixelDescription* wg_surfacePixelDescription(wg_obj surface); ///< @brief Get the pixel description for the surface.
+	wg_pixelFormat	wg_surfacePixelFormat(wg_obj surface);
+	int				wg_surfacePixelBytes(wg_obj surface);
+
+	int				wg_surfaceIsOpaque(wg_obj surface);				///< @brief Check if surface is guaranteed to be entirely opaque.
+	int				wg_surfaceCanBeCanvas(wg_obj surface);
+
+	//____ Control _______________________________________________________
+
+	wg_pixelBuffer	wg_allocPixelBuffer(wg_obj surface);
+	wg_pixelBuffer	wg_allocPixelBufferFromRect(wg_obj surface, const wg_rectI* rect);
+
+	int				wg_pushPixels(wg_obj surface, const wg_pixelBuffer* buffer);
+	int				wg_pushPixelsFromRect(wg_obj surface, const wg_pixelBuffer* buffer, const wg_rectI* bufferRect);
+
+	void			wg_pullPixels(wg_obj surface, const wg_pixelBuffer* buffer);
+	void			wg_pullPixelsFromRect(wg_obj surface, const wg_pixelBuffer* buffer, const wg_rectI* bufferRect);			// Needs to be overridden!
+
+	void			wg_freePixelBuffer(wg_obj surface, const wg_pixelBuffer* buffer);
+
+
+	//____  Rendering ____________________________________________________
+
+	int				wg_fillSurface(wg_obj surface, wg_color col);								///< @brief Fill surface with specified color.
+	int				wg_fillSurfaceRect(wg_obj surface, const wg_rectI* region, wg_color col);			///< @brief Fill section of surface with specified color
+	int				wg_copySurface(wg_obj destSurface, wg_coordI dst, wg_obj sourceSurface);		///< @brief Copy other surface as a block
+	int				wg_copySurfaceRect(wg_obj destSurface, wg_coordI dst, wg_obj sourceSurface, const wg_rectI* srcRect);	///< @brief Copy block of graphics from other surface
+
+	//____ Misc _________________________________________________________
+
+	void			wg_setSurfaceBaggage(wg_obj surface, wg_obj baggage);
+	wg_obj			wg_getSurfaceBaggage(wg_obj surface);
+
+	int				wg_addSurfaceObserver(wg_obj surface, wg_surfaceObserver_func);
+	int				wg_removeSurfaceObserver(wg_obj surface, int observerId);
+
+	wg_surfaceBP	wg_getSurfaceBlueprint(wg_obj surface);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

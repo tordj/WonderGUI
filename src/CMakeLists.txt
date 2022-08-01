@@ -32,6 +32,7 @@ include_directories(
 	gfxdevices/opengl
 	gfxdevices/stream
 	gfxdevices/metal
+	gfxdevices/c-api
 
 	fontengines/freetype
 
@@ -98,6 +99,7 @@ add_subdirectory(baselibrary)
 add_subdirectory(gfxdevices/software)
 add_subdirectory(gfxdevices/stream)
 add_subdirectory(gfxdevices/opengl)
+add_subdirectory(gfxdevices/c-api)
 if(APPLE)
 	add_subdirectory(gfxdevices/metal)
 endif()
@@ -116,6 +118,11 @@ if(MSVC)
 	target_compile_options(gfxworkbench PRIVATE "/MP")
 	target_compile_options(wgsoftgfx PRIVATE "/MP")
 	target_compile_options(wgopenglgfx PRIVATE "/MP")
+	target_compile_options(wgstreamgfx PRIVATE "/MP")
+	target_compile_options(wgcapigfx PRIVATE "/MP")
 	target_compile_options(wondergui PRIVATE "/MP")
 	target_compile_options(workbench PRIVATE "/MP")
+	target_compile_options(streamgenerator PRIVATE "/MP")
+	target_compile_options(streamanalyzer PRIVATE "/MP")
+
 endif()

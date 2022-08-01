@@ -26,15 +26,23 @@
 
 #include <wg_c_surface.h>
 
-//.____ Geometry _________________________________________________
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-wg_sizeI		wg_maxSurfaceSize(wg_obj surfaceFactory);
+	//.____ Geometry _________________________________________________
 
-//.____ Misc _______________________________________________________
+	wg_sizeI		wg_maxSurfaceSize(wg_obj surfaceFactory);
 
-wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint);
-wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj blob, int pitch);
-wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription);
-wg_obj	createSurface(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj fromSurface);
+	//.____ Misc _______________________________________________________
+
+	wg_obj	wg_createSurface(wg_obj factory, const wg_surfaceBP* blueprint);
+	wg_obj	wg_createSurfaceFromBlob(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj blob, int pitch);
+	wg_obj	wg_createSurfaceFromBitmap(wg_obj factory, const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription);
+	wg_obj	wg_createSurfaceFromSurface(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj fromSurface);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

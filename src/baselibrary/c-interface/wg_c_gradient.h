@@ -26,14 +26,22 @@
 
 #include <wg_c_color.h>
 
-struct wg_gradient
-{
-	uint8_t		isValid;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-	wg_color	topLeft;
-	wg_color	topRight;
-	wg_color	bottomRight;
-	wg_color	bottomLeft;
-};
+	struct wg_gradient
+	{
+		uint8_t		isValid;
+
+		wg_color	topLeft;
+		wg_color	topRight;
+		wg_color	bottomRight;
+		wg_color	bottomLeft;
+	};
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

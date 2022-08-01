@@ -9,6 +9,7 @@ The immutable resource objects includes the following:
 * Layout objects (TextLayout, NumberLayout, PackLayout etc)
 * Fonts (not technically true at the moment, but will be refactored)
 * Cursors
+* CanvasLayers
 
 Although these can be created anytime during the program cycle, the intended use is to create all that will be needed once during program start and have widgets share them. Widgets can swap one for another if needed, but should rarely have new ones created specifically for them.
 
@@ -22,7 +23,7 @@ A small example to clarify how resource should be handled:
 *** RIGHT WAY! ***
 
 	// At initialization
-	auto pWhiteSkin = ColorSkin::create( Color::White );											
+	auto pWhiteSkin = ColorSkin::create( Color::White );					
 	auto pBlackSkin = ColorSkin::create( Color::Black );
 										
 	// Later on changing color of a widget.
@@ -35,6 +36,6 @@ A small example to clarify how resource should be handled:
 
 Doing it the wrong way will create and destroy resources repeatedly. The cost in this case is negligible but doing the same in other places could result in the unnecessary creation of a large amount of resources, increasing memory consumption and decreasing performance. 
 
-There is also a hard limit on some resources, there can be no more than 65535 TextStyle objects at any given time. Creating a new TextStyle for each entry in a table could make you quickly reach this limit.
+There is also a hard limit on some resources, e.g. there can be no more than 65535 TextStyle objects at any given time. Creating a new TextStyle for each entry in a table could make you quickly reach this limit.
 
-Creating immutable resources on the fly might be the right thing to do in certain cases, but you should always stop and think before doing it.
+Creating immutable resources on the fly might be the right thing to do in some cases, but you should always stop and think before doing it.
