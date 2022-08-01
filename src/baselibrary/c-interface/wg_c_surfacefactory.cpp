@@ -49,7 +49,8 @@ void convertBlueprint(Surface::Blueprint* pDest, const wg_surfaceBP* pSource)
 
 wg_sizeI wg_maxSurfaceSize(wg_obj surfaceFactory)
 {
-	return *(wg_sizeI*) &getPtr(surfaceFactory)->maxSize();
+    SizeI size = getPtr(surfaceFactory)->maxSize();
+    return *(wg_sizeI*) &size;
 }
 
 

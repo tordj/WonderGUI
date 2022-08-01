@@ -28,6 +28,8 @@
 
 typedef void* wg_obj;
 
+typedef void* wg_component;
+
 //____ wg_typeInfo ___________________________________________________________
 
 struct wg_typeInfo

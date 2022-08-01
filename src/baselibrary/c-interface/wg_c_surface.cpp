@@ -46,7 +46,8 @@ int wg_surfaceIdentity(wg_obj surface)
 
 wg_sizeI wg_surfacePixelSize(wg_obj surface)
 {
-	return * (wg_sizeI*) &getPtr(surface)->pixelSize();
+    SizeI size = getPtr(surface)->pixelSize();
+    return * (wg_sizeI*) &size;
 }
 
 
@@ -64,7 +65,8 @@ int wg_surfacePixelHeight(wg_obj surface)
 
 wg_size wg_surfacePointSize(wg_obj surface)
 {
-	return *(wg_size*)&getPtr(surface)->pointSize();
+    Size size = getPtr(surface)->pointSize();
+    return *(wg_size*)&size;
 }
 
 
