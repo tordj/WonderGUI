@@ -88,8 +88,8 @@
 #include <wg_cdynamicslotcollection.h>
 #include <wg_cdynamicslotvector.h>
 #include <wg_cdynamicvector.h>
-#include <wg_cgfxinstream.h>
-#include <wg_cgfxoutstream.h>
+#include <wg_cgfxstreamsink.h>
+#include <wg_cgfxstreamsource.h>
 #include <wg_cicondisplay.h>
 #include <wg_cnumberdisplay.h>
 #include <wg_cnumbereditor.h>

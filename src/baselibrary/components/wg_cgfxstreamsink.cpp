@@ -20,15 +20,23 @@
 
 =========================================================================*/
 
-#include <wg_cgfxinstream.h>
+#include <wg_cgfxstreamsink.h>
+#include <assert.h>
 
 namespace wg
 {
-	const TypeInfo CGfxInStream::TYPEINFO = { "CGfxInStream", &Component::TYPEINFO };
+	const TypeInfo CGfxStreamSink::TYPEINFO = { "CGfxStreamSink", &Component::TYPEINFO };
+
+	//____ constructor ________________________________________________________
+
+	CGfxStreamSink::CGfxStreamSink(CGfxStreamSink::Holder * pHolder) :
+		m_pHolder(pHolder)
+	{
+	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CGfxInStream::typeInfo(void) const
+	const TypeInfo& CGfxStreamSink::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}

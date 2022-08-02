@@ -27,7 +27,7 @@
 #include <iostream>
 
 #include <wg_object.h>
-#include <wg_cgfxoutstream.h>
+#include <wg_cgfxstreamsink.h>
 #include <wg_gfxstream.h>
 #include <wg_gfxstreamdecoder.h>
 
@@ -38,7 +38,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamLogger>	GfxStreamLogger_p;
 	typedef	WeakPtr<GfxStreamLogger>	GfxStreamLogger_wp;
 
-	class GfxStreamLogger : public Object, protected CGfxOutStream::Holder
+	class GfxStreamLogger : public Object, protected CGfxStreamSink::Holder
 	{
 	public:
 
@@ -48,7 +48,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxOutStream		input;
+		CGfxStreamSink		input;
 
 		//.____ Identification __________________________________________
 

@@ -24,7 +24,7 @@
 #define	WG_GFXSTREAMENCODER_DOT_H
 #pragma once
 
-#include <wg_cgfxoutstream.h>
+#include <wg_cgfxstreamsink.h>
 #include <wg_types.h>
 #include <wg_geo.h>
 #include <wg_color.h>
@@ -44,7 +44,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamEncoder_p	create( CGfxOutStream* pStream, int bufferBytes = GfxStream::c_maxBlockSize*2 ) { return GfxStreamEncoder_p(new GfxStreamEncoder(pStream, bufferBytes)); }
+		static GfxStreamEncoder_p	create( CGfxStreamSink* pStream, int bufferBytes = GfxStream::c_maxBlockSize*2 ) { return GfxStreamEncoder_p(new GfxStreamEncoder(pStream, bufferBytes)); }
 
 		//.____ Identification __________________________________________
 
@@ -53,7 +53,7 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		void		setStream(CGfxOutStream* pStream);
+		void		setStream(CGfxStreamSink* pStream);
 
 		void		setDefaultPixelFormat(PixelFormat pixelFormat);
 		inline PixelFormat defaultPixelFormat() const { return m_defaultPixelFormat; }
@@ -110,7 +110,7 @@ namespace wg
 
 
 	protected:
-		GfxStreamEncoder( CGfxOutStream* pStream, int bufferBytes );
+		GfxStreamEncoder( CGfxStreamSink* pStream, int bufferBytes );
 		~GfxStreamEncoder();
 
 		inline void	_reserveStream(int bytes);
@@ -134,7 +134,7 @@ namespace wg
 		int			m_capacity = 0;
 		int			m_size = 0;
 
-		CGfxOutStream_p	m_pStream;
+		CGfxStreamSink_p	m_pStream;
 	};
 
 	//____ _reserveStream() ________________________________________________________

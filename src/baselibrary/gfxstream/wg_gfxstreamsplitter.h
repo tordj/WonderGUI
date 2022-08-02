@@ -24,7 +24,7 @@
 #define	WG_GFXSTREAMSPLITTER_DOT_H
 #pragma once
 
-#include <wg_cgfxoutstream.h>
+#include <wg_cgfxstreamsink.h>
 
 #include <vector>
 
@@ -35,18 +35,18 @@ namespace wg
 	typedef	StrongPtr<GfxStreamSplitter>	GfxStreamSplitter_p;
 	typedef	WeakPtr<GfxStreamSplitter>	GfxStreamSplitter_wp;
 
-	class GfxStreamSplitter : public Object, protected CGfxOutStream::Holder
+	class GfxStreamSplitter : public Object, protected CGfxStreamSink::Holder
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
 		static GfxStreamSplitter_p	create();
-		static GfxStreamSplitter_p	create( const std::initializer_list<CGfxOutStream_p>& outputs );
+		static GfxStreamSplitter_p	create( const std::initializer_list<CGfxStreamSink_p>& outputs );
 
 		//.____ Components _______________________________________
 
-		CGfxOutStream		input;
+		CGfxStreamSink		input;
 
 		//.____ Identification __________________________________________
 
@@ -56,14 +56,14 @@ namespace wg
 		//.____ Control ________________________________________________
 		
 		void	clearOutputs();
-		void	addOutput( CGfxOutStream * pOutput );
-		void	removeOutput( CGfxOutStream * pOutput );
+		void	addOutput( CGfxStreamSink * pOutput );
+		void	removeOutput( CGfxStreamSink * pOutput );
 		
 		
 	protected:
 
 		GfxStreamSplitter();
-		GfxStreamSplitter(const std::initializer_list<CGfxOutStream_p>& outputs);
+		GfxStreamSplitter(const std::initializer_list<CGfxStreamSink_p>& outputs);
 		~GfxStreamSplitter();
 
 		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
@@ -71,7 +71,7 @@ namespace wg
 		Object *	_object() override;
 		const Object *	_object() const override;
 
-		std::vector<CGfxOutStream_p> m_outputs;
+		std::vector<CGfxStreamSink_p> m_outputs;
 	};
 
 

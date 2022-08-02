@@ -24,7 +24,7 @@
 #define	WG_GFXSTREAMWRITER_DOT_H
 #pragma once
 
-#include <wg_cgfxoutstream.h>
+#include <wg_cgfxstreamsink.h>
 
 #include <functional>
 
@@ -35,7 +35,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamWriter>	GfxStreamWriter_p;
 	typedef	WeakPtr<GfxStreamWriter>	GfxStreamWriter_wp;
 
-	class GfxStreamWriter : public Object, protected CGfxOutStream::Holder
+	class GfxStreamWriter : public Object, protected CGfxStreamSink::Holder
 	{
 	public:
 
@@ -45,7 +45,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxOutStream		input;
+		CGfxStreamSink		input;
 
 		//.____ Identification __________________________________________
 

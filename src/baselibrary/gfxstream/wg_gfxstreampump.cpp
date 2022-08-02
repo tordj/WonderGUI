@@ -39,7 +39,7 @@ namespace wg
 		return p;
 	}
 
-	GfxStreamPump_p	GfxStreamPump::create(CGfxInStream* pInput, CGfxOutStream* pOutput)
+	GfxStreamPump_p	GfxStreamPump::create(CGfxStreamSource* pInput, CGfxStreamSink* pOutput)
 	{
 		GfxStreamPump_p p(new GfxStreamPump(pInput, pOutput));
 		return p;
@@ -48,7 +48,7 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	GfxStreamPump::GfxStreamPump(CGfxInStream* pInput, CGfxOutStream* pOutput)
+	GfxStreamPump::GfxStreamPump(CGfxStreamSource* pInput, CGfxStreamSink* pOutput)
 	{
 		m_pInput = pInput;
 		m_pOutput = pOutput;
@@ -69,14 +69,14 @@ namespace wg
 
 	//____ setInput() _________________________________________________________
 
-	void GfxStreamPump::setInput(CGfxInStream* pStream)
+	void GfxStreamPump::setInput(CGfxStreamSource* pStream)
 	{
 		m_pInput = pStream;
 	}
 
 	//____ setOutput() ________________________________________________________
 
-	void GfxStreamPump::setOutput(CGfxOutStream* pStream)
+	void GfxStreamPump::setOutput(CGfxStreamSink* pStream)
 	{
 		m_pOutput = pStream;
 	}

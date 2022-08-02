@@ -173,10 +173,10 @@ add_library( wondergui
 	components/wg_cdynamicslotvector.impl.h
 	components/wg_cdynamicvector.h
 	components/wg_cdynamicvector.impl.h
-	components/wg_cgfxinstream.cpp
-	components/wg_cgfxinstream.h
-	components/wg_cgfxoutstream.cpp
-	components/wg_cgfxoutstream.h
+	components/wg_cgfxstreamsource.cpp
+	components/wg_cgfxstreamsource.h
+	components/wg_cgfxstreamsink.cpp
+	components/wg_cgfxstreamsink.h
 	components/wg_cicondisplay.cpp
 	components/wg_cicondisplay.h
 	components/wg_cnumberdisplay.cpp

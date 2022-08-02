@@ -20,23 +20,15 @@
 
 =========================================================================*/
 
-#include <wg_cgfxoutstream.h>
-#include <assert.h>
+#include <wg_cgfxstreamsource.h>
 
 namespace wg
 {
-	const TypeInfo CGfxOutStream::TYPEINFO = { "CGfxOutStream", &Component::TYPEINFO };
-
-	//____ constructor ________________________________________________________
-
-	CGfxOutStream::CGfxOutStream(CGfxOutStream::Holder * pHolder) :
-		m_pHolder(pHolder)
-	{
-	}
+	const TypeInfo CGfxStreamSource::TYPEINFO = { "CGfxStreamSource", &Component::TYPEINFO };
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CGfxOutStream::typeInfo(void) const
+	const TypeInfo& CGfxStreamSource::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}

@@ -27,7 +27,7 @@
 #include <wg_types.h>
 #include <wg_object.h>
 #include <wg_pointers.h>
-#include <wg_cgfxinstream.h>
+#include <wg_cgfxstreamsource.h>
 #include <wg_gfxstream.h>
 
 #include <functional>
@@ -39,7 +39,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamReader>	GfxStreamReader_p;
 	typedef	WeakPtr<GfxStreamReader>	GfxStreamReader_wp;
 
-	class GfxStreamReader : public Object, protected CGfxInStream::Holder
+	class GfxStreamReader : public Object, protected CGfxStreamSource::Holder
 	{
 	public:
 
@@ -49,7 +49,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxInStream		output;
+		CGfxStreamSource		output;
 
 		//.____ Identification __________________________________________
 

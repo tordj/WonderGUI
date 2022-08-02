@@ -25,8 +25,8 @@
 #pragma once
 
 #include <wg_gfxstream.h>
-#include <wg_cgfxinstream.h>
-#include <wg_cgfxoutstream.h>
+#include <wg_cgfxstreamsource.h>
+#include <wg_cgfxstreamsink.h>
 
 #include <vector>
 #include <tuple>
@@ -38,7 +38,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamBuffer>	GfxStreamBuffer_p;
 	typedef	WeakPtr<GfxStreamBuffer>	GfxStreamBuffer_wp;
 
-	class GfxStreamBuffer : public Object, protected CGfxOutStream::Holder, protected CGfxInStream::Holder
+	class GfxStreamBuffer : public Object, protected CGfxStreamSink::Holder, protected CGfxStreamSource::Holder
 	{
 	public:
 
@@ -48,8 +48,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxOutStream		input;
-		CGfxInStream		output;
+		CGfxStreamSink		input;
+		CGfxStreamSource		output;
 
 		//.____ Identification __________________________________________
 

@@ -20,28 +20,27 @@
 
 =========================================================================*/
 
-#ifndef	WG_CGFXINSTREAM_DOT_H
-#define	WG_CGFXINSTREAM_DOT_H
+#ifndef	WG_CGFXSTREAMSINK_DOT_H
+#define	WG_CGFXSTREAMSINK_DOT_H
 #pragma once
 
 #include <wg_component.h>
-#include <wg_types.h>
 #include <wg_pointers.h>
 #include <wg_gfxstream.h>
 
-#include <tuple>
+
 
 namespace wg
 {
 
-	class CGfxInStream;
-	typedef	StrongComponentPtr<CGfxInStream>	CGfxInStream_p;
-	typedef	WeakComponentPtr<CGfxInStream>		CGfxInStream_wp;
+	class CGfxStreamSink;
+	typedef	StrongComponentPtr<CGfxStreamSink>	CGfxStreamSink_p;
+	typedef	WeakComponentPtr<CGfxStreamSink>	CGfxStreamSink_wp;
 
 
-	//____ CGfxInStream ________________________________________________________
+	//____ CGfxStreamSink __________________________________________________________
 
-	class CGfxInStream : public Component
+	class CGfxStreamSink : public Component, public GfxStream
 	{
 	public:
 
@@ -50,20 +49,13 @@ namespace wg
 		class Holder /** @private */
 		{
 		public:
-
-			//TODO: Add const version?
 			virtual Object * _object() = 0;
 			virtual const Object * _object() const = 0;
 
-			virtual bool _hasStreamChunks() const = 0;
-			virtual std::tuple<int, const DataSegment *> _showStreamChunks() = 0;
-			virtual	void _discardStreamChunks(int bytes) = 0;
-			virtual bool _fetchStreamChunks() = 0;
-			virtual GfxChunkId _peekStreamChunk() = 0;
+			virtual void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) = 0;
 		};
 
-
-		CGfxInStream(Holder * pHolder) : m_pHolder(pHolder) {};
+		CGfxStreamSink(Holder * pHolder);
 
 		//.____ Identification _________________________________________________
 
@@ -72,24 +64,19 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		inline bool hasChunks() const { return m_pHolder->_hasStreamChunks(); }
-		inline std::tuple<int, const DataSegment*> showChunks() { return m_pHolder->_showStreamChunks(); }
-		inline void discardChunks(int bytes) { return m_pHolder->_discardStreamChunks(bytes); }
-		inline bool fetchChunks() { return m_pHolder->_fetchStreamChunks(); }
-		inline GfxChunkId peekChunk() { return m_pHolder->_peekStreamChunk(); }
+		inline void	processChunks(const uint8_t* pBegin, const uint8_t* pEnd) { m_pHolder->_processStreamChunks(pBegin, pEnd); }
 
 		//.____ Misc __________________________________________________
 
-		inline CGfxInStream_p	ptr() { return CGfxInStream_p(this); }
+		inline CGfxStreamSink_p	ptr() { return CGfxStreamSink_p(this); }
 
 	protected:
-		Object *		_object() override { return m_pHolder->_object(); }
-		const Object *	_object() const override { return m_pHolder->_object(); }
+		Object *				_object() override { return m_pHolder->_object(); }
+		const Object *			_object() const  override { return m_pHolder->_object(); }
 
-		Holder * 			m_pHolder;
+		Holder * 	m_pHolder;
 	};
 
 
 } // namespace wg
-#endif //WG_CGFXINSTREAM_DOT_H
-#pragma once
+#endif //WG_CGFXSTREAMSINK_DOT_H
