@@ -72,7 +72,7 @@ namespace wg
 		bool	setDefaultCanvas(SizeSPX size, int scale = 64);
 
 		using GfxDevice::canvas;
-		const CanvasInfo& canvas(CanvasRef ref) const override;
+		const CanvasInfo canvas(CanvasRef ref) const override;
 
 		//.____ State _________________________________________________
 

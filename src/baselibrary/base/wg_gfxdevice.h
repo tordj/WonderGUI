@@ -96,7 +96,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		inline const CanvasInfo& canvas() const { return m_canvas; }
-		virtual const CanvasInfo& canvas(CanvasRef ref) const = 0;
+		virtual const CanvasInfo canvas(CanvasRef ref) const = 0;
 
 		inline CanvasLayers_p 		canvasLayers() const { return m_pCanvasLayers; }
 

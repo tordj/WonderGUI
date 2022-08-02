@@ -66,7 +66,7 @@ namespace wg
 		bool		defineCanvas( CanvasRef ref, SoftSurface * pSurface );
 
 		using GfxDevice::canvas;
-		const CanvasInfo& canvas(CanvasRef ref) const override;
+		const CanvasInfo canvas(CanvasRef ref) const override;
 
 		SurfaceFactory_p	surfaceFactory() override;
 

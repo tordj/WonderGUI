@@ -505,7 +505,7 @@ MetalGfxDevice::MetalGfxDevice()
 
 	//____ canvas() ____________________________________________________________
 
-    const CanvasInfo& MetalGfxDevice::canvas(CanvasRef ref) const
+    const CanvasInfo MetalGfxDevice::canvas(CanvasRef ref) const
 	{
 		if( ref == CanvasRef::Default )
 			return m_defaultCanvas;

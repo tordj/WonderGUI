@@ -26,14 +26,21 @@
 
 #include <wg_c_types.h>
 
-wg_obj			wg_createStreamBuffer(int initialCapacity);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-wg_component	wg_getStreamBufferOutput(wg_obj streamBuffer);
-wg_component	wg_getStreamBufferInput(wg_obj streamBuffer);
+	wg_obj			wg_createStreamBuffer(int initialCapacity);
 
-int				wg_streamBufferCapacity(wg_obj streamBuffer);
-int				wg_streamBufferHasChunk(wg_obj streamBuffer);
-int				wg_streamBufferBytes(wg_obj streamBuffer);
+	wg_component	wg_getStreamBufferOutput(wg_obj streamBuffer);
+	wg_component	wg_getStreamBufferInput(wg_obj streamBuffer);
 
+	int				wg_streamBufferCapacity(wg_obj streamBuffer);
+	int				wg_streamBufferHasChunk(wg_obj streamBuffer);
+	int				wg_streamBufferBytes(wg_obj streamBuffer);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

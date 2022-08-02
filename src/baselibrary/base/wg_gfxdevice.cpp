@@ -278,11 +278,11 @@ namespace wg
             setTintColor(Color::White);
             clearTintGradient();
 
-            if( m_pCanvasLayers->_layerInitializer(m_renderLayer) != nullptr )
+            if( m_pCanvasLayers->_layerClearFunc(m_renderLayer) != nullptr )
             {
                 //NOTE! BlendMode can be anything when calling initializer.
                 
-                m_pCanvasLayers->_layerInitializer(m_renderLayer)(this);
+                m_pCanvasLayers->_layerClearFunc(m_renderLayer)(this);
             }
             else
             {
@@ -470,7 +470,7 @@ namespace wg
 
 		int layer = 0;
 		if (pCanvasLayers)
-			layer = (startLayer > 0 && startLayer <= pCanvasLayers->size()) ? startLayer : pCanvasLayers->defaultLayer();
+			layer = (startLayer > 0 && startLayer <= pCanvasLayers->size()) ? startLayer : pCanvasLayers->baseLayer();
 
         m_layerSurfaces[0] = pSurface;
 
@@ -485,10 +485,10 @@ namespace wg
         
         // Call Canvas Initializer
         
-        if( pCanvasLayers && pCanvasLayers->_canvasInitializer() != nullptr )
+        if( pCanvasLayers && pCanvasLayers->_canvasClearFunc() != nullptr )
         {
             setRenderLayer(0);
-            pCanvasLayers->_canvasInitializer()(this);
+            pCanvasLayers->_canvasClearFunc()(this);
             setRenderLayer(layer);
         }
 		return true;
@@ -551,10 +551,10 @@ namespace wg
 
                     // Call layer finalizer before blending
                     
-                    if( m_pCanvasLayers->_layerFinalizer(layerIdx) != nullptr )
+                    if( m_pCanvasLayers->_layerPreBlendFunc(layerIdx) != nullptr )
                     {
                         setRenderLayer(layerIdx);
-                        m_pCanvasLayers->_layerFinalizer(layerIdx)(this);
+                        m_pCanvasLayers->_layerPreBlendFunc(layerIdx)(this);
                         setRenderLayer(0);
                     }
                     
@@ -562,8 +562,8 @@ namespace wg
                     
                     setBlitSource(m_layerSurfaces[layerIdx]);
 
-                    if( m_pCanvasLayers->_layerBlender(layerIdx) != nullptr )
-                        m_pCanvasLayers->_layerBlender(layerIdx)(this);
+                    if( m_pCanvasLayers->_layerBlendFunc(layerIdx) != nullptr )
+                        m_pCanvasLayers->_layerBlendFunc(layerIdx)(this);
                     else
                         blit({ 0,0 });
 				}
@@ -571,8 +571,8 @@ namespace wg
 
             // Call Canvas Finalizer
             
-            if( m_pCanvasLayers->_canvasFinalizer() != nullptr )
-                m_pCanvasLayers->_canvasFinalizer()(this);
+            if( m_pCanvasLayers->_canvasFinalizeFunc() != nullptr )
+                m_pCanvasLayers->_canvasFinalizeFunc()(this);
         }
         
 		// Dereference surfaces

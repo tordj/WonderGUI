@@ -58,11 +58,6 @@ namespace wg
 		m_bCanvas			= wg_surfaceCanBeCanvas(object);
 		m_pClut				= (Color8*)wg_surfaceClut(object);
 		m_pBaggage			= reinterpret_cast<Object*>(wg_getSurfaceBaggage(object));
-
-		//TODO: Handle observer somehow! Probably needs to handle it locally and bridge it.
-
-		// Observer* m_pObserver = nullptr;
-
 	}
 
 
@@ -71,6 +66,9 @@ namespace wg
 
 	CAPISurface::~CAPISurface()
 	{
+		if (m_cObserverId != 0)
+			wg_removeSurfaceObserver(m_cSurface,m_cObserverId);
+
 		wg_release(m_cSurface);
 	}
 
@@ -150,32 +148,26 @@ namespace wg
 		return wg_fillSurfaceRect( m_cSurface, (const wg_rectI*) &region, * (wg_color*)&color );
 	}
 
-	//____ copy() _____________________________________________________________
-
-	bool CAPISurface::copy(CoordI dest, Surface* pSrcSurf)
-	{
-		//TODO: IMPLEMENT!!!
-	}
-
-	bool CAPISurface::copy(CoordI dest, Surface* pSrcSurf, const RectI& srcRect)
-	{
-		//TODO: IMPLEMENT!!!
-
-		// Needs to be able to handle copy from non-CAPISurface.
-	}
-
 	//____ addObserver() ______________________________________________________
 
 	int CAPISurface::addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func)
 	{
-		//TODO: IMPLEMENT!!!
+		if( m_pObserver == nullptr )
+			m_cObserverId = wg_addSurfaceObserver(m_cSurface, [](int nRects, const wg_rectSPX* pRects, void* pData, int data) { ((CAPISurface*)pData)->_notifyObservers(nRects, (RectSPX*)pRects); }, this, 0);
+
+		return Surface::addObserver(func);
 	}
 
 	//____ removeObserver() ___________________________________________________
 
 	bool CAPISurface::removeObserver(int observerId)
 	{
-		wg_removeSurfaceObserver(m_cSurface, observerId);
+		Surface::removeObserver(observerId);
+
+		if (m_pObserver == nullptr);
+			wg_removeSurfaceObserver(m_cSurface, m_cObserverId);
+
+		return true;
 	}
 
 

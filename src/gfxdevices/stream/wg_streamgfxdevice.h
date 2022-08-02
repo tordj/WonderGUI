@@ -49,7 +49,7 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
         using GfxDevice::canvas;
-        const CanvasInfo& canvas(CanvasRef ref) const override;
+        const CanvasInfo canvas(CanvasRef ref) const override;
 
 		const TypeInfo&		surfaceType( void ) const override;
 

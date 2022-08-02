@@ -141,7 +141,7 @@ namespace wg
 
 	//____ canvas() _____________________________________________________
 
-	const CanvasInfo& SoftGfxDevice::canvas(CanvasRef ref) const
+	const CanvasInfo SoftGfxDevice::canvas(CanvasRef ref) const
 	{
 		auto it = std::find_if(m_definedCanvases.begin(), m_definedCanvases.end(), [ref](const CanvasInfo& entry) { return (ref == entry.ref); });
 

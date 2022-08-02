@@ -26,11 +26,18 @@
 
 #include <wg_c_types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 const wg_typeInfo * wg_getComponentTypeInfo(wg_component);
 int					wg_isComponentInstanceOf(wg_component, const wg_typeInfo * pTypeInfo);
 
 wg_obj           wg_getComponentObject(wg_component);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

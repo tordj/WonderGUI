@@ -93,7 +93,6 @@ namespace wg
 											// complete chunk. Overflowing data is a copy of data from beginning of buffer.
 
 		DataSegment	m_dataSegments[2];
-
 	};
 
 

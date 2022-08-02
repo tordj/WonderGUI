@@ -61,7 +61,7 @@ namespace wg
 
 		}
 
-		if (bp.defaultLayer < 0 || bp.defaultLayer > bp.layers.size())
+		if (bp.baseLayer < 0 || bp.baseLayer > bp.layers.size())
 		{
 			Base::handleError(ErrorSeverity::Critical, ErrorCode::InvalidParam, "Default layer is out of bounds.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
@@ -80,20 +80,20 @@ namespace wg
 
 		memset(&cBP, 0, sizeof(wg_canvasLayersBP));
 
-		cBP.defaultLayer = bp.defaultLayer;
+		cBP.baseLayer = bp.baseLayer;
 
-		if (bp.canvasInitializer)
+		if (bp.clearCanvasFunc)
 		{
-			cBP.canvasInitializer = _callbackRouter;
-			cBP.canvasInitializerPtr = this;
-			cBP.canvasInitializerInt = 1;
+			cBP.clearCanvasFunc = _callbackRouter;
+			cBP.clearCanvasPtr = this;
+			cBP.clearCanvasInt = 1;
 		}
 
-		if (bp.canvasFinalizer)
+		if (bp.finalizeCanvasFunc)
 		{
-			cBP.canvasFinalizer = _callbackRouter;
-			cBP.canvasFinalizerPtr = this;
-			cBP.canvasFinalizerInt = 2;
+			cBP.finalizeCanvasFunc = _callbackRouter;
+			cBP.finalizeCanvasPtr = this;
+			cBP.finalizeCanvasInt = 2;
 		}
 
 		int nLayers = bp.layers.size();
@@ -102,32 +102,32 @@ namespace wg
 		{
 			cBP.layers[i].format = (wg_pixelFormat) bp.layers[i].format;
 
-			if (bp.layers[i].canvasPreparer)
+			if (bp.layers[i].preBlendCanvasFunc)
 			{
-				cBP.layers[i].canvasPreparer = _callbackRouter;
-				cBP.layers[i].canvasPreparerPtr = this;
-				cBP.layers[i].canvasPreparerInt = 3 + (i * 4);
+				cBP.layers[i].preBlendCanvasFunc = _callbackRouter;
+				cBP.layers[i].preBlendCanvasPtr = this;
+				cBP.layers[i].preBlendCanvasInt = 3 + (i * 4);
 			}
 
-			if (bp.layers[i].initializer)
+			if (bp.layers[i].clearFunc)
 			{
-				cBP.layers[i].initializer = _callbackRouter;
-				cBP.layers[i].initializerPtr = this;
-				cBP.layers[i].initializerInt = 3 + (i * 4)+1;
+				cBP.layers[i].clearFunc = _callbackRouter;
+				cBP.layers[i].clearPtr = this;
+				cBP.layers[i].clearInt = 3 + (i * 4)+1;
 			}
 
-			if (bp.layers[i].blender)
+			if (bp.layers[i].blendFunc)
 			{
-				cBP.layers[i].blender = _callbackRouter;
-				cBP.layers[i].blenderPtr = this;
-				cBP.layers[i].blenderInt = 3 + (i * 4) + 2;
+				cBP.layers[i].blendFunc = _callbackRouter;
+				cBP.layers[i].blendPtr = this;
+				cBP.layers[i].blendInt = 3 + (i * 4) + 2;
 			}
 
-			if (bp.layers[i].finalizer)
+			if (bp.layers[i].preBlendFunc)
 			{
-				cBP.layers[i].finalizer = _callbackRouter;
-				cBP.layers[i].finalizerPtr = this;
-				cBP.layers[i].finalizerInt = 3 + (i * 4) + 3;
+				cBP.layers[i].preBlendFunc = _callbackRouter;
+				cBP.layers[i].preBlendPtr = this;
+				cBP.layers[i].preBlendInt = 3 + (i * 4) + 3;
 			}
 
 		}
@@ -151,9 +151,9 @@ namespace wg
 		GfxDevice* pDevice = pMe->m_pDevice;
 
 		if (funcNb == 1)
-			pMe->m_canvasInitializer(pDevice);
+			pMe->m_clearCanvasFunc(pDevice);
 		else if (funcNb == 2)
-			pMe->m_canvasFinalizer(pDevice);
+			pMe->m_finalizeCanvasFunc(pDevice);
 		else
 		{
 			auto& layer = pMe->m_layers[(funcNb - 3) / 4];
@@ -163,16 +163,16 @@ namespace wg
 			switch (func)
 			{
 				case 0:
-					layer.canvasPreparer(pDevice);
+					layer.preBlendCanvasFunc(pDevice);
 					break;
 				case 1:
-					layer.initializer(pDevice);
+					layer.clearFunc(pDevice);
 					break;
 				case 2:
-					layer.blender(pDevice);
+					layer.blendFunc(pDevice);
 					break;
 				case 3:
-					layer.finalizer(pDevice);
+					layer.preBlendFunc(pDevice);
 					break;
 
 				default:

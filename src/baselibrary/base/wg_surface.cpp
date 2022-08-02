@@ -499,7 +499,7 @@ namespace wg
 	 **/
 	bool Surface::copy(CoordI _dest, Surface * pSrcSurface, const RectI& _srcRect )
 	{
-		if( !pSrcSurface || pSrcSurface->m_pixelDescription.format == PixelFormat::Undefined || m_pixelDescription.format == PixelFormat::Undefined )
+		if( !pSrcSurface || pSrcSurface->pixelFormat() == PixelFormat::Undefined || m_pixelDescription.format == PixelFormat::Undefined )
 			return false;
 
 

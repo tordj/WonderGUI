@@ -60,7 +60,7 @@ namespace wg
 
 	//____ canvas() ___________________________________________________________
 
-	const CanvasInfo& NullGfxDevice::canvas(CanvasRef ref) const
+	const CanvasInfo NullGfxDevice::canvas(CanvasRef ref) const
 	{
 		return m_dummyCanvas;
 	}

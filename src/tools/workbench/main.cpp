@@ -437,8 +437,17 @@ int main(int argc, char** argv)
 
 
 	RootPanel_p pRoot = RootPanel::create(CanvasRef::Default, pGfxDevice);
+/*
+	auto pCanvasLayers = CanvasLayers::create( WGBP(CanvasLayers,
+		_.layers = { {.format = PixelFormat::A_8 }, {.format = PixelFormat::BGRA_8}, {.format = PixelFormat::BGRA_8} }
+											));
+*/
 
-	auto pCanvasLayers = CanvasLayers::create({ PixelFormat::A_8, PixelFormat::BGRA_8, PixelFormat::BGRA_8 });
+	auto pCanvasLayers = CanvasLayers::create( WGBP(CanvasLayers,
+		_.layers = { { PixelFormat::A_8 }, { PixelFormat::BGRA_8 }, { PixelFormat::BGRA_8, nullptr } }
+		));
+
+
 	pRoot->setCanvasLayers(pCanvasLayers);
 
 //		pRoot->setDebugMode(true);

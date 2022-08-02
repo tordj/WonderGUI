@@ -62,8 +62,9 @@ namespace wg
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Content _______________________________________________________
+		//.____ Misc _______________________________________________________
 
+		inline wg_obj		cObject() { return m_cCanvasLayer; }
 
 	protected:
 		CAPICanvasLayers( CAPIGfxDevice * pDevice, const Blueprint& bp);

@@ -71,7 +71,7 @@ namespace wg
 
     //____ canvas() ___________________________________________________________
 
-    const CanvasInfo& StreamGfxDevice::canvas(CanvasRef ref) const
+    const CanvasInfo StreamGfxDevice::canvas(CanvasRef ref) const
     {
         auto it = std::find_if(m_definedCanvases.begin(), m_definedCanvases.end(), [ref](const CanvasInfo& entry) { return (ref == entry.ref); });
 

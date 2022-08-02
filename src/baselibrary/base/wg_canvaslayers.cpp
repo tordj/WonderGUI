@@ -76,7 +76,7 @@ namespace wg
 			
 		}
 
-		if (bp.defaultLayer < 0 || bp.defaultLayer > bp.layers.size())
+		if (bp.baseLayer < 0 || bp.baseLayer > bp.layers.size())
 		{
 			Base::handleError(ErrorSeverity::Critical, ErrorCode::InvalidParam, "Default layer is out of bounds.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
@@ -91,9 +91,9 @@ namespace wg
 
 	CanvasLayers::CanvasLayers(const Blueprint& bp)
 	{
-		m_defaultLayer = bp.defaultLayer;
-		m_canvasInitializer = bp.canvasInitializer;
-		m_canvasFinalizer = bp.canvasFinalizer;
+		m_baseLayer = bp.baseLayer;
+		m_clearCanvasFunc = bp.clearCanvasFunc;
+		m_finalizeCanvasFunc = bp.finalizeCanvasFunc;
 
 		m_layers = bp.layers;
 	}

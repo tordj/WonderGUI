@@ -27,20 +27,27 @@
 #include <wg_c_types.h>
 #include <wg_c_geo.h>
 
-wg_obj			wg_createStreamPump();
-wg_obj			wg_createStreamPumpWithInputOutput( wg_component input, wg_component output);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void			wg_setStreamPumpInput(wg_obj streamPump, wg_component input);
-void			wg_setStreamPumpOutput(wg_obj streamPump, wg_component output);
+	wg_obj			wg_createStreamPump();
+	wg_obj			wg_createStreamPumpWithInputOutput( wg_component input, wg_component output);
+
+	void			wg_setStreamPumpInput(wg_obj streamPump, wg_component input);
+	void			wg_setStreamPumpOutput(wg_obj streamPump, wg_component output);
 
 
-wg_gfxChunkId	wg_peekChunk(wg_obj streamPump);
+	wg_gfxChunkId	wg_peekChunk(wg_obj streamPump);
 
-int				wg_pumpChunk(wg_obj streamPump);
-int				wg_pumpUntilFrame(wg_obj streamPump);
-int				wg_pumpFrame(wg_obj streamPump);
-int				wg_pumpAll(wg_obj streamPump);
+	int				wg_pumpChunk(wg_obj streamPump);
+	int				wg_pumpUntilFrame(wg_obj streamPump);
+	int				wg_pumpFrame(wg_obj streamPump);
+	int				wg_pumpAll(wg_obj streamPump);
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

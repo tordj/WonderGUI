@@ -423,7 +423,7 @@ namespace wg
 
 	//____ canvas() ___________________________________________________________
 
-	const CanvasInfo& GlGfxDevice::canvas(CanvasRef ref) const
+	const CanvasInfo GlGfxDevice::canvas(CanvasRef ref) const
 	{
 		if (ref == CanvasRef::Default)
 			return m_defaultCanvas;

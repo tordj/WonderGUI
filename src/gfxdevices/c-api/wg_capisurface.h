@@ -74,21 +74,23 @@ namespace wg
 
 		bool				fill(HiColor col) override;
 		bool				fill(const RectI& region, HiColor col ) override;
-		bool				copy(CoordI dest, Surface* pSrcSurf, const RectI& srcRect) override;
-		bool				copy(CoordI dest, Surface* pSrcSurf) override;
+
+//		bool				copy(CoordI dest, Surface* pSrcSurf, const RectI& srcRect) override;		//The default implementation should work through the CAPI-wall ...
+//		bool				copy(CoordI dest, Surface* pSrcSurf) override;								//The default implementation should work through the CAPI-wall ...
 
 		//.____ Misc _________________________________________________________
 		 
 		int					addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func) override;
 		bool				removeObserver(int observerId) override;
 
-		inline wg_obj		CObject() { return m_cSurface; }
+		inline wg_obj		cObject() { return m_cSurface; }
 
 	private:
 		CAPISurface( wg_obj object );
 		~CAPISurface();
 
 		wg_obj		m_cSurface;
+		int			m_cObserverId = 0;
 
 	};
 } // namespace wg

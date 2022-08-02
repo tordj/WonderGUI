@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 
-	typedef void(*wg_surfaceObserver_func)(int nRects, const wg_rectSPX* pRects);
+	typedef void(*wg_surfaceObserver_func)(int nRects, const wg_rectSPX* pRects, void* pData, int data);
 
 
 	struct wg_pixelBuffer	// NOT BINARY EQUIVALENT!
@@ -143,7 +143,7 @@ extern "C" {
 	void			wg_setSurfaceBaggage(wg_obj surface, wg_obj baggage);
 	wg_obj			wg_getSurfaceBaggage(wg_obj surface);
 
-	int				wg_addSurfaceObserver(wg_obj surface, wg_surfaceObserver_func);
+	int				wg_addSurfaceObserver(wg_obj surface, wg_surfaceObserver_func, void* pData, int data);
 	int				wg_removeSurfaceObserver(wg_obj surface, int observerId);
 
 	wg_surfaceBP	wg_getSurfaceBlueprint(wg_obj surface);

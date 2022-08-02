@@ -49,12 +49,12 @@ wg_component wg_getStreamBufferInput(wg_obj streamBuffer)
 
 int wg_streamBufferCapacity(wg_obj streamBuffer)
 {
-	return getPtr(streamBuffer)->capacity();
+	return getPtr(streamBuffer)->bufferCapacity();
 }
 
 int wg_streamBufferHasChunk(wg_obj streamBuffer)
 {
-	return getPtr(streamBuffer)->hasChunk();
+	return getPtr(streamBuffer)->chunkInBuffer();
 }
 
 int wg_streamBufferBytes(wg_obj streamBuffer)

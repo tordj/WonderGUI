@@ -38,31 +38,31 @@ extern "C" {
 	struct wg_canvasLayersEntryBP
 	{
 		wg_pixelFormat			format;
-		wg_canvasLayers_func	canvasPreparer;
-		void*					canvasPreparerPtr;
-		int						canvasPreparerInt;
-		wg_canvasLayers_func	initializer;
-		void*					initializerPtr;
-		int						initializerInt;
-		wg_canvasLayers_func	finalizer;
-		void*					finalizerPtr;
-		int						finalizerInt;
-		wg_canvasLayers_func	blender;
-		void*					blenderPtr;
-		int						blenderInt;
+		wg_canvasLayers_func	blendFunc;
+		void*					blendPtr;
+		int						blendInt;
+		wg_canvasLayers_func	clearFunc;
+		void*					clearPtr;
+		int						clearInt;
+		wg_canvasLayers_func	preBlendFunc;
+		void*					preBlendPtr;
+		int						preBlendInt;
+		wg_canvasLayers_func	preBlendCanvasFunc;
+		void*					preBlendCanvasPtr;
+		int						preBlendCanvasInt;
 	};
 
 
 	struct wg_canvasLayersBP
 	{
-		wg_canvasLayers_func	canvasInitializer;
-		void*					canvasInitializerPtr;
-		int						canvasInitializerInt;
-		wg_canvasLayers_func	canvasFinalizer;
-		void*					canvasFinalizerPtr;
-		int						canvasFinalizerInt;
+		wg_canvasLayers_func	clearCanvasFunc;
+		void*					clearCanvasPtr;
+		int						clearCanvasInt;
+		wg_canvasLayers_func	finalizeCanvasFunc;
+		void*					finalizeCanvasPtr;
+		int						finalizeCanvasInt;
 
-		int						defaultLayer;
+		int						baseLayer;
 		wg_canvasLayersEntryBP	layers[];				// Need to end list with entry where format = WG_PIXFMT_UNDEFINED unless full.
 
 	};
@@ -71,7 +71,7 @@ extern "C" {
 
 	int				wg_canvasLayersSize(wg_obj canvasLayers);
 	wg_pixelFormat	wg_layerFormat(wg_obj canvasLayers, int layer);
-	int				wg_defaultLayer(wg_obj canvasLayers);
+	int				wg_baseLayer(wg_obj canvasLayers);
 
 
 #ifdef __cplusplus

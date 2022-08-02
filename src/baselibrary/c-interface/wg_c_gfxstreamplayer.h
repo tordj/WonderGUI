@@ -27,15 +27,24 @@
 #include <wg_c_types.h>
 #include <wg_c_geo.h>
 
-wg_obj			wg_createStreamPlayer(wg_obj device, wg_obj surfaceFactory);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-wg_component	wg_getStreamPlayerInput(wg_obj streamPlayer);
+	wg_obj			wg_createStreamPlayer(wg_obj device, wg_obj surfaceFactory);
 
-void			wg_setStreamPlayerStoreDirtyRects(wg_obj streamPlayer, int bStore);
-void			wg_setStreamPlayerMaxDirtyRects(wg_obj streamPlayer, int max);
+	wg_component	wg_getStreamPlayerInput(wg_obj streamPlayer);
 
-int				wg_getStreamPlayerDirtyRects(wg_obj streamPlayer, wg_canvasRef canvas, const wg_rectI **pRects );
+	void			wg_setStreamPlayerStoreDirtyRects(wg_obj streamPlayer, int bStore);
+	void			wg_setStreamPlayerMaxDirtyRects(wg_obj streamPlayer, int max);
 
-void			wg_clearStreamPlayerDirtyRects(wg_obj streamPlayer);
+	int				wg_getStreamPlayerDirtyRects(wg_obj streamPlayer, wg_canvasRef canvas, const wg_rectI **pRects );
+
+	void			wg_clearStreamPlayerDirtyRects(wg_obj streamPlayer);
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif

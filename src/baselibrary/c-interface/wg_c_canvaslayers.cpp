@@ -40,20 +40,20 @@ wg_obj wg_createCanvasLayers(const wg_canvasLayersBP* pBP)
 
 	CanvasLayers::Blueprint bp;
 
-	wg_canvasLayers_func func = pBP->canvasFinalizer;
-	void*	pointer = pBP->canvasFinalizerPtr;
-	int		integer = pBP->canvasFinalizerInt;
+	wg_canvasLayers_func func = pBP->finalizeCanvasFunc;
+	void*	pointer = pBP->finalizeCanvasPtr;
+	int		integer = pBP->finalizeCanvasInt;
 	if (func != NULL)
-		bp.canvasFinalizer = [func,pointer,integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice),pointer,integer); };
+		bp.finalizeCanvasFunc = [func,pointer,integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice),pointer,integer); };
 
-	func = pBP->canvasInitializer;
-	pointer = pBP->canvasInitializerPtr;
-	integer = pBP->canvasInitializerInt;
+	func = pBP->clearCanvasFunc;
+	pointer = pBP->clearCanvasPtr;
+	integer = pBP->clearCanvasInt;
 	if (func != NULL)
-		bp.canvasInitializer = [func,pointer,integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice),pointer,integer); };
+		bp.clearCanvasFunc = [func,pointer,integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice),pointer,integer); };
 
 
-	bp.defaultLayer = pBP->defaultLayer;
+	bp.baseLayer = pBP->baseLayer;
 
 	for (int i = 0; i < WG_MAX_CANVAS_LAYERS && pBP->layers[i].format != WG_PIXFMT_UNDEFINED; i++)
 	{
@@ -61,29 +61,29 @@ wg_obj wg_createCanvasLayers(const wg_canvasLayersBP* pBP)
 
 		layer.format = (PixelFormat) pBP->layers[i].format;
 
-		func = pBP->layers[i].canvasPreparer;
-		pointer = pBP->layers[i].canvasPreparerPtr;
-		integer = pBP->layers[i].canvasPreparerInt;
+		func = pBP->layers[i].preBlendCanvasFunc;
+		pointer = pBP->layers[i].preBlendCanvasPtr;
+		integer = pBP->layers[i].preBlendCanvasInt;
 		if( func != NULL )
-			layer.canvasPreparer = [func,pointer,integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice), pointer, integer); };
+			layer.preBlendCanvasFunc = [func,pointer,integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice), pointer, integer); };
 
-		func = pBP->layers[i].initializer;
-		pointer = pBP->layers[i].initializerPtr;
-		integer = pBP->layers[i].initializerInt;
+		func = pBP->layers[i].clearFunc;
+		pointer = pBP->layers[i].clearPtr;
+		integer = pBP->layers[i].clearInt;
 		if (func != NULL)
-			layer.initializer = [func, pointer, integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice), pointer, integer); };
+			layer.clearFunc = [func, pointer, integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice), pointer, integer); };
 
-		func = pBP->layers[i].blender;
-		pointer = pBP->layers[i].blenderPtr;
-		integer = pBP->layers[i].blenderInt;
+		func = pBP->layers[i].blendFunc;
+		pointer = pBP->layers[i].blendPtr;
+		integer = pBP->layers[i].blendInt;
 		if (func != NULL)
-			layer.blender = [func, pointer, integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice), pointer, integer); };
+			layer.blendFunc = [func, pointer, integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice), pointer, integer); };
 
-		func = pBP->layers[i].finalizer;
-		pointer = pBP->layers[i].finalizerPtr;
-		integer = pBP->layers[i].finalizerInt;
+		func = pBP->layers[i].preBlendFunc;
+		pointer = pBP->layers[i].preBlendPtr;
+		integer = pBP->layers[i].preBlendInt;
 		if (func != NULL)
-			layer.finalizer = [func, pointer, integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice), pointer, integer); };
+			layer.blendFunc = [func, pointer, integer](GfxDevice* pDevice) { func(static_cast<Object*>(pDevice), pointer, integer); };
 
 		bp.layers.push_back(layer);
 	}
@@ -101,7 +101,7 @@ wg_pixelFormat wg_layerFormat(wg_obj canvasLayers, int layer)
 	return (wg_pixelFormat) getPtr(canvasLayers)->layerFormat(layer);
 }
 
-int wg_defaultLayer(wg_obj canvasLayers)
+int wg_baseLayer(wg_obj canvasLayers)
 {
-	return getPtr(canvasLayers)->defaultLayer();
+	return getPtr(canvasLayers)->baseLayer();
 }

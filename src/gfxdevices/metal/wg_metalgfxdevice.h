@@ -66,7 +66,7 @@ namespace wg
         bool    setDefaultCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI pixelSize, PixelFormat pixelFormat, int scale = 64 );
  
         using GfxDevice::canvas;
-        const CanvasInfo& canvas(CanvasRef ref) const override;
+        const CanvasInfo canvas(CanvasRef ref) const override;
 
         //.____ State _________________________________________________
 

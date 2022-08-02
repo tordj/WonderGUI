@@ -23,6 +23,7 @@
 #include <wg_capigfxdevice.h>
 #include <wg_capisurface.h>
 #include <wg_capisurfacefactory.h>
+#include <wg_capicanvaslayers.h>
 
 #include <wg_c_object.h>
 #include <wg_c_gfxdevice.h>
@@ -77,8 +78,17 @@ namespace wg
 
     //____ canvas() ___________________________________________________________
 
-    const CanvasInfo& CAPIGfxDevice::canvas(CanvasRef ref) const
+    const CanvasInfo CAPIGfxDevice::canvas(CanvasRef ref) const
     {
+        auto info = wg_getCanvasRef(m_cDevice, (wg_canvasRef)ref);
+
+        CanvasInfo info2;
+        info2.ref = (CanvasRef) info.ref;
+        info2.scale = info.scale;
+        info2.size.w = info.size.w;
+        info2.size.h = info.size.h;
+        info2.pSurface = nullptr;       // Not supported. Can't give access to C++ object on other side of CAPI-wall.
+        return info2;
     }
 
 	//____ surfaceType() _______________________________________________________
@@ -187,7 +197,7 @@ namespace wg
         if (!pSource || !pSource->isInstanceOf(CAPIGfxDevice::TYPEINFO) )
             return false;
 
-        int retVal = wg_setBlitSource(m_cDevice, static_cast<CAPISurface*>(pSource)->CObject());
+        int retVal = wg_setBlitSource(m_cDevice, static_cast<CAPISurface*>(pSource)->cObject());
 
         if( retVal )
             GfxDevice::setBlitSource(pSource);
@@ -429,31 +439,16 @@ namespace wg
 			return false;
 		}
 
-        wg_obj  canvasLayers = 0;
-
-        if (pLayers != nullptr)
-        {
-            wg_canvasLayersBP bp;
-
-            bp.defaultLayer = pLayers->m_defaultLayer;
-
-            if( pLayers->m_canvasInitializer != nullptr )
-                bp.canvasInitializer = 
-
-
-            canvasLayers = wg_createCanvasLayers(&bp);
-
-
-        }
+        auto pCAPILayers = wg_dynamic_cast<CAPICanvasLayers_p>(pLayers);
 
 
         if (canvasRef != CanvasRef::None)
         {
-            wg_beginCanvasUpdateWithRef(m_cDevice, (wg_canvasRef)canvasRef, nUpdateRects, (wg_rectSPX*)pUpdateRects, canvasLayers, startLayer);
+            wg_beginCanvasUpdateWithRef(m_cDevice, (wg_canvasRef)canvasRef, nUpdateRects, (wg_rectSPX*)pUpdateRects, pCAPILayers->cObject(), startLayer);
         }
         else
         {
-            wg_beginCanvasUpdateWithSurface(m_cDevice, (wg_obj) static_cast<Object*>(pCanvasSurface), nUpdateRects, (wg_rectSPX*)pUpdateRects, canvasLayers, startLayer);
+            wg_beginCanvasUpdateWithSurface(m_cDevice, (wg_obj) static_cast<Object*>(pCanvasSurface), nUpdateRects, (wg_rectSPX*)pUpdateRects, pCAPILayers->cObject(), startLayer);
         }
 
 		m_canvas.ref = canvasRef;

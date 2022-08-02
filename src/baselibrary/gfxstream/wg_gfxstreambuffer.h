@@ -58,8 +58,8 @@ namespace wg
 
 		//.____ Misc _____________________________________________________
 		
-		inline int	capacity() const { return m_bufferSize; };
-		inline bool	hasChunk() const { return _hasStreamChunks(); };
+		inline int	bufferCapacity() const { return m_bufferSize; };
+		inline bool	chunkInBuffer() const { return _hasStreamChunks(); };
 		int			bytesInBuffer() const;
 		
 	protected:
