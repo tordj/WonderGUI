@@ -522,6 +522,35 @@ namespace wg
 			break;
 		}
 
+		case GfxChunkId::PrecisionBlit:
+		{
+			RectSPX		dest;
+			RectF		source;
+
+			*m_pDecoder >> dest;
+			*m_pDecoder >> source;
+
+			m_pDevice->precisionBlit(dest, source);
+			break;
+		}
+				
+		case GfxChunkId::TransformBlit:
+		{
+			RectSPX		dest;
+			CoordF		source;
+			float		transform[2][2];
+
+			*m_pDecoder >> dest;
+			*m_pDecoder >> source;
+			*m_pDecoder >> transform[0][0];
+			*m_pDecoder >> transform[0][1];
+			*m_pDecoder >> transform[1][0];
+			*m_pDecoder >> transform[1][1];
+
+			m_pDevice->transformBlit(dest, source, transform);
+			break;
+		}
+
 		case GfxChunkId::RotScaleBlit:
 		{
 			RectSPX		dest;

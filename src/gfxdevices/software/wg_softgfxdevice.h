@@ -96,6 +96,7 @@ namespace wg
 		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, spx thickness = 64) override;
 
 		bool	setBlitSource(Surface * pSource) override;
+		void	transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2]) override;
 		void	rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
 
 		void	tile(const RectSPX& dest, CoordSPX shift = { 0,0 }) override;

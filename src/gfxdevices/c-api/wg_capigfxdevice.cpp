@@ -338,6 +338,20 @@ namespace wg
         wg_stretchFlipBlitRect(m_cDevice, (wg_rectSPX*)&dest, (wg_rectSPX*)&source, (wg_gfxFlip)flip );
     }
 
+	//____ precisionBlit() _______________________________________________________
+
+	void CAPIGfxDevice::precisionBlit(const RectSPX& dest, const RectF& srcSPX)
+	{
+		wg_precisionBlit(m_cDevice, (wg_rectSPX*)&dest, (wg_rectF*)&srcSPX);
+	}
+
+	//____ transformBlit() _______________________________________________________
+
+	void CAPIGfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
+	{
+		wg_transformBlit(m_cDevice, (wg_rectSPX*)&dest, {srcSPX.x,srcSPX.y}, tranform);
+	}
+
     //____ rotScaleBlit() _____________________________________________________
     void CAPIGfxDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
     {

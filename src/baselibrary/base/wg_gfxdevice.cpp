@@ -787,7 +787,6 @@ namespace wg
 		}
 	}
 
-
 	//____ stretchFlipBlit() _____________________________________________________
 
 	void GfxDevice::stretchFlipBlit(const RectSPX& dest, GfxFlip flip)
@@ -835,6 +834,41 @@ namespace wg
 		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
 		_transformBlit(dest, { ofsX, ofsY }, mtx);
+	}
+
+	//____ precisionBlit() ____________________________________________________
+
+	void GfxDevice::precisionBlit(const RectSPX& dest, const RectF& src)
+	{
+		assert(m_pBlitSource != nullptr);
+
+		float	mtx[2][2];
+
+		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
+		{
+			mtx[0][0] = src.w / dest.w;
+			mtx[0][1] = 0;
+			mtx[1][0] = 0;
+			mtx[1][1] = src.h / dest.h;
+		}
+		else
+		{
+			mtx[0][0] = src.w / dest.w;
+			mtx[0][1] = 0;
+			mtx[1][0] = 0;
+			mtx[1][1] = src.h / dest.h;
+		}
+
+		_transformBlit(dest, CoordF( src.x,src.y ), mtx );
+	}
+
+	//____ transformBlit() ________________________________________________
+
+	void GfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
+	{
+		assert(m_pBlitSource != nullptr);
+
+		_transformBlit(dest, srcSPX, transform);
 	}
 
 	//____ rotScaleBlit() _____________________________________________________

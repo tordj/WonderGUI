@@ -137,6 +137,8 @@ extern "C" {
 	void					wg_stretchFlipBlit(wg_obj device, const wg_rectSPX* dest, wg_gfxFlip flip);
 	void					wg_stretchFlipBlitRect(wg_obj device, const wg_rectSPX* dest, const wg_rectSPX* src, wg_gfxFlip flip);
 
+	void					wg_precisionBlit(wg_obj device, const wg_rectSPX* dest, const wg_rectF* srcSPX);
+	void					wg_transformBlit(wg_obj device, const wg_rectSPX* dest, wg_coordF srcSPX, const float transform[2][2]);
 	void					wg_rotScaleBlit(wg_obj device, const wg_rectSPX* dest, float rotationDegrees, float scale, wg_coordF srcCenter, wg_coordF destCenter);
 
 	void					wg_tile(wg_obj device, const wg_rectSPX* dest, wg_coordSPX shift);

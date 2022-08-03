@@ -1862,6 +1862,26 @@ namespace wg
 		return true;
 	}
 
+	//____ transformBlit() _______________________________________________________
+
+	void SoftGfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
+	{
+		if (m_pBlitSource->isTiling())
+		{
+			m_bTileSource = true;
+			_transformBlit(dest, srcSPX, transform);
+			m_bTileSource = false;
+		}
+		else
+		{
+			m_bClipSource = true;
+			_transformBlit(dest, srcSPX, transform);
+			m_bClipSource = false;
+		}
+	}
+
+
+
 	//____ _rotScaleBlit() ____________________________________________________
 
 	void SoftGfxDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter )

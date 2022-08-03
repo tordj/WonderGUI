@@ -426,6 +426,39 @@ namespace wg
 				break;
 			}
 
+			case GfxChunkId::PrecisionBlit:
+			{
+				RectSPX		dest;
+				RectF		source;
+
+				*m_pDecoder >> dest;
+				*m_pDecoder >> source;
+
+				_printRect(     "    dest       ", source );
+				_printRect(     "    source     ", source );
+				break;
+			}
+					
+			case GfxChunkId::TransformBlit:
+			{
+				RectSPX		dest;
+				CoordF		source;
+				float		transform[2][2];
+
+				*m_pDecoder >> dest;
+				*m_pDecoder >> source;
+				*m_pDecoder >> transform[0][0];
+				*m_pDecoder >> transform[0][1];
+				*m_pDecoder >> transform[1][0];
+				*m_pDecoder >> transform[1][1];
+
+				_printRect(     "    dest       ", source );
+				m_charStream << "    source      = " << source.x << ", " << source.y << std::endl;
+				m_charStream << "    transform   = [" << transform[0][0] << ", " << transform[0][1] << "]" << std::endl;
+				m_charStream << "                  [" << transform[1][0] << ", " << transform[1][1] << "]" << std::endl;
+				break;
+			}
+				
 			case GfxChunkId::RotScaleBlit:
 			{
 				RectSPX		dest;

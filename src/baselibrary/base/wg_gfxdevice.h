@@ -175,6 +175,8 @@ namespace wg
 		virtual void	stretchFlipBlit(const RectSPX& dest, GfxFlip flip);
 		virtual void	stretchFlipBlit(const RectSPX& dest, const RectSPX& src, GfxFlip flip);
 
+		virtual void	precisionBlit(const RectSPX& dest, const RectF& srcSPX);
+		virtual void	transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2]);
 		virtual void	rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f });
 
 		virtual void	tile(const RectSPX& dest, CoordSPX shift = { 0,0 });

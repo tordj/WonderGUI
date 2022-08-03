@@ -472,12 +472,33 @@ namespace wg
 
     void StreamGfxDevice::stretchFlipBlit(const RectSPX& dest, const RectSPX& source, GfxFlip flip)
     {
-
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRect, 0, 34 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << source;
         (*m_pEncoder) << flip;
     }
+
+	//____ precisionBlit() _______________________________________________________
+
+	void StreamGfxDevice::precisionBlit(const RectSPX& dest, const RectF& srcSPX)
+	{
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::PrecisionBlit, 0, 32 };
+		(*m_pEncoder) << dest;
+		(*m_pEncoder) << srcSPX;
+	}
+
+	//____ transformBlit() _______________________________________________________
+
+	void StreamGfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
+	{
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::PrecisionBlit, 0, 40 };
+		(*m_pEncoder) << dest;
+		(*m_pEncoder) << srcSPX;
+		(*m_pEncoder) << transform[0][0];
+		(*m_pEncoder) << transform[0][1];
+		(*m_pEncoder) << transform[1][0];
+		(*m_pEncoder) << transform[1][1];
+	}
 
     //____ rotScaleBlit() ___________________________________________________________
 

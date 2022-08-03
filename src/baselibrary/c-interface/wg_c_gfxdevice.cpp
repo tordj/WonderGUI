@@ -321,6 +321,19 @@ void wg_stretchFlipBlitRect(wg_obj device, const wg_rectSPX* dest, const wg_rect
 }
 
 
+void wg_precisionBlit(wg_obj device, const wg_rectSPX* dest, const wg_rectF* srcSPX)
+{
+	getPtr(device)->precisionBlit(*(const RectSPX*)dest, *(const RectF*)dest );
+
+}
+
+
+void wg_transformBlit(wg_obj device, const wg_rectSPX* dest, wg_coordF srcSPX, const float transform[2][2])
+{
+	getPtr(device)->transformBlit(*(const RectSPX*)dest, {srcSPX.x, srcSPX.y}, transform );
+}
+
+
 void wg_rotScaleBlit(wg_obj device, const wg_rectSPX* dest, float rotationDegrees, float scale, wg_coordF srcCenter, wg_coordF destCenter)
 {
 	getPtr(device)->rotScaleBlit(*(const RectSPX*)dest, rotationDegrees, scale, {srcCenter.x, srcCenter.y}, {destCenter.x, destCenter.y} );

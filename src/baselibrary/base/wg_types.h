@@ -843,12 +843,12 @@ enum class CanvasInit 		//. autoExtras
 
 		StretchBlit = 27,
 		StretchBlitRect = 28,
-//		StretchBlitRectF = 29,
 
 		StretchFlipBlit = 30,
 		StretchFlipBlitRect = 31,
-//		StretchFlipBlitRectF = 32,
 
+		PrecisionBlit = 29,
+		TransformBlit = 32,
 		RotScaleBlit = 33,
 		Tile = 34,
 		FlipTile = 35,
