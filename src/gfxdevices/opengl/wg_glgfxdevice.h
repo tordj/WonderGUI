@@ -182,7 +182,7 @@ namespace wg
 
 		//
 
-		bool	m_bProgramBinariesSupported ;
+		bool	m_bProgramBinariesSupported = false;
 
 
 		static const int c_commandBufferSize = 512*10;

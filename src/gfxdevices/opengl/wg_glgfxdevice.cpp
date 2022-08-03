@@ -159,8 +159,13 @@ namespace wg
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
 		glGetIntegerv(GL_MINOR_VERSION, &minor);
 
-		bool m_bProgramBinariesSupported = ((major == 4 && minor >= 1) || major > 4);
-
+		if((major == 4 && minor >= 1) || major > 4)
+		{
+			GLint formats = 0;
+			glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &formats);
+			m_bProgramBinariesSupported = (formats >= 1);
+		}
+		
 		//
 
 		m_bFullyInitialized = true;
