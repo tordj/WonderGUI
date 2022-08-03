@@ -40,7 +40,7 @@ extern "C" {
 	{
 		wg_pixelFormat	format;
 		uint8_t* pPixels;
-		const wg_color* pClut;
+		const wg_color8* pClut;
 		wg_rectI		rect;
 		int				pitch;
 	};
@@ -65,7 +65,7 @@ extern "C" {
 	{
 		uint8_t				buffered;
 		uint8_t				canvas;
-		const wg_color* clut;
+		const wg_color8* 	clut;
 		uint8_t				dynamic;
 		wg_pixelFormat		format;
 		int					id;
@@ -108,7 +108,7 @@ extern "C" {
 	uint32_t		wg_colorToPixel(wg_obj surface, const wg_color* col);		///< @brief Convert specified color to a pixel in surface's native format.
 	wg_color		wg_pixelToColor(wg_obj surface, uint32_t pixel);		///< @brief Get the color and alpha values of a pixel.
 
-	const wg_color* wg_surfaceClut(wg_obj surface);
+	const wg_color8* wg_surfaceClut(wg_obj surface);
 
 	const wg_pixelDescription* wg_surfacePixelDescription(wg_obj surface); ///< @brief Get the pixel description for the surface.
 	wg_pixelFormat	wg_surfacePixelFormat(wg_obj surface);

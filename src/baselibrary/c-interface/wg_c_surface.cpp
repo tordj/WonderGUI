@@ -132,9 +132,9 @@ wg_color wg_pixelToColor(wg_obj surface, uint32_t pixel)
 }
 
 
-const wg_color* wg_surfaceClut(wg_obj surface)
+const wg_color8* wg_surfaceClut(wg_obj surface)
 {
-	return (const wg_color *) getPtr(surface)->clut();
+	return (const wg_color8 *) getPtr(surface)->clut();
 }
 
 
@@ -171,14 +171,14 @@ int wg_surfaceCanBeCanvas(wg_obj surface)
 wg_pixelBuffer wg_allocPixelBuffer(wg_obj surface)
 {
 	auto pixbuf = getPtr(surface)->allocPixelBuffer();
-	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color*)pixbuf.pClut, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
+	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color8*)pixbuf.pClut, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
 }
 
 
 wg_pixelBuffer	wg_allocPixelBufferFromRect(wg_obj surface, const wg_rectI* rect)
 {
 	auto pixbuf = getPtr(surface)->allocPixelBuffer(* (RectI*) rect);
-	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color*)pixbuf.pClut, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
+	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color8*)pixbuf.pClut, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
 }
 
 
@@ -270,7 +270,7 @@ wg_surfaceBP wg_getSurfaceBlueprint(wg_obj surface)
 
 	dest.buffered		= src.buffered;
 	dest.canvas			= src.canvas;
-	dest.clut			= (wg_color*)src.clut;
+	dest.clut			= (wg_color8*)src.clut;
 	dest.dynamic		= src.dynamic;
 	dest.format			= (wg_pixelFormat) src.format;
 	dest.id				= src.id;
