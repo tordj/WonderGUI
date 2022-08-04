@@ -45,6 +45,7 @@ target_link_libraries(gfxdevicetester PRIVATE
 	wgsoftgfx
 	wgopenglgfx
 	wgstreamgfx
+	wgcapigfx
 	wgfreetypefont
 	wondergui 
 	${SDL2_LIBS}
@@ -107,6 +108,8 @@ if(APPLE)
 	target_link_libraries(gfxdevicetester_metal PRIVATE
 		wgsoftgfx
 		wgmetalgfx
+		wgstreamgfx
+		wgcapigfx
 		wgfreetypefont
 		wondergui
 		${APPKIT}

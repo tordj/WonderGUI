@@ -484,13 +484,17 @@ namespace wg
 		_canvasWasChanged();
         
         // Call Canvas Initializer
-        
-        if( pCanvasLayers && pCanvasLayers->_canvasClearFunc() != nullptr )
-        {
-            setRenderLayer(0);
-            pCanvasLayers->_canvasClearFunc()(this);
-            setRenderLayer(layer);
-        }
+		
+		if( !m_bIsProxyDevice )
+		{
+			if( pCanvasLayers && pCanvasLayers->_canvasClearFunc() != nullptr )
+			{
+				setRenderLayer(0);
+				pCanvasLayers->_canvasClearFunc()(this);
+				setRenderLayer(layer);
+			}
+		}
+		
 		return true;
 	}
 
@@ -511,7 +515,7 @@ namespace wg
 */
 		// Blend together the layers
 
-		if (m_pCanvasLayers)
+		if (!m_bIsProxyDevice && m_pCanvasLayers)
 		{
 			bool bFirst = true;
 

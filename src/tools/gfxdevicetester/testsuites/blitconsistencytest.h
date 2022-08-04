@@ -142,9 +142,9 @@ public:
             for( int i = 0; i < width ; i+=y )
             {
                 if( pDevice->blitSource()->sampleMethod() == SampleMethod::Bilinear )
-                    pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectSPX( RectF(i*30.f/(width-1), 0, y*30.f/(width-1), 10)*64) );
+                    pDevice->precisionBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*30.f/(width-1), 0, y*30.f/(width-1), 10)*64 );
                 else
-                    pDevice->stretchBlit( RectSPX(i,ofsY,y,10)*64, RectSPX( RectF(i*31.f/width, 0, y*31.f/width, 10)*64) );
+                    pDevice->precisionBlit( RectSPX(i,ofsY,y,10)*64, RectF(i*31.f/width, 0, y*31.f/width, 10)*64 );
 
             }
             ofsY += 10;

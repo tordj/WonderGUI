@@ -74,11 +74,11 @@ public:
 
 	bool	drawPrimitives(GfxDevice * pDevice, const RectSPX& canvas)
 	{
-		pDevice->drawLine(canvas.pos() + CoordI(10, 10)*64, canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 20)*64, Color::Red, 3.f);
-		pDevice->drawLine(canvas.pos() + CoordI(10, 20)*64, canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 10)*64, Color8(0, 0, 255, 128), 3.f);
+		pDevice->drawLine(canvas.pos() + CoordI(10, 10)*64, canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 20)*64, Color::Red, 3*64);
+		pDevice->drawLine(canvas.pos() + CoordI(10, 20)*64, canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 10)*64, Color8(0, 0, 255, 128), 3*64);
 
-		pDevice->drawLine(canvas.pos() + CoordI(5, 100)*64, canvas.pos() + CoordI(40,101)*64, Color::Green, 3.f);
-		pDevice->drawLine(canvas.pos() + CoordI(5, 105)*64, canvas.pos() + CoordI(6, 145)*64, Color::Green, 3.f);
+		pDevice->drawLine(canvas.pos() + CoordI(5, 100)*64, canvas.pos() + CoordI(40,101)*64, Color::Green, 3*64);
+		pDevice->drawLine(canvas.pos() + CoordI(5, 105)*64, canvas.pos() + CoordI(6, 145)*64, Color::Green, 3*64);
 
 
 		CoordI	fillOfs = { canvas.x, canvas.y + canvas.h / 2 };

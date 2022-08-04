@@ -51,7 +51,9 @@ namespace wg
 		m_id				= wg_getSurfaceIdentity(object);
 		m_scale				= wg_getSurfaceScale(object);
 		m_pixelDescription	= * (PixelDescription*) wg_surfacePixelDescription(object);
-		m_size				= * (SizeI*) &wg_surfacePixelSize(object);
+		
+		wg_sizeI pixSize 	= wg_surfacePixelSize(object);
+		m_size				= * (SizeI*) &pixSize;
 		m_sampleMethod		= (SampleMethod)wg_surfaceSampleMethod(object);
 		m_bMipmapped		= wg_surfaceIsMipmapped(object);
 		m_bTiling			= wg_surfaceIsTiling(object);
@@ -106,7 +108,7 @@ namespace wg
 
 	bool CAPISurface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
+		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
 		return wg_pushPixelsFromRect(m_cSurface, &pixbuf, (const wg_rectI*) &bufferRect);
 	}
@@ -115,7 +117,7 @@ namespace wg
 
 	void CAPISurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
+		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
 		wg_pullPixelsFromRect(m_cSurface, &pixbuf, (const wg_rectI*)&bufferRect);
 	}
@@ -124,7 +126,7 @@ namespace wg
 
 	void CAPISurface::freePixelBuffer(const PixelBuffer& buffer)
 	{
-		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
+		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
 		wg_freePixelBuffer(m_cSurface, &pixbuf);
 	}

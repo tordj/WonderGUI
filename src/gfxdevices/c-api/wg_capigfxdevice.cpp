@@ -59,7 +59,7 @@ namespace wg
 		m_cDevice = object;
         m_pSurfaceFactory = pFactory;
 		m_bRendering = false;
-
+		m_bIsProxyDevice = true;
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -194,7 +194,7 @@ namespace wg
 
     bool CAPIGfxDevice::setBlitSource(Surface * pSource)
     {
-        if (!pSource || !pSource->isInstanceOf(CAPIGfxDevice::TYPEINFO) )
+        if (!pSource || !pSource->isInstanceOf(CAPISurface::TYPEINFO) )
             return false;
 
         int retVal = wg_setBlitSource(m_cDevice, static_cast<CAPISurface*>(pSource)->cObject());
@@ -257,6 +257,8 @@ namespace wg
 
     void CAPIGfxDevice::endCanvasUpdate()
     {
+		GfxDevice::endCanvasUpdate();
+		wg_endCanvasUpdate(m_cDevice);
     }
 
     //____ fill() __________________________________________________________________
@@ -349,7 +351,7 @@ namespace wg
 
 	void CAPIGfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
 	{
-		wg_transformBlit(m_cDevice, (wg_rectSPX*)&dest, {srcSPX.x,srcSPX.y}, tranform);
+		wg_transformBlit(m_cDevice, (wg_rectSPX*)&dest, {srcSPX.x,srcSPX.y}, transform);
 	}
 
     //____ rotScaleBlit() _____________________________________________________
@@ -439,47 +441,30 @@ namespace wg
 
     bool CAPIGfxDevice::_beginCanvasUpdate(CanvasRef canvasRef, Surface * pCanvasSurface, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer)
     {     
-		if( (canvasRef == CanvasRef::None && pCanvasSurface == nullptr) ||
-		    (canvasRef != CanvasRef::None && pCanvasSurface != nullptr )  )
+		if( GfxDevice::_beginCanvasUpdate(canvasRef, pCanvasSurface, nUpdateRects, pUpdateRects, pLayers, startLayer) )
 		{
-			//TODO: Error handling!
-			return false;
+			auto pCAPILayers = wg_dynamic_cast<CAPICanvasLayers_p>(pLayers);
+			wg_obj cAPILayers = pCAPILayers ? pCAPILayers->cObject() : 0;
+
+			if (canvasRef != CanvasRef::None)
+			{
+				wg_beginCanvasUpdateWithRef(m_cDevice, (wg_canvasRef)canvasRef, nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
+			}
+			else
+			{
+				wg_beginCanvasUpdateWithSurface(m_cDevice, static_cast<CAPISurface*>(pCanvasSurface)->cObject(), nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
+			}
+			return true;
 		}
-		
-		SizeI sz = (canvasRef != CanvasRef::None) ? canvas(canvasRef).size : pCanvasSurface->pixelSize();
-		if( sz.isEmpty() )
-		{
-			// TODO: Error handling!
+		else
 			return false;
-		}
-
-        auto pCAPILayers = wg_dynamic_cast<CAPICanvasLayers_p>(pLayers);
-
-
-        if (canvasRef != CanvasRef::None)
-        {
-            wg_beginCanvasUpdateWithRef(m_cDevice, (wg_canvasRef)canvasRef, nUpdateRects, (wg_rectSPX*)pUpdateRects, pCAPILayers->cObject(), startLayer);
-        }
-        else
-        {
-            wg_beginCanvasUpdateWithSurface(m_cDevice, (wg_obj) static_cast<Object*>(pCanvasSurface), nUpdateRects, (wg_rectSPX*)pUpdateRects, pCAPILayers->cObject(), startLayer);
-        }
-
-		m_canvas.ref = canvasRef;
-		m_canvas.pSurface = pCanvasSurface;
-		
-		m_canvas.size = sz;
-		
-        return true;
     }
 
     //____ _canvasWasChanged() ________________________________________________
 
     void CAPIGfxDevice::_canvasWasChanged()
     {
-        //This method should never be called, but is pure virtual in super class.
-        
-        assert(false);
+        // Do nothing
     }
 
     //____ _renderLayerWasChanged() ___________________________________________

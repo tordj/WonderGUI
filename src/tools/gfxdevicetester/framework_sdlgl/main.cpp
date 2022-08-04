@@ -165,8 +165,9 @@ int main(int argc, char *argv[] )
 
 
 	pApp->addTestDevice(new SoftwareDevice());
+	pApp->addTestDevice(new CAPIToSoftwareDevice());
 //	pApp->addTestDevice(new StreamToSoftwareDevice());
-	pApp->addTestDevice(new OpenGLDevice());
+//	pApp->addTestDevice(new OpenGLDevice());
 
 	// Initialize the app
 

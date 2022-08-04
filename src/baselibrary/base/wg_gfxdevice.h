@@ -301,6 +301,8 @@ namespace wg
 		bool		m_bTintGradient = false;
 
 		bool        m_bRendering = false;
+		
+		bool		m_bIsProxyDevice = false;		// Set by subclasses that just wrap calls and rendering is performed elsewhere.
 	};
 
 

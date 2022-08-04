@@ -323,7 +323,7 @@ void wg_stretchFlipBlitRect(wg_obj device, const wg_rectSPX* dest, const wg_rect
 
 void wg_precisionBlit(wg_obj device, const wg_rectSPX* dest, const wg_rectF* srcSPX)
 {
-	getPtr(device)->precisionBlit(*(const RectSPX*)dest, *(const RectF*)dest );
+	getPtr(device)->precisionBlit(*(const RectSPX*)dest, *(const RectF*)srcSPX );
 
 }
 
