@@ -22,6 +22,7 @@ add_executable(gfxdevicetester
 	testsuites/blitconsistencytest.h
 	testsuites/blittests.h
 	testsuites/canvasformattests.h
+	testsuites/canvaslayertests.h
 	testsuites/clutblittests.h
 	testsuites/filltests.h
 	testsuites/linetests.h

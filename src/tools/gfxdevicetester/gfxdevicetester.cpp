@@ -24,6 +24,8 @@
 #include "testsuites/blitblendtests.h"
 #include "testsuites/a8tests.h"
 #include "testsuites/tiletests.h"
+#include "testsuites/canvaslayertests.h"
+
 
 using namespace wg;
 using namespace std;
@@ -496,6 +498,7 @@ void GfxDeviceTester::setup_tests()
 	add_testsuite(new BlitBlendTests(), new BlitBlendTests());
 	add_testsuite(new A8Tests(), new A8Tests());
 	add_testsuite(new TileTests(), new TileTests());
+	add_testsuite(new CanvasLayerTests(), new CanvasLayerTests());
 
 	regen_testentries();
 }
