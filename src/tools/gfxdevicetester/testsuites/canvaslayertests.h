@@ -1,6 +1,7 @@
 #include "testsuite.h"
 
 #include <wg_canvaslayers.h>
+#include <wg_capicanvaslayers.h>
 
 class CanvasLayerTests : public TestSuite
 {
@@ -31,15 +32,23 @@ public:
 																   _.format = PixelFormat::BGRA_8,
 																   _.canvas = true
 																   ));
-		
-		
-		m_pLayerStack1 = CanvasLayers::create( WGBP(CanvasLayers,
-								   _.baseLayer = 2,
-								   _.layers = { CanvasLayers::LayerBP(PixelFormat::A_8, [](GfxDevice * pDevice) { pDevice->setBlendMode(BlendMode::Subtract); pDevice->blit({0,0}); }),
-												CanvasLayers::LayerBP(PixelFormat::BGRA_8, [](GfxDevice * pDevice) { pDevice->setBlendMode(BlendMode::Blend); pDevice->blit({0,0}); }),
-												CanvasLayers::LayerBP(PixelFormat::A_8, [](GfxDevice * pDevice) { pDevice->setBlendMode(BlendMode::Add); pDevice->blit({0,0}); }),
-												CanvasLayers::LayerBP(PixelFormat::BGRA_8, [](GfxDevice * pDevice) { pDevice->setBlendMode(BlendMode::Blend); pDevice->blit({0,0}); })
-		} ) );
+
+		CanvasLayers::Blueprint bp = WGBP(CanvasLayers,
+			_.baseLayer = 2,
+			_.layers = { CanvasLayers::LayerBP(PixelFormat::A_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Subtract); pDevice->blit({0,0}); }),
+						 CanvasLayers::LayerBP(PixelFormat::BGRA_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Blend); pDevice->blit({0,0}); }),
+						 CanvasLayers::LayerBP(PixelFormat::A_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Add);  pDevice->blit({0,0}); }),
+						 CanvasLayers::LayerBP(PixelFormat::BGRA_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Blend);  pDevice->blit({0,0}); })
+			});
+
+		if (pDevice->isInstanceOf(CAPIGfxDevice::TYPEINFO))
+		{
+			m_pLayerStack1 = CAPICanvasLayers::create(static_cast<CAPIGfxDevice*>(pDevice), bp);
+		}
+		else
+		{
+			m_pLayerStack1 = CanvasLayers::create(bp);
+		}
 		
 		return true;
 	}
@@ -58,35 +67,25 @@ public:
 
 	bool cleanup(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->endCanvasUpdate();
-
-		pDevice->setBlitSource(m_pCanvas);
-		pDevice->setBlendMode(BlendMode::Replace);
-		pDevice->blit({0,0});
-		pDevice->setBlendMode(BlendMode::Blend);
-
 		return true;
 	}
 
 	bool prep1(GfxDevice * pDevice, const RectI& canvas)
 	{
-		
-		
+		return true;
+	}
+
+	
+	bool test1(GfxDevice * pDevice, const RectI& canvas)
+	{
+		pDevice->beginCanvasUpdate(m_pCanvas, 0, nullptr, m_pLayerStack1);
+		pDevice->setRenderLayer(0);
+
 		pDevice->setBlendMode(BlendMode::Replace);
 		pDevice->setBlitSource(m_pBackground);
 		pDevice->blit({ 0,0 });
 		pDevice->setBlendMode(BlendMode::Blend);
 
-		pDevice->beginCanvasUpdate(m_pCanvas, 0, nullptr, m_pLayerStack1 );
-		return true;
-	}
-
-
-	
-	
-	
-	bool test1(GfxDevice * pDevice, const RectI& canvas)
-	{
 		pDevice->setRenderLayer(1);
 		pDevice->setBlitSource(m_pOne);
 		pDevice->setTintColor(HiColor(1.f, 1.f, 1.f,0.25f) );
@@ -99,14 +98,21 @@ public:
 
 		pDevice->setRenderLayer(3);
 		pDevice->setTintColor(HiColor::White);
-		pDevice->fill( {0,0,canvas.w/2+m_pTwo->pixelWidth()*64/2,canvas.h}, HiColor(4096,4096,4096,4096) );
+		pDevice->fill( {0,0,canvas.w/2+m_pTwo->pixelWidth()*64/2,canvas.h}, HiColor(4096,4096,4096,1024) );
 		
 		pDevice->setRenderLayer(4);
 		pDevice->setBlitSource(m_pThree);
 		pDevice->setTintColor(Color8::Blue);
 		pDevice->blit( {canvas.w/2,0 } );
-		return true;
 
+		pDevice->endCanvasUpdate();
+
+		pDevice->setBlitSource(m_pCanvas);
+		pDevice->setBlendMode(BlendMode::Blend);
+		pDevice->blit({ 0,0 });
+		pDevice->setBlendMode(BlendMode::Blend);
+
+		return true;
 	}
 
 

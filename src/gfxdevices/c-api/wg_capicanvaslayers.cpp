@@ -25,6 +25,7 @@
 #include <wg_base.h>
 
 #include <wg_c_canvaslayers.h>
+#include <wg_c_object.h>
 
 namespace wg
 {
@@ -76,6 +77,8 @@ namespace wg
 
 	CAPICanvasLayers::CAPICanvasLayers( CAPIGfxDevice * pDevice, const Blueprint& bp) : CanvasLayers(bp)
 	{
+		m_pDevice = pDevice;
+
 		wg_canvasLayersBP cBP;
 
 		memset(&cBP, 0, sizeof(wg_canvasLayersBP));
@@ -134,6 +137,14 @@ namespace wg
 
 		m_cCanvasLayer = wg_createCanvasLayers(&cBP);
 	}
+
+	//____ CAPICanvasLayers::~CAPICanvasLayers() ______________________________
+
+	CAPICanvasLayers::~CAPICanvasLayers()
+	{
+		wg_release(m_cCanvasLayer);
+	}
+
 
 	//____ typeInfo() _________________________________________________________
 

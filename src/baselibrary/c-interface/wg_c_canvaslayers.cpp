@@ -88,7 +88,9 @@ wg_obj wg_createCanvasLayers(const wg_canvasLayersBP* pBP)
 		bp.layers.push_back(layer);
 	}
 
-	return static_cast<Object*>(CanvasLayers::create(bp));
+	auto p = CanvasLayers::create(bp);
+	p->retain();
+	return static_cast<Object*>(p);
 }
 
 int wg_canvasLayersSize(wg_obj canvasLayers)

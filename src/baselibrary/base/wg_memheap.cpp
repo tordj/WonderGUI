@@ -73,6 +73,7 @@ namespace wg
 
   bool MemHeap::exit()
   {
+	  return true;
   }
 
   //____ malloc() _____________________________________________________________

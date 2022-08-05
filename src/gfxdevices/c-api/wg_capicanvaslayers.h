@@ -68,6 +68,7 @@ namespace wg
 
 	protected:
 		CAPICanvasLayers( CAPIGfxDevice * pDevice, const Blueprint& bp);
+		~CAPICanvasLayers();
 
 		static void _callbackRouter( wg_obj cDevice, void* pMe, int funcNb );
 

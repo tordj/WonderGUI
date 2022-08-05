@@ -63,7 +63,7 @@ extern "C" {
 		int						finalizeCanvasInt;
 
 		int						baseLayer;
-		wg_canvasLayersEntryBP	layers[];				// Need to end list with entry where format = WG_PIXFMT_UNDEFINED unless full.
+		wg_canvasLayersEntryBP	layers[WG_MAX_CANVAS_LAYERS];				// Need to end list with entry where format = WG_PIXFMT_UNDEFINED unless full.
 
 	};
 
