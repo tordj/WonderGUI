@@ -63,7 +63,7 @@ using namespace wg;
     MTLRenderPassDescriptor * pDesc = view.currentRenderPassDescriptor;
     pDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
 
-    auto pDevice = wg_cast<MetalGfxDevice_p>(m_pRootPanel->gfxDevice());
+    auto pDevice = wg_static_cast<MetalGfxDevice_p>(m_pRootPanel->gfxDevice());
     
     pDevice->autopresent(view.currentDrawable);
 

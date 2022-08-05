@@ -170,7 +170,7 @@ namespace wg
               
         if( pPixels )
         {
-            _copyFrom( pPixelDescription, (uint8_t*) pPixels, pitch, m_size, m_size );
+            _copy( m_size, pPixelDescription, (uint8_t*) pPixels, pitch, m_size );
         }
                
         // Setup the clut if present

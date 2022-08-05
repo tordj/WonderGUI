@@ -23,21 +23,21 @@ public:
 		// Generate simple wave
 
 		m_simpleWaveTopLine.color = Color::White;
-		m_simpleWaveTopLine.hold = canvas.h / 2 * 256;
+		m_simpleWaveTopLine.hold = canvas.h / 2 * 64;
 		m_simpleWaveTopLine.length = 513;
 		m_simpleWaveTopLine.pWave = m_simpleWaveTopSamples;
-		m_simpleWaveTopLine.thickness = 1.f;
+		m_simpleWaveTopLine.thickness = 64;
 
 		m_simpleWaveBottomLine.color = Color::HotPink;
-		m_simpleWaveBottomLine.hold = canvas.h / 2 * 256;
+		m_simpleWaveBottomLine.hold = canvas.h / 2;
 		m_simpleWaveBottomLine.length = 30;
 		m_simpleWaveBottomLine.pWave = m_simpleWaveBottomSamples;
-		m_simpleWaveBottomLine.thickness = 5.f;
+		m_simpleWaveBottomLine.thickness = 5*64;
 
 		for (int i = 0; i < 512+1; i++)
 		{
-			m_simpleWaveTopSamples[i] = (int)((100+sin(i / 10.0) * 80) * 256);
-			m_simpleWaveBottomSamples[i] = (int)((300 + sin(i / 20.0) * 6) * 256);
+			m_simpleWaveTopSamples[i] = (int)((100+sin(i / 10.0) * 80) * 64);
+			m_simpleWaveBottomSamples[i] = (int)((300 + sin(i / 20.0) * 6) * 64);
 		}
 
 		m_simpleWaveBottomSamples[30] = 0;
@@ -46,21 +46,21 @@ public:
 		// Generate backface wave
 
 		m_backfaceWaveTopLine.color = Color::White;
-		m_backfaceWaveTopLine.hold = canvas.h / 2 * 256;
+		m_backfaceWaveTopLine.hold = canvas.h / 2 * 64;
 		m_backfaceWaveTopLine.length = 513;
 		m_backfaceWaveTopLine.pWave = m_backfaceWaveTopSamples;
-		m_backfaceWaveTopLine.thickness = 1.f;
+		m_backfaceWaveTopLine.thickness = 64;
 
 		m_backfaceWaveBottomLine.color = Color::HotPink;
-		m_backfaceWaveBottomLine.hold = canvas.h / 2 * 256;
+		m_backfaceWaveBottomLine.hold = canvas.h / 2;
 		m_backfaceWaveBottomLine.length = 513;
 		m_backfaceWaveBottomLine.pWave = m_backfaceWaveBottomSamples;
-		m_backfaceWaveBottomLine.thickness = 5.f;
+		m_backfaceWaveBottomLine.thickness = 5*64;
 
 		for (int i = 0; i < 512 + 1; i++)
 		{
-			m_backfaceWaveTopSamples[i] = (int)((100 + sin(i / 10.0) * 80) * 256);
-			m_backfaceWaveBottomSamples[i] = (int)((100 + sin(i / 20.0) * 6) * 256);
+			m_backfaceWaveTopSamples[i] = (int)((100 + sin(i / 10.0) * 80) * 64);
+			m_backfaceWaveBottomSamples[i] = (int)((100 + sin(i / 20.0) * 6) * 64);
 		}
 
 

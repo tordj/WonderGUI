@@ -984,12 +984,15 @@ MetalGfxDevice::MetalGfxDevice()
 
         //
 
+		if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 4)
+			_resizeBuffers();
+
+		//
+		
         if (((rect.x | rect.y | rect.w | rect.h) & 0x3F) == 0)
         {
             // No subpixel precision, make it quick and easy
 
-            if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 4)
-                _resizeBuffers();
             
             if (m_cmd != Command::Fill)
             {
@@ -1048,100 +1051,79 @@ MetalGfxDevice::MetalGfxDevice()
         {
             // We have subpixel precision
 
-            //TODO: Implement!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            
-            
+			// Create our outer rectangle
+
+			RectI outerRect( rect.x / 64, rect.y / 64, ((rect.x+rect.w+63)/64) - (rect.x/64), ((rect.y + rect.h + 63)/64) - (rect.y/64) );
+
+			//
+			
+			if (m_cmd != Command::FillSubPixel)
+			{
+				_endCommand();
+				_beginDrawCommand(Command::FillSubPixel);
+			}
+
+			for (int i = 0; i < m_nClipRects; i++)
+			{
+				RectI patch = RectI::getIntersection(m_pClipRects[i]/64, outerRect);
+				if (patch.w > 0 && patch.h > 0)
+				{
+					int    dx1 = patch.x;
+					int    dy1 = patch.y;
+					int dx2 = patch.x + patch.w;
+					int dy2 = patch.y + patch.h;
+
+					m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+					m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+					m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexOfs++;
+
+					m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+					m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+					m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexOfs++;
+
+					m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+					m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+					m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexOfs++;
+
+					m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+					m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+					m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexOfs++;
+
+					m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+					m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+					m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexOfs++;
+
+					m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+					m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+					m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+					m_vertexOfs++;
+				}
+			}
+
+			// Provide color
+
+			m_pExtrasBuffer[m_extrasOfs++] = col.r / 4096.f;
+			m_pExtrasBuffer[m_extrasOfs++] = col.g / 4096.f;
+			m_pExtrasBuffer[m_extrasOfs++] = col.b / 4096.f;
+			m_pExtrasBuffer[m_extrasOfs++] = col.a / 4096.f;
+
+			// Provide rectangle center and radius
+
+			SizeF    radius(rect.w / (2.f*64), rect.h / (2.f*64));
+			CoordF    center( (rect.x/64.f) + radius.w, (rect.y/64.f) + radius.h);
+
+			m_pExtrasBuffer[m_extrasOfs++] = center.x;
+			m_pExtrasBuffer[m_extrasOfs++] = center.y;
+			m_pExtrasBuffer[m_extrasOfs++] = radius.w;
+			m_pExtrasBuffer[m_extrasOfs++] = radius.h;
+			
         }
     }
-
-    //____ fill() ____ [subpixel] __________________________________________________
-
-	void MetalGfxDevice::fill(const RectF& rect, HiColor col)
-	{
-        // Skip calls that won't affect destination
-
-        if (col.a == 0 && (m_blendMode == BlendMode::Blend))
-            return;
-
-        // Create our outer rectangle
-
-        RectI outerRect( (int) rect.x, (int) rect.y, ((int) (rect.x+rect.w+0.999f)) - (int) rect.x, ((int) (rect.y + rect.h + 0.999f)) - (int) rect.y );
-
-
-        RectI clip = RectI::getIntersection(outerRect, m_clipBounds/64);
-        if (clip.w == 0 || clip.h == 0)
-            return;
-
-        //
-
-        if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
-             _resizeBuffers();
-        
-        if (m_cmd != Command::FillSubPixel)
-        {
-            _endCommand();
-            _beginDrawCommand(Command::FillSubPixel);
-        }
-
-        for (int i = 0; i < m_nClipRects; i++)
-        {
-            RectI patch = RectI::getIntersection(m_pClipRects[i]/64, outerRect);
-            if (patch.w > 0 && patch.h > 0)
-            {
-                int    dx1 = patch.x;
-                int    dy1 = patch.y;
-                int dx2 = patch.x + patch.w;
-                int dy2 = patch.y + patch.h;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-
-                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
-                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
-                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-                m_vertexOfs++;
-            }
-        }
-
-        // Provide color
-
-        m_pExtrasBuffer[m_extrasOfs++] = col.r / 4096.f;
-        m_pExtrasBuffer[m_extrasOfs++] = col.g / 4096.f;
-        m_pExtrasBuffer[m_extrasOfs++] = col.b / 4096.f;
-        m_pExtrasBuffer[m_extrasOfs++] = col.a / 4096.f;
-
-        // Provide rectangle center and radius
-
-        SizeF    radius(rect.w / 2, rect.h / 2);
-        CoordF    center(rect.x + radius.w, rect.y + radius.h);
-
-        m_pExtrasBuffer[m_extrasOfs++] = center.x;
-        m_pExtrasBuffer[m_extrasOfs++] = center.y;
-        m_pExtrasBuffer[m_extrasOfs++] = radius.w;
-        m_pExtrasBuffer[m_extrasOfs++] = radius.h;
-	}
 
     //____ plotPixels() _________________________________________________________________
 
@@ -1181,12 +1163,14 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ drawLine() ____ [from/to] __________________________________________________
 
-	void MetalGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness)
+	void MetalGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx _thickness)
 	{
         //TODO: Proper 26:6 support
         begin = roundToPixels(begin);
         end = roundToPixels(end);
-        
+     
+		float thickness = _thickness/64.f;
+		
         // Skip calls that won't affect destination
 
         if (color.a == 0 && (m_blendMode == BlendMode::Blend))
@@ -1313,12 +1297,14 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ drawLine() ____ [start/direction] __________________________________________________
 
-    void MetalGfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, float thickness)
+    void MetalGfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx _thickness)
     {
         //TODO: Proper 26:6 support
         begin = roundToPixels(begin);
         length = roundToPixels(length);
-        
+ 
+		float thickness = _thickness/64.f;
+
         // Skip calls that won't affect destination
 
         if (color.a == 0 && (m_blendMode == BlendMode::Blend))
@@ -1960,30 +1946,30 @@ MetalGfxDevice::MetalGfxDevice()
                 if (edgeIn > edgeOut)
                     std::swap(edgeIn, edgeOut);
 
-                float increment = edgeOut == edgeIn ? 100.f : 256.f / (edgeOut - edgeIn);
+                float increment = edgeOut == edgeIn ? 100.f : 64.f / (edgeOut - edgeIn);
                 float beginAdder;
                 float endAdder;
 
-                if ((edgeOut & 0xFFFFFF00) <= (unsigned int) edgeIn)
+                if ((edgeOut & 0xFFFFFFC0) <= (unsigned int) edgeIn)
                 {
-                    float firstPixelCoverage = ((256 - (edgeOut & 0xFF)) + (edgeOut - edgeIn) / 2) / 256.f;
+                    float firstPixelCoverage = ((64 - (edgeOut & 0x3F)) + (edgeOut - edgeIn) / 2) / 64.f;
 
-                    beginAdder = increment * (edgeIn & 0xFF)/256.f + firstPixelCoverage;
+                    beginAdder = increment * (edgeIn & 0x3F)/64.f + firstPixelCoverage;
                     endAdder = beginAdder;
                 }
                 else
                 {
-                    int height = 256 - (edgeIn & 0xFF);
+                    int height = 64 - (edgeIn & 0x3F);
                     int width = (int)(increment * height);
-                    float firstPixelCoverage = (height * width) / (2 * 65536.f);
-                    float lastPixelCoverage = 1.f - (edgeOut & 0xFF)*increment*(edgeOut & 0xFF) / (2*65536.f);
+                    float firstPixelCoverage = (height * width) / (2 * 4096.f);
+                    float lastPixelCoverage = 1.f - (edgeOut & 0x3F)*increment*(edgeOut & 0x3F) / (2*4096.f);
 
-                    beginAdder = increment * (edgeIn & 0xFF) / 256.f + firstPixelCoverage;
-                    endAdder = lastPixelCoverage - (1.f - (edgeOut & 0xFF)*increment / 256.f);
+                    beginAdder = increment * (edgeIn & 0x3F) / 64.f + firstPixelCoverage;
+                    endAdder = lastPixelCoverage - (1.f - (edgeOut & 0x3F)*increment / 64.f);
 //                     endAdder = lastPixelCoverage - ((edgeOut & 0xFFFFFF00)-edgeIn)*increment / 256.f;
                 }
 
-                *pEdgeData++ = edgeIn/256.f;                    // Segment begin pixel
+                *pEdgeData++ = edgeIn/64.f;                    // Segment begin pixel
                 *pEdgeData++ = increment;                        // Segment increment
                 *pEdgeData++ = beginAdder;                    // Segment begin adder
                 *pEdgeData++ = endAdder;                        // Segment end adder

@@ -38,10 +38,10 @@ extern "C" {
 	struct wg_waveLine
 	{
 		int			length;
-		float		thickness;
+		wg_spx		thickness;
 		wg_color	color;
-		int* pWave;      // Pixel offset in 24.8 format.
-		int			hold;      // Value for extending the line if it is too short (or completely missing).
+		int* 		pWave;      // Pixel offset in 26.6 format.
+		wg_spx		hold;      // Value for extending the line if it is too short (or completely missing).
 	};
 
 	struct wg_canvasInfo		// NOT BINARY EQUIVALENT!

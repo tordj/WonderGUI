@@ -1360,8 +1360,8 @@ namespace wg
 
 				for (int y = 0; y < nSegments - 1; y++)
 				{
-					int beg = pEdgeStrips[y];
-					int end = pEdgeStrips[y + edgeStripPitch];
+					int beg = pEdgeStrips[y] * 4;
+					int end = pEdgeStrips[y + edgeStripPitch] * 4;
 
 					if (beg > end)
 						swap(beg, end);

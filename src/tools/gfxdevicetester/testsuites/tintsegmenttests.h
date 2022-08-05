@@ -52,7 +52,7 @@ public:
 		RectI canvas = _canvas / 64;
 
 		float val = 0;
-		int ofs = -canvas.h / 4 * 256;
+		int ofs = -canvas.h / 4 * 64;
 
 		for (int i = 0; i <= canvas.w; i++)
 		{
@@ -61,10 +61,10 @@ public:
 			else
 				val += 19.1f;
 
-			m_rainbowEdges[i][0] = ofs + int(val * 32);
-			m_rainbowEdges[i][1] = ofs + int(val * 64);
-			m_rainbowEdges[i][2] = ofs + int(val * 96);
-			m_rainbowEdges[i][3] = ofs + int(val * 128);
+			m_rainbowEdges[i][0] = ofs + int(val * 32/4);
+			m_rainbowEdges[i][1] = ofs + int(val * 64/4);
+			m_rainbowEdges[i][2] = ofs + int(val * 96/4);
+			m_rainbowEdges[i][3] = ofs + int(val * 128/4);
 		}
 
 
@@ -75,8 +75,8 @@ public:
 			else
 				val += 12.5f;
 
-			m_rainbowEdges2[i][0] = canvas.h * 256 - int(val * 64);
-			m_rainbowEdges2[i][1] = canvas.h * 256 - int(val * 64) + 2047*3;
+			m_rainbowEdges2[i][0] = canvas.h * 64 - int(val * 16);
+			m_rainbowEdges2[i][1] = canvas.h * 64 - int(val * 16) + 2047*3/4;
 		}
 
 

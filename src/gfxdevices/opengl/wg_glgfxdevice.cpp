@@ -1996,30 +1996,30 @@ namespace wg
 				if (edgeIn > edgeOut)
 					std::swap(edgeIn, edgeOut);
 
-				float increment = edgeOut == edgeIn ? 100.f : 256.f / (edgeOut - edgeIn);
+				float increment = edgeOut == edgeIn ? 100.f : 64.f / (edgeOut - edgeIn);
 				float beginAdder;
 				float endAdder;
 
-				if ((edgeOut & 0xFFFFFF00) <= (unsigned int) edgeIn)
+				if ((edgeOut & 0xFFFFFFC0) <= (unsigned int) edgeIn)
 				{
-					float firstPixelCoverage = ((256 - (edgeOut & 0xFF)) + (edgeOut - edgeIn) / 2) / 256.f;
+					float firstPixelCoverage = ((64 - (edgeOut & 0x3F)) + (edgeOut - edgeIn) / 2) / 64.f;
 
-					beginAdder = increment * (edgeIn & 0xFF)/256.f + firstPixelCoverage;
+					beginAdder = increment * (edgeIn & 0x3F)/64.f + firstPixelCoverage;
 					endAdder = beginAdder;
 				}
 				else
 				{
-					int height = 256 - (edgeIn & 0xFF);
+					int height = 64 - (edgeIn & 0x3F);
 					int width = (int)(increment * height);
-					float firstPixelCoverage = (height * width) / (2 * 65536.f);
-					float lastPixelCoverage = 1.f - (edgeOut & 0xFF)*increment*(edgeOut & 0xFF) / (2*65536.f);
+					float firstPixelCoverage = (height * width) / (2 * 4096.f);
+					float lastPixelCoverage = 1.f - (edgeOut & 0x3F)*increment*(edgeOut & 0x3F) / (2*4096.f);
 
-					beginAdder = increment * (edgeIn & 0xFF) / 256.f + firstPixelCoverage;
-					endAdder = lastPixelCoverage - (1.f - (edgeOut & 0xFF)*increment / 256.f);
+					beginAdder = increment * (edgeIn & 0x3F) / 64.f + firstPixelCoverage;
+					endAdder = lastPixelCoverage - (1.f - (edgeOut & 0x3F)*increment / 64.f);
 // 					endAdder = lastPixelCoverage - ((edgeOut & 0xFFFFFF00)-edgeIn)*increment / 256.f;
 				}
 
-				*pExtras++ = edgeIn/256.f;					// Segment begin pixel
+				*pExtras++ = edgeIn/64.f;					// Segment begin pixel
 				*pExtras++ = increment;						// Segment increment
 				*pExtras++ = beginAdder;					// Segment begin adder
 				*pExtras++ = endAdder;						// Segment end adder

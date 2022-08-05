@@ -35,13 +35,13 @@ public:
 
 		for (int i = 0; i <= canvas.w/64; i++)
 		{
-			m_rainbowEdges[i][0] = i * 32;
-			m_rainbowEdges[i][1] = i * 64;
-			m_rainbowEdges[i][2] = i * 96;
-			m_rainbowEdges[i][3] = i * 128;
-			m_rainbowEdges[i][4] = i * 160;
-			m_rainbowEdges[i][5] = i * 192;
-			m_rainbowEdges[i][6] = i * 224;
+			m_rainbowEdges[i][0] = i * 32/4;
+			m_rainbowEdges[i][1] = i * 64/4;
+			m_rainbowEdges[i][2] = i * 96/4;
+			m_rainbowEdges[i][3] = i * 128/4;
+			m_rainbowEdges[i][4] = i * 160/4;
+			m_rainbowEdges[i][5] = i * 192/4;
+			m_rainbowEdges[i][6] = i * 224/4;
 		}
 
 		return true;
@@ -106,12 +106,12 @@ public:
 			if (i % 2 == 0)
 			{
 				for (int j = 0; j < 7; j++)
-					edges[i][j] = 1024 + 1024 * j;
+					edges[i][j] = 256 + 256 * j;
 			}
 			else
 			{
 				for (int j = 0; j < 7; j++)
-					edges[i][j] = (canvas.h*256) + 1024 * j;
+					edges[i][j] = (canvas.h*64) + 256 * j;
 			}
 		}
 
@@ -218,10 +218,10 @@ private:
 	CoordI	m_precisionPlotCoords[4] = { {1 * 64,1 * 64}, {1 * 64,2 * 64}, {1 * 64,3 * 64}, {1 * 64,4 * 64} };
 	HiColor	m_precisionPlotColors[4] = { Color8(42,42,42,255), Color8(128,128,128,255), Color8(213,213,213,255), Color8(255,255,255,255) };
 
-	int		m_precisionEdges[2][4] = { {0 * 256+128, 6 * 256, 6 * 256, 6 * 256}, {3 * 256+128, 6 * 256, 6 * 256, 6 * 256} };
+	int		m_precisionEdges[2][4] = { {0 * 64+32, 6 * 64, 6 * 64, 6 * 64}, {3 * 64+32, 6 * 64, 6 * 64, 6 * 64} };
 	HiColor	m_precisionColors[5] = { Color(0,0,0,0), Color(255,255,255,255), Color(255,0,0,255), Color(255,0,0,255), Color(255,0,0,255) };
 
-	int		m_precisionEdges2[2][4] = { {200 * 256 + 240, 219 * 256 + 89, 260 * 256, 260 * 256}, {206 * 256+170, 240 * 256, 260 * 256, 260 * 256} };
+	int		m_precisionEdges2[2][4] = { {200 * 64 + 240/4, 219 * 64 + 89/4, 260 * 64, 260 * 64}, {206 * 64+170/4, 240 * 64, 260 * 64, 260 * 64} };
 
 
 };

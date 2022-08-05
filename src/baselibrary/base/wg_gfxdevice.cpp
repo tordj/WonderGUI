@@ -1247,7 +1247,7 @@ namespace wg
 		int traceOfs = 0;
 		int startColumn = clipBeg;										// Column of traced lines we start to generate edges from.
 
-		int margin = (int)(max(pTopBorder->thickness, pBottomBorder->thickness) / 2 + 0.99);
+		int margin = (int)((max(pTopBorder->thickness, pBottomBorder->thickness)+1) / (2*64));
 
 		if (clipBeg > margin)
 		{
@@ -1375,22 +1375,22 @@ namespace wg
 
 	void GfxDevice::drawElipse(const RectSPX& canvas, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor )
 	{
-		// Center and corners in 24.8 format.
+		// Center and corners in 26.6 format.
 
-		int x1 = (int)(canvas.x * 4);
-		int y1 = (int)(canvas.y * 4);
-		int x2 = (int)((canvas.x + canvas.w) * 4);
-		int y2 = (int)((canvas.y + canvas.h) * 4);
+		int x1 = (int) canvas.x;
+		int y1 = (int) canvas.y;
+		int x2 = (int)(canvas.x + canvas.w);
+		int y2 = (int)(canvas.y + canvas.h);
 
 		CoordI center = { (x1 + x2) / 2, (y1 + y2) / 2 };
 
 		// Outer rect of elipse rounded to full pixels.
 
 		RectI outerRect;
-		outerRect.x = x1 >> 8;
-		outerRect.y = y1 >> 8;
-		outerRect.w = ((x2 + 255) >> 8) - outerRect.x;
-		outerRect.h = ((y2 + 255) >> 8) - outerRect.y;
+		outerRect.x = x1 >> 6;
+		outerRect.y = y1 >> 6;
+		outerRect.w = ((x2 + 63) >> 6) - outerRect.x;
+		outerRect.h = ((y2 + 63) >> 6) - outerRect.y;
 
 		// Adjusted clip
 
@@ -1404,15 +1404,15 @@ namespace wg
 
 		int radiusY[4];
 		radiusY[0] = (y2 - y1) / 2;
-		radiusY[1] = (int)(radiusY[0] - (outlineThickness * 4));
-		radiusY[2] = (int)(radiusY[1] - (thickness * 4));
-		radiusY[3] = (int)(radiusY[2] - (outlineThickness * 4));
+		radiusY[1] = (int)(radiusY[0] - outlineThickness);
+		radiusY[2] = (int)(radiusY[1] - thickness);
+		radiusY[3] = (int)(radiusY[2] - outlineThickness);
 
 		int radiusX[4];
 		radiusX[0] = (x2 - x1) / 2;
-		radiusX[1] = (int)(radiusX[0] - (outlineThickness * 4));
-		radiusX[2] = (int)(radiusX[1] - (thickness * 4));
-		radiusX[3] = (int)(radiusX[2] - (outlineThickness * 4));
+		radiusX[1] = (int)(radiusX[0] - outlineThickness);
+		radiusX[2] = (int)(radiusX[1] - thickness);
+		radiusX[3] = (int)(radiusX[2] - outlineThickness);
 
 		// Reserve buffer for our line traces
 
@@ -1423,9 +1423,9 @@ namespace wg
 
 		// Do line traces.
 
-		int yMid = (center.y & 0xFFFFFF00) - outerRect.y * 256;
-		int yAdjust = center.y & 0xFF;						// Compensate for center not being on pixel boundary.
-		int centerOfs = center.x - (outerRect.x << 8);
+		int yMid = (center.y & 0xFFFFFFC0) - outerRect.y * 64;
+		int yAdjust = center.y & 0x3F;						// Compensate for center not being on pixel boundary.
+		int centerOfs = center.x - (outerRect.x << 6);
 		int samplePitch = 4;
 
 		for (int edge = 0; edge < 4; edge++)
@@ -1443,13 +1443,13 @@ namespace wg
 			}
 			else
 			{
-				int xStart = (centerOfs - radiusX[edge] + 255) >> 8;		// First pixel-edge inside curve.
-				int xMid = centerOfs >> 8;								// Pixel edge on or right before center.
-				int xEnd = (centerOfs + radiusX[edge]) >> 8;				// Last pixel-edge inside curve.
+				int xStart = (centerOfs - radiusX[edge] + 63) >> 6;		// First pixel-edge inside curve.
+				int xMid = centerOfs >> 6;								// Pixel edge on or right before center.
+				int xEnd = (centerOfs + radiusX[edge]) >> 6;				// Last pixel-edge inside curve.
 
 
-				int curveInc = int(((int64_t)65536) * 256 * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
-				int curvePos = int((((radiusX[edge] - centerOfs) & 0xFF) * ((int64_t)curveInc)) >> 8);
+				int curveInc = int(((int64_t)65536) * 64 * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
+				int curvePos = int((((radiusX[edge] - centerOfs) & 0x3F) * ((int64_t)curveInc)) >> 6);
 
 				if (clipLeft > 0)
 				{
@@ -1520,19 +1520,19 @@ namespace wg
 
 				// Take care of left and right edges that needs more calculations to get the angle right.
 
-				int pixFracLeft = (xStart << 8) - (centerOfs - radiusX[edge]);
-				int pixFracRight = (centerOfs + radiusX[edge]) & 0xFF;
+				int pixFracLeft = (xStart << 6) - (centerOfs - radiusX[edge]);
+				int pixFracRight = (centerOfs + radiusX[edge]) & 0x3F;
 
 				if (pixFracLeft > 0 && xStart > 0)
 				{
-					pOutUpper[(xStart - 1)*samplePitch] = pOutUpper[xStart*samplePitch] + (yMid + yAdjust - pOutUpper[xStart*samplePitch]) * 256 / pixFracLeft;
-					pOutLower[(xStart - 1)*samplePitch] = pOutLower[xStart*samplePitch] + (yMid + yAdjust - pOutLower[xStart*samplePitch]) * 256 / pixFracLeft;
+					pOutUpper[(xStart - 1)*samplePitch] = pOutUpper[xStart*samplePitch] + (yMid + yAdjust - pOutUpper[xStart*samplePitch]) * 64 / pixFracLeft;
+					pOutLower[(xStart - 1)*samplePitch] = pOutLower[xStart*samplePitch] + (yMid + yAdjust - pOutLower[xStart*samplePitch]) * 64 / pixFracLeft;
 
 				}
 				if (pixFracRight > 0 && xEnd < samplePoints - 1)
 				{
-					pOutUpper[(xEnd + 1)*samplePitch] = pOutUpper[xEnd*samplePitch] + (yMid + yAdjust - pOutUpper[xEnd*samplePitch]) * 256 / pixFracRight;
-					pOutLower[(xEnd + 1)*samplePitch] = pOutLower[xEnd*samplePitch] + (yMid + yAdjust - pOutLower[xEnd*samplePitch]) * 256 / pixFracRight;
+					pOutUpper[(xEnd + 1)*samplePitch] = pOutUpper[xEnd*samplePitch] + (yMid + yAdjust - pOutUpper[xEnd*samplePitch]) * 64 / pixFracRight;
+					pOutLower[(xEnd + 1)*samplePitch] = pOutLower[xEnd*samplePitch] + (yMid + yAdjust - pOutLower[xEnd*samplePitch]) * 64 / pixFracRight;
 				}
 
 			}
@@ -1540,7 +1540,7 @@ namespace wg
 
 		// Split clip rectangles into upper and lower half, so we clip at the middle.
 
-		int split = min(clip.y + clip.h, outerRect.y + (yMid >> 8)) * 64;
+		int split = min(clip.y + clip.h, outerRect.y + (yMid >> 6)) * 64;
 
 		int clipBufferSize = sizeof(RectSPX)*m_nClipRects * 2;
 		RectSPX * pTopClips = (RectSPX*)Base::memStackAlloc(clipBufferSize);
@@ -1770,7 +1770,7 @@ namespace wg
 			int curveTabOfs = 0;
 			for (int i = 0; i <= quadW; i++)
 			{
-				*pEdge = (quadH<<8) - ((s_pCurveTab[(c_nCurveTabEntries-1)-(curveTabOfs >> 16)] * quadH) >> 8);
+				*pEdge = (quadH<<6) - ((s_pCurveTab[(c_nCurveTabEntries-1)-(curveTabOfs >> 16)] * quadH) >> 10);
 				pEdge += edgePitch;
 				curveTabOfs += curveTabInc;
 			}
@@ -1796,11 +1796,11 @@ namespace wg
 
 			for (int i = 0; i <= ringW; i++)
 			{
-				*p++ = (quadH << 8) - ((s_pCurveTab[(c_nCurveTabEntries - 1) - (ofs >> 16)] * ringH) >> 8);
+				*p++ = (quadH << 6) - ((s_pCurveTab[(c_nCurveTabEntries - 1) - (ofs >> 16)] * ringH) >> 10);
 				ofs += inc;
 			}
 
-			int maxVal = quadH << 8;
+			int maxVal = quadH << 6;
 			for (int i = ringW + 1; i <= quadW; i++)
 				*p++ = maxVal;
 		}
@@ -1837,7 +1837,7 @@ namespace wg
 
 				// Set startvalue and decrease per strip.
 
-				int value = quadH << 8;
+				int value = quadH << 6;
 				int dec;
 
 				float rot = (pSlice->ofs - quadStartOfs);
@@ -1864,13 +1864,13 @@ namespace wg
 				// Fill in the edge
 
 				int strip;
-				int precisionValue = value << 4;
+				int precisionValue = value << 6;
 				for (strip = 0; strip <= quadW && value >= pEdge[-1] ; strip++)
 				{
 					* pEdge = value;
 					pEdge += edgePitch;
 					precisionValue -= dec;
-					value = precisionValue >> 4;
+					value = precisionValue >> 6;
 				}
 
 				while (strip <= quadW)
@@ -1982,20 +1982,18 @@ namespace wg
 		static const int c_supersamples = 4;
 
 		static int brush[128 * c_supersamples];
-		static float prevThickness = -1.f;
+		static spx prevThickness = -1;
 
-		float thickness = pWave->thickness;
-		int brushSteps = (int)(thickness * c_supersamples / 2);
+		spx thickness = pWave->thickness;
+		int brushSteps = (int)(thickness * c_supersamples / (2*64));
 
 		// Generate brush
 
 		if (thickness != prevThickness)
 		{
-			int scaledThickness = (int)(thickness / 2 * 256);
-
-			brush[0] = scaledThickness;
+			brush[0] = thickness / 2;
 			for (int i = 1; i <= brushSteps; i++)
-				brush[i] = (scaledThickness * s_pCurveTab[c_nCurveTabEntries - (i*c_nCurveTabEntries) / brushSteps]) >> 16;
+				brush[i] = (thickness * s_pCurveTab[c_nCurveTabEntries - (i*c_nCurveTabEntries) / brushSteps]) >> (16+1);
 			prevThickness = thickness;
 		}
 
