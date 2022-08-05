@@ -332,8 +332,20 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 	if (!renderStack.isEmpty())
 	{
-        pDevice->beginCanvasUpdate(m_pCanvas, 0, nullptr, m_pCanvasLayers, m_renderLayer);
-		int bytesToRelease = _convertAndPushClipList( pDevice, renderStack.size(), renderStack.begin() );
+		int nRects = renderStack.size();
+		const wg::RectI * pRects = renderStack.begin();
+		
+		int nBytesReserved = nRects*sizeof(wg::RectSPX);
+		
+		wg::RectSPX * pClipRects = (wg::RectSPX*) wg::Base::memStackAlloc(nBytesReserved);
+		
+		for(int i = 0 ; i < nRects ; i++)
+			pClipRects[i] = pRects[i]*64;
+		
+		pDevice->beginCanvasUpdate(m_pCanvas, nRects, pClipRects, m_pCanvasLayers, m_renderLayer);
+
+//        pDevice->beginCanvasUpdate(m_pCanvas, 0, nullptr, m_pCanvasLayers, m_renderLayer);
+//		int bytesToRelease = _convertAndPushClipList( pDevice, renderStack.size(), renderStack.begin() );
 
 		pDevice->setBlendMode(WgBlendMode::Replace);
 		pDevice->setTintColor(WgColor::White);
@@ -345,8 +357,10 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
         if(m_hook.Widget())
             m_hook.Widget()->_renderPatches(pDevice, _canvas.size(), _canvas.size(), &renderStack);
 
-		_popAndReleaseClipList( pDevice, bytesToRelease);
+//		_popAndReleaseClipList( pDevice, bytesToRelease);
         pDevice->endCanvasUpdate();
+
+		wg::Base::memStackRelease(nBytesReserved);
 	}
 
 	// Set our tint color and blend mode for blitting from back canvas to screen.

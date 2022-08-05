@@ -61,7 +61,7 @@ namespace wg
 		inline int	bufferCapacity() const { return m_bufferSize; };
 		inline bool	chunkInBuffer() const { return _hasStreamChunks(); };
 		int			bytesInBuffer() const;
-		
+
 	protected:
 
 		GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder );

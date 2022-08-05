@@ -56,8 +56,8 @@ namespace wg
 
 	std::function<void(Error&)>	Base::s_pErrorHandler = nullptr;
 
-	std::atomic<unsigned int>	Base::s_objectsCreated = 0;
-	std::atomic<unsigned int>	Base::s_objectsDestroyed = 0;
+	std::atomic<unsigned int>	Base::s_objectsCreated;
+	std::atomic<unsigned int>	Base::s_objectsDestroyed;
 
 	int64_t						Base::s_timestamp = 0;
 	std::vector<Receiver*>		Base::s_updateReceivers;
@@ -72,6 +72,9 @@ namespace wg
 
 	bool Base::init( HostBridge * pHostBridge )
 	{
+		s_objectsCreated = 0;
+		s_objectsDestroyed = 0;
+		
 		if (s_pData != 0)
 		{
 			handleError(ErrorSeverity::SilentFail, ErrorCode::IllegalCall, "Call to Base::init() ignored, already initialized.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);

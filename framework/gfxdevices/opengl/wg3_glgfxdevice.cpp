@@ -1086,7 +1086,7 @@ namespace wg
 		RectI outerRect( (int) rect.x, (int) rect.y, ((int) (rect.x+rect.w+0.999f)) - (int) rect.x, ((int) (rect.y + rect.h + 0.999f)) - (int) rect.y );
 
 
-		RectI clip = RectI::getIntersection(outerRect, m_clipBounds);
+		RectI clip = RectI::getIntersection(outerRect, m_clipBounds/64);
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
@@ -1106,7 +1106,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			RectI patch = RectI::getIntersection(m_pClipRects[i], outerRect);
+			RectI patch = RectI::getIntersection(m_pClipRects[i]/64, outerRect);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				int	dx1 = patch.x;

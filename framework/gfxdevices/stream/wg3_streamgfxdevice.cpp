@@ -52,7 +52,7 @@ namespace wg
 		m_pEncoder = pEncoder;
 		m_bRendering = false;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ProtocolVersion, {}, 2 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ProtocolVersion, 0, 2 };
         (*m_pEncoder) << (unsigned short) 0x0100;
 	}
 
@@ -116,7 +116,7 @@ namespace wg
         return true;
     }
 
-	bool StreamGfxDevice::defineCanvas( CanvasRef ref, const SizeSPX& size, int scale )
+	bool StreamGfxDevice::defineCanvas( CanvasRef ref, const SizeI& size, int scale )
 	{
 	
 		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (CanvasInfo& entry) { return (ref == entry.ref); } );
@@ -124,14 +124,14 @@ namespace wg
 		if( it == m_definedCanvases.end() )
 		{
 			if( !size.isEmpty() )
-				m_definedCanvases.push_back( CanvasInfo( ref, nullptr, size, scale ) );
+				m_definedCanvases.push_back( CanvasInfo( ref, nullptr, size * 64, scale ) );
 		}
 		else
 		{
 			if( !size.isEmpty() )
 			{
 				it->pSurface = nullptr;
-				it->size = size;
+				it->size = size * 64;
                 it->scale = scale;
 			}
 			else
@@ -159,7 +159,7 @@ namespace wg
     {
         GfxDevice::setClipList(nRectangles, pRectangles);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetClipList, {}, (uint16_t)(nRectangles * 16) };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetClipList, 0, (uint16_t)(nRectangles * 16) };
         (*m_pEncoder) << GfxStream::DataChunk{ nRectangles * 16, pRectangles };
         return true;
     }
@@ -170,7 +170,7 @@ namespace wg
     {
         GfxDevice::resetClipList();
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ResetClipList, {}, 0 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ResetClipList, 0, 0 };
     }
 
     //____ pushClipList() ________________________________________________________
@@ -179,7 +179,7 @@ namespace wg
     {
         GfxDevice::pushClipList(nRectangles, pRectangles);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PushClipList, {}, (uint16_t)(nRectangles * 16) };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PushClipList, 0, (uint16_t)(nRectangles * 16) };
         (*m_pEncoder) << GfxStream::DataChunk{ nRectangles * 16, pRectangles };
         return true;
     }
@@ -190,7 +190,7 @@ namespace wg
     {
         GfxDevice::popClipList();
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PopClipList, {}, 0};
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PopClipList, 0, 0};
         return true;
     }
 
@@ -200,7 +200,7 @@ namespace wg
     {
         GfxDevice::setTintColor(color);
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintColor, {}, 8 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintColor, 0, 8 };
         (*m_pEncoder) << color;
     }
 
@@ -210,7 +210,7 @@ namespace wg
     {
         GfxDevice::setTintGradient(rect, gradient);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, {}, 16 + 34 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, 0, 16 + 34 };
         (*m_pEncoder) << rect;
         (*m_pEncoder) << gradient;
     }
@@ -221,7 +221,7 @@ namespace wg
     {
         GfxDevice::clearTintGradient();
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ClearTintGradient, {}, 0 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ClearTintGradient, 0, 0 };
     }
 
     //____ setBlendMode() __________________________________________________________
@@ -233,7 +233,7 @@ namespace wg
 
         GfxDevice::setBlendMode(blendMode);
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlendMode, {}, 2 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlendMode, 0, 2 };
         (*m_pEncoder) << blendMode;
 
         return true;
@@ -248,7 +248,7 @@ namespace wg
 
         GfxDevice::setBlitSource(pSource);
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlitSource, {}, 2 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlitSource, 0, 2 };
         (*m_pEncoder) << static_cast<StreamSurface*>(pSource)->m_inStreamId;
         return true;
     }
@@ -259,7 +259,7 @@ namespace wg
     {
         GfxDevice::setMorphFactor(factor);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetMorphFactor, {}, 4 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetMorphFactor, 0, 4 };
         (*m_pEncoder) << factor;
     }
 
@@ -269,7 +269,7 @@ namespace wg
     {
         GfxDevice::setRenderLayer(layer);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetRenderLayer, {}, 2 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetRenderLayer, 0, 2 };
         (*m_pEncoder) << (uint16_t) layer;
     }
 
@@ -280,7 +280,7 @@ namespace wg
 		if( m_bRendering == true )
 			return false;
 
-		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginRender, {}, 0 };
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginRender, 0, 0 };
 
 		m_bRendering = true;
 		return true;
@@ -293,7 +293,7 @@ namespace wg
 		if( m_bRendering == false )
 			return false;
 
-		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::EndRender, {}, 0 };
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::EndRender, 0, 0 };
 		m_pEncoder->flush();
 
 		m_bRendering = false;
@@ -304,7 +304,7 @@ namespace wg
 
     void StreamGfxDevice::flush()
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Flush, {}, 0 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Flush, 0, 0 };
         m_pEncoder->flush();
     }
 
@@ -312,7 +312,7 @@ namespace wg
 
     void StreamGfxDevice::endCanvasUpdate()
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::EndCanvasUpdate, {}, 0 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::EndCanvasUpdate, 0, 0 };
 
     }
 
@@ -323,7 +323,7 @@ namespace wg
         if( _col.a  == 0 )
             return;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Fill, {}, 8 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Fill, 0, 8 };
         (*m_pEncoder) << _col;
 
         return;
@@ -334,7 +334,7 @@ namespace wg
         if( _col.a  == 0 || _rect.w < 1 || _rect.h < 1 )
             return;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FillRectI, {}, 24 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FillRectI, 0, 24 };
         (*m_pEncoder) << _rect;
         (*m_pEncoder) << _col;
 
@@ -346,7 +346,7 @@ namespace wg
         if (col.a == 0)
             return;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FillRectF, {}, 24 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FillRectF, 0, 24 };
         (*m_pEncoder) << rect;
         (*m_pEncoder) << col;
 
@@ -372,7 +372,7 @@ namespace wg
 
         while (nCoords > 0)
         {
-            (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PlotPixels, {}, (uint16_t)(chunkCoords * 16) };
+            (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PlotPixels, 0, (uint16_t)(chunkCoords * 16) };
             (*m_pEncoder) << GfxStream::DataChunk{ chunkCoords * 8, pCoords };
             (*m_pEncoder) << GfxStream::DataChunk{ chunkCoords * 8, pColors };
 
@@ -387,7 +387,7 @@ namespace wg
 
     void StreamGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineFromTo, {}, 28 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineFromTo, 0, 28 };
         (*m_pEncoder) << begin;
         (*m_pEncoder) << end;
         (*m_pEncoder) << color;
@@ -396,7 +396,7 @@ namespace wg
 
     void StreamGfxDevice::drawLine(CoordSPX begin, Direction dir, int length, HiColor col, float thickness)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineStraight, {}, 26 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineStraight, 0, 26 };
         (*m_pEncoder) << begin;
         (*m_pEncoder) << dir;
         (*m_pEncoder) << length;
@@ -408,7 +408,7 @@ namespace wg
 
     void StreamGfxDevice::blit(CoordSPX dest)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Blit, {}, 8 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Blit, 0, 8 };
         (*m_pEncoder) << dest;
     }
 
@@ -417,7 +417,7 @@ namespace wg
         if (_src.w < 1 || _src.h < 1)
             return;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitRectI, {}, 24 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitRectI, 0, 24 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << _src;
     }
@@ -426,14 +426,14 @@ namespace wg
 
     void StreamGfxDevice::flipBlit(CoordSPX dest, GfxFlip flip )
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlit, {}, 10 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlit, 0, 10 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << flip;
     }
 
     void StreamGfxDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip )
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlitRectI, {}, 26 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlitRectI, 0, 26 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << src;
         (*m_pEncoder) << flip;
@@ -444,14 +444,14 @@ namespace wg
     void StreamGfxDevice::stretchBlit(const RectSPX& dest)
     {
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlit, {}, 16 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlit, 0, 16 };
         (*m_pEncoder) << dest;
     }
 
     void StreamGfxDevice::stretchBlit(const RectSPX& dest, const RectSPX& source)
     {
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectI, {}, 32 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectI, 0, 32 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << source;
     }
@@ -459,7 +459,7 @@ namespace wg
     void StreamGfxDevice::stretchBlit(const RectSPX& dest, const RectF& source)
     {
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectF, {}, 32 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectF, 0, 32 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << source;
     }
@@ -469,7 +469,7 @@ namespace wg
     void StreamGfxDevice::stretchFlipBlit(const RectSPX& dest, GfxFlip flip)
     {
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchFlipBlit, {}, 18 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchFlipBlit, 0, 18 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << flip;
     }
@@ -477,7 +477,7 @@ namespace wg
     void StreamGfxDevice::stretchFlipBlit(const RectSPX& dest, const RectSPX& source, GfxFlip flip)
     {
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectI, {}, 34 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectI, 0, 34 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << source;
         (*m_pEncoder) << flip;
@@ -486,7 +486,7 @@ namespace wg
     void StreamGfxDevice::stretchFlipBlit(const RectSPX& dest, const RectF& source, GfxFlip flip)
     {
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectF, {}, 34 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRectF, 0, 34 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << source;
         (*m_pEncoder) << flip;
@@ -496,7 +496,7 @@ namespace wg
 
     void StreamGfxDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::RotScaleBlit, {}, 40 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::RotScaleBlit, 0, 40 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << rotationDegrees;
         (*m_pEncoder) << scale;
@@ -508,14 +508,14 @@ namespace wg
 
     void StreamGfxDevice::tile(const RectSPX& dest, CoordSPX shift)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Tile, {}, 24 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Tile, 0, 24 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << shift;
     }
 
     void StreamGfxDevice::flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipTile, {}, 26 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipTile, 0, 26 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << flip;
         (*m_pEncoder) << shift;
@@ -523,7 +523,7 @@ namespace wg
 
     void StreamGfxDevice::scaleTile(const RectSPX& dest, float scale, CoordSPX shift)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleTile, {}, 28 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleTile, 0, 28 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << scale;
         (*m_pEncoder) << shift;
@@ -531,7 +531,7 @@ namespace wg
 
     void StreamGfxDevice::scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleFlipTile, {}, 30 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleFlipTile, 0, 30 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << scale;
         (*m_pEncoder) << flip;
@@ -544,7 +544,7 @@ namespace wg
     {
         int size = 16 + 20 + 20 + 8 + 8;
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawWave, {}, (uint16_t) size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawWave, 0, (uint16_t) size };
         (*m_pEncoder) << dest;
 
         (*m_pEncoder) << pTopBorder->length;
@@ -573,7 +573,7 @@ namespace wg
     {
         uint16_t size = 16 + 20 + 20 + 8 + 8 + 2;
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawWave, {}, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawWave, 0, size };
         (*m_pEncoder) << dest;
 
         (*m_pEncoder) << pTopBorder->length;
@@ -627,7 +627,7 @@ namespace wg
         {
             uint16_t chunkSamples = min(nSamples, maxSamplesPerChunk);
 
-            (*m_pEncoder) << GfxStream::Header{ GfxChunkId::EdgeSamples, {} , (uint16_t) (chunkSamples*4) };
+            (*m_pEncoder) << GfxStream::Header{ GfxChunkId::EdgeSamples, 0, (uint16_t) (chunkSamples*4) };
             (*m_pEncoder) << GfxStream::DataChunk{ chunkSamples*4, pSamples };
 
             pSamples += chunkSamples;
@@ -643,7 +643,7 @@ namespace wg
 
     void StreamGfxDevice::drawElipse(const RectSPX& canvas, spx thickness, HiColor color, spx outlineThickness, HiColor outlineColor )
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawElipse, {}, 40 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawElipse, 0, 40 };
         (*m_pEncoder) << canvas;
         (*m_pEncoder) << thickness;
         (*m_pEncoder) << color;
@@ -657,7 +657,7 @@ namespace wg
     {
         uint16_t size = 16 + 4 + 4 + 4 + 8 + 8 + 2 + nSlices*(4+8);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawPieChart, {}, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawPieChart, 0, size };
         (*m_pEncoder) << canvas;
         (*m_pEncoder) << start;
         (*m_pEncoder) << nSlices;
@@ -693,7 +693,7 @@ namespace wg
 
         uint16_t size = 16 + 2 + 2 + 2 + nColors*8;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawSegments, {}, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawSegments, 0, size };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << (uint16_t) nSegments;
         (*m_pEncoder) << (uint16_t) nEdgeStrips;
@@ -726,7 +726,7 @@ namespace wg
 
         uint16_t size = 16 + 2 + 2 + 2 + 2 + nColors*8;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawSegments, {}, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawSegments, 0, size };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << (uint16_t) nSegments;
         (*m_pEncoder) << (uint16_t) nEdgeStrips;
@@ -745,7 +745,7 @@ namespace wg
     {
         uint16_t size = 16 + 8 + ( 16 + 8 + 10 + 10 ) + 4;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitNinePatch, {}, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitNinePatch, 0, size };
         (*m_pEncoder) << dstRect;
         (*m_pEncoder) << dstFrame;
 

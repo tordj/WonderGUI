@@ -1209,6 +1209,8 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 				pI->min = pH->_paddedMinPixelSize(m_scale).w;
 				pI->max = pH->_paddedMaxPixelSize(m_scale).w;
 				pI->weight = pH->m_weight;
+				// This can't be undefined
+				pI->output = 0;
 				pI++;
 			}
 			pH = pH->Next();
@@ -1224,6 +1226,8 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 				pI->min = pH->_paddedMinPixelSize(m_scale).h;
 				pI->max = pH->_paddedMaxPixelSize(m_scale).h;
 				pI->weight = pH->m_weight;
+				// This can't be undefined
+				pI->output = 0;
 				pI++;
 			}
 			pH = pH->Next();
@@ -1248,6 +1252,8 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forced
 				pI->min = pH->_paddedMinPixelSize(m_scale).w;
 				pI->max = pH->_paddedMaxPixelSize(m_scale).w;
 				pI->weight = pH->m_weight;
+				// This can't be undefined
+				pI->output = 0;
 				pI++;
 			}
 			pH = pH->Next();
@@ -1263,6 +1269,8 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forced
 				pI->min = pH->_paddedMinPixelSize(m_scale).h;
 				pI->max = pH->_paddedMaxPixelSize(m_scale).h;
 				pI->weight = pH->m_weight;
+				// This can't be undefined
+				pI->output = 0;
 				pI++;
 			}
 			pH = pH->Next();

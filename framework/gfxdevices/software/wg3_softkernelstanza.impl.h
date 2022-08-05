@@ -1709,10 +1709,12 @@ void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, Hi
 
 //____ _add_segment_color() _______________________________________________
 
-inline void _add_segment_color(bool GRADIENT, int blendFraction, int offset, const int16_t* pSegmentColor, const SoftGfxDevice::SegmentGradient* pSegmentGradient, int& accB, int& accG, int& accR, int& accA)
+inline void _add_segment_color(bool GRADIENT, int blendFraction, int offset, const int16_t* pSegmentColor, const SoftGfxDevice::SegmentGradient* pSegmentGradients, int gradientIndex, int& accB, int& accG, int& accR, int& accA)
 {
 	if (GRADIENT)
 	{
+		auto pSegmentGradient = &pSegmentGradients[gradientIndex];
+		
 		accB += (blendFraction >> 4) * ((pSegmentGradient->begB + pSegmentGradient->incB * offset) >> 12);
 		accG += (blendFraction >> 4) * ((pSegmentGradient->begG + pSegmentGradient->incG * offset) >> 12);
 		accR += (blendFraction >> 4) * ((pSegmentGradient->begR + pSegmentGradient->incR * offset) >> 12);
@@ -1725,16 +1727,6 @@ inline void _add_segment_color(bool GRADIENT, int blendFraction, int offset, con
 		accB += (blendFraction * pSegmentColor[2]) >> 4;
 		accA += blendFraction << 8;
 	}
-}
-
-//____ _segment_alpha() _______________________________________________
-
-inline int _segment_alpha(bool GRADIENT, int offset, const int16_t* pSegmentColor, const SoftGfxDevice::SegmentGradient* pSegmentGradient)
-{
-	if (GRADIENT)
-		return (pSegmentGradient->begA + pSegmentGradient->incA * offset) >> 12;
-	else
-		return pSegmentColor[3];
 }
 
 
@@ -1931,7 +1923,7 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 					for (int i = 0; i <= edge; i++)
 					{
 						int blendFraction = segmentFractions[i];
-						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
 					}
 
 					outB = accB >> 12;
@@ -1946,10 +1938,10 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 
 					for (int i = 0; i <= edge; i++)
 					{
-						int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i]);
+						int alpha = GRADIENT ? (pSegmentGradients[i].begA + pSegmentGradients[i].incA * (offset >> 8)) >> 12 : pSegmentColors[i * 4 + 3];
 						int blendFraction = ((segmentFractions[i] * alpha) / 4096);
 						backFraction -= blendFraction;
-						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
 					}
 
 					outB = (accB >> 12) + ((backB * backFraction) >> 16);
@@ -1962,9 +1954,9 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 				{
 					for (int i = 0; i <= edge; i++)
 					{
-						int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i]);
+						int alpha = GRADIENT ? (pSegmentGradients[i].begA + pSegmentGradients[i].incA * (offset >> 8)) >> 12 : pSegmentColors[i * 4 + 3];
 						int blendFraction = ((segmentFractions[i] * alpha) / 4096);
-						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
 					}
 
 					outB = s_limit4096Tab[4097 + backB + (accB >> 12)];
@@ -1977,9 +1969,9 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 				{
 					for (int i = 0; i <= edge; i++)
 					{
-						int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i]);
+						int alpha = GRADIENT ? (pSegmentGradients[i].begA + pSegmentGradients[i].incA * (offset >> 8)) >> 12 : pSegmentColors[i * 4 + 3];
 						int blendFraction = ((segmentFractions[i] * alpha) / 4096);
-						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
 					}
 
 					outB = s_limit4096Tab[4097 + backB - (accB >> 12)];
@@ -1993,7 +1985,7 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 					for (int i = 0; i <= edge; i++)
 					{
 						int blendFraction = segmentFractions[i];
-						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
 					}
 
 					outB = (backB * (accB >> 12)) >> 12;
@@ -2007,7 +1999,7 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 					for (int i = 0; i <= edge; i++)
 					{
 						int blendFraction = segmentFractions[i];
-						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
 					}
 
 					int srcB2 = accB >> 12;
@@ -2026,10 +2018,10 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 
 					for (int i = 0; i <= edge; i++)
 					{
-						int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i]);
+						int alpha = GRADIENT ? (pSegmentGradients[i].begA + pSegmentGradients[i].incA * (offset >> 8)) >> 12 : pSegmentColors[i * 4 + 3];
 						int blendFraction = ((segmentFractions[i] * alpha) / 4096);
 						backFraction -= blendFraction;
-						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
 					}
 
 					int16_t srcB = (accB >> 12) + ((backB * backFraction) >> 16);
@@ -2047,10 +2039,10 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 
 					for (int i = 0; i <= edge; i++)
 					{
-						int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i]);
+						int alpha = GRADIENT ? (pSegmentGradients[i].begA + pSegmentGradients[i].incA * (offset >> 8)) >> 12 : pSegmentColors[i * 4 + 3];
 						int blendFraction = ((segmentFractions[i] * alpha) / 4096);
 						backFraction -= blendFraction;
-						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
 					}
 
 					int16_t srcB = (accB >> 12) + ((backB * backFraction) >> 16);
@@ -2068,10 +2060,10 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 
 					for (int i = 0; i <= edge; i++)
 					{
-						int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i]);
+						int alpha = GRADIENT ? (pSegmentGradients[i].begA + pSegmentGradients[i].incA * (offset >> 8)) >> 12 : pSegmentColors[i * 4 + 3];
 						int blendFraction = ((segmentFractions[i] * alpha) / 4096);
 						backFraction -= blendFraction;
-						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
 					}
 
 					int invMorph = 4096 - morphFactor;

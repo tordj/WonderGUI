@@ -60,7 +60,7 @@ WgChart::WgChart()
     m_valueLabelStyle.bLabelAtEnd = false;
 
 	m_waveIdCounter = 1;
-	m_renderSectionWidth = 220;			// Keep a high value until we have upgraded to new GfxDevice with multi-clip support.
+	m_renderSectionWidth = 64;			// Keep a high value until we have upgraded to new GfxDevice with multi-clip support.
 }
 
 //____ Destructor _____________________________________________________________
@@ -1211,7 +1211,11 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 
 	float sampleScale = (m_lastSample - m_firstSample) / (canvas.w + 1);
 
-	int nResampled = (int) (pWave->nSamples / sampleScale);
+	int nResampled = 0;
+
+	if(sampleScale != 0)
+		nResampled = (int) (pWave->nSamples / sampleScale);
+
 	if (nResampled < 0)
 		nResampled = 0;
 

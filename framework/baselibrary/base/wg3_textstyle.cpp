@@ -297,7 +297,7 @@ namespace wg
 				if (m_colorSetMask.bit(i))
 					bps.data.color = m_color[i];
 				if (m_backColorSetMask.bit(i))
-					bps.data.backColor = m_color[i];
+					bps.data.backColor = m_backColor[i];
 				if (m_decorationSetMask.bit(i))
 					bps.data.decoration = m_decoration[i];
 

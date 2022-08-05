@@ -56,7 +56,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		bool		defineCanvas( CanvasRef ref, StreamSurface * pSurface );
-		bool		defineCanvas( CanvasRef ref, const SizeSPX& size, int scale = 64 );
+		bool		defineCanvas( CanvasRef ref, const SizeI& pixelSize, int scale = 64 );
 
 		SurfaceFactory_p surfaceFactory() override;
 
