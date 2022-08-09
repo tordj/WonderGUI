@@ -148,6 +148,8 @@ extern "C" {
 
 	wg_surfaceBP	wg_getSurfaceBlueprint(wg_obj surface);
 
+
+
 #ifdef __cplusplus
 }
 #endif

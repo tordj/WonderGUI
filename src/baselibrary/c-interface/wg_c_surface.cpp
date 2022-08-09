@@ -30,8 +30,6 @@ inline Surface* getPtr(wg_obj obj) {
 }
 
 
-
-
 void wg_setSurfaceIdentity(wg_obj surface, int id)
 {
 	getPtr(surface)->setIdentity(id);

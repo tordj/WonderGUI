@@ -42,7 +42,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static BitmapFont_p	create( Surface * pSurf, char * pGlyphSpec ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec)); }
+		static BitmapFont_p	create( Surface * pSurf, char * pGlyphSpec, Font * pBackupFont = nullptr ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec,pBackupFont)); }
 
 		//.____ Identification __________________________________________
 
@@ -74,7 +74,7 @@ namespace wg
 		inline bool			isMonochrome() override { return m_bMonochrome; }
 
 	protected:
-		BitmapFont( Surface * pSurf, char * pGlyphSpec );
+		BitmapFont( Surface * pSurf, char * pGlyphSpec, Font * pBackupFont );
 		~BitmapFont();
 
 		void _insertGlyphs(Surface* pSurf, const char* pGlyphSpec);

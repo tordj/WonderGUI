@@ -217,16 +217,16 @@ inline void BasicTextLayout::_getGlyphWithoutBitmap( Font * pFont, uint16_t char
 {
 	if( charCode <= 32 )
 	{
-		glyph.pFont = nullptr;
+		glyph.advance = 0;
 		return;
 	}
 	else
 	{
 		pFont->getGlyphWithoutBitmap(charCode,glyph);
-		if( !glyph.pFont )
+		if( glyph.advance == 0 )
 		{
 			pFont->getGlyphWithoutBitmap(0x25A1,glyph);			// White square character
-			if( !glyph.pFont )
+			if( glyph.advance = 0 )
 				pFont->getGlyphWithoutBitmap('?',glyph);
 		}
 	}
@@ -236,16 +236,16 @@ inline void BasicTextLayout::_getGlyphWithBitmap(Font* pFont, uint16_t charCode,
 {
 	if (charCode <= 32)
 	{
-		glyph.pFont = nullptr;
+		glyph.advance = 0;
 		return;
 	}
 	else
 	{
 		pFont->getGlyphWithBitmap(charCode, glyph);
-		if (!glyph.pFont)
+		if (glyph.advance == 0)
 		{
 			pFont->getGlyphWithBitmap(0x25A1, glyph);			// White square character
-			if (!glyph.pFont)
+			if (glyph.advance == 0)
 				pFont->getGlyphWithBitmap('?', glyph);
 		}
 	}

@@ -35,6 +35,7 @@ include_directories(
 	gfxdevices/c-api
 
 	fontengines/freetype
+	fontengines/capi
 
 	../SDL2/include
 	../SDL2_image/include
@@ -104,6 +105,7 @@ if(APPLE)
 	add_subdirectory(gfxdevices/metal)
 endif()
 add_subdirectory(fontengines/freetype)
+add_subdirectory(fontengines/capi)
 add_subdirectory(examples)
 add_subdirectory(tools/gfxdevicetester)
 add_subdirectory(tools/gfxworkbench)

@@ -42,7 +42,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	BitmapFont::BitmapFont(Surface* pSurf, char* pGlyphSpec)
+	BitmapFont::BitmapFont(Surface* pSurf, char* pGlyphSpec, Font * pBackupFont ) : Font(pBackupFont)
 	{
 		m_nKerningGlyphs= 0;
 		m_pKerningTable = 0;
@@ -113,14 +113,14 @@ namespace wg
 			pGlyph += (chr & 0xFF);
 			if (pGlyph->pSurface)
 			{
-				glyph.pFont = this;
+				glyph.fontRef = this;
 				glyph.advance = pGlyph->advance;
 				glyph.kerningIndex = pGlyph->kerningIndex;
 				return;
 			}
 		}
 
-		glyph.pFont = 0;
+		glyph.fontRef = 0;
 		glyph.advance = 0;
 		glyph.kerningIndex = 0;
 		return;
@@ -137,7 +137,7 @@ namespace wg
 			pGlyph += (chr & 0xFF);
 			if (pGlyph->pSurface)
 			{
-				glyph.pFont			= this;
+				glyph.fontRef		= this;
 				glyph.advance		= pGlyph->advance;
 				glyph.kerningIndex	= pGlyph->kerningIndex;
 				glyph.pSurface		= pGlyph->pSurface;
@@ -148,7 +148,7 @@ namespace wg
 			}
 		}
 
-		glyph.pFont = 0;
+		glyph.fontRef = 0;
 		glyph.advance = 0;
 		glyph.kerningIndex = 0;
 		glyph.pSurface = nullptr;
@@ -163,7 +163,7 @@ namespace wg
 		if( !m_pKerningTable )
 			return 0;
 
-		if( leftGlyph.pFont != this || rightGlyph.pFont != this )
+		if( leftGlyph.fontRef != this || rightGlyph.fontRef != this )
 			return 0;
 
 		return m_pKerningTable[ (leftGlyph.kerningIndex * m_nKerningGlyphs) + rightGlyph.kerningIndex ]*64;

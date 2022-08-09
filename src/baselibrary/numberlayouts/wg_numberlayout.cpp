@@ -93,7 +93,7 @@ namespace wg
 
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph->pFont = nullptr;								// No kerning across different fonts or character of different size.
+					pPrevGlyph->advance = 0;								// No kerning across different fonts or character of different size.
 				}
 
 				if (attr.color != localTint)

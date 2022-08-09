@@ -61,7 +61,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static FreeTypeFont_p	create( Blob_p pFontFile, int faceIndex = 0, BitmapCache * pBitmapCache = nullptr ) { return FreeTypeFont_p(new FreeTypeFont(pFontFile,faceIndex,pBitmapCache)); }
+		static FreeTypeFont_p	create( Blob_p pFontFile, int faceIndex = 0, RenderMode renderMode = RenderMode::BestShapes, Font * pBackupFont = nullptr, BitmapCache * pBitmapCache = nullptr ) { return FreeTypeFont_p(new FreeTypeFont(pFontFile,faceIndex,renderMode,pBackupFont,pBitmapCache)); }
 
 		//.____ Identification __________________________________________
 
@@ -92,21 +92,19 @@ namespace wg
 
 		//.____ Appearance ___________________________________________
 
-		inline bool 		setRenderMode( RenderMode mode );
 		inline RenderMode	renderMode() const { return m_renderMode; }
 
 
 	private:
-		FreeTypeFont( Blob_p pFontFile, int faceIndex, BitmapCache * pCache );
+		FreeTypeFont( Blob_p pFontFile, int faceIndex, RenderMode renderMode, Font * pBackupFont, BitmapCache * pCache );
 		~FreeTypeFont();
 
 		class MyGlyph
 		{
 		public:
 			inline void	bitmapLost() { pSurface = nullptr; }
-			inline bool isInitialized() { return pFont != nullptr; }
+			inline bool isInitialized() { return character != 0; }
 
-			Font*		pFont = nullptr;	// Set to null if glyph not initialized.
 			uint16_t	character = 0;			// Unicode for character.
 			spx			size = 0;				// size of character.
 

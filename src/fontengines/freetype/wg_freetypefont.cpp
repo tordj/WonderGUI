@@ -60,7 +60,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	FreeTypeFont::FreeTypeFont( Blob_p pFontFile, int faceIndex, BitmapCache * pCache )
+	FreeTypeFont::FreeTypeFont( Blob_p pFontFile, int faceIndex, RenderMode renderMode, Font * pBackupFont, BitmapCache * pCache ) : Font(pBackupFont)
 	{
         if( s_nInstances == 0 )
         {
@@ -88,7 +88,9 @@ namespace wg
 			//TODO: Error handling...
 		}
 
-		setRenderMode( RenderMode::BestShapes );
+		m_renderMode = renderMode;
+		_refreshRenderFlags();
+
 		setSize( 10*64 );
 		
 		// Darken the stem if we have gammaCorrection enabled.
@@ -194,21 +196,11 @@ namespace wg
 	}
 
 
-	//____ setRenderMode() ________________________________________________________
-
-	bool FreeTypeFont::setRenderMode( RenderMode mode )
-	{
-		m_renderMode = mode;
-		_refreshRenderFlags();
-		_cacheCleared();
-		return true;
-	}
-
 	//____ kerning() ___________________________________________________________
 
 	spx FreeTypeFont::kerning( Glyph& leftGlyph, Glyph& rightGlyph )
 	{
-		if( leftGlyph.advance == 0 || rightGlyph.advance == 0 || leftGlyph.pFont != this || rightGlyph.pFont != this )
+		if( leftGlyph.advance == 0 || rightGlyph.advance == 0 || leftGlyph.advance == 0 || rightGlyph.advance == 0 )
 			return 0;
 
 		// Get kerning info
@@ -358,13 +350,14 @@ namespace wg
 		}
 
 		glyph.advance		= pGlyph->advance;
-		glyph.pFont			= pGlyph->pFont;
+		glyph.fontRef		= this
+			;
 		glyph.kerningIndex	= pGlyph->kerningIndex;
 		return;
 
 	no_glyph:
 		glyph.advance = 0;
-		glyph.pFont = 0;
+		glyph.fontRef = nullptr;
 		glyph.kerningIndex = 0;
 		return;
 
@@ -416,7 +409,7 @@ namespace wg
 			pGlyph = _addGlyph(ch, m_size, advance, char_index);
 		}
 
-		glyph.pFont = pGlyph->pFont;
+		glyph.fontRef = this;
 		glyph.advance = pGlyph->advance;
 		glyph.kerningIndex = pGlyph->kerningIndex;
 
@@ -430,7 +423,7 @@ namespace wg
 		return;
 
 	no_glyph:
-		glyph.pFont = 0;
+		glyph.fontRef = 0;
 		glyph.advance = 0;
 		glyph.kerningIndex = 0;
 		glyph.pSurface = nullptr;
@@ -588,7 +581,6 @@ namespace wg
 		pGlyph->size = size;
 		pGlyph->advance = advance;
 		pGlyph->kerningIndex = kerningIndex;
-		pGlyph->pFont = this;
 		
 		return &m_pCachedFontSizes[szOfs]->page[ch >> 7][ch & 0x7F];
 	}

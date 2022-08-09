@@ -329,7 +329,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
+					pPrevGlyph->advance = 0;								// No kerning against across different fonts or fontsizes.
 				}
 
 				spx ascend = pFont->maxAscend();

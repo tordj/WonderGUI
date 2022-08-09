@@ -28,7 +28,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	DummyFont::DummyFont()
+	DummyFont::DummyFont() : Font(nullptr)
 	{
 	}
 
@@ -98,7 +98,7 @@ namespace wg
 
 	void DummyFont::getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph)
 	{
-		glyph.pFont = nullptr;
+		glyph.fontRef = nullptr;
 		glyph.advance = 0;
 		glyph.kerningIndex = 0;
 	}
@@ -107,7 +107,7 @@ namespace wg
 
 	void DummyFont::getGlyphWithBitmap(uint16_t chr, Glyph& glyph)
 	{
-		glyph.pFont = nullptr;
+		glyph.fontRef = nullptr;
 		glyph.advance = 0;
 		glyph.kerningIndex = 0;
 		glyph.pSurface = nullptr;

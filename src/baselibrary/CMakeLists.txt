@@ -137,7 +137,9 @@ add_library( wondergui
 	c-interface/wg_c_color.cpp
 	c-interface/wg_c_color.h
 	c-interface/wg_c_component.cpp
-	c-interface/wg_c_component.h	
+	c-interface/wg_c_component.h
+	c-interface/wg_c_font.cpp
+	c-interface/wg_c_font.h		
 	c-interface/wg_c_geo.cpp
 	c-interface/wg_c_geo.h
 	c-interface/wg_c_gfxstreambuffer.cpp
@@ -156,6 +158,8 @@ add_library( wondergui
 	c-interface/wg_c_gradient.h
 	c-interface/wg_c_gfxdevice.cpp
 	c-interface/wg_c_gfxdevice.h
+	c-interface/wg_c_internal.cpp
+	c-interface/wg_c_internal.h
 	c-interface/wg_c_object.cpp
 	c-interface/wg_c_object.h
 	c-interface/wg_c_surface.cpp

@@ -171,7 +171,7 @@ namespace wg
 
 		_getGlyphWithoutBitmap( pFont, pLast->code(), glyph );
 
-		if( glyph.pFont )
+		if( glyph.advance > 0 )
 			width = glyph.advance;				// Do not advance for last, just apply kerning.
 		else if( pLast->code() == 32 )
 			width = pFont->whitespaceAdvance();
@@ -279,13 +279,13 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or characters of different size.
+					pPrevGlyph->advance = 0;								// No kerning across different fonts or characters of different size.
 				}
 			}
 
 			_getGlyphWithoutBitmap( pFont.rawPtr(), pChar->code(), * pGlyph );
 
-			if( pGlyph->pFont )
+			if( pGlyph->advance > 0 )
 			{
 				distance += pFont->kerning(*pPrevGlyph, *pGlyph);
 
@@ -428,7 +428,7 @@ namespace wg
 
 							pFont = attr.pFont;
 							pFont->setSize(attr.size);
-							pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or character of different size.
+							pPrevGlyph->advance = 0;								// No kerning against across different fonts or character of different size.
 						}
 
 						if( attr.color != localTint )
@@ -465,7 +465,7 @@ namespace wg
 
 					_getGlyphWithBitmap( pFont.rawPtr(), pChar->code(), * pGlyph);
 
-					if( pGlyph->pFont )
+					if( pGlyph->advance > 0 )
 					{
 						pos.x += pFont->kerning(*pPrevGlyph, *pGlyph);
 
@@ -1069,7 +1069,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
+					pPrevGlyph->advance = 0;								// No kerning across different fonts or fontsizes.
 				}
 
 				spaceAdv = pFont->whitespaceAdvance();
@@ -1077,7 +1077,7 @@ namespace wg
 				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
@@ -1090,7 +1090,7 @@ namespace wg
 
 			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), *pGlyph);
 
-			if (pGlyph->pFont)
+			if (pGlyph->advance > 0)
 			{
 				potentialWidth += pFont->kerning(*pPrevGlyph, *pGlyph);
 				potentialWidth += pGlyph->advance;
@@ -1119,7 +1119,7 @@ namespace wg
 				width = 0;
 				potentialWidth = 0;
 				pBreakpoint = nullptr;
-				pPrevGlyph->pFont = nullptr;
+				pPrevGlyph->advance = 0;
 			}
 			else
 			{
@@ -1136,7 +1136,7 @@ namespace wg
 					width = 0;
 					potentialWidth = 0;
 					pBreakpoint = nullptr;
-					pPrevGlyph->pFont = nullptr;
+					pPrevGlyph->advance = 0;
 
 				}
 				else
@@ -1207,7 +1207,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
+					pPrevGlyph->advance = 0;								// No kerning across different fonts or fontsizes.
 				}
 
 				spx ascend = pFont->maxAscend();
@@ -1226,7 +1226,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
@@ -1240,7 +1240,7 @@ namespace wg
 
 			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), * pGlyph);
 
-			if (pGlyph->pFont)
+			if (pGlyph->advance > 0)
 			{
 				potentialWidth += pFont->kerning(* pPrevGlyph, * pGlyph);
 				potentialWidth += pGlyph->advance;
@@ -1259,7 +1259,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
 					spx w = pCaret->eolWidth(eolCellSize, scale);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
@@ -1279,7 +1279,7 @@ namespace wg
 				width = 0;
 				potentialWidth = 0;
 				pBreakpoint = nullptr;
-				pPrevGlyph->pFont = nullptr;
+				pPrevGlyph->advance = 0;
 
 				if (pChars->styleHandle() == hCharStyle)
 				{
@@ -1313,7 +1313,7 @@ namespace wg
 					width = 0;
 					potentialWidth = 0;
 					pBreakpoint = nullptr;
-					pPrevGlyph->pFont = nullptr;
+					pPrevGlyph->advance = 0;
 
 					if (pChars->styleHandle() == hCharStyle)
 					{
@@ -1452,7 +1452,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
+					pPrevGlyph->advance = 0;								// No kerning across different fonts or fontsizes.
 				}
 
 				spx ascend = pFont->maxAscend();
@@ -1471,7 +1471,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
@@ -1485,7 +1485,7 @@ namespace wg
 
 			_getGlyphWithoutBitmap(pFont.rawPtr(), pChars->code(), * pGlyph);
 
-			if (pGlyph->pFont)
+			if (pGlyph->advance > 0)
 			{
 				potentialWidth += pFont->kerning(* pPrevGlyph, * pGlyph);
 				potentialWidth += pGlyph->advance;
@@ -1504,7 +1504,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
 					spx w = pCaret->eolWidth(eolCellSize, scale);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
@@ -1538,7 +1538,7 @@ namespace wg
 				width = 0;
 				potentialWidth = 0;
 				pBreakpoint = nullptr;
-				pPrevGlyph->pFont = nullptr;
+				pPrevGlyph->advance = 0;
 
 				if (pChars->styleHandle() == hCharStyle)
 				{
@@ -1586,7 +1586,7 @@ namespace wg
 					width = 0;
 					potentialWidth = 0;
 					pBreakpoint = nullptr;
-					pPrevGlyph->pFont = nullptr;
+					pPrevGlyph->advance = 0;
 
 					if (pChars->styleHandle() == hCharStyle)
 					{
@@ -1669,7 +1669,7 @@ namespace wg
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
+					pPrevGlyph->advance = 0;								// No kerning across different fonts or fontsizes.
 				}
 
 				spx ascend = pFont->maxAscend();
@@ -1694,7 +1694,7 @@ namespace wg
 
 			_getGlyphWithoutBitmap( pFont.rawPtr(), pChars->code(), * pGlyph );
 
-			if( pGlyph->pFont )
+			if( pGlyph->advance > 0 )
 			{
 				width += pFont->kerning(* pPrevGlyph, * pGlyph);
 				width += pGlyph->advance;
@@ -1712,7 +1712,7 @@ namespace wg
 
 				if( pCaret )
 				{
-					SizeSPX eolCellSize( pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend() );
+					SizeSPX eolCellSize( pGlyph->advance, pFont->maxAscend() + pFont->maxDescend() );
 					spx w = pCaret->eolWidth( eolCellSize, scale );
 					if( w > eolCellSize.w )
 						width += w - eolCellSize.w;
@@ -1746,7 +1746,7 @@ namespace wg
 
 				pLines->offset = int(pChars - pTextStart);
 				width = 0;
-				pPrevGlyph->pFont = nullptr;
+				pPrevGlyph->advance = 0;
 
 				if (pChars->styleHandle() == hCharStyle)
 				{
@@ -1817,7 +1817,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 			{
 				pFont = attr.pFont;
 				pFont->setSize(attr.size);
-				pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or fontsizes.
+				pPrevGlyph->advance = 0;								// No kerning across different fonts or fontsizes.
 			}
 
 			spx ascend = pFont->maxAscend();
@@ -1842,7 +1842,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 
 		_getGlyphWithoutBitmap( pFont.rawPtr(), pChars->code(), * pGlyph );
 
-		if( pGlyph->pFont )
+		if( pGlyph->advance > 0 )
 		{
 			width += pFont->kerning(* pPrevGlyph, * pGlyph);
 			width += pGlyph->advance;
@@ -1860,7 +1860,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 
 			if( pCaret )
 			{
-				SizeSPX eolCellSize( pGlyph->pFont ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend() );
+				SizeSPX eolCellSize( pGlyph->advance > 0 ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend() );
 				spx w = pCaret->eolWidth( eolCellSize, scale );
 				width += std::max(w, eolCellSize.w);
 			}
@@ -1882,7 +1882,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 			pChars++;			// Line terminator belongs to previous line.
 
 			width = 0;
-			pPrevGlyph->pFont = nullptr;
+			pPrevGlyph->advance = 0;
 
 			if (pChars->styleHandle() == hCharStyle)
 			{
@@ -2123,7 +2123,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 				{
 					pFont = attr.pFont;
 					pFont->setSize(attr.size);
-					pPrevGlyph->pFont = nullptr;								// No kerning against across different fonts or characters of different size.
+					pPrevGlyph->advance = 0;								// No kerning across different fonts or characters of different size.
 				}
 
 				hStyle = pChar->styleHandle();
@@ -2134,7 +2134,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 			_getGlyphWithoutBitmap( pFont.rawPtr(), pChar->code(), * pGlyph );
 			spx charBeg = distance;
 
-			if( pGlyph->pFont )
+			if( pGlyph->advance > 0 )
 			{
 				distance += pFont->kerning(*pPrevGlyph, *pGlyph);
 
