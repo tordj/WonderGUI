@@ -34,7 +34,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	CAPIFont::CAPIFont( wg_obj cFont, CAPIFont * pBackupFont ) : Font(pBackupFont), m_cFont(cFont)
+	CAPIFont::CAPIFont( wg_obj cFont ) : Font(nullptr), m_cFont(cFont)
 	{
 		wg_retain(cFont);
 	}
@@ -171,54 +171,6 @@ namespace wg
 			glyph.fontRef = 0;
 			glyph.kerningIndex = 0;
 		}
-
-		return;
-	}
-
-	//____ getGlyphWithBitmap() ______________________________________________
-
-	void CAPIFont::getGlyphWithBitmap(uint16_t ch, Glyph& glyph)
-	{
-		wg_glyph	cGlyph;
-
-		wg_getGlyphWithBitmap(m_cFont, ch, &cGlyph);
-
-		if (cGlyph.advance != 0)
-		{
-			glyph.advance = cGlyph.advance;
-			glyph.fontRef = cGlyph.fontRef;
-			glyph.kerningIndex = cGlyph.kerningIndex;
-
-			glyph.rect		= * (RectSPX*) &cGlyph.rect;
-			glyph.bearingX	= cGlyph.bearingX;
-			glyph.bearingY	= cGlyph.bearingY;
-
-/*
-			wg_obj baggage = wg_getSurfaceBaggage(cGlyph.surface);
-
-			CAPISurface_p	pSurface;
-
-			if (baggage == 0)
-			{
-				pSurface = CAPISurface::create(cGlyph.surface);
-				wg_setSurfaceBaggage(cGlyph.surface, static_cast<Object*>(pSurface.rawPtr()));
-			}
-			else
-				pSurface = 
-
-
-
-			glyph.pSurface	= cGlyph->pSurface;
-*/
-		}
-		else
-		{
-			glyph.advance = 0;
-			glyph.fontRef = 0;
-			glyph.kerningIndex = 0;
-			glyph.pSurface = nullptr;
-		}
-
 
 		return;
 	}

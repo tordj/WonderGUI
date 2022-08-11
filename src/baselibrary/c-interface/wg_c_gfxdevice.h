@@ -61,9 +61,9 @@ extern "C" {
 	wg_canvasInfo			wg_getCanvas(wg_obj device);
 	wg_canvasInfo			wg_getCanvasRef(wg_obj device, wg_canvasRef ref);
 
-	wg_obj					wg_getCanvasLayers(wg_obj device);
+	wg_obj					wg_canvasLayers(wg_obj device);
 
-	wg_obj					wg_getSurfaceFactory(wg_obj device);
+	wg_obj					wg_surfaceFactory(wg_obj device);
 
 	int						wg_maxSegments();
 

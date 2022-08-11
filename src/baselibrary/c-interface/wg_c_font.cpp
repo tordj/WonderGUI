@@ -147,17 +147,20 @@ int wg_isMonochrome(wg_obj font)
 }
 
 
-wg_obj wg_backupFont(wg_obj font)
+wg_obj wg_getBackupFont(wg_obj font)
 {
-	return static_cast<Object*>(getPtr(font)->backupFont().rawPtr());
+	auto p = getPtr(font)->backupFont();
+	return static_cast<Object*>(p.rawPtr());
 }
 
 
-wg_obj wg_getGlyphAsSurface(wg_obj font, uint16_t chr, const wg_surfaceBP* blueprint, wg_obj surfaceFactory)
+wg_obj wg_createSurfaceFromGlyph(wg_obj font, uint16_t chr, const wg_surfaceBP* blueprint, wg_obj surfaceFactory)
 {
 	Surface::Blueprint bp;
 
 	convertSurfaceBlueprint(&bp, blueprint);
 
-	return static_cast<Object*>(getPtr(font)->getGlyphAsSurface(chr, bp, static_cast<SurfaceFactory*>(reinterpret_cast<Object*>(surfaceFactory))));
+	auto p = getPtr(font)->getGlyphAsSurface(chr, bp, static_cast<SurfaceFactory*>(reinterpret_cast<Object*>(surfaceFactory)));
+	p->retain();
+	return static_cast<Object*>(p.rawPtr());
 }

@@ -43,7 +43,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static CAPIFont_p	create( wg_obj cFont, CAPIFont * pBackupFont = nullptr ) { return CAPIFont_p(new CAPIFont(cFont,pBackupFont)); }
+		static CAPIFont_p	create( wg_obj cFont ) { return CAPIFont_p(new CAPIFont(cFont)); }
 
 		//.____ Identification __________________________________________
 
@@ -75,8 +75,8 @@ namespace wg
 		inline wg_obj	cObject() { return m_cFont; }
 
 
-	private:
-		CAPIFont( wg_obj cFont, CAPIFont * pBackupFont );
+	protected:
+		CAPIFont( wg_obj cFont );
 		~CAPIFont();
 
 		wg_obj		m_cFont;

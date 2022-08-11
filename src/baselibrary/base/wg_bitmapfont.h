@@ -73,6 +73,8 @@ namespace wg
 		inline bool			isMonospace() override { return m_bMonospace; }
 		inline bool			isMonochrome() override { return m_bMonochrome; }
 
+		inline Surface_p	surface() { return m_pSurface;}
+		
 	protected:
 		BitmapFont( Surface * pSurf, char * pGlyphSpec, Font * pBackupFont );
 		~BitmapFont();
@@ -94,7 +96,8 @@ namespace wg
 			spx			bearingY = 0;			// y offset when rendering the glyph (negated offset to glyph origo)
 		};
 
-
+		Surface_p	m_pSurface;
+		
 		MyGlyph * 	m_glyphTab[256];
 
 		int			m_nKerningGlyphs;

@@ -43,6 +43,7 @@ namespace wg
 	class BitmapCacheListener
 	{
 	public:
+		virtual void _cacheSurfaceAdded(Surface* pSurface) = 0;
 		virtual void _cacheSurfacesRemoved(int nSurfaces, Surface* pSurfaces[]) = 0;
 		virtual void _cacheCleared() = 0;
 	};
@@ -63,9 +64,9 @@ namespace wg
 		//.____ Content ___________________________________________________
 		
 		void 	setLimit(int maxBytes);
-		int		limit() { return m_cacheLimit; }
+		int		limit() const { return m_cacheLimit; }
 
-		int		size() { return m_cacheSize; }
+		int		size() const { return m_cacheSize; }
 
 		void	clear();
 
@@ -75,7 +76,9 @@ namespace wg
 		void		removeListener( BitmapCacheListener * pListener );
 		
 		std::tuple<Surface_p, CoordI> 	getCacheSlot( SizeI size );
-
+		std::vector<Surface_p>			getSurfaces() const;
+		
+		
 	protected:
 		BitmapCache( int maxSize, SurfaceFactory * pFactory );
 		virtual ~BitmapCache();

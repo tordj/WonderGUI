@@ -4,6 +4,8 @@ add_library( wgfreetypefont
 
     wg_freetypefont.h
     wg_freetypefont.cpp
+    wg_c_freetypefont.h
+    wg_c_freetypefont.cpp
 )
 
 if(WIN32)

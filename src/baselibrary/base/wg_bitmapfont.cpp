@@ -44,6 +44,8 @@ namespace wg
 
 	BitmapFont::BitmapFont(Surface* pSurf, char* pGlyphSpec, Font * pBackupFont ) : Font(pBackupFont)
 	{
+		m_pSurface		= pSurf;
+
 		m_nKerningGlyphs= 0;
 		m_pKerningTable = 0;
 

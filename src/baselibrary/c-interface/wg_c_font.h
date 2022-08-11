@@ -71,9 +71,9 @@ extern "C" {
 	int				wg_isMonospace(wg_obj font);
 	int				wg_isMonochrome(wg_obj font);
 
-	wg_obj			wg_backupFont(wg_obj font);
+	wg_obj			wg_getBackupFont(wg_obj font);
 
-	wg_obj			wg_getGlyphAsSurface(wg_obj font, uint16_t chr, const wg_surfaceBP* blueprint, wg_obj surfaceFactory);
+	wg_obj			wg_createSurfaceFromGlyph(wg_obj font, uint16_t chr, const wg_surfaceBP* blueprint, wg_obj surfaceFactory);
 
 
 

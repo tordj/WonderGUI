@@ -90,6 +90,8 @@ namespace wg
 		bool		hasGlyph( uint16_t chr ) override;
 		bool		isMonospace() override;
 
+		inline BitmapCache_p bitmapCache() { return m_pCache; }
+		
 		//.____ Appearance ___________________________________________
 
 		inline RenderMode	renderMode() const { return m_renderMode; }
@@ -137,6 +139,7 @@ namespace wg
 			MyGlyph*	page[512];
 		};
 
+		void 				_cacheSurfaceAdded(Surface* pSurface) override;
 		void 				_cacheSurfacesRemoved(int nSurfaces, Surface* pSurfaces[]) override;
 		void 				_cacheCleared() override;
 

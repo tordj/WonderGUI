@@ -610,6 +610,13 @@ namespace wg
 		}
 	}
 
+	//____ _cacheSurfaceAdded() __________________________________________________
+
+	void FreeTypeFont::_cacheSurfaceAdded(Surface* pSurface)
+	{
+		// Do nothing.
+	}
+
 	//____ _cacheSurfacesRemoved() _____________________________________________
 
 	void FreeTypeFont::_cacheSurfacesRemoved( int nRemovedSurfaces, Surface * pRemovedSurfaces[] )
