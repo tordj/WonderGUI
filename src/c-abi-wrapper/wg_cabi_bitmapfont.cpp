@@ -21,45 +21,47 @@
 =========================================================================*/
 
 
-#include <wg_capibitmapfont.h>
-#include <wg_capisurface.h>
+#include <wg_cabi_bitmapfont.h>
+#include <wg_cabi_surface.h>
 #include <wg_c_object.h>
 #include <wg_c_bitmapfont.h>
+
+#include <cassert>
 
 namespace wg
 {
 
-	const TypeInfo	CAPIFont::TYPEINFO = { "CAPIBitmapFont", &CAPIFont::TYPEINFO };
+	const TypeInfo	CABIBitmapFont::TYPEINFO = { "CABIBitmapFont", &CABIFont::TYPEINFO };
 
 
 	//____ constructor ____________________________________________________________
 
-	CAPIBitmapFont::CAPIBitmapFont( wg_obj cBitmapFont ) : Font(nullptr), m_cFont(cFont)
+	CABIBitmapFont::CABIBitmapFont( wg_obj cBitmapFont ) : CABIFont(cBitmapFont)
 	{
 		wg_obj surface = wg_getBitmapFontSurface(cBitmapFont);
 		
-		// CAPIBitmapFont doesn't support backup fonts.
+		// CABIBitmapFont doesn't support backup fonts.
 		assert( wg_getBackupFont(cBitmapFont) == 0 );
 		
-		m_pSurface = CAPISurface::create(surface);
+		m_pSurface = CABISurface::create(surface);
 	}
 
 	//____ Destructor _____________________________________________________________
 
-	CAPIBitmapFont::~CAPIBitmapFont()
+	CABIBitmapFont::~CABIBitmapFont()
 	{
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CAPIBitmapFont::typeInfo(void) const
+	const TypeInfo& CABIBitmapFont::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ getGlyphWithBitmap() ______________________________________________
 
-	void CAPIBitmapFont::getGlyphWithBitmap(uint16_t ch, Glyph& glyph)
+	void CABIBitmapFont::getGlyphWithBitmap(uint16_t ch, Glyph& glyph)
 	{
 		wg_glyph	cGlyph;
 

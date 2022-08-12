@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#include <wg_capicanvaslayers.h>
-#include <wg_capigfxdevice.h>
+#include <wg_cabi_canvaslayers.h>
+#include <wg_cabi_gfxdevice.h>
 #include <wg_base.h>
 
 #include <wg_c_canvaslayers.h>
@@ -29,12 +29,12 @@
 
 namespace wg
 {
-	const TypeInfo CAPICanvasLayers::TYPEINFO = { "CAPICanvasLayers", &CanvasLayers::TYPEINFO };
+	const TypeInfo CABICanvasLayers::TYPEINFO = { "CABICanvasLayers", &CanvasLayers::TYPEINFO };
 
 
 	//____ create() ___________________________________________________________
 
-	CAPICanvasLayers_p CAPICanvasLayers::create(CAPIGfxDevice* pDevice, const Blueprint& bp)
+	CABICanvasLayers_p CABICanvasLayers::create(CABIGfxDevice* pDevice, const Blueprint& bp)
 	{
 		// Sanity check
 
@@ -70,12 +70,12 @@ namespace wg
 
 		//
 
-		return CAPICanvasLayers_p(new CAPICanvasLayers(pDevice,bp));
+		return CABICanvasLayers_p(new CABICanvasLayers(pDevice,bp));
 	}
 
 	//____ constructor() ______________________________________________________
 
-	CAPICanvasLayers::CAPICanvasLayers( CAPIGfxDevice * pDevice, const Blueprint& bp) : CanvasLayers(bp)
+	CABICanvasLayers::CABICanvasLayers( CABIGfxDevice * pDevice, const Blueprint& bp) : CanvasLayers(bp)
 	{
 		m_pDevice = pDevice;
 
@@ -138,9 +138,9 @@ namespace wg
 		m_cCanvasLayer = wg_createCanvasLayers(&cBP);
 	}
 
-	//____ CAPICanvasLayers::~CAPICanvasLayers() ______________________________
+	//____ CABICanvasLayers::~CABICanvasLayers() ______________________________
 
-	CAPICanvasLayers::~CAPICanvasLayers()
+	CABICanvasLayers::~CABICanvasLayers()
 	{
 		wg_release(m_cCanvasLayer);
 	}
@@ -148,16 +148,16 @@ namespace wg
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CAPICanvasLayers::typeInfo(void) const
+	const TypeInfo& CABICanvasLayers::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ _callbackRouter() __________________________________________________
 
-	void CAPICanvasLayers::_callbackRouter( wg_obj cDevice, void* _pMe, int funcNb )
+	void CABICanvasLayers::_callbackRouter( wg_obj cDevice, void* _pMe, int funcNb )
 	{
-		CAPICanvasLayers* pMe = (CAPICanvasLayers*)_pMe;
+		CABICanvasLayers* pMe = (CABICanvasLayers*)_pMe;
 
 		GfxDevice* pDevice = pMe->m_pDevice;
 

@@ -21,41 +21,47 @@
 =========================================================================*/
 
 
-#include <wg_capifreetypefont.h>
-#include <wg_capisurface.h>
+#include <wg_cabi_freetypefont.h>
+#include <wg_cabi_surface.h>
 #include <wg_c_object.h>
 #include <wg_c_font.h>
 
 namespace wg
 {
 
-	const TypeInfo	CAPIFreeTypeFont::TYPEINFO = { "CAPIFreeTypeFont", &CAPIFont::TYPEINFO };
+	const TypeInfo	CABIFreeTypeFont::TYPEINFO = { "CABIFreeTypeFont", &CABIFont::TYPEINFO };
 
+
+	//____ create() ___________________________________________________________
+
+	CABIFreeTypeFont_p CABIFreeTypeFont::create(wg_obj cFreeTypeFont, CABIBitmapCache* pCache) 
+	{ 
+		return CABIFreeTypeFont_p(new CABIFreeTypeFont(cFreeTypeFont, pCache)); 
+	}
 
 	//____ constructor ____________________________________________________________
 
-	CAPIFreeTypeFont::CAPIFreeTypeFont( wg_obj cFont ) : Font(nullptr), m_cFont(cFont)
+	CABIFreeTypeFont::CABIFreeTypeFont( wg_obj cFreeTypeFont, CABIBitmapCache * pCache ) : CABIFont(cFreeTypeFont)
 	{
-		wg_retain(cFont);
+		m_pCache = pCache;
 	}
 
-	//____ Destructor _____________________________________________________________
+	//____ destructor _____________________________________________________________
 
-	CAPIFreeTypeFont::~CAPIFreeTypeFont()
+	CABIFreeTypeFont::~CABIFreeTypeFont()
 	{
-		wg_release(m_cFont);
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CAPIFreeTypeFont::typeInfo(void) const
+	const TypeInfo& CABIFreeTypeFont::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ getGlyphWithBitmap() ______________________________________________
 
-	void CAPIFont::getGlyphWithBitmap(uint16_t ch, Glyph& glyph)
+	void CABIFreeTypeFont::getGlyphWithBitmap(uint16_t ch, Glyph& glyph)
 	{
 		wg_glyph	cGlyph;
 
@@ -71,25 +77,7 @@ namespace wg
 			glyph.bearingX	= cGlyph.bearingX;
 			glyph.bearingY	= cGlyph.bearingY;
 
-			
-			int ofs = wg_getSurfaceIdentity(cGlyph.surface);
-/*
-			wg_obj baggage = wg_getSurfaceBaggage(cGlyph.surface);
-
-			CAPISurface_p	pSurface;
-
-			if (baggage == 0)
-			{
-				pSurface = CAPISurface::create(cGlyph.surface);
-				wg_setSurfaceBaggage(cGlyph.surface, static_cast<Object*>(pSurface.rawPtr()));
-			}
-			else
-				pSurface = 
-
-
-
-			glyph.pSurface	= cGlyph->pSurface;
-*/
+			glyph.pSurface = m_pCache->wrapperSurface(cGlyph.surface);
 		}
 		else
 		{

@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CAPISURFACEFACTORY_DOT_H
-#define	WG_CAPISURFACEFACTORY_DOT_H
+#ifndef	WG_CABISURFACEFACTORY_DOT_H
+#define	WG_CABISURFACEFACTORY_DOT_H
 #pragma once
 
 #include <wg_surfacefactory.h>
@@ -34,18 +34,18 @@ class wg_surfaceBP;
 namespace wg
 {
 
-	class CAPISurfaceFactory;
-	typedef	StrongPtr<CAPISurfaceFactory>	CAPISurfaceFactory_p;
-	typedef	WeakPtr<CAPISurfaceFactory>		CAPISurfaceFactory_wp;
+	class CABISurfaceFactory;
+	typedef	StrongPtr<CABISurfaceFactory>	CABISurfaceFactory_p;
+	typedef	WeakPtr<CABISurfaceFactory>		CABISurfaceFactory_wp;
 
-	//____ CAPISurfaceFactory _____________________________________________________
+	//____ CABISurfaceFactory _____________________________________________________
 
-	class CAPISurfaceFactory : public SurfaceFactory
+	class CABISurfaceFactory : public SurfaceFactory
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static CAPISurfaceFactory_p	create(wg_obj cFactory) { return CAPISurfaceFactory_p(new CAPISurfaceFactory(cFactory)); }
+		static CABISurfaceFactory_p	create(wg_obj cFactory) { return CABISurfaceFactory_p(new CABISurfaceFactory(cFactory)); }
 
 		//.____ Identification __________________________________________
 
@@ -64,8 +64,8 @@ namespace wg
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Surface* pOther) override;
 
 	protected:
-		CAPISurfaceFactory( wg_obj cFactory );
-		~CAPISurfaceFactory();
+		CABISurfaceFactory( wg_obj cFactory );
+		~CABISurfaceFactory();
 
 		void _convertBlueprint(wg_surfaceBP* pDest, const Surface::Blueprint* pSource);
 
@@ -75,5 +75,5 @@ namespace wg
 }
 
 
-#endif //WG_CAPISURFACEFACTORY_DOT_H
+#endif //WG_CABISURFACEFACTORY_DOT_H
 

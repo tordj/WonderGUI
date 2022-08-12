@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CAPISURFACE_DOT_H
-#define	WG_CAPISURFACE_DOT_H
+#ifndef	WG_CABISURFACE_DOT_H
+#define	WG_CABISURFACE_DOT_H
 #pragma once
 
 
@@ -33,21 +33,21 @@ class wg_surfaceBP;
 namespace wg
 {
 
-	class CAPISurface;
-	typedef	StrongPtr<CAPISurface>	CAPISurface_p;
-	typedef	WeakPtr<CAPISurface>	    CAPISurface_wp;
+	class CABISurface;
+	typedef	StrongPtr<CABISurface>	CABISurface_p;
+	typedef	WeakPtr<CABISurface>	    CABISurface_wp;
 
-	//____ CAPISurface _____________________________________________________________
+	//____ CABISurface _____________________________________________________________
 
-	class CAPISurface : public Surface
+	class CABISurface : public Surface
 	{
-		friend class CAPISurfaceFactory;
+		friend class CABISurfaceFactory;
 
 	public:
 
 		//.____ Creation __________________________________________
 
-		static CAPISurface_p	create( wg_obj object );
+		static CABISurface_p	create( wg_obj object );
 
 		//.____ Identification __________________________________________
 
@@ -75,8 +75,8 @@ namespace wg
 		bool				fill(HiColor col) override;
 		bool				fill(const RectI& region, HiColor col ) override;
 
-//		bool				copy(CoordI dest, Surface* pSrcSurf, const RectI& srcRect) override;		//The default implementation should work through the CAPI-wall ...
-//		bool				copy(CoordI dest, Surface* pSrcSurf) override;								//The default implementation should work through the CAPI-wall ...
+//		bool				copy(CoordI dest, Surface* pSrcSurf, const RectI& srcRect) override;		//The default implementation should work through the CABI-wall ...
+//		bool				copy(CoordI dest, Surface* pSrcSurf) override;								//The default implementation should work through the CABI-wall ...
 
 		//.____ Misc _________________________________________________________
 		 
@@ -86,13 +86,13 @@ namespace wg
 		inline wg_obj		cObject() { return m_cSurface; }
 
 	private:
-		CAPISurface( wg_obj object );
-		~CAPISurface();
+		CABISurface( wg_obj object );
+		~CABISurface();
 
 		wg_obj		m_cSurface;
 		int			m_cObserverId = 0;
 
 	};
 } // namespace wg
-#endif //WG_CAPISURFACE_DOT_H
+#endif //WG_CABISURFACE_DOT_H
 

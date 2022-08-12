@@ -207,7 +207,7 @@ namespace wg
 		inline pts			pointHeight() const;
 
 		virtual void		setScale(int scale);		// Why do we need setScale? Should preferably only be in blueprint.
-		virtual int			scale() const;				// Need to be virtual for CAPISurface as long as we have setScale().
+		virtual int			scale() const;				// Need to be virtual for CABISurface as long as we have setScale().
 
 
 		//.____ Appearance ____________________________________________________

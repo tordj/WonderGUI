@@ -42,7 +42,7 @@ typedef void(*wg_cacheAddedSurfaceFunc)(wg_obj surface, void * pData, int data);
 typedef void(*wg_cacheRemovedSurfacesFunc)(int nSurfaces, wg_obj* pSurfaces, void * pData, int data);
 typedef void(*wg_cacheClearedFunc)(void * pData, int data);
 
-typedef void * wg_cacheListener;
+typedef void* wg_cacheListener;
 
 struct	wg_cacheListenerBP
 {
@@ -70,7 +70,8 @@ wg_cacheListener	wg_addCacheListener(wg_obj bitmapCache, wg_cacheListenerBP blue
 void				wg_removeCacheListener(wg_obj bitmapCache, wg_cacheListener listener );
 
 wg_cacheSlot 		wg_getCacheSlot(wg_obj bitmapCache, wg_sizeI size);
-int					wg_getCacheSurfaces(wg_obj bitmapCache, wg_obj ** pArray );
+int					wg_getNbCacheSurfaces(wg_obj bitmapCache);
+int					wg_getCacheSurfaces(wg_obj bitmapCache, int maxSurfaces, wg_obj * pArray );
 
 
 #ifdef __cplusplus

@@ -6,7 +6,7 @@
 #include <wg_streamgfxdevice.h>
 #include <wg_streamsurface.h>
 #include <wg_gfxstreamplayer.h>
-#include <wg_capigfxdevice.h>
+#include <wg_cabi_gfxdevice.h>
 
 using namespace wg;
 
@@ -167,10 +167,10 @@ private:
 };
 
 
-class CAPIToSoftwareDevice : public Device
+class CABIToSoftwareDevice : public Device
 {
 public:
-	CAPIToSoftwareDevice()
+	CABIToSoftwareDevice()
 	{
 	}
 
@@ -186,9 +186,9 @@ public:
 		m_pOutputCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
 		m_pOutputDevice->defineCanvas(CanvasRef::Default, m_pOutputCanvas);
 
-		auto pFactory = CAPISurfaceFactory::create((wg_obj) m_pOutputDevice->surfaceFactory());
+		auto pFactory = CABISurfaceFactory::create((wg_obj) m_pOutputDevice->surfaceFactory());
 		
-		m_pCAPIDevice = CAPIGfxDevice::create( (wg_obj) m_pOutputDevice, pFactory );
+		m_pCABIDevice = CABIGfxDevice::create( (wg_obj) m_pOutputDevice, pFactory );
 		
 		return true;
 	}
@@ -197,26 +197,26 @@ public:
 	{
 		m_pOutputDevice = nullptr;
 		m_pOutputCanvas = nullptr;
-		m_pCAPIDevice = nullptr;
+		m_pCABIDevice = nullptr;
 	}
 
 	GfxDevice_p beginRender() const
 	{
-		m_pCAPIDevice->beginRender();
-		m_pCAPIDevice->beginCanvasUpdate(CanvasRef::Default);
-		return m_pCAPIDevice;
+		m_pCABIDevice->beginRender();
+		m_pCABIDevice->beginCanvasUpdate(CanvasRef::Default);
+		return m_pCABIDevice;
 	}
 
 	void endRender() const
 	{
-		m_pCAPIDevice->endCanvasUpdate();
-		m_pCAPIDevice->endRender();
+		m_pCABIDevice->endCanvasUpdate();
+		m_pCABIDevice->endRender();
 		return;
 	}
 
 	GfxDevice_p	gfxDevice() const
 	{
-		return m_pCAPIDevice;
+		return m_pCABIDevice;
 	}
 
 	Surface_p canvas() const
@@ -226,10 +226,10 @@ public:
 
 private:
 
-	const char * m_pName = { "CAPIToSoftware" };
+	const char * m_pName = { "CABIToSoftware" };
 
 
-	CAPIGfxDevice_p		m_pCAPIDevice;
+	CABIGfxDevice_p		m_pCABIDevice;
 
 	SoftGfxDevice_p		m_pOutputDevice;
 	SoftSurface_p		m_pOutputCanvas;

@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_CAPICANVASLAYERS_DOT_H
-#define WG_CAPICANVASLAYERS_DOT_H
+#ifndef WG_CABICANVASLAYERS_DOT_H
+#define WG_CABICANVASLAYERS_DOT_H
 #pragma once
 
 #include "wg_canvaslayers.h"
@@ -31,21 +31,21 @@ typedef void* wg_obj;
 
 namespace wg
 {
-	class CAPISurface;
-	class CAPIGfxDevice;
-	typedef	StrongPtr<CAPIGfxDevice>	CAPIGfxDevice_p;
-	typedef	WeakPtr<CAPIGfxDevice>	CAPIGfxDevice_wp;
+	class CABISurface;
+	class CABIGfxDevice;
+	typedef	StrongPtr<CABIGfxDevice>	CABIGfxDevice_p;
+	typedef	WeakPtr<CABIGfxDevice>	CABIGfxDevice_wp;
 
 
-	class CAPICanvasLayers;
-	typedef	StrongPtr<CAPICanvasLayers>	CAPICanvasLayers_p;
-	typedef	WeakPtr<CAPICanvasLayers>	CAPICanvasLayers_wp;
+	class CABICanvasLayers;
+	typedef	StrongPtr<CABICanvasLayers>	CABICanvasLayers_p;
+	typedef	WeakPtr<CABICanvasLayers>	CABICanvasLayers_wp;
 
-	//____ Class CAPICanvasLayers ________________________________________________________
+	//____ Class CABICanvasLayers ________________________________________________________
 
-	class	CAPICanvasLayers : public CanvasLayers
+	class	CABICanvasLayers : public CanvasLayers
 	{
-		friend class CAPIGfxDevice;
+		friend class CABIGfxDevice;
 
 	public:
 
@@ -55,7 +55,7 @@ namespace wg
 
 		//.____ Creation ______________________________________________________
 
-		static CAPICanvasLayers_p	create( CAPIGfxDevice * pDevice, const Blueprint& blueprint);
+		static CABICanvasLayers_p	create( CABIGfxDevice * pDevice, const Blueprint& blueprint);
 
 		//.____ Identification _________________________________________________
 
@@ -67,13 +67,13 @@ namespace wg
 		inline wg_obj		cObject() { return m_cCanvasLayer; }
 
 	protected:
-		CAPICanvasLayers( CAPIGfxDevice * pDevice, const Blueprint& bp);
-		~CAPICanvasLayers();
+		CABICanvasLayers( CABIGfxDevice * pDevice, const Blueprint& bp);
+		~CABICanvasLayers();
 
 		static void _callbackRouter( wg_obj cDevice, void* pMe, int funcNb );
 
 		wg_obj			m_cCanvasLayer;
-		CAPIGfxDevice_p	m_pDevice;
+		CABIGfxDevice_p	m_pDevice;
 	};
 
 

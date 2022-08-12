@@ -28,14 +28,14 @@ include_directories(
 	baselibrary/widgets/lists
 	baselibrary/widgets/panels
 
+	c-abi-wrapper
+
 	gfxdevices/software
 	gfxdevices/opengl
 	gfxdevices/stream
 	gfxdevices/metal
-	gfxdevices/c-api
 
 	fontengines/freetype
-	fontengines/capi
 
 	../SDL2/include
 	../SDL2_image/include
@@ -97,15 +97,14 @@ endfunction()
 
 
 add_subdirectory(baselibrary)
+add_subdirectory(c-abi-wrapper)
 add_subdirectory(gfxdevices/software)
 add_subdirectory(gfxdevices/stream)
 add_subdirectory(gfxdevices/opengl)
-add_subdirectory(gfxdevices/c-api)
 if(APPLE)
 	add_subdirectory(gfxdevices/metal)
 endif()
 add_subdirectory(fontengines/freetype)
-add_subdirectory(fontengines/capi)
 add_subdirectory(examples)
 add_subdirectory(tools/gfxdevicetester)
 add_subdirectory(tools/gfxworkbench)
@@ -121,7 +120,7 @@ if(MSVC)
 	target_compile_options(wgsoftgfx PRIVATE "/MP")
 	target_compile_options(wgopenglgfx PRIVATE "/MP")
 	target_compile_options(wgstreamgfx PRIVATE "/MP")
-	target_compile_options(wgcapigfx PRIVATE "/MP")
+	target_compile_options(wgcabiwrapper PRIVATE "/MP")
 	target_compile_options(wondergui PRIVATE "/MP")
 	target_compile_options(workbench PRIVATE "/MP")
 	target_compile_options(streamgenerator PRIVATE "/MP")

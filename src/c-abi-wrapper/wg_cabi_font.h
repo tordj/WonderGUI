@@ -21,28 +21,29 @@
 =========================================================================*/
 
 
-#ifndef WG_CAPIBITMAPFONT_DOT_H
-#define WG_CAPIBITMAPFONT_DOT_H
+#ifndef WG_CABIFONT_DOT_H
+#define WG_CABIFONT_DOT_H
 #pragma once
 
 
-#include <wg_capifont.h>
-#include <wg_capisurface.h>
+#include <wg_c_types.h>
+#include <wg_font.h>
+
 
 namespace wg
 {
-	class	CAPIBitmapFont;
-	typedef	StrongPtr<CAPIBitmapFont>	CAPIBitmapFont_p;
-	typedef	WeakPtr<CAPIBitmapFont>		CAPIBitmapFont_wp;
+	class	CABIFont;
+	typedef	StrongPtr<CABIFont>		CABIFont_p;
+	typedef	WeakPtr<CABIFont>	CABIFont_wp;
 
-	class CAPIBitmapFont : public CAPIFont
+	class CABIFont : public Font
 	{
 	public:
 
 
 		//.____ Creation __________________________________________
 
-		static CAPIBitmapFont_p	create( wg_obj cBitmapFont ) { return CAPIBitmapFont_p(new CAPIBitmapFont(cBitmapFont)); }
+		static CABIFont_p	create( wg_obj cFont ) { return CABIFont_p(new CABIFont(cFont)); }
 
 		//.____ Identification __________________________________________
 
@@ -51,18 +52,38 @@ namespace wg
 
 		//.____ Rendering ______________________________________________________
 
+		bool		setSize( spx size ) override;
+		spx			size() override;
+
+		void		getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) override;
 		void		getGlyphWithBitmap(uint16_t chr, Glyph& glyph) override;
+		spx			kerning(Glyph& leftGlyph, Glyph& rightGlyph) override;
+
+		spx			lineGap() override;
+		spx			whitespaceAdvance() override;
+		spx			maxAdvance() override;
+		spx			maxAscend() override;
+		spx			maxDescend() override;
+
+		//.____ Misc ___________________________________________________________
+
+		int			nbGlyphs() override;
+		bool		hasGlyphs() override;
+		bool		hasGlyph( uint16_t chr ) override;
+		bool		isMonospace() override;
+
+		inline wg_obj	cObject() { return m_cFont; }
 
 
-	private:
-		CAPIBitmapFont( wg_obj cFont );
-		~CAPIBitmapFont();
-		
-		CAPISurface_p		m_pSurface;
+	protected:
+		CABIFont( wg_obj cFont );
+		~CABIFont();
+
+		wg_obj		m_cFont;
 	};
 
 
 
 } // namespace wg
 
-#endif //WG_CAPIBITMAPFONT_DOT_H
+#endif //WG_CABIFONT_DOT_H

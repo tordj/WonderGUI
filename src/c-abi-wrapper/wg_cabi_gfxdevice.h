@@ -19,31 +19,31 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_CAPIGFXDEVICE_DOT_H
-#define WG_CAPIGFXDEVICE_DOT_H
+#ifndef WG_CABIGFXDEVICE_DOT_H
+#define WG_CABIGFXDEVICE_DOT_H
 #pragma once
 
 #include <wg_geo.h>
 
 #include <wg_gfxdevice.h>
-#include <wg_capisurfacefactory.h>
+#include <wg_cabi_surfacefactory.h>
 
 typedef void* wg_obj;
 
 namespace wg
 {
-	class CAPISurface;
-	class CAPIGfxDevice;
-	typedef	StrongPtr<CAPIGfxDevice> CAPIGfxDevice_p;
-	typedef	WeakPtr<CAPIGfxDevice>	CAPIGfxDevice_wp;
+	class CABISurface;
+	class CABIGfxDevice;
+	typedef	StrongPtr<CABIGfxDevice> CABIGfxDevice_p;
+	typedef	WeakPtr<CABIGfxDevice>	CABIGfxDevice_wp;
 
-	class CAPIGfxDevice : public GfxDevice
+	class CABIGfxDevice : public GfxDevice
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static CAPIGfxDevice_p	create( wg_obj hDevice, CAPISurfaceFactory * pSurfaceFactory );
+		static CABIGfxDevice_p	create( wg_obj hDevice, CABISurfaceFactory * pSurfaceFactory );
 
 		//.____ Identification __________________________________________
 
@@ -146,8 +146,8 @@ namespace wg
 
  
 	protected:
-		CAPIGfxDevice( wg_obj object, CAPISurfaceFactory * pFactory );
-		~CAPIGfxDevice();
+		CABIGfxDevice( wg_obj object, CABISurfaceFactory * pFactory );
+		~CABIGfxDevice();
 
         bool    _beginCanvasUpdate( CanvasRef canvasRef, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;
         
@@ -161,7 +161,7 @@ namespace wg
 
         wg_obj  m_cDevice;
 
-		CAPISurfaceFactory_p	m_pSurfaceFactory;
+		CABISurfaceFactory_p	m_pSurfaceFactory;
 		bool	m_bRendering;
 	};
 } // namespace wg

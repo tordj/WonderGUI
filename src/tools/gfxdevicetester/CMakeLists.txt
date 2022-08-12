@@ -46,7 +46,7 @@ target_link_libraries(gfxdevicetester PRIVATE
 	wgsoftgfx
 	wgopenglgfx
 	wgstreamgfx
-	wgcapigfx
+	wgcabiwrapper
 	wgfreetypefont
 	wondergui 
 	${SDL2_LIBS}

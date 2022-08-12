@@ -21,26 +21,26 @@
 =========================================================================*/
 
 
-#include <wg_capisurface.h>
+#include <wg_cabi_surface.h>
 #include <wg_c_object.h>
 #include <wg_c_surface.h>
 
 
 namespace wg
 {
-	const TypeInfo CAPISurface::TYPEINFO = { "CAPISurface", &Surface::TYPEINFO };
+	const TypeInfo CABISurface::TYPEINFO = { "CABISurface", &Surface::TYPEINFO };
 
 
 	//____ create ______________________________________________________________
 
-	CAPISurface_p CAPISurface::create( wg_obj object)
+	CABISurface_p CABISurface::create( wg_obj object)
 	{
-		return CAPISurface_p(new CAPISurface(object));
+		return CABISurface_p(new CABISurface(object));
 	}
 
 	//____ constructor _____________________________________________________________
 
-	CAPISurface::CAPISurface(wg_obj object) : Surface( Blueprint(), PixelFormat::BGRA_8, SampleMethod::Bilinear )
+	CABISurface::CABISurface(wg_obj object) : Surface( Blueprint(), PixelFormat::BGRA_8, SampleMethod::Bilinear )
 	{
 		wg_retain(object);
 
@@ -66,7 +66,7 @@ namespace wg
 
 	//____ Destructor ______________________________________________________________
 
-	CAPISurface::~CAPISurface()
+	CABISurface::~CABISurface()
 	{
 		if (m_cObserverId != 0)
 			wg_removeSurfaceObserver(m_cSurface,m_cObserverId);
@@ -76,28 +76,28 @@ namespace wg
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CAPISurface::typeInfo(void) const
+	const TypeInfo& CABISurface::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ setScale() _________________________________________________________
 
-	void CAPISurface::setScale(int scale)
+	void CABISurface::setScale(int scale)
 	{
 		wg_setSurfaceScale(m_cSurface, scale);
 	}
 
 	//____ scale() ____________________________________________________________
 
-	int CAPISurface::scale() const
+	int CABISurface::scale() const
 	{
 		return wg_getSurfaceScale(m_cSurface);
 	}
 
 	//____ allocPixelBuffer() _________________________________________________
 
-	const PixelBuffer CAPISurface::allocPixelBuffer(const RectI& rect)
+	const PixelBuffer CABISurface::allocPixelBuffer(const RectI& rect)
 	{
 		auto pixbuf = wg_allocPixelBufferFromRect(m_cSurface, (const wg_rectI*)&rect);
 
@@ -106,7 +106,7 @@ namespace wg
 
 	//____ pushPixels() _______________________________________________________
 
-	bool CAPISurface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+	bool CABISurface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
 		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
@@ -115,7 +115,7 @@ namespace wg
 
 	//____ pullPixels() _______________________________________________________
 
-	void CAPISurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+	void CABISurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
 		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
@@ -124,7 +124,7 @@ namespace wg
 
 	//____ freePixelBuffer() __________________________________________________
 
-	void CAPISurface::freePixelBuffer(const PixelBuffer& buffer)
+	void CABISurface::freePixelBuffer(const PixelBuffer& buffer)
 	{
 		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
@@ -133,36 +133,36 @@ namespace wg
 
 	//____ alpha() ____________________________________________________________
 
-	int CAPISurface::alpha( CoordSPX coord )
+	int CABISurface::alpha( CoordSPX coord )
 	{
 		return wg_surfaceAlpha(m_cSurface, { coord.x, coord.y });
 	}
 
 	//____ fill() _____________________________________________________________
 
-	bool CAPISurface::fill(HiColor color)
+	bool CABISurface::fill(HiColor color)
 	{
 		return wg_fillSurface(m_cSurface, *(wg_color*)&color);
 	}
 
-	bool CAPISurface::fill(const RectI& region, HiColor color )
+	bool CABISurface::fill(const RectI& region, HiColor color )
 	{
 		return wg_fillSurfaceRect( m_cSurface, (const wg_rectI*) &region, * (wg_color*)&color );
 	}
 
 	//____ addObserver() ______________________________________________________
 
-	int CAPISurface::addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func)
+	int CABISurface::addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func)
 	{
 		if( m_pObserver == nullptr )
-			m_cObserverId = wg_addSurfaceObserver(m_cSurface, [](int nRects, const wg_rectSPX* pRects, void* pData, int data) { ((CAPISurface*)pData)->_notifyObservers(nRects, (RectSPX*)pRects); }, this, 0);
+			m_cObserverId = wg_addSurfaceObserver(m_cSurface, [](int nRects, const wg_rectSPX* pRects, void* pData, int data) { ((CABISurface*)pData)->_notifyObservers(nRects, (RectSPX*)pRects); }, this, 0);
 
 		return Surface::addObserver(func);
 	}
 
 	//____ removeObserver() ___________________________________________________
 
-	bool CAPISurface::removeObserver(int observerId)
+	bool CABISurface::removeObserver(int observerId)
 	{
 		Surface::removeObserver(observerId);
 

@@ -21,29 +21,28 @@
 =========================================================================*/
 
 
-#ifndef WG_CAPIFONT_DOT_H
-#define WG_CAPIFONT_DOT_H
+#ifndef WG_CABIFREETYPEFONT_DOT_H
+#define WG_CABIFREETYPEFONT_DOT_H
 #pragma once
 
 
-#include <wg_c_types.h>
-#include <wg_font.h>
-
+#include <wg_cabi_font.h>
+#include <wg_cabi_bitmapcache.h>
 
 namespace wg
 {
-	class	CAPIFont;
-	typedef	StrongPtr<CAPIFont>		CAPIFont_p;
-	typedef	WeakPtr<CAPIFont>	CAPIFont_wp;
+	class	CABIFreeTypeFont;
+	typedef	StrongPtr<CABIFreeTypeFont>	CABIFreeTypeFont_p;
+	typedef	WeakPtr<CABIFreeTypeFont>		CABIFreeTypeFont_wp;
 
-	class CAPIFont : public Font
+	class CABIFreeTypeFont : public CABIFont
 	{
 	public:
 
 
 		//.____ Creation __________________________________________
 
-		static CAPIFont_p	create( wg_obj cFont ) { return CAPIFont_p(new CAPIFont(cFont)); }
+		static CABIFreeTypeFont_p	create(wg_obj cFreeTypeFont, CABIBitmapCache* pCache);
 
 		//.____ Identification __________________________________________
 
@@ -52,38 +51,19 @@ namespace wg
 
 		//.____ Rendering ______________________________________________________
 
-		bool		setSize( spx size ) override;
-		spx			size() override;
-
-		void		getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) override;
 		void		getGlyphWithBitmap(uint16_t chr, Glyph& glyph) override;
-		spx			kerning(Glyph& leftGlyph, Glyph& rightGlyph) override;
-
-		spx			lineGap() override;
-		spx			whitespaceAdvance() override;
-		spx			maxAdvance() override;
-		spx			maxAscend() override;
-		spx			maxDescend() override;
-
-		//.____ Misc ___________________________________________________________
-
-		int			nbGlyphs() override;
-		bool		hasGlyphs() override;
-		bool		hasGlyph( uint16_t chr ) override;
-		bool		isMonospace() override;
-
-		inline wg_obj	cObject() { return m_cFont; }
 
 
-	protected:
-		CAPIFont( wg_obj cFont );
-		~CAPIFont();
-
-		wg_obj		m_cFont;
+	private:
+		CABIFreeTypeFont( wg_obj cFont, CABIBitmapCache * pCache );
+		~CABIFreeTypeFont();
+		
+		CABIBitmapCache_p m_pCache;
+		
 	};
 
 
 
 } // namespace wg
 
-#endif //WG_CAPIFONT_DOT_H
+#endif //WG_CABIFREETYPEFONT_DOT_H

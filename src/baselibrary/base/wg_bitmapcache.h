@@ -76,6 +76,8 @@ namespace wg
 		void		removeListener( BitmapCacheListener * pListener );
 		
 		std::tuple<Surface_p, CoordI> 	getCacheSlot( SizeI size );
+		
+		inline int						nbSurfaces() const { return m_cacheSurfaces->size(); }
 		std::vector<Surface_p>			getSurfaces() const;
 		
 		

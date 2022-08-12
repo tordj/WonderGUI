@@ -108,20 +108,19 @@ wg_cacheSlot wg_getCacheSlot(wg_obj bitmapCache, wg_sizeI size)
 	return {static_cast<Object*>(pSurf.rawPtr()),{coord.x,coord.y}};
 }
 
-int wg_getCacheSurfaces(wg_obj bitmapCache, wg_obj ** pArray )
+int wg_getNbCacheSurfaces(wg_obj bitmapCache)
+{
+	return getPtr(bitmapCache)->nbSurfaces();
+}
+
+
+int wg_getCacheSurfaces(wg_obj bitmapCache, int maxSurfaces, wg_obj * pArray )
 {
 	auto surfVector = getPtr(bitmapCache)->getSurfaces();
-
-	if( surfVector.size() == 0 )
-	{
-		* pArray = NULL;
-		return 0;
-	}
+	int amount = std::min(maxSurfaces, (int)surfVector.size());
 	
-	wg_obj * pBuffer = (wg_obj*) malloc(sizeof(wg_obj)*surfVector.size());
+	for( int i = 0 ; i < amount ; i++ )
+		pArray[i] = surfVector[i].rawPtr();
 	
-	for( int i = 0 ; i < surfVector.size() ; i++ )
-		pBuffer[i] = surfVector[i].rawPtr();
-	
-	return surfVector.size();
+	return amount;
 }

@@ -20,10 +20,10 @@
 
 =========================================================================*/
 
-#include <wg_capigfxdevice.h>
-#include <wg_capisurface.h>
-#include <wg_capisurfacefactory.h>
-#include <wg_capicanvaslayers.h>
+#include <wg_cabi_gfxdevice.h>
+#include <wg_cabi_surface.h>
+#include <wg_cabi_surfacefactory.h>
+#include <wg_cabi_canvaslayers.h>
 
 #include <wg_c_object.h>
 #include <wg_c_gfxdevice.h>
@@ -38,22 +38,22 @@ using namespace std;
 
 namespace wg
 {
-	const TypeInfo CAPIGfxDevice::TYPEINFO = { "CAPIGfxDevice", &GfxDevice::TYPEINFO };
+	const TypeInfo CABIGfxDevice::TYPEINFO = { "CABIGfxDevice", &GfxDevice::TYPEINFO };
 
 
 
 	//____ create() _______________________________________________________________
 
-	CAPIGfxDevice_p CAPIGfxDevice::create( wg_obj object, CAPISurfaceFactory * pFactory )
+	CABIGfxDevice_p CABIGfxDevice::create( wg_obj object, CABISurfaceFactory * pFactory )
 	{
-		CAPIGfxDevice_p p(new CAPIGfxDevice( object, pFactory ));
+		CABIGfxDevice_p p(new CABIGfxDevice( object, pFactory ));
 		return p;
 	}
 
 
 	//____ constructor _____________________________________________________________
 
-	CAPIGfxDevice::CAPIGfxDevice( wg_obj object, CAPISurfaceFactory * pFactory )
+	CABIGfxDevice::CABIGfxDevice( wg_obj object, CABISurfaceFactory * pFactory )
 	{
         wg_retain(object);
 		m_cDevice = object;
@@ -64,21 +64,21 @@ namespace wg
 
 	//____ Destructor ______________________________________________________________
 
-	CAPIGfxDevice::~CAPIGfxDevice()
+	CABIGfxDevice::~CABIGfxDevice()
 	{
         wg_release(m_cDevice);
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CAPIGfxDevice::typeInfo(void) const
+	const TypeInfo& CABIGfxDevice::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
     //____ canvas() ___________________________________________________________
 
-    const CanvasInfo CAPIGfxDevice::canvas(CanvasRef ref) const
+    const CanvasInfo CABIGfxDevice::canvas(CanvasRef ref) const
     {
         auto info = wg_getCanvasRef(m_cDevice, (wg_canvasRef)ref);
 
@@ -87,27 +87,27 @@ namespace wg
         info2.scale = info.scale;
         info2.size.w = info.size.w;
         info2.size.h = info.size.h;
-        info2.pSurface = nullptr;       // Not supported. Can't give access to C++ object on other side of CAPI-wall.
+        info2.pSurface = nullptr;       // Not supported. Can't give access to C++ object on other side of CABI-wall.
         return info2;
     }
 
 	//____ surfaceType() _______________________________________________________
 
-	const TypeInfo& CAPIGfxDevice::surfaceType( void ) const
+	const TypeInfo& CABIGfxDevice::surfaceType( void ) const
 	{
-		return CAPISurface::TYPEINFO;
+		return CABISurface::TYPEINFO;
 	}
 
 	//____ surfaceFactory() ______________________________________________________
 
-	SurfaceFactory_p CAPIGfxDevice::surfaceFactory()
+	SurfaceFactory_p CABIGfxDevice::surfaceFactory()
 	{
         return m_pSurfaceFactory;
 	}
 
     //____ setClipList() _________________________________________________________
 
-    bool CAPIGfxDevice::setClipList(int nRectangles, const RectSPX * pRectangles)
+    bool CABIGfxDevice::setClipList(int nRectangles, const RectSPX * pRectangles)
     {
         int retVal = wg_setClipList(m_cDevice, nRectangles, (wg_rectSPX*)pRectangles);
 
@@ -119,7 +119,7 @@ namespace wg
 
     //____ resetClipList() _______________________________________________________
 
-    void CAPIGfxDevice::resetClipList()
+    void CABIGfxDevice::resetClipList()
     {
         wg_resetClipList(m_cDevice);
         GfxDevice::resetClipList();
@@ -127,7 +127,7 @@ namespace wg
 
     //____ pushClipList() ________________________________________________________
 
-    bool CAPIGfxDevice::pushClipList(int nRectangles, const RectSPX* pRectangles)
+    bool CABIGfxDevice::pushClipList(int nRectangles, const RectSPX* pRectangles)
     {
         int retVal = wg_pushClipList(m_cDevice, nRectangles, (wg_rectSPX*)pRectangles);
 
@@ -139,7 +139,7 @@ namespace wg
 
     //____ popClipList() __________________________________________________________
 
-    bool CAPIGfxDevice::popClipList()
+    bool CABIGfxDevice::popClipList()
     {
         int retVal = wg_popClipList(m_cDevice);
         if( retVal )
@@ -150,7 +150,7 @@ namespace wg
 
     //____ setTintColor() __________________________________________________________
 
-    void CAPIGfxDevice::setTintColor( HiColor color )
+    void CABIGfxDevice::setTintColor( HiColor color )
     {
         GfxDevice::setTintColor(color);
 
@@ -159,7 +159,7 @@ namespace wg
 
     //____ setTintGradient() _______________________________________________________
 
-    void CAPIGfxDevice::setTintGradient(const RectSPX& rect, const Gradient& gradient)
+    void CABIGfxDevice::setTintGradient(const RectSPX& rect, const Gradient& gradient)
     {
         GfxDevice::setTintGradient(rect, gradient);
         
@@ -168,7 +168,7 @@ namespace wg
 
     //____ clearTintGradient() _____________________________________________________
 
-    void CAPIGfxDevice::clearTintGradient()
+    void CABIGfxDevice::clearTintGradient()
     {
         GfxDevice::clearTintGradient();
 
@@ -177,7 +177,7 @@ namespace wg
 
     //____ setBlendMode() __________________________________________________________
 
-    bool CAPIGfxDevice::setBlendMode( BlendMode blendMode )
+    bool CABIGfxDevice::setBlendMode( BlendMode blendMode )
     {
         if( blendMode < BlendMode_min || blendMode > BlendMode_max )
             return false;
@@ -192,12 +192,12 @@ namespace wg
 
     //____ setBlitSource() _______________________________________________________
 
-    bool CAPIGfxDevice::setBlitSource(Surface * pSource)
+    bool CABIGfxDevice::setBlitSource(Surface * pSource)
     {
-        if (!pSource || !pSource->isInstanceOf(CAPISurface::TYPEINFO) )
+        if (!pSource || !pSource->isInstanceOf(CABISurface::TYPEINFO) )
             return false;
 
-        int retVal = wg_setBlitSource(m_cDevice, static_cast<CAPISurface*>(pSource)->cObject());
+        int retVal = wg_setBlitSource(m_cDevice, static_cast<CABISurface*>(pSource)->cObject());
 
         if( retVal )
             GfxDevice::setBlitSource(pSource);
@@ -207,7 +207,7 @@ namespace wg
 
     //____ setMorphFactor() ______________________________________________________
 
-    void CAPIGfxDevice::setMorphFactor(float factor)
+    void CABIGfxDevice::setMorphFactor(float factor)
     {
         GfxDevice::setMorphFactor(factor);
 
@@ -216,7 +216,7 @@ namespace wg
 
     //____ setRenderLayer() _______________________________________________________
 
-    void CAPIGfxDevice::setRenderLayer(int layer)
+    void CABIGfxDevice::setRenderLayer(int layer)
     {
         GfxDevice::setRenderLayer(layer);
        
@@ -225,7 +225,7 @@ namespace wg
 
 	//____ beginRender() ___________________________________________________________
 
-	bool CAPIGfxDevice::beginRender()
+	bool CABIGfxDevice::beginRender()
 	{
         int bOk = wg_beginRender(m_cDevice);
 
@@ -236,7 +236,7 @@ namespace wg
 
 	//____ endRender() _____________________________________________________________
 
-	bool CAPIGfxDevice::endRender()
+	bool CABIGfxDevice::endRender()
 	{
         int bOk = wg_endRender(m_cDevice);
 
@@ -247,7 +247,7 @@ namespace wg
 
     //____ flush() ___________________________________________________________________
 
-    void CAPIGfxDevice::flush()
+    void CABIGfxDevice::flush()
     {
         wg_flushDevice(m_cDevice);
         GfxDevice::flush();
@@ -255,7 +255,7 @@ namespace wg
 
     //____ endCanvasUpdate() _________________________________________________________
 
-    void CAPIGfxDevice::endCanvasUpdate()
+    void CABIGfxDevice::endCanvasUpdate()
     {
 		GfxDevice::endCanvasUpdate();
 		wg_endCanvasUpdate(m_cDevice);
@@ -263,188 +263,188 @@ namespace wg
 
     //____ fill() __________________________________________________________________
 
-    void CAPIGfxDevice::fill( HiColor _col )
+    void CABIGfxDevice::fill( HiColor _col )
     {
         wg_fill( m_cDevice, *(wg_color*)&_col );
     }
 
-    void CAPIGfxDevice::fill( const RectSPX& _rect, HiColor _col )
+    void CABIGfxDevice::fill( const RectSPX& _rect, HiColor _col )
     {
         wg_fillRect(m_cDevice, (wg_rectSPX*) &_rect, *(wg_color*)&_col);
     }
 
     //____ plotPixels() ________________________________________________________
 
-    void CAPIGfxDevice::plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors)
+    void CABIGfxDevice::plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors)
     {
         wg_plotPixels(m_cDevice, nCoords, (wg_coordSPX*)pCoords, (wg_color*)pColors);
     }
 
     //____ drawLine() __________________________________________________________
 
-    void CAPIGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness)
+    void CABIGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness)
     {
         wg_drawLine(m_cDevice, { begin.x, begin.y }, { end.x, end.y }, *(wg_color*)&color, thickness);
     }
 
-    void CAPIGfxDevice::drawLine(CoordSPX begin, Direction dir, int length, HiColor color, spx thickness)
+    void CABIGfxDevice::drawLine(CoordSPX begin, Direction dir, int length, HiColor color, spx thickness)
     {
         wg_drawStraightLine(m_cDevice, { begin.x, begin.y }, (wg_direction) dir, length, * (wg_color*)&color, thickness);
     }
 
     //____ blit() __________________________________________________________________
 
-    void CAPIGfxDevice::blit(CoordSPX dest)
+    void CABIGfxDevice::blit(CoordSPX dest)
     {
         wg_blit(m_cDevice, { dest.x, dest.y });
     }
 
-    void CAPIGfxDevice::blit(CoordSPX dest, const RectSPX& src)
+    void CABIGfxDevice::blit(CoordSPX dest, const RectSPX& src)
     {
         wg_blitRect(m_cDevice, { dest.x, dest.y }, (wg_rectSPX*) &src );
     }
 
     //____ flipBlit() _________________________________________________________
 
-    void CAPIGfxDevice::flipBlit(CoordSPX dest, GfxFlip flip )
+    void CABIGfxDevice::flipBlit(CoordSPX dest, GfxFlip flip )
     {
         wg_flipBlit(m_cDevice, { dest.x, dest.y }, (wg_gfxFlip) flip);
     }
 
-    void CAPIGfxDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip )
+    void CABIGfxDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip )
     {
         wg_flipBlitRect(m_cDevice, { dest.x, dest.y }, (wg_rectSPX*)&src, (wg_gfxFlip)flip);
     }
 
     //____ stretchBlit() ______________________________________________________
 
-    void CAPIGfxDevice::stretchBlit(const RectSPX& dest)
+    void CABIGfxDevice::stretchBlit(const RectSPX& dest)
     {
         wg_stretchBlit(m_cDevice, (wg_rectSPX*) &dest);
     }
 
-    void CAPIGfxDevice::stretchBlit(const RectSPX& dest, const RectSPX& source)
+    void CABIGfxDevice::stretchBlit(const RectSPX& dest, const RectSPX& source)
     {
         wg_stretchBlitRect(m_cDevice, (wg_rectSPX*)&dest, (wg_rectSPX*)&source);
     }
 
     //____ stretchFlipBlit() __________________________________________________
 
-    void CAPIGfxDevice::stretchFlipBlit(const RectSPX& dest, GfxFlip flip)
+    void CABIGfxDevice::stretchFlipBlit(const RectSPX& dest, GfxFlip flip)
     {
         wg_stretchFlipBlit(m_cDevice, (wg_rectSPX*)&dest, (wg_gfxFlip) flip);
     }
 
-    void CAPIGfxDevice::stretchFlipBlit(const RectSPX& dest, const RectSPX& source, GfxFlip flip)
+    void CABIGfxDevice::stretchFlipBlit(const RectSPX& dest, const RectSPX& source, GfxFlip flip)
     {
         wg_stretchFlipBlitRect(m_cDevice, (wg_rectSPX*)&dest, (wg_rectSPX*)&source, (wg_gfxFlip)flip );
     }
 
 	//____ precisionBlit() _______________________________________________________
 
-	void CAPIGfxDevice::precisionBlit(const RectSPX& dest, const RectF& srcSPX)
+	void CABIGfxDevice::precisionBlit(const RectSPX& dest, const RectF& srcSPX)
 	{
 		wg_precisionBlit(m_cDevice, (wg_rectSPX*)&dest, (wg_rectF*)&srcSPX);
 	}
 
 	//____ transformBlit() _______________________________________________________
 
-	void CAPIGfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
+	void CABIGfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
 	{
 		wg_transformBlit(m_cDevice, (wg_rectSPX*)&dest, {srcSPX.x,srcSPX.y}, transform);
 	}
 
     //____ rotScaleBlit() _____________________________________________________
-    void CAPIGfxDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
+    void CABIGfxDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
     {
         wg_rotScaleBlit(m_cDevice, (wg_rectSPX*)&dest, rotationDegrees, scale, { srcCenter.x, srcCenter.y }, { destCenter.x, destCenter.y });
     }
 
     //____ tile() _____________________________________________________________
 
-    void CAPIGfxDevice::tile(const RectSPX& dest, CoordSPX shift)
+    void CABIGfxDevice::tile(const RectSPX& dest, CoordSPX shift)
     {
         wg_tile(m_cDevice, (wg_rectSPX*)&dest, { shift.x,shift.y });
     }
 
     //____ flipTile() _________________________________________________________
 
-    void CAPIGfxDevice::flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift)
+    void CABIGfxDevice::flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift)
     {
         wg_flipTile(m_cDevice, (wg_rectSPX*)&dest, (wg_gfxFlip) flip, { shift.x, shift.y });
     }
 
     //____ scaleTile() ________________________________________________________
 
-    void CAPIGfxDevice::scaleTile(const RectSPX& dest, float scale, CoordSPX shift)
+    void CABIGfxDevice::scaleTile(const RectSPX& dest, float scale, CoordSPX shift)
     {
         wg_scaleTile(m_cDevice, (wg_rectSPX*)&dest, scale, { shift.x,shift.y });
     }
 
     //____ scaleFlipTile() ____________________________________________________
 
-    void CAPIGfxDevice::scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift)
+    void CABIGfxDevice::scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift)
     {
         wg_scaleFlipTile(m_cDevice, (wg_rectSPX*)&dest, scale, (wg_gfxFlip) flip, { shift.x, shift.y });
     }
 
     //____ drawWave() _________________________________________________________
 
-    void CAPIGfxDevice::drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill)
+    void CABIGfxDevice::drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill)
     {
         wg_drawWave(m_cDevice, (wg_rectSPX*)&dest, (wg_waveLine*)pTopBorder, (wg_waveLine*)pBottomBorder, *(wg_color*)&frontFill, *(wg_color*)&backFill);
     }
 
     //____ flipDrawWave() _____________________________________________________
 
-    void CAPIGfxDevice::flipDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip)
+    void CABIGfxDevice::flipDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip)
     {
         wg_flipDrawWave(m_cDevice, (wg_rectSPX*)&dest, (wg_waveLine*)pTopBorder, (wg_waveLine*)pBottomBorder, *(wg_color*)&frontFill, *(wg_color*)&backFill, (wg_gfxFlip) flip );
     }
 
     //____ _drawElipse() ______________________________________________________
 
-    void CAPIGfxDevice::drawElipse(const RectSPX& canvas, spx thickness, HiColor color, spx outlineThickness, HiColor outlineColor )
+    void CABIGfxDevice::drawElipse(const RectSPX& canvas, spx thickness, HiColor color, spx outlineThickness, HiColor outlineColor )
     {
         wg_drawElipse(m_cDevice,(wg_rectSPX*)&canvas, thickness, *(wg_color*)&color, outlineThickness, *(wg_color*)&outlineColor);
     }
 
     //____ drawPieChart() _____________________________________________________
 
-    void CAPIGfxDevice::drawPieChart(const RectSPX& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
+    void CABIGfxDevice::drawPieChart(const RectSPX& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
     {
         wg_drawPieChart(m_cDevice, (wg_rectSPX*)&canvas, start, nSlices, pSliceSizes, (const wg_color*)pSliceColors, hubSize, *(wg_color*)&hubColor, *(wg_color*)&backColor, bRectangular);
     }
 
     //____ drawSegments() _____________________________________________________
 
-    void CAPIGfxDevice::drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
+    void CABIGfxDevice::drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
     {
         wg_drawSegments(m_cDevice, (wg_rectSPX*)&dest, nSegments, (const wg_color*)pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, (wg_tintMode)tintMode);
     }
 
     //____ flipDrawSegments() _________________________________________________
 
-    void CAPIGfxDevice::flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
+    void CABIGfxDevice::flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
     {
         wg_flipDrawSegments(m_cDevice, (wg_rectSPX*)&dest, nSegments, (const wg_color*)pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, (wg_gfxFlip) flip, (wg_tintMode)tintMode);
     }
 
     //.____ blitNinePatch() ___________________________________________________
 
-    void CAPIGfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)
+    void CABIGfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)
     {
         wg_blitNinePatch(m_cDevice, (wg_rectSPX*)&dstRect, (wg_borderSPX*)&dstFrame, (wg_ninePatch*)&patch, scale);
     }
 
     //.____ _beginCanvasUpdate() ______________________________________________
 
-    bool CAPIGfxDevice::_beginCanvasUpdate(CanvasRef canvasRef, Surface * pCanvasSurface, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer)
+    bool CABIGfxDevice::_beginCanvasUpdate(CanvasRef canvasRef, Surface * pCanvasSurface, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer)
     {     
 		if( GfxDevice::_beginCanvasUpdate(canvasRef, pCanvasSurface, nUpdateRects, pUpdateRects, pLayers, startLayer) )
 		{
-			auto pCAPILayers = wg_dynamic_cast<CAPICanvasLayers_p>(pLayers);
-			wg_obj cAPILayers = pCAPILayers ? pCAPILayers->cObject() : 0;
+			auto pCABILayers = wg_dynamic_cast<CABICanvasLayers_p>(pLayers);
+			wg_obj cAPILayers = pCABILayers ? pCABILayers->cObject() : 0;
 
 			if (canvasRef != CanvasRef::None)
 			{
@@ -452,7 +452,7 @@ namespace wg
 			}
 			else
 			{
-				wg_beginCanvasUpdateWithSurface(m_cDevice, static_cast<CAPISurface*>(pCanvasSurface)->cObject(), nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
+				wg_beginCanvasUpdateWithSurface(m_cDevice, static_cast<CABISurface*>(pCanvasSurface)->cObject(), nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
 			}
 			return true;
 		}
@@ -462,21 +462,21 @@ namespace wg
 
     //____ _canvasWasChanged() ________________________________________________
 
-    void CAPIGfxDevice::_canvasWasChanged()
+    void CABIGfxDevice::_canvasWasChanged()
     {
         // Do nothing
     }
 
     //____ _renderLayerWasChanged() ___________________________________________
 
-    void CAPIGfxDevice::_renderLayerWasChanged()
+    void CABIGfxDevice::_renderLayerWasChanged()
     {
         // Do nothing.
     }
 
     //____ _transformBlit() ___________________________________________________
 
-    void CAPIGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+    void CABIGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
         
@@ -485,7 +485,7 @@ namespace wg
 
     //____ _transformBlit() ___________________________________________________
 
-    void CAPIGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
+    void CABIGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
         
@@ -494,7 +494,7 @@ namespace wg
 
 	//____ _transformDrawSegments() ___________________________________________
 
-	void CAPIGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
+	void CABIGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
         //This method should never be called, but is pure virtual in super class.
         

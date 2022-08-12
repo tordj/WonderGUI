@@ -22,8 +22,8 @@
 
 #include <memory.h>
 
-#include <wg_capisurface.h>
-#include <wg_capisurfacefactory.h>
+#include <wg_cabi_surface.h>
+#include <wg_cabi_surfacefactory.h>
 
 #include <wg_c_object.h>
 #include <wg_c_surfacefactory.h>
@@ -32,18 +32,18 @@
 namespace wg
 {
 
-	const TypeInfo CAPISurfaceFactory::TYPEINFO = { "CAPISurfaceFactory", &SurfaceFactory::TYPEINFO };
+	const TypeInfo CABISurfaceFactory::TYPEINFO = { "CABISurfaceFactory", &SurfaceFactory::TYPEINFO };
 
 	//____ constructor ________________________________________________________
 
-	CAPISurfaceFactory::CAPISurfaceFactory( wg_obj cFactory) : m_cFactory(cFactory)
+	CABISurfaceFactory::CABISurfaceFactory( wg_obj cFactory) : m_cFactory(cFactory)
 	{
 		wg_retain(cFactory);
 	}
 
 	//____ destructor ________________________________________________________
 
-	CAPISurfaceFactory::~CAPISurfaceFactory()
+	CABISurfaceFactory::~CABISurfaceFactory()
 	{
 		wg_release(m_cFactory);
 	}
@@ -51,14 +51,14 @@ namespace wg
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CAPISurfaceFactory::typeInfo(void) const
+	const TypeInfo& CABISurfaceFactory::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ maxSize() ______________________________________________________________
 
-	SizeI CAPISurfaceFactory::maxSize() const
+	SizeI CABISurfaceFactory::maxSize() const
 	{			
 		wg_sizeI sz = wg_maxSurfaceSize(m_cFactory);
 		return { sz.w, sz.h };
@@ -66,46 +66,46 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p CAPISurfaceFactory::createSurface(const Surface::Blueprint& blueprint)
+	Surface_p CABISurfaceFactory::createSurface(const Surface::Blueprint& blueprint)
 	{
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
 		auto obj = wg_createSurface(m_cFactory, &bp);
-		return CAPISurface::create(obj);
+		return CABISurface::create(obj);
 	}
 
-	Surface_p CAPISurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Blob * pBlob, int pitch )
+	Surface_p CABISurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Blob * pBlob, int pitch )
 	{
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
 		auto obj = wg_createSurfaceFromBlob(m_cFactory, &bp, static_cast<Object*>(pBlob), pitch );
-		return CAPISurface::create(obj);
+		return CABISurface::create(obj);
 	}
 
-	Surface_p CAPISurfaceFactory::createSurface( const Surface::Blueprint& blueprint, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription )
+	Surface_p CABISurfaceFactory::createSurface( const Surface::Blueprint& blueprint, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription )
 	{
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
 		auto obj = wg_createSurfaceFromBitmap(m_cFactory, &bp, pPixels, pitch, (wg_pixelDescription*) pPixelDescription);
-		return CAPISurface::create(obj);
+		return CABISurface::create(obj);
 	}
 
-	Surface_p CAPISurfaceFactory::createSurface( const Surface::Blueprint& blueprint, Surface* pOther )
+	Surface_p CABISurfaceFactory::createSurface( const Surface::Blueprint& blueprint, Surface* pOther )
 	{
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
 		auto obj = wg_createSurfaceFromSurface(m_cFactory, &bp, static_cast<Object*>(pOther) );
-		return CAPISurface::create(obj);
+		return CABISurface::create(obj);
 	}
 
 
 	//____ _convertBlueprint() ________________________________________________
 
-	void CAPISurfaceFactory::_convertBlueprint(wg_surfaceBP* pDest, const Surface::Blueprint* pSource)
+	void CABISurfaceFactory::_convertBlueprint(wg_surfaceBP* pDest, const Surface::Blueprint* pSource)
 	{
 		pDest->buffered = pSource->buffered;
 		pDest->canvas = pSource->canvas;

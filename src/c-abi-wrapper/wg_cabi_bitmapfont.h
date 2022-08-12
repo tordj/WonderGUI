@@ -21,27 +21,28 @@
 =========================================================================*/
 
 
-#ifndef WG_CAPIFREETYPEFONT_DOT_H
-#define WG_CAPIFREETYPEFONT_DOT_H
+#ifndef WG_CABIBITMAPFONT_DOT_H
+#define WG_CABIBITMAPFONT_DOT_H
 #pragma once
 
 
-#include <wg_capifont.h>
+#include <wg_cabi_font.h>
+#include <wg_cabi_surface.h>
 
 namespace wg
 {
-	class	CAPIFreeTypeFont;
-	typedef	StrongPtr<CAPIFreeTypeFont>	CAPIFreeTypeFont_p;
-	typedef	WeakPtr<CAPIFreeTypeFont>		CAPIFreeTypeFont_wp;
+	class	CABIBitmapFont;
+	typedef	StrongPtr<CABIBitmapFont>	CABIBitmapFont_p;
+	typedef	WeakPtr<CABIBitmapFont>		CABIBitmapFont_wp;
 
-	class CAPIFreeTypeFont : public CAPIFont
+	class CABIBitmapFont : public CABIFont
 	{
 	public:
 
 
 		//.____ Creation __________________________________________
 
-		static CAPIFreeTypeFont_p	create( wg_obj cFreeTypeFont ) { return CAPIFreeTypeFont_p(new CAPIFreeTypeFont(cFreeTypeFont)); }
+		static CABIBitmapFont_p	create( wg_obj cBitmapFont ) { return CABIBitmapFont_p(new CABIBitmapFont(cBitmapFont)); }
 
 		//.____ Identification __________________________________________
 
@@ -54,15 +55,14 @@ namespace wg
 
 
 	private:
-		CAPIFreeTypeFont( wg_obj cFont );
-		~CAPIFreeTypeFont();
+		CABIBitmapFont( wg_obj cFont );
+		~CABIBitmapFont();
 		
-		
-		
+		CABISurface_p		m_pSurface;
 	};
 
 
 
 } // namespace wg
 
-#endif //WG_CAPIFREETYPEFONT_DOT_H
+#endif //WG_CABIBITMAPFONT_DOT_H
