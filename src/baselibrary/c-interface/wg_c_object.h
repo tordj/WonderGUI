@@ -31,10 +31,7 @@ extern "C" {
 #endif
 
 
-	typedef	void(*wg_finalizer_func)(void*);
-
-
-	const wg_typeInfo* wg_getTypeInfo(wg_obj);
+	const wg_typeInfo*	wg_getTypeInfo(wg_obj);
 	int					wg_isInstanceOf(wg_obj, const wg_typeInfo* pTypeInfo);
 
 	void				wg_setFinalizer(wg_obj, wg_finalizer_func pFinalizer);

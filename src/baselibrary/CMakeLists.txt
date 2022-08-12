@@ -132,6 +132,9 @@ add_library( wondergui
 	base/wg_weakcomponentptr.h
 	base/wg_weakptr.h
 
+
+	c-interface/wg_c_abi.cpp
+	c-interface/wg_c_abi.h
 	c-interface/wg_c_bitmapcache.cpp
 	c-interface/wg_c_bitmapcache.h
 	c-interface/wg_c_bitmapfont.cpp

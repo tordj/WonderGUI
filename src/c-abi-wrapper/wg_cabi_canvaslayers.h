@@ -34,7 +34,7 @@ namespace wg
 	class CABISurface;
 	class CABIGfxDevice;
 	typedef	StrongPtr<CABIGfxDevice>	CABIGfxDevice_p;
-	typedef	WeakPtr<CABIGfxDevice>	CABIGfxDevice_wp;
+	typedef	WeakPtr<CABIGfxDevice>		CABIGfxDevice_wp;
 
 
 	class CABICanvasLayers;

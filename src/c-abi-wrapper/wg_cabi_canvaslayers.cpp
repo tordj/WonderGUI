@@ -24,8 +24,7 @@
 #include <wg_cabi_gfxdevice.h>
 #include <wg_base.h>
 
-#include <wg_c_canvaslayers.h>
-#include <wg_c_object.h>
+#include <wg_cabi.h>
 
 namespace wg
 {
@@ -135,14 +134,14 @@ namespace wg
 
 		}
 
-		m_cCanvasLayer = wg_createCanvasLayers(&cBP);
+		m_cCanvasLayer = CABI::func()->pCanvasLayers->createCanvasLayers(&cBP);
 	}
 
 	//____ CABICanvasLayers::~CABICanvasLayers() ______________________________
 
 	CABICanvasLayers::~CABICanvasLayers()
 	{
-		wg_release(m_cCanvasLayer);
+		CABI::func()->pObject->release(m_cCanvasLayer);
 	}
 
 

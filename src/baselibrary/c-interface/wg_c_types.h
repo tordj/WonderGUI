@@ -34,6 +34,9 @@ typedef void* wg_obj;
 
 typedef void* wg_component;
 
+typedef	void(*wg_finalizer_func)(void*);
+
+
 //____ wg_typeInfo ___________________________________________________________
 
 struct wg_typeInfo

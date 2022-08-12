@@ -23,6 +23,7 @@
 #include <wg_streamgfxdevice.h>
 #include <wg_streamsurfacefactory.h>
 
+#include <wg_cabi.h>
 
 #include <wg_glgfxdevice.h>
 #include <wg_glsurface.h>
@@ -54,6 +55,9 @@ SDL_Window *		g_pSDLWindow = nullptr;
 
 Surface_p			g_pWindowSurface = nullptr;				// Set by init_system()
 RootPanel_p			g_pRoot = nullptr;
+
+wg_c_calls_header	g_cCallsHeader;
+wg_c_calls_body		g_cCallsBody;
 
 
 
@@ -164,10 +168,17 @@ int main(int argc, char *argv[] )
 		return -1;
 
 
+	// Prepare CABI interface
+
+	wg_populateCallStruc(&g_cCallsHeader, &g_cCallsBody);
+	CABI::init(&g_cCallsHeader);
+
+	//
+
 	pApp->addTestDevice(new SoftwareDevice());
-//	pApp->addTestDevice(new CABIToSoftwareDevice());
+	pApp->addTestDevice(new CABIToSoftwareDevice());
 //	pApp->addTestDevice(new StreamToSoftwareDevice());
-	pApp->addTestDevice(new OpenGLDevice());
+//	pApp->addTestDevice(new OpenGLDevice());
 
 	// Initialize the app
 
