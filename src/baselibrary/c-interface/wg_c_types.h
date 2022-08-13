@@ -291,6 +291,7 @@ enum wg_gfxChunkId
 	WG_GFXCHUNK_TIME_STAMP_MS = 54
 };
 
+
 #ifdef __cplusplus
 }
 #endif

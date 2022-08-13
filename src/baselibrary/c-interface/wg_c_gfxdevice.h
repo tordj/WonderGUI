@@ -34,15 +34,18 @@
 extern "C" {
 #endif
 
+	//____ wg_waveLine ____________________________________________________________
 
 	struct wg_waveLine
 	{
 		int			length;
 		wg_spx		thickness;
 		wg_color	color;
-		int* 		pWave;      // Pixel offset in 26.6 format.
+		int* pWave;      // Pixel offset in 26.6 format.
 		wg_spx		hold;      // Value for extending the line if it is too short (or completely missing).
 	};
+
+	//____ wg_canvasInfo __________________________________________________________
 
 	struct wg_canvasInfo		// NOT BINARY EQUIVALENT!
 	{
@@ -55,7 +58,7 @@ extern "C" {
 
 	//____ Misc _______________________________________________________
 
-	const wg_typeInfo* wg_deviceSurfaceType(wg_obj device);
+	const wg_typeInfo*		wg_deviceSurfaceType(wg_obj device);
 
 
 	wg_canvasInfo			wg_getCanvas(wg_obj device);
@@ -78,9 +81,9 @@ extern "C" {
 	int						wg_pushClipList(wg_obj device, int nRectangles, const wg_rectSPX* pRectangles);
 	int						wg_popClipList(wg_obj device);
 
-	const wg_rectSPX* wg_getClipList(wg_obj device);
+	const wg_rectSPX*		wg_getClipList(wg_obj device);
 	int						wg_clipListSize(wg_obj device);
-	const wg_rectSPX* wg_clipBounds(wg_obj device);
+	const wg_rectSPX*		wg_clipBounds(wg_obj device);
 
 	void					wg_setTintColor(wg_obj device, wg_color color);
 	const wg_color			wg_getTintColor(wg_obj device);

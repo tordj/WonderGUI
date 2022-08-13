@@ -32,11 +32,11 @@ namespace wg
 	{
 	public:
 
-		static bool	init(wg_c_calls_header* pHeader);
+		static bool	init(wg_c_calls_collection* pCallsCollection);
 
-		static inline const wg_c_calls_header* func() { return s_func; };
+		static inline const wg_c_calls_collection* func() { return s_func; };
 
-		static wg_c_calls_header*		s_func;
+		static wg_c_calls_collection*		s_func;
 	};
 
 

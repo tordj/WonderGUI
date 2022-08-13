@@ -27,11 +27,11 @@
 namespace wg
 {
 
-	wg_c_calls_header* CABI::s_func = nullptr;
+	wg_c_calls_collection* CABI::s_func = nullptr;
 
-	bool CABI::init(wg_c_calls_header* pHeader)
+	bool CABI::init(wg_c_calls_collection* pCallsCollection)
 	{
-		s_func = pHeader;
+		s_func = pCallsCollection;
 
 		return true;
 	}

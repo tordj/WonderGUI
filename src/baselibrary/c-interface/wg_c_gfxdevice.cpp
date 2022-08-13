@@ -50,13 +50,13 @@ wg_canvasInfo wg_getCanvasRef(wg_obj device, wg_canvasRef ref)
 }
 
 
-wg_obj	wg_getCanvasLayers(wg_obj device)
+wg_obj	wg_canvasLayers(wg_obj device)
 {
 	return getPtr(device)->canvasLayers().rawPtr();
 }
 
 
-wg_obj wg_getSurfaceFactory(wg_obj device)
+wg_obj wg_surfaceFactory(wg_obj device)
 {
 	return getPtr(device)->surfaceFactory().rawPtr();
 }

@@ -56,8 +56,7 @@ SDL_Window *		g_pSDLWindow = nullptr;
 Surface_p			g_pWindowSurface = nullptr;				// Set by init_system()
 RootPanel_p			g_pRoot = nullptr;
 
-wg_c_calls_header	g_cCallsHeader;
-wg_c_calls_body		g_cCallsBody;
+wg_c_calls_collection	g_cCallsCollection;
 
 
 
@@ -170,8 +169,8 @@ int main(int argc, char *argv[] )
 
 	// Prepare CABI interface
 
-	wg_populateCallStruc(&g_cCallsHeader, &g_cCallsBody);
-	CABI::init(&g_cCallsHeader);
+	wg_populateCallCollection(&g_cCallsCollection);
+	CABI::init(&g_cCallsCollection);
 
 	//
 
