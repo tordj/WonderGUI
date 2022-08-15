@@ -27,7 +27,7 @@
 #include <wg3_types.h>
 #include <wg3_object.h>
 #include <wg3_pointers.h>
-#include <wg3_cgfxinstream.h>
+#include <wg3_cgfxstreamsource.h>
 #include <wg3_gfxstream.h>
 
 #include <functional>
@@ -39,7 +39,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamReader>	GfxStreamReader_p;
 	typedef	WeakPtr<GfxStreamReader>	GfxStreamReader_wp;
 
-	class GfxStreamReader : public Object, protected CGfxInStream::Holder
+	class GfxStreamReader : public Object, protected CGfxStreamSource::Holder
 	{
 	public:
 
@@ -49,7 +49,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxInStream		output;
+		CGfxStreamSource		output;
 
 		//.____ Identification __________________________________________
 
@@ -93,7 +93,6 @@ namespace wg
 											// complete chunk. Overflowing data is a copy of data from beginning of buffer.
 
 		DataSegment	m_dataSegments[2];
-
 	};
 
 

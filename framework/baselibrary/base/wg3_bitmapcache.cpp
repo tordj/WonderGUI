@@ -149,6 +149,22 @@ namespace wg
 		return std::make_tuple(pCacheSurf->pSurface, CoordI(ofs,0));
 	}
 
+	//____ getSurfaces() _________________________________________________________
+
+	std::vector<Surface_p> BitmapCache::getSurfaces() const
+	{
+		std::vector<Surface_p>	output;
+		
+		for( const std::vector<CacheSurf>& vec : m_cacheSurfaces )
+		{
+			for( auto& entry : vec )
+				output.push_back(entry.pSurface);
+		}
+		
+		return output;
+	}
+
+
 	//____ _addCacheSurface() __________________________________________________
 
 	BitmapCache::CacheSurf * BitmapCache::_addCacheSurface( int category, int width, int height )

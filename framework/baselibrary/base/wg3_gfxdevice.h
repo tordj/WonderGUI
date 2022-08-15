@@ -62,6 +62,8 @@ namespace wg
 		int		hold;      // Value for extending the line if it is too short (or completely missing).
 	};
 
+	//____ CanvasInfo _________________________________________________________
+
 	struct CanvasInfo
 	{
 		CanvasInfo() {};
@@ -94,7 +96,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		inline const CanvasInfo& canvas() const { return m_canvas; }
-		virtual const CanvasInfo& canvas(CanvasRef ref) const = 0;
+		virtual const CanvasInfo canvas(CanvasRef ref) const = 0;
 
 		inline CanvasLayers_p 		canvasLayers() const { return m_pCanvasLayers; }
 
@@ -116,10 +118,10 @@ namespace wg
 
 		inline const RectSPX*	clipList() const { return m_pClipRects; }
 		inline int			clipListSize() const { return m_nClipRects; }
-		inline RectSPX		clipBounds() const { return m_clipBounds; }
+		inline const RectSPX&		clipBounds() const { return m_clipBounds; }
 
 		virtual void		setTintColor( HiColor color );
-		inline const HiColor&	tintColor() const { return m_tintColor; }
+		inline HiColor		tintColor() const { return m_tintColor; }
 
 		virtual void		setTintGradient(const RectSPX& rect, const Gradient& gradient);
 		virtual void		clearTintGradient();
@@ -144,21 +146,20 @@ namespace wg
 		virtual bool	isIdle();
 		virtual void	flush();
 
-        inline bool     beginCanvasUpdate( CanvasRef canvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
-        inline bool     beginCanvasUpdate( Surface * pCanvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
+        inline bool     beginCanvasUpdate( CanvasRef canvas, int nUpdateRects = 0, const RectSPX* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
+        inline bool     beginCanvasUpdate( Surface * pCanvas, int nUpdateRects = 0, const RectSPX* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
         virtual void    endCanvasUpdate();
 
         
 		// Draw methods.
 
-		virtual void	fill(HiColor col);
-		virtual void	fill( const RectSPX& rect, HiColor col ) = 0;
-		virtual void	fill(const RectF& rect, HiColor col) = 0;
+		virtual void	fill(HiColor color);
+		virtual void	fill( const RectSPX& rect, HiColor color ) = 0;
 
 		virtual void    plotPixels( int nCoords, const CoordSPX * pCoords, const HiColor * pColors) = 0;
 
-	 	virtual void	drawLine( CoordSPX begin, CoordSPX end, HiColor color, float thickness = 1.f ) = 0;
-		virtual void	drawLine( CoordSPX begin, Direction dir, spx length, HiColor col, float thickness = 1.f);
+	 	virtual void	drawLine( CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64 ) = 0;
+		virtual void	drawLine( CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness = 64 );
 
 		// Blit methods
 
@@ -170,12 +171,12 @@ namespace wg
 
 		virtual void	stretchBlit(const RectSPX& dest);
 		virtual void	stretchBlit(const RectSPX& dest, const RectSPX& src);
-		virtual void	stretchBlit(const RectSPX& dest, const RectF& src);
 
 		virtual void	stretchFlipBlit(const RectSPX& dest, GfxFlip flip);
 		virtual void	stretchFlipBlit(const RectSPX& dest, const RectSPX& src, GfxFlip flip);
-		virtual void	stretchFlipBlit(const RectSPX& dest, const RectF& src, GfxFlip flip);
 
+		virtual void	precisionBlit(const RectSPX& dest, const RectF& srcSPX);
+		virtual void	transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2]);
 		virtual void	rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f });
 
 		virtual void	tile(const RectSPX& dest, CoordSPX shift = { 0,0 });
@@ -230,7 +231,7 @@ namespace wg
 		void	_genCurveTab();
 		void	_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset);
 
-		virtual bool _beginCanvasUpdate(CanvasRef ref, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer);
+		virtual bool _beginCanvasUpdate(CanvasRef ref, Surface * pCanvas, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer);
 		void	_clearRenderLayer();						// Initializes and possibly clear render layer. 
 
 
@@ -300,6 +301,8 @@ namespace wg
 		bool		m_bTintGradient = false;
 
 		bool        m_bRendering = false;
+		
+		bool		m_bIsProxyDevice = false;		// Set by subclasses that just wrap calls and rendering is performed elsewhere.
 	};
 
 

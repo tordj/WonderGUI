@@ -42,7 +42,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static BitmapFont_p	create( Surface * pSurf, char * pGlyphSpec ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec)); }
+		static BitmapFont_p	create( Surface * pSurf, char * pGlyphSpec, Font * pBackupFont = nullptr ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec,pBackupFont)); }
 
 		//.____ Identification __________________________________________
 
@@ -73,8 +73,10 @@ namespace wg
 		inline bool			isMonospace() override { return m_bMonospace; }
 		inline bool			isMonochrome() override { return m_bMonochrome; }
 
+		inline Surface_p	surface() { return m_pSurface;}
+		
 	protected:
-		BitmapFont( Surface * pSurf, char * pGlyphSpec );
+		BitmapFont( Surface * pSurf, char * pGlyphSpec, Font * pBackupFont );
 		~BitmapFont();
 
 		void _insertGlyphs(Surface* pSurf, const char* pGlyphSpec);
@@ -94,7 +96,8 @@ namespace wg
 			spx			bearingY = 0;			// y offset when rendering the glyph (negated offset to glyph origo)
 		};
 
-
+		Surface_p	m_pSurface;
+		
 		MyGlyph * 	m_glyphTab[256];
 
 		int			m_nKerningGlyphs;

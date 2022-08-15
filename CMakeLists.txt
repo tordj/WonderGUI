@@ -13,6 +13,7 @@ include_directories(
 	framework
 	framework/baselibrary
 	framework/baselibrary/base
+	framework/baselibrary/c-interface
 	framework/baselibrary/components
 	framework/baselibrary/sizebrokers
 	framework/baselibrary/gfxstream
@@ -22,6 +23,8 @@ include_directories(
 	framework/baselibrary/skins/misc
 	framework/baselibrary/skins/state
 	framework/baselibrary/skins/static
+
+	framework/c-abi-wrapper
 
 	framework/gfxdevices/software
 	framework/gfxdevices/opengl
@@ -88,6 +91,7 @@ endfunction()
 
 
 add_subdirectory(framework)
+add_subdirectory(framework/c-abi-wrapper)
 add_subdirectory(framework/gfxdevices/software)
 add_subdirectory(framework/gfxdevices/stream)
 #add_subdirectory(framework/gfxdevices/opengl)

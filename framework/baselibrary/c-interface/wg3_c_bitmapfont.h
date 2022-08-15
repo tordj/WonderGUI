@@ -20,26 +20,23 @@
 
 =========================================================================*/
 
-#include <wg3_cgfxoutstream.h>
-#include <assert.h>
 
-namespace wg
-{
-	const TypeInfo CGfxOutStream::TYPEINFO = { "CGfxOutStream", &Component::TYPEINFO };
+#ifndef WG3_C_BITMAPFONT_DOT_H
+#define WG3_C_BITMAPFONT_DOT_H
+#pragma once
 
-	//____ constructor ________________________________________________________
+#include <wg3_c_font.h>
 
-	CGfxOutStream::CGfxOutStream(CGfxOutStream::Holder * pHolder) :
-		m_pHolder(pHolder)
-	{
-	}
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& CGfxOutStream::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
+wg_obj			wg_createBitmapFont( wg_obj surface, char * pGlyphSpec, wg_obj backupFont );
+wg_obj			wg_getBitmapFontSurface( wg_obj bitmapFont );
 
 
-} // namespace wg
+#ifdef __cplusplus
+}
+#endif
+
+#endif //WG3_C_FREETYPEFONT_DOT_H

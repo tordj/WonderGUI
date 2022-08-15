@@ -830,25 +830,25 @@ enum class CanvasInit 		//. autoExtras
 		SetRenderLayer = 16,
 
 		Fill = 17,
-		FillRectI = 18,
-		FillRectF = 19,
+		FillRect = 18,
+//		FillRectF = 19,
 		PlotPixels = 20,
 		DrawLineFromTo = 21,
 		DrawLineStraight = 22,
 
 		Blit = 23,
-		BlitRectI = 24,
+		BlitRect = 24,
 		FlipBlit = 25,
-		FlipBlitRectI = 26,
+		FlipBlitRect = 26,
 
 		StretchBlit = 27,
-		StretchBlitRectI = 28,
-		StretchBlitRectF = 29,
+		StretchBlitRect = 28,
 
 		StretchFlipBlit = 30,
-		StretchFlipBlitRectI = 31,
-		StretchFlipBlitRectF = 32,
+		StretchFlipBlitRect = 31,
 
+		PrecisionBlit = 29,
+		TransformBlit = 32,
 		RotScaleBlit = 33,
 		Tile = 34,
 		FlipTile = 35,
@@ -878,7 +878,8 @@ enum class CanvasInit 		//. autoExtras
 		DeleteSurface = 52,
 
 		ProtocolVersion = 53,
-		TimeStampMS = 54
+		TimeStampMS = 54,
+		CanvasList = 55
 	};
 
 	typedef uint8_t GfxChunkFlags;

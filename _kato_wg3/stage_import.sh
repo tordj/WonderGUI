@@ -5,9 +5,11 @@ mkdir imports
 cd imports
 mkdir baselibrary
 mkdir baselibrary/base
+mkdir baselibrary/c-interface
 mkdir baselibrary/components
 mkdir baselibrary/skins
 mkdir baselibrary/gfxstream
+mkdir c-abi-wrapper
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
@@ -41,7 +43,6 @@ cp wg_base.* \
    wg_gradient.* \
    wg_gridwalker.* \
    wg_hostbridge.* \
-   wg_internal.* \
    wg_mempool.* \
    wg_memstack.* \
    wg_nullgfxdevice.* \
@@ -64,13 +65,17 @@ cp wg_base.* \
    wg_weakptr.* \
    ../../../../wg2/_kato_wg3/imports/baselibrary/base
 
+cd ../c-interface
+cp * ../../../../wg2/_kato_wg3/imports/baselibrary/c-interface
+
+
 cd ../components
 cp wg_component.* \
    wg_cstaticvector.* \
    wg_cdynamicvector.* \
    wg_canimframes.* \
-   wg_cgfxoutstream.* \
-   wg_cgfxinstream.* \
+   wg_cgfxstreamsink.* \
+   wg_cgfxstreamsource.* \
    ../../../../wg2/_kato_wg3/imports/baselibrary/components
 
 
@@ -80,7 +85,10 @@ cp * ../../../../wg2/_kato_wg3/imports/baselibrary/gfxstream
 cd ../skins
 cp -r * ../../../../wg2/_kato_wg3/imports/baselibrary/skins
 
-cd ../../gfxdevices/opengl
+cd ../../c-abi-wrapper
+cp * ../../../wg2/_kato_wg3/imports/c-abi-wrapper
+
+cd ../gfxdevices/opengl
 cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/opengl
 
 cd ../metal

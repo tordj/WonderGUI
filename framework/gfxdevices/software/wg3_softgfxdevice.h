@@ -66,7 +66,7 @@ namespace wg
 		bool		defineCanvas( CanvasRef ref, SoftSurface * pSurface );
 
 		using GfxDevice::canvas;
-		const CanvasInfo& canvas(CanvasRef ref) const override;
+		const CanvasInfo canvas(CanvasRef ref) const override;
 
 		SurfaceFactory_p	surfaceFactory() override;
 
@@ -89,14 +89,14 @@ namespace wg
 
 		using 	GfxDevice::fill;
 		void	fill(const RectSPX& rect, HiColor col) override;
-		void	fill(const RectF& rect, HiColor col) override;
 
 		void    plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness = 1.f) override;
-		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, float thickness = 1.f) override;
+		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64) override;
+		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, spx thickness = 64) override;
 
 		bool	setBlitSource(Surface * pSource) override;
+		void	transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2]) override;
 		void	rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
 
 		void	tile(const RectSPX& dest, CoordSPX shift = { 0,0 }) override;

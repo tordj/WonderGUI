@@ -53,18 +53,17 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		using GfxDevice::canvas;
-		const CanvasInfo& canvas(CanvasRef ref) const override;
+		const CanvasInfo canvas(CanvasRef ref) const override;
 
 		SurfaceFactory_p		surfaceFactory() override;
 
 		//.____ Rendering ________________________________________________
 
 		void	fill(const RectSPX& rect, HiColor col) override;
-		void	fill(const RectF& rect, HiColor col) override;
 
 		void    plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness) override;
+		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness) override;
 
 
 	protected:

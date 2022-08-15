@@ -74,7 +74,7 @@ namespace wg
 		//.____  Rendering ____________________________________________________
 
 		bool		fill(HiColor col) override;
-		bool		fill(HiColor col, const RectI& region) override;
+		bool		fill(const RectI& region, HiColor col ) override;
 //		bool		copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst) override;
 //		bool		copyFrom(Surface * pSrcSurf, CoordI dst) override;
 

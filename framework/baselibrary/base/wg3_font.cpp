@@ -48,16 +48,6 @@ namespace wg
 		return true;
 	}
 
-    //____ setBackupFont() ______________________________________________________
-
-    bool Font::setBackupFont(Font * pFont)
-    {
-        //TODO: Error handling, make sure we don't get circular recursion.
-
-        m_pBackupFont = pFont;
-        return true;
-    }
-
 	//____ getGlyphAsSurface() ___________________________________________________
 
 	Surface_p Font::getGlyphAsSurface(uint16_t chr, const Surface::Blueprint& _bp, SurfaceFactory * pFactory )
@@ -81,7 +71,7 @@ namespace wg
 			bp.size = pixelRect.size();
 		
 		auto pSurface = pFactory->createSurface(bp);
-		pSurface->copyFrom( glyph.pSurface, pixelRect, {0,0} );
+		pSurface->copy({ 0,0 }, glyph.pSurface, pixelRect );
 		return pSurface;
 	}
 

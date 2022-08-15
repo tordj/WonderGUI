@@ -43,7 +43,6 @@ add_library( wondergui STATIC
 	baselibrary/base/wg3_gridwalker.cpp
 	baselibrary/base/wg3_gridwalker.h
 	baselibrary/base/wg3_hostbridge.h
-	baselibrary/base/wg3_internal.h
 	baselibrary/base/wg3_mempool.cpp
 	baselibrary/base/wg3_mempool.h
 	baselibrary/base/wg3_memstack.cpp
@@ -81,6 +80,48 @@ add_library( wondergui STATIC
 	baselibrary/base/wg3_util.h
 	baselibrary/base/wg3_weakcomponentptr.h
 	baselibrary/base/wg3_weakptr.h
+
+	baselibrary/c-interface/wg3_c_bitmapcache.cpp
+	baselibrary/c-interface/wg3_c_bitmapcache.h
+	baselibrary/c-interface/wg3_c_bitmapfont.cpp
+	baselibrary/c-interface/wg3_c_bitmapfont.h
+	baselibrary/c-interface/wg3_c_callcollection.cpp
+	baselibrary/c-interface/wg3_c_callcollection.h
+	baselibrary/c-interface/wg3_c_canvaslayers.cpp
+	baselibrary/c-interface/wg3_c_canvaslayers.h
+	baselibrary/c-interface/wg3_c_color.cpp
+	baselibrary/c-interface/wg3_c_color.h
+	baselibrary/c-interface/wg3_c_component.cpp
+	baselibrary/c-interface/wg3_c_component.h
+	baselibrary/c-interface/wg3_c_font.cpp
+	baselibrary/c-interface/wg3_c_font.h		
+	baselibrary/c-interface/wg3_c_geo.cpp
+	baselibrary/c-interface/wg3_c_geo.h
+	baselibrary/c-interface/wg3_c_gfxstreambuffer.cpp
+	baselibrary/c-interface/wg3_c_gfxstreambuffer.h
+	baselibrary/c-interface/wg3_c_gfxstreamlogger.cpp
+	baselibrary/c-interface/wg3_c_gfxstreamlogger.h
+	baselibrary/c-interface/wg3_c_gfxstreamplayer.cpp
+	baselibrary/c-interface/wg3_c_gfxstreamplayer.h
+	baselibrary/c-interface/wg3_c_gfxstreampump.cpp
+	baselibrary/c-interface/wg3_c_gfxstreampump.h
+	baselibrary/c-interface/wg3_c_gfxstreamreader.cpp
+	baselibrary/c-interface/wg3_c_gfxstreamreader.h
+	baselibrary/c-interface/wg3_c_gfxstreamsplitter.cpp
+	baselibrary/c-interface/wg3_c_gfxstreamsplitter.h
+	baselibrary/c-interface/wg3_c_gradient.cpp
+	baselibrary/c-interface/wg3_c_gradient.h
+	baselibrary/c-interface/wg3_c_gfxdevice.cpp
+	baselibrary/c-interface/wg3_c_gfxdevice.h
+	baselibrary/c-interface/wg3_c_internal.cpp
+	baselibrary/c-interface/wg3_c_internal.h
+	baselibrary/c-interface/wg3_c_object.cpp
+	baselibrary/c-interface/wg3_c_object.h
+	baselibrary/c-interface/wg3_c_surface.cpp
+	baselibrary/c-interface/wg3_c_surface.h
+	baselibrary/c-interface/wg3_c_surfacefactory.cpp
+	baselibrary/c-interface/wg3_c_surfacefactory.h
+	baselibrary/c-interface/wg3_c_types.h
 
 
 	baselibrary/components/wg3_canimframes.cpp

@@ -81,12 +81,14 @@ namespace wg
 
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
-		m_size = bp.size;
-		m_scale = bp.scale;
-		m_sampleMethod = method;
-		m_bTiling = bp.tiling;
-        m_bCanvas = bp.canvas;
-		m_id = bp.id;
+		m_size			= bp.size;
+		m_scale			= bp.scale;
+		m_sampleMethod	= method;
+		m_bTiling		= bp.tiling;
+        m_bCanvas		= bp.canvas;
+		m_bBuffered		= bp.buffered;
+		m_bDynamic		= bp.dynamic;
+		m_id			= bp.id;
 	}
 
 
@@ -101,6 +103,20 @@ namespace wg
 	const TypeInfo& Surface::typeInfo(void) const
 	{
 		return TYPEINFO;
+	}
+
+	//____ setScale() _________________________________________________________
+
+	void Surface::setScale(int scale)
+	{
+		m_scale = scale;
+	}
+
+	//____ scale() ____________________________________________________________
+
+	int Surface::scale() const
+	{
+		return m_scale;
 	}
 
 	//____ setTiling() ________________________________________________________
@@ -183,7 +199,7 @@ namespace wg
 					((col.b >> m_pixelDescription.B_loss) << m_pixelDescription.B_shift) |
 					((col.a >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
 
-			if( m_pixelDescription.bBigEndian == isSystemBigEndian() )
+			if( m_pixelDescription.bBigEndian != isSystemBigEndian() )
 			{
 
 				if( m_pixelDescription.bits == 16 )
@@ -215,7 +231,7 @@ namespace wg
 		if (m_pixelDescription.bIndexed)
 			return m_pClut[pixel];
 
-		if( m_pixelDescription.bBigEndian == isSystemBigEndian() )
+		if( m_pixelDescription.bBigEndian != isSystemBigEndian() )
 		{
 
 			if( m_pixelDescription.bits == 16 )
@@ -256,9 +272,9 @@ namespace wg
 	 *
 	 **/
 
-	bool Surface::fill( HiColor col )
+	bool Surface::fill( HiColor color )
 	{
-		return fill( col, RectI(0,0,pixelSize()) );
+		return fill(RectI(0, 0, pixelSize()), color );
 	}
 
 	/**
@@ -276,13 +292,13 @@ namespace wg
 	 * pixel value most closely resembling the one specified.
 	 *
 	 **/
-	bool Surface::fill( HiColor col, const RectI& region )
+	bool Surface::fill(const RectI& region, HiColor color  )
 	{
 
 		auto pixbuf = allocPixelBuffer(region);
 
 
-		uint32_t pixel = colorToPixel( col );
+		uint32_t pixel = colorToPixel( color );
 		int w = pixbuf.rect.w;
 		int h = pixbuf.rect.h;
 		int p = pixbuf.pitch;
@@ -419,7 +435,29 @@ namespace wg
 		}
 	}
 
-	//_____ copyFrom() _____________________________________________________________
+	//____ blueprint() ________________________________________________________
+
+	Surface::Blueprint Surface::blueprint() const
+	{
+		Blueprint bp;
+
+		bp.buffered = m_bBuffered;
+		bp.canvas = m_bCanvas;
+		bp.clut = m_pClut;
+		bp.dynamic = m_bDynamic;
+		bp.format = m_pixelDescription.format;
+		bp.id = m_id;
+		bp.mipmap = m_bMipmapped;
+		bp.sampleMethod = m_sampleMethod;
+		bp.scale = m_scale;
+		bp.size = m_size;
+		bp.tiling = m_bTiling;
+
+		return bp;
+	}
+
+
+	//_____ copy() _____________________________________________________________
 	/**
 	 * Copy the content of the specified surface to given coordinate of this surface
 	 *
@@ -435,12 +473,12 @@ namespace wg
 	 *
 	 * @return True if successful, otherwise false.
 	 **/
-	bool Surface::copyFrom( Surface * pSrcSurface, CoordI dst )
+	bool Surface::copy(CoordI dest, Surface * pSrcSurface )
 	{
 		if( !pSrcSurface )
 			return false;
 
-		return copyFrom( pSrcSurface, RectI(0,0,pSrcSurface->pixelSize()), dst );
+		return copy( dest, pSrcSurface, RectI(0,0,pSrcSurface->pixelSize()) );
 	}
 
 	/**
@@ -459,9 +497,9 @@ namespace wg
 	 *
 	 * @return True if successful, otherwise false.
 	 **/
-	bool Surface::copyFrom( Surface * pSrcSurface, const RectI& _srcRect, CoordI _dst )
+	bool Surface::copy(CoordI _dest, Surface * pSrcSurface, const RectI& _srcRect )
 	{
-		if( !pSrcSurface || pSrcSurface->m_pixelDescription.format == PixelFormat::Undefined || m_pixelDescription.format == PixelFormat::Undefined )
+		if( !pSrcSurface || pSrcSurface->pixelFormat() == PixelFormat::Undefined || m_pixelDescription.format == PixelFormat::Undefined )
 			return false;
 
 
@@ -473,7 +511,7 @@ namespace wg
 		}
 
 
-		bool retVal = _copyFrom(pSrcSurface->pixelDescription(), srcbuf.pPixels, srcbuf.pitch, { 0,0,_srcRect.size() }, { _dst, _srcRect.size() }, srcbuf.pClut);
+		bool retVal = _copy({ _dest, _srcRect.size() }, pSrcSurface->pixelDescription(), srcbuf.pPixels, srcbuf.pitch, { 0,0,_srcRect.size() }, srcbuf.pClut);
 
 		pSrcSurface->freePixelBuffer(srcbuf);
 
@@ -482,7 +520,7 @@ namespace wg
 	}
 
 
-	//____ _copyFrom() _________________________________________________________
+	//____ _copy() _________________________________________________________
 
 	/*
 		Copying to I8 is only allowed from other I8 content. No color conversion is then performed, CLUTs are assumed to be identical.
@@ -490,15 +528,15 @@ namespace wg
 	*/
 
 
-	bool Surface::_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color8 * pCLUT )
+	bool Surface::_copy( const RectI& destRect, const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const Color8 * pCLUT )
 	{
 		//TODO: Support endian-swap.
 
 
-		if( srcRect.w <= 0 || dstRect.w <= 0 )
+		if( srcRect.w <= 0 || destRect.w <= 0 )
 			return false;
 
-		auto pixbuf = allocPixelBuffer(dstRect);
+		auto pixbuf = allocPixelBuffer(destRect);
 
 
 		const PixelDescription * pDstFormat 	= &m_pixelDescription;

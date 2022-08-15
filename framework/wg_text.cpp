@@ -1500,7 +1500,7 @@ int WgText::_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextL
 
 					wg::Glyph hyphen;
 					pen.GetFont()->getGlyphWithoutBitmap( '-', hyphen );
-                    if( !hyphen.pFont || (pen.GetPosX() + hyphen.advance/64) > maxWidth )
+                    if( !hyphen.fontRef || (pen.GetPosX() + hyphen.advance/64) > maxWidth )
 						break;			// Can't break here, hyphen wouldn't fit on line.
 				}
 

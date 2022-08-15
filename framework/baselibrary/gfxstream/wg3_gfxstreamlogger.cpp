@@ -256,22 +256,9 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::FillRectI:
+			case GfxChunkId::FillRect:
 			{
-				RectI	rect;
-				HiColor	col;
-
-				*m_pDecoder >> rect;
-				*m_pDecoder >> col;
-
-				_printRect( "    dest       ", rect );
-				_printColor( "    color      ", col );
-				break;
-			}
-
-			case GfxChunkId::FillRectF:
-			{
-				RectF	rect;
+				RectSPX	rect;
 				HiColor	col;
 
 				*m_pDecoder >> rect;
@@ -292,10 +279,10 @@ namespace wg
 
 			case GfxChunkId::DrawLineFromTo:
 			{
-				CoordI	begin;
-				CoordI	end;
-				HiColor	color;
-				float	thickness;
+				CoordSPX	begin;
+				CoordSPX	end;
+				HiColor		color;
+				float		thickness;
 
 				*m_pDecoder >> begin;
 				*m_pDecoder >> end;
@@ -313,11 +300,11 @@ namespace wg
 
 			case GfxChunkId::DrawLineStraight:
 			{
-				CoordI		begin;
+				CoordSPX	begin;
 				Direction	dir;
-				int			length;
+				spx			length;
 				HiColor		color;
-				float		thickness;
+				spx			thickness;
 
 				*m_pDecoder >> begin;
 				*m_pDecoder >> dir;
@@ -336,7 +323,7 @@ namespace wg
 
 			case GfxChunkId::Blit:
 			{
-				CoordI		dest;
+				CoordSPX	dest;
 
 				*m_pDecoder >> dest;
 
@@ -344,10 +331,10 @@ namespace wg
 				break;
 			}
 				
-			case GfxChunkId::BlitRectI:
+			case GfxChunkId::BlitRect:
 			{
-				CoordI		dest;
-				RectI		source;
+				CoordSPX	dest;
+				RectSPX		source;
 
 				*m_pDecoder >> dest;
 				*m_pDecoder >> source;
@@ -359,7 +346,7 @@ namespace wg
 
 			case GfxChunkId::FlipBlit:
 			{
-				CoordI		dest;
+				CoordSPX	dest;
 				GfxFlip		flip;
 
 				*m_pDecoder >> dest;
@@ -371,10 +358,10 @@ namespace wg
 				break;
 			}
 				
-			case GfxChunkId::FlipBlitRectI:
+			case GfxChunkId::FlipBlitRect:
 			{
-				CoordI		dest;
-				RectI		source;
+				CoordSPX	dest;
+				RectSPX		source;
 				GfxFlip		flip;
 
 				*m_pDecoder >> dest;
@@ -389,7 +376,7 @@ namespace wg
 
 			case GfxChunkId::StretchBlit:
 			{
-				CoordI		dest;
+				CoordSPX	dest;
 
 				*m_pDecoder >> dest;
 
@@ -397,23 +384,10 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::StretchBlitRectI:
+			case GfxChunkId::StretchBlitRect:
 			{
-				CoordI		dest;
-				RectF		source;
-
-				*m_pDecoder >> dest;
-				*m_pDecoder >> source;
-
-				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
-				_printRect( "    source     ", source );
-				break;
-			}
-
-			case GfxChunkId::StretchBlitRectF:
-			{
-				CoordI		dest;
-				RectF		source;
+				CoordSPX	dest;
+				RectSPX		source;
 
 				*m_pDecoder >> dest;
 				*m_pDecoder >> source;
@@ -425,7 +399,7 @@ namespace wg
 
 			case GfxChunkId::StretchFlipBlit:
 			{
-				CoordI		dest;
+				CoordSPX	dest;
 				GfxFlip		flip;
 
 				*m_pDecoder >> dest;
@@ -436,10 +410,10 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::StretchFlipBlitRectI:
+			case GfxChunkId::StretchFlipBlitRect:
 			{
-				CoordI		dest;
-				RectF		source;
+				CoordSPX	dest;
+				RectSPX		source;
 				GfxFlip		flip;
 
 				*m_pDecoder >> dest;
@@ -452,25 +426,42 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::StretchFlipBlitRectF:
+			case GfxChunkId::PrecisionBlit:
 			{
-				CoordI		dest;
+				RectSPX		dest;
 				RectF		source;
-				GfxFlip		flip;
 
 				*m_pDecoder >> dest;
 				*m_pDecoder >> source;
-				*m_pDecoder >> flip;
 
-				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
-				_printRect( "    source     ", source );
-				m_charStream << "    flip        = " << toString(flip) << std::endl;
+				_printRect(     "    dest       ", source );
+				_printRect(     "    source     ", source );
 				break;
 			}
+					
+			case GfxChunkId::TransformBlit:
+			{
+				RectSPX		dest;
+				CoordF		source;
+				float		transform[2][2];
 
+				*m_pDecoder >> dest;
+				*m_pDecoder >> source;
+				*m_pDecoder >> transform[0][0];
+				*m_pDecoder >> transform[0][1];
+				*m_pDecoder >> transform[1][0];
+				*m_pDecoder >> transform[1][1];
+
+				_printRect(     "    dest       ", source );
+				m_charStream << "    source      = " << source.x << ", " << source.y << std::endl;
+				m_charStream << "    transform   = [" << transform[0][0] << ", " << transform[0][1] << "]" << std::endl;
+				m_charStream << "                  [" << transform[1][0] << ", " << transform[1][1] << "]" << std::endl;
+				break;
+			}
+				
 			case GfxChunkId::RotScaleBlit:
 			{
-				RectI		dest;
+				RectSPX		dest;
 				float		rotationDegrees;
 				float		scale;
 				CoordF		srcCenter;
@@ -493,8 +484,8 @@ namespace wg
 
 			case GfxChunkId::Tile:
 			{
-				RectI		dest;
-				CoordI		shift;
+				RectSPX		dest;
+				CoordSPX	shift;
 				
 				*m_pDecoder >> dest;
 				*m_pDecoder >> shift;
@@ -506,9 +497,9 @@ namespace wg
 
 			case GfxChunkId::FlipTile:
 			{
-				RectI		dest;
+				RectSPX		dest;
 				GfxFlip		flip;
-				CoordI		shift;
+				CoordSPX	shift;
 				
 				*m_pDecoder >> dest;
 				*m_pDecoder >> flip;
@@ -522,9 +513,9 @@ namespace wg
 
 			case GfxChunkId::ScaleTile:
 			{
-				RectI		dest;
+				RectSPX		dest;
 				float		scale;
-				CoordI		shift;
+				CoordSPX	shift;
 				
 				*m_pDecoder >> dest;
 				*m_pDecoder >> scale;
@@ -538,10 +529,10 @@ namespace wg
 
 			case GfxChunkId::ScaleFlipTile:
 			{
-				RectI		dest;
+				RectSPX		dest;
 				float		scale;
 				GfxFlip		flip;
-				CoordI		shift;
+				CoordSPX	shift;
 				
 				*m_pDecoder >> dest;
 				*m_pDecoder >> scale;
@@ -596,7 +587,7 @@ namespace wg
 				float sliceSizes[32];
 				HiColor sliceColors[32];
 				
-				RectI 	canvas;
+				RectSPX	canvas;
 				float 	start;
 				int 	nSlices;
 				float 	hubSize;
@@ -650,8 +641,8 @@ namespace wg
 				
 			case GfxChunkId::BlitNinePatch:
 			{
-				RectI 		dstRect;
-				BorderI 	dstFrame;
+				RectSPX		dstRect;
+				BorderSPX 	dstFrame;
 				NinePatch 	patch;
 				int			scale;
 					

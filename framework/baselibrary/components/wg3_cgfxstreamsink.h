@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG3_CGFXOUTSTREAM_DOT_H
-#define	WG3_CGFXOUTSTREAM_DOT_H
+#ifndef	WG3_CGFXSTREAMSINK_DOT_H
+#define	WG3_CGFXSTREAMSINK_DOT_H
 #pragma once
 
 #include <wg3_component.h>
@@ -33,14 +33,14 @@
 namespace wg
 {
 
-	class CGfxOutStream;
-	typedef	StrongComponentPtr<CGfxOutStream>	CGfxOutStream_p;
-	typedef	WeakComponentPtr<CGfxOutStream>		CGfxOutStream_wp;
+	class CGfxStreamSink;
+	typedef	StrongComponentPtr<CGfxStreamSink>	CGfxStreamSink_p;
+	typedef	WeakComponentPtr<CGfxStreamSink>	CGfxStreamSink_wp;
 
 
-	//____ CGfxOutStream __________________________________________________________
+	//____ CGfxStreamSink __________________________________________________________
 
-	class CGfxOutStream : public Component, public GfxStream
+	class CGfxStreamSink : public Component, public GfxStream
 	{
 	public:
 
@@ -55,7 +55,7 @@ namespace wg
 			virtual void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) = 0;
 		};
 
-		CGfxOutStream(Holder * pHolder);
+		CGfxStreamSink(Holder * pHolder);
 
 		//.____ Identification _________________________________________________
 
@@ -68,7 +68,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline CGfxOutStream_p	ptr() { return CGfxOutStream_p(this); }
+		inline CGfxStreamSink_p	ptr() { return CGfxStreamSink_p(this); }
 
 	protected:
 		Object *				_object() override { return m_pHolder->_object(); }
@@ -79,4 +79,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG3_CGFXOUTSTREAM_DOT_H
+#endif //WG3_CGFXSTREAMSINK_DOT_H

@@ -20,18 +20,38 @@
 
 =========================================================================*/
 
-#include <wg3_cgfxinstream.h>
+#include <wg3_c_gfxstreamreader.h>
+#include <wg3_gfxstreamreader.h>
 
-namespace wg
+using namespace wg;
+
+inline GfxStreamReader* getPtr(wg_obj obj) {
+	return static_cast<GfxStreamReader*>(reinterpret_cast<Object*>(obj));
+}
+
+wg_obj wg_createStreamReader(wg_readStream_func callback)
 {
-	const TypeInfo CGfxInStream::TYPEINFO = { "CGfxInStream", &Component::TYPEINFO };
+	auto p = GfxStreamReader::create(callback);
+	p->retain();
+	return p.rawPtr();
+}
 
-	//____ typeInfo() _________________________________________________________
+wg_component wg_getStreamReaderOutput(wg_obj streamReader)
+{
+	return static_cast<Component*>(&getPtr(streamReader)->output);
+}
 
-	const TypeInfo& CGfxInStream::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
+int wg_streamReaderCapacity(wg_obj streamReader)
+{
+	return getPtr(streamReader)->bufferCapacity();
+}
 
+int wg_streamReaderHasChunk(wg_obj streamReader)
+{
+	return getPtr(streamReader)->chunkInBuffer();
+}
 
-} // namespace wg
+int wg_streamReaderBytes(wg_obj streamReader)
+{
+	return getPtr(streamReader)->bytesInBuffer();
+}

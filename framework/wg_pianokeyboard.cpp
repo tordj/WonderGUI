@@ -451,7 +451,7 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
 
 				float srcOfsY = float(m_stateOfsY[pKey->state] * m_blackKeySourceHeight);
 
-				pDevice->stretchBlit((dst + canvas.pos()) * 64, wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
+				pDevice->precisionBlit((dst + canvas.pos()) * 64, wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 			}
 
             pKey++;
@@ -495,7 +495,7 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
 
 		float srcOfsY = float(m_stateOfsY[pKey->state] * m_keyboardSourceSize.h);
 
-		pDevice->stretchBlit((dst + canvas.pos()) * 64, wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
+		pDevice->precisionBlit((dst + canvas.pos()) * 64, wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 
 		if (bForward)
 		{

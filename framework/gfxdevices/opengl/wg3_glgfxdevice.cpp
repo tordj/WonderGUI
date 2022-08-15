@@ -159,8 +159,13 @@ namespace wg
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
 		glGetIntegerv(GL_MINOR_VERSION, &minor);
 
-		bool m_bProgramBinariesSupported = ((major == 4 && minor >= 1) || major > 4);
-
+		if((major == 4 && minor >= 1) || major > 4)
+		{
+			GLint formats = 0;
+			glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &formats);
+			m_bProgramBinariesSupported = (formats >= 1);
+		}
+		
 		//
 
 		m_bFullyInitialized = true;
@@ -423,7 +428,7 @@ namespace wg
 
 	//____ canvas() ___________________________________________________________
 
-	const CanvasInfo& GlGfxDevice::canvas(CanvasRef ref) const
+	const CanvasInfo GlGfxDevice::canvas(CanvasRef ref) const
 	{
 		if (ref == CanvasRef::Default)
 			return m_defaultCanvas;
@@ -1072,110 +1077,6 @@ namespace wg
 		}
 	}
 
-	//____ fill() ____ [subpixel] __________________________________________________
-
-	void GlGfxDevice::fill(const RectF& rect, HiColor col)
-	{
-		// Skip calls that won't affect destination
-
-		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
-			return;
-
-		// Create our outer rectangle
-
-		RectI outerRect( (int) rect.x, (int) rect.y, ((int) (rect.x+rect.w+0.999f)) - (int) rect.x, ((int) (rect.y + rect.h + 0.999f)) - (int) rect.y );
-
-
-		RectI clip = RectI::getIntersection(outerRect, m_clipBounds/64);
-		if (clip.w == 0 || clip.h == 0)
-			return;
-
-		//
-
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
-		{
-			_endCommand();
-			_executeBuffer();
-			_beginDrawCommand(Command::FillSubPixel);
-		}
-		else if (m_cmd != Command::FillSubPixel)
-		{
-			_endCommand();
-			_beginDrawCommand(Command::FillSubPixel);
-		}
-
-		for (int i = 0; i < m_nClipRects; i++)
-		{
-			RectI patch = RectI::getIntersection(m_pClipRects[i]/64, outerRect);
-			if (patch.w > 0 && patch.h > 0)
-			{
-				int	dx1 = patch.x;
-				int	dy1 = patch.y;
-				int dx2 = patch.x + patch.w;
-				int dy2 = patch.y + patch.h;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-
-				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
-				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
-				m_vertexBufferData[m_vertexOfs].canvasInfoOfs = m_canvasInfoOfs / 4;
-				m_vertexBufferData[m_vertexOfs].tintInfoOfs = m_tintInfoOfs / 4;
-				m_vertexOfs++;
-			}
-		}
-
-		// Provide color	
-
-		m_extrasBufferData[m_extrasOfs++] = col.r / 4096.f;
-		m_extrasBufferData[m_extrasOfs++] = col.g / 4096.f;
-		m_extrasBufferData[m_extrasOfs++] = col.b / 4096.f;
-		m_extrasBufferData[m_extrasOfs++] = col.a / 4096.f;
-
-		// Provide rectangle center and radius
-
-		SizeF	radius(rect.w / 2, rect.h / 2);
-		CoordF	center(rect.x + radius.w, rect.y + radius.h);
-
-		m_extrasBufferData[m_extrasOfs++] = center.x;
-		m_extrasBufferData[m_extrasOfs++] = center.y;
-		m_extrasBufferData[m_extrasOfs++] = radius.w;
-		m_extrasBufferData[m_extrasOfs++] = radius.h;
-	}
-
 	//____ plotPixels() ______________________________________________________
 
 	void GlGfxDevice::plotPixels(int nPixels, const CoordSPX * pCoords, const HiColor * pColors)
@@ -1230,8 +1131,10 @@ namespace wg
 
 	//____ drawLine() ____ [from/to] __________________________________________________
 
-	void GlGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness)
+	void GlGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx _thickness)
 	{
+		float thickness = _thickness / 64.f;
+
 		//TODO: Proper 26:6 support
 		begin = roundToPixels(begin);
 		end = roundToPixels(end);
@@ -1370,8 +1273,10 @@ namespace wg
 
 	//____ drawLine() ____ [start/direction] __________________________________________________
 
-	void GlGfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, float thickness)
+	void GlGfxDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx _thickness)
 	{
+		float thickness = _thickness / 64.f;
+
 		//TODO: Proper 26:6 support
 		begin = roundToPixels(begin);
 		length = roundToPixels(length);
@@ -2091,30 +1996,30 @@ namespace wg
 				if (edgeIn > edgeOut)
 					std::swap(edgeIn, edgeOut);
 
-				float increment = edgeOut == edgeIn ? 100.f : 256.f / (edgeOut - edgeIn);
+				float increment = edgeOut == edgeIn ? 100.f : 64.f / (edgeOut - edgeIn);
 				float beginAdder;
 				float endAdder;
 
-				if ((edgeOut & 0xFFFFFF00) <= (unsigned int) edgeIn)
+				if ((edgeOut & 0xFFFFFFC0) <= (unsigned int) edgeIn)
 				{
-					float firstPixelCoverage = ((256 - (edgeOut & 0xFF)) + (edgeOut - edgeIn) / 2) / 256.f;
+					float firstPixelCoverage = ((64 - (edgeOut & 0x3F)) + (edgeOut - edgeIn) / 2) / 64.f;
 
-					beginAdder = increment * (edgeIn & 0xFF)/256.f + firstPixelCoverage;
+					beginAdder = increment * (edgeIn & 0x3F)/64.f + firstPixelCoverage;
 					endAdder = beginAdder;
 				}
 				else
 				{
-					int height = 256 - (edgeIn & 0xFF);
+					int height = 64 - (edgeIn & 0x3F);
 					int width = (int)(increment * height);
-					float firstPixelCoverage = (height * width) / (2 * 65536.f);
-					float lastPixelCoverage = 1.f - (edgeOut & 0xFF)*increment*(edgeOut & 0xFF) / (2*65536.f);
+					float firstPixelCoverage = (height * width) / (2 * 4096.f);
+					float lastPixelCoverage = 1.f - (edgeOut & 0x3F)*increment*(edgeOut & 0x3F) / (2*4096.f);
 
-					beginAdder = increment * (edgeIn & 0xFF) / 256.f + firstPixelCoverage;
-					endAdder = lastPixelCoverage - (1.f - (edgeOut & 0xFF)*increment / 256.f);
+					beginAdder = increment * (edgeIn & 0x3F) / 64.f + firstPixelCoverage;
+					endAdder = lastPixelCoverage - (1.f - (edgeOut & 0x3F)*increment / 64.f);
 // 					endAdder = lastPixelCoverage - ((edgeOut & 0xFFFFFF00)-edgeIn)*increment / 256.f;
 				}
 
-				*pExtras++ = edgeIn/256.f;					// Segment begin pixel
+				*pExtras++ = edgeIn/64.f;					// Segment begin pixel
 				*pExtras++ = increment;						// Segment increment
 				*pExtras++ = beginAdder;					// Segment begin adder
 				*pExtras++ = endAdder;						// Segment end adder

@@ -60,7 +60,7 @@ namespace wg
 
 	//____ canvas() ___________________________________________________________
 
-	const CanvasInfo& NullGfxDevice::canvas(CanvasRef ref) const
+	const CanvasInfo NullGfxDevice::canvas(CanvasRef ref) const
 	{
 		return m_dummyCanvas;
 	}
@@ -85,15 +85,11 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::fill(const RectF& rect, HiColor col)
-	{
-	}
-
 	void NullGfxDevice::plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors)
 	{
 	}
 
-	void NullGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, float thickness)
+	void NullGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness)
 	{
 	}
 

@@ -78,7 +78,7 @@ public:
 	void					SetTab( int width ) { m_tabWidth = width; }
 	bool					SetChar( Uint32 chr );
 	void					FlushChar() { m_glyph = m_dummyGlyph; m_dummyGlyph.advance = 0; }
-    void					ApplyKerning() { if( m_glyph.pFont && m_glyph.pFont == m_prevGlyph.pFont ) m_pos.x += (m_pFont->kerning( m_prevGlyph, m_glyph)+32)/64; }
+    void					ApplyKerning() { if( m_glyph.fontRef && m_glyph.fontRef == m_prevGlyph.fontRef ) m_pos.x += (m_pFont->kerning( m_prevGlyph, m_glyph)+32)/64; }
 
     inline void				AdvancePos() { m_pos.x += m_glyph.advance/64; }							///< Advances position past current character.
     inline void				AdvancePosMonospaced() { m_pos.x += m_pFont->maxAdvance()/64; }	///< Advances position past current character using monospace spacing.

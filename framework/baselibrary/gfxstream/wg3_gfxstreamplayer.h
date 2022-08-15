@@ -26,7 +26,7 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 #include <wg3_object.h>
 #include <wg3_gfxstream.h>
-#include <wg3_cgfxoutstream.h>
+#include <wg3_cgfxstreamsink.h>
 #include <wg3_gfxstreamdecoder.h>
 #include <wg3_gfxdevice.h>
 #include <wg3_patches.h>
@@ -41,7 +41,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamPlayer>	GfxStreamPlayer_p;
 	typedef	WeakPtr<GfxStreamPlayer>	GfxStreamPlayer_wp;
 
-	class GfxStreamPlayer : public Object, protected CGfxOutStream::Holder
+	class GfxStreamPlayer : public Object, protected CGfxStreamSink::Holder
 	{
 	public:
 
@@ -51,7 +51,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxOutStream		input;
+		CGfxStreamSink		input;
 
 		//.____ Identification __________________________________________
 
@@ -66,6 +66,8 @@ namespace wg
 		std::tuple<int, const RectI*> dirtyRects(CanvasRef canvas);
 		void	clearDirtyRects();
 
+		void	setCanvasInfoCallback( std::function<void(const CanvasInfo * pBegin, const CanvasInfo * pEnd)>& callback );
+		
 	protected:
 		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();
@@ -157,6 +159,8 @@ namespace wg
 		bool				m_bStoreDirtyRects = false;
 		int					m_maxDirtyRects = 64;
 		PatchesSPX			m_dirtyRects[CanvasRef_size];
+		
+		std::function<void(const CanvasInfo * pBegin, const CanvasInfo * pEnd)>	m_canvasInfoCallback;
 	};
 
 }

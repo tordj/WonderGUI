@@ -30,7 +30,7 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	GfxStreamEncoder::GfxStreamEncoder(CGfxOutStream* pStream, int bufferBytes)
+	GfxStreamEncoder::GfxStreamEncoder(CGfxStreamSink* pStream, int bufferBytes)
 	{
 		m_pStream = pStream;
 
@@ -56,7 +56,7 @@ namespace wg
 
 	//____ setStream() ________________________________________________________
 
-	void GfxStreamEncoder::setStream(CGfxOutStream* pStream)
+	void GfxStreamEncoder::setStream(CGfxStreamSink* pStream)
 	{
 		m_pStream = pStream;
 	}

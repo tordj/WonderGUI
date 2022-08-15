@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG3_CGFXINSTREAM_DOT_H
-#define	WG3_CGFXINSTREAM_DOT_H
+#ifndef	WG3_CGFXSTREAMSOURCE_DOT_H
+#define	WG3_CGFXSTREAMSOURCE_DOT_H
 #pragma once
 
 #include <wg3_component.h>
@@ -34,14 +34,14 @@
 namespace wg
 {
 
-	class CGfxInStream;
-	typedef	StrongComponentPtr<CGfxInStream>	CGfxInStream_p;
-	typedef	WeakComponentPtr<CGfxInStream>		CGfxInStream_wp;
+	class CGfxStreamSource;
+	typedef	StrongComponentPtr<CGfxStreamSource>	CGfxStreamSource_p;
+	typedef	WeakComponentPtr<CGfxStreamSource>		CGfxStreamSource_wp;
 
 
-	//____ CGfxInStream ________________________________________________________
+	//____ CGfxStreamSource ________________________________________________________
 
-	class CGfxInStream : public Component
+	class CGfxStreamSource : public Component
 	{
 	public:
 
@@ -63,7 +63,7 @@ namespace wg
 		};
 
 
-		CGfxInStream(Holder * pHolder) : m_pHolder(pHolder) {};
+		CGfxStreamSource(Holder * pHolder) : m_pHolder(pHolder) {};
 
 		//.____ Identification _________________________________________________
 
@@ -80,7 +80,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline CGfxInStream_p	ptr() { return CGfxInStream_p(this); }
+		inline CGfxStreamSource_p	ptr() { return CGfxStreamSource_p(this); }
 
 	protected:
 		Object *		_object() override { return m_pHolder->_object(); }
@@ -91,5 +91,5 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG3_CGFXINSTREAM_DOT_H
+#endif //WG3_CGFXSTREAMSOURCE_DOT_H
 #pragma once

@@ -294,7 +294,7 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 	wg::Glyph ellipsis;
 	pen.GetFont()->getGlyphWithBitmap( int(WgExtChar::Ellipsis), ellipsis );
 
-	if( !ellipsis.pFont )
+	if( !ellipsis.fontRef )
 	{
 		pen.GetFont()->getGlyphWithBitmap( '.', ellipsis );
 		ellipsisChar = '.';

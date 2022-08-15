@@ -31,6 +31,7 @@
 #include <initializer_list>
 #include <utility>
 #include <functional>
+#include <vector>
 
 namespace wg
 {
@@ -85,9 +86,41 @@ namespace wg
 		friend class GfxDevice;
 		
 	public:
-		//.____ Creation __________________________________________
 
-		static CanvasLayers_p	create(const std::initializer_list<PixelFormat>& extraLayers);
+		//.____ Blueprint _________________________________________
+
+		struct LayerBP
+		{
+			LayerBP() {}
+			LayerBP(PixelFormat format) : format(format) {}
+			LayerBP(PixelFormat format, const std::function<void(GfxDevice* pDevice)>& blendFunc,
+				const std::function<void(GfxDevice* pDevice)>& clearFunc = nullptr,
+				const std::function<void(GfxDevice* pDevice)>& preBlendFunc = nullptr,
+				const std::function<void(GfxDevice* pDevice)>& preBlendCanvasFunc = nullptr)
+				: format(format), blendFunc(blendFunc), clearFunc(clearFunc), preBlendFunc(preBlendFunc), preBlendCanvasFunc(preBlendCanvasFunc) {}
+
+
+			PixelFormat format = PixelFormat::BGRA_8;
+
+			std::function<void(GfxDevice* pDevice)> blendFunc = nullptr;
+			std::function<void(GfxDevice* pDevice)> clearFunc = nullptr;
+			std::function<void(GfxDevice* pDevice)> preBlendCanvasFunc = nullptr;
+			std::function<void(GfxDevice* pDevice)> preBlendFunc = nullptr;
+		};
+
+		struct Blueprint
+		{
+			int						baseLayer = 0;
+
+			std::function<void(GfxDevice* pDevice)>  clearCanvasFunc = nullptr;
+			std::function<void(GfxDevice* pDevice)>  finalizeCanvasFunc = nullptr;
+
+			std::vector<LayerBP>	layers;
+		};
+
+		//.____ Creation ______________________________________________________
+
+		static CanvasLayers_p	create(const Blueprint& blueprint);
 
 		//.____ Identification _________________________________________________
 
@@ -96,59 +129,34 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline int				size() const { return m_nbLayers; }
+		inline int				size() const { return m_layers.size(); }
 
 		PixelFormat				layerFormat(int layer) const;
-
-		void					setDefaultLayer(int layer);
-		inline int				defaultLayer() const { return m_defaultLayer;  }
-
-        void                    setLayerInitializer(int layer, const std::function<void(GfxDevice*)>& func);
-        void                    setLayerFinalizer(int layer, const std::function<void(GfxDevice*)>& func);
-        void                    setLayerBlender(int layer, const std::function<void(GfxDevice*)>& func);
-
-        void                    setCanvasInitializer(const std::function<void(GfxDevice*)>& func);
-        void                    setCanvasFinalizer(const std::function<void(GfxDevice*)>& func);
-        
-        void                    setCanvasModifier(int beforeLayer, const std::function<void(GfxDevice*)>& func);
+		inline int				baseLayer() const { return m_baseLayer;  }
 
 
 	protected:
-		CanvasLayers(const std::initializer_list<PixelFormat>& extraLayers);
+		CanvasLayers(const Blueprint& bp);
 
 		const static int	    c_maxLayers = 16;
 
 		inline PixelFormat      _layerFormat(int i) const { return m_layers[i-1].format; }
-        inline const std::function<void(GfxDevice * pDevice)>& _layerInitializer(int i) const { return m_layers[i-1].initializer; }
-        inline const std::function<void(GfxDevice * pDevice)>& _layerFinalizer(int i) const { return m_layers[i-1].finalizer; }
-        inline const std::function<void(GfxDevice * pDevice)>& _layerBlender(int i) const { return m_layers[i-1].blender; }
+        inline const std::function<void(GfxDevice * pDevice)>& _layerClearFunc(int i) const { return m_layers[i-1].clearFunc; }
+        inline const std::function<void(GfxDevice * pDevice)>& _layerPreBlendFunc(int i) const { return m_layers[i-1].preBlendFunc; }
+        inline const std::function<void(GfxDevice * pDevice)>& _layerBlendFunc(int i) const { return m_layers[i-1].blendFunc; }
 
-        inline const std::function<void(GfxDevice * pDevice)>& _canvasInitializer() const { return m_canvasInitializer; }
-        inline const std::function<void(GfxDevice * pDevice)>& _canvasFinalizer() const { return m_canvasFinalizer; }
+        inline const std::function<void(GfxDevice * pDevice)>& _canvasClearFunc() const { return m_clearCanvasFunc; }
+        inline const std::function<void(GfxDevice * pDevice)>& _canvasFinalizeFunc() const { return m_finalizeCanvasFunc; }
 
-        inline const std::function<void(GfxDevice * pDevice)>& _canvasModifier(int i) const { return m_canvasModifiers[i-1]; }
+        inline const std::function<void(GfxDevice * pDevice)>& _canvasModifier(int i) const { return m_layers[i-1].preBlendCanvasFunc; }
 
 
 
-        struct LayerSpec
-        {
-            PixelFormat format;
-            
-            std::function<void(GfxDevice * pDevice)>  initializer = nullptr;
-            std::function<void(GfxDevice * pDevice)>  finalizer = nullptr;
-            std::function<void(GfxDevice * pDevice)>  blender = nullptr;
-        };
-
-        int             m_defaultLayer = 0;                // 0 Means that the base layer (= canvas surface) is default.
+        int						m_baseLayer = 0;                // 0 Means that the canvas surface is the base layer.
+		std::vector<LayerBP>	m_layers;
         
-        int             m_nbLayers;
-        LayerSpec       m_layers[c_maxLayers];
-
-        
-        std::function<void(GfxDevice * pDevice)>  m_canvasInitializer = nullptr;
-        std::function<void(GfxDevice * pDevice)>  m_canvasFinalizer = nullptr;
-
-        std::function<void(GfxDevice * pDevice)>  m_canvasModifiers[c_maxLayers];
+        std::function<void(GfxDevice * pDevice)>  m_clearCanvasFunc = nullptr;
+        std::function<void(GfxDevice * pDevice)>  m_finalizeCanvasFunc = nullptr;
         
     };
 

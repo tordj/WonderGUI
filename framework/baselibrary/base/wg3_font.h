@@ -34,16 +34,13 @@ namespace wg
 
 	class	Font;
 
-
-
-
 	//____ Glyph Info _________________________________________________________
 
 	struct Glyph
 	{
 		spx			advance = 0;			// Set to zero if glyph do not exist.
 		uint32_t	kerningIndex = 0;		//
-		Font*		pFont = nullptr;			//
+		void*		fontRef = nullptr;		// Needed for kerning in backup font.
 
 		// These below are not updated by getGlyphWithoutBitmap().
 
@@ -100,13 +97,12 @@ namespace wg
 		virtual bool			isMonospace() = 0;				///@brief Check if font is monospaced.
 		virtual bool			isMonochrome();					///@brief Check if font is monochrome or multi-colored.
 
-        bool                    setBackupFont(Font * pFont);    ///@brief Font used when glyph can't be found in our font.
         inline Font_p           backupFont() const;             ///@brief Font used when glyph can't be found in our font.
 
 		Surface_p				getGlyphAsSurface(uint16_t chr, const Surface::Blueprint& blueprint = Surface::Blueprint() , SurfaceFactory * pFactory = nullptr );
 
 	protected:
-		Font() {}
+		Font( Font * pBackupFont ) : m_pBackupFont(pBackupFont) {}
 		virtual ~Font() {}
 
         Font_p         m_pBackupFont;
