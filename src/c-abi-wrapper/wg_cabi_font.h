@@ -41,10 +41,6 @@ namespace wg
 	public:
 
 
-		//.____ Creation __________________________________________
-
-		static CABIFont_p	create( wg_obj cFont ) { return CABIFont_p(new CABIFont(cFont)); }
-
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
@@ -56,7 +52,6 @@ namespace wg
 		spx			size() override;
 
 		void		getGlyphWithoutBitmap(uint16_t chr, Glyph& glyph) override;
-		void		getGlyphWithBitmap(uint16_t chr, Glyph& glyph) override;
 		spx			kerning(Glyph& leftGlyph, Glyph& rightGlyph) override;
 
 		spx			lineGap() override;

@@ -56,6 +56,7 @@ extern "C" {
 	};
 
 
+
 	//____ Misc _______________________________________________________
 
 	const wg_typeInfo*		wg_deviceSurfaceType(wg_obj device);

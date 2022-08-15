@@ -21,10 +21,9 @@
 =========================================================================*/
 
 
+#include <wg_cabi.h>
 #include <wg_cabi_font.h>
 #include <wg_cabi_surface.h>
-#include <wg_c_object.h>
-#include <wg_c_font.h>
 
 namespace wg
 {
@@ -36,14 +35,14 @@ namespace wg
 
 	CABIFont::CABIFont( wg_obj cFont ) : Font(nullptr), m_cFont(cFont)
 	{
-		wg_retain(cFont);
+		CABI::object->retain(cFont);
 	}
 
 	//____ Destructor _____________________________________________________________
 
 	CABIFont::~CABIFont()
 	{
-		wg_release(m_cFont);
+		CABI::object->release(m_cFont);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -57,14 +56,14 @@ namespace wg
 
 	bool CABIFont::setSize( spx size )
 	{
-		return wg_setFontSize(m_cFont, size);
+		return CABI::font->setFontSize(m_cFont, size);
 	}
 	
 	//____ size() _____________________________________________________________
 
 	spx CABIFont::size()
 	{
-		return wg_fontSize(m_cFont);
+		return CABI::font->fontSize(m_cFont);
 	}
 
 	//____ kerning() ___________________________________________________________
@@ -81,21 +80,21 @@ namespace wg
 		right.kerningIndex = rightGlyph.kerningIndex;
 		right.fontRef = rightGlyph.fontRef;
 
-		return wg_getKerning(m_cFont, &left, &right);
+		return CABI::font->getKerning(m_cFont, &left, &right);
 	}
 
 	//____ whitespaceAdvance() _________________________________________________
 
 	spx CABIFont::whitespaceAdvance()
 	{
-		return wg_whitespaceAdvance(m_cFont);
+		return CABI::font->whitespaceAdvance(m_cFont);
 	}
 
 	//____ lineGap() ____________________________________________________________
 
 	spx CABIFont::lineGap()
 	{
-		return wg_lineGap(m_cFont);
+		return CABI::font->lineGap(m_cFont);
 	}
 
 
@@ -103,14 +102,14 @@ namespace wg
 
 	spx CABIFont::maxAscend()
 	{
-		return wg_maxAscend(m_cFont);
+		return CABI::font->maxAscend(m_cFont);
 	}
 
 	//____ maxDescend() ____________________________________________________________
 
 	spx CABIFont::maxDescend()
 	{
-		return wg_maxDescend(m_cFont);
+		return CABI::font->maxDescend(m_cFont);
 	}
 
 
@@ -118,28 +117,28 @@ namespace wg
 
 	int CABIFont::nbGlyphs()
 	{
-		return wg_nbGlyphs(m_cFont);
+		return CABI::font->nbGlyphs(m_cFont);
 	}
 
 	//____ hasGlyphs() ____________________________________________________________
 
 	bool CABIFont::hasGlyphs()
 	{
-		return wg_hasGlyphs(m_cFont);
+		return CABI::font->hasGlyphs(m_cFont);
 	}
 
 	//____ isMonospace() __________________________________________________________
 
 	bool CABIFont::isMonospace()
 	{
-		return wg_isMonospace(m_cFont);
+		return CABI::font->isMonospace(m_cFont);
 	}
 
 	//____ maxAdvance() ___________________________________________________
 
 	spx CABIFont::maxAdvance()
 	{
-		return wg_maxAdvance(m_cFont);
+		return CABI::font->maxAdvance(m_cFont);
 	}
 
 
@@ -147,7 +146,7 @@ namespace wg
 
 	bool CABIFont::hasGlyph( uint16_t ch )
 	{
-		return wg_hasGlyph(m_cFont,ch);
+		return CABI::font->hasGlyph(m_cFont,ch);
 	}
 
 	//____ getGlyphWithoutBitmap() _____________________________________________________________
@@ -156,7 +155,7 @@ namespace wg
 	{
 		wg_glyph	cGlyph;
 
-		wg_getGlyphWithoutBitmap(m_cFont, ch, &cGlyph);
+		CABI::font->getGlyphWithoutBitmap(m_cFont, ch, &cGlyph);
 
 		if (cGlyph.advance != 0)
 		{

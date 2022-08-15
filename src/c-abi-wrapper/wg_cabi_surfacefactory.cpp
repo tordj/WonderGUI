@@ -22,11 +22,9 @@
 
 #include <memory.h>
 
+#include <wg_cabi.h>
 #include <wg_cabi_surface.h>
 #include <wg_cabi_surfacefactory.h>
-
-#include <wg_c_object.h>
-#include <wg_c_surfacefactory.h>
 
 
 namespace wg
@@ -38,14 +36,14 @@ namespace wg
 
 	CABISurfaceFactory::CABISurfaceFactory( wg_obj cFactory) : m_cFactory(cFactory)
 	{
-		wg_retain(cFactory);
+		CABI::object->retain(cFactory);
 	}
 
 	//____ destructor ________________________________________________________
 
 	CABISurfaceFactory::~CABISurfaceFactory()
 	{
-		wg_release(m_cFactory);
+		CABI::object->release(m_cFactory);
 	}
 
 
@@ -60,7 +58,7 @@ namespace wg
 
 	SizeI CABISurfaceFactory::maxSize() const
 	{			
-		wg_sizeI sz = wg_maxSurfaceSize(m_cFactory);
+		wg_sizeI sz = CABI::surfaceFactory->maxSurfaceSize(m_cFactory);
 		return { sz.w, sz.h };
 	}
 
@@ -71,7 +69,7 @@ namespace wg
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
-		auto obj = wg_createSurface(m_cFactory, &bp);
+		auto obj = CABI::surfaceFactory->createSurface(m_cFactory, &bp);
 		return CABISurface::create(obj);
 	}
 
@@ -80,7 +78,7 @@ namespace wg
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
-		auto obj = wg_createSurfaceFromBlob(m_cFactory, &bp, static_cast<Object*>(pBlob), pitch );
+		auto obj = CABI::surfaceFactory->createSurfaceFromBlob(m_cFactory, &bp, static_cast<Object*>(pBlob), pitch );
 		return CABISurface::create(obj);
 	}
 
@@ -89,7 +87,7 @@ namespace wg
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
-		auto obj = wg_createSurfaceFromBitmap(m_cFactory, &bp, pPixels, pitch, (wg_pixelDescription*) pPixelDescription);
+		auto obj = CABI::surfaceFactory->createSurfaceFromBitmap(m_cFactory, &bp, pPixels, pitch, (wg_pixelDescription*) pPixelDescription);
 		return CABISurface::create(obj);
 	}
 
@@ -98,7 +96,7 @@ namespace wg
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
-		auto obj = wg_createSurfaceFromSurface(m_cFactory, &bp, static_cast<Object*>(pOther) );
+		auto obj = CABI::surfaceFactory->createSurfaceFromSurface(m_cFactory, &bp, static_cast<Object*>(pOther) );
 		return CABISurface::create(obj);
 	}
 

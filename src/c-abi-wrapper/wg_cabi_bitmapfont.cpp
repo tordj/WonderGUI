@@ -20,11 +20,9 @@
 
 =========================================================================*/
 
-
+#include <wg_cabi.h>
 #include <wg_cabi_bitmapfont.h>
 #include <wg_cabi_surface.h>
-#include <wg_c_object.h>
-#include <wg_c_bitmapfont.h>
 
 #include <cassert>
 
@@ -38,10 +36,10 @@ namespace wg
 
 	CABIBitmapFont::CABIBitmapFont( wg_obj cBitmapFont ) : CABIFont(cBitmapFont)
 	{
-		wg_obj surface = wg_getBitmapFontSurface(cBitmapFont);
+		wg_obj surface = CABI::bitmapFont->getBitmapFontSurface(cBitmapFont);
 		
 		// CABIBitmapFont doesn't support backup fonts.
-		assert( wg_getBackupFont(cBitmapFont) == 0 );
+		assert( CABI::font->getBackupFont(cBitmapFont) == 0 );
 		
 		m_pSurface = CABISurface::create(surface);
 	}
@@ -65,7 +63,7 @@ namespace wg
 	{
 		wg_glyph	cGlyph;
 
-		wg_getGlyphWithBitmap(m_cFont, ch, &cGlyph);
+		CABI::font->getGlyphWithBitmap(m_cFont, ch, &cGlyph);
 
 		if (cGlyph.advance != 0)
 		{

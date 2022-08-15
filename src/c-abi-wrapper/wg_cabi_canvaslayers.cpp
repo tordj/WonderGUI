@@ -134,14 +134,14 @@ namespace wg
 
 		}
 
-		m_cCanvasLayer = CABI::func()->pCanvasLayers->createCanvasLayers(&cBP);
+		m_cCanvasLayer = CABI::canvasLayers->createCanvasLayers(&cBP);
 	}
 
 	//____ CABICanvasLayers::~CABICanvasLayers() ______________________________
 
 	CABICanvasLayers::~CABICanvasLayers()
 	{
-		CABI::func()->pObject->release(m_cCanvasLayer);
+		CABI::object->release(m_cCanvasLayer);
 	}
 
 

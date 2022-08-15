@@ -23,9 +23,7 @@
 #include <wg_base.h>
 
 #include <wg_cabi_bitmapcache.h>
-#include <wg_c_bitmapcache.h>
-#include <wg_c_object.h>
-#include <wg_c_surface.h>
+#include <wg_cabi.h>
 
 #include <cassert>
 
@@ -40,11 +38,11 @@ namespace wg
 	CABIBitmapCache::CABIBitmapCache( wg_obj bitmapCache )
 	{
 		m_cCache = bitmapCache;
-		wg_retain(bitmapCache);
+		CABI::object->retain(bitmapCache);
 
 		// Retrieve and wrap existing cache surfaces
 
-		int nbSurfaces = wg_getNbCacheSurfaces(bitmapCache);
+		int nbSurfaces = CABI::bitmapCache->getNbCacheSurfaces(bitmapCache);
 
 		if (nbSurfaces > 0)
 		{
@@ -53,17 +51,17 @@ namespace wg
 			int mem = nbSurfaces * sizeof(wg_obj);
 
 			wg_obj * pSurfaces = (wg_obj*) Base::memStackAlloc(mem);
-			wg_getCacheSurfaces(bitmapCache, nbSurfaces, pSurfaces);
+			CABI::bitmapCache->getCacheSurfaces(bitmapCache, nbSurfaces, pSurfaces);
 
 
 			int highestNumber = 0;
 
-			if (wg_getSurfaceIdentity(pSurfaces[0]) == 0)
+			if (CABI::surface->getSurfaceIdentity(pSurfaces[0]) == 0)
 			{
 				// We are first CABIBitmapCache, we start numbering existing ones
 
 				for (int i = 0; i < nbSurfaces; i++)
-					wg_setSurfaceIdentity(pSurfaces[i], i + 1);
+					CABI::surface->setSurfaceIdentity(pSurfaces[i], i + 1);
 
 				highestNumber = nbSurfaces;
 			}
@@ -72,7 +70,7 @@ namespace wg
 				// Already numbered, we need to find highest number for stack size.
 
 				for (int i = 0; i < nbSurfaces; i++)
-					highestNumber = std::max( wg_getSurfaceIdentity(pSurfaces[i]), highestNumber);
+					highestNumber = std::max( CABI::surface->getSurfaceIdentity(pSurfaces[i]), highestNumber);
 			}
 
 			// Resize vector, create and insert wrappers
@@ -83,7 +81,7 @@ namespace wg
 			{
 				wg_obj obj = pSurfaces[i];
 
-				int ofs = wg_getSurfaceIdentity(obj) - 1;
+				int ofs = CABI::surface->getSurfaceIdentity(obj) - 1;
 				m_surfaces[ofs] = CABISurface::create(obj);
 			}
 
@@ -106,16 +104,16 @@ namespace wg
 		bp.clearFunc = [](void* pData, int data) { ((CABIBitmapCache*)pData)->_cleared(); };
 		bp.clearPtr = this;
 
-		m_listenerId = wg_addCacheListener(bitmapCache, bp);
+		m_listenerId = CABI::bitmapCache->addCacheListener(bitmapCache, bp);
 	}
 
 	//____ Destructor _____________________________________________________________
 
 	CABIBitmapCache::~CABIBitmapCache()
 	{
-		wg_removeCacheListener(m_cCache,m_listenerId);
+		CABI::bitmapCache->removeCacheListener(m_cCache,m_listenerId);
 
-		wg_release(m_cCache);
+		CABI::object->release(m_cCache);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -129,28 +127,28 @@ namespace wg
 
 	void CABIBitmapCache::setLimit(int maxBytes)
 	{
-		wg_setCacheLimit(m_cCache, maxBytes);
+		CABI::bitmapCache->setCacheLimit(m_cCache, maxBytes);
 	}
 
 	//____ limit() ____________________________________________________________
 
 	int CABIBitmapCache::limit() const
 	{
-		return wg_cacheLimit(m_cCache);
+		return CABI::bitmapCache->cacheLimit(m_cCache);
 	}
 
 	//____ size() _____________________________________________________________
 
 	int CABIBitmapCache::size() const
 	{
-		return wg_cacheSize(m_cCache);
+		return CABI::bitmapCache->cacheSize(m_cCache);
 	}
 
 	//____ clear() _______________________________________________________________
 
 	void CABIBitmapCache::clear()
 	{
-		wg_clearCache(m_cCache);
+		CABI::bitmapCache->clearCache(m_cCache);
 	}
 
 	//____ addListener() ______________________________________________________
@@ -176,9 +174,9 @@ namespace wg
 
 	std::tuple<Surface_p, CoordI> CABIBitmapCache::getCacheSlot(SizeI size)
 	{
-		auto slot = wg_getCacheSlot(m_cCache, { size.w,size.h });
+		auto slot = CABI::bitmapCache->getCacheSlot(m_cCache, { size.w,size.h });
 
-		int ofs = wg_getSurfaceIdentity(slot.surface) - 1;
+		int ofs = CABI::surface->getSurfaceIdentity(slot.surface) - 1;
 
 		return std::make_tuple(m_surfaces[ofs], CoordI( slot.coord.x, slot.coord.y ) );
 	}
@@ -202,7 +200,7 @@ namespace wg
 
 	CABISurface* CABIBitmapCache::wrapperSurface(wg_obj surfaceObject)
 	{
-		int offset = wg_getSurfaceIdentity(surfaceObject) -1;
+		int offset = CABI::surface->getSurfaceIdentity(surfaceObject) -1;
 
 		assert(offset > 0 && offset < m_surfaces.size() && m_surfaces[offset] != nullptr );
 
@@ -213,7 +211,7 @@ namespace wg
 
 	void CABIBitmapCache::_surfaceAdded(wg_obj surface)
 	{
-		int ofs = wg_getSurfaceIdentity(surface) - 1;
+		int ofs = CABI::surface->getSurfaceIdentity(surface) - 1;
 		if (ofs < 0)
 		{
 			// We are the first CABIBitmapCache receiving the callback. Let's decide and offset.
@@ -226,7 +224,7 @@ namespace wg
 				ofs++;
 			}
 
-			wg_setSurfaceIdentity(surface, ofs + 1);
+			CABI::surface->setSurfaceIdentity(surface, ofs + 1);
 		}
 
 		if (ofs >= m_surfaces.size())
@@ -241,7 +239,7 @@ namespace wg
 	{
 		for (int i = 0; i < nSurfaces; i++)
 		{
-			int ofs = wg_getSurfaceIdentity(pSurfaces[i]) - 1;
+			int ofs = CABI::surface->getSurfaceIdentity(pSurfaces[i]) - 1;
 			m_surfaces[ofs] = nullptr;
 		}
 	}

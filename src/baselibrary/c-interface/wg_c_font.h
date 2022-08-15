@@ -25,7 +25,6 @@
 #pragma once
 
 #include <wg_c_types.h>
-#include <wg_c_geo.h>
 #include <wg_c_color.h>
 #include <wg_c_surface.h>
 
@@ -48,6 +47,7 @@ extern "C" {
 		wg_spx		bearingX;
 		wg_spx		bearingY;
 	};
+
 
 	//.____ Rendering ____________________________________________
 

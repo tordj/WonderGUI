@@ -67,6 +67,7 @@ extern "C" {
 
 	};
 
+
 	wg_obj			wg_createCanvasLayers(const wg_canvasLayersBP* pBlueprint);
 
 	int				wg_canvasLayersSize(wg_obj canvasLayers);

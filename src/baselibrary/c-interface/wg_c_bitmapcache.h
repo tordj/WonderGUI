@@ -59,6 +59,7 @@ struct	wg_cacheListenerBP
 	int							clearInt;
 };
 
+
 wg_obj				wg_createBitmapCache( int maxSize, wg_obj surfaceFactory );
 
 void 				wg_setCacheLimit(wg_obj bitmapCache, int maxBytes);

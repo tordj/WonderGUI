@@ -20,11 +20,9 @@
 
 =========================================================================*/
 
-
+#include <wg_cabi.h>
 #include <wg_cabi_freetypefont.h>
 #include <wg_cabi_surface.h>
-#include <wg_c_object.h>
-#include <wg_c_font.h>
 
 namespace wg
 {
@@ -65,7 +63,7 @@ namespace wg
 	{
 		wg_glyph	cGlyph;
 
-		wg_getGlyphWithBitmap(m_cFont, ch, &cGlyph);
+		CABI::font->getGlyphWithBitmap(m_cFont, ch, &cGlyph);
 
 		if (cGlyph.advance != 0)
 		{

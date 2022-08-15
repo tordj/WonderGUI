@@ -24,7 +24,7 @@
 #define	WG_CABI_DOT_H
 #pragma once
 
-#include <wg_c_abi.h>
+#include <wg_c_callcollection.h>
 
 namespace wg
 {
@@ -32,11 +32,23 @@ namespace wg
 	{
 	public:
 
-		static bool	init(wg_c_calls_collection* pCallsCollection);
+		static wg_bitmapcache_calls*	bitmapCache;
+		static wg_bitmapfont_calls*		bitmapFont;
+		static wg_canvaslayers_calls*	canvasLayers;
+		static wg_component_calls*		component;
+		static wg_font_calls*			font;
+		static wg_object_calls*			object;
+		static wg_gfxdevice_calls*		gfxDevice;
+		static wg_streambuffer_calls*	streamBuffer;
+		static wg_streamplayer_calls*	streamPlayer;
+		static wg_streampump_calls*		streamPump;
+		static wg_streamreader_calls*	streamReader;
+		static wg_surface_calls*		surface;
+		static wg_surfacefactory_calls* surfaceFactory;
 
-		static inline const wg_c_calls_collection* func() { return s_func; };
 
-		static wg_c_calls_collection*		s_func;
+		static bool	init(wg_c_callCollection* pCallsCollection);
+
 	};
 
 

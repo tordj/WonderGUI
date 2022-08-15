@@ -56,7 +56,7 @@ SDL_Window *		g_pSDLWindow = nullptr;
 Surface_p			g_pWindowSurface = nullptr;				// Set by init_system()
 RootPanel_p			g_pRoot = nullptr;
 
-wg_c_calls_collection	g_cCallsCollection;
+wg_c_callCollection	g_cCallsCollection;
 
 
 

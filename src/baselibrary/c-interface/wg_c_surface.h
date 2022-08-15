@@ -76,6 +76,7 @@ extern "C" {
 		uint8_t				tiling;
 	};
 
+
 	//____ Identification __________________________________________
 
 	void			wg_setSurfaceIdentity(wg_obj surface, int id);
