@@ -22,8 +22,17 @@
 
 #include <wg_c_gfxdevice.h>
 #include <wg_gfxdevice.h>
-	
+
+#include <type_traits>
+
+
 using namespace wg;
+
+
+static_assert( sizeof(wg_waveLine) == sizeof(wg::WaveLine), "wg_waveLine differs in size from wg::WaveLine!" );
+static_assert( std::is_trivially_copyable<wg::WaveLine>::value, "wg::WaveLine is not trivially copyable" );
+
+
 
 inline GfxDevice* getPtr(wg_obj obj) {
 	return static_cast<GfxDevice*>(reinterpret_cast<Object*>(obj));

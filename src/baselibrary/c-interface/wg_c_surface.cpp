@@ -23,7 +23,15 @@
 #include <wg_c_surface.h>
 #include <wg_surface.h>
 
+#include <type_traits>
+
+
 using namespace wg;
+
+
+static_assert( sizeof(wg_ninePatch) == sizeof(wg::NinePatch), "wg_ninePatch differs in size from wg::NinePatch!" );
+static_assert( std::is_trivially_copyable<wg::NinePatch>::value, "wg::NinePatch is not trivially copyable" );
+
 
 inline Surface* getPtr(wg_obj obj) {
 	return static_cast<Surface*>(reinterpret_cast<Object*>(obj));

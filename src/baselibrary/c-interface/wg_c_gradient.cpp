@@ -21,3 +21,9 @@
 =========================================================================*/
 
 #include <wg_c_gradient.h>
+#include <wg_gradient.h>
+
+#include <type_traits>
+
+static_assert( sizeof(wg_gradient) == sizeof(wg::Gradient), "wg_gradient differs in size from wg:Gradient!" );
+static_assert( std::is_trivially_copyable<wg::Gradient>::value, "wg::Gradient is not trivially copyable" );

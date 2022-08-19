@@ -133,6 +133,8 @@ add_library( wondergui
 	base/wg_weakptr.h
 
 
+	c-interface/wg_c_base.cpp
+	c-interface/wg_c_base.h
 	c-interface/wg_c_bitmapcache.cpp
 	c-interface/wg_c_bitmapcache.h
 	c-interface/wg_c_bitmapfont.cpp
@@ -167,6 +169,8 @@ add_library( wondergui
 	c-interface/wg_c_gfxdevice.h
 	c-interface/wg_c_internal.cpp
 	c-interface/wg_c_internal.h
+	c-interface/wg_c_memheap.cpp
+	c-interface/wg_c_memheap.h
 	c-interface/wg_c_object.cpp
 	c-interface/wg_c_object.h
 	c-interface/wg_c_surface.cpp
@@ -174,6 +178,7 @@ add_library( wondergui
 	c-interface/wg_c_surfacefactory.cpp
 	c-interface/wg_c_surfacefactory.h
 	c-interface/wg_c_types.h
+	c-interface/wg_c_types.cpp
 
 
 	components/wg_canimframes.cpp

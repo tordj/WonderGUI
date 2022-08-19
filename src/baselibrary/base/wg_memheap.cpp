@@ -31,7 +31,7 @@ namespace wg
 	
   //____ init() _______________________________________________________________
 
-  void MemHeap::init( void * pHeap, int bytes )
+  MemHeap::MemHeap( void * pHeap, int bytes )
   {
 	  
     m_pBuffer = pHeap;
@@ -44,7 +44,7 @@ namespace wg
 	int capacity = pEnd - pStart - sizeof(Header)*2;
 
     m_capacity = capacity;
-    m_free = capacity;
+    m_reserved = 0;
 
 
 
@@ -71,9 +71,8 @@ namespace wg
 
   //____ exit() _______________________________________________________________
 
-  bool MemHeap::exit()
+  MemHeap::~MemHeap()
   {
-	  return true;
   }
 
   //____ malloc() _____________________________________________________________
@@ -129,7 +128,7 @@ namespace wg
         pHead->pNextFree->pPrevFree = pHead->pPrevFree;
     }
 
-    m_free -= ((char*)pHead->pNextBlock) - ((char*)pHead);
+    m_reserved += ((char*)pHead->pNextBlock) - ((char*)pHead);
 
     if( m_pFirstFree == pHead )
       m_pFirstFree = pHead->pNextFree;
@@ -181,7 +180,7 @@ namespace wg
 	  }
 
 
-      m_free += ((char*)pHead->pNextBlock) - ((char*)&pHead[1]);
+      m_reserved -= ((char*)pHead->pNextBlock) - ((char*)&pHead[1]);
 
 
       Header * pPrev = pHead->pPrevBlock;
@@ -209,7 +208,7 @@ namespace wg
 
           pHead = pPrev;
 
-          m_free += sizeof(pHead);                          // Removed a block header
+          m_reserved -= sizeof(pHead);                          // Removed a block header
         }
 
         if( bEmptyNextBlock )
@@ -248,7 +247,7 @@ namespace wg
               pHead->pNextFree->pPrevFree = pHead;
           }
 
-          m_free += sizeof(pHead);                          // Removed a block header
+          m_reserved -= sizeof(pHead);                          // Removed a block header
         }
       }
 	  
@@ -371,6 +370,26 @@ void MemHeap::drawFragmentMap( int nSectors, uint16_t * pSectorTable, Surface * 
 void MemHeap::setDebugLevel( int level )
 {
 	m_debugLevel = level;
+}
+
+//____ largestAvailableBlock() ________________________________________________
+
+int MemHeap::largestAvailableBlock() const
+{
+	int largest = 0;
+	
+	Header * p = m_pFirstFree;
+	while( p )
+	{
+		if( p->pNextBlock )
+		{
+			int sz = ((char*)p->pNextBlock) - ((char*)p) - sizeof(Header);
+			if( sz > largest )
+				largest = sz;
+		}
+		p = p->pNextFree;
+	}
+	return largest;
 }
 
 

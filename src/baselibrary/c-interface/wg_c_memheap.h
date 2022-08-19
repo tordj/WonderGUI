@@ -21,22 +21,34 @@
 =========================================================================*/
 
 
-#ifndef WG_C_BITMAPFONT_DOT_H
-#define WG_C_BITMAPFONT_DOT_H
+#ifndef WG_C_MEMHEAP_DOT_H
+#define WG_C_MEMHEAP_DOT_H
 #pragma once
 
-#include <wg_c_font.h>
+#include <wg_c_types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-wg_obj			wg_createBitmapFont( wg_obj surface, char * pGlyphSpec, wg_obj backupFont );
-wg_obj			wg_getBitmapFontSurface( wg_obj bitmapFont );
+	typedef void * wg_memHeap;
 
+	wg_memHeap	wg_initMemHeap( void * pHeap, int bytes );
+	void		wg_exitMemHeap( wg_memHeap heap );
+
+	void *		wg_malloc( wg_memHeap heap, int bytes );
+	void  		wg_free( wg_memHeap heap, void * pBuffer );
+
+	void		wg_drawFragmentMap( wg_memHeap heap, int nSections, uint16_t * pSectionTable, wg_obj surface );
+
+	void		wg_setMemHeapDebugLevel( wg_memHeap heap, int level );
+
+	int			wg_memHeapCapacity( wg_memHeap heap );
+	int			wg_memHeapReserved( wg_memHeap heap );
+	int			wg_largestAvailableBlock( wg_memHeap heap );
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //WG_C_BITMAPFONT_DOT_H
+#endif //WG_C_MEMHEAP_DOT_H

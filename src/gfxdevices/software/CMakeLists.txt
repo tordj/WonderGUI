@@ -2,6 +2,9 @@ source_group(Files REGULAR_EXPRESSION ".*")
 
 add_library( wgsoftgfx 
 
+	wg_c_softgfx.cpp
+	wg_c_softgfx.h
+
 	wg_softkernels.cpp
 	wg_softkernelstanza.impl.h
 	wg_softgfxdevice.cpp

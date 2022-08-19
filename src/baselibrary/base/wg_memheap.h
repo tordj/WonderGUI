@@ -34,8 +34,8 @@ namespace wg
 	class MemHeap
 	{
 	public:
-		void		init( void * pHeap, int bytes );
-		bool		exit();
+		MemHeap( void * pHeap, int bytes );
+		~MemHeap();
 
 		void *		malloc( int bytes );
 		void		free( void * pBuffer );
@@ -43,7 +43,11 @@ namespace wg
 		void		drawFragmentMap( int nSections, uint16_t * pSectionTable, Surface * pSurface );
 
 		void		setDebugLevel( int level );
-
+		
+		int			capacity() const { return m_capacity; }
+		int			reserved() const { return m_reserved; }
+		int			largestAvailableBlock() const;
+		
 	private:
 
 		void		_checkIntegrity();
@@ -59,7 +63,7 @@ namespace wg
 
 		void *	m_pBuffer;
 		int		m_capacity;
-		int		m_free;
+		int		m_reserved;
 
 		int		m_debugLevel = 0;		// 0 = No checks
 										// 1 = Fast sanity checks on block being allocated/freed.

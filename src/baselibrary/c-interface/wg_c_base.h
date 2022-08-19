@@ -21,22 +21,23 @@
 =========================================================================*/
 
 
-#ifndef WG_C_BITMAPFONT_DOT_H
-#define WG_C_BITMAPFONT_DOT_H
+#ifndef WG_C_BASE_DOT_H
+#define WG_C_BASE_DOT_H
 #pragma once
 
-#include <wg_c_font.h>
+#include <wg_c_types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-wg_obj			wg_createBitmapFont( wg_obj surface, char * pGlyphSpec, wg_obj backupFont );
-wg_obj			wg_getBitmapFontSurface( wg_obj bitmapFont );
+//TODO: Not a complete wrapper, just contains what is needed for wg-display project to work.
 
+	int wg_init();
+	int wg_exit();
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //WG_C_BITMAPFONT_DOT_H
+#endif //WG_C_BASE_DOT_H

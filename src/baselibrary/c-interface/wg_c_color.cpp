@@ -20,4 +20,12 @@
 
 =========================================================================*/
 
+#include <type_traits>
+
+#include <wg_c_color.h>
 #include <wg_color.h>
+
+
+static_assert( sizeof(wg_color) == sizeof(wg::HiColor), "wg_color differs in size from wg::HiColor!" );
+static_assert( std::is_trivially_copyable<wg::HiColor>::value, "HiColor is not trivially copyable!" );
+

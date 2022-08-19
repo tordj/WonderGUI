@@ -30,6 +30,8 @@ inline CanvasLayers* getPtr(wg_obj obj) {
 	return static_cast<CanvasLayers*>(reinterpret_cast<Object*>(obj));
 }
 
+static_assert(WG_MAX_CANVAS_LAYERS == CanvasLayers::maxLayers(), "WG_MAX_CANVAS_LAYERS needs to match CanvasLayers::MaxLayers()!" );
+
 wg_obj wg_createCanvasLayers(const wg_canvasLayersBP* pBP)
 {
 

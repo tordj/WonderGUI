@@ -20,23 +20,18 @@
 
 =========================================================================*/
 
+#include <wg_c_base.h>
+#include <wg_base.h>
 
-#ifndef WG_C_BITMAPFONT_DOT_H
-#define WG_C_BITMAPFONT_DOT_H
-#pragma once
+using namespace wg;
 
-#include <wg_c_font.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-wg_obj			wg_createBitmapFont( wg_obj surface, char * pGlyphSpec, wg_obj backupFont );
-wg_obj			wg_getBitmapFontSurface( wg_obj bitmapFont );
-
-
-#ifdef __cplusplus
+int wg_init()
+{
+	return Base::init(nullptr);
 }
-#endif
 
-#endif //WG_C_BITMAPFONT_DOT_H
+
+int wg_exit()
+{
+	return Base::exit();
+}
