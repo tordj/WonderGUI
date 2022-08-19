@@ -274,8 +274,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		inline	HiColor() : argb(0) {};
-		inline	HiColor(const HiColor& hiColor);
+		inline	constexpr HiColor() : argb(0) {};
 				HiColor(Color8 lowColor);
 		explicit inline	HiColor(int r, int g, int b, int a = 4096);
 		explicit inline	HiColor(float r, float g, float b, float a = 1.f);
@@ -410,11 +409,6 @@ namespace wg
 
 
 	//____ HiColor::HiColor() _________________________________________________________________
-
-	inline HiColor::HiColor(const HiColor& hiColor)
-	{
-		argb = hiColor.argb;
-	}
 
 	inline HiColor::HiColor(int r, int g, int b, int a)
 	{

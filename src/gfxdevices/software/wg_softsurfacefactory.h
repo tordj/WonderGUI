@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_SURFACEFACTORY_SOFT_DOT_H
-#define WG_SURFACEFACTORY_SOFT_DOT_H
+#ifndef WG_SOFTSURFACEFACTORY_DOT_H
+#define WG_SOFTSURFACEFACTORY_DOT_H
 
 #include <wg_softsurface.h>
 #include <wg_surfacefactory.h>
@@ -39,7 +39,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static SoftSurfaceFactory_p	create(int flags = SurfaceFlag::Static) { return SoftSurfaceFactory_p(new SoftSurfaceFactory(flags)); }
+		static SoftSurfaceFactory_p	create() { return SoftSurfaceFactory_p(new SoftSurfaceFactory()); }
 
 		//.____ Identification __________________________________________
 
@@ -59,10 +59,9 @@ namespace wg
 
 
 	protected:
-		SoftSurfaceFactory(int flags) : m_flags(flags) {}
+		SoftSurfaceFactory() {}
 		virtual ~SoftSurfaceFactory() {}
 
-		int		m_flags;
 	};
 
 	//========================================================================================
