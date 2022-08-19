@@ -292,6 +292,46 @@ enum wg_gfxChunkId
 };
 
 
+//____ wg_error_severity ________________________________________________
+
+typedef enum
+{
+	WG_WARNING = 0,
+	WG_SILENT_FAIL,
+	WG_SERIOUS_ERROR,
+	WG_CRITICAL_ERROR
+} wg_error_severity;
+
+//____ wg_error_code ____________________________________________________
+
+typedef enum
+{
+	WG_ERROR_OUT_OF_RANGE = 0,
+	WG_ERROR_INVALID_ITERATOR,
+	WG_ERROR_INVALID_PARAM,
+	WG_ERROR_FAILED_PREREQUISITE,
+	WG_ERROR_OPENGL,						// OPENGL HAS ISSUED A GLERROR
+	WG_ERROR_INTERNAL,
+	WG_ERROR_SYSTEM_INTEGRITY,
+	WG_ERROR_ILLEGAL_CALL,
+	WG_ERROR_RESOURCE_EXHAUSTED,			// A LIMITED INTERNAL RESOURCE HAS BEEN EXHAUSTED
+	WG_ERROR_OTHER
+} wg_error_code;
+
+//____ wg_error_info _____________________________________________________
+
+typedef struct
+{
+	wg_error_severity	severity;
+	wg_error_code		code;
+	const char * 		message;
+	const void *		object;
+	const char *		classname;
+	const char *		function;
+	const char *		file;
+	int					line;
+} wg_error_info;
+
 #ifdef __cplusplus
 }
 #endif

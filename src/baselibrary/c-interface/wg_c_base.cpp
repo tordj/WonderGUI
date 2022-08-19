@@ -20,6 +20,8 @@
 
 =========================================================================*/
 
+#include <string>
+
 #include <wg_c_base.h>
 #include <wg_base.h>
 
@@ -30,8 +32,92 @@ int wg_init()
 	return Base::init(nullptr);
 }
 
-
 int wg_exit()
 {
 	return Base::exit();
+}
+
+void wg_setErrorHandler( void (*errorHandler)(const wg_error_info * pError) )
+{
+
+	Base::setErrorHandler( [errorHandler](Error& error)
+	{
+		wg_error_info	errorInfo;
+		
+		wg_error_code		errorCode;
+		wg_error_severity	severity;
+		
+		switch( error.code )
+		{
+			case ErrorCode::OutOfRange:
+				errorCode = WG_ERROR_OUT_OF_RANGE;
+				break;
+				
+			case ErrorCode::InvalidIterator:
+				errorCode = WG_ERROR_INVALID_ITERATOR;
+				break;
+				
+			case ErrorCode::InvalidParam:
+				errorCode = WG_ERROR_INVALID_PARAM;
+				break;
+				
+			case ErrorCode::FailedPrerequisite:
+				errorCode = WG_ERROR_FAILED_PREREQUISITE;
+				break;
+				
+			case ErrorCode::OpenGL:
+				errorCode = WG_ERROR_OPENGL;
+				break;
+				
+			case ErrorCode::Internal:
+				errorCode = WG_ERROR_INTERNAL;
+				break;
+
+			case ErrorCode::SystemIntegrity:
+				errorCode = WG_ERROR_SYSTEM_INTEGRITY;
+				break;
+
+			case ErrorCode::IllegalCall:
+				errorCode = WG_ERROR_ILLEGAL_CALL;
+				break;
+
+			case ErrorCode::ResourceExhausted:
+				errorCode = WG_ERROR_RESOURCE_EXHAUSTED;
+				break;
+
+			default:
+				errorCode = WG_ERROR_OTHER;
+		}
+		
+		switch( error.severity )
+		{
+			case ErrorSeverity::Warning:
+			severity = WG_WARNING;
+			break;
+			
+			case ErrorSeverity::SilentFail:
+			severity = WG_SILENT_FAIL;
+			break;
+			
+			case ErrorSeverity::Serious:
+			severity = WG_SERIOUS_ERROR;
+			break;
+			
+			case ErrorSeverity::Critical:
+			severity = WG_CRITICAL_ERROR;
+			break;
+		}
+		
+		errorInfo.classname = error.classname;
+		errorInfo.code = errorCode;
+		errorInfo.file = error.file;
+		errorInfo.function = error.function;
+		errorInfo.object = error.pObject;
+		errorInfo.line = error.line;
+		errorInfo.message = error.message.c_str();
+		errorInfo.severity = severity;
+		
+		
+		errorHandler(&errorInfo);
+	});
 }
