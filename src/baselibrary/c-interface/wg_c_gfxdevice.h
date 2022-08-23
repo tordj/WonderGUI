@@ -36,24 +36,24 @@ extern "C" {
 
 	//____ wg_waveLine ____________________________________________________________
 
-	struct wg_waveLine
+	typedef struct
 	{
 		int			length;
 		wg_spx		thickness;
 		wg_color	color;
 		int* pWave;      // Pixel offset in 26.6 format.
 		wg_spx		hold;      // Value for extending the line if it is too short (or completely missing).
-	};
+	} wg_waveLine;
 
 	//____ wg_canvasInfo __________________________________________________________
 
-	struct wg_canvasInfo		// NOT BINARY EQUIVALENT!
+	typedef struct		// NOT BINARY EQUIVALENT!
 	{
 		wg_canvasRef	ref;
 		wg_obj			surface;
 		wg_sizeSPX		size;
 		int				scale;
-	};
+	} wg_canvasInfo;
 
 
 

@@ -45,9 +45,9 @@ extern "C" {
 
 
 
+//____ wg_bitmapcache_calls ___________________________________________________
 
-
-struct wg_bitmapcache_calls
+typedef struct
 {
 	int					structSize;
 
@@ -61,18 +61,23 @@ struct wg_bitmapcache_calls
 	wg_cacheSlot        (*getCacheSlot)(wg_obj bitmapCache, wg_sizeI size);
 	int                 (*getNbCacheSurfaces)(wg_obj bitmapCache);
 	int                 (*getCacheSurfaces)(wg_obj bitmapCache, int maxSurfaces, wg_obj * pArray );
-};
+} wg_bitmapcache_calls;
 
 
-struct wg_bitmapfont_calls
+//____ wg_bitmapfont_calls ____________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
 	wg_obj				(*createBitmapFont)(wg_obj surface, char* pGlyphSpec, wg_obj backupFont);
 	wg_obj				(*getBitmapFontSurface)(wg_obj bitmapFont);
-};
+} wg_bitmapfont_calls;
 
-struct wg_canvaslayers_calls
+
+//____ wg_canvaslayers_calls __________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
@@ -80,18 +85,24 @@ struct wg_canvaslayers_calls
 	int					(*canvasLayersSize)(wg_obj canvasLayers);
 	wg_pixelFormat		(*layerFormat)(wg_obj canvasLayers, int layer);
 	int					(*baseLayer)(wg_obj canvasLayers);
-};
+} wg_canvaslayers_calls;
 
-struct wg_component_calls
+
+//____ wg_component_calls _____________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
 	const wg_typeInfo*	(*getComponentTypeInfo)(wg_component);
 	int					(*isComponentInstanceOf)(wg_component, const wg_typeInfo* pTypeInfo);
 	wg_obj				(*getComponentObject)(wg_component);
-};
+} wg_component_calls;
 
-struct wg_font_calls
+
+//____ wg_font_calls __________________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
@@ -112,10 +123,12 @@ struct wg_font_calls
 	int					(*isMonochrome)(wg_obj font);
 	wg_obj				(*getBackupFont)(wg_obj font);
 	wg_obj				(*createSurfaceFromGlyph)(wg_obj font, uint16_t chr, const wg_surfaceBP* blueprint, wg_obj surfaceFactory);
-};
+} wg_font_calls;
 
 
-struct wg_gfxdevice_calls
+//____ wg_gfxdevice_calls _____________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
@@ -180,10 +193,12 @@ struct wg_gfxdevice_calls
 	void				(*drawSegments)(wg_obj device, const wg_rectSPX* dest, int nSegments, const wg_color* pSegmentColors, int nEdgeStrips, const int* pEdgeStrips, int edgeStripPitch, wg_tintMode tintMode);
 	void				(*flipDrawSegments)(wg_obj device, const wg_rectSPX* dest, int nSegments, const wg_color* pSegmentColors, int nEdgeStrips, const int* pEdgeStrips, int edgeStripPitch, wg_gfxFlip flip, wg_tintMode tintMode);
 	void				(*blitNinePatch)(wg_obj device, const wg_rectSPX* dstRect, const wg_borderSPX* dstFrame, const wg_ninePatch* patch, int scale);
-};
+} wg_gfxdevice_calls;
 
 
-struct wg_streambuffer_calls
+//____ wg_streambuffer_calls __________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
@@ -193,9 +208,12 @@ struct wg_streambuffer_calls
 	int					(*streamBufferCapacity)(wg_obj streamBuffer);
 	int					(*streamBufferHasChunk)(wg_obj streamBuffer);
 	int					(*streamBufferBytes)(wg_obj streamBuffer);
-};
+} wg_streambuffer_calls;
 
-struct wg_streamplayer_calls
+
+//____ wg_streamplayer_calls __________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
@@ -205,9 +223,12 @@ struct wg_streamplayer_calls
 	void				(*setStreamPlayerMaxDirtyRects)(wg_obj streamPlayer, int max);
 	int					(*getStreamPlayerDirtyRects)(wg_obj streamPlayer, wg_canvasRef canvas, const wg_rectI** pRects);
 	void				(*clearStreamPlayerDirtyRects)(wg_obj streamPlayer);
-};
+} wg_streamplayer_calls;
 
-struct wg_streampump_calls
+
+//____ wg_streampump_calls ____________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
@@ -220,9 +241,12 @@ struct wg_streampump_calls
 	int					(*pumpUntilFrame)(wg_obj streamPump);
 	int					(*pumpFrame)(wg_obj streamPump);
 	int					(*pumpAll)(wg_obj streamPump);
-};
+} wg_streampump_calls;
 
-struct wg_streamreader_calls
+
+//____ wg_streamreader_calls __________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
@@ -231,10 +255,12 @@ struct wg_streamreader_calls
 	int					(*streamReaderCapacity)(wg_obj streamReader);
 	int					(*streamReaderHasChunk)(wg_obj streamReader);
 	int					(*streamReaderBytes)(wg_obj streamReader);
-};
+} wg_streamreader_calls;
 
 
-struct wg_object_calls
+//____ wg_object_calls ________________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
@@ -245,10 +271,12 @@ struct wg_object_calls
 	void				(*retain)(wg_obj);
 	void				(*release)(wg_obj);
 	int					(*refcount)(wg_obj);
-};
+} wg_object_calls;
 
 
-struct wg_surface_calls
+//____ wg_surface_calls _______________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
@@ -290,10 +318,12 @@ struct wg_surface_calls
 	int					(*addSurfaceObserver)(wg_obj surface, wg_surfaceObserver_func, void* pData, int data);
 	int					(*removeSurfaceObserver)(wg_obj surface, int observerId);
 	wg_surfaceBP		(*getSurfaceBlueprint)(wg_obj surface);
-};
+} wg_surface_calls;
 
 
-struct wg_surfacefactory_calls
+//____ wg_surfacefactory_calls ________________________________________________
+
+typedef struct
 {
 	int					structSize;
 
@@ -302,11 +332,12 @@ struct wg_surfacefactory_calls
 	wg_obj				(*createSurfaceFromBlob)(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj blob, int pitch);
 	wg_obj				(*createSurfaceFromBitmap)(wg_obj factory, const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription);
 	wg_obj				(*createSurfaceFromSurface)(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj fromSurface);
-};
+} wg_surfacefactory_calls;
 
 
+//____ wg_c_callCollection ____________________________________________________
 
-struct wg_c_callCollection
+typedef struct
 {
 	int							structSize;
 
@@ -323,7 +354,7 @@ struct wg_c_callCollection
 	wg_streamreader_calls *		pStreamReader;
 	wg_surface_calls *			pSurface;
 	wg_surfacefactory_calls *	pSurfaceFactory;
-};
+} wg_c_callCollection;
 
 
 

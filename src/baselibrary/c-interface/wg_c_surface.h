@@ -36,17 +36,21 @@ extern "C" {
 	typedef void(*wg_surfaceObserver_func)(int nRects, const wg_rectSPX* pRects, void* pData, int data);
 
 
-	struct wg_pixelBuffer	// NOT BINARY EQUIVALENT!
+	//____ wg_pixelBuffer ________________________________________________________
+
+	typedef struct wg_pixelBuffer	// NOT BINARY EQUIVALENT!
 	{
 		wg_pixelFormat	format;
 		uint8_t* pPixels;
 		const wg_color8* pClut;
 		wg_rectI		rect;
 		int				pitch;
-	};
+	} wg_pixelBuffer;
 
 
-	struct wg_ninePatch
+	//____ wg_ninePatch __________________________________________________________
+
+	typedef struct
 	{
 		wg_rect		block;
 		wg_border	frame;
@@ -58,10 +62,12 @@ extern "C" {
 		wg_pts			rigidPartYOfs;
 		wg_pts			rigidPartYLength;
 		uint8_t			rigidPartYSections;
-	};
+	} wg_ninePatch;
 
 
-	struct wg_surfaceBP				// NOT BINARY EQUIVALENT!
+	//____ wg_surfaceBP __________________________________________________________
+
+	typedef struct				// NOT BINARY EQUIVALENT!
 	{
 		uint8_t				buffered;
 		uint8_t				canvas;
@@ -74,7 +80,7 @@ extern "C" {
 		int					scale;
 		wg_sizeI			size;					// Mandatory, except when creating from other surface.
 		uint8_t				tiling;
-	};
+	} wg_surfaceBP;
 
 
 	//____ Identification __________________________________________

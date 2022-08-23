@@ -32,9 +32,9 @@
 extern "C" {
 #endif
 
+	//____ wg_glyph ______________________________________________________________
 
-
-	struct wg_glyph		// NOT BINARY EQUIVALENT!!!
+	typedef struct		// NOT BINARY EQUIVALENT!!!
 	{
 		wg_spx		advance;
 		uint32_t	kerningIndex;
@@ -46,10 +46,10 @@ extern "C" {
 		wg_rectSPX	rect;
 		wg_spx		bearingX;
 		wg_spx		bearingY;
-	};
+	} wg_glyph;
 
 
-	//.____ Rendering ____________________________________________
+	//____ Rendering ____________________________________________
 
 	int				wg_setFontSize(wg_obj font, wg_spx size);
 	wg_spx			wg_fontSize(wg_obj font);
@@ -63,7 +63,7 @@ extern "C" {
 	wg_spx			wg_maxAscend(wg_obj font);
 	wg_spx 			wg_maxDescend(wg_obj font);
 
-	//.____ Misc ___________________________________________________________
+	//____ Misc ___________________________________________________________
 
 	int				wg_nbGlyphs(wg_obj font);
 	int				wg_hasGlyphs(wg_obj font);

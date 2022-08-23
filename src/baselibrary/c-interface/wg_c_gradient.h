@@ -30,7 +30,9 @@
 extern "C" {
 #endif
 
-	struct wg_gradient
+	//____ wg_gradient ___________________________________________________________
+
+	typedef struct
 	{
 		uint8_t		isValid;
 
@@ -38,7 +40,7 @@ extern "C" {
 		wg_color	topRight;
 		wg_color	bottomRight;
 		wg_color	bottomLeft;
-	};
+	} wg_gradient;
 
 #ifdef __cplusplus
 }

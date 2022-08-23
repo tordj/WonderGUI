@@ -32,11 +32,12 @@ extern "C" {
 #endif
 
 
-struct wg_cacheSlot
+typedef struct
 {
 	wg_obj		surface;
 	wg_coordI	coord;
-};
+} wg_cacheSlot;
+
 
 typedef void(*wg_cacheAddedSurfaceFunc)(wg_obj surface, void * pData, int data);
 typedef void(*wg_cacheRemovedSurfacesFunc)(int nSurfaces, wg_obj* pSurfaces, void * pData, int data);
@@ -44,7 +45,8 @@ typedef void(*wg_cacheClearedFunc)(void * pData, int data);
 
 typedef void* wg_cacheListener;
 
-struct	wg_cacheListenerBP
+
+typedef struct
 {
 	wg_cacheAddedSurfaceFunc	addFunc;
 	void *						addPtr;
@@ -57,7 +59,7 @@ struct	wg_cacheListenerBP
 	wg_cacheClearedFunc			clearFunc;
 	void *						clearPtr;
 	int							clearInt;
-};
+} wg_cacheListenerBP;
 
 
 wg_obj				wg_createBitmapCache( int maxSize, wg_obj surfaceFactory );

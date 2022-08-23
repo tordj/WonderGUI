@@ -111,7 +111,7 @@ namespace wg
       pNew->pNextFree = pHead->pNextFree;
 
       if( pNew->pPrevFree )
-        pNew->pPrevFree->pNextFree = pNew;
+        pNew->pPrevFree->pNextFree = pNew;	// Needed temporarily
       if( pNew->pNextFree )
         pNew->pNextFree->pPrevFree = pNew;
       if( pNew->pNextBlock )

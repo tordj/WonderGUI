@@ -20,53 +20,26 @@
 
 =========================================================================*/
 
-#ifndef WG_C_COLOR_DOT_H
-#define WG_C_COLOR_DOT_H
+#ifndef WG_C_BLOB_DOT_H
+#define WG_C_BLOB_DOT_H
 #pragma once
 
-#include <stdint.h>
+#include <wg_c_types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	//____ wg_color ______________________________________________________________
+	wg_obj 	wg_createBlob( int size );
+	wg_obj 	wg_createBlobFromData( void * pData, int size, void(*destructor)() );
 
-	typedef struct
-	{
-		union
-		{
-			struct
-			{
-				int16_t b;
-				int16_t g;
-				int16_t r;
-				int16_t a;
-			};
-			int64_t argb;
-		};
-	} wg_color;
-
-
-	//____ wg_color8 _____________________________________________________________
-
-	typedef struct
-	{
-		union
-		{
-			struct
-			{
-				uint8_t b;
-				uint8_t g;
-				uint8_t r;
-				uint8_t a;
-			};
-			uint32_t argb;
-		};
-	} wg_color8;
+	int		wg_blobSize( wg_obj blob );
+	void *	wg_blobData( wg_obj blob );
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+
+

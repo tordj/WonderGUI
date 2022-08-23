@@ -35,7 +35,9 @@ extern "C" {
 	typedef	void(*wg_canvasLayers_func)(wg_obj gfxDevice, void * pData, int data );
 
 
-	struct wg_canvasLayersEntryBP
+	//____ wg_canvasLayersEntryBP ________________________________________________
+
+	typedef struct
 	{
 		wg_pixelFormat			format;
 		wg_canvasLayers_func	blendFunc;
@@ -50,10 +52,12 @@ extern "C" {
 		wg_canvasLayers_func	preBlendCanvasFunc;
 		void*					preBlendCanvasPtr;
 		int						preBlendCanvasInt;
-	};
+	} wg_canvasLayersEntryBP;
 
 
-	struct wg_canvasLayersBP
+	//____ wg_canvasLayersBP _____________________________________________________
+
+	typedef struct
 	{
 		wg_canvasLayers_func	clearCanvasFunc;
 		void*					clearCanvasPtr;
@@ -65,7 +69,7 @@ extern "C" {
 		int						baseLayer;
 		wg_canvasLayersEntryBP	layers[WG_MAX_CANVAS_LAYERS];				// Need to end list with entry where format = WG_PIXFMT_UNDEFINED unless full.
 
-	};
+	} wg_canvasLayersBP;
 
 
 	wg_obj			wg_createCanvasLayers(const wg_canvasLayersBP* pBlueprint);

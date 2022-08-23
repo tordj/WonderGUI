@@ -135,6 +135,8 @@ add_library( wondergui
 
 	c-interface/wg_c_base.cpp
 	c-interface/wg_c_base.h
+	c-interface/wg_c_blob.cpp
+	c-interface/wg_c_blob.h
 	c-interface/wg_c_bitmapcache.cpp
 	c-interface/wg_c_bitmapcache.h
 	c-interface/wg_c_bitmapfont.cpp

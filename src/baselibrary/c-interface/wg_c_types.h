@@ -34,32 +34,32 @@ typedef void* wg_obj;
 
 typedef void* wg_component;
 
-typedef	void(*wg_finalizer_func)(void*);
+typedef	void(*wg_finalizer_func)(wg_obj);
 
 
 //____ wg_typeInfo ___________________________________________________________
 
-struct wg_typeInfo
+typedef struct wg_typeInfoStruct
 {
 	const char* className;
-	const wg_typeInfo* pSuperClass;
-};
+	const struct wg_typeInfoStruct* pSuperClass;
+} wg_typeInfo;
 
 //____ wg_tintMode ___________________________________________________________
 
-enum wg_tintMode
+typedef enum
 {
 	WG_TINT_NONE = 0,
 	WG_TINT_FLAT,
 	WG_TINT_GRADIENT_X,
 	WG_TINT_GRADIENT_Y,
 	WG_TINT_GRADIENT_XY
-};
+} wg_tintMode;
 
 
 //____ wg_blendMode ____________________________________________________________
 
-enum wg_blendMode
+typedef enum
 {
 	WG_BLENDMODE_UNDEFINED,
 	WG_BLENDMODE_IGNORE,
@@ -71,30 +71,30 @@ enum wg_blendMode
 	WG_BLENDMODE_MIN,
 	WG_BLENDMODE_MAX,
 	WG_BLENDMODE_MORPH
-};
+} wg_blendMode;
 
 //____ wg_direction ____________________________________________________________
 
-enum wg_direction
+typedef enum
 {
 	WG_DIR_UP,
 	WG_DIR_RIGHT,
 	WG_DIR_DOWM,
 	WG_DIR_LEFT
-};
+} wg_direction;
 
 //____ wg_sampleMethod ____________________________________________________________
 
-enum wg_sampleMethod
+typedef enum
 {
 	WG_SAMPLE_NEAREST,
 	WG_SAMPLE_BILINEAR,
 	WG_SAMPLE_UNDEFINED			// Default to Bilinear if it is accelerated, otherwise Nearest.
-};
+} wg_sampleMethod;
 
 //____ wg_pixelFormat _____________________________________________________________
 
-enum wg_pixelFormat
+typedef enum
 {
 	WG_PIXFMT_UNDEFINED,
 	WG_PIXFMT_CUSTOM,
@@ -120,12 +120,12 @@ enum wg_pixelFormat
 	WG_PIXFMT_RGB_565_BIGENDIAN,	///< 3 high bits of green, 5 bits of blue, 5 bits of red and 3 low bits of green in exactly that order in memory.
 
 	WG_PIXFMT_A_8
-};
+} wg_pixelFormat;
 
 
 //____ wg_pixelDescription _____________________________________________________
 
-struct wg_pixelDescription
+typedef struct
 {
 	uint8_t			format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 	int				bits;			///< Number of bits for the pixel, includes any non-used padding bits.
@@ -153,11 +153,11 @@ struct wg_pixelDescription
 	uint8_t			G_bits;				///< number of bits for green in the pixel
 	uint8_t			B_bits;				///< number of bits for blue in the pixel
 	uint8_t			A_bits;				///< number of bits for alpha in the pixel
-};
+} wg_pixelDescription;
 
 //____ wg_gfxFlip ____________________________________________________________
 
-enum wg_gfxFlip
+typedef enum
 {
 	WG_GFXFLIP_NORMAL = 0,
 	WG_GFXFLIP_X,
@@ -171,51 +171,51 @@ enum wg_gfxFlip
 	WG_GFXFLIP_ROT270,
 	WG_GFXFLIP_ROT270_FLIP_X,
 	WG_GFXFLIP_ROT270_FLIP_Y,
-};
+} wg_gfxFlip;
 
 //____ wg_canvasRef ____________________________________________________________
 
-enum wg_canvasRef
+typedef enum
 {
-	WG_CANVASREF_NONE,
-	WG_CANVASREF_DEFAULT,
-	WG_CANVASREF_1,
-	WG_CANVASREF_2,
-	WG_CANVASREF_3,
-	WG_CANVASREF_4,
-	WG_CANVASREF_5,
-	WG_CANVASREF_6,
-	WG_CANVASREF_7,
-	WG_CANVASREF_8,
-	WG_CANVASREF_9,
-	WG_CANVASREF_10,
-	WG_CANVASREF_11,
-	WG_CANVASREF_12,
-	WG_CANVASREF_13,
-	WG_CANVASREF_14,
-	WG_CANVASREF_15,
-	WG_CANVASREF_16,
-	WG_CANVASREF_17,
-	WG_CANVASREF_18,
-	WG_CANVASREF_19,
-	WG_CANVASREF_20,
-	WG_CANVASREF_21,
-	WG_CANVASREF_22,
-	WG_CANVASREF_23,
-	WG_CANVASREF_24,
-	WG_CANVASREF_25,
-	WG_CANVASREF_26,
-	WG_CANVASREF_27,
-	WG_CANVASREF_28,
-	WG_CANVASREF_29,
-	WG_CANVASREF_30,
-	WG_CANVASREF_31,
-	WG_CANVASREF_32
-};
+	WG_CANVAS_NONE,
+	WG_CANVAS_DEFAULT,
+	WG_CANVAS_1,
+	WG_CANVAS_2,
+	WG_CANVAS_3,
+	WG_CANVAS_4,
+	WG_CANVAS_5,
+	WG_CANVAS_6,
+	WG_CANVAS_7,
+	WG_CANVAS_8,
+	WG_CANVAS_9,
+	WG_CANVAS_10,
+	WG_CANVAS_11,
+	WG_CANVAS_12,
+	WG_CANVAS_13,
+	WG_CANVAS_14,
+	WG_CANVAS_15,
+	WG_CANVAS_16,
+	WG_CANVAS_17,
+	WG_CANVAS_18,
+	WG_CANVAS_19,
+	WG_CANVAS_20,
+	WG_CANVAS_21,
+	WG_CANVAS_22,
+	WG_CANVAS_23,
+	WG_CANVAS_24,
+	WG_CANVAS_25,
+	WG_CANVAS_26,
+	WG_CANVAS_27,
+	WG_CANVAS_28,
+	WG_CANVAS_29,
+	WG_CANVAS_30,
+	WG_CANVAS_31,
+	WG_CANVAS_32
+} wg_canvasRef;
 
 //____ wg_gfxChunkId ____________________________________________________
 
-enum wg_gfxChunkId
+typedef enum
 {
 	WG_GFXCHUNK_OUT_OF_DATA = 0,
 	WG_GFXCHUNK_BEGIN_RENDER = 1,
@@ -289,7 +289,7 @@ enum wg_gfxChunkId
 
 	WG_GFXCHUNK_PROTOCOL_VERSION = 53,
 	WG_GFXCHUNK_TIME_STAMP_MS = 54
-};
+} wg_gfxChunkId;
 
 
 //____ wg_error_severity ________________________________________________

@@ -793,7 +793,7 @@ void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvasRef )
 {
 	int ticker = 0;
 	SizeSPX spriteSize(30*64, 30*64);
-    SizeSPX canvasSize = pDevice->canvas(canvasRef).size*64;
+    SizeSPX canvasSize = pDevice->canvas(canvasRef).size;
 	SizeSPX moveDim(canvasSize.w - spriteSize.w, canvasSize.h - spriteSize.h);
 
 	while (ticker < 600)
@@ -818,11 +818,11 @@ void playRectangleDanceDualScreen(GfxDevice_p pDevice, CanvasRef canvasRef1, Can
 {
 	int ticker = 0;
 	SizeSPX spriteSize1(40*64, 40*64);
-	SizeSPX canvasSize1 = pDevice->canvas(canvasRef1).size*64;
+	SizeSPX canvasSize1 = pDevice->canvas(canvasRef1).size;
 	SizeSPX moveDim1(canvasSize1.w - spriteSize1.w, canvasSize1.h - spriteSize1.h);
 
 	SizeSPX spriteSize2(20*64, 20*64);
-	SizeSPX canvasSize2 = pDevice->canvas(canvasRef2).size*64;
+	SizeSPX canvasSize2 = pDevice->canvas(canvasRef2).size;
 	SizeSPX moveDim2(canvasSize2.w - spriteSize2.w, canvasSize2.h - spriteSize2.h);
 
 	while (ticker < 600)
