@@ -31,41 +31,52 @@ namespace wg
 
 #if defined(_WIN32)
 #	if defined(_M_X64) || defined(_M_IX86)
-#		define IS_BIG_ENDIAN 0
-#		define IS_LITTLE_ENDIAN 1
+#		define WG_IS_BIG_ENDIAN 0
+#		define WG_IS_LITTLE_ENDIAN 1
 #	endif
 #else
 	#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && defined(__ORDER_LITTLE_ENDIAN__)
 	#	 if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-	#		define IS_BIG_ENDIAN 1
-	#		define IS_LITTLE_ENDIAN 0
+	#		define WG_IS_BIG_ENDIAN 1
+	#		define WG_IS_LITTLE_ENDIAN 0
 	#	elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	#		define IS_BIG_ENDIAN 0
-	#		define IS_LITTLE_ENDIAN 1
+	#		define WG_IS_BIG_ENDIAN 0
+	#		define WG_IS_LITTLE_ENDIAN 1
 	#	endif
 	#else
 	#	ifdef __BIG_ENDIAN__
 	#		if __BIG_ENDIAN__
-	#			define IS_BIG_ENDIAN 1
-	#			define IS_LITTLE_ENDIAN 0
+	#			define WG_IS_BIG_ENDIAN 1
+	#			define WG_IS_LITTLE_ENDIAN 0
 	#		endif
 	#	endif
 
 	#	ifdef __LITTLE_ENDIAN__
 	#		if __LITTLE_ENDIAN__
-	#			define IS_BIG_ENDIAN 0
-	#			define IS_LITTLE_ENDIAN 1
+	#			define WG_IS_BIG_ENDIAN 0
+	#			define WG_IS_LITTLE_ENDIAN 1
 	#		endif
 	#	endif
 	#endif
 #endif
 
 
-	#ifndef IS_BIG_ENDIAN
-	#error Could not detect endianness. You need to define IS_BIG_ENDIAN and IS_LITTLE_ENDIAN in wg_types.h
-	#define IS_BIG_ENDIAN 0
-	#define IS_LITTLE_ENDIAN 0
+	#ifndef WG_IS_BIG_ENDIAN
+	#error Could not detect endianness. You need to define WG_IS_BIG_ENDIAN and WG_IS_LITTLE_ENDIAN in wg_types.h
+	#define WG_IS_BIG_ENDIAN 0
+	#define WG_IS_LITTLE_ENDIAN 0
 	#endif
+
+
+	#if INTPTR_MAX == INT64_MAX
+	#		define	WG_IS_64_BITS 1
+	#elif INTPTR_MAX == INT32_MAX
+	#		define WG_IS_64_BITS 0	
+	#else
+	#error Could not detect if target is 32 or 64 bits. You need to set WG_IS_64_BITS in wg_types.h
+	#endif
+
+
 
 	typedef	float	pts;
 	typedef int		spx;

@@ -12,7 +12,7 @@ Although you can use STL's smart pointers in software using WonderGUI, you can *
 
 #### Object
 
-wg::Object is the base class for all reference counted objects. It contains the reference counter and methods for increasing, decreasing and reading the reference count. It also contains some limited means of introspection (without enabling RTTI) and also allows for a "finalizer" callback that is called right before the object is destroyed.
+wg::Object is the base class for all reference counted objects. It contains the reference counter and methods for increasing, decreasing and reading the reference count. It also contains some limited means of introspection and allows for a "finalizer" callback that is called right before the object is destroyed.
 
 
 
@@ -99,8 +99,6 @@ Button_p	pMyButton2 = wg_dynamic_cast<Button_p>(pWidget);
 ```
 
 The difference between them is, like in normal C++, that wg_dynamic_cast makes a safe attempt to cast and returns nullptr if it fails, while static_cast assumes that you know what you are doing and do it the fast way.
-
-Worth noting is that wg_dynamic_cast, unlike dynamic_cast,  does not require/enable C++ RTTI. WonderGUI has its own methods for introspection and use them instead.
 
 Finally there is one more way to cast. Since we can assign to a StrongPtr from a raw C-style pointer, we can simply get the raw pointer, cast it using normal C++ pointer casting and then assign it to the StrongPtr, like this:
 

@@ -693,7 +693,7 @@ RectI sourceOfs;
 
 		case 16:
 
-#if IS_LITTLE_ENDIAN
+#if WG_IS_LITTLE_ENDIAN
 			if (description.A_mask == 0x00 && description.R_mask == 0xF800 && description.G_mask == 0x07E0 && description.B_mask == 0x001F)
 				return description.bLinear ? PixelFormat::BGR_565_linear : PixelFormat::Custom;
 
@@ -710,7 +710,7 @@ RectI sourceOfs;
 
 		case 24:
 
-#if IS_LITTLE_ENDIAN
+#if WG_IS_LITTLE_ENDIAN
 			if (description.A_mask == 0x00000000 && description.R_mask == 0xFF0000 && description.G_mask == 0xFF00 && description.B_mask == 0xFF)
 				return description.bLinear ? PixelFormat::BGR_8_linear : PixelFormat::BGR_8_sRGB;
 #else
@@ -722,7 +722,7 @@ RectI sourceOfs;
 
 		case 32:
 
-#if IS_LITTLE_ENDIAN
+#if WG_IS_LITTLE_ENDIAN
 			if (description.A_mask == 0xFF000000 && description.R_mask == 0xFF0000 && description.G_mask == 0xFF00 && description.B_mask == 0xFF)
 				return description.bLinear ? PixelFormat::BGRA_8_linear : PixelFormat::BGRA_8_sRGB;
 
