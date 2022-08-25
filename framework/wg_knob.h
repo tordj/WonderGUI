@@ -172,7 +172,7 @@ private:
 
 	wg::Surface_p m_pSurf;
 	wg::SurfaceFactory_p m_pSurfaceFactory;
-	float m_fValue;
+	float m_fValue = 0.0f;
 
 	// For new knob mode.
 	int m_iOversampleX = 1;

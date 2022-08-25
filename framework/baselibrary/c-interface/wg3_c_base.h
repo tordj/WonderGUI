@@ -19,32 +19,28 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG3_POINTERS_DOT_H
-#define	WG3_POINTERS_DOT_H
+
+
+#ifndef WG3_C_BASE_DOT_H
+#define WG3_C_BASE_DOT_H
 #pragma once
 
-#include <wg3_object.h>
-#include <wg3_strongptr.h>
-#include <wg3_weakptr.h>
-#include <wg3_strongcomponentptr.h>
-#include <wg3_weakcomponentptr.h>
+#include <wg3_c_types.h>
 
-namespace wg
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-	template <class Type_p>
-	Type_p wg_dynamic_cast(Object * pObject) {
+//TODO: Not a complete wrapper, just contains what is needed for wg-display project to work.
 
-		return dynamic_cast<typename Type_p::raw_type>(pObject);
-	}
+	int		wg_init();
+	int		wg_exit();
 
-	template <class Type_p>
-	Type_p wg_static_cast(Object * pObject) {
+	void	wg_setErrorHandler(void (*errorHandler)(const wg_error_info * pError) );
 
-		return static_cast<typename Type_p::raw_type>(pObject);
-	}
+
+#ifdef __cplusplus
 }
+#endif
 
-
-#endif //WG3_POINTERS_DOT_H
-
+#endif //WG3_C_BASE_DOT_H

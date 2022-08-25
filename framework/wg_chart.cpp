@@ -249,7 +249,7 @@ bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, floa
 
     // HACK!
     // This avoids the problem of top/bottom lines switching color when passing each other in all currently used cases.
-    
+
     if( bottomLineThickness == 0.f )
         bottomLineColor = topLineColor;
 
@@ -281,7 +281,7 @@ bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, floa
         p->bottomLineColorStart = p->bottomLineColor;
         startTransition = true;
     }
-    
+
     if(transitionMs == 0)
     {
        p->frontFill = frontFill;
@@ -876,21 +876,27 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 
 	WgRect waveCanvas = canvas - m_pixelPadding;
 	float sampleScale = waveCanvas.w / (m_lastSample - m_firstSample);
-    
-    int   yOfs = m_valueLabelStyle.bLabelAtEnd ? canvas.y : canvas.y + canvas.h;
 
-	// Draw sample grid lines
+    int   yOfs = m_valueLabelStyle.bLabelAtEnd ? canvas.y : canvas.y + canvas.h;
+    int   yOfs2 = m_sampleLabelStyle.bLabelAtEnd ? canvas.y : canvas.y + canvas.h;
+
+    // Draw sample grid lines
 
 	if (!m_sampleGridLines.empty())
 	{
 		for (auto& line : m_sampleGridLines)
 		{
 			int xOfs = waveCanvas.x + (int) ((line.pos - m_firstSample) * sampleScale);
-			pDevice->drawLine( WgCoord( xOfs, canvas.y )*64, WgDirection::Down, canvas.h*64, line.color, line.thickness * m_scale / WG_SCALE_BASE);
+			pDevice->drawLine( WgCoord( xOfs, canvas.y )*64, WgDirection::Down, canvas.h*64, line.color, line.thickness*64 * m_scale / WG_SCALE_BASE);
+		}
 
-			if (!line.label.isEmpty())
-			{
-				WgPen	pen(pDevice, _canvas);
+        for (auto &line : m_sampleGridLines)
+        {
+            if (!line.label.isEmpty())
+            {
+                int xOfs = waveCanvas.x + (int)((line.pos - m_firstSample) * sampleScale);
+
+                WgPen	pen(pDevice, _canvas);
 				wg::TextAttr attr;
 
 				wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr, m_scale >> 6);
@@ -899,7 +905,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 
                 pen.SetScale(m_scale);
                 pen.SetAttributes(attr);
-                
+
 				WgSize labelSize;
 				labelSize.w = WgUtil::lineWidth(nullptr, attr, wg::StateEnum::Normal, line.label.chars(),m_scale);
 				labelSize.h = pen.GetLineHeight();
@@ -911,7 +917,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 					textOfs = _skinContentRect( m_sampleLabelStyle.pSkin, labelSize, WgStateEnum::Normal, m_scale ).pos();
 				}
 
-				WgCoord labelPos = _placeLabel({ xOfs, yOfs }, m_sampleLabelStyle.alignment, m_sampleLabelStyle.offset, labelSize);
+				WgCoord labelPos = _placeLabel({ xOfs, yOfs2 }, m_sampleLabelStyle.alignment, m_sampleLabelStyle.offset, labelSize);
 
 				if (m_sampleLabelStyle.pSkin)
 					_renderSkin( m_sampleLabelStyle.pSkin, pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
@@ -919,8 +925,8 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 				pen.SetPos(labelPos + textOfs);
 				WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.chars());
 			}
-		}
-	}
+        }
+    }
 
 	// Draw value grid lines
 
@@ -933,16 +939,21 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 		int	  startOfs = mul > 0 ? waveCanvas.y : waveCanvas.y + waveCanvas.h;
 
         int   xOfs = m_valueLabelStyle.bLabelAtEnd ? canvas.x + canvas.w : canvas.x;
-        
+
 		for (auto& line : m_valueGridLines)
 		{
 			int yOfs = startOfs + (int)((line.pos - top) * mul); // +0.5f);
-			pDevice->drawLine( WgCoord( canvas.x, yOfs )*64, WgDirection::Right, canvas.w*64, line.color, line.thickness * m_scale / WG_SCALE_BASE );
+			pDevice->drawLine( WgCoord( canvas.x, yOfs )*64, WgDirection::Right, canvas.w*64, line.color, line.thickness*64 * m_scale / WG_SCALE_BASE );
+		}
 
-			if (!line.label.isEmpty())
+        for (auto &line : m_valueGridLines)
+        {
+            if (!line.label.isEmpty())
 			{
-				WgPen	pen(pDevice, _canvas);
-				wg::TextAttr attr;
+                int yOfs = startOfs + (int)((line.pos - top) * mul); // +0.5f);
+
+                WgPen pen(pDevice, _canvas);
+                wg::TextAttr attr;
 
 				wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr, m_scale >> 6);
 				if( m_valueLabelStyle.pTextStyle )
@@ -962,7 +973,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 					labelSize = _skinSizeForContent( m_valueLabelStyle.pSkin, labelSize, m_scale);
 					textOfs = _skinContentRect( m_valueLabelStyle.pSkin, labelSize, WgStateEnum::Normal, m_scale).pos();
 				}
-                
+
 				WgCoord labelPos = _placeLabel({ xOfs, yOfs }, m_valueLabelStyle.alignment, m_valueLabelStyle.offset, labelSize);
 
 				if (m_valueLabelStyle.pSkin)
@@ -971,8 +982,8 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 				pen.SetPos(labelPos + textOfs);
 				WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.chars());
 			}
-		}
-	}
+        }
+    }
 
 	// Render waves
 
@@ -1022,13 +1033,13 @@ void WgChart::_renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& wa
 	WgWaveLine top, bottom;
 
 	top.color = wave.topLineColor;
-	top.thickness = wave.topLineThickness*m_scale/WG_SCALE_BASE;
+	top.thickness = wave.topLineThickness*64*m_scale/WG_SCALE_BASE;
 	top.length = (int) wave.resampledTop.size();
 	top.pWave = wave.resampledTop.data();
 	top.hold = wave.resampledDefault;
 
 	bottom.color = wave.bottomLineColor;
-	bottom.thickness = wave.bottomLineThickness*m_scale/WG_SCALE_BASE;
+	bottom.thickness = wave.bottomLineThickness*64*m_scale/WG_SCALE_BASE;
 	bottom.length = (int)wave.resampledBottom.size();
 	bottom.pWave = wave.resampledBottom.data();
 	bottom.hold = wave.resampledDefault;
@@ -1226,7 +1237,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 	if (valueFactor < 0)
 	{
 		floor = m_bottomValue;
-		yOfs = (float) canvas.h*256;
+		yOfs = (float) canvas.h*64;
 	}
 	else
 	{
@@ -1234,7 +1245,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		yOfs = 0;
 	}
 
-	int newDefault = int(yOfs) + (int)((pWave->defaultSample - floor) * valueFactor * 256);
+	int newDefault = int(yOfs) + (int)((pWave->defaultSample - floor) * valueFactor * 64);
 	int newFirst = (int)((pWave->firstSample - m_firstSample) * sampleScale);
 
 
@@ -1258,7 +1269,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		if (nResampled == pWave->nSamples)
 		{
 			for (int i = 0; i < nResampled; i++)
-				pNewTopSamples[i] = int(yOfs) + (int)((pWave->orgTopSamples[i] - floor) * valueFactor * 256);
+				pNewTopSamples[i] = int(yOfs) + (int)((pWave->orgTopSamples[i] - floor) * valueFactor * 64);
 		}
 		else
 		{
@@ -1268,13 +1279,13 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 			{
 				float sample = stepFactor*i;
 				int ofs = (int)sample;
-				int frac2 = ((int)(sample * 256)) & 0xFF;
-				int frac1 = 256 - frac2;
+				int frac2 = ((int)(sample * 64)) & 0x3F;
+				int frac1 = 64 - frac2;
 
-				int val1 = (int)((pWave->orgTopSamples[ofs] - floor) * valueFactor * 256);
-				int val2 = (int)((pWave->orgTopSamples[ofs+1] - floor) * valueFactor * 256);
+				int val1 = (int)((pWave->orgTopSamples[ofs] - floor) * valueFactor * 64);
+				int val2 = (int)((pWave->orgTopSamples[ofs+1] - floor) * valueFactor * 64);
 
-				pNewTopSamples[i] = int(yOfs) + ((val1*frac1 + val2*frac2) >> 8) ;
+				pNewTopSamples[i] = int(yOfs) + ((val1*frac1 + val2*frac2) >> 6) ;
 			}
 		}
 	}
@@ -1294,7 +1305,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		if (nResampled == pWave->nSamples)
 		{
 			for (int i = 0; i < nResampled; i++)
-				pNewBottomSamples[i] = int(yOfs) + (int)((pWave->orgBottomSamples[i] - floor) * valueFactor * 256);
+				pNewBottomSamples[i] = int(yOfs) + (int)((pWave->orgBottomSamples[i] - floor) * valueFactor * 64);
 		}
 		else
 		{
@@ -1304,13 +1315,13 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 			{
 				float sample = stepFactor*i;
 				int ofs = (int)sample;
-				int frac2 = ((int)(sample * 256)) & 0xFF;
-				int frac1 = 256 - frac2;
+				int frac2 = ((int)(sample * 64)) & 0x3F;
+				int frac1 = 64 - frac2;
 
-				int val1 = (int)((pWave->orgBottomSamples[ofs] - floor) * valueFactor * 256);
-				int val2 = (int)((pWave->orgBottomSamples[ofs + 1] - floor) * valueFactor * 256);
+				int val1 = (int)((pWave->orgBottomSamples[ofs] - floor) * valueFactor * 64);
+				int val2 = (int)((pWave->orgBottomSamples[ofs + 1] - floor) * valueFactor * 64);
 
-				pNewBottomSamples[i] = int(yOfs) + ((val1*frac1 + val2*frac2) >> 8);
+				pNewBottomSamples[i] = int(yOfs) + ((val1*frac1 + val2*frac2) >> 6);
 			}
 		}
 	}
@@ -1406,8 +1417,8 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 		{
 			if (_lineFragmentMinMax(orgSampleOfs, nSamples, nbOrgTopSamples, pOrgTopSamples, orgDefaultSample, &min1, &max1))
 			{
-				topDirtOfs = min1 / 256 - margin;
-				topDirtHeight = max1 / 256 + 2 + margin - topDirtOfs;
+				topDirtOfs = min1 / 64 - margin;
+				topDirtHeight = max1 / 64 + 2 + margin - topDirtOfs;
 			}
 
 			if (_lineFragmentMinMax(newSampleOfs, nSamples, nbNewTopSamples, pNewTopSamples, newDefaultSample, &min2, &max2))
@@ -1421,8 +1432,8 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 				}
 				else
 				{
-					int newOfs = min2 / 256 - margin;
-					int newHeight = max2 / 256 + 2 + margin - newOfs;
+					int newOfs = min2 / 64 - margin;
+					int newHeight = max2 / 64 + 2 + margin - newOfs;
 
 					if (newOfs < topDirtOfs)
 					{
@@ -1443,8 +1454,8 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 		{
 			if (_lineFragmentMinMax(orgSampleOfs, nSamples, nbOrgBottomSamples, pOrgBottomSamples, orgDefaultSample, &min1, &max1))
 			{
-				bottomDirtOfs = min1 / 256 - margin;
-				bottomDirtHeight = max1 / 256 + 2 + margin - bottomDirtOfs;
+				bottomDirtOfs = min1 / 64 - margin;
+				bottomDirtHeight = max1 / 64 + 2 + margin - bottomDirtOfs;
 			}
 
 			if (_lineFragmentMinMax(newSampleOfs, nSamples, nbNewBottomSamples, pNewBottomSamples, newDefaultSample, &min2, &max2))
@@ -1458,8 +1469,8 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 				}
 				else
 				{
-					int newOfs = min2 / 256 - margin;
-					int newHeight = max2 / 256 + 2 + margin - newOfs;
+					int newOfs = min2 / 64 - margin;
+					int newHeight = max2 / 64 + 2 + margin - newOfs;
 
 					if (newOfs < bottomDirtOfs)
 					{

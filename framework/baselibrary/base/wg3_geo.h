@@ -83,7 +83,7 @@ namespace wg
 
 		CoordT() : x(0), y(0) {}
 		CoordT(Type x, Type y) : x(x), y(y) {}
-		CoordT(const CoordT<Type>& coord) : x(coord.x), y(coord.y) {}
+//		CoordT(const CoordT<Type>& coord) : x(coord.x), y(coord.y) {}
 		explicit CoordT(const SizeT<Type>& size);
 
 		template<typename T>
@@ -99,7 +99,7 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
-		inline CoordT<Type> operator=(const CoordT<Type>& k) { x = k.x; y = k.y; return *this; }
+//		inline CoordT<Type> operator=(const CoordT<Type>& k) { x = k.x; y = k.y; return *this; }
 
 		inline bool operator==(const CoordT<Type>& k) const { if (x == k.x && y == k.y) return true; return false; }
 		inline bool operator!=(const CoordT<Type>& k) const { if (x != k.x || y != k.y) return true; return false; }
@@ -251,7 +251,6 @@ namespace wg
 
 		SizeT() : w(0), h(0) {}
 		SizeT( Type width, Type height ) : w(width), h(height) {}
-		SizeT( const SizeT<Type>& size ) : w(size.w), h(size.h) {}
 		explicit SizeT( const CoordT<Type>& coord ) : w(coord.x), h(coord.y) {}
 		SizeT( const CoordT<Type>& c1, const CoordT<Type>& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 
@@ -271,8 +270,6 @@ namespace wg
 		inline bool	isEmpty() const { return (w == 0 && h == 0); }
 
 		//.____ Operators ___________________________________________
-
-		inline SizeT<Type> operator=(const SizeT<Type>& k)	{ w = k.w; h = k.h; return *this; }
 
 		inline bool operator==(const SizeT<Type>& k) const	{ if( w == k.w && h == k.h ) return true; return false; }
 		inline bool operator!=(const SizeT<Type>& k) const	{ if( w != k.w || h != k.h ) return true; return false; }
@@ -370,10 +367,6 @@ namespace wg
 		RectT( Type x, Type y, Type w, Type h ) : x(x), y(y), w(w), h(h) {}	///< @brief Create rectangle with the given values.
 																			///<
 																			///< Create rectangle with the given values.
-		RectT( const RectT<Type>& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}		///< @brief Create a copy of specified rectangle.
-																			///<
-																			///< Create a copy of specified rectangle.
-
 
 
 //		RectT( const RectT<Type>& r1, const RectT<Type>& r2 );						///< @brief Create rectangle from intersection of specified rectangles.
@@ -474,7 +467,6 @@ namespace wg
 
 		//
 
-		inline RectT<Type>& operator=(const RectT<Type>&);					///< @brief Normal assignment operator.
 		inline bool operator==(const RectT<Type>& rect) const;
 		inline bool operator!=(const RectT<Type>& rect) const;
 
@@ -671,20 +663,6 @@ namespace wg
 		if(bottom() <= rect.top()) return false;
 
 		return true;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Normal assignment operator.
-	 **/
-	 template<typename Type>
-	 inline RectT<Type>& RectT<Type>::operator=( const RectT<Type>& r2 )
-	{
-		x = r2.x;
-		y = r2.y;
-		w = r2.w;
-		h = r2.h;
-		return *this;
 	}
 
 	//_____________________________________________________________________________

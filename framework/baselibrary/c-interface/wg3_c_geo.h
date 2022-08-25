@@ -35,91 +35,90 @@ extern "C" {
 	typedef float	wg_pts;
 
 
-	struct wg_coordI
+	typedef struct
 	{
 		int	x, y;
-	};
+	} wg_coordI;
 
-	struct wg_coordF
+	typedef struct
 	{
 		float	x, y;
-	};
+	} wg_coordF;
 
-	struct wg_coord
+	typedef struct
 	{
 		wg_pts	x, y;
-	};
+	} wg_coord;
 
 
-	struct wg_coordSPX
+	typedef struct
 	{
 		wg_spx	x, y;
-	};
+	} wg_coordSPX;
 
 
-	struct wg_sizeI
+	typedef struct
 	{
 		int	w, h;
-	};
+	} wg_sizeI;
 
-	struct wg_sizeF
+	typedef struct
 	{
 		float	w, h;
-	};
+	} wg_sizeF;
 
-	struct wg_size
+	typedef struct
 	{
 		wg_pts	w, h;
-	};
+	} wg_size;
 
 
-	struct wg_sizeSPX
+	typedef struct
 	{
 		wg_spx	w, h;
-	};
+	} wg_sizeSPX;
 
 
-	struct wg_borderI
+	typedef struct
 	{
 		int	top, right, bottom, left;
-	};
+	} wg_borderI;
 
-	struct wg_borderF
+	typedef struct
 	{
 		float	top, right, bottom, left;
-	};
+	} wg_borderF;
 
-	struct wg_border
+	typedef struct
 	{
 		wg_pts	top, right, bottom, left;
-	};
+	} wg_border;
 
-	struct wg_borderSPX
+	typedef struct
 	{
 		wg_spx	top, right, bottom, left;
-	};
+	} wg_borderSPX;
 
 
-	struct wg_rectI
+	typedef struct
 	{
 		int	x, y, w, h;
-	};
+	} wg_rectI;
 
-	struct wg_rectF
+	typedef struct
 	{
 		float	x, y, w, h;
-	};
+	} wg_rectF;
 
-	struct wg_rect
+	typedef struct
 	{
 		wg_pts	x, y, w, h;
-	};
+	} wg_rect;
 
-
-	struct wg_rectSPX
+	typedef struct
 	{
 		wg_spx	x, y, w, h;
-	};
+	} wg_rectSPX;
 
 #ifdef __cplusplus
 }

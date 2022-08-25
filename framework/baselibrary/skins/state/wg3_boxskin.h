@@ -58,7 +58,7 @@ namespace wg
 			StateBP( State state, HiColor color, HiColor outlineColor ) : state(state)
 			{
 				data.color = color;
-				data.outlineColor = color;
+				data.outlineColor = outlineColor;
 			}
 			
 			State			state = State::Normal;

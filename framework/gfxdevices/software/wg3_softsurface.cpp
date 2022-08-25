@@ -39,7 +39,11 @@ namespace wg
 
 	SizeI SoftSurface::maxSize()
 	{
-		return SizeI(65536,65536);
+#if WG_IS_64_BITS
+		return SizeI(1048576,1048576);
+#else
+		return SizeI(65534, 65534);
+#endif
 	}
 
 	//____ Create ______________________________________________________________

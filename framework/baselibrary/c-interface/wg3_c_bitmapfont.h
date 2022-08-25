@@ -39,4 +39,4 @@ wg_obj			wg_getBitmapFontSurface( wg_obj bitmapFont );
 }
 #endif
 
-#endif //WG3_C_FREETYPEFONT_DOT_H
+#endif //WG3_C_BITMAPFONT_DOT_H

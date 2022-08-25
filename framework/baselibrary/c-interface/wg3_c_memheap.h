@@ -19,32 +19,36 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG3_POINTERS_DOT_H
-#define	WG3_POINTERS_DOT_H
+
+
+#ifndef WG3_C_MEMHEAP_DOT_H
+#define WG3_C_MEMHEAP_DOT_H
 #pragma once
 
-#include <wg3_object.h>
-#include <wg3_strongptr.h>
-#include <wg3_weakptr.h>
-#include <wg3_strongcomponentptr.h>
-#include <wg3_weakcomponentptr.h>
+#include <wg3_c_types.h>
 
-namespace wg
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-	template <class Type_p>
-	Type_p wg_dynamic_cast(Object * pObject) {
+	typedef void * wg_memHeap;
 
-		return dynamic_cast<typename Type_p::raw_type>(pObject);
-	}
+	wg_memHeap	wg_initMemHeap( void * pHeap, int bytes );
+	void		wg_exitMemHeap( wg_memHeap heap );
 
-	template <class Type_p>
-	Type_p wg_static_cast(Object * pObject) {
+	void *		wg_malloc( wg_memHeap heap, int bytes );
+	void  		wg_free( wg_memHeap heap, void * pBuffer );
 
-		return static_cast<typename Type_p::raw_type>(pObject);
-	}
+	void		wg_drawFragmentMap( wg_memHeap heap, int nSections, uint16_t * pSectionTable, wg_obj surface );
+
+	void		wg_setMemHeapDebugLevel( wg_memHeap heap, int level );
+
+	int			wg_memHeapCapacity( wg_memHeap heap );
+	int			wg_memHeapReserved( wg_memHeap heap );
+	int			wg_largestAvailableBlock( wg_memHeap heap );
+
+#ifdef __cplusplus
 }
+#endif
 
-
-#endif //WG3_POINTERS_DOT_H
-
+#endif //WG3_C_MEMHEAP_DOT_H

@@ -43,6 +43,7 @@ cp wg_base.* \
    wg_gradient.* \
    wg_gridwalker.* \
    wg_hostbridge.* \
+   wg_memheap.* \
    wg_mempool.* \
    wg_memstack.* \
    wg_nullgfxdevice.* \

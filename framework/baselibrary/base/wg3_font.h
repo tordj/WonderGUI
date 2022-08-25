@@ -101,6 +101,11 @@ namespace wg
 
 		Surface_p				getGlyphAsSurface(uint16_t chr, const Surface::Blueprint& blueprint = Surface::Blueprint() , SurfaceFactory * pFactory = nullptr );
 
+		//.____ Deprecated __________________________________________________________
+		
+		inline void				setBackupFont( Font * pFont ) { m_pBackupFont = pFont; }
+
+		
 	protected:
 		Font( Font * pBackupFont ) : m_pBackupFont(pBackupFont) {}
 		virtual ~Font() {}

@@ -19,32 +19,30 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG3_POINTERS_DOT_H
-#define	WG3_POINTERS_DOT_H
+#ifndef WG3_C_SOFTGFX_DOT_H
+#define WG3_C_SOFTGFX_DOT_H
 #pragma once
 
-#include <wg3_object.h>
-#include <wg3_strongptr.h>
-#include <wg3_weakptr.h>
-#include <wg3_strongcomponentptr.h>
-#include <wg3_weakcomponentptr.h>
+#include <wg3_c_types.h>
+#include <wg3_c_surface.h>
 
-namespace wg
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-	template <class Type_p>
-	Type_p wg_dynamic_cast(Object * pObject) {
+	wg_obj	wg_createSoftGfxDevice();
+	int		wg_defineSoftGfxDeviceCanvas( wg_obj device, wg_canvasRef ref, wg_obj softSurface );
 
-		return dynamic_cast<typename Type_p::raw_type>(pObject);
-	}
+	wg_obj	wg_createSoftSurface(const wg_surfaceBP* blueprint);
+	wg_obj	wg_createSoftSurfaceFromBlob(const wg_surfaceBP* blueprint, wg_obj blob, int pitch);
+	wg_obj	wg_createSoftSurfaceFromBitmap(const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription);
+	wg_obj	wg_createSoftSurfaceFromSurface(const wg_surfaceBP* blueprint, wg_obj fromSurface);
 
-	template <class Type_p>
-	Type_p wg_static_cast(Object * pObject) {
+	wg_obj	wg_createSoftSurfaceFactory();
 
-		return static_cast<typename Type_p::raw_type>(pObject);
-	}
+
+#ifdef __cplusplus
 }
+#endif
 
-
-#endif //WG3_POINTERS_DOT_H
-
+#endif // WG3_C_SOFTGFX_DOT_H

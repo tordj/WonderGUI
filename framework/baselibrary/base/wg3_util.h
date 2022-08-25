@@ -296,7 +296,7 @@ namespace wg
 
 		inline bool isSystemBigEndian()
 		{
-	#if IS_LITTLE_ENDIAN
+	#if WG_IS_LITTLE_ENDIAN
 			return false;
 	#else
 			return true;

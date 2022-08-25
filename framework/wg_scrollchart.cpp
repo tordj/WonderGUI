@@ -913,7 +913,7 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 	if (valueFactor < 0)
 	{
 		graphFloor = m_bottomValue;
-		yOfs = canvasHeight * 256;
+		yOfs = canvasHeight * 64;
 	}
 	else
 	{
@@ -934,10 +934,10 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 
 
 
-			int floor = yOfs + (int)((wave.floorValue - graphFloor) * valueFactor * 256);
+			int floor = yOfs + (int)((wave.floorValue - graphFloor) * valueFactor * 64);
 
-			WgWaveLine topLine = { waveSamples, wave.topLineThickness, wave.topLineColor, pTopBuffer, 0 };
-			WgWaveLine bottomLine = { waveSamples, wave.bottomLineThickness, wave.bottomLineColor, pBottomBuffer, floor };
+			WgWaveLine topLine = { waveSamples, wave.topLineThickness*64, wave.topLineColor, pTopBuffer, 0 };
+			WgWaveLine bottomLine = { waveSamples, wave.bottomLineThickness*64, wave.bottomLineColor, pBottomBuffer, floor };
 
 			switch (wave.type)
 			{
@@ -998,7 +998,7 @@ void WgScrollChart::_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop,
 	if (valueFactor < 0)
 	{
 		floor = m_bottomValue;
-		yOfs = canvasHeight * 256;
+		yOfs = canvasHeight * 64;
 	}
 	else
 	{
@@ -1026,13 +1026,13 @@ void WgScrollChart::_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop,
 
 
 		float top = itPrev->top * (1-fraction) + itNext->top * fraction;
-		*pOutTop++ = yOfs + (int) ((top-floor) * valueFactor * 256);
+		*pOutTop++ = yOfs + (int) ((top-floor) * valueFactor * 64);
 
 
 		if (wave.type == WaveType::Complex)
 		{
 			float bottom = itPrev->bottom * (1-fraction) + itNext->bottom * fraction;
-			*pOutBottom++ = yOfs + (int) ((bottom - floor) * valueFactor * 256);
+			*pOutBottom++ = yOfs + (int) ((bottom - floor) * valueFactor * 64);
 		}
 		pixelTimestamp += timestampInc;
 		i++;
@@ -1063,7 +1063,7 @@ void WgScrollChart::_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _can
 		for (auto& line : m_valueGridLines)
 		{
 			int yOfs = int(startOfs) + (int)((line.pos - top) * mul + 0.5f);
-			pDevice->drawLine( WgCoord( _canvas.x, yOfs )*64, WgDirection::Right, _canvas.w*64, line.color, line.thickness * m_scale / WG_SCALE_BASE);
+			pDevice->drawLine( WgCoord( _canvas.x, yOfs )*64, WgDirection::Right, _canvas.w*64, line.color, line.thickness*64 * m_scale / WG_SCALE_BASE);
 		}
 	}
 }

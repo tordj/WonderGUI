@@ -134,7 +134,11 @@ namespace wg
 		PixelFormat				layerFormat(int layer) const;
 		inline int				baseLayer() const { return m_baseLayer;  }
 
-
+		//.____ Misc __________________________________________________________
+		
+		static constexpr int	maxLayers() { return c_maxLayers; }
+		
+		
 	protected:
 		CanvasLayers(const Blueprint& bp);
 

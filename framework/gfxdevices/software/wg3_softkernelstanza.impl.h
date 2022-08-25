@@ -212,7 +212,7 @@ inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const C
 	if (format == PixelFormat::BGR_565_linear)
 	{
 		uint16_t pixel = *(uint16_t*)pPixel;
-#if IS_BIG_ENDIAN
+#if WG_IS_BIG_ENDIAN
 		pixel = Util::endianSwap(pixel);
 #endif
 		outB = s_fast8_channel_5[(uint8_t)pixel];
@@ -224,7 +224,7 @@ inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const C
 	if (format == PixelFormat::RGB_565_bigendian)
 	{
 		uint16_t pixel = *(uint16_t*)pPixel;
-#if IS_LITTLE_ENDIAN
+#if WG_IS_LITTLE_ENDIAN
 		pixel = Util::endianSwap(pixel);
 #endif
 		outR = s_fast8_channel_5[(uint8_t)pixel];
@@ -310,7 +310,7 @@ inline void _read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8*
 	if (format == PixelFormat::BGR_565_linear)
 	{
 		uint16_t pixel = *(uint16_t*)pPixel;
-#if IS_BIG_ENDIAN
+#if WG_IS_BIG_ENDIAN
 		pixel = Util::endianSwap(pixel);
 #endif
 		outB = s_channel_5[(uint8_t)pixel];
@@ -322,7 +322,7 @@ inline void _read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8*
 	if (format == PixelFormat::RGB_565_bigendian)
 	{
 		uint16_t pixel = *(uint16_t*)pPixel;
-#if IS_LITTLE_ENDIAN
+#if WG_IS_LITTLE_ENDIAN
 		pixel = Util::endianSwap(pixel);
 #endif
 		outR = s_channel_5[(uint8_t)pixel];
@@ -2259,21 +2259,43 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 		}
 	}
 
+#if WG_IS_64_BITS
+
+	typedef int64_t myInt;
+/*
+	const int64_t BINAL_MUL = 32768;
+	const int64_t BINAL_SHIFT = 15;
+	const int64_t BINAL_MASK = 0x7FFF;
+*/
+	const int64_t BINAL_MUL = 16777216;
+	const int64_t BINAL_SHIFT = 24;
+	const int64_t BINAL_MASK = 0xFFFFFF;
+
+#else
+
+	typedef int32_t myInt;
+	const int32_t BINAL_MUL = 32768;
+	const int32_t BINAL_SHIFT = 15;
+	const int32_t BINAL_MASK = 0x7FFF;
+
+#endif
+
 	int srcPixelBytes = pSrcSurf->pixelBytes();
 	int	srcPitch = pSrcSurf->pitch();
-	SizeI srcMax = pSrcSurf->pixelSize() * 32768;
+	myInt srcMax_w = pSrcSurf->pixelSize().w * BINAL_MUL;
+	myInt srcMax_h = pSrcSurf->pixelSize().h * BINAL_MUL;
 
-	int pixelIncX = (int)(matrix[0][0] * 32768);
-	int pixelIncY = (int)(matrix[0][1] * 32768);
+	myInt pixelIncX = (myInt)(matrix[0][0] * BINAL_MUL);
+	myInt pixelIncY = (myInt)(matrix[0][1] * BINAL_MUL);
 
-	int lineIncX = (int)(matrix[1][0] * 32768);
-	int lineIncY = (int)(matrix[1][1] * 32768);
+	myInt lineIncX = (myInt)(matrix[1][0] * BINAL_MUL);
+	myInt lineIncY = (myInt)(matrix[1][1] * BINAL_MUL);
 
-	int	srcPosMaskX = pSrcSurf->tileMaskX();
-	int	srcPosMaskY = pSrcSurf->tileMaskY();
+	myInt	srcPosMaskX = pSrcSurf->tileMaskX();
+	myInt	srcPosMaskY = pSrcSurf->tileMaskY();
 
-	int	srcPosMaskX_15binals = (srcPosMaskX << 15) | 0x7FFF;
-	int	srcPosMaskY_15binals = (srcPosMaskY << 15) | 0x7FFF;
+	myInt	srcPosMaskX_binals = (srcPosMaskX << BINAL_SHIFT) | BINAL_MASK;
+	myInt	srcPosMaskY_binals = (srcPosMaskY << BINAL_SHIFT) | BINAL_MASK;
 
 	const Color8 * pClut = pSrcSurf->clut();
 	const HiColor * pClut4096 = pSrcSurf->clut4096();
@@ -2281,22 +2303,22 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 	
 	for (int y = 0; y < nLines; y++)
 	{
-		int ofsX = (int)(pos.x * 32768 + lineIncX * y);
-		int ofsY = (int)(pos.y * 32768 + lineIncY * y);		// We use 15 binals for all calculations
+		myInt ofsX = (myInt)(pos.x * BINAL_MUL + lineIncX * y);
+		myInt ofsY = (myInt)(pos.y * BINAL_MUL + lineIncY * y);		// We use 15 binals for all calculations
 
 
 		for (int x = 0; x < lineLength; x++)
 		{
 			if (EDGEOP == SoftGfxDevice::EdgeOp::Tile)
 			{
-				ofsX &= srcPosMaskX_15binals;
-				ofsY &= srcPosMaskY_15binals;
+				ofsX &= srcPosMaskX_binals;
+				ofsY &= srcPosMaskY_binals;
 			}
 
 			// Step 1: Read source color.
 
 			int16_t srcB, srcG, srcR, srcA;
-			uint8_t* p = pSrcSurf->pixels() + (ofsY >> 15) * srcPitch + (ofsX >> 15) * srcPixelBytes;
+			uint8_t* p = pSrcSurf->pixels() + (ofsY >> BINAL_SHIFT) * srcPitch + (ofsX >> BINAL_SHIFT) * srcPixelBytes;
 
 			if (SAMPLEMETHOD == SampleMethod::Bilinear)
 			{
@@ -2307,9 +2329,9 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 				int16_t src21_b, src21_g, src21_r, src21_a;
 				int16_t src22_b, src22_g, src22_r, src22_a;
 
-				if (EDGEOP == SoftGfxDevice::EdgeOp::Clip && ((ofsX | ofsY | (srcMax.w - (ofsX + 32768 + 1)) | (srcMax.h - (ofsY + 32768 + 1))) < 0))
+				if (EDGEOP == SoftGfxDevice::EdgeOp::Clip && ((ofsX | ofsY | (srcMax_w - (ofsX + BINAL_MUL + 1)) | (srcMax_h - (ofsY + BINAL_MUL + 1))) < 0))
 				{
-					if (ofsX > srcMax.w || ofsY > srcMax.h || ofsX < -32768 || ofsY < -32768)
+					if (ofsX > srcMax_w || ofsY > srcMax_h || ofsX < -BINAL_MUL || ofsY < -BINAL_MUL)
 					{
 						// Totally outside, no need to process pixel
 
@@ -2324,44 +2346,44 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 
 						if (bFast8)
 						{
-							if (ofsX >= 0 && ofsY >= 0 && ofsX < srcMax.w && ofsY < srcMax.h)
+							if (ofsX >= 0 && ofsY >= 0 && ofsX < srcMax_w && ofsY < srcMax_h)
 								_read_pixel_fast8(p, SRCFORMAT, pClut, pClut4096, src11_b, src11_g, src11_r, src11_a);
 							else
 								src11_b = src11_g = src11_r = src11_a = 0;
 
-							if ((ofsX + 32768) >= 0 && ofsY >= 0 && (ofsX + 32768) < srcMax.w && ofsY < srcMax.h)
+							if ((ofsX + BINAL_MUL) >= 0 && ofsY >= 0 && (ofsX + BINAL_MUL) < srcMax_w && ofsY < srcMax_h)
 								_read_pixel_fast8(p + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src12_b, src12_g, src12_r, src12_a);
 							else
 								src12_b = src12_g = src12_r = src12_a = 0;
 
-							if (ofsX >= 0 && (ofsY + 32768) >= 0 && ofsX < srcMax.w && (ofsY + 32768) < srcMax.h)
+							if (ofsX >= 0 && (ofsY + BINAL_MUL) >= 0 && ofsX < srcMax_w && (ofsY + BINAL_MUL) < srcMax_h)
 								_read_pixel_fast8(p + srcPitch, SRCFORMAT, pClut, pClut4096, src21_b, src21_g, src21_r, src21_a);
 							else
 								src21_b = src21_g = src21_r = src21_a = 0;
 
-							if ((ofsX + 32768) >= 0 && (ofsY + 32768) >= 0 && (ofsX + 32768) < srcMax.w && (ofsY + 32768) < srcMax.h)
+							if ((ofsX + 32768) >= 0 && (ofsY + BINAL_MUL) >= 0 && (ofsX + BINAL_MUL) < srcMax_w && (ofsY + BINAL_MUL) < srcMax_h)
 								_read_pixel_fast8(p + srcPitch + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src22_b, src22_g, src22_r, src22_a);
 							else
 								src22_b = src22_g = src22_r = src22_a = 0;
 						}
 						else
 						{
-							if (ofsX >= 0 && ofsY >= 0 && ofsX < srcMax.w && ofsY < srcMax.h)
+							if (ofsX >= 0 && ofsY >= 0 && ofsX < srcMax_w && ofsY < srcMax_h)
 								_read_pixel(p, SRCFORMAT, pClut, pClut4096, src11_b, src11_g, src11_r, src11_a);
 							else
 								src11_b = src11_g = src11_r = src11_a = 0;
 
-							if ((ofsX + 32768) >= 0 && ofsY >= 0 && (ofsX + 32768) < srcMax.w && ofsY < srcMax.h)
+							if ((ofsX + BINAL_MUL) >= 0 && ofsY >= 0 && (ofsX + BINAL_MUL) < srcMax_w && ofsY < srcMax_h)
 								_read_pixel(p + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src12_b, src12_g, src12_r, src12_a);
 							else
 								src12_b = src12_g = src12_r = src12_a = 0;
 
-							if (ofsX >= 0 && (ofsY + 32768) >= 0 && ofsX < srcMax.w && (ofsY + 32768) < srcMax.h)
+							if (ofsX >= 0 && (ofsY + BINAL_MUL) >= 0 && ofsX < srcMax_w && (ofsY + BINAL_MUL) < srcMax_h)
 								_read_pixel(p + srcPitch, SRCFORMAT, pClut, pClut4096, src21_b, src21_g, src21_r, src21_a);
 							else
 								src21_b = src21_g = src21_r = src21_a = 0;
 
-							if ((ofsX + 32768) >= 0 && (ofsY + 32768) >= 0 && (ofsX + 32768) < srcMax.w && (ofsY + 32768) < srcMax.h)
+							if ((ofsX + BINAL_MUL) >= 0 && (ofsY + BINAL_MUL) >= 0 && (ofsX + BINAL_MUL) < srcMax_w && (ofsY + BINAL_MUL) < srcMax_h)
 								_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src22_b, src22_g, src22_r, src22_a);
 							else
 								src22_b = src22_g = src22_r = src22_a = 0;
@@ -2374,7 +2396,7 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 
 					if (EDGEOP == SoftGfxDevice::EdgeOp::Tile)
 					{
-						int x = (ofsX >> 15), y = (ofsY >> 15);
+						myInt x = (ofsX >> BINAL_SHIFT), y = (ofsY >> BINAL_SHIFT);
 
 						p2 = pSrcSurf->pixels() + y * srcPitch + ((x + 1) & srcPosMaskX) * srcPixelBytes;
 						p3 = pSrcSurf->pixels() + ((y + 1) & srcPosMaskY) * srcPitch + x * srcPixelBytes;
@@ -2384,8 +2406,8 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 					{
 						//							assert((ofsX | ofsY | (srcMax.w - (ofsX + 32768)) | (srcMax.h - (ofsY + 32768))) >= 0);
 
-						int nextX = (ofsX & 0x7FFF) == 0 ? 0 : srcPixelBytes;
-						int nextY = (ofsY & 0x7FFF) == 0 ? 0 : srcPitch;
+						myInt nextX = (ofsX & BINAL_MASK) == 0 ? 0 : srcPixelBytes;
+						myInt nextY = (ofsY & BINAL_MASK) == 0 ? 0 : srcPitch;
 
 						p2 = p + nextX;
 						p3 = p + nextY;
@@ -2410,26 +2432,26 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 
 				// Interpolate our 2x2 source colors into one source color, srcX
 
-				int fracX2 = ofsX & 0x7FFF;
-				int fracX1 = 32768 - fracX2;
+				myInt fracX2 = ofsX & BINAL_MASK;
+				myInt fracX1 = BINAL_MUL - fracX2;
 
-				int fracY2 = ofsY & 0x7FFF;
-				int fracY1 = 32768 - fracY2;
+				myInt fracY2 = ofsY & BINAL_MASK;
+				myInt fracY1 = BINAL_MUL - fracY2;
 
-				int mul11 = fracX1 * fracY1 >> 15;
-				int mul12 = fracX2 * fracY1 >> 15;
-				int mul21 = fracX1 * fracY2 >> 15;
-				int mul22 = fracX2 * fracY2 >> 15;
+				myInt mul11 = fracX1 * fracY1 >> BINAL_SHIFT;
+				myInt mul12 = fracX2 * fracY1 >> BINAL_SHIFT;
+				myInt mul21 = fracX1 * fracY2 >> BINAL_SHIFT;
+				myInt mul22 = fracX2 * fracY2 >> BINAL_SHIFT;
 
-				srcB = (src11_b * mul11 + src12_b * mul12 + src21_b * mul21 + src22_b * mul22) >> 15;
-				srcG = (src11_g * mul11 + src12_g * mul12 + src21_g * mul21 + src22_g * mul22) >> 15;
-				srcR = (src11_r * mul11 + src12_r * mul12 + src21_r * mul21 + src22_r * mul22) >> 15;
-				srcA = (src11_a * mul11 + src12_a * mul12 + src21_a * mul21 + src22_a * mul22) >> 15;
+				srcB = (src11_b * mul11 + src12_b * mul12 + src21_b * mul21 + src22_b * mul22) >> BINAL_SHIFT;
+				srcG = (src11_g * mul11 + src12_g * mul12 + src21_g * mul21 + src22_g * mul22) >> BINAL_SHIFT;
+				srcR = (src11_r * mul11 + src12_r * mul12 + src21_r * mul21 + src22_r * mul22) >> BINAL_SHIFT;
+				srcA = (src11_a * mul11 + src12_a * mul12 + src21_a * mul21 + src22_a * mul22) >> BINAL_SHIFT;
 
 			}
 			else
 			{
-				if (EDGEOP == SoftGfxDevice::EdgeOp::Clip && ((ofsX | ofsY | (srcMax.w - 1 - ofsX) | (srcMax.h - 1 - ofsY)) < 0))
+				if (EDGEOP == SoftGfxDevice::EdgeOp::Clip && ((ofsX | ofsY | (srcMax_w - 1 - ofsX) | (srcMax_h - 1 - ofsY)) < 0))
 				{
 					ofsX += pixelIncX;
 					ofsY += pixelIncY;
@@ -2438,7 +2460,7 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 				}
 				else
 				{
-					assert((ofsX | ofsY | (srcMax.w - 1 - ofsX) | (srcMax.h - 1 - ofsY)) >= 0);
+					assert((ofsX | ofsY | (srcMax_w - 1 - ofsX) | (srcMax_h - 1 - ofsY)) >= 0);
 					if (bFast8)
 						_read_pixel_fast8(p, SRCFORMAT, pClut, pClut4096, srcB, srcG, srcR, srcA);
 					else

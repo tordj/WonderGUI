@@ -24,6 +24,8 @@
 #define	WG3_GFXSTREAMENCODER_DOT_H
 #pragma once
 
+#include <cstring>
+
 #include <wg3_cgfxstreamsink.h>
 #include <wg3_types.h>
 #include <wg3_geo.h>

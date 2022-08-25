@@ -28,7 +28,7 @@
 #include <wg3_surface.h>
 
 typedef void* wg_obj;
-class wg_surfaceBP;
+typedef struct wg_surfaceBP_struct wg_surfaceBP;
 
 namespace wg
 {
