@@ -13,7 +13,7 @@ add_library( wgmetalgfx
 	wg_metalsurfacefactory.mm
 )
 
-set_source_files_properties(wg_metalshaders.mm.template wg_shadercontent.mm PROPERTIES HEADER_FILE_ONLY YES)
+set_source_files_properties(wg3_metalshaders.mm.template wg3_shadercontent.mm PROPERTIES HEADER_FILE_ONLY YES)
 
 target_include_directories(wgmetalgfx PRIVATE 
 	

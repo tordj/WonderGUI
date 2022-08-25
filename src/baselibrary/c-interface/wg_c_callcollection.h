@@ -47,7 +47,7 @@ extern "C" {
 
 //____ wg_bitmapcache_calls ___________________________________________________
 
-typedef struct
+typedef struct wg_bitmapcache_calls_struct
 {
 	int					structSize;
 
@@ -66,7 +66,7 @@ typedef struct
 
 //____ wg_bitmapfont_calls ____________________________________________________
 
-typedef struct
+typedef struct wg_bitmapfont_calls_struct
 {
 	int					structSize;
 
@@ -77,7 +77,7 @@ typedef struct
 
 //____ wg_canvaslayers_calls __________________________________________________
 
-typedef struct
+typedef struct wg_canvaslayers_calls_struct
 {
 	int					structSize;
 
@@ -90,7 +90,7 @@ typedef struct
 
 //____ wg_component_calls _____________________________________________________
 
-typedef struct
+typedef struct wg_component_calls_struct
 {
 	int					structSize;
 
@@ -102,7 +102,7 @@ typedef struct
 
 //____ wg_font_calls __________________________________________________________
 
-typedef struct
+typedef struct wg_font_calls_struct
 {
 	int					structSize;
 
@@ -128,7 +128,7 @@ typedef struct
 
 //____ wg_gfxdevice_calls _____________________________________________________
 
-typedef struct
+typedef struct wg_gfxdevice_calls_struct
 {
 	int					structSize;
 
@@ -198,7 +198,7 @@ typedef struct
 
 //____ wg_streambuffer_calls __________________________________________________
 
-typedef struct
+typedef struct wg_streambuffer_calls_struct
 {
 	int					structSize;
 
@@ -213,7 +213,7 @@ typedef struct
 
 //____ wg_streamplayer_calls __________________________________________________
 
-typedef struct
+typedef struct wg_streamplayer_calls_struct
 {
 	int					structSize;
 
@@ -228,7 +228,7 @@ typedef struct
 
 //____ wg_streampump_calls ____________________________________________________
 
-typedef struct
+typedef struct wg_streampump_calls_struct
 {
 	int					structSize;
 
@@ -246,7 +246,7 @@ typedef struct
 
 //____ wg_streamreader_calls __________________________________________________
 
-typedef struct
+typedef struct wg_streamreader_calls_struct
 {
 	int					structSize;
 
@@ -260,7 +260,7 @@ typedef struct
 
 //____ wg_object_calls ________________________________________________________
 
-typedef struct
+typedef struct wg_object_calls_struct
 {
 	int					structSize;
 
@@ -276,7 +276,7 @@ typedef struct
 
 //____ wg_surface_calls _______________________________________________________
 
-typedef struct
+typedef struct wg_surface_calls_struct
 {
 	int					structSize;
 
@@ -323,7 +323,7 @@ typedef struct
 
 //____ wg_surfacefactory_calls ________________________________________________
 
-typedef struct
+typedef struct wg_surfacefactory_calls_struct
 {
 	int					structSize;
 
@@ -337,7 +337,7 @@ typedef struct
 
 //____ wg_c_callCollection ____________________________________________________
 
-typedef struct
+typedef struct wg_c_callCollection_struct
 {
 	int							structSize;
 

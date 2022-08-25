@@ -38,7 +38,7 @@ extern "C" {
 
 	//____ wg_pixelBuffer ________________________________________________________
 
-	typedef struct wg_pixelBuffer	// NOT BINARY EQUIVALENT!
+	typedef struct	wg_pixelBuffer_struct		// NOT BINARY EQUIVALENT!
 	{
 		wg_pixelFormat	format;
 		uint8_t* pPixels;
@@ -50,7 +50,7 @@ extern "C" {
 
 	//____ wg_ninePatch __________________________________________________________
 
-	typedef struct
+	typedef struct wg_ninePatch_struct
 	{
 		wg_rect		block;
 		wg_border	frame;
@@ -67,7 +67,7 @@ extern "C" {
 
 	//____ wg_surfaceBP __________________________________________________________
 
-	typedef struct				// NOT BINARY EQUIVALENT!
+	typedef struct wg_surfaceBP_struct			// NOT BINARY EQUIVALENT!
 	{
 		uint8_t				buffered;
 		uint8_t				canvas;

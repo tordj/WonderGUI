@@ -32,7 +32,7 @@ extern "C" {
 #endif
 
 
-typedef struct
+typedef struct wg_cacheSlot_struct
 {
 	wg_obj		surface;
 	wg_coordI	coord;
@@ -46,7 +46,7 @@ typedef void(*wg_cacheClearedFunc)(void * pData, int data);
 typedef void* wg_cacheListener;
 
 
-typedef struct
+typedef struct wg_cacheListenerBP_struct
 {
 	wg_cacheAddedSurfaceFunc	addFunc;
 	void *						addPtr;

@@ -630,7 +630,7 @@ namespace wg
 				swap(beg, end);
 
 			length = end.x - beg.x;
-			slope = ((end.y - beg.y) << 16) / length;
+			slope = ((end.y - beg.y) * 65536) / length;
 
 			width = _scaleLineThickness(thickness/64.f, slope);
 			pos = (beg.y << 16) - width / 2 + 32768;

@@ -37,7 +37,7 @@ extern "C" {
 
 	//____ wg_canvasLayersEntryBP ________________________________________________
 
-	typedef struct
+	typedef struct wg_canvasLayersEntryBP_struct
 	{
 		wg_pixelFormat			format;
 		wg_canvasLayers_func	blendFunc;
@@ -57,7 +57,7 @@ extern "C" {
 
 	//____ wg_canvasLayersBP _____________________________________________________
 
-	typedef struct
+	typedef struct wg_canvasLayersBP_struct
 	{
 		wg_canvasLayers_func	clearCanvasFunc;
 		void*					clearCanvasPtr;

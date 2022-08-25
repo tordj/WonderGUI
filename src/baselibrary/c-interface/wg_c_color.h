@@ -32,7 +32,7 @@ extern "C" {
 
 	//____ wg_color ______________________________________________________________
 
-	typedef struct
+	typedef struct wg_color_struct
 	{
 		union
 		{
@@ -50,7 +50,7 @@ extern "C" {
 
 	//____ wg_color8 _____________________________________________________________
 
-	typedef struct
+	typedef struct wg_color8_struct
 	{
 		union
 		{

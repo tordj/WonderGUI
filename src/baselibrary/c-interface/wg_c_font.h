@@ -34,7 +34,7 @@ extern "C" {
 
 	//____ wg_glyph ______________________________________________________________
 
-	typedef struct		// NOT BINARY EQUIVALENT!!!
+	typedef struct wg_glyph_struct		// NOT BINARY EQUIVALENT!!!
 	{
 		wg_spx		advance;
 		uint32_t	kerningIndex;

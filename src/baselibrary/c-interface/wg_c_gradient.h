@@ -32,7 +32,7 @@ extern "C" {
 
 	//____ wg_gradient ___________________________________________________________
 
-	typedef struct
+	typedef struct wg_gradient_struct
 	{
 		uint8_t		isValid;
 

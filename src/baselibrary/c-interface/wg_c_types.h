@@ -39,10 +39,10 @@ typedef	void(*wg_finalizer_func)(wg_obj);
 
 //____ wg_typeInfo ___________________________________________________________
 
-typedef struct wg_typeInfoStruct
+typedef struct wg_typeInfo_struct
 {
 	const char* className;
-	const struct wg_typeInfoStruct* pSuperClass;
+	const struct wg_typeInfo_struct* pSuperClass;
 } wg_typeInfo;
 
 //____ wg_tintMode ___________________________________________________________
@@ -125,7 +125,7 @@ typedef enum
 
 //____ wg_pixelDescription _____________________________________________________
 
-typedef struct
+typedef struct wg_pixelDescription_struct
 {
 	uint8_t			format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 	int				bits;			///< Number of bits for the pixel, includes any non-used padding bits.
@@ -320,7 +320,7 @@ typedef enum
 
 //____ wg_error_info _____________________________________________________
 
-typedef struct
+typedef struct wg_error_info_struct
 {
 	wg_error_severity	severity;
 	wg_error_code		code;

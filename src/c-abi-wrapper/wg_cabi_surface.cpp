@@ -164,8 +164,8 @@ namespace wg
 	{
 		Surface::removeObserver(observerId);
 
-		if (m_pObserver == nullptr);
-		CABI::surface->removeSurfaceObserver(m_cSurface, m_cObserverId);
+		if (m_pObserver == nullptr)
+			CABI::surface->removeSurfaceObserver(m_cSurface, m_cObserverId);
 
 		return true;
 	}

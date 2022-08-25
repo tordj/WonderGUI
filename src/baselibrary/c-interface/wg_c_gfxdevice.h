@@ -36,7 +36,7 @@ extern "C" {
 
 	//____ wg_waveLine ____________________________________________________________
 
-	typedef struct
+	typedef struct wg_waveLine_struct
 	{
 		int			length;
 		wg_spx		thickness;
@@ -47,7 +47,7 @@ extern "C" {
 
 	//____ wg_canvasInfo __________________________________________________________
 
-	typedef struct		// NOT BINARY EQUIVALENT!
+	typedef struct wg_canvasInfo_struct		// NOT BINARY EQUIVALENT!
 	{
 		wg_canvasRef	ref;
 		wg_obj			surface;
