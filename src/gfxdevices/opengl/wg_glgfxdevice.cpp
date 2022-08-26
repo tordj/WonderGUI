@@ -23,6 +23,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 
 #include <wg_glgfxdevice.h>
 #include <wg_glsurface.h>

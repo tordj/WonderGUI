@@ -26,6 +26,8 @@
 
 #include <wg_cabi.h>
 
+#include <cstring>
+
 namespace wg
 {
 	const TypeInfo CABICanvasLayers::TYPEINFO = { "CABICanvasLayers", &CanvasLayers::TYPEINFO };

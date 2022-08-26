@@ -144,22 +144,6 @@ int main(int argc, char** argv)
 //	printf("LambdaSlot is safe to relocate: %d\n", LambdaSlot::safe_to_relocate);
 
 
-	auto pPackPanel = PackPanel::create();
-
-	auto pBase = wg_static_cast<Widget_p>(pPackPanel);
-
-	auto pPanel = wg_static_cast<Panel_p>(pBase);
-	auto pCapsule = wg_static_cast<Capsule_p>(pBase);
-
-//	auto pBlob = wg_static_cast<Blob_p>(pBase);
-
-	Panel_p p = static_cast<Panel*>(pBase.rawPtr());
-
-	p->firstChild();
-
-	p->setFinalizer([](Object * p) { /* Do something here */ });
-
-
 //	pPackPanel->slots[0].
 
 //	auto it = pPackPanel->slots.begin();
@@ -3005,14 +2989,13 @@ bool memHeapFragmentationTest(CStandardSlot_p pSlot)
 	int x = rand();
 	
 	//---
-	
-	MemHeap heap;
-	
+
 	int heapSize = 1024*1024;
 	
 	auto * pBuffer = new char[heapSize];
-	
-	heap.init(pBuffer, heapSize );
+
+	MemHeap heap(pBuffer,heapSize);
+		
 	heap.setDebugLevel(3);
 
 	void * areas[100];
@@ -3051,7 +3034,6 @@ bool memHeapFragmentationTest(CStandardSlot_p pSlot)
 		heap.free(areas[i]);
 	}
 
-	heap.exit();
 	delete [] pBuffer;
 	
 	Base::setErrorHandler( nullptr );
@@ -3200,46 +3182,41 @@ void unitTestMemHeap()
 	});
 	
 	
-	MemHeap heap;
-	
 	int heapSize = 1024*1024;
-	
-	auto * pBuffer = new char[heapSize];
-	
-	heap.init(pBuffer, heapSize );
-	heap.setDebugLevel(3);
+      	auto * pBuffer = new char[heapSize];
 
-	void * areas[100];
+        {
+	  MemHeap heap(pBuffer, heapSize );
+          heap.setDebugLevel(3);
 
-	// Randomly allocate some areas.
-	
-	for( int i = 0 ; i < 100 ; i++ )
-	{
-		int size = rand() % 8000;
-		areas[i] = heap.malloc(size);
+	  void * areas[100];
+
+	  // Randomly allocate some areas.
+	  
+	  for( int i = 0 ; i < 100 ; i++ )
+	  {
+		  int size = rand() % 8000;
+		  areas[i] = heap.malloc(size);
+	  }
+	  
+	  // Randomly free and reallocate areas
+	  
+	  for( int i = 0 ; i < 100000 ; i++ )
+	  {
+		  int entry = rand() % 100;
+
+		  heap.free(areas[entry]);
+		  
+		  areas[entry] = heap.malloc( rand() % 6000 );
+	  }
+	  
+	  // Free all areas.
+	  
+	  for( int i = 0 ; i < 100 ; i++ )
+	  {
+		  heap.free(areas[i]);
+	  }
 	}
-	
-	// Randomly free and reallocate areas
-	
-	for( int i = 0 ; i < 100000 ; i++ )
-	{
-		int entry = rand() % 100;
-
-		heap.free(areas[entry]);
-		
-		areas[entry] = heap.malloc( rand() % 6000 );
-	}
-	
-	// Free all areas.
-	
-	for( int i = 0 ; i < 100 ; i++ )
-	{
-		heap.free(areas[i]);
-	}
-
-	
-	
-	heap.exit();
 	delete [] pBuffer;
 }
 

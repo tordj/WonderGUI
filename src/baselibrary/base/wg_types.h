@@ -143,8 +143,8 @@ namespace wg
 	template<typename T> class Bitmask
 	{
 	public:
-		Bitmask<T>() { m_mask = 0; }
-		Bitmask<T>(T v) { m_mask = v; }
+	  Bitmask() { m_mask = 0; }
+		Bitmask(T v) { m_mask = v; }
 
 		inline void setBit(int index) { m_mask |= (T(1) << index); }
 		inline void setBit(int index, bool value) { m_mask &= ~(T(1) << index); m_mask |= (T(value) << index); }

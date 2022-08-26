@@ -48,6 +48,7 @@
 #include <wg_hostbridge.h>
 #include <wg_inputhandler.h>
 #include <wg_key.h>
+#include <wg_memheap.h>
 #include <wg_mempool.h>
 #include <wg_memstack.h>
 #include <wg_msg.h>
