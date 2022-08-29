@@ -26,6 +26,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdlib>
+#include <cstdio>
 #include <wg_base.h>
 #include <wg_context.h>
 
