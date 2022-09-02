@@ -106,6 +106,7 @@ bool packListTest(CStandardSlot_p pSlot);
 bool packPanelTest(CStandardSlot_p pSlot);
 bool glyphAsSurfaceTest(CStandardSlot_p pSlot, Font_p pFont );
 bool memHeapFragmentationTest(CStandardSlot_p pSlot);
+bool blendRGB565BigendianTest(CStandardSlot_p pSlot);
 
 
 void nisBlendTest();
@@ -672,7 +673,9 @@ int main(int argc, char** argv)
 //	packListTest(&pRoot->slot);
 //	packPanelTest(&pRoot->slot);
 //	glyphAsSurfaceTest(&pRoot->slot, pFont);
-	memHeapFragmentationTest(&pRoot->slot);
+//	memHeapFragmentationTest(&pRoot->slot);
+	blendRGB565BigendianTest(&pRoot->slot);
+
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -3221,3 +3224,29 @@ void unitTestMemHeap()
 }
 
 
+//____ blendRGB565BigendianTest() ______________________________________________________
+
+bool blendRGB565BigendianTest(CStandardSlot_p pEntry)
+{
+	auto pCanvas = CanvasCapsule::create( WGBP(CanvasCapsule,
+															_.pixelFormat = PixelFormat::RGB_565_bigendian ) );
+
+	auto pHSplit = PackPanel::create();
+	pCanvas->slot = pHSplit;
+
+	auto pTextEditor = TextEditor::create( WGBP(TextEditor,
+		_.skin = ColorSkin::create( Color8::Yellow, 5 ) ));
+	pTextEditor->editor.setText("TESTING");
+	pHSplit->slots << pTextEditor;
+
+
+	Surface_p pSplashSurf = loadSurface("resources/splash_opaque.png");
+
+	auto pImage = Image::create( WGBP(Image,
+		_.image = pSplashSurf));
+	pHSplit->slots << pImage;
+
+	*pEntry = pCanvas;
+
+	return true;
+}
