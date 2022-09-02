@@ -115,7 +115,6 @@ namespace wg
 		virtual void	onStateChanged( Text * pText, State newState, State oldState ) = 0;
 		virtual void	onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
 		virtual void	onCharStyleChanged( Text * pText, int ofs = 0, int len = INT_MAX ) = 0;
-		virtual void	onRefresh( Text * pText ) = 0;
 
 
 		virtual SizeSPX	defaultSize( const Text * pText, int scale ) const = 0;

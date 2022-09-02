@@ -182,13 +182,6 @@ namespace wg
 		}
 	}
 
-	//____ _refresh() _______________________________________________________
-
-	void AnimPlayer::_refresh( void )
-	{
-		Widget::_refresh();
-	}
-
 	//____ _alphaTest() ______________________________________________________
 
 	bool AnimPlayer::_alphaTest( const CoordSPX& ofs )

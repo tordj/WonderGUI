@@ -59,7 +59,6 @@ namespace wg
 
 			virtual void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) = 0;
 
-			virtual void		_sideCanvasRefresh( SideCanvas * pCanvas);
 			virtual void		_sideCanvasResize( SideCanvas * pCanvas, const SizeSPX& size, int scale = -1 ) = 0;
 			virtual void		_sideCanvasSetSkin( SideCanvas * pCanvas,  Skin * pSkin ) ;
 			virtual void		_sideCanvasSetState( SideCanvas * pCanvas,  State state );
@@ -91,7 +90,6 @@ namespace wg
 
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 
-		void		_refresh() override;
 		void		_resize( const SizeSPX& size, int scale ) override;
 		void		_setState( State state ) override;
 

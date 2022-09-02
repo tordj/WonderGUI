@@ -490,15 +490,6 @@ namespace wg
 		_requestRender();
 	}
 
-	//____ _refresh() ___________________________________________________________
-
-	void PackList::_refresh()
-	{
-		_refreshHeader();
-		_refreshList();
-		Widget::_refresh();
-	}
-
 	//____ _calcDefaultSize() __________________________________________________
 
 	SizeSPX PackList::_calcDefaultSize( int scale ) const

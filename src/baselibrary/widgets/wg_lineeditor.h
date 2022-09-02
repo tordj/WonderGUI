@@ -86,7 +86,6 @@ namespace wg
 
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void			_resize( const SizeSPX& size, int scale = -1 ) override;
-		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
 

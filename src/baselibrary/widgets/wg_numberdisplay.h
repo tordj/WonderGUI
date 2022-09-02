@@ -88,7 +88,6 @@ namespace wg
 		NumberDisplay( const Blueprint& blueprint );
 		virtual ~NumberDisplay();
 
-		void	_refresh() override;
 		void	_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void	_setState( State state ) override;
 

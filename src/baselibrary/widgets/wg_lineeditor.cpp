@@ -112,14 +112,6 @@ namespace wg
 		popClipList(pDevice, pop);
 	}
 
-	//____ _refresh() _______________________________________________________
-
-	void LineEditor::_refresh( void )
-	{
-		editor._refresh();
-		Widget::_refresh();
-	}
-
 	//____ _setState() ______________________________________________________
 
 	void LineEditor::_setState( State state )

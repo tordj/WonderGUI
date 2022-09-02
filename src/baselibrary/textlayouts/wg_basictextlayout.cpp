@@ -674,7 +674,7 @@ namespace wg
 
 	void BasicTextLayout::onTextModified( Text * pText, int ofs, int charsRemoved, int charsAdded )
 	{
-		onRefresh(pText);
+		_refresh(pText);
 	}
 
 	//____ onResized() ___________________________________________________________
@@ -682,7 +682,7 @@ namespace wg
 	void BasicTextLayout::onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale )
 	{
 		if (m_bLineWrap || newScale != oldScale)
-			onRefresh(pText);
+			_refresh(pText);
 
 
 		///TODO: Implement!
@@ -721,7 +721,7 @@ namespace wg
 
 	void BasicTextLayout::onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
-		onRefresh(pText);
+		_refresh(pText);
 /*
 		//TODO: Optimize: only update line info if textsize possibly affected.
 
@@ -737,7 +737,7 @@ namespace wg
 
 	void BasicTextLayout::onCharStyleChanged( Text * pText, int ofs, int len )
 	{
-		onRefresh(pText);
+		_refresh(pText);
 /*
 		void * pBlock = _dataBlock(pText);
 
@@ -747,9 +747,9 @@ namespace wg
 */
 	}
 
-	//____ onRefresh() ___________________________________________________________
+	//____ _refresh() ___________________________________________________________
 
-	void BasicTextLayout::onRefresh( Text * pText )
+	void BasicTextLayout::_refresh( Text * pText )
 	{
 		const Char * pChars = _chars(pText);
 		int nLines = _countLines( pText, pChars );

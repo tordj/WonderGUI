@@ -282,15 +282,6 @@ namespace wg
 		}
 	}
 
-	//____ _refresh() _______________________________________________________
-
-	void ToggleButton::_refresh( void )
-	{
-		Widget::_refresh();
-
-		//TODO: Handling of icon and text?
-	}
-
 	//____ _resize() _______________________________________________________
 
 	void ToggleButton::_resize( const SizeSPX& size, int scale )

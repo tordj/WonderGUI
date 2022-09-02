@@ -166,16 +166,6 @@ namespace wg
 		label._setSize(textRect,m_scale);
 	}
 
-	//____ _refresh() _________________________________________________________
-
-	void PopupOpener::_refresh()
-	{
-		Widget::_refresh();
-		label._refresh();
-
-		//TODO: Handling of icon and text.
-	}
-
 	//____ _receive() _________________________________________________________
 
 	void PopupOpener::_receive(Msg * pMsg)

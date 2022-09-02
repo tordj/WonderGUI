@@ -119,7 +119,6 @@ namespace wg
 
 		void	_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void	_receive( Msg * pMsg ) override;
-		void	_refresh() override;
 		bool	_alphaTest( const CoordSPX& ofs ) override;
 		void	_setState( State state ) override;
 		void	_setViewPos(pts pos);

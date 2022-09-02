@@ -145,14 +145,6 @@ namespace wg
 		return _layout()->charLine(this, charOfs);
 	}
 
-
-	//____ _refresh() _____________________________________________________________
-
-	void CText::_refresh()
-	{
-		_layout()->onRefresh(this);
-	}
-
 	//____ _setSize() _____________________________________________________________
 
 	void CText::_setSize( SizeSPX size, int scale )

@@ -562,13 +562,6 @@ namespace wg
 		}
 	}
 
-	//____ _sideCanvasRefresh() ________________________________________________
-
-	void SelectBox::_sideCanvasRefresh(SideCanvas * pCanvas)
-	{
-		//TODO: Implement!
-	}
-
 	//____ _sideCanvasResize() _________________________________________________
 
 	void SelectBox::_sideCanvasResize(SideCanvas * pCanvas, const SizeSPX& size, int scale)

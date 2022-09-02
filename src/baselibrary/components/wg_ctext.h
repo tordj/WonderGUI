@@ -86,8 +86,6 @@ namespace wg
 		virtual spx			_matchingWidth(spx height, int scale) const;
 		virtual spx			_matchingHeight(spx width, int scale) const;
 
-		virtual void		_refresh();
-
 		virtual String		_tooltip() const;
 
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas);

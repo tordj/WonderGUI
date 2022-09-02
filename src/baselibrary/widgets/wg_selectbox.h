@@ -171,8 +171,6 @@ namespace wg
 
 		SizeSPX		_sideCanvasDefaultSize( const SideCanvas * pCanvas, int scale = -1 ) const  override;
 		void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
-
-		void		_sideCanvasRefresh( SideCanvas * pCanvas) override;
 		void		_sideCanvasResize( SideCanvas * pCanvas, const SizeSPX& size, int scale = -1 ) override;
 
 		void		_sideCanvasReceive( SideCanvas * pCanvas,  Msg * pMsg ) override;

@@ -129,14 +129,6 @@ namespace wg
 		scrollbar._setState(state);
 	}
 
-
-	//____ _refresh() _______________________________________________________
-
-	void Scrollbar::_refresh( void )
-	{
-		Widget::_refresh();
-	}
-
 	//____ _defaultSize() ___________________________________________________
 
 	SizeSPX Scrollbar::_defaultSize(int scale) const

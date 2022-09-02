@@ -93,7 +93,6 @@ namespace wg
 
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
-		void			_refresh() override;
 		bool			_alphaTest( const CoordSPX& ofs ) override;
 		void			_setState( State state ) override;
 

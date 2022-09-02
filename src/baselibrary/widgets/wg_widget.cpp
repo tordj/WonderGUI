@@ -627,16 +627,6 @@ namespace wg
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
 
-	//____ _refresh() ___________________________________________________________
-
-	void Widget::_refresh()
-	{
-		m_bOpaque = m_skin.isOpaque(m_state);
-
-		_requestResize();
-		_requestRender();
-	}
-
 	//____ _setState() _________________________________________________________
 
 	void Widget::_setState( State state )

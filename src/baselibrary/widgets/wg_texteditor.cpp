@@ -106,15 +106,6 @@ namespace wg
 		editor._render( pDevice, canvas );
 	}
 
-	//____ _refresh() _______________________________________________________
-
-	void TextEditor::_refresh( void )
-	{
-		//TODO: Implement more I believe...
-
-		Widget::_refresh();
-	}
-
 	//____ _setState() ______________________________________________________
 
 	void TextEditor::_setState( State state )

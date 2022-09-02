@@ -98,8 +98,6 @@ namespace wg
 		virtual void	onStateChanged( Text * pText, State newState, State oldState ) override;
 		virtual void	onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) override;
 		virtual void	onCharStyleChanged( Text * pText, int ofs, int len ) override;
-		virtual void	onRefresh( Text * pText ) override;
-
 
 
 		virtual SizeSPX	defaultSize( const Text * pText, int scale ) const override;
@@ -147,6 +145,7 @@ namespace wg
 			spx spacing;			// Offset from start of line to start of next line.
 		};
 
+		void			_refresh(Text* pText);
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
 
 		inline void		_getGlyphWithoutBitmap( Font * pFont, uint16_t charCode, Glyph& glyph ) const;

@@ -248,16 +248,6 @@ namespace wg
 			_setState(state);
 	}
 
-	//____ _refresh() ____________________________________________________________
-
-	void Button::_refresh( void )
-	{
-		Widget::_refresh();
-		label._refresh();
-
-		//TODO: Handling of icon and text.
-	}
-
 	//____ _alphaTest() ___________________________________________________________
 
 	bool Button::_alphaTest( const CoordSPX& ofs )

@@ -194,8 +194,6 @@ namespace wg
 		bool				markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg ) override final;
 
-		inline void			refresh();
-
 		inline bool			isOpaque() const;
 
 		void				setBaggage(Object * pBaggage);
@@ -236,7 +234,6 @@ namespace wg
 		virtual void    	_preRender();
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window);
 
-		virtual void		_refresh();
 		virtual void		_resize(const SizeSPX& size, int scale = -1);
 		virtual void		_setState(State state);
 
@@ -1032,13 +1029,6 @@ namespace wg
 	bool Widget::isDropTarget() const 
 	{ 
 		return m_bDropTarget; 
-	}
-
-	//____ refresh() __________________________________________________________
-
-	void Widget::refresh() 
-	{ 
-		_refresh(); 
 	}
 
 	//____ isOpaque() _________________________________________________________
