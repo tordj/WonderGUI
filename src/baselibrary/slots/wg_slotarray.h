@@ -20,28 +20,31 @@
 
 =========================================================================*/
 
-#ifndef	WG_CSLOTARRAY_DOT_H
-#define	WG_CSLOTARRAY_DOT_H
+#ifndef	WG_SLOTARRAY_DOT_H
+#define	WG_SLOTARRAY_DOT_H
 #pragma once
 
-#include <wg_cstaticslotcollection.h>
+#include <wg_staticslotcollection.h>
 #include <wg_base.h>
 
 namespace wg
 {
 
-	//____ CSlotArray _________________________________________________________
+	//____ SlotArray _________________________________________________________
 
-	template<class SlotType, int SIZE> class CSlotArray : public CStaticSlotCollection
+	template<class SlotType, int SIZE> class SlotArray : public StaticSlotCollection
 	{
 	public:
 
 		using		iterator = SlotArrayIterator<SlotType>;
 
-		//.____ Identification _________________________________________________
+		//.____ Creation _______________________________________________________
 
-		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
-		const static TypeInfo	TYPEINFO;
+		SlotArray(SlotHolder* pHolder) : m_pHolder(pHolder)
+		{
+			for (auto& slot : m_slots)
+				slot.m_pHolder = pHolder;
+		}
 
 		//.____ Content _______________________________________________________
 
@@ -77,11 +80,6 @@ namespace wg
 		inline const SlotType& operator[](int index) const { return m_slots[index]; }
 
 	protected:
-		CSlotArray(SlotHolder * pHolder) : m_pHolder(pHolder) 
-		{
-			for (auto& slot : m_slots)
-				slot.m_pHolder = pHolder;
-		}
 
 		SlotIterator	_begin_iterator() override { return iterator(&m_slots[0]); }
 		SlotIterator	_end_iterator() override { return iterator(&m_slots[SIZE]); }
@@ -89,14 +87,14 @@ namespace wg
 		StaticSlot&		_at(int index) override 
 		{ 
 			if (index < 0 || index >= SIZE)
-				Base::handleError(ErrorSeverity::Serious, ErrorCode::OutOfRange, "Slot index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+			{			
+				auto pObject = dynamic_cast<Object*>(m_pHolder);
+				const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
+				Base::handleError(ErrorSeverity::Serious, ErrorCode::OutOfRange, "Slot index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
+			}
 
 			return m_slots[index];
 		}
-
-		Object *		_object() override { return m_pHolder->_object(); }
-		const Object *	_object() const override { return m_pHolder->_object(); }
-
 
 	//////
 		inline SlotHolder *			_holder() { return m_pHolder; }
@@ -120,8 +118,7 @@ namespace wg
 		SlotHolder * m_pHolder;
 	};
 
-	template<class SlotType, int SIZE> const TypeInfo CSlotArray<SlotType,SIZE>::TYPEINFO = { "CSlotArray<Unknow>", &CStaticSlotCollection::TYPEINFO };
 
 
 } // namespace wg
-#endif //WG_CSLOTARRAY_DOT_H
+#endif //WG_SLOTARRAY_DOT_H

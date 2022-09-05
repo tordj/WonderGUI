@@ -24,7 +24,7 @@
 #define	WG_GFXSTREAMWRITER_DOT_H
 #pragma once
 
-#include <wg_cgfxstreamsink.h>
+#include <wg_gfxstreamsink.h>
 
 #include <functional>
 
@@ -35,7 +35,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamWriter>	GfxStreamWriter_p;
 	typedef	WeakPtr<GfxStreamWriter>	GfxStreamWriter_wp;
 
-	class GfxStreamWriter : public Object, protected CGfxStreamSink::Holder
+	class GfxStreamWriter : public Object, protected GfxStreamSink::Holder
 	{
 	public:
 
@@ -45,7 +45,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxStreamSink		input;
+		GfxStreamSink		input;
 
 		//.____ Identification __________________________________________
 
@@ -58,9 +58,6 @@ namespace wg
 		~GfxStreamWriter();
 
 		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
-
-		Object *	_object() override;
-		const Object *	_object() const override;
 
 		std::function<void(int nBytes, const void * pData)>	m_dispatcher;
 	};

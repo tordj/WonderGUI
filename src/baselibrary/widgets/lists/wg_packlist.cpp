@@ -27,7 +27,7 @@
 #include <wg_base.h>
 #include <wg_gfxdevice.h>
 
-#include <wg_cdynamicslotvector.impl.h>
+#include <wg_dynamicslotvector.impl.h>
 #include <wg_slotextras.impl.h>
 
 namespace wg
@@ -35,7 +35,7 @@ namespace wg
 	using namespace Util;
 
 	template class SelectableSlotCollectionMethods<PackList::Slot, PackList::iterator, PackList>;
-	template class CDynamicSlotVector<PackList::Slot>;
+	template class DynamicSlotVector<PackList::Slot>;
 
 	const TypeInfo PackList::TYPEINFO = { "PackList", &List::TYPEINFO };
 	const TypeInfo PackList::Slot::TYPEINFO = { "PackList::Slot", &List::Slot::TYPEINFO };

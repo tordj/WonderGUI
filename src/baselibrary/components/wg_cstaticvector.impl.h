@@ -28,30 +28,6 @@
 
 namespace wg
 {
-	template<class EntryType> const TypeInfo CStaticVector<EntryType>::TYPEINFO = { "CStaticVector<Unknow>", &Component::TYPEINFO };
-
-	//____ typeInfo() ________________________________________________________
-
-	template < class EntryType>
-	const TypeInfo& CStaticVector<EntryType>::typeInfo(void) const
-	{
-		return TYPEINFO;
-		
-	}
-
-	//____ _object() __________________________________________________________
-
-	template < class EntryType>
-	const Object * 	CStaticVector<EntryType>::_object() const
-	{ 
-		return m_pHolder->_object(); 
-	}
-
-	template < class EntryType>
-	Object * CStaticVector<EntryType>::_object() 
-	{ 
-		return m_pHolder->_object(); 
-	}
 
 
 } // namespace wg

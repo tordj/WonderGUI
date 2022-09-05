@@ -37,10 +37,6 @@ namespace wg
 	class CharSeq;
 	class CharBuffer;
 
-	class CStaticTextDisplay;
-	typedef	StrongComponentPtr<CStaticTextDisplay>		CStaticTextDisplay_p;
-	typedef	WeakComponentPtr<CStaticTextDisplay>		CStaticTextDisplay_wp;
-
 
 	//____ CStaticTextDisplay __________________________________________________________________
 
@@ -59,21 +55,12 @@ namespace wg
 		CStaticTextDisplay(Widget * pWidget );
 
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
 		//.____ Content _____________________________________________
 
 		inline 	String			text() const { return CText::_getString(); }
 
 		inline int				length() const { return m_charBuffer.length(); }
 		inline bool				isEmpty() const { return length() == 0 ? true : false; }
-
-		//.____ Misc __________________________________________________
-
-		inline CStaticTextDisplay_p		ptr() { return CStaticTextDisplay_p(this); }
 
 		TextLink_p			markedLink() const;
 

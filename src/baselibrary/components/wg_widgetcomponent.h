@@ -24,7 +24,6 @@
 #define	WG_WIDGETCOMPONENT_DOT_H
 #pragma once
 
-#include <wg_component.h>
 #include <wg_widget.h>
 
 namespace wg
@@ -32,16 +31,11 @@ namespace wg
 
 	//____ WidgetComponent _________________________________________________________________
 
-	class WidgetComponent : public Component		/** @private */
+	class WidgetComponent	/** @private */
 	{
 	public:
 
 		WidgetComponent( Widget * pWidget ) : m_pWidget(pWidget) {}
-
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
 
 		//.____ Internal _______________________________________________________
 
@@ -51,6 +45,8 @@ namespace wg
 		inline RectSPX	_geo() const { return m_pWidget->_componentGeo(this); }
 		inline CoordSPX	_globalPos() const { return m_pWidget->_globalComponentPos(this); }
 		inline RectSPX	_globalGeo() const { return m_pWidget->_globalComponentGeo(this); }
+		inline Widget* _widget() const { return m_pWidget;  }
+
 
 	protected:
 
@@ -62,9 +58,6 @@ namespace wg
 		inline void		_requestFocus() const { m_pWidget->_componentRequestFocus(this); }
 
 		inline void		_notify(ComponentNotif notification, int value, void * pData) { m_pWidget->_receiveComponentNotif(this, notification, value, pData); }
-
-		Object *		_object() override;
-		const Object *	_object() const override;
 
 	protected:
 		Widget *		m_pWidget;

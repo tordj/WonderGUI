@@ -19,13 +19,11 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_CSTATICStaticVector_DOT_H
-#define WG_CSTATICStaticVector_DOT_H
+#ifndef WG_STATICVECTOR_DOT_H
+#define WG_STATICVECTOR_DOT_H
 #pragma once
 
 #include <vector>
-
-#include <wg_component.h>
 
 namespace wg
 {
@@ -33,15 +31,9 @@ namespace wg
 	//____ CStaticVector _____________________________________________________
 	
 	template<class EntryType>
-	class CStaticVector : public Component
+	class CStaticVector
 	{
 	public:
-
-		class Holder	/** @private */
-		{
-		public:
-			virtual Object * _object() = 0;
-		};
 		
 		using		iterator = typename std::vector<EntryType>::iterator;
 		using		const_iterator = typename std::vector<EntryType>::const_iterator;
@@ -50,12 +42,8 @@ namespace wg
 		using		const_reverse_iterator = typename std::vector<EntryType>::const_reverse_iterator;
 
 
-		CStaticVector(Holder * pHolder) : m_pHolder(pHolder) {}
+		CStaticVector() {}
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
@@ -90,11 +78,7 @@ namespace wg
 
 	protected:
 //		~CStaticVector() {}
-	
-		Object *		_object() override;
-		const Object *	_object() const override;
-	
-		Holder *				m_pHolder;
+		
 		std::vector<EntryType>	m_entries;
 	};
 

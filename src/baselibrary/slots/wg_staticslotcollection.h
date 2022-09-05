@@ -20,11 +20,10 @@
 
 =========================================================================*/
 
-#ifndef	WG_CSTATICSLOTCOLLECTION_DOT_H
-#define	WG_CSTATICSLOTCOLLECTION_DOT_H
+#ifndef	WG_STATICSLOTCOLLECTION_DOT_H
+#define	WG_STATICSLOTCOLLECTION_DOT_H
 #pragma once
 
-#include <wg_component.h>
 #include <wg_pointers.h>
 #include <wg_container.h>
 #include <wg_slot.h>
@@ -33,21 +32,12 @@
 namespace wg
 {
 
-	class CStaticSlotCollection;
-	typedef	StrongComponentPtr<CStaticSlotCollection>	CStaticSlotCollection_p;
-	typedef	WeakComponentPtr<CStaticSlotCollection>		CStaticSlotCollection_wp;
+	//____ StaticSlotCollection _________________________________________________________________
 
-	//____ CStaticSlotCollection _________________________________________________________________
-
-	class CStaticSlotCollection : public Component
+	class StaticSlotCollection
 	{
 	public:
 		using		iterator = SlotIterator;
-
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
@@ -58,8 +48,6 @@ namespace wg
 		virtual int index(const Widget * pWidget) const = 0;
 
 		//.____ Misc _______________________________________________________
-
-		inline CStaticSlotCollection_p ptr() { return CStaticSlotCollection_p(this); }
 
 		inline iterator	begin() { return _begin_iterator(); }
 		inline iterator	end() { return _end_iterator(); }
@@ -74,4 +62,4 @@ namespace wg
 	};
 
 } // namespace wg
-#endif //WG_CSTATICSLOTCOLLECTION_DOT_H
+#endif //WG_STATICSLOTCOLLECTION_DOT_H

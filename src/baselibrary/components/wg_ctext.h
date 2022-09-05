@@ -34,11 +34,6 @@ namespace wg
 	class EditState;
 
 
-	class CText;
-	typedef	StrongComponentPtr<CText>	CText_p;
-	typedef	WeakComponentPtr<CText>		CText_wp;
-
-
 	//____ CText __________________________________________________________________
 
 	class CText : public WidgetComponent, protected Text
@@ -49,12 +44,6 @@ namespace wg
 
 		CText(Widget * pWidget );
 		virtual ~CText();
-
-
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
 
 		//.____ Appearance _____________________________________________
 
@@ -70,9 +59,6 @@ namespace wg
 
 		inline State		state() const { return m_state; }
 
-		//.____ Misc __________________________________________________
-
-		inline CText_p		ptr() { return CText_p(this); }
 
 		//.____ Internal _______________________________________________
 

@@ -41,11 +41,6 @@ namespace wg
 		CColumnHeader(Widget * pWidget);
 		~CColumnHeader();
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
 		//.____ Appearance ____________________________________________
 
 		void			setSkin(Skin * pSkin);
@@ -62,11 +57,6 @@ namespace wg
 		void			setLayout(TextLayout* pLayout);
 		void			clearLayout();
 		TextLayout_p	layout() const { return m_pLayout; }
-
-
-		//.____ Misc __________________________________________________
-
-		inline CColumnHeader_p	ptr() { return CColumnHeader_p(this); }
 
 
 	protected:

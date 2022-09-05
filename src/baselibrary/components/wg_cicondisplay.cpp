@@ -26,7 +26,6 @@
 
 namespace wg
 {
-	const TypeInfo CIconDisplay::TYPEINFO = { "CIconDisplay", &WidgetComponent::TYPEINFO };
 
 	using namespace Util;
 
@@ -38,12 +37,6 @@ namespace wg
 		m_bOverlap		= false;
 	}
 
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& CIconDisplay::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
 
 	//____ set() ___________________________________________________________________
 

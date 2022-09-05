@@ -29,8 +29,7 @@
 namespace wg
 {
 	class CStaticNumberDisplay;
-	typedef	StrongComponentPtr<CStaticNumberDisplay>	CStaticNumberDisplay_p;
-	typedef	WeakComponentPtr<CStaticNumberDisplay>	CStaticNumberDisplay_wp;
+	typedef	ComponentPtr<CStaticNumberDisplay>	CStaticNumberDisplay_p;
 
 	//____ CStaticNumberDisplay ____________________________________________________________
 
@@ -46,11 +45,6 @@ namespace wg
 			NumberLayout_p	layout;
 		};
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
 		//.____ Appearance _____________________________________________
 
 		void				setLayout(NumberLayout* pLayout);
@@ -60,10 +54,6 @@ namespace wg
 		//.____ Content _______________________________________________
 
 		inline double		value() const { return m_value; }
-
-		//.____ Misc __________________________________________________
-
-		inline CStaticNumberDisplay_p	ptr() { return CStaticNumberDisplay_p(this); }
 
 		//.____ Internal __________________________________________________
 

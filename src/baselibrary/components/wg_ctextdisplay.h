@@ -37,10 +37,6 @@ namespace wg
 	class CharSeq;
 	class CharBuffer;
 
-	class CTextDisplay;
-	typedef	StrongComponentPtr<CTextDisplay>	CTextDisplay_p;
-	typedef	WeakComponentPtr<CTextDisplay>		CTextDisplay_wp;
-
 
 	//____ CTextDisplay __________________________________________________________________
 
@@ -58,12 +54,6 @@ namespace wg
 		};
 
 		CTextDisplay(Widget * pWidget) : CStaticTextDisplay(pWidget) {}
-
-
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _____________________________________________
 
@@ -85,10 +75,6 @@ namespace wg
 
 		inline void			clearCharStyle() { _clearCharStyle(); }
 		inline void			clearCharStyle(int ofs, int len) { _clearCharStyle(ofs, len); }
-
-		//.____ Misc __________________________________________________
-
-		inline CTextDisplay_p	ptr() { return CTextDisplay_p(this); }
 
 		//.____ Internal ______________________________________________________
 

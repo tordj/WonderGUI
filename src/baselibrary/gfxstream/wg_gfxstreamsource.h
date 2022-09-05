@@ -20,11 +20,10 @@
 
 =========================================================================*/
 
-#ifndef	WG_CGFXSTREAMSOURCE_DOT_H
-#define	WG_CGFXSTREAMSOURCE_DOT_H
+#ifndef	WG_GFXSTREAMSOURCE_DOT_H
+#define	WG_GFXSTREAMSOURCE_DOT_H
 #pragma once
 
-#include <wg_component.h>
 #include <wg_types.h>
 #include <wg_pointers.h>
 #include <wg_gfxstream.h>
@@ -34,14 +33,13 @@
 namespace wg
 {
 
-	class CGfxStreamSource;
-	typedef	StrongComponentPtr<CGfxStreamSource>	CGfxStreamSource_p;
-	typedef	WeakComponentPtr<CGfxStreamSource>		CGfxStreamSource_wp;
+	class GfxStreamSource;
+	typedef	ComponentPtr<GfxStreamSource>	GfxStreamSource_p;
 
 
-	//____ CGfxStreamSource ________________________________________________________
+	//____ GfxStreamSource ________________________________________________________
 
-	class CGfxStreamSource : public Component
+	class GfxStreamSource
 	{
 	public:
 
@@ -51,10 +49,6 @@ namespace wg
 		{
 		public:
 
-			//TODO: Add const version?
-			virtual Object * _object() = 0;
-			virtual const Object * _object() const = 0;
-
 			virtual bool _hasStreamChunks() const = 0;
 			virtual std::tuple<int, const DataSegment *> _showStreamChunks() = 0;
 			virtual	void _discardStreamChunks(int bytes) = 0;
@@ -63,12 +57,7 @@ namespace wg
 		};
 
 
-		CGfxStreamSource(Holder * pHolder) : m_pHolder(pHolder) {};
-
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
+		GfxStreamSource(Holder * pHolder) : m_pHolder(pHolder) {};
 
 		//.____ Control _______________________________________________________
 
@@ -78,18 +67,12 @@ namespace wg
 		inline bool fetchChunks() { return m_pHolder->_fetchStreamChunks(); }
 		inline GfxChunkId peekChunk() { return m_pHolder->_peekStreamChunk(); }
 
-		//.____ Misc __________________________________________________
-
-		inline CGfxStreamSource_p	ptr() { return CGfxStreamSource_p(this); }
-
 	protected:
-		Object *		_object() override { return m_pHolder->_object(); }
-		const Object *	_object() const override { return m_pHolder->_object(); }
 
 		Holder * 			m_pHolder;
 	};
 
 
 } // namespace wg
-#endif //WG_CGFXSTREAMSOURCE_DOT_H
+#endif //WG_GFXSTREAMSOURCE_DOT_H
 #pragma once

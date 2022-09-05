@@ -25,14 +25,6 @@
 
 namespace wg
 {
-	const TypeInfo CTextDisplay::TYPEINFO = { "CTextDisplay", &CStaticTextDisplay::TYPEINFO };
-
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& CTextDisplay::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
 
 	//____ initFromBlueprint() ________________________________________________
 

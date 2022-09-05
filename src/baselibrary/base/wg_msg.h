@@ -53,8 +53,7 @@ namespace wg
 
 	typedef WeakPtr<Object>		Object_wp;
 
-	typedef	StrongComponentPtr<CTextEditor>	CTextEditor_p;
-	typedef	WeakComponentPtr<CTextEditor>	CTextEditor_wp;
+	typedef	ComponentPtr<CTextEditor>	CTextEditor_p;
 
 	typedef    StrongPtr<BasicDataset>  BasicDataset_p;
 	typedef    WeakPtr<BasicDataset>    BasicDataset_wp;
@@ -1011,7 +1010,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		inline static TextEditMsg_p create( CTextEditor * pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
+		inline static TextEditMsg_p create( const CTextEditor_p& pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
 
 		//.____ Identification __________________________________________
 
@@ -1024,7 +1023,7 @@ namespace wg
 		bool				isFinal() const;
 
 	protected:
-		TextEditMsg( CTextEditor * pText, bool bFinal );
+		TextEditMsg( const CTextEditor_p& pText, bool bFinal );
 
 		CTextEditor_p		m_pText;
 		bool				m_bFinal;

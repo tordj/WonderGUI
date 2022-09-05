@@ -25,16 +25,6 @@
 
 namespace wg
 {
-	const TypeInfo CValueEditor::TYPEINFO = { "CValueEditor", &CNumberDisplay::TYPEINFO };
-
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& CValueEditor::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
-
-
 
 
 } // namespace wg

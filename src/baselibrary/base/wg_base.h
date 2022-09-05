@@ -144,7 +144,7 @@ namespace wg
 		static char *		memStackAlloc( int bytes );
 		static void			memStackRelease( int bytes );
 
-		static void			handleError( ErrorSeverity severity, ErrorCode code, const char * pMsg, const Object * pObject, const TypeInfo& pClassType, const char * pFunction, const char * pFile, int line );
+		static void			handleError( ErrorSeverity severity, ErrorCode code, const char * pMsg, const Object * pObject, const TypeInfo * pClassType, const char * pFunction, const char * pFile, int line );
 
 		static void			beginObjectTracking();
 		static void			endObjectTracking();

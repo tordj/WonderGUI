@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_overlay.h>
-#include <wg_cdynamicslotvector.h>
+#include <wg_dynamicslotvector.h>
 
 namespace wg
 {
@@ -49,7 +49,7 @@ namespace wg
 		{
 			friend class ModalOverlay;
 			friend class CSlots;
-			template<class S> friend class CDynamicSlotVector;
+			template<class S> friend class DynamicSlotVector;
 			template<class S> friend class SlotVector;
 
 		public:
@@ -96,7 +96,7 @@ namespace wg
 
 		//____ CSlots ________________________________________________________
 
-		class CSlots : public CDynamicSlotVector<Slot>
+		class CSlots : public DynamicSlotVector<Slot>
 		{
 			friend class ModalOverlay;
 		public:
@@ -109,16 +109,12 @@ namespace wg
 			iterator	pushBack(const Widget_p& pWidget, const Rect& geometry, Placement origo = Placement::NorthWest);
 			iterator	pushBack(const Widget_p& pWidget, const Coord& pos, Placement origo = Placement::NorthWest) { return pushBack(pWidget, Rect(pos, 0, 0), origo); }
 
-			//.____ Misc __________________________________________________________
-
-			inline CModalSlotVector_p	ptr() { return CModalSlotVector_p(this); }
-
 		protected:
 
-			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
+			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
 
-			const ModalOverlay *	_holder() const { return static_cast<const ModalOverlay*>(CDynamicSlotVector<Slot>::_holder()); }
-			ModalOverlay *	_holder() { return static_cast<ModalOverlay*>(CDynamicSlotVector<Slot>::_holder()); }
+			const ModalOverlay *	_holder() const { return static_cast<const ModalOverlay*>(DynamicSlotVector<Slot>::_holder()); }
+			ModalOverlay *	_holder() { return static_cast<ModalOverlay*>(DynamicSlotVector<Slot>::_holder()); }
 
 		};
 

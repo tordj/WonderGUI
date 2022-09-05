@@ -29,8 +29,6 @@ namespace wg
 	template class CDynamicVector<AnimFrame>;
 
 
-	const TypeInfo CAnimFrames::TYPEINFO = { "CAnimFrames", &CStaticVector<AnimFrame>::TYPEINFO };
-
 
 	//____ setSurface() __________________________________________________________
 

@@ -26,7 +26,6 @@
 
 namespace wg
 {
-	const TypeInfo CNumberDisplay::TYPEINFO = { "CNumberDisplay", &CStaticNumberDisplay::TYPEINFO };
 
 	//____ constructor ________________________________________________________
 
@@ -34,13 +33,7 @@ namespace wg
 	{
 	}
 
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& CNumberDisplay::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
-
+	
 	//____ clear() _________________________________________________________________
 
 	void CNumberDisplay::clear()

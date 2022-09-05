@@ -80,11 +80,6 @@ namespace wg
 
 		CAnimFrames(Holder * pHolder) : CDynamicVector(pHolder) {}
 
-		
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
-		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 

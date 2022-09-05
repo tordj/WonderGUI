@@ -44,14 +44,14 @@ namespace wg
 	Blob_p			GlGfxDevice::s_pShaderPrograms = nullptr;
 
 
-#define LOG_GLERROR(check) { GLenum err = check; if(err != 0) onGlError(err, this, TYPEINFO, __func__, __FILE__, __LINE__ ); }
+#define LOG_GLERROR(check) { GLenum err = check; if(err != 0) onGlError(err, this, &TYPEINFO, __func__, __FILE__, __LINE__ ); }
 
-#define LOG_INIT_GLERROR(check) { GLenum err = check; if(err != 0) { onGlError(err, this, TYPEINFO, __func__, __FILE__, __LINE__ ); m_bFullyInitialized = false; } }
+#define LOG_INIT_GLERROR(check) { GLenum err = check; if(err != 0) { onGlError(err, this, &TYPEINFO, __func__, __FILE__, __LINE__ ); m_bFullyInitialized = false; } }
 
 
 	//____ onGlError() _______________________________________________________________
 
-	void GlGfxDevice::onGlError(GLenum errorCode, const Object * pObject, const TypeInfo& pClassType, const char * func, const char * file, int line)
+	void GlGfxDevice::onGlError(GLenum errorCode, const Object * pObject, const TypeInfo* pClassType, const char * func, const char * file, int line)
 	{
 		char	buffer[1024];
 
@@ -2783,7 +2783,7 @@ namespace wg
 				char	buffer[2048 * 3 + 256];
 
 				sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
-				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OpenGL, buffer, this, TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OpenGL, buffer, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			}
 
 			glDetachShader(programID, vertexShaderID);

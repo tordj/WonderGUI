@@ -41,7 +41,7 @@ namespace wg
 
 		if (bp.layers.size() > c_maxLayers)
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Number of layers exceeds maximum", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Number of layers exceeds maximum", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 
@@ -51,13 +51,13 @@ namespace wg
 
 			if (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
 			{
-				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Canvas layers can not be CLUT-based", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Canvas layers can not be CLUT-based", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 				return nullptr;
 			}
 
 			if (format == PixelFormat::Custom)
 			{
-				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Canvas layers can not have custom pixel format", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Canvas layers can not have custom pixel format", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 				return nullptr;
 			}
 
@@ -65,7 +65,7 @@ namespace wg
 
 		if (bp.baseLayer < 0 || bp.baseLayer > bp.layers.size())
 		{
-			Base::handleError(ErrorSeverity::Critical, ErrorCode::InvalidParam, "Default layer is out of bounds.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::Critical, ErrorCode::InvalidParam, "Default layer is out of bounds.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 

@@ -846,10 +846,10 @@ namespace wg
 		return m_pText;
 	}
 
-	TextEditMsg::TextEditMsg( CTextEditor * pText, bool bFinal )
+	TextEditMsg::TextEditMsg( const CTextEditor_p& pText, bool bFinal )
 	{
 		m_type 		= MsgType::TextEdit;
-		m_pSource 	= pText->object();
+		m_pSource 	= pText->_widget();
 		m_pText 	= pText;
 		m_bFinal	= bFinal;
 	}

@@ -88,18 +88,6 @@ typedef struct wg_canvaslayers_calls_struct
 } wg_canvaslayers_calls;
 
 
-//____ wg_component_calls _____________________________________________________
-
-typedef struct wg_component_calls_struct
-{
-	int					structSize;
-
-	const wg_typeInfo*	(*getComponentTypeInfo)(wg_component);
-	int					(*isComponentInstanceOf)(wg_component, const wg_typeInfo* pTypeInfo);
-	wg_obj				(*getComponentObject)(wg_component);
-} wg_component_calls;
-
-
 //____ wg_font_calls __________________________________________________________
 
 typedef struct wg_font_calls_struct
@@ -344,7 +332,6 @@ typedef struct wg_c_callCollection_struct
 	wg_bitmapcache_calls *		pBitmapCache;
 	wg_bitmapfont_calls *		pBitmapFont;
 	wg_canvaslayers_calls *		pCanvasLayers;
-	wg_component_calls *		pComponent;
 	wg_font_calls *				pFont;
 	wg_object_calls *			pObject;
 	wg_gfxdevice_calls *		pGfxDevice;

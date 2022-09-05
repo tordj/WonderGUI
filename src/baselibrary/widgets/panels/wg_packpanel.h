@@ -27,7 +27,7 @@
 #include <wg_panel.h>
 #include <wg_slot.h>
 #include <wg_slotextras.h>
-#include <wg_cdynamicslotvector.h>
+#include <wg_dynamicslotvector.h>
 
 
 namespace wg
@@ -56,7 +56,7 @@ namespace wg
 			friend class PackPanel;
 			friend class CSlots;
 			template<class S> friend class SlotVector;
-			friend class CDynamicSlotVector<Slot>;
+			friend class DynamicSlotVector<Slot>;
 
 		public:
 			//.____ Identification ________________________________________________
@@ -107,7 +107,7 @@ namespace wg
 		typedef	StrongComponentPtr<CSlots>	CSlots_p;
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
-		class CSlots : public CDynamicSlotVector<Slot>, 
+		class CSlots : public DynamicSlotVector<Slot>, 
 			public PaddedSlotCollectionMethods<Slot, iterator, PackPanel>,
 			public HideableSlotCollectionMethods<Slot, iterator, PackPanel>
 		{
@@ -121,19 +121,15 @@ namespace wg
 			bool		setWeight(int index, int amount, std::initializer_list<float> weights);
 			bool		setWeight(const SlotIterator&  beg, const SlotIterator&  end, std::initializer_list<float> weights);
 
-			//.____ Misc __________________________________________________________
-
-			inline CSlots_p	ptr() { return CSlots_p(this); }
-
 		protected:
-			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
+			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
 
-			inline PackPanel *		_holder() { return static_cast<PackPanel*>(CDynamicSlotVector<Slot>::_holder()); }
-			inline const PackPanel *	_holder() const { return static_cast<const PackPanel*>(CDynamicSlotVector<Slot>::_holder()); }
+			inline PackPanel *		_holder() { return static_cast<PackPanel*>(DynamicSlotVector<Slot>::_holder()); }
+			inline const PackPanel *	_holder() const { return static_cast<const PackPanel*>(DynamicSlotVector<Slot>::_holder()); }
 
-			Slot* _slot(int index) { return CDynamicSlotVector<Slot>::_slot(index); }
+			Slot* _slot(int index) { return DynamicSlotVector<Slot>::_slot(index); }
 
-			inline int _size() const override { return CDynamicSlotVector<Slot>::size(); }
+			inline int _size() const override { return DynamicSlotVector<Slot>::size(); }
 		};
 
 		friend class PaddedSlotCollectionMethods<PackPanel::Slot, iterator, PackPanel>;

@@ -164,25 +164,9 @@ namespace wg
 
 	public:
 
-		//.____ Identification ________________________________________________
+		//.____ Creation ______________________________________________________
 
-		const static TypeInfo	TYPEINFO;
-
-		//.____ Content _______________________________________________________
-
-		inline void		setWidget(const Widget_p& pWidget) { if (pWidget) pWidget->releaseFromParent(); m_pHolder->_replaceChild(this, pWidget); }
-
-		//.____ Operators __________________________________________
-
-		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
-
-		//		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
-
-
-	protected:
-		const static bool safe_to_relocate = true;
-
-		DynamicSlot(SlotHolder * pHolder) : StaticSlot(pHolder) {}
+		DynamicSlot(SlotHolder* pHolder) : StaticSlot(pHolder) {}
 
 		DynamicSlot(DynamicSlot&& o) noexcept : StaticSlot(o.m_pHolder)
 		{
@@ -213,6 +197,25 @@ namespace wg
 
 			return *this;
 		}
+
+
+		//.____ Identification ________________________________________________
+
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content _______________________________________________________
+
+		inline void		setWidget(const Widget_p& pWidget) { if (pWidget) pWidget->releaseFromParent(); m_pHolder->_replaceChild(this, pWidget); }
+
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+
+
+	protected:
+		const static bool safe_to_relocate = true;
+
 	};
 
 

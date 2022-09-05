@@ -260,9 +260,9 @@ int main ( int argc, char** argv )
     auto pStreamLogger = GfxStreamLogger::create(std::cout);
 
 
-	auto pStreamSplitter = GfxStreamSplitter::create({ pStreamPlayer->input.ptr(), pStreamLogger->input.ptr() });
+	auto pStreamSplitter = GfxStreamSplitter::create({ GfxStreamSink_p(pStreamPlayer, pStreamPlayer->input), GfxStreamSink_p(pStreamLogger, pStreamLogger->input) });
 
-	auto pStreamPump = GfxStreamPump::create(pStreamReader->output.ptr(), pStreamSplitter->input.ptr() );
+	auto pStreamPump = GfxStreamPump::create(GfxStreamSource_p( pStreamReader, pStreamReader->output), GfxStreamSink_p(pStreamSplitter, pStreamSplitter->input) );
 
 
 	//------------------------------------------------------

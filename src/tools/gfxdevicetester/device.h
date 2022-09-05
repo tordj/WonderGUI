@@ -107,7 +107,7 @@ public:
 		m_pOutputDevice->defineCanvas(CanvasRef::Default, m_pOutputCanvas);
 		m_pStreamPlayer = GfxStreamPlayer::create(m_pOutputDevice, m_pOutputDevice->surfaceFactory());
 
-		m_pStreamEncoder = GfxStreamEncoder::create(m_pStreamPlayer->input.ptr());
+		m_pStreamEncoder = GfxStreamEncoder::create( ComponentPtr( m_pStreamPlayer, m_pStreamPlayer->input) );
 
 		m_pStreamDevice = StreamGfxDevice::create(m_pStreamEncoder);
 		m_pStreamCanvas = StreamSurface::create(m_pStreamEncoder, canvasSize, canvasFormat, SurfaceFlag::Canvas);

@@ -20,29 +20,24 @@
 
 =========================================================================*/
 
-#ifndef	WG_CDYNAMICSLOTVECTOR_DOT_H
-#define	WG_CDYNAMICSLOTVECTOR_DOT_H
+#ifndef	WG_DYNAMICSLOTVECTOR_DOT_H
+#define	WG_DYNAMICSLOTVECTOR_DOT_H
 #pragma once
 
-#include <wg_cdynamicslotcollection.h>
-#include <wg_cstaticslotvector.h>
+#include <wg_dynamicslotcollection.h>
+#include <wg_staticslotvector.h>
 
 namespace wg
 {
 
-	//____ CDynamicSlotVector _________________________________________________________
+	//____ DynamicSlotVector _________________________________________________________
 
 	template<class SlotType> 
-	class CDynamicSlotVector : public CDynamicSlotCollection
+	class DynamicSlotVector : public DynamicSlotCollection
 	{
 	public:
 
 		using		iterator = SlotArrayIterator<SlotType>;
-
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
@@ -52,7 +47,12 @@ namespace wg
 		inline SlotType& at(int index) const
 		{
 			if (index < 0 || index >= m_size)
-				Base::handleError(ErrorSeverity::Serious, ErrorCode::OutOfRange, "Slot index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+			{
+				auto pObject = dynamic_cast<Object*>(m_pHolder);
+				const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
+
+				Base::handleError(ErrorSeverity::Serious, ErrorCode::OutOfRange, "Slot index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
+			}
 
 			return m_pArray[index];
 		}
@@ -156,15 +156,12 @@ namespace wg
 		inline const SlotType& operator[](int index) const { return m_pArray[index]; }
 
 	protected:
-		CDynamicSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
-		~CDynamicSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
+		DynamicSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
+		~DynamicSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
 		SlotIterator	_begin_iterator() override;
 		SlotIterator	_end_iterator() override;
 		StaticSlot&		_at(int index) override;
-
-		Object *		_object() override;
-		const Object *	_object() const override;
 
 		SlotIterator	_pushFront(Widget * pWidget) override;
 		SlotIterator	_pushFront(const Widget_p pWidgets[], int amount) override;
@@ -283,4 +280,4 @@ namespace wg
 	};
 
 } // namespace wg
-#endif //WG_CDYNAMICSLOTVECTOR_DOT_H
+#endif //WG_DYNAMICSLOTVECTOR_DOT_H

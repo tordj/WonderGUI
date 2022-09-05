@@ -26,8 +26,6 @@
 
 namespace wg
 {
-	const TypeInfo CColumnHeader::TYPEINFO = { "CColumnHeader", &WidgetComponent::TYPEINFO };
-
 
 	//____ constructor ___________________________________________________________
 
@@ -44,13 +42,6 @@ namespace wg
 	CColumnHeader::~CColumnHeader()
 	{
 		_layout()->removeText(this);
-	}
-
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& CColumnHeader::typeInfo(void) const
-	{
-		return TYPEINFO;
 	}
 
 	//____ setSkin() _____________________________________________________________

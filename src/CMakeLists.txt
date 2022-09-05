@@ -19,6 +19,7 @@ include_directories(
 	baselibrary/skins/misc
 	baselibrary/skins/state
 	baselibrary/skins/static
+	baselibrary/slots
 	baselibrary/gfxstream
 	baselibrary/textlayouts
 	baselibrary/numberlayouts

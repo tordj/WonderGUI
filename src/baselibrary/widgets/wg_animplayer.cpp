@@ -331,11 +331,5 @@ namespace wg
 
 	}
 
-	//____ _object() __________________________________________________________
-
-	Object* AnimPlayer::_object()
-	{
-		return this;
-	}
 
 } // namespace wg

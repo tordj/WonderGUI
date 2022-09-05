@@ -25,19 +25,11 @@
 
 namespace wg
 {
-	const TypeInfo CStaticNumberDisplay::TYPEINFO = { "CStaticNumberDisplay", &CText::TYPEINFO };
 
 	//____ constructor ________________________________________________________
 
 	CStaticNumberDisplay::CStaticNumberDisplay(Widget * pWidget) : WidgetComponent(pWidget)
 	{
-	}
-
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& CStaticNumberDisplay::typeInfo(void) const
-	{
-		return TYPEINFO;
 	}
 
 	//____ setLayout() _____________________________________________________

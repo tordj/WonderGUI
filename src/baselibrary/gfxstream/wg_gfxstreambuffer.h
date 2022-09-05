@@ -25,8 +25,8 @@
 #pragma once
 
 #include <wg_gfxstream.h>
-#include <wg_cgfxstreamsource.h>
-#include <wg_cgfxstreamsink.h>
+#include <wg_gfxstreamsource.h>
+#include <wg_gfxstreamsink.h>
 
 #include <vector>
 #include <tuple>
@@ -38,7 +38,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamBuffer>	GfxStreamBuffer_p;
 	typedef	WeakPtr<GfxStreamBuffer>	GfxStreamBuffer_wp;
 
-	class GfxStreamBuffer : public Object, protected CGfxStreamSink::Holder, protected CGfxStreamSource::Holder
+	class GfxStreamBuffer : public Object, protected GfxStreamSink::Holder, protected GfxStreamSource::Holder
 	{
 	public:
 
@@ -48,8 +48,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxStreamSink		input;
-		CGfxStreamSource		output;
+		GfxStreamSink		input;
+		GfxStreamSource	output;
 
 		//.____ Identification __________________________________________
 
@@ -76,10 +76,6 @@ namespace wg
 		bool			_fetchStreamChunks() override;
 
 		void			_resizeBuffer( int newSize );
-
-
-		Object *		_object() override;
-		const Object *	_object() const override;
 
 		static constexpr int c_bufferMargin = GfxStream::c_maxBlockSize;
 

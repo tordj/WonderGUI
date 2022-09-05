@@ -27,7 +27,7 @@
 
 
 #include <wg_panel.h>
-#include <wg_cstandardslot.h>
+#include <wg_slot.h>
 #include <wg_cscrollbar.h>
 
 namespace wg
@@ -50,7 +50,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CStandardSlot	slot;
+		DynamicSlot		slot;
 		CScrollbar		scrollbarX;
 		CScrollbar		scrollbarY;
 

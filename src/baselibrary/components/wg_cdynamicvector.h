@@ -38,7 +38,7 @@ namespace wg
 
 		using iterator = typename CStaticVector<EntryType>::iterator;
 
-		class Holder : public CStaticVector<EntryType>::Holder	/** @private */
+		class Holder	/** @private */
 		{
 		public:
 			virtual void	_didAddEntries(EntryType * pEntry, int nb) = 0;
@@ -46,12 +46,7 @@ namespace wg
 			virtual void	_willEraseEntries(EntryType * pEntry, int nb) = 0;
 		};
 		
-		CDynamicVector(Holder * pHolder) : CStaticVector<EntryType>(pHolder) {}
-
-		//.____ Identification _________________________________________________ 
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
+		CDynamicVector(Holder * pHolder) : CStaticVector<EntryType>(), m_pHolder(pHolder) {}
 
 		//.____ Content _______________________________________________________
 
@@ -76,11 +71,13 @@ namespace wg
 		inline iterator operator<<(std::initializer_list<EntryType> entries) { return pushBack(entries); }
 
 	protected:
-//		~CDynamicVector() {}
-	
-		virtual void	_didAddEntries(EntryType* pEntry, int nb) { static_cast<Holder*>(CStaticVector<EntryType>::m_pHolder)->_didAddEntries(pEntry, nb); }
-		virtual void	_didMoveEntries(EntryType* pFrom, EntryType* pTo, int nb) { static_cast<Holder*>(CStaticVector<EntryType>::m_pHolder)->_didMoveEntries(pFrom, pTo, nb); }
-		virtual void	_willEraseEntries(EntryType* pEntry, int nb) { static_cast<Holder*>(CStaticVector<EntryType>::m_pHolder)->_willEraseEntries(pEntry, nb); }
+
+		Holder* m_pHolder;
+
+
+		virtual void	_didAddEntries(EntryType* pEntry, int nb) { m_pHolder->_didAddEntries(pEntry, nb); }
+		virtual void	_didMoveEntries(EntryType* pFrom, EntryType* pTo, int nb) { m_pHolder->_didMoveEntries(pFrom, pTo, nb); }
+		virtual void	_willEraseEntries(EntryType* pEntry, int nb) { m_pHolder->_willEraseEntries(pEntry, nb); }
 	};
 
 } //namespace

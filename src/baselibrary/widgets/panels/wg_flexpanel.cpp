@@ -24,7 +24,7 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
-#include <wg_cdynamicslotvector.impl.h>
+#include <wg_dynamicslotvector.impl.h>
 #include <wg_slotextras.impl.h>
 
 #include <assert.h>
@@ -33,7 +33,7 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CDynamicSlotVector<FlexPanel::Slot>;
+	template class DynamicSlotVector<FlexPanel::Slot>;
 	template class HideableSlotCollectionMethods<FlexPanel::Slot, FlexPanel::iterator, FlexPanel>;
 
 	const TypeInfo FlexPanel::TYPEINFO = { "FlexPanel", &Panel::TYPEINFO };

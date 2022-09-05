@@ -25,25 +25,5 @@
 namespace wg
 {
 
-	const TypeInfo	WidgetComponent::TYPEINFO = { "WidgetComponent", &Component::TYPEINFO };
-
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& WidgetComponent::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
-
-	//____ _object() __________________________________________________________
-
-	Object * WidgetComponent::_object()
-	{ 
-		return m_pWidget; 
-	}
-
-	const Object * WidgetComponent::_object() const
-	{ 
-		return m_pWidget; 
-	}
 
 } // namespace wg

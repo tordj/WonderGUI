@@ -104,7 +104,6 @@ namespace wg
 		void			_didAddEntries(AnimFrame* pEntry, int nb) override;
 		void			_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb) override;
 		void			_willEraseEntries(AnimFrame* pEntry, int nb) override;
-		Object*			_object() override;
 
 
 	private:

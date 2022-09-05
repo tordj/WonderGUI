@@ -127,7 +127,9 @@ namespace wg
 	{
 		if (it < entries.begin() || it >= entries.end())
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidIterator, "Invalid iterator", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+			auto pObject = dynamic_cast<Object*>(m_pHolder);
+			const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidIterator, "Invalid iterator", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -156,7 +158,9 @@ namespace wg
 	{
 		if (index < 0 || index >= entries.size())
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OutOfRange, "index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+			auto pObject = dynamic_cast<Object*>(m_pHolder);
+			const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OutOfRange, "index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
 			return;
 		}
 

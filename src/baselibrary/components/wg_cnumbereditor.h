@@ -41,11 +41,6 @@ namespace wg
 		CValueEditor(Widget * pWidget );
 		~CValueEditor();
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
 
 		//.____ State __________________________________________________
 
@@ -87,9 +82,6 @@ namespace wg
 		void				goBof();
 		void				goEof();
 
-		//.____ Misc __________________________________________________
-
-		inline CValueEditor_p		ptr() { return CValueEditor_p(this); }
 
 	protected:
 		void				_onValueEdited() { _notify( ComponentNotif::ValueEdited, 0, nullptr ); }

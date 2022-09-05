@@ -27,7 +27,7 @@
 
 #include <wg_list.h>
 #include <wg_ccolumnheader.h>
-#include <wg_cdynamicslotvector.h>
+#include <wg_dynamicslotvector.h>
 #include <wg_slotextras.h>
 
 
@@ -63,7 +63,7 @@ namespace wg
 			friend class CSlots;
 			friend class PackList;
 			template<class S> friend class SlotVector;
-			friend class CDynamicSlotVector<Slot>;
+			friend class DynamicSlotVector<Slot>;
 
 		public:
 
@@ -103,15 +103,11 @@ namespace wg
 		typedef	StrongComponentPtr<CSlots>	CSlots_p;
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
-		class CSlots : public CDynamicSlotVector<Slot>,
+		class CSlots : public DynamicSlotVector<Slot>,
 			 public SelectableSlotCollectionMethods< PackList::Slot, iterator, PackList >
 		{
 			friend class PackList;
 		public:
-
-			//.____ Misc __________________________________________________________
-
-			inline CSlots_p	ptr() { return CSlots_p(this); }
 
 			//.____ Content _______________________________________________________
 
@@ -125,16 +121,16 @@ namespace wg
 
 			//____ Holder _________________________________________________________
 
-			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
+			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
 
 
-			inline const PackList *	_holder() const { return static_cast<const PackList*>(CDynamicSlotVector<Slot>::_holder()); }
-			inline PackList *		_holder() { return static_cast<PackList*>(CDynamicSlotVector<Slot>::_holder()); }
+			inline const PackList *	_holder() const { return static_cast<const PackList*>(DynamicSlotVector<Slot>::_holder()); }
+			inline PackList *		_holder() { return static_cast<PackList*>(DynamicSlotVector<Slot>::_holder()); }
 
-			inline Slot* _slot(int index) override { return CDynamicSlotVector::_slot(index); }
-			inline const Slot* _slot(int index) const { return CDynamicSlotVector::_slot(index); }
+			inline Slot* _slot(int index) override { return DynamicSlotVector::_slot(index); }
+			inline const Slot* _slot(int index) const { return DynamicSlotVector::_slot(index); }
 
-			inline int _size() const override {	return CDynamicSlotVector<Slot>::size(); }
+			inline int _size() const override {	return DynamicSlotVector<Slot>::size(); }
 
 		};
 

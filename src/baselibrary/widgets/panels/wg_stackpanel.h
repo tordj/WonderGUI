@@ -27,7 +27,7 @@
 #include <wg_panel.h>
 #include <wg_slot.h>
 #include <wg_slotextras.h>
-#include <wg_cdynamicslotvector.h>
+#include <wg_dynamicslotvector.h>
 
 namespace wg
 {
@@ -53,7 +53,7 @@ namespace wg
 		{
 			friend class StackPanel;
 			friend class CSlots;
-			friend class CDynamicSlotVector<Slot>;
+			friend class DynamicSlotVector<Slot>;
 
 		public:
 
@@ -108,26 +108,22 @@ namespace wg
 		typedef	StrongComponentPtr<CSlots>	CSlots_p;
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
-		class CSlots : public CDynamicSlotVector<Slot>, 
+		class CSlots : public DynamicSlotVector<Slot>, 
 			public PaddedSlotCollectionMethods<Slot,iterator,StackPanel>,
 			public HideableSlotCollectionMethods<Slot, iterator, StackPanel>
 		{
 			friend class StackPanel;
-		public:
 
-			//.____ Misc __________________________________________________________
-
-			inline CSlots_p	ptr() { return CSlots_p(this); }
 
 		protected:
 			
-			inline StackPanel* _holder() { return static_cast<StackPanel*>(CDynamicSlotVector<Slot>::_holder()); }
-			inline const StackPanel* _holder() const { return static_cast<const StackPanel*>(CDynamicSlotVector<Slot>::_holder()); }
+			inline StackPanel* _holder() { return static_cast<StackPanel*>(DynamicSlotVector<Slot>::_holder()); }
+			inline const StackPanel* _holder() const { return static_cast<const StackPanel*>(DynamicSlotVector<Slot>::_holder()); }
 
-			Slot* _slot(int index) { return CDynamicSlotVector<Slot>::_slot(index); }
-			inline int _size() const override { return CDynamicSlotVector<Slot>::size(); }
+			Slot* _slot(int index) { return DynamicSlotVector<Slot>::_slot(index); }
+			inline int _size() const override { return DynamicSlotVector<Slot>::size(); }
 
-			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
+			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
 		};
 
 		friend class Slot;

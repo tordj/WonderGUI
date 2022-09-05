@@ -268,9 +268,9 @@ int main ( int argc, char** argv )
 //	auto pEncoder = GfxStreamEncoder::create(pGfxPlayer->stream.ptr());
 //	auto pEncoder = GfxStreamEncoder::create(pStreamLogger->stream.ptr());
 
-	auto pFirstSplitter = GfxStreamSplitter::create( { pStreamBuffer->input.ptr(), pStreamWriter->input.ptr() });
+	auto pFirstSplitter = GfxStreamSplitter::create( { GfxStreamSink_p( pStreamBuffer, pStreamBuffer->input), GfxStreamSink_p( pStreamWriter, pStreamWriter->input) });
 
-	auto pEncoder = GfxStreamEncoder::create(pFirstSplitter->input.ptr());
+	auto pEncoder = GfxStreamEncoder::create(GfxStreamSink_p( pFirstSplitter, pFirstSplitter->input) );
 
 	// Logger
 
@@ -283,9 +283,9 @@ int main ( int argc, char** argv )
 
 	// Streampump taking from buffer and feeding logger and/or player
 
-	auto pAfterBufferSplitter = GfxStreamSplitter::create({ pStreamLogger->input.ptr(), pStreamPlayer->input.ptr() });
+	auto pAfterBufferSplitter = GfxStreamSplitter::create({ GfxStreamSink_p( pStreamLogger, pStreamLogger->input ), GfxStreamSink_p( pStreamPlayer, pStreamPlayer->input) });
 
-	auto pStreamPump = GfxStreamPump::create(pStreamBuffer->output.ptr(), pAfterBufferSplitter->input.ptr());
+	auto pStreamPump = GfxStreamPump::create(GfxStreamSource_p(pStreamBuffer, pStreamBuffer->output), GfxStreamSink_p( pAfterBufferSplitter, pAfterBufferSplitter->input) );
 
 	// StreamGfxDevice and StreamSurfaceFactory feeding encoder
 

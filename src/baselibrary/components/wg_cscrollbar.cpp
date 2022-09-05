@@ -25,8 +25,6 @@
 
 namespace wg
 {
-	const TypeInfo CScrollbar::TYPEINFO = { "CScrollbar", &WidgetComponent::TYPEINFO };
-
 	using namespace Util;
 
 	//____ constructor ____________________________________________________________
@@ -41,13 +39,6 @@ namespace wg
 	CScrollbar::~CScrollbar()
 	{
 
-	}
-
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& CScrollbar::typeInfo(void) const
-	{
-		return TYPEINFO;
 	}
 
 	//____ setSkins() _________________________________________________________

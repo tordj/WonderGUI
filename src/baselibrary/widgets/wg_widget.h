@@ -89,9 +89,9 @@ namespace wg
 		friend class DynamicSlot;
 		friend class Base;
 
-		template<class S> friend class CStaticSlotVector;
-		template<class S> friend class CDynamicSlotVector;
-		template<class S, int X> friend class CSlotArray;
+		template<class S> friend class StaticSlotVector;
+		template<class S> friend class DynamicSlotVector;
+		template<class S, int X> friend class SlotArray;
 
 	public:
 

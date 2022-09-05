@@ -117,7 +117,7 @@ namespace wg
 		if ((width == SizeConstraint::Equal || width == SizeConstraint::LessOrEqual)
 			&& (height == SizeConstraint::Equal || height == SizeConstraint::LessOrEqual))
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Only one dimension can be constrained to Equal/LessOrEqual", this, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Only one dimension can be constrained to Equal/LessOrEqual", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
 

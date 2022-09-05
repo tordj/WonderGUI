@@ -162,8 +162,6 @@ namespace wg
 		void		_didMoveEntries(SelectBoxEntry * pFrom, SelectBoxEntry * pTo, int nb) override;
 		void		_willEraseEntries(SelectBoxEntry * pEntry, int nb) override;
 
-		Object *	_object() override { return this; }
-
 		//
 		
 		spx			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, spx width, int scale = -1 ) const override;

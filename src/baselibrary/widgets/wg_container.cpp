@@ -127,18 +127,6 @@ namespace wg
 		return m_pHolder ? m_pHolder->_root() : nullptr;
 	}
 
-	//____ _object() __________________________________________________________
-
-	Object * Container::_object()
-	{
-		return this;
-	}
-
-	const Object * Container::_object() const
-	{
-		return this;
-	}
-
 	//____ _scale() ________________________________________________________________
 
 	int Container::_scale() const

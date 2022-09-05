@@ -29,16 +29,6 @@
 
 namespace wg
 {
-	
-	template<class EntryType> const TypeInfo CDynamicVector<EntryType>::TYPEINFO = { "CDynamicVector<Unknow>", &CStaticVector<EntryType>::TYPEINFO };
-
-	//____ typeInfo() _________________________________________________________________
-
-	template < class EntryType>
-	const TypeInfo& CDynamicVector<EntryType>::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
 
 	//____ pushBack() _________________________________________________________________
 

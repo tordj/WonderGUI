@@ -26,20 +26,11 @@ namespace wg
 {
 	using namespace Util;
 
-	const TypeInfo CText::TYPEINFO = { "CText", &WidgetComponent::TYPEINFO };
-
 	//____ constructor _____________________________________________________________
 
 	CText::CText(Widget * pWidget ) : WidgetComponent( pWidget )
 	{
 		_layout()->addText(this);
-	}
-
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& CText::typeInfo(void) const
-	{
-		return TYPEINFO;
 	}
 
 	//____ destructor ______________________________________________________________

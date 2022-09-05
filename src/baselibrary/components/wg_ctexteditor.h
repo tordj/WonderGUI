@@ -30,10 +30,8 @@
 
 namespace wg
 {
-
 	class CTextEditor;
-	typedef	StrongComponentPtr<CTextEditor>	CTextEditor_p;
-	typedef	WeakComponentPtr<CTextEditor>	CTextEditor_wp;
+	typedef	ComponentPtr<CTextEditor>	CTextEditor_p;
 
 
 	//____ CTextEditor __________________________________________________________________
@@ -56,12 +54,6 @@ namespace wg
 		};
 
 		CTextEditor(Widget * pWidget );
-
-
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
 
 		//.____ State __________________________________________________
 
@@ -106,10 +98,6 @@ namespace wg
 		bool			caretLineEnd();
 		bool			caretTextBegin();
 		bool			caretTextEnd();
-
-		//.____ Misc __________________________________________________
-
-		inline CTextEditor_p		ptr() { return CTextEditor_p(this); }
 
 		//.____ Internal ______________________________________________________
 
@@ -189,6 +177,7 @@ namespace wg
 		int				m_maxLines = 0;
 		int				m_maxChars = 0;
 	};
+
 
 } // namespace wg
 #endif //WG_CTEXTEDITOR_DOT_H

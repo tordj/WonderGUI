@@ -33,10 +33,6 @@
 namespace wg
 {
 
-	class CIconDisplay;
-	typedef	StrongComponentPtr<CIconDisplay>	CIconDisplay_p;
-	typedef	WeakComponentPtr<CIconDisplay>		CIconDisplay_wp;
-
 	//____ CIconDisplay _____________________________________________________________
 
 	class CIconDisplay : public WidgetComponent
@@ -56,11 +52,6 @@ namespace wg
 			bool			overlap = false;
 		};
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
 		//.____ Content _____________________________________________
 
 		bool			set(Skin * pIconGfx, Placement placement = Placement::West, Border padding = Border(0),
@@ -79,10 +70,6 @@ namespace wg
 		inline Border		padding() const { return m_padding; }
 		inline bool			overlap() const { return _overlap(); }
 		inline Skin_p		skin() const { return _skin(); }
-
-		//.____ Misc __________________________________________________
-
-		inline CIconDisplay_p		ptr() { return CIconDisplay_p(this); }
 
 		//.____ Internal ______________________________________________________
 

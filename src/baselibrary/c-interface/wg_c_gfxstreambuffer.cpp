@@ -39,12 +39,14 @@ wg_obj wg_createStreamBuffer(int initialCapacity)
 
 wg_component wg_getStreamBufferOutput(wg_obj streamBuffer)
 {
-	return static_cast<Component*>(&getPtr(streamBuffer)->output);
+	auto p = getPtr(streamBuffer);
+	return { static_cast<Object*>(p), &p->output };
 }
 
 wg_component wg_getStreamBufferInput(wg_obj streamBuffer)
 {
-	return static_cast<Component*>(&getPtr(streamBuffer)->input);
+	auto p = getPtr(streamBuffer);
+	return { static_cast<Object*>(p), &p->input };
 }
 
 int wg_streamBufferCapacity(wg_obj streamBuffer)

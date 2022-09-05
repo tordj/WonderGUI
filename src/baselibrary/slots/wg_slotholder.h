@@ -45,8 +45,6 @@ namespace wg
 	public:
 		virtual Container * _container() = 0;
 		virtual RootPanel *	_root() = 0;
-		virtual Object *	_object() = 0;
-		virtual const Object *	_object() const = 0;
 		virtual int			_scale() const = 0;
 
 		virtual const TypeInfo& _slotTypeInfo(const StaticSlot * pSlot) const = 0;

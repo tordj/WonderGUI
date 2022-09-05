@@ -48,11 +48,6 @@ namespace wg
 			double			value = 0.0;
 		};
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
 		//.____ Content _____________________________________________
 
 		void				clear();

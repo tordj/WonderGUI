@@ -32,10 +32,6 @@
 namespace wg
 {
 
-	class CScrollbar;
-	typedef	StrongComponentPtr<CScrollbar>	CScrollbar_p;
-	typedef	WeakComponentPtr<CScrollbar>	CScrollbar_wp;
-
 	//____ CScrollbar __________________________________________________________________
 
 	class CScrollbar : public WidgetComponent
@@ -68,11 +64,6 @@ namespace wg
 		};
 
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
 		//.____ Appearance _____________________________________________
 
 		void		setSkins(Skin* pBackground, Skin* pBar, Skin* pBackwardButton, Skin* pForwardButton);
@@ -87,8 +78,6 @@ namespace wg
 		bool		jumpToPress() const { return m_bJumpToPress; }
 
 		//.____ Misc __________________________________________________
-
-		inline CScrollbar_p		ptr() { return CScrollbar_p(this); }
 
 		inline bool				inWorkingOrder() const { return m_skins[Part::Bar] != nullptr || m_skins[Part::Prev] != nullptr || m_skins[Part::Next] != nullptr; }
 

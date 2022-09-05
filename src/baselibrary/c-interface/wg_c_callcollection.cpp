@@ -25,7 +25,6 @@
 #include <wg_c_bitmapcache.h>
 #include <wg_c_bitmapfont.h>
 #include <wg_c_canvaslayers.h>
-#include <wg_c_component.h>
 #include <wg_c_font.h>
 #include <wg_c_gfxdevice.h>
 #include <wg_c_gfxstreambuffer.h>
@@ -42,7 +41,6 @@ struct wg_c_calls_body
 	wg_bitmapcache_calls		bitmapCache;
 	wg_bitmapfont_calls			bitmapFont;
 	wg_canvaslayers_calls		canvasLayers;
-	wg_component_calls			component;
 	wg_font_calls				font;
 	wg_object_calls				object;
 	wg_gfxdevice_calls			gfxDevice;
@@ -85,13 +83,6 @@ void wg_populateCallCollection(wg_c_callCollection * pHeader)
 	pBody->canvasLayers.canvasLayersSize	= &wg_canvasLayersSize;
 	pBody->canvasLayers.createCanvasLayers	= &wg_createCanvasLayers;
 	pBody->canvasLayers.layerFormat			= &wg_layerFormat;
-
-
-	pBody->component.structSize				= sizeof(wg_component_calls);
-	pBody->component.getComponentTypeInfo	= &wg_getComponentTypeInfo;
-	pBody->component.isComponentInstanceOf	= &wg_isComponentInstanceOf;
-	pBody->component.getComponentObject		= &wg_getComponentObject;
-
 
 	pBody->font.structSize					= sizeof(wg_font_calls);
 	pBody->font.setFontSize					= &wg_setFontSize;
@@ -278,7 +269,6 @@ void wg_populateCallCollection(wg_c_callCollection * pHeader)
 	pHeader->pBitmapCache		= &pBody->bitmapCache;
 	pHeader->pBitmapFont		= &pBody->bitmapFont;
 	pHeader->pCanvasLayers		= &pBody->canvasLayers;
-	pHeader->pComponent			= &pBody->component;
 	pHeader->pFont				= &pBody->font;
 	pHeader->pObject			= &pBody->object;
 	pHeader->pGfxDevice			= &pBody->gfxDevice;

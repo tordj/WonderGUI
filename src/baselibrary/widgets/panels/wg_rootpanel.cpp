@@ -277,18 +277,6 @@ namespace wg
 			return spxToPts(m_canvas.size,m_scale);
 	}
 
-	//____ _object() ____________________________________________________________
-
-	Object* RootPanel::_object()
-	{
-		return this;
-	}
-
-	const Object* RootPanel::_object() const
-	{
-		return this;
-	}
-
 	//____ setVisible() ___________________________________________________________
 
 	bool RootPanel::setVisible(bool bVisible)

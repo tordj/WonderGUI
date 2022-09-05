@@ -20,32 +20,24 @@
 
 =========================================================================*/
 
-#ifndef	WG_CDYNAMICSLOTCOLLECTION_DOT_H
-#define	WG_CDYNAMICSLOTCOLLECTION_DOT_H
+#ifndef	WG_DYNAMICSLOTCOLLECTION_DOT_H
+#define	WG_DYNAMICSLOTCOLLECTION_DOT_H
 #pragma once
 
-#include <wg_cstaticslotcollection.h>
+#include <wg_staticslotcollection.h>
 
 namespace wg
 {
 
-	//____ CDynamicSlotCollection __________________________________________________________
+	//____ DynamicSlotCollection __________________________________________________________
 
-	class CDynamicSlotCollection;
-	typedef	StrongComponentPtr<CDynamicSlotCollection>	CDynamicSlotCollection_p;
-	typedef	WeakComponentPtr<CDynamicSlotCollection>	CDynamicSlotCollection_wp;
 
-	class CDynamicSlotCollection : public CStaticSlotCollection
+	class DynamicSlotCollection : public StaticSlotCollection
 	{
 
 	public:
 
 		using		iterator = SlotIterator;
-
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
@@ -118,9 +110,6 @@ namespace wg
 		virtual void		moveBefore(int index, int sibling) = 0;
 		inline  iterator	moveBefore(const iterator& it, const iterator& sibling)				{ return _moveBefore(it,sibling); }
 
-		//.____ Misc _______________________________________________________
-
-		inline CDynamicSlotCollection_p ptr() { return CDynamicSlotCollection_p(this); }
 
 		//.____ Operators __________________________________________
 
@@ -145,4 +134,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CDYNAMICSLOTCOLLECTION_DOT_H
+#endif //WG_DYNAMICSLOTCOLLECTION_DOT_H

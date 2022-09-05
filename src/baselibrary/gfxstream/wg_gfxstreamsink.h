@@ -24,7 +24,6 @@
 #define	WG_CGFXSTREAMSINK_DOT_H
 #pragma once
 
-#include <wg_component.h>
 #include <wg_pointers.h>
 #include <wg_gfxstream.h>
 
@@ -33,14 +32,13 @@
 namespace wg
 {
 
-	class CGfxStreamSink;
-	typedef	StrongComponentPtr<CGfxStreamSink>	CGfxStreamSink_p;
-	typedef	WeakComponentPtr<CGfxStreamSink>	CGfxStreamSink_wp;
+	class GfxStreamSink;
+	typedef	ComponentPtr<GfxStreamSink>	GfxStreamSink_p;
 
 
-	//____ CGfxStreamSink __________________________________________________________
+	//____ GfxStreamSink __________________________________________________________
 
-	class CGfxStreamSink : public Component, public GfxStream
+	class GfxStreamSink : public GfxStream
 	{
 	public:
 
@@ -49,30 +47,17 @@ namespace wg
 		class Holder /** @private */
 		{
 		public:
-			virtual Object * _object() = 0;
-			virtual const Object * _object() const = 0;
 
 			virtual void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) = 0;
 		};
 
-		CGfxStreamSink(Holder * pHolder);
-
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
+		GfxStreamSink(Holder * pHolder) : m_pHolder(pHolder) {}
 
 		//.____ Control _______________________________________________________
 
 		inline void	processChunks(const uint8_t* pBegin, const uint8_t* pEnd) { m_pHolder->_processStreamChunks(pBegin, pEnd); }
 
-		//.____ Misc __________________________________________________
-
-		inline CGfxStreamSink_p	ptr() { return CGfxStreamSink_p(this); }
-
 	protected:
-		Object *				_object() override { return m_pHolder->_object(); }
-		const Object *			_object() const  override { return m_pHolder->_object(); }
 
 		Holder * 	m_pHolder;
 	};

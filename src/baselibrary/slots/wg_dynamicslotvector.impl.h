@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef	WG_CDYNAMICSLOTVECTOR_IMPL_DOT_H
-#define	WG_CDYNAMICSLOTVECTOR_IMPL_DOT_H
+#ifndef	WG_DYNAMICSLOTVECTOR_IMPL_DOT_H
+#define	WG_DYNAMICSLOTVECTOR_IMPL_DOT_H
 #pragma once
 
-#include <wg_cdynamicslotvector.h>
+#include <wg_dynamicslotvector.h>
 #include <cstring>
 
 //#define INSTANTIATE_CHILDREN(SlotType)		template class CSlotVector< SlotType >;
@@ -33,22 +33,10 @@ namespace wg
 {
 	class Widget;
 
-	template<class SlotType> const TypeInfo CDynamicSlotVector<SlotType>::TYPEINFO = { "CDynamicSlotVector<Unknow>", &CDynamicSlotCollection::TYPEINFO };
-
-
-	//____ typeInfo() _________________________________________________________________
-
-	template < class SlotType>
-	const TypeInfo& CDynamicSlotVector<SlotType>::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
-
-
 	//____ pushFront() _________________________________________________________________
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::pushFront(const Widget_p& pWidget)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::pushFront(const Widget_p& pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
@@ -59,7 +47,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::pushFront(const Widget_p pWidgets[], int amount)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::pushFront(const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -80,7 +68,7 @@ namespace wg
 	//____ pushBack() _________________________________________________________________
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::pushBack(const Widget_p& pWidget)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::pushBack(const Widget_p& pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
@@ -91,7 +79,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::pushBack(const Widget_p pWidgets[], int amount)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::pushBack(const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -109,7 +97,7 @@ namespace wg
 	//____ insert() ______________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::insert(int index, const Widget_p& pWidget)
+	void DynamicSlotVector<SlotType>::insert(int index, const Widget_p& pWidget)
 	{
 		//TODO: Add assert
 
@@ -121,7 +109,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::insert(const SlotIterator& pos, const Widget_p& pWidget)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::insert(const SlotIterator& pos, const Widget_p& pWidget)
 	{
 		//TODO: Add assert
 
@@ -135,7 +123,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::insert(int index, const Widget_p pWidgets[], int amount)
+	void DynamicSlotVector<SlotType>::insert(int index, const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -150,7 +138,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::insert(const SlotIterator& pos, const Widget_p pWidgets[], int amount)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::insert(const SlotIterator& pos, const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -169,7 +157,7 @@ namespace wg
 	//____ erase() ______________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::erase(int index)
+	void DynamicSlotVector<SlotType>::erase(int index)
 	{
 		//TODO: Add assert
 
@@ -179,7 +167,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::erase(const SlotIterator& pos)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::erase(const SlotIterator& pos)
 	{
 		//TODO: Add assert
 
@@ -189,7 +177,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::erase(int index, int amount)
+	void DynamicSlotVector<SlotType>::erase(int index, int amount)
 	{
 		//TODO: Add assert
 
@@ -199,7 +187,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::erase(const SlotIterator& beg, const SlotIterator& end)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::erase(const SlotIterator& beg, const SlotIterator& end)
 	{
 		//TODO: Add assert
 
@@ -213,7 +201,7 @@ namespace wg
 	//____ clear() _______________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::clear()
+	void DynamicSlotVector<SlotType>::clear()
 	{
 		if (isEmpty())
 			return;
@@ -224,7 +212,7 @@ namespace wg
 	//____ moveToBack() __________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::moveToBack(int index)
+	void DynamicSlotVector<SlotType>::moveToBack(int index)
 	{
 		//TODO: Assert
 
@@ -236,7 +224,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::moveToBack(const SlotIterator& it)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::moveToBack(const SlotIterator& it)
 	{
 		//TODO: Assert
 
@@ -251,7 +239,7 @@ namespace wg
 	//____ moveToFront() _________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::moveToFront(int index)
+	void DynamicSlotVector<SlotType>::moveToFront(int index)
 	{
 		//TODO: Assert
 
@@ -263,7 +251,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::moveToFront(const SlotIterator& it)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::moveToFront(const SlotIterator& it)
 	{
 		//TODO: Assert
 
@@ -278,7 +266,7 @@ namespace wg
 	//____ moveBefore() __________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::moveBefore(int index, int sibling)
+	void DynamicSlotVector<SlotType>::moveBefore(int index, int sibling)
 	{
 		//TODO: Assert
 
@@ -296,7 +284,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotVector<SlotType>::moveBefore(const SlotIterator& it, const SlotIterator& sibling)
+	SlotArrayIterator<SlotType> DynamicSlotVector<SlotType>::moveBefore(const SlotIterator& it, const SlotIterator& sibling)
 	{
 		//TODO: Assert
 
@@ -318,7 +306,7 @@ namespace wg
 	//____ _begin_iterator() ___________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_begin_iterator()
+	SlotIterator DynamicSlotVector<SlotType>::_begin_iterator()
 	{
 		return iterator(_begin());
 	}
@@ -326,7 +314,7 @@ namespace wg
 	//____ _end_iterator() _____________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_end_iterator()
+	SlotIterator DynamicSlotVector<SlotType>::_end_iterator()
 	{
 		return iterator(_end());
 	}
@@ -334,33 +322,22 @@ namespace wg
 	//____ _at() _____________________________________________________________
 
 	template < class SlotType>
-	StaticSlot& CDynamicSlotVector<SlotType>::_at(int index)
+	StaticSlot& DynamicSlotVector<SlotType>::_at(int index)
 	{
 		if (index < 0 || index >= m_size)
-			Base::handleError(ErrorSeverity::Serious, ErrorCode::OutOfRange, "Slot index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+		{
+			auto pObject = dynamic_cast<Object*>(m_pHolder);
+			const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
+			Base::handleError(ErrorSeverity::Serious, ErrorCode::OutOfRange, "Slot index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
+		}
 
 		return *_slot(index);
 	}
 
-	//____ _object() __________________________________________________________
-
-	template < class SlotType>
-	Object * CDynamicSlotVector<SlotType>::_object()
-	{
-		return m_pHolder->_object();
-	}
-
-	template < class SlotType>
-	const Object * CDynamicSlotVector<SlotType>::_object() const
-	{
-		return m_pHolder->_object();
-	}
-
-
 	//____ _releaseGuardPointer() _____________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard)
+	void DynamicSlotVector<SlotType>::_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard)
 	{
 		Container * pParent = pToRelease->_parent();
 
@@ -387,7 +364,7 @@ namespace wg
 	//____ _pushFront() _______________________________________________________
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_pushFront(Widget * pWidget)
+	SlotIterator DynamicSlotVector<SlotType>::_pushFront(Widget * pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
@@ -398,7 +375,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_pushFront(const Widget_p pWidgets[], int amount)
+	SlotIterator DynamicSlotVector<SlotType>::_pushFront(const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -416,7 +393,7 @@ namespace wg
 	//____ _pushBack() ________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_pushBack(Widget * pWidget)
+	SlotIterator DynamicSlotVector<SlotType>::_pushBack(Widget * pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
@@ -427,7 +404,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_pushBack(const Widget_p pWidgets[], int amount)
+	SlotIterator DynamicSlotVector<SlotType>::_pushBack(const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -445,7 +422,7 @@ namespace wg
 	//____ _insert() ________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_insert(const SlotIterator& it, Widget * pWidget)
+	SlotIterator DynamicSlotVector<SlotType>::_insert(const SlotIterator& it, Widget * pWidget)
 	{
 		//TODO: Add assert
 
@@ -459,7 +436,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_insert(const SlotIterator& it, const Widget_p pWidgets[], int amount)
+	SlotIterator DynamicSlotVector<SlotType>::_insert(const SlotIterator& it, const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -478,7 +455,7 @@ namespace wg
 	//____ _erase() ________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_erase(const SlotIterator& it)
+	SlotIterator DynamicSlotVector<SlotType>::_erase(const SlotIterator& it)
 	{
 		//TODO: Add assert
 
@@ -488,7 +465,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_erase(const SlotIterator& beg, const SlotIterator& end)
+	SlotIterator DynamicSlotVector<SlotType>::_erase(const SlotIterator& beg, const SlotIterator& end)
 	{
 		//TODO: Add assert
 
@@ -501,7 +478,7 @@ namespace wg
 	//____ _moveToFront() ________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_moveToFront(const SlotIterator& it)
+	SlotIterator DynamicSlotVector<SlotType>::_moveToFront(const SlotIterator& it)
 	{
 		//TODO: Assert
 
@@ -516,7 +493,7 @@ namespace wg
 	//____ _moveToBack() ________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_moveToBack(const SlotIterator& it)
+	SlotIterator DynamicSlotVector<SlotType>::_moveToBack(const SlotIterator& it)
 	{
 		//TODO: Assert
 
@@ -531,7 +508,7 @@ namespace wg
 	//____ _moveBefore() ________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotVector<SlotType>::_moveBefore(const SlotIterator& it, const SlotIterator& sibling)
+	SlotIterator DynamicSlotVector<SlotType>::_moveBefore(const SlotIterator& it, const SlotIterator& sibling)
 	{
 		//TODO: Assert
 
@@ -553,7 +530,7 @@ namespace wg
 	//____ _move() ____________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::_move(SlotType * pFrom, SlotType * pTo)
+	void DynamicSlotVector<SlotType>::_move(SlotType * pFrom, SlotType * pTo)
 	{
 		SlotType temp = std::move(*pFrom);
 		if (pFrom < pTo)
@@ -588,7 +565,7 @@ namespace wg
 	//____ _reorder() _________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::_reorder(int order[])
+	void DynamicSlotVector<SlotType>::_reorder(int order[])
 	{
 		if (m_size == 0)
 			return;
@@ -609,7 +586,7 @@ namespace wg
 	//____ _find() ____________________________________________________________
 
 	template < class SlotType>
-	SlotType * CDynamicSlotVector<SlotType>::_find(const Widget* pWidget) const
+	SlotType * DynamicSlotVector<SlotType>::_find(const Widget* pWidget) const
 	{
 		for (auto p = _begin(); p < _end(); p++)
 			if (p->_widget() == pWidget)
@@ -621,7 +598,7 @@ namespace wg
 	//____ _reallocArray() ____________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::_reallocArray(int capacity, int offset)
+	void DynamicSlotVector<SlotType>::_reallocArray(int capacity, int offset)
 	{
 		int size = sizeof(SlotType)*capacity;
 		SlotType* pOldBuffer = m_pBuffer;
@@ -650,7 +627,7 @@ namespace wg
 	//____ _reallocBlock() ____________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::_reallocBlock(SlotType * pBeg, SlotType * pEnd)
+	void DynamicSlotVector<SlotType>::_reallocBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		while (pBeg < pEnd)
 		{
@@ -662,7 +639,7 @@ namespace wg
 	//____ _deleteBlock() _____________________________________________________
 
 	template < class SlotType>
-	SlotType* CDynamicSlotVector<SlotType>::_deleteBlock(SlotType * pBeg, SlotType * pEnd)
+	SlotType* DynamicSlotVector<SlotType>::_deleteBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		if (m_pBuffer == m_pArray)
 		{
@@ -715,7 +692,7 @@ namespace wg
 	//____ _insertBlock() _____________________________________________________
 
 	template < class SlotType>
-	SlotType* CDynamicSlotVector<SlotType>::_insertBlock(SlotType * pPos, int entries)
+	SlotType* DynamicSlotVector<SlotType>::_insertBlock(SlotType * pPos, int entries)
 	{
 		if (entries <= m_capacity - m_size)
 		{
@@ -837,7 +814,7 @@ namespace wg
 	//____ _killBlock() __________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::_killBlock(SlotType * pBeg, SlotType * pEnd)
+	void DynamicSlotVector<SlotType>::_killBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		while (pBeg < pEnd)
 			(pBeg++)->~SlotType();
@@ -846,7 +823,7 @@ namespace wg
 	//____ _initBlock() __________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotVector<SlotType>::_initBlock(SlotType * pBeg, SlotType * pEnd)
+	void DynamicSlotVector<SlotType>::_initBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		while (pBeg < pEnd)
 			new (pBeg++) SlotType(m_pHolder);
@@ -854,5 +831,5 @@ namespace wg
 
 } // namespace wg
 
-#endif //WG_CDYNAMICSLOTVECTOR_IMPL_DOT_H
+#endif //WG_DYNAMICSLOTVECTOR_IMPL_DOT_H
 
