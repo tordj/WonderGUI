@@ -26,7 +26,7 @@
 #include <functional>
 
 #include <wg_list.h>
-#include <wg_ccolumnheader.h>
+#include <wg_columnheader.h>
 #include <wg_dynamicslotvector.h>
 #include <wg_slotextras.h>
 
@@ -143,7 +143,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CColumnHeader		header;
+		ColumnHeader		header;
 		CSlots	slots;
 
 		//.____ Identification __________________________________________
@@ -238,13 +238,13 @@ namespace wg
 		void			_unselectSlots(StaticSlot * pSlot, int nb);
 
 
-		// Overloaded from WidgetComponent::Holder
+		// Overloaded from Component::Holder
 
-		CoordSPX		_componentPos(const WidgetComponent * pComponent) const override;
-		SizeSPX			_componentSize(const WidgetComponent * pComponent) const override;
-		RectSPX			_componentGeo(const WidgetComponent * pComponent) const override;
+		CoordSPX		_componentPos(const Component * pComponent) const override;
+		SizeSPX			_componentSize(const Component * pComponent) const override;
+		RectSPX			_componentGeo(const Component * pComponent) const override;
 
-		void			_receiveComponentNotif(WidgetComponent * pComponent, ComponentNotif notification, int value, void * pData) override;
+		void			_receiveComponentNotif(Component * pComponent, ComponentNotif notification, int value, void * pData) override;
 
 
 		// Internal
@@ -275,7 +275,7 @@ namespace wg
 		void			_addToContentDefaultSize(spx length, spx breadth);
 		void			_subFromContentDefaultSize(spx length, spx breadth);
 
-		class ColumnHeaderAccess : public CColumnHeader { friend class PackList; };
+		class ColumnHeaderAccess : public ColumnHeader { friend class PackList; };
 		const ColumnHeaderAccess& _header() const { return static_cast<const ColumnHeaderAccess&>(header); }
 		ColumnHeaderAccess& _header() { return static_cast<ColumnHeaderAccess&>(header); }
 

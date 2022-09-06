@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_cnumberdisplay.h>
+#include <wg_number.h>
 
 
 namespace wg
@@ -29,30 +29,30 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	CNumberDisplay::CNumberDisplay(Widget * pWidget) : CStaticNumberDisplay(pWidget), m_minValue(std::numeric_limits<double>::lowest()), m_maxValue(std::numeric_limits<double>::max())
+	Number::Number(Widget * pWidget) : StaticNumber(pWidget), m_minValue(std::numeric_limits<double>::lowest()), m_maxValue(std::numeric_limits<double>::max())
 	{
 	}
 
 	
 	//____ clear() _________________________________________________________________
 
-	void CNumberDisplay::clear()
+	void Number::clear()
 	{
 		m_minValue = std::numeric_limits<double>::lowest();
 		m_maxValue = std::numeric_limits<double>::max();
-		CStaticNumberDisplay::_set(0.0);
+		StaticNumber::_set(0.0);
 	}
 
 	//____ set() ___________________________________________________________________
 
-	bool CNumberDisplay::set(double value)
+	bool Number::set(double value)
 	{
 		return _set(value);
 	}
 
 	//____ setRange() _________________________________________________________
 
-	bool CNumberDisplay::setRange(double min, double max)
+	bool Number::setRange(double min, double max)
 	{
 		if (min > max)
 			return false;
@@ -64,13 +64,13 @@ namespace wg
 		limit(val, min, max);
 		m_value = val;
 		if (val != m_value)
-			CStaticNumberDisplay::_set(val);
+			StaticNumber::_set(val);
 		return true;
 	}
 
 	//____ _initFromBlueprint() _______________________________________________
 
-	void CNumberDisplay::_initFromBlueprint(const Blueprint& bp)
+	void Number::_initFromBlueprint(const Blueprint& bp)
 	{
 		m_pLayout	= bp.layout;
 		m_maxValue	= bp.maxValue;
@@ -80,13 +80,13 @@ namespace wg
 
 	//____ _set() _____________________________________________________________
 
-	bool CNumberDisplay::_set( double value )
+	bool Number::_set( double value )
 	{
 		if( value > m_maxValue )
 			value = m_maxValue;
 		else if( value < m_minValue )
 			value = m_minValue;
-		return CStaticNumberDisplay::_set(value);
+		return StaticNumber::_set(value);
 	}
 
 

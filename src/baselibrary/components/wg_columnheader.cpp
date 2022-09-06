@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_ccolumnheader.h>
+#include <wg_columnheader.h>
 #include <wg_msg.h>
 #include <wg_inputhandler.h>
 
@@ -29,7 +29,7 @@ namespace wg
 
 	//____ constructor ___________________________________________________________
 
-	CColumnHeader::CColumnHeader(Widget * pWidget) : WidgetComponent(pWidget), m_skin(this)
+	ColumnHeader::ColumnHeader(Widget * pWidget) : Component(pWidget), m_skin(this)
 	{
 		m_bPressed = false;
 		m_sortOrder = SortOrder::None;
@@ -39,14 +39,14 @@ namespace wg
 
 	//____ destructor ______________________________________________________________
 
-	CColumnHeader::~CColumnHeader()
+	ColumnHeader::~ColumnHeader()
 	{
 		_layout()->removeText(this);
 	}
 
 	//____ setSkin() _____________________________________________________________
 
-	void CColumnHeader::setSkin( Skin * pSkin )
+	void ColumnHeader::setSkin( Skin * pSkin )
 	{
 		if( pSkin != m_skin.get() )
 		{
@@ -58,14 +58,14 @@ namespace wg
 
 	//____ setText() __________________________________________________________
 
-	void CColumnHeader::setText(const CharSeq& seq)
+	void ColumnHeader::setText(const CharSeq& seq)
 	{
 		int removed = m_text.length();
 		m_text = seq;
 		_layout()->onTextModified(this, 0, removed, m_text.length());
 	}
 
-	void CColumnHeader::setText(const String& str)
+	void ColumnHeader::setText(const String& str)
 	{
 		int removed = m_text.length();
 		m_text = str;
@@ -74,7 +74,7 @@ namespace wg
 
 	//____ setStyle() _________________________________________________________
 
-	void CColumnHeader::setStyle(TextStyle* pStyle)
+	void ColumnHeader::setStyle(TextStyle* pStyle)
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = pStyle;
@@ -83,14 +83,14 @@ namespace wg
 
 	//____ clearStyle() _______________________________________________________
 
-	void CColumnHeader::clearStyle()
+	void ColumnHeader::clearStyle()
 	{
 		setStyle(nullptr);
 	}
 
 	//____ setLayout() ________________________________________________________
 
-	void CColumnHeader::setLayout(TextLayout* pLayout)
+	void ColumnHeader::setLayout(TextLayout* pLayout)
 	{
 		if (pLayout == m_pLayout)
 			return;
@@ -102,7 +102,7 @@ namespace wg
 
 	//____ clearLayout() ______________________________________________________
 
-	void CColumnHeader::clearLayout()
+	void ColumnHeader::clearLayout()
 	{
 		setLayout(nullptr);
 	}
@@ -110,7 +110,7 @@ namespace wg
 
 	//____ _setSortOrder() ________________________________________________________
 
-	void CColumnHeader::_setSortOrder(SortOrder order)
+	void ColumnHeader::_setSortOrder(SortOrder order)
 	{
 		if (order != m_sortOrder)
 		{
@@ -122,7 +122,7 @@ namespace wg
 
 	//____ _setState() ____________________________________________________________
 
-	void CColumnHeader::_setState( State state )
+	void ColumnHeader::_setState( State state )
 	{
 		State oldState = m_state;
 		m_state = state;
@@ -135,7 +135,7 @@ namespace wg
 
 	//____ _setSize() ____________________________________________________________
 
-	void CColumnHeader::_setSize( SizeSPX size, int scale )
+	void ColumnHeader::_setSize( SizeSPX size, int scale )
 	{
 		if( m_size != size || m_scale != scale )
 		{
@@ -152,7 +152,7 @@ namespace wg
 
 	//____ _defaultSize() _______________________________________________________
 
-	SizeSPX CColumnHeader::_defaultSize(int scale) const
+	SizeSPX ColumnHeader::_defaultSize(int scale) const
 	{
 
 		SizeSPX size = _layout()->defaultSize(this, scale);
@@ -163,7 +163,7 @@ namespace wg
 
 	//____ _matchingWidth() ____________________________________________________
 
-	spx CColumnHeader::_matchingWidth( spx height, int scale ) const
+	spx ColumnHeader::_matchingWidth( spx height, int scale ) const
 	{
 		SizeSPX padding = m_skin.contentPaddingSize(scale);
 
@@ -176,7 +176,7 @@ namespace wg
 
 	//____ _matchingHeight() ___________________________________________________
 
-	spx CColumnHeader::_matchingHeight( spx width, int scale ) const
+	spx ColumnHeader::_matchingHeight( spx width, int scale ) const
 	{
 		SizeSPX padding = m_skin.contentPaddingSize(scale);
 
@@ -189,7 +189,7 @@ namespace wg
 
 	//____ _receive() _____________________________________________________________
 
-	bool  CColumnHeader::_receive( Msg * _pMsg )
+	bool  ColumnHeader::_receive( Msg * _pMsg )
 	{
 		switch( _pMsg->type() )
 		{
@@ -288,7 +288,7 @@ namespace wg
 
 	//____ _render() ____________________________________________________________
 
-	void CColumnHeader::_render( GfxDevice * pDevice, const RectSPX& _canvas )
+	void ColumnHeader::_render( GfxDevice * pDevice, const RectSPX& _canvas )
 	{
 		RectSPX canvas( _canvas );
 
@@ -300,92 +300,92 @@ namespace wg
 
 	//____ _textSize() ________________________________________________________
 
-	SizeSPX CColumnHeader::_textSize() const
+	SizeSPX ColumnHeader::_textSize() const
 	{
 		return m_skin.contentRect(m_size, m_scale, m_state);
 	}
 
-	State CColumnHeader::_textState() const
+	State ColumnHeader::_textState() const
 	{
 		return m_state;
 	}
 
-	TextStyle* CColumnHeader::_textStyle() const
+	TextStyle* ColumnHeader::_textStyle() const
 	{
 		return m_pStyle;
 	}
 
-	const Char* CColumnHeader::_textBegin() const
+	const Char* ColumnHeader::_textBegin() const
 	{
 		return m_text.chars();
 	}
 
-	int CColumnHeader::_textLength() const
+	int ColumnHeader::_textLength() const
 	{
 		return m_text.length();
 	}
 
-	bool CColumnHeader::_caretVisible() const
+	bool ColumnHeader::_caretVisible() const
 	{
 		return false;
 	}
 
-	int CColumnHeader::_caretOffset() const
+	int ColumnHeader::_caretOffset() const
 	{
 		return 0;
 	}
 
-	std::tuple<int, int> CColumnHeader::_selectedText() const
+	std::tuple<int, int> ColumnHeader::_selectedText() const
 	{
 		return std::make_tuple(0, 0);
 	}
 
-	void CColumnHeader::_mapperRequestRender()
+	void ColumnHeader::_mapperRequestRender()
 	{
 		_requestRender( m_skin.contentRect(m_size, m_scale, m_state) );
 	}
 
-	void CColumnHeader::_mapperRequestRender(const RectSPX& rect)
+	void ColumnHeader::_mapperRequestRender(const RectSPX& rect)
 	{
 		_requestRender(rect + m_skin.contentOfs(m_scale, m_state));
 	}
 
-	void CColumnHeader::_mapperRequestResize()
+	void ColumnHeader::_mapperRequestResize()
 	{
 		_requestResize();
 	}
 
-	int CColumnHeader::_scale() const
+	int ColumnHeader::_scale() const
 	{
 		return m_scale;
 	}
 
-	float CColumnHeader::_skinValue(const SkinSlot* pSlot) const
+	float ColumnHeader::_skinValue(const SkinSlot* pSlot) const
 	{
 		return m_sortOrder == SortOrder::Descending ? 1.f : 0.f;
 	}
 
-	float CColumnHeader::_skinValue2(const SkinSlot* pSlot) const
+	float ColumnHeader::_skinValue2(const SkinSlot* pSlot) const
 	{
 		return -1;
 	}
 
-	State CColumnHeader::_skinState(const SkinSlot* pSlot) const
+	State ColumnHeader::_skinState(const SkinSlot* pSlot) const
 	{
 		return m_state;
 	}
 
-	SizeSPX CColumnHeader::_skinSize(const SkinSlot* pSlot) const
+	SizeSPX ColumnHeader::_skinSize(const SkinSlot* pSlot) const
 	{
 		return m_size;
 	}
 
-	void CColumnHeader::_skinRequestRender(const SkinSlot* pSlot)
+	void ColumnHeader::_skinRequestRender(const SkinSlot* pSlot)
 	{
 		_requestRender();
 	}
 
-	void CColumnHeader::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
+	void ColumnHeader::_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect)
 	{
 		_requestRender(rect);
 	}

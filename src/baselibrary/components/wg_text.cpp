@@ -20,10 +20,23 @@
 
 =========================================================================*/
 
-#include <wg_widgetcomponent.h>
+
+#include <wg_text.h>
 
 namespace wg
 {
 
+	//____ initFromBlueprint() ________________________________________________
 
-} // namespace wg
+	void Text::_initFromBlueprint(const Blueprint& bp)
+	{
+		if (bp.style)
+			setStyle(bp.style);
+
+		if (bp.layout)
+			setLayout(bp.layout);
+
+		if (!bp.text.isEmpty())
+			_setText(bp.text);
+	}
+}

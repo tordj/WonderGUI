@@ -20,12 +20,12 @@
 
 =========================================================================*/
 
-#ifndef	WG_CICONDISPLAY_DOT_H
-#define	WG_CICONDISPLAY_DOT_H
+#ifndef	WG_ICON_DOT_H
+#define	WG_ICON_DOT_H
 #pragma once
 
 #include <wg_types.h>
-#include <wg_widgetcomponent.h>
+#include <wg_component.h>
 #include <wg_geo.h>
 #include <wg_skin.h>
 #include <wg_util.h>
@@ -33,13 +33,13 @@
 namespace wg
 {
 
-	//____ CIconDisplay _____________________________________________________________
+	//____ Icon _____________________________________________________________
 
-	class CIconDisplay : public WidgetComponent
+	class Icon : public Component
 	{
 	public:
-		CIconDisplay( Widget * pWidget );
-		virtual ~CIconDisplay() {};
+		Icon( Widget * pWidget );
+		virtual ~Icon() {};
 
 
 		//____ Blueprint ______________________________________________________
@@ -103,4 +103,4 @@ namespace wg
 
 
 } // namespace wg
-#endif	// WG_CICONDISPLAY_DOT_H
+#endif	// WG_ICON_DOT_H

@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_cicondisplay.h>
+#include <wg_icon.h>
 #include <wg_skin.h>
 #include <wg_util.h>
 
@@ -31,7 +31,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	CIconDisplay::CIconDisplay( Widget * pWidget ) : WidgetComponent(pWidget)
+	Icon::Icon( Widget * pWidget ) : Component(pWidget)
 	{
 		m_placement		= Placement::West;
 		m_bOverlap		= false;
@@ -40,7 +40,7 @@ namespace wg
 
 	//____ set() ___________________________________________________________________
 
-	bool CIconDisplay::set( Skin * pSkin, Placement placement, Border padding, bool bOverlap )
+	bool Icon::set( Skin * pSkin, Placement placement, Border padding, bool bOverlap )
 	{
 		m_pSkin 	= pSkin;
 		m_placement	= placement;
@@ -53,7 +53,7 @@ namespace wg
 
 	//____ clear() _________________________________________________________________
 
-	void CIconDisplay::clear()
+	void Icon::clear()
 	{
 		m_pSkin 	= 0;
 		m_placement	= Placement::West;
@@ -65,7 +65,7 @@ namespace wg
 
 	//____ _initFromBlueprint() ______________________________________________
 
-	void CIconDisplay::_initFromBlueprint(const Blueprint& bp)
+	void Icon::_initFromBlueprint(const Blueprint& bp)
 	{
 		m_pSkin = bp.skin;
 		m_placement = bp.placement;
@@ -75,7 +75,7 @@ namespace wg
 
 	//____ _setPlacement() ___________________________________________________
 
-	void CIconDisplay::_setPlacement( Placement placement )
+	void Icon::_setPlacement( Placement placement )
 	{
 		if( placement != m_placement )
 		{
@@ -86,7 +86,7 @@ namespace wg
 
 	//____ _setPadding() _______________________________________________________
 
-	void CIconDisplay::_setPadding( Border borders )
+	void Icon::_setPadding( Border borders )
 	{
 		if( borders != m_padding )
 		{
@@ -97,7 +97,7 @@ namespace wg
 
 	//____ _setOverlap() _________________________________________________________
 
-	void CIconDisplay::_setOverlap( bool bOverlap )
+	void Icon::_setOverlap( bool bOverlap )
 	{
 		if( bOverlap != m_bOverlap )
 		{
@@ -108,7 +108,7 @@ namespace wg
 
 	//____ _setSkin() ______________________________________________________________
 
-	void CIconDisplay::_setSkin( Skin * pSkin )
+	void Icon::_setSkin( Skin * pSkin )
 	{
 		if( pSkin != m_pSkin )
 		{
@@ -124,7 +124,7 @@ namespace wg
 
 	*/
 
-	RectSPX CIconDisplay::_getIconRect( const RectSPX& contentRect, int scale ) const
+	RectSPX Icon::_getIconRect( const RectSPX& contentRect, int scale ) const
 	{
 		if( m_pSkin )
 			return _getIconRect(contentRect, m_pSkin->_defaultSize(scale), scale);
@@ -132,7 +132,7 @@ namespace wg
 			return RectSPX();
 	}
 
-	RectSPX CIconDisplay::_getIconRect( const RectSPX& contentRect, const SizeSPX& iconSize, int scale ) const
+	RectSPX Icon::_getIconRect( const RectSPX& contentRect, const SizeSPX& iconSize, int scale ) const
 	{
 		RectSPX rect;
 
@@ -163,7 +163,7 @@ namespace wg
 
 	//____ _getTextRect() _____________________________________________________
 
-	RectSPX CIconDisplay::_getTextRect( const RectSPX& contentRect, const RectSPX& iconRect, int scale ) const
+	RectSPX Icon::_getTextRect( const RectSPX& contentRect, const RectSPX& iconRect, int scale ) const
 	{
 		RectSPX textRect = contentRect;
 
@@ -219,7 +219,7 @@ namespace wg
 
 	//____ _defaultSize() ________________________________________________________
 
-	SizeSPX CIconDisplay::_defaultSize(int scale) const
+	SizeSPX Icon::_defaultSize(int scale) const
 	{
 		if( m_pSkin )
 			return m_pSkin->_defaultSize(scale) + align(ptsToSpx(m_padding,scale));
@@ -227,7 +227,7 @@ namespace wg
 		return SizeSPX();
 	}
 
-	SizeSPX CIconDisplay::_defaultSize(int scale, SizeSPX& textSize) const
+	SizeSPX Icon::_defaultSize(int scale, SizeSPX& textSize) const
 	{
 		SizeSPX defaultSize = m_pSkin->_defaultSize(scale) + align(ptsToSpx(m_padding.size(), scale));
 

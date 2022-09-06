@@ -262,7 +262,7 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	CoordSPX Button::_componentPos( const WidgetComponent * pComponent ) const
+	CoordSPX Button::_componentPos( const Component * pComponent ) const
 	{
 		RectSPX contentRect = m_skin.contentRect(contentRect, m_scale, m_state);
 
@@ -279,7 +279,7 @@ namespace wg
 
 	//____ _componentSize() ______________________________________________________________
 
-	SizeSPX Button::_componentSize( const WidgetComponent * pComponent ) const
+	SizeSPX Button::_componentSize( const Component * pComponent ) const
 	{
 		SizeSPX	sz = m_size - m_skin.contentPaddingSize(m_scale);
 
@@ -295,7 +295,7 @@ namespace wg
 
 	//____ _componentGeo() ______________________________________________________________
 
-	RectSPX Button::_componentGeo( const WidgetComponent * pComponent ) const
+	RectSPX Button::_componentGeo( const Component * pComponent ) const
 	{
 		RectSPX	contentRect = m_skin.contentRect(m_size, m_scale, m_state);
 

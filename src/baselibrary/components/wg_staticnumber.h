@@ -19,24 +19,24 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_CSTATICNUMBERDISPLAY_DOT_H
-#define WG_CSTATICNUMBERDISPLAY_DOT_H
+#ifndef	WG_STATICNUMBER_DOT_H
+#define WG_STATICNUMBER_DOT_H
 #pragma once
 
-#include <wg_ctext.h>
+#include <wg_textbase.h>
 #include <wg_numberlayout.h>
 
 namespace wg
 {
-	class CStaticNumberDisplay;
-	typedef	ComponentPtr<CStaticNumberDisplay>	CStaticNumberDisplay_p;
+	class StaticNumber;
+	typedef	ComponentPtr<StaticNumber>	StaticNumber_p;
 
-	//____ CStaticNumberDisplay ____________________________________________________________
+	//____ StaticNumber ____________________________________________________________
 
-	class CStaticNumberDisplay : public WidgetComponent
+	class StaticNumber : public Component
 	{
 	public:
-		CStaticNumberDisplay(Widget * pHolder);
+		StaticNumber(Widget * pHolder);
 
 		//.____ Blueprint ______________________________________________________
 
@@ -78,4 +78,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CSTATICNUMBERDISPLAY_DOT_H
+#endif //WG_STATICNUMBER_DOT_H

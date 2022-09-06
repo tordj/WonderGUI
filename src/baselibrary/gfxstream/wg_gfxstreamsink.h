@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CGFXSTREAMSINK_DOT_H
-#define	WG_CGFXSTREAMSINK_DOT_H
+#ifndef	WG_GFXSTREAMSINK_DOT_H
+#define	WG_GFXSTREAMSINK_DOT_H
 #pragma once
 
 #include <wg_pointers.h>
@@ -64,4 +64,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CGFXSTREAMSINK_DOT_H
+#endif //WG_GFXSTREAMSINK_DOT_H

@@ -21,20 +21,20 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_cstaticnumberdisplay.h>
+#include <wg_staticnumber.h>
 
 namespace wg
 {
 
 	//____ constructor ________________________________________________________
 
-	CStaticNumberDisplay::CStaticNumberDisplay(Widget * pWidget) : WidgetComponent(pWidget)
+	StaticNumber::StaticNumber(Widget * pWidget) : Component(pWidget)
 	{
 	}
 
 	//____ setLayout() _____________________________________________________
 
-	void CStaticNumberDisplay::setLayout(NumberLayout* pLayout)
+	void StaticNumber::setLayout(NumberLayout* pLayout)
 	{
 		if (m_pLayout.rawPtr() != pLayout)
 		{
@@ -45,7 +45,7 @@ namespace wg
 
 	//____ clearLayout() ___________________________________________________
 
-	void CStaticNumberDisplay::clearLayout()
+	void StaticNumber::clearLayout()
 	{
 		if (m_pLayout)
 		{
@@ -56,7 +56,7 @@ namespace wg
 
 	//____ _set() _____________________________________________________________
 
-	bool CStaticNumberDisplay::_set( double value )
+	bool StaticNumber::_set( double value )
 	{
 		if( m_value != value )
 		{
@@ -69,7 +69,7 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void CStaticNumberDisplay::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state)
+	void StaticNumber::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state)
 	{
 		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
 
@@ -80,7 +80,7 @@ namespace wg
 
 	//____ _defaultSize() ___________________________________________________
 
-	SizeSPX CStaticNumberDisplay::_defaultSize(int scale) const
+	SizeSPX StaticNumber::_defaultSize(int scale) const
 	{
 		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
 
@@ -90,7 +90,7 @@ namespace wg
 
 	//____ _refresh() _________________________________________________________
 
-	void CStaticNumberDisplay::_refresh()
+	void StaticNumber::_refresh()
 	{
 		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
 
@@ -104,7 +104,7 @@ namespace wg
 
 	//____ _stateChangeNeedsRender() __________________________________________
 
-	bool CStaticNumberDisplay::_stateChangeNeedsRender(State newState, State oldState) const
+	bool StaticNumber::_stateChangeNeedsRender(State newState, State oldState) const
 	{
 		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
 
@@ -113,7 +113,7 @@ namespace wg
 
 	//____ _initFromBlueprint() _______________________________________________
 
-	void CStaticNumberDisplay::_initFromBlueprint(const Blueprint& blueprint)
+	void StaticNumber::_initFromBlueprint(const Blueprint& blueprint)
 	{
 		m_pLayout = blueprint.layout;
 	}

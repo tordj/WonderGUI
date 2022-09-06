@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <algorithm>
-#include <wg_ctexteditor.h>
+#include <wg_editabletext.h>
 #include <wg_charseq.h>
 #include <wg_msg.h>
 #include <wg_inputhandler.h>
@@ -45,13 +45,13 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	CTextEditor::CTextEditor(Widget * pWidget ) : CTextDisplay(pWidget)
+	EditableText::EditableText(Widget * pWidget ) : Text(pWidget)
 	{
 	}
 
 	//____ setMaxLines() _________________________________________________________
 
-	bool CTextEditor::setMaxLines(int maxLines)
+	bool EditableText::setMaxLines(int maxLines)
 	{
 		if (maxLines < 0)
 			return false;
@@ -65,7 +65,7 @@ namespace wg
 
 	//____ setMaxChars() _________________________________________________________
 
-	bool CTextEditor::setMaxChars(int maxChars)
+	bool EditableText::setMaxChars(int maxChars)
 	{
 		if (maxChars < 0)
 			return false;
@@ -79,7 +79,7 @@ namespace wg
 
 	//____ _initFromBlueprint() _______________________________________________
 
-	void CTextEditor::_initFromBlueprint(const Blueprint& bp)
+	void EditableText::_initFromBlueprint(const Blueprint& bp)
 	{
 		if (bp.style)
 			setStyle(bp.style);
@@ -99,9 +99,9 @@ namespace wg
 
 	//____ _receive() ___________________________________________________________
 
-	void CTextEditor::_receive( Msg * pMsg )
+	void EditableText::_receive( Msg * pMsg )
 	{
-		CTextDisplay::_receive( pMsg );
+		Text::_receive( pMsg );
 
 		MsgType type = pMsg->type();
 
@@ -278,45 +278,45 @@ namespace wg
 
 	//____ _clear() _________________________________________________________________
 
-	void CTextEditor::_clear()
+	void EditableText::_clear()
 	{
 		m_editState.caretOfs = 0;
 		m_editState.selectOfs = 0;
 		m_editState.wantedOfs = -1;
 
-		CTextDisplay::_clear();
+		Text::_clear();
 		_updateDisplayArea();
 	}
 
 	//____ _setText() ___________________________________________________________________
 
-	void CTextEditor::_setText( const CharSeq& seq )
+	void EditableText::_setText( const CharSeq& seq )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
-		CTextDisplay::_setText( seq );
+		Text::_setText( seq );
 		_caretToEnd();
 	}
 
-	void CTextEditor::_setText( const CharBuffer * pBuffer )
+	void EditableText::_setText( const CharBuffer * pBuffer )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
-		CTextDisplay::_setText( pBuffer );
+		Text::_setText( pBuffer );
 		_caretToEnd();
 	}
 
-	void CTextEditor::_setText( const String& str )
+	void EditableText::_setText( const String& str )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
-		CTextDisplay::_setText( str );
+		Text::_setText( str );
 		_caretToEnd();
 	}
 
 	//____ _append() ________________________________________________________________
 
-	int CTextEditor::_append( const CharSeq& seq )
+	int EditableText::_append( const CharSeq& seq )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
@@ -325,7 +325,7 @@ namespace wg
 
 		if( m_editState.caretOfs == m_editState.selectOfs && m_editState.caretOfs == m_charBuffer.length() )
 		{
-			int newOfs = m_editState.caretOfs + CTextDisplay::_append( seq );
+			int newOfs = m_editState.caretOfs + Text::_append( seq );
 			_layout()->caretMove( this, newOfs, m_editState.caretOfs );
 
 			m_editState.caretOfs = newOfs;
@@ -334,18 +334,18 @@ namespace wg
 			_updateDisplayArea();
 		}
 
-		return CTextDisplay::_append( seq );
+		return Text::_append( seq );
 	}
 
 	//____ _insert() ________________________________________________________________
 
-	int CTextEditor::_insert( int ofs, const CharSeq& seq )
+	int EditableText::_insert( int ofs, const CharSeq& seq )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
 		limit( ofs, 0, m_charBuffer.length() );
 
-		int added = CTextDisplay::_insert(ofs,seq);
+		int added = Text::_insert(ofs,seq);
 
 		/* Inserting text should affect the selection as little as possible. Therefore:
 		 *
@@ -394,7 +394,7 @@ namespace wg
 
 	//____ _replace() _______________________________________________________________
 
-	int CTextEditor::_replace( int ofs, int nDelete, const CharSeq& seq )
+	int EditableText::_replace( int ofs, int nDelete, const CharSeq& seq )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 		//TODO: Implement correctly!!!
@@ -403,7 +403,7 @@ namespace wg
 		limit( ofs, 0, m_charBuffer.length() );
 		limit( nDelete, 0, m_charBuffer.length() - ofs );
 
-		int sizeModif = CTextDisplay::_replace(ofs,nDelete,seq);
+		int sizeModif = Text::_replace(ofs,nDelete,seq);
 
 		// Replacing text should not affect caret or selection except where necessary.
 
@@ -423,7 +423,7 @@ namespace wg
 
 	//____ _erase() ________________________________________________________________
 
-	int CTextEditor::_erase( int ofs, int len )
+	int EditableText::_erase( int ofs, int len )
 	{
 		limit( ofs, 0, m_charBuffer.length() );
 		limit( len, 0, m_charBuffer.length() - ofs );
@@ -467,14 +467,14 @@ namespace wg
 			_updateDisplayArea();
 		}
 
-		int ret = CTextDisplay::_erase( ofs, len );
+		int ret = Text::_erase( ofs, len );
 		_updateDisplayArea();
 		return ret;
 	}
 
 	//____ _setState() ______________________________________________________________
 
-	void CTextEditor::_setState( State state )
+	void EditableText::_setState( State state )
 	{
 		if( state.isFocused() != m_state.isFocused() && m_editMode == TextEditMode::Editable )
 		{
@@ -517,20 +517,20 @@ namespace wg
 
 		// Set this last, so that bCaret is set when we call
 
-		CTextDisplay::_setState(state);
+		Text::_setState(state);
 	}
 
 
 	//____ render() ______________________________________________________________
 
-	void CTextEditor::_render( GfxDevice * pDevice, const RectSPX& canvas )
+	void EditableText::_render( GfxDevice * pDevice, const RectSPX& canvas )
 	{
 		_layout()->render(this, pDevice, canvas );
 	}
 
 	//____ setEditMode() _______________________________________________________
 
-	void CTextEditor::setEditMode( TextEditMode mode )
+	void EditableText::setEditMode( TextEditMode mode )
 	{
 		switch( mode )
 		{
@@ -551,7 +551,7 @@ namespace wg
 
 	//____ select() ____________________________________________________________
 
-	bool CTextEditor::select( int beg, int end )
+	bool EditableText::select( int beg, int end )
 	{
 		if( m_editMode == TextEditMode::Static )
 			return false;
@@ -575,14 +575,14 @@ namespace wg
 
 	//____ selectAll() _________________________________________________________
 
-	bool CTextEditor::selectAll()
+	bool EditableText::selectAll()
 	{
 		return select( 0, m_charBuffer.length() );
 	}
 
 	//____ unselect() __________________________________________________________
 
-	bool CTextEditor::unselect()
+	bool EditableText::unselect()
 	{
 		if( m_editMode == TextEditMode::Static )
 			return false;
@@ -599,28 +599,28 @@ namespace wg
 
 	//____ selectionBegin() ____________________________________________________
 
-	int CTextEditor::selectionBegin() const
+	int EditableText::selectionBegin() const
 	{
 		return m_editState.selectOfs;
 	}
 
 	//____ selectionEnd() ______________________________________________________
 
-	int CTextEditor::selectionEnd() const
+	int EditableText::selectionEnd() const
 	{
 		return m_editState.caretOfs;
 	}
 
 	//____ selectionSize() ______________________________________________________
 
-	int CTextEditor::selectionSize() const
+	int EditableText::selectionSize() const
 	{
 		return abs(m_editState.caretOfs-m_editState.selectOfs);
 	}
 
 	//____ eraseSelected() _____________________________________________________
 
-	int CTextEditor::eraseSelected()
+	int EditableText::eraseSelected()
 	{
 		if( m_editMode == TextEditMode::Static )
 			return -1;
@@ -640,7 +640,7 @@ namespace wg
 
 	//____ setCaretPos() _______________________________________________________
 
-	bool CTextEditor::setCaretOfs( int ofs )
+	bool EditableText::setCaretOfs( int ofs )
 	{
 		if( m_editMode != TextEditMode::Editable )
 			return false;
@@ -652,7 +652,7 @@ namespace wg
 
 	//____ caretPos() ___________________________________________________________
 
-	int CTextEditor::caretOfs() const
+	int EditableText::caretOfs() const
 	{
 		if( !m_editState.bCaret )
 			return -1;
@@ -661,7 +661,7 @@ namespace wg
 	}
 	//____ caretPut() __________________________________________________________
 
-	int CTextEditor::caretPut( const CharSeq& seq )
+	int EditableText::caretPut( const CharSeq& seq )
 	{
 		if( !m_editState.bCaret )
 			return 0;
@@ -732,7 +732,7 @@ namespace wg
 		return retVal;
 	}
 
-	bool CTextEditor::caretPut( uint16_t c )
+	bool EditableText::caretPut( uint16_t c )
 	{
 		//TODO: Implement
 		return false;
@@ -740,7 +740,7 @@ namespace wg
 
 	//____ caretUp() ___________________________________________________________
 
-	bool CTextEditor::caretUp()
+	bool EditableText::caretUp()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -751,7 +751,7 @@ namespace wg
 
 	//____ caretDown() _________________________________________________________
 
-	bool CTextEditor::caretDown()
+	bool EditableText::caretDown()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -762,7 +762,7 @@ namespace wg
 
 	//____ caretLeft() _________________________________________________________
 
-	bool CTextEditor::caretLeft()
+	bool EditableText::caretLeft()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -773,7 +773,7 @@ namespace wg
 
 	//____ caretRight() ________________________________________________________
 
-	bool CTextEditor::caretRight()
+	bool EditableText::caretRight()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -784,7 +784,7 @@ namespace wg
 
 	//____ caretNextWord() _____________________________________________________
 
-	bool CTextEditor::caretNextWord()
+	bool EditableText::caretNextWord()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -795,7 +795,7 @@ namespace wg
 
 	//____ caretPrevWord() _____________________________________________________
 
-	bool CTextEditor::caretPrevWord()
+	bool EditableText::caretPrevWord()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -806,7 +806,7 @@ namespace wg
 
 	//____ caretEraseNextChar() ________________________________________________
 
-	bool CTextEditor::caretEraseNextChar()
+	bool EditableText::caretEraseNextChar()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -827,7 +827,7 @@ namespace wg
 
 	//____ caretErasePrevChar() ________________________________________________
 
-	bool CTextEditor::caretErasePrevChar()
+	bool EditableText::caretErasePrevChar()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -854,14 +854,14 @@ namespace wg
 
 	//____ caretEraseNextWord() ________________________________________________
 
-	bool CTextEditor::caretEraseNextWord()
+	bool EditableText::caretEraseNextWord()
 	{
 		return false; //TODO: Implement!
 	}
 
 	//____ caretErasePrevWord() ________________________________________________
 
-	bool CTextEditor::caretErasePrevWord()
+	bool EditableText::caretErasePrevWord()
 	{
 		return false; //TODO: Implement!
 	}
@@ -871,7 +871,7 @@ namespace wg
 
 	//_____ caretLineBegin() ___________________________________________________
 
-	bool CTextEditor::caretLineBegin()
+	bool EditableText::caretLineBegin()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -882,7 +882,7 @@ namespace wg
 
 	//____ caretLineEnd() ______________________________________________________
 
-	bool CTextEditor::caretLineEnd()
+	bool EditableText::caretLineEnd()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -893,7 +893,7 @@ namespace wg
 
 	//____ caretTextBegin() ____________________________________________________
 
-	bool CTextEditor::caretTextBegin()
+	bool EditableText::caretTextBegin()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -906,7 +906,7 @@ namespace wg
 
 	//____ caretTextEnd() ______________________________________________________
 
-	bool CTextEditor::caretTextEnd()
+	bool EditableText::caretTextEnd()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -919,7 +919,7 @@ namespace wg
 
 	//____ _caretToEnd() __________________________________________________________
 
-	void CTextEditor::_caretToEnd()
+	void EditableText::_caretToEnd()
 	{
 		m_editState.caretOfs = m_charBuffer.length();		// Caret placed on terminator char following the string.
 		m_editState.selectOfs = m_editState.caretOfs;
@@ -931,7 +931,7 @@ namespace wg
 
 	//____ caretToPos() __________________________________________________________
 
-	bool CTextEditor::caretToPos( CoordSPX pos)
+	bool EditableText::caretToPos( CoordSPX pos)
 	{
 		int ofs = _layout()->caretToPos(this, pos, m_editState.wantedOfs );
 		return _moveCaret( ofs, MoveMethod::Mouse );
@@ -939,7 +939,7 @@ namespace wg
 
 	//____ _caretSelectWord() __________________________________________________
 
-	bool CTextEditor::caretSelectWord()
+	bool EditableText::caretSelectWord()
 	{
 		//TODO: Implement!
 		return false;
@@ -947,7 +947,7 @@ namespace wg
 
 	//____ _caretSelectLine() __________________________________________________
 
-	bool CTextEditor::caretSelectLine()
+	bool EditableText::caretSelectLine()
 	{
 		//TODO: Implement!
 		return false;
@@ -956,7 +956,7 @@ namespace wg
 
 	//____ _moveCaret() ______________________________________________
 
-	bool CTextEditor::_moveCaret( int caretOfs, MoveMethod method )
+	bool EditableText::_moveCaret( int caretOfs, MoveMethod method )
 	{
 		int selectOfs = m_editState.selectOfs;
 
@@ -997,7 +997,7 @@ namespace wg
 
 	//____ _updateDisplayArea() _______________________________________________
 
-	void CTextEditor::_updateDisplayArea()
+	void EditableText::_updateDisplayArea()
 	{
 		// Make sure caret and surrounding characters are visible (and preferably whole selection, if any)
 		//
@@ -1016,7 +1016,7 @@ namespace wg
 
 	//____ _updateInsertStyle() ________________________________________________
 
-	void CTextEditor::_updateInsertStyle()
+	void EditableText::_updateInsertStyle()
 	{
 
 	}

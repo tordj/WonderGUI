@@ -41,7 +41,7 @@ namespace wg
 	class Layer;
 	class MsgRouter;
 	class SlotHolder;
-    class WidgetComponent;
+    class Component;
 
 	class Widget;
 	typedef	StrongPtr<Widget>	Widget_p;
@@ -84,7 +84,7 @@ namespace wg
 	class Widget : public Receiver, protected SkinSlot::Holder
 	{
 		friend class Container;
-		friend class WidgetComponent;
+		friend class Component;
 		friend class StaticSlot;
 		friend class DynamicSlot;
 		friend class Base;
@@ -312,22 +312,22 @@ namespace wg
 
 		// Methods for components to access
 
-		virtual State		_componentState(const WidgetComponent* pComponent) const;
-		virtual CoordSPX	_componentPos( const WidgetComponent * pComponent ) const;
-		virtual SizeSPX		_componentSize( const WidgetComponent * pComponent ) const;
-		virtual RectSPX		_componentGeo( const WidgetComponent * pComponent ) const;
-		virtual CoordSPX	_globalComponentPos( const WidgetComponent * pComponent ) const;
-		virtual RectSPX		_globalComponentGeo( const WidgetComponent * pComponent ) const;
+		virtual State		_componentState(const Component* pComponent) const;
+		virtual CoordSPX	_componentPos( const Component * pComponent ) const;
+		virtual SizeSPX		_componentSize( const Component * pComponent ) const;
+		virtual RectSPX		_componentGeo( const Component * pComponent ) const;
+		virtual CoordSPX	_globalComponentPos( const Component * pComponent ) const;
+		virtual RectSPX		_globalComponentGeo( const Component * pComponent ) const;
 
-		virtual void		_componentRequestRender( const WidgetComponent * pComponent );
-		virtual void		_componentRequestRender( const WidgetComponent * pComponent, const RectSPX& rect );
-		virtual void		_componentRequestResize( const WidgetComponent * pComponent );
+		virtual void		_componentRequestRender( const Component * pComponent );
+		virtual void		_componentRequestRender( const Component * pComponent, const RectSPX& rect );
+		virtual void		_componentRequestResize( const Component * pComponent );
 
-		virtual void		_componentRequestFocus( const WidgetComponent * pComponent );
-		virtual void		_componentRequestInView( const WidgetComponent * pComponent );
-		virtual void		_componentRequestInView( const WidgetComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave );
+		virtual void		_componentRequestFocus( const Component * pComponent );
+		virtual void		_componentRequestInView( const Component * pComponent );
+		virtual void		_componentRequestInView( const Component * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave );
 
-		virtual void		_receiveComponentNotif( WidgetComponent * pComponent, ComponentNotif notification, int value, void * pData );
+		virtual void		_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData );
 
 		// Methods for skin to access
 

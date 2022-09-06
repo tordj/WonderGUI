@@ -180,28 +180,28 @@ add_library( wondergui
 	c-interface/wg_c_types.cpp
 
 
-	components/wg_ccolumnheader.cpp
-	components/wg_ccolumnheader.h
-	components/wg_cicondisplay.cpp
-	components/wg_cicondisplay.h
-	components/wg_cnumberdisplay.cpp
-	components/wg_cnumberdisplay.h
-	components/wg_cnumbereditor.cpp
-	components/wg_cnumbereditor.h
-	components/wg_cscrollbar.cpp
-	components/wg_cscrollbar.h
-	components/wg_cstatictextdisplay.cpp
-	components/wg_cstatictextdisplay.h
-	components/wg_cstaticnumberdisplay.cpp
-	components/wg_cstaticnumberdisplay.h
-	components/wg_ctext.cpp
-	components/wg_ctext.h
-	components/wg_ctextdisplay.cpp
-	components/wg_ctextdisplay.h
-	components/wg_ctexteditor.cpp
-	components/wg_ctexteditor.h
-	components/wg_widgetcomponent.cpp
-	components/wg_widgetcomponent.h
+	components/wg_columnheader.cpp
+	components/wg_columnheader.h
+	components/wg_editablenumber.cpp
+	components/wg_editablenumber.h
+	components/wg_editabletext.cpp
+	components/wg_editabletext.h
+	components/wg_icon.cpp
+	components/wg_icon.h
+	components/wg_number.cpp
+	components/wg_number.h
+	components/wg_scroller.cpp
+	components/wg_scroller.h
+	components/wg_staticnumber.cpp
+	components/wg_staticnumber.h
+	components/wg_statictext.cpp
+	components/wg_statictext.h
+	components/wg_text.cpp
+	components/wg_text.h
+	components/wg_textbase.cpp
+	components/wg_textbase.h
+	components/wg_component.cpp
+	components/wg_component.h
 
 	gfxstream/wg_gfxstream.h
 	gfxstream/wg_gfxstreambuffer.cpp

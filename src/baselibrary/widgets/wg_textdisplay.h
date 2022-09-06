@@ -26,7 +26,7 @@
 
 
 #include <wg_widget.h>
-#include <wg_ctextdisplay.h>
+#include <wg_text.h>
 
 namespace wg
 {
@@ -45,7 +45,7 @@ namespace wg
 		{
 			Object_p		baggage;
 			bool			dropTarget = false;
-			CTextDisplay::Blueprint	display;
+			Text::Blueprint	display;
 			bool			enabled = true;
 			Finalizer_p		finalizer;
 			int				id = 0;
@@ -67,7 +67,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		CTextDisplay			display;
+		Text			display;
 
 		//.____ Identification __________________________________________
 

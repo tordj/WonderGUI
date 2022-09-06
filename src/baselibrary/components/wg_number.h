@@ -19,64 +19,57 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
-#ifndef	WG_CSTATICTEXTDISPLAY_DOT_H
-#define WG_CSTATICTEXTDISPLAY_DOT_H
+#ifndef	WG_NUMBER_DOT_H
+#define WG_NUMBER_DOT_H
 #pragma once
 
-#include <wg_types.h>
-#include <wg_ctext.h>
-
-
-#include <wg_base.h>
+#include <limits>
+#include <wg_staticnumber.h>
 
 namespace wg
 {
 
-	class String;
-	class CharSeq;
-	class CharBuffer;
 
+	//____ Number ____________________________________________________________
 
-	//____ CStaticTextDisplay __________________________________________________________________
-
-	class CStaticTextDisplay : public CText
+	class Number : public StaticNumber
 	{
 	public:
+		Number(Widget * pHolder);
+		~Number() {}
 
 		//.____ Blueprint ______________________________________________________
 
 		struct Blueprint
 		{
-			TextLayout_p	layout;
-			TextStyle_p		style;
+			NumberLayout_p	layout;
+			double			maxValue = std::numeric_limits<double>::max();
+			double			minValue = std::numeric_limits<double>::lowest();
+			double			value = 0.0;
 		};
-
-		CStaticTextDisplay(Widget * pWidget );
-
 
 		//.____ Content _____________________________________________
 
-		inline 	String			text() const { return CText::_getString(); }
+		void				clear();
+		bool				set( double value );
 
-		inline int				length() const { return m_charBuffer.length(); }
-		inline bool				isEmpty() const { return length() == 0 ? true : false; }
+		bool				setRange( double min, double max );
+		inline double		min() const { return m_minValue; }
+		inline double		max() const { return m_maxValue; }
 
-		TextLink_p			markedLink() const;
-
-		//.____ Internal ______________________________________________________
+		//.____ Internal __________________________________________________
 
 		void				_initFromBlueprint(const Blueprint& blueprint);
 
-
 	protected:
 
-		virtual void		_receive( Msg * pMsg );
+		bool				_set(double value) override;
 
-	protected:
-		TextLink_p			m_pMarkedLink;	// Character offset for beginning of marked or focused link
+		double				m_minValue;
+		double				m_maxValue;
 	};
 
 
+
 } // namespace wg
-#endif //WG_CSTATICTEXTDISPLAY_DOT_H
+#endif //WG_CNUMBERDISPLAY_DOT_H

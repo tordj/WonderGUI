@@ -19,27 +19,26 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_CNUMBEREDITOR_DOT_H
-#define WG_CNUMBEREDITOR_DOT_H
+#ifndef	WG_EDITABLENUMBER_DOT_H
+#define WG_EDITABLENUMBER_DOT_H
 #pragma once
 
-#include <wg_cnumberdisplay.h>
+#include <wg_number.h>
 #include <wg_caret.h>
 
 namespace wg
 {
 
-	class CValueEditor;
-	typedef	StrongComponentPtr<CValueEditor>	CValueEditor_p;
-	typedef	WeakComponentPtr<CValueEditor>		CValueEditor_wp;
+	class EditableNumber;
+	typedef	ComponentPtr<EditableNumber>	EditableNumber_p;
 
-	//____ CValueEditor ____________________________________________________________
+	//____ EditableNumber ____________________________________________________________
 
-	class CValueEditor : public CNumberDisplay
+	class EditableNumber : public Number
 	{
 	public:
-		CValueEditor(Widget * pWidget );
-		~CValueEditor();
+		EditableNumber(Widget * pWidget );
+		~EditableNumber();
 
 
 		//.____ State __________________________________________________
@@ -57,7 +56,7 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
-		// Calling these methods gets component into edit mode, displaying caret.
+		// Calling these methods gets number into edit mode, displaying caret.
 
 		int					insertAtCaret( const CharSeq& str );
 		bool				insertAtCaret( uint16_t c );
@@ -96,4 +95,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CNUMBEREDITOR_DOT_H
+#endif //WG_EDITABLENUMBER_DOT_H

@@ -27,7 +27,7 @@
 #include <wg_widget.h>
 #include <wg_sidecanvas.h>
 #include <wg_dynamicvector.h>
-#include <wg_ctextdisplay.h>
+#include <wg_text.h>
 
 namespace wg
 {
@@ -36,7 +36,7 @@ namespace wg
 	
 	//____ SelectBoxEntry ________________________________________________________
 
-	class SelectBoxEntry : private Text
+	class SelectBoxEntry : private TextItem
 	{
 		friend class SelectBox;
 	public:
@@ -91,7 +91,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		CTextDisplay			text;
+		Text			text;
 		DynamicVector<SelectBoxEntry>	entries;
 
 		//.____ Identification __________________________________________

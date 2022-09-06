@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_cnumbereditor.h>
+#include <wg_editablenumber.h>
 
 namespace wg
 {

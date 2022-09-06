@@ -39,7 +39,7 @@ namespace wg
 	class CharBuffer;
 	class TextStyle;
 
-	class Text
+	class TextItem
 	{
 		friend class TextLayout;
 
@@ -86,89 +86,89 @@ namespace wg
 
 		//.____ Internal __________________________________________
 
-		virtual void	addText( Text * pText ) = 0;
-		virtual void	removeText( Text * pText ) = 0;
+		virtual void	addText( TextItem * pText ) = 0;
+		virtual void	removeText( TextItem * pText ) = 0;
 
-		virtual int		charAtPos( const Text * pText, CoordSPX pos ) const = 0;
-		virtual CoordSPX charPos( const Text * pText, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
-		virtual RectSPX	charRect( const Text * pText, int charOfs ) const = 0;
-		virtual int		charLine( const Text * pText, int charOfs ) const = 0;
-		virtual int		lineBegin( const Text * pText, int lineNb ) const = 0;
-		virtual int		lineEnd( const Text * pText, int lineNb ) const = 0;
+		virtual int		charAtPos( const TextItem * pText, CoordSPX pos ) const = 0;
+		virtual CoordSPX charPos( const TextItem * pText, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual RectSPX	charRect( const TextItem * pText, int charOfs ) const = 0;
+		virtual int		charLine( const TextItem * pText, int charOfs ) const = 0;
+		virtual int		lineBegin( const TextItem * pText, int lineNb ) const = 0;
+		virtual int		lineEnd( const TextItem * pText, int lineNb ) const = 0;
 
-		virtual int		wordBegin( const Text * pText, int charOfs ) const = 0;
-		virtual int		wordEnd( const Text * pText, int charOfs ) const = 0;
+		virtual int		wordBegin( const TextItem * pText, int charOfs ) const = 0;
+		virtual int		wordEnd( const TextItem * pText, int charOfs ) const = 0;
 
 
-		virtual void 	render( Text * pText, GfxDevice * pDevice, const RectSPX& canvas ) = 0;
+		virtual void 	render( TextItem * pText, GfxDevice * pDevice, const RectSPX& canvas ) = 0;
 
 		// Caret/selection update notification methods, only one of these needs to be called.
 		// A selection change implies a caret move.
 
-		virtual void	caretMove( Text * pText, int newOfs, int oldOfs ) = 0;
-		virtual void	selectionChange( Text * pText, int selectOfs, int caretOfs, int oldSelectOfs, int oldCaretOfs ) = 0;
+		virtual void	caretMove( TextItem * pText, int newOfs, int oldOfs ) = 0;
+		virtual void	selectionChange( TextItem * pText, int selectOfs, int caretOfs, int oldSelectOfs, int oldCaretOfs ) = 0;
 
 		//
 
-		virtual void	onTextModified( Text * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
-		virtual void	onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale ) = 0;
-		virtual void	onStateChanged( Text * pText, State newState, State oldState ) = 0;
-		virtual void	onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
-		virtual void	onCharStyleChanged( Text * pText, int ofs = 0, int len = INT_MAX ) = 0;
+		virtual void	onTextModified( TextItem * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
+		virtual void	onResized( TextItem * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale ) = 0;
+		virtual void	onStateChanged( TextItem * pText, State newState, State oldState ) = 0;
+		virtual void	onStyleChanged( TextItem * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
+		virtual void	onCharStyleChanged( TextItem * pText, int ofs = 0, int len = INT_MAX ) = 0;
 
 
-		virtual SizeSPX	defaultSize( const Text * pText, int scale ) const = 0;
-		virtual spx		matchingWidth( const Text * pText, spx height, int scale ) const = 0;
-		virtual spx		matchingHeight( const Text * pText, spx width, int scale ) const = 0;
+		virtual SizeSPX	defaultSize( const TextItem * pText, int scale ) const = 0;
+		virtual spx		matchingWidth( const TextItem * pText, spx height, int scale ) const = 0;
+		virtual spx		matchingHeight( const TextItem * pText, spx width, int scale ) const = 0;
 
-		virtual RectSPX	rectForRange( const Text * pText, int ofs, int length ) const = 0;
-		virtual RectSPX	rectForCaret( const Text * pText ) const = 0;
+		virtual RectSPX	rectForRange( const TextItem * pText, int ofs, int length ) const = 0;
+		virtual RectSPX	rectForCaret( const TextItem * pText ) const = 0;
 
-		virtual String	tooltip( const Text * pText ) const;
+		virtual String	tooltip( const TextItem * pText ) const;
 
 
 		// Methods for supporting a caret
 
-		virtual Direction 	textDirection( Text * pText, int charOfs ) const = 0;
-		virtual int			caretToPos( Text * pText, CoordSPX pos, spx& wantedLineOfs ) const = 0;
-		virtual int			caretUp( Text * pText, int charOfs, spx& wantedLineOfs ) const = 0;
-		virtual int			caretDown( Text * pText, int charOfs, spx& wantedLineOfs ) const = 0;
-		virtual int			caretLeft( Text * pText, int charOfs, spx& wantedLineOfs ) const = 0;
-		virtual int			caretRight( Text * pText, int charOfs, spx& wantedLineOfs ) const = 0;
-		virtual int			caretHome( Text * pText, int charOfs, spx& wantedLineOfs ) const = 0;
-		virtual int			caretEnd( Text * pText, int charOfs, spx& wantedLineOfs ) const = 0;
+		virtual Direction 	textDirection( TextItem * pText, int charOfs ) const = 0;
+		virtual int			caretToPos( TextItem * pText, CoordSPX pos, spx& wantedLineOfs ) const = 0;
+		virtual int			caretUp( TextItem * pText, int charOfs, spx& wantedLineOfs ) const = 0;
+		virtual int			caretDown( TextItem * pText, int charOfs, spx& wantedLineOfs ) const = 0;
+		virtual int			caretLeft( TextItem * pText, int charOfs, spx& wantedLineOfs ) const = 0;
+		virtual int			caretRight( TextItem * pText, int charOfs, spx& wantedLineOfs ) const = 0;
+		virtual int			caretHome( TextItem * pText, int charOfs, spx& wantedLineOfs ) const = 0;
+		virtual int			caretEnd( TextItem * pText, int charOfs, spx& wantedLineOfs ) const = 0;
 
-		virtual int			caretPrevWord( Text * pText, int charOfs ) const = 0;
-		virtual int			caretNextWord( Text * pText, int charOfs ) const = 0;
+		virtual int			caretPrevWord( TextItem * pText, int charOfs ) const = 0;
+		virtual int			caretNextWord( TextItem * pText, int charOfs ) const = 0;
 
 
 	protected:
 		TextLayout() {}
 		virtual ~TextLayout() {};
 
-		SizeSPX				_size( const Text * pText ) const;
-		int					_length( const Text * pText ) const;
-		int					_scale(const Text* pText) const;
+		SizeSPX				_size( const TextItem * pText ) const;
+		int					_length( const TextItem * pText ) const;
+		int					_scale(const TextItem * pText) const;
 
-		bool				_caretVisible( const Text * pText ) const;
-		int					_caretOfs( const Text * pText ) const;
-		std::tuple<int,int>	_selection( const Text * pText ) const;		// Begin/end of selection
+		bool				_caretVisible( const TextItem * pText ) const;
+		int					_caretOfs( const TextItem * pText ) const;
+		std::tuple<int,int>	_selection( const TextItem * pText ) const;		// Begin/end of selection
 
-		const Char *  		_chars( const Text * pText ) const;
-		const void *		_dataBlock( const Text * pText) const;
-		void *				_dataBlock( Text * pText) const;
-		int					_dataInt( const Text * pText ) const;
+		const Char *  		_chars( const TextItem * pText ) const;
+		const void *		_dataBlock( const TextItem * pText) const;
+		void *				_dataBlock( TextItem * pText) const;
+		int					_dataInt( const TextItem * pText ) const;
 
 
-		const TextStyle *	_baseStyle( const Text * pText ) const;
-		State				_state( const Text * pText ) const;
+		const TextStyle *	_baseStyle( const TextItem * pText ) const;
+		State				_state( const TextItem * pText ) const;
 
-		void			_setTextDataBlock( Text * pText, void * pBlock );
-		void			_setTextDataInt( Text * pText, int data );
+		void			_setTextDataBlock( TextItem * pText, void * pBlock );
+		void			_setTextDataInt( TextItem * pText, int data );
 
-		void			_setTextDirty( Text * pText );
-		void			_setTextDirty( Text * pText, const RectSPX& rect );
-		void			_requestTextResize( Text * pText );
+		void			_setTextDirty( TextItem * pText );
+		void			_setTextDirty( TextItem * pText, const RectSPX& rect );
+		void			_requestTextResize( TextItem * pText );
 
 	};
 

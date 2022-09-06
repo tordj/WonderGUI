@@ -19,27 +19,27 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_CCOLUMNHEADER_DOT_H
-#define WG_CCOLUMNHEADER_DOT_H
+#ifndef WG_COLUMNHEADER_DOT_H
+#define WG_COLUMNHEADER_DOT_H
 #pragma once
 
-#include <wg_widgetcomponent.h>
+#include <wg_component.h>
 #include <wg_textlayout.h>
 #include <wg_base.h>
 
 namespace wg
 {
-	class CColumnHeader;
-	typedef	StrongComponentPtr<CColumnHeader>	CColumnHeader_p;
-	typedef	WeakComponentPtr<CColumnHeader>		CColumnHeader_wp;
+	class ColumnHeader;
+	typedef	StrongComponentPtr<ColumnHeader>	ColumnHeader_p;
+	typedef	WeakComponentPtr<ColumnHeader>		ColumnHeader_wp;
 	 
-	//____ CColumnHeader ___________________________________________________
+	//____ ColumnHeader ___________________________________________________
 
-	class CColumnHeader : public WidgetComponent, protected Text, protected SkinSlot::Holder
+	class ColumnHeader : public Component, protected TextItem, protected SkinSlot::Holder
 	{
 	public:
-		CColumnHeader(Widget * pWidget);
-		~CColumnHeader();
+		ColumnHeader(Widget * pWidget);
+		~ColumnHeader();
 
 		//.____ Appearance ____________________________________________
 
@@ -120,4 +120,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CCOLUMNHEADER_DOT_H
+#endif //WG_COLUMNHEADER_DOT_H

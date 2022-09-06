@@ -20,23 +20,23 @@
 
 =========================================================================*/
 
-#ifndef	WG_CTEXTEDITOR_DOT_H
-#define WG_CTEXTEDITOR_DOT_H
+#ifndef	WG_EDITABLETEXT_DOT_H
+#define WG_EDITABLETEXT_DOT_H
 #pragma once
 
 #include <algorithm>
 
-#include <wg_ctextdisplay.h>
+#include <wg_text.h>
 
 namespace wg
 {
-	class CTextEditor;
-	typedef	ComponentPtr<CTextEditor>	CTextEditor_p;
+	class EditableText;
+	typedef	ComponentPtr<EditableText>	EditableText_p;
 
 
-	//____ CTextEditor __________________________________________________________________
+	//____ EditableText __________________________________________________________________
 
-	class CTextEditor : public CTextDisplay
+	class EditableText : public Text
 	{
 	public:
 
@@ -53,7 +53,7 @@ namespace wg
 
 		};
 
-		CTextEditor(Widget * pWidget );
+		EditableText(Widget * pWidget );
 
 		//.____ State __________________________________________________
 
@@ -180,4 +180,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CTEXTEDITOR_DOT_H
+#endif //WG_EDITABLETEXT_DOT_H

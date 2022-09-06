@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef	WG_CSCROLLBAR_DOT_H
-#define WG_CSCROLLBAR_DOT_H
+#ifndef	WG_SCROLLER_DOT_H
+#define WG_SCROLLER_DOT_H
 #pragma once
 
-#include <wg_widgetcomponent.h>
+#include <wg_component.h>
 #include <wg_pointers.h>
 #include <wg_skin.h>
 #include <wg_msg.h>
@@ -32,24 +32,24 @@
 namespace wg
 {
 
-	//____ CScrollbar __________________________________________________________________
+	//____ Scroller __________________________________________________________________
 
-	class CScrollbar : public WidgetComponent
+	class Scroller : public Component
 	{
 	public:
 
 		class Holder
 		{
 		public:
-			virtual void	_scrollbarStep(const CScrollbar* pComponent, int dir) = 0;
-			virtual void	_scrollbarPage(const CScrollbar* pComponent, int dir) = 0;
-			virtual void	_scrollbarWheel(const CScrollbar* pComponent, int dir) = 0;
-			virtual spx		_scrollbarMove(const CScrollbar* pComponent, spx pos) = 0;
-			virtual std::tuple<spx, spx, spx> _scrollbarOfsLenContent(const CScrollbar* pComponent) = 0;
+			virtual void	_scrollbarStep(const Scroller* pComponent, int dir) = 0;
+			virtual void	_scrollbarPage(const Scroller* pComponent, int dir) = 0;
+			virtual void	_scrollbarWheel(const Scroller* pComponent, int dir) = 0;
+			virtual spx		_scrollbarMove(const Scroller* pComponent, spx pos) = 0;
+			virtual std::tuple<spx, spx, spx> _scrollbarOfsLenContent(const Scroller* pComponent) = 0;
 		};
 
-		CScrollbar(Widget* pWidget, CScrollbar::Holder * pHolderInterface, Axis axis);
-		virtual ~CScrollbar();
+		Scroller(Widget* pWidget, Scroller::Holder * pHolderInterface, Axis axis);
+		virtual ~Scroller();
 
 
 		//____ Blueprint ______________________________________________________
@@ -136,4 +136,4 @@ namespace wg
 
 } // namespace wg
 
-#endif //WG_CSCROLLBAR_DOT_H
+#endif //WG_SCROLLER_DOT_H

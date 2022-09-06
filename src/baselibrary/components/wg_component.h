@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_WIDGETCOMPONENT_DOT_H
-#define	WG_WIDGETCOMPONENT_DOT_H
+#ifndef	WG_COMPONENT_DOT_H
+#define	WG_COMPONENT_DOT_H
 #pragma once
 
 #include <wg_widget.h>
@@ -29,13 +29,13 @@
 namespace wg
 {
 
-	//____ WidgetComponent _________________________________________________________________
+	//____ Component _________________________________________________________________
 
-	class WidgetComponent	/** @private */
+	class Component	/** @private */
 	{
 	public:
 
-		WidgetComponent( Widget * pWidget ) : m_pWidget(pWidget) {}
+		Component( Widget * pWidget ) : m_pWidget(pWidget) {}
 
 		//.____ Internal _______________________________________________________
 
@@ -65,4 +65,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_WIDGETCOMPONENT_DOT_H
+#endif //WG_COMPONENT_DOT_H

@@ -20,12 +20,12 @@
 
 =========================================================================*/
 
-#ifndef	WG_CTEXTDISPLAY_DOT_H
-#define WG_CTEXTDISPLAY_DOT_H
+#ifndef	WG_TEXT_DOT_H
+#define WG_TEXT_DOT_H
 #pragma once
 
 #include <wg_types.h>
-#include <wg_cstatictextdisplay.h>
+#include <wg_statictext.h>
 
 
 #include <wg_base.h>
@@ -38,9 +38,9 @@ namespace wg
 	class CharBuffer;
 
 
-	//____ CTextDisplay __________________________________________________________________
+	//____ Text __________________________________________________________________
 
-	class CTextDisplay : public CStaticTextDisplay
+	class Text : public StaticText
 	{
 	public:
 
@@ -53,7 +53,7 @@ namespace wg
 			String			text;
 		};
 
-		CTextDisplay(Widget * pWidget) : CStaticTextDisplay(pWidget) {}
+		Text(Widget * pWidget) : StaticText(pWidget) {}
 
 		//.____ Content _____________________________________________
 
@@ -84,4 +84,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CTEXTDISPLAY_DOT_H
+#endif //WG_TEXT_DOT_H

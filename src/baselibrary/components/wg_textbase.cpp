@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_ctext.h>
+#include <wg_textbase.h>
 
 namespace wg
 {
@@ -28,21 +28,21 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	CText::CText(Widget * pWidget ) : WidgetComponent( pWidget )
+	TextBase::TextBase(Widget * pWidget ) : Component( pWidget )
 	{
 		_layout()->addText(this);
 	}
 
 	//____ destructor ______________________________________________________________
 
-	CText::~CText()
+	TextBase::~TextBase()
 	{
 		_layout()->removeText(this);
 	}
 
 	//____ setStyle() ______________________________________________________________
 
-	void CText::setStyle( TextStyle * pStyle )
+	void TextBase::setStyle( TextStyle * pStyle )
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = pStyle;
@@ -51,7 +51,7 @@ namespace wg
 
 	//____ clearStyle() ____________________________________________________________
 
-	void CText::clearStyle()
+	void TextBase::clearStyle()
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = 0;
@@ -60,7 +60,7 @@ namespace wg
 
 	//____ setLayout() __________________________________________________________
 
-	void CText::setLayout( TextLayout * pLayout )
+	void TextBase::setLayout( TextLayout * pLayout )
 	{
 		if( pLayout == m_pLayout )
 			return;
@@ -72,7 +72,7 @@ namespace wg
 
 	//____ clearLayout() ________________________________________________________
 
-	void CText::clearLayout()
+	void TextBase::clearLayout()
 	{
 		if( !m_pLayout )
 			return;
@@ -84,7 +84,7 @@ namespace wg
 
 	//____ _setState() ______________________________________________________________
 
-	void CText::_setState( State state )
+	void TextBase::_setState( State state )
 	{
 		if( state == m_state )
 			return;
@@ -96,49 +96,49 @@ namespace wg
 
 	//____ _defaultSize() _________________________________________________________
 
-	SizeSPX CText::_defaultSize(int scale) const
+	SizeSPX TextBase::_defaultSize(int scale) const
 	{
 		return _layout()->defaultSize(this, scale);
 	}
 
 	//____ _matchingWidth() _________________________________________________________
 
-	spx CText::_matchingWidth( spx height, int scale ) const
+	spx TextBase::_matchingWidth( spx height, int scale ) const
 	{
 		return _layout()->matchingWidth(this, height, scale);
 	}
 
 	//____ _matchingHeight() ________________________________________________________
 
-	spx CText::_matchingHeight( spx width, int scale ) const
+	spx TextBase::_matchingHeight( spx width, int scale ) const
 	{
 		return _layout()->matchingHeight(this, width, scale);
 	}
 
 	//____ _charAtPos() ___________________________________________________________
 
-	int CText::_charAtPos( CoordSPX pos ) const
+	int TextBase::_charAtPos( CoordSPX pos ) const
 	{
 		return _layout()->charAtPos(this,pos);
 	}
 
 	//____ _charRect() ____________________________________________________________
 
-	RectSPX CText::_charRect( int charOfs ) const
+	RectSPX TextBase::_charRect( int charOfs ) const
 	{
 		return _layout()->charRect(this, charOfs);
 	}
 
 	//____ _charLine() ____________________________________________________________
 
-	int CText::_charLine( int charOfs ) const
+	int TextBase::_charLine( int charOfs ) const
 	{
 		return _layout()->charLine(this, charOfs);
 	}
 
 	//____ _setSize() _____________________________________________________________
 
-	void CText::_setSize( SizeSPX size, int scale )
+	void TextBase::_setSize( SizeSPX size, int scale )
 	{
 		if( size == m_size && scale && m_scale )
 			return;
@@ -152,35 +152,35 @@ namespace wg
 
 	//_____ _render() _____________________________________________________________
 
-	void  CText::_render( GfxDevice * pDevice, const RectSPX& _canvas )
+	void  TextBase::_render( GfxDevice * pDevice, const RectSPX& _canvas )
 	{
 		_layout()->render(this, pDevice, _canvas );
 	}
 
 	//____ _rectForRange() __________________________________________________________
 
-	RectSPX  CText::_rectForRange( int ofs, int length ) const
+	RectSPX  TextBase::_rectForRange( int ofs, int length ) const
 	{
 		return _layout()->rectForRange(this, ofs, length);
 	}
 
 	//____ _tooltip() _______________________________________________________________
 
-	String CText::_tooltip() const
+	String TextBase::_tooltip() const
 	{
 		return _layout()->tooltip(this);
 	}
 
 	//____ _getString() ___________________________________________________________________
 
-	String CText::_getString() const
+	String TextBase::_getString() const
 	{
 		return String(&m_charBuffer);
 	}
 
 	//____ _clear() _________________________________________________________________
 
-	void CText::_clear()
+	void TextBase::_clear()
 	{
 		int removed = m_charBuffer.length();
 		m_charBuffer.clear();
@@ -189,7 +189,7 @@ namespace wg
 
 	//___ _setText() ____________________________________________________________________
 
-	void CText::_setText(const CharSeq& seq)
+	void TextBase::_setText(const CharSeq& seq)
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
@@ -198,7 +198,7 @@ namespace wg
 		_layout()->onTextModified(this, 0, removed, m_charBuffer.length());
 	}
 
-	void CText::_setText(const CharBuffer * buffer)
+	void TextBase::_setText(const CharBuffer * buffer)
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
@@ -207,7 +207,7 @@ namespace wg
 		_layout()->onTextModified(this, 0, removed, m_charBuffer.length());
 	}
 
-	void CText::_setText(const String& str)
+	void TextBase::_setText(const String& str)
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
@@ -218,7 +218,7 @@ namespace wg
 
 	//____ _append() ________________________________________________________________
 
-	int CText::_append(const CharSeq& seq)
+	int TextBase::_append(const CharSeq& seq)
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
@@ -230,7 +230,7 @@ namespace wg
 
 	//____ _insert() ________________________________________________________________
 
-	int CText::_insert(int ofs, const CharSeq& seq)
+	int TextBase::_insert(int ofs, const CharSeq& seq)
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
@@ -241,7 +241,7 @@ namespace wg
 
 	//____ _replace() ___________________________________________________________
 
-	int CText::_replace(int ofs, int nDelete, const CharSeq& seq)
+	int TextBase::_replace(int ofs, int nDelete, const CharSeq& seq)
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
@@ -252,7 +252,7 @@ namespace wg
 
 	//____ _erase() ____________________________________________________________
 
-	int CText::_erase(int ofs, int len)
+	int TextBase::_erase(int ofs, int len)
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 
@@ -263,13 +263,13 @@ namespace wg
 
 	//____ _setCharStyle() ______________________________________________________
 
-	void CText::_setCharStyle(TextStyle * pStyle)
+	void TextBase::_setCharStyle(TextStyle * pStyle)
 	{
 		m_charBuffer.setStyle(pStyle);
 		_layout()->onCharStyleChanged(this);
 	}
 
-	void CText::_setCharStyle(TextStyle * pStyle, int ofs, int len)
+	void TextBase::_setCharStyle(TextStyle * pStyle, int ofs, int len)
 	{
 		m_charBuffer.setStyle(pStyle, ofs, len);
 		_layout()->onCharStyleChanged(this, ofs, len);
@@ -277,13 +277,13 @@ namespace wg
 
 	//____ _clearCharStyle() ____________________________________________________
 
-	void CText::_clearCharStyle()
+	void TextBase::_clearCharStyle()
 	{
 		m_charBuffer.clearStyle();
 		_layout()->onCharStyleChanged(this);
 	}
 
-	void CText::_clearCharStyle(int ofs, int len)
+	void TextBase::_clearCharStyle(int ofs, int len)
 	{
 		m_charBuffer.clearStyle(ofs, len);
 		_layout()->onCharStyleChanged(this, ofs, len);
@@ -291,7 +291,7 @@ namespace wg
 
 	//____ _mapperRequestRender() _______________________________________________
 
-	void CText::_mapperRequestRender(const RectSPX& rect)
+	void TextBase::_mapperRequestRender(const RectSPX& rect)
 	{
 		_requestRender(rect);
 	}

@@ -38,26 +38,26 @@ namespace wg
 
 	//____ tooltip() _______________________________________________________________
 
-	String TextLayout::tooltip( const Text * pText ) const
+	String TextLayout::tooltip( const TextItem * pText ) const
 	{
 		return String();
 	}
 
 	//____ _chars() ___________________________________________________________
 
-	const Char * TextLayout::_chars( const Text * pText ) const
+	const Char * TextLayout::_chars( const TextItem * pText ) const
 	{
 		return pText->_textBegin();
 	}
 
 	//____ _dataBlock() _______________________________________________________
 
-	void * TextLayout::_dataBlock( Text * pText) const
+	void * TextLayout::_dataBlock( TextItem * pText) const
 	{
 		return pText->m_pMapperData;
 	}
 
-	const void * TextLayout::_dataBlock( const Text * pText) const
+	const void * TextLayout::_dataBlock( const TextItem * pText) const
 	{
 		return pText->m_pMapperData;
 	}
@@ -65,14 +65,14 @@ namespace wg
 
 	//____ _dataInt() _________________________________________________________
 
-	int TextLayout::_dataInt( const Text * pText ) const
+	int TextLayout::_dataInt( const TextItem * pText ) const
 	{
 		return pText->m_mapperData;
 	}
 
 	//____ _baseStyle() _________________________________________________________
 
-	const TextStyle * TextLayout::_baseStyle( const Text * pText ) const
+	const TextStyle * TextLayout::_baseStyle( const TextItem * pText ) const
 	{
 		TextStyle * pStyle = pText->_textStyle();
 		if( pStyle == 0 )
@@ -83,54 +83,54 @@ namespace wg
 
 	//____ _state() _________________________________________________________
 
-	State TextLayout::_state( const Text * pText ) const
+	State TextLayout::_state( const TextItem * pText ) const
 	{
 		return pText->_textState();
 	}
 
 	//____ _setTextDataBlock() ____________________________________________________
 
-	void  TextLayout::_setTextDataBlock( Text * pText, void * pBlock )
+	void  TextLayout::_setTextDataBlock( TextItem * pText, void * pBlock )
 	{
 		pText->m_pMapperData = pBlock;
 	}
 
 	//____ _setTextDataInt() ______________________________________________________
 
-	void  TextLayout::_setTextDataInt( Text * pText, int data )
+	void  TextLayout::_setTextDataInt( TextItem * pText, int data )
 	{
 		pText->m_mapperData = data;
 	}
 
 	//____ _setTextDirty() ____________________________________________________
 
-	void  TextLayout::_setTextDirty( Text * pText )
+	void  TextLayout::_setTextDirty( TextItem * pText )
 	{
 		pText->_mapperRequestRender();
 	}
 
-	void  TextLayout::_setTextDirty( Text * pText, const RectSPX& rect )
+	void  TextLayout::_setTextDirty( TextItem * pText, const RectSPX& rect )
 	{
 		pText->_mapperRequestRender( rect );
 	}
 
 	//____ _requestTextResize() _______________________________________________
 
-	void TextLayout::_requestTextResize( Text * pText )
+	void TextLayout::_requestTextResize( TextItem * pText )
 	{
 		pText->_mapperRequestResize();
 	}
 
 	//____ _size() _____________________________________________________________
 
-	SizeSPX TextLayout::_size( const Text * pText ) const
+	SizeSPX TextLayout::_size( const TextItem * pText ) const
 	{
 		return pText->_textSize();
 	}
 
 	//____ _length() ___________________________________________________________
 
-	int TextLayout::_length( const Text * pText ) const
+	int TextLayout::_length( const TextItem * pText ) const
 	{
 		return pText->_textLength();
 	}
@@ -138,28 +138,28 @@ namespace wg
 
 	//____ _caretVisible() _____________________________________________________
 
-	bool TextLayout::_caretVisible( const Text * pText ) const
+	bool TextLayout::_caretVisible( const TextItem * pText ) const
 	{
 		return pText->_caretVisible();
 	}
 
 	//____ _caretOfs() ____________________________________________________________
 
-	int TextLayout::_caretOfs( const Text * pText ) const
+	int TextLayout::_caretOfs( const TextItem * pText ) const
 	{
 		return pText->_caretOffset();
 	}
 
 	//____ _selection() ________________________________________________________
 	
-	std::tuple<int,int>	TextLayout::_selection( const Text * pText ) const
+	std::tuple<int,int>	TextLayout::_selection( const TextItem * pText ) const
 	{
 		return pText->_selectedText();
 	}
 
 	//____ _scale() ___________________________________________________________
 
-	int TextLayout::_scale(const Text* pText) const
+	int TextLayout::_scale(const TextItem * pText) const
 	{
 		return pText->_scale();
 	}

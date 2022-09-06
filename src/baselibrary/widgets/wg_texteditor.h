@@ -26,7 +26,7 @@
 
 
 #include <wg_widget.h>
-#include <wg_ctexteditor.h>
+#include <wg_editabletext.h>
 
 namespace wg
 {
@@ -48,7 +48,7 @@ namespace wg
 		{
 			Object_p		baggage;
 			bool			dropTarget = false;
-			CTextEditor::Blueprint	editor;
+			EditableText::Blueprint	editor;
 			bool			enabled = true;
 			Finalizer_p		finalizer;
 			int				id = 0;
@@ -70,7 +70,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		CTextEditor		editor;
+		EditableText		editor;
 
 		//.____ Identification __________________________________________
 

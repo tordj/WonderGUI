@@ -96,8 +96,6 @@ namespace wg
 //		friend class Object_wp;
 		friend class Object;
 
-		template<class T> friend class WeakComponentPtr;
-
 		friend class WeakPtrHub;
 
 	public:

@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_cscrollbar.h>
+#include <wg_scroller.h>
 
 
 namespace wg
@@ -29,14 +29,14 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	CScrollbar::CScrollbar(Widget* pWidget, CScrollbar::Holder * pHolderInterface, Axis axis) : 
-		WidgetComponent(pWidget),m_pHolderInterface(pHolderInterface), m_axis(axis)
+	Scroller::Scroller(Widget* pWidget, Scroller::Holder * pHolderInterface, Axis axis) : 
+		Component(pWidget),m_pHolderInterface(pHolderInterface), m_axis(axis)
 	{
 	}
 
 	//____ destructor _________________________________________________________
 
-	CScrollbar::~CScrollbar()
+	Scroller::~Scroller()
 	{
 
 	}
@@ -51,7 +51,7 @@ namespace wg
 	 * @param pFwdButtonSkin	Skin for the forward (down or right) button.
 	 *
 	 **/
-	void CScrollbar::setSkins(Skin* pBackground, Skin* pBar, Skin* pPrevButton, Skin* pNextButton)
+	void Scroller::setSkins(Skin* pBackground, Skin* pBar, Skin* pPrevButton, Skin* pNextButton)
 	{
 		int scale = _scale();
 
@@ -84,42 +84,42 @@ namespace wg
 
 	//____ setBackground() ____________________________________________________
 
-	void CScrollbar::setBackground(Skin* pSkin)
+	void Scroller::setBackground(Skin* pSkin)
 	{
 		_replaceSkin(pSkin, m_skins[Part::Back]);
 	}
 
 	//____ setBar() _______________________________________________________
 
-	void CScrollbar::setBar(Skin* pSkin)
+	void Scroller::setBar(Skin* pSkin)
 	{
 		_replaceSkin(pSkin, m_skins[Part::Bar]);
 	}
 
 	//____ setForwardButton() _________________________________________________
 
-	void CScrollbar::setForwardButton(Skin* pSkin)
+	void Scroller::setForwardButton(Skin* pSkin)
 	{
 		_replaceSkin(pSkin, m_skins[Part::Next]);
 	}
 
 	//____ setBackwardButton() ________________________________________________
 
-	void CScrollbar::setBackwardButton(Skin* pSkin)
+	void Scroller::setBackwardButton(Skin* pSkin)
 	{
 		_replaceSkin(pSkin, m_skins[Part::Prev]);
 	}
 
 	//____ setJumpToPress() ___________________________________________________
 
-	void CScrollbar::setJumpToPress(bool bJump)
+	void Scroller::setJumpToPress(bool bJump)
 	{
 		m_bJumpToPress = bJump;
 	}
 
 	//____ _initFromBlueprint() _______________________________________________
 
-	void CScrollbar::_initFromBlueprint(const Blueprint& bp)
+	void Scroller::_initFromBlueprint(const Blueprint& bp)
 	{
 		if( bp.background )
 			m_skins[Part::Back] = bp.background;
@@ -138,7 +138,7 @@ namespace wg
 
 	//____ _defaultSize() ___________________________________________________
 
-	SizeSPX CScrollbar::_defaultSize(int scale) const
+	SizeSPX Scroller::_defaultSize(int scale) const
 	{
 		SizeSPX prefSize = m_skins[Part::Bar] ? m_skins[Part::Bar]->_defaultSize(scale) : SizeSPX();
 
@@ -187,7 +187,7 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void CScrollbar::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale)
+	void Scroller::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale)
 	{
 		for (int i = 0; i < Part_size; i++)
 		{
@@ -198,7 +198,7 @@ namespace wg
 
 	//____ _pointerMoved() ________________________________________________
 
-	void CScrollbar::_pointerMoved(CoordSPX pointerPos)
+	void Scroller::_pointerMoved(CoordSPX pointerPos)
 	{
 		RectSPX geo = _size();
 		Part markedPart = _getMarkedPart(geo, pointerPos);
@@ -227,7 +227,7 @@ namespace wg
 
 	//____ _receive() _________________________________________________________
 
-	bool CScrollbar::_receive(Msg* _pMsg)
+	bool Scroller::_receive(Msg* _pMsg)
 	{
 		bool bProcessed = false;
 
@@ -422,7 +422,7 @@ namespace wg
 
 	//____ _setState() ________________________________________________________
 
-	void CScrollbar::_setState(State state)
+	void Scroller::_setState(State state)
 	{
 		// We just copy Enabled/Focused/Selected to all our skins.
 		// We ignore Targeted since that won't work without hover anyway.
@@ -447,7 +447,7 @@ namespace wg
 
 	//____ _setAxis() _________________________________________________________
 
-	void CScrollbar::_setAxis(Axis axis)
+	void Scroller::_setAxis(Axis axis)
 	{
 		// No request render here. We assume it is done anyway.
 
@@ -456,7 +456,7 @@ namespace wg
 
 	//____ _alphaTest() _______________________________________________________
 
-	bool CScrollbar::_alphaTest(CoordSPX ofs, SizeSPX canvas)
+	bool Scroller::_alphaTest(CoordSPX ofs, SizeSPX canvas)
 	{
 		//TODO: Support rounded outer corners on buttons?
 		//TODO: Check against the skins?
@@ -466,7 +466,7 @@ namespace wg
 
 	//____ _update() __________________________________________________________
 
-	void CScrollbar::_update(spx newViewPos, spx oldViewPos, spx newViewLen, spx oldViewLen, spx newContentLen, spx oldContentLen)
+	void Scroller::_update(spx newViewPos, spx oldViewPos, spx newViewLen, spx oldViewLen, spx newContentLen, spx oldContentLen)
 	{
 		RectSPX canvas = _size();
 		int scale = _scale();
@@ -489,7 +489,7 @@ namespace wg
 	//
 	// We accept bar being marked even if we are beside it. This is per design.
 
-	CScrollbar::Part CScrollbar::_getMarkedPart(const RectSPX& canvas, CoordSPX pos) const
+	Scroller::Part Scroller::_getMarkedPart(const RectSPX& canvas, CoordSPX pos) const
 	{
 		if (!canvas.contains(pos))
 			return Part::None;
@@ -538,7 +538,7 @@ namespace wg
 
 	//____ _partGeo() _______________________________________________
 
-	RectSPX CScrollbar::_partGeo(Part part, const RectSPX& canvas, int scale) const
+	RectSPX Scroller::_partGeo(Part part, const RectSPX& canvas, int scale) const
 	{
 		int nextButtonLen = _buttonLen(Part::Next, canvas, scale);
 		int prevButtonLen = _buttonLen(Part::Prev, canvas, scale);
@@ -580,7 +580,7 @@ namespace wg
 
 	//____ _setPartState() _________________________________________________
 
-	void CScrollbar::_setPartState(Part part, State newState, State oldState, const RectSPX& fullCanvas, int scale )
+	void Scroller::_setPartState(Part part, State newState, State oldState, const RectSPX& fullCanvas, int scale )
 	{
 		if (part == Part::None)
 			return;
@@ -598,7 +598,7 @@ namespace wg
 
 	//____ _replaceSkin() _____________________________________________________
 
-	void CScrollbar::_replaceSkin(Skin* pNew, Skin_p& pOld)
+	void Scroller::_replaceSkin(Skin* pNew, Skin_p& pOld)
 	{
 		if (pNew != pOld)
 		{
@@ -616,7 +616,7 @@ namespace wg
 
 	//____ _buttonLen() _____________________________________________________
 
-	spx CScrollbar::_buttonLen(Part button, const RectSPX& canvas, int scale) const
+	spx Scroller::_buttonLen(Part button, const RectSPX& canvas, int scale) const
 	{
 		if (m_skins[button])
 		{
@@ -643,7 +643,7 @@ namespace wg
 
 	//____ _dragbarArea() _____________________________________________________
 
-	RectSPX CScrollbar::_dragbarArea(const RectSPX& availableArea, int scale) const
+	RectSPX Scroller::_dragbarArea(const RectSPX& availableArea, int scale) const
 	{
 			spx viewOfs;
 			spx viewLen;
@@ -653,7 +653,7 @@ namespace wg
 			return _dragbarArea(availableArea, scale, viewOfs, viewLen, contentLen);
 	}
 
-	RectSPX CScrollbar::_dragbarArea(const RectSPX& availableArea, int scale, spx viewOfs, spx viewLen, spx contentLen) const
+	RectSPX Scroller::_dragbarArea(const RectSPX& availableArea, int scale, spx viewOfs, spx viewLen, spx contentLen) const
 	{
 		float fracLen = float(viewLen) / float(contentLen);
 		float fracOfs = contentLen == viewLen ? 0 : float(viewOfs) / float(contentLen - viewLen);

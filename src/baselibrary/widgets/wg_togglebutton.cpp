@@ -383,7 +383,7 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	CoordSPX ToggleButton::_componentPos(const WidgetComponent* pComponent) const
+	CoordSPX ToggleButton::_componentPos(const Component* pComponent) const
 	{
 		RectSPX contentRect = m_skin.contentRect(contentRect, m_scale, m_state);
 
@@ -400,7 +400,7 @@ namespace wg
 
 	//____ _componentSize() ______________________________________________________________
 
-	SizeSPX ToggleButton::_componentSize(const WidgetComponent* pComponent) const
+	SizeSPX ToggleButton::_componentSize(const Component* pComponent) const
 	{
 		SizeSPX	sz = m_size - m_skin.contentPaddingSize(m_scale);
 
@@ -416,7 +416,7 @@ namespace wg
 
 	//____ _componentGeo() ______________________________________________________________
 
-	RectSPX ToggleButton::_componentGeo(const WidgetComponent* pComponent) const
+	RectSPX ToggleButton::_componentGeo(const Component* pComponent) const
 	{
 		RectSPX	contentRect = m_skin.contentRect(m_size, m_scale, m_state);
 

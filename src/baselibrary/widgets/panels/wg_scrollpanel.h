@@ -28,7 +28,7 @@
 
 #include <wg_panel.h>
 #include <wg_slot.h>
-#include <wg_cscrollbar.h>
+#include <wg_scroller.h>
 
 namespace wg
 {
@@ -40,7 +40,7 @@ namespace wg
 
 	//____ ScrollPanel ________________________________________________________
 
-	class ScrollPanel : public Panel, protected CScrollbar::Holder
+	class ScrollPanel : public Panel, protected Scroller::Holder
 	{
 	public:
 
@@ -51,8 +51,8 @@ namespace wg
 		//.____ Components _______________________________________
 
 		DynamicSlot		slot;
-		CScrollbar		scrollbarX;
-		CScrollbar		scrollbarY;
+		Scroller		scrollbarX;
+		Scroller		scrollbarY;
 
 		//.____ Identification __________________________________________
 
@@ -145,19 +145,19 @@ namespace wg
 
 		//
 
-		CoordSPX		_componentPos(const WidgetComponent* pComponent) const override;
-		SizeSPX			_componentSize(const WidgetComponent* pComponent) const override;
-		RectSPX			_componentGeo(const WidgetComponent* pComponent) const override;
+		CoordSPX		_componentPos(const Component* pComponent) const override;
+		SizeSPX			_componentSize(const Component* pComponent) const override;
+		RectSPX			_componentGeo(const Component* pComponent) const override;
 
 
 
-		// Needed for CScrollbar
+		// Needed for Scroller
 
-		void	_scrollbarStep(const CScrollbar* pComponent, int dir) override;
-		void	_scrollbarPage(const CScrollbar* pComponent, int dir) override;
-		void	_scrollbarWheel(const CScrollbar* pComponent, int dir) override;
-		spx		_scrollbarMove(const CScrollbar* pComponent, spx pos) override;
-		std::tuple<spx, spx, spx> _scrollbarOfsLenContent(const CScrollbar* pComponent) override;
+		void	_scrollbarStep(const Scroller* pComponent, int dir) override;
+		void	_scrollbarPage(const Scroller* pComponent, int dir) override;
+		void	_scrollbarWheel(const Scroller* pComponent, int dir) override;
+		spx		_scrollbarMove(const Scroller* pComponent, spx pos) override;
+		std::tuple<spx, spx, spx> _scrollbarOfsLenContent(const Scroller* pComponent) override;
 
 		RectSPX			m_viewRegion;
 		RectSPX			m_scrollbarXRegion;

@@ -25,7 +25,7 @@
 #pragma once
 
 #	include <wg_widget.h>
-#	include <wg_cnumberdisplay.h>
+#	include <wg_number.h>
 
 namespace wg
 {
@@ -48,7 +48,7 @@ namespace wg
 		{
 			Object_p		baggage;
 			bool			dropTarget = false;
-			CNumberDisplay::Blueprint	display;
+			Number::Blueprint	display;
 			bool			enabled = true;
 			Finalizer_p		finalizer;
 			int				id = 0;
@@ -70,7 +70,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CNumberDisplay		display;
+		Number		display;
 
 		//.____ Identification __________________________________________
 
@@ -93,7 +93,7 @@ namespace wg
 
 	private:
 
-		class DisplayAccess : public CNumberDisplay { friend class NumberDisplay; };
+		class DisplayAccess : public Number { friend class NumberDisplay; };
 		const DisplayAccess& _display() const { return static_cast<const DisplayAccess&>(display); }
 		DisplayAccess& _display() { return static_cast<DisplayAccess&>(display); }
 

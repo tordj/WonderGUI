@@ -19,57 +19,64 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_CNUMBERDISPLAY_DOT_H
-#define WG_CNUMBERDISPLAY_DOT_H
+
+#ifndef	WG_STATICTEXT_DOT_H
+#define WG_STATICTEXT_DOT_H
 #pragma once
 
-#include <limits>
-#include <wg_cstaticnumberdisplay.h>
+#include <wg_types.h>
+#include <wg_textbase.h>
+
+
+#include <wg_base.h>
 
 namespace wg
 {
 
+	class String;
+	class CharSeq;
+	class CharBuffer;
 
-	//____ CNumberDisplay ____________________________________________________________
 
-	class CNumberDisplay : public CStaticNumberDisplay
+	//____ StaticText __________________________________________________________________
+
+	class StaticText : public TextBase
 	{
 	public:
-		CNumberDisplay(Widget * pHolder);
-		~CNumberDisplay() {}
 
 		//.____ Blueprint ______________________________________________________
 
 		struct Blueprint
 		{
-			NumberLayout_p	layout;
-			double			maxValue = std::numeric_limits<double>::max();
-			double			minValue = std::numeric_limits<double>::lowest();
-			double			value = 0.0;
+			TextLayout_p	layout;
+			TextStyle_p		style;
 		};
+
+		StaticText(Widget * pWidget );
+
 
 		//.____ Content _____________________________________________
 
-		void				clear();
-		bool				set( double value );
+		inline 	String			text() const { return TextBase::_getString(); }
 
-		bool				setRange( double min, double max );
-		inline double		min() const { return m_minValue; }
-		inline double		max() const { return m_maxValue; }
+		inline int				length() const { return m_charBuffer.length(); }
+		inline bool				isEmpty() const { return length() == 0 ? true : false; }
 
-		//.____ Internal __________________________________________________
+		TextLink_p			markedLink() const;
+
+		//.____ Internal ______________________________________________________
 
 		void				_initFromBlueprint(const Blueprint& blueprint);
 
+
 	protected:
 
-		bool				_set(double value) override;
+		virtual void		_receive( Msg * pMsg );
 
-		double				m_minValue;
-		double				m_maxValue;
+	protected:
+		TextLink_p			m_pMarkedLink;	// Character offset for beginning of marked or focused link
 	};
 
 
-
 } // namespace wg
-#endif //WG_CNUMBERDISPLAY_DOT_H
+#endif //WG_STATICTEXT_DOT_H

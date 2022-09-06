@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_widget.h>
-#include	<wg_ctextdisplay.h>
+#include	<wg_text.h>
 
 namespace wg
 {
@@ -48,8 +48,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CTextDisplay			labels;
-		CStaticTextDisplay		values;
+		Text			labels;
+		StaticText		values;
 
 
 		//.____ Identification __________________________________________

@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef	WG_CTEXT_DOT_H
-#define WG_CTEXT_DOT_H
+#ifndef	WG_TEXTBASE_DOT_H
+#define WG_TEXTBASE_DOT_H
 #pragma once
 
-#include <wg_widgetcomponent.h>
+#include <wg_component.h>
 #include <wg_textstyle.h>
 #include <wg_textlayout.h>
 #include <wg_base.h>
@@ -34,16 +34,16 @@ namespace wg
 	class EditState;
 
 
-	//____ CText __________________________________________________________________
+	//____ TextBase __________________________________________________________________
 
-	class CText : public WidgetComponent, protected Text
+	class TextBase : public Component, protected TextItem
 	{
 		friend class TextLayout;
 		friend class BasicTextLayout;
 	public:
 
-		CText(Widget * pWidget );
-		virtual ~CText();
+		TextBase(Widget * pWidget );
+		virtual ~TextBase();
 
 		//.____ Appearance _____________________________________________
 
@@ -128,7 +128,7 @@ namespace wg
 		virtual int			_caretOffset() const override { return 0; }
 		virtual std::tuple<int,int>	_selectedText() const override { return std::make_tuple(0,0); };		// Begin/end of selection
 
-		int					_scale() const override { return WidgetComponent::_scale(); }
+		int					_scale() const override { return Component::_scale(); }
 
 
 	protected:
@@ -141,7 +141,7 @@ namespace wg
 		CharBuffer			m_charBuffer;
 		TextLayout_p		m_pLayout;
 
-		// Here so it can be shared by CTextEditor and CValueEditor
+		// Here so it can be shared by EditableText and EditableNumber
 
 		class EditState
 		{
@@ -150,7 +150,7 @@ namespace wg
 
 			bool 			bCaret;			// Set if caret should be displayed.
 			bool			bShiftDown;		// Set if caret is in "selection mode" modifying the selection when moving.
-			bool			bButtonDown;	// Set when mouse button was pressed inside component and still is down.
+			bool			bButtonDown;	// Set when mouse button was pressed inside the text rectangle and still is down.
 			int 			selectOfs;		// Selection is between selectOfs and caretOfs.
 			int				caretOfs;		// End of selection and caret offset (if displaying)
 			spx				wantedOfs;		// Carets wanted offset when skipping between lines. -1 = none set.
@@ -160,4 +160,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CTEXT_DOT_H
+#endif //WG_TEXTBASE_DOT_H

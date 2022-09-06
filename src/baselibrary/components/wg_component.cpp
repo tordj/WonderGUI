@@ -20,23 +20,10 @@
 
 =========================================================================*/
 
-
-#include <wg_textdisplay.h>
+#include <wg_component.h>
 
 namespace wg
 {
 
-	//____ initFromBlueprint() ________________________________________________
 
-	void CTextDisplay::_initFromBlueprint(const Blueprint& bp)
-	{
-		if (bp.style)
-			setStyle(bp.style);
-
-		if (bp.layout)
-			setLayout(bp.layout);
-
-		if (!bp.text.isEmpty())
-			_setText(bp.text);
-	}
-}
+} // namespace wg

@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_cstatictextdisplay.h>
+#include <wg_statictext.h>
 #include <wg_msg.h>
 #include <wg_msgrouter.h>
 #include <wg_util.h>
@@ -31,13 +31,13 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	CStaticTextDisplay::CStaticTextDisplay(Widget * pWidget ) : CText( pWidget )
+	StaticText::StaticText(Widget * pWidget ) : TextBase( pWidget )
 	{
 	}
 
 	//____ markedLink() _____________________________________________________
 
-	TextLink_p CStaticTextDisplay::markedLink() const
+	TextLink_p StaticText::markedLink() const
 	{
 		//TODO: Implement!
 
@@ -46,7 +46,7 @@ namespace wg
 
 	//____ initFromBlueprint() ________________________________________________
 
-	void CStaticTextDisplay::_initFromBlueprint(const Blueprint& bp)
+	void StaticText::_initFromBlueprint(const Blueprint& bp)
 	{
 		if (bp.style)
 			setStyle(bp.style);
@@ -57,7 +57,7 @@ namespace wg
 
 	//____ _receive() ___________________________________________________________
 
-	void CStaticTextDisplay::_receive( Msg * _pMsg )
+	void StaticText::_receive( Msg * _pMsg )
 	{
 		if( !_pMsg->isMouseMsg() )
 			return;
@@ -82,7 +82,7 @@ namespace wg
 						pLink = pStyle->link();
 				}
 
-				// Fall back to components default style
+				// Fall back to parts default style
 
 				if( !pLink && m_pStyle )
 					pLink = m_pStyle->link();
