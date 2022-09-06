@@ -27,13 +27,11 @@
 #include <wg_base.h>
 #include <wg_popupoverlay.h>
 #include <wg_inputhandler.h>
-#include <wg_cdynamicvector.impl.h>
 
 #include <algorithm>
 
 namespace wg
 {
-	template class CDynamicVector<SelectBoxEntry>;
 
 	using namespace Util;
 
@@ -123,7 +121,7 @@ namespace wg
 
 	//____ selectEntry() _____________________________________________________
 
-	void SelectBox::selectEntry(const CDynamicVector<SelectBoxEntry>::iterator& it)
+	void SelectBox::selectEntry(const DynamicVector<SelectBoxEntry>::iterator& it)
 	{
 		if (it < entries.begin() || it >= entries.end())
 		{

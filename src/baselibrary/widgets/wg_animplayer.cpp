@@ -25,14 +25,12 @@
 #include <wg_util.h>
 #include <wg_msgrouter.h>
 #include <wg_gfxdevice.h>
-#include <wg_cdynamicvector.impl.h>
 
 #include <math.h>
 
 
 namespace wg
 {
-	template class CDynamicVector<AnimFrame>;
 	using namespace Util;
 
 	const TypeInfo AnimPlayer::TYPEINFO = { "AnimPlayer", &Widget::TYPEINFO };
@@ -279,14 +277,14 @@ namespace wg
 
 	//____ _didSetAnimFrameSize() _____________________________________________
 
-	void AnimPlayer::_didSetAnimFrameSize(CAnimFrames* pComponent)
+	void AnimPlayer::_didSetAnimFrameSize(AnimFrames* pComponent)
 	{
 		_requestResize();
 	}
 
 	//____ _didSetAnimSurface() _______________________________________________
 
-	void AnimPlayer::_didSetAnimSurface(CAnimFrames* pComponent)
+	void AnimPlayer::_didSetAnimSurface(AnimFrames* pComponent)
 	{
 		_requestRender();
 	}

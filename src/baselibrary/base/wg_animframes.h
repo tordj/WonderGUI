@@ -19,23 +19,22 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_CANIMFRAMES_DOT_H
-#define WG_CANIMFRAMES_DOT_H
+#ifndef WG_ANIMFRAMES_DOT_H
+#define WG_ANIMFRAMES_DOT_H
 #pragma once
 
 
-#include <wg_cdynamicvector.h>
+#include <wg_dynamicvector.h>
 #include <wg_surface.h>
 #include <wg_geo.h>
-#include <wg_cstaticvector.h>
-#include <wg_cstaticvector.impl.h>
+#include <wg_staticvector.h>
 
 namespace wg
 {
 
 	class AnimFrame
 	{
-		friend class CAnimFrames;
+		friend class AnimFrames;
 	public:
 		AnimFrame(Coord source, int duration, GfxFlip flip = GfxFlip::Normal) : m_source(source), m_timestamp(0), m_duration(duration), m_flip(flip) {}
 
@@ -53,11 +52,11 @@ namespace wg
 	};
 
 
-	//____ CAnimFrames _____________________________________________________
+	//____ AnimFrames _____________________________________________________
 	/**
 		@brief Vector of frames for a bitmap-based animation.
 
-		The CAnimFrames component contains a vector of rectangular bitmap
+		The AnimFrames component contains a vector of rectangular bitmap
 		areas, all of the same size, used as frames in an animation.
 
 		All frames must be from the same Surface. Each frame
@@ -67,18 +66,18 @@ namespace wg
 		can be used to cut down on the amount of graphics needed for certain animations.
 	*/
 
-	class CAnimFrames : public CDynamicVector<AnimFrame>
+	class AnimFrames : public DynamicVector<AnimFrame>
 	{
 	public:
 		 
-		class Holder : public CDynamicVector<AnimFrame>::Holder
+		class Holder : public DynamicVector<AnimFrame>::Holder
 		{
 		public:
-			virtual void	_didSetAnimFrameSize(CAnimFrames * pComponent) = 0;
-			virtual void	_didSetAnimSurface(CAnimFrames * pComponent) = 0;
+			virtual void	_didSetAnimFrameSize(AnimFrames * pComponent) = 0;
+			virtual void	_didSetAnimSurface(AnimFrames * pComponent) = 0;
 		};
 
-		CAnimFrames(Holder * pHolder) : CDynamicVector(pHolder) {}
+		AnimFrames(Holder * pHolder) : DynamicVector(pHolder) {}
 
 
 		//.____ Content _______________________________________________________
@@ -119,7 +118,7 @@ namespace wg
 		@return Duration of the animation.
 	*/
 
-	inline int CAnimFrames::duration() const 
+	inline int AnimFrames::duration() const 
 	{ 
 		return m_duration; 
 	}
@@ -128,4 +127,4 @@ namespace wg
 
 } //namespace wg
 
-#endif //WG_CANIMFRAMES_DOT_H
+#endif //WG_ANIMFRAMES_DOT_H

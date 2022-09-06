@@ -19,36 +19,33 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_canimframes.h>
-#include <wg_cdynamicvector.impl.h>
+#include <wg_animframes.h>
 
 #include <algorithm>
 
 namespace wg
 {
-	template class CDynamicVector<AnimFrame>;
-
 
 
 	//____ setSurface() __________________________________________________________
 
-	void CAnimFrames::setSurface(Surface* pSurface)
+	void AnimFrames::setSurface(Surface* pSurface)
 	{
 		if (pSurface != m_pSurface)
 		{
 			m_pSurface = pSurface;
-			static_cast<CAnimFrames::Holder*>(m_pHolder)->_didSetAnimSurface(this);
+			static_cast<AnimFrames::Holder*>(m_pHolder)->_didSetAnimSurface(this);
 		}
 	}
 
 	//____ setFrameSize() __________________________________________________________
 
-	void CAnimFrames::setFrameSize(Size pointSize)
+	void AnimFrames::setFrameSize(Size pointSize)
 	{
 		if (pointSize != m_frameSize)
 		{
 			m_frameSize = pointSize;
-			static_cast<CAnimFrames::Holder*>(m_pHolder)->_didSetAnimFrameSize(this);
+			static_cast<AnimFrames::Holder*>(m_pHolder)->_didSetAnimFrameSize(this);
 		}
 	}
 
@@ -66,7 +63,7 @@ namespace wg
 		@return Pointer to the frame for the timestamp or nullptr if component contains
 				no frames.
 	*/
-	const AnimFrame* CAnimFrames::find(int timestamp) const
+	const AnimFrame* AnimFrames::find(int timestamp) const
 	{
 		if (m_entries.empty())
 			return nullptr;
@@ -100,7 +97,7 @@ namespace wg
 
 	//____ _didAddEntries() ___________________________________________________
 
-	void CAnimFrames::_didAddEntries(AnimFrame* pEntry, int nb)
+	void AnimFrames::_didAddEntries(AnimFrame* pEntry, int nb)
 	{
 		int ofs = int(pEntry - &m_entries.front());
 		int timestamp = ofs == 0 ? 0 : pEntry[-1].timestamp() + pEntry[-1].duration();
@@ -120,12 +117,12 @@ namespace wg
 			timestamp += it->m_duration;
 		}
 
-		CDynamicVector::_didAddEntries(pEntry, nb);
+		DynamicVector::_didAddEntries(pEntry, nb);
 	}
 
 	//____ _didMoveEntries() __________________________________________________
 
-	void CAnimFrames::_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb)
+	void AnimFrames::_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb)
 	{
 		AnimFrame* pEntry = std::min(pFrom, pTo);
 
@@ -137,12 +134,12 @@ namespace wg
 			timestamp += it->m_duration;
 		}
 
-		CDynamicVector::_didMoveEntries(pFrom, pTo, nb);
+		DynamicVector::_didMoveEntries(pFrom, pTo, nb);
 	}
 
 	//____ _willEraseEntries() ___________________________________________________
 
-	void CAnimFrames::_willEraseEntries(AnimFrame* pEntry, int nb)
+	void AnimFrames::_willEraseEntries(AnimFrame* pEntry, int nb)
 	{
 		int ofs = int(pEntry - &m_entries.front());
 		int timestamp = pEntry->timestamp() + pEntry->duration();
@@ -158,7 +155,7 @@ namespace wg
 			timestamp += it->m_duration;
 		}
 
-		CDynamicVector::_willEraseEntries(pEntry, nb);
+		DynamicVector::_willEraseEntries(pEntry, nb);
 	}
 
 

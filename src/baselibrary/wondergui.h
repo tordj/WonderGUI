@@ -82,11 +82,11 @@
 #include <wg_types.h>
 #include <wg_util.h>
 #include <wg_weakptr.h>
-#include <wg_canimframes.h>
+#include <wg_animframes.h>
 #include <wg_ccolumnheader.h>
 #include <wg_dynamicslotcollection.h>
 #include <wg_dynamicslotvector.h>
-#include <wg_cdynamicvector.h>
+#include <wg_dynamicvector.h>
 #include <wg_cicondisplay.h>
 #include <wg_cnumberdisplay.h>
 #include <wg_cnumbereditor.h>
@@ -96,7 +96,7 @@
 #include <wg_staticslotcollection.h>
 #include <wg_staticslotvector.h>
 #include <wg_cstatictextdisplay.h>
-#include <wg_cstaticvector.h>
+#include <wg_staticvector.h>
 #include <wg_ctext.h>
 #include <wg_ctextdisplay.h>
 #include <wg_ctexteditor.h>

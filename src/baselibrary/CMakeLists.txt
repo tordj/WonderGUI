@@ -26,6 +26,8 @@ source_group(Widgets/Panels REGULAR_EXPRESSION "widgets/panels//*")
 
 add_library( wondergui
 			
+	base/wg_animframes.cpp
+	base/wg_animframes.h
 	base/wg_base.cpp
 	base/wg_base.h
 	base/wg_bitmapcache.cpp
@@ -56,6 +58,7 @@ add_library( wondergui
 	base/wg_dataset.h
 	base/wg_dummyfont.cpp
 	base/wg_dummyfont.h
+	base/wg_dynamicvector.h
 	base/wg_enumextras.cpp
 	base/wg_enumextras.h
 	base/wg_font.cpp
@@ -105,6 +108,7 @@ add_library( wondergui
 	base/wg_skinslotmi.h
 	base/wg_state.cpp
 	base/wg_state.h
+	base/wg_staticvector.h
 	base/wg_string.cpp
 	base/wg_string.h
 	base/wg_strongptr.h
@@ -176,12 +180,8 @@ add_library( wondergui
 	c-interface/wg_c_types.cpp
 
 
-	components/wg_canimframes.cpp
-	components/wg_canimframes.h
 	components/wg_ccolumnheader.cpp
 	components/wg_ccolumnheader.h
-	components/wg_cdynamicvector.h
-	components/wg_cdynamicvector.impl.h
 	components/wg_cicondisplay.cpp
 	components/wg_cicondisplay.h
 	components/wg_cnumberdisplay.cpp
@@ -194,8 +194,6 @@ add_library( wondergui
 	components/wg_cstatictextdisplay.h
 	components/wg_cstaticnumberdisplay.cpp
 	components/wg_cstaticnumberdisplay.h
-	components/wg_cstaticvector.h
-	components/wg_cstaticvector.impl.h
 	components/wg_ctext.cpp
 	components/wg_ctext.h
 	components/wg_ctextdisplay.cpp

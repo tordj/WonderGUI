@@ -26,7 +26,7 @@
 
 
 #include <wg_widget.h>
-#include <wg_canimframes.h>
+#include <wg_animframes.h>
 
 namespace wg
 {
@@ -41,7 +41,7 @@ namespace wg
 	*
 	**/
 
-	class AnimPlayer : public Widget, protected CAnimFrames::Holder
+	class AnimPlayer : public Widget, protected AnimFrames::Holder
 	{
 	public:
 
@@ -51,7 +51,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CAnimFrames		frames;
+		AnimFrames		frames;
 
 		//.____ Identification __________________________________________
 
@@ -99,8 +99,8 @@ namespace wg
 		bool			_playPosUpdated();
 		int				_playPosToTimestamp(int playPos) const;
 
-		void			_didSetAnimFrameSize(CAnimFrames* pComponent) override;
-		void			_didSetAnimSurface(CAnimFrames* pComponent) override;
+		void			_didSetAnimFrameSize(AnimFrames* pComponent) override;
+		void			_didSetAnimSurface(AnimFrames* pComponent) override;
 		void			_didAddEntries(AnimFrame* pEntry, int nb) override;
 		void			_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb) override;
 		void			_willEraseEntries(AnimFrame* pEntry, int nb) override;

@@ -28,10 +28,10 @@
 namespace wg
 {
 
-	//____ CStaticVector _____________________________________________________
+	//____ StaticVector _____________________________________________________
 	
 	template<class EntryType>
-	class CStaticVector
+	class StaticVector
 	{
 	public:
 		
@@ -42,7 +42,7 @@ namespace wg
 		using		const_reverse_iterator = typename std::vector<EntryType>::const_reverse_iterator;
 
 
-		CStaticVector() {}
+		StaticVector() {}
 
 
 		//.____ Content _______________________________________________________
@@ -77,11 +77,11 @@ namespace wg
 		inline const EntryType& operator[](int index) const { return m_entries[index]; }
 
 	protected:
-//		~CStaticVector() {}
+//		~StaticVector() {}
 		
 		std::vector<EntryType>	m_entries;
 	};
 
 } //namespace
 
-#endif //WG_CStaticVector_DOT_H
+#endif //WG_STATICVECTOR_DOT_H
