@@ -88,10 +88,6 @@ namespace wg
 		};
 
 
-		class CSlots;
-		typedef	StrongComponentPtr<CSlots>		CSlots_p;
-		typedef	WeakComponentPtr<CSlots>		CSlots_wp;
-
 		using		iterator = SlotArrayIterator<Slot>;
 
 		//____ CSlots ________________________________________________________

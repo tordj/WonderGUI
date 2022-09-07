@@ -29,9 +29,6 @@
 
 namespace wg
 {
-	class ColumnHeader;
-	typedef	StrongComponentPtr<ColumnHeader>	ColumnHeader_p;
-	typedef	WeakComponentPtr<ColumnHeader>		ColumnHeader_wp;
 	 
 	//____ ColumnHeader ___________________________________________________
 

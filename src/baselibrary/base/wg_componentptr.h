@@ -108,21 +108,6 @@ namespace wg
 			return *this;
 		}
 
-		template<typename _Tp1> ComponentPtr<Comp>& operator=( _Tp1 * _p)
-		{
-			if (m_pComponent != _p)
-			{
-				if (m_pObject)
-					m_pObject->release();
-
-				m_pObject = _p.m_pObject;
-				m_pComponent = _p.m_pComponent;
-				if (m_pObject)
-					m_pObject->retain();
-			}
-			return *this;
-		}
-
 		operator  Comp*() const { return m_pComponent; }
 
 		inline Comp & operator*() const { return * this->m_pComponent; }

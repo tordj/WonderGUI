@@ -90,10 +90,6 @@ namespace wg
 		};
 
 
-		class CSlots;
-		typedef	StrongComponentPtr<CSlots>	CModalSlotVector_p;
-		typedef	WeakComponentPtr<CSlots>	CModalSlotVector_wp;
-
 		//____ CSlots ________________________________________________________
 
 		class CSlots : public DynamicSlotVector<Slot>

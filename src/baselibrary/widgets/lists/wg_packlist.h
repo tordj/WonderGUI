@@ -99,10 +99,6 @@ namespace wg
 
 		//____ CSlots ______________________________________________________
 
-		class CSlots;
-		typedef	StrongComponentPtr<CSlots>	CSlots_p;
-		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
-
 		class CSlots : public DynamicSlotVector<Slot>,
 			 public SelectableSlotCollectionMethods< PackList::Slot, iterator, PackList >
 		{

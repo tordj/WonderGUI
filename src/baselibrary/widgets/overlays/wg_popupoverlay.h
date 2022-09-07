@@ -89,10 +89,6 @@ namespace wg
 		};
 
 
-		class CSlots;
-		typedef	StrongComponentPtr<CSlots>	CPopupSlots_p;
-		typedef	WeakComponentPtr<CSlots>	CPopupSlots_wp;
-
 		//____ CSlots ________________________________________________________
 
 		class CSlots : public StaticSlotVector<Slot>
