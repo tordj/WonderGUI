@@ -17,6 +17,7 @@
 
 
 #include <wondergui.h>
+#include <wg_componentptr.h>
 #include <wg_memheap.h>
 
 #include <bitset>
@@ -70,42 +71,43 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 	return p2->id() - p1->id();
 }
 
-bool shadowLayerTest(CStandardSlot_p pSlot);
-bool stretchBlitTest(CStandardSlot_p pSlot);
-bool scrollIntoViewTest(CStandardSlot_p pSlot);
-bool textClipTest(CStandardSlot_p pSlot);
-bool textEditorTest(CStandardSlot_p pSlot);
-bool lineEditorTest(CStandardSlot_p pSlot);
-bool popupOpenerTest(CStandardSlot_p pSlot);
-bool scrollbarTest(CStandardSlot_p pSlot);
-bool modalLayerTest(CStandardSlot_p pSlot);
-bool splitPanelTest(CStandardSlot_p pSlot);
-bool designLayerTest(CStandardSlot_p pSlot);
-bool pianoKeyboardTest(CStandardSlot_p pSlot);
-bool sliderTest(CStandardSlot_p pSlot);
-bool rangeSliderTest(CStandardSlot_p pSlot);
-bool pieKnobTest(CStandardSlot_p pSlot);
-bool spinKnobTest(CStandardSlot_p pSlot);
-bool animKnobTest(CStandardSlot_p pSlot);
-bool canvasStackTest(CStandardSlot_p pSlot);
-bool doubleSkinTest(CStandardSlot_p pSlot);
-bool timerTest(CStandardSlot_p pSlot);
-bool animPlayerTest(CStandardSlot_p pSlot);
-bool selectBoxTest(CStandardSlot_p pSlot);
-bool tileSkinTest(CStandardSlot_p pSlot);
-bool gradientSkinTest(CStandardSlot_p pSlot);
-bool bakeSkinTest(CStandardSlot_p pSlot);
-bool animSkinTest(CStandardSlot_p pSlot);
-bool renderLayerTest(CStandardSlot_p pSlot);
-bool rigidPartNinePatchTest(CStandardSlot_p pSlot);
-bool scrollSkinTest(CStandardSlot_p pSlot);
-bool tooltipLayerTest(CStandardSlot_p pSlot);
-bool kerningTest(CStandardSlot_p pSlot);
-bool circleSkinTest(CStandardSlot_p pSlot);
-bool packListTest(CStandardSlot_p pSlot);
-bool packPanelTest(CStandardSlot_p pSlot);
-bool glyphAsSurfaceTest(CStandardSlot_p pSlot, Font_p pFont );
-bool memHeapFragmentationTest(CStandardSlot_p pSlot);
+bool shadowLayerTest(ComponentPtr<DynamicSlot> pSlot);
+bool stretchBlitTest(ComponentPtr<DynamicSlot> pSlot);
+bool scrollIntoViewTest(ComponentPtr<DynamicSlot> pSlot);
+bool textClipTest(ComponentPtr<DynamicSlot> pSlot);
+bool textEditorTest(ComponentPtr<DynamicSlot> pSlot);
+bool lineEditorTest(ComponentPtr<DynamicSlot> pSlot);
+bool popupOpenerTest(ComponentPtr<DynamicSlot> pSlot);
+bool scrollbarTest(ComponentPtr<DynamicSlot> pSlot);
+bool modalLayerTest(ComponentPtr<DynamicSlot> pSlot);
+bool splitPanelTest(ComponentPtr<DynamicSlot> pSlot);
+bool designLayerTest(ComponentPtr<DynamicSlot> pSlot);
+bool pianoKeyboardTest(ComponentPtr<DynamicSlot> pSlot);
+bool sliderTest(ComponentPtr<DynamicSlot> pSlot);
+bool rangeSliderTest(ComponentPtr<DynamicSlot> pSlot);
+bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot);
+bool spinKnobTest(ComponentPtr<DynamicSlot> pSlot);
+bool animKnobTest(ComponentPtr<DynamicSlot> pSlot);
+bool canvasStackTest(ComponentPtr<DynamicSlot> pSlot);
+bool doubleSkinTest(ComponentPtr<DynamicSlot> pSlot);
+bool timerTest(ComponentPtr<DynamicSlot> pSlot);
+bool animPlayerTest(ComponentPtr<DynamicSlot> pSlot);
+bool selectBoxTest(ComponentPtr<DynamicSlot> pSlot);
+bool tileSkinTest(ComponentPtr<DynamicSlot> pSlot);
+bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot);
+bool bakeSkinTest(ComponentPtr<DynamicSlot> pSlot);
+bool animSkinTest(ComponentPtr<DynamicSlot> pSlot);
+bool renderLayerTest(ComponentPtr<DynamicSlot> pSlot);
+bool rigidPartNinePatchTest(ComponentPtr<DynamicSlot> pSlot);
+bool scrollSkinTest(ComponentPtr<DynamicSlot> pSlot);
+bool tooltipLayerTest(ComponentPtr<DynamicSlot> pSlot);
+bool kerningTest(ComponentPtr<DynamicSlot> pSlot);
+bool circleSkinTest(ComponentPtr<DynamicSlot> pSlot);
+bool packListTest(ComponentPtr<DynamicSlot> pSlot);
+bool packPanelTest(ComponentPtr<DynamicSlot> pSlot);
+bool glyphAsSurfaceTest(ComponentPtr<DynamicSlot> pSlot, Font_p pFont );
+bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot);
+bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pSlot);
 
 
 void nisBlendTest();
@@ -637,42 +639,47 @@ int main(int argc, char** argv)
 	//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
 
 	
+
+	auto pSlot = ComponentPtr(pRoot, pRoot->slot);
+
 //	shadowLayerTest(pRoot->child.ptr());
 //	stretchBlitTest(pRoot->child.ptr());
 //	scrollIntoViewTest(pRoot->child.ptr());
-//	textClipTest(&pRoot->slot);
-//	textEditorTest(&pRoot->slot);
-//	lineEditorTest(&pRoot->slot);
-//	popupOpenerTest(&pRoot->slot);
-//	scrollbarTest(&pRoot->slot);
-//	modalLayerTest(&pRoot->slot);
-//	splitPanelTest(&pRoot->slot);
-//	designLayerTest(&pRoot->slot);
-//	pianoKeyboardTest(&pRoot->slot);
-//	sliderTest(&pRoot->slot);
-//	rangeSliderTest(&pRoot->slot);
-//	pieKnobTest(&pRoot->slot);
-//	spinKnobTest(&pRoot->slot);
-//  animKnobTest(&pRoot->slot);
-//	canvasStackTest(&pRoot->slot);
-//	doubleSkinTest(&pRoot->slot);
-//	timerTest(&pRoot->slot);
-//	animPlayerTest(&pRoot->slot);
-//	selectBoxTest(&pRoot->slot);
-//	tileSkinTest(&pRoot->slot);
-//	gradientSkinTest(&pRoot->slot);
-//	bakeSkinTest(&pRoot->slot);
-//	animSkinTest(&pRoot->slot);
-//	renderLayerTest(&pRoot->slot);
-//	rigidPartNinePatchTest(&pRoot->slot);
-//	scrollSkinTest(&pRoot->slot);
-//	tooltipLayerTest(&pRoot->slot);
-//	kerningTest(&pRoot->slot);
-//	circleSkinTest(&pRoot->slot);
-//	packListTest(&pRoot->slot);
-//	packPanelTest(&pRoot->slot);
-//	glyphAsSurfaceTest(&pRoot->slot, pFont);
-	memHeapFragmentationTest(&pRoot->slot);
+//	textClipTest(pSlot);
+//	textEditorTest(pSlot);
+//	lineEditorTest(pSlot);
+//	popupOpenerTest(pSlot);
+//	scrollbarTest(pSlot);
+//	modalLayerTest(pSlot);
+	splitPanelTest(pSlot);
+//	designLayerTest(pSlot);
+//	pianoKeyboardTest(pSlot);
+//	sliderTest(pSlot);
+//	rangeSliderTest(pSlot);
+//	pieKnobTest(pSlot);
+//	spinKnobTest(pSlot);
+//  animKnobTest(pSlot);
+//	canvasStackTest(pSlot);
+//	doubleSkinTest(pSlot);
+//	timerTest(pSlot);
+//	animPlayerTest(pSlot);
+//	selectBoxTest(pSlot);
+//	tileSkinTest(pSlot);
+//	gradientSkinTest(pSlot);
+//	bakeSkinTest(pSlot);
+//	animSkinTest(pSlot);
+//	renderLayerTest(pSlot);
+//	rigidPartNinePatchTest(pSlot);
+//	scrollSkinTest(pSlot);
+//	tooltipLayerTest(pSlot);
+//	kerningTest(pSlot);
+//	circleSkinTest(pSlot);
+//	packListTest(pSlot);
+//	packPanelTest(pSlot);
+//	glyphAsSurfaceTest(pSlot, pFont);
+//	memHeapFragmentationTest(pSlot);
+//	blendRGB565BigendianTest( pSlot );
+
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -1735,7 +1742,7 @@ bool savePNG(Surface * pSurface, const char * path)
 
 //____ shadowLayerTest() ______________________________________________________
 
-bool shadowLayerTest(CStandardSlot_p pEntry )
+bool shadowLayerTest(ComponentPtr<DynamicSlot> pEntry )
 {
 /*
 	Surface_p pImgSurface = loadSurface("resources/shadow.png", PixelFormat::A8);
@@ -1802,7 +1809,7 @@ bool shadowLayerTest(CStandardSlot_p pEntry )
 
 //____ stretchBlitTest() ______________________________________________________
 
-bool stretchBlitTest(CStandardSlot_p pEntry)
+bool stretchBlitTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	Surface_p pImgSurface = loadSurface("resources/white_frame_256x256.png", { .format = PixelFormat::BGR_8, .sampleMethod = SampleMethod::Bilinear });
 
@@ -1828,7 +1835,7 @@ bool stretchBlitTest(CStandardSlot_p pEntry)
 
 //____ scrollIntoViewTest() ______________________________________________________
 
-bool scrollIntoViewTest(CStandardSlot_p pEntry)
+bool scrollIntoViewTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pEditor = TextEditor::create();
 
@@ -1850,7 +1857,7 @@ bool scrollIntoViewTest(CStandardSlot_p pEntry)
 
 //____ textClipTest() ______________________________________________________
 
-bool textClipTest(CStandardSlot_p pEntry)
+bool textClipTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen, 10);
 
@@ -1869,7 +1876,7 @@ bool textClipTest(CStandardSlot_p pEntry)
 
 //____ textEditorTest() ______________________________________________________
 
-bool textEditorTest(CStandardSlot_p pEntry)
+bool textEditorTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen, 2);
 
@@ -1887,7 +1894,7 @@ bool textEditorTest(CStandardSlot_p pEntry)
 
 //____ lineEditorTest() ______________________________________________________
 
-bool lineEditorTest(CStandardSlot_p pEntry)
+bool lineEditorTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen, 10);
 
@@ -1906,7 +1913,7 @@ bool lineEditorTest(CStandardSlot_p pEntry)
 
 //____ popupOpenerTest() ______________________________________________________
 
-bool popupOpenerTest(CStandardSlot_p pEntry)
+bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 {
 
 	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black, 2);
@@ -1933,7 +1940,7 @@ bool popupOpenerTest(CStandardSlot_p pEntry)
 
 //____ scrollbarTest() ______________________________________________________
 
-bool scrollbarTest(CStandardSlot_p pEntry)
+bool scrollbarTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black, 5);
 
@@ -1961,7 +1968,7 @@ bool scrollbarTest(CStandardSlot_p pEntry)
 
 //____ modalLayerTest() ______________________________________________________
 
-bool modalLayerTest(CStandardSlot_p pEntry)
+bool modalLayerTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	lineEditorTest(pEntry);
 	Widget_p p = *pEntry;
@@ -1987,7 +1994,7 @@ bool modalLayerTest(CStandardSlot_p pEntry)
 
 //____ splitPanelTest() ______________________________________________________
 
-bool splitPanelTest(CStandardSlot_p pEntry)
+bool splitPanelTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pSplit = SplitPanel::create();
 
@@ -2017,7 +2024,7 @@ bool splitPanelTest(CStandardSlot_p pEntry)
 
 //____ designLayerTest() ______________________________________________________
 
-bool designLayerTest(CStandardSlot_p pSlot)
+bool designLayerTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pDesignOverlay = DesignOverlay::create();
 
@@ -2052,7 +2059,7 @@ bool designLayerTest(CStandardSlot_p pSlot)
 
 //____ pianoKeyboardTest() ____________________________________________________
 
-bool pianoKeyboardTest(CStandardSlot_p pSlot)
+bool pianoKeyboardTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2114,7 +2121,7 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 
 //____ pieKnobTest() ____________________________________________________
 
-bool pieKnobTest(CStandardSlot_p pSlot)
+bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2182,7 +2189,7 @@ bool pieKnobTest(CStandardSlot_p pSlot)
 
 //____ spinKnobTest() ____________________________________________________
 
-bool spinKnobTest(CStandardSlot_p pSlot)
+bool spinKnobTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2226,7 +2233,7 @@ bool spinKnobTest(CStandardSlot_p pSlot)
 
 //____ animKnobTest() ____________________________________________________
 
-bool animKnobTest(CStandardSlot_p pSlot)
+bool animKnobTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2260,7 +2267,7 @@ bool animKnobTest(CStandardSlot_p pSlot)
 
 //____ sliderTest() ____________________________________________________
 
-bool sliderTest(CStandardSlot_p pSlot)
+bool sliderTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2301,7 +2308,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 
 //____ rangeSliderTest() ____________________________________________________
 
-bool rangeSliderTest(CStandardSlot_p pSlot)
+bool rangeSliderTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2346,7 +2353,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 
 //____ canvasStackTest() ____________________________________________________
 
-bool canvasStackTest(CStandardSlot_p pSlot)
+bool canvasStackTest(ComponentPtr<DynamicSlot> pSlot)
 {
 /*
 	auto pBaseLayer = FlexPanel::create();
@@ -2435,7 +2442,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 
 //____ doubleSkinTest() ____________________________________________________
 
-bool doubleSkinTest(CStandardSlot_p pSlot)
+bool doubleSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2464,7 +2471,7 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 
 //____ timerTest() ____________________________________________________
 
-bool timerTest(CStandardSlot_p pSlot)
+bool timerTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2490,7 +2497,7 @@ bool timerTest(CStandardSlot_p pSlot)
 
 //____ animPlayerTest() ____________________________________________________
 
-bool animPlayerTest(CStandardSlot_p pSlot)
+bool animPlayerTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2520,7 +2527,7 @@ bool animPlayerTest(CStandardSlot_p pSlot)
 
 //____ selectBoxTest() ____________________________________________________
 
-bool selectBoxTest(CStandardSlot_p pSlot)
+bool selectBoxTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	PopupOverlay_p pPopupOverlay = PopupOverlay::create();
 
@@ -2560,7 +2567,7 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 
 //____ tileSkinTest() ____________________________________________________
 
-bool tileSkinTest(CStandardSlot_p pSlot)
+bool tileSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
 
 	auto pBaseLayer = FlexPanel::create();
@@ -2592,7 +2599,7 @@ bool tileSkinTest(CStandardSlot_p pSlot)
 
 //____ gradientSkinTest() ____________________________________________________
 
-bool gradientSkinTest(CStandardSlot_p pSlot)
+bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
 
 	auto pBaseLayer = FlexPanel::create();
@@ -2623,7 +2630,7 @@ bool gradientSkinTest(CStandardSlot_p pSlot)
 
 //____ bakeSkinTest() ____________________________________________________
 
-bool bakeSkinTest(CStandardSlot_p pSlot)
+bool bakeSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
 
 	auto pBaseLayer = FlexPanel::create();
@@ -2659,7 +2666,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 
 //____ animSkinTest() ____________________________________________________
 
-bool animSkinTest(CStandardSlot_p pSlot)
+bool animSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
 
 	auto pBaseLayer = FlexPanel::create();
@@ -2694,7 +2701,7 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 //____ renderLayerTest() ____________________________________________________
 
-bool renderLayerTest(CStandardSlot_p pSlot)
+bool renderLayerTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::SlateGrey) );
@@ -2727,7 +2734,7 @@ bool renderLayerTest(CStandardSlot_p pSlot)
 
 //____ rigidPartNinePatchTest() ________________________________________________
 
-bool rigidPartNinePatchTest(CStandardSlot_p pSlot)
+bool rigidPartNinePatchTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2762,7 +2769,7 @@ bool rigidPartNinePatchTest(CStandardSlot_p pSlot)
 
 //____ scrollSkinTest() ________________________________________________
 
-bool scrollSkinTest(CStandardSlot_p pSlot)
+bool scrollSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2796,7 +2803,7 @@ bool scrollSkinTest(CStandardSlot_p pSlot)
 
 TextDisplay_p	s_pTooltip;
 
-bool tooltipLayerTest(CStandardSlot_p pSlot)
+bool tooltipLayerTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pTooltipOverlay = TooltipOverlay::create();
 
@@ -2848,7 +2855,7 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 
 //____ tooltipLayerTest() _____________________________________________________
 
-bool kerningTest(CStandardSlot_p pSlot)
+bool kerningTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2871,7 +2878,7 @@ bool kerningTest(CStandardSlot_p pSlot)
 
 //____ circleSkinTest() ________________________________________________________
 
-bool circleSkinTest(CStandardSlot_p pSlot)
+bool circleSkinTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
@@ -2898,7 +2905,7 @@ bool circleSkinTest(CStandardSlot_p pSlot)
 
 //____ packListTest() ________________________________________________________
 
-bool packListTest(CStandardSlot_p pSlot)
+bool packListTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
@@ -2944,7 +2951,7 @@ bool packListTest(CStandardSlot_p pSlot)
 
 //____ packPanelTest() ________________________________________________________
 
-bool packPanelTest(CStandardSlot_p pSlot)
+bool packPanelTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
@@ -2975,7 +2982,7 @@ bool packPanelTest(CStandardSlot_p pSlot)
 
 //____ memHeapFragmentationTest() ________________________________________________________
 
-bool memHeapFragmentationTest(CStandardSlot_p pSlot)
+bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot)
 {
 	Base::setErrorHandler( [](Error& error)  {
 		
@@ -3051,7 +3058,7 @@ bool memHeapFragmentationTest(CStandardSlot_p pSlot)
 
 //____ glyphAsSurfaceTest() ________________________________________________________
 
-bool glyphAsSurfaceTest(CStandardSlot_p pSlot, Font_p pFont )
+bool glyphAsSurfaceTest(ComponentPtr<DynamicSlot> pSlot, Font_p pFont )
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::Red));
@@ -3221,3 +3228,29 @@ void unitTestMemHeap()
 }
 
 
+//____ blendRGB565BigendianTest() ______________________________________________________
+
+bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pCanvas = CanvasCapsule::create( WGBP(CanvasCapsule,
+															_.pixelFormat = PixelFormat::RGB_565_bigendian ) );
+
+	auto pHSplit = PackPanel::create();
+	pCanvas->slot = pHSplit;
+
+	auto pTextEditor = TextEditor::create( WGBP(TextEditor,
+		_.skin = ColorSkin::create( Color8::Yellow, 5 ) ));
+	pTextEditor->editor.setText("TESTING");
+	pHSplit->slots << pTextEditor;
+
+
+	Surface_p pSplashSurf = loadSurface("resources/splash_opaque.png");
+
+	auto pImage = Image::create( WGBP(Image,
+		_.image = pSplashSurf));
+	pHSplit->slots << pImage;
+
+	*pEntry = pCanvas;
+
+	return true;
+}

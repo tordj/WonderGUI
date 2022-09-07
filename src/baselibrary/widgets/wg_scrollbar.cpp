@@ -129,14 +129,6 @@ namespace wg
 		scrollbar._setState(state);
 	}
 
-
-	//____ _refresh() _______________________________________________________
-
-	void Scrollbar::_refresh( void )
-	{
-		Widget::_refresh();
-	}
-
 	//____ _defaultSize() ___________________________________________________
 
 	SizeSPX Scrollbar::_defaultSize(int scale) const
@@ -214,7 +206,7 @@ namespace wg
 
 	//____ _scrollbarStep() ___________________________________________________
 
-	void Scrollbar::_scrollbarStep(const CScrollbar* pComponent, int dir)
+	void Scrollbar::_scrollbarStep(const Scroller* pComponent, int dir)
 	{
 		spx newViewPos = m_viewPos + m_singleStep * dir;
 		limit(newViewPos, 0, m_contentLen - m_viewLen);
@@ -224,21 +216,21 @@ namespace wg
 
 	//____ _scrollbarPage() ___________________________________________________
 
-	void Scrollbar::_scrollbarPage(const CScrollbar* pComponent, int dir)
+	void Scrollbar::_scrollbarPage(const Scroller* pComponent, int dir)
 	{
 		_setViewPos(m_viewPos + (m_viewLen - m_pageOverlap) * dir);
 	}
 
 	//____ _scrollbarWheel() __________________________________________________
 
-	void Scrollbar::_scrollbarWheel(const CScrollbar* pComponent, int dir)
+	void Scrollbar::_scrollbarWheel(const Scroller* pComponent, int dir)
 	{
 		_setViewPos(m_viewPos + m_wheelRoll * dir);
 	}
 
 	//____ _scrollbarMove() ___________________________________________________
 
-	spx Scrollbar::_scrollbarMove(const CScrollbar* pComponent, spx pos)
+	spx Scrollbar::_scrollbarMove(const Scroller* pComponent, spx pos)
 	{
 		spx viewLen = align(ptsToSpx(m_viewLen, m_scale));
 		spx contentLen = align(ptsToSpx(m_contentLen, m_scale));
@@ -253,7 +245,7 @@ namespace wg
 
 	//____ _scrollbarOfsLenContent() __________________________________________
 
-	std::tuple<spx, spx, spx> Scrollbar::_scrollbarOfsLenContent(const CScrollbar* pComponent)
+	std::tuple<spx, spx, spx> Scrollbar::_scrollbarOfsLenContent(const Scroller* pComponent)
 	{
 		return std::make_tuple(align(ptsToSpx(m_viewPos,m_scale)), align(ptsToSpx(m_viewLen, m_scale)), align(ptsToSpx(m_contentLen, m_scale)) );
 	}

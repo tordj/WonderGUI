@@ -23,7 +23,7 @@
 #include <wg_msg.h>
 #include <wg_key.h>
 #include <wg_widget.h>
-#include <wg_ctexteditor.h>
+#include <wg_editabletext.h>
 #include <wg_dataset.h>
 
 namespace wg
@@ -841,15 +841,15 @@ namespace wg
 
 	const TypeInfo TextEditMsg::TYPEINFO = { "TextEditMsg", &Msg::TYPEINFO };
 
-	CTextEditor_p TextEditMsg::text() const
+	EditableText_p TextEditMsg::text() const
 	{
 		return m_pText;
 	}
 
-	TextEditMsg::TextEditMsg( CTextEditor * pText, bool bFinal )
+	TextEditMsg::TextEditMsg( const EditableText_p& pText, bool bFinal )
 	{
 		m_type 		= MsgType::TextEdit;
-		m_pSource 	= pText->object();
+		m_pSource 	= pText->_widget();
 		m_pText 	= pText;
 		m_bFinal	= bFinal;
 	}

@@ -27,8 +27,8 @@
 
 
 #include <wg_panel.h>
-#include <wg_cslot.h>
-#include <wg_cslotarray.h>
+#include <wg_slot.h>
+#include <wg_slotarray.h>
 
 
 namespace wg
@@ -50,7 +50,7 @@ namespace wg
 		class Slot : public DynamicSlot
 		{
 			friend class SplitPanel;
-			template<class S, int X> friend class CSlotArray;
+			template<class S, int X> friend class SlotArray;
 
 		public:
 
@@ -75,35 +75,13 @@ namespace wg
 			RectSPX	m_geo;
 		};
 
-
-		//____ CSlots ________________________________________________________
-
-		class CSlots;
-		typedef	StrongComponentPtr<CSlots>	CSlots_p;
-		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
-
-		class CSlots : public CSlotArray<Slot, 2>
-		{
-			friend class SplitPanel;
-		public:
-
-			//.____ Misc __________________________________________________________
-
-			inline CSlots_p	ptr() { return CSlots_p(this); }
-
-		protected:
-
-			CSlots(SlotHolder * pHolder) : CSlotArray(pHolder) {}
-		};
-
-
 		//.____ Creation __________________________________________
 
 		static SplitPanel_p	create() { return SplitPanel_p(new SplitPanel()); }
 
 		//.____ Components _______________________________________
 
-		CSlots			slots;
+		SlotArray<Slot, 2>		slots;
 
 		//.____ Identification __________________________________________
 
@@ -155,7 +133,6 @@ namespace wg
 
 		void		_resize(const SizeSPX& size, int scale = -1) override;
 		void		_setState(State state) override;
-		void		_refresh() override;
 		void		_receive(Msg * pMsg) override;
 
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

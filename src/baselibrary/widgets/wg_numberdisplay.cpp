@@ -66,15 +66,6 @@ namespace wg
 		return m_skin.sizeForContent(size, scale);
 	}
 
-
-	//____ _refresh() ____________________________________________________________
-
-	void NumberDisplay::_refresh( void )
-	{
-		display._refresh();
-		Widget::_refresh();
-	}
-
 	//____ _render() _____________________________________________________________
 
 	void NumberDisplay::_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window )

@@ -26,7 +26,7 @@
 
 
 #include <wg_panel.h>
-#include <wg_cdynamicslotvector.h>
+#include <wg_dynamicslotvector.h>
 #include <wg_slotextras.h>
 
 namespace wg
@@ -50,7 +50,7 @@ namespace wg
 		{
 			friend class LambdaPanel;
 			friend class CSlots;
-			friend class CDynamicSlotVector<Slot>;
+			friend class DynamicSlotVector<Slot>;
 
 		public:
 
@@ -96,7 +96,7 @@ namespace wg
 
 		//____ CSlots ________________________________________________________
 
-		class CSlots : public CDynamicSlotVector<Slot>,
+		class CSlots : public DynamicSlotVector<Slot>,
 			public HideableSlotCollectionMethods<Slot, iterator, LambdaPanel>
 
 		{
@@ -112,21 +112,17 @@ namespace wg
 			iterator	insert(int index, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func);
 			iterator	insert(iterator pos, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func);
 
-			//.____ Misc __________________________________________________________
-
-			inline CSlots_p	ptr() { return CSlots_p(this); }
-
 		protected:
 
-			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
+			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
 
-			LambdaPanel *	_holder() { return static_cast<LambdaPanel*>(CDynamicSlotVector<Slot>::_holder()); }
-			const LambdaPanel *	_holder() const { return static_cast<const LambdaPanel*>(CDynamicSlotVector<Slot>::_holder()); }
+			LambdaPanel *	_holder() { return static_cast<LambdaPanel*>(DynamicSlotVector<Slot>::_holder()); }
+			const LambdaPanel *	_holder() const { return static_cast<const LambdaPanel*>(DynamicSlotVector<Slot>::_holder()); }
 
-			inline Slot* _slot(int index) override { return CDynamicSlotVector::_slot(index); }
-			inline const Slot* _slot(int index) const { return CDynamicSlotVector::_slot(index); }
+			inline Slot* _slot(int index) override { return DynamicSlotVector::_slot(index); }
+			inline const Slot* _slot(int index) const { return DynamicSlotVector::_slot(index); }
 
-			inline int _size() const override { return CDynamicSlotVector<Slot>::size(); }
+			inline int _size() const override { return DynamicSlotVector<Slot>::size(); }
 		};
 
 		friend class Slot;

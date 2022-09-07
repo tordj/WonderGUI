@@ -41,7 +41,7 @@ namespace wg
 	class Layer;
 	class MsgRouter;
 	class SlotHolder;
-    class WidgetComponent;
+    class Component;
 
 	class Widget;
 	typedef	StrongPtr<Widget>	Widget_p;
@@ -84,14 +84,14 @@ namespace wg
 	class Widget : public Receiver, protected SkinSlot::Holder
 	{
 		friend class Container;
-		friend class WidgetComponent;
+		friend class Component;
 		friend class StaticSlot;
 		friend class DynamicSlot;
 		friend class Base;
 
-		template<class S> friend class CStaticSlotVector;
-		template<class S> friend class CDynamicSlotVector;
-		template<class S, int X> friend class CSlotArray;
+		template<class S> friend class StaticSlotVector;
+		template<class S> friend class DynamicSlotVector;
+		template<class S, int X> friend class SlotArray;
 
 	public:
 
@@ -194,8 +194,6 @@ namespace wg
 		bool				markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg ) override final;
 
-		inline void			refresh();
-
 		inline bool			isOpaque() const;
 
 		void				setBaggage(Object * pBaggage);
@@ -236,7 +234,6 @@ namespace wg
 		virtual void    	_preRender();
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window);
 
-		virtual void		_refresh();
 		virtual void		_resize(const SizeSPX& size, int scale = -1);
 		virtual void		_setState(State state);
 
@@ -315,22 +312,22 @@ namespace wg
 
 		// Methods for components to access
 
-		virtual State		_componentState(const WidgetComponent* pComponent) const;
-		virtual CoordSPX	_componentPos( const WidgetComponent * pComponent ) const;
-		virtual SizeSPX		_componentSize( const WidgetComponent * pComponent ) const;
-		virtual RectSPX		_componentGeo( const WidgetComponent * pComponent ) const;
-		virtual CoordSPX	_globalComponentPos( const WidgetComponent * pComponent ) const;
-		virtual RectSPX		_globalComponentGeo( const WidgetComponent * pComponent ) const;
+		virtual State		_componentState(const Component* pComponent) const;
+		virtual CoordSPX	_componentPos( const Component * pComponent ) const;
+		virtual SizeSPX		_componentSize( const Component * pComponent ) const;
+		virtual RectSPX		_componentGeo( const Component * pComponent ) const;
+		virtual CoordSPX	_globalComponentPos( const Component * pComponent ) const;
+		virtual RectSPX		_globalComponentGeo( const Component * pComponent ) const;
 
-		virtual void		_componentRequestRender( const WidgetComponent * pComponent );
-		virtual void		_componentRequestRender( const WidgetComponent * pComponent, const RectSPX& rect );
-		virtual void		_componentRequestResize( const WidgetComponent * pComponent );
+		virtual void		_componentRequestRender( const Component * pComponent );
+		virtual void		_componentRequestRender( const Component * pComponent, const RectSPX& rect );
+		virtual void		_componentRequestResize( const Component * pComponent );
 
-		virtual void		_componentRequestFocus( const WidgetComponent * pComponent );
-		virtual void		_componentRequestInView( const WidgetComponent * pComponent );
-		virtual void		_componentRequestInView( const WidgetComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave );
+		virtual void		_componentRequestFocus( const Component * pComponent );
+		virtual void		_componentRequestInView( const Component * pComponent );
+		virtual void		_componentRequestInView( const Component * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave );
 
-		virtual void		_receiveComponentNotif( WidgetComponent * pComponent, ComponentNotif notification, int value, void * pData );
+		virtual void		_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData );
 
 		// Methods for skin to access
 
@@ -1032,13 +1029,6 @@ namespace wg
 	bool Widget::isDropTarget() const 
 	{ 
 		return m_bDropTarget; 
-	}
-
-	//____ refresh() __________________________________________________________
-
-	void Widget::refresh() 
-	{ 
-		_refresh(); 
 	}
 
 	//____ isOpaque() _________________________________________________________

@@ -154,7 +154,7 @@ namespace wg
 			}
 
 			SizeI pixelSize = align(m_size) / 64;
-			m_pCanvas = pFactory->createSurface(m_size, m_canvasFormat, SurfaceFlag::Canvas);
+			m_pCanvas = pFactory->createSurface(pixelSize, m_canvasFormat, SurfaceFlag::Canvas);
 			m_patches.clear();
 			m_patches.add(m_size);
 		}

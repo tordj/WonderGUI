@@ -252,17 +252,5 @@ namespace wg
 		delete[] pOldBuffer;
 	}
 
-	//____ _object() __________________________________________________________
-
-	Object * GfxStreamBuffer::_object()
-	{
-		return this;
-	}
-
-	const Object * GfxStreamBuffer::_object() const
-	{
-		return this;
-	}
-
 
 } // namespace wg

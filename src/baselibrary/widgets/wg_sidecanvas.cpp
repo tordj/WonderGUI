@@ -103,13 +103,6 @@ namespace wg
 		m_pHolder->_sideCanvasRender(this,pDevice,canvas,window);
 	}
 
-	//____ _refresh() _________________________________________________________________
-
-	void SideCanvas::_refresh()
-	{
-		m_pHolder->_sideCanvasRefresh(this);
-	}
-	
 	//____ _resize() _________________________________________________________________
 	
 	void SideCanvas::_resize( const SizeSPX& size, int scale )
@@ -178,13 +171,6 @@ namespace wg
 	void SideCanvas::Holder::_sideCanvasMaskPatches( SideCanvas * pCanvas, PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		return pCanvas->Widget::_maskPatches(patches,geo,clip,blendMode);
-	}
-
-	//____ _Holder::_sideCanvasRefresh() ____________________________________________
-
-	void SideCanvas::Holder::_sideCanvasRefresh( SideCanvas * pCanvas)
-	{
-		return pCanvas->Widget::_refresh();
 	}
 
 	//____ _Holder::_sideCanvasSetSkin() ____________________________________________

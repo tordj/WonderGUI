@@ -31,7 +31,7 @@
 #include <wg_numberdisplay.h>
 #include <wg_textdisplay.h>
 
-#include <wg_cstaticslotvector.impl.h>
+#include <wg_staticslotvector.impl.h>
 
 #include <string>
 
@@ -39,7 +39,7 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CStaticSlotVector<DesignOverlay::ToolboxSlot>;
+	template class StaticSlotVector<DesignOverlay::ToolboxSlot>;
 
 	const TypeInfo DesignOverlay::TYPEINFO = { "DesignOverlay", &Overlay::TYPEINFO };
 	const TypeInfo DesignOverlay::ToolboxSlot::TYPEINFO = { "DesignOverlay::ToolboxSlot", &Overlay::Slot::TYPEINFO };

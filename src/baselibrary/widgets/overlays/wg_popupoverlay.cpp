@@ -27,14 +27,14 @@
 #include <wg_panel.h>
 #include <wg_base.h>
 #include <wg_inputhandler.h>
-#include <wg_cstaticslotvector.impl.h>
+#include <wg_staticslotvector.impl.h>
 
 #include <algorithm>
 
 namespace wg
 {
 	using namespace Util;
-	template class CStaticSlotVector<PopupOverlay::Slot>;
+	template class StaticSlotVector<PopupOverlay::Slot>;
 
 	const TypeInfo PopupOverlay::TYPEINFO = { "PopupOverlay", &Overlay::TYPEINFO };
 	const TypeInfo PopupOverlay::Slot::TYPEINFO = { "PopupOverlay::Slot", &Overlay::Slot::TYPEINFO };

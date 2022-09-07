@@ -26,8 +26,8 @@
 #include <functional>
 
 #include <wg_list.h>
-#include <wg_ccolumnheader.h>
-#include <wg_cdynamicslotvector.h>
+#include <wg_columnheader.h>
+#include <wg_dynamicslotvector.h>
 #include <wg_slotextras.h>
 
 
@@ -63,7 +63,7 @@ namespace wg
 			friend class CSlots;
 			friend class PackList;
 			template<class S> friend class SlotVector;
-			friend class CDynamicSlotVector<Slot>;
+			friend class DynamicSlotVector<Slot>;
 
 		public:
 
@@ -103,15 +103,11 @@ namespace wg
 		typedef	StrongComponentPtr<CSlots>	CSlots_p;
 		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
 
-		class CSlots : public CDynamicSlotVector<Slot>,
+		class CSlots : public DynamicSlotVector<Slot>,
 			 public SelectableSlotCollectionMethods< PackList::Slot, iterator, PackList >
 		{
 			friend class PackList;
 		public:
-
-			//.____ Misc __________________________________________________________
-
-			inline CSlots_p	ptr() { return CSlots_p(this); }
 
 			//.____ Content _______________________________________________________
 
@@ -125,16 +121,16 @@ namespace wg
 
 			//____ Holder _________________________________________________________
 
-			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
+			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
 
 
-			inline const PackList *	_holder() const { return static_cast<const PackList*>(CDynamicSlotVector<Slot>::_holder()); }
-			inline PackList *		_holder() { return static_cast<PackList*>(CDynamicSlotVector<Slot>::_holder()); }
+			inline const PackList *	_holder() const { return static_cast<const PackList*>(DynamicSlotVector<Slot>::_holder()); }
+			inline PackList *		_holder() { return static_cast<PackList*>(DynamicSlotVector<Slot>::_holder()); }
 
-			inline Slot* _slot(int index) override { return CDynamicSlotVector::_slot(index); }
-			inline const Slot* _slot(int index) const { return CDynamicSlotVector::_slot(index); }
+			inline Slot* _slot(int index) override { return DynamicSlotVector::_slot(index); }
+			inline const Slot* _slot(int index) const { return DynamicSlotVector::_slot(index); }
 
-			inline int _size() const override {	return CDynamicSlotVector<Slot>::size(); }
+			inline int _size() const override {	return DynamicSlotVector<Slot>::size(); }
 
 		};
 
@@ -147,7 +143,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CColumnHeader		header;
+		ColumnHeader		header;
 		CSlots	slots;
 
 		//.____ Identification __________________________________________
@@ -190,7 +186,6 @@ namespace wg
 		void			_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void			_resize( const SizeSPX& size, int scale = -1) override;
-		void			_refresh() override;
 
 		void			_receive( Msg * pMsg ) override;
 		SizeSPX			_windowPadding() const override;
@@ -243,13 +238,13 @@ namespace wg
 		void			_unselectSlots(StaticSlot * pSlot, int nb);
 
 
-		// Overloaded from WidgetComponent::Holder
+		// Overloaded from Component::Holder
 
-		CoordSPX		_componentPos(const WidgetComponent * pComponent) const override;
-		SizeSPX			_componentSize(const WidgetComponent * pComponent) const override;
-		RectSPX			_componentGeo(const WidgetComponent * pComponent) const override;
+		CoordSPX		_componentPos(const Component * pComponent) const override;
+		SizeSPX			_componentSize(const Component * pComponent) const override;
+		RectSPX			_componentGeo(const Component * pComponent) const override;
 
-		void			_receiveComponentNotif(WidgetComponent * pComponent, ComponentNotif notification, int value, void * pData) override;
+		void			_receiveComponentNotif(Component * pComponent, ComponentNotif notification, int value, void * pData) override;
 
 
 		// Internal
@@ -280,7 +275,7 @@ namespace wg
 		void			_addToContentDefaultSize(spx length, spx breadth);
 		void			_subFromContentDefaultSize(spx length, spx breadth);
 
-		class ColumnHeaderAccess : public CColumnHeader { friend class PackList; };
+		class ColumnHeaderAccess : public ColumnHeader { friend class PackList; };
 		const ColumnHeaderAccess& _header() const { return static_cast<const ColumnHeaderAccess&>(header); }
 		ColumnHeaderAccess& _header() { return static_cast<ColumnHeaderAccess&>(header); }
 

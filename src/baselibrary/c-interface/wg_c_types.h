@@ -32,9 +32,17 @@ extern "C" {
 
 typedef void* wg_obj;
 
-typedef void* wg_component;
 
 typedef	void(*wg_finalizer_func)(wg_obj);
+
+//____ wg_component __________________________________________________________
+
+typedef struct wg_component_struct
+{
+	wg_obj object;
+	void* interface;
+} wg_component;
+
 
 
 //____ wg_typeInfo ___________________________________________________________

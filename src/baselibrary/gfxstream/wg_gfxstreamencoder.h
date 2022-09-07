@@ -26,7 +26,8 @@
 
 #include <cstring>
 
-#include <wg_cgfxstreamsink.h>
+#include <wg_gfxstreamsink.h>
+#include <wg_componentptr.h>
 #include <wg_types.h>
 #include <wg_geo.h>
 #include <wg_color.h>
@@ -46,7 +47,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamEncoder_p	create( CGfxStreamSink* pStream, int bufferBytes = GfxStream::c_maxBlockSize*2 ) { return GfxStreamEncoder_p(new GfxStreamEncoder(pStream, bufferBytes)); }
+		static GfxStreamEncoder_p	create( const GfxStreamSink_p& pStream, int bufferBytes = GfxStream::c_maxBlockSize*2 ) { return GfxStreamEncoder_p(new GfxStreamEncoder(pStream, bufferBytes)); }
 
 		//.____ Identification __________________________________________
 
@@ -55,7 +56,7 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		void		setStream(CGfxStreamSink* pStream);
+		void		setStream(const GfxStreamSink_p& pStream);
 
 		void		setDefaultPixelFormat(PixelFormat pixelFormat);
 		inline PixelFormat defaultPixelFormat() const { return m_defaultPixelFormat; }
@@ -112,7 +113,7 @@ namespace wg
 
 
 	protected:
-		GfxStreamEncoder( CGfxStreamSink* pStream, int bufferBytes );
+		GfxStreamEncoder( const GfxStreamSink_p& pStream, int bufferBytes );
 		~GfxStreamEncoder();
 
 		inline void	_reserveStream(int bytes);
@@ -136,7 +137,7 @@ namespace wg
 		int			m_capacity = 0;
 		int			m_size = 0;
 
-		CGfxStreamSink_p	m_pStream;
+		ComponentPtr<GfxStreamSink>	m_pStream;
 	};
 
 	//____ _reserveStream() ________________________________________________________

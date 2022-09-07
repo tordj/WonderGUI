@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_overlay.h>
-#include <wg_cstaticslotvector.h>
+#include <wg_staticslotvector.h>
 #include <wg_packpanel.h>
 
 namespace wg
@@ -49,7 +49,7 @@ namespace wg
 		{
 			friend class DesignOverlay;
 			friend class CDesignToolboxSlotVector;
-			template<class S> friend class CStaticSlotVector;
+			template<class S> friend class StaticSlotVector;
 			template<class S> friend class SlotVector;
 
 		public:
@@ -74,11 +74,11 @@ namespace wg
 
 		//____ CToolboxVector _________________________________________________
 
-		class CToolboxVector : public CStaticSlotVector<ToolboxSlot>
+		class CToolboxVector : public StaticSlotVector<ToolboxSlot>
 		{
 			friend class DesignOverlay;
 
-			CToolboxVector(SlotHolder * pHolder) : CStaticSlotVector<ToolboxSlot>(pHolder) {}
+			CToolboxVector(SlotHolder * pHolder) : StaticSlotVector<ToolboxSlot>(pHolder) {}
 		};
 
 

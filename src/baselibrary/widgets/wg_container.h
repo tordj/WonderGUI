@@ -86,8 +86,6 @@ namespace wg
 
 			Container *				_container() override;
 			RootPanel *				_root() override;
-			Object *				_object() override;
-			const Object *			_object() const override;
 			virtual int				_scale() const override;									///< Default scale value for all children.
 
 			virtual CoordSPX		_childPos( const StaticSlot * pSlot ) const override = 0;				///< Get the local position of a child.

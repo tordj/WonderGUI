@@ -25,14 +25,14 @@
 #include <wg_util.h>
 #include <wg_patches.h>
 
-#include <wg_cdynamicslotvector.impl.h>
+#include <wg_dynamicslotvector.impl.h>
 #include <wg_slotextras.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
-	template class CDynamicSlotVector<StackPanel::Slot>;
+	template class DynamicSlotVector<StackPanel::Slot>;
 	template class PaddedSlotCollectionMethods<StackPanel::Slot,StackPanel::iterator,StackPanel>;
 	template class HideableSlotCollectionMethods<StackPanel::Slot, StackPanel::iterator, StackPanel>;
 

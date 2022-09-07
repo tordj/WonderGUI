@@ -27,7 +27,7 @@
 #include <wg_base.h>
 #include <wg_gfxdevice.h>
 
-#include <wg_cdynamicslotvector.impl.h>
+#include <wg_dynamicslotvector.impl.h>
 #include <wg_slotextras.impl.h>
 
 namespace wg
@@ -35,7 +35,7 @@ namespace wg
 	using namespace Util;
 
 	template class SelectableSlotCollectionMethods<PackList::Slot, PackList::iterator, PackList>;
-	template class CDynamicSlotVector<PackList::Slot>;
+	template class DynamicSlotVector<PackList::Slot>;
 
 	const TypeInfo PackList::TYPEINFO = { "PackList", &List::TYPEINFO };
 	const TypeInfo PackList::Slot::TYPEINFO = { "PackList::Slot", &List::Slot::TYPEINFO };
@@ -488,15 +488,6 @@ namespace wg
 		}
 
 		_requestRender();
-	}
-
-	//____ _refresh() ___________________________________________________________
-
-	void PackList::_refresh()
-	{
-		_refreshHeader();
-		_refreshList();
-		Widget::_refresh();
 	}
 
 	//____ _calcDefaultSize() __________________________________________________
@@ -1568,7 +1559,7 @@ namespace wg
 
 	//____ _componentPos() ____________________________________________________________
 
-	CoordSPX PackList::_componentPos( const WidgetComponent * pComponent ) const
+	CoordSPX PackList::_componentPos( const Component * pComponent ) const
 	{
 		CoordSPX c = m_bHorizontal ? CoordSPX(_windowSection().x, 0 ) : CoordSPX(0, _windowSection().y );
 		return c;
@@ -1576,21 +1567,21 @@ namespace wg
 
 	//____ _componentSize() _________________________________________________________
 
-	SizeSPX PackList::_componentSize( const WidgetComponent * pComponent ) const
+	SizeSPX PackList::_componentSize( const Component * pComponent ) const
 	{
 		return _header()._size();		// We store size internally in the _header().
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
-	RectSPX PackList::_componentGeo( const WidgetComponent * pComponent ) const
+	RectSPX PackList::_componentGeo( const Component * pComponent ) const
 	{
 		return RectSPX( _componentPos(pComponent), _header()._size() );
 	}
 
 	//____ _receiveComponentNotif() _____________________________________________________
 
-	void PackList::_receiveComponentNotif( WidgetComponent * pComponent, ComponentNotif notification, int value, void * pData )
+	void PackList::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )
 	{
 		if( notification == ComponentNotif::SortOrderChanged )
 		{

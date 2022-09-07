@@ -29,7 +29,7 @@
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
 #include <wg_gfxdevice.h>
-#include <wg_cstandardslot.h>
+#include <wg_slot.h>
 
 namespace wg
 {
@@ -69,7 +69,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		CStandardSlot		slot;
+		DynamicSlot			slot;
 
 		//.____ Identification __________________________________________
 
@@ -154,8 +154,6 @@ namespace wg
 
 		Container *  	_container() override;
 		RootPanel *		_root() override;
-		Object *		_object() override;
-		const Object *	_object() const override;
 		int				_scale() const override;
 
 		CoordSPX		_childPos( const StaticSlot * pSlot ) const override;

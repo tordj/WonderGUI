@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_overlay.h>
-#include <wg_cslot.h>
+#include <wg_slot.h>
 
 namespace wg
 {

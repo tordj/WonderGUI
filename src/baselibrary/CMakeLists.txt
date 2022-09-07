@@ -11,6 +11,8 @@ source_group(Skins/Misc REGULAR_EXPRESSION "skins/misc//*")
 source_group(Skins/State REGULAR_EXPRESSION "skins/state//*")
 source_group(Skins/Static REGULAR_EXPRESSION "skins/static//*")
 
+source_group(Slots REGULAR_EXPRESSION "slots//*")
+
 source_group(GfxStream REGULAR_EXPRESSION "gfxstream//*")
 source_group(TextLayouts REGULAR_EXPRESSION "textlayouts//*")
 source_group(NumberLayouts REGULAR_EXPRESSION "numberlayouts//*")
@@ -24,6 +26,8 @@ source_group(Widgets/Panels REGULAR_EXPRESSION "widgets/panels//*")
 
 add_library( wondergui
 			
+	base/wg_animframes.cpp
+	base/wg_animframes.h
 	base/wg_base.cpp
 	base/wg_base.h
 	base/wg_bitmapcache.cpp
@@ -47,12 +51,14 @@ add_library( wondergui
 	base/wg_codepages.h
 	base/wg_color.cpp
 	base/wg_color.h
+	base/wg_componentptr.h
 	base/wg_context.cpp
 	base/wg_context.h
 	base/wg_dataset.cpp
 	base/wg_dataset.h
 	base/wg_dummyfont.cpp
 	base/wg_dummyfont.h
+	base/wg_dynamicvector.h
 	base/wg_enumextras.cpp
 	base/wg_enumextras.h
 	base/wg_font.cpp
@@ -100,17 +106,11 @@ add_library( wondergui
 	base/wg_skinslotmanager.h
 	base/wg_skinslotmi.cpp
 	base/wg_skinslotmi.h
-	base/wg_slot.cpp
-	base/wg_slot.h
-	base/wg_slotextras.h
-	base/wg_slotextras.impl.h	
-	base/wg_slotholder.h
-	base/wg_slotiterator.h
 	base/wg_state.cpp
 	base/wg_state.h
+	base/wg_staticvector.h
 	base/wg_string.cpp
 	base/wg_string.h
-	base/wg_strongcomponentptr.h
 	base/wg_strongptr.h
 	base/wg_surface.cpp
 	base/wg_surface.h
@@ -129,7 +129,6 @@ add_library( wondergui
 	base/wg_types.h
 	base/wg_util.cpp
 	base/wg_util.h
-	base/wg_weakcomponentptr.h
 	base/wg_weakptr.h
 
 
@@ -147,8 +146,6 @@ add_library( wondergui
 	c-interface/wg_c_canvaslayers.h
 	c-interface/wg_c_color.cpp
 	c-interface/wg_c_color.h
-	c-interface/wg_c_component.cpp
-	c-interface/wg_c_component.h
 	c-interface/wg_c_font.cpp
 	c-interface/wg_c_font.h		
 	c-interface/wg_c_geo.cpp
@@ -183,53 +180,55 @@ add_library( wondergui
 	c-interface/wg_c_types.cpp
 
 
-	components/wg_canimframes.cpp
-	components/wg_canimframes.h
-	components/wg_ccolumnheader.cpp
-	components/wg_ccolumnheader.h
-	components/wg_cdynamicslotcollection.cpp
-	components/wg_cdynamicslotcollection.h
-	components/wg_cdynamicslotvector.h
-	components/wg_cdynamicslotvector.impl.h
-	components/wg_cdynamicvector.h
-	components/wg_cdynamicvector.impl.h
-	components/wg_cgfxstreamsource.cpp
-	components/wg_cgfxstreamsource.h
-	components/wg_cgfxstreamsink.cpp
-	components/wg_cgfxstreamsink.h
-	components/wg_cicondisplay.cpp
-	components/wg_cicondisplay.h
-	components/wg_cnumberdisplay.cpp
-	components/wg_cnumberdisplay.h
-	components/wg_cnumbereditor.cpp
-	components/wg_cnumbereditor.h
+	components/wg_columnheader.cpp
+	components/wg_columnheader.h
+	components/wg_editablenumber.cpp
+	components/wg_editablenumber.h
+	components/wg_editabletext.cpp
+	components/wg_editabletext.h
+	components/wg_icon.cpp
+	components/wg_icon.h
+	components/wg_number.cpp
+	components/wg_number.h
+	components/wg_scroller.cpp
+	components/wg_scroller.h
+	components/wg_staticnumber.cpp
+	components/wg_staticnumber.h
+	components/wg_statictext.cpp
+	components/wg_statictext.h
+	components/wg_text.cpp
+	components/wg_text.h
+	components/wg_textbase.cpp
+	components/wg_textbase.h
 	components/wg_component.cpp
 	components/wg_component.h
-	components/wg_cscrollbar.cpp
-	components/wg_cscrollbar.h
-	components/wg_cslot.cpp
-	components/wg_cslot.h
-	components/wg_cslotarray.h
-	components/wg_cstandardslot.cpp
-	components/wg_cstandardslot.h
-	components/wg_cstaticslotcollection.cpp
-	components/wg_cstaticslotcollection.h
-	components/wg_cstaticslotvector.h
-	components/wg_cstaticslotvector.impl.h
-	components/wg_cstatictextdisplay.cpp
-	components/wg_cstatictextdisplay.h
-	components/wg_cstaticnumberdisplay.cpp
-	components/wg_cstaticnumberdisplay.h
-	components/wg_cstaticvector.h
-	components/wg_cstaticvector.impl.h
-	components/wg_ctext.cpp
-	components/wg_ctext.h
-	components/wg_ctextdisplay.cpp
-	components/wg_ctextdisplay.h
-	components/wg_ctexteditor.cpp
-	components/wg_ctexteditor.h
-	components/wg_widgetcomponent.cpp
-	components/wg_widgetcomponent.h
+
+	gfxstream/wg_gfxstream.h
+	gfxstream/wg_gfxstreambuffer.cpp
+	gfxstream/wg_gfxstreambuffer.h
+	gfxstream/wg_gfxstreamdecoder.cpp
+	gfxstream/wg_gfxstreamdecoder.h
+	gfxstream/wg_gfxstreamencoder.cpp
+	gfxstream/wg_gfxstreamencoder.h
+	gfxstream/wg_gfxstreamlogger.cpp
+	gfxstream/wg_gfxstreamlogger.h
+	gfxstream/wg_gfxstreamplayer.cpp
+	gfxstream/wg_gfxstreamplayer.h
+	gfxstream/wg_gfxstreampump.cpp
+	gfxstream/wg_gfxstreampump.h
+	gfxstream/wg_gfxstreamreader.cpp
+	gfxstream/wg_gfxstreamreader.h
+	gfxstream/wg_gfxstreamsink.h
+	gfxstream/wg_gfxstreamsource.h
+	gfxstream/wg_gfxstreamsplitter.cpp
+	gfxstream/wg_gfxstreamsplitter.h
+	gfxstream/wg_gfxstreamwriter.cpp
+	gfxstream/wg_gfxstreamwriter.h
+
+	numberlayouts/wg_basicnumberlayout.cpp
+	numberlayouts/wg_basicnumberlayout.h
+	numberlayouts/wg_numberlayout.cpp
+	numberlayouts/wg_numberlayout.h
 
 	sizebrokers/wg_scalepreferred_sizebroker.cpp
 	sizebrokers/wg_scalepreferred_sizebroker.h
@@ -284,36 +283,25 @@ add_library( wondergui
 	skins/static/wg_statictileskin.cpp
 	skins/static/wg_statictileskin.h
 
-	gfxstream/wg_gfxstream.h
-	gfxstream/wg_gfxstreambuffer.cpp
-	gfxstream/wg_gfxstreambuffer.h
-	gfxstream/wg_gfxstreamdecoder.cpp
-	gfxstream/wg_gfxstreamdecoder.h
-	gfxstream/wg_gfxstreamencoder.cpp
-	gfxstream/wg_gfxstreamencoder.h
-	gfxstream/wg_gfxstreamlogger.cpp
-	gfxstream/wg_gfxstreamlogger.h
-	gfxstream/wg_gfxstreamplayer.cpp
-	gfxstream/wg_gfxstreamplayer.h
-	gfxstream/wg_gfxstreampump.cpp
-	gfxstream/wg_gfxstreampump.h
-	gfxstream/wg_gfxstreamreader.cpp
-	gfxstream/wg_gfxstreamreader.h
-	gfxstream/wg_gfxstreamsplitter.cpp
-	gfxstream/wg_gfxstreamsplitter.h
-	gfxstream/wg_gfxstreamwriter.cpp
-	gfxstream/wg_gfxstreamwriter.h
+	slots/wg_slot.cpp
+	slots/wg_slot.h
+	slots/wg_slotextras.impl.h
+	slots/wg_slotextras.h
+	slots/wg_slotholder.h
+	slots/wg_slotiterator.h
+	slots/wg_dynamicslotcollection.h
+	slots/wg_dynamicslotvector.h
+	slots/wg_dynamicslotvector.impl.h
+	slots/wg_slotarray.h
+	slots/wg_staticslotcollection.h
+	slots/wg_staticslotvector.h
+	slots/wg_staticslotvector.impl.h
 
 
 	textlayouts/wg_basictextlayout.cpp
 	textlayouts/wg_basictextlayout.h
 	textlayouts/wg_textlayout.cpp
 	textlayouts/wg_textlayout.h
-
-	numberlayouts/wg_basicnumberlayout.cpp
-	numberlayouts/wg_basicnumberlayout.h
-	numberlayouts/wg_numberlayout.cpp
-	numberlayouts/wg_numberlayout.h
 
 	widgets/wg_animplayer.cpp
 	widgets/wg_animplayer.h

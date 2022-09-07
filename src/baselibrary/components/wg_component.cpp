@@ -21,59 +21,9 @@
 =========================================================================*/
 
 #include <wg_component.h>
-#include <wg_strongcomponentptr.h>
 
 namespace wg
 {
 
-	const TypeInfo	Component::TYPEINFO = { "Component", nullptr };
 
-	//____ typeInfo() _________________________________________________________
-
-	const TypeInfo& Component::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
-
-
-	//____ isInstanceOf() _____________________________________________________
-
-	bool Component::isInstanceOf(const TypeInfo& _typeInfo) const
-	{
-		const TypeInfo* p = &typeInfo();
-
-		while (p != nullptr)
-		{
-			if (p == &_typeInfo)
-				return true;
-			p = _typeInfo.pSuperClass;
-		}
-		return false;
-	}
-
-	//____ ptr() ______________________________________________________________
-
-	/** @brief Get a pointer to this interface.
-	 *
-	 *
-	 */
-
-	Component_p	Component::ptr()
-	{
-		return Component_p(this);
-	}
-
-	//____ object() _______________________________________________________________
-
-	/** @brief Get a pointer to the object providing this interface.
-	 *
-	 *
-	 */
-
-	Object_p Component::object()
-	{
-		return Object_p( _object() );
-	};
-
-
-}
+} // namespace wg

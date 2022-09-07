@@ -19,70 +19,49 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_COMPONENT_DOT_H
-#define WG_COMPONENT_DOT_H
+
+#ifndef	WG_COMPONENT_DOT_H
+#define	WG_COMPONENT_DOT_H
 #pragma once
 
-#include <wg_types.h>
+#include <wg_widget.h>
 
 namespace wg
 {
-	class Component;
-	template<class T> class StrongComponentPtr;
-	typedef StrongComponentPtr<Component>	Component_p;
 
-	template<class T> class WeakComponentPtr;
-	typedef WeakComponentPtr<Component>		Component_wp;
+	//____ Component _________________________________________________________________
 
-	class Object;
-	template<class T> class StrongPtr;
-	typedef StrongPtr<Object>				Object_p;
-
-	struct TypeInfo;
-
-	/**
-	 * @brief Provides access to a component of a widget or object.
-	 *
-	 * Interfaces are provided by Widgets and other reference counted Objects
-	 * to provide API access to their embedded components such as labels and
-	 * icons.
-	 *
-	 * The interface concept of WonderGUI serves two purposes:
-	 *
-	 * First it
-	 * provides a nice API-level abstraction to keep methods for accessing
-	 * different components of a widget logically separated while providing
-	 * an identical way to access same type of component in all widgets that
-	 * contains them.
-	 *
-	 * Secondly it provides a safe way to pass around pointers to the embedded
-	 * components since interface pointers do reference counting on the object.
-	 *
-	 **/
-
-	class Component
+	class Component	/** @private */
 	{
-		template<class T> friend class StrongComponentPtr;
-		template<class T> friend class WeakComponentPtr;
 	public:
 
-		//.____ Identification _________________________________________________
+		Component( Widget * pWidget ) : m_pWidget(pWidget) {}
 
-		virtual const TypeInfo& typeInfo(void) const;
-		const static TypeInfo	TYPEINFO;
+		//.____ Internal _______________________________________________________
 
-		bool		isInstanceOf(const TypeInfo& typeInfo) const;
+		inline CoordSPX	_pos() const { return m_pWidget->_componentPos(this); }
+		inline int		_scale() const { return m_pWidget->_scale(); }
+		inline SizeSPX	_size() const { return m_pWidget->_componentSize(this); }
+		inline RectSPX	_geo() const { return m_pWidget->_componentGeo(this); }
+		inline CoordSPX	_globalPos() const { return m_pWidget->_globalComponentPos(this); }
+		inline RectSPX	_globalGeo() const { return m_pWidget->_globalComponentGeo(this); }
+		inline Widget* _widget() const { return m_pWidget;  }
 
-		//.____ Misc __________________________________________________
-
-		Component_p				ptr();
-		Object_p				object();
 
 	protected:
-		virtual Object * 			_object() = 0;
-		virtual const Object * 		_object() const = 0;
-	};
 
+		inline void		_requestRender() const { m_pWidget->_componentRequestRender(this); }
+		inline void		_requestRender(const RectSPX& rect) const { m_pWidget->_componentRequestRender(this, rect); }
+		inline void		_requestResize() const { m_pWidget->_componentRequestResize(this); }
+		inline void		_requestVisibility() const { m_pWidget->_componentRequestInView(this); }
+		inline void		_requestVisibility(const RectSPX& mustHave, const RectSPX& niceToHave) const { m_pWidget->_componentRequestInView(this, mustHave, niceToHave); }
+		inline void		_requestFocus() const { m_pWidget->_componentRequestFocus(this); }
+
+		inline void		_notify(ComponentNotif notification, int value, void * pData) { m_pWidget->_receiveComponentNotif(this, notification, value, pData); }
+
+	protected:
+		Widget *		m_pWidget;
+	};
 
 
 } // namespace wg

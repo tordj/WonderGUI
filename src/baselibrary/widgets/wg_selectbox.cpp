@@ -27,13 +27,11 @@
 #include <wg_base.h>
 #include <wg_popupoverlay.h>
 #include <wg_inputhandler.h>
-#include <wg_cdynamicvector.impl.h>
 
 #include <algorithm>
 
 namespace wg
 {
-	template class CDynamicVector<SelectBoxEntry>;
 
 	using namespace Util;
 
@@ -123,11 +121,13 @@ namespace wg
 
 	//____ selectEntry() _____________________________________________________
 
-	void SelectBox::selectEntry(const CDynamicVector<SelectBoxEntry>::iterator& it)
+	void SelectBox::selectEntry(const DynamicVector<SelectBoxEntry>::iterator& it)
 	{
 		if (it < entries.begin() || it >= entries.end())
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidIterator, "Invalid iterator", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+			auto pObject = dynamic_cast<Object*>(m_pHolder);
+			const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidIterator, "Invalid iterator", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -156,7 +156,9 @@ namespace wg
 	{
 		if (index < 0 || index >= entries.size())
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OutOfRange, "index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+			auto pObject = dynamic_cast<Object*>(m_pHolder);
+			const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OutOfRange, "index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -560,13 +562,6 @@ namespace wg
 			pTextLayout->render(&entry, pDevice, entryRect);
 			pos.y += entry.m_height;
 		}
-	}
-
-	//____ _sideCanvasRefresh() ________________________________________________
-
-	void SelectBox::_sideCanvasRefresh(SideCanvas * pCanvas)
-	{
-		//TODO: Implement!
 	}
 
 	//____ _sideCanvasResize() _________________________________________________

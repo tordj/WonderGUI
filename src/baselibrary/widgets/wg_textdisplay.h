@@ -26,7 +26,7 @@
 
 
 #include <wg_widget.h>
-#include <wg_ctextdisplay.h>
+#include <wg_text.h>
 
 namespace wg
 {
@@ -45,7 +45,7 @@ namespace wg
 		{
 			Object_p		baggage;
 			bool			dropTarget = false;
-			CTextDisplay::Blueprint	display;
+			Text::Blueprint	display;
 			bool			enabled = true;
 			Finalizer_p		finalizer;
 			int				id = 0;
@@ -67,7 +67,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		CTextDisplay			display;
+		Text			display;
 
 		//.____ Identification __________________________________________
 
@@ -94,7 +94,6 @@ namespace wg
 
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void			_resize( const SizeSPX& size, int scale = -1 ) override;
-		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
 

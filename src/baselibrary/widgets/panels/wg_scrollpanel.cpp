@@ -117,7 +117,7 @@ namespace wg
 		if ((width == SizeConstraint::Equal || width == SizeConstraint::LessOrEqual)
 			&& (height == SizeConstraint::Equal || height == SizeConstraint::LessOrEqual))
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Only one dimension can be constrained to Equal/LessOrEqual", this, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Only one dimension can be constrained to Equal/LessOrEqual", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
 
@@ -1079,7 +1079,7 @@ namespace wg
 
 	//____ _componentPos() ____________________________________________________
 
-	CoordSPX ScrollPanel::_componentPos(const WidgetComponent* pComponent) const
+	CoordSPX ScrollPanel::_componentPos(const Component* pComponent) const
 	{
 		if (pComponent == &scrollbarX)
 			return m_scrollbarXRegion.pos();
@@ -1089,7 +1089,7 @@ namespace wg
 
 	//____ _componentSize() ___________________________________________________
 
-	SizeSPX ScrollPanel::_componentSize(const WidgetComponent* pComponent) const
+	SizeSPX ScrollPanel::_componentSize(const Component* pComponent) const
 	{
 		if (pComponent == &scrollbarX)
 			return m_scrollbarXRegion.size();
@@ -1100,7 +1100,7 @@ namespace wg
 
 	//____ _componentGeo() ____________________________________________________
 
-	RectSPX ScrollPanel::_componentGeo(const WidgetComponent* pComponent) const
+	RectSPX ScrollPanel::_componentGeo(const Component* pComponent) const
 	{
 		if (pComponent == &scrollbarX)
 			return m_scrollbarXRegion;
@@ -1110,7 +1110,7 @@ namespace wg
 
 	//____ _scrollbarStep() ___________________________________________________
 
-	void ScrollPanel::_scrollbarStep(const CScrollbar* pComponent, int dir)
+	void ScrollPanel::_scrollbarStep(const Scroller* pComponent, int dir)
 	{
 		if (pComponent == &scrollbarX)
 		{
@@ -1132,7 +1132,7 @@ namespace wg
 
 	//____ _scrollbarPage() ___________________________________________________
 
-	void ScrollPanel::_scrollbarPage(const CScrollbar* pComponent, int dir)
+	void ScrollPanel::_scrollbarPage(const Scroller* pComponent, int dir)
 	{
 		if (pComponent == &scrollbarX)
 		{
@@ -1152,7 +1152,7 @@ namespace wg
 	
 	//____ _scrollbarWheel() __________________________________________________
 
-	void ScrollPanel::_scrollbarWheel(const CScrollbar* pComponent, int dir)
+	void ScrollPanel::_scrollbarWheel(const Scroller* pComponent, int dir)
 	{
 		if (pComponent == &scrollbarX)
 		{
@@ -1172,7 +1172,7 @@ namespace wg
 
 	//____ _scrollbarMove() ___________________________________________________
 
-	spx ScrollPanel::_scrollbarMove(const CScrollbar* pComponent, spx pos)
+	spx ScrollPanel::_scrollbarMove(const Scroller* pComponent, spx pos)
 	{
 		pos = align(pos);
 
@@ -1194,7 +1194,7 @@ namespace wg
 
 	//____ _scrollbarOfsLenContent() __________________________________________
 
-	std::tuple<spx, spx, spx> ScrollPanel::_scrollbarOfsLenContent(const CScrollbar* pComponent)
+	std::tuple<spx, spx, spx> ScrollPanel::_scrollbarOfsLenContent(const Scroller* pComponent)
 	{
 		if (pComponent == &scrollbarX)
 			return std::make_tuple(m_viewXOfs, m_viewXLen, m_canvasXLen);

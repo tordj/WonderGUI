@@ -27,7 +27,7 @@
 #include <wg_types.h>
 #include <wg_object.h>
 #include <wg_pointers.h>
-#include <wg_cgfxstreamsource.h>
+#include <wg_gfxstreamsource.h>
 #include <wg_gfxstream.h>
 
 #include <functional>
@@ -39,7 +39,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamReader>	GfxStreamReader_p;
 	typedef	WeakPtr<GfxStreamReader>	GfxStreamReader_wp;
 
-	class GfxStreamReader : public Object, protected CGfxStreamSource::Holder
+	class GfxStreamReader : public Object, protected GfxStreamSource::Holder
 	{
 	public:
 
@@ -49,7 +49,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxStreamSource		output;
+		GfxStreamSource		output;
 
 		//.____ Identification __________________________________________
 
@@ -66,9 +66,6 @@ namespace wg
 
 		GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder );
 		~GfxStreamReader();
-
-		Object *    	_object() override { return this; }
-		const Object * 	_object() const override { return this; }
 
 		bool 			_hasStreamChunks() const override;
 		std::tuple<int, const DataSegment*> _showStreamChunks() override;

@@ -126,15 +126,6 @@ namespace wg
 		display._render(pDevice, canvas);
 	}
 
-	//____ _refresh() _______________________________________________________
-
-	void TextDisplay::_refresh( void )
-	{
-		//TODO: Implement more I believe...
-
-		Widget::_refresh();
-	}
-
 	//____ _setState() ______________________________________________________
 
 	void TextDisplay::_setState( State state )

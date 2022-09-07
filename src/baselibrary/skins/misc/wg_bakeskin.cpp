@@ -26,12 +26,10 @@
 #include <wg_base.h>
 #include <wg_context.h>
 #include <cassert>
-#include <wg_cdynamicvector.impl.h>
 #include <wg_skin.impl.h>
 
 namespace wg
 {
-	template class CDynamicVector<Skin_p>;
 
 	using namespace Util;
 
@@ -65,7 +63,7 @@ namespace wg
 		m_contentPadding = blueprint.padding;
 		m_bContentPaddingSet = !blueprint.padding.isEmpty();
 
-		//TODO: CDynamicVector should have a pushBack( iterator begin, interator end ) which we should use.
+		//TODO: DynamicVector should have a pushBack( iterator begin, interator end ) which we should use.
 
 		m_skins = blueprint.skins;
 
@@ -199,7 +197,7 @@ namespace wg
 
 		if (!m_pBakeSurface)
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Can't render: missing bake surface", this, BakeSkin::TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Can't render: missing bake surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 

@@ -418,7 +418,7 @@ namespace wg
 					toString(m_blendMode),
 					toString(m_pRenderLayerSurface->pixelFormat()) );
 				
-				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				return;
 			}
 
@@ -453,7 +453,7 @@ namespace wg
 					toString(m_blendMode),
 					toString(m_pRenderLayerSurface->pixelFormat()) );
 				
-				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				return;
 			}
 
@@ -613,7 +613,7 @@ namespace wg
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -771,7 +771,7 @@ namespace wg
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -1310,7 +1310,7 @@ namespace wg
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -1826,7 +1826,7 @@ namespace wg
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -2353,7 +2353,7 @@ namespace wg
 			toString(m_blendMode),
 			toString(m_pRenderLayerSurface->pixelFormat()) );
 		
-		Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+		Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 	}
 
 	//____ _dummyTransformBlit() ________________________________________________
@@ -2373,7 +2373,7 @@ namespace wg
 			toString(m_blendMode),
 			toString(m_pRenderLayerSurface->pixelFormat()) );
 		
-		Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, TYPEINFO, __func__, __FILE__, __LINE__);
+		Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 	}
 
 

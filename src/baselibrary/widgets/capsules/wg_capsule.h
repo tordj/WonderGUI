@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_cstandardslot.h>
+#include <wg_slot.h>
 
 
 namespace wg
@@ -55,7 +55,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CStandardSlot		slot;
+		DynamicSlot		slot;
 
 		//.____ Identification __________________________________________
 

@@ -26,7 +26,7 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 #include <wg_object.h>
 #include <wg_gfxstream.h>
-#include <wg_cgfxstreamsink.h>
+#include <wg_gfxstreamsink.h>
 #include <wg_gfxstreamdecoder.h>
 #include <wg_gfxdevice.h>
 #include <wg_patches.h>
@@ -41,7 +41,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamPlayer>	GfxStreamPlayer_p;
 	typedef	WeakPtr<GfxStreamPlayer>	GfxStreamPlayer_wp;
 
-	class GfxStreamPlayer : public Object, protected CGfxStreamSink::Holder
+	class GfxStreamPlayer : public Object, protected GfxStreamSink::Holder
 	{
 	public:
 
@@ -51,7 +51,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxStreamSink		input;
+		GfxStreamSink		input;
 
 		//.____ Identification __________________________________________
 
@@ -71,9 +71,6 @@ namespace wg
 	protected:
 		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();
-
-		Object* _object() override;
-		const Object* _object() const override;
 
 		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
 

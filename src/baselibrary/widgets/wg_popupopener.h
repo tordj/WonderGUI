@@ -24,8 +24,8 @@
 #pragma once
 
 #include <wg_widget.h>
-#include <wg_ctextdisplay.h>
-#include <wg_cicondisplay.h>
+#include <wg_text.h>
+#include <wg_icon.h>
 
 namespace wg
 {
@@ -47,9 +47,9 @@ namespace wg
 			bool			dropTarget = false;
 			bool			enabled = true;
 			Finalizer_p		finalizer;
-			CIconDisplay::Blueprint	icon;
+			Icon::Blueprint	icon;
 			int				id = 0;
-			CTextDisplay::Blueprint label;
+			Text::Blueprint label;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
@@ -72,8 +72,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CTextDisplay			label;
-		CIconDisplay			icon;
+		Text			label;
+		Icon			icon;
 
 		//.____ Identification __________________________________________
 
@@ -105,7 +105,6 @@ namespace wg
 
 		void			_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void			_resize(const SizeSPX& size, int scale = -1) override;
-		void			_refresh() override;
 		void			_receive(Msg * pMsg) override;
 		void			_setState(State state) override;
 
@@ -113,11 +112,11 @@ namespace wg
 		void			_open();
 		void			_close();
 
-		CoordSPX		_componentPos(const WidgetComponent * pComponent) const override;
-		SizeSPX			_componentSize(const WidgetComponent * pComponent) const override;
-		RectSPX			_componentGeo(const WidgetComponent * pComponent) const override;
+		CoordSPX		_componentPos(const Component * pComponent) const override;
+		SizeSPX			_componentSize(const Component * pComponent) const override;
+		RectSPX			_componentGeo(const Component * pComponent) const override;
 
-		class IconAccess : public CIconDisplay { friend class PopupOpener; };
+		class IconAccess : public Icon { friend class PopupOpener; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
 		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }
 

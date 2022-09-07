@@ -38,7 +38,7 @@ namespace wg
 
 	SizeI	GlSurface::s_maxSize;
 
-#define HANDLE_GLERROR(check) { GLenum err = check; if(err != 0) GlGfxDevice::onGlError(err, this, TYPEINFO, __func__, __FILE__, __LINE__ ); }
+#define HANDLE_GLERROR(check) { GLenum err = check; if(err != 0) GlGfxDevice::onGlError(err, this, &TYPEINFO, __func__, __FILE__, __LINE__ ); }
 
     unsigned int    GlSurface::g_texturePixels = 0;
     unsigned int    GlSurface::g_backingPixels = 0;

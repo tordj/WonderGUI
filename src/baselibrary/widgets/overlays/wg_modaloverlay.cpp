@@ -27,14 +27,14 @@
 #include <wg_base.h>
 #include <wg_inputhandler.h>
 
-#include <wg_cdynamicslotvector.impl.h>
+#include <wg_dynamicslotvector.impl.h>
 
 
 namespace wg
 {
 	using namespace Util;
 
-	template class CDynamicSlotVector<ModalOverlay::Slot>;
+	template class DynamicSlotVector<ModalOverlay::Slot>;
 
 	const TypeInfo ModalOverlay::TYPEINFO = { "ModalOverlay", &Overlay::TYPEINFO };
 	const TypeInfo ModalOverlay::Slot::TYPEINFO = { "ModalOverlay::Slot", &Overlay::Slot::TYPEINFO };

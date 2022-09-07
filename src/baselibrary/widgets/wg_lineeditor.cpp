@@ -112,14 +112,6 @@ namespace wg
 		popClipList(pDevice, pop);
 	}
 
-	//____ _refresh() _______________________________________________________
-
-	void LineEditor::_refresh( void )
-	{
-		editor._refresh();
-		Widget::_refresh();
-	}
-
 	//____ _setState() ______________________________________________________
 
 	void LineEditor::_setState( State state )
@@ -150,7 +142,7 @@ namespace wg
 
 	//____ _componentPos() __________________________________________________________
 
-	CoordSPX LineEditor::_componentPos( const WidgetComponent * pComponent ) const
+	CoordSPX LineEditor::_componentPos( const Component * pComponent ) const
 	{
 		if (pComponent != &editor)
 			return CoordSPX();
@@ -162,7 +154,7 @@ namespace wg
 
 	//____ _componentSize() _________________________________________________________
 
-	SizeSPX LineEditor::_componentSize( const WidgetComponent * pComponent ) const
+	SizeSPX LineEditor::_componentSize( const Component * pComponent ) const
 	{
 		if (pComponent != &editor)
 			return m_size;
@@ -172,7 +164,7 @@ namespace wg
 
 	//____ _componentGeo() __________________________________________________________
 
-	RectSPX LineEditor::_componentGeo( const WidgetComponent * pComponent ) const
+	RectSPX LineEditor::_componentGeo( const Component * pComponent ) const
 	{
 		if (pComponent != &editor)
 			return m_size;
@@ -185,7 +177,7 @@ namespace wg
 
 	//____ _componentRequestRender() ______________________________________________
 
-	void LineEditor::_componentRequestRender(const WidgetComponent * pComponent)
+	void LineEditor::_componentRequestRender(const Component * pComponent)
 	{
 		if (pComponent != &editor)
 			return _requestRender();
@@ -193,7 +185,7 @@ namespace wg
 		_requestRender(m_skin.contentRect(m_size, m_scale, m_state));
 	}
 
-	void LineEditor::_componentRequestRender( const WidgetComponent * pComponent, const RectSPX& rect )
+	void LineEditor::_componentRequestRender( const Component * pComponent, const RectSPX& rect )
 	{
 		if (pComponent != &editor)
 			return _requestRender(rect);
@@ -210,7 +202,7 @@ namespace wg
 
 	//____ _componentRequestResize() ______________________________________________
 
-	void LineEditor::_componentRequestResize( const WidgetComponent * pComponent )
+	void LineEditor::_componentRequestResize( const Component * pComponent )
 	{
 		if (pComponent != &editor)
 			return Widget::_componentRequestResize(pComponent);
@@ -227,7 +219,7 @@ namespace wg
 
 	//____ _componentRequestInView() ____________________________________________
 
-	void LineEditor::_componentRequestInView(const WidgetComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave)
+	void LineEditor::_componentRequestInView(const Component * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave)
 	{
 		spx scrollOfs = m_textScrollOfs;
 		SizeSPX canvas = _componentSize(pComponent);

@@ -25,8 +25,8 @@
 #pragma once
 
 #include <wg_widget.h>
-#include <wg_ctextdisplay.h>
-#include <wg_cicondisplay.h>
+#include <wg_text.h>
+#include <wg_icon.h>
 
 namespace wg
 {
@@ -80,9 +80,9 @@ namespace wg
 			bool			enabled = true;
 			Finalizer_p		finalizer;
 			bool			flipOnRelease = false;
-			CIconDisplay::Blueprint	icon;
+			Icon::Blueprint	icon;
 			int				id = 0;
-			CTextDisplay::Blueprint	label;
+			Text::Blueprint	label;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
@@ -102,8 +102,8 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		CTextDisplay		label;
-		CIconDisplay		icon;
+		Text		label;
+		Icon		icon;
 
 		//.____ Identification __________________________________________
 
@@ -139,7 +139,6 @@ namespace wg
 
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void		_receive( Msg * pMsg ) override;
-		void		_refresh() override;
 		void		_resize( const SizeSPX& size, int scale = -1 ) override;
 		bool		_alphaTest( const CoordSPX& ofs ) override;
 		void		_setState(State state) override { _setState(state, false); }
@@ -148,14 +147,14 @@ namespace wg
 		void		_setToggleGroup( ToggleGroup * pGroup );
 		ToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }
 
-		CoordSPX	_componentPos( const WidgetComponent * pComponent ) const override;
-		SizeSPX		_componentSize( const WidgetComponent * pComponent ) const override;
-		RectSPX		_componentGeo( const WidgetComponent * pComponent ) const override;
+		CoordSPX	_componentPos( const Component * pComponent ) const override;
+		SizeSPX		_componentSize( const Component * pComponent ) const override;
+		RectSPX		_componentGeo( const Component * pComponent ) const override;
 
 
 
 	private:
-		class IconAccess : public CIconDisplay { friend class ToggleButton; };
+		class IconAccess : public Icon { friend class ToggleButton; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
 		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }
 

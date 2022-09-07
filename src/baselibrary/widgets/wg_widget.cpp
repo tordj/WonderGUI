@@ -170,7 +170,7 @@ namespace wg
 
 		if (nb1 == c_maxLevels-1 || nb2 == c_maxLevels-1)
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::Internal, "Widget hierarchy too deep for operation.", this, Widget::TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::Internal, "Widget hierarchy too deep for operation.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 
@@ -627,16 +627,6 @@ namespace wg
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
 
-	//____ _refresh() ___________________________________________________________
-
-	void Widget::_refresh()
-	{
-		m_bOpaque = m_skin.isOpaque(m_state);
-
-		_requestResize();
-		_requestRender();
-	}
-
 	//____ _setState() _________________________________________________________
 
 	void Widget::_setState( State state )
@@ -734,19 +724,19 @@ namespace wg
 
 	//____ _componentRequestRender() _________________________________________________________
 
-	void Widget::_componentRequestRender( const WidgetComponent * pComponent )
+	void Widget::_componentRequestRender( const Component * pComponent )
 	{
 		_requestRender( _componentGeo( pComponent ) );
 	}
 
-	void Widget::_componentRequestRender( const WidgetComponent * pComponent, const RectSPX& rect )
+	void Widget::_componentRequestRender( const Component * pComponent, const RectSPX& rect )
 	{
 		_requestRender( rect + _componentPos( pComponent ) );
 	}
 
 	//____ _componentRequestResize() ________________________________________________________
 
-	void Widget::_componentRequestResize( const WidgetComponent * pComponent )
+	void Widget::_componentRequestResize( const Component * pComponent )
 	{
 		_requestResize();
 		_requestRender();
@@ -754,20 +744,20 @@ namespace wg
 
 	//____ _componentRequestFocus() ___________________________________________________
 
-	void Widget::_componentRequestFocus( const WidgetComponent * pComponent )
+	void Widget::_componentRequestFocus( const Component * pComponent )
 	{
 		grabFocus();
 	}
 
 	//____ _componentRequestInView() ______________________________________________
 
-	void Widget::_componentRequestInView( const WidgetComponent * pComponent )
+	void Widget::_componentRequestInView( const Component * pComponent )
 	{
 		RectSPX r = _componentGeo( pComponent );
 		_requestInView( r, r );
 	}
 
-	void Widget::_componentRequestInView( const WidgetComponent * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave )
+	void Widget::_componentRequestInView( const Component * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave )
 	{
 		CoordSPX ofs = _componentPos( pComponent );
 		_requestInView(mustHave + ofs, niceToHave + ofs );
@@ -776,49 +766,49 @@ namespace wg
 
 	//____ _componentState() ______________________________________________________________
 
-	State Widget::_componentState(const WidgetComponent* pComponent) const
+	State Widget::_componentState(const Component* pComponent) const
 	{
 		return m_state;
 	}
 
 	//____ _componentPos() ______________________________________________________________
 
-	CoordSPX Widget::_componentPos( const WidgetComponent * pComponent ) const
+	CoordSPX Widget::_componentPos( const Component * pComponent ) const
 	{
 			return m_skin.contentOfs( m_scale, m_state );
 	}
 
 	//____ _componentSize() ______________________________________________________________
 
-	SizeSPX Widget::_componentSize( const WidgetComponent * pComponent ) const
+	SizeSPX Widget::_componentSize( const Component * pComponent ) const
 	{
 			return m_size - m_skin.contentPaddingSize(m_scale);
 	}
 
 	//____ _componentGeo() ____________________________________________________
 
-	RectSPX Widget::_componentGeo( const WidgetComponent * pComponent ) const
+	RectSPX Widget::_componentGeo( const Component * pComponent ) const
 	{
 			return m_skin.contentRect( m_size, m_scale, m_state );
 	}
 
 	//____ _globalComponentPos() ______________________________________________
 
-	CoordSPX Widget::_globalComponentPos( const WidgetComponent * pComponent ) const
+	CoordSPX Widget::_globalComponentPos( const Component * pComponent ) const
 	{
 		return _componentPos( pComponent ) + _globalPos();
 	}
 
 	//____ _globalComponentGeo() ______________________________________________
 
-	RectSPX Widget::_globalComponentGeo( const WidgetComponent * pComponent ) const
+	RectSPX Widget::_globalComponentGeo( const Component * pComponent ) const
 	{
 		return _componentGeo( pComponent ) + _globalPos();
 	}
 
 	//____ _receiveComponentNotif() ___________________________________________
 
-	void Widget::_receiveComponentNotif( WidgetComponent * pComponent, ComponentNotif notification, int value, void * pData )
+	void Widget::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )
 	{
 		// By default we do nothing
 	}

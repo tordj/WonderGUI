@@ -46,15 +46,14 @@ namespace wg
 	class ModalOverlay;
 	class DragNDropOverlay;
 
-	class CStaticTextDisplay;
-	class CTextDisplay;
-	class CTextEditor;
+	class StaticText;
+	class Text;
+	class EditableText;
 	class BasicDataset;
 
 	typedef WeakPtr<Object>		Object_wp;
 
-	typedef	StrongComponentPtr<CTextEditor>	CTextEditor_p;
-	typedef	WeakComponentPtr<CTextEditor>	CTextEditor_wp;
+	typedef	ComponentPtr<EditableText>	EditableText_p;
 
 	typedef    StrongPtr<BasicDataset>  BasicDataset_p;
 	typedef    WeakPtr<BasicDataset>    BasicDataset_wp;
@@ -1011,7 +1010,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		inline static TextEditMsg_p create( CTextEditor * pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
+		inline static TextEditMsg_p create( const EditableText_p& pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
 
 		//.____ Identification __________________________________________
 
@@ -1020,13 +1019,13 @@ namespace wg
 
 		//.____ Content ________________________________________________________
 
-		CTextEditor_p		text() const;
+		EditableText_p		text() const;
 		bool				isFinal() const;
 
 	protected:
-		TextEditMsg( CTextEditor * pText, bool bFinal );
+		TextEditMsg( const EditableText_p& pText, bool bFinal );
 
-		CTextEditor_p		m_pText;
+		EditableText_p		m_pText;
 		bool				m_bFinal;
 	};
 

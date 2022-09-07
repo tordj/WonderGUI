@@ -44,7 +44,8 @@ wg_obj wg_createStreamPlayer(wg_obj device, wg_obj surfaceFactory)
 
 wg_component wg_getStreamPlayerInput(wg_obj streamPlayer)
 {
-	return static_cast<Component*>(&getPtr(streamPlayer)->input);
+	auto p = getPtr(streamPlayer);
+	return { static_cast<Object*>(p), &p->input };
 }
 
 void wg_setStreamPlayerStoreDirtyRects(wg_obj streamPlayer, int bStore)

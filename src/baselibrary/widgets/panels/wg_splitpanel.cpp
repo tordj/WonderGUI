@@ -67,7 +67,7 @@ namespace wg
 		if (bHorizontal != m_bHorizontal)
 		{
 			m_bHorizontal = bHorizontal;
-			_refresh();
+			_updateGeo();
 		}
 	}
 
@@ -351,14 +351,6 @@ namespace wg
 			firstLength = maxLengthFirst;
 
 		return firstLength;
-	}
-
-	//____ _refresh() ____________________________________________________________
-
-	void SplitPanel::_refresh()
-	{
-		_updateGeo();
-		_requestRender();
 	}
 
 	//____ _receive() ___________________________________________________________

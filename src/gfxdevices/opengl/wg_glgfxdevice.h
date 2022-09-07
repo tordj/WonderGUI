@@ -415,7 +415,7 @@ namespace wg
 
 		//
 
-		static void onGlError(GLenum errorCode, const Object * pObject, const TypeInfo& pClassType, const char * func, const char * file, int line);
+		static void onGlError(GLenum errorCode, const Object * pObject, const TypeInfo* pClassType, const char * func, const char * file, int line);
 
 	};
 

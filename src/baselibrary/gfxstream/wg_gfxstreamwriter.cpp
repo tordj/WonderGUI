@@ -66,17 +66,4 @@ namespace wg
 	}
 
 
-	//____ _object() __________________________________________________________
-
-	Object * GfxStreamWriter::_object()
-	{
-		return this;
-	}
-
-	const Object * GfxStreamWriter::_object() const
-	{
-		return this;
-	}
-
-
 } // namespace wg

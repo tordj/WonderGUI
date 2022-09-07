@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_overlay.h>
-#include <wg_cstaticslotvector.h>
+#include <wg_staticslotvector.h>
 
 #include <vector>
 
@@ -52,7 +52,7 @@ namespace wg
 		{
 			friend class PopupOverlay;
 			friend class CSlots;
-			friend class CStaticSlotVector<Slot>;
+			friend class StaticSlotVector<Slot>;
 
 		public:
 			const static bool safe_to_relocate = false;
@@ -95,15 +95,11 @@ namespace wg
 
 		//____ CSlots ________________________________________________________
 
-		class CSlots : public CStaticSlotVector<Slot>
+		class CSlots : public StaticSlotVector<Slot>
 		{
 			friend class PopupOverlay;
 
 		public:
-
-			//.____ Misc __________________________________________________________
-
-			inline CPopupSlots_p	ptr() { return CPopupSlots_p(this); }
 
 			//.____ Content _______________________________________________________
 
@@ -119,10 +115,10 @@ namespace wg
 
 		protected:
 
-			CSlots(SlotHolder * pHolder) : CStaticSlotVector<Slot>(pHolder) {}
+			CSlots(SlotHolder * pHolder) : StaticSlotVector<Slot>(pHolder) {}
 
-			const PopupOverlay *	_holder() const { return static_cast<const PopupOverlay*>(CStaticSlotVector<Slot>::_holder()); }
-			PopupOverlay *	_holder() { return static_cast<PopupOverlay*>(CStaticSlotVector<Slot>::_holder()); }
+			const PopupOverlay *	_holder() const { return static_cast<const PopupOverlay*>(StaticSlotVector<Slot>::_holder()); }
+			PopupOverlay *	_holder() { return static_cast<PopupOverlay*>(StaticSlotVector<Slot>::_holder()); }
 		};
 
 

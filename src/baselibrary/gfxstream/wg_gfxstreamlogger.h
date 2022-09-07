@@ -27,7 +27,7 @@
 #include <iostream>
 
 #include <wg_object.h>
-#include <wg_cgfxstreamsink.h>
+#include <wg_gfxstreamsink.h>
 #include <wg_gfxstream.h>
 #include <wg_gfxstreamdecoder.h>
 
@@ -38,7 +38,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamLogger>	GfxStreamLogger_p;
 	typedef	WeakPtr<GfxStreamLogger>	GfxStreamLogger_wp;
 
-	class GfxStreamLogger : public Object, protected CGfxStreamSink::Holder
+	class GfxStreamLogger : public Object, protected GfxStreamSink::Holder
 	{
 	public:
 
@@ -48,7 +48,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CGfxStreamSink		input;
+		GfxStreamSink		input;
 
 		//.____ Identification __________________________________________
 
@@ -58,9 +58,6 @@ namespace wg
 	protected:
 		GfxStreamLogger( std::ostream& out );
 		~GfxStreamLogger();
-
-		Object* _object() override;
-		const Object* _object() const override;
 
 		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
 

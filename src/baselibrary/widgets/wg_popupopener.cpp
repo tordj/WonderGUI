@@ -166,16 +166,6 @@ namespace wg
 		label._setSize(textRect,m_scale);
 	}
 
-	//____ _refresh() _________________________________________________________
-
-	void PopupOpener::_refresh()
-	{
-		Widget::_refresh();
-		label._refresh();
-
-		//TODO: Handling of icon and text.
-	}
-
 	//____ _receive() _________________________________________________________
 
 	void PopupOpener::_receive(Msg * pMsg)
@@ -274,7 +264,7 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	CoordSPX PopupOpener::_componentPos(const WidgetComponent * pComponent) const
+	CoordSPX PopupOpener::_componentPos(const Component * pComponent) const
 	{
 		RectSPX contentRect = m_skin.contentRect(m_size, m_scale, m_state);
 
@@ -291,7 +281,7 @@ namespace wg
 
 	//____ _componentSize() ______________________________________________________________
 
-	SizeSPX PopupOpener::_componentSize(const WidgetComponent * pComponent) const
+	SizeSPX PopupOpener::_componentSize(const Component * pComponent) const
 	{
 		SizeSPX sz = m_size - m_skin.contentPaddingSize(m_scale);
 
@@ -307,7 +297,7 @@ namespace wg
 
 	//____ _componentGeo() ______________________________________________________________
 
-	RectSPX PopupOpener::_componentGeo(const WidgetComponent * pComponent) const
+	RectSPX PopupOpener::_componentGeo(const Component * pComponent) const
 	{
 		RectSPX	contentRect = m_skin.contentRect(m_size, m_scale, m_state);
 

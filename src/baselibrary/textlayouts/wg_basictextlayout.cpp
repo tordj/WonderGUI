@@ -72,7 +72,7 @@ namespace wg
 
 	//____ addText() _________________________________________________________
 
-	void BasicTextLayout::addText( Text * pText )
+	void BasicTextLayout::addText( TextItem * pText )
 	{
 		const Char * pChars = _chars(pText);
 		int nLines = _countLines( pText, pChars );
@@ -85,7 +85,7 @@ namespace wg
 
 	//____ removeText() _________________________________________________________
 
-	void BasicTextLayout::removeText( Text * pText )
+	void BasicTextLayout::removeText( TextItem * pText )
 	{
 		free( _dataBlock(pText) );
 		_setTextDataBlock(pText, 0);
@@ -100,7 +100,7 @@ namespace wg
 
 	//____ charAtPos() _________________________________________________________
 
-	int BasicTextLayout::charAtPos( const Text * pText, CoordSPX pos ) const
+	int BasicTextLayout::charAtPos( const TextItem * pText, CoordSPX pos ) const
 	{
 		int line = _lineAtPosY(pText, pos.y, SelectMode::Marked );
 		if( line == -1 )
@@ -111,7 +111,7 @@ namespace wg
 
 	//_____ charPos() ______________________________________________________
 
-	CoordSPX BasicTextLayout::charPos( const Text * pText, int charOfs ) const
+	CoordSPX BasicTextLayout::charPos( const TextItem * pText, int charOfs ) const
 	{
 		int line = charLine(pText, charOfs);
 
@@ -126,7 +126,7 @@ namespace wg
 
 	//____ charRect() ________________________________________________________
 
-	RectSPX BasicTextLayout::charRect( const Text * pText, int charOfs ) const
+	RectSPX BasicTextLayout::charRect( const TextItem * pText, int charOfs ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -181,7 +181,7 @@ namespace wg
 
 	//____ charLine() ________________________________________________________
 
-	int BasicTextLayout::charLine( const Text * pText, int charOfs ) const
+	int BasicTextLayout::charLine( const TextItem * pText, int charOfs ) const
 	{
 		if( charOfs < 0 )
 			return -1;
@@ -201,7 +201,7 @@ namespace wg
 
 	//____ lineBegin() ________________________________________________________
 
-	int BasicTextLayout::lineBegin( const Text * pText, int lineNb ) const
+	int BasicTextLayout::lineBegin( const TextItem * pText, int lineNb ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -215,7 +215,7 @@ namespace wg
 
 	//____ lineEnd() ___________________________________________________________
 
-	int BasicTextLayout::lineEnd( const Text * pText, int lineNb ) const
+	int BasicTextLayout::lineEnd( const TextItem * pText, int lineNb ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -229,7 +229,7 @@ namespace wg
 
 	//____ wordBegin() _________________________________________________________
 
-	int BasicTextLayout::wordBegin( const Text * pText, int charOfs ) const
+	int BasicTextLayout::wordBegin( const TextItem * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -237,7 +237,7 @@ namespace wg
 
 	//____ wordEnd() ___________________________________________________________
 
-	int BasicTextLayout::wordEnd( const Text * pText, int charOfs ) const
+	int BasicTextLayout::wordEnd( const TextItem * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs+1;
@@ -325,7 +325,7 @@ namespace wg
 
 	//____ render()___________________________________________________________
 
-	void BasicTextLayout::render( Text * pText, GfxDevice * pDevice, const RectSPX& canvas )
+	void BasicTextLayout::render( TextItem * pText, GfxDevice * pDevice, const RectSPX& canvas )
 	{
 
 		void * pBlock = _dataBlock(pText);
@@ -506,7 +506,7 @@ namespace wg
 
 	//____ _renderBack()___________________________________________________________
 
-	void BasicTextLayout::_renderBack( Text * pText, GfxDevice * pDevice, const RectSPX& canvas )
+	void BasicTextLayout::_renderBack( TextItem * pText, GfxDevice * pDevice, const RectSPX& canvas )
 	{
 		const Char * pCharArray = _chars(pText);
 		const Char * pBeg = pCharArray;
@@ -546,7 +546,7 @@ namespace wg
 
 	//____ _renderBackSection() ________________________________________________
 
-	void BasicTextLayout::_renderBackSection( Text * pText, GfxDevice * pDevice, const RectSPX& canvas,
+	void BasicTextLayout::_renderBackSection( TextItem * pText, GfxDevice * pDevice, const RectSPX& canvas,
 											int begChar, int endChar, HiColor color )
 	{
 
@@ -606,7 +606,7 @@ namespace wg
 
 	//____ caretMove() ________________________________________________________
 
-	void BasicTextLayout::caretMove( Text * pText, int newOfs, int oldOfs )
+	void BasicTextLayout::caretMove( TextItem * pText, int newOfs, int oldOfs )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		if( _caretVisible(pText) && pCaret )
@@ -625,7 +625,7 @@ namespace wg
 
 	//____ selectionChange() __________________________________________________
 
-	void BasicTextLayout::selectionChange( Text * pText, int selectOfs, int caretOfs, int oldSelectOfs, int oldCaretOfs )
+	void BasicTextLayout::selectionChange( TextItem * pText, int selectOfs, int caretOfs, int oldSelectOfs, int oldCaretOfs )
 	{
 		int oldBeg = std::min(oldSelectOfs,oldCaretOfs);
 		int oldEnd = std::max(oldSelectOfs,oldCaretOfs);
@@ -672,17 +672,17 @@ namespace wg
 
 	//____ onTextModified() ____________________________________________________
 
-	void BasicTextLayout::onTextModified( Text * pText, int ofs, int charsRemoved, int charsAdded )
+	void BasicTextLayout::onTextModified( TextItem * pText, int ofs, int charsRemoved, int charsAdded )
 	{
-		onRefresh(pText);
+		_refresh(pText);
 	}
 
 	//____ onResized() ___________________________________________________________
 
-	void BasicTextLayout::onResized( Text * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale )
+	void BasicTextLayout::onResized( TextItem * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale )
 	{
 		if (m_bLineWrap || newScale != oldScale)
-			onRefresh(pText);
+			_refresh(pText);
 
 
 		///TODO: Implement!
@@ -690,7 +690,7 @@ namespace wg
 
 	//____ onStateChanged() ______________________________________________________
 
-	void BasicTextLayout::onStateChanged( Text * pText, State newState, State oldState )
+	void BasicTextLayout::onStateChanged( TextItem * pText, State newState, State oldState )
 	{
 		// TODO: Support for more than one input device, focusing different (or same) texts.
 
@@ -719,9 +719,9 @@ namespace wg
 
 	//____ onStyleChanged() ______________________________________________________
 
-	void BasicTextLayout::onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
+	void BasicTextLayout::onStyleChanged( TextItem * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
-		onRefresh(pText);
+		_refresh(pText);
 /*
 		//TODO: Optimize: only update line info if textsize possibly affected.
 
@@ -735,9 +735,9 @@ namespace wg
 
 	//____ onCharStyleChanged() __________________________________________________
 
-	void BasicTextLayout::onCharStyleChanged( Text * pText, int ofs, int len )
+	void BasicTextLayout::onCharStyleChanged( TextItem * pText, int ofs, int len )
 	{
-		onRefresh(pText);
+		_refresh(pText);
 /*
 		void * pBlock = _dataBlock(pText);
 
@@ -747,9 +747,9 @@ namespace wg
 */
 	}
 
-	//____ onRefresh() ___________________________________________________________
+	//____ _refresh() ___________________________________________________________
 
-	void BasicTextLayout::onRefresh( Text * pText )
+	void BasicTextLayout::_refresh( TextItem * pText )
 	{
 		const Char * pChars = _chars(pText);
 		int nLines = _countLines( pText, pChars );
@@ -764,7 +764,7 @@ namespace wg
 
 	//___ rectForRange() _________________________________________________________
 
-	RectSPX BasicTextLayout::rectForRange( const Text * pText, int ofs, int length ) const
+	RectSPX BasicTextLayout::rectForRange( const TextItem * pText, int ofs, int length ) const
 	{
 		int begChar = ofs;
 		int endChar = ofs + length;
@@ -830,7 +830,7 @@ namespace wg
 
 	// Includes left/right margin where applicable.
 
-	RectSPX BasicTextLayout::rectForCaret( const Text * pText ) const
+	RectSPX BasicTextLayout::rectForCaret( const TextItem * pText ) const
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		if( !_caretVisible(pText) || !pCaret )
@@ -842,14 +842,14 @@ namespace wg
 
 	//____ textDirection() ____________________________________________________
 
-	Direction BasicTextLayout::textDirection( Text * pText, int charOfs ) const
+	Direction BasicTextLayout::textDirection( TextItem * pText, int charOfs ) const
 	{
 		return Direction::Right;
 	}
 
 	//____ caretToPos() _____________________________________________________
 
-	int BasicTextLayout::caretToPos( Text * pText, CoordSPX pos, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretToPos( TextItem * pText, CoordSPX pos, spx& wantedLineOfs ) const
 	{
 		wantedLineOfs = -1;
 
@@ -859,7 +859,7 @@ namespace wg
 
 	//____ caretUp() ___________________________________________________________
 
-	int BasicTextLayout::caretUp( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretUp( TextItem * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine(pText, charOfs );
 
@@ -875,7 +875,7 @@ namespace wg
 
 	//____ caretDown() _________________________________________________________
 
-	int BasicTextLayout::caretDown( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretDown( TextItem * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine(pText, charOfs );
 
@@ -893,7 +893,7 @@ namespace wg
 
 	//____ caretLeft() _________________________________________________________
 
-	int BasicTextLayout::caretLeft( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretLeft( TextItem * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		if( charOfs > 0 )
 			charOfs--;
@@ -904,7 +904,7 @@ namespace wg
 
 	//____ caretRight() ________________________________________________________
 
-	int BasicTextLayout::caretRight( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretRight( TextItem * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		if( charOfs < _length(pText) )
 			charOfs++;
@@ -915,7 +915,7 @@ namespace wg
 
 	//____ caretHome() ________________________________________________________
 
-	int BasicTextLayout::caretHome( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretHome( TextItem * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine( pText, charOfs );
 
@@ -930,7 +930,7 @@ namespace wg
 
 	//____ caretEnd() ________________________________________________________
 
-	int BasicTextLayout::caretEnd( Text * pText, int charOfs, spx& wantedLineOfs ) const
+	int BasicTextLayout::caretEnd( TextItem * pText, int charOfs, spx& wantedLineOfs ) const
 	{
 		int line = charLine( pText, charOfs );
 
@@ -945,7 +945,7 @@ namespace wg
 
 	//____ caretPrevWord() _____________________________________________________
 
-	int BasicTextLayout::caretPrevWord( Text * pText, int charOfs ) const
+	int BasicTextLayout::caretPrevWord( TextItem * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -953,7 +953,7 @@ namespace wg
 
 	//____ caretNextWord() _____________________________________________________
 
-	int BasicTextLayout::caretNextWord( Text * pText, int charOfs ) const
+	int BasicTextLayout::caretNextWord( TextItem * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -962,7 +962,7 @@ namespace wg
 
 	//____ tooltip() _______________________________________________________________
 
-	String BasicTextLayout::tooltip( const Text * pText ) const
+	String BasicTextLayout::tooltip( const TextItem * pText ) const
 	{
 		//TODO: Return the text if it overflows the mapped area?
 
@@ -972,7 +972,7 @@ namespace wg
 
 	//____ defaultSize() _________________________________________________________
 
-	SizeSPX BasicTextLayout::defaultSize( const Text * pText, int scale ) const
+	SizeSPX BasicTextLayout::defaultSize( const TextItem * pText, int scale ) const
 	{
 		if (scale != _scale(pText))
 			return _calcDefaultSize(_chars(pText),_baseStyle(pText), scale, _state(pText));
@@ -982,7 +982,7 @@ namespace wg
 
 	//____ matchingWidth() _________________________________________________________
 
-	spx BasicTextLayout::matchingWidth( const Text * pText, spx height, int scale ) const
+	spx BasicTextLayout::matchingWidth( const TextItem * pText, spx height, int scale ) const
 	{
 		if (scale != _scale(pText))
 			return _calcDefaultSize(_chars(pText),_baseStyle(pText), scale, _state(pText)).w;
@@ -992,14 +992,14 @@ namespace wg
 
 	//____ matchingHeight() ________________________________________________________
 
-	spx BasicTextLayout::matchingHeight( const Text * pText, spx width, int scale ) const
+	spx BasicTextLayout::matchingHeight( const TextItem * pText, spx width, int scale ) const
 	{
 		return _calcMatchingHeight(_chars(pText), _baseStyle(pText), scale, _state(pText), width);
 	}
 
 	//____ _countLines() ___________________________________________________________
 
-	int BasicTextLayout::_countLines( Text * pText, const Char * pChars ) const
+	int BasicTextLayout::_countLines( TextItem * pText, const Char * pChars ) const
 	{
 		if (m_bLineWrap)
 			return _countWrapLines(pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
@@ -1353,7 +1353,7 @@ namespace wg
 
 	//____ _reallocBlock() _________________________________________________________
 
-	void * BasicTextLayout::_reallocBlock( Text* pText, int nLines )
+	void * BasicTextLayout::_reallocBlock( TextItem * pText, int nLines )
 	{
 		void * pBlock = _dataBlock(pText);
 		if( pBlock )
@@ -1370,7 +1370,7 @@ namespace wg
 
 	//____ _updateLineInfo() _______________________________________________________
 
-	void BasicTextLayout::_updateLineInfo( Text * pText, void * pBlock, const Char * pChars )
+	void BasicTextLayout::_updateLineInfo( TextItem * pText, void * pBlock, const Char * pChars )
 	{
 		BlockHeader * pHeader = _header(_dataBlock(pText));
 		SizeSPX defaultSize;
@@ -1966,7 +1966,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 
 	//____ _charPosX() _________________________________________________________
 
-	spx BasicTextLayout::_charPosX( const Text * pText, int charOfs ) const
+	spx BasicTextLayout::_charPosX( const TextItem * pText, int charOfs ) const
 	{
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + charLine(pText, charOfs);
 		const Char * pChars = _chars(pText);
@@ -1979,7 +1979,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 
 	//____ _lineAtPosY() _______________________________________________________
 
-	int BasicTextLayout::_lineAtPosY( const Text * pText, spx posY, SelectMode mode ) const
+	int BasicTextLayout::_lineAtPosY( const TextItem * pText, spx posY, SelectMode mode ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHead = _header(pBlock);
@@ -2060,7 +2060,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 
 	//____ _charAtPosX() _______________________________________________________
 
-	int BasicTextLayout::_charAtPosX( const Text * pText, int line, spx posX, SelectMode mode ) const
+	int BasicTextLayout::_charAtPosX( const TextItem * pText, int line, spx posX, SelectMode mode ) const
 	{
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 
