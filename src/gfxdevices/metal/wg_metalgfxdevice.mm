@@ -628,7 +628,7 @@ MetalGfxDevice::MetalGfxDevice()
     {
         if( pixelFormat != PixelFormat::BGRA_8 && pixelFormat != PixelFormat::BGRA_8_linear && pixelFormat != PixelFormat::BGRA_8_sRGB && pixelFormat != PixelFormat::A_8 )
         {
-            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "pixelFormat must be BGRA_8, BGRA_8_linear, BGRA_8_sRGB or A_8", this, TYPEINFO, __func__, __FILE__, __LINE__);
+            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "pixelFormat must be BGRA_8, BGRA_8_linear, BGRA_8_sRGB or A_8", this, &TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
         }
 
@@ -748,7 +748,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         if (!pSource || pSource->typeInfo() != MetalSurface::TYPEINFO)
         {
-            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Provided surface is NOT a MetalSurface", this, TYPEINFO, __func__, __FILE__, __LINE__);
+            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Provided surface is NOT a MetalSurface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
         }
 
@@ -2488,7 +2488,7 @@ MetalGfxDevice::MetalGfxDevice()
                 break;
                 
             default:
-                Base::handleError(ErrorSeverity::Serious, ErrorCode::Internal, "Canvas format is neither BGRA_8_linear, BGRA_8_sRGB or A_8", this, TYPEINFO, __func__, __FILE__, __LINE__ );
+                Base::handleError(ErrorSeverity::Serious, ErrorCode::Internal, "Canvas format is neither BGRA_8_linear, BGRA_8_sRGB or A_8", this, &TYPEINFO, __func__, __FILE__, __LINE__ );
                 break;
         }
 

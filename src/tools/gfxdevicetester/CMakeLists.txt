@@ -110,7 +110,7 @@ if(APPLE)
 		wgsoftgfx
 		wgmetalgfx
 		wgstreamgfx
-		wgcapigfx
+		wgcabiwrapper
 		wgfreetypefont
 		wondergui
 		${APPKIT}
