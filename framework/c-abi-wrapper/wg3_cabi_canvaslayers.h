@@ -24,7 +24,7 @@
 #define WG3_CABICANVASLAYERS_DOT_H
 #pragma once
 
-#include "wg3_canvaslayers.h"
+#include <wg3_canvaslayers.h>
 
 
 typedef void* wg_obj;

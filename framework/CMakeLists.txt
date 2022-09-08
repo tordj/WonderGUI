@@ -61,7 +61,7 @@ add_library( wondergui STATIC
 	baselibrary/base/wg3_state.h
 	baselibrary/base/wg3_string.cpp
 	baselibrary/base/wg3_string.h
-	baselibrary/base/wg3_strongcomponentptr.h
+	baselibrary/base/wg3_componentptr.h
 	baselibrary/base/wg3_strongptr.h
 	baselibrary/base/wg3_surface.cpp
 	baselibrary/base/wg3_surface.h
@@ -78,8 +78,12 @@ add_library( wondergui STATIC
 	baselibrary/base/wg3_types.h
 	baselibrary/base/wg3_util.cpp
 	baselibrary/base/wg3_util.h
-	baselibrary/base/wg3_weakcomponentptr.h
 	baselibrary/base/wg3_weakptr.h
+	baselibrary/base/wg3_animframes.cpp
+	baselibrary/base/wg3_animframes.h
+	baselibrary/base/wg3_dynamicvector.h
+	baselibrary/base/wg3_staticvector.h
+
 
 	baselibrary/c-interface/wg3_c_bitmapcache.cpp
 	baselibrary/c-interface/wg3_c_bitmapcache.h
@@ -91,8 +95,6 @@ add_library( wondergui STATIC
 	baselibrary/c-interface/wg3_c_canvaslayers.h
 	baselibrary/c-interface/wg3_c_color.cpp
 	baselibrary/c-interface/wg3_c_color.h
-	baselibrary/c-interface/wg3_c_component.cpp
-	baselibrary/c-interface/wg3_c_component.h
 	baselibrary/c-interface/wg3_c_font.cpp
 	baselibrary/c-interface/wg3_c_font.h		
 	baselibrary/c-interface/wg3_c_geo.cpp
@@ -122,16 +124,6 @@ add_library( wondergui STATIC
 	baselibrary/c-interface/wg3_c_surfacefactory.cpp
 	baselibrary/c-interface/wg3_c_surfacefactory.h
 	baselibrary/c-interface/wg3_c_types.h
-
-
-	baselibrary/components/wg3_canimframes.cpp
-	baselibrary/components/wg3_canimframes.h
-	baselibrary/components/wg3_cdynamicvector.h
-	baselibrary/components/wg3_cdynamicvector.impl.h
-	baselibrary/components/wg3_component.cpp
-	baselibrary/components/wg3_component.h
-	baselibrary/components/wg3_cstaticvector.h
-	baselibrary/components/wg3_cstaticvector.impl.h
 
 
 	baselibrary/skins/wg3_animskin.cpp

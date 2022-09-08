@@ -23,6 +23,8 @@
 #include <wg3_base.h>
 #include <wg3_context.h>
 
+#include <algorithm>
+
 namespace wg
 {
 
@@ -76,7 +78,7 @@ namespace wg
 	{
 		if (maxBytes < 0)
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "You can not set cache to a negative size!", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "You can not set cache to a negative size!", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 

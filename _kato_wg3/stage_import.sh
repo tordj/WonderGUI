@@ -6,7 +6,6 @@ cd imports
 mkdir baselibrary
 mkdir baselibrary/base
 mkdir baselibrary/c-interface
-mkdir baselibrary/components
 mkdir baselibrary/skins
 mkdir baselibrary/gfxstream
 mkdir c-abi-wrapper
@@ -21,7 +20,8 @@ cd ..
 cd ../../WonderGUI/src
 
 cd baselibrary/base
-cp wg_base.* \
+cp wg_animframes.* \
+   wg_base.* \
    wg_object.* \
    wg_bitmapfont.* \
    wg_bitmapcache.* \
@@ -36,6 +36,7 @@ cp wg_base.* \
    wg_context.* \
    wg_dataset.* \
    wg_dummyfont.* \
+   wg_dynamicvector.* \
    wg_enumextras.* \
    wg_font.* \
    wg_geo.* \
@@ -51,8 +52,9 @@ cp wg_base.* \
    wg_pointers.* \
    wg_skinslotmanager.* \
    wg_state.*\
+   wg_staticvector.* \
    wg_string.* \
-   wg_strongcomponentptr.* \
+   wg_componentptr.* \
    wg_strongptr.* \
    wg_surface.* \
    wg_surfacefactory.* \
@@ -62,23 +64,11 @@ cp wg_base.* \
    wg_texttool.* \
    wg_types.* \
    wg_util.* \
-   wg_weakcomponentptr.* \
    wg_weakptr.* \
    ../../../../wg2/_kato_wg3/imports/baselibrary/base
 
 cd ../c-interface
 cp * ../../../../wg2/_kato_wg3/imports/baselibrary/c-interface
-
-
-cd ../components
-cp wg_component.* \
-   wg_cstaticvector.* \
-   wg_cdynamicvector.* \
-   wg_canimframes.* \
-   wg_cgfxstreamsink.* \
-   wg_cgfxstreamsource.* \
-   ../../../../wg2/_kato_wg3/imports/baselibrary/components
-
 
 cd  ../gfxstream
 cp * ../../../../wg2/_kato_wg3/imports/baselibrary/gfxstream

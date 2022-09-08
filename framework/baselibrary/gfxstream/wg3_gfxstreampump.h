@@ -25,9 +25,10 @@
 
 #include <wg3_geo.h>
 #include <wg3_object.h>
+#include <wg3_componentptr.h>
 
-#include <wg3_cgfxstreamsource.h>
-#include <wg3_cgfxstreamsink.h>
+#include <wg3_gfxstreamsource.h>
+#include <wg3_gfxstreamsink.h>
 
 namespace wg
 {
@@ -42,7 +43,7 @@ namespace wg
 		//.____ Creation ______________________________________________________
 
 		static GfxStreamPump_p	create();
-		static GfxStreamPump_p	create( CGfxStreamSource * pInput, CGfxStreamSink * pOutput );
+		static GfxStreamPump_p	create( const GfxStreamSource_p& pInput, const GfxStreamSink_p& pOutput );
 
 		//.____ Identification ________________________________________________
 
@@ -51,8 +52,8 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		void		setInput(CGfxStreamSource* pStream);
-		void		setOutput(CGfxStreamSink* pStream);
+		void		setInput(const GfxStreamSource_p& pInput);
+		void		setOutput(const GfxStreamSink_p& pOutput);
 
 		GfxChunkId	peekChunk();
 		bool		pumpChunk();
@@ -64,7 +65,7 @@ namespace wg
 
 	protected:
 
-		GfxStreamPump(CGfxStreamSource* pInput, CGfxStreamSink* pOutput);
+		GfxStreamPump(const GfxStreamSource_p& pInput, const GfxStreamSink_p& pOutput);
 		~GfxStreamPump();
 
 		inline GfxStream::Header _decodeHeader(const uint8_t* pHeader) const
@@ -77,8 +78,8 @@ namespace wg
 		bool _pumpUntilChunk(GfxChunkId id, bool bInclusive);
 
 
-		CGfxStreamSource_p		m_pInput;
-		CGfxStreamSink_p		m_pOutput;
+		GfxStreamSource_p	m_pInput;
+		GfxStreamSink_p	m_pOutput;
 	};
 }
 

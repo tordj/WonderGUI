@@ -344,7 +344,7 @@ namespace wg
 				break;
 
 			default:
-                Base::handleError( ErrorSeverity::Critical, ErrorCode::InvalidParam, "Specified PixelFormat not supported", this, TYPEINFO, __func__, __FILE__, __LINE__ );
+                Base::handleError( ErrorSeverity::Critical, ErrorCode::InvalidParam, "Specified PixelFormat not supported", this, &TYPEINFO, __func__, __FILE__, __LINE__ );
 				assert(false);           // Should never get here, just avoiding compiler warnings.
 				break;
 		}

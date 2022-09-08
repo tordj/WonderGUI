@@ -5,7 +5,6 @@ cd exports
 mkdir baselibrary
 mkdir baselibrary/base
 mkdir baselibrary/c-interface
-mkdir baselibrary/components
 mkdir baselibrary/gfxstream
 mkdir baselibrary/skins
 mkdir c-abi-wrapper
@@ -20,7 +19,6 @@ cd ..
 
 cp -r ../framework/baselibrary/base exports/baselibrary
 cp -r ../framework/baselibrary/c-interface exports/baselibrary
-cp -r ../framework/baselibrary/components exports/baselibrary
 cp -r ../framework/baselibrary/gfxstream exports/baselibrary
 cp -r ../framework/baselibrary/skins exports/baselibrary
 cp -r ../framework/c-abi-wrapper exports/

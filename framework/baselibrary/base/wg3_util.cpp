@@ -578,7 +578,7 @@ RectI sourceOfs;
 				output.A_shift = 0;
 				output.R_shift = 0;
 				output.G_shift = 5;
-				output.B_shift = 13;
+				output.B_shift = 11;
 
 				return true;
 

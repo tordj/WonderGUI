@@ -62,18 +62,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _object() _____________________________________________________________
-
-	Object* GfxStreamLogger::_object()
-	{
-		return this;
-	}
-
-	const Object* GfxStreamLogger::_object() const
-	{
-		return this;
-	}
-
 	//____ _processStreamChunks() _____________________________________________
 
 	void GfxStreamLogger::_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd)

@@ -110,19 +110,6 @@ namespace wg
 		m_canvasInfoCallback = callback;
 	}
 
-
-	//____ _object() _____________________________________________________________
-
-	Object* GfxStreamPlayer::_object()
-	{
-		return this;
-	}
-
-	const Object* GfxStreamPlayer::_object() const
-	{
-		return this;
-	}
-
 	//____ _processStreamChunks() _____________________________________________
 
 	void GfxStreamPlayer::_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd)

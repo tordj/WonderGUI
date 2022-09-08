@@ -40,8 +40,8 @@ wg_obj wg_createStreamPump()
 
 wg_obj wg_createStreamPumpWithInputOutput(wg_component input, wg_component output)
 {
-	CGfxStreamSource* pInput = static_cast<CGfxStreamSource*>(reinterpret_cast<Component*>(input));
-	CGfxStreamSink* pOutput = static_cast<CGfxStreamSink*>(reinterpret_cast<Component*>(output));
+	GfxStreamSource_p pInput(reinterpret_cast<Object*>(input.object), * reinterpret_cast<GfxStreamSource*>(input.interface));
+	GfxStreamSink_p pOutput(reinterpret_cast<Object*>(output.object), *reinterpret_cast<GfxStreamSink*>(output.interface));
 
 	auto p = GfxStreamPump::create(pInput,pOutput);
 	p->retain();
@@ -50,13 +50,13 @@ wg_obj wg_createStreamPumpWithInputOutput(wg_component input, wg_component outpu
 
 void wg_setStreamPumpInput(wg_obj streamPump, wg_component input)
 {
-	CGfxStreamSource* pInput = static_cast<CGfxStreamSource*>(reinterpret_cast<Component*>(input));
+	GfxStreamSource_p pInput(reinterpret_cast<Object*>(input.object), *reinterpret_cast<GfxStreamSource*>(input.interface));
 	getPtr(streamPump)->setInput(pInput);
 }
 
 void wg_setStreamPumpOutput(wg_obj streamPump, wg_component output)
 {
-	CGfxStreamSink* pOutput = static_cast<CGfxStreamSink*>(reinterpret_cast<Component*>(output));
+	GfxStreamSink_p pOutput(reinterpret_cast<Object*>(output.object), *reinterpret_cast<GfxStreamSink*>(output.interface));
 	getPtr(streamPump)->setOutput(pOutput);
 }
 

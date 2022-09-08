@@ -29,7 +29,7 @@
 #include <wg3_geo.h>
 #include <wg3_color.h>
 #include <wg3_gradient.h>
-#include <wg3_cgfxstreamsource.h>
+#include <wg3_gfxstreamsource.h>
 
 #include <cstring>
 

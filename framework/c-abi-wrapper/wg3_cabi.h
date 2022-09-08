@@ -35,7 +35,6 @@ namespace wg
 		static wg_bitmapcache_calls*	bitmapCache;
 		static wg_bitmapfont_calls*		bitmapFont;
 		static wg_canvaslayers_calls*	canvasLayers;
-		static wg_component_calls*		component;
 		static wg_font_calls*			font;
 		static wg_object_calls*			object;
 		static wg_gfxdevice_calls*		gfxDevice;

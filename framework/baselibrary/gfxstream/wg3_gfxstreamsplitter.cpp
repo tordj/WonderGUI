@@ -39,7 +39,7 @@ namespace wg
 		return new GfxStreamSplitter();
 	}
 
-	GfxStreamSplitter_p GfxStreamSplitter::create(const std::initializer_list<CGfxStreamSink_p>& outputs)
+	GfxStreamSplitter_p GfxStreamSplitter::create(const std::initializer_list<GfxStreamSink_p>& outputs)
 	{
 		return new GfxStreamSplitter(outputs);
 	}
@@ -50,7 +50,7 @@ namespace wg
 	{
 	}
 
-	GfxStreamSplitter::GfxStreamSplitter(const std::initializer_list<CGfxStreamSink_p>& outputs) : input(this)
+	GfxStreamSplitter::GfxStreamSplitter(const std::initializer_list<GfxStreamSink_p>& outputs) : input(this)
 	{
 		m_outputs = outputs;
 	}
@@ -77,14 +77,14 @@ namespace wg
 
 	//____ addOutput() ___________________________________________________________
 
-	void GfxStreamSplitter::addOutput( CGfxStreamSink * pOutput )
+	void GfxStreamSplitter::addOutput( const GfxStreamSink_p& pOutput )
 	{
 		m_outputs.push_back(pOutput);
 	}
 
 	//____ removeOutput() ________________________________________________________
 
-	void GfxStreamSplitter::removeOutput( CGfxStreamSink * pOutput )
+	void GfxStreamSplitter::removeOutput(const GfxStreamSink_p& pOutput)
 	{
 		auto newEnd = std::remove( m_outputs.begin(), m_outputs.end(), pOutput );
 		m_outputs.erase(newEnd, m_outputs.end());
@@ -96,18 +96,6 @@ namespace wg
 	{
 		for (auto& pOutput : m_outputs)
 			pOutput->processChunks(pBegin, pEnd);
-	}
-
-	//____ _object() __________________________________________________________
-
-	Object * GfxStreamSplitter::_object()
-	{
-		return this;
-	}
-
-	const Object * GfxStreamSplitter::_object() const
-	{
-		return this;
 	}
 
 

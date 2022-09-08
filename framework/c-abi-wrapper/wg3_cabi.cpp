@@ -30,7 +30,6 @@ namespace wg
 	wg_bitmapcache_calls*		CABI::bitmapCache	= nullptr;
 	wg_bitmapfont_calls*		CABI::bitmapFont	= nullptr;
 	wg_canvaslayers_calls*		CABI::canvasLayers	= nullptr;
-	wg_component_calls*			CABI::component		= nullptr;
 	wg_font_calls*				CABI::font			= nullptr;
 	wg_object_calls*			CABI::object		= nullptr;
 	wg_gfxdevice_calls*			CABI::gfxDevice		= nullptr;
@@ -57,9 +56,6 @@ namespace wg
 			goto	error_too_old_abi;
 
 		if (pCallsCollection->pCanvasLayers->structSize < sizeof(wg_canvaslayers_calls))
-			goto	error_too_old_abi;
-
-		if (pCallsCollection->pComponent->structSize < sizeof(wg_component_calls))
 			goto	error_too_old_abi;
 
 		if (pCallsCollection->pFont->structSize < sizeof(wg_font_calls))
@@ -94,7 +90,6 @@ namespace wg
 		bitmapCache		= pCallsCollection->pBitmapCache;
 		bitmapFont		= pCallsCollection->pBitmapFont;
 		canvasLayers	= pCallsCollection->pCanvasLayers;
-		component		= pCallsCollection->pComponent;
 		font			= pCallsCollection ->pFont;
 		object			= pCallsCollection->pObject;
 		gfxDevice		= pCallsCollection->pGfxDevice;

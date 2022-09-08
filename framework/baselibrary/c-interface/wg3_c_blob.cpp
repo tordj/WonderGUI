@@ -32,12 +32,16 @@ inline Blob* getPtr(wg_obj obj) {
 
 wg_obj wg_createBlob( int size )
 {
-	return static_cast<Object*>(Blob::create(size));
+  auto pBlob = Blob::create(size);
+  pBlob->retain();
+  return static_cast<Object*>(pBlob);
 }
 
 wg_obj 	wg_createBlobFromData( void * pData, int size, void(*destructor)() )
 {
-	return static_cast<Object*>(Blob::create(pData,size,destructor));
+  auto pBlob = Blob::create(pData,size,destructor);
+  pBlob->retain();
+	return static_cast<Object*>(pBlob);
 }
 
 int wg_blobSize( wg_obj blob )

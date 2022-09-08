@@ -1484,12 +1484,12 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 					dirY = pos.y - center.y;
 				else if( pos.y > center.y + center.h )
 					dirY = pos.y - (center.y + center.h);
-                
+
                 int maxScrollSpeed = m_hoverScrollSpeed * m_scale / WG_SCALE_BASE;
 
 				dirX = dirX * maxScrollSpeed / border.left;
 				dirY = dirY * maxScrollSpeed / border.top;
-               
+
                 wg::limit( dirX, -maxScrollSpeed, maxScrollSpeed );
                 wg::limit( dirY, -maxScrollSpeed, maxScrollSpeed );
 
@@ -1557,7 +1557,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 	WgRect	dirtBounds = patches.getUnion();
 
 	int bytesToRelease = _convertAndPushClipList( pDevice, patches.size(), patches.begin() );
-	
+
 	// Render skin
 
 	if( m_pSkin )
@@ -1570,7 +1570,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 		WgRect window = m_elements[WINDOW].m_windowGeo + _canvas.pos();
 		pDevice->fill( window*64, m_bgColor );
 	}
-	
+
 	//
 
 	if( m_elements[WINDOW].Widget() )
@@ -1611,7 +1611,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 	}
 
 	//
-	
+
 	if( m_pFillerBlocks && m_geoFiller.w != 0 && m_geoFiller.h != 0 )
 	{
 		WgMode mode = m_bEnabled?WG_MODE_NORMAL:WG_MODE_DISABLED;
@@ -1621,7 +1621,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 	}
 
 	//
-	
+
 	_popAndReleaseClipList( pDevice, bytesToRelease );
 }
 
@@ -1763,7 +1763,7 @@ bool WgScrollPanel::SetMouseWheelAxis(int wheelNb, wg::Axis axis)
 {
     if( wheelNb < 0 || wheelNb > 4 )
         return false;
-    
+
     m_mouseWheelAxis[wheelNb] = axis;
     return true;
 }

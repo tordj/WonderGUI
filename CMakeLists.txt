@@ -14,7 +14,6 @@ include_directories(
 	framework/baselibrary
 	framework/baselibrary/base
 	framework/baselibrary/c-interface
-	framework/baselibrary/components
 	framework/baselibrary/sizebrokers
 	framework/baselibrary/gfxstream
 	framework/baselibrary/skins/anim

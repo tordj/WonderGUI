@@ -155,67 +155,67 @@ enum    WgEventType
     WG_EVENT_DUMMY = 0,
     WG_EVENT_TICK,
     WG_EVENT_POINTER_CHANGE,
-    
+
     WG_EVENT_FOCUS_GAINED,
     WG_EVENT_FOCUS_LOST,
-    
+
     WG_EVENT_MOUSE_ENTER,
     WG_EVENT_MOUSE_MOVE,
     WG_EVENT_MOUSE_POSITION,
     WG_EVENT_MOUSE_LEAVE,
-    
+
     WG_EVENT_MOUSEBUTTON_PRESS,
     WG_EVENT_MOUSEBUTTON_REPEAT,
     WG_EVENT_MOUSEBUTTON_DRAG,
     WG_EVENT_MOUSEBUTTON_RELEASE,
     WG_EVENT_MOUSEBUTTON_CLICK,
     WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK,
-    
+
     WG_EVENT_KEY_PRESS,
     WG_EVENT_KEY_REPEAT,
     WG_EVENT_KEY_RELEASE,
     WG_EVENT_CHARACTER,
     WG_EVENT_MOUSEWHEEL_ROLL,
-    
+
     WG_EVENT_SELECTED,                        // Posted every time a popup menu entry is selected. Should be used by more widgets in the future.
     WG_EVENT_BUTTON_PRESS,                    // Posted every time a button is pressed, either by left mouse button or enter key.
-    
+
     WG_EVENT_CHECKBOX_CHECK,
     WG_EVENT_CHECKBOX_UNCHECK,
     WG_EVENT_CHECKBOX_TOGGLE,
-    
+
     WG_EVENT_RADIOBUTTON_SELECT,
     WG_EVENT_RADIOBUTTON_UNSELECT,
     WG_EVENT_RADIOBUTTON_TOGGLE,
-    
+
     WG_EVENT_ANIMATION_UPDATE,                // Posted every time the animation changes frame.
-    
+
     WG_EVENT_TAB_SELECT,                    // Posted when a new tab is selected.
     WG_EVENT_TAB_PRESS,                        // Posted every time any mousebutton is pressed on a widget.
-    
+
     WG_EVENT_SLIDER_MOVE,
     WG_EVENT_SLIDER_STEP_FWD,
     WG_EVENT_SLIDER_STEP_BWD,
     WG_EVENT_SLIDER_JUMP_FWD,
     WG_EVENT_SLIDER_JUMP_BWD,
     WG_EVENT_SLIDER_WHEEL_ROLL,
-    
+
     WG_EVENT_TEXT_MODIFY,                    // Posted for every change to text through cursor/selection.
     WG_EVENT_TEXT_SET,                        // Posted when edited text is 'set' by removing cursor.
-    
+
     WG_EVENT_MENUITEM_SELECT,                // Posted when a WgMenuEntry or WgMenuRadioButton is selected.
     WG_EVENT_MENUITEM_CHECK,                // Posted when a WgMenuCheckBox is checked.
     WG_EVENT_MENUITEM_UNCHECK,                // Posted when a WgMenuCheckBox is unchecked.
-    
+
     WG_EVENT_POPUP_CLOSED,
-    
+
     WG_EVENT_MODAL_MOVE_OUTSIDE,
     WG_EVENT_MODAL_BLOCKED_PRESS,
     WG_EVENT_MODAL_BLOCKED_RELEASE,
-    
+
     WG_EVENT_TABLE_CELL_MARK,
     WG_EVENT_TABLE_CELL_UNMARK,
-    
+
     WG_EVENT_LINK_MARK,
     WG_EVENT_LINK_UNMARK,
     WG_EVENT_LINK_PRESS,
@@ -223,18 +223,18 @@ enum    WgEventType
     WG_EVENT_LINK_RELEASE,
     WG_EVENT_LINK_CLICK,
     WG_EVENT_LINK_DOUBLE_CLICK,
-    
+
     WG_EVENT_KNOB_TURN,
     WG_EVENT_RANGE_CHANGED,
-    
+
     WG_EVENT_SLIDER_PRESS,
     WG_EVENT_SLIDER_MOVED,
     WG_EVENT_SLIDER_ENTER,
     WG_EVENT_SLIDER_LEAVE,
-    
+
     WG_EVENT_SLIDER_HANDLE_ENTER,
     WG_EVENT_SLIDER_HANDLE_LEAVE,
-    
+
     WG_EVENT_DROP_PICK,
     WG_EVENT_DROP_PROBE,
     WG_EVENT_DROP_ENTER,
@@ -243,12 +243,12 @@ enum    WgEventType
     WG_EVENT_DROP_DELIVER,
     WG_EVENT_DROP_CANCEL,
     WG_EVENT_DROP_COMPLETE,
-    
+
     WG_EVENT_DROPHOVER_ENTER,
     WG_EVENT_DROPHOVER_MOVE,
     WG_EVENT_DROPHOVER_LEAVE,
 
-    
+
     WG_EVENT_LANES_DROP,
 	WG_EVENT_LANES_INSERT,
 	WG_EVENT_LANES_BUTTON_PRESS,
@@ -262,8 +262,8 @@ enum    WgEventType
     //    WG_EVENT_SLIDER_RELEASE,
     //    WG_EVENT_SLIDER_CLICK,
     //    WG_EVENT_SLIDER_DOUBLE_CLICK,
-    
-    
+
+
     /*
      WG_EVENT_ITEM_ENTER,
      WG_EVENT_ITEM_LEAVE,

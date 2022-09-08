@@ -38,7 +38,8 @@ wg_obj wg_createStreamReader(wg_readStream_func callback)
 
 wg_component wg_getStreamReaderOutput(wg_obj streamReader)
 {
-	return static_cast<Component*>(&getPtr(streamReader)->output);
+	auto p = getPtr(streamReader);
+	return { static_cast<Object*>(p), &p->output };
 }
 
 int wg_streamReaderCapacity(wg_obj streamReader)

@@ -19,29 +19,21 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG3_CSTATICStaticVector_DOT_H
-#define WG3_CSTATICStaticVector_DOT_H
+#ifndef WG3_STATICVECTOR_DOT_H
+#define WG3_STATICVECTOR_DOT_H
 #pragma once
 
 #include <vector>
 
-#include <wg3_component.h>
-
 namespace wg
 {
 
-	//____ CStaticVector _____________________________________________________
+	//____ StaticVector _____________________________________________________
 	
 	template<class EntryType>
-	class CStaticVector : public Component
+	class StaticVector
 	{
 	public:
-
-		class Holder	/** @private */
-		{
-		public:
-			virtual Object * _object() = 0;
-		};
 		
 		using		iterator = typename std::vector<EntryType>::iterator;
 		using		const_iterator = typename std::vector<EntryType>::const_iterator;
@@ -50,12 +42,8 @@ namespace wg
 		using		const_reverse_iterator = typename std::vector<EntryType>::const_reverse_iterator;
 
 
-		CStaticVector(Holder * pHolder) : m_pHolder(pHolder) {}
+		StaticVector() {}
 
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
@@ -89,15 +77,11 @@ namespace wg
 		inline const EntryType& operator[](int index) const { return m_entries[index]; }
 
 	protected:
-//		~CStaticVector() {}
-	
-		Object *		_object() override;
-		const Object *	_object() const override;
-	
-		Holder *				m_pHolder;
+//		~StaticVector() {}
+		
 		std::vector<EntryType>	m_entries;
 	};
 
 } //namespace
 
-#endif //WG3_CStaticVector_DOT_H
+#endif //WG3_STATICVECTOR_DOT_H

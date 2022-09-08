@@ -26,8 +26,7 @@
 #include <wg3_object.h>
 #include <wg3_strongptr.h>
 #include <wg3_weakptr.h>
-#include <wg3_strongcomponentptr.h>
-#include <wg3_weakcomponentptr.h>
+#include <wg3_componentptr.h>
 
 namespace wg
 {
