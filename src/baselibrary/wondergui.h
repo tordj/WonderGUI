@@ -163,6 +163,7 @@
 #include <wg_scrollpanel.h>
 #include <wg_splitpanel.h>
 #include <wg_stackpanel.h>
+#include <wg_twoslotpanel.h>
 #include <wg_animplayer.h>
 #include <wg_button.h>
 #include <wg_container.h>

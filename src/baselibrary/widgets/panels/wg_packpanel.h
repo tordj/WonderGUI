@@ -96,7 +96,7 @@ namespace wg
 			bool		m_bResizeRequired = false;
 			float		m_weight = 1.f;				// Weight for space allocation.
 			RectSPX		m_geo;						// Real geo of child (no padding included).
-			SizeSPX		m_defaultSize;			// Cached padded default size from the child.
+			SizeSPX		m_defaultSize;				// Cached padded default size from the child.
 		};
 
 		using		iterator = SlotArrayIterator<Slot>;

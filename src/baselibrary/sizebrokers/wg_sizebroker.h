@@ -35,12 +35,11 @@ namespace wg
 
 		//.____ Properties _____________________________________________________
 
-		pts	preferred;		// Preferred length for this item (input)
-		pts	min;			// Min length for this item (input)
-		pts	max;			// Max length for this item (input)
+		spx	preferred;		// Preferred length for this item (input)
+		spx	min;			// Min length for this item (input)
+		spx	max;			// Max length for this item (input)
 		float	weight;		// Weight for this item (input)
-		pts	output;			// Length or preferred length for this item (output)
-		pts outSPX;			// Should be ignored by sizebroker. Used for postprocessing.
+		spx	output;			// Length or preferred length for this item (output)
 	};
 
 
@@ -58,8 +57,8 @@ namespace wg
 
 		//.____ Misc __________________________________________
 
-		virtual pts setItemLengths( SizeBrokerItem * pItems, int nItems, pts totalLength ) const = 0;
-		virtual pts setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const = 0;
+		virtual spx setItemLengths( SizeBrokerItem * pItems, int nItems, spx totalLength ) const = 0;
+		virtual spx setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const = 0;
 		virtual bool mayAlterPreferredLengths() const = 0;
 
 	protected:

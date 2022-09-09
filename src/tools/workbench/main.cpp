@@ -108,6 +108,7 @@ bool packPanelTest(ComponentPtr<DynamicSlot> pSlot);
 bool glyphAsSurfaceTest(ComponentPtr<DynamicSlot> pSlot, Font_p pFont );
 bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot);
 bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pSlot);
+bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pSlot);
 
 
 void nisBlendTest();
@@ -651,7 +652,7 @@ int main(int argc, char** argv)
 //	popupOpenerTest(pSlot);
 //	scrollbarTest(pSlot);
 //	modalLayerTest(pSlot);
-	splitPanelTest(pSlot);
+//	splitPanelTest(pSlot);
 //	designLayerTest(pSlot);
 //	pianoKeyboardTest(pSlot);
 //	sliderTest(pSlot);
@@ -679,6 +680,7 @@ int main(int argc, char** argv)
 //	glyphAsSurfaceTest(pSlot, pFont);
 //	memHeapFragmentationTest(pSlot);
 //	blendRGB565BigendianTest( pSlot );
+	twoSlotPanelTest(pSlot);
 
 
 	// Test IChild and IChildIterator baseclasses
@@ -3251,6 +3253,26 @@ bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pEntry)
 	pHSplit->slots << pImage;
 
 	*pEntry = pCanvas;
+
+	return true;
+}
+
+//____ twoSlotPanelTest() ______________________________________________________
+
+bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pPanel = TwoSlotPanel::create();
+	pPanel->setAxis(Axis::X);
+
+	auto pContent1 = TextEditor::create();
+	pContent1->setSkin(StaticColorSkin::create(Color::Red));
+	pPanel->slots[0] = pContent1;
+
+	auto pContent2 = TextEditor::create();
+	pContent2->setSkin(StaticColorSkin::create(Color::Green));
+	pPanel->slots[1] = pContent2;
+
+	*pEntry = pPanel;
 
 	return true;
 }

@@ -45,8 +45,8 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		pts setItemLengths( SizeBrokerItem * pItems, int nItems, pts totalLength ) const override;
-		pts setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const override;
+		spx setItemLengths( SizeBrokerItem * pItems, int nItems, spx totalLength ) const override;
+		spx setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const override;
 		bool mayAlterPreferredLengths() const override;
 
 	protected:

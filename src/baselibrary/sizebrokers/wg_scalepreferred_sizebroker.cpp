@@ -20,6 +20,7 @@
 
 =========================================================================*/
 #include <wg_scalepreferred_sizebroker.h>
+#include <wg_util.h>
 
 namespace wg
 {
@@ -36,19 +37,19 @@ namespace wg
 
 	//____ setItemLengths() _______________________________________________________
 
-	pts ScalePreferredSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, pts totalLength ) const
+	spx ScalePreferredSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, spx totalLength ) const
 	{
 		return setPreferredLengths( pItems, nItems );
 	}
 
 	//____ setPreferredLengths() __________________________________________________
 
-	pts ScalePreferredSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
+	spx ScalePreferredSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
 	{
-		pts total = 0;
+		spx total = 0;
 		for( int i = 0 ; i < nItems ; i++ )
 		{
-			pts def = pItems[i].preferred * pItems[i].weight;
+			spx def = Util::align( pItems[i].preferred * pItems[i].weight );
 			pItems[i].output = def;
 			total += def;
 		}

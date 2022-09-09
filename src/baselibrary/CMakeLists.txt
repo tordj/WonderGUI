@@ -293,6 +293,7 @@ add_library( wondergui
 	slots/wg_dynamicslotvector.h
 	slots/wg_dynamicslotvector.impl.h
 	slots/wg_slotarray.h
+	slots/wg_slotarray2.h
 	slots/wg_staticslotcollection.h
 	slots/wg_staticslotvector.h
 	slots/wg_staticslotvector.impl.h
@@ -388,4 +389,6 @@ add_library( wondergui
 	widgets/panels/wg_splitpanel.h
 	widgets/panels/wg_stackpanel.cpp
 	widgets/panels/wg_stackpanel.h
+	widgets/panels/wg_twoslotpanel.cpp
+	widgets/panels/wg_twoslotpanel.h
 )

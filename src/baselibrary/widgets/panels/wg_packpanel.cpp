@@ -175,7 +175,7 @@ namespace wg
 				{
 					if( pS->m_bVisible )
 					{
-						spx itemHeight = pS->_paddedMatchingHeight( pI->outSPX, scale );
+						spx itemHeight = pS->_paddedMatchingHeight( pI->output, scale );
 						if( itemHeight > height )
 							height = itemHeight;
 						pI++;
@@ -271,7 +271,7 @@ namespace wg
 				{
 					if( pS->m_bVisible )
 					{
-						spx itemWidth = pS->_paddedMatchingWidth( pI->outSPX, scale );
+						spx itemWidth = pS->_paddedMatchingWidth( pI->output, scale );
 						if( itemWidth > width )
 							width = itemWidth;
 						pI++;
@@ -709,7 +709,7 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					spx b = m_bHorizontal?pS->_paddedMatchingHeight(pI->outSPX, scale):pS->_paddedMatchingWidth(pI->outSPX, scale);
+					spx b = m_bHorizontal?pS->_paddedMatchingHeight(pI->output, scale):pS->_paddedMatchingWidth(pI->output, scale);
 					if( b > breadth )
 						breadth = b;
 					pI++;
@@ -899,15 +899,15 @@ namespace wg
 					geo.y = pos.y;
 					if( m_bHorizontal )
 					{
-						geo.w = pI->outSPX;
+						geo.w = pI->output;
 						geo.h = sz.h;
-						pos.x += pI->outSPX;
+						pos.x += pI->output;
 					}
 					else
 					{
 						geo.w = sz.w;
-						geo.h = pI->outSPX;
-						pos.y += pI->outSPX;
+						geo.h = pI->output;
+						pos.y += pI->output;
 					}
 					geo -= align(ptsToSpx(p->m_padding,m_scale));
 					geo += contentOfs;
@@ -974,9 +974,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = spxToPts(pS->m_defaultSize.w, m_scale);
-					pI->min = spxToPts(pS->_paddedMinSize(m_scale).w, m_scale);
-					pI->max = spxToPts(pS->_paddedMaxSize(m_scale).w, m_scale);
+					pI->preferred = pS->m_defaultSize.w;
+					pI->min = pS->_paddedMinSize(m_scale).w;
+					pI->max = pS->_paddedMaxSize(m_scale).w;
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -988,9 +988,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = spxToPts(pS->m_defaultSize.h, m_scale);
-					pI->min = spxToPts(pS->_paddedMinSize(m_scale).h, m_scale);
-					pI->max = spxToPts(pS->_paddedMaxSize(m_scale).h, m_scale);
+					pI->preferred = pS->m_defaultSize.h;
+					pI->min = pS->_paddedMinSize(m_scale).h;
+					pI->max = pS->_paddedMaxSize(m_scale).h;
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -1010,9 +1010,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = spxToPts(pS->_paddedMatchingWidth(forcedBreadth,m_scale), m_scale);
-					pI->min = spxToPts(pS->_paddedMinSize(m_scale).w, m_scale);
-					pI->max = spxToPts(pS->_paddedMaxSize(m_scale).w, m_scale);
+					pI->preferred = pS->_paddedMatchingWidth(forcedBreadth,m_scale);
+					pI->min = pS->_paddedMinSize(m_scale).w;
+					pI->max = pS->_paddedMaxSize(m_scale).w;
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -1024,9 +1024,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = spxToPts(pS->_paddedMatchingHeight(forcedBreadth,m_scale), m_scale);
-					pI->min = spxToPts(pS->_paddedMinSize(m_scale).w, m_scale);
-					pI->max = spxToPts(pS->_paddedMaxSize(m_scale).w, m_scale);
+					pI->preferred = pS->_paddedMatchingHeight(forcedBreadth,m_scale);
+					pI->min = pS->_paddedMinSize(m_scale).h;
+					pI->max = pS->_paddedMaxSize(m_scale).h;
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -1040,7 +1040,7 @@ namespace wg
 
 	spx PackPanel::_setItemLengths(SizeBrokerItem * pItems, int nItems, spx availableLength) const
 	{
-		m_pSizeBroker->setItemLengths(pItems, nItems, spxToPts(availableLength,m_scale) );
+		m_pSizeBroker->setItemLengths(pItems, nItems, availableLength );
 
 		// Align outputs so we end up on pixel boundaries
 
@@ -1049,8 +1049,8 @@ namespace wg
 		for (int i = 0; i < nItems; i++)
 		{
 			end += pItems[i].output;
-			spx conv = align(ptsToSpx(end, m_scale));
-			pItems[i].outSPX = conv - begin;
+			spx conv = align(end);
+			pItems[i].output = conv - begin;
 			begin = conv;
 		}
 
@@ -1070,8 +1070,8 @@ namespace wg
 		for (int i = 0; i < nItems; i++)
 		{
 			end += pItems[i].output;
-			spx conv = align(ptsToSpx(end, m_scale));
-			pItems[i].outSPX = conv - begin;
+			spx conv = align(end);
+			pItems[i].output = conv - begin;
 			begin = conv;
 		}
 
