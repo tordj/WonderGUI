@@ -82,13 +82,13 @@ namespace wg
 		}
 	}
 
-	//____ setSizeBroker() ____________________________________________________
+	//____ setLayout() ____________________________________________________
 
-	void TwoSlotPanel::setSizeBroker(SizeBroker* pBroker)
+	void TwoSlotPanel::setLayout(PackLayout* pLayout)
 	{
-		if (pBroker != m_pSizeBroker)
+		if (pLayout != m_pLayout)
 		{
-			m_pSizeBroker = pBroker;
+			m_pLayout = pLayout;
 			m_defaultSize = _calcDefaultSize(m_scale);
 			_requestResize();
 // This will only be needed once _requestResize can fail.
@@ -128,7 +128,7 @@ namespace wg
 
 	SizeSPX TwoSlotPanel::_calcDefaultSize(int scale) const
 	{
-		//TODO: Use sizebrokers default size function if present!
+		//TODO: Use layouts default size function if present!
 
 		SizeSPX firstSz;
 		SizeSPX secondSz;
@@ -180,10 +180,12 @@ namespace wg
 		spx totalLength = (m_bHorizontal ? contentGeo.w : contentGeo.h);
 		spx len1 = 0, len2 = 0;
 
-		if (m_pSizeBroker)
+		if (m_pLayout)
 		{
-			SizeBrokerItem items[2];
-			SizeBrokerItem* pI = items;
+			PackLayout::Item items[2];
+			PackLayout::Item* pI = items;
+
+			spx	results[2];
 
 			if (m_bHorizontal)
 			{
@@ -191,7 +193,7 @@ namespace wg
 				{
 					if (slots[i].m_pWidget)
 					{
-						pI->preferred = slots[i].m_pWidget->_matchingWidth(contentGeo.h, m_scale);
+						pI->def = slots[i].m_pWidget->_matchingWidth(contentGeo.h, m_scale);
 						pI->min = slots[i].m_pWidget->_minSize(m_scale).w;
 						pI->max = slots[i].m_pWidget->_maxSize(m_scale).w;
 						pI->weight = slots[i].m_weight;
@@ -205,7 +207,7 @@ namespace wg
 				{
 					if (slots[i].m_pWidget)
 					{
-						pI->preferred = slots[i].m_pWidget->_matchingHeight(contentGeo.w, m_scale);
+						pI->def = slots[i].m_pWidget->_matchingHeight(contentGeo.w, m_scale);
 						pI->min = slots[i].m_pWidget->_minSize(m_scale).h;
 						pI->max = slots[i].m_pWidget->_maxSize(m_scale).h;
 						pI->weight = slots[i].m_weight;
@@ -216,15 +218,15 @@ namespace wg
 
 			if (pI > items)
 			{
-				spx combinedLength =  m_pSizeBroker->setItemLengths(items, pI - items, m_bHorizontal ? contentGeo.w : contentGeo.h);
+				spx combinedLength =  m_pLayout->getItemSizes(results, m_bHorizontal ? contentGeo.w : contentGeo.h, m_scale, pI - items, items );
 
 				if (slots[0].m_pWidget)
 				{
-					len1 = align(items[0].output);
+					len1 = results[0];
 					combinedLength -= len1;
 				}
 
-				len1 = combinedLength;
+				len2 = combinedLength;
 			}
 
 		}

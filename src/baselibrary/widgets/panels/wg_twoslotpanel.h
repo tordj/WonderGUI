@@ -29,7 +29,7 @@
 #include <wg_panel.h>
 #include <wg_slot.h>
 #include <wg_slotarray2.h>
-#include <wg_sizebroker.h>
+#include <wg_packlayout.h>
 
 
 namespace wg
@@ -61,8 +61,8 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			void			setWeight(float weight);
-			inline float	weight() const { return m_weight; }
+			void			setWeight(float weight) { m_weight = int(weight * 65536); };
+			inline float	weight() const { return float(m_weight)/65536; }
 
 
 			//.____ Operators __________________________________________
@@ -72,7 +72,7 @@ namespace wg
 		protected:
 			Slot() : DynamicSlot(nullptr) {}
 
-			float	m_weight = 1.f;
+			int		m_weight = 65536;			// Float scaled down to 16.16 format.
 			int		m_length = 0;
 		};
 
@@ -96,8 +96,8 @@ namespace wg
 
 		//.____ Behavior _______________________________________________________
 
-		void			setSizeBroker(SizeBroker* pBroker);
-		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
+		void			setLayout(PackLayout* pLayout);
+		PackLayout_p	layout() const { return m_pLayout; }
 
 		//.____ Internal _______________________________________________________
 
@@ -162,7 +162,7 @@ namespace wg
 
 		bool			m_bHorizontal;
 		SizeSPX			m_defaultSize;
-		SizeBroker_p	m_pSizeBroker;
+		PackLayout_p	m_pLayout;
 	};
 
 }

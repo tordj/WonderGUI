@@ -3272,6 +3272,10 @@ bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pEntry)
 	pContent2->setSkin(StaticColorSkin::create(Color::Green));
 	pPanel->slots[1] = pContent2;
 
+
+	auto pLayout = PackLayout::create( { .expandFactor = PackLayout::Factor::One } );
+	pPanel->setLayout(pLayout);
+
 	*pEntry = pPanel;
 
 	return true;
