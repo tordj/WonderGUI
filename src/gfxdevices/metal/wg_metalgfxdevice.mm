@@ -984,7 +984,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         //
 
-		if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 4)
+		if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
 			_resizeBuffers();
 
 		//

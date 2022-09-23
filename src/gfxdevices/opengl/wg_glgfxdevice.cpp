@@ -1068,8 +1068,8 @@ namespace wg
 
 			// Provide rectangle center and radius
 
-			SizeF	radius(rect.w / 2, rect.h / 2);
-			CoordF	center(rect.x + radius.w, rect.y + radius.h);
+			SizeF    radius(rect.w / (2.f*64), rect.h / (2.f*64));
+			CoordF    center( (rect.x/64.f) + radius.w, (rect.y/64.f) + radius.h);
 
 			m_extrasBufferData[m_extrasOfs++] = center.x;
 			m_extrasBufferData[m_extrasOfs++] = center.y;

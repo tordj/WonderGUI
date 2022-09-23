@@ -31,7 +31,7 @@
 extern "C" {
 #endif
 
-	wg_obj			wg_createStreamPump();
+	wg_obj			wg_createStreamPump(void);
 	wg_obj			wg_createStreamPumpWithInputOutput( wg_component input, wg_component output);
 
 	void			wg_setStreamPumpInput(wg_obj streamPump, wg_component input);

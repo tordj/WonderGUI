@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-	wg_obj	wg_createSoftGfxDevice();
+	wg_obj	wg_createSoftGfxDevice(void);
 	int		wg_defineSoftGfxDeviceCanvas( wg_obj device, wg_canvasRef ref, wg_obj softSurface );
 
 	wg_obj	wg_createSoftSurface(const wg_surfaceBP* blueprint);
@@ -38,7 +38,7 @@ extern "C" {
 	wg_obj	wg_createSoftSurfaceFromBitmap(const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription);
 	wg_obj	wg_createSoftSurfaceFromSurface(const wg_surfaceBP* blueprint, wg_obj fromSurface);
 
-	wg_obj	wg_createSoftSurfaceFactory();
+	wg_obj	wg_createSoftSurfaceFactory(void);
 
 
 #ifdef __cplusplus
