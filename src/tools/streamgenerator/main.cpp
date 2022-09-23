@@ -58,7 +58,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
 void playImageStreamingTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
 
 
-CoordSPX positionSprite(SizeSPX dimensions, int tick, int nb, int amount);
+CoordSPX positionSprite(SizeSPX dimensions, int tick, int length, int nb, int amount);
 
 
 
@@ -321,8 +321,8 @@ int main ( int argc, char** argv )
 	// Record stream
 	//------------------------------------------------------
 
-//    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
-	  playRectangleDanceDualScreen( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
+    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
+//	  playRectangleDanceDualScreen( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
 //    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 //    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
@@ -754,8 +754,8 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
 
 void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory )
 {
-    SDL_Surface * pLogoImg = IMG_Load( "resources/logo-200.png" );
-//	SDL_Surface * pLogoImg = IMG_Load( "softube_logo_transparent_small.png" );
+//    SDL_Surface * pLogoImg = IMG_Load( "resources/logo-200.png" );
+	SDL_Surface * pLogoImg = IMG_Load( "softube_logo_transparent_small.png" );
 
 	//    convertSDLFormat( &format, pFontSurf->format );
 
@@ -781,7 +781,7 @@ void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p p
         pDevice->fill(Color::Black);
         
         pDevice->setBlitSource(pLogoSurf);
-        pDevice->setTintColor(HiColor(4096,4096,4096,ticker*4096/length));
+        pDevice->setTintColor(HiColor(4096,4096,4096,ticker*4096/(length-1)));
         pDevice->blit( CoordSPX( (canvasSize.w - logoSize.w)/2*64, (canvasSize.h - logoSize.h)/2*64 ));
         
         pDevice->endCanvasUpdate();
@@ -795,19 +795,20 @@ void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p p
 void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvasRef )
 {
 	int ticker = 0;
+	const int length = 150;
 	SizeSPX spriteSize(30*64, 30*64);
     SizeSPX canvasSize = pDevice->canvas(canvasRef).size;
 	SizeSPX moveDim(canvasSize.w - spriteSize.w, canvasSize.h - spriteSize.h);
 
-	while (ticker < 600)
+	while (ticker < length)
 	{
 		pDevice->beginRender();
         pDevice->beginCanvasUpdate(canvasRef);
         
 		pDevice->fill(Color::Black);
-		pDevice->fill({ positionSprite(moveDim, ticker, 0, 3),spriteSize }, Color::Red);
-		pDevice->fill({ positionSprite(moveDim, ticker, 1, 3),spriteSize }, Color::Green);
-		pDevice->fill({ positionSprite(moveDim, ticker, 2, 3),spriteSize }, Color::Blue);
+		pDevice->fill({ positionSprite(moveDim, ticker, length, 0, 3),spriteSize }, Color::Red);
+		pDevice->fill({ positionSprite(moveDim, ticker, length, 1, 3),spriteSize }, Color::Green);
+		pDevice->fill({ positionSprite(moveDim, ticker, length, 2, 3),spriteSize }, Color::Blue);
 
         pDevice->endCanvasUpdate();
 		pDevice->endRender();
@@ -820,6 +821,7 @@ void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvasRef )
 void playRectangleDanceDualScreen(GfxDevice_p pDevice, CanvasRef canvasRef1, CanvasRef canvasRef2 )
 {
 	int ticker = 0;
+	const int length = 600;
 	SizeSPX spriteSize1(40*64, 40*64);
 	SizeSPX canvasSize1 = pDevice->canvas(canvasRef1).size;
 	SizeSPX moveDim1(canvasSize1.w - spriteSize1.w, canvasSize1.h - spriteSize1.h);
@@ -828,31 +830,31 @@ void playRectangleDanceDualScreen(GfxDevice_p pDevice, CanvasRef canvasRef1, Can
 	SizeSPX canvasSize2 = pDevice->canvas(canvasRef2).size;
 	SizeSPX moveDim2(canvasSize2.w - spriteSize2.w, canvasSize2.h - spriteSize2.h);
 
-	while (ticker < 600)
+	while (ticker < length)
 	{
 		pDevice->beginRender();
 
 		pDevice->beginCanvasUpdate(canvasRef1);
 		
 		pDevice->fill(Color::Black);
-		pDevice->fill({ positionSprite(moveDim1, ticker, 0, 3),spriteSize1 }, Color::Red);
-		pDevice->fill({ positionSprite(moveDim1, ticker, 1, 3),spriteSize1 }, Color::Green);
-		pDevice->fill({ positionSprite(moveDim1, ticker, 2, 3),spriteSize1 }, Color::Blue);
+		pDevice->fill({ positionSprite(moveDim1, ticker, length, 0, 3),spriteSize1 }, Color::Red);
+		pDevice->fill({ positionSprite(moveDim1, ticker, length, 1, 3),spriteSize1 }, Color::Green);
+		pDevice->fill({ positionSprite(moveDim1, ticker, length, 2, 3),spriteSize1 }, Color::Blue);
 
 		pDevice->endCanvasUpdate();
 
 		pDevice->beginCanvasUpdate(canvasRef2);
 		
 		pDevice->fill(Color::Black);
-		pDevice->fill({ positionSprite(moveDim2, ticker, 8, 9),spriteSize2 }, Color(255,0,0) );
-		pDevice->fill({ positionSprite(moveDim2, ticker, 7, 9),spriteSize2 }, Color(224,0,0) );
-		pDevice->fill({ positionSprite(moveDim2, ticker, 6, 9),spriteSize2 }, Color(192,0,0) );
-		pDevice->fill({ positionSprite(moveDim2, ticker, 5, 9),spriteSize2 }, Color(160,0,0) );
-		pDevice->fill({ positionSprite(moveDim2, ticker, 4, 9),spriteSize2 }, Color(128,0,0) );
-		pDevice->fill({ positionSprite(moveDim2, ticker, 3, 9),spriteSize2 }, Color(96,0,0) );
-		pDevice->fill({ positionSprite(moveDim2, ticker, 2, 9),spriteSize2 }, Color(64,0,0) );
-		pDevice->fill({ positionSprite(moveDim2, ticker, 1, 9),spriteSize2 }, Color(32,0,0) );
-		pDevice->fill({ positionSprite(moveDim2, ticker, 0, 9),spriteSize2 }, Color(0,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, length, 8, 9),spriteSize2 }, Color(255,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, length, 7, 9),spriteSize2 }, Color(224,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, length, 6, 9),spriteSize2 }, Color(192,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, length, 5, 9),spriteSize2 }, Color(160,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, length, 4, 9),spriteSize2 }, Color(128,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, length, 3, 9),spriteSize2 }, Color(96,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, length, 2, 9),spriteSize2 }, Color(64,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, length, 1, 9),spriteSize2 }, Color(32,0,0) );
+		pDevice->fill({ positionSprite(moveDim2, ticker, length, 0, 9),spriteSize2 }, Color(0,0,0) );
 
 		pDevice->endCanvasUpdate();
 
@@ -891,7 +893,7 @@ void playScroll(GfxDevice_p pDevice, RectI canvas )
 }
 
 
-CoordSPX positionSprite(SizeSPX dimensions, int tick, int nb, int amount)
+CoordSPX positionSprite(SizeSPX dimensions, int tick, int length, int nb, int amount)
 {
 	const float PI = 3.14159265f;
 
@@ -900,8 +902,8 @@ CoordSPX positionSprite(SizeSPX dimensions, int tick, int nb, int amount)
 	if (tick < 90)
 		radius *= sin(tick*PI / 180);
 
-	if (tick > 600 - 90)
-		radius *= 1.f - sin((tick - (600 - 90))*PI / 180);
+	if (tick > length - 90)
+		radius *= 1.f - sin((tick - (length - 90))*PI / 180);
 
 
 	CoordSPX c;
