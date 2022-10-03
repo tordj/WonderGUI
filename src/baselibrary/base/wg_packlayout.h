@@ -101,7 +101,7 @@ namespace wg
 			spx		def;			// Default length for this item.
 			spx		min;			// Min length for this item.
 			spx		max;			// Max length for this item.
-			int		weight;			// Weight for this item.
+			int		weight;			// Weight for this item. 16 binals.
 		};
 
 		struct Blueprint

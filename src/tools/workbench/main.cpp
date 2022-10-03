@@ -3261,19 +3261,21 @@ bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pEntry)
 
 bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pEntry)
 {
+	auto pWrapTextLayout = BasicTextLayout::create( { .wrap = true });
+
 	auto pPanel = TwoSlotPanel::create();
 	pPanel->setAxis(Axis::X);
 
-	auto pContent1 = TextEditor::create();
+	auto pContent1 = TextEditor::create({ .editor = {.layout = pWrapTextLayout } } );
 	pContent1->setSkin(StaticColorSkin::create(Color::Red));
 	pPanel->slots[0] = pContent1;
 
-	auto pContent2 = TextEditor::create();
+	auto pContent2 = TextEditor::create({ .editor = {.layout = pWrapTextLayout } });
 	pContent2->setSkin(StaticColorSkin::create(Color::Green));
 	pPanel->slots[1] = pContent2;
 
 
-	auto pLayout = PackLayout::create( { .expandFactor = PackLayout::Factor::One } );
+	auto pLayout = PackLayout::create( { .expandFactor = PackLayout::Factor::One, .shrinkFactor = PackLayout::Factor::Weight } );
 	pPanel->setLayout(pLayout);
 
 	*pEntry = pPanel;

@@ -98,19 +98,20 @@ namespace wg
 
 		// Convert weight to spx if needed below
 
-		int allocAmount = 0;
+		int spxWeightAllocAmount = 0;
 		auto pWeightSpx = nullptr;
 
 		if (m_bUseSpxWeight)
 		{
-			allocAmount = sizeof(spx) * nItems;
-			auto pWeightSpx = (spx*)Base::memStackAlloc(allocAmount);
+			spxWeightAllocAmount = sizeof(spx) * nItems;
+			auto pWeightSpx = (spx*)Base::memStackAlloc(spxWeightAllocAmount);
 
 			for (int i = 0; i < nItems; i++)
-				pWeightSpx[i] = Util::align(spx(pItems[i].weight * scale));
+				pWeightSpx[i] = Util::align(spx( ((pItems[i].weight>>8) * scale)>>8));
 		}
 
 		spx totalLength = 0;
+
 
 		// Calc and store the start length for all items
 
@@ -270,48 +271,46 @@ namespace wg
 
 		}
 
+
+		// Get our min/max sizes.
+
+		const spx* pMin;
+		int	 pitchMin;
+		std::tie(pMin, pitchMin) = _minSizes(pItems, pWeightSpx);
+
+		const spx* pMax;
+		int	 pitchMax;
+		std::tie(pMax, pitchMax) = _maxSizes(pItems, pWeightSpx);
+
 		// Limit the start sizes by min and max values
 
 		//TODO: Optimize by skipping when not needed (like when all sources are set to default and func is Source or MaxSource).
 
+		const spx* pMin2 = pMin;
+		const spx* pMax2 = pMax;
+
+		for (int i = 0; i < nItems; i++)
 		{
-			const spx* pMin;
-			int	 pitchMin;
-			std::tie(pMin, pitchMin) = _minSizes(pItems, pWeightSpx);
-
-			const spx* pMax;
-			int	 pitchMax;
-			std::tie(pMax, pitchMax) = _maxSizes(pItems, pWeightSpx);
-
-
-			for (int i = 0; i < nItems; i++)
+			if (pOutput[i] < *pMin2)
 			{
-				if (pOutput[i] < *pMin)
-				{
-					totalLength += *pMin - pOutput[i];
-					pOutput[i] = *pMin;
-				}
-
-				if (pOutput[i] > *pMax)
-				{
-					totalLength -= pOutput[i] - *pMax;
-					pOutput[i] = *pMax;
-				}
-
-				pMin = (spx*)(((char*)pMin) + pitchMin);
-				pMax = (spx*)(((char*)pMax) + pitchMax);
+				totalLength += *pMin2 - pOutput[i];
+				pOutput[i] = *pMin2;
 			}
+
+			if (pOutput[i] > *pMax2)
+			{
+				totalLength -= pOutput[i] - *pMax2;
+				pOutput[i] = *pMax2;
+			}
+
+			pMin2 = (spx*)(((char*)pMin2) + pitchMin);
+			pMax2 = (spx*)(((char*)pMax2) + pitchMax);
 		}
 
+		// Figure out which items to hide and hide them.
 
 		if (totalLength > availableSpace)
 		{
-			// Get our min sizes
-
-			const spx* pMin;
-			int	 pitchMin;
-			std::tie(pMin, pitchMin) = _minSizes(pItems, pWeightSpx);
-
 			// Hide items if we are in restained hide mode and they won't fit even at minSize.
 
 			if (m_hideSetting == HideSetting::Restrained)
@@ -337,63 +336,135 @@ namespace wg
 					pOutput[i] = -1;
 				}
 			}
+			else if (m_hideSetting == HideSetting::Aggressive)
+			{					
+				// Get our item factors
 
-			// Use shrink function if we got too long.
+				int allocBytes = sizeof(int64_t) * nItems;
+				auto pFactors = (uint64_t*)Base::memStackAlloc(allocBytes);
+				uint64_t factorTotal = _getItemFactors(pFactors, m_shrinkFactor, nItems, pItems, pOutput, pWeightSpx);
 
-			if (totalLength > availableSpace && m_shrinkFactor != Factor::Zero)
-			{
-				spx excessLength = totalLength - availableSpace;
+				// Loop through our items and calculate the sizes they must have to fit available space.
+				// Check which ones goes below their minSize and find the one that first goes below its
+				// minSize and remove that one.
+				// Repeat until no item has to shrink below its minSize for us to fit available space.
 
-				const spx* pMin;
-				int	 pitchMin;
-				std::tie(pMin, pitchMin) = _minSizes(pItems, pWeightSpx);
-
-				switch (m_shrinkFactor)
+				while (totalLength > availableSpace)
 				{
-					case Factor::Ordered:
+					int itemToRemove = -1;
+					float removalFactor = 2;		// 
+
+					uint64_t acc = 0;
+					const spx* pMin2 = pMin;
+
+					for (int i = 0; i < nItems; i++)
 					{
+						uint64_t factor = pFactors[i];
 
-						break;
-					}
-
-					default:
-					{
-						// Get our item factors
-
-						int allocBytes = sizeof(int64_t) * nItems;
-						auto pFactors = (uint64_t*)Base::memStackAlloc(allocBytes);
-						uint64_t factorTotal = _getItemFactors(pFactors, m_shrinkFactor, nItems, pItems, pOutput, pWeightSpx);
-
-
-
-						// Align our output
-
+						if (factor > 0)
 						{
-							spx acc = 32;
-							for (int i = 0; i < nItems; i++)
+							uint64_t valToSub = factor * (totalLength - availableSpace) + acc;
+
+							acc = valToSub % factorTotal;
+							spx spxToSub = (spx)(valToSub / factorTotal);
+
+							if (pOutput[i] - spxToSub < *pMin2)
 							{
-								acc += pOutput[i];
-								spx aligned = acc & 0xFFFFFFC0;
-								acc -= aligned;
-								pOutput[i] = aligned;
+								float newFactor = (pOutput[i] - *pMin2) / (float)spxToSub;
+								if (newFactor < removalFactor)
+								{
+									itemToRemove = i;
+									removalFactor = newFactor;
+								}
 							}
 						}
-
-						// Clean up
-
-						Base::memStackRelease(allocBytes);
-						break;
 					}
 
-
+					if (itemToRemove >= 0)
+					{
+						totalLength -= pOutput[itemToRemove];
+						pOutput[itemToRemove] = -1;
+						factorTotal -= pFactors[itemToRemove];
+						pFactors[itemToRemove] = 0;
+					}
+					else
+						break;
 				}
 
+				// Clean up
 
+				Base::memStackRelease(allocBytes);
 			}
-
-
 		}
 
+		// Use shrink function if we got too long.
+
+		if (totalLength > availableSpace && m_shrinkFactor != Factor::Zero)
+		{
+			spx excessLength = totalLength - availableSpace;
+
+			switch (m_shrinkFactor)
+			{
+				case Factor::Ordered:
+				{
+
+					break;
+				}
+
+				default:
+				{
+					// Get our item factors
+
+					int allocBytes = sizeof(int64_t) * nItems;
+					auto pFactors = (uint64_t*)Base::memStackAlloc(allocBytes);
+					uint64_t factorTotal = _getItemFactors(pFactors, m_shrinkFactor, nItems, pItems, pOutput, pWeightSpx);
+
+	
+					// Allocate spaceLeft in possibly several passes until all has been allocated
+
+					while (factorTotal > 0.f && excessLength > 0)
+					{
+						uint64_t acc = 0;
+						const spx* pMin2 = pMin;
+
+						uint64_t currentTotal = factorTotal;
+						spx currentExcessLength = excessLength;
+
+						for (int i = 0; i < nItems; i++)
+						{
+							uint64_t factor = pFactors[i];
+
+							if (factor > 0)
+							{
+								uint64_t valToSub = factor * currentExcessLength + acc;
+
+								acc = valToSub % currentTotal;
+								spx spxToSub = (spx)(valToSub / currentTotal);
+
+								spx maxSub = pOutput[i] - *pMin2;
+								if (spxToSub > maxSub)
+								{
+									spxToSub = maxSub;
+									factorTotal -= factor;
+									pFactors[i] = 0;
+								}
+								pOutput[i] -= spxToSub;
+								excessLength -= spxToSub;
+							}
+
+							pMin2 = (spx*)(((char*)pMin2) + pitchMin);
+						}
+					}
+
+					// Clean up
+
+					Base::memStackRelease(allocBytes);
+					break;
+				}
+			}
+
+			totalLength = availableSpace + excessLength;
+		}
 
 		// Use expand function if we have space left.
 
@@ -401,10 +472,6 @@ namespace wg
 		{
 			spx spaceLeft = availableSpace - totalLength;
 
-			const spx* pMax;
-			int	 pitchMax;
-			std::tie(pMax, pitchMax) = _maxSizes(pItems, pWeightSpx);
-	
 			switch (m_expandFactor)
 			{
 				case Factor::Ordered:
@@ -427,7 +494,7 @@ namespace wg
 					}
 					break;
 				}
-
+/*
 				case Factor::One:
 				{
 					// Check how many items can still expand
@@ -477,6 +544,7 @@ namespace wg
 
 					break;
 				}
+*/
 
 				default:
 				{
@@ -488,12 +556,14 @@ namespace wg
 
 					// Allocate spaceLeft in possibly several passes until all has been allocated
 
-					uint64_t acc = 0;
-					const spx* pMax2 = pMax;
 
 					while(factorTotal > 0.f && spaceLeft > 0)
 					{
-						uint64_t currentTotal = factorTotal;
+						uint64_t	acc = 0;
+						const spx*	pMax2 = pMax;
+
+						uint64_t	currentTotal = factorTotal;
+						spx			currentSpaceLeft = spaceLeft;
 
 						for (int i = 0; i < nItems; i++)
 						{
@@ -501,12 +571,12 @@ namespace wg
 
 							if (factor > 0)
 							{
-								uint64_t valToAdd = factor * spaceLeft + acc;
+								uint64_t valToAdd = factor * currentSpaceLeft + acc;
 
 								acc = valToAdd % currentTotal;
 								spx spxToAdd = (spx)(valToAdd / currentTotal);
 
-								spx maxAdd = pOutput[i] - *pMax2;
+								spx maxAdd = *pMax2 - pOutput[i];
 								if (spxToAdd > maxAdd)
 								{
 									spxToAdd = maxAdd;
@@ -521,19 +591,6 @@ namespace wg
 						}
 					}
 
-					// Align our output
-
-					{
-						spx acc = 32;
-						for (int i = 0 ; i < nItems ; i++)
-						{
-							acc += pOutput[i];
-							spx aligned = acc & 0xFFFFFFC0;
-							acc -= aligned;
-							pOutput[i] = aligned;
-						}
-					}
-
 					// Clean up
 
 					Base::memStackRelease(allocBytes);
@@ -545,10 +602,24 @@ namespace wg
 			totalLength = availableSpace - spaceLeft;
 		}
 
+
+		// Align our output
+
+		{
+			spx acc = 32;
+			for (int i = 0; i < nItems; i++)
+			{
+				acc += pOutput[i];
+				spx aligned = acc & 0xFFFFFFC0;
+				acc -= aligned;
+				pOutput[i] = aligned;
+			}
+		}
+
 		// Cleanup
 
-		if (allocAmount > 0)
-			Base::memStackRelease(allocAmount);
+		if (spxWeightAllocAmount > 0)
+			Base::memStackRelease(spxWeightAllocAmount);
 
 		return totalLength;
 	}
@@ -579,7 +650,7 @@ namespace wg
 				auto pWeightSpx = (spx*)Base::memStackAlloc(allocAmount);
 
 				for (int i = 0; i < nItems; i++)
-					pWeightSpx[i] = Util::align(spx(pItems[i].weight * scale));
+					pWeightSpx[i] = Util::align(spx(((pItems[i].weight>>8) * scale)>>8));
 
 				pSource = pWeightSpx;
 				pitch = sizeof(spx);
