@@ -97,7 +97,7 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::_transformBlit(const RectSPX& dest, CoordF src, const float complexTransform[2][2])
+	void NullGfxDevice::_transformBlit(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2])
 	{
 	}
 

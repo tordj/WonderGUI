@@ -61,6 +61,11 @@ namespace wg
 	typedef	RectT<int>		RectI;
 	typedef RectT<float>	RectF;
 
+	typedef CoordT<binalInt>	BinalCoord;
+	typedef SizeT<binalInt>		BinalSize;
+	typedef	RectT<binalInt>		BinalRect;
+
+
 
 	//____ CoordT<> ___________________________________________________________
 	/**

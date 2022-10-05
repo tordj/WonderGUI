@@ -38,6 +38,17 @@ namespace wg
 
 	namespace Util		/** @private */
 	{
+		inline binalInt toBinalInt(float floatSPX)
+		{
+			return binalInt(floatSPX * BINAL_MUL/64);
+		}
+
+		inline binalInt toBinalInt(spx intSPX)
+		{
+			return binalInt(intSPX) * BINAL_MUL/64;
+		}
+
+	
 		inline RectI roundToPixels(const RectSPX& r);
 		inline CoordI roundToPixels(const CoordSPX& r);
 		inline SizeI roundToPixels(const SizeSPX& r);

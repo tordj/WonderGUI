@@ -1871,13 +1871,13 @@ namespace wg
 		if (m_pBlitSource->isTiling())
 		{
 			m_bTileSource = true;
-			_transformBlit(dest, srcSPX, transform);
+			GfxDevice::transformBlit(dest, srcSPX, transform);
 			m_bTileSource = false;
 		}
 		else
 		{
 			m_bClipSource = true;
-			_transformBlit(dest, srcSPX, transform);
+			GfxDevice::transformBlit(dest, srcSPX, transform);
 			m_bClipSource = false;
 		}
 	}
@@ -2099,7 +2099,7 @@ namespace wg
 
 	//____ _transformBlit() [transform] ____________________________________
 
-	void SoftGfxDevice::_transformBlit(const RectSPX& _dest, CoordF _src, const float complexTransform[2][2])
+	void SoftGfxDevice::_transformBlit(const RectSPX& _dest, BinalCoord _src, const binalInt complexTransform[2][2])
 	{
 		// Clip and render the patches
 
@@ -2115,7 +2115,7 @@ namespace wg
 		{
 			RectI  patch = m_pClipRects[i]/64;
 
-			CoordF src = CoordF(_src)/64;
+			BinalCoord src = _src;
 
 			CoordI	patchOfs = patch.pos() - dest.pos();
 
@@ -2161,14 +2161,16 @@ namespace wg
 			bool bClipSource = false;
 			if (m_bClipSource)
 			{
-				SizeF clipMax = static_cast<SizeF>(m_pBlitSource->m_size);
-
+				BinalSize clipMax = (static_cast<BinalSize>(m_pBlitSource->m_size))*BINAL_MUL;
+				
 				if (m_pBlitSource->m_sampleMethod == SampleMethod::Bilinear)
-					clipMax -= SizeF(1.f, 1.f);
+					clipMax -= BinalSize( BINAL_MUL, BINAL_MUL);
 
-				CoordF src2 = src;		// Source pixel to read for top-right destination corner.
-				CoordF src3 = src;		// Source pixel to read for bottom-right destination corner.
-				CoordF src4 = src;		// Source pixel to read for bottom-left destination corner.
+				
+				
+				BinalCoord src2 = src;		// Source pixel to read for top-right destination corner.
+				BinalCoord src3 = src;		// Source pixel to read for bottom-right destination corner.
+				BinalCoord src4 = src;		// Source pixel to read for bottom-left destination corner.
 
 				src2.x += (patch.w - 1) * complexTransform[0][0];
 				src2.y += (patch.w - 1) * complexTransform[0][1];
@@ -2277,7 +2279,7 @@ namespace wg
 
 	//____ _onePassTransforBlit() ____________________________________________
 
-	void SoftGfxDevice::_onePassTransformBlit(const RectI& dest, CoordF pos, const float transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
+	void SoftGfxDevice::_onePassTransformBlit(const RectI& dest, BinalCoord pos, const binalInt transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
 	{
 		const SoftSurface * pSource = m_pBlitSource;
 
@@ -2291,7 +2293,7 @@ namespace wg
 
 	//____ _twoPassTransformBlit() ____________________________________________
 
-	void SoftGfxDevice::_twoPassTransformBlit(const RectI& dest, CoordF pos, const float transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
+	void SoftGfxDevice::_twoPassTransformBlit(const RectI& dest, BinalCoord pos, const binalInt transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
 	{
 		const SoftSurface * pSource = m_pBlitSource;
 
@@ -2358,7 +2360,7 @@ namespace wg
 
 	//____ _dummyTransformBlit() ________________________________________________
 
-	void SoftGfxDevice::_dummyTransformBlit(const RectI& dest, CoordF pos, const float matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
+	void SoftGfxDevice::_dummyTransformBlit(const RectI& dest, BinalCoord pos, const binalInt matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
 	{
 		if( m_blendMode == BlendMode::Ignore )
 			return;

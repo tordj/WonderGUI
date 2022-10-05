@@ -1512,7 +1512,7 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _transformBlit() ____ [complex] __________________________________________________
 
-	void MetalGfxDevice::_transformBlit(const RectSPX& _dest, CoordF src, const float complexTransform[2][2])
+	void MetalGfxDevice::_transformBlit(const RectSPX& _dest, BinalCoord src, const binalInt complexTransform[2][2])
 	{
         if (m_pBlitSource == nullptr)
             return;
@@ -1534,8 +1534,6 @@ MetalGfxDevice::MetalGfxDevice()
         //TODO: Proper 26:6 support
 		//TODO: Proper 26:6 support
 		RectI dest = roundToPixels(_dest);
-
-		src /= 64;
 		
 		//
 
@@ -1587,23 +1585,23 @@ MetalGfxDevice::MetalGfxDevice()
 
         if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
         {
-			m_pExtrasBuffer[m_extrasOfs++] = src.x + 0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = src.y + 0.5f;
+			m_pExtrasBuffer[m_extrasOfs++] = (float(src.x) / BINAL_MUL) + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = (float(src.y) / BINAL_MUL) + 0.5f;
             m_pExtrasBuffer[m_extrasOfs++] = dest.x + 0.5f;
             m_pExtrasBuffer[m_extrasOfs++] = dest.y + 0.5f;
         }
         else
         {
-            m_pExtrasBuffer[m_extrasOfs++] = src.x;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
-            m_pExtrasBuffer[m_extrasOfs++] = src.y;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
+            m_pExtrasBuffer[m_extrasOfs++] = (float(src.x) / BINAL_MUL);                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
+            m_pExtrasBuffer[m_extrasOfs++] = (float(src.y) / BINAL_MUL);                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
             m_pExtrasBuffer[m_extrasOfs++] = dest.x +0.5f;
             m_pExtrasBuffer[m_extrasOfs++] = dest.y +0.5f;
         }
 
-        m_pExtrasBuffer[m_extrasOfs++] = complexTransform[0][0];
-        m_pExtrasBuffer[m_extrasOfs++] = complexTransform[0][1];
-        m_pExtrasBuffer[m_extrasOfs++] = complexTransform[1][0];
-        m_pExtrasBuffer[m_extrasOfs++] = complexTransform[1][1];
+        m_pExtrasBuffer[m_extrasOfs++] = float(complexTransform[0][0]) / BINAL_MUL;
+		m_pExtrasBuffer[m_extrasOfs++] = float(complexTransform[0][1]) / BINAL_MUL;
+		m_pExtrasBuffer[m_extrasOfs++] = float(complexTransform[1][0]) / BINAL_MUL;
+		m_pExtrasBuffer[m_extrasOfs++] = float(complexTransform[1][1]) / BINAL_MUL;
 	}
 
     //____ _transformDrawSegments() ___________________________________________________

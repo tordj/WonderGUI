@@ -2235,7 +2235,7 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 //____ _transform_blit __________________________________________
 
 template<PixelFormat SRCFORMAT, SampleMethod SAMPLEMETHOD, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, SoftGfxDevice::EdgeOp EDGEOP >
-void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t* pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
+void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt matrix[2][2], uint8_t* pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
 {
 	bool	bFast8 = false;
 	int		bits = 12;
@@ -2259,43 +2259,23 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 		}
 	}
 
-#if WG_IS_64_BITS
-
-	typedef int64_t myInt;
-/*
-	const int64_t BINAL_MUL = 32768;
-	const int64_t BINAL_SHIFT = 15;
-	const int64_t BINAL_MASK = 0x7FFF;
-*/
-	const int64_t BINAL_MUL = 16777216;
-	const int64_t BINAL_SHIFT = 24;
-	const int64_t BINAL_MASK = 0xFFFFFF;
-
-#else
-
-	typedef int32_t myInt;
-	const int32_t BINAL_MUL = 32768;
-	const int32_t BINAL_SHIFT = 15;
-	const int32_t BINAL_MASK = 0x7FFF;
-
-#endif
 
 	int srcPixelBytes = pSrcSurf->pixelBytes();
 	int	srcPitch = pSrcSurf->pitch();
-	myInt srcMax_w = pSrcSurf->pixelSize().w * BINAL_MUL;
-	myInt srcMax_h = pSrcSurf->pixelSize().h * BINAL_MUL;
+	binalInt srcMax_w = pSrcSurf->pixelSize().w * BINAL_MUL;
+	binalInt srcMax_h = pSrcSurf->pixelSize().h * BINAL_MUL;
 
-	myInt pixelIncX = (myInt)(matrix[0][0] * BINAL_MUL);
-	myInt pixelIncY = (myInt)(matrix[0][1] * BINAL_MUL);
+	binalInt pixelIncX = matrix[0][0];
+	binalInt pixelIncY = matrix[0][1];
 
-	myInt lineIncX = (myInt)(matrix[1][0] * BINAL_MUL);
-	myInt lineIncY = (myInt)(matrix[1][1] * BINAL_MUL);
+	binalInt lineIncX = matrix[1][0];
+	binalInt lineIncY = matrix[1][1];
 
-	myInt	srcPosMaskX = pSrcSurf->tileMaskX();
-	myInt	srcPosMaskY = pSrcSurf->tileMaskY();
+	binalInt	srcPosMaskX = pSrcSurf->tileMaskX();
+	binalInt	srcPosMaskY = pSrcSurf->tileMaskY();
 
-	myInt	srcPosMaskX_binals = (srcPosMaskX << BINAL_SHIFT) | BINAL_MASK;
-	myInt	srcPosMaskY_binals = (srcPosMaskY << BINAL_SHIFT) | BINAL_MASK;
+	binalInt	srcPosMaskX_binals = (srcPosMaskX << BINAL_SHIFT) | BINAL_MASK;
+	binalInt	srcPosMaskY_binals = (srcPosMaskY << BINAL_SHIFT) | BINAL_MASK;
 
 	const Color8 * pClut = pSrcSurf->clut();
 	const HiColor * pClut4096 = pSrcSurf->clut4096();
@@ -2303,8 +2283,8 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 	
 	for (int y = 0; y < nLines; y++)
 	{
-		myInt ofsX = (myInt)(pos.x * BINAL_MUL + lineIncX * y);
-		myInt ofsY = (myInt)(pos.y * BINAL_MUL + lineIncY * y);		// We use 15 binals for all calculations
+		binalInt ofsX = (binalInt)(pos.x + lineIncX * y);
+		binalInt ofsY = (binalInt)(pos.y + lineIncY * y);		// We use 15 binals for all calculations
 
 
 		for (int x = 0; x < lineLength; x++)
@@ -2396,7 +2376,7 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 
 					if (EDGEOP == SoftGfxDevice::EdgeOp::Tile)
 					{
-						myInt x = (ofsX >> BINAL_SHIFT), y = (ofsY >> BINAL_SHIFT);
+						binalInt x = (ofsX >> BINAL_SHIFT), y = (ofsY >> BINAL_SHIFT);
 
 						p2 = pSrcSurf->pixels() + y * srcPitch + ((x + 1) & srcPosMaskX) * srcPixelBytes;
 						p3 = pSrcSurf->pixels() + ((y + 1) & srcPosMaskY) * srcPitch + x * srcPixelBytes;
@@ -2406,8 +2386,8 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 					{
 						//							assert((ofsX | ofsY | (srcMax.w - (ofsX + 32768)) | (srcMax.h - (ofsY + 32768))) >= 0);
 
-						myInt nextX = (ofsX & BINAL_MASK) == 0 ? 0 : srcPixelBytes;
-						myInt nextY = (ofsY & BINAL_MASK) == 0 ? 0 : srcPitch;
+						binalInt nextX = (ofsX & BINAL_MASK) == 0 ? 0 : srcPixelBytes;
+						binalInt nextY = (ofsY & BINAL_MASK) == 0 ? 0 : srcPitch;
 
 						p2 = p + nextX;
 						p3 = p + nextY;
@@ -2432,16 +2412,16 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 
 				// Interpolate our 2x2 source colors into one source color, srcX
 
-				myInt fracX2 = ofsX & BINAL_MASK;
-				myInt fracX1 = BINAL_MUL - fracX2;
+				binalInt fracX2 = ofsX & BINAL_MASK;
+				binalInt fracX1 = BINAL_MUL - fracX2;
 
-				myInt fracY2 = ofsY & BINAL_MASK;
-				myInt fracY1 = BINAL_MUL - fracY2;
+				binalInt fracY2 = ofsY & BINAL_MASK;
+				binalInt fracY1 = BINAL_MUL - fracY2;
 
-				myInt mul11 = fracX1 * fracY1 >> BINAL_SHIFT;
-				myInt mul12 = fracX2 * fracY1 >> BINAL_SHIFT;
-				myInt mul21 = fracX1 * fracY2 >> BINAL_SHIFT;
-				myInt mul22 = fracX2 * fracY2 >> BINAL_SHIFT;
+				binalInt mul11 = fracX1 * fracY1 >> BINAL_SHIFT;
+				binalInt mul12 = fracX2 * fracY1 >> BINAL_SHIFT;
+				binalInt mul21 = fracX1 * fracY2 >> BINAL_SHIFT;
+				binalInt mul22 = fracX2 * fracY2 >> BINAL_SHIFT;
 
 				srcB = (src11_b * mul11 + src12_b * mul12 + src21_b * mul21 + src22_b * mul22) >> BINAL_SHIFT;
 				srcG = (src11_g * mul11 + src12_g * mul12 + src21_g * mul21 + src22_g * mul22) >> BINAL_SHIFT;

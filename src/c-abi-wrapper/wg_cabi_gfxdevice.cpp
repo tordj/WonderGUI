@@ -480,7 +480,7 @@ namespace wg
 
     //____ _transformBlit() ___________________________________________________
 
-    void CABIGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
+    void CABIGfxDevice::_transformBlit(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
         

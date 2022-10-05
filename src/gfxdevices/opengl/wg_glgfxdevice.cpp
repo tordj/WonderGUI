@@ -1537,7 +1537,7 @@ namespace wg
 
 	//____ _transformBlit() ____ [complex] __________________________________________________
 
-	void GlGfxDevice::_transformBlit(const RectSPX& _dest, CoordF src, const float complexTransform[2][2])
+	void GlGfxDevice::_transformBlit(const RectSPX& _dest, BinalCoord src, const binalInt complexTransform[2][2])
 	{
 		if (m_pBlitSource == nullptr)
 			return;
@@ -1559,8 +1559,6 @@ namespace wg
 
 		//TODO: Proper 26:6 support
 		RectI dest = roundToPixels(_dest);
-
-		src /= 64;
 
 		//
 
@@ -1627,26 +1625,26 @@ namespace wg
 				m_vertexOfs += 6;
 			}
 		}
-
+		
 		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 		{
-			m_extrasBufferData[m_extrasOfs++] = src.x + 0.5f;
-			m_extrasBufferData[m_extrasOfs++] = src.y + 0.5f;
+			m_extrasBufferData[m_extrasOfs++] = GLfloat(src.x)/BINAL_MUL + 0.5f;
+			m_extrasBufferData[m_extrasOfs++] = GLfloat(src.y)/BINAL_MUL + 0.5f;
 			m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.x) + 0.5f;
 			m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.y) + 0.5f;
 		}
 		else
 		{
-			m_extrasBufferData[m_extrasOfs++] = src.x;
-			m_extrasBufferData[m_extrasOfs++] = src.y;
+			m_extrasBufferData[m_extrasOfs++] = GLfloat(src.x)/BINAL_MUL;
+			m_extrasBufferData[m_extrasOfs++] = GLfloat(src.y)/BINAL_MUL;
 			m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.x) +0.5f;
 			m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.y) +0.5f;
 		}
 
-		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][0];
-		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][1];
-		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][0];
-		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][1];
+		m_extrasBufferData[m_extrasOfs++] = GLfloat(complexTransform[0][0])/BINAL_MUL;
+		m_extrasBufferData[m_extrasOfs++] = GLfloat(complexTransform[0][1])/BINAL_MUL;
+		m_extrasBufferData[m_extrasOfs++] = GLfloat(complexTransform[1][0])/BINAL_MUL;
+		m_extrasBufferData[m_extrasOfs++] = GLfloat(complexTransform[1][1])/BINAL_MUL;
 	}
 
 	//____ _transformDrawSegments() ______________________________________________________
