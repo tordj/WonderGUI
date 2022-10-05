@@ -91,6 +91,7 @@ public:
 	void	deleteCustomBlitEntry(int index) { m_customBlits.erase( m_customBlits.begin()+index ); }
 
 
+
 private:
 
 	bool	m_tintModes[wg::TintMode_size];
