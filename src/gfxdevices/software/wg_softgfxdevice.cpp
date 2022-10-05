@@ -2402,7 +2402,10 @@ namespace wg
 
 		// Add fallback back to two-pass rendering.
 
-		if (m_pRenderLayerSurface->pixelDescription()->bLinear && m_pBlitSource->pixelDescription()->bLinear)
+		auto pPixelDescSource = m_pBlitSource->pixelDescription();
+		auto pPixelDescDest = m_pRenderLayerSurface->pixelDescription();
+		
+		if ((pPixelDescDest->bLinear || pPixelDescDest->format == PixelFormat::A_8) && (pPixelDescSource->bLinear || pPixelDescSource->format == PixelFormat::A_8) )
 		{
 			m_pStraightBlitFirstPassOp = s_moveTo_internal_fast8_OpTab[(int)srcFormat][0];
 			m_pStraightTileFirstPassOp = s_moveTo_internal_fast8_OpTab[(int)srcFormat][1];

@@ -774,7 +774,7 @@ namespace wg
 				if( dest.h == 64)
 					mtx[1][1] = 0;
 				else
-					mtx[1][1] = (src.h-64) / (dest.h-64);
+ 					mtx[1][1] = (src.h-64) / (dest.h-64);
 			}
 			else
 			{
