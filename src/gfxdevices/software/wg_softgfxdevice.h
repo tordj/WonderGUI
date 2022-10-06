@@ -181,8 +181,8 @@ namespace wg
 		void	_renderLayerWasChanged() override;
 
 
-		void	_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
-		void	_transformBlit(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2]) override;
+		void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
+		void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2]) override;
 
 		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 

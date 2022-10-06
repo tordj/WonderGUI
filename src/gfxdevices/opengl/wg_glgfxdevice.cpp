@@ -1421,9 +1421,9 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = radius.h;
 	}
 
-	//____ _transformBlit() ____ [simple] __________________________________________________
+	//____ _transformBlitSimple() ______________________________________________________
 
-	void GlGfxDevice::_transformBlit(const RectSPX& _dest, CoordSPX src, const int simpleTransform[2][2])
+	void GlGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX src, const int simpleTransform[2][2])
 	{
 		if (m_pBlitSource == nullptr)
 			return;
@@ -1535,9 +1535,9 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[1][1];
 	}
 
-	//____ _transformBlit() ____ [complex] __________________________________________________
+	//____ _transformBlitComplex() ______________________________________________________
 
-	void GlGfxDevice::_transformBlit(const RectSPX& _dest, BinalCoord src, const binalInt complexTransform[2][2])
+	void GlGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord src, const binalInt complexTransform[2][2])
 	{
 		if (m_pBlitSource == nullptr)
 			return;

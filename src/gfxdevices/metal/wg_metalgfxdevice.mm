@@ -1431,9 +1431,9 @@ MetalGfxDevice::MetalGfxDevice()
     }
 
 
-    //____ _transformBlit() ____ [simple] __________________________________________________
+    //____ _transformBlitSimple() ______________________________________________________
 
-	void MetalGfxDevice::_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2])
+	void MetalGfxDevice::_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2])
 	{
         if (m_pBlitSource == nullptr)
             return;
@@ -1510,9 +1510,9 @@ MetalGfxDevice::MetalGfxDevice()
         m_pExtrasBuffer[m_extrasOfs++] = (float) simpleTransform[1][1];
     }
 
-    //____ _transformBlit() ____ [complex] __________________________________________________
+    //____ _transformBlitComplex() ______________________________________________________
 
-	void MetalGfxDevice::_transformBlit(const RectSPX& _dest, BinalCoord src, const binalInt complexTransform[2][2])
+	void MetalGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord src, const binalInt complexTransform[2][2])
 	{
         if (m_pBlitSource == nullptr)
             return;

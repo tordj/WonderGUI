@@ -469,18 +469,18 @@ namespace wg
         // Do nothing.
     }
 
-    //____ _transformBlit() ___________________________________________________
+    //____ _transformBlitSimple() ___________________________________________________
 
-    void CABIGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+    void CABIGfxDevice::_transformBlitSimple(const RectI& dest, CoordI src, const int simpleTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
         
         assert(false);
     }
 
-    //____ _transformBlit() ___________________________________________________
+    //____ _transformBlitComplex() ___________________________________________________
 
-    void CABIGfxDevice::_transformBlit(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2])
+    void CABIGfxDevice::_transformBlitComplex(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
         

@@ -826,14 +826,14 @@ namespace wg
         assert(false);
     }
 
-    void StreamGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+    void StreamGfxDevice::_transformBlitSimple(const RectI& dest, CoordI src, const int simpleTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
         
         assert(false);
     }
 
-    void StreamGfxDevice::_transformBlit(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2])
+    void StreamGfxDevice::_transformBlitComplex(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
         

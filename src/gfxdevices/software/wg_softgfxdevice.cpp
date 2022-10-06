@@ -2021,9 +2021,9 @@ namespace wg
 			_clearRenderLayer();
 	}
 
-	//____ _transformBlit() [straight] ____________________________________
+	//____ _transformBlitSimple() ____________________________________
 
-	void SoftGfxDevice::_transformBlit(const RectSPX& _dest, CoordSPX _src, const int simpleTransform[2][2])
+	void SoftGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX _src, const int simpleTransform[2][2])
 	{
 		// For this method, source and dest should be pixel aligned.
 
@@ -2097,9 +2097,9 @@ namespace wg
 		}
 	}
 
-	//____ _transformBlit() [transform] ____________________________________
+	//____ _transformBlitComplex() _______________________________________________
 
-	void SoftGfxDevice::_transformBlit(const RectSPX& _dest, BinalCoord _src, const binalInt complexTransform[2][2])
+	void SoftGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord _src, const binalInt complexTransform[2][2])
 	{
 		// Clip and render the patches
 

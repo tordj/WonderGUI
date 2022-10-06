@@ -218,8 +218,8 @@ namespace wg
 		virtual void	_renderLayerWasChanged() = 0;	// Checked for errors before we get here.
 		virtual void	_clipListWasChanged();			// Called when cliplist has been changed.
 
-		virtual void	_transformBlit(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) = 0;
-		virtual void	_transformBlit(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2]) = 0;
+		virtual void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) = 0;
+		virtual void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2]) = 0;
 
 		virtual void	_transformDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, const int simpleTransform[2][2]);
 		virtual void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) = 0;

@@ -685,14 +685,14 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		_transformBlit({ dest, m_pBlitSource->pixelSize()*64 }, { 0,0 }, blitFlipTransforms[0]);
+		_transformBlitSimple({ dest, m_pBlitSource->pixelSize()*64 }, { 0,0 }, blitFlipTransforms[0]);
 	}
 
 	void GfxDevice::blit(CoordSPX dest, const RectSPX& src)
 	{
 		assert(m_pBlitSource != nullptr);
 
-		_transformBlit({ dest, src.size() }, src.pos(), blitFlipTransforms[0]);
+		_transformBlitSimple({ dest, src.size() }, src.pos(), blitFlipTransforms[0]);
 	}
 
 	//____ flipBlit() _________________________________________________________
@@ -710,7 +710,7 @@ namespace wg
 		if (blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		_transformBlit({ dest, dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
+		_transformBlitSimple({ dest, dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
 	}
 
 	void GfxDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip)
@@ -725,7 +725,7 @@ namespace wg
 			swap(dstSize.w, dstSize.h);
 
 
-        _transformBlit({ dest, dstSize }, {ofsX, ofsY}, blitFlipTransforms[(int)flip]);
+        _transformBlitSimple({ dest, dstSize }, {ofsX, ofsY}, blitFlipTransforms[(int)flip]);
 	}
 
 
@@ -750,7 +750,7 @@ namespace wg
 		{
 			// This is a 1:1 blit, let's use the fast alternative.
 
-			_transformBlit( dest, src.pos(), blitFlipTransforms[0]);
+			_transformBlitSimple( dest, src.pos(), blitFlipTransforms[0]);
 		}
 		else
 		{
@@ -782,7 +782,7 @@ namespace wg
 				mtx[1][1] = (binalInt(src.h) * (BINAL_MUL/64)) / (dest.h/64);
 			}
 
-			_transformBlit(dest, { binalInt(src.x) * (BINAL_MUL/64), binalInt(src.y) * (BINAL_MUL/64) }, mtx);
+			_transformBlitComplex(dest, { binalInt(src.x) * (BINAL_MUL/64), binalInt(src.y) * (BINAL_MUL/64) }, mtx);
 		}
 	}
 
@@ -842,7 +842,7 @@ namespace wg
 		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
 		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
-		_transformBlit(dest, { ofsX, ofsY }, mtx);
+		_transformBlitComplex(dest, { ofsX, ofsY }, mtx);
 	}
 
 	//____ precisionBlit() ____________________________________________________
@@ -870,7 +870,7 @@ namespace wg
 			mtx[1][1] = src.h / (dest.h/64);
 		}
 
-		_transformBlit(dest, src.pos(), mtx );
+		_transformBlitComplex(dest, src.pos(), mtx );
 	}
 
 	//____ transformBlit() ________________________________________________
@@ -887,7 +887,7 @@ namespace wg
 		mtx[1][1] = binalInt(transform[1][1]*BINAL_MUL);
 
 		
-		_transformBlit(dest, { toBinalInt(src.x), toBinalInt(src.y) }, mtx);
+		_transformBlitComplex(dest, { toBinalInt(src.x), toBinalInt(src.y) }, mtx);
 	}
 
 	//____ rotScaleBlit() _____________________________________________________
@@ -921,7 +921,7 @@ namespace wg
 		src.x -= (dest.w * destCenter.x * mtx[0][0] + dest.h * destCenter.y * mtx[1][0]) / 64;
 		src.y -= (dest.w * destCenter.x * mtx[0][1] + dest.h * destCenter.y * mtx[1][1]) / 64;
 
-		_transformBlit(dest, { src.x,src.y }, mtx);
+		_transformBlitComplex(dest, { src.x,src.y }, mtx);
 	}
 
 	//____ tile() _____________________________________________________________
@@ -936,7 +936,7 @@ namespace wg
 			return;
 		}
 
-		_transformBlit( dest, shift, blitFlipTransforms[0]);
+		_transformBlitSimple( dest, shift, blitFlipTransforms[0]);
 	}
 
 	//____ flipTile() _________________________________________________________
@@ -963,7 +963,7 @@ namespace wg
 		if (blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		_transformBlit({ dest.pos(), dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
+		_transformBlitSimple({ dest.pos(), dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
 	}
 
 	//____ scaleTile() _________________________________________________________
@@ -987,7 +987,7 @@ namespace wg
 
 		BinalCoord sh = { toBinalInt(shift.x / scale), toBinalInt(shift.y / scale) };
 
-		_transformBlit(dest, sh, mtx);
+		_transformBlitComplex(dest, sh, mtx);
 	}
 
 	//____ scaleFlipTile() _________________________________________________________
@@ -1016,7 +1016,7 @@ namespace wg
 		ofsX += (shift.x * mtx[0][0] + shift.y * mtx[1][0]) / 64;
 		ofsY += (shift.x * mtx[0][1] + shift.y * mtx[1][1]) / 64;
 
-		_transformBlit(dest, {ofsX,ofsY}, mtx);
+		_transformBlitComplex(dest, {ofsX,ofsY}, mtx);
 	}
 
 	//____ blitNinePatch() ________________________________________________
