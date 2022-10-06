@@ -25,6 +25,7 @@
 #include "testsuites/a8tests.h"
 #include "testsuites/tiletests.h"
 #include "testsuites/canvaslayertests.h"
+#include "testsuites/rgb565bigendiantests.h"
 
 
 using namespace wg;
@@ -499,6 +500,7 @@ void GfxDeviceTester::setup_tests()
 	add_testsuite(new A8Tests(), new A8Tests());
 	add_testsuite(new TileTests(), new TileTests());
 	add_testsuite(new CanvasLayerTests(), new CanvasLayerTests());
+//	add_testsuite(new RGB565BigEndianTests(), new RGB565BigEndianTests());	// Can only be handled by software rendering for now.
 
 	regen_testentries();
 }

@@ -6,6 +6,7 @@ add_library( wgsoftgfx
 	wg_c_softgfx.h
 
 	wg_softkernels.cpp
+	wg_softkernels_handtuned.cpp
 	wg_softkernelstanza.impl.h
 	wg_softgfxdevice.cpp
 	wg_softgfxdevice.h

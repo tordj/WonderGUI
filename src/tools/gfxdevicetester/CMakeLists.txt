@@ -29,6 +29,7 @@ add_executable(gfxdevicetester
 	testsuites/mipmaptests.h
 	testsuites/piecharttests.h
 	testsuites/plottests.h
+	testsuites/rgb565bigendiantests.h	
 	testsuites/segmenttests.h
 	testsuites/testsuite.h
 	testsuites/tiletests.h

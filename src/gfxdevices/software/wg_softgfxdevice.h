@@ -344,6 +344,7 @@ namespace wg
 
 
 		void	_populateOpTab();
+		void	_populateOpTabWithHandTunedKernels();
 
 		static StraightBlitKernelEntry s_straightBlitKernels[];
 		static TransformBlitKernelEntry s_transformBlitKernels[];

@@ -2567,6 +2567,8 @@ namespace wg
 		_populateOpTab();
 
 		_populateOptimizedBlits();
+		
+		_populateOpTabWithHandTunedKernels();
 	}
 		
 	//____ _populateOptimizedBlits() __________________________________________
