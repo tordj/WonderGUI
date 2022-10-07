@@ -56,7 +56,7 @@ namespace wg
 		inline void		shrinkToFit() { StaticVector<EntryType>::m_entries.shrink_to_fit(); }
 
 		iterator		pushBack( const EntryType& entry );
-		iterator		pushBack( std::initializer_list<EntryType> entries );
+		iterator		pushBack( const std::initializer_list<EntryType>& entries );
 
 		iterator		insert( int index, const EntryType& entry );
 
@@ -68,7 +68,7 @@ namespace wg
 		//.____ Operators __________________________________________
 
 		inline iterator operator<<(const EntryType& entry) { return pushBack(entry); }
-		inline iterator operator<<(std::initializer_list<EntryType> entries) { return pushBack(entries); }
+		inline iterator operator<<(const std::initializer_list<EntryType>& entries) { return pushBack(entries); }
 
 	protected:
 
@@ -92,7 +92,7 @@ namespace wg
 	}
 
 	template < class EntryType>
-	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack(std::initializer_list<EntryType> entries)
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack( const std::initializer_list<EntryType>& entries)
 	{
 		int amount = (int)StaticVector<EntryType>::m_entries.size();
 

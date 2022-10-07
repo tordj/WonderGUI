@@ -69,7 +69,7 @@ namespace wg
 
 	bool PackPanel::CSlots::setWeight(int index, int amount, std::initializer_list<float> weights)
 	{
-		if (index < 0 || amount <= 0 || index + amount >= size() || amount >(int) weights.size())
+		if (index < 0 || amount <= 0 || index + amount > size() || amount >(int) weights.size())
 			return false;
 
 		auto pSlot = _slot(index);
@@ -512,8 +512,9 @@ namespace wg
 			if (pSlot[i].m_weight != *pWeights)
 			{
 				bModified = true;
-				pSlot[i].m_weight = * pWeights++;
+				pSlot[i].m_weight = * pWeights;
 			}
+			pWeights++;
 		}
 
 		if (bModified)
