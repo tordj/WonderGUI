@@ -246,7 +246,7 @@ void GfxDeviceTester::refresh_performance_display()
 		{
 			auto pEntry = PackPanel::create();
 			pEntry->setAxis(Axis::X);
-			pEntry->setSizeBroker(g_pPerformanceEntryBroker);
+			pEntry->setLayout(g_pPerformanceEntryLayout);
 
 			auto pLabel = TextDisplay::create();
 			pLabel->display.setText(t.name);
@@ -600,26 +600,31 @@ bool GfxDeviceTester::setup_chrome()
 	pLayerStack->setSkin( StaticColorSkin::create(Color::AntiqueWhite) );
 	m_pVisitor->rootPanel()->slot = pLayerStack;
 
+	auto pUniformLayout = PackLayout::create({ .wantedSize = PackLayout::WantedSize::Default,
+		.startSize = PackLayout::StartSize::Default, .expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Zero });
+//		auto pUniformLayout = PackLayout::create({});
+
+
 	// Divid screen into sidebar and canvaspanel with top section
 
 	auto pMidSection = PackPanel::create();
 	pMidSection->setAxis(Axis::X);
-	pMidSection->setSizeBroker(UniformSizeBroker::create());
+	pMidSection->setLayout(pUniformLayout);
 	auto it = pLayerStack->slots << pMidSection;
 	(*it).setSizePolicy(SizePolicy2D::Stretch);
 
 	auto pSidebar = PackPanel::create();
 	pSidebar->setAxis(Axis::Y);
 	pSidebar->setSkin( pPlateSkin );
-	pSidebar->setSizeBroker(UniformSizeBroker::create());
+	pSidebar->setLayout(pUniformLayout);
 
 	auto pCanvasPanel = PackPanel::create();
 	pCanvasPanel->setAxis(Axis::Y);
-	pCanvasPanel->setSizeBroker(UniformSizeBroker::create());
+	pCanvasPanel->setLayout(pUniformLayout);
 
 	auto pViewNav = PackPanel::create();
 	pViewNav->setAxis(Axis::X);
-	pViewNav->setSizeBroker(UniformSizeBroker::create());
+	pViewNav->setLayout(pUniformLayout);
 	pViewNav->setSkin( pPlateSkin );
 
 	auto pViewPanel = ScrollPanel::create();
@@ -663,7 +668,7 @@ bool GfxDeviceTester::setup_chrome()
 	// Setup clip mode section
 
 	pClipSection->setAxis(Axis::X);
-	pClipSection->setSizeBroker(UniformSizeBroker::create());
+	pClipSection->setLayout(pUniformLayout);
 
 	auto pClipLabel = TextDisplay::create();
 	pClipLabel->display.setText("ClipRects: ");
@@ -700,7 +705,7 @@ bool GfxDeviceTester::setup_chrome()
 	// Setup display mode section
 
 	pDispModeSection->setAxis(Axis::X);
-	pDispModeSection->setSizeBroker(UniformSizeBroker::create());
+	pDispModeSection->setLayout(pUniformLayout);
 
 
 	auto pTesteeButton = Button::create();
@@ -768,7 +773,7 @@ bool GfxDeviceTester::setup_chrome()
 	// Setup display zoom section
 
 	pDispModeSection->setAxis(Axis::X);
-	pDispModeSection->setSizeBroker(UniformSizeBroker::create());
+	pDispModeSection->setLayout(pUniformLayout);
 
 	auto pX1Button = Button::create();
 	pX1Button->setSkin( pSimpleButtonSkin );
@@ -885,8 +890,7 @@ bool GfxDeviceTester::setup_chrome()
 		auto pMapper = BasicTextLayout::create({ .placement = Placement::East });
 		g_pPerformanceValueMapper = pMapper;
 
-		auto pBroker = UniformSizeBroker::create();
-		g_pPerformanceEntryBroker = pBroker;
+		g_pPerformanceEntryLayout = PackLayout::create( { .expandFactor = PackLayout::Factor::One } );
 
 
 		auto pBase = PackPanel::create();
@@ -906,7 +910,7 @@ bool GfxDeviceTester::setup_chrome()
 		auto pBottom = PackPanel::create();
 		pBottom->setSkin( pPlateSkin );
 		pBottom->setAxis(Axis::X);
-		pBottom->setSizeBroker(UniformSizeBroker::create());
+		pBottom->setLayout(pUniformLayout);
 
 		auto pRefresh = Button::create();
 		pRefresh->setSkin( pSimpleButtonSkin );

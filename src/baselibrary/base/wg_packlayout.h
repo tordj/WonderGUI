@@ -45,6 +45,7 @@ namespace wg
 		{
 			Default,
 			MaxDefault,
+			MaxDefaultTimesWeight,
 			DefaultTimesWeight,
 		};
 
@@ -53,6 +54,7 @@ namespace wg
 			Default,
 			MaxDefault,
 			DefaultTimesWeight,
+			MaxDefaultTimesWeight,
 			DefaultAsFraction
 		};
 
@@ -140,7 +142,7 @@ namespace wg
 		//.____ Misc __________________________________________
 
 		virtual spx getItemSizes(spx* pOutput, spx availableSpace, int scale, int nItems, const Item* pItems);
-		virtual spx getWantedSizes(int scale, int nItems, const Item* pItems);
+		virtual spx getWantedSizes(spx* pOutput, int scale, int nItems, const Item* pItems);
 		virtual bool doesCalcWantedLength();
 
 	protected:

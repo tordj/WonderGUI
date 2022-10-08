@@ -119,7 +119,7 @@ protected:
 	Widget_p			g_pPerformanceDisplay = nullptr;
 	PackList_p			g_pPerformanceList = nullptr;
 	TextLayout_p		g_pPerformanceValueMapper = nullptr;
-	SizeBroker_p		g_pPerformanceEntryBroker = nullptr;
+	PackLayout_p		g_pPerformanceEntryLayout = nullptr;
 
 	vector<Device*>		g_testdevices;
 	vector<SuiteEntry>	g_testsuites;

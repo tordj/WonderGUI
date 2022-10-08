@@ -93,7 +93,7 @@ namespace wg
 	{
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = true;
-		m_pSizeBroker = 0;
+		m_pLayout = 0;
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -123,13 +123,13 @@ namespace wg
 	}
 
 
-	//____ setSizeBroker() _______________________________________________________
+	//____ setLayout() _______________________________________________________
 
-	void PackPanel::setSizeBroker( SizeBroker * pBroker )
+	void PackPanel::setLayout( PackLayout * pLayout )
 	{
-		if( m_pSizeBroker.rawPtr() != pBroker )
+		if( m_pLayout.rawPtr() != pLayout )
 		{
-			m_pSizeBroker = pBroker;
+			m_pLayout = pLayout;
 			_refreshGeometries();
 
 		}
@@ -154,87 +154,90 @@ namespace wg
 
 		spx height = 0;
 
-		if( m_bHorizontal )
+		if (slots.size() > 0)
 		{
-			if( m_pSizeBroker )
+			if( m_bHorizontal )
 			{
-				// Allocate and populate SizeBroker array
-
-				int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
-				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-
-				int nItems = _populateSizeBrokerArray(pItemArea);
-
-				// Retrieve item lengths and find height of highest item.
-
-				_setItemLengths( pItemArea, nItems, width );
-
-				SizeBrokerItem * pI = pItemArea;
-
-				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+				if( m_pLayout )
 				{
-					if( pS->m_bVisible )
-					{
-						spx itemHeight = pS->_paddedMatchingHeight( pI->output, scale );
-						if( itemHeight > height )
-							height = itemHeight;
-						pI++;
-					}
-				}
+					// Allocate and populate Layout array
 
-				// Release temporary memory area
+					int arrayBytes = (sizeof(PackLayout::Item) + sizeof(spx)) * slots.size();
+					PackLayout::Item * pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
+					spx* pOutput = (spx*)&pItemArea[slots.size()];
 
-				Base::memStackRelease(arrayBytes);
-			}
-			else
-			{
-				if (scale == m_scale)
-				{
+					int nItems = _populateLayoutArray(pItemArea);
+
+					// Retrieve item lengths and find height of highest item.
+
+					m_pLayout->getItemSizes(pOutput, width, m_scale, nItems, pItemArea);
+
 					for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 					{
-						if( pS->m_bVisible && pS->m_defaultSize.h > height )
-								height = pS->m_defaultSize.h;
+						if( pS->m_bVisible )
+						{
+							spx itemHeight = pS->_paddedMatchingHeight( *pOutput, scale );
+							if( itemHeight > height )
+								height = itemHeight;
+							pOutput++;
+						}
 					}
+
+					// Release temporary memory area
+
+					Base::memStackRelease(arrayBytes);
 				}
 				else
 				{
-					for (auto pS = slots._begin(); pS != slots._end(); pS++)
+					if (scale == m_scale)
 					{
-						if (pS->m_bVisible)
+						for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 						{
-							spx h = pS->_paddedDefaultSize(scale).h;
-							if (h > height)
-								height = h;
+							if( pS->m_bVisible && pS->m_defaultSize.h > height )
+									height = pS->m_defaultSize.h;
+						}
+					}
+					else
+					{
+						for (auto pS = slots._begin(); pS != slots._end(); pS++)
+						{
+							if (pS->m_bVisible)
+							{
+								spx h = pS->_paddedDefaultSize(scale).h;
+								if (h > height)
+									height = h;
+							}
 						}
 					}
 				}
 			}
-		}
-		else
-		{
-			if( m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths() )
-			{
-				// Allocate and populate SizeBroker array
-
-				int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
-				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-
-				int nItems = _populateSizeBrokerArray(pItemArea, width);
-
-				// Retrieve default length
-
-				height = _setDefaultLengths( pItemArea, nItems );
-
-				// Release temporary memory area
-
-				Base::memStackRelease(arrayBytes);
-			}
 			else
 			{
-				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+				if( m_pLayout && m_pLayout->doesCalcWantedLength() )
 				{
-					if( pS->m_bVisible )
-						height += pS->_paddedMatchingHeight( width, scale );
+					// Allocate and populate SizeBroker array
+
+					int arrayBytes = (sizeof(PackLayout::Item) + sizeof(spx)) * slots.size();
+					PackLayout::Item * pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
+					spx* pOutput = (spx*)&pItemArea[slots.size()];
+
+					int nItems = _populateLayoutArray(pItemArea, width);
+
+					// Retrieve default length
+
+					height = m_pLayout->getWantedSizes(pOutput, m_scale, nItems, pItemArea);
+
+					// Release temporary memory area
+
+					Base::memStackRelease(arrayBytes);
+				}
+				else
+				{
+					for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+					{
+						if( pS->m_bVisible )
+							height += pS->_paddedMatchingHeight( width, scale );
+					}
 				}
 			}
 		}
@@ -250,87 +253,91 @@ namespace wg
 	{
 		spx width = 0;
 
-		if( !m_bHorizontal )
+		if (slots.size() > 0)
 		{
-			if( m_pSizeBroker )
+			if( !m_bHorizontal )
 			{
-				// Allocate and populate SizeBroker array
-
-				int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
-				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-
-				int nItems = _populateSizeBrokerArray(pItemArea);
-
-				// Retrieve item lengths and find height of highest item.
-
-				_setItemLengths( pItemArea, nItems, height );
-
-				SizeBrokerItem * pI = pItemArea;
-
-				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+				if( m_pLayout )
 				{
-					if( pS->m_bVisible )
-					{
-						spx itemWidth = pS->_paddedMatchingWidth( pI->output, scale );
-						if( itemWidth > width )
-							width = itemWidth;
-						pI++;
-					}
-				}
+					// Allocate and populate SizeBroker array
 
-				// Release temporary memory area
+					int arrayBytes = (sizeof(PackLayout::Item)+sizeof(spx)) * slots.size();
+					PackLayout::Item* pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
+					spx* pOutput = (spx*)&pItemArea[slots.size()];
 
-				Base::memStackRelease(arrayBytes);
-			}
-			else
-			{
-				if (scale == m_scale)
-				{
-					for (auto pS = slots._begin(); pS != slots._end(); pS++)
+					int nItems = _populateLayoutArray(pItemArea);
+
+					// Retrieve item lengths and find height of highest item.
+
+
+					m_pLayout->getItemSizes(pOutput, height, m_scale, nItems, pItemArea);
+
+					for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 					{
-						if (pS->m_bVisible && pS->m_defaultSize.w > width)
-							width = pS->m_defaultSize.w;
+						if( pS->m_bVisible )
+						{
+							spx itemWidth = pS->_paddedMatchingWidth( *pOutput, scale );
+							if( itemWidth > width )
+								width = itemWidth;
+							pOutput++;
+						}
 					}
+
+					// Release temporary memory area
+
+					Base::memStackRelease(arrayBytes);
 				}
 				else
 				{
-					for (auto pS = slots._begin(); pS != slots._end(); pS++)
+					if (scale == m_scale)
 					{
-						if (pS->m_bVisible)
+						for (auto pS = slots._begin(); pS != slots._end(); pS++)
 						{
-							spx w = pS->_paddedDefaultSize(scale).w;
-							if (w > width)
-								width = w;
+							if (pS->m_bVisible && pS->m_defaultSize.w > width)
+								width = pS->m_defaultSize.w;
+						}
+					}
+					else
+					{
+						for (auto pS = slots._begin(); pS != slots._end(); pS++)
+						{
+							if (pS->m_bVisible)
+							{
+								spx w = pS->_paddedDefaultSize(scale).w;
+								if (w > width)
+									width = w;
+							}
 						}
 					}
 				}
 			}
-		}
-		else
-		{
-			if( m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths() )
-			{
-				// Allocate and populate SizeBroker array
-
-				int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
-				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-
-				int nItems = _populateSizeBrokerArray(pItemArea, height);
-
-				// Retrieve preferred length
-
-				width = _setDefaultLengths( pItemArea, nItems );
-
-				// Release temporary memory area
-
-				Base::memStackRelease(arrayBytes);
-			}
 			else
 			{
-				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+				if( m_pLayout && m_pLayout->doesCalcWantedLength() )
 				{
-					if( pS->m_bVisible )
-						width += pS->_paddedMatchingWidth( height, scale );
+					// Allocate and populate SizeBroker array
+
+					int arrayBytes = (sizeof(PackLayout::Item) + sizeof(spx)) * slots.size();
+					PackLayout::Item* pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
+					spx* pOutput = (spx*)&pItemArea[slots.size()];
+
+					int nItems = _populateLayoutArray(pItemArea, height);
+
+					// Retrieve preferred length
+
+					width = m_pLayout->getWantedSizes(pOutput, m_scale, nItems, pItemArea);
+
+					// Release temporary memory area
+
+					Base::memStackRelease(arrayBytes);
+				}
+				else
+				{
+					for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+					{
+						if( pS->m_bVisible )
+							width += pS->_paddedMatchingWidth( height, scale );
+					}
 				}
 			}
 		}
@@ -496,7 +503,7 @@ namespace wg
 
 		if (bModified)
 		{
-			if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
+			if (m_pLayout && m_pLayout->doesCalcWantedLength())
 				_refreshGeometries();
 			else
 				_refreshChildGeo();
@@ -519,7 +526,7 @@ namespace wg
 
 		if (bModified)
 		{
-			if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
+			if (m_pLayout && m_pLayout->doesCalcWantedLength())
 				_refreshGeometries();
 			else
 				_refreshChildGeo();
@@ -692,95 +699,100 @@ namespace wg
 		spx length = 0;
 		spx breadth = 0;
 
-		if( m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths() )
+		if (slots._size() > 0)
 		{
-			// Allocate and populate SizeBroker array
-
-			int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
-			SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-
-			int nItems = _populateSizeBrokerArray(pItemArea);
-
-			// Retrieve preferred length and breadth
-
-			length = _setDefaultLengths( pItemArea, nItems );
-
-			SizeBrokerItem * pI = pItemArea;
-			for (auto pS = slots._begin(); pS != slots._end(); pS++)
+			if( m_pLayout && m_pLayout->doesCalcWantedLength() )
 			{
-				if( pS->m_bVisible )
+				// Allocate and populate SizeBroker array
+
+				int arrayBytes = (sizeof(PackLayout::Item)+sizeof(spx)) * slots.size();
+				PackLayout::Item* pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
+				spx* pOutput = (spx*) & pItemArea[slots.size()];
+
+				int nItems = _populateLayoutArray(pItemArea);
+
+				// Retrieve preferred length and breadth
+
+				length = m_pLayout->getWantedSizes(pOutput, m_scale, nItems, pItemArea);
+
+				PackLayout::Item* pI = pItemArea;
+				for (auto pS = slots._begin(); pS != slots._end(); pS++)
 				{
-					spx b = m_bHorizontal?pS->_paddedMatchingHeight(pI->output, scale):pS->_paddedMatchingWidth(pI->output, scale);
-					if( b > breadth )
-						breadth = b;
-					pI++;
-				}
-			}
-
-			// Release temporary memory area
-
-			Base::memStackRelease(arrayBytes);
-
-		}
-		else
-		{
-			if( scale == m_scale )
-			{
-				if( m_bHorizontal )
-				{
-					for (auto p = slots._begin(); p != slots._end(); p++)
+					if( pS->m_bVisible )
 					{
-						if( p->m_bVisible )
-						{
-							length += p->m_defaultSize.w;
-							if( p->m_defaultSize.h > breadth )
-								breadth = p->m_defaultSize.h;
-						}
+						spx b = m_bHorizontal?pS->_paddedMatchingHeight(*pOutput, scale):pS->_paddedMatchingWidth(*pOutput, scale);
+						if( b > breadth )
+							breadth = b;
+						pI++;
+						pOutput++;
 					}
 				}
-				else
-				{
-					for (auto p = slots._begin(); p != slots._end(); p++)
-					{
-						if( p->m_bVisible )
-						{
-							length += p->m_defaultSize.h;
-							if( p->m_defaultSize.w > breadth )
-								breadth = p->m_defaultSize.w;
-						}
-					}
-				}
+
+				// Release temporary memory area
+
+				Base::memStackRelease(arrayBytes);
+
 			}
 			else
 			{
-				if( m_bHorizontal )
+				if( scale == m_scale )
 				{
-					for (auto p = slots._begin(); p != slots._end(); p++)
+					if( m_bHorizontal )
 					{
-						if( p->m_bVisible )
+						for (auto p = slots._begin(); p != slots._end(); p++)
 						{
-							SizeSPX defaultSize = p->_widget()->_defaultSize(scale);
-							length += defaultSize.w;
-							if( defaultSize.h > breadth )
-								breadth = defaultSize.h;
+							if( p->m_bVisible )
+							{
+								length += p->m_defaultSize.w;
+								if( p->m_defaultSize.h > breadth )
+									breadth = p->m_defaultSize.h;
+							}
+						}
+					}
+					else
+					{
+						for (auto p = slots._begin(); p != slots._end(); p++)
+						{
+							if( p->m_bVisible )
+							{
+								length += p->m_defaultSize.h;
+								if( p->m_defaultSize.w > breadth )
+									breadth = p->m_defaultSize.w;
+							}
 						}
 					}
 				}
 				else
 				{
-					for (auto p = slots._begin(); p != slots._end(); p++)
+					if( m_bHorizontal )
 					{
-						if( p->m_bVisible )
+						for (auto p = slots._begin(); p != slots._end(); p++)
 						{
-							SizeSPX defaultSize = p->_widget()->_defaultSize(scale);
-							length += defaultSize.h;
-							if( defaultSize.w > breadth )
-								breadth = defaultSize.w;
+							if( p->m_bVisible )
+							{
+								SizeSPX defaultSize = p->_widget()->_defaultSize(scale);
+								length += defaultSize.w;
+								if( defaultSize.h > breadth )
+									breadth = defaultSize.h;
+							}
+						}
+					}
+					else
+					{
+						for (auto p = slots._begin(); p != slots._end(); p++)
+						{
+							if( p->m_bVisible )
+							{
+								SizeSPX defaultSize = p->_widget()->_defaultSize(scale);
+								length += defaultSize.h;
+								if( defaultSize.w > breadth )
+									breadth = defaultSize.w;
+							}
 						}
 					}
 				}
-			}
 			
+			}
 		}
 
 		//
@@ -805,7 +817,7 @@ namespace wg
 		// Optimized special case, just copy preferred to length.
 		//TODO: We probably need to use matchingWidth()/matchingHeight() here anyway... prefered length might change with given breadth
 
-		if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->mayAlterPreferredLengths()) )
+		if( !m_pLayout || (wantedLength == givenLength && !m_pLayout->doesCalcWantedLength()) )
 		{
 			CoordSPX pos;
 			RectSPX geo;
@@ -879,16 +891,18 @@ namespace wg
 		{
 			// Allocate and populate SizeBroker array
 
-			int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
-			SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
+			int arrayBytes = (sizeof(PackLayout::Item)+sizeof(spx)) * slots.size();
+			PackLayout::Item* pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
+			spx* pOutput = (spx*) &pItemArea[slots.size()];
 
-			int nItems = _populateSizeBrokerArray(pItemArea, givenBreadth);
+			int nItems = _populateLayoutArray(pItemArea, givenBreadth);
 
 			// Retrieve length and set geo for all children, call _requestRender() and _setSize() where needed.
 
-			_setItemLengths( pItemArea, nItems, givenLength );
 
-			SizeBrokerItem * pI = pItemArea;
+			m_pLayout->getItemSizes(pOutput, givenLength, m_scale, nItems, pItemArea);
+
+			spx* pI = pOutput;
 
 			CoordSPX pos;
 			RectSPX geo;
@@ -900,15 +914,15 @@ namespace wg
 					geo.y = pos.y;
 					if( m_bHorizontal )
 					{
-						geo.w = pI->output;
+						geo.w = *pOutput;
 						geo.h = sz.h;
-						pos.x += pI->output;
+						pos.x += *pOutput;
 					}
 					else
 					{
 						geo.w = sz.w;
-						geo.h = pI->output;
-						pos.y += pI->output;
+						geo.h = *pOutput;
+						pos.y += *pOutput;
 					}
 					geo -= align(ptsToSpx(p->m_padding,m_scale));
 					geo += contentOfs;
@@ -963,11 +977,11 @@ namespace wg
 		}
 	}
 
-	//____ _populateSizeBrokerArray() ___________________________________________
+	//____ _populateLayoutArray() ___________________________________________
 
-	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray ) const
+	int PackPanel::_populateLayoutArray(PackLayout::Item* pArray ) const
 	{
-		SizeBrokerItem * pI = pArray;
+		PackLayout::Item* pI = pArray;
 
 		if( m_bHorizontal )
 		{
@@ -975,10 +989,10 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = pS->m_defaultSize.w;
+					pI->def = pS->m_defaultSize.w;
 					pI->min = pS->_paddedMinSize(m_scale).w;
 					pI->max = pS->_paddedMaxSize(m_scale).w;
-					pI->weight = pS->m_weight;
+					pI->weight = pS->m_weight*65536;
 					pI++;
 				}
 			}
@@ -989,10 +1003,10 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = pS->m_defaultSize.h;
+					pI->def = pS->m_defaultSize.h;
 					pI->min = pS->_paddedMinSize(m_scale).h;
 					pI->max = pS->_paddedMaxSize(m_scale).h;
-					pI->weight = pS->m_weight;
+					pI->weight = pS->m_weight*65536;
 					pI++;
 				}
 			}
@@ -1001,9 +1015,9 @@ namespace wg
 		return int(pI - pArray);
 	}
 
-	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray, spx forcedBreadth ) const
+	int PackPanel::_populateLayoutArray(PackLayout::Item* pArray, spx forcedBreadth ) const
 	{
-		SizeBrokerItem * pI = pArray;
+		PackLayout::Item* pI = pArray;
 
 		if( m_bHorizontal )
 		{
@@ -1011,10 +1025,10 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = pS->_paddedMatchingWidth(forcedBreadth,m_scale);
+					pI->def = pS->_paddedMatchingWidth(forcedBreadth,m_scale);
 					pI->min = pS->_paddedMinSize(m_scale).w;
 					pI->max = pS->_paddedMaxSize(m_scale).w;
-					pI->weight = pS->m_weight;
+					pI->weight = pS->m_weight*65536;
 					pI++;
 				}
 			}
@@ -1025,58 +1039,16 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = pS->_paddedMatchingHeight(forcedBreadth,m_scale);
+					pI->def = pS->_paddedMatchingHeight(forcedBreadth,m_scale);
 					pI->min = pS->_paddedMinSize(m_scale).h;
 					pI->max = pS->_paddedMaxSize(m_scale).h;
-					pI->weight = pS->m_weight;
+					pI->weight = pS->m_weight*65536;
 					pI++;
 				}
 			}
 		}
 
 		return int(pI - pArray);
-	}
-
-	//____ _setItemLengths() ___________________________________________________________
-
-	spx PackPanel::_setItemLengths(SizeBrokerItem * pItems, int nItems, spx availableLength) const
-	{
-		m_pSizeBroker->setItemLengths(pItems, nItems, availableLength );
-
-		// Align outputs so we end up on pixel boundaries
-
-		spx begin = 0;
-		pts end = 0;
-		for (int i = 0; i < nItems; i++)
-		{
-			end += pItems[i].output;
-			spx conv = align(end);
-			pItems[i].output = conv - begin;
-			begin = conv;
-		}
-
-		return begin;
-	}
-
-	//____ _setDefaultLengths() _______________________________________________________
-
-	spx PackPanel::_setDefaultLengths(SizeBrokerItem * pItems, int nItems) const
-	{
-		m_pSizeBroker->setPreferredLengths(pItems, nItems);
-
-		// Align outputs so we end up on pixel boundaries
-
-		spx begin = 0;
-		pts end = 0;
-		for (int i = 0; i < nItems; i++)
-		{
-			end += pItems[i].output;
-			spx conv = align(end);
-			pItems[i].output = conv - begin;
-			begin = conv;
-		}
-
-		return begin;
 	}
 
 

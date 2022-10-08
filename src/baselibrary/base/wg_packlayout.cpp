@@ -165,11 +165,36 @@ namespace wg
 
 				for (int i = 0; i < nItems; i++)
 				{
-					spx val = Util::align(spx((*pSource) * pItems[i].weight));
+					spx val = Util::align(spx((int64_t(*pSource) * pItems[i].weight) / 65536));
 					totalLength += val;
 					pOutput[i] = val;
 					pSource = (spx*)(((char*)pSource) + pitch);
 				}
+				break;
+			}
+			case StartSize::MaxDefaultTimesWeight:
+			{
+				const spx* pSource;
+				int	 pitch;
+				std::tie(pSource, pitch) = _defaultSizes(pItems, pWeightSpx);
+ 
+				spx max = 0;
+
+				for (int i = 0; i < nItems; i++)
+				{
+					if (*pSource > max)
+						max = *pSource;
+					pSource = (spx*)(((char*)pSource) + pitch);
+				}
+
+				for (int i = 0; i < nItems; i++)
+				{
+					spx x = Util::align(spx((int64_t(max) * pItems[i].weight) / 65536));
+					totalLength += x;
+					pOutput[i] = x;
+					pSource = (spx*)(((char*)pSource) + pitch);
+				}
+
 				break;
 			}
 
@@ -626,7 +651,7 @@ namespace wg
 
 	//____ getWantedSizes() _________________________________________________
 
-	spx PackLayout::getWantedSizes(int scale, int nItems, const Item* pItems)
+	spx PackLayout::getWantedSizes(spx* pOutput, int scale, int nItems, const Item* pItems)
 	{
 		// This can be optimized when using lists as source and function Source or MaxSource
 		// by generating a vector of return values for each number of items.
@@ -644,6 +669,7 @@ namespace wg
 
 		switch (m_defaultSizeSource)
 		{
+			default:
 			case SizeSource::Weight:
 			{
 				allocAmount = sizeof(spx) * nItems;
@@ -686,6 +712,7 @@ namespace wg
 			{
 				for (int i = 0; i < nItems; i++)
 				{
+					pOutput[i] = *pSource;
 					result += *pSource;
 					pSource = (spx*)(((char*)pSource) + pitch);
 				}
@@ -701,16 +728,44 @@ namespace wg
 						max = *pSource;
 					pSource = (spx*)(((char*)pSource) + pitch);
 				}
+
+				for (int i = 0; i < nItems; i++)
+					pOutput[i] = max;
+
 				result = max * nItems;
 				break;
 			}
 			case WantedSize::DefaultTimesWeight:
 				for (int i = 0; i < nItems; i++)
 				{
-					result += Util::align(spx((* pSource) * pItems[i].weight));
+					spx x = Util::align(spx((int64_t(*pSource) * pItems[i].weight) / 65536));
+					pOutput[i] = x;
+					result += x; 
 					pSource = (spx*)(((char*)pSource) + pitch);
 				}
 				break;
+			case WantedSize::MaxDefaultTimesWeight:
+			{
+				spx max = 0;
+
+				for (int i = 0; i < nItems; i++)
+				{
+					if (*pSource > max)
+						max = *pSource;
+					pSource = (spx*)(((char*)pSource) + pitch);
+				}
+
+				for (int i = 0; i < nItems; i++)
+				{
+					spx x = Util::align(spx((int64_t(max) * pItems[i].weight)/65536));
+					pOutput[i] = x;
+					result += x;
+					pSource = (spx*)(((char*)pSource) + pitch);
+				}
+
+				break;
+			}
+
 			default:			// Should never get here.
 				break;
 		}

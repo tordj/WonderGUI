@@ -1503,6 +1503,9 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 		{
 			// Special case, one pixel wide row
 
+
+			//TODO: Width might be more than a pixel, needs to be clipped as well!
+
 			int alpha = (color.a * width) >> 16;
 
 			int16_t backB, backG, backR, backA;

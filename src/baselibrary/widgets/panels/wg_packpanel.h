@@ -23,7 +23,7 @@
 #define WG_PACKPANEL_DOT_H
 #pragma once
 
-#include <wg_sizebroker.h>
+#include <wg_packlayout.h>
 #include <wg_panel.h>
 #include <wg_slot.h>
 #include <wg_slotextras.h>
@@ -152,8 +152,9 @@ namespace wg
 
 		//.____ Behavior ________________________________________________________
 
-		void			setSizeBroker( SizeBroker * pBroker );
-		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
+		void			setLayout(PackLayout* pLayout);
+		PackLayout_p	layout() const { return m_pLayout; }
+
 
 		//.____ Internal ______________________________________________________
 
@@ -218,14 +219,11 @@ namespace wg
 
 		void		_refreshGeometries();
 		SizeSPX		_calcDefaultSize( int scale ) const;
-		int			_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
-		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, spx forcedBreadth ) const;
-
-		spx			_setItemLengths(SizeBrokerItem * pItems, int nItems, spx totalLength) const;
-		spx			_setDefaultLengths(SizeBrokerItem * pItems, int nItems) const;
+		int			_populateLayoutArray( PackLayout::Item * pArray ) const;
+		int			_populateLayoutArray(PackLayout::Item* pArray, spx forcedBreadth ) const;
 
 		bool			m_bHorizontal;
-		SizeBroker_p	m_pSizeBroker;
+		PackLayout_p	m_pLayout;
 		SizeSPX			m_defaultContentSize;
 
 	};
