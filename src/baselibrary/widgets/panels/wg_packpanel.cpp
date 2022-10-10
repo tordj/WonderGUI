@@ -689,7 +689,7 @@ namespace wg
 		}
 		
 		Panel::_resize(size, scale);
-		_refreshChildGeo(false);
+		_refreshChildGeo(true);			// Needs to requestRender() if size was not changed.
 	}
 
 	//____ _calcDefaultSize() ______________________________________________________

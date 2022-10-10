@@ -146,8 +146,8 @@ namespace wg
 
 				for (int i = 0; i < nItems; i++)
 				{
-					if (*pSource > max);
-					max = *pSource;
+					if (*pSource > max)
+						max = *pSource;
 					pSource = (spx*)(((char*)pSource) + pitch);
 				}
 
@@ -724,7 +724,7 @@ namespace wg
 
 				for (int i = 0; i < nItems; i++)
 				{
-					if( *pSource > max );
+					if( *pSource > max )
 						max = *pSource;
 					pSource = (spx*)(((char*)pSource) + pitch);
 				}
@@ -914,7 +914,7 @@ namespace wg
 				int total = 0;
 				for (int i = 0; i < nItems; i++)
 				{
-					int margin = pSizes[i] - pMin[i];
+					int margin = pSizes[i] - * pMin;
 					pOutput[i] = margin;
 					total += margin;
 					pMin = (spx*)(((char*)pMin) + minPitch);
@@ -1000,7 +1000,7 @@ namespace wg
 				int total = 0;
 				for (int i = 0; i < nItems; i++)
 				{
-					int margin = int((int64_t(pSizes[i] - pMin[i]) * pItems[i].weight) / 65536);
+					int margin = int((int64_t(pSizes[i] - *pMin) * pItems[i].weight) / 65536);
 					pOutput[i] = margin;
 					total += margin;
 					pMin = (spx*)(((char*)pMin) + minPitch);
@@ -1021,7 +1021,7 @@ namespace wg
 				int total = 0;
 				for (int i = 0; i < nItems; i++)
 				{
-					int margin = int((int64_t(pSizes[i] - pMin[i]) * (largestWeight - pItems[i].weight)) / 65536);
+					int margin = int((int64_t(pSizes[i] - * pMin) * (largestWeight - pItems[i].weight)) / 65536);
 					pOutput[i] = margin;
 					total += margin;
 					pMin = (spx*)(((char*)pMin) + minPitch);

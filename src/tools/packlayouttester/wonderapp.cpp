@@ -415,7 +415,7 @@ void MyApp::_updateLayout()
 {
 	PackLayout::Blueprint bp;
 
-	bp.defaultSizeSource = (PackLayout::SizeSource) m_pStartSizeSelector->selectedEntryId();
+	bp.startSize = (PackLayout::StartSize) m_pStartSizeSelector->selectedEntryId();
 	bp.expandFactor = (PackLayout::Factor) m_pExpandFactorSelector->selectedEntryId();
 	bp.shrinkFactor = (PackLayout::Factor) m_pShrinkFactorSelector->selectedEntryId();
 	bp.hideSetting = (PackLayout::HideSetting) m_pHideSelector->selectedEntryId();
