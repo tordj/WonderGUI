@@ -40,7 +40,7 @@ private:
 	wg::Skin_p			m_pCheckBoxSkin;
 	wg::Skin_p			m_pSectionSkin;
 
-	wg::SizeBroker_p	m_pSizeBroker;
+	wg::PackLayout_p	m_pLayout;
 	
 	wg::TextStyle_p		m_pTextStyle;
 	wg::TextStyle_p		m_pLabelStyle;

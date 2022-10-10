@@ -77,9 +77,9 @@ namespace wg
 																			offset != other.offset; }
 		//.____ Internal _______________________________________________________
 
-		CoordSPX	_pos(SizeSPX canvas) const
+		CoordSPX	_pos(SizeSPX canvas,  int scale) const
 		{
-			CoordSPX c(origo.x * canvas.w + offset.x, origo.y * canvas.h + offset.y);
+			CoordSPX c(origo.x * canvas.w + offset.x*scale, origo.y * canvas.h + offset.y*scale);
 			return c;
 		}
 

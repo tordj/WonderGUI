@@ -629,8 +629,8 @@ namespace wg
 
 		if( pSlot->m_bPinned )
 		{
-			CoordSPX topLeft = pSlot->m_topLeftPin._pos( m_size );
-			CoordSPX bottomRight = pSlot->m_bottomRightPin._pos( m_size );
+			CoordSPX topLeft = pSlot->m_topLeftPin._pos( m_size, m_scale );
+			CoordSPX bottomRight = pSlot->m_bottomRightPin._pos( m_size, m_scale );
 
 			geo = RectSPX(topLeft,bottomRight);
 
@@ -640,8 +640,8 @@ namespace wg
 			sz.limit( pSlot->_widget()->_minSize(m_scale), pSlot->_widget()->_maxSize(m_scale) );
 			if( sz != geo.size() )
 			{
-				geo.x += geo.w - sz.w / 2;
-				geo.y += geo.h - sz.h / 2;
+				geo.x += (geo.w - sz.w) / 2;
+				geo.y += (geo.h - sz.h) / 2;
 				geo.w = sz.w;
 				geo.h = sz.h;
 			}
@@ -655,8 +655,8 @@ namespace wg
 
 			// Calculate position
 
-			CoordSPX pos = pSlot->m_origo._pos( m_size );		// Placement,
-			pos -= pSlot->m_hotspot._pos(sz);				// hotspot
+			CoordSPX pos = pSlot->m_origo._pos( m_size, m_scale );		// Placement,
+			pos -= pSlot->m_hotspot._pos(sz, m_scale);				// hotspot
 			pos += ptsToSpx(pSlot->m_placementGeo.pos(),m_scale);				// and Offset.
 
 			// Limit size/pos according to parent
@@ -712,7 +712,7 @@ namespace wg
 		{
 			RectSPX geo = ptsToSpx(pSlot->m_placementGeo,m_scale);
 
-			CoordSPX hotspot = pSlot->m_hotspot._pos(geo.size());
+			CoordSPX hotspot = pSlot->m_hotspot._pos(geo.size(), m_scale);
 			CoordSPX offset = geo.pos() + ptsToSpx(pSlot->m_origo.offset,m_scale) - hotspot;
 
 			spx leftOfOrigo = 0 - offset.x;

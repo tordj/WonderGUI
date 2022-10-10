@@ -902,8 +902,6 @@ namespace wg
 
 			m_pLayout->getItemSizes(pOutput, givenLength, m_scale, nItems, pItemArea);
 
-			spx* pI = pOutput;
-
 			CoordSPX pos;
 			RectSPX geo;
 			for (auto p = slots._begin(); p != slots._end(); p++)
@@ -943,7 +941,7 @@ namespace wg
 							p->m_bResizeRequired = false;
 						}
 					}
-					pI++;
+					pOutput++;
 				}
 				else
 				{

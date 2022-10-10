@@ -85,8 +85,8 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	if (!_loadSkins(pVisitor))
 		return false;
 
-
-	m_pSizeBroker = UniformSizeBroker::create();
+	m_pLayout = PackLayout::create({ .wantedSize = PackLayout::WantedSize::Default,
+	.startSize = PackLayout::StartSize::Default, .expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Zero });
 
 	auto pPopupOverlay = PopupOverlay::create();
 	
@@ -94,7 +94,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	
 	auto pBasePanel = PackPanel::create();
 	pBasePanel->setAxis(Axis::Y);
-	pBasePanel->setSizeBroker(m_pSizeBroker);
+	pBasePanel->setLayout(m_pLayout);
 	
 	auto pSplitPanel = SplitPanel::create();
 	pSplitPanel->setAxis(Axis::Y);
@@ -137,12 +137,12 @@ Widget_p MyApp::createInputPanel()
 {
 	auto pBase = PackPanel::create();
 	pBase->setAxis(Axis::Y);
-	pBase->setSizeBroker(m_pSizeBroker);
+	pBase->setLayout(m_pLayout);
 	pBase->setSkin(m_pPlateSkin);
 	
 	auto pTopRow = PackPanel::create();
 	pTopRow->setAxis(Axis::X);
-	pTopRow->setSizeBroker(m_pSizeBroker);
+	pTopRow->setLayout(m_pLayout);
 	
 	auto pLabel = TextDisplay::create( WGBP(TextDisplay,
 											_.display = WGBP(Text,
@@ -237,7 +237,7 @@ Widget_p MyApp::createCharsPanel()
 {
 	auto pBase = PackPanel::create();
 	pBase->setAxis(Axis::Y);
-	pBase->setSizeBroker(m_pSizeBroker);
+	pBase->setLayout(m_pLayout);
 	pBase->setSkin(m_pPlateSkin);
 	
 	auto pLabel = TextDisplay::create( { .display = { .text = String("Characters to include") } } );
@@ -282,7 +282,7 @@ Widget_p MyApp::createOutputPanel()
 {
 	auto pBase = PackPanel::create();
 	pBase->setAxis(Axis::Y);
-	pBase->setSizeBroker(m_pSizeBroker);
+	pBase->setLayout(m_pLayout);
 	pBase->setSkin(m_pPlateSkin);
 
 	auto pLabel = TextDisplay::create( { .display = { .text = String("Preview") } } );

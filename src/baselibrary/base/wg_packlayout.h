@@ -45,8 +45,8 @@ namespace wg
 		{
 			Default,
 			MaxDefault,
-			MaxDefaultTimesWeight,
 			DefaultTimesWeight,
+			MaxDefaultTimesWeight,
 		};
 
 		enum class StartSize
