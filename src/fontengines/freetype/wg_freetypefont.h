@@ -34,6 +34,8 @@
 #include <wg_font.h>
 #include <wg_blob.h>
 #include <wg_bitmapcache.h>
+#include <wg_base.h>
+#include <wg_context.h>
 
 
 typedef struct FT_LibraryRec_  *FT_Library;
@@ -59,9 +61,21 @@ namespace wg
 			BestShapes
 		};
 
+		struct Blueprint
+		{
+			Font_p			backupFont;
+			Blob_p			blob;
+			BitmapCache_p	cache;
+			int				faceIndex = 0;
+			RenderMode		renderMode = RenderMode::BestShapes;
+			bool			stemDarkening = Base::activeContext()->gammaCorrection();
+		};
+		
+		
 		//.____ Creation __________________________________________
 
-		static FreeTypeFont_p	create( Blob_p pFontFile, int faceIndex = 0, RenderMode renderMode = RenderMode::BestShapes, Font * pBackupFont = nullptr, BitmapCache * pBitmapCache = nullptr ) { return FreeTypeFont_p(new FreeTypeFont(pFontFile,faceIndex,renderMode,pBackupFont,pBitmapCache)); }
+		static FreeTypeFont_p	create( Blob * pTTFBlob );
+		static FreeTypeFont_p	create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
@@ -98,7 +112,7 @@ namespace wg
 
 
 	private:
-		FreeTypeFont( Blob_p pFontFile, int faceIndex, RenderMode renderMode, Font * pBackupFont, BitmapCache * pCache );
+		FreeTypeFont( const Blueprint& bp );
 		~FreeTypeFont();
 
 		class MyGlyph

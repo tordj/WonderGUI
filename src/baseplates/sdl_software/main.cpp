@@ -18,6 +18,8 @@
 
 #include "baseplate.h"
 
+#include "tinyfiledialogs.h"
+
 using namespace wg;
 
 
@@ -58,15 +60,34 @@ public:
 	{
 		return g_pRoot;
 	}
-
+	
 	int64_t			time() override
 	{
 		return SDL_GetPerformanceCounter() * 1000000 / SDL_GetPerformanceFrequency();
 	}
 
-	wg::Blob_p		loadBlob(const std::string& path) override;
-	wg::Surface_p	loadSurface(const std::string& path, SurfaceFactory* pFactory, const Surface::Blueprint& bp = Surface::Blueprint() ) override;
+	wg::Blob_p 		loadBlob(const std::string& path) override;
+	wg::Surface_p 	loadSurface(const std::string& path, SurfaceFactory* pFactory, const Surface::Blueprint& bp = Surface::Blueprint() ) override;
 
+	void 			notifyPopup(char const * title, char const * message, char const * iconType) override;
+
+	int				messageBox(char const * title, char const * message, char const * dialogType,
+							   char const * iconType, int defaultButton ) override;
+
+	char *			inputBox(char const * title, char const * message, char const * defaultInput ) override;
+
+	char *			saveFileDialog( char const * title, char const * defaultPathAndFile,
+									int nbFilterPatterns,	char const * const * filterPatterns,
+									char const * singleFilterDescription ) override;
+	
+	char * 			openFileDialog(	char const * title, char const * defaultPathAndFile,
+									int nbFilterPatterns, char const * const * filterPatterns,
+									char const * singleFilterDescription, bool bMultiSelect ) override;
+
+	char *			selectFolderDialog( char const * title, char const * defaultPath) override;
+	
+	
+	
 protected:
 	void			convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat);
 
@@ -154,12 +175,15 @@ bool init_wondergui()
 {
 	Base::init(nullptr);
 
+	auto pGfxDevice = SoftGfxDevice::create();
+	auto pSurfaceFactory = SoftSurfaceFactory::create();
+	
 	Context_p pContext = Context::create();
-    pContext->setSurfaceFactory(SoftSurfaceFactory::create());
+    pContext->setSurfaceFactory(pSurfaceFactory);
+	pContext->setGfxDevice(pGfxDevice);
 	pContext->setGammaCorrection(true);
 	Base::setActiveContext(pContext);
 
-	auto pGfxDevice = SoftGfxDevice::create();
 
 	SDL_Surface* pWinSurf = SDL_GetWindowSurface(g_pSDLWindow);
 
@@ -535,4 +559,50 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 	return pSurface;
 }
 
+//____ notifyPopup() __________________________________________________________
 
+void MyAppVisitor::notifyPopup(char const * title, char const * message, char const * iconType)
+{
+	tinyfd_notifyPopup( title, message, iconType);
+}
+
+//____ messageBox() ___________________________________________________________
+
+int	MyAppVisitor::messageBox(char const * title, char const * message, char const * dialogType,
+							 char const * iconType, int defaultButton )
+{
+	return tinyfd_messageBox( title, message, dialogType, iconType, defaultButton );
+}
+
+//____ inputBox() _____________________________________________________________
+
+char * MyAppVisitor::inputBox(char const * title, char const * message, char const * defaultInput )
+{
+	return tinyfd_inputBox( title, message, defaultInput );
+}
+
+//____ saveFileDialog() _______________________________________________________
+
+char * MyAppVisitor::saveFileDialog( char const * title, char const * defaultPathAndFile,
+								int nbFilterPatterns,	char const * const * filterPatterns,
+								char const * singleFilterDescription )
+{
+	return tinyfd_saveFileDialog( title, defaultPathAndFile, nbFilterPatterns, filterPatterns, singleFilterDescription );
+}
+
+//____ openFileDialog() _______________________________________________________
+
+char * MyAppVisitor::openFileDialog(	char const * title, char const * defaultPathAndFile,
+								int nbFilterPatterns, char const * const * filterPatterns,
+								char const * singleFilterDescription, bool bMultiSelection )
+{
+	return tinyfd_openFileDialog( title, defaultPathAndFile, nbFilterPatterns, filterPatterns, singleFilterDescription, bMultiSelection );
+}
+
+//____ selectFolderDialog() ___________________________________________________
+
+char * MyAppVisitor::selectFolderDialog( char const * title, char const * defaultPath)
+{
+	return tinyfd_selectFolderDialog( title, defaultPath );
+
+}

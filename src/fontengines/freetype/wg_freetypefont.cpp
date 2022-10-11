@@ -31,8 +31,6 @@
 #include <wg_freetypefont.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
-#include <wg_base.h>
-#include <wg_context.h>
 #include <wg_util.h>
 
 
@@ -58,9 +56,23 @@ namespace wg
 
 	FT_Library		FreeTypeFont::s_freeTypeLibrary;
 
+
+	//____ create() ______________________________________________________________
+
+	FreeTypeFont_p FreeTypeFont::create( Blob * pTTFBlob )
+	{
+		return FreeTypeFont_p( new FreeTypeFont(WGBP(FreeTypeFont, _.blob = pTTFBlob )) );
+	}
+
+
+	FreeTypeFont_p FreeTypeFont::create( const Blueprint& blueprint )
+	{
+		return FreeTypeFont_p(new FreeTypeFont(blueprint));
+	}
+
 	//____ constructor ____________________________________________________________
 
-	FreeTypeFont::FreeTypeFont( Blob_p pFontFile, int faceIndex, RenderMode renderMode, Font * pBackupFont, BitmapCache * pCache ) : Font(pBackupFont)
+	FreeTypeFont::FreeTypeFont( const Blueprint& bp ) : Font(bp.backupFont)
 	{
         if( s_nInstances == 0 )
         {
@@ -72,23 +84,23 @@ namespace wg
         }
         s_nInstances++;
 
-		m_pFontFile = pFontFile;
-		m_pCache 	=  pCache ? BitmapCache_p(pCache) : Base::defaultBitmapCache();
+		m_pFontFile = bp.blob;
+		m_pCache 	=  bp.cache ? BitmapCache_p(bp.cache) : Base::defaultBitmapCache();
 		m_size 			= 0;
 
 //		_growCachedFontSizes(c_maxFontSize);
 
 		FT_Error err = FT_New_Memory_Face(	s_freeTypeLibrary,
-											(const FT_Byte *)pFontFile->data(),
-											pFontFile->size(),
-											faceIndex,
+											(const FT_Byte *)m_pFontFile->data(),
+											m_pFontFile->size(),
+											bp.faceIndex,
 											&m_ftFace );
 		if( err )
 		{
 			//TODO: Error handling...
 		}
 
-		m_renderMode = renderMode;
+		m_renderMode = bp.renderMode;
 		_refreshRenderFlags();
 
 		setSize( 10*64 );
@@ -96,7 +108,7 @@ namespace wg
 		// Darken the stem if we have gammaCorrection enabled.
 
 #ifdef SUPPORT_STEM_DARKENING
-		if (Base::activeContext()->gammaCorrection())
+		if (bp.stemDarkening)
 		{
 			FT_Parameter         property1;
 			FT_Bool              darken_stems = 1;

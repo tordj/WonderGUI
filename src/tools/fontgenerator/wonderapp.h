@@ -21,19 +21,29 @@ public:
 	wg::Widget_p	createCharsPanel();
 	wg::Widget_p	createOutputPanel();
 
-	void		load();
-	void		save();
+	bool		loadTTF( const char * pPath );
+	bool		saveBitmapFont();
 
-
-
+	bool		generateBitmapFont();
+	void		displayBitmapFont();
 
 private:
 
 	bool			_setupGUI(Visitor* pVisitor);
 	bool			_loadSkins(Visitor* pVisitor);
 
+	wg::SelectBox_p		m_pSizeSelector;
+	wg::SelectBox_p		m_pModeSelector;
+	wg::SelectBox_p		m_pSRGBSelector;
 
-
+	
+	wg::TextEditor_p	m_pCharsEditor;
+	wg::Blob_p			m_pLoadedFontBlob;
+	
+	wg::Surface_p		m_pBitmapFontSurface;
+	wg::Surface_p		m_pFontDisplaySurface;
+	wg::Image_p			m_pBitmapDisplay;
+	
 	wg::Skin_p			m_pPlateSkin;
 	wg::Skin_p			m_pButtonSkin;
 	wg::Skin_p			m_pToggleButtonSkin;

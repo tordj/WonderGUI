@@ -33,7 +33,9 @@ bool MyApp::init(Visitor* pVisitor)
 		printf("ERROR: Failed to setup GUI!\n");
 		return false;
 	}
-
+	
+	loadTTF("resources/DroidSans.ttf");
+		
 	return true;
 }
 
@@ -117,18 +119,162 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	return true;
 }
 
-//____ load() _________________________________________________________________
+//____ loadTTF() _________________________________________________________________
 
-void MyApp::load()
+bool MyApp::loadTTF( const char * pPath)
+{
+	std::ifstream file( pPath, std::ios::binary | std::ios::ate);
+	std::streamsize size = file.tellg();
+	file.seekg(0, std::ios::beg);
+
+	auto pBlob = Blob::create(size);
+	
+	if (file.read((char*)pBlob->data(), size))
+	{
+		m_pLoadedFontBlob = pBlob;
+		return true;
+	}
+	
+	return false;
+}
+
+//____ saveBitmapFont() _________________________________________________________________
+
+bool MyApp::saveBitmapFont()
 {
 
 }
 
-//____ save() _________________________________________________________________
+//____ generateBitmapFont() ___________________________________________________
 
-void MyApp::save()
+bool MyApp::generateBitmapFont()
 {
+	if( !m_pLoadedFontBlob )
+		return false;
+	
+	String chars = m_pCharsEditor->editor.text();
 
+	spx size = m_pSizeSelector->selectedEntryId() * 64;
+	FreeTypeFont::RenderMode renderMode = (FreeTypeFont::RenderMode) m_pModeSelector->selectedEntryId();
+	bool bUseSRGB = (m_pSRGBSelector->selectedEntryId() == 1);
+		
+	PixelFormat	outputFormat = bUseSRGB ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
+	
+	auto pFont = FreeTypeFont::create( { .blob = m_pLoadedFontBlob, .renderMode = renderMode, .stemDarkening = bUseSRGB });
+	if( !pFont )
+		return false;
+
+	
+	pFont->setSize(size);
+	
+	// Calculate size of surface needed.
+		
+	spx maxWidth = 512*64;
+	spx ofsX = 0;
+	int nRows = 1;
+
+	for( int i = 0 ; i < chars.length() ; i++ )
+	{
+		Glyph glyph;
+		pFont->getGlyphWithBitmap(chars.chars()[i].code(), glyph);
+		
+		if( glyph.pSurface )
+		{
+			ofsX += glyph.rect.w+64;
+		
+			if( ofsX > maxWidth )
+			{
+				nRows++;
+				ofsX = glyph.rect.w+64;
+			}
+		}
+	}
+	
+	SizeI surfaceSize;
+	
+	int rowPixelHeight = (pFont->maxAscend() + pFont->maxDescend()) / 64;
+	surfaceSize.h = 1 + (rowPixelHeight+1) * nRows;
+	
+	if( nRows == 1 )
+		surfaceSize.w = ofsX / 64;
+	else
+		surfaceSize.w = maxWidth / 64;
+	
+	// Generate and fill in surface
+	
+	auto pSurface = Base::activeContext()->surfaceFactory()->createSurface( { .format = outputFormat, .size = surfaceSize });
+	auto pDevice = Base::activeContext()->gfxDevice();
+
+	HiColor lineColor(1024,0,0,4096);
+	
+	pDevice->beginRender();
+	
+	pDevice->beginCanvasUpdate(pSurface);
+	pDevice->setBlendMode(BlendMode::Replace);
+	pDevice->fill(Color::Transparent);
+	pDevice->setBlendMode(BlendMode::Blend);
+
+	CoordSPX pos;
+	int rowHeight = (pFont->maxAscend() + pFont->maxDescend()) / 64;
+	spx baselineOfs = pFont->maxAscend();
+	
+	pDevice->setTintColor(Color::White);
+	pDevice->drawLine(pos, Direction::Right, surfaceSize.w*64, lineColor);
+	pos.y += 64;
+	
+	for( int i = 0 ; i < chars.length() ; i++ )
+	{
+		Glyph glyph;
+		pFont->getGlyphWithBitmap(chars.chars()[i].code(), glyph);
+		
+		if( pos.x + glyph.rect.w+64 > surfaceSize.w*64  )
+		{
+			pos.x = 0;
+			pos.y += rowHeight*64;
+			pDevice->drawLine(pos, Direction::Right, surfaceSize.w*64, lineColor);
+			pos.y += 64;
+		}
+
+		if( glyph.pSurface )
+		{
+			pDevice->setBlitSource(glyph.pSurface);
+			pDevice->blit(pos + CoordSPX(0,baselineOfs + glyph.bearingY), glyph.rect);
+			pos.x += glyph.rect.w;
+			pDevice->drawLine(pos, Direction::Down, rowHeight*64, lineColor );
+			pos.x += 64;
+		}		
+	}
+
+	pos.x = 0;
+	pos.y += rowHeight*64;
+	pDevice->drawLine(pos, Direction::Right, surfaceSize.w*64, lineColor);
+
+	
+	pDevice->endCanvasUpdate();
+	pDevice->endRender();
+	
+	m_pBitmapFontSurface = pSurface;
+	
+	m_pFontDisplaySurface = Base::activeContext()->surfaceFactory()->createSurface( { .format = PixelFormat::BGRA_8, .size = surfaceSize });
+
+	pDevice->beginRender();
+	pDevice->beginCanvasUpdate(m_pFontDisplaySurface);
+	pDevice->fill( HiColor::White );
+	pDevice->setBlitSource(pSurface);
+	pDevice->setTintColor(HiColor::Black);
+	pDevice->blit({0,0});
+	pDevice->endCanvasUpdate();
+	pDevice->endRender();
+	
+	
+	return true;
+}
+
+//____ displayBitmapFont() ___________________________________________________
+
+void MyApp::displayBitmapFont()
+{
+	m_pBitmapDisplay->setImage(m_pFontDisplaySurface);
 }
 
 //____ createInputPanel() ________________________________________________________
@@ -181,10 +327,14 @@ Widget_p MyApp::createInputPanel()
 	auto pSizeSelector = SelectBox::create();
 	pSizeSelector->setSkin(m_pButtonSkin);
 	pSizeSelector->setListSkin(m_pPlateSkin);
-	pSizeSelector->entries.pushBack({ {6, String("6") }, {7, String("7") }, {8, String("8")}, {9, String("9")}, {10, String("10")} });
-
 	
-
+	char tmp[8];
+	for( int i = 6 ; i <= 32 ; i++ )
+	{
+		sprintf( tmp, "%i", i);
+		pSizeSelector->entries.pushBack(SelectBoxEntry(i, String(tmp)));
+	}
+	
 	auto pModeLabel = TextDisplay::create( WGBP(TextDisplay,
 												_.display = WGBP(Text,
 																 _.style = m_pTextStyle,
@@ -198,27 +348,26 @@ Widget_p MyApp::createInputPanel()
 	pModeSelector->entries.pushBack({ 	{ int(FreeTypeFont::RenderMode::Monochrome), String("Monochrome") },
 										{ int(FreeTypeFont::RenderMode::CrispEdges), String("CrispEdges") },
 										{ int(FreeTypeFont::RenderMode::BestShapes), String("BestShapes")} });
-
-	auto pOutputLabel = TextDisplay::create( WGBP(TextDisplay,
+	
+	auto pSRGBLabel = TextDisplay::create( WGBP(TextDisplay,
 												_.display = WGBP(Text,
 																 _.style = m_pTextStyle,
 																 _.text = "Output format:",
 																 _.layout = m_pTextLayoutCentered )
 												));
 
-	auto pOutputSelector = SelectBox::create();
-	pOutputSelector->setSkin(m_pButtonSkin);
-	pOutputSelector->setListSkin(m_pPlateSkin);
-	pOutputSelector->entries.pushBack({ 	{ 0, String("Linear RGB") },
+	auto pSRGBSelector = SelectBox::create();
+	pSRGBSelector->setSkin(m_pButtonSkin);
+	pSRGBSelector->setListSkin(m_pPlateSkin);
+	pSRGBSelector->entries.pushBack({ 	{ 0, String("Linear RGB") },
 											{ 1, String("sRGB") } });
 
-	
 	pBottomRow->slots << pSizeLabel;
 	pBottomRow->slots << pSizeSelector;
 	pBottomRow->slots << pModeLabel;
 	pBottomRow->slots << pModeSelector;
-	pBottomRow->slots << pOutputLabel;
-	pBottomRow->slots << pOutputSelector;
+	pBottomRow->slots << pSRGBLabel;
+	pBottomRow->slots << pSRGBSelector;
 
 	pBottomRow->slots.setPadding( 0, 6, Border(0,0,6,6) );
 	
@@ -227,6 +376,16 @@ Widget_p MyApp::createInputPanel()
 	pBase->slots << pBottomRow;
 
 	pBase->slots[1].setPadding({4,0,0,0});
+
+	m_pSizeSelector = pSizeSelector;
+	m_pModeSelector = pModeSelector;
+	m_pSRGBSelector = pSRGBSelector;
+
+	m_pSizeSelector->selectEntryByIndex(0);
+	m_pModeSelector->selectEntryByIndex(0);
+	m_pSRGBSelector->selectEntryByIndex(0);
+
+	
 	
 	return pBase;
 }
@@ -261,11 +420,11 @@ Widget_p MyApp::createCharsPanel()
 	pWindow->setAutohideScrollbars(true, true);
 	pWindow->setSizeConstraints(SizeConstraint::GreaterOrEqual, SizeConstraint::GreaterOrEqual);
 
-	auto pEditor = TextEditor::create( WGBP(TextEditor,
+	m_pCharsEditor = TextEditor::create( WGBP(TextEditor,
 											_.skin = m_pSectionSkin
 											));
 	
-	pWindow->slot = pEditor;
+	pWindow->slot = m_pCharsEditor;
 	
 	
 	pBase->slots << pLabel;
@@ -285,8 +444,29 @@ Widget_p MyApp::createOutputPanel()
 	pBase->setLayout(m_pLayout);
 	pBase->setSkin(m_pPlateSkin);
 
-	auto pLabel = TextDisplay::create( { .display = { .text = String("Preview") } } );
+	
+	auto pTopPanel = PackPanel::create();
+	pTopPanel->setAxis(Axis::X);
+	pTopPanel->setLayout(m_pLayout);
+	
+	auto pLeftBottomLayout = BasicTextLayout::create( { .placement = Placement::SouthWest } );
+	
+	auto pLabel = TextDisplay::create( { .display = { .text = String("Preview"), .layout = pLeftBottomLayout } } );
+	auto pFiller = Filler::create();
+	auto pGenerateButton = Button::create( { .label = { .text = String("Generate")}, .skin = m_pButtonSkin } );
+	auto pSaveButton = Button::create( { .label = { .text = String("Save")}, .skin = m_pButtonSkin } );
 
+	Base::msgRouter()->addRoute(pGenerateButton, MsgType::Select, [this](Msg*pMsg){this->generateBitmapFont();this->displayBitmapFont();} );
+	
+	
+	pTopPanel->slots << pLabel;
+	pTopPanel->slots << pFiller;
+	pTopPanel->slots << pGenerateButton;
+	pTopPanel->slots << pSaveButton;
+
+	pTopPanel->slots.setWeight(0, 4, {0.f,1.f,0.f,0.f});
+	pTopPanel->slots.setPadding( 0,4, Border(0,4,4,4) );
+	
 	
 	auto pWindow = ScrollPanel::create();
 	pWindow->setSkin(m_pSectionSkin);
@@ -304,12 +484,15 @@ Widget_p MyApp::createOutputPanel()
 	pWindow->scrollbarY.setBar(m_pPlateSkin);
 	
 	pWindow->setAutohideScrollbars(true, false);
-	pWindow->setSizeConstraints(SizeConstraint::Equal, SizeConstraint::GreaterOrEqual);
+	pWindow->setSizeConstraints(SizeConstraint::None, SizeConstraint::None);
 	
-	pBase->slots << pLabel;
+	pBase->slots << pTopPanel;
 	pBase->slots << pWindow;
 
 	pBase->slots.setWeight(0, 2, {0.f, 1.f} );
+	
+	m_pBitmapDisplay = Image::create();
+	pWindow->slot = m_pBitmapDisplay;
 	
 	return pBase;
 }
