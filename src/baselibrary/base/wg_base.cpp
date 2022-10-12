@@ -334,6 +334,36 @@ namespace wg
 		return s_pData->pActiveContext;
 	}
 
+	//____ setClipboardText() ____________________________________________________
+
+	void Base::setClipboardText( const String& text )
+	{
+		s_pData->clipboardText = text;
+		if( s_pHostBridge )
+		{
+			auto stdString = CharSeq(text).getStdString();
+			
+			s_pHostBridge->setClipboardText(stdString);
+		}
+	}
+
+	//____ getClipboardText() ____________________________________________________
+
+	String Base::getClipboardText()
+	{
+		if( s_pHostBridge )
+		{
+			auto stdString = s_pHostBridge->getClipboardText();
+			
+			return String(stdString);
+		}
+		else
+		{
+			return s_pData->clipboardText;
+		}
+	}
+
+
 	//____ setErrorHandler() _________________________________________________________
 
 	void Base::setErrorHandler(std::function<void(Error&)> handler)

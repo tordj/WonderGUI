@@ -19,11 +19,11 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
-
 #ifndef WG_HOSTBRIDGE_DOT_H
 #define WG_HOSTBRIDGE_DOT_H
 #pragma once
+
+#include <string>
 
 namespace wg
 {
@@ -38,8 +38,11 @@ namespace wg
 	class HostBridge
 	{
 	public:
-		virtual void	hidePointer() = 0;
-		virtual void	showPointer() = 0;
+		virtual bool		hidePointer() = 0;
+		virtual bool		showPointer() = 0;
+		
+		virtual std::string	getClipboardText() = 0;
+		virtual bool		setClipboardText(const std::string& text) = 0;
 	};
 }
 

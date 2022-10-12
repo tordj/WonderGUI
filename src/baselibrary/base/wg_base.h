@@ -29,6 +29,7 @@
 #include <wg_strongptr.h>
 #include <wg_types.h>
 #include <wg_hostbridge.h>
+#include <wg_string.h>
 
 #include <string>
 #include <functional>
@@ -126,11 +127,16 @@ namespace wg
 		static void			setActiveContext(Context * pContext);
 		static Context_p	activeContext();
 
+		static void			setClipboardText( const String& text );
+		static String		getClipboardText();
+		
 		static void			setErrorHandler(std::function<void(Error&)> handler);
 		std::function<void(Error&)>	errorHandler();
 
 		static HostBridge *	hostBridge() { return s_pHostBridge; }
 
+
+		
 		//.____ Misc ________________________________________________
 
 		const static TypeInfo	TYPEINFO;
@@ -195,6 +201,8 @@ namespace wg
 
 			MemPool *		pPtrPool;
 			MemStack *		pMemStack;
+
+			String			clipboardText;
 		};
 
 		static HostBridge*					s_pHostBridge;
@@ -208,6 +216,7 @@ namespace wg
 
 		static BitmapCache_p				s_pDefaultBitmapCache;
 
+		
 		struct ObjectInfo
 		{
 			// Filename and line where this objects create() method was called.

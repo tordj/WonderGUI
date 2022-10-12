@@ -23,43 +23,12 @@
 using namespace wg;
 
 
-bool		init_system( Rect windowGeo, float scale );
-void		exit_system();
-
-bool		process_system_events(const RootPanel_p& pRoot);
-void		update_window_rects( const Rect * pRects, int nRects );
-
-bool		init_wondergui();
-void		exit_wondergui();
-
-
-MouseButton translateSDLMouseButton(Uint8 button);
-
-
-Size				g_windowPointSize;
-SizeI				g_windowPixelSize;
-float				g_scale;
-
-SDL_Window *		g_pSDLWindow = nullptr;
-PixelFormat			g_pixelFormat = PixelFormat::Undefined;
-
-Surface_p			g_pWindowSurface = nullptr;				// Set by init_system()
-RootPanel_p			g_pRoot = nullptr;
-
-
-static const char * iconNames[4] = { "info", "warning", "error", "question" };
-static const char * dialogNames[4] = { "ok", "okcancel", "yesno", "yesnocancel" };
-
-
 //____ MyAppVisitor ________________________________________________________
 
 class MyAppVisitor : public WonderApp::Visitor
 {
 public:
-	wg::RootPanel_p	rootPanel() override
-	{
-		return g_pRoot;
-	}
+	wg::RootPanel_p	rootPanel() override;
 	
 	int64_t			time() override
 	{
@@ -92,6 +61,50 @@ protected:
 	void			convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat);
 
 };
+
+//____ MyHostBridge ___________________________________________________________
+
+class MyHostBridge : public HostBridge
+{
+public:
+	bool		hidePointer() override;
+	bool		showPointer() override;
+	
+	std::string	getClipboardText() override;
+	bool		setClipboardText(const std::string& text) override;
+};
+
+//______________________________________________________________________________
+
+bool		init_system( Rect windowGeo, float scale );
+void		exit_system();
+
+bool		process_system_events(const RootPanel_p& pRoot);
+void		update_window_rects( const Rect * pRects, int nRects );
+
+bool		init_wondergui();
+void		exit_wondergui();
+
+
+MouseButton translateSDLMouseButton(Uint8 button);
+
+
+Size				g_windowPointSize;
+SizeI				g_windowPixelSize;
+float				g_scale;
+
+SDL_Window *		g_pSDLWindow = nullptr;
+PixelFormat			g_pixelFormat = PixelFormat::Undefined;
+
+Surface_p			g_pWindowSurface = nullptr;				// Set by init_system()
+RootPanel_p			g_pRoot = nullptr;
+
+MyHostBridge *		g_pHostBridge = nullptr;
+
+static const char * iconNames[4] = { "info", "warning", "error", "question" };
+static const char * dialogNames[4] = { "ok", "okcancel", "yesno", "yesnocancel" };
+
+
 
 
 //____ main() _________________________________________________________________
@@ -173,7 +186,9 @@ int main(int argc, char *argv[] )
 
 bool init_wondergui()
 {
-	Base::init(nullptr);
+	g_pHostBridge = new MyHostBridge();
+	
+	Base::init(g_pHostBridge);
 
 	auto pGfxDevice = SoftGfxDevice::create();
 	auto pSurfaceFactory = SoftSurfaceFactory::create();
@@ -263,6 +278,8 @@ void exit_wondergui()
 	g_pRoot = nullptr;
 
 	Base::exit();
+	delete g_pHostBridge;
+	g_pHostBridge = nullptr;
 }
 
 
@@ -450,6 +467,13 @@ MouseButton translateSDLMouseButton(Uint8 button)
 	case SDL_BUTTON_X2:
 		return MouseButton::X2;
 	}
+}
+
+//____ rootPanel() _____________________________________________________________
+
+wg::RootPanel_p	MyAppVisitor::rootPanel()
+{
+	return g_pRoot;
 }
 
 //____ convertSDLFormat() ______________________________________________________
@@ -699,4 +723,49 @@ char * MyAppVisitor::selectFolderDialog( char const * title, char const * defaul
 {
 	return tinyfd_selectFolderDialog( title, defaultPath );
 
+}
+
+//____ hidePointer() __________________________________________________________
+
+bool MyHostBridge::hidePointer()
+{
+	if( SDL_ShowCursor(SDL_DISABLE) == SDL_DISABLE )
+		return true;
+	
+	return false;
+}
+
+//____ showPointer() __________________________________________________________
+
+bool MyHostBridge::showPointer()
+{
+	if( SDL_ShowCursor(SDL_ENABLE) == SDL_ENABLE )
+		return true;
+	
+	return false;
+}
+
+//____ getClipboardText() _____________________________________________________
+
+std::string MyHostBridge::getClipboardText()
+{
+	char * pText = SDL_GetClipboardText();
+	std::string text = pText;
+	SDL_free(pText);
+	return text;
+}
+
+//____ setClipboardText() _____________________________________________________
+
+bool MyHostBridge::setClipboardText(const std::string& text )
+{
+	int retval = SDL_SetClipboardText( text.c_str() );
+	if( retval != 0 )
+	{
+		//TODO: Error handling!
+
+		return false;
+	}
+	
+	return true;
 }
