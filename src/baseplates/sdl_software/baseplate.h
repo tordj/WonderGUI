@@ -15,6 +15,32 @@ class WonderApp : public wg::Object
 {
 public:
 
+	enum class IconType
+	{
+		Info,
+		Warning,
+		Error,
+		Question
+	};
+	
+	enum class DialogType
+	{
+		Ok,
+		OkCancel,
+		YesNo,
+		YesNoCancel		
+	};
+	
+	enum class DialogButton
+	{
+		Undefined,
+		Cancel,
+		No,
+		Yes,
+		Ok
+	};
+	
+	
 	static WonderApp_p create();
 
 	class Visitor
@@ -27,22 +53,22 @@ public:
 		virtual wg::Surface_p	loadSurface(const std::string& path, wg::SurfaceFactory* pFactory = nullptr,
 											const wg::Surface::Blueprint& blueprint = wg::Surface::Blueprint() ) = 0;
 		
-		virtual void	notifyPopup(char const * title, char const * message, char const * iconType) = 0;
+		virtual bool			notifyPopup(char const * title, char const * message, IconType iconType) = 0;
 		
-		virtual int		messageBox(char const * title, char const * message, char const * dialogType,
-								   char const * iconType, int defaultButton ) = 0;
+		virtual DialogButton	messageBox(char const * title, char const * message, DialogType dialogType,
+										   IconType iconType, DialogButton defaultButton = DialogButton::Undefined ) = 0;
 
-		virtual char *	inputBox(char const * title, char const * message, char const * defaultInput ) = 0;
+		virtual char *			inputBox(char const * title, char const * message, char const * defaultInput ) = 0;
 
-		virtual char *	saveFileDialog( char const * title, char const * defaultPathAndFile,
-									    int nbFilterPatterns,	char const * const * fFilterPatterns,
-										char const * singleFilterDescription ) = 0;
+		virtual char *			saveFileDialog( char const * title, char const * defaultPathAndFile,
+											    int nbFilterPatterns,	char const * const * fFilterPatterns,
+											    char const * singleFilterDescription ) = 0;
 		
-		virtual char * 	openFileDialog(	char const * title, char const * defaultPathAndFile,
-										int nbFilterPatterns, char const * const * filterPatterns,
-										char const * singleFilterDescription, bool bMultiSelec ) = 0;
+		virtual char * 			openFileDialog(	char const * title, char const * defaultPathAndFile,
+											    int nbFilterPatterns, char const * const * filterPatterns,
+											    char const * singleFilterDescription, bool bMultiSelec ) = 0;
 
-		virtual char *	selectFolderDialog( char const * title, char const * defaultPath) = 0;
+		virtual char *			selectFolderDialog( char const * title, char const * defaultPath) = 0;
 	};
 
 	virtual wg::Size	startWindowSize() = 0;

@@ -47,8 +47,8 @@ Surface_p			g_pWindowSurface = nullptr;				// Set by init_system()
 RootPanel_p			g_pRoot = nullptr;
 
 
-
-
+static const char * iconNames[4] = { "info", "warning", "error", "question" };
+static const char * dialogNames[4] = { "ok", "okcancel", "yesno", "yesnocancel" };
 
 
 //____ MyAppVisitor ________________________________________________________
@@ -69,10 +69,10 @@ public:
 	wg::Blob_p 		loadBlob(const std::string& path) override;
 	wg::Surface_p 	loadSurface(const std::string& path, SurfaceFactory* pFactory, const Surface::Blueprint& bp = Surface::Blueprint() ) override;
 
-	void 			notifyPopup(char const * title, char const * message, char const * iconType) override;
+	bool 			notifyPopup(char const * title, char const * message, WonderApp::IconType iconType) override;
 
-	int				messageBox(char const * title, char const * message, char const * dialogType,
-							   char const * iconType, int defaultButton ) override;
+	WonderApp::DialogButton	messageBox(char const * title, char const * message, WonderApp::DialogType dialogType,
+									   WonderApp::IconType iconType, WonderApp::DialogButton defaultButton ) override;
 
 	char *			inputBox(char const * title, char const * message, char const * defaultInput ) override;
 
@@ -561,17 +561,111 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 
 //____ notifyPopup() __________________________________________________________
 
-void MyAppVisitor::notifyPopup(char const * title, char const * message, char const * iconType)
+bool MyAppVisitor::notifyPopup(char const * title, char const * message, WonderApp::IconType iconType)
 {
-	tinyfd_notifyPopup( title, message, iconType);
+	if( iconType == WonderApp::IconType::Question )
+		return false;
+	
+	tinyfd_notifyPopup( title, message, iconNames[int(iconType)]);
+	return true;
 }
 
 //____ messageBox() ___________________________________________________________
 
-int	MyAppVisitor::messageBox(char const * title, char const * message, char const * dialogType,
-							 char const * iconType, int defaultButton )
+WonderApp::DialogButton	MyAppVisitor::messageBox(char const * title, char const * message, WonderApp::DialogType dialogType,
+							 WonderApp::IconType iconType, WonderApp::DialogButton defaultButton )
 {
-	return tinyfd_messageBox( title, message, dialogType, iconType, defaultButton );
+	int defaultButtonInt;
+	
+	switch( dialogType )
+	{
+		case::WonderApp::DialogType::Ok:
+		{
+			if( defaultButton != WonderApp::DialogButton::Ok && defaultButton != WonderApp::DialogButton::Undefined )
+				goto wrongDefaultButton;
+			
+			defaultButtonInt = 1;
+			break;
+		}
+
+		case::WonderApp::DialogType::OkCancel:
+		{
+			if( defaultButton == WonderApp::DialogButton::Undefined)
+				defaultButton = WonderApp::DialogButton::Cancel;
+			
+			if( defaultButton != WonderApp::DialogButton::Ok && defaultButton != WonderApp::DialogButton::Cancel )
+				goto wrongDefaultButton;
+			break;
+		}
+
+		case::WonderApp::DialogType::YesNo:
+		{
+			if( defaultButton == WonderApp::DialogButton::Undefined)
+				defaultButton = WonderApp::DialogButton::No;
+			
+			if( defaultButton != WonderApp::DialogButton::Yes && defaultButton != WonderApp::DialogButton::No )
+				goto wrongDefaultButton;
+			break;
+		}
+
+		case::WonderApp::DialogType::YesNoCancel:
+		{
+			if( defaultButton == WonderApp::DialogButton::Undefined)
+				defaultButton = WonderApp::DialogButton::Cancel;
+			
+			if( defaultButton != WonderApp::DialogButton::Yes && defaultButton != WonderApp::DialogButton::No &&
+				defaultButton != WonderApp::DialogButton::Cancel )
+				goto wrongDefaultButton;
+			break;
+		}
+	}
+	
+	{
+		int retval = tinyfd_messageBox( title, message, dialogNames[int(dialogType)], iconNames[int(iconType)], defaultButtonInt );
+		WonderApp::DialogButton selectedButton;
+		
+		switch( dialogType )
+		{
+			case::WonderApp::DialogType::Ok:
+			{
+				selectedButton = WonderApp::DialogButton::Ok;
+				break;
+			}
+
+			case::WonderApp::DialogType::OkCancel:
+			{
+				selectedButton = retval == 1 ? WonderApp::DialogButton::Ok : WonderApp::DialogButton::Cancel;
+				break;
+			}
+
+			case::WonderApp::DialogType::YesNo:
+			{
+				selectedButton = retval == 1 ? WonderApp::DialogButton::Yes : WonderApp::DialogButton::No;
+				break;
+			}
+
+			case::WonderApp::DialogType::YesNoCancel:
+			{
+				if( retval == 0 )
+					selectedButton = WonderApp::DialogButton::No;
+				else if( retval == 1 )
+					selectedButton = WonderApp::DialogButton::Yes;
+				else
+					selectedButton = WonderApp::DialogButton::Cancel;
+				break;
+			}
+		}
+		
+		return selectedButton;
+	}
+	
+
+wrongDefaultButton:
+	
+	Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Default button isn't a button of specified dialog type", nullptr, nullptr, __func__, __FILE__, __LINE__);
+	
+	return WonderApp::DialogButton::Undefined;
+
 }
 
 //____ inputBox() _____________________________________________________________
@@ -592,7 +686,7 @@ char * MyAppVisitor::saveFileDialog( char const * title, char const * defaultPat
 
 //____ openFileDialog() _______________________________________________________
 
-char * MyAppVisitor::openFileDialog(	char const * title, char const * defaultPathAndFile,
+char * MyAppVisitor::openFileDialog( char const * title, char const * defaultPathAndFile,
 								int nbFilterPatterns, char const * const * filterPatterns,
 								char const * singleFilterDescription, bool bMultiSelection )
 {

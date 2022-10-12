@@ -6,6 +6,8 @@
 #include <string>
 #include <fstream>
 
+#include <SDL2_image/SDL_image.h>
+
 using namespace wg;
 using namespace std;
 
@@ -28,6 +30,8 @@ wg::Size MyApp::startWindowSize()
 
 bool MyApp::init(Visitor* pVisitor)
 {
+	m_pAppVisitor = pVisitor;
+
 	if (!_setupGUI(pVisitor))
 	{
 		printf("ERROR: Failed to setup GUI!\n");
@@ -35,7 +39,7 @@ bool MyApp::init(Visitor* pVisitor)
 	}
 	
 	loadTTF("resources/DroidSans.ttf");
-		
+	
 	return true;
 }
 
@@ -68,7 +72,9 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 									_.font = pFont,
 									_.size = 14,
 									_.color = Color8::Black,
-									_.states = {{State::Disabled, Color8::DarkGrey}} ));
+									_.states = {{State::Disabled, Color8::DarkGrey},
+												{State::Selected, Color8::White, Color8::DarkGrey}
+	} ));
 
 	m_pLabelStyle = TextStyle::create(WGBP(TextStyle,
 									_.font = pFont,
@@ -119,19 +125,34 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	return true;
 }
 
+//____ selectAndLoadTTF() __________________________________________________________
+
+bool MyApp::selectAndLoadTTF()
+{
+	static const char * filters[3] = { "*.ttf", "*.ttc", "*.otf" };
+	
+	const char * pSelectedFile = m_pAppVisitor->openFileDialog("Select Font", nullptr, 3, filters, "Font Files", false);
+
+	if( pSelectedFile )
+	{
+		bool bLoaded = loadTTF(pSelectedFile);
+		return bLoaded;
+	}
+	
+	return false;
+}
+
+
 //____ loadTTF() _________________________________________________________________
 
 bool MyApp::loadTTF( const char * pPath)
 {
-	std::ifstream file( pPath, std::ios::binary | std::ios::ate);
-	std::streamsize size = file.tellg();
-	file.seekg(0, std::ios::beg);
-
-	auto pBlob = Blob::create(size);
+	auto pBlob = m_pAppVisitor->loadBlob(pPath);
 	
-	if (file.read((char*)pBlob->data(), size))
+	if( pBlob )
 	{
 		m_pLoadedFontBlob = pBlob;
+		m_pTTFPathDisplay->display.setText(pPath);
 		return true;
 	}
 	
@@ -142,30 +163,128 @@ bool MyApp::loadTTF( const char * pPath)
 
 bool MyApp::saveBitmapFont()
 {
+//	static const char * filters[3] = { "*.*", "*.ttc", "*.otf" };
+	
+	const char * pOutputPath = m_pAppVisitor->saveFileDialog("Enter output name without extension", nullptr, 0, nullptr, nullptr);
 
+	if( pOutputPath )
+	{
+		std::string pngPath = std::string(pOutputPath) + ".png";
+		
+		
+		// Save PNG
+		
+		auto pixbuf = m_pBitmapFontSurface->allocPixelBuffer();
+
+		PixelDescription pixdesc;
+		Util::pixelFormatToDescription(pixbuf.format, pixdesc);
+
+		auto pSDLSurf = SDL_CreateRGBSurfaceFrom(pixbuf.pPixels, pixbuf.rect.w, pixbuf.rect.h, pixdesc.bits, pixbuf.pitch, pixdesc.R_mask, pixdesc.G_mask, pixdesc.B_mask, pixdesc.A_mask);
+				
+		IMG_SavePNG(pSDLSurf, pngPath.c_str());
+				
+		// Save spec
+		
+		std::string specPath = std::string(pOutputPath) + ".fnt";
+
+		std::ofstream out( specPath );
+		out << m_bitmapFontSpec;
+		out.close();
+		
+		return true;
+	}
+	
+	return false;
 }
 
-//____ generateBitmapFont() ___________________________________________________
+//____ generateBitmapFont() _________________________________________________________
 
 bool MyApp::generateBitmapFont()
 {
 	if( !m_pLoadedFontBlob )
 		return false;
 	
-	String chars = m_pCharsEditor->editor.text();
-
+	if( m_pCharsEditor->editor.isEmpty() )
+		return false;
+	
 	spx size = m_pSizeSelector->selectedEntryId() * 64;
 	FreeTypeFont::RenderMode renderMode = (FreeTypeFont::RenderMode) m_pModeSelector->selectedEntryId();
 	bool bUseSRGB = (m_pSRGBSelector->selectedEntryId() == 1);
-		
-	PixelFormat	outputFormat = bUseSRGB ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
-	
+			
 	auto pFont = FreeTypeFont::create( { .blob = m_pLoadedFontBlob, .renderMode = renderMode, .stemDarkening = bUseSRGB });
 	if( !pFont )
 		return false;
 
-	
 	pFont->setSize(size);
+
+	String charmap = m_pCharsEditor->editor.text();
+	
+	generateFontSurface(pFont, charmap);
+	generateFontSpec(pFont, charmap);
+	
+	return true;
+}
+
+//____ generateFontSpec() _____________________________________________________
+
+bool MyApp::generateFontSpec( FreeTypeFont * pFont, String& charmap )
+{
+	int size = pFont->size()/64;
+	int whitespace = pFont->whitespaceAdvance()/64;
+	int monochrome = pFont->isMonochrome();
+	int baseline = pFont->maxAscend()/64;
+	int linegap = pFont->lineGap()/64;
+	
+	
+	char buffer[1024];
+	
+	sprintf( buffer, "[INFO BEGIN]\n\nSIZE: %d\nWHITESPACE: %d\nMONOCHROME: %d\nBASELINE: %d\nLINEGAP: %d\n\n[INFO END]\n\n",
+			size, whitespace, monochrome, baseline, linegap );
+	
+	m_bitmapFontSpec = buffer;
+	
+	m_bitmapFontSpec += "\n[CHARMAP BEGIN]\n\n";
+	m_bitmapFontSpec += CharSeq(charmap).getStdString();
+	m_bitmapFontSpec += "\n[CHARMAP END]\n\n";
+	
+	m_bitmapFontSpec += "\n[KERNING BEGIN]\n\n";
+	
+	for( int i = 0 ; i < charmap.length() ; i++ )
+	{
+		Glyph glyph1;
+		pFont->getGlyphWithoutBitmap(charmap.chars()[i].code(), glyph1);
+		
+		for( int j = 0 ; j < charmap.length() ; j++ )
+		{
+			Glyph glyph2;
+			pFont->getGlyphWithoutBitmap(charmap.chars()[j].code(), glyph2);
+			
+			spx kerningSPX = pFont->kerning(glyph1, glyph2);
+	
+			int kerning = (kerningSPX - 32) / 64;
+			
+			if( kerning != 0 )
+			{
+				sprintf( buffer, "%c%c %d ", charmap.chars()[i].code(), charmap.chars()[j].code(), kerning );
+				m_bitmapFontSpec += buffer;
+			}
+		}
+	}
+	
+	m_bitmapFontSpec += "\n[KERNING END]\n";
+
+	
+	return true;
+}
+
+//____ generateFontSurface() ___________________________________________________
+
+bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
+{
+	bool bUseSRGB = (m_pSRGBSelector->selectedEntryId() == 1);
+		
+	PixelFormat	outputFormat = bUseSRGB ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
+
 	
 	// Calculate size of surface needed.
 		
@@ -212,7 +331,7 @@ bool MyApp::generateBitmapFont()
 	pDevice->beginCanvasUpdate(pSurface);
 	pDevice->setBlendMode(BlendMode::Replace);
 	pDevice->fill(Color::Transparent);
-	pDevice->setBlendMode(BlendMode::Blend);
+	pDevice->setBlendMode(BlendMode::Replace);
 
 	CoordSPX pos;
 	int rowHeight = (pFont->maxAscend() + pFont->maxDescend()) / 64;
@@ -299,7 +418,7 @@ Widget_p MyApp::createInputPanel()
 
 	auto pPath = TextDisplay::create( WGBP(TextDisplay,
 											 _.skin = m_pSectionSkin,
-											 _.display = WGBP(Text, _.style = m_pTextStyle, _.layout = m_pTextLayoutCentered, _.text = String("C:\\Test.ttf") )
+											 _.display = WGBP(Text, _.style = m_pTextStyle, _.layout = m_pTextLayoutCentered)
 										   ) );
 	
 	auto pLoadButton = Button::create( WGBP(Button,
@@ -377,16 +496,17 @@ Widget_p MyApp::createInputPanel()
 
 	pBase->slots[1].setPadding({4,0,0,0});
 
+	m_pTTFPathDisplay = pPath;
 	m_pSizeSelector = pSizeSelector;
 	m_pModeSelector = pModeSelector;
 	m_pSRGBSelector = pSRGBSelector;
 
-	m_pSizeSelector->selectEntryByIndex(0);
-	m_pModeSelector->selectEntryByIndex(0);
+	m_pSizeSelector->selectEntryById(10);
+	m_pModeSelector->selectEntryById(int(FreeTypeFont::RenderMode::BestShapes));
 	m_pSRGBSelector->selectEntryByIndex(0);
 
-	
-	
+	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadTTF();});
+
 	return pBase;
 }
 
@@ -494,6 +614,9 @@ Widget_p MyApp::createOutputPanel()
 	m_pBitmapDisplay = Image::create();
 	pWindow->slot = m_pBitmapDisplay;
 	
+	
+	Base::msgRouter()->addRoute( pSaveButton, MsgType::Select, [this](Msg*pMsg){this->saveBitmapFont();});
+
 	return pBase;
 }
 

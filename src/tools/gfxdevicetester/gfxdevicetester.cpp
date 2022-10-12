@@ -60,7 +60,7 @@ bool GfxDeviceTester::init( AppVisitor * pVisitor )
 	// Init fonts
 
 	Blob_p pFontFile = pVisitor->loadBlob("resources/DroidSans.ttf");
-	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 0);
+	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile);
 
 	TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .font = pFont, .size = 16 });
 	Base::setDefaultStyle(pStyle);

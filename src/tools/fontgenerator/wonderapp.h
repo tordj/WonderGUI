@@ -4,6 +4,7 @@
 #include "baseplate.h"
 
 #include <wondergui.h>
+#include <wg_freetypefont.h>
 
 #include <initializer_list>
 #include <string>
@@ -22,9 +23,13 @@ public:
 	wg::Widget_p	createOutputPanel();
 
 	bool		loadTTF( const char * pPath );
+	bool 		selectAndLoadTTF();
+
 	bool		saveBitmapFont();
 
 	bool		generateBitmapFont();
+	bool		generateFontSpec( wg::FreeTypeFont * pFont, wg::String& charmap );
+	bool		generateFontSurface( wg::FreeTypeFont * pFont, wg::String& charmap );
 	void		displayBitmapFont();
 
 private:
@@ -32,6 +37,9 @@ private:
 	bool			_setupGUI(Visitor* pVisitor);
 	bool			_loadSkins(Visitor* pVisitor);
 
+	WonderApp::Visitor * m_pAppVisitor = nullptr;
+	
+	wg::TextDisplay_p	m_pTTFPathDisplay;
 	wg::SelectBox_p		m_pSizeSelector;
 	wg::SelectBox_p		m_pModeSelector;
 	wg::SelectBox_p		m_pSRGBSelector;
@@ -41,6 +49,7 @@ private:
 	wg::Blob_p			m_pLoadedFontBlob;
 	
 	wg::Surface_p		m_pBitmapFontSurface;
+	std::string			m_bitmapFontSpec;
 	wg::Surface_p		m_pFontDisplaySurface;
 	wg::Image_p			m_pBitmapDisplay;
 	
