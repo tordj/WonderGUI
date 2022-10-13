@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS YES)
+
 project(WonderGUI VERSION 3.0 DESCRIPTION "WonderGUI User Interface Library")
 
 set(CMAKE_CXX_STANDARD 11)
@@ -99,23 +101,13 @@ endfunction()
 
 add_subdirectory(baselibrary)
 add_subdirectory(c-abi-wrapper)
-add_subdirectory(gfxdevices/software)
-add_subdirectory(gfxdevices/stream)
-add_subdirectory(gfxdevices/opengl)
-if(APPLE)
-	add_subdirectory(gfxdevices/metal)
-endif()
-add_subdirectory(fontengines/freetype)
+add_subdirectory(gfxdevices)
+add_subdirectory(fontengines)
 add_subdirectory(examples)
-add_subdirectory(tools/fontgenerator)
-add_subdirectory(tools/gfxdevicetester)
-add_subdirectory(tools/gfxworkbench)
-add_subdirectory(tools/packlayouttester)
-add_subdirectory(tools/softkernelgenerator)
-add_subdirectory(tools/streamanalyzer)
-add_subdirectory(tools/streamgenerator)
-#add_subdirectory(tools/unittester)
-add_subdirectory(tools/workbench)
+add_subdirectory(tools)
+
+
+
 
 if(MSVC)
 	target_compile_options(gfxdevicetester PRIVATE "/MP")
