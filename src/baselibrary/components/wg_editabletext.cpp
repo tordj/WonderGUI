@@ -202,12 +202,25 @@ namespace wg
 				switch( cmd )
 				{
 					case EditCmd::Cut:
+						if( hasSelection() )
+						{
+							Base::setClipboardText(getSelection());
+							eraseSelected();
+						}
 					break;
 
 					case EditCmd::Copy:
+						if( hasSelection() )
+						{
+							Base::setClipboardText(getSelection());
+						}
 					break;
 
 					case EditCmd::Paste:
+						if( m_editState.bCaret )
+						{
+							caretPut(Base::getClipboardText());
+						}
 					break;
 
 					case EditCmd::Undo:
@@ -617,6 +630,23 @@ namespace wg
 	{
 		return abs(m_editState.caretOfs-m_editState.selectOfs);
 	}
+
+	//____ getSelection() _______________________________________________________
+
+	String EditableText::getSelection() const
+	{
+		int beg = m_editState.selectOfs;
+		int end = m_editState.caretOfs;
+		
+		if( beg == end )
+			return String();
+
+		if( beg > end )
+			std::swap( beg, end );
+
+		return String(CharSeq(&m_charBuffer, beg, end-beg));
+	}
+
 
 	//____ eraseSelected() _____________________________________________________
 

@@ -88,6 +88,7 @@ namespace wg
 		int				selectionEnd() const;
 		int				selectionSize() const;				// Number of characters that are selected.
 
+		String			getSelection() const;
 
 		// These methods will fail unless caret is present
 

@@ -251,11 +251,23 @@ bool init_wondergui()
 	pInput->mapKey(SDLK_LALT, Key::Alt);
 	pInput->mapKey(SDLK_RALT, Key::Alt);
 
+	pInput->mapKey(SDLK_LGUI, Key::Super);
+	pInput->mapKey(SDLK_RGUI, Key::Super);
+
+	
 	pInput->mapKey(SDLK_KP_ENTER, Key::Return);
 
 
-	pInput->mapCommand(SDLK_ESCAPE, ModKeys::None, EditCmd::Escape);
+#ifdef __APPLE__
+	pInput->mapCommand(SDLK_x, ModKeys::Super, EditCmd::Cut);
+	pInput->mapCommand(SDLK_c, ModKeys::Super, EditCmd::Copy);
+	pInput->mapCommand(SDLK_v, ModKeys::Super, EditCmd::Paste);
 
+	pInput->mapCommand(SDLK_a, ModKeys::Super, EditCmd::SelectAll);
+
+	pInput->mapCommand(SDLK_z, ModKeys::Super, EditCmd::Undo);
+	pInput->mapCommand(SDLK_z, ModKeys::SuperShift, EditCmd::Redo);
+#else
 	pInput->mapCommand(SDLK_x, ModKeys::Ctrl, EditCmd::Cut);
 	pInput->mapCommand(SDLK_c, ModKeys::Ctrl, EditCmd::Copy);
 	pInput->mapCommand(SDLK_v, ModKeys::Ctrl, EditCmd::Paste);
@@ -264,6 +276,10 @@ bool init_wondergui()
 
 	pInput->mapCommand(SDLK_z, ModKeys::Ctrl, EditCmd::Undo);
 	pInput->mapCommand(SDLK_z, ModKeys::CtrlShift, EditCmd::Redo);
+#endif
+	
+	pInput->mapCommand(SDLK_ESCAPE, ModKeys::None, EditCmd::Escape);
+
 	
 	
 //	g_pRoot->setDebugMode(true);
