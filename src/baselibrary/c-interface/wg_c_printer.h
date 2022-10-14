@@ -46,8 +46,8 @@ extern "C" {
 
 	void		wg_print( wg_obj printer, const char * pText );
 	wg_coordSPX	wg_printAt( wg_obj printer, wg_coordSPX pos, const char * pText );
-	void		wg_printJustified( wg_obj printer, wg_placement xPlacement, const char * pText );
-	void		wg_printInBox( wg_obj printer, const wg_rectSPX box, wg_placement placement, const char * pText );
+	void		wg_printAligned( wg_obj printer, wg_placement xAlign, const char * pText );
+	void		wg_printInBox( wg_obj printer, const wg_rectSPX box, wg_placement alignment, const char * pText );
 
 	wg_spx		wg_printerLineHeight( wg_obj printer );
 	wg_sizeSPX	wg_printerTextSize( wg_obj printer, const char * pString );

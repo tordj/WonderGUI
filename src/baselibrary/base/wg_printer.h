@@ -38,13 +38,24 @@ namespace wg
 
 
 	/**
-	 * @brief Reference counted container of arbitrary data.
+	 * @brief Object for low-level printing of text on screen.
 	 *
-	 * Blob is a container that can be used to wrap a non-WonderGUI
-	 * object or any set of data into a reference counted WonderGUI object.
+	 * A Printer in WG is a low-level object for printing text on screen (it performs 'prints') and has
+	 * nothing to do with printing on paper.
 	 *
-	 * When the Blob is destroyed, the external object is destroyed or the memory area
-	 * released.
+	 * It exists outside the normal text display system and doesn't use TextStyle, Text-objects, Strings
+	 * or TextLayout objects. It just prints UTF-8 strings of text onto the current canvas of its specified
+	 * GfxDevice using the specified font.
+	 *
+	 * All print-methods are meant to be used within a GfxDevice render-cycle, where things such as Canvas,
+	 * BlendMode and TintColor has already been setup.
+	 *
+	 * To change the size of the font between prints you simply change the size in the Font-object itself. If you
+	 * want to print in another color you change tint color of the GfxDevice.
+	 *
+	 * At a minimum you need to set GfxDevice and Font before you can start printing. You should also set
+	 * line width if you want to do aligned printing (since line width needs to be known for alignment).
+	 *
 	 */
 
 	class Printer : public Object
@@ -64,7 +75,7 @@ namespace wg
 		void		setGfxDevice(GfxDevice * pDevice);
 		void		setFont(Font * pFont);
 		
-		void		setOrigo( CoordSPX origo );
+		void		setCursorOrigo( CoordSPX origo );
 		void		setLineWidth( spx width );		// Needed for printJustifiedLine()
 		
 		void		resetCursor();
@@ -74,8 +85,8 @@ namespace wg
 		
 		void		print( const char * pText );
 		CoordSPX	printAt( CoordSPX pos, const char * pText );
-		void		printJustified( Placement xPlacement, const char * pText );
-		void		printInBox( const RectSPX& box, Placement placement, const char * pText );
+		void		printAligned( Placement xAlignment, const char * pText );
+		void		printInBox( const RectSPX& box, Placement alignment, const char * pText );
 
 		spx			lineHeight();
 		SizeSPX		textSize( const char * pString );
@@ -87,7 +98,7 @@ namespace wg
 		
 		uint32_t 	_parseChar( const char *& pStr );
 		CoordSPX	_print( CoordSPX pos, const char * pBegin, const char * pEnd, spx origoX );
-		CoordSPX	_printJustified( CoordSPX pos, spx lineWidth, Placement xPlacement, const char * pBegin );
+		CoordSPX	_printAligned( CoordSPX pos, spx lineWidth, Placement xAlignment, const char * pBegin );
 
 		const char * _lineEnd( const char * pPos );
 		SizeSPX		_textSize( const char * pBegin, const char * pEnd );

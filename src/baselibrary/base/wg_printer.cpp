@@ -66,9 +66,9 @@ namespace wg
 		m_pFont = pFont;
 	}
 
-	//____ setOrigo() ____________________________________________________________
+	//____ setCursorOrigo() ____________________________________________________________
 
-	void Printer::setOrigo( CoordSPX origo )
+	void Printer::setCursorOrigo( CoordSPX origo )
 	{
 		m_cursorOrigo = origo;
 	}
@@ -120,11 +120,11 @@ namespace wg
 		}
 	}
 
-	//____ printJustified() __________________________________________________
+	//____ printAligned() __________________________________________________
 
-	void Printer::printJustified( Placement xPlacement, const char * pText )
+	void Printer::printAligned( Placement xAlignment, const char * pText )
 	{
-		m_cursorPos = _printJustified(m_cursorPos, m_lineWidth, xPlacement, pText);
+		m_cursorPos = _printAligned(m_cursorPos, m_lineWidth, xAlignment, pText);
 	}
 
 	//____ print() ________________________________________________________________
@@ -160,17 +160,17 @@ namespace wg
 
 	//____ printInBox() ____________________________________________________________
 
-	void Printer::printInBox( const RectSPX& box, Placement placement, const char * pText )
+	void Printer::printInBox( const RectSPX& box, Placement alignment, const char * pText )
 	{
 		SizeSPX wholeTextSize = _textSize(pText, nullptr);
 		
-		int yMul = g_placementMulY[int(placement)];
+		int yMul = g_placementMulY[int(alignment)];
 
 		CoordSPX pos = box.pos();
 		pos.y += (box.h - wholeTextSize.h) * yMul / 2;
 		pos.y += m_pFont->maxAscend();
 		
-		_printJustified(pos, box.w, placement, pText);
+		_printAligned(pos, box.w, alignment, pText);
 	}
 
 	//____ _print() ______________________________________________________________
@@ -234,11 +234,11 @@ namespace wg
 		return pos;
 	}
 
-	//____ _printJustified() __________________________________________________
+	//____ _printAligned() __________________________________________________
 
-	CoordSPX Printer::_printJustified( CoordSPX pos, spx lineWidth, Placement xPlacement, const char * pBegin )
+	CoordSPX Printer::_printAligned( CoordSPX pos, spx lineWidth, Placement xAlign, const char * pBegin )
 	{
-		int mul = g_placementMulX[int(xPlacement)];
+		int mul = g_placementMulX[int(xAlign)];
 
 		while( * pBegin != 0 )
 		{

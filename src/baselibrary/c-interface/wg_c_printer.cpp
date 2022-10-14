@@ -51,7 +51,7 @@ void wg_setPrinterFont( wg_obj printer, wg_obj font )
 
 void wg_setPrinterOrigo( wg_obj printer, wg_coordSPX coord )
 {
-	getPtr(printer)->setOrigo({coord.x, coord.y});
+	getPtr(printer)->setCursorOrigo({coord.x, coord.y});
 }
 
 void wg_setPrinterLineWidth( wg_obj printer, wg_spx width )
@@ -89,9 +89,9 @@ wg_coordSPX wg_printAt( wg_obj printer, wg_coordSPX pos, const char * pText )
 	getPtr(printer)->printAt({pos.x,pos.y},pText);
 }
 
-void wg_printJustified( wg_obj printer, wg_placement xPlacement, const char * pText )
+void wg_printAligned( wg_obj printer, wg_placement xAlignment, const char * pText )
 {
-	getPtr(printer)->printJustified( Placement(xPlacement),pText);
+	getPtr(printer)->printAligned( Placement(xAlignment),pText);
 }
 
 void wg_printInBox( wg_obj printer, const wg_rectSPX box, wg_placement placement, const char * pText )

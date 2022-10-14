@@ -88,7 +88,7 @@ int main ( int argc, char** argv )
 	auto pPrinter = Printer::create();
 	pPrinter->setFont(pFont);
 	pPrinter->setGfxDevice(pGfxDevice);
-	pPrinter->setOrigo({0,20*64});
+	pPrinter->setCursorOrigo({0,20*64});
 	pPrinter->setLineWidth(640*3*64);
 	
 	
@@ -117,7 +117,7 @@ int main ( int argc, char** argv )
 		
 		pPrinter->resetCursor();
 		pPrinter->print("Hello from Printer!\n");
-		pPrinter->printJustified(Placement::Center, "This text should be centered, one line down!");
+		pPrinter->printAligned(Placement::Center, "This text should be centered, one line down!");
 
 		pPrinter->crlf();
 		pPrinter->print("First part of text,");
