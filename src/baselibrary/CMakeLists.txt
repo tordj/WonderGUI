@@ -97,6 +97,8 @@ add_library( wondergui
 	base/wg_patches.impl.h
 	base/wg_patches.h
 	base/wg_pointers.h
+	base/wg_printer.cpp
+	base/wg_printer.h
 	base/wg_receiver.cpp
 	base/wg_receiver.h
 	base/wg_resdb.cpp
@@ -174,6 +176,8 @@ add_library( wondergui
 	c-interface/wg_c_memheap.h
 	c-interface/wg_c_object.cpp
 	c-interface/wg_c_object.h
+	c-interface/wg_c_printer.cpp
+	c-interface/wg_c_printer.h
 	c-interface/wg_c_surface.cpp
 	c-interface/wg_c_surface.h
 	c-interface/wg_c_surfacefactory.cpp

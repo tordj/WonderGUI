@@ -42,7 +42,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	BitmapFont::BitmapFont(Surface* pSurf, char* pGlyphSpec, Font * pBackupFont ) : Font(pBackupFont)
+	BitmapFont::BitmapFont(Surface* pSurf, const char* pGlyphSpec, Font * pBackupFont ) : Font(pBackupFont)
 	{
 		m_pSurface		= pSurf;
 

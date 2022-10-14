@@ -1,12 +1,20 @@
 
-
 #include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 #ifdef WIN32
-#	include <SDL.h>
+#    include <SDL.h>
+#    include <SDL_image.h>
+#elif __APPLE__
+#    include <SDL2/SDL.h>
+#    include <SDL2_image/SDL_image.h>
 #else
-#	include <SDL2/SDL.h>
+#    include <SDL2/SDL.h>
+#    include <SDL2/SDL_image.h>
 #endif
+
 #include <wondergui.h>
 
 #include <wg_softsurface.h>
@@ -62,7 +70,28 @@ int main ( int argc, char** argv )
 	SDL_FreeSurface(pSDLSurf);
 
 
+	// Setup a bitmap font
+	
+	SDL_Surface * pSDLFontSurf = IMG_Load( "resources/charmap-oldschool_white_5x7_ascii.png" );
+	SoftSurface_p pFontSurface = SoftSurface::create( SizeI( pSDLFontSurf->w, pSDLFontSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLFontSurf->pixels, pSDLFontSurf->pitch, 0 );
+	SDL_FreeSurface(pSDLFontSurf);
 
+	std::ifstream file( "resources/charmap-oldschool_white_5x7_ascii.fnt" );
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::string fontSpec = buffer.str();
+	
+	auto pFont = BitmapFont::create(pFontSurface, fontSpec.c_str() );
+	
+	//
+	
+	auto pPrinter = Printer::create();
+	pPrinter->setFont(pFont);
+	pPrinter->setGfxDevice(pGfxDevice);
+	pPrinter->setOrigo({0,20*64});
+	pPrinter->setLineWidth(640*3*64);
+	
+	
 	//------------------------------------------------------
 	// Program Main Loop
 	//------------------------------------------------------
@@ -81,8 +110,33 @@ int main ( int argc, char** argv )
 		pGfxDevice->beginRender();
 		pGfxDevice->beginCanvasUpdate(pCanvas);		
 
-		pGfxDevice->fill(HiColor::Black);
+		pGfxDevice->fill(Color8::Green);
 
+		
+		pFont->setSize(10*64);
+		
+		pPrinter->resetCursor();
+		pPrinter->print("Hello from Printer!\n");
+		pPrinter->printJustified(Placement::Center, "This text should be centered, one line down!");
+
+		pPrinter->crlf();
+		pPrinter->print("First part of text,");
+		pPrinter->print(" second part of text on same line.");
+		
+		RectSPX box = { 20*64, 200*64, 640*64, 30*64 };
+
+		pGfxDevice->fill(box, Color8::Black);
+		
+		pPrinter->printInBox(box, Placement::Center, "Multiline text that is\naligned inside a box.");
+		
+		pPrinter->crlf();
+		pPrinter->print("Yet another line.\n");
+		
+		pPrinter->printAt(box.pos(), "A little text");
+		
+		pPrinter->print("And another (one).");
+
+/*
 		for( int y = 0 ; y < 17 ; y++ )
 		{
 			for( int x = 0 ; x < 17 ; x++ )
@@ -92,7 +146,7 @@ int main ( int argc, char** argv )
 		}
 
 		pGfxDevice->fill( RectI((18*16)*64,0, 64*10, 64*300), HiColor(4096/16,0,0,4096) );
-
+*/
 		pGfxDevice->endCanvasUpdate();
 		pGfxDevice->endRender();
 

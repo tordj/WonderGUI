@@ -42,7 +42,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static BitmapFont_p	create( Surface * pSurf, char * pGlyphSpec, Font * pBackupFont = nullptr ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec,pBackupFont)); }
+		static BitmapFont_p	create( Surface * pSurf, const char * pGlyphSpec, Font * pBackupFont = nullptr ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec,pBackupFont)); }
 
 		//.____ Identification __________________________________________
 
@@ -76,7 +76,7 @@ namespace wg
 		inline Surface_p	surface() { return m_pSurface;}
 		
 	protected:
-		BitmapFont( Surface * pSurf, char * pGlyphSpec, Font * pBackupFont );
+		BitmapFont( Surface * pSurf, const char * pGlyphSpec, Font * pBackupFont );
 		~BitmapFont();
 
 		void _insertGlyphs(Surface* pSurf, const char* pGlyphSpec);

@@ -53,6 +53,24 @@ typedef struct wg_typeInfo_struct
 	const struct wg_typeInfo_struct* pSuperClass;
 } wg_typeInfo;
 
+//____ wg_placement ___________________________________________________________
+
+typedef enum
+{
+	// Clockwise from upper left corner, center last. Must be in range 0-8
+
+	WG_NORTHWEST = 0,
+	WG_NORTH,
+	WG_NORTHEAST,
+	WG_EAST,
+	WG_SOUTHEAST,
+	WG_SOUTH,
+	WG_SOUTHWEST,
+	WG_WEST,
+	WG_CENTER
+
+} wg_placement;
+
 //____ wg_tintMode ___________________________________________________________
 
 typedef enum
