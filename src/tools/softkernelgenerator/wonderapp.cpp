@@ -89,11 +89,11 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 		return false;
 
 
-	auto pSizeBroker = UniformSizeBroker::create();
+	auto pLayout = PackLayout::create( { .expandFactor = PackLayout::Factor::Weight });
 
 	auto pBasePanel = PackPanel::create();
 	pBasePanel->setAxis(Axis::Y);
-	pBasePanel->setSizeBroker(pSizeBroker);
+	pBasePanel->setLayout(pLayout);
 
 	auto pWindow = ScrollPanel::create();
 	pWindow->setSkin(ColorSkin::create(Color8::AntiqueWhite));
@@ -529,7 +529,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 	auto pTopSection = PackPanel::create();
 	pTopSection->setAxis(Axis::X);
 	pTopSection->setSkin(m_pSectionSkin);
-	pTopSection->setSizeBroker(UniformSizeBroker::create());
+	pTopSection->setLayout(PackLayout::create( { .expandFactor = PackLayout::Factor::Weight }));
 
 
 	// Togglebuttons for TintModes
@@ -602,7 +602,7 @@ Widget_p MyApp::_buildHeaderWithCloseButton(std::string title, std::function<voi
 	pRow->slots << pButton;
 
 	pRow->slots[1].setWeight(0.f);
-	pRow->setSizeBroker(UniformSizeBroker::create());
+	pRow->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
 
 	return pRow;
 }
@@ -657,7 +657,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 
 		auto pBodyRow = PackPanel::create();
 		pBodyRow->setAxis(Axis::X);
-		pBodyRow->setSizeBroker(UniformSizeBroker::create());
+		pBodyRow->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
 
 		pBodyRow->slots << _buildToggleButtonRow("Operations", activeBlitTypes, it->blitTypes, [this, index](Msg* pMsg) { this->customBlitTypeToggled(index, pMsg); });
 		pBodyRow->slots << _buildToggleButtonRow("Tint Modes", activeTintModes, it->tintModes, [this, index](Msg* pMsg) { this->customBlitTintModeToggled(index,pMsg); });
@@ -714,7 +714,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 
 	pRow->slots[1].setWeight(0);
 
-	pRow->setSizeBroker(UniformSizeBroker::create());
+	pRow->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
 
 	Base::msgRouter()->addRoute(pButton, MsgType::Select, [this](Msg* pMsg) {this->addOptimizedBlitEntry(); });
 
@@ -786,7 +786,7 @@ wg::Widget_p MyApp::_buildLabeledList(int nColumns, std::initializer_list < std:
 {
 	auto pSection = PackPanel::create();
 	pSection->setAxis(Axis::X);
-	pSection->setSizeBroker(UniformSizeBroker::create());
+	pSection->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
 
 	PackPanel_p columns[16][2];
 
@@ -855,7 +855,7 @@ wg::Widget_p MyApp::_buildExportSection()
 
 	pSection->slots[1].setWeight(0);
 
-	pSection->setSizeBroker(UniformSizeBroker::create());
+	pSection->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
 
 	Base::msgRouter()->addRoute(pButton, MsgType::Select, [this](Msg* pMsg) {this->generateSource(); });
 

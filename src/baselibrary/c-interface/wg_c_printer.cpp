@@ -42,22 +42,45 @@ void wg_setPrinterGfxDevice( wg_obj printer, wg_obj gfxDevice )
 	getPtr(printer)->setGfxDevice(pDevice);
 }
 
+wg_obj wg_printerGfxDevice(wg_obj printer)
+{
+	return reinterpret_cast<wg_obj>(static_cast<Object*>(getPtr(printer)->gfxDevice().rawPtr()));
+}
+
 void wg_setPrinterFont( wg_obj printer, wg_obj font )
 {
 	auto pFont = static_cast<Font*>(reinterpret_cast<Object*>(font));
 	getPtr(printer)->setFont(pFont);
-
 }
+
+wg_obj wg_printerFont(wg_obj printer)
+{
+	return reinterpret_cast<wg_obj>(static_cast<Object*>(getPtr(printer)->font().rawPtr()));
+}
+
 
 void wg_setPrinterOrigo( wg_obj printer, wg_coordSPX coord )
 {
 	getPtr(printer)->setCursorOrigo({coord.x, coord.y});
 }
 
+wg_coordSPX	wg_printerOrigo(wg_obj printer)
+{
+	auto coord = getPtr(printer)->cursorOrigo();
+	return { coord.x,coord.y };
+}
+
+
 void wg_setPrinterLineWidth( wg_obj printer, wg_spx width )
 {
 	getPtr(printer)->setLineWidth(width);
 }
+
+wg_spx wg_printerLineWidth(wg_obj printer)
+{
+	return (wg_spx) getPtr(printer)->lineWidth();
+}
+
 
 void wg_resetPrinterCursor( wg_obj printer )
 {
@@ -69,12 +92,24 @@ void wg_setPrinterCursor( wg_obj printer, wg_coordSPX pos )
 	getPtr(printer)->setCursor({pos.x,pos.y});
 }
 
-void wg_printerCRLF( wg_obj printer )
+
+wg_coordSPX wg_printerCursor(wg_obj printer)
+{
+	auto coord = getPtr(printer)->cursor();
+	return { coord.x,coord.y };
+}
+
+void wg_printTab(wg_obj printer)
+{
+	getPtr(printer)->tab();
+}
+
+void wg_printCRLF( wg_obj printer )
 {
 	getPtr(printer)->crlf();
 }
 
-void wg_printerCRFLWithFontSizes( wg_obj printer, wg_spx maxFontSizeThisLine, wg_spx maxFontSizeNextLine )
+void wg_printCRFLWithFontSizes( wg_obj printer, wg_spx maxFontSizeThisLine, wg_spx maxFontSizeNextLine )
 {
 	getPtr(printer)->crlf(maxFontSizeThisLine, maxFontSizeNextLine);
 }
@@ -86,7 +121,8 @@ void wg_print( wg_obj printer, const char * pText )
 
 wg_coordSPX wg_printAt( wg_obj printer, wg_coordSPX pos, const char * pText )
 {
-	getPtr(printer)->printAt({pos.x,pos.y},pText);
+	auto coord = getPtr(printer)->printAt({pos.x,pos.y},pText);
+	return { coord.x,coord.y };
 }
 
 void wg_printAligned( wg_obj printer, wg_placement xAlignment, const char * pText )
@@ -94,9 +130,10 @@ void wg_printAligned( wg_obj printer, wg_placement xAlignment, const char * pTex
 	getPtr(printer)->printAligned( Placement(xAlignment),pText);
 }
 
-void wg_printInBox( wg_obj printer, const wg_rectSPX box, wg_placement placement, const char * pText )
+wg_coordSPX wg_printInBox( wg_obj printer, const wg_rectSPX box, wg_placement placement, const char * pText )
 {
-	getPtr(printer)->printInBox( {box.x,box.y,box.w,box.h}, Placement(placement),pText);
+	auto coord = getPtr(printer)->printInBox( {box.x,box.y,box.w,box.h}, Placement(placement),pText);
+	return { coord.x,coord.y };
 }
 
 wg_spx wg_printerLineHeight( wg_obj printer )

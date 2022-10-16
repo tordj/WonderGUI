@@ -73,20 +73,31 @@ namespace wg
 		//.____ Control ________________________________________________
 
 		void		setGfxDevice(GfxDevice * pDevice);
+		GfxDevice_p	gfxDevice() const { return m_pGfxDevice;  }
+
 		void		setFont(Font * pFont);
+		Font_p		font() const { return m_pFont;  }
 		
 		void		setCursorOrigo( CoordSPX origo );
+		CoordSPX	cursorOrigo() const { return m_cursorOrigo;  }
+
 		void		setLineWidth( spx width );		// Needed for printJustifiedLine()
-		
+		spx			lineWidth() const { return m_lineWidth; }
+
+		void		setTabSize(int nbWhiteSpace);
+		int			tabSize() const { return m_tabSize;  }
+
 		void		resetCursor();
 		void		setCursor( CoordSPX pos );
+		CoordSPX	cursor() const { return m_cursorPos;  }
+		void		tab();
 		void		crlf();
 		void		crlf( spx maxFontSizeThisLine, spx maxFontSizeNextLine );
 		
 		void		print( const char * pText );
 		CoordSPX	printAt( CoordSPX pos, const char * pText );
 		void		printAligned( Placement xAlignment, const char * pText );
-		void		printInBox( const RectSPX& box, Placement alignment, const char * pText );
+		CoordSPX	printInBox( const RectSPX& box, Placement alignment, const char * pText );
 
 		spx			lineHeight();
 		SizeSPX		textSize( const char * pString );
@@ -109,8 +120,9 @@ namespace wg
 		CoordSPX	m_cursorPos;
 		CoordSPX	m_cursorOrigo;
 		
-		spx			m_lineWidth;
-		
+		spx			m_lineWidth = 100*64;
+		int			m_tabSize = 8;
+
 	};
 
 

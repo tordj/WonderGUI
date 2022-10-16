@@ -53,6 +53,22 @@ namespace wg
 	}
 
 	//____ setGfxDevice() ______________________________________________________
+	/**
+	* @brief Set GfxDevice used for printing
+	* 
+	* A GfxDevice is needed for printing. Printer uses the GfxDevice as is
+	* and issues individual blit-calls for copying characters to the screen.
+	* 
+	* Therefore the GfxDevice needs to be in a mode where beginRender() and beginCanvasUpdate()
+	* has been called before any of the print-methods can be called.
+	* 
+	* No states of the GfxDevice is changed by Printer (except for changing blitSource) so
+	* blend modes, tint settings etc are used as they are.
+	* 
+	* To change the color of the printed text you should change the tint color of the GfxDevice.
+	* 
+	* @param pDevice	Pointer at GfxDevice to use when printing.
+	*/
 
 	void Printer::setGfxDevice(GfxDevice * pDevice)
 	{
@@ -60,27 +76,68 @@ namespace wg
 	}
 
 	//____ setFont() _____________________________________________________________
-
+	/**
+	* @brief Set font used for printing.
+	* 
+	* This sets the font used for printing. To change the size of text being printed
+	* you should call the fonts setSize() method before printing.
+	* 
+	* The font can be changed between individual print calls.
+	* 
+	* @pFont	The font to use.
+	*/
 	void Printer::setFont(Font * pFont)
 	{
 		m_pFont = pFont;
 	}
 
 	//____ setCursorOrigo() ____________________________________________________________
-
+	/**
+	* @brief Set the origo for the cursor.
+	* 
+	* Sets the origo for the cursor on the canvas. The origo is the top-left position for the cursor
+	* and the position the cursor returns to when resetCursor() is called.
+	* 
+	* When the cursor begins a new line it returns to the x-position of origo.
+	* 
+	* Current cursor position is not modified when setting origo. So you might
+	* want to call resetCursor() right after.
+	* 
+	* @param origo	Position of origo in subpixel coordinates.
+	*/
 	void Printer::setCursorOrigo( CoordSPX origo )
 	{
 		m_cursorOrigo = origo;
 	}
 
 	//____ setLineWidth() ________________________________________________________
-
+	/**
+	* @brief Set line width used for aligning text.
+	* 
+	* This sets the line width, which is needed for calculating the right position
+	* when centering or right-aligning text.
+	* 
+	* @param width	Line width measured in subpixels.
+	*/
 	void Printer::setLineWidth( spx width )
 	{
 		m_lineWidth = width;
 	}
 
+	//____ setTabSize() __________________________________________________________
+
+	void Printer::setTabSize(int nbWhiteSpace)
+	{
+		m_tabSize = nbWhiteSpace;
+	}
+
+
 	//____ resetCursor() _________________________________________________________
+	/**
+	* @brief Move cursor to origo.
+	* 
+	* Move the cursor to origo.
+	*/
 
 	void Printer::resetCursor()
 	{
@@ -88,13 +145,50 @@ namespace wg
 	}
 
 	//____ setCursor() ___________________________________________________________
-
+	/**
+	* @brief Move cursor to specified position.
+	* 
+	* Moves the cursor to the specified position on the canvas.
+	* 
+	* @param origo	Position of cursor in subpixel coordinates.
+	*
+	* Please note that characters are printed with the cursor position as their baseline,
+	* not their top left coordinate. Setting cursor to {0,0} will make all uppercase
+	* characters of the first line disappear above the canvas.
+	* 
+ 	* @param position	New position of cursor in subpixel coordinates.
+	*/
 	void Printer::setCursor( CoordSPX pos )
 	{
 		m_cursorPos = pos;
 	}
 
+	//____ tab() ______________________________________________________________
+	/**
+	* @brief Move the cursor to next tab position.
+	* 
+	* Moves the cursor to the next tab position.
+	*/
+
+	void Printer::tab()
+	{
+		spx tablen = m_pFont->whitespaceAdvance() * m_tabSize;
+		m_cursorPos.x = m_cursorPos.x - (m_cursorPos.x % tablen) + tablen;
+	}
+
 	//____ crlf() ________________________________________________________________
+	/**
+	* @brief Move cursor to beginning of next line.
+	* 
+	* Moves the cursor to the beginning of the next line.
+	* 
+	* The beginning of the next line has the X-position of cursor origo. The new 
+	* Y-position is calculated under the assumption that the current font and font size
+	* has been used for printing the current line and will be used for printing the next line.
+	* 
+	* If that assumption is incorrect, you need to specify the max font size used for this line
+	* and the next line.
+	*/
 
 	void Printer::crlf()
 	{
@@ -121,21 +215,57 @@ namespace wg
 	}
 
 	//____ printAligned() __________________________________________________
-
+	/**
+	* @brief Prints horizontally aligned text.
+	* 
+	* Prints the text with the specified horizontal alignment.
+	* 
+	* @param xAlignment	Should be either West, Center or East since only horizontal alignment is made.
+	*					Specifying other alignment such as SouthWest will also work, but the vertical
+	*					part of the alignment is ignored.
+	* 
+	* @param pText		Text to be printed. Zero terminated UTF8 string of characters. The string
+	*                   can be a multi-line string with line-feed characters. Each line is aligned
+	*					individually.
+	* 
+	* The X-position of the cursor is ignored as the text is aligned as specified.
+	* The cursor is then moved to the position after the last printed character.
+	* 
+	*/
 	void Printer::printAligned( Placement xAlignment, const char * pText )
 	{
 		m_cursorPos = _printAligned(m_cursorPos, m_lineWidth, xAlignment, pText);
 	}
 
 	//____ print() ________________________________________________________________
-
+	/**
+	* @brief Prints text at current cursor position.
+	* 
+	* Prints the specified text starting at the current cursor position.
+	* 
+	* @param pText		Text to be printed. Zero terminated UTF8 string of characters. The string
+	*                   can be a multi-line string with tab and line-feed characters.
+	* 
+	* The cursor is moved to the position after the last printed character.
+	* 
+	*/
 	void Printer::print( const char * pText )
 	{
 		m_cursorPos = _print(m_cursorPos, pText, nullptr, m_cursorOrigo.x );
 	}
 
 	//____ lineHeight() __________________________________________________________
-
+	/**
+	* @brief Height of a line using the current font and font size.
+	* 
+	* Gets the height of a line when using the current font and font size.
+	* This line height includes the spacing between lines specified as lineGap
+	* in the font, it therefore corresponds to the distance the cursor needs
+	* to move downwards after ending a line and beginning a new one and is not
+	* the same as height needed for printing a single line.
+	* 
+	* @return Height of the line in subpixels or 0 if no font specified.
+	*/
 	spx Printer::lineHeight()
 	{
 		if( m_pFont )
@@ -145,6 +275,14 @@ namespace wg
 	}
 
 	//____ textSize() _____________________________________________________________
+	/**
+	* @brief Size on canvas needed to print text.
+	* 
+	* Gets the size needed on canvas for printing the specified text, using the current
+	* font and font size.
+	* 
+	* @return	Size needed in subpixels.
+	*/
 
 	SizeSPX Printer::textSize( const char * pText )
 	{
@@ -152,15 +290,44 @@ namespace wg
 	}
 
 	//____ printAt() ______________________________________________________________
-
+	/**
+	* @brief Print text at the given coordinate.
+	* 
+	* Prints the specified text, left-aligned, starting from the given coordinate.
+	* 
+	* This method ignores the cursor origo and doesn't update the cursor position.
+	* If the text contains a newline character the horizontal position will return
+	* to the specified position.
+	* 
+	* @return The coordinate for printing any character following the text.
+	*/
 	CoordSPX Printer::printAt( CoordSPX pos, const char * pText )
 	{
 		return _print(pos, pText, nullptr, pos.x );
 	}
 
 	//____ printInBox() ____________________________________________________________
+	/**
+	* @brief Print text aligned in specified rectangle.
+	*
+	* Prints text in the specified box with horizontal and vertical alignment.
+	* 
+	* @param box	The rectangular area to align the text within before printing.
+	* 
+	* @param alignment	Horizontal and vertical alignment of the text within the box.
+	* 
+	* @param pText		Text to be printed. Zero terminated UTF8 string of characters. The string
+	*                   can be a multi-line string with tab and line-feed characters.
+	*
+	* The text printed will not be constrained to the box, if the text is bigger than the box it will be
+	* drawn partially outside.
+	* 
+	* This method ignores the cursor origo and doesn't update the cursor position.
+	* 
+	* @return	Position for printing any following character.
+	*/
 
-	void Printer::printInBox( const RectSPX& box, Placement alignment, const char * pText )
+	CoordSPX Printer::printInBox( const RectSPX& box, Placement alignment, const char * pText )
 	{
 		SizeSPX wholeTextSize = _textSize(pText, nullptr);
 		
@@ -170,7 +337,7 @@ namespace wg
 		pos.y += (box.h - wholeTextSize.h) * yMul / 2;
 		pos.y += m_pFont->maxAscend();
 		
-		_printAligned(pos, box.w, alignment, pText);
+		return _printAligned(pos, box.w, alignment, pText);
 	}
 
 	//____ _print() ______________________________________________________________
@@ -203,7 +370,7 @@ namespace wg
 				}
 				else if( chr == 9 )	// TAB
 				{
-					spx tablen = m_pFont->whitespaceAdvance()*8;
+					spx tablen = m_pFont->whitespaceAdvance()*m_tabSize;
 					pos.x = pos.x - ((pos.x-origoX) % tablen) + tablen;
 				}
 				else if( chr == 0 )
@@ -354,7 +521,7 @@ namespace wg
 				}
 				else if( chr == 9 )	// TAB
 				{
-					spx tablen = m_pFont->whitespaceAdvance()*8;
+					spx tablen = m_pFont->whitespaceAdvance()*m_tabSize;
 					pos.x = pos.x - (pos.x % tablen) + tablen;
 				}
 					
