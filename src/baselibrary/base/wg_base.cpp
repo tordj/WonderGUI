@@ -83,6 +83,10 @@ namespace wg
 
 		s_pHostBridge = pHostBridge;
 
+		TextTool::setDefaultBreakRules();
+		HiColor::_initTables();
+
+
 		TextStyleManager::init();
 		SkinSlotManager::init();
 
@@ -110,8 +114,6 @@ namespace wg
       	s_pData->pInputHandler = InputHandler::create();
 #endif
 
-		TextTool::setDefaultBreakRules();
-		HiColor::_initTables();
 
 		return true;
 	}

@@ -6,7 +6,14 @@
 #include <string>
 #include <fstream>
 
-#include <SDL2_image/SDL_image.h>
+#ifdef WIN32
+#    include <SDL_image.h>
+#elif __APPLE__
+#    include <SDL2_image/SDL_image.h>
+#else
+#    include <SDL2/SDL_image.h>
+#endif
+
 
 using namespace wg;
 using namespace std;
@@ -72,8 +79,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 									_.font = pFont,
 									_.size = 14,
 									_.color = Color8::Black,
-									_.states = {{State::Disabled, Color8::DarkGrey},
-												{State::Selected, Color8::White, Color8::DarkGrey}
+									_.states = {{State::Disabled, Color8::DarkGrey}
 	} ));
 
 	m_pLabelStyle = TextStyle::create(WGBP(TextStyle,
@@ -571,7 +577,7 @@ Widget_p MyApp::createOutputPanel()
 	
 	auto pLeftBottomLayout = BasicTextLayout::create( { .placement = Placement::SouthWest } );
 	
-	auto pLabel = TextDisplay::create( { .display = { .text = String("Preview"), .layout = pLeftBottomLayout } } );
+	auto pLabel = TextDisplay::create( { .display = {.layout = pLeftBottomLayout, .text = String("Preview") } } );
 	auto pFiller = Filler::create();
 	auto pGenerateButton = Button::create( { .label = { .text = String("Generate")}, .skin = m_pButtonSkin } );
 	auto pSaveButton = Button::create( { .label = { .text = String("Save")}, .skin = m_pButtonSkin } );
