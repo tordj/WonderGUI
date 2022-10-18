@@ -180,7 +180,7 @@ namespace wg
 			const Color8* clut = nullptr;
 			bool				dynamic = false;
 			PixelFormat			format = PixelFormat::Undefined;
-			int					id = 0;
+			int					identity = 0;
 			bool				mipmap = false;
 			SampleMethod		sampleMethod = SampleMethod::Undefined;
 			int					scale = 64;
@@ -231,7 +231,7 @@ namespace wg
 
 		inline bool			isOpaque() const;				///< @brief Check if surface is guaranteed to be entirely opaque.
 		inline bool			canBeCanvas() const;				///< @brief Check if surface can be used as canvas.
-
+		
 		//.____ Control _______________________________________________________
 
 		inline const PixelBuffer allocPixelBuffer();

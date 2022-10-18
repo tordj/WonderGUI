@@ -580,6 +580,16 @@ Widget_p MyApp::createOutputPanel()
 	auto pLabel = TextDisplay::create( { .display = {.layout = pLeftBottomLayout, .text = String("Preview") } } );
 	auto pFiller = Filler::create();
 	auto pGenerateButton = Button::create( { .label = { .text = String("Generate")}, .skin = m_pButtonSkin } );
+	
+	auto pImageFormatSelector = SelectBox::create();
+	pImageFormatSelector->setSkin(m_pButtonSkin);
+	pImageFormatSelector->setListSkin(m_pPlateSkin);
+	pImageFormatSelector->entries.pushBack({ 	{ 0, String("Uncompressed 8-bit indexed WGSF") },
+												{ 1, String("Uncompressed 32-bit WGSF") },
+												{ 2, String("Compressed 32-bit PNG")} });
+	pImageFormatSelector->selectEntryByIndex(1);
+	m_pImageFormatSelector = pImageFormatSelector;
+	
 	auto pSaveButton = Button::create( { .label = { .text = String("Save")}, .skin = m_pButtonSkin } );
 
 	Base::msgRouter()->addRoute(pGenerateButton, MsgType::Select, [this](Msg*pMsg){this->generateBitmapFont();this->displayBitmapFont();} );
@@ -588,10 +598,11 @@ Widget_p MyApp::createOutputPanel()
 	pTopPanel->slots << pLabel;
 	pTopPanel->slots << pFiller;
 	pTopPanel->slots << pGenerateButton;
+	pTopPanel->slots << pImageFormatSelector;
 	pTopPanel->slots << pSaveButton;
 
-	pTopPanel->slots.setWeight(0, 4, {0.f,1.f,0.f,0.f});
-	pTopPanel->slots.setPadding( 0,4, Border(0,4,4,4) );
+	pTopPanel->slots.setWeight(0, 5, {0.f,1.f,0.f,0.f,0.f});
+	pTopPanel->slots.setPadding( 0,5, Border(0,4,4,4) );
 	
 	
 	auto pWindow = ScrollPanel::create();
@@ -623,6 +634,8 @@ Widget_p MyApp::createOutputPanel()
 	
 	Base::msgRouter()->addRoute( pSaveButton, MsgType::Select, [this](Msg*pMsg){this->saveBitmapFont();});
 
+
+	
 	return pBase;
 }
 

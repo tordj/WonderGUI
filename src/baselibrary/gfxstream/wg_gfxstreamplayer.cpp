@@ -832,7 +832,7 @@ namespace wg
 			*m_pDecoder >> bp.canvas;
 			*m_pDecoder >> bp.dynamic;
 			*m_pDecoder >> bp.format;
-			*m_pDecoder >> bp.id;
+			*m_pDecoder >> bp.identity;
 			*m_pDecoder >> bp.mipmap;
 			*m_pDecoder >> bp.sampleMethod;
 			*m_pDecoder >> bp.scale;

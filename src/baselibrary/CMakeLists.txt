@@ -13,6 +13,8 @@ source_group(Skins/Static REGULAR_EXPRESSION "skins/static//*")
 
 source_group(Slots REGULAR_EXPRESSION "slots//*")
 
+source_group(SurfaceIO REGULAR_EXPRESSION "surfaceio//*")
+
 source_group(GfxStream REGULAR_EXPRESSION "gfxstream//*")
 source_group(TextLayouts REGULAR_EXPRESSION "textlayouts//*")
 source_group(NumberLayouts REGULAR_EXPRESSION "numberlayouts//*")
@@ -303,6 +305,14 @@ add_library( wondergui
 	slots/wg_staticslotcollection.h
 	slots/wg_staticslotvector.h
 	slots/wg_staticslotvector.impl.h
+
+	surfaceio/wg_surfacefileheader.h
+	surfaceio/wg_surfacereader.h
+	surfaceio/wg_surfacereader.cpp
+	surfaceio/wg_surfacewriter.h
+	surfaceio/wg_surfacewriter.cpp
+
+
 
 
 	textlayouts/wg_basictextlayout.cpp

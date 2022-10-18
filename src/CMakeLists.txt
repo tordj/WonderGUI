@@ -22,6 +22,7 @@ include_directories(
 	baselibrary/skins/state
 	baselibrary/skins/static
 	baselibrary/slots
+	baselibrary/surfaceio
 	baselibrary/gfxstream
 	baselibrary/textlayouts
 	baselibrary/numberlayouts
@@ -105,6 +106,7 @@ add_subdirectory(gfxdevices)
 add_subdirectory(fontengines)
 add_subdirectory(examples)
 add_subdirectory(tools)
+
 
 
 

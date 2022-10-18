@@ -76,4 +76,9 @@ public:
 	virtual bool	init(Visitor* pVisitor) = 0;
 	virtual bool	update() = 0;
 	virtual void	exit() = 0;
+	
+protected:
+
+	~WonderApp() {}
+	
 };

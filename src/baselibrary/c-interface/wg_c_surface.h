@@ -74,7 +74,7 @@ extern "C" {
 		const wg_color8* 	clut;
 		uint8_t				dynamic;
 		wg_pixelFormat		format;
-		int					id;
+		int					identity;
 		uint8_t				mipmap;
 		wg_sampleMethod		sampleMethod;
 		int					scale;

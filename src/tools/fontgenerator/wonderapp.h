@@ -43,6 +43,7 @@ private:
 	wg::SelectBox_p		m_pSizeSelector;
 	wg::SelectBox_p		m_pModeSelector;
 	wg::SelectBox_p		m_pSRGBSelector;
+	wg::SelectBox_p		m_pImageFormatSelector;
 
 	
 	wg::TextEditor_p	m_pCharsEditor;

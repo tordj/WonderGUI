@@ -173,7 +173,6 @@ int main(int argc, char *argv[] )
 
 	//
 
-	delete pApp;
 	delete pVisitor;
 
 	exit_wondergui();

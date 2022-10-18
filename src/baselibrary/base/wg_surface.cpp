@@ -88,7 +88,7 @@ namespace wg
         m_bCanvas		= bp.canvas;
 		m_bBuffered		= bp.buffered;
 		m_bDynamic		= bp.dynamic;
-		m_id			= bp.id;
+		m_id			= bp.identity;
 	}
 
 
@@ -446,7 +446,7 @@ namespace wg
 		bp.clut = m_pClut;
 		bp.dynamic = m_bDynamic;
 		bp.format = m_pixelDescription.format;
-		bp.id = m_id;
+		bp.identity = m_id;
 		bp.mipmap = m_bMipmapped;
 		bp.sampleMethod = m_sampleMethod;
 		bp.scale = m_scale;

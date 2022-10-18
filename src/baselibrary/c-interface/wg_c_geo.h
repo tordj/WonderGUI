@@ -50,7 +50,6 @@ extern "C" {
 		wg_pts	x, y;
 	} wg_coord;
 
-
 	typedef struct
 	{
 		wg_spx	x, y;
@@ -71,7 +70,6 @@ extern "C" {
 	{
 		wg_pts	w, h;
 	} wg_size;
-
 
 	typedef struct
 	{
