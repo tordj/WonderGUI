@@ -14,7 +14,6 @@ include_directories(
 	baselibrary/base
 	baselibrary/c-interface
 	baselibrary/components
-	baselibrary/sizebrokers
 	baselibrary/skins/anim
 	baselibrary/skins/meter
 	baselibrary/skins

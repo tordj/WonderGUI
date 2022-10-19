@@ -2,7 +2,6 @@
 source_group(Base REGULAR_EXPRESSION "base//*")
 source_group(C-Interface REGULAR_EXPRESSION "c-interface//*")
 source_group(Components REGULAR_EXPRESSION "components//*")
-source_group(SizeBrokers REGULAR_EXPRESSION "sizebrokers//*")
 
 source_group(Skins REGULAR_EXPRESSION "skins//*")
 source_group(Skins/Anim REGULAR_EXPRESSION "skins/anim//*")
@@ -238,13 +237,6 @@ add_library( wondergui
 	numberlayouts/wg_numberlayout.cpp
 	numberlayouts/wg_numberlayout.h
 
-	sizebrokers/wg_scalepreferred_sizebroker.cpp
-	sizebrokers/wg_scalepreferred_sizebroker.h
-	sizebrokers/wg_sizebroker.cpp
-	sizebrokers/wg_sizebroker.h
-	sizebrokers/wg_uniform_sizebroker.cpp
-	sizebrokers/wg_uniform_sizebroker.h
-	
 	skins/wg_animskin.cpp
 	skins/wg_animskin.h
 	skins/wg_skin.cpp

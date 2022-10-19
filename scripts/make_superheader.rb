@@ -2,9 +2,18 @@
 # Finds .h files recursively starting from specified directories and generates wondergui.h
 
 def printUsage()
-  puts "make_superheader dir1 [dir2 [...]]"
+  puts "make_superheader outputfile dir1 [dir2 [...]]"
   puts
 end
+
+
+if( $*.length < 2 )
+  printUsage()
+  exit
+end
+
+
+outputFileName = $*.shift
 
 paths = []
 
@@ -54,12 +63,16 @@ output << "
 
 "
 
-for header in headerlist
-output << "#include <#{header}>"
-end
-output << "
-#endif //WONDERGUI_DOT_H
-"
+headerlist.sort!
 
-puts output
+for header in headerlist
+output << "#include <#{header}>\n"
+end
+output << "\n#endif //WONDERGUI_DOT_H\n"
+
+
+f = File.new( outputFileName, "wb")
+f.puts output
+f.close
+
 
