@@ -58,8 +58,8 @@ namespace wg
 		
 		// Read the header
 		
-		stream.read( (char*) &header, 12 );
-		stream.read( ((char*)(&header))+12, header.headerBytes - 12);
+		stream.read( (char*) &header, 8 );
+		stream.read( ((char*)(&header))+8, header.headerBytes - 8);
 		
 		// Prepare surface blueprint
 		
@@ -124,6 +124,8 @@ namespace wg
 		
 		pSurface->pullPixels(pixbuf);
 		pSurface->freePixelBuffer(pixbuf);
+
+		return pSurface;
 	}
 /*
 	//____ readSurfaceFromBlob() _______________________________________________

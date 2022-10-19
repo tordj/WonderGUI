@@ -18,6 +18,7 @@
 #include <wondergui.h>
 
 #include <wg_softsurface.h>
+#include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
 
 using namespace wg;
@@ -71,15 +72,35 @@ int main ( int argc, char** argv )
 
 
 	// Setup a bitmap font
-	
-	SDL_Surface * pSDLFontSurf = IMG_Load( "resources/charmap-oldschool_white_5x7_ascii.png" );
+/*
+	SDL_Surface * pSDLFontSurf = IMG_Load( "resources/droid-20-ascii.png" );
 	SoftSurface_p pFontSurface = SoftSurface::create( SizeI( pSDLFontSurf->w, pSDLFontSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLFontSurf->pixels, pSDLFontSurf->pitch, 0 );
 	SDL_FreeSurface(pSDLFontSurf);
+*/
 
-	std::ifstream file( "resources/charmap-oldschool_white_5x7_ascii.fnt" );
+	std::ifstream input("resources/droid-20-ascii.surf", std::ios::binary );
+	auto pReader = SurfaceReader::create( WGBP(SurfaceReader, _.factory = SoftSurfaceFactory::create() ));
+	Surface_p pFontSurface = pReader->readSurfaceFromStream(input);
+	input.close();
+
+
+	std::ifstream file("resources/droid-20-ascii.fnt");
 	std::stringstream buffer;
 	buffer << file.rdbuf();
 	std::string fontSpec = buffer.str();
+
+
+/*
+	SDL_Surface * pSDLFontSurf = IMG_Load( "resources/test.png" );
+	SoftSurface_p pFontSurface = SoftSurface::create( SizeI( pSDLFontSurf->w, pSDLFontSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLFontSurf->pixels, pSDLFontSurf->pitch, 0 );
+	SDL_FreeSurface(pSDLFontSurf);
+
+	std::ifstream file( "resources/test.fnt" );
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::string fontSpec = buffer.str();
+*/
+
 	
 	auto pFont = BitmapFont::create(pFontSurface, fontSpec.c_str() );
 	

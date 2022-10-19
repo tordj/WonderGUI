@@ -384,12 +384,15 @@ namespace wg
 			{
 				m_pFont->getGlyphWithBitmap(chr, *pGlyph);
 
-				CoordSPX blitPos = pos;
-				blitPos.x += pGlyph->bearingX;
-				blitPos.y += pGlyph->bearingY;
+				if (pGlyph->pSurface)
+				{
+					CoordSPX blitPos = pos;
+					blitPos.x += pGlyph->bearingX;
+					blitPos.y += pGlyph->bearingY;
 				
-				m_pGfxDevice->setBlitSource(pGlyph->pSurface);
-				m_pGfxDevice->blit(blitPos,pGlyph->rect);
+					m_pGfxDevice->setBlitSource(pGlyph->pSurface);
+					m_pGfxDevice->blit(blitPos,pGlyph->rect);
+				}
 
 				pos.x += pGlyph->advance;
 

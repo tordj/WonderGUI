@@ -250,7 +250,6 @@ namespace wg
 			//TODO: Error handling!
 		}
 
-		bool bNewLine = false;
 		while (pChar < pCharmapEnd)
 		{
 			uint16_t ch = TextTool::readChar(pChar);
@@ -260,23 +259,15 @@ namespace wg
 				int dummy = 0;
 			}
 
-			if (ch == 10 || ch == 13)
-				bNewLine = true;
-			else
+			if (ch != 10 && ch != 13)
 			{
 				RectI r;
-				if (bNewLine)
+				r = gw.nextCell();
+				if (r.isEmpty())
 				{
-					if (gw.nextLine() == false)
-					{
-						//TODO: Error handling!
-					}
-
+					gw.nextLine();
 					r = gw.firstCell();
-					bNewLine = false;
 				}
-				else
-					r = gw.nextCell();
 
 				if (!r.isEmpty())
 				{

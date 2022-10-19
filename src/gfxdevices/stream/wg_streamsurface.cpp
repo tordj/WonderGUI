@@ -544,7 +544,7 @@ namespace wg
 		*m_pEncoder << bp.canvas;
 		*m_pEncoder << bp.dynamic;
 		*m_pEncoder << bp.format;
-		*m_pEncoder << bp.id;
+		*m_pEncoder << bp.identity;
 		*m_pEncoder << bp.mipmap;
 		*m_pEncoder << bp.sampleMethod;
 		*m_pEncoder << bp.scale;

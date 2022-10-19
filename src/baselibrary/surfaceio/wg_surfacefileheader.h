@@ -35,7 +35,7 @@ namespace wg
 
 struct SurfaceFileHeader
 {
-	char 			header[4]				= { 'W', 'G', 'S', 'F' };
+	char 			header[4]				= { 'S', 'U', 'R', 'F' };
 	int16_t			versionNumber			= 1;
 	int16_t			headerBytes				= 0;
 	int32_t			clutDataBytes			= 0;

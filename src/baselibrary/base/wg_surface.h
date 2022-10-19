@@ -82,7 +82,7 @@ namespace wg
 	 * 
 	 * A PixelBuffer is strongly tied to the Surface it was created from and may not be used in any call
 	 * to any other Surface. So you can not push pixels from one Surface into a PixelBuffer and then pull 
-	 * them into another as a way of copying content between them. Use Surface::copyFrom() for that.
+	 * them into another as a way of copying content between them. Use Surface::copy() for that.
 	 */
 
 	struct PixelBuffer

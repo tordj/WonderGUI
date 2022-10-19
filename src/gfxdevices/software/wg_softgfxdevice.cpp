@@ -750,7 +750,7 @@ namespace wg
 		BlendMode edgeBlendMode = m_blendMode;
 		if (m_blendMode == BlendMode::Replace)
 		{
-			_col.a = 255;						// Needed since we still blend the edges.
+			_col.a = 4096;							// Needed since we still blend the edges.
 			edgeBlendMode = BlendMode::Blend;
 		}
 

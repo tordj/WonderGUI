@@ -175,19 +175,45 @@ bool MyApp::saveBitmapFont()
 
 	if( pOutputPath )
 	{
-		std::string pngPath = std::string(pOutputPath) + ".png";
-		
-		
-		// Save PNG
-		
-		auto pixbuf = m_pBitmapFontSurface->allocPixelBuffer();
+		// Save image
 
-		PixelDescription pixdesc;
-		Util::pixelFormatToDescription(pixbuf.format, pixdesc);
+		int saveFormat = m_pImageFormatSelector->selectedEntryId();
 
-		auto pSDLSurf = SDL_CreateRGBSurfaceFrom(pixbuf.pPixels, pixbuf.rect.w, pixbuf.rect.h, pixdesc.bits, pixbuf.pitch, pixdesc.R_mask, pixdesc.G_mask, pixdesc.B_mask, pixdesc.A_mask);
-				
-		IMG_SavePNG(pSDLSurf, pngPath.c_str());
+		switch (saveFormat)
+		{
+			case 0:				// 8-bit SURF (uncompressed)
+			break;
+			case 1:				// 32-bit SURF (uncompressed)
+			{
+				std::string path = std::string(pOutputPath) + ".surf";
+
+				std::ofstream out(path, std::ios::binary);
+				auto pWriter = SurfaceWriter::create({});
+				pWriter->writeSurfaceToStream(out, m_pBitmapFontSurface);
+				out.close();
+			}
+			break;
+			
+			case 2:				// 32-bit PNG (compressed)
+			{
+				std::string pngPath = std::string(pOutputPath) + ".png";
+
+				// Save PNG
+
+				auto pixbuf = m_pBitmapFontSurface->allocPixelBuffer();
+				m_pBitmapFontSurface->pushPixels(pixbuf);
+
+				PixelDescription pixdesc;
+				Util::pixelFormatToDescription(pixbuf.format, pixdesc);
+
+				auto pSDLSurf = SDL_CreateRGBSurfaceFrom(pixbuf.pPixels, pixbuf.rect.w, pixbuf.rect.h, pixdesc.bits, pixbuf.pitch, pixdesc.R_mask, pixdesc.G_mask, pixdesc.B_mask, pixdesc.A_mask);
+
+				IMG_SavePNG(pSDLSurf, pngPath.c_str());
+				m_pBitmapFontSurface->freePixelBuffer(pixbuf);
+			}
+			break;
+		}
+
 				
 		// Save spec
 		
@@ -584,8 +610,8 @@ Widget_p MyApp::createOutputPanel()
 	auto pImageFormatSelector = SelectBox::create();
 	pImageFormatSelector->setSkin(m_pButtonSkin);
 	pImageFormatSelector->setListSkin(m_pPlateSkin);
-	pImageFormatSelector->entries.pushBack({ 	{ 0, String("Uncompressed 8-bit indexed WGSF") },
-												{ 1, String("Uncompressed 32-bit WGSF") },
+	pImageFormatSelector->entries.pushBack({ 	{ 0, String("Uncompressed 8-bit indexed SURF") },
+												{ 1, String("Uncompressed 32-bit SURF") },
 												{ 2, String("Compressed 32-bit PNG")} });
 	pImageFormatSelector->selectEntryByIndex(1);
 	m_pImageFormatSelector = pImageFormatSelector;
