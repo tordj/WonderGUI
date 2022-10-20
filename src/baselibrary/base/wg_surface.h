@@ -33,7 +33,7 @@
 
 namespace wg
 {
-
+	class SurfaceFactory;
 
 	class Surface;
 	typedef	StrongPtr<Surface>	Surface_p;
@@ -253,6 +253,7 @@ namespace wg
 		virtual bool		fill(const RectI& region, HiColor color );			///< @brief Fill section of surface with specified color
 		virtual bool		copy( CoordI dest, Surface * pSrcSurf, const RectI& srcRect );	///< @brief Copy block of graphics from other surface
 		virtual bool		copy( CoordI dest, Surface * pSrcSurf );		///< @brief Copy other surface as a block
+		virtual Surface_p	convert(PixelFormat format, SurfaceFactory* pFactory = nullptr);
 
 		//.____ Misc _________________________________________________________
 

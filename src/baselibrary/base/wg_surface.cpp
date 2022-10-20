@@ -25,6 +25,8 @@
 #include <wg_surface.h>
 #include <wg_dataset.h>
 #include <wg_util.h>
+#include <wg_base.h>
+#include <wg_context.h>
 
 namespace wg
 {
@@ -996,6 +998,79 @@ namespace wg
 		freePixelBuffer(pixbuf);
 		return true;
 	}
+
+	//____ convert() _________________________________________________________
+
+	Surface_p Surface::convert(PixelFormat format, SurfaceFactory* pFactory)
+	{
+		if (!pFactory)
+			pFactory = Base::activeContext()->surfaceFactory();
+
+		if (!pFactory)
+		{
+			//TODO: Error handling!
+			return Surface_p();
+		}
+
+		if (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_linear || format == PixelFormat::CLUT_8_sRGB)
+		{
+			// We only allow conversion to indexed if surface has 256 colors at most.
+
+
+			Color8* pCLUT = (Color8*) Base::memStackAlloc(1024);
+			int nColors = 0;
+
+			auto pBlob = Blob::create(m_size.w * m_size.h);
+			uint8_t* pPixels = (uint8_t*) pBlob->data();
+
+			auto pixbuf = allocPixelBuffer();
+			pushPixels(pixbuf);
+
+
+			switch (m_pixelDescription.bits)
+			{
+			case 8:
+				break;
+			case 16:
+				break;
+			case 24:
+				break;
+			case 32:
+
+				for (int y = 0; y < m_size.h; y++)
+				{
+					uint32_t* pLine = (uint32_t*) (pixbuf.pPixels + pixbuf.pitch * y);
+
+					for (int x = 0; x < m_size.w; x++)
+					{
+						uint32_t pixel = pLine[x];
+
+					}
+				}
+
+				break;
+
+
+			}
+
+
+
+
+
+			freePixelBuffer(pixbuf);
+			Base::memStackRelease(1024);
+		}
+		else
+		{
+			auto bp = blueprint();
+			bp.format = format;
+
+			auto pSurface = pFactory->createSurface(bp);
+			pSurface->copy({ 0,0 }, this);
+			return pSurface;
+		}
+	}
+
 
 	//____ _alpha() ___________________________________________________________
 

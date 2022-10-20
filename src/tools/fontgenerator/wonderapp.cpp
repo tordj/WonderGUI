@@ -182,6 +182,11 @@ bool MyApp::saveBitmapFont()
 		switch (saveFormat)
 		{
 			case 0:				// 8-bit SURF (uncompressed)
+			{
+
+			}
+
+
 			break;
 			case 1:				// 32-bit SURF (uncompressed)
 			{
