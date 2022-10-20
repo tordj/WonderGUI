@@ -117,6 +117,11 @@ namespace wg
 
 		stream.write((char*) &header, headerBytes);
 
+		// write clut
+		
+		if( bp.clut )
+			stream.write( (char*) bp.clut, 256*sizeof(Color8) );
+		
 		// Write pixels
 		
 		auto pixbuf = pSurface->allocPixelBuffer();
@@ -140,11 +145,6 @@ namespace wg
 		}
 
 		pSurface->freePixelBuffer(pixbuf);
-
-		// write clut
-		
-		if( bp.clut )
-			stream.write( (char*) bp.clut, 256*sizeof(Color8) );
 
 		// write extra data
 		

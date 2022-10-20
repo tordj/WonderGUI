@@ -361,13 +361,16 @@ namespace wg
 			pGlyph = _addGlyph( ch, m_size, advance, char_index );
 		}
 
+		glyph.bearingX		= pGlyph->bearingX;
+		glyph.bearingY		= pGlyph->bearingY;
 		glyph.advance		= pGlyph->advance;
-		glyph.fontRef		= this
-			;
+		glyph.fontRef		= this;
 		glyph.kerningIndex	= pGlyph->kerningIndex;
 		return;
 
 	no_glyph:
+		glyph.bearingX		= 0;
+		glyph.bearingY		= 0;
 		glyph.advance = 0;
 		glyph.fontRef = nullptr;
 		glyph.kerningIndex = 0;

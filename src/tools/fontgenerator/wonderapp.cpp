@@ -183,7 +183,39 @@ bool MyApp::saveBitmapFont()
 		{
 			case 0:				// 8-bit SURF (uncompressed)
 			{
+				auto pCopy = m_pBitmapFontSurface->convert(PixelFormat::BGRA_8);
+				
+				auto pixbuf = pCopy->allocPixelBuffer();
+				pCopy->pushPixels(pixbuf);
+				
+				for( int y = 0 ; y < pixbuf.rect.h ; y++ )
+				{
+					uint8_t * pLine = pixbuf.pPixels + pixbuf.pitch*y;
+					for( int x = 0 ; x < pixbuf.rect.w ; x++ )
+					{
+						uint8_t alpha = pLine[x*4+3];
+						if( alpha < 3 )
+							pLine[x*4+3] = 0;
+					}
+				}
+				
+				pCopy->pullPixels(pixbuf);
+				pCopy->freePixelBuffer(pixbuf);
+				
+				auto pIndexedSurface = pCopy->convert(PixelFormat::CLUT_8_linear);
+				if( pIndexedSurface )
+				{
+					std::string path = std::string(pOutputPath) + ".surf";
 
+					std::ofstream out(path, std::ios::binary);
+					auto pWriter = SurfaceWriter::create({});
+					pWriter->writeSurfaceToStream(out, pIndexedSurface);
+					out.close();
+				}
+				else
+				{
+					int x = 0;
+				}
 			}
 
 
@@ -297,7 +329,10 @@ bool MyApp::generateFontSpec( FreeTypeFont * pFont, String& charmap )
 			pFont->getGlyphWithoutBitmap(charmap.chars()[j].code(), glyph2);
 			
 			spx kerningSPX = pFont->kerning(glyph1, glyph2);
-	
+
+			if( glyph2.bearingX < 0 )
+				kerningSPX += glyph2.bearingX;
+			
 			int kerning = (kerningSPX - 32) / 64;
 			
 			if( kerning != 0 )
@@ -393,9 +428,17 @@ bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 
 		if( glyph.pSurface )
 		{
+			spx bearingX = glyph.bearingX;
+			spx advance = glyph.advance;
+			if( bearingX < 0 )
+			{
+				advance -= bearingX;
+				bearingX = 0;
+			}
+			
 			pDevice->setBlitSource(glyph.pSurface);
-			pDevice->blit(pos + CoordSPX(0,baselineOfs + glyph.bearingY), glyph.rect);
-			pos.x += glyph.rect.w;
+			pDevice->blit(pos + CoordSPX(bearingX,baselineOfs + glyph.bearingY), glyph.rect);
+			pos.x += advance;
 			pDevice->drawLine(pos, Direction::Down, rowHeight*64, lineColor );
 			pos.x += 64;
 		}		
@@ -405,7 +448,6 @@ bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 	pos.y += rowHeight*64;
 	pDevice->drawLine(pos, Direction::Right, surfaceSize.w*64, lineColor);
 
-	
 	pDevice->endCanvasUpdate();
 	pDevice->endRender();
 	

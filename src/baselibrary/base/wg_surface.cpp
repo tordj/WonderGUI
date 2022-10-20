@@ -1012,12 +1012,12 @@ namespace wg
 			return Surface_p();
 		}
 
-		if (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_linear || format == PixelFormat::CLUT_8_sRGB)
+		if ( (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_linear || format == PixelFormat::CLUT_8_sRGB) &&
+			( m_pixelDescription.format != PixelFormat::CLUT_8_sRGB && m_pixelDescription.format != PixelFormat::CLUT_8_linear ))
 		{
-			// We only allow conversion to indexed if surface has 256 colors at most.
+			// We only allow conversion to indexed if surface has 256 colors at most!
 
-
-			Color8* pCLUT = (Color8*) Base::memStackAlloc(1024);
+			uint32_t* pCLUT = (uint32_t*) Base::memStackAlloc(1024);
 			int nColors = 0;
 
 			auto pBlob = Blob::create(m_size.w * m_size.h);
@@ -1027,38 +1027,90 @@ namespace wg
 			pushPixels(pixbuf);
 
 
-			switch (m_pixelDescription.bits)
+			switch (m_pixelDescription.format)
 			{
-			case 8:
-				break;
-			case 16:
-				break;
-			case 24:
-				break;
-			case 32:
-
-				for (int y = 0; y < m_size.h; y++)
+				case PixelFormat::BGRA_8_sRGB:
+				case PixelFormat::BGRA_8_linear:
 				{
-					uint32_t* pLine = (uint32_t*) (pixbuf.pPixels + pixbuf.pitch * y);
-
-					for (int x = 0; x < m_size.w; x++)
+					// Generate CLUT (kind of) and indexed pixels
+						
+					uint8_t* pDest = pPixels;
+					for (int y = 0; y < m_size.h; y++)
 					{
-						uint32_t pixel = pLine[x];
+						uint32_t* pLine = (uint32_t*) (pixbuf.pPixels + pixbuf.pitch * y);
 
+						for (int x = 0; x < m_size.w; x++)
+						{
+							uint32_t pixel = pLine[x];
+							int ofs = 0;
+							while( ofs < nColors && pCLUT[ofs] != pixel )
+								ofs++;
+							if( ofs == nColors )
+							{
+								if( nColors == 256 )
+								{
+									nColors++;
+									goto end;
+								}
+
+								uint8_t * pBGRA = (uint8_t*) &pixel;
+								Color8 col( pBGRA[2], pBGRA[1], pBGRA[0], pBGRA[3] );
+
+								
+								pCLUT[ofs] = pixel;
+								nColors++;
+							}
+							* pDest++ = (uint8_t) ofs;
+						}
 					}
+
+					// Convert CLUT from pixels to colors
+					
+					Color8 * pColor = (Color8*) pCLUT;
+					for( int i = 0 ; i < nColors ; i++ )
+					{
+						uint8_t * pBGRA = (uint8_t*) &pCLUT[i];
+						Color8 col( pBGRA[2], pBGRA[1], pBGRA[0], pBGRA[3] );
+						pColor[i] = col;
+					}
+					break;
 				}
-
-				break;
-
-
+					
+				default:
+					Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Conversion of this kind of surface to CLUT_8 has not been implemented (sorry!)", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+					
+					freePixelBuffer(pixbuf);
+					Base::memStackRelease(1024);
+					return nullptr;
 			}
+end:
+			
+			if( nColors > 256 )
+			{
+				Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Can't convert surface with more than 256 colors to CLUT_8", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				
+				freePixelBuffer(pixbuf);
+				Base::memStackRelease(1024);
+				return nullptr;
+			}
+					
+			// Fill out clut with zeroes
+				
+			for( int i = nColors ; i < 256 ; i++ )
+				pCLUT[i] = 0;
 
+			// Create surface
 
+			auto bp = blueprint();
+			bp.format = format;
+			bp.clut = (Color8*) pCLUT;
+			auto pSurface = pFactory->createSurface(bp, pBlob);
 
-
-
+			// Cleanup and return
+			
 			freePixelBuffer(pixbuf);
 			Base::memStackRelease(1024);
+			return pSurface;
 		}
 		else
 		{

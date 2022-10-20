@@ -78,13 +78,13 @@ int main ( int argc, char** argv )
 	SDL_FreeSurface(pSDLFontSurf);
 */
 
-	std::ifstream input("resources/droid-20-ascii.surf", std::ios::binary );
+	std::ifstream input("resources/droid_16_ascii_indexed.surf", std::ios::binary );
 	auto pReader = SurfaceReader::create( WGBP(SurfaceReader, _.factory = SoftSurfaceFactory::create() ));
 	Surface_p pFontSurface = pReader->readSurfaceFromStream(input);
 	input.close();
 
 
-	std::ifstream file("resources/droid-20-ascii.fnt");
+	std::ifstream file("resources/droid_16_ascii_indexed.fnt");
 	std::stringstream buffer;
 	buffer << file.rdbuf();
 	std::string fontSpec = buffer.str();
