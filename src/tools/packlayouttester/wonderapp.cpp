@@ -118,11 +118,10 @@ Widget_p MyApp::_createControlPanel()
 
 	m_pStartSizeSelector = _createSelectBox();
 	m_pStartSizeSelector->entries.pushBack({ 
-		{ int(PackLayout::StartSize::Default), String("Default")},
-		{ int(PackLayout::StartSize::MaxDefault), String("MaxDefault") },
-		{ int(PackLayout::StartSize::DefaultTimesWeight), String("DefaultTimesWeight") },
-		{ int(PackLayout::StartSize::MaxDefaultTimesWeight), String("MaxDefaultTimesWeight") },
-		{ int(PackLayout::StartSize::DefaultAsFraction), String("DefaultAsFraction") },
+		{ int(PackLayout::WantedSize::Default), String("Default")},
+		{ int(PackLayout::WantedSize::MaxDefault), String("MaxDefault") },
+		{ int(PackLayout::WantedSize::DefaultTimesWeight), String("DefaultTimesWeight") },
+		{ int(PackLayout::WantedSize::MaxDefaultTimesWeight), String("MaxDefaultTimesWeight") },
 	});
 
 	m_pExpandFactorSelector = _createSelectBox();
@@ -242,7 +241,7 @@ Widget_p MyApp::_createControlPanel()
 	pBase->slots.pushBackPinned(m_pShrinkOrderInput, { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, { Placement::NorthEast, {-10,pos.y + 20} });
 
 
-	m_pStartSizeSelector->selectEntryById(int(PackLayout::StartSize::Default));
+	m_pStartSizeSelector->selectEntryById(int(PackLayout::WantedSize::Default));
 	m_pExpandFactorSelector->selectEntryById(int(PackLayout::Factor::Weight));
 	m_pShrinkFactorSelector->selectEntryById(int(PackLayout::Factor::Size));
 	m_pHideSelector->selectEntryById(int(PackLayout::HideSetting::Never));
@@ -415,7 +414,7 @@ void MyApp::_updateLayout()
 {
 	PackLayout::Blueprint bp;
 
-	bp.startSize = (PackLayout::StartSize) m_pStartSizeSelector->selectedEntryId();
+	bp.wantedSize = (PackLayout::WantedSize) m_pStartSizeSelector->selectedEntryId();
 	bp.expandFactor = (PackLayout::Factor) m_pExpandFactorSelector->selectedEntryId();
 	bp.shrinkFactor = (PackLayout::Factor) m_pShrinkFactorSelector->selectedEntryId();
 	bp.hideSetting = (PackLayout::HideSetting) m_pHideSelector->selectedEntryId();

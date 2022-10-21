@@ -183,6 +183,10 @@ add_library( wondergui
 	c-interface/wg_c_surface.h
 	c-interface/wg_c_surfacefactory.cpp
 	c-interface/wg_c_surfacefactory.h
+	c-interface/wg_c_surfacereader.cpp
+	c-interface/wg_c_surfacereader.h
+	c-interface/wg_c_surfacewriter.cpp
+	c-interface/wg_c_surfacewriter.h
 	c-interface/wg_c_types.h
 	c-interface/wg_c_types.cpp
 

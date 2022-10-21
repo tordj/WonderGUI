@@ -58,13 +58,15 @@ public:
 
 	
 	Surface_p		readSurfaceFromStream( std::istream& stream );
-//	Surface_p		readSurfaceFromBlob( const Blob * pBlob );
-//	Surface_p		readSurfaceFromMemory( const char * pSFWInMemory );
+	Surface_p		readSurfaceFromBlob( const Blob * pBlob );
+	Surface_p		readSurfaceFromMemory( const char * pData );
 
 
 protected:
 	SurfaceReader( const Blueprint& bp );
 	virtual ~SurfaceReader() {}
+	
+	Surface::Blueprint	_blueprintFromHeader( const SurfaceFileHeader * pHeader );
 	
 	
 	SurfaceFactory_p	m_pFactory;

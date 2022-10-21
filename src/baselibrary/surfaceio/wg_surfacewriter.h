@@ -47,7 +47,6 @@ public:
 	struct SaveInfo
 	{
 		bool identity		= true;
-		bool baggage 		= false;
 		bool sampleMethod 	= false;
 		bool scale			= true;
 		bool buffered		= false;
@@ -72,10 +71,13 @@ public:
 	const static TypeInfo	TYPEINFO;
 	
 	void			writeSurfaceToStream( std::ostream& stream, Surface * pSurface, int extraDataSize = 0, char * pExtraData = nullptr );
+	Blob_p			writeSurfaceToBlob( Surface * pSurface, int extraDataSize = 0, char * pExtraData = nullptr );
 
 protected:
 	SurfaceWriter( const Blueprint& bp );
 	virtual ~SurfaceWriter() {}
+	
+	int				_generateHeader( SurfaceFileHeader * pHeader, Surface * pSurface, int extraDataSize );
 	
 	SaveInfo		m_saveInfo;
 	

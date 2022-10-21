@@ -38,8 +38,8 @@ struct SurfaceFileHeader
 	char 			header[4]				= { 'S', 'U', 'R', 'F' };
 	int16_t			versionNumber			= 1;
 	int16_t			headerBytes				= 0;
-	int32_t			clutDataBytes			= 0;
-	int32_t			imageDataBytes			= 0;
+	int32_t			paletteBytes			= 0;
+	int32_t			pixelBytes				= 0;
 	int32_t			extraDataBytes			= 0;
 
 	int32_t			width					= 0;
@@ -70,19 +70,19 @@ struct SurfaceFileHeader
 	//	-- 40 bytes header ends here.
 
 	char			pixelFiltering[4]		= { 'N','O','N','E' };
-	int16_t			filterBlocksX			= 1;
-	int16_t			filterBlocksY			= 1;
+	int16_t			filterBlockWidth		= 1;
+	int16_t			filterBlockHeight		= 1;
 	char			pixelCompression[4]		= { 'N','O','N','E' };
 	int16_t			pixelDecompressMargin	= 0;
 	int16_t			reserved2				= 0;
 	
 	//	-- 56 bytes header ends here.
 
-	int32_t			clutEntries 			= 0;
-	char			clutFiltering[4]		= { 'N','O','N','E' };
-	char 			clutCompression[4]	= { 'N','O','N','E' };
-	char			clutFilteringParams[8] = { 0,0,0,0,0,0,0,0 };
-	int16_t			clutDecompressMargin	= 0;
+	int32_t			paletteEntries 			= 0;
+	char			paletteFiltering[4]		= { 'N','O','N','E' };
+	char			paletteFilteringParams[8] = { 0,0,0,0,0,0,0,0 };
+	char 			paletteCompression[4]	= { 'N','O','N','E' };
+	int16_t			paletteDecompressMargin	= 0;
 	int16_t			reserved3				= 0;
 
 	//	-- 80 bytes header ends here.

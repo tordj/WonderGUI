@@ -33,7 +33,6 @@ namespace wg
 	SurfaceReader_p SurfaceReader::create( const Blueprint& blueprint )
 	{
 		return SurfaceReader_p( new SurfaceReader(blueprint) );
-		
 	}
 	
 	//____ constructor ___________________________________________________________
@@ -63,21 +62,11 @@ namespace wg
 		
 		// Prepare surface blueprint
 		
-		Surface::Blueprint bp;
-		bp.size 	= {header.width, header.height};
-		bp.scale 	= header.scale;
-		bp.format 	= header.format;
-		bp.buffered = header.buffered;
-		bp.canvas 	= header.canvas;
-		bp.dynamic 	= header.dynamic;
-		bp.mipmap 	= header.mipmap;
-		bp.identity	= header.identity;
-		bp.tiling	= header.tiling;
-		bp.sampleMethod = header.sampleMethod;
+		Surface::Blueprint bp = _blueprintFromHeader(&header);
 		
 		// Read and prepare CLUT
 		
-		int clutBytes = header.clutEntries*sizeof(Color8) + header.clutDecompressMargin;
+		int clutBytes = header.paletteEntries*sizeof(Color8) + header.paletteDecompressMargin;
 		Color8 * pClut = nullptr;
 		if( clutBytes > 0 )
 		{
@@ -127,21 +116,91 @@ namespace wg
 
 		return pSurface;
 	}
-/*
+
 	//____ readSurfaceFromBlob() _______________________________________________
 
 	Surface_p SurfaceReader::readSurfaceFromBlob( const Blob * pBlob )
 	{
-	   
+		return readSurfaceFromMemory( static_cast<const char*>(pBlob->data()) );
 	}
 
 	//____ readSurfaceFromMemory() _____________________________________________
 
-	Surface_p SurfaceReader::readSurfaceFromMemory( const char * pSFWInMemory )
+	Surface_p SurfaceReader::readSurfaceFromMemory( const char * pData )
 	{
-		
+		SurfaceFileHeader	header;
+		 		 
+		// Read the header
+
+		int headerSize = * (const int*)&pData[4];
+		std::memcpy( &header, pData, headerSize);
+		pData+= headerSize;
+		 
+		// Prepare surface blueprint
+		 
+		Surface::Blueprint bp = _blueprintFromHeader(&header);
+		 
+		// Prepare CLUT
+		 
+		int clutBytes = header.paletteEntries*sizeof(Color8);
+		if( clutBytes > 0 )
+		{
+			bp.clut = (Color8*) pData;
+			pData += clutBytes;
+		}
+		 
+		// Create surface
+		 
+		auto pSurface = m_pFactory->createSurface(bp);
+		 		 
+		// Read pixels into PixelBuffer
+		// We only support uncompressed pixels for the moment
+		 
+		auto pixbuf = pSurface->allocPixelBuffer();
+
+		int lineBytes = header.width * pSurface->pixelBytes();
+		 
+		if( pixbuf.pitch > lineBytes )
+		{
+			// Pitch is involved, we need to read line by line
+			 
+			char * pPixels = (char *) pixbuf.pPixels;
+			 
+			for( int y = 0 ; y < header.height ; y++ )
+			{
+				std::memcpy( pPixels, pData, lineBytes );
+				pData += lineBytes;
+				pPixels += pixbuf.pitch;
+			}
+		}
+		else
+		{
+			std::memcpy( pixbuf.pPixels, pData, lineBytes * header.height );
+		}
+		 
+		pSurface->pullPixels(pixbuf);
+		pSurface->freePixelBuffer(pixbuf);
+
+		return pSurface;
 	}
-*/
+
+
+//____ _blueprintFromHeader() _________________________________________________
+
+Surface::Blueprint SurfaceReader::_blueprintFromHeader( const SurfaceFileHeader * pHeader )
+{
+	return WGBP(Surface,
+				_.size 			= {pHeader->width, pHeader->height},
+				_.scale 		= pHeader->scale,
+				_.format 		= pHeader->format,
+				_.buffered 		= pHeader->buffered,
+				_.canvas 		= pHeader->canvas,
+				_.dynamic 		= pHeader->dynamic,
+				_.mipmap 		= pHeader->mipmap,
+				_.identity		= pHeader->identity,
+				_.tiling		= pHeader->tiling,
+				_.sampleMethod 	= pHeader->sampleMethod );
+}
 
 
 } // namespace wg

@@ -2961,8 +2961,7 @@ bool packPanelTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pPackPanel = PackPanel::create();
 	pPackPanel->setSkin(ColorSkin::create(Color::Azure));
 	pPackPanel->setAxis(Axis::X);
-	pPackPanel->setSizeBroker(UniformSizeBroker::create());
-//	pPackPanel->setSizeBroker(ScalePreferredSizeBroker::create());
+	pPackPanel->setLayout(PackLayout::create({}));
 
 	auto pText1 = TextDisplay::create();
 	pText1->display.setText("TEXT1");
