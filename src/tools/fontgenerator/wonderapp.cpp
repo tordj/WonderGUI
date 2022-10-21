@@ -100,7 +100,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 		return false;
 
 	m_pLayout = PackLayout::create({ .wantedSize = PackLayout::WantedSize::Default,
-	.startSize = PackLayout::StartSize::Default, .expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Zero });
+	.expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Zero });
 
 	auto pPopupOverlay = PopupOverlay::create();
 	

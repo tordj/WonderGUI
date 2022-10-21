@@ -54,6 +54,7 @@ namespace wg
 
 	protected:
 		Receiver() {};
+		~Receiver() {}
 
 		virtual void	_update(int microPassed, int64_t microsecTimestamp);
 

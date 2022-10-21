@@ -49,15 +49,6 @@ namespace wg
 			MaxDefaultTimesWeight,
 		};
 
-		enum class StartSize
-		{
-			Default,
-			MaxDefault,
-			DefaultTimesWeight,
-			MaxDefaultTimesWeight,
-			DefaultAsFraction
-		};
-
 		enum class Factor
 		{
 			Zero,								// Don't shrink at all.
@@ -109,7 +100,6 @@ namespace wg
 		struct Blueprint
 		{
 			WantedSize			wantedSize = WantedSize::Default;
-			StartSize			startSize = StartSize::Default;
 			Factor				expandFactor = Factor::Zero;
 			Factor				shrinkFactor = Factor::Zero;
 			HideSetting			hideSetting = HideSetting::Never;
@@ -159,7 +149,6 @@ namespace wg
 		uint64_t			_getItemFactors(uint64_t* pOutput, Factor factor, int nItems, const Item* pItems, const spx * pSizes, const spx* pWeightSpx);
 
 		WantedSize			m_wantedSize;
-		StartSize			m_startSize;
 		HideSetting			m_hideSetting;
 		Factor				m_shrinkFactor;
 		Factor				m_expandFactor;

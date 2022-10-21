@@ -93,6 +93,7 @@ namespace wg
 
 	protected:
 		Caret();
+		~Caret() {}
 
 		bool		_updateNeedToRender( int oldTicks, int newTicks );
 

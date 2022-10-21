@@ -52,7 +52,8 @@ namespace wg
 		virtual bool	stateChangeNeedsRender(State newState, State oldState) const = 0;
 
 	protected:
-
+		~NumberLayout() {}
+		
 		void	_renderString(GfxDevice * pDevice, const Char* pString, TextStyle* pStyle, CoordSPX pos, int scale, State state );
 
 	};

@@ -44,7 +44,6 @@ namespace wg
 	PackLayout::PackLayout(const Blueprint& bp)
 	{
 		m_wantedSize	= bp.wantedSize;
-		m_startSize		= bp.startSize;
 		m_expandFactor	= bp.expandFactor;
 		m_shrinkFactor	= bp.shrinkFactor;
 		m_hideSetting	= bp.hideSetting;
@@ -119,9 +118,9 @@ namespace wg
 
 			// Calculate start lengths
 
-			switch (m_startSize)
+			switch (m_wantedSize)
 			{
-			case StartSize::Default:
+			case WantedSize::Default:
 			{
 				const spx* pSource;
 				int	 pitch;
@@ -136,7 +135,7 @@ namespace wg
 				}
 				break;
 			}
-			case StartSize::MaxDefault:
+			case WantedSize::MaxDefault:
 			{
 				const spx* pSource;
 				int	 pitch;
@@ -157,7 +156,7 @@ namespace wg
 				totalLength = max * nItems;
 				break;
 			}
-			case StartSize::DefaultTimesWeight:
+			case WantedSize::DefaultTimesWeight:
 			{
 				const spx* pSource;
 				int	 pitch;
@@ -172,7 +171,7 @@ namespace wg
 				}
 				break;
 			}
-			case StartSize::MaxDefaultTimesWeight:
+			case WantedSize::MaxDefaultTimesWeight:
 			{
 				const spx* pSource;
 				int	 pitch;
@@ -197,98 +196,6 @@ namespace wg
 
 				break;
 			}
-
-			case StartSize::DefaultAsFraction:
-			{
-				//TODO: Should this handle min/max so that it uses all length anyway?
-
-				if (m_defaultSizeSource == SizeSource::Item)
-				{
-					// We use SPX as source
-
-					spx totalSource = 0;
-					for (int i = 0; i < nItems; i++)
-						totalSource += pItems[i].def;
-
-					spx		accLengthSPX = 0;
-					float	accLengthF = 0.f;
-					float	multiplier = availableSpace / float(totalSource);
-
-					for (int i = 0; i < nItems; i++)
-					{
-						accLengthF += pItems[i].def * multiplier;
-						spx newAccLength = align(spx(accLengthF));
-
-						pOutput[i] = newAccLength - accLengthSPX;
-						accLengthSPX = newAccLength;
-					}
-				}
-				else
-				{
-					// We use 16.16-floats as source
-
-					const int* pSource;
-					int	 pitch;
-
-					switch (m_defaultSizeSource)
-					{
-					case SizeSource::Weight:
-						pSource = &pItems->weight;
-						pitch = sizeof(Item);
-						break;
-
-					case SizeSource::List1:
-						pSource = m_list1.data();
-						pitch = sizeof(int);
-						break;
-
-					case SizeSource::List2:
-						pSource = m_list2.data();
-						pitch = sizeof(int);
-						break;
-
-					case SizeSource::List3:
-						pSource = m_list3.data();
-						pitch = sizeof(int);
-						break;
-
-					default:
-						break;			// Should never get here.
-					}
-
-					// Calc sum of all sources
-/*
-					int totalSource = 0;
-					const int* pSource2 = pSource;
-					for (int i = 0; i < nItems; i++)
-					{
-						totalSource += *pSource2;
-						pSource2 = (int*)(((char*)pSource2) + pitch);
-					}
-
-					// 
-
-					spx		accLengthSPX = 0;
-					int64_t	accLengthF = 0.f;
-					float	multiplier = availableSpace / float(totalSource);
-
-					for (int i = 0; i < nItems; i++)
-					{
-						accLengthF += (*pSource) * multiplier;
-						spx newAccLength = align(spx(accLengthF));
-
-						pOutput[i] = newAccLength - accLengthSPX;
-						accLengthSPX = newAccLength;
-						pSource = (int*)(((char*)pSource) + pitch);
-					}
-*/
-
-				}
-
-				totalLength = availableSpace;
-				break;
-			}
-
 
 			default:			// Should never get here.
 				break;
@@ -1064,9 +971,9 @@ namespace wg
 				}
 				return total;
 			}
+			default:
+				return 0; // Should never get here!
 		}
-
-		return 0;		// Should never get here!
 	}
 
 

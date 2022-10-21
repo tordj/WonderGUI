@@ -144,7 +144,7 @@ int main ( int argc, char** argv )
 		pPrinter->print("First part of text,");
 		pPrinter->print(" second part of text on same line.");
 		
-		RectSPX box = { 20*64, 200*64, 640*64, 30*64 };
+		RectSPX box = { 20*64, 200*64, 640*64, 60*64 };
 
 		pGfxDevice->fill(box, Color8::Black);
 		

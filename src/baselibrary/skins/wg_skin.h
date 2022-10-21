@@ -46,7 +46,6 @@ namespace wg
 		friend class SkinSlotMI;
 
 	public:
-		virtual ~Skin() {};
 
 		//.____ Identification __________________________________________
 
@@ -108,6 +107,7 @@ namespace wg
 
 	protected:
 		Skin() {};
+		virtual ~Skin() {};
 
         inline void     _doIncUseCount(Skin * pSkin) { pSkin->_incUseCount();}
         inline void     _doDecUseCount(Skin * pSkin) { pSkin->_decUseCount();}

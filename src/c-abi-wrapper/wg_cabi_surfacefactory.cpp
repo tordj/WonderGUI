@@ -110,7 +110,7 @@ namespace wg
 		pDest->clut = (wg_color8*)pSource->clut;
 		pDest->dynamic = pSource->dynamic;
 		pDest->format = (wg_pixelFormat)pSource->format;
-		pDest->id = pSource->id;
+		pDest->identity = pSource->identity;
 		pDest->mipmap = pSource->mipmap;
 		pDest->sampleMethod = (wg_sampleMethod)pSource->sampleMethod;
 		pDest->scale = pSource->scale;

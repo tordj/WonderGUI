@@ -53,6 +53,7 @@ namespace wg
 
 	protected:
 		BasicDataset() {}
+		~BasicDataset() {}
 	};
 
 	//____ Dataset<> _________________________________________________________________

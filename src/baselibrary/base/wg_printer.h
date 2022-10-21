@@ -105,6 +105,7 @@ namespace wg
 
 	protected:
 		Printer();
+		~Printer() {}
 	
 		
 		uint32_t 	_parseChar( const char *& pStr );

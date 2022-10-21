@@ -61,9 +61,9 @@ namespace wg
         
 	protected:
 		MetalSurfaceFactory(int flags) : m_flags(flags) {}
+		~MetalSurfaceFactory() {}
 
 		int m_flags;
-
 	};
 
 }

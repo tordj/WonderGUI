@@ -600,10 +600,10 @@ bool GfxDeviceTester::setup_chrome()
 	pLayerStack->setSkin( StaticColorSkin::create(Color::AntiqueWhite) );
 	m_pVisitor->rootPanel()->slot = pLayerStack;
 
-	auto pUniformLayout = PackLayout::create({ .wantedSize = PackLayout::WantedSize::MaxDefaultTimesWeight,
-		.startSize = PackLayout::StartSize::MaxDefaultTimesWeight, .expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Zero });
-//		auto pUniformLayout = PackLayout::create({});
+	auto pUniformLayout = PackLayout::create({ .wantedSize = PackLayout::WantedSize::Default,
+		.expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Weight });
 
+	
 
 	// Divid screen into sidebar and canvaspanel with top section
 
