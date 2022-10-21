@@ -475,6 +475,7 @@ namespace wg
 		else
 			return 0xFFFFFFFF;					// Broken character (or more than 4 bytes which we don't support)
 
+		return g;
 	}
 
 	//____ _lineEnd() ____________________________________________________________

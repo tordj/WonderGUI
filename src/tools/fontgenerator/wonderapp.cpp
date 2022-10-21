@@ -320,13 +320,15 @@ bool MyApp::generateFontSpec( FreeTypeFont * pFont, String& charmap )
 	
 	for( int i = 0 ; i < charmap.length() ; i++ )
 	{
+		uint16_t code1 = charmap.chars()[i].code();
 		Glyph glyph1;
-		pFont->getGlyphWithoutBitmap(charmap.chars()[i].code(), glyph1);
+		pFont->getGlyphWithoutBitmap(code1, glyph1);
 		
 		for( int j = 0 ; j < charmap.length() ; j++ )
 		{
+			uint16_t code2 = charmap.chars()[j].code();
 			Glyph glyph2;
-			pFont->getGlyphWithoutBitmap(charmap.chars()[j].code(), glyph2);
+			pFont->getGlyphWithoutBitmap(code2, glyph2);
 			
 			spx kerningSPX = pFont->kerning(glyph1, glyph2);
 
@@ -337,7 +339,13 @@ bool MyApp::generateFontSpec( FreeTypeFont * pFont, String& charmap )
 			
 			if( kerning != 0 )
 			{
-				sprintf( buffer, "%c%c %d ", charmap.chars()[i].code(), charmap.chars()[j].code(), kerning );
+				char buff1[4] = {0,0,0,0};
+				TextTool::uint16ToUtf8(code1, buff1, 4);
+
+				char buff2[4] = {0,0,0,0};
+				TextTool::uint16ToUtf8(code2, buff2, 4);
+
+				sprintf( buffer, "%s%s %d ", buff1, buff2, kerning );
 				m_bitmapFontSpec += buffer;
 			}
 		}
@@ -360,7 +368,7 @@ bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 	
 	// Calculate size of surface needed.
 		
-	spx maxWidth = 512*64;
+	spx maxWidth = 4096*64;
 	spx ofsX = 0;
 	int nRows = 1;
 
@@ -368,15 +376,19 @@ bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 	{
 		Glyph glyph;
 		pFont->getGlyphWithBitmap(chars.chars()[i].code(), glyph);
-		
+
 		if( glyph.pSurface )
 		{
-			ofsX += glyph.rect.w+64;
+			spx advance = glyph.advance;
+			if( glyph.bearingX < 0 )
+				advance -= glyph.bearingX;
+
+			ofsX += advance+64;
 		
 			if( ofsX > maxWidth )
 			{
 				nRows++;
-				ofsX = glyph.rect.w+64;
+				ofsX = advance+64;
 			}
 		}
 	}
@@ -418,7 +430,15 @@ bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 		Glyph glyph;
 		pFont->getGlyphWithBitmap(chars.chars()[i].code(), glyph);
 		
-		if( pos.x + glyph.rect.w+64 > surfaceSize.w*64  )
+		spx bearingX = glyph.bearingX;
+		spx advance = glyph.advance;
+		if( bearingX < 0 )
+		{
+			advance -= bearingX;
+			bearingX = 0;
+		}
+		
+		if( pos.x + advance > surfaceSize.w*64  )
 		{
 			pos.x = 0;
 			pos.y += rowHeight*64;
@@ -428,14 +448,6 @@ bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 
 		if( glyph.pSurface )
 		{
-			spx bearingX = glyph.bearingX;
-			spx advance = glyph.advance;
-			if( bearingX < 0 )
-			{
-				advance -= bearingX;
-				bearingX = 0;
-			}
-			
 			pDevice->setBlitSource(glyph.pSurface);
 			pDevice->blit(pos + CoordSPX(bearingX,baselineOfs + glyph.bearingY), glyph.rect);
 			pos.x += advance;
