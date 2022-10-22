@@ -55,7 +55,7 @@ namespace wg
 	 * a way that is independent of the underlying architecture.
 	 * 
 	 * PixelBuffers can not be created directly and their members are read-only. Only the 
-	 * pixels (pointed to by the member pPixels) can be modified.
+	 * pixels (pointed to by the member pixels) can be modified.
 	 * 
 	 * They are created by the Surface to which they are connected and either, depending
 	 * on type of Surface, allocates a buffer for reading/writing pixels from/to the Surface
@@ -88,8 +88,8 @@ namespace wg
 	struct PixelBuffer
 	{
 		PixelFormat		format;
-		uint8_t*		pPixels;
-		const Color8*	pPalette;
+		uint8_t*		pixels;
+		const Color8*	palette;
 		RectI			rect;
 		int				pitch;
 	};

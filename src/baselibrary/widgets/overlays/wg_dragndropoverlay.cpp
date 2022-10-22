@@ -110,7 +110,7 @@ namespace wg
 			SizeSPX pref = p->_widget()->_defaultSize(m_scale);
 			SizeSPX max = SizeSPX::max(pref, p->m_geo.size());
 
-			_requestRender(RectSPX::getIntersection({ 0,0,m_size }, { p->m_geo.pos(), max }));
+			_requestRender(RectSPX::overlap({ 0,0,m_size }, { p->m_geo.pos(), max }));
 			p->_setSize(pref);
 		}
 	}
@@ -158,7 +158,7 @@ namespace wg
 
 		// Clip our geometry and pass it on
 
-		_requestRender( RectSPX::getIntersection( rect, RectSPX(0,0,m_size) ));
+		_requestRender( RectSPX::overlap( rect, RectSPX(0,0,m_size) ));
 	}
 
 	//____ _receive() __________________________________________________________

@@ -106,7 +106,7 @@ namespace wg
 
 	bool CABISurface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pPalette, *(wg_rectI*)&buffer.rect, buffer.pitch };
+		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pixels, (wg_color8*)buffer.palette, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
 		return CABI::surface->pushPixelsFromRect(m_cSurface, &pixbuf, (const wg_rectI*) &bufferRect);
 	}
@@ -115,7 +115,7 @@ namespace wg
 
 	void CABISurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pPalette, *(wg_rectI*)&buffer.rect, buffer.pitch };
+		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pixels, (wg_color8*)buffer.palette, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
 		CABI::surface->pullPixelsFromRect(m_cSurface, &pixbuf, (const wg_rectI*)&bufferRect);
 	}
@@ -124,7 +124,7 @@ namespace wg
 
 	void CABISurface::freePixelBuffer(const PixelBuffer& buffer)
 	{
-		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pPalette, *(wg_rectI*)&buffer.rect, buffer.pitch };
+		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pixels, (wg_color8*)buffer.palette, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
 		CABI::surface->freePixelBuffer(m_cSurface, &pixbuf);
 	}

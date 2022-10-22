@@ -80,7 +80,7 @@ namespace wg
 		{
 			// Pitch is involved, we need to write line by line
 			
-			char * pPixels = (char *) pixbuf.pPixels;
+			char * pPixels = (char *) pixbuf.pixels;
 			
 			for( int y = 0 ; y < header.height ; y++ )
 			{
@@ -90,7 +90,7 @@ namespace wg
 		}
 		else
 		{
-			stream.write( (char*) pixbuf.pPixels, lineBytes * header.height );
+			stream.write( (char*) pixbuf.pixels, lineBytes * header.height );
 		}
 
 		pSurface->freePixelBuffer(pixbuf);
@@ -141,7 +141,7 @@ namespace wg
 		{
 			// Pitch is involved, we need to write line by line
 			
-			char * pPixels = (char *) pixbuf.pPixels;
+			char * pPixels = (char *) pixbuf.pixels;
 			
 			for( int y = 0 ; y < header.height ; y++ )
 			{
@@ -152,7 +152,7 @@ namespace wg
 		}
 		else
 		{
-			std::memcpy(pWrite, pixbuf.pPixels, lineBytes * header.height );
+			std::memcpy(pWrite, pixbuf.pixels, lineBytes * header.height );
 			pWrite += lineBytes * header.height;
 		}
 

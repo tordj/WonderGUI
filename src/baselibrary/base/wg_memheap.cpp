@@ -324,7 +324,7 @@ void MemHeap::drawFragmentMap( int nSectors, uint16_t * pSectorTable, Surface * 
 	
 	// Draw fragment map.
 
-	uint16_t * pPixels = (uint16_t*) buffer.pPixels;
+	uint16_t * pPixels = (uint16_t*) buffer.pixels;
 
 	for( int sector = 0 ; sector < nSectors ; sector++ )
 	{
@@ -355,7 +355,7 @@ void MemHeap::drawFragmentMap( int nSectors, uint16_t * pSectorTable, Surface * 
 		if( (sector+1) % sectorsPerRow == 0 )
 		{
 			int newRow = (sector+1) / sectorsPerRow;
-			pPixels = (uint16_t*) (buffer.pPixels+newRow*secSize*buffer.pitch);
+			pPixels = (uint16_t*) (buffer.pixels+newRow*secSize*buffer.pitch);
 		}
 		else
 			pPixels += secSize;

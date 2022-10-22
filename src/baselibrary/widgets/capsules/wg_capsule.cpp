@@ -141,7 +141,7 @@ namespace wg
 	void Capsule::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
 		if( !m_skin.isEmpty() )
-			container.add(RectSPX::getIntersection(geo, clip));
+			container.add(RectSPX::overlap(geo, clip));
 		else if( slot._widget() )
 			slot._widget()->_collectPatches(container, _contentRect(geo), clip);
 	}
@@ -153,7 +153,7 @@ namespace wg
 		if (!m_skin.isEmpty())
 		{
 			if(m_skin.isOpaque( clip, geo.size(), m_scale, m_state ) )
-				patches.sub(RectSPX::getIntersection(geo, clip));
+				patches.sub(RectSPX::overlap(geo, clip));
 			else if( slot._widget() )
 				slot._widget()->_maskPatches(patches, _contentRect(geo), clip, blendMode);
 		}

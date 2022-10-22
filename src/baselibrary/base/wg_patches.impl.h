@@ -78,7 +78,7 @@ namespace wg
 		{
 			const RectT<T>& rect = source.m_pFirst[i];
 			if (rect.intersectsWith(trim))
-				m_pFirst[m_size++] = RectT<T>::getIntersection(rect, trim);
+				m_pFirst[m_size++] = RectT<T>::overlap(rect, trim);
 		}
 	}
 
@@ -413,7 +413,7 @@ namespace wg
 			{
 				if (m_size == m_capacity)
 					_expandMem(1);
-				m_pFirst[m_size++] = RectT<T>::getIntersection(rect, trim);
+				m_pFirst[m_size++] = RectT<T>::overlap(rect, trim);
 			}
 		}
 	}
@@ -462,17 +462,17 @@ namespace wg
 		{
 
 			if( clip.intersectsWith(*pRect) )
-				*pRect = RectT<T>::getIntersection(*pRect, clip);
+				*pRect = RectT<T>::overlap(*pRect, clip);
 			else
 				*pRect-- = m_pFirst[--m_size];				// Remove the rectangle
 
 		}
 	}
 
-	//____ getUnion() _________________________________________________________________
+	//____ bounds() _________________________________________________________________
 
 	template <class T>
-	RectT<T> PatchesT<T>::getUnion() const
+	RectT<T> PatchesT<T>::bounds() const
 	{
 		if( m_size == 0 )
 			return RectT<T>();

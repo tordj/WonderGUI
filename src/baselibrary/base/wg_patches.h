@@ -67,7 +67,7 @@ namespace wg
 		//.____ Misc __________________________________________________________
 
 		void			clip( const RectT<T>& clip );
-		RectT<T>		getUnion() const;
+		RectT<T>		bounds() const;
 
 		int				repair();															// Fixes any overlap that might have resulted from push()
 		int				optimize();															// Combines small PatchesT into larger ones where possible

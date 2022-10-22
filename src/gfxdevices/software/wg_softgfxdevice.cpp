@@ -692,7 +692,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 			for (int i = 0; i < m_nClipRects; i++)
 			{
-				RectI patch =  RectI::getIntersection(m_pClipRects[i]/64, pixelRect);
+				RectI patch =  RectI::overlap(m_pClipRects[i]/64, pixelRect);
 				if (patch.w == 0 || patch.h == 0)
 					continue;
 
@@ -738,7 +738,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			{
 				HiColor color = col;
 
-				RectI  patch = RectI::getIntersection(rect, m_pClipRects[i]);
+				RectI  patch = RectI::overlap(rect, m_pClipRects[i]);
 				if (patch.w == 0 || patch.h == 0)
 					continue;
 
@@ -1612,7 +1612,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		{
 			// Clip patch
 
-			RectI patch = RectI::getIntersection(dest, m_pClipRects[patchIdx]/64);
+			RectI patch = RectI::overlap(dest, m_pClipRects[patchIdx]/64);
 			if (patch.w == 0 || patch.h == 0)
 				continue;
 
@@ -2304,7 +2304,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		m_canvasPixelBuffer = m_pRenderLayerSurface->allocPixelBuffer();
 		m_pRenderLayerSurface->pushPixels(m_canvasPixelBuffer);
 
-		m_pCanvasPixels = m_canvasPixelBuffer.pPixels;
+		m_pCanvasPixels = m_canvasPixelBuffer.pixels;
 		m_canvasPitch = m_canvasPixelBuffer.pitch;
 
 		m_canvasPixelBits = m_pRenderLayerSurface->pixelDescription()->bits;

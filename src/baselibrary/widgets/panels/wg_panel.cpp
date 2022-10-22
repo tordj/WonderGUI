@@ -70,7 +70,7 @@ namespace wg
 		//TODO: Should m_maskOp be moved to Container instead? Could remove many versions of _maskPatches()...
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{
-			patches.sub( RectSPX::getIntersection(geo,clip) );
+			patches.sub( RectSPX::overlap(geo,clip) );
 			return;
 		}
 
@@ -78,7 +78,7 @@ namespace wg
 		{
 			case MaskOp::Recurse:
 			{
-				RectSPX	myClip = RectSPX::getIntersection(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't (for panels where children can go outside parent).
+				RectSPX	myClip = RectSPX::overlap(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't (for panels where children can go outside parent).
 				SlotWithGeo child;
 				_firstSlotWithGeo( child );
 
@@ -92,7 +92,7 @@ namespace wg
 			case MaskOp::Skip:
 				break;
 			case MaskOp::Mask:
-				patches.sub( RectSPX::getIntersection(geo,clip) );
+				patches.sub( RectSPX::overlap(geo,clip) );
 				break;
 		}
 	}

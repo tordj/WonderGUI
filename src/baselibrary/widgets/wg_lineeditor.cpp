@@ -197,7 +197,7 @@ namespace wg
 		dirt += visible.pos();
 
 		if (dirt.intersectsWith(visible))
-			_requestRender(RectSPX::getIntersection(dirt, visible));
+			_requestRender(RectSPX::overlap(dirt, visible));
 	}
 
 	//____ _componentRequestResize() ______________________________________________
