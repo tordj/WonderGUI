@@ -409,9 +409,9 @@ namespace wg
 		return s_pData->pMemStack->allocBytes(bytes);
 	}
 
-	//____ memStackRelease() ______________________________________________________
+	//____ memStackFree() ______________________________________________________
 
-	void Base::memStackRelease( int bytes )
+	void Base::memStackFree( int bytes )
 	{	assert(s_pData!=0);
 		return s_pData->pMemStack->releaseBytes(bytes);
 	}

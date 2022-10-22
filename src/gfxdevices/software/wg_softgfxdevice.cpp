@@ -1756,10 +1756,10 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		// Free what we have reserved on the memStack.
 
 		if (gradientsXBufferSize > 0)
-			Base::memStackRelease(gradientsXBufferSize);
+			Base::memStackFree(gradientsXBufferSize);
 
 		if (gradientsYBufferSize > 0)
-			Base::memStackRelease(gradientsYBufferSize);
+			Base::memStackFree(gradientsYBufferSize);
 
 	}
 
@@ -2569,7 +2569,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			line += thisChunkLines;
 		}
 
-		Base::memStackRelease(memBufferSize);
+		Base::memStackFree(memBufferSize);
 	}
 
 	//____ _onePassTransforBlit() ____________________________________________
@@ -2633,7 +2633,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			line += thisChunkLines;
 		}
 
-		Base::memStackRelease(memBufferSize);
+		Base::memStackFree(memBufferSize);
 	}
 
 	//____ _dummyStraightBlit() _________________________________________________

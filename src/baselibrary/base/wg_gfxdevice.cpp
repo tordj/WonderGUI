@@ -1398,8 +1398,8 @@ namespace wg
 
 		// Free temporary work memory
 
-		Base::memStackRelease(edgeBufferSize);
-		Base::memStackRelease(lineBufferSize);
+		Base::memStackFree(edgeBufferSize);
+		Base::memStackFree(lineBufferSize);
 	}
 
 	//____ drawElipse() ______________________________________________________
@@ -1622,8 +1622,8 @@ namespace wg
 
 		// Free temporary work memory
 
-		Base::memStackRelease(clipBufferSize);
-		Base::memStackRelease(bufferSize);
+		Base::memStackFree(clipBufferSize);
+		Base::memStackFree(bufferSize);
 
 	}
 
@@ -1966,9 +1966,9 @@ namespace wg
 		}
 
 		if( hubBufferSize != 0 )
-			Base::memStackRelease(hubBufferSize);
+			Base::memStackFree(hubBufferSize);
 
-		Base::memStackRelease(bufferSize);
+		Base::memStackFree(bufferSize);
 	}
 
 	//____ drawSegments() ______________________________________________________

@@ -146,7 +146,7 @@ namespace wg
 		static void			update( int64_t timestamp_microseconds );
 
 		static char *		memStackAlloc( int bytes );
-		static void			memStackRelease( int bytes );
+		static void			memStackFree( int bytes );
 
 		static void			handleError( ErrorLevel severity, ErrorCode code, const char * pMsg, const Object * pObject, const TypeInfo * pClassType, const char * pFunction, const char * pFile, int line );
 

@@ -325,7 +325,7 @@ namespace wg
 
 				// Clean up
 
-				Base::memStackRelease(allocBytes);
+				Base::memStackFree(allocBytes);
 			}
 		}
 
@@ -390,7 +390,7 @@ namespace wg
 
 					// Clean up
 
-					Base::memStackRelease(allocBytes);
+					Base::memStackFree(allocBytes);
 					break;
 				}
 			}
@@ -525,7 +525,7 @@ namespace wg
 
 					// Clean up
 
-					Base::memStackRelease(allocBytes);
+					Base::memStackFree(allocBytes);
 					break;
 				}
 
@@ -551,7 +551,7 @@ namespace wg
 		// Cleanup
 
 		if (spxWeightAllocAmount > 0)
-			Base::memStackRelease(spxWeightAllocAmount);
+			Base::memStackFree(spxWeightAllocAmount);
 
 		return totalLength;
 	}
@@ -678,7 +678,7 @@ namespace wg
 		}
 
 		if( allocAmount > 0 )
-			Base::memStackRelease(allocAmount);
+			Base::memStackFree(allocAmount);
 
 		return result;
 	}

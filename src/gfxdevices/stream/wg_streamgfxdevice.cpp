@@ -672,7 +672,7 @@ namespace wg
         }
         
         if( allocSize > 0 )
-            Base::memStackRelease(allocSize);
+            Base::memStackFree(allocSize);
 
     }
 

@@ -381,7 +381,7 @@ namespace wg
 
 			m_pDevice->plotPixels(nPixels, (CoordI*)pBuffer, (HiColor*)(pBuffer + header.size / 2));
 
-			Base::memStackRelease(bufferSize);
+			Base::memStackFree(bufferSize);
 			break;
 		}
 
@@ -860,7 +860,7 @@ namespace wg
 			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(bp);
 
 			if (bp.palette)
-				Base::memStackRelease(1024);
+				Base::memStackFree(1024);
 
 			break;
 		}

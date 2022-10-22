@@ -96,7 +96,7 @@ namespace wg
 		auto pSurface = m_pFactory->createSurface(bp);
 		
 		if( paletteBytes > 0 )
-			Base::memStackRelease(paletteBytes);
+			Base::memStackFree(paletteBytes);
 		
 		// Read pixels into PixelBuffer
 		// We only support uncompressed pixels for the moment

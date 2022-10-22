@@ -89,7 +89,7 @@ namespace wg
 
 			// Release buffer
 
-			Base::memStackRelease(mem);
+			Base::memStackFree(mem);
 		}
 
 		// Set up listener.

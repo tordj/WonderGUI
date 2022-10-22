@@ -1548,7 +1548,7 @@ namespace wg
 		}
 
 		slots._reorder( pOrderList );
-		Base::memStackRelease( listSize );
+		Base::memStackFree( listSize );
 
 		// Update ofs in the slots
 

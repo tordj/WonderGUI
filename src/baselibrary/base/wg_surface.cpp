@@ -1076,7 +1076,7 @@ namespace wg
 					Base::handleError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Conversion of this kind of surface to Index_8 has not been implemented (sorry!)", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 					
 					freePixelBuffer(pixbuf);
-					Base::memStackRelease(1024);
+					Base::memStackFree(1024);
 					return nullptr;
 			}
 end:
@@ -1086,7 +1086,7 @@ end:
 				Base::handleError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Can't convert surface with more than 256 colors to Index_8", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				
 				freePixelBuffer(pixbuf);
-				Base::memStackRelease(1024);
+				Base::memStackFree(1024);
 				return nullptr;
 			}
 					
@@ -1105,7 +1105,7 @@ end:
 			// Cleanup and return
 			
 			freePixelBuffer(pixbuf);
-			Base::memStackRelease(1024);
+			Base::memStackFree(1024);
 			return pSurface;
 		}
 		else
