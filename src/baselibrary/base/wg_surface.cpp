@@ -1073,7 +1073,7 @@ namespace wg
 				}
 					
 				default:
-					Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Conversion of this kind of surface to Index_8 has not been implemented (sorry!)", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+					Base::handleError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Conversion of this kind of surface to Index_8 has not been implemented (sorry!)", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 					
 					freePixelBuffer(pixbuf);
 					Base::memStackRelease(1024);
@@ -1083,7 +1083,7 @@ end:
 			
 			if( nColors > 256 )
 			{
-				Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Can't convert surface with more than 256 colors to Index_8", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Can't convert surface with more than 256 colors to Index_8", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				
 				freePixelBuffer(pixbuf);
 				Base::memStackRelease(1024);

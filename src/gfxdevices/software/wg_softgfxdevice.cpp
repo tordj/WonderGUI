@@ -686,7 +686,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 					toString(m_blendMode),
 					toString(m_pRenderLayerSurface->pixelFormat()) );
 				
-				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				return;
 			}
 
@@ -729,7 +729,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 					toString(m_blendMode),
 					toString(m_pRenderLayerSurface->pixelFormat()) );
 				
-				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				return;
 			}
 
@@ -893,7 +893,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -1059,7 +1059,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -1602,7 +1602,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -2121,7 +2121,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -2651,7 +2651,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			toString(m_blendMode),
 			toString(m_pRenderLayerSurface->pixelFormat()) );
 		
-		Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		Base::handleError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 	}
 
 	//____ _dummyTransformBlit() ________________________________________________
@@ -2671,7 +2671,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			toString(m_blendMode),
 			toString(m_pRenderLayerSurface->pixelFormat()) );
 		
-		Base::handleError(ErrorSeverity::SilentFail, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		Base::handleError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 	}
 
 
