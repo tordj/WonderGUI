@@ -26,7 +26,6 @@
 #include <string.h>
 #include <wg_font.h>
 #include <wg_base.h>
-#include <wg_context.h>
 
 namespace wg
 {

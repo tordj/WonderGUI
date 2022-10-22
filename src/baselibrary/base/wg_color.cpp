@@ -23,7 +23,6 @@
 #include <wg_color.h>
 #include <wg_util.h>
 #include <wg_base.h>
-#include <wg_context.h>
 
 #include <algorithm>
 #include <math.h>

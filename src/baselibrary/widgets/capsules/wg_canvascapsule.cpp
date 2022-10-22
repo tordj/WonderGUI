@@ -23,7 +23,6 @@
 #include <wg_canvascapsule.h>
 #include <wg_gfxdevice.h>
 #include <wg_base.h>
-#include <wg_context.h>
 #include <wg_util.h>
 
 namespace wg

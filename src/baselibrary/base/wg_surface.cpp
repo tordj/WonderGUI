@@ -26,7 +26,6 @@
 #include <wg_dataset.h>
 #include <wg_util.h>
 #include <wg_base.h>
-#include <wg_context.h>
 
 namespace wg
 {

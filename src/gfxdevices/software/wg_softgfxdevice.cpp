@@ -29,7 +29,6 @@
 #include <cstdio>
 #include <vector>
 #include <wg_base.h>
-#include <wg_context.h>
 
 
 #include <cassert>

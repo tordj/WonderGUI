@@ -1,6 +1,5 @@
 #include <wg_softgfxdevice.h>
 #include <wg_base.h>
-#include <wg_context.h>
 
 namespace wg
 {

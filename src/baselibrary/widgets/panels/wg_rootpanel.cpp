@@ -26,7 +26,6 @@
 #include <wg_boxskin.h>
 #include <wg_inputhandler.h>
 #include <wg_util.h>
-#include <wg_context.h>
 
 #include <new>
 

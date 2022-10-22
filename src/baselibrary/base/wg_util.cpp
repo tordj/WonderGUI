@@ -26,7 +26,6 @@
 #include <wg_gfxdevice.h>
 #include <wg_patches.h>
 #include <wg_base.h>
-#include <wg_context.h>
 #include <wg_state.h>
 
 #include <algorithm>

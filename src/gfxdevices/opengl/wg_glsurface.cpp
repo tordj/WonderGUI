@@ -27,7 +27,6 @@
 #include <wg_util.h>
 #include <wg_blob.h>
 #include <wg_base.h>
-#include <wg_context.h>
 #include <assert.h>
 
 

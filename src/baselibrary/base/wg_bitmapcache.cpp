@@ -21,7 +21,6 @@
 =========================================================================*/
 #include <wg_bitmapcache.h>
 #include <wg_base.h>
-#include <wg_context.h>
 
 #include <algorithm>
 

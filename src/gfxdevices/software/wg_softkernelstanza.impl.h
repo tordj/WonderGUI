@@ -2,7 +2,6 @@
 #include <wg_softgfxdevice.h>
 #include <wg_util.h>
 #include <wg_base.h>
-#include <wg_context.h>
 
 using namespace wg;
 using namespace wg::Util;

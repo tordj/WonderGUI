@@ -29,7 +29,6 @@
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
 #include <wg_base.h>
-#include <wg_context.h>
 #include <wg_util.h>
 
 using namespace std;

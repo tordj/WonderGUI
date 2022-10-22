@@ -25,7 +25,6 @@
 #include <wg_geo.h>
 #include <wg_util.h>
 #include <wg_base.h>
-#include <wg_context.h>
 #include <wg_skin.impl.h>
 
 #include <cmath>

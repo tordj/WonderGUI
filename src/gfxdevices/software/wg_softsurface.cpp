@@ -25,7 +25,6 @@
 #include <wg_softsurface.h>
 #include <wg_util.h>
 #include <wg_base.h>
-#include <wg_context.h>
 #include <wg_softgfxdevice.h>
 
 namespace wg

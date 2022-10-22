@@ -53,8 +53,6 @@ add_library( wondergui
 	base/wg_color.cpp
 	base/wg_color.h
 	base/wg_componentptr.h
-	base/wg_context.cpp
-	base/wg_context.h
 	base/wg_dataset.cpp
 	base/wg_dataset.h
 	base/wg_dummyfont.cpp

@@ -35,7 +35,6 @@
 #include <wg_blob.h>
 #include <wg_bitmapcache.h>
 #include <wg_base.h>
-#include <wg_context.h>
 
 
 typedef struct FT_LibraryRec_  *FT_Library;

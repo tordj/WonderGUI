@@ -318,7 +318,6 @@ int main(int argc, char** argv)
 
 //	Base::setErrorHandler([](Error&) { int x = 0; });
 
-	Context_p pContext = WGTRACK( Context::create() );
 
 
 
@@ -354,9 +353,6 @@ int main(int argc, char** argv)
 		pFactory = SoftSurfaceFactory::create();
 	}
 #endif
-
-	pContext->setSurfaceFactory(pFactory);
-	pContext->setGfxDevice(pDevice);
 
 	Base::setDefaults({ .gfxDevice = pDevice, .surfaceFactory = pFactory } );
 
