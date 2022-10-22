@@ -76,7 +76,7 @@ namespace wg
 	{
 		TextStyle * pStyle = pText->_textStyle();
 		if( pStyle == 0 )
-			pStyle = Base::defaultStyle().rawPtr();
+			pStyle = Base::defaultTextStyle().rawPtr();
 
 		return pStyle;
 	}

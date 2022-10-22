@@ -54,7 +54,7 @@ namespace wg
 		
 		if( bp.layers.size() > c_maxLayers )
 		{
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Number of layers exceeds maximum", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Number of layers exceeds maximum", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 		
@@ -64,15 +64,14 @@ namespace wg
 
 			if (format == PixelFormat::Index_8 || format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear)
 			{
-				Base::handleError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Canvas layers can not be palette-based", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::throwError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Canvas layers can not be palette-based", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 				return nullptr;
 			}
-						
 		}
 
 		if (bp.baseLayer < 0 || bp.baseLayer > bp.layers.size())
 		{
-			Base::handleError(ErrorLevel::Critical, ErrorCode::InvalidParam, "Default layer is out of bounds.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::Critical, ErrorCode::InvalidParam, "Default layer is out of bounds.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 
@@ -114,7 +113,7 @@ namespace wg
 	{
 		if (layer < 1 || layer > m_layers.size() )
 		{
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return PixelFormat::Undefined;
 		}
 

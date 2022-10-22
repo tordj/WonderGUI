@@ -240,18 +240,16 @@ int main(int argc, char *argv[] )
 
 bool init_wondergui()
 {
-	Base::init(nullptr);
-
-	Context_p pContext = Context::create();
-    pContext->setSurfaceFactory(GlSurfaceFactory::create());
-	pContext->setGammaCorrection(true);
-	Base::setActiveContext(pContext);
+	Base::init(nullptr, nullptr);
 
 	auto pGfxDevice = GlGfxDevice::create(0);
 
 	int scale = 64;
-
 	pGfxDevice->setDefaultCanvas(g_windowPixelSize*64,  scale);
+
+	Base::setDefaults({ .gfxDevice = pGfxDevice,
+						.surfaceFactory = GlSurfaceFactory::create(),
+					 } );
 
 	g_pRoot = RootPanel::create( CanvasRef::Default, pGfxDevice);
 
@@ -571,7 +569,7 @@ Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory,
 		px = PixelFormat::BGR_8;
 
 	if (!pFactory)
-		pFactory = Base::activeContext()->surfaceFactory();
+		pFactory = Base::defaultSurfaceFactory();
 
 	bp.format = px;
 	bp.palette = pPalette;

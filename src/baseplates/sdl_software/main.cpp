@@ -219,6 +219,7 @@ int main(int argc, char *argv[] )
 	// Exit the app
 
 	pApp->exit();
+	pApp = nullptr;
 
 	//
 
@@ -236,7 +237,7 @@ bool init_wondergui()
 {
 	g_pHostBridge = new MyHostBridge();
 	
-	Base::init(g_pHostBridge);
+	Base::init(g_pHostBridge, nullptr);
 
 
 	auto pGfxDevice = SoftGfxDevice::create();
@@ -244,11 +245,7 @@ bool init_wondergui()
 
 	auto pSurfaceFactory = SoftSurfaceFactory::create();
 	
-	Context_p pContext = Context::create();
-    pContext->setSurfaceFactory(pSurfaceFactory);
-	pContext->setGfxDevice(pGfxDevice);
-	pContext->setGammaCorrection(true);
-	Base::setActiveContext(pContext);
+	Base::setDefaults( { .gfxDevice = pGfxDevice, .surfaceFactory = pSurfaceFactory } );
 
 	InputHandler_p pInput = Base::inputHandler();
 	
@@ -329,6 +326,8 @@ bool init_wondergui()
 
 void exit_wondergui()
 {
+	g_pRoot = nullptr;
+	g_pWindowSurface = nullptr;
 	g_pGfxDevice = nullptr;
 
 	Base::exit();
@@ -630,7 +629,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 			px = PixelFormat::BGR_8;
 
 		if (!pFactory)
-			pFactory = Base::activeContext()->surfaceFactory();
+			pFactory = Base::defaultSurfaceFactory();
 
 		bp.format = px;
 		bp.palette = pPalette;
@@ -747,7 +746,7 @@ WonderApp::DialogButton	MyAppVisitor::messageBox(	const std::string& title, cons
 
 wrongDefaultButton:
 	
-	Base::handleError(ErrorLevel::Error, ErrorCode::InvalidParam, "Default button isn't a button of specified dialog type", nullptr, nullptr, __func__, __FILE__, __LINE__);
+	Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Default button isn't a button of specified dialog type", nullptr, nullptr, __func__, __FILE__, __LINE__);
 	
 	return WonderApp::DialogButton::Undefined;
 

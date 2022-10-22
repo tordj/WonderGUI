@@ -127,7 +127,7 @@ namespace wg
 		{
 			auto pObject = dynamic_cast<Object*>(m_pHolder);
 			const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::InvalidIterator, "Invalid iterator", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::InvalidIterator, "Invalid iterator", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -158,7 +158,7 @@ namespace wg
 		{
 			auto pObject = dynamic_cast<Object*>(m_pHolder);
 			const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::OutOfRange, "index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::OutOfRange, "index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -680,7 +680,7 @@ namespace wg
 
 	TextStyle * SelectBoxEntry::_textStyle() const
 	{
-		return m_pParent->m_pEntryStyle ? m_pParent->m_pEntryStyle : Base::defaultStyle();
+		return m_pParent->m_pEntryStyle ? m_pParent->m_pEntryStyle : Base::defaultTextStyle();
 	}
 
 	const Char * SelectBoxEntry::_textBegin() const

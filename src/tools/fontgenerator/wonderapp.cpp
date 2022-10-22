@@ -90,7 +90,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 									_.color = Color8::Black));
 
 
-	Base::setDefaultStyle(m_pTextStyle);
+	Base::setDefaults({ .textStyle = m_pTextStyle });
 
 	m_pTextLayoutCentered = BasicTextLayout::create(WGBP(BasicTextLayout,
 		_.placement = Placement::Center));
@@ -403,8 +403,8 @@ bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 	
 	// Generate and fill in surface
 	
-	auto pSurface = Base::activeContext()->surfaceFactory()->createSurface( { .format = outputFormat, .size = surfaceSize });
-	auto pDevice = Base::activeContext()->gfxDevice();
+	auto pSurface = Base::defaultSurfaceFactory()->createSurface( { .format = outputFormat, .size = surfaceSize });
+	auto pDevice = Base::defaultGfxDevice();
 
 	HiColor lineColor(1024,0,0,4096);
 	
@@ -463,7 +463,7 @@ bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 	
 	m_pBitmapFontSurface = pSurface;
 	
-	m_pFontDisplaySurface = Base::activeContext()->surfaceFactory()->createSurface( { .format = PixelFormat::BGRA_8, .size = surfaceSize });
+	m_pFontDisplaySurface = Base::defaultSurfaceFactory()->createSurface( { .format = PixelFormat::BGRA_8, .size = surfaceSize });
 
 	pDevice->beginRender();
 	pDevice->beginCanvasUpdate(m_pFontDisplaySurface);

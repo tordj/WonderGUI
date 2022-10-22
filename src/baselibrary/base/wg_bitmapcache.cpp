@@ -78,7 +78,7 @@ namespace wg
 	{
 		if (maxBytes < 0)
 		{
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "You can not set cache to a negative size!", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "You can not set cache to a negative size!", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -171,7 +171,7 @@ namespace wg
 
 	BitmapCache::CacheSurf * BitmapCache::_addCacheSurface( int category, int width, int height )
 	{
-		auto pFactory = m_pFactory ? m_pFactory : Base::activeContext()->surfaceFactory();
+		auto pFactory = m_pFactory ? m_pFactory : Base::defaultSurfaceFactory();
 		
 		Surface_p pSurf;
 		

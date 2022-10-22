@@ -955,7 +955,7 @@ void _plot(uint8_t* pDst, HiColor color, const SoftGfxDevice::ColTrans& tint, Co
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = Base::gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
 
 		srcB = pPackTab[color.b];
 		srcG = pPackTab[color.g];
@@ -1026,7 +1026,7 @@ void _plot_list(const RectI& clip, int nCoords, const CoordI* pCoords, const HiC
 		tintA = tint.flatTintColor.a;
 	}
 
-	const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+	const uint8_t* pPackTab = Base::gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
 
 	RectI pixelClip = clip / 64;
 
@@ -1116,7 +1116,7 @@ void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, 
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = Base::gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
 
 		srcB = pPackTab[color.b];
 		srcG = pPackTab[color.g];
@@ -1275,7 +1275,7 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = Base::gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
 
 		srcB = pPackTab[color.b];
 		srcG = pPackTab[color.g];
@@ -1472,7 +1472,7 @@ void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, Hi
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = Base::gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
 
 		srcB = pPackTab[col.b];
 		srcG = pPackTab[col.g];

@@ -269,7 +269,7 @@ namespace wg
 
 	HiColor::HiColor(Color8 lowColor)
 	{
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? unpackSRGBTab : unpackLinearTab;
+		const int16_t* pUnpackTab = Base::gammaCorrection() ? unpackSRGBTab : unpackLinearTab;
 
 		r = pUnpackTab[lowColor.r];
 		g = pUnpackTab[lowColor.g];
@@ -352,7 +352,7 @@ namespace wg
 
 	HiColor::operator Color8() const
 	{
-		const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? packSRGBTab : packLinearTab;
+		const uint8_t* pPackTab = Base::gammaCorrection() ? packSRGBTab : packLinearTab;
 		return Color8(pPackTab[r], pPackTab[g], pPackTab[b], packLinearTab[a]);
 	}
 

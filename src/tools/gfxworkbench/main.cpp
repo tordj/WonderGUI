@@ -52,7 +52,7 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 
-	Base::init(nullptr);
+	Base::init(nullptr, nullptr);
 
 	PixelFormat format = PixelFormat::Undefined;
 

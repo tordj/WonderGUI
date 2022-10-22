@@ -138,7 +138,7 @@ namespace wg
 		OutOfRange,
 		InvalidIterator,
 		InvalidParam,
-		FailedPrerequisite,
+		FailedCondition,
 		OpenGL,						// OpenGL has issued a GLerror
 		Internal,
 		SystemIntegrity,

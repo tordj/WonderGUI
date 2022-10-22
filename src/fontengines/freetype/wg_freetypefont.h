@@ -68,7 +68,7 @@ namespace wg
 			BitmapCache_p	cache;
 			int				faceIndex = 0;
 			RenderMode		renderMode = RenderMode::BestShapes;
-			bool			stemDarkening = Base::activeContext()->gammaCorrection();
+			bool			stemDarkening = Base::gammaCorrection();
 		};
 		
 		

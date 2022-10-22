@@ -48,20 +48,31 @@ namespace wg
 {
 	const TypeInfo	Base::TYPEINFO = { "Base", nullptr };
 
-	HostBridge*					Base::s_pHostBridge = nullptr;
+	bool						Base::s_bInitialized = false;
 
+
+	MsgRouter_p					Base::s_pMsgRouter;
+	InputHandler_p				Base::s_pInputHandler;
+	TextLayout_p				Base::s_pDefaultTextLayout;
+	Caret_p						Base::s_pDefaultCaret;
+	NumberLayout_p				Base::s_pDefaultNumberLayout;
+	TextStyle_p					Base::s_pDefaultTextStyle;
+	GfxDevice_p					Base::s_pDefaultGfxDevice;
+	SurfaceFactory_p			Base::s_pDefaultSurfaceFactory;
 	BitmapCache_p				Base::s_pDefaultBitmapCache;
 
-	Base::Data *				Base::s_pData = 0;
+	MemPool*					Base::s_pPtrPool = nullptr;
+	MemStack*					Base::s_pMemStack = nullptr;
+	String						Base::s_clipboardText;
+	bool						Base::s_bGammaCorrection = true;
 
+	HostBridge*					Base::s_pHostBridge = nullptr;
+	int64_t						Base::s_timestamp = 0;
 	std::function<void(Error&)>	Base::s_pErrorHandler = nullptr;
+	std::vector<Receiver*>		Base::s_updateReceivers;
 
 	std::atomic<unsigned int>	Base::s_objectsCreated;
 	std::atomic<unsigned int>	Base::s_objectsDestroyed;
-
-	int64_t						Base::s_timestamp = 0;
-	std::vector<Receiver*>		Base::s_updateReceivers;
-
 
 	bool						Base::s_bTrackingObjects = false;
 
@@ -70,18 +81,21 @@ namespace wg
 
 	//____ init() __________________________________________________________________
 
-	bool Base::init( HostBridge * pHostBridge )
+	bool Base::init(HostBridge* pHostBridge, std::function<void(Error&)> errorHandler)
 	{
-		s_objectsCreated = 0;
-		s_objectsDestroyed = 0;
-		
-		if (s_pData != 0)
+		if (s_bInitialized)
 		{
-			handleError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to Base::init() ignored, already initialized.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::Error, ErrorCode::IllegalCall, "Call to Base::init() ignored, already initialized.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
 
 		s_pHostBridge = pHostBridge;
+		s_pErrorHandler = errorHandler;
+
+		s_objectsCreated = 0;
+		s_objectsDestroyed = 0;
+
+		s_timestamp = 0;
 
 		TextTool::setDefaultBreakRules();
 		HiColor::_initTables();
@@ -90,31 +104,28 @@ namespace wg
 		TextStyleManager::init();
 		SkinSlotManager::init();
 
-		s_pData = new Data;
 
-		s_pData->pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
-		s_pData->pMemStack = new MemStack( 4096 );
-
-		s_pData->pActiveContext = Context::create();
+		s_pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
+		s_pMemStack = new MemStack( 4096 );
 
 		TextStyle::Blueprint textStyleBP;
 		textStyleBP.font = DummyFont::create();
 
-		s_pData->pDefaultStyle = TextStyle::create( textStyleBP );
+		s_pDefaultTextStyle = TextStyle::create( textStyleBP );
 
 #ifndef WG2_MODE
-		s_pData->pDefaultCaret = Caret::create();
+		s_pDefaultCaret = Caret::create();
 
-		s_pData->pDefaultTextLayout = BasicTextLayout::create({});
+		s_pDefaultTextLayout = BasicTextLayout::create({});
 
 
-		s_pData->pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
+		s_pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
 
-		s_pData->pMsgRouter = MsgRouter::create();
-      	s_pData->pInputHandler = InputHandler::create();
+		s_pMsgRouter = MsgRouter::create();
+      	s_pInputHandler = InputHandler::create();
 #endif
 
-
+		s_bInitialized = true;
 		return true;
 	}
 
@@ -123,46 +134,140 @@ namespace wg
 	bool Base::exit()
 	{
 
-		if (s_pData == 0)
+		if (!s_bInitialized)
 		{
-			handleError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to Base::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to Base::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
 
-		if( !s_pData->pPtrPool->isEmpty() )
-		{
-			handleError(ErrorLevel::SilentError, ErrorCode::SystemIntegrity, "Some weak pointers still in use. Can not exit WonderGUI.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
-			return false;
-		}
-
-		if( !s_pData->pMemStack->isEmpty() )
-		{
-			handleError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
-		}
-
-		delete s_pData->pPtrPool;
-		delete s_pData->pMemStack;
-		delete s_pData;
-		s_pData = nullptr;
+		s_pMsgRouter = nullptr;
+		s_pInputHandler = nullptr;
+		s_pDefaultTextLayout = nullptr;
+		s_pDefaultCaret = nullptr;
+		s_pDefaultNumberLayout = nullptr;
+		s_pDefaultTextStyle = nullptr;
+		s_pDefaultGfxDevice = nullptr;
+		s_pDefaultSurfaceFactory = nullptr;
 
 		SkinSlotManager::exit();
 		TextStyleManager::exit();
 
-		if( s_pDefaultBitmapCache )
+		if (s_pDefaultBitmapCache)
 		{
 			s_pDefaultBitmapCache->clear();
 			s_pDefaultBitmapCache = nullptr;
 		}
 
-		if (s_objectsCreated != s_objectsDestroyed)
-			handleError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+		// All Objects needs to be destroyed at this point!
 
+		if (s_objectsCreated != s_objectsDestroyed)
+			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+
+
+		if( !s_pPtrPool->isEmpty() )
+		{
+			throwError(ErrorLevel::SilentError, ErrorCode::SystemIntegrity, "Some weak pointers still in use. Can not exit WonderGUI.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
+
+		if( !s_pMemStack->isEmpty() )
+		{
+			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+		}
+
+		delete s_pPtrPool;
+		s_pPtrPool = nullptr;
+		delete s_pMemStack;
+		s_pMemStack = nullptr;
+
+		bool s_bInitialized = false;
 		return true;
 	}
 
-	//____ handleError() _________________________________________________________
+	//____ setDefaults() ______________________________________________________
 
-	void Base::handleError(ErrorLevel severity, ErrorCode code, const char * msg, const Object * pObject, const TypeInfo* pClassType, const char * function, const char * file, int line)
+	void Base::setDefaults(const Blueprint& bp)
+	{
+		assert(s_bInitialized);
+
+		if( bp.caret )
+			s_pDefaultCaret				= bp.caret;
+
+		if( bp.gfxDevice)
+			s_pDefaultGfxDevice			= bp.gfxDevice;
+
+		if( bp.numberLayout )
+			s_pDefaultNumberLayout		= bp.numberLayout;
+
+		if( bp.surfaceFactory )
+			s_pDefaultSurfaceFactory	= bp.surfaceFactory;
+
+		if( bp.textLayout )
+			s_pDefaultTextLayout		= bp.textLayout;
+
+		if( bp.textStyle )
+			s_pDefaultTextStyle			= bp.textStyle;
+	}
+
+	//____ msgRouter() ________________________________________________________
+
+	MsgRouter_p Base::msgRouter() 
+	{ 
+		return s_pMsgRouter; 
+	};
+	
+	//____ inputHandler() ________________________________________________________
+
+	InputHandler_p Base::inputHandler() 
+	{ 
+		return s_pInputHandler; 
+	}
+
+	//____ defaultTextLayout() ________________________________________________________
+
+	TextLayout_p Base::defaultTextLayout() 
+	{ 
+		return s_pDefaultTextLayout; 
+	}
+
+	//____ defaultCaret() ________________________________________________________
+
+	Caret_p Base::defaultCaret() 
+	{
+		return s_pDefaultCaret; 
+	}
+
+	//____ defaultTextStyle() ________________________________________________________
+
+	TextStyle_p Base::defaultTextStyle() 
+	{ 
+		return s_pDefaultTextStyle; 
+	}
+
+	//____ defaultNumberLayout() ________________________________________________________
+
+	NumberLayout_p Base::defaultNumberLayout() 
+	{ 
+		return s_pDefaultNumberLayout; 
+	}
+
+	//____ defaultGfxDevice() ________________________________________________________
+
+	GfxDevice_p Base::defaultGfxDevice() 
+	{ 
+		return s_pDefaultGfxDevice; 
+	}
+	
+	//____ defaultSurfaceFactory() ________________________________________________________
+
+	SurfaceFactory_p Base::defaultSurfaceFactory() 
+	{ 
+		return s_pDefaultSurfaceFactory; 
+	}
+
+	//____ throwError() _________________________________________________________
+
+	void Base::throwError(ErrorLevel level, ErrorCode code, const char * msg, const Object * pObject, const TypeInfo* pClassType, const char * function, const char * file, int line)
 	{
 		if (s_pErrorHandler)
 		{
@@ -175,22 +280,22 @@ namespace wg
 			error.function = function;
 			error.file = file;
 			error.line = line;
-			error.severity = severity;
+			error.level = level;
 
 			s_pErrorHandler(error);
 		}
 	}
 
-	//____ beginObjectTracking() _________________________________________________
+	//____ startTrackingObjects() _________________________________________________
 
-	void Base::beginObjectTracking()
+	void Base::startTrackingObjects()
 	{
 		s_bTrackingObjects = true;
 	}
 
-	//____ endObjectTracking() __________________________________________________
+	//____ stopTrackingObjects() __________________________________________________
 
-	void Base::endObjectTracking()
+	void Base::stopTrackingObjects()
 	{
 		s_bTrackingObjects = false;
 		s_trackedObjects.clear();
@@ -226,73 +331,6 @@ namespace wg
 	}
 
 
-#ifndef WG2_MODE
-
-	//____ msgRouter() _________________________________________________________
-
-	MsgRouter_p	Base::msgRouter()
-	{
-		return s_pData->pMsgRouter;
-	}
-
-	//____ inputHandler() ______________________________________________________
-
-	InputHandler_p Base::inputHandler()
-	{
-		return s_pData->pInputHandler;
-	}
-
-	//____ defaultCaret() ______________________________________________________
-
-	Caret_p Base::defaultCaret()
-	{
-		assert(s_pData != 0);
-		return s_pData->pDefaultCaret;
-	}
-
-	//____ setDefaultCaret() ___________________________________________________
-
-	void Base::setDefaultCaret( Caret * pCaret )
-	{
-		assert( s_pData != 0 );
-		s_pData->pDefaultCaret = pCaret;
-	}
-
-	//_____ defaultTextLayout() ________________________________________________
-
-	TextLayout_p Base::defaultTextLayout()
-	{
-		assert(s_pData!=0);
-		return s_pData->pDefaultTextLayout;
-	}
-
-
-	//____ setDefaultTextLayout() ___________________________________________________
-
-	void Base::setDefaultTextLayout( TextLayout * pTextLayout )
-	{
-		assert( s_pData != 0 );
-		s_pData->pDefaultTextLayout = pTextLayout;
-	}
-
-	//____ defaultNumberLayout() _____________________________________________
-
-	NumberLayout_p Base::defaultNumberLayout()
-	{
-		assert(s_pData != 0);
-		return s_pData->pDefaultNumberLayout;
-	}
-
-	//____ setDefaultNumberLayout() _______________________________________________________
-
-	void Base::setDefaultNumberLayout(NumberLayout * pFormatter)
-	{
-		assert(s_pData != 0);
-		s_pData->pDefaultNumberLayout = pFormatter;
-	}
-
-#endif
-
 	//____ defaultBitmapCache() __________________________________________________
 
 	BitmapCache_p Base::defaultBitmapCache()
@@ -303,44 +341,11 @@ namespace wg
 		return s_pDefaultBitmapCache;
 	}
 
-	//____ defaultStyle() ______________________________________________________
-
-	TextStyle_p Base::defaultStyle()
-	{
-		assert(s_pData!=0);
-		return s_pData->pDefaultStyle;
-	}
-
-	//____ setDefaultStyle() _______________________________________________________
-
-	void Base::setDefaultStyle( TextStyle * pStyle )
-	{
-		assert( s_pData != 0 );
-		s_pData->pDefaultStyle = pStyle;
-	}
-
-	//___ setActiveContext() __________________________________________________
-
-	void Base::setActiveContext(Context * pContext)
-	{
-		assert(s_pData != 0);
-		s_pData->pActiveContext = pContext;
-
-	}
-
-	//____ activeContext() ____________________________________________________
-
-	Context_p Base::activeContext()
-	{
-		assert(s_pData != 0);
-		return s_pData->pActiveContext;
-	}
-
 	//____ setClipboardText() ____________________________________________________
 
 	void Base::setClipboardText( const String& text )
 	{
-		s_pData->clipboardText = text;
+		s_clipboardText = text;
 		if( s_pHostBridge )
 		{
 			auto stdString = CharSeq(text).getStdString();
@@ -361,23 +366,8 @@ namespace wg
 		}
 		else
 		{
-			return s_pData->clipboardText;
+			return s_clipboardText;
 		}
-	}
-
-
-	//____ setErrorHandler() _________________________________________________________
-
-	void Base::setErrorHandler(std::function<void(Error&)> handler)
-	{
-		s_pErrorHandler = handler;
-	}
-
-	//____ errorHandler() ____________________________________________________________
-
-	std::function<void(Error&)>	Base::errorHandler()
-	{
-		return s_pErrorHandler;
 	}
 
 	//____ update() ______________________________________________________________
@@ -390,7 +380,7 @@ namespace wg
 		// Update wondergui systems
 
 #ifndef WG2_MODE
-        s_pData->pInputHandler->_update(timestamp/1000);
+        s_pInputHandler->_update(timestamp/1000);
 #endif
         SkinSlotManager::update(microPassed/1000);
 
@@ -405,15 +395,14 @@ namespace wg
 
 	char * Base::memStackAlloc( int bytes )
 	{
-		assert(s_pData!=0);
-		return s_pData->pMemStack->allocBytes(bytes);
+		return s_pMemStack->allocBytes(bytes);
 	}
 
 	//____ memStackFree() ______________________________________________________
 
 	void Base::memStackFree( int bytes )
-	{	assert(s_pData!=0);
-		return s_pData->pMemStack->releaseBytes(bytes);
+	{
+		return s_pMemStack->releaseBytes(bytes);
 	}
 
 	//____ _trackObject() ________________________________________________________
@@ -444,8 +433,8 @@ namespace wg
 
 	WeakPtrHub * Base::_allocWeakPtrHub()
 	{
-		assert( s_pData != 0 );
-		WeakPtrHub * pHub = (WeakPtrHub*) s_pData->pPtrPool->allocEntry();
+		assert( s_bInitialized != 0 );
+		WeakPtrHub * pHub = (WeakPtrHub*) s_pPtrPool->allocEntry();
 
 		new (pHub) WeakPtrHub();
 
@@ -456,9 +445,9 @@ namespace wg
 
 	void Base::_freeWeakPtrHub( WeakPtrHub * pHub )
 	{
-		assert( s_pData != 0 );
+		assert( s_bInitialized != 0 );
 		pHub->~WeakPtrHub();
-		s_pData->pPtrPool->freeEntry( pHub );
+		s_pPtrPool->freeEntry( pHub );
 	}
 
 

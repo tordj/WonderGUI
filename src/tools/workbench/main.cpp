@@ -312,8 +312,8 @@ int main(int argc, char** argv)
 */
 
 
-	Base::beginObjectTracking();
-	Base::init(nullptr);
+	Base::startTrackingObjects();
+	Base::init(nullptr, nullptr);
 
 
 //	Base::setErrorHandler([](Error&) { int x = 0; });
@@ -358,7 +358,7 @@ int main(int argc, char** argv)
 	pContext->setSurfaceFactory(pFactory);
 	pContext->setGfxDevice(pDevice);
 
-	Base::setActiveContext(pContext);
+	Base::setDefaults({ .gfxDevice = pDevice, .surfaceFactory = pFactory } );
 
 //	nisBlendTest();
 	commonAncestorTest();
@@ -433,8 +433,8 @@ int main(int argc, char** argv)
 
 		SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 */
-	GfxDevice_p pGfxDevice				= Base::activeContext()->gfxDevice();
-	SurfaceFactory_p pSurfaceFactory	= Base::activeContext()->surfaceFactory();
+	GfxDevice_p pGfxDevice				= Base::defaultGfxDevice();
+	SurfaceFactory_p pSurfaceFactory	= Base::defaultSurfaceFactory();
 
 
 	RootPanel_p pRoot = RootPanel::create(CanvasRef::Default, pGfxDevice);
@@ -489,7 +489,7 @@ int main(int argc, char** argv)
 	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile);
 
 	TextStyle_p pStyle = TextStyle::create( { .color = Color::Black, .font = pFont, .size = 16 } );
-	Base::setDefaultStyle(pStyle);
+	Base::setDefaults({ .textStyle = pStyle });
 
 	
 	TextStyle_p pStyle2 = TextStyle::create( { 	.color = Color::Black,
@@ -1363,7 +1363,7 @@ int main(int argc, char** argv)
 
 	Base::exit();
 	Base::printObjects(std::cout);
-	Base::endObjectTracking();
+	Base::stopTrackingObjects();
 
 	// Exit SDL
 
@@ -1700,7 +1700,7 @@ Surface_p loadSurface(const std::string& path, const Surface::Blueprint& bluepri
 	else
 		bp.format = PixelFormat::BGRA_8;
 
-	Surface_p pImgSurface = Base::activeContext()->surfaceFactory()->createSurface( bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pImgSurface = Base::defaultSurfaceFactory()->createSurface( bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 
 	SDL_FreeSurface(pSDLSurf);
 
@@ -2651,7 +2651,7 @@ bool bakeSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pSplashSkin = BlockSkin::create({ .blendMode = BlendMode::Add, .surface = pSplashSurf });
 
-	Surface_p pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
+	Surface_p pBakeSurface = Base::defaultSurfaceFactory()->createSurface(SizeI(512, 512));
 
 	auto pBakedSkin = BakeSkin::create({ .skins = { pSplashSkin, pDynamicSkin }, .surface = pBakeSurface });
 
@@ -2690,7 +2690,7 @@ bool animSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pDoubleSkin = DoubleSkin::create(pAnimSkin2, pFramingSkin, true);
 
-	auto pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
+	auto pBakeSurface = Base::defaultSurfaceFactory()->createSurface(SizeI(512, 512));
 
 	auto pBakeSkin = BakeSkin::create({ .skinInSkin = true, .skins = {pAnimSkin2, pBoxSkin,pAnimSkin}, .surface = pBakeSurface });
 
@@ -2866,7 +2866,7 @@ bool kerningTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pDisplay1 = TextDisplay::create();
 
-	auto bp = Base::defaultStyle()->blueprint();
+	auto bp = Base::defaultTextStyle()->blueprint();
 	bp.size = 32;
 
 	auto pBigStyle = TextStyle::create(bp);
@@ -2987,11 +2987,13 @@ bool packPanelTest(ComponentPtr<DynamicSlot> pSlot)
 
 bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot)
 {
+/*
 	Base::setErrorHandler( [](Error& error)  {
 		
 		int x = 0;
 		
 	});
+*/
 	
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
@@ -3030,7 +3032,7 @@ bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot)
 	}
 	
 	
-	auto pSurface = Base::activeContext()->surfaceFactory()->createSurface( { .format = PixelFormat::RGB_565_bigendian, .size = SizeI(512,512) } );
+	auto pSurface = Base::defaultSurfaceFactory()->createSurface( { .format = PixelFormat::RGB_565_bigendian, .size = SizeI(512,512) } );
 	
 	uint16_t sectionTable[1024*4];
 	
@@ -3046,7 +3048,7 @@ bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot)
 
 	delete [] pBuffer;
 	
-	Base::setErrorHandler( nullptr );
+//	Base::setErrorHandler( nullptr );
 	
 	auto pImage = Image::create( { .image = pSurface } );
 //	pImage->setImage(pSurface);
@@ -3185,12 +3187,6 @@ void textStyleTest()
 
 void unitTestMemHeap()
 {
-	Base::setErrorHandler( [](Error& error)  {
-		
-		int x = 0;
-		
-	});
-	
 	
 	int heapSize = 1024*1024;
       	auto * pBuffer = new char[heapSize];

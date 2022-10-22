@@ -355,7 +355,7 @@ namespace wg
 
 	bool RootPanel::beginRender()
 	{
-		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::activeContext()->gfxDevice();
+		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
 
 		if( !pGfxDevice || m_canvas.size.isEmpty() || !slot._widget() )
 		{
@@ -410,7 +410,7 @@ namespace wg
 
 	bool RootPanel::renderSection(const Rect& _clip)
 	{
-		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::activeContext()->gfxDevice();
+		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
 
 		if( !pGfxDevice || m_canvas.size.isEmpty() || !slot._widget() )
 		{
@@ -491,7 +491,7 @@ namespace wg
 
 	bool RootPanel::endRender(void)
 	{
-		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::activeContext()->gfxDevice();
+		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
 
 		if( !pGfxDevice || m_canvas.size.isEmpty() || !slot._widget() )
 		{

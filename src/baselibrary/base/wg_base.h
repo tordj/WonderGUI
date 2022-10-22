@@ -52,10 +52,11 @@ namespace wg
 	class TextLayout;
 	class Caret;
 	class TextStyle;
-	class Context;
 	class Object;
 	class Receiver;
 	class BitmapCache;
+	class GfxDevice;
+	class SurfaceFactory;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
 	typedef	StrongPtr<NumberLayout>		NumberLayout_p;
@@ -63,14 +64,15 @@ namespace wg
 	typedef	StrongPtr<TextLayout>		TextLayout_p;
 	typedef	StrongPtr<Caret>			Caret_p;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
-	typedef	StrongPtr<Context>			Context_p;
 	typedef	StrongPtr<BitmapCache>		BitmapCache_p;
+	typedef	StrongPtr<GfxDevice>		GfxDevice_p;
+	typedef	StrongPtr<SurfaceFactory>	SurfaceFactory_p;
 
 
 	class Error
 	{
 	public:
-		ErrorLevel	severity;
+		ErrorLevel		level;
 		ErrorCode		code;
 		std::string		message;
 		const Object *	pObject;
@@ -103,37 +105,43 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static bool init( HostBridge * pHostBridge );
+		static bool init( HostBridge * pHostBridge, std::function<void(Error&)> errorHandler);
 		static bool exit();
 
 		//.____ Content _____________________________________________
 
-		static MsgRouter_p	msgRouter();
+		struct Blueprint
+		{
+			Caret_p				caret;
+			GfxDevice_p			gfxDevice;
+			NumberLayout_p		numberLayout;
+			SurfaceFactory_p	surfaceFactory;
+			TextLayout_p		textLayout;
+			TextStyle_p			textStyle;
+		};
+
+		static void				setDefaults(const Blueprint& blueprint);
+
+		static MsgRouter_p		msgRouter();
 		static InputHandler_p	inputHandler();
 		static BitmapCache_p	defaultBitmapCache();
+		static TextLayout_p		defaultTextLayout();
+		static Caret_p			defaultCaret();
+		static TextStyle_p 		defaultTextStyle();
+		static NumberLayout_p	defaultNumberLayout();
+		static GfxDevice_p		defaultGfxDevice();
+		static SurfaceFactory_p	defaultSurfaceFactory();
 
-		static void			setDefaultTextLayout( TextLayout * pTextLayout );
-		static TextLayout_p defaultTextLayout();
-
-		static void			setDefaultCaret(Caret * pCaret);
-		static Caret_p		defaultCaret();
-
-		static void			setDefaultStyle( TextStyle * pStyle );
-		static TextStyle_p 	defaultStyle();
-
-		static void			setDefaultNumberLayout(NumberLayout * pFormatter);
-		static NumberLayout_p defaultNumberLayout();
-
-		static void			setActiveContext(Context * pContext);
-		static Context_p	activeContext();
-
-		static void			setClipboardText( const String& text );
-		static String		getClipboardText();
+		static void				setClipboardText( const String& text );
+		static String			getClipboardText();
 		
-		static void			setErrorHandler(std::function<void(Error&)> handler);
-		std::function<void(Error&)>	errorHandler();
 
-		static HostBridge *	hostBridge() { return s_pHostBridge; }
+		static HostBridge *		hostBridge()					{ return s_pHostBridge; }
+		static std::function<void(Error&)>	errorHandler()		{ return s_pErrorHandler; }
+
+	
+		static inline void		setGammaCorrection(bool bOn)	{ s_bGammaCorrection = bOn; }
+		static inline bool		gammaCorrection()				{ return s_bGammaCorrection; }
 
 
 		
@@ -141,18 +149,18 @@ namespace wg
 
 		const static TypeInfo	TYPEINFO;
 
-		static bool			isInitialized() { return s_pData != 0; }
+		static bool			isInitialized() { return s_bInitialized; }
 
 		static void			update( int64_t timestamp_microseconds );
 
 		static char *		memStackAlloc( int bytes );
 		static void			memStackFree( int bytes );
 
-		static void			handleError( ErrorLevel severity, ErrorCode code, const char * pMsg, const Object * pObject, const TypeInfo * pClassType, const char * pFunction, const char * pFile, int line );
+		static void			throwError( ErrorLevel level, ErrorCode code, const char * pMsg, const Object * pObject, const TypeInfo * pClassType, const char * pFunction, const char * pFile, int line );
 
-		static void			beginObjectTracking();
-		static void			endObjectTracking();
-		static bool			isObjectTracking() { return s_bTrackingObjects;  }
+		static void			startTrackingObjects();
+		static void			stopTrackingObjects();
+		static bool			isTrackingObjects() { return s_bTrackingObjects;  }
 
 		static void			printObjects(std::ostream& stream);
 
@@ -182,39 +190,31 @@ namespace wg
         inline static void	_objectWillDestroy(Object* pObject) { s_objectsDestroyed.fetch_add(1, std::memory_order_relaxed); if (s_bTrackingObjects) s_trackedObjects.erase(pObject); }
 
 
-		struct Data
-		{
+		static bool					s_bInitialized;
 
-#ifndef WG2_MODE
-			MsgRouter_p		pMsgRouter;
-			InputHandler_p	pInputHandler;
-			TextLayout_p	pDefaultTextLayout;
-			Caret_p			pDefaultCaret;
-			NumberLayout_p	pDefaultNumberLayout;
-#endif
+		static MsgRouter_p			s_pMsgRouter;
+		static InputHandler_p		s_pInputHandler;
+		static TextLayout_p			s_pDefaultTextLayout;
+		static Caret_p				s_pDefaultCaret;
+		static NumberLayout_p		s_pDefaultNumberLayout;
+		static TextStyle_p			s_pDefaultTextStyle;
+		static GfxDevice_p			s_pDefaultGfxDevice;					// GfxDevice that can be used by Widgets when needed.
+		static SurfaceFactory_p		s_pDefaultSurfaceFactory;				// SurfaceFactory that can be used by Widgets when needed.
 
-			Context_p		pActiveContext;
-			TextStyle_p			pDefaultStyle;
+		static BitmapCache_p		s_pDefaultBitmapCache;
 
+		//
 
-			//
+		static MemPool*				s_pPtrPool;
+		static MemStack*			s_pMemStack;
+		static String				s_clipboardText;
+		static bool					s_bGammaCorrection;
+		static HostBridge*			s_pHostBridge;
+		static int64_t				s_timestamp;
 
-			MemPool *		pPtrPool;
-			MemStack *		pMemStack;
-
-			String			clipboardText;
-		};
-
-		static HostBridge*					s_pHostBridge;
-
-		static Data *						s_pData;
 		static std::function<void(Error&)>	s_pErrorHandler;
-
-		static int64_t						s_timestamp;
-
 		static std::vector<Receiver*>		s_updateReceivers;
 
-		static BitmapCache_p				s_pDefaultBitmapCache;
 
 		
 		struct ObjectInfo

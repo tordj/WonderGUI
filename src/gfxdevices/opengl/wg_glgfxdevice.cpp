@@ -98,7 +98,7 @@ namespace wg
 
 
 		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, pErrorName );
-		Base::handleError(ErrorLevel::SilentError, ErrorCode::OpenGL, buffer, pObject, pClassType, func, file, line);
+		Base::throwError(ErrorLevel::SilentError, ErrorCode::OpenGL, buffer, pObject, pClassType, func, file, line);
 	}
 
 
@@ -1097,7 +1097,7 @@ namespace wg
 			_beginDrawCommand(Command::Plot);
 		}
 
-		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+		float* pConv = Base::gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
@@ -2343,7 +2343,7 @@ namespace wg
         }
 		else
 		{
-			if( Base::activeContext()->gammaCorrection() )
+			if( Base::gammaCorrection() )
 				glEnable(GL_FRAMEBUFFER_SRGB);
 			else
 				glDisable(GL_FRAMEBUFFER_SRGB);
@@ -2781,7 +2781,7 @@ namespace wg
 				char	buffer[2048 * 3 + 256];
 
 				sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
-				Base::handleError(ErrorLevel::SilentError, ErrorCode::OpenGL, buffer, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::throwError(ErrorLevel::SilentError, ErrorCode::OpenGL, buffer, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			}
 
 			glDetachShader(programID, vertexShaderID);

@@ -68,11 +68,11 @@ int main ( int argc, char** argv )
 	// Init WonderGUI
 	//------------------------------------------------------
 
-	// First we need to initialize the base system
-	// Normally we would provide a HostBridge-interface, but 
-	// for this simple example we skip it and pass null.
+	// First we need to initialize the base system.
+	// Normally we would provide a HostBridge-interface and an error-handler, 
+	// but for this simple example we skip them and pass null.
 
-	Base::init(nullptr);
+	Base::init(nullptr, nullptr);
 
 	// The software renderer needs a SoftSurface as its canvas,
 	// so we wrap the SDL WindowSurface into a SoftSurface.

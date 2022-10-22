@@ -399,7 +399,7 @@ RectI sourceOfs;
 		switch( format )
 		{
 			case PixelFormat::BGR_8:
-				format = Base::activeContext()->gammaCorrection() ? PixelFormat::BGR_8_sRGB : PixelFormat::BGR_8_linear;
+				format = Base::gammaCorrection() ? PixelFormat::BGR_8_sRGB : PixelFormat::BGR_8_linear;
 			case PixelFormat::BGR_8_sRGB:
 			case PixelFormat::BGR_8_linear:
 				output.format = format;
@@ -431,7 +431,7 @@ RectI sourceOfs;
 				return true;
 
 			case PixelFormat::BGRX_8:
-				format = Base::activeContext()->gammaCorrection() ? PixelFormat::BGRX_8_sRGB : PixelFormat::BGRX_8_linear;
+				format = Base::gammaCorrection() ? PixelFormat::BGRX_8_sRGB : PixelFormat::BGRX_8_linear;
 			case PixelFormat::BGRX_8_sRGB:
 			case PixelFormat::BGRX_8_linear:
 				output.format = format;
@@ -464,7 +464,7 @@ RectI sourceOfs;
 
 
 			case PixelFormat::BGRA_8:
-				format = Base::activeContext()->gammaCorrection() ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
+				format = Base::gammaCorrection() ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
 			case PixelFormat::BGRA_8_sRGB:
 			case PixelFormat::BGRA_8_linear:
 				output.format = format;
@@ -613,7 +613,7 @@ RectI sourceOfs;
 				return true;
 
 			case PixelFormat::Index_8:
-				format = Base::activeContext()->gammaCorrection() ? PixelFormat::Index_8_sRGB : PixelFormat::Index_8_linear;
+				format = Base::gammaCorrection() ? PixelFormat::Index_8_sRGB : PixelFormat::Index_8_linear;
 			case PixelFormat::Index_8_sRGB:
 			case PixelFormat::Index_8_linear:
 				output.format = format;

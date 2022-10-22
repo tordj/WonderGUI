@@ -77,7 +77,7 @@ namespace wg
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas);
 
 		TextLayout*			_layout() const { return m_pLayout ? m_pLayout.rawPtr() : Base::defaultTextLayout().rawPtr(); }
-		TextStyle*			_style() const { if (m_pStyle) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
+		TextStyle*			_style() const { if (m_pStyle) return m_pStyle.rawPtr(); return Base::defaultTextStyle().rawPtr(); }
 
 		virtual void		_setText(const CharSeq& seq);
 		virtual void		_setText(const CharBuffer* buffer);
@@ -119,7 +119,7 @@ namespace wg
 
 		virtual SizeSPX		_textSize() const override { return m_size; }
 		virtual State		_textState() const override { return m_state; }
-		virtual TextStyle * _textStyle() const override { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
+		virtual TextStyle * _textStyle() const override { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultTextStyle().rawPtr(); }
 		
 		virtual const Char *_textBegin() const override { return m_charBuffer.chars(); }
 		virtual int 		_textLength() const override { return m_charBuffer.nbChars(); }

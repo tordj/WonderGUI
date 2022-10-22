@@ -163,7 +163,7 @@ namespace wg
 		if (size.w > canvas.w || size.h > canvas.h)
 			popData = limitClipList(pDevice, canvas);
 
-		_renderString(pDevice, charBuffer.chars(), Base::defaultStyle(), ofs, scale, state);
+		_renderString(pDevice, charBuffer.chars(), Base::defaultTextStyle(), ofs, scale, state);
 
 		popClipList(pDevice, popData);
 	}
@@ -299,7 +299,7 @@ namespace wg
 
 		TextAttr		baseAttr;
 
-		Base::defaultStyle()->exportAttr(state, &baseAttr, scale);
+		Base::defaultTextStyle()->exportAttr(state, &baseAttr, scale);
 
 		TextAttr		attr;
 		Font_p 			pFont;

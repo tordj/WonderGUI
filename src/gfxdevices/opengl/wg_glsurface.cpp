@@ -490,7 +490,7 @@ namespace wg
 		switch (format)
 		{
 			case PixelFormat::BGR_8:
-				m_internalFormat = Base::activeContext()->gammaCorrection() ? GL_SRGB8 : GL_RGB8;
+				m_internalFormat = Base::gammaCorrection() ? GL_SRGB8 : GL_RGB8;
 				m_accessFormat = GL_BGR;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 3;
@@ -511,7 +511,7 @@ namespace wg
 				break;
 
 			case PixelFormat::BGRX_8:
-				m_internalFormat = Base::activeContext()->gammaCorrection() ? GL_SRGB8 : GL_RGB8;
+				m_internalFormat = Base::gammaCorrection() ? GL_SRGB8 : GL_RGB8;
 				m_accessFormat = GL_BGRA;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 4;
@@ -532,7 +532,7 @@ namespace wg
 				break;
 
 			case PixelFormat::BGRA_8:
-				m_internalFormat = Base::activeContext()->gammaCorrection() ? GL_SRGB8_ALPHA8 : GL_RGBA8;
+				m_internalFormat = Base::gammaCorrection() ? GL_SRGB8_ALPHA8 : GL_RGBA8;
 				m_accessFormat = GL_BGRA;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 4;

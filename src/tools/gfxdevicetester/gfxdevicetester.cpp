@@ -63,7 +63,7 @@ bool GfxDeviceTester::init( AppVisitor * pVisitor )
 	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile);
 
 	TextStyle_p pStyle = TextStyle::create({ .color = HiColor::Black, .font = pFont, .size = 16 });
-	Base::setDefaultStyle(pStyle);
+	Base::setDefaults({ .textStyle = pStyle } );
 
 	g_pButtonLabelStyle = TextStyle::create({ .color = HiColor::Black, .font = pFont, .size = 16 });
 
@@ -308,7 +308,7 @@ SurfaceDisplay_p GfxDeviceTester::create_canvas()
 {
 	auto pCanvas = SurfaceDisplay::create();
 	
-	auto pSurface = Base::activeContext()->surfaceFactory()->createSurface(g_canvasSize);
+	auto pSurface = Base::defaultSurfaceFactory()->createSurface(g_canvasSize);
 	pCanvas->setSurface(pSurface);
 //	pCanvas->canvas.setBackColor(Color::Black);
 	return pCanvas;

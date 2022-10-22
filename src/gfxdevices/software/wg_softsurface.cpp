@@ -50,21 +50,33 @@ namespace wg
 
 	SoftSurface_p SoftSurface::create(const Blueprint& blueprint)
 	{
+		if (!_isBlueprintValid(blueprint, maxSize()))
+			return SoftSurface_p();
+
 		return SoftSurface_p(new SoftSurface(blueprint));
 	}
 
 	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, Blob* pBlob, int pitch)
 	{
+		if (!_isBlueprintValid(blueprint, maxSize()))
+			return SoftSurface_p();
+
 		return SoftSurface_p(new SoftSurface(blueprint, pBlob, pitch));
 	}
 
 	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription)
 	{
+		if (!_isBlueprintValid(blueprint, maxSize()))
+			return SoftSurface_p();
+
 		return SoftSurface_p(new SoftSurface(blueprint, pPixels, pitch, pPixelDescription));
 	}
 
 	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, Surface* pOther)
 	{
+		if (!_isBlueprintValid(blueprint, maxSize(),pOther))
+			return SoftSurface_p();
+
 		return SoftSurface_p(new SoftSurface(blueprint, pOther));
 	}
 
@@ -76,9 +88,6 @@ namespace wg
 
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, int flags, const Color8 * pPalette )
 	{
-		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::Index_8 || format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear) && pPalette == nullptr))
-			return SoftSurface_p();
-
 		Blueprint bp;
 
 		bp.size = size;
@@ -93,15 +102,15 @@ namespace wg
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
+
+		if (!_isBlueprintValid(bp, maxSize()))
+			return SoftSurface_p();
 
 		return SoftSurface_p(new SoftSurface(bp));
 	}
 
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pPalette)
 	{
-		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::Index_8 || format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear) && pPalette == nullptr) || !pBlob || pitch % 4 != 0 )
-			return SoftSurface_p();
-
 		Blueprint bp;
 
 		bp.size = size;
@@ -116,6 +125,9 @@ namespace wg
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
+
+		if (!_isBlueprintValid(bp, maxSize()))
+			return SoftSurface_p();
 
 		return SoftSurface_p(new SoftSurface(bp, pBlob, pitch));
 	}
@@ -141,6 +153,9 @@ namespace wg
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
 
+		if (!_isBlueprintValid(bp, maxSize()))
+			return SoftSurface_p();
+
 		return  SoftSurface_p(new SoftSurface( bp, pPixels, pitch, pPixelDescription ));
 	};
 
@@ -159,6 +174,9 @@ namespace wg
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
+
+		if (!_isBlueprintValid(bp, maxSize(), pOther))
+			return SoftSurface_p();
 
 		return SoftSurface_p(new SoftSurface( bp, pOther ));
 	}
@@ -322,7 +340,7 @@ namespace wg
 
 			if (m_size.w != 1 << xBits || m_size.h != 1 << yBits)
 			{
-				Base::handleError(ErrorLevel::Warning, ErrorCode::FailedPrerequisite, "Surface of non-two-factor size set to tile. Tiling will happen at largest two-factor boundary.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::throwError(ErrorLevel::Warning, ErrorCode::FailedCondition, "Surface of non-two-factor size set to tile. Tiling will happen at largest two-factor boundary.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			}
 
 			m_srcPosMaskX = (1 << xBits) -1;
@@ -418,7 +436,7 @@ namespace wg
 		m_pPalette4096 = new HiColor[256];
 
 		HiColor * p = m_pPalette4096;
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
+		const int16_t* pUnpackTab = Base::gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		for (int i = 0; i < 256; i++)
 		{

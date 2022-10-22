@@ -179,7 +179,7 @@ namespace wg
 	{
 		if (m_clipListStack.empty())
 		{
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "No ClipLists in stack, nothing to pop.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::FailedCondition, "No ClipLists in stack, nothing to pop.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
 
@@ -255,7 +255,7 @@ namespace wg
 
 		if (!m_pCanvasLayers || layer < 0 || layer > m_pCanvasLayers->size())
 		{
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Specified layer out of bounds.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Specified layer out of bounds.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -521,7 +521,7 @@ namespace wg
 
 		if (m_canvasStack.empty())
 		{
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "No Canvas being updated, nothing to end.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::FailedCondition, "No Canvas being updated, nothing to end.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 */
@@ -944,7 +944,7 @@ namespace wg
 
 		if (!m_pBlitSource->isTiling())
 		{
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::FailedCondition, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -959,7 +959,7 @@ namespace wg
 
 		if (!m_pBlitSource->isTiling())
 		{
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::FailedCondition, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -986,7 +986,7 @@ namespace wg
 
 		if (!m_pBlitSource->isTiling())
 		{
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::FailedCondition, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -1010,7 +1010,7 @@ namespace wg
 
 		if (!m_pBlitSource->isTiling())
 		{
-			Base::handleError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::FailedCondition, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 

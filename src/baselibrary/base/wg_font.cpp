@@ -58,7 +58,7 @@ namespace wg
 			return nullptr;
 		
 		if( pFactory == nullptr )
-			pFactory = Base::activeContext()->surfaceFactory();
+			pFactory = Base::defaultSurfaceFactory();
 		
 		if( !pFactory )
 			return nullptr;

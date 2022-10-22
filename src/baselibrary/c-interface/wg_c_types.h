@@ -322,10 +322,10 @@ typedef enum
 typedef enum
 {
 	WG_WARNING = 0,
-	WG_SILENT_FAIL,
-	WG_SERIOUS_ERROR,
+	WG_SILENT_ERROR,
+	WG_ERROR,
 	WG_CRITICAL_ERROR
-} wg_error_severity;
+} wg_error_level;
 
 //____ wg_error_code ____________________________________________________
 
@@ -334,7 +334,7 @@ typedef enum
 	WG_ERROR_OUT_OF_RANGE = 0,
 	WG_ERROR_INVALID_ITERATOR,
 	WG_ERROR_INVALID_PARAM,
-	WG_ERROR_FAILED_PREREQUISITE,
+	WG_ERROR_FAILED_CONDITION,
 	WG_ERROR_OPENGL,						// OPENGL HAS ISSUED A GLERROR
 	WG_ERROR_INTERNAL,
 	WG_ERROR_SYSTEM_INTEGRITY,
@@ -347,7 +347,7 @@ typedef enum
 
 typedef struct wg_error_info_struct
 {
-	wg_error_severity	severity;
+	wg_error_level		level;
 	wg_error_code		code;
 	const char * 		message;
 	const void *		object;
