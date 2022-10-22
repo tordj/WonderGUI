@@ -11,7 +11,7 @@ using namespace wg::Util;
 	
 //____ read_pixel_fast8() _______________________________________________________
 
-inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pPalette, const HiColor* pPalette4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 {
 	if (format == PixelFormat::Undefined)
 	{
@@ -72,7 +72,7 @@ inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const C
 		outA = SoftGfxDevice::s_fast8_channel_4_2[pPixel[1]];
 	}
 
-	if (format == PixelFormat::A_8)
+	if (format == PixelFormat::Alpha_8)
 	{
 		outB = 255;
 		outG = 255;
@@ -80,9 +80,9 @@ inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const C
 		outA = *pPixel;
 	}
 
-	if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
+	if (format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear)
 	{
-		Color8 c = pClut[*pPixel];
+		Color8 c = pPalette[*pPixel];
 		outB = c.b;
 		outG = c.g;
 		outR = c.r;
@@ -93,7 +93,7 @@ inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const C
 
 //____ read_pixel() _______________________________________________________
 
-inline void _read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+inline void _read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8* pPalette, const HiColor* pPalette4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 {
 	if (format == PixelFormat::Undefined)
 	{
@@ -169,7 +169,7 @@ inline void _read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8*
 		outA = SoftGfxDevice::s_channel_4_2[pPixel[1]];
 	}
 
-	if (format == PixelFormat::A_8)
+	if (format == PixelFormat::Alpha_8)
 	{
 		outB = 4096;
 		outG = 4096;
@@ -177,9 +177,9 @@ inline void _read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8*
 		outA = HiColor::unpackLinearTab[*pPixel];
 	}
 
-	if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
+	if (format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear)
 	{
-		const HiColor* p = &pClut4096[(*pPixel)];
+		const HiColor* p = &pPalette4096[(*pPixel)];
 		outB = p->b;
 		outG = p->g;
 		outR = p->r;
@@ -239,7 +239,7 @@ inline void _write_pixel_fast8(uint8_t* pPixel, PixelFormat format, int16_t b, i
 		pPixel[1] = (r >> 4) | (a & 0xF0);
 	}
 
-	if (format == PixelFormat::A_8)
+	if (format == PixelFormat::Alpha_8)
 	{
 		pPixel[0] = (uint8_t)a;
 	}
@@ -311,7 +311,7 @@ inline void _write_pixel(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t
 		pPixel[1] = (HiColor::packLinearTab[r] >> 4) | (HiColor::packLinearTab[a] & 0xF0);
 	}
 
-	if (format == PixelFormat::A_8)
+	if (format == PixelFormat::Alpha_8)
 	{
 		pPixel[0] = HiColor::packLinearTab[a];
 	}
@@ -329,7 +329,7 @@ inline void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat des
 	// into templates where only one BlendMode is possible. With if-statements,
 	// the statements are properly detected as never occuring and completely removed.
 
-	if (destFormat == PixelFormat::A_8)
+	if (destFormat == PixelFormat::Alpha_8)
 	{
 		// Alpha only destination. We treat alpha differently when there is no other channel.
 
@@ -473,7 +473,7 @@ inline void	_blend_pixels(BlendMode mode, int morphFactor, PixelFormat destForma
 	// into templates where only one BlendMode is possible. With if-statements,
 	// the statements are properly detected as never occuring and completely removed.
 
-	if (destFormat == PixelFormat::A_8)
+	if (destFormat == PixelFormat::Alpha_8)
 	{
 		// Alpha only destination. We treat alpha differently when there is no other channel.
 
@@ -941,7 +941,7 @@ void _plot(uint8_t* pDst, HiColor color, const SoftGfxDevice::ColTrans& tint, Co
 {
 	bool bFast8 = false;
 
-	if (DSTFORMAT == PixelFormat::A_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
+	if (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
 		DSTFORMAT == PixelFormat::BGR_8_linear)
@@ -1008,7 +1008,7 @@ void _plot_list(const RectI& clip, int nCoords, const CoordI* pCoords, const HiC
 {
 	bool bFast8 = false;
 
-	if (DSTFORMAT == PixelFormat::A_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
+	if (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
 		DSTFORMAT == PixelFormat::BGR_8_linear)
@@ -1097,7 +1097,7 @@ void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, 
 {
 	bool bFast8 = false;
 
-	if (DSTFORMAT == PixelFormat::A_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
+	if (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
 		DSTFORMAT == PixelFormat::BGR_8_linear)
@@ -1449,7 +1449,7 @@ void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, Hi
 	bool bFast8 = false;
 	int		bits = 12;
 
-	if (DSTFORMAT == PixelFormat::A_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
+	if (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
 		DSTFORMAT == PixelFormat::BGR_8_linear)
@@ -1571,7 +1571,7 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 	bool bFast8 = false;
 	int		bits = 12;
 
-	if (DSTFORMAT == PixelFormat::A_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
+	if (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
 		DSTFORMAT == PixelFormat::BGR_8_linear)
@@ -1936,12 +1936,12 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 	bool	bFast8 = false;
 	int		bits = 12;
 
-	bool srcIsLinear = (SRCFORMAT == PixelFormat::A_8 || SRCFORMAT == PixelFormat::BGRA_4_linear ||
+	bool srcIsLinear = (SRCFORMAT == PixelFormat::Alpha_8 || SRCFORMAT == PixelFormat::BGRA_4_linear ||
 		SRCFORMAT == PixelFormat::BGRA_8_linear || SRCFORMAT == PixelFormat::BGRX_8_linear ||
 		SRCFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
 		SRCFORMAT == PixelFormat::BGR_8_linear);
 
-	bool dstIsLinear = (DSTFORMAT == PixelFormat::A_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
+	bool dstIsLinear = (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
 		DSTFORMAT == PixelFormat::BGR_8_linear);
@@ -1975,8 +1975,8 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 		maskY = pSrcSurf->tileMaskY();
 	}
 
-	const Color8 * pClut = pSrcSurf->clut();
-	const HiColor * pClut4096 = pSrcSurf->clut4096();
+	const Color8 * pPalette = pSrcSurf->palette();
+	const HiColor * pPalette4096 = pSrcSurf->Palette4096();
 
 
 	// Step 1: Prepare any tint gradient
@@ -2010,9 +2010,9 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 
 			int16_t srcB, srcG, srcR, srcA;
 			if (bFast8)
-				_read_pixel_fast8(pSrc, SRCFORMAT, pClut, pClut4096, srcB, srcG, srcR, srcA);
+				_read_pixel_fast8(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
 			else
-				_read_pixel(pSrc, SRCFORMAT, pClut, pClut4096, srcB, srcG, srcR, srcA);
+				_read_pixel(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
 
 			// Step 3: Apply any tint
 
@@ -2072,12 +2072,12 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 	bool	bFast8 = false;
 	int		bits = 12;
 
-	bool srcIsLinear = (SRCFORMAT == PixelFormat::A_8 || SRCFORMAT == PixelFormat::BGRA_4_linear ||
+	bool srcIsLinear = (SRCFORMAT == PixelFormat::Alpha_8 || SRCFORMAT == PixelFormat::BGRA_4_linear ||
 		SRCFORMAT == PixelFormat::BGRA_8_linear || SRCFORMAT == PixelFormat::BGRX_8_linear ||
 		SRCFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
 		SRCFORMAT == PixelFormat::BGR_8_linear);
 
-	bool dstIsLinear = (DSTFORMAT == PixelFormat::A_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
+	bool dstIsLinear = (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
 		DSTFORMAT == PixelFormat::BGR_8_linear);
@@ -2109,8 +2109,8 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 	binalInt	srcPosMaskX_binals = (srcPosMaskX << BINAL_SHIFT) | BINAL_MASK;
 	binalInt	srcPosMaskY_binals = (srcPosMaskY << BINAL_SHIFT) | BINAL_MASK;
 
-	const Color8 * pClut = pSrcSurf->clut();
-	const HiColor * pClut4096 = pSrcSurf->clut4096();
+	const Color8 * pPalette = pSrcSurf->palette();
+	const HiColor * pPalette4096 = pSrcSurf->Palette4096();
 
 	
 	for (int y = 0; y < nLines; y++)
@@ -2159,44 +2159,44 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 						if (bFast8)
 						{
 							if (ofsX >= 0 && ofsY >= 0 && ofsX < srcMax_w && ofsY < srcMax_h)
-								_read_pixel_fast8(p, SRCFORMAT, pClut, pClut4096, src11_b, src11_g, src11_r, src11_a);
+								_read_pixel_fast8(p, SRCFORMAT, pPalette, pPalette4096, src11_b, src11_g, src11_r, src11_a);
 							else
 								src11_b = src11_g = src11_r = src11_a = 0;
 
 							if ((ofsX + BINAL_MUL) >= 0 && ofsY >= 0 && (ofsX + BINAL_MUL) < srcMax_w && ofsY < srcMax_h)
-								_read_pixel_fast8(p + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src12_b, src12_g, src12_r, src12_a);
+								_read_pixel_fast8(p + srcPixelBytes, SRCFORMAT, pPalette, pPalette4096, src12_b, src12_g, src12_r, src12_a);
 							else
 								src12_b = src12_g = src12_r = src12_a = 0;
 
 							if (ofsX >= 0 && (ofsY + BINAL_MUL) >= 0 && ofsX < srcMax_w && (ofsY + BINAL_MUL) < srcMax_h)
-								_read_pixel_fast8(p + srcPitch, SRCFORMAT, pClut, pClut4096, src21_b, src21_g, src21_r, src21_a);
+								_read_pixel_fast8(p + srcPitch, SRCFORMAT, pPalette, pPalette4096, src21_b, src21_g, src21_r, src21_a);
 							else
 								src21_b = src21_g = src21_r = src21_a = 0;
 
 							if ((ofsX + 32768) >= 0 && (ofsY + BINAL_MUL) >= 0 && (ofsX + BINAL_MUL) < srcMax_w && (ofsY + BINAL_MUL) < srcMax_h)
-								_read_pixel_fast8(p + srcPitch + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src22_b, src22_g, src22_r, src22_a);
+								_read_pixel_fast8(p + srcPitch + srcPixelBytes, SRCFORMAT, pPalette, pPalette4096, src22_b, src22_g, src22_r, src22_a);
 							else
 								src22_b = src22_g = src22_r = src22_a = 0;
 						}
 						else
 						{
 							if (ofsX >= 0 && ofsY >= 0 && ofsX < srcMax_w && ofsY < srcMax_h)
-								_read_pixel(p, SRCFORMAT, pClut, pClut4096, src11_b, src11_g, src11_r, src11_a);
+								_read_pixel(p, SRCFORMAT, pPalette, pPalette4096, src11_b, src11_g, src11_r, src11_a);
 							else
 								src11_b = src11_g = src11_r = src11_a = 0;
 
 							if ((ofsX + BINAL_MUL) >= 0 && ofsY >= 0 && (ofsX + BINAL_MUL) < srcMax_w && ofsY < srcMax_h)
-								_read_pixel(p + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src12_b, src12_g, src12_r, src12_a);
+								_read_pixel(p + srcPixelBytes, SRCFORMAT, pPalette, pPalette4096, src12_b, src12_g, src12_r, src12_a);
 							else
 								src12_b = src12_g = src12_r = src12_a = 0;
 
 							if (ofsX >= 0 && (ofsY + BINAL_MUL) >= 0 && ofsX < srcMax_w && (ofsY + BINAL_MUL) < srcMax_h)
-								_read_pixel(p + srcPitch, SRCFORMAT, pClut, pClut4096, src21_b, src21_g, src21_r, src21_a);
+								_read_pixel(p + srcPitch, SRCFORMAT, pPalette, pPalette4096, src21_b, src21_g, src21_r, src21_a);
 							else
 								src21_b = src21_g = src21_r = src21_a = 0;
 
 							if ((ofsX + BINAL_MUL) >= 0 && (ofsY + BINAL_MUL) >= 0 && (ofsX + BINAL_MUL) < srcMax_w && (ofsY + BINAL_MUL) < srcMax_h)
-								_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, pClut, pClut4096, src22_b, src22_g, src22_r, src22_a);
+								_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, pPalette, pPalette4096, src22_b, src22_g, src22_r, src22_a);
 							else
 								src22_b = src22_g = src22_r = src22_a = 0;
 						}
@@ -2228,17 +2228,17 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 
 					if (bFast8)
 					{
-						_read_pixel_fast8(p, SRCFORMAT, pClut, pClut4096, src11_b, src11_g, src11_r, src11_a);
-						_read_pixel_fast8(p2, SRCFORMAT, pClut, pClut4096, src12_b, src12_g, src12_r, src12_a);
-						_read_pixel_fast8(p3, SRCFORMAT, pClut, pClut4096, src21_b, src21_g, src21_r, src21_a);
-						_read_pixel_fast8(p4, SRCFORMAT, pClut, pClut4096, src22_b, src22_g, src22_r, src22_a);
+						_read_pixel_fast8(p, SRCFORMAT, pPalette, pPalette4096, src11_b, src11_g, src11_r, src11_a);
+						_read_pixel_fast8(p2, SRCFORMAT, pPalette, pPalette4096, src12_b, src12_g, src12_r, src12_a);
+						_read_pixel_fast8(p3, SRCFORMAT, pPalette, pPalette4096, src21_b, src21_g, src21_r, src21_a);
+						_read_pixel_fast8(p4, SRCFORMAT, pPalette, pPalette4096, src22_b, src22_g, src22_r, src22_a);
 					}
 					else
 					{
-						_read_pixel(p, SRCFORMAT, pClut, pClut4096, src11_b, src11_g, src11_r, src11_a);
-						_read_pixel(p2, SRCFORMAT, pClut, pClut4096, src12_b, src12_g, src12_r, src12_a);
-						_read_pixel(p3, SRCFORMAT, pClut, pClut4096, src21_b, src21_g, src21_r, src21_a);
-						_read_pixel(p4, SRCFORMAT, pClut, pClut4096, src22_b, src22_g, src22_r, src22_a);
+						_read_pixel(p, SRCFORMAT, pPalette, pPalette4096, src11_b, src11_g, src11_r, src11_a);
+						_read_pixel(p2, SRCFORMAT, pPalette, pPalette4096, src12_b, src12_g, src12_r, src12_a);
+						_read_pixel(p3, SRCFORMAT, pPalette, pPalette4096, src21_b, src21_g, src21_r, src21_a);
+						_read_pixel(p4, SRCFORMAT, pPalette, pPalette4096, src22_b, src22_g, src22_r, src22_a);
 					}
 				}
 
@@ -2274,9 +2274,9 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 				{
 					assert((ofsX | ofsY | (srcMax_w - 1 - ofsX) | (srcMax_h - 1 - ofsY)) >= 0);
 					if (bFast8)
-						_read_pixel_fast8(p, SRCFORMAT, pClut, pClut4096, srcB, srcG, srcR, srcA);
+						_read_pixel_fast8(p, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
 					else
-						_read_pixel(p, SRCFORMAT, pClut, pClut4096, srcB, srcG, srcR, srcA);
+						_read_pixel(p, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
 				}
 			}
 

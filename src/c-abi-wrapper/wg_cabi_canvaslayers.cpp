@@ -49,9 +49,9 @@ namespace wg
 		{
 			PixelFormat format = layer.format;
 
-			if (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
+			if (format == PixelFormat::Index_8 || format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear)
 			{
-				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Canvas layers can not be CLUT-based", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Canvas layers can not be palette-based", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 				return nullptr;
 			}
 		}

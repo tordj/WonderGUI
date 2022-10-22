@@ -233,7 +233,7 @@ void wg_populateCallCollection(wg_c_callCollection * pHeader)
 	pBody->surface.surfaceAlpha				= &wg_surfaceAlpha;
 	pBody->surface.colorToPixel				= &wg_colorToPixel;
 	pBody->surface.pixelToColor				= &wg_pixelToColor;
-	pBody->surface.surfaceClut				= &wg_surfaceClut;
+	pBody->surface.surfacePalette			= &wg_surfacePalette;
 	pBody->surface.surfacePixelDescription	= &wg_surfacePixelDescription;
 	pBody->surface.surfacePixelFormat		= &wg_surfacePixelFormat;
 	pBody->surface.surfacePixelBytes		= &wg_surfacePixelBytes;

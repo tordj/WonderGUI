@@ -23,7 +23,7 @@ add_executable(gfxdevicetester
 	testsuites/blittests.h
 	testsuites/canvasformattests.h
 	testsuites/canvaslayertests.h
-	testsuites/clutblittests.h
+	testsuites/indexblittests.h
 	testsuites/filltests.h
 	testsuites/linetests.h
 	testsuites/mipmaptests.h
@@ -84,7 +84,7 @@ if(APPLE)
 		testsuites/blitconsistencytest.h
 		testsuites/blittests.h
 		testsuites/canvasformattests.h
-		testsuites/clutblittests.h
+		testsuites/indexblittests.h
 		testsuites/filltests.h
 		testsuites/linetests.h
 		testsuites/mipmaptests.h

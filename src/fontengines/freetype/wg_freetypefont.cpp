@@ -500,7 +500,7 @@ namespace wg
 
 		auto pixbuf = pSurf->allocPixelBuffer(pGlyph->rect/64);
 
-		assert( pSurf->pixelDescription()->format == PixelFormat::A_8);
+		assert( pSurf->pixelDescription()->format == PixelFormat::Alpha_8);
 
 		// Copy glyph bitmap into alpha channel of slot, making sure to clear any
 		// left over area of slots alpha channel.

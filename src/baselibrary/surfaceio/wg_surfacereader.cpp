@@ -75,29 +75,29 @@ namespace wg
 			Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
-
-		// Read and prepare CLUT
-
-		int clutBytes = header.paletteEntries*sizeof(Color8) + header.paletteDecompressMargin;
-		Color8 * pClut = nullptr;
-		if( clutBytes > 0 )
+	
+		// Read and prepare palette
+		
+		int paletteBytes = header.paletteEntries*sizeof(Color8) + header.paletteDecompressMargin;
+		Color8 * pPalette = nullptr;
+		if( paletteBytes > 0 )
 		{
-			pClut = (Color8*) Base::memStackAlloc(clutBytes);
+			pPalette = (Color8*) Base::memStackAlloc(paletteBytes);
 
-			// We only support uncompressed CLUT for the moment
-
-			stream.read( (char*) pClut, clutBytes );
-
-			bp.clut = pClut;
+			// We only support uncompressed palette for the moment
+			
+			stream.read( (char*) pPalette, paletteBytes );
+						
+			bp.palette = pPalette;
 		}
 
 		// Create surface
 
 		auto pSurface = m_pFactory->createSurface(bp);
-
-		if( clutBytes > 0 )
-			Base::memStackRelease(clutBytes);
-
+		
+		if( paletteBytes > 0 )
+			Base::memStackRelease(paletteBytes);
+		
 		// Read pixels into PixelBuffer
 		// We only support uncompressed pixels for the moment
 
@@ -169,13 +169,13 @@ namespace wg
 		}
 
 
-		// Prepare CLUT
-
-		int clutBytes = header.paletteEntries*sizeof(Color8);
-		if( clutBytes > 0 )
+		// Prepare palette
+		 
+		int paletteBytes = header.paletteEntries*sizeof(Color8);
+		if( paletteBytes > 0 )
 		{
-			bp.clut = (Color8*) pData;
-			pData += clutBytes;
+			bp.palette = (Color8*) pData;
+			pData += paletteBytes;
 		}
 
 		// Create surface

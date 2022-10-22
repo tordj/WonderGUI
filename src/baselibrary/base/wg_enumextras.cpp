@@ -35,35 +35,6 @@ namespace wg
 
 =========================================================================*/
 
-	const char * toString(ErrorSeverity i)
-	{
-		static const char * names[] = { 
-			"Warning",
-			"SilentFail",
-			"Serious",
-			"Critical" };
-
-		return names[(int)i];
-	}
-
-	const char * toString(ErrorCode i)
-	{
-		static const char * names[] = { 
-			"OutOfRange",
-			"InvalidIterator",
-			"InvalidParam",
-			"FailedPrerequisite",
-			"OpenGL",
-			"Internal",
-			"SystemIntegrity",
-			"IllegalCall",
-			"ResourceExhausted",
-			"RenderFailure",
-			"Other" };
-
-		return names[(int)i];
-	}
-
 	const char * toString(CodePage i)
 	{
 		static const char * names[] = { 
@@ -357,11 +328,11 @@ namespace wg
 			"BGRA_8_linear",
 			"BGRA_4_linear",
 			"BGR_565_linear",
-			"CLUT_8",
-			"CLUT_8_sRGB",
-			"CLUT_8_linear",
+			"Index_8",
+			"Index_8_sRGB",
+			"Index_8_linear",
 			"RGB_565_bigendian",
-			"A_8" };
+			"Alpha_8" };
 
 		return names[(int)i];
 	}
@@ -457,21 +428,21 @@ namespace wg
 			"SetMorphFactor",
 			"SetRenderLayer",
 			"Fill",
-			"FillRect",
-			"Undefined1",
+			"FillRectI",
+			"FillRectF",
 			"PlotPixels",
 			"DrawLineFromTo",
 			"DrawLineStraight",
 			"Blit",
-			"BlitRect",
+			"BlitRectI",
 			"FlipBlit",
-			"FlipBlitRect",
+			"FlipBlitRectI",
 			"StretchBlit",
-			"StretchBlitRect",
+			"StretchBlitRectI",
+			"StretchBlitRectF",
 			"StretchFlipBlit",
-			"StretchFlipBlitRect",
-			"PrecisionBlit",
-			"TransformBlit",
+			"StretchFlipBlitRectI",
+			"StretchFlipBlitRectF",
 			"RotScaleBlit",
 			"Tile",
 			"FlipTile",
@@ -493,8 +464,7 @@ namespace wg
 			"CopySurface",
 			"DeleteSurface",
 			"ProtocolVersion",
-			"TimeStampMS",
-			"CanvasList" };
+			"TimeStampMS" };
 
 		return names[(int)i];
 	}

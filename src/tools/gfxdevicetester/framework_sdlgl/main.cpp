@@ -547,22 +547,22 @@ Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory,
 	convertSDLFormat(&format, pSDLSurf->format);
 
 	PixelFormat px;
-	Color8* pClut = nullptr;
+	Color8* pPalette = nullptr;
 
-	Color8 clut[256];
+	Color8 palette[256];
 
 	if (format.bIndexed)
 	{
-		px = PixelFormat::CLUT_8;
+		px = PixelFormat::Index_8;
 
 		for (int i = 0; i < 256; i++)
 		{
-			clut[i].r = pSDLSurf->format->palette->colors[i].r;
-			clut[i].g = pSDLSurf->format->palette->colors[i].g;
-			clut[i].b = pSDLSurf->format->palette->colors[i].b;
-			clut[i].a = pSDLSurf->format->palette->colors[i].a;
+			palette[i].r = pSDLSurf->format->palette->colors[i].r;
+			palette[i].g = pSDLSurf->format->palette->colors[i].g;
+			palette[i].b = pSDLSurf->format->palette->colors[i].b;
+			palette[i].a = pSDLSurf->format->palette->colors[i].a;
 		}
-		pClut = clut;
+		pPalette = palette;
 	}
 
 	else if (format.A_bits > 0)
@@ -574,7 +574,7 @@ Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory,
 		pFactory = Base::activeContext()->surfaceFactory();
 
 	bp.format = px;
-	bp.clut = pClut;
+	bp.palette = pPalette;
 	bp.size = { pSDLSurf->w, pSDLSurf->h };
 
 	auto pSurface = pFactory->createSurface(bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);

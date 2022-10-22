@@ -65,10 +65,10 @@ namespace wg
 
 		stream.write((char*) &header, headerBytes);
 
-		// Write clut
+		// Write palette
 		
-		if( pSurface->clut() )
-			stream.write( (char*) pSurface->clut(), 256*sizeof(Color8) );
+		if( pSurface->palette() )
+			stream.write( (char*) pSurface->palette(), 256*sizeof(Color8) );
 		
 		// Write pixels
 		
@@ -123,11 +123,11 @@ namespace wg
 		std::memcpy(pWrite, &header, headerBytes);
 		pWrite += headerBytes;
 		
-		// Write clut
+		// Write palette
 		
-		if( pSurface->clut() )
+		if( pSurface->palette() )
 		{
-			std::memcpy(pWrite, pSurface->clut(), 256*sizeof(Color8) );
+			std::memcpy(pWrite, pSurface->palette(), 256*sizeof(Color8) );
 			pWrite += 256*sizeof(Color8);
 		}
 		
@@ -206,7 +206,7 @@ namespace wg
 		if( m_saveInfo.identity )
 			pHeader->identity = bp.identity;
 		
-		if( bp.clut )
+		if( bp.palette )
 		{
 			pHeader->paletteBytes = 256*sizeof(Color8);
 			pHeader->paletteEntries = 256;
@@ -216,7 +216,7 @@ namespace wg
 		int headerBytes;
 		if( extraDataSize != 0 )
 			headerBytes = 88;
-		else if( bp.clut )
+		else if( bp.palette )
 			headerBytes = 80;
 		else if( (m_saveInfo.scale && bp.scale != 64) || (m_saveInfo.identity && bp.identity != 0) )
 			headerBytes = 40;

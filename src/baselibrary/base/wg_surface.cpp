@@ -161,8 +161,8 @@ namespace wg
 	 *
 	 * The alpha channel of the color value is ignored if surface does not contain an alpha channel.
 	 *
-	 * Note: This call is very slow on indexed surfaces (PixelFormat::I8), since the whole clut
-	 * needs to be searched for the closest color with quite some math on every entry.
+	 * Note: This call is very slow on indexed surfaces (Index_8, Index_8_sRGB etc), since the whole palette
+	 * needs to be searched for the closest color with calculations on every entry.
 	 *
 	 * @return Pixel value in surface's native format that closest resembles specified color.
 	 *
@@ -180,10 +180,10 @@ namespace wg
 			int closestValue = std::numeric_limits<int>::max();
 			for (int i = 0; i < 255; i++)
 			{
-				int rDiff = m_pClut[i].r - col.r;
-				int gDiff = m_pClut[i].g - col.g;
-				int bDiff = m_pClut[i].b - col.b;
-				int aDiff = m_pClut[i].a - col.a;
+				int rDiff = m_pPalette[i].r - col.r;
+				int gDiff = m_pPalette[i].g - col.g;
+				int bDiff = m_pPalette[i].b - col.b;
+				int aDiff = m_pPalette[i].a - col.a;
 				int value = rDiff*rDiff + gDiff*gDiff + bDiff*bDiff + aDiff*aDiff;
 				if (value < closestValue)
 				{
@@ -231,7 +231,7 @@ namespace wg
 	HiColor Surface::pixelToColor( uint32_t pixel ) const
 	{
 		if (m_pixelDescription.bIndexed)
-			return m_pClut[pixel];
+			return m_pPalette[pixel];
 
 		if( m_pixelDescription.bBigEndian != isSystemBigEndian() )
 		{
@@ -445,7 +445,7 @@ namespace wg
 
 		bp.buffered = m_bBuffered;
 		bp.canvas = m_bCanvas;
-		bp.clut = m_pClut;
+		bp.palette = m_pPalette;
 		bp.dynamic = m_bDynamic;
 		bp.format = m_pixelDescription.format;
 		bp.identity = m_id;
@@ -513,7 +513,7 @@ namespace wg
 		}
 
 
-		bool retVal = _copy({ _dest, _srcRect.size() }, pSrcSurface->pixelDescription(), srcbuf.pPixels, srcbuf.pitch, { 0,0,_srcRect.size() }, srcbuf.pClut);
+		bool retVal = _copy({ _dest, _srcRect.size() }, pSrcSurface->pixelDescription(), srcbuf.pPixels, srcbuf.pitch, { 0,0,_srcRect.size() }, srcbuf.pPalette);
 
 		pSrcSurface->freePixelBuffer(srcbuf);
 
@@ -525,12 +525,12 @@ namespace wg
 	//____ _copy() _________________________________________________________
 
 	/*
-		Copying to I8 is only allowed from other I8 content. No color conversion is then performed, CLUTs are assumed to be identical.
-		Copying from A8 to any other surface copies white pixels with alpha (if destination has alpha channel, otherwise just white pixels).
+		Copying to Index_8 is only allowed from other Index_8 content. No color conversion is then performed, palettes are assumed to be identical.
+		Copying from Alpha_8 to any other surface copies white pixels with alpha (if destination has alpha channel, otherwise just white pixels).
 	*/
 
 
-	bool Surface::_copy( const RectI& destRect, const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const Color8 * pCLUT )
+	bool Surface::_copy( const RectI& destRect, const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const Color8 * pPalette )
 	{
 		//TODO: Support endian-swap.
 
@@ -606,19 +606,19 @@ namespace wg
 			}
 
 		}
-		else if (pDstFormat->format == PixelFormat::CLUT_8_sRGB || pDstFormat->format == PixelFormat::CLUT_8_linear)
+		else if (pDstFormat->format == PixelFormat::Index_8_sRGB || pDstFormat->format == PixelFormat::Index_8_linear)
 		{
 			freePixelBuffer(pixbuf);
-			return false;								// Can't copy to CLUT-based surface unless source is of identical format!
+			return false;								// Can't copy to palette-based surface unless source is of identical format!
 		}
 		else if (pSrcFormat->bIndexed)
 		{
-			// Convert pixels from CLUT-based to normal when copying
+			// Convert pixels from index to color values when copying
 
 			if (pSrcFormat->bits != 8)
 			{
 				freePixelBuffer(pixbuf);
-				return false;							// Only 8-bit CLUTS are supported for the momment.
+				return false;							// Only 8-bit palettes are supported for the momment.
 			}
 
 			int		srcInc = pSrcFormat->bits / 8;
@@ -634,7 +634,7 @@ namespace wg
 					{
 						for (int x = 0; x < srcRect.w; x++)
 						{
-							Color8 srcpixel = pCLUT[*pSrc++];
+							Color8 srcpixel = pPalette[*pSrc++];
 							*pDst++ = srcpixel.a;
 						}
 						pSrc += srcLineInc;
@@ -647,7 +647,7 @@ namespace wg
 					{
 						for (int x = 0; x < srcRect.w; x++)
 						{
-							Color8 srcpixel = pCLUT[*pSrc++];
+							Color8 srcpixel = pPalette[*pSrc++];
 
 							unsigned int dstpixel = ((((uint32_t)srcpixel.r >> pDstFormat->R_loss) << pDstFormat->R_shift) |
 								(((uint32_t)srcpixel.g >> pDstFormat->G_loss) << pDstFormat->G_shift) |
@@ -665,7 +665,7 @@ namespace wg
 					{
 						for (int x = 0; x < srcRect.w; x++)
 						{
-							Color8 srcpixel = pCLUT[*pSrc++];
+							Color8 srcpixel = pPalette[*pSrc++];
 							pDst[0] = srcpixel.b;
 							pDst[1] = srcpixel.g;
 							pDst[2] = srcpixel.r;
@@ -681,7 +681,7 @@ namespace wg
 					{
 						for (int x = 0; x < srcRect.w; x++)
 						{
-							Color8 srcpixel = pCLUT[*pSrc++];
+							Color8 srcpixel = pPalette[*pSrc++];
 							pDst[0] = srcpixel.b;
 							pDst[1] = srcpixel.g;
 							pDst[2] = srcpixel.r;
@@ -1012,12 +1012,12 @@ namespace wg
 			return Surface_p();
 		}
 
-		if ( (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_linear || format == PixelFormat::CLUT_8_sRGB) &&
-			( m_pixelDescription.format != PixelFormat::CLUT_8_sRGB && m_pixelDescription.format != PixelFormat::CLUT_8_linear ))
+		if ( (format == PixelFormat::Index_8 || format == PixelFormat::Index_8_linear || format == PixelFormat::Index_8_sRGB) &&
+			( m_pixelDescription.format != PixelFormat::Index_8_sRGB && m_pixelDescription.format != PixelFormat::Index_8_linear ))
 		{
 			// We only allow conversion to indexed if surface has 256 colors at most!
 
-			uint32_t* pCLUT = (uint32_t*) Base::memStackAlloc(1024);
+			uint32_t* pPalette = (uint32_t*) Base::memStackAlloc(1024);
 			int nColors = 0;
 
 			auto pBlob = Blob::create(m_size.w * m_size.h);
@@ -1032,7 +1032,7 @@ namespace wg
 				case PixelFormat::BGRA_8_sRGB:
 				case PixelFormat::BGRA_8_linear:
 				{
-					// Generate CLUT (kind of) and indexed pixels
+					// Generate palette (kind of) and indexed pixels
 						
 					uint8_t* pDest = pPixels;
 					for (int y = 0; y < m_size.h; y++)
@@ -1043,7 +1043,7 @@ namespace wg
 						{
 							uint32_t pixel = pLine[x];
 							int ofs = 0;
-							while( ofs < nColors && pCLUT[ofs] != pixel )
+							while( ofs < nColors && pPalette[ofs] != pixel )
 								ofs++;
 							if( ofs == nColors )
 							{
@@ -1053,19 +1053,19 @@ namespace wg
 									goto end;
 								}
 								
-								pCLUT[ofs] = pixel;
+								pPalette[ofs] = pixel;
 								nColors++;
 							}
 							* pDest++ = (uint8_t) ofs;
 						}
 					}
 
-					// Convert CLUT from pixels to colors
+					// Convert palette from pixels to colors
 					
-					Color8 * pColor = (Color8*) pCLUT;
+					Color8 * pColor = (Color8*) pPalette;
 					for( int i = 0 ; i < nColors ; i++ )
 					{
-						uint8_t * pBGRA = (uint8_t*) &pCLUT[i];
+						uint8_t * pBGRA = (uint8_t*) &pPalette[i];
 						Color8 col( pBGRA[2], pBGRA[1], pBGRA[0], pBGRA[3] );
 						pColor[i] = col;
 					}
@@ -1073,7 +1073,7 @@ namespace wg
 				}
 					
 				default:
-					Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Conversion of this kind of surface to CLUT_8 has not been implemented (sorry!)", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+					Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Conversion of this kind of surface to Index_8 has not been implemented (sorry!)", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 					
 					freePixelBuffer(pixbuf);
 					Base::memStackRelease(1024);
@@ -1083,23 +1083,23 @@ end:
 			
 			if( nColors > 256 )
 			{
-				Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Can't convert surface with more than 256 colors to CLUT_8", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Can't convert surface with more than 256 colors to Index_8", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				
 				freePixelBuffer(pixbuf);
 				Base::memStackRelease(1024);
 				return nullptr;
 			}
 					
-			// Fill out clut with zeroes
+			// Fill out palette with zeroes
 				
 			for( int i = nColors ; i < 256 ; i++ )
-				pCLUT[i] = 0;
+				pPalette[i] = 0;
 
 			// Create surface
 
 			auto bp = blueprint();
 			bp.format = format;
-			bp.clut = (Color8*) pCLUT;
+			bp.palette = (Color8*) pPalette;
 			auto pSurface = pFactory->createSurface(bp, pBlob);
 
 			// Cleanup and return
@@ -1131,13 +1131,13 @@ end:
 
 		switch (m_pixelDescription.format)
 		{
-		case PixelFormat::CLUT_8_sRGB:
-		case PixelFormat::CLUT_8_linear:
+		case PixelFormat::Index_8_sRGB:
+		case PixelFormat::Index_8_linear:
 		{
 			uint8_t index = buffer.pPixels[buffer.pitch * coord.y + coord.x];
-			return HiColor::unpackLinearTab[buffer.pClut[index].a];
+			return HiColor::unpackLinearTab[buffer.pPalette[index].a];
 		}
-		case PixelFormat::A_8:
+		case PixelFormat::Alpha_8:
 		{
 			uint8_t* pPixel = buffer.pPixels + buffer.pitch * coord.y + coord.x;
 			return HiColor::unpackLinearTab[pPixel[0]];
@@ -1173,9 +1173,9 @@ end:
         if (size.w > maxSize.w || size.h > maxSize.h)
             return false;
 
-        bool bIsIndexed = (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear);
+        bool bIsIndexed = (format == PixelFormat::Index_8 || format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear);
 
-        if (format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.clut == nullptr))
+        if (format == format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.palette == nullptr))
             return false;
 
         if (bp.canvas && bIsIndexed)
@@ -1189,8 +1189,8 @@ end:
             if ( pOther && !pOther->pixelDescription()->bIndexed)
                 return false;            // Can't create indexed from non-indexed source.
             
-            if( bp.clut == nullptr && ( !pOther || pOther->clut() == nullptr ) )
-                return false;           // Indexed but clut is missing.
+            if( bp.palette == nullptr && ( !pOther || pOther->palette() == nullptr ) )
+                return false;           // Indexed but palette is missing.
         }
                 
         return true;
