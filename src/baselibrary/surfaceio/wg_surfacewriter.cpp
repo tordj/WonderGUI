@@ -165,6 +165,8 @@ namespace wg
 			std::memcpy( pWrite, pExtraData, extraDataSize );
 			pWrite += extraDataSize;
 		}
+
+		return pBlob;
 	}
 
 
@@ -227,6 +229,8 @@ namespace wg
 
 		pHeader->pixelBytes = lineBytes * bp.size.h;
 		pHeader->extraDataBytes = extraDataSize;
+
+		return headerBytes;
 	}
 
 
