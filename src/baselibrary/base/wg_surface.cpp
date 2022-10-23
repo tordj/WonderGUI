@@ -1174,7 +1174,7 @@ end:
 
         bool bIsIndexed = (format == PixelFormat::Index_8 || format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear);
 
-        if (format == format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.palette == nullptr))
+        if (format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.palette == nullptr))
             return false;
 
         if (bp.canvas && bIsIndexed)

@@ -177,11 +177,11 @@ namespace wg
 		{
 			bool				buffered = false;
 			bool				canvas = false;
-			const Color8*		palette = nullptr;
 			bool				dynamic = false;
 			PixelFormat			format = PixelFormat::Undefined;
 			int					identity = 0;
 			bool				mipmap = false;
+			const Color8*		palette = nullptr;
 			SampleMethod		sampleMethod = SampleMethod::Undefined;
 			int					scale = 64;
 			SizeI				size;					// Mandatory, except when creating from other surface.
