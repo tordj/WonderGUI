@@ -59,7 +59,7 @@ void KernelDB::setBlendMode(BlendMode mode, bool bOn)
 void KernelDB::setSrcFormat(PixelFormat format, bool bOn)
 {
 	if (format >= PixelFormat_min && format <= PixelFormat_max &&
-		format != PixelFormat::Undefined && format != PixelFormat::Custom &&
+		format != PixelFormat::Undefined &&
 		format != PixelFormat::BGRA_8 && format != PixelFormat::BGRX_8 &&
 		format != PixelFormat::BGR_8 && format != PixelFormat::CLUT_8 )
 		m_srcFormats[int(format)] = bOn;
@@ -70,7 +70,7 @@ void KernelDB::setSrcFormat(PixelFormat format, bool bOn)
 void KernelDB::setDestFormat(PixelFormat format, bool bOn)
 {
 	if (format >= PixelFormat_min && format <= PixelFormat_max &&
-		format != PixelFormat::Undefined && format != PixelFormat::Custom &&
+		format != PixelFormat::Undefined &&
 		format != PixelFormat::BGRA_8 && format != PixelFormat::BGRX_8 &&
 		format != PixelFormat::BGR_8 && format != PixelFormat::CLUT_8 &&
 		format != PixelFormat::CLUT_8_linear && format != PixelFormat::CLUT_8_sRGB )
@@ -331,7 +331,7 @@ bool KernelDB::generateSource(std::ostream& out)
 		{
 			if( m_srcFormats[i] )
 				out << wg::toString( (PixelFormat) i ) << endl << "                       ";
-			else if( i != int(PixelFormat::Undefined) && i != int(PixelFormat::Custom) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8) )
+			else if( i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8) )
 				bAllSupported = false;
 		}
 
@@ -342,7 +342,7 @@ bool KernelDB::generateSource(std::ostream& out)
 		{
 			for (int i = 0; i < PixelFormat_size; i++)
 			{
-				if( !m_srcFormats[i] &&  i != int(PixelFormat::Undefined) && i != int(PixelFormat::Custom) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8)  )
+				if( !m_srcFormats[i] &&  i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8)  )
 					out << " " << wg::toString( (PixelFormat) i );
 			}
 		}
@@ -357,7 +357,7 @@ bool KernelDB::generateSource(std::ostream& out)
 		{
 			if( m_destFormats[i] )
 				out << wg::toString( (PixelFormat) i ) << endl << "                       ";
-			else if( i != int(PixelFormat::Undefined) && i != int(PixelFormat::Custom) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8) && i != int(PixelFormat::CLUT_8_sRGB) && i != int(PixelFormat::CLUT_8_linear) )
+			else if( i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8) && i != int(PixelFormat::CLUT_8_sRGB) && i != int(PixelFormat::CLUT_8_linear) )
 				bAllSupported = false;
 		}
 
@@ -368,7 +368,7 @@ bool KernelDB::generateSource(std::ostream& out)
 		{
 			for (int i = 0; i < PixelFormat_size; i++)
 			{
-				if( !m_destFormats[i] &&  i != int(PixelFormat::Undefined) && i != int(PixelFormat::Custom) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8) && i != int(PixelFormat::CLUT_8_sRGB) && i != int(PixelFormat::CLUT_8_linear) )
+				if( !m_destFormats[i] &&  i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8) && i != int(PixelFormat::CLUT_8_sRGB) && i != int(PixelFormat::CLUT_8_linear) )
 					out << " " << wg::toString( (PixelFormat) i );
 			}
 		}

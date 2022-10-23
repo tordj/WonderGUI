@@ -278,9 +278,9 @@ bool MyApp::generateBitmapFont()
 	
 	spx size = m_pSizeSelector->selectedEntryId() * 64;
 	FreeTypeFont::RenderMode renderMode = (FreeTypeFont::RenderMode) m_pModeSelector->selectedEntryId();
-	bool bUseSRGB = (m_pSRGBSelector->selectedEntryId() == 1);
+	bool bStemDarkening = (m_pStemDarkeningSelector->selectedEntryId() == 1);
 			
-	auto pFont = FreeTypeFont::create( { .blob = m_pLoadedFontBlob, .renderMode = renderMode, .stemDarkening = bUseSRGB });
+	auto pFont = FreeTypeFont::create( { .blob = m_pLoadedFontBlob, .renderMode = renderMode, .stemDarkening = bStemDarkening });
 	if( !pFont )
 		return false;
 
@@ -361,7 +361,7 @@ bool MyApp::generateFontSpec( FreeTypeFont * pFont, String& charmap )
 
 bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 {
-	bool bUseSRGB = (m_pSRGBSelector->selectedEntryId() == 1);
+	bool bUseSRGB = (m_pStemDarkeningSelector->selectedEntryId() == 1);
 		
 	PixelFormat	outputFormat = bUseSRGB ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
 
@@ -562,22 +562,22 @@ Widget_p MyApp::createInputPanel()
 	auto pSRGBLabel = TextDisplay::create( WGBP(TextDisplay,
 												_.display = WGBP(Text,
 																 _.style = m_pTextStyle,
-																 _.text = "Output format:",
+																 _.text = "Stemdarkening:",
 																 _.layout = m_pTextLayoutCentered )
 												));
 
-	auto pSRGBSelector = SelectBox::create();
-	pSRGBSelector->setSkin(m_pButtonSkin);
-	pSRGBSelector->setListSkin(m_pPlateSkin);
-	pSRGBSelector->entries.pushBack({ 	{ 0, String("Linear RGB") },
-											{ 1, String("sRGB") } });
+	auto pStemDarkeningSelector = SelectBox::create();
+	pStemDarkeningSelector->setSkin(m_pButtonSkin);
+	pStemDarkeningSelector->setListSkin(m_pPlateSkin);
+	pStemDarkeningSelector->entries.pushBack({ 	{ 0, String("Off") },
+											{ 1, String("On") } });
 
 	pBottomRow->slots << pSizeLabel;
 	pBottomRow->slots << pSizeSelector;
 	pBottomRow->slots << pModeLabel;
 	pBottomRow->slots << pModeSelector;
 	pBottomRow->slots << pSRGBLabel;
-	pBottomRow->slots << pSRGBSelector;
+	pBottomRow->slots << pStemDarkeningSelector;
 
 	pBottomRow->slots.setPadding( 0, 6, Border(0,0,6,6) );
 	
@@ -590,11 +590,11 @@ Widget_p MyApp::createInputPanel()
 	m_pTTFPathDisplay = pPath;
 	m_pSizeSelector = pSizeSelector;
 	m_pModeSelector = pModeSelector;
-	m_pSRGBSelector = pSRGBSelector;
+	m_pStemDarkeningSelector = pStemDarkeningSelector;
 
 	m_pSizeSelector->selectEntryById(10);
 	m_pModeSelector->selectEntryById(int(FreeTypeFont::RenderMode::BestShapes));
-	m_pSRGBSelector->selectEntryByIndex(0);
+	m_pStemDarkeningSelector->selectEntryByIndex(0);
 
 	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadTTF();});
 

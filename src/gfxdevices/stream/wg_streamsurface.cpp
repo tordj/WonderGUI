@@ -68,7 +68,7 @@ namespace wg
 
 	StreamSurface_p	StreamSurface::create( GfxStreamEncoder * pEncoder, SizeI size, PixelFormat format, int flags, const Color8 * pClut )
 	{
-		if (format == PixelFormat::Undefined || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
+		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
 			return StreamSurface_p();
 
 		Blueprint bp;
@@ -111,7 +111,7 @@ namespace wg
 
 	StreamSurface_p	StreamSurface::create( GfxStreamEncoder * pEncoder,SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut )
 	{
-		if (format == PixelFormat::Undefined || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
+		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max ||
 			((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
 			return StreamSurface_p();
 

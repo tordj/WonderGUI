@@ -1159,10 +1159,6 @@ end:
 			uint8_t* pPixel = buffer.pPixels + buffer.pitch * coord.y + coord.x * 4;
 			return HiColor::unpackLinearTab[pPixel[3]];
 		}
-		case PixelFormat::Custom:
-		{
-			//TODO: Implement!
-		}
 		default:
 			return 4096;
 		}
@@ -1183,10 +1179,10 @@ end:
 
         bool bIsIndexed = (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear);
 
-        if (format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.clut == nullptr))
+        if (format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.clut == nullptr))
             return false;
 
-        if (bp.canvas && (bIsIndexed || format == PixelFormat::Custom))
+        if (bp.canvas && bIsIndexed)
             return false;
 
         if( bIsIndexed )

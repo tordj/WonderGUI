@@ -1650,7 +1650,7 @@ void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, cons
 
 void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat )
 {
-	pWGFormat->format = PixelFormat::Custom;
+	pWGFormat->format = PixelFormat::Undefined;
 	pWGFormat->bits = pSDLFormat->BitsPerPixel;
 	pWGFormat->bIndexed = false;
 

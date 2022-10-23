@@ -495,7 +495,7 @@ wg::RootPanel_p	MyAppVisitor::rootPanel()
 
 void MyAppVisitor::convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat)
 {
-	pWGFormat->format = PixelFormat::Custom;
+	pWGFormat->format = PixelFormat::Undefined;
 	pWGFormat->bits = pSDLFormat->BitsPerPixel;
 	pWGFormat->bIndexed = (pSDLFormat->palette != nullptr);
 

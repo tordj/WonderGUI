@@ -42,7 +42,7 @@ private:
 	wg::TextDisplay_p	m_pTTFPathDisplay;
 	wg::SelectBox_p		m_pSizeSelector;
 	wg::SelectBox_p		m_pModeSelector;
-	wg::SelectBox_p		m_pSRGBSelector;
+	wg::SelectBox_p		m_pStemDarkeningSelector;
 	wg::SelectBox_p		m_pImageFormatSelector;
 
 	

@@ -655,7 +655,6 @@ enum class CanvasInit 		//. autoExtras
 	enum class PixelFormat : uint8_t	//. autoExtras
 	{
 		Undefined,			///< Pixelformat is undefined.
-		Custom,				///< Pixelformat has no enum, but can be fully specified through a PixelDescription struct.
 		BGR_8,				///< One byte of blue, green and red in exactly that order in memory.
 		BGR_8_sRGB,			///< One byte of blue, green and red in exactly that order in memory.
 		BGR_8_linear,		///< One byte of blue, green and red in exactly that order in memory.

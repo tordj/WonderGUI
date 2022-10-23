@@ -278,11 +278,10 @@ namespace wg
 	}
 
 	GlSurface::GlSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription ) 
-		: Surface(bp, (pPixelDescription->format != PixelFormat::Custom && pPixelDescription->format != PixelFormat::Undefined) ? pPixelDescription->format : PixelFormat::BGRA_8, SampleMethod::Bilinear)
+		: Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
 	{
+		//TODO: Not just default to BGRA_8 if PixelFormat not specified in Blueprint. Instead we should take the most suitable PixelFormat base on pPixelDescription
 		
-//		PixelFormat format = bp.format == PixelFormat::Undefined ? PixelFormat::BGRA_8 : bp.format;
-
 		_setPixelDetails(m_pixelDescription.format);
 		m_pClut = nullptr;
 
@@ -318,17 +317,14 @@ namespace wg
 				memcpy(m_pClut, bp.clut, 1024);
 			}
 
-			if( pPixelDescription->format == PixelFormat::Custom )
-            {
-                m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-                m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
+			// Set blob and pitch temporarily so we can use _copy().
+						
+            m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
 
-                _copy(m_size, pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size);
+            _copy(m_size, pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size);
 
-                _setupGlTexture(m_pBlob->data(), m_pitch);
-            }
-            else
-                _setupGlTexture(pPixels, pitch);
+            _setupGlTexture(m_pBlob->data(), m_pitch);
 
             m_pBlob = nullptr;
             m_pitch = 0;

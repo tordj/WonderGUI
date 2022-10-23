@@ -123,7 +123,6 @@ typedef enum
 typedef enum
 {
 	WG_PIXFMT_UNDEFINED,
-	WG_PIXFMT_CUSTOM,
 	WG_PIXFMT_BGR_8,				///< One byte of blue, green and red in exactly that order in memory.
 	WG_PIXFMT_BGR_8_SRGB,			///< One byte of blue, green and red in exactly that order in memory.
 	WG_PIXFMT_BGR_8_LINEAR,			///< One byte of blue, green and red in exactly that order in memory.

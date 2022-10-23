@@ -58,7 +58,7 @@ namespace wg
 	SoftGfxDevice::TransformBlitOp_p		SoftGfxDevice::s_transformTo_internal_OpTab[PixelFormat_size][2][3];
 	SoftGfxDevice::TransformBlitOp_p		SoftGfxDevice::s_transformTo_internal_fast8_OpTab[PixelFormat_size][2][3];
 
-	static_assert(PixelFormat_size == 18,
+	static_assert(PixelFormat_size == 17,
 		"You need to update s_srcFmtToMtxOfsTab, s_dstFmtToMtxOfsTab and number of entries in m_straightBlitKernelMatrix and m_transformBlitKernelMatrix when PixelFormat_size changes!");
 
 	static_assert(BlendMode_size == 11,
@@ -66,8 +66,8 @@ namespace wg
 
 
 
-	int SoftGfxDevice::s_srcFmtToMtxOfsTab[PixelFormat_size] = { -1, -1, -1, 0, 1, -1, 2, 3, -1, 4, 5, 6, 7, -1, 8, 9, 10, 11 };
-	int SoftGfxDevice::s_dstFmtToMtxOfsTab[PixelFormat_size] = { -1, -1, -1, 0, 1, -1, 2, 3, -1, 4, 5, 6, 7, -1, -1, -1, 8, 9 };
+	int SoftGfxDevice::s_srcFmtToMtxOfsTab[PixelFormat_size] = { -1, -1, 0, 1, -1, 2, 3, -1, 4, 5, 6, 7, -1, 8, 9, 10, 11 };
+	int SoftGfxDevice::s_dstFmtToMtxOfsTab[PixelFormat_size] = { -1, -1, 0, 1, -1, 2, 3, -1, 4, 5, 6, 7, -1, -1, -1, 8, 9 };
 
 	int SoftGfxDevice::s_blendModeToMtxOfsTab[BlendMode_size] = { -1, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
