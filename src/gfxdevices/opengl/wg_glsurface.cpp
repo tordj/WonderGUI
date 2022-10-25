@@ -285,9 +285,12 @@ namespace wg
 		_setPixelDetails(m_pixelDescription.format);
 		m_pClut = nullptr;
 
-		if (pitch == 0)
-			pitch = bp.size.w * m_pixelDescription.bits / 8;
-
+		if( !pPixelDescription )
+			pPixelDescription = &m_pixelDescription;
+		
+		if( pitch == 0 )
+			pitch = bp.size.w * pPixelDescription->bits/8;
+		
         if (bp.buffered || m_pixelDescription.bits <= 8)
         {
             g_backingPixels += m_size.w*m_size.h;
@@ -295,7 +298,7 @@ namespace wg
             m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
             m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
 
-            _copy(m_size, pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size);
+            _copy(m_size, pPixelDescription, pPixels, pitch, m_size);
 
 			// Setup CLUT before calling _setupGlTexture().
 

@@ -13,16 +13,22 @@ for fileName in $*
 
   values = data.unpack("c*");
 
-  arrayName = "waxfile"
+
+  
+  arrayName = File.basename(fileName, File.extname(fileName))
+
+  replacements = { '-' => '_', ' ' => '_' }
+
+   arrayName.gsub!(Regexp.union(replacements.keys), replacements)
+
 
   sourceName = fileName + ".c";
   headerName = fileName + ".h";
 
 
-
   f = File.new( headerName, "w")
 
-    f.puts "extern char " + arrayName + "[" + values.length.to_s + "];"
+    f.puts "extern char " + arrayName + "[" + (values.length+1).to_s + "];"
     f.puts "#define " + arrayName + "_length " + values.length.to_s
 
   f.close
@@ -31,12 +37,12 @@ for fileName in $*
   rows = 0
   f = File.new( sourceName, "w")
 
-  f.print "char " + arrayName + "[" + values.length.to_s + "] = { "
+  f.print "char " + arrayName + "[" + (values.length+1).to_s + "] = { "
 
 
   for c in values
 
-    f.print c.to_s + ", ";
+    f.print c.to_s + ", "
     rows += 1
 
     if( rows > 20 )
@@ -47,11 +53,7 @@ for fileName in $*
 
   end
 
-  f.print "};"
- 
-
-
-    f.close
-
+  f.print ",0 };"
+  f.close
 
 end

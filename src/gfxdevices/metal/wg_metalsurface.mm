@@ -125,13 +125,12 @@ namespace wg
     {
         _setPixelDetails(m_pixelDescription.format);
         m_bMipmapped = bp.mipmap;
-         PixelDescription srcFormat;
-         
-         if( pPixelDescription == nullptr )
-         {
-             Util::pixelFormatToDescription(m_pixelDescription.format, srcFormat);
-             pPixelDescription = &srcFormat;
-         }
+ 
+		if( !pPixelDescription )
+			pPixelDescription = &m_pixelDescription;
+		
+		if( pitch == 0 )
+			pitch = bp.size.w * bp.size.h * pPixelDescription->bits/8;
          
          _setupMetalTexture( pPixels, pitch, pPixelDescription, bp.clut);
 

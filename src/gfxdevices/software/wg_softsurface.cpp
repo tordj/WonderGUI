@@ -196,11 +196,17 @@ namespace wg
 	{
 		//TODO: Convert pixeldescription to format and use that if bp.format == Undefined && pixeldesc is valid.
 
+		if( !pPixelDescription )
+			pPixelDescription = &m_pixelDescription;
+		
+		if( pitch == 0 )
+			pitch = bp.size.w * pPixelDescription->bits/8;
+		
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
 		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.clut ? 1024 : 0) );
 		m_pData = (uint8_t*)m_pBlob->data();
 
-		_copy(bp.size, pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, bp.size);
+		_copy(bp.size, pPixelDescription, pPixels, pitch, bp.size);
 
 		if (bp.clut)
 		{
