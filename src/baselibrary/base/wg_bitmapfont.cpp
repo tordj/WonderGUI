@@ -32,8 +32,8 @@
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
+#include <wg_util.h>
 #include <wg_bitmapfont.h>
-#include <wg_texttool.h>
 #include <wg_gridwalker.h>
 
 namespace wg
@@ -237,7 +237,7 @@ namespace wg
 
 		const char* pChar = pCharmapBeg;
 		while ((*pChar == 10 || *pChar == 13) && pChar < pCharmapEnd)
-			TextTool::readChar(pChar);
+			Util::readUTF8Char(pChar);
 
 
 		PixelBuffer pixelBuffer = pSurf->allocPixelBuffer();
@@ -252,7 +252,7 @@ namespace wg
 
 		while (pChar < pCharmapEnd)
 		{
-			uint16_t ch = TextTool::readChar(pChar);
+			uint16_t ch = Util::readUTF8Char(pChar);
 
 			if (ch == '3')
 			{

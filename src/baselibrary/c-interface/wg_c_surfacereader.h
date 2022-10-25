@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_C_BLOB_DOT_H
-#define WG_C_BLOB_DOT_H
+#ifndef WG_C_SURFACEREADER_DOT_H
+#define WG_C_SURFACEREADER_DOT_H
 #pragma once
 
 #include <wg_c_types.h>

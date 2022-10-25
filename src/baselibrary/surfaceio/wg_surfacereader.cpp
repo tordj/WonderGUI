@@ -132,7 +132,7 @@ namespace wg
 		 		 
 		// Read the header
 
-		int headerSize = * (const int*)&pData[4];
+		int headerSize = * (const int16_t*)&pData[6];
 		std::memcpy( &header, pData, headerSize);
 		pData+= headerSize;
 		 
