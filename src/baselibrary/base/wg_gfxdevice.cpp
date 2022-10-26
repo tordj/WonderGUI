@@ -281,7 +281,7 @@ namespace wg
             if( m_pCanvasLayers->_layerClearFunc(m_renderLayer) != nullptr )
             {
                 //NOTE! BlendMode can be anything when calling initializer.
-                
+
                 m_pCanvasLayers->_layerClearFunc(m_renderLayer)(this);
             }
             else
@@ -290,7 +290,7 @@ namespace wg
                 fill(Color::Transparent);
             }
 
-            
+
             setBlendMode(savedBlendMode);
 			setTintColor(savedTintColor);
 
@@ -387,9 +387,9 @@ namespace wg
 
 	bool GfxDevice::_beginCanvasUpdate(CanvasRef ref, Surface * pSurface, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pCanvasLayers, int startLayer )
 	{
-		
+
 		SizeSPX sz;
-		
+
 		if( ref != CanvasRef::None )
 			sz = canvas(ref).size;
 		else if( pSurface )
@@ -405,7 +405,7 @@ namespace wg
 			//TODO: Error handling!
 			return false;
 		}
-		
+
 		RectSPX bounds;
 
 		if (nUpdateRects > 0)
@@ -457,7 +457,7 @@ namespace wg
 		m_canvas.ref = ref;
 		m_canvas.pSurface = pSurface;
 		m_canvas.size = sz;
-		
+
 		m_pCanvasLayers = pCanvasLayers;
 
 		m_pCanvasUpdateRects = pUpdateRects;
@@ -482,9 +482,9 @@ namespace wg
 		m_blendMode = BlendMode::Blend;
 		m_morphFactor = 0.5f;
 		_canvasWasChanged();
-        
+
         // Call Canvas Initializer
-		
+
 		if( !m_bIsProxyDevice )
 		{
 			if( pCanvasLayers && pCanvasLayers->_canvasClearFunc() != nullptr )
@@ -494,7 +494,7 @@ namespace wg
 				setRenderLayer(layer);
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -506,7 +506,7 @@ namespace wg
 
         // It is OK for canvas stack to be empty, we need another way to sync
         // begin/endCanvasUpdate() calls.
- 
+
 		if (m_canvasStack.empty())
 		{
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "No Canvas being updated, nothing to end.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
@@ -523,7 +523,7 @@ namespace wg
 			for (int layerIdx = 1; layerIdx <= nbLayers; layerIdx++)
 			{
                 // Call pre-blend canvas modifier no matter if layer has a surface or not
-                
+
                 if( m_pCanvasLayers->_canvasModifier(layerIdx) != nullptr )
                 {
                     if (bFirst)
@@ -540,7 +540,7 @@ namespace wg
                 }
 
                 // Finalize and blend layer if it has a surface.
-                
+
                 if (m_layerSurfaces[layerIdx])
 				{
 					if (bFirst)
@@ -554,16 +554,16 @@ namespace wg
 					}
 
                     // Call layer finalizer before blending
-                    
+
                     if( m_pCanvasLayers->_layerPreBlendFunc(layerIdx) != nullptr )
                     {
                         setRenderLayer(layerIdx);
                         m_pCanvasLayers->_layerPreBlendFunc(layerIdx)(this);
                         setRenderLayer(0);
                     }
-                    
+
                     // Blend layer onto base layer
-                    
+
                     setBlitSource(m_layerSurfaces[layerIdx]);
 
                     if( m_pCanvasLayers->_layerBlendFunc(layerIdx) != nullptr )
@@ -574,11 +574,11 @@ namespace wg
 			}
 
             // Call Canvas Finalizer
-            
+
             if( m_pCanvasLayers->_canvasFinalizeFunc() != nullptr )
                 m_pCanvasLayers->_canvasFinalizeFunc()(this);
         }
-        
+
 		// Dereference surfaces
 
 		for (int i = 0; i < CanvasLayers::c_maxLayers; i++)
@@ -814,7 +814,7 @@ namespace wg
 				scaleX = 0;
 			else
 				scaleX = srcW / ((dest.w/64)-1);
-			
+
 			if( dest.h == 64 )
 				scaleY = 0;
 			else
@@ -827,7 +827,7 @@ namespace wg
 		{
 
 			//TODO: Not sure about this -1. Was -0.99 when dealing with spx and floats which looked suspicious.
-			
+
 			scaleX = (srcW / (dest.w/64)) -1;
 			scaleY = (srcH / (dest.h/64)) -1;
 
@@ -835,7 +835,7 @@ namespace wg
 			ofsY = (binalInt(src.y) * (BINAL_MUL/64)) + (srcH - scaleY) * blitFlipOffsets[(int)flip][1];
 		}
 
-		int64_t		mtx[2][2];
+		binalInt	mtx[2][2];
 
 		mtx[0][0] = scaleX * blitFlipTransforms[(int)flip][0][0];
 		mtx[0][1] = scaleY * blitFlipTransforms[(int)flip][0][1];
@@ -851,10 +851,10 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		int64_t	mtx[2][2];
+		binalInt	mtx[2][2];
 
 		BinalRect src(toBinalInt(_src.x),toBinalInt(_src.y),toBinalInt(_src.w),toBinalInt(_src.h));
-		
+
 		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 		{
 			mtx[0][0] = src.w / (dest.w/64);
@@ -880,13 +880,13 @@ namespace wg
 		assert(m_pBlitSource != nullptr);
 
 		binalInt	mtx[2][2];
-		
+
 		mtx[0][0] = binalInt(transform[0][0]*BINAL_MUL);
 		mtx[0][1] = binalInt(transform[0][1]*BINAL_MUL);
 		mtx[1][0] = binalInt(transform[1][0]*BINAL_MUL);
 		mtx[1][1] = binalInt(transform[1][1]*BINAL_MUL);
 
-		
+
 		_transformBlitComplex(dest, { toBinalInt(src.x), toBinalInt(src.y) }, mtx);
 	}
 
@@ -914,7 +914,7 @@ namespace wg
 		mtx[1][1] = cz * scale * BINAL_MUL;
 
 		src = { binalInt(srcCenter.x * m_pBlitSource->m_size.w * BINAL_MUL), binalInt(srcCenter.y * m_pBlitSource->m_size.h * BINAL_MUL) };
-		 
+
 //		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
 //		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
 
@@ -1196,7 +1196,7 @@ namespace wg
 				stretchBlit(dstSE, srcSE);
 		}
 	}
-	
+
 	//____ drawWave() ______________________________________________________
 
 	void GfxDevice::drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill )
@@ -1743,7 +1743,7 @@ namespace wg
 			slices[sliceIdx - 1].size = 1.f - slices[sliceIdx - 1].ofs;
 		}
 
-		nSlices = sliceIdx;			// Repurpose this variable 
+		nSlices = sliceIdx;			// Repurpose this variable
 
 		// Slices now in order, lets render the quadrants
 
