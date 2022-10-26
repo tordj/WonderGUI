@@ -110,7 +110,6 @@ int main ( int argc, char** argv )
 	pPrinter->setFont(pFont);
 	pPrinter->setGfxDevice(pGfxDevice);
 	pPrinter->setCursorOrigo({0,20*64});
-	pPrinter->setLineWidth(640*3*64);
 	
 	
 	//------------------------------------------------------
@@ -136,6 +135,7 @@ int main ( int argc, char** argv )
 		
 		pFont->setSize(10*64);
 		
+		pPrinter->setLineWidth(640*3*64);
 		pPrinter->resetCursor();
 		pPrinter->print("Hello from Printer!\n");
 		pPrinter->printAligned(Placement::Center, "This text should be centered, one line down!");
@@ -144,7 +144,7 @@ int main ( int argc, char** argv )
 		pPrinter->print("First part of text,");
 		pPrinter->print(" second part of text on same line.");
 		
-		RectSPX box = { 20*64, 200*64, 640*64, 60*64 };
+		RectSPX box = { 20*64, 300*64, 640*64, 60*64 };
 
 		pGfxDevice->fill(box, Color8::Black);
 		
@@ -157,6 +157,10 @@ int main ( int argc, char** argv )
 		
 		pPrinter->print("And another (one).");
 
+		pPrinter->setLineWidth(100*64);
+		pPrinter->printWrapping("This not so very long texts should be wrapping automatically every 100 pixels.\nThis is line two.", 20*64);
+		
+		
 /*
 		for( int y = 0 ; y < 17 ; y++ )
 		{

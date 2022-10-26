@@ -54,12 +54,17 @@ extern "C" {
 	void		wg_printCRFLWithFontSizes( wg_obj printer, wg_spx maxFontSizeThisLine, wg_spx maxFontSizeNextLine );
 
 	void		wg_print( wg_obj printer, const char * pText );
-	wg_coordSPX	wg_printAt( wg_obj printer, wg_coordSPX pos, const char * pText );
 	void		wg_printAligned( wg_obj printer, wg_placement xAlign, const char * pText );
+	void		wg_printWrapping( wg_obj printer, const char * pText, wg_spx wrappedLinesIndent );
+
+	wg_coordSPX	wg_printAt( wg_obj printer, wg_coordSPX pos, const char * pText );
 	wg_coordSPX	wg_printInBox( wg_obj printer, const wg_rectSPX box, wg_placement alignment, const char * pText );
 
 	wg_spx		wg_printerLineHeight( wg_obj printer );
 	wg_sizeSPX	wg_printerTextSize( wg_obj printer, const char * pString );
+
+	wg_sizeSPX	wg_printerWrappingTextSize( wg_obj printer, const char * pText, wg_spx wrappedLinesIndent );
+
 
 #ifdef __cplusplus
 }

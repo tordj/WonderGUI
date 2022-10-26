@@ -15,9 +15,9 @@ for fileName in $*
 
 
   
-  arrayName = File.basename(fileName, File.extname(fileName))
+  arrayName = File.basename(fileName)
 
-  replacements = { '-' => '_', ' ' => '_' }
+  replacements = { '-' => '_', ' ' => '_', '.' => '_' }
 
    arrayName.gsub!(Regexp.union(replacements.keys), replacements)
 
@@ -36,7 +36,7 @@ for fileName in $*
 
   rows = 0
   f = File.new( sourceName, "w")
-
+  f.print "#pragma pack(push, 4)\n"
   f.print "char " + arrayName + "[" + (values.length+1).to_s + "] = { "
 
 
@@ -53,7 +53,10 @@ for fileName in $*
 
   end
 
-  f.print ",0 };"
+  f.print "0 };\n"
+  f.print "#pragma pack(pop)\n"
+
+
   f.close
 
 end

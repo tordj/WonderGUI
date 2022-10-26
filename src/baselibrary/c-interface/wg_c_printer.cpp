@@ -130,6 +130,12 @@ void wg_printAligned( wg_obj printer, wg_placement xAlignment, const char * pTex
 	getPtr(printer)->printAligned( Placement(xAlignment),pText);
 }
 
+void wg_printWrapping( wg_obj printer, const char * pText, wg_spx wrappedLinesIndent )
+{
+	getPtr(printer)->printWrapping( pText, wrappedLinesIndent );
+}
+
+
 wg_coordSPX wg_printInBox( wg_obj printer, const wg_rectSPX box, wg_placement placement, const char * pText )
 {
 	auto coord = getPtr(printer)->printInBox( {box.x,box.y,box.w,box.h}, Placement(placement),pText);
@@ -144,5 +150,11 @@ wg_spx wg_printerLineHeight( wg_obj printer )
 wg_sizeSPX wg_printerTextSize( wg_obj printer, const char * pText )
 {
 	auto size = getPtr(printer)->textSize(pText);
+	return {size.w,size.h};
+}
+
+wg_sizeSPX wg_printerWrappingTextSize( wg_obj printer, const char * pText, wg_spx wrappedLinesIndent )
+{
+	auto size = getPtr(printer)->wrappingTextSize(pText, wrappedLinesIndent);
 	return {size.w,size.h};
 }

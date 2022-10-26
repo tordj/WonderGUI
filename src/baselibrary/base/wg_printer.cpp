@@ -254,6 +254,28 @@ namespace wg
 		m_cursorPos = _print(m_cursorPos, pText, nullptr, m_cursorOrigo.x );
 	}
 
+	//____ printWrapping() ________________________________________________________________
+	/**
+	* @brief Prints text at current cursor position with raw line wrapping.
+	*
+	* Prints the specified text starting at the current cursor position. Any line longer than current lineWidth
+	* is wrapped to next line. The wrapping does not consider word boundaries, it just wraps where is needed, including
+	* in the middle of a word.
+	* Optionally, the wrapped lines can be indented.
+	*
+	* @param pText				Text to be printed. Zero terminated UTF8 string of characters. The string
+	*                   				can be a multi-line string with tab and line-feed characters.
+	* @param wrappedLinesIndent	Distance to indent wrapped lines, measured in subpixels.
+	*
+	* The cursor is moved to the position after the last printed character.
+	*
+	*/
+	void Printer::printWrapping( const char * pText, spx wrappedLinesIndent )
+	{
+		m_cursorPos = _print(m_cursorPos, pText, nullptr, m_cursorOrigo.x, true, wrappedLinesIndent );
+	}
+
+
 	//____ lineHeight() __________________________________________________________
 	/**
 	* @brief Height of a line using the current font and font size.
@@ -281,6 +303,8 @@ namespace wg
 	* Gets the size needed on canvas for printing the specified text, using the current
 	* font and font size.
 	* 
+	* @param	Zero-terminated string of characters to calculate size of.
+	*
 	* @return	Size needed in subpixels.
 	*/
 
@@ -288,6 +312,25 @@ namespace wg
 	{
 		return _textSize(pText, nullptr);
 	}
+
+	//____ wrappingTextSize() _____________________________________________________________
+	/**
+	* @brief Size on canvas needed to print wrapping text.
+	*
+	* Gets the size needed on canvas for printing the specified text, using the current
+	* font, font size and lineWidth.
+	*
+	* @param					Zero-terminated string of characters to calculate size of.
+	* @param wrappedLinesIndent	Distance in subpixels to indent lines that have been wrapped. Defaults is zero.
+	*
+	* @return					Size needed in subpixels.
+	*/
+
+	SizeSPX Printer::wrappingTextSize( const char * pText, spx wrappedLinesIndent )
+	{
+		return _textSize(pText, nullptr, true, wrappedLinesIndent );
+	}
+
 
 	//____ printAt() ______________________________________________________________
 	/**
@@ -342,7 +385,7 @@ namespace wg
 
 	//____ _print() ______________________________________________________________
 
-	CoordSPX Printer::_print( CoordSPX pos, const char * pBegin, const char * pEnd, spx origoX )
+	CoordSPX Printer::_print( CoordSPX pos, const char * pBegin, const char * pEnd, spx origoX, bool bWrap, spx wrappedLinesIndent )
 	{
 		if( !m_pGfxDevice || !m_pFont )
 			return pos;
@@ -383,7 +426,16 @@ namespace wg
 			 else
 			{
 				m_pFont->getGlyphWithBitmap(chr, *pGlyph);
-
+				
+				if( pGlyph->fontRef && pPrevGlyph->fontRef )
+					pos.x += m_pFont->kerning(*pPrevGlyph, *pGlyph);
+				
+				if( bWrap && (pos.x + pGlyph->advance > m_lineWidth ) )
+				{
+					pos.x = origoX + wrappedLinesIndent;
+					pos.y += m_pFont->maxAscend() + m_pFont->maxDescend() + m_pFont->lineGap();
+				}
+								
 				if (pGlyph->pSurface)
 				{
 					CoordSPX blitPos = pos;
@@ -396,8 +448,6 @@ namespace wg
 
 				pos.x += pGlyph->advance;
 
-				if( pGlyph->fontRef && pPrevGlyph->fontRef )
-					pos.x += m_pFont->kerning(*pPrevGlyph, *pGlyph);
 			}
 			std::swap(pGlyph,pPrevGlyph);
 		}
@@ -490,7 +540,7 @@ namespace wg
 
 	//____ _textSize() ___________________________________________________________
 
-	SizeSPX Printer::_textSize( const char * pBegin, const char * pEnd )
+	SizeSPX Printer::_textSize( const char * pBegin, const char * pEnd, bool bWrap, spx wrappedLinesIndent )
 	{
 		if( !m_pGfxDevice || !m_pFont )
 			return SizeSPX();
@@ -518,8 +568,6 @@ namespace wg
 					pos.x += m_pFont->whitespaceAdvance();
 				else if( chr == 10 )	// LF
 				{
-					if( pos.x > maxX )
-						maxX = pos.x;
 					pos.x = 0;
 					pos.y += m_pFont->maxDescend() + m_pFont->lineGap() + m_pFont->maxAscend();
 				}
@@ -535,17 +583,29 @@ namespace wg
 			{
 				m_pFont->getGlyphWithoutBitmap(chr, *pGlyph);
 
-				pos.x += pGlyph->advance;
+				spx newPosX = pos.x;
+				
+				newPosX += pGlyph->advance;
 				if( pGlyph->fontRef && pPrevGlyph->fontRef )
-					pos.x += m_pFont->kerning(*pPrevGlyph, *pGlyph);
+					newPosX += m_pFont->kerning(*pPrevGlyph, *pGlyph);
+				
+				if( bWrap && newPosX > m_lineWidth )
+				{
+					if( pos.x > maxX )
+						maxX = pos.x;
+					pos.x = wrappedLinesIndent + pGlyph->advance;
+					pos.y += m_pFont->maxDescend() + m_pFont->lineGap() + m_pFont->maxAscend();
+				}
+				else
+					pos.x = newPosX;
+				
+				if( pos.x > maxX )
+					maxX = pos.x;
 			}
 			std::swap(pGlyph,pPrevGlyph);
 		}
 
 		pos.y += m_pFont->maxDescend();
-		
-		if( pos.x > maxX )
-			maxX = pos.x;
 		
 		return SizeSPX(maxX, pos.y);
 	}

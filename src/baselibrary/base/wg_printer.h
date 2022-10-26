@@ -95,12 +95,15 @@ namespace wg
 		void		crlf( spx maxFontSizeThisLine, spx maxFontSizeNextLine );
 		
 		void		print( const char * pText );
-		CoordSPX	printAt( CoordSPX pos, const char * pText );
 		void		printAligned( Placement xAlignment, const char * pText );
+		void		printWrapping( const char * pText, spx wrappedLinesIndent = 0 );
+
+		CoordSPX	printAt( CoordSPX pos, const char * pText );
 		CoordSPX	printInBox( const RectSPX& box, Placement alignment, const char * pText );
 
 		spx			lineHeight();
-		SizeSPX		textSize( const char * pString );
+		SizeSPX		textSize( const char * pText );
+		SizeSPX		wrappingTextSize( const char * pText, spx wrappedLinesIndent = 0 );
 
 
 	protected:
@@ -109,11 +112,11 @@ namespace wg
 	
 		
 		uint32_t 	_parseChar( const char *& pStr );
-		CoordSPX	_print( CoordSPX pos, const char * pBegin, const char * pEnd, spx origoX );
+		CoordSPX	_print( CoordSPX pos, const char * pBegin, const char * pEnd, spx origoX, bool bWrap = false, spx wrappedLinesIndent = 0 );
 		CoordSPX	_printAligned( CoordSPX pos, spx lineWidth, Placement xAlignment, const char * pBegin );
 
 		const char * _lineEnd( const char * pPos );
-		SizeSPX		_textSize( const char * pBegin, const char * pEnd );
+		SizeSPX		_textSize( const char * pBegin, const char * pEnd, bool bWrap = false, spx wrappedLinesIndent = 0 );
 		
 		GfxDevice_p	m_pGfxDevice;
 		Font_p		m_pFont;
