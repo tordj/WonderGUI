@@ -42,21 +42,6 @@ namespace wg
 
 	const TypeInfo SoftGfxDevice::TYPEINFO = { "SoftGfxDevice", &GfxDevice::TYPEINFO };
 
-	SoftGfxDevice::PlotOp_p		SoftGfxDevice::s_plotOpTab[BlendMode_size][PixelFormat_size];
-	SoftGfxDevice::FillOp_p		SoftGfxDevice::s_fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size];
-	SoftGfxDevice::LineOp_p		SoftGfxDevice::s_lineOpTab[BlendMode_size][PixelFormat_size];
-	SoftGfxDevice::ClipLineOp_p SoftGfxDevice::s_clipLineOpTab[BlendMode_size][PixelFormat_size];
-	SoftGfxDevice::PlotListOp_p SoftGfxDevice::s_plotListOpTab[BlendMode_size][PixelFormat_size];
-	SoftGfxDevice::SegmentOp_p	SoftGfxDevice::s_segmentOpTab[2][BlendMode_size][PixelFormat_size];		// bVerticalTint, BlendMode, PixelFormat
-
-	SoftGfxDevice::StraightBlitOp_p		SoftGfxDevice::s_pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size];
-	SoftGfxDevice::StraightBlitOp_p		SoftGfxDevice::s_pass2OpTab_fast8[TintMode_size][BlendMode_size][PixelFormat_size];
-
-	SoftGfxDevice::StraightBlitOp_p		SoftGfxDevice::s_moveTo_internal_OpTab[PixelFormat_size][2];
-	SoftGfxDevice::StraightBlitOp_p		SoftGfxDevice::s_moveTo_internal_fast8_OpTab[PixelFormat_size][2];
-
-	SoftGfxDevice::TransformBlitOp_p		SoftGfxDevice::s_transformTo_internal_OpTab[PixelFormat_size][2][3];
-	SoftGfxDevice::TransformBlitOp_p		SoftGfxDevice::s_transformTo_internal_fast8_OpTab[PixelFormat_size][2][3];
 
 	static_assert(PixelFormat_size == 17,
 		"You need to update s_srcFmtToMtxOfsTab, s_dstFmtToMtxOfsTab and number of entries in m_straightBlitKernelMatrix and m_transformBlitKernelMatrix when PixelFormat_size changes!");
@@ -74,14 +59,14 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	SoftGfxDevice_p SoftGfxDevice::create()
+	SoftGfxDevice_p SoftGfxDevice::create(const KernelCollection * collection[])
 	{
-		return SoftGfxDevice_p(new SoftGfxDevice());
+		return SoftGfxDevice_p(new SoftGfxDevice(collection));
 	}
 
 	//____ constructor _____________________________________________________________
 
-	SoftGfxDevice::SoftGfxDevice()
+	SoftGfxDevice::SoftGfxDevice(const KernelCollection * collection[])
 	{
 		m_pCanvasPixels = nullptr;
 		m_pRenderLayerSurface = nullptr;
@@ -90,6 +75,25 @@ namespace wg
 		m_colTrans.morphFactor = 2048;
 		_initTables();
 
+		// Populate kernel tables
+
+
+		for( const KernelCollection ** pEntry = collection ; * pEntry != nullptr ; pEntry++ )
+		{
+			const KernelCollection * pCollection = * pEntry;
+			
+			if( pCollection->insertKernelsIntoOpTab != nullptr )
+				pCollection->insertKernelsIntoOpTab(m_plotOpTab, m_lineOpTab, m_clipLineOpTab, m_fillOpTab, m_plotListOpTab,
+													m_segmentOpTab, m_pass2OpTab, m_pass2OpTab_fast8, m_moveTo_internal_OpTab,
+													m_transformTo_internal_OpTab, m_moveTo_internal_fast8_OpTab,
+													m_transformTo_internal_fast8_OpTab );
+			
+			if( pCollection->pStraightBlitKernels != nullptr )
+				_populateOptimizedStraightBlits( pCollection->pStraightBlitKernels );
+
+			if( pCollection->pTranformBlitKernels != nullptr )
+				_populateOptimizedTransformBlits( pCollection->pTranformBlitKernels );
+		}
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -405,7 +409,7 @@ namespace wg
 			RectI pixelRect = roundToPixels(rect);
 
 			int pixelBytes = m_canvasPixelBits / 8;
-			FillOp_p pFunc = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+			FillOp_p pFunc = m_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 			if (pFunc == nullptr)
 			{
 				if( m_blendMode == BlendMode::Ignore )
@@ -437,9 +441,9 @@ namespace wg
 					BlendMode	edgeBlendMode = (m_blendMode == BlendMode::Replace) ? BlendMode::Blend : m_blendMode; // Need to blend edges and corners even if fill is replace
 
 			int pixelBytes = m_canvasPixelBits / 8;
-			FillOp_p pFillOp = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
-			FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
-	//		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+			FillOp_p pFillOp = m_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+			FillOp_p pEdgeOp = m_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+	//		PlotOp_p pPlotOp = m_plotOpTab[(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 			if (pFillOp == nullptr || pEdgeOp == nullptr )
 			{
@@ -600,7 +604,7 @@ namespace wg
 
 		//
 
-		ClipLineOp_p pOp = s_clipLineOpTab[(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+		ClipLineOp_p pOp = m_clipLineOpTab[(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 		if (pOp == nullptr )
 		{
@@ -757,8 +761,8 @@ namespace wg
 		_col = _col * m_tintColor;
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p	pCenterOp = s_fillOpTab[(int)TintMode::None][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
-		FillOp_p	pEdgeOp = s_fillOpTab[(int)TintMode::None][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+		FillOp_p	pCenterOp = m_fillOpTab[(int)TintMode::None][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+		FillOp_p	pEdgeOp = m_fillOpTab[(int)TintMode::None][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 		if (pCenterOp == nullptr || pEdgeOp == nullptr )
 		{
@@ -1297,7 +1301,7 @@ namespace wg
 		if (!dest.intersectsWith(m_clipBounds/64))
 			return;
 
-		SegmentOp_p	pOp = s_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+		SegmentOp_p	pOp = m_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		if (pOp == nullptr )
 		{
 			if( m_blendMode == BlendMode::Ignore )
@@ -1813,7 +1817,7 @@ namespace wg
 		const int pitch = m_canvasPitch;
 		const int pixelBytes = m_canvasPixelBits / 8;
 
-		PlotListOp_p pOp = s_plotListOpTab[(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+		PlotListOp_p pOp = m_plotListOpTab[(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 		if (pOp == nullptr )
 		{
@@ -2409,21 +2413,21 @@ namespace wg
 		
 		if ((pPixelDescDest->bLinear || pPixelDescDest->format == PixelFormat::A_8) && (pPixelDescSource->bLinear || pPixelDescSource->format == PixelFormat::A_8) )
 		{
-			m_pStraightBlitFirstPassOp = s_moveTo_internal_fast8_OpTab[(int)srcFormat][0];
-			m_pStraightTileFirstPassOp = s_moveTo_internal_fast8_OpTab[(int)srcFormat][1];
-			m_pTransformBlitFirstPassOp = s_transformTo_internal_fast8_OpTab[(int)srcFormat][(int)sampleMethod][0];
-			m_pTransformClipBlitFirstPassOp = s_transformTo_internal_fast8_OpTab[(int)srcFormat][(int)sampleMethod][1];
-			m_pTransformTileFirstPassOp = s_transformTo_internal_fast8_OpTab[(int)srcFormat][(int)sampleMethod][2];
-			m_pBlitSecondPassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+			m_pStraightBlitFirstPassOp = m_moveTo_internal_fast8_OpTab[(int)srcFormat][0];
+			m_pStraightTileFirstPassOp = m_moveTo_internal_fast8_OpTab[(int)srcFormat][1];
+			m_pTransformBlitFirstPassOp = m_transformTo_internal_fast8_OpTab[(int)srcFormat][(int)sampleMethod][0];
+			m_pTransformClipBlitFirstPassOp = m_transformTo_internal_fast8_OpTab[(int)srcFormat][(int)sampleMethod][1];
+			m_pTransformTileFirstPassOp = m_transformTo_internal_fast8_OpTab[(int)srcFormat][(int)sampleMethod][2];
+			m_pBlitSecondPassOp = m_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		}
 		else
 		{
-			m_pStraightBlitFirstPassOp = s_moveTo_internal_OpTab[(int)srcFormat][0];
-			m_pStraightTileFirstPassOp = s_moveTo_internal_OpTab[(int)srcFormat][1];
-			m_pTransformBlitFirstPassOp = s_transformTo_internal_OpTab[(int)srcFormat][(int)sampleMethod][0];
-			m_pTransformClipBlitFirstPassOp = s_transformTo_internal_OpTab[(int)srcFormat][(int)sampleMethod][1];
-			m_pTransformTileFirstPassOp = s_transformTo_internal_OpTab[(int)srcFormat][(int)sampleMethod][2];
-			m_pBlitSecondPassOp = s_pass2OpTab[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+			m_pStraightBlitFirstPassOp = m_moveTo_internal_OpTab[(int)srcFormat][0];
+			m_pStraightTileFirstPassOp = m_moveTo_internal_OpTab[(int)srcFormat][1];
+			m_pTransformBlitFirstPassOp = m_transformTo_internal_OpTab[(int)srcFormat][(int)sampleMethod][0];
+			m_pTransformClipBlitFirstPassOp = m_transformTo_internal_OpTab[(int)srcFormat][(int)sampleMethod][1];
+			m_pTransformTileFirstPassOp = m_transformTo_internal_OpTab[(int)srcFormat][(int)sampleMethod][2];
+			m_pBlitSecondPassOp = m_pass2OpTab[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		}
 
 
@@ -2451,10 +2455,10 @@ namespace wg
 			m_pStraightBlitFirstPassOp = m_pStraightBlitKernels[straightBlitIndex - 1].pKernel;
 		}
 		else if (srcFormat == PixelFormat::BGRA_8_linear && m_pRenderLayerSurface->pixelDescription()->bLinear &&
-			s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()] )
+			m_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()] )
 		{
 			m_pStraightBlitOp = &SoftGfxDevice::_onePassStraightBlit;
-			m_pStraightBlitFirstPassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+			m_pStraightBlitFirstPassOp = m_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		}
 		else if (m_pStraightBlitFirstPassOp && m_pBlitSecondPassOp)
 			m_pStraightBlitOp = &SoftGfxDevice::_twoPassStraightBlit;
@@ -2526,18 +2530,18 @@ namespace wg
 			{
 				for (int k = 0; k < TintMode_size; k++)
 				{
-					s_fillOpTab[k][i][j] = nullptr;
-					s_pass2OpTab[k][i][j] = nullptr;
-					s_pass2OpTab_fast8[k][i][j] = nullptr;
+					m_fillOpTab[k][i][j] = nullptr;
+					m_pass2OpTab[k][i][j] = nullptr;
+					m_pass2OpTab_fast8[k][i][j] = nullptr;
 
 				}
 
-				s_plotOpTab[i][j] = nullptr;
-				s_lineOpTab[i][j] = nullptr;
-				s_clipLineOpTab[i][j] = nullptr;
-				s_plotListOpTab[i][j] = nullptr;
-				s_segmentOpTab[0][i][j] = nullptr;
-				s_segmentOpTab[1][i][j] = nullptr;
+				m_plotOpTab[i][j] = nullptr;
+				m_lineOpTab[i][j] = nullptr;
+				m_clipLineOpTab[i][j] = nullptr;
+				m_plotListOpTab[i][j] = nullptr;
+				m_segmentOpTab[0][i][j] = nullptr;
+				m_segmentOpTab[1][i][j] = nullptr;
 			}
 		}
 
@@ -2545,37 +2549,30 @@ namespace wg
 		{
 			for (int j = 0; j < 2; j++)
 			{
-				s_moveTo_internal_OpTab[i][j] = nullptr;
-				s_moveTo_internal_fast8_OpTab[i][j] = nullptr;
+				m_moveTo_internal_OpTab[i][j] = nullptr;
+				m_moveTo_internal_fast8_OpTab[i][j] = nullptr;
 			}
 
 			for (int j = 0; j < 3; j++)
 			{
-				s_transformTo_internal_OpTab[i][0][j] = nullptr;
-				s_transformTo_internal_OpTab[i][1][j] = nullptr;
+				m_transformTo_internal_OpTab[i][0][j] = nullptr;
+				m_transformTo_internal_OpTab[i][1][j] = nullptr;
 
-				s_transformTo_internal_fast8_OpTab[i][0][j] = nullptr;
-				s_transformTo_internal_fast8_OpTab[i][1][j] = nullptr;
+				m_transformTo_internal_fast8_OpTab[i][0][j] = nullptr;
+				m_transformTo_internal_fast8_OpTab[i][1][j] = nullptr;
 			}
 		}
 
 		memset(m_straightBlitKernelMatrix, 0, sizeof(m_straightBlitKernelMatrix));
 		memset(m_transformBlitKernelMatrix, 0, sizeof(m_transformBlitKernelMatrix));
-
-		// Populate kernel tables
-
-		_populateOpTab();
-
-		_populateOptimizedBlits();
-		
-		_populateOpTabWithHandTunedKernels();
 	}
-		
-	//____ _populateOptimizedBlits() __________________________________________
 
-	void SoftGfxDevice::_populateOptimizedBlits()
+
+	//____ _populateOptimizedStraightBlits() __________________________________________
+
+	void SoftGfxDevice::_populateOptimizedStraightBlits( const StraightBlitKernelEntry* pKernelList )
 	{
-		m_pStraightBlitKernels = _getStraightBlitKernels();
+		m_pStraightBlitKernels = pKernelList;
 
 		for (int i = 0; m_pStraightBlitKernels[i].pKernel != nullptr; i++)
 		{
@@ -2587,10 +2584,14 @@ namespace wg
 
 			m_straightBlitKernelMatrix[srcIndex][entry.bTile][(int)entry.tintMode][blendIndex][dstIndex] = i+1;
 		}
+	}
+		
+		
+	//____ _populateOptimizedTransformBlits() __________________________________________
 
-		//
-
-		m_pTransformBlitKernels = _getTransformBlitKernels();
+	void SoftGfxDevice::_populateOptimizedTransformBlits( const TransformBlitKernelEntry* pKernelList )
+	{
+		m_pTransformBlitKernels = pKernelList;
 
 		for (int i = 0; m_pTransformBlitKernels[i].pKernel != nullptr ; i++)
 		{
@@ -2602,7 +2603,6 @@ namespace wg
 
 			m_transformBlitKernelMatrix[srcIndex][(int)entry.sampleMethod][entry.normTileClip][(int)entry.tintMode][blendIndex][dstIndex] = i+1;
 		}
-
 	}
 
 	//____ _scaleLineThickness() ___________________________________________________

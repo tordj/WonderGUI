@@ -62,11 +62,237 @@ namespace wg
 		}
 	}
 
-	//____ _populateOpTabWithHandTunedKernels() __________________________________
+	//____ _straight_blit_rgb565bigendian_to_same_notint_noblend_notransform() ____________________________________________________________
 
-	void SoftGfxDevice::_populateOpTabWithHandTunedKernels()
+	void _straight_blit_rgb565bigendian_to_same_notint_noblend_notransform(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
 	{
-		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] = &_fill_rgb565bigendian_noblend_notint;
+
+		// Calculate number of loops and if we need extra start/end writes
+		
+		int loops = lineLength;
+		bool bStartSingle = false;
+		
+		if( (intptr_t(pDst) & 0x3) != 0 )
+		{
+			bStartSingle = true;
+			loops--;
+		}
+		
+		bool bEndSingle = loops % 2;
+		loops /= 2;
+		
+		// Copy loop
+		
+		for (int y = 0; y < nLines; y++)
+		{
+			if( bStartSingle )
+			{
+				* ((uint16_t*)pDst) = * ((uint16_t*) pSrc);
+				pSrc += 2;
+				pDst += 2;
+			}
+
+			for (int x = 0; x < loops; x++)
+			{
+				* ((uint32_t*)pDst) = * ((uint32_t*)pSrc);
+				pSrc += 4;
+				pDst += 4;
+			}
+			if( bEndSingle )
+			{
+				* ((uint16_t*)pDst) = * ((uint16_t*) pSrc);
+				pSrc += 2;
+				pDst += 2;
+			}
+
+			pSrc += pitches.srcY;
+			pDst += pitches.dstY;
+		}
 	}
 
+//____ _straight_blit_index8_to_rgb565bigendian_notint_noblend_notransform() ____________________________________________________________
+
+void _straight_blit_index8_to_rgb565bigendian_notint_noblend_notransform(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
+{
+
+	// Calculate number of loops and if we need extra start/end writes
+	
+	auto pPalette = pSrcSurf->clut();
+	
+	// Copy loop
+	
+	for (int y = 0; y < nLines; y++)
+	{
+		for (int x = 0; x < lineLength; x++)
+		{
+			uint32_t col = ((uint32_t*)pPalette)[*pSrc++];
+
+			uint16_t out = ((col >> 19) & 0x1F) | ((col >> 5) & 0x7E0) | ((col & 0xF8) << 8);
+			out = (out >> 8 | out << 8);
+			* (uint16_t*)pDst = out;
+		}
+
+		pSrc += pitches.srcY;
+		pDst += pitches.dstY;
+	}
+}
+
+//____ _straight_blit_index8_to_rgb565bigendian_notint_blend_notransform() ____________________________________________________________
+
+void _straight_blit_index8_to_rgb565bigendian_notint_blend_notransform(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
+{
+
+	// Calculate number of loops and if we need extra start/end writes
+	
+	auto pPalette = pSrcSurf->clut();
+	
+	// Copy loop
+	
+	for (int y = 0; y < nLines; y++)
+	{
+		for (int x = 0; x < lineLength; x++)
+		{
+			Color8 col = pPalette[*pSrc++];
+
+			int alpha = col.a * 65536 / 255;
+			int invAlpha = 65536 - alpha;
+
+			uint16_t back = * ((uint16_t*)pDst);
+	
+			back = (back >> 8 | back << 8);
+			int backR = back & 0x1F;
+			int backG = (back >> 5) & 0x3F;
+			int backB = (back >> 11) & 0x3F;
+						
+			int outB = (backB * invAlpha + col.b * alpha) >> 16;
+			int outG = (backG * invAlpha + col.g * alpha) >> 16;
+			int outR = (backR * invAlpha + col.r * alpha) >> 16;
+			
+			uint16_t out = outR | (outG << 5) | (outB << 11 );
+			out = (out >> 8 | out << 8);
+
+			* (uint16_t*)pDst = out;
+			pDst += 2;
+		}
+
+		pSrc += pitches.srcY;
+		pDst += pitches.dstY;
+	}
+}
+
+
+
+//____ _straight_blit_alpha8_to_rgb565bigendian_notint_blend_notransform() ____________________________________________________________
+
+void _straight_blit_alpha8_to_rgb565bigendian_notint_blend_notransform(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
+{
+	// Copy loop
+	
+	for (int y = 0; y < nLines; y++)
+	{
+		for (int x = 0; x < lineLength; x++)
+		{
+			uint8_t a = * pSrc++;
+			int alpha = a * 65536 / 255;
+			int invAlpha = 65536 - alpha;
+
+			uint16_t back = * ((uint16_t*)pDst);
+	
+			back = (back >> 8 | back << 8);
+			int backR = back & 0x1F;
+			int backG = (back >> 5) & 0x3F;
+			int backB = (back >> 11) & 0x3F;
+						
+			int outB = (backB * invAlpha + 31 * alpha) >> 16;
+			int outG = (backG * invAlpha + 63 * alpha) >> 16;
+			int outR = (backR * invAlpha + 31 * alpha) >> 16;
+			
+			uint16_t out = outR | (outG << 5) | (outB << 11 );
+			out = (out >> 8 | out << 8);
+
+			* (uint16_t*)pDst = out;
+			pDst += 2;
+		}
+
+		pSrc += pitches.srcY;
+		pDst += pitches.dstY;
+	}
+}
+
+//____ _straight_blit_alpha8_to_rgb565bigendian_tint_blend_notransform() ____________________________________________________________
+
+void _straight_blit_alpha8_to_rgb565bigendian_tint_blend_notransform(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
+{
+
+	uint8_t srcR = HiColor::packLinearTab[tint.flatTintColor.r] >> 3;
+	uint8_t srcG = HiColor::packLinearTab[tint.flatTintColor.g] >> 2;
+	uint8_t srcB = HiColor::packLinearTab[tint.flatTintColor.b] >> 3;
+
+	uint16_t tintA = tint.flatTintColor.a * 16;
+	
+	// Copy loop
+	
+	for (int y = 0; y < nLines; y++)
+	{
+		for (int x = 0; x < lineLength; x++)
+		{
+			uint8_t a = * pSrc++;
+			int alpha = a * tintA / 255;
+			int invAlpha = 65536 - alpha;
+
+			
+			uint16_t back = * ((uint16_t*)pDst);
+	
+			back = (back >> 8 | back << 8);
+			int backR = back & 0x1F;
+			int backG = (back >> 5) & 0x3F;
+			int backB = (back >> 11) & 0x3F;
+						
+			
+			int outB = (backB * invAlpha + srcB * alpha) >> 16;
+			int outG = (backG * invAlpha + srcG * alpha) >> 16;
+			int outR = (backR * invAlpha + srcR * alpha) >> 16;
+			
+			uint16_t out = outR | (outG << 5) | (outB << 11 );
+			out = (out >> 8 | out << 8);
+
+			* (uint16_t*)pDst = out;
+			pDst += 2;
+		}
+
+		pSrc += pitches.srcY;
+		pDst += pitches.dstY;
+	}
+}
+
+//____ insertKernelsIntoOpTab() __________________________________
+
+static void insertKernelsIntoOpTab(
+							SoftGfxDevice::PlotOp_p 			plotOpTab[BlendMode_size][PixelFormat_size],
+							SoftGfxDevice::LineOp_p 			lineOpTab[BlendMode_size][PixelFormat_size],
+							SoftGfxDevice::ClipLineOp_p			clipLineOpTab[BlendMode_size][PixelFormat_size],
+							SoftGfxDevice::FillOp_p				fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size],
+							SoftGfxDevice::PlotListOp_p			plotListOpTab[BlendMode_size][PixelFormat_size],
+							SoftGfxDevice::SegmentOp_p			segmentOpTab[2][BlendMode_size][PixelFormat_size],
+							SoftGfxDevice::StraightBlitOp_p		pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size],
+							SoftGfxDevice::StraightBlitOp_p		pass2OpTab_fast8[TintMode_size][BlendMode_size][PixelFormat_size],
+							SoftGfxDevice::StraightBlitOp_p		moveTo_internal_OpTab[PixelFormat_size][2],
+							SoftGfxDevice::TransformBlitOp_p	transformTo_internal_OpTab[PixelFormat_size][2][3],
+							SoftGfxDevice::StraightBlitOp_p		moveTo_internal_fast8_OpTab[PixelFormat_size][2],
+							SoftGfxDevice::TransformBlitOp_p	transformTo_internal_fast8_OpTab[PixelFormat_size][2][3] )
+{
+	fillOpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::RGB_565_bigendian] = &_fill_rgb565bigendian_noblend_notint;
+}
+
+static SoftGfxDevice::StraightBlitKernelEntry straightBlitKernels[] = {
+	{ PixelFormat::RGB_565_bigendian, false, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_rgb565bigendian_to_same_notint_noblend_notransform },
+	{ PixelFormat::CLUT_8_linear, false, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_index8_to_rgb565bigendian_notint_noblend_notransform },
+	{ PixelFormat::CLUT_8_linear, false, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_index8_to_rgb565bigendian_notint_blend_notransform },
+	{ PixelFormat::A_8, false, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_alpha8_to_rgb565bigendian_notint_blend_notransform },
+	{ PixelFormat::A_8, false, TintMode::Flat, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_alpha8_to_rgb565bigendian_tint_blend_notransform },
+	{ PixelFormat::Undefined, false, TintMode::None, BlendMode::Undefined, PixelFormat::Undefined, nullptr }
+};
+
+
+	SoftGfxDevice::KernelCollection	HandTunedRGB565SoftGfxKernels = { insertKernelsIntoOpTab, straightBlitKernels, nullptr };
 };

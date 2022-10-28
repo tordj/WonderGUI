@@ -28,6 +28,9 @@ MouseButton 	translateMouseButton( uint8_t button );
 
 bool			bQuit = false;	// Set to false by myButtonClickCallback() or translateEvents().
 
+extern wg::SoftGfxDevice::KernelCollection	DefaultSoftGfxKernels;
+
+
 //____ main() _________________________________________________________________
 
 int main ( int argc, char** argv )
@@ -60,8 +63,9 @@ int main ( int argc, char** argv )
 	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
 	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
 
+	const SoftGfxDevice::KernelCollection * kernels[2] = { &DefaultSoftGfxKernels, nullptr };
 
-	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
+	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( kernels );
 
 	// First we load the 24-bit bmp containing the button graphics.
 	// No error handling or such to keep this example short and simple.

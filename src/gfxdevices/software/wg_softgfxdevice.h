@@ -47,12 +47,12 @@ namespace wg
 	class SoftGfxDevice : public GfxDevice
 	{
 		friend class SoftSurface;
-
 	public:
+		struct KernelCollection;
 
 		//.____ Creation __________________________________________
 
-		static SoftGfxDevice_p	create();
+		static SoftGfxDevice_p	create( const KernelCollection * collection[] );
 
 		//.____ Identification __________________________________________
 
@@ -147,8 +147,6 @@ namespace wg
 			Tile
 		};
 
-
-
 		struct SegmentGradient
 		{
 			int			begR;		// Blue value at top of segment column. 0-255 << 16;
@@ -171,10 +169,59 @@ namespace wg
 			int dstY;			// Pitch in bytes from end of line to beginning of next for each line written.
 		};
 
+		typedef	void(*PlotOp_p)(uint8_t * pDst, HiColor col, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*PlotListOp_p)(const RectI& clip, int nCoords, const CoordI * pCoords, const HiColor * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
+		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*StraightBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
+		typedef	void(*TransformBlitOp_p)(const SoftSurface * pSrcSurf, BinalCoord pos, const binalInt matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
+		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);
+
+		struct StraightBlitKernelEntry
+		{
+			PixelFormat			srcFormat;
+			bool				bTile;
+			TintMode			tintMode;
+			BlendMode			blendMode;
+			PixelFormat			destFormat;
+			StraightBlitOp_p	pKernel;
+		};
+
+		struct TransformBlitKernelEntry
+		{
+			PixelFormat			srcFormat;
+			SampleMethod		sampleMethod;
+			uint8_t				normTileClip;
+			TintMode			tintMode;
+			BlendMode			blendMode;
+			PixelFormat			destFormat;
+			TransformBlitOp_p	pKernel;
+		};
 		
+		
+		struct KernelCollection
+		{
+			void (*insertKernelsIntoOpTab)(	PlotOp_p 			plotOpTab[BlendMode_size][PixelFormat_size],
+											LineOp_p 			lineOpTab[BlendMode_size][PixelFormat_size],
+											ClipLineOp_p		clipLineOpTab[BlendMode_size][PixelFormat_size],
+											FillOp_p			fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size],
+											PlotListOp_p		plotListOpTab[BlendMode_size][PixelFormat_size],
+											SegmentOp_p			segmentOpTab[2][BlendMode_size][PixelFormat_size],
+											StraightBlitOp_p	pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size],
+											StraightBlitOp_p	pass2OpTab_fast8[TintMode_size][BlendMode_size][PixelFormat_size],
+											StraightBlitOp_p	moveTo_internal_OpTab[PixelFormat_size][2],
+											TransformBlitOp_p	transformTo_internal_OpTab[PixelFormat_size][2][3],
+											StraightBlitOp_p	moveTo_internal_fast8_OpTab[PixelFormat_size][2],
+											TransformBlitOp_p	transformTo_internal_fast8_OpTab[PixelFormat_size][2][3] );
+
+			const StraightBlitKernelEntry *	pStraightBlitKernels;
+			const TransformBlitKernelEntry * pTranformBlitKernels;
+		
+		};
 		
 	protected:
-		SoftGfxDevice();
+		SoftGfxDevice(const KernelCollection * collection[]);
 		~SoftGfxDevice();
 
 		void	_canvasWasChanged() override;
@@ -279,36 +326,6 @@ namespace wg
 
 		//
 
-		typedef	void(*PlotOp_p)(uint8_t * pDst, HiColor col, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*PlotListOp_p)(const RectI& clip, int nCoords, const CoordI * pCoords, const HiColor * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
-		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*StraightBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
-		typedef	void(*TransformBlitOp_p)(const SoftSurface * pSrcSurf, BinalCoord pos, const binalInt matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
-		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);
-
-		struct StraightBlitKernelEntry
-		{
-			PixelFormat			srcFormat;
-			bool				bTile;
-			TintMode			tintMode;
-			BlendMode			blendMode;
-			PixelFormat			destFormat;
-			StraightBlitOp_p	pKernel;
-		};
-
-		struct TransformBlitKernelEntry
-		{
-			PixelFormat			srcFormat;
-			SampleMethod		sampleMethod;
-			uint8_t				normTileClip;
-			TintMode			tintMode;
-			BlendMode			blendMode;
-			PixelFormat			destFormat;
-			TransformBlitOp_p	pKernel;
-		};
-
 		typedef void(SoftGfxDevice::*StraightBlitProxy_Op)(const RectI& dest, CoordI src, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp);
 		typedef void(SoftGfxDevice::*TransformBlitProxy_Op)(const RectI& dest, BinalCoord pos, const binalInt matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp);
 
@@ -334,41 +351,32 @@ namespace wg
 		uint16_t					m_straightBlitKernelMatrix[12][2][5][9][10];
 		uint16_t					m_transformBlitKernelMatrix[12][2][3][5][9][10];
 
-		StraightBlitKernelEntry*	m_pStraightBlitKernels = nullptr;
-		TransformBlitKernelEntry*	m_pTransformBlitKernels = nullptr;
+		const StraightBlitKernelEntry*	m_pStraightBlitKernels = nullptr;
+		const TransformBlitKernelEntry*	m_pTransformBlitKernels = nullptr;
 
 
 		//
 
-		void	_populateOptimizedBlits();
-
-
-		void	_populateOpTab();
-		void	_populateOpTabWithHandTunedKernels();
-
-		static StraightBlitKernelEntry s_straightBlitKernels[];
-		static TransformBlitKernelEntry s_transformBlitKernels[];
-
-		StraightBlitKernelEntry*	_getStraightBlitKernels() const;
-		TransformBlitKernelEntry*	_getTransformBlitKernels() const;
+		void	_populateOptimizedStraightBlits( const StraightBlitKernelEntry* pKernelList );
+		void	_populateOptimizedTransformBlits( const TransformBlitKernelEntry* pKernelList );
 
 		//
 
-		static PlotOp_p			s_plotOpTab[BlendMode_size][PixelFormat_size];
-		static LineOp_p			s_lineOpTab[BlendMode_size][PixelFormat_size];
-		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelFormat_size];
-		static FillOp_p			s_fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size];		//[BlendMode][TintMode][DestFormat]
-		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelFormat_size];
-		static SegmentOp_p		s_segmentOpTab[2][BlendMode_size][PixelFormat_size];				//[bVerticalTint][BlendMode][DestFormat]
+		PlotOp_p				m_plotOpTab[BlendMode_size][PixelFormat_size];
+		LineOp_p				m_lineOpTab[BlendMode_size][PixelFormat_size];
+		ClipLineOp_p			m_clipLineOpTab[BlendMode_size][PixelFormat_size];
+		FillOp_p				m_fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size];		//[BlendMode][TintMode][DestFormat]
+		PlotListOp_p			m_plotListOpTab[BlendMode_size][PixelFormat_size];
+		SegmentOp_p				m_segmentOpTab[2][BlendMode_size][PixelFormat_size];				//[bVerticalTint][BlendMode][DestFormat]
 
-		static StraightBlitOp_p	s_pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size];
-		static StraightBlitOp_p	s_pass2OpTab_fast8[TintMode_size][BlendMode_size][PixelFormat_size];
+		StraightBlitOp_p		m_pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size];
+		StraightBlitOp_p		m_pass2OpTab_fast8[TintMode_size][BlendMode_size][PixelFormat_size];
 
-		static StraightBlitOp_p	s_moveTo_internal_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
-		static TransformBlitOp_p	s_transformTo_internal_OpTab[PixelFormat_size][2][3];				// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		StraightBlitOp_p		m_moveTo_internal_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
+		TransformBlitOp_p		m_transformTo_internal_OpTab[PixelFormat_size][2][3];				// [SourceFormat][SampleMethod][Normal/Clip/Tile]
 
-		static StraightBlitOp_p	s_moveTo_internal_fast8_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
-		static TransformBlitOp_p	s_transformTo_internal_fast8_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
+		StraightBlitOp_p		m_moveTo_internal_fast8_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
+		TransformBlitOp_p		m_transformTo_internal_fast8_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
 
 
 		SurfaceFactory_p	m_pSurfaceFactory;

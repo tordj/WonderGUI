@@ -26,13 +26,15 @@
 #include <wg_softgfxdevice.h>
 #include <wg_softsurfacefactory.h>
 
-
 using namespace wg;
 
+extern wg::SoftGfxDevice::KernelCollection	DefaultSoftGfxKernels;
 
 wg_obj wg_createSoftGfxDevice()
 {
-	auto p = SoftGfxDevice::create();
+	const wg::SoftGfxDevice::KernelCollection * kernelList[2] = { &DefaultSoftGfxKernels, nullptr };
+	
+	auto p = SoftGfxDevice::create( kernelList );
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }
