@@ -61,6 +61,8 @@ void freeSDLSurfCallback( void * pSDLSurf )
 	SDL_FreeSurface( (SDL_Surface*) pSDLSurf );
 }
 
+extern void addGeneratedKernels( SoftGfxDevice * pDevice );
+
 
 //____ main() _________________________________________________________________
 
@@ -164,6 +166,7 @@ int main ( int argc, char** argv )
 	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), type, pCanvasBlob, pWinSurf->pitch );
     
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
+	addGeneratedKernels(pGfxDevice);
 
 	RootPanel_p pRoot = RootPanel::create( pCanvas, pGfxDevice );
 //    pRoot->setGeo( pCanvas->size() );

@@ -28,13 +28,13 @@
 
 using namespace wg;
 
-extern wg::SoftGfxDevice::KernelCollection	DefaultSoftGfxKernels;
+extern void addGeneratedKernels( SoftGfxDevice * pDevice );
 
 wg_obj wg_createSoftGfxDevice()
 {
-	const wg::SoftGfxDevice::KernelCollection * kernelList[2] = { &DefaultSoftGfxKernels, nullptr };
 	
-	auto p = SoftGfxDevice::create( kernelList );
+	auto p = SoftGfxDevice::create();
+	addGeneratedKernels(p);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }

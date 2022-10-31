@@ -38,6 +38,9 @@
 using namespace wg;
 using namespace std;
 
+extern void addGeneratedKernels( SoftGfxDevice * pDevice );
+
+
 void 			translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot );
 MouseButton 	translateMouseButton( Uint8 button );
 void 			updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow );
@@ -170,6 +173,7 @@ int main ( int argc, char** argv )
 	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), type, pCanvasBlob, pWinSurf->pitch );
     
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
+	addGeneratedKernels(pGfxDevice);
 
 	RootPanel_p pRoot = RootPanel::create( pCanvas, pGfxDevice );
 //    pRoot->setGeo( pCanvas->size() );

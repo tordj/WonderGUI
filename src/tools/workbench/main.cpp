@@ -41,6 +41,8 @@
 
 using namespace wg;
 
+extern void addGeneratedKernels( SoftGfxDevice * pDevice );
+
 void			unitTestMemHeap();
 
 void 			translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot );
@@ -346,6 +348,7 @@ int main(int argc, char** argv)
 
 		pCanvas = SoftSurface::create( SizeI(width, height), type, pBlob, pScreen->pitch, SurfaceFlag::Canvas);
 		auto pSoftDevice = SoftGfxDevice::create();
+		addGeneratedKernels(pSoftDevice);
 		pSoftDevice->defineCanvas(CanvasRef::Default, pCanvas);
 		pDevice = pSoftDevice;
 

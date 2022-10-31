@@ -623,7 +623,7 @@ namespace wg
 	{
 		Nearest,
 		Bilinear,
-		Undefined			// Default to Bilinear if it is accelerated, otherwise Nearest.
+		Undefined			// Needs to be last! Default to Bilinear if it is accelerated, otherwise Nearest.
 	};
 
 

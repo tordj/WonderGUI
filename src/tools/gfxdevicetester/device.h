@@ -10,6 +10,9 @@
 
 using namespace wg;
 
+extern void addGeneratedKernels( SoftGfxDevice * pDevice );
+
+
 class Device
 {
 public:
@@ -45,6 +48,7 @@ public:
 	{
 		m_pCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
 		m_pDevice = SoftGfxDevice::create();
+		addGeneratedKernels(m_pDevice);
 		return true;
 	}
 
@@ -103,6 +107,7 @@ public:
 	{
 
 		m_pOutputDevice = SoftGfxDevice::create();
+		addGeneratedKernels(m_pOutputDevice);
 		m_pOutputCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
 		m_pOutputDevice->defineCanvas(CanvasRef::Default, m_pOutputCanvas);
 		m_pStreamPlayer = GfxStreamPlayer::create(m_pOutputDevice, m_pOutputDevice->surfaceFactory());
@@ -183,6 +188,8 @@ public:
 	{
 
 		m_pOutputDevice = SoftGfxDevice::create();
+		addGeneratedKernels(m_pOutputDevice);
+
 		m_pOutputCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
 		m_pOutputDevice->defineCanvas(CanvasRef::Default, m_pOutputCanvas);
 

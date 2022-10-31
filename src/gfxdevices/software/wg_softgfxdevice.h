@@ -48,11 +48,10 @@ namespace wg
 	{
 		friend class SoftSurface;
 	public:
-		struct KernelCollection;
 
 		//.____ Creation __________________________________________
 
-		static SoftGfxDevice_p	create( const KernelCollection * collection[] );
+		static SoftGfxDevice_p	create();
 
 		//.____ Identification __________________________________________
 
@@ -105,8 +104,19 @@ namespace wg
 		void	scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 }) override;
 		void	scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
+
+
 		//.____ Internal _____________________________________________________
-		
+
+		enum EdgeOp
+		{
+			None,
+			Tile,
+			Clip
+		};
+
+		const static int             EdgeOp_size = 3;
+
 		struct ColTrans
 		{
 			TintMode mode;
@@ -140,12 +150,6 @@ namespace wg
 			int			morphFactor;	// Scale: 0 -> 4096
 		};
 
-		enum EdgeOp
-		{
-			None,
-			Clip,
-			Tile
-		};
 
 		struct SegmentGradient
 		{
@@ -178,52 +182,28 @@ namespace wg
 		typedef	void(*TransformBlitOp_p)(const SoftSurface * pSrcSurf, BinalCoord pos, const binalInt matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);
 
-		struct StraightBlitKernelEntry
-		{
-			PixelFormat			srcFormat;
-			bool				bTile;
-			TintMode			tintMode;
-			BlendMode			blendMode;
-			PixelFormat			destFormat;
-			StraightBlitOp_p	pKernel;
-		};
 
-		struct TransformBlitKernelEntry
-		{
-			PixelFormat			srcFormat;
-			SampleMethod		sampleMethod;
-			uint8_t				normTileClip;
-			TintMode			tintMode;
-			BlendMode			blendMode;
-			PixelFormat			destFormat;
-			TransformBlitOp_p	pKernel;
-		};
-		
-		
-		struct KernelCollection
-		{
-			void (*insertKernelsIntoOpTab)(	PlotOp_p 			plotOpTab[BlendMode_size][PixelFormat_size],
-											LineOp_p 			lineOpTab[BlendMode_size][PixelFormat_size],
-											ClipLineOp_p		clipLineOpTab[BlendMode_size][PixelFormat_size],
-											FillOp_p			fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size],
-											PlotListOp_p		plotListOpTab[BlendMode_size][PixelFormat_size],
-											SegmentOp_p			segmentOpTab[2][BlendMode_size][PixelFormat_size],
-											StraightBlitOp_p	pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size],
-											StraightBlitOp_p	pass2OpTab_fast8[TintMode_size][BlendMode_size][PixelFormat_size],
-											StraightBlitOp_p	moveTo_internal_OpTab[PixelFormat_size][2],
-											TransformBlitOp_p	transformTo_internal_OpTab[PixelFormat_size][2][3],
-											StraightBlitOp_p	moveTo_internal_fast8_OpTab[PixelFormat_size][2],
-											TransformBlitOp_p	transformTo_internal_fast8_OpTab[PixelFormat_size][2][3] );
+		//.____ Control ______________________________________________________
 
-			const StraightBlitKernelEntry *	pStraightBlitKernels;
-			const TransformBlitKernelEntry * pTranformBlitKernels;
+		bool	setPlotKernel(BlendMode blendMode, PixelFormat destFormat, PlotOp_p pKernel);
+		bool	setPlotListKernel(BlendMode blendMode, PixelFormat destFormat, PlotListOp_p pKernel);
+
+		bool	setLineKernel(BlendMode blendMode, PixelFormat destFormat, LineOp_p pKernel);
+		bool	setClipLineKernel(BlendMode blendMode, PixelFormat destFormat, ClipLineOp_p pKernel);
+		bool	setFillKernel(TintMode tintMode, BlendMode blendMode, PixelFormat destFormat, FillOp_p pKernel);
+
+		bool	setSegmentStripKernel(bool bTint, BlendMode blendMode, PixelFormat destFormat, SegmentOp_p pKernel);
+
+		bool	setStraightBlitKernel(PixelFormat sourceFormat, EdgeOp edgeOp, TintMode tintMode,
+									  BlendMode blendMode, PixelFormat destFormat, StraightBlitOp_p pKernel);
 		
-		};
-		
+		bool	setTransformBlitKernel(PixelFormat sourceFormat, SampleMethod sampleMethod, EdgeOp edgeOp,
+									   TintMode tintMode, BlendMode blendMode, PixelFormat destFormat, TransformBlitOp_p pKernel);
+
 	protected:
-		SoftGfxDevice(const KernelCollection * collection[]);
+		SoftGfxDevice();
 		~SoftGfxDevice();
-
+		
 		void	_canvasWasChanged() override;
 		void	_renderLayerWasChanged() override;
 
@@ -233,6 +213,7 @@ namespace wg
 
 		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
+		bool	_setupDestFormatKernels(PixelFormat format);
 
 		inline static void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const HiColor* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 		inline static void _write_pixel_fast8(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
@@ -340,44 +321,55 @@ namespace wg
 		void	_dummyTransformBlit(const RectI& dest, BinalCoord pos, const binalInt matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp);
 
 		//
+	
+		struct SinglePassStraightBlitKernels // 60 bytes on 32-bit system
+		{
+			StraightBlitOp_p	pKernels[EdgeOp_size][TintMode_size];
+		};
 
-		static int s_srcFmtToMtxOfsTab[PixelFormat_size];
-		static int s_dstFmtToMtxOfsTab[PixelFormat_size];
-		static int s_blendModeToMtxOfsTab[BlendMode_size];
+		struct SinglePassTransformBlitKernels // 180 bytes on 32-bit system
+		{
+			TransformBlitOp_p	pKernels[SampleMethod_size][EdgeOp_size][TintMode_size];
+		};
 
-		// Straight blit: [srcFormat][Normal/Tile][TintMode][BlendMode][DestFormat]
-		// Transform blit: [srcFormat][SampleFormat][Normal/Clip/Tile][TintMode][BlendMode][DestFormat]
+		struct SinglePassBlitKernels	// 44 bytes on all systems
+		{
+			SinglePassBlitKernels();
+			
+			uint16_t	straightBlitKernels[BlendMode_size];	// Offset into m_singlePassStraightBlitKernels
+			uint16_t	transformBlitKernels[BlendMode_size];	// Offset into m_singlePassTransformBlitKernels
+		};
 
-		uint16_t					m_straightBlitKernelMatrix[12][2][5][9][10];
-		uint16_t					m_transformBlitKernelMatrix[12][2][3][5][9][10];
+		struct DestFormatKernels	// 752 bytes on 32-bit system
+		{
+			DestFormatKernels();
+			
+			PlotOp_p 				pPlotKernels[BlendMode_size];
+			LineOp_p 				pLineKernels[BlendMode_size];
+			ClipLineOp_p			pClipLineKernels[BlendMode_size];
+			FillOp_p				pFillKernels[TintMode_size][BlendMode_size];
+			PlotListOp_p			pPlotListKernels[BlendMode_size];
+			SegmentOp_p				pSegmentKernels[2][BlendMode_size];
 
-		const StraightBlitKernelEntry*	m_pStraightBlitKernels = nullptr;
-		const TransformBlitKernelEntry*	m_pTransformBlitKernels = nullptr;
+			StraightBlitOp_p		pStraightBlitFromHiColorKernels[TintMode_size][BlendMode_size];
+			StraightBlitOp_p		pStraightBlitFromBGRA8Kernels[TintMode_size][BlendMode_size];
+
+			uint16_t				singlePassBlitKernels[PixelFormat_size];		// PixelFormat of blit source. Offset into m_singlePassBlitKernels +1.
+		};
+
+		StraightBlitOp_p	m_pStraightMoveToBGRA8Kernels[PixelFormat_size][EdgeOp_size];
+		TransformBlitOp_p	m_pTransformMoveToBGRA8Kernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
+		StraightBlitOp_p	m_pStraightMoveToHiColorKernels[PixelFormat_size][EdgeOp_size];
+		TransformBlitOp_p	m_pTransformMoveToHiColorKernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
+
+		DestFormatKernels *	m_pKernels[PixelFormat_size];
+	
+		std::vector<SinglePassBlitKernels>			m_singlePassBlitKernels;
+		std::vector<SinglePassStraightBlitKernels>	m_singlePassStraightBlitKernels;
+		std::vector<SinglePassTransformBlitKernels>	m_singlePassTransformBlitKernels;
 
 
 		//
-
-		void	_populateOptimizedStraightBlits( const StraightBlitKernelEntry* pKernelList );
-		void	_populateOptimizedTransformBlits( const TransformBlitKernelEntry* pKernelList );
-
-		//
-
-		PlotOp_p				m_plotOpTab[BlendMode_size][PixelFormat_size];
-		LineOp_p				m_lineOpTab[BlendMode_size][PixelFormat_size];
-		ClipLineOp_p			m_clipLineOpTab[BlendMode_size][PixelFormat_size];
-		FillOp_p				m_fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size];		//[BlendMode][TintMode][DestFormat]
-		PlotListOp_p			m_plotListOpTab[BlendMode_size][PixelFormat_size];
-		SegmentOp_p				m_segmentOpTab[2][BlendMode_size][PixelFormat_size];				//[bVerticalTint][BlendMode][DestFormat]
-
-		StraightBlitOp_p		m_pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size];
-		StraightBlitOp_p		m_pass2OpTab_fast8[TintMode_size][BlendMode_size][PixelFormat_size];
-
-		StraightBlitOp_p		m_moveTo_internal_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
-		TransformBlitOp_p		m_transformTo_internal_OpTab[PixelFormat_size][2][3];				// [SourceFormat][SampleMethod][Normal/Clip/Tile]
-
-		StraightBlitOp_p		m_moveTo_internal_fast8_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
-		TransformBlitOp_p		m_transformTo_internal_fast8_OpTab[PixelFormat_size][2][3];					// [SourceFormat][SampleMethod][Normal/Clip/Tile]
-
 
 		SurfaceFactory_p	m_pSurfaceFactory;
 

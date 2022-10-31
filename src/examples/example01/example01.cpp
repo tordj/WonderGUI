@@ -41,6 +41,9 @@
 
 using namespace wg;
 
+extern void addGeneratedKernels( SoftGfxDevice * pDevice );
+
+
 void 			translateEvents( RootPanel_p pRoot );
 MouseButton 	translateMouseButton( uint8_t button );
 void 			updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow );
@@ -90,6 +93,8 @@ int main ( int argc, char** argv )
 	// it our canvas to draw up.
 
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
+	addGeneratedKernels(pGfxDevice);
+
 
 	// We create a RootPanel. This is responsible for rendering the
 	// tree of child widgets connected to it and handle their events.

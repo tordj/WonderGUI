@@ -22,7 +22,7 @@
 
 using namespace wg;
 
-extern wg::SoftGfxDevice::KernelCollection	DefaultSoftGfxKernels;
+extern void addGeneratedKernels( SoftGfxDevice * pDevice );
 
 
 //____ MyAppVisitor ________________________________________________________
@@ -191,9 +191,10 @@ bool init_wondergui()
 	
 	Base::init(g_pHostBridge);
 
-	const SoftGfxDevice::KernelCollection * kernels[2] = { &DefaultSoftGfxKernels, nullptr };
 
-	auto pGfxDevice = SoftGfxDevice::create( kernels );
+	auto pGfxDevice = SoftGfxDevice::create();
+	addGeneratedKernels( pGfxDevice );
+
 	auto pSurfaceFactory = SoftSurfaceFactory::create();
 	
 	Context_p pContext = Context::create();
