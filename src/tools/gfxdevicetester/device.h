@@ -3,14 +3,14 @@
 
 #include <wg_gfxdevice.h>
 #include <wg_softgfxdevice.h>
+#include <wg_softkernels_default.h>
+
 #include <wg_streamgfxdevice.h>
 #include <wg_streamsurface.h>
 #include <wg_gfxstreamplayer.h>
 #include <wg_cabi_gfxdevice.h>
 
 using namespace wg;
-
-extern void addGeneratedKernels( SoftGfxDevice * pDevice );
 
 
 class Device
@@ -48,7 +48,7 @@ public:
 	{
 		m_pCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
 		m_pDevice = SoftGfxDevice::create();
-		addGeneratedKernels(m_pDevice);
+		addDefaultSoftKernels(m_pDevice);
 		return true;
 	}
 
@@ -107,7 +107,7 @@ public:
 	{
 
 		m_pOutputDevice = SoftGfxDevice::create();
-		addGeneratedKernels(m_pOutputDevice);
+		addDefaultSoftKernels(m_pOutputDevice);
 		m_pOutputCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
 		m_pOutputDevice->defineCanvas(CanvasRef::Default, m_pOutputCanvas);
 		m_pStreamPlayer = GfxStreamPlayer::create(m_pOutputDevice, m_pOutputDevice->surfaceFactory());
@@ -188,7 +188,7 @@ public:
 	{
 
 		m_pOutputDevice = SoftGfxDevice::create();
-		addGeneratedKernels(m_pOutputDevice);
+		addDefaultSoftKernels(m_pOutputDevice);
 
 		m_pOutputCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
 		m_pOutputDevice->defineCanvas(CanvasRef::Default, m_pOutputCanvas);

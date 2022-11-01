@@ -26,17 +26,39 @@
 #include <wg_softgfxdevice.h>
 #include <wg_softsurfacefactory.h>
 
-using namespace wg;
+#include <wg_softkernels_default.h>
+#include <wg_softkernels_rgb565be_base.h>
+#include <wg_softkernels_rgb565be_extras.h>
 
-extern void addGeneratedKernels( SoftGfxDevice * pDevice );
+using namespace wg;
 
 wg_obj wg_createSoftGfxDevice()
 {
 	
 	auto p = SoftGfxDevice::create();
-	addGeneratedKernels(p);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
+}
+
+int	wg_addDefaultSoftKernels( wg_obj device )
+{
+	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
+
+	return addDefaultSoftKernels(pDevice);
+}
+
+int	wg_addBaseSoftKernelsForRGB565BECanvas( wg_obj device )
+{
+	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
+
+	return addBaseSoftKernelsForRGB565BECanvas(pDevice);
+}
+
+int	wg_addExtraSoftKernelsForRGB565BECanvas( wg_obj device )
+{
+	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
+
+	return addExtraSoftKernelsForRGB565BECanvas(pDevice);
 }
 
 

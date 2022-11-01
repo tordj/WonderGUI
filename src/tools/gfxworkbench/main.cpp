@@ -20,6 +20,7 @@
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
+#include <wg_softkernels_default.h>
 
 using namespace wg;
 
@@ -28,7 +29,6 @@ MouseButton 	translateMouseButton( uint8_t button );
 
 bool			bQuit = false;	// Set to false by myButtonClickCallback() or translateEvents().
 
-extern void addGeneratedKernels( SoftGfxDevice * pDevice );
 
 
 
@@ -65,7 +65,7 @@ int main ( int argc, char** argv )
 	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
 
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
-	addGeneratedKernels(pGfxDevice);
+	addDefaultSoftKernels(pGfxDevice);
 
 	
 	// First we load the 24-bit bmp containing the button graphics.

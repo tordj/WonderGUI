@@ -108,12 +108,12 @@ Destination Formats:BGR_8_sRGB
 
 *******************************************************************************/
 
-#include <wg_softgfxdevice.h>
+#include <wg_softkernels_default.h>
 #include <wg_softkernelstanza.impl.h>
 
 using namespace wg;
 
-void addGeneratedKernels( SoftGfxDevice * pDevice )
+bool wg::addDefaultSoftKernels( SoftGfxDevice * pDevice )
 {
     _initStanzaTables();
 
@@ -3416,4 +3416,6 @@ pDevice->setTransformBlitKernel( PixelFormat::A_8, SampleMethod::Nearest, SoftGf
 pDevice->setTransformBlitKernel( PixelFormat::A_8, SampleMethod::Bilinear, SoftGfxDevice::EdgeOp::Clip, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, _transform_blit<PixelFormat::A_8, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, SoftGfxDevice::EdgeOp::Clip> );
 pDevice->setTransformBlitKernel( PixelFormat::A_8, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::Tile, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, _transform_blit<PixelFormat::A_8, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, SoftGfxDevice::EdgeOp::Tile> );
 pDevice->setTransformBlitKernel( PixelFormat::A_8, SampleMethod::Bilinear, SoftGfxDevice::EdgeOp::Tile, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, _transform_blit<PixelFormat::A_8, SampleMethod::Bilinear, TintMode::None, BlendMode::Blend, PixelFormat::BGRA_8_linear, SoftGfxDevice::EdgeOp::Tile> );
+	
+	return true;
 }

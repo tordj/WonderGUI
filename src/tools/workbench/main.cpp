@@ -28,6 +28,7 @@
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
+#include <wg_softkernels_default.h>
 
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
@@ -40,8 +41,6 @@
 
 
 using namespace wg;
-
-extern void addGeneratedKernels( SoftGfxDevice * pDevice );
 
 void			unitTestMemHeap();
 
@@ -348,7 +347,7 @@ int main(int argc, char** argv)
 
 		pCanvas = SoftSurface::create( SizeI(width, height), type, pBlob, pScreen->pitch, SurfaceFlag::Canvas);
 		auto pSoftDevice = SoftGfxDevice::create();
-		addGeneratedKernels(pSoftDevice);
+		addDefaultSoftKernels(pSoftDevice);
 		pSoftDevice->defineCanvas(CanvasRef::Default, pCanvas);
 		pDevice = pSoftDevice;
 

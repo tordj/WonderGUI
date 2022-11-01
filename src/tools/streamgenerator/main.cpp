@@ -23,6 +23,7 @@
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
+#include <wg_softkernels_default.h>
 #include <wg_streamsurface.h>
 #include <wg_streamsurfacefactory.h>
 #include <wg_streamgfxdevice.h>
@@ -38,7 +39,6 @@
 using namespace wg;
 using namespace std;
 
-extern void addGeneratedKernels( SoftGfxDevice * pDevice );
 
 
 void 			translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot );
@@ -173,7 +173,7 @@ int main ( int argc, char** argv )
 	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), type, pCanvasBlob, pWinSurf->pitch );
     
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
-	addGeneratedKernels(pGfxDevice);
+	addDefaultSoftKernels(pGfxDevice);
 
 	RootPanel_p pRoot = RootPanel::create( pCanvas, pGfxDevice );
 //    pRoot->setGeo( pCanvas->size() );

@@ -38,10 +38,9 @@
 
 #include <wg_softsurface.h>
 #include <wg_softgfxdevice.h>
+#include <wg_softkernels_default.h>
 
 using namespace wg;
-
-extern void addGeneratedKernels( SoftGfxDevice * pDevice );
 
 
 void 			translateEvents( RootPanel_p pRoot );
@@ -93,7 +92,7 @@ int main ( int argc, char** argv )
 	// it our canvas to draw up.
 
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
-	addGeneratedKernels(pGfxDevice);
+	addDefaultSoftKernels(pGfxDevice);
 
 
 	// We create a RootPanel. This is responsible for rendering the

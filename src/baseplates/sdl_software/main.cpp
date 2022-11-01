@@ -15,14 +15,13 @@
 
 #include <wg_softgfxdevice.h>
 #include <wg_softsurfacefactory.h>
+#include <wg_softkernels_default.h>
 
 #include "baseplate.h"
 
 #include "tinyfiledialogs.h"
 
 using namespace wg;
-
-extern void addGeneratedKernels( SoftGfxDevice * pDevice );
 
 
 //____ MyAppVisitor ________________________________________________________
@@ -193,7 +192,7 @@ bool init_wondergui()
 
 
 	auto pGfxDevice = SoftGfxDevice::create();
-	addGeneratedKernels( pGfxDevice );
+	addDefaultSoftKernels( pGfxDevice );
 
 	auto pSurfaceFactory = SoftSurfaceFactory::create();
 	

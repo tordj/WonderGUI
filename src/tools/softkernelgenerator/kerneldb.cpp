@@ -34,8 +34,6 @@ KernelDB::CustomBlitSpec::CustomBlitSpec()
 }
 
 
-
-
 //____ setTintMode() __________________________________________________________
 
 void KernelDB::setTintMode(TintMode mode, bool bOn)
@@ -263,12 +261,12 @@ bool KernelDB::generateSource(std::ostream& out)
 	out << "thousands of optimized render loops, growing the size of WonderGUI by many" << endl;
 	out << "megabytes." << endl;
 	out << endl;
-	out << "The default wg_softkernels.cpp provides a good balance between size and performance" << endl;
-	out << "for modern desktop applications, supporting everyting but only optimizing most" << endl;
-	out << "important blit operations." << endl;
+	out << "For modern desktop applications wg_softkernels_default.h/cpp provides a good" << endl;
+	out << "balance between size and performance, supporting everyting but only optimizing" << endl;
+	out << "most important blit operations." << endl;
 	out << endl;
 	out << "********************************************************************************" << endl << endl;
-	out << "SUPPORTED MODES AND FORMATS" << endl << endl;
+	out << "SUPPORTED MODES AND FORMATS " << endl << endl;
 
 		// TintModes
 	{
@@ -407,7 +405,7 @@ bool KernelDB::generateSource(std::ostream& out)
 		out << "Source Formats:     ";
 		for( int i = 0 ; i < PixelFormat_size ; i++ )
 		{
-			if( blitSpec.sourceFormats[i] )
+			if( blitSpec.sourceFormats[i] && m_srcFormats[i] )
 				out << toString( (PixelFormat)i ) << endl << "                    ";
 		}
 		out << endl;
@@ -415,7 +413,7 @@ bool KernelDB::generateSource(std::ostream& out)
 		out << "Destination Formats:";
 		for( int i = 0 ; i < PixelFormat_size ; i++ )
 		{
-			if( blitSpec.sourceFormats[i] )
+			if( blitSpec.sourceFormats[i] && m_destFormats[i] )
 				out << toString( (PixelFormat)i ) << endl << "                    ";
 		}
 		out << endl;
@@ -440,7 +438,7 @@ bool KernelDB::generateSource(std::ostream& out)
 	out << endl;
 	out << "using namespace wg;" << endl;
 	out << endl;
-	out << "void addGeneratedKernels( SoftGfxDevice * pDevice )" << endl;
+	out << "bool wg::addDefaultSoftKernels( SoftGfxDevice * pDevice )" << endl;
 	out << "{" << endl;
 	out << "    _initStanzaTables();" << endl << endl;
 
@@ -814,7 +812,7 @@ bool KernelDB::generateSource(std::ostream& out)
 				{
 					for (int dstFmt = 0; dstFmt < PixelFormat_size; dstFmt++)
 					{
-						if (entry.tintModes[tintMode] && entry.blendModes[blendMode] && entry.sourceFormats[srcFmt] && entry.destFormats[dstFmt])
+						if (entry.tintModes[tintMode] && entry.blendModes[blendMode] && entry.sourceFormats[srcFmt] && m_srcFormats[srcFmt] && entry.destFormats[dstFmt] && m_destFormats[dstFmt])
 						{
 							if (entry.blitTypes[(int)BlitType::StraightBlit])
 							{
@@ -867,7 +865,7 @@ bool KernelDB::generateSource(std::ostream& out)
 				{
 					for (int dstFmt = 0; dstFmt < PixelFormat_size; dstFmt++)
 					{
-						if (entry.tintModes[tintMode] && entry.blendModes[blendMode] && entry.sourceFormats[srcFmt] && entry.destFormats[dstFmt])
+						if (entry.tintModes[tintMode] && entry.blendModes[blendMode] && entry.sourceFormats[srcFmt] && m_srcFormats[srcFmt] && entry.destFormats[dstFmt] && m_destFormats[dstFmt])
 						{
 							if (entry.blitTypes[(int)BlitType::TransformBlitNearest])
 							{
@@ -972,6 +970,7 @@ bool KernelDB::generateSource(std::ostream& out)
 
 	// Print end of method
 
+	out << "    return true;" << endl;
 	out << "}" << endl;
 
 
