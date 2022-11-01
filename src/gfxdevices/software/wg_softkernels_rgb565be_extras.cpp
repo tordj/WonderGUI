@@ -85,8 +85,23 @@ static void _fill_rgb565bigendian_noblend_notint(uint8_t* pDst, int pitchX, int 
 
 static void _straight_blit_rgb565bigendian_to_same_notint_noblend(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
 {
-//	if( ((simpleTransform[0][0] + simpleTransform[1][1]) == 2) && ((simpleTransform[0][1] | simpleTransform[1][0]) == 0) )
-//	{
+	if( pitches.srcX == 2 && pitches.dstX == 2 )
+	{
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				* ((uint16_t*)pDst) = * ((uint16_t*) pSrc);
+				pSrc += 2;
+				pDst += 2;
+			}
+
+			pSrc += pitches.srcY;
+			pDst += pitches.dstY;
+		}
+	}
+	else
+	{
 		for (int y = 0; y < nLines; y++)
 		{
 			for (int x = 0; x < lineLength; x++)
@@ -99,54 +114,7 @@ static void _straight_blit_rgb565bigendian_to_same_notint_noblend(const uint8_t*
 			pSrc += pitches.srcY;
 			pDst += pitches.dstY;
 		}
-//	}
-/*
-	else
-	{
-		// Calculate number of loops and if we need extra start/end writes
-		
-		int loops = lineLength;
-		bool bStartSingle = false;
-		
-		if( (intptr_t(pDst) & 0x3) != 0 )
-		{
-			bStartSingle = true;
-			loops--;
-		}
-		
-		bool bEndSingle = loops % 2;
-		loops /= 2;
-		
-		// Copy loop
-		
-		for (int y = 0; y < nLines; y++)
-		{
-			if( bStartSingle )
-			{
-				* ((uint16_t*)pDst) = * ((uint16_t*) pSrc);
-				pSrc += 2;
-				pDst += 2;
-			}
-
-			for (int x = 0; x < loops; x++)
-			{
-				* ((uint32_t*)pDst) = * ((uint32_t*)pSrc);
-				pSrc += 4;
-				pDst += 4;
-			}
-			if( bEndSingle )
-			{
-				* ((uint16_t*)pDst) = * ((uint16_t*) pSrc);
-				pSrc += 2;
-				pDst += 2;
-			}
-
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
-		}
-
 	}
- */
 }
 
 //____ _straight_blit_index8linear_to_rgb565bigendian_notint_noblend() ____________________________________________________________

@@ -182,7 +182,24 @@ namespace wg
 		typedef	void(*TransformBlitOp_p)(const SoftSurface * pSrcSurf, BinalCoord pos, const binalInt matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);
 
+		static void _initStanzaTables();
 
+		
+		static int 				s_mulTab[256];
+
+		static int16_t			s_limit4096Tab[4097 * 3];
+
+		static bool				s_bTablesInitialized;
+	
+		static const int16_t 	s_channel_4_1[256];		
+		static const int16_t	s_channel_4_2[256];
+		static const int16_t	s_channel_5[256];
+		static const int16_t	s_channel_6[256];
+		static const uint8_t	s_fast8_channel_4_1[256];
+		static const uint8_t 	s_fast8_channel_4_2[256];
+		static const uint8_t	s_fast8_channel_5[256];
+		static const uint8_t	s_fast8_channel_6[256];
+		
 		//.____ Control ______________________________________________________
 
 		bool	setPlotKernel(BlendMode blendMode, PixelFormat destFormat, PlotOp_p pKernel);

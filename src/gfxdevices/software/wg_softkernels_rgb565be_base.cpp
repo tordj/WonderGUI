@@ -85,7 +85,7 @@ using namespace wg;
 
 bool wg::addBaseSoftKernelsForRGB565BECanvas( SoftGfxDevice * pDevice )
 {
-    _initStanzaTables();
+    SoftGfxDevice::_initStanzaTables();
 
 pDevice->setPlotKernel( BlendMode::Replace, PixelFormat::BGR_8_linear, _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_linear> );
 pDevice->setPlotKernel( BlendMode::Replace, PixelFormat::BGRX_8_linear, _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGRX_8_linear> );

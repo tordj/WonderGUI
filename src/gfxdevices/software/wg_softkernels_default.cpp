@@ -115,7 +115,7 @@ using namespace wg;
 
 bool wg::addDefaultSoftKernels( SoftGfxDevice * pDevice )
 {
-    _initStanzaTables();
+    SoftGfxDevice::_initStanzaTables();
 
 pDevice->setPlotKernel( BlendMode::Replace, PixelFormat::BGR_8_sRGB, _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_sRGB> );
 pDevice->setPlotKernel( BlendMode::Replace, PixelFormat::BGR_8_linear, _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_linear> );
