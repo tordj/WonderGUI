@@ -68,6 +68,12 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(blueprint, pOther));
 	}
 
+	SoftSurface_p SoftSurface::createInPlace(const Blueprint& blueprint, uint8_t* pPixels, int pitch)
+	{
+		return SoftSurface_p(new SoftSurface(blueprint, pPixels, pitch));
+	}
+
+
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, int flags, const Color8 * pClut )
 	{
 		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
@@ -157,8 +163,6 @@ namespace wg
 		return SoftSurface_p(new SoftSurface( bp, pOther ));
 	}
 
-
-
 	//____ constructor ________________________________________________________________
 
 	SoftSurface::SoftSurface( const Blueprint& bp ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest )
@@ -190,6 +194,29 @@ namespace wg
 
 		_initTiling();
 	}
+
+	SoftSurface::SoftSurface(const Blueprint& bp, uint8_t * pPixels, int pitch) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
+	{
+		// This constructor creates the surface in place, using the pixels (and clut if present in BP) where they are.
+		
+		if( pitch == 0 )
+			pitch = bp.size.w * m_pixelDescription.bits/8;
+		
+		m_pitch = pitch;
+		m_pBlob = nullptr;
+		m_pData = pPixels;
+
+		if (bp.clut)
+		{
+			m_pClut = const_cast<Color8*>(bp.clut);
+			_makeClut4096();
+		}
+		else
+			m_pClut = nullptr;
+
+		_initTiling();
+	}
+
 
 	SoftSurface::SoftSurface(const Blueprint& bp, uint8_t * pPixels, int pitch,
 							 const PixelDescription * pPixelDescription) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)

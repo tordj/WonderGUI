@@ -303,6 +303,8 @@ add_library( wondergui
 	slots/wg_staticslotvector.impl.h
 
 	surfaceio/wg_surfacefileheader.h
+	surfaceio/wg_surfacefileinspector.h
+	surfaceio/wg_surfacefileinspector.cpp
 	surfaceio/wg_surfacereader.h
 	surfaceio/wg_surfacereader.cpp
 	surfaceio/wg_surfacewriter.h

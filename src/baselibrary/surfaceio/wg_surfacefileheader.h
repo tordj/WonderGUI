@@ -38,8 +38,8 @@ struct SurfaceFileHeader
 	char 			header[4]				= { 'S', 'U', 'R', 'F' };
 	int16_t			versionNumber			= 1;
 	int16_t			headerBytes				= 0;
-	int32_t			paletteBytes			= 0;
-	int32_t			pixelBytes				= 0;
+	int32_t			paletteBytes			= 0;		// Includes padding
+	int32_t			pixelBytes				= 0;		// Includes padding
 	int32_t			extraDataBytes			= 0;
 
 	int32_t			width					= 0;
@@ -74,7 +74,8 @@ struct SurfaceFileHeader
 	int16_t			filterBlockHeight		= 1;
 	char			pixelCompression[4]		= { 'N','O','N','E' };
 	int16_t			pixelDecompressMargin	= 0;
-	int16_t			reserved2				= 0;
+	int8_t			pixelDataPadding		= 0;					// Number of extra bytes at end of pixel data to ensure each block starts on 32-bit alignment.
+	int8_t			reserved2				= 0;
 	
 	//	-- 56 bytes header ends here.
 
@@ -83,7 +84,8 @@ struct SurfaceFileHeader
 	char			paletteFilteringParams[8] = { 0,0,0,0,0,0,0,0 };
 	char 			paletteCompression[4]	= { 'N','O','N','E' };
 	int16_t			paletteDecompressMargin	= 0;
-	int16_t			reserved3				= 0;
+	int8_t			paletteDataPadding		= 0;					// Number of extra bytes at end of pixel data to ensure each block starts on 32-bit alignment.
+	int8_t			reserved3				= 0;
 
 	//	-- 80 bytes header ends here.
 

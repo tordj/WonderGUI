@@ -50,6 +50,8 @@ namespace wg
 		static SoftSurface_p	create(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
 		static SoftSurface_p	create(const Blueprint& blueprint, Surface* pOther);
 
+		static SoftSurface_p	createInPlace(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0);
+
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
@@ -90,8 +92,9 @@ namespace wg
 
 	protected:
 		SoftSurface(const Blueprint& blueprint);
-		SoftSurface(const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
-		SoftSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
+		SoftSurface(const Blueprint& blueprint, Blob* pBlob, int pitch);
+		SoftSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch);		// Create in place!
+		SoftSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription);
 		SoftSurface(const Blueprint& blueprint, Surface* pOther);
 
 		~SoftSurface();

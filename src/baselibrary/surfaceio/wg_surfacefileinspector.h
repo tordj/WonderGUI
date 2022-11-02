@@ -20,56 +20,56 @@
 
 =========================================================================*/
 
-#ifndef WG_SURFACEREADER_DOT_H
-#define WG_SURFACEREADER_DOT_H
+#ifndef WG_SURFACEFILEINSPECTOR_DOT_H
+#define WG_SURFACEFILEINSPECTOR_DOT_H
 #pragma once
 
-#include <istream>
 
+#include <wg_surface.h>
 #include <wg_surfacefileheader.h>
-#include <wg_surfacefactory.h>
 
 namespace wg
 {
 
+class SurfaceFileInspector;
+typedef	StrongPtr<SurfaceFileInspector>	SurfaceFileInspector_p;
+typedef	WeakPtr<SurfaceFileInspector>	SurfaceFileInspector_wp;
 
-	class SurfaceReader;
-	typedef	StrongPtr<SurfaceReader>SurfaceReader_p;
-	typedef	WeakPtr<SurfaceReader>	SurfaceReader_wp;
-
-
-class SurfaceReader : public Object
+class SurfaceFileInspector : public Object
 {
 public:
 
-	struct Blueprint
-	{
-		SurfaceFactory_p	factory;
-	};
-
 	//.____ Creation __________________________________________
 
-	static SurfaceReader_p	create( const Blueprint& blueprint );
+	static SurfaceFileInspector_p	create( const char * pSurfaceFileInMemory );
 
 	//.____ Identification _________________________________________________
 
 	const TypeInfo&		typeInfo(void) const override;
 	const static TypeInfo	TYPEINFO;
 
-	//.____ Misc _________________________________________________________________
+	//.____ Content _________________________________________________________________
+
+	Surface::Blueprint 	surfaceBlueprint();
 	
-	Surface_p		readSurfaceFromStream( std::istream& stream );
-	Surface_p		readSurfaceFromBlob( const Blob * pBlob );
-	Surface_p		readSurfaceFromMemory( const char * pData );
+	int				pixelDataOffset();
+	int				pixelDataBytes();
+
+	int				paletteDataOffset();
+	int				paletteDataBytes();
 	
+	int				extraDataOffset();
+	int				extraDataBytes();
+
+	bool			isPixelDataCompressed();
+	bool			isPaletteDataCompressed();
+	bool			isExtraDataCompressed();
+
 protected:
-	SurfaceReader( const Blueprint& bp );
-	virtual ~SurfaceReader() {}
-	
-	Surface::Blueprint	_blueprintFromHeader( const SurfaceFileHeader * pHeader );
-	
-	
-	SurfaceFactory_p	m_pFactory;
+	SurfaceFileInspector( const char * pSurfaceFileInMemory );
+
+	SurfaceFileHeader	m_header;
+	const uint8_t *		m_pSurfaceFileInMemory;
 	
 };
 
@@ -77,7 +77,7 @@ protected:
 //==============================================================================
 
 } // namespace wg
-#endif // WG_SURFACEREADER_DOT_H
+#endif // WG_SURFACEFILEINSPECTOR_DOT_H
 
 
 
