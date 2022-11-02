@@ -157,7 +157,7 @@ static void _straight_blit_index8linear_to_rgb565bigendian_notint_blend(const ui
 		{
 			Color8 col = pPalette[*pSrc];
 
-			int alpha = col.a * 65536 / 255;
+			int alpha = SoftGfxDevice::s_mulTab[col.a];
 			int invAlpha = 65536 - alpha;
 
 			uint16_t back = * ((uint16_t*)pDst);
@@ -167,9 +167,9 @@ static void _straight_blit_index8linear_to_rgb565bigendian_notint_blend(const ui
 			int backG = (back >> 5) & 0x3F;
 			int backB = (back >> 11) & 0x3F;
 						
-			int outB = (backB * invAlpha + col.b * alpha) >> 16;
-			int outG = (backG * invAlpha + col.g * alpha) >> 16;
-			int outR = (backR * invAlpha + col.r * alpha) >> 16;
+			int outB = (backB * invAlpha + col.b * (alpha>>3)) >> 16;
+			int outG = (backG * invAlpha + col.g * (alpha>>2)) >> 16;
+			int outR = (backR * invAlpha + col.r * (alpha>>3)) >> 16;
 			
 			uint16_t out = outR | (outG << 5) | (outB << 11 );
 			out = (out >> 8 | out << 8);
@@ -196,8 +196,7 @@ static void _straight_blit_alpha8_to_rgb565bigendian_notint_blend(const uint8_t*
 	{
 		for (int x = 0; x < lineLength; x++)
 		{
-			uint8_t a = * pSrc;
-			int alpha = a * 65536 / 255;
+			int alpha = SoftGfxDevice::s_mulTab[* pSrc];
 			int invAlpha = 65536 - alpha;
 
 			uint16_t back = * ((uint16_t*)pDst);
@@ -241,11 +240,9 @@ static void _straight_blit_alpha8_to_rgb565bigendian_flattint_blend(const uint8_
 	{
 		for (int x = 0; x < lineLength; x++)
 		{
-			uint8_t a = * pSrc;
-			int alpha = a * tintA / 255;
+			int alpha = SoftGfxDevice::s_mulTab[* pSrc];
 			int invAlpha = 65536 - alpha;
 
-			
 			uint16_t back = * ((uint16_t*)pDst);
 	
 			back = (back >> 8 | back << 8);
@@ -308,9 +305,9 @@ static void _straight_blit_bgra8linear_to_rgb565bigendian_notint_blend(const uin
 	{
 		for (int x = 0; x < lineLength; x++)
 		{
-			Color8 col = *pSrc;
+			Color8 col = * (Color8*) pSrc;
 
-			int alpha = col.a * 65536 / 255;
+			int alpha = SoftGfxDevice::s_mulTab[col.a];
 			int invAlpha = 65536 - alpha;
 
 			uint16_t back = * ((uint16_t*)pDst);
@@ -320,9 +317,9 @@ static void _straight_blit_bgra8linear_to_rgb565bigendian_notint_blend(const uin
 			int backG = (back >> 5) & 0x3F;
 			int backB = (back >> 11) & 0x3F;
 						
-			int outB = (backB * invAlpha + col.b * alpha) >> 16;
-			int outG = (backG * invAlpha + col.g * alpha) >> 16;
-			int outR = (backR * invAlpha + col.r * alpha) >> 16;
+			int outB = (backB * invAlpha + col.b * (alpha>>3)) >> 16;
+			int outG = (backG * invAlpha + col.g * (alpha>>2)) >> 16;
+			int outR = (backR * invAlpha + col.r * (alpha>>3)) >> 16;
 			
 			uint16_t out = outR | (outG << 5) | (outB << 11 );
 			out = (out >> 8 | out << 8);
