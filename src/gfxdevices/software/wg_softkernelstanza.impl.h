@@ -45,9 +45,9 @@ inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const C
 #if WG_IS_BIG_ENDIAN
 		pixel = Util::endianSwap(pixel);
 #endif
-		outB = SoftGfxDevice::s_fast8_channel_5[(uint8_t)pixel];
-		outG = SoftGfxDevice::s_fast8_channel_6[(uint8_t)(pixel >> 5)];
-		outR = SoftGfxDevice::s_fast8_channel_5[(uint8_t)(pixel >> 11)];
+		outB = SoftGfxDevice::s_fast8_channel_5[pixel & 0x1F];
+		outG = SoftGfxDevice::s_fast8_channel_6[(pixel >> 5) & 0x3F];
+		outR = SoftGfxDevice::s_fast8_channel_5[pixel >> 11];
 		outA = 255;
 	}
 
@@ -57,9 +57,9 @@ inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const C
 #if WG_IS_LITTLE_ENDIAN
 		pixel = Util::endianSwap(pixel);
 #endif
-		outR = SoftGfxDevice::s_fast8_channel_5[(uint8_t)pixel];
-		outG = SoftGfxDevice::s_fast8_channel_6[(uint8_t)(pixel >> 5)];
-		outB = SoftGfxDevice::s_fast8_channel_5[(uint8_t)(pixel >> 11)];
+		outR = SoftGfxDevice::s_fast8_channel_5[pixel & 0x1F];
+		outG = SoftGfxDevice::s_fast8_channel_6[(pixel >> 5) & 0x3F];
+		outB = SoftGfxDevice::s_fast8_channel_5[pixel >> 11];
 		outA = 255;
 	}
 
@@ -143,9 +143,9 @@ inline void _read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8*
 #if WG_IS_BIG_ENDIAN
 		pixel = Util::endianSwap(pixel);
 #endif
-		outB = SoftGfxDevice::s_channel_5[(uint8_t)pixel];
-		outG = SoftGfxDevice::s_channel_6[(uint8_t)(pixel >> 5)];
-		outR = SoftGfxDevice::s_channel_5[(uint8_t)(pixel >> 11)];
+		outB = SoftGfxDevice::s_channel_5[pixel & 0x1F];
+		outG = SoftGfxDevice::s_channel_6[(pixel >> 5) & 0x3F];
+		outR = SoftGfxDevice::s_channel_5[pixel >> 11];
 		outA = 4096;
 	}
 
@@ -155,12 +155,11 @@ inline void _read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8*
 #if WG_IS_LITTLE_ENDIAN
 		pixel = Util::endianSwap(pixel);
 #endif
-		outR = SoftGfxDevice::s_channel_5[(uint8_t)pixel];
-		outG = SoftGfxDevice::s_channel_6[(uint8_t)(pixel >> 5)];
-		outB = SoftGfxDevice::s_channel_5[(uint8_t)(pixel >> 11)];
+		outR = SoftGfxDevice::s_channel_5[pixel & 0x1F];
+		outG = SoftGfxDevice::s_channel_6[(pixel >> 5) & 0x3F];
+		outB = SoftGfxDevice::s_channel_5[pixel >> 11];
 		outA = 4096;
 	}
-
 
 	if (format == PixelFormat::BGRA_4_linear)
 	{
