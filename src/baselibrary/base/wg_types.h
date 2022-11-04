@@ -679,6 +679,7 @@ enum class CanvasInit 		//. autoExtras
 		A_8,				///< 8 bits of alpha only.
 	};
 
+
 	//____ PixelDescription __________________________________________________________
 	/**
 	 * @brief Describes the format of a pixel.

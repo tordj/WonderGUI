@@ -1052,10 +1052,6 @@ namespace wg
 									nColors++;
 									goto end;
 								}
-
-								uint8_t * pBGRA = (uint8_t*) &pixel;
-								Color8 col( pBGRA[2], pBGRA[1], pBGRA[0], pBGRA[3] );
-
 								
 								pCLUT[ofs] = pixel;
 								nColors++;

@@ -302,7 +302,7 @@ namespace wg
 
 		inline uint16_t endianSwap( uint16_t in )
 		{
-			return ((in & 0xff00) >> 8) | (in << 8);
+			return (in >> 8 | in << 8);
 		}
 
 		constexpr bool isSystemBigEndian()

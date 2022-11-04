@@ -267,7 +267,7 @@ namespace wg
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
-		_copy(RectI(size), &m_pixelDescription, pixelbuffer.pPixels, pitch, RectI(size) );
+		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pPixels, pitch, RectI(size) );
 
 		if ( pOther->clut() )
 		{
