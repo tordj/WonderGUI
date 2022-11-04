@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_surfacefileinfo.h>
+#include <wg_surfacefileinspector.h>
 
 namespace wg
 {

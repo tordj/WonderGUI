@@ -97,6 +97,8 @@ add_library( wondergui
 	base/wg_patches.cpp
 	base/wg_patches.impl.h
 	base/wg_patches.h
+	base/wg_pixeltools.cpp
+	base/wg_pixeltools.h
 	base/wg_pointers.h
 	base/wg_printer.cpp
 	base/wg_printer.h

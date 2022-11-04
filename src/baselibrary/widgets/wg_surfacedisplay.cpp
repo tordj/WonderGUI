@@ -406,11 +406,13 @@ namespace wg
 
 		if (pos != dispRect.pos())
 		{
+			Size size = m_pSurface ? m_pSurface->pointSize() : Size{0,0};
+			
 			if (pos.x != dispRect.x)
-				m_offset.x = -(m_pSurface->pointWidth() * pos.x / dispRect.w);
+				m_offset.x = -(size.w * pos.x / dispRect.w);
 
 			if (pos.y != dispRect.y)
-				m_offset.y = -(m_pSurface->pointHeight() * pos.y / dispRect.h);
+				m_offset.y = -(size.h * pos.y / dispRect.h);
 
 			return true;		// Offset modified
 		}
