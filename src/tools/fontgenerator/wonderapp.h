@@ -9,6 +9,7 @@
 #include <initializer_list>
 #include <string>
 
+
 class MyApp : public WonderApp
 {
 public:
@@ -22,7 +23,7 @@ public:
 	wg::Widget_p	createCharsPanel();
 	wg::Widget_p	createOutputPanel();
 
-	bool		loadTTF( const char * pPath );
+	bool		loadTTF( const std::string& path );
 	bool 		selectAndLoadTTF();
 
 	bool		saveBitmapFont();

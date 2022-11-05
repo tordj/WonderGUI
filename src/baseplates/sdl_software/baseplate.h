@@ -53,20 +53,24 @@ public:
 		virtual wg::Surface_p	loadSurface(const std::string& path, wg::SurfaceFactory* pFactory = nullptr,
 											const wg::Surface::Blueprint& blueprint = wg::Surface::Blueprint() ) = 0;
 		
-		virtual bool			notifyPopup(char const * title, char const * message, IconType iconType) = 0;
+		virtual bool			notifyPopup(const std::string& title, const std::string& message, IconType iconType) = 0;
 		
-		virtual DialogButton	messageBox(char const * title, char const * message, DialogType dialogType,
+		virtual DialogButton	messageBox(const std::string& title, const std::string& message, DialogType dialogType,
 										   IconType iconType, DialogButton defaultButton = DialogButton::Undefined ) = 0;
 
-		virtual char *			inputBox(char const * title, char const * message, char const * defaultInput ) = 0;
+		virtual std::string		inputBox(const std::string& title, const std::string& message, const std::string& defaultInput) = 0;
 
-		virtual char *			saveFileDialog( char const * title, char const * defaultPathAndFile,
-											    int nbFilterPatterns,	char const * const * fFilterPatterns,
-											    char const * singleFilterDescription ) = 0;
+		virtual std::string		saveFileDialog(	const std::string& title, const std::string& defaultPathAndFile,
+												const std::vector<std::string>& filterPatterns,
+												const std::string& singleFilterDescription) = 0;
 		
-		virtual char * 			openFileDialog(	char const * title, char const * defaultPathAndFile,
-											    int nbFilterPatterns, char const * const * filterPatterns,
-											    char const * singleFilterDescription, bool bMultiSelec ) = 0;
+		virtual std::string		openFileDialog(	const std::string& title, const std::string& defaultPathAndFile,
+												const std::vector<std::string>& filterPatterns,
+												const std::string& singleFilterDescription) = 0;
+
+		virtual std::vector<std::string> openMultiFileDialog( const std::string& title, const std::string& defaultPathAndFile,
+															const std::vector<std::string>& filterPatterns,
+															const std::string& singleFilterDescription ) = 0;
 
 		virtual char *			selectFolderDialog( char const * title, char const * defaultPath) = 0;
 	};

@@ -135,30 +135,26 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 bool MyApp::selectAndLoadTTF()
 {
-	static const char * filters[3] = { "*.ttf", "*.ttc", "*.otf" };
-	
-	const char * pSelectedFile = m_pAppVisitor->openFileDialog("Select Font", nullptr, 3, filters, "Font Files", false);
+	auto selectedFile = m_pAppVisitor->openFileDialog("Select Font", "", {"*.ttf", "*.ttc", "*.otf"}, "Font Files");
 
-	if( pSelectedFile )
-	{
-		bool bLoaded = loadTTF(pSelectedFile);
-		return bLoaded;
-	}
-	
-	return false;
+	if (selectedFile.empty())
+		return false;
+
+	bool bLoaded = loadTTF(selectedFile.c_str());
+	return bLoaded;	
 }
 
 
 //____ loadTTF() _________________________________________________________________
 
-bool MyApp::loadTTF( const char * pPath)
+bool MyApp::loadTTF( const string& path)
 {
-	auto pBlob = m_pAppVisitor->loadBlob(pPath);
+	auto pBlob = m_pAppVisitor->loadBlob(path);
 	
 	if( pBlob )
 	{
 		m_pLoadedFontBlob = pBlob;
-		m_pTTFPathDisplay->display.setText(pPath);
+		m_pTTFPathDisplay->display.setText(path);
 		return true;
 	}
 	
@@ -171,9 +167,9 @@ bool MyApp::saveBitmapFont()
 {
 //	static const char * filters[3] = { "*.*", "*.ttc", "*.otf" };
 	
-	const char * pOutputPath = m_pAppVisitor->saveFileDialog("Enter output name without extension", nullptr, 0, nullptr, nullptr);
+	std::string outputPath = m_pAppVisitor->saveFileDialog("Enter output name without extension", "", {}, "");
 
-	if( pOutputPath )
+	if( !outputPath.empty() )
 	{
 		// Save image
 
@@ -187,7 +183,7 @@ bool MyApp::saveBitmapFont()
 				
 				auto pixbuf = pCopy->allocPixelBuffer();
 				pCopy->pushPixels(pixbuf);
-				
+				 
 				for( int y = 0 ; y < pixbuf.rect.h ; y++ )
 				{
 					uint8_t * pLine = pixbuf.pPixels + pixbuf.pitch*y;
@@ -205,7 +201,7 @@ bool MyApp::saveBitmapFont()
 				auto pIndexedSurface = pCopy->convert(PixelFormat::CLUT_8_linear);
 				if( pIndexedSurface )
 				{
-					std::string path = std::string(pOutputPath) + ".surf";
+					std::string path = outputPath + ".surf";
 
 					std::ofstream out(path, std::ios::binary);
 					auto pWriter = SurfaceWriter::create({});
@@ -222,7 +218,7 @@ bool MyApp::saveBitmapFont()
 			break;
 			case 1:				// 32-bit SURF (uncompressed)
 			{
-				std::string path = std::string(pOutputPath) + ".surf";
+				std::string path = outputPath + ".surf";
 
 				std::ofstream out(path, std::ios::binary);
 				auto pWriter = SurfaceWriter::create({});
@@ -233,7 +229,7 @@ bool MyApp::saveBitmapFont()
 			
 			case 2:				// 32-bit PNG (compressed)
 			{
-				std::string pngPath = std::string(pOutputPath) + ".png";
+				std::string pngPath = outputPath + ".png";
 
 				// Save PNG
 
@@ -254,7 +250,7 @@ bool MyApp::saveBitmapFont()
 				
 		// Save spec
 		
-		std::string specPath = std::string(pOutputPath) + ".fnt";
+		std::string specPath = outputPath + ".fnt";
 
 		std::ofstream out( specPath );
 		out << m_bitmapFontSpec;

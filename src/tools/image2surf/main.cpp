@@ -125,7 +125,7 @@ int main ( int argc, char** argv )
 	swap( desc.B_mask, desc.R_mask);
 	swap( desc.B_shift, desc.R_shift);
 
-	auto pOrg = SoftSurface::create( { .size = {width,height}, .format = PixelFormat::BGRA_8 }, pImage, 0, &desc );
+	auto pOrg = SoftSurface::create( { .format = PixelFormat::BGRA_8, .size = {width,height}}, pImage, 0, &desc );
 	
 	auto pConverted = pOrg->convert( g_format, SoftSurfaceFactory::create() );
 	

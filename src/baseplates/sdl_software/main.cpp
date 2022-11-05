@@ -11,6 +11,8 @@
 #endif
 
 
+#include <fstream>
+
 #include <wondergui.h>
 
 #include <wg_softgfxdevice.h>
@@ -22,7 +24,6 @@
 #include "tinyfiledialogs.h"
 
 using namespace wg;
-
 
 //____ MyAppVisitor ________________________________________________________
 
@@ -39,20 +40,25 @@ public:
 	wg::Blob_p 		loadBlob(const std::string& path) override;
 	wg::Surface_p 	loadSurface(const std::string& path, SurfaceFactory* pFactory, const Surface::Blueprint& bp = Surface::Blueprint() ) override;
 
-	bool 			notifyPopup(char const * title, char const * message, WonderApp::IconType iconType) override;
 
-	WonderApp::DialogButton	messageBox(char const * title, char const * message, WonderApp::DialogType dialogType,
-									   WonderApp::IconType iconType, WonderApp::DialogButton defaultButton ) override;
+	bool			notifyPopup(const std::string& title, const std::string& message, WonderApp::IconType iconType) override;
 
-	char *			inputBox(char const * title, char const * message, char const * defaultInput ) override;
+	WonderApp::DialogButton	messageBox(	const std::string& title, const std::string& message, WonderApp::DialogType dialogType,
+										WonderApp::IconType iconType, WonderApp::DialogButton defaultButton = WonderApp::DialogButton::Undefined) override;
 
-	char *			saveFileDialog( char const * title, char const * defaultPathAndFile,
-									int nbFilterPatterns,	char const * const * filterPatterns,
-									char const * singleFilterDescription ) override;
-	
-	char * 			openFileDialog(	char const * title, char const * defaultPathAndFile,
-									int nbFilterPatterns, char const * const * filterPatterns,
-									char const * singleFilterDescription, bool bMultiSelect ) override;
+	std::string		inputBox( const std::string& title, const std::string& message, const std::string& defaultInput) override;
+
+	std::string		saveFileDialog(	const std::string& title, const std::string& defaultPathAndFile,
+									const std::vector<std::string>& filterPatterns,
+									const std::string& singleFilterDescription) override;
+
+	std::string		openFileDialog( const std::string& title, const std::string& defaultPathAndFile,
+									const std::vector<std::string>& filterPatterns,
+									const std::string& singleFilterDescription) override;
+
+	std::vector<std::string> openMultiFileDialog(	const std::string& title, const std::string& defaultPathAndFile,
+													const std::vector<std::string>& filterPatterns,
+													const std::string& singleFilterDescription) override;
 
 	char *			selectFolderDialog( char const * title, char const * defaultPath) override;
 	
@@ -316,7 +322,7 @@ bool init_system( Rect windowGeo, float scale )
 	// make sure SDL cleans up before exit
 	atexit(SDL_Quit);
  
-	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x, windowGeo.y, windowGeo.w, windowGeo.h , SDL_WINDOW_SHOWN /* | SDL_WINDOW_ALLOW_HIGHDPI */ );
+	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x, windowGeo.y, windowGeo.w, windowGeo.h , SDL_WINDOW_SHOWN  | SDL_WINDOW_ALLOW_HIGHDPI  );
 	if( pWin == nullptr )
 	{
 		printf("Unable to create SDL window: %s\n", SDL_GetError());
@@ -558,65 +564,83 @@ Blob_p MyAppVisitor::loadBlob(const std::string& path)
 
 Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFactory, const Surface::Blueprint& _bp)
 {
-	Surface::Blueprint bp = _bp;
-
-
-	PixelDescription format;
-
-	auto pSDLSurf = IMG_Load(path.c_str());
-	convertSDLFormat(&format, pSDLSurf->format);
-
-	PixelFormat px;
-	Color8* pClut = nullptr;
-
-	Color8 clut[256];
-
-	if (format.bIndexed)
+	if (path.rfind(".surf") == path.size() - 5 || path.rfind(".srf") == path.size() - 4)
 	{
-		px = PixelFormat::CLUT_8;
+		std::ifstream input(path, std::ios::binary);
+		if (!input.good())
+			return nullptr;
 
-		for (int i = 0; i < 256; i++)
-		{
-			clut[i].r = pSDLSurf->format->palette->colors[i].r;
-			clut[i].g = pSDLSurf->format->palette->colors[i].g;
-			clut[i].b = pSDLSurf->format->palette->colors[i].b;
-			clut[i].a = pSDLSurf->format->palette->colors[i].a;
-		}
-		pClut = clut;
+		auto pReader = SurfaceReader::create({ .factory = Base::activeContext()->surfaceFactory() });
+		Surface_p pSurface = pReader->readSurfaceFromStream(input);
+		input.close();
+		return pSurface;
 	}
-
-	else if (format.A_bits > 0)
-		px = PixelFormat::BGRA_8;
 	else
-		px = PixelFormat::BGR_8;
+	{
+		Surface::Blueprint bp = _bp;
 
-	if (!pFactory)
-		pFactory = Base::activeContext()->surfaceFactory();
+		PixelDescription format;
 
-	bp.format = px;
-	bp.clut = pClut;
-	bp.size = { pSDLSurf->w, pSDLSurf->h };
+		auto pSDLSurf = IMG_Load(path.c_str());
+		if (pSDLSurf == NULL)
+			return nullptr;
+		convertSDLFormat(&format, pSDLSurf->format);
 
-	auto pSurface = pFactory->createSurface(bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
-	SDL_FreeSurface(pSDLSurf);
-	return pSurface;
+		PixelFormat px;
+		Color8* pClut = nullptr;
+
+		Color8 clut[256];
+
+		if (format.bIndexed)
+		{
+			px = PixelFormat::CLUT_8;
+
+			for (int i = 0; i < 256; i++)
+			{
+				clut[i].r = pSDLSurf->format->palette->colors[i].r;
+				clut[i].g = pSDLSurf->format->palette->colors[i].g;
+				clut[i].b = pSDLSurf->format->palette->colors[i].b;
+				clut[i].a = pSDLSurf->format->palette->colors[i].a;
+			}
+			pClut = clut;
+		}
+
+		else if (format.A_bits > 0)
+			px = PixelFormat::BGRA_8;
+		else
+			px = PixelFormat::BGR_8;
+
+		if (!pFactory)
+			pFactory = Base::activeContext()->surfaceFactory();
+
+		bp.format = px;
+		bp.clut = pClut;
+		bp.size = { pSDLSurf->w, pSDLSurf->h };
+
+		auto pSurface = pFactory->createSurface(bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
+		SDL_FreeSurface(pSDLSurf);
+		return pSurface;
+	}
+	
+	
 }
 
 //____ notifyPopup() __________________________________________________________
 
-bool MyAppVisitor::notifyPopup(char const * title, char const * message, WonderApp::IconType iconType)
+bool MyAppVisitor::notifyPopup(const std::string& title, const std::string& message, WonderApp::IconType iconType)
 {
 	if( iconType == WonderApp::IconType::Question )
 		return false;
 	
-	tinyfd_notifyPopup( title, message, iconNames[int(iconType)]);
+	tinyfd_notifyPopup( title.c_str(), message.c_str(), iconNames[int(iconType)]);
 	return true;
 }
 
 //____ messageBox() ___________________________________________________________
 
-WonderApp::DialogButton	MyAppVisitor::messageBox(char const * title, char const * message, WonderApp::DialogType dialogType,
-							 WonderApp::IconType iconType, WonderApp::DialogButton defaultButton )
+WonderApp::DialogButton	MyAppVisitor::messageBox(	const std::string& title, const std::string& message, 
+													WonderApp::DialogType dialogType, WonderApp::IconType iconType, 
+													WonderApp::DialogButton defaultButton)
 {
 	int defaultButtonInt;
 	
@@ -664,7 +688,7 @@ WonderApp::DialogButton	MyAppVisitor::messageBox(char const * title, char const 
 	}
 	
 	{
-		int retval = tinyfd_messageBox( title, message, dialogNames[int(dialogType)], iconNames[int(iconType)], defaultButtonInt );
+		int retval = tinyfd_messageBox( title.c_str(), message.c_str(), dialogNames[int(dialogType)], iconNames[int(iconType)], defaultButtonInt);
 		WonderApp::DialogButton selectedButton;
 		
 		switch( dialogType )
@@ -713,27 +737,83 @@ wrongDefaultButton:
 
 //____ inputBox() _____________________________________________________________
 
-char * MyAppVisitor::inputBox(char const * title, char const * message, char const * defaultInput )
+std::string MyAppVisitor::inputBox(const std::string& title, const std::string& message, const std::string& defaultInput)
 {
-	return tinyfd_inputBox( title, message, defaultInput );
+	return tinyfd_inputBox( title.c_str(), message.c_str(), defaultInput.c_str() );
 }
 
 //____ saveFileDialog() _______________________________________________________
 
-char * MyAppVisitor::saveFileDialog( char const * title, char const * defaultPathAndFile,
-								int nbFilterPatterns,	char const * const * filterPatterns,
-								char const * singleFilterDescription )
+std::string MyAppVisitor::saveFileDialog(	const std::string& title, const std::string& defaultPathAndFile,
+											const std::vector<std::string>& filterPatterns,
+											const std::string& singleFilterDescription)
 {
-	return tinyfd_saveFileDialog( title, defaultPathAndFile, nbFilterPatterns, filterPatterns, singleFilterDescription );
+	const char* pPatternPointers[64];
+	const char** pPatterns = filterPatterns.empty() ? NULL : pPatternPointers;
+
+	for (int i = 0; i < filterPatterns.size(); i++)
+		pPatternPointers[i] = filterPatterns[i].c_str();
+
+	return tinyfd_saveFileDialog( title.c_str(), defaultPathAndFile.c_str(), filterPatterns.size(), pPatterns, singleFilterDescription.c_str() );
 }
 
 //____ openFileDialog() _______________________________________________________
 
-char * MyAppVisitor::openFileDialog( char const * title, char const * defaultPathAndFile,
-								int nbFilterPatterns, char const * const * filterPatterns,
-								char const * singleFilterDescription, bool bMultiSelection )
+std::string MyAppVisitor::openFileDialog(	const std::string& title, const std::string& defaultPathAndFile,
+											const std::vector<std::string>& filterPatterns,
+											const std::string& singleFilterDescription)
 {
-	return tinyfd_openFileDialog( title, defaultPathAndFile, nbFilterPatterns, filterPatterns, singleFilterDescription, bMultiSelection );
+	const char* pPatternPointers[64];
+	const char** pPatterns = filterPatterns.empty() ? NULL : pPatternPointers;
+
+	for (int i = 0; i < filterPatterns.size(); i++)
+		pPatternPointers[i] = filterPatterns[i].c_str();
+
+	auto pResult = tinyfd_openFileDialog( title.c_str(), defaultPathAndFile.c_str(), filterPatterns.size(), pPatterns, singleFilterDescription.c_str(), false);
+
+	if (pResult == NULL)
+		return std::string();
+	else
+		return std::string(pResult);
+}
+
+//____ openMultiFileDialog() _______________________________________________________
+
+std::vector<std::string> MyAppVisitor::openMultiFileDialog(	const std::string& title, 
+															const std::string& defaultPathAndFile,
+															const std::vector<std::string>& filterPatterns,
+															const std::string& singleFilterDescription)
+{
+	const char* pPatternPointers[64];
+	const char** pPatterns = filterPatterns.empty() ? NULL : pPatternPointers;
+
+	for (int i = 0; i < filterPatterns.size(); i++)
+		pPatternPointers[i] = filterPatterns[i].c_str();
+
+	auto pResult = tinyfd_openFileDialog(title.c_str(), defaultPathAndFile.c_str(), filterPatterns.size(), pPatterns, singleFilterDescription.c_str(), true);
+
+	if (pResult == NULL)
+		return std::vector<std::string>();
+	else
+	{
+		std::vector<std::string> paths;
+
+		char* pBeg = pResult;
+		while (*pBeg != 0)
+		{
+			char* pEnd = pBeg;
+			while (*pEnd != 0 && *pEnd != '|')
+				pEnd++;
+
+			paths.push_back(std::string(pBeg, pEnd - pBeg));
+
+			pBeg = pEnd;
+			if (*pBeg == '|')
+				pBeg++;
+		}
+
+		return paths;
+	}
 }
 
 //____ selectFolderDialog() ___________________________________________________

@@ -2587,7 +2587,8 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 	//____ _twoPassTransformBlit() ____________________________________________
 
-	void SoftGfxDevice::_twoPassTransformBlit(const RectI& dest, BinalCoord pos, const binalInt transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
+	void SoftGfxDevice::_twoPassTransformBlit(	const RectI& dest, BinalCoord pos, const binalInt transformMatrix[2][2], 
+												CoordI patchPos, TransformBlitOp_p pPassOneOp)
 	{
 		const SoftSurface * pSource = m_pBlitSource;
 

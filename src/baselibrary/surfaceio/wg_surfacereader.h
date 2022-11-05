@@ -59,8 +59,13 @@ public:
 	//.____ Misc _________________________________________________________________
 	
 	Surface_p		readSurfaceFromStream( std::istream& stream );
-	Surface_p		readSurfaceFromBlob( const Blob * pBlob );
-	Surface_p		readSurfaceFromMemory( const char * pData );
+	Surface_p		readSurfaceFromStream(std::istream& stream, const Surface::Blueprint& extraFlags );
+
+	Surface_p		readSurfaceFromBlob(const Blob* pBlob);
+	Surface_p		readSurfaceFromBlob( const Blob * pBlob, const Surface::Blueprint& extraFlags );
+
+	Surface_p		readSurfaceFromMemory(const char* pData);
+	Surface_p		readSurfaceFromMemory( const char * pData, const Surface::Blueprint& extraFlags );
 	
 protected:
 	SurfaceReader( const Blueprint& bp );
@@ -68,9 +73,9 @@ protected:
 	
 	Surface::Blueprint	_blueprintFromHeader( const SurfaceFileHeader * pHeader );
 	
+	int				_addFlagsFromOtherBlueprint(Surface::Blueprint& dest, const Surface::Blueprint& extraFlags);
 	
 	SurfaceFactory_p	m_pFactory;
-	
 };
 
 

@@ -51,7 +51,13 @@ namespace wg
 
 	//____ readSurfaceFromStream() _____________________________________________
 
-	Surface_p SurfaceReader::readSurfaceFromStream( std::istream& stream )
+	Surface_p SurfaceReader::readSurfaceFromStream(std::istream& stream)
+	{
+		Surface::Blueprint dummy;
+		return readSurfaceFromStream(stream, dummy);
+	}
+
+	Surface_p SurfaceReader::readSurfaceFromStream(std::istream& stream, const Surface::Blueprint& _bp)
 	{
 		SurfaceFileHeader	header;
 		
@@ -63,7 +69,12 @@ namespace wg
 		// Prepare surface blueprint
 		
 		Surface::Blueprint bp = _blueprintFromHeader(&header);
-		
+		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
+		{
+			Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
+	
 		// Read and prepare CLUT
 		
 		int clutBytes = header.paletteEntries*sizeof(Color8) + header.paletteDecompressMargin;
@@ -119,14 +130,25 @@ namespace wg
 
 	//____ readSurfaceFromBlob() _______________________________________________
 
-	Surface_p SurfaceReader::readSurfaceFromBlob( const Blob * pBlob )
+	Surface_p SurfaceReader::readSurfaceFromBlob(const Blob* pBlob)
 	{
-		return readSurfaceFromMemory( static_cast<const char*>(pBlob->data()) );
+		return readSurfaceFromMemory(static_cast<const char*>(pBlob->data()));
+	}
+
+	Surface_p SurfaceReader::readSurfaceFromBlob( const Blob * pBlob, const Surface::Blueprint& bp )
+	{
+		return readSurfaceFromMemory( static_cast<const char*>(pBlob->data()), bp);
 	}
 
 	//____ readSurfaceFromMemory() _____________________________________________
 
-	Surface_p SurfaceReader::readSurfaceFromMemory( const char * pData )
+	Surface_p SurfaceReader::readSurfaceFromMemory(const char* pData)
+	{
+		Surface::Blueprint dummy;
+		return readSurfaceFromMemory(pData, dummy);
+	}
+
+	Surface_p SurfaceReader::readSurfaceFromMemory(const char* pData, const Surface::Blueprint& _bp)
 	{
 		SurfaceFileHeader	header;
 		 		 
@@ -139,7 +161,13 @@ namespace wg
 		// Prepare surface blueprint
 		 
 		Surface::Blueprint bp = _blueprintFromHeader(&header);
-		 
+		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
+		{
+			Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
+
+
 		// Prepare CLUT
 		 
 		int clutBytes = header.paletteEntries*sizeof(Color8);
@@ -201,6 +229,47 @@ Surface::Blueprint SurfaceReader::_blueprintFromHeader( const SurfaceFileHeader 
 				_.tiling		= pHeader->tiling,
 				_.sampleMethod 	= pHeader->sampleMethod );
 }
+
+//____ _addFlagsFromOtherBlueprint() __________________________________________
+
+int SurfaceReader::_addFlagsFromOtherBlueprint(Surface::Blueprint& dest, const Surface::Blueprint& extraFlags)
+{
+	int errorCode = 0;
+
+	if ( extraFlags.buffered )
+		dest.buffered = true;
+
+	if (extraFlags.canvas)
+		dest.canvas = true;
+
+	if (extraFlags.clut)
+		errorCode = 1;
+
+	if (extraFlags.dynamic)
+		dest.dynamic = true;
+
+	if (extraFlags.format != PixelFormat::Undefined)
+		errorCode = 2;
+
+	if (extraFlags.identity != 0)
+		dest.identity = extraFlags.identity;
+
+	if (extraFlags.mipmap)
+		dest.mipmap = true;
+
+	if (extraFlags.sampleMethod != SampleMethod::Undefined)
+		dest.sampleMethod = extraFlags.sampleMethod;
+
+	if (extraFlags.scale != 64)
+		errorCode = 3;
+
+	if (extraFlags.tiling)
+		dest.tiling = true;
+
+	return errorCode;
+}
+
+
 
 
 } // namespace wg

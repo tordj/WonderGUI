@@ -25,7 +25,10 @@ public:
 	Widget_p	createInfoPanel();
 
 	void		selectAndLoadImage();
-	
+
+	bool		loadImage(int idx);
+
+
 private:
 
 	bool			_setupGUI(Visitor* pVisitor);
@@ -34,9 +37,14 @@ private:
 	WonderApp::Visitor * m_pAppVisitor = nullptr;
 
 	SurfaceDisplay_p	m_pImageDisplay;
-	
+	TextDisplay_p		m_pPathDisplay;
+	Button_p			m_pPrevButton;
+	Button_p			m_pNextButton;
+
 	std::vector<std::string>	m_imagePaths;
 	
+	int				m_imageIdx;
+
 	Skin_p			m_pPlateSkin;
 	Skin_p			m_pButtonSkin;
 	Skin_p			m_pToggleButtonSkin;

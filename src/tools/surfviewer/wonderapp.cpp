@@ -177,6 +177,22 @@ Widget_p MyApp::createTopBar()
 
 	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadImage();});
 
+	Base::msgRouter()->addRoute(pLeftButton, MsgType::Select, [this](Msg* pMsg) 
+		{
+			if (m_imageIdx > 0)
+				this->loadImage(--m_imageIdx);
+		});
+
+	Base::msgRouter()->addRoute(pRightButton, MsgType::Select, [this](Msg* pMsg)
+		{
+			if (m_imageIdx < m_imagePaths.size()-1 )
+				this->loadImage(++m_imageIdx);
+		});
+
+	m_pPathDisplay = pPath;
+	m_pPrevButton = pLeftButton;
+	m_pNextButton = pRightButton;
+
 	return pBar;
 }
 
@@ -284,24 +300,29 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 
 void MyApp::selectAndLoadImage()
 {
-	static const char * filters[3] = { "*.surf", "*.qoi" };
-
-	char * pSelection = m_pAppVisitor->openFileDialog("Select Images", nullptr, 2, filters, "Image files", true);
+	auto selectedFiles = m_pAppVisitor->openMultiFileDialog("Select Images", "", { "*.surf", "*.qoi" }, "Image files");
 	
-	if( pSelection == NULL )
+	if( selectedFiles.empty()  )
 		return;
 
-	char * pBeg = pSelection;
-	
-	m_imagePaths.clear();
-	
-	while( * pBeg != 0 )
-	{
-		char * pEnd = pBeg+1;
-		while( * pEnd != 0 && * pEnd != '|' )
-			pEnd++;
+	m_imagePaths = selectedFiles;
+	loadImage(0);
+}
 
-		m_imagePaths.push_back( std::string(pBeg, pEnd - pBeg ) );
-		pBeg = pEnd;
-	}
+//____ loadImage() ____________________________________________________________
+
+bool MyApp::loadImage(int idx)
+{
+	if (idx < 0 || idx >= m_imagePaths.size())
+		return false;
+
+	auto pSurface = m_pAppVisitor->loadSurface(m_imagePaths[idx]);
+
+	m_pImageDisplay->setSurface(pSurface);
+	m_pPathDisplay->display.setText(m_imagePaths[idx]);
+
+	m_pPrevButton->setEnabled( idx != 0 );
+	m_pNextButton->setEnabled( idx != m_imagePaths.size()-1 );
+
+	return true;
 }

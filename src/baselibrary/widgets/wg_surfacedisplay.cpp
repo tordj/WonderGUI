@@ -375,20 +375,20 @@ namespace wg
 		{
 			switch (m_placement)
 			{
-			case Placement::West:
 			case Placement::NorthWest:
-			case Placement::SouthWest:
+			case Placement::North:
+			case Placement::NorthEast:
 				pos.y = 0;
 				break;
 
-			case Placement::North:
+			case Placement::West:
 			case Placement::Center:
-			case Placement::South:
+			case Placement::East:
 				pos.y = align((m_size.h - dispRect.h) / 2);
 				break;
 
-			case Placement::East:
-			case Placement::NorthEast:
+			case Placement::SouthWest:
+			case Placement::South:
 			case Placement::SouthEast:
 				pos.y = m_size.h - dispRect.h;
 				break;
