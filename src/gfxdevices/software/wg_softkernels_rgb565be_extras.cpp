@@ -122,7 +122,7 @@ static void _straight_blit_rgb565bigendian_to_same_notint_noblend(const uint8_t*
 
 static void _straight_blit_index8linear_to_rgb565bigendian_notint_noblend(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
 {
-	auto pPalette = pSrcSurf->clut();
+	auto pPalette = pSrcSurf->palette();
 	
 	// Copy loop
 	
@@ -148,7 +148,7 @@ static void _straight_blit_index8linear_to_rgb565bigendian_notint_noblend(const 
 
 static void _straight_blit_index8linear_to_rgb565bigendian_notint_blend(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
 {
-	auto pPalette = pSrcSurf->clut();
+	auto pPalette = pSrcSurf->palette();
 	
 	// Copy loop
 	
@@ -359,13 +359,13 @@ bool wg::addExtraSoftKernelsForRGB565BECanvas( SoftGfxDevice * pDevice )
 	
 	pDevice->setStraightBlitKernel( PixelFormat::RGB_565_bigendian, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_rgb565bigendian_to_same_notint_noblend );
 	
-	pDevice->setStraightBlitKernel( PixelFormat::CLUT_8_linear, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_index8linear_to_rgb565bigendian_notint_noblend );
+	pDevice->setStraightBlitKernel( PixelFormat::Index_8_linear, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_index8linear_to_rgb565bigendian_notint_noblend );
 
-	pDevice->setStraightBlitKernel( PixelFormat::CLUT_8_linear, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_index8linear_to_rgb565bigendian_notint_blend );
+	pDevice->setStraightBlitKernel( PixelFormat::Index_8_linear, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_index8linear_to_rgb565bigendian_notint_blend );
 
-	pDevice->setStraightBlitKernel( PixelFormat::A_8, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_alpha8_to_rgb565bigendian_notint_blend );
+	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_alpha8_to_rgb565bigendian_notint_blend );
 
-	pDevice->setStraightBlitKernel( PixelFormat::A_8, SoftGfxDevice::EdgeOp::None, TintMode::Flat, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_alpha8_to_rgb565bigendian_flattint_blend );
+	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::EdgeOp::None, TintMode::Flat, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_alpha8_to_rgb565bigendian_flattint_blend );
 
 	pDevice->setStraightBlitKernel( PixelFormat::BGRA_8_linear, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_bgrxa8linear_to_rgb565bigendian_notint_noblend );
 

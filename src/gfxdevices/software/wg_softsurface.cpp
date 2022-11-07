@@ -223,13 +223,13 @@ namespace wg
 		m_pBlob = nullptr;
 		m_pData = pPixels;
 
-		if (bp.clut)
+		if (bp.palette)
 		{
-			m_pClut = const_cast<Color8*>(bp.clut);
-			_makeClut4096();
+			m_pPalette = const_cast<Color8*>(bp.palette);
+			_makePalette4096();
 		}
 		else
-			m_pClut = nullptr;
+			m_pPalette = nullptr;
 
 		_initTiling();
 	}
@@ -284,7 +284,7 @@ namespace wg
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->palette() ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
-		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pPixels, pitch, RectI(size) );
+		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pixels, pitch, RectI(size) );
 
 		if ( pOther->palette() )
 		{

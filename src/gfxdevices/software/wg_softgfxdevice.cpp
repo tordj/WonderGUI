@@ -2838,7 +2838,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		    format != PixelFormat::BGRX_8_sRGB && format != PixelFormat::BGRX_8_linear &&
 		    format != PixelFormat::BGRA_8_sRGB && format != PixelFormat::BGRA_8_linear &&
 		    format != PixelFormat::BGRA_4_linear && format != PixelFormat::BGR_565_linear &&
-		    format != PixelFormat::A_8 && format != PixelFormat::RGB_565_bigendian )
+		    format != PixelFormat::Alpha_8 && format != PixelFormat::RGB_565_bigendian )
 		{
 			return false;
 		}

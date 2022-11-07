@@ -101,7 +101,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 									_.color = Color8::Black));
 
 
-	Base::setDefaultStyle(m_pTextStyle);
+	Base::setDefaults({ .textStyle = m_pTextStyle });
 
 	m_pTextLayoutCentered = BasicTextLayout::create(WGBP(BasicTextLayout,
 		_.placement = Placement::Center));

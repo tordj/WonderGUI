@@ -588,7 +588,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 		if (!input.good())
 			return nullptr;
 
-		auto pReader = SurfaceReader::create({ .factory = Base::activeContext()->surfaceFactory() });
+		auto pReader = SurfaceReader::create({ .factory = Base::defaultSurfaceFactory() });
 		Surface_p pSurface = pReader->readSurfaceFromStream(input);
 		input.close();
 		return pSurface;
@@ -615,10 +615,10 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 
 			for (int i = 0; i < 256; i++)
 			{
-				clut[i].r = pSDLSurf->format->palette->colors[i].r;
-				clut[i].g = pSDLSurf->format->palette->colors[i].g;
-				clut[i].b = pSDLSurf->format->palette->colors[i].b;
-				clut[i].a = pSDLSurf->format->palette->colors[i].a;
+				palette[i].r = pSDLSurf->format->palette->colors[i].r;
+				palette[i].g = pSDLSurf->format->palette->colors[i].g;
+				palette[i].b = pSDLSurf->format->palette->colors[i].b;
+				palette[i].a = pSDLSurf->format->palette->colors[i].a;
 			}
 			pPalette = palette;
 		}

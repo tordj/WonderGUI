@@ -72,7 +72,7 @@ namespace wg
 		Surface::Blueprint bp = _blueprintFromHeader(&header);
 		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
 		{
-			Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 	
@@ -164,7 +164,7 @@ namespace wg
 		Surface::Blueprint bp = _blueprintFromHeader(&header);
 		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
 		{
-			Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 
@@ -243,7 +243,7 @@ int SurfaceReader::_addFlagsFromOtherBlueprint(Surface::Blueprint& dest, const S
 	if (extraFlags.canvas)
 		dest.canvas = true;
 
-	if (extraFlags.clut)
+	if (extraFlags.palette)
 		errorCode = 1;
 
 	if (extraFlags.dynamic)

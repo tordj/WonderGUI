@@ -114,7 +114,7 @@ int main ( int argc, char** argv )
 		return -1;
 	}
 	
-	Base::init(nullptr);
+	Base::init(nullptr, nullptr);
 
 	
 	
