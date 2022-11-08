@@ -26,6 +26,8 @@
 
 #include <assert.h>
 
+#include <iomanip>
+
 namespace wg
 {
 
@@ -81,9 +83,12 @@ namespace wg
 
 		if (header.type == GfxChunkId::OutOfData)
 			return false;
+		
+		if( m_bDisplayStreamOffset )
+			m_charStream << std::setw(10) << std::setfill('0') << m_streamOffset << " - ";
 
 		if (header.type >= GfxChunkId_min && header.type <= GfxChunkId_max)
-		{
+		{			
 			m_charStream << toString(header.type);
 /*
 			if (*(char*)&header.flags != 0)
@@ -842,9 +847,10 @@ namespace wg
 
 				m_pDecoder->skip(header.size);
 				break;
-			}
+			}				
 		}
 
+		m_streamOffset += header.size + 4;
 		return true;
 	}
 

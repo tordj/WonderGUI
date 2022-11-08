@@ -75,6 +75,9 @@ namespace wg
 		std::ostream&	m_charStream;
 
 		GfxStreamDecoder_p m_pDecoder;
+		
+		bool			m_bDisplayStreamOffset = true;
+		uint64_t		m_streamOffset = 0;
 	};
 
 }

@@ -72,7 +72,7 @@ namespace wg
 		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
 		{
 			Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
-			return false;
+			return nullptr;
 		}
 	
 		// Read and prepare CLUT
@@ -164,7 +164,7 @@ namespace wg
 		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
 		{
 			Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
-			return false;
+			return nullptr;
 		}
 
 

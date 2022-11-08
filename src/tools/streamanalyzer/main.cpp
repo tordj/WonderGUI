@@ -263,7 +263,7 @@ int main ( int argc, char** argv )
     auto pStreamLogger = GfxStreamLogger::create(std::cout);
 
 
-	auto pStreamSplitter = GfxStreamSplitter::create({ GfxStreamSink_p(pStreamPlayer, pStreamPlayer->input), GfxStreamSink_p(pStreamLogger, pStreamLogger->input) });
+	auto pStreamSplitter = GfxStreamSplitter::create({ GfxStreamSink_p(pStreamLogger, pStreamLogger->input), GfxStreamSink_p(pStreamPlayer, pStreamPlayer->input) });
 
 	auto pStreamPump = GfxStreamPump::create(GfxStreamSource_p( pStreamReader, pStreamReader->output), GfxStreamSink_p(pStreamSplitter, pStreamSplitter->input) );
 
@@ -297,14 +297,29 @@ int main ( int argc, char** argv )
 	// Program Main Loop
 	//------------------------------------------------------
 
+	int nFrames = 0;
+
 	while( !bQuit )
 	{
 		translateEvents( pInput, pRoot );
 
 		pStreamPump->pumpUntilFrame();
-		bool pumpAgain = true;
-//		while( pumpAgain )
-			pumpAgain = pStreamPump->pumpFrame();
+
+		GfxChunkId chunkId = pStreamPump->peekChunk();
+		while( chunkId != GfxChunkId::OutOfData )
+		{
+			pStreamPump->pumpChunk();
+			if( chunkId == GfxChunkId::EndRender )
+			{
+				nFrames++;
+				if( nFrames == 258 )
+				{
+					int x = 0;
+				}
+				break;
+			}
+			chunkId = pStreamPump->peekChunk();
+		}
 		
 //		pStreamPump->pumpAll();
 

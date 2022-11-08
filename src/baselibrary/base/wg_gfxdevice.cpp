@@ -158,7 +158,19 @@ namespace wg
 	bool GfxDevice::pushClipList(int nRectangles, const RectSPX* pRectangles)
 	{
 		m_clipListStack.push_back({ m_nClipRects,m_pClipRects,m_clipBounds });
-		return setClipList(nRectangles, pRectangles);
+
+		RectSPX bounds = *pRectangles;
+		for (int i = 1; i < nRectangles; i++)
+			bounds.growToContain(pRectangles[i]);
+
+		if (bounds.x < 0 || bounds.y < 0 || bounds.w > m_canvas.size.w || bounds.h > m_canvas.size.h)
+			return false;
+
+		m_pClipRects = pRectangles;
+		m_nClipRects = nRectangles;
+		m_clipBounds = bounds;
+		_clipListWasChanged();
+		return true;
 	}
 
 	//____ popClipList() ______________________________________________________
