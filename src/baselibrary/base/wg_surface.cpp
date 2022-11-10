@@ -26,6 +26,7 @@
 #include <wg_dataset.h>
 #include <wg_util.h>
 #include <wg_base.h>
+#include <wg_pixeltools.h>
 
 namespace wg
 {
@@ -498,24 +499,47 @@ namespace wg
 	 *
 	 * @return True if successful, otherwise false.
 	 **/
-	bool Surface::copy(CoordI _dest, Surface * pSrcSurface, const RectI& _srcRect )
+	bool Surface::copy(CoordI dest, Surface * pSrcSurface, RectI srcRect )
 	{
-		if( !pSrcSurface || pSrcSurface->pixelFormat() == PixelFormat::Undefined || m_pixelDescription.format == PixelFormat::Undefined )
+		if (srcRect.x < 0 || srcRect.y < 0 || srcRect.x + srcRect.w > pSrcSurface->pixelWidth() || srcRect.y + srcRect.h > pSrcSurface->pixelHeight())
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "srcRect is not fully within source surface.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
+		}
 
+		srcRect.w = std::min(srcRect.w, m_size.w / 64 - dest.x);
+		srcRect.h = std::min(srcRect.h, m_size.h / 64 - dest.y);
 
-		auto srcbuf = pSrcSurface->allocPixelBuffer(_srcRect);
+		auto srcbuf = pSrcSurface->allocPixelBuffer(srcRect);
 		bool bPushed = pSrcSurface->pushPixels(srcbuf);
 		if (!bPushed)
 		{
 			//TODO: Error handling.
 		}
 
+		auto dstbuf = allocPixelBuffer();
 
-		bool retVal = _copy({ _dest, _srcRect.size() }, pSrcSurface->pixelDescription(), srcbuf.pixels, srcbuf.pitch, { 0,0,_srcRect.size() }, srcbuf.palette);
+		auto pSrcDesc = pSrcSurface->pixelDescription();
+		auto pDstDesc = pixelDescription();
+				
+		uint8_t * pDstPixels = dstbuf.pixels + dest.y * dstbuf.pitch + dest.x * pDstDesc->bits/8;
+
+		int srcPitchAdd = srcbuf.pitch - srcRect.w * pSrcDesc->bits / 8;
+		int dstPitchAdd = dstbuf.pitch - srcRect.w * pDstDesc->bits / 8;
+
+		int srcPaletteEntries = srcbuf.palette ? 256 : 0;
+		int maxDstPaletteEntries = dstbuf.palette ? 256 : 0;
+
+		int dstPaletteEntries;
+
+		bool retVal = PixelTools::copyPixels( srcRect.w, srcRect.h, srcbuf.pixels, pSrcSurface->pixelFormat(), srcPitchAdd,
+			pDstPixels, pixelFormat(), dstPitchAdd, const_cast<Color8*>(srcbuf.palette), const_cast<Color8*>(dstbuf.palette),
+			srcPaletteEntries, maxDstPaletteEntries, dstPaletteEntries );
 
 		pSrcSurface->freePixelBuffer(srcbuf);
 
+		pullPixels(dstbuf);
+		freePixelBuffer(srcbuf);
 
 		return retVal;
 	}
