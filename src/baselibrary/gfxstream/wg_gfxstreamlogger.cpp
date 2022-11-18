@@ -919,7 +919,7 @@ namespace wg
 
 	void GfxStreamLogger::_printColor( const char * header, HiColor color )
 	{
-		m_charStream << header << " = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+		m_charStream << header << " = " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << ", " << (int)color.a << std::endl;
 	}
 
 	//____ _printBorder() _________________________________________________

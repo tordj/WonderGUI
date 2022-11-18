@@ -698,7 +698,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
 
     pLogoSurf->copy( CoordI(), pOrgSurf );
     
-    SizeI canvasSize = pDevice->canvas(canvasRef).size;
+    SizeI canvasSize = pDevice->canvas(canvasRef).size/64;
 
     int ticker = 0;
     int length = 600;
@@ -709,7 +709,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
     
     while (ticker < length)
     {
-        auto pCanvas = pFactory->createSurface( backCanvasSize, PixelFormat::RGB_565_bigendian );
+		auto pCanvas = pFactory->createSurface( WGBP(Surface, _.size = backCanvasSize, _.format = PixelFormat::RGB_565_bigendian, _.canvas = true ) );
         
         
         
@@ -722,7 +722,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
         {
             pDevice->setBlitSource(pOldCanvas);
             pDevice->setTintColor(HiColor(4096,3800,3500,3930));
-//            pDevice->blit( CoordI( (canvasSize.w - logoSize.w)/2, (canvasSize.h - logoSize.h)/2 ));
+//            pDevice->blit( CoordI( (canvasSize.w - logoSize.w)/2*64, (canvasSize.h - logoSize.h)/2*64 ));
             pDevice->rotScaleBlit( backCanvasSize*64, 3, 1.02f );
         }
 

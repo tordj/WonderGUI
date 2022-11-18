@@ -2709,23 +2709,21 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		
 		if ((pPixelDescDest->bLinear || dstFormat == PixelFormat::A_8) && (pPixelDescSource->bLinear || srcFormat == PixelFormat::A_8) )
 		{
-			m_pStraightBlitFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][0];
-			m_pStraightTileFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][1];
-			m_pTransformBlitFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][0];
-			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][1];
-			m_pTransformTileFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][2];
-
-			
-			
+			m_pStraightBlitFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(EdgeOp::None)];
+			m_pStraightTileFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(EdgeOp::Tile)];
+			m_pTransformBlitFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::None)];
+			m_pTransformTileFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Tile)];
+			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Clip)];
+		
 			m_pBlitSecondPassOp				= m_pKernels[(int)dstFormat]->pStraightBlitFromBGRA8Kernels[(int)m_colTrans.mode][(int)m_blendMode];
 		}
 		else
 		{
-			m_pStraightBlitFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][0];
-			m_pStraightTileFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][1];
-			m_pTransformBlitFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][0];
-			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][1];
-			m_pTransformTileFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][2];
+			m_pStraightBlitFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][int(EdgeOp::None)];
+			m_pStraightTileFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][int(EdgeOp::Tile)];
+			m_pTransformBlitFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::None)];
+			m_pTransformTileFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Tile)];
+			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Clip)];
 
 			m_pBlitSecondPassOp				= m_pKernels[(int)dstFormat]->pStraightBlitFromHiColorKernels[(int)m_colTrans.mode][(int)m_blendMode];
 		}
