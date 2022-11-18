@@ -214,6 +214,9 @@ namespace wg
 
     void StreamGfxDevice::setTintColor( HiColor color )
     {
+		if( color == m_tintColor )
+			return;
+		
         GfxDevice::setTintColor(color);
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintColor, 0, 8 };
@@ -224,6 +227,9 @@ namespace wg
 
     void StreamGfxDevice::setTintGradient(const RectSPX& rect, const Gradient& gradient)
     {
+		if( rect == m_tintGradientRect && m_tintGradient == gradient )
+			return;
+		
         GfxDevice::setTintGradient(rect, gradient);
         
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, 0, 16 + 34 };
@@ -235,6 +241,9 @@ namespace wg
 
     void StreamGfxDevice::clearTintGradient()
     {
+		if( m_bTintGradient == false )
+			return;
+		
         GfxDevice::clearTintGradient();
         
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ClearTintGradient, 0, 0 };
@@ -247,6 +256,9 @@ namespace wg
         if( blendMode < BlendMode_min || blendMode > BlendMode_max )
                 return false;
 
+		if( blendMode == m_blendMode )
+			return true;
+		
         GfxDevice::setBlendMode(blendMode);
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlendMode, 0, 2 };
@@ -262,6 +274,9 @@ namespace wg
         if (!pSource || !pSource->isInstanceOf(StreamSurface::TYPEINFO) )
             return false;
 
+		if( pSource == m_pBlitSource )
+			return true;
+		
         GfxDevice::setBlitSource(pSource);
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlitSource, 0, 2 };
@@ -273,6 +288,9 @@ namespace wg
 
     void StreamGfxDevice::setMorphFactor(float factor)
     {
+		if( factor == m_morphFactor )
+			return;
+		
         GfxDevice::setMorphFactor(factor);
         
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetMorphFactor, 0, 4 };
@@ -283,6 +301,9 @@ namespace wg
 
     void StreamGfxDevice::setRenderLayer(int layer)
     {
+		if( layer == m_renderLayer )
+			return;
+		
         GfxDevice::setRenderLayer(layer);
         
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetRenderLayer, 0, 2 };
