@@ -97,13 +97,18 @@ namespace wg
 		if (_hasChunk())
 		{
 			header.type = (GfxChunkId)_pullChar();
-			* (char*) &header.flags = _pullChar();
-			header.size = (uint16_t)_pullShort();
+			uint8_t sizeEtc = _pullChar();
+			header.spxFormat = sizeEtc >> 5;
+			sizeEtc &= 0x1F;
+			if (sizeEtc <= 30)
+				header.size = sizeEtc;
+			else
+				header.size = (uint16_t)_pullShort();
 		}
 		else
 		{
 			header.type = GfxChunkId::OutOfData;
-			* (char*) &header.flags = 0;
+			header.spxFormat = 0;
 			header.size = 0;
 		}
 

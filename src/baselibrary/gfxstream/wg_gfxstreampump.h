@@ -68,11 +68,6 @@ namespace wg
 		GfxStreamPump(const GfxStreamSource_p& pInput, const GfxStreamSink_p& pOutput);
 		~GfxStreamPump();
 
-		inline GfxStream::Header _decodeHeader(const uint8_t* pHeader) const
-		{
-			return { * (GfxStream::Header *) pHeader };
-		}
-
 		const uint8_t* _findChunk(GfxChunkId id, int nSegments, const DataSegment * pSegments);
 
 		bool _pumpUntilChunk(GfxChunkId id, bool bInclusive);

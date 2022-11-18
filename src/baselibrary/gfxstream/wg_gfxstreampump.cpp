@@ -107,10 +107,10 @@ namespace wg
 		if (m_pInput->hasChunks())
 		{
 			std::tie(nSegments, pSegments) = m_pInput->showChunks();
-			auto header = _decodeHeader( pSegments[0].pBegin );
+			int size = GfxStream::chunkSize( pSegments[0].pBegin );
 
-			m_pOutput->processChunks( pSegments[0].pBegin, pSegments[0].pBegin + header.size + 4 );
-			m_pInput->discardChunks(header.size + 4);
+			m_pOutput->processChunks( pSegments[0].pBegin, pSegments[0].pBegin + size );
+			m_pInput->discardChunks(size);
 
 			return true;
 		}
@@ -162,9 +162,7 @@ namespace wg
 
 		//
 
-		auto header = _decodeHeader(pEndRenderPos);
-
-		const uint8_t* pEnd = pEndRenderPos + (bInclusive ? header.size + 4 : 0);
+		const uint8_t* pEnd = pEndRenderPos + (bInclusive ? GfxStream::chunkSize(pEndRenderPos) : 0);
 
 		int	bytesProcessed = 0;
 		for (int i = 0; i < nSegments; i++)
@@ -263,10 +261,10 @@ namespace wg
 
 			while (p != pSegments[seg].pEnd)
 			{
-				auto header = _decodeHeader(p);
-				if (header.type == id)
+				GfxChunkId chunkId = GfxStream::chunkType(p);
+				if (chunkId == id)
 					return p;
-				p += header.size + 4;
+				p += GfxStream::chunkSize(p);
 			}
 		}
 

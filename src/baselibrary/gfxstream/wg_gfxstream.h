@@ -41,8 +41,8 @@ namespace wg
 		struct Header
 		{
 			GfxChunkId      type;
-            GfxChunkFlags   flags;
-    		uint16_t        size;
+            uint8_t			spxFormat;
+    		int				size;
 		};
 
 		struct DataChunk
@@ -52,11 +52,21 @@ namespace wg
 		};
 
 
+
+		inline static GfxChunkId chunkType(const uint8_t* pChunk)
+		{
+			return (GfxChunkId) pChunk[0];
+		}
+
+		inline static int chunkSize(const uint8_t* pChunk)
+		{
+			uint8_t sizeEtc = pChunk[1] & 0x1F;
+			if (sizeEtc <= 30)
+				return sizeEtc + 2;
+			else
+				return *(uint16_t*)&pChunk[2] + 4;
+		}
 	};
-
-
-
-
 
 };
 

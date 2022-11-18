@@ -129,9 +129,17 @@ namespace wg
 
 		int unprocessedData = ((m_writeOfs - m_processedOfs + m_bufferSize) % m_bufferSize);
 
-		while (unprocessedData >= 4)
+		while (unprocessedData >= 2)
 		{
-			int chunkSize = (*(uint16_t*)&m_pBuffer[(m_processedOfs + 2) % m_bufferSize]) + 4;
+			int chunkSize = (m_pBuffer[(m_processedOfs + 1) % m_bufferSize] & 0x1F) + 2;
+
+			if (chunkSize >= (31+2))
+			{
+				if (unprocessedData < 4)
+					break;
+
+				chunkSize = (*(uint16_t*)&m_pBuffer[(m_processedOfs + 2) % m_bufferSize]) + 4;
+			}
 
 			if (chunkSize > unprocessedData)
 				break;
@@ -194,7 +202,7 @@ namespace wg
 		if(m_processedOfs == m_readOfs )
 			return GfxChunkId::OutOfData;
 
-		return (GfxChunkId) * (uint16_t*) &m_pBuffer[m_readOfs];
+		return (GfxChunkId)  m_pBuffer[m_readOfs];
 	}
 
 	//____ _discardStreamChunks() _____________________________________________

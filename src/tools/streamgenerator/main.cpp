@@ -325,10 +325,10 @@ int main ( int argc, char** argv )
 	// Record stream
 	//------------------------------------------------------
 
-    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
+//    playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
 //	  playRectangleDanceDualScreen( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
 //    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
-//    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
 //	playImageStreamingTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
