@@ -32,7 +32,7 @@ namespace PixelTools
 {
 	bool copyPixels( int width, int height, uint8_t * pSrcPixels, PixelFormat srcFmt, int srcPitchAdd,
 					 uint8_t * pDstPixels, PixelFormat dstFmt, int dstPitchAdd, Color8 * pSrcPalette,
-					Color8 * pDstPalette, int srcPaletteEntries, int maxDstPaletteEntries, int& dstPaletteEntries);
+					Color8 * pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries );
 }
 
 }

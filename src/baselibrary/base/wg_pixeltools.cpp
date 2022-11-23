@@ -222,9 +222,8 @@ static void readRGB_565_bigendian( const uint8_t * pSrc, uint8_t * pDst, int nbP
 
 bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int srcPitchAdd,
 				 uint8_t * pDst, PixelFormat dstFmt, int dstPitchAdd, Color8 * pSrcPalette,
-				 Color8 * pDstPalette, int srcPaletteEntries, int maxDstPaletteEntries, int& dstPaletteEntries )
+				 Color8 * pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries )
 {
-	// TODO: Straight copy with palette conversion when converting between Index_8_linear and Index_8_sRGB.
 	// TODO: Optimize copy to A8 in several ways.
 
 	int nAllocatedBytes = 0;
@@ -520,7 +519,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 			case PixelFormat::Index_8_linear:
 			{
 				uint8_t		buffer[64*4];
-				int 		nColors = 0;
+				int 		nColors = dstPaletteEntries;
 
 				for( int y = 0 ; y < height ; y++ )
 				{

@@ -279,7 +279,6 @@ namespace wg
 		static const uint8_t *	s_pixelConvTabs[9];
 
 		void				_notifyObservers(int nRects, const RectSPX* pRects);
-		bool 				_copy(const RectI& dstRect, const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const Color8 * pPalette = nullptr );
 		int					_alpha(CoordSPX coord, const PixelBuffer& buffer);
 
         static bool         _isBlueprintValid( const Blueprint& bp, SizeI maxSize, Surface * pOther = nullptr );
