@@ -5,149 +5,107 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "text_test.h"
-#include "valueformat_test.h"
-//#include "textparser_test.h"
+#include "tests/gfxstream.h"
 
 //____ Constructor _____________________________________________________________
 
-TestFramework::TestFramework()
+TestFramework::TestFramework( std::ostream& output ) :
+	m_log(output)
 {
-	AddTestClass( new ValueFormatTest() );
-//	AddTestClass( new TextTest() );
-//	AddTestClass( new TextParserTest() );
+
+	addCollection( new GfxStreamTest() );
 }
 
 //____ Destructor ______________________________________________________________
 
 TestFramework::~TestFramework()
 {
-	// Nothing to do. TestCollections are freed by Chain automatically.
+	for (auto p : m_testCollections)
+		delete p;
 }
 
-//____ RunAll() ________________________________________________________________
+//____ initAllTests() ________________________________________________________________
 
-bool TestFramework::RunAll()
+int TestFramework::initAllTests()
 {
-	printf( "Running all tests in the framework:\n" );
+	m_log << "Initializing Tests" << std::endl;
 
-	TestCollection * p = m_testCollections.getFirst();
-
-	bool bOk = true;
-
-	while( p && bOk )
+	int nFailed = 0;
+	for (auto p : m_testCollections)
 	{
-		bOk = p->Run();
-		p = p->getNext();
+		if (!p->init(m_log))
+			nFailed++;
 	}
 
-	if( bOk )
-	{
-		printf( "\nAll tests ran successfully!\n\n" );
-	}
-
-
-	return bOk;
+	return nFailed;
 }
 
-//____ RunCollection() _________________________________________________________
+//____ runAllTests() ________________________________________________________________
 
-bool TestFramework::RunCollection( const char * pName )
+int TestFramework::runAllTests()
 {
+	m_log << "Running all tests in the framework:\n";
 
-	TestCollection * p = m_testCollections.getFirst();
-
-	while( p )
+	int nFailures = 0;
+	for (auto p : m_testCollections)
 	{
-		if( strcmp( p->GetName(), pName ) == 0 )
+		for (int i = 0; i < p->nbTests(); i++)
 		{
-			printf( "Running all tests of collection '%s':\n", pName );
-			return p->Run();
+			if (!p->getTest(i).run(m_log))
+				nFailures++;
 		}
-		p = p->getNext();
 	}
 
-	printf( "ERROR: Couldn't find test collection '%s'!\n", pName );
+	if( nFailures == 0 )
+	{
+		m_log << "\nAll tests ran successfully!\n\n" << std::flush;
+	}
+	else
+	{
+		m_log << "\n" << nFailures << " tests failed!\n\n" << std::flush;
+	}
 
-	return false;
+	return nFailures;
+}
+
+//____ runCollection() _________________________________________________________
+
+int TestFramework::runCollection( int collIdx )
+{
+	TestCollection* pCollection = m_testCollections[collIdx];
+
+	m_log << "Running all tests of collection '" << pCollection->name() << "':\n";
+
+	int nFailures = 0;
+	for (int i = 0; i < pCollection->nbTests(); i++)
+	{
+		if (!pCollection->getTest(i).run(m_log))
+			nFailures++;
+	}
+
+	if (nFailures == 0)
+	{
+		m_log << "\nAll tests ran successfully!\n\n" << std::flush;
+	}
+	else
+	{
+		m_log << "\n" << nFailures << " tests failed!\n\n" << std::flush;
+	}
+
+	return nFailures;
 }
 
 
 //____ RunTest() _______________________________________________________________
 
-bool TestFramework::RunTest( const char * pCollectionName, const char * pTestName )
+bool TestFramework::runTest( int collIdx, int testIdx )
 {
-	TestCollection * p = m_testCollections.getFirst();
+	TestCollection * p = m_testCollections[collIdx];
 
-	while( p )
-	{
-		if( strcmp( p->GetName(), pCollectionName ) == 0 )
-			break;
+	Test& test = p->getTest(testIdx);
 
-		p = p->getNext();
-	}
+	m_log << "Running test '" << test.name() << "' of collection '" << p->name() << "':\n";
+	bool bSuccess = test.run(m_log);
 
-	if( !p )
-	{
-		printf( "ERROR: Couldn't find test collection '%s'!\n", pCollectionName );
-		return false;
-	}
-
-
-	Test * t = p->GetFirstTest();
-
-	while( t )
-	{
-		if( strcmp( t->pName, pTestName ) == 0 )
-		{
-			printf( "Running test '%s' of collection '%s':\n", pTestName, pCollectionName );
-			return p->RunTest(t);
-
-		}
-		t = p->GetNextTest( t );
-	}
-
-	printf( "ERROR: Couldn't find test '%s' of collection '%s'!\n", pTestName, pCollectionName );
-	return false;
+	return bSuccess;
 }
-
-
-//____ TestCollection::Run() ___________________________________________________
-
-bool TestCollection::Run()
-{
-	printf( "  Collection: %s\n", GetName() );
-
-	Test * p = m_tests.getFirst();
-
-	bool bOk = true;
-
-	while( p && bOk )
-	{
-		bOk = RunTest(p);
-		p = p->getNext();
-	}
-
-	return bOk;
-}
-
-
-//____ TestCollection::RunTest() _______________________________________________
-
-bool TestCollection::RunTest( Test * p )
-{
-	printf( "    Running %s...", p->pName );
-
-	if( p->pFunc( this ) )
-	{
-		printf( "  OK\n" );
-		return true;
-	}
-	else
-	{
-		printf( "  FAILED!\n\n" );
-		printf( "ERROR: %s\n", m_errorMsg );
-		return false;
-	}
-}
-

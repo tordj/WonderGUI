@@ -6,6 +6,13 @@
 #include <wg_chain.h>
 #include <stdio.h>
 
+#include <vector>
+#include <string>
+#include <functional>
+#include <iostream>
+#include <sstream>
+
+
 //____ Macros __________________________________________________________________
 
 #define DECL_TEST( _class_, _method_ )										\
@@ -13,13 +20,12 @@
 	static bool _method_##cb(void * p) {return ((_class_*)p)->_method_();}
 
 #define ADD_TEST( _method_ )												\
-	m_tests.push_back( new Test( #_method_, _method_ ## cb ) );
+	m_tests.push_back( Test( #_method_, [this](std::ostream& output){ return this->_method_(output); } ) );
 
 #define TEST_ASSERT( _expression_ )											\
 	if( !(_expression_) )													\
 	{																		\
-		sprintf( m_errorMsg, "Failed check '%s' at line %d in file %s\n", 	\
-				 #_expression_	, __LINE__, __FILE__ );						\
+		output << "Failed assert '" << #_expression_ << "' at line " << __LINE__ << " of " << __FILE__ << "." << std::endl; \
 		return false;														\
 	}
 
@@ -29,63 +35,86 @@
 //____ Test ____________________________________________________________________
 
 
-class Test : public WgLink
+class Test
 {
 public:
-	Test( char * _pName, bool(*_pFunc)(void*) ) { pName = _pName; pFunc = _pFunc; }
+	Test( char * _pName, const std::function<bool(std::ostream& output)>& func ) { m_name = _pName; m_func = func; }
 
-	LINK_METHODS( Test );
+	std::string		name() const { return m_name; }
+	bool			run(std::ostream& output) 
+	{ 
+		output << "    Running " << m_name << "...";
 
-	const char *  	pName;
-	bool(*pFunc)(void*);
+		std::ostringstream ss;
+
+		bool success = m_func(ss);
+		
+		if (success)
+			output << "  OK" << std::endl;
+		else
+		{
+
+			output << "  FAILED!" << std::endl;
+			output << "    " << ss.str() << std::endl;
+		}
+
+		return success; 
+	}
+
+protected:
+	std::string				m_name;
+	std::function<bool(std::ostream&)>	m_func;
 };
 
 
 //____ TestCollection __________________________________________________________
 
-class TestCollection : public WgLink
+class TestCollection
 {
 public:
-	TestCollection() { m_errorMsg[0] = 0; };
+	TestCollection() {};
 	virtual ~TestCollection() {};
 
-	bool Run();
+	virtual bool	init(std::ostream& output) { return true; };
+
+	int				nbTests() const { return m_tests.size(); }
+	Test&			getTest(int index) { return m_tests[index]; }
+	
 
 
-	bool RunTest( Test * pTest );
-
-	inline Test * GetFirstTest() {return m_tests.getFirst();}
-	Test * GetNextTest( Test * p ) {return p->getNext();}
-
-	virtual char * GetName() const = 0;
-
-	LINK_METHODS( TestCollection );
+	virtual std::string		name() const = 0;
 
 protected:
 
-	char 			m_errorMsg[512];
+	std::vector<Test>	m_tests;
 
-	WgChain<Test>	m_tests;
 };
 
 //____ TestFramework ___________________________________________________________
 
 class TestFramework
 {
+	friend class TestCollection;
 public:
-	TestFramework();
+	TestFramework( std::ostream& output );
 	~TestFramework();
 
-	bool RunAll();
-	bool RunCollection( const char * pName );
-	bool RunTest( const char * pCollectionName, const char * pTestName );
+	int				nbCollections() const { return m_testCollections.size(); }
+	TestCollection* getCollection(int index) { return m_testCollections[index]; }
 
+	int				initAllTests();
 
-private:
-	inline void AddTestClass( TestCollection * pCollection ) { m_testCollections.push_back(pCollection); };
+	int				runAllTests();
+	int				runCollection( int collIdx );
+	bool			runTest(int collIdx, int testIdx );
 
-	WgChain<TestCollection> m_testCollections;
+	int				addCollection(TestCollection* pCollection) { m_testCollections.push_back(pCollection); return m_testCollections.size() - 1; };
 
+protected:
+
+	std::vector<TestCollection*>	m_testCollections;
+
+	std::ostream&					m_log;
 };
 
 #endif // TESTFRAMEWORK_DOT_H

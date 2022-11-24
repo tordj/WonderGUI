@@ -4,9 +4,9 @@
 
 int main( int argc, char * argv[] )
 {
-	TestFramework	t;
+	TestFramework	t(std::cout);
 
-	bool res = t.RunAll();
+	bool res = t.runAllTests();
 
 //	_getch();
 
