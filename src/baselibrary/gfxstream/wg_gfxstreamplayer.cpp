@@ -186,12 +186,12 @@ namespace wg
              
 		case GfxChunkId::BeginCanvasUpdate:
 		{
-			CanvasRef	canvasRef;
 			uint16_t	surfaceId;
-			int			nUpdateRects;
+			CanvasRef	canvasRef;
+			uint8_t		nUpdateRects;
 				
- 			*m_pDecoder >> canvasRef;
 			*m_pDecoder >> surfaceId;
+ 			*m_pDecoder >> canvasRef;
 			*m_pDecoder >> nUpdateRects;
 
 			auto pRects = _pushClipListCanvas(nUpdateRects);

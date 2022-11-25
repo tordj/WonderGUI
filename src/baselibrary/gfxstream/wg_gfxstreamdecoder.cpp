@@ -115,6 +115,12 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (uint8_t& i)
+	{
+		i = _pullChar();
+		return *this;
+	}
+
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (int16_t& i)
 	{
 		i = _pullShort();
@@ -317,7 +323,7 @@ namespace wg
 
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (CanvasRef& r)
 	{
-		r = (CanvasRef)_pullShort();
+		r = (CanvasRef)_pullChar();
 		return *this;
 	}
 

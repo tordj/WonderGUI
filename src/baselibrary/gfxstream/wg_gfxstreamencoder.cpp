@@ -146,6 +146,12 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (uint8_t uint8)
+	{
+		_pushChar(uint8);
+		return *this;
+	}
+
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (int16_t int16)
 	{
 		_pushShort(int16);
@@ -341,7 +347,7 @@ namespace wg
 
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (CanvasRef r)
 	{
-		_pushShort((short)r);
+		_pushChar((char)r);
 		return *this;
 	}
 

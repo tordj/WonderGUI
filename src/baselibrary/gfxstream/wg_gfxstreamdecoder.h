@@ -68,6 +68,7 @@ namespace wg
 
 		GfxStreamDecoder& operator>> (GfxStream::Header& header);
 
+		GfxStreamDecoder& operator>> (uint8_t&);
 		GfxStreamDecoder& operator>> (int16_t&);
 		GfxStreamDecoder& operator>> (uint16_t&);
 		GfxStreamDecoder& operator>> (int&);

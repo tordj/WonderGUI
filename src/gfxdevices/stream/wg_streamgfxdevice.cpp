@@ -823,12 +823,12 @@ namespace wg
 			return false;
 		}
 		
-        uint16_t size = 2 + 2 + 4 + nUpdateRects * 16;
+        uint16_t size = 2 + 1 + 1 + nUpdateRects * 16;
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginCanvasUpdate, {}, size };
+ 		(*m_pEncoder) << (pCanvasSurface ? static_cast<StreamSurface*>(pCanvasSurface)->m_inStreamId : (uint16_t) 0);
         (*m_pEncoder) << canvasRef;
-		(*m_pEncoder) << (pCanvasSurface ? static_cast<StreamSurface*>(pCanvasSurface)->m_inStreamId : (uint16_t) 0);
-        (*m_pEncoder) << nUpdateRects;
+        (*m_pEncoder) << (uint8_t) nUpdateRects;
         (*m_pEncoder) << GfxStream::DataChunk{ nUpdateRects*16, pUpdateRects };
 		
 		m_canvas.ref = canvasRef;

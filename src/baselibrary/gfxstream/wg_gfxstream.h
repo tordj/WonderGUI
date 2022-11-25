@@ -66,6 +66,24 @@ namespace wg
 			else
 				return *(uint16_t*)&pChunk[2] + 4;
 		}
+
+		inline static int headerSize(const uint8_t* pChunk)
+		{
+			uint8_t sizeEtc = pChunk[1] & 0x1F;
+			if (sizeEtc <= 30)
+				return 2;
+			else
+				return 4;
+		}
+
+		inline static int dataSize(const uint8_t* pChunk)
+		{
+			uint8_t sizeEtc = pChunk[1] & 0x1F;
+			if (sizeEtc <= 30)
+				return sizeEtc;
+			else
+				return *(uint16_t*)&pChunk[2];
+		}
 	};
 
 };

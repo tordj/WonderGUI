@@ -74,6 +74,7 @@ namespace wg
 		//.____ Operators _____________________________________________________
 
 		GfxStreamEncoder& operator<< (GfxStream::Header);
+		GfxStreamEncoder& operator<< (uint8_t);
 		GfxStreamEncoder& operator<< (int16_t);
 		GfxStreamEncoder& operator<< (uint16_t);
 		GfxStreamEncoder& operator<< (int32_t);
