@@ -71,9 +71,10 @@ int main ( int argc, char** argv )
 
     // Load stream
 
- //   g_pStreamBuffer = (char*) loadFile( argv[1], &g_streamSize );
-//	g_pStreamBuffer = (char*) loadFile( "output.wax", &g_streamSize );
-	g_pStreamBuffer = (char*) loadFile( "softubehwstream.dat", &g_streamSize );
+	if( argc > 1 )
+		g_pStreamBuffer = (char*) loadFile( argv[1], &g_streamSize );
+	else
+		g_pStreamBuffer = (char*) loadFile( "softubehwstream.dat", &g_streamSize );
 
     if( g_pStreamBuffer == NULL )
         return -1;
