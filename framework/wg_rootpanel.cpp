@@ -86,6 +86,13 @@ WgRootPanel::~WgRootPanel()
 	delete m_pEventHandler;
 }
 
+//____ SetMaxDirtyRects() _____________________________________________________
+
+void WgRootPanel::SetMaxDirtyRects( int max )
+{
+	m_maxDirtyRects = max;
+}
+
 //____ SetGfxDevice() _________________________________________________________
 
 bool WgRootPanel::SetGfxDevice( wg::GfxDevice * pDevice )
@@ -136,6 +143,12 @@ bool WgRootPanel::SetCanvas(wg::CanvasRef ref)
 
 bool WgRootPanel::SetPixelGeo( const WgRect& geo )
 {
+	if( m_bGeoFrozen )
+	{
+		m_frozenGeo = geo;
+		return true;
+	}
+	
 	if( geo.x == 0 && geo.y == 0 && geo.w == 0 && geo.h == 0 )
 		m_bHasGeo = false;
 	else
@@ -144,7 +157,12 @@ bool WgRootPanel::SetPixelGeo( const WgRect& geo )
 	m_geo = geo;
 
 	if( m_hook.Widget() )
-		m_hook.Widget()->_onNewSize(geo);
+	{
+		if( m_bHasGeo )
+			m_hook.Widget()->_onNewSize(geo);
+		else
+			m_hook.Widget()->_onNewSize(m_canvas.size/64);
+	}
 	return true;
 }
 
@@ -158,6 +176,28 @@ WgRect WgRootPanel::PixelGeo() const
         return m_canvas.size/64;
 }
 
+//____ SetFreezeGeo() _________________________________________________________
+
+void WgRootPanel::SetFreezeGeo(bool bFreeze)
+{
+	if( bFreeze == m_bGeoFrozen )
+		return;
+	
+	m_bGeoFrozen = bFreeze;
+	if( bFreeze )
+	{
+		m_frozenGeo = m_geo;
+		m_frozenScale = m_scale;
+	}
+	else
+	{
+		if( m_geo != m_frozenGeo )
+			SetPixelGeo( m_frozenGeo );
+		
+		if( m_scale != m_frozenScale )
+			SetScale(m_frozenScale);
+	}
+}
 
 //____ SetChild() _____________________________________________________________
 
@@ -284,6 +324,15 @@ bool WgRootPanel::BeginRender()
 
 	m_preRenderCalls.clear();
 
+	// Limit number of dirty rects
+	
+	if( m_maxDirtyRects > 0 && m_dirtyPatches.size() > m_maxDirtyRects )
+	{
+		WgRect u = m_dirtyPatches.getUnion();
+		m_dirtyPatches.clear();
+		m_dirtyPatches.add(u);
+	}
+	
 	// GfxDevice barfs on cliplist with rectangles (partly) outside canvas
 
     m_dirtyPatches.clip(PixelGeo());
@@ -321,7 +370,12 @@ bool WgRootPanel::BeginRender()
 
 	// Initialize GfxDevice
 
-	return m_pGfxDevice->beginRender();
+	bool m_bWasAlreadyRendering = m_pGfxDevice->isRendering();
+	
+	if( m_bWasAlreadyRendering )
+		return true;
+	else
+		return m_pGfxDevice->beginRender();
 }
 
 
@@ -430,7 +484,10 @@ bool WgRootPanel::EndRender( void )
 	m_updatedPatches.add(&m_dirtyPatches);
 	m_dirtyPatches.clear();
 
-	return m_pGfxDevice->endRender();
+	if( !m_bWasAlreadyRendering )
+		return m_pGfxDevice->endRender();
+	else
+		return true;
 }
 
 
@@ -453,6 +510,12 @@ void WgRootPanel::SetScale( int scale )
 {
 	if( m_scale != scale )
 	{
+		if( m_bGeoFrozen )
+		{
+			m_frozenScale = scale;
+			return;
+		}
+		
 		m_scale = scale;
 		if( m_hook.Widget() )
 			m_hook.Widget()->_setScale(m_scale);

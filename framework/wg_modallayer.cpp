@@ -582,6 +582,9 @@ void WgModalLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pH
 				pHandler->QueueEvent( new WgEvent::ModalMoveOutside(this) );
 			}
 			break;
+
+			default:
+				break;
 		}
 	}
 

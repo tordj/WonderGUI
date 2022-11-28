@@ -499,6 +499,9 @@ void WgZoomOutCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, co
 
 void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
+	if( _pPatches->isEmpty() )
+		return;
+	
 	if( m_bOutlineMode == false ) //&& m_outerZoom == 1.f )
 	{
 		WgColor oldTint;

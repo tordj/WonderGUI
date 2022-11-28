@@ -1554,6 +1554,9 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 
 	//
 
+	if( patches.isEmpty() )
+		return;
+	
 	WgRect	dirtBounds = patches.getUnion();
 
 	int bytesToRelease = _convertAndPushClipList( pDevice, patches.size(), patches.begin() );
@@ -1592,7 +1595,8 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 					winPatches.push( WgRect::getIntersection(*pRect,window) );
 			}
 
-			m_elements[WINDOW].Widget()->_renderPatches( pDevice, canvas, window, &winPatches );
+			if( !winPatches.isEmpty() )
+				m_elements[WINDOW].Widget()->_renderPatches( pDevice, canvas, window, &winPatches );
 		}
 	}
 

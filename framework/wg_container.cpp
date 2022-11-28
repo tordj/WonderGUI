@@ -357,6 +357,8 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 			patches.push( WgRect::getIntersection(*pRect,_canvas) );
 	}
 
+	if( patches.isEmpty() )
+		return;
 
 	// Render container itself
 

@@ -136,10 +136,10 @@ WgRect WgHook::PointGeo() const
 	WgRect geo = PixelGeo();
     int scale = Parent() ? Parent()->Scale() : 4096;
 
-	geo.x = (geo.x << WG_SCALE_BINALS) / scale;
-	geo.y = (geo.y << WG_SCALE_BINALS) / scale;
-	geo.w = (geo.w << WG_SCALE_BINALS) / scale;
-	geo.h = (geo.h << WG_SCALE_BINALS) / scale;
+	geo.x = (geo.x * WG_SCALE_BASE) / scale;
+	geo.y = (geo.y * WG_SCALE_BASE) / scale;
+	geo.w = (geo.w * WG_SCALE_BASE) / scale;
+	geo.h = (geo.h * WG_SCALE_BASE) / scale;
 
 	return geo;
 }

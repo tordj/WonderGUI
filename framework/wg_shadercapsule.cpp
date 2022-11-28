@@ -106,6 +106,9 @@ WgBlendMode WgShaderCapsule::_getBlendMode() const
 
 void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
+	if( _pPatches->isEmpty() )
+		return;
+	
 	int bytesToRelease = _convertAndPushClipList( pDevice, _pPatches->size(), _pPatches->begin() );
 
 	if( m_pSkin )

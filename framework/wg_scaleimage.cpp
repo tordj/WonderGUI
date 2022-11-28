@@ -75,7 +75,7 @@ void WgScaleImage::SetSource( wg::Surface * pSurf )
 	if( pSurf != m_pOrgSurface )
 	{
 		m_pOrgSurface = pSurf;
-		_recalcImageRect( PixelSize() );
+		_recalcImageRect( PixelSize(), false );
 		_regenerateSurface();
 	}
 }
@@ -94,7 +94,7 @@ void WgScaleImage::SetImageMaxSize( WgSize max )
 
 	if( bRegenerate )
 	{
-		_recalcImageRect( PixelSize() );
+		_recalcImageRect( PixelSize(), false );
 		_regenerateSurface();
 	}
 }
@@ -102,7 +102,7 @@ void WgScaleImage::SetImageMaxSize( WgSize max )
 
 //____ _recalcImageRect() _____________________________________________________
 
-void WgScaleImage::_recalcImageRect( WgSize widgetSize )
+void WgScaleImage::_recalcImageRect( WgSize widgetSize, bool bRegenerate )
 {
 	int w = m_pOrgSurface->pixelSize().w;
 	int h = m_pOrgSurface->pixelSize().h;
@@ -139,7 +139,10 @@ void WgScaleImage::_recalcImageRect( WgSize widgetSize )
 		if( imgRect.size() != m_imgRect.size() )
 		{
 			m_imgRect = imgRect;
-			_regenerateSurface();
+			if( bRegenerate )
+				_regenerateSurface();
+			else
+				m_pGenSurface = nullptr;
 
 		}
 		else if( imgRect.pos() != m_imgRect.pos() )
@@ -197,7 +200,7 @@ void WgScaleImage::SetImageScale( bool bScale )
 	if( bScale != m_bScale )
 	{
 		m_bScale = bScale;
-		_recalcImageRect( PixelSize() );
+		_recalcImageRect( PixelSize(), false );
 		_regenerateSurface();
 	}
 }
@@ -211,7 +214,7 @@ void WgScaleImage::SetImageOrigo( WgOrigo origo )
 		m_imgOrigo = origo;
 		if( m_bScale )
 		{
-			_recalcImageRect( PixelSize() );
+			_recalcImageRect( PixelSize(), true );
 			_requestRender();
 		}
 	}
@@ -233,7 +236,8 @@ WgSize WgScaleImage::PreferredPixelSize() const
 
 void WgScaleImage::_onNewSize( const WgSize& size )
 {
-	_recalcImageRect( size );
+	_recalcImageRect( size, false );
+	_requestPreRenderCall();
 }
 
 
@@ -249,6 +253,15 @@ void WgScaleImage::_onCloneContent( const WgWidget * _pOrg )
 	m_maxImgSize = pOrg->m_maxImgSize;
 	m_imgOrigo = pOrg->m_imgOrigo;
 }
+
+//____ _preRender() ___________________________________________________________
+
+void WgScaleImage::_preRender()
+{
+	if( !m_pGenSurface )
+		_regenerateSurface();
+}
+
 
 //____ _onRender() _____________________________________________________________
 

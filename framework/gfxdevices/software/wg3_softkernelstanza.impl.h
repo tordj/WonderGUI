@@ -1502,8 +1502,7 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 		if (beg == end)
 		{
 			// Special case, one pixel wide row
-
-			int alpha = (color.a * width) >> 16;
+			int16_t alpha = ((int32_t)color.a * (std::min(int32_t(1 << 16), (int32_t)width))) >> 16;
 
 			int16_t backB, backG, backR, backA;
 			int16_t outB, outG, outR, outA;
@@ -2259,26 +2258,24 @@ void _transform_blit(const SoftSurface* pSrcSurf, CoordF pos, const float matrix
 		}
 	}
 
+/*
 #if WG_IS_64_BITS
 
 	typedef int64_t myInt;
-/*
-	const int64_t BINAL_MUL = 32768;
-	const int64_t BINAL_SHIFT = 15;
-	const int64_t BINAL_MASK = 0x7FFF;
-*/
+
 	const int64_t BINAL_MUL = 16777216;
 	const int64_t BINAL_SHIFT = 24;
 	const int64_t BINAL_MASK = 0xFFFFFF;
 
 #else
+*/
 
 	typedef int32_t myInt;
 	const int32_t BINAL_MUL = 32768;
 	const int32_t BINAL_SHIFT = 15;
 	const int32_t BINAL_MASK = 0x7FFF;
 
-#endif
+//#endif
 
 	int srcPixelBytes = pSrcSurf->pixelBytes();
 	int	srcPitch = pSrcSurf->pitch();

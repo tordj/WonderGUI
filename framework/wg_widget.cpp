@@ -556,6 +556,25 @@ void WgWidget::_preRender()
 
 int WgWidget::_convertAndPushClipList( wg::GfxDevice * pDevice, int nRects, const WgRect * pRects )
 {
+	// Compare cliplist to what we already have. Only push if different.
+
+	assert( nRects != 0 );
+	
+	if( nRects == pDevice->clipListSize() )
+	{
+		const wg::RectI * pCurrent = pDevice->clipList();
+		int i = 0;
+		while( i < nRects )
+		{
+			if( pCurrent[i] != pRects[i]*64 )
+				break;
+			i++;
+		}
+		if( i == nRects )
+			return 0;				// Cliplists are identical. We don't push.
+	}
+	
+	
 	int nBytes = nRects*sizeof(wg::RectSPX);
 	
 	wg::RectSPX * pClipRects = (wg::RectSPX*) wg::Base::memStackAlloc(nBytes);
@@ -571,6 +590,9 @@ int WgWidget::_convertAndPushClipList( wg::GfxDevice * pDevice, int nRects, cons
 
 void WgWidget::_popAndReleaseClipList( wg::GfxDevice * pDevice, int bytesToRelease)
 {
+	if( bytesToRelease == 0 )
+		return;						// No cliplist was pushed.
+		
 	pDevice->popClipList();
 	wg::Base::memStackRelease(bytesToRelease);
 }
@@ -580,6 +602,9 @@ void WgWidget::_popAndReleaseClipList( wg::GfxDevice * pDevice, int bytesToRelea
 
 void WgWidget::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
+	if( _pPatches->isEmpty() )
+		return;
+
 	int bytesToRelease = _convertAndPushClipList(pDevice, _pPatches->size(), _pPatches->begin());
 	_onRender( pDevice, _canvas, _window );
 	_popAndReleaseClipList(pDevice, bytesToRelease);

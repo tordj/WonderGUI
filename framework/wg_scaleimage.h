@@ -42,9 +42,9 @@ public:
 	WgScaleImage();
 	virtual ~WgScaleImage();
 
-	virtual const char *Type( void ) const;
+	const char *Type( void ) const override;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgScaleImage(); };
+	WgWidget * NewOfMyType() const override{ return new WgScaleImage(); };
 
 	void			SetSurfaceFactory( wg::SurfaceFactory * pFactory );
 	wg::SurfaceFactory_p GetSurfaceFactory() const { return m_pSurfaceFactory; }
@@ -62,7 +62,7 @@ public:
 
 
 
-	WgSize			PreferredPixelSize() const;
+	WgSize			PreferredPixelSize() const override;
 
 	void resample(wg::Surface* src, wg::Surface* dest)
 	{
@@ -489,14 +489,17 @@ public:
 
 protected:
 
-	void	_onNewSize( const WgSize& size );
-	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window);
-	bool	_onAlphaTest( const WgCoord& ofs );
+	void	_onNewSize( const WgSize& size ) override;
+	void	_onCloneContent( const WgWidget * _pOrg ) override;
+	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window) override;
+	bool	_onAlphaTest( const WgCoord& ofs ) override;
 
 	void	_regenerateSurface();
-	void	_recalcImageRect( WgSize widgetSize );
+	void	_recalcImageRect( WgSize widgetSize, bool bRegenerate );
 
+	void    _preRender() override;
+
+	
 private:
 
 	wg::Surface_p   m_pOrgSurface;				// Original surface

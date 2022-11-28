@@ -50,6 +50,9 @@ public:
     WgRootPanel( wg::CanvasRef canvasRef, wg::GfxDevice * pGfxDevice = nullptr );
 	~WgRootPanel();
 
+	void					SetMaxDirtyRects( int max );
+	inline int				MaxDirtyRects() const { return m_maxDirtyRects; }
+	
 	bool					SetGfxDevice( wg::GfxDevice * pDevice );
 	inline wg::GfxDevice_p 	GfxDevice() const { return m_pGfxDevice; };
 
@@ -73,6 +76,13 @@ public:
 
 	void					SetScale( int scale );
 	int						Scale() const { return m_scale; }
+
+	// Freezes RootPanels geo and scale.
+	// Calls to SetPixelGeo() and SetScale() will just store value
+	// and not apply it until unfrozen. This does not prevent direct changes to geo/scale on its children.
+
+	void					SetFreezeGeo(bool bFreeze);
+	bool					IsGeoFrozen(bool bFreeze) { return m_bGeoFrozen; }
 
 	// Inherited from WgWidgetHolder
 
@@ -156,6 +166,9 @@ protected:
 	WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
 	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
+	int					m_maxDirtyRects = 0;	// 0 = unlimited
+	bool				m_bWasAlreadyRendering = false;
+	
 	std::vector<WgWidgetWeakPtr>   m_preRenderCalls;
 
 	wg::Skin_p			m_pUpdatedRectOverlay;
@@ -169,9 +182,13 @@ protected:
 	WgEventHandler *	m_pEventHandler;
 	Hook				m_hook;
 	WgRect				m_geo;
+	int					m_scale;
 	bool				m_bHasGeo;
 	bool				m_bVisible;
-	int					m_scale;
+	bool				m_bGeoFrozen = false;
+	
+	WgRect				m_frozenGeo;
+	int					m_frozenScale;
 };
 
 

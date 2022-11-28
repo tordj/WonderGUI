@@ -382,6 +382,9 @@ void WgKnob::_onNewSize(const WgSize& size)
 
 void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
 {
+	if( _pPatches->isEmpty() )
+		return;
+	
 	if (!m_pSurf)
 	{
 		if( !m_pSurfaceFactory )

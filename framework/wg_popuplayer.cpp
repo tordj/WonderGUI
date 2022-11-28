@@ -529,6 +529,9 @@ void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas
 			patches.push(WgRect::getIntersection(*pRect, _canvas));
 	}
 
+	if( patches.isEmpty() )
+		return;
+	
 	// Render container itself
 
 	int bytesToRelease = _convertAndPushClipList( pDevice, patches.size(), patches.begin() );
@@ -592,7 +595,7 @@ void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas
 
 		if (tint.a == 255)
 			p->pSlot->m_pWidget->_renderPatches(pDevice, p->geo, p->geo, &p->patches);
-		else
+		else if( !p->patches.isEmpty() )
 		{
 			WgColor oldTint = pDevice->tintColor();
 			pDevice->setTintColor(oldTint*tint);
