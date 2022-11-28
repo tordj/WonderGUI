@@ -35,7 +35,7 @@ namespace wg
 		return TYPEINFO;
 	}
 
-
+	//____ createSurface() _______________________________________________________
 
 	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, int flags, const Color8* pClut)
 	{

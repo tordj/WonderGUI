@@ -7,6 +7,7 @@ mkdir baselibrary/base
 mkdir baselibrary/c-interface
 mkdir baselibrary/gfxstream
 mkdir baselibrary/skins
+mkdir baselibrary/surfaceio
 mkdir c-abi-wrapper
 mkdir gfxdevices
 mkdir gfxdevices/opengl
@@ -21,6 +22,7 @@ cp -r ../framework/baselibrary/base exports/baselibrary
 cp -r ../framework/baselibrary/c-interface exports/baselibrary
 cp -r ../framework/baselibrary/gfxstream exports/baselibrary
 cp -r ../framework/baselibrary/skins exports/baselibrary
+cp -r ../framework/baselibrary/surfaceio exports/baselibrary
 cp -r ../framework/c-abi-wrapper exports/
 cp -r ../framework/gfxdevices exports/
 cp -r ../framework/fontengines exports/ 

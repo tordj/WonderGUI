@@ -22,7 +22,8 @@ include_directories(
 	framework/baselibrary/skins/misc
 	framework/baselibrary/skins/state
 	framework/baselibrary/skins/static
-
+	framework/baselibrary/surfaceio
+	
 	framework/c-abi-wrapper
 
 	framework/gfxdevices/software

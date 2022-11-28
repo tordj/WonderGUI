@@ -37,38 +37,43 @@ int wg_exit()
 	return Base::exit();
 }
 
+int wg_isInitialized()
+{
+	return Base::isInitialized();
+}
+
 void wg_setErrorHandler( void (*errorHandler)(const wg_error_info * pError) )
 {
 
 	Base::setErrorHandler( [errorHandler](Error& error)
 	{
 		wg_error_info	errorInfo;
-		
+
 		wg_error_code		errorCode;
 		wg_error_severity	severity;
-		
+
 		switch( error.code )
 		{
 			case ErrorCode::OutOfRange:
 				errorCode = WG_ERROR_OUT_OF_RANGE;
 				break;
-				
+
 			case ErrorCode::InvalidIterator:
 				errorCode = WG_ERROR_INVALID_ITERATOR;
 				break;
-				
+
 			case ErrorCode::InvalidParam:
 				errorCode = WG_ERROR_INVALID_PARAM;
 				break;
-				
+
 			case ErrorCode::FailedPrerequisite:
 				errorCode = WG_ERROR_FAILED_PREREQUISITE;
 				break;
-				
+
 			case ErrorCode::OpenGL:
 				errorCode = WG_ERROR_OPENGL;
 				break;
-				
+
 			case ErrorCode::Internal:
 				errorCode = WG_ERROR_INTERNAL;
 				break;
@@ -88,26 +93,26 @@ void wg_setErrorHandler( void (*errorHandler)(const wg_error_info * pError) )
 			default:
 				errorCode = WG_ERROR_OTHER;
 		}
-		
+
 		switch( error.severity )
 		{
 			case ErrorSeverity::Warning:
 			severity = WG_WARNING;
 			break;
-			
+
 			case ErrorSeverity::SilentFail:
 			severity = WG_SILENT_FAIL;
 			break;
-			
+
 			case ErrorSeverity::Serious:
 			severity = WG_SERIOUS_ERROR;
 			break;
-			
+
 			case ErrorSeverity::Critical:
 			severity = WG_CRITICAL_ERROR;
 			break;
 		}
-		
+
 		errorInfo.classname = error.classname;
 		errorInfo.code = errorCode;
 		errorInfo.file = error.file;
@@ -116,8 +121,8 @@ void wg_setErrorHandler( void (*errorHandler)(const wg_error_info * pError) )
 		errorInfo.line = error.line;
 		errorInfo.message = error.message.c_str();
 		errorInfo.severity = severity;
-		
-		
+
+
 		errorHandler(&errorInfo);
 	});
 }

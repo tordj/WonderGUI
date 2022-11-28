@@ -279,7 +279,7 @@ wg_surfaceBP wg_getSurfaceBlueprint(wg_obj surface)
 	dest.clut			= (wg_color8*)src.clut;
 	dest.dynamic		= src.dynamic;
 	dest.format			= (wg_pixelFormat) src.format;
-	dest.id				= src.id;
+	dest.identity		= src.identity;
 	dest.mipmap			= src.mipmap;
 	dest.sampleMethod	= (wg_sampleMethod) src.sampleMethod;
 	dest.scale			= src.scale;

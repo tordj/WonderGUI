@@ -7,7 +7,7 @@ add_library( wgmetalgfx
 	wg3_metalshaders.mm
 	wg3_metalsurface.h
 	wg3_metalsurface.mm
-	wg3_metalsurface.h
+	wg3_metalsurfacefactory.h
 	wg3_metalsurfacefactory.mm
 )
 

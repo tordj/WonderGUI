@@ -40,6 +40,7 @@
 #include <wg3_softsurface.h>
 #include <wg3_softsurfacefactory.h>
 #include <wg3_softgfxdevice.h>
+#include <wg3_softkernels_default.h>
 #include <wg3_boxskin.h>
 #include <wg3_bitmapfont.h>
 #include <wg3_freetypefont.h>
@@ -240,6 +241,8 @@ int main ( int argc, char** argv )
     auto pGfxDevice = wg::SoftGfxDevice::create();
     pGfxDevice->defineCanvas( wg::CanvasRef::Default, pCanvas );
     
+	addDefaultSoftKernels(pGfxDevice);
+	
     g_pGfxDevice = pGfxDevice;
     g_pCanvas = pCanvas;
     
@@ -279,7 +282,7 @@ int main ( int argc, char** argv )
 	
 	auto pFontBlob = wg::Blob::create(pFontFile, size, [pFontFile] { free(pFontFile); });
 
-	auto pFont = wg::FreeTypeFont::create(pFontBlob,0);
+	auto pFont = wg::FreeTypeFont::create( { .blob = pFontBlob } );
 	
 	// Load bitmap font
 

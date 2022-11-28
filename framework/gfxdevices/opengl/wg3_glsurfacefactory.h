@@ -60,6 +60,7 @@ namespace wg
 
 	protected:
 		GlSurfaceFactory(int flags) : m_flags(flags) {}
+		~GlSurfaceFactory() {}
 
 		int m_flags;
 

@@ -68,7 +68,7 @@ namespace wg
 
 	StreamSurface_p	StreamSurface::create( GfxStreamEncoder * pEncoder, SizeI size, PixelFormat format, int flags, const Color8 * pClut )
 	{
-		if (format == PixelFormat::Undefined || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
+		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
 			return StreamSurface_p();
 
 		Blueprint bp;
@@ -111,7 +111,7 @@ namespace wg
 
 	StreamSurface_p	StreamSurface::create( GfxStreamEncoder * pEncoder,SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut )
 	{
-		if (format == PixelFormat::Undefined || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
+		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max ||
 			((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
 			return StreamSurface_p();
 
@@ -263,13 +263,12 @@ namespace wg
 
 
 	StreamSurface::StreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& bp, Surface* pOther)
-		: Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod())
+		: Surface(bp, pOther->pixelFormat(), pOther->sampleMethod())
 	{
-		//TODO: This only works now if blueprint and pOther agrees on size, pixelformat, etc.
+		//TODO: This only works now if blueprint and pOther agrees on size, etc.
 
 		assert(pOther);
 
-		PixelFormat format = pOther->pixelFormat();
 		auto pixelbuffer = pOther->allocPixelBuffer();
 		bool bPushed = pOther->pushPixels(pixelbuffer);
 
@@ -283,41 +282,41 @@ namespace wg
 		m_pitch = ((size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
 		m_bDynamic = bp.dynamic;
 
-		Util::pixelFormatToDescription(format, m_pixelDescription);
-
 		Blueprint myBP = bp;
 		myBP.size = m_size;
 		myBP.sampleMethod = m_sampleMethod;
 		myBP.format = m_pixelDescription.format;
 
         m_inStreamId = _sendCreateSurface(myBP);
-        
+
+		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0));
+
+		// _copy() implicitly calls _sendPixels().
+		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pPixels, pitch, RectI(size));
+		pOther->freePixelBuffer(pixelbuffer);
+		
 		if (m_pixelDescription.bits <= 8 || bp.buffered)
 		{
-			m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0));
-
-            // _copy() implicitly calls _sendPixels().
-			_copy(RectI(size), &m_pixelDescription, pixelbuffer.pPixels, pitch, RectI(size));
-
-			if (pOther->clut())
+			if (bp.clut)
 			{
-				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-				memcpy(m_pClut, pOther->clut(), 1024);
+				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * bp.size.h);
+				memcpy(m_pClut, bp.clut, 1024);
 			}
 			else
 				m_pClut = nullptr;
+
+			m_pAlphaLayer = nullptr;
 		}
 		else
 		{
-            _sendPixels(m_pEncoder, size, pixelbuffer.pPixels, pitch);
+			m_pBlob = nullptr;
 
-            if (m_pixelDescription.A_bits == 0)
+			if (m_pixelDescription.A_bits == 0)
 				m_pAlphaLayer = nullptr;
 			else
 				m_pAlphaLayer = _genAlphaLayer((char*)pixelbuffer.pPixels, pitch);
 		}
 
-		pOther->freePixelBuffer(pixelbuffer);
 		m_pEncoder->flush();
 	}
 
@@ -544,7 +543,7 @@ namespace wg
 		*m_pEncoder << bp.canvas;
 		*m_pEncoder << bp.dynamic;
 		*m_pEncoder << bp.format;
-		*m_pEncoder << bp.id;
+		*m_pEncoder << bp.identity;
 		*m_pEncoder << bp.mipmap;
 		*m_pEncoder << bp.sampleMethod;
 		*m_pEncoder << bp.scale;

@@ -33,7 +33,7 @@ void convertSurfaceBlueprint(Surface::Blueprint* pDest, const wg_surfaceBP* pSou
 	pDest->clut = (Color8*)pSource->clut;
 	pDest->dynamic = pSource->dynamic;
 	pDest->format = (PixelFormat)pSource->format;
-	pDest->id = pSource->id;
+	pDest->identity = pSource->identity;
 	pDest->mipmap = pSource->mipmap;
 	pDest->sampleMethod = (SampleMethod)pSource->sampleMethod;
 	pDest->scale = pSource->scale;

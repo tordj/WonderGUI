@@ -214,6 +214,9 @@ namespace wg
 
     void StreamGfxDevice::setTintColor( HiColor color )
     {
+		if( color == m_tintColor )
+			return;
+		
         GfxDevice::setTintColor(color);
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintColor, 0, 8 };
@@ -224,6 +227,9 @@ namespace wg
 
     void StreamGfxDevice::setTintGradient(const RectSPX& rect, const Gradient& gradient)
     {
+		if( rect == m_tintGradientRect && m_tintGradient == gradient )
+			return;
+		
         GfxDevice::setTintGradient(rect, gradient);
         
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, 0, 16 + 34 };
@@ -235,6 +241,9 @@ namespace wg
 
     void StreamGfxDevice::clearTintGradient()
     {
+		if( m_bTintGradient == false )
+			return;
+		
         GfxDevice::clearTintGradient();
         
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ClearTintGradient, 0, 0 };
@@ -245,8 +254,14 @@ namespace wg
     bool StreamGfxDevice::setBlendMode( BlendMode blendMode )
     {
         if( blendMode < BlendMode_min || blendMode > BlendMode_max )
-                return false;
+        {
+            Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Not a valid blendMode", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+            return false;
+        }
 
+		if( blendMode == m_blendMode )
+			return true;
+		
         GfxDevice::setBlendMode(blendMode);
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlendMode, 0, 2 };
@@ -259,9 +274,15 @@ namespace wg
 
     bool StreamGfxDevice::setBlitSource(Surface * pSource)
     {
-        if (!pSource || !pSource->isInstanceOf(StreamSurface::TYPEINFO) )
+        if (!pSource || !pSource->isInstanceOf(StreamSurface::TYPEINFO))
+        {
+            Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Surface is not a StreamSurface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
+        }
 
+		if( pSource == m_pBlitSource )
+			return true;
+		
         GfxDevice::setBlitSource(pSource);
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlitSource, 0, 2 };
@@ -273,6 +294,9 @@ namespace wg
 
     void StreamGfxDevice::setMorphFactor(float factor)
     {
+		if( factor == m_morphFactor )
+			return;
+		
         GfxDevice::setMorphFactor(factor);
         
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetMorphFactor, 0, 4 };
@@ -283,6 +307,9 @@ namespace wg
 
     void StreamGfxDevice::setRenderLayer(int layer)
     {
+		if( layer == m_renderLayer )
+			return;
+		
         GfxDevice::setRenderLayer(layer);
         
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetRenderLayer, 0, 2 };
@@ -751,7 +778,7 @@ namespace wg
 
     void StreamGfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)
     {
-        uint16_t size = 16 + 8 + ( 16 + 8 + 10 + 10 ) + 4;
+        uint16_t size = 16 + 16 + ( 16 + 8 + 10 + 10 ) + 4;
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitNinePatch, 0, size };
         (*m_pEncoder) << dstRect;
@@ -796,12 +823,12 @@ namespace wg
 			return false;
 		}
 		
-        uint16_t size = 2 + 2 + 4 + nUpdateRects * 16;
+        uint16_t size = 2 + 1 + 1 + nUpdateRects * 16;
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginCanvasUpdate, {}, size };
+ 		(*m_pEncoder) << (pCanvasSurface ? static_cast<StreamSurface*>(pCanvasSurface)->m_inStreamId : (uint16_t) 0);
         (*m_pEncoder) << canvasRef;
-		(*m_pEncoder) << (pCanvasSurface ? static_cast<StreamSurface*>(pCanvasSurface)->m_inStreamId : (uint16_t) 0);
-        (*m_pEncoder) << nUpdateRects;
+        (*m_pEncoder) << (uint8_t) nUpdateRects;
         (*m_pEncoder) << GfxStream::DataChunk{ nUpdateRects*16, pUpdateRects };
 		
 		m_canvas.ref = canvasRef;
@@ -826,14 +853,14 @@ namespace wg
         assert(false);
     }
 
-    void StreamGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+    void StreamGfxDevice::_transformBlitSimple(const RectI& dest, CoordI src, const int simpleTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
         
         assert(false);
     }
 
-    void StreamGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
+    void StreamGfxDevice::_transformBlitComplex(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
         

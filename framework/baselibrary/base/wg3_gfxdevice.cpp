@@ -158,7 +158,19 @@ namespace wg
 	bool GfxDevice::pushClipList(int nRectangles, const RectSPX* pRectangles)
 	{
 		m_clipListStack.push_back({ m_nClipRects,m_pClipRects,m_clipBounds });
-		return setClipList(nRectangles, pRectangles);
+
+		RectSPX bounds = *pRectangles;
+		for (int i = 1; i < nRectangles; i++)
+			bounds.growToContain(pRectangles[i]);
+
+		if (bounds.x < 0 || bounds.y < 0 || bounds.w > m_canvas.size.w || bounds.h > m_canvas.size.h)
+			return false;
+
+		m_pClipRects = pRectangles;
+		m_nClipRects = nRectangles;
+		m_clipBounds = bounds;
+		_clipListWasChanged();
+		return true;
 	}
 
 	//____ popClipList() ______________________________________________________
@@ -281,7 +293,7 @@ namespace wg
             if( m_pCanvasLayers->_layerClearFunc(m_renderLayer) != nullptr )
             {
                 //NOTE! BlendMode can be anything when calling initializer.
-                
+
                 m_pCanvasLayers->_layerClearFunc(m_renderLayer)(this);
             }
             else
@@ -290,7 +302,7 @@ namespace wg
                 fill(Color::Transparent);
             }
 
-            
+
             setBlendMode(savedBlendMode);
 			setTintColor(savedTintColor);
 
@@ -387,9 +399,9 @@ namespace wg
 
 	bool GfxDevice::_beginCanvasUpdate(CanvasRef ref, Surface * pSurface, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pCanvasLayers, int startLayer )
 	{
-		
+
 		SizeSPX sz;
-		
+
 		if( ref != CanvasRef::None )
 			sz = canvas(ref).size;
 		else if( pSurface )
@@ -405,7 +417,7 @@ namespace wg
 			//TODO: Error handling!
 			return false;
 		}
-		
+
 		RectSPX bounds;
 
 		if (nUpdateRects > 0)
@@ -457,7 +469,7 @@ namespace wg
 		m_canvas.ref = ref;
 		m_canvas.pSurface = pSurface;
 		m_canvas.size = sz;
-		
+
 		m_pCanvasLayers = pCanvasLayers;
 
 		m_pCanvasUpdateRects = pUpdateRects;
@@ -482,9 +494,9 @@ namespace wg
 		m_blendMode = BlendMode::Blend;
 		m_morphFactor = 0.5f;
 		_canvasWasChanged();
-        
+
         // Call Canvas Initializer
-		
+
 		if( !m_bIsProxyDevice )
 		{
 			if( pCanvasLayers && pCanvasLayers->_canvasClearFunc() != nullptr )
@@ -494,7 +506,7 @@ namespace wg
 				setRenderLayer(layer);
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -506,7 +518,7 @@ namespace wg
 
         // It is OK for canvas stack to be empty, we need another way to sync
         // begin/endCanvasUpdate() calls.
- 
+
 		if (m_canvasStack.empty())
 		{
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "No Canvas being updated, nothing to end.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
@@ -523,7 +535,7 @@ namespace wg
 			for (int layerIdx = 1; layerIdx <= nbLayers; layerIdx++)
 			{
                 // Call pre-blend canvas modifier no matter if layer has a surface or not
-                
+
                 if( m_pCanvasLayers->_canvasModifier(layerIdx) != nullptr )
                 {
                     if (bFirst)
@@ -540,7 +552,7 @@ namespace wg
                 }
 
                 // Finalize and blend layer if it has a surface.
-                
+
                 if (m_layerSurfaces[layerIdx])
 				{
 					if (bFirst)
@@ -554,16 +566,16 @@ namespace wg
 					}
 
                     // Call layer finalizer before blending
-                    
+
                     if( m_pCanvasLayers->_layerPreBlendFunc(layerIdx) != nullptr )
                     {
                         setRenderLayer(layerIdx);
                         m_pCanvasLayers->_layerPreBlendFunc(layerIdx)(this);
                         setRenderLayer(0);
                     }
-                    
+
                     // Blend layer onto base layer
-                    
+
                     setBlitSource(m_layerSurfaces[layerIdx]);
 
                     if( m_pCanvasLayers->_layerBlendFunc(layerIdx) != nullptr )
@@ -574,11 +586,11 @@ namespace wg
 			}
 
             // Call Canvas Finalizer
-            
+
             if( m_pCanvasLayers->_canvasFinalizeFunc() != nullptr )
                 m_pCanvasLayers->_canvasFinalizeFunc()(this);
         }
-        
+
 		// Dereference surfaces
 
 		for (int i = 0; i < CanvasLayers::c_maxLayers; i++)
@@ -685,14 +697,14 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		_transformBlit({ dest, m_pBlitSource->pixelSize()*64 }, { 0,0 }, blitFlipTransforms[0]);
+		_transformBlitSimple({ dest, m_pBlitSource->pixelSize()*64 }, { 0,0 }, blitFlipTransforms[0]);
 	}
 
 	void GfxDevice::blit(CoordSPX dest, const RectSPX& src)
 	{
 		assert(m_pBlitSource != nullptr);
 
-		_transformBlit({ dest, src.size() }, src.pos(), blitFlipTransforms[0]);
+		_transformBlitSimple({ dest, src.size() }, src.pos(), blitFlipTransforms[0]);
 	}
 
 	//____ flipBlit() _________________________________________________________
@@ -710,7 +722,7 @@ namespace wg
 		if (blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		_transformBlit({ dest, dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
+		_transformBlitSimple({ dest, dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
 	}
 
 	void GfxDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip)
@@ -725,7 +737,7 @@ namespace wg
 			swap(dstSize.w, dstSize.h);
 
 
-        _transformBlit({ dest, dstSize }, {ofsX, ofsY}, blitFlipTransforms[(int)flip]);
+        _transformBlitSimple({ dest, dstSize }, {ofsX, ofsY}, blitFlipTransforms[(int)flip]);
 	}
 
 
@@ -739,34 +751,29 @@ namespace wg
 		stretchBlit(dest, RectSPX(0, 0, m_pBlitSource->pixelSize()*64) );
 	}
 
-	void GfxDevice::stretchBlit(const RectSPX& dest, const RectSPX& _src )
+	void GfxDevice::stretchBlit(const RectSPX& dest, const RectSPX& src )
 	{
 		assert(m_pBlitSource != nullptr);
 
-		if (m_pBlitSource == nullptr || dest.w == 0 || dest.h == 0 || _src.w == 0 || _src.h == 0)
+		if (m_pBlitSource == nullptr || dest.w == 0 || dest.h == 0 || src.w == 0 || src.h == 0)
 			return;
 
-		if (dest.w == _src.w && dest.h == _src.h)
+		if (dest.w == src.w && dest.h == src.h)
 		{
 			// This is a 1:1 blit, let's use the fast alternative.
 
-			_transformBlit( dest, _src.pos(), blitFlipTransforms[0]);
+			_transformBlitSimple( dest, src.pos(), blitFlipTransforms[0]);
 		}
 		else
 		{
-			RectF src{ (float)_src.x, (float)_src.y, (float)_src.w, (float)_src.h };
-
-			float	mtx[2][2];
+			binalInt	mtx[2][2];
 
 			if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 			{
-	//			src.x += 0.5f;
-	//			src.y += 0.5f;
-
 				if (dest.w == 64)
 					mtx[0][0] = 0;
 				else
-					mtx[0][0] = (src.w-64) / (dest.w-64);
+					mtx[0][0] = binalInt(src.w-64) * (BINAL_MUL/64) / ((dest.w/64) - 1);
 
 				mtx[0][1] = 0;
 				mtx[1][0] = 0;
@@ -774,20 +781,20 @@ namespace wg
 				if( dest.h == 64)
 					mtx[1][1] = 0;
 				else
-					mtx[1][1] = (src.h-64) / (dest.h-64);
+					mtx[1][1] = binalInt(src.h-64) * (BINAL_MUL/64) / ((dest.h/64) - 1);
 			}
 			else
 			{
 				// We want last src sample to be taken as close to the end of the source
 				// rectangle as possible in order to get a more balanced representation.
 
-				mtx[0][0] = src.w / dest.w;
+				mtx[0][0] = (binalInt(src.w) * (BINAL_MUL/64)) / (dest.w/64);
 				mtx[0][1] = 0;
 				mtx[1][0] = 0;
-				mtx[1][1] = src.h / dest.h;
+				mtx[1][1] = (binalInt(src.h) * (BINAL_MUL/64)) / (dest.h/64);
 			}
 
-			_transformBlit(dest, { src.x, src.y }, mtx);
+			_transformBlitComplex(dest, { binalInt(src.x) * (BINAL_MUL/64), binalInt(src.y) * (BINAL_MUL/64) }, mtx);
 		}
 	}
 
@@ -804,75 +811,95 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		float scaleX, scaleY;
-		float ofsX, ofsY;
+		binalInt scaleX, scaleY;
+		binalInt ofsX, ofsY;
+
+		binalInt srcW = binalInt(src.w)  * (BINAL_MUL/64);
+		binalInt srcH = binalInt(src.h)  * (BINAL_MUL/64);
 
 		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 		{
-			float srcW = (float)(src.w - 64);
-			float srcH = (float)(src.h - 64);
+			srcW -= BINAL_MUL;
+			srcH -= BINAL_MUL;
 
-			scaleX = srcW / (dest.w-64);
-			scaleY = srcH / (dest.h-64);
+			if( dest.w == 64 )
+				scaleX = 0;
+			else
+				scaleX = srcW / ((dest.w/64)-1);
 
-			ofsX = src.x + srcW * blitFlipOffsets[(int)flip][0];
-			ofsY = src.y + srcH * blitFlipOffsets[(int)flip][1];
+			if( dest.h == 64 )
+				scaleY = 0;
+			else
+				scaleY = srcH / ((dest.h/64)-1);
+
+			ofsX = (binalInt(src.x)  * (BINAL_MUL/64)) + srcW * blitFlipOffsets[(int)flip][0];
+			ofsY = (binalInt(src.y)  * (BINAL_MUL/64)) + srcH * blitFlipOffsets[(int)flip][1];
 		}
 		else
 		{
-			float srcW = (float)src.w;
-			float srcH = (float)src.h;
 
-			scaleX = srcW / (dest.w - 0.99f);
-			scaleY = srcH / (dest.h - 0.99f);
+			//TODO: Not sure about this -1. Was -0.99 when dealing with spx and floats which looked suspicious.
 
-			ofsX = src.x + (srcW - scaleX) * blitFlipOffsets[(int)flip][0];
-			ofsY = src.y + (srcH - scaleY) * blitFlipOffsets[(int)flip][1];
+			scaleX = (srcW / (dest.w/64)) -1;
+			scaleY = (srcH / (dest.h/64)) -1;
+
+			ofsX = (binalInt(src.x) * (BINAL_MUL/64)) + (srcW - scaleX) * blitFlipOffsets[(int)flip][0];
+			ofsY = (binalInt(src.y) * (BINAL_MUL/64)) + (srcH - scaleY) * blitFlipOffsets[(int)flip][1];
 		}
 
-		float	mtx[2][2];
+		binalInt	mtx[2][2];
 
 		mtx[0][0] = scaleX * blitFlipTransforms[(int)flip][0][0];
 		mtx[0][1] = scaleY * blitFlipTransforms[(int)flip][0][1];
 		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
 		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
-		_transformBlit(dest, { ofsX, ofsY }, mtx);
+		_transformBlitComplex(dest, { ofsX, ofsY }, mtx);
 	}
 
 	//____ precisionBlit() ____________________________________________________
 
-	void GfxDevice::precisionBlit(const RectSPX& dest, const RectF& src)
+	void GfxDevice::precisionBlit(const RectSPX& dest, const RectF& _src)
 	{
 		assert(m_pBlitSource != nullptr);
 
-		float	mtx[2][2];
+		binalInt	mtx[2][2];
+
+		BinalRect src(toBinalInt(_src.x),toBinalInt(_src.y),toBinalInt(_src.w),toBinalInt(_src.h));
 
 		if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
 		{
-			mtx[0][0] = src.w / dest.w;
+			mtx[0][0] = src.w / (dest.w/64);
 			mtx[0][1] = 0;
 			mtx[1][0] = 0;
-			mtx[1][1] = src.h / dest.h;
+			mtx[1][1] = src.h / (dest.h/64);
 		}
 		else
 		{
-			mtx[0][0] = src.w / dest.w;
+			mtx[0][0] = src.w / (dest.w/64);
 			mtx[0][1] = 0;
 			mtx[1][0] = 0;
-			mtx[1][1] = src.h / dest.h;
+			mtx[1][1] = src.h / (dest.h/64);
 		}
 
-		_transformBlit(dest, CoordF( src.x,src.y ), mtx );
+		_transformBlitComplex(dest, src.pos(), mtx );
 	}
 
 	//____ transformBlit() ________________________________________________
 
-	void GfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
+	void GfxDevice::transformBlit(const RectSPX& dest, CoordF src, const float transform[2][2])
 	{
 		assert(m_pBlitSource != nullptr);
 
-		_transformBlit(dest, srcSPX, transform);
+		binalInt	mtx[2][2];
+
+		mtx[0][0] = binalInt(transform[0][0]*BINAL_MUL);
+		mtx[0][1] = binalInt(transform[0][1]*BINAL_MUL);
+		mtx[1][0] = binalInt(transform[1][0]*BINAL_MUL);
+		mtx[1][1] = binalInt(transform[1][1]*BINAL_MUL);
+
+
+		_transformBlitComplex(dest, { toBinalInt(src.x), toBinalInt(src.y) }, mtx);
 	}
 
 	//____ rotScaleBlit() _____________________________________________________
@@ -884,29 +911,29 @@ namespace wg
 		if (m_pBlitSource->m_size.w * scale < 1.f || m_pBlitSource->m_size.h * scale < 1.f )			// Values very close to zero gives overflow in calculations.
 			return;
 
-		CoordF	src;
-		float	mtx[2][2];
+		BinalCoord	src;
+		binalInt	mtx[2][2];
 
 		float	sz = (float)sin(-rotationDegrees*3.14159265/180);
 		float	cz = (float)cos(-rotationDegrees*3.14159265 / 180);
 
 		scale = 1.f / scale;
 
-		mtx[0][0] = cz * scale;
-		mtx[0][1] = sz * scale;
+		mtx[0][0] = cz * scale * BINAL_MUL;
+		mtx[0][1] = sz * scale * BINAL_MUL;
 
-		mtx[1][0] = -sz * scale;
-		mtx[1][1] = cz * scale;
+		mtx[1][0] = -sz * scale * BINAL_MUL;
+		mtx[1][1] = cz * scale * BINAL_MUL;
 
-		src = { srcCenter.x * m_pBlitSource->m_size.w*64, srcCenter.y * m_pBlitSource->m_size.h*64 };
-		 
+		src = { binalInt(srcCenter.x * m_pBlitSource->m_size.w * BINAL_MUL), binalInt(srcCenter.y * m_pBlitSource->m_size.h * BINAL_MUL) };
+
 //		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
 //		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
 
-		src.x -= dest.w * destCenter.x * mtx[0][0] + dest.h * destCenter.y * mtx[1][0];
-		src.y -= dest.w * destCenter.x * mtx[0][1] + dest.h * destCenter.y * mtx[1][1];
+		src.x -= (dest.w * destCenter.x * mtx[0][0] + dest.h * destCenter.y * mtx[1][0]) / 64;
+		src.y -= (dest.w * destCenter.x * mtx[0][1] + dest.h * destCenter.y * mtx[1][1]) / 64;
 
-		_transformBlit(dest, { src.x,src.y }, mtx);
+		_transformBlitComplex(dest, { src.x,src.y }, mtx);
 	}
 
 	//____ tile() _____________________________________________________________
@@ -921,7 +948,7 @@ namespace wg
 			return;
 		}
 
-		_transformBlit( dest, shift, blitFlipTransforms[0]);
+		_transformBlitSimple( dest, shift, blitFlipTransforms[0]);
 	}
 
 	//____ flipTile() _________________________________________________________
@@ -948,7 +975,7 @@ namespace wg
 		if (blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		_transformBlit({ dest.pos(), dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
+		_transformBlitSimple({ dest.pos(), dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
 	}
 
 	//____ scaleTile() _________________________________________________________
@@ -963,16 +990,16 @@ namespace wg
 			return;
 		}
 
-		float	mtx[2][2];
+		binalInt	mtx[2][2];
 
-		mtx[0][0] = 1.f/scale;
+		mtx[0][0] = BINAL_MUL / scale;
 		mtx[0][1] = 0;
 		mtx[1][0] = 0;
-		mtx[1][1] = 1.f/scale;
+		mtx[1][1] = BINAL_MUL / scale;
 
-		CoordF sh = { shift.x / scale,shift.y / scale };
+		BinalCoord sh = { toBinalInt(shift.x / scale), toBinalInt(shift.y / scale) };
 
-		_transformBlit(dest, sh, mtx);
+		_transformBlitComplex(dest, sh, mtx);
 	}
 
 	//____ scaleFlipTile() _________________________________________________________
@@ -987,21 +1014,21 @@ namespace wg
 			return;
 		}
 
-		float	mtx[2][2];
+		binalInt		mtx[2][2];
 
-		mtx[0][0] = blitFlipTransforms[(int)flip][0][0] / scale;
-		mtx[0][1] = blitFlipTransforms[(int)flip][0][1] / scale;
-		mtx[1][0] = blitFlipTransforms[(int)flip][1][0] / scale;
-		mtx[1][1] = blitFlipTransforms[(int)flip][1][1] / scale;
+		mtx[0][0] = blitFlipTransforms[(int)flip][0][0] * (BINAL_MUL / scale);
+		mtx[0][1] = blitFlipTransforms[(int)flip][0][1] * (BINAL_MUL / scale);
+		mtx[1][0] = blitFlipTransforms[(int)flip][1][0] * (BINAL_MUL / scale);
+		mtx[1][1] = blitFlipTransforms[(int)flip][1][1] * (BINAL_MUL / scale);
 
-		SizeSPX srcSize = m_pBlitSource->pixelSize()*64;
-		float ofsX = (float) (srcSize.w-64) * blitFlipOffsets[(int)flip][0];
-		float ofsY = (float) (srcSize.h-64) * blitFlipOffsets[(int)flip][1];
+		BinalSize srcSize = BinalSize(m_pBlitSource->pixelSize()) * BINAL_MUL;
+		binalInt ofsX = (srcSize.w-BINAL_MUL) * blitFlipOffsets[(int)flip][0];
+		binalInt ofsY = (srcSize.h-BINAL_MUL) * blitFlipOffsets[(int)flip][1];
 
-		ofsX += shift.x * mtx[0][0] + shift.y * mtx[1][0];
-		ofsY += shift.x * mtx[0][1] + shift.y * mtx[1][1];
+		ofsX += (shift.x * mtx[0][0] + shift.y * mtx[1][0]) / 64;
+		ofsY += (shift.x * mtx[0][1] + shift.y * mtx[1][1]) / 64;
 
-		_transformBlit(dest, {ofsX,ofsY}, mtx);
+		_transformBlitComplex(dest, {ofsX,ofsY}, mtx);
 	}
 
 	//____ blitNinePatch() ________________________________________________
@@ -1181,7 +1208,7 @@ namespace wg
 				stretchBlit(dstSE, srcSE);
 		}
 	}
-	
+
 	//____ drawWave() ______________________________________________________
 
 	void GfxDevice::drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill )
@@ -1728,7 +1755,7 @@ namespace wg
 			slices[sliceIdx - 1].size = 1.f - slices[sliceIdx - 1].ofs;
 		}
 
-		nSlices = sliceIdx;			// Repurpose this variable 
+		nSlices = sliceIdx;			// Repurpose this variable
 
 		// Slices now in order, lets render the quadrants
 

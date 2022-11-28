@@ -73,13 +73,39 @@ namespace wg
 	#elif INTPTR_MAX == INT32_MAX
 	#		define WG_IS_64_BITS 0	
 	#else
-	#error Could not detect if target is 32 or 64 bits. You need to set WG_IS_64_BITS in wg_types.h
+	#error Could not detect if target is 32 or 64 bits. You need to manually set WG_IS_64_BITS in wg_types.h
 	#endif
 
+//-----------------------------------------------------------------------------
+// Defining the internal type "binalInt" which is a 32 or 64 bit integer with
+// 15 and 24 binals respetively depending on if architecture is 32 or 64 bits.
+// This is used internally for high-precision integer operations.
 
+#if WG_IS_64_BITS
+
+	typedef int64_t binalInt;
+/*
+	const int64_t BINAL_MUL = 32768;
+	const int64_t BINAL_SHIFT = 15;
+	const int64_t BINAL_MASK = 0x7FFF;
+*/
+	const int64_t BINAL_MUL = 16777216;
+	const int64_t BINAL_SHIFT = 24;
+	const int64_t BINAL_MASK = 0xFFFFFF;
+
+#else
+
+	typedef int32_t binalInt;
+	const int32_t BINAL_MUL = 32768;
+	const int32_t BINAL_SHIFT = 15;
+	const int32_t BINAL_MASK = 0x7FFF;
+
+#endif
+
+//-----------------------------------------------------------------------------
 
 	typedef	float	pts;
-	typedef int		spx;
+	typedef int		spx;		// Measurement in 1/64th of a pixel, e.g. pixels with 6 binals.
 
 
 	static const int spx_max = 0x7FFFFFC0;	// On pixel boundary with margin for rounding operation.
@@ -597,7 +623,7 @@ namespace wg
 	{
 		Nearest,
 		Bilinear,
-		Undefined			// Default to Bilinear if it is accelerated, otherwise Nearest.
+		Undefined			// Needs to be last! Default to Bilinear if it is accelerated, otherwise Nearest.
 	};
 
 
@@ -629,7 +655,6 @@ enum class CanvasInit 		//. autoExtras
 	enum class PixelFormat : uint8_t	//. autoExtras
 	{
 		Undefined,			///< Pixelformat is undefined.
-		Custom,				///< Pixelformat has no enum, but can be fully specified through a PixelDescription struct.
 		BGR_8,				///< One byte of blue, green and red in exactly that order in memory.
 		BGR_8_sRGB,			///< One byte of blue, green and red in exactly that order in memory.
 		BGR_8_linear,		///< One byte of blue, green and red in exactly that order in memory.
@@ -653,6 +678,7 @@ enum class CanvasInit 		//. autoExtras
 
 		A_8,				///< 8 bits of alpha only.
 	};
+
 
 	//____ PixelDescription __________________________________________________________
 	/**

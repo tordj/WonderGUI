@@ -695,16 +695,16 @@ RectI sourceOfs;
 
 #if WG_IS_LITTLE_ENDIAN
 			if (description.A_mask == 0x00 && description.R_mask == 0xF800 && description.G_mask == 0x07E0 && description.B_mask == 0x001F)
-				return description.bLinear ? PixelFormat::BGR_565_linear : PixelFormat::Custom;
+				return description.bLinear ? PixelFormat::BGR_565_linear : PixelFormat::Undefined;
 
 			if (description.A_mask == 0xF000 && description.R_mask == 0x0F00 && description.G_mask == 0x00F0 && description.B_mask == 0x000F)
-				return description.bLinear ? PixelFormat::BGRA_4_linear : PixelFormat::Custom;
+				return description.bLinear ? PixelFormat::BGRA_4_linear : PixelFormat::Undefined;
 #else
 			if (description.A_mask == 0x00 && description.R_mask == 0xF8 && description.G_mask == 0x0E007 && description.B_mask == 0x1F00)
-				return description.bLinear ? PixelFormat::BGR_565_linear : PixelFormat::Custom;
+				return description.bLinear ? PixelFormat::BGR_565_linear : PixelFormat::Undefined;
 
 			if (description.A_mask == 0x00F0 && description.R_mask == 0x000F && description.G_mask == 0xF000 && description.B_mask == 0x0F00)
-				return description.bLinear ? PixelFormat::BGRA_4_linear : PixelFormat::Custom;
+				return description.bLinear ? PixelFormat::BGRA_4_linear : PixelFormat::Undefined;
 #endif
 			break;
 
@@ -738,7 +738,8 @@ RectI sourceOfs;
 			break;
 		}
 
-		return PixelFormat::Custom;
+		return PixelFormat::Undefined;
+		
 	}
 
 

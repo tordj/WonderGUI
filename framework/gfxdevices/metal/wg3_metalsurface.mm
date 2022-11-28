@@ -121,17 +121,16 @@ namespace wg
         _setupMetalTexture(pBlob->data(), pitch, &srcFormat, bp.clut);
     }
     
-    MetalSurface::MetalSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription) : Surface(bp, (pPixelDescription->format != PixelFormat::Custom && pPixelDescription->format != PixelFormat::Undefined) ? pPixelDescription->format : PixelFormat::BGRA_8, SampleMethod::Bilinear)
+    MetalSurface::MetalSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
     {
         _setPixelDetails(m_pixelDescription.format);
         m_bMipmapped = bp.mipmap;
-         PixelDescription srcFormat;
-         
-         if( pPixelDescription == nullptr )
-         {
-             Util::pixelFormatToDescription(m_pixelDescription.format, srcFormat);
-             pPixelDescription = &srcFormat;
-         }
+ 
+		if( !pPixelDescription )
+			pPixelDescription = &m_pixelDescription;
+		
+		if( pitch == 0 )
+			pitch = bp.size.w * bp.size.h * pPixelDescription->bits/8;
          
          _setupMetalTexture( pPixels, pitch, pPixelDescription, bp.clut);
 

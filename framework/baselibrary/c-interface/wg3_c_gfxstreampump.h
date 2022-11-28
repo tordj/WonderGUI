@@ -31,7 +31,7 @@
 extern "C" {
 #endif
 
-	wg_obj			wg_createStreamPump();
+	wg_obj			wg_createStreamPump(void);
 	wg_obj			wg_createStreamPumpWithInputOutput( wg_component input, wg_component output);
 
 	void			wg_setStreamPumpInput(wg_obj streamPump, wg_component input);
@@ -43,6 +43,7 @@ extern "C" {
 	int				wg_pumpChunk(wg_obj streamPump);
 	int				wg_pumpUntilFrame(wg_obj streamPump);
 	int				wg_pumpFrame(wg_obj streamPump);
+	int				wg_pumpAllFramesOptimizeClipping(wg_obj streamPump);
 	int				wg_pumpAll(wg_obj streamPump);
 
 #ifdef __cplusplus

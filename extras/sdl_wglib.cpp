@@ -582,7 +582,7 @@ namespace sdl_wglib
 
 	void ConvertPixelFormat( WgPixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFormat )
 	{
-        pWGFormat->format = WgPixelType::Custom;
+        pWGFormat->format = WgPixelType::Undefined;
 		pWGFormat->bits = pSDLFormat->BitsPerPixel;
 		pWGFormat->bIndexed = false;
 

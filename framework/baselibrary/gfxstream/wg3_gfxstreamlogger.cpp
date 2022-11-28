@@ -26,6 +26,8 @@
 
 #include <assert.h>
 
+#include <iomanip>
+
 namespace wg
 {
 
@@ -81,9 +83,12 @@ namespace wg
 
 		if (header.type == GfxChunkId::OutOfData)
 			return false;
+		
+		if( m_bDisplayStreamOffset )
+			m_charStream << std::setw(10) << std::setfill('0') << m_streamOffset << " - ";
 
 		if (header.type >= GfxChunkId_min && header.type <= GfxChunkId_max)
-		{
+		{			
 			m_charStream << toString(header.type);
 /*
 			if (*(char*)&header.flags != 0)
@@ -119,12 +124,12 @@ namespace wg
 
 			case GfxChunkId::BeginCanvasUpdate:
 			{
-				CanvasRef	canvasRef;
 				uint16_t	surfaceId;
-				int			nUpdateRects;
+				CanvasRef	canvasRef;
+				uint8_t		nUpdateRects;
 					
-				*m_pDecoder >> canvasRef;
 				*m_pDecoder >> surfaceId;
+				*m_pDecoder >> canvasRef;
 				*m_pDecoder >> nUpdateRects;
 
 				if( surfaceId > 0 )
@@ -675,7 +680,7 @@ namespace wg
 				*m_pDecoder >> bp.canvas;
 				*m_pDecoder >> bp.dynamic;
 				*m_pDecoder >> bp.format;
-				*m_pDecoder >> bp.id;
+				*m_pDecoder >> bp.identity;
 				*m_pDecoder >> bp.mipmap;
 				*m_pDecoder >> bp.sampleMethod;
 				*m_pDecoder >> bp.scale;
@@ -686,7 +691,7 @@ namespace wg
 				m_charStream << "    canvas      = " << bp.canvas << std::endl;
 				m_charStream << "    dynamic     = " << bp.dynamic << std::endl;
 				m_charStream << "    format      = " << toString(bp.format) << std::endl;
-				m_charStream << "    id          = " << bp.id << std::endl;
+				m_charStream << "    identity    = " << bp.identity << std::endl;
 				m_charStream << "    mipmap      = " << bp.mipmap << std::endl;
 				m_charStream << "    sampleMethod= " << toString(bp.sampleMethod) << std::endl;
 				m_charStream << "    scale       = " << bp.scale << std::endl;
@@ -842,9 +847,10 @@ namespace wg
 
 				m_pDecoder->skip(header.size);
 				break;
-			}
+			}				
 		}
 
+		m_streamOffset += header.size + 4;
 		return true;
 	}
 
@@ -913,7 +919,7 @@ namespace wg
 
 	void GfxStreamLogger::_printColor( const char * header, HiColor color )
 	{
-		m_charStream << header << " = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+		m_charStream << header << " = " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << ", " << (int)color.a << std::endl;
 	}
 
 	//____ _printBorder() _________________________________________________

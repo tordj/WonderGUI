@@ -55,6 +55,8 @@ add_library( wondergui STATIC
 	baselibrary/base/wg3_patches.impl.h
 	baselibrary/base/wg3_patches.h
 	baselibrary/base/wg3_pointers.h
+	baselibrary/base/wg3_printer.cpp
+	baselibrary/base/wg3_printer.h
 	baselibrary/base/wg3_skinslotmanager.cpp
 	baselibrary/base/wg3_skinslotmanager.h
 	baselibrary/base/wg3_state.cpp
@@ -119,8 +121,14 @@ add_library( wondergui STATIC
 	baselibrary/c-interface/wg3_c_internal.h
 	baselibrary/c-interface/wg3_c_object.cpp
 	baselibrary/c-interface/wg3_c_object.h
+	baselibrary/c-interface/wg3_c_printer.cpp
+	baselibrary/c-interface/wg3_c_printer.h
 	baselibrary/c-interface/wg3_c_surface.cpp
 	baselibrary/c-interface/wg3_c_surface.h
+	baselibrary/c-interface/wg3_c_surfacereader.cpp
+	baselibrary/c-interface/wg3_c_surfacereader.h
+	baselibrary/c-interface/wg3_c_surfacewriter.cpp
+	baselibrary/c-interface/wg3_c_surfacewriter.h
 	baselibrary/c-interface/wg3_c_surfacefactory.cpp
 	baselibrary/c-interface/wg3_c_surfacefactory.h
 	baselibrary/c-interface/wg3_c_types.h
@@ -172,6 +180,13 @@ add_library( wondergui STATIC
 	baselibrary/skins/static/wg3_statictileskin.cpp
 	baselibrary/skins/static/wg3_statictileskin.h
 
+	baselibrary/surfaceio/wg3_surfacefileheader.h
+	baselibrary/surfaceio/wg3_surfacefileinspector.h
+	baselibrary/surfaceio/wg3_surfacefileinspector.cpp
+	baselibrary/surfaceio/wg3_surfacereader.h
+	baselibrary/surfaceio/wg3_surfacereader.cpp
+	baselibrary/surfaceio/wg3_surfacewriter.h
+	baselibrary/surfaceio/wg3_surfacewriter.cpp
 
 
 	wg_anim.cpp

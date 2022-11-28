@@ -83,6 +83,10 @@ namespace wg
 
 		s_pHostBridge = pHostBridge;
 
+		TextTool::setDefaultBreakRules();
+		HiColor::_initTables();
+
+
 		TextStyleManager::init();
 		SkinSlotManager::init();
 
@@ -110,8 +114,6 @@ namespace wg
       	s_pData->pInputHandler = InputHandler::create();
 #endif
 
-		TextTool::setDefaultBreakRules();
-		HiColor::_initTables();
 
 		return true;
 	}
@@ -333,6 +335,36 @@ namespace wg
 		assert(s_pData != 0);
 		return s_pData->pActiveContext;
 	}
+
+	//____ setClipboardText() ____________________________________________________
+
+	void Base::setClipboardText( const String& text )
+	{
+		s_pData->clipboardText = text;
+		if( s_pHostBridge )
+		{
+			auto stdString = CharSeq(text).getStdString();
+			
+			s_pHostBridge->setClipboardText(stdString);
+		}
+	}
+
+	//____ getClipboardText() ____________________________________________________
+
+	String Base::getClipboardText()
+	{
+		if( s_pHostBridge )
+		{
+			auto stdString = s_pHostBridge->getClipboardText();
+			
+			return String(stdString);
+		}
+		else
+		{
+			return s_pData->clipboardText;
+		}
+	}
+
 
 	//____ setErrorHandler() _________________________________________________________
 

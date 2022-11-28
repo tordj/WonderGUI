@@ -30,6 +30,8 @@
 #include <wg3_gfxstreamsource.h>
 #include <wg3_gfxstreamsink.h>
 
+#include <vector>
+
 namespace wg
 {
 	class GfxStreamPump;
@@ -59,7 +61,7 @@ namespace wg
 		bool		pumpChunk();
 		bool		pumpUntilFrame();
 		bool		pumpFrame();
-//		bool		pumpAllFramesWithOptimization();
+		bool		pumpAllFramesOptimizeClipping();
 		bool		pumpAll();
 
 
@@ -68,14 +70,12 @@ namespace wg
 		GfxStreamPump(const GfxStreamSource_p& pInput, const GfxStreamSink_p& pOutput);
 		~GfxStreamPump();
 
-		inline GfxStream::Header _decodeHeader(const uint8_t* pHeader) const
-		{
-			return { * (GfxStream::Header *) pHeader };
-		}
+		const uint8_t*	_findChunk(GfxChunkId id, const uint8_t* pBegin, const uint8_t* pEnd);
+		void			_maskAddRect(std::vector<RectI>& vRects, int startOffset, const RectI& rect);
 
-		const uint8_t* _findChunk(GfxChunkId id, int nSegments, const DataSegment * pSegments);
 
-		bool _pumpUntilChunk(GfxChunkId id, bool bInclusive);
+		bool			_pumpUntilChunk(GfxChunkId id, bool bInclusive );
+		bool			_fetchUntilChunk(GfxChunkId id);
 
 
 		GfxStreamSource_p	m_pInput;

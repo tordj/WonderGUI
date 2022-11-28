@@ -165,7 +165,7 @@ namespace wg
 
 		// Skip incomplete character if we started in the middle of one.
 
-		while( g & 0x40 == 0 )
+		while( (g & 0x40) == 0 )
 		{
 			if( g == 0 )
 				return 0;
@@ -174,14 +174,14 @@ namespace wg
 
 		// Decode character the safer way.
 
-		if( g & 0xE0 == 0xC0 )					// 2 bytes character (11 bits data).
+		if( (g & 0xE0) == 0xC0 )					// 2 bytes character (11 bits data).
 		{
 			g &= 0x1F;
 			g <<= 6;
 			if( * ((const unsigned char *&)pStr) < 128 ) return 0xFFFFFFFF; // Broken character.
 			g += ((*pStr++) & 0x3F);
 		}
-		else if( g & 0xF0 == 0xE0 )			// 3 bytes character (16 bits data).
+		else if( (g & 0xF0) == 0xE0 )			// 3 bytes character (16 bits data).
 		{
 			g &= 0x0F;
 			g <<= 6;
@@ -191,7 +191,7 @@ namespace wg
 			if( * ((const unsigned char *&)pStr) < 128 ) return 0xFFFFFFFF; // Broken character.
 			g += ((*pStr++) & 0x3F);
 		}
-		else if( g & 0xF8 == 0xF0 )			// 4 bytes character (21 bits data).
+		else if( (g & 0xF8) == 0xF0 )			// 4 bytes character (21 bits data).
 		{
 			g &= 0x07;
 			g <<= 6;

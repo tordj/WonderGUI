@@ -141,6 +141,7 @@ namespace wg
 		
 	protected:
 		CanvasLayers(const Blueprint& bp);
+		~CanvasLayers() {}
 
 		const static int	    c_maxLayers = 16;
 

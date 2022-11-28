@@ -54,13 +54,6 @@ namespace wg
 				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Canvas layers can not be CLUT-based", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 				return nullptr;
 			}
-
-			if (format == PixelFormat::Custom)
-			{
-				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Canvas layers can not have custom pixel format", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
-				return nullptr;
-			}
-
 		}
 
 		if (bp.baseLayer < 0 || bp.baseLayer > bp.layers.size())

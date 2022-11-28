@@ -62,6 +62,7 @@ namespace wg
 
 	protected:
 		StateSkin() { m_bIgnoresState = false; }
+		~StateSkin() {}
 
 		void			_updateContentShift();
 

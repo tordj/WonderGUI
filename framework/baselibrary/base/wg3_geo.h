@@ -61,6 +61,11 @@ namespace wg
 	typedef	RectT<int>		RectI;
 	typedef RectT<float>	RectF;
 
+	typedef CoordT<binalInt>	BinalCoord;
+	typedef SizeT<binalInt>		BinalSize;
+	typedef	RectT<binalInt>		BinalRect;
+
+
 
 	//____ CoordT<> ___________________________________________________________
 	/**
@@ -440,8 +445,8 @@ namespace wg
 
 		inline Type width() const;								///< @brief Get the width of the rectangle.
 		inline Type height() const;								///< @brief Get the height of the rectangle.
-		inline SizeT<Type> size() const;								///< @brief Get the size of the rectangle.
-		inline CoordT<Type> pos() const;								///< @brief Get the position of the rectangle.
+		inline SizeT<Type> size() const;						///< @brief Get the size of the rectangle.
+		inline CoordT<Type> pos() const;						///< @brief Get the position of the rectangle.
 
 		inline Type left() const;								///< @brief Get X coordinate of left border.
 		inline Type top() const;									///< @brief Get Y cordinate of top border.

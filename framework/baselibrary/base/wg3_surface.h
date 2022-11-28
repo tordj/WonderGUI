@@ -33,7 +33,7 @@
 
 namespace wg
 {
-
+	class SurfaceFactory;
 
 	class Surface;
 	typedef	StrongPtr<Surface>	Surface_p;
@@ -82,7 +82,7 @@ namespace wg
 	 * 
 	 * A PixelBuffer is strongly tied to the Surface it was created from and may not be used in any call
 	 * to any other Surface. So you can not push pixels from one Surface into a PixelBuffer and then pull 
-	 * them into another as a way of copying content between them. Use Surface::copyFrom() for that.
+	 * them into another as a way of copying content between them. Use Surface::copy() for that.
 	 */
 
 	struct PixelBuffer
@@ -180,7 +180,7 @@ namespace wg
 			const Color8* clut = nullptr;
 			bool				dynamic = false;
 			PixelFormat			format = PixelFormat::Undefined;
-			int					id = 0;
+			int					identity = 0;
 			bool				mipmap = false;
 			SampleMethod		sampleMethod = SampleMethod::Undefined;
 			int					scale = 64;
@@ -231,7 +231,7 @@ namespace wg
 
 		inline bool			isOpaque() const;				///< @brief Check if surface is guaranteed to be entirely opaque.
 		inline bool			canBeCanvas() const;				///< @brief Check if surface can be used as canvas.
-
+		
 		//.____ Control _______________________________________________________
 
 		inline const PixelBuffer allocPixelBuffer();
@@ -253,6 +253,7 @@ namespace wg
 		virtual bool		fill(const RectI& region, HiColor color );			///< @brief Fill section of surface with specified color
 		virtual bool		copy( CoordI dest, Surface * pSrcSurf, const RectI& srcRect );	///< @brief Copy block of graphics from other surface
 		virtual bool		copy( CoordI dest, Surface * pSrcSurf );		///< @brief Copy other surface as a block
+		virtual Surface_p	convert(PixelFormat format, SurfaceFactory* pFactory = nullptr);
 
 		//.____ Misc _________________________________________________________
 

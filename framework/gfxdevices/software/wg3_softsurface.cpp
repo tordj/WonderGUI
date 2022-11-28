@@ -68,9 +68,15 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(blueprint, pOther));
 	}
 
+	SoftSurface_p SoftSurface::createInPlace(const Blueprint& blueprint, uint8_t* pPixels, int pitch)
+	{
+		return SoftSurface_p(new SoftSurface(blueprint, pPixels, pitch));
+	}
+
+
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, int flags, const Color8 * pClut )
 	{
-		if (format == PixelFormat::Undefined || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
+		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
 			return SoftSurface_p();
 
 		Blueprint bp;
@@ -93,7 +99,7 @@ namespace wg
 
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut)
 	{
-		if (format == PixelFormat::Undefined || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0 )
+		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0 )
 			return SoftSurface_p();
 
 		Blueprint bp;
@@ -116,7 +122,7 @@ namespace wg
 
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut )
 	{
-		if (format == PixelFormat::Undefined || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
+		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max ||
 			 ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
 			return SoftSurface_p();
 
@@ -157,8 +163,6 @@ namespace wg
 		return SoftSurface_p(new SoftSurface( bp, pOther ));
 	}
 
-
-
 	//____ constructor ________________________________________________________________
 
 	SoftSurface::SoftSurface( const Blueprint& bp ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest )
@@ -191,16 +195,45 @@ namespace wg
 		_initTiling();
 	}
 
+	SoftSurface::SoftSurface(const Blueprint& bp, uint8_t * pPixels, int pitch) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
+	{
+		// This constructor creates the surface in place, using the pixels (and clut if present in BP) where they are.
+		
+		if( pitch == 0 )
+			pitch = bp.size.w * m_pixelDescription.bits/8;
+		
+		m_pitch = pitch;
+		m_pBlob = nullptr;
+		m_pData = pPixels;
+
+		if (bp.clut)
+		{
+			m_pClut = const_cast<Color8*>(bp.clut);
+			_makeClut4096();
+		}
+		else
+			m_pClut = nullptr;
+
+		_initTiling();
+	}
+
+
 	SoftSurface::SoftSurface(const Blueprint& bp, uint8_t * pPixels, int pitch,
 							 const PixelDescription * pPixelDescription) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
 	{
 		//TODO: Convert pixeldescription to format and use that if bp.format == Undefined && pixeldesc is valid.
 
+		if( !pPixelDescription )
+			pPixelDescription = &m_pixelDescription;
+		
+		if( pitch == 0 )
+			pitch = bp.size.w * pPixelDescription->bits/8;
+		
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
 		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.clut ? 1024 : 0) );
 		m_pData = (uint8_t*)m_pBlob->data();
 
-		_copy(bp.size, pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, bp.size);
+		_copy(bp.size, pPixelDescription, pPixels, pitch, bp.size);
 
 		if (bp.clut)
 		{
@@ -234,7 +267,7 @@ namespace wg
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
-		_copy(RectI(size), &m_pixelDescription, pixelbuffer.pPixels, pitch, RectI(size) );
+		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pPixels, pitch, RectI(size) );
 
 		if ( pOther->clut() )
 		{

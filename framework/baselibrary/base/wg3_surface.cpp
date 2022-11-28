@@ -25,6 +25,8 @@
 #include <wg3_surface.h>
 #include <wg3_dataset.h>
 #include <wg3_util.h>
+#include <wg3_base.h>
+#include <wg3_context.h>
 
 namespace wg
 {
@@ -88,7 +90,7 @@ namespace wg
         m_bCanvas		= bp.canvas;
 		m_bBuffered		= bp.buffered;
 		m_bDynamic		= bp.dynamic;
-		m_id			= bp.id;
+		m_id			= bp.identity;
 	}
 
 
@@ -446,7 +448,7 @@ namespace wg
 		bp.clut = m_pClut;
 		bp.dynamic = m_bDynamic;
 		bp.format = m_pixelDescription.format;
-		bp.id = m_id;
+		bp.identity = m_id;
 		bp.mipmap = m_bMipmapped;
 		bp.sampleMethod = m_sampleMethod;
 		bp.scale = m_scale;
@@ -997,6 +999,127 @@ namespace wg
 		return true;
 	}
 
+	//____ convert() _________________________________________________________
+
+	Surface_p Surface::convert(PixelFormat format, SurfaceFactory* pFactory)
+	{
+		if (!pFactory)
+			pFactory = Base::activeContext()->surfaceFactory();
+
+		if (!pFactory)
+		{
+			//TODO: Error handling!
+			return Surface_p();
+		}
+
+		if ( (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_linear || format == PixelFormat::CLUT_8_sRGB) &&
+			( m_pixelDescription.format != PixelFormat::CLUT_8_sRGB && m_pixelDescription.format != PixelFormat::CLUT_8_linear ))
+		{
+			// We only allow conversion to indexed if surface has 256 colors at most!
+
+			uint32_t* pCLUT = (uint32_t*) Base::memStackAlloc(1024);
+			int nColors = 0;
+
+			auto pBlob = Blob::create(m_size.w * m_size.h);
+			uint8_t* pPixels = (uint8_t*) pBlob->data();
+
+			auto pixbuf = allocPixelBuffer();
+			pushPixels(pixbuf);
+
+
+			switch (m_pixelDescription.format)
+			{
+				case PixelFormat::BGRA_8_sRGB:
+				case PixelFormat::BGRA_8_linear:
+				{
+					// Generate CLUT (kind of) and indexed pixels
+						
+					uint8_t* pDest = pPixels;
+					for (int y = 0; y < m_size.h; y++)
+					{
+						uint32_t* pLine = (uint32_t*) (pixbuf.pPixels + pixbuf.pitch * y);
+
+						for (int x = 0; x < m_size.w; x++)
+						{
+							uint32_t pixel = pLine[x];
+							int ofs = 0;
+							while( ofs < nColors && pCLUT[ofs] != pixel )
+								ofs++;
+							if( ofs == nColors )
+							{
+								if( nColors == 256 )
+								{
+									nColors++;
+									goto end;
+								}
+								
+								pCLUT[ofs] = pixel;
+								nColors++;
+							}
+							* pDest++ = (uint8_t) ofs;
+						}
+					}
+
+					// Convert CLUT from pixels to colors
+					
+					Color8 * pColor = (Color8*) pCLUT;
+					for( int i = 0 ; i < nColors ; i++ )
+					{
+						uint8_t * pBGRA = (uint8_t*) &pCLUT[i];
+						Color8 col( pBGRA[2], pBGRA[1], pBGRA[0], pBGRA[3] );
+						pColor[i] = col;
+					}
+					break;
+				}
+					
+				default:
+					Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Conversion of this kind of surface to CLUT_8 has not been implemented (sorry!)", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+					
+					freePixelBuffer(pixbuf);
+					Base::memStackRelease(1024);
+					return nullptr;
+			}
+end:
+			
+			if( nColors > 256 )
+			{
+				Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Can't convert surface with more than 256 colors to CLUT_8", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				
+				freePixelBuffer(pixbuf);
+				Base::memStackRelease(1024);
+				return nullptr;
+			}
+					
+			// Fill out clut with zeroes
+				
+			for( int i = nColors ; i < 256 ; i++ )
+				pCLUT[i] = 0;
+
+			// Create surface
+
+			auto bp = blueprint();
+			bp.format = format;
+			bp.clut = (Color8*) pCLUT;
+			auto pSurface = pFactory->createSurface(bp, pBlob);
+
+			// Cleanup and return
+			
+			freePixelBuffer(pixbuf);
+			Base::memStackRelease(1024);
+			return pSurface;
+		}
+		else
+		{
+			auto bp = blueprint();
+			bp.format = format;
+
+			auto pSurface = pFactory->createSurface(bp);
+			pSurface->copy({ 0,0 }, this);
+			return pSurface;
+		}
+	}
+
+
 	//____ _alpha() ___________________________________________________________
 
 	int Surface::_alpha(CoordSPX _coord, const PixelBuffer& buffer)
@@ -1032,10 +1155,6 @@ namespace wg
 			uint8_t* pPixel = buffer.pPixels + buffer.pitch * coord.y + coord.x * 4;
 			return HiColor::unpackLinearTab[pPixel[3]];
 		}
-		case PixelFormat::Custom:
-		{
-			//TODO: Implement!
-		}
 		default:
 			return 4096;
 		}
@@ -1056,10 +1175,10 @@ namespace wg
 
         bool bIsIndexed = (format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear);
 
-        if (format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.clut == nullptr))
+        if (format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.clut == nullptr))
             return false;
 
-        if (bp.canvas && (bIsIndexed || format == PixelFormat::Custom))
+        if (bp.canvas && bIsIndexed)
             return false;
 
         if( bIsIndexed )

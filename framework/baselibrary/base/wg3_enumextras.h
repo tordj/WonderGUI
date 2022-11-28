@@ -86,7 +86,7 @@ namespace wg
 	const static MaskOp          MaskOp_max          = MaskOp::Mask;
 	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
 	const static CanvasRef       CanvasRef_max       = CanvasRef::Canvas_32;
-	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::TimeStampMS;
+	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::CanvasList;
 
 	const static int             CodePage_size       = (int)CodePage::_874 + 1;
 	const static int             TintMode_size       = (int)TintMode::GradientXY + 1;

@@ -33,8 +33,9 @@ extern "C" {
 
 //TODO: Not a complete wrapper, just contains what is needed for wg-display project to work.
 
-	int		wg_init();
-	int		wg_exit();
+	int		wg_init(void);
+	int		wg_exit(void);
+	int		wg_isInitialized(void);
 
 	void	wg_setErrorHandler(void (*errorHandler)(const wg_error_info * pError) );
 

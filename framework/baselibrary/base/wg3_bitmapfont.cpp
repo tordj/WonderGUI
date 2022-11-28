@@ -32,8 +32,8 @@
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
+#include <wg3_util.h>
 #include <wg3_bitmapfont.h>
-#include <wg3_texttool.h>
 #include <wg3_gridwalker.h>
 
 namespace wg
@@ -42,7 +42,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	BitmapFont::BitmapFont(Surface* pSurf, char* pGlyphSpec, Font * pBackupFont ) : Font(pBackupFont)
+	BitmapFont::BitmapFont(Surface* pSurf, const char* pGlyphSpec, Font * pBackupFont ) : Font(pBackupFont)
 	{
 		m_pSurface		= pSurf;
 
@@ -237,7 +237,7 @@ namespace wg
 
 		const char* pChar = pCharmapBeg;
 		while ((*pChar == 10 || *pChar == 13) && pChar < pCharmapEnd)
-			TextTool::readChar(pChar);
+			Util::readUTF8Char(pChar);
 
 
 		PixelBuffer pixelBuffer = pSurf->allocPixelBuffer();
@@ -250,33 +250,24 @@ namespace wg
 			//TODO: Error handling!
 		}
 
-		bool bNewLine = false;
 		while (pChar < pCharmapEnd)
 		{
-			uint16_t ch = TextTool::readChar(pChar);
+			uint16_t ch = Util::readUTF8Char(pChar);
 
 			if (ch == '3')
 			{
 				int dummy = 0;
 			}
 
-			if (ch == 10 || ch == 13)
-				bNewLine = true;
-			else
+			if (ch != 10 && ch != 13)
 			{
 				RectI r;
-				if (bNewLine)
+				r = gw.nextCell();
+				if (r.isEmpty())
 				{
-					if (gw.nextLine() == false)
-					{
-						//TODO: Error handling!
-					}
-
+					gw.nextLine();
 					r = gw.firstCell();
-					bNewLine = false;
 				}
-				else
-					r = gw.nextCell();
 
 				if (!r.isEmpty())
 				{

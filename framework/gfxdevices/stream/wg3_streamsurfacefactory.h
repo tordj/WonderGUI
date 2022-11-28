@@ -67,6 +67,7 @@ namespace wg
 
 	protected:
 		StreamSurfaceFactory( GfxStreamEncoder * pEncoder);
+		~StreamSurfaceFactory(){}
 
 		void	_addReference(Surface* pSurface);
 

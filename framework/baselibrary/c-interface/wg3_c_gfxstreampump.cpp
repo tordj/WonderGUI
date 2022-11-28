@@ -81,6 +81,12 @@ int wg_pumpFrame(wg_obj streamPump)
 	return getPtr(streamPump)->pumpFrame();
 }
 
+int wg_pumpAllFramesOptimizeClipping(wg_obj streamPump)
+{
+	return getPtr(streamPump)->pumpAllFramesOptimizeClipping();
+}
+
+
 int wg_pumpAll(wg_obj streamPump)
 {
 	return getPtr(streamPump)->pumpAll();

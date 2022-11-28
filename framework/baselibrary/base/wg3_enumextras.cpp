@@ -317,7 +317,6 @@ namespace wg
 	{
 		static const char * names[] = { 
 			"Undefined",
-			"Custom",
 			"BGR_8",
 			"BGR_8_sRGB",
 			"BGR_8_linear",

@@ -25,7 +25,6 @@
 #include <limits.h>
 #include <string.h>
 #include <wg3_font.h>
-#include <wg3_texttool.h>
 #include <wg3_base.h>
 #include <wg3_context.h>
 

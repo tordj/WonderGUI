@@ -26,15 +26,39 @@
 #include <wg3_softgfxdevice.h>
 #include <wg3_softsurfacefactory.h>
 
+#include <wg3_softkernels_default.h>
+#include <wg3_softkernels_rgb565be_base.h>
+#include <wg3_softkernels_rgb565be_extras.h>
 
 using namespace wg;
 
-
 wg_obj wg_createSoftGfxDevice()
 {
+	
 	auto p = SoftGfxDevice::create();
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
+}
+
+int	wg_addDefaultSoftKernels( wg_obj device )
+{
+	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
+
+	return addDefaultSoftKernels(pDevice);
+}
+
+int	wg_addBaseSoftKernelsForRGB565BECanvas( wg_obj device )
+{
+	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
+
+	return addBaseSoftKernelsForRGB565BECanvas(pDevice);
+}
+
+int	wg_addExtraSoftKernelsForRGB565BECanvas( wg_obj device )
+{
+	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
+
+	return addExtraSoftKernelsForRGB565BECanvas(pDevice);
 }
 
 
@@ -51,7 +75,7 @@ wg_obj wg_createSoftSurface(const wg_surfaceBP* blueprint)
 {
 	Surface::Blueprint	bp;
 	convertSurfaceBlueprint(&bp, blueprint);
-	
+
 	auto p = SoftSurface::create(bp);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());

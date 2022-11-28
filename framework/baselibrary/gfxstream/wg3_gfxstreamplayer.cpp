@@ -186,12 +186,12 @@ namespace wg
              
 		case GfxChunkId::BeginCanvasUpdate:
 		{
-			CanvasRef	canvasRef;
 			uint16_t	surfaceId;
-			int			nUpdateRects;
+			CanvasRef	canvasRef;
+			uint8_t		nUpdateRects;
 				
- 			*m_pDecoder >> canvasRef;
 			*m_pDecoder >> surfaceId;
+ 			*m_pDecoder >> canvasRef;
 			*m_pDecoder >> nUpdateRects;
 
 			auto pRects = _pushClipListCanvas(nUpdateRects);
@@ -832,7 +832,7 @@ namespace wg
 			*m_pDecoder >> bp.canvas;
 			*m_pDecoder >> bp.dynamic;
 			*m_pDecoder >> bp.format;
-			*m_pDecoder >> bp.id;
+			*m_pDecoder >> bp.identity;
 			*m_pDecoder >> bp.mipmap;
 			*m_pDecoder >> bp.sampleMethod;
 			*m_pDecoder >> bp.scale;
@@ -1001,6 +1001,7 @@ namespace wg
 	RectI * GfxStreamPlayer::_pushClipList(int nRects)
 	{
 		m_clipListInfoStack.push_back(m_clipList);
+		m_clipList.bCanvas = false;
 		return _setClipList(nRects, true);
 	}
 

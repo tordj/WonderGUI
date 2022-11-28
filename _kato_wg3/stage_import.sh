@@ -7,6 +7,7 @@ mkdir baselibrary
 mkdir baselibrary/base
 mkdir baselibrary/c-interface
 mkdir baselibrary/skins
+mkdir baselibrary/surfaceio
 mkdir baselibrary/gfxstream
 mkdir c-abi-wrapper
 mkdir gfxdevices
@@ -50,6 +51,7 @@ cp wg_animframes.* \
    wg_nullgfxdevice.* \
    wg_patches.* \
    wg_pointers.* \
+   wg_printer.* \
    wg_skinslotmanager.* \
    wg_state.*\
    wg_staticvector.* \
@@ -75,6 +77,9 @@ cp * ../../../../wg2/_kato_wg3/imports/baselibrary/gfxstream
 
 cd ../skins
 cp -r * ../../../../wg2/_kato_wg3/imports/baselibrary/skins
+
+cd ../surfaceio
+cp -r * ../../../../wg2/_kato_wg3/imports/baselibrary/surfaceio
 
 cd ../../c-abi-wrapper
 cp * ../../../wg2/_kato_wg3/imports/c-abi-wrapper

@@ -69,7 +69,7 @@ extern "C" {
 
 	wg_obj					wg_surfaceFactory(wg_obj device);
 
-	int						wg_maxSegments();
+	int						wg_maxSegments(void);
 
 	//____ Geometry _________________________________________________
 
