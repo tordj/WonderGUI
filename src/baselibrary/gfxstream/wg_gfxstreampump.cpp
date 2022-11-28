@@ -216,9 +216,9 @@ namespace wg
 		return false;
 	}
 
-	//____ pumpAllFramesWithOptimization() ____________________________________________________
+	//____ pumpAllFramesOptimizeClipping() ____________________________________________________
 
-	bool GfxStreamPump::pumpAllFramesWithOptimization()
+	bool GfxStreamPump::pumpAllFramesOptimizeClipping()
 	{
 		// Fetch all data
 

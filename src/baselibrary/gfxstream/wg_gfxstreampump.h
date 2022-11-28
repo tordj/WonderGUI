@@ -61,7 +61,7 @@ namespace wg
 		bool		pumpChunk();
 		bool		pumpUntilFrame();
 		bool		pumpFrame();
-		bool		pumpAllFramesWithOptimization();
+		bool		pumpAllFramesOptimizeClipping();
 		bool		pumpAll();
 
 

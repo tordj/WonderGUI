@@ -75,7 +75,7 @@ wg_obj wg_createSoftSurface(const wg_surfaceBP* blueprint)
 {
 	Surface::Blueprint	bp;
 	convertSurfaceBlueprint(&bp, blueprint);
-	
+
 	auto p = SoftSurface::create(bp);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());

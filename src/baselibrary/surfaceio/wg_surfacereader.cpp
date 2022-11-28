@@ -22,6 +22,7 @@
 
 #include <wg_surfacereader.h>
 #include <wg_base.h>
+#include <cstring>
 
 namespace wg
 {
@@ -34,7 +35,7 @@ namespace wg
 	{
 		return SurfaceReader_p( new SurfaceReader(blueprint) );
 	}
-	
+
 	//____ constructor ___________________________________________________________
 
 	SurfaceReader::SurfaceReader( const Blueprint& bp )
@@ -60,23 +61,23 @@ namespace wg
 	Surface_p SurfaceReader::readSurfaceFromStream(std::istream& stream, const Surface::Blueprint& _bp)
 	{
 		SurfaceFileHeader	header;
-		
+
 		// Read the header
-		
+
 		stream.read( (char*) &header, 8 );
 		stream.read( ((char*)(&header))+8, header.headerBytes - 8);
-		
+
 		// Prepare surface blueprint
-		
+
 		Surface::Blueprint bp = _blueprintFromHeader(&header);
 		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
 		{
 			Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
-	
+
 		// Read and prepare CLUT
-		
+
 		int clutBytes = header.paletteEntries*sizeof(Color8) + header.paletteDecompressMargin;
 		Color8 * pClut = nullptr;
 		if( clutBytes > 0 )
@@ -84,33 +85,33 @@ namespace wg
 			pClut = (Color8*) Base::memStackAlloc(clutBytes);
 
 			// We only support uncompressed CLUT for the moment
-			
+
 			stream.read( (char*) pClut, clutBytes );
-						
+
 			bp.clut = pClut;
 		}
-		
+
 		// Create surface
-		
+
 		auto pSurface = m_pFactory->createSurface(bp);
-		
+
 		if( clutBytes > 0 )
 			Base::memStackRelease(clutBytes);
-		
+
 		// Read pixels into PixelBuffer
 		// We only support uncompressed pixels for the moment
-		
+
 		auto pixbuf = pSurface->allocPixelBuffer();
 
-		
+
 		int lineBytes = header.width * pSurface->pixelBytes();
-		
+
 		if( pixbuf.pitch > lineBytes )
 		{
 			// Pitch is involved, we need to read line by line
-			
+
 			char * pPixels = (char *) pixbuf.pPixels;
-			
+
 			for( int y = 0 ; y < header.height ; y++ )
 			{
 				stream.read( pPixels, lineBytes );
@@ -121,7 +122,7 @@ namespace wg
 		{
 			stream.read( (char*) pixbuf.pPixels, lineBytes * header.height );
 		}
-		
+
 		pSurface->pullPixels(pixbuf);
 		pSurface->freePixelBuffer(pixbuf);
 
@@ -151,15 +152,15 @@ namespace wg
 	Surface_p SurfaceReader::readSurfaceFromMemory(const char* pData, const Surface::Blueprint& _bp)
 	{
 		SurfaceFileHeader	header;
-		 		 
+
 		// Read the header
 
 		int headerSize = * (const int16_t*)&pData[6];
 		std::memcpy( &header, pData, headerSize);
 		pData+= headerSize;
-		 
+
 		// Prepare surface blueprint
-		 
+
 		Surface::Blueprint bp = _blueprintFromHeader(&header);
 		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
 		{
@@ -169,31 +170,31 @@ namespace wg
 
 
 		// Prepare CLUT
-		 
+
 		int clutBytes = header.paletteEntries*sizeof(Color8);
 		if( clutBytes > 0 )
 		{
 			bp.clut = (Color8*) pData;
 			pData += clutBytes;
 		}
-		 
+
 		// Create surface
-		 
+
 		auto pSurface = m_pFactory->createSurface(bp);
-		 		 
+
 		// Read pixels into PixelBuffer
 		// We only support uncompressed pixels for the moment
-		 
+
 		auto pixbuf = pSurface->allocPixelBuffer();
 
 		int lineBytes = header.width * pSurface->pixelBytes();
-		 
+
 		if( pixbuf.pitch > lineBytes )
 		{
 			// Pitch is involved, we need to read line by line
-			 
+
 			char * pPixels = (char *) pixbuf.pPixels;
-			 
+
 			for( int y = 0 ; y < header.height ; y++ )
 			{
 				std::memcpy( pPixels, pData, lineBytes );
@@ -205,7 +206,7 @@ namespace wg
 		{
 			std::memcpy( pixbuf.pPixels, pData, lineBytes * header.height );
 		}
-		 
+
 		pSurface->pullPixels(pixbuf);
 		pSurface->freePixelBuffer(pixbuf);
 
