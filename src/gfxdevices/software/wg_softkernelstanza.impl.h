@@ -1335,7 +1335,7 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 
 			//TODO: Width might be more than a pixel, needs to be clipped as well!
 
-			int alpha = (color.a * width) >> 16;
+			int16_t alpha = ((int32_t)color.a * (std::min(int32_t(1 << 16), (int32_t)width))) >> 16;
 
 			int16_t backB, backG, backR, backA;
 			int16_t outB, outG, outR, outA;
