@@ -79,6 +79,8 @@ namespace wg
 	{
 		GfxStream::Header header;
 
+		int chunkSize = m_pDecoder->chunkSize();
+		
 		*m_pDecoder >> header;
 
 		if (header.type == GfxChunkId::OutOfData)
@@ -850,7 +852,7 @@ namespace wg
 			}				
 		}
 
-		m_streamOffset += header.size + 4;
+		m_streamOffset += chunkSize;
 		return true;
 	}
 

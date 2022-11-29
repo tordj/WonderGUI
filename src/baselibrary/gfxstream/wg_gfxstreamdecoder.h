@@ -60,6 +60,8 @@ namespace wg
 
 		bool				isEmpty();
 		GfxStream::Header	peek();
+		inline int			chunkSize();
+		
 
 		void				skip(int bytes);
 		void				align();
@@ -125,6 +127,19 @@ namespace wg
 		const uint8_t* m_pDataEnd = nullptr;
 		const uint8_t* m_pDataRead = nullptr;
 	};
+
+
+	//____ chunkSize() ______________________________________________________
+
+	int GfxStreamDecoder::chunkSize()
+	{
+		uint8_t sizeEtc = m_pDataRead[1] & 0x1F;
+		
+		if (sizeEtc <= 30)
+			return sizeEtc + 2;
+		else
+			return (* (uint16_t*) &m_pDataRead[2]) + 4;
+	}
 
 	//____ _hasChunk() ______________________________________________________
 

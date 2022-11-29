@@ -49,7 +49,7 @@ void MyApp::exit()
 
 bool MyApp::_setupGUI(Visitor* pVisitor)
 {
-	m_pWindow = pVisitor->createWindow({ .size = {800,700}, .title = "WonderGUI Surface Viewer" });
+	m_pWindow = pVisitor->createWindow({ .size = {800,700}, .title = "PackLayout Tester" });
 
 	auto pRoot = m_pWindow->rootPanel();
 

@@ -179,7 +179,7 @@ namespace wg
 		if(m_processedOfs == m_readOfs )
 			return GfxChunkId::OutOfData;
 
-		return GfxStream::chunkType((uint8_t*)m_pBuffer);
+		return GfxStream::chunkType((uint8_t*)(m_pBuffer + m_readOfs));
 	}
 
 	//____ _discardStreamChunks() _____________________________________________
