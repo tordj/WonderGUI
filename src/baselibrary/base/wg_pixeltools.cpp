@@ -645,7 +645,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 						pSrc += srcDesc.bits / 8 * 64;
 
 						for( int i = 0 ; i < 64 ; i++ )
-							* pDst++ = (buffer[i] >> 24);
+							* pDst++ = buffer[i*4+3];
 
 						widthLeft -= 64;
 					}
@@ -656,7 +656,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 						pSrc += srcDesc.bits / 8 * widthLeft;
 
 						for( int i = 0 ; i < widthLeft ; i++ )
-							* pDst++ = (buffer[i] >> 24);
+							* pDst++ = buffer[i*4+3];
 
 					}
 					pSrc += srcPitchAdd;
