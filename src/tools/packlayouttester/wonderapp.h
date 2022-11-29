@@ -11,11 +11,9 @@
 class MyApp : public WonderApp
 {
 public:
-	wg::Size	startWindowSize();
-
-	bool		init(Visitor* pVisitor);
-	bool		update();
-	void		exit();
+	bool		init(Visitor* pVisitor) override;
+	bool		update() override;
+	void		exit() override;
 
 
 
@@ -33,6 +31,7 @@ private:
 	wg::SelectBox_p	_createSelectBox();
 	wg::SelectBox_p	_createSizeSourceSelectBox();
 
+	Window_p			m_pWindow;
 
 	wg::Size			m_dragStartSize;
 

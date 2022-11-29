@@ -12,11 +12,10 @@
 class MyApp : public WonderApp
 {
 public:
-	wg::Size	startWindowSize();
 
-	bool		init(Visitor* pVisitor);
-	bool		update();
-	void		exit();
+	bool		init(Visitor* pVisitor) override;
+	bool		update() override;
+	void		exit() override;
 
 	void		tintModeToggled(wg::Msg* pMsg);
 	void		blendModeToggled(wg::Msg* pMsg);
@@ -65,6 +64,8 @@ private:
 
 	KernelDB *	m_pDB = nullptr;
 
+	Window_p			m_pWindow;
+
 	wg::Skin_p			m_pPlateSkin;
 	wg::Skin_p			m_pButtonSkin;
 	wg::Skin_p			m_pToggleButtonSkin;
@@ -76,6 +77,6 @@ private:
 
 	wg::TextLayout_p	m_pTextLayoutCentered;
 
-	wg::ScrollPanel_p	m_pWindow;
+	wg::ScrollPanel_p	m_pScrollPanel;
 	wg::PackPanel_p		m_pList;
 };

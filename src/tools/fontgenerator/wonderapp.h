@@ -38,8 +38,9 @@ private:
 	bool			_setupGUI(Visitor* pVisitor);
 	bool			_loadSkins(Visitor* pVisitor);
 
-	WonderApp::Visitor * m_pAppVisitor = nullptr;
-	
+	Visitor *			m_pAppVisitor = nullptr;
+	Window_p			m_pWindow;
+
 	wg::TextDisplay_p	m_pTTFPathDisplay;
 	wg::SelectBox_p		m_pSizeSelector;
 	wg::SelectBox_p		m_pModeSelector;
@@ -67,7 +68,5 @@ private:
 	wg::TextStyle_p		m_pLabelStyle;
 
 	wg::TextLayout_p	m_pTextLayoutCentered;
-
-	wg::ScrollPanel_p	m_pWindow;
 	wg::PackPanel_p		m_pList;
 };

@@ -6,6 +6,7 @@ add_executable(softkernelgenerator
 
 	../../baseplates/sdl_software/main.cpp
 	../../baseplates/sdl_software/baseplate.h
+	../../baseplates/sdl_software/baseplate.cpp
 	../../baseplates/sdl_software/tinyfiledialogs.h
 	../../baseplates/sdl_software/tinyfiledialogs.c
 	wonderapp.cpp

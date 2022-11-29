@@ -30,15 +30,13 @@ using namespace wg;
 class MyAppVisitor : public WonderApp::Visitor
 {
 public:
-	wg::RootPanel_p	rootPanel() override;
-	
 	int64_t			time() override
 	{
 		return SDL_GetPerformanceCounter() * 1000000 / SDL_GetPerformanceFrequency();
 	}
 
-	wg::Blob_p 		loadBlob(const std::string& path) override;
-	wg::Surface_p 	loadSurface(const std::string& path, SurfaceFactory* pFactory, const Surface::Blueprint& bp = Surface::Blueprint() ) override;
+	Blob_p 			loadBlob(const std::string& path) override;
+	Surface_p 		loadSurface(const std::string& path, SurfaceFactory* pFactory, const Surface::Blueprint& bp = Surface::Blueprint() ) override;
 
 
 	bool			notifyPopup(const std::string& title, const std::string& message, WonderApp::IconType iconType) override;
@@ -60,9 +58,10 @@ public:
 													const std::vector<std::string>& filterPatterns,
 													const std::string& singleFilterDescription) override;
 
-	char *			selectFolderDialog( char const * title, char const * defaultPath) override;
+	std::string		selectFolderDialog(const std::string& title, const std::string& defaultPath) override;
 	
-	
+	WonderApp::Window_p	createWindow(const WonderApp::Window::Blueprint& blueprint) override;
+
 	
 protected:
 	void			convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat);
@@ -81,13 +80,44 @@ public:
 	bool		setClipboardText(const std::string& text) override;
 };
 
+//____ MyWindow _______________________________________________________________
+
+class MyWindow;
+typedef	wg::StrongPtr<MyWindow>		MyWindow_p;
+typedef	wg::WeakPtr<MyWindow>		MyWindow_wp;
+
+
+class MyWindow : public WonderApp::Window
+{
+public:
+	static MyWindow_p		create(const Blueprint& blueprint);
+
+	bool			setTitle(std::string& title) override;
+	std::string		title() const override { return m_title; }
+
+	void			render();
+
+	Uint32			SDLWindowId() { return SDL_GetWindowID(m_pSDLWindow); }
+
+protected:
+	MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo, SDL_Window* pSDLWindow);
+	~MyWindow() {}
+
+	Rect	_updateWindowGeo(const Rect& geo) override;
+
+	std::string		m_title;
+	SDL_Window*		m_pSDLWindow;
+};
+
+
+
+
 //______________________________________________________________________________
 
-bool		init_system( Rect windowGeo, float scale );
+bool		init_system();
 void		exit_system();
 
-bool		process_system_events(const RootPanel_p& pRoot);
-void		update_window_rects( const Rect * pRects, int nRects );
+bool		process_system_events();
 
 bool		init_wondergui();
 void		exit_wondergui();
@@ -96,17 +126,14 @@ void		exit_wondergui();
 MouseButton translateSDLMouseButton(Uint8 button);
 
 
-Size				g_windowPointSize;
-SizeI				g_windowPixelSize;
 float				g_scale;
 
-SDL_Window *		g_pSDLWindow = nullptr;
-PixelFormat			g_pixelFormat = PixelFormat::Undefined;
-
-Surface_p			g_pWindowSurface = nullptr;				// Set by init_system()
-RootPanel_p			g_pRoot = nullptr;
-
+GfxDevice_p			g_pGfxDevice;
 MyHostBridge *		g_pHostBridge = nullptr;
+
+std::vector<MyWindow_wp>	g_windows;
+
+
 
 static const char * iconNames[4] = { "info", "warning", "error", "question" };
 static const char * dialogNames[4] = { "ok", "okcancel", "yesno", "yesnocancel" };
@@ -125,12 +152,10 @@ int main(int argc, char *argv[] )
 
 	// Get apps window size before we continue
 
-	g_windowPointSize = pApp->startWindowSize();
 	g_scale = 1.f;
-	g_windowPixelSize = SizeI(g_windowPointSize * g_scale);
 
 
-	if (!init_system({ 20,20, g_windowPointSize }, g_scale ))
+	if (!init_system() )
 		return -1;
 	
 	if (!init_wondergui() )
@@ -146,7 +171,7 @@ int main(int argc, char *argv[] )
 	{
 		// Handle system events
 
-		bContinue = process_system_events(g_pRoot);
+		bContinue = process_system_events();
 
 		if (bContinue)
 		{
@@ -162,11 +187,18 @@ int main(int argc, char *argv[] )
 
 			Base::update(SDL_GetPerformanceCounter() * 1000000 / SDL_GetPerformanceFrequency());
 
+			// Remove any windows pointers for erased windows.
+
+			g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), nullptr), g_windows.end());
+
+
 			// Render. We do this outside the app since we might want to 
 			// handle updated rectangles in a system specific way.
 
-			g_pRoot->render();
-			SDL_UpdateWindowSurface(g_pSDLWindow);
+			for (auto& pWin : g_windows )
+			{
+				pWin->render();		
+			}
 
 			// Sleep for a while
 
@@ -208,21 +240,8 @@ bool init_wondergui()
 	pContext->setGammaCorrection(true);
 	Base::setActiveContext(pContext);
 
-
-	SDL_Surface* pWinSurf = SDL_GetWindowSurface(g_pSDLWindow);
-
-	Blob_p pCanvasBlob = Blob::create(pWinSurf->pixels, 0);
-	g_pWindowSurface = SoftSurface::create(SizeI(pWinSurf->w, pWinSurf->h), g_pixelFormat, pCanvasBlob, pWinSurf->pitch);
-
-
-	pGfxDevice->defineCanvas( CanvasRef::Default, static_cast<SoftSurface*>(g_pWindowSurface.rawPtr()));
-
-	g_pRoot = RootPanel::create( CanvasRef::Default, pGfxDevice);
-
 	InputHandler_p pInput = Base::inputHandler();
 	
-	pInput->setFocusedWindow(g_pRoot);
-
 	pInput->mapKey(SDLK_LEFT, Key::Left);
 	pInput->mapKey(SDLK_RIGHT, Key::Right);
 	pInput->mapKey(SDLK_UP, Key::Up);
@@ -300,7 +319,7 @@ bool init_wondergui()
 
 void exit_wondergui()
 {
-	g_pRoot = nullptr;
+	g_pGfxDevice = nullptr;
 
 	Base::exit();
 	delete g_pHostBridge;
@@ -310,7 +329,7 @@ void exit_wondergui()
 
 //____ init_system() _______________________________________________________
 
-bool init_system( Rect windowGeo, float scale )
+bool init_system()
 {
 	// initialize SDL video
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -322,40 +341,6 @@ bool init_system( Rect windowGeo, float scale )
 	// make sure SDL cleans up before exit
 	atexit(SDL_Quit);
  
-	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x, windowGeo.y, windowGeo.w, windowGeo.h , SDL_WINDOW_SHOWN  | SDL_WINDOW_ALLOW_HIGHDPI  );
-	if( pWin == nullptr )
-	{
-		printf("Unable to create SDL window: %s\n", SDL_GetError());
-		return false;
-	}
-    
-	SDL_Surface * pWinSurf = SDL_GetWindowSurface(pWin);
-	if (pWinSurf == nullptr)
-	{
-		printf("Unable to get window SDL Surface: %s\n", SDL_GetError());
-		return false;
-	}
-
-	PixelFormat format = PixelFormat::Undefined;
-
-	switch (pWinSurf->format->BitsPerPixel)
-	{
-		case 32:
-			format = PixelFormat::BGRX_8;
-			break;
-		case 24:
-			format = PixelFormat::BGR_8;
-			break;
-		default:
-		{
-			printf("Unsupported pixelformat of SDL Surface!\n");
-			return false;
-		}
-	}
-    
-	g_pSDLWindow = pWin;
-	g_pixelFormat = format;
-
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
 	return true;
@@ -369,7 +354,7 @@ void exit_system()
 }
 
 //____ update_window_rects() __________________________________________________
-
+/*
 void update_window_rects(const Rect* pRects, int nRects)
 {
 	if (nRects == 0)
@@ -385,11 +370,12 @@ void update_window_rects(const Rect* pRects, int nRects)
 
 	SDL_UpdateWindowSurfaceRects(g_pSDLWindow, &rects.front(), nRects);
 }
+*/
 
 
 //____ process_system_events() ________________________________________________
 
-bool process_system_events(const RootPanel_p& pRoot)
+bool process_system_events()
 {
 /*
 	SDL_Event e;
@@ -418,8 +404,26 @@ bool process_system_events(const RootPanel_p& pRoot)
 			return false;
 
 		case SDL_MOUSEMOTION:
-			pInput->setPointer(pRoot, Coord(e.motion.x, e.motion.y));
+		{
+			RootPanel* pRootPanel = nullptr;
+
+			for (auto& wpWindow : g_windows)
+			{
+				if (wpWindow == nullptr)
+					continue;
+
+				MyWindow* pWin = wpWindow;
+				if (pWin->SDLWindowId() == e.motion.windowID)
+				{
+					pRootPanel = pWin->rootPanel();
+					break;
+				}
+
+			}
+
+			pInput->setPointer(pRootPanel, Coord(e.motion.x, e.motion.y));
 			break;
+		}
 
 		case SDL_MOUSEBUTTONDOWN:
 			pInput->setButton(translateSDLMouseButton(e.button.button), true);
@@ -492,13 +496,6 @@ MouseButton translateSDLMouseButton(Uint8 button)
 	case SDL_BUTTON_X2:
 		return MouseButton::X2;
 	}
-}
-
-//____ rootPanel() _____________________________________________________________
-
-wg::RootPanel_p	MyAppVisitor::rootPanel()
-{
-	return g_pRoot;
 }
 
 //____ convertSDLFormat() ______________________________________________________
@@ -642,7 +639,7 @@ WonderApp::DialogButton	MyAppVisitor::messageBox(	const std::string& title, cons
 													WonderApp::DialogType dialogType, WonderApp::IconType iconType, 
 													WonderApp::DialogButton defaultButton)
 {
-	int defaultButtonInt;
+	int defaultButtonInt = 0;
 	
 	switch( dialogType )
 	{
@@ -657,31 +654,29 @@ WonderApp::DialogButton	MyAppVisitor::messageBox(	const std::string& title, cons
 
 		case::WonderApp::DialogType::OkCancel:
 		{
-			if( defaultButton == WonderApp::DialogButton::Undefined)
-				defaultButton = WonderApp::DialogButton::Cancel;
-			
-			if( defaultButton != WonderApp::DialogButton::Ok && defaultButton != WonderApp::DialogButton::Cancel )
+			if (defaultButton == WonderApp::DialogButton::Ok)
+				defaultButtonInt = 1;
+			else if (defaultButton != WonderApp::DialogButton::Cancel && defaultButton != WonderApp::DialogButton::Undefined)
 				goto wrongDefaultButton;
 			break;
 		}
 
 		case::WonderApp::DialogType::YesNo:
 		{
-			if( defaultButton == WonderApp::DialogButton::Undefined)
-				defaultButton = WonderApp::DialogButton::No;
-			
-			if( defaultButton != WonderApp::DialogButton::Yes && defaultButton != WonderApp::DialogButton::No )
+			if (defaultButton == WonderApp::DialogButton::Yes)
+				defaultButtonInt = 1;
+			else if (defaultButton != WonderApp::DialogButton::No && defaultButton != WonderApp::DialogButton::Undefined)
 				goto wrongDefaultButton;
 			break;
 		}
 
 		case::WonderApp::DialogType::YesNoCancel:
 		{
-			if( defaultButton == WonderApp::DialogButton::Undefined)
-				defaultButton = WonderApp::DialogButton::Cancel;
-			
-			if( defaultButton != WonderApp::DialogButton::Yes && defaultButton != WonderApp::DialogButton::No &&
-				defaultButton != WonderApp::DialogButton::Cancel )
+			if (defaultButton == WonderApp::DialogButton::Yes)
+				defaultButtonInt = 1;
+			else if (defaultButton == WonderApp::DialogButton::No)
+				defaultButtonInt = 2;
+			else if( defaultButton != WonderApp::DialogButton::Cancel && defaultButton != WonderApp::DialogButton::Undefined )
 				goto wrongDefaultButton;
 			break;
 		}
@@ -711,6 +706,7 @@ WonderApp::DialogButton	MyAppVisitor::messageBox(	const std::string& title, cons
 				break;
 			}
 
+			default:
 			case::WonderApp::DialogType::YesNoCancel:
 			{
 				if( retval == 0 )
@@ -818,11 +814,23 @@ std::vector<std::string> MyAppVisitor::openMultiFileDialog(	const std::string& t
 
 //____ selectFolderDialog() ___________________________________________________
 
-char * MyAppVisitor::selectFolderDialog( char const * title, char const * defaultPath)
+std::string MyAppVisitor::selectFolderDialog(const std::string& title, const std::string& defaultPath)
 {
-	return tinyfd_selectFolderDialog( title, defaultPath );
+	return tinyfd_selectFolderDialog( title.c_str(), defaultPath.c_str());
 
 }
+
+//____ createWindow() _________________________________________________________
+
+WonderApp::Window_p MyAppVisitor::createWindow(const WonderApp::Window::Blueprint& blueprint)
+{
+	auto pWindow =  MyWindow::create(blueprint);
+
+	g_windows.push_back(pWindow.rawPtr());
+
+	return pWindow;
+}
+
 
 //____ hidePointer() __________________________________________________________
 
@@ -867,4 +875,94 @@ bool MyHostBridge::setClipboardText(const std::string& text )
 	}
 	
 	return true;
+}
+
+//____ create() _______________________________________________________________
+
+MyWindow_p MyWindow::create(const Blueprint& blueprint)
+{
+	Rect geo;
+
+	geo = { blueprint.pos + Coord(4,20), blueprint.size};
+
+
+
+
+	SDL_Window* pSDLWindow = SDL_CreateWindow(blueprint.title.c_str(), geo.x, geo.y, geo.w, geo.h, 0);
+	if (pSDLWindow == NULL)
+		return nullptr;
+
+	SDL_Surface* pWinSurf = SDL_GetWindowSurface(pSDLWindow);
+	if (pWinSurf == nullptr)
+	{
+//		printf("Unable to get window SDL Surface: %s\n", SDL_GetError());
+		return nullptr;
+	}
+
+	PixelFormat format = PixelFormat::Undefined;
+
+	switch (pWinSurf->format->BitsPerPixel)
+	{
+	case 32:
+		format = PixelFormat::BGRX_8;
+		break;
+	case 24:
+		format = PixelFormat::BGR_8;
+		break;
+	default:
+	{
+		printf("Unsupported pixelformat of SDL Surface!\n");
+		return nullptr;
+	}
+	}
+
+	Blob_p pCanvasBlob = Blob::create(pWinSurf->pixels, 0);
+	auto pWindowSurface = SoftSurface::create(SizeI(pWinSurf->w, pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch);
+	auto pRootPanel = RootPanel::create(pWindowSurface, g_pGfxDevice);
+
+	MyWindow_p pWindow = new MyWindow(blueprint.title, pRootPanel, geo, pSDLWindow);
+
+	//TODO: This is ugly. It should be handled when windows gets focused.
+
+	Base::inputHandler()->setFocusedWindow(pRootPanel);
+
+	return pWindow;
+}
+
+
+//____ MyWindow constructor ___________________________________________________
+
+MyWindow::MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo, SDL_Window* pSDLWindow)
+	: Window(pRootPanel, geo)
+{
+	m_pSDLWindow = pSDLWindow;
+	m_title = title;
+}
+
+
+//___ setTitle() ______________________________________________________________
+
+bool MyWindow::setTitle(std::string& title)
+{
+	return false;
+}
+
+//____ render() _______________________________________________________________
+
+void MyWindow::render()
+{
+	m_pRootPanel->render();
+
+	//TODO: Just update the dirty rectangles!
+
+	SDL_UpdateWindowSurface(m_pSDLWindow);
+}
+
+
+
+//____ _updateWindowGeo() _____________________________________________________
+
+Rect MyWindow::_updateWindowGeo(const Rect& geo)
+{
+	return m_geo;
 }

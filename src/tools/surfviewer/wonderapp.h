@@ -35,6 +35,7 @@ private:
 	bool			_loadSkins(Visitor* pVisitor);
 
 	WonderApp::Visitor * m_pAppVisitor = nullptr;
+	WonderApp::Window_p m_pWindow = nullptr;
 
 	SurfaceDisplay_p	m_pImageDisplay;
 	TextDisplay_p		m_pPathDisplay;
@@ -57,6 +58,4 @@ private:
 	TextStyle_p		m_pLabelStyle;
 
 	TextLayout_p	m_pTextLayoutCentered;
-
-	ScrollPanel_p	m_pWindow;
 };

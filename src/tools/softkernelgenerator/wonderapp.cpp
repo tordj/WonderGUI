@@ -16,14 +16,6 @@ WonderApp_p WonderApp::create()
 	return new MyApp();
 }
 
-
-//____ startWindowSize() ______________________________________________________
-
-wg::Size MyApp::startWindowSize()
-{
-	return { 800,700 };
-}
-
 //____ init() _________________________________________________________________
 
 bool MyApp::init(Visitor* pVisitor)
@@ -58,7 +50,9 @@ void MyApp::exit()
 
 bool MyApp::_setupGUI(Visitor* pVisitor)
 {
-	auto pRoot = pVisitor->rootPanel();
+	m_pWindow = pVisitor->createWindow({ .size = {800,700}, .title = "WonderGUI Surface Viewer" });
+
+	auto pRoot = m_pWindow->rootPanel();
 
 	//
 
@@ -112,7 +106,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 	pRoot->slot = pBasePanel;
 
-	m_pWindow = pWindow;
+	m_pScrollPanel = pWindow;
 
 	return true;
 }
@@ -347,8 +341,7 @@ void MyApp::_refreshSummary()
 
 void MyApp::_refreshList()
 {
-//	m_pWindow->slot.clear();
-	m_pWindow->slot = _buildList();
+	m_pScrollPanel->slot = _buildList();
 }
 
 

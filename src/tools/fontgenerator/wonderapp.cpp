@@ -68,7 +68,9 @@ void MyApp::exit()
 
 bool MyApp::_setupGUI(Visitor* pVisitor)
 {
-	auto pRoot = pVisitor->rootPanel();
+	m_pWindow = pVisitor->createWindow({ .size = {800,700}, .title = "Font Generator" });
+
+	auto pRoot = m_pWindow->rootPanel();
 
 	//
 

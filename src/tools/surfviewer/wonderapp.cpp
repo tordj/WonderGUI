@@ -59,6 +59,7 @@ bool MyApp::update()
 
 void MyApp::exit()
 {
+
 }
 
 
@@ -66,7 +67,9 @@ void MyApp::exit()
 
 bool MyApp::_setupGUI(Visitor* pVisitor)
 {
-	auto pRoot = pVisitor->rootPanel();
+	m_pWindow = pVisitor->createWindow({ .size = {800,600}, .title = "WonderGUI Surface Viewer" });
+
+	auto pRoot = m_pWindow->rootPanel();
 
 	//
 
