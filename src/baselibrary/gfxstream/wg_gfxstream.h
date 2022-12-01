@@ -52,6 +52,111 @@ namespace wg
 		};
 
 
+		class Chunk
+		{
+		public:
+
+			GfxChunkId	type() const { return m_type; }
+
+			int			chunkSize() const
+			{
+				uint8_t sizeEtc = m_flags_and_size & 0x1F;
+				if (sizeEtc <= 30)
+					return sizeEtc + 2;
+				else
+					return ((uint16_t*)this)[1] + 4;
+			}
+
+			int			dataSize() const
+			{
+				uint8_t sizeEtc = m_flags_and_size & 0x1F;
+				if (sizeEtc <= 30)
+					return sizeEtc;
+				else
+					return ((uint16_t*)this)[1] + 4;
+			}
+
+			void*		data()
+			{
+				if ( (m_flags_and_size & 0x1F) <= 30)
+					return ((uint8_t*)this) + 2;
+				else
+					return ((uint8_t*)this) + 2;
+
+			}
+
+			Chunk *		next() const
+			{
+				uint8_t sizeEtc = m_flags_and_size & 0x1F;
+				if (sizeEtc <= 30)
+					return (Chunk*) (((uint8_t*)this) + sizeEtc + 2);
+				else
+					return (Chunk*) (((uint8_t*)this) + ((uint16_t*)this)[1] + 4);
+			}
+
+
+		protected:
+			GfxChunkId	m_type;
+			uint8_t		m_flags_and_size;
+		};
+
+
+
+		class iterator
+		{
+		public:
+			iterator(void* pChunk) : m_pChunk((Chunk*)pChunk) {}
+
+
+			inline Chunk operator*() const
+			{
+				return *m_pChunk;
+			}
+
+			inline Chunk* operator->() const
+			{
+				return m_pChunk;
+			}
+
+			inline iterator& operator++()
+			{
+				m_pChunk = m_pChunk->next();
+				return *this;
+			}
+
+			inline iterator operator++(int)
+			{
+				iterator it = *this;
+				m_pChunk = m_pChunk->next();
+				return it;
+			}
+
+			inline bool operator==(const iterator& rhs) const
+			{
+				return m_pChunk == rhs.m_pChunk;
+			}
+
+			inline bool operator!=(const iterator& rhs) const
+			{
+				return m_pChunk != rhs.m_pChunk;
+			}
+
+			inline bool operator< (const iterator& rhs) const { return m_pChunk < rhs.m_pChunk; }
+			inline bool operator> (const iterator& rhs) const { return m_pChunk > rhs.m_pChunk; }
+			inline bool operator<=(const iterator& rhs) const { return m_pChunk <= rhs.m_pChunk; }
+			inline bool operator>=(const iterator& rhs) const { return m_pChunk >= rhs.m_pChunk; }
+
+
+
+
+		protected:
+			Chunk* m_pChunk;
+
+			virtual void	_inc() {};
+	
+		};
+
+
 
 		inline static GfxChunkId chunkType(const uint8_t* pChunk)
 		{

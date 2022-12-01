@@ -384,6 +384,17 @@ namespace wg
 		else
 		{
 			Slot * pSlot = slots._first();
+
+			while (!pSlot->m_bVisible)
+			{
+				if (pSlot == slots._last())
+				{
+					package.pSlot = nullptr;
+					return;
+				}
+				pSlot++;
+			}
+
 			package.pSlot = pSlot;
 			package.geo = pSlot->m_geo;
 		}
@@ -400,6 +411,17 @@ namespace wg
 		else
 		{
 			pSlot++;
+
+			while (!pSlot->m_bVisible)
+			{
+				if (pSlot == slots._last())
+				{
+					package.pSlot = nullptr;
+					return;
+				}
+				pSlot++;
+			}
+
 			package.pSlot = pSlot;
 			package.geo = pSlot->m_geo;
 		}

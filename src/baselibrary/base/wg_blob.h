@@ -32,7 +32,6 @@
 
 namespace wg
 {
-
 	class Blob;
 	typedef	StrongPtr<Blob>		Blob_p;
 	typedef	WeakPtr<Blob>		Blob_wp;
@@ -59,22 +58,22 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		const TypeInfo&		typeInfo(void) const override;
+		const TypeInfo&	typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ___________________________________________________________
 
-		inline int		size() const { return m_size; }			///< @brief Get the size of the blobs data.
-																///<
-																///< Get the size of the blobs data.
-																///< The size of the content can only be retrieved if known by the blob.
-																///< @return Size of blob data or 0 if unknown.
-		const void *	data() const { return m_pData; }
-		void *			data() { return m_pData; }				///< @brief Get pointer to the data of the blob.
-																///<
-																///< Get a raw pointer to the data of the blob, which is either the object
-																///< wrapped or beginning of the reserved memory area.
-																///< @return Pointer to data of the blob.
+		inline int			size() const;
+
+		inline const void*	data() const;
+		inline void*		data();
+
+		inline const void*	begin() const;
+		inline void*		begin();
+
+		inline const void*	end() const;
+		inline void*		end();
+
 
 	protected:
 		Blob( int bytes );
@@ -90,6 +89,83 @@ namespace wg
 
 		std::function<void()> m_destructor;
 	};
+
+
+	/** @brief Get the size of the blobs data.
+		
+		Get the size of the blobs data.
+
+		The size of the content can only be retrieved if known by the blob.
+		
+		@return Size of blob data or 0 if unknown.
+	**/
+
+	int		Blob::size() const 
+	{ 
+		return m_size; 
+	}
+
+
+	/**
+		Get a raw pointer to the data of the blob, which is either the object
+		wrapped or beginning of the reserved memory area.
+
+		@return Pointer to data of the blob.
+	
+	**/
+
+	const void* Blob::data() const 
+	{ 
+		return m_pData; 
+	}
+
+	void* Blob::data() 
+	{ 
+		return m_pData; 
+	}				
+
+
+	/** @brief Get pointer to the data of the blob.
+	
+		Get a raw pointer to the beginning of the data of the blob, which is either the object
+		wrapped or beginning of the reserved memory area.
+
+		This method behaves identical to data() and is just provided for API completeness.
+
+		@return Pointer to beginning of data of the blob.															
+	**/
+
+	const void* Blob::begin() const 
+	{ 
+		return m_pData; 
+	}
+
+	void* Blob::begin()
+	{
+		return m_pData;
+	}
+
+
+	/** @brief Get pointer to the end of the data of the blob.
+	* 
+		Get a raw pointer to the end of the data of the blob, which is the address + length of the data.
+
+		If the size of the data is not defined this method will return the address of the data.
+	
+		@return Pointer to end of data of the blob if size is known, otherwise pointer to beginning of data.
+	**/
+
+	const void* Blob::end() const 
+	{ 
+		return ((char*)m_pData) + m_size; 
+	}	
+	
+	void* Blob::end()
+	{
+		return ((char*)m_pData) + m_size;
+	}
+
+
 
 
 } // namespace wg

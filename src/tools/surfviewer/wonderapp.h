@@ -16,9 +16,9 @@ class MyApp : public WonderApp
 public:
 	Size	startWindowSize();
 
-	bool		init(Visitor* pVisitor);
-	bool		update();
-	void		exit();
+	bool		init(Visitor* pVisitor) override;
+	bool		update() override;
+	void		exit() override;
 
 	Widget_p 	createTopBar();
 	Widget_p	createImagePanel();

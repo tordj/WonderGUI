@@ -10,6 +10,7 @@
 #include <string>
 
 using namespace wg;
+using namespace std;
 
 class MyApp : public WonderApp
 {
@@ -19,28 +20,38 @@ public:
 	void		exit() override;
 
 	Widget_p 	createTopBar();
-	Widget_p	createImagePanel();
-	Widget_p	createInfoPanel();
+	Widget_p	createDisplayPanel();
+	Widget_p	createControlsPanel();
 
-	void		selectAndLoadImage();
+	void		selectAndLoadStream();
 
-	bool		loadImage(int idx);
+	bool		loadStream(string path);
 
+	void		setupScreens();
+	void		updateGUIAfterReload();
 
 private:
 
 	bool			_setupGUI(Visitor* pVisitor);
 	bool			_loadSkins(Visitor* pVisitor);
 
+
 	Visitor * 			m_pAppVisitor = nullptr;
 	Window_p			m_pWindow;
 
-	SurfaceDisplay_p	m_pImageDisplay;
-	TextDisplay_p		m_pPathDisplay;
+	Blob_p				m_pStreamBlob;
+	vector<GfxStream::iterator>	m_frames;
+	vector<Surface_p>	m_screens;
+
+
+
+
+	PackPanel_p			m_pDisplayToggles;
+	PackPanel_p			m_pScreenLineup;
+
+
 	Button_p			m_pPrevButton;
 	Button_p			m_pNextButton;
-
-	std::vector<std::string>	m_imagePaths;
 	
 	int				m_imageIdx;
 

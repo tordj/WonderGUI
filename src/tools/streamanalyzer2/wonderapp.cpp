@@ -37,6 +37,19 @@ bool MyApp::init(Visitor* pVisitor)
 		return false;
 	}
 		
+	auto arguments = pVisitor->programArguments();
+
+	if ( !arguments.empty() )
+	{
+
+		if (!loadStream(arguments[0] ))
+		{
+			printf("ERROR: Could not load stream '%s'!\n", arguments[0].c_str() );
+			return false;
+		}
+	}
+
+
 	return true;
 }
 
@@ -102,17 +115,20 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	auto pBasePanel = PackPanel::create();
 	pBasePanel->setAxis(Axis::Y);
 	pBasePanel->setLayout(m_pLayout);
-	
+
+	pBasePanel->slots << createTopBar();
+
+
+
 	auto pSplitPanel = SplitPanel::create();
-	pSplitPanel->setAxis(Axis::X);
+	pSplitPanel->setAxis(Axis::Y);
 	pSplitPanel->setResizeRatio(1.f);
 	pSplitPanel->setSplitFactor(0.5f);			//TODO: SplitPanel::setSplitFactor() does not work! Replace with some other function?
 	pSplitPanel->setHandleSkin(m_pButtonSkin);
 	
-	pSplitPanel->slots[0] = createImagePanel();
-	pSplitPanel->slots[1] = createInfoPanel();
+	pSplitPanel->slots[0] = createDisplayPanel();
+	pSplitPanel->slots[1] = createControlsPanel();
 
-	pBasePanel->slots << createTopBar();
 	pBasePanel->slots << pSplitPanel;
 
 	pBasePanel->slots.setWeight(0, 2, {0.f,1.f});
@@ -123,6 +139,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 	return true;
 }
+
 
 
 //____ createTopBar() ________________________________________________________
@@ -140,60 +157,34 @@ Widget_p MyApp::createTopBar()
 											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Load" )
 											));
 
-	auto pSpacer = Filler::create( WGBP(Filler, _.defaultSize = { 20,1 } ));
+	auto pSpacer1 = Filler::create( WGBP(Filler, _.defaultSize = { 20,1 } ));
+
+	auto pSpacer2 = Filler::create(WGBP(Filler, _.defaultSize = { 20,1 }));
 
 	
-	auto pLeftButton = Button::create( WGBP(Button,
-											_.skin = m_pButtonSkin,
-											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " < " )
-											));
+	m_pDisplayToggles = PackPanel::create();
 
-	
 
-	auto pPath = TextDisplay::create( WGBP(TextDisplay,
-											 _.skin = m_pSectionSkin,
-											 _.display = WGBP(Text, _.style = m_pTextStyle, _.layout = m_pTextLayoutCentered)
-										   ) );
-	
-	auto pRightButton = Button::create( WGBP(Button,
-											_.skin = m_pButtonSkin,
-											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " > " )
-											));
 
 	pBar->slots << pLoadButton;
-	pBar->slots << pSpacer;
-	pBar->slots << pLeftButton;
-	pBar->slots << pPath;
-	pBar->slots << pRightButton;
+	pBar->slots << pSpacer1;
+	pBar->slots << m_pDisplayToggles;
+	pBar->slots << pSpacer2;
 
-	pBar->slots.setWeight( 0, 5, {0.f, 0.f, 0.f, 1.f, 0.f});
+
+	pBar->slots.setWeight( 0, 4, {0.f, 1.f, 0.f, 1.f});
 	
 
 
-	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadImage();});
+	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadStream();});
 
-	Base::msgRouter()->addRoute(pLeftButton, MsgType::Select, [this](Msg* pMsg) 
-		{
-			if (m_imageIdx > 0)
-				this->loadImage(--m_imageIdx);
-		});
-
-	Base::msgRouter()->addRoute(pRightButton, MsgType::Select, [this](Msg* pMsg)
-		{
-			if (m_imageIdx < m_imagePaths.size()-1 )
-				this->loadImage(++m_imageIdx);
-		});
-
-	m_pPathDisplay = pPath;
-	m_pPrevButton = pLeftButton;
-	m_pNextButton = pRightButton;
 
 	return pBar;
 }
 
-//____ createImagePanel() _____________________________________________________
+//____ createDisplayPanel() _____________________________________________________
 
-Widget_p MyApp::createImagePanel()
+Widget_p MyApp::createDisplayPanel()
 {
 	auto pWindow = ScrollPanel::create();
 
@@ -209,28 +200,137 @@ Widget_p MyApp::createImagePanel()
 		_.outlineColor = Color8::Black)));
 	pWindow->scrollbarY.setBar(m_pPlateSkin);
 
-	pWindow->setAutohideScrollbars(true, true);
-	pWindow->setSizeConstraints(SizeConstraint::GreaterOrEqual, SizeConstraint::GreaterOrEqual);
+	pWindow->setSkin(ColorSkin::create(Color::DarkSlateBlue));
 
-	m_pImageDisplay = SurfaceDisplay::create( WGBP(SurfaceDisplay,
-											_.skin = ColorSkin::create( Color8::AntiqueWhite)
-											));
+	pWindow->setAutohideScrollbars(true, true);
+	pWindow->setSizeConstraints(SizeConstraint::None, SizeConstraint::None);
+	pWindow->setPlacement(Placement::Center);
+
+	auto pLineup = PackPanel::create();
+	pLineup->setAxis(Axis::X);
+
+
 	
-	pWindow->slot = m_pImageDisplay;
+	pWindow->slot = pLineup;
 	
+	m_pScreenLineup = pLineup;
+
 	return pWindow;
 }
 
-//____ createInfoPanel() _____________________________________________________
+//____ createControlsPanel() _____________________________________________________
 
-Widget_p MyApp::createInfoPanel()
+Widget_p MyApp::createControlsPanel()
 {
-	auto pBase = PackPanel::create();
-	pBase->setAxis(Axis::Y);
-	pBase->setLayout(m_pLayout);
-	pBase->setSkin(m_pPlateSkin);
+	auto pBase = SplitPanel::create();
+	pBase->setAxis(Axis::X);
+	pBase->setResizeRatio(1.f);
+	pBase->setSplitFactor(0.5f);			//TODO: SplitPanel::setSplitFactor() does not work! Replace with some other function?
+	pBase->setHandleSkin(m_pButtonSkin);
 
-	
+	auto pLeftSection = PackPanel::create();
+	pLeftSection->setAxis(Axis::Y);
+	pLeftSection->setLayout(m_pLayout);
+	pLeftSection->setSkin(m_pPlateSkin);
+
+
+	auto pLogSection = PackPanel::create();
+	pLogSection->setAxis(Axis::Y);
+	pLogSection->setLayout(m_pLayout);
+	pLogSection->setSkin(m_pPlateSkin);
+
+	pBase->slots[0] = pLeftSection;
+	pBase->slots[1] = pLogSection;
+
+	// Create log section content
+
+	auto pLogWindow = ScrollPanel::create();
+
+	pLogWindow->scrollbarX.setBackground(BoxSkin::create(WGBP(BoxSkin,
+		_.color = Color8::DarkOliveGreen,
+		_.outline = 1,
+		_.outlineColor = Color8::Black)));
+	pLogWindow->scrollbarX.setBar(m_pPlateSkin);
+
+	pLogWindow->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
+		_.color = Color8::DarkOliveGreen,
+		_.outline = 1,
+		_.outlineColor = Color8::Black)));
+	pLogWindow->scrollbarY.setBar(m_pPlateSkin);
+
+	pLogWindow->setAutohideScrollbars(true, true);
+	pLogWindow->setSizeConstraints(SizeConstraint::GreaterOrEqual, SizeConstraint::GreaterOrEqual);
+
+	auto pLogText = TextDisplay::create({ .skin = ColorSkin::create(Color8::LightYellow)});
+
+
+	pLogWindow->slot = pLogText;
+
+	pLogSection->slots << pLogWindow;
+
+	// Create left section content
+
+
+
+	auto pPlayButtons = PackPanel::create();
+	pPlayButtons->setAxis(Axis::X);
+	pPlayButtons->setLayout(m_pLayout);
+
+	auto pLongLeftButton = Button::create(WGBP(Button,
+		_.skin = m_pButtonSkin,
+		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " << ")
+	));
+
+
+	auto pLeftButton = Button::create(WGBP(Button,
+		_.skin = m_pButtonSkin,
+		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " < ")
+	));
+
+	auto pPauseButton = Button::create(WGBP(Button,
+		_.skin = m_pButtonSkin,
+		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " || ")
+	));
+
+
+	auto pRightButton = Button::create(WGBP(Button,
+		_.skin = m_pButtonSkin,
+		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " > ")
+	));
+
+	auto pLongRightButton = Button::create(WGBP(Button,
+		_.skin = m_pButtonSkin,
+		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " >> ")
+	));
+
+	pPlayButtons->slots << Filler::create();
+	pPlayButtons->slots << pLongLeftButton;
+	pPlayButtons->slots << pLeftButton;
+	pPlayButtons->slots << pPauseButton;
+	pPlayButtons->slots << pRightButton;
+	pPlayButtons->slots << pLongRightButton;
+	pPlayButtons->slots << Filler::create();
+
+	pPlayButtons->slots.setWeight(1, 5, 0.f);
+
+	pLeftSection->slots << pPlayButtons;
+
+
+	Base::msgRouter()->addRoute(pLeftButton, MsgType::Select, [this](Msg* pMsg)
+		{
+		});
+
+	Base::msgRouter()->addRoute(pRightButton, MsgType::Select, [this](Msg* pMsg)
+		{
+		});
+
+
+
+
+	pLeftSection->slots << Filler::create();
+
+	pLeftSection->slots.setWeight(pLeftSection->slots.begin(), pLeftSection->slots.end() - 1, 0);
+
 	return pBase;
 }
 
@@ -291,33 +391,118 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 	return true;
 }
 
-//____ selectAndLoadImage() ___________________________________________________
+//____ selectAndLoadStream() ___________________________________________________
 
-void MyApp::selectAndLoadImage()
+void MyApp::selectAndLoadStream()
 {
-	auto selectedFiles = m_pAppVisitor->openMultiFileDialog("Select Images", "", { "*.surf", "*.qoi" }, "Image files");
+	auto selectedFile = m_pAppVisitor->openFileDialog("Select GfxStream", "", { "*.wax", "*.dat" }, "Stream files");
 	
-	if( selectedFiles.empty()  )
+	if( selectedFile.empty()  )
 		return;
 
-	m_imagePaths = selectedFiles;
-	loadImage(0);
+	loadStream(selectedFile);
 }
 
-//____ loadImage() ____________________________________________________________
+//____ loadStream() ____________________________________________________________
 
-bool MyApp::loadImage(int idx)
+bool MyApp::loadStream(std::string path)
 {
-	if (idx < 0 || idx >= m_imagePaths.size())
-		return false;
 
-	auto pSurface = m_pAppVisitor->loadSurface(m_imagePaths[idx]);
+	auto pStream = m_pAppVisitor->loadBlob(path);
 
-	m_pImageDisplay->setSurface(pSurface);
-	m_pPathDisplay->display.setText(m_imagePaths[idx]);
+	m_pStreamBlob = pStream;
 
-	m_pPrevButton->setEnabled( idx != 0 );
-	m_pNextButton->setEnabled( idx != m_imagePaths.size()-1 );
+	// Parse stream, find all frames
+
+	m_frames.clear();
+
+	for (auto pChunk = GfxStream::iterator(pStream->begin()); pChunk != GfxStream::iterator(pStream->end()); pChunk++ )
+	{
+		if (pChunk->type() == GfxChunkId::BeginRender)
+			m_frames.push_back(pChunk);
+	}
+
+	//
+
+	setupScreens();
+	updateGUIAfterReload();
 
 	return true;
+}
+
+//____ setupScreens() _________________________________________________________
+
+void MyApp::setupScreens()
+{
+	m_screens.clear();
+
+	SurfaceFactory_p	pFactory = Base::activeContext()->surfaceFactory();
+
+	for (int i = 0; i < 11; i++)
+	{
+		auto pSurf = pFactory->createSurface({ .format = PixelFormat::RGB_565_bigendian, .identity = int(CanvasRef::Default) + i, .size = {240,240}});
+		pSurf->fill(HiColor::Black);
+
+		m_screens.push_back(pSurf);
+	}
+}
+
+//____ updateGUIAfterReload() ________________________________________________
+
+void MyApp::updateGUIAfterReload()
+{
+
+	m_pScreenLineup->slots.clear();
+	m_pDisplayToggles->slots.clear();
+
+
+	int toggleNb = 0;
+
+	for (auto pScreen : m_screens)
+	{
+		// Fill in screen lineup
+
+		auto pPanel = TwoSlotPanel::create();
+		pPanel->setAxis(Axis::Y);
+		pPanel->setSkin(m_pPlateSkin);
+
+		auto pLabel = TextDisplay::create( WGBP(TextDisplay,
+											_.display.text = toString((CanvasRef)pScreen->identity()),
+											_.display.layout = m_pTextLayoutCentered
+										));
+
+		auto pDisplay = SurfaceDisplay::create({ .surface = pScreen });
+
+		pPanel->slots[0] = pLabel;
+		pPanel->slots[1] = pDisplay;
+
+		m_pScreenLineup->slots << pPanel;
+
+		// Fill in toggles
+
+		char label[6];
+		sprintf(label, " %d ", toggleNb);
+
+		auto pToggle = ToggleButton::create( WGBP(ToggleButton,
+												_.skin = m_pToggleButtonSkin,
+												_.label.text = label,
+												_.selected = true
+											) );
+
+		auto pScreenLineup = m_pScreenLineup;
+		Base::msgRouter()->addRoute(pToggle, MsgType::Toggle, [toggleNb, pScreenLineup](Msg* pMsg)
+			{
+				auto pMessage = static_cast<ToggleMsg*>(pMsg);
+				pScreenLineup->slots[toggleNb].setVisible(pMessage->isSet());
+			});
+
+		m_pDisplayToggles->slots << pToggle;
+
+		toggleNb++;
+	}
+
+
+
+
+	m_pScreenLineup->slots.setPadding(m_pScreenLineup->slots.begin(), m_pScreenLineup->slots.end(), 6);
 }

@@ -428,21 +428,20 @@ namespace wg
 			"SetMorphFactor",
 			"SetRenderLayer",
 			"Fill",
-			"FillRectI",
-			"FillRectF",
+			"FillRect",
 			"PlotPixels",
 			"DrawLineFromTo",
 			"DrawLineStraight",
 			"Blit",
-			"BlitRectI",
+			"BlitRect",
 			"FlipBlit",
-			"FlipBlitRectI",
+			"FlipBlitRect",
 			"StretchBlit",
-			"StretchBlitRectI",
-			"StretchBlitRectF",
+			"StretchBlitRect",
 			"StretchFlipBlit",
-			"StretchFlipBlitRectI",
-			"StretchFlipBlitRectF",
+			"StretchFlipBlitRect",
+			"PrecisionBlit",
+			"TransformBlit",
 			"RotScaleBlit",
 			"Tile",
 			"FlipTile",
@@ -464,7 +463,8 @@ namespace wg
 			"CopySurface",
 			"DeleteSurface",
 			"ProtocolVersion",
-			"TimeStampMS" };
+			"TimeStampMS",
+			"CanvasList" };
 
 		return names[(int)i];
 	}

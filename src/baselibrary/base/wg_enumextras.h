@@ -111,7 +111,7 @@ namespace wg
 	const static int             MaskOp_size         = (int)MaskOp::Mask + 1;
 	const static int             GfxFlip_size        = (int)GfxFlip::Rot270FlipY + 1;
 	const static int             CanvasRef_size      = (int)CanvasRef::Canvas_32 + 1;
-	const static int             GfxChunkId_size     = (int)GfxChunkId::TimeStampMS + 1;
+	const static int             GfxChunkId_size     = (int)GfxChunkId::CanvasList + 1;
 
 	const char * toString(CodePage);
 	const char * toString(TintMode);

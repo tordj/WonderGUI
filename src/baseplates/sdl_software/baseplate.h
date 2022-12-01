@@ -130,6 +130,9 @@ public:
 	class Visitor
 	{
 	public:
+
+		virtual std::vector<std::string> programArguments() const = 0;
+
 		virtual int64_t			time() = 0;					// Time in millisec since any arbitrary time before call to init().
 
 		virtual wg::Blob_p		loadBlob(const std::string& path) = 0;
@@ -158,6 +161,7 @@ public:
 		virtual std::string		selectFolderDialog(const std::string& title, const std::string& defaultPath) = 0;
 
 		virtual Window_p		createWindow(const Window::Blueprint& blueprint) = 0;
+
 	};
 
 	virtual bool	init(Visitor* pVisitor) = 0;

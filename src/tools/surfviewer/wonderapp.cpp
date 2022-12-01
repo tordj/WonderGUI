@@ -44,7 +44,19 @@ bool MyApp::init(Visitor* pVisitor)
 		printf("ERROR: Failed to setup GUI!\n");
 		return false;
 	}
-		
+	
+	// Add any image file from the argument list
+
+	auto arguments = pVisitor->programArguments();
+
+	for ( auto& arg : arguments )
+	{
+		auto sz = arg.size();
+		if ( sz >= 5 && ( arg.find(".qoi", sz - 4) != string::npos ||
+			 arg.find(".surf", sz - 5) != string::npos) )
+			m_imagePaths.push_back(arg);
+	}
+
 	return true;
 }
 

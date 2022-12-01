@@ -30,6 +30,9 @@ using namespace wg;
 class MyAppVisitor : public WonderApp::Visitor
 {
 public:
+
+	std::vector<std::string> programArguments() const override;
+
 	int64_t			time() override
 	{
 		return SDL_GetPerformanceCounter() * 1000000 / SDL_GetPerformanceFrequency();
@@ -129,10 +132,14 @@ MouseButton translateSDLMouseButton(Uint8 button);
 float				g_scale;
 
 GfxDevice_p			g_pGfxDevice;
+SurfaceFactory_p	g_pSurfaceFactory;
+
 MyHostBridge *		g_pHostBridge = nullptr;
 
 std::vector<MyWindow_wp>	g_windows;
 
+int			g_argc = 0;
+char**		g_argv = nullptr;
 
 
 static const char * iconNames[4] = { "info", "warning", "error", "question" };
@@ -145,6 +152,9 @@ static const char * dialogNames[4] = { "ok", "okcancel", "yesno", "yesnocancel" 
 
 int main(int argc, char *argv[] )
 {
+	g_argc = argc;
+	g_argv = argv;
+
 	// Create app and visitor, make any app-specif initialization
 
 	auto pApp = WonderApp::create();
@@ -528,6 +538,18 @@ void MyAppVisitor::convertSDLFormat(PixelDescription* pWGFormat, const SDL_Pixel
 
 }
 
+//____ programArguments() _________________________________________________
+
+std::vector<std::string> MyAppVisitor::programArguments() const
+{
+	std::vector<std::string>	args;
+
+	for (int i = 1; i < g_argc; i++)
+		args.push_back(g_argv[i]);
+
+	return args;
+}
+
 //____ loadBlob() _________________________________________________________
 
 Blob_p MyAppVisitor::loadBlob(const std::string& path)
@@ -830,7 +852,6 @@ WonderApp::Window_p MyAppVisitor::createWindow(const WonderApp::Window::Blueprin
 
 	return pWindow;
 }
-
 
 //____ hidePointer() __________________________________________________________
 

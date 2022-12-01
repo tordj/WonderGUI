@@ -84,6 +84,7 @@
 #include <wg_gfxstreamsink.h>
 #include <wg_gfxstreamsource.h>
 #include <wg_gfxstreamsplitter.h>
+#include <wg_gfxstreamwrapper.h>
 #include <wg_gfxstreamwriter.h>
 #include <wg_gradient.h>
 #include <wg_gridwalker.h>
@@ -117,6 +118,7 @@
 #include <wg_patches.h>
 #include <wg_pianokeyboard.h>
 #include <wg_piemeterskin.h>
+#include <wg_pixeltools.h>
 #include <wg_pointers.h>
 #include <wg_popupopener.h>
 #include <wg_popupoverlay.h>
@@ -167,6 +169,7 @@
 #include <wg_surfacedisplay.h>
 #include <wg_surfacefactory.h>
 #include <wg_surfacefileheader.h>
+#include <wg_surfacefileinspector.h>
 #include <wg_surfacereader.h>
 #include <wg_surfacewriter.h>
 #include <wg_sysfont.h>

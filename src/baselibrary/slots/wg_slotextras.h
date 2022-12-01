@@ -35,7 +35,7 @@
 #define		SLOT_HIDING_METHODS(HOLDERTYPE) \
 	inline void		hide() { static_cast<HOLDERTYPE*>(_holder())->_hideSlots(this, 1); } \
 	inline void		unhide() { static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); } \
-	inline void		setVisible(bool bVisible) { if (bVisible) static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); else static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); } \
+	inline void		setVisible(bool bVisible) { if (bVisible) static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); else static_cast<HOLDERTYPE*>(_holder())->_hideSlots(this, 1); } \
 	inline bool		isVisible() const { return m_bVisible; }
 
 #define		SLOT_PADDING_HELPER_METHODS	SizeSPX		_paddedDefaultSize(int scale) const { return m_pWidget->_defaultSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); } \
