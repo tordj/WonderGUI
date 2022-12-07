@@ -189,6 +189,7 @@ namespace wg
 				std::memset(m_pAlphaLayer, 0, bp.size.w*bp.size.h);
 			}
 		}
+		m_pEncoder->flush();
 	}
 
 	StreamSurface::StreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp, Blob* pBlob, int pitch )

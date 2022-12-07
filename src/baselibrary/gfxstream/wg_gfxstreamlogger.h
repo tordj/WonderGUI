@@ -55,6 +55,12 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Behavior __________________________________________
+		
+		void	setDisplayOffset(bool bDisplay) { m_bDisplayStreamOffset = bDisplay; }
+		bool	displayOffset() const { return m_bDisplayStreamOffset; }
+
+		
 	protected:
 		GfxStreamLogger( std::ostream& out );
 		~GfxStreamLogger();

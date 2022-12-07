@@ -53,7 +53,7 @@ namespace wg
 			Object_p		baggage;
 			bool			dropTarget = false;
 			bool			enabled = true;
-			Finalizer_p		finalizer;
+			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
 			Surface_p		image;
 			Rect			imageRect;

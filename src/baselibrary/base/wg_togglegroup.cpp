@@ -32,8 +32,6 @@ namespace wg
 
 	ToggleGroup::ToggleGroup()
 	{
-		m_bRequireSelected = true;
-		m_pSelected = 0;
 	}
 
 	//____ Destructor ______________________________________________________________

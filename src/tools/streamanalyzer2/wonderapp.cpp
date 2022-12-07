@@ -3,6 +3,7 @@
 
 #include <wondergui.h>
 #include <wg_freetypefont.h>
+#include <wg_softgfxdevice.h>
 #include <string>
 #include <fstream>
 
@@ -106,7 +107,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 		return false;
 
 	m_pLayout = PackLayout::create({ .wantedSize = PackLayout::WantedSize::Default,
-	.expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Zero });
+	.expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Weight });
 
 	auto pPopupOverlay = PopupOverlay::create();
 	
@@ -127,7 +128,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	pSplitPanel->setHandleSkin(m_pButtonSkin);
 	
 	pSplitPanel->slots[0] = createDisplayPanel();
-	pSplitPanel->slots[1] = createControlsPanel();
+	pSplitPanel->slots[1] = createLowerPanel();
 
 	pBasePanel->slots << pSplitPanel;
 
@@ -186,23 +187,9 @@ Widget_p MyApp::createTopBar()
 
 Widget_p MyApp::createDisplayPanel()
 {
-	auto pWindow = ScrollPanel::create();
-
-	pWindow->scrollbarX.setBackground(BoxSkin::create(WGBP(BoxSkin,
-		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
-		_.outlineColor = Color8::Black)));
-	pWindow->scrollbarX.setBar(m_pPlateSkin);
-
-	pWindow->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
-		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
-		_.outlineColor = Color8::Black)));
-	pWindow->scrollbarY.setBar(m_pPlateSkin);
+	auto pWindow = _standardScrollPanel();
 
 	pWindow->setSkin(ColorSkin::create(Color::DarkSlateBlue));
-
-	pWindow->setAutohideScrollbars(true, true);
 	pWindow->setSizeConstraints(SizeConstraint::None, SizeConstraint::None);
 	pWindow->setPlacement(Placement::Center);
 
@@ -218,9 +205,9 @@ Widget_p MyApp::createDisplayPanel()
 	return pWindow;
 }
 
-//____ createControlsPanel() _____________________________________________________
+//____ createLowerPanel() _____________________________________________________
 
-Widget_p MyApp::createControlsPanel()
+Widget_p MyApp::createLowerPanel()
 {
 	auto pBase = SplitPanel::create();
 	pBase->setAxis(Axis::X);
@@ -228,49 +215,194 @@ Widget_p MyApp::createControlsPanel()
 	pBase->setSplitFactor(0.5f);			//TODO: SplitPanel::setSplitFactor() does not work! Replace with some other function?
 	pBase->setHandleSkin(m_pButtonSkin);
 
-	auto pLeftSection = PackPanel::create();
-	pLeftSection->setAxis(Axis::Y);
-	pLeftSection->setLayout(m_pLayout);
-	pLeftSection->setSkin(m_pPlateSkin);
+	pBase->slots[0] = createNavigationPanel();
+	pBase->slots[1] = createLogPanel();
+
+	return pBase;
+}
+
+//____ createLogPanel() _______________________________________________________
+
+Widget_p MyApp::createLogPanel()
+{
+	auto pMain = PackPanel::create();
+	pMain->setAxis(Axis::Y);
+	pMain->setLayout(m_pLayout);
+	pMain->setSkin(m_pPlateSkin);
+
+	auto pLogButtonRow = PackPanel::create();
+	pLogButtonRow->setAxis(Axis::X);
 
 
-	auto pLogSection = PackPanel::create();
-	pLogSection->setAxis(Axis::Y);
-	pLogSection->setLayout(m_pLayout);
-	pLogSection->setSkin(m_pPlateSkin);
+	auto pFrameLogButton = ToggleButton::create( WGBP(ToggleButton,
+											_.skin = m_pToggleButtonSkin,
+											_.selected = true,
+											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Frame data" )
+											));
 
-	pBase->slots[0] = pLeftSection;
-	pBase->slots[1] = pLogSection;
+	auto pFullLogButton = ToggleButton::create( WGBP(ToggleButton,
+											_.skin = m_pToggleButtonSkin,
+											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "File data" )
+											));
 
-	// Create log section content
+	auto pResourcesButton = ToggleButton::create( WGBP(ToggleButton,
+											_.skin = m_pToggleButtonSkin,
+											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Resources" )
+											));
 
-	auto pLogWindow = ScrollPanel::create();
+	auto pErrorLogButton = ToggleButton::create( WGBP(ToggleButton,
+											_.skin = m_pToggleButtonSkin,
+											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Errors" )
+											));
+	
+	
+	auto pToggleGroup = ToggleGroup::create();
+	pToggleGroup->add(pFrameLogButton);
+	pToggleGroup->add(pFullLogButton);
+	pToggleGroup->add(pResourcesButton);
+	pToggleGroup->add(pErrorLogButton);
 
-	pLogWindow->scrollbarX.setBackground(BoxSkin::create(WGBP(BoxSkin,
-		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
-		_.outlineColor = Color8::Black)));
-	pLogWindow->scrollbarX.setBar(m_pPlateSkin);
+	Base::msgRouter()->addRoute(pFrameLogButton, MsgType::Toggle, [this](Msg* pMsg)
+		{
+			auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
+		
+			if( pToggleMsg->isSet() )
+				this->showFrameLog();
+		});
+	
+	Base::msgRouter()->addRoute(pFullLogButton, MsgType::Toggle, [this](Msg* pMsg)
+		{
+		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
+	
+		if( pToggleMsg->isSet() )
+			this->showFullLog();
+		});
 
-	pLogWindow->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
-		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
-		_.outlineColor = Color8::Black)));
-	pLogWindow->scrollbarY.setBar(m_pPlateSkin);
+	Base::msgRouter()->addRoute(pResourcesButton, MsgType::Toggle, [this](Msg* pMsg)
+		{
+		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
+	
+		if( pToggleMsg->isSet() )
+			this->showResources();
+		});
 
-	pLogWindow->setAutohideScrollbars(true, true);
-	pLogWindow->setSizeConstraints(SizeConstraint::GreaterOrEqual, SizeConstraint::GreaterOrEqual);
+	Base::msgRouter()->addRoute(pErrorLogButton, MsgType::Toggle, [this](Msg* pMsg)
+		{
+		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
+	
+		if( pToggleMsg->isSet() )
+			this->showErrors();
+		});
 
-	auto pLogText = TextDisplay::create({ .skin = ColorSkin::create(Color8::LightYellow)});
+	
+	pLogButtonRow->slots << pFrameLogButton;
+	pLogButtonRow->slots << pFullLogButton;
+	pLogButtonRow->slots << pResourcesButton;
+	pLogButtonRow->slots << pErrorLogButton;
 
+	
+	TextEditor::Blueprint displayBP;
+	displayBP.skin = ColorSkin::create(Color8::LightYellow);
+	displayBP.editor.editMode = TextEditMode::Selectable;
+	
+	// Create frame log hierarchy
+	
+	auto pFrameLogWindow = _standardScrollPanel();
+	
+	auto pFrameLogText = TextEditor::create( displayBP );
+	pFrameLogWindow->slot = pFrameLogText;
 
-	pLogWindow->slot = pLogText;
+	m_pFrameLogDisplay = pFrameLogText;
 
-	pLogSection->slots << pLogWindow;
+	m_pFrameLogContainer = pFrameLogWindow;
 
+	// Create full log hierarchy
+	
+	auto pFullLogWindow = _standardScrollPanel();
+
+	auto pFullLogText = TextEditor::create( displayBP );
+	pFullLogWindow->slot = pFullLogText;
+
+	m_pFullLogDisplay = pFullLogText;
+
+	m_pFullLogContainer = pFullLogWindow;
+
+	// Create error log
+	
+	auto pErrorsWindow = _standardScrollPanel();
+
+	auto pErrorsText = TextEditor::create( displayBP );
+	pErrorsWindow->slot = pErrorsText;
+
+	m_pErrorsDisplay = pErrorsText;
+
+	m_pErrorsContainer = pErrorsWindow;
+	
+	Base::setErrorHandler( [this](Error& err)
+	{
+		char temp[1024];
+		
+		sprintf(temp, "%s: %s - %s\n", toString( err.severity ), err.function, err.message.c_str() );
+		
+		m_pErrorsDisplay->editor.append(temp);
+	});
+	
+	
+	// Create resources view
+	
+	auto pResourcesWindow = _standardScrollPanel();
+	
+	auto pResourcesPanel = PackPanel::create();
+	pResourcesPanel->setAxis(Axis::Y);
+	pResourcesPanel->setSkin(ColorSkin::create(Color::Black));
+	pResourcesWindow->slot = pResourcesPanel;
+	
+	m_pResourcePanel = pResourcesPanel;
+	
+	m_pResourceContainer = pResourcesWindow;
+	
+	// Finish it it up
+	
+	auto pLogCapsule = SizeCapsule::create();
+	pLogCapsule->slot = pFrameLogWindow;
+	m_pLogCapsule = pLogCapsule;
+	
+	pMain->slots << pLogButtonRow;
+	pMain->slots << pLogCapsule;
+
+	pMain->slots.setWeight(0, 1, 0.f);
+	
+	return pMain;
+}
+
+//____ createNavigationPanel() ________________________________________________
+
+Widget_p MyApp::createNavigationPanel()
+{
+	auto pMain = PackPanel::create();
+	pMain->setAxis(Axis::Y);
+	pMain->setLayout(m_pLayout);
+	pMain->setSkin(m_pPlateSkin);
+	
 	// Create left section content
 
-
+	auto pProgressText = TextDisplay::create( WGBP(TextDisplay,
+											_.display = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "1/20" )
+											));
+	m_pProgressText = pProgressText;
+	
+	auto pSlider = Slider::create( { .handle = m_pButtonSkin,
+									 .skin = ColorSkin::create( Color::Black )
+	} );
+	
+	Base::msgRouter()->addRoute(pSlider, MsgType::ValueUpdate, [this](Msg* pMsg)
+	{
+		auto pMyMsg = static_cast<ValueUpdateMsg*>(pMsg);
+		this->setFrame( int(pMyMsg->fraction() * this->m_frames.size() + 0.5f) );
+	});
+	
+	m_pProgressSlider = pSlider;
+	
 
 	auto pPlayButtons = PackPanel::create();
 	pPlayButtons->setAxis(Axis::X);
@@ -313,25 +445,38 @@ Widget_p MyApp::createControlsPanel()
 
 	pPlayButtons->slots.setWeight(1, 5, 0.f);
 
-	pLeftSection->slots << pPlayButtons;
+	pMain->slots << pProgressText;
+	pMain->slots << pSlider;
+	pMain->slots << pPlayButtons;
 
+	Base::msgRouter()->addRoute(pLongLeftButton, MsgType::Select, [this](Msg* pMsg)
+		{
+			this->setFrame(this->m_currentFrame-5);
+		});
 
 	Base::msgRouter()->addRoute(pLeftButton, MsgType::Select, [this](Msg* pMsg)
 		{
+			this->setFrame(this->m_currentFrame-1);
 		});
 
 	Base::msgRouter()->addRoute(pRightButton, MsgType::Select, [this](Msg* pMsg)
 		{
+			this->setFrame(this->m_currentFrame+1);
+		});
+
+	Base::msgRouter()->addRoute(pLongRightButton, MsgType::Select, [this](Msg* pMsg)
+		{
+			this->setFrame(this->m_currentFrame+5);
 		});
 
 
 
+	pMain->slots << Filler::create();
 
-	pLeftSection->slots << Filler::create();
+	pMain->slots.setWeight(pMain->slots.begin(), pMain->slots.end() - 1, 0);
+	pMain->slots.setPadding(pMain->slots.begin(), pMain->slots.end(), 2);
 
-	pLeftSection->slots.setWeight(pLeftSection->slots.begin(), pLeftSection->slots.end() - 1, 0);
-
-	return pBase;
+	return pMain;
 }
 
 
@@ -422,11 +567,22 @@ bool MyApp::loadStream(std::string path)
 			m_frames.push_back(pChunk);
 	}
 
-	//
+	// Setup streamwrapper and pump
 
+	m_pStreamWrapper = GfxStreamWrapper::create(pStream->begin(), pStream->end());
+	
+	auto pContext = Base::activeContext();
+	
+	m_pStreamPlayer	= GfxStreamPlayer::create( pContext->gfxDevice(), pContext->surfaceFactory() );
+	
+	m_pStreamPump = GfxStreamPump::create( GfxStreamSource_p(m_pStreamWrapper.rawPtr(), m_pStreamWrapper->output), GfxStreamSink_p(m_pStreamPlayer.rawPtr(),m_pStreamPlayer->input) );
+	
+	//
+	
 	setupScreens();
 	updateGUIAfterReload();
-
+	setFrame(0);
+	
 	return true;
 }
 
@@ -438,12 +594,17 @@ void MyApp::setupScreens()
 
 	SurfaceFactory_p	pFactory = Base::activeContext()->surfaceFactory();
 
+	// Ugly typecast! Will only work with SoftGfxDevice!
+	SoftGfxDevice_p		pGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::activeContext()->gfxDevice());
+	
 	for (int i = 0; i < 11; i++)
 	{
 		auto pSurf = pFactory->createSurface({ .format = PixelFormat::RGB_565_bigendian, .identity = int(CanvasRef::Default) + i, .size = {240,240}});
 		pSurf->fill(HiColor::Black);
 
 		m_screens.push_back(pSurf);
+		
+		pGfxDevice->defineCanvas(CanvasRef(int(CanvasRef::Default) + i), wg_dynamic_cast<SoftSurface_p>(pSurf));
 	}
 }
 
@@ -501,8 +662,180 @@ void MyApp::updateGUIAfterReload()
 		toggleNb++;
 	}
 
-
-
-
 	m_pScreenLineup->slots.setPadding(m_pScreenLineup->slots.begin(), m_pScreenLineup->slots.end(), 6);
+
+	//
+	
+	m_pProgressSlider->setSteps( m_frames.size() );
+
+	
+	_logFullStream();
+	_updateFrameCounterAndSlider();
+}
+
+//____ setFrame() _____________________________________________________________
+
+void MyApp::setFrame( int frame )
+{
+	if( m_frames.size() == 0 )
+		return;
+	
+	if( frame < 0 )
+		frame = 0;
+	if( frame >= m_frames.size() )
+		frame = m_frames.size() -1;
+	
+	if( frame == m_currentFrame )
+		return;
+	
+	// Update the diplays and log
+	
+/*	if( frame > m_currentFrame )
+	{
+		_playFrames( m_currentFrame+1, frame+1 );
+	}
+	else
+*/	{
+		_resetStream();
+		_playFrames( 0, frame+1 );
+	}
+
+	// Update the log
+	
+	_logFrames( frame, frame+1);
+
+	//
+
+	m_currentFrame = frame;
+	
+	// Update slider and frame counter
+	
+	_updateFrameCounterAndSlider();
+		
+}
+
+//____ showFrameLog() _________________________________________________________
+
+void MyApp::showFrameLog()
+{
+	m_pLogCapsule->slot = m_pFrameLogContainer;
+}
+
+//____ showFullLog() __________________________________________________________
+
+void MyApp::showFullLog()
+{
+	m_pLogCapsule->slot = m_pFullLogContainer;
+}
+
+//____ showResources() ________________________________________________________
+
+void MyApp::showResources()
+{
+	m_pLogCapsule->slot = m_pResourceContainer;
+}
+
+//____ showErrors() ___________________________________________________________
+
+void MyApp::showErrors()
+{
+	m_pLogCapsule->slot = m_pErrorsContainer;
+}
+
+
+
+//____ _resetStream() _________________________________________________________
+
+void MyApp::_resetStream()
+{
+	m_pStreamWrapper->restart();
+	m_pStreamPlayer->reset();
+}
+
+//____ _playFrames() __________________________________________________________
+
+void MyApp::_playFrames( int begin, int end )
+{
+	uint8_t * pBegin = begin == 0 ? (uint8_t*) m_pStreamBlob->begin() : (uint8_t*) m_frames[begin];
+	uint8_t * pEnd = end == m_frames.size() ? (uint8_t*) m_pStreamBlob->end() : (uint8_t*) m_frames[end];
+
+	auto pWrapper = GfxStreamWrapper::create( pBegin, pEnd );
+	
+	m_pStreamPump->setInput({pWrapper, pWrapper->output});
+	m_pStreamPump->pumpAll();
+}
+
+//____ _logFrames() ___________________________________________________________
+
+void MyApp::_logFrames( int begin, int end )
+{
+	uint8_t * pBegin = begin == 0 ? (uint8_t*) m_pStreamBlob->begin() : (uint8_t*) m_frames[begin];
+	uint8_t * pEnd = end == m_frames.size() ? (uint8_t*) m_pStreamBlob->end() : (uint8_t*) m_frames[end];
+
+	auto pWrapper = GfxStreamWrapper::create( pBegin, pEnd );
+
+	std::ostringstream	logStream;
+	auto pLogger = GfxStreamLogger::create( logStream );
+	pLogger->setDisplayOffset(false);
+	
+	auto pPump = GfxStreamPump::create( {pWrapper, pWrapper->output}, {pLogger, pLogger->input} );
+	pPump->pumpAll();
+
+	m_pFrameLogDisplay->editor.setText( logStream.str() );
+}
+
+//____ _updateFrameCounterAndSlider() _________________________________________
+
+void MyApp::_updateFrameCounterAndSlider()
+{
+	char temp[20];
+	
+	sprintf( temp, "%d / %d", m_currentFrame+1, (int) m_frames.size() );
+	
+	
+	m_pProgressText->display.setText(temp);
+	
+	m_pProgressSlider->setValue( m_currentFrame / float(m_frames.size()) );
+}
+
+
+//____ _logFullStream() _______________________________________________________
+
+void MyApp::_logFullStream()
+{
+	auto pWrapper = GfxStreamWrapper::create( m_pStreamBlob->begin(), m_pStreamBlob->end()  );
+
+	std::ostringstream	logStream;
+	auto pLogger = GfxStreamLogger::create( logStream );
+	pLogger->setDisplayOffset(true);
+	
+	auto pPump = GfxStreamPump::create( {pWrapper, pWrapper->output}, {pLogger, pLogger->input} );
+	pPump->pumpAll();
+
+	m_pFullLogDisplay->editor.setText( logStream.str() );
+
+}
+
+//____ _standardScrollPanel() _________________________________________________
+
+ScrollPanel_p MyApp::_standardScrollPanel()
+{
+	auto pWidget = ScrollPanel::create();
+
+	pWidget->scrollbarX.setBackground(BoxSkin::create(WGBP(BoxSkin,
+		_.color = Color8::DarkOliveGreen,
+		_.outline = 1,
+		_.outlineColor = Color8::Black)));
+	pWidget->scrollbarX.setBar(m_pPlateSkin);
+
+	pWidget->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
+		_.color = Color8::DarkOliveGreen,
+		_.outline = 1,
+		_.outlineColor = Color8::Black)));
+	pWidget->scrollbarY.setBar(m_pPlateSkin);
+
+	pWidget->setAutohideScrollbars(true, true);
+	pWidget->setSizeConstraints(SizeConstraint::GreaterOrEqual, SizeConstraint::GreaterOrEqual);
+
+	return pWidget;
 }

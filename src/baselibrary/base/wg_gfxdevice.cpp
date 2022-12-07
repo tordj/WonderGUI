@@ -1035,7 +1035,11 @@ namespace wg
 
 	void GfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)
 	{
-		assert(m_pBlitSource != nullptr);
+		if( !m_pBlitSource )
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "No blit source set", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
 
 		int srcScale = m_pBlitSource->scale();
 

@@ -123,7 +123,7 @@ namespace wg
 
 	//____ ErrorSeverity ________________________________________________
 
-	enum class ErrorSeverity
+	enum class ErrorSeverity		//. autoExtras
 	{
 		Warning,
 		SilentFail,
@@ -133,7 +133,7 @@ namespace wg
 
 	//____ ErrorCode ____________________________________________________
 
-	enum class ErrorCode
+	enum class ErrorCode			//. autoExtras
 	{
 		OutOfRange,
 		InvalidIterator,
@@ -868,7 +868,7 @@ enum class CanvasInit 		//. autoExtras
 
 		Fill = 17,
 		FillRect = 18,
-//		FillRectF = 19,
+		Undefined1 = 19,
 		PlotPixels = 20,
 		DrawLineFromTo = 21,
 		DrawLineStraight = 22,

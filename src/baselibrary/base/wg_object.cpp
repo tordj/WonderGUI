@@ -40,6 +40,7 @@ namespace wg
 			pHub = Base::_allocWeakPtrHub();
 			pHub->refCnt = 1;
 			pHub->pObj = pObj;
+			pHub->pFinalizer = nullptr;
 			pObj->m_pWeakPtrHub = pHub;
 		}
 		else
@@ -82,16 +83,16 @@ namespace wg
 	void WeakPtrHub::setFinalizer(Object * pObj, Finalizer_p pFinalizer)
 	{
 		WeakPtrHub * pHub;
-		if (!pObj->m_pWeakPtrHub)
+		if (pObj->m_pWeakPtrHub)
+		{
+			pHub = pObj->m_pWeakPtrHub;
+		}
+		else
 		{
 			pHub = Base::_allocWeakPtrHub();
 			pHub->refCnt = 0;
 			pHub->pObj = pObj;
 			pObj->m_pWeakPtrHub = pHub;
-		}
-		else
-		{
-			pHub = pObj->m_pWeakPtrHub;
 		}
 
 		pHub->pFinalizer = pFinalizer;

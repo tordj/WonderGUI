@@ -54,7 +54,7 @@ namespace wg
 			bool			dropTarget = false;
 			int				duration = 1000;
 			bool			enabled = true;
-			Finalizer_p		finalizer;
+			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;

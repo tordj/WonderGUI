@@ -58,7 +58,7 @@ namespace wg
 			bool			dropTarget = false;
 			bool			enabled = true;
 			Surface_p		evenWhiteKeys;
-			Finalizer_p		finalizer;
+			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
 			bool			keyFlipOnPress = false;
 			std::bitset<7>	keyLayout = 0b1011011;

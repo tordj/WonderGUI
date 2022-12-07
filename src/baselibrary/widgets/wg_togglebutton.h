@@ -78,7 +78,7 @@ namespace wg
 			ClickArea		clickArea = ClickArea::Default;
 			bool			dropTarget = false;
 			bool			enabled = true;
-			Finalizer_p		finalizer;
+			Finalizer_p		finalizer = nullptr;
 			bool			flipOnRelease = false;
 			Icon::Blueprint	icon;
 			int				id = 0;

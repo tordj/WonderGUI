@@ -112,13 +112,17 @@ namespace wg
 			//TODO: Error handling!
 			return;
 		}
-
+/*
+		This causes problems if setSteps() is followed by setValue() since it
+		posts a message changing value, which will be processed after setValue().
+ 
 		if (nbSteps != m_nbSteps)
 		{
 			m_nbSteps = nbSteps;
 			if( nbSteps > 0 )
 				_setValue(m_value);		// Have the value aligned to the steps.
 		}
+*/
 	}
 
 	//____ setValue() _________________________________________________________
@@ -311,7 +315,7 @@ namespace wg
 		if (m_nbSteps > 0)
 		{
 			int val = int(value * m_nbSteps + 0.5f);
-			value = 1.f / val;
+			value = val / float(m_nbSteps);
 		}
 
 		if (value != m_value)

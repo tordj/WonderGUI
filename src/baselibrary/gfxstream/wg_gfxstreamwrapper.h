@@ -46,6 +46,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static GfxStreamWrapper_p	create( const void * pBegin, const void * pEnd );
+		static GfxStreamWrapper_p	create( GfxStream::iterator begin, GfxStream::iterator end );
 
 		//.____ Components _______________________________________
 

@@ -146,7 +146,10 @@ namespace wg
 			inline bool operator<=(const iterator& rhs) const { return m_pChunk <= rhs.m_pChunk; }
 			inline bool operator>=(const iterator& rhs) const { return m_pChunk >= rhs.m_pChunk; }
 
-
+			inline operator uint8_t*() const
+			{
+				return (uint8_t*) m_pChunk;
+			}
 
 
 		protected:

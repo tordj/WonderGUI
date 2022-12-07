@@ -87,8 +87,8 @@ namespace wg
 
 	private:
 
-		bool						m_bRequireSelected;
-		ToggleButton *				m_pSelected;
+		bool						m_bRequireSelected = true;
+		ToggleButton *				m_pSelected = nullptr;
 		std::vector<ToggleButton*> m_entries;
 	};
 

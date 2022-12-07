@@ -55,7 +55,7 @@ namespace wg
 			pts				dragRange = 200;
 			bool			dropTarget	= false;
 			bool			enabled		= true;
-			Finalizer_p		finalizer;
+			Finalizer_p		finalizer	= nullptr;
 			int				id			= 0;
 			MarkPolicy		markPolicy	= MarkPolicy::AlphaTest;
 			bool			pickable	= false;

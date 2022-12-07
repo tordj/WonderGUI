@@ -38,6 +38,8 @@ namespace wg
 
 =========================================================================*/
 
+	const static ErrorSeverity   ErrorSeverity_min   = ErrorSeverity::Warning;
+	const static ErrorCode       ErrorCode_min       = ErrorCode::OutOfRange;
 	const static CodePage        CodePage_min        = CodePage::Latin1;
 	const static TintMode        TintMode_min        = TintMode::None;
 	const static BlendMode       BlendMode_min       = BlendMode::Undefined;
@@ -63,6 +65,8 @@ namespace wg
 	const static CanvasRef       CanvasRef_min       = CanvasRef::None;
 	const static GfxChunkId      GfxChunkId_min      = GfxChunkId::OutOfData;
 
+	const static ErrorSeverity   ErrorSeverity_max   = ErrorSeverity::Critical;
+	const static ErrorCode       ErrorCode_max       = ErrorCode::Other;
 	const static CodePage        CodePage_max        = CodePage::_874;
 	const static TintMode        TintMode_max        = TintMode::GradientXY;
 	const static BlendMode       BlendMode_max       = BlendMode::Morph;
@@ -88,6 +92,8 @@ namespace wg
 	const static CanvasRef       CanvasRef_max       = CanvasRef::Canvas_32;
 	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::CanvasList;
 
+	const static int             ErrorSeverity_size  = (int)ErrorSeverity::Critical + 1;
+	const static int             ErrorCode_size      = (int)ErrorCode::Other + 1;
 	const static int             CodePage_size       = (int)CodePage::_874 + 1;
 	const static int             TintMode_size       = (int)TintMode::GradientXY + 1;
 	const static int             BlendMode_size      = (int)BlendMode::Morph + 1;
@@ -113,6 +119,8 @@ namespace wg
 	const static int             CanvasRef_size      = (int)CanvasRef::Canvas_32 + 1;
 	const static int             GfxChunkId_size     = (int)GfxChunkId::CanvasList + 1;
 
+	const char * toString(ErrorSeverity);
+	const char * toString(ErrorCode);
 	const char * toString(CodePage);
 	const char * toString(TintMode);
 	const char * toString(BlendMode);

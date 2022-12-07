@@ -38,6 +38,12 @@ namespace wg
 		return new GfxStreamWrapper( pBegin, pEnd );
 	}
 
+	GfxStreamWrapper_p GfxStreamWrapper::create( GfxStream::iterator begin, GfxStream::iterator end )
+	{
+		return new GfxStreamWrapper( (uint8_t*) begin, (uint8_t*) end );
+	}
+
+
 	//____ constructor _____________________________________________________________
 
 	GfxStreamWrapper::GfxStreamWrapper( const void * pBegin, const void * pEnd ) : 
@@ -73,6 +79,11 @@ namespace wg
 
 	bool GfxStreamWrapper::_hasStreamChunks() const
 	{
+		uint64_t beg = (uint64_t) m_dataSegment.pBegin;
+		uint64_t end = (uint64_t) m_dataSegment.pEnd;
+		uint64_t diff = end -beg;
+		
+		
 		return (m_dataSegment.pBegin != m_dataSegment.pEnd);
 	}
 
@@ -80,6 +91,10 @@ namespace wg
 
 	std::tuple<int, const DataSegment*> GfxStreamWrapper::_showStreamChunks()
 	{
+		uint64_t beg = (uint64_t) m_dataSegment.pBegin;
+		uint64_t end = (uint64_t) m_dataSegment.pEnd;
+		uint64_t diff = end -beg;
+
 		if (m_dataSegment.pBegin == m_dataSegment.pEnd)
 			return std::make_tuple(int(0), nullptr);
 		else

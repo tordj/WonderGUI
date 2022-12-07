@@ -68,6 +68,8 @@ namespace wg
 
 		void	setCanvasInfoCallback( std::function<void(const CanvasInfo * pBegin, const CanvasInfo * pEnd)>& callback );
 		
+		void	reset();
+		
 	protected:
 		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();

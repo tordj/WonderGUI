@@ -56,7 +56,7 @@ namespace wg
 			bool			dropTarget = false;
 			bool			enabled = true;
 			Skin_p			endHandle;
-			Finalizer_p		finalizer;
+			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;

@@ -35,6 +35,35 @@ namespace wg
 
 =========================================================================*/
 
+	const char * toString(ErrorSeverity i)
+	{
+		static const char * names[] = { 
+			"Warning",
+			"SilentFail",
+			"Serious",
+			"Critical" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(ErrorCode i)
+	{
+		static const char * names[] = { 
+			"OutOfRange",
+			"InvalidIterator",
+			"InvalidParam",
+			"FailedPrerequisite",
+			"OpenGL",
+			"Internal",
+			"SystemIntegrity",
+			"IllegalCall",
+			"ResourceExhausted",
+			"RenderFailure",
+			"Other" };
+
+		return names[(int)i];
+	}
+
 	const char * toString(CodePage i)
 	{
 		static const char * names[] = { 
@@ -429,6 +458,7 @@ namespace wg
 			"SetRenderLayer",
 			"Fill",
 			"FillRect",
+			"Undefined1",
 			"PlotPixels",
 			"DrawLineFromTo",
 			"DrawLineStraight",

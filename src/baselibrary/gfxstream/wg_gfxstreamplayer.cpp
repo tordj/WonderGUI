@@ -314,6 +314,12 @@ namespace wg
 			uint16_t	surfaceId;
 			*m_pDecoder >> surfaceId;
 
+			if( surfaceId > m_vSurfaces.size() || m_vSurfaces[surfaceId] == nullptr )
+			{
+				Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "SurfaceID is not valid", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				break;
+			}
+
 			m_pDevice->setBlitSource(m_vSurfaces[surfaceId]);
 			break;
 		}
@@ -975,6 +981,14 @@ namespace wg
 
 		return true;
 	}
+
+	//____ reset() _______________________________________________________________
+
+	void GfxStreamPlayer::reset()
+	{
+		m_vSurfaces.clear();
+	}
+
 
 	//____ _pushClipListCanvas() ____________________________________________________
 

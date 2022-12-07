@@ -46,7 +46,7 @@ namespace wg
 			Object_p		baggage;
 			bool			dropTarget = false;
 			bool			enabled = true;
-			Finalizer_p		finalizer;
+			Finalizer_p		finalizer = nullptr;
 			Icon::Blueprint	icon;
 			int				id = 0;
 			Text::Blueprint label;
