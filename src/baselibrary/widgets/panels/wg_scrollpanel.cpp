@@ -652,8 +652,11 @@ namespace wg
 				m_childCanvas.setSize(size);
 			}
 
-			if (pWidget->_size() != size || pWidget->scale() != m_scale)
+			if (m_bChildRequestedResize || pWidget->_size() != size || pWidget->scale() != m_scale)
+			{
 				pWidget->_resize(size, m_scale);
+				m_bChildRequestedResize = false;
+			}
 		}
 		else
 			m_childCanvas.clear();
@@ -981,6 +984,8 @@ namespace wg
 
 
 		_updateScrollbars();
+		
+		m_bChildRequestedResize = true;		// So that _resize() will know...
 		_requestResize();
 	}
 

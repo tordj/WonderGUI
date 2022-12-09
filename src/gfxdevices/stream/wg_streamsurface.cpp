@@ -294,7 +294,6 @@ namespace wg
 
 		// _copy() implicitly calls _sendPixels().
 		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pPixels, pitch, RectI(size));
-		pOther->freePixelBuffer(pixelbuffer);
 		
 		if (m_pixelDescription.bits <= 8 || bp.buffered)
 		{
@@ -318,6 +317,7 @@ namespace wg
 				m_pAlphaLayer = _genAlphaLayer((char*)pixelbuffer.pPixels, pitch);
 		}
 
+		pOther->freePixelBuffer(pixelbuffer);
 		m_pEncoder->flush();
 	}
 

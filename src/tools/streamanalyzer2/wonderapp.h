@@ -47,11 +47,14 @@ private:
 	void		_logFrames( int begin, int end );
 	void		_updateFrameCounterAndSlider();
 	void		_logFullStream();
+	void		_updateResourcesView();
 
 	bool		_setupGUI(Visitor* pVisitor);
 	bool		_loadSkins(Visitor* pVisitor);
+	
 	ScrollPanel_p	_standardScrollPanel();
-
+	Widget_p		_buildSurfaceDisplayWithIndexTag( Surface * pSurf, int index );
+	
 	Visitor * 			m_pAppVisitor = nullptr;
 	Window_p			m_pWindow;
 
@@ -99,11 +102,13 @@ private:
 	Skin_p			m_pToggleButtonSkin;
 	Skin_p			m_pCheckBoxSkin;
 	Skin_p			m_pSectionSkin;
+	Skin_p			m_pRedOutlinedBlackSkin;
 
 	PackLayout_p	m_pLayout;
 	
 	TextStyle_p		m_pTextStyle;
 	TextStyle_p		m_pLabelStyle;
+	TextStyle_p		m_pBigWhiteStyle;
 
 	TextLayout_p	m_pTextLayoutCentered;
 

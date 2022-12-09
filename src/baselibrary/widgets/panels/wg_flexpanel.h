@@ -172,7 +172,7 @@ namespace wg
 
 		protected:
 
-			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder), m_bPinned(false), m_bVisible(false), m_origo(Placement::NorthWest), m_hotspot(Placement::NorthWest) {}
+			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder) {}
 
 			Slot(Slot&& o) = default;
 			Slot& operator=(Slot&& o) = default;
@@ -181,14 +181,14 @@ namespace wg
 			inline FlexPanel * _holder() { return static_cast<FlexPanel*>(DynamicSlot::_holder()); }
 			inline const FlexPanel * _holder() const { return static_cast<const FlexPanel*>(DynamicSlot::_holder()); }
 
-			bool			m_bPinned;
-			bool			m_bVisible;
+			bool			m_bPinned = false;
+			bool			m_bVisible = false;
 			RectSPX			m_realGeo;			// Widgets geo relative parent, pixel aligned.
 
 			// Positioned children
 
-			FlexPos			m_origo;
-			FlexPos			m_hotspot;
+			FlexPos			m_origo = Placement::NorthWest;
+			FlexPos			m_hotspot = Placement::NorthWest;
 			Rect			m_placementGeo;		// Widgets geo relative anchor and hotspot, not pixel aligned.
 
 			//	Stretched children

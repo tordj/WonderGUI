@@ -207,7 +207,7 @@ namespace wg
 
 		std::vector<Widget_p>   m_preRenderCalls;
 
-		bool				m_bDebugMode;
+		bool				m_bDebugMode = false;
 		Skin_p				m_pDebugOverlay;
 		int					m_afterglowFrames;
 		std::deque<PatchesSPX>	m_afterglowRects;	// Afterglow rects are placed in this queue.
@@ -217,12 +217,12 @@ namespace wg
 		CanvasLayers_p		m_pCanvasLayers;
 
 		RectSPX				m_geo;
-		bool				m_bHasGeo;
+		bool				m_bHasGeo = false;
 
 		int					m_scale;
 		bool				m_bScaleSet = false;// Set when scale is explicitly specified and not taken from canvas.
 
-		bool				m_bVisible;
+		bool				m_bVisible = true;
 
 		SkinSlot			m_skin;				//TODO: Padding is not respected yet.
 

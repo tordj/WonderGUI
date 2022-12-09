@@ -191,6 +191,8 @@ namespace wg
 		bool			m_bAutoscrollX = false;
 		bool			m_bAutoscrollY = false;
 
+		bool			m_bChildRequestedResize = false;
+		
 //		bool		m_bOverlayScrollbars;
 
 

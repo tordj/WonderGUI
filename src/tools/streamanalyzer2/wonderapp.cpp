@@ -94,6 +94,12 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 									_.size = 16,
 									_.color = Color8::Black));
 
+	m_pBigWhiteStyle = TextStyle::create(WGBP(TextStyle,
+									_.font = pFont,
+									_.size = 20,
+									_.color = HiColor::White));
+
+	
 
 	Base::setDefaultStyle(m_pTextStyle);
 
@@ -532,6 +538,12 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.padding = { 2,2,2,2 }
 	));
 
+	m_pRedOutlinedBlackSkin = BoxSkin::create(WGBP(BoxSkin,
+		_.color = HiColor::Black,
+		_.outline = 2,
+		_.outlineColor = Color8::Red,
+		_.padding = { 3,3,3,3 }
+	));
 
 	return true;
 }
@@ -581,6 +593,7 @@ bool MyApp::loadStream(std::string path)
 	
 	setupScreens();
 	updateGUIAfterReload();
+	m_currentFrame = 100000000;			// To avoid early out in setFrame().
 	setFrame(0);
 	
 	return true;
@@ -711,7 +724,8 @@ void MyApp::setFrame( int frame )
 	// Update slider and frame counter
 	
 	_updateFrameCounterAndSlider();
-		
+	_updateResourcesView();
+
 }
 
 //____ showFrameLog() _________________________________________________________
@@ -816,6 +830,29 @@ void MyApp::_logFullStream()
 
 }
 
+//____ _updateResourcesView() _________________________________________________
+
+void MyApp::_updateResourcesView()
+{
+	m_pResourcePanel->slots.clear();
+	
+	auto surfaces = m_pStreamPlayer->surfaces();
+	
+	int index = 0;
+	for( auto pSurf : surfaces )
+	{
+		if( pSurf != nullptr )
+		{
+			auto pWidget = _buildSurfaceDisplayWithIndexTag( pSurf, index );
+			m_pResourcePanel->slots << pWidget;
+		}
+		index++;
+	}
+	
+	m_pResourcePanel->slots.setPadding( m_pResourcePanel->slots.begin(), m_pResourcePanel->slots.end(), 6 );
+}
+
+
 //____ _standardScrollPanel() _________________________________________________
 
 ScrollPanel_p MyApp::_standardScrollPanel()
@@ -838,4 +875,41 @@ ScrollPanel_p MyApp::_standardScrollPanel()
 	pWidget->setSizeConstraints(SizeConstraint::GreaterOrEqual, SizeConstraint::GreaterOrEqual);
 
 	return pWidget;
+}
+
+
+//____ _buildSurfaceDisplaWithIndexTag() ______________________________________
+
+Widget_p MyApp::_buildSurfaceDisplayWithIndexTag( Surface * pSurf, int index )
+{
+	auto pBase = PackPanel::create();
+	pBase->setAxis(Axis::Y);
+	pBase->setId(index);
+	
+	char	label[256];
+	sprintf( label, "%d: %dx%d %s", index, pSurf->pixelWidth(), pSurf->pixelHeight(), toString(pSurf->pixelFormat()) );
+	
+	auto pLabel = TextDisplay::create( WGBP(TextDisplay,
+						 _.display.style = m_pBigWhiteStyle,
+						 _.display.text = label,
+						_.display.layout = m_pTextLayoutCentered
+				));
+	
+	
+	auto pDisplay = SurfaceDisplay::create( WGBP(SurfaceDisplay,
+												 _.surface = pSurf,
+												 _.skin = m_pRedOutlinedBlackSkin ));
+	
+	auto pCentering = StackPanel::create();
+	pCentering->slots << pDisplay;
+	pCentering->slots[0].setPlacement(Placement::Center);
+	pCentering->slots[0].setSizePolicy(SizePolicy2D::Original);
+
+	
+	pBase->slots << pLabel;
+	pBase->slots << pCentering;
+	
+	pBase->slots.setPadding( 0, 1, {0,0,4,0} );
+	
+	return pBase;
 }

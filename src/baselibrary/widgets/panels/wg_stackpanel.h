@@ -93,7 +93,7 @@ namespace wg
 			SLOT_PADDING_HELPER_METHODS
 
 			Border				m_padding;
-			bool				m_bVisible;
+			bool				m_bVisible = 0;
 
 			Placement			m_placement = Placement::Center;
 			SizePolicy2D		m_sizePolicy = SizePolicy2D::Original;

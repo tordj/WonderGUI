@@ -70,6 +70,8 @@ namespace wg
 		
 		void	reset();
 		
+		const std::vector<Surface_p>& surfaces() const { return m_vSurfaces; }
+		
 	protected:
 		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();

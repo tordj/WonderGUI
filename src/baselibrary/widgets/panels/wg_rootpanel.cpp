@@ -81,12 +81,6 @@ namespace wg
 
 	RootPanel::RootPanel() : slot(this), m_skin(this)
 	{
-		m_bVisible = true;
-		m_bHasGeo = false;
-		m_bScaleSet = false;
-
-		m_bDebugMode = false;
-
 		BoxSkin::Blueprint bp;
 		bp.color = HiColor(4096, 0, 0, 2048);
 		bp.outline = 1;
