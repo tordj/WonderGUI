@@ -483,8 +483,8 @@ namespace wg
 					defaultSize.w = sz.w;
 				if( sz.h > defaultSize.h )
 					defaultSize.h = sz.h;
-				p++;
 			}
+			p++;
 		}
 
 		if( defaultSize != m_defaultSize )

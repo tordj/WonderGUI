@@ -389,26 +389,27 @@ Widget_p MyApp::createNavigationPanel()
 	pMain->setAxis(Axis::Y);
 	pMain->setLayout(m_pLayout);
 	pMain->setSkin(m_pPlateSkin);
-	
-	// Create left section content
 
-	auto pProgressText = TextDisplay::create( WGBP(TextDisplay,
-											_.display = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "1/20" )
-											));
+	// Setup slider and progress counter
+
+	auto pProgressText = TextDisplay::create(WGBP(TextDisplay,
+		_.display = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "1/20")
+	));
 	m_pProgressText = pProgressText;
-	
-	auto pSlider = Slider::create( { .handle = m_pButtonSkin,
-									 .skin = ColorSkin::create( Color::Black )
-	} );
-	
+
+	auto pSlider = Slider::create({ .handle = m_pButtonSkin,
+									 .skin = ColorSkin::create(Color::Black)
+		});
+
 	Base::msgRouter()->addRoute(pSlider, MsgType::ValueUpdate, [this](Msg* pMsg)
-	{
-		auto pMyMsg = static_cast<ValueUpdateMsg*>(pMsg);
-		this->setFrame( int(pMyMsg->fraction() * this->m_frames.size() + 0.5f) );
-	});
-	
+		{
+			auto pMyMsg = static_cast<ValueUpdateMsg*>(pMsg);
+	this->setFrame(int(pMyMsg->fraction() * this->m_frames.size() + 0.5f));
+		});
+
 	m_pProgressSlider = pSlider;
-	
+
+	// Setup play buttons
 
 	auto pPlayButtons = PackPanel::create();
 	pPlayButtons->setAxis(Axis::X);
@@ -451,31 +452,87 @@ Widget_p MyApp::createNavigationPanel()
 
 	pPlayButtons->slots.setWeight(1, 5, 0.f);
 
-	pMain->slots << pProgressText;
-	pMain->slots << pSlider;
-	pMain->slots << pPlayButtons;
-
 	Base::msgRouter()->addRoute(pLongLeftButton, MsgType::Select, [this](Msg* pMsg)
 		{
-			this->setFrame(this->m_currentFrame-5);
+			this->setFrame(this->m_currentFrame - 5);
 		});
 
 	Base::msgRouter()->addRoute(pLeftButton, MsgType::Select, [this](Msg* pMsg)
 		{
-			this->setFrame(this->m_currentFrame-1);
+			this->setFrame(this->m_currentFrame - 1);
 		});
 
 	Base::msgRouter()->addRoute(pRightButton, MsgType::Select, [this](Msg* pMsg)
 		{
-			this->setFrame(this->m_currentFrame+1);
+			this->setFrame(this->m_currentFrame + 1);
 		});
 
 	Base::msgRouter()->addRoute(pLongRightButton, MsgType::Select, [this](Msg* pMsg)
 		{
-			this->setFrame(this->m_currentFrame+5);
+			this->setFrame(this->m_currentFrame + 5);
+		});
+
+	// Setup skip buttons
+
+	static const char * skipButtonLabels[5] = { " +2 ", " +4 ", " +6 ", " +8 ", " +10 " };
+	static int skipButtonAdvances[5] = { 2, 4, 6, 8, 10 };
+
+
+	auto pSkipButtons = PackPanel::create();
+	pSkipButtons->setAxis(Axis::X);
+	pSkipButtons->setLayout(m_pLayout);
+	pSkipButtons->slots << Filler::create();
+
+	for (int i = 0; i < 5; i++)
+	{
+		auto pButton = Button::create(WGBP(Button,
+			_.skin = m_pButtonSkin,
+			_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = skipButtonLabels[i] )
+		));
+
+		pSkipButtons->slots << pButton;
+
+		int skip = skipButtonAdvances[i];
+		Base::msgRouter()->addRoute(pButton, MsgType::Select, [this,skip](Msg* pMsg)
+			{
+				this->skipFrames( skip );
+			});
+
+	}
+
+	pSkipButtons->slots << Filler::create();
+	pSkipButtons->slots.setWeight(1, 5, 0.f);
+
+
+
+	// Setup extra controls
+
+	auto pExtraControls = PackPanel::create();
+	pExtraControls->setAxis(Axis::X);
+	pExtraControls->setLayout(m_pLayout);
+
+	auto pRectToggle = ToggleButton::create(WGBP(ToggleButton,
+		_.label = WGBP(Text, _.style = m_pTextStyle, _.text = "Show debug rectangles"),
+		_.icon = WGBP(Icon, _.skin = m_pToggleButtonSkin, _.padding = { 0,8,0,0 })
+	));
+
+	Base::msgRouter()->addRoute(pRectToggle, MsgType::Toggle, [this](Msg* pMsg)
+		{
+			this->toggleDebugRects(static_cast<ToggleMsg*>(pMsg)->isSet());
 		});
 
 
+	m_pDebugRectsToggle = pRectToggle;
+
+	pExtraControls->slots << pRectToggle;
+
+	// Put it all together
+
+	pMain->slots << pProgressText;
+	pMain->slots << pSlider;
+	pMain->slots << pPlayButtons;
+	pMain->slots << pSkipButtons;
+	pMain->slots << pExtraControls;
 
 	pMain->slots << Filler::create();
 
@@ -581,13 +638,11 @@ bool MyApp::loadStream(std::string path)
 
 	// Setup streamwrapper and pump
 
-	m_pStreamWrapper = GfxStreamWrapper::create(pStream->begin(), pStream->end());
-	
 	auto pContext = Base::activeContext();
 	
 	m_pStreamPlayer	= GfxStreamPlayer::create( pContext->gfxDevice(), pContext->surfaceFactory() );
 	
-	m_pStreamPump = GfxStreamPump::create( GfxStreamSource_p(m_pStreamWrapper.rawPtr(), m_pStreamWrapper->output), GfxStreamSink_p(m_pStreamPlayer.rawPtr(),m_pStreamPlayer->input) );
+	m_pStreamPump = GfxStreamPump::create( GfxStreamSource_p(), GfxStreamSink_p(m_pStreamPlayer.rawPtr(),m_pStreamPlayer->input) );
 	
 	//
 	
@@ -629,6 +684,12 @@ void MyApp::updateGUIAfterReload()
 	m_pScreenLineup->slots.clear();
 	m_pDisplayToggles->slots.clear();
 
+	m_debugOverlays.clear();
+	m_overlayDisplays.clear();
+
+
+	auto pSurfFactory = Base::activeContext()->surfaceFactory();
+
 
 	int toggleNb = 0;
 
@@ -647,8 +708,21 @@ void MyApp::updateGUIAfterReload()
 
 		auto pDisplay = SurfaceDisplay::create({ .surface = pScreen });
 
+
+		auto pOverlaySurface = pSurfFactory->createSurface(pScreen->pixelSize());
+		auto pOverlayDisplay = SurfaceDisplay::create({ .surface = pOverlaySurface });
+
+		m_debugOverlays.push_back(pOverlaySurface);
+		m_overlayDisplays.push_back(pOverlayDisplay);
+
+		auto pDisplayStack = StackPanel::create();
+		pDisplayStack->slots << pDisplay;
+		pDisplayStack->slots << pOverlayDisplay;
+
+		pDisplayStack->slots[1].setVisible(false);
+
 		pPanel->slots[0] = pLabel;
-		pPanel->slots[1] = pDisplay;
+		pPanel->slots[1] = pDisplayStack;
 
 		m_pScreenLineup->slots << pPanel;
 
@@ -703,12 +777,12 @@ void MyApp::setFrame( int frame )
 	
 	// Update the diplays and log
 	
-/*	if( frame > m_currentFrame )
+	if( frame > m_currentFrame )
 	{
 		_playFrames( m_currentFrame+1, frame+1 );
 	}
 	else
-*/	{
+	{
 		_resetStream();
 		_playFrames( 0, frame+1 );
 	}
@@ -727,6 +801,17 @@ void MyApp::setFrame( int frame )
 	_updateResourcesView();
 
 }
+
+//____ skipFrames() ___________________________________________________________
+
+void MyApp::skipFrames(int frames)
+{
+	if (m_frames.size() == 0)
+		return;
+
+
+}
+
 
 //____ showFrameLog() _________________________________________________________
 
@@ -756,13 +841,29 @@ void MyApp::showErrors()
 	m_pLogCapsule->slot = m_pErrorsContainer;
 }
 
+//____ toggleDebugRects() _____________________________________________________
 
+void MyApp::toggleDebugRects(bool bShow)
+{
+	m_bShowDebugRects = bShow;
+
+	// Flip visible flag on overlays
+
+	for (auto pDisplay : m_overlayDisplays)
+	{
+
+	}
+
+	//
+
+	if (m_bShowDebugRects)
+		_updateDebugOverlays();
+}
 
 //____ _resetStream() _________________________________________________________
 
 void MyApp::_resetStream()
 {
-	m_pStreamWrapper->restart();
 	m_pStreamPlayer->reset();
 }
 
@@ -850,6 +951,16 @@ void MyApp::_updateResourcesView()
 	}
 	
 	m_pResourcePanel->slots.setPadding( m_pResourcePanel->slots.begin(), m_pResourcePanel->slots.end(), 6 );
+}
+
+//____ _updateDebugOverlays() _________________________________________________
+
+void MyApp::_updateDebugOverlays()
+{
+
+
+
+
 }
 
 

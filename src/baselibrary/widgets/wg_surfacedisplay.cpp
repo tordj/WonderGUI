@@ -65,6 +65,8 @@ namespace wg
 
 	SurfaceDisplay::~SurfaceDisplay()
 	{
+		if (m_pSurface)
+			m_pSurface->removeObserver(m_surfaceObserverId);
 	}
 
 	//____ typeInfo() _________________________________________________________

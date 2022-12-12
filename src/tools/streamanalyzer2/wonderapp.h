@@ -34,11 +34,14 @@ public:
 	void		updateGUIAfterReload();
 
 	void		setFrame( int frame );
-	
+	void		skipFrames(int frames);
+
 	void		showFrameLog();
 	void		showFullLog();
 	void		showResources();
 	void		showErrors();
+
+	void		toggleDebugRects(bool bShow);
 	
 private:
 
@@ -48,6 +51,7 @@ private:
 	void		_updateFrameCounterAndSlider();
 	void		_logFullStream();
 	void		_updateResourcesView();
+	void		_updateDebugOverlays();
 
 	bool		_setupGUI(Visitor* pVisitor);
 	bool		_loadSkins(Visitor* pVisitor);
@@ -59,16 +63,19 @@ private:
 	Window_p			m_pWindow;
 
 	Blob_p				m_pStreamBlob;
-	GfxStreamWrapper_p	m_pStreamWrapper;
 	GfxStreamPlayer_p	m_pStreamPlayer;
 	GfxStreamLogger_p	m_pStreamLogger;
 	GfxStreamPump_p		m_pStreamPump;
+	GfxDevice_p			m_pStreamGfxDevice;			// Needs its own GfxDevice.
 
 	
 	vector<GfxStream::iterator>	m_frames;
-	vector<Surface_p>	m_screens;
+	vector<Surface_p>			m_screens;
+	vector<Surface_p>			m_debugOverlays;
+	vector<SurfaceDisplay_p>	m_overlayDisplays;
 
 	int					m_currentFrame = 0;			// First frame is 0.
+	bool				m_bShowDebugRects = false;
 
 	PackPanel_p			m_pDisplayToggles;
 	PackPanel_p			m_pScreenLineup;
@@ -89,11 +96,8 @@ private:
 	TextDisplay_p		m_pProgressText;
 	Slider_p			m_pProgressSlider;
 
+	ToggleButton_p		m_pDebugRectsToggle;
 
-	
-
-	Button_p			m_pPrevButton;
-	Button_p			m_pNextButton;
 	
 	int				m_imageIdx;
 

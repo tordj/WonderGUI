@@ -325,6 +325,8 @@ namespace wg
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginRender, 0, 0 };
 
+        setBlitSource(nullptr);                 // We don't optimize blit source between frames.
+
 		m_bRendering = true;
 		return true;
 	}
