@@ -81,7 +81,8 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 	auto pFontBlob = pVisitor->loadBlob("resources/DroidSans.ttf");
 	auto pFont = FreeTypeFont::create(pFontBlob);
-
+	m_pFont = pFont;
+	
 	m_pTextStyle = TextStyle::create(WGBP(TextStyle,
 									_.font = pFont,
 									_.size = 14,
@@ -130,7 +131,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	auto pSplitPanel = SplitPanel::create();
 	pSplitPanel->setAxis(Axis::Y);
 	pSplitPanel->setResizeRatio(1.f);
-	pSplitPanel->setSplitFactor(0.5f);			//TODO: SplitPanel::setSplitFactor() does not work! Replace with some other function?
+//	pSplitPanel->setSplit(0.5f);
 	pSplitPanel->setHandleSkin(m_pButtonSkin);
 	
 	pSplitPanel->slots[0] = createDisplayPanel();
@@ -144,6 +145,8 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	
 	pRoot->slot = pPopupOverlay;
 
+	pSplitPanel->setSplit(0.5f);
+	
 	return true;
 }
 
@@ -215,15 +218,22 @@ Widget_p MyApp::createDisplayPanel()
 
 Widget_p MyApp::createLowerPanel()
 {
-	auto pBase = SplitPanel::create();
+	auto pBase = TwoSlotPanel::create();
 	pBase->setAxis(Axis::X);
-	pBase->setResizeRatio(1.f);
-	pBase->setSplitFactor(0.5f);			//TODO: SplitPanel::setSplitFactor() does not work! Replace with some other function?
-	pBase->setHandleSkin(m_pButtonSkin);
 
+	auto pLayout = PackLayout::create( { .expandFactor = PackLayout::Factor::Weight } );
+	
+	pBase->setLayout(pLayout);
+	
+//	pBase->slots << createNavigationPanel();
+//	pBase->slots << createLogPanel();
+
+	
 	pBase->slots[0] = createNavigationPanel();
 	pBase->slots[1] = createLogPanel();
 
+	pBase->slots[0].setWeight(0.f);
+	
 	return pBase;
 }
 
@@ -251,6 +261,17 @@ Widget_p MyApp::createLogPanel()
 											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "File data" )
 											));
 
+	auto pOptimizerInLogButton = ToggleButton::create( WGBP(ToggleButton,
+											_.skin = m_pToggleButtonSkin,
+											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Optimizer input" )
+											));
+
+	auto pOptimizerOutLogButton = ToggleButton::create( WGBP(ToggleButton,
+											_.skin = m_pToggleButtonSkin,
+											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Optimizer output" )
+											));
+
+	
 	auto pResourcesButton = ToggleButton::create( WGBP(ToggleButton,
 											_.skin = m_pToggleButtonSkin,
 											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Resources" )
@@ -265,6 +286,8 @@ Widget_p MyApp::createLogPanel()
 	auto pToggleGroup = ToggleGroup::create();
 	pToggleGroup->add(pFrameLogButton);
 	pToggleGroup->add(pFullLogButton);
+	pToggleGroup->add(pOptimizerInLogButton);
+	pToggleGroup->add(pOptimizerOutLogButton);
 	pToggleGroup->add(pResourcesButton);
 	pToggleGroup->add(pErrorLogButton);
 
@@ -284,6 +307,22 @@ Widget_p MyApp::createLogPanel()
 			this->showFullLog();
 		});
 
+	Base::msgRouter()->addRoute(pOptimizerInLogButton, MsgType::Toggle, [this](Msg* pMsg)
+		{
+		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
+	
+		if( pToggleMsg->isSet() )
+			this->showOptimizerInLog();
+		});
+	
+	Base::msgRouter()->addRoute(pOptimizerOutLogButton, MsgType::Toggle, [this](Msg* pMsg)
+		{
+		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
+	
+		if( pToggleMsg->isSet() )
+			this->showOptimizerOutLog();
+		});
+	
 	Base::msgRouter()->addRoute(pResourcesButton, MsgType::Toggle, [this](Msg* pMsg)
 		{
 		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
@@ -303,9 +342,10 @@ Widget_p MyApp::createLogPanel()
 	
 	pLogButtonRow->slots << pFrameLogButton;
 	pLogButtonRow->slots << pFullLogButton;
+	pLogButtonRow->slots << pOptimizerInLogButton;
+	pLogButtonRow->slots << pOptimizerOutLogButton;
 	pLogButtonRow->slots << pResourcesButton;
 	pLogButtonRow->slots << pErrorLogButton;
-
 	
 	TextEditor::Blueprint displayBP;
 	displayBP.skin = ColorSkin::create(Color8::LightYellow);
@@ -333,6 +373,28 @@ Widget_p MyApp::createLogPanel()
 
 	m_pFullLogContainer = pFullLogWindow;
 
+	// Create optimizer in log hierarchy
+	
+	auto pOptimizerInLogWindow = _standardScrollPanel();
+
+	auto pOptimizerInLogText = TextEditor::create( displayBP );
+	pOptimizerInLogWindow->slot = pOptimizerInLogText;
+
+	m_pOptimizerInLogDisplay = pOptimizerInLogText;
+
+	m_pOptimizerInLogContainer = pOptimizerInLogWindow;
+	
+	// Create optimizer out log hierarchy
+	
+	auto pOptimizerOutLogWindow = _standardScrollPanel();
+
+	auto pOptimizerOutLogText = TextEditor::create( displayBP );
+	pOptimizerOutLogWindow->slot = pOptimizerOutLogText;
+
+	m_pOptimizerOutLogDisplay = pOptimizerOutLogText;
+
+	m_pOptimizerOutLogContainer = pOptimizerOutLogWindow;
+	
 	// Create error log
 	
 	auto pErrorsWindow = _standardScrollPanel();
@@ -392,8 +454,14 @@ Widget_p MyApp::createNavigationPanel()
 
 	// Setup slider and progress counter
 
+	auto pProgressStyle = TextStyle::create(WGBP(TextStyle,
+									_.font = m_pFont,
+									_.size = 48,
+									_.color = HiColor::Black));
+
+	
 	auto pProgressText = TextDisplay::create(WGBP(TextDisplay,
-		_.display = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "1/20")
+		_.display = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = pProgressStyle, _.text = "-/-")
 	));
 	m_pProgressText = pProgressText;
 
@@ -641,6 +709,8 @@ bool MyApp::loadStream(std::string path)
 	auto pContext = Base::activeContext();
 	
 	m_pStreamPlayer	= GfxStreamPlayer::create( pContext->gfxDevice(), pContext->surfaceFactory() );
+	m_pStreamPlayer->setStoreDirtyRects(true);
+	m_pStreamPlayer->setMaxDirtyRects(10000);
 	
 	m_pStreamPump = GfxStreamPump::create( GfxStreamSource_p(), GfxStreamSink_p(m_pStreamPlayer.rawPtr(),m_pStreamPlayer->input) );
 	
@@ -716,10 +786,12 @@ void MyApp::updateGUIAfterReload()
 		m_overlayDisplays.push_back(pOverlayDisplay);
 
 		auto pDisplayStack = StackPanel::create();
-		pDisplayStack->slots << pDisplay;
+		m_screenStacks.push_back(pDisplayStack);
+		
 		pDisplayStack->slots << pOverlayDisplay;
+		pDisplayStack->slots << pDisplay;
 
-		pDisplayStack->slots[1].setVisible(false);
+		pDisplayStack->slots[0].setVisible(false);
 
 		pPanel->slots[0] = pLabel;
 		pPanel->slots[1] = pDisplayStack;
@@ -779,17 +851,19 @@ void MyApp::setFrame( int frame )
 	
 	if( frame > m_currentFrame )
 	{
-		_playFrames( m_currentFrame+1, frame+1 );
+		_playFrames( m_currentFrame+1, frame, false );
+		_playFrames( frame, frame+1, false );
 	}
 	else
 	{
 		_resetStream();
-		_playFrames( 0, frame+1 );
+		_playFrames( 0, frame, true );
+		_playFrames( frame, frame+1, false );
 	}
 
 	// Update the log
 	
-	_logFrames( frame, frame+1);
+	_logFrames( frame, frame+1, false, m_pFrameLogDisplay );
 
 	//
 
@@ -800,6 +874,8 @@ void MyApp::setFrame( int frame )
 	_updateFrameCounterAndSlider();
 	_updateResourcesView();
 
+	if (m_bShowDebugRects)
+		_updateDebugOverlays();
 }
 
 //____ skipFrames() ___________________________________________________________
@@ -809,6 +885,31 @@ void MyApp::skipFrames(int frames)
 	if (m_frames.size() == 0)
 		return;
 
+	int destFrame = m_currentFrame + frames;
+	
+	if( destFrame >= m_frames.size() )
+		destFrame = m_frames.size() -1;
+
+	_playFrames( m_currentFrame+1, destFrame+1, true );
+
+	// Update the logs
+
+	_logFrames( m_currentFrame, m_currentFrame+1, false, m_pFrameLogDisplay );
+
+	_logFrames( m_currentFrame+1, destFrame+1, false, m_pOptimizerInLogDisplay);
+	_logFrames( m_currentFrame+1, destFrame+1, true, m_pOptimizerOutLogDisplay);
+
+	//
+
+	m_currentFrame = destFrame;
+	
+	// Update slider and frame counter
+	
+	_updateFrameCounterAndSlider();
+	_updateResourcesView();
+
+	if (m_bShowDebugRects)
+		_updateDebugOverlays();
 
 }
 
@@ -826,6 +927,22 @@ void MyApp::showFullLog()
 {
 	m_pLogCapsule->slot = m_pFullLogContainer;
 }
+
+//____ showOptimizerInLog() ___________________________________________________
+
+void MyApp::showOptimizerInLog()
+{
+	m_pLogCapsule->slot = m_pOptimizerInLogContainer;
+
+}
+
+//____ showOptimizerOutLog() ___________________________________________________
+
+void MyApp::showOptimizerOutLog()
+{
+	m_pLogCapsule->slot = m_pOptimizerOutLogContainer;
+}
+
 
 //____ showResources() ________________________________________________________
 
@@ -849,9 +966,9 @@ void MyApp::toggleDebugRects(bool bShow)
 
 	// Flip visible flag on overlays
 
-	for (auto pDisplay : m_overlayDisplays)
+	for (auto pScreenStack : m_screenStacks)
 	{
-
+		pScreenStack->slots[0].setVisible(bShow);
 	}
 
 	//
@@ -869,7 +986,7 @@ void MyApp::_resetStream()
 
 //____ _playFrames() __________________________________________________________
 
-void MyApp::_playFrames( int begin, int end )
+void MyApp::_playFrames( int begin, int end, bool bOptimize )
 {
 	uint8_t * pBegin = begin == 0 ? (uint8_t*) m_pStreamBlob->begin() : (uint8_t*) m_frames[begin];
 	uint8_t * pEnd = end == m_frames.size() ? (uint8_t*) m_pStreamBlob->end() : (uint8_t*) m_frames[end];
@@ -877,12 +994,18 @@ void MyApp::_playFrames( int begin, int end )
 	auto pWrapper = GfxStreamWrapper::create( pBegin, pEnd );
 	
 	m_pStreamPump->setInput({pWrapper, pWrapper->output});
-	m_pStreamPump->pumpAll();
+
+	m_pStreamPlayer->clearDirtyRects();
+
+	if( bOptimize )
+		m_pStreamPump->pumpAllFramesOptimizeClipping();
+	else
+		m_pStreamPump->pumpAll();
 }
 
 //____ _logFrames() ___________________________________________________________
 
-void MyApp::_logFrames( int begin, int end )
+void MyApp::_logFrames( int begin, int end, bool bOptimize, TextEditor * pDisplay )
 {
 	uint8_t * pBegin = begin == 0 ? (uint8_t*) m_pStreamBlob->begin() : (uint8_t*) m_frames[begin];
 	uint8_t * pEnd = end == m_frames.size() ? (uint8_t*) m_pStreamBlob->end() : (uint8_t*) m_frames[end];
@@ -894,9 +1017,14 @@ void MyApp::_logFrames( int begin, int end )
 	pLogger->setDisplayOffset(false);
 	
 	auto pPump = GfxStreamPump::create( {pWrapper, pWrapper->output}, {pLogger, pLogger->input} );
-	pPump->pumpAll();
 
-	m_pFrameLogDisplay->editor.setText( logStream.str() );
+	
+	if( bOptimize )
+		pPump->pumpAllFramesOptimizeClipping();
+	else
+		pPump->pumpAll();
+
+	pDisplay->editor.setText( logStream.str() );
 }
 
 //____ _updateFrameCounterAndSlider() _________________________________________
@@ -957,10 +1085,42 @@ void MyApp::_updateResourcesView()
 
 void MyApp::_updateDebugOverlays()
 {
+	auto pDevice = Base::activeContext()->gfxDevice();
+	
+	auto pOverlaySkin = BoxSkin::create( Border(1), HiColor(4096,0,0,1024), HiColor(4096,0,0,4096));
+	
+	pDevice->beginRender();
+	
+	for( int i = 0 ; i < m_debugOverlays.size() ; i++ )
+	{
+		CanvasRef canvas = (CanvasRef) (i+1);
+		auto pOverlay = m_debugOverlays[i];
+		auto [nRects, pRects] = m_pStreamPlayer->dirtyRects(canvas);
+		if( nRects == 0 )
+		{
+			pDevice->beginCanvasUpdate(m_debugOverlays[i]);
+			pDevice->setBlendMode(BlendMode::Replace);
+			pDevice->fill(Color::Transparent);
+			pDevice->setBlendMode(BlendMode::Blend);
+			pDevice->endCanvasUpdate();
+		}
+		else
+		{
+			pDevice->beginCanvasUpdate(m_debugOverlays[i]);
+			pDevice->setBlendMode(BlendMode::Replace);
+			pDevice->fill(Color::Transparent);
+			pDevice->setBlendMode(BlendMode::Blend);
+			for( int x = 0 ; x < nRects ; x++ )
+			{
+				pOverlaySkin->_render(pDevice, pRects[x], 64, State::Normal);
+			}
+			pDevice->endCanvasUpdate();
 
+			
+		}
 
-
-
+		pDevice->endRender();
+	}
 }
 
 

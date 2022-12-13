@@ -38,6 +38,10 @@ public:
 
 	void		showFrameLog();
 	void		showFullLog();
+
+	void		showOptimizerInLog();
+	void		showOptimizerOutLog();
+
 	void		showResources();
 	void		showErrors();
 
@@ -46,8 +50,8 @@ public:
 private:
 
 	void		_resetStream();							// Clear displays, delete surfaces.
-	void		_playFrames( int begin, int end );
-	void		_logFrames( int begin, int end );
+	void		_playFrames( int begin, int end, bool bOptimize );
+	void		_logFrames( int begin, int end, bool bOptimize, TextEditor * pDisplay );
 	void		_updateFrameCounterAndSlider();
 	void		_logFullStream();
 	void		_updateResourcesView();
@@ -66,13 +70,13 @@ private:
 	GfxStreamPlayer_p	m_pStreamPlayer;
 	GfxStreamLogger_p	m_pStreamLogger;
 	GfxStreamPump_p		m_pStreamPump;
-	GfxDevice_p			m_pStreamGfxDevice;			// Needs its own GfxDevice.
 
 	
 	vector<GfxStream::iterator>	m_frames;
 	vector<Surface_p>			m_screens;
 	vector<Surface_p>			m_debugOverlays;
 	vector<SurfaceDisplay_p>	m_overlayDisplays;
+	vector<StackPanel_p>		m_screenStacks;
 
 	int					m_currentFrame = 0;			// First frame is 0.
 	bool				m_bShowDebugRects = false;
@@ -86,6 +90,13 @@ private:
 
 	Widget_p			m_pFullLogContainer;
 	TextEditor_p		m_pFullLogDisplay;
+
+	Widget_p			m_pOptimizerInLogContainer;
+	TextEditor_p		m_pOptimizerInLogDisplay;
+
+	Widget_p			m_pOptimizerOutLogContainer;
+	TextEditor_p		m_pOptimizerOutLogDisplay;
+
 	
 	Widget_p			m_pResourceContainer;
 	PackPanel_p			m_pResourcePanel;
@@ -110,6 +121,7 @@ private:
 
 	PackLayout_p	m_pLayout;
 	
+	Font_p			m_pFont;
 	TextStyle_p		m_pTextStyle;
 	TextStyle_p		m_pLabelStyle;
 	TextStyle_p		m_pBigWhiteStyle;
