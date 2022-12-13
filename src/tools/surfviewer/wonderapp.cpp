@@ -126,7 +126,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	auto pSplitPanel = SplitPanel::create();
 	pSplitPanel->setAxis(Axis::X);
 	pSplitPanel->setResizeRatio(1.f);
-	pSplitPanel->setSplitFactor(0.5f);			//TODO: SplitPanel::setSplitFactor() does not work! Replace with some other function?
+	pSplitPanel->setSplit(0.5f);			//TODO: SplitPanel::setSplitFactor() does not work! Replace with some other function?
 	pSplitPanel->setHandleSkin(m_pButtonSkin);
 	
 	pSplitPanel->slots[0] = createImagePanel();

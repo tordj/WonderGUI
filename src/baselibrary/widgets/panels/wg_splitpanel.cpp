@@ -175,11 +175,7 @@ namespace wg
 				slots[1]._setSize(secondChildGeo);
 
 			m_handleGeo = handleGeo;
-
-			return true;
 		}
-
-		return false;
 	}
 
 	//____ split() _______________________________________________________________
