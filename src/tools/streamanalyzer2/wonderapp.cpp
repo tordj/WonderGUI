@@ -890,6 +890,9 @@ void MyApp::skipFrames(int frames)
 	if( destFrame >= m_frames.size() )
 		destFrame = m_frames.size() -1;
 
+	if( destFrame == m_currentFrame )
+		return;
+	
 	_playFrames( m_currentFrame+1, destFrame+1, true );
 
 	// Update the logs

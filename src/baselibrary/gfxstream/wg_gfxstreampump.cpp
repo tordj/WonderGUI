@@ -463,26 +463,49 @@ namespace wg
 					}
 
 
-
-					pActiveUpdateRects = clipRects.data() + pFrameData->ofsClipRects;
 					nActiveUpdateRects = pFrameData->nClipRects;
 
-					// Create our own BeginCanvasUpdate
+					if( nActiveUpdateRects == 0 )
+					{
+						// No updates for this canvas, just skip it
+						
+						int nCanvasUpdate = 1;
+						p += GfxStream::chunkSize(p);
+						
+						while( nCanvasUpdate > 0 )
+						{
+							GfxChunkId type = GfxStream::chunkType(p);
+							if( type == GfxChunkId::BeginCanvasUpdate )
+								nCanvasUpdate++;
+							else if( type == GfxChunkId::EndCanvasUpdate )
+								nCanvasUpdate--;
+							
+							p += GfxStream::chunkSize(p);
+						}
+					}
+					else
+					{
+						pActiveUpdateRects = clipRects.data() + pFrameData->ofsClipRects;
 
-					int dataSize = nActiveUpdateRects * sizeof(RectSPX) + 4;
+						
+						
+						// Create our own BeginCanvasUpdate
 
-					tempChunk[0] = (uint8_t) GfxChunkId::BeginCanvasUpdate;
-					tempChunk[1] = 31;		// Force long header.
-					*(uint16_t*)(tempChunk + 2) = dataSize;
-					*(uint16_t*)(tempChunk + 4) = surfaceId;
-					tempChunk[6] = (uint8_t) canvasRef;
-					tempChunk[7] = nActiveUpdateRects;
+						int dataSize = nActiveUpdateRects * sizeof(RectSPX) + 4;
 
-					std::memcpy(tempChunk + 8, pActiveUpdateRects, nActiveUpdateRects * sizeof(RectSPX));
-					
-					// Process our created chunk
+						tempChunk[0] = (uint8_t) GfxChunkId::BeginCanvasUpdate;
+						tempChunk[1] = 31;		// Force long header.
+						*(uint16_t*)(tempChunk + 2) = dataSize;
+						*(uint16_t*)(tempChunk + 4) = surfaceId;
+						tempChunk[6] = (uint8_t) canvasRef;
+						tempChunk[7] = nActiveUpdateRects;
 
-					m_pOutput->processChunks(tempChunk, tempChunk + 4 + dataSize);	
+						std::memcpy(tempChunk + 8, pActiveUpdateRects, nActiveUpdateRects * sizeof(RectSPX));
+						
+						// Process our created chunk
+
+						m_pOutput->processChunks(tempChunk, tempChunk + 4 + dataSize);
+					}
 
 				}
 				else // PushClipList or SetClipList
