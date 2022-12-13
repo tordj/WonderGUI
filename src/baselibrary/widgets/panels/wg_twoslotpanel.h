@@ -110,7 +110,7 @@ namespace wg
 
 		void		_updateDefaultSize();
 		SizeSPX		_calcDefaultSize(int scale) const;
-		bool		_updateGeo();
+		bool		_updateGeo( bool bForce );
 
 		// Overloaded from Widget
 

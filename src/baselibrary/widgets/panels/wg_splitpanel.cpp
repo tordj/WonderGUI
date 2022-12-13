@@ -39,7 +39,6 @@ namespace wg
 	{
 		m_bHorizontal = false;
 		m_handleThickness = 0;
-		m_splitFactor = 0.5f;
 		m_resizeRatio = 0.5f;
 
 		m_bSiblingsOverlap = false;
@@ -110,19 +109,93 @@ namespace wg
 
 	//____ setResizeFunction() ___________________________________________________
 
-	void SplitPanel::setResizeFunction(std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, float fraction, pts handleMovement)> func)
+	void SplitPanel::setResizeFunction(std::function<pts(Widget * pFirst, Widget * pSecond, pts totalLength, pts handleMovement)> func)
 	{
 		m_resizeFunc = func;
 		_updateGeo();
 	}
 
-	//____ setSplitFactor() _________________________________________________
+	//____ setSplit() _________________________________________________
 
-	void SplitPanel::setSplitFactor(float factor)
+	void SplitPanel::setSplit(float factor)
 	{
 		limit(factor, 0.f, 1.f);
-		m_splitFactor = factor;
-		_updateGeo();
+
+		RectSPX geo = m_size;
+		RectSPX contentGeo = m_skin.contentRect(geo, m_scale, m_state);
+
+		RectSPX firstChildGeo;
+		RectSPX secondChildGeo;
+		RectSPX handleGeo;
+
+		// Calculate new lengths using broker
+
+		spx handleThickness = _handleThickness(m_scale);
+
+		spx totalLength = (m_bHorizontal ? contentGeo.w : contentGeo.h) - handleThickness;
+		spx firstChildLength;
+		spx secondChildLength;
+
+		firstChildLength = align(factor * totalLength);
+		
+		firstChildLength = _limitFirstSlotLength(firstChildLength, totalLength);
+		secondChildLength = totalLength - firstChildLength;
+
+		
+		
+		
+		// Update geo rectangles
+
+		if( m_bHorizontal )
+		{
+			firstChildGeo = RectSPX(contentGeo.x, contentGeo.y, firstChildLength, contentGeo.h);
+			secondChildGeo = RectSPX(contentGeo.x + contentGeo.w - secondChildLength, contentGeo.y, secondChildLength, contentGeo.h);
+			handleGeo = RectSPX(contentGeo.x + firstChildLength, contentGeo.y, handleThickness, contentGeo.h );
+		}
+		else
+		{
+			firstChildGeo = RectSPX(contentGeo.x, contentGeo.y, contentGeo.w, firstChildLength);
+			secondChildGeo = RectSPX(contentGeo.x, contentGeo.y + contentGeo.h - secondChildLength, contentGeo.w, secondChildLength);
+			handleGeo = RectSPX(contentGeo.x, contentGeo.y + firstChildLength, contentGeo.w, handleThickness);
+		}
+
+		// Request render and set sizes
+
+
+		if (handleGeo != m_handleGeo || firstChildGeo != slots[0].m_geo || secondChildGeo != slots[1].m_geo)
+		{
+			_requestRender(contentGeo);
+
+			slots[0].m_geo = firstChildGeo;
+			if( slots[0]._widget() )
+				slots[0]._setSize(firstChildGeo);
+
+			slots[1].m_geo = secondChildGeo;
+			if (slots[1]._widget())
+				slots[1]._setSize(secondChildGeo);
+
+			m_handleGeo = handleGeo;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	//____ split() _______________________________________________________________
+
+	float SplitPanel::split() const
+	{
+		RectSPX geo = m_size;
+		RectSPX contentGeo = m_skin.contentRect(geo, m_scale, m_state);
+
+		spx handleThickness = _handleThickness(m_scale);
+		spx totalLength = (m_bHorizontal ? contentGeo.w : contentGeo.h) - handleThickness;
+
+		if( m_bHorizontal )
+			return (m_handleGeo.x - contentGeo.x) / float(totalLength);
+		else
+			return (m_handleGeo.y - contentGeo.y) / float(totalLength);
 	}
 
 	//____ _defaultSize() _______________________________________________________
@@ -229,20 +302,15 @@ namespace wg
 
 		if (m_resizeFunc)
 		{
-			pts len = m_resizeFunc(slots[0]._widget(), slots[1]._widget(), spxToPts(totalLength,m_scale), m_splitFactor, spxToPts(handleMovement,m_scale));
+			pts len = m_resizeFunc(slots[0]._widget(), slots[1]._widget(), spxToPts(totalLength,m_scale), spxToPts(handleMovement,m_scale));
 			length = ptsToSpx(len, m_scale);
 		}
 		else
-			length = _defaultResizeFunc(slots[0]._widget(), slots[1]._widget(), totalLength, m_splitFactor, handleMovement);
+			length = _defaultResizeFunc(slots[0]._widget(), slots[1]._widget(), totalLength, handleMovement);
 
 		firstChildLength = align(length);
 
 		secondChildLength = totalLength - firstChildLength;
-
-		// Update lengthFraction if we had handle movement
-
-		if (handleMovement != 0 )
-			m_splitFactor = (firstChildLength+32) / (float) totalLength;
 
 		// Update geo rectangles
 
@@ -284,7 +352,7 @@ namespace wg
 
 	//____ _defaultResizeFunc() ___________________________________________________
 
-	spx SplitPanel::_defaultResizeFunc(Widget * pFirst, Widget * pSecond, spx totalLength, float splitFactor, spx handleMovement)
+	spx SplitPanel::_defaultResizeFunc(Widget * pFirst, Widget * pSecond, spx totalLength, spx handleMovement)
 	{
 		spx firstLength;
 
@@ -304,6 +372,14 @@ namespace wg
 		else
 			firstLength = (m_bHorizontal ? slots[0].m_geo.w : slots[0].m_geo.h) + handleMovement;
 
+		return _limitFirstSlotLength(firstLength, totalLength);
+	}
+
+
+	//____ _limitFirsSlotLength() ________________________________________________
+
+	spx SplitPanel::_limitFirstSlotLength( spx firstLength, spx totalLength )
+	{
 		spx minLengthFirst = 0;
 		spx minLengthSecond = 0;
 		spx maxLengthFirst = spx_max;
@@ -311,13 +387,13 @@ namespace wg
 
 		if( m_bHorizontal )
 		{
-			if (pFirst)
+			if (slots[0]._widget())
 			{
 				minLengthFirst = slots[0]._widget()->minSize().w;
 				maxLengthFirst = slots[0]._widget()->maxSize().w;
 			}
 
-			if (pSecond)
+			if (slots[1]._widget())
 			{
 				minLengthSecond = slots[1]._widget()->minSize().w;
 				maxLengthSecond = slots[1]._widget()->maxSize().w;
@@ -325,13 +401,13 @@ namespace wg
 		}
 		else
 		{
-			if (pFirst)
+			if (slots[0]._widget())
 			{
 				minLengthFirst = slots[0]._widget()->minSize().h;
 				maxLengthFirst = slots[0]._widget()->maxSize().h;
 			}
 
-			if (pSecond)
+			if (slots[1]._widget())
 			{
 				minLengthSecond = slots[1]._widget()->minSize().h;
 				maxLengthSecond = slots[1]._widget()->maxSize().h;

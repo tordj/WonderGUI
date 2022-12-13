@@ -169,7 +169,7 @@ namespace wg
 
 	//____ _updateGeo() __________________________________________________________
 
-	bool TwoSlotPanel::_updateGeo()
+	bool TwoSlotPanel::_updateGeo(bool bForce)
 	{
 		RectSPX contentGeo = _contentRect();
 
@@ -306,18 +306,18 @@ namespace wg
 		}
 	
 		// Request render and set sizes
-
-		if (len1 != slots[0].m_length || len2 != slots[1].m_length)
+		
+		if (bForce || len1 != slots[0].m_length || len2 != slots[1].m_length)
 		{
 			_requestRender(contentGeo);
 
 			slots[0].m_length = len1;
 			if( slots[0]._widget() )
-				slots[0]._setSize(_slotOneRect(contentGeo));
+				slots[0]._setSize(_slotOneRect(contentGeo), m_scale);
 
 			slots[1].m_length = len2;
 			if (slots[1]._widget())
-				slots[1]._setSize(_slotTwoRect(contentGeo));
+				slots[1]._setSize(_slotTwoRect(contentGeo), m_scale);
 
 			return true;
 		}
@@ -369,8 +369,12 @@ namespace wg
 
 	void TwoSlotPanel::_resize(const SizeSPX& size, int scale)
 	{
+		spx breadthDiff = m_bHorizontal ? m_size.w - size.w : m_size.h - size.h;
+		bool bForceUpdate = (scale != m_scale || breadthDiff != 0);
+			
 		Panel::_resize(size,scale);
-		_updateGeo();
+		_updateGeo( bForceUpdate );
+			
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________

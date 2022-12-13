@@ -511,7 +511,7 @@ namespace wg
 
 					tempChunk[0] = (uint8_t) chunkType;
 					tempChunk[1] = 31;		// Force long header.
-					*((uint16_t*)(tempChunk + 2)) = nDstRect;
+					*((uint16_t*)(tempChunk + 2)) = nDstRect*sizeof(RectSPX);
 
 					// Process our created chunk
 

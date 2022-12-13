@@ -87,7 +87,7 @@ namespace wg
 			return false;
 		
 		if( m_bDisplayStreamOffset )
-			m_charStream << std::setw(10) << std::setfill('0') << m_streamOffset << " - ";
+			m_charStream << std::setw(8) << std::setfill('0') << m_streamOffset << " - ";
 
 		if (header.type >= GfxChunkId_min && header.type <= GfxChunkId_max)
 		{			
@@ -277,7 +277,7 @@ namespace wg
 				CoordSPX	begin;
 				CoordSPX	end;
 				HiColor		color;
-				float		thickness;
+				spx			thickness;
 
 				*m_pDecoder >> begin;
 				*m_pDecoder >> end;
