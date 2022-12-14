@@ -251,8 +251,10 @@ namespace wg
 
 	spx PackPanel::_matchingWidth( spx height, int scale ) const
 	{
-		spx width = 0;
+		scale = _fixScale(scale);
 
+		spx width = 0;
+		
 		if (slots.size() > 0)
 		{
 			if( !m_bHorizontal )
