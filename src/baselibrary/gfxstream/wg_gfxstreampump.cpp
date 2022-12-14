@@ -210,7 +210,9 @@ namespace wg
 				if (_findChunk(id, pSegments[i].pBegin, pSegments[i].pEnd) != pSegments[i].pEnd)
 					return true;
 			}
-			m_pInput->fetchChunks();
+			
+			if( !m_pInput->fetchChunks() )
+				break;
 		}
 
 		return false;

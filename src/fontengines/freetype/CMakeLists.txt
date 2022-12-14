@@ -19,7 +19,7 @@ else()
 endif()
 
 if(APPLE)
-    target_link_libraries(wgfreetypefont PRIVATE freetype bz2 z )
+    target_link_libraries(wgfreetypefont PRIVATE freetype_arm64 freetype_x86_64 bz2 z )
 else()
     target_link_libraries(wgfreetypefont PRIVATE freetype )
 endif()
