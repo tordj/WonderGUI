@@ -59,7 +59,7 @@ namespace wg
 		//.____ Misc _____________________________________________________
 		
 		inline int	bufferCapacity() const { return m_bufferSize; };
-		inline bool	chunkInBuffer() const { return _hasStreamChunks(); };
+		inline bool	chunkInBuffer() { return _hasStreamChunks(); };
 		int			bytesInBuffer() const;
 
 	protected:
@@ -67,7 +67,7 @@ namespace wg
 		GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder );
 		~GfxStreamReader();
 
-		bool 			_hasStreamChunks() const override;
+		bool 			_hasStreamChunks() override;
 		std::tuple<int, const DataSegment*> _showStreamChunks() override;
 		GfxChunkId 		_peekStreamChunk() override;
 		void 			_discardStreamChunks(int bytes) override;

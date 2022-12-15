@@ -77,7 +77,7 @@ namespace wg
 
 	//____ _hasStreamChunks() _________________________________________________
 
-	bool GfxStreamWrapper::_hasStreamChunks() const
+	bool GfxStreamWrapper::_hasStreamChunks()
 	{
 		uint64_t beg = (uint64_t) m_dataSegment.pBegin;
 		uint64_t end = (uint64_t) m_dataSegment.pEnd;

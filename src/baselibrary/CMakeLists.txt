@@ -225,6 +225,8 @@ add_library( wondergui
 	gfxstream/wg_gfxstreamencoder.h
 	gfxstream/wg_gfxstreamlogger.cpp
 	gfxstream/wg_gfxstreamlogger.h
+	gfxstream/wg_gfxstreamloopwrapper.cpp
+	gfxstream/wg_gfxstreamloopwrapper.h
 	gfxstream/wg_gfxstreamplayer.cpp
 	gfxstream/wg_gfxstreamplayer.h
 	gfxstream/wg_gfxstreampump.cpp

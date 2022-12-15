@@ -23,231 +23,246 @@
 #include <cstring>
 #include <algorithm>
 
-#include <wg_gfxstreamreader.h>
+#include <wg_gfxstreamloopwrapper.h>
 #include <assert.h>
 
 namespace wg
 {
 
-	const TypeInfo GfxStreamReader::TYPEINFO = { "GfxStreamReader", &Object::TYPEINFO };
+	const TypeInfo GfxStreamLoopWrapper::TYPEINFO = { "GfxStreamLoopWrapper", &Object::TYPEINFO };
 
 	//____ create() ___________________________________________________________
 
-	GfxStreamReader_p GfxStreamReader::create(std::function<int(int nBytes, void * pDest)> dataFetcher)
+	GfxStreamLoopWrapper_p GfxStreamLoopWrapper::create(const void * pBufferBegin, const void * pBufferEnd,
+														std::function<const void *()> getWritePtrFunc,
+														std::function<void(const void * pReadPos)> setReadPtrFunc )
 	{
-		return new GfxStreamReader(dataFetcher);
+		return new GfxStreamLoopWrapper(pBufferBegin, pBufferEnd, getWritePtrFunc, setReadPtrFunc);
 	}
 
 	//____ constructor _____________________________________________________________
 
-	GfxStreamReader::GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder) : output(this)
+	GfxStreamLoopWrapper::GfxStreamLoopWrapper(const void * pBufferBegin, const void * pBufferEnd,
+											   std::function<const void *()> getWritePtrFunc,
+											   std::function<void(const void * pReadPos)> setReadPtrFunc ) : output(this)
 	{
-		m_fetcher = dataFeeder;
-
-		m_pBuffer = new char[c_bufferStartSize+c_bufferMargin];
-		m_bufferSize = c_bufferStartSize;
-		m_readOfs = 0;
-		m_writeOfs = 0;
-		m_processedOfs = 0;
-		m_bufferOverflow = 0;
+		m_pBufferBegin = (const uint8_t*) pBufferBegin;
+		m_pBufferEnd = (const uint8_t*) pBufferEnd;
+		
+		m_pBeginChunks = (const uint8_t*) pBufferBegin;
+		m_pEndChunks = (const uint8_t*) pBufferEnd;
+		
+		m_getWritePtrFunc = getWritePtrFunc;
+		m_setReadPtrFunc = setReadPtrFunc;
 	}
 
 	//____ Destructor _________________________________________________________
 
-	GfxStreamReader::~GfxStreamReader()
+	GfxStreamLoopWrapper::~GfxStreamLoopWrapper()
 	{
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& GfxStreamReader::typeInfo(void) const
+	const TypeInfo& GfxStreamLoopWrapper::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
-	//____ bytesInBuffer() ____________________________________________________
-
-	int GfxStreamReader::bytesInBuffer() const
-	{
-		if( m_readOfs <= m_writeOfs )
-			return m_writeOfs - m_readOfs;
-		else
-			return m_writeOfs + m_bufferSize - m_readOfs;
-	}
-
-	//____ _fetchData() _______________________________________________________
-
-	void GfxStreamReader::_fetchData()
-	{
-
-		// Calcuate size of chunks to fill in the circular buffer
-
-		int size = m_bufferSize - ((m_writeOfs - m_readOfs + m_bufferSize) % m_bufferSize) -2;		// -2 since we may not catch up to readOfs
-
-		int chunk1 = std::min(size, m_bufferSize - m_writeOfs);		// Until readPos or end of buffer
-		int chunk2 = size - chunk1;								// From start of buffer
-
-		// Fetch data to first chunk
-
-		int written = m_fetcher(chunk1, m_pBuffer + m_writeOfs);
-		if (written == 0)
-			return;
-
-		m_writeOfs = (m_writeOfs + written) % m_bufferSize;
-
-		// Fetch data to second chunk if we filled first chunk
-
-		if (written == chunk1 && chunk2 > 0)
-		{
-			written = m_fetcher(chunk2, m_pBuffer);
-			m_writeOfs = written;
-		}
-
-		// Advance m_processedOfs, handling any overflow
-
-		int unprocessedData = ((m_writeOfs - m_processedOfs + m_bufferSize) % m_bufferSize);
-
-		while (unprocessedData >= 4)
-		{
-			int chunkSize = (* (uint16_t*)&m_pBuffer[(m_processedOfs + 2) % m_bufferSize]) + 4;
-
-			if (chunkSize > unprocessedData)
-				break;
-
-			// Handle overflow.
-
-			if (m_processedOfs + chunkSize >= m_bufferSize)
-			{
-				m_bufferOverflow = m_processedOfs + chunkSize - m_bufferSize;
-				memcpy(m_pBuffer + m_bufferSize, m_pBuffer, m_bufferOverflow);
-			}
-
-			m_processedOfs = (m_processedOfs + chunkSize) % m_bufferSize;
-			unprocessedData -= chunkSize;
-		}
-	}
-
 	//____ _hasStreamChunks() _________________________________________________
 
-	bool GfxStreamReader::_hasStreamChunks() const
+	bool GfxStreamLoopWrapper::_hasStreamChunks()
 	{
-		return (m_processedOfs != m_readOfs);
+		return m_pBeginChunks != m_pEndChunks;
 	}
 
 	//____ _showStreamChunks() ________________________________________________
 
-	std::tuple<int, const DataSegment*> GfxStreamReader::_showStreamChunks()
+	std::tuple<int, const DataSegment*> GfxStreamLoopWrapper::_showStreamChunks()
 	{
-		if (m_processedOfs == m_readOfs)
+		if( m_pEndChunks == m_pBeginChunks )
 			return std::make_tuple(int(0), nullptr);
 
-		if (m_processedOfs < m_readOfs)
+		m_dataSegments[0].pBegin = (uint8_t *) m_pBeginChunks;
+
+		if( m_pSplitChunkBegin )
 		{
-			m_dataSegments[0].pBegin = (uint8_t*)m_pBuffer + m_readOfs;
-			m_dataSegments[0].pEnd = (uint8_t*)m_pBuffer + m_bufferSize + m_bufferOverflow;
+			m_dataSegments[0].pEnd = (uint8_t*) m_pSplitChunkBegin;
 
+			m_dataSegments[1].pBegin = m_rejoinedChunk;
+			m_dataSegments[1].pEnd = m_rejoinedChunk + m_rejoinedChunkSize;
+			
+			if( m_pSplitChunkEnd == m_pEndChunks )
+				return std::make_tuple(int(2), m_dataSegments);
 
+			m_dataSegments[1].pBegin = (uint8_t*) m_pSplitChunkEnd;
+			m_dataSegments[1].pEnd = (uint8_t*) m_pEndChunks;
 
-			if (m_processedOfs == m_bufferOverflow )
-				return std::make_tuple(int(1), m_dataSegments);
+			return std::make_tuple(int(3), m_dataSegments);
+		}
+		else if( m_pEndChunks < m_pBeginChunks )
+		{
+			m_dataSegments[0].pEnd = (uint8_t*) m_pBufferEnd;
 
-			m_dataSegments[1].pBegin = (uint8_t*)m_pBuffer + m_bufferOverflow;
-			m_dataSegments[1].pEnd = (uint8_t*)m_pBuffer + m_processedOfs;
+			m_dataSegments[1].pBegin = (uint8_t*) m_pBufferBegin;
+			m_dataSegments[1].pEnd = (uint8_t*) m_pEndChunks;
+
 			return std::make_tuple(int(2), m_dataSegments);
-
 		}
 		else
 		{
-			m_dataSegments[0].pBegin = (uint8_t*)m_pBuffer + m_readOfs;
-			m_dataSegments[0].pEnd = (uint8_t*)m_pBuffer + m_processedOfs;
+			m_dataSegments[0].pEnd = (uint8_t*) m_pEndChunks;
+			
 			return std::make_tuple(int(1), m_dataSegments);
 		}
 	}
 
 	//____ _peekStreamChunk() __________________________________________________________
 
-	GfxChunkId GfxStreamReader:: _peekStreamChunk()
+	GfxChunkId GfxStreamLoopWrapper:: _peekStreamChunk()
 	{
-		if(m_processedOfs == m_readOfs )
+		if( m_pBeginChunks == m_pEndChunks )
 			return GfxChunkId::OutOfData;
-
-		return (GfxChunkId) * (uint16_t*) &m_pBuffer[m_readOfs];
+		else
+			return GfxStream::chunkType(m_pBeginChunks);
 	}
 
 	//____ _discardStreamChunks() _____________________________________________
 
-	void GfxStreamReader::_discardStreamChunks(int bytes)
+	void GfxStreamLoopWrapper::_discardStreamChunks(int bytes)
 	{
-		m_readOfs = (m_readOfs + bytes) % m_bufferSize;
-		if (m_readOfs <= m_processedOfs)
-			m_bufferOverflow = 0;
+		const uint8_t * p = m_pBeginChunks;
+		p += bytes;
+		if( p >= m_pBufferEnd )
+		{
+			p -= (m_pBufferEnd - m_pBufferBegin);
+			
+			m_rejoinedChunkSize = 0;
+			m_pSplitChunkBegin = nullptr;
+			m_pSplitChunkEnd = nullptr;
+		}
+		
+		m_pBeginChunks = p;
+		
+		m_setReadPtrFunc(p);
 	}
 
 	//____ _fetchStreamChunks() _______________________________________________
 
-	bool GfxStreamReader::_fetchStreamChunks()
+	bool GfxStreamLoopWrapper::_fetchStreamChunks()
 	{
-		int dataInBuffer = (m_writeOfs - m_readOfs + m_bufferSize) % m_bufferSize;
-		int maxFetch = m_bufferSize - dataInBuffer - 2;		// -2 since we may not catch up to readOfs
+		const uint8_t *  pDataEnd = (const uint8_t*) m_getWritePtrFunc();
 
-		if (maxFetch == 0)
+		const uint8_t *	pChunk = m_pEndChunks;
+		
+		if( pDataEnd < pChunk )
 		{
-			// Grow the buffer
-
-			int oldBufferSize = m_bufferSize;
-			char* pOldBuffer = m_pBuffer;
-
-			m_bufferSize *= 2;
-			m_pBuffer = new char[m_bufferSize + c_bufferMargin];
-
-			if (m_writeOfs > m_readOfs)
+			int endBufferBytes = m_pBufferEnd - pChunk;
+			
+			// Advance pChunk over chunks to the last, incomplete chunk in the buffer
+			
+			while( endBufferBytes > 2 )
 			{
-				memcpy(m_pBuffer, pOldBuffer + m_readOfs, m_writeOfs - m_readOfs);
-				int ofsSub = m_readOfs;
+				// Get chunk size
+				
+				int chunkSize;
+				
+				uint8_t sizeEtc = pChunk[1] & 0x1F;
+				if (sizeEtc <= 30)
+					chunkSize = sizeEtc + 2;
+				else
+				{
+					if( endBufferBytes < 4 )
+						break;
+					
+					chunkSize = ((uint16_t*) pChunk)[1] + 4;
+				}
+				
+				//
+				
+				if( chunkSize < endBufferBytes )
+				{
+					pChunk += chunkSize;
+					endBufferBytes -= chunkSize;
+				}
+			}
+			
+			if( pChunk < m_pBufferEnd )
+			{
+				// We have an broken chunk at the end
+				
+				int dataSize = (m_pBufferEnd - pChunk) + (pDataEnd - m_pBufferBegin);
 
-				m_readOfs -= ofsSub;
-				m_writeOfs -= ofsSub;
-				m_processedOfs -= ofsSub;
-				m_bufferOverflow = 0;
+				int chunkSize;
+				
+				uint8_t sizeEtc = pChunk[1] & 0x1F;
+				if (sizeEtc <= 30)
+					chunkSize = sizeEtc + 2;
+				else
+				{
+					if( endBufferBytes >= 4 )
+						chunkSize = ((uint16_t*) pChunk)[1] + 4;
+					else if( dataSize >= 4 )
+						chunkSize = ((uint16_t*) m_pBufferBegin)[0] + 4;
+					else
+						chunkSize = 0;
+				}
+
+				// Leave if chunk is not complete
+				
+				if( chunkSize > dataSize )
+					goto out;
+				
+				// Rejoin our chunk, set pointer
+				
+				int part1Size = m_pBufferEnd - pChunk;
+				memcpy( m_rejoinedChunk, pChunk, part1Size );
+				memcpy( m_rejoinedChunk + part1Size, m_pBufferBegin, chunkSize - part1Size );
+				
+				m_rejoinedChunkSize = chunkSize;
+				m_pSplitChunkBegin = pChunk;
+			
+				pChunk = m_pBufferBegin + chunkSize - part1Size;
+				m_pSplitChunkEnd = pChunk;
+
 			}
 			else
 			{
-				int chunkSize1 = oldBufferSize - m_readOfs;
-				int chunkSize2 = m_writeOfs;
-
-				memcpy(m_pBuffer, pOldBuffer + m_readOfs, chunkSize1);
-				memcpy(m_pBuffer + chunkSize1, pOldBuffer, chunkSize2);
-
-				m_processedOfs = (m_processedOfs - m_readOfs + oldBufferSize) % oldBufferSize;
-				m_readOfs = 0;
-				m_writeOfs = chunkSize1 + chunkSize2;
-				m_bufferOverflow = 0;
+				pChunk = m_pBufferBegin;
 			}
-
-			delete [] pOldBuffer;
 		}
-
-		int oldProcessedOfs = m_processedOfs;
-
-		_fetchData();
-		if (oldProcessedOfs == m_processedOfs)
+		
+		//
+		
+		while( pChunk + 2 <= pDataEnd )
 		{
-			// We didn't get a full chunk, either buffer is full or there is no more data atm.
-
-			int dataInBuffer = (m_writeOfs - m_readOfs + m_bufferSize) % m_bufferSize;
-			int maxFetch = m_bufferSize - dataInBuffer - 2;		// -2 since we may not catch up to readOfs
-
-			if (maxFetch == 0)
+			int chunkSize;
+			
+			uint8_t sizeEtc = pChunk[1] & 0x1F;
+			if (sizeEtc <= 30)
+				chunkSize = sizeEtc + 2;
+			else
 			{
-				// Call ourselves recursively to grow the buffer and refetch.
-
-				return _fetchStreamChunks();
+				if( pChunk + 4 <= pDataEnd )
+					chunkSize = ((uint16_t*) pChunk)[1] + 4;
+				else
+					break;
 			}
-
-			return false;
+			
+			if( pChunk + chunkSize <= pDataEnd )
+				pChunk += chunkSize;
+			else
+				break;
 		}
+out:
+		if( pChunk != m_pEndChunks )
+		{
+			m_pEndChunks = pChunk;
+			return true;
+		}
+		else
+			return false;
 
-		return true;
 	}
 
 

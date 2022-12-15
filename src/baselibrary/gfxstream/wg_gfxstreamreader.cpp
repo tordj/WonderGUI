@@ -137,7 +137,7 @@ namespace wg
 
 	//____ _hasStreamChunks() _________________________________________________
 
-	bool GfxStreamReader::_hasStreamChunks() const
+	bool GfxStreamReader::_hasStreamChunks()
 	{
 		return (m_processedOfs != m_readOfs);
 	}

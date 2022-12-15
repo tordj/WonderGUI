@@ -27,7 +27,7 @@
 #include <wg_types.h>
 #include <wg_object.h>
 #include <wg_pointers.h>
-#include <wg_cgfxinstream.h>
+#include <wg_gfxstreamsource.h>
 #include <wg_gfxstream.h>
 
 #include <functional>
@@ -36,22 +36,22 @@ namespace wg
 {
 
 	class GfxStreamLoopWrapper;
-	typedef	StrongPtr<GfxStreamReader>	GfxStreamLoopWrapper_p;
-	typedef	WeakPtr<GfxStreamReader>	GfxStreamLoopWrapper_wp;
+	typedef	StrongPtr<GfxStreamLoopWrapper>	GfxStreamLoopWrapper_p;
+	typedef	WeakPtr<GfxStreamLoopWrapper>	GfxStreamLoopWrapper_wp;
 
-	class GfxStreamLoopWrapper : public Object, protected CGfxInStream::Holder
+	class GfxStreamLoopWrapper : public Object, protected GfxStreamSource::Holder
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
 		static GfxStreamLoopWrapper_p	create( const void * pBufferBegin, const void * pBufferEnd, 
-												std::function<std::tuple<const void * pBegin, const void * pEnd>()> getContentFunc,
-												std::function<void(const void * pReadPos)> setContentBeginFunc );
+												std::function<const void *()> getWritePtrFunc,
+												std::function<void(const void * pReadPos)> setReadPtrFunc );
 
 		//.____ Components _______________________________________
 
-		CGfxInStream		output;
+		GfxStreamSource		output;
 
 		//.____ Identification __________________________________________
 
@@ -62,28 +62,31 @@ namespace wg
 		
 	protected:
 
-		GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder );
-		~GfxStreamReader();
+		GfxStreamLoopWrapper(const void * pBufferBegin, const void * pBufferEnd,
+							 std::function<const void *()> getWritePtrFunc,
+							 std::function<void(const void * pReadPos)> setReadPtrFunc );
 
-		Object *    	_object() override { return this; }
-		const Object * 	_object() const override { return this; }
+		~GfxStreamLoopWrapper();
 
-		bool 			_hasStreamChunks() const override;
+		bool 			_hasStreamChunks() override;
 		std::tuple<int, const DataSegment*> _showStreamChunks() override;
 		GfxChunkId 		_peekStreamChunk() override;
 		void 			_discardStreamChunks(int bytes) override;
 		bool 			_fetchStreamChunks() override;
+		
+		const uint8_t * m_pBufferBegin;
+		const uint8_t * m_pBufferEnd;
 
-		std::function<int(int nBytes, void * pDest)>	m_fetcher;
+		std::function<const void *()> 				m_getWritePtrFunc;
+		std::function<void(const void * pReadPos)> 	m_setReadPtrFunc;
 
-		const void * m_pBufferBegin; 
-		const void * m_pBufferEnd;
-
-		std::function<std::tuple<const void * pBegin, const void * pEnd>()> m_getContentFunc;
-		std::function<void(const void * pReadPos)> 							m_setContentBeginFunc;
-
-		char	m_rejoinedChunk[];
-
+		uint8_t	m_rejoinedChunk[GfxStream::c_maxBlockSize];
+		int		m_rejoinedChunkSize = 0;
+		
+		const uint8_t * m_pBeginChunks = nullptr;
+		const uint8_t * m_pSplitChunkBegin = nullptr;
+		const uint8_t * m_pSplitChunkEnd = nullptr;
+		const uint8_t * m_pEndChunks = nullptr;
 
 		DataSegment	m_dataSegments[3];
 

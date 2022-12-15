@@ -49,7 +49,7 @@ namespace wg
 		{
 		public:
 
-			virtual bool _hasStreamChunks() const = 0;
+			virtual bool _hasStreamChunks() = 0;
 			virtual std::tuple<int, const DataSegment *> _showStreamChunks() = 0;
 			virtual	void _discardStreamChunks(int bytes) = 0;
 			virtual bool _fetchStreamChunks() = 0;
@@ -61,7 +61,7 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		inline bool hasChunks() const { return m_pHolder->_hasStreamChunks(); }
+		inline bool hasChunks() { return m_pHolder->_hasStreamChunks(); }
 		inline std::tuple<int, const DataSegment*> showChunks() { return m_pHolder->_showStreamChunks(); }
 		inline void discardChunks(int bytes) { return m_pHolder->_discardStreamChunks(bytes); }
 		inline bool fetchChunks() { return m_pHolder->_fetchStreamChunks(); }

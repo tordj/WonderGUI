@@ -59,7 +59,7 @@ namespace wg
 		//.____ Misc _____________________________________________________
 		
 		inline int	bufferCapacity() const { return m_bufferSize; };
-		inline bool	chunkInBuffer() const { return _hasStreamChunks(); };
+		inline bool	chunkInBuffer() { return _hasStreamChunks(); };
 		int			bytesInBuffer() const;
 		
 	protected:
@@ -69,7 +69,7 @@ namespace wg
 
 		void			_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
 
-		bool			_hasStreamChunks() const override;
+		bool			_hasStreamChunks() override;
 		std::tuple<int, const DataSegment*> _showStreamChunks() override;
 		GfxChunkId 		_peekStreamChunk() override;
 		void			_discardStreamChunks(int bytes) override;
