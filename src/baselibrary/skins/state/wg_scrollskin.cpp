@@ -237,7 +237,7 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool ScrollSkin::_markTest(const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool ScrollSkin::_markTest(const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 

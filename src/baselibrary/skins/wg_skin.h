@@ -82,7 +82,7 @@ namespace wg
 		virtual bool		_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const;
 
 		virtual bool		_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state,
-									float value = 1.f, float value2 = -1.f) const = 0;
+									float value = 1.f, float value2 = -1.f, int alphaOverride = -1 ) const = 0;
 
 		virtual void 		_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state,
 									float value = 1.f, float value2 = -1.f, int animPos = 0, 

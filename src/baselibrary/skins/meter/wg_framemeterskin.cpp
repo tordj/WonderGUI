@@ -117,7 +117,7 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool FrameMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool FrameMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		//TODO: Support flip!
 		//TODO: Support tint!
@@ -131,7 +131,10 @@ namespace wg
 			NinePatch patch;
 			patch.block = Rect(pFrame->coord, m_size);
 			patch.frame = m_gfxPadding;
-			return Util::markTestNinePatch(ofs, m_pSurface, patch, canvas, scale, m_markAlpha);
+			
+			int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+
+			return Util::markTestNinePatch(ofs, m_pSurface, patch, canvas, scale, alpha);
 		}
 
 		return false;

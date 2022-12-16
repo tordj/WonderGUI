@@ -150,13 +150,15 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool TileSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool TileSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		//TODO: Take gradient and tintColor into account.
 
 		Surface * pSurf = m_stateSurfaces[state];
 
-		return markTestTileRect(_ofs, pSurf, canvas, scale, m_markAlpha);
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+
+		return markTestTileRect(_ofs, pSurf, canvas, scale, alpha);
 	}
 
 	//____ _isOpaque() _____________________________________________________________

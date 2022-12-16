@@ -177,7 +177,7 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool BoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool BoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
@@ -197,7 +197,9 @@ namespace wg
 				opacity = m_outlineColor[i].a;
 		}
 
-		return ( opacity >= m_markAlpha);
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+
+		return ( opacity >= alpha);
 	}
 
 	//____ _isOpaque() _____________________________________________________________

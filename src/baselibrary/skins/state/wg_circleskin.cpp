@@ -154,7 +154,7 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool CircleSkin::_markTest(const CoordSPX& _ofs, const RectSPX& _canvas, int scale, State state, float value, float value2) const
+	bool CircleSkin::_markTest(const CoordSPX& _ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		int i = state;
 
@@ -184,20 +184,23 @@ namespace wg
 		if (distanceSquared > radius * radius)
 			return false;
 
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+
+		
 		float fillRadius = radius - outlineThickness;
 
 		if( distanceSquared > fillRadius * fillRadius )
-			return (m_stateInfo[i].outlineColor.a >= m_markAlpha);
+			return (m_stateInfo[i].outlineColor.a >= alpha);
 
 		float innerOutlineRadius = fillRadius - thickness;
 
 		if( innerOutlineRadius < 0 || distanceSquared > innerOutlineRadius * innerOutlineRadius )
-			return (m_stateInfo[i].color.a >= m_markAlpha);
+			return (m_stateInfo[i].color.a >= alpha);
 
 		float holeRadius = innerOutlineRadius - outlineThickness;
 
 		if( holeRadius < 0 || distanceSquared > holeRadius*holeRadius )
-			return (m_stateInfo[i].outlineColor.a >= m_markAlpha);
+			return (m_stateInfo[i].outlineColor.a >= alpha);
 
 		return false;
 	}

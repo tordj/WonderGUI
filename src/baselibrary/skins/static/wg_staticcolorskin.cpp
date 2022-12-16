@@ -91,9 +91,11 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool StaticColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride ) const
 	{
-		return ( canvas.contains(ofs) && m_color.a >= m_markAlpha );
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+
+		return ( canvas.contains(ofs) && m_color.a >= alpha );
 	}
 
 

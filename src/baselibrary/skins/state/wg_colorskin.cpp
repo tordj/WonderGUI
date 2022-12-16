@@ -116,12 +116,14 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool ColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool ColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
 
-		return ( m_color[state].a >= m_markAlpha);
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+
+		return ( m_color[state].a >= alpha);
 	}
 
 	//____ _dirtyRect() ______________________________________________________

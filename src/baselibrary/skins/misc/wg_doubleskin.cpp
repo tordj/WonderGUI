@@ -195,13 +195,13 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool DoubleSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool DoubleSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
-		if (m_pBackSkin->_markTest(ofs, canvas, scale, state, value, value2))
+		if (m_pBackSkin->_markTest(ofs, canvas, scale, state, value, value2, alphaOverride ))
 			return true;
 
 		RectSPX canvas2 = m_bSkinInSkin ? m_pBackSkin->_contentRect(canvas, scale, state) : canvas;
-		return canvas2.contains(ofs) && m_pFrontSkin->_markTest(ofs, canvas2, scale, state, value, value2);
+		return canvas2.contains(ofs) && m_pFrontSkin->_markTest(ofs, canvas2, scale, state, value, value2, alphaOverride);
 	}
 
 	//____ _render() ___________________________________________________________

@@ -103,11 +103,13 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticTileSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool StaticTileSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride ) const
 	{
 		//TODO: Take tint into account.
 
-		return markTestTileRect(ofs, m_pSurface, canvas, scale, m_markAlpha);
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+		
+		return markTestTileRect(ofs, m_pSurface, canvas, scale, alpha);
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________

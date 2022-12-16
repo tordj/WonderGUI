@@ -326,7 +326,7 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool MultiBlockSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool MultiBlockSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		RectSPX blockSize = align(ptsToSpx(m_blockSizePoints, scale));
 
@@ -345,7 +345,10 @@ namespace wg
 			NinePatch patch;
 			patch.block = { srcOfs, m_blockSizePoints };
 			patch.frame = m_frame;
-			bool bMarked = markTestNinePatch(_ofs, layer.pSurface, patch, canvas, scale, m_markAlpha);
+
+			int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+
+			bool bMarked = markTestNinePatch(_ofs, layer.pSurface, patch, canvas, scale, alpha);
 			if (bMarked)
 				return true;
 		}

@@ -179,11 +179,11 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool BakeSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool BakeSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		for (auto& pSkin : m_skins)
 		{
-			if (pSkin && pSkin->_markTest(ofs,canvas,scale,state,value,value2))
+			if (pSkin && pSkin->_markTest(ofs,canvas,scale,state,value,value2,alphaOverride))
 				return true;
 		}
 		return false;

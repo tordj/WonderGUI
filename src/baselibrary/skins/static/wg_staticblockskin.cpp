@@ -197,9 +197,11 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool StaticBlockSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
-		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, scale, m_markAlpha);
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+
+		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, scale, alpha);
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________

@@ -235,7 +235,7 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool PieMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool PieMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		if (!canvas.contains(ofs))
 			return false;

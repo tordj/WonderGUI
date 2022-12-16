@@ -143,7 +143,7 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool SpinAnimSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool SpinAnimSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride ) const
 	{
 		if (!canvas.contains(ofs))
 			return false;

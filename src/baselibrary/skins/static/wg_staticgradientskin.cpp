@@ -92,11 +92,13 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticGradientSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool StaticGradientSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		if (!canvas.contains(ofs) )
 			return false;
 
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+		
 		int xFrac = (ofs.x - canvas.x) * 4096 / canvas.w;
 		int yFrac = (ofs.y - canvas.y) * 4096 / canvas.h;
 
@@ -105,7 +107,7 @@ namespace wg
 
 		int val = xVal1 + (xVal2 - xVal1) * yFrac / 4096;
 
-		return (val >= m_markAlpha);
+		return (val >= alpha);
 	}
 
 

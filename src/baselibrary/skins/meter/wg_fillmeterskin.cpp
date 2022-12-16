@@ -144,15 +144,17 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool FillMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool FillMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
 
-		if( _barFillArea(canvas, scale, value, value2).contains(ofs) )
-			return (HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096*value)).a >= m_markAlpha);
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 
-		return (m_backColor.a >= m_markAlpha);
+		if( _barFillArea(canvas, scale, value, value2).contains(ofs) )
+			return (HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096*value)).a >= alpha);
+
+		return (m_backColor.a >= alpha);
 	}
 
 	//____ _dirtyRect() ________________________________________________________

@@ -94,7 +94,7 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticBoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool StaticBoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -109,7 +109,9 @@ namespace wg
 			opacity =  center.contains(ofs) ? m_fillColor.a : m_outlineColor.a;
 		}
 
-		return (opacity >= m_markAlpha);
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+
+		return (opacity >= alpha);
 	}
 
 	//____ _render() ______________________________________________________________

@@ -582,14 +582,16 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool BlockSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2) const
+	bool BlockSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
 		NinePatch	patch = m_ninePatch;
 		patch.block.setPos(m_stateBlocks[state]);
 
-		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, scale, m_markAlpha);
+		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
+
+		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, scale, alpha);
 	}
 
 	//____ _isOpaque() _____________________________________________________________
