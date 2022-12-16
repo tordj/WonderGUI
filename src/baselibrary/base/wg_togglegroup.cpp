@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_togglegroup.h>
+#include <wg_msgrouter.h>
 
 namespace wg
 {
@@ -232,6 +233,8 @@ namespace wg
 		if( pOldSelected && pOldSelected != pButton )
 			pOldSelected->setSelected(false);
 
+		Base::msgRouter()->post(SelectMsg::create(pButton));
+		Base::msgRouter()->post(SelectMsg::create(this));
 	}
 
 	//____ _unselect() _____________________________________________________________
@@ -244,6 +247,8 @@ namespace wg
 				return false;
 
 			m_pSelected = 0;
+			Base::msgRouter()->post(UnselectMsg::create(pButton));
+			Base::msgRouter()->post(UnselectMsg::create(this));
 		}
 		return true;
 	}

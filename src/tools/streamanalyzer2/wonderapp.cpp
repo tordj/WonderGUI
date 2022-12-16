@@ -291,51 +291,33 @@ Widget_p MyApp::createLogPanel()
 	pToggleGroup->add(pResourcesButton);
 	pToggleGroup->add(pErrorLogButton);
 
-	Base::msgRouter()->addRoute(pFrameLogButton, MsgType::Toggle, [this](Msg* pMsg)
+	Base::msgRouter()->addRoute(pFrameLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
-			auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
-		
-			if( pToggleMsg->isSet() )
-				this->showFrameLog();
+			this->showFrameLog();
 		});
 	
-	Base::msgRouter()->addRoute(pFullLogButton, MsgType::Toggle, [this](Msg* pMsg)
+	Base::msgRouter()->addRoute(pFullLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
-		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
-	
-		if( pToggleMsg->isSet() )
 			this->showFullLog();
 		});
 
-	Base::msgRouter()->addRoute(pOptimizerInLogButton, MsgType::Toggle, [this](Msg* pMsg)
+	Base::msgRouter()->addRoute(pOptimizerInLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
-		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
-	
-		if( pToggleMsg->isSet() )
 			this->showOptimizerInLog();
 		});
 	
-	Base::msgRouter()->addRoute(pOptimizerOutLogButton, MsgType::Toggle, [this](Msg* pMsg)
+	Base::msgRouter()->addRoute(pOptimizerOutLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
-		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
-	
-		if( pToggleMsg->isSet() )
 			this->showOptimizerOutLog();
 		});
 	
-	Base::msgRouter()->addRoute(pResourcesButton, MsgType::Toggle, [this](Msg* pMsg)
+	Base::msgRouter()->addRoute(pResourcesButton, MsgType::Select, [this](Msg* pMsg)
 		{
-		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
-	
-		if( pToggleMsg->isSet() )
 			this->showResources();
 		});
 
-	Base::msgRouter()->addRoute(pErrorLogButton, MsgType::Toggle, [this](Msg* pMsg)
+	Base::msgRouter()->addRoute(pErrorLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
-		auto pToggleMsg = static_cast<ToggleMsg*>(pMsg);
-	
-		if( pToggleMsg->isSet() )
 			this->showErrors();
 		});
 

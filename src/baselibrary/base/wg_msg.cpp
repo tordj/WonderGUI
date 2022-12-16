@@ -698,10 +698,10 @@ namespace wg
 
 	const TypeInfo SelectMsg::TYPEINFO = { "SelectMsg", &Msg::TYPEINFO };
 
-	SelectMsg::SelectMsg( Object * pSource )
+	SelectMsg::SelectMsg(Object* pSource)
 	{
-		m_type 			= MsgType::Select;
-		m_pSource 		= pSource;
+		m_type = MsgType::Select;
+		m_pSource = pSource;
 	}
 
 	const TypeInfo& SelectMsg::typeInfo(void) const
@@ -709,6 +709,24 @@ namespace wg
 		return TYPEINFO;
 	}
 
+
+	//____ UnselectMsg _________________________________________________________
+
+	const TypeInfo UnselectMsg::TYPEINFO = { "UnselectMsg", &Msg::TYPEINFO };
+
+	UnselectMsg::UnselectMsg( Object * pSource )
+	{
+		m_type 			= MsgType::Unselect;
+		m_pSource 		= pSource;
+	}
+
+	const TypeInfo& UnselectMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+
+	
 	//____ ToggleMsg ______________________________________________
 
 	const TypeInfo ToggleMsg::TYPEINFO = { "ToggleMsg", &Msg::TYPEINFO };

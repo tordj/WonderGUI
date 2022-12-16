@@ -191,6 +191,10 @@ namespace wg
 	typedef	StrongPtr<SelectMsg>		SelectMsg_p;
 	typedef	WeakPtr<SelectMsg>	SelectMsg_wp;
 
+	class UnselectMsg;
+	typedef	StrongPtr<UnselectMsg>		UnselectMsg_p;
+	typedef	WeakPtr<UnselectMsg>	UnselectMsg_wp;
+
 	class ToggleMsg;
 	typedef	StrongPtr<ToggleMsg>		ToggleMsg_p;
 	typedef	WeakPtr<ToggleMsg>	ToggleMsg_wp;
@@ -890,6 +894,25 @@ namespace wg
 	protected:
 		SelectMsg( Object * pSource );
 	};
+
+	//____ UnselectMsg ___________________________________________________________
+
+	class UnselectMsg : public Msg
+	{
+	public:
+		//.____ Creation __________________________________________
+
+		inline static UnselectMsg_p	create(Object* pSource) { return new UnselectMsg(pSource); }
+
+		//.____ Identification __________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+	protected:
+		UnselectMsg(Object* pSource);
+	};
+
 
 	//____ ToggleMsg ___________________________________________________________
 
