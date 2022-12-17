@@ -95,8 +95,8 @@ namespace wg
 			if( m_pSplitChunkEnd == m_pEndChunks )
 				return std::make_tuple(int(2), m_dataSegments);
 
-			m_dataSegments[1].pBegin = (uint8_t*) m_pSplitChunkEnd;
-			m_dataSegments[1].pEnd = (uint8_t*) m_pEndChunks;
+			m_dataSegments[2].pBegin = (uint8_t*) m_pSplitChunkEnd;
+			m_dataSegments[2].pEnd = (uint8_t*) m_pEndChunks;
 
 			return std::make_tuple(int(3), m_dataSegments);
 		}

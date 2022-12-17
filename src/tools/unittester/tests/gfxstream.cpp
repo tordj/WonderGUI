@@ -61,6 +61,7 @@ bool GfxStreamTest::streamLoopWrapperTest(std::ostream& output)
 	
 	while( pBlobRead < pBlobEnd )
 	{
+
 		int leftToRead = pBlobEnd - pBlobRead;
 
 		if( pBufferRead <= pBufferWrite )
@@ -82,7 +83,7 @@ bool GfxStreamTest::streamLoopWrapperTest(std::ostream& output)
 			}
 		}
 		
-		
+
 		if( pBufferRead > pBufferWrite )
 		{
 			int amount = std::min(int(pBufferRead - pBufferWrite - 2), leftToRead);
@@ -94,14 +95,17 @@ bool GfxStreamTest::streamLoopWrapperTest(std::ostream& output)
 				leftToRead -= amount;
 			}
 		}
+
 		
 /*
 		* pBufferWrite++ = * pBlobRead++;
 		if( pBufferWrite == loopBuffer + loopBufferSize )
 			pBufferWrite = loopBuffer;
 */
+
 		pStreamPump->pumpAll();
 	}
+
 	
 	int newSize = pOutputWrite - pOutputBuffer;
 	

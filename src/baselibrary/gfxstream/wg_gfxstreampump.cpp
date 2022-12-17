@@ -571,17 +571,6 @@ namespace wg
 		while (m_pInput->hasChunks())
 		{
 			std::tie(nSegments, pSegments) = m_pInput->showChunks();
-
-			if( nSegments == 3 )
-			{
-				int bytes1 = pSegments[0].pEnd - pSegments[0].pBegin;
-				int bytes2 = pSegments[1].pEnd - pSegments[1].pBegin;
-				int bytes3 = pSegments[2].pEnd - pSegments[2].pBegin;
-				
-				if( bytes1 <= 0 || bytes2 <= 0 || bytes3 <= 0 )
-					m_pInput->showChunks();
-				
-			}
 			
 			int	bytesProcessed = 0;
 			for (int i = 0; i < nSegments; i++)
