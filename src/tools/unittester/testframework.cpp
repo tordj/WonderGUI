@@ -7,6 +7,8 @@
 
 #include "tests/gfxstream.h"
 
+
+
 //____ Constructor _____________________________________________________________
 
 TestFramework::TestFramework( std::ostream& output ) :
@@ -108,4 +110,33 @@ bool TestFramework::runTest( int collIdx, int testIdx )
 	bool bSuccess = test.run(m_log);
 
 	return bSuccess;
+}
+
+//____ loadBlob() _________________________________________________________
+
+Blob_p TestCollection::loadBlob(const std::string& path)
+{
+	FILE* fp;
+
+#ifdef WIN32
+	errno_t err = fopen_s(&fp, path.c_str(), "rb");
+#else
+	fp = fopen(path.c_str(), "rb");
+#endif
+	if (!fp)
+		return 0;
+
+	fseek(fp, 0, SEEK_END);
+	int size = (int)ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+
+	Blob_p pBlob = Blob::create(size);
+
+	int nRead = (int)fread(pBlob->data(), 1, size, fp);
+	fclose(fp);
+
+	if (nRead < size)
+		return 0;
+
+	return pBlob;
 }

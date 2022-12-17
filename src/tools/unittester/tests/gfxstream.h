@@ -14,5 +14,5 @@ public:
 
 private:
 
-	bool frameOptimizationTest(std::ostream& output);
+	bool streamLoopWrapperTest(std::ostream& output);
 };

@@ -50,7 +50,7 @@ namespace wg
 		m_pBufferEnd = (const uint8_t*) pBufferEnd;
 		
 		m_pBeginChunks = (const uint8_t*) pBufferBegin;
-		m_pEndChunks = (const uint8_t*) pBufferEnd;
+		m_pEndChunks = (const uint8_t*) pBufferBegin;
 		
 		m_getWritePtrFunc = getWritePtrFunc;
 		m_setReadPtrFunc = setReadPtrFunc;
@@ -185,6 +185,8 @@ namespace wg
 					pChunk += chunkSize;
 					endBufferBytes -= chunkSize;
 				}
+				else
+					break;
 			}
 			
 			if( pChunk < m_pBufferEnd )
@@ -205,7 +207,7 @@ namespace wg
 					else if( dataSize >= 4 )
 						chunkSize = ((uint16_t*) m_pBufferBegin)[0] + 4;
 					else
-						chunkSize = 0;
+						goto out;
 				}
 
 				// Leave if chunk is not complete
