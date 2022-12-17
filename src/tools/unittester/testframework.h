@@ -4,14 +4,16 @@
 
 
 #include <wg_chain.h>
-#include <stdio.h>
+#include <wg_blob.h>
 
+#include <stdio.h>
 #include <vector>
 #include <string>
 #include <functional>
 #include <iostream>
 #include <sstream>
 
+using namespace wg;
 
 //____ Macros __________________________________________________________________
 
@@ -85,6 +87,8 @@ public:
 	virtual std::string		name() const = 0;
 
 protected:
+
+	Blob_p 			loadBlob(const std::string& path);
 
 	std::vector<Test>	m_tests;
 
