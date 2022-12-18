@@ -38,8 +38,6 @@ namespace wg
 
 	Button::Button() : icon(this), label(this)
 	{
-		m_bPressed 		 = false;
-		m_bReturnPressed = false;
 	}
 
 	Button::Button(const Blueprint& bp) : icon(this), label(this)
@@ -47,9 +45,7 @@ namespace wg
 		_initFromBlueprint(bp);
 		icon._initFromBlueprint(bp.icon);
 		label._initFromBlueprint(bp.label);
-
-		m_bPressed = false;
-		m_bReturnPressed = false;
+		m_bSelectOnPress = bp.selectOnPress;
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -63,6 +59,13 @@ namespace wg
 	const TypeInfo& Button::typeInfo(void) const
 	{
 		return TYPEINFO;
+	}
+
+	//____ setSelectOnPress() _________________________________________________
+
+	void Button::setSelectOnPress(bool bSelectOnPress)
+	{
+		m_bSelectOnPress = bSelectOnPress;
 	}
 
 	//____ _matchingHeight() _______________________________________________________
@@ -176,6 +179,9 @@ namespace wg
 			case MsgType::KeyPress:
 				if( static_cast<KeyPressMsg*>(_pMsg)->translatedKeyCode() == Key::Return )
 				{
+					if( m_bSelectOnPress )
+						pRouter->post(SelectMsg::create(this));
+
 					m_bReturnPressed = true;
 					_pMsg->swallow();
 				}
@@ -183,6 +189,9 @@ namespace wg
 
 			case MsgType::KeyRepeat:
 				if( static_cast<KeyRepeatMsg*>(_pMsg)->translatedKeyCode() == Key::Return )
+					if (m_bSelectOnPress)
+						pRouter->post(SelectMsg::create(this));
+
 					_pMsg->swallow();
 				break;
 
@@ -190,7 +199,8 @@ namespace wg
 				if( static_cast<KeyReleaseMsg*>(_pMsg)->translatedKeyCode() == Key::Return )
 				{
 					m_bReturnPressed = false;
-					pRouter->post( SelectMsg::create(this) );
+					if( !m_bSelectOnPress )
+						pRouter->post( SelectMsg::create(this) );
 					_pMsg->swallow();
 				}
 				break;
@@ -204,10 +214,24 @@ namespace wg
 			case MsgType::MousePress:
 				if( static_cast<MousePressMsg*>(_pMsg)->button() == MouseButton::Left )
 				{
+					if (m_bSelectOnPress)
+						pRouter->post(SelectMsg::create(this));
+
 					m_bPressed = true;
 					_pMsg->swallow();
 				}
 				break;
+
+			case MsgType::MouseRepeat:
+				if (static_cast<MouseRepeatMsg*>(_pMsg)->button() == MouseButton::Left)
+				{
+					if (m_bSelectOnPress)
+						pRouter->post(SelectMsg::create(this));
+
+					_pMsg->swallow();
+				}
+				break;
+
 			case MsgType::MouseRelease:
 				if( static_cast<MouseReleaseMsg*>(_pMsg)->button() == MouseButton::Left )
 				{
@@ -215,15 +239,25 @@ namespace wg
 					_pMsg->swallow();
 				}
 				break;
+
 			case MsgType::MouseClick:
 				if( static_cast<MouseClickMsg*>(_pMsg)->button() == MouseButton::Left )
 				{
-					pRouter->post( SelectMsg::create(this) );
+					if( !m_bSelectOnPress )
+						pRouter->post( SelectMsg::create(this) );
 					_pMsg->swallow();
 				}
 				break;
-			case MsgType::MouseDoubleClick:
-			case MsgType::MouseRepeat:
+
+			case MsgType::MouseDoubleClick:		// We handle double-click as single-click, allowing fast repeated clicking.
+				if (static_cast<MouseClickMsg*>(_pMsg)->button() == MouseButton::Left)
+				{
+					if (!m_bSelectOnPress)
+						pRouter->post(SelectMsg::create(this));
+					_pMsg->swallow();
+				}
+				break;
+
 			case MsgType::MouseDrag:
 				if( static_cast<MouseButtonMsg*>(_pMsg)->button() == MouseButton::Left )
 					_pMsg->swallow();

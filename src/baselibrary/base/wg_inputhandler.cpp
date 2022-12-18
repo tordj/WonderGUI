@@ -744,8 +744,10 @@ namespace wg
 
 				while( repeatPos <= timestamp )
 				{
-					auto p = MouseRepeatMsg::create(m_inputId, (MouseButton)button, m_latestPressWidgets[button].rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, repeatPos);
-					Base::msgRouter()->post(p);
+					auto pWidget = m_latestPressWidgets[button].rawPtr();
+					auto pMsg = MouseRepeatMsg::create(m_inputId, (MouseButton)button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, repeatPos);
+					pMsg->setCopyTo(pWidget);
+					Base::msgRouter()->post(pMsg);
 					repeatPos += m_keyRepeatRate;
 				}
 			}
@@ -769,7 +771,10 @@ namespace wg
 
 			while( repeatPos <= timestamp )
 			{
-				Base::msgRouter()->post( new KeyRepeatMsg( m_inputId, key.nativeKeyCode, key.translatedKeyCode, key.pWidget.rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, repeatPos ));
+				auto pWidget = key.pWidget.rawPtr();
+				auto pMsg = new KeyRepeatMsg(m_inputId, key.nativeKeyCode, key.translatedKeyCode, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, repeatPos);
+				pMsg->setCopyTo(pWidget);
+				Base::msgRouter()->post(pMsg);
 
 				EditCmd cmd = translateCommand( key.nativeKeyCode, m_modKeys );
 				if( cmd != EditCmd::None )

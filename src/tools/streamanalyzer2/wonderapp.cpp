@@ -467,12 +467,13 @@ Widget_p MyApp::createNavigationPanel()
 
 	auto pLongLeftButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
-		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " << ")
+		_.selectOnPress = true,
+		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered,_.style = m_pTextStyle, _.text = " << ")
 	));
-
 
 	auto pLeftButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
+		_.selectOnPress = true,
 		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " < ")
 	));
 
@@ -481,14 +482,15 @@ Widget_p MyApp::createNavigationPanel()
 		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " || ")
 	));
 
-
 	auto pRightButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
+		_.selectOnPress = true,
 		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " > ")
 	));
 
 	auto pLongRightButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
+		_.selectOnPress = true,
 		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = " >> ")
 	));
 

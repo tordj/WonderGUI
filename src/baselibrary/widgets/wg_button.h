@@ -62,6 +62,7 @@ namespace wg
 			PointerStyle	pointer = PointerStyle::Default;
 			int				scale = -1;
 			bool			selectable = true;
+			bool			selectOnPress = false;
 			Skin_p			skin;
 			bool			tabLock = false;
 			String			tooltip;
@@ -81,6 +82,12 @@ namespace wg
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
+
+		//.____ Behavior ______________________________________________________
+
+		void	setSelectOnPress(bool bSelectOnPress);
+		bool	selectOnPress() const { return m_bSelectOnPress;  }
+
 
 		//.____ Internal ______________________________________________________
 
@@ -113,8 +120,9 @@ namespace wg
 		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }
 
 
-		bool			m_bPressed;				// Set when left mousebutton was pressed inside.
-		bool			m_bReturnPressed;
+		bool		m_bPressed			= false;				// Set when left mousebutton was pressed inside.
+		bool		m_bReturnPressed	= false;
+		bool		m_bSelectOnPress	= false;
 	};
 
 
