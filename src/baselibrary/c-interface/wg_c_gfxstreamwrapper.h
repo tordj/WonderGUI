@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_C_GFXSTREAMPLAYER_DOT_H
-#define WG_C_GFXSTREAMPLAYER_DOT_H
+#ifndef WG_C_GFXSTREAMWRAPPER_DOT_H
+#define WG_C_GFXSTREAMWRAPPER_DOT_H
 #pragma once
 
 #include <wg_c_types.h>
@@ -31,18 +31,14 @@
 extern "C" {
 #endif
 
-	wg_obj			wg_createStreamPlayer(wg_obj device, wg_obj surfaceFactory);
+	wg_obj	wg_createStreamWrapper( const void * pBegin, const void * pEnd );
 
-	wg_component	wg_getStreamPlayerInput(wg_obj streamPlayer);
+	wg_component	wg_getStreamWrapperOutput(wg_obj streamWrapper);
 
-	void			wg_resetStreamPlayer(wg_obj streamPlayer);
+	int		wg_chunkInStreamWrapper(wg_obj streamWrapper);
+	int		wg_bytesInStreamWrapper(wg_obj streamWrapper);
 
-	void			wg_setStreamPlayerStoreDirtyRects(wg_obj streamPlayer, int bStore);
-	void			wg_setStreamPlayerMaxDirtyRects(wg_obj streamPlayer, int max);
-
-	int				wg_getStreamPlayerDirtyRects(wg_obj streamPlayer, wg_canvasRef canvas, const wg_rectI **pRects );
-
-	void			wg_clearStreamPlayerDirtyRects(wg_obj streamPlayer);
+	void	wg_restartStreamWrapper(wg_obj streamWrapper);
 
 #ifdef __cplusplus
 }
@@ -50,3 +46,4 @@ extern "C" {
 
 
 #endif
+

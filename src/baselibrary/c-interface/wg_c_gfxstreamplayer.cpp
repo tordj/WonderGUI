@@ -48,6 +48,13 @@ wg_component wg_getStreamPlayerInput(wg_obj streamPlayer)
 	return { static_cast<Object*>(p), &p->input };
 }
 
+void wg_resetStreamPlayer(wg_obj streamPlayer)
+{
+	auto p = getPtr(streamPlayer);
+	p->reset();
+}
+
+
 void wg_setStreamPlayerStoreDirtyRects(wg_obj streamPlayer, int bStore)
 {
 	getPtr(streamPlayer)->setStoreDirtyRects(bStore);

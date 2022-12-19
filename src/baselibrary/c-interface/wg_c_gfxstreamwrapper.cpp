@@ -1,3 +1,4 @@
+
 /*=========================================================================
 
 						 >>> WonderGUI <<<
@@ -20,33 +21,44 @@
 
 =========================================================================*/
 
-#ifndef WG_C_GFXSTREAMPLAYER_DOT_H
-#define WG_C_GFXSTREAMPLAYER_DOT_H
-#pragma once
+#include <wg_c_gfxstreamwrapper.h>
+#include <wg_gfxstreamwrapper.h>
 
-#include <wg_c_types.h>
-#include <wg_c_geo.h>
+using namespace wg;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-	wg_obj			wg_createStreamPlayer(wg_obj device, wg_obj surfaceFactory);
-
-	wg_component	wg_getStreamPlayerInput(wg_obj streamPlayer);
-
-	void			wg_resetStreamPlayer(wg_obj streamPlayer);
-
-	void			wg_setStreamPlayerStoreDirtyRects(wg_obj streamPlayer, int bStore);
-	void			wg_setStreamPlayerMaxDirtyRects(wg_obj streamPlayer, int max);
-
-	int				wg_getStreamPlayerDirtyRects(wg_obj streamPlayer, wg_canvasRef canvas, const wg_rectI **pRects );
-
-	void			wg_clearStreamPlayerDirtyRects(wg_obj streamPlayer);
-
-#ifdef __cplusplus
+inline GfxStreamWrapper* getPtr(wg_obj obj) {
+	return static_cast<GfxStreamWrapper*>(reinterpret_cast<Object*>(obj));
 }
-#endif
+
+wg_obj wg_createStreamWrapper( const void * pBegin, const void * pEnd )
+{
+	auto p = GfxStreamWrapper::create(pBegin, pEnd);
+	p->retain();
+	return p.rawPtr();
+}
+
+wg_component wg_getStreamWrapperOutput(wg_obj streamWrapper)
+{
+	auto p = getPtr(streamWrapper);
+	return { static_cast<Object*>(p), &p->output };
+}
+
+int wg_chunkInStreamWrapper(wg_obj streamWrapper)
+{
+	auto p = getPtr(streamWrapper);
+	return p->chunkInBuffer();
+}
+
+int wg_bytesInStreamWrapper(wg_obj streamWrapper)
+{
+	auto p = getPtr(streamWrapper);
+	return p->bytesInBuffer();
+}
+
+void	wg_restartStreamWrapper(wg_obj streamWrapper)
+{
+	auto p = getPtr(streamWrapper);
+	p->restart();
+}
 
 
-#endif

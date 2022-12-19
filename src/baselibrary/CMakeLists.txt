@@ -161,6 +161,8 @@ add_library( wondergui
 	c-interface/wg_c_gfxstreambuffer.h
 	c-interface/wg_c_gfxstreamlogger.cpp
 	c-interface/wg_c_gfxstreamlogger.h
+	c-interface/wg_c_gfxstreamloopwrapper.cpp
+	c-interface/wg_c_gfxstreamloopwrapper.h
 	c-interface/wg_c_gfxstreamplayer.cpp
 	c-interface/wg_c_gfxstreamplayer.h
 	c-interface/wg_c_gfxstreampump.cpp
@@ -169,6 +171,8 @@ add_library( wondergui
 	c-interface/wg_c_gfxstreamreader.h
 	c-interface/wg_c_gfxstreamsplitter.cpp
 	c-interface/wg_c_gfxstreamsplitter.h
+	c-interface/wg_c_gfxstreamwrapper.cpp
+	c-interface/wg_c_gfxstreamwrapper.h
 	c-interface/wg_c_gradient.cpp
 	c-interface/wg_c_gradient.h
 	c-interface/wg_c_gfxdevice.cpp
