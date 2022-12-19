@@ -772,7 +772,12 @@ std::string MyAppVisitor::saveFileDialog(	const std::string& title, const std::s
 	for (int i = 0; i < filterPatterns.size(); i++)
 		pPatternPointers[i] = filterPatterns[i].c_str();
 
-	return tinyfd_saveFileDialog( title.c_str(), defaultPathAndFile.c_str(), filterPatterns.size(), pPatterns, singleFilterDescription.c_str() );
+	auto pResult = tinyfd_saveFileDialog( title.c_str(), defaultPathAndFile.c_str(), filterPatterns.size(), pPatterns, singleFilterDescription.c_str() );
+	
+	if(pResult == NULL)
+		return std::string();
+	else
+		return std::string(pResult);
 }
 
 //____ openFileDialog() _______________________________________________________

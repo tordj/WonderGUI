@@ -21,6 +21,7 @@ WonderApp_p WonderApp::create()
 bool MyApp::init(Visitor* pVisitor)
 {
 	m_pDB = new KernelDB();
+	m_pVisitor = pVisitor;
 
 	if (!_setupGUI(pVisitor))
 	{
@@ -220,14 +221,55 @@ void MyApp::eraseCustomBlitEntry(int index)
 	_refreshList();
 }
 
-//____ generateSource() _______________________________________________________
+//____ exportSource() _______________________________________________________
 
-void MyApp::generateSource()
+bool MyApp::exportSource()
 {
+	auto path = m_pVisitor->saveFileDialog("Export Kernels", "", {}, "" );
+	
+	if( path.empty() )
+		return false;
+	
+	String kernelLabel = m_pKernelFuncNameEditor->editor.text();
+	
+	auto labelString = CharSeq(kernelLabel).getStdString();
+	
+	// Export source
+	
 	ofstream	myStream;
-	myStream.open("wg_softkernels.cpp");
-	m_pDB->generateSource(myStream);
+	myStream.open(path + ".cpp");
+	m_pDB->generateSource(myStream, labelString);
 	myStream.close();
+	
+	// Export CPP header
+	
+	myStream.open(path + ".h");
+
+	myStream << "#pragma once" << endl;
+	myStream << "#include <wg_softgfxdevice.h>" << endl << endl;
+	myStream << "namespace wg" << endl;
+	myStream << "{" << endl;
+	myStream << "	bool " << labelString << "( SoftGfxDevice * pDevice );" << endl;
+	myStream << "};" << endl;
+	
+	myStream.close();
+	
+	// Export C header
+	
+	myStream.open(path + "_c.h");
+
+	myStream << "#ifdef __cplusplus" << endl;
+	myStream << "extern \"C\" {" << endl;
+	myStream << "#endif" << endl;
+	myStream << "	int	" << labelString << "( wg_obj device );" << endl;
+	myStream << "#ifdef __cplusplus" << endl;
+	myStream << "}" << endl;
+	myStream << "#endif" << endl;
+	
+	myStream.close();
+
+	
+	return true;
 }
 
 //____ addOptimizedBlitEntry() ________________________________________________
@@ -322,6 +364,12 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.padding = { 4,2,4,2 }
 	));
 
+	m_pInputBoxSkin = BoxSkin::create(WGBP(BoxSkin,
+		_.color = HiColor::White,
+		_.outline = 1,
+		_.outlineColor = Color8::Grey,
+		_.padding = { 4,2,4,2 }
+	));
 
 
 	return true;
@@ -836,21 +884,35 @@ wg::Widget_p MyApp::_buildExportSection()
 		_.outlineColor = Color8::Black,
 		_.padding = { 4,2,4,2 }
 	)));
+
+	
+	auto pEditorLabel = TextDisplay::create( WGBP(TextDisplay,
+												  _.display.text = "AddKernel function name: "
+											));
+	
+	auto pEditor = LineEditor::create( WGBP(LineEditor,
+											_.skin = m_pInputBoxSkin,
+											_.editor.text = "addDefaultSoftKernels"
+											));
+	
+	m_pKernelFuncNameEditor = pEditor;
 	
 	auto pButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
-		_.label.text = "Generate Source Code"
+		_.label.text = "Export Source Code"
 	));
 
-	pSection->slots << Filler::create();
+	pSection->slots << pEditorLabel;
+	pSection->slots << pEditor;
 	pSection->slots << pButton;
-	pSection->slots << Filler::create();
 
-	pSection->slots[1].setWeight(0);
+	pSection->slots[0].setWeight(0.f);
+	pSection->slots[1].setWeight(1.0f);
+	pSection->slots[2].setWeight(0);
 
 	pSection->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
 
-	Base::msgRouter()->addRoute(pButton, MsgType::Select, [this](Msg* pMsg) {this->generateSource(); });
+	Base::msgRouter()->addRoute(pButton, MsgType::Select, [this](Msg* pMsg) {this->exportSource(); });
 
 	return pSection;
 }

@@ -32,7 +32,7 @@ public:
 	void		eraseCustomBlitEntry(int index);
 
 	void		addOptimizedBlitEntry();
-	void		generateSource();
+	bool		exportSource();
 	void		clear();
 	void		reset();
 	void		load();
@@ -62,8 +62,9 @@ private:
 	void			_refreshList();
 
 
-	KernelDB *	m_pDB = nullptr;
-
+	KernelDB *			m_pDB = nullptr;
+	Visitor *			m_pVisitor = nullptr;
+	
 	Window_p			m_pWindow;
 
 	wg::Skin_p			m_pPlateSkin;
@@ -71,6 +72,7 @@ private:
 	wg::Skin_p			m_pToggleButtonSkin;
 	wg::Skin_p			m_pCheckBoxSkin;
 	wg::Skin_p			m_pSectionSkin;
+	wg::Skin_p			m_pInputBoxSkin;
 
 	wg::TextStyle_p		m_pTextStyle;
 	wg::TextStyle_p		m_pLabelStyle;
@@ -79,4 +81,5 @@ private:
 
 	wg::ScrollPanel_p	m_pScrollPanel;
 	wg::PackPanel_p		m_pList;
+	wg::LineEditor_p	m_pKernelFuncNameEditor;
 };

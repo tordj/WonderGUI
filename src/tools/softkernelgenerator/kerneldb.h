@@ -63,7 +63,7 @@ public:
 	void	reset();
 	void	clear();
 
-	bool	generateSource( std::ostream& filename );
+	bool	generateSource( std::ostream& filename, const std::string& kernelLabel );
 	KernelCount	countKernels();
 	int		countEntryKernels(int entry);
 

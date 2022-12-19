@@ -213,7 +213,7 @@ const char * toString(KernelDB::BlitType i)
 
 //____ generateSource() _______________________________________________________
 
-bool KernelDB::generateSource(std::ostream& out)
+bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel )
 {
 	char temp[4096];
 
@@ -438,7 +438,17 @@ bool KernelDB::generateSource(std::ostream& out)
 	out << endl;
 	out << "using namespace wg;" << endl;
 	out << endl;
-	out << "bool wg::addDefaultSoftKernels( SoftGfxDevice * pDevice )" << endl;
+
+	
+	out << "int	wg_" << kernelLabel << "( wg_obj device )" << endl;
+	out << "{" << endl;
+	out << "	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));" << endl;
+	out << endl;
+	out << "	return " << kernelLabel << "(pDevice);" << endl;
+	out << "}" << endl << endl;
+
+	out << endl;
+	out << "bool wg::" << kernelLabel << "( SoftGfxDevice * pDevice )" << endl;
 	out << "{" << endl;
 	out << "    _initStanzaTables();" << endl << endl;
 
