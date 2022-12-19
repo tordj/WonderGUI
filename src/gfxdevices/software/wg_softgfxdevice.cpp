@@ -50,6 +50,7 @@ namespace wg
 	static_assert(BlendMode_size == 11,
 		"You need to update s_blendModeToMtxOfsTab and number of entries in m_straightBlitKernelMatrix and m_transformBlitKernelMatrix when BlendMode_size changes!");
 
+int		SoftGfxDevice::s_lineThicknessTable[17];
 
 int 	SoftGfxDevice::s_mulTab[256];
 
@@ -2813,30 +2814,17 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		return;
 	}
 
-	//____ _initTables() ___________________________________________________________
-
-	void SoftGfxDevice::_initTables()
-	{
-		// Init lineThicknessTable
-
-		for( int i = 0 ; i < 17 ; i++ )
-		{
-			double b = i/16.0;
-			m_lineThicknessTable[i] = (int) (Util::squareRoot( 1.0 + b*b ) * 65536);
-		}
-	}
-
 	//____ _scaleLineThickness() ___________________________________________________
 
 	int SoftGfxDevice::_scaleLineThickness( float thickness, int slope )
 	{
 		slope = std::abs(slope);
 
-		int scale = m_lineThicknessTable[slope>>12];
+		int scale = s_lineThicknessTable[slope>>12];
 
 		if( slope < (1 << 16) )
 		{
-			int scale2 = m_lineThicknessTable[(slope>>12)+1];
+			int scale2 = s_lineThicknessTable[(slope>>12)+1];
 			scale += ((scale2-scale)*(slope & 0xFFF)) >> 12;
 		}
 
@@ -2863,9 +2851,9 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 	}
 
 
-	//____ _initStanzaTables() ____________________________________________________
+	//____ _initTables() ____________________________________________________
 
-	void SoftGfxDevice::_initStanzaTables()
+	void SoftGfxDevice::_initTables()
 	{
 		if( !s_bTablesInitialized)
 		{
@@ -2885,6 +2873,14 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			for (int i = 0; i < 256; i++)
 				s_mulTab[i] = 65536 * i / 255;
 
+			// Init line thickness table
+			
+			for( int i = 0 ; i < 17 ; i++ )
+			{
+				double b = i/16.0;
+				s_lineThicknessTable[i] = (int) (Util::squareRoot( 1.0 + b*b ) * 65536);
+			}
+			
 			s_bTablesInitialized = true;
 		}
 	}

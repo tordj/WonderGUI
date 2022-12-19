@@ -10,13 +10,13 @@ Generating optimized blits for all possible combinations can result in tens of
 thousands of optimized render loops, growing the size of WonderGUI by many
 megabytes.
 
-The default wg_softkernels.cpp provides a good balance between size and performance
-for modern desktop applications, supporting everyting but only optimizing most
-important blit operations.
+For modern desktop applications wg_softkernels_default.h/cpp provides a good
+balance between size and performance, supporting everyting but only optimizing
+most important blit operations.
 
 ********************************************************************************
 
-SUPPORTED MODES AND FORMATS
+SUPPORTED MODES AND FORMATS 
 
 Tint modes:            None
                        Flat
@@ -78,15 +78,32 @@ Destination Formats:BGR_8_linear
 
 *******************************************************************************/
 
-#include <wg_softkernels_rgb565be_base.h>
+#include <wg_softgfxdevice.h>
 #include <wg_softkernelstanza.impl.h>
+#include <wg_c_gfxdevice.h>
 
 using namespace wg;
 
+namespace wg
+{
+	bool addBaseSoftKernelsForRGB565BECanvas( SoftGfxDevice * pDevice );
+};
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+int	wg_addBaseSoftKernelsForRGB565BECanvas( wg_obj device )
+{
+	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
+
+	return addBaseSoftKernelsForRGB565BECanvas(pDevice);
+}
+#ifdef __cplusplus
+}
+#endif
+
 bool wg::addBaseSoftKernelsForRGB565BECanvas( SoftGfxDevice * pDevice )
 {
-    SoftGfxDevice::_initStanzaTables();
-
 pDevice->setPlotKernel( BlendMode::Replace, PixelFormat::BGR_8_linear, _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_linear> );
 pDevice->setPlotKernel( BlendMode::Replace, PixelFormat::BGRX_8_linear, _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGRX_8_linear> );
 pDevice->setPlotKernel( BlendMode::Replace, PixelFormat::BGRA_8_linear, _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGRA_8_linear> );
@@ -1033,5 +1050,6 @@ pDevice->setTransformBlitKernel( PixelFormat::A_8, SampleMethod::Nearest, SoftGf
 pDevice->setTransformBlitKernel( PixelFormat::A_8, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::Tile, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _transform_blit<PixelFormat::A_8, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, SoftGfxDevice::EdgeOp::Tile> );
 pDevice->setTransformBlitKernel( PixelFormat::A_8, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Blend, PixelFormat::A_8, _transform_blit<PixelFormat::A_8, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::A_8, SoftGfxDevice::EdgeOp::None> );
 pDevice->setTransformBlitKernel( PixelFormat::A_8, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::Tile, TintMode::None, BlendMode::Blend, PixelFormat::A_8, _transform_blit<PixelFormat::A_8, SampleMethod::Nearest, TintMode::None, BlendMode::Blend, PixelFormat::A_8, SoftGfxDevice::EdgeOp::Tile> );
+
     return true;
 }

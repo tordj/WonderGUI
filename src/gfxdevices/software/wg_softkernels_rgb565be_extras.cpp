@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_softkernels_rgb565be_extras.h>
+#include <wg_c_softgfx.h>
 
 using namespace wg;
 
@@ -334,6 +335,21 @@ static void _straight_blit_bgra8linear_to_rgb565bigendian_notint_blend(const uin
 	}
 }
 
+
+//____ wg_addExtraSoftKernelsForRGB565BECanvas() __________________________________
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+int	wg_addExtraSoftKernelsForRGB565BECanvas( wg_obj device )
+{
+	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
+
+	return addExtraSoftKernelsForRGB565BECanvas(pDevice);
+}
+#ifdef __cplusplus
+}
+#endif
 
 //____ addExtraSoftKernelsForRGB565BECanvas() __________________________________
 

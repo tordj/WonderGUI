@@ -261,7 +261,7 @@ bool MyApp::exportSource()
 	myStream << "#ifdef __cplusplus" << endl;
 	myStream << "extern \"C\" {" << endl;
 	myStream << "#endif" << endl;
-	myStream << "	int	" << labelString << "( wg_obj device );" << endl;
+	myStream << "	int	wg_" << labelString << "( wg_obj device );" << endl;
 	myStream << "#ifdef __cplusplus" << endl;
 	myStream << "}" << endl;
 	myStream << "#endif" << endl;

@@ -435,22 +435,34 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 
 	out << "#include <wg_softgfxdevice.h>" << endl;
 	out << "#include <wg_softkernelstanza.impl.h>" << endl;
+	out << "#include <wg_c_gfxdevice.h>" << endl;
+
 	out << endl;
 	out << "using namespace wg;" << endl;
 	out << endl;
 
+	out << "namespace wg" << endl;
+	out << "{" << endl;
+	out << "	bool " << kernelLabel << "( SoftGfxDevice * pDevice );" << endl;
+	out << "};" << endl << endl;
 	
+	out << "#ifdef __cplusplus" << endl;
+	out << "extern \"C\" {" << endl;
+	out << "#endif" << endl;
 	out << "int	wg_" << kernelLabel << "( wg_obj device )" << endl;
 	out << "{" << endl;
 	out << "	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));" << endl;
 	out << endl;
 	out << "	return " << kernelLabel << "(pDevice);" << endl;
 	out << "}" << endl << endl;
+	out << "#ifdef __cplusplus" << endl;
+	out << "}" << endl;
+	out << "#endif" << endl;
+
 
 	out << endl;
 	out << "bool wg::" << kernelLabel << "( SoftGfxDevice * pDevice )" << endl;
 	out << "{" << endl;
-	out << "    _initStanzaTables();" << endl << endl;
 
 
 	// Print out the plot kernels.
@@ -980,7 +992,7 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 
 	// Print end of method
 
-	out << "    return true;" << endl;
+	out << endl << "    return true;" << endl;
 	out << "}" << endl;
 
 

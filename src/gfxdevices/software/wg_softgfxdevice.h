@@ -182,9 +182,9 @@ namespace wg
 		typedef	void(*TransformBlitOp_p)(const SoftSurface * pSrcSurf, BinalCoord pos, const binalInt matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);
 
-		static void _initStanzaTables();
 
-		
+		static int				s_lineThicknessTable[17];
+
 		static int 				s_mulTab[256];
 
 		static int16_t			s_limit4096Tab[4097 * 3];
@@ -314,7 +314,7 @@ namespace wg
 
 		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
 
-		void	_initTables();
+		static void	_initTables();
 		void	_updateBlitFunctions();
 		int 	_scaleLineThickness(float thickness, int slope);
 
@@ -424,8 +424,6 @@ namespace wg
 		//
 		
 		std::vector<CanvasInfo>	m_definedCanvases;
-
-		int				m_lineThicknessTable[17];
 
 		Surface_p		m_pRenderLayerSurface = nullptr;	// render layer surface
 		PixelBuffer		m_canvasPixelBuffer;

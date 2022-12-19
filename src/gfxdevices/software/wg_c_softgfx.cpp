@@ -40,27 +40,6 @@ wg_obj wg_createSoftGfxDevice()
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }
 
-int	wg_addDefaultSoftKernels( wg_obj device )
-{
-	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
-
-	return addDefaultSoftKernels(pDevice);
-}
-
-int	wg_addBaseSoftKernelsForRGB565BECanvas( wg_obj device )
-{
-	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
-
-	return addBaseSoftKernelsForRGB565BECanvas(pDevice);
-}
-
-int	wg_addExtraSoftKernelsForRGB565BECanvas( wg_obj device )
-{
-	auto pDevice = static_cast<SoftGfxDevice*>(reinterpret_cast<Object*>(device));
-
-	return addExtraSoftKernelsForRGB565BECanvas(pDevice);
-}
-
 
 int wg_defineSoftGfxDeviceCanvas( wg_obj device, wg_canvasRef ref, wg_obj softSurface )
 {

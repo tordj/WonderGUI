@@ -32,10 +32,6 @@ extern "C" {
 
 	wg_obj	wg_createSoftGfxDevice(void);
 
-	int		wg_addDefaultSoftKernels( wg_obj device );
-	int		wg_addBaseSoftKernelsForRGB565BECanvas( wg_obj device );
-	int		wg_addExtraSoftKernelsForRGB565BECanvas( wg_obj device );
-
 	int		wg_defineSoftGfxDeviceCanvas( wg_obj device, wg_canvasRef ref, wg_obj softSurface );
 
 	wg_obj	wg_createSoftSurface(const wg_surfaceBP* blueprint);
