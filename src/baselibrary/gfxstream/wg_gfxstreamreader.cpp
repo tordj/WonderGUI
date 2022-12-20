@@ -56,6 +56,7 @@ namespace wg
 
 	GfxStreamReader::~GfxStreamReader()
 	{
+		delete[] m_pBuffer;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -63,6 +64,23 @@ namespace wg
 	const TypeInfo& GfxStreamReader::typeInfo(void) const
 	{
 		return TYPEINFO;
+	}
+
+	//____ reset() ____________________________________________________________
+
+	void GfxStreamReader::reset()
+	{
+		if (m_bufferSize != c_bufferStartSize)
+		{
+			delete[] m_pBuffer;
+			m_pBuffer = new char[c_bufferStartSize + c_bufferMargin];
+			m_bufferSize = c_bufferStartSize;
+		}
+
+		m_readOfs = 0;
+		m_writeOfs = 0;
+		m_processedOfs = 0;
+		m_bufferOverflow = 0;
 	}
 
 	//____ bytesInBuffer() ____________________________________________________

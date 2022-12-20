@@ -57,7 +57,9 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Misc _____________________________________________________
-		
+	
+		void	reset();
+
 		inline int	bufferCapacity() const { return m_bufferSize; };
 		inline bool	chunkInBuffer() { return _hasStreamChunks(); };
 		int			bytesInBuffer() const;

@@ -37,6 +37,8 @@ extern "C" {
 
 	wg_component	wg_getStreamReaderOutput(wg_obj streamReader);
 
+	void			wg_resetStreamReader(wg_obj streamReader);
+
 	int				wg_streamReaderCapacity(wg_obj streamReader);
 	int				wg_streamReaderHasChunk(wg_obj streamReader);
 	int				wg_streamReaderBytes(wg_obj streamReader);

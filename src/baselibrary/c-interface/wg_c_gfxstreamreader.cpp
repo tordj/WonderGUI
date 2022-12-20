@@ -42,6 +42,11 @@ wg_component wg_getStreamReaderOutput(wg_obj streamReader)
 	return { static_cast<Object*>(p), &p->output };
 }
 
+void wg_resetStreamReader(wg_obj streamReader)
+{
+	getPtr(streamReader)->reset();
+}
+
 int wg_streamReaderCapacity(wg_obj streamReader)
 {
 	return getPtr(streamReader)->bufferCapacity();
