@@ -109,7 +109,7 @@ namespace wg
 		Border		m_gfxPadding;
 
 		BlendMode		m_blendMode = BlendMode::Undefined;
-		HiColor			m_color = Color::White;
+		HiColor			m_color = HiColor::White;
 		Gradient		m_gradient;
 	};
 

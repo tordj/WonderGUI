@@ -570,11 +570,11 @@ namespace wg
 		if( !_holder() )
 			return false;
 
-		RootPanel * pRoot = _holder()->_root();
+		Root * pRoot = _holder()->_root();
 		if( !pRoot )
 			return false;
 
-		pRoot->_addPreRenderCall(this);
+		pRoot->addPreRenderCall(this);
 		return true;
 	}
 

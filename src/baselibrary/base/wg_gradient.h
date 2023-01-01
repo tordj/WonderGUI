@@ -49,7 +49,7 @@ namespace wg
 
 		Gradient(Placement start, HiColor startColor, HiColor endColor);
 
-		inline void clear() { topLeft = topRight = bottomRight = bottomLeft = Color::White; }
+		inline void clear() { topLeft = topRight = bottomRight = bottomLeft = HiColor::White; }
 		inline bool isOpaque() { return (topLeft.a + topRight.a + bottomRight.a + bottomLeft.a) == 4096 * 4; }
 
 		inline bool operator==(const Gradient& other) const

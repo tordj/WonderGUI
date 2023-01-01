@@ -357,6 +357,19 @@ typedef struct wg_error_info_struct
 	int					line;
 } wg_error_info;
 
+//____ wg_state _______________________________________________________________
+
+typedef struct wg_state_struct
+{
+	uint8_t	focused : 1;
+	uint8_t	hovered : 1;
+	uint8_t	pressed : 1;
+	uint8_t	selected : 1;
+	uint8_t	targeted : 1;
+	uint8_t	disabled : 1;
+} wg_state;
+
+
 #ifdef __cplusplus
 }
 #endif

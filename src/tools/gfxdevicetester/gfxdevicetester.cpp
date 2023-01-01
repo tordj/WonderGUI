@@ -62,10 +62,10 @@ bool GfxDeviceTester::init( AppVisitor * pVisitor )
 	Blob_p pFontFile = pVisitor->loadBlob("resources/DroidSans.ttf");
 	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile);
 
-	TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .font = pFont, .size = 16 });
+	TextStyle_p pStyle = TextStyle::create({ .color = HiColor::Black, .font = pFont, .size = 16 });
 	Base::setDefaultStyle(pStyle);
 
-	g_pButtonLabelStyle = TextStyle::create({ .color = Color::Black, .font = pFont, .size = 16 });
+	g_pButtonLabelStyle = TextStyle::create({ .color = HiColor::Black, .font = pFont, .size = 16 });
 
 	//
 
@@ -401,7 +401,7 @@ void GfxDeviceTester::run_tests(Device* pDevice, DeviceEnum device)
 	auto pGfxDevice = pDevice->beginRender();
 	//	pDevice->setClip(g_canvasSize);
 
-	pGfxDevice->fill(g_canvasSize*64, Color::Black);
+	pGfxDevice->fill(g_canvasSize*64, HiColor::Black);
 	pGfxDevice->setClipList((int)g_clipList.size(), &g_clipList[0]);
 
 	for (auto& test : g_tests)

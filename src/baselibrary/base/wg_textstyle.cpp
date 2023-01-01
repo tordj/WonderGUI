@@ -77,8 +77,8 @@ namespace wg
 		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			m_size[i]			= -1;
-			m_color[i]			= Color::Black;
-			m_backColor[i]		= Color::Transparent;
+			m_color[i]			= HiColor::Black;
+			m_backColor[i]		= HiColor::Transparent;
 			m_decoration[i]		= TextDecoration::Undefined;
 		}
 

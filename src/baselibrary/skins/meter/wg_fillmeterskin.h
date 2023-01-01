@@ -44,7 +44,7 @@ namespace wg
 
 		struct Blueprint
 		{
-			HiColor		backColor = Color::Transparent;
+			HiColor		backColor = HiColor::Transparent;
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = Color::Blue;
 			Direction	direction = Direction::Right;

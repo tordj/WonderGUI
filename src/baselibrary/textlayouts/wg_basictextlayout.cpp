@@ -344,7 +344,7 @@ namespace wg
 		TextStyle_h		hStyle = 0xFFFF;
 
 		HiColor	baseTint = pDevice->tintColor();
-		HiColor	localTint = Color::White;
+		HiColor	localTint = HiColor::White;
 
 		BlendMode renderMode = pDevice->blendMode();
 
@@ -514,7 +514,7 @@ namespace wg
 
 		TextStyle_h hStyle = 0xFFFF;
 
-		HiColor		color = Color::Transparent;
+		HiColor		color = HiColor::Transparent;
 
 		for( pChar = pCharArray ; !pChar->isEndOfText() ; pChar++ )
 		{

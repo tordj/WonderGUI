@@ -891,7 +891,7 @@ namespace wg
 			auto pChild = slot._widget();
 			if (pChild->isContainer())
 				pFound = static_cast<Container*>(pChild)->_findWidget(pos - m_childCanvas.pos(), mode);
-			else if (mode == SearchMode::Geometry || pChild->_alphaTest(pos - m_childCanvas.pos()))
+			else if (mode == SearchMode::Geometry || pChild->_markTest(pos - m_childCanvas.pos()))
 				pFound = pChild;
 		}
 

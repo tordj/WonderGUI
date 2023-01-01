@@ -122,7 +122,7 @@ namespace wg
 
 	//____ _root() ___________________________________________________________________
 
-	RootPanel * Container::_root()
+	Root * Container::_root()
 	{
 		return m_pHolder ? m_pHolder->_root() : nullptr;
 	}
@@ -230,7 +230,7 @@ namespace wg
 		return nullptr;
 	}
 
-
+	//____ _getModalOverlay() _________________________________________________
 
 	ModalOverlay *  Container::_getModalOverlay() const
 	{
@@ -241,6 +241,8 @@ namespace wg
 		else
 			return 0;
 	}
+
+	//____ _getPopupOverlay() _________________________________________________
 
 	PopupOverlay * Container::_getPopupOverlay() const
 	{
@@ -283,7 +285,6 @@ namespace wg
 				p = p->_nextSibling();
 			}
 		}
-
 	}
 
 	//____ _render() _____________________________________________________

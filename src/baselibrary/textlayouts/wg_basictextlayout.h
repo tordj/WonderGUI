@@ -48,9 +48,9 @@ namespace wg
 			Placement	placement = Placement::NorthWest;
 
 			BlendMode	selectionBackBlend	= BlendMode::Invert;
-			HiColor		selectionBackColor	= Color::White;
+			HiColor		selectionBackColor	= HiColor::White;
 			BlendMode	selectionCharBlend	= BlendMode::Invert;
-			HiColor		selectionCharColor	= Color::White;
+			HiColor		selectionCharColor	= HiColor::White;
 
 			bool		wrap = false;
 		};

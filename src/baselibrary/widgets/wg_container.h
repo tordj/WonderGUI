@@ -85,7 +85,7 @@ namespace wg
 			// SlotHolder methods
 
 			Container *				_container() override;
-			RootPanel *				_root() override;
+			Root *					_root() override;
 			virtual int				_scale() const override;									///< Default scale value for all children.
 
 			virtual CoordSPX		_childPos( const StaticSlot * pSlot ) const override = 0;				///< Get the local position of a child.

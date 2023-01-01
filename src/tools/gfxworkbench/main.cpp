@@ -151,7 +151,7 @@ int main ( int argc, char** argv )
 		
 		RectSPX box = { 20*64, 300*64, 640*64, 60*64 };
 
-		pGfxDevice->fill(box, Color8::Black);
+		pGfxDevice->fill(box, HiColor::Black);
 		
 		pPrinter->printInBox(box, Placement::Center, "Multiline text that is\naligned inside a box.");
 		

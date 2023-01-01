@@ -358,7 +358,7 @@ namespace wg
 
 	enum class SearchMode	//. autoExtras
 	{
-		MarkPolicy,			///< Perform a mark test on widget according to widgets MarkPolicyh.
+		MarkPolicy,			///< Perform a mark test on widget according to widgets MarkPolicy.
 		Geometry,			///< Goes strictly on geometry, ignores markPolicy.
 		ActionTarget,		///< Like MarkPolicy, but takes modality into account.
 	};

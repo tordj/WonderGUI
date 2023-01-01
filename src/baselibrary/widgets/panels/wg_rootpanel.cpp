@@ -515,12 +515,15 @@ namespace wg
 	Widget* RootPanel::_findWidget(const CoordSPX& ofs, SearchMode mode)
 	{
 		if (!m_geo.contains(ofs) || !slot._widget())
-			return 0;
+			return nullptr;
 
 		if (slot._widget() && slot._widget()->isContainer())
 			return static_cast<Container*>(slot._widget())->_findWidget(ofs, mode);
 
-		return slot._widget();
+		if (mode == SearchMode::Geometry || slot._widget()->_markTest(ofs))
+			return slot._widget();
+
+		return nullptr;
 	}
 
 
@@ -579,7 +582,7 @@ namespace wg
 
 	//____ _root() __________________________________________________
 
-	RootPanel* RootPanel::_root()
+	Root* RootPanel::_root()
 	{
 		return this;
 	}

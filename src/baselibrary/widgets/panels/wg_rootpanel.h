@@ -30,6 +30,7 @@
 #include <wg_msgrouter.h>
 #include <wg_gfxdevice.h>
 #include <wg_slot.h>
+#include <wg_root.h>
 
 namespace wg
 {
@@ -53,7 +54,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected SlotHolder, protected SkinSlot::Holder
+	class RootPanel : public Object, public Root, protected SlotHolder, protected SkinSlot::Holder
 	{
 		friend class Widget;
 		friend class Container;
@@ -139,7 +140,8 @@ namespace wg
 		inline int			nbUpdatedRects() const { return m_updatedPatches.size(); }
 		inline const RectSPX*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? nullptr : m_updatedPatches.begin(); }
 
-		inline void			addDirtyPatch( const RectSPX& rect ) { m_dirtyPatches.add( rect ); }
+		inline void			addDirtyPatch( const RectSPX& rect ) override { m_dirtyPatches.add( rect ); }
+		inline void         addPreRenderCall(Widget* pWidget) override { m_preRenderCalls.push_back(pWidget); }
 
 
 	protected:
@@ -153,7 +155,7 @@ namespace wg
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		Container *  	_container() override;
-		RootPanel *		_root() override;
+		Root *			_root() override;
 		int				_scale() const override;
 
 		CoordSPX		_childPos( const StaticSlot * pSlot ) const override;
@@ -194,8 +196,6 @@ namespace wg
 		void			_skinRequestRender(const SkinSlot* pSlot) override;
 		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
-
-		inline void         _addPreRenderCall(Widget * pWidget) { m_preRenderCalls.push_back(pWidget); }
 
 		Widget *			_findWidget( const CoordSPX& ofs, SearchMode mode );
 

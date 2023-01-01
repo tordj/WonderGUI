@@ -60,7 +60,7 @@ namespace wg
 			StateBP() {}
 			StateBP( State state ) : state(state) {}
 			StateBP( State state, StateData data ) : state(state), data(data) {}
-			StateBP( State state, Color color, bool reuseBlock = false, State reuseBlockFrom = State::Normal ) : state(state) { data.color = color; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
+			StateBP( State state, HiColor color, bool reuseBlock = false, State reuseBlockFrom = State::Normal ) : state(state) { data.color = color; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
 			StateBP( State state, Coord contentShift, bool reuseBlock = false, State reuseBlockFrom = State::Normal ) : state(state)	{ data.contentShift = contentShift; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
 
 			State			state = State::Normal;

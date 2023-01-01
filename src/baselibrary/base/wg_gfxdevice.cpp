@@ -487,7 +487,7 @@ namespace wg
         m_layerSurfaces[0] = pSurface;
 
 		m_renderLayer = layer;
-		m_tintColor = Color::White;
+		m_tintColor = HiColor::White;
 		m_tintGradient.clear();
 		m_tintGradientRect = sz;
 		m_bTintGradient = false;
@@ -1340,11 +1340,11 @@ namespace wg
 
 			HiColor	col[5];
 
-			col[0] = Color::Transparent;
+			col[0] = HiColor::Transparent;
 			col[1] = pTopBorder->color;
 			col[2] = frontFill;
 			col[3] = pBottomBorder->color;
-			col[4] = Color::Transparent;
+			col[4] = HiColor::Transparent;
 
 			_transformDrawSegments(dest*64, 5, col, length + 1, pEdgeBuffer, 4, TintMode::Flat, simpleTransform );
 
@@ -1385,12 +1385,12 @@ namespace wg
 
 			HiColor	col[6];
 
-			col[0] = Color::Transparent;
+			col[0] = HiColor::Transparent;
 			col[1] = pTopBorder->color;
 			col[2] = frontFill;
 			col[3] = backFill;
 			col[4] = pBottomBorder->color;
-			col[5] = Color::Transparent;
+			col[5] = HiColor::Transparent;
 
 			_transformDrawSegments(dest*64, 6, col, length + 1, pEdgeBuffer, 5, TintMode::Flat, simpleTransform);
 		}
@@ -1605,11 +1605,11 @@ namespace wg
 		// Render columns
 
 		HiColor	col[5];
-		col[0] = Color::Transparent;
+		col[0] = HiColor::Transparent;
 		col[1] = outlineColor;
 		col[2] = fillColor;
 		col[3] = outlineColor;
-		col[4] = Color::Transparent;
+		col[4] = HiColor::Transparent;
 
 		const RectI * pOldClipRects = m_pClipRects;
 		int nOldClipRects = m_nClipRects;

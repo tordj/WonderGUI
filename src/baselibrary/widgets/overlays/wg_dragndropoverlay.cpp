@@ -502,7 +502,7 @@ namespace wg
 
 			auto pFactory = pDevice->surfaceFactory();
 			auto pCanvas = pFactory->createSurface(sz/64,PixelFormat::BGRA_8);
-			pCanvas->fill( Color::Transparent );
+			pCanvas->fill( HiColor::Transparent );
 
 			pDevice->beginCanvasUpdate(pCanvas);
 			m_pPicked->_render(pDevice, sz, sz);

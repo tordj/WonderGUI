@@ -26,8 +26,10 @@
 
 #include <wg_c_callcollection.h>
 
+
 namespace wg
 {
+
 	class CABI
 	{
 	public:
@@ -54,4 +56,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CABI__DOT_H
+#endif //WG_CABI_DOT_H

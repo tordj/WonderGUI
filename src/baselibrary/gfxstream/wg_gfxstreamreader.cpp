@@ -208,7 +208,7 @@ namespace wg
 		if (m_readOfs <= m_processedOfs)
 			m_bufferOverflow = 0;
 	}
-
+	 
 	//____ _fetchStreamChunks() _______________________________________________
 
 	bool GfxStreamReader::_fetchStreamChunks()

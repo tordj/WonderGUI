@@ -52,7 +52,7 @@ namespace wg
 
 		struct Blueprint
 		{
-			HiColor		backColor = Color::Transparent;
+			HiColor		backColor = HiColor::Transparent;
 
 			BlendMode	blendMode = BlendMode::Undefined;
 			Size		defaultSize;
@@ -60,7 +60,7 @@ namespace wg
 
 			Border		gfxPadding;
 
-			HiColor		hubColor = Color::Transparent;
+			HiColor		hubColor = HiColor::Transparent;
 			float		hubSize = 0.75f;
 
 			int			layer = -1;
@@ -125,8 +125,8 @@ namespace wg
 		Border		m_gfxPadding;
 
 		BlendMode	m_blendMode = BlendMode::Undefined;
-		HiColor		m_hubColor = Color::Transparent;
-		HiColor		m_backColor = Color::Transparent;
+		HiColor		m_hubColor = HiColor::Transparent;
+		HiColor		m_backColor = HiColor::Transparent;
 		HiColor		m_emptyColor = Color::DarkBlue;
 
 		Slice		m_slices[c_maxSlices];

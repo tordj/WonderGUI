@@ -31,7 +31,7 @@
 namespace wg
 {
 	class Container;
-	class RootPanel;
+	class Root;
 	class Widget;
 	class StaticSlot;
 	class Object;
@@ -44,7 +44,7 @@ namespace wg
 	{
 	public:
 		virtual Container * _container() = 0;
-		virtual RootPanel *	_root() = 0;
+		virtual Root *		_root() = 0;
 		virtual int			_scale() const = 0;
 
 		virtual const TypeInfo& _slotTypeInfo(const StaticSlot * pSlot) const = 0;

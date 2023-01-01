@@ -80,7 +80,7 @@ namespace wg
 		for (int i = 0; i < State::IndexAmount; i++)
 		{
 			layer.blockOfs[i] = ofs;
-			layer.tintColor[i] = Color::White;
+			layer.tintColor[i] = HiColor::White;
 
 			_updateStateOpacity(i);
 		}
@@ -106,7 +106,7 @@ namespace wg
 		//
 
 		for (int i = 0; i < State::IndexAmount; i++)
-			layer.tintColor[i] = Color::White;
+			layer.tintColor[i] = HiColor::White;
 
 		//
 
@@ -181,7 +181,7 @@ namespace wg
 
 		// Set default color for normal state.
 
-		layer.tintColor[0] = Color::White;
+		layer.tintColor[0] = HiColor::White;
 
 		//
 

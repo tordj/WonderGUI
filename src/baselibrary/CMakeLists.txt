@@ -107,6 +107,7 @@ add_library( wondergui
 	base/wg_resdb.cpp
 	base/wg_resdb.h
 	base/wg_resloader.h
+	base/wg_root.h
 	base/wg_skinslot.cpp
 	base/wg_skinslot.h
 	base/wg_skinslotmanager.cpp

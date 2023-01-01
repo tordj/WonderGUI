@@ -99,7 +99,7 @@ namespace wg
 
 	void FillMeterSkin::_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, Color::White, _canvas, m_gradient );
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, HiColor::White, _canvas, m_gradient );
 
 		HiColor barColor = HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096 * value));
 

@@ -443,7 +443,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		if (m_nTintGradients == 0)
 		{
-			if (color == Color::White)
+			if (color == HiColor::White)
 				tintMode = TintMode::None;
 			else
 				tintMode = TintMode::Flat;
@@ -488,7 +488,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		if (!m_bTintGradient)
 		{
-			tintMode = (m_tintColor == Color::White) ? TintMode::None : TintMode::Flat;
+			tintMode = (m_tintColor == HiColor::White) ? TintMode::None : TintMode::Flat;
 			m_colTrans.flatTintColor = m_tintColor;
 			m_bTintOpaque = (m_tintColor.a == 4096);
 		}
