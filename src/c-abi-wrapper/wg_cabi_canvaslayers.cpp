@@ -24,7 +24,7 @@
 #include <wg_cabi_gfxdevice.h>
 #include <wg_base.h>
 
-#include <wg_cabi.h>
+#include <wg_cabi_base.h>
 
 #include <cstring>
 

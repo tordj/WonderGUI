@@ -32,59 +32,63 @@
 namespace wg
 {
 
+	inline CABIRoot* getRoot(void * pRoot) {
+		return static_cast<CABIRoot*>(reinterpret_cast<Object*>(pRoot));
+	}
+
 
 
 	static wg_spx func_matchingHeight(void* pCABIRoot, wg_spx width, int scale)
 	{
-		return (wg_spx) static_cast<CABIRoot*>(pCABIRoot)->_matchingHeight(spx(width), scale);
+		return (wg_spx) getRoot(pCABIRoot)->_matchingHeight(spx(width), scale);
 	}
 
 	static wg_spx func_matchingWidth(void* pCABIRoot, wg_spx height, int scale)
 	{
-		return (wg_spx) static_cast<CABIRoot*>(pCABIRoot)->_matchingWidth(spx(height), scale);
+		return (wg_spx) getRoot(pCABIRoot)->_matchingWidth(spx(height), scale);
 	}
 
 	static wg_sizeSPX func_defaultSize(void* pCABIRoot, int scale)
 	{
-		SizeSPX sz = static_cast<CABIRoot*>(pCABIRoot)->_defaultSize(scale);
+		SizeSPX sz = getRoot(pCABIRoot)->_defaultSize(scale);
 		return { sz.w, sz.h };
 	}
 
 	static wg_sizeSPX func_minSize(void* pCABIRoot, int scale)
 	{
-		SizeSPX sz = static_cast<CABIRoot*>(pCABIRoot)->_minSize(scale);
+		SizeSPX sz = getRoot(pCABIRoot)->_minSize(scale);
 		return { sz.w, sz.h };
 	}
 
 	static wg_sizeSPX func_maxSize(void* pCABIRoot, int scale)
 	{
-		SizeSPX sz = static_cast<CABIRoot*>(pCABIRoot)->_maxSize(scale);
+		SizeSPX sz = getRoot(pCABIRoot)->_maxSize(scale);
 		return { sz.w, sz.h };
 	}
 
 	int	func_markTest(void* pCABIRoot, wg_coordSPX ofs)
 	{
-		return static_cast<CABIRoot*>(pCABIRoot)->_markTest({ ofs.x, ofs.y });
+		return getRoot(pCABIRoot)->_markTest({ ofs.x, ofs.y });
 	}
 
 	void func_preRender(void* pCABIRoot)
 	{
-		static_cast<CABIRoot*>(pCABIRoot)->_preRender();
+		getRoot(pCABIRoot)->_preRender();
 	}
 
 	void func_render(void* pCABIRoot, wg_obj device, wg_rectSPX canvas, wg_rectSPX window)
 	{
-		static_cast<CABIRoot*>(pCABIRoot)->_render(device, {canvas.x, canvas.y, canvas.w, canvas.h}, {window.x, window.y, window.w, window.h});
+		getRoot(pCABIRoot)->_render(device, {canvas.x, canvas.y, canvas.w, canvas.h}, {window.x, window.y, window.w, window.h});
 	}
 
 	void func_resize(void* pCABIRoot, wg_sizeSPX size, int scale)
 	{
-		static_cast<CABIRoot*>(pCABIRoot)->_resize({ size.w, size.h }, scale);
+		getRoot(pCABIRoot)->_resize({ size.w, size.h }, scale);
 	}
 
 	void func_setState(void* pCABIRoot, wg_state state)
 	{
-		static_cast<CABIRoot*>(pCABIRoot)->_setState(*(State*)&state);
+		getRoot(pCABIRoot)->_setState(*(State*)&state);
 	}
 
 	void func_receive(void* pCABIRoot, wg_obj msg)
@@ -92,12 +96,17 @@ namespace wg
 
 	}
 
+	wg_pointerStyle func_pointerStyle(void* pCABIRoot)
+	{
+		return (wg_pointerStyle)getRoot(pCABIRoot)->_pointerStyle();
+	}
+
 	wg_cabi_root_incalls makeCABI_root_incalls(CABIRoot* pCABIRoot)
 	{
 		wg_cabi_root_incalls calls;
 
 		calls.structSize		= sizeof(wg_cabi_root_incalls);
-		calls.pCABIRoot			= pCABIRoot;
+		calls.pCABIRoot			= static_cast<Object*>(pCABIRoot);
 		calls.matchingHeight	= func_matchingHeight;
 		calls.matchingWidth		= func_matchingWidth;
 		calls.defaultSize		= func_defaultSize;
@@ -109,6 +118,7 @@ namespace wg
 		calls.resize			= func_resize;
 		calls.setState			= func_setState;
 		calls.receive			= func_receive;
+		calls.pointerStyle		= func_pointerStyle;
 
 		return calls;
 	}
@@ -150,6 +160,11 @@ namespace wg
 		return getCapsule(hostCapsule)->_rootRequestFocus();
 	}
 
+	int func_requestPreRenderCall(wg_obj hostCapsule)
+	{
+		return 	getCapsule(hostCapsule)->_requestPreRenderCall();
+	}
+
 	void func_requestInView(wg_obj hostCapsule, wg_rectSPX mustHaveArea, wg_rectSPX niceToHaveArea)
 	{
 		return getCapsule(hostCapsule)->_rootRequestInView( {mustHaveArea.x, mustHaveArea.y, mustHaveArea.w, mustHaveArea.h},
@@ -173,18 +188,20 @@ namespace wg
 		calls.structSize = sizeof(wg_cabi_root_outcalls);
 		calls.hostCapsule = static_cast<Object*>(pCABICapsule);
 
-		calls.requestRender = func_requestRender;
-		calls.requestResize = func_requestResize;
-		calls.isVisible		= func_isVisible;
-		calls.windowSection = func_windowSection;
-		calls.requestFocus	= func_requestFocus;
-		calls.releaseFocus	= func_releaseFocus;
-		calls.requestInView = func_requestInView;
-		calls.connect		= func_connect;
-		calls.disconnect	= func_disconnect;
+		calls.requestRender			= func_requestRender;
+		calls.requestResize			= func_requestResize;
+		calls.isVisible				= func_isVisible;
+		calls.windowSection			= func_windowSection;
+		calls.requestFocus			= func_requestFocus;
+		calls.releaseFocus			= func_releaseFocus;
+		calls.requestPreRenderCall	= func_requestPreRenderCall;
+		calls.requestInView			= func_requestInView;
+		calls.connect				= func_connect;
+		calls.disconnect			= func_disconnect;
 
 		return calls;
 	}
+
 } // namespace wg
 
 #endif //WG_CABIROOTINTERFACE_DOT_H

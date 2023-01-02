@@ -94,7 +94,7 @@ namespace wg
 		Widget_p			findWidget(const Coord& ofs, SearchMode mode);
 
 		void				addDirtyPatch(const RectSPX& rect) override;
-		void				addPreRenderCall(Widget* pWidget) override;
+		bool				addPreRenderCall(Widget* pWidget) override;
 
 		//.____ Internal ________________________________________________________
 
@@ -114,6 +114,8 @@ namespace wg
 		void		_setState(State state);
 
 		void		_receive(Msg* pMsg);
+
+		PointerStyle	_pointerStyle() const;
 
 	protected:
 		CABIRoot();
@@ -173,8 +175,8 @@ namespace wg
 		CanvasLayers_p		m_pCanvasLayers;
 
 		RectSPX				m_size;
-		int					m_scale;
-
+		int					m_scale = 64;
+		State				m_state;
 
 		Widget_wp			m_pFocusedChild;
 	};

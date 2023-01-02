@@ -317,7 +317,7 @@ typedef enum
 } wg_gfxChunkId;
 
 
-//____ wg_error_severity ________________________________________________
+//____ wg_errorSeverity ________________________________________________
 
 typedef enum
 {
@@ -325,9 +325,9 @@ typedef enum
 	WG_SILENT_FAIL,
 	WG_SERIOUS_ERROR,
 	WG_CRITICAL_ERROR
-} wg_error_severity;
+} wg_errorSeverity;
 
-//____ wg_error_code ____________________________________________________
+//____ wg_errorCode ____________________________________________________
 
 typedef enum
 {
@@ -341,21 +341,21 @@ typedef enum
 	WG_ERROR_ILLEGAL_CALL,
 	WG_ERROR_RESOURCE_EXHAUSTED,			// A LIMITED INTERNAL RESOURCE HAS BEEN EXHAUSTED
 	WG_ERROR_OTHER
-} wg_error_code;
+} wg_errorCode;
 
-//____ wg_error_info _____________________________________________________
+//____ wg_errorInfo _____________________________________________________
 
-typedef struct wg_error_info_struct
+typedef struct wg_errorInfo_struct
 {
-	wg_error_severity	severity;
-	wg_error_code		code;
+	wg_errorSeverity	severity;
+	wg_errorCode		code;
 	const char * 		message;
 	const void *		object;
 	const char *		classname;
 	const char *		function;
 	const char *		file;
 	int					line;
-} wg_error_info;
+} wg_errorInfo;
 
 //____ wg_state _______________________________________________________________
 
@@ -369,6 +369,30 @@ typedef struct wg_state_struct
 	uint8_t	disabled : 1;
 } wg_state;
 
+//____ wg_pointerStyle _______________________________________________________
+
+typedef enum
+{
+	WG_POINTER_ARROW,				// default arrow
+	WG_POINTER_DEFAULT = WG_POINTER_ARROW,	// default arrow
+	WG_POINTER_HOURGLASS,			// hourglass
+	WG_POINTER_HAND,				// hand
+	WG_POINTER_OPENHAND,			// open hand
+	WG_POINTER_CLOSEDHAND,			// closed hand
+	WG_POINTER_CROSSHAIR,			// crosshair
+	WG_POINTER_HELP,				// help
+	WG_POINTER_IBEAM,				// I-beam
+	WG_POINTER_STOP,				// slashed circle
+	WG_POINTER_UPARROW,			// arrow pointing up
+	WG_POINTER_RESIZEALL,			// four-pointed arrow in all directions
+	WG_POINTER_RESIZENESW,			// double-pointed arrow pointing northeast and southwest
+	WG_POINTER_RESIZENWSE,			// double-pointed arrow pointing northwest and southeast
+	WG_POINTER_RESIZENS,			// double-pointed arrow pointing north and south
+	WG_POINTER_RESIZEWE,			// double-pointed arrow pointing west and east
+	WG_POINTER_RESIZEBEAMNS,		// double-pointed arrow pointing north and south
+	WG_POINTER_RESIZEBEAMWE,		// double-pointed arrow pointing north and south
+
+} wg_pointerStyle;
 
 #ifdef __cplusplus
 }

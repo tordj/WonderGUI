@@ -23,7 +23,7 @@
 #include <wg_base.h>
 
 #include <wg_cabi_bitmapcache.h>
-#include <wg_cabi.h>
+#include <wg_cabi_base.h>
 
 #include <cassert>
 #include <algorithm>

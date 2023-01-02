@@ -574,8 +574,7 @@ namespace wg
 		if( !pRoot )
 			return false;
 
-		pRoot->addPreRenderCall(this);
-		return true;
+		return pRoot->addPreRenderCall(this);
 	}
 
 	//____ _startReceiveUpdates() _____________________________________________

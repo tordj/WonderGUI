@@ -117,27 +117,27 @@ namespace wg
 		virtual bool		pushClipList(int nRectangles, const RectSPX* pRectangles);
 		virtual bool		popClipList();
 
-		inline const RectSPX*	clipList() const { return m_pClipRects; }
-		inline int			clipListSize() const { return m_nClipRects; }
-		inline const RectSPX&		clipBounds() const { return m_clipBounds; }
+		virtual const RectSPX*	clipList() const { return m_pClipRects; }
+		virtual int			clipListSize() const { return m_nClipRects; }
+		virtual const RectSPX&	clipBounds() const { return m_clipBounds; }
 
 		virtual void		setTintColor( HiColor color );
-		inline HiColor		tintColor() const { return m_tintColor; }
+		virtual HiColor		tintColor() const { return m_tintColor; }
 
 		virtual void		setTintGradient(const RectSPX& rect, const Gradient& gradient);
 		virtual void		clearTintGradient();
 
 		virtual bool		setBlendMode( BlendMode blendMode );
-		inline BlendMode 	blendMode() const { return m_blendMode; }
+		virtual BlendMode 	blendMode() const { return m_blendMode; }
 
 		virtual bool		setBlitSource(Surface * pSource);
-		inline Surface_p 	blitSource() const { return m_pBlitSource; }
+		virtual Surface_p 	blitSource() const { return m_pBlitSource; }
 
 		virtual void		setMorphFactor(float factor);
-		float				morphFactor() const { return m_morphFactor; }
+		virtual float		morphFactor() const { return m_morphFactor; }
 
 		virtual void		setRenderLayer(int layer);
-		int					renderLayer() const { return m_renderLayer; }
+		virtual int			renderLayer() const { return m_renderLayer; }
 
 		//.____ Rendering ________________________________________________
 

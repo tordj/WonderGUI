@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_cabi.h>
+#include <wg_cabi_base.h>
 #include <wg_cabi_gfxdevice.h>
 #include <wg_cabi_surface.h>
 #include <wg_cabi_surfacefactory.h>
@@ -132,7 +132,7 @@ namespace wg
         return retVal;
     }
 
-    //____ popClipList() __________________________________________________________
+    //____ popClipList() ______________________________________________________
 
     bool CABIGfxDevice::popClipList()
     {
@@ -143,7 +143,28 @@ namespace wg
         return retVal;
     }
 
-    //____ setTintColor() __________________________________________________________
+    //____ clipList() _________________________________________________________
+
+    const RectSPX* CABIGfxDevice::clipList() const
+    {
+        return (RectSPX*) CABI::gfxDevice->getClipList(m_cDevice);
+    }
+
+    //____ clipListSize() _____________________________________________________
+
+    int CABIGfxDevice::clipListSize() const
+    {
+        return CABI::gfxDevice->clipListSize(m_cDevice);
+    }
+
+    //____ clipBounds() _______________________________________________________
+
+    const RectSPX& CABIGfxDevice::clipBounds() const
+    {
+        return  * (RectSPX*) CABI::gfxDevice->clipBounds(m_cDevice);
+    }
+
+    //____ setTintColor() _____________________________________________________
 
     void CABIGfxDevice::setTintColor( HiColor color )
     {
@@ -152,7 +173,16 @@ namespace wg
         CABI::gfxDevice->setTintColor(m_cDevice, *(wg_color*)&color);
     }
 
-    //____ setTintGradient() _______________________________________________________
+    //____ tintColor() ________________________________________________________
+
+    HiColor CABIGfxDevice::tintColor() const
+    {
+        wg_color col = CABI::gfxDevice->getTintColor(m_cDevice);
+
+        return *(HiColor*)&col;
+    }
+
+    //____ setTintGradient() __________________________________________________
 
     void CABIGfxDevice::setTintGradient(const RectSPX& rect, const Gradient& gradient)
     {
@@ -161,7 +191,7 @@ namespace wg
         CABI::gfxDevice->setTintGradient(m_cDevice, (const wg_rectSPX*)&rect, (const wg_gradient*)&gradient);
     }
 
-    //____ clearTintGradient() _____________________________________________________
+    //____ clearTintGradient() ________________________________________________
 
     void CABIGfxDevice::clearTintGradient()
     {
@@ -185,6 +215,14 @@ namespace wg
         return retVal;
     }
 
+    //____ blendMode() ________________________________________________________
+
+    BlendMode  CABIGfxDevice::blendMode() const
+    {
+        return (BlendMode) CABI::gfxDevice->getBlendMode(m_cDevice);
+    }
+
+
     //____ setBlitSource() _______________________________________________________
 
     bool CABIGfxDevice::setBlitSource(Surface * pSource)
@@ -200,6 +238,15 @@ namespace wg
         return retVal;
     }
 
+    //____ CABIGfxDevice::blitSource() ________________________________________
+
+    Surface_p CABIGfxDevice::blitSource() const
+    {
+        // This method can not be correctly implemented without huge performance loss.
+
+        return nullptr;
+    }
+
     //____ setMorphFactor() ______________________________________________________
 
     void CABIGfxDevice::setMorphFactor(float factor)
@@ -209,6 +256,13 @@ namespace wg
         CABI::gfxDevice->setMorphFactor(m_cDevice, m_morphFactor);
     }
 
+    //____ morphFactor() ______________________________________________________
+
+    float CABIGfxDevice::morphFactor() const
+    {
+        return CABI::gfxDevice->getMorphFactor(m_cDevice);
+    }
+
     //____ setRenderLayer() _______________________________________________________
 
     void CABIGfxDevice::setRenderLayer(int layer)
@@ -216,6 +270,13 @@ namespace wg
         GfxDevice::setRenderLayer(layer);
        
         CABI::gfxDevice->setRenderLayer(m_cDevice, m_renderLayer);
+    }
+
+    //____ renderLayer() ______________________________________________________
+
+    int CABIGfxDevice::renderLayer() const
+    {
+        return CABI::gfxDevice->getRenderLayer(m_cDevice);
     }
 
 	//____ beginRender() ___________________________________________________________

@@ -27,8 +27,6 @@
 #include <wg_c_types.h>
 #include <wg_c_geo.h>
 
-class CABIRoot;
-class CABICapsule;
 
 
 
@@ -41,22 +39,24 @@ extern "C" {
 		int			structSize;
 		void*		pCABIRoot;
 
-		wg_spx(*matchingHeight)(void* pCABIRoot, wg_spx width, int scale);
-		wg_spx(*matchingWidth)(void* pCABIRoot, wg_spx height, int scale);
+		wg_spx		(*matchingHeight)(void* pCABIRoot, wg_spx width, int scale);
+		wg_spx			(*matchingWidth)(void* pCABIRoot, wg_spx height, int scale);
 
-		wg_sizeSPX(*defaultSize)(void* pCABIRoot, int scale);
-		wg_sizeSPX(*minSize)(void* pCABIRoot, int scale);
-		wg_sizeSPX(*maxSize)(void* pCABIRoot, int scale);
+		wg_sizeSPX		(*defaultSize)(void* pCABIRoot, int scale);
+		wg_sizeSPX		(*minSize)(void* pCABIRoot, int scale);
+		wg_sizeSPX		(*maxSize)(void* pCABIRoot, int scale);
 
-		int			(*markTest)(void* pCABIRoot, wg_coordSPX ofs);
+		int				(*markTest)(void* pCABIRoot, wg_coordSPX ofs);
 
-		void    	(*preRender)(void* pCABIRoot);
-		void		(*render)(void* pCABIRoot, wg_obj pDevice, wg_rectSPX canvas, wg_rectSPX window);
+		void    		(*preRender)(void* pCABIRoot);
+		void			(*render)(void* pCABIRoot, wg_obj pDevice, wg_rectSPX canvas, wg_rectSPX window);
 
-		void		(*resize)(void* pCABIRoot, wg_sizeSPX size, int scale);
-		void		(*setState)(void* pCABIRoot, wg_state state);
+		void			(*resize)(void* pCABIRoot, wg_sizeSPX size, int scale);
+		void			(*setState)(void* pCABIRoot, wg_state state);
+		void			(*receive)(void* pCABIRoot, wg_obj msg);
 
-		void		(*receive)(void* pCABIRoot, wg_obj msg);
+//		wg_string		(*tooltip)(void* pCABIRoot);
+		wg_pointerStyle	(*pointerStyle)(void* pCABIRoot);
 
 	};
 
@@ -71,6 +71,8 @@ extern "C" {
 		wg_rectSPX	(*windowSection)(wg_obj hostCapsule);
 		int			(*requestFocus)(wg_obj hostCapsule);
 		int			(*releaseFocus)(wg_obj hostCapsule);
+		int			(*requestPreRenderCall)(wg_obj hostCapsule);
+
 
 		void		(*requestInView)(wg_obj hostCapsule, wg_rectSPX mustHaveArea, wg_rectSPX niceToHaveArea );
 
@@ -81,6 +83,8 @@ extern "C" {
 
 namespace wg
 {
+	class CABIRoot;
+	class CABICapsule;
 
 	wg_cabi_root_incalls makeCABI_root_incalls(CABIRoot* pCABIRoot);
 

@@ -22,7 +22,7 @@
 
 #include <memory.h>
 
-#include <wg_cabi.h>
+#include <wg_cabi_base.h>
 #include <wg_cabi_surface.h>
 #include <wg_cabi_surfacefactory.h>
 

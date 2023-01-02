@@ -31,7 +31,7 @@ namespace wg
 
 	const TypeInfo CABICapsule::TYPEINFO = { "CABICapsule", &Widget::TYPEINFO };
 
-	//____ create() _______________________________________________________________
+	//____ create() ___________________________________________________________
 
 	CABICapsule_p CABICapsule::create()
 	{
@@ -44,7 +44,7 @@ namespace wg
 	}
 
 
-	//____ constructor ____________________________________________________________
+	//____ constructor ________________________________________________________
 
 	CABICapsule::CABICapsule()
 	{
@@ -58,7 +58,7 @@ namespace wg
 	
 	}
 
-	//____ Destructor _____________________________________________________________
+	//____ Destructor _________________________________________________________
 
 	CABICapsule::~CABICapsule()
 	{
@@ -71,8 +71,26 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ tooltip() __________________________________________________________
 
-	//____ _defaultSize() ________________________________________________________
+	String CABICapsule::tooltip() const
+	{
+		//TODO: Implement!!!
+
+		return String();
+	}
+
+	//____ pointerStyle() _____________________________________________________
+
+	PointerStyle CABICapsule::pointerStyle() const
+	{
+		if (m_cabi.pCABIRoot)
+			return (PointerStyle)m_cabi.pointerStyle(m_cabi.pCABIRoot);
+		else
+			return m_pointerStyle;
+	}
+
+	//____ _defaultSize() _____________________________________________________
 
 	SizeSPX CABICapsule::_defaultSize(int scale) const
 	{
@@ -85,7 +103,7 @@ namespace wg
 		return SizeSPX();
 	}
 
-	//____ _minSize() ______________________________________________________________
+	//____ _minSize() _________________________________________________________
 
 	SizeSPX CABICapsule::_minSize(int scale) const
 	{
@@ -97,7 +115,7 @@ namespace wg
 		return SizeSPX();
 	}
 
-	//____ _maxSize() ______________________________________________________________
+	//____ _maxSize() _________________________________________________________
 
 	SizeSPX CABICapsule::_maxSize(int scale) const
 	{
@@ -107,7 +125,7 @@ namespace wg
 			return { size.w, size.h };
 		}
 
-		return SizeSPX();
+		return SizeSPX(spx_max,spx_max);
 	}
 
 	//____ _matchingHeight() __________________________________________________
@@ -173,10 +191,13 @@ namespace wg
 
 	bool CABICapsule::_alphaTest(const CoordSPX& ofs)
 	{
+		return true;
+/*
 		if (m_cabi.pCABIRoot)
 			return m_cabi.alphaTest(m_cabi.pCABIRoot, { ofs.x,ofs.y } );
 
 		return false;
+*/
 	}
 
 	//____ _isRootVisible() ___________________________________________________

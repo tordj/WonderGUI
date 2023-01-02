@@ -22,7 +22,7 @@
 
 
 
-#include <wg_cabi.h>
+#include <wg_cabi_base.h>
 
 namespace wg
 {

@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_cabi.h>
+#include <wg_cabi_base.h>
 #include <wg_cabi_bitmapfont.h>
 #include <wg_cabi_surface.h>
 

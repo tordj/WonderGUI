@@ -113,35 +113,35 @@ namespace wg
 		//.____ Debug __________________________________________________________
 
 		void				setDebugMode( bool onOff );
-		bool				isDebugMode() const { return m_bDebugMode; }
+		inline bool			isDebugMode() const;
 		void 				setDebugOverlay(Skin * pOverlaySkin );
 		void				setDebugAfterglow(int frames);
-		Skin_p				debugOverlay() const { return m_pDebugOverlay;  }
-		int					debugAfterglow() const { return m_afterglowFrames;  }
+		inline Skin_p		debugOverlay() const;
+		inline int			debugAfterglow() const;
 
 		//.____ Misc ___________________________________________________________
 
-		bool				setGfxDevice( GfxDevice * pDevice );
-		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
+		bool					setGfxDevice( GfxDevice * pDevice );
+		inline GfxDevice_p 		gfxDevice() const;
 
-		bool				setCanvas(Surface* pCanvasSurface);
-		bool				setCanvas(CanvasRef canvasRef);
-		inline const CanvasInfo& canvasInfo() const { return m_canvas; }
-		inline SizeI		canvasSize() const { return m_canvas.size; }
+		bool					setCanvas(Surface* pCanvasSurface);
+		bool					setCanvas(CanvasRef canvasRef);
+		inline const CanvasInfo&canvasInfo() const;
+		inline SizeI			canvasSize() const;
 
-		void				setCanvasLayers( CanvasLayers * pLayers );
-		CanvasLayers_p		canvasLayers() const { return m_pCanvasLayers; }
+		void					setCanvasLayers( CanvasLayers * pLayers );
+		inline CanvasLayers_p	canvasLayers() const;
 
-		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget( Util::ptsToSpx(ofs,m_scale)-m_geo.pos(),mode)); }
+		inline Widget_p			findWidget(const Coord& ofs, SearchMode mode);
 
-		inline int			nbDirtyRects() const { return m_dirtyPatches.size(); }
-		inline const RectSPX*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? nullptr : m_dirtyPatches.begin(); }
+		inline int				nbDirtyRects() const;
+		inline const RectSPX*	firstDirtyRect() const;
 
-		inline int			nbUpdatedRects() const { return m_updatedPatches.size(); }
-		inline const RectSPX*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? nullptr : m_updatedPatches.begin(); }
+		inline int				nbUpdatedRects() const;
+		inline const RectSPX*	firstUpdatedRect() const;
 
-		inline void			addDirtyPatch( const RectSPX& rect ) override { m_dirtyPatches.add( rect ); }
-		inline void         addPreRenderCall(Widget* pWidget) override { m_preRenderCalls.push_back(pWidget); }
+		inline void				addDirtyPatch(const RectSPX& rect) override;
+		inline bool				addPreRenderCall(Widget* pWidget) override;
 
 
 	protected:
@@ -250,6 +250,105 @@ namespace wg
 	{
 		return m_skin.get();
 	}
+
+	//____ isDebugMode() ______________________________________________________
+
+	bool RootPanel::isDebugMode() const 
+	{ 
+		return m_bDebugMode; 
+	}
+
+	//____ debugOverlay() _____________________________________________________
+
+	inline Skin_p RootPanel::debugOverlay() const 
+	{ 
+		return m_pDebugOverlay; 
+	}
+
+	//____ debugAfterglow() ___________________________________________________
+
+	int RootPanel::debugAfterglow() const 
+	{ 
+		return m_afterglowFrames; 
+	}
+
+	//____ gfxDevice() ___________________________________________________
+
+	GfxDevice_p RootPanel::gfxDevice() const 
+	{ 
+		return m_pGfxDevice; 
+	}
+
+	//____ canvasInfo() ___________________________________________________
+
+	const CanvasInfo& RootPanel::canvasInfo() const 
+	{ 
+		return m_canvas; 
+	}
+
+	//____ canvasSize() ___________________________________________________
+
+	SizeI RootPanel::canvasSize() const 
+	{ 
+		return m_canvas.size; 
+	}
+
+	//____ canvasLayers() ___________________________________________________
+
+	CanvasLayers_p RootPanel::canvasLayers() const 
+	{ 
+		return m_pCanvasLayers;
+	}
+
+	//____ findWidget() _______________________________________________________
+
+	Widget_p RootPanel::findWidget(const Coord& ofs, SearchMode mode)
+	{ 
+		return Widget_p(_findWidget(Util::ptsToSpx(ofs, m_scale) - m_geo.pos(), mode)); 
+	}
+
+	//____ nbDirtyRects() _____________________________________________________
+
+	int RootPanel::nbDirtyRects() const 
+	{ 
+		return m_dirtyPatches.size();
+	}
+
+	//____ firstDirtyRect() ___________________________________________________
+
+	const RectSPX* RootPanel::firstDirtyRect() const 
+	{ 
+		return m_dirtyPatches.isEmpty() ? nullptr : m_dirtyPatches.begin(); 
+	}
+
+	//____ nbUpdateRects() ____________________________________________________
+
+	int RootPanel::nbUpdatedRects() const 
+	{ 
+		return m_updatedPatches.size(); 
+	}
+
+	//____ firstUpdateRect() __________________________________________________
+
+	const RectSPX* RootPanel::firstUpdatedRect() const 
+	{ 
+		return m_updatedPatches.isEmpty() ? nullptr : m_updatedPatches.begin(); 
+	}
+
+	//____ addDirtyPatch() ____________________________________________________
+
+	void RootPanel::addDirtyPatch(const RectSPX& rect) 
+	{ 
+		m_dirtyPatches.add(rect); 
+	}
+
+	//____ addPreRenderCall() _________________________________________________
+
+	bool RootPanel::addPreRenderCall(Widget* pWidget)
+	{ 
+		m_preRenderCalls.push_back(pWidget); return true; 
+	}
+
 
 } // namespace wg
 #endif //WG_ROOTPANEL_DOT_H

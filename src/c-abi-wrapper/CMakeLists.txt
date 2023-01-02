@@ -2,8 +2,9 @@ source_group(Files REGULAR_EXPRESSION ".*")
 
 add_library( wgcabiwrapper
 
-	wg_cabi.cpp
 	wg_cabi.h
+	wg_cabi_base.cpp
+	wg_cabi_base.h
 	wg_cabi_bitmapcache.cpp
 	wg_cabi_bitmapcache.h
 	wg_cabi_bitmapfont.cpp

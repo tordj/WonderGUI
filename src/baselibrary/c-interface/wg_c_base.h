@@ -37,7 +37,7 @@ extern "C" {
 	int		wg_exit(void);
 	int		wg_isInitialized(void);
 
-	void	wg_setErrorHandler(void (*errorHandler)(const wg_error_info * pError) );
+	void	wg_setErrorHandler(void (*errorHandler)(const wg_errorInfo * pError) );
 
 
 #ifdef __cplusplus

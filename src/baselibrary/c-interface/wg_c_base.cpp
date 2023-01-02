@@ -42,15 +42,15 @@ int wg_isInitialized()
 	return Base::isInitialized();
 }
 
-void wg_setErrorHandler( void (*errorHandler)(const wg_error_info * pError) )
+void wg_setErrorHandler( void (*errorHandler)(const wg_errorInfo * pError) )
 {
 
 	Base::setErrorHandler( [errorHandler](Error& error)
 	{
-		wg_error_info	errorInfo;
+		wg_errorInfo	errorInfo;
 
-		wg_error_code		errorCode;
-		wg_error_severity	severity;
+		wg_errorCode		errorCode;
+		wg_errorSeverity	severity;
 
 		switch( error.code )
 		{

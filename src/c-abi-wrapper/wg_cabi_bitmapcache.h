@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_bitmapcache.h>
-#include <wg_cabi.h>
+#include <wg_cabi_base.h>
 #include <wg_cabi_surface.h>
 #include <wg_c_bitmapcache.h>
 

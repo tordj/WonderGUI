@@ -1,5 +1,6 @@
 
 
+add_subdirectory(cabiworkbench)
 add_subdirectory(fontgenerator)
 add_subdirectory(gfxdevicetester)
 add_subdirectory(gfxworkbench)
@@ -13,4 +14,4 @@ add_subdirectory(streamgenerator)
 add_subdirectory(unittester)
 add_subdirectory(workbench)
 
-set_target_properties( fontgenerator gfxdevicetester gfxworkbench image2surf packlayouttester softkernelgenerator streamanalyzer streamanalyzer2 streamgenerator surfviewer unittester workbench PROPERTIES FOLDER "Tools" )
+set_target_properties( cabiworkbench fontgenerator gfxdevicetester gfxworkbench image2surf packlayouttester softkernelgenerator streamanalyzer streamanalyzer2 streamgenerator surfviewer unittester workbench PROPERTIES FOLDER "Tools" )

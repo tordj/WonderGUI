@@ -67,18 +67,28 @@ namespace wg
         bool        pushClipList(int nRectangles, const RectSPX* pRectangles) override;
         bool        popClipList() override;
 
+        const RectSPX* clipList() const override;
+        int			clipListSize() const override;
+        const RectSPX& clipBounds() const override;
+
+
         void        setTintColor( HiColor color ) override;
+        HiColor		tintColor() const override;
 
         void        setTintGradient(const RectSPX& rect, const Gradient& gradient) override;
         void        clearTintGradient() override;
 
         bool        setBlendMode( BlendMode blendMode ) override;
+        BlendMode 	blendMode() const override;
 
         bool        setBlitSource(Surface * pSource) override;
+        Surface_p 	blitSource() const override;
 
         void        setMorphFactor(float factor) override;
+        float		morphFactor() const override;
 
         void        setRenderLayer(int layer) override;
+        int			renderLayer() const override;
 
         
         

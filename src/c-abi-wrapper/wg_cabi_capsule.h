@@ -86,12 +86,8 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
-		 void		setSkin(Skin* pSkin);
-
-		inline  String tooltip() const;
-
-		 PointerStyle pointerStyle() const;
-
+		String			tooltip() const override;
+		PointerStyle	pointerStyle() const override;
 
 		//.____ Internal _________________________________________________
 
@@ -102,8 +98,6 @@ namespace wg
 		SizeSPX		_minSize(int scale = -1) const override;
 		SizeSPX		_maxSize(int scale = -1) const override;
 
-		bool		_markTest(const CoordSPX& ofs) override;
-
 		void    	_preRender() override;
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 
@@ -113,7 +107,7 @@ namespace wg
 		void		_receive(Msg* pMsg) override;
 		bool		_alphaTest(const CoordSPX& ofs) override;
 
-
+		bool        _requestPreRenderCall() { return Widget::_requestPreRenderCall(); };
 
 		bool		_isRootVisible() const;
 		RectSPX		_rootWindowSection() const;		// Returns the window section within the childs canvas.

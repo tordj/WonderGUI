@@ -20,20 +20,22 @@
 
 =========================================================================*/
 
-#ifndef	WG_CABI_DOT_H
-#define	WG_CABI_DOT_H
+#ifndef	WG_ROOT_DOT_H
+#define WG_ROOT_DOT_H
 #pragma once
 
+#include <wg_widget.h>
 
-#include <wg_cabi_bitmapcache.h>
-#include <wg_cabi_bitmapfont.h>
-#include <wg_cabi_canvaslayers.h>
-#include <wg_cabi_capsule.h>
-#include <wg_cabi_font.h>
-#include <wg_cabi_freetypefont.h>
-#include <wg_cabi_gfxdevice.h>
-#include <wg_cabi_root.h>
-#include <wg_cabi_surface.h>
-#include <wg_cabi_surfacefactory.h>
+namespace wg
+{
+	class Root
+	{
+	public:
 
-#endif //WG_CABI_DOT_H
+		virtual void	addDirtyPatch(const RectSPX& rect) = 0;
+		virtual bool	addPreRenderCall(Widget* pWidget) = 0;
+	};
+
+
+} // namespace wg
+#endif //WG_ROOT_DOT_H

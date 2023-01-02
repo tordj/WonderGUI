@@ -20,20 +20,37 @@
 
 =========================================================================*/
 
-#ifndef	WG_CABI_DOT_H
-#define	WG_CABI_DOT_H
+#ifndef	WG_CABI_BASE_DOT_H
+#define	WG_CABI_BASE_DOT_H
 #pragma once
 
+#include <wg_c_callcollection.h>
 
-#include <wg_cabi_bitmapcache.h>
-#include <wg_cabi_bitmapfont.h>
-#include <wg_cabi_canvaslayers.h>
-#include <wg_cabi_capsule.h>
-#include <wg_cabi_font.h>
-#include <wg_cabi_freetypefont.h>
-#include <wg_cabi_gfxdevice.h>
-#include <wg_cabi_root.h>
-#include <wg_cabi_surface.h>
-#include <wg_cabi_surfacefactory.h>
+namespace wg
+{
 
-#endif //WG_CABI_DOT_H
+	class CABI
+	{
+	public:
+
+		static wg_bitmapcache_calls*	bitmapCache;
+		static wg_bitmapfont_calls*		bitmapFont;
+		static wg_canvaslayers_calls*	canvasLayers;
+		static wg_font_calls*			font;
+		static wg_object_calls*			object;
+		static wg_gfxdevice_calls*		gfxDevice;
+		static wg_streambuffer_calls*	streamBuffer;
+		static wg_streamplayer_calls*	streamPlayer;
+		static wg_streampump_calls*		streamPump;
+		static wg_streamreader_calls*	streamReader;
+		static wg_surface_calls*		surface;
+		static wg_surfacefactory_calls* surfaceFactory;
+
+
+		static bool	init(wg_c_callCollection* pCallsCollection);
+
+	};
+
+
+} // namespace wg
+#endif //WG_CABI_BASE_DOT_H
