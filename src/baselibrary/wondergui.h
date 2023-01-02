@@ -78,6 +78,7 @@
 #include <wg_gfxstreamdecoder.h>
 #include <wg_gfxstreamencoder.h>
 #include <wg_gfxstreamlogger.h>
+#include <wg_gfxstreamloopwrapper.h>
 #include <wg_gfxstreamplayer.h>
 #include <wg_gfxstreampump.h>
 #include <wg_gfxstreamreader.h>
@@ -128,6 +129,7 @@
 #include <wg_renderlayercapsule.h>
 #include <wg_resdb.h>
 #include <wg_resloader.h>
+#include <wg_root.h>
 #include <wg_rootpanel.h>
 #include <wg_scrollbar.h>
 #include <wg_scroller.h>

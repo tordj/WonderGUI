@@ -15,4 +15,5 @@ public:
 private:
 
 	bool streamLoopWrapperTest(std::ostream& output);
+	bool streamReaderPumpWithOptimizationTest(std::ostream& output);
 };

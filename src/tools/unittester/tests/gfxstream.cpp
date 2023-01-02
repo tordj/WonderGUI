@@ -2,9 +2,7 @@
 
 #include "gfxstream.h"
 
-#include <wg_gfxstreamloopwrapper.h>
-#include <wg_gfxstreampump.h>
-#include <wg_gfxstreamwriter.h>
+#include <wondergui.h>
 
 #include <wg_string.h>
 
@@ -14,6 +12,7 @@ GfxStreamTest::GfxStreamTest()
 {
 
 	ADD_TEST(streamLoopWrapperTest);
+	ADD_TEST(streamReaderPumpWithOptimizationTest);
 
 }
 
@@ -122,3 +121,64 @@ bool GfxStreamTest::streamLoopWrapperTest(std::ostream& output)
 	return true;
 }
 
+//____ streamReaderPumpWithOptimizationTest() _________________________________
+
+bool GfxStreamTest::streamReaderPumpWithOptimizationTest(std::ostream& output)
+{
+	Blob_p pBlob = loadBlob("resources/teststream.wax");
+
+//	Blob_p pBlob = loadBlob("softubehwstream-crash.dat");
+
+	char* pOutputBuffer = new char[pBlob->size() + 10000];			// Some bytes margin, just in case.
+	char* pOutputWrite = pOutputBuffer;
+
+	char* pBlobRead = (char *) pBlob->begin();
+	char* pBlobReadMax = (char*)pBlob->begin();
+	char* pBlobEnd = (char *) pBlob->end();
+
+
+	auto pStreamReader = GfxStreamReader::create([&pBlobRead, &pBlobReadMax](int nBytes, void* pDest) {
+
+		int bytes = std::min(nBytes, int(pBlobReadMax - pBlobRead));
+
+		memcpy(pDest, pBlobRead, bytes);
+		pBlobRead += bytes;
+		return bytes;
+
+	});
+		
+
+	auto pStreamWriter = GfxStreamWriter::create([&pOutputWrite](int nBytes, const void* pBytes) {
+		memcpy(pOutputWrite, pBytes, nBytes), pOutputWrite += nBytes;
+
+		});
+
+	auto pStreamPump = GfxStreamPump::create({ pStreamReader, pStreamReader->output }, { pStreamWriter, pStreamWriter->input });
+
+
+	while (pBlobRead < pBlobEnd)
+	{
+
+		pStreamPump->pumpAllFramesOptimizeClipping();
+
+		pBlobReadMax += std::min(1024, int(pBlobEnd - pBlobReadMax));
+
+	}
+
+/*
+	int newSize = pOutputWrite - pOutputBuffer;
+
+	TEST_ASSERT(newSize == pBlob->size());
+
+	char* pOrg = (char*)pBlob->data();
+	char* pCopy = (char*)pOutputBuffer;
+
+	for (int i = 0; i < pBlob->size(); i++)
+	{
+		TEST_ASSERT(*pCopy++ == *pOrg++);
+	}
+
+*/
+
+	return true;
+}
