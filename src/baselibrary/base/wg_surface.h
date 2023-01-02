@@ -252,7 +252,7 @@ namespace wg
 		virtual bool		fill( HiColor color );								///< @brief Fill surface with specified color.
 		virtual bool		fill(const RectI& region, HiColor color );			///< @brief Fill section of surface with specified color
 		virtual bool		copy( CoordI dest, Surface * pSrcSurf, RectI srcRect );	///< @brief Copy block of graphics from other surface
-		virtual bool		copy( CoordI dest, Surface * pSrcSurf );		///< @brief Copy other surface as a block
+		virtual bool		copy( CoordI dest, Surface * pSrcSurf );			///< @brief Copy other surface as a block
 		virtual Surface_p	convert(PixelFormat format, SurfaceFactory* pFactory = nullptr);
 
 		//.____ Misc _________________________________________________________

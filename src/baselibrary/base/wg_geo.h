@@ -435,9 +435,9 @@ namespace wg
 		inline CoordT<Type> center() const { return {x+w/2,y+h/2}; }
 		inline RectT<Type> center(SizeT<Type> sz) const { return { x + (w-sz.w) / 2,y + (h-sz.h) / 2, sz }; }
 
-		inline bool intersectsWith( const RectT<Type>& rect ) const;	///< @brief Check for intersection (partial or full overlap) with specified rectangle.
+		inline bool isOverlapping( const RectT<Type>& rect ) const;	///< @brief Check for intersection (partial or full overlap) with specified rectangle.
 
-		bool		intersectsWithOrContains(CoordT<Type> p1, CoordT<Type> p2, int precision = 14) const;
+		bool		isOverlapping(CoordT<Type> p1, CoordT<Type> p2, int precision = 14) const;
 		bool		clipLine(CoordT<Type> * p1, CoordT<Type> * p2, int precision = 14) const;
 
 
@@ -649,14 +649,14 @@ namespace wg
 
 	//_____________________________________________________________________________
 	/**
-	 * Check for intersection (partial or full overlap) with specified rectangle.
+	 * Check for overlap with specified rectangle.
 	 *
 	 * @param rect Rectangle to check against.
 	 *
-	 * @return True if rectangles intersects.
+	 * @return True if rectangles overlap.
 	 **/
 	 template<typename Type>
-	 inline bool RectT<Type>::intersectsWith( const RectT<Type>& rect ) const
+	 inline bool RectT<Type>::isOverlapping( const RectT<Type>& rect ) const
 	{
 		if(left() >= rect.right()) return false;
 		if(right() <= rect.left()) return false;
@@ -1225,10 +1225,10 @@ namespace wg
 
 
 
-	 //____ intersectsWithOrContains() _______________________________________________________
+	 //____ isOverlapping() _______________________________________________________
 
 	 template<typename Type>
-	 bool RectT<Type>::intersectsWithOrContains(CoordT<Type> p1, CoordT<Type> p2, int precision) const
+	 bool RectT<Type>::isOverlapping(CoordT<Type> p1, CoordT<Type> p2, int precision) const
 	 {
 		 // NOTE: This needs to be kept in sync with ClipLine() so they always return same result for same input.
 

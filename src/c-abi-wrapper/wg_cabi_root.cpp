@@ -153,7 +153,7 @@ namespace wg
 
 	bool CABIRoot::_markTest(const CoordSPX& ofs)
 	{
-
+		return true;
 	}
 
 	void CABIRoot::_preRender()
@@ -186,5 +186,6 @@ namespace wg
 	{
 		//TODO: Implement!!!
 	}
+}
 
 

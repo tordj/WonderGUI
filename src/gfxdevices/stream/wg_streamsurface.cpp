@@ -293,7 +293,7 @@ namespace wg
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->palette() ? 1024 : 0));
 
 		// _copy() implicitly calls _sendPixels().
-		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pPixels, pitch, RectI(size));
+		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pixels, pitch, RectI(size));
 		
 		if (m_pixelDescription.bits <= 8 || bp.buffered)
 		{

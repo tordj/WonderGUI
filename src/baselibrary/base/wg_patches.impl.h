@@ -77,7 +77,7 @@ namespace wg
 		for (int i = 0; i < source.m_size; i++)
 		{
 			const RectT<T>& rect = source.m_pFirst[i];
-			if (rect.intersectsWith(trim))
+			if (rect.isOverlapping(trim))
 				m_pFirst[m_size++] = RectT<T>::overlap(rect, trim);
 		}
 	}
@@ -409,7 +409,7 @@ namespace wg
 		for (int i = 0; i < source.m_size; i++)
 		{
 			const RectT<T>& rect = source.m_pFirst[i];
-			if (rect.intersectsWith(trim))
+			if (rect.isOverlapping(trim))
 			{
 				if (m_size == m_capacity)
 					_expandMem(1);
@@ -461,7 +461,7 @@ namespace wg
 		for( RectT<T> * pRect = m_pFirst ; pRect < m_pFirst + m_size ; pRect++ )
 		{
 
-			if( clip.intersectsWith(*pRect) )
+			if( clip.isOverlapping(*pRect) )
 				*pRect = RectT<T>::overlap(*pRect, clip);
 			else
 				*pRect-- = m_pFirst[--m_size];				// Remove the rectangle

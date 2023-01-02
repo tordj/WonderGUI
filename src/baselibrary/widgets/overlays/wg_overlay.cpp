@@ -93,7 +93,7 @@ namespace wg
 
 		while( pCover <  pEnd )
 		{
-			if( pCover->m_geo.intersectsWith( rect ) )
+			if( pCover->m_geo.isOverlapping( rect ) )
 				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectSPX(0,0, m_size ), _getBlendMode() );
 
 			pCover = _incOverlaySlot(pCover,incNext);

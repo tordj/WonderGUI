@@ -902,7 +902,7 @@ namespace wg
 		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
 			return;
 
-		if (!rect.intersectsWith(m_clipBounds))
+		if (!rect.isOverlapping(m_clipBounds))
 			return;
 
 		//
@@ -1328,7 +1328,7 @@ namespace wg
 
 		// Clip our rectangle
 
-		if (!outerRect.intersectsWith(m_clipBounds/64))
+		if (!outerRect.isOverlapping(m_clipBounds/64))
 			return;
 
 		//
@@ -1427,7 +1427,7 @@ namespace wg
 		if (m_pBlitSource == nullptr)
 			return;
 
-		if (!_dest.intersectsWith(m_clipBounds))
+		if (!_dest.isOverlapping(m_clipBounds))
 			return;
 
 		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8 )
@@ -1541,7 +1541,7 @@ namespace wg
 		if (m_pBlitSource == nullptr)
 			return;
 
-		if (!_dest.intersectsWith(m_clipBounds))
+		if (!_dest.isOverlapping(m_clipBounds))
 			return;
 
 		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
@@ -1650,7 +1650,7 @@ namespace wg
 
 	void GlGfxDevice::_transformDrawSegments( const RectSPX& _destIn, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2] )
 	{
-		if (!_destIn.intersectsWith(m_clipBounds))
+		if (!_destIn.isOverlapping(m_clipBounds))
 			return;
 
 		//TODO: Proper 26:6 support

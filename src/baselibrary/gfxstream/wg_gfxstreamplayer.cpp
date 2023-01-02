@@ -316,7 +316,7 @@ namespace wg
 
 			if( surfaceId > m_vSurfaces.size() || m_vSurfaces[surfaceId] == nullptr )
 			{
-				Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "SurfaceID is not valid", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "SurfaceID is not valid", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				break;
 			}
 

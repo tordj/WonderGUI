@@ -255,7 +255,7 @@ namespace wg
     {
         if( blendMode < BlendMode_min || blendMode > BlendMode_max )
         {
-            Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Not a valid blendMode", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+            Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Not a valid blendMode", this, &TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
         }
 
@@ -276,7 +276,7 @@ namespace wg
     {
         if (!pSource || !pSource->isInstanceOf(StreamSurface::TYPEINFO))
         {
-            Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Surface is not a StreamSurface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+            Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Surface is not a StreamSurface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
         }
 

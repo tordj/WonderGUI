@@ -731,7 +731,6 @@ enum class CanvasInit 		//. autoExtras
 	 *
 	 **/
 
-
 	struct PixelDescription
 	{
 	public:
@@ -764,6 +763,24 @@ enum class CanvasInit 		//. autoExtras
 		uint8_t	B_bits;				///< number of bits for blue in the pixel
 		uint8_t	A_bits;				///< number of bits for alpha in the pixel
 	};
+
+	//____ PixelDescription2 _________________________________________________
+
+	struct PixelDescription2
+	{
+	public:
+		int			bits		= 0;		///< Number of bits for the pixel, includes any non-used padding bits.
+		bool		bLinear		= false;	///< True if RGB values are linear (as opposed to in sRGB format, e.g. logarithmic with gamma 2.2).
+		bool		bIndexed	= false;	///< True if pixels are index into palette, no RGB values in pixel.
+		bool 		bBigEndian	= false;	///< Set if 16- or 32-bit pixel is in big-endian format.
+		bool 		bBitplanes	= false;	///< Set if pixeldata is organized in bitplanes. (2 bytes per plane).
+
+		uint64_t	R_mask		= 0;		///< bitmask for getting the red bits out of the pixel
+		uint64_t	G_mask		= 0;		///< bitmask for getting the green bits out of the pixel
+		uint64_t	B_mask		= 0;		///< bitmask for getting the blue bits out of the pixel
+		uint64_t	A_mask		= 0;		///< bitmask for getting the alpha bits out of the pixel
+	};
+
 
 
 	//____ MaskOp ____________________________________________________________

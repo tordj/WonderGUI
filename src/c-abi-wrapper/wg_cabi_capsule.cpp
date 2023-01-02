@@ -173,10 +173,10 @@ namespace wg
 
 	bool CABICapsule::_alphaTest(const CoordSPX& ofs)
 	{
-		if (m_cabi.pCABIRoot)
-			return m_cabi.alphaTest(m_cabi.pCABIRoot, { ofs.x,ofs.y } );
+		// Do we even need this call?
 
-		return false;
+
+		return true;
 	}
 
 	//____ _isRootVisible() ___________________________________________________

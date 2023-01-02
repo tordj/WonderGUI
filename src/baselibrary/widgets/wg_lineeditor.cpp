@@ -196,7 +196,7 @@ namespace wg
 		RectSPX visible = m_skin.contentRect( m_size, m_scale, m_state );
 		dirt += visible.pos();
 
-		if (dirt.intersectsWith(visible))
+		if (dirt.isOverlapping(visible))
 			_requestRender(RectSPX::overlap(dirt, visible));
 	}
 

@@ -1036,7 +1036,7 @@ namespace wg
 	{
 		if( !m_pBlitSource )
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "No blit source set", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::FailedCondition, "No blit source set", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 

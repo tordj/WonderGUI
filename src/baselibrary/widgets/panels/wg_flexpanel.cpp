@@ -459,7 +459,7 @@ namespace wg
 
 		for(Slot * pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
-			if( pCover->m_bVisible && pCover->m_realGeo.intersectsWith( rect ) )
+			if( pCover->m_bVisible && pCover->m_realGeo.isOverlapping( rect ) )
 				pCover->_widget()->_maskPatches( patches, pCover->m_realGeo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
 		}
 

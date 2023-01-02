@@ -64,7 +64,8 @@ namespace wg
 
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint) = 0;
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch = 0) = 0;
-		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr) = 0;
+		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, PixelFormat format = PixelFormat::Undefined ) = 0;
+		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription2& pixelDescription ) = 0;
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Surface* pOther) = 0;
 
 

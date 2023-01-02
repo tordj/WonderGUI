@@ -222,7 +222,7 @@ namespace wg
 		int i = state;
 		if( center.contains(rect) )
 			return m_fillColor[i].a == 4096;
-		else if( !center.intersectsWith(rect) )
+		else if( !center.isOverlapping(rect) )
 			return m_outlineColor[i].a == 4096;
 
 		return m_fillColor[i].a == 4096 && m_outlineColor[i].a == 4096;

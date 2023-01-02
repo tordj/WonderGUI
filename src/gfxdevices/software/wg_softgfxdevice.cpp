@@ -639,7 +639,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		// Clipping
 
-		if( !m_clipBounds.intersectsWith(rect) )
+		if( !m_clipBounds.isOverlapping(rect) )
 			return;
 
 		// Prepare colors
@@ -1581,7 +1581,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		uint8_t* pOrigo = m_pCanvasPixels + start.y * yPitch + start.x * xPitch;
 
-		if (!dest.intersectsWith(m_clipBounds/64))
+		if (!dest.isOverlapping(m_clipBounds/64))
 			return;
 
 		SegmentOp_p	pOp = nullptr;
@@ -2323,7 +2323,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		// Clip and render the patches
 
-		if (!_dest.intersectsWith(m_clipBounds))
+		if (!_dest.isOverlapping(m_clipBounds))
 			return;
 
 
@@ -2397,7 +2397,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 	{
 		// Clip and render the patches
 
-		if (!_dest.intersectsWith(m_clipBounds))
+		if (!_dest.isOverlapping(m_clipBounds))
 			return;
 
 		//TODO: Proper 26:6 support

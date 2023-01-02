@@ -507,7 +507,7 @@ namespace wg
 				const Slot * pCover = pSlot + 1;
 				while (pCover < slots._end())
 				{
-					if (pCover->m_bVisible && (pCover->m_geo.intersectsWith(pSlot->m_geo) || pCover->m_geo.intersectsWith(geo)) )
+					if (pCover->m_bVisible && (pCover->m_geo.isOverlapping(pSlot->m_geo) || pCover->m_geo.isOverlapping(geo)) )
 						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
 
 					pCover++;
@@ -544,7 +544,7 @@ namespace wg
 
 		for (Slot * pCover = slots._begin(); pCover < pSlot ; pCover++)
 		{
-			if (pCover->m_bVisible && pCover->m_geo.intersectsWith(rect))
+			if (pCover->m_bVisible && pCover->m_geo.isOverlapping(rect))
 				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
 		}
 

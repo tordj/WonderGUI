@@ -976,7 +976,7 @@ RectI sourceOfs;
 
 		for( int i = 0 ; i < nRects ; i++ )
 		{
-			if (clip.intersectsWith(pRects[i]))
+			if (clip.isOverlapping(pRects[i]))
 				pNewRects[nNewRects++] = RectSPX::overlap(pRects[i], clip);
 		}
 

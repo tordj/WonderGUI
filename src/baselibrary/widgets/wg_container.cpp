@@ -324,7 +324,7 @@ namespace wg
 			{
 				RectSPX geo = child.geo + _canvas.pos();
 
-				if( geo.intersectsWith( dirtBounds ) )
+				if( geo.isOverlapping( dirtBounds ) )
 					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), geo ) );
 
 				_nextSlotWithGeo( child );
@@ -369,7 +369,7 @@ namespace wg
 			while(child.pSlot)
 			{
 				RectSPX canvas = child.geo + _canvas.pos();
-				if (canvas.intersectsWith(dirtBounds))
+				if (canvas.isOverlapping(dirtBounds))
 				{
 					ClipPopData popData = limitClipList(pDevice, canvas );
 

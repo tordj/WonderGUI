@@ -370,7 +370,7 @@ namespace wg
 			while(child.pSlot)
 			{
 				RectSPX canvas = child.geo + _canvas.pos();
-				if (canvas.intersectsWith(dirtBounds))
+				if (canvas.isOverlapping(dirtBounds))
 				{
 					ClipPopData clipPop = limitClipList(pDevice, canvas );
 					if( pDevice->clipListSize() > 0 )
@@ -667,9 +667,9 @@ namespace wg
 		bool	bOldLassoInside = false;
 		bool	bNewLassoInside = false;
 
-		if( oldLasso.intersectsWith(listArea ) )
+		if( oldLasso.isOverlapping(listArea ) )
 			bOldLassoInside = true;
-		if( newLasso.intersectsWith(listArea ) )
+		if( newLasso.isOverlapping(listArea ) )
 			bNewLassoInside = true;
 
 		if( !bOldLassoInside && !bNewLassoInside )
