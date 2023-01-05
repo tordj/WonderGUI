@@ -25,7 +25,7 @@ source_group(Widgets/Lists REGULAR_EXPRESSION "widgets/lists//*")
 source_group(Widgets/Panels REGULAR_EXPRESSION "widgets/panels//*")
 
 
-add_library( wondergui
+add_library( wondergui STATIC
 			
 	base/wg_animframes.cpp
 	base/wg_animframes.h

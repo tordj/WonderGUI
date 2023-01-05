@@ -337,7 +337,7 @@ namespace wg
 				const uint8_t* pData = pChunk + GfxStream::headerSize(pChunk);
 
 				int nRects = pData[3];
-				RectSPX* pRects = (RectSPX*)(pData + 4);
+				uint16_t * pRects = (uint16_t*)(pData + 4);
 
 				// Check if this frame completely redraws the canvas.
 
@@ -371,7 +371,13 @@ namespace wg
 				{
 					for (int r = 0; r < nRects; r++)
 					{
-						const RectI& rect = *pRects++;
+						RectI rect;
+						rect.x = pRects[0] + (int(pRects[1]) << 16);
+						rect.y = pRects[2] + (int(pRects[3]) << 16);
+						rect.w = pRects[4] + (int(pRects[5]) << 16);
+						rect.h = pRects[6] + (int(pRects[7]) << 16);
+						pRects += 8;
+
 						if( rect.w > 0 && rect.h > 0 )
 							clipRects.push_back(rect);
 					}
@@ -382,7 +388,13 @@ namespace wg
 
 					for (int r = 0; r < nRects; r++)
 					{
-						const RectI& rect = *pRects++;
+						RectI rect;
+						rect.x = pRects[0] + (int(pRects[1]) << 16);
+						rect.y = pRects[2] + (int(pRects[3]) << 16);
+						rect.w = pRects[4] + (int(pRects[5]) << 16);
+						rect.h = pRects[6] + (int(pRects[7]) << 16);
+						pRects += 8;
+						
 						if (rect.w > 0 && rect.h > 0)
 							_maskAddRect(clipRects, maskBegin, rect);
 					}

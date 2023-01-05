@@ -22,6 +22,7 @@
 
 #include <wg_cabi_base.h>
 #include <wg_cabi_root.h>
+#include <wg_cabi_root_incalls.h>
 #include <wg_cabi_gfxdevice.h>
 #include <wg_container.h>
 

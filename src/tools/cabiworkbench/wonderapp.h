@@ -19,8 +19,6 @@ using namespace wg;
 class MyApp : public WonderApp
 {
 public:
-	Size	startWindowSize();
-
 	bool		init(Visitor* pVisitor) override;
 	bool		update() override;
 	void		exit() override;
@@ -28,10 +26,13 @@ public:
 
 private:
 
+	typedef int (*initClientFunc)( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface );
+	typedef int (*updateClientFunc)(void);
+	typedef void (*exitClientFunc)(void);
+
+	
 	bool			_setupGUI(Visitor* pVisitor);
 	bool			_loadSkins(Visitor* pVisitor);
-
-	void			_setupCABIClient(wg_c_callCollection* pBaseInterface, wg_cabi_root_outcalls* pRootInterface);
 
 	WonderApp::Visitor * m_pAppVisitor = nullptr;
 	WonderApp::Window_p m_pWindow = nullptr;
@@ -40,6 +41,12 @@ private:
 
 	CABIRoot_p		m_pCABIRoot;
 
+	initClientFunc	m_pInitClient;
+	updateClientFunc	m_pUpdateClient;
+	exitClientFunc	m_pExitClient;
+
+	
+	
 	Skin_p			m_pPlateSkin;
 	Skin_p			m_pButtonSkin;
 	Skin_p			m_pToggleButtonSkin;

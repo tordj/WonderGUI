@@ -3,6 +3,7 @@
 
 #include <wondergui.h>
 #include <wg_cabi.h>
+#include <wg_cabi_root_outcalls.h>
 #include <wg_freetypefont.h>
 
 #include <string>
@@ -16,6 +17,7 @@
 #    include <SDL2/SDL_image.h>
 #endif
 
+#include <dlfcn.h>
 
 using namespace wg;
 using namespace std;
@@ -27,13 +29,6 @@ WonderApp_p WonderApp::create()
 	return new MyApp();
 }
 
-
-//____ startWindowSize() ______________________________________________________
-
-wg::Size MyApp::startWindowSize()
-{
-	return { 800,700 };
-}
 
 //____ init() _________________________________________________________________
 
@@ -47,6 +42,24 @@ bool MyApp::init(Visitor* pVisitor)
 		return false;
 	}
 
+	
+	void * pLib = dlopen("libcabiclient.dylib", RTLD_LAZY | RTLD_LOCAL );
+	if( pLib == nullptr )
+		return false;
+	
+	
+	 
+	m_pInitClient = (initClientFunc) dlsym(pLib, "init" );
+	m_pUpdateClient = (updateClientFunc) dlsym(pLib, "update" );
+	m_pExitClient = (exitClientFunc) dlsym(pLib, "exitX" );
+
+
+	wg_c_callCollection	c_calls;
+	wg_populateCallCollection(&c_calls);
+	wg_cabi_root_outcalls rootOutCalls = makeCABI_root_outcalls(m_pCABICapsule);
+
+	m_pInitClient(&c_calls, &rootOutCalls);
+	
 	return true;
 }
 
@@ -54,14 +67,15 @@ bool MyApp::init(Visitor* pVisitor)
 
 bool MyApp::update()
 {
+	m_pUpdateClient();
 	return true;
-}
+} 
 
 //____ exit() _________________________________________________________________
 
 void MyApp::exit()
 {
-
+	m_pExitClient();
 }
 
 
@@ -136,45 +150,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 	m_pCABICapsule = pCABICapsule;
 
-
-	wg_c_callCollection	c_calls;
-	wg_populateCallCollection(&c_calls);
-	wg_cabi_root_outcalls rootOutCalls = makeCABI_root_outcalls(pCABICapsule);
-	_setupCABIClient(&c_calls, &rootOutCalls);
-
 	return true;
-}
-
-//____ _setupCABIClient() ___________________________________________________________
-
-void MyApp::_setupCABIClient( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface )
-{
-
-	CABI::init(pBaseInterface);
-
-	auto pCABIRoot = CABIRoot::create(pRootInterface);
-
-	auto pMainPanel = PackPanel::create();
-	pMainPanel->setAxis(Axis::Y);
-	pMainPanel->setSkin(ColorSkin::create({ .color = Color::DarkGray, .padding = 4 }));
-
-	auto pLayout = PackLayout::create({
-		.expandFactor = PackLayout::Factor::Weight
-		});
-
-	pMainPanel->setLayout(pLayout);
-
-	auto pFiller1 = Filler::create({ .skin = ColorSkin::create({.color = Color::Red }) });
-	auto pFiller2 = Filler::create({ .skin = ColorSkin::create({.color = Color::Green }) });
-	auto pFiller3 = Filler::create({ .skin = ColorSkin::create({.color = Color::Blue }) });
-
-	pMainPanel->slots << pFiller1;
-	pMainPanel->slots << pFiller2;
-	pMainPanel->slots << pFiller3;
-
-	pCABIRoot->slot = pMainPanel;
-
-	m_pCABIRoot = pCABIRoot;
 }
 
 

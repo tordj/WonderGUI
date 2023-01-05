@@ -28,9 +28,6 @@
 #include <wg_c_geo.h>
 
 
-
-
-
 extern "C" {
 
 
@@ -81,16 +78,5 @@ extern "C" {
 	};
 }
 
-namespace wg
-{
-	class CABIRoot;
-	class CABICapsule;
-
-	wg_cabi_root_incalls makeCABI_root_incalls(CABIRoot* pCABIRoot);
-
-	wg_cabi_root_outcalls makeCABI_root_outcalls(CABICapsule* pCABICapsule);
-
-
-}
 
 #endif //WG_CABI_ROOT_INTERFACE_DOT_H

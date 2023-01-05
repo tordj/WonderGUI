@@ -123,151 +123,99 @@ namespace wg
 	template <class T>
 	void PatchesT<T>::_add( const RectT<T>& rect, int startOffset )
 	{
-		RectT<T> newR = rect;
-
 		for( int i = startOffset ; i < m_size ; i++ )
 		{
 			RectT<T> * pR = m_pFirst + i;
 
 			// Bail out early if no intersection at all.
 
-			if( newR.x >= pR->x + pR->w || newR.x + newR.w <= pR->x ||
-				newR.y >= pR->y + pR->h || newR.y + newR.h <= pR->y )
+			if( rect.x >= pR->x + pR->w || rect.x + rect.w <= pR->x ||
+			   rect.y >= pR->y + pR->h || rect.y + rect.h <= pR->y )
 				continue;															// No intersection.
 
 			// Check for total coverage
 
-			if( newR.x >= pR->x  &&  newR.x + newR.w <= pR->x + pR->w  &&
-			  newR.y >= pR->y  &&  newR.y + newR.h <= pR->y + pR->h  )
+			if( rect.x >= pR->x  &&  rect.x + rect.w <= pR->x + pR->w  &&
+			   rect.y >= pR->y  &&  rect.y + rect.h <= pR->y + pR->h  )
 				return;  															// newR totally covered by pR
 
-			if( newR.x <= pR->x  &&  newR.x + newR.w >= pR->x + pR->w  &&
-			  newR.y <= pR->y  &&  newR.y + newR.h >= pR->y + pR->h  )
+			if( rect.x <= pR->x  &&  rect.x + rect.w >= pR->x + pR->w  &&
+			   rect.y <= pR->y  &&  rect.y + rect.h >= pR->y + pR->h  )
 			{
 				remove( i-- );														// pR totally covered by newR
 				continue;
 			}
 
-			// In four special cases we rather clip pR than newR...
-
-			if( newR.x <= pR->x && newR.x + newR.w >= pR->x + pR->w )
-	 		{
-	 			if( newR.y <= pR->y && newR.y + newR.h > pR->y )
-	 			{
-	 				T diff = newR.y + newR.h - pR->y;
-	 				pR->y += diff;
-	 				pR->h -= diff;
-					continue;
-	 			}
-
-	 			if( newR.y < pR->y + pR->h && newR.y + newR.h >= pR->y + pR->h )
-	 			{
-	 				T diff = pR->y + pR->h - newR.y;
-	 				pR->h -= diff;
-					continue;
-	 			}
-
-	 		}
-	 		else if( newR.y <= pR->y && newR.y + newR.h >= pR->y + pR->h )
-	 		{
-	 			if( newR.x <= pR->x && newR.x + newR.w > pR->x )
-	 			{
-	 				T diff = newR.x + newR.w - pR->x;
-	 				pR->x += diff;
-	 				pR->w -= diff;
-					continue;
-	 			}
-
-	 			if( newR.x < pR->x + pR->w && newR.x + newR.w >= pR->x + pR->w )
-				{
-					T diff = pR->x + pR->w - newR.x;
-	 				pR->w -= diff;
-					continue;
-	 			}
-	 		}
-
+			
 			// Clip newR against pR.
 
-			RectT<T>	xR;
-			bool	bExtraRect = false;
+			RectT<T> newR = rect;
+
+			RectT<T> mask = *pR;
 
 			// Cut off upper part
 
-			if( newR.y < pR->y )
+			if (newR.y < mask.y)
 			{
-				bExtraRect = true;
-				xR.x = newR.x;
-				xR.w = newR.w;
-				xR.y = newR.y;
-				xR.h = pR->y - newR.y;
+				RectT<T> xR(newR.x, newR.y, newR.w, mask.y - newR.y);
+				_add(xR, i + 1);
 
 				newR.h -= xR.h;
 				newR.y += xR.h;
 			}
 
-			// Take care of middle part(s)
+			// Cut off lower part
 
-			if( newR.x < pR->x )
+			if (newR.y + newR.h > mask.y + mask.h )
 			{
-				if( !bExtraRect )
+				RectT<T>	xR;
+				xR.x = newR.x;
+				xR.y = mask.y + mask.h;
+				xR.w = newR.w;
+				xR.h = (newR.y + newR.h) - (mask.y + mask.h);
+				_add(xR, i + 1);
+
+				newR.h -= xR.h;
+			}
+
+			if (newR.h > 0)
+			{
+				// Cut off left part
+
+				if (newR.x < mask.x)
 				{
-					bExtraRect = true;
+					RectT<T>	xR;
 					xR.x = newR.x;
 					xR.y = newR.y;
-					xR.w = pR->x - newR.x;
-					if( newR.y + newR.h < pR->y + pR->h )
-						xR.h = newR.h;
-					else
-						xR.h = pR->y + pR->h - xR.y;
-				}
-				else
-				{
-					newR.w = pR->x - newR.x;
-					_add( xR, i+1 );
-					continue;
-				}
-			}
+					xR.w = mask.x - newR.x;
+					xR.h = newR.h;
 
-			if( newR.x + newR.w > pR->x + pR->w )
-			{
-				if( !bExtraRect )
+					_add(xR, i + 1);
+				}
+
+				// Cut off right part
+
+				if (newR.x + newR.w > mask.x + mask.w)
 				{
-					bExtraRect = true;
-					xR.x = pR->x + pR->w;
+					RectT<T>	xR;
+					xR.x = mask.x + mask.w;
 					xR.y = newR.y;
-					xR.w = newR.x + newR.w - (pR->x + pR->w);
-					if( newR.y + newR.h < pR->y + pR->h )
-						xR.h = newR.h;
-					else
-						xR.h = pR->y + pR->h - xR.y;
-				}
-				else
-				{
-					newR.w = newR.x + newR.w - (pR->x + pR->w);
-					newR.x = pR->x + pR->w;
-					_add( xR, i+1 );
-					continue;
+					xR.w = (newR.x + newR.w) - (mask.x + mask.w);
+					xR.h = newR.h;
+
+					_add(xR, i + 1);
 				}
 			}
 
-			// Take care of lower part
+			// We have split our rectangle into visible pieces and masked them one by one.
+			// There is nothing left of original rectangle.
 
-			if( newR.y + newR.h > pR->y + pR->h )
-			{
-				newR.h = newR.y + newR.h - (pR->y + pR->h);
-				newR.y = pR->y + pR->h;
-				_add( xR, i+1 );
-				continue;
-			}
-
-			// If we got here, we certainly have xR and just trash in newR...
-
-			newR = xR;
+			return;
 		}
 
 		// If we haven't returned yet we have a patch left to add.
 
-		push( newR );
+		push( rect );
 	}
 
 	//____ add() ___________________________________________________________________

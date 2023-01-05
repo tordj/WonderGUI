@@ -146,8 +146,6 @@ static const char * iconNames[4] = { "info", "warning", "error", "question" };
 static const char * dialogNames[4] = { "ok", "okcancel", "yesno", "yesnocancel" };
 
 
-
-
 //____ main() _________________________________________________________________
 
 int main(int argc, char *argv[] )
