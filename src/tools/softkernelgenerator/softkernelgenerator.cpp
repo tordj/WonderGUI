@@ -1,7 +1,6 @@
 
-#include "wonderapp.h"
+#include "softkernelgenerator.h"
 
-#include <wondergui.h>
 #include <wg_freetypefont.h>
 #include <string>
 #include <fstream>

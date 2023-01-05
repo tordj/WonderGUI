@@ -57,6 +57,10 @@ link_directories(
 )
 
 
+set(WAPPLIB wappsdl2sw)
+
+
+
 if(WIN32)
 
 	set(SDL2_LIBS SDL2 SDL2main)
@@ -105,8 +109,7 @@ add_subdirectory(gfxdevices)
 add_subdirectory(fontengines)
 add_subdirectory(examples)
 add_subdirectory(tools)
-
-
+add_subdirectory(wonderapp/${WAPPLIB})
 
 
 
@@ -123,5 +126,4 @@ if(MSVC)
 	target_compile_options(streamanalyzer PRIVATE "/MP")
 	target_compile_options(fontgenerator PRIVATE "/MP")
 	target_compile_options(softkernelgenerator PRIVATE "/MP")
-
 endif()

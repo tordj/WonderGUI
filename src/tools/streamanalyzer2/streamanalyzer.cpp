@@ -1,8 +1,6 @@
 
-#include "wonderapp.h"
+#include "streamanalyzer.h"
 
-#include <wondergui.h>
-#include <wg_freetypefont.h>
 #include <wg_softgfxdevice.h>
 #include <string>
 #include <fstream>

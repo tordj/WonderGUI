@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "baseplate.h"
+#include <wonderapp.h>
 
 #include <wondergui.h>
 #include <wg_freetypefont.h>

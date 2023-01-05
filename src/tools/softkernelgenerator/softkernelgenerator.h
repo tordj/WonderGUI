@@ -1,10 +1,11 @@
 
 #pragma once
 
-#include "baseplate.h"
+#include <wonderapp.h>
+#include <wondergui.h>
+
 #include "kerneldb.h"
 
-#include <wondergui.h>
 
 #include <initializer_list>
 #include <string>

@@ -19,13 +19,13 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#pragma once
 
 #include <wg_object.h>
 #include <wg_blob.h>
 #include <wg_surface.h>
 #include <wg_rootpanel.h>
 
-#pragma once
 
 
 class WonderApp;

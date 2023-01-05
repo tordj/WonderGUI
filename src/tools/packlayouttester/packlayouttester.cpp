@@ -1,7 +1,8 @@
 
-#include "wonderapp.h"
+#include "packlayouttester.h"
 
 #include <wondergui.h>
+
 #include <wg_freetypefont.h>
 #include <string>
 #include <fstream>
