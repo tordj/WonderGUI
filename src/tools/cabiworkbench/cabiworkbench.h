@@ -34,7 +34,7 @@ private:
 	bool			_setupGUI(Visitor* pVisitor);
 	bool			_loadSkins(Visitor* pVisitor);
 
-	void *			_loadLibrary(const char* pPath);
+	void *			_openLibrary(const char* pPath);
 	void *			_loadSymbol(void* pLibrary, const char* pSymbol);
 
 

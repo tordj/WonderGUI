@@ -12,8 +12,6 @@ add_library(cabiclient SHARED
 		../../c-abi-wrapper/wg_cabi_bitmapfont.cpp
 		../../c-abi-wrapper/wg_cabi_bitmapfont.h
 		../../c-abi-wrapper/wg_cabi_canvaslayers.cpp
-		../../c-abi-wrapper/wg_cabi_canvaslayers.h
-		../../c-abi-wrapper/wg_cabi_capsule.cpp
 		../../c-abi-wrapper/wg_cabi_capsule.h
 		../../c-abi-wrapper/wg_cabi_font.cpp
 		../../c-abi-wrapper/wg_cabi_font.h

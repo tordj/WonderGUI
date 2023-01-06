@@ -12,11 +12,8 @@
 #ifdef WIN32
 #	include <Windows.h>
 #	include <libloaderapi.h>
-#else
-#	ifdef __APPLE__
-#		include <dlfcn.h>
-#	else
-#	endif
+#else								// OSX and Linux.
+#	include <dlfcn.h>
 #endif
 
 
@@ -44,7 +41,7 @@ bool MyApp::init(Visitor* pVisitor)
 	}
 
 	
-	void * pLib = _loadLibrary("cabiclient");
+	void * pLib = _openLibrary("cabiclient");
 	if( pLib == nullptr )
 		return false;
 	
@@ -211,45 +208,26 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 	return true;
 }
 
-//____ _loadLibrary() _________________________________________________________
+//____ _openLibrary() _________________________________________________________
 
-void * MyApp::_loadLibrary(const char* pPath)
+void * MyApp::_openLibrary(const char* pPath)
 {
-#ifdef __APPLE__
-
-//		std::string path = "lib" + pPath + ".dylib";
-
-		return dlopen(pPath, RTLD_LAZY | RTLD_LOCAL);
-#endif
-
 #ifdef WIN32
-
 		return (void*) LoadLibraryA(pPath);
+#else														// Apple and Linux
+	std::string path = "lib" + string(pPath) + ".dylib";
+	return dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
 #endif
-		return nullptr;
 }
 
 //____ _loadSymbol() __________________________________________________________
 
 void* MyApp::_loadSymbol(void* pLibrary, const char* pSymbol)
 {
-#ifdef __APPLE__
-	return dlsym(pLib, pSymbol);
-#endif
-
 #ifdef WIN32
-
-	void * pSym = GetProcAddress((HMODULE)pLibrary, pSymbol);
-
-	if (pSym == nullptr)
-	{
-		DWORD err = GetLastError();
-
-		int x = 0;
-	}
-
-	return pSym;
+	return GetProcAddress((HMODULE)pLibrary, pSymbol);
+#else														// Apple and Linux
+	return dlsym(pLibrary, pSymbol);
 #endif
-	return nullptr;
 }
 

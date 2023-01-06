@@ -13,7 +13,7 @@ using namespace std;
 #ifdef WIN32
 #define	DLLEXPORTPREFIX __declspec(dllexport)
 #else
-#define	DLLEXPORTPREFIX()
+#define	DLLEXPORTPREFIX
 #endif
 
 extern "C" {
