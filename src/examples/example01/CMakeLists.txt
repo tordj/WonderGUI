@@ -1,5 +1,14 @@
 set(CMAKE_CXX_STANDARD 20)
 
+if(WIN32)
+	set(SDL2_LIBS SDL2 SDL2main)
+elseif(APPLE)
+	find_library(SDL2_LIBS SDL2)
+else()
+	set(SDL2_LIBS SDL2)
+endif()
+
+
 source_group(Files REGULAR_EXPRESSION ".*")
 
 add_executable(example01

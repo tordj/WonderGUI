@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "baseplate.h"
+#include <wonderapp.h>
 
 #include <wondergui.h>
 #include <wg_freetypefont.h>
@@ -33,6 +33,10 @@ private:
 	
 	bool			_setupGUI(Visitor* pVisitor);
 	bool			_loadSkins(Visitor* pVisitor);
+
+	void *			_loadLibrary(const char* pPath);
+	void *			_loadSymbol(void* pLibrary, const char* pSymbol);
+
 
 	WonderApp::Visitor * m_pAppVisitor = nullptr;
 	WonderApp::Window_p m_pWindow = nullptr;

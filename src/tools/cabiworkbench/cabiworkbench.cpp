@@ -1,5 +1,5 @@
 
-#include "wonderapp.h"
+#include "cabiworkbench.h"
 
 #include <wondergui.h>
 #include <wg_cabi.h>
@@ -10,14 +10,15 @@
 #include <fstream>
 
 #ifdef WIN32
-#    include <SDL_image.h>
-#elif __APPLE__
-#    include <SDL2_image/SDL_image.h>
+#	include <Windows.h>
+#	include <libloaderapi.h>
 #else
-#    include <SDL2/SDL_image.h>
+#	ifdef __APPLE__
+#		include <dlfcn.h>
+#	else
+#	endif
 #endif
 
-#include <dlfcn.h>
 
 using namespace wg;
 using namespace std;
@@ -43,15 +44,15 @@ bool MyApp::init(Visitor* pVisitor)
 	}
 
 	
-	void * pLib = dlopen("libcabiclient.dylib", RTLD_LAZY | RTLD_LOCAL );
+	void * pLib = _loadLibrary("cabiclient");
 	if( pLib == nullptr )
 		return false;
 	
 	
 	 
-	m_pInitClient = (initClientFunc) dlsym(pLib, "init" );
-	m_pUpdateClient = (updateClientFunc) dlsym(pLib, "update" );
-	m_pExitClient = (exitClientFunc) dlsym(pLib, "exitX" );
+	m_pInitClient = (initClientFunc) _loadSymbol(pLib, "init" );
+	m_pUpdateClient = (updateClientFunc) _loadSymbol(pLib, "update" );
+	m_pExitClient = (exitClientFunc) _loadSymbol(pLib, "exitX" );
 
 
 	wg_c_callCollection	c_calls;
@@ -208,5 +209,47 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 
 
 	return true;
+}
+
+//____ _loadLibrary() _________________________________________________________
+
+void * MyApp::_loadLibrary(const char* pPath)
+{
+#ifdef __APPLE__
+
+//		std::string path = "lib" + pPath + ".dylib";
+
+		return dlopen(pPath, RTLD_LAZY | RTLD_LOCAL);
+#endif
+
+#ifdef WIN32
+
+		return (void*) LoadLibraryA(pPath);
+#endif
+		return nullptr;
+}
+
+//____ _loadSymbol() __________________________________________________________
+
+void* MyApp::_loadSymbol(void* pLibrary, const char* pSymbol)
+{
+#ifdef __APPLE__
+	return dlsym(pLib, pSymbol);
+#endif
+
+#ifdef WIN32
+
+	void * pSym = GetProcAddress((HMODULE)pLibrary, pSymbol);
+
+	if (pSym == nullptr)
+	{
+		DWORD err = GetLastError();
+
+		int x = 0;
+	}
+
+	return pSym;
+#endif
+	return nullptr;
 }
 

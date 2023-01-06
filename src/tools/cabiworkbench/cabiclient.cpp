@@ -6,27 +6,21 @@
 #include <string>
 #include <fstream>
 
-
-
-#include <dlfcn.h>
-
 using namespace wg;
 using namespace std;
 
 
+#ifdef WIN32
+#define	DLLEXPORTPREFIX __declspec(dllexport)
+#else
+#define	DLLEXPORTPREFIX()
+#endif
+
 extern "C" {
-
-	int		mySimpleCall(void);
-	int		init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface );
-	int		update(void);
-	void	exitX(void);
+	DLLEXPORTPREFIX int		init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface );
+	DLLEXPORTPREFIX int		update(void);
+	DLLEXPORTPREFIX void	exitX(void);
 }
-
-int mySimpleCall(void)
-{
-	return 123;
-}
-
 
 
 
@@ -35,7 +29,7 @@ CABIRoot_p g_pCABIRoot;
 
 //____ init() _________________________________________________________________
 
-int init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface )
+DLLEXPORTPREFIX int init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface )
 {
 	Base::init(nullptr);
 	
@@ -72,14 +66,14 @@ int init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInt
 
 //____ update() _______________________________________________________________
 
-int update(void)
+DLLEXPORTPREFIX int update(void)
 {
 	return 1;
 }
 
 //____ exit() _________________________________________________________________
 
-void exitX(void)
+DLLEXPORTPREFIX void exitX(void)
 {
 	Base::exit();
 }

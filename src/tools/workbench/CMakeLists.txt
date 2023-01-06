@@ -1,6 +1,29 @@
 
 set(CMAKE_CXX_STANDARD 20)
 
+if(WIN32)
+
+	set(SDL2_LIBS SDL2 SDL2main)
+	set(SDL2IMAGE_LIBS SDL2_image)
+
+	set(OPENGL_LIBS glew32 opengl32)
+
+elseif(APPLE)
+
+	find_library(SDL2_LIBS SDL2)
+	find_library(SDL2IMAGE_LIBS SDL2_image)
+
+	find_library(OPENGL_LIBS OpenGL)
+
+else()
+
+	set(SDL2_LIBS SDL2)
+	set(SDL2IMAGE_LIBS SDL2_image)
+
+	set(OPENGL_LIBS GLEW GL)
+endif()
+
+
 source_group(Files REGULAR_EXPRESSION ".*")
 
 add_executable(workbench
