@@ -68,6 +68,7 @@ public:
 	typedef	wg::StrongPtr<Window>	Window_p;
 	typedef	wg::WeakPtr<Window>		Window_wp;
 
+	typedef	void* LibId;
 
 	class Window : public wg::Object
 	{
@@ -161,6 +162,11 @@ public:
 		virtual std::string		selectFolderDialog(const std::string& title, const std::string& defaultPath) = 0;
 
 		virtual Window_p		createWindow(const Window::Blueprint& blueprint) = 0;
+
+		virtual LibId			openLibrary(const std::string& path) = 0;
+		virtual void*			loadSymbol(LibId lib, const std::string& symbol) = 0;
+		virtual bool			closeLibrary(LibId lib) = 0;
+
 
 	};
 

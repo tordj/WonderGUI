@@ -34,12 +34,11 @@ private:
 	bool			_setupGUI(Visitor* pVisitor);
 	bool			_loadSkins(Visitor* pVisitor);
 
-	void *			_openLibrary(const char* pPath);
-	void *			_loadSymbol(void* pLibrary, const char* pSymbol);
-
 
 	WonderApp::Visitor * m_pAppVisitor = nullptr;
 	WonderApp::Window_p m_pWindow = nullptr;
+	WonderApp::LibId	m_libId = 0;
+
 
 	CABICapsule_p	m_pCABICapsule;
 

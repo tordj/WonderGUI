@@ -9,12 +9,6 @@
 #include <string>
 #include <fstream>
 
-#ifdef WIN32
-#	include <Windows.h>
-#	include <libloaderapi.h>
-#else								// OSX and Linux.
-#	include <dlfcn.h>
-#endif
 
 
 using namespace wg;
@@ -41,15 +35,15 @@ bool MyApp::init(Visitor* pVisitor)
 	}
 
 	
-	void * pLib = _openLibrary("cabiclient");
-	if( pLib == nullptr )
+	m_libId = pVisitor->openLibrary("cabiclient");
+	if( m_libId == 0 )
 		return false;
 	
 	
 	 
-	m_pInitClient = (initClientFunc) _loadSymbol(pLib, "init" );
-	m_pUpdateClient = (updateClientFunc) _loadSymbol(pLib, "update" );
-	m_pExitClient = (exitClientFunc) _loadSymbol(pLib, "exitX" );
+	m_pInitClient = (initClientFunc) pVisitor->loadSymbol(m_libId, "init" );
+	m_pUpdateClient = (updateClientFunc)pVisitor->loadSymbol(m_libId, "update" );
+	m_pExitClient = (exitClientFunc)pVisitor->loadSymbol(m_libId, "exitX" );
 
 
 	wg_c_callCollection	c_calls;
@@ -73,7 +67,11 @@ bool MyApp::update()
 
 void MyApp::exit()
 {
-	m_pExitClient();
+	if (m_libId)
+	{
+		m_pExitClient();
+		m_pAppVisitor->closeLibrary(m_libId);
+	}
 }
 
 
@@ -207,27 +205,3 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 
 	return true;
 }
-
-//____ _openLibrary() _________________________________________________________
-
-void * MyApp::_openLibrary(const char* pPath)
-{
-#ifdef WIN32
-		return (void*) LoadLibraryA(pPath);
-#else														// Apple and Linux
-	std::string path = "lib" + string(pPath) + ".dylib";
-	return dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
-#endif
-}
-
-//____ _loadSymbol() __________________________________________________________
-
-void* MyApp::_loadSymbol(void* pLibrary, const char* pSymbol)
-{
-#ifdef WIN32
-	return GetProcAddress((HMODULE)pLibrary, pSymbol);
-#else														// Apple and Linux
-	return dlsym(pLibrary, pSymbol);
-#endif
-}
-

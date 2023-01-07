@@ -20,22 +20,26 @@
 
 =========================================================================*/
 
+#include <wonderapp.h>
+#include <wondergui.h>
+
 #ifdef WIN32
-#    include <SDL.h>
-#    include <SDL_image.h>
+#	include <SDL.h>
+#	include <SDL_image.h>
+#	include <Windows.h>
+#	include <libloaderapi.h>
 #elif __APPLE__
-#    include <SDL2/SDL.h>
-#    include <SDL2_image/SDL_image.h>
+#	include <SDL2/SDL.h>
+#	include <SDL2_image/SDL_image.h>
+#	include <dlfcn.h>
 #else
-#    include <SDL2/SDL.h>
-#    include <SDL2/SDL_image.h>
+#	include <SDL2/SDL.h>
+#	include <SDL2/SDL_image.h>
+#	include <dlfcn.h>
 #endif
 
 
 #include <fstream>
-
-#include <wonderapp.h>
-#include <wondergui.h>
 
 #include <wg_softgfxdevice.h>
 #include <wg_softsurfacefactory.h>
@@ -86,7 +90,11 @@ public:
 	
 	WonderApp::Window_p	createWindow(const WonderApp::Window::Blueprint& blueprint) override;
 
-	
+	WonderApp::LibId	openLibrary(const std::string& path) override;
+	void*			loadSymbol(WonderApp::LibId lib, const std::string& symbol) override;
+	bool			closeLibrary(WonderApp::LibId lib) override;
+
+
 protected:
 	void			convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat);
 
@@ -844,6 +852,40 @@ WonderApp::Window_p MyAppVisitor::createWindow(const WonderApp::Window::Blueprin
 	g_windows.push_back(pWindow.rawPtr());
 
 	return pWindow;
+}
+
+//____ openLibrary() __________________________________________________________
+
+WonderApp::LibId MyAppVisitor::openLibrary(const std::string& path)
+{
+#ifdef WIN32
+	return (void*)LoadLibraryA(path.c_str());
+#else														// Apple and Linux
+	std::string fullPath = "lib" + path + ".dylib";
+	return dlopen(fullPath.c_str(), RTLD_LAZY | RTLD_LOCAL);
+#endif
+}
+
+//____ loadSymbol() __________________________________________________________
+
+void* MyAppVisitor::loadSymbol(WonderApp::LibId lib, const std::string& symbol)
+{
+#ifdef WIN32
+	return GetProcAddress((HMODULE)lib, symbol.c_str());
+#else														// Apple and Linux
+	return dlsym(lib, symbol.c_str());
+#endif
+}
+
+//____ closeLibrary() _________________________________________________________
+
+bool MyAppVisitor::closeLibrary(WonderApp::LibId lib)
+{
+#ifdef WIN32
+	return FreeLibrary((HMODULE)lib);
+#else														// Apple and Linux
+	return (dlclose(lib) == 0);
+#endif
 }
 
 //____ hidePointer() __________________________________________________________
