@@ -242,7 +242,7 @@ namespace wg
 
 		virtual SizeSPX		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 
-		StaticSlot* _slot() const { return m_pSlot; }
+		StaticSlot* 		_slot() const { return m_pSlot; }
 
 	protected:
 		Widget();

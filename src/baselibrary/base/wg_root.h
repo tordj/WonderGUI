@@ -28,12 +28,37 @@
 
 namespace wg
 {
-	class Root
+	class Root;
+	typedef	StrongPtr<Root>		Root_p;
+	typedef	WeakPtr<Root>		Root_wp;
+
+
+	class Root : public Object
 	{
 	public:
 
-		virtual void	addDirtyPatch(const RectSPX& rect) = 0;
-		virtual bool	addPreRenderCall(Widget* pWidget) = 0;
+		//.____ Identification __________________________________________
+
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Geometry _________________________________________________
+
+		virtual int			scale() const = 0;
+		virtual Rect		geo() const = 0;
+				
+		//.____ Misc ___________________________________________________________
+		
+		virtual void		addDirtyPatch(const RectSPX& rect) = 0;
+		virtual bool		addPreRenderCall(Widget* pWidget) = 0;
+
+		virtual Widget_p	findWidget(const Coord& ofs, SearchMode mode) = 0;
+
+		//.____ Internal _______________________________________________________
+		
+		virtual Widget *	_child() const = 0;
+		virtual Widget *	_focusedChild() const = 0;
+
 	};
 
 

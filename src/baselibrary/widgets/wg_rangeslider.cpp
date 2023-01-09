@@ -165,7 +165,7 @@ namespace wg
 		case MsgType::MouseMove:
 		{
 			auto pMsg = static_cast<InputMsg*>(_pMsg);
-			CoordSPX pos = _toLocal(pMsg->_pointerPos());
+			CoordSPX pos = _toLocal(pMsg->pointerSpxPos());
 
 			if (_handleGeo(m_size, true).contains(pos) != m_beginHandleState.isHovered())
 				_setHandleState(m_beginHandleState + State::Hovered, true);
@@ -191,7 +191,7 @@ namespace wg
 			if (pMsg->button() != MouseButton::Left)
 				break;
 
-			CoordSPX pos = _toLocal(pMsg->_pointerPos());
+			CoordSPX pos = _toLocal(pMsg->pointerSpxPos());
 			RectSPX  beginHandle = _handleGeo(m_size, true);
 			RectSPX  endHandle = _handleGeo(m_size, false);
 			if (beginHandle.contains(pos))

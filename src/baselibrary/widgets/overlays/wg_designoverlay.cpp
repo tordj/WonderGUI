@@ -30,6 +30,7 @@
 #include <wg_packpanel.h>
 #include <wg_numberdisplay.h>
 #include <wg_textdisplay.h>
+#include <wg_gfxdevice.h>
 
 #include <wg_staticslotvector.impl.h>
 
@@ -443,7 +444,7 @@ namespace wg
 
 					if (pMsg->button() == MouseButton::Left)
 					{
-						CoordSPX mousePos = pMsg->_pointerPos() - _globalPos();
+						CoordSPX mousePos = pMsg->pointerSpxPos() - _globalPos();
 
 						// Check for press on palette edge
 

@@ -55,6 +55,10 @@ extern "C" {
 //		wg_string		(*tooltip)(void* pCABIRoot);
 		wg_pointerStyle	(*pointerStyle)(void* pCABIRoot);
 
+		void			(*setPointerPos)(void* pCABIRoot, wg_coordSPX pos, int64_t timestamp );
+		void			(*setButtonState)(void* pCABIRoot, int button, int pressed, int64_t timestamp );
+
+		void			(*onUpdate)(void* pCABIRoot, int microPassed, int64_t microsecTimestamp);
 	};
 
 	struct wg_cabi_root_outcalls

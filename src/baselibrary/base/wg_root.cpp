@@ -19,30 +19,18 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#include <wg_root.h>
 
-#ifndef WG_C_GFXSTREAMBUFFER_DOT_H
-#define WG_C_GFXSTREAMBUFFER_DOT_H
-#pragma once
+namespace wg
+{
+	const TypeInfo Root::TYPEINFO = { "Root", &Object::TYPEINFO };
 
-#include <wg_c_types.h>
+	//____ typeInfo() _________________________________________________________
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+	const TypeInfo& Root::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
 
-	wg_obj			wg_createStreamBuffer(int initialCapacity);
 
-	wg_component	wg_getStreamBufferOutput(wg_obj streamBuffer);
-	wg_component	wg_getStreamBufferInput(wg_obj streamBuffer);
-
-	int				wg_streamBufferCapacity(wg_obj streamBuffer);
-	int				wg_streamBufferHasChunk(wg_obj streamBuffer);
-	int				wg_streamBufferBytes(wg_obj streamBuffer);
-
-	void			wg_resetStreamBuffer(wg_obj streamBuffer);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+} // namespace wg

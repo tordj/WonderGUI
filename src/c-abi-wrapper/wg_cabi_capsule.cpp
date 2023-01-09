@@ -22,6 +22,7 @@
 
 #include <wg_cabi_capsule.h>
 #include <wg_gfxdevice.h>
+#include <wg_msg.h>
 
 #include <algorithm>
 
@@ -184,8 +185,55 @@ namespace wg
 
 	void CABICapsule::_receive(Msg* pMsg)
 	{
+		if(!m_cabi.pCABIRoot)
+		{
+			Widget::_receive(pMsg);
+			return;
+		}
 
+		switch( pMsg->type() )
+		{
+			case MsgType::MouseEnter:
+			case MsgType::MouseMove:
+			case MsgType::MouseLeave:
+			{
+				auto pMess = static_cast<InputMsg*>(pMsg);
+				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
+				m_cabi.setPointerPos(m_cabi.pCABIRoot, { localPos.x, localPos.y }, pMess->timestamp() );
+				
+				break;
+			}
+				
+			case MsgType::MousePress:
+			{
+				auto pMess = static_cast<MousePressMsg*>(pMsg);
+				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
+				m_cabi.setButtonState(m_cabi.pCABIRoot, (int) pMess->button(), 1, pMess->timestamp() );
+				break;
+			}
+				
+			case MsgType::MouseRelease:
+			{
+				auto pMess = static_cast<MouseReleaseMsg*>(pMsg);
+				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
+				m_cabi.setButtonState(m_cabi.pCABIRoot, (int) pMess->button(), 0, pMess->timestamp() );
+				break;
+			}
+
+				
+			default:
+				break;
+		}
 	}
+
+	//____ _update() __________________________________________________________
+
+	void CABICapsule::_update(int microPassed, int64_t microsecTimestamp)
+	{
+		if(m_cabi.pCABIRoot)
+			m_cabi.onUpdate(m_cabi.pCABIRoot, microPassed, microsecTimestamp);
+	}
+
 
 	//____ _alphaTest() _______________________________________________________
 
@@ -255,12 +303,14 @@ namespace wg
 	void CABICapsule::_connectRoot(wg_cabi_root_incalls* pCalls)
 	{
 		m_cabi = *pCalls;
+		_startReceiveUpdates();
 	}
 
 	//___ _disconnectRoot() ____________________________________________________
 
 	void CABICapsule::_disconnectRoot()
 	{
+		_stopReceiveUpdates();
 		std::memset(&m_cabi, 0, sizeof(m_cabi));
 	}
 

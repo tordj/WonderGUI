@@ -338,12 +338,10 @@ namespace wg
 
 		char				inputId() const { return m_inputId; }
 		int64_t				timestamp() const { return m_timestamp; }
-		ModKeys		modKeys() const { return m_modKeys; }
+		ModKeys				modKeys() const { return m_modKeys; }
 		Coord				pointerPos() const { return m_pointerPos; }
 
-		//.____ Internal ____________________________________________________
-
-		CoordSPX			_pointerPos() const { return m_pointerPosSPX; }
+		CoordSPX			pointerSpxPos() const { return m_pointerPosSPX; }
 
 	protected:
 		InputMsg(char inputId, ModKeys modKeys, Coord pointerPos, CoordSPX pointerPosSPX, int64_t timestamp) : m_inputId(inputId), m_modKeys(modKeys), m_pointerPos(pointerPos), m_pointerPosSPX(pointerPosSPX), m_timestamp(timestamp) {}

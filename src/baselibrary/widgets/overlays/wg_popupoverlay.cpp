@@ -28,6 +28,7 @@
 #include <wg_base.h>
 #include <wg_inputhandler.h>
 #include <wg_staticslotvector.impl.h>
+#include <wg_gfxdevice.h>
 
 #include <algorithm>
 
@@ -523,7 +524,7 @@ namespace wg
 				if (popupSlots.isEmpty())
 					break;
 
-				CoordSPX 	pointerPos = static_cast<InputMsg*>(_pMsg)->_pointerPos() - _globalPos();
+				CoordSPX 	pointerPos = static_cast<InputMsg*>(_pMsg)->pointerSpxPos() - _globalPos();
 
 				// Top popup can be in state PeekOpen, which needs special attention.
 

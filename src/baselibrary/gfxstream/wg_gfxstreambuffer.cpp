@@ -53,6 +53,7 @@ namespace wg
 
 	GfxStreamBuffer::~GfxStreamBuffer()
 	{
+		delete [] m_pBuffer;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -61,6 +62,23 @@ namespace wg
 	{
 		return TYPEINFO;
 	}
+
+	//____ reset() ____________________________________________________________
+
+	void GfxStreamBuffer::reset( int newBufferSize )
+	{
+		if( newBufferSize != 0 && newBufferSize != m_bufferSize )
+		{
+			delete [] m_pBuffer;
+			m_pBuffer = new char[newBufferSize + c_bufferMargin];
+		}
+
+		m_readOfs = 0;
+		m_writeOfs = 0;
+		m_processedOfs = 0;
+		m_bufferOverflow = 0;
+	}
+
 
 	//____ bytesInBuffer() ____________________________________________________
 
@@ -233,7 +251,14 @@ namespace wg
 		m_bufferSize = newSize;
 		m_pBuffer = new char[m_bufferSize + c_bufferMargin];
 
-		if (m_writeOfs > m_readOfs)
+		if(m_writeOfs == m_readOfs)
+		{
+			m_readOfs = 0;
+			m_writeOfs = 0;
+			m_processedOfs = 0;
+			m_bufferOverflow = 0;
+		}
+		else if (m_writeOfs > m_readOfs)
 		{
 			memcpy(m_pBuffer, pOldBuffer + m_readOfs, m_writeOfs - m_readOfs);
 			int ofsSub = m_readOfs;

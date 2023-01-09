@@ -99,6 +99,22 @@ namespace wg
 
 	}
 
+	void func_setPointerPos(void* pCABIRoot, wg_coordSPX pos, int64_t timestamp )
+	{
+		getRoot(pCABIRoot)->_setPointerPos({pos.x,pos.y}, timestamp);
+	}
+
+	void func_setButtonState(void* pCABIRoot, int button, int pressed, int64_t timestamp )
+	{
+		getRoot(pCABIRoot)->_setButtonState(button, bool(pressed), timestamp);
+	}
+
+
+	void func_onUpdate(void* pCABIRoot, int microPassed, int64_t microsecTimestamp)
+	{
+		getRoot(pCABIRoot)->_update(microPassed,microsecTimestamp);
+	}
+
 	wg_pointerStyle func_pointerStyle(void* pCABIRoot)
 	{
 		return (wg_pointerStyle)getRoot(pCABIRoot)->_pointerStyle();
@@ -122,6 +138,9 @@ namespace wg
 		calls.setState			= func_setState;
 		calls.receive			= func_receive;
 		calls.pointerStyle		= func_pointerStyle;
+		calls.setPointerPos		= func_setPointerPos;
+		calls.setButtonState	= func_setButtonState;
+		calls.onUpdate			= func_onUpdate;
 
 		return calls;
 	}

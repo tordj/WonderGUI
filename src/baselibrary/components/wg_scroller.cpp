@@ -239,7 +239,7 @@ namespace wg
 			{
 				auto pMsg = static_cast<MouseMoveMsg*>(_pMsg);
 
-				_pointerMoved(pMsg->_pointerPos() - _globalPos());
+				_pointerMoved(pMsg->pointerSpxPos() - _globalPos());
 				break;
 			}
 
@@ -257,7 +257,7 @@ namespace wg
 					case Part::Bar:
 					{
 						auto pMsg = static_cast<MousePressMsg*>(_pMsg);
-						CoordSPX pointerPos = pMsg->_pointerPos() - _globalPos();
+						CoordSPX pointerPos = pMsg->pointerSpxPos() - _globalPos();
 
 						auto barTopLeft = _partGeo(Part::Bar, geo, scale).pos();
 
@@ -267,7 +267,7 @@ namespace wg
 					case Part::Back:
 					{
 						auto pMsg = static_cast<MousePressMsg*>(_pMsg);
-						CoordSPX pointerPos = pMsg->_pointerPos() - _globalPos();
+						CoordSPX pointerPos = pMsg->pointerSpxPos() - _globalPos();
 						auto barCenter = _partGeo(Part::Bar, geo, scale).center();
 
 						m_barPressOfs = m_axis == Axis::X ? pointerPos.x - barCenter.x : pointerPos.y - barCenter.y;
@@ -308,7 +308,7 @@ namespace wg
 					int scale = _scale();
 
 					auto pMsg = static_cast<MousePressMsg*>(_pMsg);
-					CoordSPX pointerPos = pMsg->_pointerPos() - _globalPos();
+					CoordSPX pointerPos = pMsg->pointerSpxPos() - _globalPos();
 
 					auto barCenter = _partGeo(Part::Bar, geo, scale).center();
 
@@ -348,8 +348,8 @@ namespace wg
 				m_pressedPart = Part::None;
 				
 				auto pMsg = static_cast<MouseReleaseMsg*>(_pMsg);
-				_pointerMoved(pMsg->_pointerPos() - _globalPos());
-
+				_pointerMoved(pMsg->pointerSpxPos() - _globalPos());
+				
 
 				_pMsg->swallow();
 				bProcessed = true;
@@ -368,7 +368,7 @@ namespace wg
 
 					RectSPX barGeo = _dragbarArea(backGeo, scale);
 
-					CoordSPX pointerOfs = pMsg->_pointerPos() - backGeo.pos();
+					CoordSPX pointerOfs = pMsg->pointerSpxPos() - backGeo.pos();
 
 
 					spx barMaxOfs;

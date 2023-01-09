@@ -242,6 +242,12 @@ namespace wg
 		}
 	}
 
+	//____ scale() ____________________________________________________________
+
+	int RootPanel::scale() const
+	{
+		return m_scale;
+	}
 
 	//_____ setGeo() _____________________________________________________________
 
@@ -509,6 +515,12 @@ namespace wg
 		return pGfxDevice->endRender();
 	}
 
+	//____ findWidget() _______________________________________________________
+
+	Widget_p RootPanel::findWidget(const Coord& ofs, SearchMode mode)
+	{
+		return Widget_p(_findWidget(Util::ptsToSpx(ofs, m_scale) - m_geo.pos(), mode));
+	}
 
 	//____ _findWidget() _____________________________________________________________
 
@@ -524,6 +536,13 @@ namespace wg
 			return slot._widget();
 
 		return nullptr;
+	}
+
+	//____ _child() ______________________________________________________________
+
+	Widget * RootPanel::_child() const
+	{
+		return slot._widget();
 	}
 
 

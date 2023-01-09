@@ -189,7 +189,7 @@ namespace wg
 
 					case DragState::Dragging:
 					{
-						CoordSPX pointerPos = pMsg->_pointerPos();
+						CoordSPX pointerPos = pMsg->pointerSpxPos();
 
 						// Move the drag-widget onscreen.
 
@@ -217,7 +217,7 @@ namespace wg
 
 					case DragState::Targeting:
 					{
-						CoordSPX pointerPos = pMsg->_pointerPos();
+						CoordSPX pointerPos = pMsg->pointerSpxPos();
 
 						// Move the drag-widget onscreen.
 

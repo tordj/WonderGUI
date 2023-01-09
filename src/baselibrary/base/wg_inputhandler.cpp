@@ -225,7 +225,7 @@ namespace wg
 	//____ setPointer() ___________________________________________________________
 
 
-	void InputHandler::setPointer( RootPanel * pRoot, Coord pos, int64_t timestamp )
+	void InputHandler::setPointer( Root * pRoot, Coord pos, int64_t timestamp )
 	{
 		Coord	prevPointerPos = m_pointerPos;
 		CoordSPX	prevPointerPosSPX = m_pointerPosSPX;
@@ -498,7 +498,7 @@ namespace wg
 
 	//____ setFocusedWindow() ____________________________________________________________
 
-	void InputHandler::setFocusedWindow( RootPanel * pRoot )
+	void InputHandler::setFocusedWindow( Root * pRoot )
 	{
 		if( pRoot == m_pFocusedRoot.rawPtr() )
 			return;
@@ -518,13 +518,13 @@ namespace wg
 			if( p )
 				_setFocused( p );
 			else
-				_setFocused( pRoot->slot.rawWidgetPtr() );				// Bottom container gets focus per default.
+				_setFocused( pRoot->_child() );				// Bottom container gets focus per default.
 		}
 	}
 
 	//____ _focusChanged() _____________________________________________________
 
-	bool InputHandler::_focusChanged( RootPanel * pRoot, Widget * pOldFocused, Widget * pNewFocused )
+	bool InputHandler::_focusChanged( Root * pRoot, Widget * pOldFocused, Widget * pNewFocused )
 	{
 		if (pRoot != m_pFocusedRoot.rawPtr() )
 			return false;					// Root does not have focus, thus can't assign focus to its child.

@@ -201,7 +201,7 @@ namespace wg
 			// No break, fall through to next case on purpose.
 		case MsgType::MouseMove:
 		{
-			CoordSPX mousePos = static_cast<InputMsg*>(_pMsg)->_pointerPos() - _globalPos();
+			CoordSPX mousePos = static_cast<InputMsg*>(_pMsg)->pointerSpxPos() - _globalPos();
 			Widget* pHovered = _findWidget(mousePos, SearchMode::ActionTarget);
 
 			if (pHovered->tooltip().isEmpty())

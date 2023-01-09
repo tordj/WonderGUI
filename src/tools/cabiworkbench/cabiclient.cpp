@@ -47,9 +47,14 @@ DLLEXPORTPREFIX int init( wg_c_callCollection * pBaseInterface, wg_cabi_root_out
 
 	pMainPanel->setLayout(pLayout);
 
-	auto pFiller1 = Filler::create({ .skin = ColorSkin::create({.color = Color::Red }) });
-	auto pFiller2 = Filler::create({ .skin = ColorSkin::create({.color = Color::Green }) });
-	auto pFiller3 = Filler::create({ .skin = ColorSkin::create({.color = Color::Blue }) });
+	auto pSkin1 = ColorSkin::create({ .states = { {State::Normal, Color::Red}, {State::Hovered, Color::Pink}, {State::Pressed, Color::DarkRed} }  });
+	auto pSkin2 = ColorSkin::create({ .states = { {State::Normal, Color::Green}, {State::Hovered, Color::LightGreen}, {State::Pressed, Color::DarkGreen} }  });
+	auto pSkin3 = ColorSkin::create({ .states = { {State::Normal, Color::Blue}, {State::Hovered, Color::LightBlue}, {State::Pressed, Color::DarkBlue} }  });
+
+	
+	auto pFiller1 = Filler::create({ .skin = pSkin1 });
+	auto pFiller2 = Filler::create({ .skin = pSkin2 });
+	auto pFiller3 = Filler::create({ .skin = pSkin3 });
 
 	pMainPanel->slots << pFiller1;
 	pMainPanel->slots << pFiller2;

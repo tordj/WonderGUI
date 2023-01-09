@@ -28,8 +28,9 @@
 #include <wg_widget.h>
 #include <wg_key.h>
 #include <wg_msg.h>
-#include <wg_rootpanel.h>
+#include <wg_root.h>
 
+#include	<map>
 
 /* LEFT TO DO:
  *
@@ -42,11 +43,6 @@
 
 namespace wg
 {
-
-	class RootPanel;
-	typedef	StrongPtr<RootPanel>		RootPanel_p;
-	typedef	WeakPtr<RootPanel>		RootPanel_wp;
-
 	class InputHandler;
 	typedef	StrongPtr<InputHandler>		InputHandler_p;
 	typedef	WeakPtr<InputHandler>		InputHandler_wp;
@@ -68,11 +64,11 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		void 		setPointer(RootPanel * pRoot, Coord pos, int64_t timestamp = 0);
+		void 		setPointer(Root * pRoot, Coord pos, int64_t timestamp = 0);
 		void 		setButton(MouseButton button, bool bPressed, int64_t timestamp = 0);
 		void 		setWheelRoll(int wheel, pts distance, bool bInvertScroll = false, int64_t timestamp = 0);
 
-		void 		setFocusedWindow(RootPanel * pRoot);
+		void 		setFocusedWindow(Root * pRoot);
 
 		void 		setKey(int nativeKeyCode, bool bPressed, int64_t timestamp = 0);
 
@@ -104,7 +100,7 @@ namespace wg
 		//.____ State _________________________________________________
 
 		Widget_p 	focusedWidget() const { return _focusedWidget(); }
-		RootPanel_p focusedWindow() const { return m_pFocusedRoot.rawPtr(); }
+		Root_p 		focusedWindow() const { return m_pFocusedRoot.rawPtr(); }
 
 		bool		isButtonPressed(MouseButton button) const;
 		bool		isAnyButtonPressed() const;
@@ -141,7 +137,7 @@ namespace wg
 		void		_handleKeyRepeats( int64_t timestamp );
 
 
-		bool		_focusChanged( RootPanel * pRoot, Widget * pOldFocused, Widget * pNewFocused );
+		bool		_focusChanged( Root * pRoot, Widget * pOldFocused, Widget * pNewFocused );
 
 		int			_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list );
 
@@ -157,10 +153,10 @@ namespace wg
 		Coord			m_pointerPos;
 		CoordSPX		m_pointerPosSPX;
 
-		RootPanel_wp	m_pMarkedRoot;		// Root widget the pointer currently is "inside".
+		Root_wp			m_pMarkedRoot;		// Root widget the pointer currently is "inside".
 		Widget_wp		m_pMarkedWidget;	// Widget the pointer currently is "inside". Empty if outside a modal widget.
 
-		RootPanel_wp	m_pFocusedRoot;		// RootPanel that is focused (has the focused widget).
+		Root_wp			m_pFocusedRoot;		// RootPanel that is focused (has the focused widget).
 
 		std::vector<Widget_wp>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
 

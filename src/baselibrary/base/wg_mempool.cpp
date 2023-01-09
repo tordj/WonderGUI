@@ -55,7 +55,7 @@ namespace wg
 
 		Block * pBlock = m_blocks.first();
 
-		while( (pBlock && pEntry < pBlock->pMemBlock) || (pEntry >= ((uint8_t*)pBlock->pMemBlock) + pBlock->blockSize) )
+		while( pBlock && ((pEntry < pBlock->pMemBlock) || (pEntry >= ((uint8_t*)pBlock->pMemBlock) + pBlock->blockSize)) )
 		{
 			pBlock = pBlock->next();
 		}

@@ -58,7 +58,7 @@ namespace wg
 	 */
 
 
-	class CABIRoot : public Object, public Root, protected SlotHolder
+	class CABIRoot : public Root, protected SlotHolder
 	{
 		friend class Widget;
 		friend class Container;
@@ -79,10 +79,11 @@ namespace wg
 
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
+		
 		//.____ Geometry _________________________________________________
 
-		inline int			scale() const;
+		int					scale() const override;
+		Rect				geo() const override;
 
 		//.____ State _________________________________________________
 
@@ -91,7 +92,7 @@ namespace wg
 
 		//.____ Misc ___________________________________________________________
 
-		Widget_p			findWidget(const Coord& ofs, SearchMode mode);
+		Widget_p			findWidget(const Coord& ofs, SearchMode mode) override;
 
 		void				addDirtyPatch(const RectSPX& rect) override;
 		bool				addPreRenderCall(Widget* pWidget) override;
@@ -116,6 +117,12 @@ namespace wg
 		void		_receive(Msg* pMsg);
 
 		PointerStyle	_pointerStyle() const;
+		
+		void		_setPointerPos( CoordSPX pos, int64_t timestamp );
+		void 		_setButtonState( int button, bool bPressed, int64_t timestamp );
+
+		void		_update(int microPassed, int64_t microsecTimestamp);
+
 
 	protected:
 		CABIRoot();
@@ -163,7 +170,10 @@ namespace wg
 		Widget*			_findWidget(const CoordSPX& ofs, SearchMode mode);
 
 		//		void				_setFocusedChild( Widget * pWidget );
-		Widget*			_focusedChild() const;
+
+
+		Widget*			_child() const override;
+		Widget*			_focusedChild() const override;
 
 
 		wg_cabi_root_outcalls	m_cabi;
@@ -180,13 +190,6 @@ namespace wg
 
 		Widget_wp			m_pFocusedChild;
 	};
-
-	//____ scale() ____________________________________________________________
-
-	int CABIRoot::scale() const
-	{
-		return m_scale;
-	}
 
 
 } // namespace wg

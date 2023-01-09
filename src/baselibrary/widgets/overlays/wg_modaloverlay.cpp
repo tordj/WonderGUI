@@ -493,27 +493,27 @@ namespace wg
 		{
 			InputMsg * pMsg = static_cast<InputMsg*>(_pMsg);
 
-			if( !modalSlots.isEmpty() && _findWidget( pMsg->_pointerPos(), SearchMode::ActionTarget ) == this )
+			if( !modalSlots.isEmpty() && _findWidget( pMsg->pointerSpxPos(), SearchMode::ActionTarget ) == this )
 			{
 				switch( pMsg->type() )
 				{
 					case MsgType::MousePress:
 					{
 						MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
-						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->_pointerPos(), pMsg->timestamp()) );
+						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
 					}
 					break;
 
 					case MsgType::MouseRelease:
 					{
 						MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
-						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->_pointerPos(), pMsg->timestamp()) );
+						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
 					}
 					break;
 
 					case MsgType::MouseMove:
 					{
-						Base::msgRouter()->post( new ModalMoveOutsideMsg( pMsg->inputId(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->_pointerPos(), pMsg->timestamp()) );
+						Base::msgRouter()->post( new ModalMoveOutsideMsg( pMsg->inputId(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
 					}
 					break;
 

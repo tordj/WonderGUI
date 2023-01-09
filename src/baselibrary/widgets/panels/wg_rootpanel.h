@@ -54,7 +54,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, public Root, protected SlotHolder, protected SkinSlot::Holder
+	class RootPanel : public Root, protected SlotHolder, protected SkinSlot::Holder
 	{
 		friend class Widget;
 		friend class Container;
@@ -81,11 +81,11 @@ namespace wg
 
 		bool				setScale(int scale);
 		void				clearScale();
-		inline int			scale() const;
+		int					scale() const override;
 		inline bool			isScaleSet() const;
 
 		bool				setGeo( const Rect& geo );
-		Rect				geo() const;
+		Rect				geo() const override;
 
 		//.____ State _________________________________________________
 
@@ -132,7 +132,7 @@ namespace wg
 		void					setCanvasLayers( CanvasLayers * pLayers );
 		inline CanvasLayers_p	canvasLayers() const;
 
-		inline Widget_p			findWidget(const Coord& ofs, SearchMode mode);
+		Widget_p				findWidget(const Coord& ofs, SearchMode mode) override;
 
 		inline int				nbDirtyRects() const;
 		inline const RectSPX*	firstDirtyRect() const;
@@ -200,7 +200,10 @@ namespace wg
 		Widget *			_findWidget( const CoordSPX& ofs, SearchMode mode );
 
 //		void				_setFocusedChild( Widget * pWidget );
-		Widget *			_focusedChild() const;
+
+		Widget *			_child() const override;
+
+		Widget *			_focusedChild() const override;
 
 		PatchesSPX			m_dirtyPatches;		// Dirty patches that needs to be rendered.
 		PatchesSPX			m_updatedPatches;	// Patches that were updated in last rendering session.
@@ -229,13 +232,6 @@ namespace wg
 
 		Widget_wp			m_pFocusedChild;
 	};
-
-	//____ scale() ____________________________________________________________
-
-	int RootPanel::scale() const
-	{
-		return m_scale;
-	}
 
 	//____ isScaleSet() _______________________________________________________
 
@@ -298,13 +294,6 @@ namespace wg
 	CanvasLayers_p RootPanel::canvasLayers() const 
 	{ 
 		return m_pCanvasLayers;
-	}
-
-	//____ findWidget() _______________________________________________________
-
-	Widget_p RootPanel::findWidget(const Coord& ofs, SearchMode mode)
-	{ 
-		return Widget_p(_findWidget(Util::ptsToSpx(ofs, m_scale) - m_geo.pos(), mode)); 
 	}
 
 	//____ nbDirtyRects() _____________________________________________________

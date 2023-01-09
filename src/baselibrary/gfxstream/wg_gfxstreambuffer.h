@@ -58,6 +58,8 @@ namespace wg
 
 		//.____ Misc _____________________________________________________
 		
+		void	reset( int newBufferSize = 0 );
+		
 		inline int	bufferCapacity() const { return m_bufferSize; };
 		inline bool	chunkInBuffer() { return _hasStreamChunks(); };
 		int			bytesInBuffer() const;

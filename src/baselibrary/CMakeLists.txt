@@ -107,6 +107,7 @@ add_library( wondergui STATIC
 	base/wg_resdb.cpp
 	base/wg_resdb.h
 	base/wg_resloader.h
+	base/wg_root.cpp
 	base/wg_root.h
 	base/wg_skinslot.cpp
 	base/wg_skinslot.h

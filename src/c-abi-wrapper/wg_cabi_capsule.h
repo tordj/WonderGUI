@@ -129,6 +129,8 @@ namespace wg
 		CABICapsule(const Blueprint& bp);
 		 ~CABICapsule();
 
+		void	_update(int microPassed, int64_t microsecTimestamp) override;
+
 
 		 wg_cabi_root_incalls	m_cabi;
 

@@ -59,7 +59,7 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Misc _____________________________________________________
-		
+
 	protected:
 
 		GfxStreamLoopWrapper(const void * pBufferBegin, const void * pBufferEnd,

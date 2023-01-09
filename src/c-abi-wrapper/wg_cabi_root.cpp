@@ -25,6 +25,9 @@
 #include <wg_cabi_root_incalls.h>
 #include <wg_cabi_gfxdevice.h>
 #include <wg_container.h>
+#include <wg_util.h>
+#include <wg_base.h>
+#include <wg_inputhandler.h>
 
 
 namespace wg
@@ -117,6 +120,21 @@ namespace wg
 			m_preRenderCalls.push_back(pWidget);
 
 		return canPreRender;
+	}
+
+
+	//____ scale() ____________________________________________________________
+
+	int CABIRoot::scale() const
+	{
+		return m_scale;
+	}
+
+	//____ geo() ______________________________________________________________
+
+	Rect CABIRoot::geo() const
+	{
+		return Util::spxToPts(m_size,m_scale);
 	}
 
 	//____ _matchingHeight() __________________________________________________
@@ -256,7 +274,29 @@ namespace wg
 		return PointerStyle::Default;
 	}
 
-	//____ _slotTypeInfo() ___________________________________________________
+	//____ _setPointerPos() ___________________________________________________
+
+	void CABIRoot::_setPointerPos( CoordSPX pos, int64_t timestamp )
+	{
+		Base::inputHandler()->setPointer(this, Util::spxToPts(pos, m_scale), timestamp );
+	}
+
+	//____ _setButtonState() __________________________________________________
+
+	void CABIRoot::_setButtonState( int button, bool bPressed, int64_t timestamp )
+	{
+		Base::inputHandler()->setButton((MouseButton) button, bPressed, timestamp );
+	}
+
+	//____ _update() __________________________________________________________
+
+	void CABIRoot::_update(int microPassed, int64_t microsecTimestamp)
+	{
+		Base::msgRouter()->dispatch();
+		Base::update(microsecTimestamp);
+	}
+
+	//____ _slotTypeInfo() ____________________________________________________
 
 	const TypeInfo& CABIRoot::_slotTypeInfo(const StaticSlot* pSlot) const
 	{
@@ -277,12 +317,27 @@ namespace wg
 		return this;
 	}
 
-	//____ _scale() ______________________________________________________________
+	//____ _scale() ___________________________________________________________
 
 	int CABIRoot::_scale() const
 	{
 		return m_scale;
 	}
+
+	//____ _child() ___________________________________________________________
+	
+	Widget*	CABIRoot::_child() const
+	{
+		return slot._widget();
+	}
+
+	//____ _focusedChild() ____________________________________________________
+
+	Widget* CABIRoot::_focusedChild() const
+	{
+		return m_pFocusedChild.rawPtr();
+	}
+
 
 	//____ _childPos() ________________________________________________________
 
