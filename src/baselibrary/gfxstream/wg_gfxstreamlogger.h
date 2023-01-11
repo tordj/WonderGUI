@@ -60,7 +60,9 @@ namespace wg
 		void	setDisplayOffset(bool bDisplay) { m_bDisplayStreamOffset = bDisplay; }
 		bool	displayOffset() const { return m_bDisplayStreamOffset; }
 
-		
+		void	setDisplayChunkNb(bool bDisplay) { m_bDisplayChunkNb = bDisplay; }
+		bool	displayChunkNb() const { return m_bDisplayChunkNb; }
+
 	protected:
 		GfxStreamLogger( std::ostream& out );
 		~GfxStreamLogger();
@@ -83,7 +85,9 @@ namespace wg
 		GfxStreamDecoder_p m_pDecoder;
 		
 		bool			m_bDisplayStreamOffset = true;
+		bool			m_bDisplayChunkNb = true;
 		uint64_t		m_streamOffset = 0;
+		int				m_chunkNb = 0;
 	};
 
 }

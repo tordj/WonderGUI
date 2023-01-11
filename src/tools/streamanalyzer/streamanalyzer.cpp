@@ -833,7 +833,7 @@ void MyApp::setFrame( int frame )
 	
 	if( frame > m_currentFrame )
 	{
-		_playFrames( m_currentFrame+1, frame, false );
+		_playFrames( m_currentFrame+1, frame, true );
 		_playFrames( frame, frame+1, false );
 	}
 	else
@@ -1035,7 +1035,7 @@ void MyApp::_logFullStream()
 
 	std::ostringstream	logStream;
 	auto pLogger = GfxStreamLogger::create( logStream );
-	pLogger->setDisplayOffset(true);
+	pLogger->setDisplayChunkNb(true);
 	
 	auto pPump = GfxStreamPump::create( {pWrapper, pWrapper->output}, {pLogger, pLogger->input} );
 	pPump->pumpAll();

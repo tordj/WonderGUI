@@ -85,7 +85,11 @@ namespace wg
 
 		if (header.type == GfxChunkId::OutOfData)
 			return false;
-		
+
+		if (m_bDisplayChunkNb)
+			m_charStream << std::setw(6) << std::setfill('0') << m_chunkNb << ": ";
+
+
 		if( m_bDisplayStreamOffset )
 			m_charStream << std::setw(8) << std::setfill('0') << m_streamOffset << " - ";
 
@@ -853,6 +857,7 @@ namespace wg
 		}
 
 		m_streamOffset += chunkSize;
+		m_chunkNb++;
 		return true;
 	}
 

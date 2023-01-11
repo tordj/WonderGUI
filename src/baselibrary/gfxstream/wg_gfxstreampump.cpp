@@ -26,6 +26,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <cstring>
 
 using namespace std;
 
@@ -427,13 +428,13 @@ namespace wg
 			{
 				auto p = pBegin;
 
-				GfxChunkId chunkType = GfxStream::chunkType(p);
+				GfxChunkId chunkType;
 				while (p != pEnd )
 				{
+					chunkType = GfxStream::chunkType(p);
 					if (chunkType == GfxChunkId::BeginCanvasUpdate || chunkType == GfxChunkId::SetClipList || chunkType == GfxChunkId::PushClipList)
 						break;
 					p += GfxStream::chunkSize(p);
-					chunkType = GfxStream::chunkType(p);
 				}
 
 				if (p != pBegin)
@@ -495,6 +496,18 @@ namespace wg
 								nCanvasUpdate--;
 							
 							p += GfxStream::chunkSize(p);
+							if (p == pEnd)
+							{
+								// We reached segment boundary but need to keep our loop going.
+
+								seg++;
+
+								pBegin = pSegments[seg].pBegin;
+								pEnd = (seg == nFullSegments) ? pLastFoundEndRender + GfxStream::chunkSize(pLastFoundEndRender) : pSegments[seg].pEnd;
+								p = pBegin;
+
+								bytesToDiscard += pEnd - pBegin;
+							}
 						}
 					}
 					else
@@ -583,7 +596,7 @@ namespace wg
 		while (m_pInput->hasChunks())
 		{
 			std::tie(nSegments, pSegments) = m_pInput->showChunks();
-			
+
 			int	bytesProcessed = 0;
 			for (int i = 0; i < nSegments; i++)
 			{
