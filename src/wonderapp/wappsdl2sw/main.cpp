@@ -359,6 +359,40 @@ void exit_system()
 	IMG_Quit();
 }
 
+//____ _generateWindowSurface() _______________________________________________
+
+Surface_p generateWindowSurface(SDL_Window* pWindow)
+{
+	SDL_Surface* pWinSurf = SDL_GetWindowSurface(pWindow);
+	if (pWinSurf == nullptr)
+	{
+		//		printf("Unable to get window SDL Surface: %s\n", SDL_GetError());
+		return nullptr;
+	}
+
+	PixelFormat format = PixelFormat::Undefined;
+
+	switch (pWinSurf->format->BitsPerPixel)
+	{
+	case 32:
+		format = PixelFormat::BGRX_8;
+		break;
+	case 24:
+		format = PixelFormat::BGR_8;
+		break;
+	default:
+	{
+		printf("Unsupported pixelformat of SDL Surface!\n");
+		return nullptr;
+	}
+	}
+
+	Blob_p pCanvasBlob = Blob::create(pWinSurf->pixels, 0);
+	auto pWindowSurface = SoftSurface::create(SizeI(pWinSurf->w, pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch);
+
+	return pWindowSurface;
+}
+
 //____ update_window_rects() __________________________________________________
 /*
 void update_window_rects(const Rect* pRects, int nRects)
@@ -472,6 +506,48 @@ bool process_system_events()
 		case SDL_TEXTINPUT:
 			pInput->putText(e.text.text);
 			break;
+
+		case SDL_WINDOWEVENT:
+		{
+			MyWindow* pWindow = nullptr;
+
+			for (auto& pWin : g_windows)
+			{
+				if (pWin && e.window.windowID == pWin->SDLWindowId())
+				{
+					pWindow = pWin;
+					break;
+				}
+			}
+			if (pWindow == nullptr)
+				break;
+
+			switch (e.window.event)
+			{
+				// See https://stackoverflow.com/questions/32294913/getting-continuous-window-resize-event-in-sdl-2
+				// for how to do continous resize.
+
+				case SDL_WINDOWEVENT_SIZE_CHANGED:		// Called for all in-between sizes.			
+				{
+					Size size(e.window.data1, e.window.data2);
+
+					if (size != pWindow->rootPanel()->geo().size())
+					{
+						auto pWindowSurface = generateWindowSurface(pWindow->SDLWindow());
+						pWindow->rootPanel()->setCanvas(pWindowSurface);
+					}
+					break;
+				}
+
+				case SDL_WINDOWEVENT_RESIZED:			// Called for final size.
+					break;
+
+				default:
+					break;
+			}
+			break;
+		}
+
 
 
 		default:
@@ -941,39 +1017,20 @@ MyWindow_p MyWindow::create(const Blueprint& blueprint)
 
 	geo = { blueprint.pos + Coord(4,20), blueprint.size};
 
+	uint32_t flags = 0;
+
+	if (blueprint.resizable)
+		flags |= SDL_WINDOW_RESIZABLE;
 
 
-
-	SDL_Window* pSDLWindow = SDL_CreateWindow(blueprint.title.c_str(), geo.x, geo.y, geo.w, geo.h, 0);
+	SDL_Window* pSDLWindow = SDL_CreateWindow(blueprint.title.c_str(), geo.x, geo.y, geo.w, geo.h, flags);
 	if (pSDLWindow == NULL)
 		return nullptr;
 
-	SDL_Surface* pWinSurf = SDL_GetWindowSurface(pSDLWindow);
-	if (pWinSurf == nullptr)
-	{
-//		printf("Unable to get window SDL Surface: %s\n", SDL_GetError());
+	auto pWindowSurface = generateWindowSurface(pSDLWindow);
+	if (pWindowSurface == nullptr)
 		return nullptr;
-	}
 
-	PixelFormat format = PixelFormat::Undefined;
-
-	switch (pWinSurf->format->BitsPerPixel)
-	{
-	case 32:
-		format = PixelFormat::BGRX_8;
-		break;
-	case 24:
-		format = PixelFormat::BGR_8;
-		break;
-	default:
-	{
-		printf("Unsupported pixelformat of SDL Surface!\n");
-		return nullptr;
-	}
-	}
-
-	Blob_p pCanvasBlob = Blob::create(pWinSurf->pixels, 0);
-	auto pWindowSurface = SoftSurface::create(SizeI(pWinSurf->w, pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch);
 	auto pRootPanel = RootPanel::create(pWindowSurface, g_pGfxDevice);
 
 	MyWindow_p pWindow = new MyWindow(blueprint.title, pRootPanel, geo, pSDLWindow);
@@ -992,7 +1049,6 @@ MyWindow::MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg
 	: Window(pRootPanel, geo)
 {
 	m_pSDLWindow = pSDLWindow;
-	m_title = title;
 }
 
 
@@ -1000,8 +1056,27 @@ MyWindow::MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg
 
 bool MyWindow::setTitle(std::string& title)
 {
+	SDL_SetWindowTitle(m_pSDLWindow, title.c_str());
+	return true;
+}
+
+//____ setIcon() ______________________________________________________________
+
+bool MyWindow::setIcon(Surface* pIcon)
+{
+	//TODO: IMPLEMENT!
+
 	return false;
 }
+
+
+//____ title() ________________________________________________________________
+
+std::string MyWindow::title() const
+{
+	return std::string(SDL_GetWindowTitle(m_pSDLWindow));
+}
+
 
 //____ render() _______________________________________________________________
 
@@ -1020,5 +1095,9 @@ void MyWindow::render()
 
 Rect MyWindow::_updateWindowGeo(const Rect& geo)
 {
+	//TODO: Calculate and update position as well.
+
+	SDL_SetWindowSize(m_pSDLWindow, geo.w, geo.h);
 	return m_geo;
 }
+

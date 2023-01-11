@@ -37,18 +37,20 @@ public:
 	static MyWindow_p		create(const Blueprint& blueprint);
 
 	bool			setTitle(std::string& title) override;
-	std::string		title() const override { return m_title; }
+	std::string		title() const override;
+
+	bool			setIcon(wg::Surface * pIcon) override;
 
 	void			render();
 
 	Uint32			SDLWindowId() { return SDL_GetWindowID(m_pSDLWindow); }
+	SDL_Window*		SDLWindow() { return m_pSDLWindow; }
 
 protected:
 	MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo, SDL_Window* pSDLWindow);
 	~MyWindow() {}
 
-	wg::Rect	_updateWindowGeo(const wg::Rect& geo) override;
+	wg::Rect		_updateWindowGeo(const wg::Rect& geo) override;
 
-	std::string		m_title;
 	SDL_Window*		m_pSDLWindow;
 };

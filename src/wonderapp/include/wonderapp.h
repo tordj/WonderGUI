@@ -84,6 +84,7 @@ public:
 
 			wg::Placement		origo = wg::Placement::Center;
 			wg::Coord			pos;
+			bool				resizable = true;
 			wg::Size			size = { 640,480 };
 			std::string			title = "WonderGUI Application";
 		};
@@ -113,6 +114,7 @@ public:
 		virtual bool			setTitle(std::string& title) = 0;
 		virtual std::string		title() const = 0;
 
+		virtual bool			setIcon(wg::Surface * pIcon) = 0;
 
 	protected:
 		Window(wg::RootPanel* pRootPanel, const wg::Rect& geo);
