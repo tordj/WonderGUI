@@ -131,10 +131,13 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	
 	auto pCABICapsule = CABICapsule::create();
 
-
+	auto pTextEditor = TextEditor::create( { .skin = m_pSectionSkin });
+	
+	
+	
 
 	pSplitPanel->slots[0] = pCABICapsule;
-	pSplitPanel->slots[1] = Filler::create({ .skin = m_pButtonSkin });
+	pSplitPanel->slots[1] = pTextEditor;
 
 	pBasePanel->slots << pSplitPanel;
 

@@ -120,6 +120,7 @@ namespace wg
 		
 		void		_setPointerPos( CoordSPX pos, int64_t timestamp );
 		void 		_setButtonState( int button, bool bPressed, int64_t timestamp );
+		void 		_setKeyState( int nativeKeyCode, bool bPressed, int64_t timestamp );
 
 		void		_update(int microPassed, int64_t microsecTimestamp);
 

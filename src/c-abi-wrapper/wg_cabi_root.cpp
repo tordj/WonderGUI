@@ -256,6 +256,20 @@ namespace wg
 				slot._widget()->_setState(s);
 			}
 		}
+
+		if( state.isFocused() != oldState.isFocused() )
+		{
+			if( m_pFocusedChild )
+			{
+				State s = m_pFocusedChild->state();
+				s.setFocused(!s.isFocused());
+				m_pFocusedChild->_setState(s);
+				
+				if( !state.isFocused() )
+					m_pFocusedChild = nullptr;
+			}
+		}
+
 	}
 
 	//____ _receive() _________________________________________________________
@@ -286,6 +300,13 @@ namespace wg
 	void CABIRoot::_setButtonState( int button, bool bPressed, int64_t timestamp )
 	{
 		Base::inputHandler()->setButton((MouseButton) button, bPressed, timestamp );
+	}
+
+	//____ _setKeyState() __________________________________________________
+
+	void CABIRoot::_setKeyState( int nativeKeyCode, bool bPressed, int64_t timestamp )
+	{
+		Base::inputHandler()->setKey(nativeKeyCode, bPressed, timestamp );
 	}
 
 	//____ _update() __________________________________________________________
@@ -391,17 +412,40 @@ namespace wg
 	//____ () ___________________________________________________
 	bool CABIRoot::_childRequestFocus(StaticSlot* pSlot, Widget* pWidget)
 	{
-		//TODO: Implement!!!
+		if (!m_cabi.hostCapsule)
+			return false;
 
-		return false;
+		if( m_pFocusedChild )
+		{
+			State s = m_pFocusedChild->state();
+			s.setFocused(false);
+			m_pFocusedChild->_setState(s);
+
+			m_pFocusedChild = pWidget;
+			
+			s = m_pFocusedChild->state();
+			s.setFocused(true);
+			m_pFocusedChild->_setState(s);
+		}
+		else
+		{
+			bool result = (bool) m_cabi.requestFocus(m_cabi.hostCapsule);
+			if( result )
+				m_pFocusedChild = pWidget;
+			
+			return result;
+		}
 	}
 
 	//____ () ___________________________________________________
 	bool CABIRoot::_childReleaseFocus(StaticSlot* pSlot, Widget* pWidget)
 	{
-		//TODO: Implement!!!
+		if (!m_cabi.hostCapsule)
+			return false;
 
-		return false;
+		bool result = (bool) m_cabi.releaseFocus(m_cabi.hostCapsule);
+		
+		return result;
 	}
 
 	//____ _childRequestInView() ___________________________________________________

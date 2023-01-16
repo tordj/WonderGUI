@@ -109,6 +109,11 @@ namespace wg
 		getRoot(pCABIRoot)->_setButtonState(button, bool(pressed), timestamp);
 	}
 
+	void func_setKeyState(void* pCABIRoot, int nativeKeyCode, int pressed, int64_t timestamp )
+	{
+		getRoot(pCABIRoot)->_setKeyState(nativeKeyCode, bool(pressed), timestamp);
+	}
+
 
 	void func_onUpdate(void* pCABIRoot, int microPassed, int64_t microsecTimestamp)
 	{
@@ -140,6 +145,7 @@ namespace wg
 		calls.pointerStyle		= func_pointerStyle;
 		calls.setPointerPos		= func_setPointerPos;
 		calls.setButtonState	= func_setButtonState;
+		calls.setKeyState		= func_setKeyState;
 		calls.onUpdate			= func_onUpdate;
 
 		return calls;

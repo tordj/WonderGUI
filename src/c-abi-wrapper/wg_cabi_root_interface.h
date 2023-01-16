@@ -57,6 +57,7 @@ extern "C" {
 
 		void			(*setPointerPos)(void* pCABIRoot, wg_coordSPX pos, int64_t timestamp );
 		void			(*setButtonState)(void* pCABIRoot, int button, int pressed, int64_t timestamp );
+		void			(*setKeyState)(void* pCABIRoot, int nativeKeycode, int pressed, int64_t timestamp );
 
 		void			(*onUpdate)(void* pCABIRoot, int microPassed, int64_t microsecTimestamp);
 	};

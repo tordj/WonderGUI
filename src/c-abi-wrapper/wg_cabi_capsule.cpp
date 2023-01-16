@@ -179,6 +179,8 @@ namespace wg
 	{
 		if (m_cabi.pCABIRoot)
 			m_cabi.setState(m_cabi.pCABIRoot, * (wg_state*) &state);
+		
+		Widget::_setState(state);
 	}
 
 	//____ _receive() _________________________________________________________
@@ -207,7 +209,6 @@ namespace wg
 			case MsgType::MousePress:
 			{
 				auto pMess = static_cast<MousePressMsg*>(pMsg);
-				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
 				m_cabi.setButtonState(m_cabi.pCABIRoot, (int) pMess->button(), 1, pMess->timestamp() );
 				break;
 			}
@@ -215,15 +216,38 @@ namespace wg
 			case MsgType::MouseRelease:
 			{
 				auto pMess = static_cast<MouseReleaseMsg*>(pMsg);
-				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
 				m_cabi.setButtonState(m_cabi.pCABIRoot, (int) pMess->button(), 0, pMess->timestamp() );
 				break;
 			}
 
+			case MsgType::KeyPress:
+			{
+				auto pMess = static_cast<KeyPressMsg*>(pMsg);
+				m_cabi.setKeyState(m_cabi.pCABIRoot, pMess->nativeKeyCode(), 1, pMess->timestamp() );
+				break;
+			}
+
+			case MsgType::KeyRelease:
+			{
+				auto pMess = static_cast<KeyReleaseMsg*>(pMsg);
+				m_cabi.setKeyState(m_cabi.pCABIRoot, pMess->nativeKeyCode(), 0, pMess->timestamp() );
+				break;
+			}
+
+			case MsgType::TextInput:
+				break;
+				
+				//TODO!
+				//
+				// Inkludera TextEdit messages????
+				// Få cut/copy/paste att fungera.
+				// InputHandler::setFocusedWidget() ska uppdatera focused widget i CABIRoot.
 				
 			default:
 				break;
 		}
+		
+		Widget::_receive( pMsg );
 	}
 
 	//____ _update() __________________________________________________________

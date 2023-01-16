@@ -33,6 +33,8 @@ add_library(cabiclient SHARED
 
 target_link_libraries(cabiclient PRIVATE
 	wondergui
+	wgfreetypefont
+
 )
 
 set_target_properties(cabiclient PROPERTIES POSITION_INDEPENDENT_CODE ON)
