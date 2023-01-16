@@ -126,6 +126,8 @@ void		exit_wondergui();
 
 MouseButton translateSDLMouseButton(Uint8 button);
 
+Surface_p generateWindowSurface(SDL_Window* pWindow, int widht, int height);
+
 
 float				g_scale;
 
@@ -142,6 +144,9 @@ char**		g_argv = nullptr;
 
 static const char * iconNames[4] = { "info", "warning", "error", "question" };
 static const char * dialogNames[4] = { "ok", "okcancel", "yesno", "yesnocancel" };
+
+
+std::mutex g_winResizeEventMutex;
 
 
 //____ main() _________________________________________________________________
@@ -181,6 +186,10 @@ int main(int argc, char *argv[] )
 
 		if (bContinue)
 		{
+			// Don't collide with eventWatcher.
+			
+			const std::lock_guard<std::mutex> lock(g_winResizeEventMutex);
+
 			// Uppdate the app
 
 			bContinue = pApp->update();
@@ -332,6 +341,30 @@ void exit_wondergui()
 	g_pHostBridge = nullptr;
 }
 
+//____ eventWatcher() _________________________________________________________
+
+int eventWatcher(void * pNull, SDL_Event* pEvent)
+{
+	//WARNING! This function could potentially run in another thread!
+	
+	if (pEvent->type == SDL_WINDOWEVENT && pEvent->window.event == SDL_WINDOWEVENT_RESIZED)
+	{
+		const std::lock_guard<std::mutex> lock(g_winResizeEventMutex);
+
+		for( int i = 0 ; i < g_windows.size() ; i++ )
+		{
+			if( g_windows[i] && g_windows[i]->SDLWindowId() == pEvent->window.windowID )
+			{
+				MyWindow * pWindow = g_windows[i];
+
+				auto pWindowSurface = generateWindowSurface(pWindow->SDLWindow(), pEvent->window.data1, pEvent->window.data2);
+				pWindow->rootPanel()->setCanvas(pWindowSurface);
+				pWindow->render();
+				break;
+			}
+		}
+	}
+}
 
 //____ init_system() _______________________________________________________
 
@@ -344,6 +377,10 @@ bool init_system()
 		return false;
 	}
 
+	SDL_SetHint(SDL_HINT_VIDEO_ALLOW_SCREENSAVER, "1");
+
+	SDL_AddEventWatch(eventWatcher, nullptr);
+	
 	// make sure SDL cleans up before exit
 	atexit(SDL_Quit);
  
@@ -356,12 +393,14 @@ bool init_system()
 
 void exit_system()
 {
+//	SDL_DelEventWatch(eventWatcher, nullptr);
+
 	IMG_Quit();
 }
 
 //____ _generateWindowSurface() _______________________________________________
 
-Surface_p generateWindowSurface(SDL_Window* pWindow)
+Surface_p generateWindowSurface(SDL_Window* pWindow, int width, int height )
 {
 	SDL_Surface* pWinSurf = SDL_GetWindowSurface(pWindow);
 	if (pWinSurf == nullptr)
@@ -388,7 +427,7 @@ Surface_p generateWindowSurface(SDL_Window* pWindow)
 	}
 
 	Blob_p pCanvasBlob = Blob::create(pWinSurf->pixels, 0);
-	auto pWindowSurface = SoftSurface::create(SizeI(pWinSurf->w, pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch);
+	auto pWindowSurface = SoftSurface::create(SizeI(width, height), format, pCanvasBlob, pWinSurf->pitch);
 
 	return pWindowSurface;
 }
@@ -529,18 +568,20 @@ bool process_system_events()
 
 				case SDL_WINDOWEVENT_SIZE_CHANGED:		// Called for all in-between sizes.			
 				{
-					Size size(e.window.data1, e.window.data2);
-
-					if (size != pWindow->rootPanel()->geo().size())
-					{
-						auto pWindowSurface = generateWindowSurface(pWindow->SDLWindow());
-						pWindow->rootPanel()->setCanvas(pWindowSurface);
-					}
 					break;
 				}
 
 				case SDL_WINDOWEVENT_RESIZED:			// Called for final size.
+				{
+					Size size(e.window.data1, e.window.data2);
+
+					if (size != pWindow->rootPanel()->geo().size())
+					{
+						auto pWindowSurface = generateWindowSurface(pWindow->SDLWindow(), e.window.data1, e.window.data2 );
+						pWindow->rootPanel()->setCanvas(pWindowSurface);
+					}
 					break;
+				}
 
 				default:
 					break;
@@ -1027,7 +1068,7 @@ MyWindow_p MyWindow::create(const Blueprint& blueprint)
 	if (pSDLWindow == NULL)
 		return nullptr;
 
-	auto pWindowSurface = generateWindowSurface(pSDLWindow);
+	auto pWindowSurface = generateWindowSurface(pSDLWindow, geo.w, geo.h);
 	if (pWindowSurface == nullptr)
 		return nullptr;
 
