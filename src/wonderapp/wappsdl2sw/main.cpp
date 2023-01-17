@@ -40,6 +40,7 @@
 
 
 #include <fstream>
+#include <mutex>
 
 #include <wg_softgfxdevice.h>
 #include <wg_softsurfacefactory.h>
@@ -364,6 +365,7 @@ int eventWatcher(void * pNull, SDL_Event* pEvent)
 			}
 		}
 	}
+	return 0;
 }
 
 //____ init_system() _______________________________________________________

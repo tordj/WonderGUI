@@ -596,7 +596,7 @@ namespace wg
 
 
 			area.x = canvas.x + _linePosX( pLine, canvas.w);
-			area.w = endPos.x - area.x;
+			area.w = endPos.x;
 			area.h = pLine->height;
 
 			pDevice->fill( area, color );
@@ -1921,7 +1921,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 			case Placement::North:
 			case Placement::Center:
 			case Placement::South:
-				return (canvasWidth - pLine->width) / 2;
+				return Util::align((canvasWidth - pLine->width) / 2);
 			case Placement::NorthEast:
 			case Placement::East:
 			case Placement::SouthEast:

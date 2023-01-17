@@ -21,6 +21,7 @@
 =========================================================================*/
 #include <wg_caret.h>
 #include <wg_gfxdevice.h>
+#include <wg_util.h>
 
 namespace wg
 {
@@ -160,9 +161,9 @@ namespace wg
 			case CaretMode::Overwrite:
 				return cell;
 			case CaretMode::Eol:
-				return RectSPX( cell.x, cell.y, std::max(1*scale, cell.h/ 16), cell.h );
+				return Util::align(RectSPX( cell.x, cell.y, std::max(1*scale, cell.h/ 16), cell.h ));
 			default: // CaretMode::Insert:
-				return RectSPX( cell.x, cell.y, std::max(1*scale, cell.h/ 16), cell.h );
+				return Util::align(RectSPX(cell.x, cell.y, std::max(1 * scale, cell.h / 16), cell.h));
 		}
 	}
 
