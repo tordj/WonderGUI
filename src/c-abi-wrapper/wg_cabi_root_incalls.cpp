@@ -114,6 +114,11 @@ namespace wg
 		getRoot(pCABIRoot)->_setKeyState(nativeKeyCode, bool(pressed), timestamp);
 	}
 
+	void func_putText(void* pCABIRoot, const char * pUTF8String )
+	{
+		getRoot(pCABIRoot)->_putText(pUTF8String);
+	}
+
 
 	void func_onUpdate(void* pCABIRoot, int microPassed, int64_t microsecTimestamp)
 	{
@@ -146,6 +151,8 @@ namespace wg
 		calls.setPointerPos		= func_setPointerPos;
 		calls.setButtonState	= func_setButtonState;
 		calls.setKeyState		= func_setKeyState;
+		calls.putText			= func_putText;
+
 		calls.onUpdate			= func_onUpdate;
 
 		return calls;

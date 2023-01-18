@@ -394,6 +394,91 @@ typedef enum
 
 } wg_pointerStyle;
 
+//____ wg_key ______________________________________________________________
+
+typedef enum
+{
+	WG_KEY_LEFT = 1,
+	WG_KEY_RIGHT,
+	WG_KEY_UP,
+	WG_KEY_DOWN,
+
+	WG_KEY_HOME,
+	WG_KEY_END,
+	WG_KEY_PAGE_UP,
+	WG_KEY_PAGE_DOWN,
+
+	WG_KEY_RETURN,
+	WG_KEY_BACKSPACE,
+	WG_KEY_DELETE,
+	WG_KEY_TAB,
+	WG_KEY_ESCAPE,
+	WG_KEY_SPACE,
+
+	WG_KEY_F1,
+	WG_KEY_F2,
+	WG_KEY_F3,
+	WG_KEY_F4,
+	WG_KEY_F5,
+	WG_KEY_F6,
+	WG_KEY_F7,
+	WG_KEY_F8,
+	WG_KEY_F9,
+	WG_KEY_F10,
+	WG_KEY_F11,
+	WG_KEY_F12,
+
+	WG_KEY_SHIFT,
+	WG_KEY_CONTROL,
+	WG_KEY_ALT,
+	WG_KEY_SUPER,
+
+	WG_KEY_UNMAPPED		// This one must always be last!
+	
+	
+} wg_key;
+
+//____ wg_modkeys __________________________________________________________
+
+typedef enum
+{
+	WG_MODKEYS_NONE = 0,
+	WG_MODKEYS_SHIFT = 1,
+	WG_MODKEYS_ALT = 2,
+	WG_MODKEYS_ALT_SHIFT = 3,
+	WG_MODKEYS_CTRL = 4,
+	WG_MODKEYS_CTRL_SHIFT = 5,
+	WG_MODKEYS_CTRL_ALT = 6,
+	WG_MODKEYS_CTRL_ALT_SHIFT = 7,
+	WG_MODKEYS_SUPER = 8,
+	WG_MODKEYS_SUPER_SHIFT = 9,
+	WG_MODKEYS_SUPER_ALT = 10,
+	WG_MODKEYS_SUPER_ALT_SHIFT = 11,
+	WG_MODKEYS_SUPER_CTRL = 12,
+	WG_MODKEYS_SUPER_CTRL_SHIFT = 13,
+	WG_MODKEYS_SUPER_CTRL_ALT = 14,
+	WG_MODKEYS_SUPER_CTRL_ALT_SHIFT = 15,
+
+} wg_modkeys;
+
+
+//____ wg_editCommand _____________________________________________________
+
+typedef enum
+{
+	WG_EDITCMD_NONE,
+	WG_EDITCMD_CUT,
+	WG_EDITCMD_COPY,
+	WG_EDITCMD_PASTE,
+	WG_EDITCMD_UNDO,
+	WG_EDITCMD_REDO,
+	WG_EDITCMD_SELECT_ALL,
+	WG_EDITCMD_ESCAPE,
+	WG_EDITCMD_BREAK
+	
+} wg_editCommand;
+
+
 #ifdef __cplusplus
 }
 #endif

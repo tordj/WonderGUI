@@ -5,11 +5,12 @@
 #include <wg_cabi.h>
 #include <wg_cabi_root_outcalls.h>
 #include <wg_freetypefont.h>
+#include <wg_key.h>
 
 #include <string>
 #include <fstream>
 
-
+#include <SDL2/SDL.h>
 
 using namespace wg;
 using namespace std;
@@ -50,7 +51,79 @@ bool MyApp::init(Visitor* pVisitor)
 	wg_populateCallCollection(&c_calls);
 	wg_cabi_root_outcalls rootOutCalls = makeCABI_root_outcalls(m_pCABICapsule);
 
-	m_pInitClient(&c_calls, &rootOutCalls);
+	m_pInitClient(&c_calls, &rootOutCalls, Base::activeContext()->gfxDevice(), Base::activeContext()->surfaceFactory());
+	
+	// Map keys and commands
+	
+	mapInputKeyFunc 	pMapKeyFunc 	= (mapInputKeyFunc) pVisitor->loadSymbol(m_libId, "mapInputKey" );
+	mapInputCommandFunc pMapCommandFunc = (mapInputCommandFunc) pVisitor->loadSymbol(m_libId, "mapInputCommand" );
+
+	
+	pMapKeyFunc(SDLK_LEFT, WG_KEY_LEFT);
+	pMapKeyFunc(SDLK_RIGHT, WG_KEY_RIGHT);
+	pMapKeyFunc(SDLK_UP, WG_KEY_UP);
+	pMapKeyFunc(SDLK_DOWN, WG_KEY_DOWN);
+	pMapKeyFunc(SDLK_BACKSPACE, WG_KEY_BACKSPACE);
+	pMapKeyFunc(SDLK_DELETE, WG_KEY_DELETE);
+	pMapKeyFunc(SDLK_END, WG_KEY_END);
+	pMapKeyFunc(SDLK_ESCAPE, WG_KEY_ESCAPE);
+	pMapKeyFunc(SDLK_HOME, WG_KEY_HOME);
+	pMapKeyFunc(SDLK_PAGEDOWN, WG_KEY_PAGE_DOWN);
+	pMapKeyFunc(SDLK_PAGEUP, WG_KEY_UP);
+	pMapKeyFunc(SDLK_RETURN, WG_KEY_RETURN);
+	pMapKeyFunc(SDLK_SPACE, WG_KEY_SPACE);
+	pMapKeyFunc(SDLK_TAB, WG_KEY_TAB);
+	pMapKeyFunc(SDLK_F1, WG_KEY_F1);
+	pMapKeyFunc(SDLK_F2, WG_KEY_F2);
+	pMapKeyFunc(SDLK_F3, WG_KEY_F3);
+	pMapKeyFunc(SDLK_F4, WG_KEY_F4);
+	pMapKeyFunc(SDLK_F5, WG_KEY_F5);
+	pMapKeyFunc(SDLK_F6, WG_KEY_F6);
+	pMapKeyFunc(SDLK_F7, WG_KEY_F7);
+	pMapKeyFunc(SDLK_F8, WG_KEY_F8);
+	pMapKeyFunc(SDLK_F9, WG_KEY_F9);
+	pMapKeyFunc(SDLK_F10, WG_KEY_F10);
+	pMapKeyFunc(SDLK_F11, WG_KEY_F11);
+	pMapKeyFunc(SDLK_F12, WG_KEY_F12);
+
+
+	pMapKeyFunc(SDLK_LCTRL, WG_KEY_CONTROL);
+	pMapKeyFunc(SDLK_RCTRL, WG_KEY_CONTROL);
+
+	pMapKeyFunc(SDLK_LSHIFT, WG_KEY_SHIFT);
+	pMapKeyFunc(SDLK_RSHIFT, WG_KEY_SHIFT);
+
+	pMapKeyFunc(SDLK_LALT, WG_KEY_ALT);
+	pMapKeyFunc(SDLK_RALT, WG_KEY_ALT);
+
+	pMapKeyFunc(SDLK_LGUI, WG_KEY_SUPER);
+	pMapKeyFunc(SDLK_RGUI, WG_KEY_SUPER);
+
+	
+	pMapKeyFunc(SDLK_KP_ENTER, WG_KEY_RETURN);
+
+
+#ifdef __APPLE__
+	pMapCommandFunc(SDLK_x, WG_MODKEYS_SUPER, WG_EDITCMD_CUT);
+	pMapCommandFunc(SDLK_c, WG_MODKEYS_SUPER, WG_EDITCMD_COPY);
+	pMapCommandFunc(SDLK_v, WG_MODKEYS_SUPER, WG_EDITCMD_PASTE);
+
+	pMapCommandFunc(SDLK_a, WG_MODKEYS_SUPER, WG_EDITCMD_SELECT_ALL);
+
+	pMapCommandFunc(SDLK_z, WG_MODKEYS_SUPER, WG_EDITCMD_UNDO);
+	pMapCommandFunc(SDLK_z, WG_MODKEYS_SUPER_SHIFT, WG_EDITCMD_REDO);
+#else
+	pMapCommandFunc(SDLK_x, WG_MODKEYS_CTRL, WG_EDITCMD_CUT);
+	pMapCommandFunc(SDLK_c, WG_MODKEYS_CTRL, WG_EDITCMD_COPY);
+	pMapCommandFunc(SDLK_v, WG_MODKEYS_CTRL, WG_EDITCMD_PASTE);
+
+	pMapCommandFunc(SDLK_a, WG_MODKEYS_CTRL, WG_EDITCMD_SELECT_ALL);
+
+	pMapCommandFunc(SDLK_z, WG_MODKEYS_CTRL, WG_EDITCMD_UNDO);
+	pMapCommandFunc(SDLK_z, WG_MODKEYS_CTRL_SHIFT, WG_EDITCMD_REDO);
+#endif
+	
+	pMapCommandFunc(SDLK_ESCAPE, WG_MODKEYS_NONE, WG_EDITCMD_ESCAPE);
 	
 	return true;
 }

@@ -17,9 +17,13 @@ using namespace std;
 #endif
 
 extern "C" {
-	DLLEXPORTPREFIX int		init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface );
+	DLLEXPORTPREFIX int		init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface, wg_obj hGfxDevice, wg_obj hSurfaceFactory );
 	DLLEXPORTPREFIX int		update(void);
 	DLLEXPORTPREFIX void	exitX(void);
+
+	DLLEXPORTPREFIX void	mapInputKey(uint32_t native_keycode, wg_key translated_keycode);
+	DLLEXPORTPREFIX void	mapInputCommand(uint32_t native_keycode, wg_modkeys modkeys, wg_editCommand command);
+
 }
 
 
@@ -32,13 +36,23 @@ CABIRoot_p g_pCABIRoot;
 
 //____ init() _________________________________________________________________
 
-DLLEXPORTPREFIX int init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface )
+DLLEXPORTPREFIX int init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface, wg_obj hGfxDevice, wg_obj hSurfaceFactory )
 {
-	Base::init(nullptr);
 	CABI::init(pBaseInterface);
+	Base::init(nullptr);
+
+	auto pSurfaceFactory 	= CABISurfaceFactory::create(hSurfaceFactory);
+	auto pGfxDevice 		= CABIGfxDevice::create(hGfxDevice,pSurfaceFactory);
+	
+	Context_p pContext = Context::create();
+	pContext->setSurfaceFactory(pSurfaceFactory);
+	pContext->setGfxDevice(pGfxDevice);
+	pContext->setGammaCorrection(true);
+	Base::setActiveContext(pContext);
+	
+	
 	auto pCABIRoot = CABIRoot::create(pRootInterface);
 
-	
 	auto pFontBlob = loadBlob("resources/DroidSans.ttf");
 	auto pFont = FreeTypeFont::create(pFontBlob);
 
@@ -103,6 +117,21 @@ DLLEXPORTPREFIX void exitX(void)
 	Base::exit();
 }
 
+//____ mapInputKey() _______________________________________________________
+
+DLLEXPORTPREFIX void mapInputKey(uint32_t native_keycode, wg_key translated_keycode)
+{
+	Base::inputHandler()->mapKey(native_keycode, (Key) translated_keycode);
+}
+
+//____ mapInputCommand() ___________________________________________________
+
+DLLEXPORTPREFIX void mapInputCommand(uint32_t native_keycode, wg_modkeys modkeys, wg_editCommand command)
+{
+	Base::inputHandler()->mapCommand(native_keycode, (ModKeys) modkeys, (EditCmd) command);
+}
+
+
 //____ loadBlob() _________________________________________________________
 
 Blob_p loadBlob(const std::string& path)
@@ -131,3 +160,4 @@ Blob_p loadBlob(const std::string& path)
 
 	return pBlob;
 }
+

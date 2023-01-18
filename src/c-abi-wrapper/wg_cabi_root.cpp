@@ -268,6 +268,9 @@ namespace wg
 				if( !state.isFocused() )
 					m_pFocusedChild = nullptr;
 			}
+			
+			Base::inputHandler()->setFocusedWindow(state.isFocused()?this:nullptr);
+			
 		}
 
 	}
@@ -307,6 +310,13 @@ namespace wg
 	void CABIRoot::_setKeyState( int nativeKeyCode, bool bPressed, int64_t timestamp )
 	{
 		Base::inputHandler()->setKey(nativeKeyCode, bPressed, timestamp );
+	}
+
+	//____ _putText() ____________________________________________________________
+
+	void CABIRoot::_putText( const char * pUTF8Text )
+	{
+		Base::inputHandler()->putText(pUTF8Text);
 	}
 
 	//____ _update() __________________________________________________________

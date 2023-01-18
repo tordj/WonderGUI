@@ -26,9 +26,12 @@ public:
 
 private:
 
-	typedef int (*initClientFunc)( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface );
+	typedef int (*initClientFunc)( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface, wg_obj hGfxDevice, wg_obj hSurfaceFactory );
 	typedef int (*updateClientFunc)(void);
 	typedef void (*exitClientFunc)(void);
+
+	typedef void (*mapInputKeyFunc)(uint32_t native_keycode, wg_key translated_keycode);
+	typedef void (*mapInputCommandFunc)(uint32_t native_keycode, wg_modkeys modkeys, wg_editCommand command);
 
 	
 	bool			_setupGUI(Visitor* pVisitor);

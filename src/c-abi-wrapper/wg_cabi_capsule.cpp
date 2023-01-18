@@ -23,6 +23,7 @@
 #include <wg_cabi_capsule.h>
 #include <wg_gfxdevice.h>
 #include <wg_msg.h>
+#include <wg_base.h>
 
 #include <algorithm>
 
@@ -235,13 +236,19 @@ namespace wg
 			}
 
 			case MsgType::TextInput:
-				break;
+			{
+				auto pMess = static_cast<TextInputMsg*>(pMsg);
+				String str = pMess->text();
 				
-				//TODO!
-				//
-				// Inkludera TextEdit messages????
-				// Få cut/copy/paste att fungera.
-				// InputHandler::setFocusedWidget() ska uppdatera focused widget i CABIRoot.
+				int maxSize = str.length()*4;
+				char * pDest = (char*) Base::memStackAlloc(maxSize);
+				
+				TextTool::getTextUTF8(str.chars(), pDest, maxSize);
+				
+				m_cabi.putText(m_cabi.pCABIRoot,pDest);
+				Base::memStackRelease(maxSize);
+				break;
+			}
 				
 			default:
 				break;
