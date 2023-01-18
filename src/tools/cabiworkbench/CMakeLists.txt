@@ -37,8 +37,7 @@ target_link_libraries(cabiclient PRIVATE
 
 )
 
-set_target_properties(cabiclient PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
+set_target_properties(cabiclient PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
 add_executable(cabiworkbench
 
