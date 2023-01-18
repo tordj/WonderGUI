@@ -70,7 +70,7 @@ void MyApp::exit()
 
 bool MyApp::_setupGUI(Visitor* pVisitor)
 {
-	m_pWindow = pVisitor->createWindow({ .size = {1600,800}, .title = "Stream Analyzer" });
+	m_pWindow = pVisitor->createWindow({ .minSize = { 600, 200 }, .size = {1600,800}, .title = "Stream Analyzer" });
 
 	auto pRoot = m_pWindow->rootPanel();
 

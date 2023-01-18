@@ -82,6 +82,8 @@ public:
 			// The origo-relative positioning of this blueprint will be recalculated
 			// to a position in a coordinate system with origo at NorthWest. 
 
+			wg::Size			maxSize;
+			wg::Size			minSize;			
 			wg::Placement		origo = wg::Placement::Center;
 			wg::Coord			pos;
 			bool				resizable = true;

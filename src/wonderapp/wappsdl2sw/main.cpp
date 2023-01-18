@@ -1070,6 +1070,12 @@ MyWindow_p MyWindow::create(const Blueprint& blueprint)
 	if (pSDLWindow == NULL)
 		return nullptr;
 
+	if( !blueprint.minSize.isEmpty() )
+		SDL_SetWindowMinimumSize(pSDLWindow,blueprint.minSize.w, blueprint.minSize.h);
+
+	if( !blueprint.maxSize.isEmpty() )
+		SDL_SetWindowMaximumSize(pSDLWindow,blueprint.maxSize.w, blueprint.maxSize.h);
+
 	auto pWindowSurface = generateWindowSurface(pSDLWindow, geo.w, geo.h);
 	if (pWindowSurface == nullptr)
 		return nullptr;
