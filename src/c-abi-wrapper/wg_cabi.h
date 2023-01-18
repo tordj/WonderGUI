@@ -24,7 +24,6 @@
 #define	WG_CABI_DOT_H
 #pragma once
 
-
 #include <wg_cabi_bitmapcache.h>
 #include <wg_cabi_bitmapfont.h>
 #include <wg_cabi_canvaslayers.h>
@@ -32,6 +31,7 @@
 #include <wg_cabi_font.h>
 #include <wg_cabi_freetypefont.h>
 #include <wg_cabi_gfxdevice.h>
+#include <wg_cabi_hostbridge.h>
 #include <wg_cabi_root.h>
 #include <wg_cabi_surface.h>
 #include <wg_cabi_surfacefactory.h>

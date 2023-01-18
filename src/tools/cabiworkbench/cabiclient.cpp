@@ -17,7 +17,8 @@ using namespace std;
 #endif
 
 extern "C" {
-	DLLEXPORTPREFIX int		init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface, wg_obj hGfxDevice, wg_obj hSurfaceFactory );
+	DLLEXPORTPREFIX int		init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface,
+								  void * pHostBridge, wg_obj hGfxDevice, wg_obj hSurfaceFactory );
 	DLLEXPORTPREFIX int		update(void);
 	DLLEXPORTPREFIX void	exitX(void);
 
@@ -34,12 +35,17 @@ TextStyle_p		g_pTextStyle;
 
 CABIRoot_p g_pCABIRoot;
 
+CABIHostBridge * g_pHostBridge = nullptr;
+
 //____ init() _________________________________________________________________
 
-DLLEXPORTPREFIX int init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface, wg_obj hGfxDevice, wg_obj hSurfaceFactory )
+DLLEXPORTPREFIX int init( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface, void * pHostBridge, wg_obj hGfxDevice, wg_obj hSurfaceFactory )
 {
 	CABI::init(pBaseInterface);
-	Base::init(nullptr);
+	
+	g_pHostBridge = new CABIHostBridge(pHostBridge);
+	
+	Base::init(g_pHostBridge);
 
 	auto pSurfaceFactory 	= CABISurfaceFactory::create(hSurfaceFactory);
 	auto pGfxDevice 		= CABIGfxDevice::create(hGfxDevice,pSurfaceFactory);
@@ -115,6 +121,8 @@ DLLEXPORTPREFIX void exitX(void)
 	g_pTextStyle = nullptr;
 	g_pCABIRoot = nullptr;
 	Base::exit();
+
+	delete g_pHostBridge;
 }
 
 //____ mapInputKey() _______________________________________________________

@@ -179,6 +179,8 @@ add_library( wondergui STATIC
 	c-interface/wg_c_gradient.h
 	c-interface/wg_c_gfxdevice.cpp
 	c-interface/wg_c_gfxdevice.h
+	c-interface/wg_c_hostbridge.cpp
+	c-interface/wg_c_hostbridge.h
 	c-interface/wg_c_internal.cpp
 	c-interface/wg_c_internal.h
 	c-interface/wg_c_memheap.cpp

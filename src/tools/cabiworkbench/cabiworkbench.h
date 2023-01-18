@@ -26,7 +26,7 @@ public:
 
 private:
 
-	typedef int (*initClientFunc)( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface, wg_obj hGfxDevice, wg_obj hSurfaceFactory );
+	typedef int (*initClientFunc)( wg_c_callCollection * pBaseInterface, wg_cabi_root_outcalls * pRootInterface, void * pHostBridge, wg_obj hGfxDevice, wg_obj hSurfaceFactory );
 	typedef int (*updateClientFunc)(void);
 	typedef void (*exitClientFunc)(void);
 

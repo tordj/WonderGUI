@@ -19,6 +19,8 @@ add_library(cabiclient SHARED
 		../../c-abi-wrapper/wg_cabi_freetypefont.h
 		../../c-abi-wrapper/wg_cabi_gfxdevice.cpp
 		../../c-abi-wrapper/wg_cabi_gfxdevice.h
+		../../c-abi-wrapper/wg_cabi_hostbridge.cpp
+		../../c-abi-wrapper/wg_cabi_hostbridge.h
 		../../c-abi-wrapper/wg_cabi_root.cpp
 		../../c-abi-wrapper/wg_cabi_root.h
 		../../c-abi-wrapper/wg_cabi_root_incalls.cpp

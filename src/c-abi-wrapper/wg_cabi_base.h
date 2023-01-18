@@ -45,6 +45,7 @@ namespace wg
 		static wg_streamreader_calls*	streamReader;
 		static wg_surface_calls*		surface;
 		static wg_surfacefactory_calls* surfaceFactory;
+		static wg_hostbridge_calls*		hostBridge;
 
 
 		static bool	init(wg_c_callCollection* pCallsCollection);

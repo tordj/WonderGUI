@@ -39,6 +39,7 @@ namespace wg
 	wg_streamreader_calls*		CABI::streamReader	= nullptr;
 	wg_surface_calls*			CABI::surface		= nullptr;
 	wg_surfacefactory_calls*	CABI::surfaceFactory= nullptr;
+	wg_hostbridge_calls*		CABI::hostBridge	= nullptr;
 
 
 	//___ init() ______________________________________________________________
@@ -85,6 +86,8 @@ namespace wg
 		if (pCallsCollection->pSurfaceFactory->structSize < sizeof(wg_surfacefactory_calls))
 			goto	error_too_old_abi;
 
+		if (pCallsCollection->pHostBridge->structSize < sizeof(wg_hostbridge_calls))
+			goto	error_too_old_abi;
 
 
 		bitmapCache		= pCallsCollection->pBitmapCache;
@@ -97,7 +100,8 @@ namespace wg
 		streamPlayer	= pCallsCollection->pStreamPlayer;
 		streamPump		= pCallsCollection->pStreamPump;
 		surface			= pCallsCollection->pSurface;
-		surfaceFactory = pCallsCollection->pSurfaceFactory;
+		surfaceFactory	= pCallsCollection->pSurfaceFactory;
+		hostBridge		= pCallsCollection->pHostBridge;
 
 		return true;
 

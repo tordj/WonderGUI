@@ -43,7 +43,18 @@ extern "C" {
 #endif
 
 
+//____ wg_hostbridge_calls _____________________________________________
 
+typedef struct wg_hostbridge_calls_struct
+{
+	int					structSize;
+
+	int					(*hidePointer)( void * pHostBridge );
+	int					(*showPointer)( void * pHostBridge );
+
+	int					(*getClipboardText)( void * pHostBridge, int maxChars, char * pDest );
+	int					(*setClipboardText)( void * pHostBridge, const char * pText );
+} wg_hostbridge_calls;
 
 //____ wg_bitmapcache_calls ___________________________________________________
 
@@ -341,6 +352,7 @@ typedef struct wg_c_callCollection_struct
 	wg_streamreader_calls *		pStreamReader;
 	wg_surface_calls *			pSurface;
 	wg_surfacefactory_calls *	pSurfaceFactory;
+	wg_hostbridge_calls *		pHostBridge;
 } wg_c_callCollection;
 
 

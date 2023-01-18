@@ -22,6 +22,8 @@
 
 #include <wg_c_callcollection.h>
 
+#include <wg_c_hostbridge.h>
+
 #include <wg_c_bitmapcache.h>
 #include <wg_c_bitmapfont.h>
 #include <wg_c_canvaslayers.h>
@@ -50,6 +52,7 @@ struct wg_c_calls_body
 	wg_streamreader_calls		streamReader;
 	wg_surface_calls			surface;
 	wg_surfacefactory_calls		surfaceFactory;
+	wg_hostbridge_calls			hostBridge;
 };
 
 static wg_c_calls_body	body;
@@ -264,6 +267,11 @@ void wg_populateCallCollection(wg_c_callCollection * pHeader)
 	pBody->surfaceFactory.createSurfaceFromBitmap = &wg_createSurfaceFromBitmap;
 	pBody->surfaceFactory.createSurfaceFromSurface = &wg_createSurfaceFromSurface;
 
+	pBody->hostBridge.structSize			= sizeof(wg_hostbridge_calls);
+	pBody->hostBridge.hidePointer			= &wg_hidePointer;
+	pBody->hostBridge.showPointer			= &wg_showPointer;
+	pBody->hostBridge.getClipboardText		= &wg_getClipboardText;
+	pBody->hostBridge.setClipboardText		= &wg_setClipboardText;
 
 	pHeader->structSize			= sizeof(wg_c_callCollection);
 	pHeader->pBitmapCache		= &pBody->bitmapCache;
@@ -278,7 +286,7 @@ void wg_populateCallCollection(wg_c_callCollection * pHeader)
 	pHeader->pStreamReader		= &pBody->streamReader;
 	pHeader->pSurface			= &pBody->surface;
 	pHeader->pSurfaceFactory	= &pBody->surfaceFactory;
-
+	pHeader->pHostBridge		= &pBody->hostBridge;
 }
 
 

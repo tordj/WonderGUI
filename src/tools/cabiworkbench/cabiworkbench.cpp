@@ -51,7 +51,8 @@ bool MyApp::init(Visitor* pVisitor)
 	wg_populateCallCollection(&c_calls);
 	wg_cabi_root_outcalls rootOutCalls = makeCABI_root_outcalls(m_pCABICapsule);
 
-	m_pInitClient(&c_calls, &rootOutCalls, Base::activeContext()->gfxDevice(), Base::activeContext()->surfaceFactory());
+	m_pInitClient(&c_calls, &rootOutCalls, Base::hostBridge(),
+				  Base::activeContext()->gfxDevice(), Base::activeContext()->surfaceFactory());
 	
 	// Map keys and commands
 	

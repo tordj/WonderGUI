@@ -19,6 +19,8 @@ add_library( wgcabiwrapper STATIC
 	wg_cabi_freetypefont.h
 	wg_cabi_gfxdevice.cpp
 	wg_cabi_gfxdevice.h
+	wg_cabi_hostbridge.cpp
+	wg_cabi_hostbridge.h	
 	wg_cabi_root.cpp
 	wg_cabi_root.h
 	wg_cabi_root_incalls.cpp
