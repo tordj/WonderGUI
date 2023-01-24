@@ -3,7 +3,7 @@ source_group(C-API REGULAR_EXPRESSION "c-api//*")
 source_group(Stream REGULAR_EXPRESSION "stream//wg_*")
 source_group(Stream/C-API REGULAR_EXPRESSION "stream/c-api//wg_*")
 
-add_library( wondergfx STATIC
+set( SOURCES
 
 	wg_bitmapcache.cpp
 	wg_bitmapcache.h
@@ -120,8 +120,11 @@ add_library( wondergfx STATIC
 	stream/c-api/wg_c_gfxstreamwriter.cpp
 	stream/c-api/wg_c_gfxstreamwriter.h
 	stream/c-api/wondergfxstream_c.h
-
 )
+
+set(WONDERGFX_SOURCES ${SOURCES} PARENT_SCOPE)
+
+add_library( wondergfx STATIC ${SOURCES} )
 
 target_include_directories(wondergfx PRIVATE 
 	${WONDERGFX_INCDIRS}

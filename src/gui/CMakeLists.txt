@@ -24,8 +24,7 @@ source_group(Widgets/Panels REGULAR_EXPRESSION "widgets/panels//*")
 
 
 
-add_library( wondergui STATIC
-
+set( SOURCES
 	base/wg_animframes.cpp
 	base/wg_animframes.h
 	base/wg_caret.cpp
@@ -272,6 +271,10 @@ add_library( wondergui STATIC
 	widgets/panels/wg_twoslotpanel.cpp
 	widgets/panels/wg_twoslotpanel.h
 )
+
+set(WONDERGUI_SOURCES ${SOURCES} PARENT_SCOPE)
+
+add_library( wondergui STATIC ${SOURCES} )
 
 target_include_directories(wondergui PRIVATE 
 	${WONDERGUI_INCDIRS}

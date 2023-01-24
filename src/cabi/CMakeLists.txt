@@ -1,7 +1,6 @@
 source_group(Files REGULAR_EXPRESSION ".*")
 
-add_library( wgcabiclient STATIC
-
+set( CLIENT_SOURCES
 	wg_cabi.h
 	wg_cabi_base.cpp
 	wg_cabi_base.h
@@ -30,21 +29,27 @@ add_library( wgcabiclient STATIC
 	wg_cabi_surfacefactory.h
 )
 
-target_include_directories(wgcabiclient PRIVATE 
-	${WONDERGUI_INCDIRS}
-	${WGCABI_INCDIRS}
-)
-
-
-add_library( wgcabihost STATIC
+set( HOST_SOURCES
 	wg_cabi_base.cpp
 	wg_cabi_base.h
 	wg_cabi_root_interface.h
 	wg_cabi_root_outcalls.cpp
 	wg_cabi_root_outcalls.h
 	wg_cabi_capsule.cpp
-	wg_cabi_capsule.h	
+	wg_cabi_capsule.h
 )
+
+
+set(CABICLIENT_SOURCES ${CLIENT_SOURCES} PARENT_SCOPE)
+
+add_library( wgcabiclient STATIC ${CLIENT_SOURCES} )
+
+target_include_directories(wgcabiclient PRIVATE 
+	${WONDERGUI_INCDIRS}
+	${WGCABI_INCDIRS}
+)
+
+add_library( wgcabihost STATIC ${HOST_SOURCES} )
 
 target_include_directories(wgcabihost PRIVATE 
 	${WONDERGUI_INCDIRS}

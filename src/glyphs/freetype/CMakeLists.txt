@@ -1,17 +1,23 @@
 source_group(Files REGULAR_EXPRESSION ".*")
 
-add_library( wgfreetypefont STATIC
-
+set(SOURCES
     wg_freetypefont.h
     wg_freetypefont.cpp
     wg_c_freetypefont.h
     wg_c_freetypefont.cpp
 )
 
+
+set(WGFREETYPEFONT_SOURCES ${SOURCES} PARENT_SCOPE)
+
+add_library( wgfreetypefont STATIC ${SOURCES} )
+
 target_include_directories(wgfreetypefont PRIVATE
     ${WGFREETYPEFONT_INCDIRS}
     ${WONDERGLYPHS_INCDIRS}
 )
+
+
 
 if(WIN32)
     target_include_directories(wgfreetypefont PRIVATE ../../../freetype/include )

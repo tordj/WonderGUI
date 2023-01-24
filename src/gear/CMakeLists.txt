@@ -1,8 +1,8 @@
 source_group(Code REGULAR_EXPRESSION "wg_*|wonder*")
 source_group(C-API REGULAR_EXPRESSION "c-api//*")
 
-add_library( wondergear STATIC
 
+set(SOURCES
 	wg_gearbase.cpp
 	wg_gearbase.h
 	wg_blob.cpp
@@ -40,8 +40,13 @@ add_library( wondergear STATIC
 	c-api/wondergear_c.h
 
 	wondergear.h
-
 )
+
+
+
+set(WONDERGEAR_SOURCES ${SOURCES} PARENT_SCOPE)
+
+add_library( wondergear STATIC ${SOURCES} )
 
 target_include_directories(wondergear PRIVATE 
 	${WONDERGEAR_INCDIRS}

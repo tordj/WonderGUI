@@ -1,7 +1,7 @@
 source_group(Code REGULAR_EXPRESSION "wg_*|wonder*")
 source_group(C-API REGULAR_EXPRESSION "c-api//*")
 
-add_library( wonderglyphs STATIC
+set(SOURCES
 
 	wg_bitmapfont.cpp
 	wg_bitmapfont.h
@@ -26,11 +26,13 @@ add_library( wonderglyphs STATIC
 	c-api/wg_c_printer.cpp
 	c-api/wg_c_printer.h
 	c-api/wonderglyphs_c.h
-
 )
 
-target_include_directories(wonderglyphs PRIVATE 
+set(WONDERGLYPHS_SOURCES ${SOURCES} PARENT_SCOPE)
 
+add_library( wonderglyphs STATIC ${SOURCES} )
+
+target_include_directories(wonderglyphs PRIVATE 
 	${WONDERGLYPHS_INCDIRS}
 )
 
