@@ -8,7 +8,7 @@ add_executable(packlayouttester
 )
 
 target_include_directories(packlayouttester PRIVATE 
-	../../wonderapp/include
+	${WAPP_INCDIRS}
 )
 
 target_working_directory(packlayouttester ${WG_ROOT} )

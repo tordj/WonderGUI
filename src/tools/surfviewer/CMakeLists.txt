@@ -9,7 +9,7 @@ add_executable(surfviewer
 )
 
 target_include_directories(surfviewer PRIVATE 
-	../../wonderapp/include
+	${WAPP_INCDIRS}
 )
 
 target_working_directory(surfviewer ${WG_ROOT} )

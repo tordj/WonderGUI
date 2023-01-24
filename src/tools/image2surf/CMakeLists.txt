@@ -11,8 +11,12 @@ add_executable(image2surf
 target_working_directory(image2surf ${WG_ROOT} )
 
 target_link_libraries(image2surf PRIVATE
+	wondergfx
 	wgsoftgfx
-	wondergui 
 )
 
+target_include_directories(image2surf PRIVATE
+	${WONDERGFX_INCDIRS}
+	${WGSOFTGFX_INCDIRS}
+)
 

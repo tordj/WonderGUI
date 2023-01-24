@@ -11,7 +11,7 @@ add_executable(softkernelgenerator
 )
 
 target_include_directories(softkernelgenerator PRIVATE 
-	../../wonderapp/include
+	${WAPP_INCDIRS}
 )
 
 target_working_directory(softkernelgenerator ${WG_ROOT} )

@@ -46,13 +46,15 @@ bool MyApp::init(Visitor* pVisitor)
 	m_pUpdateClient = (updateClientFunc)pVisitor->loadSymbol(m_libId, "update" );
 	m_pExitClient = (exitClientFunc)pVisitor->loadSymbol(m_libId, "exitX" );
 
+	void * pCreateBitmapCache = pVisitor->loadSymbol(m_libId, "wg_getTypeInfo" );
+
 
 	wg_c_callCollection	c_calls;
 	wg_populateCallCollection(&c_calls);
 	wg_cabi_root_outcalls rootOutCalls = makeCABI_root_outcalls(m_pCABICapsule);
 
 	m_pInitClient(&c_calls, &rootOutCalls, Base::hostBridge(),
-				  Base::activeContext()->gfxDevice(), Base::activeContext()->surfaceFactory());
+				  Base::defaultGfxDevice(), Base::defaultSurfaceFactory());
 	
 	// Map keys and commands
 	

@@ -228,6 +228,12 @@ int main(int argc, char *argv[] )
 
 	//
 
+	pApp = nullptr;
+	
+	Base::setErrorHandler(nullptr);		//TODO: WAPP-framework should have its own error-handler.
+
+	g_windows.clear();
+	
 	delete pVisitor;
 
 	exit_wondergui();
@@ -250,11 +256,9 @@ bool init_wondergui()
 
 	auto pSurfaceFactory = SoftSurfaceFactory::create();
 	
-	Context_p pContext = Context::create();
-    pContext->setSurfaceFactory(pSurfaceFactory);
-	pContext->setGfxDevice(pGfxDevice);
-	pContext->setGammaCorrection(true);
-	Base::setActiveContext(pContext);
+    Base::setDefaultSurfaceFactory(pSurfaceFactory);
+	Base::setDefaultGfxDevice(pGfxDevice);
+	Base::setDefaultToSRGB(true);
 
 	InputHandler_p pInput = Base::inputHandler();
 	
@@ -336,6 +340,7 @@ bool init_wondergui()
 void exit_wondergui()
 {
 	g_pGfxDevice = nullptr;
+	g_pSurfaceFactory = nullptr;
 
 	Base::exit();
 	delete g_pHostBridge;
@@ -704,7 +709,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 		if (!input.good())
 			return nullptr;
 
-		auto pReader = SurfaceReader::create({ .factory = Base::activeContext()->surfaceFactory() });
+		auto pReader = SurfaceReader::create({ .factory = Base::defaultSurfaceFactory() });
 		Surface_p pSurface = pReader->readSurfaceFromStream(input);
 		input.close();
 		return pSurface;
@@ -745,7 +750,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 			px = PixelFormat::BGR_8;
 
 		if (!pFactory)
-			pFactory = Base::activeContext()->surfaceFactory();
+			pFactory = Base::defaultSurfaceFactory();
 
 		bp.format = px;
 		bp.clut = pClut;

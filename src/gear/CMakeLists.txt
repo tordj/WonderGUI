@@ -1,0 +1,48 @@
+source_group(Code REGULAR_EXPRESSION "wg_*|wonder*")
+source_group(C-API REGULAR_EXPRESSION "c-api//*")
+
+add_library( wondergear STATIC
+
+	wg_gearbase.cpp
+	wg_gearbase.h
+	wg_blob.cpp
+	wg_blob.h
+	wg_chain.cpp
+	wg_chain.h
+	wg_componentptr.h
+	wg_dataset.cpp
+	wg_dataset.h
+	wg_memheap.cpp
+	wg_memheap.h
+	wg_mempool.cpp
+	wg_mempool.h
+	wg_memstack.cpp
+	wg_memstack.h
+	wg_object.cpp
+	wg_object.h
+	wg_pointers.h
+	wg_strongptr.h
+	wg_gearenumextras.cpp
+	wg_gearenumextras.h
+	wg_geartypes.h
+	wg_weakptr.h
+
+	c-api/wg_c_gearbase.cpp
+	c-api/wg_c_gearbase.h
+	c-api/wg_c_blob.cpp
+	c-api/wg_c_blob.h
+	c-api/wg_c_geartypes.cpp
+	c-api/wg_c_geartypes.h
+	c-api/wg_c_memheap.cpp
+	c-api/wg_c_memheap.h
+	c-api/wg_c_object.cpp
+	c-api/wg_c_object.h
+	c-api/wondergear_c.h
+
+	wondergear.h
+
+)
+
+target_include_directories(wondergear PRIVATE 
+	${WONDERGEAR_INCDIRS}
+)

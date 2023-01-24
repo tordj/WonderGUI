@@ -36,6 +36,13 @@ target_link_directories(workbench PRIVATE
 
 target_working_directory(workbench ${WG_ROOT} )
 
+target_include_directories(workbench PRIVATE 
+	${WONDERGUI_INCDIRS}
+	${WGSOFTGFX_INCDIRS}
+	${WGOPENGLGFX_INCDIRS}
+	${WGFREETYPEFONT_INCDIRS}
+)
+
 target_link_libraries(workbench PRIVATE
 	wgsoftgfx
 	wgopenglgfx

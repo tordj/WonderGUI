@@ -19,22 +19,14 @@
 #include <cstring>
 
 #include <wondergui.h>
+#include <wondergfxstream.h>
+#include <wg_freetypefont.h>
 
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
 #include <wg_softkernels_default.h>
-#include <wg_streamsurface.h>
-#include <wg_streamsurfacefactory.h>
-#include <wg_streamgfxdevice.h>
 
-#include <wg_gfxstreambuffer.h>
-#include <wg_gfxstreamsplitter.h>
-#include <wg_gfxstreampump.h>
-
-#include <wg_freetypefont.h>
-#include <wg_packlist.h>
-#include <wg_popupopener.h>
 
 using namespace wg;
 using namespace std;
@@ -294,11 +286,11 @@ int main ( int argc, char** argv )
 
 	// StreamGfxDevice and StreamSurfaceFactory feeding encoder
 
-	auto pStreamDevice = StreamGfxDevice::create(pEncoder);
+	auto pStreamDevice = GfxStreamDevice::create(pEncoder);
     pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {240,240} );
 	pStreamDevice->defineCanvas(CanvasRef::Canvas_2, {240,240} );
 
-	auto pSurfaceFactory = StreamSurfaceFactory::create(pEncoder);
+	auto pSurfaceFactory = GfxStreamSurfaceFactory::create(pEncoder);
 
 
 //	pStreamPlug->openOutput(0);

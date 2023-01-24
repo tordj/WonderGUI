@@ -21,7 +21,7 @@ add_executable(fontgenerator
 )
 
 target_include_directories(fontgenerator PRIVATE 
-	../../wonderapp/include
+	${WAPP_INCDIRS}
 )
 
 target_working_directory(fontgenerator ${WG_ROOT} )

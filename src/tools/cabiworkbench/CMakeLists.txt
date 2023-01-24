@@ -7,13 +7,22 @@ add_library(cabiclient SHARED
 	
 	)
 
-target_link_libraries(cabiclient PRIVATE
-	wondergui
-	wgfreetypefont
-	wgcabiclient
+target_link_libraries(cabiclient
+	PRIVATE wondergui
+	PRIVATE wgfreetypefont
+	PRIVATE wgcabiclient
 )
 
-set_target_properties(cabiclient PROPERTIES CXX_VISIBILITY_PRESET hidden)
+target_include_directories(cabiclient PRIVATE 
+	${WGCABI_INCDIRS}
+	${WONDERGUI_INCDIRS}
+	${WGFREETYPEFONT_INCDIRS}
+)
+
+
+#set_target_properties(cabiclient PROPERTIES CXX_VISIBILITY_PRESET hidden)
+
+
 
 add_executable(cabiworkbench
 
@@ -22,7 +31,8 @@ add_executable(cabiworkbench
 )
 
 target_include_directories(cabiworkbench PRIVATE 
-	../../wonderapp/include
+	${WAPP_INCDIRS}
+	${WGCABI_INCDIRS}
 )
 
 add_dependencies(cabiworkbench cabiclient)
@@ -31,7 +41,7 @@ target_working_directory(cabiworkbench ${WG_ROOT} )
 
 target_link_libraries(cabiworkbench PRIVATE
 	${WAPPLIB}
-	wgcabihost
+	PRIVATE wgcabihost
 )
 
 

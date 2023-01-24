@@ -50,11 +50,8 @@ DLLEXPORTPREFIX int init( wg_c_callCollection * pBaseInterface, wg_cabi_root_out
 	auto pSurfaceFactory 	= CABISurfaceFactory::create(hSurfaceFactory);
 	auto pGfxDevice 		= CABIGfxDevice::create(hGfxDevice,pSurfaceFactory);
 	
-	Context_p pContext = Context::create();
-	pContext->setSurfaceFactory(pSurfaceFactory);
-	pContext->setGfxDevice(pGfxDevice);
-	pContext->setGammaCorrection(true);
-	Base::setActiveContext(pContext);
+	Base::setDefaultSurfaceFactory(pSurfaceFactory);
+	Base::setDefaultGfxDevice(pGfxDevice);
 	
 	
 	auto pCABIRoot = CABIRoot::create(pRootInterface);

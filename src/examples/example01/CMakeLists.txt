@@ -20,6 +20,12 @@ target_link_directories(example01 PRIVATE
 	../../SDL2/lib/x64
 )
 
+target_include_directories(example01 PRIVATE 
+	${WONDERGUI_INCDIRS}
+	${WGSOFTGFX_INCDIRS}
+)
+
+
 target_working_directory(example01 ${WG_ROOT} )
 
 target_link_libraries(example01 PRIVATE

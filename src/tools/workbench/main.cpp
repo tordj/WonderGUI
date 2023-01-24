@@ -318,11 +318,6 @@ int main(int argc, char** argv)
 
 //	Base::setErrorHandler([](Error&) { int x = 0; });
 
-	Context_p pContext = WGTRACK( Context::create() );
-
-
-
-
 
 #ifdef USE_OPEN_GL
 	pCanvas = nullptr;
@@ -355,10 +350,8 @@ int main(int argc, char** argv)
 	}
 #endif
 
-	pContext->setSurfaceFactory(pFactory);
-	pContext->setGfxDevice(pDevice);
-
-	Base::setActiveContext(pContext);
+	Base::setDefaultSurfaceFactory(pFactory);
+	Base::setDefaultGfxDevice(pDevice);
 
 //	nisBlendTest();
 	commonAncestorTest();
@@ -433,8 +426,8 @@ int main(int argc, char** argv)
 
 		SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 */
-	GfxDevice_p pGfxDevice				= Base::activeContext()->gfxDevice();
-	SurfaceFactory_p pSurfaceFactory	= Base::activeContext()->surfaceFactory();
+	GfxDevice_p pGfxDevice				= Base::defaultGfxDevice();
+	SurfaceFactory_p pSurfaceFactory	= Base::defaultSurfaceFactory();
 
 
 	RootPanel_p pRoot = RootPanel::create(CanvasRef::Default, pGfxDevice);
@@ -1700,7 +1693,7 @@ Surface_p loadSurface(const std::string& path, const Surface::Blueprint& bluepri
 	else
 		bp.format = PixelFormat::BGRA_8;
 
-	Surface_p pImgSurface = Base::activeContext()->surfaceFactory()->createSurface( bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pImgSurface = Base::defaultSurfaceFactory()->createSurface( bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 
 	SDL_FreeSurface(pSDLSurf);
 
@@ -2651,7 +2644,7 @@ bool bakeSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pSplashSkin = BlockSkin::create({ .blendMode = BlendMode::Add, .surface = pSplashSurf });
 
-	Surface_p pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
+	Surface_p pBakeSurface = Base::defaultSurfaceFactory()->createSurface(SizeI(512, 512));
 
 	auto pBakedSkin = BakeSkin::create({ .skins = { pSplashSkin, pDynamicSkin }, .surface = pBakeSurface });
 
@@ -2690,7 +2683,7 @@ bool animSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pDoubleSkin = DoubleSkin::create(pAnimSkin2, pFramingSkin, true);
 
-	auto pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
+	auto pBakeSurface = Base::defaultSurfaceFactory()->createSurface(SizeI(512, 512));
 
 	auto pBakeSkin = BakeSkin::create({ .skinInSkin = true, .skins = {pAnimSkin2, pBoxSkin,pAnimSkin}, .surface = pBakeSurface });
 
@@ -2987,6 +2980,7 @@ bool packPanelTest(ComponentPtr<DynamicSlot> pSlot)
 
 bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot)
 {
+/*
 	Base::setErrorHandler( [](Error& error)  {
 		
 		int x = 0;
@@ -3054,7 +3048,7 @@ bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot)
 	pBaseLayer->slots.pushBack(pImage);
 	*pSlot = pBaseLayer;
 	return true;
-
+*/
 }
 
 

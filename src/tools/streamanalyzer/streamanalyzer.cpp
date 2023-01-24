@@ -63,6 +63,7 @@ bool MyApp::update()
 
 void MyApp::exit()
 {
+	Base::setErrorHandler( nullptr );
 }
 
 
@@ -687,10 +688,8 @@ bool MyApp::loadStream(std::string path)
 	}
 
 	// Setup streamwrapper and pump
-
-	auto pContext = Base::activeContext();
 	
-	m_pStreamPlayer	= GfxStreamPlayer::create( pContext->gfxDevice(), pContext->surfaceFactory() );
+	m_pStreamPlayer	= GfxStreamPlayer::create( GfxBase::defaultGfxDevice(), GfxBase::defaultSurfaceFactory() );
 	m_pStreamPlayer->setStoreDirtyRects(true);
 	m_pStreamPlayer->setMaxDirtyRects(10000);
 	
@@ -712,10 +711,10 @@ void MyApp::setupScreens()
 {
 	m_screens.clear();
 
-	SurfaceFactory_p	pFactory = Base::activeContext()->surfaceFactory();
+	SurfaceFactory_p	pFactory = GfxBase::defaultSurfaceFactory();
 
 	// Ugly typecast! Will only work with SoftGfxDevice!
-	SoftGfxDevice_p		pGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::activeContext()->gfxDevice());
+	SoftGfxDevice_p		pGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(GfxBase::defaultGfxDevice());
 	
 	for (int i = 0; i < 11; i++)
 	{
@@ -740,7 +739,7 @@ void MyApp::updateGUIAfterReload()
 	m_overlayDisplays.clear();
 
 
-	auto pSurfFactory = Base::activeContext()->surfaceFactory();
+	auto pSurfFactory = GfxBase::defaultSurfaceFactory();
 
 
 	int toggleNb = 0;
@@ -1070,7 +1069,7 @@ void MyApp::_updateResourcesView()
 
 void MyApp::_updateDebugOverlays()
 {
-	auto pDevice = Base::activeContext()->gfxDevice();
+	auto pDevice = GfxBase::defaultGfxDevice();
 	
 	auto pOverlaySkin = BoxSkin::create( Border(1), HiColor(4096,0,0,1024), HiColor(4096,0,0,4096));
 	

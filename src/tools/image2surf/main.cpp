@@ -1,5 +1,5 @@
 
-#include <wondergui.h>
+#include <wondergfx.h>
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
 
@@ -114,7 +114,7 @@ int main ( int argc, char** argv )
 		return -1;
 	}
 	
-	Base::init(nullptr);
+	GfxBase::init();
 
 	
 	
@@ -134,7 +134,7 @@ int main ( int argc, char** argv )
 	pWriter->writeSurfaceToStream(out, pConverted);
 	out.close();
 
-	Base::exit();
+	GfxBase::exit();
 	stbi_image_free(pImage);
     return 0;
 }

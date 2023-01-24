@@ -33,6 +33,12 @@ add_executable(gfxworkbench
 target_link_directories(gfxworkbench PRIVATE 
 )
 
+target_include_directories(gfxworkbench PRIVATE 
+	${WONDERGUI_INCDIRS}
+	${WGSOFTGFX_INCDIRS}
+	${WGFREETYPEFONT_INCDIRS}
+)
+
 target_working_directory(gfxworkbench ${WG_ROOT})
 
 target_link_libraries(gfxworkbench PRIVATE

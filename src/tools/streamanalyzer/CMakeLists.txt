@@ -9,13 +9,15 @@ add_executable(streamanalyzer
 )
 
 target_include_directories(streamanalyzer PRIVATE 
-	../../wonderapp/include
+	${WAPP_INCDIRS}
+	${WGSOFTGFX_INCDIRS}
 )
 
 target_working_directory(streamanalyzer ${WG_ROOT} )
 
 target_link_libraries(streamanalyzer PRIVATE
 	${WAPPLIB}
+	wgsoftgfx
 )
 
 

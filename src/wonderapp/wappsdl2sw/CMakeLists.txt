@@ -37,6 +37,8 @@ add_library(wappsdl2sw
 
 target_include_directories(wappsdl2sw PRIVATE 
 	../include
+	${WONDERGUI_INCDIRS}
+	${WGSOFTGFX_INCDIRS}
 )
 
 set_target_properties(wappsdl2sw PROPERTIES FOLDER "WonderApp/Frameworks" )
@@ -44,7 +46,7 @@ set_target_properties(wappsdl2sw PROPERTIES FOLDER "WonderApp/Frameworks" )
 target_link_libraries(wappsdl2sw PRIVATE
 	wgsoftgfx
 	wgfreetypefont
-	wondergui 
+	wondergui
 	${SDL2_LIBS}
 	${SDL2IMAGE_LIBS}
 )

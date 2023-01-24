@@ -23,11 +23,17 @@ add_executable(streamgenerator
 target_link_directories(streamgenerator PRIVATE 
 )
 
+target_include_directories(streamgenerator PRIVATE 
+	${WONDERGUI_INCDIRS}
+	${WGSOFTGFX_INCDIRS}
+	${WGFREETYPEFONT_INCDIRS}
+)
+
+
 target_working_directory(streamgenerator ${WG_ROOT} )
 
 target_link_libraries(streamgenerator PRIVATE
 	wgsoftgfx
-    wgstreamgfx
 	wgfreetypefont
 	wondergui 
 	${SDL2_LIBS}
