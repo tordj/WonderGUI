@@ -1,7 +1,7 @@
 #include "testsuite.h"
 
 #include <wg_canvaslayers.h>
-#include <wg_cabi_canvaslayers.h>
+#include <wg_plugincanvaslayers.h>
 
 class CanvasLayerTests : public TestSuite
 {
@@ -41,9 +41,9 @@ public:
 						 CanvasLayers::LayerBP(PixelFormat::BGRA_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Blend);  pDevice->blit({0,0}); })
 			});
 
-		if (pDevice->isInstanceOf(CABIGfxDevice::TYPEINFO))
+		if (pDevice->isInstanceOf(PluginGfxDevice::TYPEINFO))
 		{
-			m_pLayerStack1 = CABICanvasLayers::create(static_cast<CABIGfxDevice*>(pDevice), bp);
+			m_pLayerStack1 = PluginCanvasLayers::create(static_cast<PluginGfxDevice*>(pDevice), bp);
 		}
 		else
 		{

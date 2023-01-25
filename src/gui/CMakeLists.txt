@@ -83,8 +83,6 @@ set( SOURCES
 	base/wg_util.h
 
 
-	c-api/wg_c_callcollection.cpp
-	c-api/wg_c_callcollection.h
 	c-api/wg_c_hostbridge.cpp
 	c-api/wg_c_hostbridge.h
 	c-api/wg_c_types.h

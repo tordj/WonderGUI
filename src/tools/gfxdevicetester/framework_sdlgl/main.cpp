@@ -170,7 +170,7 @@ int main(int argc, char *argv[] )
 	// Prepare CABI interface
 
 	wg_populateCallCollection(&g_cCallsCollection);
-	CABI::init(&g_cCallsCollection);
+	PluginBase::init(&g_cCallsCollection);
 
 	//
 

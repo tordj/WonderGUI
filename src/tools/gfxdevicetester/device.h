@@ -8,7 +8,7 @@
 #include <wg_streamgfxdevice.h>
 #include <wg_streamsurface.h>
 #include <wg_gfxstreamplayer.h>
-#include <wg_cabi_gfxdevice.h>
+#include <wg_plugingfxdevice.h>
 
 using namespace wg;
 
@@ -193,9 +193,9 @@ public:
 		m_pOutputCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
 		m_pOutputDevice->defineCanvas(CanvasRef::Default, m_pOutputCanvas);
 
-		auto pFactory = CABISurfaceFactory::create((wg_obj) m_pOutputDevice->surfaceFactory());
+		auto pFactory = PluginSurfaceFactory::create((wg_obj) m_pOutputDevice->surfaceFactory());
 		
-		m_pCABIDevice = CABIGfxDevice::create( (wg_obj) m_pOutputDevice, pFactory );
+		m_pCABIDevice = PluginGfxDevice::create( (wg_obj) m_pOutputDevice, pFactory );
 		
 		return true;
 	}
@@ -236,7 +236,7 @@ private:
 	const char * m_pName = { "CABIToSoftware" };
 
 
-	CABIGfxDevice_p		m_pCABIDevice;
+	PluginGfxDevice_p		m_pCABIDevice;
 
 	SoftGfxDevice_p		m_pOutputDevice;
 	SoftSurface_p		m_pOutputCanvas;

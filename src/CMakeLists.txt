@@ -93,9 +93,8 @@ set(WGFREETYPEFONT_INCDIRS
 	${PROJECT_SOURCE_DIR}/glyphs/freetype/
 )
 
-set(WGCABI_INCDIRS
-	${PROJECT_SOURCE_DIR}/cabi
-	${PROJECT_SOURCE_DIR}/cabi/c-api
+set(WGPLUGIN_INCDIRS
+	${PROJECT_SOURCE_DIR}/plugin
 )
 
 
@@ -131,7 +130,7 @@ add_subdirectory(gfx/opengl)
 add_subdirectory(gfx/software)
 
 
-add_subdirectory(cabi)
+add_subdirectory(plugin)
 add_subdirectory(wonderapp/${WAPPLIB})
 add_subdirectory(tools)
 add_subdirectory(examples)
