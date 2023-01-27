@@ -45,6 +45,8 @@ namespace wg
 	{
 		if( s_gfxInitCounter == 0 )
 		{
+			wg::HiColor::_initTables();
+
 			s_gfxInitCounter++;
 			return GearBase::init();
 		}

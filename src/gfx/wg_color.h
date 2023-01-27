@@ -269,7 +269,7 @@ namespace wg
 
 	class HiColor
 	{
-		friend class Base;
+		friend class GfxBase;
 	public:
 
 		//.____ Creation __________________________________________

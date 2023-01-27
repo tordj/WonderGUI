@@ -97,7 +97,11 @@ set(WGPLUGIN_INCDIRS
 	${PROJECT_SOURCE_DIR}/plugin
 )
 
-
+set(WGLEGACYGUI_INCDIRS
+	${WONDERGUI_INCDIRS}
+	${WGFREETYPEFONT_INCDIRS}
+	${PROJECT_SOURCE_DIR}/legacygui/
+)
 
 set(WAPP_INCDIRS
 	${WONDERGUI_INCDIRS}
@@ -122,6 +126,7 @@ add_subdirectory(gear)
 add_subdirectory(gfx)
 add_subdirectory(glyphs)
 add_subdirectory(gui)
+add_subdirectory(legacygui)
 
 add_subdirectory(glyphs/freetype)
 

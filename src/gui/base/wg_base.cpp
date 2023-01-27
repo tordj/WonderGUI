@@ -80,8 +80,6 @@ namespace wg
 		s_pHostBridge = pHostBridge;
 
 		TextTool::setDefaultBreakRules();
-		HiColor::_initTables();
-
 
 		TextStyleManager::init();
 		SkinSlotManager::init();
