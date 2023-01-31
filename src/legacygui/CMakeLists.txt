@@ -1,7 +1,7 @@
 source_group(Files REGULAR_EXPRESSION ".*")
 
-add_library( wglegacygui STATIC
 			
+set( SOURCES
 	wg2_anim.cpp
 	wg2_anim.h
 	wg2_animplayer.cpp
@@ -96,6 +96,7 @@ add_library( wglegacygui STATIC
 	wg2_rangeslider.h
 	wg2_renderlayercapsule.cpp
 	wg2_renderlayercapsule.h
+	wg2_root.h
 	wg2_rootpanel.cpp
 	wg2_rootpanel.h
 	wg2_rulerlabels.cpp
@@ -228,6 +229,11 @@ add_library( wglegacygui STATIC
 	../gui/skins/static/wg_statictileskin.h
 
 )
+
+set(WGLEGACYGUI_SOURCES ${SOURCES} PARENT_SCOPE)
+
+add_library( wglegacygui STATIC ${SOURCES} )
+
 
 target_include_directories(wglegacygui PRIVATE
 	.

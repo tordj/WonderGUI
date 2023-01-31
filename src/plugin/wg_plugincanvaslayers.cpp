@@ -24,7 +24,7 @@
 #include <wg_plugingfxdevice.h>
 #include <wg_base.h>
 
-#include <wg_pluginbase.h>
+#include <wg_plugincalls.h>
 
 #include <cstring>
 
@@ -129,14 +129,14 @@ namespace wg
 
 		}
 
-		m_cCanvasLayer = PluginBase::canvasLayers->createCanvasLayers(&cBP);
+		m_cCanvasLayer = PluginCalls::canvasLayers->createCanvasLayers(&cBP);
 	}
 
 	//____ PluginCanvasLayers::~PluginCanvasLayers() ______________________________
 
 	PluginCanvasLayers::~PluginCanvasLayers()
 	{
-		PluginBase::object->release(m_cCanvasLayer);
+		PluginCalls::object->release(m_cCanvasLayer);
 	}
 
 

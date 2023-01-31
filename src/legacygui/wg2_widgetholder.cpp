@@ -152,12 +152,12 @@ const WgLayer * WgWidgetHolder::CastToLayer() const
 
 //____ CastToRoot() ___________________________________________________________
 
-WgRootPanel * WgWidgetHolder::CastToRoot()
+WgRoot * WgWidgetHolder::CastToRoot()
 {
 	return 0;
 }
 
-const WgRootPanel * WgWidgetHolder::CastToRoot() const
+const WgRoot * WgWidgetHolder::CastToRoot() const
 {
 	return 0;
 }

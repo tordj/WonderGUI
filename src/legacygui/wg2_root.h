@@ -19,39 +19,38 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#ifndef WG2_ROOT_DOT_H
+#define WG2_ROOT_DOT_H
 
-#ifndef	WG_PLUGINBASE_DOT_H
-#define	WG_PLUGINBASE_DOT_H
-#pragma once
+#ifndef WG2_CONTAINER_DOT_H
+#	include <wg2_container.h>
+#endif
 
-#include <wg_plugininterface.h>
-#include <wg_pluginhostbridge.h>
-#include <wg_base.h>
+#ifndef WG2_GEO_DOT_H
+#	include <wg2_geo.h>
+#endif
 
-namespace wg
+
+class WgWidget;
+class WgEventHandler;
+
+class WgRoot
 {
+	friend class WgWidget;
+	
+public:
 
-	class PluginBase : public Base
-	{
-	public:
+	virtual WgEventHandler *	EventHandler() const = 0;
 
-		//.____ Creation __________________________________________
-
-		static bool init( wg_plugin_interface* pInterface, void * pRealHostBridge );
-		static bool exit();
-		
-		//.____ Misc ________________________________________________
-
-		const static TypeInfo	TYPEINFO;
-
-		static bool			isInitialized() { return s_pluginInitCounter > 0; }
-
-	private:
-		static	int				s_pluginInitCounter;
-
-		static	PluginHostBridge *	s_pHostBridge;
-	};
+	virtual int			Scale() const = 0;
+	virtual WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode ) = 0;
 
 
-} // namespace wg
-#endif //WG_PLUGINBASE_DOT_H
+protected:
+	virtual void        _addPreRenderCall(WgWidget * pWidget) = 0;
+
+};
+
+
+
+#endif //WG2_ROOT_DOT_H

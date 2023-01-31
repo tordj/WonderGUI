@@ -30,18 +30,18 @@
 
 //____ Constructor ____________________________________________________________
 
-WgEventHandler::WgEventHandler( WgRootPanel * pRoot )
+WgEventHandler::WgEventHandler( WgRoot * pRoot )
 {
 	m_pRoot					= pRoot;
 	m_time					= 0;
-	m_modKeys				= WG2_MODKEY_NONE;
+	m_modKeys				= WG_MODKEY_NONE;
 	m_pointerStyle			= WgPointerStyle::Default;
 
 	m_bIsProcessing			= false;
 	m_bWindowFocus			= true;
 	m_bIgnoreNextCharacterEvent = false;
 
-	for( int i = 0 ; i <= WG2_MAX_BUTTONS ; i++ )
+	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		m_bButtonPressed[i] = 0;
 		m_pLatestPressEvents[i] = 0;
@@ -176,7 +176,7 @@ WgPanel * WgEventHandler::FocusGroup() const
 
 bool WgEventHandler::IsMouseButtonPressed( int button )
 {
-	if( button >= 1 && button <= WG2_MAX_BUTTONS )
+	if( button >= 1 && button <= WG_MAX_BUTTONS )
 		return m_bButtonPressed[button];
 
 	return false;
@@ -1080,7 +1080,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 
 	// Check if we need to post BUTTON_REPEAT
 
-	for( int button = 0 ; button <= WG2_MAX_BUTTONS ; button++ )
+	for( int button = 0 ; button <= WG_MAX_BUTTONS ; button++ )
 	{
 		if( m_bButtonPressed[button] )
 		{
@@ -1182,7 +1182,7 @@ void WgEventHandler::_processMouseEnter( WgEvent::MouseEnter * pEvent )
 {
 	// Post events for button drag
 
-	for( int i = 0 ; i <= WG2_MAX_BUTTONS ; i++ )
+	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
 			QueueEvent( new WgEvent::MouseButtonDrag( i, m_pLatestPressEvents[i]->PointerPixelPos(), m_pointerPos, pEvent->PointerPixelPos() ) );
@@ -1220,7 +1220,7 @@ void WgEventHandler::_processMouseMove( WgEvent::MouseMove * pEvent )
 
 	// Post events for button drag
 
-	for( int i = 0 ; i <= WG2_MAX_BUTTONS ; i++ )
+	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
 			QueueEvent( new WgEvent::MouseButtonDrag( i, m_pLatestPressEvents[i]->PointerPixelPos(), m_pointerPos, pEvent->PointerPixelPos() ) );
@@ -1254,7 +1254,7 @@ void WgEventHandler::_updateMarkedWidget(bool bMouseMoved)
     // Mouse is only allowed to mark Widgets that were marked on press of that button.
 
     int button = 0;                                // Button that has been pressed for longest, 0 = no button pressed
-    for( int i = 1 ; i <= WG2_MAX_BUTTONS ; i++ )
+    for( int i = 1 ; i <= WG_MAX_BUTTONS ; i++ )
     {
         if( m_bButtonPressed[i] && (button == 0 || m_pLatestPressEvents[i]->Timestamp() < m_pLatestPressEvents[button]->Timestamp()) )
             button = i;
@@ -1420,22 +1420,22 @@ void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
 	switch( pEvent->TranslatedKeyCode() )
 	{
 		case WG_KEY_SHIFT:
-			m_modKeys = (WgModifierKeys) (m_modKeys | WG2_MODKEY_SHIFT);
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SHIFT);
 			break;
 		case WG_KEY_CONTROL:
-			m_modKeys = (WgModifierKeys) (m_modKeys | WG2_MODKEY_CTRL);
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_CTRL);
 			break;
 		case WG_KEY_ALT:
-			m_modKeys = (WgModifierKeys) (m_modKeys | WG2_MODKEY_ALT);
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_ALT);
 			break;
 		case WG_KEY_SUPER:
-			m_modKeys = (WgModifierKeys) (m_modKeys | WG2_MODKEY_SUPER);
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SUPER);
 			break;
 		case WG_KEY_MAC_CONTROL:
-			m_modKeys = (WgModifierKeys) (m_modKeys | WG2_MODKEY_MAC_CONTROL);
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_MAC_CONTROL);
 			break;
 		case WG_KEY_WIN_START:
-			m_modKeys = (WgModifierKeys) (m_modKeys | WG2_MODKEY_WIN_START);
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_WIN_START);
 			break;
 		default:
 			break;
@@ -1508,22 +1508,22 @@ void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 	switch( pEvent->TranslatedKeyCode() )
 	{
 		case WG_KEY_SHIFT:
-			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG2_MODKEY_SHIFT);
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SHIFT);
 			break;
 		case WG_KEY_CONTROL:
-			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG2_MODKEY_CTRL);
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_CTRL);
 			break;
 		case WG_KEY_ALT:
-			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG2_MODKEY_ALT);
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_ALT);
 			break;
 		case WG_KEY_SUPER:
-			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG2_MODKEY_SUPER);
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SUPER);
 			break;
 		case WG_KEY_MAC_CONTROL:
-			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG2_MODKEY_MAC_CONTROL);
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_MAC_CONTROL);
 			break;
 		case WG_KEY_WIN_START:
-			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG2_MODKEY_WIN_START);
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_WIN_START);
 			break;
 		default:
 			break;

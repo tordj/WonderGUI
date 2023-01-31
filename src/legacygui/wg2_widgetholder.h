@@ -30,7 +30,7 @@
 #include <wg2_geo.h>
 
 class WgWidget;
-class WgRootPanel;
+class WgRoot;
 class WgHook;
 class WgContainer;
 class WgPanel;
@@ -69,8 +69,8 @@ class WgWidgetHolder
 		virtual const WgCapsule *			CastToCapsule() const;
 		virtual WgLayer *					CastToLayer();
 		virtual const WgLayer *				CastToLayer() const;
-		virtual WgRootPanel *				CastToRoot();
-		virtual const WgRootPanel *			CastToRoot() const;
+		virtual WgRoot *					CastToRoot();
+		virtual const WgRoot *				CastToRoot() const;
 
 		virtual bool		IsRoot() const;
 		virtual bool		IsWidget() const;
@@ -87,8 +87,8 @@ class WgWidgetHolder
 		virtual void        _inViewRequested( WgHook * pChild ) = 0;
 		virtual void        _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea ) = 0;
 
-		virtual WgHook*	_firstHook() const = 0;
-		virtual WgHook*	_lastHook() const = 0;
+		virtual WgHook*		_firstHook() const = 0;
+		virtual WgHook*		_lastHook() const = 0;
 };
 
 

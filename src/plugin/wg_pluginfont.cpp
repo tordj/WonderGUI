@@ -21,7 +21,7 @@
 =========================================================================*/
 
 
-#include <wg_pluginbase.h>
+#include <wg_plugincalls.h>
 #include <wg_pluginfont.h>
 #include <wg_pluginsurface.h>
 
@@ -35,14 +35,14 @@ namespace wg
 
 	PluginFont::PluginFont( wg_obj cFont ) : Font(nullptr), m_cFont(cFont)
 	{
-		PluginBase::object->retain(cFont);
+		PluginCalls::object->retain(cFont);
 	}
 
 	//____ Destructor _____________________________________________________________
 
 	PluginFont::~PluginFont()
 	{
-		PluginBase::object->release(m_cFont);
+		PluginCalls::object->release(m_cFont);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -56,14 +56,14 @@ namespace wg
 
 	bool PluginFont::setSize( spx size )
 	{
-		return PluginBase::font->setFontSize(m_cFont, size);
+		return PluginCalls::font->setFontSize(m_cFont, size);
 	}
 	
 	//____ size() _____________________________________________________________
 
 	spx PluginFont::size()
 	{
-		return PluginBase::font->fontSize(m_cFont);
+		return PluginCalls::font->fontSize(m_cFont);
 	}
 
 	//____ kerning() ___________________________________________________________
@@ -80,21 +80,21 @@ namespace wg
 		right.kerningIndex = rightGlyph.kerningIndex;
 		right.fontRef = rightGlyph.fontRef;
 
-		return PluginBase::font->getKerning(m_cFont, &left, &right);
+		return PluginCalls::font->getKerning(m_cFont, &left, &right);
 	}
 
 	//____ whitespaceAdvance() _________________________________________________
 
 	spx PluginFont::whitespaceAdvance()
 	{
-		return PluginBase::font->whitespaceAdvance(m_cFont);
+		return PluginCalls::font->whitespaceAdvance(m_cFont);
 	}
 
 	//____ lineGap() ____________________________________________________________
 
 	spx PluginFont::lineGap()
 	{
-		return PluginBase::font->lineGap(m_cFont);
+		return PluginCalls::font->lineGap(m_cFont);
 	}
 
 
@@ -102,14 +102,14 @@ namespace wg
 
 	spx PluginFont::maxAscend()
 	{
-		return PluginBase::font->maxAscend(m_cFont);
+		return PluginCalls::font->maxAscend(m_cFont);
 	}
 
 	//____ maxDescend() ____________________________________________________________
 
 	spx PluginFont::maxDescend()
 	{
-		return PluginBase::font->maxDescend(m_cFont);
+		return PluginCalls::font->maxDescend(m_cFont);
 	}
 
 
@@ -117,28 +117,28 @@ namespace wg
 
 	int PluginFont::nbGlyphs()
 	{
-		return PluginBase::font->nbGlyphs(m_cFont);
+		return PluginCalls::font->nbGlyphs(m_cFont);
 	}
 
 	//____ hasGlyphs() ____________________________________________________________
 
 	bool PluginFont::hasGlyphs()
 	{
-		return PluginBase::font->hasGlyphs(m_cFont);
+		return PluginCalls::font->hasGlyphs(m_cFont);
 	}
 
 	//____ isMonospace() __________________________________________________________
 
 	bool PluginFont::isMonospace()
 	{
-		return PluginBase::font->isMonospace(m_cFont);
+		return PluginCalls::font->isMonospace(m_cFont);
 	}
 
 	//____ maxAdvance() ___________________________________________________
 
 	spx PluginFont::maxAdvance()
 	{
-		return PluginBase::font->maxAdvance(m_cFont);
+		return PluginCalls::font->maxAdvance(m_cFont);
 	}
 
 
@@ -146,7 +146,7 @@ namespace wg
 
 	bool PluginFont::hasGlyph( uint16_t ch )
 	{
-		return PluginBase::font->hasGlyph(m_cFont,ch);
+		return PluginCalls::font->hasGlyph(m_cFont,ch);
 	}
 
 	//____ getGlyphWithoutBitmap() _____________________________________________________________
@@ -155,7 +155,7 @@ namespace wg
 	{
 		wg_glyph	cGlyph;
 
-		PluginBase::font->getGlyphWithoutBitmap(m_cFont, ch, &cGlyph);
+		PluginCalls::font->getGlyphWithoutBitmap(m_cFont, ch, &cGlyph);
 
 		if (cGlyph.advance != 0)
 		{

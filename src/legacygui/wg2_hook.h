@@ -32,7 +32,7 @@
 class WgWidgetHolder;
 class WgContainer;
 class WgWidget;
-class WgRootPanel;
+class WgRoot;
 class WgRectLink;
 class WgEventHandler;
 
@@ -65,7 +65,7 @@ public:
 	WgWidgetHolder * 		Holder() const { return _holder(); }
 	WgContainer * 			Parent() const { return _parent(); }
 
-	virtual WgRootPanel *	Root() const;
+	virtual WgRoot *	Root() const;
 	WgEventHandler *	EventHandler() const;
 
 	virtual const char *Type( void ) const = 0;

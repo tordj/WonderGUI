@@ -20,38 +20,22 @@
 
 =========================================================================*/
 
-#ifndef	WG_PLUGINBASE_DOT_H
-#define	WG_PLUGINBASE_DOT_H
+#ifndef	WGLEGACYPLUGIN_DOT_H
+#define	WGLEGACYPLUGIN_DOT_H
 #pragma once
 
-#include <wg_plugininterface.h>
+#include <wg2_pluginbase.h>
+#include <wg2_pluginroot.h>
+
+#include <wg_pluginbitmapcache.h>
+#include <wg_pluginbitmapfont.h>
+#include <wg_plugincanvaslayers.h>
+#include <wg_plugincapsule.h>
+#include <wg_pluginfont.h>
+#include <wg_pluginfreetypefont.h>
+#include <wg_plugingfxdevice.h>
 #include <wg_pluginhostbridge.h>
-#include <wg_base.h>
+#include <wg_pluginsurface.h>
+#include <wg_pluginsurfacefactory.h>
 
-namespace wg
-{
-
-	class PluginBase : public Base
-	{
-	public:
-
-		//.____ Creation __________________________________________
-
-		static bool init( wg_plugin_interface* pInterface, void * pRealHostBridge );
-		static bool exit();
-		
-		//.____ Misc ________________________________________________
-
-		const static TypeInfo	TYPEINFO;
-
-		static bool			isInitialized() { return s_pluginInitCounter > 0; }
-
-	private:
-		static	int				s_pluginInitCounter;
-
-		static	PluginHostBridge *	s_pHostBridge;
-	};
-
-
-} // namespace wg
-#endif //WG_PLUGINBASE_DOT_H
+#endif //WGLEGACYPLUGIN_DOT_H

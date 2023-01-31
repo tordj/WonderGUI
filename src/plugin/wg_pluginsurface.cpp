@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_pluginbase.h>
+#include <wg_plugincalls.h>
 #include <wg_pluginsurface.h>
 
 
@@ -40,24 +40,24 @@ namespace wg
 
 	PluginSurface::PluginSurface(wg_obj object) : Surface( Blueprint(), PixelFormat::BGRA_8, SampleMethod::Bilinear )
 	{
-		PluginBase::object->retain(object);
+		PluginCalls::object->retain(object);
 
 		m_cSurface = object;
 
 		// We have initialized with an empty Blueprint. Now lets set correct values.
 
-		m_id				= PluginBase::surface->getSurfaceIdentity(object);
-		m_scale				= PluginBase::surface->getSurfaceScale(object);
-		m_pixelDescription	= * (PixelDescription*)PluginBase::surface->surfacePixelDescription(object);
+		m_id				= PluginCalls::surface->getSurfaceIdentity(object);
+		m_scale				= PluginCalls::surface->getSurfaceScale(object);
+		m_pixelDescription	= * (PixelDescription*)PluginCalls::surface->surfacePixelDescription(object);
 		
-		wg_sizeI pixSize 	= PluginBase::surface->surfacePixelSize(object);
+		wg_sizeI pixSize 	= PluginCalls::surface->surfacePixelSize(object);
 		m_size				= * (SizeI*) &pixSize;
-		m_sampleMethod		= (SampleMethod)PluginBase::surface->surfaceSampleMethod(object);
-		m_bMipmapped		= PluginBase::surface->surfaceIsMipmapped(object);
-		m_bTiling			= PluginBase::surface->surfaceIsTiling(object);
-		m_bCanvas			= PluginBase::surface->surfaceCanBeCanvas(object);
-		m_pClut				= (Color8*)PluginBase::surface->surfaceClut(object);
-		m_pBaggage			= reinterpret_cast<Object*>(PluginBase::surface->getSurfaceBaggage(object));
+		m_sampleMethod		= (SampleMethod)PluginCalls::surface->surfaceSampleMethod(object);
+		m_bMipmapped		= PluginCalls::surface->surfaceIsMipmapped(object);
+		m_bTiling			= PluginCalls::surface->surfaceIsTiling(object);
+		m_bCanvas			= PluginCalls::surface->surfaceCanBeCanvas(object);
+		m_pClut				= (Color8*)PluginCalls::surface->surfaceClut(object);
+		m_pBaggage			= reinterpret_cast<Object*>(PluginCalls::surface->getSurfaceBaggage(object));
 	}
 
 
@@ -67,9 +67,9 @@ namespace wg
 	PluginSurface::~PluginSurface()
 	{
 		if (m_cObserverId != 0)
-			PluginBase::surface->removeSurfaceObserver(m_cSurface,m_cObserverId);
+			PluginCalls::surface->removeSurfaceObserver(m_cSurface,m_cObserverId);
 
-		PluginBase::object->release(m_cSurface);
+		PluginCalls::object->release(m_cSurface);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -83,21 +83,21 @@ namespace wg
 
 	void PluginSurface::setScale(int scale)
 	{
-		PluginBase::surface->setSurfaceScale(m_cSurface, scale);
+		PluginCalls::surface->setSurfaceScale(m_cSurface, scale);
 	}
 
 	//____ scale() ____________________________________________________________
 
 	int PluginSurface::scale() const
 	{
-		return PluginBase::surface->getSurfaceScale(m_cSurface);
+		return PluginCalls::surface->getSurfaceScale(m_cSurface);
 	}
 
 	//____ allocPixelBuffer() _________________________________________________
 
 	const PixelBuffer PluginSurface::allocPixelBuffer(const RectI& rect)
 	{
-		auto pixbuf = PluginBase::surface->allocPixelBufferFromRect(m_cSurface, (const wg_rectI*)&rect);
+		auto pixbuf = PluginCalls::surface->allocPixelBufferFromRect(m_cSurface, (const wg_rectI*)&rect);
 
 		return { (PixelFormat) pixbuf.format, pixbuf.pPixels, (Color8*) pixbuf.pClut, * (RectI*) &pixbuf.rect, pixbuf.pitch };
 	}
@@ -108,7 +108,7 @@ namespace wg
 	{
 		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
-		return PluginBase::surface->pushPixelsFromRect(m_cSurface, &pixbuf, (const wg_rectI*) &bufferRect);
+		return PluginCalls::surface->pushPixelsFromRect(m_cSurface, &pixbuf, (const wg_rectI*) &bufferRect);
 	}
 
 	//____ pullPixels() _______________________________________________________
@@ -117,7 +117,7 @@ namespace wg
 	{
 		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
-		PluginBase::surface->pullPixelsFromRect(m_cSurface, &pixbuf, (const wg_rectI*)&bufferRect);
+		PluginCalls::surface->pullPixelsFromRect(m_cSurface, &pixbuf, (const wg_rectI*)&bufferRect);
 	}
 
 	//____ freePixelBuffer() __________________________________________________
@@ -126,26 +126,26 @@ namespace wg
 	{
 		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
-		PluginBase::surface->freePixelBuffer(m_cSurface, &pixbuf);
+		PluginCalls::surface->freePixelBuffer(m_cSurface, &pixbuf);
 	}
 
 	//____ alpha() ____________________________________________________________
 
 	int PluginSurface::alpha( CoordSPX coord )
 	{
-		return PluginBase::surface->surfaceAlpha(m_cSurface, { coord.x, coord.y });
+		return PluginCalls::surface->surfaceAlpha(m_cSurface, { coord.x, coord.y });
 	}
 
 	//____ fill() _____________________________________________________________
 
 	bool PluginSurface::fill(HiColor color)
 	{
-		return PluginBase::surface->fillSurface(m_cSurface, *(wg_color*)&color);
+		return PluginCalls::surface->fillSurface(m_cSurface, *(wg_color*)&color);
 	}
 
 	bool PluginSurface::fill(const RectI& region, HiColor color )
 	{
-		return PluginBase::surface->fillSurfaceRect( m_cSurface, (const wg_rectI*) &region, * (wg_color*)&color );
+		return PluginCalls::surface->fillSurfaceRect( m_cSurface, (const wg_rectI*) &region, * (wg_color*)&color );
 	}
 
 	//____ addObserver() ______________________________________________________
@@ -153,7 +153,7 @@ namespace wg
 	int PluginSurface::addObserver(const std::function<void(int nRects, const RectSPX* pRects)>& func)
 	{
 		if( m_pObserver == nullptr )
-			m_cObserverId = PluginBase::surface->addSurfaceObserver(m_cSurface, [](int nRects, const wg_rectSPX* pRects, void* pData, int data) { ((PluginSurface*)pData)->_notifyObservers(nRects, (RectSPX*)pRects); }, this, 0);
+			m_cObserverId = PluginCalls::surface->addSurfaceObserver(m_cSurface, [](int nRects, const wg_rectSPX* pRects, void* pData, int data) { ((PluginSurface*)pData)->_notifyObservers(nRects, (RectSPX*)pRects); }, this, 0);
 
 		return Surface::addObserver(func);
 	}
@@ -165,7 +165,7 @@ namespace wg
 		Surface::removeObserver(observerId);
 
 		if (m_pObserver == nullptr)
-			PluginBase::surface->removeSurfaceObserver(m_cSurface, m_cObserverId);
+			PluginCalls::surface->removeSurfaceObserver(m_cSurface, m_cObserverId);
 
 		return true;
 	}

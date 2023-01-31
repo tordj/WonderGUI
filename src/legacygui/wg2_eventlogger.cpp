@@ -588,7 +588,7 @@ string WgEventLogger::_formatModkeys( const WgEvent::Event * _pEvent )
 
 	string	out;
 
-	if( keys != WG2_MODKEY_NONE )
+	if( keys != WG_MODKEY_NONE )
 	{
 		char	temp[64];
 		sprintf( temp, " modkeys=%X", keys );

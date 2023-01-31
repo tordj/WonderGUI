@@ -92,7 +92,7 @@ void WgPen::_onAttrChanged()
 
 bool WgPen::SetAttributes( const wg::TextAttr& attr )
 {
-	if( attr.size < 0 && attr.size > WG2_MAX_FONTSIZE )
+	if( attr.size < 0 && attr.size > WG_MAX_FONTSIZE )
 		return false;
 
 	if( attr.pFont != m_pFont || attr.size != m_wantedSize )
@@ -109,7 +109,7 @@ bool WgPen::SetAttributes( const wg::TextAttr& attr )
 
 bool WgPen::SetSize( int size )
 {
-	if( size < 0 && size > WG2_MAX_FONTSIZE )
+	if( size < 0 && size > WG_MAX_FONTSIZE )
 		return false;
 
 	if( size != m_wantedSize )

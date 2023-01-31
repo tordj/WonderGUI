@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_pluginbase.h>
+#include <wg_plugincalls.h>
 #include <wg_plugingfxdevice.h>
 #include <wg_pluginsurface.h>
 #include <wg_pluginsurfacefactory.h>
@@ -50,7 +50,7 @@ namespace wg
 
 	PluginGfxDevice::PluginGfxDevice( wg_obj object, PluginSurfaceFactory * pFactory )
 	{
-        PluginBase::object->retain(object);
+        PluginCalls::object->retain(object);
 		m_cDevice = object;
         m_pSurfaceFactory = pFactory;
 		m_bRendering = false;
@@ -61,7 +61,7 @@ namespace wg
 
 	PluginGfxDevice::~PluginGfxDevice()
 	{
-        PluginBase::object->release(m_cDevice);
+        PluginCalls::object->release(m_cDevice);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -75,7 +75,7 @@ namespace wg
 
     const CanvasInfo PluginGfxDevice::canvas(CanvasRef ref) const
     {
-        auto info = PluginBase::gfxDevice->getCanvasRef(m_cDevice, (wg_canvasRef)ref);
+        auto info = PluginCalls::gfxDevice->getCanvasRef(m_cDevice, (wg_canvasRef)ref);
 
         CanvasInfo info2;
         info2.ref = (CanvasRef) info.ref;
@@ -104,7 +104,7 @@ namespace wg
 
     bool PluginGfxDevice::setClipList(int nRectangles, const RectSPX * pRectangles)
     {
-        int retVal = PluginBase::gfxDevice->setClipList(m_cDevice, nRectangles, (wg_rectSPX*)pRectangles);
+        int retVal = PluginCalls::gfxDevice->setClipList(m_cDevice, nRectangles, (wg_rectSPX*)pRectangles);
 
         if (retVal)
             GfxDevice::setClipList(nRectangles, pRectangles);
@@ -116,7 +116,7 @@ namespace wg
 
     void PluginGfxDevice::resetClipList()
     {
-        PluginBase::gfxDevice->resetClipList(m_cDevice);
+        PluginCalls::gfxDevice->resetClipList(m_cDevice);
         GfxDevice::resetClipList();
     }
 
@@ -124,7 +124,7 @@ namespace wg
 
     bool PluginGfxDevice::pushClipList(int nRectangles, const RectSPX* pRectangles)
     {
-        int retVal = PluginBase::gfxDevice->pushClipList(m_cDevice, nRectangles, (wg_rectSPX*)pRectangles);
+        int retVal = PluginCalls::gfxDevice->pushClipList(m_cDevice, nRectangles, (wg_rectSPX*)pRectangles);
 
         if( retVal )
             GfxDevice::pushClipList(nRectangles, pRectangles);
@@ -136,7 +136,7 @@ namespace wg
 
     bool PluginGfxDevice::popClipList()
     {
-        int retVal = PluginBase::gfxDevice->popClipList(m_cDevice);
+        int retVal = PluginCalls::gfxDevice->popClipList(m_cDevice);
         if( retVal )
             GfxDevice::popClipList();
         
@@ -147,21 +147,21 @@ namespace wg
 
     const RectSPX* PluginGfxDevice::clipList() const
     {
-        return (RectSPX*) PluginBase::gfxDevice->getClipList(m_cDevice);
+        return (RectSPX*) PluginCalls::gfxDevice->getClipList(m_cDevice);
     }
 
     //____ clipListSize() _____________________________________________________
 
     int PluginGfxDevice::clipListSize() const
     {
-        return PluginBase::gfxDevice->clipListSize(m_cDevice);
+        return PluginCalls::gfxDevice->clipListSize(m_cDevice);
     }
 
     //____ clipBounds() _______________________________________________________
 
     const RectSPX& PluginGfxDevice::clipBounds() const
     {
-        return  * (RectSPX*) PluginBase::gfxDevice->clipBounds(m_cDevice);
+        return  * (RectSPX*) PluginCalls::gfxDevice->clipBounds(m_cDevice);
     }
 
     //____ setTintColor() _____________________________________________________
@@ -170,14 +170,14 @@ namespace wg
     {
         GfxDevice::setTintColor(color);
 
-        PluginBase::gfxDevice->setTintColor(m_cDevice, *(wg_color*)&color);
+        PluginCalls::gfxDevice->setTintColor(m_cDevice, *(wg_color*)&color);
     }
 
     //____ tintColor() ________________________________________________________
 
     HiColor PluginGfxDevice::tintColor() const
     {
-        wg_color col = PluginBase::gfxDevice->getTintColor(m_cDevice);
+        wg_color col = PluginCalls::gfxDevice->getTintColor(m_cDevice);
 
         return *(HiColor*)&col;
     }
@@ -188,7 +188,7 @@ namespace wg
     {
         GfxDevice::setTintGradient(rect, gradient);
         
-        PluginBase::gfxDevice->setTintGradient(m_cDevice, (const wg_rectSPX*)&rect, (const wg_gradient*)&gradient);
+        PluginCalls::gfxDevice->setTintGradient(m_cDevice, (const wg_rectSPX*)&rect, (const wg_gradient*)&gradient);
     }
 
     //____ clearTintGradient() ________________________________________________
@@ -197,7 +197,7 @@ namespace wg
     {
         GfxDevice::clearTintGradient();
 
-        PluginBase::gfxDevice->clearTintGradient(m_cDevice);
+        PluginCalls::gfxDevice->clearTintGradient(m_cDevice);
     }
 
     //____ setBlendMode() __________________________________________________________
@@ -207,7 +207,7 @@ namespace wg
         if( blendMode < BlendMode_min || blendMode > BlendMode_max )
             return false;
 
-        int retVal = PluginBase::gfxDevice->setBlendMode(m_cDevice, (wg_blendMode)blendMode);
+        int retVal = PluginCalls::gfxDevice->setBlendMode(m_cDevice, (wg_blendMode)blendMode);
 
         if( retVal )
             GfxDevice::setBlendMode(blendMode);
@@ -219,7 +219,7 @@ namespace wg
 
     BlendMode  PluginGfxDevice::blendMode() const
     {
-        return (BlendMode) PluginBase::gfxDevice->getBlendMode(m_cDevice);
+        return (BlendMode) PluginCalls::gfxDevice->getBlendMode(m_cDevice);
     }
 
 
@@ -230,7 +230,7 @@ namespace wg
         if (!pSource || !pSource->isInstanceOf(PluginSurface::TYPEINFO) )
             return false;
 
-        int retVal = PluginBase::gfxDevice->setBlitSource(m_cDevice, static_cast<PluginSurface*>(pSource)->cObject());
+        int retVal = PluginCalls::gfxDevice->setBlitSource(m_cDevice, static_cast<PluginSurface*>(pSource)->cObject());
 
         if( retVal )
             GfxDevice::setBlitSource(pSource);
@@ -253,14 +253,14 @@ namespace wg
     {
         GfxDevice::setMorphFactor(factor);
 
-        PluginBase::gfxDevice->setMorphFactor(m_cDevice, m_morphFactor);
+        PluginCalls::gfxDevice->setMorphFactor(m_cDevice, m_morphFactor);
     }
 
     //____ morphFactor() ______________________________________________________
 
     float PluginGfxDevice::morphFactor() const
     {
-        return PluginBase::gfxDevice->getMorphFactor(m_cDevice);
+        return PluginCalls::gfxDevice->getMorphFactor(m_cDevice);
     }
 
     //____ setRenderLayer() _______________________________________________________
@@ -269,21 +269,21 @@ namespace wg
     {
         GfxDevice::setRenderLayer(layer);
        
-        PluginBase::gfxDevice->setRenderLayer(m_cDevice, m_renderLayer);
+        PluginCalls::gfxDevice->setRenderLayer(m_cDevice, m_renderLayer);
     }
 
     //____ renderLayer() ______________________________________________________
 
     int PluginGfxDevice::renderLayer() const
     {
-        return PluginBase::gfxDevice->getRenderLayer(m_cDevice);
+        return PluginCalls::gfxDevice->getRenderLayer(m_cDevice);
     }
 
 	//____ beginRender() ___________________________________________________________
 
 	bool PluginGfxDevice::beginRender()
 	{
-        int bOk = PluginBase::gfxDevice->beginRender(m_cDevice);
+        int bOk = PluginCalls::gfxDevice->beginRender(m_cDevice);
 
         if (bOk)
             GfxDevice::beginRender();
@@ -294,7 +294,7 @@ namespace wg
 
 	bool PluginGfxDevice::endRender()
 	{
-        int bOk = PluginBase::gfxDevice->endRender(m_cDevice);
+        int bOk = PluginCalls::gfxDevice->endRender(m_cDevice);
 
         if (bOk)
             GfxDevice::endRender();
@@ -305,7 +305,7 @@ namespace wg
 
     void PluginGfxDevice::flush()
     {
-        PluginBase::gfxDevice->flushDevice(m_cDevice);
+        PluginCalls::gfxDevice->flushDevice(m_cDevice);
         GfxDevice::flush();
     }
 
@@ -314,183 +314,183 @@ namespace wg
     void PluginGfxDevice::endCanvasUpdate()
     {
 		GfxDevice::endCanvasUpdate();
-        PluginBase::gfxDevice->endCanvasUpdate(m_cDevice);
+        PluginCalls::gfxDevice->endCanvasUpdate(m_cDevice);
     }
 
     //____ fill() __________________________________________________________________
 
     void PluginGfxDevice::fill( HiColor _col )
     {
-        PluginBase::gfxDevice->fill( m_cDevice, *(wg_color*)&_col );
+        PluginCalls::gfxDevice->fill( m_cDevice, *(wg_color*)&_col );
     }
 
     void PluginGfxDevice::fill( const RectSPX& _rect, HiColor _col )
     {
-        PluginBase::gfxDevice->fillRect(m_cDevice, (wg_rectSPX*) &_rect, *(wg_color*)&_col);
+        PluginCalls::gfxDevice->fillRect(m_cDevice, (wg_rectSPX*) &_rect, *(wg_color*)&_col);
     }
 
     //____ plotPixels() ________________________________________________________
 
     void PluginGfxDevice::plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors)
     {
-        PluginBase::gfxDevice->plotPixels(m_cDevice, nCoords, (wg_coordSPX*)pCoords, (wg_color*)pColors);
+        PluginCalls::gfxDevice->plotPixels(m_cDevice, nCoords, (wg_coordSPX*)pCoords, (wg_color*)pColors);
     }
 
     //____ drawLine() __________________________________________________________
 
     void PluginGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness)
     {
-        PluginBase::gfxDevice->drawLine(m_cDevice, { begin.x, begin.y }, { end.x, end.y }, *(wg_color*)&color, thickness);
+        PluginCalls::gfxDevice->drawLine(m_cDevice, { begin.x, begin.y }, { end.x, end.y }, *(wg_color*)&color, thickness);
     }
 
     void PluginGfxDevice::drawLine(CoordSPX begin, Direction dir, int length, HiColor color, spx thickness)
     {
-        PluginBase::gfxDevice->drawStraightLine(m_cDevice, { begin.x, begin.y }, (wg_direction) dir, length, * (wg_color*)&color, thickness);
+        PluginCalls::gfxDevice->drawStraightLine(m_cDevice, { begin.x, begin.y }, (wg_direction) dir, length, * (wg_color*)&color, thickness);
     }
 
     //____ blit() __________________________________________________________________
 
     void PluginGfxDevice::blit(CoordSPX dest)
     {
-        PluginBase::gfxDevice->blit(m_cDevice, { dest.x, dest.y });
+        PluginCalls::gfxDevice->blit(m_cDevice, { dest.x, dest.y });
     }
 
     void PluginGfxDevice::blit(CoordSPX dest, const RectSPX& src)
     {
-        PluginBase::gfxDevice->blitRect(m_cDevice, { dest.x, dest.y }, (wg_rectSPX*) &src );
+        PluginCalls::gfxDevice->blitRect(m_cDevice, { dest.x, dest.y }, (wg_rectSPX*) &src );
     }
 
     //____ flipBlit() _________________________________________________________
 
     void PluginGfxDevice::flipBlit(CoordSPX dest, GfxFlip flip )
     {
-        PluginBase::gfxDevice->flipBlit(m_cDevice, { dest.x, dest.y }, (wg_gfxFlip) flip);
+        PluginCalls::gfxDevice->flipBlit(m_cDevice, { dest.x, dest.y }, (wg_gfxFlip) flip);
     }
 
     void PluginGfxDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip )
     {
-        PluginBase::gfxDevice->flipBlitRect(m_cDevice, { dest.x, dest.y }, (wg_rectSPX*)&src, (wg_gfxFlip)flip);
+        PluginCalls::gfxDevice->flipBlitRect(m_cDevice, { dest.x, dest.y }, (wg_rectSPX*)&src, (wg_gfxFlip)flip);
     }
 
     //____ stretchBlit() ______________________________________________________
 
     void PluginGfxDevice::stretchBlit(const RectSPX& dest)
     {
-        PluginBase::gfxDevice->stretchBlit(m_cDevice, (wg_rectSPX*) &dest);
+        PluginCalls::gfxDevice->stretchBlit(m_cDevice, (wg_rectSPX*) &dest);
     }
 
     void PluginGfxDevice::stretchBlit(const RectSPX& dest, const RectSPX& source)
     {
-        PluginBase::gfxDevice->stretchBlitRect(m_cDevice, (wg_rectSPX*)&dest, (wg_rectSPX*)&source);
+        PluginCalls::gfxDevice->stretchBlitRect(m_cDevice, (wg_rectSPX*)&dest, (wg_rectSPX*)&source);
     }
 
     //____ stretchFlipBlit() __________________________________________________
 
     void PluginGfxDevice::stretchFlipBlit(const RectSPX& dest, GfxFlip flip)
     {
-        PluginBase::gfxDevice->stretchFlipBlit(m_cDevice, (wg_rectSPX*)&dest, (wg_gfxFlip) flip);
+        PluginCalls::gfxDevice->stretchFlipBlit(m_cDevice, (wg_rectSPX*)&dest, (wg_gfxFlip) flip);
     }
 
     void PluginGfxDevice::stretchFlipBlit(const RectSPX& dest, const RectSPX& source, GfxFlip flip)
     {
-        PluginBase::gfxDevice->stretchFlipBlitRect(m_cDevice, (wg_rectSPX*)&dest, (wg_rectSPX*)&source, (wg_gfxFlip)flip );
+        PluginCalls::gfxDevice->stretchFlipBlitRect(m_cDevice, (wg_rectSPX*)&dest, (wg_rectSPX*)&source, (wg_gfxFlip)flip );
     }
 
 	//____ precisionBlit() _______________________________________________________
 
 	void PluginGfxDevice::precisionBlit(const RectSPX& dest, const RectF& srcSPX)
 	{
-        PluginBase::gfxDevice->precisionBlit(m_cDevice, (wg_rectSPX*)&dest, (wg_rectF*)&srcSPX);
+        PluginCalls::gfxDevice->precisionBlit(m_cDevice, (wg_rectSPX*)&dest, (wg_rectF*)&srcSPX);
 	}
 
 	//____ transformBlit() _______________________________________________________
 
 	void PluginGfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
 	{
-        PluginBase::gfxDevice->transformBlit(m_cDevice, (wg_rectSPX*)&dest, {srcSPX.x,srcSPX.y}, transform);
+        PluginCalls::gfxDevice->transformBlit(m_cDevice, (wg_rectSPX*)&dest, {srcSPX.x,srcSPX.y}, transform);
 	}
 
     //____ rotScaleBlit() _____________________________________________________
     void PluginGfxDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
     {
-        PluginBase::gfxDevice->rotScaleBlit(m_cDevice, (wg_rectSPX*)&dest, rotationDegrees, scale, { srcCenter.x, srcCenter.y }, { destCenter.x, destCenter.y });
+        PluginCalls::gfxDevice->rotScaleBlit(m_cDevice, (wg_rectSPX*)&dest, rotationDegrees, scale, { srcCenter.x, srcCenter.y }, { destCenter.x, destCenter.y });
     }
 
     //____ tile() _____________________________________________________________
 
     void PluginGfxDevice::tile(const RectSPX& dest, CoordSPX shift)
     {
-        PluginBase::gfxDevice->tile(m_cDevice, (wg_rectSPX*)&dest, { shift.x,shift.y });
+        PluginCalls::gfxDevice->tile(m_cDevice, (wg_rectSPX*)&dest, { shift.x,shift.y });
     }
 
     //____ flipTile() _________________________________________________________
 
     void PluginGfxDevice::flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift)
     {
-        PluginBase::gfxDevice->flipTile(m_cDevice, (wg_rectSPX*)&dest, (wg_gfxFlip) flip, { shift.x, shift.y });
+        PluginCalls::gfxDevice->flipTile(m_cDevice, (wg_rectSPX*)&dest, (wg_gfxFlip) flip, { shift.x, shift.y });
     }
 
     //____ scaleTile() ________________________________________________________
 
     void PluginGfxDevice::scaleTile(const RectSPX& dest, float scale, CoordSPX shift)
     {
-        PluginBase::gfxDevice->scaleTile(m_cDevice, (wg_rectSPX*)&dest, scale, { shift.x,shift.y });
+        PluginCalls::gfxDevice->scaleTile(m_cDevice, (wg_rectSPX*)&dest, scale, { shift.x,shift.y });
     }
 
     //____ scaleFlipTile() ____________________________________________________
 
     void PluginGfxDevice::scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift)
     {
-        PluginBase::gfxDevice->scaleFlipTile(m_cDevice, (wg_rectSPX*)&dest, scale, (wg_gfxFlip) flip, { shift.x, shift.y });
+        PluginCalls::gfxDevice->scaleFlipTile(m_cDevice, (wg_rectSPX*)&dest, scale, (wg_gfxFlip) flip, { shift.x, shift.y });
     }
 
     //____ drawWave() _________________________________________________________
 
     void PluginGfxDevice::drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill)
     {
-        PluginBase::gfxDevice->drawWave(m_cDevice, (wg_rectSPX*)&dest, (wg_waveLine*)pTopBorder, (wg_waveLine*)pBottomBorder, *(wg_color*)&frontFill, *(wg_color*)&backFill);
+        PluginCalls::gfxDevice->drawWave(m_cDevice, (wg_rectSPX*)&dest, (wg_waveLine*)pTopBorder, (wg_waveLine*)pBottomBorder, *(wg_color*)&frontFill, *(wg_color*)&backFill);
     }
 
     //____ flipDrawWave() _____________________________________________________
 
     void PluginGfxDevice::flipDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip)
     {
-        PluginBase::gfxDevice->flipDrawWave(m_cDevice, (wg_rectSPX*)&dest, (wg_waveLine*)pTopBorder, (wg_waveLine*)pBottomBorder, *(wg_color*)&frontFill, *(wg_color*)&backFill, (wg_gfxFlip) flip );
+        PluginCalls::gfxDevice->flipDrawWave(m_cDevice, (wg_rectSPX*)&dest, (wg_waveLine*)pTopBorder, (wg_waveLine*)pBottomBorder, *(wg_color*)&frontFill, *(wg_color*)&backFill, (wg_gfxFlip) flip );
     }
 
     //____ _drawElipse() ______________________________________________________
 
     void PluginGfxDevice::drawElipse(const RectSPX& canvas, spx thickness, HiColor color, spx outlineThickness, HiColor outlineColor )
     {
-        PluginBase::gfxDevice->drawElipse(m_cDevice,(wg_rectSPX*)&canvas, thickness, *(wg_color*)&color, outlineThickness, *(wg_color*)&outlineColor);
+        PluginCalls::gfxDevice->drawElipse(m_cDevice,(wg_rectSPX*)&canvas, thickness, *(wg_color*)&color, outlineThickness, *(wg_color*)&outlineColor);
     }
 
     //____ drawPieChart() _____________________________________________________
 
     void PluginGfxDevice::drawPieChart(const RectSPX& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
     {
-        PluginBase::gfxDevice->drawPieChart(m_cDevice, (wg_rectSPX*)&canvas, start, nSlices, pSliceSizes, (const wg_color*)pSliceColors, hubSize, *(wg_color*)&hubColor, *(wg_color*)&backColor, bRectangular);
+        PluginCalls::gfxDevice->drawPieChart(m_cDevice, (wg_rectSPX*)&canvas, start, nSlices, pSliceSizes, (const wg_color*)pSliceColors, hubSize, *(wg_color*)&hubColor, *(wg_color*)&backColor, bRectangular);
     }
 
     //____ drawSegments() _____________________________________________________
 
     void PluginGfxDevice::drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
     {
-        PluginBase::gfxDevice->drawSegments(m_cDevice, (wg_rectSPX*)&dest, nSegments, (const wg_color*)pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, (wg_tintMode)tintMode);
+        PluginCalls::gfxDevice->drawSegments(m_cDevice, (wg_rectSPX*)&dest, nSegments, (const wg_color*)pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, (wg_tintMode)tintMode);
     }
 
     //____ flipDrawSegments() _________________________________________________
 
     void PluginGfxDevice::flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
     {
-        PluginBase::gfxDevice->flipDrawSegments(m_cDevice, (wg_rectSPX*)&dest, nSegments, (const wg_color*)pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, (wg_gfxFlip) flip, (wg_tintMode)tintMode);
+        PluginCalls::gfxDevice->flipDrawSegments(m_cDevice, (wg_rectSPX*)&dest, nSegments, (const wg_color*)pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, (wg_gfxFlip) flip, (wg_tintMode)tintMode);
     }
 
     //.____ blitNinePatch() ___________________________________________________
 
     void PluginGfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)
     {
-        PluginBase::gfxDevice->blitNinePatch(m_cDevice, (wg_rectSPX*)&dstRect, (wg_borderSPX*)&dstFrame, (wg_ninePatch*)&patch, scale);
+        PluginCalls::gfxDevice->blitNinePatch(m_cDevice, (wg_rectSPX*)&dstRect, (wg_borderSPX*)&dstFrame, (wg_ninePatch*)&patch, scale);
     }
 
     //.____ _beginCanvasUpdate() ______________________________________________
@@ -504,11 +504,11 @@ namespace wg
 
 			if (canvasRef != CanvasRef::None)
 			{
-                PluginBase::gfxDevice->beginCanvasUpdateWithRef(m_cDevice, (wg_canvasRef)canvasRef, nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
+                PluginCalls::gfxDevice->beginCanvasUpdateWithRef(m_cDevice, (wg_canvasRef)canvasRef, nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
 			}
 			else
 			{
-                PluginBase::gfxDevice->beginCanvasUpdateWithSurface(m_cDevice, static_cast<PluginSurface*>(pCanvasSurface)->cObject(), nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
+                PluginCalls::gfxDevice->beginCanvasUpdateWithSurface(m_cDevice, static_cast<PluginSurface*>(pCanvasSurface)->cObject(), nUpdateRects, (wg_rectSPX*)pUpdateRects, cAPILayers, startLayer);
 			}
 			return true;
 		}

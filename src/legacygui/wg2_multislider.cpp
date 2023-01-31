@@ -1010,12 +1010,12 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			m_state.setPressed(true);
 
-            if(m_overrideModifier != WG2_MODKEY_NONE && (pEv->ModKeys() == m_overrideModifier))
+            if(m_overrideModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_overrideModifier))
                 break;
 
             GrabFocus();
 
-            bool bStaticMode = (m_staticModifier != WG2_MODKEY_NONE && (pEv->ModKeys() == m_staticModifier));
+            bool bStaticMode = (m_staticModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_staticModifier));
 
 
 			if (bHandlePressed)
@@ -1107,7 +1107,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 		{
 			const WgEvent::MouseButtonDrag * pEv = static_cast<const WgEvent::MouseButtonDrag*>(pEvent);
 
-            if( pEv->Button() != 1 || !m_state.isEnabled() || (m_overrideModifier != WG2_MODKEY_NONE && (pEv->ModKeys() == m_overrideModifier) ) )
+            if( pEv->Button() != 1 || !m_state.isEnabled() || (m_overrideModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_overrideModifier) ) )
                 break;
 
 			// If a modKey that we don't support is pressed, we ignore all modkeys.
@@ -1119,7 +1119,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
             // StaticMode is handled separately. Don't update anything, but call the callback if present.
             // Currently no support for axis-lock, finetune or sending message.
 
-            if (m_staticModifier != WG2_MODKEY_NONE && (pEv->ModKeys() == m_staticModifier) )
+            if (m_staticModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_staticModifier) )
             {
                 if (m_selectedSliderHandle >= 0)
                 {

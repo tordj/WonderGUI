@@ -20,38 +20,39 @@
 
 =========================================================================*/
 
-#ifndef	WG_PLUGINBASE_DOT_H
-#define	WG_PLUGINBASE_DOT_H
+#ifndef	WG_PLUGINCALLS_DOT_H
+#define	WG_PLUGINCALLS_DOT_H
 #pragma once
 
 #include <wg_plugininterface.h>
-#include <wg_pluginhostbridge.h>
-#include <wg_base.h>
 
 namespace wg
 {
 
-	class PluginBase : public Base
+	class PluginCalls
 	{
 	public:
 
-		//.____ Creation __________________________________________
-
-		static bool init( wg_plugin_interface* pInterface, void * pRealHostBridge );
-		static bool exit();
+		//.____ Internal __________________________________________
 		
-		//.____ Misc ________________________________________________
+		static wg_bitmapcache_calls*	bitmapCache;
+		static wg_bitmapfont_calls*		bitmapFont;
+		static wg_canvaslayers_calls*	canvasLayers;
+		static wg_font_calls*			font;
+		static wg_object_calls*			object;
+		static wg_gfxdevice_calls*		gfxDevice;
+		static wg_streambuffer_calls*	streamBuffer;
+		static wg_streamplayer_calls*	streamPlayer;
+		static wg_streampump_calls*		streamPump;
+		static wg_streamreader_calls*	streamReader;
+		static wg_surface_calls*		surface;
+		static wg_surfacefactory_calls* surfaceFactory;
+		static wg_hostbridge_calls*		hostBridge;
+		static wg_plugincapsule_calls*	pluginCapsule;
 
-		const static TypeInfo	TYPEINFO;
-
-		static bool			isInitialized() { return s_pluginInitCounter > 0; }
-
-	private:
-		static	int				s_pluginInitCounter;
-
-		static	PluginHostBridge *	s_pHostBridge;
+		static bool _init(wg_plugin_interface* pCallsCollection);
 	};
 
 
 } // namespace wg
-#endif //WG_PLUGINBASE_DOT_H
+#endif //WG_PLUGINCALLS_DOT_H

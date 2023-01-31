@@ -291,7 +291,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 	if( m_bFocused && (type == WG_EVENT_MOUSEBUTTON_PRESS || type == WG_EVENT_MOUSEBUTTON_DRAG) && ((const WgEvent::MouseButtonEvent*)(pEvent))->Button() == 1 )
 	{
 
-		if( IsSelectable() && (modKeys & WG2_MODKEY_SHIFT) )
+		if( IsSelectable() && (modKeys & WG_MODKEY_SHIFT) )
 		{
 			m_pText->setSelectionMode(true);
 		}
@@ -303,7 +303,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		m_pText->CursorGotoCoord( pEvent->PointerPixelPos(), textCanvas );
 		_bringCursorInView();
 
-		if(IsSelectable() && type == WG_EVENT_MOUSEBUTTON_PRESS && !(modKeys & WG2_MODKEY_SHIFT))
+		if(IsSelectable() && type == WG_EVENT_MOUSEBUTTON_PRESS && !(modKeys & WG_MODKEY_SHIFT))
 		{
 			m_pText->clearSelection();
 			m_pText->setSelectionMode(true);
@@ -370,7 +370,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		switch( static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode() )
 		{
 			case WG_KEY_LEFT:
-				if( modKeys & WG2_MODKEY_SHIFT )
+				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
 				if( modKeys & modKeyMap.stepWord )
@@ -383,7 +383,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				_bringCursorInView();
 				break;
 			case WG_KEY_RIGHT:
-				if( modKeys & WG2_MODKEY_SHIFT )
+				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
 				if( modKeys & modKeyMap.stepWord )
@@ -397,7 +397,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				break;
 
 			case WG_KEY_UP:
-				if( modKeys & WG2_MODKEY_SHIFT )
+				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
 				if( modKeys & modKeyMap.beginEndText )
@@ -409,7 +409,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				break;
 
 			case WG_KEY_DOWN:
-				if( modKeys & WG2_MODKEY_SHIFT )
+				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
 				if( modKeys & modKeyMap.beginEndText )
@@ -447,10 +447,10 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				break;
 
 			case WG_KEY_HOME:
-				if( modKeys & WG2_MODKEY_SHIFT )
+				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				if( modKeys & WG2_MODKEY_CTRL )
+				if( modKeys & WG_MODKEY_CTRL )
 					m_pText->goBOF();
 				else
 					m_pText->goBOL();
@@ -459,10 +459,10 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				break;
 
 			case WG_KEY_END:
-				if( modKeys & WG2_MODKEY_SHIFT )
+				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				if( modKeys & WG2_MODKEY_CTRL )
+				if( modKeys & WG_MODKEY_CTRL )
 					m_pText->goEOF();
 				else
 					m_pText->goEOL();

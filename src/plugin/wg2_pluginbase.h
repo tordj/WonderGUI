@@ -20,38 +20,34 @@
 
 =========================================================================*/
 
-#ifndef	WG_PLUGINBASE_DOT_H
-#define	WG_PLUGINBASE_DOT_H
+#ifndef	WG2_PLUGINBASE_DOT_H
+#define	WG2_PLUGINBASE_DOT_H
 #pragma once
 
 #include <wg_plugininterface.h>
 #include <wg_pluginhostbridge.h>
-#include <wg_base.h>
+#include <wg2_base.h>
 
-namespace wg
+
+class WgPluginBase : public WgBase
 {
+public:
 
-	class PluginBase : public Base
-	{
-	public:
+	//.____ Creation __________________________________________
 
-		//.____ Creation __________________________________________
+	static bool init( wg_plugin_interface* pInterface, void * pRealHostBridge );
+	static bool exit();
+	
+	//.____ Misc ________________________________________________
 
-		static bool init( wg_plugin_interface* pInterface, void * pRealHostBridge );
-		static bool exit();
-		
-		//.____ Misc ________________________________________________
+	static bool			isInitialized() { return s_pluginInitCounter > 0; }
+	
+private:
+	static	int				s_pluginInitCounter;
 
-		const static TypeInfo	TYPEINFO;
-
-		static bool			isInitialized() { return s_pluginInitCounter > 0; }
-
-	private:
-		static	int				s_pluginInitCounter;
-
-		static	PluginHostBridge *	s_pHostBridge;
-	};
+	static	wg::PluginHostBridge *	s_pHostBridge;
+};
 
 
-} // namespace wg
-#endif //WG_PLUGINBASE_DOT_H
+
+#endif //WG2_PLUGINBASE_DOT_H

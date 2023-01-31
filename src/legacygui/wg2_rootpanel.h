@@ -33,6 +33,7 @@
 #	include <wg2_geo.h>
 #endif
 
+#include <wg2_root.h>
 #include <wg2_patches.h>
 #include <wg_skin.h>
 #include <wg_gfxdevice.h>
@@ -40,7 +41,7 @@
 
 class WgWidget;
 
-class WgRootPanel : public WgWidgetHolder
+class WgRootPanel : public WgWidgetHolder, public WgRoot
 {
 	friend class WgWidget;
 
@@ -61,7 +62,7 @@ public:
     inline const wg::CanvasInfo&   CanvasInfo() const { return m_canvas; }
     inline wg::SizeI        CanvasSize() const { return m_canvas.size; }
     
-	inline WgEventHandler *	EventHandler() const { return m_pEventHandler; }
+	inline WgEventHandler *	EventHandler() const override { return m_pEventHandler; }
 
 	bool					SetPixelGeo( const WgRect& geo );
 	WgRect					PixelGeo() const;
@@ -75,7 +76,7 @@ public:
 	WgWidget * 				ReleaseChild();
 
 	void					SetScale( int scale );
-	int						Scale() const { return m_scale; }
+	int						Scale() const override { return m_scale; }
 
 	// Freezes RootPanels geo and scale.
 	// Calls to SetPixelGeo() and SetScale() will just store value
@@ -86,16 +87,16 @@ public:
 
 	// Inherited from WgWidgetHolder
 
-	bool					DeleteChild( WgWidget * pWidget );
-	WgWidget *				ReleaseChild( WgWidget * pWidget );
+	bool					DeleteChild( WgWidget * pWidget ) override;
+	WgWidget *				ReleaseChild( WgWidget * pWidget ) override;
 
-	bool					DeleteAllChildren();
-	bool					ReleaseAllChildren();
+	bool					DeleteAllChildren() override;
+	bool					ReleaseAllChildren() override;
 
-	bool					IsRoot() const { return true; }
+	bool					IsRoot() const override { return true; }
 
-	WgRootPanel *			CastToRoot() { return this; }
-	const WgRootPanel *		CastToRoot() const { return this; }
+	WgRoot *				CastToRoot() override { return this; }
+	const WgRoot *			CastToRoot() const override { return this; }
 
 
 	inline int				NbDirtyRects() const { return m_dirtyPatches.size(); }
@@ -117,7 +118,7 @@ public:
 	inline void	AddDirtyPatch( const WgRect& rect ) { m_dirtyPatches.add( rect ); }
     inline void ClearDirtyPatches( const WgRect& rect ) { m_dirtyPatches.clear(); }
 
-	WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode );
+	WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode ) override;
 
 protected:
 	class Hook : public WgHook
@@ -152,16 +153,16 @@ protected:
 		WgRootPanel *		m_pRoot;
 	};
 
-	inline void         _addPreRenderCall(WgWidget * pWidget) { m_preRenderCalls.push_back(pWidget); }
+	inline void         _addPreRenderCall(WgWidget * pWidget) override { m_preRenderCalls.push_back(pWidget); }
 
-	WgHook*				_firstHook() const { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
-	WgHook*				_lastHook() const { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*				_firstHook() const override { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*				_lastHook() const override { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
 
-	bool 				_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );
-	bool 				_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );
+	bool 				_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting ) override;
+	bool 				_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing ) override;
 
-	void                _inViewRequested( WgHook * pChild );
-	void                _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
+	void                _inViewRequested( WgHook * pChild ) override;
+	void                _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea ) override;
 
 	WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
 	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.

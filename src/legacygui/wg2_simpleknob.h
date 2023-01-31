@@ -47,7 +47,7 @@ public:
 
 	void    SetValue( float value );
 	float   GetValue() { return m_fValue; }
-	void    SetColor( WgColor color ) { if( m_lineColor != color ) {m_lineColor = color; _requestRender();} };
+	void    SetColor( WgColor color ) { if( m_lineColor != wg::HiColor(color) ) {m_lineColor = color; _requestRender();} };
 
 	WgSize	PreferredPixelSize() const;
 	void    SetPreferredPixelSize(WgSize size);

@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_pluginbase.h>
+#include <wg_plugincalls.h>
 #include <wg_pluginbitmapfont.h>
 #include <wg_pluginsurface.h>
 
@@ -36,10 +36,10 @@ namespace wg
 
 	PluginBitmapFont::PluginBitmapFont( wg_obj cBitmapFont ) : PluginFont(cBitmapFont)
 	{
-		wg_obj surface = PluginBase::bitmapFont->getBitmapFontSurface(cBitmapFont);
+		wg_obj surface = PluginCalls::bitmapFont->getBitmapFontSurface(cBitmapFont);
 		
 		// PluginBitmapFont doesn't support backup fonts.
-		assert( PluginBase::font->getBackupFont(cBitmapFont) == 0 );
+		assert( PluginCalls::font->getBackupFont(cBitmapFont) == 0 );
 		
 		m_pSurface = PluginSurface::create(surface);
 	}
@@ -63,7 +63,7 @@ namespace wg
 	{
 		wg_glyph	cGlyph;
 
-		PluginBase::font->getGlyphWithBitmap(m_cFont, ch, &cGlyph);
+		PluginCalls::font->getGlyphWithBitmap(m_cFont, ch, &cGlyph);
 
 		if (cGlyph.advance != 0)
 		{

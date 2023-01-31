@@ -212,7 +212,7 @@ bool WgContainer::_descendantPos(WgWidget * pDescendant, WgCoord& pos)
 
 //____ _onNewRoot() ___________________________________________________________
 
-void WgContainer::_onNewRoot( WgRootPanel * pRoot )
+void WgContainer::_onNewRoot( WgRoot * pRoot )
 {
 	for( WgHook * p = FirstHook() ; p != 0 ; p = p->Next() )
 		p->Widget()->_onNewRoot( pRoot );

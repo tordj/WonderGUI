@@ -23,7 +23,7 @@
 #include <wg_base.h>
 
 #include <wg_pluginbitmapcache.h>
-#include <wg_pluginbase.h>
+#include <wg_plugincalls.h>
 
 #include <cassert>
 #include <algorithm>
@@ -40,11 +40,11 @@ namespace wg
 	PluginBitmapCache::PluginBitmapCache( wg_obj bitmapCache )
 	{
 		m_cCache = bitmapCache;
-		PluginBase::object->retain(bitmapCache);
+		PluginCalls::object->retain(bitmapCache);
 
 		// Retrieve and wrap existing cache surfaces
 
-		int nbSurfaces = PluginBase::bitmapCache->getNbCacheSurfaces(bitmapCache);
+		int nbSurfaces = PluginCalls::bitmapCache->getNbCacheSurfaces(bitmapCache);
 
 		if (nbSurfaces > 0)
 		{
@@ -53,17 +53,17 @@ namespace wg
 			int mem = nbSurfaces * sizeof(wg_obj);
 
 			wg_obj * pSurfaces = (wg_obj*) Base::memStackAlloc(mem);
-			PluginBase::bitmapCache->getCacheSurfaces(bitmapCache, nbSurfaces, pSurfaces);
+			PluginCalls::bitmapCache->getCacheSurfaces(bitmapCache, nbSurfaces, pSurfaces);
 
 
 			int highestNumber = 0;
 
-			if (PluginBase::surface->getSurfaceIdentity(pSurfaces[0]) == 0)
+			if (PluginCalls::surface->getSurfaceIdentity(pSurfaces[0]) == 0)
 			{
 				// We are first PluginBitmapCache, we start numbering existing ones
 
 				for (int i = 0; i < nbSurfaces; i++)
-					PluginBase::surface->setSurfaceIdentity(pSurfaces[i], i + 1);
+					PluginCalls::surface->setSurfaceIdentity(pSurfaces[i], i + 1);
 
 				highestNumber = nbSurfaces;
 			}
@@ -72,7 +72,7 @@ namespace wg
 				// Already numbered, we need to find highest number for stack size.
 
 				for (int i = 0; i < nbSurfaces; i++)
-					highestNumber = std::max( PluginBase::surface->getSurfaceIdentity(pSurfaces[i]), highestNumber);
+					highestNumber = std::max( PluginCalls::surface->getSurfaceIdentity(pSurfaces[i]), highestNumber);
 			}
 
 			// Resize vector, create and insert wrappers
@@ -83,7 +83,7 @@ namespace wg
 			{
 				wg_obj obj = pSurfaces[i];
 
-				int ofs = PluginBase::surface->getSurfaceIdentity(obj) - 1;
+				int ofs = PluginCalls::surface->getSurfaceIdentity(obj) - 1;
 				m_surfaces[ofs] = PluginSurface::create(obj);
 			}
 
@@ -106,16 +106,16 @@ namespace wg
 		bp.clearFunc = [](void* pData, int data) { ((PluginBitmapCache*)pData)->_cleared(); };
 		bp.clearPtr = this;
 
-		m_listenerId = PluginBase::bitmapCache->addCacheListener(bitmapCache, bp);
+		m_listenerId = PluginCalls::bitmapCache->addCacheListener(bitmapCache, bp);
 	}
 
 	//____ Destructor _____________________________________________________________
 
 	PluginBitmapCache::~PluginBitmapCache()
 	{
-		PluginBase::bitmapCache->removeCacheListener(m_cCache,m_listenerId);
+		PluginCalls::bitmapCache->removeCacheListener(m_cCache,m_listenerId);
 
-		PluginBase::object->release(m_cCache);
+		PluginCalls::object->release(m_cCache);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -129,28 +129,28 @@ namespace wg
 
 	void PluginBitmapCache::setLimit(int maxBytes)
 	{
-		PluginBase::bitmapCache->setCacheLimit(m_cCache, maxBytes);
+		PluginCalls::bitmapCache->setCacheLimit(m_cCache, maxBytes);
 	}
 
 	//____ limit() ____________________________________________________________
 
 	int PluginBitmapCache::limit() const
 	{
-		return PluginBase::bitmapCache->cacheLimit(m_cCache);
+		return PluginCalls::bitmapCache->cacheLimit(m_cCache);
 	}
 
 	//____ size() _____________________________________________________________
 
 	int PluginBitmapCache::size() const
 	{
-		return PluginBase::bitmapCache->cacheSize(m_cCache);
+		return PluginCalls::bitmapCache->cacheSize(m_cCache);
 	}
 
 	//____ clear() _______________________________________________________________
 
 	void PluginBitmapCache::clear()
 	{
-		PluginBase::bitmapCache->clearCache(m_cCache);
+		PluginCalls::bitmapCache->clearCache(m_cCache);
 	}
 
 	//____ addListener() ______________________________________________________
@@ -176,9 +176,9 @@ namespace wg
 
 	std::tuple<Surface_p, CoordI> PluginBitmapCache::getCacheSlot(SizeI size)
 	{
-		auto slot = PluginBase::bitmapCache->getCacheSlot(m_cCache, { size.w,size.h });
+		auto slot = PluginCalls::bitmapCache->getCacheSlot(m_cCache, { size.w,size.h });
 
-		int ofs = PluginBase::surface->getSurfaceIdentity(slot.surface) - 1;
+		int ofs = PluginCalls::surface->getSurfaceIdentity(slot.surface) - 1;
 
 		return std::make_tuple(m_surfaces[ofs], CoordI( slot.coord.x, slot.coord.y ) );
 	}
@@ -202,7 +202,7 @@ namespace wg
 
 	PluginSurface* PluginBitmapCache::wrapperSurface(wg_obj surfaceObject)
 	{
-		int offset = PluginBase::surface->getSurfaceIdentity(surfaceObject) -1;
+		int offset = PluginCalls::surface->getSurfaceIdentity(surfaceObject) -1;
 
 		assert(offset > 0 && offset < m_surfaces.size() && m_surfaces[offset] != nullptr );
 
@@ -213,7 +213,7 @@ namespace wg
 
 	void PluginBitmapCache::_surfaceAdded(wg_obj surface)
 	{
-		int ofs = PluginBase::surface->getSurfaceIdentity(surface) - 1;
+		int ofs = PluginCalls::surface->getSurfaceIdentity(surface) - 1;
 		if (ofs < 0)
 		{
 			// We are the first PluginBitmapCache receiving the callback. Let's decide and offset.
@@ -226,7 +226,7 @@ namespace wg
 				ofs++;
 			}
 
-			PluginBase::surface->setSurfaceIdentity(surface, ofs + 1);
+			PluginCalls::surface->setSurfaceIdentity(surface, ofs + 1);
 		}
 
 		if (ofs >= m_surfaces.size())
@@ -241,7 +241,7 @@ namespace wg
 	{
 		for (int i = 0; i < nSurfaces; i++)
 		{
-			int ofs = PluginBase::surface->getSurfaceIdentity(pSurfaces[i]) - 1;
+			int ofs = PluginCalls::surface->getSurfaceIdentity(pSurfaces[i]) - 1;
 			m_surfaces[ofs] = nullptr;
 		}
 	}

@@ -41,7 +41,7 @@
 
 #include <wg_chain.h>
 
-class WgRootPanel;
+class WgRoot;
 class WgPanel;
 
 class WgEventListener
@@ -55,10 +55,10 @@ public:
 
 struct WgModKeyMap
 {
-	WgModifierKeys       stepWord        = WG2_MODKEY_CTRL;
-	WgModifierKeys       beginEndLine    = WG2_MODKEY_NONE;
-	WgModifierKeys       beginEndText    = WG2_MODKEY_NONE;
-//    WgModifierKeys       pageUpDown      = WG2_MODKEY_NONE;
+	WgModifierKeys       stepWord        = WG_MODKEY_CTRL;
+	WgModifierKeys       beginEndLine    = WG_MODKEY_NONE;
+	WgModifierKeys       beginEndText    = WG_MODKEY_NONE;
+//    WgModifierKeys       pageUpDown      = WG_MODKEY_NONE;
 };
 
 
@@ -67,7 +67,7 @@ class WgEventHandler
 friend class WgWidget;
 
 public:
-	WgEventHandler( WgRootPanel * pRoot );
+	WgEventHandler( WgRoot * pRoot );
 	~WgEventHandler();
 
 	bool	QueueEvent( WgEvent::Event * pEvent );
@@ -198,7 +198,7 @@ private:
 
 	//
 
-	WgRootPanel *		m_pRoot;
+	WgRoot *		m_pRoot;
 
 	std::deque<WgEvent::Event*>				m_eventQueue;
 	bool									m_bIsProcessing;	// Set when we are inside ProcessEvents().
@@ -226,13 +226,13 @@ private:
     
 	// Current button states
 
-	bool						m_bButtonPressed[WG2_MAX_BUTTONS+1];
+	bool						m_bButtonPressed[WG_MAX_BUTTONS+1];
 
-	WgEvent::MouseButtonPress *	m_pLatestPressEvents[WG2_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
-	WgEvent::MouseButtonRelease *	m_pLatestReleaseEvents[WG2_MAX_BUTTONS+1];	// Saved info for the last time each button was released.
+	WgEvent::MouseButtonPress *	m_pLatestPressEvents[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
+	WgEvent::MouseButtonRelease *	m_pLatestReleaseEvents[WG_MAX_BUTTONS+1];	// Saved info for the last time each button was released.
 
-	WgWidgetWeakPtr				m_latestPressWidgets[WG2_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
-	WgWidgetWeakPtr				m_previousPressWidgets[WG2_MAX_BUTTONS+1];	// Widget that received the second latest press, for each button,
+	WgWidgetWeakPtr				m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
+	WgWidgetWeakPtr				m_previousPressWidgets[WG_MAX_BUTTONS+1];	// Widget that received the second latest press, for each button,
 																			// used for double-click handling.
     WgWidgetWeakPtr             m_pWidgetLockedPointer;
     

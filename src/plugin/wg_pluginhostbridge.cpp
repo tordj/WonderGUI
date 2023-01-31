@@ -22,7 +22,7 @@
 
 
 #include <wg_pluginhostbridge.h>
-#include <wg_pluginbase.h>
+#include <wg_plugincalls.h>
 
 namespace wg
 {
@@ -31,14 +31,14 @@ namespace wg
 
 	bool PluginHostBridge::hidePointer()
 	{
-		return PluginBase::hostBridge->hidePointer(m_pHostBridge);
+		return PluginCalls::hostBridge->hidePointer(m_pHostBridge);
 	}
 
 	//____ showPointer() __________________________________________________________
 
 	bool PluginHostBridge::showPointer()
 	{
-		return PluginBase::hostBridge->showPointer(m_pHostBridge);
+		return PluginCalls::hostBridge->showPointer(m_pHostBridge);
 	}
 
 	//____ getClipboardText() _____________________________________________________
@@ -47,7 +47,7 @@ namespace wg
 	{
 		char temp[4096];
 		
-		int len = PluginBase::hostBridge->getClipboardText(m_pHostBridge, 4096, temp );
+		int len = PluginCalls::hostBridge->getClipboardText(m_pHostBridge, 4096, temp );
 		return temp;
 	}
 
@@ -55,7 +55,7 @@ namespace wg
 
 	bool PluginHostBridge::setClipboardText(const std::string& text)
 	{
-		return PluginBase::hostBridge->setClipboardText(m_pHostBridge,text.c_str());
+		return PluginCalls::hostBridge->setClipboardText(m_pHostBridge,text.c_str());
 	}
 
 } // namespace wg

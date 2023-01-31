@@ -145,8 +145,8 @@ void WgWidget::_onNewHook( WgHook * pHook )
 {
 	if( pHook )
 	{
-		WgRootPanel * pNewRoot = pHook->Root();
-		WgRootPanel * pOldRoot = m_pHook ? m_pHook->Root() : 0;
+		WgRoot * pNewRoot = pHook->Root();
+		WgRoot * pOldRoot = m_pHook ? m_pHook->Root() : 0;
 
 
 		if( pNewRoot && pNewRoot != pOldRoot )
@@ -159,7 +159,7 @@ void WgWidget::_onNewHook( WgHook * pHook )
 
 //____ _onNewRoot() ___________________________________________________________
 
-void WgWidget::_onNewRoot( WgRootPanel * pRoot )
+void WgWidget::_onNewRoot( WgRoot * pRoot )
 {
 	if( m_bReceiveTick && pRoot )
 		pRoot->EventHandler()->_addTickReceiver(this);
@@ -175,7 +175,7 @@ void WgWidget::_startReceiveTicks()
 
 		if( m_pHook )
 		{
-			WgRootPanel * pRoot = m_pHook->Root();
+			WgRoot * pRoot = m_pHook->Root();
 			if( pRoot )
 				pRoot->EventHandler()->_addTickReceiver(this);
 		}
@@ -193,7 +193,7 @@ void WgWidget::_stopReceiveTicks()
 
 bool WgWidget::LockPointer()
 {
-    WgRootPanel * pRoot = m_pHook->Root();
+    WgRoot * pRoot = m_pHook->Root();
     if( pRoot )
         m_bPointerLocked = pRoot->EventHandler()->_widgetLockPointer(this);
     
@@ -204,7 +204,7 @@ bool WgWidget::LockPointer()
 
 void WgWidget::ReleasePointer()
 {
-    WgRootPanel * pRoot = m_pHook->Root();
+    WgRoot * pRoot = m_pHook->Root();
     if( pRoot )
         pRoot->EventHandler()->_widgetReleasePointer(this);
     
@@ -348,7 +348,7 @@ WgEventHandler * WgWidget::_eventHandler() const
 {
 	if( m_pHook )
 	{
-		WgRootPanel * pRoot = m_pHook->Root();
+		WgRoot * pRoot = m_pHook->Root();
 		if( pRoot )
 			return pRoot->EventHandler();
 	}
@@ -380,7 +380,7 @@ WgSize WgWidget::MinPixelSize() const
 
 WgSize WgWidget::MaxPixelSize() const
 {
-	return WgSize(2<<24,2<<24);
+	return WgSize(2<<20,2<<20);
 }
 
 //____ SetMarked() ____________________________________________________________
@@ -515,7 +515,7 @@ void WgWidget::_queueEvent( WgEvent::Event * pEvent )
 {
 	if( m_pHook )
 	{
-		WgRootPanel * pRoot = m_pHook->Root();
+		WgRoot * pRoot = m_pHook->Root();
 		if( pRoot )
 		{
 			pRoot->EventHandler()->QueueEvent(pEvent);
@@ -532,7 +532,7 @@ bool WgWidget::_requestPreRenderCall()
 {
 	if( m_pHook )
 	{
-		WgRootPanel * pRoot = m_pHook->Root();
+		WgRoot * pRoot = m_pHook->Root();
 		if( pRoot )
 		{
 			pRoot->_addPreRenderCall(this);

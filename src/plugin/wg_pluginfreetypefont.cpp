@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_pluginbase.h>
+#include <wg_plugincalls.h>
 #include <wg_pluginfreetypefont.h>
 #include <wg_pluginsurface.h>
 
@@ -63,7 +63,7 @@ namespace wg
 	{
 		wg_glyph	cGlyph;
 
-		PluginBase::font->getGlyphWithBitmap(m_cFont, ch, &cGlyph);
+		PluginCalls::font->getGlyphWithBitmap(m_cFont, ch, &cGlyph);
 
 		if (cGlyph.advance != 0)
 		{

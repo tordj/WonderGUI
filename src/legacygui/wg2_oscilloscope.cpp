@@ -162,7 +162,7 @@ void WgOscilloscope::SetHGridLines( int nLines, float pLines[] )
 
 void WgOscilloscope::SetLineColor( WgColor color )
 {
-	if( color != m_lineColor )
+	if( wg::HiColor(color) != m_lineColor )
 	{
 		m_lineColor = color;
 		_requestRender();

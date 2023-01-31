@@ -106,7 +106,12 @@ typedef enum
 	WG_KEY_ALT,
 	WG_KEY_SUPER,
 
-	WG_KEY_UNMAPPED		// This one must always be last!
+	WG_KEY_UNMAPPED,
+	
+	// These two are only here for WG2 compatibility. Do not use!
+	
+	WG_KEY_MAC_CONTROL,	// Deprecated. Do not use!
+	WG_KEY_WIN_START	// Deprecated. Do not use!
 	
 	
 } wg_key;

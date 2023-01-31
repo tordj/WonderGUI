@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_pluginbase.h>
+#include <wg_plugincalls.h>
 #include <wg_pluginroot.h>
 #include <wg_plugininterface.h>
 #include <wg_plugingfxdevice.h>
@@ -83,7 +83,7 @@ namespace wg
 	{
 		m_pluginCapsule = myPluginCapsule;
 
-		PluginBase::pluginCapsule->connect(m_pluginCapsule, static_cast<Object*>(this), &m_interface);
+		PluginCalls::pluginCapsule->connect(m_pluginCapsule, static_cast<Object*>(this), &m_interface);
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -91,7 +91,7 @@ namespace wg
 	PluginRoot::~PluginRoot()
 	{
 		if (m_pluginCapsule)
-			PluginBase::pluginCapsule->disconnect(m_pluginCapsule);
+			PluginCalls::pluginCapsule->disconnect(m_pluginCapsule);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -124,7 +124,7 @@ namespace wg
 
 	void PluginRoot::addDirtyPatch(const RectSPX& rect)
 	{
-		PluginBase::pluginCapsule->requestRender(m_pluginCapsule, { rect.x,rect.y,rect.w,rect.h });
+		PluginCalls::pluginCapsule->requestRender(m_pluginCapsule, { rect.x,rect.y,rect.w,rect.h });
 	}
 
 	//____ addPreRenderCall() _________________________________________________
@@ -134,7 +134,7 @@ namespace wg
 		bool canPreRender;
 
 		if (m_preRenderCalls.empty())
-			canPreRender = PluginBase::pluginCapsule->requestPreRenderCall(m_pluginCapsule);
+			canPreRender = PluginCalls::pluginCapsule->requestPreRenderCall(m_pluginCapsule);
 		else
 			canPreRender = true;
 
@@ -223,8 +223,11 @@ namespace wg
 	void PluginRoot::_preRender()
 	{
 		for (auto& pWidget : m_preRenderCalls)
-			pWidget->_preRender();
-
+		{
+			if( pWidget )
+				pWidget->_preRender();
+		}
+		
 		m_preRenderCalls.clear();
 	}
 
@@ -235,7 +238,7 @@ namespace wg
 		if (slot.isEmpty())
 			return;
 
-		wg_obj hFactory = PluginBase::gfxDevice->surfaceFactory(device);
+		wg_obj hFactory = PluginCalls::gfxDevice->surfaceFactory(device);
 
 		auto pFactory = PluginSurfaceFactory::create(hFactory);
 		auto pDevice = PluginGfxDevice::create(device, pFactory);
@@ -425,23 +428,25 @@ namespace wg
 	void PluginRoot::_childRequestRender(StaticSlot* pSlot)
 	{
 		if (m_pluginCapsule)
-			PluginBase::pluginCapsule->requestRender(m_pluginCapsule, { 0,0,m_size.w,m_size.h });
+			PluginCalls::pluginCapsule->requestRender(m_pluginCapsule, { 0,0,m_size.w,m_size.h });
 	}
 
 	void PluginRoot::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)
 	{
 		if (m_pluginCapsule)
-			PluginBase::pluginCapsule->requestRender(m_pluginCapsule, { rect.x,rect.y,rect.w,rect.h });
+			PluginCalls::pluginCapsule->requestRender(m_pluginCapsule, { rect.x,rect.y,rect.w,rect.h });
 	}
 
 	//____ _childRequestResize() ______________________________________________
+
 	void PluginRoot::_childRequestResize(StaticSlot* pSlot)
 	{
 		if (m_pluginCapsule)
-			PluginBase::pluginCapsule->requestResize(m_pluginCapsule);
+			PluginCalls::pluginCapsule->requestResize(m_pluginCapsule);
 	}
 
-	//____ () ___________________________________________________
+	//____ _childRequestFocus() ___________________________________________________
+
 	bool PluginRoot::_childRequestFocus(StaticSlot* pSlot, Widget* pWidget)
 	{
 		if (!m_pluginCapsule)
@@ -461,7 +466,7 @@ namespace wg
 		}
 		else
 		{
-			bool result = (bool) PluginBase::pluginCapsule->requestFocus(m_pluginCapsule);
+			bool result = (bool) PluginCalls::pluginCapsule->requestFocus(m_pluginCapsule);
 			if( result )
 				m_pFocusedChild = pWidget;
 			
@@ -469,13 +474,14 @@ namespace wg
 		}
 	}
 
-	//____ () ___________________________________________________
+	//____ _childReleaseFocus() ___________________________________________________
+
 	bool PluginRoot::_childReleaseFocus(StaticSlot* pSlot, Widget* pWidget)
 	{
 		if (!m_pluginCapsule)
 			return false;
 
-		bool result = (bool) PluginBase::pluginCapsule->releaseFocus(m_pluginCapsule);
+		bool result = (bool) PluginCalls::pluginCapsule->releaseFocus(m_pluginCapsule);
 		
 		return result;
 	}
@@ -485,13 +491,13 @@ namespace wg
 	void PluginRoot::_childRequestInView(StaticSlot* pSlot)
 	{
 		if (m_pluginCapsule)
-			PluginBase::pluginCapsule->requestInView(m_pluginCapsule, { 0,0,m_size.w,m_size.h }, { 0,0,m_size.w,m_size.h } );
+			PluginCalls::pluginCapsule->requestInView(m_pluginCapsule, { 0,0,m_size.w,m_size.h }, { 0,0,m_size.w,m_size.h } );
 	}
 
 	void PluginRoot::_childRequestInView(StaticSlot* pSlot, const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea)
 	{
 		if (m_pluginCapsule)
-			PluginBase::pluginCapsule->requestInView(m_pluginCapsule, { mustHaveArea.x,mustHaveArea.y,mustHaveArea.w,mustHaveArea.h },
+			PluginCalls::pluginCapsule->requestInView(m_pluginCapsule, { mustHaveArea.x,mustHaveArea.y,mustHaveArea.w,mustHaveArea.h },
 													{ niceToHaveArea.x, niceToHaveArea.y, niceToHaveArea.h, niceToHaveArea.w });
 	}
 
@@ -517,8 +523,8 @@ namespace wg
 
 		if (m_pluginCapsule)
 		{
-			PluginBase::pluginCapsule->requestRender(m_pluginCapsule, { 0,0, m_size.w, m_size.h });
-			PluginBase::pluginCapsule->requestResize(m_pluginCapsule);
+			PluginCalls::pluginCapsule->requestRender(m_pluginCapsule, { 0,0, m_size.w, m_size.h });
+			PluginCalls::pluginCapsule->requestResize(m_pluginCapsule);
 		}
 	}
 
@@ -533,8 +539,8 @@ namespace wg
 
 		if (m_pluginCapsule)
 		{
-			PluginBase::pluginCapsule->requestRender(m_pluginCapsule, { 0,0, m_size.w, m_size.h });
-			PluginBase::pluginCapsule->requestResize(m_pluginCapsule);
+			PluginCalls::pluginCapsule->requestRender(m_pluginCapsule, { 0,0, m_size.w, m_size.h });
+			PluginCalls::pluginCapsule->requestResize(m_pluginCapsule);
 		}
 	}
 

@@ -178,7 +178,7 @@ namespace wg
 
 		wg_obj			m_pluginCapsule;
 
-		std::vector<Widget_p>   m_preRenderCalls;
+		std::vector<Widget_wp>   m_preRenderCalls;
 
 
 		GfxDevice_p			m_pGfxDevice;

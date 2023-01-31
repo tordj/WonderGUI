@@ -248,7 +248,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 		if( m_bFocused )
 		{
-			if( _isSelectable() && (pEvent->ModKeys() & WG2_MODKEY_SHIFT) )
+			if( _isSelectable() && (pEvent->ModKeys() & WG_MODKEY_SHIFT) )
 			{
 				m_pText->setSelectionMode(true);
 			}
@@ -288,7 +288,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 				m_pText->CursorGotoCoord( WgCoord(x, 0), WgRect(0,0,1000000,1000000) );
 			}
 
-			if(_isSelectable() && event == WG_EVENT_MOUSEBUTTON_PRESS && !(pEvent->ModKeys() & WG2_MODKEY_SHIFT))
+			if(_isSelectable() && event == WG_EVENT_MOUSEBUTTON_PRESS && !(pEvent->ModKeys() & WG_MODKEY_SHIFT))
 			{
 				m_pText->clearSelection();
 				m_pText->setSelectionMode(true);
@@ -338,7 +338,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 		switch( key )
 		{
 			case WG_KEY_LEFT:
-				if( pEvent->ModKeys() & WG2_MODKEY_SHIFT )
+				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
 				if( pEvent->ModKeys() & modKeyMap.stepWord )
@@ -358,7 +358,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 				}
 				break;
 			case WG_KEY_RIGHT:
-				if( pEvent->ModKeys() & WG2_MODKEY_SHIFT )
+				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
 				if( pEvent->ModKeys() & modKeyMap.stepWord )
@@ -413,11 +413,11 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 				switch( pEvent->ModKeys() )
 				{
 
-				case WG2_MODKEY_CTRL:
+				case WG_MODKEY_CTRL:
 					break;
 
 				default: // no modifier key was pressed
-					if(pEvent->ModKeys() & WG2_MODKEY_SHIFT )
+					if(pEvent->ModKeys() & WG_MODKEY_SHIFT )
 						m_pText->setSelectionMode(true);
 
 					m_pText->goBOL();
@@ -435,11 +435,11 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 				switch( pEvent->ModKeys() )
 				{
 
-				case WG2_MODKEY_CTRL:
+				case WG_MODKEY_CTRL:
 					break;
 
 				default: // no modifier key was pressed
-					if( pEvent->ModKeys() & WG2_MODKEY_SHIFT )
+					if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
 						m_pText->setSelectionMode(true);
 
 					m_pText->goEOL();

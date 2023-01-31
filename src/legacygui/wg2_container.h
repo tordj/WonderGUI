@@ -97,7 +97,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 
 		bool			_descendantPos(WgWidget * pDescendant, WgCoord& pos);
 
-		virtual void	_onNewRoot( WgRootPanel * pRoot );
+		virtual void	_onNewRoot( WgRoot * pRoot );
 
 		virtual void	_setScale( int scale );
 

@@ -88,7 +88,7 @@ namespace WgEvent
 			bool			IsKeyEvent() const;
 
 		protected:
-			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG2_MODKEY_NONE), m_timestamp(0), m_bIsForWidget(false) {}
+			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForWidget(false) {}
 			virtual ~Event() {}
 
 			virtual void 	_cloneContentFrom( const Event * pOrg );			// Only subclassed for the standard event types.

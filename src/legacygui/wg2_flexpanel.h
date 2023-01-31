@@ -311,7 +311,7 @@ private:
 	std::vector<WgFlexAnchor>	m_anchors;
 
 	bool			m_bConfineChildren;
-	WgRect          m_preferredSize;
+	WgSize          m_preferredSize;
 
 	static WgFlexAnchor	g_baseAnchors[9];
 };

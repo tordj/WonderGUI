@@ -63,7 +63,9 @@ class WgWidget : public WgWeakPtrTarget
     friend class WgStackHook;
     friend class WgDragNDropHook;
 
-    friend class WgRootPanel;
+    friend class WgRoot;
+	friend class WgRootPanel;
+	friend class WgPluginRoot;
     friend class WgFlexPanel;
     friend class WgModalLayer;
     friend class WgTablePanel;
@@ -214,7 +216,7 @@ public:
 protected:
 
 	void			_onNewHook( WgHook * pHook );
-	virtual void	_onNewRoot( WgRootPanel * pRoot );
+	virtual void	_onNewRoot( WgRoot * pRoot );
 
 	void			_startReceiveTicks();
 	void			_stopReceiveTicks();

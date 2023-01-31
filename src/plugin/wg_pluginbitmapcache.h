@@ -25,8 +25,8 @@
 #pragma once
 
 #include <wg_bitmapcache.h>
-#include <wg_pluginbase.h>
 #include <wg_pluginsurface.h>
+#include <wg_c_bitmapcache.h>
 #include <wg_c_types.h>
 
 namespace wg

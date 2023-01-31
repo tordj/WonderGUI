@@ -170,6 +170,8 @@ namespace wg
 
 	void PluginCapsule::_resize(const SizeSPX& size, int scale)
 	{
+		Widget::_resize(size, scale);
+		
 		if (m_pPluginRoot)
 			m_calls.resize(m_pPluginRoot, {size.w,size.h}, scale);
 	}
@@ -336,6 +338,9 @@ namespace wg
 		m_pPluginRoot = pPluginRoot;
 		m_calls = *pCalls;
 		_startReceiveUpdates();
+		
+		if(pPluginRoot)
+			m_calls.resize(pPluginRoot, {m_size.w,m_size.h}, m_scale);
 	}
 
 	//___ _disconnectPlugin() ____________________________________________________

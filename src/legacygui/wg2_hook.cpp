@@ -167,7 +167,7 @@ WgRect WgHook::ScreenPointGeo() const
 
 //____ Root() _________________________________________________________________
 
-WgRootPanel * WgHook::Root() const
+WgRoot * WgHook::Root() const
 {
 	WgWidgetHolder * pHolder = _holder();
 
@@ -187,7 +187,7 @@ WgRootPanel * WgHook::Root() const
 
 WgEventHandler * WgHook::EventHandler() const
 {
-	WgRootPanel * pRoot = Root();
+	WgRoot * pRoot = Root();
 	if( pRoot )
 		return pRoot->EventHandler();
 

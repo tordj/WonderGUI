@@ -219,7 +219,7 @@ void WgText::setText( const wg::CharSeq& seq )
 
 	clearSelection();
 
-	assert( m_buffer.findFirst( WG2_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
 void WgText::setText( const wg::CharBuffer * buffer )
@@ -231,7 +231,7 @@ void WgText::setText( const wg::CharBuffer * buffer )
 
 	clearSelection();
 
-	assert( m_buffer.findFirst( WG2_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
 
@@ -245,7 +245,7 @@ void WgText::setText( const wg::String& str )
 	_textModified();
 	clearSelection();
 
-	assert( m_buffer.findFirst( WG2_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
 
@@ -541,7 +541,7 @@ void WgText::setStyle( wg::TextStyle * pStyle )
 
 bool WgText::setColor( const WgColor color )
 {
-	if( m_pBaseStyle && m_pBaseStyle->isColorStatic() && m_pBaseStyle->color(wg::StateEnum::Normal) == color )
+	if( m_pBaseStyle && m_pBaseStyle->isColorStatic() && m_pBaseStyle->color(wg::StateEnum::Normal) == wg::HiColor(color) )
 		return false;
 
 	auto bp = m_pBaseStyle ? m_pBaseStyle->blueprint() : wg::TextStyle::Blueprint();
@@ -555,7 +555,7 @@ bool WgText::setColor( const WgColor color )
 
 bool WgText::setColor( const WgColor color, wg::State state )
 {
-	if( m_pBaseStyle && m_pBaseStyle->color(state) == color )
+	if( m_pBaseStyle && m_pBaseStyle->color(state) == wg::HiColor(color) )
 		return false;
 
 	auto bp = m_pBaseStyle->blueprint();
@@ -1087,7 +1087,7 @@ int WgText::addText( const wg::CharSeq& seq )
 
 	_textModified();
 
-	assert( m_buffer.findFirst( WG2_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
 	return nAdded;
  }
@@ -1104,7 +1104,7 @@ int WgText::insertText( int ofs, const wg::CharSeq& seq )
 
 	_textModified();
 
-	assert( m_buffer.findFirst( WG2_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
 	return nInserted;
 }
@@ -1121,7 +1121,7 @@ int WgText::replaceText( int ofs, int nDelete, const wg::CharSeq& seq )
 
 	_textModified();
 
-	assert( m_buffer.findFirst( WG2_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
 	return nInserted;
 }
@@ -2107,7 +2107,7 @@ WgTextPos WgText::ClampPos( WgTextPos pos ) const
 
 WgCoord WgText::FocusWindowOnRange( const WgSize& canvas, const WgRect& _window, WgRange range ) const
 {
-	if( _window == canvas )
+	if( _window.size() == canvas )
 		return _window.pos();
 
 	// Move view so that range stays visible with:

@@ -22,7 +22,7 @@
 
 #include <memory.h>
 
-#include <wg_pluginbase.h>
+#include <wg_plugincalls.h>
 #include <wg_pluginsurface.h>
 #include <wg_pluginsurfacefactory.h>
 
@@ -36,14 +36,14 @@ namespace wg
 
 	PluginSurfaceFactory::PluginSurfaceFactory( wg_obj cFactory) : m_cFactory(cFactory)
 	{
-		PluginBase::object->retain(cFactory);
+		PluginCalls::object->retain(cFactory);
 	}
 
 	//____ destructor ________________________________________________________
 
 	PluginSurfaceFactory::~PluginSurfaceFactory()
 	{
-		PluginBase::object->release(m_cFactory);
+		PluginCalls::object->release(m_cFactory);
 	}
 
 
@@ -58,7 +58,7 @@ namespace wg
 
 	SizeI PluginSurfaceFactory::maxSize() const
 	{			
-		wg_sizeI sz = PluginBase::surfaceFactory->maxSurfaceSize(m_cFactory);
+		wg_sizeI sz = PluginCalls::surfaceFactory->maxSurfaceSize(m_cFactory);
 		return { sz.w, sz.h };
 	}
 
@@ -69,7 +69,7 @@ namespace wg
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
-		auto obj = PluginBase::surfaceFactory->createSurface(m_cFactory, &bp);
+		auto obj = PluginCalls::surfaceFactory->createSurface(m_cFactory, &bp);
 		return PluginSurface::create(obj);
 	}
 
@@ -78,7 +78,7 @@ namespace wg
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
-		auto obj = PluginBase::surfaceFactory->createSurfaceFromBlob(m_cFactory, &bp, static_cast<Object*>(pBlob), pitch );
+		auto obj = PluginCalls::surfaceFactory->createSurfaceFromBlob(m_cFactory, &bp, static_cast<Object*>(pBlob), pitch );
 		return PluginSurface::create(obj);
 	}
 
@@ -87,7 +87,7 @@ namespace wg
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
-		auto obj = PluginBase::surfaceFactory->createSurfaceFromBitmap(m_cFactory, &bp, pPixels, pitch, (wg_pixelDescription*) pPixelDescription);
+		auto obj = PluginCalls::surfaceFactory->createSurfaceFromBitmap(m_cFactory, &bp, pPixels, pitch, (wg_pixelDescription*) pPixelDescription);
 		return PluginSurface::create(obj);
 	}
 
@@ -96,7 +96,7 @@ namespace wg
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
-		auto obj = PluginBase::surfaceFactory->createSurfaceFromSurface(m_cFactory, &bp, static_cast<Object*>(pOther) );
+		auto obj = PluginCalls::surfaceFactory->createSurfaceFromSurface(m_cFactory, &bp, static_cast<Object*>(pOther) );
 		return PluginSurface::create(obj);
 	}
 

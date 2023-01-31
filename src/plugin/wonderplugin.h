@@ -20,10 +20,11 @@
 
 =========================================================================*/
 
-#ifndef	WG_CABI_DOT_H
-#define	WG_CABI_DOT_H
+#ifndef	WONDERPLUGIN_DOT_H
+#define	WONDERPLUGIN_DOT_H
 #pragma once
 
+#include <wg_pluginbase.h>
 #include <wg_pluginbitmapcache.h>
 #include <wg_pluginbitmapfont.h>
 #include <wg_plugincanvaslayers.h>
@@ -36,4 +37,4 @@
 #include <wg_pluginsurface.h>
 #include <wg_pluginsurfacefactory.h>
 
-#endif //WG_CABI_DOT_H
+#endif //WONDERPLUGIN_DOT_H
