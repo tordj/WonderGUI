@@ -2689,7 +2689,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		// Sanity checking...
 
-		if (!m_pRenderLayerSurface || !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData)
+		if (!m_pRenderLayerSurface || !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData || m_blendMode == BlendMode::Ignore )
 			return;
 
 		//
@@ -2698,10 +2698,27 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		PixelFormat		srcFormat = m_pBlitSource->m_pixelDescription.format;
 		PixelFormat		dstFormat = m_pRenderLayerSurface->pixelFormat();
 
+		BlendMode		blendMode = m_blendMode;
+		
 		if (m_pKernels[(int)dstFormat] == nullptr)
 			return;
 
-
+		// Optimize BlendMode
+		
+		// TODO: Optimize by having flag for alpha in m_colTrans, which also is calculated on gradient tints.
+		
+		if( m_colTrans.mode == TintMode::None || (m_colTrans.mode == TintMode::Flat && m_colTrans.flatTintColor.a == 4096) )
+		{
+			// TODO: Optimize by using a lookup table.
+			
+			if( blendMode == BlendMode::Blend && (srcFormat == PixelFormat::RGB_565_bigendian || srcFormat == PixelFormat::BGR_8_sRGB ||
+				srcFormat == PixelFormat::BGR_8_linear || srcFormat == PixelFormat::BGR_565_linear ||
+				srcFormat == PixelFormat::BGRX_8_sRGB || srcFormat == PixelFormat::BGRX_8_linear) )
+			{
+				blendMode = BlendMode::Replace;
+			}
+		}
+		
 		// Add two-pass rendering fallback.
 
 		auto pPixelDescSource = m_pBlitSource->pixelDescription();
@@ -2715,7 +2732,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			m_pTransformTileFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Tile)];
 			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Clip)];
 		
-			m_pBlitSecondPassOp				= m_pKernels[(int)dstFormat]->pStraightBlitFromBGRA8Kernels[(int)m_colTrans.mode][(int)m_blendMode];
+			m_pBlitSecondPassOp				= m_pKernels[(int)dstFormat]->pStraightBlitFromBGRA8Kernels[(int)m_colTrans.mode][(int)blendMode];
 		}
 		else
 		{
@@ -2725,7 +2742,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			m_pTransformTileFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Tile)];
 			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Clip)];
 
-			m_pBlitSecondPassOp				= m_pKernels[(int)dstFormat]->pStraightBlitFromHiColorKernels[(int)m_colTrans.mode][(int)m_blendMode];
+			m_pBlitSecondPassOp				= m_pKernels[(int)dstFormat]->pStraightBlitFromHiColorKernels[(int)m_colTrans.mode][(int)blendMode];
 		}
 
 
@@ -2743,8 +2760,8 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		{
 			auto pSingleBlitKernels = &m_singlePassBlitKernels[singleBlitKernelsIdx - 1];
 
-			int straightBlitKernelsIdx = pSingleBlitKernels->straightBlitKernels[(int)m_blendMode];
-			int transformBlitKernelsIdx = pSingleBlitKernels->transformBlitKernels[(int)m_blendMode];
+			int straightBlitKernelsIdx = pSingleBlitKernels->straightBlitKernels[(int)blendMode];
+			int transformBlitKernelsIdx = pSingleBlitKernels->transformBlitKernels[(int)blendMode];
 			
 			if (straightBlitKernelsIdx > 0)
 			{

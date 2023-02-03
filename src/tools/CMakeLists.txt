@@ -15,4 +15,4 @@ add_subdirectory(workbench)
 add_subdirectory(legacyworkbench)
 
 
-set_target_properties( legacyworkbench testplugin fontgenerator gfxdevicetester gfxworkbench image2surf packlayouttester pluginworkbench softkernelgenerator streamanalyzer streamanalyzer streamgenerator surfviewer unittester workbench PROPERTIES FOLDER "Tools" )
+set_target_properties( legacyworkbench legacytestplugin testplugin fontgenerator gfxdevicetester gfxworkbench image2surf packlayouttester pluginworkbench softkernelgenerator streamanalyzer streamanalyzer streamgenerator surfviewer unittester workbench PROPERTIES FOLDER "Tools" )
