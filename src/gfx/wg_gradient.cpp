@@ -78,10 +78,13 @@ namespace wg
 			topLeft = bottomLeft = startColor;
 			topRight = bottomRight = endColor;
 			break;
+				
+		default:
+			return;
 		}
 
+		isValid = true;
 	}
-
 
 }
 
