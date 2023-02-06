@@ -327,7 +327,7 @@ int main ( int argc, char** argv )
 //    gfxStreamingTest(pRoot);
 
 	// Setup debug overlays
-	auto pOverlaySkin = wg::BoxSkin::create( { .outline = 1, .outlineColor = WgColor::Red, .color = WgColor(255,0,0,128),
+	auto pOverlaySkin = wg::BoxSkin::create( { .color = WgColor(255,0,0,128), .outline = 1, .outlineColor = WgColor::Red,
 		.states = { {wg::StateEnum::Normal, {.color = WgColor::Transparent } }
 		}
 	});
@@ -531,7 +531,7 @@ void packPanelStressTest( WgRootPanel * pRoot )
 	pRoot->SetChild(pBaseFlex);
 	
 
-	auto pVPackSkin = wg::BoxSkin::create( { .color = WgColor::Blue, .padding = 11, .outline = 10, .outlineColor = WgColor::Red } );
+	auto pVPackSkin = wg::BoxSkin::create( { .color = WgColor::Blue, .outline = 10, .outlineColor = WgColor::Red, .padding = 11 } );
 	
 	auto pVPack = new WgPackPanel();
 	pVPack->SetOrientation(wg::Axis::Y);
@@ -775,12 +775,12 @@ void baselineTest( WgRootPanel * pRoot )
 
 void scrollPanelTest( WgRootPanel * pRoot )
 {
-	wg::BoxSkin_p    pBgSkin = wg::BoxSkin::create( { .color = WgColor::Green, .padding = 2, .outline = 2, .outlineColor = WgColor::Red } );
+	wg::BoxSkin_p    pBgSkin = wg::BoxSkin::create( { .color = WgColor::Green, .outline = 2, .outlineColor = WgColor::Red, .padding = 2 } );
 	
 	wg::BoxSkin_p    pButtonSkin = wg::BoxSkin::create({ .color = WgColor::Red, .outline = 2, .outlineColor = WgColor::Black } );
 //    pButtonSkin->SetContentPadding(6);
 
-	wg::BoxSkin_p    pBarSkin = wg::BoxSkin::create({ .color = WgColor::Grey, .padding = 6, .outline = 2, .outlineColor = WgColor::DarkGrey } );
+	wg::BoxSkin_p    pBarSkin = wg::BoxSkin::create({ .color = WgColor::Grey, .outline = 2, .outlineColor = WgColor::DarkGrey, .padding = 6 });
 
 	auto pScrollPanel = new WgScrollPanel();
 	
@@ -960,10 +960,10 @@ bool rangeSliderTest(WgRootPanel* pRoot)
 		auto pBgSkin = wg::FillMeterSkin::create( {
 			.backColor = wg::Color::Black,
 			.color = wg::Color::Green,
-			.padding = wg::Border(),
 			.direction = wg::Direction::Right,
-			.gfxPadding = wg::Border(0, 10, 0, 10)
-		});
+			.gfxPadding = wg::Border(0, 10, 0, 10),
+			.padding = wg::Border()
+			});
 
 		pSliderX->SetAxis(wg::Axis::X);
 		pSliderX->SetSkin(pBgSkin);
@@ -977,10 +977,10 @@ bool rangeSliderTest(WgRootPanel* pRoot)
 		auto pBgSkin = wg::FillMeterSkin::create( {
 			.backColor = wg::Color::Black,
 			.color = wg::Color::Green,
-			.padding = wg::Border(),
 			.direction = wg::Direction::Up,
-			.gfxPadding = wg::Border(10, 0, 10, 0)
-		});
+			.gfxPadding = wg::Border(10, 0, 10, 0),
+			.padding = wg::Border()
+			});
 		
 		pSliderY->SetAxis(wg::Axis::Y);
 		pSliderY->SetSkin(pBgSkin);
@@ -1050,7 +1050,7 @@ bool tooltipLayerTest(WgRootPanel * pRoot)
 	});
 */
 
-	auto pTooltipSkin = wg::BoxSkin::create( { .color = wg::Color::White, .padding = 2, .outline = 1, .outlineColor = wg::Color::Black } );
+	auto pTooltipSkin = wg::BoxSkin::create( { .color = wg::Color::White, .outline = 1, .outlineColor = wg::Color::Black, .padding = 2 } );
 
 	auto pBaseLayer = new WgFlexPanel();
 	pBaseLayer->SetSkin( wg::ColorSkin::create(wg::Color::PapayaWhip) );

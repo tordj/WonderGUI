@@ -29,6 +29,7 @@ target_include_directories(testplugin PRIVATE
 	${WGPLUGIN_INCDIRS}
 	${WONDERGUI_INCDIRS}
 	${WGFREETYPEFONT_INCDIRS}
+	${WG_ROOT}/SDL2/include/
 )
 
 set_target_properties(testplugin PROPERTIES
@@ -106,6 +107,7 @@ add_executable(pluginworkbench
 target_include_directories(pluginworkbench PRIVATE 
 	${WAPP_INCDIRS}
 	${WGPLUGIN_INCDIRS}
+	${WG_ROOT}/SDL2/include/
 )
 
 add_dependencies(pluginworkbench testplugin legacytestplugin)

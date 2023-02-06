@@ -50,6 +50,10 @@ namespace wg
 			s_gfxInitCounter++;
 			return GearBase::init();
 		}
+
+		s_gfxInitCounter++;
+		return true;
+
 	}
 
 	//____ exit() __________________________________________________________________

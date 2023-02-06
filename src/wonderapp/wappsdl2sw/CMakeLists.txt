@@ -39,6 +39,8 @@ target_include_directories(wappsdl2sw PRIVATE
 	../include
 	${WONDERGUI_INCDIRS}
 	${WGSOFTGFX_INCDIRS}
+	${WG_ROOT}/SDL2/include/
+	${WG_ROOT}/SDL2_image/include/	
 )
 
 set_target_properties(wappsdl2sw PROPERTIES FOLDER "WonderApp/Frameworks" )

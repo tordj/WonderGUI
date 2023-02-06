@@ -16,6 +16,12 @@ add_executable(example01
 	example01.cpp
 )
 
+target_include_directories(example01 PRIVATE
+
+	${WG_ROOT}/SDL2/include/
+)
+
+
 target_link_directories(example01 PRIVATE 
 	../../SDL2/lib/x64
 )

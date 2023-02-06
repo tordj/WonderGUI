@@ -83,6 +83,7 @@ set(WGSOFTGFX_INCDIRS
 
 set(WGOPENGLGFX_INCDIRS
 	${PROJECT_SOURCE_DIR}/gfx/opengl/
+	${WG_ROOT}/glew/include/
 )
 
 set(WGMETALGFX_INCDIRS
@@ -130,7 +131,10 @@ add_subdirectory(legacygui)
 
 add_subdirectory(glyphs/freetype)
 
-add_subdirectory(gfx/metal)
+if(APPLE)
+	add_subdirectory(gfx/metal)
+endif()
+
 add_subdirectory(gfx/opengl)
 add_subdirectory(gfx/software)
 

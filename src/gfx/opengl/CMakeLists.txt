@@ -13,7 +13,7 @@ add_library( wgopenglgfx
 
 target_include_directories(wgopenglgfx PRIVATE 
 	${WONDERGFX_INCDIRS}
-	${WGOPENGLGFX_INCDIRS}	
+	${WGOPENGLGFX_INCDIRS}
 )
 
 set_target_properties( wgopenglgfx PROPERTIES FOLDER "Graphics Devices" )

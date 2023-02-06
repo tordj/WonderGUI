@@ -22,6 +22,8 @@ add_executable(fontgenerator
 
 target_include_directories(fontgenerator PRIVATE 
 	${WAPP_INCDIRS}
+	${WG_ROOT}/SDL2/include/
+	${WG_ROOT}/SDL2_image/include/
 )
 
 target_working_directory(fontgenerator ${WG_ROOT} )

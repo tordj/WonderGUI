@@ -311,6 +311,7 @@ void WgPluginRoot::_setState(State state)
 PointerStyle WgPluginRoot::_pointerStyle() const
 {
 	//TODO: Implement!!!
+	return PointerStyle::Default;
 }
 
 //____ _setPointerPos() _______________________________________________________
@@ -379,7 +380,7 @@ bool WgPluginRoot::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesti
 		bool result = (bool) PluginCalls::pluginCapsule->requestFocus(m_pluginCapsule);
 
 		if( !result )
-			return nullptr;
+			return false;
 			
 		return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
 	}

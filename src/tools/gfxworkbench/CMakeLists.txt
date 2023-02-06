@@ -30,6 +30,12 @@ add_executable(gfxworkbench
 	main.cpp
 )
 
+target_include_directories(gfxworkbench PRIVATE 
+	${WG_ROOT}/SDL2/include/
+	${WG_ROOT}/SDL2_image/include/
+)
+
+
 target_link_directories(gfxworkbench PRIVATE 
 )
 

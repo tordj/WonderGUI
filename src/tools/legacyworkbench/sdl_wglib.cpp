@@ -248,13 +248,13 @@ namespace sdl_wglib
 			.frame = 3,
 			.padding = 4,
 			.spacing = 2,
-			.surface = pSurface,
 			.states = {
 				wg::StateEnum::Normal, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {}
-			}
+			},
+			.surface = pSurface
 		};
 		
 		sliderBtnBP.firstBlock = wg::Rect(1,HSLIDER_BTN_OFS,17,17);
@@ -281,14 +281,14 @@ namespace sdl_wglib
 			.frame = 2,
 			.padding = 3,
 			.spacing = 2,
-			.surface = pSurface,
 			.states = {
 				wg::StateEnum::Normal, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {}
-			}
-		} );
+			},
+			.surface = pSurface
+			} );
 		
 		auto pSliderBackBlocks	= wg::BlockSkin::create( { .firstBlock = wg::Rect(1,SLIDER_BACK_OFS,5,5), .frame = 2, .padding = 2, .surface = pSurface } );
 		
@@ -298,14 +298,14 @@ namespace sdl_wglib
 			.frame = 3,
 			.padding = 3,
 			.spacing = 2,
-			.surface = pSurface,
 			.states = {
 				wg::StateEnum::Normal, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {}
-			}
-		} );
+			},
+			.surface = pSurface
+			} );
 		
 		auto pCheckboxIconSkin = wg::BlockSkin::create( {
 			.axis = wg::Axis::X,
@@ -313,7 +313,6 @@ namespace sdl_wglib
 			.frame = 2,
 			.padding = 3,
 			.spacing = 2,
-			.surface = pSurface,
 			.states = {
 				wg::StateEnum::Normal, {},
 				wg::StateEnum::Hovered, {},
@@ -323,7 +322,8 @@ namespace sdl_wglib
 				wg::StateEnum::SelectedHovered, {},
 				wg::StateEnum::SelectedPressed, {},
 				wg::StateEnum::DisabledSelected, {},
-			}
+			},
+			.surface = pSurface
 		} );
 		
 		auto pRadiobuttonIconSkin = wg::BlockSkin::create( {
@@ -387,14 +387,14 @@ namespace sdl_wglib
 			.frame = 3,
 			.padding = 4,
 			.spacing = 2,
-			.surface = pSurface,
 			.states = {
 				wg::StateEnum::Normal, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {}
-			}
-		} );
+			},
+			.surface = pSurface
+			} );
 
 
 		auto pHSplitBlocks = wg::BlockSkin::create( { .firstBlock = wg::Rect( 1,SPLITS_AND_FRAME_OFS,8,2 ), .surface = pSurface } );
@@ -409,14 +409,14 @@ namespace sdl_wglib
 			.frame = {1,1,20,1},
 			.padding = {2,2,21,2},
 			.spacing = 2,
-			.surface = pSurface,
 			.states = {
 				wg::StateEnum::Normal, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {}
-			}
-		} );
+			},
+			.surface = pSurface
+			} );
 
 //		auto pBgCheckeredGreyBlocks = WgBlockset::CreateFromRect( pSurface, WgRect(0,TILES_OFS,64,64), WG_OPAQUE | WG_TILE_ALL );
 //		auto pBgBlueGradientBlocks = WgBlockset::CreateFromRect( pSurface, WgRect(1*64,TILES_OFS,64,64), WG_OPAQUE );

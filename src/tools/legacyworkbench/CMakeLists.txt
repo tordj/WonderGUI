@@ -33,6 +33,12 @@ add_executable(legacyworkbench
 	sdl_wglib.h
 )
 
+target_include_directories(legacyworkbench PRIVATE
+
+	${WG_ROOT}/SDL2/include/
+	${WG_ROOT}/SDL2_image/include/
+)
+
 target_link_directories(legacyworkbench PRIVATE 
 )
 

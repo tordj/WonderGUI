@@ -27,6 +27,8 @@ target_include_directories(streamgenerator PRIVATE
 	${WONDERGUI_INCDIRS}
 	${WGSOFTGFX_INCDIRS}
 	${WGFREETYPEFONT_INCDIRS}
+	${WG_ROOT}/SDL2/include/
+	${WG_ROOT}/SDL2_image/include/
 )
 
 

@@ -41,6 +41,9 @@ target_include_directories(workbench PRIVATE
 	${WGSOFTGFX_INCDIRS}
 	${WGOPENGLGFX_INCDIRS}
 	${WGFREETYPEFONT_INCDIRS}
+	${WG_ROOT}/SDL2/include/
+	${WG_ROOT}/SDL2_image/include/
+
 )
 
 target_link_libraries(workbench PRIVATE

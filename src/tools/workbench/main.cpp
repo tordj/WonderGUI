@@ -3049,6 +3049,7 @@ bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot)
 	*pSlot = pBaseLayer;
 	return true;
 */
+	return false;
 }
 
 
