@@ -42,7 +42,7 @@ target_link_libraries(wappsdl2sw PRIVATE
 	wgsoftgfx
 	wgfreetypefont
 	wondergui
-	freetype
+	${FREETYPE2_LIB}
 	${SDL2_LIBS}
 	${SDL2IMAGE_LIBS}
 )

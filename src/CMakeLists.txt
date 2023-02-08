@@ -37,6 +37,8 @@ if(WIN32)
 	set(OPENGL_LIBS glew32 opengl32)
 
 elseif(APPLE)
+	set(FREETYPE2_INCDIR ${WG_ROOT}/freetype/include)
+	set(FREETYPE2_LIBDIR ${WG_ROOT}/freetype/lib/)
     set(FREETYPE2_LIB freetype_arm64 freetype_x86_64 bz2 z )
 
 	find_library(SDL2_LIBS SDL2)
