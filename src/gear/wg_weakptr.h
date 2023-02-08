@@ -35,9 +35,9 @@ namespace wg
 	class WeakPtrHub		/** @private */
 	{
 	public:
-		int				refCnt;
-		Object* pObj;
-		Finalizer_p		pFinalizer;
+		int				refCnt 		= 0;
+		Object * 		pObj		= nullptr;
+		Finalizer_p		pFinalizer	= nullptr;
 
 		static WeakPtrHub* getHub(Object* pObj);
 		static void			releaseHub(WeakPtrHub* pHub);

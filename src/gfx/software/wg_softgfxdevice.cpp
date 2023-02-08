@@ -194,6 +194,14 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 	SoftGfxDevice::~SoftGfxDevice()
 	{
+		for(int i=0; i<PixelFormat_size; i++)
+		{
+			if(m_pKernels[i])
+			{
+				delete m_pKernels[i];
+				m_pKernels[i] = nullptr;
+			}
+		}
 	}
 
 	//____ typeInfo() _________________________________________________________
