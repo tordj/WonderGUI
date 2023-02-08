@@ -230,18 +230,18 @@ set( SOURCES
 
 )
 
-set(WGLEGACYGUI_SOURCES ${SOURCES} PARENT_SCOPE)
-
-add_library( wglegacygui STATIC ${SOURCES} )
-
-
-target_include_directories(wglegacygui PRIVATE
-	.
+set(INCDIRS
 	${WONDERGUI_INCDIRS}
 	${WGFREETYPEFONT_INCDIRS}
+	${CMAKE_CURRENT_LIST_DIR}
 )
 
-target_link_libraries(wglegacygui PUBLIC
-	wonderglyphs
-	wgfreetypefont
-)
+
+add_library( wglegacygui STATIC ${SOURCES} )
+target_include_directories(wglegacygui PRIVATE ${INCDIRS} )
+target_link_libraries(wglegacygui PUBLIC wonderglyphs wgfreetypefont )
+
+
+list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
+set(WGLEGACYGUI_SOURCES ${SOURCES} PARENT_SCOPE)
+set(WGLEGACYGUI_INCDIRS ${INCDIRS} PARENT_SCOPE)

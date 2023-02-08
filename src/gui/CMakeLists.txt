@@ -270,14 +270,35 @@ set( SOURCES
 	widgets/panels/wg_twoslotpanel.h
 )
 
-set(WONDERGUI_SOURCES ${SOURCES} PARENT_SCOPE)
+
+set(INCDIRS
+	${WONDERGLYPHS_INCDIRS}
+	${CMAKE_CURRENT_LIST_DIR}
+	${CMAKE_CURRENT_LIST_DIR}/base/
+	${CMAKE_CURRENT_LIST_DIR}/c-api/
+	${CMAKE_CURRENT_LIST_DIR}/components/
+	${CMAKE_CURRENT_LIST_DIR}/numberlayouts/
+	${CMAKE_CURRENT_LIST_DIR}/skins/
+	${CMAKE_CURRENT_LIST_DIR}/skins/anim/
+	${CMAKE_CURRENT_LIST_DIR}/skins/meter/
+	${CMAKE_CURRENT_LIST_DIR}/skins/misc/
+	${CMAKE_CURRENT_LIST_DIR}/skins/state/
+	${CMAKE_CURRENT_LIST_DIR}/skins/static/
+	${CMAKE_CURRENT_LIST_DIR}/slots/
+	${CMAKE_CURRENT_LIST_DIR}/textlayouts/
+	${CMAKE_CURRENT_LIST_DIR}/widgets/
+	${CMAKE_CURRENT_LIST_DIR}/widgets/capsules/
+	${CMAKE_CURRENT_LIST_DIR}/widgets/lists/
+	${CMAKE_CURRENT_LIST_DIR}/widgets/overlays/
+	${CMAKE_CURRENT_LIST_DIR}/widgets/panels/
+)
+
+
 
 add_library( wondergui STATIC ${SOURCES} )
+target_include_directories(wondergui PRIVATE ${INCDIRS} )
+target_link_libraries(wondergui PUBLIC wonderglyphs )
 
-target_include_directories(wondergui PRIVATE 
-	${WONDERGUI_INCDIRS}
-)
-
-target_link_libraries(wondergui PUBLIC
-	wonderglyphs
-)
+list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
+set(WONDERGUI_SOURCES ${SOURCES} PARENT_SCOPE)
+set(WONDERGUI_INCDIRS ${INCDIRS} PARENT_SCOPE)

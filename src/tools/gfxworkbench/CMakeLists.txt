@@ -2,28 +2,6 @@
 source_group(Files REGULAR_EXPRESSION ".*")
 
 
-if(WIN32)
-
-	set(SDL2_LIBS SDL2 SDL2main)
-	set(SDL2IMAGE_LIBS SDL2_image)
-
-	set(OPENGL_LIBS glew32 opengl32)
-
-elseif(APPLE)
-
-	find_library(SDL2_LIBS SDL2)
-	find_library(SDL2IMAGE_LIBS SDL2_image)
-
-	find_library(OPENGL_LIBS OpenGL)
-
-else()
-
-	set(SDL2_LIBS SDL2)
-	set(SDL2IMAGE_LIBS SDL2_image)
-
-	set(OPENGL_LIBS GLEW GL)
-endif()
-
 
 add_executable(gfxworkbench
 
@@ -31,27 +9,27 @@ add_executable(gfxworkbench
 )
 
 target_include_directories(gfxworkbench PRIVATE 
-	${WG_ROOT}/SDL2/include/
-	${WG_ROOT}/SDL2_image/include/
+	${SDL2_INCDIR}
+	${SDL2IMAGE_INCDIR}
+	${WONDERGUI_INCDIRS}
+	${WGSOFTGFX_INCDIRS}
 )
 
 
 target_link_directories(gfxworkbench PRIVATE 
+	${SDL2_LIBDIR}
+	${SDL2IMAGE_LIBDIR}
+	${GLEW_LIBDIR}
 )
 
-target_include_directories(gfxworkbench PRIVATE 
-	${WONDERGUI_INCDIRS}
-	${WGSOFTGFX_INCDIRS}
-	${WGFREETYPEFONT_INCDIRS}
-)
 
 target_working_directory(gfxworkbench ${WG_ROOT})
 
 target_link_libraries(gfxworkbench PRIVATE
 	wgsoftgfx
 	wgopenglgfx
-	wgfreetypefont
 	wondergui 
+	wgfreetypefont
 	${SDL2_LIBS}
 	${SDL2IMAGE_LIBS}
 	${OPENGL_LIBS}

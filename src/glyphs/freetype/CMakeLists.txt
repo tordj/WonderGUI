@@ -8,29 +8,19 @@ set(SOURCES
 )
 
 
-set(WGFREETYPEFONT_SOURCES ${SOURCES} PARENT_SCOPE)
+set(INCDIRS
+   ${CMAKE_CURRENT_LIST_DIR}
+)
+
 
 add_library( wgfreetypefont STATIC ${SOURCES} )
 
 target_include_directories(wgfreetypefont PRIVATE
-    ${WGFREETYPEFONT_INCDIRS}
+    ${INCDIRS}
     ${WONDERGLYPHS_INCDIRS}
+    ${FREETYPE2_INCDIR}
 )
 
-
-
-if(WIN32)
-    target_include_directories(wgfreetypefont PRIVATE ../../../freetype/include )
-    target_link_directories(wgfreetypefont PRIVATE ../freetype/lib/x64 )
-elseif(APPLE)
-    target_include_directories(wgfreetypefont PRIVATE ../../../freetype/include )
-    target_link_directories(wgfreetypefont PRIVATE ../../../freetype/lib)
-else()
-    target_include_directories(wgfreetypefont PRIVATE /usr/include/freetype2 )
-endif()
-
-if(APPLE)
-    target_link_libraries(wgfreetypefont PRIVATE freetype_arm64 freetype_x86_64 bz2 z )
-else()
-    target_link_libraries(wgfreetypefont PRIVATE freetype )
-endif()
+list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
+set(WGFREETYPEFONT_SOURCES ${SOURCES} PARENT_SCOPE)
+set(WGFREETYPEFONT_INCDIRS ${INCDIRS} PARENT_SCOPE)

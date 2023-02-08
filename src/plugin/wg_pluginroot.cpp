@@ -463,6 +463,7 @@ namespace wg
 			s = m_pFocusedChild->state();
 			s.setFocused(true);
 			m_pFocusedChild->_setState(s);
+			return true;
 		}
 		else
 		{

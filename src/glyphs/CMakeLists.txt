@@ -28,14 +28,19 @@ set(SOURCES
 	c-api/wonderglyphs_c.h
 )
 
-set(WONDERGLYPHS_SOURCES ${SOURCES} PARENT_SCOPE)
+
+set(INCDIRS
+	${WONDERGFX_INCDIRS}
+	${CMAKE_CURRENT_LIST_DIR}
+	${CMAKE_CURRENT_LIST_DIR}/c-api
+)
 
 add_library( wonderglyphs STATIC ${SOURCES} )
+target_include_directories(wonderglyphs PRIVATE ${INCDIRS} )
+target_link_libraries(wonderglyphs PUBLIC wondergfx )
 
-target_include_directories(wonderglyphs PRIVATE 
-	${WONDERGLYPHS_INCDIRS}
-)
+list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
+set(WONDERGLYPHS_SOURCES ${SOURCES} PARENT_SCOPE)
+set(WONDERGLYPHS_INCDIRS ${INCDIRS} PARENT_SCOPE)
 
-target_link_libraries(wonderglyphs PUBLIC
-	wondergfx
-)
+

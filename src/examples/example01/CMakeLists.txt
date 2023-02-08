@@ -1,14 +1,5 @@
 set(CMAKE_CXX_STANDARD 20)
 
-if(WIN32)
-	set(SDL2_LIBS SDL2 SDL2main)
-elseif(APPLE)
-	find_library(SDL2_LIBS SDL2)
-else()
-	set(SDL2_LIBS SDL2)
-endif()
-
-
 source_group(Files REGULAR_EXPRESSION ".*")
 
 add_executable(example01
@@ -18,12 +9,12 @@ add_executable(example01
 
 target_include_directories(example01 PRIVATE
 
-	${WG_ROOT}/SDL2/include/
+	${SDL2_INCDIR}
 )
 
 
 target_link_directories(example01 PRIVATE 
-	../../SDL2/lib/x64
+	${SDL2_LIBDIR}
 )
 
 target_include_directories(example01 PRIVATE 

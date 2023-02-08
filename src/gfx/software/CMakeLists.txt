@@ -1,6 +1,6 @@
 source_group(Files REGULAR_EXPRESSION ".*")
 
-add_library( wgsoftgfx 
+set(SOURCES
 
 	c-api/wg_c_softgfx.cpp
 	c-api/wg_c_softgfx.h
@@ -23,9 +23,21 @@ add_library( wgsoftgfx
 	wg_softsurfacefactory.h
 )
 
+set(INCDIRS
+	${CMAKE_CURRENT_LIST_DIR}
+	${CMAKE_CURRENT_LIST_DIR}/c-api
+)
+
+add_library( wgsoftgfx STATIC ${SOURCES} )
+
 target_include_directories(wgsoftgfx PRIVATE 
 	${WONDERGFX_INCDIRS}
-	${WGSOFTGFX_INCDIRS}
+	${INCDIRS}
 )
 
 set_target_properties( wgsoftgfx PROPERTIES FOLDER "Graphics Devices" )
+
+
+list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
+set(WGSOFTGFX_SOURCES ${SOURCES} PARENT_SCOPE)
+set(WGSOFTGFX_INCDIRS ${INCDIRS} PARENT_SCOPE)

@@ -1,6 +1,6 @@
 source_group(Files REGULAR_EXPRESSION ".*")
 
-set( CLIENT_SOURCES
+set( PLUGIN_SOURCES
 	wonderplugin.h
 
 	wg_c_plugincapsule.h
@@ -37,7 +37,7 @@ set( CLIENT_SOURCES
 	wonderplugin.h
 )
 
-set( LEGACYCLIENT_SOURCES
+set( LEGACYPLUGIN_SOURCES
 	wglegacyplugin.h
 
 	wg_c_plugincapsule.h
@@ -88,34 +88,44 @@ set( HOST_SOURCES
 	wg_c_pluginroot.h
 )
 
-
-set(WGCLIENT_SOURCES ${CLIENT_SOURCES} PARENT_SCOPE)
-
-add_library( wgpluginclient STATIC ${CLIENT_SOURCES} )
-
-target_include_directories(wgpluginclient PRIVATE
-	${WONDERGUI_INCDIRS}
-	${WGPLUGIN_INCDIRS}
+set(INCDIRS
+	 ${CMAKE_CURRENT_LIST_DIR}
 )
 
-set(WGLEGACYCLIENT_SOURCES ${LEGACYCLIENT_SOURCES} PARENT_SCOPE)
 
-add_library( wglegacypluginclient STATIC ${LEGACYCLIENT_SOURCES} )
 
-target_include_directories(wglegacypluginclient PRIVATE
+add_library( wgplugin STATIC ${PLUGIN_SOURCES} )
+
+target_include_directories(wgplugin PRIVATE
+	${WONDERGUI_INCDIRS}
+	${INCDIRS}
+)
+
+
+add_library( wglegacyplugin STATIC ${LEGACYPLUGIN_SOURCES} )
+
+target_include_directories(wglegacyplugin PRIVATE
 	${WGLEGACYGUI_INCDIRS}
-	${WGPLUGIN_INCDIRS}
+	${INCDIRS}
 )
 
  
-
 add_library( wgpluginhost STATIC ${HOST_SOURCES} )
 
 target_include_directories(wgpluginhost PRIVATE
 	${WONDERGUI_INCDIRS}
-	${WGPLUGIN_INCDIRS}
+	${INCDIRS}
 )
 
-set_target_properties( wgpluginhost wgpluginclient wglegacypluginclient PROPERTIES FOLDER "Plugin" )
+
+set_target_properties( wgpluginhost wgplugin wglegacyplugin PROPERTIES FOLDER "Plugin" )
 
  
+list(TRANSFORM PLUGIN_SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
+set(WGPLUGIN_SOURCES ${PLUGIN_SOURCES} PARENT_SCOPE)
+set(WGPLUGIN_INCDIRS ${INCDIRS} PARENT_SCOPE)
+
+list(TRANSFORM LEGACYPLUGIN_SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
+set(WGLEGACYPLUGIN_SOURCES ${LEGACYPLUGIN_SOURCES} PARENT_SCOPE)
+set(WGLEGACYPLUGIN_INCDIRS ${INCDIRS} PARENT_SCOPE)
+

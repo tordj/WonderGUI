@@ -122,15 +122,22 @@ set( SOURCES
 	stream/c-api/wondergfxstream_c.h
 )
 
-set(WONDERGFX_SOURCES ${SOURCES} PARENT_SCOPE)
+set(INCDIRS
+	${WONDERGEAR_INCDIRS}
+	${CMAKE_CURRENT_LIST_DIR}
+	${CMAKE_CURRENT_LIST_DIR}/c-api
+	${CMAKE_CURRENT_LIST_DIR}/stream
+	${CMAKE_CURRENT_LIST_DIR}/stream/c-api
+)
+
 
 add_library( wondergfx STATIC ${SOURCES} )
+target_include_directories(wondergfx PRIVATE ${INCDIRS} )
+target_link_libraries(wondergfx PUBLIC wondergear )
 
-target_include_directories(wondergfx PRIVATE 
-	${WONDERGFX_INCDIRS}
-)
 
-target_link_libraries(wondergfx PUBLIC
-	wondergear
-)
+list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
+set(WONDERGFX_SOURCES ${SOURCES} PARENT_SCOPE)
+set(WONDERGFX_INCDIRS ${INCDIRS} PARENT_SCOPE)
+
 

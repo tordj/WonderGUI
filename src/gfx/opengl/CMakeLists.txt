@@ -1,6 +1,6 @@
 source_group(Files REGULAR_EXPRESSION ".*")
 
-add_library( wgopenglgfx 
+set(SOURCES
 
 	wg_glgfxdevice.cpp
 	wg_glgfxdevice.h
@@ -11,9 +11,21 @@ add_library( wgopenglgfx
 	wg_glsurfacefactory.h
 )
 
+set(INCDIRS
+	${CMAKE_CURRENT_LIST_DIR}
+	${GLEW_INCDIR}
+)
+
+
+add_library( wgopenglgfx STATIC ${SOURCES} )
+
 target_include_directories(wgopenglgfx PRIVATE 
 	${WONDERGFX_INCDIRS}
-	${WGOPENGLGFX_INCDIRS}
+	${INCDIRS}
 )
 
 set_target_properties( wgopenglgfx PROPERTIES FOLDER "Graphics Devices" )
+
+list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
+set(WGOPENGLGFX_SOURCES ${SOURCES} PARENT_SCOPE)
+set(WGOPENGLGFX_INCDIRS ${INCDIRS} PARENT_SCOPE)
