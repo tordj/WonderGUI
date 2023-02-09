@@ -29,6 +29,7 @@
 #include <wg_c_canvaslayers.h>
 #include <wg_c_color.h>
 #include <wg_c_geo.h>
+#include <wg_c_gfxbase.h>
 #include <wg_c_gfxdevice.h>
 #include <wg_c_gfxtypes.h>
 #include <wg_c_gradient.h>

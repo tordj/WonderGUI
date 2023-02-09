@@ -40,7 +40,7 @@ typedef	void(*wg_finalizer_func)(wg_obj);
 typedef struct wg_component_struct
 {
 	wg_obj object;
-	void * pInterf;
+	void * pInterface;
 } wg_component;
 
 

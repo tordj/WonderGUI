@@ -21,27 +21,35 @@
 =========================================================================*/
 
 
-#ifndef WG_C_GEARBASE_DOT_H
-#define WG_C_GEARBASE_DOT_H
+#ifndef WG_C_GFXBASE_DOT_H
+#define WG_C_GFXBASE_DOT_H
 #pragma once
 
-#include <wg_c_geartypes.h>
+#include <wg_c_gfxtypes.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-//TODO: Not a complete wrapper, just contains what is needed for wg-display project to work.
 
-	int		wg_initGearBase(void);
-	int		wg_exitGearBase(void);
-	int		wg_isGearBaseInitialized(void);
+	int		wg_initGfxBase(void);
+	int		wg_exitGfxBase(void);
+	int		wg_isGfxBaseInitialized(void);
 
-	void	wg_setErrorHandler(void (*errorHandler)(const wg_errorInfo * pError) );
+	wg_obj	wg_defaultBitmapCache();
+
+	void	wg_setDefaultSurfaceFactory( wg_obj factory );
+	wg_obj	wg_defaultSurfaceFactory();
+
+	void	wg_setDefaultGfxDevice( wg_obj device );
+	wg_obj	wg_defaultGfxDevice();
+
+	void	wg_setDefaultToSRGB( int bSRGB );
+	int		wg_defaultToSRGB();
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //WG_C_GEARBASE_DOT_H
+#endif //WG_C_GFXBASE_DOT_H

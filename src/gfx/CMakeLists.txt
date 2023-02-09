@@ -51,6 +51,8 @@ set( SOURCES
 	c-api/wg_c_color.h
 	c-api/wg_c_geo.cpp
 	c-api/wg_c_geo.h
+	c-api/wg_c_gfxbase.cpp
+	c-api/wg_c_gfxbase.h
 	c-api/wg_c_gfxdevice.cpp
 	c-api/wg_c_gfxdevice.h
 	c-api/wg_c_gfxtypes.h

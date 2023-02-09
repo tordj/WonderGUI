@@ -38,8 +38,8 @@ wg_obj wg_createStreamSplitter()
 
 wg_obj wg_createStreamSplitterWithOutputs(wg_component output1, wg_component output2)
 {
-	GfxStreamSink_p pSink1(reinterpret_cast<Object*>(output1.object), *reinterpret_cast<GfxStreamSink*>(output1.interf));
-	GfxStreamSink_p pSink2(reinterpret_cast<Object*>(output2.object), *reinterpret_cast<GfxStreamSink*>(output2.interf));
+	GfxStreamSink_p pSink1(reinterpret_cast<Object*>(output1.object), *reinterpret_cast<GfxStreamSink*>(output1.pInterface));
+	GfxStreamSink_p pSink2(reinterpret_cast<Object*>(output2.object), *reinterpret_cast<GfxStreamSink*>(output2.pInterface));
 
 	auto p = GfxStreamSplitter::create( { pSink1, pSink2 });
 	p->retain();
@@ -60,13 +60,13 @@ void wg_clearStreamSplitterOutputs(wg_obj streamSplitter)
 
 void wg_addStreamSplitterOutput(wg_obj streamSplitter, wg_component output)
 {
-	GfxStreamSink_p pSink(reinterpret_cast<Object*>(output.object), *reinterpret_cast<GfxStreamSink*>(output.interf));
+	GfxStreamSink_p pSink(reinterpret_cast<Object*>(output.object), *reinterpret_cast<GfxStreamSink*>(output.pInterface));
 	getPtr(streamSplitter)->addOutput(pSink);
 
 }
 
 void wg_removeStreamSplitterOutput(wg_obj streamSplitter, wg_component output)
 {
-	GfxStreamSink_p pSink(reinterpret_cast<Object*>(output.object), *reinterpret_cast<GfxStreamSink*>(output.interf));
+	GfxStreamSink_p pSink(reinterpret_cast<Object*>(output.object), *reinterpret_cast<GfxStreamSink*>(output.pInterface));
 	getPtr(streamSplitter)->removeOutput(pSink);
 }

@@ -27,17 +27,17 @@
 
 using namespace wg;
 
-int wg_init()
+int wg_initGearBase()
 {
 	return GearBase::init();
 }
 
-int wg_exit()
+int wg_exitGearBase()
 {
 	return GearBase::exit();
 }
 
-int wg_isInitialized()
+int wg_isGearBaseInitialized()
 {
 	return GearBase::isInitialized();
 }
