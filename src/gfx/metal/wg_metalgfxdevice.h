@@ -147,7 +147,7 @@ namespace wg
             BGRA8_linear,
             BGRX8_sRGB,
             BGRA8_sRGB,
-            A_8
+            Alpha_8
         };
         
         
