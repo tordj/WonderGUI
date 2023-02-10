@@ -41,8 +41,8 @@ extern "C" {
 	typedef struct	wg_pixelBuffer_struct		// NOT BINARY EQUIVALENT!
 	{
 		wg_pixelFormat	format;
-		uint8_t* pPixels;
-		const wg_color8* pPalette;
+		uint8_t* pixels;
+		const wg_color8* palette;
 		wg_rectI		rect;
 		int				pitch;
 	} wg_pixelBuffer;
