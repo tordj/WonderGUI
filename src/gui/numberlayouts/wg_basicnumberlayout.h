@@ -58,7 +58,7 @@ namespace wg
 
 			Placement	placement = Placement::East;	///< Alignment of displayed value. Default is East, i.e. right justified and vertically centered.
 
-			String		prefix;							///< A prefix to be displayed left of the value e.g. '$' or '£'. Negative values display the minus sign before this prefix unless prefixNegative is set. 
+			String		prefix;							///< A prefix to be displayed left of the value e.g. '$' or 'Â£'. Negative values display the minus sign before this prefix unless prefixNegative is set. 
 			String		prefixNegative;					///< A separate prefix to display for negative values only, should include the minus sign.
 
 			TextStyle_p	style;							///< TextStyle for the number, including decimal sign, group separator and (if prefixNegative not set) the minus sign.

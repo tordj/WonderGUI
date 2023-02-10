@@ -10,7 +10,9 @@ $match = "any"					# word, begin, end, any
 $separator = "="
 $tasks = []
 $bSilent = false
-
+$bRecursive = false
+$files = []
+$bDryrun = false
 
 def generateRegexp( match, string )
 	if match == 'any'
@@ -35,6 +37,10 @@ def getParamsAndStatementFile()
 			$separator = $*.shift
 		elsif param == "-silent"
 			$bSilent = true
+		elsif param == "-recursive"
+			$bRecursive = true
+		elsif param == "-dryrun"
+			$bDryrun = true
 		else
 			$statementFile = param
 			break
@@ -65,7 +71,9 @@ end
 def printUsage()
 	printf "usage: multirep [params] [statementFile] file1 [file2 [...]]\n\n"
 	puts "params:"
+	puts "-dryrun          Do not save changes to files."
 	puts "-match [part]    Part of words to match (whole/begin/end/any)."
+	puts "-recursive	   Search for all files recursively."
 	puts "-sep   [string]  Separator used in statementFile (default: '=')"
 	puts "-silent          Less verbose output"
 	puts
@@ -90,11 +98,25 @@ end
 loadStatements( $statementFile )
 
 
+### Generate list of files to search
+
+if( $bRecursive )
+
+	for exp in $*
+		$files += Dir.glob( File.join("**", exp ) )
+	end
+
+else
+	$files = $*
+end
+
+
+
 ### Start the processing
 
 printf( "%d replace statements to run on %d files.\n", $tasks.size, $*.length )
 
-for fileName in $*
+for fileName in $files
 	
 	if( $bSilent == false )
 		print "Processing: " + fileName + "..."
@@ -123,9 +145,11 @@ for fileName in $*
 		else
 			print " #{modifiedLines} lines changed.\n"
 		end
-		f = File.new( fileName, "w")
-		f.puts content
-		f.close
+		if( $bDryrun == false )
+			f = File.new( fileName, "w")
+			f.puts content
+			f.close
+		end
 	elsif( $bSilent == false )
 		print "\n"
 	end
