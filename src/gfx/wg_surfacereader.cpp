@@ -76,27 +76,27 @@ namespace wg
 			return nullptr;
 		}
 
-		// Read and prepare CLUT
+		// Read and prepare palette
 
-		int clutBytes = header.paletteEntries*sizeof(Color8) + header.paletteDecompressMargin;
-		Color8 * pClut = nullptr;
-		if( clutBytes > 0 )
+		int paletteBytes = header.paletteEntries*sizeof(Color8) + header.paletteDecompressMargin;
+		Color8 * pPalette = nullptr;
+		if( paletteBytes > 0 )
 		{
-			pClut = (Color8*) GfxBase::memStackAlloc(clutBytes);
+			pPalette = (Color8*) GfxBase::memStackAlloc(paletteBytes);
 
-			// We only support uncompressed CLUT for the moment
+			// We only support uncompressed palette for the moment
 
-			stream.read( (char*) pClut, clutBytes );
+			stream.read( (char*) pPalette, paletteBytes );
 
-			bp.clut = pClut;
+			bp.palette = pPalette;
 		}
 
 		// Create surface
 
 		auto pSurface = m_pFactory->createSurface(bp);
 
-		if( clutBytes > 0 )
-			GfxBase::memStackRelease(clutBytes);
+		if( paletteBytes > 0 )
+			GfxBase::memStackRelease(paletteBytes);
 
 		// Read pixels into PixelBuffer
 		// We only support uncompressed pixels for the moment
@@ -169,13 +169,13 @@ namespace wg
 		}
 
 
-		// Prepare CLUT
+		// Prepare palette
 
-		int clutBytes = header.paletteEntries*sizeof(Color8);
-		if( clutBytes > 0 )
+		int paletteBytes = header.paletteEntries*sizeof(Color8);
+		if( paletteBytes > 0 )
 		{
-			bp.clut = (Color8*) pData;
-			pData += clutBytes;
+			bp.palette = (Color8*) pData;
+			pData += paletteBytes;
 		}
 
 		// Create surface
@@ -243,7 +243,7 @@ int SurfaceReader::_addFlagsFromOtherBlueprint(Surface::Blueprint& dest, const S
 	if (extraFlags.canvas)
 		dest.canvas = true;
 
-	if (extraFlags.clut)
+	if (extraFlags.palette)
 		errorCode = 1;
 
 	if (extraFlags.dynamic)

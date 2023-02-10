@@ -79,7 +79,7 @@ namespace wg
 		//.____ Misc __________________________________________________________
 
 		inline	id<MTLTexture>	getTexture() const { return m_texture; }
-		inline	id<MTLTexture>	getClutTexture() const { return m_clutTexture; }
+		inline	id<MTLTexture>	getPaletteTexture() const { return m_paletteTexture; }
 
 	private:
 
@@ -91,7 +91,7 @@ namespace wg
 		~MetalSurface();
 
 		void		    _setPixelDetails( PixelFormat format );
-        void            _setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut );
+        void            _setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pPalette );
 
         void            _createAndSyncTextures( bool bHasTextureData );
         
@@ -105,8 +105,8 @@ namespace wg
         std::atomic<bool>  m_bTextureSyncInProgress;           // Texture is being updated with changes from buffer.
 
 
-		id<MTLTexture>	m_clutTexture = nil;	    // Private texture with clut data, only accessed by GPU.
-        id<MTLBuffer>   m_clutBuffer = nil;         // Shared buffer, containing clut data accessible to CPU.
+		id<MTLTexture>	m_paletteTexture = nil;	    // Private texture with palette data, only accessed by GPU.
+        id<MTLBuffer>   m_paletteBuffer = nil;         // Shared buffer, containing palette data accessible to CPU.
         
 		id<MTLTexture>	m_texture = nil;			// Private texture, only accessed by GPU.
         id<MTLBuffer>   m_textureBuffer = nil;      // Shared buffer, containing texture data accessible to CPU.

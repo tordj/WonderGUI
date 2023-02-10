@@ -340,7 +340,7 @@ typedef struct wg_surface_calls_struct
 	int					(*surfaceAlpha)(wg_obj surface, wg_coordSPX coord);
 	uint32_t			(*colorToPixel)(wg_obj surface, const wg_color* col);
 	wg_color			(*pixelToColor)(wg_obj surface, uint32_t pixel);
-	const wg_color8*	(*surfaceClut)(wg_obj surface);
+	const wg_color8*	(*surfacePalette)(wg_obj surface);
 	const wg_pixelDescription* (*surfacePixelDescription)(wg_obj surface);
 	wg_pixelFormat		(*surfacePixelFormat)(wg_obj surface);
 	int					(*surfacePixelBytes)(wg_obj surface);

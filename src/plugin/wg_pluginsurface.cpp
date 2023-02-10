@@ -56,7 +56,7 @@ namespace wg
 		m_bMipmapped		= PluginCalls::surface->surfaceIsMipmapped(object);
 		m_bTiling			= PluginCalls::surface->surfaceIsTiling(object);
 		m_bCanvas			= PluginCalls::surface->surfaceCanBeCanvas(object);
-		m_pClut				= (Color8*)PluginCalls::surface->surfaceClut(object);
+		m_pPalette				= (Color8*)PluginCalls::surface->surfacePalette(object);
 		m_pBaggage			= reinterpret_cast<Object*>(PluginCalls::surface->getSurfaceBaggage(object));
 	}
 
@@ -99,14 +99,14 @@ namespace wg
 	{
 		auto pixbuf = PluginCalls::surface->allocPixelBufferFromRect(m_cSurface, (const wg_rectI*)&rect);
 
-		return { (PixelFormat) pixbuf.format, pixbuf.pPixels, (Color8*) pixbuf.pClut, * (RectI*) &pixbuf.rect, pixbuf.pitch };
+		return { (PixelFormat) pixbuf.format, pixbuf.pPixels, (Color8*) pixbuf.pPalette, * (RectI*) &pixbuf.rect, pixbuf.pitch };
 	}
 
 	//____ pushPixels() _______________________________________________________
 
 	bool PluginSurface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
+		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pPalette, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
 		return PluginCalls::surface->pushPixelsFromRect(m_cSurface, &pixbuf, (const wg_rectI*) &bufferRect);
 	}
@@ -115,7 +115,7 @@ namespace wg
 
 	void PluginSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
+		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pPalette, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
 		PluginCalls::surface->pullPixelsFromRect(m_cSurface, &pixbuf, (const wg_rectI*)&bufferRect);
 	}
@@ -124,7 +124,7 @@ namespace wg
 
 	void PluginSurface::freePixelBuffer(const PixelBuffer& buffer)
 	{
-		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pClut, *(wg_rectI*)&buffer.rect, buffer.pitch };
+		wg_pixelBuffer pixbuf = { (wg_pixelFormat)buffer.format, buffer.pPixels, (wg_color8*)buffer.pPalette, *(wg_rectI*)&buffer.rect, buffer.pitch };
 
 		PluginCalls::surface->freePixelBuffer(m_cSurface, &pixbuf);
 	}

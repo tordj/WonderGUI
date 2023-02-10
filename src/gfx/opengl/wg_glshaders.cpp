@@ -296,7 +296,7 @@ const char GlGfxDevice::alphaBlitFragmentShader_A8[] =
 
 
 
-const char GlGfxDevice::clutBlitNearestVertexShader[] =
+const char GlGfxDevice::paletteBlitNearestVertexShader[] =
 
 "#version 330 core\n"
 
@@ -338,7 +338,7 @@ const char GlGfxDevice::clutBlitNearestVertexShader[] =
 "   fragColor = texelFetch(extrasId, tintInfoOfs);		   "
 "}                                                         ";
 
-const char GlGfxDevice::clutBlitNearestGradientVertexShader[] =
+const char GlGfxDevice::paletteBlitNearestGradientVertexShader[] =
 
 "#version 330 core\n"
 
@@ -396,36 +396,36 @@ const char GlGfxDevice::clutBlitNearestGradientVertexShader[] =
 "}                                                         ";
 
 
-const char GlGfxDevice::clutBlitNearestFragmentShader[] =
+const char GlGfxDevice::paletteBlitNearestFragmentShader[] =
 
 "#version 330 core\n"
 
 "uniform sampler2D texId;						"
-"uniform sampler2D clutId;						"
+"uniform sampler2D paletteId;						"
 "in vec2 texUV;									"
 "in vec4 fragColor;								"
 "out vec4 color;								"
 "void main()									"
 "{												"
-"   color = texture(clutId, vec2(texture(texId, texUV).r,0.5f)) * fragColor;	"
+"   color = texture(paletteId, vec2(texture(texId, texUV).r,0.5f)) * fragColor;	"
 "}												";
 
-const char GlGfxDevice::clutBlitNearestFragmentShader_A8[] =
+const char GlGfxDevice::paletteBlitNearestFragmentShader_A8[] =
 
 "#version 330 core\n"
 
 "uniform sampler2D texId;						"
-"uniform sampler2D clutId;						"
+"uniform sampler2D paletteId;						"
 "in vec2 texUV;									"
 "in vec4 fragColor;								"
 "out vec4 color;								"
 "void main()									"
 "{												"
-"   color.r = texture(clutId, vec2(texture(texId, texUV).r,0.5f)).a * fragColor.a;	"
+"   color.r = texture(paletteId, vec2(texture(texId, texUV).r,0.5f)).a * fragColor.a;	"
 "}												";
 
 
-const char GlGfxDevice::clutBlitInterpolateVertexShader[] =
+const char GlGfxDevice::paletteBlitInterpolateVertexShader[] =
 
 "#version 330 core\n"
 
@@ -479,7 +479,7 @@ const char GlGfxDevice::clutBlitInterpolateVertexShader[] =
 "   fragColor = texelFetch(extrasId, tintInfoOfs);		   "
 "}                                                         ";
 
-const char GlGfxDevice::clutBlitInterpolateGradientVertexShader[] =
+const char GlGfxDevice::paletteBlitInterpolateGradientVertexShader[] =
 
 "#version 330 core\n"
 
@@ -550,12 +550,12 @@ const char GlGfxDevice::clutBlitInterpolateGradientVertexShader[] =
 "}                                                         ";
 
 
-const char GlGfxDevice::clutBlitInterpolateFragmentShader[] =
+const char GlGfxDevice::paletteBlitInterpolateFragmentShader[] =
 
 "#version 330 core\n"
 
 "uniform sampler2D texId;						"
-"uniform sampler2D clutId;						"
+"uniform sampler2D paletteId;						"
 "in vec2 texUV00;								"
 "in vec2 texUV11;								"
 "in vec2 uvFrac;								"
@@ -567,22 +567,22 @@ const char GlGfxDevice::clutBlitInterpolateFragmentShader[] =
 "   float index01 = texture(texId, vec2(texUV11.x,texUV00.y) ).r;		"
 "   float index10 = texture(texId, vec2(texUV00.x,texUV11.y) ).r;		"
 "   float index11 = texture(texId, texUV11).r;		"
-"   vec4 color00 = texture(clutId, vec2(index00,0.5f));	"
-"   vec4 color01 = texture(clutId, vec2(index01,0.5f));	"
-"   vec4 color10 = texture(clutId, vec2(index10,0.5f));	"
-"   vec4 color11 = texture(clutId, vec2(index11,0.5f));	"
+"   vec4 color00 = texture(paletteId, vec2(index00,0.5f));	"
+"   vec4 color01 = texture(paletteId, vec2(index01,0.5f));	"
+"   vec4 color10 = texture(paletteId, vec2(index10,0.5f));	"
+"   vec4 color11 = texture(paletteId, vec2(index11,0.5f));	"
 
 "   vec4 out0 = color00 * (1-fract(uvFrac.x)) + color01 * fract(uvFrac.x);	"
 "   vec4 out1 = color10 * (1-fract(uvFrac.x)) + color11 * fract(uvFrac.x);	"
 "   color = (out0 * (1-fract(uvFrac.y)) + out1 * fract(uvFrac.y)) * fragColor;	"
 "}												";
 
-const char GlGfxDevice::clutBlitInterpolateFragmentShader_A8[] =
+const char GlGfxDevice::paletteBlitInterpolateFragmentShader_A8[] =
 
 "#version 330 core\n"
 
 "uniform sampler2D texId;						"
-"uniform sampler2D clutId;						"
+"uniform sampler2D paletteId;						"
 "in vec2 texUV00;								"
 "in vec2 texUV11;								"
 "in vec2 uvFrac;								"
@@ -594,10 +594,10 @@ const char GlGfxDevice::clutBlitInterpolateFragmentShader_A8[] =
 "   float index01 = texture(texId, vec2(texUV11.x,texUV00.y) ).r;		"
 "   float index10 = texture(texId, vec2(texUV00.x,texUV11.y) ).r;		"
 "   float index11 = texture(texId, texUV11).r;		"
-"   float color00 = texture(clutId, vec2(index00,0.5f)).a;	"
-"   float color01 = texture(clutId, vec2(index01,0.5f)).a;	"
-"   float color10 = texture(clutId, vec2(index10,0.5f)).a;	"
-"   float color11 = texture(clutId, vec2(index11,0.5f)).a;	"
+"   float color00 = texture(paletteId, vec2(index00,0.5f)).a;	"
+"   float color01 = texture(paletteId, vec2(index01,0.5f)).a;	"
+"   float color10 = texture(paletteId, vec2(index10,0.5f)).a;	"
+"   float color11 = texture(paletteId, vec2(index11,0.5f)).a;	"
 
 "   float out0 = color00 * (1-fract(uvFrac.x)) + color01 * fract(uvFrac.x);	"
 "   float out1 = color10 * (1-fract(uvFrac.x)) + color11 * fract(uvFrac.x);	"

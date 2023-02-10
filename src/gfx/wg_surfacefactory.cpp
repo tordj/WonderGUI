@@ -37,7 +37,7 @@ namespace wg
 
 	//____ createSurface() _______________________________________________________
 
-	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, int flags, const Color8* pClut)
+	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, int flags, const Color8* pPalette)
 	{
 		Surface::Blueprint bp;
 
@@ -49,7 +49,7 @@ namespace wg
 		bp.dynamic = (flags & SurfaceFlag::Dynamic);
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.clut = pClut;
+		bp.palette = pPalette;
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
@@ -58,7 +58,7 @@ namespace wg
 	}
 
 
-	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags, const Color8* pClut)
+	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags, const Color8* pPalette)
 	{
 		Surface::Blueprint bp;
 
@@ -70,7 +70,7 @@ namespace wg
 		bp.dynamic = (flags & SurfaceFlag::Dynamic);
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.clut = pClut;
+		bp.palette = pPalette;
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
@@ -79,7 +79,7 @@ namespace wg
 	}
 
 	Surface_p SurfaceFactory::createSurface(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch,
-		const PixelDescription* pPixelDescription, int flags, const Color8* pClut)
+		const PixelDescription* pPixelDescription, int flags, const Color8* pPalette)
 	{
 		Surface::Blueprint bp;
 
@@ -91,7 +91,7 @@ namespace wg
 		bp.dynamic = (flags & SurfaceFlag::Dynamic);
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.clut = pClut;
+		bp.palette = pPalette;
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;

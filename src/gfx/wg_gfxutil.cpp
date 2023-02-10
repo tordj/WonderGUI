@@ -361,7 +361,7 @@ int Util::gcd(int a, int b)
 
 
 
-			case PixelFormat::A_8:
+			case PixelFormat::Alpha_8:
 				output.format = format;
 				output.bits = 8;
 				output.bIndexed = false;
@@ -389,14 +389,14 @@ int Util::gcd(int a, int b)
 				output.A_shift = 0;
 				return true;
 
-			case PixelFormat::CLUT_8:
-				format = GfxBase::defaultToSRGB() ? PixelFormat::CLUT_8_sRGB : PixelFormat::CLUT_8_linear;
-			case PixelFormat::CLUT_8_sRGB:
-			case PixelFormat::CLUT_8_linear:
+			case PixelFormat::Index_8:
+				format = GfxBase::defaultToSRGB() ? PixelFormat::Index_8_sRGB : PixelFormat::Index_8_linear;
+			case PixelFormat::Index_8_sRGB:
+			case PixelFormat::Index_8_linear:
 				output.format = format;
 				output.bits = 8;
 				output.bIndexed = true;
-				output.bLinear = format == PixelFormat::CLUT_8_linear ? true : false;
+				output.bLinear = format == PixelFormat::Index_8_linear ? true : false;
 				output.bBigEndian = false;
 
 				output.R_bits = 8;
@@ -460,11 +460,11 @@ int Util::gcd(int a, int b)
 		case 8:
 
 			if (description.A_mask == 0xFF)
-				return PixelFormat::A_8;
+				return PixelFormat::Alpha_8;
 			if (description.bIndexed && description.bLinear)
-				return PixelFormat::CLUT_8_linear;
+				return PixelFormat::Index_8_linear;
 			if (description.bIndexed && !description.bLinear)
-				return PixelFormat::CLUT_8_sRGB;
+				return PixelFormat::Index_8_sRGB;
 
 			break;
 

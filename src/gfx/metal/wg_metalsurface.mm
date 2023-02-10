@@ -103,7 +103,7 @@ namespace wg
     {
         _setPixelDetails(m_pixelDescription.format);
         m_bMipmapped = bp.mipmap;
-        _setupMetalTexture( nullptr, 0, nullptr, bp.clut );
+        _setupMetalTexture( nullptr, 0, nullptr, bp.palette );
 
     }
 
@@ -117,7 +117,7 @@ namespace wg
         PixelDescription srcFormat;
         Util::pixelFormatToDescription(m_pixelDescription.format, srcFormat);
 
-        _setupMetalTexture(pBlob->data(), pitch, &srcFormat, bp.clut);
+        _setupMetalTexture(pBlob->data(), pitch, &srcFormat, bp.palette);
     }
     
     MetalSurface::MetalSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
@@ -131,7 +131,7 @@ namespace wg
 		if( pitch == 0 )
 			pitch = bp.size.w * bp.size.h * pPixelDescription->bits/8;
          
-         _setupMetalTexture( pPixels, pitch, pPixelDescription, bp.clut);
+         _setupMetalTexture( pPixels, pitch, pPixelDescription, bp.palette);
 
     }
 
@@ -143,7 +143,7 @@ namespace wg
         
         auto pixbuf = pOther->allocPixelBuffer();
         if( pOther->pushPixels(pixbuf) )
-            _setupMetalTexture(pixbuf.pPixels, pixbuf.pitch, pOther->pixelDescription(), pOther->clut());
+            _setupMetalTexture(pixbuf.pPixels, pixbuf.pitch, pOther->pixelDescription(), pOther->palette());
         else
         {
             // Error handling
@@ -154,7 +154,7 @@ namespace wg
 
     //____ _setupMetalTexture() __________________________________________________________________
 
-    void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut )
+    void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pPalette )
     {
 		m_bTextureSyncInProgress = false;
 
@@ -171,14 +171,14 @@ namespace wg
             _copy( m_size, pPixelDescription, (uint8_t*) pPixels, pitch, m_size );
         }
                
-        // Setup the clut if present
+        // Setup the palette if present
         
-        if( pClut )
+        if( pPalette )
         {
-            // Create the clut buffer and copy data
+            // Create the palette buffer and copy data
 
-            m_clutBuffer = [MetalGfxDevice::s_metalDevice newBufferWithBytes:pClut length:1024 options:MTLResourceStorageModeShared];
-            m_pClut = (Color*) [m_clutBuffer contents];
+            m_paletteBuffer = [MetalGfxDevice::s_metalDevice newBufferWithBytes:pPalette length:1024 options:MTLResourceStorageModeShared];
+            m_pPalette = (Color*) [m_paletteBuffer contents];
         }
         
         //
@@ -214,25 +214,25 @@ namespace wg
         m_texture = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:textureDescriptor];
         [textureDescriptor release];
         
-        // Create the clut texture
+        // Create the palette texture
         
-        if( m_pClut )
+        if( m_pPalette )
         {
-            MTLTextureDescriptor *clutDescriptor = [[MTLTextureDescriptor alloc] init];
+            MTLTextureDescriptor *paletteDescriptor = [[MTLTextureDescriptor alloc] init];
 
-            clutDescriptor.pixelFormat   = m_pixelDescription.bLinear ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatBGRA8Unorm_sRGB;
-            clutDescriptor.width         = 256;
-            clutDescriptor.height        = 1;
-            clutDescriptor.storageMode   = MTLStorageModePrivate;
+            paletteDescriptor.pixelFormat   = m_pixelDescription.bLinear ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatBGRA8Unorm_sRGB;
+            paletteDescriptor.width         = 256;
+            paletteDescriptor.height        = 1;
+            paletteDescriptor.storageMode   = MTLStorageModePrivate;
 
-            m_clutTexture = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:clutDescriptor];
+            m_paletteTexture = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:paletteDescriptor];
             
-            [clutDescriptor release];
+            [paletteDescriptor release];
         }
 
-        // Copy from buffers to textures (pixels and cluts)
+        // Copy from buffers to textures (pixels and palettes)
         
-		if( bHasTextureData || m_pClut )
+		if( bHasTextureData || m_pPalette )
 		{
 			id<MTLCommandBuffer> commandBuffer = [MetalGfxDevice::s_metalCommandQueue commandBuffer];
 			id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
@@ -255,20 +255,20 @@ namespace wg
 									destinationOrigin:  textureOrigin];
 			}
 			
-			if( m_pClut )
+			if( m_pPalette )
 			{
-				MTLSize clutSize = { 256, 1, 1 };
-				MTLOrigin clutOrigin = {0,0,0};
+				MTLSize paletteSize = { 256, 1, 1 };
+				MTLOrigin paletteOrigin = {0,0,0};
 
-				[blitCommandEncoder copyFromBuffer:     m_clutBuffer
+				[blitCommandEncoder copyFromBuffer:     m_paletteBuffer
 									sourceOffset:       0
 									sourceBytesPerRow:  1024
 									sourceBytesPerImage:0
-									sourceSize:         clutSize
-									toTexture:          m_clutTexture
+									sourceSize:         paletteSize
+									toTexture:          m_paletteTexture
 									destinationSlice:   0
 									destinationLevel:   0
-									destinationOrigin:  clutOrigin];
+									destinationOrigin:  paletteOrigin];
 			}
 
 			if(m_bMipmapped)
@@ -331,13 +331,13 @@ namespace wg
                 m_internalFormat = MTLPixelFormatBGRA8Unorm;
                 break;
                 
-			case PixelFormat::CLUT_8:
-			case PixelFormat::CLUT_8_sRGB:
-			case PixelFormat::CLUT_8_linear:
+			case PixelFormat::Index_8:
+			case PixelFormat::Index_8_sRGB:
+			case PixelFormat::Index_8_linear:
 				m_internalFormat = MTLPixelFormatR8Unorm;
 				break;
 
-			case PixelFormat::A_8:
+			case PixelFormat::Alpha_8:
 				m_internalFormat = MTLPixelFormatR8Unorm;
 				break;
 
@@ -360,8 +360,8 @@ namespace wg
         [m_texture release];
         [m_textureBuffer release];
         
-        [m_clutTexture release];
-        [m_clutBuffer release];
+        [m_paletteTexture release];
+        [m_paletteBuffer release];
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -378,7 +378,7 @@ namespace wg
         PixelBuffer pixbuf;
 
         pixbuf.format = m_pixelDescription.format;
-        pixbuf.pClut = m_pClut;
+        pixbuf.pPalette = m_pPalette;
         pixbuf.pitch = m_size.w * m_pixelSize;
         pixbuf.pPixels = ((uint8_t*)[m_textureBuffer contents]) + rect.y * pixbuf.pitch + rect.x * m_pixelSize;
         pixbuf.rect = rect;
@@ -435,13 +435,13 @@ namespace wg
         
         switch (m_pixelDescription.format)
         {
-            case PixelFormat::CLUT_8_sRGB:
-            case PixelFormat::CLUT_8_linear:
+            case PixelFormat::Index_8_sRGB:
+            case PixelFormat::Index_8_linear:
             {
                 uint8_t index = p[pitch * coord.y + coord.x];
-                return HiColor::unpackLinearTab[m_pClut[index].a];
+                return HiColor::unpackLinearTab[m_pPalette[index].a];
             }
-            case PixelFormat::A_8:
+            case PixelFormat::Alpha_8:
             {
                 uint8_t * pPixel = p + pitch * coord.y + coord.x;
                 return HiColor::unpackLinearTab[pPixel[0]];
@@ -472,7 +472,7 @@ namespace wg
 			return true;
 
 		m_texture = nil;
-        m_clutTexture = nil;
+        m_paletteTexture = nil;
 
 		return true;
 	}

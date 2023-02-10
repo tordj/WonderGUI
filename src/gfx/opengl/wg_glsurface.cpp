@@ -95,7 +95,7 @@ namespace wg
 		return GlSurface_p(new GlSurface(bp, pOther));
 	}
 
-	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, int flags, const Color8* pClut)
+	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, int flags, const Color8* pPalette)
 	{
 		Blueprint bp;
 
@@ -107,7 +107,7 @@ namespace wg
 		bp.dynamic = (flags & SurfaceFlag::Dynamic);
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.clut = pClut;
+		bp.palette = pPalette;
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
@@ -118,7 +118,7 @@ namespace wg
 		return GlSurface_p(new GlSurface(bp));
 	}
 
-	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags, const Color8* pClut)
+	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags, const Color8* pPalette)
 	{
 		Blueprint bp;
 
@@ -130,7 +130,7 @@ namespace wg
 		bp.dynamic = (flags & SurfaceFlag::Dynamic);
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.clut = pClut;
+		bp.palette = pPalette;
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
@@ -141,7 +141,7 @@ namespace wg
 		return GlSurface_p(new GlSurface(bp, pBlob, pitch));
 	}
 
-	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription, int flags, const Color8* pClut)
+	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription, int flags, const Color8* pPalette)
 	{
 		Blueprint bp;
 
@@ -153,7 +153,7 @@ namespace wg
 		bp.dynamic = (flags & SurfaceFlag::Dynamic);
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.clut = pClut;
+		bp.palette = pPalette;
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
@@ -194,28 +194,28 @@ namespace wg
 		HANDLE_GLERROR(glGetError());
 
 		_setPixelDetails(m_pixelDescription.format);
-		m_pClut = nullptr;
+		m_pPalette = nullptr;
 
 		if (bp.buffered || m_pixelDescription.bits <= 8)
         {
             g_backingPixels += m_size.w*m_size.h;
             m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
+            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.palette ? 1024 : 0));
 
-            if (bp.clut)
+            if (bp.palette)
             {
-                m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-                memcpy(m_pClut, bp.clut, 1024);
+                m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
+                memcpy(m_pPalette, bp.palette, 1024);
             }
         }
         else
 		{
 			m_pitch = 0;
 
-			if (bp.clut)
+			if (bp.palette)
 			{
-				m_pClut = new Color8[256];
-				memcpy(m_pClut, bp.clut, 1024);
+				m_pPalette = new Color8[256];
+				memcpy(m_pPalette, bp.palette, 1024);
 			}
 
 			if (m_pixelDescription.A_bits > 0)
@@ -234,7 +234,7 @@ namespace wg
 
 
 		_setPixelDetails(m_pixelDescription.format);
-		m_pClut = const_cast<Color8*>(bp.clut);
+		m_pPalette = const_cast<Color8*>(bp.palette);
 
 		if (pitch == 0)
 			pitch = bp.size.w * m_pixelDescription.bits / 8;
@@ -249,10 +249,10 @@ namespace wg
 		{
 			m_pitch = 0;
 
-			if (bp.clut)
+			if (bp.palette)
 			{
-				m_pClut = new Color8[256];
-				memcpy(m_pClut, bp.clut, 1024);
+				m_pPalette = new Color8[256];
+				memcpy(m_pPalette, bp.palette, 1024);
 			}
 
 			if (m_pixelDescription.A_bits > 0)
@@ -262,7 +262,7 @@ namespace wg
 				// Setup a fake PixelBuffer for call to _updateAlphaMap
 				PixelBuffer buf;
 				buf.format = m_pixelDescription.format;
-				buf.pClut = m_pClut;
+				buf.pPalette = m_pPalette;
 				buf.pitch = pitch;
 				buf.pPixels = (uint8_t*) pBlob->data();
 				buf.rect = m_size;
@@ -282,7 +282,7 @@ namespace wg
 		//TODO: Not just default to BGRA_8 if PixelFormat not specified in Blueprint. Instead we should take the most suitable PixelFormat base on pPixelDescription
 		
 		_setPixelDetails(m_pixelDescription.format);
-		m_pClut = nullptr;
+		m_pPalette = nullptr;
 
 		if( !pPixelDescription )
 			pPixelDescription = &m_pixelDescription;
@@ -295,34 +295,34 @@ namespace wg
             g_backingPixels += m_size.w*m_size.h;
 
             m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
+            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.palette ? 1024 : 0));
 
             _copy(m_size, pPixelDescription, pPixels, pitch, m_size);
 
-			// Setup CLUT before calling _setupGlTexture().
+			// Setup palette before calling _setupGlTexture().
 
-			if (bp.clut)
+			if (bp.palette)
 			{
-				m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-				memcpy(m_pClut, bp.clut, 1024);
+				m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
+				memcpy(m_pPalette, bp.palette, 1024);
 			}
 
             _setupGlTexture(m_pBlob->data(), m_pitch);
         }
         else
 		{
-			// Setup CLUT before calling _setupGlTexture().
+			// Setup palette before calling _setupGlTexture().
 
-			if (bp.clut)
+			if (bp.palette)
 			{
-				m_pClut = new Color8[256];
-				memcpy(m_pClut, bp.clut, 1024);
+				m_pPalette = new Color8[256];
+				memcpy(m_pPalette, bp.palette, 1024);
 			}
 
 			// Set blob and pitch temporarily so we can use _copy().
 						
             m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.clut ? 1024 : 0));
+            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.palette ? 1024 : 0));
 
             _copy(m_size, pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size);
 
@@ -338,7 +338,7 @@ namespace wg
 				// Setup a fake PixelBuffer for call to _updateAlphaMap
 				PixelBuffer buf;
 				buf.format = m_pixelDescription.format;
-				buf.pClut = m_pClut;
+				buf.pPalette = m_pPalette;
 				buf.pitch = pitch;
 				buf.pPixels = pPixels;
 				buf.rect = m_size;
@@ -353,7 +353,7 @@ namespace wg
 	{
 		_setPixelDetails(m_pixelDescription.format);
 		m_size	= pOther->pixelSize();
-		m_pClut = nullptr;
+		m_pPalette = nullptr;
 
 		auto pixbuf = pOther->allocPixelBuffer();
 		if( !pOther->pushPixels(pixbuf) )
@@ -371,8 +371,8 @@ namespace wg
 
             if (m_pixelDescription.bIndexed)
             {
-                m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-                memcpy(m_pClut, pOther->clut(), 1024);
+                m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
+                memcpy(m_pPalette, pOther->palette(), 1024);
             }
         }
         else
@@ -381,8 +381,8 @@ namespace wg
 
 			if (m_pixelDescription.bIndexed)
 			{
-				m_pClut = new Color8[256];
-				memcpy(m_pClut, pOther->clut(), 1024);
+				m_pPalette = new Color8[256];
+				memcpy(m_pPalette, pOther->palette(), 1024);
 			}
 
 			if (m_pixelDescription.A_bits > 0)
@@ -432,7 +432,7 @@ namespace wg
 
 		//
 
-		if (m_pClut)
+		if (m_pPalette)
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -441,8 +441,8 @@ namespace wg
 
 			HANDLE_GLERROR(glGetError());
 
-			glGenTextures(1, &m_clutTexture);
-			glBindTexture(GL_TEXTURE_2D, m_clutTexture);
+			glGenTextures(1, &m_paletteTexture);
+			glBindTexture(GL_TEXTURE_2D, m_paletteTexture);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -451,7 +451,7 @@ namespace wg
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-			glTexImage2D(GL_TEXTURE_2D, 0, m_pixelDescription.bLinear ? GL_RGBA8 : GL_SRGB8_ALPHA8, 256, 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, m_pClut);
+			glTexImage2D(GL_TEXTURE_2D, 0, m_pixelDescription.bLinear ? GL_RGBA8 : GL_SRGB8_ALPHA8, 256, 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, m_pPalette);
 
 			HANDLE_GLERROR(glGetError());
 		}
@@ -566,16 +566,16 @@ namespace wg
 				m_pixelSize = 2;
 				break;
 
-			case PixelFormat::CLUT_8:
-			case PixelFormat::CLUT_8_sRGB:
-			case PixelFormat::CLUT_8_linear:
+			case PixelFormat::Index_8:
+			case PixelFormat::Index_8_sRGB:
+			case PixelFormat::Index_8_linear:
 				m_internalFormat = GL_R8;
 				m_accessFormat = GL_RED;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 1;
 				break;
 
-			case PixelFormat::A_8:
+			case PixelFormat::Alpha_8:
 				m_internalFormat = GL_R8;
 				m_accessFormat = GL_RED;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
@@ -604,11 +604,11 @@ namespace wg
 
 		glDeleteTextures( 1, &m_texture );
 
-		if (m_pClut)
+		if (m_pPalette)
 		{
-			glDeleteTextures(1, &m_clutTexture);
+			glDeleteTextures(1, &m_paletteTexture);
 			if (!m_pBlob)
-				delete[] m_pClut;		// Clut is not part of the blob.
+				delete[] m_pPalette;		// Palette is not part of the blob.
 		}
 
 		if (m_pAlphaMap)
@@ -633,7 +633,7 @@ namespace wg
 		if (m_pBlob)
 		{
 			pixbuf.format = m_pixelDescription.format;
-			pixbuf.pClut = m_pClut;
+			pixbuf.pPalette = m_pPalette;
 			pixbuf.pitch = m_pitch;
 			pixbuf.pPixels = ((uint8_t*)m_pBlob->data()) + rect.y * m_pitch + rect.x * m_pixelSize;
 			pixbuf.rect = rect;
@@ -641,7 +641,7 @@ namespace wg
 		else
 		{
 			pixbuf.format = m_pixelDescription.format;
-			pixbuf.pClut = m_pClut;
+			pixbuf.pPalette = m_pPalette;
 			pixbuf.pitch = ((rect.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
             pixbuf.pPixels = new uint8_t[rect.h * pixbuf.pitch];
 			pixbuf.rect = rect;
@@ -735,7 +735,7 @@ namespace wg
 
 			if (m_pixelDescription.bIndexed)
 			{
-				return HiColor::unpackLinearTab[m_pClut[*pPixel].a];
+				return HiColor::unpackLinearTab[m_pPalette[*pPixel].a];
 			}
 			else if (m_pixelDescription.A_bits == 0)
 				return 4096;
@@ -950,12 +950,12 @@ namespace wg
 		case PixelFormat::BGR_565_linear:
 			type = GL_UNSIGNED_SHORT_5_6_5_REV;
 			break;
-		case PixelFormat::A_8:
+		case PixelFormat::Alpha_8:
 			type = GL_UNSIGNED_BYTE;
 			break;
-		case PixelFormat::CLUT_8:
-		case PixelFormat::CLUT_8_sRGB:
-		case PixelFormat::CLUT_8_linear:
+		case PixelFormat::Index_8:
+		case PixelFormat::Index_8_sRGB:
+		case PixelFormat::Index_8_linear:
 			type = GL_UNSIGNED_BYTE;
 			break;
 		default:

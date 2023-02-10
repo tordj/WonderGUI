@@ -689,7 +689,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
     
     SDL_FreeSurface( pLogoImg );
 
-    Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::A_8 );
+    Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::Alpha_8 );
 
     pLogoSurf->copy( CoordI(), pOrgSurf );
     
@@ -764,7 +764,7 @@ void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p p
     
     SDL_FreeSurface( pLogoImg );
 
-    Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::A_8 );
+    Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::Alpha_8 );
 
     pLogoSurf->copy( CoordI(), pOrgSurf );
     

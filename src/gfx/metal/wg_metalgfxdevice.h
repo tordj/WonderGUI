@@ -128,15 +128,15 @@ namespace wg
         enum class TextureIndex
         {
             Texture = 0,
-            Clut = 1,
+            Palette = 1,
             SegPal = 2
         };
         
         enum class BlitFragShader
         {
             Normal = 0,
-            ClutNearest = 1,
-            ClutInterpolated = 2,
+            PaletteNearest = 1,
+            PaletteInterpolated = 2,
             A8Source = 3,
             RGBXSource = 4
         };

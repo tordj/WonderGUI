@@ -846,12 +846,12 @@ namespace wg
 			*m_pDecoder >> bp.tiling;
 
 			bp.buffered = false;
-			bp.clut = nullptr;
+			bp.palette = nullptr;
 
 			if (header.size > 1024)
 			{
-				bp.clut = (Color8*) GfxBase::memStackAlloc(1024);
-				*m_pDecoder >> GfxStream::DataChunk{ 1024, bp.clut };
+				bp.palette = (Color8*) GfxBase::memStackAlloc(1024);
+				*m_pDecoder >> GfxStream::DataChunk{ 1024, bp.palette };
 			}
 
 			if (m_vSurfaces.size() <= surfaceId)
@@ -859,7 +859,7 @@ namespace wg
 
 			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(bp);
 
-			if (bp.clut)
+			if (bp.palette)
 				GfxBase::memStackRelease(1024);
 
 			break;

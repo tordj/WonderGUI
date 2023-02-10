@@ -138,9 +138,9 @@ namespace wg
 			"BGRA_8_linear",
 			"BGRA_4_linear",
 			"BGR_565_linear",
-			"CLUT_8",
-			"CLUT_8_sRGB",
-			"CLUT_8_linear",
+			"Index_8",
+			"Index_8_sRGB",
+			"Index_8_linear",
 			"RGB_565_bigendian",
 			"A_8" };
 

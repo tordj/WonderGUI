@@ -599,7 +599,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 	pColumn = _buildToggleButtonRow("Source Formats", { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
 							PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
 							PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
-							PixelFormat::CLUT_8_linear, PixelFormat::CLUT_8_sRGB, PixelFormat::RGB_565_bigendian, PixelFormat::A_8 },
+							PixelFormat::Index_8_linear, PixelFormat::Index_8_sRGB, PixelFormat::RGB_565_bigendian, PixelFormat::Alpha_8 },
 		m_pDB->srcFormats(), [this](Msg* pMsg) {this->sourceFormatToggled(pMsg); });
 
 	pTopSection->slots << pColumn;
@@ -609,7 +609,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 	pColumn = _buildToggleButtonRow("Dest Formats", { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
 								PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
 								PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
-								PixelFormat::RGB_565_bigendian, PixelFormat::A_8 },
+								PixelFormat::RGB_565_bigendian, PixelFormat::Alpha_8 },
 		m_pDB->destFormats(), [this](Msg* pMsg) {this->destFormatToggled(pMsg); });
 
 	pTopSection->slots << pColumn;

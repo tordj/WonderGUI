@@ -239,13 +239,13 @@ namespace wg
 		BGRA_4_linear,		///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
 		BGR_565_linear,		///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
 
-		CLUT_8,				///< 8 bits of index into the CLUT (Color Lookup Table).
-		CLUT_8_sRGB,		///< 8 bits of index into the CLUT (Color Lookup Table).
-		CLUT_8_linear,		///< 8 bits of index into the CLUT (Color Lookup Table).
+		Index_8,			///< 8 bits of index into the palette.
+		Index_8_sRGB,		///< 8 bits of index into the palette.
+		Index_8_linear,		///< 8 bits of index into the palette.
 
 		RGB_565_bigendian,	///< 3 high bits of green, 5 bits of blue, 5 bits of red and 3 low bits of green in exactly that order in memory.
 
-		A_8,				///< 8 bits of alpha only.
+		Alpha_8,			///< 8 bits of alpha only.
 	};
 
 
@@ -307,7 +307,7 @@ namespace wg
 
 		PixelFormat	format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
-		bool		bIndexed;		///< True if pixels are index into CLUT, no RGB values in pixel.
+		bool		bIndexed;		///< True if pixels are index into palette, no RGB values in pixel.
 		bool		bLinear;		///< True if RGB values are linear (as opposed to in sRGB format, e.g. logarithmic with gamma 2.2).
 		bool 		bBigEndian;		///< Set if 16- or 32-bit pixel is in big-endian format.
 

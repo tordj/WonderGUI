@@ -80,9 +80,9 @@ namespace wg
 
 		//.____ Deprecated ____________________________________________________
 
-		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
-		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
-		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
+		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
+		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
 		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, Surface* pOther, int flags = SurfaceFlag::Static);
 
 		//.____ Misc __________________________________________________________

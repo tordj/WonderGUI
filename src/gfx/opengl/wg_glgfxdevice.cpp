@@ -135,18 +135,18 @@ namespace wg
 		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
 	}
 
-	//____ _setClutBlitUniforms() __________________________________________________
+	//____ _setPaletteBlitUniforms() __________________________________________________
 
-	void GlGfxDevice::_setClutBlitUniforms(GLuint progId, int uboBindingPoint)
+	void GlGfxDevice::_setPaletteBlitUniforms(GLuint progId, int uboBindingPoint)
 	{
 		GLint extrasIdLoc = glGetUniformLocation(progId, "extrasId");
 		GLint texIdLoc = glGetUniformLocation(progId, "texId");
-		GLint clutIdLoc = glGetUniformLocation(progId, "clutId");
+		GLint paletteIdLoc = glGetUniformLocation(progId, "paletteId");
 
 		glUseProgram(progId);
 		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
-		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
+		glUniform1i(paletteIdLoc, 2);			// Needs to be set. Texture unit 2 is used for palette.
 	}
 
 	//____ constructor _____________________________________________________________________
@@ -193,42 +193,42 @@ namespace wg
 		}
 
 
-		m_blitProgMatrix[(int)PixelFormat::A_8][0][0][0] = m_alphaBlitProg[0];
-		m_blitProgMatrix[(int)PixelFormat::A_8][1][0][0] = m_alphaBlitProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Alpha_8][0][0][0] = m_alphaBlitProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Alpha_8][1][0][0] = m_alphaBlitProg[0];
 
-		m_blitProgMatrix[(int)PixelFormat::A_8][0][1][0] = m_alphaBlitGradientProg[0];
-		m_blitProgMatrix[(int)PixelFormat::A_8][1][1][0] = m_alphaBlitGradientProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Alpha_8][0][1][0] = m_alphaBlitGradientProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Alpha_8][1][1][0] = m_alphaBlitGradientProg[0];
 
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][0][0][0] = m_clutBlitNearestProg[0];
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][1][0][0] = m_clutBlitInterpolateProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_linear][0][0][0] = m_paletteBlitNearestProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_linear][1][0][0] = m_paletteBlitInterpolateProg[0];
 
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][0][1][0] = m_clutBlitNearestGradientProg[0];
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][1][1][0] = m_clutBlitInterpolateGradientProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_linear][0][1][0] = m_paletteBlitNearestGradientProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_linear][1][1][0] = m_paletteBlitInterpolateGradientProg[0];
 
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][0][0] = m_clutBlitNearestProg[0];
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][0][0] = m_clutBlitInterpolateProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_sRGB][0][0][0] = m_paletteBlitNearestProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_sRGB][1][0][0] = m_paletteBlitInterpolateProg[0];
 
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][1][0] = m_clutBlitNearestGradientProg[0];
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][1][0] = m_clutBlitInterpolateGradientProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_sRGB][0][1][0] = m_paletteBlitNearestGradientProg[0];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_sRGB][1][1][0] = m_paletteBlitInterpolateGradientProg[0];
 
 
-		m_blitProgMatrix[(int)PixelFormat::A_8][0][0][1] = m_alphaBlitProg[1];
-		m_blitProgMatrix[(int)PixelFormat::A_8][1][0][1] = m_alphaBlitProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Alpha_8][0][0][1] = m_alphaBlitProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Alpha_8][1][0][1] = m_alphaBlitProg[1];
 
-		m_blitProgMatrix[(int)PixelFormat::A_8][0][1][1] = m_alphaBlitGradientProg[1];
-		m_blitProgMatrix[(int)PixelFormat::A_8][1][1][1] = m_alphaBlitGradientProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Alpha_8][0][1][1] = m_alphaBlitGradientProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Alpha_8][1][1][1] = m_alphaBlitGradientProg[1];
 
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][0][0][1] = m_clutBlitNearestProg[1];
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][1][0][1] = m_clutBlitInterpolateProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_linear][0][0][1] = m_paletteBlitNearestProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_linear][1][0][1] = m_paletteBlitInterpolateProg[1];
 
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][0][1][1] = m_clutBlitNearestGradientProg[1];
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][1][1][1] = m_clutBlitInterpolateGradientProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_linear][0][1][1] = m_paletteBlitNearestGradientProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_linear][1][1][1] = m_paletteBlitInterpolateGradientProg[1];
 
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][0][1] = m_clutBlitNearestProg[1];
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][0][1] = m_clutBlitInterpolateProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_sRGB][0][0][1] = m_paletteBlitNearestProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_sRGB][1][0][1] = m_paletteBlitInterpolateProg[1];
 
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][1][1] = m_clutBlitNearestGradientProg[1];
-		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][1][1] = m_clutBlitInterpolateGradientProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_sRGB][0][1][1] = m_paletteBlitNearestGradientProg[1];
+		m_blitProgMatrix[(int)PixelFormat::Index_8_sRGB][1][1][1] = m_paletteBlitInterpolateGradientProg[1];
 
 		LOG_INIT_GLERROR(glGetError());
 
@@ -355,14 +355,14 @@ namespace wg
 		glDeleteProgram(m_alphaBlitProg[1]);
 		glDeleteProgram(m_alphaBlitGradientProg[0]);
 		glDeleteProgram(m_alphaBlitGradientProg[1]);
-		glDeleteProgram(m_clutBlitNearestProg[0]);
-		glDeleteProgram(m_clutBlitNearestProg[1]);
-		glDeleteProgram(m_clutBlitNearestGradientProg[0]);
-		glDeleteProgram(m_clutBlitNearestGradientProg[1]);
-		glDeleteProgram(m_clutBlitInterpolateProg[0]);
-		glDeleteProgram(m_clutBlitInterpolateProg[1]);
-		glDeleteProgram(m_clutBlitInterpolateGradientProg[0]);
-		glDeleteProgram(m_clutBlitInterpolateGradientProg[1]);
+		glDeleteProgram(m_paletteBlitNearestProg[0]);
+		glDeleteProgram(m_paletteBlitNearestProg[1]);
+		glDeleteProgram(m_paletteBlitNearestGradientProg[0]);
+		glDeleteProgram(m_paletteBlitNearestGradientProg[1]);
+		glDeleteProgram(m_paletteBlitInterpolateProg[0]);
+		glDeleteProgram(m_paletteBlitInterpolateProg[1]);
+		glDeleteProgram(m_paletteBlitInterpolateGradientProg[0]);
+		glDeleteProgram(m_paletteBlitInterpolateGradientProg[1]);
 
 		glDeleteProgram(m_plotProg[0]);
 		glDeleteProgram(m_plotProg[1]);
@@ -2372,7 +2372,7 @@ namespace wg
         m_activeCanvasSize = { width, height };
 		m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->m_bMipmapped : false;
 
-		bool bIsAlphaOnly = m_pActiveCanvas ? m_pActiveCanvas->pixelFormat() == PixelFormat::A_8 : false;
+		bool bIsAlphaOnly = m_pActiveCanvas ? m_pActiveCanvas->pixelFormat() == PixelFormat::Alpha_8 : false;
 
 		if (bIsAlphaOnly != bWasAlphaOnly)
 			_setBlendMode(m_activeBlendMode);
@@ -2386,7 +2386,7 @@ namespace wg
 	{
 		LOG_GLERROR(glGetError());
 
-		bool bAlphaOnly = m_pActiveCanvas ? m_pActiveCanvas->pixelFormat() == PixelFormat::A_8 : false;
+		bool bAlphaOnly = m_pActiveCanvas ? m_pActiveCanvas->pixelFormat() == PixelFormat::Alpha_8 : false;
 
 
 		switch (mode)
@@ -2522,11 +2522,11 @@ namespace wg
 			m_pActiveBlitSource = pSurf;
 			pSurf->m_bPendingReads = false;			// Clear this as we pass it by...
 
-			if (pSurf->m_pClut)
+			if (pSurf->m_pPalette)
 			{
 				glActiveTexture(GL_TEXTURE2);
-				GLuint clutTex = pSurf->getClutTexture();
-				glBindTexture(GL_TEXTURE_2D, clutTex);
+				GLuint paletteTex = pSurf->getPaletteTexture();
+				glBindTexture(GL_TEXTURE_2D, paletteTex);
 				glActiveTexture(GL_TEXTURE0);
 
 				assert(glGetError() == 0);
@@ -2626,39 +2626,39 @@ namespace wg
 			LOG_INIT_GLERROR(glGetError());
 		}
 
-		// Create and init Clut Blit shaders
+		// Create and init Palette Blit shaders
 
 		for (int i = 0; i < 2; i++)
 		{
-			GLuint progId = _loadOrCompileProgram(programNb++, clutBlitNearestVertexShader, i == 0 ? clutBlitNearestFragmentShader : clutBlitNearestFragmentShader_A8);
-			_setClutBlitUniforms(progId, uboBindingPoint);
-			m_clutBlitNearestProg[i] = progId;
+			GLuint progId = _loadOrCompileProgram(programNb++, paletteBlitNearestVertexShader, i == 0 ? paletteBlitNearestFragmentShader : paletteBlitNearestFragmentShader_A8);
+			_setPaletteBlitUniforms(progId, uboBindingPoint);
+			m_paletteBlitNearestProg[i] = progId;
 			LOG_INIT_GLERROR(glGetError());
 		}
 
 		for (int i = 0; i < 2; i++)
 		{
-			GLuint progId = _loadOrCompileProgram(programNb++, clutBlitInterpolateVertexShader, i == 0 ? clutBlitInterpolateFragmentShader : clutBlitInterpolateFragmentShader_A8);
-			_setClutBlitUniforms(progId, uboBindingPoint);
-			m_clutBlitInterpolateProg[i] = progId;
+			GLuint progId = _loadOrCompileProgram(programNb++, paletteBlitInterpolateVertexShader, i == 0 ? paletteBlitInterpolateFragmentShader : paletteBlitInterpolateFragmentShader_A8);
+			_setPaletteBlitUniforms(progId, uboBindingPoint);
+			m_paletteBlitInterpolateProg[i] = progId;
 			LOG_INIT_GLERROR(glGetError());
 		}
 
-		// Create and init Clut Blit gradient shaders
+		// Create and init Palette Blit gradient shaders
 
 		for (int i = 0; i < 2; i++)
 		{
-			GLuint progId = _loadOrCompileProgram(programNb++, clutBlitNearestGradientVertexShader, i == 0 ? clutBlitNearestFragmentShader : clutBlitNearestFragmentShader_A8);
-			_setClutBlitUniforms(progId, uboBindingPoint);
-			m_clutBlitNearestGradientProg[i] = progId;
+			GLuint progId = _loadOrCompileProgram(programNb++, paletteBlitNearestGradientVertexShader, i == 0 ? paletteBlitNearestFragmentShader : paletteBlitNearestFragmentShader_A8);
+			_setPaletteBlitUniforms(progId, uboBindingPoint);
+			m_paletteBlitNearestGradientProg[i] = progId;
 			LOG_INIT_GLERROR(glGetError());
 		}
 
 		for (int i = 0; i < 2; i++)
 		{
-			GLuint progId = _loadOrCompileProgram(programNb++, clutBlitInterpolateGradientVertexShader, i == 0 ? clutBlitInterpolateFragmentShader : clutBlitInterpolateFragmentShader_A8);
-			_setClutBlitUniforms(progId, uboBindingPoint);
-			m_clutBlitInterpolateGradientProg[i] = progId;
+			GLuint progId = _loadOrCompileProgram(programNb++, paletteBlitInterpolateGradientVertexShader, i == 0 ? paletteBlitInterpolateFragmentShader : paletteBlitInterpolateFragmentShader_A8);
+			_setPaletteBlitUniforms(progId, uboBindingPoint);
+			m_paletteBlitInterpolateGradientProg[i] = progId;
 			LOG_INIT_GLERROR(glGetError());
 		}
 
@@ -2829,17 +2829,17 @@ namespace wg
 		programs[prg++] = m_alphaBlitGradientProg[0];
 		programs[prg++] = m_alphaBlitGradientProg[1];
 
-		programs[prg++] = m_clutBlitNearestProg[0];
-		programs[prg++] = m_clutBlitNearestProg[1];
+		programs[prg++] = m_paletteBlitNearestProg[0];
+		programs[prg++] = m_paletteBlitNearestProg[1];
 
-		programs[prg++] = m_clutBlitInterpolateProg[0];
-		programs[prg++] = m_clutBlitInterpolateProg[1];
+		programs[prg++] = m_paletteBlitInterpolateProg[0];
+		programs[prg++] = m_paletteBlitInterpolateProg[1];
 
-		programs[prg++] = m_clutBlitNearestGradientProg[0];
-		programs[prg++] = m_clutBlitNearestGradientProg[1];
+		programs[prg++] = m_paletteBlitNearestGradientProg[0];
+		programs[prg++] = m_paletteBlitNearestGradientProg[1];
 
-		programs[prg++] = m_clutBlitInterpolateGradientProg[0];
-		programs[prg++] = m_clutBlitInterpolateGradientProg[1];
+		programs[prg++] = m_paletteBlitInterpolateGradientProg[0];
+		programs[prg++] = m_paletteBlitInterpolateGradientProg[1];
 
 		programs[prg++] = m_plotProg[0];
 		programs[prg++] = m_plotProg[1];

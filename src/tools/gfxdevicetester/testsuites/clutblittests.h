@@ -1,17 +1,17 @@
 #include "testsuite.h"
 
-class ClutBlitTests : public TestSuite
+class PaletteBlitTests : public TestSuite
 {
 public:
-	ClutBlitTests()
+	PaletteBlitTests()
 	{
-		name = "ClutBlitTests";
+		name = "PaletteBlitTests";
 
-		addTest("ClutBlit", &ClutBlitTests::setNearestPicture, &ClutBlitTests::blit, &ClutBlitTests::dummy);
-		addTest("ClutRotScaleBlit", &ClutBlitTests::setNearestPicture, &ClutBlitTests::rotScaleBlit, &ClutBlitTests::dummy);
-		addTest("ClutRotScaleBlitInterpolate", &ClutBlitTests::setInterpolatedPicture, &ClutBlitTests::rotScaleBlit, &ClutBlitTests::dummy);
-		addTest("ClutStretchBlit", &ClutBlitTests::setNearestPicture, &ClutBlitTests::stretchBlit, &ClutBlitTests::dummy);
-		addTest("ClutStretchBlitInterpolated", &ClutBlitTests::setInterpolatedPicture, &ClutBlitTests::stretchBlit, &ClutBlitTests::dummy);
+		addTest("PaletteBlit", &PaletteBlitTests::setNearestPicture, &PaletteBlitTests::blit, &PaletteBlitTests::dummy);
+		addTest("PaletteRotScaleBlit", &PaletteBlitTests::setNearestPicture, &PaletteBlitTests::rotScaleBlit, &PaletteBlitTests::dummy);
+		addTest("PaletteRotScaleBlitInterpolate", &PaletteBlitTests::setInterpolatedPicture, &PaletteBlitTests::rotScaleBlit, &PaletteBlitTests::dummy);
+		addTest("PaletteStretchBlit", &PaletteBlitTests::setNearestPicture, &PaletteBlitTests::stretchBlit, &PaletteBlitTests::dummy);
+		addTest("PaletteStretchBlitInterpolated", &PaletteBlitTests::setInterpolatedPicture, &PaletteBlitTests::stretchBlit, &PaletteBlitTests::dummy);
 
 	}
 

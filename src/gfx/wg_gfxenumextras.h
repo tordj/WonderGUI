@@ -57,7 +57,7 @@ namespace wg
 	const static Direction       Direction_max       = Direction::Left;
 	const static Axis            Axis_max            = Axis::Y;
 	const static CanvasInit      CanvasInit_max      = CanvasInit::Clear;
-	const static PixelFormat     PixelFormat_max     = PixelFormat::A_8;
+	const static PixelFormat     PixelFormat_max     = PixelFormat::Alpha_8;
 	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
 	const static CanvasRef       CanvasRef_max       = CanvasRef::Canvas_32;
 	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::CanvasList;
@@ -69,7 +69,7 @@ namespace wg
 	const static int             Direction_size      = (int)Direction::Left + 1;
 	const static int             Axis_size           = (int)Axis::Y + 1;
 	const static int             CanvasInit_size     = (int)CanvasInit::Clear + 1;
-	const static int             PixelFormat_size    = (int)PixelFormat::A_8 + 1;
+	const static int             PixelFormat_size    = (int)PixelFormat::Alpha_8 + 1;
 	const static int             GfxFlip_size        = (int)GfxFlip::Rot270FlipY + 1;
 	const static int             CanvasRef_size      = (int)CanvasRef::Canvas_32 + 1;
 	const static int             GfxChunkId_size     = (int)GfxChunkId::CanvasList + 1;

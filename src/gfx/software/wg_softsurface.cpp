@@ -73,9 +73,9 @@ namespace wg
 	}
 
 
-	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, int flags, const Color8 * pClut )
+	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, int flags, const Color8 * pPalette )
 	{
-		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
+		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::Index_8 || format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear) && pPalette == nullptr))
 			return SoftSurface_p();
 
 		Blueprint bp;
@@ -88,7 +88,7 @@ namespace wg
 		bp.dynamic = (flags & SurfaceFlag::Dynamic);
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.clut = pClut;
+		bp.palette = pPalette;
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
@@ -96,9 +96,9 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(bp));
 	}
 
-	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut)
+	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pPalette)
 	{
-		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0 )
+		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::Index_8 || format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear) && pPalette == nullptr) || !pBlob || pitch % 4 != 0 )
 			return SoftSurface_p();
 
 		Blueprint bp;
@@ -111,7 +111,7 @@ namespace wg
 		bp.dynamic = (flags & SurfaceFlag::Dynamic);
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.clut = pClut;
+		bp.palette = pPalette;
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
@@ -119,10 +119,10 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(bp, pBlob, pitch));
 	}
 
-	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut )
+	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pPalette )
 	{
 		if (format == PixelFormat::Undefined || format < PixelFormat_min || format > PixelFormat_max ||
-			 ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
+			 ((format == PixelFormat::Index_8 || format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear) && pPalette == nullptr) || pPixels == nullptr || pitch <= 0 )
 			return SoftSurface_p();
 
 		Blueprint bp;
@@ -135,7 +135,7 @@ namespace wg
 		bp.dynamic = (flags & SurfaceFlag::Dynamic);
 		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
 		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.clut = pClut;
+		bp.palette = pPalette;
 
 		if( flags & SurfaceFlag::Bilinear )
 			bp.sampleMethod = SampleMethod::Bilinear;
@@ -167,17 +167,17 @@ namespace wg
 	SoftSurface::SoftSurface( const Blueprint& bp ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest )
 	{
 		m_pitch = ((bp.size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
-		m_pBlob = Blob::create( m_pitch*bp.size.h + (bp.clut ? 1024 : 0) );
+		m_pBlob = Blob::create( m_pitch*bp.size.h + (bp.palette ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
-		if (bp.clut)
+		if (bp.palette)
 		{
-			m_pClut = (Color8*)(m_pData + m_pitch * bp.size.h);
-			memcpy(m_pClut, bp.clut, 1024);
-			_makeClut4096();
+			m_pPalette = (Color8*)(m_pData + m_pitch * bp.size.h);
+			memcpy(m_pPalette, bp.palette, 1024);
+			_makePalette4096();
 		}
 		else
-			m_pClut = nullptr;
+			m_pPalette = nullptr;
 
 		_initTiling();
 	}
@@ -187,16 +187,16 @@ namespace wg
 		m_pitch = pitch > 0 ? pitch : bp.size.w * m_pixelDescription.bits/8;
 		m_pBlob = pBlob;
 		m_pData = (uint8_t*) m_pBlob->data();
-		m_pClut = const_cast<Color8*>(bp.clut);
-		if( m_pClut )
-			_makeClut4096();
+		m_pPalette = const_cast<Color8*>(bp.palette);
+		if( m_pPalette )
+			_makePalette4096();
 
 		_initTiling();
 	}
 
 	SoftSurface::SoftSurface(const Blueprint& bp, uint8_t * pPixels, int pitch) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
 	{
-		// This constructor creates the surface in place, using the pixels (and clut if present in BP) where they are.
+		// This constructor creates the surface in place, using the pixels (and palette if present in BP) where they are.
 		
 		if( pitch == 0 )
 			pitch = bp.size.w * m_pixelDescription.bits/8;
@@ -205,13 +205,13 @@ namespace wg
 		m_pBlob = nullptr;
 		m_pData = pPixels;
 
-		if (bp.clut)
+		if (bp.palette)
 		{
-			m_pClut = const_cast<Color8*>(bp.clut);
-			_makeClut4096();
+			m_pPalette = const_cast<Color8*>(bp.palette);
+			_makePalette4096();
 		}
 		else
-			m_pClut = nullptr;
+			m_pPalette = nullptr;
 
 		_initTiling();
 	}
@@ -229,19 +229,19 @@ namespace wg
 			pitch = bp.size.w * pPixelDescription->bits/8;
 		
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
-		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.clut ? 1024 : 0) );
+		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.palette ? 1024 : 0) );
 		m_pData = (uint8_t*)m_pBlob->data();
 
 		_copy(bp.size, pPixelDescription, pPixels, pitch, bp.size);
 
-		if (bp.clut)
+		if (bp.palette)
 		{
-			m_pClut = (Color8*)(m_pData + m_pitch * bp.size.h);
-			memcpy(m_pClut, bp.clut, 1024);
-			_makeClut4096();
+			m_pPalette = (Color8*)(m_pData + m_pitch * bp.size.h);
+			memcpy(m_pPalette, bp.palette, 1024);
+			_makePalette4096();
 		}
 		else
-			m_pClut = nullptr;
+			m_pPalette = nullptr;
 
 		_initTiling();
 	}
@@ -263,19 +263,19 @@ namespace wg
 
 		m_size = size;
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
-		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
+		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->palette() ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
 		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pPixels, pitch, RectI(size) );
 
-		if ( pOther->clut() )
+		if ( pOther->palette() )
 		{
-			m_pClut = (Color8*)(m_pData + m_pitch * size.h);
-			memcpy(m_pClut, pOther->clut(), 1024);
-			_makeClut4096();
+			m_pPalette = (Color8*)(m_pData + m_pitch * size.h);
+			memcpy(m_pPalette, pOther->palette(), 1024);
+			_makePalette4096();
 		}
 		else
-			m_pClut = nullptr;
+			m_pPalette = nullptr;
 
 		pOther->freePixelBuffer(pixelbuffer);
 
@@ -286,7 +286,7 @@ namespace wg
 
 	SoftSurface::~SoftSurface()
 	{
-		delete [] m_pClut4096;
+		delete [] m_pPalette4096;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -302,7 +302,7 @@ namespace wg
 	{
 		PixelBuffer	buffer;
 		buffer.format = m_pixelDescription.format;
-		buffer.pClut = m_pClut;
+		buffer.pPalette = m_pPalette;
 		buffer.pitch = m_pitch;
 		buffer.pPixels = m_pData;
 		buffer.rect = { 0,0,m_size };
@@ -340,7 +340,7 @@ namespace wg
 	{
 		PixelBuffer	buf;
 		buf.pPixels = m_pData + m_pitch*rect.y + rect.x*m_pixelDescription.bits/8;
-		buf.pClut = m_pClut;
+		buf.pPalette = m_pPalette;
 		buf.format = m_pixelDescription.format;
 		buf.rect = rect;
 		buf.pitch = m_pitch;
@@ -410,21 +410,21 @@ namespace wg
 		}
 	}
 
-	//____ _makeClut4096() ____________________________________________________
+	//____ _makePalette4096() ____________________________________________________
 
-	void SoftSurface::_makeClut4096()
+	void SoftSurface::_makePalette4096()
 	{
-		m_pClut4096 = new HiColor[256];
+		m_pPalette4096 = new HiColor[256];
 
-		HiColor * p = m_pClut4096;
+		HiColor * p = m_pPalette4096;
 		const int16_t* pUnpackTab = GfxBase::defaultToSRGB() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		for (int i = 0; i < 256; i++)
 		{
-			p[i].r = pUnpackTab[m_pClut[i].r];
-			p[i].g = pUnpackTab[m_pClut[i].g];
-			p[i].b = pUnpackTab[m_pClut[i].b];
-			p[i].a = HiColor::unpackLinearTab[m_pClut[i].a];
+			p[i].r = pUnpackTab[m_pPalette[i].r];
+			p[i].g = pUnpackTab[m_pPalette[i].g];
+			p[i].b = pUnpackTab[m_pPalette[i].b];
+			p[i].a = HiColor::unpackLinearTab[m_pPalette[i].a];
 		}
 	}
 

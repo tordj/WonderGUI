@@ -84,7 +84,7 @@ typedef struct
     float2 texUV;
 } BlitFragInput;
 
-//____ ClutBlitInterpolateFragInput ______________________________________________
+//____ PaletteBlitInterpolateFragInput ______________________________________________
 
 typedef struct 
 {
@@ -93,7 +93,7 @@ typedef struct
     float2 texUV00;
     float2 texUV11;
     float2 uvFrac;
- } ClutBlitInterpolateFragInput;
+ } PaletteBlitInterpolateFragInput;
 
 //____ SegmentsFragInput ______________________________________________
 
@@ -503,49 +503,49 @@ fragment float4 alphaBlitFragmentShader_A8(BlitFragInput in [[stage_in]],
 
 
 
-//____ clutBlitNearestFragmentShader() ____________________________________________
+//____ paletteBlitNearestFragmentShader() ____________________________________________
 
-fragment float4 clutBlitNearestFragmentShader(BlitFragInput in [[stage_in]],
+fragment float4 paletteBlitNearestFragmentShader(BlitFragInput in [[stage_in]],
                                     texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> clutTexture [[ texture(1) ]],
+                                    texture2d<half> paletteTexture [[ texture(1) ]],
                                     sampler textureSampler [[ sampler(0) ]])
 {
-    constexpr sampler clutSampler (mag_filter::nearest,
+    constexpr sampler paletteSampler (mag_filter::nearest,
                                       min_filter::nearest);
 
     const float colorIndex = colorTexture.sample(textureSampler, in.texUV).r;
-    const half4 colorSample = clutTexture.sample(clutSampler, {colorIndex,0.5f} );
+    const half4 colorSample = paletteTexture.sample(paletteSampler, {colorIndex,0.5f} );
 
 //    return in.color;
     return float4(colorSample) * in.color;
 };
 
-//____ clutBlitNearestFragmentShader_A8() ____________________________________________
+//____ paletteBlitNearestFragmentShader_A8() ____________________________________________
 
-fragment float4 clutBlitNearestFragmentShader_A8(BlitFragInput in [[stage_in]],
+fragment float4 paletteBlitNearestFragmentShader_A8(BlitFragInput in [[stage_in]],
                                     texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> clutTexture [[ texture(1) ]],
+                                    texture2d<half> paletteTexture [[ texture(1) ]],
                                     sampler textureSampler [[ sampler(0) ]])
 {
-    constexpr sampler clutSampler (mag_filter::nearest,
+    constexpr sampler paletteSampler (mag_filter::nearest,
                                       min_filter::nearest);
 
     const float colorIndex = colorTexture.sample(textureSampler, in.texUV).r;
-    const float colorSample = clutTexture.sample(clutSampler, {colorIndex,0.5f} ).a;
+    const float colorSample = paletteTexture.sample(paletteSampler, {colorIndex,0.5f} ).a;
 
     return { colorSample * in.color.a, 0.0, 0.0, 0.0 };
 };
 
 
-//____ clutBlitInterpolateVertexShader() _______________________________________________
+//____ paletteBlitInterpolateVertexShader() _______________________________________________
 
-vertex ClutBlitInterpolateFragInput
-clutBlitInterpolateVertexShader(uint vertexID [[vertex_id]],
+vertex PaletteBlitInterpolateFragInput
+paletteBlitInterpolateVertexShader(uint vertexID [[vertex_id]],
              constant Vertex *pVertices [[buffer(0)]],
              constant vector_float4  *pExtras [[buffer(1)]],
              constant Uniform * pUniform[[buffer(2)]])
 {
-    ClutBlitInterpolateFragInput out;
+    PaletteBlitInterpolateFragInput out;
 
     float2 pos = (vector_float2) pVertices[vertexID].coord.xy;
 
@@ -575,15 +575,15 @@ clutBlitInterpolateVertexShader(uint vertexID [[vertex_id]],
     return out;
 }
 
-//____ clutBlitInterpolateGradientVertexShader() _______________________________________________
+//____ paletteBlitInterpolateGradientVertexShader() _______________________________________________
 
-vertex ClutBlitInterpolateFragInput
-clutBlitInterpolateGradientVertexShader(uint vertexID [[vertex_id]],
+vertex PaletteBlitInterpolateFragInput
+paletteBlitInterpolateGradientVertexShader(uint vertexID [[vertex_id]],
              constant Vertex *pVertices [[buffer(0)]],
              constant vector_float4  *pExtras [[buffer(1)]],
              constant Uniform * pUniform[[buffer(2)]])
 {
-    ClutBlitInterpolateFragInput out;
+    PaletteBlitInterpolateFragInput out;
 
     float2 pos = (vector_float2) pVertices[vertexID].coord.xy;
 
@@ -618,24 +618,24 @@ clutBlitInterpolateGradientVertexShader(uint vertexID [[vertex_id]],
     return out;
 }
 
-//____ clutBlitInterpolateFragmentShader() ____________________________________________
+//____ paletteBlitInterpolateFragmentShader() ____________________________________________
 
-fragment float4 clutBlitInterpolateFragmentShader(ClutBlitInterpolateFragInput in [[stage_in]],
+fragment float4 paletteBlitInterpolateFragmentShader(PaletteBlitInterpolateFragInput in [[stage_in]],
                                     texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> clutTexture [[ texture(1) ]],
+                                    texture2d<half> paletteTexture [[ texture(1) ]],
                                     sampler textureSampler [[ sampler(0) ]])
 {
-    constexpr sampler clutSampler (mag_filter::nearest,
+    constexpr sampler paletteSampler (mag_filter::nearest,
                                       min_filter::nearest);
 
    float index00 = colorTexture.sample(textureSampler, in.texUV00).r;
    float index01 = colorTexture.sample(textureSampler, float2(in.texUV11.x,in.texUV00.y) ).r;
    float index10 = colorTexture.sample(textureSampler, float2(in.texUV00.x,in.texUV11.y) ).r;
    float index11 = colorTexture.sample(textureSampler, in.texUV11).r;
-   half4 color00 = clutTexture.sample(clutSampler, float2(index00,0.5f));
-   half4 color01 = clutTexture.sample(clutSampler, float2(index01,0.5f));
-   half4 color10 = clutTexture.sample(clutSampler, float2(index10,0.5f));
-   half4 color11 = clutTexture.sample(clutSampler, float2(index11,0.5f));
+   half4 color00 = paletteTexture.sample(paletteSampler, float2(index00,0.5f));
+   half4 color01 = paletteTexture.sample(paletteSampler, float2(index01,0.5f));
+   half4 color10 = paletteTexture.sample(paletteSampler, float2(index10,0.5f));
+   half4 color11 = paletteTexture.sample(paletteSampler, float2(index11,0.5f));
 
    half4 out0 = color00 * (1-fract(in.uvFrac.x)) + color01 * fract(in.uvFrac.x);
    half4 out1 = color10 * (1-fract(in.uvFrac.x)) + color11 * fract(in.uvFrac.x);
@@ -644,24 +644,24 @@ fragment float4 clutBlitInterpolateFragmentShader(ClutBlitInterpolateFragInput i
     return float4(colorSample) * in.color;
 };
 
-//____ clutBlitInterpolateFragmentShader_A8() ____________________________________________
+//____ paletteBlitInterpolateFragmentShader_A8() ____________________________________________
 
-fragment float4 clutBlitInterpolateFragmentShader_A8(ClutBlitInterpolateFragInput in [[stage_in]],
+fragment float4 paletteBlitInterpolateFragmentShader_A8(PaletteBlitInterpolateFragInput in [[stage_in]],
                                     texture2d<float> colorTexture [[ texture(0) ]],
-                                    texture2d<half> clutTexture [[ texture(1) ]],
+                                    texture2d<half> paletteTexture [[ texture(1) ]],
                                     sampler textureSampler [[ sampler(0) ]])
 {
-    constexpr sampler clutSampler (mag_filter::nearest,
+    constexpr sampler paletteSampler (mag_filter::nearest,
                                       min_filter::nearest);
 
    float index00 = colorTexture.sample(textureSampler, in.texUV00).r;
    float index01 = colorTexture.sample(textureSampler, float2(in.texUV11.x,in.texUV00.y) ).r;
    float index10 = colorTexture.sample(textureSampler, float2(in.texUV00.x,in.texUV11.y) ).r;
    float index11 = colorTexture.sample(textureSampler, in.texUV11).r;
-   float color00 = clutTexture.sample(clutSampler, float2(index00,0.5f)).a;
-   float color01 = clutTexture.sample(clutSampler, float2(index01,0.5f)).a;
-   float color10 = clutTexture.sample(clutSampler, float2(index10,0.5f)).a;
-   float color11 = clutTexture.sample(clutSampler, float2(index11,0.5f)).a;
+   float color00 = paletteTexture.sample(paletteSampler, float2(index00,0.5f)).a;
+   float color01 = paletteTexture.sample(paletteSampler, float2(index01,0.5f)).a;
+   float color10 = paletteTexture.sample(paletteSampler, float2(index10,0.5f)).a;
+   float color11 = paletteTexture.sample(paletteSampler, float2(index11,0.5f)).a;
 
    float out0 = color00 * (1-fract(in.uvFrac.x)) + color01 * fract(in.uvFrac.x);
    float out1 = color10 * (1-fract(in.uvFrac.x)) + color11 * fract(in.uvFrac.x);

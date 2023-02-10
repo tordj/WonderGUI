@@ -33,7 +33,7 @@ namespace wg
 	class GfxStream
 	{
 	public:
-		static constexpr int	c_maxBlockSize = 1024+256;		// Includes the block headers!	Must be at least 4096+14+block_header_size due to CLUT possibly included in CreateSurface-chunks.
+		static constexpr int	c_maxBlockSize = 1024+256;		// Includes the block headers!	Must be at least 4096+14+block_header_size due to palette possibly included in CreateSurface-chunks.
 
 		static constexpr int	c_maxClipRects = 256;		// Largest number of patches allowed for a drawing primitive.
 

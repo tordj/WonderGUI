@@ -199,7 +199,7 @@ bool MyApp::saveBitmapFont()
 				pCopy->pullPixels(pixbuf);
 				pCopy->freePixelBuffer(pixbuf);
 				
-				auto pIndexedSurface = pCopy->convert(PixelFormat::CLUT_8_linear);
+				auto pIndexedSurface = pCopy->convert(PixelFormat::Index_8_linear);
 				if( pIndexedSurface )
 				{
 					std::string path = outputPath + ".surf";

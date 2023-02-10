@@ -2732,7 +2732,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		auto pPixelDescSource = m_pBlitSource->pixelDescription();
 		auto pPixelDescDest = m_pRenderLayerSurface->pixelDescription();
 		
-		if ((pPixelDescDest->bLinear || dstFormat == PixelFormat::A_8) && (pPixelDescSource->bLinear || srcFormat == PixelFormat::A_8) )
+		if ((pPixelDescDest->bLinear || dstFormat == PixelFormat::Alpha_8) && (pPixelDescSource->bLinear || srcFormat == PixelFormat::Alpha_8) )
 		{
 			m_pStraightBlitFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(EdgeOp::None)];
 			m_pStraightTileFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(EdgeOp::Tile)];
@@ -2863,7 +2863,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		    format != PixelFormat::BGRX_8_sRGB && format != PixelFormat::BGRX_8_linear &&
 		    format != PixelFormat::BGRA_8_sRGB && format != PixelFormat::BGRA_8_linear &&
 		    format != PixelFormat::BGRA_4_linear && format != PixelFormat::BGR_565_linear &&
-		    format != PixelFormat::A_8 && format != PixelFormat::RGB_565_bigendian )
+		    format != PixelFormat::Alpha_8 && format != PixelFormat::RGB_565_bigendian )
 		{
 			return false;
 		}

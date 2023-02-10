@@ -78,13 +78,13 @@ namespace wg
 		inline uint8_t *	pixels() const { return m_pData; }
 		inline int			tileMaskX() const { return m_srcPosMaskX; }
 		inline int			tileMaskY() const { return m_srcPosMaskY; }
-		inline const HiColor * clut4096() const { return m_pClut4096; }
+		inline const HiColor * palette4096() const { return m_pPalette4096; }
 		
 		//.____ Deprecated ____________________________________________________
 
-		static SoftSurface_p	create(SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
-		static SoftSurface_p	create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
-		static SoftSurface_p	create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static SoftSurface_p	create(SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
+		static SoftSurface_p	create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
+		static SoftSurface_p	create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
 		static SoftSurface_p	create(Surface* pOther, int flags = SurfaceFlag::Static);
 
 		void putPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<uint32_t> &col, int length, bool replace);
@@ -99,7 +99,7 @@ namespace wg
 
 		~SoftSurface();
 
-		void		_makeClut4096();
+		void		_makePalette4096();
 		void		_initTiling();
 
 		int			m_srcPosMaskX = 0;
@@ -110,7 +110,7 @@ namespace wg
 		Blob_p		m_pBlob;
 		uint8_t*	m_pData;
 
-		HiColor*	m_pClut4096 = nullptr;
+		HiColor*	m_pPalette4096 = nullptr;
 	};
 
 

@@ -138,9 +138,9 @@ wg_color wg_pixelToColor(wg_obj surface, uint32_t pixel)
 }
 
 
-const wg_color8* wg_surfaceClut(wg_obj surface)
+const wg_color8* wg_surfacePalette(wg_obj surface)
 {
-	return (const wg_color8 *) getPtr(surface)->clut();
+	return (const wg_color8 *) getPtr(surface)->palette();
 }
 
 
@@ -177,44 +177,44 @@ int wg_surfaceCanBeCanvas(wg_obj surface)
 wg_pixelBuffer wg_allocPixelBuffer(wg_obj surface)
 {
 	auto pixbuf = getPtr(surface)->allocPixelBuffer();
-	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color8*)pixbuf.pClut, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
+	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color8*)pixbuf.pPalette, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
 }
 
 
 wg_pixelBuffer	wg_allocPixelBufferFromRect(wg_obj surface, const wg_rectI* rect)
 {
 	auto pixbuf = getPtr(surface)->allocPixelBuffer(* (RectI*) rect);
-	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color8*)pixbuf.pClut, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
+	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color8*)pixbuf.pPalette, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
 }
 
 
 int wg_pushPixels(wg_obj surface, const wg_pixelBuffer* buffer)
 {
-	return getPtr(surface)->pushPixels( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pClut, * (RectI*)&buffer->rect, buffer->pitch });
+	return getPtr(surface)->pushPixels( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pPalette, * (RectI*)&buffer->rect, buffer->pitch });
 }
 
 
 int wg_pushPixelsFromRect(wg_obj surface, const wg_pixelBuffer* buffer, const wg_rectI* bufferRect)
 {
-	return getPtr(surface)->pushPixels( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pClut, * (RectI*)&buffer->rect, buffer->pitch }, * (const RectI*) bufferRect );
+	return getPtr(surface)->pushPixels( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pPalette, * (RectI*)&buffer->rect, buffer->pitch }, * (const RectI*) bufferRect );
 }
 
 
 void wg_pullPixels(wg_obj surface, const wg_pixelBuffer* buffer)
 {
-	getPtr(surface)->pullPixels({ (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pClut, *(RectI*)&buffer->rect, buffer->pitch });
+	getPtr(surface)->pullPixels({ (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pPalette, *(RectI*)&buffer->rect, buffer->pitch });
 }
 
 
 void wg_pullPixelsFromRect(wg_obj surface, const wg_pixelBuffer* buffer, const wg_rectI* bufferRect)
 {
-	getPtr(surface)->pullPixels({ (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pClut, *(RectI*)&buffer->rect, buffer->pitch }, *(const RectI*)bufferRect);
+	getPtr(surface)->pullPixels({ (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pPalette, *(RectI*)&buffer->rect, buffer->pitch }, *(const RectI*)bufferRect);
 }
 
 
 void wg_freePixelBuffer(wg_obj surface, const wg_pixelBuffer* buffer)
 {
-	getPtr(surface)->freePixelBuffer( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pClut, *(RectI*)&buffer->rect, buffer->pitch } );
+	getPtr(surface)->freePixelBuffer( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pPalette, *(RectI*)&buffer->rect, buffer->pitch } );
 }
 
 
@@ -276,7 +276,7 @@ wg_surfaceBP wg_getSurfaceBlueprint(wg_obj surface)
 
 	dest.buffered		= src.buffered;
 	dest.canvas			= src.canvas;
-	dest.clut			= (wg_color8*)src.clut;
+	dest.palette			= (wg_color8*)src.palette;
 	dest.dynamic		= src.dynamic;
 	dest.format			= (wg_pixelFormat) src.format;
 	dest.identity		= src.identity;

@@ -115,13 +115,13 @@ typedef enum
 	WG_PIXFMT_BGRA_4_LINEAR,		///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
 	WG_PIXFMT_BGR_565_LINEAR,		///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
 
-	WG_PIXFMT_CLUT_8,				///< 8 bits of index into the CLUT (Color Lookup Table).
-	WG_PIXFMT_CLUT_8_SRGB,			///< 8 bits of index into the CLUT (Color Lookup Table).
-	WG_PIXFMT_CLUT_8_LINEAR,		///< 8 bits of index into the CLUT (Color Lookup Table).
+	WG_PIXFMT_INDEX_8,				///< 8 bits of index into the palette.
+	WG_PIXFMT_INDEX_8_SRGB,			///< 8 bits of index into the palette.
+	WG_PIXFMT_INDEX_8_LINEAR,		///< 8 bits of index into the palette.
 
 	WG_PIXFMT_RGB_565_BIGENDIAN,	///< 3 high bits of green, 5 bits of blue, 5 bits of red and 3 low bits of green in exactly that order in memory.
 
-	WG_PIXFMT_A_8
+	WG_PIXFMT_ALPHA_8
 } wg_pixelFormat;
 
 
@@ -131,7 +131,7 @@ typedef struct wg_pixelDescription_struct
 {
 	uint8_t			format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 	int				bits;			///< Number of bits for the pixel, includes any non-used padding bits.
-	uint8_t			bIndexed;		///< True if pixels are index into CLUT, no RGB values in pixel.
+	uint8_t			bIndexed;		///< True if pixels are index into palette, no RGB values in pixel.
 	uint8_t			bLinear;		///< True if RGB values are linear (as opposed to in sRGB format, e.g. logarithmic with gamma 2.2).
 	uint8_t			bBigEndian;		///< Set if 16- or 32-bit pixel is in big-endian format.
 

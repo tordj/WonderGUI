@@ -89,7 +89,7 @@ namespace wg
 	{
 		PixelFormat		format;
 		uint8_t*		pPixels;
-		const Color8*	pClut;
+		const Color8*	pPalette;
 		RectI			rect;
 		int				pitch;
 	};
@@ -177,7 +177,7 @@ namespace wg
 		{
 			bool				buffered = false;
 			bool				canvas = false;
-			const Color8* clut = nullptr;
+			const Color8* palette = nullptr;
 			bool				dynamic = false;
 			PixelFormat			format = PixelFormat::Undefined;
 			int					identity = 0;
@@ -223,7 +223,7 @@ namespace wg
 		virtual	uint32_t	colorToPixel( const HiColor& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
 		virtual	HiColor		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
 
-		inline const Color8* clut() const;
+		inline const Color8* palette() const;
 
 		inline const PixelDescription*	pixelDescription() const; ///< @brief Get the pixel description for the surface.
 		inline PixelFormat	pixelFormat() const;
@@ -279,7 +279,7 @@ namespace wg
 		static const uint8_t *	s_pixelConvTabs[9];
 
 		void				_notifyObservers(int nRects, const RectSPX* pRects);
-		bool 				_copy(const RectI& dstRect, const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const Color8 * pCLUT = nullptr );
+		bool 				_copy(const RectI& dstRect, const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const Color8 * ppalette = nullptr );
 		int					_alpha(CoordSPX coord, const PixelBuffer& buffer);
 
         static bool         _isBlueprintValid( const Blueprint& bp, SizeI maxSize, Surface * pOther = nullptr );
@@ -299,7 +299,7 @@ namespace wg
 		bool				m_bDynamic = false;
 //		bool				m_bOpaque = false;
 
-		Color8 *			m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.
+		Color8 *			m_pPalette = nullptr;					// Pointer at color lookup table. Always 256 entries long.
 
 		Object_p			m_pBaggage;
 		Observer *			m_pObserver = nullptr;
@@ -438,11 +438,11 @@ namespace wg
 		return m_bCanvas;
 	}
 
-	//____ clut() _____________________________________________________________
+	//____ palette() _____________________________________________________________
 
-	const Color8* Surface::clut() const
+	const Color8* Surface::palette() const
 	{
-		return m_pClut;
+		return m_pPalette;
 	}
 
 	//____ pixelDescription() _________________________________________________

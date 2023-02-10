@@ -91,16 +91,16 @@ namespace wg
 		//.____ Misc __________________________________________________________
 
 		inline	GLuint	getTexture() const { return m_texture; }
-		inline	GLuint	getClutTexture() const { return m_clutTexture; }
+		inline	GLuint	getPaletteTexture() const { return m_paletteTexture; }
 
         static unsigned int totalTexturePixels() { return g_texturePixels; }
         static unsigned int totalBackingPixels() { return g_backingPixels; }
 
 		//.____ Deprecated ____________________________________________________
 
-		static GlSurface_p	create(SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
-		static GlSurface_p	create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
-		static GlSurface_p	create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color8* pClut = nullptr);
+		static GlSurface_p	create(SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
+		static GlSurface_p	create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
+		static GlSurface_p	create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
 		static GlSurface_p	create(Surface* pOther, int flags = SurfaceFlag::Static);
 
 
@@ -123,7 +123,7 @@ namespace wg
 		void		_readBackTexture( void * pDest);
 
 
-		GLuint 		m_clutTexture = 0;	// GL clut texture handle.
+		GLuint 		m_paletteTexture = 0;	// GL palette texture handle.
 
 		GLuint 		m_texture = 0;		// GL texture handle.
 		GLint       m_internalFormat;   // GL_RGB8 or GL_RGBA8.

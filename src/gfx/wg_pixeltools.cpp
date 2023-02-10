@@ -330,7 +330,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				}
 				break;
 				
-			case PixelFormat::CLUT_8_sRGB:
+			case PixelFormat::Index_8_sRGB:
 				pReadFunc = readIndex8;
 				if( !dstDesc.bLinear )
 					pTab1 = pSrcPalette;
@@ -343,7 +343,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				}
 				break;
 				
-			case PixelFormat::CLUT_8_linear:
+			case PixelFormat::Index_8_linear:
 				pReadFunc = readIndex8;
 				if( dstDesc.bLinear )
 					pTab1 = pSrcPalette;
@@ -371,7 +371,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				}
 				break;
 
-			case PixelFormat::A_8:
+			case PixelFormat::Alpha_8:
 				pReadFunc = readAlpha8;
 				break;
 			default:
@@ -516,8 +516,8 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				break;
 			}
 
-			case PixelFormat::CLUT_8_sRGB:
-			case PixelFormat::CLUT_8_linear:
+			case PixelFormat::Index_8_sRGB:
+			case PixelFormat::Index_8_linear:
 			{
 				uint8_t		buffer[64*4];
 				int 		nColors = 0;
@@ -631,7 +631,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				break;
 			}
 
-			case PixelFormat::A_8:
+			case PixelFormat::Alpha_8:
 			{
 				uint8_t	buffer[64*4];
 

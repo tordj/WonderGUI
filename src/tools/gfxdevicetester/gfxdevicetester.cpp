@@ -15,7 +15,7 @@
 #include "testsuites/blittests.h"
 #include "testsuites/segmenttests.h"
 #include "testsuites/wavetests.h"
-#include "testsuites/clutblittests.h"
+#include "testsuites/paletteblittests.h"
 #include "testsuites/mipmaptests.h"
 #include "testsuites/blitconsistencytest.h"
 #include "testsuites/piecharttests.h"
@@ -491,7 +491,7 @@ void GfxDeviceTester::setup_tests()
 	add_testsuite(new PatchBlitTests(), new PatchBlitTests());
 	add_testsuite(new SegmentTests(), new SegmentTests());
 	add_testsuite(new WaveTests(), new WaveTests());
-	add_testsuite(new ClutBlitTests(), new ClutBlitTests());
+	add_testsuite(new PaletteBlitTests(), new PaletteBlitTests());
 	add_testsuite(new MipmapTests(), new MipmapTests());
 	add_testsuite(new PieChartTests(), new PieChartTests());
 	add_testsuite(new TintBlitTests(), new TintBlitTests());

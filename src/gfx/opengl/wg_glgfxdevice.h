@@ -162,7 +162,7 @@ namespace wg
 
 		void	_setDrawUniforms(GLuint progId, int uboBindingPoint);
 		void	_setBlitUniforms(GLuint progId, int uboBindingPoint);
-		void	_setClutBlitUniforms(GLuint progId, int uboBindingPoint);
+		void	_setPaletteBlitUniforms(GLuint progId, int uboBindingPoint);
 
 		void	_initTables();
 		float	_scaleThickness(float thickeness, float slope);
@@ -226,11 +226,11 @@ namespace wg
 		GLuint  m_alphaBlitProg[2];								// [RGB/A_8 dest]
 		GLuint  m_alphaBlitGradientProg[2];						// [RGB/A_8 dest]
 
-		GLuint  m_clutBlitNearestProg[2];						// [RGB/A_8 dest]
-		GLuint  m_clutBlitNearestGradientProg[2];				// [RGB/A_8 dest]
+		GLuint  m_paletteBlitNearestProg[2];						// [RGB/A_8 dest]
+		GLuint  m_paletteBlitNearestGradientProg[2];				// [RGB/A_8 dest]
 
-		GLuint  m_clutBlitInterpolateProg[2];					// [RGB/A_8 dest]
-		GLuint  m_clutBlitInterpolateGradientProg[2];			// [RGB/A_8 dest]
+		GLuint  m_paletteBlitInterpolateProg[2];					// [RGB/A_8 dest]
+		GLuint  m_paletteBlitInterpolateGradientProg[2];			// [RGB/A_8 dest]
 
 		GLuint  m_plotProg[2];									// [RGB/A_8 dest]
 		GLuint  m_lineFromToProg[2];							// [RGB/A_8 dest]
@@ -398,18 +398,18 @@ namespace wg
 		static const char alphaBlitFragmentShader[];
 		static const char alphaBlitFragmentShader_A8[];
 
-		static const char clutBlitNearestVertexShader[];
-		static const char clutBlitNearestFragmentShader[];
-		static const char clutBlitNearestFragmentShader_A8[];
-		static const char clutBlitInterpolateVertexShader[];
-		static const char clutBlitInterpolateFragmentShader[];
-		static const char clutBlitInterpolateFragmentShader_A8[];
+		static const char paletteBlitNearestVertexShader[];
+		static const char paletteBlitNearestFragmentShader[];
+		static const char paletteBlitNearestFragmentShader_A8[];
+		static const char paletteBlitInterpolateVertexShader[];
+		static const char paletteBlitInterpolateFragmentShader[];
+		static const char paletteBlitInterpolateFragmentShader_A8[];
 
 		static const char fillGradientVertexShader[];
 		static const char aaFillGradientVertexShader[];
 		static const char blitGradientVertexShader[];
-		static const char clutBlitNearestGradientVertexShader[];
-		static const char clutBlitInterpolateGradientVertexShader[];
+		static const char paletteBlitNearestGradientVertexShader[];
+		static const char paletteBlitInterpolateGradientVertexShader[];
 
 
 		//

@@ -59,7 +59,7 @@ void KernelDB::setSrcFormat(PixelFormat format, bool bOn)
 	if (format >= PixelFormat_min && format <= PixelFormat_max &&
 		format != PixelFormat::Undefined &&
 		format != PixelFormat::BGRA_8 && format != PixelFormat::BGRX_8 &&
-		format != PixelFormat::BGR_8 && format != PixelFormat::CLUT_8 )
+		format != PixelFormat::BGR_8 && format != PixelFormat::Index_8 )
 		m_srcFormats[int(format)] = bOn;
 }
 
@@ -70,8 +70,8 @@ void KernelDB::setDestFormat(PixelFormat format, bool bOn)
 	if (format >= PixelFormat_min && format <= PixelFormat_max &&
 		format != PixelFormat::Undefined &&
 		format != PixelFormat::BGRA_8 && format != PixelFormat::BGRX_8 &&
-		format != PixelFormat::BGR_8 && format != PixelFormat::CLUT_8 &&
-		format != PixelFormat::CLUT_8_linear && format != PixelFormat::CLUT_8_sRGB )
+		format != PixelFormat::BGR_8 && format != PixelFormat::Index_8 &&
+		format != PixelFormat::Index_8_linear && format != PixelFormat::Index_8_sRGB )
 		m_destFormats[int(format)] = bOn;
 }
 
@@ -223,9 +223,9 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 							m_srcFormats[(int)PixelFormat::BGRX_8_linear] ||
 							m_srcFormats[(int)PixelFormat::BGR_565_linear] ||
 							m_srcFormats[(int)PixelFormat::BGR_8_linear] ||
-							m_srcFormats[(int)PixelFormat::CLUT_8_linear] ||
+							m_srcFormats[(int)PixelFormat::Index_8_linear] ||
 							m_srcFormats[(int)PixelFormat::RGB_565_bigendian] ||
-							m_srcFormats[(int)PixelFormat::A_8];
+							m_srcFormats[(int)PixelFormat::Alpha_8];
 
 	bool bHasLinearDest =   m_destFormats[(int)PixelFormat::BGRA_4_linear] ||
 							m_destFormats[(int)PixelFormat::BGRA_8_linear] ||
@@ -233,12 +233,12 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 							m_destFormats[(int)PixelFormat::BGR_565_linear] ||
 							m_destFormats[(int)PixelFormat::BGR_8_linear] ||
 							m_destFormats[(int)PixelFormat::RGB_565_bigendian] ||
-							m_destFormats[(int)PixelFormat::A_8];
+							m_destFormats[(int)PixelFormat::Alpha_8];
 
 	bool bHasSRGBSource =	m_srcFormats[(int)PixelFormat::BGRA_8_sRGB] ||
 							m_srcFormats[(int)PixelFormat::BGRX_8_sRGB] ||
 							m_srcFormats[(int)PixelFormat::BGR_8_sRGB] ||
-							m_srcFormats[(int)PixelFormat::CLUT_8_sRGB];
+							m_srcFormats[(int)PixelFormat::Index_8_sRGB];
 
 	bool bHasSRGBDest =		m_destFormats[(int)PixelFormat::BGRA_8_sRGB] ||
 							m_destFormats[(int)PixelFormat::BGRX_8_sRGB] ||
@@ -329,7 +329,7 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 		{
 			if( m_srcFormats[i] )
 				out << wg::toString( (PixelFormat) i ) << endl << "                       ";
-			else if( i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8) )
+			else if( i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::Index_8) )
 				bAllSupported = false;
 		}
 
@@ -340,7 +340,7 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 		{
 			for (int i = 0; i < PixelFormat_size; i++)
 			{
-				if( !m_srcFormats[i] &&  i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8)  )
+				if( !m_srcFormats[i] &&  i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::Index_8)  )
 					out << " " << wg::toString( (PixelFormat) i );
 			}
 		}
@@ -355,7 +355,7 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 		{
 			if( m_destFormats[i] )
 				out << wg::toString( (PixelFormat) i ) << endl << "                       ";
-			else if( i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8) && i != int(PixelFormat::CLUT_8_sRGB) && i != int(PixelFormat::CLUT_8_linear) )
+			else if( i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::Index_8) && i != int(PixelFormat::Index_8_sRGB) && i != int(PixelFormat::Index_8_linear) )
 				bAllSupported = false;
 		}
 
@@ -366,7 +366,7 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 		{
 			for (int i = 0; i < PixelFormat_size; i++)
 			{
-				if( !m_destFormats[i] &&  i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::CLUT_8) && i != int(PixelFormat::CLUT_8_sRGB) && i != int(PixelFormat::CLUT_8_linear) )
+				if( !m_destFormats[i] &&  i != int(PixelFormat::Undefined) && i != int(PixelFormat::BGR_8) && i != int(PixelFormat::BGRX_8) && i != int(PixelFormat::BGRA_8) && i != int(PixelFormat::Index_8) && i != int(PixelFormat::Index_8_sRGB) && i != int(PixelFormat::Index_8_linear) )
 					out << " " << wg::toString( (PixelFormat) i );
 			}
 		}
@@ -1065,10 +1065,10 @@ void KernelDB::reset()
 	m_srcFormats[int(PixelFormat::BGRA_8_linear)] = true;
 	m_srcFormats[int(PixelFormat::BGRA_4_linear)] = true;
 	m_srcFormats[int(PixelFormat::BGR_565_linear)] = true;
-	m_srcFormats[int(PixelFormat::CLUT_8_sRGB)] = true;
-	m_srcFormats[int(PixelFormat::CLUT_8_linear)] = true;
+	m_srcFormats[int(PixelFormat::Index_8_sRGB)] = true;
+	m_srcFormats[int(PixelFormat::Index_8_linear)] = true;
 	m_srcFormats[int(PixelFormat::RGB_565_bigendian)] = true;
-	m_srcFormats[int(PixelFormat::A_8)] = true;
+	m_srcFormats[int(PixelFormat::Alpha_8)] = true;
 
 	// Set standard destination formats
 
@@ -1081,7 +1081,7 @@ void KernelDB::reset()
 	m_destFormats[int(PixelFormat::BGRA_4_linear)] = true;
 	m_destFormats[int(PixelFormat::BGR_565_linear)] = true;
 	m_destFormats[int(PixelFormat::RGB_565_bigendian)] = true;
-	m_destFormats[int(PixelFormat::A_8)] = true;
+	m_destFormats[int(PixelFormat::Alpha_8)] = true;
 
 	// Set custom blit methods
 	{
