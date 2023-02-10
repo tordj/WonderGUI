@@ -29,8 +29,24 @@ namespace wg
 {
 	class Object;
 
+	class Finalizer_p
+	{
+	public:
+		Finalizer_p() {}
+		Finalizer_p( void(*p)(Object*) ) : pFunc(p) {}
 
-	typedef	void(*Finalizer_p)(Object*);
+		void operator()(Object* pObject) const { pFunc(pObject); }
+		operator bool() const { return pFunc != nullptr;  }
+
+		bool operator==(const Finalizer_p p) const { return this->pFunc == p.pFunc; }
+		bool operator!=(const Finalizer_p p) const { return this->pFunc != p.pFunc;	}
+
+		void(*rawPtr())(Object*) { return pFunc;  }
+
+	protected:
+		void(*pFunc)(Object*) = nullptr;
+	};
+
 
 	class WeakPtrHub		/** @private */
 	{

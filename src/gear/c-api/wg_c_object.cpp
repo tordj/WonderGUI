@@ -38,13 +38,13 @@ int wg_isInstanceOf(wg_obj object, const wg_typeInfo* pTypeInfo)
 
 void wg_setFinalizer(wg_obj object, wg_finalizer_func pFinalizer)
 {
-	reinterpret_cast<Object*>(object)->setFinalizer(reinterpret_cast<Finalizer_p>(pFinalizer));
+	reinterpret_cast<Object*>(object)->setFinalizer(reinterpret_cast<void(*)(Object*)>(pFinalizer));
 }
 
 wg_finalizer_func wg_finalizer(wg_obj object)
 {
 	auto pFinalizer = reinterpret_cast<Object*>(object)->finalizer();
-	return reinterpret_cast<wg_finalizer_func>(pFinalizer);
+	return reinterpret_cast<wg_finalizer_func>(pFinalizer.rawPtr());
 }
 
 void wg_retain(wg_obj object)

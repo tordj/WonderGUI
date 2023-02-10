@@ -439,9 +439,6 @@ namespace wg
 		bool		intersectsWithOrContains(CoordT<Type> p1, CoordT<Type> p2, int precision = 14) const;
 		bool		clipLine(CoordT<Type> * p1, CoordT<Type> * p2, int precision = 14) const;
 
-
-		inline Type width() const;								///< @brief Get the width of the rectangle.
-		inline Type height() const;								///< @brief Get the height of the rectangle.
 		inline SizeT<Type> size() const;						///< @brief Get the size of the rectangle.
 		inline CoordT<Type> pos() const;						///< @brief Get the position of the rectangle.
 
@@ -892,26 +889,6 @@ namespace wg
 	{
 		w = sz.w;
 		h = sz.h;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get width of the rectangle (member variable w).
-	 **/
-	 template<typename Type>
-	 inline Type RectT<Type>::width() const
-	{
-		return w;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get height of the rectangle (member variable h).
-	 **/
-	 template<typename Type>
-	 inline Type RectT<Type>::height() const
-	{
-		return h;
 	}
 
 	//_____________________________________________________________________________
