@@ -217,7 +217,7 @@ namespace wg
 			auto pOldClip = pDevice->clipList();
 
 			for( int i = 0 ; i < nClipRects ; i++ )
-				clip[i] = RectSPX::getIntersection( pOldClip[i] - canvas.pos(), bakeCanvas );
+				clip[i] = RectSPX::overlap( pOldClip[i] - canvas.pos(), bakeCanvas );
 		}
 		else
 		{

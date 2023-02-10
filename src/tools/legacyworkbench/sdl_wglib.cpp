@@ -138,7 +138,7 @@ namespace sdl_wglib
 		for (int y = 0; y < size.h; y++)
 		{
 			uint8_t * pDest = ((uint8_t *) pOutput->pixels) + pOutput->pitch * y;
-            uint8_t * pSource = pixbuf.pPixels + pixbuf.pitch * y;
+            uint8_t * pSource = pixbuf.pixels + pixbuf.pitch * y;
 			memcpy(pDest, pSource, size.w * pFmt->bits / 8);
 		}
 

@@ -137,7 +137,7 @@ void WgLayer::_onRequestRender( const WgRect& rect, const WgLayerHook * pHook )
 	// Clip our geometry and put it in a dirtyrect-list
 
 	WgPatches patches;
-	patches.add( WgRect::getIntersection( rect, WgRect(0,0,m_size)) );
+	patches.add( WgRect::overlap( rect, WgRect(0,0,m_size)) );
 
 	// Remove portions of dirty rect that are covered by opaque upper siblings,
 	// possibly filling list with many small dirty rects instead.
@@ -151,7 +151,7 @@ void WgLayer::_onRequestRender( const WgRect& rect, const WgLayerHook * pHook )
 
 	while( pCover )
 	{
-		if( pCover->m_geo.intersectsWith( rect ) )
+		if( pCover->m_geo.isOverlapping( rect ) )
 			pCover->Widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();

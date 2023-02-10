@@ -204,7 +204,7 @@ public:
 		s->pHandleSkin = pkHandleSkin;
 		WgRect handleGeo2 = _sliderHandleGeo(*s, sliderGeo);
 
-		_requestRender(WgRect::getUnion(handleGeo1,handleGeo2));
+		_requestRender(WgRect::bounds(handleGeo1,handleGeo2));
 	}
 
     //NOTE: Would be better if this just returned the sliderId, instead of exposing internal structure.

@@ -324,7 +324,7 @@ namespace wg
 			{
 				RectSPX geo = child.geo + _canvas.pos();
 
-				if( geo.intersectsWith( dirtBounds ) )
+				if( geo.isOverlapping( dirtBounds ) )
 					renderList.push_back( WidgetRenderContext(child.pSlot->_widget(), geo ) );
 
 				_nextSlotWithGeo( child );
@@ -369,7 +369,7 @@ namespace wg
 			while(child.pSlot)
 			{
 				RectSPX canvas = child.geo + _canvas.pos();
-				if (canvas.intersectsWith(dirtBounds))
+				if (canvas.isOverlapping(dirtBounds))
 				{
 					ClipPopData popData = limitClipList(pDevice, canvas );
 
@@ -400,7 +400,7 @@ namespace wg
 			}
 		}
 		else
-			container.add( RectSPX::getIntersection( geo, clip ) );
+			container.add( RectSPX::overlap( geo, clip ) );
 	}
 
 	//____ _maskPatches() __________________________________________________________
@@ -409,7 +409,7 @@ namespace wg
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-			patches.sub( RectSPX::getIntersection(geo,clip) );
+			patches.sub( RectSPX::overlap(geo,clip) );
 		else
 		{
 			SlotWithGeo child;

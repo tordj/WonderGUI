@@ -1235,7 +1235,7 @@ namespace wg
 		// Make a bounding box around all clip rectangles
 
 		RectI _dest = _destIn/64;
-		RectI bounds = RectI::getIntersection( m_clipBounds/64, _dest );
+		RectI bounds = RectI::overlap( m_clipBounds/64, _dest );
 
 		if (bounds.w == 0 || bounds.h == 0)
 			return;
@@ -1424,7 +1424,7 @@ namespace wg
 
 		// Adjusted clip
 
-		RectI clip = RectI::getIntersection(m_clipBounds / 64, outerRect);
+		RectI clip = RectI::overlap(m_clipBounds / 64, outerRect);
 		if (clip.w == 0 || clip.h == 0)
 			return;
 

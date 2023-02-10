@@ -369,7 +369,7 @@ namespace wg
 				m_rangeBegin = begin;
 				RectSPX newGeo = _handleGeo(m_size, true);
 
-				changeRect = RectSPX::getUnion(oldGeo, newGeo);
+				changeRect = RectSPX::bounds(oldGeo, newGeo);
 			}
 
 			if (end != m_rangeEnd)
@@ -378,7 +378,7 @@ namespace wg
 				m_rangeEnd = end;
 				RectSPX newGeo = _handleGeo(m_size, false);
 
-				changeRect = RectSPX::getUnion(changeRect, RectSPX::getUnion(oldGeo, newGeo));
+				changeRect = RectSPX::bounds(changeRect, RectSPX::bounds(oldGeo, newGeo));
 			}
 			_requestRender(changeRect);
 

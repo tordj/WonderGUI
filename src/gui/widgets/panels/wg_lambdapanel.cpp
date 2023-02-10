@@ -363,7 +363,7 @@ namespace wg
 				Slot * p = pTo+1;
 				while (p <= pFrom)
 				{
-					RectSPX cover = RectSPX::getIntersection(pTo->m_geo, p->m_geo);
+					RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -377,7 +377,7 @@ namespace wg
 				Slot * p = pFrom;
 				while (p < pTo)
 				{
-					RectSPX cover = RectSPX::getIntersection(pTo->m_geo, p->m_geo);
+					RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -499,15 +499,15 @@ namespace wg
 				// Clip our geometry and put it in a dirtyrect-list
 
 				PatchesSPX patches;
-				patches.add(RectSPX::getIntersection(pSlot->m_geo, RectSPX(0, 0, m_size)));
-				patches.add(RectSPX::getIntersection(geo, RectSPX(0, 0, m_size)));
+				patches.add(RectSPX::overlap(pSlot->m_geo, RectSPX(0, 0, m_size)));
+				patches.add(RectSPX::overlap(geo, RectSPX(0, 0, m_size)));
 
 				// Remove portions of patches that are covered by opaque upper siblings
 
 				const Slot * pCover = pSlot + 1;
 				while (pCover < slots._end())
 				{
-					if (pCover->m_bVisible && (pCover->m_geo.intersectsWith(pSlot->m_geo) || pCover->m_geo.intersectsWith(geo)) )
+					if (pCover->m_bVisible && (pCover->m_geo.isOverlapping(pSlot->m_geo) || pCover->m_geo.isOverlapping(geo)) )
 						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
 
 					pCover++;
@@ -538,13 +538,13 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		PatchesSPX patches;
-		patches.add(RectSPX::getIntersection(rect, RectSPX(0, 0, m_size)));
+		patches.add(RectSPX::overlap(rect, RectSPX(0, 0, m_size)));
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
 		for (Slot * pCover = slots._begin(); pCover < pSlot ; pCover++)
 		{
-			if (pCover->m_bVisible && pCover->m_geo.intersectsWith(rect))
+			if (pCover->m_bVisible && pCover->m_geo.isOverlapping(rect))
 				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
 		}
 

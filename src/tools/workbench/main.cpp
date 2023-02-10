@@ -1720,7 +1720,7 @@ bool savePNG(Surface * pSurface, const char * path)
 	for (int y = 0; y < size.h; y++)
 	{
 		char * pDest = ((char *)pOutput->pixels) + pOutput->pitch * y;
-		char * pSource = (char*) pixbuf.pPixels + pixbuf.pitch * y;
+		char * pSource = (char*) pixbuf.pixels + pixbuf.pitch * y;
 		memcpy(pDest, pSource, size.w * pFmt->bits / 8);
 	}
 

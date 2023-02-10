@@ -293,7 +293,7 @@ namespace wg
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->palette() ? 1024 : 0));
 
 		// _copy() implicitly calls _sendPixels().
-		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pPixels, pitch, RectI(size));
+		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pixels, pitch, RectI(size));
 		
 		if (m_pixelDescription.bits <= 8 || bp.buffered)
 		{
@@ -314,7 +314,7 @@ namespace wg
 			if (m_pixelDescription.A_bits == 0)
 				m_pAlphaLayer = nullptr;
 			else
-				m_pAlphaLayer = _genAlphaLayer((char*)pixelbuffer.pPixels, pitch);
+				m_pAlphaLayer = _genAlphaLayer((char*)pixelbuffer.pixels, pitch);
 		}
 
 		pOther->freePixelBuffer(pixelbuffer);
@@ -346,8 +346,8 @@ namespace wg
 
 		if (m_pBlob)
 		{
-			buf.pPixels = (uint8_t*) m_pBlob->data() + m_pitch * rect.y + rect.x * m_pixelDescription.bits / 8;
-			buf.pPalette = m_pPalette;
+			buf.pixels = (uint8_t*) m_pBlob->data() + m_pitch * rect.y + rect.x * m_pixelDescription.bits / 8;
+			buf.palette = m_pPalette;
 			buf.format = m_pixelDescription.format;
 			buf.rect = rect;
 			buf.pitch = m_pitch;
@@ -355,8 +355,8 @@ namespace wg
 		else
 		{
 			buf.pitch = ((rect.w + 3) & 0xFFFFFFFC) * m_pixelDescription.bits / 8;
-			buf.pPixels = new uint8_t[buf.pitch*rect.h];
-			buf.pPalette = m_pPalette;
+			buf.pixels = new uint8_t[buf.pitch*rect.h];
+			buf.palette = m_pPalette;
 			buf.format = m_pixelDescription.format;
 			buf.rect = rect;
 		}
@@ -378,7 +378,7 @@ namespace wg
 
 	void GfxStreamSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		_sendPixels(m_pEncoder, buffer.rect, buffer.pPixels, buffer.pitch);
+		_sendPixels(m_pEncoder, buffer.rect, buffer.pixels, buffer.pitch);
 		m_pEncoder->flush();
 	}
 
@@ -387,7 +387,7 @@ namespace wg
 	void GfxStreamSurface::freePixelBuffer(const PixelBuffer& buffer)
 	{
 		if (!m_pBlob)
-			delete[] buffer.pPixels;
+			delete[] buffer.pixels;
 	}
 
 	//____ alpha() ____________________________________________________________
@@ -399,17 +399,17 @@ namespace wg
 		if (m_pAlphaLayer)
 		{
 			buffer.format = PixelFormat::Alpha_8;
-			buffer.pPalette = nullptr;
+			buffer.palette = nullptr;
 			buffer.pitch = m_size.w;
-			buffer.pPixels = m_pAlphaLayer;
+			buffer.pixels = m_pAlphaLayer;
 			buffer.rect = { 0,0,m_size };
 		}
 		else
 		{
 			buffer.format = m_pixelDescription.format;
-			buffer.pPalette = m_pPalette;
+			buffer.palette = m_pPalette;
 			buffer.pitch = m_pitch;
-			buffer.pPixels = (uint8_t*) m_pBlob->data();
+			buffer.pixels = (uint8_t*) m_pBlob->data();
 			buffer.rect = { 0,0,m_size };
 		}
 

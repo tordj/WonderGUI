@@ -237,7 +237,7 @@ namespace wg
 
 					if (patches.size() > m_maxDirtyRects)
 					{
-						RectSPX u = patches.getUnion();
+						RectSPX u = patches.bounds();
 						patches.clear();
 						patches.push(u);
 					}
@@ -876,7 +876,7 @@ namespace wg
 			m_pUpdatingSurface = m_vSurfaces[surfaceId];
 			m_pixelBuffer = m_pUpdatingSurface->allocPixelBuffer(rect);
 
-			m_pWritePixels = m_pixelBuffer.pPixels;
+			m_pWritePixels = m_pixelBuffer.pixels;
 			
 			m_surfaceBytesLeft = rect.w * rect.h * m_pUpdatingSurface->pixelBytes();
 			break;
@@ -884,8 +884,8 @@ namespace wg
 
 		case GfxChunkId::SurfacePixels:
 		{
-            int line = (m_pWritePixels - m_pixelBuffer.pPixels) / m_pixelBuffer.pitch;
-            int ofs = (m_pWritePixels - m_pixelBuffer.pPixels) % m_pixelBuffer.pitch;
+            int line = (m_pWritePixels - m_pixelBuffer.pixels) / m_pixelBuffer.pitch;
+            int ofs = (m_pWritePixels - m_pixelBuffer.pixels) % m_pixelBuffer.pitch;
 
             int bytesPerLine = m_pixelBuffer.rect.w * m_pUpdatingSurface->pixelBytes();
             

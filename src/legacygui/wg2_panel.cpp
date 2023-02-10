@@ -83,7 +83,7 @@ void WgPanel::_onCloneContent( const WgPanel * _pOrg )
 void WgPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	if( m_pSkin )
-		container.add( WgRect::getIntersection( geo, clip ) );
+		container.add( WgRect::overlap( geo, clip ) );
 	else
 		WgContainer::_onCollectPatches( container, geo, clip );
 
@@ -96,7 +96,7 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 {
 	if( m_pSkin && m_pSkin->isOpaque() )
 	{
-		patches.sub( WgRect::getIntersection(geo,clip) );
+		patches.sub( WgRect::overlap(geo,clip) );
 		return;
 	}
 
@@ -106,7 +106,7 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 		{
 			WgRect childGeo;
 			WgPanelHook * p = static_cast<WgPanelHook*>(_firstHookWithGeo( childGeo ));
-			WgRect myClip = WgRect::getIntersection(geo, clip);
+			WgRect myClip = WgRect::overlap(geo, clip);
 
 			while(p)
 			{
@@ -119,7 +119,7 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 		case WgMaskOp::Skip:
 			break;
 		case WgMaskOp::Mask:
-			patches.sub( WgRect::getIntersection(geo,clip) );
+			patches.sub( WgRect::overlap(geo,clip) );
 			break;
 	}
 }

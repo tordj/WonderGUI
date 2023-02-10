@@ -978,7 +978,7 @@ MetalGfxDevice::MetalGfxDevice()
         if (col.a == 0 && (m_blendMode == BlendMode::Blend))
             return;
 
-        if (!rect.intersectsWith(m_clipBounds))
+        if (!rect.isOverlapping(m_clipBounds))
             return;
 
         //
@@ -1001,7 +1001,7 @@ MetalGfxDevice::MetalGfxDevice()
 
             for (int i = 0; i < m_nClipRects; i++)
             {
-                RectI patch = roundToPixels(RectSPX::getIntersection(m_pClipRects[i], rect));
+                RectI patch = roundToPixels(RectSPX::overlap(m_pClipRects[i], rect));
                 if (patch.w > 0 && patch.h > 0)
                 {
                     int    dx1 = patch.x;
@@ -1064,7 +1064,7 @@ MetalGfxDevice::MetalGfxDevice()
 
 			for (int i = 0; i < m_nClipRects; i++)
 			{
-				RectI patch = RectI::getIntersection(m_pClipRects[i]/64, outerRect);
+				RectI patch = RectI::overlap(m_pClipRects[i]/64, outerRect);
 				if (patch.w > 0 && patch.h > 0)
 				{
 					int    dx1 = patch.x;
@@ -1351,7 +1351,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         // Clip our rectangle
 
-        if (!outerRect.intersectsWith(m_clipBounds/64))
+        if (!outerRect.isOverlapping(m_clipBounds/64))
             return;
 
         //
@@ -1370,7 +1370,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch = RectI::getIntersection(m_pClipRects[i]/64, outerRect);
+            RectI patch = RectI::overlap(m_pClipRects[i]/64, outerRect);
             if (patch.w > 0 && patch.h > 0)
             {
                 int    dx1 = patch.x;
@@ -1437,7 +1437,7 @@ MetalGfxDevice::MetalGfxDevice()
         if (m_pBlitSource == nullptr)
             return;
 
-        if (!dest.intersectsWith(m_clipBounds))
+        if (!dest.isOverlapping(m_clipBounds))
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8 )
@@ -1454,7 +1454,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch = roundToPixels(RectI::getIntersection(m_pClipRects[i], dest));
+            RectI patch = roundToPixels(RectI::overlap(m_pClipRects[i], dest));
             if (patch.w > 0 && patch.h > 0)
             {
                 int        dx1 = patch.x;
@@ -1516,7 +1516,7 @@ MetalGfxDevice::MetalGfxDevice()
         if (m_pBlitSource == nullptr)
             return;
 
-        if (!_dest.intersectsWith(m_clipBounds))
+        if (!_dest.isOverlapping(m_clipBounds))
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
@@ -1538,7 +1538,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-			RectI patch = RectI::getIntersection(m_pClipRects[i]/64, dest);
+			RectI patch = RectI::overlap(m_pClipRects[i]/64, dest);
             if (patch.w > 0 && patch.h > 0)
             {
                 Vertex * pVertex = m_pVertexBuffer + m_vertexOfs;
@@ -1607,7 +1607,7 @@ MetalGfxDevice::MetalGfxDevice()
 
 	void MetalGfxDevice::_transformDrawSegments(const RectSPX& _destIn, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
-        if (!_destIn.intersectsWith(m_clipBounds))
+        if (!_destIn.isOverlapping(m_clipBounds))
             return;
 
         //
@@ -1686,7 +1686,7 @@ MetalGfxDevice::MetalGfxDevice()
 
         for (int i = 0; i < m_nClipRects; i++)
         {
-            RectI patch = RectI::getIntersection(m_pClipRects[i]/64, dest);
+            RectI patch = RectI::overlap(m_pClipRects[i]/64, dest);
             if (patch.w > 0 && patch.h > 0)
             {
                 Vertex * pVertex = m_pVertexBuffer + m_vertexOfs;

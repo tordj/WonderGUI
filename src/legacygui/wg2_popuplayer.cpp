@@ -475,7 +475,7 @@ void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pSl
 	// Clip our geometry and put it in a dirtyrect-list
 
 	WgPatches patches;
-	patches.add( WgRect::getIntersection( rect, WgRect(0,0,m_size)) );
+	patches.add( WgRect::overlap( rect, WgRect(0,0,m_size)) );
 
 	// Remove portions of dirty rect that are covered by opaque upper siblings,
 	// possibly filling list with many small dirty rects instead.
@@ -491,7 +491,7 @@ void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pSl
 
 		while (pCover)
 		{
-			if (pCover->m_geo.intersectsWith(rect) && pCover->state != WgPopupHook::State::OpeningDelay && pCover->state != WgPopupHook::State::Opening && pCover->state != WgPopupHook::State::Closing)
+			if (pCover->m_geo.isOverlapping(rect) && pCover->state != WgPopupHook::State::OpeningDelay && pCover->state != WgPopupHook::State::Opening && pCover->state != WgPopupHook::State::Closing)
 				pCover->m_pWidget->_onMaskPatches(patches, pCover->m_geo, WgRect(0, 0, INT_MAX, INT_MAX), _getBlendMode());
 
 			pCover = pCover->Prev();
@@ -525,8 +525,8 @@ void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas
 
 	for (const WgRect * pRect = _pPatches->begin(); pRect != _pPatches->end(); pRect++)
 	{
-		if (_canvas.intersectsWith(*pRect))
-			patches.push(WgRect::getIntersection(*pRect, _canvas));
+		if (_canvas.isOverlapping(*pRect))
+			patches.push(WgRect::overlap(*pRect, _canvas));
 	}
 
 	if( patches.isEmpty() )
@@ -540,7 +540,7 @@ void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas
 
 	// Render children
 
-	WgRect	dirtBounds = patches.getUnion();
+	WgRect	dirtBounds = patches.bounds();
 
 	// Create WidgetRenderContext's for popups that might get dirty patches
 
@@ -552,7 +552,7 @@ void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas
 	{
 		WgRect geo = pSlot->m_geo + _canvas.pos();
 
-		if (geo.intersectsWith(dirtBounds) && pSlot->state != WgPopupHook::State::OpeningDelay)
+		if (geo.isOverlapping(dirtBounds) && pSlot->state != WgPopupHook::State::OpeningDelay)
 			renderList.push_back(WidgetRenderContext(pSlot, geo));
 
 		pSlot = pSlot->Next();

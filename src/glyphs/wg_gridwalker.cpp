@@ -35,7 +35,7 @@ namespace wg
 
 		m_pixelBytes = pixelDescription.bits / 8;
 
-		m_gridPixel = _readPixel(m_pBuffer->pPixels);
+		m_gridPixel = _readPixel(m_pBuffer->pixels);
 	}
 
 	bool GridWalker::firstLine()
@@ -47,8 +47,8 @@ namespace wg
 
 	bool GridWalker::nextLine()
 	{
-		const uint8_t* pPixels = m_pBuffer->pPixels + (m_cell.y + m_cell.h) * m_pBuffer->pitch;
-		const uint8_t* pPixelsEnd = m_pBuffer->pPixels + m_pBuffer->rect.h * m_pBuffer->pitch;
+		const uint8_t* pPixels = m_pBuffer->pixels + (m_cell.y + m_cell.h) * m_pBuffer->pitch;
+		const uint8_t* pPixelsEnd = m_pBuffer->pixels + m_pBuffer->rect.h * m_pBuffer->pitch;
 
 		while (pPixels < pPixelsEnd && _readPixel(pPixels) == m_gridPixel)
 			pPixels += m_pBuffer->pitch;
@@ -64,7 +64,7 @@ namespace wg
 			return false;
 
 		m_cell.x = 0;
-		m_cell.y = (pBeg - m_pBuffer->pPixels) / m_pBuffer->pitch;
+		m_cell.y = (pBeg - m_pBuffer->pixels) / m_pBuffer->pitch;
 		m_cell.h = (pPixels - pBeg) / m_pBuffer->pitch;
 		return true;
 	}
@@ -72,8 +72,8 @@ namespace wg
 	RectI GridWalker::firstCell()
 	{
 		m_cell.x = 0;
-		const uint8_t* pPixels = m_pBuffer->pPixels + m_cell.y * m_pBuffer->pitch + m_cell.x * m_pixelBytes;
-		const uint8_t* pPixelsEnd = m_pBuffer->pPixels + m_cell.y * m_pBuffer->pitch + m_pBuffer->rect.w * m_pixelBytes;
+		const uint8_t* pPixels = m_pBuffer->pixels + m_cell.y * m_pBuffer->pitch + m_cell.x * m_pixelBytes;
+		const uint8_t* pPixelsEnd = m_pBuffer->pixels + m_cell.y * m_pBuffer->pitch + m_pBuffer->rect.w * m_pixelBytes;
 
 
 		auto pBeg = pPixels;
@@ -90,8 +90,8 @@ namespace wg
 
 	RectI GridWalker::nextCell()
 	{
-		const uint8_t* pPixels = m_pBuffer->pPixels + m_cell.y * m_pBuffer->pitch + (m_cell.x + m_cell.w) * m_pixelBytes;
-		const uint8_t* pPixelsEnd = m_pBuffer->pPixels + m_cell.y * m_pBuffer->pitch + m_pBuffer->rect.w * m_pixelBytes;
+		const uint8_t* pPixels = m_pBuffer->pixels + m_cell.y * m_pBuffer->pitch + (m_cell.x + m_cell.w) * m_pixelBytes;
+		const uint8_t* pPixelsEnd = m_pBuffer->pixels + m_cell.y * m_pBuffer->pitch + m_pBuffer->rect.w * m_pixelBytes;
 
 		while (pPixels < pPixelsEnd && _readPixel(pPixels) == m_gridPixel)
 			pPixels += m_pixelBytes;
@@ -103,7 +103,7 @@ namespace wg
 		if (pPixels >= pPixelsEnd)
 			return RectI();
 
-		m_cell.x = (pBeg - (m_pBuffer->pPixels + m_cell.y * m_pBuffer->pitch)) / m_pixelBytes;
+		m_cell.x = (pBeg - (m_pBuffer->pixels + m_cell.y * m_pBuffer->pitch)) / m_pixelBytes;
 		m_cell.w = (pPixels - pBeg) / m_pixelBytes;
 
 		return m_cell;

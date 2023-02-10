@@ -55,7 +55,7 @@ public:
 
 	inline void		clear() { m_size = 0; }
 	void			clip( const WgRect& clip );
-	WgRect			getUnion() const;
+	WgRect			bounds() const;
 
 	int				repair();															// Fixes any overlap that might have resulted from Push()
 	int				optimize();															// Combines small patches into larger ones where possible

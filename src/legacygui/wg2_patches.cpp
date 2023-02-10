@@ -396,16 +396,16 @@ void WgPatches::clip( const WgRect& clip )
 {
 	for( WgRect * pRect = m_pFirst ; pRect < m_pFirst + m_size ; pRect++ )
 	{
-		if( clip.intersectsWith(*pRect) )
-			*pRect = WgRect::getIntersection(*pRect, clip);
+		if( clip.isOverlapping(*pRect) )
+			*pRect = WgRect::overlap(*pRect, clip);
 		else
 			*pRect-- = m_pFirst[--m_size];				// Remove the rectangle
 	}
 }
 
-//____ getUnion() _________________________________________________________________
+//____ bounds() _________________________________________________________________
 
-WgRect WgPatches::getUnion() const
+WgRect WgPatches::bounds() const
 {
 	if( m_size == 0 )
 		return WgRect();

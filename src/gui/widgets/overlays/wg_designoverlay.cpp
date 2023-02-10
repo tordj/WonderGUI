@@ -193,7 +193,7 @@ namespace wg
 					m_pToolboxSkin->_render(pDevice, geo + m_pToolboxSkin->_contentPadding(m_scale, State::Normal), m_scale, State::Normal);
 
 				RectSPX pxPaletteGeo = palette.m_geo;
-				if (pDevice->clipBounds().intersectsWith(pxPaletteGeo))
+				if (pDevice->clipBounds().isOverlapping(pxPaletteGeo))
 				{
 					ClipPopData popData = limitClipList(pDevice, palette.m_geo);
 					palette._widget()->_render(pDevice, geo, geo);

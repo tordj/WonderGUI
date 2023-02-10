@@ -178,7 +178,7 @@ bool WgFlexHook::Up()
 
 	// Get area potentially exposed
 
-	WgRect cover = WgRect::getIntersection( m_realGeo, pNext->m_realGeo );
+	WgRect cover = WgRect::overlap( m_realGeo, pNext->m_realGeo );
 
 	// Move up
 
@@ -205,7 +205,7 @@ bool WgFlexHook::Down()
 
 	// Get area of sibling potentially exposed
 
-	WgRect cover = WgRect::getIntersection( m_realGeo, pPrev->m_realGeo );
+	WgRect cover = WgRect::overlap( m_realGeo, pPrev->m_realGeo );
 
 	// Move down
 
@@ -248,7 +248,7 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 		{
 			while( p != this )
 			{
-				WgRect cover = WgRect::getIntersection( m_realGeo, p->m_realGeo );
+				WgRect cover = WgRect::overlap( m_realGeo, p->m_realGeo );
 
 				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, this );
@@ -274,7 +274,7 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 		{
 			while( p != this )
 			{
-				WgRect cover = WgRect::getIntersection( m_realGeo, p->m_realGeo );
+				WgRect cover = WgRect::overlap( m_realGeo, p->m_realGeo );
 
 				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, p );
@@ -319,7 +319,7 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 		{
 			while( p != this )
 			{
-				WgRect cover = WgRect::getIntersection( m_realGeo, p->m_realGeo );
+				WgRect cover = WgRect::overlap( m_realGeo, p->m_realGeo );
 
 				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, this );
@@ -340,7 +340,7 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 		{
 			while( p != this )
 			{
-				WgRect cover = WgRect::getIntersection( m_realGeo, p->m_realGeo );
+				WgRect cover = WgRect::overlap( m_realGeo, p->m_realGeo );
 
 				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, p );
@@ -1302,14 +1302,14 @@ void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook
 	// Clip our geometry and put it in a dirtyrect-list
 
 	WgPatches patches;
-	patches.add( WgRect::getIntersection( rect, WgRect(0,0,PixelSize())) );
+	patches.add( WgRect::overlap( rect, WgRect(0,0,PixelSize())) );
 
 	// Remove portions of patches that are covered by opaque upper siblings
 
 	WgFlexHook * pCover = pHook->Next();
 	while( pCover )
 	{
-		if( pCover->m_bVisible && pCover->m_realGeo.intersectsWith( rect ) )
+		if( pCover->m_bVisible && pCover->m_realGeo.isOverlapping( rect ) )
 			pCover->Widget()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();

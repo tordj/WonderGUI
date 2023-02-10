@@ -509,13 +509,13 @@ namespace wg
 		switch( pFTBitmap->pixel_mode )
 		{
 			case (FT_PIXEL_MODE_MONO):
-				_copyA1ToA8( pFTBitmap->buffer, pFTBitmap->width, pFTBitmap->rows, pFTBitmap->pitch, pixbuf.pPixels, pixbuf.pitch );
+				_copyA1ToA8( pFTBitmap->buffer, pFTBitmap->width, pFTBitmap->rows, pFTBitmap->pitch, pixbuf.pixels, pixbuf.pitch );
 				break;
 			case (FT_PIXEL_MODE_GRAY):
-				_copyA8ToA8( pFTBitmap->buffer, pFTBitmap->width, pFTBitmap->rows, pFTBitmap->pitch, pixbuf.pPixels, pixbuf.pitch );
+				_copyA8ToA8( pFTBitmap->buffer, pFTBitmap->width, pFTBitmap->rows, pFTBitmap->pitch, pixbuf.pixels, pixbuf.pitch );
 				break;
 			case (FT_PIXEL_MODE_BGRA):
-				_copyBGRA8ToBGRA8(pFTBitmap->buffer, pFTBitmap->width, pFTBitmap->rows, pFTBitmap->pitch, pixbuf.pPixels, pixbuf.pitch);
+				_copyBGRA8ToBGRA8(pFTBitmap->buffer, pFTBitmap->width, pFTBitmap->rows, pFTBitmap->pitch, pixbuf.pixels, pixbuf.pitch);
 				break;
 			default:
 				assert( false );

@@ -187,7 +187,7 @@ bool MyApp::saveBitmapFont()
 				 
 				for( int y = 0 ; y < pixbuf.rect.h ; y++ )
 				{
-					uint8_t * pLine = pixbuf.pPixels + pixbuf.pitch*y;
+					uint8_t * pLine = pixbuf.pixels + pixbuf.pitch*y;
 					for( int x = 0 ; x < pixbuf.rect.w ; x++ )
 					{
 						uint8_t alpha = pLine[x*4+3];
@@ -240,7 +240,7 @@ bool MyApp::saveBitmapFont()
 				PixelDescription pixdesc;
 				Util::pixelFormatToDescription(pixbuf.format, pixdesc);
 
-				auto pSDLSurf = SDL_CreateRGBSurfaceFrom(pixbuf.pPixels, pixbuf.rect.w, pixbuf.rect.h, pixdesc.bits, pixbuf.pitch, pixdesc.R_mask, pixdesc.G_mask, pixdesc.B_mask, pixdesc.A_mask);
+				auto pSDLSurf = SDL_CreateRGBSurfaceFrom(pixbuf.pixels, pixbuf.rect.w, pixbuf.rect.h, pixdesc.bits, pixbuf.pitch, pixdesc.R_mask, pixdesc.G_mask, pixdesc.B_mask, pixdesc.A_mask);
 
 				IMG_SavePNG(pSDLSurf, pngPath.c_str());
 				m_pBitmapFontSurface->freePixelBuffer(pixbuf);

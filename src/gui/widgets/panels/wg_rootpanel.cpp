@@ -252,7 +252,7 @@ namespace wg
 
 	bool RootPanel::setGeo(const Rect& _geo)
 	{
-		RectSPX geoSpx = RectSPX::getIntersection(m_canvas.size, align(ptsToSpx(_geo,m_scale)));
+		RectSPX geoSpx = RectSPX::overlap(m_canvas.size, align(ptsToSpx(_geo,m_scale)));
 
 		m_bHasGeo = !_geo.isEmpty();
 
@@ -426,7 +426,7 @@ namespace wg
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
 		RectSPX geo = m_geo;
-		RectSPX clip = RectSPX::getIntersection(align(ptsToSpx(_clip,m_scale)), geo);
+		RectSPX clip = RectSPX::overlap(align(ptsToSpx(_clip,m_scale)), geo);
 		if( clip.w == 0 || clip.h == 0 )
 			return false;						// Invalid rect area.
 

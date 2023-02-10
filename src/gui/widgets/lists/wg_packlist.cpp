@@ -263,12 +263,12 @@ namespace wg
 		if( m_skin.isEmpty() )
 		{
 			if (m_bHorizontal)
-				container.add(RectSPX::getIntersection(RectSPX(geo.x, geo.y, std::min(geo.w, m_contentLength), geo.h), clip));
+				container.add(RectSPX::overlap(RectSPX(geo.x, geo.y, std::min(geo.w, m_contentLength), geo.h), clip));
 			else
-				container.add(RectSPX::getIntersection(RectSPX(geo.x, geo.y, geo.w, std::min(geo.h, m_contentLength)), clip));
+				container.add(RectSPX::overlap(RectSPX(geo.x, geo.y, geo.w, std::min(geo.h, m_contentLength)), clip));
 		}
 		else
-			container.add( RectSPX::getIntersection( geo, clip ) );
+			container.add( RectSPX::overlap( geo, clip ) );
 	}
 
 	//____ _maskPatches() _______________________________________________________
@@ -276,17 +276,17 @@ namespace wg
 	void PackList::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-			patches.sub( RectSPX::getIntersection(geo,clip) );
+			patches.sub( RectSPX::overlap(geo,clip) );
 		else if( m_bOpaqueEntries && blendMode == BlendMode::Blend )
 		{
 			if( m_bHorizontal )
-				patches.sub( RectSPX::getIntersection( RectSPX( geo.x, geo.y, std::min(geo.w,m_contentLength), geo.h ), clip ) );
+				patches.sub( RectSPX::overlap( RectSPX( geo.x, geo.y, std::min(geo.w,m_contentLength), geo.h ), clip ) );
 			else
-				patches.sub( RectSPX::getIntersection( RectSPX( geo.x, geo.y, geo.w, std::min(geo.h,m_contentLength) ), clip ) );
+				patches.sub( RectSPX::overlap( RectSPX( geo.x, geo.y, geo.w, std::min(geo.h,m_contentLength) ), clip ) );
 		}
 		else
 		{
-			RectSPX	myClip = RectSPX::getIntersection(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't.
+			RectSPX	myClip = RectSPX::overlap(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't.
 			SlotWithGeo child;
 			_firstSlotWithGeo( child );
 
@@ -370,7 +370,7 @@ namespace wg
 			while(child.pSlot)
 			{
 				RectSPX canvas = child.geo + _canvas.pos();
-				if (canvas.intersectsWith(dirtBounds))
+				if (canvas.isOverlapping(dirtBounds))
 				{
 					ClipPopData clipPop = limitClipList(pDevice, canvas );
 					if( pDevice->clipListSize() > 0 )
@@ -667,9 +667,9 @@ namespace wg
 		bool	bOldLassoInside = false;
 		bool	bNewLassoInside = false;
 
-		if( oldLasso.intersectsWith(listArea ) )
+		if( oldLasso.isOverlapping(listArea ) )
 			bOldLassoInside = true;
-		if( newLasso.intersectsWith(listArea ) )
+		if( newLasso.isOverlapping(listArea ) )
 			bNewLassoInside = true;
 
 		if( !bOldLassoInside && !bNewLassoInside )

@@ -1103,17 +1103,17 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 				for( int i = 0 ; i < oldClipListSize ; i++ )
 				{
-					if( pOldClipList[i].intersectsWith(topSection) )
-						pRects[nRects++] = WgRect::getIntersection(pOldClipList[i], topSection );
+					if( pOldClipList[i].isOverlapping(topSection) )
+						pRects[nRects++] = WgRect::overlap(pOldClipList[i], topSection );
 
-					if( pOldClipList[i].intersectsWith(leftSection) )
-						pRects[nRects++] = WgRect::getIntersection(pOldClipList[i], leftSection );
+					if( pOldClipList[i].isOverlapping(leftSection) )
+						pRects[nRects++] = WgRect::overlap(pOldClipList[i], leftSection );
 
-					if( pOldClipList[i].intersectsWith(bottomSection) )
-						pRects[nRects++] = WgRect::getIntersection(pOldClipList[i], bottomSection );
+					if( pOldClipList[i].isOverlapping(bottomSection) )
+						pRects[nRects++] = WgRect::overlap(pOldClipList[i], bottomSection );
 
-					if( pOldClipList[i].intersectsWith(rightSection) )
-						pRects[nRects++] = WgRect::getIntersection(pOldClipList[i], rightSection );
+					if( pOldClipList[i].isOverlapping(rightSection) )
+						pRects[nRects++] = WgRect::overlap(pOldClipList[i], rightSection );
 				}
 
 				pDevice->setClipList(nRects, pRects);

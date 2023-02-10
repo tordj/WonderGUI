@@ -266,7 +266,7 @@ namespace wg
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->palette() ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
-		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pPixels, pitch, RectI(size) );
+		_copy(RectI(size), pOther->pixelDescription(), pixelbuffer.pixels, pitch, RectI(size) );
 
 		if ( pOther->palette() )
 		{
@@ -302,9 +302,9 @@ namespace wg
 	{
 		PixelBuffer	buffer;
 		buffer.format = m_pixelDescription.format;
-		buffer.pPalette = m_pPalette;
+		buffer.palette = m_pPalette;
 		buffer.pitch = m_pitch;
-		buffer.pPixels = m_pData;
+		buffer.pixels = m_pData;
 		buffer.rect = { 0,0,m_size };
 
 		return _alpha(coord, buffer);
@@ -339,8 +339,8 @@ namespace wg
 	const PixelBuffer SoftSurface::allocPixelBuffer(const RectI& rect)
 	{
 		PixelBuffer	buf;
-		buf.pPixels = m_pData + m_pitch*rect.y + rect.x*m_pixelDescription.bits/8;
-		buf.pPalette = m_pPalette;
+		buf.pixels = m_pData + m_pitch*rect.y + rect.x*m_pixelDescription.bits/8;
+		buf.palette = m_pPalette;
 		buf.format = m_pixelDescription.format;
 		buf.rect = rect;
 		buf.pitch = m_pitch;

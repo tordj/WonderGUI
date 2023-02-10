@@ -93,7 +93,7 @@ namespace wg
 
 		uint8_t val[2] = { 0,255 };
 
-		uint8_t* pPixel = pixbuf.pPixels;
+		uint8_t* pPixel = pixbuf.pixels;
 		uint8_t* pRead = compressed_font[0];
 		for (int y = 0; y < 48; y++)
 		{

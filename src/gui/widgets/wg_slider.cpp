@@ -326,7 +326,7 @@ namespace wg
 			m_value = value;
 			RectSPX newGeo = _handleGeo(m_size);
 
-			RectSPX changeRect = RectSPX::getUnion(oldGeo, newGeo);
+			RectSPX changeRect = RectSPX::bounds(oldGeo, newGeo);
 			_requestRender(changeRect);
 
 			m_skin.valueChanged(m_value, oldValue);

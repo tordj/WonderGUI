@@ -480,7 +480,7 @@ void WgZoomOutCapsule::_onCollectPatches( WgPatches& container, const WgRect& ge
 {
 	// Do the simple thing here
 
-	container.add( WgRect::getIntersection( geo, clip ) );
+	container.add( WgRect::overlap( geo, clip ) );
 }
 
 //____ _onMaskPatches() _________________________________________________________

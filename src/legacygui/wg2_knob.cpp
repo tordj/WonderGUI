@@ -394,7 +394,7 @@ void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 
 	if( !m_backBufferDirtyRect.isEmpty() )
 	{
-		_redrawBackBuffer(WgRect::getIntersection({ 0, 0, m_size.w, m_size.h}, m_backBufferDirtyRect));
+		_redrawBackBuffer(WgRect::overlap({ 0, 0, m_size.w, m_size.h}, m_backBufferDirtyRect));
 		m_backBufferDirtyRect.clear();
 	}
 
@@ -471,7 +471,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
     WgColor col;
 
     auto pixbuf = m_pSurf->allocPixelBuffer(region);
-    unsigned char* dest = (unsigned char*) pixbuf.pPixels;
+    unsigned char* dest = (unsigned char*) pixbuf.pixels;
 
 	float x = 0.0f, y = 0.0f;
 	float y_inv = 0.0f;
@@ -1012,7 +1012,7 @@ void WgKnob::_downsample(wg::Surface* pSurf, const int oversample)
     auto pixbuf = pSurf->allocPixelBuffer();
     pSurf->pushPixels(pixbuf);
     
-    unsigned int* data = (unsigned int*) pixbuf.pPixels;
+    unsigned int* data = (unsigned int*) pixbuf.pixels;
 	int i=0, j=0;
 
 	// Loop over small size
@@ -1086,7 +1086,7 @@ void  WgKnob::_requestRenderBackBuffer(const WgRect& rect)
 	WgRect surfRect = m_size;
 	WgRect contentRect = WgUtil::OrigoToRect(m_origo, canvas.size(), surfRect) + canvas.pos();
 
-	WgRect dirtyCanvasRect = WgRect::getIntersection(contentRect, rect + contentRect.pos());
+	WgRect dirtyCanvasRect = WgRect::overlap(contentRect, rect + contentRect.pos());
 	_requestRender(dirtyCanvasRect);
 
 	//	_requestRender();

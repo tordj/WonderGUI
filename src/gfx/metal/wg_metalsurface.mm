@@ -143,7 +143,7 @@ namespace wg
         
         auto pixbuf = pOther->allocPixelBuffer();
         if( pOther->pushPixels(pixbuf) )
-            _setupMetalTexture(pixbuf.pPixels, pixbuf.pitch, pOther->pixelDescription(), pOther->palette());
+            _setupMetalTexture(pixbuf.pixels, pixbuf.pitch, pOther->pixelDescription(), pOther->palette());
         else
         {
             // Error handling
@@ -378,9 +378,9 @@ namespace wg
         PixelBuffer pixbuf;
 
         pixbuf.format = m_pixelDescription.format;
-        pixbuf.pPalette = m_pPalette;
+        pixbuf.palette = m_pPalette;
         pixbuf.pitch = m_size.w * m_pixelSize;
-        pixbuf.pPixels = ((uint8_t*)[m_textureBuffer contents]) + rect.y * pixbuf.pitch + rect.x * m_pixelSize;
+        pixbuf.pixels = ((uint8_t*)[m_textureBuffer contents]) + rect.y * pixbuf.pitch + rect.x * m_pixelSize;
         pixbuf.rect = rect;
         return pixbuf;
     }

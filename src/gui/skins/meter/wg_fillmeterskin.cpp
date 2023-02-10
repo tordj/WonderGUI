@@ -186,7 +186,7 @@ namespace wg
 		if (result1.isEmpty())
 			return result2;
 
-		return RectSPX::getUnion(result1, result2);
+		return RectSPX::bounds(result1, result2);
 	}
 
 

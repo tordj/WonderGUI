@@ -264,7 +264,7 @@ WgRect WgCapsule::_childGeo()
 void WgCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	if( m_pSkin )
-		container.add( WgRect::getIntersection( geo, clip ) );
+		container.add( WgRect::overlap( geo, clip ) );
 	else if( m_hook.Widget() )
 		m_hook.Widget()->_onCollectPatches( container, geo, clip );
 }
@@ -274,7 +274,7 @@ void WgCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, cons
 void WgCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	if( m_pSkin && m_pSkin->isOpaque(m_state) )
-		patches.sub( WgRect::getIntersection( geo, clip ) );
+		patches.sub( WgRect::overlap( geo, clip ) );
 	else if( m_hook.Widget() )
 	{
 		WgRect childGeo;

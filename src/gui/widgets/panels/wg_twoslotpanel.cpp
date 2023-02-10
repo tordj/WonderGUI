@@ -341,7 +341,7 @@ namespace wg
 				slots[1]._widget()->_collectPatches(container, _slotTwoRect(contentRect), clip);
 		}
 		else
-			container.add(RectSPX::getIntersection(geo, clip));
+			container.add(RectSPX::overlap(geo, clip));
 	}
 
 	//____ _maskPatches() _____________________________________________________
@@ -351,7 +351,7 @@ namespace wg
 		{
 			//TODO: Don't just check isOpaque() globally, check rect by rect.
 			if ((m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-				patches.sub(RectSPX::getIntersection(geo, clip));
+				patches.sub(RectSPX::overlap(geo, clip));
 			else
 			{
 				RectSPX contentRect = _contentRect(geo);

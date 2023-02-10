@@ -1338,7 +1338,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 		{
 			WgRect bgGeo = _sliderSkinGeo(slider, sliderGeo);
 
-			if( bgGeo.intersectsWith(pDevice->clipBounds()/64) )
+			if( bgGeo.isOverlapping(pDevice->clipBounds()/64) )
 			{
 				WgState	emptyPartState = slider.sliderState;
 				WgState filledPartState = slider.sliderState;
@@ -1413,7 +1413,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 					int nRects = 0;
 					for( int i = 0 ; i < oldClipListSize ; i++ )
 					{
-						pRects[nRects] = WgRect::getIntersection(pOldClipList[i], filledPart*64 );
+						pRects[nRects] = WgRect::overlap(pOldClipList[i], filledPart*64 );
 						if( !pRects[nRects].isEmpty() )
 							nRects++;
 					}
@@ -1431,7 +1431,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 					nRects = 0;
 					for( int i = 0 ; i < oldClipListSize ; i++ )
 					{
-						pRects[nRects] = WgRect::getIntersection(pOldClipList[i], emptyPart1*64 );
+						pRects[nRects] = WgRect::overlap(pOldClipList[i], emptyPart1*64 );
 						if( !pRects[nRects].isEmpty() )
 							nRects++;
 					}
@@ -1440,7 +1440,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 					for( int i = 0 ; i < oldClipListSize ; i++ )
 					{
-						pRects[nRects] = WgRect::getIntersection(pOldClipList[i], emptyPart2*64 );
+						pRects[nRects] = WgRect::overlap(pOldClipList[i], emptyPart2*64 );
 						if( !pRects[nRects].isEmpty() )
 							nRects++;
 					}

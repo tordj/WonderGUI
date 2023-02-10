@@ -550,8 +550,8 @@ namespace wg
 					{
 						for (int j = 0; j < nActiveUpdateRects; j++)
 						{
-							if (pSrcRect[i].intersectsWith(pActiveUpdateRects[j]) )
-								*pDst++ = RectSPX::getIntersection(pSrcRect[i], pActiveUpdateRects[j]);
+							if (pSrcRect[i].isOverlapping(pActiveUpdateRects[j]) )
+								*pDst++ = RectSPX::overlap(pSrcRect[i], pActiveUpdateRects[j]);
 						}
 					}
 

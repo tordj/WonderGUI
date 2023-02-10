@@ -353,8 +353,8 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 	
 	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
-		if( _canvas.intersectsWith( *pRect ) )
-			patches.push( WgRect::getIntersection(*pRect,_canvas) );
+		if( _canvas.isOverlapping( *pRect ) )
+			patches.push( WgRect::overlap(*pRect,_canvas) );
 	}
 
 	if( patches.isEmpty() )
@@ -372,7 +372,7 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 
 	// Render children
 
-	WgRect	dirtBounds = patches.getUnion();
+	WgRect	dirtBounds = patches.bounds();
 
 	if( m_bSiblingsOverlap )
 	{
@@ -389,7 +389,7 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 
 			bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
 
-			if( bVisibleHook && geo.intersectsWith( dirtBounds ) )
+			if( bVisibleHook && geo.isOverlapping( dirtBounds ) )
 				renderList.push_back( WidgetRenderContext(p->Widget(), geo ) );
 
 			p = _nextHookWithGeo( childGeo, p );
@@ -428,7 +428,7 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 		{
 			WgRect canvas = childGeo + _canvas.pos();
 			bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
-			if( bVisibleHook && canvas.intersectsWith( dirtBounds ) )
+			if( bVisibleHook && canvas.isOverlapping( dirtBounds ) )
 				p->Widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 			p = _nextHookWithGeo( childGeo, p );
 		}

@@ -110,7 +110,7 @@ namespace wg
 		{
 			// Pitch is involved, we need to read line by line
 
-			char * pPixels = (char *) pixbuf.pPixels;
+			char * pPixels = (char *) pixbuf.pixels;
 
 			for( int y = 0 ; y < header.height ; y++ )
 			{
@@ -120,7 +120,7 @@ namespace wg
 		}
 		else
 		{
-			stream.read( (char*) pixbuf.pPixels, lineBytes * header.height );
+			stream.read( (char*) pixbuf.pixels, lineBytes * header.height );
 		}
 
 		pSurface->pullPixels(pixbuf);
@@ -193,7 +193,7 @@ namespace wg
 		{
 			// Pitch is involved, we need to read line by line
 
-			char * pPixels = (char *) pixbuf.pPixels;
+			char * pPixels = (char *) pixbuf.pixels;
 
 			for( int y = 0 ; y < header.height ; y++ )
 			{
@@ -204,7 +204,7 @@ namespace wg
 		}
 		else
 		{
-			std::memcpy( pixbuf.pPixels, pData, lineBytes * header.height );
+			std::memcpy( pixbuf.pixels, pData, lineBytes * header.height );
 		}
 
 		pSurface->pullPixels(pixbuf);

@@ -88,8 +88,8 @@ namespace wg
 	struct PixelBuffer
 	{
 		PixelFormat		format;
-		uint8_t*		pPixels;
-		const Color8*	pPalette;
+		uint8_t*		pixels;
+		const Color8*	palette;
 		RectI			rect;
 		int				pitch;
 	};

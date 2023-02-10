@@ -389,7 +389,7 @@ void WgRangeSlider::_setRange(float begin, float end)
 				m_rangeBegin = begin;
 				WgRect newGeo = _handleGeo(size,true);
 
-				changeRect = WgRect::getUnion(oldGeo, newGeo);
+				changeRect = WgRect::bounds(oldGeo, newGeo);
 			}
 
 			if (end != m_rangeEnd)
@@ -399,7 +399,7 @@ void WgRangeSlider::_setRange(float begin, float end)
 				m_rangeEnd = end;
 				WgRect newGeo = _handleGeo(size, false);
 
-				changeRect = WgRect::getUnion(changeRect, WgRect::getUnion(oldGeo, newGeo));
+				changeRect = WgRect::bounds(changeRect, WgRect::bounds(oldGeo, newGeo));
 			}
 		}
 

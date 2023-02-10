@@ -258,7 +258,7 @@ void WgStackPanel::_onRenderRequested( WgVectorHook * _pHook, const WgRect& _rec
 	while( pCover )
 	{
 		WgRect geo = pCover->_getGeo(m_size);
-		if( pCover->IsVisible() && geo.intersectsWith( rect ) )
+		if( pCover->IsVisible() && geo.isOverlapping( rect ) )
 			pCover->Widget()->_onMaskPatches( patches, geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();

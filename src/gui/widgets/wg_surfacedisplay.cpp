@@ -268,7 +268,7 @@ namespace wg
 		for (int i = 0; i < nRects; i++)
 		{
 			auto rectInCanvas = alignUp(_surfaceRectToCanvasRect(pRects[i]));
-			_requestRender(RectSPX::getUnion(contentRect, rectInCanvas));
+			_requestRender(RectSPX::bounds(contentRect, rectInCanvas));
 		}
 	}
 

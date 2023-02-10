@@ -617,14 +617,14 @@ void WgWidget::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 void WgWidget::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-		container.add( WgRect::getIntersection( geo, clip ) );
+		container.add( WgRect::overlap( geo, clip ) );
 }
 
 void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	if( (m_bOpaque && blendMode == WgBlendMode::Blend) || blendMode == WgBlendMode::Replace )
 	{
-		patches.sub( WgRect::getIntersection( geo, clip ) );
+		patches.sub( WgRect::overlap( geo, clip ) );
 	}
 }
 

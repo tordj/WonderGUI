@@ -81,7 +81,7 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		PatchesSPX patches;
-		patches.add( RectSPX::getIntersection( rect, RectSPX(0,0,m_size)) );
+		patches.add( RectSPX::overlap( rect, RectSPX(0,0,m_size)) );
 
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
@@ -93,7 +93,7 @@ namespace wg
 
 		while( pCover <  pEnd )
 		{
-			if( pCover->m_geo.intersectsWith( rect ) )
+			if( pCover->m_geo.isOverlapping( rect ) )
 				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectSPX(0,0, m_size ), _getBlendMode() );
 
 			pCover = _incOverlaySlot(pCover,incNext);

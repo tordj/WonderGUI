@@ -303,7 +303,7 @@ namespace wg
 		int w = pixbuf.rect.w;
 		int h = pixbuf.rect.h;
 		int p = pixbuf.pitch;
-		uint8_t * pDest = pixbuf.pPixels;
+		uint8_t * pDest = pixbuf.pixels;
 
 		bool ret = true;
 		switch( m_pixelDescription.bits )
@@ -512,7 +512,7 @@ namespace wg
 		}
 
 
-		bool retVal = _copy({ _dest, _srcRect.size() }, pSrcSurface->pixelDescription(), srcbuf.pPixels, srcbuf.pitch, { 0,0,_srcRect.size() }, srcbuf.pPalette);
+		bool retVal = _copy({ _dest, _srcRect.size() }, pSrcSurface->pixelDescription(), srcbuf.pixels, srcbuf.pitch, { 0,0,_srcRect.size() }, srcbuf.palette);
 
 		pSrcSurface->freePixelBuffer(srcbuf);
 
@@ -544,7 +544,7 @@ namespace wg
 		int		dstPitch = pixbuf.pitch;
 
 		uint8_t *	pSrc = pSrcPixels;
-		uint8_t *	pDst = pixbuf.pPixels;
+		uint8_t *	pDst = pixbuf.pixels;
 
 		pSrc += srcRect.y * srcPitch + srcRect.x * pSrcFormat->bits/8;
 //		pDst += dstRect.y * dstPitch + dstRect.x * pDstFormat->bits/8;
@@ -1036,7 +1036,7 @@ namespace wg
 					uint8_t* pDest = pPixels;
 					for (int y = 0; y < m_size.h; y++)
 					{
-						uint32_t* pLine = (uint32_t*) (pixbuf.pPixels + pixbuf.pitch * y);
+						uint32_t* pLine = (uint32_t*) (pixbuf.pixels + pixbuf.pitch * y);
 
 						for (int x = 0; x < m_size.w; x++)
 						{
@@ -1133,17 +1133,17 @@ end:
 		case PixelFormat::Index_8_sRGB:
 		case PixelFormat::Index_8_linear:
 		{
-			uint8_t index = buffer.pPixels[buffer.pitch * coord.y + coord.x];
-			return HiColor::unpackLinearTab[buffer.pPalette[index].a];
+			uint8_t index = buffer.pixels[buffer.pitch * coord.y + coord.x];
+			return HiColor::unpackLinearTab[buffer.palette[index].a];
 		}
 		case PixelFormat::Alpha_8:
 		{
-			uint8_t* pPixel = buffer.pPixels + buffer.pitch * coord.y + coord.x;
+			uint8_t* pPixel = buffer.pixels + buffer.pitch * coord.y + coord.x;
 			return HiColor::unpackLinearTab[pPixel[0]];
 		}
 		case PixelFormat::BGRA_4_linear:
 		{
-			uint16_t pixel = *(uint16_t*)(buffer.pPixels + buffer.pitch * coord.y + coord.x * 2);
+			uint16_t pixel = *(uint16_t*)(buffer.pixels + buffer.pitch * coord.y + coord.x * 2);
 			const uint8_t* pConvTab = s_pixelConvTabs[4];
 
 			return HiColor::unpackLinearTab[((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift)];
@@ -1151,7 +1151,7 @@ end:
 		case PixelFormat::BGRA_8_sRGB:
 		case PixelFormat::BGRA_8_linear:
 		{
-			uint8_t* pPixel = buffer.pPixels + buffer.pitch * coord.y + coord.x * 4;
+			uint8_t* pPixel = buffer.pixels + buffer.pitch * coord.y + coord.x * 4;
 			return HiColor::unpackLinearTab[pPixel[3]];
 		}
 		default:

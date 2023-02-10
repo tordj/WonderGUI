@@ -177,14 +177,14 @@ int wg_surfaceCanBeCanvas(wg_obj surface)
 wg_pixelBuffer wg_allocPixelBuffer(wg_obj surface)
 {
 	auto pixbuf = getPtr(surface)->allocPixelBuffer();
-	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color8*)pixbuf.pPalette, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
+	return { (wg_pixelFormat)pixbuf.format, pixbuf.pixels, (wg_color8*)pixbuf.palette, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
 }
 
 
 wg_pixelBuffer	wg_allocPixelBufferFromRect(wg_obj surface, const wg_rectI* rect)
 {
 	auto pixbuf = getPtr(surface)->allocPixelBuffer(* (RectI*) rect);
-	return { (wg_pixelFormat)pixbuf.format, pixbuf.pPixels, (wg_color8*)pixbuf.pPalette, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
+	return { (wg_pixelFormat)pixbuf.format, pixbuf.pixels, (wg_color8*)pixbuf.palette, *(wg_rectI*)&pixbuf.rect, pixbuf.pitch };
 }
 
 

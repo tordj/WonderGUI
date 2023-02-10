@@ -76,7 +76,7 @@ namespace wg
 			m_pSurface = pSurface;
 
 			if( pSurface )
-				m_rect = Rect::getIntersection( rect, Rect(pSurface->pointSize()) );
+				m_rect = Rect::overlap( rect, Rect(pSurface->pointSize()) );
 			else
 				m_rect.clear();
 

@@ -368,7 +368,7 @@ namespace wg
 				Slot * p = pTo+1;
 				while (p <= pFrom)
 				{
-					RectSPX cover = RectSPX::getIntersection(pTo->m_realGeo, p->m_realGeo);
+					RectSPX cover = RectSPX::overlap(pTo->m_realGeo, p->m_realGeo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -382,7 +382,7 @@ namespace wg
 				Slot * p = pFrom;
 				while (p < pTo)
 				{
-					RectSPX cover = RectSPX::getIntersection(pTo->m_realGeo, p->m_realGeo);
+					RectSPX cover = RectSPX::overlap(pTo->m_realGeo, p->m_realGeo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -453,13 +453,13 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		PatchesSPX patches;
-		patches.add( RectSPX::getIntersection( rect, RectSPX(0,0,m_size)) );
+		patches.add( RectSPX::overlap( rect, RectSPX(0,0,m_size)) );
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
 		for(Slot * pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
-			if( pCover->m_bVisible && pCover->m_realGeo.intersectsWith( rect ) )
+			if( pCover->m_bVisible && pCover->m_realGeo.isOverlapping( rect ) )
 				pCover->_widget()->_maskPatches( patches, pCover->m_realGeo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
 		}
 

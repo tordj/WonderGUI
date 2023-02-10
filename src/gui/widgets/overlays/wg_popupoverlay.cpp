@@ -363,7 +363,7 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		PatchesSPX patches;
-		patches.add( RectSPX::getIntersection( rect, RectSPX(0,0,m_size)) );
+		patches.add( RectSPX::overlap( rect, RectSPX(0,0,m_size)) );
 
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
@@ -379,7 +379,7 @@ namespace wg
 
 			while (pCover >= popupSlots._begin())
 			{
-				if (pCover->m_geo.intersectsWith(rect) && pCover->m_state != Slot::State::OpeningDelay && pCover->m_state != Slot::State::Opening && pCover->m_state != Slot::State::Closing)
+				if (pCover->m_geo.isOverlapping(rect) && pCover->m_state != Slot::State::OpeningDelay && pCover->m_state != Slot::State::Opening && pCover->m_state != Slot::State::Closing)
 					pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, spx_max, spx_max), _getBlendMode());
 
 				pCover--;
@@ -422,7 +422,7 @@ namespace wg
 		{
 			RectSPX geo = pSlot->m_geo + _canvas.pos();
 
-			if (geo.intersectsWith(dirtBounds) && pSlot->m_state != Slot::State::OpeningDelay)
+			if (geo.isOverlapping(dirtBounds) && pSlot->m_state != Slot::State::OpeningDelay)
 				renderList.push_back(WidgetRenderContext(pSlot, geo));
 		}
 

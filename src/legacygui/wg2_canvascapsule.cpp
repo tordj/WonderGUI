@@ -298,7 +298,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 	for (const WgRect * pScreenRect = _pPatches->begin(); pScreenRect != _pPatches->end(); pScreenRect++)
 	{
-		WgRect r = WgRect::getIntersection( _canvas, *pScreenRect );
+		WgRect r = WgRect::overlap( _canvas, *pScreenRect );
 
 		if( r.w > 0 && r.h > 0 )
 		{
@@ -308,9 +308,9 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 			for (const WgRect * pLocalDirt = m_dirtyPatches.begin(); pLocalDirt != m_dirtyPatches.end(); pLocalDirt++)
 			{
-				if (pLocalDirt->intersectsWith(r))
+				if (pLocalDirt->isOverlapping(r))
 				{
-					renderStack.push(WgRect::getIntersection(*pLocalDirt,r));
+					renderStack.push(WgRect::overlap(*pLocalDirt,r));
 					bIntersected = true;
 				}
 			}
@@ -440,7 +440,7 @@ void WgCanvasCapsule::_onRenderRequested(const WgRect& rect)
 void WgCanvasCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	if (m_tintColor.a > 0 || m_blendMode == WgBlendMode::Replace)
-		container.add( WgRect::getIntersection( geo, clip ) );
+		container.add( WgRect::overlap( geo, clip ) );
 }
 
 //____ _onMaskPatches() _______________________________________________________
@@ -450,7 +450,7 @@ void WgCanvasCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, con
 	//TODO: Support recursive masking.
 
 	if( m_pCanvas && ((m_tintColor.a == 255 && m_pCanvas->pixelDescription()->A_bits == 0) || m_blendMode == WgBlendMode::Replace) )
-		patches.sub(WgRect::getIntersection(geo, clip));
+		patches.sub(WgRect::overlap(geo, clip));
 
 	return;
 }

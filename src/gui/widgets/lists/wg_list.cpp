@@ -389,7 +389,7 @@ namespace wg
 		RectSPX geoLast;
 		_getEntryGeo( geoFirst, pBegin );
 		_getEntryGeo( geoLast, pLast );
-		_requestRender( RectSPX::getUnion(geoFirst,geoLast) );
+		_requestRender( RectSPX::bounds(geoFirst,geoLast) );
 
 		// Reserve ItemInfo array of right size if we are going to post message
 

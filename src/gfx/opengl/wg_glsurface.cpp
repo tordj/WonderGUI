@@ -262,9 +262,9 @@ namespace wg
 				// Setup a fake PixelBuffer for call to _updateAlphaMap
 				PixelBuffer buf;
 				buf.format = m_pixelDescription.format;
-				buf.pPalette = m_pPalette;
+				buf.palette = m_pPalette;
 				buf.pitch = pitch;
-				buf.pPixels = (uint8_t*) pBlob->data();
+				buf.pixels = (uint8_t*) pBlob->data();
 				buf.rect = m_size;
 
 				_updateAlphaMap( buf, m_size );
@@ -338,9 +338,9 @@ namespace wg
 				// Setup a fake PixelBuffer for call to _updateAlphaMap
 				PixelBuffer buf;
 				buf.format = m_pixelDescription.format;
-				buf.pPalette = m_pPalette;
+				buf.palette = m_pPalette;
 				buf.pitch = pitch;
-				buf.pPixels = pPixels;
+				buf.pixels = pPixels;
 				buf.rect = m_size;
 
 				_updateAlphaMap(buf, m_size);
@@ -367,7 +367,7 @@ namespace wg
 
             m_pitch = m_size.w * m_pixelSize;
             m_pBlob = Blob::create(m_pitch * m_size.h + (m_pixelDescription.bIndexed ? 1024 : 0));
-            _copy(m_size, pOther->pixelDescription(), pixbuf.pPixels, pixbuf.pitch, m_size);
+            _copy(m_size, pOther->pixelDescription(), pixbuf.pixels, pixbuf.pitch, m_size);
 
             if (m_pixelDescription.bIndexed)
             {
@@ -394,7 +394,7 @@ namespace wg
 
 		//TODO: Support pitch
 
-        _setupGlTexture(pixbuf.pPixels, pixbuf.pitch);
+        _setupGlTexture(pixbuf.pixels, pixbuf.pitch);
 
 		pOther->freePixelBuffer(pixbuf);
 	}
@@ -633,17 +633,17 @@ namespace wg
 		if (m_pBlob)
 		{
 			pixbuf.format = m_pixelDescription.format;
-			pixbuf.pPalette = m_pPalette;
+			pixbuf.palette = m_pPalette;
 			pixbuf.pitch = m_pitch;
-			pixbuf.pPixels = ((uint8_t*)m_pBlob->data()) + rect.y * m_pitch + rect.x * m_pixelSize;
+			pixbuf.pixels = ((uint8_t*)m_pBlob->data()) + rect.y * m_pitch + rect.x * m_pixelSize;
 			pixbuf.rect = rect;
 		}
 		else
 		{
 			pixbuf.format = m_pixelDescription.format;
-			pixbuf.pPalette = m_pPalette;
+			pixbuf.palette = m_pPalette;
 			pixbuf.pitch = ((rect.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-            pixbuf.pPixels = new uint8_t[rect.h * pixbuf.pitch];
+            pixbuf.pixels = new uint8_t[rect.h * pixbuf.pitch];
 			pixbuf.rect = rect;
 		}
 		return pixbuf;
@@ -664,7 +664,7 @@ namespace wg
 		{
             // This is OpenGL pre 4.5, we can only read back a whole texture :(
             
-            _readBackTexture(buffer.pPixels);
+            _readBackTexture(buffer.pixels);
 			return false;
 		}
         else
@@ -691,7 +691,7 @@ namespace wg
 		glBindTexture(GL_TEXTURE_2D, m_texture);
 
 		RectI texRect = { buffer.rect.pos() + bufferRect.pos(), bufferRect.size() };
-		uint8_t* pSrc = buffer.pPixels + bufferRect.y * buffer.pitch + bufferRect.x * m_pixelSize;
+		uint8_t* pSrc = buffer.pixels + bufferRect.y * buffer.pitch + bufferRect.x * m_pixelSize;
 
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.pitch/m_pixelSize);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, texRect.x, texRect.y, texRect.w, texRect.h, m_accessFormat, m_pixelDataType, pSrc);
@@ -713,7 +713,7 @@ namespace wg
 	void GlSurface::freePixelBuffer(const PixelBuffer& buffer)
 	{
 		if (!m_pBlob)
-			delete [] buffer.pPixels;
+			delete [] buffer.pixels;
 	}
 
 	//____ alpha() ____________________________________________________________
@@ -837,7 +837,7 @@ namespace wg
 	void GlSurface::_updateAlphaMap(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
 		uint8_t* pDst = m_pAlphaMap + (buffer.rect.y + bufferRect.y) * m_size.w + (buffer.rect.x + bufferRect.x);
-		uint8_t* pSrc = buffer.pPixels + bufferRect.y * buffer.pitch + bufferRect.x * m_pixelSize;
+		uint8_t* pSrc = buffer.pixels + bufferRect.y * buffer.pitch + bufferRect.x * m_pixelSize;
 
 		int srcPitchAdd = buffer.pitch - bufferRect.w * m_pixelSize;
 		int dstPitchAdd = m_size.w - bufferRect.w;

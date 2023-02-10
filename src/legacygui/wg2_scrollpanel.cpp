@@ -1548,8 +1548,8 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 
 	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
-		if( _window.intersectsWith( *pRect ) )
-			patches.push( WgRect::getIntersection(*pRect,_window) );
+		if( _window.isOverlapping( *pRect ) )
+			patches.push( WgRect::overlap(*pRect,_window) );
 	}
 
 	//
@@ -1557,7 +1557,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 	if( patches.isEmpty() )
 		return;
 	
-	WgRect	dirtBounds = patches.getUnion();
+	WgRect	dirtBounds = patches.bounds();
 
 	int bytesToRelease = _convertAndPushClipList( pDevice, patches.size(), patches.begin() );
 
@@ -1579,11 +1579,11 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 	if( m_elements[WINDOW].Widget() )
 	{
 		WgRect canvas = m_elements[WINDOW].m_canvasGeo + _canvas.pos();
-		WgRect window = WgRect::getIntersection( canvas, m_elements[WINDOW].m_windowGeo + _canvas.pos() );
+		WgRect window = WgRect::overlap( canvas, m_elements[WINDOW].m_windowGeo + _canvas.pos() );
 
 		// Use intersection in case canvas is smaller than window.
 
-		if( window.intersectsWith(dirtBounds) )
+		if( window.isOverlapping(dirtBounds) )
 		{
 			// We need to eliminate dirt outside our view window
 
@@ -1591,8 +1591,8 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 
 			for( const WgRect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
 			{
-				if( window.intersectsWith( *pRect ) )
-					winPatches.push( WgRect::getIntersection(*pRect,window) );
+				if( window.isOverlapping( *pRect ) )
+					winPatches.push( WgRect::overlap(*pRect,window) );
 			}
 
 			if( !winPatches.isEmpty() )
@@ -1603,14 +1603,14 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 	if( m_elements[XDRAG].m_bVisible )
 	{
 		WgRect canvas = m_elements[XDRAG].m_windowGeo + _canvas.pos();
-		if( canvas.intersectsWith(dirtBounds) )
+		if( canvas.isOverlapping(dirtBounds) )
 			m_elements[XDRAG].Widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 	}
 
 	if( m_elements[YDRAG].m_bVisible )
 	{
 		WgRect canvas = m_elements[YDRAG].m_windowGeo + _canvas.pos();
-		if( canvas.intersectsWith(dirtBounds) )
+		if( canvas.isOverlapping(dirtBounds) )
 			m_elements[YDRAG].Widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 	}
 
@@ -1633,7 +1633,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 
 void WgScrollPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-	container.add( WgRect::getIntersection(geo,clip) );
+	container.add( WgRect::overlap(geo,clip) );
 }
 
 //____ _onMaskPatches() __________________________________________________________
@@ -1649,9 +1649,9 @@ void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const
 			WgScrollHook * p = &m_elements[WINDOW];
 
 			if( m_bgColor.a == 255 )
-				patches.sub( WgRect::getIntersection( p->m_windowGeo + geo.pos(), clip) );
+				patches.sub( WgRect::overlap( p->m_windowGeo + geo.pos(), clip) );
 			else if( p->Widget() )
-				p->Widget()->_onMaskPatches( patches, p->m_canvasGeo + geo.pos(), WgRect::getIntersection(p->m_windowGeo + geo.pos(), clip), blendMode );
+				p->Widget()->_onMaskPatches( patches, p->m_canvasGeo + geo.pos(), WgRect::overlap(p->m_windowGeo + geo.pos(), clip), blendMode );
 
 			// Mask against dragbars
 
@@ -1666,14 +1666,14 @@ void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const
 			// Maska against corner piece
 
 			if( !m_geoFiller.isEmpty() && m_pFillerBlocks && m_pFillerBlocks->isOpaque() )
-				patches.sub( WgRect::getIntersection(m_geoFiller + geo.pos(), clip) );
+				patches.sub( WgRect::overlap(m_geoFiller + geo.pos(), clip) );
 
 			break;
 		}
 		case WgMaskOp::Skip:
 			break;
 		case WgMaskOp::Mask:
-			patches.sub( WgRect::getIntersection(geo,clip) );
+			patches.sub( WgRect::overlap(geo,clip) );
 			break;
 	}
 }
@@ -1819,8 +1819,8 @@ void WgScrollPanel::_inViewRequested( WgHook * pChild, const WgRect& mustHaveAre
 
 	// Forward to any outer ScrollPanel
 
-	WgRect newMustHaveArea = WgRect::getIntersection( mustHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo );
-	WgRect newNiceToHaveArea = WgRect::getIntersection( niceToHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo );
+	WgRect newMustHaveArea = WgRect::overlap( mustHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo );
+	WgRect newNiceToHaveArea = WgRect::overlap( niceToHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo );
 
 	_requestInView( newMustHaveArea, newNiceToHaveArea );
 }
@@ -1979,7 +1979,7 @@ void WgScrollHook::_requestRender( const WgRect& rect )
 {
 	if( m_bVisible )
 	{
-		WgRect r = WgRect::getIntersection( m_windowGeo, rect + m_canvasGeo.pos() );
+		WgRect r = WgRect::overlap( m_windowGeo, rect + m_canvasGeo.pos() );
 
 		if( !r.isEmpty() )
 			m_pView->_requestRender( r );

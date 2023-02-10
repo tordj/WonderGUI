@@ -550,7 +550,7 @@ namespace wg
 
 	void Widget::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
-			container.add( RectSPX::getIntersection( geo, clip ) );
+			container.add( RectSPX::overlap( geo, clip ) );
 	}
 
 	//____ _maskPatches() _______________________________________________________
@@ -559,7 +559,7 @@ namespace wg
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{
-			patches.sub( RectSPX::getIntersection( geo, clip ) );
+			patches.sub( RectSPX::overlap( geo, clip ) );
 		}
 	}
 

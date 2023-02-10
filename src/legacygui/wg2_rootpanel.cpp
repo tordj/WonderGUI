@@ -328,7 +328,7 @@ bool WgRootPanel::BeginRender()
 	
 	if( m_maxDirtyRects > 0 && m_dirtyPatches.size() > m_maxDirtyRects )
 	{
-		WgRect u = m_dirtyPatches.getUnion();
+		WgRect u = m_dirtyPatches.bounds();
 		m_dirtyPatches.clear();
 		m_dirtyPatches.add(u);
 	}
@@ -388,8 +388,8 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 	// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
-    WgRect canvas = m_bHasGeo ? WgRect::getIntersection(m_geo, WgRect(m_canvas.size/64)) : WgRect(m_canvas.size/64);
-	WgRect clip = WgRect::getIntersection( _clip, canvas );
+    WgRect canvas = m_bHasGeo ? WgRect::overlap(m_geo, WgRect(m_canvas.size/64)) : WgRect(m_canvas.size/64);
+	WgRect clip = WgRect::overlap( _clip, canvas );
 	if( clip.w == 0 || clip.h == 0 )
 		return false;						// Invalid rect area.
 
@@ -405,8 +405,8 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 	for( const WgRect * pRect = m_dirtyPatches.begin() ; pRect != m_dirtyPatches.end() ; pRect++ )
 	{
-		if( clip.intersectsWith(*pRect) )
-			dirtyPatches.push( WgRect::getIntersection(*pRect, clip) );
+		if( clip.isOverlapping(*pRect) )
+			dirtyPatches.push( WgRect::overlap(*pRect, clip) );
 	}
 
 	// Render the dirty patches recursively

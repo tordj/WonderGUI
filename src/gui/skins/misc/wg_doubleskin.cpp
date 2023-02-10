@@ -188,7 +188,7 @@ namespace wg
 			return true;
 	 
 		RectSPX canvas2 = m_bSkinInSkin ? m_pBackSkin->_contentRect(canvasSize, scale, state) : RectSPX(canvasSize);
-		RectSPX rect2 = RectSPX::getUnion(rect, canvas2) - canvas2.pos();
+		RectSPX rect2 = RectSPX::bounds(rect, canvas2) - canvas2.pos();
 
 		return (!rect2.isEmpty() && m_pFrontSkin->_isOpaque(rect2, canvas2.size(), scale, state));
 	}
@@ -249,7 +249,7 @@ namespace wg
 		if (dirt2.isEmpty())
 			return dirt1;
 
-		return RectSPX::getUnion(dirt1, dirt2);
+		return RectSPX::bounds(dirt1, dirt2);
 	}
 
 	//____ _animationLength() __________________________________________________

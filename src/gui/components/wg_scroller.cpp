@@ -478,7 +478,7 @@ namespace wg
 		RectSPX oldBar = _dragbarArea(sliderBack, scale, oldViewPos, oldViewLen, oldContentLen );
 		RectSPX newBar = _dragbarArea(sliderBack, scale, newViewPos, newViewLen, newContentLen);
 
-		RectSPX dirt = RectSPX::getUnion(oldBar, newBar);
+		RectSPX dirt = RectSPX::bounds(oldBar, newBar);
 
 		if( !dirt.isEmpty() )
 			_requestRender(dirt);

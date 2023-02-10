@@ -353,7 +353,7 @@ namespace wg
 		for( auto pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
 			RectSPX geo = { pCover->m_position, pCover->_widget()->_size() };
-			if( pCover->m_bVisible && geo.intersectsWith( rect ) )
+			if( pCover->m_bVisible && geo.isOverlapping( rect ) )
 				pCover->_widget()->_maskPatches( patches, geo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
 		}
 

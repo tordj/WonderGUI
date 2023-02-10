@@ -193,7 +193,7 @@ void WgDragNDropLayer::_onRequestRender(const WgRect& rect, const WgLayerHook * 
 
 	// Clip our geometry and pass it on
 
-	_requestRender( WgRect::getIntersection( rect, WgRect(0,0,m_size) ));
+	_requestRender( WgRect::overlap( rect, WgRect(0,0,m_size) ));
 }
 
 //____ _firstLayerHook() ____________________________________________________________

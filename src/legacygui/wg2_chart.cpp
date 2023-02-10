@@ -1004,7 +1004,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 
 	for( int i = 0 ; i < oldClipListSize ; i++ )
 	{
-		pRects[nRects] = WgRect::getIntersection(pOldClipList[i], waveClip );
+		pRects[nRects] = WgRect::overlap(pOldClipList[i], waveClip );
 		if( !pRects[nRects].isEmpty() )
 			nRects++;
 	}

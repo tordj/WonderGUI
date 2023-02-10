@@ -71,8 +71,8 @@ public:
 
         src->pushPixels(srcpixbuf);
         
-        unsigned char* pSrc = (unsigned char*)srcpixbuf.pPixels;
-        unsigned char* pDest = (unsigned char*)destpixbuf.pPixels;
+        unsigned char* pSrc = (unsigned char*)srcpixbuf.pixels;
+        unsigned char* pDest = (unsigned char*)destpixbuf.pixels;
 
 		bool quit = false;
 		Resize_HQ_4ch(pSrc,

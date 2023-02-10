@@ -374,7 +374,6 @@ namespace wg
 																			///< Create rectangle with the given values.
 
 
-//		RectT( const RectT<Type>& r1, const RectT<Type>& r2 );						///< @brief Create rectangle from intersection of specified rectangles.
 		RectT( const CoordT<Type>& p1, const CoordT<Type>& p2 );						///< @brief	Create rectangle to cover the area between the specified coordinates.
 		RectT( const CoordT<Type>& p, const SizeT<Type>& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {} 	///< @brief Create rectangle of specified position and size.
 																							///<
@@ -422,10 +421,8 @@ namespace wg
 		void shrink( const BorderT<Type> &borders );
 
 
-
-	//	bool intersection( const RectT<Type>& r1, const RectT<Type>& r2 );
-		static RectT<Type> getUnion( const RectT<Type>& r1, const RectT<Type>& r2 );
-		static RectT<Type> getIntersection(const RectT<Type>& r1, const RectT<Type>& r2);
+		static RectT<Type> bounds( const RectT<Type>& r1, const RectT<Type>& r2 );
+		static RectT<Type> overlap(const RectT<Type>& r1, const RectT<Type>& r2);
 
 		void growToContain( const RectT<Type>& rect );
 		void growToContain( const CoordT<Type>& coord );
@@ -437,7 +434,7 @@ namespace wg
 		inline CoordT<Type> center() const { return {x+w/2,y+h/2}; }
 		inline RectT<Type> center(SizeT<Type> sz) const { return { x + (w-sz.w) / 2,y + (h-sz.h) / 2, sz }; }
 
-		inline bool intersectsWith( const RectT<Type>& rect ) const;	///< @brief Check for intersection (partial or full overlap) with specified rectangle.
+		inline bool isOverlapping( const RectT<Type>& rect ) const;	///< @brief Check for overlap with specified rectangle.
 
 		bool		intersectsWithOrContains(CoordT<Type> p1, CoordT<Type> p2, int precision = 14) const;
 		bool		clipLine(CoordT<Type> * p1, CoordT<Type> * p2, int precision = 14) const;
@@ -525,19 +522,19 @@ namespace wg
 
 	//____ RectT() _______________________________________________________________
 	/**
-	 * Create rectangle from intersection of specified rectangles.
+	 * Create rectangle from overlap of specified rectangles.
 	 *
-	 * @param r1	First intersecting rectangle.
-	 * @param r2	Second intersecting rectangle.
+	 * @param r1	First overlapping rectangle.
+	 * @param r2	Second overlapping rectangle.
 	 *
-	 * If specified rectangles don't intersect, width and height will be set to zero.
+	 * If specified rectangles don't overlap, width and height will be set to zero.
 	 *
 	 **/
 	/*
 	template<typename Type>
 	RectT<Type>::RectT(const RectT<Type>& r1, const RectT<Type>& r2)
 	{
-		* this = RectT<Type>::getIntersection(r1, r2);
+		* this = RectT<Type>::overlap(r1, r2);
 	}
 	*/
 
@@ -653,14 +650,14 @@ namespace wg
 
 	//_____________________________________________________________________________
 	/**
-	 * Check for intersection (partial or full overlap) with specified rectangle.
+	 * Check for overlap (partial or full) with specified rectangle.
 	 *
 	 * @param rect Rectangle to check against.
 	 *
-	 * @return True if rectangles intersects.
+	 * @return True if rectangles overlap.
 	 **/
 	 template<typename Type>
-	 inline bool RectT<Type>::intersectsWith( const RectT<Type>& rect ) const
+	 inline bool RectT<Type>::isOverlapping( const RectT<Type>& rect ) const
 	{
 		if(left() >= rect.right()) return false;
 		if(right() <= rect.left()) return false;
@@ -999,79 +996,21 @@ namespace wg
 		h = 0;
 	}
 
-	 //____ intersection() ________________________________________________________________
+	 //____ overlap() _________________________________________________
 	 /**
-	  * @brief Set rectangle to intersection of specified rectangles.
+	  * @brief Get the overlap of specified rectangles.
 	  *
-	  * Set rectangle to intersection of specified rectangles.
-	  *
-	  * @param r1	First intersecting rectangle.
-	  * @param r2	Second intersecting rectangle.
-	  *
-	  * If specified rectangles don't intersect, width and height will be set to zero.
-	  *
-	  * @return	True if the specified rectangles intersected.
-	  **/
-/*
-	 template<typename Type>
-	 bool RectT<Type>::intersection(const RectT<Type>& r1, const RectT<Type>& r2)
-	 {
-		 Type		x1, y1;						// So we can use ourself as inparameter.
-		 Type		x2, y2;
-
-		 if (r1.x > r2.x)
-			 x1 = r1.x;
-		 else
-			 x1 = r2.x;
-
-		 if (r1.y > r2.y)
-			 y1 = r1.y;
-		 else
-			 y1 = r2.y;
-
-		 if (r1.x + r1.w < r2.x + r2.w)
-			 x2 = r1.x + r1.w;
-		 else
-			 x2 = r2.x + r2.w;
-
-		 if (r1.y + r1.h < r2.y + r2.h)
-			 y2 = r1.y + r1.h;
-		 else
-			 y2 = r2.y + r2.h;
-
-		 x = x1;
-		 y = y1;
-		 w = x2 - x;
-		 h = y2 - y;
-
-		 if (w <= 0 || h <= 0)
-		 {
-			 w = 0;
-			 h = 0;
-			 return	false;
-		 }
-
-		 return	true;
-	 }
-*/
-
-	 //____ getIntersection() _________________________________________________
-	 /**
-	  * @brief Get the intersection of specified rectangles.
-	  *
-	  * Get the union of specified rectangles.
+	  * Get the overlap of specified rectangles.
 	  *
 	  * @param r1	First rectangle.
 	  * @param r2	Second rectangle.
 	  *
-	  * The intersection of the rectangles is the region where the rectangles overlap.
-	  *
-	  * @return	A rectangle that is the intersection of the specified rectangles or an empty
+	  * @return	A rectangle that is the overlap between the specified rectangles or an empty
 	  *         rectangle if rectangles don't overlap.
 	  **/
 
 	template<typename Type>
-	RectT<Type> RectT<Type>::getIntersection(const RectT<Type>& r1, const RectT<Type>& r2)
+	RectT<Type> RectT<Type>::overlap(const RectT<Type>& r1, const RectT<Type>& r2)
 	{
 		Type		x1, y1;						// So we can use ourself as inparameter.
 		Type		x2, y2;
@@ -1103,22 +1042,22 @@ namespace wg
 	}
 
 
-	 //____ getUnion() ________________________________________________________________
+	 //____ bounds() ________________________________________________________________
 	 /**
-	  * @brief Get the union of specified rectangles.
+	  * @brief Get the bounds of the specified rectangles.
 	  *
-	  * Get the union of specified rectangles.
+	  * Get the bounds of the specified rectangles.
 	  *
 	  * @param r1	First rectangle.
 	  * @param r2	Second rectangle.
 	  *
-	  * The union of the rectangles is the smallest rectangle that contains both.
+	  * The bounds of the rectangles is the smallest rectangle that fully contains both.
 	  *
-	  * @return	A rectangle that is the union of the specified rectangles.
+	  * @return	A rectangle that is the bounds of the specified rectangles.
 	  **/
 
 	 template<typename Type>
-	 RectT<Type> RectT<Type>::getUnion(const RectT<Type>& r1, const RectT<Type>& r2)
+	 RectT<Type> RectT<Type>::bounds(const RectT<Type>& r1, const RectT<Type>& r2)
 	 {
 		 RectT<Type> out;
 		 out.x = r1.x < r2.x ? r1.x : r2.x;
