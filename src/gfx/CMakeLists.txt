@@ -1,7 +1,7 @@
-source_group(Code REGULAR_EXPRESSION "wg_*|wonder*")
+source_group(Base REGULAR_EXPRESSION "wg_*|wonder*")
 source_group(C-API REGULAR_EXPRESSION "c-api//*")
-source_group(Stream REGULAR_EXPRESSION "stream//wg_*")
-source_group(Stream/C-API REGULAR_EXPRESSION "stream/c-api//wg_*")
+source_group(Stream REGULAR_EXPRESSION "stream/wg_*")
+source_group(C-API/Stream REGULAR_EXPRESSION "stream/c-api/wg_*")
 
 set( SOURCES
 
