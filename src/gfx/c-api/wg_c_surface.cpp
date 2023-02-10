@@ -190,31 +190,31 @@ wg_pixelBuffer	wg_allocPixelBufferFromRect(wg_obj surface, const wg_rectI* rect)
 
 int wg_pushPixels(wg_obj surface, const wg_pixelBuffer* buffer)
 {
-	return getPtr(surface)->pushPixels( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pPalette, * (RectI*)&buffer->rect, buffer->pitch });
+	return getPtr(surface)->pushPixels( { (PixelFormat)buffer->format, buffer->pixels, (Color8*)buffer->palette, * (RectI*)&buffer->rect, buffer->pitch });
 }
 
 
 int wg_pushPixelsFromRect(wg_obj surface, const wg_pixelBuffer* buffer, const wg_rectI* bufferRect)
 {
-	return getPtr(surface)->pushPixels( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pPalette, * (RectI*)&buffer->rect, buffer->pitch }, * (const RectI*) bufferRect );
+	return getPtr(surface)->pushPixels( { (PixelFormat)buffer->format, buffer->pixels, (Color8*)buffer->palette, * (RectI*)&buffer->rect, buffer->pitch }, * (const RectI*) bufferRect );
 }
 
 
 void wg_pullPixels(wg_obj surface, const wg_pixelBuffer* buffer)
 {
-	getPtr(surface)->pullPixels({ (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pPalette, *(RectI*)&buffer->rect, buffer->pitch });
+	getPtr(surface)->pullPixels({ (PixelFormat)buffer->format, buffer->pixels, (Color8*)buffer->palette, *(RectI*)&buffer->rect, buffer->pitch });
 }
 
 
 void wg_pullPixelsFromRect(wg_obj surface, const wg_pixelBuffer* buffer, const wg_rectI* bufferRect)
 {
-	getPtr(surface)->pullPixels({ (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pPalette, *(RectI*)&buffer->rect, buffer->pitch }, *(const RectI*)bufferRect);
+	getPtr(surface)->pullPixels({ (PixelFormat)buffer->format, buffer->pixels, (Color8*)buffer->palette, *(RectI*)&buffer->rect, buffer->pitch }, *(const RectI*)bufferRect);
 }
 
 
 void wg_freePixelBuffer(wg_obj surface, const wg_pixelBuffer* buffer)
 {
-	getPtr(surface)->freePixelBuffer( { (PixelFormat)buffer->format, buffer->pPixels, (Color8*)buffer->pPalette, *(RectI*)&buffer->rect, buffer->pitch } );
+	getPtr(surface)->freePixelBuffer( { (PixelFormat)buffer->format, buffer->pixels, (Color8*)buffer->palette, *(RectI*)&buffer->rect, buffer->pitch } );
 }
 
 
