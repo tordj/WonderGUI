@@ -43,7 +43,7 @@ public:
 		
 		m_data.removeFunc(nSurfaces,pObjects,m_data.removePtr,m_data.removeInt);
 		
-		GfxBase::memStackRelease(sizeof(wg_obj)*nSurfaces);
+		GfxBase::memStackFree(sizeof(wg_obj)*nSurfaces);
 	}
 	void _cacheCleared() override { m_data.clearFunc( m_data.addPtr, m_data.addInt ); }
 	

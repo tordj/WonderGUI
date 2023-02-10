@@ -558,7 +558,7 @@ void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 
 	SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );
 
-	Base::memStackRelease( sizeof(SDL_Rect) * nRects );
+	Base::memStackFree( sizeof(SDL_Rect) * nRects );
 }
 
 //____ myButtonClickCallback() _________________________________________________

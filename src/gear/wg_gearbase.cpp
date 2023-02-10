@@ -74,7 +74,7 @@ namespace wg
 	{
 		if( s_initCounter <= 0 )
 		{
-			handleError(ErrorSeverity::SilentFail, ErrorCode::IllegalCall, "Call to GearBase::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to GearBase::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
 		
@@ -86,7 +86,7 @@ namespace wg
 		
 		if( !s_pPtrPool->isEmpty() )
 		{
-			handleError(ErrorSeverity::SilentFail, ErrorCode::SystemIntegrity, "Some weak pointers still in use. Can not exit WonderGUI.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::SilentError, ErrorCode::SystemIntegrity, "Some weak pointers still in use. Can not exit WonderGUI.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
 
@@ -94,7 +94,7 @@ namespace wg
 		
 		if( !s_pMemStack->isEmpty() )
 		{
-			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 		}
 
 		delete s_pPtrPool;
@@ -104,14 +104,14 @@ namespace wg
 		s_pMemStack = nullptr;
 
 		if (s_objectsCreated != s_objectsDestroyed)
-			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 
 		return true;
 	}
 
-	//____ handleError() _________________________________________________________
+	//____ throwError() _________________________________________________________
 
-	void GearBase::handleError(ErrorSeverity severity, ErrorCode code, const char * msg, const Object * pObject, const TypeInfo* pClassType, const char * function, const char * file, int line)
+	void GearBase::throwError(ErrorLevel severity, ErrorCode code, const char * msg, const Object * pObject, const TypeInfo* pClassType, const char * function, const char * file, int line)
 	{
 		if (s_pErrorHandler)
 		{
@@ -198,9 +198,9 @@ namespace wg
 		return s_pMemStack->allocBytes(bytes);
 	}
 
-	//____ memStackRelease() ______________________________________________________
+	//____ memStackFree() ______________________________________________________
 
-	void GearBase::memStackRelease( int bytes )
+	void GearBase::memStackFree( int bytes )
 	{	assert(s_pMemStack != nullptr);
 		return s_pMemStack->releaseBytes(bytes);
 	}

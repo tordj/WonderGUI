@@ -255,7 +255,7 @@ namespace wg
     {
         if( blendMode < BlendMode_min || blendMode > BlendMode_max )
         {
-            GfxBase::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Not a valid blendMode", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+            GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Not a valid blendMode", this, &TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
         }
 
@@ -276,7 +276,7 @@ namespace wg
     {
         if (!pSource || !pSource->isInstanceOf(GfxStreamSurface::TYPEINFO))
         {
-            GfxBase::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Surface is not a GfxStreamSurface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+            GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Surface is not a GfxStreamSurface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
         }
 
@@ -672,7 +672,7 @@ namespace wg
         }
         
         if( allocSize > 0 )
-            GfxBase::memStackRelease(allocSize);
+            GfxBase::memStackFree(allocSize);
 
     }
 

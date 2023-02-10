@@ -1456,7 +1456,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 					// Clean up
 
 					pDevice->setClipList(oldClipListSize, pOldClipList);
-					wg::GfxBase::memStackRelease(allocSize);
+					wg::GfxBase::memStackFree(allocSize);
 
 				}
 

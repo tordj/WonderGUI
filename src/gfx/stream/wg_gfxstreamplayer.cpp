@@ -316,7 +316,7 @@ namespace wg
 
 			if( surfaceId > m_vSurfaces.size() || m_vSurfaces[surfaceId] == nullptr )
 			{
-				GfxBase::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "SurfaceID is not valid", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "SurfaceID is not valid", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 				break;
 			}
 
@@ -381,7 +381,7 @@ namespace wg
 
 			m_pDevice->plotPixels(nPixels, (CoordI*)pBuffer, (HiColor*)(pBuffer + header.size / 2));
 
-			GfxBase::memStackRelease(bufferSize);
+			GfxBase::memStackFree(bufferSize);
 			break;
 		}
 
@@ -860,7 +860,7 @@ namespace wg
 			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(bp);
 
 			if (bp.palette)
-				GfxBase::memStackRelease(1024);
+				GfxBase::memStackFree(1024);
 
 			break;
 		}

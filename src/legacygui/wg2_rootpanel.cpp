@@ -430,7 +430,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
         
         m_pGfxDevice->endCanvasUpdate();
 		
-		wg::GfxBase::memStackRelease(nRects*sizeof(wg::RectSPX));
+		wg::GfxBase::memStackFree(nRects*sizeof(wg::RectSPX));
 		
     }
 	// Handle updated rect overlays

@@ -1024,7 +1024,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 	}
 
 	pDevice->setClipList(oldClipListSize, pOldClipList);
-	wg::GfxBase::memStackRelease(allocSize);
+	wg::GfxBase::memStackFree(allocSize);
 }
 
 //____ _renderWave() __________________________________________________________
@@ -1375,14 +1375,14 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		{
 			pWave->resampledBottom.resize(nResampled);
 			memcpy(&pWave->resampledBottom[0], pNewBottomSamples, nbNewBottomSamples * sizeof(int));
-			wg::GfxBase::memStackRelease(nbNewBottomSamples * sizeof(int));
+			wg::GfxBase::memStackFree(nbNewBottomSamples * sizeof(int));
 		}
 
 		if( nbNewTopSamples > 0 )
 		{
 			pWave->resampledTop.resize(nResampled);
 			memcpy(&pWave->resampledTop[0], pNewTopSamples, nbNewTopSamples * sizeof(int));
-			wg::GfxBase::memStackRelease(nbNewTopSamples * sizeof(int));
+			wg::GfxBase::memStackFree(nbNewTopSamples * sizeof(int));
 		}
 	}
 

@@ -309,7 +309,7 @@ WgWidget * WgWidget::CommonAncestor(WgWidget* pOtherWidget)
 
     if (nb1 == c_maxLevels-1 || nb2 == c_maxLevels-1)
     {
-//        wg::GfxBase::handleError(ErrorSeverity::SilentFail, ErrorCode::Internal, "Widget hierarchy too deep for operation.", this, Widget::TYPEINFO, __func__, __FILE__, __LINE__);
+//        wg::GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::Internal, "Widget hierarchy too deep for operation.", this, Widget::TYPEINFO, __func__, __FILE__, __LINE__);
         return nullptr;
     }
 
@@ -597,7 +597,7 @@ void WgWidget::_popAndReleaseClipList( wg::GfxDevice * pDevice, int bytesToRelea
 	//	return;						// No cliplist was pushed.
 		
 	pDevice->popClipList();
-	wg::GfxBase::memStackRelease(bytesToRelease);
+	wg::GfxBase::memStackFree(bytesToRelease);
 }
 
 

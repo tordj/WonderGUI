@@ -185,7 +185,7 @@ namespace wg
 
 					// Release temporary memory area
 
-					Base::memStackRelease(arrayBytes);
+					Base::memStackFree(arrayBytes);
 				}
 				else
 				{
@@ -229,7 +229,7 @@ namespace wg
 
 					// Release temporary memory area
 
-					Base::memStackRelease(arrayBytes);
+					Base::memStackFree(arrayBytes);
 				}
 				else
 				{
@@ -287,7 +287,7 @@ namespace wg
 
 					// Release temporary memory area
 
-					Base::memStackRelease(arrayBytes);
+					Base::memStackFree(arrayBytes);
 				}
 				else
 				{
@@ -331,7 +331,7 @@ namespace wg
 
 					// Release temporary memory area
 
-					Base::memStackRelease(arrayBytes);
+					Base::memStackFree(arrayBytes);
 				}
 				else
 				{
@@ -754,7 +754,7 @@ namespace wg
 
 				// Release temporary memory area
 
-				Base::memStackRelease(arrayBytes);
+				Base::memStackFree(arrayBytes);
 
 			}
 			else
@@ -995,7 +995,7 @@ namespace wg
 
 			// Release SizeBroker array
 
-			Base::memStackRelease(arrayBytes);
+			Base::memStackFree(arrayBytes);
 		}
 	}
 

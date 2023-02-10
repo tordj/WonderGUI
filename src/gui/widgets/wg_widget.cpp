@@ -170,7 +170,7 @@ namespace wg
 
 		if (nb1 == c_maxLevels-1 || nb2 == c_maxLevels-1)
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::Internal, "Widget hierarchy too deep for operation.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::Internal, "Widget hierarchy too deep for operation.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 

@@ -42,7 +42,7 @@ namespace wg
 	class Error
 	{
 	public:
-		ErrorSeverity	severity;
+		ErrorLevel	severity;
 		ErrorCode		code;
 		std::string		message;
 		const Object *	pObject;
@@ -91,9 +91,9 @@ namespace wg
 
 
 		static char *		memStackAlloc( int bytes );
-		static void			memStackRelease( int bytes );
+		static void			memStackFree( int bytes );
 
-		static void			handleError( ErrorSeverity severity, ErrorCode code, const char * pMsg, const Object * pObject, const TypeInfo * pClassType, const char * pFunction, const char * pFile, int line );
+		static void			throwError( ErrorLevel severity, ErrorCode code, const char * pMsg, const Object * pObject, const TypeInfo * pClassType, const char * pFunction, const char * pFile, int line );
 
 		static void			beginObjectTracking();
 		static void			endObjectTracking();

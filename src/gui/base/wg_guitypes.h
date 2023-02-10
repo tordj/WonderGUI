@@ -121,9 +121,9 @@ namespace wg
 #define WGTRACK(pObj) wg::Base::_trackObj(pObj, __FILE__, __LINE__ ) 
 
 
-	//____ ErrorSeverity ________________________________________________
+	//____ ErrorLevel ________________________________________________
 
-	enum class ErrorSeverity		//. autoExtras
+	enum class ErrorLevel		//. autoExtras
 	{
 		Warning,
 		SilentFail,

@@ -262,7 +262,7 @@ void WgOscilloscope::SetLinePoints( int nPoints, float pPointValues[] )
 
 	// Return memory allocated for render segments
 
-	wg::GfxBase::memStackRelease(allocSize);
+	wg::GfxBase::memStackFree(allocSize);
 }
 
 //____ _updateRenderSegments()__________________________________________________

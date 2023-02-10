@@ -178,7 +178,7 @@ namespace wg
 	{
 		if (m_clipListStack.empty())
 		{
-			GfxBase::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "No ClipLists in stack, nothing to pop.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "No ClipLists in stack, nothing to pop.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
 
@@ -254,7 +254,7 @@ namespace wg
 
 		if (!m_pCanvasLayers || layer < 0 || layer > m_pCanvasLayers->size())
 		{
-			GfxBase::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Specified layer out of bounds.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "Specified layer out of bounds.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -520,7 +520,7 @@ namespace wg
 
 		if (m_canvasStack.empty())
 		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "No Canvas being updated, nothing to end.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::throwError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "No Canvas being updated, nothing to end.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 */
@@ -943,7 +943,7 @@ namespace wg
 
 		if (!m_pBlitSource->isTiling())
 		{
-			GfxBase::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -958,7 +958,7 @@ namespace wg
 
 		if (!m_pBlitSource->isTiling())
 		{
-			GfxBase::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -985,7 +985,7 @@ namespace wg
 
 		if (!m_pBlitSource->isTiling())
 		{
-			GfxBase::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -1009,7 +1009,7 @@ namespace wg
 
 		if (!m_pBlitSource->isTiling())
 		{
-			GfxBase::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -1036,7 +1036,7 @@ namespace wg
 	{
 		if( !m_pBlitSource )
 		{
-			GfxBase::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "No blit source set", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::FailedPrerequisite, "No blit source set", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -1397,8 +1397,8 @@ namespace wg
 
 		// Free temporary work memory
 
-		GfxBase::memStackRelease(edgeBufferSize);
-		GfxBase::memStackRelease(lineBufferSize);
+		GfxBase::memStackFree(edgeBufferSize);
+		GfxBase::memStackFree(lineBufferSize);
 	}
 
 	//____ drawElipse() ______________________________________________________
@@ -1621,8 +1621,8 @@ namespace wg
 
 		// Free temporary work memory
 
-		GfxBase::memStackRelease(clipBufferSize);
-		GfxBase::memStackRelease(bufferSize);
+		GfxBase::memStackFree(clipBufferSize);
+		GfxBase::memStackFree(bufferSize);
 
 	}
 
@@ -1965,9 +1965,9 @@ namespace wg
 		}
 
 		if( hubBufferSize != 0 )
-			GfxBase::memStackRelease(hubBufferSize);
+			GfxBase::memStackFree(hubBufferSize);
 
-		GfxBase::memStackRelease(bufferSize);
+		GfxBase::memStackFree(bufferSize);
 	}
 
 	//____ drawSegments() ______________________________________________________

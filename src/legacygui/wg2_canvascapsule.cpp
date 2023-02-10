@@ -359,7 +359,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 //		_popAndReleaseClipList( pDevice, bytesToRelease);
         pDevice->endCanvasUpdate();
 
-		wg::GfxBase::memStackRelease(nBytesReserved);
+		wg::GfxBase::memStackFree(nBytesReserved);
 	}
 
 	// Set our tint color and blend mode for blitting from back canvas to screen.

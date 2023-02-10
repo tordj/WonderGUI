@@ -258,7 +258,7 @@ int WgPackPanel::MatchingPixelHeight( int width ) const
 
 			// Release temporary memory area
 
-			wg::GfxBase::memStackRelease(arrayBytes);
+			wg::GfxBase::memStackFree(arrayBytes);
 		}
 		else
 		{
@@ -391,7 +391,7 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
 
 			// Release temporary memory area
 
-			wg::GfxBase::memStackRelease(arrayBytes);
+			wg::GfxBase::memStackFree(arrayBytes);
 		}
 		else
 		{
@@ -1052,7 +1052,7 @@ void WgPackPanel::_refreshChildGeo()
 
 		// Release SizeBroker array
 
-		wg::GfxBase::memStackRelease(arrayBytes);
+		wg::GfxBase::memStackFree(arrayBytes);
 	}
 
 	// Make adjustments to breadth according to mode and possibly adjust position.
@@ -1189,7 +1189,7 @@ void WgPackPanel::_refreshChildGeo()
 
 	// Release temporary memory
 
-	wg::GfxBase::memStackRelease(childGeosBytes);
+	wg::GfxBase::memStackFree(childGeosBytes);
 }
 
 //____ _populateSizeBrokerArray() ___________________________________________

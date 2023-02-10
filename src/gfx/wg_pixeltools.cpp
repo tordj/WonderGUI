@@ -682,12 +682,12 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 	}
 	
 	if( nAllocatedBytes > 0 )
-		GfxBase::memStackRelease(nAllocatedBytes);
+		GfxBase::memStackFree(nAllocatedBytes);
 	return true;
 	
 error:
 	if( nAllocatedBytes > 0 )
-		GfxBase::memStackRelease(nAllocatedBytes);
+		GfxBase::memStackFree(nAllocatedBytes);
 	return false;
 }
 

@@ -52,15 +52,15 @@ typedef struct wg_typeInfo_struct
 	const struct wg_typeInfo_struct* pSuperClass;
 } wg_typeInfo;
 
-//____ wg_errorSeverity ________________________________________________
+//____ wg_errorLevel ________________________________________________
 
 typedef enum
 {
 	WG_WARNING = 0,
-	WG_SILENT_FAIL,
-	WG_SERIOUS_ERROR,
-	WG_CRITICAL_ERROR
-} wg_errorSeverity;
+	WG_SILENT_ERROR,
+	WG_ERROR,
+	WG_CRITICAL
+} wg_errorLevel;
 
 //____ wg_errorCode ____________________________________________________
 
@@ -82,7 +82,7 @@ typedef enum
 
 typedef struct wg_errorInfo_struct
 {
-	wg_errorSeverity	severity;
+	wg_errorLevel	severity;
 	wg_errorCode		code;
 	const char * 		message;
 	const void *		object;

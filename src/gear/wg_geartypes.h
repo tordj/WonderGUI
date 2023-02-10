@@ -89,13 +89,13 @@ template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T
 #define WGTRACK(pObj) wg::Base::_trackObj(pObj, __FILE__, __LINE__ ) 
 
 
-	//____ ErrorSeverity ________________________________________________
+	//____ ErrorLevel ________________________________________________
 
-	enum class ErrorSeverity		//. autoExtras
+	enum class ErrorLevel		//. autoExtras
 	{
 		Warning,
-		SilentFail,
-		Serious,
+		SilentError,
+		Error,
 		Critical
 	};
 

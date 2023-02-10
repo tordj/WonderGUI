@@ -34,7 +34,7 @@ namespace wg
 
 =========================================================================*/
 
-	const char * toString(ErrorSeverity i)
+	const char * toString(ErrorLevel i)
 	{
 		static const char * names[] = { 
 			"Warning",

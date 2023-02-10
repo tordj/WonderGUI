@@ -61,7 +61,7 @@ namespace wg
 	{
 		if( s_pluginInitCounter <= 0 )
 		{
-			handleError(ErrorSeverity::SilentFail, ErrorCode::IllegalCall, "Call to PluginBase::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to PluginBase::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
 		}
 		

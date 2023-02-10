@@ -487,7 +487,7 @@ RectI sourceOfs;
 		if( popData.bInitialized )
 		{
 			pDevice->setClipList(popData.nRects, popData.pRects);
-			Base::memStackRelease(popData.reservedMem);
+			Base::memStackFree(popData.reservedMem);
 		}
 	}
 

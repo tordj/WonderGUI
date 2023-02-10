@@ -193,7 +193,7 @@ namespace wg
 			slot._widget()->_render(pDevice, canvas, canvas);
 
 		pDevice->endCanvasUpdate();
-		Base::memStackRelease(allocSize);
+		Base::memStackFree(allocSize);
 		
 		// Blit our canvas
 

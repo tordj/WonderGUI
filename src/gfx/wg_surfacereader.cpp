@@ -72,7 +72,7 @@ namespace wg
 		Surface::Blueprint bp = _blueprintFromHeader(&header);
 		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
 		{
-			GfxBase::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 
@@ -96,7 +96,7 @@ namespace wg
 		auto pSurface = m_pFactory->createSurface(bp);
 
 		if( paletteBytes > 0 )
-			GfxBase::memStackRelease(paletteBytes);
+			GfxBase::memStackFree(paletteBytes);
 
 		// Read pixels into PixelBuffer
 		// We only support uncompressed pixels for the moment
@@ -164,7 +164,7 @@ namespace wg
 		Surface::Blueprint bp = _blueprintFromHeader(&header);
 		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
 		{
-			GfxBase::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 

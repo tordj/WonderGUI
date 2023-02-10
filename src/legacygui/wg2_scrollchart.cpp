@@ -958,7 +958,7 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 		}
 	}
 
-	wg::GfxBase::memStackRelease(bufferSize);
+	wg::GfxBase::memStackFree(bufferSize);
 }
 
 //____ _resampleWavePortion() _________________________________________________
@@ -1121,7 +1121,7 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 				_renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale);
 
 				pDevice->setClipList(oldClipListSize, pOldClipList);
-				wg::GfxBase::memStackRelease(allocSize);
+				wg::GfxBase::memStackFree(allocSize);
 			}
 		}
 		else

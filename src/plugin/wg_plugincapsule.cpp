@@ -248,7 +248,7 @@ namespace wg
 				TextTool::getTextUTF8(str.chars(), pDest, maxSize);
 				
 				m_calls.putText(m_pPluginRoot,pDest);
-				Base::memStackRelease(maxSize);
+				Base::memStackFree(maxSize);
 				break;
 			}
 				

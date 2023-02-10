@@ -78,7 +78,7 @@ namespace wg
 	{
 		if (maxBytes < 0)
 		{
-			GfxBase::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "You can not set cache to a negative size!", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::InvalidParam, "You can not set cache to a negative size!", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 

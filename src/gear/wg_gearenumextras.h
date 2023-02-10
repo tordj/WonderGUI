@@ -38,16 +38,16 @@ namespace wg
 
 =========================================================================*/
 
-	const static ErrorSeverity   ErrorSeverity_min   = ErrorSeverity::Warning;
+	const static ErrorLevel   ErrorLevel_min   = ErrorLevel::Warning;
 	const static ErrorCode       ErrorCode_min       = ErrorCode::OutOfRange;
 
-	const static ErrorSeverity   ErrorSeverity_max   = ErrorSeverity::Critical;
+	const static ErrorLevel   ErrorLevel_max   = ErrorLevel::Critical;
 	const static ErrorCode       ErrorCode_max       = ErrorCode::Other;
 
-	const static int             ErrorSeverity_size  = (int)ErrorSeverity::Critical + 1;
+	const static int             ErrorLevel_size  = (int)ErrorLevel::Critical + 1;
 	const static int             ErrorCode_size      = (int)ErrorCode::Other + 1;
 
-	const char * toString(ErrorSeverity);
+	const char * toString(ErrorLevel);
 	const char * toString(ErrorCode);
 
 //=========================================================================

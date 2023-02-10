@@ -867,7 +867,7 @@ WonderApp::DialogButton	MyAppVisitor::messageBox(	const std::string& title, cons
 
 wrongDefaultButton:
 	
-	Base::handleError(ErrorSeverity::Serious, ErrorCode::InvalidParam, "Default button isn't a button of specified dialog type", nullptr, nullptr, __func__, __FILE__, __LINE__);
+	Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Default button isn't a button of specified dialog type", nullptr, nullptr, __func__, __FILE__, __LINE__);
 	
 	return WonderApp::DialogButton::Undefined;
 
