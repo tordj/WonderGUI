@@ -45,7 +45,7 @@ public:
 	}
 
 
-	bool init(GfxDevice * pDevice, const RectI& _canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectI& _canvas, WonderApp::Visitor * pAppVisitor)
 	{
 		// Generate rainbow segments
 

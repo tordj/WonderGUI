@@ -14,7 +14,6 @@ using namespace wg;
 class MyApp : public WonderApp
 {
 public:
-	Size	startWindowSize();
 
 	bool		init(Visitor* pVisitor) override;
 	bool		update() override;

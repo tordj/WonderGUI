@@ -10,7 +10,7 @@ public:
 		addTest("Plot", &PlotTests::plot );
 	}
 
-	bool init(GfxDevice * pDevice, const RectSPX& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectSPX& canvas, WonderApp::Visitor * pAppVisitor)
 	{
 		m_coords[0] = { 1 * 64,1 * 64 };
 		m_coords[1] = { 3 * 64,1 * 64 };

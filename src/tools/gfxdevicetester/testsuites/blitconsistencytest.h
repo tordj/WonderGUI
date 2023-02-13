@@ -24,7 +24,7 @@ public:
 
 	}
 
-	bool init(GfxDevice * pDevice, const RectSPX& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectSPX& canvas, WonderApp::Visitor * pAppVisitor)
 	{
 		m_pPalette = pAppVisitor->loadSurface("resources/stretchblit_consistency.png", pDevice->surfaceFactory(), { .buffered = true, .sampleMethod = SampleMethod::Nearest });
 		if (!m_pPalette)

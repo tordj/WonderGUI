@@ -14,7 +14,7 @@ public:
 		addTest("DrawToBGR_565", &CanvasFormatTests::init_BGR_565, &CanvasFormatTests::drawPrimitives, &CanvasFormatTests::exit_drawToSurface);
 	}
 
-	bool init(GfxDevice * pDevice, const RectSPX& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectSPX& canvas, WonderApp::Visitor * pAppVisitor)
 	{
 		m_pCanvasBGR_8 = pDevice->surfaceFactory()->createSurface(canvas/64, PixelFormat::BGR_8, SurfaceFlag::Canvas );
 		m_pCanvasBGRA_8 = pDevice->surfaceFactory()->createSurface(canvas/64, PixelFormat::BGRA_8, SurfaceFlag::Canvas);

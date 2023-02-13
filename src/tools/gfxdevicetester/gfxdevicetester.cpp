@@ -1,36 +1,42 @@
 
 #include <cmath>
-
 #include <wg_freetypefont.h>
-#include <wg_basictextlayout.h>
 
 #include "gfxdevicetester.h"
 
 #include "testsuites/testsuite.h"
+
+#include "testsuites/a8tests.h"
 #include "testsuites/blendtests.h"
-#include "testsuites/filltests.h"
-#include "testsuites/plottests.h"
-#include "testsuites/linetests.h"
-#include "testsuites/canvasformattests.h"
-#include "testsuites/blittests.h"
-#include "testsuites/segmenttests.h"
-#include "testsuites/wavetests.h"
-#include "testsuites/paletteblittests.h"
-#include "testsuites/mipmaptests.h"
+#include "testsuites/blitblendtests.h"
 #include "testsuites/blitconsistencytest.h"
+#include "testsuites/blittests.h"
+#include "testsuites/canvasformattests.h"
+#include "testsuites/canvaslayertests.h"
+#include "testsuites/filltests.h"
+#include "testsuites/linetests.h"
+#include "testsuites/mipmaptests.h"
+#include "testsuites/paletteblittests.h"
 #include "testsuites/piecharttests.h"
+#include "testsuites/plottests.h"
+#include "testsuites/rgb565bigendiantests.h"
+#include "testsuites/segmenttests.h"
+#include "testsuites/tiletests.h"
 #include "testsuites/tintblittests.h"
 #include "testsuites/tintsegmenttests.h"
-#include "testsuites/blitblendtests.h"
-#include "testsuites/a8tests.h"
-#include "testsuites/tiletests.h"
-#include "testsuites/canvaslayertests.h"
-#include "testsuites/rgb565bigendiantests.h"
+#include "testsuites/wavetests.h"
 
 
 using namespace wg;
 using namespace std;
 
+
+//____ create() _______________________________________________________________
+
+WonderApp_p WonderApp::create()
+{
+	return static_cast<WonderApp*>( new GfxDeviceTester() );
+}
 
 //____ constructor ____________________________________________________________
 
@@ -48,9 +54,16 @@ GfxDeviceTester::~GfxDeviceTester()
 
 //____ init() _________________________________________________________________
 
-bool GfxDeviceTester::init( AppVisitor * pVisitor )
+bool GfxDeviceTester::init( WonderApp::Visitor * pVisitor )
 {
 	m_pVisitor = pVisitor;
+
+	m_pWindow = pVisitor->createWindow({ .size = {800,700}, .title = "Font Generator" });
+
+	//
+	
+	addTestDevice(new SoftwareDevice());
+	addTestDevice(new SoftwareDevice());
 
 	// Init textmappers
 
@@ -308,7 +321,7 @@ SurfaceDisplay_p GfxDeviceTester::create_canvas()
 {
 	auto pCanvas = SurfaceDisplay::create();
 	
-	auto pSurface = Base::activeContext()->surfaceFactory()->createSurface(g_canvasSize);
+	auto pSurface = Base::defaultSurfaceFactory()->createSurface(g_canvasSize);
 	pCanvas->setSurface(pSurface);
 //	pCanvas->canvas.setBackColor(Color::Black);
 	return pCanvas;
@@ -598,7 +611,7 @@ bool GfxDeviceTester::setup_chrome()
 
 	auto pLayerStack = StackPanel::create();
 	pLayerStack->setSkin( StaticColorSkin::create(Color::AntiqueWhite) );
-	m_pVisitor->rootPanel()->slot = pLayerStack;
+	m_pWindow->rootPanel()->slot = pLayerStack;
 
 	auto pUniformLayout = PackLayout::create({ .wantedSize = PackLayout::WantedSize::Default,
 		.expandFactor = PackLayout::Factor::Weight, .shrinkFactor = PackLayout::Factor::Weight });

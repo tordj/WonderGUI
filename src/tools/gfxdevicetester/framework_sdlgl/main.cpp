@@ -20,14 +20,14 @@
 #include <wg_softsurfacefactory.h>
 
 
-#include <wg_streamgfxdevice.h>
-#include <wg_streamsurfacefactory.h>
+#include <wg_gfxstreamdevice.h>
+#include <wg_gfxstreamsurfacefactory.h>
 
-#include <wg_cabi.h>
+//#include <wg_cabi.h>
 
-#include <wg_glgfxdevice.h>
-#include <wg_glsurface.h>
-#include <wg_glsurfacefactory.h>
+//#include <wg_glgfxdevice.h>
+//#include <wg_glsurface.h>
+//#include <wg_glsurfacefactory.h>
 
 #include "../device.h"
 #include "../gfxdevicetester.h"
@@ -56,10 +56,10 @@ SDL_Window *		g_pSDLWindow = nullptr;
 Surface_p			g_pWindowSurface = nullptr;				// Set by init_system()
 RootPanel_p			g_pRoot = nullptr;
 
-wg_c_callCollection	g_cCallsCollection;
+//wg_c_callCollection	g_cCallsCollection;
 
 
-
+/*
 //____ OpenGLDevice ________________________________________________________
 
 class OpenGLDevice : public Device
@@ -117,7 +117,7 @@ private:
 	GlGfxDevice_p	m_pDevice;
 	GlSurface_p		m_pCanvas;
 };
-
+*/
 
 
 //____ MyAppVisitor ________________________________________________________

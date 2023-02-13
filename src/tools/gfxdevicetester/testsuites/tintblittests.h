@@ -23,7 +23,7 @@ public:
 		addTest("TintXYOffsetBlit", &TintBlitTests::setOffsetTintXY, &TintBlitTests::offsetBlit, &TintBlitTests::cleanup);
 	}
 
-	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectI& canvas, WonderApp::Visitor * pAppVisitor)
 	{
 		m_pImg = pAppVisitor->loadSurface("resources/mipmaptest.png", pDevice->surfaceFactory());
 		if (!m_pImg)

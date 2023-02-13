@@ -12,7 +12,7 @@ public:
 
 	}
 
-	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectI& canvas, WonderApp::Visitor * pAppVisitor)
 	{
 		m_pStdSurface = pAppVisitor->loadSurface("resources/mipmaptest.png", pDevice->surfaceFactory(), { .sampleMethod = SampleMethod::Bilinear } );
 		if (!m_pStdSurface)

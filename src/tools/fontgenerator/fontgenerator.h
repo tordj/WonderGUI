@@ -13,7 +13,6 @@
 class MyApp : public WonderApp
 {
 public:
-	wg::Size	startWindowSize();
 
 	bool		init(Visitor* pVisitor);
 	bool		update();

@@ -2,36 +2,36 @@
 
 #include <wondergui.h>
 
-#include "app.h"
+#include <wonderapp.h>
 
 #include "device.h"
 #include "testsuites/testsuite.h"
 
 
 
-class GfxDeviceTester : public SimpleApp
+class GfxDeviceTester : public WonderApp
 {
+	friend class WonderApp;
 public:
 
-	GfxDeviceTester();
-	~GfxDeviceTester();
 
-	wg::Size	startWindowSize() override { return { 1400, 900 }; }
+	bool	init(Visitor* pVisitor) override;
+	bool	update() override;
+	void	exit() override;
 
+	
 
 	// Pre-init configuration
 
 	void	addTestDevice(Device* pDevice);
 	void	destroy_testdevices();
 
-	// Init/update/exit
 
-	bool	init(AppVisitor* pVisitor) override;
-	bool	update() override;
-	void	exit() override;
 
 	
 protected:
+	GfxDeviceTester();
+	~GfxDeviceTester();
 
 	enum class DisplayMode
 	{
@@ -106,7 +106,8 @@ protected:
 
 	const SizeI			g_canvasSize = { 512, 512 };
 
-	AppVisitor*			m_pVisitor = nullptr;
+	Visitor*			m_pVisitor = nullptr;
+	Window_p			m_pWindow;
 
 	ScrollPanel_p		g_pViewPanel = nullptr;
 

@@ -1,7 +1,7 @@
 
 
 add_subdirectory(fontgenerator)
-#add_subdirectory(gfxdevicetester)
+add_subdirectory(gfxdevicetester)
 add_subdirectory(gfxworkbench)
 add_subdirectory(image2surf)
 add_subdirectory(packlayouttester)
@@ -16,4 +16,21 @@ add_subdirectory(legacyworkbench)
 add_subdirectory(embeddedworkbench)
 
 
-set_target_properties( embeddedworkbench legacyworkbench legacytestplugin testplugin fontgenerator gfxworkbench image2surf packlayouttester pluginworkbench softkernelgenerator streamanalyzer streamanalyzer streamgenerator surfviewer unittester workbench PROPERTIES FOLDER "Tools" )
+set_target_properties( 
+	gfxdevicetester 
+	embeddedworkbench 
+	legacyworkbench 
+	legacytestplugin 
+	testplugin 
+	fontgenerator 
+	gfxworkbench 
+	image2surf 
+	packlayouttester 
+	pluginworkbench 
+	softkernelgenerator 
+	streamanalyzer 
+	streamgenerator 
+	surfviewer 
+	unittester 
+	workbench 
+	PROPERTIES FOLDER "Tools" )

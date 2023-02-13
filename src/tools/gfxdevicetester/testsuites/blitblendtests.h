@@ -20,7 +20,7 @@ public:
 	}
 
 
-	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectI& canvas, WonderApp::Visitor * pAppVisitor)
 	{
 		m_pSplash = pAppVisitor->loadSurface("resources/splash.png", pDevice->surfaceFactory(), { .sampleMethod = SampleMethod::Nearest } );
 		if (!m_pSplash)

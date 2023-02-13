@@ -1,7 +1,7 @@
 #include "testsuite.h"
 
 #include <wg_canvaslayers.h>
-#include <wg_plugincanvaslayers.h>
+//#include <wg_plugincanvaslayers.h>
 
 class CanvasLayerTests : public TestSuite
 {
@@ -15,7 +15,7 @@ public:
 	}
 
 
-	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectI& canvas, WonderApp::Visitor * pAppVisitor)
 	{
 		m_pOne = pAppVisitor->loadSurface("resources/one.png", pDevice->surfaceFactory(), { .sampleMethod = SampleMethod::Nearest } );
 		m_pTwo = pAppVisitor->loadSurface("resources/two.png", pDevice->surfaceFactory(), { .sampleMethod = SampleMethod::Nearest } );
@@ -41,12 +41,12 @@ public:
 						 CanvasLayers::LayerBP(PixelFormat::BGRA_8, [](GfxDevice* pDevice) { pDevice->setBlendMode(BlendMode::Blend);  pDevice->blit({0,0}); })
 			});
 
-		if (pDevice->isInstanceOf(PluginGfxDevice::TYPEINFO))
+/*		if (pDevice->isInstanceOf(PluginGfxDevice::TYPEINFO))
 		{
 			m_pLayerStack1 = PluginCanvasLayers::create(static_cast<PluginGfxDevice*>(pDevice), bp);
 		}
 		else
-		{
+*/		{
 			m_pLayerStack1 = CanvasLayers::create(bp);
 		}
 		

@@ -11,7 +11,7 @@ public:
 		addTest("A8_Fills", &A8Tests::setCanvas, &A8Tests::fills, &A8Tests::finalize);
 	}
 
-	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
+	bool init(GfxDevice * pDevice, const RectI& canvas, WonderApp::Visitor * pAppVisitor)
 	{
 		m_pCanvas = pDevice->surfaceFactory()->createSurface(canvas.size()/64, PixelFormat::Alpha_8, SurfaceFlag::Canvas);
 

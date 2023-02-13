@@ -17,14 +17,6 @@ WonderApp_p WonderApp::create()
 	return new MyApp();
 }
 
-
-//____ startWindowSize() ______________________________________________________
-
-wg::Size MyApp::startWindowSize()
-{
-	return { 800,700 };
-}
-
 //____ init() _________________________________________________________________
 
 bool MyApp::init(Visitor* pVisitor)

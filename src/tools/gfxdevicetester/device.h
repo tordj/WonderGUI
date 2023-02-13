@@ -5,10 +5,10 @@
 #include <wg_softgfxdevice.h>
 #include <wg_softkernels_default.h>
 
-#include <wg_streamgfxdevice.h>
-#include <wg_streamsurface.h>
+#include <wg_gfxstreamdevice.h>
+#include <wg_gfxstreamsurface.h>
 #include <wg_gfxstreamplayer.h>
-#include <wg_plugingfxdevice.h>
+//#include <wg_plugingfxdevice.h>
 
 using namespace wg;
 
@@ -114,8 +114,8 @@ public:
 
 		m_pStreamEncoder = GfxStreamEncoder::create( ComponentPtr( m_pStreamPlayer, m_pStreamPlayer->input) );
 
-		m_pStreamDevice = StreamGfxDevice::create(m_pStreamEncoder);
-		m_pStreamCanvas = StreamSurface::create(m_pStreamEncoder, canvasSize, canvasFormat, SurfaceFlag::Canvas);
+		m_pStreamDevice = GfxStreamDevice::create(m_pStreamEncoder);
+		m_pStreamCanvas = GfxStreamSurface::create(m_pStreamEncoder, canvasSize, canvasFormat, SurfaceFlag::Canvas);
 		m_pStreamDevice->defineCanvas(CanvasRef::Default, m_pStreamCanvas);
 
 		return true;
@@ -162,8 +162,8 @@ private:
 
 	GfxStreamEncoder_p	m_pStreamEncoder;
 
-	StreamSurface_p		m_pStreamCanvas;
-	StreamGfxDevice_p	m_pStreamDevice;
+	GfxStreamSurface_p	m_pStreamCanvas;
+	GfxStreamDevice_p	m_pStreamDevice;
 
 
 	GfxStreamPlayer_p	m_pStreamPlayer;
@@ -171,7 +171,7 @@ private:
 	SoftSurface_p		m_pOutputCanvas;
 };
 
-
+/*
 class CABIToSoftwareDevice : public Device
 {
 public:
@@ -241,3 +241,5 @@ private:
 	SoftGfxDevice_p		m_pOutputDevice;
 	SoftSurface_p		m_pOutputCanvas;
 };
+*/
+
