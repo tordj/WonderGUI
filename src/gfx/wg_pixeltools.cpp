@@ -25,7 +25,7 @@
 
 #include <cstring>
 
-namespace wg { namespace PixelTool
+namespace wg { namespace PixelTools
 {
 
 uint8_t linearToSRGBTable[256] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
@@ -64,6 +64,8 @@ uint8_t conv_5_to_8_sRGB[32] = {0, 0, 1, 1, 3, 5, 7, 10, 13, 17, 21, 26, 32, 38,
 uint8_t conv_6_to_8_sRGB[64] = {0, 0, 0, 0, 1, 1, 1, 2, 3, 4, 4, 5, 7, 8, 9, 11, 13, 14, 16, 18,
 	20, 23, 25, 28, 31, 33, 36, 40, 43, 46, 50, 54, 57, 61, 66, 70, 74, 79, 84, 89, 94, 99, 105, 110,
 	116, 122, 128, 134, 140, 147, 153, 160, 167, 174, 182, 189, 197, 205, 213, 221, 229, 238, 246, 255 };
+
+uint8_t conv_1_to_8_linear[2] = { 0, 0xff };
 
 uint8_t conv_4_to_8_linear[16] 	= {	0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
 uint8_t conv_5_to_8_linear[32]	= {	0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
@@ -166,6 +168,20 @@ static void readIndex8( const uint8_t * pSrc, uint8_t * pDst, int nbPixels, void
 	}
 }
 
+static void readIndex16(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, void* p1, void* p2)
+{
+	uint32_t* pPalette = (uint32_t*)p1;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+
+		*(uint32_t*)pDst = pPalette[*((uint16_t*)pSrc)];
+		pDst += 4;
+		pSrc += 2;
+	}
+}
+
+
 static void readBGRA_4( const uint8_t * pSrc, uint8_t * pDst, int nbPixels, void * p1, void * p2 )
 {
 	uint8_t * pConvTab = (uint8_t*) p1;
@@ -218,11 +234,467 @@ static void readRGB_565_bigendian( const uint8_t * pSrc, uint8_t * pDst, int nbP
 	}
 }
 
-//____ copyPixels() ___________________________________________________________
+struct ShiftReadConvTab
+{
+	int maskR;
+	int maskG;
+	int maskB;
+	int maskA;
+	int shiftR;
+	int shiftG;
+	int shiftB;
+	int shiftA;
+	uint8_t* pConvR;
+	uint8_t* pConvG;
+	uint8_t* pConvB;
+	uint8_t* pConvA;
+};
+
+
+static void shiftReadConv_32bit( const uint8_t * pSrc, uint8_t * pDst, int nbPixels, void* pConvTab, void* pDummy)
+{
+	ShiftReadConvTab& t = *(ShiftReadConvTab*)pConvTab;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint32_t rgba = *(uint32_t*)pSrc;
+
+		*pDst++ = t.pConvB[(rgba & t.maskB) >> t.shiftB];
+		*pDst++ = t.pConvG[(rgba & t.maskG) >> t.shiftG];
+		*pDst++ = t.pConvR[(rgba & t.maskR) >> t.shiftR];
+		*pDst++ = t.pConvA[(rgba & t.maskA) >> t.shiftA];
+		pSrc += 4;
+	}
+}
+
+static void shiftReadConv_32bit_swap(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, void * pConvTab, void * pDummy )
+{
+	ShiftReadConvTab& t = *(ShiftReadConvTab*)pConvTab;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint32_t rgba = *(uint32_t*)pSrc;
+		rgba = (rgba & 0x0000FFFF) << 16 | (rgba & 0xFFFF0000) >> 16;
+		rgba = (rgba & 0x00FF00FF) << 8 | (rgba & 0xFF00FF00) >> 8;
+
+		*pDst++ = t.pConvB[(rgba & t.maskB) >> t.shiftB];
+		*pDst++ = t.pConvG[(rgba & t.maskG) >> t.shiftG];
+		*pDst++ = t.pConvR[(rgba & t.maskR) >> t.shiftR];
+		*pDst++ = t.pConvA[(rgba & t.maskA) >> t.shiftA];
+		pSrc += 4;
+	}
+}
+
+
+static void shiftReadConv_24bit_le(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, void* pConvTab, void* pDummy)
+{
+	ShiftReadConvTab& t = *(ShiftReadConvTab*)pConvTab;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint32_t rgba = pSrc[0] + uint32_t(pSrc[1] << 8) + uint32_t(pSrc[2] << 8);
+
+		*pDst++ = t.pConvB[(rgba & t.maskB) >> t.shiftB];
+		*pDst++ = t.pConvG[(rgba & t.maskG) >> t.shiftG];
+		*pDst++ = t.pConvR[(rgba & t.maskR) >> t.shiftR];
+		*pDst++ = t.pConvA[(rgba & t.maskA) >> t.shiftA];
+		pSrc += 3;
+	}
+}
+
+static void shiftReadConv_24bit_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, void* pConvTab, void* pDummy)
+{
+	ShiftReadConvTab& t = *(ShiftReadConvTab*)pConvTab;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint32_t rgba = pSrc[2] + uint32_t(pSrc[1] << 8) + uint32_t(pSrc[0] << 8);
+
+		*pDst++ = t.pConvB[(rgba & t.maskB) >> t.shiftB];
+		*pDst++ = t.pConvG[(rgba & t.maskG) >> t.shiftG];
+		*pDst++ = t.pConvR[(rgba & t.maskR) >> t.shiftR];
+		*pDst++ = t.pConvA[(rgba & t.maskA) >> t.shiftA];
+		pSrc += 3;
+	}
+}
+
+static void shiftReadConv_16bit(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, void* pConvTab, void* pDummy)
+{
+	ShiftReadConvTab& t = *(ShiftReadConvTab*)pConvTab;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint16_t rgba = *(uint16_t*)pSrc;
+
+		*pDst++ = t.pConvB[(rgba & t.maskB) >> t.shiftB];
+		*pDst++ = t.pConvG[(rgba & t.maskG) >> t.shiftG];
+		*pDst++ = t.pConvR[(rgba & t.maskR) >> t.shiftR];
+		*pDst++ = t.pConvA[(rgba & t.maskA) >> t.shiftA];
+		pSrc += 2;
+	}
+}
+
+static void shiftReadConv_16bit_swap(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, void* pConvTab, void* pDummy) 
+{
+	ShiftReadConvTab& t = *(ShiftReadConvTab*)pConvTab;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint16_t rgba = *(uint16_t*)pSrc;
+		rgba = (rgba >> 8 | rgba << 8);
+
+		*pDst++ = t.pConvB[(rgba & t.maskB) >> t.shiftB];
+		*pDst++ = t.pConvG[(rgba & t.maskG) >> t.shiftG];
+		*pDst++ = t.pConvR[(rgba & t.maskR) >> t.shiftR];
+		*pDst++ = t.pConvA[(rgba & t.maskA) >> t.shiftA];
+		pSrc += 2;
+	}
+}
+
+static void shiftReadConv_8bit(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, void* pConvTab, void* pDummy)
+{
+	ShiftReadConvTab& t = *(ShiftReadConvTab*)pConvTab;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint8_t rgba = * pSrc++;
+
+		*pDst++ = t.pConvB[(rgba & t.maskB) >> t.shiftB];
+		*pDst++ = t.pConvG[(rgba & t.maskG) >> t.shiftG];
+		*pDst++ = t.pConvR[(rgba & t.maskR) >> t.shiftR];
+		*pDst++ = t.pConvA[(rgba & t.maskA) >> t.shiftA];
+	}
+}
+
+static void readConv_planes_8i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, uint32_t* pPalette)
+{
+	while(nbPixels > 0)
+	{
+		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	plane3 = (pSrc[4] << 8) + pSrc[5];
+		uint16_t	plane4 = (pSrc[6] << 8) + pSrc[7];
+		uint16_t	plane5 = (pSrc[8] << 8) + pSrc[9];
+		uint16_t	plane6 = (pSrc[10] << 8) + pSrc[11];
+		uint16_t	plane7 = (pSrc[12] << 8) + pSrc[13];
+		uint16_t	plane8 = (pSrc[14] << 8) + pSrc[15];
+
+		int pixNow = std::min(16, nbPixels);
+		for (int i = 0; i < pixNow; i++)
+		{
+			int		index = ((plane1 & 0x80) >> 15) | ((plane2 & 0x80) >> 14) | ((plane3 & 0x80) >> 13) | ((plane4 & 0x80) >> 12)
+				| ((plane5 & 0x80) >> 11) | ((plane6 & 0x80) >> 10) | ((plane7 & 0x80) >> 9) | ((plane8 & 0x80) >> 8);
+			*(uint32_t*)pDst = pPalette[index];
+			pDst += 4;
+
+			plane1 <<= 1;
+			plane2 <<= 1;
+			plane3 <<= 1;
+			plane4 <<= 1;
+			plane5 <<= 1;
+			plane6 <<= 1;
+			plane7 <<= 1;
+			plane8 <<= 1;
+		}
+
+		pSrc += 16;
+		nbPixels -= pixNow;
+	}
+}
+
+static void readConv_planes_5i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, uint32_t* pPalette)
+{
+	while (nbPixels > 0)
+	{
+		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	plane3 = (pSrc[4] << 8) + pSrc[5];
+		uint16_t	plane4 = (pSrc[6] << 8) + pSrc[7];
+		uint16_t	plane5 = (pSrc[8] << 8) + pSrc[9];
+
+		int pixNow = std::min(16, nbPixels);
+		for (int i = 0; i < pixNow; i++)
+		{
+			int		index = ((plane1 & 0x80) >> 15) | ((plane2 & 0x80) >> 14) | ((plane3 & 0x80) >> 13) | ((plane4 & 0x80) >> 12) | ((plane5 & 0x80) >> 11);
+			*(uint32_t*)pDst = pPalette[index];
+			pDst += 4;
+
+			plane1 <<= 1;
+			plane2 <<= 1;
+			plane3 <<= 1;
+			plane4 <<= 1;
+			plane5 <<= 1;
+		}
+
+		pSrc += 10;
+		nbPixels -= pixNow;
+	}
+}
+
+static void readConv_planes_4i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, uint32_t* pPalette)
+{
+	while (nbPixels > 0)
+	{
+		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	plane3 = (pSrc[4] << 8) + pSrc[5];
+		uint16_t	plane4 = (pSrc[6] << 8) + pSrc[7];
+
+		int pixNow = std::min(16, nbPixels);
+		for (int i = 0; i < pixNow; i++)
+		{
+			int		index = ((plane1 & 0x80) >> 15) | ((plane2 & 0x80) >> 14) | ((plane3 & 0x80) >> 13) | ((plane4 & 0x80) >> 12);
+			*(uint32_t*)pDst = pPalette[index];
+			pDst += 4;
+
+			plane1 <<= 1;
+			plane2 <<= 1;
+			plane3 <<= 1;
+			plane4 <<= 1;
+		}
+
+		pSrc += 8;
+		nbPixels -= pixNow;
+	}
+}
+
+static void readConv_planes_2i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, uint32_t* pPalette)
+{
+	while (nbPixels > 0)
+	{
+		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
+
+		int pixNow = std::min(16, nbPixels);
+		for (int i = 0; i < pixNow; i++)
+		{
+			int		index = ((plane1 & 0x80) >> 15) | ((plane2 & 0x80) >> 14);
+			*(uint32_t*)pDst = pPalette[index];
+			pDst += 4;
+
+			plane1 <<= 1;
+			plane2 <<= 1;
+		}
+
+		pSrc += 4;
+		nbPixels -= pixNow;
+	}
+}
+
+static void readConv_planes_1i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, uint32_t* pPalette)
+{
+	while (nbPixels > 0)
+	{
+		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
+
+		int pixNow = std::min(16, nbPixels);
+		for (int i = 0; i < pixNow; i++)
+		{
+			int		index = ((plane1 & 0x80) >> 15);
+			*(uint32_t*)pDst = pPalette[index];
+			pDst += 4;
+
+			plane1 <<= 1;
+		}
+
+		pSrc += 2;
+		nbPixels -= pixNow;
+	}
+}
+
+static void readConv_planes_8i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, uint32_t* pPalette)
+{
+	while (nbPixels > 0)
+	{
+		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	plane3 = (pSrc[4] << 8) + pSrc[5];
+		uint16_t	plane4 = (pSrc[6] << 8) + pSrc[7];
+		uint16_t	plane5 = (pSrc[8] << 8) + pSrc[9];
+		uint16_t	plane6 = (pSrc[10] << 8) + pSrc[11];
+		uint16_t	plane7 = (pSrc[12] << 8) + pSrc[13];
+		uint16_t	plane8 = (pSrc[14] << 8) + pSrc[15];
+		uint16_t	planeA = (pSrc[16] << 8) + pSrc[17];
+
+		int pixNow = std::min(16, nbPixels);
+		for (int i = 0; i < pixNow; i++)
+		{
+			int		index = ((plane1 & 0x80) >> 15) | ((plane2 & 0x80) >> 14) | ((plane3 & 0x80) >> 13) | ((plane4 & 0x80) >> 12)
+				| ((plane5 & 0x80) >> 11) | ((plane6 & 0x80) >> 10) | ((plane7 & 0x80) >> 9) | ((plane8 & 0x80) >> 8);
+			
+			uint32_t argb = pPalette[index];
+
+			argb |= conv_1_to_8_linear[((planeA & 0x80) >> 15)];
+
+			*(uint32_t*)pDst = argb;
+			pDst += 4;
+
+			plane1 <<= 1;
+			plane2 <<= 1;
+			plane3 <<= 1;
+			plane4 <<= 1;
+			plane5 <<= 1;
+			plane6 <<= 1;
+			plane7 <<= 1;
+			plane8 <<= 1;
+			planeA <<= 1;
+		}
+
+		pSrc += 18;
+		nbPixels -= pixNow;
+	}
+}
+
+static void readConv_planes_5i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, uint32_t* pPalette)
+{
+	while (nbPixels > 0)
+	{
+		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	plane3 = (pSrc[4] << 8) + pSrc[5];
+		uint16_t	plane4 = (pSrc[6] << 8) + pSrc[7];
+		uint16_t	plane5 = (pSrc[8] << 8) + pSrc[9];
+		uint16_t	planeA = (pSrc[10] << 8) + pSrc[11];
+
+		int pixNow = std::min(16, nbPixels);
+		for (int i = 0; i < pixNow; i++)
+		{
+			int		index = ((plane1 & 0x80) >> 15) | ((plane2 & 0x80) >> 14) | ((plane3 & 0x80) >> 13) | ((plane4 & 0x80) >> 12) | ((plane5 & 0x80) >> 11);
+
+			uint32_t argb = pPalette[index];
+
+			argb |= conv_1_to_8_linear[((planeA & 0x80) >> 15)];
+
+			*(uint32_t*)pDst = argb;
+			pDst += 4;
+
+			plane1 <<= 1;
+			plane2 <<= 1;
+			plane3 <<= 1;
+			plane4 <<= 1;
+			plane5 <<= 1;
+			planeA <<= 1;
+		}
+
+		pSrc += 12;
+		nbPixels -= pixNow;
+	}
+}
+
+static void readConv_planes_4i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, uint32_t* pPalette)
+{
+	while (nbPixels > 0)
+	{
+		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	plane3 = (pSrc[4] << 8) + pSrc[5];
+		uint16_t	plane4 = (pSrc[6] << 8) + pSrc[7];
+		uint16_t	planeA = (pSrc[8] << 8) + pSrc[9];
+
+		int pixNow = std::min(16, nbPixels);
+		for (int i = 0; i < pixNow; i++)
+		{
+			int		index = ((plane1 & 0x80) >> 15) | ((plane2 & 0x80) >> 14) | ((plane3 & 0x80) >> 13) | ((plane4 & 0x80) >> 12);
+
+			uint32_t argb = pPalette[index];
+
+			argb |= conv_1_to_8_linear[((planeA & 0x80) >> 15)];
+
+			*(uint32_t*)pDst = argb;
+			pDst += 4;
+
+			plane1 <<= 1;
+			plane2 <<= 1;
+			plane3 <<= 1;
+			plane4 <<= 1;
+			planeA <<= 1;
+		}
+
+		pSrc += 10;
+		nbPixels -= pixNow;
+	}
+}
+
+static void readConv_planes_2i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, uint32_t* pPalette)
+{
+	while (nbPixels > 0)
+	{
+		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	planeA = (pSrc[4] << 8) + pSrc[5];
+
+		int pixNow = std::min(16, nbPixels);
+		for (int i = 0; i < pixNow; i++)
+		{
+			int		index = ((plane1 & 0x80) >> 15) | ((plane2 & 0x80) >> 14);
+
+			uint32_t argb = pPalette[index];
+
+			argb |= conv_1_to_8_linear[((planeA & 0x80) >> 15)];
+
+			*(uint32_t*)pDst = argb;
+			pDst += 4;
+
+			plane1 <<= 1;
+			plane2 <<= 1;
+			planeA <<= 1;
+		}
+
+		pSrc += 6;
+		nbPixels -= pixNow;
+	}
+}
+
+static void readConv_planes_1i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, uint32_t* pPalette)
+{
+	while (nbPixels > 0)
+	{
+		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	planeA = (pSrc[2] << 8) + pSrc[3];
+
+		int pixNow = std::min(16, nbPixels);
+		for (int i = 0; i < pixNow; i++)
+		{
+			int		index = ((plane1 & 0x80) >> 15);
+
+			uint32_t argb = pPalette[index];
+
+			argb |= conv_1_to_8_linear[((planeA & 0x80) >> 15)];
+
+			*(uint32_t*)pDst = argb;
+			pDst += 4;
+
+			plane1 <<= 1;
+			planeA <<= 1;
+		}
+
+		pSrc += 4;
+		nbPixels -= pixNow;
+	}
+}
+
+
+//____ copyPixels() [PixelDescription] ________________________________________
+
+bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& srcFmt, int srcPitchAdd,
+	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, Color8* pSrcPalette,
+	Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries)
+{
+	if (srcFmt.bBitplanes)
+	{
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::IllegalCall, "Conversion from bitplanes not supported yet", nullptr, nullptr, __func__, __FILE__, __LINE__);
+		return false;
+	}
+
+
+	return false;
+}
+
+//____ copyPixels() [PixelFormat] _____________________________________________
 
 bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int srcPitchAdd,
 				 uint8_t * pDst, PixelFormat dstFmt, int dstPitchAdd, Color8 * pSrcPalette,
-				 Color8 * pDstPalette, int srcPaletteEntries, int maxDstPaletteEntries, int& dstPaletteEntries )
+				 Color8 * pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries )
 {
 	// TODO: Straight copy with palette conversion when converting between Index_8_linear and Index_8_sRGB.
 	// TODO: Optimize copy to A8 in several ways.
@@ -520,7 +992,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 			case PixelFormat::Index_8_linear:
 			{
 				uint8_t		buffer[64*4];
-				int 		nColors = 0;
+				int 		nColors = dstPaletteEntries;
 
 				for( int y = 0 ; y < height ; y++ )
 				{
@@ -690,6 +1162,14 @@ error:
 		GfxBase::memStackFree(nAllocatedBytes);
 	return false;
 }
+
+
+
+
+
+
+
+
 
 
 } } // namespace wg::PixelTool

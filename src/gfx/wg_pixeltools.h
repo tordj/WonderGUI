@@ -28,15 +28,23 @@
 
 namespace wg
 {
-namespace PixelTools
-{
-	bool copyPixels( int width, int height, uint8_t * pSrcPixels, PixelFormat srcFmt, int srcPitchAdd,
-					 uint8_t * pDstPixels, PixelFormat dstFmt, int dstPitchAdd, Color8 * pSrcPalette,
-					Color8 * pDstPalette, int srcPaletteEntries, int maxDstPaletteEntries );
-}
+	namespace PixelTools
+	{
+		/* CURRENT LIMITATIONS
+		
+			Not more than 8 bits per channel.
+			Bitplanes not supported.		
+		*/
 
-}
 
+		bool copyPixels(int width, int height, uint8_t* pSrc, PixelFormat srcFmt, int srcPitchAdd,
+			uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, Color8* pSrcPalette,
+			Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries);
+
+		bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& srcFmt, int srcPitchAdd,
+			uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, Color8* pSrcPalette,
+			Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries);
+	}
+}
 
 #endif //WG_PIXELTOOLS_DOT_H
-
