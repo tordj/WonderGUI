@@ -1473,12 +1473,16 @@ namespace wg
 			}
 			else
 			{
+				//TODO: We need to handle subpixels better here.
+				// We should increase curvePos with the real xStart offset (could be as much as 63/64 of a pixel)
+				// and handle xMid similarly.
+				
 				int xStart = (centerOfs - radiusX[edge] + 63) >> 6;		// First pixel-edge inside curve.
-				int xMid = centerOfs >> 6;								// Pixel edge on or right before center.
-				int xEnd = (centerOfs + radiusX[edge]) >> 6;				// Last pixel-edge inside curve.
+				int xMid = (centerOfs) >> 6;							// Pixel edge on or right before center.
+				int xEnd = (centerOfs + radiusX[edge]) >> 6;			// Last pixel-edge inside curve.
 
 
-				int curveInc = int(((int64_t)65536) * 64 * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
+				int curveInc = int(int64_t((65536 * 64)-1) * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
 				int curvePos = int((((radiusX[edge] - centerOfs) & 0x3F) * ((int64_t)curveInc)) >> 6);
 
 				if (clipLeft > 0)
