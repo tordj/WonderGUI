@@ -805,9 +805,9 @@ void WgWidget::_renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State
 
 bool WgWidget::_markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, int scale, float value1, float value2) const
 {
-	//WG3FIX: Take opacity treshold into account.
+	int alphaOverride = m_markOpacity >= 0 ? m_markOpacity*4096/255 : -1;
 	
-	return pSkin->_markTest( ofs*64, canvas*64, scale >> 6, state, value1, value2 );
+	return pSkin->_markTest( ofs*64, canvas*64, scale >> 6, state, value1, value2, alphaOverride );
 }
 
 //____ _skinMinSize() __________________________________________________________
