@@ -247,20 +247,30 @@ WgCoord WgWidget::Abs2localPoint( const WgCoord& cord ) const
 
 wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
 {
+	return Screenshot( PixelSize(), surfaceFlags );
+}
+
+wg::Surface_p WgWidget::Screenshot( const WgRect& _rect, int surfaceFlags )
+{
 	auto pDevice = wg::GfxBase::defaultGfxDevice();
 	auto pFactory =  wg::GfxBase::defaultSurfaceFactory();
 
 	if( !pDevice || !pFactory )
 		return nullptr;
 
-	WgSize sz = PixelSize();
+	
+	WgRect rect = WgRect::overlap(PixelSize(), _rect*m_scale/WG_SCALE_BASE);
 
-	auto pCanvas = pFactory->createSurface(sz,wg::PixelFormat::BGRA_8, surfaceFlags | wg::SurfaceFlag::Canvas );
+	auto pCanvas = pFactory->createSurface(rect.size(),wg::PixelFormat::BGRA_8, surfaceFlags | wg::SurfaceFlag::Canvas );
+    if(!pCanvas)
+        return nullptr;
 	pCanvas->setScale(m_scale/4096.f*64);
 
 	WgPatches patches;
-	patches.add( sz );
+	patches.add( rect.size() );
 
+	WgRect geoWithOffset = { -rect.x, -rect.y, rect.w, rect.h };
+	
     bool    bWasRendering = pDevice->isRendering();
     
 	if( !bWasRendering )
@@ -270,7 +280,7 @@ wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
     pDevice->setBlendMode(wg::BlendMode::Replace);
     pDevice->fill( WgColor::Transparent );
     pDevice->setBlendMode(wg::BlendMode::Blend);
-    _renderPatches(pDevice, sz, sz, &patches);
+    _renderPatches(pDevice, geoWithOffset, geoWithOffset, &patches);
     pDevice->endCanvasUpdate();
 
     if( !bWasRendering )
