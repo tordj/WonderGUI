@@ -8,7 +8,7 @@ public:
 	GfxStreamTest();
 	~GfxStreamTest();
 
-	std::string name() const { return "GfxStream Test"; };
+	std::string name() const override { return "GfxStream Test"; };
 
 	bool init(std::ostream& output) override;
 

@@ -40,7 +40,7 @@ using namespace wg;
 class Test
 {
 public:
-	Test( char * _pName, const std::function<bool(std::ostream& output)>& func ) { m_name = _pName; m_func = func; }
+	Test( std::string _name, const std::function<bool(std::ostream& output)>& func ) { m_name = _name; m_func = func; }
 
 	std::string		name() const { return m_name; }
 	bool			run(std::ostream& output) 

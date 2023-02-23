@@ -6,6 +6,8 @@
 #include <string.h>
 
 #include "tests/gfxstream.h"
+#include "tests/softgfxdevice.h"
+
 
 
 
@@ -16,6 +18,7 @@ TestFramework::TestFramework( std::ostream& output ) :
 {
 
 	addCollection( new GfxStreamTest() );
+	addCollection( new SoftGfxDeviceTest() );
 }
 
 //____ Destructor ______________________________________________________________
@@ -48,26 +51,26 @@ int TestFramework::runAllTests()
 {
 	m_log << "Running all tests in the framework:\n";
 
-	int nFailures = 0;
+	int nFailed = 0;
 	for (auto p : m_testCollections)
 	{
 		for (int i = 0; i < p->nbTests(); i++)
 		{
 			if (!p->getTest(i).run(m_log))
-				nFailures++;
+				nFailed++;
 		}
 	}
 
-	if( nFailures == 0 )
+	if( nFailed == 0 )
 	{
 		m_log << "\nAll tests ran successfully!\n\n" << std::flush;
 	}
 	else
 	{
-		m_log << "\n" << nFailures << " tests failed!\n\n" << std::flush;
+		m_log << "\n" << nFailed << " tests failed!\n\n" << std::flush;
 	}
 
-	return nFailures;
+	return nFailed;
 }
 
 //____ runCollection() _________________________________________________________
@@ -78,23 +81,23 @@ int TestFramework::runCollection( int collIdx )
 
 	m_log << "Running all tests of collection '" << pCollection->name() << "':\n";
 
-	int nFailures = 0;
+	int nFailed = 0;
 	for (int i = 0; i < pCollection->nbTests(); i++)
 	{
 		if (!pCollection->getTest(i).run(m_log))
-			nFailures++;
+			nFailed++;
 	}
 
-	if (nFailures == 0)
+	if (nFailed == 0)
 	{
 		m_log << "\nAll tests ran successfully!\n\n" << std::flush;
 	}
 	else
 	{
-		m_log << "\n" << nFailures << " tests failed!\n\n" << std::flush;
+		m_log << "\n" << nFailed << " tests failed!\n\n" << std::flush;
 	}
 
-	return nFailures;
+	return nFailed;
 }
 
 

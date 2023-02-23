@@ -1,17 +1,22 @@
 //#include <conio.h>
 #include "testframework.h"
 
+#include <wondergui.h>
+
+using namespace wg;
 
 int main( int argc, char * argv[] )
 {
+	Base::init(nullptr);
+	
+	
 	TestFramework	t(std::cout);
 
-	bool res = t.runAllTests();
+	int nFailed = t.runAllTests();
 
 //	_getch();
 
-	if( res )
-		return 0;
-	else
-		return -1;
+	Base::exit();
+	
+	return nFailed;
 }
