@@ -337,20 +337,28 @@ namespace wg
 		uint8_t	A_bits;				///< number of bits for alpha in the pixel
 	};
 
+	//____ PixelFmt _________________________________________________________
+
+	enum class PixelFmt		//. autoExtras
+	{
+		Chunky,						///< Normal pixel. All bits for a pixel are packed into same sequence of bytes.
+		Chunky_BE,					///< Same as Chunky, but stored in big-endian format.
+		Index,						///< Pixels are color indexes into a palette.
+		Bitplanes					///< Pixels are color indexes into a palette, stored in 16-bit bitplanes. Starting with lowest bitplane.
+	};
+
 	//____ PixelDescription2 _________________________________________________
 
 	struct PixelDescription2
 	{
 		int			bits = 0;			///< Number of bits for the pixel, includes any non-used padding bits.
-		bool		bLinear = false;	///< True if RGB values are linear (as opposed to in sRGB format, e.g. logarithmic with gamma 2.2).
-		bool		bIndexed = false;	///< True if pixels are index into palette, no RGB values in pixel.
-		bool 		bBigEndian = false;	///< Set if 16- or 32-bit pixel is in big-endian format.
-		bool 		bBitplanes = false;	///< Set if pixeldata is organized in bitplanes. (2 bytes per plane).
-
-		uint64_t	R_mask = 0;			///< bitmask for getting the red bits out of the pixel
-		uint64_t	G_mask = 0;			///< bitmask for getting the green bits out of the pixel
-		uint64_t	B_mask = 0;			///< bitmask for getting the blue bits out of the pixel
-		uint64_t	A_mask = 0;			///< bitmask for getting the alpha bits out of the pixel
+		PixelFmt	type = PixelFmt::Chunky;
+		bool		bLinear = false;
+		
+		uint64_t	R_mask = 0;			///< bitmask for getting the red bits out of chunky pixel
+		uint64_t	G_mask = 0;			///< bitmask for getting the green bits out of chunky pixel
+		uint64_t	B_mask = 0;			///< bitmask for getting the blue bits out of chunky pixel
+		uint64_t	A_mask = 0;			///< bitmask for getting the alpha bits out of chunky pixel
 	};
 
 	//____ GfxFlip ____________________________________________________________
