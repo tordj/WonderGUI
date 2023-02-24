@@ -52,6 +52,7 @@ void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p p
 void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
 void playImageStreamingTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory );
 void playBounceRects(GfxDevice_p pDevice, CanvasRef canvasRef);
+void playDualScreenBounceRects(GfxDevice_p pDevice, CanvasRef canvasRef1, CanvasRef canvasRef2);
 
 
 CoordSPX positionSprite(SizeSPX dimensions, int tick, int length, int nb, int amount);
@@ -322,7 +323,8 @@ int main ( int argc, char** argv )
 //	  playRectangleDanceDualScreen( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
 //    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 //    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
-	playBounceRects( pStreamDevice, CanvasRef::Canvas_1 );
+//	playBounceRects( pStreamDevice, CanvasRef::Canvas_1 );
+	playDualScreenBounceRects( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
 
 //	playImageStreamingTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
@@ -820,19 +822,19 @@ void playRectangleDance(GfxDevice_p pDevice, CanvasRef canvasRef )
 void playBounceRects(GfxDevice_p pDevice, CanvasRef canvasRef)
 {
 	int ticker = 0;
-	const int length = 150;
+	const int length = 1000;
 	SizeSPX spriteSize(30 * 64, 30 * 64);
 	SizeSPX canvasSize = pDevice->canvas(canvasRef).size;
 	SizeSPX moveDim(canvasSize.w - spriteSize.w, canvasSize.h - spriteSize.h);
 
-	RectSPX spriteRects[8] = {	{100 * 64,100 * 64,50 * 64,50 * 64},
-								{100 * 64,100 * 64,40 * 64,10 * 64},
-								{100 * 64,100 * 64,30 * 64,30 * 64},
-								{100 * 64,100 * 64,30 * 64,20 * 64},
-								{100 * 64,100 * 64,20 * 64,15 * 64},
-								{100 * 64,100 * 64,20 * 64,20 * 64},
-								{100 * 64,100 * 64,15 * 64,15 * 64},
-								{100 * 64,100 * 64,10 * 64,10 * 64} };
+	RectSPX spriteRects[8] = {	{100 * 64,100 * 64,50*3 * 64,50*3 * 64},
+								{100 * 64,100 * 64,40*2 * 64,10*2 * 64},
+								{100 * 64,100 * 64,30*2 * 64,30*2 * 64},
+								{100 * 64,100 * 64,30*2 * 64,20*2 * 64},
+								{100 * 64,100 * 64,20*2 * 64,15*2 * 64},
+								{100 * 64,100 * 64,20*2 * 64,20*2 * 64},
+								{100 * 64,100 * 64,15*2 * 64,15*2 * 64},
+								{100 * 64,100 * 64,10*2 * 64,10*2 * 64} };
 
 	Color8	spriteColors[8] = { Color::Red, Color::Green, Color::Blue, Color::Pink, Color::Purple, Color::Brown, Color::Yellow, Color::Magenta };
 
@@ -909,6 +911,132 @@ void playBounceRects(GfxDevice_p pDevice, CanvasRef canvasRef)
 		pDevice->endCanvasUpdate();
 		pDevice->endRender();
 
+		ticker++;
+
+	}
+}
+
+
+//____ playDualScreenBounceRects() _________________________________________________
+
+void playDualScreenBounceRects(GfxDevice_p pDevice, CanvasRef canvasRef1, CanvasRef canvasRef2)
+{
+	int ticker = 0;
+	const int length = 1000;
+	SizeSPX spriteSize(30 * 64, 30 * 64);
+	SizeSPX canvasSize = pDevice->canvas(canvasRef1).size;
+	SizeSPX moveDim(canvasSize.w - spriteSize.w, canvasSize.h - spriteSize.h);
+
+	RectSPX spriteRects[2][8] = {{	{100 * 64,100 * 64,50*3 * 64,50*3 * 64},
+									{100 * 64,100 * 64,40*2 * 64,10*2 * 64},
+									{100 * 64,100 * 64,30*2 * 64,30*2 * 64},
+									{100 * 64,100 * 64,30*2 * 64,20*2 * 64},
+									{100 * 64,100 * 64,20*2 * 64,15*2 * 64},
+									{100 * 64,100 * 64,20*2 * 64,20*2 * 64},
+									{100 * 64,100 * 64,15*2 * 64,15*2 * 64},
+									{100 * 64,100 * 64,10*2 * 64,10*2 * 64} },
+								{	{100 * 64,100 * 64,50*3 * 64,50*3 * 64},
+									{100 * 64,100 * 64,40*2 * 64,10*2 * 64},
+									{100 * 64,100 * 64,30*2 * 64,30*2 * 64},
+									{100 * 64,100 * 64,30*2 * 64,20*2 * 64},
+									{100 * 64,100 * 64,20*2 * 64,15*2 * 64},
+									{100 * 64,100 * 64,20*2 * 64,20*2 * 64},
+									{100 * 64,100 * 64,15*2 * 64,15*2 * 64},
+									{100 * 64,100 * 64,10*2 * 64,10*2 * 64} }};
+
+	
+	Color8	spriteColors[8] = { Color::Red, Color::Green, Color::Blue, Color::Pink, Color::Purple, Color::Brown, Color::Yellow, Color::Magenta };
+
+
+	CoordSPX spriteMovement[2][8] = { { { 64,128 },
+									{ 128,64 },
+									{ 32,96 },
+									{ 250,103 },
+									{ 64,250 },
+									{ 48,120 },
+									{ -40,-78 },
+									{ -80,-150 } },
+
+									{ { 164,28 },
+									{ 64,128 },
+									{ 96,32 },
+									{ 103,250 },
+									{ 264,50 },
+									{ 120,48 },
+									{ -78,-40 },
+									{ -180,-50 } } };
+	
+	pDevice->beginRender();
+
+	pDevice->beginCanvasUpdate(canvasRef1);
+	pDevice->fill(Color::Black);
+	pDevice->endCanvasUpdate();
+
+	pDevice->beginCanvasUpdate(canvasRef2);
+	pDevice->fill(Color::Black);
+	pDevice->endCanvasUpdate();
+
+	pDevice->endRender();
+
+	while (ticker < length)
+	{
+		PatchesSPX clip;
+
+		const int nSprites = 8;
+
+		pDevice->beginRender();
+
+		for( int s = 0 ; s < 2 ; s++ )
+		{
+			for (int i = 0; i < nSprites; i++)
+				clip.add( Util::alignUp(spriteRects[s][i]));
+
+			for (int i = 0; i < nSprites; i++)
+			{
+				spriteRects[s][i].x += spriteMovement[s][i].x;
+				spriteRects[s][i].y += spriteMovement[s][i].y;
+
+				if (spriteRects[s][i].x < 0)
+				{
+					 spriteMovement[s][i].x = -spriteMovement[s][i].x;
+					 spriteRects[s][i].x = -spriteRects[s][i].x;
+				}
+
+				if (spriteRects[s][i].y < 0)
+				{
+					spriteMovement[s][i].y = -spriteMovement[s][i].y;
+					spriteRects[s][i].y = -spriteRects[s][i].y;
+				}
+
+				if (spriteRects[s][i].x + spriteRects[s][i].w > canvasSize.w )
+				{
+					spriteMovement[s][i].x = -spriteMovement[s][i].x;
+					spriteRects[s][i].x = canvasSize.w - spriteRects[s][i].w - (spriteRects[s][i].x + spriteRects[s][i].w - canvasSize.w);
+				}
+
+				if (spriteRects[s][i].y + spriteRects[s][i].h > canvasSize.h)
+				{
+					spriteMovement[s][i].y = -spriteMovement[s][i].y;
+					spriteRects[s][i].y = canvasSize.h - spriteRects[s][i].h - (spriteRects[s][i].y + spriteRects[s][i].h - canvasSize.h);
+				}
+
+			}
+
+			for (int i = 0; i < nSprites; i++)
+				clip.add(Util::alignUp(spriteRects[s][i]));
+
+			CanvasRef canvas = s == 0 ? canvasRef1 : canvasRef2;
+			pDevice->beginCanvasUpdate(canvas, clip.size(), clip.begin() );
+
+			pDevice->fill(Color::Black);
+
+			for (int i = 0 ; i < nSprites; i++)
+				pDevice->fill(spriteRects[s][i], spriteColors[i]);
+
+			pDevice->endCanvasUpdate();
+		}
+		
+		pDevice->endRender();
 		ticker++;
 
 	}
