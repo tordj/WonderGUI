@@ -226,6 +226,10 @@ namespace wg
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );
 		PixelFormat	pixelDescriptionToFormat(const PixelDescription& description);
 
+		const PixelDescription2& pixelFormatToDescription2( PixelFormat format );
+		PixelFormat	pixelDescription2ToFormat(const PixelDescription2& description);
+
+	
 
 		uint32_t mostSignificantBit(uint32_t value);
 
@@ -295,7 +299,6 @@ namespace wg
 	{
 		return (r + 32) >> 6;
 	}
-
 
 } // namespace wg
 #endif // WG_GFXUTIL_DOT_H

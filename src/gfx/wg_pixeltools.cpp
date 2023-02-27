@@ -1101,6 +1101,8 @@ bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& s
 	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, Color8* pSrcPalette,
 	Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries)
 {
+	auto dstDesc = Util::pixelFormatToDescription2( dstFmt );
+
 	//TODO: Optimize by calling other copyPixels() if source pixel format is known.
 	
 	
@@ -1116,9 +1118,6 @@ bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& s
 	}
 	else
 	{
-		PixelDescription dstDesc;
-		Util::pixelFormatToDescription( dstFmt, dstDesc );
-
 		ShiftReadConvTab convTab;
 
 		convTab.maskR = srcDesc.R_mask;
@@ -1135,9 +1134,9 @@ bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& s
 
 		const uint8_t ** pTabList;
 		
-		if( dstDesc.bLinear == srcDesc.bLinear )
+		if( dstDesc.colorSpace == srcDesc.colorSpace )
 			pTabList = conv_straight_tabs;
-		else if( srcDesc.bLinear )
+		else if( srcDesc.colorSpace == ColorSpace::Linear )
 			pTabList = conv_linear_to_sRGB_tabs;
 		else
 			pTabList = conv_srgb_to_linear_tabs;
@@ -1182,20 +1181,22 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				 uint8_t * pDst, PixelFormat dstFmt, int dstPitchAdd, Color8 * pSrcPalette,
 				 Color8 * pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries )
 {
+	
+	
 	// TODO: Straight copy with palette conversion when converting between Index_8_linear and Index_8_sRGB.
 	// TODO: Optimize copy to A8 in several ways.
 
 	int nAllocatedBytes = 0;
 	
-	PixelDescription srcDesc;
-	PixelDescription dstDesc;
+	auto srcDesc = Util::pixelFormatToDescription2( srcFmt );
+ 	auto dstDesc = Util::pixelFormatToDescription2( dstFmt );
 
-	Util::pixelFormatToDescription( srcFmt, srcDesc );
- 	Util::pixelFormatToDescription( dstFmt, dstDesc );
-
+	if( srcDesc.colorSpace == ColorSpace::Undefined || dstDesc.colorSpace == ColorSpace::Undefined )
+		return false;																					// We need to know the color space to perform copy.
+	
 	if( (srcFmt == dstFmt) || (srcFmt == PixelFormat::BGRA_8_sRGB && dstFmt == PixelFormat::BGRX_8_sRGB) ||
 		(srcFmt == PixelFormat::BGRA_8_linear && dstFmt == PixelFormat::BGRX_8_linear) ||
-		(srcDesc.bIndexed && dstDesc.bIndexed && maxDstPaletteEntries >= srcPaletteEntries) )
+		(srcDesc.type == PixelFmt::Index && dstDesc.type == PixelFmt::Index && maxDstPaletteEntries >= srcPaletteEntries) )
 	{
 		if( srcPitchAdd + dstPitchAdd == 0 )
 			std::memcpy( pDst, pSrc, srcDesc.bits * width * height / 8 );
@@ -1214,17 +1215,20 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 			}
 		}
 
-		if(srcDesc.bIndexed && dstDesc.bIndexed && srcDesc.bLinear != dstDesc.bLinear )
+		if(srcDesc.type == PixelFmt::Index && dstDesc.type == PixelFmt::Index && srcDesc.colorSpace != dstDesc.colorSpace )
 		{
 			// Palette needs to be converted between sRGB and Linear.
 
-			const uint8_t * pTable = srcDesc.bLinear ? linearToSRGBTable : sRGBToLinearTable;
+			const uint8_t * pTable = srcDesc.colorSpace == ColorSpace::Linear ? linearToSRGBTable : sRGBToLinearTable;
 			readConvBGRA8( (uint8_t*) pSrcPalette, (uint8_t*) pDstPalette, maxDstPaletteEntries, pTable, nullptr );
 		}
 	}
 	else
 	{
 		void(*pReadFunc)( const uint8_t *, uint8_t *, int, const void *, const void * );
+
+		bool bLinearSource = (srcDesc.colorSpace == ColorSpace::Linear);
+		bool bLinearDest = (dstDesc.colorSpace == ColorSpace::Linear);
 
 		const void * pTab1 = nullptr;
 		const void * pTab2 = nullptr;
@@ -1233,41 +1237,41 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 		{
 			case PixelFormat::BGR_8_sRGB:
 			case PixelFormat::BGR_8_linear:
-				if(srcDesc.bLinear == dstDesc.bLinear)
+				if(srcDesc.colorSpace == dstDesc.colorSpace)
 					pReadFunc = readBGR8;
 				else
 				{
 					pReadFunc = readConvBGR8;
-					pTab1 = srcDesc.bLinear ? linearToSRGBTable : sRGBToLinearTable;
+					pTab1 = bLinearSource ? linearToSRGBTable : sRGBToLinearTable;
 				}
 				break;
 
 
 			case PixelFormat::BGRX_8_sRGB:
 			case PixelFormat::BGRX_8_linear:
-				if(srcDesc.bLinear == dstDesc.bLinear)
+				if(srcDesc.colorSpace == dstDesc.colorSpace)
 					pReadFunc = readBGRX8;
 				else
 				{
 					pReadFunc = readConvBGRX8;
-					pTab1 = srcDesc.bLinear ? linearToSRGBTable : sRGBToLinearTable;
+					pTab1 = bLinearSource ? linearToSRGBTable : sRGBToLinearTable;
 				}
 				break;
 
 			case PixelFormat::BGRA_8_sRGB:
 			case PixelFormat::BGRA_8_linear:
-				if(srcDesc.bLinear == dstDesc.bLinear)
+				if(srcDesc.colorSpace == dstDesc.colorSpace)
 					pReadFunc = readBGRA8;
 				else
 				{
 					pReadFunc = readConvBGRA8;
-					pTab1 = srcDesc.bLinear ? linearToSRGBTable : sRGBToLinearTable;
+					pTab1 = bLinearSource ? linearToSRGBTable : sRGBToLinearTable;
 				}
 				break;
 
 			case PixelFormat::BGRA_4_linear:
 				pReadFunc = readBGRA_4;
-				if( dstDesc.bLinear )
+				if( bLinearDest )
 					pTab1 = conv_4_to_8_straight;
 				else
 					pTab1 = conv_4_linear_to_8_sRGB;
@@ -1276,7 +1280,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				
 			case PixelFormat::BGR_565_linear:
 				pReadFunc = readBGR_565;
-				if( dstDesc.bLinear )
+				if( bLinearDest )
 				{
 					pTab1 = conv_5_to_8_straight;
 					pTab2 = conv_6_to_8_straight;
@@ -1290,7 +1294,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				
 			case PixelFormat::Index_8_sRGB:
 				pReadFunc = readIndex8;
-				if( !dstDesc.bLinear )
+				if( !bLinearDest )
 					pTab1 = pSrcPalette;
 				else
 				{
@@ -1303,7 +1307,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				
 			case PixelFormat::Index_8_linear:
 				pReadFunc = readIndex8;
-				if( dstDesc.bLinear )
+				if( bLinearDest )
 					pTab1 = pSrcPalette;
 				else
 				{
@@ -1317,7 +1321,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				
 			case PixelFormat::RGB_565_bigendian:
 				pReadFunc = readRGB_565_bigendian;
-				if( dstDesc.bLinear )
+				if( bLinearDest )
 				{
 					pTab1 = conv_5_to_8_straight;
 					pTab2 = conv_6_to_8_straight;

@@ -44,6 +44,7 @@ namespace wg
 		bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& srcFmt, int srcPitchAdd,
 			uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, Color8* pSrcPalette,
 			Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries);
+
 	}
 }
 

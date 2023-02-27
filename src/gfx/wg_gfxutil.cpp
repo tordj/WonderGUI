@@ -20,6 +20,7 @@
 
 =========================================================================*/
 
+#include <wg_gfxtypes.h>
 #include <wg_gfxutil.h>
 #include <wg_geo.h>
 #include <wg_surface.h>
@@ -82,6 +83,143 @@ namespace wg
 										0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 										0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 										0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+
+
+
+
+const PixelDescription2	pixelDescTab[PixelFormat_size] = {
+	{0,  PixelFmt::Chunky, ColorSpace::Linear, 0, 0, 0, 0},								// Undefined
+	{24,  PixelFmt::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0},			// BGR_8
+	{24, PixelFmt::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0}, 				// BGR_8_sRGB
+	{24, PixelFmt::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0},				// BGR_8_linear
+
+	{32,  PixelFmt::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0},			// BGRX_8
+	{32, PixelFmt::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0}, 				// BGRX_8_sRGB
+	{32, PixelFmt::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0},				// BGRX_8_linear
+
+	{32,  PixelFmt::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0xFF000000},	// BGRA_8
+	{32, PixelFmt::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0xFF000000}, 		// BGRA_8_sRGB
+	{32, PixelFmt::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0xFF000000},		// BGRA_8_linear
+
+	{16, PixelFmt::Chunky, ColorSpace::Linear, 0xF00, 0xF0, 0xF, 0xF000},				// BGRA_4_linear
+	{16, PixelFmt::Chunky, ColorSpace::Linear, 0xF800, 0x07E0, 0x001F, 0},				// BGR_565_linear
+
+	{8, PixelFmt::Index, ColorSpace::Undefined, 0, 0, 0, 0},							// Index_8
+	{8, PixelFmt::Index, ColorSpace::sRGB, 0, 0, 0, 0},									// Index_8_sRGB
+	{8, PixelFmt::Index, ColorSpace::Linear, 0, 0, 0, 0},								// Index_8_linear
+
+	{16, PixelFmt::Chunky_BE, ColorSpace::Linear, 0x001F, 0x07E0, 0xF800, 0},			// RGB_565_bigendian
+
+	{8, PixelFmt::Chunky, ColorSpace::Undefined, 0x0, 0x0, 0x0, 0xFF}					// Alpha_8
+};
+
+
+
+
+
+const PixelDescription2& Util::pixelFormatToDescription2( PixelFormat format )
+{
+	return pixelDescTab[int(format)];
+}
+
+
+PixelFormat	Util::pixelDescription2ToFormat(const PixelDescription2& description)
+{
+	
+	switch( description.type )
+	{
+		case PixelFmt::Chunky:
+		{
+			switch( description.bits )
+			{
+				case 8:
+					if( description == pixelDescTab[int(PixelFormat::Alpha_8)])
+					   return PixelFormat::Alpha_8;
+					break;
+					
+				case 16:
+					if( description == pixelDescTab[int(PixelFormat::BGRA_4_linear)])
+					   return PixelFormat::BGRA_4_linear;
+					if( description == pixelDescTab[int(PixelFormat::BGR_565_linear)])
+					   return PixelFormat::BGR_565_linear;
+					break;
+					
+				case 24:
+				{
+					auto p = &pixelDescTab[int(PixelFormat::BGR_8)];
+					
+					if( description.R_mask == p->R_mask && description.G_mask == p->G_mask && description.B_mask == p->B_mask && description.A_mask == 0 )
+					{
+						if( description.colorSpace == ColorSpace::Undefined )
+							return PixelFormat::BGR_8;
+						else if( description.colorSpace == ColorSpace::sRGB )
+							return PixelFormat::BGR_8_sRGB;
+						else if( description.colorSpace == ColorSpace::Linear )
+							return PixelFormat::BGR_8_linear;
+					}
+						
+					if( description == pixelDescTab[int(PixelFormat::BGRA_4_linear)])
+					   return PixelFormat::BGRA_4_linear;
+					break;
+				}
+					
+				case 32:
+				{
+					auto p = &pixelDescTab[int(PixelFormat::BGRA_8)];
+
+					if( description.R_mask == p->R_mask && description.G_mask == p->G_mask && description.B_mask == p->B_mask )
+					{
+						if( description.A_mask == p->A_mask )
+						{
+							if( description.colorSpace == ColorSpace::Undefined )
+								return PixelFormat::BGRA_8;
+							else if( description.colorSpace == ColorSpace::sRGB )
+								return PixelFormat::BGRA_8_sRGB;
+							else if( description.colorSpace == ColorSpace::Linear )
+								return PixelFormat::BGRA_8_linear;
+						}
+						else if( description.A_mask == 0 )
+						{
+							if( description.colorSpace == ColorSpace::Undefined )
+								return PixelFormat::BGRX_8;
+							else if( description.colorSpace == ColorSpace::sRGB )
+								return PixelFormat::BGRX_8_sRGB;
+							else if( description.colorSpace == ColorSpace::Linear )
+								return PixelFormat::BGRX_8_linear;
+						}
+					}
+					break;
+				}
+					
+			}
+			
+		}
+		case PixelFmt::Chunky_BE:
+		{
+			if( description == pixelDescTab[int(PixelFormat::RGB_565_bigendian)])
+			   return PixelFormat::RGB_565_bigendian;
+			
+			break;
+		}
+		case PixelFmt::Index:
+		{
+			if( description.bits == 8 )
+			{
+				if( description.colorSpace == ColorSpace::Undefined )
+					return PixelFormat::Index_8;
+				else if( description.colorSpace == ColorSpace::sRGB )
+					return PixelFormat::Index_8_sRGB;
+				else if( description.colorSpace == ColorSpace::Linear )
+					return PixelFormat::Index_8_linear;
+			}
+			break;
+		}
+		default:
+			break;
+	}
+	
+	return PixelFormat::Undefined;
+}
 
 
 

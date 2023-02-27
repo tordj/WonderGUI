@@ -347,13 +347,34 @@ namespace wg
 		Bitplanes					///< Pixels are color indexes into a palette, stored in 16-bit bitplanes. Starting with lowest bitplane.
 	};
 
+	//____ ColorSpace ________________________________________________________
+
+	enum class ColorSpace	//. autoExtras
+	{
+		Undefined,
+		Linear,
+		sRGB
+	};
+
 	//____ PixelDescription2 _________________________________________________
 
 	struct PixelDescription2
 	{
+		// These constructors are needed for Clang to compile GfxUtil::pixelDescTab in C++11 setting.
+		
+		PixelDescription2() {}
+		PixelDescription2(int _bits, PixelFmt _type, ColorSpace _colorSpace, uint64_t _R_mask, uint64_t _G_mask, uint64_t _B_mask, uint64_t _A_mask ) :
+		bits(_bits), type(_type), colorSpace(_colorSpace), R_mask(_R_mask), G_mask(_G_mask), B_mask(_B_mask), A_mask(_A_mask) {}
+		
+		bool operator==( const PixelDescription2& k ) const
+		{
+			return ( bits == k.bits && type == k.type && colorSpace == k.colorSpace && R_mask == k.R_mask && G_mask == k.G_mask && B_mask == k.B_mask && A_mask == k.A_mask );
+		}
+		
+		
 		int			bits = 0;			///< Number of bits for the pixel, includes any non-used padding bits.
 		PixelFmt	type = PixelFmt::Chunky;
-		bool		bLinear = false;
+		ColorSpace	colorSpace = ColorSpace::sRGB;
 		
 		uint64_t	R_mask = 0;			///< bitmask for getting the red bits out of chunky pixel
 		uint64_t	G_mask = 0;			///< bitmask for getting the green bits out of chunky pixel
