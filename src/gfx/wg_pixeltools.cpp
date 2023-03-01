@@ -929,7 +929,7 @@ static bool convertPixelsToKnownType( int width, int height, uint8_t * pSrc, int
 							if( nColors == maxDstPaletteEntries )
 							{
 								GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Pixel copying aborted. Out of palette entries in destination.", nullptr, nullptr, __func__, __FILE__, __LINE__ );
-								return;
+								return false;
 							}
 							
 							pDstPalette[ofs] = col;
@@ -958,7 +958,7 @@ static bool convertPixelsToKnownType( int width, int height, uint8_t * pSrc, int
 							if( nColors == maxDstPaletteEntries )
 							{
 								GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Pixel copying aborted. Out of palette entries in destination.", nullptr, nullptr, __func__, __FILE__, __LINE__ );
-								return;
+								return false;
 							}
 							
 							pDstPalette[ofs] = col;
@@ -1072,7 +1072,7 @@ static bool convertPixelsToKnownType( int width, int height, uint8_t * pSrc, int
 		}
 	}
 	
-	
+	return true;
 }
 
 

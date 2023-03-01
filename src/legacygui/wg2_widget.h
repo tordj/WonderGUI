@@ -163,7 +163,8 @@ public:
 	WgCoord			Local2absPoint( const WgCoord& cord ) const;		// Cordinate from local cordsys to global (in pixels)
 	WgCoord			Abs2localPoint( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys (in pixels)
 
-	wg::Surface_p     Screenshot( int surfaceFlags = 0 );
+	wg::Surface_p	Screenshot( int surfaceFlags = 0 );
+	wg::Surface_p	Screenshot(const WgRect& _rect, int surfaceFlags = 0);
 
     WgWidget *      CommonAncestor(WgWidget* pOtherWidget);
 

@@ -21,8 +21,7 @@ void exit_cpp_necessities()
 
 namespace std
 {
-	void __throw_bad_function_call() __attribute__((__noreturn__));
-        void __throw_bad_array_new_length(){ while(1); }
+    void __throw_bad_array_new_length(){ while(1); }
 
 	void  __throw_bad_function_call(){ while(1); }
 
