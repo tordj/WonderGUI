@@ -723,45 +723,21 @@ namespace wg
 //		if (m_bBackingBufferStale)
 //			_refreshBackingBuffer();
 
-		//TODO: Take endianess into account.
-		//TODO: Take advantage of subpixel precision and interpolate alpha value if surface set to interpolate.
-
-		CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
-
-		if (m_pBlob)
+		if( m_pBlob )
 		{
-			uint8_t* pPixel = (uint8_t*)m_pBlob->data();
-			pPixel += coord.y * m_pitch + coord.x * (m_pixelSize);
-
-			if (m_pixelDescription.bIndexed)
-			{
-				return HiColor::unpackLinearTab[m_pPalette[*pPixel].a];
-			}
-			else if (m_pixelDescription.A_bits == 0)
-				return 4096;
-			else
-			{
-				uint32_t val;
-
-				switch (m_pixelSize)
-				{
-				case 1:
-					val = (uint32_t)*pPixel;
-				case 2:
-					val = (uint32_t)((uint16_t*)pPixel)[0];
-				case 3:
-					val = ((uint32_t)pPixel[0]) + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[2]) << 16);
-				default:
-					val = *((uint32_t*)pPixel);
-				}
-
-				const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
-
-				return HiColor::unpackLinearTab[pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift]];
-			}
+			PixelBuffer buf;
+			buf.rect = m_size;
+			buf.palette = m_pPalette;
+			buf.pitch = m_pitch;
+			buf.format = m_pixelDescription.format;
+			buf.pixels = m_pBlob->data();
+			
+			return _alpha(_coord, buf);
 		}
 		else if (m_pAlphaMap)
+		{
 			return HiColor::unpackLinearTab[m_pAlphaMap[coord.y * m_size.w + coord.x]];
+		}
 		else
 			return 4096;
 	}

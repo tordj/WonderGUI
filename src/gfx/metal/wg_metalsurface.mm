@@ -429,39 +429,9 @@ namespace wg
 
         CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
 
-        uint8_t * p = (uint8_t*) [m_textureBuffer contents];
+		// No need to free the PixelBuffer, we know how our pixel buffer works.
 
-        int pitch = m_size.w * m_pixelSize;
-        
-        switch (m_pixelDescription.format)
-        {
-            case PixelFormat::Index_8_sRGB:
-            case PixelFormat::Index_8_linear:
-            {
-                uint8_t index = p[pitch * coord.y + coord.x];
-                return HiColor::unpackLinearTab[m_pPalette[index].a];
-            }
-            case PixelFormat::Alpha_8:
-            {
-                uint8_t * pPixel = p + pitch * coord.y + coord.x;
-                return HiColor::unpackLinearTab[pPixel[0]];
-            }
-            case PixelFormat::BGRA_4_linear:
-            {
-                uint16_t pixel = * (uint16_t *)(p + pitch * coord.y + coord.x);
-                const uint8_t * pConvTab = s_pixelConvTabs[4];
-
-                return HiColor::unpackLinearTab[pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift]];
-            }
-            case PixelFormat::BGRA_8_sRGB:
-            case PixelFormat::BGRA_8_linear:
-            {
-                uint8_t * pPixel = p + pitch * coord.y + coord.x * 4;
-                return pPixel[3];
-            }
-            default:
-                return 4096;
-        }
+		return _alpha( _coord, allocPixelBuffer() );
 	}
 
 	//____ unload() ___________________________________________________________

@@ -1128,7 +1128,7 @@ end:
 
 		CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
 
-		switch (m_pixelDescription.format)
+		switch (buffer.format)
 		{
 		case PixelFormat::Index_8_sRGB:
 		case PixelFormat::Index_8_linear:
