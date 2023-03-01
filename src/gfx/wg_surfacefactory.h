@@ -64,18 +64,10 @@ namespace wg
 
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint) = 0;
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch = 0) = 0;
-		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr) = 0;
-		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Surface* pOther) = 0;
-
-
-		//.____ Deprecated ____________________________________________________
-
-		Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pPalette = nullptr );
-		Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pPalette = nullptr);
-		Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch,
-										   const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static,
-										   const Color8 * pPalette = nullptr);
-		Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static );
+		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+										  const PixelDescription2& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr) = 0;
+		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format = PixelFormat::Undefined, int pitch = 0,
+										  const Color8 * pPalette = nullptr) = 0;
 
 	protected:
 		virtual ~SurfaceFactory() {}

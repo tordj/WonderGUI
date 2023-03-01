@@ -37,11 +37,11 @@ namespace wg
 		*/
 
 
-		bool copyPixels(int width, int height, uint8_t* pSrc, PixelFormat srcFmt, int srcPitchAdd,
+		bool copyPixels(int width, int height, const uint8_t* pSrc, PixelFormat srcFmt, int srcPitchAdd,
 			uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette,
 			Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries);
 
-		bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& srcFmt, int srcPitchAdd,
+		bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescription2& srcFmt, int srcPitchAdd,
 			uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette,
 			Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries);
 

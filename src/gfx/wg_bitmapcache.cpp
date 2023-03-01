@@ -166,7 +166,6 @@ namespace wg
 		return output;
 	}
 
-
 	//____ _addCacheSurface() __________________________________________________
 
 	BitmapCache::CacheSurf * BitmapCache::_addCacheSurface( int category, int width, int height )
@@ -176,9 +175,9 @@ namespace wg
 		Surface_p pSurf;
 		
 		if( category == 9 )
-			pSurf = pFactory->createSurface( {width,height}, PixelFormat::Alpha_8 );
+			pSurf = pFactory->createSurface( WGBP(Surface, _.size = {width,height}, _.format = PixelFormat::Alpha_8) );
 		else
-			pSurf = pFactory->createSurface( {width,s_categoryHeight[category]}, PixelFormat::Alpha_8 );
+			pSurf = pFactory->createSurface( WGBP(Surface, _.size = {width,s_categoryHeight[category]}, _.format = PixelFormat::Alpha_8) );
 
 		m_cacheSize += width * height;
 

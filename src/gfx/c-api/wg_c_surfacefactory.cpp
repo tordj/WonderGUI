@@ -60,22 +60,25 @@ wg_obj wg_createSurfaceFromBlob(wg_obj factory, const wg_surfaceBP* blueprint, w
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }
 
+wg_obj	wg_createSurfaceFromRawData(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels,
+									const wg_pixelDescription2 * pPixelDescription, int pitch, const wg_color8 * pPalette );
 
-wg_obj wg_createSurfaceFromBitmap(wg_obj factory, const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription)
+wg_obj	wg_createSurfaceFromBitmap(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels,
+								   wg_pixelFormat pixelFormat, int pitch, const wg_color8 * pPalette )
 {
 	Surface::Blueprint	bp;
 	convertSurfaceBlueprint(&bp, blueprint);
-	auto p = getPtr(factory)->createSurface(bp, pPixels, pitch, (PixelDescription*) pPixelDescription);
+	auto p = getPtr(factory)->createSurface(bp, pPixels, (PixelFormat) pixelFormat, pitch, (Color8*) pPalette);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }
 
-
-wg_obj wg_createSurfaceFromSurface(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj fromSurface)
+wg_obj	wg_createSurfaceFromRawData(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels,
+									const wg_pixelDescription2 * pPixelDescription, int pitch, const wg_color8 * pPalette )
 {
 	Surface::Blueprint	bp;
 	convertSurfaceBlueprint(&bp, blueprint);
-	auto p = getPtr(factory)->createSurface(bp, static_cast<Surface*>(reinterpret_cast<Object*>(fromSurface)));
+	auto p = getPtr(factory)->createSurface(bp, pPixels, *(PixelDescription2*)pPixelDescription, pitch, (Color8*) pPalette);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }

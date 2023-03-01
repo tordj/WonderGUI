@@ -36,8 +36,10 @@ extern "C" {
 
 	wg_obj	wg_createSoftSurface(const wg_surfaceBP* blueprint);
 	wg_obj	wg_createSoftSurfaceFromBlob(const wg_surfaceBP* blueprint, wg_obj blob, int pitch);
-	wg_obj	wg_createSoftSurfaceFromBitmap(const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription);
-	wg_obj	wg_createSoftSurfaceFromSurface(const wg_surfaceBP* blueprint, wg_obj fromSurface);
+	wg_obj	wg_createSoftSurfaceFromBitmap(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels,
+										   wg_pixelFormat pixelFormat, int pitch, const wg_color8 * pPalette );
+	wg_obj	wg_createSoftSurfaceFromRawData(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels,
+											const wg_pixelDescription2 * pPixelDescription, int pitch, const wg_color8 * pPalette );
 
 	wg_obj	wg_createSoftSurfaceFactory(void);
 

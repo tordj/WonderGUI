@@ -47,8 +47,8 @@ namespace wg
 
 		static SoftSurface_p	create(const Blueprint& blueprint);
 		static SoftSurface_p	create(const Blueprint& blueprint, Blob* pBlob, int pitch = 0 );
-		static SoftSurface_p	create(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
-		static SoftSurface_p	create(const Blueprint& blueprint, Surface* pOther);
+		static SoftSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format = PixelFormat::Undefined, int pitch = 0, const Color8 * pPalette = nullptr);
+		static SoftSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr);
 
 		static SoftSurface_p	createInPlace(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0);
 
@@ -82,11 +82,6 @@ namespace wg
 		
 		//.____ Deprecated ____________________________________________________
 
-		static SoftSurface_p	create(SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
-		static SoftSurface_p	create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
-		static SoftSurface_p	create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
-		static SoftSurface_p	create(Surface* pOther, int flags = SurfaceFlag::Static);
-
 		void putPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<uint32_t> &col, int length, bool replace);
 
 
@@ -94,8 +89,8 @@ namespace wg
 		SoftSurface(const Blueprint& blueprint);
 		SoftSurface(const Blueprint& blueprint, Blob* pBlob, int pitch);
 		SoftSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch);		// Create in place!
-		SoftSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription);
-		SoftSurface(const Blueprint& blueprint, Surface* pOther);
+		SoftSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette);
+		SoftSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
 
 		~SoftSurface();
 

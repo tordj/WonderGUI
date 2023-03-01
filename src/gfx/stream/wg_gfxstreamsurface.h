@@ -47,9 +47,11 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint);
-		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
-		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
-		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Surface* pOther);
+		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Blob* pBlob, int pitch = 0 );
+		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels,
+										   PixelFormat format = PixelFormat::Undefined, int pitch = 0, const Color8 * pPalette = nullptr);
+		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels,
+										   const PixelDescription2& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr);
 
 		//.____ Identification __________________________________________
 
@@ -78,13 +80,6 @@ namespace wg
 //		bool		copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst) override;
 //		bool		copyFrom(Surface * pSrcSurf, CoordI dst) override;
 
-		//.____ Deprecated ____________________________________________________
-
-		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
-		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
-		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
-		static GfxStreamSurface_p	create(GfxStreamEncoder* pEncoder, Surface* pOther, int flags = SurfaceFlag::Static);
-
 		//.____ Misc __________________________________________________________
 
 		bool		streamAsNew(GfxStreamEncoder* pEncoder);
@@ -92,8 +87,8 @@ namespace wg
 	private:
 		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint);
 		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
-		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
-		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Surface* pOther);
+		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette);
+		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
 
 		~GfxStreamSurface();
 

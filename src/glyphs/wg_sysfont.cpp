@@ -87,7 +87,7 @@ namespace wg
 
 	SysFont::SysFont(SurfaceFactory* pFactory, Font * pBackupFont ) : Font(pBackupFont)
 	{
-		m_pSurface = pFactory->createSurface({ 512,48 }, PixelFormat::Alpha_8);
+		m_pSurface = pFactory->createSurface( WGBP(Surface, _.size = { 512,48 }, _.format = PixelFormat::Alpha_8) );
 
 		auto pixbuf = m_pSurface->allocPixelBuffer();
 

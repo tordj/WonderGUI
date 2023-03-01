@@ -97,7 +97,7 @@ public:
 
 
 protected:
-	void			convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat);
+	void			convertSDLFormat(PixelDescription2* pWGFormat, const SDL_PixelFormat* pSDLFormat);
 
 };
 
@@ -434,7 +434,7 @@ Surface_p generateWindowSurface(SDL_Window* pWindow, int width, int height )
 	}
 
 	Blob_p pCanvasBlob = Blob::create(pWinSurf->pixels, 0);
-	auto pWindowSurface = SoftSurface::create(SizeI(width, height), format, pCanvasBlob, pWinSurf->pitch);
+	auto pWindowSurface = SoftSurface::create( WGBP(Surface, _.size = {width, height}, _.format = format), pCanvasBlob, pWinSurf->pitch);
 
 	return pWindowSurface;
 }
@@ -630,32 +630,19 @@ MouseButton translateSDLMouseButton(Uint8 button)
 
 //____ convertSDLFormat() ______________________________________________________
 
-void MyAppVisitor::convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat)
+void MyAppVisitor::convertSDLFormat(PixelDescription2* pWGFormat, const SDL_PixelFormat* pSDLFormat)
 {
-	pWGFormat->format = PixelFormat::Undefined;
-	pWGFormat->bits = pSDLFormat->BitsPerPixel;
-	pWGFormat->bIndexed = (pSDLFormat->palette != nullptr);
+	if( (pSDLFormat->palette != nullptr) )
+		pWGFormat->type = PixelFmt::Index;
+	else
+		pWGFormat->type = PixelFmt::Chunky;
 
+	pWGFormat->bits = pSDLFormat->BitsPerPixel;
+	
 	pWGFormat->R_mask = pSDLFormat->Rmask;
 	pWGFormat->G_mask = pSDLFormat->Gmask;
 	pWGFormat->B_mask = pSDLFormat->Bmask;
 	pWGFormat->A_mask = pSDLFormat->Amask;
-
-	pWGFormat->R_shift = pSDLFormat->Rshift;
-	pWGFormat->G_shift = pSDLFormat->Gshift;
-	pWGFormat->B_shift = pSDLFormat->Bshift;
-	pWGFormat->A_shift = pSDLFormat->Ashift;
-
-	pWGFormat->R_loss = pSDLFormat->Rloss;
-	pWGFormat->G_loss = pSDLFormat->Gloss;
-	pWGFormat->B_loss = pSDLFormat->Bloss;
-	pWGFormat->A_loss = pSDLFormat->Aloss;
-
-	pWGFormat->R_bits = 8 - pSDLFormat->Rloss;
-	pWGFormat->G_bits = 8 - pSDLFormat->Gloss;
-	pWGFormat->B_bits = 8 - pSDLFormat->Bloss;
-	pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
-
 }
 
 //____ programArguments() _________________________________________________
@@ -718,7 +705,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 	{
 		Surface::Blueprint bp = _bp;
 
-		PixelDescription format;
+		PixelDescription2 format;
 
 		auto pSDLSurf = IMG_Load(path.c_str());
 		if (pSDLSurf == NULL)
@@ -730,7 +717,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 
 		Color8 palette[256];
 
-		if (format.bIndexed)
+		if (format.type == PixelFmt::Index)
 		{
 			px = PixelFormat::Index_8;
 
@@ -744,7 +731,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 			pPalette = palette;
 		}
 
-		else if (format.A_bits > 0)
+		else if (format.A_mask > 0)
 			px = PixelFormat::BGRA_8;
 		else
 			px = PixelFormat::BGR_8;
@@ -756,7 +743,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 		bp.palette = pPalette;
 		bp.size = { pSDLSurf->w, pSDLSurf->h };
 
-		auto pSurface = pFactory->createSurface(bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
+		auto pSurface = pFactory->createSurface(bp, (unsigned char*)pSDLSurf->pixels, format, pSDLSurf->pitch);
 		SDL_FreeSurface(pSDLSurf);
 		return pSurface;
 	}

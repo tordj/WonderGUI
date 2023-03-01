@@ -751,7 +751,7 @@ void MyApp::updateGUIAfterReload()
 		auto pDisplay = SurfaceDisplay::create({ .surface = pScreen });
 
 
-		auto pOverlaySurface = pSurfFactory->createSurface(pScreen->pixelSize());
+		auto pOverlaySurface = pSurfFactory->createSurface( WGBP(Surface, _.size = pScreen->pixelSize()) );
 		auto pOverlayDisplay = SurfaceDisplay::create({ .surface = pOverlaySurface });
 
 		m_debugOverlays.push_back(pOverlaySurface);

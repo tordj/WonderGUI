@@ -56,14 +56,17 @@ namespace wg
 		return SoftSurface::create(blueprint, pBlob, pitch);
 	}
 
-	Surface_p SoftSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription)
+	Surface_p SoftSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+												PixelFormat format, int pitch, const Color8 * pPalette)
 	{
-		return SoftSurface::create(blueprint, pPixels, pitch, pPixelDescription);
+		return SoftSurface::create(blueprint, pPixels, format, pitch, pPalette);
 	}
 
-	Surface_p SoftSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Surface* pOther)
+	Surface_p SoftSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+												const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
 	{
-		return SoftSurface::create( blueprint, pOther );
+		return SoftSurface::create(blueprint, pPixels, pixelDescription, pitch, pPalette);
 	}
+
 
 } // namespace wg

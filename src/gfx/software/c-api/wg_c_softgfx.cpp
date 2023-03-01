@@ -70,22 +70,23 @@ wg_obj wg_createSoftSurfaceFromBlob(const wg_surfaceBP* blueprint, wg_obj blob, 
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }
 
-
-wg_obj wg_createSoftSurfaceFromBitmap(const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription)
+wg_obj	wg_createSoftSurfaceFromBitmap(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels,
+									   wg_pixelFormat pixelFormat, int pitch, const wg_color8 * pPalette )
 {
 	Surface::Blueprint	bp;
 	convertSurfaceBlueprint(&bp, blueprint);
-	auto p = SoftSurface::create(bp, pPixels, pitch, (PixelDescription*) pPixelDescription);
+	auto p = SoftSurface::create(bp, pPixels, (PixelFormat) pixelFormat, pitch, (const Color8*) pPalette);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }
 
-
-wg_obj wg_createSoftSurfaceFromSurface(const wg_surfaceBP* blueprint, wg_obj fromSurface)
+wg_obj	wg_createSoftSurfaceFromRawData(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels,
+										const wg_pixelDescription2 * pPixelDescription, int pitch, const wg_color8 * pPalette )
 {
 	Surface::Blueprint	bp;
 	convertSurfaceBlueprint(&bp, blueprint);
-	auto p = SoftSurface::create(bp, static_cast<Surface*>(reinterpret_cast<Object*>(fromSurface)));
+	
+	auto p = SoftSurface::create(bp, pPixels, *(PixelDescription2*) pPixelDescription, pitch, (const Color8*) pPalette);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }

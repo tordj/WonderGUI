@@ -157,6 +157,40 @@ typedef struct wg_pixelDescription_struct
 	uint8_t			A_bits;				///< number of bits for alpha in the pixel
 } wg_pixelDescription;
 
+
+//____ wg_pixelFmt _________________________________________________________
+
+typedef enum
+{
+	WG_PIXFMT_CHUNKY,			///< Normal pixel. All bits for a pixel are packed into same sequence of bytes.
+	WG_PIXFMT_CHUNKY_BE,		///< Same as Chunky, but stored in big-endian format.
+	WG_PIXFMT_INDEX,			///< Pixels are color indexes into a palette.
+	WG_PIXFMT_BITPLANES			///< Pixels are color indexes into a palette, stored in 16-bit bitplanes. Starting with lowest bitplane.
+} wg_pixelFmt;
+
+//____ wg_colorSpace ________________________________________________________
+
+typedef enum
+{
+	WG_COLORSPACE_UNDEFINED,
+	WG_COLORSPACE_LINEAR,
+	WG_COLORSPACE_SRGB
+} wg_colorSpace;
+
+//____ wg_pixelDescription2 _____________________________________________________
+
+typedef struct wg_pixelDescription2_struct
+{
+	int				bits;			///< Number of bits for the pixel, includes any non-used padding bits.
+	wg_pixelFmt		type;
+	wg_colorSpace	colorSpace;
+	
+	uint64_t		R_mask;			///< bitmask for getting the red bits out of chunky pixel
+	uint64_t		G_mask;			///< bitmask for getting the green bits out of chunky pixel
+	uint64_t		B_mask;			///< bitmask for getting the blue bits out of chunky pixel
+	uint64_t		A_mask;			///< bitmask for getting the alpha bits out of chunky pixel
+} wg_pixelDescription2;
+
 //____ wg_gfxFlip ____________________________________________________________
 
 typedef enum

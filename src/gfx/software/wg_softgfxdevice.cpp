@@ -2300,7 +2300,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		bool	bClear = false;
 		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer] == nullptr)
 		{
-			m_layerSurfaces[m_renderLayer] = SoftSurface::create(m_canvas.size/64, m_pCanvasLayers->layerFormat(m_renderLayer));
+			m_layerSurfaces[m_renderLayer] = SoftSurface::create( WGBP(Surface, _.size = m_canvas.size/64, _.format = m_pCanvasLayers->layerFormat(m_renderLayer)) );
 			bClear = true;
 		}
 

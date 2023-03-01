@@ -28,35 +28,6 @@
 namespace wg { namespace PixelTools
 {
 
-const uint8_t sRGBToLinearTable[256] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8,
-	8, 8, 9, 9, 9, 10, 10, 11, 11, 11, 12, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18,
-	19, 19, 20, 20, 21, 22, 22, 23, 23, 24, 25, 25, 26, 26, 27, 28, 28, 29, 30, 30, 31, 32, 33, 33,
-	34, 35, 35, 36, 37, 38, 39, 39, 40, 41, 42, 43, 43, 44, 45, 46, 47, 48, 49, 49, 50, 51, 52, 53,
-	54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 73, 74, 75, 76, 77, 78,
-	79, 81, 82, 83, 84, 85, 87, 88, 89, 90, 91, 93, 94, 95, 97, 98, 99, 100, 102, 103, 105, 106, 107,
-	109, 110, 111, 113, 114, 116, 117, 119, 120, 121, 123, 124, 126, 127, 129, 130, 132, 133, 135,
-	137, 138, 140, 141, 143, 145, 146, 148, 149, 151, 153, 154, 156, 158, 159, 161, 163, 165, 166,
-	168, 170, 172, 173, 175, 177, 179, 181, 182, 184, 186, 188, 190, 192, 194, 196, 197, 199, 201,
-	203, 205, 207, 209, 211, 213, 215, 217, 219, 221, 223, 225, 227, 229, 231, 234, 236, 238, 240,
-	242, 244, 246, 248, 251, 253, 255 };
-
-const uint8_t linearToSRGBTable[256] = {0, 21, 28, 34, 39, 43, 46, 50, 53, 56, 59, 61, 64, 66, 68, 70, 72,
-	74, 76, 78, 80, 82, 84, 85, 87, 89, 90, 92, 93, 95, 96, 98, 99, 101, 102, 103, 105, 106, 107,
-	109, 110, 111, 112, 114, 115, 116, 117, 118, 119, 120, 122, 123, 124, 125, 126, 127, 128, 129,
-	130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 144, 145, 146, 147,
-	148, 149, 150, 151, 151, 152, 153, 154, 155, 156, 156, 157, 158, 159, 160, 160, 161, 162, 163,
-	164, 164, 165, 166, 167, 167, 168, 169, 170, 170, 171, 172, 173, 173, 174, 175, 175, 176, 177,
-	178, 178, 179, 180, 180, 181, 182, 182, 183, 184, 184, 185, 186, 186, 187, 188, 188, 189, 190,
-	190, 191, 192, 192, 193, 194, 194, 195, 195, 196, 197, 197, 198, 199, 199, 200, 200, 201, 202,
-	202, 203, 203, 204, 205, 205, 206, 206, 207, 207, 208, 209, 209, 210, 210, 211, 212, 212, 213,
-	213, 214, 214, 215, 215, 216, 217, 217, 218, 218, 219, 219, 220, 220, 221, 221, 222, 223, 223,
-	224, 224, 225, 225, 226, 226, 227, 227, 228, 228, 229, 229, 230, 230, 231, 231, 232, 232, 233,
-	233, 234, 234, 235, 235, 236, 236, 237, 237, 238, 238, 239, 239, 240, 240, 241, 241, 242, 242,
-	243, 243, 244, 244, 245, 245, 246, 246, 247, 247, 248, 248, 249, 249, 249, 250, 250, 251, 251,
-	252, 252, 253, 253, 254, 254, 255, 255 };
-
-
 const uint8_t conv_2_linear_to_8_sRGB[4] 	= {0, 155, 212, 255 };
 
 const uint8_t conv_3_linear_to_8_sRGB[8] 	= {0, 105, 144, 173, 198, 219, 238, 255};
@@ -81,6 +52,22 @@ const uint8_t conv_7_linear_to_8_sRGB[128] 	= {0, 28, 39, 46, 53, 59, 64, 68, 73
 	218, 219, 220, 221, 222, 223, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237,
 	238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 249, 250, 251, 252, 253, 254, 255 };
 
+const uint8_t conv_8_linear_to_8_sRGB[256] = {0, 21, 28, 34, 39, 43, 46, 50, 53, 56, 59, 61, 64, 66, 68, 70, 72,
+	74, 76, 78, 80, 82, 84, 85, 87, 89, 90, 92, 93, 95, 96, 98, 99, 101, 102, 103, 105, 106, 107,
+	109, 110, 111, 112, 114, 115, 116, 117, 118, 119, 120, 122, 123, 124, 125, 126, 127, 128, 129,
+	130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 144, 145, 146, 147,
+	148, 149, 150, 151, 151, 152, 153, 154, 155, 156, 156, 157, 158, 159, 160, 160, 161, 162, 163,
+	164, 164, 165, 166, 167, 167, 168, 169, 170, 170, 171, 172, 173, 173, 174, 175, 175, 176, 177,
+	178, 178, 179, 180, 180, 181, 182, 182, 183, 184, 184, 185, 186, 186, 187, 188, 188, 189, 190,
+	190, 191, 192, 192, 193, 194, 194, 195, 195, 196, 197, 197, 198, 199, 199, 200, 200, 201, 202,
+	202, 203, 203, 204, 205, 205, 206, 206, 207, 207, 208, 209, 209, 210, 210, 211, 212, 212, 213,
+	213, 214, 214, 215, 215, 216, 217, 217, 218, 218, 219, 219, 220, 220, 221, 221, 222, 223, 223,
+	224, 224, 225, 225, 226, 226, 227, 227, 228, 228, 229, 229, 230, 230, 231, 231, 232, 232, 233,
+	233, 234, 234, 235, 235, 236, 236, 237, 237, 238, 238, 239, 239, 240, 240, 241, 241, 242, 242,
+	243, 243, 244, 244, 245, 245, 246, 246, 247, 247, 248, 248, 249, 249, 249, 250, 250, 251, 251,
+	252, 252, 253, 253, 254, 254, 255, 255 };
+
+
 const uint8_t conv_2_sRGB_to_8_linear[4] 	= {0, 23, 105, 255};
 
 const uint8_t conv_3_sRGB_to_8_linear[8] 	= {0, 4, 16, 40, 74, 122, 182, 255};
@@ -102,7 +89,21 @@ const uint8_t conv_7_sRGB_to_8_linear[128] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1
 	120, 122, 125, 128, 132, 135, 138, 141, 144, 147, 151, 154, 157, 161, 164, 168, 171, 175, 179,
 	182, 186, 190, 193, 197, 201, 205, 209, 213, 217, 221, 225, 229, 233, 238, 242, 246, 251, 255};
 
+const uint8_t conv_8_sRGB_to_8_linear[256] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8,
+	8, 8, 9, 9, 9, 10, 10, 11, 11, 11, 12, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18,
+	19, 19, 20, 20, 21, 22, 22, 23, 23, 24, 25, 25, 26, 26, 27, 28, 28, 29, 30, 30, 31, 32, 33, 33,
+	34, 35, 35, 36, 37, 38, 39, 39, 40, 41, 42, 43, 43, 44, 45, 46, 47, 48, 49, 49, 50, 51, 52, 53,
+	54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 73, 74, 75, 76, 77, 78,
+	79, 81, 82, 83, 84, 85, 87, 88, 89, 90, 91, 93, 94, 95, 97, 98, 99, 100, 102, 103, 105, 106, 107,
+	109, 110, 111, 113, 114, 116, 117, 119, 120, 121, 123, 124, 126, 127, 129, 130, 132, 133, 135,
+	137, 138, 140, 141, 143, 145, 146, 148, 149, 151, 153, 154, 156, 158, 159, 161, 163, 165, 166,
+	168, 170, 172, 173, 175, 177, 179, 181, 182, 184, 186, 188, 190, 192, 194, 196, 197, 199, 201,
+	203, 205, 207, 209, 211, 213, 215, 217, 219, 221, 223, 225, 227, 229, 231, 234, 236, 238, 240,
+	242, 244, 246, 248, 251, 253, 255 };
 
+
+const uint8_t conv_0_to_8_straight[1] 	= { 0xff };
 const uint8_t conv_1_to_8_straight[2] 	= { 0, 0xff };
 const uint8_t conv_2_to_8_straight[4] 	= {	0, 0x55, 0xaa, 0xff };
 const uint8_t conv_3_to_8_straight[8] 	= { 0, 0x24, 0x48, 0x6d, 0x91, 0xb6, 0xda, 0xff };
@@ -130,17 +131,35 @@ const uint8_t conv_7_to_8_straight[128] = { 0, 0x2, 0x4, 0x6, 0x8, 0xa, 0xc, 0xe
 	0xcc, 0xce, 0xd0, 0xd2, 0xd4, 0xd6, 0xd8, 0xda, 0xdc, 0xde, 0xe0, 0xe2, 0xe4, 0xe6, 0xe8,
 	0xea, 0xec, 0xee, 0xf0, 0xf2, 0xf4, 0xf6, 0xf8, 0xfa, 0xfc, 0xff };
 
-const uint8_t * conv_srgb_to_linear_tabs[8] = { nullptr, conv_1_to_8_straight,
+const uint8_t conv_8_to_8_straight[256] = {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF,
+	0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+	0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
+	0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
+	0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
+	0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
+	0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F,
+	0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F,
+	0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F,
+	0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F,
+	0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
+	0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF,
+	0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF,
+	0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF,
+	0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
+	0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF };
+
+
+const uint8_t * conv_srgb_to_linear_tabs[9] = { conv_0_to_8_straight, conv_1_to_8_straight,
 	conv_2_sRGB_to_8_linear, conv_3_sRGB_to_8_linear, conv_4_sRGB_to_8_linear,
-	conv_5_sRGB_to_8_linear, conv_6_sRGB_to_8_linear, conv_7_sRGB_to_8_linear };
+	conv_5_sRGB_to_8_linear, conv_6_sRGB_to_8_linear, conv_7_sRGB_to_8_linear, conv_8_sRGB_to_8_linear };
 
-const uint8_t * conv_linear_to_sRGB_tabs[8] = { nullptr, conv_1_to_8_straight, conv_2_linear_to_8_sRGB,
+const uint8_t * conv_linear_to_sRGB_tabs[9] = { conv_0_to_8_straight, conv_1_to_8_straight, conv_2_linear_to_8_sRGB,
 	conv_3_linear_to_8_sRGB, conv_4_linear_to_8_sRGB, conv_5_linear_to_8_sRGB,
-	conv_6_linear_to_8_sRGB, conv_7_linear_to_8_sRGB };
+	conv_6_linear_to_8_sRGB, conv_7_linear_to_8_sRGB, conv_8_linear_to_8_sRGB };
 
-const uint8_t * conv_straight_tabs[8] = { nullptr, conv_1_to_8_straight, conv_2_to_8_straight,
+const uint8_t * conv_straight_tabs[9] = { conv_0_to_8_straight, conv_1_to_8_straight, conv_2_to_8_straight,
 	conv_3_to_8_straight, conv_4_to_8_straight, conv_5_to_8_straight,
-	conv_6_to_8_straight, conv_7_to_8_straight };
+	conv_6_to_8_straight, conv_7_to_8_straight, conv_8_to_8_straight };
 
 
 static void readBGRA8( const uint8_t * pSrc, uint8_t * pDst, int nbPixels, const void * p1, const void * p2 )
@@ -760,7 +779,7 @@ static void readConv_planes_1i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 
 //____ convertPixelsToKnownType() _________________________________________________________
 
-static bool convertPixelsToKnownType( int width, int height, uint8_t * pSrc, int srcPixelBits, int srcPitchAdd,
+static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSrc, int srcPixelBits, int srcPitchAdd,
 										uint8_t * pDst, PixelFormat dstFmt, int dstPitchAdd, Color8 * pDstPalette, int& dstPaletteEntries, int maxDstPaletteEntries,
 										void(*pReadFunc)( const uint8_t *, uint8_t *, int, const void *, const void * ), const void * pTab1, const void * pTab2 )
 {
@@ -1075,11 +1094,15 @@ static bool convertPixelsToKnownType( int width, int height, uint8_t * pSrc, int
 	return true;
 }
 
+//____ shiftAndBitsFromMask() _________________________________________________
 
 inline void shiftAndBitsFromMask( uint64_t mask, int& shift, int& bits )
 {
 	shift = 0;
 	bits = 0;
+	
+	if( mask == 0 )
+		return;
 	
 	while( (mask & 0x1) == 0 )
 	{
@@ -1097,7 +1120,7 @@ inline void shiftAndBitsFromMask( uint64_t mask, int& shift, int& bits )
 
 //____ copyPixels() [PixelDescription] ________________________________________
 
-bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& srcDesc, int srcPitchAdd,
+bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescription2& srcDesc, int srcPitchAdd,
 	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette,
 	Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries)
 {
@@ -1177,7 +1200,7 @@ bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& s
 
 //____ copyPixels() [PixelFormat] _____________________________________________
 
-bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int srcPitchAdd,
+bool copyPixels( int width, int height, const uint8_t * pSrc, PixelFormat srcFmt, int srcPitchAdd,
 				 uint8_t * pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8 * pSrcPalette,
 				 Color8 * pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries )
 {
@@ -1219,7 +1242,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 		{
 			// Palette needs to be converted between sRGB and Linear.
 
-			const uint8_t * pTable = srcDesc.colorSpace == ColorSpace::Linear ? linearToSRGBTable : sRGBToLinearTable;
+			const uint8_t * pTable = srcDesc.colorSpace == ColorSpace::Linear ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
 			readConvBGRA8( (uint8_t*) pSrcPalette, (uint8_t*) pDstPalette, maxDstPaletteEntries, pTable, nullptr );
 		}
 	}
@@ -1242,7 +1265,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				else
 				{
 					pReadFunc = readConvBGR8;
-					pTab1 = bLinearSource ? linearToSRGBTable : sRGBToLinearTable;
+					pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
 				}
 				break;
 
@@ -1254,7 +1277,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				else
 				{
 					pReadFunc = readConvBGRX8;
-					pTab1 = bLinearSource ? linearToSRGBTable : sRGBToLinearTable;
+					pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
 				}
 				break;
 
@@ -1265,7 +1288,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				else
 				{
 					pReadFunc = readConvBGRA8;
-					pTab1 = bLinearSource ? linearToSRGBTable : sRGBToLinearTable;
+					pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
 				}
 				break;
 
@@ -1300,7 +1323,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				{
 					nAllocatedBytes = srcPaletteEntries*sizeof(Color8);
 					Color8 * pConvPalette = (Color8*) GfxBase::memStackAlloc(nAllocatedBytes);
-					readConvBGRA8( (uint8_t*) pSrcPalette, (uint8_t*) pConvPalette, srcPaletteEntries, sRGBToLinearTable, nullptr);
+					readConvBGRA8( (uint8_t*) pSrcPalette, (uint8_t*) pConvPalette, srcPaletteEntries, conv_8_sRGB_to_8_linear, nullptr);
 					pTab1 = pConvPalette;
 				}
 				break;
@@ -1313,7 +1336,7 @@ bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int 
 				{
 					nAllocatedBytes = srcPaletteEntries*sizeof(Color8);
 					Color8 * pConvPalette = (Color8*) GfxBase::memStackAlloc(nAllocatedBytes);
-					readConvBGRA8( (uint8_t*) pSrcPalette, (uint8_t*) pConvPalette, srcPaletteEntries, linearToSRGBTable, nullptr);
+					readConvBGRA8( (uint8_t*) pSrcPalette, (uint8_t*) pConvPalette, srcPaletteEntries, conv_8_linear_to_8_sRGB, nullptr);
 					pTab1 = pConvPalette;
 				}
 				break;
