@@ -1098,7 +1098,7 @@ inline void shiftAndBitsFromMask( uint64_t mask, int& shift, int& bits )
 //____ copyPixels() [PixelDescription] ________________________________________
 
 bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& srcDesc, int srcPitchAdd,
-	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, Color8* pSrcPalette,
+	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette,
 	Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries)
 {
 	auto dstDesc = Util::pixelFormatToDescription2( dstFmt );
@@ -1178,7 +1178,7 @@ bool copyPixels(int width, int height, uint8_t* pSrc, const PixelDescription2& s
 //____ copyPixels() [PixelFormat] _____________________________________________
 
 bool copyPixels( int width, int height, uint8_t * pSrc, PixelFormat srcFmt, int srcPitchAdd,
-				 uint8_t * pDst, PixelFormat dstFmt, int dstPitchAdd, Color8 * pSrcPalette,
+				 uint8_t * pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8 * pSrcPalette,
 				 Color8 * pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries )
 {
 	

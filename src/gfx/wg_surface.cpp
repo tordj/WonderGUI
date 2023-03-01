@@ -26,6 +26,7 @@
 #include <wg_dataset.h>
 #include <wg_gfxutil.h>
 #include <wg_gfxbase.h>
+#include <wg_pixeltools.h>
 
 namespace wg
 {
@@ -503,19 +504,45 @@ namespace wg
 		if( !pSrcSurface || pSrcSurface->pixelFormat() == PixelFormat::Undefined || m_pixelDescription.format == PixelFormat::Undefined )
 			return false;
 
-
-		auto srcbuf = pSrcSurface->allocPixelBuffer(_srcRect);
+		// Clip as needed to get source and dest rectangles.
+		
+		RectI srcRect = RectI::overlap(_srcRect, pSrcSurface->m_size );
+		if( srcRect.isEmpty() )
+			return false;
+			
+		RectI destRect = RectI::overlap( { _dest, srcRect.size() }, m_size );
+		if( destRect.isEmpty() )
+			return false;
+		
+		srcRect.setSize( destRect.size() );
+		
+		// Allocate our buffers, push source pixels
+		
+		
+		auto srcbuf = pSrcSurface->allocPixelBuffer(srcRect);
 		bool bPushed = pSrcSurface->pushPixels(srcbuf);
 		if (!bPushed)
 		{
 			//TODO: Error handling.
 		}
+		
+		auto dstbuf = allocPixelBuffer( destRect );
+		
+		//
+		
+		auto& srcDesc = Util::pixelFormatToDescription2(srcbuf.format);
+		auto& dstDesc = Util::pixelFormatToDescription2(m_pixelDescription.format);
+		
+		int dstPaletteEntries = 256;
+		
+		bool retVal = PixelTools::copyPixels(srcbuf.rect.w, srcbuf.rect.h, srcbuf.pixels, srcbuf.format, srcbuf.pitch - srcbuf.rect.w*srcDesc.bits/8,
+								dstbuf.pixels, dstbuf.format, dstbuf.pitch - dstbuf.rect.w*dstDesc.bits/8, srcbuf.palette,
+								m_pPalette, 256, dstPaletteEntries, 256);
 
-
-		bool retVal = _copy({ _dest, _srcRect.size() }, pSrcSurface->pixelDescription(), srcbuf.pixels, srcbuf.pitch, { 0,0,_srcRect.size() }, srcbuf.palette);
-
+		pullPixels(dstbuf);
+		freePixelBuffer(dstbuf);
+		
 		pSrcSurface->freePixelBuffer(srcbuf);
-
 
 		return retVal;
 	}
@@ -527,7 +554,6 @@ namespace wg
 		Copying to Index_8 is only allowed from other Index_8 content. No color conversion is then performed, palettes are assumed to be identical.
 		Copying from Alpha_8 to any other surface copies white pixels with alpha (if destination has alpha channel, otherwise just white pixels).
 	*/
-
 
 	bool Surface::_copy( const RectI& destRect, const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const Color8 * ppalette )
 	{
@@ -1011,111 +1037,14 @@ namespace wg
 			return Surface_p();
 		}
 
-		if ( (format == PixelFormat::Index_8 || format == PixelFormat::Index_8_linear || format == PixelFormat::Index_8_sRGB) &&
-			( m_pixelDescription.format != PixelFormat::Index_8_sRGB && m_pixelDescription.format != PixelFormat::Index_8_linear ))
-		{
-			// We only allow conversion to indexed if surface has 256 colors at most!
+		auto bp = blueprint();
+		bp.format = format;
 
-			uint32_t* ppalette = (uint32_t*) GfxBase::memStackAlloc(1024);
-			int nColors = 0;
-
-			auto pBlob = Blob::create(m_size.w * m_size.h);
-			uint8_t* pPixels = (uint8_t*) pBlob->data();
-
-			auto pixbuf = allocPixelBuffer();
-			pushPixels(pixbuf);
-
-
-			switch (m_pixelDescription.format)
-			{
-				case PixelFormat::BGRA_8_sRGB:
-				case PixelFormat::BGRA_8_linear:
-				{
-					// Generate palette (kind of) and indexed pixels
-						
-					uint8_t* pDest = pPixels;
-					for (int y = 0; y < m_size.h; y++)
-					{
-						uint32_t* pLine = (uint32_t*) (pixbuf.pixels + pixbuf.pitch * y);
-
-						for (int x = 0; x < m_size.w; x++)
-						{
-							uint32_t pixel = pLine[x];
-							int ofs = 0;
-							while( ofs < nColors && ppalette[ofs] != pixel )
-								ofs++;
-							if( ofs == nColors )
-							{
-								if( nColors == 256 )
-								{
-									nColors++;
-									goto end;
-								}
-								
-								ppalette[ofs] = pixel;
-								nColors++;
-							}
-							* pDest++ = (uint8_t) ofs;
-						}
-					}
-
-					// Convert palette from pixels to colors
-					
-					Color8 * pColor = (Color8*) ppalette;
-					for( int i = 0 ; i < nColors ; i++ )
-					{
-						uint8_t * pBGRA = (uint8_t*) &ppalette[i];
-						Color8 col( pBGRA[2], pBGRA[1], pBGRA[0], pBGRA[3] );
-						pColor[i] = col;
-					}
-					break;
-				}
-					
-				default:
-					GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Conversion of this kind of surface to Index_8 has not been implemented (sorry!)", this, &TYPEINFO, __func__, __FILE__, __LINE__);
-					
-					freePixelBuffer(pixbuf);
-					GfxBase::memStackFree(1024);
-					return nullptr;
-			}
-end:
-			
-			if( nColors > 256 )
-			{
-				GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Can't convert surface with more than 256 colors to Index_8", this, &TYPEINFO, __func__, __FILE__, __LINE__);
-				
-				freePixelBuffer(pixbuf);
-				GfxBase::memStackFree(1024);
-				return nullptr;
-			}
-					
-			// Fill out palette with zeroes
-				
-			for( int i = nColors ; i < 256 ; i++ )
-				ppalette[i] = 0;
-
-			// Create surface
-
-			auto bp = blueprint();
-			bp.format = format;
-			bp.palette = (Color8*) ppalette;
-			auto pSurface = pFactory->createSurface(bp, pBlob);
-
-			// Cleanup and return
-			
-			freePixelBuffer(pixbuf);
-			GfxBase::memStackFree(1024);
+		auto pSurface = pFactory->createSurface(bp);
+		if( pSurface->copy({ 0,0 }, this) )
 			return pSurface;
-		}
-		else
-		{
-			auto bp = blueprint();
-			bp.format = format;
-
-			auto pSurface = pFactory->createSurface(bp);
-			pSurface->copy({ 0,0 }, this);
-			return pSurface;
-		}
+		
+		return nullptr;
 	}
 
 
