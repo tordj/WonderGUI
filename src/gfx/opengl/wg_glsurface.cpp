@@ -79,112 +79,24 @@ namespace wg
 		return GlSurface_p(new GlSurface(bp, pBlob, pitch));
 	}
 
-	GlSurface_p GlSurface::create(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription)
+	GlSurface_p	GlSurface::create(const Blueprint& bp, const uint8_t* pPixels,
+								  PixelFormat format, int pitch, const Color8 * pPalette);
 	{
 		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
 
-		return GlSurface_p(new GlSurface(bp, pPixels, pitch, pPixelDescription));
-	}
-
-	GlSurface_p GlSurface::create(const Blueprint& bp, Surface* pOther)
-	{
-		if (!_isBlueprintValid(bp, maxSize(), pOther))
-			return GlSurface_p();
-
-		return GlSurface_p(new GlSurface(bp, pOther));
-	}
-
-	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, int flags, const Color8* pPalette)
-	{
-		Blueprint bp;
-
-		bp.size = size;
-		bp.format = format;
-
-		bp.buffered = (flags & SurfaceFlag::Buffered);
-		bp.canvas = (flags & SurfaceFlag::Canvas);
-		bp.dynamic = (flags & SurfaceFlag::Dynamic);
-		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
-		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.palette = pPalette;
-
-		if( flags & SurfaceFlag::Bilinear )
-			bp.sampleMethod = SampleMethod::Bilinear;
-		
-		if (!_isBlueprintValid(bp, maxSize()))
-			return GlSurface_p();
-
-		return GlSurface_p(new GlSurface(bp));
-	}
-
-	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags, const Color8* pPalette)
-	{
-		Blueprint bp;
-
-		bp.size = size;
-		bp.format = format;
-
-		bp.buffered = (flags & SurfaceFlag::Buffered);
-		bp.canvas = (flags & SurfaceFlag::Canvas);
-		bp.dynamic = (flags & SurfaceFlag::Dynamic);
-		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
-		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.palette = pPalette;
-
-		if( flags & SurfaceFlag::Bilinear )
-			bp.sampleMethod = SampleMethod::Bilinear;
-
-		if (!_isBlueprintValid(bp, maxSize()))
-			return GlSurface_p();
-
-		return GlSurface_p(new GlSurface(bp, pBlob, pitch));
-	}
-
-	GlSurface_p GlSurface::create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription, int flags, const Color8* pPalette)
-	{
-		Blueprint bp;
-
-		bp.size = size;
-		bp.format = format;
-
-		bp.buffered = (flags & SurfaceFlag::Buffered);
-		bp.canvas = (flags & SurfaceFlag::Canvas);
-		bp.dynamic = (flags & SurfaceFlag::Dynamic);
-		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
-		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-		bp.palette = pPalette;
-
-		if( flags & SurfaceFlag::Bilinear )
-			bp.sampleMethod = SampleMethod::Bilinear;
-
-		if (!_isBlueprintValid(bp, maxSize()))
-			return GlSurface_p();
-
-		return  GlSurface_p(new GlSurface(bp, pPixels, pitch, pPixelDescription));
+		return  GlSurface_p(new GlSurface(bp, pPixels, format, pitch, pPalette));
 	};
 
-	GlSurface_p GlSurface::create(Surface* pOther, int flags)
+	GlSurface_p	GlSurface::create(const Blueprint& bp, const uint8_t* pPixels,
+								  const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
 	{
-		if (!pOther)
+		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
 
-		Blueprint bp;
+		return  GlSurface_p(new GlSurface(bp, pPixels, pixelDescription, pitch, pPalette));
+	};
 
-		bp.buffered = (flags & SurfaceFlag::Buffered);
-		bp.canvas = (flags & SurfaceFlag::Canvas);
-		bp.dynamic = (flags & SurfaceFlag::Dynamic);
-		bp.mipmap = (flags & SurfaceFlag::Mipmapped);
-		bp.scale = (flags & SurfaceFlag::Scale200) ? 128 : 64;
-
-		if( flags & SurfaceFlag::Bilinear )
-			bp.sampleMethod = SampleMethod::Bilinear;
-
-		if (!_isBlueprintValid(bp, maxSize(), pOther))
-			return GlSurface_p();
-
-		return GlSurface_p(new GlSurface(bp, pOther));
-	}
 
 	//____ constructor _____________________________________________________________
 
@@ -276,30 +188,33 @@ namespace wg
 		_setupGlTexture(pBlob->data(), pitch);
 	}
 
-	GlSurface::GlSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription ) 
-		: Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
+	GlSurface::GlSurface(const Blueprint& bp, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette)
+	: GlSurface(bp, pPixels, Util::pixelFormatToDescription2(format), pitch, pPalette)
+	{
+	
+	}
+
+	GlSurface::GlSurface(const Blueprint& bp, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
+	: Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
 	{
 		//TODO: Not just default to BGRA_8 if PixelFormat not specified in Blueprint. Instead we should take the most suitable PixelFormat base on pPixelDescription
 		
 		_setPixelDetails(m_pixelDescription.format);
 		m_pPalette = nullptr;
-
-		if( !pPixelDescription )
-			pPixelDescription = &m_pixelDescription;
 		
 		if( pitch == 0 )
-			pitch = bp.size.w * pPixelDescription->bits/8;
+			pitch = bp.size.w * pixelDescription.bits/8;
 		
         if (bp.buffered || m_pixelDescription.bits <= 8)
         {
             g_backingPixels += m_size.w*m_size.h;
 
+			// Create our blob
+			
             m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
             m_pBlob = Blob::create(m_pitch * m_size.h + (bp.palette ? 1024 : 0));
 
-            _copy(m_size, pPixelDescription, pPixels, pitch, m_size);
-
-			// Setup palette before calling _setupGlTexture().
+			// Setup palette
 
 			if (bp.palette)
 			{
@@ -307,30 +222,49 @@ namespace wg
 				memcpy(m_pPalette, bp.palette, 1024);
 			}
 
+			// Copy pixels
+			
+			int dstPaletteEntries = 256;
+			
+			copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, pitch - m_size.w * pixelDescription.bits/8,
+					   (uint8_t*) m_pBlob->data(), m_pixelDescription.format, m_pitch - m_size.w * m_pixelDescription.bits / 8,
+					   pPalette, m_pPalette, 256, dstPaletteEntries, 256);
+
+			// Setup GL-texture
+			
             _setupGlTexture(m_pBlob->data(), m_pitch);
         }
         else
 		{
-			// Setup palette before calling _setupGlTexture().
+			// Setup palette, not part of Blob since we should keep this.
 
 			if (bp.palette)
 			{
 				m_pPalette = new Color8[256];
 				memcpy(m_pPalette, bp.palette, 1024);
 			}
+			
+			// Convert/copy pixels to temporary buffer.
 
-			// Set blob and pitch temporarily so we can use _copy().
-						
-            m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.palette ? 1024 : 0));
+			//TODO: Skip temporary buffer and copy if source format is same as destination.
 
-            _copy(m_size, pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, m_size);
+			int tempBufPitch = m_size.w * m_pixelDescription.bits / 8;
+			uint8_t * pTempPixelBuffer = new char[tempBufPitch * m_size.h];
+
+			// Copy pixels
+
+			int dstPaletteEntries = 256;
+		
+			copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, pitch - m_size.w * pixelDescription.bits/8,
+					   pTempPixelBuffer, m_pixelDescription.format, 0,
+					   pPalette, m_pPalette, 256, dstPaletteEntries, 256);
+
+			// Setup GL-texture
 
             _setupGlTexture(m_pBlob->data(), m_pitch);
 
-            m_pBlob = nullptr;
-            m_pitch = 0;
-
+			//
+			
 			if (m_pixelDescription.A_bits > 0)
 			{
 				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
@@ -339,65 +273,20 @@ namespace wg
 				PixelBuffer buf;
 				buf.format = m_pixelDescription.format;
 				buf.palette = m_pPalette;
-				buf.pitch = pitch;
-				buf.pixels = pPixels;
+				buf.pitch = tempBufPitch;
+				buf.pixels = pTempPixelBuffer;
 				buf.rect = m_size;
 
 				_updateAlphaMap(buf, m_size);
 			}
+
+			// Delete our temp buffer
+			
+			delete [] pTempPixelBuffer;
+
 		}
 	}
 
-
-	GlSurface::GlSurface(const Blueprint& bp, Surface* pOther) : Surface(bp, pOther->pixelFormat(), pOther->sampleMethod() )
-	{
-		_setPixelDetails(m_pixelDescription.format);
-		m_size	= pOther->pixelSize();
-		m_pPalette = nullptr;
-
-		auto pixbuf = pOther->allocPixelBuffer();
-		if( !pOther->pushPixels(pixbuf) )
-		{
-			//TODO: Error handling
-		}
-
-        if (bp.buffered || m_pixelDescription.bits <= 8)
-        {
-            g_backingPixels += m_size.w*m_size.h;
-
-            m_pitch = m_size.w * m_pixelSize;
-            m_pBlob = Blob::create(m_pitch * m_size.h + (m_pixelDescription.bIndexed ? 1024 : 0));
-            _copy(m_size, pOther->pixelDescription(), pixbuf.pixels, pixbuf.pitch, m_size);
-
-            if (m_pixelDescription.bIndexed)
-            {
-                m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-                memcpy(m_pPalette, pOther->palette(), 1024);
-            }
-        }
-        else
-		{
-			m_pitch = 0;
-
-			if (m_pixelDescription.bIndexed)
-			{
-				m_pPalette = new Color8[256];
-				memcpy(m_pPalette, pOther->palette(), 1024);
-			}
-
-			if (m_pixelDescription.A_bits > 0)
-			{
-				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
-				_updateAlphaMap(pixbuf, m_size);
-			}
-		}
-
-		//TODO: Support pitch
-
-        _setupGlTexture(pixbuf.pixels, pixbuf.pitch);
-
-		pOther->freePixelBuffer(pixbuf);
-	}
 
 	//____ _setupGlTexture() __________________________________________________
 

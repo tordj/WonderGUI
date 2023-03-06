@@ -98,7 +98,6 @@ extern "C" {
 	wg_pts			wg_surfacePointWidth(wg_obj surface);
 	wg_pts			wg_surfacePointHeight(wg_obj surface);
 
-	void			wg_setSurfaceScale(wg_obj surface, int scale);
 	int				wg_getSurfaceScale(wg_obj surface);
 
 
@@ -112,14 +111,11 @@ extern "C" {
 
 	int				wg_surfaceAlpha(wg_obj surface, wg_coordSPX coord);	///< @brief Get Alpha value of subpixel at specified coordinate.
 
-	uint32_t		wg_colorToPixel(wg_obj surface, const wg_color* col);		///< @brief Convert specified color to a pixel in surface's native format.
-	wg_color		wg_pixelToColor(wg_obj surface, uint32_t pixel);		///< @brief Get the color and alpha values of a pixel.
-
 	const wg_color8* wg_surfacePalette(wg_obj surface);
 
 	const wg_pixelDescription* wg_surfacePixelDescription(wg_obj surface); ///< @brief Get the pixel description for the surface.
 	wg_pixelFormat	wg_surfacePixelFormat(wg_obj surface);
-	int				wg_surfacePixelBytes(wg_obj surface);
+	int				wg_surfacePixelBits(wg_obj surface);
 
 	int				wg_surfaceIsOpaque(wg_obj surface);				///< @brief Check if surface is guaranteed to be entirely opaque.
 	int				wg_surfaceCanBeCanvas(wg_obj surface);

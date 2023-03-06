@@ -1211,11 +1211,11 @@ bool copyPixels( int width, int height, const uint8_t * pSrc, PixelFormat srcFmt
 
 	int nAllocatedBytes = 0;
 	
-	auto srcDesc = Util::pixelFormatToDescription2( srcFmt );
- 	auto dstDesc = Util::pixelFormatToDescription2( dstFmt );
-
-	if( srcDesc.colorSpace == ColorSpace::Undefined || dstDesc.colorSpace == ColorSpace::Undefined )
-		return false;																					// We need to know the color space to perform copy.
+	srcFmt = Util::translatePixelType(srcFmt);
+	dstFmt = Util::translatePixelType(dstFmt);
+	
+	auto& srcDesc = Util::pixelFormatToDescription2( srcFmt );
+ 	auto& dstDesc = Util::pixelFormatToDescription2( dstFmt );
 	
 	if( (srcFmt == dstFmt) || (srcFmt == PixelFormat::BGRA_8_sRGB && dstFmt == PixelFormat::BGRX_8_sRGB) ||
 		(srcFmt == PixelFormat::BGRA_8_linear && dstFmt == PixelFormat::BGRX_8_linear) ||
@@ -1380,8 +1380,307 @@ error:
 	return false;
 }
 
+//____ colorToPixelBytes() ____________________________________________________
+
+int colorToPixelBytes( HiColor color, PixelFormat type, uint8_t pixelArea[18], Color8* pPalette, int paletteEntries )
+{
+	switch( type )
+	{
+		case PixelFormat::BGR_8:
+		{
+			uint8_t * pConvTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+			
+			pixelArea[0] = pConvTab[color.b];
+			pixelArea[1] = pConvTab[color.g];
+			pixelArea[2] = pConvTab[color.r];
+			return 3;
+		}
+			
+		case PixelFormat::BGR_8_sRGB:
+		{
+			uint8_t * pConvTab = HiColor::packSRGBTab;
+			
+			pixelArea[0] = pConvTab[color.b];
+			pixelArea[1] = pConvTab[color.g];
+			pixelArea[2] = pConvTab[color.r];
+			return 3;
+		}
+			
+		case PixelFormat::BGR_8_linear:
+		{
+			uint8_t * pConvTab = HiColor::packLinearTab;
+			
+			pixelArea[0] = pConvTab[color.b];
+			pixelArea[1] = pConvTab[color.g];
+			pixelArea[2] = pConvTab[color.r];
+			return 3;
+		}
+			
+		case PixelFormat::BGRX_8:
+		{
+			uint8_t * pConvTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+			
+			pixelArea[0] = pConvTab[color.b];
+			pixelArea[1] = pConvTab[color.g];
+			pixelArea[2] = pConvTab[color.r];
+			pixelArea[3] = 0;
+			return 4;
+		}
+			
+		case PixelFormat::BGRX_8_sRGB:
+		{
+			uint8_t * pConvTab = HiColor::packSRGBTab;
+			
+			pixelArea[0] = pConvTab[color.b];
+			pixelArea[1] = pConvTab[color.g];
+			pixelArea[2] = pConvTab[color.r];
+			pixelArea[3] = 0;
+			return 4;
+		}
+			
+		case PixelFormat::BGRX_8_linear:
+		{
+			uint8_t * pConvTab = HiColor::packLinearTab;
+			
+			pixelArea[0] = pConvTab[color.b];
+			pixelArea[1] = pConvTab[color.g];
+			pixelArea[2] = pConvTab[color.r];
+			pixelArea[3] = 0;
+			return 4;
+		}
+			
+		case PixelFormat::BGRA_8:
+		{
+			uint8_t * pConvTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+			
+			pixelArea[0] = pConvTab[color.b];
+			pixelArea[1] = pConvTab[color.g];
+			pixelArea[2] = pConvTab[color.r];
+			pixelArea[3] = HiColor::packLinearTab[color.a];
+			return 4;
+		}
+			
+		case PixelFormat::BGRA_8_sRGB:
+		{
+			uint8_t * pConvTab = HiColor::packSRGBTab;
+			
+			pixelArea[0] = pConvTab[color.b];
+			pixelArea[1] = pConvTab[color.g];
+			pixelArea[2] = pConvTab[color.r];
+			pixelArea[3] = HiColor::packLinearTab[color.a];
+			return 4;
+		}
+			
+		case PixelFormat::BGRA_8_linear:
+		{
+			uint8_t * pConvTab = HiColor::packLinearTab;
+			
+			pixelArea[0] = pConvTab[color.b];
+			pixelArea[1] = pConvTab[color.g];
+			pixelArea[2] = pConvTab[color.r];
+			pixelArea[3] = HiColor::packLinearTab[color.a];
+			return 4;
+		}
+			
+		case PixelFormat::BGRA_4_linear:
+		{
+			uint8_t * pConvTab = HiColor::packLinearTab;
+
+			int b = pConvTab[color.b];
+			int g = pConvTab[color.b];
+			int r = pConvTab[color.b];
+			int a = pConvTab[color.b];
+
+			uint16_t pixel = (b & 0xF0 << 8) | (g & 0xF0 << 4) | (r & 0xF0) | (a >> 4);
+			* (uint16_t*) pixelArea = pixel;
+			return 2;
+		}
+			
+		case PixelFormat::BGR_565_linear:
+		{
+			uint8_t * pConvTab = HiColor::packLinearTab;
+
+			int b = pConvTab[color.b];
+			int g = pConvTab[color.b];
+			int r = pConvTab[color.b];
+			int a = pConvTab[color.b];
+
+			uint16_t pixel = (b & 0xF8 << 8) | (g & 0xFC << 3) | (r >> 3);
+			* (uint16_t*) pixelArea = pixel;
+			return 2;
+		}
+
+		case PixelFormat::Index_8:
+		{
+			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, GfxBase::defaultToSRGB(), pPalette,256);
+			return 1;
+		}
+
+		case PixelFormat::Index_8_sRGB:
+		{
+			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, true, pPalette,256);
+			return 1;
+		}
+
+		case PixelFormat::Index_8_linear:
+		{
+			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, false, pPalette,256);
+			return 1;
+		}
+			
+		case PixelFormat::RGB_565_bigendian:
+		{
+			uint8_t * pConvTab = HiColor::packLinearTab;
+
+			int b = pConvTab[color.b];
+			int g = pConvTab[color.b];
+			int r = pConvTab[color.b];
+			int a = pConvTab[color.b];
+
+			uint16_t pixel = (r & 0xF8 << 8) | (g & 0xFC << 3) | (b >> 3);
+			* (uint16_t*) pixelArea = Util::endianSwap(pixel);
+			return 2;
+		}
+
+		case PixelFormat::Alpha_8:
+			pixelArea[0] = HiColor::packLinearTab[color.a];
+			return 1;
+			
+			
+		default:
+			return 0;
+	}
+}
 
 
+
+//____ fillBitmap() ___________________________________________________________
+
+void fillBitmap(uint8_t* pBitmap, PixelFormat pixelType, int pitch, RectI fillRect, HiColor color )
+{
+	pixelType = Util::translatePixelType(pixelType);
+	
+	auto&	pixelDesc = Util::pixelFormatToDescription2(pixelType);
+	
+	uint8_t pixelArea[18];
+	int pixelBytes = colorToPixelBytes(color, pixelType, pixelArea);
+
+	if( pixelDesc.type == PixelFmt::Bitplanes )
+	{
+	}
+	else
+	{
+		uint8_t * pDest = pBitmap + fillRect.y*pitch + fillRect.x*pixelBytes;
+		int eolAdd = pitch - fillRect.w * pixelBytes;
+		
+		switch(pixelBytes)
+		{
+			case 1:
+			{
+				uint8_t pixel = pixelArea[0];
+				
+				for( int y = 0 ; y < fillRect.h ; y++ )
+				{
+					for( int x = 0 ; x < fillRect.w ; x++ )
+						* pDest++ = pixel;
+					pDest += eolAdd;
+				}
+				break;
+			}
+
+			case 2:
+			{
+				uint16_t pixel = * (uint16_t*) pixelArea;
+				
+				for( int y = 0 ; y < fillRect.h ; y++ )
+				{
+					for( int x = 0 ; x < fillRect.w ; x++ )
+					{
+						* ((uint16_t*)pDest) = pixel;
+						pDest += 2;
+					}
+					pDest += eolAdd;
+				}
+				break;
+			}
+
+			case 3:
+			{
+				for( int y = 0 ; y < fillRect.h ; y++ )
+				{
+					for( int x = 0 ; x < fillRect.w ; x++ )
+					{
+						* pDest++ = pixelArea[0];
+						* pDest++ = pixelArea[1];
+						* pDest++ = pixelArea[2];
+					}
+					pDest += eolAdd;
+				}
+				break;
+			}
+
+			case 4:
+			{
+				uint32_t pixel = * (uint32_t*) pixelArea;
+				
+				for( int y = 0 ; y < fillRect.h ; y++ )
+				{
+					for( int x = 0 ; x < fillRect.w ; x++ )
+					{
+						* ((uint32_t*)pDest) = pixel;
+						pDest += 4;
+					}
+					pDest += eolAdd;
+				}
+				break;
+			}
+		}
+	}
+}
+
+//____ findBestMatchInPalette() ____________________________________________
+
+int findBestMatchInPalette( HiColor color, bool bSRGB, Color8* pPalette, int paletteEntries)
+{
+	uint8_t * pConvTab = bSRGB ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+	Color8 col;
+	
+	col.b = pConvTab[color.b];
+	col.g = pConvTab[color.b];
+	col.r = pConvTab[color.b];
+	col.a = pConvTab[color.b];
+
+	// First we make a quick check for exact match
+	
+	for( int i = 0 ; i < paletteEntries ; i++ )
+		if( col == pPalette[i] )
+			return i;
+	
+	// Find best match
+	
+	int bestMatchIndex = 0;
+	int bestMatchDiff = 256*256*4;
+	
+	for( int i = 0 ; i < paletteEntries ; i++ )
+	{
+		Color8& palCol = pPalette[i];
+		
+		int diffB = abs(col.b - palCol.b);
+		int diffG = abs(col.g - palCol.g);
+		int diffR = abs(col.r - palCol.r);
+		int diffA = abs(col.a - palCol.a);
+
+		int combDiff = diffB*diffB + diffG*diffG + diffR*diffR + diffA*diffA;
+		if(combDiff < bestMatchDiff)
+		{
+			bestMatchDiff = combDiff;
+			bestMatchIndex = i;
+		}
+	}
+	
+	return bestMatchIndex;
+}
 
 
 } } // namespace wg::PixelTool

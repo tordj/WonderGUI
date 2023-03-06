@@ -40,7 +40,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static MetalSurfaceFactory_p	create( int flags = SurfaceFlag::Static ) { return MetalSurfaceFactory_p(new MetalSurfaceFactory(flags)); }
+		static MetalSurfaceFactory_p	create() { return MetalSurfaceFactory_p(new MetalSurfaceFactory()); }
 
 		//.____ Identification __________________________________________
 
@@ -53,17 +53,21 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-        Surface_p    createSurface(const Surface::Blueprint& blueprint) override;
-        Surface_p    createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch = 0) override;
-        Surface_p    createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch = 0,
-                                   const PixelDescription* pPixelDescription = nullptr) override;
-        Surface_p    createSurface(const Surface::Blueprint& blueprint, Surface* pOther) override;
+		Surface_p	createSurface(const Surface::Blueprint& blueprint) override;
+		Surface_p	createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch) override;
+
+		Surface_p	createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+								  const PixelDescription2& pixelDescription, int pitch = 0,
+								  const Color8 * pPalette = nullptr) override;
+
+		Surface_p	createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+								  PixelFormat format = PixelFormat::Undefined, int pitch = 0,
+								  const Color8 * pPalette = nullptr) override;
         
 	protected:
-		MetalSurfaceFactory(int flags) : m_flags(flags) {}
+		MetalSurfaceFactory() {}
 		~MetalSurfaceFactory() {}
 
-		int m_flags;
 	};
 
 }

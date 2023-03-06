@@ -75,12 +75,12 @@ namespace wg
 	GfxStreamSurface::GfxStreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp) : Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod() )
 	{
 		m_pEncoder = pEncoder;
-		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
+		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pPixelDescription->bits / 8;
 		m_bDynamic = bp.dynamic;
 
 		m_inStreamId = _sendCreateSurface(bp);
 
-		if (m_pixelDescription.bits <= 8 || bp.buffered)
+		if (m_pPixelDescription->bits <= 8 || bp.buffered)
 		{
 			m_pBlob = Blob::create(m_pitch*bp.size.h + (bp.palette ? 1024 : 0) );
 			std::memset(m_pBlob->data(), 0, m_pitch*bp.size.h);
@@ -97,7 +97,7 @@ namespace wg
 		}
 		else
 		{
-			if (m_pixelDescription.A_bits == 0)
+			if (m_pPixelDescription->A_mask == 0)
 				m_pAlphaLayer = nullptr;
 			else
 			{
@@ -117,7 +117,7 @@ namespace wg
 
 		m_inStreamId = _sendCreateSurface(bp);
 
-		if (m_pixelDescription.bits <= 8 || bp.buffered)
+		if (m_pPixelDescription->bits <= 8 || bp.buffered)
 		{
 			m_pBlob = pBlob;
 			m_pPalette = const_cast<Color8*>(bp.palette);
@@ -125,7 +125,7 @@ namespace wg
 		}
 		else
 		{
-			if (m_pixelDescription.A_bits == 0)
+			if (m_pPixelDescription->A_mask == 0)
 				m_pAlphaLayer = nullptr;
 			else
 				m_pAlphaLayer = _genAlphaLayer((char*)pBlob->data(), pitch);
@@ -139,7 +139,7 @@ namespace wg
 		: Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod())
 	{
 		m_pEncoder = pEncoder;
-		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
+		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pPixelDescription->bits / 8;
 		m_bDynamic = bp.dynamic;
 
 		m_inStreamId = _sendCreateSurface(bp);
@@ -154,13 +154,13 @@ namespace wg
 		int srcPitchAdd = pitch == 0 ? 0 : pitch - pixelDescription.bits/8 * m_size.w;
 
 		PixelTools::copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, srcPitchAdd,
-							 (uint8_t*) m_pBlob->data(), m_pixelDescription.format, m_pitch - m_pixelDescription.bits/8 * m_size.w, pPalette,
+							 (uint8_t*) m_pBlob->data(), m_pixelFormat, m_pitch - m_pPixelDescription->bits/8 * m_size.w, pPalette,
 							 const_cast<Color8*>(bp.palette), 256, dstPaletteEntries, 256);
 		
 		_sendPixels(m_pEncoder, m_size, (uint8_t*) m_pBlob->data(), m_pitch);
 		m_pEncoder->flush();
 
-		if (m_pixelDescription.bits <= 8 || bp.buffered)
+		if (m_pPixelDescription->bits <= 8 || bp.buffered)
 		{
 			if (bp.palette)
 			{
@@ -176,7 +176,7 @@ namespace wg
 		{
 			m_pBlob = nullptr;
 
-			if (m_pixelDescription.A_bits == 0)
+			if (m_pPixelDescription->A_mask == 0)
 				m_pAlphaLayer = nullptr;
 			else
 				m_pAlphaLayer = _genAlphaLayer((char*)pPixels, pitch);
@@ -187,7 +187,7 @@ namespace wg
 		: Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod())
 	{
 		m_pEncoder = pEncoder;
-		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
+		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pPixelDescription->bits / 8;
 		m_bDynamic = bp.dynamic;
 
 		m_inStreamId = _sendCreateSurface(bp);
@@ -201,13 +201,13 @@ namespace wg
 		int srcPitchAdd = pitch == 0 ? 0 : pitch - Util::pixelFormatToDescription2(srcFormat).bits/8 * m_size.w;
 
 		PixelTools::copyPixels(m_size.w, m_size.h, pPixels, srcFormat, srcPitchAdd,
-							 (uint8_t*) m_pBlob->data(), m_pixelDescription.format, m_pitch - m_pixelDescription.bits/8 * m_size.w, pPalette,
+							 (uint8_t*) m_pBlob->data(), m_pixelFormat, m_pitch - m_pPixelDescription->bits/8 * m_size.w, pPalette,
 							 const_cast<Color8*>(bp.palette), 256, dstPaletteEntries, 256);
 		
 		_sendPixels(m_pEncoder, m_size, (uint8_t*) m_pBlob->data(), m_pitch);
 		m_pEncoder->flush();
 
-		if (m_pixelDescription.bits <= 8 || bp.buffered)
+		if (m_pPixelDescription->bits <= 8 || bp.buffered)
 		{
 			if (bp.palette)
 			{
@@ -223,7 +223,7 @@ namespace wg
 		{
 			m_pBlob = nullptr;
 
-			if (m_pixelDescription.A_bits == 0)
+			if (m_pPixelDescription->A_mask == 0)
 				m_pAlphaLayer = nullptr;
 			else
 				m_pAlphaLayer = _genAlphaLayer((char*)pPixels, pitch);
@@ -254,18 +254,18 @@ namespace wg
 
 		if (m_pBlob)
 		{
-			buf.pixels = (uint8_t*) m_pBlob->data() + m_pitch * rect.y + rect.x * m_pixelDescription.bits / 8;
+			buf.pixels = (uint8_t*) m_pBlob->data() + m_pitch * rect.y + rect.x * m_pPixelDescription->bits / 8;
 			buf.palette = m_pPalette;
-			buf.format = m_pixelDescription.format;
+			buf.format = m_pixelFormat;
 			buf.rect = rect;
 			buf.pitch = m_pitch;
 		}
 		else
 		{
-			buf.pitch = ((rect.w + 3) & 0xFFFFFFFC) * m_pixelDescription.bits / 8;
+			buf.pitch = ((rect.w + 3) & 0xFFFFFFFC) * m_pPixelDescription->bits / 8;
 			buf.pixels = new uint8_t[buf.pitch*rect.h];
 			buf.palette = m_pPalette;
-			buf.format = m_pixelDescription.format;
+			buf.format = m_pixelFormat;
 			buf.rect = rect;
 		}
 
@@ -314,7 +314,7 @@ namespace wg
 		}
 		else
 		{
-			buffer.format = m_pixelDescription.format;
+			buffer.format = m_pixelFormat;
 			buffer.palette = m_pPalette;
 			buffer.pitch = m_pitch;
 			buffer.pixels = (uint8_t*) m_pBlob->data();
@@ -345,59 +345,7 @@ namespace wg
 
 		if (m_pBlob)
 		{
-			uint32_t pixel = colorToPixel(color);
-			int w = region.w;
-			int h = region.h;
-			int p = m_pitch;
-			uint8_t * pDest = reinterpret_cast<uint8_t*>(m_pBlob->data()) + region.y * p + region.x*m_pixelDescription.bits / 8;
-
-			switch (m_pixelDescription.bits)
-			{
-			case 8:
-				for (int y = 0; y < h; y++)
-				{
-					for (int x = 0; x < w; x++)
-						pDest[x] = (uint8_t)pixel;
-					pDest += p;
-				}
-				break;
-			case 16:
-				for (int y = 0; y < h; y++)
-				{
-					for (int x = 0; x < w; x++)
-						((uint16_t*)pDest)[x] = (uint16_t)pixel;
-					pDest += p;
-				}
-				break;
-			case 24:
-			{
-				uint8_t one = (uint8_t)pixel;
-				uint8_t two = (uint8_t)(pixel >> 8);
-				uint8_t three = (uint8_t)(pixel >> 16);
-
-				for (int y = 0; y < h; y++)
-				{
-					for (int x = 0; x < w; x++)
-					{
-						pDest[x++] = one;
-						pDest[x++] = two;
-						pDest[x++] = three;
-					}
-					pDest += p - w * 3;
-				}
-				break;
-			}
-			case 32:
-				for (int y = 0; y < h; y++)
-				{
-					for (int x = 0; x < w; x++)
-						((uint32_t*)pDest)[x] = pixel;
-					pDest += p;
-				}
-				break;
-			default:
-				assert(false);
-			}
+			PixelTools::fillBitmap((uint8_t*) m_pBlob->data(), m_pixelFormat, m_pitch, region, color);
 		}
 		else if (m_pAlphaLayer)
 		{
@@ -422,7 +370,7 @@ namespace wg
 		*pEncoder << m_inStreamId;
 		*pEncoder << m_bCanvas;
 		*pEncoder << m_bDynamic;
-		*pEncoder << m_pixelDescription.format;
+		*pEncoder << m_pixelFormat;
 		*pEncoder << m_id;
 		*pEncoder << m_bMipmapped;
 		*pEncoder << m_sampleMethod;
@@ -474,7 +422,7 @@ namespace wg
 		//TODO: Support more than 8 bit alpha.
 
 		uint8_t * pDest = pAlphaLayer;
-		int pixelPitch = m_pixelDescription.bits / 8;
+		int pixelPitch = m_pPixelDescription->bits / 8;
 		for (int y = 0; y < m_size.h; y++)
 		{
 			const char * pPixelAlpha = pSource + y*pitch + pixelPitch -1;
@@ -496,7 +444,7 @@ namespace wg
 		*pEncoder << m_inStreamId;
 		*pEncoder << rect;
 
-		int	pixelSize = m_pixelDescription.bits / 8;
+		int	pixelSize = m_pPixelDescription->bits / 8;
 		int dataSize = rect.w * rect.h * pixelSize;
 
 		const uint8_t * pLine = pSource;

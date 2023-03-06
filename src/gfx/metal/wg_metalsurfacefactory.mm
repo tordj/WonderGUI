@@ -49,24 +49,26 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-    Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint)
-    {
-        return MetalSurface::create(blueprint);
-    }
+	Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint)
+	{
+		return MetalSurface::create(blueprint);
+	}
 
-    Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch)
-    {
-        return MetalSurface::create(blueprint, pBlob, pitch);
-    }
+	Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch)
+	{
+		return MetalSurface::create(blueprint, pBlob, pitch);
+	}
 
-    Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription)
-    {
-        return MetalSurface::create(blueprint, pPixels, pitch, pPixelDescription);
-    }
+	Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+												PixelFormat format, int pitch, const Color8 * pPalette)
+	{
+		return MetalSurface::create(blueprint, pPixels, format, pitch, pPalette);
+	}
 
-    Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Surface* pOther)
-    {
-        return MetalSurface::create( blueprint, pOther );
-    }
+	Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+												const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
+	{
+		return MetalSurface::create(blueprint, pPixels, pixelDescription, pitch, pPalette);
+	}
 
 } // namespace wg

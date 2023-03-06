@@ -878,7 +878,7 @@ namespace wg
 
 			m_pWritePixels = m_pixelBuffer.pixels;
 			
-			m_surfaceBytesLeft = rect.w * rect.h * m_pUpdatingSurface->pixelBytes();
+			m_surfaceBytesLeft = rect.w * rect.h * m_pUpdatingSurface->pixelBits()/8;
 			break;
 		}
 
@@ -887,7 +887,7 @@ namespace wg
             int line = (m_pWritePixels - m_pixelBuffer.pixels) / m_pixelBuffer.pitch;
             int ofs = (m_pWritePixels - m_pixelBuffer.pixels) % m_pixelBuffer.pitch;
 
-            int bytesPerLine = m_pixelBuffer.rect.w * m_pUpdatingSurface->pixelBytes();
+            int bytesPerLine = m_pixelBuffer.rect.w * m_pUpdatingSurface->pixelBits()/8;
             
             int chunkBytesLeft = header.size;
 			

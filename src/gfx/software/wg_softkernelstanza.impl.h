@@ -1963,7 +1963,7 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 
 	if (TILE)
 	{
-		xPitch = pSrcSurf->pixelBytes();
+		xPitch = pSrcSurf->pixelBits()/8;
 		yPitch = pSrcSurf->pitch();
 
 		int ofs = int(pSrc - pSrcSurf->pixels());
@@ -2091,7 +2091,7 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 	}
 
 
-	int srcPixelBytes = pSrcSurf->pixelBytes();
+	int srcPixelBytes = pSrcSurf->pixelBits()/8;
 	int	srcPitch = pSrcSurf->pitch();
 	binalInt srcMax_w = pSrcSurf->pixelSize().w * BINAL_MUL;
 	binalInt srcMax_h = pSrcSurf->pixelSize().h * BINAL_MUL;

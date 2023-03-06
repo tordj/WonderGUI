@@ -46,7 +46,7 @@ public:
 
 	bool init(SizeI canvasSize, PixelFormat canvasFormat)
 	{
-		m_pCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
+		m_pCanvas = SoftSurface::create( WGBP(Surface, _.size = canvasSize, _.format = canvasFormat, _.canvas = true) );
 		m_pDevice = SoftGfxDevice::create();
 		addDefaultSoftKernels(m_pDevice);
 		return true;
@@ -108,14 +108,14 @@ public:
 
 		m_pOutputDevice = SoftGfxDevice::create();
 		addDefaultSoftKernels(m_pOutputDevice);
-		m_pOutputCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
+		m_pOutputCanvas = SoftSurface::create( { .canvas = true, .format = canvasFormat, .size = canvasSize });
 		m_pOutputDevice->defineCanvas(CanvasRef::Default, m_pOutputCanvas);
 		m_pStreamPlayer = GfxStreamPlayer::create(m_pOutputDevice, m_pOutputDevice->surfaceFactory());
 
 		m_pStreamEncoder = GfxStreamEncoder::create( ComponentPtr( m_pStreamPlayer, m_pStreamPlayer->input) );
 
 		m_pStreamDevice = GfxStreamDevice::create(m_pStreamEncoder);
-		m_pStreamCanvas = GfxStreamSurface::create(m_pStreamEncoder, canvasSize, canvasFormat, SurfaceFlag::Canvas);
+		m_pStreamCanvas = GfxStreamSurface::create(m_pStreamEncoder, { .canvas = true, .format = canvasFormat, .size = canvasSize } );
 		m_pStreamDevice->defineCanvas(CanvasRef::Default, m_pStreamCanvas);
 
 		return true;

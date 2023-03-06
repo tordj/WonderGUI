@@ -47,8 +47,14 @@ namespace wg
 
 		static SoftSurface_p	create(const Blueprint& blueprint);
 		static SoftSurface_p	create(const Blueprint& blueprint, Blob* pBlob, int pitch = 0 );
-		static SoftSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format = PixelFormat::Undefined, int pitch = 0, const Color8 * pPalette = nullptr);
-		static SoftSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr);
+		
+		static SoftSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
+									   PixelFormat format = PixelFormat::Undefined, int pitch = 0,
+									   const Color8 * pPalette = nullptr);
+		
+		static SoftSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
+									   const PixelDescription2& pixelDescription, int pitch = 0,
+									   const Color8 * pPalette = nullptr);
 
 		static SoftSurface_p	createInPlace(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0);
 

@@ -172,7 +172,7 @@ bool MyApp::saveBitmapFont()
 		{
 			case 0:				// 8-bit SURF (uncompressed)
 			{
-				auto pCopy = m_pBitmapFontSurface->convert(PixelFormat::BGRA_8);
+				auto pCopy = m_pBitmapFontSurface->convert( { .format = PixelFormat::BGRA_8 } );
 				
 				auto pixbuf = pCopy->allocPixelBuffer();
 				pCopy->pushPixels(pixbuf);
@@ -191,7 +191,7 @@ bool MyApp::saveBitmapFont()
 				pCopy->pullPixels(pixbuf);
 				pCopy->freePixelBuffer(pixbuf);
 				
-				auto pIndexedSurface = pCopy->convert(PixelFormat::Index_8_linear);
+				auto pIndexedSurface = pCopy->convert( { .format = PixelFormat::Index_8_linear } );
 				if( pIndexedSurface )
 				{
 					std::string path = outputPath + ".surf";
@@ -229,8 +229,7 @@ bool MyApp::saveBitmapFont()
 				auto pixbuf = m_pBitmapFontSurface->allocPixelBuffer();
 				m_pBitmapFontSurface->pushPixels(pixbuf);
 
-				PixelDescription pixdesc;
-				Util::pixelFormatToDescription(pixbuf.format, pixdesc);
+				PixelDescription2 pixdesc = Util::pixelFormatToDescription2(pixbuf.format);
 
 				auto pSDLSurf = SDL_CreateRGBSurfaceFrom(pixbuf.pixels, pixbuf.rect.w, pixbuf.rect.h, pixdesc.bits, pixbuf.pitch, pixdesc.R_mask, pixdesc.G_mask, pixdesc.B_mask, pixdesc.A_mask);
 

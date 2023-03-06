@@ -104,7 +104,7 @@ namespace wg
 		auto pixbuf = pSurface->allocPixelBuffer();
 
 
-		int lineBytes = header.width * pSurface->pixelBytes();
+		int lineBytes = header.width * pSurface->pixelBits()/8;
 
 		if( pixbuf.pitch > lineBytes )
 		{
@@ -164,7 +164,7 @@ namespace wg
 		Surface::Blueprint bp = _blueprintFromHeader(&header);
 		if (_addFlagsFromOtherBlueprint(bp, _bp) != 0)
 		{
-			GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Provided blueprint can not alter format, scale or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Provided blueprint can not alter size, format or palette of loaded surface but have one or more of these parameters set.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			return nullptr;
 		}
 
@@ -187,7 +187,7 @@ namespace wg
 
 		auto pixbuf = pSurface->allocPixelBuffer();
 
-		int lineBytes = header.width * pSurface->pixelBytes();
+		int lineBytes = header.width * pSurface->pixelBits()/8;
 
 		if( pixbuf.pitch > lineBytes )
 		{
@@ -261,9 +261,13 @@ int SurfaceReader::_addFlagsFromOtherBlueprint(Surface::Blueprint& dest, const S
 	if (extraFlags.sampleMethod != SampleMethod::Undefined)
 		dest.sampleMethod = extraFlags.sampleMethod;
 
-	if (extraFlags.scale != 64)
+	if (extraFlags.scale != 0)
+		dest.scale = extraFlags.scale;
+
+	if (!extraFlags.size.isEmpty())
 		errorCode = 3;
 
+	
 	if (extraFlags.tiling)
 		dest.tiling = true;
 

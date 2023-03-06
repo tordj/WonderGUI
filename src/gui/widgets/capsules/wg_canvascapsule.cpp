@@ -160,8 +160,8 @@ namespace wg
 
 		// Make sure we have right scale
 
-		if (m_pCanvas->scale() != m_scale)
-			m_pCanvas->setScale(m_scale);
+//		if (m_pCanvas->scale() != m_scale)
+//			m_pCanvas->setScale(m_scale);
 
 		// Generate the clip buffer
 

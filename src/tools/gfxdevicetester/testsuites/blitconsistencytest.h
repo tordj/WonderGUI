@@ -38,9 +38,9 @@ public:
         if (!m_pGrid)
             return false;
 
-		m_pPaletteBilinear = pDevice->surfaceFactory()->createSurface({ .sampleMethod = SampleMethod::Bilinear }, m_pPalette);
-		m_pFrameBilinear = pDevice->surfaceFactory()->createSurface({ .sampleMethod = SampleMethod::Bilinear }, m_pFrame);
-		m_pGridBilinear = pDevice->surfaceFactory()->createSurface({ .sampleMethod = SampleMethod::Bilinear }, m_pGrid);
+		m_pPaletteBilinear = m_pPalette->convert( { .sampleMethod = SampleMethod::Bilinear }, pDevice->surfaceFactory() );
+		m_pFrameBilinear = m_pFrame->convert( { .sampleMethod = SampleMethod::Bilinear }, pDevice->surfaceFactory() );
+		m_pGridBilinear = m_pGrid->convert( { .sampleMethod = SampleMethod::Bilinear }, pDevice->surfaceFactory() );
 
 		return true;
 	}

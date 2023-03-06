@@ -177,13 +177,13 @@ namespace wg
 		{
 			bool				buffered = false;
 			bool				canvas = false;
-			const Color8* palette = nullptr;
+			const Color8* 		palette = nullptr;
 			bool				dynamic = false;
 			PixelFormat			format = PixelFormat::Undefined;
 			int					identity = 0;
 			bool				mipmap = false;
 			SampleMethod		sampleMethod = SampleMethod::Undefined;
-			int					scale = 64;
+			int					scale = 0;
 			SizeI				size;					// Mandatory, except when creating from other surface.
 			bool				tiling = false;
 		};
@@ -206,7 +206,6 @@ namespace wg
 		inline pts			pointWidth() const;
 		inline pts			pointHeight() const;
 
-		virtual void		setScale(int scale);		// Why do we need setScale? Should preferably only be in blueprint.
 		virtual int			scale() const;				// Need to be virtual for PluginSurface as long as we have setScale().
 
 
@@ -220,14 +219,11 @@ namespace wg
 
 		virtual int			alpha( CoordSPX coord ) = 0;	///< @brief Get Alpha value of subpixel at specified coordinate.
 
-		virtual	uint32_t	colorToPixel( const HiColor& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
-		virtual	HiColor		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
-
 		inline const Color8* palette() const;
 
-		inline const PixelDescription*	pixelDescription() const; ///< @brief Get the pixel description for the surface.
+		inline const PixelDescription2*	pixelDescription() const; ///< @brief Get the pixel description for the surface.
 		inline PixelFormat	pixelFormat() const;
-		inline int			pixelBytes() const;
+		inline int			pixelBits() const;
 
 		inline bool			isOpaque() const;				///< @brief Check if surface is guaranteed to be entirely opaque.
 		inline bool			canBeCanvas() const;				///< @brief Check if surface can be used as canvas.
@@ -253,7 +249,7 @@ namespace wg
 		virtual bool		fill(const RectI& region, HiColor color );			///< @brief Fill section of surface with specified color
 		virtual bool		copy( CoordI dest, Surface * pSrcSurf, const RectI& srcRect );	///< @brief Copy block of graphics from other surface
 		virtual bool		copy( CoordI dest, Surface * pSrcSurf );		///< @brief Copy other surface as a block
-		virtual Surface_p	convert(PixelFormat format, SurfaceFactory* pFactory = nullptr);
+		virtual Surface_p	convert( const Surface::Blueprint& bp, SurfaceFactory* pFactory = nullptr);
 
 		//.____ Misc _________________________________________________________
 
@@ -279,16 +275,16 @@ namespace wg
 		static const uint8_t *	s_pixelConvTabs[9];
 
 		void				_notifyObservers(int nRects, const RectSPX* pRects);
-		bool 				_copy(const RectI& dstRect, const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const Color8 * ppalette = nullptr );
 		int					_alpha(CoordSPX coord, const PixelBuffer& buffer);
 
-        static bool         _isBlueprintValid( const Blueprint& bp, SizeI maxSize, Surface * pOther = nullptr );
+        static bool         _isBlueprintValid( const Blueprint& bp, SizeI maxSize);
 
 		int                 m_id = 0;
 
  		int					m_scale = 64;
 
-		PixelDescription	m_pixelDescription;
+		const PixelDescription2*	m_pPixelDescription;
+		PixelFormat			m_pixelFormat;
 		SizeI				m_size;								// Width and height in pixels.
 
 		SampleMethod		m_sampleMethod = SampleMethod::Nearest;
@@ -428,7 +424,8 @@ namespace wg
 	{
 		//TODO: Indexed can also be opaque. Check their alpha on init instead?
 
-		return m_pixelDescription.A_bits == 0 && !m_pixelDescription.bIndexed ? true : false;
+		return 	m_pPixelDescription->A_mask == 0 && (m_pPixelDescription->type == PixelFmt::Chunky ||
+		m_pPixelDescription->type == PixelFmt::Chunky_BE );
 	}
 
 	//____ canBeCanvas() ______________________________________________________
@@ -445,25 +442,26 @@ namespace wg
 		return m_pPalette;
 	}
 
-	//____ pixelDescription() _________________________________________________
-
-	const PixelDescription*	Surface::pixelDescription() const
-	{
-		return &m_pixelDescription;
-	}
-
 	//____ pixelFormat() ______________________________________________________
 
 	PixelFormat Surface::pixelFormat() const
 	{
-		return m_pixelDescription.format;
+		return m_pixelFormat;
 	}
 
-	//____ pixelBytes() _______________________________________________________
+	//____ pixelBits() ______________________________________________________
 
-	int Surface::pixelBytes() const
+	int Surface::pixelBits() const
 	{
-		return m_pixelDescription.bits / 8;
+		return m_pPixelDescription->bits;
+	}
+
+
+	//____ pixelDescription() _________________________________________________
+
+	const PixelDescription2* Surface::pixelDescription() const
+	{
+		return m_pPixelDescription;
 	}
 
 	//____ allocPixelBuffer() __________________________________________________

@@ -195,20 +195,6 @@ namespace wg
 		Undefined			// Needs to be last! Default to Bilinear if it is accelerated, otherwise Nearest.
 	};
 
-
-	//____ SurfaceFlag ____________________________________________________________
-
-	namespace SurfaceFlag
-	{
-		const int Static = 0;		// No content access/modification expected
-		const int Dynamic = 1;		// Expect content to be accessed and/or modified
-		const int Buffered = 2;	    // Hardware accelerated surface is buffered in memory for faster allocPixelBuffer() and pushPixels() calls.
-		const int Mipmapped = 4;	// Surface should be Mipmapped. Better downscaling, but takes more memory and time to initialize and unlock Write-access.
-		const int Scale200 = 8;
-		const int Canvas = 16;		// Surface may be used as Canvas.
-		const int Bilinear = 32;	// Force SampleMethod::Bilinear.
-	};
-
 	//____ CanvasInit ______________________________________________________________
 
 	enum class CanvasInit 		//. autoExtras
@@ -246,96 +232,24 @@ namespace wg
 		RGB_565_bigendian,	///< 3 high bits of green, 5 bits of blue, 5 bits of red and 3 low bits of green in exactly that order in memory.
 
 		Alpha_8,			///< 8 bits of alpha only.
+	};
 
 //		Index_16,			///< 16 bits of index into the palette.
 //		Index_16_sRGB,		///< 16 bits of index into an sRGB palette.
 //		Index_16_linear,	///< 16 bits of index into a linear palette.
-	};
+		
+//		Bitplanes_1,
+//		Bitplanes_2,
+//		Bitplanes_4,
+//		Bitplanes_5,
+//		Bitplanes_8,
 
+//		Bitplanes_1_A1,
+//		Bitplanes_2_A1,
+//		Bitplanes_4_A1,
+//		Bitplanes_5_A1,
+//		Bitplanes_8_A1,
 
-	//____ PixelDescription __________________________________________________________
-	/**
-	 * @brief Describes the format of a pixel.
-	 *
-	 * Describes the format of a pixel.
-	 *
-	 * The format of the pixel is described in three ways by a PixelDescription object:
-	 *
-	 * First a PixelFormat enum that contains predefined values for common pixel formats.
-	 * This allows for human readable information and quick lockups.
-	 *
-	 * Secondly a set of variables containing the number of bits for each pixel and the
-	 * individual red, green, blue and alpha channels. This allows for quickly and easily
-	 * checking the size of a pixel and the color depths and presence and depth of the alpha channel.
-	 *
-	 * Thirdly a set of mask, shift and loss variables for each individual channel, specifies the position
-	 * of each channel and allows for quick conversion to and from the default 32-bit RGBA format used by Color.
-	 *
-	 * If a pixel format can not be fully described by a PixelDescription object, the member type is set to Unknown.
-	 *
-	 * As long as the type member is not set to Unknown, you can extract the value of any channel of a
-	 * pixel by applying the mask and shift variables. I.e. to extract the value of red from a pixel
-	 * as an 8-bit value in the range 0-255, you use the formula:
-	 *
-	 * redValue = ((pixel & R_mask) >> R_shift) << R_loss
-	 *
-	 * Thus you can convert any specified pixel type to a Color structure using the following routine:
-	 *
-	 * uint32_t	pixel;
-	 * PixelDescription * pFormat;
-	 *
-	 * 	Color col( ((pixel & pFormat->R_mask) >> pFormat->R_shift) << pFormat->R_loss,
-	 *			   ((pixel & pFormat->G_mask) >> pFormat->G_shift) << pFormat->G_loss,
-	 *			   ((pixel & pFormat->B_mask) >> pFormat->B_shift) << pFormat->B_loss,
-	 *			   ((pixel & pFormat->A_mask) >> pFormat->A_shift) << pFormat->A_loss );
-	 *
-	 * To convert a Color object to a pixel value you can use:
-	 *
-	 * Color color;
-	 * PixelDescription * pFormat;
-	 *
-	 * 	uint32_t pix = ((color.r >> pFormat->R_loss) << pFormat->R_shift) |
-	 *				   ((color.g >> pFormat->G_loss) << pFormat->G_shift) |
-	 *				   ((color.b >> pFormat->B_loss) << pFormat->B_shift) |
-	 *				   ((color.a >> pFormat->A_loss) << pFormat->A_shift);
-	 *
-	 * This is essentially what the default implementation for Surface::colorToPixel() and Surface::pixelToColor() does.
-	 *
-	 **/
-
-
-	struct PixelDescription
-	{
-	public:
-		//.____ Properties _____________________________________________________
-
-		PixelFormat	format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
-		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
-		bool		bIndexed;		///< True if pixels are index into palette, no RGB values in pixel.
-		bool		bLinear;		///< True if RGB values are linear (as opposed to in sRGB format, e.g. logarithmic with gamma 2.2).
-		bool 		bBigEndian;		///< Set if 16- or 32-bit pixel is in big-endian format.
-
-		uint32_t	R_mask;			///< bitmask for getting the red bits out of the pixel
-		uint32_t	G_mask;			///< bitmask for getting the green bits out of the pixel
-		uint32_t	B_mask;			///< bitmask for getting the blue bits out of the pixel
-		uint32_t	A_mask;			///< bitmask for getting the alpha bits out of the pixel
-
-		uint8_t		R_shift;		///< amount to shift the red bits to the right to get the value.
-		uint8_t		G_shift;		///< amount to shift the green bits to the right to get the value.
-		uint8_t		B_shift;		///< amount to shift the blue bits to the right to get the value.
-		uint8_t		A_shift;		///< amount to shift the alpha bits to the right to get the value.
-
-		uint8_t		R_loss;			///< amount to shift the red bits to the right to get the value.
-		uint8_t		G_loss;			///< amount to shift the green bits to the right to get the value.
-		uint8_t		B_loss;			///< amount to shift the blue bits to the right to get the value.
-		uint8_t		A_loss;			///< amount to shift the alpha bits to the right to get the value.
-
-
-		uint8_t	R_bits;				///< number of bits for red in the pixel
-		uint8_t	G_bits;				///< number of bits for green in the pixel
-		uint8_t	B_bits;				///< number of bits for blue in the pixel
-		uint8_t	A_bits;				///< number of bits for alpha in the pixel
-	};
 
 	//____ PixelFmt _________________________________________________________
 

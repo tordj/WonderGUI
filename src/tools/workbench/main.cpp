@@ -340,7 +340,13 @@ int main(int argc, char** argv)
 
 		Blob_p pBlob = Blob::create(pScreen->pixels, nullptr);
 
-		pCanvas = SoftSurface::create( SizeI(width, height), type, pBlob, pScreen->pitch, SurfaceFlag::Canvas);
+		pCanvas = SoftSurface::create(WGBP(Surface,
+											_.size = SizeI(width, height),
+											_.format = type,
+											_.canvas = true ),
+									  pBlob,
+									  pScreen->pitch );
+		
 		auto pSoftDevice = SoftGfxDevice::create();
 		addDefaultSoftKernels(pSoftDevice);
 		pSoftDevice->defineCanvas(CanvasRef::Default, pCanvas);

@@ -223,12 +223,10 @@ namespace wg
 		int		gcd(int a, int b);
 
 
-		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );
-		PixelFormat	pixelDescriptionToFormat(const PixelDescription& description);
-
 		const PixelDescription2& pixelFormatToDescription2( PixelFormat format );
 		PixelFormat	pixelDescription2ToFormat(const PixelDescription2& description);
 
+		PixelFormat translatePixelType( PixelFormat type);	// Translate pixel types without colorSpace info to ones with.
 	
 
 		uint32_t mostSignificantBit(uint32_t value);

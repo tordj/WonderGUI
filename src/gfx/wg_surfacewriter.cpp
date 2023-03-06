@@ -72,7 +72,7 @@ namespace wg
 		
 		// Write pixels
 		
-		int lineBytes = header.width * pSurface->pixelBytes();
+		int lineBytes = header.width * pSurface->pixelBits()/8;
 		auto pixbuf = pSurface->allocPixelBuffer();
 		pSurface->pushPixels(pixbuf);
 		
@@ -133,7 +133,7 @@ namespace wg
 		
 		// Write pixels
 		
-		int lineBytes = header.width * pSurface->pixelBytes();
+		int lineBytes = header.width * pSurface->pixelBits()/8;
 		auto pixbuf = pSurface->allocPixelBuffer();
 		pSurface->pushPixels(pixbuf);
 		
@@ -225,7 +225,7 @@ namespace wg
 		
 		pHeader->headerBytes = headerBytes;
 		
-		int lineBytes = bp.size.w * pSurface->pixelBytes();
+		int lineBytes = bp.size.w * pSurface->pixelBits()/8;
 
 		pHeader->pixelBytes = lineBytes * bp.size.h;
 		pHeader->extraDataBytes = extraDataSize;

@@ -88,12 +88,6 @@ wg_pts wg_surfacePointHeight(wg_obj surface)
 }
 
 
-void wg_setSurfaceScale(wg_obj surface, int scale)
-{
-	getPtr(surface)->setScale(scale);
-}
-
-
 int wg_getSurfaceScale(wg_obj surface)
 {
 	return getPtr(surface)->scale();
@@ -125,19 +119,6 @@ int wg_surfaceAlpha(wg_obj surface, wg_coordSPX coord)
 }
 
 
-uint32_t wg_colorToPixel(wg_obj surface, const wg_color* color)
-{
-	return getPtr(surface)->colorToPixel(*(HiColor*)&color);
-}
-
-
-wg_color wg_pixelToColor(wg_obj surface, uint32_t pixel)
-{
-	auto color = getPtr(surface)->pixelToColor(pixel);
-	return *(wg_color*)&color;
-}
-
-
 const wg_color8* wg_surfacePalette(wg_obj surface)
 {
 	return (const wg_color8 *) getPtr(surface)->palette();
@@ -156,9 +137,9 @@ wg_pixelFormat wg_surfacePixelFormat(wg_obj surface)
 }
 
 
-int wg_surfacePixelBytes(wg_obj surface)
+int wg_surfacePixelBits(wg_obj surface)
 {
-	return getPtr(surface)->pixelBytes();
+	return getPtr(surface)->pixelBits();
 }
 
 

@@ -79,13 +79,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setScale() _________________________________________________________
-
-	void PluginSurface::setScale(int scale)
-	{
-		PluginCalls::surface->setSurfaceScale(m_cSurface, scale);
-	}
-
 	//____ scale() ____________________________________________________________
 
 	int PluginSurface::scale() const

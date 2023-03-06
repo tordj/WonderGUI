@@ -59,9 +59,16 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static GlSurface_p	create(const Blueprint& blueprint);
-		static GlSurface_p	create(const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
-		static GlSurface_p	create(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
-		static GlSurface_p	create(const Blueprint& blueprint, Surface* pOther);
+		static GlSurface_p	create(const Blueprint& blueprint, Blob* pBlob, int pitch = 0 );
+		
+		static GlSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
+									   PixelFormat format = PixelFormat::Undefined, int pitch = 0,
+									   const Color8 * pPalette = nullptr);
+		
+		static GlSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
+									   const PixelDescription2& pixelDescription, int pitch = 0,
+									   const Color8 * pPalette = nullptr);
+
 
 		//.____ Identification __________________________________________
 
@@ -96,19 +103,12 @@ namespace wg
         static unsigned int totalTexturePixels() { return g_texturePixels; }
         static unsigned int totalBackingPixels() { return g_backingPixels; }
 
-		//.____ Deprecated ____________________________________________________
-
-		static GlSurface_p	create(SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
-		static GlSurface_p	create(SizeI size, PixelFormat format, Blob* pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
-		static GlSurface_p	create(SizeI size, PixelFormat format, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color8* pPalette = nullptr);
-		static GlSurface_p	create(Surface* pOther, int flags = SurfaceFlag::Static);
-
 
 	private:
 		GlSurface(const Blueprint& blueprint);
-		GlSurface(const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
-		GlSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
-		GlSurface(const Blueprint& blueprint, Surface* pOther);
+		GlSurface(const Blueprint& blueprint, Blob* pBlob, int pitch);
+		GlSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette);
+		GlSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
 
 		~GlSurface();
 

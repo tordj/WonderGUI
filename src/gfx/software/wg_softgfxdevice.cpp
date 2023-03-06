@@ -2509,7 +2509,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 	{
 		const SoftSurface * pSource = m_pBlitSource;
 
-		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
+		int srcPixelBytes = pSource->m_pPixelDescription->bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
 		Pitches pitches;
@@ -2531,7 +2531,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 	{
 		SoftSurface * pSource = m_pBlitSource;
 
-		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
+		int srcPixelBytes = pSource->m_pPixelDescription->bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
 		Pitches pitchesPass1, pitchesPass2;
@@ -2703,7 +2703,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		//
 
 		SampleMethod	sampleMethod = m_pBlitSource->sampleMethod();
-		PixelFormat		srcFormat = m_pBlitSource->m_pixelDescription.format;
+		PixelFormat		srcFormat = m_pBlitSource->m_pixelFormat;
 		PixelFormat		dstFormat = m_pRenderLayerSurface->pixelFormat();
 
 		BlendMode		blendMode = m_blendMode;
@@ -2732,7 +2732,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		auto pPixelDescSource = m_pBlitSource->pixelDescription();
 		auto pPixelDescDest = m_pRenderLayerSurface->pixelDescription();
 		
-		if ((pPixelDescDest->bLinear || dstFormat == PixelFormat::Alpha_8) && (pPixelDescSource->bLinear || srcFormat == PixelFormat::Alpha_8) )
+		if ((pPixelDescDest->colorSpace == ColorSpace::Linear || dstFormat == PixelFormat::Alpha_8) && (pPixelDescSource->colorSpace == ColorSpace::Linear || srcFormat == PixelFormat::Alpha_8) )
 		{
 			m_pStraightBlitFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(EdgeOp::None)];
 			m_pStraightTileFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(EdgeOp::Tile)];

@@ -235,8 +235,14 @@ int main ( int argc, char** argv )
 	// Setup streaming
 	//------------------------------------------------------
     
-    auto pStreamOutputCanvas1 = SoftSurface::create( {240,240}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
-	auto pStreamOutputCanvas2 = SoftSurface::create( {240,240}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
+	auto pStreamOutputCanvas1 = SoftSurface::create( WGBP(Surface,
+														  _.size = {240,240},
+														  _.format = PixelFormat::BGRA_8,
+														  _.canvas = true) );
+	auto pStreamOutputCanvas2 = SoftSurface::create( WGBP(Surface,
+														  _.size = {240,240},
+														  _.format = PixelFormat::BGRA_8,
+														  _.canvas = true) );
 
 	pGfxDevice->defineCanvas(CanvasRef::Canvas_1, pStreamOutputCanvas1);
 	pGfxDevice->defineCanvas(CanvasRef::Canvas_2, pStreamOutputCanvas2);

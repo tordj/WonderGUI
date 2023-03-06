@@ -29,7 +29,9 @@ public:
 		if (!m_pSplash)
 			return false;
 
-		m_pAlphaOnly = pDevice->surfaceFactory()->createSurface({ 400,400 }, PixelFormat::Alpha_8);
+		m_pAlphaOnly = pDevice->surfaceFactory()->createSurface( WGBP(Surface,
+																	  _.size = { 400,400 },
+																	  _.format = PixelFormat::Alpha_8 ));
 
 		RectI	copySource = RectI(m_pClockFace->pixelSize()).center({ 400,400 });
 		m_pAlphaOnly->copy({ 0,0 },m_pClockFace, copySource );

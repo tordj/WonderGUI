@@ -81,10 +81,13 @@ namespace wg
 		PixelFormat format = bp.format == PixelFormat::Undefined ? defaultPixelFormat : bp.format;
 		SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? defaultSampleMethod : bp.sampleMethod;
 
-		Util::pixelFormatToDescription(format, m_pixelDescription);
+		format = Util::translatePixelType(format);
+
+		m_pixelFormat	= format;
+		m_pPixelDescription = &Util::pixelFormatToDescription2(format);
 
 		m_size			= bp.size;
-		m_scale			= bp.scale;
+		m_scale			= bp.scale == 0 ? 64 : bp.scale;
 		m_sampleMethod	= method;
 		m_bTiling		= bp.tiling;
         m_bCanvas		= bp.canvas;
@@ -107,155 +110,11 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setScale() _________________________________________________________
-
-	void Surface::setScale(int scale)
-	{
-		m_scale = scale;
-	}
-
 	//____ scale() ____________________________________________________________
 
 	int Surface::scale() const
 	{
 		return m_scale;
-	}
-
-	//____ setTiling() ________________________________________________________
-	/**
-	 * @brief Set whether Surface should be tiling.
-	 * 
-	 * Set whether Surface should be tiling, e.g. if reads outside the Surface
-	 * should "loop back over the surface" or result in transparency.
-	 * 
-	 * @param bTiling	True if Surface should be tiling, otherwise false.
-	 * 
-	 * @return True if successful.
-	 * 
-	 * A Surface needs to be tiling in order for GfxDevice::tile() and similar functions
-	 * to work properly.
-	 * 
-	 * It also affects other blit methods such as rotScaleBlit() which will either
-	 * fill the destination with a tiled version or just produce one transformed copy with 
-	 * transparency around.
-	 * 
-	 * A Surface set to tiling can be used in normal blit operatons as well, but 
-	 * colors from one edge tend to bleed to the one across when using SampleMethod::Bilinear
-	 * since they are considered neighbors.
-	 * 
-	 * Also worth noting is that SoftSurface puts extra restrictions on tiling Surfaces -
-	 * their length and height must be a power of two. Calling this method to enable tiling for 
-	 * a SoftSurface where not both dimension are a power of two will fail.
-	 */
-
-	//____ colorToPixel() ____________________________________________________________
-	/**
-	 * Convert specified color to a pixel in surface's native format.
-	 *
-	 * @param col	Color to be converted to pixel
-	 *
-	 * Converts the specified color to a raw pixel in surface's native format. If the native
-	 * pixel format is less than 32 bits, the upper bits of the return value are cleared.
-	 * The pixel value returned is the one closes resembling the specified color, given the
-	 * limitations of the surfaces native format.
-	 *
-	 * The alpha channel of the color value is ignored if surface does not contain an alpha channel.
-	 *
-	 * Note: This call is very slow on indexed surfaces (Index_8, Index_8_sRGB etc), since the whole palette
-	 * needs to be searched for the closest color with quite some math on every entry.
-	 *
-	 * @return Pixel value in surface's native format that closest resembles specified color.
-	 *
-	 **/
-	uint32_t Surface::colorToPixel( const HiColor& color ) const
-	{
-		uint32_t pix;
-
-		uint8_t* pPackTab = m_pixelDescription.bLinear ? HiColor::packLinearTab : HiColor::packSRGBTab;
-		Color8 col(pPackTab[color.r], pPackTab[color.g], pPackTab[color.b], HiColor::packLinearTab[color.a]);
-
-		if (m_pixelDescription.bIndexed )
-		{
-			pix = 0;                                                    // Just to avoid compiler warning.
-			int closestValue = std::numeric_limits<int>::max();
-			for (int i = 0; i < 255; i++)
-			{
-				int rDiff = m_pPalette[i].r - col.r;
-				int gDiff = m_pPalette[i].g - col.g;
-				int bDiff = m_pPalette[i].b - col.b;
-				int aDiff = m_pPalette[i].a - col.a;
-				int value = rDiff*rDiff + gDiff*gDiff + bDiff*bDiff + aDiff*aDiff;
-				if (value < closestValue)
-				{
-					closestValue = value;
-					pix = i;
-					if (closestValue == 0)
-						break;
-				}
-			}
-		}
-		else
-		{
-			pix =	((col.r >> m_pixelDescription.R_loss) << m_pixelDescription.R_shift) |
-					((col.g >> m_pixelDescription.G_loss) << m_pixelDescription.G_shift) |
-					((col.b >> m_pixelDescription.B_loss) << m_pixelDescription.B_shift) |
-					((col.a >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
-
-			if( m_pixelDescription.bBigEndian != isSystemBigEndian() )
-			{
-
-				if( m_pixelDescription.bits == 16 )
-					pix = endianSwap( (uint16_t) pix );
-				else if( m_pixelDescription.bits == 16 )
-					pix = endianSwap( pix );
-			}
-		}
-		return pix;
-	}
-
-	//____ pixelToColor() ____________________________________________________________
-	/**
-	 * Get the color and alpha values of a pixel
-	 *
-	 * @param pixel Pixel value in surface's native format to get the RGBA values of
-	 *
-	 * Converts the specified pixel value to a Color object with RGBA values.
-	 * If the native pixel format is less than 32 bits, the upper bits of the parameter
-	 * needs to be cleared.
-	 * If the surface doesn't have an alpha channel, the alpha value of the Color structure is
-	 * set to 255 (opaque).
-	 *
-	 * @return Color structure with RGBA values for the specified pixel value.
-	 *
-	 **/
-	HiColor Surface::pixelToColor( uint32_t pixel ) const
-	{
-		if (m_pixelDescription.bIndexed)
-			return m_pPalette[pixel];
-
-		if( m_pixelDescription.bBigEndian != isSystemBigEndian() )
-		{
-
-			if( m_pixelDescription.bits == 16 )
-				pixel = endianSwap( (uint16_t) pixel );
-			else if( m_pixelDescription.bits == 16 )
-				pixel = endianSwap( pixel );
-		}
-
-		Color8 col;
-
-        const uint8_t *    pConvTab_R = s_pixelConvTabs[m_pixelDescription.R_bits];
-        const uint8_t *    pConvTab_G = s_pixelConvTabs[m_pixelDescription.G_bits];
-        const uint8_t *    pConvTab_B = s_pixelConvTabs[m_pixelDescription.B_bits];
-        const uint8_t *    pConvTab_A = s_pixelConvTabs[m_pixelDescription.A_bits];
-        
-        col.r = pConvTab_R[(pixel & m_pixelDescription.R_mask) >> m_pixelDescription.R_shift];
-        col.g = pConvTab_G[(pixel & m_pixelDescription.G_mask) >> m_pixelDescription.G_shift];
-        col.b = pConvTab_B[(pixel & m_pixelDescription.B_mask) >> m_pixelDescription.B_shift];
-        col.a = pConvTab_A[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
-
-		int16_t* pUnpackTab = m_pixelDescription.bLinear ? HiColor::unpackLinearTab : HiColor::unpackSRGBTab;
-		return HiColor(pUnpackTab[col.r], pUnpackTab[col.g], pUnpackTab[col.b], HiColor::unpackLinearTab[col.a]);
 	}
 
 	//____ fill() _________________________________________________________________
@@ -296,71 +155,14 @@ namespace wg
 	 **/
 	bool Surface::fill(const RectI& region, HiColor color  )
 	{
-
 		auto pixbuf = allocPixelBuffer(region);
 
-
-		uint32_t pixel = colorToPixel( color );
-		int w = pixbuf.rect.w;
-		int h = pixbuf.rect.h;
-		int p = pixbuf.pitch;
-		uint8_t * pDest = pixbuf.pixels;
-
-		bool ret = true;
-		switch( m_pixelDescription.bits )
-		{
-			case 8:
-				for( int y = 0 ; y < h ; y++ )
-				{
-					for( int x = 0 ; x < w ; x++ )
-						pDest[x] = (uint8_t) pixel;
-					pDest += p;
-				}
-				break;
-			case 16:
-				for( int y = 0 ; y < h ; y++ )
-				{
-					for( int x = 0 ; x < w ; x++ )
-						((uint16_t*)pDest)[x] = (uint16_t) pixel;
-					pDest += p;
-				}
-				break;
-			case 24:
-			{
-				uint8_t one = (uint8_t) pixel;
-				uint8_t two = (uint8_t) (pixel>>8);
-				uint8_t three = (uint8_t) (pixel>>16);
-
-				for( int y = 0 ; y < h ; y++ )
-				{
-					for( int x = 0 ; x < w*3 ;  )
-					{
-						pDest[x++] = one;
-						pDest[x++] = two;
-						pDest[x++] = three;
-					}
-					pDest += p;
-				}
-				break;
-			}
-			case 32:
-				for( int y = 0 ; y < h ; y++ )
-				{
-					for( int x = 0 ; x < w ; x++ )
-						((uint32_t*)pDest)[x] = pixel;
-					pDest += p;
-				}
-				break;
-			default:
-				ret = false;
-		}
-
-		//
-
+		PixelTools::fillBitmap(pixbuf.pixels, pixbuf.format, pixbuf.pitch, pixbuf.rect.size(), color);
+		
 		pullPixels(pixbuf);
 		freePixelBuffer(pixbuf);
 
-		return ret;
+		return true;
 	}
 
 	//____ pullPixels() _______________________________________________________
@@ -447,7 +249,7 @@ namespace wg
 		bp.canvas = m_bCanvas;
 		bp.palette = m_pPalette;
 		bp.dynamic = m_bDynamic;
-		bp.format = m_pixelDescription.format;
+		bp.format = m_pixelFormat;
 		bp.identity = m_id;
 		bp.mipmap = m_bMipmapped;
 		bp.sampleMethod = m_sampleMethod;
@@ -501,7 +303,7 @@ namespace wg
 	 **/
 	bool Surface::copy(CoordI _dest, Surface * pSrcSurface, const RectI& _srcRect )
 	{
-		if( !pSrcSurface || pSrcSurface->pixelFormat() == PixelFormat::Undefined || m_pixelDescription.format == PixelFormat::Undefined )
+		if( !pSrcSurface || pSrcSurface->pixelFormat() == PixelFormat::Undefined || m_pixelFormat == PixelFormat::Undefined )
 			return false;
 
 		// Clip as needed to get source and dest rectangles.
@@ -531,7 +333,7 @@ namespace wg
 		//
 		
 		auto& srcDesc = Util::pixelFormatToDescription2(srcbuf.format);
-		auto& dstDesc = Util::pixelFormatToDescription2(m_pixelDescription.format);
+		auto& dstDesc = Util::pixelFormatToDescription2(m_pixelFormat);
 		
 		int dstPaletteEntries = 256;
 		
@@ -547,486 +349,9 @@ namespace wg
 		return retVal;
 	}
 
-
-	//____ _copy() _________________________________________________________
-
-	/*
-		Copying to Index_8 is only allowed from other Index_8 content. No color conversion is then performed, palettes are assumed to be identical.
-		Copying from Alpha_8 to any other surface copies white pixels with alpha (if destination has alpha channel, otherwise just white pixels).
-	*/
-
-	bool Surface::_copy( const RectI& destRect, const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const Color8 * ppalette )
-	{
-		//TODO: Support endian-swap.
-
-
-		if( srcRect.w <= 0 || destRect.w <= 0 )
-			return false;
-
-		auto pixbuf = allocPixelBuffer(destRect);
-
-
-		const PixelDescription * pDstFormat 	= &m_pixelDescription;
-		int		dstPitch = pixbuf.pitch;
-
-		uint8_t *	pSrc = pSrcPixels;
-		uint8_t *	pDst = pixbuf.pixels;
-
-		pSrc += srcRect.y * srcPitch + srcRect.x * pSrcFormat->bits/8;
-//		pDst += dstRect.y * dstPitch + dstRect.x * pDstFormat->bits/8;
-
-
-		if( pSrcFormat->bits == pDstFormat->bits && pSrcFormat->R_mask == pDstFormat->R_mask &&
-			pSrcFormat->G_mask == pDstFormat->G_mask && pSrcFormat->B_mask == pDstFormat->B_mask &&
-			pSrcFormat->A_mask == pDstFormat->A_mask)
-		{
-			// We have identical formats so we can do a fast straight copy
-
-			int lineLength = srcRect.w * pSrcFormat->bits/8;
-			for( int y = 0 ; y < srcRect.h ; y++ )
-			{
-				memcpy( pDst, pSrc, lineLength );
-				pSrc += srcPitch;
-				pDst += dstPitch;
-			}
-		}
-		else if (pSrcFormat->format == PixelFormat::BGRA_8 && pDstFormat->format == PixelFormat::BGR_8)
-		{
-			// Standard 8-bit RGB values, we just need to lose the alpha channel
-
-			int		srcLineInc = srcPitch - 4 * srcRect.w;
-			int		dstLineInc = dstPitch - 3 * srcRect.w;
-
-			for (int y = 0; y < srcRect.h; y++)
-			{
-				for (int x = 0; x < srcRect.w; x++)
-				{
-					* pDst++ = * pSrc++;
-					* pDst++ = * pSrc++;
-					*pDst++ = *pSrc++;
-					pSrc++;
-				}
-				pSrc += srcLineInc;
-				pDst += dstLineInc;
-			}
-		}
-		else if(pSrcFormat->format == PixelFormat::BGR_8 && pDstFormat->format == PixelFormat::BGRA_8)
-		{
-			// Standard 8-bit RGB values, We just needs to add an alpha channel
-
-			int		srcLineInc = srcPitch - 3 * srcRect.w;
-			int		dstLineInc = dstPitch - 4 * srcRect.w;
-
-			for (int y = 0; y < srcRect.h; y++)
-			{
-				for (int x = 0; x < srcRect.w; x++)
-				{
-					*pDst++ = *pSrc++;
-					*pDst++ = *pSrc++;
-					*pDst++ = *pSrc++;
-					*pDst++ = 255;
-				}
-				pSrc += srcLineInc;
-				pDst += dstLineInc;
-			}
-
-		}
-		else if (pDstFormat->format == PixelFormat::Index_8_sRGB || pDstFormat->format == PixelFormat::Index_8_linear)
-		{
-			freePixelBuffer(pixbuf);
-			return false;								// Can't copy to palette-based surface unless source is of identical format!
-		}
-		else if (pSrcFormat->bIndexed)
-		{
-			// Convert pixels from index to color values when copying
-
-			if (pSrcFormat->bits != 8)
-			{
-				freePixelBuffer(pixbuf);
-				return false;							// Only 8-bit paletteS are supported for the momment.
-			}
-
-			int		srcInc = pSrcFormat->bits / 8;
-			int		dstInc = pDstFormat->bits / 8;
-
-			int		srcLineInc = srcPitch - srcInc * srcRect.w;
-			int		dstLineInc = dstPitch - dstInc * srcRect.w;
-
-			switch (pDstFormat->bits)
-			{
-				case 0x08:										// This can only be A8, so we simplify and optimize a bit....
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							Color8 srcpixel = ppalette[*pSrc++];
-							*pDst++ = srcpixel.a;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-					break;
-
-				case 0x10:
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							Color8 srcpixel = ppalette[*pSrc++];
-
-							unsigned int dstpixel = ((((uint32_t)srcpixel.r >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-								(((uint32_t)srcpixel.g >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-								(((uint32_t)srcpixel.b >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-								(((uint32_t)srcpixel.a >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							*((unsigned short*)pDst) = (unsigned short)dstpixel; pDst += 2;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-					break;
-
-				case 0x18:										// This can only be BGR_8, so we simplify and optimize a bit....
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							Color8 srcpixel = ppalette[*pSrc++];
-							pDst[0] = srcpixel.b;
-							pDst[1] = srcpixel.g;
-							pDst[2] = srcpixel.r;
-							pDst += 3;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-					break;
-
-				case 0x20:										// This can only be BGRA_8, so we simplify and optimize a bit....
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							Color8 srcpixel = ppalette[*pSrc++];
-							pDst[0] = srcpixel.b;
-							pDst[1] = srcpixel.g;
-							pDst[2] = srcpixel.r;
-							pDst[3] = srcpixel.a;
-							pDst += 4;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-					break;
-				default:
-					freePixelBuffer(pixbuf);
-					return false;								// Unsupported destination format!
-
-			}
-		}
-		else
-		{
-			// We need to fully convert pixels when copying
-
-			int		srcInc = pSrcFormat->bits/8;
-			int		dstInc = pDstFormat->bits/8;
-
-			int		srcLineInc = srcPitch - srcInc * srcRect.w;
-			int		dstLineInc = dstPitch - dstInc * srcRect.w;
-
-			const uint8_t *	pConvTab_R = s_pixelConvTabs[pSrcFormat->R_bits];
-			const uint8_t *	pConvTab_G = s_pixelConvTabs[pSrcFormat->G_bits];
-			const uint8_t *	pConvTab_B = s_pixelConvTabs[pSrcFormat->B_bits];
-			const uint8_t *	pConvTab_A = s_pixelConvTabs[pSrcFormat->A_bits];
-
-
-			switch( (pSrcFormat->bits << 8) + pDstFormat->bits )
-			{
-				case 0x0808:
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							unsigned int srcpixel = *((unsigned char*)pSrc); pSrc += 1;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							*((unsigned char*)pDst) = (unsigned char)dstpixel; pDst += 1;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x1008:
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							unsigned int srcpixel = *((unsigned short*)pSrc); pSrc += 2;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							*((unsigned char*)pDst) = (unsigned char)dstpixel; pDst += 1;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x1808:
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1]) << 8) + (((unsigned int)pSrc[2]) << 16); pSrc += 3;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							*((unsigned char*)pDst) = (unsigned char)dstpixel; pDst += 1;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x2008:
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							unsigned int srcpixel = *((unsigned int*)pSrc); pSrc += 4;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							*((unsigned char*)pDst) = (unsigned char)dstpixel; pDst += 1;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x0810:
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							unsigned int srcpixel = *((unsigned char*)pSrc); pSrc += 1;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							*((unsigned short*)pDst) = (unsigned char)dstpixel; pDst += 2;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x0818:
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							unsigned int srcpixel = *((unsigned char*)pSrc); pSrc += 1;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							pDst[0] = (unsigned char)dstpixel;
-							pDst[1] = (unsigned char)(dstpixel >> 8);
-							pDst[2] = (unsigned char)(dstpixel >> 16);
-							pDst += 3;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-					break;
-
-				case 0x0820:
-					for (int y = 0; y < srcRect.h; y++)
-					{
-						for (int x = 0; x < srcRect.w; x++)
-						{
-							unsigned int srcpixel = *((unsigned char*)pSrc); pSrc += 1;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							*((unsigned int*)pDst) = (unsigned int)dstpixel; pDst += 4;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-					break;
-
-				case 0x1010:
-					for( int y = 0 ; y < srcRect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcRect.w ; x++ )
-						{
-							unsigned int srcpixel = * ((unsigned short*)pSrc); pSrc+=2;
-							unsigned int dstpixel = ( (((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-													  (((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-													  (((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-													  (((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							* ((unsigned short*)pDst) = (unsigned short) dstpixel; pDst+=2;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x1810:
-					for( int y = 0 ; y < srcRect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcRect.w ; x++ )
-						{
-							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1])<<8) + (((unsigned int)pSrc[2])<<16); pSrc+=3;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							* ((unsigned short*)pDst) = (unsigned short) dstpixel; pDst+=2;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x2010:
-					for( int y = 0 ; y < srcRect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcRect.w ; x++ )
-						{
-							unsigned int srcpixel = * ((unsigned int*)pSrc); pSrc+=4;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							* ((unsigned short*)pDst) = (unsigned short) dstpixel; pDst+=2;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x1018:
-					for( int y = 0 ; y < srcRect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcRect.w ; x++ )
-						{
-							unsigned int srcpixel = * ((unsigned short*)pSrc); pSrc+=2;
-							unsigned int dstpixel = ( (((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-													  (((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-													  (((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-													  (((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							pDst[0] = (unsigned char) dstpixel;
-							pDst[1] = (unsigned char) (dstpixel >> 8);
-							pDst[2] = (unsigned char) (dstpixel >> 16);
-							pDst+=3;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-						pDst+=3;
-					}
-				break;
-				case 0x1818:
-					for( int y = 0 ; y < srcRect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcRect.w ; x++ )
-						{
-							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1]) << 8) + (((unsigned int)pSrc[2]) << 16); pSrc+=3;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							pDst[0] = (unsigned char) dstpixel;
-							pDst[1] = (unsigned char) (dstpixel >> 8);
-							pDst[2] = (unsigned char) (dstpixel >> 16);
-							pDst+=3;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x2018:
-					for( int y = 0 ; y < srcRect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcRect.w ; x++ )
-						{
-							unsigned int srcpixel = * ((unsigned int*)pSrc); pSrc+=4;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							pDst[0] = (unsigned char) dstpixel;
-							pDst[1] = (unsigned char) (dstpixel >> 8);
-							pDst[2] = (unsigned char) (dstpixel >> 16);
-							pDst+=3;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x1020:
-					for( int y = 0 ; y < srcRect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcRect.w ; x++ )
-						{
-							unsigned int srcpixel = * ((unsigned short*)pSrc); pSrc+=2;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							* ((unsigned int*)pDst) = dstpixel; pDst+=4;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x1820:
-					for( int y = 0 ; y < srcRect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcRect.w ; x++ )
-						{
-							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1]) << 8) + (((unsigned int)pSrc[2]) << 16); pSrc+=3;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							* ((unsigned int*)pDst) = dstpixel; pDst+=4;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-				case 0x2020:
-					for( int y = 0 ; y < srcRect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcRect.w ; x++ )
-						{
-							unsigned int srcpixel = * ((unsigned int*)pSrc); pSrc+=4;
-							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
-													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
-													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
-													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
-							* ((unsigned int*)pDst) = dstpixel; pDst+=4;
-						}
-						pSrc += srcLineInc;
-						pDst += dstLineInc;
-					}
-				break;
-
-				default:
-					freePixelBuffer(pixbuf);
-					return false;			// Failed to copy
-			}
-		}
-
-		pullPixels(pixbuf);
-		freePixelBuffer(pixbuf);
-		return true;
-	}
-
 	//____ convert() _________________________________________________________
 
-	Surface_p Surface::convert(PixelFormat format, SurfaceFactory* pFactory)
+	Surface_p Surface::convert( const Surface::Blueprint& _bp, SurfaceFactory* pFactory)
 	{
 		if (!pFactory)
 			pFactory = GfxBase::defaultSurfaceFactory();
@@ -1037,9 +362,19 @@ namespace wg
 			return Surface_p();
 		}
 
-		auto bp = blueprint();
-		bp.format = format;
-
+		auto bp = _bp;
+		
+		bp.size = m_size;
+		
+		if( bp.scale == 0 )
+			bp.scale = m_scale;
+		
+		if( bp.sampleMethod == SampleMethod::Undefined )
+			bp.sampleMethod = m_sampleMethod;
+		
+		if( bp.format == PixelFormat::Undefined )
+			bp.format = m_pixelFormat;
+		
 		auto pSurface = pFactory->createSurface(bp);
 		if( pSurface->copy({ 0,0 }, this) )
 			return pSurface;
@@ -1075,7 +410,7 @@ namespace wg
 			uint16_t pixel = *(uint16_t*)(buffer.pixels + buffer.pitch * coord.y + coord.x * 2);
 			const uint8_t* pConvTab = s_pixelConvTabs[4];
 
-			return HiColor::unpackLinearTab[((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift)];
+			return HiColor::unpackLinearTab[pConvTab[pixel >> 12]];
 		}
 		case PixelFormat::BGRA_8_sRGB:
 		case PixelFormat::BGRA_8_linear:
@@ -1090,14 +425,17 @@ namespace wg
 
     //____ _isBlueprintValid() ________________________________________________
 
-    bool Surface::_isBlueprintValid(const Blueprint& bp, SizeI maxSize, Surface * pOther)
+    bool Surface::_isBlueprintValid(const Blueprint& bp, SizeI maxSize)
     {
-        SizeI size = pOther ? pOther->pixelSize() :bp.size;
+        SizeI size = bp.size;
 
         PixelFormat format = bp.format;
         if( format == PixelFormat::Undefined )
-            format = pOther ? pOther->pixelFormat() : PixelFormat::BGRA_8;
+            format = PixelFormat::BGRA_8;
 
+		if( size.isEmpty() )
+			return false;
+		
         if (size.w > maxSize.w || size.h > maxSize.h)
             return false;
 
@@ -1114,10 +452,7 @@ namespace wg
             if( bp.mipmap )
                 return false;            // Indexed can't be mipmapped.
 
-            if ( pOther && !pOther->pixelDescription()->bIndexed)
-                return false;            // Can't create indexed from non-indexed source.
-            
-            if( bp.palette == nullptr && ( !pOther || pOther->palette() == nullptr ) )
+            if( bp.palette == nullptr )
                 return false;           // Indexed but palette is missing.
         }
                 

@@ -321,7 +321,7 @@ SurfaceDisplay_p GfxDeviceTester::create_canvas()
 {
 	auto pCanvas = SurfaceDisplay::create();
 	
-	auto pSurface = Base::defaultSurfaceFactory()->createSurface(g_canvasSize);
+	auto pSurface = Base::defaultSurfaceFactory()->createSurface( { .size = g_canvasSize } );
 	pCanvas->setSurface(pSurface);
 //	pCanvas->canvas.setBackColor(Color::Black);
 	return pCanvas;

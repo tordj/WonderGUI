@@ -1258,7 +1258,10 @@ void WgScrollChart::_regenCanvas()
 		if (sz.w <= 0 && sz.h <= 0)
 			return;
 
-		m_pCanvas = m_pFactory->createSurface(sz, WgPixelType::BGRX_8, wg::SurfaceFlag::Canvas);
+		m_pCanvas = m_pFactory->createSurface( WGBP(Surface,
+													_.size = sz,
+													_.format = WgPixelType::BGRX_8,
+													_.canvas = true ));
 //		m_pCanvas->Fill(m_chartColor);
 		m_canvasOfs = 0;
 		m_bRefreshCanvas = true;

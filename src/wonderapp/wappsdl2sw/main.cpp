@@ -697,7 +697,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 			return nullptr;
 
 		auto pReader = SurfaceReader::create({ .factory = Base::defaultSurfaceFactory() });
-		Surface_p pSurface = pReader->readSurfaceFromStream(input);
+		Surface_p pSurface = pReader->readSurfaceFromStream(input, _bp);
 		input.close();
 		return pSurface;
 	}

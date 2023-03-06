@@ -16,12 +16,29 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectSPX& canvas, WonderApp::Visitor * pAppVisitor)
 	{
-		m_pCanvasBGR_8 = pDevice->surfaceFactory()->createSurface(canvas/64, PixelFormat::BGR_8, SurfaceFlag::Canvas );
-		m_pCanvasBGRA_8 = pDevice->surfaceFactory()->createSurface(canvas/64, PixelFormat::BGRA_8, SurfaceFlag::Canvas);
-		m_pCanvasBGRX_8 = pDevice->surfaceFactory()->createSurface(canvas/64, PixelFormat::BGRX_8, SurfaceFlag::Canvas);
-		m_pCanvasBGRA_4 = pDevice->surfaceFactory()->createSurface(canvas/64, PixelFormat::BGRA_4_linear, SurfaceFlag::Canvas);
-		m_pCanvasBGR_565 = pDevice->surfaceFactory()->createSurface(canvas/64, PixelFormat::BGR_565_linear, SurfaceFlag::Canvas);
-
+		m_pCanvasBGR_8 = pDevice->surfaceFactory()->createSurface( WGBP(Surface,
+																		_.size = canvas/64,
+																		_.format = PixelFormat::BGR_8,
+																		_.canvas = true ));
+		m_pCanvasBGRA_8 = pDevice->surfaceFactory()->createSurface( WGBP(Surface,
+																		 _.size = canvas/64,
+																		 _.format = PixelFormat::BGRA_8,
+																		 _.canvas = true ));
+																   
+																   
+																   
+		m_pCanvasBGRX_8 = pDevice->surfaceFactory()->createSurface( WGBP(Surface,
+																		 _.size = canvas/64,
+																		 _.format = PixelFormat::BGRX_8,
+																		 _.canvas = true ));
+		m_pCanvasBGRA_4 = pDevice->surfaceFactory()->createSurface( WGBP(Surface,
+																		 _.size = canvas/64,
+																		 _.format = PixelFormat::BGRA_4_linear,
+																		 _.canvas = true ));
+		m_pCanvasBGR_565 = pDevice->surfaceFactory()->createSurface( WGBP(Surface,
+																		  _.size = canvas/64,
+																		  _.format = PixelFormat::BGR_565_linear,
+																		  _.canvas = true ));
 		return true;
 	}
 

@@ -46,10 +46,16 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-        static MetalSurface_p    create(const Blueprint& blueprint);
-        static MetalSurface_p    create(const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
-        static MetalSurface_p    create(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
-        static MetalSurface_p    create(const Blueprint& blueprint, Surface* pOther);
+		static MetalSurface_p	create(const Blueprint& blueprint);
+		static MetalSurface_p	create(const Blueprint& blueprint, Blob* pBlob, int pitch = 0 );
+		
+		static MetalSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
+									   PixelFormat format = PixelFormat::Undefined, int pitch = 0,
+									   const Color8 * pPalette = nullptr);
+		
+		static MetalSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
+									   const PixelDescription2& pixelDescription, int pitch = 0,
+									   const Color8 * pPalette = nullptr);
 
 		//.____ Identification __________________________________________
 
@@ -83,10 +89,11 @@ namespace wg
 
 	private:
 
-        MetalSurface(const Blueprint& blueprint);
-        MetalSurface(const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
-        MetalSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0, const PixelDescription* pPixelDescription = nullptr);
-        MetalSurface(const Blueprint& blueprint, Surface* pOther);
+		MetalSurface(const Blueprint& blueprint);
+		MetalSurface(const Blueprint& blueprint, Blob* pBlob, int pitch);
+		MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette);
+		MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
+
 
 		~MetalSurface();
 

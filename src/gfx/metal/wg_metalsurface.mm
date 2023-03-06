@@ -76,26 +76,23 @@ namespace wg
 		return MetalSurface_p(new MetalSurface(bp,pBlob,pitch));
 	}
 
-	MetalSurface_p	MetalSurface::create( const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription )
+	MetalSurface_p	MetalSurface::create(const Blueprint& bp, const uint8_t* pPixels,
+										 PixelFormat format, int pitch, const Color8 * pPalette);
 	{
         if (!_isBlueprintValid(bp, maxSize()))
             return MetalSurface_p();
 
-		return  MetalSurface_p(new MetalSurface(bp, pPixels, pitch, pPixelDescription));
+		return  MetalSurface_p(new MetalSurface(bp, pPixels, format, pitch, pPalette));
 	};
 
-	MetalSurface_p	MetalSurface::create( const Blueprint& bp, Surface* pOther )
+	MetalSurface_p	MetalSurface::create(const Blueprint& bp, const uint8_t* pPixels,
+										 const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
 	{
-		if (!pOther)
+		if (!_isBlueprintValid(bp, maxSize()))
 			return MetalSurface_p();
 
-        if (!_isBlueprintValid(bp, maxSize(), pOther))
-            return MetalSurface_p();
-
-		return MetalSurface_p(new MetalSurface( bp, pOther ));
-	}
-
-
+		return  MetalSurface_p(new MetalSurface(bp, pPixels, pixelDescription, pitch, pPalette));
+	};
 
 	//____ constructor _____________________________________________________________
 
@@ -119,74 +116,113 @@ namespace wg
 
         _setupMetalTexture(pBlob->data(), pitch, &srcFormat, bp.palette);
     }
-    
-    MetalSurface::MetalSurface(const Blueprint& bp, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
-    {
-        _setPixelDetails(m_pixelDescription.format);
-        m_bMipmapped = bp.mipmap;
- 
-		if( !pPixelDescription )
-			pPixelDescription = &m_pixelDescription;
+
+	MetalSurface::MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette)
+	: Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
+	{
+		_setPixelDetails(m_pixelDescription.format);
+		m_bMipmapped = bp.mipmap;
 		
 		if( pitch == 0 )
-			pitch = bp.size.w * bp.size.h * pPixelDescription->bits/8;
-         
-         _setupMetalTexture( pPixels, pitch, pPixelDescription, bp.palette);
+			pitch = bp.size.w * pPixelDescription->bits/8;
 
-    }
+		auto srcDesc = Util::pixelFormatToDescription2(format);
+		
+		if( (srcDesc.type == PixelFmt::Index || srcDesc.type == PixelFmt::Bitplanes) )
+		{
+			if( pPalette == nullptr )
+				pPalette = blueprint.palette;
+			
+			if( pPalette == nullptr )
+			{
+				GfxBase::throwError( ErrorLevel::Error, ErrorCode::InvalidParam, "No palette for index-pixels, neither specified or in Blueprint.", this, &TYPEINFO, __func__, __FILE__, __LINE__ );
+				
+				return;			// TODO: we are returning a not fully initialized object. Should signal for destruction somehow.
+			}
+		}
+		
+		_setupMetalTexture( pPixels, pitch, PixelFormat::Undefined &pixelDescription, bp.palette, pPalette );
+	}
 
-    MetalSurface::MetalSurface(const Blueprint& bp, Surface* pOther) : Surface(bp, pOther->pixelFormat(), pOther->sampleMethod() )
+
+	MetalSurface::MetalSurface(const Blueprint& bp, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
+	: Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
     {
         _setPixelDetails(m_pixelDescription.format);
         m_bMipmapped = bp.mipmap;
-        m_size    = pOther->pixelSize();
-        
-        auto pixbuf = pOther->allocPixelBuffer();
-        if( pOther->pushPixels(pixbuf) )
-            _setupMetalTexture(pixbuf.pixels, pixbuf.pitch, pOther->pixelDescription(), pOther->palette());
-        else
-        {
-            // Error handling
-        }
+		
+		if( pitch == 0 )
+			pitch = bp.size.w * pPixelDescription->bits/8;
 
-        pOther->freePixelBuffer(pixbuf);
-	}
+		if( (pixelDescription.type == PixelFmt::Index || pixelDescription.type == PixelFmt::Bitplanes) )
+		{
+			if( pPalette == nullptr )
+				pPalette = blueprint.palette;
+			
+			if( pPalette == nullptr )
+			{
+				GfxBase::throwError( ErrorLevel::Error, ErrorCode::InvalidParam, "No palette for index-pixels, neither specified or in Blueprint.", this, &TYPEINFO, __func__, __FILE__, __LINE__ );
+				
+				return;			// TODO: we are returning a not fully initialized object. Should signal for destruction somehow.
+			}
+		}
+		
+		_setupMetalTexture( pPixels, pitch, PixelFormat::Undefined &pixelDescription, bp.palette, pPalette );
+    }
 
-    //____ _setupMetalTexture() __________________________________________________________________
 
-    void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pPalette )
-    {
+	//____ _setupMetalTexture() __________________________________________________________________
+
+	void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, PixelFormat srcFormat, const PixelDescription2 * pSrcPixelDesc, const Color * pSrcPalette, const Color * pDstPalette )
+	{
 		m_bTextureSyncInProgress = false;
 
-        // Create our shared buffer
-        
-        int     bufferLength = m_size.w * m_size.h * m_pixelSize;
+		// Create our shared buffer
+		
+		int     bufferLength = m_size.w * m_size.h * m_pixelSize;
 
-        m_textureBuffer = [MetalGfxDevice::s_metalDevice newBufferWithLength:bufferLength options:MTLResourceStorageModeShared];
-        
-        // Copy pixel data to our shared buffer
-              
-        if( pPixels )
-        {
-            _copy( m_size, pPixelDescription, (uint8_t*) pPixels, pitch, m_size );
-        }
-               
-        // Setup the palette if present
-        
-        if( pPalette )
-        {
-            // Create the palette buffer and copy data
+		m_textureBuffer = [MetalGfxDevice::s_metalDevice newBufferWithLength:bufferLength options:MTLResourceStorageModeShared];
+		
+		// Copy pixel data to our shared buffer
+			  
+		if( pPixels )
+		{
+			auto pDst = (uint8_t*)[m_textureBuffer contents];
 
-            m_paletteBuffer = [MetalGfxDevice::s_metalDevice newBufferWithBytes:pPalette length:1024 options:MTLResourceStorageModeShared];
-            m_pPalette = (Color*) [m_paletteBuffer contents];
-        }
-        
-        //
-        
-        _createAndSyncTextures( pPixels != nullptr );
-        
-//        setScaleMode(m_scaleMode);
-    }
+			int dstPaletteEntries = 256;
+
+			if( srcFormat != PixelFormat::Undefined )
+			{
+				auto srcDesc = Util::pixelFormatToDescription2(srcFormat);
+
+				copyPixels(m_size.w, m_size.h, pPixels, srcFormat, pitch - m_size.w * srcDesc.bits/8,
+						   pDst, m_pixelDescription.format, 0, pSrcPalette,
+						   pDstPalette, 256, dstPaletteEntries, 256);
+			}
+			else
+			{
+				copyPixels(m_size.w, m_size.h, pPixels, * pSrcPixelDesc, pitch - m_size.w * srcDesc.bits/8,
+						   pDst, m_pixelDescription.format, 0, pSrcPalette,
+						   pDstPalette, 256, dstPaletteEntries, 256);
+			}
+		}
+			   
+		// Setup the palette if present
+		
+		if( pPalette )
+		{
+			// Create the palette buffer and copy data
+
+			m_paletteBuffer = [MetalGfxDevice::s_metalDevice newBufferWithBytes:pPalette length:1024 options:MTLResourceStorageModeShared];
+			m_pPalette = (Color*) [m_paletteBuffer contents];
+		}
+		
+		//
+		
+		_createAndSyncTextures( pPixels != nullptr );
+		
+	//        setScaleMode(m_scaleMode);
+	}
 
     //____ _createAndSyncTextures() __________________________________________________
 

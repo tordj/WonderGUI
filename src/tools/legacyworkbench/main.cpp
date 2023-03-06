@@ -230,7 +230,12 @@ int main ( int argc, char** argv )
 	else if (pScreen->format->BitsPerPixel == 24)
 		type = WgPixelType::BGR_8;
 
-	auto pCanvas = wg::SoftSurface::create( WgSize(width,height), type, wg::Blob::create(pScreen->pixels, nullptr), pScreen->pitch, wg::SurfaceFlag::Canvas );
+	auto pCanvas = wg::SoftSurface::create( WGBP(Surface,
+												 _.size = WgSize(width,height),
+												 _.format = type,
+												 _.canvas = true ),
+											wg::Blob::create(pScreen->pixels, nullptr),
+											pScreen->pitch);
 	auto pGfxDevice = wg::SoftGfxDevice::create();
 	pGfxDevice->defineCanvas( wg::CanvasRef::Default, pCanvas );
 	

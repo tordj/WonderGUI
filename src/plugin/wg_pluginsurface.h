@@ -56,7 +56,6 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		void				setScale(int scale) override;
 		int					scale() const override;
 
         //.____ Content _______________________________________________________

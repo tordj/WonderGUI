@@ -59,15 +59,16 @@ namespace wg
 		return GlSurface::create(blueprint, pBlob, pitch);
 	}
 
-	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, uint8_t* pPixels, int pitch, const PixelDescription* pPixelDescription)
+	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+												PixelFormat format, int pitch, const Color8 * pPalette)
 	{
-		return GlSurface::create(blueprint, pPixels, pitch, pPixelDescription);
+		return GlSurface::create(blueprint, pPixels, format, pitch, pPalette);
 	}
 
-	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, Surface* pOther)
+	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+												const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
 	{
-		return GlSurface::create( blueprint, pOther );
+		return GlSurface::create(blueprint, pPixels, pixelDescription, pitch, pPalette);
 	}
-
 
 } // namespace wg

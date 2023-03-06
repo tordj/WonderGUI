@@ -12,7 +12,10 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectI& canvas, WonderApp::Visitor * pAppVisitor)
 	{
-		m_pCanvas = pDevice->surfaceFactory()->createSurface(canvas.size()/64, PixelFormat::RGB_565_bigendian, SurfaceFlag::Canvas);
+		m_pCanvas = pDevice->surfaceFactory()->createSurface( WGBP(Surface,
+																   _.size = canvas.size()/64,
+																   _.format = PixelFormat::RGB_565_bigendian,
+																   _.canvas = true ) );
 
 		m_pImg = pAppVisitor->loadSurface("resources/splash.png", pDevice->surfaceFactory());
 		if (!m_pImg)

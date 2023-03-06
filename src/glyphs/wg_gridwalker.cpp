@@ -30,8 +30,7 @@ namespace wg
 	{
 		m_pBuffer = &pixelBuffer;
 
-		PixelDescription pixelDescription;
-		Util::pixelFormatToDescription(m_pBuffer->format, pixelDescription);
+		PixelDescription2 pixelDescription = Util::pixelFormatToDescription2(m_pBuffer->format);
 
 		m_pixelBytes = pixelDescription.bits / 8;
 

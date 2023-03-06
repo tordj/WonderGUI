@@ -599,7 +599,10 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 			if (pSurfaceFactory)
 			{
-				m_pShadowSurface = pSurfaceFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Canvas);
+				m_pShadowSurface = pSurfaceFactory->createSurface( WGBP(Surface,
+																		_.size = _canvas.size(),
+																		_.format = WgPixelType::BGRA_8,
+																		_.canvas = true ));
 				m_pShadowSurface->fill(WgColor::Transparent);
 			}
 		}

@@ -287,7 +287,10 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 		if (_canvas.w > maxSize.w || _canvas.h > maxSize.h)
 			return;                            // Can't create a canvas of the required size!
 
-		m_pCanvas = pFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Canvas );
+		m_pCanvas = pFactory->createSurface( WGBP(Surface,
+												  _.size = _canvas.size(),
+												  _.format = WgPixelType::BGRA_8,
+												  _.canvas = true) );
 		m_dirtyPatches.clear();
 		m_dirtyPatches.add(_canvas.size());
 	}

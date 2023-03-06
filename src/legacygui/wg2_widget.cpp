@@ -245,12 +245,12 @@ WgCoord WgWidget::Abs2localPoint( const WgCoord& cord ) const
 
 //____ Screenshot() ___________________________________________________________
 
-wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
+wg::Surface_p WgWidget::Screenshot( const wg::Surface::Blueprint& bp )
 {
-	return Screenshot( PixelSize(), surfaceFlags );
+	return Screenshot( PixelSize(), bp );
 }
 
-wg::Surface_p WgWidget::Screenshot( const WgRect& _rect, int surfaceFlags )
+wg::Surface_p WgWidget::Screenshot( const WgRect& _rect, const wg::Surface::Blueprint& _bp )
 {
 	auto pDevice = wg::GfxBase::defaultGfxDevice();
 	auto pFactory =  wg::GfxBase::defaultSurfaceFactory();
@@ -261,10 +261,15 @@ wg::Surface_p WgWidget::Screenshot( const WgRect& _rect, int surfaceFlags )
 	
 	WgRect rect = WgRect::overlap(PixelSize(), _rect*m_scale/WG_SCALE_BASE);
 
-	auto pCanvas = pFactory->createSurface(rect.size(),wg::PixelFormat::BGRA_8, surfaceFlags | wg::SurfaceFlag::Canvas );
+	Surface::Blueprint bp = _bp;
+	bp.size = rect.size();
+	bp.format = wg::PixelFormat::BGRA_8;
+	bp.canvas = true;
+	bp.scale = m_scale/4096.f*64;
+	
+	auto pCanvas = pFactory->createSurface( bp );
     if(!pCanvas)
         return nullptr;
-	pCanvas->setScale(m_scale/4096.f*64);
 
 	WgPatches patches;
 	patches.add( rect.size() );
