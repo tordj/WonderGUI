@@ -719,7 +719,7 @@ void WgDragNDropLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _ca
 	{
 		WgSize sz = m_pPicked->PixelSize();
 
-		auto pCanvas = m_pPicked->Screenshot();
+		auto pCanvas = m_pPicked->Screenshot({});
 		auto pImage = new WgImage();
 		pImage->SetImage( pCanvas );
 		pImage->_onNewSize(sz);

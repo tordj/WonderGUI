@@ -74,7 +74,11 @@ protected:
 	Surface::Blueprint	_blueprintFromHeader( const SurfaceFileHeader * pHeader );
 	
 	int				_addFlagsFromOtherBlueprint(Surface::Blueprint& dest, const Surface::Blueprint& extraFlags);
-	
+
+	Surface_p		_readSurfFromStream(std::istream& stream, const Surface::Blueprint& extraFlags);
+	Surface_p		_readQOIFromStream(std::istream& stream, const Surface::Blueprint& extraFlags);
+
+
 	SurfaceFactory_p	m_pFactory;
 };
 

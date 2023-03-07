@@ -264,7 +264,7 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pBody->surfaceFactory.createSurface		= &wg_createSurface;
 	pBody->surfaceFactory.createSurfaceFromBlob = &wg_createSurfaceFromBlob;
 	pBody->surfaceFactory.createSurfaceFromBitmap = &wg_createSurfaceFromBitmap;
-	pBody->surfaceFactory.createSurfaceFromSurface = &wg_createSurfaceFromSurface;
+	pBody->surfaceFactory.createSurfaceFromRawData = &wg_createSurfaceFromRawData;
 
 	pBody->hostBridge.structSize			= sizeof(wg_hostbridge_calls);
 	pBody->hostBridge.hidePointer			= &wg_hidePointer;

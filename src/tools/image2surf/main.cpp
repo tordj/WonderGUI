@@ -118,16 +118,13 @@ int main ( int argc, char** argv )
 
 	
 	
-	PixelDescription desc;
-	Util::pixelFormatToDescription(PixelFormat::BGRA_8_sRGB, desc);
+	PixelDescription2 desc = Util::pixelFormatToDescription2(PixelFormat::BGRA_8_sRGB);
 	
-	desc.format = PixelFormat::Undefined;
 	swap( desc.B_mask, desc.R_mask);
-	swap( desc.B_shift, desc.R_shift);
 
-	auto pOrg = SoftSurface::create( { .format = PixelFormat::BGRA_8, .size = {width,height}}, pImage, 0, &desc );
+	auto pOrg = SoftSurface::create( { .format = PixelFormat::BGRA_8, .size = {width,height}}, pImage, desc, 0 );
 	
-	auto pConverted = pOrg->convert( g_format, SoftSurfaceFactory::create() );
+	auto pConverted = pOrg->convert({ .format = g_format }, SoftSurfaceFactory::create());
 	
 	std::ofstream out(g_pOutputFileName, std::ios::binary);
 	auto pWriter = SurfaceWriter::create({});

@@ -372,8 +372,8 @@ typedef struct wg_surfacefactory_calls_struct
 	wg_sizeI			(*maxSurfaceSize)(wg_obj surfaceFactory);
 	wg_obj				(*createSurface)(wg_obj factory, const wg_surfaceBP* blueprint);
 	wg_obj				(*createSurfaceFromBlob)(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj blob, int pitch);
-	wg_obj				(*createSurfaceFromBitmap)(wg_obj factory, const wg_surfaceBP* blueprint, uint8_t* pPixels, int pitch, const wg_pixelDescription* pPixelDescription);
-	wg_obj				(*createSurfaceFromSurface)(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj fromSurface);
+	wg_obj				(*createSurfaceFromBitmap)(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels, wg_pixelFormat format,  int pitch, const wg_color8 * pPalette);
+	wg_obj				(*createSurfaceFromRawData)(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels, const wg_pixelDescription2* pPixelDescription, int pitch, const wg_color8* pPalette);
 
 } wg_surfacefactory_calls;
 

@@ -39,7 +39,7 @@ void 			updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const Msg_p& pMsg );
 void * 			loadFile( const char * pPath );
 Blob_p 			loadBlob( const char * pPath );
-void			convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat );
+void			convertSDLFormat( PixelDescription2 * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
 
@@ -164,7 +164,7 @@ int main ( int argc, char** argv )
 		type = PixelFormat::BGR_8;
 		
 	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
-	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), type, pCanvasBlob, pWinSurf->pitch );
+	SoftSurface_p pCanvas = SoftSurface::create({ .format = type, .size = SizeI(pWinSurf->w,pWinSurf->h) }, pCanvasBlob, pWinSurf->pitch);
     
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
 	addDefaultSoftKernels(pGfxDevice);
@@ -352,11 +352,11 @@ int main ( int argc, char** argv )
 //	auto pSoftSurfaceFactory = SoftSurfaceFactory::create();
 
 
-	PixelDescription	format;
+	PixelDescription2	format;
 
 	auto pSDLSurf = IMG_Load("resources/splash.png");
 	convertSDLFormat(&format, pSDLSurf->format);
-	Surface_p pSplashSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGRA_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (uint8_t *)pSDLSurf->pixels, pSDLSurf->pitch, &format);
+	Surface_p pSplashSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGRA_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (uint8_t *)pSDLSurf->pixels, format, pSDLSurf->pitch);
 	SDL_FreeSurface(pSDLSurf);
 
 
@@ -631,9 +631,9 @@ void * loadFile( const char * pPath )
 
 //____ convertSDLFormat() ______________________________________________________
 
-void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat )
+void convertSDLFormat( PixelDescription2 * pWGFormat, const SDL_PixelFormat * pSDLFormat )
 {
-	pWGFormat->format = PixelFormat::Undefined;
+	pWGFormat->type = PixelFmt::Chunky;
 	pWGFormat->bits = pSDLFormat->BitsPerPixel;
 
 	pWGFormat->R_mask = pSDLFormat->Rmask;
@@ -641,15 +641,6 @@ void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSD
 	pWGFormat->B_mask = pSDLFormat->Bmask;
 	pWGFormat->A_mask = pSDLFormat->Amask;
 
-	pWGFormat->R_shift = pSDLFormat->Rshift;
-	pWGFormat->G_shift = pSDLFormat->Gshift;
-	pWGFormat->B_shift = pSDLFormat->Bshift;
-	pWGFormat->A_shift = pSDLFormat->Ashift;
-
-	pWGFormat->R_bits = 8 - pSDLFormat->Rloss;
-	pWGFormat->G_bits = 8 - pSDLFormat->Gloss;
-	pWGFormat->B_bits = 8 - pSDLFormat->Bloss;
-	pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
 }
 
 //____ playImageStreamingTest() _______________________________________________
@@ -661,11 +652,11 @@ void playImageStreamingTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFac
 
 	SizeI logoSize = SizeI(pLogoImg->w,pLogoImg->h);
 
-	SoftSurface_p pOrgSurf = SoftSurface::create( logoSize, PixelFormat::BGRA_8, (unsigned char*) pLogoImg->pixels, pLogoImg->pitch);
+	SoftSurface_p pOrgSurf = SoftSurface::create({ .format = PixelFormat::BGRA_8, .size = logoSize,  }, (unsigned char*)pLogoImg->pixels, PixelFormat::BGRA_8,  pLogoImg->pitch);
 	
 	SDL_FreeSurface( pLogoImg );
 
-	Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::BGRA_8 );
+	Surface_p pLogoSurf = pFactory->createSurface({ .format = PixelFormat::BGRA_8, .size = logoSize });
 
 	pLogoSurf->copy( CoordI(), pOrgSurf );
 	
@@ -693,11 +684,11 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
 
     SizeI logoSize = SizeI(pLogoImg->w,pLogoImg->h);
 
-    SoftSurface_p pOrgSurf = SoftSurface::create( logoSize, PixelFormat::BGRA_8, (unsigned char*) pLogoImg->pixels, pLogoImg->pitch);
+	SoftSurface_p pOrgSurf = SoftSurface::create({ .format = PixelFormat::BGRA_8, .size = logoSize }, (unsigned char*)pLogoImg->pixels, PixelFormat::BGRA_8, pLogoImg->pitch);
     
     SDL_FreeSurface( pLogoImg );
 
-    Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::Alpha_8 );
+	Surface_p pLogoSurf = pFactory->createSurface({ .format = PixelFormat::Alpha_8, .size = logoSize });
 
     pLogoSurf->copy( CoordI(), pOrgSurf );
     
@@ -768,11 +759,11 @@ void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p p
 
     SizeI logoSize = SizeI(pLogoImg->w,pLogoImg->h);
 
-    SoftSurface_p pOrgSurf = SoftSurface::create( logoSize, PixelFormat::BGRA_8, (unsigned char*) pLogoImg->pixels, pLogoImg->pitch);
+	SoftSurface_p pOrgSurf = SoftSurface::create({ .format = PixelFormat::BGRA_8, .size = logoSize }, (unsigned char*)pLogoImg->pixels, PixelFormat::BGRA_8, pLogoImg->pitch);
     
     SDL_FreeSurface( pLogoImg );
 
-    Surface_p pLogoSurf = pFactory->createSurface( logoSize, PixelFormat::Alpha_8 );
+	Surface_p pLogoSurf = pFactory->createSurface({ .format = PixelFormat::Alpha_8, .size = logoSize });
 
     pLogoSurf->copy( CoordI(), pOrgSurf );
     

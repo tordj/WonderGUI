@@ -25,6 +25,9 @@ target_include_directories(embeddedworkbench PRIVATE
 	${SDL2_INCDIR}
 )
 
+target_link_directories(embeddedworkbench PRIVATE 
+	${SDL2_LIBDIR}
+)
 
 target_link_libraries(embeddedworkbench PRIVATE
 

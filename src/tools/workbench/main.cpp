@@ -53,7 +53,7 @@ Blob_p 			loadBlob( const char * pPath );
 Surface_p		loadSurface(const std::string& path, const Surface::Blueprint& blueprint = Surface::Blueprint() );
 bool			savePNG(Surface * pSurface, const char * path);
 
-void			convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat );
+void			convertSDLFormat( PixelDescription2 * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
 
@@ -466,7 +466,7 @@ int main(int argc, char** argv)
 
 	// Init font
 
-	PixelDescription	pixelDesc;
+	PixelDescription2	pixelDesc;
 /*
 	char * pFontSpec = (char*)loadFile("resources/anuvverbubbla_8x8.fnt");
 
@@ -509,7 +509,7 @@ int main(int argc, char** argv)
 
 	SDL_Surface * pSDLSurf = IMG_Load("resources/simple_button.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pButtonSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGR_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({
 		.axis = wg::Axis::X,
@@ -521,21 +521,21 @@ int main(int argc, char** argv)
 
 	pSDLSurf = IMG_Load("resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pBackgroundSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pBackgroundSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGR_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pBackgroundSkin = BlockSkin::create(pBackgroundSurface);
 
 
 	pSDLSurf = IMG_Load("resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pSplashSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pSplashSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGR_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pSplashSkin = BlockSkin::create(pSplashSurface);
 
 
 	pSDLSurf = IMG_Load("resources/state_button.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGR_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 	SDL_FreeSurface(pSDLSurf);
 //	BlockSkin_p pStateButtonSkin = BlockSkin::create(pStateButtonSurface, { State::Normal, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }, Border(3), Axis::X);
 	auto pStateButtonSkin = BlockSkin::create( BlockSkin::Blueprint
@@ -552,7 +552,7 @@ int main(int argc, char** argv)
 
 	pSDLSurf = IMG_Load("resources/grey_pressable_plate.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGR_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 	SDL_FreeSurface(pSDLSurf);
 //	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { State::Normal, State::Hovered, State::Pressed, State::Disabled }, Border(3), Axis::X);
 	auto pPressablePlateSkin = BlockSkin::create(BlockSkin::Blueprint
@@ -568,26 +568,26 @@ int main(int argc, char** argv)
 
 	pSDLSurf = IMG_Load("resources/list_entry.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pListEntrySurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pListEntrySurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGRA_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 	SDL_FreeSurface(pSDLSurf);
 	Skin_p pListEntrySkin = BlockSkin::create(pListEntrySurface, { State::Normal, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }, Border(2), Axis::X);
 
 	pSDLSurf = IMG_Load("resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pImgSurface = pSurfaceFactory->createSurface( { .format = PixelFormat::BGR_8, .sampleMethod = SampleMethod::Bilinear, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pImgSurface = pSurfaceFactory->createSurface( { .format = PixelFormat::BGR_8, .sampleMethod = SampleMethod::Bilinear, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface(pImgSurface);
 
 
 	pSDLSurf = IMG_Load("resources/up_down_arrow.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGRA_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 	SDL_FreeSurface(pSDLSurf);
 	Skin_p pUpDownArrowSkin = BlockSkin::create(pUpDownArrowSurface, { State::Normal, State::Selected }, Border(0));
 
 	pSDLSurf = IMG_Load("resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pSimpleIconSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pSimpleIconSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGRA_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 	SDL_FreeSurface(pSDLSurf);
 	Skin_p pSimpleIconSkin = BlockSkin::createStaticFromSurface(pSimpleIconSurface, Border(0));
 
@@ -1649,26 +1649,15 @@ void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, cons
 
 //____ convertSDLFormat() ______________________________________________________
 
-void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat )
+void convertSDLFormat( PixelDescription2 * pWGFormat, const SDL_PixelFormat * pSDLFormat )
 {
-	pWGFormat->format = PixelFormat::Undefined;
+	pWGFormat->type = PixelFmt::Chunky;
 	pWGFormat->bits = pSDLFormat->BitsPerPixel;
-	pWGFormat->bIndexed = false;
 
 	pWGFormat->R_mask = pSDLFormat->Rmask;
 	pWGFormat->G_mask = pSDLFormat->Gmask;
 	pWGFormat->B_mask = pSDLFormat->Bmask;
 	pWGFormat->A_mask = pSDLFormat->Amask;
-
-	pWGFormat->R_shift = pSDLFormat->Rshift;
-	pWGFormat->G_shift = pSDLFormat->Gshift;
-	pWGFormat->B_shift = pSDLFormat->Bshift;
-	pWGFormat->A_shift = pSDLFormat->Ashift;
-
-	pWGFormat->R_bits = 8 - pSDLFormat->Rloss;
-	pWGFormat->G_bits = 8 - pSDLFormat->Gloss;
-	pWGFormat->B_bits = 8 - pSDLFormat->Bloss;
-	pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
 
 }
 
@@ -1677,7 +1666,7 @@ void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSD
 
 Surface_p loadSurface(const std::string& path, const Surface::Blueprint& blueprint)
 {
-	PixelDescription	pixelDesc;
+	PixelDescription2	pixelDesc;
 
 	auto pSDLSurf = IMG_Load(path.c_str());
 	if (pSDLSurf == nullptr)
@@ -1694,12 +1683,12 @@ Surface_p loadSurface(const std::string& path, const Surface::Blueprint& bluepri
 
 	if (pixelDesc.bits == 24)
 		bp.format = PixelFormat::BGR_8;
-	else if (pixelDesc.A_bits == 0)
+	else if (pixelDesc.A_mask == 0)
 		bp.format = PixelFormat::BGRX_8;
 	else
 		bp.format = PixelFormat::BGRA_8;
 
-	Surface_p pImgSurface = Base::defaultSurfaceFactory()->createSurface( bp, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pImgSurface = Base::defaultSurfaceFactory()->createSurface( bp, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 
 	SDL_FreeSurface(pSDLSurf);
 
@@ -1711,7 +1700,7 @@ Surface_p loadSurface(const std::string& path, const Surface::Blueprint& bluepri
 bool savePNG(Surface * pSurface, const char * path)
 {
 	SizeI size = pSurface->pixelSize();
-	const PixelDescription* pFmt = pSurface->pixelDescription();
+	const PixelDescription2* pFmt = pSurface->pixelDescription();
 
 	SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, pFmt->R_mask, pFmt->G_mask, pFmt->B_mask, pFmt->A_mask);
 
@@ -2650,7 +2639,7 @@ bool bakeSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pSplashSkin = BlockSkin::create({ .blendMode = BlendMode::Add, .surface = pSplashSurf });
 
-	Surface_p pBakeSurface = Base::defaultSurfaceFactory()->createSurface(SizeI(512, 512));
+	Surface_p pBakeSurface = Base::defaultSurfaceFactory()->createSurface({ .size = SizeI(512, 512) });
 
 	auto pBakedSkin = BakeSkin::create({ .skins = { pSplashSkin, pDynamicSkin }, .surface = pBakeSurface });
 
@@ -2689,7 +2678,7 @@ bool animSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pDoubleSkin = DoubleSkin::create(pAnimSkin2, pFramingSkin, true);
 
-	auto pBakeSurface = Base::defaultSurfaceFactory()->createSurface(SizeI(512, 512));
+	auto pBakeSurface = Base::defaultSurfaceFactory()->createSurface({ .size = SizeI(512, 512) });
 
 	auto pBakeSkin = BakeSkin::create({ .skinInSkin = true, .skins = {pAnimSkin2, pBoxSkin,pAnimSkin}, .surface = pBakeSurface });
 

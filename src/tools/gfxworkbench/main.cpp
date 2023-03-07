@@ -62,7 +62,7 @@ int main ( int argc, char** argv )
 		format = PixelFormat::BGR_8;
 
 	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
-	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
+	SoftSurface_p pCanvas = SoftSurface::create({ .format = format, .size = SizeI(pWinSurf->w,pWinSurf->h) }, pCanvasBlob, pWinSurf->pitch);
 
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
 	addDefaultSoftKernels(pGfxDevice);
@@ -72,7 +72,7 @@ int main ( int argc, char** argv )
 	// No error handling or such to keep this example short and simple.
 
 	SDL_Surface * pSDLSurf = SDL_LoadBMP( "resources/simple_button.bmp" );
-	SoftSurface_p pButtonSurface = SoftSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	SoftSurface_p pButtonSurface = SoftSurface::create({ .format = PixelFormat::BGR_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, PixelFormat::BGR_8, pSDLSurf->pitch, 0);
 	SDL_FreeSurface(pSDLSurf);
 
 

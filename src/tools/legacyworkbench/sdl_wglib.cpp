@@ -184,7 +184,7 @@ namespace sdl_wglib
 		bp2.format = type;
 		
 		
-        wg::Surface_p pSurf = factory->createSurface( bp2, (uint8_t*) bmp->pixels, bmp->pitch, &pixelFormat );
+        wg::Surface_p pSurf = factory->createSurface( bp2, (uint8_t*) bmp->pixels, pixelFormat, bmp->pitch );
 
 		if( !pSurf )
 		{
@@ -582,25 +582,13 @@ namespace sdl_wglib
 
 	void ConvertPixelFormat( WgPixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFormat )
 	{
-        pWGFormat->format = WgPixelType::Undefined;
 		pWGFormat->bits = pSDLFormat->BitsPerPixel;
-		pWGFormat->bIndexed = false;
+		pWGFormat->type = wg::PixelFmt::Chunky;
 
 		pWGFormat->R_mask = pSDLFormat->Rmask;
 		pWGFormat->G_mask = pSDLFormat->Gmask;
 		pWGFormat->B_mask = pSDLFormat->Bmask;
 		pWGFormat->A_mask = pSDLFormat->Amask;
-
-		pWGFormat->R_shift = pSDLFormat->Rshift;
-		pWGFormat->G_shift = pSDLFormat->Gshift;
-		pWGFormat->B_shift = pSDLFormat->Bshift;
-		pWGFormat->A_shift = pSDLFormat->Ashift;
-
-		pWGFormat->R_bits = 8 - pSDLFormat->Rloss;
-		pWGFormat->G_bits = 8 - pSDLFormat->Gloss;
-		pWGFormat->B_bits = 8 - pSDLFormat->Bloss;
-		pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
-
 	}
 	
 	

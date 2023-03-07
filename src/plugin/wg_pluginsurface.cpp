@@ -48,7 +48,7 @@ namespace wg
 
 		m_id				= PluginCalls::surface->getSurfaceIdentity(object);
 		m_scale				= PluginCalls::surface->getSurfaceScale(object);
-		m_pixelDescription	= * (PixelDescription*)PluginCalls::surface->surfacePixelDescription(object);
+		m_pPixelDescription	= (PixelDescription2*)PluginCalls::surface->surfacePixelDescription(object);
 		
 		wg_sizeI pixSize 	= PluginCalls::surface->surfacePixelSize(object);
 		m_size				= * (SizeI*) &pixSize;

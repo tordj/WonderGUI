@@ -452,7 +452,7 @@ void WgCanvasCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, con
 {
 	//TODO: Support recursive masking.
 
-	if( m_pCanvas && ((m_tintColor.a == 255 && m_pCanvas->pixelDescription()->A_bits == 0) || m_blendMode == WgBlendMode::Replace) )
+	if( m_pCanvas && ((m_tintColor.a == 255 && m_pCanvas->pixelDescription()->A_mask == 0) || m_blendMode == WgBlendMode::Replace) )
 		patches.sub(WgRect::overlap(geo, clip));
 
 	return;

@@ -456,7 +456,10 @@ namespace wg
 		bool bClear = false;
 		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer] == nullptr)
 		{
-			m_layerSurfaces[m_renderLayer] = GlSurface::create(roundToPixels(m_canvas.size), m_pCanvasLayers->layerFormat(m_renderLayer), SurfaceFlag::Canvas);
+			m_layerSurfaces[m_renderLayer] = GlSurface::create( WGBP(Surface,
+																_.size = roundToPixels(m_canvas.size), 
+																_.format = m_pCanvasLayers->layerFormat(m_renderLayer), 
+																_.canvas = true ));
 			bClear = true;
 		}
 
@@ -2131,7 +2134,7 @@ namespace wg
 						if (nVertices > 0 && m_pActiveBlitSource)
 						{
 							GlSurface* pSurf = m_pActiveBlitSource;
-							glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->sampleMethod()][m_bGradientActive][m_bActiveCanvasIsA8]);
+							glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelFormat][(int)pSurf->sampleMethod()][m_bGradientActive][m_bActiveCanvasIsA8]);
 
 							glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 

@@ -52,6 +52,8 @@ namespace wg
 	
 		int findBestMatchInPalette( HiColor color, bool bSRGB, Color8* pPalette, int paletteEntries = 256);
 	
+		bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, RectI srcRect, uint8_t* pDst, int dstPitch, const Color8* pPalette);
+
 	}
 }
 

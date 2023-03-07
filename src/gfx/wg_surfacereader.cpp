@@ -22,6 +22,8 @@
 
 #include <wg_surfacereader.h>
 #include <wg_gfxbase.h>
+#include <wg_gfxutil.h>
+
 #include <cstring>
 
 namespace wg
@@ -60,11 +62,36 @@ namespace wg
 
 	Surface_p SurfaceReader::readSurfaceFromStream(std::istream& stream, const Surface::Blueprint& _bp)
 	{
+
+		// Determine file format
+
+		const char id_QOI[4] = { 'q','o','i','f' };
+		const char id_Surf[4] = { 'S','U','R','F' };
+
+		char identifier[4];
+		stream.read(identifier, 4);
+
+		if (*(uint32_t*)id_Surf == *(uint32_t*)identifier)
+			return _readSurfFromStream(stream, _bp);
+		else if (*(uint32_t*)id_QOI == *(uint32_t*)identifier)
+			return _readQOIFromStream(stream, _bp);
+
+		GfxBase::throwError(ErrorLevel::Error, ErrorCode::Other, "Stream is not a supported image format.", this, &TYPEINFO, __func__, __FILE__, __LINE__ );
+		return nullptr;
+	}
+
+	//____ _readSurfFromStream() ______________________________________________
+
+	Surface_p SurfaceReader::_readSurfFromStream(std::istream & stream, const Surface::Blueprint & _bp)
+	{
 		SurfaceFileHeader	header;
 
-		// Read the header
+		// Read the header size
 
-		stream.read( (char*) &header, 8 );
+		stream.read(((char*)(&header)) + 4, 4);
+
+		// Read the rest of the header
+
 		stream.read( ((char*)(&header))+8, header.headerBytes - 8);
 
 		// Prepare surface blueprint
@@ -127,6 +154,39 @@ namespace wg
 		pSurface->freePixelBuffer(pixbuf);
 
 		return pSurface;
+	}
+
+	//____ _readQOIFromStream() ______________________________________________
+
+	Surface_p SurfaceReader::_readQOIFromStream(std::istream& stream, const Surface::Blueprint& _bp)
+	{
+		struct qoi_header{
+			uint32_t width; // image width in pixels (BE)
+			uint32_t height; // image height in pixels (BE)
+			uint8_t channels; // 3 = RGB, 4 = RGBA
+			uint8_t colorspace; // 0 = sRGB with linear alpha
+								// 1 = all channels linear
+		};
+
+		qoi_header header;
+
+		// Read header
+
+		stream.read(((char*)(&header)), 10);
+
+		if (!Util::isSystemBigEndian())
+		{
+			header.width = Util::endianSwap(header.width);
+			header.height = Util::endianSwap(header.height);
+		}
+
+		// Create surface
+
+
+
+
+
+		return nullptr;
 	}
 
 	//____ readSurfaceFromBlob() _______________________________________________

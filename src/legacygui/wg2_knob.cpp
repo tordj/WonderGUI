@@ -389,7 +389,9 @@ void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 	{
 		if( !m_pSurfaceFactory )
 			return;
-		m_pSurf = m_pSurfaceFactory->createSurface(m_size*m_iOversampleX, WgPixelType::BGRA_8);
+		m_pSurf = m_pSurfaceFactory->createSurface( WGBP(Surface,
+													_.size = m_size*m_iOversampleX, 
+													_.format = WgPixelType::BGRA_8) );
 	}
 
 	if( !m_backBufferDirtyRect.isEmpty() )

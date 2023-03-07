@@ -261,7 +261,7 @@ wg::Surface_p WgWidget::Screenshot( const WgRect& _rect, const wg::Surface::Blue
 	
 	WgRect rect = WgRect::overlap(PixelSize(), _rect*m_scale/WG_SCALE_BASE);
 
-	Surface::Blueprint bp = _bp;
+	wg::Surface::Blueprint bp = _bp;
 	bp.size = rect.size();
 	bp.format = wg::PixelFormat::BGRA_8;
 	bp.canvas = true;

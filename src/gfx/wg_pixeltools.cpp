@@ -357,9 +357,7 @@ static void shiftReadConv_32bit_swap(const uint8_t* pSrc, uint8_t* pDst, int nbP
 
 	for (int i = 0; i < nbPixels; i++)
 	{
-		uint32_t rgba = *(uint32_t*)pSrc;
-		rgba = (rgba & 0x0000FFFF) << 16 | (rgba & 0xFFFF0000) >> 16;
-		rgba = (rgba & 0x00FF00FF) << 8 | (rgba & 0xFF00FF00) >> 8;
+		uint32_t rgba = Util::endianSwap(*(uint32_t*)pSrc);
 
 		*pDst++ = t.pConvB[(rgba & t.maskB) >> t.shiftB];
 		*pDst++ = t.pConvG[(rgba & t.maskG) >> t.shiftG];
@@ -376,12 +374,12 @@ static void shiftReadConv_24bit_le(const uint8_t* pSrc, uint8_t* pDst, int nbPix
 
 	for (int i = 0; i < nbPixels; i++)
 	{
-		uint32_t rgba = pSrc[0] + uint32_t(pSrc[1] << 8) + uint32_t(pSrc[2] << 8);
+		uint32_t rgba = pSrc[0] + (uint32_t(pSrc[1]) << 8) + (uint32_t(pSrc[2]) << 16);
 
 		*pDst++ = t.pConvB[(rgba & t.maskB) >> t.shiftB];
 		*pDst++ = t.pConvG[(rgba & t.maskG) >> t.shiftG];
 		*pDst++ = t.pConvR[(rgba & t.maskR) >> t.shiftR];
-		*pDst++ = t.pConvA[(rgba & t.maskA) >> t.shiftA];
+		*pDst++ = 255;
 		pSrc += 3;
 	}
 }
@@ -392,12 +390,12 @@ static void shiftReadConv_24bit_be(const uint8_t* pSrc, uint8_t* pDst, int nbPix
 
 	for (int i = 0; i < nbPixels; i++)
 	{
-		uint32_t rgba = pSrc[2] + uint32_t(pSrc[1] << 8) + uint32_t(pSrc[0] << 8);
+		uint32_t rgba = pSrc[2] + (uint32_t(pSrc[1]) << 8) + (uint32_t(pSrc[0]) << 16);
 
 		*pDst++ = t.pConvB[(rgba & t.maskB) >> t.shiftB];
 		*pDst++ = t.pConvG[(rgba & t.maskG) >> t.shiftG];
 		*pDst++ = t.pConvR[(rgba & t.maskR) >> t.shiftR];
-		*pDst++ = t.pConvA[(rgba & t.maskA) >> t.shiftA];
+		*pDst++ = 255;
 		pSrc += 3;
 	}
 }
@@ -1096,24 +1094,38 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 //____ shiftAndBitsFromMask() _________________________________________________
 
-inline void shiftAndBitsFromMask( uint64_t mask, int& shift, int& bits )
+inline void shiftAndBitsFromMask( uint64_t mask64, int& shift, int& bits )
 {
 	shift = 0;
 	bits = 0;
 	
-	if( mask == 0 )
+	if( mask64 == 0 )
 		return;
 	
-	while( (mask & 0x1) == 0 )
+	while( (mask64 & 0xFF) == 0)
+	{
+		shift += 8;
+		mask64 >>= 8;
+	}
+
+	uint32_t mask32 = (uint32_t)mask64;	// It all fits into 32 bits now, so lets be nice to 32-bit CPUs. ;)
+
+	while( (mask32 & 0x1) == 0 )
 	{
 		shift++;
-		mask >>= 1;
+		mask32 >>= 1;
 	}
-	
-	while( (mask & 0x1) == 1 )
+
+	while ((mask32 & 0xF) == 0xF)
+	{
+		bits+=4;
+		mask32 >>= 4;
+	}
+
+	while( (mask32 & 0x1) == 1 )
 	{
 		bits++;
-		mask >>= 1;
+		mask32 >>= 1;
 	}
 }
 
@@ -1681,6 +1693,106 @@ int findBestMatchInPalette( HiColor color, bool bSRGB, Color8* pPalette, int pal
 	
 	return bestMatchIndex;
 }
+
+//____ extractAlphaChannel() __________________________________________________
+
+bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, RectI srcRect, uint8_t* pDst, int dstPitch, const Color8* pPalette)
+{
+
+	auto& pixDesc = Util::pixelFormatToDescription2(format);
+
+	if (pixDesc.A_mask == 0 && pixDesc.type != PixelFmt::Index)
+		return false;										// These pixels have no alpha.
+
+	pSrc += srcRect.y * srcPitch + srcRect.x * pixDesc.bits/8;
+
+	int srcPitchAdd = srcPitch - srcRect.w * pixDesc.bits/8;	//TODO: Won't work for bitplane graphics.
+	int dstPitchAdd = dstPitch - srcRect.w;
+
+	switch (pixDesc.type)
+	{
+		case PixelFmt::Index:
+		{
+			if (pixDesc.bits == 8)
+			{
+				for (int y = 0; y < srcRect.h; y++)
+				{
+					for (int x = 0; x < srcRect.w; x++)
+						*pDst++ = pPalette[*pSrc++].a;
+
+					pSrc += srcPitchAdd;
+					pDst += dstPitchAdd;
+				}
+			}
+			else if (pixDesc.bits == 16)
+			{
+				for (int y = 0; y < srcRect.h; y++)
+				{
+					for (int x = 0; x < srcRect.w; x++)
+					{
+						*pDst++ = pPalette[*(uint16_t*)pSrc].a;
+						pSrc += 2;
+					}
+
+					pSrc += srcPitchAdd;
+					pDst += dstPitchAdd;
+				}
+			}
+			return true;
+		}
+
+		case PixelFmt::Chunky:
+		{
+			switch (pixDesc.bits)
+			{
+				case 1:									// Only PixelType::Alpha_8 has this size.
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+							*pDst++ = *pSrc++;
+
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+
+				case 2:									// Only PixelType::BGRA_4 has this size and alpha.
+				{
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							uint16_t val = (* ((uint16_t*)pSrc)) >> 12;
+							*pDst++ = val | (val << 4);
+							pSrc += 2;
+						}
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+					break;
+				}
+				case 4:									// Only PixelType::BGRA_8 has this size and alpha
+				{
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							*pDst++ = pSrc[3];
+							pSrc += 4;
+						}
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+					break;
+				}
+			}
+
+		}
+		
+		default:
+			return false;		// PixelFormat not supported yet.
+	}
+}
+
 
 
 } } // namespace wg::PixelTool

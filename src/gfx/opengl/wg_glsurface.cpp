@@ -25,6 +25,7 @@
 #include <wg_glsurface.h>
 #include <wg_glgfxdevice.h>
 #include <wg_gfxutil.h>
+#include <wg_pixeltools.h>
 #include <wg_blob.h>
 #include <wg_gfxbase.h>
 #include <assert.h>
@@ -80,7 +81,7 @@ namespace wg
 	}
 
 	GlSurface_p	GlSurface::create(const Blueprint& bp, const uint8_t* pPixels,
-								  PixelFormat format, int pitch, const Color8 * pPalette);
+								  PixelFormat format, int pitch, const Color8 * pPalette)
 	{
 		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
@@ -89,7 +90,7 @@ namespace wg
 	};
 
 	GlSurface_p	GlSurface::create(const Blueprint& bp, const uint8_t* pPixels,
-								  const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
+								  const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
 	{
 		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
@@ -105,13 +106,13 @@ namespace wg
 	{
 		HANDLE_GLERROR(glGetError());
 
-		_setPixelDetails(m_pixelDescription.format);
+		_setPixelDetails(m_pixelFormat);
 		m_pPalette = nullptr;
 
-		if (bp.buffered || m_pixelDescription.bits <= 8)
+		if (bp.buffered || m_pPixelDescription->bits <= 8)
         {
             g_backingPixels += m_size.w*m_size.h;
-            m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+            m_pitch = ((m_size.w * m_pPixelDescription->bits / 8) + 3) & 0xFFFFFFFC;
             m_pBlob = Blob::create(m_pitch * m_size.h + (bp.palette ? 1024 : 0));
 
             if (bp.palette)
@@ -130,7 +131,7 @@ namespace wg
 				memcpy(m_pPalette, bp.palette, 1024);
 			}
 
-			if (m_pixelDescription.A_bits > 0)
+			if (m_pPixelDescription->A_mask > 0)
 				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
 		}
 
@@ -145,13 +146,13 @@ namespace wg
 		// Set general information
 
 
-		_setPixelDetails(m_pixelDescription.format);
+		_setPixelDetails(m_pixelFormat);
 		m_pPalette = const_cast<Color8*>(bp.palette);
 
 		if (pitch == 0)
-			pitch = bp.size.w * m_pixelDescription.bits / 8;
+			pitch = bp.size.w * m_pPixelDescription->bits / 8;
 
-        if ((bp.buffered) || m_pixelDescription.bits <= 8)
+        if ((bp.buffered) || m_pPixelDescription->bits <= 8)
         {
             g_backingPixels += m_size.w*m_size.h;
             m_pitch = pitch;
@@ -167,13 +168,13 @@ namespace wg
 				memcpy(m_pPalette, bp.palette, 1024);
 			}
 
-			if (m_pixelDescription.A_bits > 0)
+			if (m_pPixelDescription->A_mask > 0)
 			{
 				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
 
 				// Setup a fake PixelBuffer for call to _updateAlphaMap
 				PixelBuffer buf;
-				buf.format = m_pixelDescription.format;
+				buf.format = m_pixelFormat;
 				buf.palette = m_pPalette;
 				buf.pitch = pitch;
 				buf.pixels = (uint8_t*) pBlob->data();
@@ -199,19 +200,19 @@ namespace wg
 	{
 		//TODO: Not just default to BGRA_8 if PixelFormat not specified in Blueprint. Instead we should take the most suitable PixelFormat base on pPixelDescription
 		
-		_setPixelDetails(m_pixelDescription.format);
+		_setPixelDetails(m_pixelFormat);
 		m_pPalette = nullptr;
 		
 		if( pitch == 0 )
 			pitch = bp.size.w * pixelDescription.bits/8;
 		
-        if (bp.buffered || m_pixelDescription.bits <= 8)
+        if (bp.buffered || m_pPixelDescription->bits <= 8)
         {
             g_backingPixels += m_size.w*m_size.h;
 
 			// Create our blob
 			
-            m_pitch = ((m_size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+            m_pitch = ((m_size.w * m_pPixelDescription->bits / 8) + 3) & 0xFFFFFFFC;
             m_pBlob = Blob::create(m_pitch * m_size.h + (bp.palette ? 1024 : 0));
 
 			// Setup palette
@@ -226,8 +227,8 @@ namespace wg
 			
 			int dstPaletteEntries = 256;
 			
-			copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, pitch - m_size.w * pixelDescription.bits/8,
-					   (uint8_t*) m_pBlob->data(), m_pixelDescription.format, m_pitch - m_size.w * m_pixelDescription.bits / 8,
+			PixelTools::copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, pitch - m_size.w * pixelDescription.bits/8,
+					   (uint8_t*) m_pBlob->data(), m_pixelFormat, m_pitch - m_size.w * m_pPixelDescription->bits / 8,
 					   pPalette, m_pPalette, 256, dstPaletteEntries, 256);
 
 			// Setup GL-texture
@@ -248,15 +249,15 @@ namespace wg
 
 			//TODO: Skip temporary buffer and copy if source format is same as destination.
 
-			int tempBufPitch = m_size.w * m_pixelDescription.bits / 8;
-			uint8_t * pTempPixelBuffer = new char[tempBufPitch * m_size.h];
+			int tempBufPitch = m_size.w * m_pPixelDescription->bits / 8;
+			uint8_t * pTempPixelBuffer = new uint8_t[tempBufPitch * m_size.h];
 
 			// Copy pixels
 
 			int dstPaletteEntries = 256;
 		
-			copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, pitch - m_size.w * pixelDescription.bits/8,
-					   pTempPixelBuffer, m_pixelDescription.format, 0,
+			PixelTools::copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, pitch - m_size.w * pixelDescription.bits/8,
+					   pTempPixelBuffer, m_pixelFormat, 0,
 					   pPalette, m_pPalette, 256, dstPaletteEntries, 256);
 
 			// Setup GL-texture
@@ -265,13 +266,13 @@ namespace wg
 
 			//
 			
-			if (m_pixelDescription.A_bits > 0)
+			if (m_pPixelDescription->A_mask > 0)
 			{
 				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
 
 				// Setup a fake PixelBuffer for call to _updateAlphaMap
 				PixelBuffer buf;
-				buf.format = m_pixelDescription.format;
+				buf.format = m_pixelFormat;
 				buf.palette = m_pPalette;
 				buf.pitch = tempBufPitch;
 				buf.pixels = pTempPixelBuffer;
@@ -340,7 +341,7 @@ namespace wg
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-			glTexImage2D(GL_TEXTURE_2D, 0, m_pixelDescription.bLinear ? GL_RGBA8 : GL_SRGB8_ALPHA8, 256, 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, m_pPalette);
+			glTexImage2D(GL_TEXTURE_2D, 0, m_pPixelDescription->colorSpace == ColorSpace::Linear ? GL_RGBA8 : GL_SRGB8_ALPHA8, 256, 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, m_pPalette);
 
 			HANDLE_GLERROR(glGetError());
 		}
@@ -521,7 +522,7 @@ namespace wg
 
 		if (m_pBlob)
 		{
-			pixbuf.format = m_pixelDescription.format;
+			pixbuf.format = m_pixelFormat;
 			pixbuf.palette = m_pPalette;
 			pixbuf.pitch = m_pitch;
 			pixbuf.pixels = ((uint8_t*)m_pBlob->data()) + rect.y * m_pitch + rect.x * m_pixelSize;
@@ -529,9 +530,9 @@ namespace wg
 		}
 		else
 		{
-			pixbuf.format = m_pixelDescription.format;
+			pixbuf.format = m_pixelFormat;
 			pixbuf.palette = m_pPalette;
-			pixbuf.pitch = ((rect.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+			pixbuf.pitch = ((rect.w * m_pPixelDescription->bits / 8) + 3) & 0xFFFFFFFC;
             pixbuf.pixels = new uint8_t[rect.h * pixbuf.pitch];
 			pixbuf.rect = rect;
 		}
@@ -618,13 +619,18 @@ namespace wg
 			buf.rect = m_size;
 			buf.palette = m_pPalette;
 			buf.pitch = m_pitch;
-			buf.format = m_pixelDescription.format;
-			buf.pixels = m_pBlob->data();
+			buf.format = m_pixelFormat;
+			buf.pixels = (uint8_t*) m_pBlob->data();
 			
 			return _alpha(_coord, buf);
 		}
 		else if (m_pAlphaMap)
 		{
+			//TODO: Take endianess into account.
+			//TODO: Take advantage of subpixel precision and interpolate alpha value if surface set to interpolate.
+
+			CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
+
 			return HiColor::unpackLinearTab[m_pAlphaMap[coord.y * m_size.w + coord.x]];
 		}
 		else
@@ -701,82 +707,9 @@ namespace wg
 
 	void GlSurface::_updateAlphaMap(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		uint8_t* pDst = m_pAlphaMap + (buffer.rect.y + bufferRect.y) * m_size.w + (buffer.rect.x + bufferRect.x);
-		uint8_t* pSrc = buffer.pixels + bufferRect.y * buffer.pitch + bufferRect.x * m_pixelSize;
-
-		int srcPitchAdd = buffer.pitch - bufferRect.w * m_pixelSize;
-		int dstPitchAdd = m_size.w - bufferRect.w;
-
-		PixelFormat fmt = m_pixelDescription.format;
-		
-		if (fmt == PixelFormat::BGRA_8_linear || fmt == PixelFormat::BGRA_8_sRGB)
-		{
-			for (int y = 0; y < bufferRect.h; y++)
-			{
-				for (int x = 0; x < bufferRect.w; x++)
-				{
-					*pDst++ = pSrc[3];
-					pSrc += 4;
-				}
-				pSrc += srcPitchAdd;
-				pDst += dstPitchAdd;
-			}
-		}
-		else
-		{
-			const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
-			switch (m_pixelSize)
-			{
-				case 2:
-				{
-					for (int y = 0; y < bufferRect.h; y++)
-					{
-						for (int x = 0; x < bufferRect.w; x++)
-						{
-							uint32_t val = (uint32_t)((uint16_t*)pSrc)[0];
-							*pDst++ = pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
-							pSrc += m_pixelSize;
-						}
-						pSrc += srcPitchAdd;
-						pDst += dstPitchAdd;
-					}
-					break;
-				}
-				case 3:
-				{
-					for (int y = 0; y < bufferRect.h; y++)
-					{
-						for (int x = 0; x < bufferRect.w; x++)
-						{
-							uint32_t val = ((uint32_t)pSrc[0]) + (((uint32_t)pSrc[1]) << 8) + (((uint32_t)pSrc[2]) << 16);
-							*pDst++ = pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
-							pSrc += m_pixelSize;
-						}
-						pSrc += srcPitchAdd;
-						pDst += dstPitchAdd;
-					}
-					break;
-				}
-				case 4:
-				{
-					for (int y = 0; y < bufferRect.h; y++)
-					{
-						for (int x = 0; x < bufferRect.w; x++)
-						{
-							uint32_t val = *((uint32_t*)pSrc);
-							*pDst++ = pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
-							pSrc += m_pixelSize;
-						}
-						pSrc += srcPitchAdd;
-						pDst += dstPitchAdd;
-					}
-					break;
-				}
-				default:
-					break;
-			}
-		}
-	
+		PixelTools::extractAlphaChannel(m_pixelFormat, buffer.pixels, buffer.pitch,
+			{ buffer.rect.x + bufferRect.x,buffer.rect.y + bufferRect.y, bufferRect.w, bufferRect.h },
+			m_pAlphaMap, m_size.w, m_pPalette);	
 	}
 
 	//____ _readBackTexture() ____________________________________________
@@ -794,7 +727,7 @@ namespace wg
 
 		GLenum	type;
 
-		switch (m_pixelDescription.format)
+		switch (m_pixelFormat)
 		{
 		case PixelFormat::BGR_8:
 		case PixelFormat::BGR_8_sRGB:

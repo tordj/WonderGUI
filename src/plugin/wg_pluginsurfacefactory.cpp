@@ -82,24 +82,27 @@ namespace wg
 		return PluginSurface::create(obj);
 	}
 
-	Surface_p PluginSurfaceFactory::createSurface( const Surface::Blueprint& blueprint, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription )
+
+	Surface_p PluginSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+		PixelFormat format, int pitch, const Color8* pPalette)
 	{
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
-		auto obj = PluginCalls::surfaceFactory->createSurfaceFromBitmap(m_cFactory, &bp, pPixels, pitch, (wg_pixelDescription*) pPixelDescription);
+		auto obj = PluginCalls::surfaceFactory->createSurfaceFromBitmap(m_cFactory, &bp, pPixels, wg_pixelFormat(format), pitch, (const wg_color8*) pPalette);
 		return PluginSurface::create(obj);
 	}
 
-	Surface_p PluginSurfaceFactory::createSurface( const Surface::Blueprint& blueprint, Surface* pOther )
+	Surface_p PluginSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
+		const PixelDescription2& pixelDescription, int pitch, const Color8* pPalette)
 	{
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
-		auto obj = PluginCalls::surfaceFactory->createSurfaceFromSurface(m_cFactory, &bp, static_cast<Object*>(pOther) );
+		auto obj = PluginCalls::surfaceFactory->createSurfaceFromRawData(m_cFactory, &bp, pPixels, 
+					(const wg_pixelDescription2*) &pixelDescription, pitch, (const wg_color8*)pPalette);
 		return PluginSurface::create(obj);
 	}
-
 
 	//____ _convertBlueprint() ________________________________________________
 
