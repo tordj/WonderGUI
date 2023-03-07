@@ -81,12 +81,12 @@ wg_obj	wg_createSoftSurfaceFromBitmap(wg_obj factory, const wg_surfaceBP* bluepr
 }
 
 wg_obj	wg_createSoftSurfaceFromRawData(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels,
-										const wg_pixelDescription2 * pPixelDescription, int pitch, const wg_color8 * pPalette )
+										const wg_pixelDescription * pPixelDescription, int pitch, const wg_color8 * pPalette )
 {
 	Surface::Blueprint	bp;
 	convertSurfaceBlueprint(&bp, blueprint);
 	
-	auto p = SoftSurface::create(bp, pPixels, *(PixelDescription2*) pPixelDescription, pitch, (const Color8*) pPalette);
+	auto p = SoftSurface::create(bp, pPixels, *(PixelDescription*) pPixelDescription, pitch, (const Color8*) pPalette);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }

@@ -53,7 +53,7 @@ Blob_p 			loadBlob( const char * pPath );
 Surface_p		loadSurface(const std::string& path, const Surface::Blueprint& blueprint = Surface::Blueprint() );
 bool			savePNG(Surface * pSurface, const char * path);
 
-void			convertSDLFormat( PixelDescription2 * pWGFormat, const SDL_PixelFormat * pSDLFormat );
+void			convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
 
@@ -466,7 +466,7 @@ int main(int argc, char** argv)
 
 	// Init font
 
-	PixelDescription2	pixelDesc;
+	PixelDescription	pixelDesc;
 /*
 	char * pFontSpec = (char*)loadFile("resources/anuvverbubbla_8x8.fnt");
 
@@ -1649,9 +1649,9 @@ void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, cons
 
 //____ convertSDLFormat() ______________________________________________________
 
-void convertSDLFormat( PixelDescription2 * pWGFormat, const SDL_PixelFormat * pSDLFormat )
+void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat )
 {
-	pWGFormat->type = PixelFmt::Chunky;
+	pWGFormat->type = PixelType::Chunky;
 	pWGFormat->bits = pSDLFormat->BitsPerPixel;
 
 	pWGFormat->R_mask = pSDLFormat->Rmask;
@@ -1666,7 +1666,7 @@ void convertSDLFormat( PixelDescription2 * pWGFormat, const SDL_PixelFormat * pS
 
 Surface_p loadSurface(const std::string& path, const Surface::Blueprint& blueprint)
 {
-	PixelDescription2	pixelDesc;
+	PixelDescription	pixelDesc;
 
 	auto pSDLSurf = IMG_Load(path.c_str());
 	if (pSDLSurf == nullptr)
@@ -1700,7 +1700,7 @@ Surface_p loadSurface(const std::string& path, const Surface::Blueprint& bluepri
 bool savePNG(Surface * pSurface, const char * path)
 {
 	SizeI size = pSurface->pixelSize();
-	const PixelDescription2* pFmt = pSurface->pixelDescription();
+	const PixelDescription* pFmt = pSurface->pixelDescription();
 
 	SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, pFmt->R_mask, pFmt->G_mask, pFmt->B_mask, pFmt->A_mask);
 

@@ -90,7 +90,7 @@ namespace wg
 	};
 
 	GlSurface_p	GlSurface::create(const Blueprint& bp, const uint8_t* pPixels,
-								  const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
+								  const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
 	{
 		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
@@ -190,12 +190,12 @@ namespace wg
 	}
 
 	GlSurface::GlSurface(const Blueprint& bp, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette)
-	: GlSurface(bp, pPixels, Util::pixelFormatToDescription2(format), pitch, pPalette)
+	: GlSurface(bp, pPixels, Util::pixelFormatToDescription(format), pitch, pPalette)
 	{
 	
 	}
 
-	GlSurface::GlSurface(const Blueprint& bp, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
+	GlSurface::GlSurface(const Blueprint& bp, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
 	: Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
 	{
 		//TODO: Not just default to BGRA_8 if PixelFormat not specified in Blueprint. Instead we should take the most suitable PixelFormat base on pPixelDescription

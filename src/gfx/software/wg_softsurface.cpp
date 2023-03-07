@@ -58,7 +58,7 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(blueprint, pBlob, pitch));
 	}
 
-	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette )
+	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette )
 	{
 		return SoftSurface_p(new SoftSurface(blueprint, pPixels, pixelDescription, pitch, pPalette));
 	}
@@ -150,7 +150,7 @@ namespace wg
 		// Copy pixels
 
 		int dstPaletteEntries = 256;
-		int srcPitchAdd = (pitch == 0) ? 0 : pitch - Util::pixelFormatToDescription2(format).bits/8 * m_size.w;
+		int srcPitchAdd = (pitch == 0) ? 0 : pitch - Util::pixelFormatToDescription(format).bits/8 * m_size.w;
 
 		PixelTools::copyPixels(m_size.w, m_size.h, pPixels, format, srcPitchAdd,
 							   m_pData, m_pixelFormat, m_pitch - m_pPixelDescription->bits/8 * m_size.w, pPalette,
@@ -159,7 +159,7 @@ namespace wg
 
 
 	SoftSurface::SoftSurface(const Blueprint& bp, const uint8_t * pPixels,
-							 const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
+							 const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
 	{
 		
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pPixelDescription->bits / 8;

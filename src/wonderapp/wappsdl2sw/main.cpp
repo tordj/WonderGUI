@@ -97,7 +97,7 @@ public:
 
 
 protected:
-	void			convertSDLFormat(PixelDescription2* pWGFormat, const SDL_PixelFormat* pSDLFormat);
+	void			convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat);
 
 };
 
@@ -630,12 +630,12 @@ MouseButton translateSDLMouseButton(Uint8 button)
 
 //____ convertSDLFormat() ______________________________________________________
 
-void MyAppVisitor::convertSDLFormat(PixelDescription2* pWGFormat, const SDL_PixelFormat* pSDLFormat)
+void MyAppVisitor::convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat)
 {
 	if( (pSDLFormat->palette != nullptr) )
-		pWGFormat->type = PixelFmt::Index;
+		pWGFormat->type = PixelType::Index;
 	else
-		pWGFormat->type = PixelFmt::Chunky;
+		pWGFormat->type = PixelType::Chunky;
 
 	pWGFormat->bits = pSDLFormat->BitsPerPixel;
 	
@@ -705,7 +705,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 	{
 		Surface::Blueprint bp = _bp;
 
-		PixelDescription2 format;
+		PixelDescription format;
 
 		auto pSDLSurf = IMG_Load(path.c_str());
 		if (pSDLSurf == NULL)
@@ -717,7 +717,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 
 		Color8 palette[256];
 
-		if (format.type == PixelFmt::Index)
+		if (format.type == PixelType::Index)
 		{
 			px = PixelFormat::Index_8;
 

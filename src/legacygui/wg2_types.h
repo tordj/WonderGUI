@@ -65,7 +65,7 @@ typedef wg::TextEditMode WgTextEditMode;
 typedef wg::MaskOp      WgMaskOp;
 typedef wg::PlayMode    WgAnimMode;
 
-typedef wg::PixelDescription2    WgPixelFormat;
+typedef wg::PixelDescription    WgPixelFormat;
 
 
 #	include <stdint.h>			// Use the C99 official header

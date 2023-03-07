@@ -51,7 +51,7 @@ namespace wg
 		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels,
 										   PixelFormat format = PixelFormat::Undefined, int pitch = 0, const Color8 * pPalette = nullptr);
 		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels,
-										   const PixelDescription2& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr);
+										   const PixelDescription& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr);
 
 		//.____ Identification __________________________________________
 
@@ -88,7 +88,7 @@ namespace wg
 		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint);
 		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
 		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette);
-		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
+		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette);
 
 		~GfxStreamSurface();
 

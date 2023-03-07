@@ -118,7 +118,7 @@ int main ( int argc, char** argv )
 
 	
 	
-	PixelDescription2 desc = Util::pixelFormatToDescription2(PixelFormat::BGRA_8_sRGB);
+	PixelDescription desc = Util::pixelFormatToDescription(PixelFormat::BGRA_8_sRGB);
 	
 	swap( desc.B_mask, desc.R_mask);
 

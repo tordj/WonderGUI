@@ -57,7 +57,7 @@ namespace wg
 	}
 
 	GfxStreamSurface_p GfxStreamSurface::create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels,
-												const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
+												const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
 	{
 		return GfxStreamSurface_p(new GfxStreamSurface(pEncoder, blueprint, pPixels, pixelDescription, pitch, pPalette));
 	}
@@ -135,7 +135,7 @@ namespace wg
 		m_pEncoder->flush();
 	}
 
-	GfxStreamSurface::GfxStreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp, const uint8_t * pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette )
+	GfxStreamSurface::GfxStreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp, const uint8_t * pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette )
 		: Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod())
 	{
 		m_pEncoder = pEncoder;
@@ -198,7 +198,7 @@ namespace wg
 		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.palette ? 1024 : 0) );
 
 		int dstPaletteEntries = 256;
-		int srcPitchAdd = pitch == 0 ? 0 : pitch - Util::pixelFormatToDescription2(srcFormat).bits/8 * m_size.w;
+		int srcPitchAdd = pitch == 0 ? 0 : pitch - Util::pixelFormatToDescription(srcFormat).bits/8 * m_size.w;
 
 		PixelTools::copyPixels(m_size.w, m_size.h, pPixels, srcFormat, srcPitchAdd,
 							 (uint8_t*) m_pBlob->data(), m_pixelFormat, m_pitch - m_pPixelDescription->bits/8 * m_size.w, pPalette,

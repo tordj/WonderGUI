@@ -66,7 +66,7 @@ namespace wg
 	}
 
 	Surface_p GlSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
-												const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
+												const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
 	{
 		return GlSurface::create(blueprint, pPixels, pixelDescription, pitch, pPalette);
 	}

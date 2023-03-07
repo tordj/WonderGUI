@@ -81,10 +81,10 @@ namespace wg
 		PixelFormat format = bp.format == PixelFormat::Undefined ? defaultPixelFormat : bp.format;
 		SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? defaultSampleMethod : bp.sampleMethod;
 
-		format = Util::translatePixelType(format);
+		format = Util::translatePixelFormat(format);
 
 		m_pixelFormat	= format;
-		m_pPixelDescription = &Util::pixelFormatToDescription2(format);
+		m_pPixelDescription = &Util::pixelFormatToDescription(format);
 
 		m_size			= bp.size;
 		m_scale			= bp.scale == 0 ? 64 : bp.scale;
@@ -332,8 +332,8 @@ namespace wg
 		
 		//
 		
-		auto& srcDesc = Util::pixelFormatToDescription2(srcbuf.format);
-		auto& dstDesc = Util::pixelFormatToDescription2(m_pixelFormat);
+		auto& srcDesc = Util::pixelFormatToDescription(srcbuf.format);
+		auto& dstDesc = Util::pixelFormatToDescription(m_pixelFormat);
 		
 		int dstPaletteEntries = 256;
 		

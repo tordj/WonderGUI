@@ -53,7 +53,7 @@ namespace wg
 									   const Color8 * pPalette = nullptr);
 		
 		static SoftSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
-									   const PixelDescription2& pixelDescription, int pitch = 0,
+									   const PixelDescription& pixelDescription, int pitch = 0,
 									   const Color8 * pPalette = nullptr);
 
 		static SoftSurface_p	createInPlace(const Blueprint& blueprint, uint8_t* pPixels, int pitch = 0);
@@ -96,7 +96,7 @@ namespace wg
 		SoftSurface(const Blueprint& blueprint, Blob* pBlob, int pitch);
 		SoftSurface(const Blueprint& blueprint, uint8_t* pPixels, int pitch);		// Create in place!
 		SoftSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette);
-		SoftSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
+		SoftSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette);
 
 		~SoftSurface();
 

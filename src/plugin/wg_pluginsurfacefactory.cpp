@@ -94,13 +94,13 @@ namespace wg
 	}
 
 	Surface_p PluginSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
-		const PixelDescription2& pixelDescription, int pitch, const Color8* pPalette)
+		const PixelDescription& pixelDescription, int pitch, const Color8* pPalette)
 	{
 		wg_surfaceBP	bp;
 		_convertBlueprint(&bp, &blueprint);
 
 		auto obj = PluginCalls::surfaceFactory->createSurfaceFromRawData(m_cFactory, &bp, pPixels, 
-					(const wg_pixelDescription2*) &pixelDescription, pitch, (const wg_color8*)pPalette);
+					(const wg_pixelDescription*) &pixelDescription, pitch, (const wg_color8*)pPalette);
 		return PluginSurface::create(obj);
 	}
 

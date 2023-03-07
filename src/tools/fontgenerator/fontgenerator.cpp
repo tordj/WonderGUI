@@ -229,7 +229,7 @@ bool MyApp::saveBitmapFont()
 				auto pixbuf = m_pBitmapFontSurface->allocPixelBuffer();
 				m_pBitmapFontSurface->pushPixels(pixbuf);
 
-				PixelDescription2 pixdesc = Util::pixelFormatToDescription2(pixbuf.format);
+				PixelDescription pixdesc = Util::pixelFormatToDescription(pixbuf.format);
 
 				auto pSDLSurf = SDL_CreateRGBSurfaceFrom(pixbuf.pixels, pixbuf.rect.w, pixbuf.rect.h, pixdesc.bits, pixbuf.pitch, pixdesc.R_mask, pixdesc.G_mask, pixdesc.B_mask, pixdesc.A_mask);
 

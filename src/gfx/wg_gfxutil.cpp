@@ -87,47 +87,47 @@ namespace wg
 
 
 
-const PixelDescription2	pixelDescTab[PixelFormat_size] = {
-	{0,  PixelFmt::Chunky, ColorSpace::Linear, 0, 0, 0, 0},								// Undefined
-	{24,  PixelFmt::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0},			// BGR_8
-	{24, PixelFmt::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0}, 				// BGR_8_sRGB
-	{24, PixelFmt::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0},				// BGR_8_linear
+const PixelDescription	pixelDescTab[PixelFormat_size] = {
+	{0,  PixelType::Chunky, ColorSpace::Linear, 0, 0, 0, 0},								// Undefined
+	{24,  PixelType::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0},			// BGR_8
+	{24, PixelType::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0}, 				// BGR_8_sRGB
+	{24, PixelType::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0},				// BGR_8_linear
 
-	{32,  PixelFmt::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0},			// BGRX_8
-	{32, PixelFmt::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0}, 				// BGRX_8_sRGB
-	{32, PixelFmt::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0},				// BGRX_8_linear
+	{32,  PixelType::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0},			// BGRX_8
+	{32, PixelType::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0}, 				// BGRX_8_sRGB
+	{32, PixelType::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0},				// BGRX_8_linear
 
-	{32,  PixelFmt::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0xFF000000},	// BGRA_8
-	{32, PixelFmt::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0xFF000000}, 		// BGRA_8_sRGB
-	{32, PixelFmt::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0xFF000000},		// BGRA_8_linear
+	{32,  PixelType::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0xFF000000},	// BGRA_8
+	{32, PixelType::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0xFF000000}, 		// BGRA_8_sRGB
+	{32, PixelType::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0xFF000000},		// BGRA_8_linear
 
-	{16, PixelFmt::Chunky, ColorSpace::Linear, 0xF00, 0xF0, 0xF, 0xF000},				// BGRA_4_linear
-	{16, PixelFmt::Chunky, ColorSpace::Linear, 0xF800, 0x07E0, 0x001F, 0},				// BGR_565_linear
+	{16, PixelType::Chunky, ColorSpace::Linear, 0xF00, 0xF0, 0xF, 0xF000},				// BGRA_4_linear
+	{16, PixelType::Chunky, ColorSpace::Linear, 0xF800, 0x07E0, 0x001F, 0},				// BGR_565_linear
 
-	{8, PixelFmt::Index, ColorSpace::Undefined, 0, 0, 0, 0},							// Index_8
-	{8, PixelFmt::Index, ColorSpace::sRGB, 0, 0, 0, 0},									// Index_8_sRGB
-	{8, PixelFmt::Index, ColorSpace::Linear, 0, 0, 0, 0},								// Index_8_linear
+	{8, PixelType::Index, ColorSpace::Undefined, 0, 0, 0, 0},							// Index_8
+	{8, PixelType::Index, ColorSpace::sRGB, 0, 0, 0, 0},									// Index_8_sRGB
+	{8, PixelType::Index, ColorSpace::Linear, 0, 0, 0, 0},								// Index_8_linear
 
-	{16, PixelFmt::Chunky_BE, ColorSpace::Linear, 0x001F, 0x07E0, 0xF800, 0},			// RGB_565_bigendian
+	{16, PixelType::Chunky_BE, ColorSpace::Linear, 0x001F, 0x07E0, 0xF800, 0},			// RGB_565_bigendian
 
-	{8, PixelFmt::Chunky, ColorSpace::Undefined, 0x0, 0x0, 0x0, 0xFF}					// Alpha_8
+	{8, PixelType::Chunky, ColorSpace::Undefined, 0x0, 0x0, 0x0, 0xFF}					// Alpha_8
 };
 
 
 
 
-const PixelDescription2& Util::pixelFormatToDescription2( PixelFormat format )
+const PixelDescription& Util::pixelFormatToDescription( PixelFormat format )
 {
 	return pixelDescTab[int(format)];
 }
 
 
-PixelFormat	Util::pixelDescription2ToFormat(const PixelDescription2& description)
+PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
 {
 	
 	switch( description.type )
 	{
-		case PixelFmt::Chunky:
+		case PixelType::Chunky:
 		{
 			switch( description.bits )
 			{
@@ -193,14 +193,14 @@ PixelFormat	Util::pixelDescription2ToFormat(const PixelDescription2& description
 			}
 			
 		}
-		case PixelFmt::Chunky_BE:
+		case PixelType::Chunky_BE:
 		{
 			if( description == pixelDescTab[int(PixelFormat::RGB_565_bigendian)])
 			   return PixelFormat::RGB_565_bigendian;
 			
 			break;
 		}
-		case PixelFmt::Index:
+		case PixelType::Index:
 		{
 			if( description.bits == 8 )
 			{
@@ -326,9 +326,9 @@ int Util::gcd(int a, int b)
 		return MultiplyDeBruijnBitPosition[(uint32_t)(value * 0x07C4ACDDU) >> 27];
 	}
 
-	//____ translatePixelType() __________________________________________________
+	//____ translatePixelFormat() __________________________________________________
 
-	PixelFormat Util::translatePixelType(PixelFormat type)
+	PixelFormat Util::translatePixelFormat(PixelFormat type)
 	{
 		if( type == PixelFormat::BGR_8 )
 			type = GfxBase::defaultToSRGB() ? PixelFormat::BGR_8_sRGB : PixelFormat::BGR_8_linear;

@@ -125,48 +125,15 @@ typedef enum
 } wg_pixelFormat;
 
 
-//____ wg_pixelDescription _____________________________________________________
-
-typedef struct wg_pixelDescription_struct
-{
-	uint8_t			format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
-	int				bits;			///< Number of bits for the pixel, includes any non-used padding bits.
-	uint8_t			bIndexed;		///< True if pixels are index into palette, no RGB values in pixel.
-	uint8_t			bLinear;		///< True if RGB values are linear (as opposed to in sRGB format, e.g. logarithmic with gamma 2.2).
-	uint8_t			bBigEndian;		///< Set if 16- or 32-bit pixel is in big-endian format.
-
-	uint32_t		R_mask;			///< bitmask for getting the red bits out of the pixel
-	uint32_t		G_mask;			///< bitmask for getting the green bits out of the pixel
-	uint32_t		B_mask;			///< bitmask for getting the blue bits out of the pixel
-	uint32_t		A_mask;			///< bitmask for getting the alpha bits out of the pixel
-
-	uint8_t			R_shift;		///< amount to shift the red bits to the right to get the value.
-	uint8_t			G_shift;		///< amount to shift the green bits to the right to get the value.
-	uint8_t			B_shift;		///< amount to shift the blue bits to the right to get the value.
-	uint8_t			A_shift;		///< amount to shift the alpha bits to the right to get the value.
-
-	uint8_t			R_loss;			///< amount to shift the red bits to the right to get the value.
-	uint8_t			G_loss;			///< amount to shift the green bits to the right to get the value.
-	uint8_t			B_loss;			///< amount to shift the blue bits to the right to get the value.
-	uint8_t			A_loss;			///< amount to shift the alpha bits to the right to get the value.
-
-
-	uint8_t			R_bits;				///< number of bits for red in the pixel
-	uint8_t			G_bits;				///< number of bits for green in the pixel
-	uint8_t			B_bits;				///< number of bits for blue in the pixel
-	uint8_t			A_bits;				///< number of bits for alpha in the pixel
-} wg_pixelDescription;
-
-
-//____ wg_pixelFmt _________________________________________________________
+//____ wg_pixelType _________________________________________________________
 
 typedef enum
 {
-	WG_PIXFMT_CHUNKY,			///< Normal pixel. All bits for a pixel are packed into same sequence of bytes.
-	WG_PIXFMT_CHUNKY_BE,		///< Same as Chunky, but stored in big-endian format.
-	WG_PIXFMT_INDEX,			///< Pixels are color indexes into a palette.
-	WG_PIXFMT_BITPLANES			///< Pixels are color indexes into a palette, stored in 16-bit bitplanes. Starting with lowest bitplane.
-} wg_pixelFmt;
+	WG_PIXTYPE_CHUNKY,			///< Normal pixel. All bits for a pixel are packed into same sequence of bytes.
+	WG_PIXTYPE_CHUNKY_BE,		///< Same as Chunky, but stored in big-endian format.
+	WG_PIXTYPE_INDEX,			///< Pixels are color indexes into a palette.
+	WG_PIXTYPE_BITPLANES		///< Pixels are color indexes into a palette, stored in 16-bit bitplanes. Starting with lowest bitplane.
+} wg_pixelType;
 
 //____ wg_colorSpace ________________________________________________________
 
@@ -177,19 +144,19 @@ typedef enum
 	WG_COLORSPACE_SRGB
 } wg_colorSpace;
 
-//____ wg_pixelDescription2 _____________________________________________________
+//____ wg_pixelDescription _____________________________________________________
 
-typedef struct wg_pixelDescription2_struct
+typedef struct wg_pixelDescription_struct
 {
 	int				bits;			///< Number of bits for the pixel, includes any non-used padding bits.
-	wg_pixelFmt		type;
+	wg_pixelType	type;
 	wg_colorSpace	colorSpace;
 	
 	uint64_t		R_mask;			///< bitmask for getting the red bits out of chunky pixel
 	uint64_t		G_mask;			///< bitmask for getting the green bits out of chunky pixel
 	uint64_t		B_mask;			///< bitmask for getting the blue bits out of chunky pixel
 	uint64_t		A_mask;			///< bitmask for getting the alpha bits out of chunky pixel
-} wg_pixelDescription2;
+} wg_pixelDescription;
 
 //____ wg_gfxFlip ____________________________________________________________
 

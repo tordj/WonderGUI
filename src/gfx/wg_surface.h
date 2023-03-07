@@ -221,7 +221,7 @@ namespace wg
 
 		inline const Color8* palette() const;
 
-		inline const PixelDescription2*	pixelDescription() const; ///< @brief Get the pixel description for the surface.
+		inline const PixelDescription*	pixelDescription() const; ///< @brief Get the pixel description for the surface.
 		inline PixelFormat	pixelFormat() const;
 		inline int			pixelBits() const;
 
@@ -283,7 +283,7 @@ namespace wg
 
  		int					m_scale = 64;
 
-		const PixelDescription2*	m_pPixelDescription;
+		const PixelDescription*	m_pPixelDescription;
 		PixelFormat			m_pixelFormat;
 		SizeI				m_size;								// Width and height in pixels.
 
@@ -424,8 +424,8 @@ namespace wg
 	{
 		//TODO: Indexed can also be opaque. Check their alpha on init instead?
 
-		return 	m_pPixelDescription->A_mask == 0 && (m_pPixelDescription->type == PixelFmt::Chunky ||
-		m_pPixelDescription->type == PixelFmt::Chunky_BE );
+		return 	m_pPixelDescription->A_mask == 0 && (m_pPixelDescription->type == PixelType::Chunky ||
+		m_pPixelDescription->type == PixelType::Chunky_BE );
 	}
 
 	//____ canBeCanvas() ______________________________________________________
@@ -459,7 +459,7 @@ namespace wg
 
 	//____ pixelDescription() _________________________________________________
 
-	const PixelDescription2* Surface::pixelDescription() const
+	const PixelDescription* Surface::pixelDescription() const
 	{
 		return m_pPixelDescription;
 	}

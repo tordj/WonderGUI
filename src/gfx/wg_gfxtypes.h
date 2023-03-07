@@ -251,9 +251,9 @@ namespace wg
 //		Bitplanes_8_A1,
 
 
-	//____ PixelFmt _________________________________________________________
+	//____ PixelType _________________________________________________________
 
-	enum class PixelFmt		//. autoExtras
+	enum class PixelType		//. autoExtras
 	{
 		Chunky,						///< Normal pixel. All bits for a pixel are packed into same sequence of bytes.
 		Chunky_BE,					///< Same as Chunky, but stored in big-endian format.
@@ -270,24 +270,24 @@ namespace wg
 		sRGB
 	};
 
-	//____ PixelDescription2 _________________________________________________
+	//____ PixelDescription _________________________________________________
 
-	struct PixelDescription2
+	struct PixelDescription
 	{
 		// These constructors are needed for Clang to compile GfxUtil::pixelDescTab in C++11 setting.
 		
-		PixelDescription2() {}
-		PixelDescription2(int _bits, PixelFmt _type, ColorSpace _colorSpace, uint64_t _R_mask, uint64_t _G_mask, uint64_t _B_mask, uint64_t _A_mask ) :
+		PixelDescription() {}
+		PixelDescription(int _bits, PixelType _type, ColorSpace _colorSpace, uint64_t _R_mask, uint64_t _G_mask, uint64_t _B_mask, uint64_t _A_mask ) :
 		bits(_bits), type(_type), colorSpace(_colorSpace), R_mask(_R_mask), G_mask(_G_mask), B_mask(_B_mask), A_mask(_A_mask) {}
 		
-		bool operator==( const PixelDescription2& k ) const
+		bool operator==( const PixelDescription& k ) const
 		{
 			return ( bits == k.bits && type == k.type && colorSpace == k.colorSpace && R_mask == k.R_mask && G_mask == k.G_mask && B_mask == k.B_mask && A_mask == k.A_mask );
 		}
 		
 		
 		int			bits = 0;			///< Number of bits for the pixel, includes any non-used padding bits.
-		PixelFmt	type = PixelFmt::Chunky;
+		PixelType	type = PixelType::Chunky;
 		ColorSpace	colorSpace = ColorSpace::sRGB;
 		
 		uint64_t	R_mask = 0;			///< bitmask for getting the red bits out of chunky pixel

@@ -39,7 +39,7 @@ void 			updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const Msg_p& pMsg );
 void * 			loadFile( const char * pPath );
 Blob_p 			loadBlob( const char * pPath );
-void			convertSDLFormat( PixelDescription2 * pWGFormat, const SDL_PixelFormat * pSDLFormat );
+void			convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
 
@@ -191,7 +191,7 @@ int main ( int argc, char** argv )
 
 	SDL_Surface * pFontSurf = IMG_Load( "../resources/anuvverbubbla_8x8.png" );
 //	convertSDLFormat( &format, pFontSurf->format );
-	SoftSurface_p pFontImg = SoftSurface::create( SizeI(pFontSurf->w,pFontSurf->h), PixelType::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch);
+	SoftSurface_p pFontImg = SoftSurface::create( SizeI(pFontSurf->w,pFontSurf->h), PixelFormat::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch);
 	SDL_FreeSurface( pFontSurf );
 		
 	BitmapFont_p pBmpFont = BitmapFont::create( pFontImg, pFontSpec );
@@ -352,7 +352,7 @@ int main ( int argc, char** argv )
 //	auto pSoftSurfaceFactory = SoftSurfaceFactory::create();
 
 
-	PixelDescription2	format;
+	PixelDescription	format;
 
 	auto pSDLSurf = IMG_Load("resources/splash.png");
 	convertSDLFormat(&format, pSDLSurf->format);
@@ -631,9 +631,9 @@ void * loadFile( const char * pPath )
 
 //____ convertSDLFormat() ______________________________________________________
 
-void convertSDLFormat( PixelDescription2 * pWGFormat, const SDL_PixelFormat * pSDLFormat )
+void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat )
 {
-	pWGFormat->type = PixelFmt::Chunky;
+	pWGFormat->type = PixelType::Chunky;
 	pWGFormat->bits = pSDLFormat->BitsPerPixel;
 
 	pWGFormat->R_mask = pSDLFormat->Rmask;

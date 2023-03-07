@@ -1132,21 +1132,21 @@ inline void shiftAndBitsFromMask( uint64_t mask64, int& shift, int& bits )
 
 //____ copyPixels() [PixelDescription] ________________________________________
 
-bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescription2& srcDesc, int srcPitchAdd,
+bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescription& srcDesc, int srcPitchAdd,
 	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette,
 	Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries)
 {
-	auto dstDesc = Util::pixelFormatToDescription2( dstFmt );
+	auto dstDesc = Util::pixelFormatToDescription( dstFmt );
 
 	//TODO: Optimize by calling other copyPixels() if source pixel format is known.
 	
 	
-	if (srcDesc.type == PixelFmt::Bitplanes)
+	if (srcDesc.type == PixelType::Bitplanes)
 	{
 		GfxBase::throwError(ErrorLevel::Error, ErrorCode::IllegalCall, "Conversion from bitplanes not supported yet", nullptr, nullptr, __func__, __FILE__, __LINE__);
 		return false;
 	}
-	else if(srcDesc.type == PixelFmt::Index)
+	else if(srcDesc.type == PixelType::Index)
 	{
 		GfxBase::throwError(ErrorLevel::Error, ErrorCode::IllegalCall, "Conversion from palette indexes not supported yet", nullptr, nullptr, __func__, __FILE__, __LINE__);
 		return false;
@@ -1191,13 +1191,13 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescripti
 				pReadFunc = shiftReadConv_8bit;
 				break;
 			case 16:
-				pReadFunc = (srcDesc.type == PixelFmt::Chunky_BE) ? shiftReadConv_16bit_swap : shiftReadConv_16bit;
+				pReadFunc = (srcDesc.type == PixelType::Chunky_BE) ? shiftReadConv_16bit_swap : shiftReadConv_16bit;
 				break;
 			case 24:
-				pReadFunc = (srcDesc.type == PixelFmt::Chunky_BE) ? shiftReadConv_24bit_be : shiftReadConv_24bit_le;
+				pReadFunc = (srcDesc.type == PixelType::Chunky_BE) ? shiftReadConv_24bit_be : shiftReadConv_24bit_le;
 				break;
 			case 32:
-				pReadFunc = (srcDesc.type == PixelFmt::Chunky_BE) ? shiftReadConv_32bit_swap : shiftReadConv_32bit;
+				pReadFunc = (srcDesc.type == PixelType::Chunky_BE) ? shiftReadConv_32bit_swap : shiftReadConv_32bit;
 				break;
 			default:
 				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Conversion from chunky pixels requires 8, 16, 24 or 32 bit pixels.", nullptr, nullptr, __func__, __FILE__, __LINE__);
@@ -1223,15 +1223,15 @@ bool copyPixels( int width, int height, const uint8_t * pSrc, PixelFormat srcFmt
 
 	int nAllocatedBytes = 0;
 	
-	srcFmt = Util::translatePixelType(srcFmt);
-	dstFmt = Util::translatePixelType(dstFmt);
+	srcFmt = Util::translatePixelFormat(srcFmt);
+	dstFmt = Util::translatePixelFormat(dstFmt);
 	
-	auto& srcDesc = Util::pixelFormatToDescription2( srcFmt );
- 	auto& dstDesc = Util::pixelFormatToDescription2( dstFmt );
+	auto& srcDesc = Util::pixelFormatToDescription( srcFmt );
+ 	auto& dstDesc = Util::pixelFormatToDescription( dstFmt );
 	
 	if( (srcFmt == dstFmt) || (srcFmt == PixelFormat::BGRA_8_sRGB && dstFmt == PixelFormat::BGRX_8_sRGB) ||
 		(srcFmt == PixelFormat::BGRA_8_linear && dstFmt == PixelFormat::BGRX_8_linear) ||
-		(srcDesc.type == PixelFmt::Index && dstDesc.type == PixelFmt::Index && maxDstPaletteEntries >= srcPaletteEntries) )
+		(srcDesc.type == PixelType::Index && dstDesc.type == PixelType::Index && maxDstPaletteEntries >= srcPaletteEntries) )
 	{
 		if( srcPitchAdd + dstPitchAdd == 0 )
 			std::memcpy( pDst, pSrc, srcDesc.bits * width * height / 8 );
@@ -1250,7 +1250,7 @@ bool copyPixels( int width, int height, const uint8_t * pSrc, PixelFormat srcFmt
 			}
 		}
 
-		if(srcDesc.type == PixelFmt::Index && dstDesc.type == PixelFmt::Index && srcDesc.colorSpace != dstDesc.colorSpace )
+		if(srcDesc.type == PixelType::Index && dstDesc.type == PixelType::Index && srcDesc.colorSpace != dstDesc.colorSpace )
 		{
 			// Palette needs to be converted between sRGB and Linear.
 
@@ -1568,16 +1568,16 @@ int colorToPixelBytes( HiColor color, PixelFormat type, uint8_t pixelArea[18], C
 
 //____ fillBitmap() ___________________________________________________________
 
-void fillBitmap(uint8_t* pBitmap, PixelFormat pixelType, int pitch, RectI fillRect, HiColor color )
+void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fillRect, HiColor color )
 {
-	pixelType = Util::translatePixelType(pixelType);
+	pixelFormat = Util::translatePixelFormat(pixelFormat);
 	
-	auto&	pixelDesc = Util::pixelFormatToDescription2(pixelType);
+	auto&	pixelDesc = Util::pixelFormatToDescription(pixelFormat);
 	
 	uint8_t pixelArea[18];
-	int pixelBytes = colorToPixelBytes(color, pixelType, pixelArea);
+	int pixelBytes = colorToPixelBytes(color, pixelFormat, pixelArea);
 
-	if( pixelDesc.type == PixelFmt::Bitplanes )
+	if( pixelDesc.type == PixelType::Bitplanes )
 	{
 	}
 	else
@@ -1699,9 +1699,9 @@ int findBestMatchInPalette( HiColor color, bool bSRGB, Color8* pPalette, int pal
 bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, RectI srcRect, uint8_t* pDst, int dstPitch, const Color8* pPalette)
 {
 
-	auto& pixDesc = Util::pixelFormatToDescription2(format);
+	auto& pixDesc = Util::pixelFormatToDescription(format);
 
-	if (pixDesc.A_mask == 0 && pixDesc.type != PixelFmt::Index)
+	if (pixDesc.A_mask == 0 && pixDesc.type != PixelType::Index)
 		return false;										// These pixels have no alpha.
 
 	pSrc += srcRect.y * srcPitch + srcRect.x * pixDesc.bits/8;
@@ -1711,7 +1711,7 @@ bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, 
 
 	switch (pixDesc.type)
 	{
-		case PixelFmt::Index:
+		case PixelType::Index:
 		{
 			if (pixDesc.bits == 8)
 			{
@@ -1741,11 +1741,11 @@ bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, 
 			return true;
 		}
 
-		case PixelFmt::Chunky:
+		case PixelType::Chunky:
 		{
 			switch (pixDesc.bits)
 			{
-				case 1:									// Only PixelType::Alpha_8 has this size.
+				case 1:									// Only PixelFormat::Alpha_8 has this size.
 					for (int y = 0; y < srcRect.h; y++)
 					{
 						for (int x = 0; x < srcRect.w; x++)
@@ -1755,7 +1755,7 @@ bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, 
 						pDst += dstPitchAdd;
 					}
 
-				case 2:									// Only PixelType::BGRA_4 has this size and alpha.
+				case 2:									// Only PixelFormat::BGRA_4 has this size and alpha.
 				{
 					for (int y = 0; y < srcRect.h; y++)
 					{
@@ -1770,7 +1770,7 @@ bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, 
 					}
 					break;
 				}
-				case 4:									// Only PixelType::BGRA_8 has this size and alpha
+				case 4:									// Only PixelFormat::BGRA_8 has this size and alpha
 				{
 					for (int y = 0; y < srcRect.h; y++)
 					{
