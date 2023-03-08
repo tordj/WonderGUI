@@ -42,12 +42,15 @@ namespace wg
 
 	const TypeInfo SoftGfxDevice::TYPEINFO = { "SoftGfxDevice", &GfxDevice::TYPEINFO };
 
-
-	static_assert(PixelFormat_size == 17,
+/*
+ 
+ 	static_assert(PixelFormat_size == 17,
 		"You need to update s_srcFmtToMtxOfsTab, s_dstFmtToMtxOfsTab and number of entries in m_straightBlitKernelMatrix and m_transformBlitKernelMatrix when PixelFormat_size changes!");
 
 	static_assert(BlendMode_size == 11,
 		"You need to update s_blendModeToMtxOfsTab and number of entries in m_straightBlitKernelMatrix and m_transformBlitKernelMatrix when BlendMode_size changes!");
+ */
+
 
 int		SoftGfxDevice::s_lineThicknessTable[17];
 

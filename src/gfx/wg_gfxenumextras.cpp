@@ -34,7 +34,6 @@ namespace wg
 
 =========================================================================*/
 
-
 	const char * toString(TintMode i)
 	{
 		static const char * names[] = { 
@@ -65,20 +64,9 @@ namespace wg
 		return names[(int)i];
 	}
 
-
-	const char * toString(SampleMethod i)
-	{
-		static const char * names[] = { 
-			"Nearest",
-			"Bilinear",
-			"Undefined" };
-
-		return names[(int)i];
-	}
-
 	const char * toString(Placement i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"NorthWest",
 			"North",
 			"NorthEast",
@@ -94,7 +82,7 @@ namespace wg
 
 	const char * toString(Direction i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Up",
 			"Right",
 			"Down",
@@ -105,10 +93,20 @@ namespace wg
 
 	const char * toString(Axis i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Undefined",
 			"X",
 			"Y" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(SampleMethod i)
+	{
+		static const char * names[] = { 
+			"Nearest",
+			"Bilinear",
+			"Undefined" };
 
 		return names[(int)i];
 	}
@@ -136,13 +134,48 @@ namespace wg
 			"BGRA_8",
 			"BGRA_8_sRGB",
 			"BGRA_8_linear",
-			"BGRA_4_linear",
-			"BGR_565_linear",
 			"Index_8",
 			"Index_8_sRGB",
 			"Index_8_linear",
+			"Index_16",
+			"Index_16_sRGB",
+			"Index_16_linear",
+			"Alpha_8",
+			"BGRA_4_linear",
+			"BGR_565_linear",
 			"RGB_565_bigendian",
-			"A_8" };
+			"RGB_555_bigendian",
+			"Bitplanes_1",
+			"Bitplanes_2",
+			"Bitplanes_4",
+			"Bitplanes_5",
+			"Bitplanes_8",
+			"Bitplanes_1_A1",
+			"Bitplanes_2_A1",
+			"Bitplanes_4_A1",
+			"Bitplanes_5_A1",
+			"Bitplanes_8_A1" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(PixelType i)
+	{
+		static const char * names[] = { 
+			"Chunky",
+			"Chunky_BE",
+			"Index",
+			"Bitplanes" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(ColorSpace i)
+	{
+		static const char * names[] = { 
+			"Undefined",
+			"Linear",
+			"sRGB" };
 
 		return names[(int)i];
 	}

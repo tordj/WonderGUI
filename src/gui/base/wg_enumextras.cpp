@@ -53,7 +53,6 @@ namespace wg
 		return names[(int)i];
 	}
 
-
 	const char * toString(PointerStyle i)
 	{
 		static const char * names[] = { 
@@ -125,7 +124,6 @@ namespace wg
 		return names[(int)i];
 	}
 
-
 	const char * toString(SizeConstraint i)
 	{
 		static const char * names[] = { 
@@ -178,6 +176,7 @@ namespace wg
 			"DropCancel",
 			"DropComplete",
 			"Select",
+			"Unselect",
 			"Toggle",
 			"ScrollbarMove",
 			"ValueUpdate",
@@ -227,7 +226,6 @@ namespace wg
 
 		return names[(int)i];
 	}
-
 
 	const char * toString(MaskOp i)
 	{

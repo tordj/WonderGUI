@@ -89,30 +89,46 @@ namespace wg
 
 const PixelDescription	pixelDescTab[PixelFormat_size] = {
 	{0,  PixelType::Chunky, ColorSpace::Linear, 0, 0, 0, 0},								// Undefined
-	{24,  PixelType::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0},			// BGR_8
-	{24, PixelType::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0}, 				// BGR_8_sRGB
-	{24, PixelType::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0},				// BGR_8_linear
+	{24,  PixelType::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0},				// BGR_8
+	{24, PixelType::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0}, 					// BGR_8_sRGB
+	{24, PixelType::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0},					// BGR_8_linear
 
-	{32,  PixelType::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0},			// BGRX_8
-	{32, PixelType::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0}, 				// BGRX_8_sRGB
-	{32, PixelType::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0},				// BGRX_8_linear
+	{32,  PixelType::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0},				// BGRX_8
+	{32, PixelType::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0}, 					// BGRX_8_sRGB
+	{32, PixelType::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0},					// BGRX_8_linear
 
 	{32,  PixelType::Chunky, ColorSpace::Undefined, 0xFF0000, 0xFF00, 0xFF, 0xFF000000},	// BGRA_8
-	{32, PixelType::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0xFF000000}, 		// BGRA_8_sRGB
+	{32, PixelType::Chunky, ColorSpace::sRGB, 0xFF0000, 0xFF00, 0xFF, 0xFF000000}, 			// BGRA_8_sRGB
 	{32, PixelType::Chunky, ColorSpace::Linear, 0xFF0000, 0xFF00, 0xFF, 0xFF000000},		// BGRA_8_linear
 
-	{16, PixelType::Chunky, ColorSpace::Linear, 0xF00, 0xF0, 0xF, 0xF000},				// BGRA_4_linear
-	{16, PixelType::Chunky, ColorSpace::Linear, 0xF800, 0x07E0, 0x001F, 0},				// BGR_565_linear
-
-	{8, PixelType::Index, ColorSpace::Undefined, 0, 0, 0, 0},							// Index_8
+	{8, PixelType::Index, ColorSpace::Undefined, 0, 0, 0, 0},								// Index_8
 	{8, PixelType::Index, ColorSpace::sRGB, 0, 0, 0, 0},									// Index_8_sRGB
-	{8, PixelType::Index, ColorSpace::Linear, 0, 0, 0, 0},								// Index_8_linear
+	{8, PixelType::Index, ColorSpace::Linear, 0, 0, 0, 0},									// Index_8_linear
 
-	{16, PixelType::Chunky_BE, ColorSpace::Linear, 0x001F, 0x07E0, 0xF800, 0},			// RGB_565_bigendian
+	{16, PixelType::Index, ColorSpace::Undefined, 0, 0, 0, 0},								// Index_16
+	{16, PixelType::Index, ColorSpace::sRGB, 0, 0, 0, 0},									// Index_16_sRGB
+	{16, PixelType::Index, ColorSpace::Linear, 0, 0, 0, 0},									// Index_16_linear
 
-	{8, PixelType::Chunky, ColorSpace::Undefined, 0x0, 0x0, 0x0, 0xFF}					// Alpha_8
+	{8, PixelType::Chunky, ColorSpace::Undefined, 0x0, 0x0, 0x0, 0xFF},						// Alpha_8
+
+	{16, PixelType::Chunky, ColorSpace::Linear, 0xF00, 0xF0, 0xF, 0xF000},					// BGRA_4_linear
+	{16, PixelType::Chunky, ColorSpace::Linear, 0xF800, 0x07E0, 0x001F, 0},					// BGR_565_linear
+
+	{16, PixelType::Chunky_BE, ColorSpace::Linear, 0x001F, 0x07E0, 0xF800, 0},				// RGB_565_bigendian
+	{16, PixelType::Chunky_BE, ColorSpace::Linear, 0x001F, 0x07C0, 0xF800, 0},				// RGB_555_bigendian
+
+	{1, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 0},								// Bitplanes_1
+	{2, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 0},								// Bitplanes_2
+	{4, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 0},								// Bitplanes_4
+	{5, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 0},								// Bitplanes_5
+	{8, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 0},								// Bitplanes_8
+
+	{2, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_1_A1
+	{3, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_2_A1
+	{5, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_4_A1
+	{6, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_5_A1
+	{9, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1}								// Bitplanes_8_A1
 };
-
 
 
 

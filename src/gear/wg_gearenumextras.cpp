@@ -38,8 +38,8 @@ namespace wg
 	{
 		static const char * names[] = { 
 			"Warning",
-			"SilentFail",
-			"Serious",
+			"SilentError",
+			"Error",
 			"Critical" };
 
 		return names[(int)i];
@@ -62,6 +62,7 @@ namespace wg
 
 		return names[(int)i];
 	}
+
 
 //=========================================================================
 //. endAutoSection

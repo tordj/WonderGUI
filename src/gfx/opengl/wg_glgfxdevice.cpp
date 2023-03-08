@@ -185,7 +185,6 @@ namespace wg
 			for (int j = 0; j < 2; j++)
 			{
 				m_blitProgMatrix[i][0][0][j] = m_blitProg[j];
-				m_blitProgMatrix[i][0][0][j] = m_blitProg[j];
 				m_blitProgMatrix[i][1][0][j] = m_blitProg[j];
 				m_blitProgMatrix[i][0][1][j] = m_blitGradientProg[j];
 				m_blitProgMatrix[i][1][1][j] = m_blitGradientProg[j];

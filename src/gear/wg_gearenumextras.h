@@ -38,13 +38,13 @@ namespace wg
 
 =========================================================================*/
 
-	const static ErrorLevel   ErrorLevel_min   = ErrorLevel::Warning;
+	const static ErrorLevel      ErrorLevel_min      = ErrorLevel::Warning;
 	const static ErrorCode       ErrorCode_min       = ErrorCode::OutOfRange;
 
-	const static ErrorLevel   ErrorLevel_max   = ErrorLevel::Critical;
+	const static ErrorLevel      ErrorLevel_max      = ErrorLevel::Critical;
 	const static ErrorCode       ErrorCode_max       = ErrorCode::Other;
 
-	const static int             ErrorLevel_size  = (int)ErrorLevel::Critical + 1;
+	const static int             ErrorLevel_size     = (int)ErrorLevel::Critical + 1;
 	const static int             ErrorCode_size      = (int)ErrorCode::Other + 1;
 
 	const char * toString(ErrorLevel);

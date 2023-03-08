@@ -2,10 +2,13 @@
 # Update wg_enumextras.h/cpp with functions for all enums in wg_types.h marked "autoExtras".
 
 
-	inputFiles = [ 'src/baselibrary/base/wg_types.h' ]
+	Task = Struct.new( :input, :header_out, :source_out )
 
-	headerPath = 'src/baselibrary/base/wg_enumextras.h'
-	sourcePath = 'src/baselibrary/base/wg_enumextras.cpp'
+	$tasks = []
+
+	$tasks << Task.new( 'src/gear/wg_geartypes.h', 'src/gear/wg_gearenumextras.h', 'src/gear/wg_gearenumextras.cpp' )
+	$tasks << Task.new( 'src/gfx/wg_gfxtypes.h', 'src/gfx/wg_gfxenumextras.h', 'src/gfx/wg_gfxenumextras.cpp' )
+	$tasks << Task.new( 'src/gui/base/wg_types.h', 'src/gui/base/wg_enumextras.h', 'src/gui/base/wg_enumextras.cpp' )
 
 
 def replaceAutoSection( path, newContent )
@@ -134,14 +137,16 @@ end
 
 	# Scan inputFiles and auto generate content.
 
-	for file in inputFiles
-		processInputFile( file, headerContent, sourceContent )
+	for task in $tasks
+		processInputFile( task[:input], headerContent, sourceContent )
+		replaceAutoSection( task[:header_out], headerContent )
+		replaceAutoSection( task[:source_out], sourceContent )
+		headerContent = []
+		sourceContent = []
 	end
 
 
 	# Save modified header and source
 
-	replaceAutoSection( headerPath, headerContent )
-	replaceAutoSection( sourcePath, sourceContent )
 
 
