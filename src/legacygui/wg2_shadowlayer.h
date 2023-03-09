@@ -148,7 +148,7 @@ protected:
 	void            _requestRenderShadows(int ofs, int nb);
 	void			_onFrontChanged();
 
-
+	bool			m_bPreRenderRequested = false;
 
 	WgShadowHook    m_frontHook;
 	wg::Surface_p   m_pShadowSurface;

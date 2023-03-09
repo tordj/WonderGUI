@@ -88,14 +88,14 @@ WgContainer * WgShadowHook::_parent() const
 
 WgShadowLayer::WgShadowLayer() : m_frontHook(this)
 {
-//	_startReceiveTicks();
+	_startReceiveTicks();
 }
 
 //____ Destructor _____________________________________________________________
 
 WgShadowLayer::~WgShadowLayer()
 {
-//	_stopReceiveTicks();
+	_stopReceiveTicks();
 }
 
 //____ Type() _________________________________________________________________
@@ -334,7 +334,7 @@ void WgShadowLayer::_requestRenderShadows(int ofs, int nb)
 	for (auto p = &m_shadows[ofs]; p != &m_shadows[ofs + nb]; p++)
 	{
 		WgPatches patches;
-		patches.add(p->m_geo);
+		patches.add(p->m_geo );
 
 		// Remove portions of patches that are covered by opaque front widgets
 
@@ -457,7 +457,11 @@ void WgShadowLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 	{
 		case WgEventType::WG_EVENT_TICK:
 		{
-//			_requestPreRenderCall();
+			if( !m_bPreRenderRequested )
+			{
+				_requestPreRenderCall();
+				m_bPreRenderRequested = true;
+			}
 			break;
 		}
 
@@ -625,8 +629,6 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 			if (!shadowPatches.isEmpty())
 			{
-				auto oldCanvas = pDevice->canvas();
-
 				pDevice->beginCanvasUpdate(m_pShadowSurface,shadowPatches.size(), shadowPatches.begin());
 
 				pDevice->setTintColor(WgColor::White);
@@ -651,7 +653,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 			pDevice->setTintColor( wg::Color8(255,255,255,m_shadowTint) );
 			pDevice->setBlendMode(WgBlendMode::Blend);
 			pDevice->setBlitSource( m_pShadowSurface );
-			pDevice->blit( _canvas.pos() );
+			pDevice->blit( _canvas.pos()*64 );
  
 			pDevice->setTintColor(oldTint);
 			pDevice->setBlendMode(oldBlendMode);
@@ -666,13 +668,14 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		m_frontHook.Widget()->_renderPatches(pDevice, contentGeo, contentGeo, _pPatches);
 
     // Request next PreRenderCall.
-    
-    _requestPreRenderCall();
+  
+	m_bPreRenderRequested = false;
+//    _requestPreRenderCall();
 
 }
 
 
-//____ _onFrontChanced() ______________________________________________________
+//____ _onFrontChanged() ______________________________________________________
 
 void WgShadowLayer::_onFrontChanged()
 {

@@ -484,6 +484,7 @@ void WgPopupOpener::_onLostInputFocus()
 void WgPopupOpener::_textModified()
 {
 	_requestRender();
+    _requestResize();
 }
 
 //____ _iconModified() __________________________________________________________
@@ -492,6 +493,7 @@ void WgPopupOpener::_iconModified()
 {
 	//TODO: Should possibly refresh size too.
 	_requestRender();
+    _requestResize();
 }
 
 //____ _open() ____________________________________________________________

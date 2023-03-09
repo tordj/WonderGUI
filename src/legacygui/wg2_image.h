@@ -51,14 +51,21 @@ public:
 	void            SetImage( wg::Surface * pSurface );
 	wg::Surface_p   GetImage() const { return m_pImage; }
 
+	void			SetImageTint( wg::Color color);
+	wg::Color		ImageTint() const { return m_imageTint; }
 
 	WgSize			PreferredPixelSize() const;
 
 	int				MatchingPixelHeight(int pixelWidth) const;
 	int				MatchingPixelWidth(int pixelHeight) const;
 
+	void			SetKeepAspectRatio(bool bKeepAspectRatio) { m_bKeepAspectRatio = bKeepAspectRatio;  }
+
+    void SetScale(int scale) { _setScale(scale); }
 
 protected:
+
+	WgRect	_imageRect(const WgRect& _canvas);
 
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
@@ -71,6 +78,8 @@ protected:
 private:
 
 	wg::Surface_p   m_pImage;
+	bool			m_bKeepAspectRatio = false;
+	wg::Color		m_imageTint = wg::Color::White;
 };
 
 

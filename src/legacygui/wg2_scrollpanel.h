@@ -182,6 +182,7 @@ public:
 	bool	ViewIncludeX( WgRect& rect );
 	bool	ViewIncludeY( WgRect& rect );
 */
+    void SetDisableScroll(bool bDisable) { m_bDisableScroll = bDisable;  }
 
     bool        SetMouseWheelAxis(int wheelNb, wg::Axis axis);
     wg::Axis    MouseWheelAxis(int wheelNb);
@@ -386,6 +387,8 @@ private:
 	int             m_hoverScrollRemainsY = 0;              // Saved remains from hover scroll calculations. 1/1000th of a pixel.
 
 	std::vector<uint8_t>    m_hoverScrollCategories;        // DropPick-categories for which we activate scrollHover (none-set = all).
+
+    bool m_bDisableScroll = false;
 };
 
 #endif //WG2_SCROLLPANEL_DOT_H

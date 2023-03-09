@@ -509,7 +509,7 @@ void WgMultiSlider::_markSliderHandle(Slider * pSlider)
 void WgMultiSlider::_selectSliderHandle(Slider * pSlider)
 {
 	if (pSlider && m_selectedSliderHandle == pSlider - &m_sliders.front())
-		return;											// Already selected, nothing to do.
+	    return;											// Already selected, nothing to do.
 
 	// Select this slider
 
@@ -868,7 +868,7 @@ void WgMultiSlider::SetSliderLast(int iSliderID)
                                  { return kSlider.id == iSliderID; });
 
     std::iter_swap(kSliderIter, m_sliders.end()-1);
-  
+
 }
 
 //____ _onEvent() _____________________________________________________________

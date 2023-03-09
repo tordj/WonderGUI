@@ -289,10 +289,10 @@ public:
 protected:
     void _onEvent(const WgEvent::Event *pEvent, WgEventHandler *pHandler);
     void            _onNewSize( const WgSize& size );
+	void			_setScale( int scale );
 
 private:
 	void			_onCloneContent( const WgWidget * _pOrg );
-	void			_setScale( int scale );
 
 	WgSize          _scaledPreferredPixelSize( WgWidget * pWidget );
 

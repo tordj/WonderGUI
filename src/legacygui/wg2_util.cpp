@@ -171,7 +171,7 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect canvas, in
 
 	alpha = block.Surface()->alpha( WgCoord(srcOfs.x+ofs.x, srcOfs.y+ofs.y)*64 );
 
-	return ( alpha >= opacityTreshold);
+	return ( alpha*255/4096 >= opacityTreshold);
 }
 
 

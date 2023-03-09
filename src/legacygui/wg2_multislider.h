@@ -143,7 +143,7 @@ public:
 
     void    SetSlidersPointAligned(bool bAlign);
     bool    IsSlidersPointAligned() const { return m_bPointAlignSliders; }
-    
+
 	void	SetGhostHandle(bool bGhost);						// Handle is not pressable, only background. Can be useful in some press-modes.
 																// In ghost-mode, handle will also get hover and press states when slider is hovered/pressed.
 	bool	IsGhostHandle() const { return m_bGhostHandle; }
@@ -222,6 +222,9 @@ public:
     void SetSliderState(int iSliderID, bool bEnabled);
     bool GetSliderEnabled(int iSliderID);
     void SetSliderCheckState(bool bState) { m_CheckStateForMove = bState; }
+
+    int HoveredSliderHandleIndex() { return m_hoveredSliderHandle; }
+    void RefreshSliderGeo() { _refreshSliderGeo(); }
 
 protected:
 
@@ -304,8 +307,7 @@ protected:
 
 	Slider *	_findSlider(int sliderId);
 	const Slider *	_findSlider(int sliderId) const;
-    void RefreshSliderGeo() { _refreshSliderGeo(); }
-    int HoveredSliderHandleIndex() { return m_hoveredSliderHandle; }
+
     int SelectedSliderHandleIndex() { return m_selectedSliderHandle; }
 
 private:

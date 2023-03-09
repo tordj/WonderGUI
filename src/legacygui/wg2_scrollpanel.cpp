@@ -1438,9 +1438,11 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 
 		case WG_EVENT_MOUSEWHEEL_ROLL:
 		{
-			const WgEvent::MouseWheelRoll * pEvent = static_cast<const WgEvent::MouseWheelRoll*>(_pEvent);
+            if(m_bDisableScroll == true)
+                return;
+            const WgEvent::MouseWheelRoll *pEvent = static_cast<const WgEvent::MouseWheelRoll *>(_pEvent);
 
-			if( m_elements[WINDOW].m_windowGeo.contains(pEvent->PointerPixelPos()) )
+            if( m_elements[WINDOW].m_windowGeo.contains(pEvent->PointerPixelPos()) )
 			{
 				m_rubberBorderPause = 300;
 				int wheel = pEvent->Wheel();

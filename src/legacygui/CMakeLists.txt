@@ -135,6 +135,8 @@ set( SOURCES
 	wg2_textdisplay.h
 	wg2_tooltiplayer.cpp
 	wg2_tooltiplayer.h
+	wg2_tuner.h
+	wg2_tuner.cpp
 	wg2_types.h
 	wg2_userdefines.h
 	wg2_util.cpp

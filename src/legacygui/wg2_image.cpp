@@ -82,6 +82,14 @@ void WgImage::SetImage( wg::Surface * pSurface )
 	_requestRender();
 }
 
+//____ SetImageTint() _________________________________________________________
+
+void WgImage::SetImageTint( wg::Color color)
+{
+	m_imageTint = color;
+	_requestRender();
+}
+
 
 //____ PreferredPixelSize() _____________________________________________________________
 
@@ -150,7 +158,38 @@ int  WgImage::MatchingPixelWidth(int pixelHeight) const
 	return ((pixelHeight-paddingSize.h) * imageSize.w / imageSize.h) + paddingSize.w;
 }
 
+//____ _imageRect() ___________________________________________________________
 
+WgRect WgImage::_imageRect(const WgRect& _canvas)
+{
+
+	WgRect canvas = m_pSkin ? _skinContentRect(m_pSkin, _canvas, m_state, m_scale) : _canvas;
+
+	if (m_bKeepAspectRatio)
+	{
+		WgSize imageSize = m_pImage->pixelSize();
+
+		float imageRatio = imageSize.w / (float) imageSize.h;
+		float canvasRatio = _canvas.w / (float)_canvas.h;
+
+		WgSize outSize;
+
+		if (imageRatio > canvasRatio)
+		{
+			outSize.w = canvas.w;
+			outSize.h = (int) canvas.w / imageRatio;
+		}
+		else
+		{
+			outSize.w = (int) canvas.h * imageRatio;
+			outSize.h = canvas.h;
+		}
+
+		return {canvas.x + (canvas.w - outSize.w) / 2 , canvas.y + (canvas.h - outSize.h) / 2, outSize.w, outSize.h };
+	}
+	else
+		return canvas;
+}
 
 
 //____ _onCloneContent() _______________________________________________________
@@ -167,12 +206,21 @@ void WgImage::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 {
 	WgWidget::_onRender(pDevice, _canvas, _window);
 
-	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, WgStateEnum::Normal, m_scale) : _canvas;
+//	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, WgStateEnum::Normal, m_scale) : _canvas;
 
 	if( m_pImage )
 	{
-		pDevice->setBlitSource(m_pImage);
-		pDevice->stretchBlit(canvas*64);
+		if( m_imageTint.a != 0 )
+		{
+			if( m_imageTint != wg::Color::White )
+				pDevice->setTintColor(m_imageTint);
+				
+			pDevice->setBlitSource(m_pImage);
+			pDevice->stretchBlit(_imageRect(_canvas)*64);
+			
+			if( m_imageTint != wg::Color::White )
+				pDevice->setTintColor(wg::Color::White);
+		}
 	}
 }
 
@@ -182,23 +230,19 @@ bool WgImage::_onAlphaTest( const WgCoord& ofs )
 {
 	WgSize sz = PixelSize();
 
+	if (m_pSkin && _markTestSkin(m_pSkin, ofs, sz, m_state, m_markOpacity, m_scale))
+		return true;
+
 	if( m_pImage )
 	{
-		if( m_pSkin && _markTestSkin( m_pSkin, ofs, sz, m_state, m_markOpacity, m_scale) )
-			return true;
-
-		WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, sz, m_state, m_scale) : WgRect(sz);
+		WgRect canvas = m_pSkin ? _imageRect(sz) : WgRect(sz);
 		if( canvas.contains(ofs) )
 		{
 			WgSize imgSize = m_pImage->pixelSize();
 
 			WgCoord surfOfs = { (ofs.x - canvas.x)*imgSize.w/canvas.w, (ofs.y - canvas.y)*imgSize.h/canvas.h };
-			m_pImage->alpha(surfOfs*64);
+			return m_pImage->alpha(surfOfs*64) * m_imageTint.a / 255 * 255/4096;
 		}
-	}
-	else if( m_pSkin )
-	{
-		return _markTestSkin(m_pSkin, ofs, sz, m_state, m_markOpacity, m_scale);
 	}
 
 	return false;

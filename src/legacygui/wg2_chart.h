@@ -227,6 +227,8 @@ protected:
 //	void	_onEnable();
 //	void	_onDisable();
 
+    void SetLabelHorizontalOffset(int iOffset) { m_iLabelHorizontalOffset = iOffset; }
+
 private:
 
 	WgSize			m_defaultSize;
@@ -276,6 +278,8 @@ private:
     int                 m_msTimeState = 0;
     int                 m_msTime = 0;
     bool                m_useTemporalFiltering = false;
+
+    int                 m_iLabelHorizontalOffset = 0;
 };
 
 

@@ -45,8 +45,9 @@ public:
 	void	SetMinSize( WgSize size );              // Measured in points
 	void	SetMaxSize( WgSize size );              // Measured in points
 	void	SetKeepAspectRatio(bool bKeepAspect);
+    WgSize  PreferredPointSize() { return m_pointsPreferred; }; // Measured in points
 
-	WgSize	PreferredPixelSize() const override;
+    WgSize	PreferredPixelSize() const override;
 	WgSize	MinPixelSize() const override;
 	WgSize	MaxPixelSize() const override;
 

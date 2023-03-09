@@ -252,7 +252,7 @@ bool WgPopupLayer::_updateGeo(WgPopupHook* pSlot, bool bInitialUpdate )
 
 		case WgOrigo::North:						// Centered above launcherGeo.
 		{
-			geo.x = pSlot->launcherGeo.left() + pSlot->launcherGeo.w/2 + geo.w/2;
+			geo.x = pSlot->launcherGeo.left() + pSlot->launcherGeo.w/2 - geo.w/2;
 			geo.y = pSlot->launcherGeo.top() - geo.h;
 			break;
 		}
@@ -271,7 +271,7 @@ bool WgPopupLayer::_updateGeo(WgPopupHook* pSlot, bool bInitialUpdate )
 
 		case WgOrigo::South:						// Centered below launcherGeo.
 		{
-			geo.x = pSlot->launcherGeo.left() + pSlot->launcherGeo.w/2 + geo.w/2;
+			geo.x = pSlot->launcherGeo.left() + pSlot->launcherGeo.w/2 - geo.w/2;
 			geo.y = pSlot->launcherGeo.bottom();
 			break;
 		}
