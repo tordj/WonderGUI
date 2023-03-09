@@ -62,6 +62,17 @@ inline void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const C
 		outA = 255;
 	}
 
+	if (format == PixelFormat::RGB_555_bigendian)
+	{
+		uint16_t pixel = *(uint16_t*)pPixel;
+#if WG_IS_LITTLE_ENDIAN
+		pixel = Util::endianSwap(pixel);
+#endif
+		outR = SoftGfxDevice::s_fast8_channel_5[pixel & 0x1F];
+		outG = SoftGfxDevice::s_fast8_channel_5[(pixel >> 6) & 0x1F];
+		outB = SoftGfxDevice::s_fast8_channel_5[pixel >> 11];
+		outA = 255;
+	}
 
 	if (format == PixelFormat::BGRA_4_linear)
 	{
@@ -160,6 +171,18 @@ inline void _read_pixel(const uint8_t* pPixel, PixelFormat format, const Color8*
 		outA = 4096;
 	}
 
+	if (format == PixelFormat::RGB_555_bigendian)
+	{
+		uint16_t pixel = *(uint16_t*)pPixel;
+#if WG_IS_LITTLE_ENDIAN
+		pixel = Util::endianSwap(pixel);
+#endif
+		outR = SoftGfxDevice::s_channel_5[pixel & 0x1F];
+		outG = SoftGfxDevice::s_channel_5[(pixel >> 6) & 0x1F];
+		outB = SoftGfxDevice::s_channel_5[pixel >> 11];
+		outA = 4096;
+	}
+	
 	if (format == PixelFormat::BGRA_4_linear)
 	{
 		outB = SoftGfxDevice::s_channel_4_1[pPixel[0]];
@@ -230,7 +253,11 @@ inline void _write_pixel_fast8(uint8_t* pPixel, PixelFormat format, int16_t b, i
 		pPixel[1] = ((g & 0x1C) << 3) | (r >> 3);
 	}
 
-
+	if (format == PixelFormat::RGB_555_bigendian)
+	{
+		pPixel[0] = (b & 0xF8) | (g >> 5);
+		pPixel[1] = ((g & 0x18) << 3) | (r >> 3);
+	}
 
 	if (format == PixelFormat::BGRA_4_linear)
 	{
@@ -304,6 +331,12 @@ inline void _write_pixel(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t
 		pPixel[1] = ((HiColor::packLinearTab[g] & 0x1C) << 3) | (HiColor::packLinearTab[r] >> 3);
 	}
 
+	if (format == PixelFormat::RGB_555_bigendian)
+	{
+		pPixel[0] = (HiColor::packLinearTab[b] & 0xF8) | (HiColor::packLinearTab[g] >> 5);
+		pPixel[1] = ((HiColor::packLinearTab[g] & 0x18) << 3) | (HiColor::packLinearTab[r] >> 3);
+	}
+	
 	if (format == PixelFormat::BGRA_4_linear)
 	{
 		pPixel[0] = (HiColor::packLinearTab[b] >> 4) | (HiColor::packLinearTab[g] & 0xF0);
@@ -943,7 +976,7 @@ void _plot(uint8_t* pDst, HiColor color, const SoftGfxDevice::ColTrans& tint, Co
 	if (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
-		DSTFORMAT == PixelFormat::BGR_8_linear)
+		DSTFORMAT == PixelFormat::RGB_555_bigendian ||DSTFORMAT == PixelFormat::BGR_8_linear)
 	{
 		bFast8 = true;
 	}
@@ -1010,7 +1043,7 @@ void _plot_list(const RectI& clip, int nCoords, const CoordI* pCoords, const HiC
 	if (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
-		DSTFORMAT == PixelFormat::BGR_8_linear)
+		DSTFORMAT == PixelFormat::RGB_555_bigendian || DSTFORMAT == PixelFormat::BGR_8_linear)
 	{
 		bFast8 = true;
 	}
@@ -1099,7 +1132,7 @@ void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, 
 	if (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
-		DSTFORMAT == PixelFormat::BGR_8_linear)
+		DSTFORMAT == PixelFormat::RGB_555_bigendian || DSTFORMAT == PixelFormat::BGR_8_linear)
 	{
 		bFast8 = true;
 	}
@@ -1451,7 +1484,7 @@ void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, Hi
 	if (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
-		DSTFORMAT == PixelFormat::BGR_8_linear)
+		DSTFORMAT == PixelFormat::RGB_555_bigendian || DSTFORMAT == PixelFormat::BGR_8_linear)
 	{
 		bFast8 = true;
 		bits = 8;
@@ -1573,7 +1606,7 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 	if (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
-		DSTFORMAT == PixelFormat::BGR_8_linear)
+		DSTFORMAT == PixelFormat::RGB_555_bigendian || DSTFORMAT == PixelFormat::BGR_8_linear)
 	{
 		bFast8 = true;
 		bits = 8;
@@ -1937,13 +1970,13 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 
 	bool srcIsLinear = (SRCFORMAT == PixelFormat::Alpha_8 || SRCFORMAT == PixelFormat::BGRA_4_linear ||
 		SRCFORMAT == PixelFormat::BGRA_8_linear || SRCFORMAT == PixelFormat::BGRX_8_linear ||
-		SRCFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
-		SRCFORMAT == PixelFormat::BGR_8_linear);
+		SRCFORMAT == PixelFormat::BGR_565_linear || SRCFORMAT == PixelFormat::RGB_565_bigendian ||
+		SRCFORMAT == PixelFormat::RGB_555_bigendian || SRCFORMAT == PixelFormat::BGR_8_linear);
 
 	bool dstIsLinear = (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
-		DSTFORMAT == PixelFormat::BGR_8_linear);
+		DSTFORMAT == PixelFormat::RGB_555_bigendian || DSTFORMAT == PixelFormat::BGR_8_linear);
 
 	if ((srcIsLinear && dstIsLinear) || (!srcIsLinear && !dstIsLinear && TINT == TintMode::None && BLEND == BlendMode::Replace))
 	{
@@ -2073,13 +2106,13 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 
 	bool srcIsLinear = (SRCFORMAT == PixelFormat::Alpha_8 || SRCFORMAT == PixelFormat::BGRA_4_linear ||
 		SRCFORMAT == PixelFormat::BGRA_8_linear || SRCFORMAT == PixelFormat::BGRX_8_linear ||
-		SRCFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
-		SRCFORMAT == PixelFormat::BGR_8_linear);
+		SRCFORMAT == PixelFormat::BGR_565_linear || SRCFORMAT == PixelFormat::RGB_565_bigendian ||
+		SRCFORMAT == PixelFormat::RGB_555_bigendian || SRCFORMAT == PixelFormat::BGR_8_linear);
 
 	bool dstIsLinear = (DSTFORMAT == PixelFormat::Alpha_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
 		DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
 		DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::RGB_565_bigendian ||
-		DSTFORMAT == PixelFormat::BGR_8_linear);
+		DSTFORMAT == PixelFormat::RGB_555_bigendian || DSTFORMAT == PixelFormat::BGR_8_linear);
 
 	if ((srcIsLinear && dstIsLinear) || (!srcIsLinear && !dstIsLinear && TINT == TintMode::None && BLEND == BlendMode::Replace))
 	{

@@ -709,7 +709,7 @@ void MyApp::setupScreens()
 	
 	for (int i = 0; i < 11; i++)
 	{
-		auto pSurf = pFactory->createSurface({ .format = PixelFormat::RGB_565_bigendian, .identity = int(CanvasRef::Default) + i, .size = {240,240}});
+		auto pSurf = pFactory->createSurface({ .format = PixelFormat::RGB_555_bigendian, .identity = int(CanvasRef::Default) + i, .size = {240,240}});
 		pSurf->fill(HiColor::Black);
 
 		m_screens.push_back(pSurf);

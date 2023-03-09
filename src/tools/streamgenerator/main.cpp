@@ -703,7 +703,7 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
     
     while (ticker < length)
     {
-		auto pCanvas = pFactory->createSurface( WGBP(Surface, _.size = backCanvasSize, _.format = PixelFormat::RGB_565_bigendian, _.canvas = true ) );
+		auto pCanvas = pFactory->createSurface( WGBP(Surface, _.size = backCanvasSize, _.format = PixelFormat::RGB_555_bigendian, _.canvas = true ) );
         
         
         

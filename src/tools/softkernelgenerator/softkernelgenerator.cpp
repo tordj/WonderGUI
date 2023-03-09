@@ -596,20 +596,31 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 
 	// Togglebuttons for Source Format
 
-	pColumn = _buildToggleButtonRow("Source Formats", { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
-							PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
-							PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
-							PixelFormat::Index_8_linear, PixelFormat::Index_8_sRGB, PixelFormat::RGB_565_bigendian, PixelFormat::Alpha_8 },
+	
+	
+	pColumn = _buildToggleButtonRow("Source Formats", { PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB,
+														PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
+														PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
+														PixelFormat::Index_8_linear, PixelFormat::Index_8_sRGB,
+														PixelFormat::Index_16_linear, PixelFormat::Index_16_sRGB,
+														PixelFormat::BGRA_4_linear,
+														PixelFormat::BGR_565_linear,
+														PixelFormat::RGB_565_bigendian,
+														PixelFormat::RGB_555_bigendian,
+														PixelFormat::Alpha_8 },
 		m_pDB->srcFormats(), [this](Msg* pMsg) {this->sourceFormatToggled(pMsg); });
 
 	pTopSection->slots << pColumn;
 
 	// Togglebuttons for Dest Format
 
-	pColumn = _buildToggleButtonRow("Dest Formats", { PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
-								PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
-								PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB, PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
-								PixelFormat::RGB_565_bigendian, PixelFormat::Alpha_8 },
+	pColumn = _buildToggleButtonRow("Dest Formats", { 	PixelFormat::BGR_8_linear, PixelFormat::BGR_8_sRGB,
+														PixelFormat::BGRX_8_linear, PixelFormat::BGRX_8_sRGB,
+														PixelFormat::BGRA_8_linear, PixelFormat::BGRA_8_sRGB,
+														PixelFormat::BGRA_4_linear, PixelFormat::BGR_565_linear,
+														PixelFormat::RGB_565_bigendian,
+														PixelFormat::RGB_555_bigendian,
+														PixelFormat::Alpha_8 },
 		m_pDB->destFormats(), [this](Msg* pMsg) {this->destFormatToggled(pMsg); });
 
 	pTopSection->slots << pColumn;

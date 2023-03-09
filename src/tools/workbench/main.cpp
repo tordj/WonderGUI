@@ -3019,7 +3019,7 @@ bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot)
 	}
 	
 	
-	auto pSurface = Base::activeContext()->surfaceFactory()->createSurface( { .format = PixelFormat::RGB_565_bigendian, .size = SizeI(512,512) } );
+	auto pSurface = Base::activeContext()->surfaceFactory()->createSurface( { .format = PixelFormat::RGB_555_bigendian, .size = SizeI(512,512) } );
 	
 	uint16_t sectionTable[1024*4];
 	

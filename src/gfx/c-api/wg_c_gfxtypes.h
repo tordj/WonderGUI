@@ -112,16 +112,34 @@ typedef enum
 	WG_PIXFMT_BGRA_8_SRGB,			///< One byte of blue, green, red and alpha in exactly that order in memory.
 	WG_PIXFMT_BGRA_8_LINEAR,		///< One byte of blue, green, red and alpha in exactly that order in memory.
 
-	WG_PIXFMT_BGRA_4_LINEAR,		///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
-	WG_PIXFMT_BGR_565_LINEAR,		///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
-
 	WG_PIXFMT_INDEX_8,				///< 8 bits of index into the palette.
 	WG_PIXFMT_INDEX_8_SRGB,			///< 8 bits of index into the palette.
 	WG_PIXFMT_INDEX_8_LINEAR,		///< 8 bits of index into the palette.
 
-	WG_PIXFMT_RGB_565_BIGENDIAN,	///< 3 high bits of green, 5 bits of blue, 5 bits of red and 3 low bits of green in exactly that order in memory.
+	WG_PIXFMT_INDEX_16,				///< 8 bits of index into the palette.
+	WG_PIXFMT_INDEX_16_SRGB,		///< 8 bits of index into the palette.
+	WG_PIXFMT_INDEX_16_LINEAR,		///< 8 bits of index into the palette.
 
-	WG_PIXFMT_ALPHA_8
+	WG_PIXFMT_ALPHA_8,
+
+	WG_PIXFMT_BGRA_4_LINEAR,		///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
+	WG_PIXFMT_BGR_565_LINEAR,		///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
+
+	WG_PIXFMT_RGB_565_BIGENDIAN,	///< 3 high bits of green, 5 bits of blue, 5 bits of red and 3 low bits of green in exactly that order in memory.
+	WG_PIXFMT_RGB_555_BIGENDIAN,	/// Same layout as RGB_565_bigendian, but lowest bit of green is always cleared. Avoids accidental tinting towards green of dark colors.
+
+	WG_PIXFMT_BITPLANES_1,
+	WG_PIXFMT_BITPLANES_2,
+	WG_PIXFMT_BITPLANES_4,
+	WG_PIXFMT_BITPLANES_5,
+	WG_PIXFMT_BITPLANES_8,
+
+	WG_PIXFMT_BITPLANES_1_A1,
+	WG_PIXFMT_BITPLANES_2_A1,
+	WG_PIXFMT_BITPLANES_4_A1,
+	WG_PIXFMT_BITPLANES_5_A1,
+	WG_PIXFMT_BITPLANES_8_A1
+	
 } wg_pixelFormat;
 
 

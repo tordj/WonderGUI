@@ -225,6 +225,7 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 							m_srcFormats[(int)PixelFormat::BGR_8_linear] ||
 							m_srcFormats[(int)PixelFormat::Index_8_linear] ||
 							m_srcFormats[(int)PixelFormat::RGB_565_bigendian] ||
+							m_srcFormats[(int)PixelFormat::RGB_555_bigendian] ||
 							m_srcFormats[(int)PixelFormat::Alpha_8];
 
 	bool bHasLinearDest =   m_destFormats[(int)PixelFormat::BGRA_4_linear] ||
@@ -233,6 +234,7 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 							m_destFormats[(int)PixelFormat::BGR_565_linear] ||
 							m_destFormats[(int)PixelFormat::BGR_8_linear] ||
 							m_destFormats[(int)PixelFormat::RGB_565_bigendian] ||
+							m_destFormats[(int)PixelFormat::RGB_555_bigendian] ||
 							m_destFormats[(int)PixelFormat::Alpha_8];
 
 	bool bHasSRGBSource =	m_srcFormats[(int)PixelFormat::BGRA_8_sRGB] ||
@@ -1068,6 +1070,7 @@ void KernelDB::reset()
 	m_srcFormats[int(PixelFormat::Index_8_sRGB)] = true;
 	m_srcFormats[int(PixelFormat::Index_8_linear)] = true;
 	m_srcFormats[int(PixelFormat::RGB_565_bigendian)] = true;
+	m_srcFormats[int(PixelFormat::RGB_555_bigendian)] = true;
 	m_srcFormats[int(PixelFormat::Alpha_8)] = true;
 
 	// Set standard destination formats
@@ -1081,6 +1084,7 @@ void KernelDB::reset()
 	m_destFormats[int(PixelFormat::BGRA_4_linear)] = true;
 	m_destFormats[int(PixelFormat::BGR_565_linear)] = true;
 	m_destFormats[int(PixelFormat::RGB_565_bigendian)] = true;
+	m_destFormats[int(PixelFormat::RGB_555_bigendian)] = true;
 	m_destFormats[int(PixelFormat::Alpha_8)] = true;
 
 	// Set custom blit methods

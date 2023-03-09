@@ -213,7 +213,8 @@ PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
 		{
 			if( description == pixelDescTab[int(PixelFormat::RGB_565_bigendian)])
 			   return PixelFormat::RGB_565_bigendian;
-			
+			else if( description == pixelDescTab[int(PixelFormat::RGB_555_bigendian)])
+			   return PixelFormat::RGB_555_bigendian;
 			break;
 		}
 		case PixelType::Index:

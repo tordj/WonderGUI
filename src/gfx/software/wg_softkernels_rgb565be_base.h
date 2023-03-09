@@ -3,5 +3,5 @@
 
 namespace wg
 {
-	bool wg_addBaseSoftKernelsForRGB565BECanvas( SoftGfxDevice * pDevice );
+	bool addBaseSoftKernelsForRGB565BECanvas( SoftGfxDevice * pDevice );
 };

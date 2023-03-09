@@ -21,6 +21,9 @@
 #include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
 #include <wg_softkernels_default.h>
+#include <wg_softkernels_rgb565be_base.h>
+#include <wg_softkernels_rgb555be_base.h>
+#include <wg_softkernels_rgb555be_extras.h>
 
 using namespace wg;
 
@@ -42,7 +45,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 640*3, height = 480*3;
+	int posX = 100, posY = 100, width = 640, height = 480;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
@@ -57,15 +60,17 @@ int main ( int argc, char** argv )
 	PixelFormat format = PixelFormat::Undefined;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
-		format = PixelFormat::BGRA_8;
+		format = PixelFormat::BGRA_8_sRGB;
 	else if( pWinSurf->format->BitsPerPixel == 24 )
-		format = PixelFormat::BGR_8;
+		format = PixelFormat::BGR_8_sRGB;
 
 	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
 	SoftSurface_p pCanvas = SoftSurface::create({ .format = format, .size = SizeI(pWinSurf->w,pWinSurf->h) }, pCanvasBlob, pWinSurf->pitch);
 
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
 	addDefaultSoftKernels(pGfxDevice);
+//	addBaseSoftKernelsForRGB565BECanvas(pGfxDevice);
+	addBaseSoftKernelsForRGB555BECanvas(pGfxDevice);
 
 	
 	// First we load the 24-bit bmp containing the button graphics.
@@ -117,6 +122,11 @@ int main ( int argc, char** argv )
 	pPrinter->setCursorOrigo({0,20*64});
 	
 	
+	pSDLSurf = SDL_LoadBMP( "resources/definitely_srgb.bmp" );
+	SoftSurface_p pSRGBSurface = SoftSurface::create({ .format = PixelFormat::BGRA_8_sRGB, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, PixelFormat::BGRA_8_sRGB, pSDLSurf->pitch, 0);
+	SDL_FreeSurface(pSDLSurf);
+
+	
 	//------------------------------------------------------
 	// Program Main Loop
 	//------------------------------------------------------
@@ -135,10 +145,11 @@ int main ( int argc, char** argv )
 		pGfxDevice->beginRender();
 		pGfxDevice->beginCanvasUpdate(pCanvas);		
 
-		pGfxDevice->fill(Color8::Green);
+		pGfxDevice->fill(Color8::Black);
 
-		
-		pFont->setSize(10*64);
+/*
+ 
+ 		pFont->setSize(10*64);
 		
 		pPrinter->setLineWidth(640*3*64);
 		pPrinter->resetCursor();
@@ -164,7 +175,8 @@ int main ( int argc, char** argv )
 
 		pPrinter->setLineWidth(100*64);
 		pPrinter->printWrapping("This not so very long texts should be wrapping automatically every 100 pixels.\nThis is line two.", 20*64);
-		
+ */
+
 		
 /*
 		for( int y = 0 ; y < 17 ; y++ )
@@ -177,9 +189,53 @@ int main ( int argc, char** argv )
 
 		pGfxDevice->fill( RectI((18*16)*64,0, 64*10, 64*300), HiColor(4096/16,0,0,4096) );
 */
+		
+
+		auto pHWCanvas = SoftSurface::create( { .canvas = true, .format = PixelFormat::RGB_555_bigendian, .size = {256,256}} );
+		pHWCanvas->fill(Color8::Green);
+
+		pGfxDevice->beginCanvasUpdate(pHWCanvas);
+		pGfxDevice->setTintGradient( {0,0,256*64,256*64}, Gradient(Placement::West, HiColor::Black, HiColor::White) );
+		pGfxDevice->fill(HiColor::White);
+		pGfxDevice->endCanvasUpdate();
+
+		auto pHWCanvas2 = SoftSurface::create( { .canvas = true, .format = PixelFormat::RGB_565_bigendian, .size = {256,256}} );
+		pHWCanvas2->fill(Color8::Green);
+
+ 
+ 		pGfxDevice->beginCanvasUpdate(pHWCanvas2);
+		pGfxDevice->setTintGradient( {0,0,256*64,256*64}, Gradient(Placement::West, HiColor::Black, HiColor::White) );
+		pGfxDevice->fill(HiColor::White);
+		pGfxDevice->endCanvasUpdate();
+
+
+		pGfxDevice->setBlitSource(pHWCanvas);
+		pGfxDevice->blit({0,0});
+		
+		pGfxDevice->setBlitSource(pHWCanvas2);
+		pGfxDevice->blit({0,256*64});
+
+		pGfxDevice->setBlitSource( pSRGBSurface );
+		pGfxDevice->blit({0,10*64});
+		
+		
 		pGfxDevice->endCanvasUpdate();
 		pGfxDevice->endRender();
 
+		
+		uint8_t * pScreen = (uint8_t*) pWinSurf->pixels;
+		for( int y = 0 ; y < 10 ; y++ )
+		{
+			for( int x = 0 ; x < 256 ; x++ )
+			{
+				* pScreen++ = x;
+				* pScreen++ = x;
+				* pScreen++ = x;
+				* pScreen++ = x;
+			}
+			pScreen += pWinSurf->pitch - 256*4;
+		}
+		
 		SDL_UnlockSurface(pWinSurf);
 
 		SDL_UpdateWindowSurface( pWin );

@@ -2722,7 +2722,8 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		{
 			// TODO: Optimize by using a lookup table.
 			
-			if( blendMode == BlendMode::Blend && (srcFormat == PixelFormat::RGB_565_bigendian || srcFormat == PixelFormat::BGR_8_sRGB ||
+			if( blendMode == BlendMode::Blend && (srcFormat == PixelFormat::RGB_565_bigendian ||
+				srcFormat == PixelFormat::RGB_555_bigendian || srcFormat == PixelFormat::BGR_8_sRGB ||
 				srcFormat == PixelFormat::BGR_8_linear || srcFormat == PixelFormat::BGR_565_linear ||
 				srcFormat == PixelFormat::BGRX_8_sRGB || srcFormat == PixelFormat::BGRX_8_linear) )
 			{
@@ -2866,7 +2867,8 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		    format != PixelFormat::BGRX_8_sRGB && format != PixelFormat::BGRX_8_linear &&
 		    format != PixelFormat::BGRA_8_sRGB && format != PixelFormat::BGRA_8_linear &&
 		    format != PixelFormat::BGRA_4_linear && format != PixelFormat::BGR_565_linear &&
-		    format != PixelFormat::Alpha_8 && format != PixelFormat::RGB_565_bigendian )
+		    format != PixelFormat::Alpha_8 && format != PixelFormat::RGB_565_bigendian &&
+		    format != PixelFormat::RGB_555_bigendian )
 		{
 			return false;
 		}
