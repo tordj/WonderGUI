@@ -28,6 +28,9 @@
 namespace wg { namespace PixelTools
 {
 
+typedef	void(*PixelReadFunc)(const uint8_t*, uint8_t*, int, const void*, const void*);
+
+
 const uint8_t conv_2_linear_to_8_sRGB[4] 	= {0, 155, 212, 255 };
 
 const uint8_t conv_3_linear_to_8_sRGB[8] 	= {0, 105, 144, 173, 198, 219, 238, 255};
@@ -795,11 +798,12 @@ static void readConv_planes_1i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 	}
 }
 
+
 //____ convertPixelsToKnownType() _________________________________________________________
 
 static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSrc, int srcPixelBits, int srcPitchAdd,
 										uint8_t * pDst, PixelFormat dstFmt, int dstPitchAdd, Color8 * pDstPalette, int& dstPaletteEntries, int maxDstPaletteEntries,
-										void(*pReadFunc)( const uint8_t *, uint8_t *, int, const void *, const void * ), const void * pTab1, const void * pTab2 )
+										PixelReadFunc pReadFunc, const void * pTab1, const void * pTab2 )
 {
 	switch( dstFmt)
 	{
@@ -1249,7 +1253,7 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescripti
 		convTab.pConvA = pTabList[bitsA];
 	
 
-		void(*pReadFunc)( const uint8_t *, uint8_t *, int, const void *, const void * );
+		PixelReadFunc pReadFunc;
 
 		switch( srcDesc.bits )
 		{
@@ -1282,8 +1286,7 @@ bool copyPixels( int width, int height, const uint8_t * pSrc, PixelFormat srcFmt
 				 uint8_t * pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8 * pSrcPalette,
 				 Color8 * pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries )
 {
-	
-	
+
 	// TODO: Straight copy with palette conversion when converting between Index_8_linear and Index_8_sRGB.
 	// TODO: Optimize copy to A8 in several ways.
 
@@ -1326,7 +1329,7 @@ bool copyPixels( int width, int height, const uint8_t * pSrc, PixelFormat srcFmt
 	}
 	else
 	{
-		void(*pReadFunc)( const uint8_t *, uint8_t *, int, const void *, const void * );
+		PixelReadFunc pReadFunc;
 
 		bool bLinearSource = (srcDesc.colorSpace == ColorSpace::Linear);
 		bool bLinearDest = (dstDesc.colorSpace == ColorSpace::Linear);
@@ -1334,119 +1337,150 @@ bool copyPixels( int width, int height, const uint8_t * pSrc, PixelFormat srcFmt
 		const void * pTab1 = nullptr;
 		const void * pTab2 = nullptr;
 
-		switch( srcFmt )
+		switch (srcDesc.type)
 		{
-			case PixelFormat::BGR_8_sRGB:
-			case PixelFormat::BGR_8_linear:
-				if(srcDesc.colorSpace == dstDesc.colorSpace)
-					pReadFunc = readBGR8;
-				else
-				{
-					pReadFunc = readConvBGR8;
-					pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
-				}
-				break;
-
-
-			case PixelFormat::BGRX_8_sRGB:
-			case PixelFormat::BGRX_8_linear:
-				if(srcDesc.colorSpace == dstDesc.colorSpace)
-					pReadFunc = readBGRX8;
-				else
-				{
-					pReadFunc = readConvBGRX8;
-					pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
-				}
-				break;
-
-			case PixelFormat::BGRA_8_sRGB:
-			case PixelFormat::BGRA_8_linear:
-				if(srcDesc.colorSpace == dstDesc.colorSpace)
-					pReadFunc = readBGRA8;
-				else
-				{
-					pReadFunc = readConvBGRA8;
-					pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
-				}
-				break;
-
-			case PixelFormat::BGRA_4_linear:
-				pReadFunc = readBGRA_4;
-				if( bLinearDest )
-					pTab1 = conv_4_to_8_straight;
-				else
-					pTab1 = conv_4_linear_to_8_sRGB;
-				
-				break;
-				
-			case PixelFormat::BGR_565_linear:
-				pReadFunc = readBGR_565;
-				if( bLinearDest )
-				{
-					pTab1 = conv_5_to_8_straight;
-					pTab2 = conv_6_to_8_straight;
-				}
-				else
-				{
-					pTab1 = conv_5_linear_to_8_sRGB;
-					pTab2 = conv_6_linear_to_8_sRGB;
-				}
-				break;
-				
-			case PixelFormat::Index_8_sRGB:
-				pReadFunc = readIndex8;
-				if( !bLinearDest )
+			case PixelType::Index:
+				pReadFunc = srcDesc.bits == 8 ? readIndex8 : readIndex16;
+				if (srcDesc.colorSpace == dstDesc.colorSpace)
 					pTab1 = pSrcPalette;
 				else
 				{
-					nAllocatedBytes = srcPaletteEntries*sizeof(Color8);
-					Color8 * pConvPalette = (Color8*) GfxBase::memStackAlloc(nAllocatedBytes);
-					readConvBGRA8( (uint8_t*) pSrcPalette, (uint8_t*) pConvPalette, srcPaletteEntries, conv_8_sRGB_to_8_linear, nullptr);
-					pTab1 = pConvPalette;
-				}
-				break;
-				
-			case PixelFormat::Index_8_linear:
-				pReadFunc = readIndex8;
-				if( bLinearDest )
-					pTab1 = pSrcPalette;
-				else
-				{
-					nAllocatedBytes = srcPaletteEntries*sizeof(Color8);
-					Color8 * pConvPalette = (Color8*) GfxBase::memStackAlloc(nAllocatedBytes);
-					readConvBGRA8( (uint8_t*) pSrcPalette, (uint8_t*) pConvPalette, srcPaletteEntries, conv_8_linear_to_8_sRGB, nullptr);
+					auto convTab = srcDesc.colorSpace == ColorSpace::Linear ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
+
+					nAllocatedBytes = srcPaletteEntries * sizeof(Color8);
+					Color8* pConvPalette = (Color8*)GfxBase::memStackAlloc(nAllocatedBytes);
+					readConvBGRA8((uint8_t*)pSrcPalette, (uint8_t*)pConvPalette, srcPaletteEntries, convTab, nullptr);
 					pTab1 = pConvPalette;
 				}
 				break;
 
-				
-			case PixelFormat::RGB_565_bigendian:
-				pReadFunc = readRGB_565_bigendian;
-				if( bLinearDest )
-				{
-					pTab1 = conv_5_to_8_straight;
-					pTab2 = conv_6_to_8_straight;
-				}
-				else
-				{
-					pTab1 = conv_5_linear_to_8_sRGB;
-					pTab2 = conv_6_linear_to_8_sRGB;
-				}
-				break;
+			case PixelType::Bitplanes:
+			{
+				const PixelReadFunc readFunc_planes_nonAlpha[8] = { 
+					readConv_planes_1i_be, readConv_planes_2i_be, nullptr, readConv_planes_4i_be,
+					readConv_planes_5i_be, nullptr, nullptr, readConv_planes_8i_be };
 
-			case PixelFormat::RGB_555_bigendian:
-				pReadFunc = readRGB_555_bigendian;
-				if( bLinearDest )
-					pTab1 = conv_5_to_8_straight;
+				const PixelReadFunc readFunc_planes_withAlpha[8] = { 
+					readConv_planes_1i_a1_be, readConv_planes_2i_a1_be, nullptr, readConv_planes_4i_a1_be,
+					readConv_planes_5i_a1_be, nullptr, nullptr, readConv_planes_8i_a1_be };
+
+				if (srcDesc.A_mask == 0)
+					pReadFunc = readFunc_planes_nonAlpha[srcDesc.bits - 1];
 				else
-					pTab1 = conv_5_linear_to_8_sRGB;
+					pReadFunc = readFunc_planes_withAlpha[srcDesc.bits - 2];
+
+				if (srcDesc.colorSpace == dstDesc.colorSpace)
+					pTab1 = pSrcPalette;
+				else
+				{
+					auto convTab = srcDesc.colorSpace == ColorSpace::Linear ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
+
+					nAllocatedBytes = srcPaletteEntries * sizeof(Color8);
+					Color8* pConvPalette = (Color8*)GfxBase::memStackAlloc(nAllocatedBytes);
+					readConvBGRA8((uint8_t*)pSrcPalette, (uint8_t*)pConvPalette, srcPaletteEntries, convTab, nullptr);
+					pTab1 = pConvPalette;
+				}
 				break;
+			}
 				
-			case PixelFormat::Alpha_8:
-				pReadFunc = readAlpha8;
+
+			case PixelType::Chunky_BE:
+			{
+				if (srcFmt == PixelFormat::RGB_565_bigendian)
+				{
+					pReadFunc = readRGB_565_bigendian;
+					if (bLinearDest)
+					{
+						pTab1 = conv_5_to_8_straight;
+						pTab2 = conv_6_to_8_straight;
+					}
+					else
+					{
+						pTab1 = conv_5_linear_to_8_sRGB;
+						pTab2 = conv_6_linear_to_8_sRGB;
+					}
+				}
+				else
+				{
+					pReadFunc = readRGB_555_bigendian;
+					if (bLinearDest)
+						pTab1 = conv_5_to_8_straight;
+					else
+						pTab1 = conv_5_linear_to_8_sRGB;
+				}
 				break;
-			default:
-				goto error;
+			}
+
+			case PixelType::Chunky:
+			{
+				switch( srcFmt )
+				{
+					case PixelFormat::BGR_8_sRGB:
+					case PixelFormat::BGR_8_linear:
+						if(srcDesc.colorSpace == dstDesc.colorSpace)
+							pReadFunc = readBGR8;
+						else
+						{
+							pReadFunc = readConvBGR8;
+							pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
+						}
+						break;
+
+
+					case PixelFormat::BGRX_8_sRGB:
+					case PixelFormat::BGRX_8_linear:
+						if(srcDesc.colorSpace == dstDesc.colorSpace)
+							pReadFunc = readBGRX8;
+						else
+						{
+							pReadFunc = readConvBGRX8;
+							pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
+						}
+						break;
+
+					case PixelFormat::BGRA_8_sRGB:
+					case PixelFormat::BGRA_8_linear:
+						if(srcDesc.colorSpace == dstDesc.colorSpace)
+							pReadFunc = readBGRA8;
+						else
+						{
+							pReadFunc = readConvBGRA8;
+							pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
+						}
+						break;
+
+					case PixelFormat::BGRA_4_linear:
+						pReadFunc = readBGRA_4;
+						if( bLinearDest )
+							pTab1 = conv_4_to_8_straight;
+						else
+							pTab1 = conv_4_linear_to_8_sRGB;
+				
+						break;
+				
+					case PixelFormat::BGR_565_linear:
+						pReadFunc = readBGR_565;
+						if( bLinearDest )
+						{
+							pTab1 = conv_5_to_8_straight;
+							pTab2 = conv_6_to_8_straight;
+						}
+						else
+						{
+							pTab1 = conv_5_linear_to_8_sRGB;
+							pTab2 = conv_6_linear_to_8_sRGB;
+						}
+						break;
+								
+					case PixelFormat::Alpha_8:
+						pReadFunc = readAlpha8;
+						break;
+
+					default:
+						goto error;
+				}
+				break;
+			}
 		}
 
 		if( !convertPixelsToKnownType(	width, height, pSrc, srcDesc.bits, srcPitchAdd, pDst, dstFmt, dstPitchAdd,

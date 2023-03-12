@@ -27,7 +27,7 @@ target_include_directories(wgmetalgfx PRIVATE
 	${WGMETALGFX_INCDIRS}
 )
 
-set_target_properties( wgmetalgfx PROPERTIES FOLDER "Graphics Devices" )
+set_target_properties( wgmetalgfx PROPERTIES FOLDER "Extensions" )
 
 list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
 set(WGMETALGFX_SOURCES ${SOURCES} PARENT_SCOPE)

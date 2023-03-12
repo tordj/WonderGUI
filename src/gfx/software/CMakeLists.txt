@@ -41,7 +41,7 @@ target_include_directories(wgsoftgfx PRIVATE
 	${INCDIRS}
 )
 
-set_target_properties( wgsoftgfx PROPERTIES FOLDER "Graphics Devices" )
+set_target_properties( wgsoftgfx PROPERTIES FOLDER "Extensions" )
 
 
 list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )

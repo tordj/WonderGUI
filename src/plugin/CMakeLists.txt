@@ -118,7 +118,7 @@ target_include_directories(wgpluginhost PRIVATE
 )
 
 
-set_target_properties( wgpluginhost wgplugin wglegacyplugin PROPERTIES FOLDER "Plugin" )
+set_target_properties( wgpluginhost wgplugin wglegacyplugin PROPERTIES FOLDER "Extensions" )
 
  
 list(TRANSFORM PLUGIN_SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )

@@ -21,6 +21,9 @@ target_include_directories(wgfreetypefont PRIVATE
     ${FREETYPE2_INCDIR}
 )
 
+set_target_properties( wgfreetypefont PROPERTIES FOLDER "Extensions" )
+
+
 list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
 set(WGFREETYPEFONT_SOURCES ${SOURCES} PARENT_SCOPE)
 set(WGFREETYPEFONT_INCDIRS ${INCDIRS} PARENT_SCOPE)

@@ -24,7 +24,7 @@ target_include_directories(wgopenglgfx PRIVATE
 	${INCDIRS}
 )
 
-set_target_properties( wgopenglgfx PROPERTIES FOLDER "Graphics Devices" )
+set_target_properties( wgopenglgfx PROPERTIES FOLDER "Extensions" )
 
 list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
 set(WGOPENGLGFX_SOURCES ${SOURCES} PARENT_SCOPE)
