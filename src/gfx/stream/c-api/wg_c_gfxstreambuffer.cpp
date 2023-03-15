@@ -66,7 +66,7 @@ int wg_streamBufferBytes(wg_obj streamBuffer)
 
 void wg_resetStreamBuffer(wg_obj streamBuffer)
 {
-	return getPtr(streamBuffer)->reset();
+	getPtr(streamBuffer)->reset();
 }
 
 

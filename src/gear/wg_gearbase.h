@@ -44,7 +44,7 @@ namespace wg
 	public:
 		ErrorLevel	severity;
 		ErrorCode		code;
-		std::string		message;
+		const char *	message;
 		const Object *	pObject;
 		const char *	classname;
 		const char *	function;

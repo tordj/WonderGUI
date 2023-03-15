@@ -21,36 +21,22 @@
 =========================================================================*/
 
 
-#ifndef WG_C_GFXBASE_DOT_H
-#define WG_C_GFXBASE_DOT_H
+#ifndef WG_C_GFXUTIL_DOT_H
+#define WG_C_GFXUTIL_DOT_H
 #pragma once
 
 #include <wg_c_gfxtypes.h>
-#include <wg_c_gearbase.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-	int		wg_initGfxBase(void);
-	int		wg_exitGfxBase(void);
-	int		wg_isGfxBaseInitialized(void);
-
-	wg_obj	wg_defaultBitmapCache();
-
-	void	wg_setDefaultSurfaceFactory( wg_obj factory );
-	wg_obj	wg_defaultSurfaceFactory();
-
-	void	wg_setDefaultGfxDevice( wg_obj device );
-	wg_obj	wg_defaultGfxDevice();
-
-	void	wg_setDefaultToSRGB( int bSRGB );
-	int		wg_defaultToSRGB();
-
-
+	const wg_pixelDescription* 	wg_pixelFormatToDescription( wg_pixelFormat format );
+	wg_pixelFormat 				wg_pixelDescriptionToFormat(const wg_pixelDescription * pDescription);
+	wg_pixelFormat 				wg_translatePixelFormat( wg_pixelFormat format);
+	
 #ifdef __cplusplus
 }
 #endif
 
-#endif //WG_C_GFXBASE_DOT_H
+#endif //WG_C_GFXUTIL_DOT_H

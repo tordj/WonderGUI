@@ -56,6 +56,8 @@ set( SOURCES
 	c-api/wg_c_gfxdevice.cpp
 	c-api/wg_c_gfxdevice.h
 	c-api/wg_c_gfxtypes.h
+	c-api/wg_c_gfxutil.cpp
+	c-api/wg_c_gfxutil.h
 	c-api/wg_c_gradient.cpp
 	c-api/wg_c_gradient.h
 	c-api/wg_c_internal.cpp

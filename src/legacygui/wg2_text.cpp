@@ -1339,6 +1339,9 @@ void WgText::SetEditMode(WgTextEditMode mode)
 		delete m_pCursor;
 		m_pCursor = 0;
 	}
+	
+	if( mode == WgTextEditMode::Static )
+		clearSelection();
 }
 
 

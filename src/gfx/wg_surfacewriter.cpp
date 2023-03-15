@@ -22,6 +22,7 @@
 
 #include <wg_surfacewriter.h>
 #include <wg_gfxbase.h>
+#include <cstring>
 
 namespace wg
 {
@@ -33,9 +34,9 @@ namespace wg
 	SurfaceWriter_p SurfaceWriter::create( const Blueprint& blueprint )
 	{
 		return SurfaceWriter_p( new SurfaceWriter(blueprint) );
-		
+
 	}
-	
+
 	//____ constructor ___________________________________________________________
 
 	SurfaceWriter::SurfaceWriter( const Blueprint& bp )
@@ -55,33 +56,33 @@ namespace wg
 	void SurfaceWriter::writeSurfaceToStream( std::ostream& stream, Surface * pSurface, int extraDataSize, char * pExtraData )
 	{
 		//TODO: Should clear X-channel on BGRX surfaces? Make it optional?
-		
+
 		// Fill in header
-		
+
 		SurfaceFileHeader	header;
 		int headerBytes = _generateHeader(&header, pSurface, extraDataSize);
-		
+
 		// Write header
 
 		stream.write((char*) &header, headerBytes);
 
 		// Write palette
-		
+
 		if( pSurface->palette() )
 			stream.write( (char*) pSurface->palette(), 256*sizeof(Color8) );
-		
+
 		// Write pixels
-		
+
 		int lineBytes = header.width * pSurface->pixelBits()/8;
 		auto pixbuf = pSurface->allocPixelBuffer();
 		pSurface->pushPixels(pixbuf);
-		
+
 		if( pixbuf.pitch > lineBytes )
 		{
 			// Pitch is involved, we need to write line by line
-			
+
 			char * pPixels = (char *) pixbuf.pixels;
-			
+
 			for( int y = 0 ; y < header.height ; y++ )
 			{
 				stream.write( pPixels, lineBytes );
@@ -96,7 +97,7 @@ namespace wg
 		pSurface->freePixelBuffer(pixbuf);
 
 		// write extra data
-		
+
 		if( extraDataSize > 0 )
 			stream.write( pExtraData, extraDataSize );
 	}
@@ -106,43 +107,43 @@ namespace wg
 	Blob_p SurfaceWriter::writeSurfaceToBlob( Surface * pSurface, int extraDataSize, char * pExtraData )
 	{
 		// Fill in header
-		
+
 		SurfaceFileHeader	header;
 		int headerBytes = _generateHeader(&header, pSurface, extraDataSize);
-	
+
 		// Calculate size needed for blob
-		
+
 		int size = headerBytes + header.paletteBytes + header.pixelBytes + header.extraDataBytes;
-		
+
 		Blob_p pBlob = Blob::create(size);
-		
+
 		char * pWrite = (char*) pBlob->data();
-		
+
 		// Write header
 
 		std::memcpy(pWrite, &header, headerBytes);
 		pWrite += headerBytes;
-		
+
 		// Write palette
-		
+
 		if( pSurface->palette() )
 		{
 			std::memcpy(pWrite, pSurface->palette(), 256*sizeof(Color8) );
 			pWrite += 256*sizeof(Color8);
 		}
-		
+
 		// Write pixels
-		
+
 		int lineBytes = header.width * pSurface->pixelBits()/8;
 		auto pixbuf = pSurface->allocPixelBuffer();
 		pSurface->pushPixels(pixbuf);
-		
+
 		if( pixbuf.pitch > lineBytes )
 		{
 			// Pitch is involved, we need to write line by line
-			
+
 			char * pPixels = (char *) pixbuf.pixels;
-			
+
 			for( int y = 0 ; y < header.height ; y++ )
 			{
 				std::memcpy(pWrite, pPixels, lineBytes );
@@ -159,7 +160,7 @@ namespace wg
 		pSurface->freePixelBuffer(pixbuf);
 
 		// write extra data
-		
+
 		if( extraDataSize > 0 )
 		{
 			std::memcpy( pWrite, pExtraData, extraDataSize );
@@ -175,43 +176,43 @@ namespace wg
 	int SurfaceWriter::_generateHeader( SurfaceFileHeader * pHeader, Surface * pSurface, int extraDataSize )
 	{
 		auto bp = pSurface->blueprint();
-		
+
 		auto sz = pSurface->pixelSize();
-		
+
 		pHeader->width = bp.size.w;
 		pHeader->height = bp.size.h;
 		pHeader->format = bp.format;
 
 		if( m_saveInfo.sampleMethod )
 			pHeader->sampleMethod = bp.sampleMethod;
-		
+
 		if( m_saveInfo.buffered )
 			pHeader->buffered = bp.buffered;
-		
+
 		if( m_saveInfo.canvas )
 			pHeader->canvas = bp.canvas;
-		
+
 		if( m_saveInfo.dynamic )
 			pHeader->dynamic = bp.dynamic;
-		
+
 		if( m_saveInfo.tiling )
 			pHeader->tiling = bp.tiling;
-		
+
 		if( m_saveInfo.mipmap )
 			pHeader->mipmap = bp.mipmap;
 
 		if( m_saveInfo.scale )
 			pHeader->scale = bp.scale;
-		
+
 		if( m_saveInfo.identity )
 			pHeader->identity = bp.identity;
-		
+
 		if( bp.palette )
 		{
 			pHeader->paletteBytes = 256*sizeof(Color8);
 			pHeader->paletteEntries = 256;
 		}
-		
+
 
 		int headerBytes;
 		if( extraDataSize != 0 )
@@ -222,9 +223,9 @@ namespace wg
 			headerBytes = 40;
 		else
 			headerBytes = 32;
-		
+
 		pHeader->headerBytes = headerBytes;
-		
+
 		int lineBytes = bp.size.w * pSurface->pixelBits()/8;
 
 		pHeader->pixelBytes = lineBytes * bp.size.h;

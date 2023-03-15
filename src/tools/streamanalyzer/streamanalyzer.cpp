@@ -382,7 +382,7 @@ Widget_p MyApp::createLogPanel()
 	{
 		char temp[1024];
 		
-		sprintf(temp, "%s: %s - %s\n", toString( err.severity ), err.function, err.message.c_str() );
+		sprintf(temp, "%s: %s - %s\n", toString( err.severity ), err.function, err.message );
 		
 		m_pErrorsDisplay->editor.append(temp);
 	});

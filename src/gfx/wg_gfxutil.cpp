@@ -134,13 +134,19 @@ const PixelDescription	pixelDescTab[PixelFormat_size] = {
 
 const PixelDescription& Util::pixelFormatToDescription( PixelFormat format )
 {
+/*
+	static PixelDescription description = {8, PixelType::Index, ColorSpace::Linear, 0, 0, 0, 0};
+	if (format == PixelFormat::Index_8_linear) {
+		return description;
+	}
+*/
 	return pixelDescTab[int(format)];
 }
 
 
 PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
 {
-	
+
 	switch( description.type )
 	{
 		case PixelType::Chunky:
@@ -151,18 +157,18 @@ PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
 					if( description == pixelDescTab[int(PixelFormat::Alpha_8)])
 					   return PixelFormat::Alpha_8;
 					break;
-					
+
 				case 16:
 					if( description == pixelDescTab[int(PixelFormat::BGRA_4_linear)])
 					   return PixelFormat::BGRA_4_linear;
 					if( description == pixelDescTab[int(PixelFormat::BGR_565_linear)])
 					   return PixelFormat::BGR_565_linear;
 					break;
-					
+
 				case 24:
 				{
 					auto p = &pixelDescTab[int(PixelFormat::BGR_8)];
-					
+
 					if( description.R_mask == p->R_mask && description.G_mask == p->G_mask && description.B_mask == p->B_mask && description.A_mask == 0 )
 					{
 						if( description.colorSpace == ColorSpace::Undefined )
@@ -172,12 +178,12 @@ PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
 						else if( description.colorSpace == ColorSpace::Linear )
 							return PixelFormat::BGR_8_linear;
 					}
-						
+
 					if( description == pixelDescTab[int(PixelFormat::BGRA_4_linear)])
 					   return PixelFormat::BGRA_4_linear;
 					break;
 				}
-					
+
 				case 32:
 				{
 					auto p = &pixelDescTab[int(PixelFormat::BGRA_8)];
@@ -205,9 +211,9 @@ PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
 					}
 					break;
 				}
-					
+
 			}
-			
+
 		}
 		case PixelType::Chunky_BE:
 		{
@@ -233,7 +239,7 @@ PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
 		default:
 			break;
 	}
-	
+
 	return PixelFormat::Undefined;
 }
 
@@ -317,7 +323,7 @@ double Util::powerOfTen(int num)
 	return rst;
 }
 
-int Util::gcd(int a, int b) 
+int Util::gcd(int a, int b)
 {
 	return b == 0 ? a : Util::gcd(b, a % b);
 }
@@ -349,10 +355,10 @@ int Util::gcd(int a, int b)
 	{
 		if( type == PixelFormat::BGR_8 )
 			type = GfxBase::defaultToSRGB() ? PixelFormat::BGR_8_sRGB : PixelFormat::BGR_8_linear;
-		
+
 		if( type == PixelFormat::BGRX_8 )
 			type = GfxBase::defaultToSRGB() ? PixelFormat::BGRX_8_sRGB : PixelFormat::BGR_8_linear;
-		
+
 		if( type == PixelFormat::BGRA_8 )
 			type = GfxBase::defaultToSRGB() ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
 

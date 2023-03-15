@@ -26,10 +26,6 @@
 #include <wg_softgfxdevice.h>
 #include <wg_softsurfacefactory.h>
 
-#include <wg_softkernels_default.h>
-#include <wg_softkernels_rgb565be_base.h>
-#include <wg_softkernels_rgb565be_extras.h>
-
 using namespace wg;
 
 wg_obj wg_createSoftGfxDevice()

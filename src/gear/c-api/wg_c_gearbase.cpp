@@ -119,7 +119,7 @@ void wg_setErrorHandler( void (*errorHandler)(const wg_errorInfo * pError) )
 		errorInfo.function = error.function;
 		errorInfo.object = error.pObject;
 		errorInfo.line = error.line;
-		errorInfo.message = error.message.c_str();
+		errorInfo.message = error.message;
 		errorInfo.severity = severity;
 
 

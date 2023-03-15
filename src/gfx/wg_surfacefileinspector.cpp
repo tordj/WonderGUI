@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_surfacefileinspector.h>
+#include <cstring>
 
 namespace wg
 {
