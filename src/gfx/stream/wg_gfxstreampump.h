@@ -61,7 +61,7 @@ namespace wg
 		bool		pumpChunk();
 		bool		pumpUntilFrame();
 		bool		pumpFrame();
-		bool		pumpAllFramesOptimizeClipping();
+		bool		pumpAllFramesOptimizeClipping( int optimizationDepth = 1024 );
 		bool		pumpAll();
 
 
@@ -71,7 +71,7 @@ namespace wg
 		~GfxStreamPump();
 
 		const uint8_t*	_findChunk(GfxChunkId id, const uint8_t* pBegin, const uint8_t* pEnd);
-		void			_maskAddRect(std::vector<RectI>& vRects, int startOffset, const RectI& rect);
+		void			_maskAddRect(std::vector<RectI>& vRects, int startOffset, int endOffset, const RectI& rect);
 
 
 		bool			_pumpUntilChunk(GfxChunkId id, bool bInclusive );
@@ -79,7 +79,7 @@ namespace wg
 
 
 		GfxStreamSource_p	m_pInput;
-		GfxStreamSink_p	m_pOutput;
+		GfxStreamSink_p		m_pOutput;
 	};
 }
 

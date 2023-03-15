@@ -23,6 +23,7 @@
 #include <wg_gfxstreampump.h>
 #include <wg_surface.h>
 #include <wg_patches.h>
+#include <wg_gfxbase.h>
 
 #include <vector>
 #include <cstdint>
@@ -221,7 +222,7 @@ namespace wg
 
 	//____ pumpAllFramesOptimizeClipping() ____________________________________________________
 
-	bool GfxStreamPump::pumpAllFramesOptimizeClipping()
+	bool GfxStreamPump::pumpAllFramesOptimizeClipping( int optimizationDepth )
 	{
 		// Fetch all data
 
@@ -331,6 +332,14 @@ namespace wg
 
 			for (int i = canvas.frames.size() - 1; i >= 0; i--)
 			{
+				// Only optimize against last 4 frames of updates for this canvas.
+
+				if( i + optimizationDepth < canvas.frames.size() )
+					maskBegin = canvas.frames[i+optimizationDepth].ofsClipRects;
+				
+				
+				int maskEnd = clipRects.size();				// Where we stop masking for this frame
+				
 				// Get data from header
 
 				const uint8_t* pChunk = canvas.frames[i].pBegin;
@@ -341,25 +350,24 @@ namespace wg
 				uint16_t * pRects = (uint16_t*)(pData + 4);
 
 				// Check if this frame completely redraws the canvas.
-
+				
 				if (nRects == 0)
 				{
-					canvas.frames[i].ofsClipRects = -1;							// Signal that this is a complete redraw.
+					canvas.frames[i].ofsClipRects = 0;							// Signal that this is a complete redraw.
 					canvas.frames[i].nClipRects = 0;
 
 					// All earlier frames can be skipped 
 
-					i--;
 					while (i >= 0)
 					{
-						canvas.frames[i].ofsClipRects = clipRects.size();
-						canvas.frames[i].nClipRects = 0;
+						canvas.frames[i].ofsClipRects = maskBegin;
+						canvas.frames[i].nClipRects = -1;
 						i--;
 					}
 
+					clipRects.resize(maskBegin);
 					break;
 				}
-
 
 
 				// Mask and copy rectangles for this frame
@@ -397,7 +405,7 @@ namespace wg
 						pRects += 8;
 						
 						if (rect.w > 0 && rect.h > 0)
-							_maskAddRect(clipRects, maskBegin, rect);
+							_maskAddRect(clipRects, maskBegin, maskEnd, rect);
 					}
 				}
 
@@ -408,10 +416,7 @@ namespace wg
 
 		// Play stream, replacing BeginRenderCanvas with our opimized one and
 		// filtering set/push clip-rect against canvas cliplist.
-
-
-		uint8_t	tempChunk[16 + 16 * 256];		// Maximum of 256 rectangles... 
-
+				
 		RectSPX*	pActiveUpdateRects = nullptr;
 		int			nActiveUpdateRects = 0;
 
@@ -460,42 +465,22 @@ namespace wg
 
 					CanvasFrame* pFrameData = &pCanvasData->frames[pCanvasData->framesPlayed++];
 
-					// Take care of special cases: Full canvas redraw and no canvas update.
-
+		
 					if (pFrameData->nClipRects == 0)
 					{
-						if (pFrameData->ofsClipRects == -1)
-						{
-							m_pOutput->processChunks(p, p + GfxStream::chunkSize(p) );
-							pBegin = p + GfxStream::chunkSize(p);
-							continue;
-						}
-						else
-						{
-							//TODO: Skip whole surface update, unless it contains another surface update.
-						}
-
+						// Full canvas redraw, just process BeginCanvasUpdate as it is.
+						
+						m_pOutput->processChunks(p, p + GfxStream::chunkSize(p) );
 					}
-
-
-					nActiveUpdateRects = pFrameData->nClipRects;
-
-					if( nActiveUpdateRects == 0 )
+					else if (pFrameData->nClipRects == -1 )
 					{
 						// No updates for this canvas, just skip it
 						
 						int nCanvasUpdate = 1;
-						p += GfxStream::chunkSize(p);
-						
 						while( nCanvasUpdate > 0 )
 						{
-							GfxChunkId type = GfxStream::chunkType(p);
-							if( type == GfxChunkId::BeginCanvasUpdate )
-								nCanvasUpdate++;
-							else if( type == GfxChunkId::EndCanvasUpdate )
-								nCanvasUpdate--;
-							
 							p += GfxStream::chunkSize(p);
+
 							if (p == pEnd)
 							{
 								// We reached segment boundary but need to keep our loop going.
@@ -508,30 +493,41 @@ namespace wg
 
 								bytesToDiscard += pEnd - pBegin;
 							}
+
+							GfxChunkId type = GfxStream::chunkType(p);
+							if( type == GfxChunkId::BeginCanvasUpdate )
+								nCanvasUpdate++;
+							else if( type == GfxChunkId::EndCanvasUpdate )
+								nCanvasUpdate--;
 						}
 					}
 					else
 					{
+						nActiveUpdateRects = pFrameData->nClipRects;
 						pActiveUpdateRects = clipRects.data() + pFrameData->ofsClipRects;
 
+//						assert(nActiveUpdateRects < 256 );
 						
+						uint8_t * pTempChunk = (uint8_t*) GfxBase::memStackAlloc(16+16*nActiveUpdateRects);
 						
 						// Create our own BeginCanvasUpdate
 
 						int dataSize = nActiveUpdateRects * sizeof(RectSPX) + 4;
+						
+						pTempChunk[0] = (uint8_t) GfxChunkId::BeginCanvasUpdate;
+						pTempChunk[1] = 31;		// Force long header.
+						*(uint16_t*)(pTempChunk + 2) = dataSize;
+						*(uint16_t*)(pTempChunk + 4) = surfaceId;
+						pTempChunk[6] = (uint8_t) canvasRef;
+						pTempChunk[7] = 0;						// Dummy, used to be number of rects.
 
-						tempChunk[0] = (uint8_t) GfxChunkId::BeginCanvasUpdate;
-						tempChunk[1] = 31;		// Force long header.
-						*(uint16_t*)(tempChunk + 2) = dataSize;
-						*(uint16_t*)(tempChunk + 4) = surfaceId;
-						tempChunk[6] = (uint8_t) canvasRef;
-						tempChunk[7] = nActiveUpdateRects;
-
-						std::memcpy(tempChunk + 8, pActiveUpdateRects, nActiveUpdateRects * sizeof(RectSPX));
+						std::memcpy(pTempChunk + 8, pActiveUpdateRects, nActiveUpdateRects * sizeof(RectSPX));
 						
 						// Process our created chunk
 
-						m_pOutput->processChunks(tempChunk, tempChunk + 4 + dataSize);
+						m_pOutput->processChunks(pTempChunk, pTempChunk + 4 + dataSize);
+						
+						GfxBase::memStackFree(16+16*nActiveUpdateRects);
 					}
 
 				}
@@ -544,7 +540,12 @@ namespace wg
 
 					// Create our own PushClipList/SetClipList, start by filtering and pushing rectangles.
 
-					RectSPX* pDst = (RectSPX*)(tempChunk + 4);
+					int nBytesAllocated = 16+(16*nSrcRect+16*nActiveUpdateRects)*2;		// This could in theory be too low...
+																						// In theory we could need nSrcRect*nActiveUpdateRects.
+					
+					uint8_t * pTempChunk = (uint8_t*) GfxBase::memStackAlloc(nBytesAllocated);
+
+					RectSPX* pDst = (RectSPX*)(pTempChunk + 4);
 
 					for (int i = 0; i < nSrcRect; i++)
 					{
@@ -555,18 +556,19 @@ namespace wg
 						}
 					}
 
-					int nDstRect = pDst - (RectSPX*)(tempChunk + 4);
+					int nDstRect = pDst - (RectSPX*)(pTempChunk + 4);
 
 					// Create the header
 
-					tempChunk[0] = (uint8_t) chunkType;
-					tempChunk[1] = 31;		// Force long header.
-					*((uint16_t*)(tempChunk + 2)) = nDstRect*sizeof(RectSPX);
+					pTempChunk[0] = (uint8_t) chunkType;
+					pTempChunk[1] = 31;		// Force long header.
+					*((uint16_t*)(pTempChunk + 2)) = nDstRect*sizeof(RectSPX);
 
 					// Process our created chunk
 
-					m_pOutput->processChunks( tempChunk, (uint8_t*) pDst );
+					m_pOutput->processChunks( pTempChunk, (uint8_t*) pDst );
 
+					GfxBase::memStackFree(nBytesAllocated);
 				}
 
 				pBegin = p + GfxStream::chunkSize(p);
@@ -632,10 +634,11 @@ namespace wg
 
 	//____ _maskAddRect() __________________________________________________________________
 
-	void GfxStreamPump::_maskAddRect(std::vector<RectI>& vRects, int startOffset, const RectI& rect)
+	void GfxStreamPump::_maskAddRect(std::vector<RectI>& vRects, int startOffset, int endOffset, const RectI& rect)
 	{
-
-		for (int i = startOffset; i < vRects.size(); i++)
+		// We mask in reverse order as an optimization.
+		
+		for (int i = endOffset - 1; i >= startOffset; --i)
 		{
 			RectI* pR = vRects.data() + i;
 
@@ -663,7 +666,7 @@ namespace wg
 			if (newR.y < mask.y)
 			{
 				RectI xR(newR.x, newR.y, newR.w, mask.y - newR.y);
-				_maskAddRect(vRects, i + 1, xR );
+				_maskAddRect(vRects, startOffset, i - 1, xR );
 
 				newR.h -= xR.h;
 				newR.y += xR.h;
@@ -678,7 +681,7 @@ namespace wg
 				xR.y = mask.y + mask.h;
 				xR.w = newR.w;
 				xR.h = (newR.y + newR.h) - (mask.y + mask.h);
-				_maskAddRect(vRects, i + 1, xR);
+				_maskAddRect(vRects, startOffset, i - 1, xR);
 
 				newR.h -= xR.h;
 			}
@@ -695,7 +698,7 @@ namespace wg
 					xR.w = mask.x - newR.x;
 					xR.h = newR.h;
 
-					_maskAddRect(vRects, i + 1, xR);
+					_maskAddRect(vRects, startOffset, i - 1, xR);
 				}
 
 				// Cut off right part
@@ -708,7 +711,7 @@ namespace wg
 					xR.w = (newR.x + newR.w) - (mask.x + mask.w);
 					xR.h = newR.h;
 
-					_maskAddRect(vRects, i + 1, xR);
+					_maskAddRect(vRects, startOffset, i - 1, xR);
 				}
 			}
 

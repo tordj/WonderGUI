@@ -132,11 +132,13 @@ namespace wg
 			{
 				uint16_t	surfaceId;
 				CanvasRef	canvasRef;
-				uint8_t		nUpdateRects;
+				uint8_t		dummy;
 					
 				*m_pDecoder >> surfaceId;
 				*m_pDecoder >> canvasRef;
-				*m_pDecoder >> nUpdateRects;
+				*m_pDecoder >> dummy;
+				
+				int nUpdateRects = (header.size - 4) / 16;
 
 				if( surfaceId > 0 )
 					m_charStream << "    surfaceId   = " << surfaceId << std::endl;
