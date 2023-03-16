@@ -113,10 +113,10 @@ namespace wg
 
 		protected:
 			
-			inline StackPanel* _holder() { return static_cast<StackPanel*>(DynamicSlotVector<Slot>::_holder()); }
+			inline StackPanel* _holder() override { return static_cast<StackPanel*>(DynamicSlotVector<Slot>::_holder()); }
 			inline const StackPanel* _holder() const { return static_cast<const StackPanel*>(DynamicSlotVector<Slot>::_holder()); }
 
-			Slot* _slot(int index) { return DynamicSlotVector<Slot>::_slot(index); }
+			Slot* _slot(int index) override { return DynamicSlotVector<Slot>::_slot(index); }
 			inline int _size() const override { return DynamicSlotVector<Slot>::size(); }
 
 			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}

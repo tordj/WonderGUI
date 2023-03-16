@@ -231,7 +231,7 @@ namespace wg
 
 			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
 
-			inline FlexPanel * _holder() { return static_cast<FlexPanel*>(DynamicSlotVector<Slot>::_holder()); }
+			inline FlexPanel * _holder() override { return static_cast<FlexPanel*>(DynamicSlotVector<Slot>::_holder()); }
 			inline const FlexPanel * _holder() const { return static_cast<const FlexPanel*>(DynamicSlotVector<Slot>::_holder()); }
 
 			inline Slot* _slot(int index) override { return DynamicSlotVector::_slot(index); }

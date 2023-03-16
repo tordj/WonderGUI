@@ -59,11 +59,11 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		inline Color8() : argb(0) {};
-		inline Color8( const Color8& col );
-		inline Color8( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 );
-		inline Color8( uint32_t argb );
-		inline Color8( uint32_t rgb, uint8_t a );
+		inline constexpr Color8() : argb(0) {};
+		inline constexpr Color8( const Color8& col );
+		inline constexpr Color8( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 );
+		inline constexpr Color8( uint32_t argb );
+		inline constexpr Color8( uint32_t rgb, uint8_t a );
 
 		//.____ Operators ___________________________________________
 
@@ -276,8 +276,8 @@ namespace wg
 
 		inline	constexpr HiColor() : argb(0) {};
 				HiColor(Color8 lowColor);
-		explicit inline	HiColor(int r, int g, int b, int a = 4096);
-		explicit inline	HiColor(float r, float g, float b, float a = 1.f);
+		explicit inline	constexpr HiColor(int r, int g, int b, int a = 4096);
+		explicit inline	constexpr HiColor(float r, float g, float b, float a = 1.f);
 
 		//.____ Misc ________________________________________________
 
@@ -364,28 +364,24 @@ namespace wg
 
 	//____ Color8::Color8() _________________________________________________________________
 
-	inline Color8::Color8( const Color8& _col )
+	inline constexpr Color8::Color8( const Color8& _col )
+	: argb(_col.argb)
 	{
-		argb = _col.argb;
 	}
 
-	inline Color8::Color8( uint32_t _argb )
+	inline constexpr Color8::Color8( uint32_t _argb )
+	: argb(_argb)
 	{
-		argb = _argb;
 	}
 
-	inline Color8::Color8( uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a )
+	inline constexpr Color8::Color8( uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a )
+	: a(_a), r(_r), g(_g), b(_b)
 	{
-		a = _a;
-		r = _r;
-		g = _g;
-		b = _b;
 	}
 
-	inline Color8::Color8( uint32_t rgb, uint8_t _a )
+	inline constexpr Color8::Color8( uint32_t rgb, uint8_t _a )
+	: argb( rgb | (a << 24))
 	{
-		argb = rgb;
-		a = _a;
 	}
 
 	//-------------------------------------------------------------------
@@ -410,25 +406,15 @@ namespace wg
 
 	//____ HiColor::HiColor() _________________________________________________________________
 
-	inline HiColor::HiColor(int r, int g, int b, int a)
+	inline constexpr HiColor::HiColor(int r, int g, int b, int a)
+	: r(r), g(g), b(b), a(a)
 	{
-		this->r = (int16_t) r;
-		this->g = (int16_t) g;
-		this->b = (int16_t) b;
-		this->a = (int16_t)a;
 	}
 
-	inline HiColor::HiColor(float r, float g, float b, float a)
+	inline constexpr HiColor::HiColor(float r, float g, float b, float a)
+	: r(int16_t(r * 4096)), g(int16_t(g * 4096)), b(int16_t(b * 4096)), a(int16_t(a * 4096))
 	{
-		this->r = int16_t(r * 4096);
-		this->g = int16_t(g * 4096);
-		this->b = int16_t(b * 4096);
-		this->a = int16_t(a * 4096);
 	}
-
-
-
-
 
 
 } // namespace wg

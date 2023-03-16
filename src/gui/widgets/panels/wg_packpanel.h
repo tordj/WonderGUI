@@ -121,10 +121,10 @@ namespace wg
 		protected:
 			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
 
-			inline PackPanel *		_holder() { return static_cast<PackPanel*>(DynamicSlotVector<Slot>::_holder()); }
+			inline PackPanel *		_holder() override { return static_cast<PackPanel*>(DynamicSlotVector<Slot>::_holder()); }
 			inline const PackPanel *	_holder() const { return static_cast<const PackPanel*>(DynamicSlotVector<Slot>::_holder()); }
 
-			Slot* _slot(int index) { return DynamicSlotVector<Slot>::_slot(index); }
+			Slot* _slot(int index) override { return DynamicSlotVector<Slot>::_slot(index); }
 
 			inline int _size() const override { return DynamicSlotVector<Slot>::size(); }
 		};

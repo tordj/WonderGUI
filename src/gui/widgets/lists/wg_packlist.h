@@ -121,7 +121,7 @@ namespace wg
 
 
 			inline const PackList *	_holder() const { return static_cast<const PackList*>(DynamicSlotVector<Slot>::_holder()); }
-			inline PackList *		_holder() { return static_cast<PackList*>(DynamicSlotVector<Slot>::_holder()); }
+			inline PackList *		_holder() override { return static_cast<PackList*>(DynamicSlotVector<Slot>::_holder()); }
 
 			inline Slot* _slot(int index) override { return DynamicSlotVector::_slot(index); }
 			inline const Slot* _slot(int index) const { return DynamicSlotVector::_slot(index); }

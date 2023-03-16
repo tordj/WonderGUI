@@ -86,16 +86,16 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		CoordT() : x(0), y(0) {}
-		CoordT(Type x, Type y) : x(x), y(y) {}
+		constexpr CoordT() : x(0), y(0) {}
+		constexpr CoordT(Type x, Type y) : x(x), y(y) {}
 //		CoordT(const CoordT<Type>& coord) : x(coord.x), y(coord.y) {}
-		explicit CoordT(const SizeT<Type>& size);
+		explicit constexpr CoordT(const SizeT<Type>& size);
 
 		template<typename T>
-		explicit CoordT(const CoordT<T>& r) : x((Type)r.x), y((Type)r.y) {}
+		explicit constexpr CoordT(const CoordT<T>& r) : x((Type)r.x), y((Type)r.y) {}
 
 		template<typename T>
-		explicit CoordT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y) {}
+		explicit constexpr CoordT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y) {}
 
 
 		//.____ Misc ______________________________________________
@@ -134,10 +134,9 @@ namespace wg
 
 	//_____________________________________________________________________________
 	template<typename Type>
-	inline CoordT<Type>::CoordT(const SizeT<Type>& size)
+	inline constexpr CoordT<Type>::CoordT(const SizeT<Type>& size)
+	: x(size.w), y(size.h)
 	{
-		x = size.w;
-		y = size.h;
 	}
 
 	//____ BorderT ______________________________________________________________

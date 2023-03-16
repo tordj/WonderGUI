@@ -112,7 +112,7 @@ namespace wg
 
 			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
 
-			LambdaPanel *	_holder() { return static_cast<LambdaPanel*>(DynamicSlotVector<Slot>::_holder()); }
+			LambdaPanel *	_holder() override { return static_cast<LambdaPanel*>(DynamicSlotVector<Slot>::_holder()); }
 			const LambdaPanel *	_holder() const { return static_cast<const LambdaPanel*>(DynamicSlotVector<Slot>::_holder()); }
 
 			inline Slot* _slot(int index) override { return DynamicSlotVector::_slot(index); }
