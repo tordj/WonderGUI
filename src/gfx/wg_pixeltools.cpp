@@ -1310,12 +1310,9 @@ bool copyPixels( int width, int height, const uint8_t * pSrc, PixelFormat srcFmt
 
 			for( int y = 0 ; y < height ; y++ )
 			{
-				for( int x = 0 ; x < width ; x++ )
-				{
-					std::memcpy( pDst, pSrc, srcDesc.bits * width * height / 8 );
-					pDst += pitch + dstPitchAdd;
-					pSrc += pitch + srcPitchAdd;
-				}
+				std::memcpy( pDst, pSrc, srcDesc.bits * width / 8 );
+				pDst += pitch + dstPitchAdd;
+				pSrc += pitch + srcPitchAdd;
 			}
 		}
 

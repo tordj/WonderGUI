@@ -27,6 +27,8 @@
 #include <wg_gfxutil.h>
 #include <wg_blob.h>
 #include <wg_gfxbase.h>
+#include <wg_pixeltools.h>
+
 #include <assert.h>
 
 
@@ -77,7 +79,7 @@ namespace wg
 	}
 
 	MetalSurface_p	MetalSurface::create(const Blueprint& bp, const uint8_t* pPixels,
-										 PixelFormat format, int pitch, const Color8 * pPalette);
+										 PixelFormat format, int pitch, const Color8 * pPalette)
 	{
         if (!_isBlueprintValid(bp, maxSize()))
             return MetalSurface_p();
@@ -86,7 +88,7 @@ namespace wg
 	};
 
 	MetalSurface_p	MetalSurface::create(const Blueprint& bp, const uint8_t* pPixels,
-										 const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
+										 const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
 	{
 		if (!_isBlueprintValid(bp, maxSize()))
 			return MetalSurface_p();
@@ -96,11 +98,13 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
+
+
     MetalSurface::MetalSurface(const Blueprint& bp) : Surface( bp, PixelFormat::BGRA_8, SampleMethod::Bilinear )
     {
-        _setPixelDetails(m_pixelDescription.format);
+        _setPixelDetails(m_pixelFormat);
         m_bMipmapped = bp.mipmap;
-        _setupMetalTexture( nullptr, 0, nullptr, bp.palette );
+        _setupMetalTexture( nullptr, 0, PixelFormat::Undefined, nullptr, nullptr, bp.palette );
 
     }
 
@@ -108,30 +112,26 @@ namespace wg
     {
         // Set general information
 
-        _setPixelDetails(m_pixelDescription.format);
+        _setPixelDetails(m_pixelFormat);
         m_bMipmapped = bp.mipmap;
-
-        PixelDescription srcFormat;
-        Util::pixelFormatToDescription(m_pixelDescription.format, srcFormat);
-
-        _setupMetalTexture(pBlob->data(), pitch, &srcFormat, bp.palette);
+        _setupMetalTexture(pBlob->data(), pitch, m_pixelFormat, nullptr, bp.palette, bp.palette);
     }
 
-	MetalSurface::MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette)
+	MetalSurface::MetalSurface(const Blueprint& bp, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette)
 	: Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
 	{
-		_setPixelDetails(m_pixelDescription.format);
+		_setPixelDetails(m_pixelFormat);
 		m_bMipmapped = bp.mipmap;
 		
-		if( pitch == 0 )
-			pitch = bp.size.w * pPixelDescription->bits/8;
+		auto srcDesc = Util::pixelFormatToDescription(format);
 
-		auto srcDesc = Util::pixelFormatToDescription2(format);
-		
-		if( (srcDesc.type == PixelFmt::Index || srcDesc.type == PixelFmt::Bitplanes) )
+		if( pitch == 0 )
+			pitch = bp.size.w * srcDesc.bits/8;
+
+		if( (srcDesc.type == PixelType::Index || srcDesc.type == PixelType::Bitplanes) )
 		{
 			if( pPalette == nullptr )
-				pPalette = blueprint.palette;
+				pPalette = bp.palette;
 			
 			if( pPalette == nullptr )
 			{
@@ -141,23 +141,23 @@ namespace wg
 			}
 		}
 		
-		_setupMetalTexture( pPixels, pitch, PixelFormat::Undefined &pixelDescription, bp.palette, pPalette );
+		_setupMetalTexture( pPixels, pitch, format, nullptr, pPalette, bp.palette );
 	}
 
 
-	MetalSurface::MetalSurface(const Blueprint& bp, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette)
+	MetalSurface::MetalSurface(const Blueprint& bp, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
 	: Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
     {
-        _setPixelDetails(m_pixelDescription.format);
+        _setPixelDetails(m_pixelFormat);
         m_bMipmapped = bp.mipmap;
 		
 		if( pitch == 0 )
-			pitch = bp.size.w * pPixelDescription->bits/8;
+			pitch = bp.size.w * pixelDescription.bits/8;
 
-		if( (pixelDescription.type == PixelFmt::Index || pixelDescription.type == PixelFmt::Bitplanes) )
+		if( (pixelDescription.type == PixelType::Index || pixelDescription.type == PixelType::Bitplanes) )
 		{
 			if( pPalette == nullptr )
-				pPalette = blueprint.palette;
+				pPalette = bp.palette;
 			
 			if( pPalette == nullptr )
 			{
@@ -167,13 +167,13 @@ namespace wg
 			}
 		}
 		
-		_setupMetalTexture( pPixels, pitch, PixelFormat::Undefined &pixelDescription, bp.palette, pPalette );
+		_setupMetalTexture( pPixels, pitch, PixelFormat::Undefined, &pixelDescription, pPalette, bp.palette );
     }
 
 
 	//____ _setupMetalTexture() __________________________________________________________________
 
-	void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, PixelFormat srcFormat, const PixelDescription2 * pSrcPixelDesc, const Color * pSrcPalette, const Color * pDstPalette )
+	void MetalSurface::_setupMetalTexture(const void * pPixels, int pitch, PixelFormat srcFormat, const PixelDescription * pSrcPixelDesc, const Color * pSrcPalette, const Color * pDstPalette )
 	{
 		m_bTextureSyncInProgress = false;
 
@@ -182,6 +182,18 @@ namespace wg
 		int     bufferLength = m_size.w * m_size.h * m_pixelSize;
 
 		m_textureBuffer = [MetalGfxDevice::s_metalDevice newBufferWithLength:bufferLength options:MTLResourceStorageModeShared];
+
+		// Setup the palette if present
+		
+		if( pDstPalette )
+		{
+			// Create the palette buffer and copy data
+
+			m_paletteBuffer = [MetalGfxDevice::s_metalDevice newBufferWithBytes:pDstPalette length:1024 options:MTLResourceStorageModeShared];
+			m_pPalette = (Color*) [m_paletteBuffer contents];
+		}
+		
+		//
 		
 		// Copy pixel data to our shared buffer
 			  
@@ -193,31 +205,20 @@ namespace wg
 
 			if( srcFormat != PixelFormat::Undefined )
 			{
-				auto srcDesc = Util::pixelFormatToDescription2(srcFormat);
+				auto& srcDesc = Util::pixelFormatToDescription(srcFormat);
 
-				copyPixels(m_size.w, m_size.h, pPixels, srcFormat, pitch - m_size.w * srcDesc.bits/8,
-						   pDst, m_pixelDescription.format, 0, pSrcPalette,
-						   pDstPalette, 256, dstPaletteEntries, 256);
+				PixelTools::copyPixels(m_size.w, m_size.h, (const uint8_t*) pPixels, srcFormat, pitch - m_size.w * srcDesc.bits/8,
+									   pDst, m_pixelFormat, 0, pSrcPalette,
+									   m_pPalette, 256, dstPaletteEntries, 256);
 			}
 			else
 			{
-				copyPixels(m_size.w, m_size.h, pPixels, * pSrcPixelDesc, pitch - m_size.w * srcDesc.bits/8,
-						   pDst, m_pixelDescription.format, 0, pSrcPalette,
-						   pDstPalette, 256, dstPaletteEntries, 256);
+				PixelTools::copyPixels(m_size.w, m_size.h, (const uint8_t*) pPixels, * pSrcPixelDesc, pitch - m_size.w * pSrcPixelDesc->bits/8,
+									   pDst, m_pixelFormat, 0, pSrcPalette,
+									   m_pPalette, 256, dstPaletteEntries, 256);
 			}
 		}
 			   
-		// Setup the palette if present
-		
-		if( pPalette )
-		{
-			// Create the palette buffer and copy data
-
-			m_paletteBuffer = [MetalGfxDevice::s_metalDevice newBufferWithBytes:pPalette length:1024 options:MTLResourceStorageModeShared];
-			m_pPalette = (Color*) [m_paletteBuffer contents];
-		}
-		
-		//
 		
 		_createAndSyncTextures( pPixels != nullptr );
 		
@@ -256,7 +257,7 @@ namespace wg
         {
             MTLTextureDescriptor *paletteDescriptor = [[MTLTextureDescriptor alloc] init];
 
-            paletteDescriptor.pixelFormat   = m_pixelDescription.bLinear ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatBGRA8Unorm_sRGB;
+            paletteDescriptor.pixelFormat   = m_pPixelDescription->colorSpace == ColorSpace::Linear ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatBGRA8Unorm_sRGB;
             paletteDescriptor.width         = 256;
             paletteDescriptor.height        = 1;
             paletteDescriptor.storageMode   = MTLStorageModePrivate;
@@ -383,8 +384,8 @@ namespace wg
 				break;
 		}
 
-		Util::pixelFormatToDescription(format, m_pixelDescription);
-        m_pixelSize = m_pixelDescription.bits / 8;
+		m_pPixelDescription = &Util::pixelFormatToDescription(format);
+        m_pixelSize = m_pPixelDescription->bits / 8;
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -413,7 +414,7 @@ namespace wg
     {
         PixelBuffer pixbuf;
 
-        pixbuf.format = m_pixelDescription.format;
+        pixbuf.format = m_pixelFormat;
         pixbuf.palette = m_pPalette;
         pixbuf.pitch = m_size.w * m_pixelSize;
         pixbuf.pixels = ((uint8_t*)[m_textureBuffer contents]) + rect.y * pixbuf.pitch + rect.x * m_pixelSize;
@@ -459,11 +460,6 @@ namespace wg
 	{
         if( m_bBufferNeedsSync )
             _syncBufferAndWait();
-
-        //TODO: Take endianess into account.
-        //TODO: Take advantage of subpixel precision and interpolate alpha value if surface set to interpolate.
-
-        CoordI coord(((_coord.x + 32) / 64) % m_size.w, ((_coord.y + 32) / 64) % m_size.h);
 
 		// No need to free the PixelBuffer, we know how our pixel buffer works.
 

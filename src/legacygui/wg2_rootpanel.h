@@ -71,7 +71,7 @@ public:
 	bool					IsVisible() const { return m_bVisible; }
 
 	inline WgWidget *		Child() const { return m_hook.Widget(); }
-	bool					SetChild( WgWidget * pWidget );
+	bool					SetChild( WgWidget * pWidget ) override;
 	inline void				DeleteChild() { SetChild(0); }
 	WgWidget * 				ReleaseChild();
 

@@ -7,6 +7,10 @@
 #	include <wg2_anim.h>
 #endif
 
+#ifndef WG2_ANIMPLAYER_DOT_H
+#	include <wg2_animplayer.h>
+#endif
+
 #ifndef WG2_BASE_DOT_H
 #	include <wg2_base.h>
 #endif
@@ -101,10 +105,6 @@
 #endif
 
 
-#ifndef WG2_ANIMPLAYER_DOT_H
-#	include <wg2_animplayer.h>
-#endif
-
 #ifndef WG2_BUTTON_DOT_H
 #	include <wg2_button.h>
 #endif
@@ -180,6 +180,10 @@
 #include <wg_fillmeterskin.h>
 
 #include <wg2_rangeslider.h>
+
+#include <wg2_dragndroplayer.h>
+#include <wg2_tooltiplayer.h>
+#include <wg2_popuplayer.h>
 
 
 #endif //WGLEGACYGUI_DOT_H

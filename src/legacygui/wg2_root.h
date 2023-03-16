@@ -39,11 +39,13 @@ class WgRoot
 	friend class WgWidget;
 	
 public:
-
+	virtual ~WgRoot(){}
+	
 	virtual WgEventHandler *	EventHandler() const = 0;
 
 	virtual int			Scale() const = 0;
 	virtual WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode ) = 0;
+	virtual bool		SetChild(WgWidget* pWidget) = 0;
 
 
 protected:

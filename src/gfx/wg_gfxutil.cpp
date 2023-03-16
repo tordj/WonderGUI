@@ -134,12 +134,6 @@ const PixelDescription	pixelDescTab[PixelFormat_size] = {
 
 const PixelDescription& Util::pixelFormatToDescription( PixelFormat format )
 {
-/*
-	static PixelDescription description = {8, PixelType::Index, ColorSpace::Linear, 0, 0, 0, 0};
-	if (format == PixelFormat::Index_8_linear) {
-		return description;
-	}
-*/
 	return pixelDescTab[int(format)];
 }
 

@@ -54,7 +54,7 @@ namespace wg
 									   const Color8 * pPalette = nullptr);
 		
 		static MetalSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
-									   const PixelDescription2& pixelDescription, int pitch = 0,
+									   const PixelDescription& pixelDescription, int pitch = 0,
 									   const Color8 * pPalette = nullptr);
 
 		//.____ Identification __________________________________________
@@ -71,6 +71,8 @@ namespace wg
 		int		    alpha(CoordSPX coord) override;
 
         //.____ Control _______________________________________________________
+
+		using Surface::allocPixelBuffer;
 
         const PixelBuffer allocPixelBuffer(const RectI& rect) override;
         bool        pushPixels(const PixelBuffer& buffer, const RectI& bufferRect) override;
@@ -92,13 +94,14 @@ namespace wg
 		MetalSurface(const Blueprint& blueprint);
 		MetalSurface(const Blueprint& blueprint, Blob* pBlob, int pitch);
 		MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette);
-		MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription2& pixelDescription, int pitch, const Color8 * pPalette);
+		MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette);
 
 
 		~MetalSurface();
 
 		void		    _setPixelDetails( PixelFormat format );
-        void            _setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pPalette );
+		void 			_setupMetalTexture(const void * pPixels, int pitch, PixelFormat srcFormat, const PixelDescription * pSrcPixelDesc,
+										   const Color * pSrcPalette, const Color * pDstPalette );
 
         void            _createAndSyncTextures( bool bHasTextureData );
         

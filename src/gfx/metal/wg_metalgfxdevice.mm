@@ -2234,16 +2234,16 @@ MetalGfxDevice::MetalGfxDevice()
                       
                         BlitFragShader shader = BlitFragShader::Normal;
 
-                        if(pSurf->m_pixelDescription.bIndexed)
+                        if(pSurf->m_pPixelDescription->type == PixelType::Index)
                         {
                             if( pSurf->sampleMethod() == SampleMethod::Bilinear )
                                 shader = BlitFragShader::PaletteInterpolated;
                             else
                                 shader = BlitFragShader::PaletteNearest;
                         }
-                        else if(pSurf->m_pixelDescription.format == PixelFormat::Alpha_8)
+                        else if(pSurf->m_pixelFormat == PixelFormat::Alpha_8)
                             shader = BlitFragShader::A8Source;
-                        else if(pSurf->m_pixelDescription.A_bits == 0)
+                        else if(pSurf->m_pPixelDescription->A_mask == 0)
                             shader = BlitFragShader::RGBXSource;
                         
                         [renderEncoder setRenderPipelineState:m_blitPipelines[(int)shader][m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
@@ -2516,7 +2516,7 @@ MetalGfxDevice::MetalGfxDevice()
         {
             [renderEncoder setFragmentTexture:pSurf->getTexture() atIndex: (unsigned) TextureIndex::Texture];
 
-            if(pSurf->pixelDescription()->bIndexed)
+            if(pSurf->pixelDescription()->type == PixelType::Index)
                 [renderEncoder setFragmentSamplerState: m_samplers[0][0][pSurf->isTiling()] atIndex:0];
             else
                 [renderEncoder setFragmentSamplerState: m_samplers[pSurf->isMipmapped()][pSurf->sampleMethod() == SampleMethod::Bilinear][pSurf->isTiling()] atIndex:0];

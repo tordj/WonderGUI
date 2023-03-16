@@ -37,6 +37,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_surface.h>
 
+#include <wg_plugininterface.h>
 
 
 class WgPluginRoot : public WgWidgetHolder, public WgRoot
@@ -67,7 +68,7 @@ public:
 	WgRect					PixelGeo() const { return m_size/64; }
 
 	inline WgWidget *		Child() const { return m_hook.Widget(); }
-	bool					SetChild( WgWidget * pWidget );
+	bool					SetChild( WgWidget * pWidget ) override;
 	inline void				DeleteChild() { SetChild(0); }
 	WgWidget * 				ReleaseChild();
 	
