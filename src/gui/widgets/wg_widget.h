@@ -342,7 +342,7 @@ namespace wg
 		void			_skinRequestRender(const SkinSlot* pSlot) override;
 		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
-		int				m_id = 0;
+
 		Object_p		m_pBaggage;
 
 		SkinSlot		m_skin;
@@ -350,10 +350,18 @@ namespace wg
 		SlotHolder *	m_pHolder = nullptr;
 		StaticSlot *	m_pSlot = nullptr;
 
-		PointerStyle	m_pointerStyle = PointerStyle::Default;
-
 		String			m_tooltip;
+
+		int				m_id = 0;
+		PointerStyle	m_pointerStyle = PointerStyle::Default;
 		MarkPolicy		m_markPolicy = MarkPolicy::AlphaTest;
+
+		bool			m_bScaleSet = false;			// Set when scale is explicitly specified and not just inherited.
+
+		bool            m_bPickable = false;        // Set if this widget accepts to be the source of drag-n-drop operations.
+		uint8_t         m_pickCategory = 0;     // Category of drag-n-drop operations. User defined.
+
+		bool            m_bDropTarget = false;      // Set if this widget accepts to be the target of drag-n-drop operations.
 
 		bool			m_bOpaque = false;				// Set if widget is totally opaque, no need to render anything behind.
 		bool			m_bTabLock = false;				// If set, the widget prevents focus shifting away from it with tab.
@@ -363,12 +371,6 @@ namespace wg
 		State			m_state;						// Current state of widget.
 		SizeSPX			m_size = { 256 * 64,256 * 64 };	// Current size of widget.
 		int				m_scale = 64;
-		bool			m_bScaleSet = false;			// Set when scale is explicitly specified and not just inherited.
-
-		bool            m_bPickable = false;        // Set if this widget accepts to be the source of drag-n-drop operations.
-		uint8_t         m_pickCategory = 0;     // Category of drag-n-drop operations. User defined.
-
-		bool            m_bDropTarget = false;      // Set if this widget accepts to be the target of drag-n-drop operations.
 
 //	private:
 		bool			m_bPressed = false;			// Keeps track of pressed button when mouse leaves/re-enters widget.

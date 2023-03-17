@@ -140,8 +140,14 @@ int main(int argc, char** argv)
 
 
 	printf("SizeOf Filler: %d\n", (int) sizeof(Filler));
+	printf("SizeOf Widget: %d\n", (int)sizeof(Widget));
 	printf("SizeOf Object: %d\n", (int) sizeof(Object));
 	printf("SizeOf Receiver: %d\n", (int) sizeof(Receiver));
+
+	printf("SizeOf SkinSlot: %d\n", (int)sizeof(SkinSlot));
+	printf("SizeOf String: %d\n", (int)sizeof(String));
+	printf("SizeOf SizeSPX: %d\n", (int)sizeof(SizeSPX));
+
 
 //	printf("Slot is safe to relocate: %d\n", StaticSlot::safe_to_relocate);
 //	printf("PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
