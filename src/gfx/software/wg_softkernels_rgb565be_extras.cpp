@@ -233,15 +233,13 @@ static void _straight_blit_alpha8_to_rgb565bigendian_flattint_blend(const uint8_
 	uint8_t srcG = HiColor::packLinearTab[tint.flatTintColor.g] >> 2;
 	uint8_t srcB = HiColor::packLinearTab[tint.flatTintColor.b] >> 3;
 
-	uint16_t tintA = tint.flatTintColor.a * 16;
-	
 	// Copy loop
 	
 	for (int y = 0; y < nLines; y++)
 	{
 		for (int x = 0; x < lineLength; x++)
 		{
-			int alpha = SoftGfxDevice::s_mulTab[* pSrc];
+			int alpha = (SoftGfxDevice::s_mulTab[* pSrc] * tint.flatTintColor.a) >> 12;
 			int invAlpha = 65536 - alpha;
 
 			uint16_t back = * ((uint16_t*)pDst);
