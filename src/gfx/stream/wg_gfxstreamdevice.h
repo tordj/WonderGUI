@@ -81,6 +81,8 @@ namespace wg
 
         void        setMorphFactor(float factor) override;
 
+		void		setFixedBlendColor( HiColor color ) override;
+
         void        setRenderLayer(int layer) override;
 
         

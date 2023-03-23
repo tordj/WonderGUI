@@ -616,6 +616,14 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		m_colTrans.morphFactor = int(factor * 4096);
 	}
 
+	//____ setFixedBlendColor() ___________________________________________________
+
+	void SoftGfxDevice::setFixedBlendColor(HiColor color)
+	{
+		m_fixedBlendColor = color;
+		m_colTrans.fixedBlendColor = color;
+	}
+
 	//____ beginRender() _______________________________________________________
 
 	bool SoftGfxDevice::beginRender()
@@ -1579,7 +1587,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		// Modify opaqueSegments if our state isn't blend
 		
-		if( m_blendMode != BlendMode::Blend )
+		if( m_blendMode != BlendMode::Blend && m_blendMode != BlendMode::BlendFixedColor )
 		{
 			bool val = (m_blendMode == BlendMode::Replace);
 			
@@ -1587,6 +1595,13 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 				opaqueSegments[seg] = val;
 		}
 		
+		// Modify transparentSegments if our state is BlendFixedColor
+		
+		if( m_blendMode == BlendMode::BlendFixedColor )
+		{
+			for (int seg = 0; seg < nSegments; seg++)
+				transparentSegments[seg] = false;
+		}
 		
 		// Set start position and clip dest
 
@@ -1756,7 +1771,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 				//
 				auto gradientPointer = pGradientsY != nullptr ? pGradientsY + skippedSegments : nullptr;
-				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, gradientPointer, transparentSegments + skippedSegments, opaqueSegments + skippedSegments, int(m_morphFactor*4096));
+				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, gradientPointer, transparentSegments + skippedSegments, opaqueSegments + skippedSegments, m_colTrans);
 				pEdgeStrips += edgeStripPitch;
 				pStripStart += colPitch;
 				columnOfs++;

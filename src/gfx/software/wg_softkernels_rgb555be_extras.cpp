@@ -88,17 +88,65 @@ static void _straight_blit_rgb555bigendian_to_same_notint_noblend(const uint8_t*
 {
 	if( pitches.srcX == 2 && pitches.dstX == 2 )
 	{
-		for (int y = 0; y < nLines; y++)
+		if((intptr_t(pSrc) & 0x3) == (intptr_t(pDst) & 0x3))
 		{
-			for (int x = 0; x < lineLength; x++)
+			// Calculate number of loops and if we need extra start/end writes
+			
+			int loops = lineLength;
+			bool bStartSingle = false;
+			
+			if( (intptr_t(pDst) & 0x3) != 0 )
 			{
-				* ((uint16_t*)pDst) = * ((uint16_t*) pSrc);
-				pSrc += 2;
-				pDst += 2;
+				bStartSingle = true;
+				loops--;
 			}
+			
+			bool bEndSingle = loops % 2;
+			loops /= 2;
 
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
+			for (int y = 0; y < nLines; y++)
+			{
+				if( bStartSingle )
+				{
+					* ((uint16_t*)pDst) = * ((uint16_t*)pSrc);
+					pSrc += 2;
+					pDst += 2;
+				}
+								
+				for (int x = 0; x < loops; x++)
+				{
+					* ((uint32_t*)pDst) = * ((uint32_t*) pSrc);
+					pSrc += 4;
+					pDst += 4;
+				}
+
+				if( bEndSingle )
+				{
+					* ((uint16_t*)pDst) = * ((uint16_t*)pSrc);
+					pSrc += 2;
+					pDst += 2;
+				}
+				
+				pSrc += pitches.srcY;
+				pDst += pitches.dstY;
+			}
+			
+			
+		}
+		else
+		{
+			for (int y = 0; y < nLines; y++)
+			{
+				for (int x = 0; x < lineLength; x++)
+				{
+					* ((uint16_t*)pDst) = * ((uint16_t*) pSrc);
+					pSrc += 2;
+					pDst += 2;
+				}
+
+				pSrc += pitches.srcY;
+				pDst += pitches.dstY;
+			}
 		}
 	}
 	else

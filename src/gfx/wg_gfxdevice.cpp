@@ -245,6 +245,13 @@ namespace wg
 		m_morphFactor = factor;
 	}
 
+	//____ setFixedBlendColor() __________________________________________________
+
+	void GfxDevice::setFixedBlendColor( HiColor color )
+	{
+		m_fixedBlendColor = color;
+	}
+
 	//____ setRenderLayer() ___________________________________________________
 
 	void GfxDevice::setRenderLayer(int layer)

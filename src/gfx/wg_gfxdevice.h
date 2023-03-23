@@ -136,9 +136,12 @@ namespace wg
 		virtual void		setMorphFactor(float factor);
 		virtual float		morphFactor() const { return m_morphFactor; }
 
+		virtual void		setFixedBlendColor( HiColor color );
+		virtual HiColor		fixedBlendColor() const { return m_fixedBlendColor; }
+
 		virtual void		setRenderLayer(int layer);
 		virtual int			renderLayer() const { return m_renderLayer; }
-
+		
 		//.____ Rendering ________________________________________________
 
 		virtual bool	beginRender();
@@ -297,6 +300,8 @@ namespace wg
 		BlendMode	m_blendMode = BlendMode::Blend;		// Current BlendMode.
 		float		m_morphFactor = 0.5f;				// Factor used for morphing in BlendMode::Morph.
 
+		HiColor		m_fixedBlendColor = HiColor::Black;
+		
 		Gradient	m_tintGradient;
 		RectSPX		m_tintGradientRect = { 0,0,0,0 };
 		bool		m_bTintGradient = false;

@@ -327,6 +327,7 @@ namespace wg
 			case BlendMode::Morph:
 				return mix(baseColor, blendColor, 2048);
 			case BlendMode::Blend:
+			case BlendMode::BlendFixedColor:
 				return mix(baseColor, HiColor(blendColor.r, blendColor.g, blendColor.b, baseColor.a), blendColor.a);
 			case BlendMode::Undefined:
 			case BlendMode::Ignore:

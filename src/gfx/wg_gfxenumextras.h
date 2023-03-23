@@ -53,7 +53,7 @@ namespace wg
 	const static GfxChunkId      GfxChunkId_min      = GfxChunkId::OutOfData;
 
 	const static TintMode        TintMode_max        = TintMode::GradientXY;
-	const static BlendMode       BlendMode_max       = BlendMode::Morph;
+	const static BlendMode       BlendMode_max       = BlendMode::BlendFixedColor;
 	const static Placement       Placement_max       = Placement::Center;
 	const static Direction       Direction_max       = Direction::Left;
 	const static Axis            Axis_max            = Axis::Y;
@@ -64,10 +64,10 @@ namespace wg
 	const static ColorSpace      ColorSpace_max      = ColorSpace::sRGB;
 	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
 	const static CanvasRef       CanvasRef_max       = CanvasRef::Canvas_32;
-	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::CanvasList;
+	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::SetFixedBlendColor;
 
 	const static int             TintMode_size       = (int)TintMode::GradientXY + 1;
-	const static int             BlendMode_size      = (int)BlendMode::Morph + 1;
+	const static int             BlendMode_size      = (int)BlendMode::BlendFixedColor + 1;
 	const static int             Placement_size      = (int)Placement::Center + 1;
 	const static int             Direction_size      = (int)Direction::Left + 1;
 	const static int             Axis_size           = (int)Axis::Y + 1;
@@ -78,7 +78,7 @@ namespace wg
 	const static int             ColorSpace_size     = (int)ColorSpace::sRGB + 1;
 	const static int             GfxFlip_size        = (int)GfxFlip::Rot270FlipY + 1;
 	const static int             CanvasRef_size      = (int)CanvasRef::Canvas_32 + 1;
-	const static int             GfxChunkId_size     = (int)GfxChunkId::CanvasList + 1;
+	const static int             GfxChunkId_size     = (int)GfxChunkId::SetFixedBlendColor + 1;
 
 	const char * toString(TintMode);
 	const char * toString(BlendMode);

@@ -108,8 +108,10 @@ namespace wg
 							///< Color Blending: DstRGBA = min(SrcRGBA,DstRGBA)
 		Max,				///< Blitting: Maximum value of each RGB component, alpha is ignored.
 							///< Color Blending: DstRGBA = max(SrcRGBA,DstRGBA)
-		Morph				///< Blitting: Transition RGBA into source by morph factor.
+		Morph,				///< Blitting: Transition RGBA into source by morph factor.
 							///< Color Blending: A 50% mix of the two colors.
+		BlendFixedColor		///< Blitting: Blend source against fixed color and replace destination with result.
+							///< Color Blending: Same as Blend
 	};
 
 	//____ Placement _____________________________________________________________
@@ -440,7 +442,9 @@ namespace wg
 
 		ProtocolVersion = 53,
 		TimeStampMS = 54,
-		CanvasList = 55
+		CanvasList = 55,
+		
+		SetFixedBlendColor = 56
 	};
 
 	typedef uint8_t GfxChunkFlags;

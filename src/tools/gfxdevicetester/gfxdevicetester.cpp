@@ -8,6 +8,7 @@
 
 #include "testsuites/a8tests.h"
 #include "testsuites/blendtests.h"
+#include "testsuites/blendfixedcolortests.h"
 #include "testsuites/blitblendtests.h"
 #include "testsuites/blitconsistencytest.h"
 #include "testsuites/blittests.h"
@@ -514,6 +515,7 @@ void GfxDeviceTester::setup_tests()
 	add_testsuite(new TileTests(), new TileTests());
 	add_testsuite(new CanvasLayerTests(), new CanvasLayerTests());
 //	add_testsuite(new RGB565BigEndianTests(), new RGB565BigEndianTests());	// Can only be handled by software rendering for now.
+	add_testsuite(new BlendFixedColorTests(), new BlendFixedColorTests());
 
 	regen_testentries();
 }

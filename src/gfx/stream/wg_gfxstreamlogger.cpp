@@ -237,6 +237,15 @@ namespace wg
 				m_charStream << "    factor      = " << factor << std::endl;
 				break;
 			}
+				
+			case GfxChunkId::SetFixedBlendColor:
+			{
+				HiColor		color;
+				*m_pDecoder >> color;
+
+				_printColor( "    color      ", color );
+				break;
+			}
 
 			case GfxChunkId::SetRenderLayer:
 			{

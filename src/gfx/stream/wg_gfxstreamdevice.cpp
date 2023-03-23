@@ -303,6 +303,19 @@ namespace wg
         (*m_pEncoder) << factor;
     }
 
+	//____ setFixedBlendColor() __________________________________________________
+
+	void GfxStreamDevice::setFixedBlendColor( HiColor color )
+	{
+		if( color == m_fixedBlendColor )
+			return;
+		
+		GfxDevice::setFixedBlendColor(color);
+		
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetFixedBlendColor, 0, 8 };
+		(*m_pEncoder) << color;
+	}
+
     //____ setRenderLayer() _______________________________________________________
 
     void GfxStreamDevice::setRenderLayer(int layer)

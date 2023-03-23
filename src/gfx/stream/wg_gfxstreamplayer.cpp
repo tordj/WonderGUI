@@ -336,6 +336,16 @@ namespace wg
 			break;
 		}
 
+		case GfxChunkId::SetFixedBlendColor:
+		{
+			HiColor	col;
+
+			*m_pDecoder >> col;
+			
+			m_pDevice->setFixedBlendColor(col);
+			break;
+		}
+				
 		case GfxChunkId::SetRenderLayer:
 		{
 			uint16_t	layer;

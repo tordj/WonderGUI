@@ -585,7 +585,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 
 	// Togglebuttons for BlendModes
 
-	pColumn = _buildToggleButtonRow("Blend Modes", { BlendMode::Replace, BlendMode::Blend, BlendMode::Add, BlendMode::Subtract, BlendMode::Multiply, BlendMode::Max, BlendMode::Min, BlendMode::Invert, BlendMode::Morph },
+	pColumn = _buildToggleButtonRow("Blend Modes", { BlendMode::Replace, BlendMode::Blend, BlendMode::Add, BlendMode::Subtract, BlendMode::Multiply, BlendMode::Max, BlendMode::Min, BlendMode::Invert, BlendMode::Morph, BlendMode::BlendFixedColor },
 		m_pDB->blendModes(), [this](Msg* pMsg) {this->blendModeToggled(pMsg); });
 
 	for (auto& p : pColumn->slots)

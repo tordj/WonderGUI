@@ -59,7 +59,9 @@ namespace wg
 			"Invert",
 			"Min",
 			"Max",
-			"Morph" };
+			"Morph",
+			"BlendFixedColor"
+		};
 
 		return names[(int)i];
 	}
@@ -298,7 +300,9 @@ namespace wg
 			"DeleteSurface",
 			"ProtocolVersion",
 			"TimeStampMS",
-			"CanvasList" };
+			"CanvasList",
+			"SetFixedBlendColor"
+		};
 
 		return names[(int)i];
 	}

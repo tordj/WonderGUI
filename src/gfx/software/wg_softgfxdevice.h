@@ -78,6 +78,7 @@ namespace wg
 
 		bool		setBlendMode(BlendMode blendMode) override;
 		void		setMorphFactor(float factor) override;
+		void		setFixedBlendColor( HiColor color ) override;
 
 		//.____ Rendering ________________________________________________
 
@@ -148,6 +149,8 @@ namespace wg
 			int32_t	rightIncA;
 
 			int			morphFactor;	// Scale: 0 -> 4096
+			
+			HiColor	fixedBlendColor;
 		};
 
 
@@ -173,14 +176,14 @@ namespace wg
 			int dstY;			// Pitch in bytes from end of line to beginning of next for each line written.
 		};
 
-		typedef	void(*PlotOp_p)(uint8_t * pDst, HiColor col, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*PlotOp_p)(uint8_t * pDst, HiColor col, const ColTrans& tint);
 		typedef	void(*PlotListOp_p)(const RectI& clip, int nCoords, const CoordI * pCoords, const HiColor * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
 		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*StraightBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
 		typedef	void(*TransformBlitOp_p)(const SoftSurface * pSrcSurf, BinalCoord pos, const binalInt matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
-		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);
+		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, const SoftGfxDevice::ColTrans& tint);
 
 
 		static int				s_lineThicknessTable[17];
@@ -238,7 +241,8 @@ namespace wg
 		inline static void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat,
 			int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 			int16_t backB, int16_t backG, int16_t backR, int16_t backA,
-			int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+			int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
+			int16_t& fixedB, int16_t& fixedG, int16_t& fixedR, int16_t& fixedA);
 
 
 		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color8 * pPalette, const HiColor* pPalette4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
@@ -247,7 +251,8 @@ namespace wg
 		inline static void	_blend_pixels(	BlendMode mode, int morphFactor, PixelFormat destFormat,
 											int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 											int16_t backB, int16_t backG, int16_t backR, int16_t backA,
-											int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+											int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
+											int16_t& fixedB, int16_t& fixedG, int16_t& fixedR, int16_t& fixedA);
 
 		inline static void	_color_tint_init(	TintMode tintMode, const ColTrans& tint, int bits, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
 												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,

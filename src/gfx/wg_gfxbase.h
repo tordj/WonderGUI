@@ -54,16 +54,16 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
-		static BitmapCache_p	defaultBitmapCache();
+		static BitmapCache_p		defaultBitmapCache();
+		
+		static void					setDefaultSurfaceFactory( SurfaceFactory * pFactory );
+		static inline SurfaceFactory_p	defaultSurfaceFactory() { return s_pDefaultSurfaceFactory; };
 
-		static void				setDefaultSurfaceFactory( SurfaceFactory * pFactory );
-		static SurfaceFactory_p	defaultSurfaceFactory() { return s_pDefaultSurfaceFactory; };
+		static void					setDefaultGfxDevice( GfxDevice * pDevice );
+		static inline GfxDevice_p	defaultGfxDevice() { return s_pDefaultGfxDevice; };
 
-		static void				setDefaultGfxDevice( GfxDevice * pDevice );
-		static GfxDevice_p		defaultGfxDevice() { return s_pDefaultGfxDevice; };
-
-		static void				setDefaultToSRGB( bool bSRGB );
-		static bool				defaultToSRGB() { return s_bSRGB; }
+		static void					setDefaultToSRGB( bool bSRGB );
+		static inline bool			defaultToSRGB() { return s_bSRGB; }
 		
 		
 	private:

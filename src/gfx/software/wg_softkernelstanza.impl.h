@@ -354,7 +354,8 @@ inline void _write_pixel(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t
 inline void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat,
 	int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 	int16_t backB, int16_t backG, int16_t backR, int16_t backA,
-	int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
+	int16_t& fixedB, int16_t& fixedG, int16_t& fixedR, int16_t& fixedA)
 {
 	// Note: We use if-statements instead of switch/case here since some compilers
 	// won't fully eliminate the switch/case statements when this code is inlined
@@ -382,6 +383,14 @@ inline void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat des
 			outA = (backA * invAlpha + 255 * alpha) >> 16;
 		}
 
+		if (mode == BlendMode::BlendFixedColor)
+		{
+			int alpha = SoftGfxDevice::s_mulTab[srcA];
+			int invAlpha = 65536 - alpha;
+
+			outA = (fixedA * invAlpha + 255 * alpha) >> 16;
+		}
+		
 		if (mode == BlendMode::Add)
 			outA = limitUint8(backA + srcA);
 
@@ -434,6 +443,17 @@ inline void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat des
 			outA = (backA * invAlpha + 255 * alpha) >> 16;
 		}
 
+		if (mode == BlendMode::BlendFixedColor)
+		{
+			int alpha = SoftGfxDevice::s_mulTab[srcA];
+			int invAlpha = 65536 - alpha;
+
+			outB = (fixedB * invAlpha + srcB * alpha) >> 16;
+			outG = (fixedG * invAlpha + srcG * alpha) >> 16;
+			outR = (fixedR * invAlpha + srcR * alpha) >> 16;
+			outA = (fixedA * invAlpha + 255 * alpha) >> 16;
+		}
+		
 		if (mode == BlendMode::Add)
 		{
 			int alpha = SoftGfxDevice::s_mulTab[srcA];
@@ -498,7 +518,8 @@ inline void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat des
 inline void	_blend_pixels(BlendMode mode, int morphFactor, PixelFormat destFormat,
 	int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 	int16_t backB, int16_t backG, int16_t backR, int16_t backA,
-	int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
+	int16_t& fixedB, int16_t& fixedG, int16_t& fixedR, int16_t& fixedA )
 {
 	// Note: We use if-statements instead of switch/case here since some compilers
 	// won't fully eliminate the switch/case statements when this code is inlined
@@ -526,6 +547,14 @@ inline void	_blend_pixels(BlendMode mode, int morphFactor, PixelFormat destForma
 			outA = (backA * invAlpha + 4096 * alpha) >> 12;
 		}
 
+		if (mode == BlendMode::BlendFixedColor)
+		{
+			int alpha = srcA;
+			int invAlpha = 4096 - alpha;
+
+			outA = (fixedA * invAlpha + 4096 * alpha) >> 12;
+		}
+		
 		if (mode == BlendMode::Add)
 			outA = SoftGfxDevice::s_limit4096Tab[4097 + backA + srcA];
 
@@ -576,6 +605,17 @@ inline void	_blend_pixels(BlendMode mode, int morphFactor, PixelFormat destForma
 			outA = (backA * invAlpha + 4096 * alpha) >> 12;
 		}
 
+		if (mode == BlendMode::BlendFixedColor)
+		{
+			int alpha = srcA;
+			int invAlpha = 4096 - alpha;
+
+			outB = (fixedB * invAlpha + srcB * alpha) >> 12;
+			outG = (fixedG * invAlpha + srcG * alpha) >> 12;
+			outR = (fixedR * invAlpha + srcR * alpha) >> 12;
+			outA = (fixedA * invAlpha + 4096 * alpha) >> 12;
+		}
+		
 		if (mode == BlendMode::Add)
 		{
 			int alpha = srcA;
@@ -969,7 +1009,7 @@ inline void _texel_tint_pixel(TintMode tintMode, int bits, int16_t& pixelB, int1
 //____ _plot() ____________________________________________________________
 
 template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-void _plot(uint8_t* pDst, HiColor color, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
+void _plot(uint8_t* pDst, HiColor color, const SoftGfxDevice::ColTrans& tint)
 {
 	bool bFast8 = false;
 
@@ -1012,9 +1052,30 @@ void _plot(uint8_t* pDst, HiColor color, const SoftGfxDevice::ColTrans& tint, Co
 		srcA = (srcA * tint.flatTintColor.a) >> 12;
 	}
 
-	// Step 2: Get color components of background pixel blending into backX
-	// Step 3: Blend srcX and backX into outX
-	// Step 4: Write resulting pixel to destination
+	// Step 2: Setup fixed blend color
+	
+	int16_t fixedB, fixedG, fixedR, fixedA;
+
+	if (bFast8)
+	{
+		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+		fixedB = pPackTab[tint.fixedBlendColor.b];
+		fixedG = pPackTab[tint.fixedBlendColor.g];
+		fixedR = pPackTab[tint.fixedBlendColor.r];
+		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+	}
+	else
+	{
+		fixedB = tint.fixedBlendColor.b;
+		fixedG = tint.fixedBlendColor.g;
+		fixedR = tint.fixedBlendColor.r;
+		fixedA = tint.fixedBlendColor.a;
+	}
+	
+	// Step 3: Get color components of background pixel blending into backX
+	// Step 4: Blend srcX and backX into outX
+	// Step 5: Write resulting pixel to destination
 
 	int16_t backB, backG, backR, backA;
 	int16_t outB, outG, outR, outA;
@@ -1022,13 +1083,13 @@ void _plot(uint8_t* pDst, HiColor color, const SoftGfxDevice::ColTrans& tint, Co
 	if (bFast8)
 	{
 		_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-		_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+		_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 		_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 	}
 	else
 	{
 		_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-		_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+		_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 		_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 	}
 }
@@ -1101,7 +1162,28 @@ void _plot_list(const RectI& clip, int nCoords, const CoordI* pCoords, const HiC
 				srcA = (srcA * tintA) >> 12;
 			}
 
-			// Step 2: Get color components of background pixel blending into backX
+			// Step 2: Setup fixed blend color
+			
+			int16_t fixedB, fixedG, fixedR, fixedA;
+
+			if (bFast8)
+			{
+				const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+				fixedB = pPackTab[tint.fixedBlendColor.b];
+				fixedG = pPackTab[tint.fixedBlendColor.g];
+				fixedR = pPackTab[tint.fixedBlendColor.r];
+				fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+			}
+			else
+			{
+				fixedB = tint.fixedBlendColor.b;
+				fixedG = tint.fixedBlendColor.g;
+				fixedR = tint.fixedBlendColor.r;
+				fixedA = tint.fixedBlendColor.a;
+			}
+			
+			// Step 3: Get color components of background pixel blending into backX
 
 			int16_t backB, backG, backR, backA;
 			int16_t outB, outG, outR, outA;
@@ -1109,13 +1191,15 @@ void _plot_list(const RectI& clip, int nCoords, const CoordI* pCoords, const HiC
 			if (bFast8)
 			{
 				_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+									outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA );
 				_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 			else
 			{
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+							  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 		}
@@ -1174,6 +1258,29 @@ void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, 
 		srcA = (srcA * tint.flatTintColor.a) >> 12;
 	}
 
+	// Step 2: Setup fixed blend color
+	
+	int16_t fixedB, fixedG, fixedR, fixedA;
+
+	if (bFast8)
+	{
+		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+		fixedB = pPackTab[tint.fixedBlendColor.b];
+		fixedG = pPackTab[tint.fixedBlendColor.g];
+		fixedR = pPackTab[tint.fixedBlendColor.r];
+		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+	}
+	else
+	{
+		fixedB = tint.fixedBlendColor.b;
+		fixedG = tint.fixedBlendColor.g;
+		fixedR = tint.fixedBlendColor.r;
+		fixedA = tint.fixedBlendColor.a;
+	}
+	
+	//
+	
 	for (int i = 0; i < length; i++)
 	{
 		int beg = pos >> 16;
@@ -1194,15 +1301,15 @@ void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, 
 			if (bFast8)
 			{
 				_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-				_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+									outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA );
 				_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 			else
 			{
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+							  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 		}
@@ -1218,13 +1325,15 @@ void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, 
 			if (bFast8)
 			{
 				_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+									outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 			else
 			{
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+							  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 
@@ -1243,13 +1352,15 @@ void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, 
 					if (bFast8)
 					{
 						_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-						_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+						_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+											outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 						_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 					}
 					else
 					{
 						_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-						_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+						_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+									  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 						_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 					}
 					ofs++;
@@ -1271,13 +1382,15 @@ void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, 
 				if (bFast8)
 				{
 					_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+										outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 					_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				else
 				{
 					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+								  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 
@@ -1332,6 +1445,29 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 		srcA = (srcA * tint.flatTintColor.a) >> 12;
 	}
 
+	// Step 2: Setup fixed blend color
+	
+	int16_t fixedB, fixedG, fixedR, fixedA;
+
+	if (bFast8)
+	{
+		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+		fixedB = pPackTab[tint.fixedBlendColor.b];
+		fixedG = pPackTab[tint.fixedBlendColor.g];
+		fixedR = pPackTab[tint.fixedBlendColor.r];
+		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+	}
+	else
+	{
+		fixedB = tint.fixedBlendColor.b;
+		fixedG = tint.fixedBlendColor.g;
+		fixedR = tint.fixedBlendColor.r;
+		fixedA = tint.fixedBlendColor.a;
+	}
+	
+	//
+	
 	for (int i = 0; i < length; i++)
 	{
 		if (pos >= clipEnd || pos + width <= clipStart)
@@ -1375,13 +1511,15 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 			if (bFast8)
 			{
 				_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+									outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 			else
 			{
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+							  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 		}
@@ -1397,13 +1535,15 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 			if (bFast8)
 			{
 				_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+									outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 			else
 			{
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+							  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 
@@ -1426,13 +1566,15 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 					if (bFast8)
 					{
 						_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-						_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+						_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+											outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 						_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 					}
 					else
 					{
 						_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-						_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+						_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+									  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 						_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 					}
 
@@ -1455,13 +1597,15 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 				if (bFast8)
 				{
 					_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+										outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 					_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				else
 				{
 					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA,
+								  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 			}
@@ -1525,10 +1669,31 @@ void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, Hi
 		leftIncB, leftIncG, leftIncR, leftIncA, rightIncB, rightIncG, rightIncR, rightIncA,
 		xIncB, xIncG, xIncR, xIncA, patchPos);
 
+	// Step 2: Setup fixed blend color
+	
+	int16_t fixedB, fixedG, fixedR, fixedA;
+
+	if (bFast8)
+	{
+		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+		fixedB = pPackTab[tint.fixedBlendColor.b];
+		fixedG = pPackTab[tint.fixedBlendColor.g];
+		fixedR = pPackTab[tint.fixedBlendColor.r];
+		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+	}
+	else
+	{
+		fixedB = tint.fixedBlendColor.b;
+		fixedG = tint.fixedBlendColor.g;
+		fixedR = tint.fixedBlendColor.r;
+		fixedA = tint.fixedBlendColor.a;
+	}
+	
 	for (int y = 0; y < nLines; y++)
 	{
 
-		// Step 2: Apply any vertical tint gradient
+		// Step 3: Apply any vertical tint gradient
 
 		_color_tint_line(TINT, tint, bits, srcB, srcG, srcR, srcA, tintedB, tintedG, tintedR, tintedA,
 			leftB, leftG, leftR, leftA, rightB, rightG, rightR, rightA,
@@ -1537,14 +1702,14 @@ void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, Hi
 
 		for (int x = 0; x < lineLength; x++)
 		{
-			// Step 3: Apply any horizontal tint gradient
+			// Step 4: Apply any horizontal tint gradient
 
 			_color_tint_pixel(TINT, bits, tintedB, tintedG, tintedR, tintedA, xIncB, xIncG, xIncR, xIncA,
 				pixelB, pixelG, pixelR, pixelA);
 
-			// Step 4: Get color components of background pixel blending into backX
-			// Step 5: Blend srcX and backX into outX
-			// Step 6: Write resulting pixel to destination
+			// Step 5: Get color components of background pixel blending into backX
+			// Step 6: Blend srcX and backX into outX
+			// Step 7: Write resulting pixel to destination
 
 			int16_t backB, backG, backR, backA;
 			int16_t outB, outG, outR, outA;
@@ -1552,13 +1717,15 @@ void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, Hi
 			if (bFast8)
 			{
 				_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA,
+									outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 			else
 			{
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA,
+							  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 
@@ -1597,7 +1764,7 @@ inline void _add_segment_color(bool GRADIENT, int blendFraction, int offset, con
 //____ _draw_segment_strip() _______________________________________________
 
 template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
-void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixelPitch, int nEdges, SegmentEdge* pEdges, const int16_t* pSegmentColors, const SoftGfxDevice::SegmentGradient* pSegmentGradients, const bool* pTransparentSegments, const bool* pOpaqueSegments, int morphFactor)
+void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixelPitch, int nEdges, SegmentEdge* pEdges, const int16_t* pSegmentColors, const SoftGfxDevice::SegmentGradient* pSegmentGradients, const bool* pTransparentSegments, const bool* pOpaqueSegments, const SoftGfxDevice::ColTrans& tint)
 {
 
 	bool bFast8 = false;
@@ -1612,6 +1779,29 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 		bits = 8;
 	}
 
+	
+	// Setup fixed blend color
+	
+	int16_t fixedB, fixedG, fixedR, fixedA;
+
+	if (bFast8)
+	{
+		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+		fixedB = pPackTab[tint.fixedBlendColor.b];
+		fixedG = pPackTab[tint.fixedBlendColor.g];
+		fixedR = pPackTab[tint.fixedBlendColor.r];
+		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+	}
+	else
+	{
+		fixedB = tint.fixedBlendColor.b;
+		fixedG = tint.fixedBlendColor.g;
+		fixedR = tint.fixedBlendColor.r;
+		fixedA = tint.fixedBlendColor.a;
+	}
+	
+	
 	// Render the column
 
 	int offset = colBeg;				// 24.8 format, but binals cleared (always pointing at beginning of full pixel).
@@ -1715,13 +1905,15 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 						if (bFast8)
 						{
 							_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-							_blend_pixels_fast8(BLEND, morphFactor, DSTFORMAT, inB, inG, inR, inA, backB, backG, backR, backA, outB, outG, outR, outA);
+							_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, inB, inG, inR, inA, backB, backG, backR, backA,
+												outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 							_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 						}
 						else
 						{
 							_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-							_blend_pixels(BLEND, morphFactor, DSTFORMAT, inB, inG, inR, inA, backB, backG, backR, backA, outB, outG, outR, outA);
+							_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, inB, inG, inR, inA, backB, backG, backR, backA,
+										  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 							_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 						}
 
@@ -1814,6 +2006,24 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 					outA = (accA >> 12) + ((backA * backFraction) >> 16);	// This should be correct... 							
 				}
 
+				if (BLEND == BlendMode::BlendFixedColor)
+				{
+					int backFraction = 65536;
+
+					for (int i = 0; i <= edge; i++)
+					{
+						int alpha = GRADIENT ? (pSegmentGradients[i].begA + pSegmentGradients[i].incA * (offset >> 8)) >> 12 : pSegmentColors[i * 4 + 3];
+						int blendFraction = ((segmentFractions[i] * alpha) / 4096);
+						backFraction -= blendFraction;
+						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
+					}
+
+					outB = (accB >> 12) + ((fixedB * backFraction) >> 16);
+					outG = (accG >> 12) + ((fixedG * backFraction) >> 16);
+					outR = (accR >> 12) + ((fixedR * backFraction) >> 16);
+					outA = (accA >> 12) + ((fixedA * backFraction) >> 16);	// This should be correct...
+				}
+				
 				if (BLEND == BlendMode::Add)
 				{
 					for (int i = 0; i <= edge; i++)
@@ -1930,12 +2140,12 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 						_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], pSegmentGradients, i, accB, accG, accR, accA);
 					}
 
-					int invMorph = 4096 - morphFactor;
+					int invMorph = 4096 - tint.morphFactor;
 
-					outB = (backB * invMorph + (accB >> 12) * morphFactor) >> 12;
-					outG = (backG * invMorph + (accG >> 12) * morphFactor) >> 12;
-					outR = (backR * invMorph + (accR >> 12) * morphFactor) >> 12;
-					outA = (backA * invMorph + (backFraction >> 4) * morphFactor) >> 12;
+					outB = (backB * invMorph + (accB >> 12) * tint.morphFactor) >> 12;
+					outG = (backG * invMorph + (accG >> 12) * tint.morphFactor) >> 12;
+					outR = (backR * invMorph + (accR >> 12) * tint.morphFactor) >> 12;
+					outA = (backA * invMorph + (backFraction >> 4) * tint.morphFactor) >> 12;
 				}
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
@@ -2022,16 +2232,37 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 	_texel_tint_init(TINT, tint, bits, leftB, leftG, leftR, leftA, rightB, rightG, rightR, rightA,
 		xIncB, xIncG, xIncR, xIncA, tintB, tintG, tintR, tintA, patchPos);
 
+	// Step 2: Setup fixed blend color
+	
+	int16_t fixedB, fixedG, fixedR, fixedA;
+
+	if (bFast8)
+	{
+		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+		fixedB = pPackTab[tint.fixedBlendColor.b];
+		fixedG = pPackTab[tint.fixedBlendColor.g];
+		fixedR = pPackTab[tint.fixedBlendColor.r];
+		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+	}
+	else
+	{
+		fixedB = tint.fixedBlendColor.b;
+		fixedG = tint.fixedBlendColor.g;
+		fixedR = tint.fixedBlendColor.r;
+		fixedA = tint.fixedBlendColor.a;
+	}
+	
 	for (int y = 0; y < nLines; y++)
 	{
-		// Step 2: Prepare tint for any vertical gradient
+		// Step 3: Prepare tint for any vertical gradient
 
 		_texel_tint_line(TINT, tint, bits, leftB, leftG, leftR, leftA, rightB, rightG, rightR, rightA,
 			xIncB, xIncG, xIncR, xIncA, tintB, tintG, tintR, tintA, patchPos);
 
 		for (int x = 0; x < lineLength; x++)
 		{
-			// Step 3: Read source pixels
+			// Step 4: Read source pixels
 
 			if (TILE)
 			{
@@ -2046,14 +2277,14 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 			else
 				_read_pixel(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
 
-			// Step 3: Apply any tint
+			// Step 5: Apply any tint
 
 			_texel_tint_pixel(TINT, bits, srcB, srcG, srcR, srcA, xIncB, xIncG, xIncR, xIncA,
 				tintB, tintG, tintR, tintA);
 
-			// Step 2: Get color components of background pixel blending into backX
-			// Step 3: Blend srcX and backX into outX
-			// Step 4: Write resulting pixel to destination
+			// Step 6: Get color components of background pixel blending into backX
+			// Step 7: Blend srcX and backX into outX
+			// Step 8: Write resulting pixel to destination
 
 			int16_t backB, backG, backR, backA;
 			int16_t outB, outG, outR, outA;
@@ -2061,17 +2292,19 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 			if (bFast8)
 			{
 				_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+									outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 			else
 			{
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+							  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 
-			// Step 6: Increment source and destination pointers
+			// Step 9: Increment source and destination pointers
 
 			if (TILE)
 			{
@@ -2144,6 +2377,26 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 	const Color8 * pPalette = pSrcSurf->palette();
 	const HiColor * pPalette4096 = pSrcSurf->palette4096();
 
+	// Step 1: Setup fixed blend color
+	
+	int16_t fixedB, fixedG, fixedR, fixedA;
+
+	if (bFast8)
+	{
+		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+		fixedB = pPackTab[tint.fixedBlendColor.b];
+		fixedG = pPackTab[tint.fixedBlendColor.g];
+		fixedR = pPackTab[tint.fixedBlendColor.r];
+		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+	}
+	else
+	{
+		fixedB = tint.fixedBlendColor.b;
+		fixedG = tint.fixedBlendColor.g;
+		fixedR = tint.fixedBlendColor.r;
+		fixedA = tint.fixedBlendColor.a;
+	}
 	
 	for (int y = 0; y < nLines; y++)
 	{
@@ -2159,7 +2412,7 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 				ofsY &= srcPosMaskY_binals;
 			}
 
-			// Step 1: Read source color.
+			// Step 2: Read source color.
 
 			int16_t srcB, srcG, srcR, srcA;
 			uint8_t* p = pSrcSurf->pixels() + (ofsY >> BINAL_SHIFT) * srcPitch + (ofsX >> BINAL_SHIFT) * srcPixelBytes;
@@ -2322,13 +2575,15 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 			if (bFast8)
 			{
 				_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+									outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 			else
 			{
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
-				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA,
+							  outB, outG, outR, outA, fixedB, fixedG, fixedR, fixedA);
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
 
