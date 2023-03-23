@@ -87,6 +87,8 @@ public:
     void    ChangeText(std::string kStr);
     void    ChangeText(const char* kStr);
 
+	void	SetFixedBlendColor( wg::HiColor color );
+	
 protected:
 
     void    _onCloneContent( const WgWidget * _pOrg );
@@ -113,7 +115,8 @@ private:
     void    _textModified();
     bool    _insertCharAtCursor( Uint16 c );
 
-    wg::String            m_kStr;
+    wg::String			m_kStr;
+	wg::HiColor			m_fixedBlendColor = wg::HiColor::Undefined;
 };
 
 #endif // WG2_TEXTDISPLAY_DOT_H

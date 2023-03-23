@@ -77,6 +77,7 @@ bool tooltipLayerTest(WgRootPanel* pRoot);
 bool flowPanelTest(WgRootPanel* pRoot);
 bool fullStateSupportTest(WgRootPanel* pRoot);
 bool gfxStreamingTest(WgRootPanel* pRoot);
+bool blendFixedColorTest(WgRootPanel* pRoot);
 
 
 //#define USE_OPEN_GL
@@ -328,9 +329,10 @@ int main ( int argc, char** argv )
 //    canvasCapsuleTest(pRoot);
 //    tooltipLayerTest(pRoot);
 //    flowPanelTest(pRoot);
-	fullStateSupportTest(pRoot);
+//	fullStateSupportTest(pRoot);
 //    gfxStreamingTest(pRoot);
-
+	blendFixedColorTest(pRoot);
+	
 	// Setup debug overlays
 	auto pOverlaySkin = wg::BoxSkin::create( { .color = WgColor(255,0,0,128), .outline = 1, .outlineColor = WgColor::Red,
 		.states = { {wg::StateEnum::Normal, {.color = WgColor::Transparent } }
@@ -453,6 +455,24 @@ void updateOscilloscope( WgOscilloscope * pOsc, int ofs, float freq, float ampli
 		}
 
 		pOsc->SetLinePoints(256,points);
+}
+
+//____ blendFixedColorTest() __________________________________________________
+
+bool blendFixedColorTest(WgRootPanel* pRoot)
+{
+	auto pBaseFlex = new WgFlexPanel();
+	pRoot->SetChild(pBaseFlex);
+
+	pBaseFlex->SetSkin(wg::ColorSkin::create(WgColor::Black));
+	
+	auto pText1 = new WgTextDisplay();
+	pText1->SetText("TEXT 1 WITH FIXED BACKGROUND COLOR.");
+	pText1->SetSkin( wg::ColorSkin::create(WgColor::HotPink) );
+	pText1->SetTextWrap(true);
+	pText1->SetFixedBlendColor(wg::HiColor(0,2048,0,4096));
+
+	pBaseFlex->AddChild(pText1, WgCoord(20,20) );
 }
 
 

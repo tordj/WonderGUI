@@ -92,11 +92,17 @@ void WgTextDisplay::GoEOF()
 		m_pText->goEOF();
 }
 
-
 //_______________________________________________________________
 void WgTextDisplay::SetEditMode(WgTextEditMode mode)
 {
 	m_text.SetEditMode(mode);
+}
+
+//_______________________________________________________________
+void WgTextDisplay::SetFixedBlendColor( wg::HiColor color )
+{
+	m_fixedBlendColor = color;
+	_requestRender();
 }
 
 //____ MatchingPixelHeight() _______________________________________________________
@@ -230,8 +236,18 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 	else
 		m_text.hideCursor();
 
-	WgGfxDevice::PrintText( pDevice, pText, canvas );
+	if( m_fixedBlendColor != wg::HiColor::Undefined )
+	{
+		pDevice->setFixedBlendColor(m_fixedBlendColor);
+		pDevice->setBlendMode(wg::BlendMode::BlendFixedColor);
+		WgGfxDevice::PrintText( pDevice, pText, canvas );
+		pDevice->setBlendMode(wg::BlendMode::Blend);
+	}
+	else
+		WgGfxDevice::PrintText( pDevice, pText, canvas );
 
+	
+	
 	if( pText != &m_text )
 		delete pText;
 }
