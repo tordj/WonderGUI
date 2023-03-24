@@ -46,7 +46,7 @@ namespace wg
 			uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette,
 			Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries);
 
-		void fillBitmap(uint8_t* pBitmap, PixelFormat type, int pitch, RectI fillRect, HiColor color );
+		void fillBitmap(uint8_t* pBitmap, PixelFormat type, int pitch, RectI fillRect, HiColor color, Color8* pPalette = nullptr, int paletteEntries = 0);
 	
 		int colorToPixelBytes( HiColor color, PixelFormat type, uint8_t pixelArea[18], Color8* pPalette = nullptr, int paletteEntries = 0 );
 	

@@ -1628,22 +1628,40 @@ int colorToPixelBytes( HiColor color, PixelFormat type, uint8_t pixelArea[18], C
 
 		case PixelFormat::Index_8:
 		{
-			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, GfxBase::defaultToSRGB(), pPalette,256);
+			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, GfxBase::defaultToSRGB(), pPalette, paletteEntries);
 			return 1;
 		}
 
 		case PixelFormat::Index_8_sRGB:
 		{
-			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, true, pPalette,256);
+			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, true, pPalette, paletteEntries);
 			return 1;
 		}
 
 		case PixelFormat::Index_8_linear:
 		{
-			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, false, pPalette,256);
+			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, false, pPalette, paletteEntries);
 			return 1;
 		}
-			
+
+		case PixelFormat::Index_16:
+		{
+			* reinterpret_cast<uint16_t*>(pixelArea) = (uint16_t)findBestMatchInPalette(color, GfxBase::defaultToSRGB(), pPalette, paletteEntries);
+			return 2;
+		}
+
+		case PixelFormat::Index_16_sRGB:
+		{
+			*reinterpret_cast<uint16_t*>(pixelArea) = (uint16_t)findBestMatchInPalette(color, true, pPalette, paletteEntries);
+			return 2;
+		}
+
+		case PixelFormat::Index_16_linear:
+		{
+			*reinterpret_cast<uint16_t*>(pixelArea) = (uint16_t)findBestMatchInPalette(color, false, pPalette, paletteEntries);
+			return 2;
+		}
+
 		case PixelFormat::RGB_565_bigendian:
 		{
 			uint8_t * pConvTab = HiColor::packLinearTab;
@@ -1685,17 +1703,63 @@ int colorToPixelBytes( HiColor color, PixelFormat type, uint8_t pixelArea[18], C
 
 //____ fillBitmap() ___________________________________________________________
 
-void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fillRect, HiColor color )
+void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fillRect, HiColor color, Color8* pPalette, int paletteEntries)
 {
 	pixelFormat = Util::translatePixelFormat(pixelFormat);
 	
 	auto&	pixelDesc = Util::pixelFormatToDescription(pixelFormat);
 	
 	uint8_t pixelArea[18];
-	int pixelBytes = colorToPixelBytes(color, pixelFormat, pixelArea);
+	int pixelBytes = colorToPixelBytes(color, pixelFormat, pixelArea, pPalette, paletteEntries);
 
 	if( pixelDesc.type == PixelType::Bitplanes )
 	{
+		int pixelWords = pixelBytes / 2;
+	
+		uint16_t leftPixelMask = 0xFFFF >> (fillRect.x & 0xF);
+		uint16_t rightPixelMask = 0xFFFF << (15 - ((fillRect.x + fillRect.w) & 0xF));
+
+		int wordWidth = 1 + (((fillRect.x + fillRect.w) & 0xF) - (fillRect.x & 0xF)) / 16;
+
+
+		uint8_t * pDest = pBitmap + fillRect.y * pitch + (pixelDesc.bits * 2 * (fillRect.x / 16));
+		int eolAdd = pitch - wordWidth*pixelDesc.bits*2;
+
+		uint16_t* wordArea = (uint16_t*)pixelArea;
+
+		if (wordWidth == 1)
+		{
+			uint16_t pixelMask = leftPixelMask & rightPixelMask;
+			uint16_t invMask = ~pixelMask;
+
+			for (int y = 0; y < fillRect.h; y++)
+			{
+				for (int plane = 0; plane < pixelWords; plane++)
+					*pDest++ = ((*pDest) & invMask) | (wordArea[plane] & pixelMask);
+
+				pDest += eolAdd;
+			}
+		}
+		else
+		{
+			uint16_t invLeftMask = ~leftPixelMask;
+			uint16_t invRightMask = ~rightPixelMask;
+
+			for (int y = 0; y < fillRect.h; y++)
+			{
+				for (int plane = 0; plane < pixelWords; plane++)
+					*pDest++ = ((*pDest) & invLeftMask) | (wordArea[plane] & leftPixelMask);
+
+				for( int x = 0 ; x < (wordWidth - 2) ; x++ )
+					for (int plane = 0; plane < pixelWords; plane++)
+						*pDest++ = wordArea[plane];
+
+				for (int plane = 0; plane < pixelWords; plane++)
+					*pDest++ = ((*pDest) & invRightMask) | (wordArea[plane] & rightPixelMask);
+
+				pDest += eolAdd;
+			}
+		}
 	}
 	else
 	{
