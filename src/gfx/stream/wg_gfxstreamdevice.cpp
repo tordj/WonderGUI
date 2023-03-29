@@ -843,7 +843,7 @@ namespace wg
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginCanvasUpdate, {}, size };
  		(*m_pEncoder) << (pCanvasSurface ? static_cast<GfxStreamSurface*>(pCanvasSurface)->m_inStreamId : (uint16_t) 0);
         (*m_pEncoder) << canvasRef;
-        (*m_pEncoder) << 0;				// Dummy, was nUpdateRects;
+        (*m_pEncoder) << (uint8_t) 0;				// Dummy, was nUpdateRects;
         (*m_pEncoder) << GfxStream::DataChunk{ nUpdateRects*16, pUpdateRects };
 		
 		m_canvas.ref = canvasRef;

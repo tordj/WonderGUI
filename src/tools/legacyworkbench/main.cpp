@@ -473,6 +473,7 @@ bool blendFixedColorTest(WgRootPanel* pRoot)
 	pText1->SetFixedBlendColor(wg::HiColor(0,2048,0,4096));
 
 	pBaseFlex->AddChild(pText1, WgCoord(20,20) );
+	return true;
 }
 
 

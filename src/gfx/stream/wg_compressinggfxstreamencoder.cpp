@@ -23,6 +23,7 @@
 #include <wg_compressinggfxstreamencoder.h>
 
 #include <algorithm>
+#include <assert.h>
 
 namespace wg
 {
@@ -72,13 +73,13 @@ namespace wg
 				m_scopes.emplace_back(m_activeScope);
 				m_activeScope = m_scopes.size() -1;
 
-				m_scopes[m_activeScope].chunks.emplace_back( GfxChunkId::BeginRender, m_data.size(), 0, 0 );
+				m_scopes[m_activeScope].chunks.emplace_back( GfxChunkId::BeginRender, (int) m_data.size(), 0, 0 );
 				break;
 			}
 
 			case GfxChunkId::EndRender:
 			{
-				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndRender, m_data.size(), 0, 0);
+				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndRender, (int) m_data.size(), 0, 0);
 				_processScopes();
 				flush();
 
@@ -90,7 +91,7 @@ namespace wg
 			case GfxChunkId::BeginCanvasUpdate:
 			{
 				int newScopeIdx = m_scopes.size();
-				int dataOfs = m_data.size();
+				int dataOfs = (int) m_data.size();
 
 				// Signal jump to subscope in our scope with a special chunk.
 				
@@ -114,7 +115,7 @@ namespace wg
 
 			case GfxChunkId::EndCanvasUpdate:
 			{
-				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndCanvasUpdate, m_data.size(), 0, 0);
+				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndCanvasUpdate, (int) m_data.size(), 0, 0);
 				m_activeScope = m_scopes[m_activeScope].prevScope;
 				break;
 			}
@@ -125,7 +126,7 @@ namespace wg
 				{
 					// Chunk is outside begin/end render scope. Just put it in outputBuffer directly.
 					
-					int ofs = m_outputBuffer.size();
+					int ofs = (int) m_outputBuffer.size();
 					if (header.size <= 30)
 					{
 						m_outputBuffer.resize(ofs + header.size + 2);
@@ -148,7 +149,7 @@ namespace wg
 				{
 					// Put header in our chunks
 					
-					int dataOfs = m_data.size();
+					int dataOfs = (int) m_data.size();
 					m_scopes[m_activeScope].chunks.emplace_back(header.type, dataOfs, header.size, 0 );
 				
 					// Prepare data buffer for writes.
