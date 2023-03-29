@@ -274,7 +274,8 @@ int main ( int argc, char** argv )
 
 	auto pFirstSplitter = GfxStreamSplitter::create( { GfxStreamSink_p( pStreamBuffer, pStreamBuffer->input), GfxStreamSink_p( pStreamWriter, pStreamWriter->input) });
 
-	auto pEncoder = GfxStreamEncoder::create(GfxStreamSink_p( pFirstSplitter, pFirstSplitter->input) );
+//	auto pEncoder = FastGfxStreamEncoder::create(GfxStreamSink_p( pFirstSplitter, pFirstSplitter->input) );
+	auto pEncoder = CompressingGfxStreamEncoder::create(GfxStreamSink_p( pFirstSplitter, pFirstSplitter->input) );
 
 	// Logger
 
@@ -328,9 +329,9 @@ int main ( int argc, char** argv )
 //   playRectangleDance( pStreamDevice, CanvasRef::Canvas_1 );
 //	  playRectangleDanceDualScreen( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
 //    playLogoFadeIn( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
-//    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
+    playSurfaceStressTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 //	playBounceRects( pStreamDevice, CanvasRef::Canvas_1 );
-	playDualScreenBounceRects( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
+//	playDualScreenBounceRects( pStreamDevice, CanvasRef::Canvas_1, CanvasRef::Canvas_2 );
 
 //	playImageStreamingTest( pStreamDevice, CanvasRef::Canvas_1, pSurfaceFactory );
 
@@ -752,8 +753,8 @@ void playSurfaceStressTest(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFact
 
 void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p pFactory )
 {
-//    SDL_Surface * pLogoImg = IMG_Load( "resources/logo-200.png" );
-	SDL_Surface * pLogoImg = IMG_Load( "softube_logo_transparent_small.png" );
+    SDL_Surface * pLogoImg = IMG_Load( "resources/logo-200.png" );
+//	SDL_Surface * pLogoImg = IMG_Load( "softube_logo_transparent_small.png" );
 
 	//    convertSDLFormat( &format, pFontSurf->format );
 
@@ -767,7 +768,7 @@ void playLogoFadeIn(GfxDevice_p pDevice, CanvasRef canvasRef, SurfaceFactory_p p
 
     pLogoSurf->copy( CoordI(), pOrgSurf );
     
-    SizeI canvasSize = pDevice->canvas(canvasRef).size;
+    SizeI canvasSize = pDevice->canvas(canvasRef).size/64;
 
     int ticker = 0;
     int length = 30;

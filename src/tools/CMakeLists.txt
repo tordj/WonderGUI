@@ -10,27 +10,29 @@ add_subdirectory(softkernelgenerator)
 add_subdirectory(surfviewer)
 add_subdirectory(streamanalyzer)
 add_subdirectory(streamgenerator)
+add_subdirectory(streamtrimmer)
 add_subdirectory(unittester)
 add_subdirectory(workbench)
 add_subdirectory(legacyworkbench)
 add_subdirectory(embeddedworkbench)
 
 
-set_target_properties( 
-	gfxdevicetester 
-	embeddedworkbench 
-	legacyworkbench 
-	legacytestplugin 
-	testplugin 
-	fontgenerator 
-	gfxworkbench 
-	image2surf 
-	packlayouttester 
-	pluginworkbench 
-	softkernelgenerator 
-	streamanalyzer 
-	streamgenerator 
-	surfviewer 
-	unittester 
-	workbench 
+set_target_properties(
+	gfxdevicetester
+	embeddedworkbench
+	legacyworkbench
+	legacytestplugin
+	testplugin
+	fontgenerator
+	gfxworkbench
+	image2surf
+	packlayouttester
+	pluginworkbench
+	softkernelgenerator
+	streamanalyzer
+	streamgenerator
+	streamtrimmer
+	surfviewer
+	unittester
+	workbench
 	PROPERTIES FOLDER "Tools" )

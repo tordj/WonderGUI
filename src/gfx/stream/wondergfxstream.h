@@ -23,6 +23,9 @@
 #define WONDERGFXSTREAM_DOT_H
 #pragma once
 
+#include <wg_compressinggfxstreamencoder.h>
+#include <wg_fastgfxstreamencoder.h>
+
 #include <wg_gfxstream.h>
 #include <wg_gfxstreambuffer.h>
 #include <wg_gfxstreamdecoder.h>
@@ -40,6 +43,8 @@
 #include <wg_gfxstreamsurfacefactory.h>
 #include <wg_gfxstreamwrapper.h>
 #include <wg_gfxstreamwriter.h>
+
+
 
 
 #endif //WONDERGFXSTREAM_DOT_H

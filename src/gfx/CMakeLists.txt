@@ -1,6 +1,6 @@
 source_group(Base REGULAR_EXPRESSION "wg_*|wonder*")
 source_group(C-API REGULAR_EXPRESSION "c-api//*")
-source_group(Stream REGULAR_EXPRESSION "stream/wg_*")
+source_group(Stream REGULAR_EXPRESSION "stream/wg_*|stream/wonder*")
 source_group(C-API/Stream REGULAR_EXPRESSION "stream/c-api/wg_*")
 
 set( SOURCES
@@ -72,6 +72,10 @@ set( SOURCES
 	c-api/wg_c_surfacewriter.h
 	c-api/wondergfx_c.h
 
+	stream/wg_compressinggfxstreamencoder.cpp
+	stream/wg_compressinggfxstreamencoder.h	
+	stream/wg_fastgfxstreamencoder.cpp
+	stream/wg_fastgfxstreamencoder.h
 	stream/wg_gfxstream.h
 	stream/wg_gfxstreambuffer.cpp
 	stream/wg_gfxstreambuffer.h
