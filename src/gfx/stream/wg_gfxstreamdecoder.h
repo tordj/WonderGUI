@@ -68,45 +68,41 @@ namespace wg
 
 		//.____ Operators _____________________________________________
 
-		GfxStreamDecoder& operator>> (GfxStream::Header& header);
+		inline GfxStreamDecoder& operator>> (GfxStream::Header& header);
 
-		GfxStreamDecoder& operator>> (uint8_t&);
-		GfxStreamDecoder& operator>> (int16_t&);
-		GfxStreamDecoder& operator>> (uint16_t&);
-		GfxStreamDecoder& operator>> (int&);
-		GfxStreamDecoder& operator>> (float&);
-		GfxStreamDecoder& operator>> (bool&);
+		inline GfxStreamDecoder& operator>> (uint8_t&);
+		inline GfxStreamDecoder& operator>> (int16_t&);
+		inline GfxStreamDecoder& operator>> (uint16_t&);
+		inline GfxStreamDecoder& operator>> (int&);
+		inline GfxStreamDecoder& operator>> (float&);
+		inline GfxStreamDecoder& operator>> (bool&);
 
-		GfxStreamDecoder& operator>> (CoordS&);
-		GfxStreamDecoder& operator>> (CoordI&);
-		GfxStreamDecoder& operator>> (CoordF&);
-		GfxStreamDecoder& operator>> (SizeS&);
-		GfxStreamDecoder& operator>> (SizeI&);
-		GfxStreamDecoder& operator>> (SizeF&);
-		GfxStreamDecoder& operator>> (RectS&);
-		GfxStreamDecoder& operator>> (RectI&);
-		GfxStreamDecoder& operator>> (RectF&);
-		GfxStreamDecoder& operator>> (BorderS&);
-		GfxStreamDecoder& operator>> (BorderI&);
-		GfxStreamDecoder& operator>> (Border&);
-		GfxStreamDecoder& operator>> (Gradient&);
+		inline GfxStreamDecoder& operator>> (CoordI&);
+		inline GfxStreamDecoder& operator>> (CoordF&);
+		inline GfxStreamDecoder& operator>> (SizeI&);
+		inline GfxStreamDecoder& operator>> (SizeF&);
+		inline GfxStreamDecoder& operator>> (RectI&);
+		inline GfxStreamDecoder& operator>> (RectF&);
+		inline GfxStreamDecoder& operator>> (BorderI&);
+		inline GfxStreamDecoder& operator>> (Border&);
+		inline GfxStreamDecoder& operator>> (Gradient&);
 
-		GfxStreamDecoder& operator>> (HiColor&);
-		GfxStreamDecoder& operator>> (Direction&);
-		GfxStreamDecoder& operator>> (BlendMode&);
-		GfxStreamDecoder& operator>> (TintMode&);
-		GfxStreamDecoder& operator>> (Axis&);
-		GfxStreamDecoder& operator>> (PixelFormat&);
-		GfxStreamDecoder& operator>> (SampleMethod&);
-		GfxStreamDecoder& operator>> (GfxFlip&);
-		GfxStreamDecoder& operator>> (XSections&);
-		GfxStreamDecoder& operator>> (YSections&);
-		GfxStreamDecoder& operator>> (CanvasRef&);
+		inline GfxStreamDecoder& operator>> (HiColor&);
+		inline GfxStreamDecoder& operator>> (Direction&);
+		inline GfxStreamDecoder& operator>> (BlendMode&);
+		inline GfxStreamDecoder& operator>> (TintMode&);
+		inline GfxStreamDecoder& operator>> (Axis&);
+		inline GfxStreamDecoder& operator>> (PixelFormat&);
+		inline GfxStreamDecoder& operator>> (SampleMethod&);
+		inline GfxStreamDecoder& operator>> (GfxFlip&);
+		inline GfxStreamDecoder& operator>> (XSections&);
+		inline GfxStreamDecoder& operator>> (YSections&);
+		inline GfxStreamDecoder& operator>> (CanvasRef&);
+		
+		inline GfxStreamDecoder& operator>> (const GfxStream::DataChunk&);
 
-		GfxStreamDecoder& operator>> (const GfxStream::DataChunk&);
-
-		GfxStreamDecoder& operator>> (int[2][2]);
-		GfxStreamDecoder& operator>> (float[2][2]);
+		inline GfxStreamDecoder& operator>> (int[2][2]);
+		inline GfxStreamDecoder& operator>> (float[2][2]);
 
 
 	protected:
@@ -123,10 +119,244 @@ namespace wg
 		inline void		_pullBytes(int nBytes, char* pBytes);
 		inline void		_skipBytes(int nBytes);
 
+		int				m_spxFormat;
+
+		typedef	const uint8_t* (*SpxOp_p)(const uint8_t* pStream, spx& output);
+		typedef	const uint8_t*(*CoordOp_p)(const uint8_t* pStream, CoordI& output);
+		typedef	const uint8_t*(*SizeOp_p)(const uint8_t* pStream, SizeI& output);
+		typedef	const uint8_t*(*RectOp_p)(const uint8_t* pStream, RectI& output);
+
+		static const SpxOp_p	s_spxOps[4];
+		static const CoordOp_p	s_coordOps[4];
+		static const SizeOp_p	s_sizeOps[4];
+		static const RectOp_p	s_rectOps[4];
+
 		const uint8_t* m_pDataBegin = nullptr;
 		const uint8_t* m_pDataEnd = nullptr;
 		const uint8_t* m_pDataRead = nullptr;
 	};
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (GfxStream::Header& header)
+	{
+		if (_hasChunk())
+		{
+			header.type = (GfxChunkId)_pullChar();
+			uint8_t sizeEtc = _pullChar();
+			header.spxFormat = sizeEtc >> 5;
+			sizeEtc &= 0x1F;
+			if (sizeEtc <= 30)
+				header.size = sizeEtc;
+			else
+				header.size = (uint16_t)_pullShort();
+		}
+		else
+		{
+			header.type = GfxChunkId::OutOfData;
+			header.spxFormat = 0;
+			header.size = 0;
+		}
+
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (uint8_t& i)
+	{
+		i = _pullChar();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (int16_t& i)
+	{
+		i = _pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (uint16_t& i)
+	{
+		i = _pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (int& i)
+	{
+		i = _pullInt();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (float& f)
+	{
+		f = _pullFloat();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (bool& b)
+	{
+		int16_t myBool = _pullShort();
+		b = (bool)myBool;
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordI& coord)
+	{
+		m_pDataRead = s_coordOps[m_spxFormat](m_pDataRead, coord);
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordF& coord)
+	{
+		coord.x = _pullFloat();
+		coord.y = _pullFloat();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (SizeI& sz)
+	{
+		m_pDataRead = s_sizeOps[m_spxFormat](m_pDataRead, sz);
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (SizeF& sz)
+	{
+		sz.w = _pullFloat();
+		sz.h = _pullFloat();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (RectI& rect)
+	{
+		m_pDataRead = s_rectOps[m_spxFormat](m_pDataRead, rect);
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (RectF& rect)
+	{
+		rect.x = _pullFloat();
+		rect.y = _pullFloat();
+		rect.w = _pullFloat();
+		rect.h = _pullFloat();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (BorderI& border)
+	{
+		border.top = _pullShort();
+		border.right = _pullShort();
+		border.bottom = _pullShort();
+		border.left = _pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (Border& border)
+	{
+		border.top = _pullFloat();
+		border.right = _pullFloat();
+		border.bottom = _pullFloat();
+		border.left = _pullFloat();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (Gradient& gradient)
+	{
+		*this >> gradient.topLeft;
+		*this >> gradient.topRight;
+		*this >> gradient.bottomRight;
+		*this >> gradient.bottomLeft;
+		*this >> gradient.isValid;
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (HiColor& color)
+	{
+		color.b = _pullShort();
+		color.g = _pullShort();
+		color.r = _pullShort();
+		color.a = _pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (Direction& dir)
+	{
+		dir = (Direction)_pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (BlendMode& blendMode)
+	{
+		blendMode = (BlendMode)_pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (TintMode& tintMode)
+	{
+		tintMode = (TintMode)_pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (Axis& o)
+	{
+		o = (Axis)_pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (PixelFormat& t)
+	{
+		t = (PixelFormat)_pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (SampleMethod& m)
+	{
+		m = (SampleMethod)_pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (GfxFlip& f)
+	{
+		f = (GfxFlip)_pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (XSections& x)
+	{
+		x = (XSections)_pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (YSections& y)
+	{
+		y = (YSections)_pullShort();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (CanvasRef& r)
+	{
+		r = (CanvasRef)_pullChar();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (const GfxStream::DataChunk& data)
+	{
+		_pullBytes(data.bytes, (char*)data.pBuffer);
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (int mtx[2][2])
+	{
+		mtx[0][0] = _pullChar();
+		mtx[0][1] = _pullChar();
+		mtx[1][0] = _pullChar();
+		mtx[1][1] = _pullChar();
+		return *this;
+	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (float mtx[2][2])
+	{
+		mtx[0][0] = _pullFloat();
+		mtx[0][1] = _pullFloat();
+		mtx[1][0] = _pullFloat();
+		mtx[1][1] = _pullFloat();
+		return *this;
+	}
 
 
 	//____ chunkSize() ______________________________________________________

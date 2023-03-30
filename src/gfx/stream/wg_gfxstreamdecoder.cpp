@@ -28,10 +28,157 @@ namespace wg
 {
 	const TypeInfo GfxStreamDecoder::TYPEINFO = { "GfxStreamDecoder", &Object::TYPEINFO };
 
+
+	const uint8_t* spxOp0(const uint8_t* pDst, spx& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output = p[0] + (int(p[1] << 16));
+		return pDst + 4;
+	}
+
+	const uint8_t* spxOp1(const uint8_t* pDst, spx& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output = p[0];
+		return pDst + 2;
+	}
+
+	const uint8_t* spxOp2(const uint8_t* pDst, spx& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output = int(p[0]) << 6;
+		return pDst + 2;
+	}
+
+	const uint8_t* spxOp3(const uint8_t* p, spx& output)
+	{
+		output = int(p[0]) << 6;
+		return p + 1;
+	}
+
+	const uint8_t* coordOp0(const uint8_t* pDst, CoordI& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output.x = p[0] + (int(p[1] << 16));
+		output.y = p[2] + (int(p[3] << 16));
+		return pDst + 8;
+	}
+
+	const uint8_t* coordOp1(const uint8_t* pDst, CoordI& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output.x = p[0];
+		output.y = p[1];
+		return pDst + 4;
+	}
+
+	const uint8_t* coordOp2(const uint8_t* pDst, CoordI& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output.x = int(p[0]) << 6;
+		output.y = int(p[1]) << 6;
+		return pDst + 4;
+	}
+
+	const uint8_t* coordOp3(const uint8_t* p, CoordI& output)
+	{
+		output.x = int(p[0]) << 6;
+		output.y = int(p[1]) << 6;
+		return p + 2;
+	}
+
+	const uint8_t* sizeOp0(const uint8_t* pDst, SizeI& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output.w = p[0] + (int(p[1] << 16));
+		output.h = p[2] + (int(p[3] << 16));
+		return pDst + 8;
+	}
+
+	const uint8_t* sizeOp1(const uint8_t* pDst, SizeI& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output.w = p[0];
+		output.h = p[1];
+		return pDst + 4;
+	}
+
+	const uint8_t* sizeOp2(const uint8_t* pDst, SizeI& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output.w = int(p[0]) << 6;
+		output.h = int(p[1]) << 6;
+		return pDst + 4;
+	}
+
+	const uint8_t* sizeOp3(const uint8_t* p, SizeI& output)
+	{
+		output.w = int(p[0]) << 6;
+		output.h = int(p[1]) << 6;
+		return p + 2;
+	}
+
+	const uint8_t* rectOp0(const uint8_t* pDst, RectI& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output.x = p[0] + (int(p[1] << 16));
+		output.y = p[2] + (int(p[3] << 16));
+		output.w = p[4] + (int(p[5] << 16));
+		output.h = p[6] + (int(p[7] << 16));
+		return pDst + 16;
+	}
+
+	const uint8_t* rectOp1(const uint8_t* pDst, RectI& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output.x = p[0];
+		output.y = p[1];
+		output.w = p[2];
+		output.h = p[3];
+		return pDst + 8;
+	}
+
+	const uint8_t* rectOp2(const uint8_t* pDst, RectI& output)
+	{
+		uint16_t* p = (uint16_t*)pDst;
+
+		output.x = int(p[0]) << 6;
+		output.y = int(p[1]) << 6;
+		output.w = int(p[2]) << 6;
+		output.h = int(p[3]) << 6;
+		return pDst + 8;
+	}
+
+	const uint8_t* rectOp3(const uint8_t* p, RectI& output)
+	{
+		output.x = int(p[0]) << 6;
+		output.y = int(p[1]) << 6;
+		output.w = int(p[2]) << 6;
+		output.h = int(p[3]) << 6;
+		return p + 4;
+	}
+
+	const GfxStreamDecoder::SpxOp_p			GfxStreamDecoder::s_spxOps[4] = { spxOp0, spxOp1, spxOp2, spxOp3 };
+	const GfxStreamDecoder::CoordOp_p		GfxStreamDecoder::s_coordOps[4] = { coordOp0, coordOp1, coordOp2, coordOp3 };
+	const GfxStreamDecoder::SizeOp_p		GfxStreamDecoder::s_sizeOps[4] = { sizeOp0, sizeOp1, sizeOp2, sizeOp3 };
+	const GfxStreamDecoder::RectOp_p		GfxStreamDecoder::s_rectOps[4]	= { rectOp0, rectOp1, rectOp2, rectOp3 };
+
 	//____ constructor ________________________________________________________
 
 	GfxStreamDecoder::GfxStreamDecoder()
 	{
+		m_spxFormat = 0;
 	}
 
 	//____ destructor ________________________________________________________
@@ -81,275 +228,12 @@ namespace wg
 		_skipBytes(bytes);
 	}
 
-	//____ skip() _____________________________________________________________
+	//____ align() _____________________________________________________________
 
 	void GfxStreamDecoder::align()
 	{
 		if( ( std::intptr_t(m_pDataRead) & 0x1) == 1 )
 			_skipBytes(1);
 	}
-
-
-	//____ operator>> _________________________________________________________
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (GfxStream::Header& header)
-	{
-		if (_hasChunk())
-		{
-			header.type = (GfxChunkId)_pullChar();
-			uint8_t sizeEtc = _pullChar();
-			header.spxFormat = sizeEtc >> 5;
-			sizeEtc &= 0x1F;
-			if (sizeEtc <= 30)
-				header.size = sizeEtc;
-			else
-				header.size = (uint16_t)_pullShort();
-		}
-		else
-		{
-			header.type = GfxChunkId::OutOfData;
-			header.spxFormat = 0;
-			header.size = 0;
-		}
-
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (uint8_t& i)
-	{
-		i = _pullChar();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (int16_t& i)
-	{
-		i = _pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (uint16_t& i)
-	{
-		i = _pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (int& i)
-	{
-		i = _pullInt();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (float& f)
-	{
-		f = _pullFloat();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (bool& b)
-	{
-		int16_t myBool = _pullShort();
-		b = (bool)myBool;
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordS& coord)
-	{
-		coord.x = _pullShort();
-		coord.y = _pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordI& coord)
-	{
-		coord.x = _pullInt();
-		coord.y = _pullInt();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordF& coord)
-	{
-		coord.x = _pullFloat();
-		coord.y = _pullFloat();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (SizeS& sz)
-	{
-		sz.w = _pullShort();
-		sz.h = _pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (SizeI& sz)
-	{
-		sz.w = _pullInt();
-		sz.h = _pullInt();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (SizeF& sz)
-	{
-		sz.w = _pullFloat();
-		sz.h = _pullFloat();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (RectS& rect)
-	{
-		rect.x = _pullShort();
-		rect.y = _pullShort();
-		rect.w = _pullShort();
-		rect.h = _pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (RectI& rect)
-	{
-		rect.x = _pullInt();
-		rect.y = _pullInt();
-		rect.w = _pullInt();
-		rect.h = _pullInt();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (RectF& rect)
-	{
-		rect.x = _pullFloat();
-		rect.y = _pullFloat();
-		rect.w = _pullFloat();
-		rect.h = _pullFloat();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (BorderS& border)
-	{
-		border.top = _pullShort();
-		border.right = _pullShort();
-		border.bottom = _pullShort();
-		border.left = _pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (BorderI& border)
-	{
-		border.top = _pullShort();
-		border.right = _pullShort();
-		border.bottom = _pullShort();
-		border.left = _pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (Border& border)
-	{
-		border.top = _pullFloat();
-		border.right = _pullFloat();
-		border.bottom = _pullFloat();
-		border.left = _pullFloat();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (Gradient& gradient)
-	{
-		* this >> gradient.topLeft;
-		* this >> gradient.topRight;
-		* this >> gradient.bottomRight;
-		* this >> gradient.bottomLeft;
-		* this >> gradient.isValid;
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (HiColor& color)
-	{
-		color.b = _pullShort();
-		color.g = _pullShort();
-		color.r = _pullShort();
-		color.a = _pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (Direction& dir)
-	{
-		dir = (Direction)_pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (BlendMode& blendMode)
-	{
-		blendMode = (BlendMode)_pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (TintMode& tintMode)
-	{
-		tintMode = (TintMode)_pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (Axis& o)
-	{
-		o = (Axis)_pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (PixelFormat& t)
-	{
-		t = (PixelFormat)_pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (SampleMethod& m)
-	{
-		m = (SampleMethod)_pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (GfxFlip& f)
-	{
-		f = (GfxFlip)_pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (XSections& x)
-	{
-		x = (XSections)_pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (YSections& y)
-	{
-		y = (YSections)_pullShort();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (CanvasRef& r)
-	{
-		r = (CanvasRef)_pullChar();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (const GfxStream::DataChunk& data)
-	{
-		_pullBytes(data.bytes, (char*)data.pBuffer);
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (int mtx[2][2])
-	{
-		mtx[0][0] = _pullChar();
-		mtx[0][1] = _pullChar();
-		mtx[1][0] = _pullChar();
-		mtx[1][1] = _pullChar();
-		return *this;
-	}
-
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (float mtx[2][2])
-	{
-		mtx[0][0] = _pullFloat();
-		mtx[0][1] = _pullFloat();
-		mtx[1][0] = _pullFloat();
-		mtx[1][1] = _pullFloat();
-		return *this;
-	}
-
 
 }
