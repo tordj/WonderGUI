@@ -72,10 +72,6 @@ set( SOURCES
 	c-api/wg_c_surfacewriter.h
 	c-api/wondergfx_c.h
 
-	stream/wg_compressinggfxstreamencoder.cpp
-	stream/wg_compressinggfxstreamencoder.h	
-	stream/wg_fastgfxstreamencoder.cpp
-	stream/wg_fastgfxstreamencoder.h
 	stream/wg_gfxstream.h
 	stream/wg_gfxstreambuffer.cpp
 	stream/wg_gfxstreambuffer.h
@@ -85,6 +81,8 @@ set( SOURCES
 	stream/wg_gfxstreamdevice.h
 	stream/wg_gfxstreamencoder.cpp
 	stream/wg_gfxstreamencoder.h
+	stream/wg_gfxstreamfastencoder.cpp
+	stream/wg_gfxstreamfastencoder.h
 	stream/wg_gfxstreamlogger.cpp
 	stream/wg_gfxstreamlogger.h
 	stream/wg_gfxstreamloopwrapper.cpp
@@ -103,6 +101,8 @@ set( SOURCES
 	stream/wg_gfxstreamsurface.h
 	stream/wg_gfxstreamsurfacefactory.cpp
 	stream/wg_gfxstreamsurfacefactory.h
+	stream/wg_gfxstreamtrimencoder.cpp
+	stream/wg_gfxstreamtrimencoder.h	
 	stream/wg_gfxstreamwrapper.cpp
 	stream/wg_gfxstreamwrapper.h
 	stream/wg_gfxstreamwriter.cpp

@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_COMPRESSINGGFXSTREAMENCODER_DOT_H
-#define	WG_COMPRESSINGGFXSTREAMENCODER_DOT_H
+#ifndef	WG_GFXSTREAMTRIMENCODER_DOT_H
+#define	WG_GFXSTREAMTRIMENCODER_DOT_H
 #pragma once
 
 #include <cstring>
@@ -37,19 +37,19 @@
 
 namespace wg
 {
-	class CompressingGfxStreamEncoder;
-	typedef	StrongPtr<CompressingGfxStreamEncoder>	CompressingGfxStreamEncoder_p;
-	typedef	WeakPtr<CompressingGfxStreamEncoder>	CompressingGfxStreamEncoder_wp;
+	class GfxStreamTrimEncoder;
+	typedef	StrongPtr<GfxStreamTrimEncoder>	GfxStreamTrimEncoder_p;
+	typedef	WeakPtr<GfxStreamTrimEncoder>	GfxStreamTrimEncoder_wp;
 
-	//____ CompressingGfxStreamEncoder ___________________________________________________
+	//____ GfxStreamTrimEncoder ___________________________________________________
 
-	class CompressingGfxStreamEncoder : public GfxStreamEncoder
+	class GfxStreamTrimEncoder : public GfxStreamEncoder
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static CompressingGfxStreamEncoder_p	create( const GfxStreamSink_p& pStream, int bufferBytes = GfxStream::c_maxBlockSize*2 ) { return CompressingGfxStreamEncoder_p(new CompressingGfxStreamEncoder(pStream, bufferBytes)); }
+		static GfxStreamTrimEncoder_p	create( const GfxStreamSink_p& pStream, int bufferBytes = GfxStream::c_maxBlockSize*2 ) { return GfxStreamTrimEncoder_p(new GfxStreamTrimEncoder(pStream, bufferBytes)); }
 
 		//.____ Identification __________________________________________
 
@@ -65,8 +65,8 @@ namespace wg
 		GfxStreamEncoder& operator<< (GfxStream::Header) override;
 
 	protected:
-		CompressingGfxStreamEncoder( const GfxStreamSink_p& pStream, int bufferBytes );
-		~CompressingGfxStreamEncoder();
+		GfxStreamTrimEncoder( const GfxStreamSink_p& pStream, int bufferBytes );
+		~GfxStreamTrimEncoder();
 
 		struct ChunkInfo
 		{
@@ -103,7 +103,7 @@ namespace wg
 		};
 		
 		ClipListScopeResult	_processClipListScope( ChunkInfo * pNextChunk, RectSPX * pClipRects, int nClipRects );
-		bool 				_processSetClipList( ChunkInfo * pSetClipListChunk, RectSPX * pClipRects, int nClipRects );
+		bool 				_processSetClipList( ChunkInfo * pSetClipListChunk, RectSPX * pActiveRects, int nActiveRects, RectSPX * pMyRects, int nMyRects );
 
 		
 		int						m_activeScope;

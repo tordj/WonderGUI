@@ -20,17 +20,17 @@
 
 =========================================================================*/
 
-#include <wg_fastgfxstreamencoder.h>
+#include <wg_gfxstreamfastencoder.h>
 
 #include <algorithm>
 
 namespace wg
 {
-	const TypeInfo FastGfxStreamEncoder::TYPEINFO = { "FastGfxStreamEncoder", &Object::TYPEINFO };
+	const TypeInfo GfxStreamFastEncoder::TYPEINFO = { "GfxStreamFastEncoder", &Object::TYPEINFO };
 
 	//____ constructor ________________________________________________________
 
-	FastGfxStreamEncoder::FastGfxStreamEncoder(const GfxStreamSink_p& pStream, int bufferBytes) : GfxStreamEncoder(pStream)
+	GfxStreamFastEncoder::GfxStreamFastEncoder(const GfxStreamSink_p& pStream, int bufferBytes) : GfxStreamEncoder(pStream)
 	{
 		m_pBuffer = new uint8_t[bufferBytes];
 		m_capacity = bufferBytes;
@@ -39,7 +39,7 @@ namespace wg
 
 	//____ destructor ________________________________________________________
 
-	FastGfxStreamEncoder::~FastGfxStreamEncoder()
+	GfxStreamFastEncoder::~GfxStreamFastEncoder()
 	{
 		delete[] m_pBuffer;
 	}
@@ -47,14 +47,14 @@ namespace wg
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& FastGfxStreamEncoder::typeInfo(void) const
+	const TypeInfo& GfxStreamFastEncoder::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ flush() ____________________________________________________________
 
-	void FastGfxStreamEncoder::flush()
+	void GfxStreamFastEncoder::flush()
 	{
 		if (m_pStream)
 			m_pStream->processChunks( m_pBuffer, m_pWriteData);
@@ -64,7 +64,7 @@ namespace wg
 
 	//____ operator<< _________________________________________________________
 
-	GfxStreamEncoder& FastGfxStreamEncoder::operator<< (GfxStream::Header header)
+	GfxStreamEncoder& GfxStreamFastEncoder::operator<< (GfxStream::Header header)
 	{
 		if (header.size <= 30)
 		{

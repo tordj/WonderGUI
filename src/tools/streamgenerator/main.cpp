@@ -274,8 +274,8 @@ int main ( int argc, char** argv )
 
 	auto pFirstSplitter = GfxStreamSplitter::create( { GfxStreamSink_p( pStreamBuffer, pStreamBuffer->input), GfxStreamSink_p( pStreamWriter, pStreamWriter->input) });
 
-//	auto pEncoder = FastGfxStreamEncoder::create(GfxStreamSink_p( pFirstSplitter, pFirstSplitter->input) );
-	auto pEncoder = CompressingGfxStreamEncoder::create(GfxStreamSink_p( pFirstSplitter, pFirstSplitter->input) );
+//	auto pEncoder = GfxStreamFastEncoder::create(GfxStreamSink_p( pFirstSplitter, pFirstSplitter->input) );
+	auto pEncoder = GfxStreamTrimEncoder::create(GfxStreamSink_p( pFirstSplitter, pFirstSplitter->input) );
 
 	// Logger
 

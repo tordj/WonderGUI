@@ -20,18 +20,18 @@
 
 =========================================================================*/
 
-#include <wg_compressinggfxstreamencoder.h>
+#include <wg_gfxstreamtrimencoder.h>
 
 #include <algorithm>
 #include <assert.h>
 
 namespace wg
 {
-	const TypeInfo CompressingGfxStreamEncoder::TYPEINFO = { "CompressingGfxStreamEncoder", &Object::TYPEINFO };
+	const TypeInfo GfxStreamTrimEncoder::TYPEINFO = { "GfxStreamTrimEncoder", &Object::TYPEINFO };
 
 	//____ constructor ________________________________________________________
 
-	CompressingGfxStreamEncoder::CompressingGfxStreamEncoder(const GfxStreamSink_p& pStream, int bufferBytes)
+	GfxStreamTrimEncoder::GfxStreamTrimEncoder(const GfxStreamSink_p& pStream, int bufferBytes)
 	: GfxStreamEncoder(pStream)
 	{
 		m_activeScope = -1;
@@ -40,21 +40,21 @@ namespace wg
 
 	//____ destructor ________________________________________________________
 
-	CompressingGfxStreamEncoder::~CompressingGfxStreamEncoder()
+	GfxStreamTrimEncoder::~GfxStreamTrimEncoder()
 	{
 	}
 
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CompressingGfxStreamEncoder::typeInfo(void) const
+	const TypeInfo& GfxStreamTrimEncoder::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ flush() ____________________________________________________________
 
-	void CompressingGfxStreamEncoder::flush()
+	void GfxStreamTrimEncoder::flush()
 	{
 		if (m_pStream)
 			m_pStream->processChunks( m_outputBuffer.data(), m_outputBuffer.data() + m_outputBuffer.size() );
@@ -64,7 +64,7 @@ namespace wg
 
 	//____ operator<< _________________________________________________________
 
-	GfxStreamEncoder& CompressingGfxStreamEncoder::operator<< (GfxStream::Header header)
+	GfxStreamEncoder& GfxStreamTrimEncoder::operator<< (GfxStream::Header header)
 	{
 		switch( header.type )
 		{
@@ -166,7 +166,7 @@ namespace wg
 
 	//____ _processScopes() ______________________________________________________
 
-	void CompressingGfxStreamEncoder::_processScopes()
+	void GfxStreamTrimEncoder::_processScopes()
 	{
 		if( m_scopes.size() < 2 )
 			return;
@@ -181,7 +181,7 @@ namespace wg
 
 	//____ _writeScopeToOutput() _________________________________________________
 
-	void CompressingGfxStreamEncoder::_writeScopeToOutput( Scope * pScope )
+	void GfxStreamTrimEncoder::_writeScopeToOutput( Scope * pScope )
 	{
 		for( auto& chunk : pScope->chunks )
 		{
@@ -220,7 +220,7 @@ namespace wg
 
 	//____ _optimizeClipLists() ______________________________________________
 
-	void CompressingGfxStreamEncoder::_optimizeClipLists( Scope * pScope )
+	void GfxStreamTrimEncoder::_optimizeClipLists( Scope * pScope )
 	{
 		auto pChunk = pScope->chunks.data();
 		auto pEnd = pChunk + pScope->chunks.size();
@@ -240,11 +240,16 @@ namespace wg
 			switch( pChunk->type )
 			{
 				case GfxChunkId::SetClipList:
-					if( _processSetClipList( pChunk, pActiveRects, nActiveRects) )
+				{
+					int nMyRects = pChunk->dataSize / 16;
+					RectSPX* pMyRects = (RectSPX*)(m_data.data() + pChunk->dataOfs);
+
+					if( _processSetClipList( pChunk, pActiveRects, nActiveRects, pMyRects, nMyRects) )
 					{
 						nActiveRects = pChunk->dataSize / 16;
 						pActiveRects = (RectSPX*) (m_data.data() + pChunk->dataOfs);
 					}
+				}
 					break;
 
 				case GfxChunkId::PushClipList:
@@ -255,9 +260,14 @@ namespace wg
 				}
 					
 				case GfxChunkId::ResetClipList:
-					nActiveRects = nCanvasRects;
-					pActiveRects = pCanvasRects;
+				{
+					if ( _processSetClipList(pChunk, pActiveRects, nActiveRects, pCanvasRects, nCanvasRects) )
+					{
+						nActiveRects = nCanvasRects;
+						pActiveRects = pCanvasRects;
+					}
 					break;
+				}
 					
 				default:
 					break;
@@ -270,7 +280,7 @@ namespace wg
 
 	//____ _processClipListScope() _______________________________________________
 
-	CompressingGfxStreamEncoder::ClipListScopeResult CompressingGfxStreamEncoder::_processClipListScope( ChunkInfo * pScope, RectSPX * pClipRects, int nClipRects )
+	GfxStreamTrimEncoder::ClipListScopeResult GfxStreamTrimEncoder::_processClipListScope( ChunkInfo * pScope, RectSPX * pClipRects, int nClipRects )
 	{
 		bool bHasSetClipList = false;
 		bool bDoesRendering = false;
@@ -298,7 +308,10 @@ namespace wg
 			{
 				case GfxChunkId::SetClipList:
 				{
-					if( _processSetClipList(pChunk, pActiveRects, nActiveRects) )
+					int nMyRects = pChunk->dataSize / 16;
+					RectSPX* pMyRects = (RectSPX*)(m_data.data() + pChunk->dataOfs);
+
+					if( _processSetClipList(pChunk, pActiveRects, nActiveRects, pMyRects, nMyRects) )
 					{
 						bHasSetClipList = true;
 						nActiveRects = pChunk->dataSize / 16;
@@ -309,8 +322,12 @@ namespace wg
 					
 				case GfxChunkId::ResetClipList:
 				{
-					nActiveRects = nScopeRects;
-					pActiveRects = pScopeRects;
+					if (_processSetClipList(pChunk, pActiveRects, nActiveRects, pScopeRects, nScopeRects))
+					{
+						bHasSetClipList = true;
+						nActiveRects = nScopeRects;
+						pActiveRects = pScopeRects;
+					}
 					break;
 				}
 					
@@ -351,7 +368,7 @@ namespace wg
 
 	//____ _isRenderingChunk() ___________________________________________________
 
-	bool CompressingGfxStreamEncoder::_isRenderingChunk(GfxChunkId chunkType)
+	bool GfxStreamTrimEncoder::_isRenderingChunk(GfxChunkId chunkType)
 	{
 		int chunkId = int(chunkType);
 		
@@ -363,7 +380,7 @@ namespace wg
 
 	//____ _compareClipLists() ___________________________________________________
 
-	bool CompressingGfxStreamEncoder::_compareClipLists(RectSPX * pList1, int sizeList1, RectSPX * pList2, int sizeList2 )
+	bool GfxStreamTrimEncoder::_compareClipLists(RectSPX * pList1, int sizeList1, RectSPX * pList2, int sizeList2 )
 	{
 		if( sizeList1 != sizeList2 )
 			return false;
@@ -377,25 +394,22 @@ namespace wg
 		return true;
 	}
 
-	//____ _processSetClipList() ________________________________________________
+	//____ _processSetClipList() ________________________________________________
 
-	bool CompressingGfxStreamEncoder::_processSetClipList( ChunkInfo * pScope, RectSPX * pClipRects, int nClipRects )
+	bool GfxStreamTrimEncoder::_processSetClipList( ChunkInfo * pScope, RectSPX * pCurrRects, int nCurrRects, RectSPX * pMyRects, int nMyRects)
 	{
-		assert( pScope->type == GfxChunkId::SetClipList );
+		assert( pScope->type == GfxChunkId::SetClipList || pScope->type == GfxChunkId::ResetClipList );
 		
-		int nMyRects = pScope->dataSize / 16;
-		RectSPX* pMyRects = (RectSPX*) (m_data.data() + pScope->dataOfs);
-
 		// Check if identical to current clip-list.
 		
-		if( _compareClipLists( pClipRects, nClipRects, pMyRects, nMyRects ) )
+		if( _compareClipLists( pCurrRects, nCurrRects, pMyRects, nMyRects ) )
 		{
 			pScope->type = GfxChunkId::OutOfData;
 			return false;
 		}
 
-		ChunkInfo * pChunk = pScope;
-		
+		auto pChunk = pScope;
+
 		while( true )
 		{
 			pChunk++;
@@ -409,7 +423,6 @@ namespace wg
 					pScope->type = GfxChunkId::OutOfData;
 					return false;							// We ran into end of update or change of cliplist before rendering anything.
 				}
-
 
 				case GfxChunkId::PushClipList:
 				{

@@ -386,43 +386,43 @@ namespace wg
 
 			case GfxChunkId::StretchBlit:
 			{
-				CoordSPX	dest;
+				RectSPX		dest;
 
 				*m_pDecoder >> dest;
 
-				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
+				_printRect("    dest       ", dest);
 				break;
 			}
 
 			case GfxChunkId::StretchBlitRect:
 			{
-				CoordSPX	dest;
+				RectSPX		dest;
 				RectSPX		source;
 
 				*m_pDecoder >> dest;
 				*m_pDecoder >> source;
 
-				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
+				_printRect( "    dest       ", dest);
 				_printRect( "    source     ", source );
 				break;
 			}
 
 			case GfxChunkId::StretchFlipBlit:
 			{
-				CoordSPX	dest;
+				RectSPX		dest;
 				GfxFlip		flip;
 
 				*m_pDecoder >> dest;
 				*m_pDecoder >> flip;
 
-				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
+				_printRect("    dest       ", dest);
 				m_charStream << "    flip        = " << toString(flip) << std::endl;
 				break;
 			}
 
 			case GfxChunkId::StretchFlipBlitRect:
 			{
-				CoordSPX	dest;
+				RectSPX		dest;
 				RectSPX		source;
 				GfxFlip		flip;
 
@@ -430,7 +430,7 @@ namespace wg
 				*m_pDecoder >> source;
 				*m_pDecoder >> flip;
 
-				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
+				_printRect("    dest       ", dest);
 				_printRect(     "    source     ", source );
 				m_charStream << "    flip        = " << toString(flip) << std::endl;
 				break;
@@ -483,7 +483,7 @@ namespace wg
 				*m_pDecoder >> srcCenter;
 				*m_pDecoder >> destCenter;
 
-				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
+				_printRect("    dest       ", dest);
 				m_charStream << "    rotation    = " << rotationDegrees << " degrees" << std::endl;
 				m_charStream << "    scale       = " << scale << std::endl;
 				m_charStream << "    srcCenter   = " << srcCenter.x << ", " << srcCenter.y << std::endl;

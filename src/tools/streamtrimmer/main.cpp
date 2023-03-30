@@ -60,7 +60,7 @@ int main ( int argc, char** argv )
 
 	auto pTrimmedSplitter = GfxStreamSplitter::create( {{pTrimmedLogger, pTrimmedLogger->input}, {pTrimmedWriter, pTrimmedWriter->input}});
 	
-	auto pTrimEncoder = FastGfxStreamEncoder::create( {pTrimmedSplitter, pTrimmedSplitter->input} );
+	auto pTrimEncoder = GfxStreamTrimEncoder::create( {pTrimmedSplitter, pTrimmedSplitter->input} );
 	
 	auto pFactory = GfxStreamSurfaceFactory::create(pTrimEncoder);
 	auto pDevice = GfxStreamDevice::create(pTrimEncoder);
@@ -70,7 +70,6 @@ int main ( int argc, char** argv )
 	
 	auto pStraightLogger = GfxStreamLogger::create( log );
 
-//	auto pInputSplitter = GfxStreamSplitter::create( {{pPlayer, pPlayer->input}} );
 	auto pInputSplitter = GfxStreamSplitter::create( {{pStraightLogger, pStraightLogger->input}, {pPlayer, pPlayer->input}} );
 	
 	auto pStreamPump = GfxStreamPump::create( {pStreamReader, pStreamReader->output}, {pInputSplitter, pInputSplitter->input} );

@@ -5,9 +5,7 @@
 #include <wg_softgfxdevice.h>
 #include <wg_softkernels_default.h>
 
-#include <wg_gfxstreamdevice.h>
-#include <wg_gfxstreamsurface.h>
-#include <wg_gfxstreamplayer.h>
+#include <wondergfxstream.h>
 //#include <wg_plugingfxdevice.h>
 
 using namespace wg;
@@ -112,7 +110,7 @@ public:
 		m_pOutputDevice->defineCanvas(CanvasRef::Default, m_pOutputCanvas);
 		m_pStreamPlayer = GfxStreamPlayer::create(m_pOutputDevice, m_pOutputDevice->surfaceFactory());
 
-		m_pStreamEncoder = GfxStreamEncoder::create( ComponentPtr( m_pStreamPlayer, m_pStreamPlayer->input) );
+		m_pStreamEncoder = GfxStreamFastEncoder::create( ComponentPtr( m_pStreamPlayer, m_pStreamPlayer->input) );
 
 		m_pStreamDevice = GfxStreamDevice::create(m_pStreamEncoder);
 		m_pStreamCanvas = GfxStreamSurface::create(m_pStreamEncoder, { .canvas = true, .format = canvasFormat, .size = canvasSize } );

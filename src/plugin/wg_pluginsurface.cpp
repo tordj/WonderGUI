@@ -56,7 +56,7 @@ namespace wg
 		m_bMipmapped		= PluginCalls::surface->surfaceIsMipmapped(object);
 		m_bTiling			= PluginCalls::surface->surfaceIsTiling(object);
 		m_bCanvas			= PluginCalls::surface->surfaceCanBeCanvas(object);
-		m_pPalette				= (Color8*)PluginCalls::surface->surfacePalette(object);
+		m_pPalette			= (Color8*)PluginCalls::surface->surfacePalette(object);
 		m_pBaggage			= reinterpret_cast<Object*>(PluginCalls::surface->getSurfaceBaggage(object));
 	}
 

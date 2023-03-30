@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_FASTGFXSTREAMENCODER_DOT_H
-#define	WG_FASTGFXSTREAMENCODER_DOT_H
+#ifndef	WG_GFXSTREAMFASTENCODER_DOT_H
+#define	WG_GFXSTREAMFASTENCODER_DOT_H
 #pragma once
 
 #include <cstring>
@@ -36,19 +36,19 @@
 
 namespace wg
 {
-	class FastGfxStreamEncoder;
-	typedef	StrongPtr<FastGfxStreamEncoder>	FastGfxStreamEncoder_p;
-	typedef	WeakPtr<FastGfxStreamEncoder>	FastGfxStreamEncoder_wp;
+	class GfxStreamFastEncoder;
+	typedef	StrongPtr<GfxStreamFastEncoder>	GfxStreamFastEncoder_p;
+	typedef	WeakPtr<GfxStreamFastEncoder>	GfxStreamFastEncoder_wp;
 
-	//____ FastGfxStreamEncoder ___________________________________________________
+	//____ GfxStreamFastEncoder ___________________________________________________
 
-	class FastGfxStreamEncoder : public GfxStreamEncoder
+	class GfxStreamFastEncoder : public GfxStreamEncoder
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static FastGfxStreamEncoder_p	create( const GfxStreamSink_p& pStream, int bufferBytes = GfxStream::c_maxBlockSize*2 ) { return FastGfxStreamEncoder_p(new FastGfxStreamEncoder(pStream, bufferBytes)); }
+		static GfxStreamFastEncoder_p	create( const GfxStreamSink_p& pStream, int bufferBytes = GfxStream::c_maxBlockSize*2 ) { return GfxStreamFastEncoder_p(new GfxStreamFastEncoder(pStream, bufferBytes)); }
 
 		//.____ Identification __________________________________________
 
@@ -64,8 +64,8 @@ namespace wg
 		GfxStreamEncoder& operator<< (GfxStream::Header) override;
 
 	protected:
-		FastGfxStreamEncoder( const GfxStreamSink_p& pStream, int bufferBytes );
-		~FastGfxStreamEncoder();
+		GfxStreamFastEncoder( const GfxStreamSink_p& pStream, int bufferBytes );
+		~GfxStreamFastEncoder();
 
 		uint8_t*	m_pBuffer = nullptr;
 		int			m_capacity = 0;
@@ -75,4 +75,4 @@ namespace wg
 
 
 
-#endif // WG_GFXSTREAMENCODER_DOT_H
+#endif // WG_GFXSTREAMFASTENCODER_DOT_H
