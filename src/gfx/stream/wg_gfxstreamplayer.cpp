@@ -1007,6 +1007,7 @@ namespace wg
 	RectI * GfxStreamPlayer::_pushClipListCanvas(int nRects)
 	{
 		m_clipListInfoStack.push_back(m_clipList);
+		m_clipList.bCanvas = false;
 		RectI * pRects = _setClipList(nRects, true);
 		m_clipList.bCanvas = true;
 		return pRects;
