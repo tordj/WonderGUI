@@ -96,17 +96,34 @@ namespace wg
 		if (header.type >= GfxChunkId_min && header.type <= GfxChunkId_max)
 		{			
 			m_charStream << toString(header.type);
-/*
-			if (*(char*)&header.flags != 0)
+
+			switch( header.spxFormat )
 			{
-				m_charStream << " (";
-				if (header.flags.supix)
-					m_charStream << " supix";
-				if (header.flags.packed)
-					m_charStream << " packed";
-				m_charStream << " )";
+				case 0:
+					break;
+				case 1:
+					m_charStream << " (spx16_dec)";
+					break;
+				case 2:
+					m_charStream << " (spx16_int)";
+					break;
+				case 3:
+					m_charStream << " (spx8_int)";
+					break;
+				case 4:
+					m_charStream << " (spx16_dec deltas)";
+					break;
+				case 5:
+					m_charStream << " (spx16_int deltas)";
+					break;
+				case 6:
+					m_charStream << " (spx8_dec deltas)";
+					break;
+				case 7:
+					m_charStream << " (spx8_int deltas)";
+					break;
 			}
-*/
+			
 			m_charStream << std::endl;
 		}
 
@@ -298,6 +315,7 @@ namespace wg
 				*m_pDecoder >> end;
 				*m_pDecoder >> color;
 				*m_pDecoder >> thickness;
+				m_pDecoder->align();
 
 				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
 				m_charStream << "    end         = " << end.x << ", " << end.y << std::endl;
@@ -309,6 +327,29 @@ namespace wg
 
 
 			case GfxChunkId::DrawLineStraight:
+			{
+				CoordSPX	begin;
+				Direction	dir;
+				GfxStream::SPX	length;
+				GfxStream::SPX	thickness;
+				HiColor		color;
+
+				*m_pDecoder >> begin;
+				*m_pDecoder >> dir;
+				*m_pDecoder >> length;
+				*m_pDecoder >> thickness;
+				*m_pDecoder >> color;
+
+				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    direction   = " << toString(dir) << std::endl;
+				m_charStream << "    length      = " << length << std::endl;
+
+				_printColor( "    color      ", color );
+				m_charStream << "    thickness   = " << thickness << std::endl;
+				break;
+			}
+
+			case GfxChunkId::DrawLineStraightDeprecated:
 			{
 				CoordSPX	begin;
 				Direction	dir;

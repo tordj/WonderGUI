@@ -346,7 +346,7 @@ namespace wg
 
 				const uint8_t* pData = pChunk + GfxStream::headerSize(pChunk);
 
-				int nRects = pData[3];
+				int nRects = (GfxStream::dataSize(pChunk) - 4) / 16;
 				uint16_t * pRects = (uint16_t*)(pData + 4);
 
 				// Check if this frame completely redraws the canvas.

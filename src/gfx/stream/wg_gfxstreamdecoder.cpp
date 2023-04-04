@@ -33,7 +33,7 @@ namespace wg
 	{
 		uint16_t* p = (uint16_t*)pDst;
 
-		output = p[0] + (int(p[1] << 16));
+		output = p[0] + (int(p[1]) << 16);
 		return pDst + 4;
 	}
 
@@ -47,7 +47,7 @@ namespace wg
 
 	const uint8_t* spxOp2(const uint8_t* pDst, spx& output)
 	{
-		uint16_t* p = (uint16_t*)pDst;
+		int16_t* p = (int16_t*)pDst;
 
 		output = int(p[0]) << 6;
 		return pDst + 2;
@@ -63,8 +63,8 @@ namespace wg
 	{
 		uint16_t* p = (uint16_t*)pDst;
 
-		output.x = p[0] + (int(p[1] << 16));
-		output.y = p[2] + (int(p[3] << 16));
+		output.x = p[0] + (int(p[1]) << 16);
+		output.y = p[2] + (int(p[3]) << 16);
 		return pDst + 8;
 	}
 
@@ -79,7 +79,7 @@ namespace wg
 
 	const uint8_t* coordOp2(const uint8_t* pDst, CoordI& output)
 	{
-		uint16_t* p = (uint16_t*)pDst;
+		int16_t* p = (int16_t*)pDst;
 
 		output.x = int(p[0]) << 6;
 		output.y = int(p[1]) << 6;
@@ -97,8 +97,8 @@ namespace wg
 	{
 		uint16_t* p = (uint16_t*)pDst;
 
-		output.w = p[0] + (int(p[1] << 16));
-		output.h = p[2] + (int(p[3] << 16));
+		output.w = p[0] + (int(p[1]) << 16);
+		output.h = p[2] + (int(p[3]) << 16);
 		return pDst + 8;
 	}
 
@@ -113,7 +113,7 @@ namespace wg
 
 	const uint8_t* sizeOp2(const uint8_t* pDst, SizeI& output)
 	{
-		uint16_t* p = (uint16_t*)pDst;
+		int16_t* p = (int16_t*)pDst;
 
 		output.w = int(p[0]) << 6;
 		output.h = int(p[1]) << 6;
@@ -131,10 +131,10 @@ namespace wg
 	{
 		uint16_t* p = (uint16_t*)pDst;
 
-		output.x = p[0] + (int(p[1] << 16));
-		output.y = p[2] + (int(p[3] << 16));
-		output.w = p[4] + (int(p[5] << 16));
-		output.h = p[6] + (int(p[7] << 16));
+		output.x = p[0] + (int(p[1]) << 16);
+		output.y = p[2] + (int(p[3]) << 16);
+		output.w = p[4] + (int(p[5]) << 16);
+		output.h = p[6] + (int(p[7]) << 16);
 		return pDst + 16;
 	}
 
@@ -151,7 +151,7 @@ namespace wg
 
 	const uint8_t* rectOp2(const uint8_t* pDst, RectI& output)
 	{
-		uint16_t* p = (uint16_t*)pDst;
+		int16_t* p = (int16_t*)pDst;
 
 		output.x = int(p[0]) << 6;
 		output.y = int(p[1]) << 6;

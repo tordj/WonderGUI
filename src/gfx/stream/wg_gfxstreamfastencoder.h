@@ -59,14 +59,12 @@ namespace wg
 
 		void		flush() override;
 
-		//.____ Operators _____________________________________________________
-
-		GfxStreamEncoder& operator<< (GfxStream::Header) override;
-
 	protected:
 		GfxStreamFastEncoder( const GfxStreamSink_p& pStream, int bufferBytes );
 		~GfxStreamFastEncoder();
 
+		void _beginChunk(GfxStream::Header header) override;
+		
 		uint8_t*	m_pBuffer = nullptr;
 		int			m_capacity = 0;
 	};

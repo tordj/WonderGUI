@@ -402,14 +402,15 @@ namespace wg
 			CoordSPX	begin;
 			CoordSPX	end;
 			HiColor		color;
-			spx			thickness;
+			GfxStream::SPX	thickness;
 
 			*m_pDecoder >> begin;
 			*m_pDecoder >> end;
 			*m_pDecoder >> color;
 			*m_pDecoder >> thickness;
+			m_pDecoder->align();
 
-			m_pDevice->drawLine(begin, end, color, thickness);
+			m_pDevice->drawLine(begin, end, color, thickness.value);
 			break;
 		}
 
@@ -417,20 +418,39 @@ namespace wg
 		{
 			CoordSPX	begin;
 			Direction	dir;
-			spx			length;
+			GfxStream::SPX	length;
+			GfxStream::SPX	thickness;
 			HiColor		color;
-			spx			thickness;
 
 			*m_pDecoder >> begin;
 			*m_pDecoder >> dir;
 			*m_pDecoder >> length;
-			*m_pDecoder >> color;
 			*m_pDecoder >> thickness;
+			*m_pDecoder >> color;
 
 			m_pDevice->drawLine(begin, dir, length, color, thickness);
 			break;
 		}
 
+			case GfxChunkId::DrawLineStraightDeprecated:
+			{
+				CoordSPX	begin;
+				Direction	dir;
+				spx			length;
+				HiColor		color;
+				spx			thickness;
+
+				*m_pDecoder >> begin;
+				*m_pDecoder >> dir;
+				*m_pDecoder >> length;
+				*m_pDecoder >> color;
+				*m_pDecoder >> thickness;
+
+				m_pDevice->drawLine(begin, dir, length, color, thickness);
+				break;
+			}
+
+				
 		case GfxChunkId::Blit:
 		{
 			CoordSPX	dest;

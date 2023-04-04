@@ -254,11 +254,6 @@ namespace wg
 		{
 			uint16_t ch = Util::readUTF8Char(pChar);
 
-			if (ch == '3')
-			{
-				int dummy = 0;
-			}
-
 			if (ch != 10 && ch != 13)
 			{
 				RectI r;

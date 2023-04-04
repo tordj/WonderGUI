@@ -37,6 +37,15 @@ namespace wg
 
 		static constexpr int	c_maxClipRects = 256;		// Largest number of patches allowed for a drawing primitive.
 
+		struct SPX
+		{
+			SPX() {}
+			SPX(spx v) : value(v) {}
+			
+			operator spx() const {return value;}
+			
+			spx value;
+		};
 
 		struct Header
 		{

@@ -2,6 +2,9 @@
 #include "streamanalyzer.h"
 
 #include <wg_softgfxdevice.h>
+#include <wg_softkernels_rgb555be_extras.h>
+#include <wg_softkernels_rgb565be_extras.h>
+
 #include <string>
 #include <fstream>
 
@@ -40,6 +43,13 @@ bool MyApp::init(Visitor* pVisitor)
 	}
 
 
+	auto pSoftGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::defaultGfxDevice());
+	if( pSoftGfxDevice )
+	{
+		addExtraSoftKernelsForRGB555BECanvas(pSoftGfxDevice);
+		addExtraSoftKernelsForRGB565BECanvas(pSoftGfxDevice);
+	}
+	
 	return true;
 }
 

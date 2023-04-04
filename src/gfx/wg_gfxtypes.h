@@ -394,10 +394,10 @@ namespace wg
 
 		Fill = 17,
 		FillRect = 18,
-		Undefined1 = 19,
+		DrawLineStraight = 19,
 		PlotPixels = 20,
 		DrawLineFromTo = 21,
-		DrawLineStraight = 22,
+		DrawLineStraightDeprecated = 22,
 
 		Blit = 23,
 		BlitRect = 24,

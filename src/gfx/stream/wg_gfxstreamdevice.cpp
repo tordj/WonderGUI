@@ -35,6 +35,114 @@ namespace wg
 	const TypeInfo GfxStreamDevice::TYPEINFO = { "GfxStreamDevice", &GfxDevice::TYPEINFO };
 
 
+	inline int _spxMask( const CoordI& c )
+	{
+		const int add = (1 << 21);
+		return (c.x+add) | (c.y+add);
+	}
+
+	inline int _spxMask( const SizeI& s )
+	{
+		return s.w | s.h;
+	}
+
+	inline int _spxMask( const RectI& r )
+	{
+		const int add = (1 << 21);
+		return (r.x+add) | (r.y+add) | r.w | r.h;
+	}
+
+	inline int _spxMask( spx v )
+	{
+		const int add = (1 << 21);
+		return (v+add);
+	}
+
+
+
+	inline int _spxMask( const spx * pBegin, const spx * pEnd )
+	{
+		const int add = (1 << 21);
+		int result = 0;
+
+		while( pBegin < pEnd )
+			result |= (* pBegin++) + add;
+
+		return result;
+	}
+
+	inline uint8_t _evaluateMask( int spxMask )
+	{
+		if( (spxMask & 0xFFDFC03F) == 0 )
+			return 3;						// Fits in uint8_t without binals.
+
+		if( (spxMask & 0xFFC0003F) == 0 )
+			return 2;						// Fits in int16_t without binals.
+
+		if( (spxMask & 0xFFDF0000) == 0 )
+			return 1;						// Fits in uint16_t with binals.
+
+		return 0;
+	}
+
+	inline int _spxMaskWithDelta( const spx * pBegin, const spx * pEnd, spx prevValue )
+	{
+		const int add = (1 << 21);
+		int spxMask = 0;
+
+		int deltaMin = 0;
+		int deltaMax = 0;
+		
+		while( pBegin < pEnd )
+		{
+			int value = * pBegin++;
+			int delta = value - prevValue;
+			int prevValue = value;
+			
+			if( delta < deltaMin )
+				deltaMin = delta;
+			
+			if( delta > deltaMax )
+				deltaMax = delta;
+			
+			spxMask |= value + add;
+		}
+		
+		// See if it will fit in any of the 8-bit formats.
+		
+		if( (spxMask & 0xFFDFC03F) == 0 )
+			return 3;						// Fits as non-delta values in uint8_t without binals.
+
+		if( deltaMin >= -128 && deltaMax <= 127 )
+			return 6;						// Fits as delta values in int8_t with binals.
+		
+		if( ((spxMask & 0x3F) == 0) && (deltaMin >= -128*64 && deltaMax <= 128*64-1) )
+			return 7;						// Fits as delta values in int8_t without binals.
+
+		// See if it will fit in any of the 16-bit formats
+		
+		if( (spxMask & 0xFFDF0000) == 0 )
+			return 1;						// Fits in uint16_t with binals.
+
+		if( (spxMask & 0xFFC0003F) == 0 )
+			return 2;						// Fits in int16_t without binals.
+
+		if( deltaMin >= -32768 && deltaMax <= 32767 )
+			return 4;						// Fits as delta values in int16_t with binals.
+		
+		if( ((spxMask & 0x3F) == 0) && (deltaMin >= -32768 && deltaMax <= 32768*64-1) )
+			return 5;						// Fits as delta values in int16_t without binals.
+		
+		return 0;							// We need 32 bits.
+	}
+
+	inline int _spxSize(int spxFormat)
+	{
+		static const int size[8] = {4,2,2,1,2,2,1,1};
+	
+		return size[spxFormat];
+	}
+
 
 	//____ create() _______________________________________________________________
 
@@ -392,7 +500,9 @@ namespace wg
         if( _col.a  == 0 || _rect.w < 1 || _rect.h < 1 )
             return;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FillRect, 0, 24 };
+		uint8_t spxFormat = _evaluateMask( _spxMask(_rect) );
+
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FillRect, spxFormat, _spxSize(spxFormat)*4 + 8 };
         (*m_pEncoder) << _rect;
         (*m_pEncoder) << _col;
 
@@ -433,53 +543,66 @@ namespace wg
 
     void GfxStreamDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineFromTo, 0, 28 };
+		uint8_t spxFormat = _evaluateMask(_spxMask(begin ) | _spxMask(end) | _spxMask(thickness) );
+		
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineFromTo, spxFormat, (((_spxSize(spxFormat)*5)+1)&0xFFFE) + 8  };
         (*m_pEncoder) << begin;
         (*m_pEncoder) << end;
         (*m_pEncoder) << color;
-        (*m_pEncoder) << thickness;
+        (*m_pEncoder) << GfxStream::SPX(thickness);
+		m_pEncoder->align();
     }
 
-    void GfxStreamDevice::drawLine(CoordSPX begin, Direction dir, int length, HiColor col, spx thickness)
+    void GfxStreamDevice::drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, spx thickness)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineStraight, 0, 26 };
+		uint8_t spxFormat = _evaluateMask(_spxMask(begin ) | _spxMask(length) | _spxMask(thickness) );
+		
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineStraight, spxFormat, _spxSize(spxFormat)*4 + 10 };
         (*m_pEncoder) << begin;
         (*m_pEncoder) << dir;
-        (*m_pEncoder) << length;
-        (*m_pEncoder) << col;
-        (*m_pEncoder) << thickness;
+        (*m_pEncoder) << GfxStream::SPX(length);
+        (*m_pEncoder) << GfxStream::SPX(thickness);
+		(*m_pEncoder) << col;
     }
 
     //____ blit() __________________________________________________________________
 
     void GfxStreamDevice::blit(CoordSPX dest)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Blit, 0, 8 };
+		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::Blit, spxFormat, _spxSize(spxFormat)*2 };
         (*m_pEncoder) << dest;
     }
 
-    void GfxStreamDevice::blit(CoordSPX dest, const RectSPX& _src)
+    void GfxStreamDevice::blit(CoordSPX dest, const RectSPX& src)
     {
-        if (_src.w < 1 || _src.h < 1)
+        if (src.w < 1 || src.h < 1)
             return;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitRect, 0, 24 };
+		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(src) );
+		
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitRect, spxFormat, _spxSize(spxFormat)*6 };
         (*m_pEncoder) << dest;
-        (*m_pEncoder) << _src;
+        (*m_pEncoder) << src;
     }
 
     //____ flipBlit() _________________________________________________________
 
     void GfxStreamDevice::flipBlit(CoordSPX dest, GfxFlip flip )
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlit, 0, 10 };
+		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlit, spxFormat, _spxSize(spxFormat)*2 + 2 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << flip;
     }
 
     void GfxStreamDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip )
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlitRect, 0, 26 };
+		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(src) );
+
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlitRect, spxFormat, _spxSize(spxFormat)*6 + 2 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << src;
         (*m_pEncoder) << flip;
@@ -489,15 +612,17 @@ namespace wg
 
     void GfxStreamDevice::stretchBlit(const RectSPX& dest)
     {
+		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlit, 0, 16 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlit, spxFormat, _spxSize(spxFormat)*4 };
         (*m_pEncoder) << dest;
     }
 
     void GfxStreamDevice::stretchBlit(const RectSPX& dest, const RectSPX& source)
     {
+		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(source) );
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRect, 0, 32 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRect, spxFormat, _spxSize(spxFormat)*8 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << source;
     }
@@ -506,15 +631,18 @@ namespace wg
 
     void GfxStreamDevice::stretchFlipBlit(const RectSPX& dest, GfxFlip flip)
     {
+		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchFlipBlit, 0, 18 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchFlipBlit, spxFormat, _spxSize(spxFormat)*4+2 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << flip;
     }
 
     void GfxStreamDevice::stretchFlipBlit(const RectSPX& dest, const RectSPX& source, GfxFlip flip)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRect, 0, 34 };
+		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(source) );
+
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRect, spxFormat, _spxSize(spxFormat)*8+2 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << source;
         (*m_pEncoder) << flip;
@@ -524,7 +652,9 @@ namespace wg
 
 	void GfxStreamDevice::precisionBlit(const RectSPX& dest, const RectF& srcSPX)
 	{
-		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::PrecisionBlit, 0, 32 };
+		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::PrecisionBlit, spxFormat, _spxSize(spxFormat)*4 + 16 };
 		(*m_pEncoder) << dest;
 		(*m_pEncoder) << srcSPX;
 	}
@@ -533,7 +663,9 @@ namespace wg
 
 	void GfxStreamDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
 	{
-		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::PrecisionBlit, 0, 40 };
+		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::PrecisionBlit, spxFormat, _spxSize(spxFormat)*4 + 24 };
 		(*m_pEncoder) << dest;
 		(*m_pEncoder) << srcSPX;
 		(*m_pEncoder) << transform[0][0];
@@ -546,7 +678,9 @@ namespace wg
 
     void GfxStreamDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::RotScaleBlit, 0, 40 };
+		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::RotScaleBlit, spxFormat, _spxSize(spxFormat)*4 + 24 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << rotationDegrees;
         (*m_pEncoder) << scale;
@@ -558,14 +692,18 @@ namespace wg
 
     void GfxStreamDevice::tile(const RectSPX& dest, CoordSPX shift)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Tile, 0, 24 };
+		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
+		
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::Tile, spxFormat, _spxSize(spxFormat)*6 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << shift;
     }
 
     void GfxStreamDevice::flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipTile, 0, 26 };
+		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
+
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipTile, spxFormat, _spxSize(spxFormat)*6 + 2 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << flip;
         (*m_pEncoder) << shift;
@@ -573,7 +711,9 @@ namespace wg
 
     void GfxStreamDevice::scaleTile(const RectSPX& dest, float scale, CoordSPX shift)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleTile, 0, 28 };
+		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
+
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleTile, spxFormat, _spxSize(spxFormat)*6 + 4 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << scale;
         (*m_pEncoder) << shift;
@@ -581,7 +721,9 @@ namespace wg
 
     void GfxStreamDevice::scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift)
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleFlipTile, 0, 30 };
+		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
+
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleFlipTile, spxFormat, _spxSize(spxFormat)*6 + 6 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << scale;
         (*m_pEncoder) << flip;

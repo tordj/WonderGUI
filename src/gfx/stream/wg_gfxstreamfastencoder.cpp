@@ -62,9 +62,9 @@ namespace wg
 		m_pWriteData = m_pBuffer;
 	}
 
-	//____ operator<< _________________________________________________________
+	//____ _beginChunk() _________________________________________________________
 
-	GfxStreamEncoder& GfxStreamFastEncoder::operator<< (GfxStream::Header header)
+	void GfxStreamFastEncoder::_beginChunk(GfxStream::Header header)
 	{
 		if (header.size <= 30)
 		{
@@ -72,7 +72,7 @@ namespace wg
 				flush();
 
 			_pushChar((char)header.type);
-			_pushChar(header.size);
+			_pushChar(header.size + (header.spxFormat << 5));
 		}
 		else
 		{
@@ -80,11 +80,8 @@ namespace wg
 				flush();
 
 			_pushChar((char)header.type);
-			_pushChar(31);
+			_pushChar(31  + (header.spxFormat << 5));
 			_pushShort((short)header.size);
 		}
-		return *this;
 	}
-
-
 }

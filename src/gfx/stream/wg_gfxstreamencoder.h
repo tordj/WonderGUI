@@ -69,7 +69,7 @@ namespace wg
 
 		//.____ Operators _____________________________________________________
 
-		virtual GfxStreamEncoder& operator<< (GfxStream::Header) = 0;
+		inline GfxStreamEncoder& operator<< (GfxStream::Header);
 		inline GfxStreamEncoder& operator<< (uint8_t);
 		inline GfxStreamEncoder& operator<< (int16_t);
 		inline GfxStreamEncoder& operator<< (uint16_t);
@@ -77,6 +77,7 @@ namespace wg
 		inline GfxStreamEncoder& operator<< (float);
 		inline GfxStreamEncoder& operator<< (bool);
 
+		inline GfxStreamEncoder& operator<< (const GfxStream::SPX& v);
 		inline GfxStreamEncoder& operator<< (const CoordI&);
 		inline GfxStreamEncoder& operator<< (const CoordF&);
 		inline GfxStreamEncoder& operator<< (const SizeI&);
@@ -109,6 +110,8 @@ namespace wg
 		GfxStreamEncoder( const GfxStreamSink_p& pStream );
 		~GfxStreamEncoder() {};
 
+		virtual void _beginChunk(GfxStream::Header header) = 0;
+		
 		inline void	_pushChar(char c);
 		inline void	_pushShort(short s);
 		inline void	_pushInt(int i);
@@ -123,6 +126,8 @@ namespace wg
 		uint16_t*	m_pFreeIdStack = nullptr;
 		int			m_freeIdStackCapacity = 0;
 		int			m_freeIdStackSize = 0;
+		
+		int			m_spxFormat = 0;
 
 		ComponentPtr<GfxStreamSink>	m_pStream;
 		
@@ -183,6 +188,15 @@ namespace wg
 		m_pWriteData += nBytes;
 	}
 
+	//____ operator<< ____________________________________________________________
+
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (GfxStream::Header header)
+	{
+		m_spxFormat = header.spxFormat;
+		_beginChunk(header);
+		return *this;
+	}
+
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (uint8_t uint8)
 	{
 		_pushChar(uint8);
@@ -220,10 +234,49 @@ namespace wg
 		return *this;
 	}
 
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const GfxStream::SPX& v)
+	{
+		if( m_spxFormat == 0 )
+		{
+			_pushInt(v.value);
+		}
+		else if( m_spxFormat == 1 )
+		{
+			_pushShort(v.value);
+		}
+		else if( m_spxFormat == 2 )
+		{
+			_pushShort(v.value >> 6);
+		}
+		else
+		{
+			_pushChar(v.value >> 6);
+		}
+		return *this;
+	}
+
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const CoordI& c)
 	{
-		_pushInt(c.x);
-		_pushInt(c.y);
+		if( m_spxFormat == 0 )
+		{
+			_pushInt(c.x);
+			_pushInt(c.y);
+		}
+		else if( m_spxFormat == 1 )
+		{
+			_pushShort(c.x);
+			_pushShort(c.y);
+		}
+		else if( m_spxFormat == 2 )
+		{
+			_pushShort(c.x >> 6);
+			_pushShort(c.y >> 6);
+		}
+		else
+		{
+			_pushChar(c.x >> 6);
+			_pushChar(c.y >> 6);
+		}
 		return *this;
 	}
 
@@ -236,8 +289,26 @@ namespace wg
 
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const SizeI& sz)
 	{
-		_pushInt(sz.w);
-		_pushInt(sz.h);
+		if( m_spxFormat == 0 )
+		{
+			_pushInt(sz.w);
+			_pushInt(sz.h);
+		}
+		else if( m_spxFormat == 1 )
+		{
+			_pushShort(sz.w);
+			_pushShort(sz.h);
+		}
+		else if( m_spxFormat == 2 )
+		{
+			_pushShort(sz.w >> 6);
+			_pushShort(sz.h >> 6);
+		}
+		else
+		{
+			_pushChar(sz.w >> 6);
+			_pushChar(sz.h >> 6);
+		}
 		return *this;
 	}
 
@@ -250,10 +321,34 @@ namespace wg
 
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const RectI& rect)
 	{
-		_pushInt(rect.x);
-		_pushInt(rect.y);
-		_pushInt(rect.w);
-		_pushInt(rect.h);
+		if( m_spxFormat == 0 )
+		{
+			_pushInt(rect.x);
+			_pushInt(rect.y);
+			_pushInt(rect.w);
+			_pushInt(rect.h);
+		}
+		else if( m_spxFormat == 1 )
+		{
+			_pushShort(rect.x);
+			_pushShort(rect.y);
+			_pushShort(rect.w);
+			_pushShort(rect.h);
+		}
+		else if( m_spxFormat == 2 )
+		{
+			_pushShort(rect.x >> 6);
+			_pushShort(rect.y >> 6);
+			_pushShort(rect.w >> 6);
+			_pushShort(rect.h >> 6);
+		}
+		else
+		{
+			_pushChar(rect.x >> 6);
+			_pushChar(rect.y >> 6);
+			_pushChar(rect.w >> 6);
+			_pushChar(rect.h >> 6);
+		}
 		return *this;
 	}
 

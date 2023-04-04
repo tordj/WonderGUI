@@ -60,23 +60,22 @@ namespace wg
 
 		void		flush() override;
 
-		//.____ Operators _____________________________________________________
-
-		GfxStreamEncoder& operator<< (GfxStream::Header) override;
-
 	protected:
 		GfxStreamTrimEncoder( const GfxStreamSink_p& pStream, int bufferBytes );
 		~GfxStreamTrimEncoder();
 
+		void _beginChunk(GfxStream::Header header) override;
+		
 		struct ChunkInfo
 		{
-			ChunkInfo(GfxChunkId type, int dataOfs, int dataSize, int extra )
-			: type(type), dataOfs(dataOfs), dataSize(dataSize), extra(extra) {}
+			ChunkInfo(GfxChunkId type, int dataOfs, int dataSize, int spxFormat, int extra )
+			: type(type), dataOfs(dataOfs), dataSize(dataSize), spxFormat(spxFormat), extra(extra) {}
 			
 			
 			GfxChunkId	type;
 			int 		dataOfs;		// Offset into data-vector for this chunks data.
 			int			dataSize;
+			int			spxFormat;
 			int			extra;			// Additional chunk-specific info. Used by BeginCanvasUpdate to number new scope.
 		};
 		

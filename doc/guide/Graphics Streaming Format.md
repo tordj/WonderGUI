@@ -24,16 +24,16 @@ The chunk header is 2-4 bytes long, depending on the size of the chunk and has t
 
 ##### SPX storage format
 
-| Value in Header | Meaning                       |
-| :-------------- | ----------------------------- |
-| 0               | 32 bit values with binals.    |
-| 1               | 16 bit values with binals.    |
-| 2               | 16 bit values without binals. |
-| 3               | 8 bit values without binals.  |
-| 4               | 16 bit deltas with binals.    |
-| 5               | 16 bit deltas without binals. |
-| 6               | 8 bit deltas with binals.     |
-| 7               | 8 bit deltas without binals.  |
+| Value in Header | Meaning                               |
+| :-------------- | ------------------------------------- |
+| 0               | 32 bit signed values with binals.     |
+| 1               | 16 bit unsigned values with binals.   |
+| 2               | 16 bit signed values without binals.  |
+| 3               | 8 bit unsigned values without binals. |
+| 4               | 16 bit signed deltas with binals.     |
+| 5               | 16 bit signed deltas without binals.  |
+| 6               | 8 bit signed deltas with binals.      |
+| 7               | 8 bit signed deltas without binals.   |
 
 The first four alternatives can be used in any header and affects all the data stored in SPX format, this means all CoordSPX, SizeSPX, RectSPX, BorderSPX and anything just saved as an SPX.
 

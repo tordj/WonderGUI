@@ -62,9 +62,9 @@ namespace wg
 		m_outputBuffer.clear();
 	}
 
-	//____ operator<< _________________________________________________________
+	//____ _beginChunk() _________________________________________________________
 
-	GfxStreamEncoder& GfxStreamTrimEncoder::operator<< (GfxStream::Header header)
+	void GfxStreamTrimEncoder::_beginChunk(GfxStream::Header header)
 	{
 		switch( header.type )
 		{
@@ -73,13 +73,13 @@ namespace wg
 				m_scopes.emplace_back(m_activeScope);
 				m_activeScope = m_scopes.size() -1;
 
-				m_scopes[m_activeScope].chunks.emplace_back( GfxChunkId::BeginRender, (int) m_data.size(), 0, 0 );
+				m_scopes[m_activeScope].chunks.emplace_back( GfxChunkId::BeginRender, (int) m_data.size(), 0, 0, 0 );
 				break;
 			}
 
 			case GfxChunkId::EndRender:
 			{
-				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndRender, (int) m_data.size(), 0, 0);
+				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndRender, (int) m_data.size(), 0, 0, 0);
 				_processScopes();
 				flush();
 
@@ -95,7 +95,7 @@ namespace wg
 
 				// Signal jump to subscope in our scope with a special chunk.
 				
-				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId(-1), dataOfs, 0, newScopeIdx);
+				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId(-1), dataOfs, 0, 0, newScopeIdx);
 
 				// Create/setup our subscope
 				
@@ -104,7 +104,7 @@ namespace wg
 				
 				// Put BeginCanvasUpdate-chunk inside our subscope.
 				
-				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::BeginCanvasUpdate, dataOfs, header.size, 0 );
+				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::BeginCanvasUpdate, dataOfs, header.size, 0, 0 );
 
 				// Prepare data buffer for writes.
 
@@ -115,7 +115,7 @@ namespace wg
 
 			case GfxChunkId::EndCanvasUpdate:
 			{
-				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndCanvasUpdate, (int) m_data.size(), 0, 0);
+				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndCanvasUpdate, (int) m_data.size(), 0, 0, 0);
 				m_activeScope = m_scopes[m_activeScope].prevScope;
 				break;
 			}
@@ -133,7 +133,7 @@ namespace wg
 						m_pWriteData = m_outputBuffer.data() + ofs;
 
 						_pushChar((char)header.type);
-						_pushChar(header.size);
+						_pushChar(header.size + (header.spxFormat << 5));
 					}
 					else
 					{
@@ -141,7 +141,7 @@ namespace wg
 						m_pWriteData = m_outputBuffer.data() + ofs;
 
 						_pushChar((char)header.type);
-						_pushChar(31);
+						_pushChar(31 + (header.spxFormat << 5));
 						_pushShort((short)header.size);
 					}
 				}
@@ -150,7 +150,7 @@ namespace wg
 					// Put header in our chunks
 					
 					int dataOfs = (int) m_data.size();
-					m_scopes[m_activeScope].chunks.emplace_back(header.type, dataOfs, header.size, 0 );
+					m_scopes[m_activeScope].chunks.emplace_back(header.type, dataOfs, header.size, header.spxFormat, 0 );
 				
 					// Prepare data buffer for writes.
 					
@@ -160,8 +160,6 @@ namespace wg
 				break;
 			}
 		}
-		
-		return *this;
 	}
 
 	//____ _processScopes() ______________________________________________________
@@ -194,6 +192,11 @@ namespace wg
 			}
 			else
 			{
+				if( chunk.type == GfxChunkId::DrawLineStraight )
+				{
+					int dummy = 0;
+				}
+				
 				int ofs = m_outputBuffer.size();
 				if (chunk.dataSize <= 30)
 				{
@@ -201,7 +204,7 @@ namespace wg
 					m_pWriteData = m_outputBuffer.data() + ofs;
 
 					_pushChar((char)chunk.type);
-					_pushChar(chunk.dataSize);
+					_pushChar(chunk.dataSize | (chunk.spxFormat << 5));
 				}
 				else
 				{
@@ -209,7 +212,7 @@ namespace wg
 					m_pWriteData = m_outputBuffer.data() + ofs;
 
 					_pushChar((char)chunk.type);
-					_pushChar(31);
+					_pushChar(31 | (chunk.spxFormat << 5) );
 					_pushShort((short)chunk.dataSize);
 				}
 				

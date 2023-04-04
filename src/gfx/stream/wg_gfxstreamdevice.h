@@ -105,7 +105,7 @@ namespace wg
         void    plotPixels( int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
         void    drawLine( CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64 ) override;
-        void    drawLine( CoordSPX begin, Direction dir, int length, HiColor col, spx thickness = 64 ) override;
+        void    drawLine( CoordSPX begin, Direction dir, spx length, HiColor col, spx thickness = 64 ) override;
 
         // Blit methods
 

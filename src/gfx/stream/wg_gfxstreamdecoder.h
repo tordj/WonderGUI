@@ -77,6 +77,7 @@ namespace wg
 		inline GfxStreamDecoder& operator>> (float&);
 		inline GfxStreamDecoder& operator>> (bool&);
 
+		inline GfxStreamDecoder& operator>> (GfxStream::SPX&);
 		inline GfxStreamDecoder& operator>> (CoordI&);
 		inline GfxStreamDecoder& operator>> (CoordF&);
 		inline GfxStreamDecoder& operator>> (SizeI&);
@@ -143,6 +144,8 @@ namespace wg
 			header.type = (GfxChunkId)_pullChar();
 			uint8_t sizeEtc = _pullChar();
 			header.spxFormat = sizeEtc >> 5;
+			m_spxFormat = sizeEtc >> 5;
+
 			sizeEtc &= 0x1F;
 			if (sizeEtc <= 30)
 				header.size = sizeEtc;
@@ -195,6 +198,20 @@ namespace wg
 		b = (bool)myBool;
 		return *this;
 	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (GfxStream::SPX& value)
+	{
+		if(m_spxFormat == 0 )
+			value.value = _pullInt();
+		else if(m_spxFormat == 1 )
+			value.value = uint16_t(_pullShort());			// Value is unsigned.
+		else if(m_spxFormat == 2 )
+			value.value = int(_pullShort()) << 6;
+		else if(m_spxFormat == 3 )
+			value.value = int(uint8_t(_pullChar())) << 6;	// Make sure value is unsigned.
+		return *this;
+	}
+
 
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordI& coord)
 	{
