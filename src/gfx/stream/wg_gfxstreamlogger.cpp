@@ -155,7 +155,7 @@ namespace wg
 				*m_pDecoder >> canvasRef;
 				*m_pDecoder >> dummy;
 				
-				int nUpdateRects = (header.size - 4) / 16;
+				int nUpdateRects = (header.size - 4) / (GfxStream::spxSize(header.spxFormat)*4);
 
 				if( surfaceId > 0 )
 					m_charStream << "    surfaceId   = " << surfaceId << std::endl;
@@ -725,7 +725,7 @@ namespace wg
 			case GfxChunkId::EdgeSamples:
 			{
 				m_pDecoder->skip(header.size);
-				m_charStream << "    nSamples    = " << (int)header.size/2 << std::endl;
+				m_charStream << "    nSamples    = " << (int)header.size/GfxStream::spxSize(header.spxFormat) << std::endl;
 				break;
 			}
 

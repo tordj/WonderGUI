@@ -201,6 +201,13 @@ namespace wg
 			else
 				return *(uint16_t*)&pChunk[2];
 		}
+		
+		inline static int spxSize(int spxFormat)
+		{
+			static const int size[8] = {4,2,2,1,2,2,1,1};
+		
+			return size[spxFormat];
+		}
 	};
 
 };

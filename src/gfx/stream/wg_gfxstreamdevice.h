@@ -154,6 +154,9 @@ namespace wg
 		GfxStreamDevice( GfxStreamEncoder * pEncoder );
 		~GfxStreamDevice();
 
+		bool 	_clippedOut(const RectSPX& rect);
+
+		
         void    _streamEdgeSamples( int nSamples, int samplesPerLine, int linePitch, const int * pSamples );
 
         bool    _beginCanvasUpdate( CanvasRef canvasRef, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;

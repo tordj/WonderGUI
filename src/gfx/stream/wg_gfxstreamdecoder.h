@@ -109,7 +109,7 @@ namespace wg
 	protected:
 		GfxStreamDecoder();
 		~GfxStreamDecoder();
-
+		
 		inline bool		_hasChunk();
 		inline GfxStream::Header	_peekChunk();	// Is only called if _hasChunk() has returned true.
 
