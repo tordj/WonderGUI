@@ -821,7 +821,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 					pReadFunc( pSrc, buffer, 64, pTab1, pTab2 );
 					pSrc += srcPixelBits * 8;
 
-					uint8_t * p = (uint8_t*) buffer;
+					uint8_t * p = buffer;
 					for( int i = 0 ; i < 64 ; i++ )
 					{
 						* pDst++ = * p++;
@@ -837,7 +837,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 					pReadFunc( pSrc, buffer, widthLeft, pTab1, pTab2 );
 					pSrc += srcPixelBits / 8 * widthLeft;
 
-					uint8_t * p = (uint8_t*) buffer;
+					uint8_t * p = buffer;
 					for( int i = 0 ; i < widthLeft ; i++ )
 					{
 						* pDst++ = * p++;
@@ -865,7 +865,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 					pReadFunc( pSrc, buffer, 64, pTab1, pTab2 );
 					pSrc += srcPixelBits * 8;
 
-					uint8_t * p = (uint8_t*) buffer;
+					uint8_t * p = buffer;
 					for( int i = 0 ; i < 64 ; i++ )
 					{
 						uint8_t dst = ((* p++) >> 4);
@@ -884,7 +884,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 					pReadFunc( pSrc, buffer, widthLeft, pTab1, pTab2 );
 					pSrc += srcPixelBits / 8 * widthLeft;
 
-					uint8_t * p = (uint8_t*) buffer;
+					uint8_t * p = buffer;
 					for( int i = 0 ; i < widthLeft ; i++ )
 					{
 						uint8_t dst = ((* p++) >> 4);
@@ -904,7 +904,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 		case PixelFormat::BGR_565_linear:
 		{
-			uint8_t	buffer[64*4];
+			uint32_t	buffer[64];
 
 			for( int y = 0 ; y < height ; y++ )
 			{
@@ -912,7 +912,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
-					pReadFunc( pSrc, buffer, 64, pTab1, pTab2 );
+					pReadFunc( pSrc, (uint8_t*) buffer, 64, pTab1, pTab2 );
 					pSrc += srcPixelBits * 8;
 
 					for( int i = 0 ; i < 64 ; i++ )
@@ -927,7 +927,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 				if( widthLeft > 0 )
 				{
-					pReadFunc( pSrc, buffer, widthLeft, pTab1, pTab2 );
+					pReadFunc( pSrc, (uint8_t*) buffer, widthLeft, pTab1, pTab2 );
 					pSrc += srcPixelBits / 8 * widthLeft;
 
 					for( int i = 0 ; i < widthLeft ; i++ )
@@ -946,7 +946,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 		case PixelFormat::Index_8_sRGB:
 		case PixelFormat::Index_8_linear:
 		{
-			uint8_t		buffer[64*4];
+			uint32_t		buffer[64];
 			int 		nColors = dstPaletteEntries;
 
 			for( int y = 0 ; y < height ; y++ )
@@ -955,7 +955,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
-					pReadFunc( pSrc, buffer, 64, pTab1, pTab2 );
+					pReadFunc( pSrc, (uint8_t*) buffer, 64, pTab1, pTab2 );
 					pSrc += srcPixelBits * 8;
 
 					for( int i = 0 ; i < 64 ; i++ )
@@ -984,7 +984,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 				if( widthLeft > 0 )
 				{
-					pReadFunc( pSrc, buffer, widthLeft, pTab1, pTab2 );
+					pReadFunc( pSrc, (uint8_t*) buffer, widthLeft, pTab1, pTab2 );
 					pSrc += srcPixelBits / 8 * widthLeft;
 
 					for( int i = 0 ; i < widthLeft ; i++ )
@@ -1020,7 +1020,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 		case PixelFormat::RGB_565_bigendian:
 		{
-			uint8_t	buffer[64*4];
+			uint32_t	buffer[64];
 
 			for( int y = 0 ; y < height ; y++ )
 			{
@@ -1028,7 +1028,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
-					pReadFunc( pSrc, buffer, 64, pTab1, pTab2 );
+					pReadFunc( pSrc, (uint8_t*) buffer, 64, pTab1, pTab2 );
 					pSrc += srcPixelBits * 8;
 
 					for( int i = 0 ; i < 64 ; i++ )
@@ -1045,7 +1045,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 				if( widthLeft > 0 )
 				{
-					pReadFunc( pSrc, buffer, widthLeft, pTab1, pTab2 );
+					pReadFunc( pSrc, (uint8_t*) buffer, widthLeft, pTab1, pTab2 );
 					pSrc += srcPixelBits / 8 * widthLeft;
 
 					for( int i = 0 ; i < widthLeft ; i++ )
@@ -1066,7 +1066,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 		case PixelFormat::RGB_555_bigendian:
 		{
-			uint8_t	buffer[64*4];
+			uint32_t	buffer[64];
 
 			for( int y = 0 ; y < height ; y++ )
 			{
@@ -1074,7 +1074,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
-					pReadFunc( pSrc, buffer, 64, pTab1, pTab2 );
+					pReadFunc( pSrc, (uint8_t*) buffer, 64, pTab1, pTab2 );
 					pSrc += srcPixelBits * 8;
 
 					for( int i = 0 ; i < 64 ; i++ )
@@ -1091,7 +1091,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 				if( widthLeft > 0 )
 				{
-					pReadFunc( pSrc, buffer, widthLeft, pTab1, pTab2 );
+					pReadFunc( pSrc, (uint8_t*) buffer, widthLeft, pTab1, pTab2 );
 					pSrc += srcPixelBits / 8 * widthLeft;
 
 					for( int i = 0 ; i < widthLeft ; i++ )
@@ -1735,8 +1735,10 @@ void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fill
 			for (int y = 0; y < fillRect.h; y++)
 			{
 				for (int plane = 0; plane < pixelWords; plane++)
-					*pDest++ = ((*pDest) & invMask) | (wordArea[plane] & pixelMask);
-
+				{
+					*pDest = ((*pDest) & invMask) | (wordArea[plane] & pixelMask);
+					pDest++;
+				}
 				pDest += eolAdd;
 			}
 		}
@@ -1748,15 +1750,24 @@ void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fill
 			for (int y = 0; y < fillRect.h; y++)
 			{
 				for (int plane = 0; plane < pixelWords; plane++)
-					*pDest++ = ((*pDest) & invLeftMask) | (wordArea[plane] & leftPixelMask);
-
+				{
+					*pDest = ((*pDest) & invLeftMask) | (wordArea[plane] & leftPixelMask);
+					pDest++;
+				}
+				
 				for( int x = 0 ; x < (wordWidth - 2) ; x++ )
 					for (int plane = 0; plane < pixelWords; plane++)
-						*pDest++ = wordArea[plane];
-
+					{
+						*pDest = wordArea[plane];
+						pDest++;
+					}
+				
 				for (int plane = 0; plane < pixelWords; plane++)
-					*pDest++ = ((*pDest) & invRightMask) | (wordArea[plane] & rightPixelMask);
-
+				{
+					*pDest = ((*pDest) & invRightMask) | (wordArea[plane] & rightPixelMask);
+					pDest++;
+				}
+				
 				pDest += eolAdd;
 			}
 		}
