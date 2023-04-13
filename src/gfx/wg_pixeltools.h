@@ -50,7 +50,7 @@ namespace wg
 	
 		int colorToPixelBytes( HiColor color, PixelFormat type, uint8_t pixelArea[18], Color8* pPalette = nullptr, int paletteEntries = 0 );
 	
-		int findBestMatchInPalette( HiColor color, bool bSRGB, Color8* pPalette, int paletteEntries = 256);
+		int findBestMatchInPalette( HiColor color, Color8* pPalette, int paletteEntries = 256, ColorSpace paletteColorSpace = ColorSpace::Undefined );
 	
 		bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, RectI srcRect, uint8_t* pDst, int dstPitch, const Color8* pPalette);
 

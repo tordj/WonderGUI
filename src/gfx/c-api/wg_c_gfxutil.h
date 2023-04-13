@@ -33,7 +33,7 @@ extern "C" {
 
 	const wg_pixelDescription* 	wg_pixelFormatToDescription( wg_pixelFormat format );
 	wg_pixelFormat 				wg_pixelDescriptionToFormat(const wg_pixelDescription * pDescription);
-	wg_pixelFormat 				wg_translatePixelFormat( wg_pixelFormat format);
+	wg_pixelFormat 				wg_clarifyPixelFormat( wg_pixelFormat format);
 	
 #ifdef __cplusplus
 }

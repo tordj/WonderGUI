@@ -156,7 +156,9 @@ namespace wg
 			"Bitplanes_2_A1",
 			"Bitplanes_4_A1",
 			"Bitplanes_5_A1",
-			"Bitplanes_8_A1" };
+			"Bitplanes_8_A1",
+			"BGRX_8_linear",
+			"BGRA_8_linear" };
 
 		return names[(int)i];
 	}

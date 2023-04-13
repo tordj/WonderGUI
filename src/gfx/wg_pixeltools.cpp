@@ -29,6 +29,7 @@ namespace wg { namespace PixelTools
 {
 
 typedef	void(*PixelReadFunc)(const uint8_t*, uint8_t*, int, const void*, const void*);
+typedef	void(*PixelWriteFunc)(const uint8_t*, uint8_t*, int);
 
 
 const uint8_t conv_2_linear_to_8_sRGB[4] 	= {0, 155, 212, 255 };
@@ -154,6 +155,27 @@ const uint8_t conv_8_to_8_straight[256] = {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x
 	0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
 	0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF };
 
+const uint16_t conv_8_sRGB_to_16_linear[256] = { 0, 1, 2, 4, 7, 11, 17, 24, 32, 42, 53, 65, 79, 94,
+	111, 129, 148, 169, 192, 216, 242, 270, 299, 330, 362, 396, 432, 469, 508, 549, 591, 635, 681,
+	729, 779, 830, 883, 938, 995, 1053, 1113, 1175, 1239, 1305, 1373, 1443, 1514, 1587, 1663, 1740,
+	1819, 1900, 1983, 2068, 2155, 2243, 2334, 2427, 2521, 2618, 2717, 2817, 2920, 3024, 3131, 3240,
+	3350, 3463, 3578, 3694, 3813, 3934, 4057, 4182, 4309, 4438, 4570, 4703, 4838, 4976, 5115, 5257,
+	5401, 5547, 5695, 5845, 5998, 6152, 6309, 6468, 6629, 6792, 6957, 7124, 7294, 7466, 7640, 7816,
+	7994, 8175, 8358, 8543, 8730, 8919, 9111, 9305, 9501, 9699, 9900, 10102, 10307, 10515, 10724,
+	10936, 11150, 11366, 11585, 11806, 12029, 12254, 12482, 12712, 12944, 13179, 13416, 13655, 13896,
+	14140, 14386, 14635, 14885, 15138, 15394, 15652, 15912, 16174, 16439, 16706, 16975, 17247, 17521,
+	17798, 18077, 18358, 18642, 18928, 19216, 19507, 19800, 20095, 20393, 20694, 20996, 21301, 21609,
+	21919, 22231, 22546, 22863, 23182, 23504, 23829, 24156, 24485, 24817, 25151, 25487, 25826, 26168,
+	26512, 26858, 27207, 27558, 27912, 28268, 28627, 28988, 29351, 29717, 30086, 30457, 30830, 31206,
+	31585, 31966, 32349, 32735, 33124, 33514, 33908, 34304, 34702, 35103, 35507, 35913, 36321, 36732,
+	37146, 37562, 37981, 38402, 38825, 39252, 39680, 40112, 40546, 40982, 41421, 41862, 42306, 42753,
+	43202, 43654, 44108, 44565, 45025, 45487, 45951, 46418, 46888, 47360, 47835, 48313, 48793, 49275,
+	49761, 50249, 50739, 51232, 51728, 52226, 52727, 53230, 53736, 54245, 54756, 55270, 55787, 56306,
+	56828, 57352, 57879, 58409, 58941, 59476, 60014, 60554, 61097, 61642, 62190, 62741, 63295, 63851,
+	64410, 64971, 65535 };
+
+uint8_t* pConv_16_linear_to_8_sRGB = nullptr;
+
 
 const uint8_t * conv_srgb_to_linear_tabs[9] = { conv_0_to_8_straight, conv_1_to_8_straight,
 	conv_2_sRGB_to_8_linear, conv_3_sRGB_to_8_linear, conv_4_sRGB_to_8_linear,
@@ -166,6 +188,35 @@ const uint8_t * conv_linear_to_sRGB_tabs[9] = { conv_0_to_8_straight, conv_1_to_
 const uint8_t * conv_straight_tabs[9] = { conv_0_to_8_straight, conv_1_to_8_straight, conv_2_to_8_straight,
 	conv_3_to_8_straight, conv_4_to_8_straight, conv_5_to_8_straight,
 	conv_6_to_8_straight, conv_7_to_8_straight, conv_8_to_8_straight };
+
+
+static void createConv16toSRGBTab()
+{
+	uint8_t * pBuff = new uint8_t[65536];
+
+	for (int i = 0; i < 255; i++)
+	{
+		int ofs = conv_8_sRGB_to_16_linear[i];
+		int end = conv_8_sRGB_to_16_linear[i+1];
+
+		int midPoint = (ofs + end) / 2;
+
+		while (ofs <= midPoint)
+		{
+			pBuff[ofs] = i;
+			ofs++;
+		}
+
+		while (ofs < end)
+		{
+			pBuff[ofs] = i+1;
+			ofs++;
+		}
+	}
+
+	pBuff[65535] = 255;
+	pConv_16_linear_to_8_sRGB = pBuff;
+}
 
 
 static void readBGRA8( const uint8_t * pSrc, uint8_t * pDst, int nbPixels, const void * p1, const void * p2 )
@@ -238,6 +289,40 @@ static void readConvBGR8( const uint8_t * pSrc, uint8_t * pDst, int nbPixels, co
 		* pDst++ = 255;
 	}
 }
+
+static void readBGRA16(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	pSrc++;								// Point at high-order byte of channel
+	for (int i = 0; i < nbPixels; i++)
+	{
+		*pDst++ = *pSrc;
+		pSrc += 2;
+		*pDst++ = *pSrc;
+		pSrc += 2;
+		*pDst++ = *pSrc;
+		pSrc += 2;
+		*pDst++ = *pSrc;
+		pSrc += 2;
+	}
+}
+
+static void readConvBGRA16(const uint8_t* _pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	//TODO: We lose a lot of precision by only using 8-bit linear values when converting to 8-bit SRGB.
+
+	uint8_t* pRGBConvTab = (uint8_t*)p1;
+
+	uint16_t * pSrc = (uint16_t*) _pSrc;								// Point at high-order byte of channel
+	for (int i = 0; i < nbPixels; i++)
+	{
+		*pDst++ = pRGBConvTab[*pSrc++];
+		*pDst++ = pRGBConvTab[*pSrc++];
+		*pDst++ = pRGBConvTab[*pSrc++];
+		*pDst++ = (*pSrc++) >> 8;
+	}
+}
+
+
 
 static void readAlpha8( const uint8_t * pSrc, uint8_t * pDst, int nbPixels, const void * p1, const void * p2 )
 {
@@ -355,7 +440,72 @@ struct ShiftReadConvTab
 	const uint8_t* pConvG;
 	const uint8_t* pConvB;
 	const uint8_t* pConvA;
+	uint64_t	maskR64;
+	uint64_t	maskG64;
+	uint64_t	maskB64;
+	uint64_t	maskA64;
+
 };
+
+
+static void shiftRead_64bit_to64(const uint8_t* _pSrc, uint8_t* _pDst, int nbPixels, const void* pConvTab, const void* pDummy)
+{
+	ShiftReadConvTab& t = *(ShiftReadConvTab*)pConvTab;
+
+	uint64_t* pSrc = (uint64_t*)_pSrc;
+	uint16_t* pDst = (uint16_t*)_pDst;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t rgba = * pSrc++;
+
+		*pDst++ = (rgba & t.maskB64) >> t.shiftB;
+		*pDst++ = (rgba & t.maskG64) >> t.shiftG;
+		*pDst++ = (rgba & t.maskR64) >> t.shiftR;
+		*pDst++ = (rgba & t.maskA64) >> t.shiftA;
+	}
+}
+
+
+static void shiftRead_64bit(const uint8_t* _pSrc, uint8_t* pDst, int nbPixels, const void* pConvTab, const void* pDummy)
+{
+	ShiftReadConvTab& t = *(ShiftReadConvTab*)pConvTab;
+
+	uint64_t* pSrc = (uint64_t*)_pSrc;
+
+	int shiftB = t.shiftB + 8;
+	int shiftG = t.shiftG + 8;
+	int shiftR = t.shiftR + 8;
+	int shiftA = t.shiftA + 8;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t rgba = *pSrc++;
+
+		*pDst++ = (rgba & t.maskB64) >> shiftB;
+		*pDst++ = (rgba & t.maskG64) >> shiftG;
+		*pDst++ = (rgba & t.maskR64) >> shiftR;
+		*pDst++ = (rgba & t.maskA64) >> shiftA;
+	}
+}
+
+
+static void shiftReadConv_64bit(const uint8_t* _pSrc, uint8_t* pDst, int nbPixels, const void* pConvTab, const void* pDummy)
+{
+	ShiftReadConvTab& t = *(ShiftReadConvTab*)pConvTab;
+
+	uint64_t* pSrc = (uint64_t*)_pSrc;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t rgba = * pSrc++;
+
+		*pDst++ = t.pConvB[(rgba & t.maskB64) >> t.shiftB];
+		*pDst++ = t.pConvG[(rgba & t.maskG64) >> t.shiftG];
+		*pDst++ = t.pConvR[(rgba & t.maskR64) >> t.shiftR];
+		*pDst++ = t.pConvA[(rgba & t.maskA64) >> t.shiftA];
+	}
+}
 
 
 static void shiftReadConv_32bit( const uint8_t * pSrc, uint8_t * pDst, int nbPixels, const void* pConvTab, const void* pDummy)
@@ -798,6 +948,416 @@ static void readConv_planes_1i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 	}
 }
 
+static void read16_BGRA16_linear(const uint8_t* _pSrc, uint8_t* _pDst, int nbPixels, const void* p1, const void* p2)
+{
+	auto pSrc = (const uint64_t*) _pSrc;
+	auto pDst = (uint64_t*) _pDst;
+
+	for (int i = 0; i < nbPixels; i++)
+		*pDst++ = *pSrc++;
+}
+
+
+static void read16_BGRA8_linear(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t dest = *pSrc++;
+		dest <<= 16;
+		dest |= *pSrc++;
+		dest <<= 16;
+		dest |= *pSrc++;
+		dest <<= 16;
+		dest |= *pSrc++;
+
+		*(uint64_t*)pDst = dest | (dest << 8);
+		pDst += 8;
+	}
+}
+
+static void read16_BGRA8_sRGB(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t dest = conv_8_sRGB_to_16_linear[*pSrc++];
+		dest <<= 16;
+		dest |= conv_8_sRGB_to_16_linear[*pSrc++];
+		dest <<= 16;
+		dest |= conv_8_sRGB_to_16_linear[*pSrc++];
+		dest <<= 16;
+		dest |= conv_8_sRGB_to_16_linear[*pSrc++];
+
+		*(uint64_t*)pDst = dest;
+		pDst += 8;
+	}
+}
+
+static void read16_BGRX8_linear(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t dest = *pSrc++;
+		dest <<= 16;
+		dest |= *pSrc++;
+		dest <<= 16;
+		dest |= *pSrc++;
+		dest <<= 16;
+		pSrc++;
+
+		*(uint64_t*)pDst = dest | (dest << 8) | 0xFFFF;
+		pDst += 8;
+	}
+}
+
+static void read16_BGRX8_sRGB(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t dest = conv_8_sRGB_to_16_linear[*pSrc++];
+		dest <<= 16;
+		dest |= conv_8_sRGB_to_16_linear[*pSrc++];
+		dest <<= 16;
+		dest |= conv_8_sRGB_to_16_linear[*pSrc++];
+		dest <<= 16;
+		pSrc++;
+
+		*(uint64_t*)pDst = dest | 0xFFFF;;
+		pDst += 8;
+	}
+}
+
+static void read16_BGR8_linear(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t dest = *pSrc++;
+		dest <<= 16;
+		dest |= *pSrc++;
+		dest <<= 16;
+		dest |= *pSrc++;
+		dest <<= 16;
+
+		*(uint64_t*)pDst = dest | (dest << 8) | 0xFFFF;
+		pDst += 8;
+	}
+}
+
+static void read16_BGR8_sRGB(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t dest = conv_8_sRGB_to_16_linear[*pSrc++];
+		dest <<= 16;
+		dest |= conv_8_sRGB_to_16_linear[*pSrc++];
+		dest <<= 16;
+		dest |= conv_8_sRGB_to_16_linear[*pSrc++];
+		dest <<= 16;
+
+		*(uint64_t*)pDst = dest | 0xFFFF;
+		pDst += 8;
+	}
+}
+
+static void read16_Alpha_8(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	for (int i = 0; i < nbPixels; i++)
+	{
+		int dest = *pSrc++;
+		*(uint64_t*)pDst = 0xFFFFFFFFFFFFFF00 | dest | (dest << 8 );
+		pDst += 8;
+	}
+}
+
+static void read16_Index8(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	uint64_t* pPalette = (uint64_t*)p1;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		*(uint64_t*)pDst = pPalette[*pSrc++];
+		pDst += 8;
+	}
+}
+
+static void read16_Index16(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	uint64_t* pPalette = (uint64_t*)p1;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+
+		*(uint64_t*)pDst = pPalette[*((uint16_t*)pSrc)];
+		pDst += 8;
+		pSrc += 2;
+	}
+}
+
+
+static void read16_BGRA_4(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	uint64_t* pOut = (uint64_t*) pDst;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t	acc = 0;
+
+		uint8_t bg = *pSrc++;
+		acc = conv_4_to_8_straight[bg & 0xF];
+		acc <<= 16;
+
+		acc |= conv_4_to_8_straight[bg >> 4];
+		acc <<= 16;
+
+		uint8_t ra = *pSrc++;
+		acc |= conv_4_to_8_straight[ra & 0xF];
+		acc <<= 16;
+
+		acc |= conv_4_to_8_straight[ra >> 4];
+
+		*pDst++ = acc | (acc << 8);
+	}
+}
+
+
+static void read16_BGR_565(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	uint64_t* pOut = (uint64_t*)pDst;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t	acc = 0;
+
+		uint16_t bgr = *(uint16_t*)pSrc;
+
+		acc = conv_5_to_8_straight[bgr & 0x1F];
+		acc <<= 16;
+
+		acc |= conv_6_to_8_straight[(bgr >> 5) & 0x3F];
+		acc <<= 16;
+
+		acc |= conv_5_to_8_straight[bgr >> 11];
+		acc <<= 16;
+
+		*pDst++ = acc | (acc << 8) | 0xFFFF;
+		pSrc += 2;
+	}
+}
+
+static void read16_RGB_565_bigendian(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	uint64_t* pOut = (uint64_t*)pDst;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t	acc = 0;
+
+		uint16_t rgb = *(uint16_t*)pSrc;
+		rgb = (rgb >> 8 | rgb << 8);
+
+		acc = conv_5_to_8_straight[rgb & 0x1F];
+		acc <<= 16;
+
+		acc |= conv_6_to_8_straight[(rgb >> 5) & 0x3F];
+		acc <<= 16;
+
+		acc |= conv_5_to_8_straight[rgb >> 11];
+		acc <<= 16;
+
+		*pDst++ = acc | (acc << 8) | 0xFFFF;
+		pSrc += 2;
+	}
+}
+
+static void read16_RGB_555_bigendian(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	uint64_t* pOut = (uint64_t*)pDst;
+
+	for (int i = 0; i < nbPixels; i++)
+	{
+		uint64_t	acc = 0;
+
+		uint16_t rgb = *(uint16_t*)pSrc;
+		rgb = (rgb >> 8 | rgb << 8);
+
+		acc = conv_5_to_8_straight[rgb & 0x1F];
+		acc <<= 16;
+
+		acc |= conv_5_to_8_straight[(rgb >> 6) & 0x1F];
+		acc <<= 16;
+
+		acc |= conv_5_to_8_straight[rgb >> 11];
+		acc <<= 16;
+
+		*pDst++ = acc | (acc << 8) | 0xFFFF;
+		pSrc += 2;
+	}
+}
+
+static void read16_bitplanes(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* p1, const void* p2)
+{
+	PixelReadFunc pFunc = (PixelReadFunc) p2;
+
+	pFunc(pSrc, pDst, nbPixels, p1, nullptr);
+
+	uint8_t* pCpySrc = pDst + nbPixels*4;
+	uint8_t* pCpyDst = pDst + nbPixels*8;
+
+	for (int i = 0; i < nbPixels * 4; i++)
+	{
+		* --pCpyDst = * --pCpySrc;
+		* --pCpyDst = * pCpySrc;
+	}
+}
+
+
+
+static void copy_RGBA_8_to_BGR_8(const uint8_t* pSrc, uint8_t* pDst, int amount)
+{
+	for (int i = 0; i < amount; i++)
+	{
+		*pDst++ = *pSrc++;
+		*pDst++ = *pSrc++;
+		*pDst++ = *pSrc++;
+		pSrc += 1;
+	}
+}
+
+static void copy_RGBA_8_to_BGRA_4(const uint8_t* pSrc, uint8_t* pDst, int amount)
+{
+	for (int i = 0; i < amount; i++)
+	{
+		uint8_t dst = ((*pSrc++) >> 4);
+		dst |= ((*pSrc++) & 0xF0);
+		*pDst++ = dst;
+
+		dst = ((*pSrc++) >> 4);
+		dst |= ((*pSrc++) & 0xF0);
+		*pDst++ = dst;
+	}
+}
+
+static void copy_RGBA_8_to_BGR_565(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
+{
+	auto pSrc = (uint32_t*)_pSrc;
+	auto pDst = (uint16_t*)_pDst;
+
+	for (int i = 0; i < amount; i++)
+	{
+		uint32_t col = * pSrc++;
+		* pDst++ = ((col >> 19) & 0x1F) | ((col >> 5) & 0x7E0) | ((col & 0xF8) << 8);
+	}
+}
+
+static void copy_RGBA_8_to_RGB_565BE(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
+{
+	auto pSrc = (uint32_t*)_pSrc;
+	auto pDst = (uint16_t*)_pDst;
+
+	for (int i = 0; i < amount; i++)
+	{
+		uint32_t col = * pSrc++;
+		uint16_t out = ((col >> 19) & 0x1F) | ((col >> 5) & 0x7E0) | ((col & 0xF8) << 8);
+		out = (out >> 8 | out << 8);
+		* pDst++ = out;
+	}
+}
+
+static void copy_RGBA_8_to_RGB_555BE(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
+{
+	auto pSrc = (uint32_t*)_pSrc;
+	auto pDst = (uint16_t*)_pDst;
+
+	for (int i = 0; i < amount; i++)
+	{
+		uint32_t col = *pSrc++;
+		uint16_t out = ((col >> 19) & 0x1F) | ((col >> 5) & 0x7C0) | ((col & 0xF8) << 8);
+		out = (out >> 8 | out << 8);
+		*pDst++ = out;
+	}
+}
+
+static void copy_RGBA_8_to_Alpha_8(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
+{
+	auto pSrc = (uint32_t*)_pSrc;
+	auto pDst = (uint16_t*)_pDst;
+
+	for (int i = 0; i < amount; i++)
+	{
+		pSrc += 3;
+		*pDst++ = * pSrc++;
+	}
+}
+
+//____ getChunkyWriteFuncFromBGRA8() _______________________________________________
+
+static PixelWriteFunc getChunkyWriteFuncFromBGRA8(PixelFormat dstFmt)
+{
+	switch (dstFmt)
+	{
+	case PixelFormat::BGR_8_sRGB:
+	case PixelFormat::BGR_8_linear:
+		return copy_RGBA_8_to_BGR_8;
+
+	case PixelFormat::BGRA_4_linear:
+		return copy_RGBA_8_to_BGRA_4;
+
+	case PixelFormat::BGR_565_linear:
+		return copy_RGBA_8_to_BGR_565;
+
+	case PixelFormat::RGB_565_bigendian:
+		return copy_RGBA_8_to_RGB_565BE;
+
+	case PixelFormat::RGB_555_bigendian:
+		return copy_RGBA_8_to_RGB_555BE;
+
+	case PixelFormat::Alpha_8:
+		return copy_RGBA_8_to_Alpha_8;
+
+	default:
+		return nullptr;
+	}
+}
+
+
+//____ twoStepCopyToChunky() _________________________________________________
+
+static bool twoStepCopyToChunky(int width, int height, const uint8_t* pSrc, int srcPixelBits, int srcPitchAdd,
+	uint8_t* pDst, int dstPixelBits, int dstPitchAdd, PixelReadFunc pReadFunc, const void* pTab1, const void* pTab2,
+	PixelWriteFunc pWriteFunc )
+{
+	uint8_t	buffer[64 * 4];
+
+	for (int y = 0; y < height; y++)
+	{
+		int x = 0;
+		int widthLeft = width;
+		while (widthLeft > 64)
+		{
+			pReadFunc(pSrc, buffer, 64, pTab1, pTab2);
+			pSrc += srcPixelBits * 8;
+
+			pWriteFunc(buffer, pDst, 64);
+			pDst += dstPixelBits * 8;
+
+			widthLeft -= 64;
+		}
+
+		if (widthLeft > 0)
+		{
+			pReadFunc(pSrc, buffer, widthLeft, pTab1, pTab2);
+			pSrc += srcPixelBits / 8 * widthLeft;
+
+			pWriteFunc(buffer, pDst, 64);
+			pDst += dstPixelBits * 8;
+		}
+
+		pSrc += srcPitchAdd;
+		pDst += dstPitchAdd;
+	}
+
+	return true;
+}
+
 
 //____ convertPixelsToKnownType() _________________________________________________________
 
@@ -946,7 +1506,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 		case PixelFormat::Index_8_sRGB:
 		case PixelFormat::Index_8_linear:
 		{
-			uint32_t		buffer[64];
+			uint32_t	buffer[64];
 			int 		nColors = dstPaletteEntries;
 
 			for( int y = 0 ; y < height ; y++ )
@@ -1145,18 +1705,8 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 		}
 
 		default:
-		{
-			int srcPitch = width * srcPixelBits / 8 + srcPitchAdd;
-			int dstPitch = width * srcPixelBits / 8 + dstPitchAdd;
-
-			for( int y = 0 ; y < height ; y++ )
-			{
-				pReadFunc( pSrc, pDst, width, pTab1, pTab2 );
-				pSrc += srcPitch;
-				pDst += dstPitch;
-			}
+			assert(false);		// Should never get here.
 			break;
-		}
 	}
 	
 	return true;
@@ -1164,7 +1714,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 //____ shiftAndBitsFromMask() _________________________________________________
 
-inline void shiftAndBitsFromMask( uint64_t mask64, int& shift, int& bits )
+static inline void shiftAndBitsFromMask( uint64_t mask64, int& shift, int& bits )
 {
 	shift = 0;
 	bits = 0;
@@ -1230,6 +1780,11 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescripti
 		convTab.maskB = srcDesc.B_mask;
 		convTab.maskA = srcDesc.A_mask;
 
+		convTab.maskR64 = srcDesc.R_mask;
+		convTab.maskG64 = srcDesc.G_mask;
+		convTab.maskB64 = srcDesc.B_mask;
+		convTab.maskA64 = srcDesc.A_mask;
+
 		int bitsR, bitsG, bitsB, bitsA;
 		
 		shiftAndBitsFromMask( srcDesc.R_mask, convTab.shiftR, bitsR );
@@ -1237,26 +1792,53 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescripti
 		shiftAndBitsFromMask( srcDesc.B_mask, convTab.shiftB, bitsB );
 		shiftAndBitsFromMask( srcDesc.A_mask, convTab.shiftA, bitsA );
 
-		const uint8_t ** pTabList;
-		
-		if( dstDesc.colorSpace == srcDesc.colorSpace )
-			pTabList = conv_straight_tabs;
-		else if( srcDesc.colorSpace == ColorSpace::Linear )
-			pTabList = conv_linear_to_sRGB_tabs;
-		else
-			pTabList = conv_srgb_to_linear_tabs;
-
-		
-		convTab.pConvR = pTabList[bitsR];
-		convTab.pConvG = pTabList[bitsG];
-		convTab.pConvB = pTabList[bitsB];
-		convTab.pConvA = pTabList[bitsA];
-	
-
 		PixelReadFunc pReadFunc;
 
-		switch( srcDesc.bits )
+		if (srcDesc.bits == 64)
 		{
+			if (dstDesc.colorSpace == ColorSpace::sRGB)
+			{
+				if (pConv_16_linear_to_8_sRGB)
+					createConv16toSRGBTab();
+
+				convTab.pConvR = pConv_16_linear_to_8_sRGB;
+				convTab.pConvG = pConv_16_linear_to_8_sRGB;
+				convTab.pConvB = pConv_16_linear_to_8_sRGB;
+				convTab.pConvA = pConv_16_linear_to_8_sRGB;
+			}
+			else
+			{
+				convTab.pConvR = nullptr;
+				convTab.pConvG = nullptr;
+				convTab.pConvB = nullptr;
+				convTab.pConvA = nullptr;
+			}
+
+			if (dstFmt == PixelFormat::BGRA_16_linear)
+				pReadFunc = shiftRead_64bit_to64;
+			else if (dstDesc.colorSpace == ColorSpace::Linear)
+				pReadFunc = shiftRead_64bit;
+			else
+				pReadFunc = shiftReadConv_64bit;
+		}
+		else
+		{
+			const uint8_t** pTabList;
+
+			if (dstDesc.colorSpace == srcDesc.colorSpace)
+				pTabList = conv_straight_tabs;
+			else if (srcDesc.colorSpace == ColorSpace::Linear)
+				pTabList = conv_linear_to_sRGB_tabs;
+			else
+				pTabList = conv_srgb_to_linear_tabs;
+
+			convTab.pConvR = pTabList[bitsR];
+			convTab.pConvG = pTabList[bitsG];
+			convTab.pConvB = pTabList[bitsB];
+			convTab.pConvA = pTabList[bitsA];
+
+			switch (srcDesc.bits)
+			{
 			case 8:
 				pReadFunc = shiftReadConv_8bit;
 				break;
@@ -1272,431 +1854,665 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescripti
 			default:
 				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Conversion from chunky pixels requires 8, 16, 24 or 32 bit pixels.", nullptr, nullptr, __func__, __FILE__, __LINE__);
 				return false;
-		}
-		
+			}
+		}			
 		
 		return convertPixelsToKnownType(width, height, pSrc, srcDesc.bits, srcPitchAdd, pDst, dstFmt, dstPitchAdd,
 										  pDstPalette, dstPaletteEntries, maxDstPaletteEntries, pReadFunc, &convTab, nullptr );
 	}
 }
 
-//____ copyPixels() [PixelFormat] _____________________________________________
+//____ getReadFuncFor32bitDest() _____________________________________________
 
-bool copyPixels( int width, int height, const uint8_t * pSrc, PixelFormat srcFmt, int srcPitchAdd,
-				 uint8_t * pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8 * pSrcPalette,
-				 Color8 * pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries )
+static std::tuple<PixelReadFunc, const void *, const void *, int> getReadFuncFor32bitDest(PixelFormat srcFmt, PixelFormat dstFmt, const Color8* pSrcPalette, int srcPaletteEntries )
 {
+	auto& srcDesc = Util::pixelFormatToDescription(srcFmt);
+	auto& dstDesc = Util::pixelFormatToDescription(dstFmt);
 
-	// TODO: Straight copy with palette conversion when converting between Index_8_linear and Index_8_sRGB.
-	// TODO: Optimize copy to A8 in several ways.
+	PixelReadFunc pReadFunc = nullptr;
+
+	bool bLinearSource = (srcDesc.colorSpace == ColorSpace::Linear);
+	bool bLinearDest = (dstDesc.colorSpace == ColorSpace::Linear);
+
+	const void* pTab1 = nullptr;
+	const void* pTab2 = nullptr;
 
 	int nAllocatedBytes = 0;
-	
-	srcFmt = Util::translatePixelFormat(srcFmt);
-	dstFmt = Util::translatePixelFormat(dstFmt);
-	
-	auto& srcDesc = Util::pixelFormatToDescription( srcFmt );
- 	auto& dstDesc = Util::pixelFormatToDescription( dstFmt );
-	
-	if( (srcFmt == dstFmt) || (srcFmt == PixelFormat::BGRA_8_sRGB && dstFmt == PixelFormat::BGRX_8_sRGB) ||
-		(srcFmt == PixelFormat::BGRA_8_linear && dstFmt == PixelFormat::BGRX_8_linear) ||
-		(srcDesc.type == PixelType::Index && dstDesc.type == PixelType::Index && maxDstPaletteEntries >= srcPaletteEntries) )
+
+	switch (srcDesc.type)
 	{
-		if( srcPitchAdd + dstPitchAdd == 0 )
-			std::memcpy( pDst, pSrc, srcDesc.bits * width * height / 8 );
-		else
-		{
-			int pitch = width * srcDesc.bits / 8;
-
-			for( int y = 0 ; y < height ; y++ )
+		case PixelType::Index:
+			pReadFunc = srcDesc.bits == 8 ? readIndex8 : readIndex16;
+			if (srcDesc.colorSpace == dstDesc.colorSpace)
+				pTab1 = pSrcPalette;
+			else
 			{
-				std::memcpy( pDst, pSrc, srcDesc.bits * width / 8 );
-				pDst += pitch + dstPitchAdd;
-				pSrc += pitch + srcPitchAdd;
+				auto convTab = srcDesc.colorSpace == ColorSpace::Linear ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
+
+				nAllocatedBytes = srcPaletteEntries * sizeof(Color8);
+				Color8* pConvPalette = (Color8*)GfxBase::memStackAlloc(nAllocatedBytes);
+				readConvBGRA8((uint8_t*)pSrcPalette, (uint8_t*)pConvPalette, srcPaletteEntries, convTab, nullptr);
+				pTab1 = pConvPalette;
 			}
-		}
+			break;
 
-		if(srcDesc.type == PixelType::Index && dstDesc.type == PixelType::Index && srcDesc.colorSpace != dstDesc.colorSpace )
+		case PixelType::Bitplanes:
 		{
-			// Palette needs to be converted between sRGB and Linear.
+			const PixelReadFunc readFunc_planes_nonAlpha[8] = {
+				readConv_planes_1i_be, readConv_planes_2i_be, nullptr, readConv_planes_4i_be,
+				readConv_planes_5i_be, nullptr, nullptr, readConv_planes_8i_be };
 
-			const uint8_t * pTable = srcDesc.colorSpace == ColorSpace::Linear ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
-			readConvBGRA8( (uint8_t*) pSrcPalette, (uint8_t*) pDstPalette, maxDstPaletteEntries, pTable, nullptr );
+			const PixelReadFunc readFunc_planes_withAlpha[8] = {
+				readConv_planes_1i_a1_be, readConv_planes_2i_a1_be, nullptr, readConv_planes_4i_a1_be,
+				readConv_planes_5i_a1_be, nullptr, nullptr, readConv_planes_8i_a1_be };
+
+			if (srcDesc.A_mask == 0)
+				pReadFunc = readFunc_planes_nonAlpha[srcDesc.bits - 1];
+			else
+				pReadFunc = readFunc_planes_withAlpha[srcDesc.bits - 2];
+
+			if (srcDesc.colorSpace == dstDesc.colorSpace)
+				pTab1 = pSrcPalette;
+			else
+			{
+				auto convTab = srcDesc.colorSpace == ColorSpace::Linear ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
+
+				nAllocatedBytes = srcPaletteEntries * sizeof(Color8);
+				Color8* pConvPalette = (Color8*)GfxBase::memStackAlloc(nAllocatedBytes);
+				readConvBGRA8((uint8_t*)pSrcPalette, (uint8_t*)pConvPalette, srcPaletteEntries, convTab, nullptr);
+				pTab1 = pConvPalette;
+			}
+			break;
 		}
+
+
+		case PixelType::Chunky_BE:
+		{
+			if (srcFmt == PixelFormat::RGB_565_bigendian)
+			{
+				pReadFunc = readRGB_565_bigendian;
+				if (bLinearDest)
+				{
+					pTab1 = conv_5_to_8_straight;
+					pTab2 = conv_6_to_8_straight;
+				}
+				else
+				{
+					pTab1 = conv_5_linear_to_8_sRGB;
+					pTab2 = conv_6_linear_to_8_sRGB;
+				}
+			}
+			else
+			{
+				pReadFunc = readRGB_555_bigendian;
+				if (bLinearDest)
+					pTab1 = conv_5_to_8_straight;
+				else
+					pTab1 = conv_5_linear_to_8_sRGB;
+			}
+			break;
+		}
+
+		case PixelType::Chunky:
+		{
+			switch (srcFmt)
+			{
+			case PixelFormat::BGR_8_sRGB:
+			case PixelFormat::BGR_8_linear:
+				if (srcDesc.colorSpace == dstDesc.colorSpace)
+					pReadFunc = readBGR8;
+				else
+				{
+					pReadFunc = readConvBGR8;
+					pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
+				}
+				break;
+
+
+			case PixelFormat::BGRX_8_sRGB:
+			case PixelFormat::BGRX_8_linear:
+				if (srcDesc.colorSpace == dstDesc.colorSpace)
+					pReadFunc = readBGRX8;
+				else
+				{
+					pReadFunc = readConvBGRX8;
+					pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
+				}
+				break;
+
+			case PixelFormat::BGRA_8_sRGB:
+			case PixelFormat::BGRA_8_linear:
+				if (srcDesc.colorSpace == dstDesc.colorSpace)
+					pReadFunc = readBGRA8;
+				else
+				{
+					pReadFunc = readConvBGRA8;
+					pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
+				}
+				break;
+
+			case PixelFormat::BGRA_4_linear:
+				pReadFunc = readBGRA_4;
+				if (bLinearDest)
+					pTab1 = conv_4_to_8_straight;
+				else
+					pTab1 = conv_4_linear_to_8_sRGB;
+
+				break;
+
+			case PixelFormat::BGR_565_linear:
+				pReadFunc = readBGR_565;
+				if (bLinearDest)
+				{
+					pTab1 = conv_5_to_8_straight;
+					pTab2 = conv_6_to_8_straight;
+				}
+				else
+				{
+					pTab1 = conv_5_linear_to_8_sRGB;
+					pTab2 = conv_6_linear_to_8_sRGB;
+				}
+				break;
+
+			case PixelFormat::Alpha_8:
+				pReadFunc = readAlpha8;
+				break;
+
+			case PixelFormat::BGRA_16_linear:
+				if (srcDesc.colorSpace == ColorSpace::Linear)
+					pReadFunc = readBGRA16;
+				else
+				{
+					if (pConv_16_linear_to_8_sRGB == nullptr)
+						createConv16toSRGBTab();
+
+					pReadFunc = readConvBGRA16;
+					pTab1 = pConv_16_linear_to_8_sRGB;
+				}
+				break;
+
+
+			default:
+				break;			// Should never get here.
+			}
+			break;
+		}
+	}
+
+	return std::make_tuple(pReadFunc, pTab1, pTab2, nAllocatedBytes);
+}
+
+//____ getReadFuncFor64bitDest() _____________________________________________
+
+static std::tuple<PixelReadFunc, const void*, const void*, int> getReadFuncFor64bitDest(PixelFormat srcFmt, const Color8* pSrcPalette, int srcPaletteEntries)
+{
+	auto& srcDesc = Util::pixelFormatToDescription(srcFmt);
+
+	PixelReadFunc pReadFunc = nullptr;
+
+	bool bLinearSource = (srcDesc.colorSpace == ColorSpace::Linear);
+
+	const void* pTab1 = nullptr;
+	const void* pTab2 = nullptr;
+
+	int nAllocatedBytes = 0;
+
+	switch (srcDesc.type)
+	{
+		case PixelType::Index:
+		{
+			// Generate a 16-bit palette.
+
+			nAllocatedBytes = srcPaletteEntries * 8;
+			uint16_t* pConvPalette = (uint16_t*)GfxBase::memStackAlloc(nAllocatedBytes);
+
+			if (bLinearSource)
+				read16_BGRA8_linear((uint8_t*)pSrcPalette, (uint8_t*)pConvPalette, srcPaletteEntries, nullptr, nullptr);
+			else
+				read16_BGRA8_sRGB((uint8_t*)pSrcPalette, (uint8_t*)pConvPalette, srcPaletteEntries, nullptr, nullptr);
+
+			//
+
+			pReadFunc = srcDesc.bits == 8 ? read16_Index8 : read16_Index16;
+			pTab1 = pConvPalette;
+
+			break;
+		}
+
+		case PixelType::Bitplanes:
+		{
+			const PixelReadFunc readFunc_planes_nonAlpha[8] = {
+				readConv_planes_1i_be, readConv_planes_2i_be, nullptr, readConv_planes_4i_be,
+				readConv_planes_5i_be, nullptr, nullptr, readConv_planes_8i_be };
+
+			const PixelReadFunc readFunc_planes_withAlpha[8] = {
+				readConv_planes_1i_a1_be, readConv_planes_2i_a1_be, nullptr, readConv_planes_4i_a1_be,
+				readConv_planes_5i_a1_be, nullptr, nullptr, readConv_planes_8i_a1_be };
+
+			if (srcDesc.A_mask == 0)
+				pTab2 = readFunc_planes_nonAlpha[srcDesc.bits - 1];
+			else
+				pTab2 = readFunc_planes_withAlpha[srcDesc.bits - 2];
+
+			pTab1 = pSrcPalette;
+
+			pReadFunc = read16_bitplanes;
+			break;
+		}
+
+		case PixelType::Chunky_BE:
+		{
+			if (srcFmt == PixelFormat::RGB_565_bigendian)
+				pReadFunc = read16_RGB_565_bigendian;
+			else
+				pReadFunc = read16_RGB_555_bigendian;
+			break;
+		}
+
+		case PixelType::Chunky:
+		{
+			switch (srcFmt)
+			{
+			case PixelFormat::BGR_8_sRGB:
+				pReadFunc = read16_BGR8_sRGB;
+				break;
+
+			case PixelFormat::BGR_8_linear:
+				pReadFunc = read16_BGR8_linear;
+				break;
+
+			case PixelFormat::BGRX_8_sRGB:
+				pReadFunc = read16_BGRX8_sRGB;
+				break;
+
+			case PixelFormat::BGRX_8_linear:
+				pReadFunc = read16_BGRX8_linear;
+				break;
+
+			case PixelFormat::BGRA_8_sRGB:
+				pReadFunc = read16_BGRA8_sRGB;
+				break;
+
+			case PixelFormat::BGRA_8_linear:
+				pReadFunc = read16_BGRA8_linear;
+				break;
+
+			case PixelFormat::BGRA_4_linear:
+				pReadFunc = read16_BGRA_4;
+				break;
+
+			case PixelFormat::BGR_565_linear:
+				pReadFunc = read16_BGR_565;
+				break;
+
+			case PixelFormat::Alpha_8:
+				pReadFunc = read16_Alpha_8;
+				break;
+
+			case PixelFormat::BGRA_16_linear:
+				pReadFunc = read16_BGRA16_linear;
+				break;
+
+			default:
+				assert(false);
+				break;			// Should never get here.
+			}
+			break;
+		}
+	}
+
+	return std::make_tuple(pReadFunc, pTab1, pTab2, nAllocatedBytes);
+}
+
+
+//____ copyTo32bitDestination() ______________________________________________
+
+static bool copyTo32bitDestination(int width, int height, const uint8_t* pSrc, PixelFormat srcFmt, int srcPitchAdd,
+	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette, int srcPaletteEntries)
+{
+	auto& srcDesc = Util::pixelFormatToDescription(srcFmt);
+
+	PixelReadFunc pReadFunc = nullptr;
+
+	const void* pTab1 = nullptr;
+	const void* pTab2 = nullptr;
+
+	int nAllocatedBytes = 0;
+
+	std::tie(pReadFunc, pTab1, pTab2, nAllocatedBytes) = getReadFuncFor32bitDest(srcFmt, dstFmt, pSrcPalette, srcPaletteEntries);
+	if (pReadFunc == nullptr)
+		return false;
+
+	int srcPitch = width * srcDesc.bits / 8 + srcPitchAdd;
+	int dstPitch = width * 32 / 8 + dstPitchAdd;
+
+	for (int y = 0; y < height; y++)
+	{
+		pReadFunc(pSrc, pDst, width, pTab1, pTab2);
+		pSrc += srcPitch;
+		pDst += dstPitch;
+	}
+
+	GfxBase::memStackFree(nAllocatedBytes);
+	return true;
+}
+
+//____ copyTo64bitDestination() ______________________________________________
+
+static bool copyTo64bitDestination(int width, int height, const uint8_t* pSrc, PixelFormat srcFmt, int srcPitchAdd,
+	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette, int srcPaletteEntries)
+{
+	auto& srcDesc = Util::pixelFormatToDescription(srcFmt);
+
+	PixelReadFunc pReadFunc = nullptr;
+
+	const void* pTab1 = nullptr;
+	const void* pTab2 = nullptr;
+
+	int nAllocatedBytes = 0;
+
+	std::tie(pReadFunc, pTab1, pTab2, nAllocatedBytes) = getReadFuncFor64bitDest(srcFmt, pSrcPalette, srcPaletteEntries );
+	if (pReadFunc == nullptr)
+		return false;
+
+	int srcPitch = width * srcDesc.bits / 8 + srcPitchAdd;
+	int dstPitch = width * 64 / 8 + dstPitchAdd;
+
+	for (int y = 0; y < height; y++)
+	{
+		pReadFunc(pSrc, pDst, width, pTab1, pTab2);
+		pSrc += srcPitch;
+		pDst += dstPitch;
+	}
+
+	GfxBase::memStackFree(nAllocatedBytes);
+	return true;
+}
+
+//____ copyToChunkyDestination() ______________________________________________
+
+static bool copyToChunkyDestination(int width, int height, const uint8_t* pSrc, PixelFormat srcFmt, int srcPitchAdd,
+	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette, int srcPaletteEntries)
+{
+	auto& srcDesc = Util::pixelFormatToDescription(srcFmt);
+	auto& dstDesc = Util::pixelFormatToDescription(dstFmt);
+
+
+	if (srcFmt == dstFmt)
+	{
+		// We can do a straight memcopy
+
+		int bytes = width * srcDesc.bits / 8;
+
+		for (int y = 0; y < height; y++)
+		{
+			memcpy(pDst, pSrc, bytes);
+			pSrc += srcPitchAdd + bytes;
+			pDst += dstPitchAdd + bytes;
+		}
+	}
+	else if ( srcDesc.colorSpace == dstDesc.colorSpace && (srcFmt == PixelFormat::BGRA_8_linear || srcFmt == PixelFormat::BGRA_8_sRGB ||
+		srcFmt == PixelFormat::BGRX_8_linear || srcFmt == PixelFormat::BGRX_8_sRGB) )
+	{
+		// We can do a one step process
+
+		PixelWriteFunc pWriteFunc = getChunkyWriteFuncFromBGRA8(dstFmt);
+
+		for (int y = 0; y < height; y++)
+		{
+			pWriteFunc(pSrc, pDst, width);
+
+			pSrc += srcPitchAdd + width * srcDesc.bits / 8;
+			pDst += dstPitchAdd + width * dstDesc.bits / 8;
+		}
+
 	}
 	else
 	{
-		PixelReadFunc pReadFunc;
+		// We need to make a two-step process
 
-		bool bLinearSource = (srcDesc.colorSpace == ColorSpace::Linear);
-		bool bLinearDest = (dstDesc.colorSpace == ColorSpace::Linear);
+		PixelReadFunc pReadFunc = nullptr;
 
-		const void * pTab1 = nullptr;
-		const void * pTab2 = nullptr;
+		const void* pTab1 = nullptr;
+		const void* pTab2 = nullptr;
 
-		switch (srcDesc.type)
+		int nAllocatedBytes = 0;
+
+		std::tie(pReadFunc, pTab1, pTab2, nAllocatedBytes) = getReadFuncFor32bitDest(srcFmt, dstFmt, pSrcPalette, srcPaletteEntries);
+		if (pReadFunc == nullptr)
+			return false;
+
+		PixelWriteFunc pWriteFunc = getChunkyWriteFuncFromBGRA8(dstFmt);
+
+		return twoStepCopyToChunky(width, height, pSrc, srcDesc.bits, srcPitchAdd, pDst, dstDesc.bits, dstPitchAdd,
+			pReadFunc, pTab1, pTab2, pWriteFunc);
+	}
+
+}
+
+//____ copyToIndexedDestination() _____________________________________________
+
+static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc, PixelFormat srcFmt, int srcPitchAdd,
+	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette,
+	Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries)
+{
+
+	auto& srcDesc = Util::pixelFormatToDescription(srcFmt);
+	auto& dstDesc = Util::pixelFormatToDescription(dstFmt);
+
+	if (srcDesc.type == PixelType::Index || srcDesc.type == PixelType::Bitplanes)
+	{
+		// Both source and dest are palette-based.
+
+
+
+
+
+	}
+	else
+	{
+
+	}
+
+
+
+}
+
+
+//____ copyPixels() [PixelFormat] _____________________________________________
+
+bool copyPixels(int width, int height, const uint8_t* pSrc, PixelFormat srcFmt, int srcPitchAdd,
+	uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette,
+	Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries)
+{
+
+	srcFmt = Util::clarifyPixelFormat(srcFmt);
+	dstFmt = Util::clarifyPixelFormat(dstFmt);
+
+	if (dstFmt == PixelFormat::BGRA_8_linear || dstFmt == PixelFormat::BGRA_8_sRGB || dstFmt == PixelFormat::BGRX_8_linear || dstFmt == PixelFormat::BGRX_8_sRGB)
+		return copyTo32bitDestination(width, height, pSrc, srcFmt, srcPitchAdd, pDst, dstFmt, dstPitchAdd, pSrcPalette, srcPaletteEntries);
+	else if (dstFmt == PixelFormat::BGRX_16_linear)
+		return copyTo64bitDestination(width, height, pSrc, srcFmt, srcPitchAdd, pDst, dstFmt, dstPitchAdd, pSrcPalette, srcPaletteEntries);
+	else
+	{
+		auto& dstDesc = Util::pixelFormatToDescription(dstFmt);
+
+		switch (dstDesc.type)
 		{
-			case PixelType::Index:
-				pReadFunc = srcDesc.bits == 8 ? readIndex8 : readIndex16;
-				if (srcDesc.colorSpace == dstDesc.colorSpace)
-					pTab1 = pSrcPalette;
-				else
-				{
-					auto convTab = srcDesc.colorSpace == ColorSpace::Linear ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
-
-					nAllocatedBytes = srcPaletteEntries * sizeof(Color8);
-					Color8* pConvPalette = (Color8*)GfxBase::memStackAlloc(nAllocatedBytes);
-					readConvBGRA8((uint8_t*)pSrcPalette, (uint8_t*)pConvPalette, srcPaletteEntries, convTab, nullptr);
-					pTab1 = pConvPalette;
-				}
-				break;
-
 			case PixelType::Bitplanes:
-			{
-				const PixelReadFunc readFunc_planes_nonAlpha[8] = { 
-					readConv_planes_1i_be, readConv_planes_2i_be, nullptr, readConv_planes_4i_be,
-					readConv_planes_5i_be, nullptr, nullptr, readConv_planes_8i_be };
-
-				const PixelReadFunc readFunc_planes_withAlpha[8] = { 
-					readConv_planes_1i_a1_be, readConv_planes_2i_a1_be, nullptr, readConv_planes_4i_a1_be,
-					readConv_planes_5i_a1_be, nullptr, nullptr, readConv_planes_8i_a1_be };
-
-				if (srcDesc.A_mask == 0)
-					pReadFunc = readFunc_planes_nonAlpha[srcDesc.bits - 1];
-				else
-					pReadFunc = readFunc_planes_withAlpha[srcDesc.bits - 2];
-
-				if (srcDesc.colorSpace == dstDesc.colorSpace)
-					pTab1 = pSrcPalette;
-				else
-				{
-					auto convTab = srcDesc.colorSpace == ColorSpace::Linear ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
-
-					nAllocatedBytes = srcPaletteEntries * sizeof(Color8);
-					Color8* pConvPalette = (Color8*)GfxBase::memStackAlloc(nAllocatedBytes);
-					readConvBGRA8((uint8_t*)pSrcPalette, (uint8_t*)pConvPalette, srcPaletteEntries, convTab, nullptr);
-					pTab1 = pConvPalette;
-				}
-				break;
-			}
-				
-
-			case PixelType::Chunky_BE:
-			{
-				if (srcFmt == PixelFormat::RGB_565_bigendian)
-				{
-					pReadFunc = readRGB_565_bigendian;
-					if (bLinearDest)
-					{
-						pTab1 = conv_5_to_8_straight;
-						pTab2 = conv_6_to_8_straight;
-					}
-					else
-					{
-						pTab1 = conv_5_linear_to_8_sRGB;
-						pTab2 = conv_6_linear_to_8_sRGB;
-					}
-				}
-				else
-				{
-					pReadFunc = readRGB_555_bigendian;
-					if (bLinearDest)
-						pTab1 = conv_5_to_8_straight;
-					else
-						pTab1 = conv_5_linear_to_8_sRGB;
-				}
-				break;
-			}
+				return false;				// Not supported yet!
 
 			case PixelType::Chunky:
-			{
-				switch( srcFmt )
-				{
-					case PixelFormat::BGR_8_sRGB:
-					case PixelFormat::BGR_8_linear:
-						if(srcDesc.colorSpace == dstDesc.colorSpace)
-							pReadFunc = readBGR8;
-						else
-						{
-							pReadFunc = readConvBGR8;
-							pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
-						}
-						break;
+			case PixelType::Chunky_BE:
+				return copyToChunkyDestination(width, height, pSrc, srcFmt, srcPitchAdd, pDst, dstFmt, dstPitchAdd, pSrcPalette, srcPaletteEntries);
 
 
-					case PixelFormat::BGRX_8_sRGB:
-					case PixelFormat::BGRX_8_linear:
-						if(srcDesc.colorSpace == dstDesc.colorSpace)
-							pReadFunc = readBGRX8;
-						else
-						{
-							pReadFunc = readConvBGRX8;
-							pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
-						}
-						break;
 
-					case PixelFormat::BGRA_8_sRGB:
-					case PixelFormat::BGRA_8_linear:
-						if(srcDesc.colorSpace == dstDesc.colorSpace)
-							pReadFunc = readBGRA8;
-						else
-						{
-							pReadFunc = readConvBGRA8;
-							pTab1 = bLinearSource ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
-						}
-						break;
+			case PixelType::Index:
+				return false;				// Not supported yet!
 
-					case PixelFormat::BGRA_4_linear:
-						pReadFunc = readBGRA_4;
-						if( bLinearDest )
-							pTab1 = conv_4_to_8_straight;
-						else
-							pTab1 = conv_4_linear_to_8_sRGB;
-				
-						break;
-				
-					case PixelFormat::BGR_565_linear:
-						pReadFunc = readBGR_565;
-						if( bLinearDest )
-						{
-							pTab1 = conv_5_to_8_straight;
-							pTab2 = conv_6_to_8_straight;
-						}
-						else
-						{
-							pTab1 = conv_5_linear_to_8_sRGB;
-							pTab2 = conv_6_linear_to_8_sRGB;
-						}
-						break;
-								
-					case PixelFormat::Alpha_8:
-						pReadFunc = readAlpha8;
-						break;
-
-					default:
-						goto error;
-				}
-				break;
-			}
 		}
 
-		if( !convertPixelsToKnownType(	width, height, pSrc, srcDesc.bits, srcPitchAdd, pDst, dstFmt, dstPitchAdd,
-										pDstPalette, dstPaletteEntries, maxDstPaletteEntries,
-										pReadFunc, pTab1, pTab2 ) )
-		   goto error;
-		
 	}
-	
-	if( nAllocatedBytes > 0 )
-		GfxBase::memStackFree(nAllocatedBytes);
-	return true;
-	
-error:
-	if( nAllocatedBytes > 0 )
-		GfxBase::memStackFree(nAllocatedBytes);
-	return false;
 }
 
 //____ colorToPixelBytes() ____________________________________________________
 
-int colorToPixelBytes( HiColor color, PixelFormat type, uint8_t pixelArea[18], Color8* pPalette, int paletteEntries )
+int colorToPixelBytes( HiColor color, PixelFormat format, uint8_t pixelArea[18], Color8* pPalette, int paletteEntries )
 {
-	switch( type )
+	auto& desc = Util::pixelFormatToDescription(format);
+
+	if (desc.type == PixelType::Bitplanes)
 	{
+		HiColor alphaLess = color;
+		alphaLess.a = 0xFF;
+		int colorNb = findBestMatchInPalette(alphaLess, pPalette, paletteEntries, ColorSpace::Linear);
+
+		uint16_t* pOutput = (uint16_t*) pixelArea;
+		int mask = colorNb ^ 0xFFFF;
+
+		int alphaBits = int(desc.A_mask);
+		int colorBits = desc.bits - alphaBits;
+
+		for (int i = 0; i < colorBits; i++)
+		{
+			* pOutput++ = (uint16_t)((mask & 0x1) - 1);
+			mask >>= 1;
+		}
+
+		if( alphaBits )
+			* pOutput++ = color.a >= 2048 ? 0xFFFF : 0x0000;
+
+		return desc.bits*2;
+	}
+	else
+	{
+		uint8_t* pConvTab;
+		if (desc.colorSpace == ColorSpace::Undefined )
+			pConvTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		else if(desc.colorSpace == ColorSpace::Linear )
+			pConvTab = HiColor::packLinearTab;
+		else
+			pConvTab = HiColor::packSRGBTab;
+
+		switch (format)
+		{
 		case PixelFormat::BGR_8:
-		{
-			uint8_t * pConvTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
-			
-			pixelArea[0] = pConvTab[color.b];
-			pixelArea[1] = pConvTab[color.g];
-			pixelArea[2] = pConvTab[color.r];
-			return 3;
-		}
-			
 		case PixelFormat::BGR_8_sRGB:
-		{
-			uint8_t * pConvTab = HiColor::packSRGBTab;
-			
-			pixelArea[0] = pConvTab[color.b];
-			pixelArea[1] = pConvTab[color.g];
-			pixelArea[2] = pConvTab[color.r];
-			return 3;
-		}
-			
 		case PixelFormat::BGR_8_linear:
 		{
-			uint8_t * pConvTab = HiColor::packLinearTab;
-			
 			pixelArea[0] = pConvTab[color.b];
 			pixelArea[1] = pConvTab[color.g];
 			pixelArea[2] = pConvTab[color.r];
 			return 3;
 		}
-			
+
+
 		case PixelFormat::BGRX_8:
-		{
-			uint8_t * pConvTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
-			
-			pixelArea[0] = pConvTab[color.b];
-			pixelArea[1] = pConvTab[color.g];
-			pixelArea[2] = pConvTab[color.r];
-			pixelArea[3] = 0;
-			return 4;
-		}
-			
 		case PixelFormat::BGRX_8_sRGB:
-		{
-			uint8_t * pConvTab = HiColor::packSRGBTab;
-			
-			pixelArea[0] = pConvTab[color.b];
-			pixelArea[1] = pConvTab[color.g];
-			pixelArea[2] = pConvTab[color.r];
-			pixelArea[3] = 0;
-			return 4;
-		}
-			
 		case PixelFormat::BGRX_8_linear:
 		{
-			uint8_t * pConvTab = HiColor::packLinearTab;
-			
 			pixelArea[0] = pConvTab[color.b];
 			pixelArea[1] = pConvTab[color.g];
 			pixelArea[2] = pConvTab[color.r];
 			pixelArea[3] = 0;
 			return 4;
 		}
-			
+
+
 		case PixelFormat::BGRA_8:
-		{
-			uint8_t * pConvTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
-			
-			pixelArea[0] = pConvTab[color.b];
-			pixelArea[1] = pConvTab[color.g];
-			pixelArea[2] = pConvTab[color.r];
-			pixelArea[3] = HiColor::packLinearTab[color.a];
-			return 4;
-		}
-			
 		case PixelFormat::BGRA_8_sRGB:
-		{
-			uint8_t * pConvTab = HiColor::packSRGBTab;
-			
-			pixelArea[0] = pConvTab[color.b];
-			pixelArea[1] = pConvTab[color.g];
-			pixelArea[2] = pConvTab[color.r];
-			pixelArea[3] = HiColor::packLinearTab[color.a];
-			return 4;
-		}
-			
 		case PixelFormat::BGRA_8_linear:
 		{
-			uint8_t * pConvTab = HiColor::packLinearTab;
-			
 			pixelArea[0] = pConvTab[color.b];
 			pixelArea[1] = pConvTab[color.g];
 			pixelArea[2] = pConvTab[color.r];
 			pixelArea[3] = HiColor::packLinearTab[color.a];
 			return 4;
 		}
-			
+
 		case PixelFormat::BGRA_4_linear:
 		{
-			uint8_t * pConvTab = HiColor::packLinearTab;
-
 			int b = pConvTab[color.b];
 			int g = pConvTab[color.g];
 			int r = pConvTab[color.r];
 			int a = pConvTab[color.a];
 
 			uint16_t pixel = ((b & 0xF0) << 8) | ((g & 0xF0) << 4) | (r & 0xF0) | (a >> 4);
-			* (uint16_t*) pixelArea = pixel;
+			*(uint16_t*)pixelArea = pixel;
 			return 2;
 		}
-			
+
 		case PixelFormat::BGR_565_linear:
 		{
-			uint8_t * pConvTab = HiColor::packLinearTab;
-
 			int b = pConvTab[color.b];
 			int g = pConvTab[color.g];
 			int r = pConvTab[color.r];
 
 			uint16_t pixel = ((b & 0xF8) << 8) | ((g & 0xFC) << 3) | (r >> 3);
-			* (uint16_t*) pixelArea = pixel;
+			*(uint16_t*)pixelArea = pixel;
 			return 2;
 		}
 
 		case PixelFormat::Index_8:
-		{
-			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, GfxBase::defaultToSRGB(), pPalette, paletteEntries);
-			return 1;
-		}
-
 		case PixelFormat::Index_8_sRGB:
-		{
-			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, true, pPalette, paletteEntries);
-			return 1;
-		}
-
 		case PixelFormat::Index_8_linear:
 		{
-			pixelArea[0] = (uint8_t) findBestMatchInPalette(color, false, pPalette, paletteEntries);
+			pixelArea[0] = (uint8_t)findBestMatchInPalette(color, pPalette, paletteEntries, desc.colorSpace);
 			return 1;
 		}
 
 		case PixelFormat::Index_16:
-		{
-			* reinterpret_cast<uint16_t*>(pixelArea) = (uint16_t)findBestMatchInPalette(color, GfxBase::defaultToSRGB(), pPalette, paletteEntries);
-			return 2;
-		}
-
 		case PixelFormat::Index_16_sRGB:
-		{
-			*reinterpret_cast<uint16_t*>(pixelArea) = (uint16_t)findBestMatchInPalette(color, true, pPalette, paletteEntries);
-			return 2;
-		}
-
 		case PixelFormat::Index_16_linear:
 		{
-			*reinterpret_cast<uint16_t*>(pixelArea) = (uint16_t)findBestMatchInPalette(color, false, pPalette, paletteEntries);
+			*reinterpret_cast<uint16_t*>(pixelArea) = (uint16_t)findBestMatchInPalette(color, pPalette, paletteEntries, desc.colorSpace);
 			return 2;
 		}
 
 		case PixelFormat::RGB_565_bigendian:
 		{
-			uint8_t * pConvTab = HiColor::packLinearTab;
-
 			int b = pConvTab[color.b];
 			int g = pConvTab[color.g];
 			int r = pConvTab[color.r];
 
 			uint16_t pixel = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
-			* (uint16_t*) pixelArea = Util::endianSwap(pixel);
+			*(uint16_t*)pixelArea = Util::endianSwap(pixel);
 			return 2;
 		}
 
 		case PixelFormat::RGB_555_bigendian:
 		{
-			uint8_t * pConvTab = HiColor::packLinearTab;
-
 			int b = pConvTab[color.b];
 			int g = pConvTab[color.g];
 			int r = pConvTab[color.r];
 
 			uint16_t pixel = ((r & 0xF8) << 8) | ((g & 0xF8) << 3) | (b >> 3);
-			* (uint16_t*) pixelArea = Util::endianSwap(pixel);
+			*(uint16_t*)pixelArea = Util::endianSwap(pixel);
 			return 2;
 		}
 
-			
 		case PixelFormat::Alpha_8:
 			pixelArea[0] = HiColor::packLinearTab[color.a];
 			return 1;
-			
-			
+
+		case PixelFormat::BGRA_16_linear:
+		{
+			uint16_t* pOutput = (uint16_t*)pixelArea;
+
+			*pOutput++ = (color.b * 65535) / 4096;
+			*pOutput++ = (color.g * 65535) / 4096;
+			*pOutput++ = (color.r * 65535) / 4096;
+			*pOutput++ = (color.a * 65535) / 4096;
+			return 8;
+		}
+
 		default:
 			return 0;
+		}
+
 	}
+
 }
 
 
@@ -1705,7 +2521,7 @@ int colorToPixelBytes( HiColor color, PixelFormat type, uint8_t pixelArea[18], C
 
 void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fillRect, HiColor color, Color8* pPalette, int paletteEntries)
 {
-	pixelFormat = Util::translatePixelFormat(pixelFormat);
+	pixelFormat = Util::clarifyPixelFormat(pixelFormat);
 	
 	auto&	pixelDesc = Util::pixelFormatToDescription(pixelFormat);
 	
@@ -1838,15 +2654,37 @@ void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fill
 				}
 				break;
 			}
+
+			case 8:
+			{
+				uint64_t pixel = *(uint64_t*)pixelArea;
+
+				for (int y = 0; y < fillRect.h; y++)
+				{
+					for (int x = 0; x < fillRect.w; x++)
+					{
+						*((uint64_t*)pDest) = pixel;
+						pDest += 8;
+					}
+					pDest += eolAdd;
+				}
+				break;
+			}
 		}
 	}
 }
 
 //____ findBestMatchInPalette() ____________________________________________
 
-int findBestMatchInPalette( HiColor color, bool bSRGB, Color8* pPalette, int paletteEntries)
+int findBestMatchInPalette(HiColor color, Color8* pPalette, int paletteEntries, ColorSpace paletteColorSpace)
 {
-	uint8_t * pConvTab = bSRGB ? HiColor::packSRGBTab : HiColor::packLinearTab;
+	uint8_t* pConvTab;
+	if (paletteColorSpace == ColorSpace::Undefined)
+		pConvTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+	else if (paletteColorSpace == ColorSpace::Linear)
+		pConvTab = HiColor::packLinearTab;
+	else
+		pConvTab = HiColor::packSRGBTab;
 
 	Color8 col;
 	
@@ -1937,7 +2775,7 @@ bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, 
 		{
 			switch (pixDesc.bits)
 			{
-				case 1:									// Only PixelFormat::Alpha_8 has this size.
+				case 8:									// Only PixelFormat::Alpha_8 has this size.
 					for (int y = 0; y < srcRect.h; y++)
 					{
 						for (int x = 0; x < srcRect.w; x++)
@@ -1947,7 +2785,7 @@ bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, 
 						pDst += dstPitchAdd;
 					}
 
-				case 2:									// Only PixelFormat::BGRA_4 has this size and alpha.
+				case 16:									// Only PixelFormat::BGRA_4 has this size and alpha.
 				{
 					for (int y = 0; y < srcRect.h; y++)
 					{
@@ -1962,7 +2800,7 @@ bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, 
 					}
 					break;
 				}
-				case 4:									// Only PixelFormat::BGRA_8 has this size and alpha
+				case 32:									// Only PixelFormat::BGRA_8 has this size and alpha
 				{
 					for (int y = 0; y < srcRect.h; y++)
 					{
@@ -1970,6 +2808,20 @@ bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, 
 						{
 							*pDst++ = pSrc[3];
 							pSrc += 4;
+						}
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+					break;
+				}
+				case 64:									// Only PixelFormat::BGRA_16 has this size and alpha
+				{
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							*pDst++ = pSrc[7];
+							pSrc += 8;
 						}
 						pSrc += srcPitchAdd;
 						pDst += dstPitchAdd;

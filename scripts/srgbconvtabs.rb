@@ -151,3 +151,13 @@ print "uint8_t conv_7_sRGB_to_8_linear[128] 	= {"
 	end
 
 	print "\n\n"
+
+print "uint16_t conv_8_sRGB_to_16_linear[256] = {"
+
+	max = 255 ** 2.2
+	for i in 0..255
+		val = (((i ** 2.2) / max) * 65535).round
+		print "#{val}, "
+	end
+
+	print "\n\n"

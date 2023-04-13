@@ -42,7 +42,7 @@ namespace wg
 		PixelFormat format = bp.format == PixelFormat::Undefined ? defaultPixelFormat : bp.format;
 		SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? defaultSampleMethod : bp.sampleMethod;
 
-		format = Util::translatePixelFormat(format);
+		format = Util::clarifyPixelFormat(format);
 
 		m_pixelFormat	= format;
 		m_pPixelDescription = &Util::pixelFormatToDescription(format);

@@ -127,7 +127,10 @@ const PixelDescription	pixelDescTab[PixelFormat_size] = {
 	{3, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_2_A1
 	{5, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_4_A1
 	{6, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_5_A1
-	{9, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1}								// Bitplanes_8_A1
+	{9, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_8_A1
+
+	{64, PixelType::Chunky, ColorSpace::Linear, 0xFFFF00000000, 0xFFFF0000, 0xFFFF, 0},						// BGRX_16_linear
+	{64, PixelType::Chunky, ColorSpace::Linear, 0xFFFF00000000, 0xFFFF0000, 0xFFFF, 0xFFFF000000000000}		// BGRA_16_linear
 };
 
 
@@ -206,6 +209,25 @@ PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
 					break;
 				}
 
+				case 64:
+				{
+					auto p = &pixelDescTab[int(PixelFormat::BGRA_16_linear)];
+
+					if (description.R_mask == p->R_mask && description.G_mask == p->G_mask && description.B_mask == p->B_mask)
+					{
+						if (description.A_mask == p->A_mask)
+						{
+							if (description.colorSpace == ColorSpace::Linear)
+								return PixelFormat::BGRA_16_linear;
+						}
+						else if (description.A_mask == 0)
+						{
+							if (description.colorSpace == ColorSpace::Linear)
+								return PixelFormat::BGRX_16_linear;
+						}
+					}
+					break;
+				}
 			}
 
 		}
@@ -227,6 +249,15 @@ PixelFormat	Util::pixelDescriptionToFormat(const PixelDescription& description)
 					return PixelFormat::Index_8_sRGB;
 				else if( description.colorSpace == ColorSpace::Linear )
 					return PixelFormat::Index_8_linear;
+			}
+			else if( description.bits == 16 )
+			{
+				if (description.colorSpace == ColorSpace::Undefined)
+					return PixelFormat::Index_16;
+				else if (description.colorSpace == ColorSpace::sRGB)
+					return PixelFormat::Index_16_sRGB;
+				else if (description.colorSpace == ColorSpace::Linear)
+					return PixelFormat::Index_16_linear;
 			}
 			break;
 		}
@@ -343,9 +374,9 @@ int Util::gcd(int a, int b)
 		return MultiplyDeBruijnBitPosition[(uint32_t)(value * 0x07C4ACDDU) >> 27];
 	}
 
-	//____ translatePixelFormat() __________________________________________________
+	//____ clarifyPixelFormat() __________________________________________________
 
-	PixelFormat Util::translatePixelFormat(PixelFormat type)
+	PixelFormat Util::clarifyPixelFormat(PixelFormat type)
 	{
 		if( type == PixelFormat::BGR_8 )
 			type = GfxBase::defaultToSRGB() ? PixelFormat::BGR_8_sRGB : PixelFormat::BGR_8_linear;
@@ -358,6 +389,9 @@ int Util::gcd(int a, int b)
 
 		if( type == PixelFormat::Index_8 )
 			type = GfxBase::defaultToSRGB() ? PixelFormat::Index_8_sRGB : PixelFormat::Index_8_linear;
+
+		if (type == PixelFormat::Index_16)
+			type = GfxBase::defaultToSRGB() ? PixelFormat::Index_16_sRGB : PixelFormat::Index_16_linear;
 
 		return type;
 	}

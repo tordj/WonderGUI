@@ -945,6 +945,7 @@ namespace wg
         int nColors;
         switch( tintMode )
         {
+            default:
             case TintMode::None:
             case TintMode::Flat:
                 nColors = nSegments;
@@ -981,6 +982,7 @@ namespace wg
 		int nColors;
         switch( tintMode )
         {
+            default:
             case TintMode::None:
             case TintMode::Flat:
                 nColors = nSegments;

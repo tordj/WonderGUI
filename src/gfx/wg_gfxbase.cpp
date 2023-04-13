@@ -24,6 +24,7 @@
 
 #include <wg_gfxbase.h>
 #include <wg_bitmapcache.h>
+#include <wg_pixeltools.h>
 
 
 namespace wg
@@ -36,6 +37,11 @@ namespace wg
 	GfxDevice_p			GfxBase::s_pDefaultGfxDevice;
 
 	BitmapCache_p		GfxBase::s_pDefaultBitmapCache;
+
+	namespace PixelTools
+	{
+		extern uint8_t* pConv_16_linear_to_8_sRGB;
+	}
 
 
 
@@ -82,7 +88,10 @@ namespace wg
 			s_pDefaultBitmapCache->clear();
 			s_pDefaultBitmapCache = nullptr;
 		}
-			
+		
+		delete [] PixelTools::pConv_16_linear_to_8_sRGB;
+		PixelTools::pConv_16_linear_to_8_sRGB = nullptr;
+
 		return GearBase::exit();
 	}
 

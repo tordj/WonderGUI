@@ -59,7 +59,7 @@ namespace wg
 	const static Axis            Axis_max            = Axis::Y;
 	const static SampleMethod    SampleMethod_max    = SampleMethod::Undefined;
 	const static CanvasInit      CanvasInit_max      = CanvasInit::Clear;
-	const static PixelFormat     PixelFormat_max     = PixelFormat::Bitplanes_8_A1;
+	const static PixelFormat     PixelFormat_max     = PixelFormat::BGRA_16_linear;
 	const static PixelType       PixelType_max       = PixelType::Bitplanes;
 	const static ColorSpace      ColorSpace_max      = ColorSpace::sRGB;
 	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
@@ -73,7 +73,7 @@ namespace wg
 	const static int             Axis_size           = (int)Axis::Y + 1;
 	const static int             SampleMethod_size   = (int)SampleMethod::Undefined + 1;
 	const static int             CanvasInit_size     = (int)CanvasInit::Clear + 1;
-	const static int             PixelFormat_size    = (int)PixelFormat::Bitplanes_8_A1 + 1;
+	const static int             PixelFormat_size    = (int)PixelFormat::BGRA_16_linear + 1;
 	const static int             PixelType_size      = (int)PixelType::Bitplanes + 1;
 	const static int             ColorSpace_size     = (int)ColorSpace::sRGB + 1;
 	const static int             GfxFlip_size        = (int)GfxFlip::Rot270FlipY + 1;

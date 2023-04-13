@@ -35,7 +35,7 @@ wg_pixelFormat wg_pixelDescriptionToFormat(const wg_pixelDescription * pDescript
 	return (wg_pixelFormat) Util::pixelDescriptionToFormat( * reinterpret_cast<const PixelDescription *>(pDescription));
 }
 
-wg_pixelFormat wg_translatePixelFormat( wg_pixelFormat format)
+wg_pixelFormat wg_clarifyPixelFormat( wg_pixelFormat format)
 {
-	return (wg_pixelFormat) Util::translatePixelFormat( (PixelFormat) format );
+	return (wg_pixelFormat) Util::clarifyPixelFormat( (PixelFormat) format );
 }

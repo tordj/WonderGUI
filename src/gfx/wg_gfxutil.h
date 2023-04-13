@@ -226,7 +226,7 @@ namespace wg
 		const PixelDescription& pixelFormatToDescription( PixelFormat format );
 		PixelFormat	pixelDescriptionToFormat(const PixelDescription& description);
 
-		PixelFormat translatePixelFormat( PixelFormat format);	// Translate pixel types without colorSpace info to ones with.
+		PixelFormat clarifyPixelFormat( PixelFormat format);	// Translate pixel types without colorSpace info to ones with.
 	
 
 		uint32_t mostSignificantBit(uint32_t value);
