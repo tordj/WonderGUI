@@ -447,7 +447,8 @@ namespace wg
 		TimeStampMS = 54,
 		CanvasList = 55,
 		
-		SetFixedBlendColor = 56
+		SetFixedBlendColor = 56,
+		
 	};
 
 	typedef uint8_t GfxChunkFlags;

@@ -71,69 +71,85 @@ namespace wg
 		return result;
 	}
 
-	inline uint8_t _evaluateMask( int spxMask )
+	inline GfxStream::SpxFormat _evaluateMask( int spxMask )
 	{
 		if( (spxMask & 0xFFDFC03F) == 0 )
-			return 3;						// Fits in uint8_t without binals.
+			return GfxStream::SpxFormat::Uint8_int;						// Fits in uint8_t without binals.
 
 		if( (spxMask & 0xFFC0003F) == 0 )
-			return 2;						// Fits in int16_t without binals.
+			return GfxStream::SpxFormat::Int16_int;						// Fits in int16_t without binals.
 
 		if( (spxMask & 0xFFDF0000) == 0 )
-			return 1;						// Fits in uint16_t with binals.
+			return GfxStream::SpxFormat::Uint16_dec;						// Fits in uint16_t with binals.
 
-		return 0;
+		return GfxStream::SpxFormat::Int32_dec;
 	}
 
-	inline int _spxMaskWithDelta( const spx * pBegin, const spx * pEnd, spx prevValue )
+	inline GfxStream::SpxFormat _spxFieldFormat( const spx * pBegin, const spx * pEnd, const spx * pPrevValues )
 	{
 		const int add = (1 << 21);
 		int spxMask = 0;
+		int deltaMask = 0;
 
 		int deltaMin = 0;
 		int deltaMax = 0;
-		
-		while( pBegin < pEnd )
+
+		if( pPrevValues )
 		{
-			int value = * pBegin++;
-			int delta = value - prevValue;
-			int prevValue = value;
-			
-			if( delta < deltaMin )
-				deltaMin = delta;
-			
-			if( delta > deltaMax )
-				deltaMax = delta;
-			
-			spxMask |= value + add;
+			while( pBegin < pEnd )
+			{
+				int value = * pBegin++;
+				int delta = value - * pPrevValues++;
+				
+				if( delta < deltaMin )
+					deltaMin = delta;
+				
+				if( delta > deltaMax )
+					deltaMax = delta;
+				
+				spxMask |= value + add;
+				deltaMask |= delta;
+			}
 		}
+		else
+		{
+			while( pBegin < pEnd )
+			{
+				int value = * pBegin++;
+				spxMask |= value + add;
+			}
+			
+			deltaMin = INT_MIN;
+			deltaMax = INT_MAX;
+		}
+		
 		
 		// See if it will fit in any of the 8-bit formats.
 		
 		if( (spxMask & 0xFFDFC03F) == 0 )
-			return 3;						// Fits as non-delta values in uint8_t without binals.
+			return GfxStream::SpxFormat::Uint8_int;						// Fits as non-delta values in uint8_t without binals.
 
 		if( deltaMin >= -128 && deltaMax <= 127 )
-			return 6;						// Fits as delta values in int8_t with binals.
+			return GfxStream::SpxFormat::Delta8_dec;						// Fits as delta values in int8_t with binals.
 		
-		if( ((spxMask & 0x3F) == 0) && (deltaMin >= -128*64 && deltaMax <= 128*64-1) )
-			return 7;						// Fits as delta values in int8_t without binals.
+		if( ((deltaMask & 0x3F) == 0) && (deltaMin >= -128*64 && deltaMax <= 128*64-1) )
+			return GfxStream::SpxFormat::Delta8_int;						// Fits as delta values in int8_t without binals.
 
 		// See if it will fit in any of the 16-bit formats
 		
 		if( (spxMask & 0xFFDF0000) == 0 )
-			return 1;						// Fits in uint16_t with binals.
+			return GfxStream::SpxFormat::Uint16_dec;						// Fits in uint16_t with binals.
 
 		if( (spxMask & 0xFFC0003F) == 0 )
-			return 2;						// Fits in int16_t without binals.
+			return GfxStream::SpxFormat::Int16_int;						// Fits in int16_t without binals.
 
 		if( deltaMin >= -32768 && deltaMax <= 32767 )
-			return 4;						// Fits as delta values in int16_t with binals.
+			return GfxStream::SpxFormat::Delta16_dec;						// Fits as delta values in int16_t with binals.
 		
-		if( ((spxMask & 0x3F) == 0) && (deltaMin >= -32768 && deltaMax <= 32768*64-1) )
-			return 5;						// Fits as delta values in int16_t without binals.
+		if( ((deltaMask & 0x3F) == 0) && (deltaMin >= -32768 && deltaMax <= 32768*64-1) )
+			return GfxStream::SpxFormat::Delta16_int;						// Fits as delta values in int16_t without binals.
 		
-		return 0;							// We need 32 bits.
+		return GfxStream::SpxFormat::Int32_dec;							// We need 32 bits.
 	}
 
 
@@ -153,7 +169,7 @@ namespace wg
 		m_pEncoder = pEncoder;
 		m_bRendering = false;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ProtocolVersion, 0, 2 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ProtocolVersion, GfxStream::SpxFormat::Int32_dec, 2 };
         (*m_pEncoder) << (uint16_t) 0x0100;
 	}
 
@@ -248,7 +264,7 @@ namespace wg
 
 	void GfxStreamDevice::encodeCanvasList()
 	{
-		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetClipList, 0, (uint16_t)(m_definedCanvases.size()*12) };
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::CanvasList, GfxStream::SpxFormat::Int32_dec, (uint16_t)(m_definedCanvases.size()*12) };
 
 		(*m_pEncoder) << (uint16_t) m_definedCanvases.size();
 		
@@ -276,8 +292,8 @@ namespace wg
     {
         GfxDevice::setClipList(nRectangles, pRectangles);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetClipList, 0, (uint16_t)(nRectangles * 16) };
-        (*m_pEncoder) << GfxStream::DataChunk{ nRectangles * 16, pRectangles };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetClipList, GfxStream::SpxFormat::Int32_dec, (uint16_t)(nRectangles * 16) };
+        (*m_pEncoder) << GfxStream::WriteBytes{ nRectangles * 16, pRectangles };
         return true;
     }
 
@@ -287,7 +303,7 @@ namespace wg
     {
         GfxDevice::resetClipList();
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ResetClipList, 0, 0 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ResetClipList, GfxStream::SpxFormat::Int32_dec, 0 };
     }
 
     //____ pushClipList() ________________________________________________________
@@ -296,8 +312,8 @@ namespace wg
     {
         GfxDevice::pushClipList(nRectangles, pRectangles);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PushClipList, 0, (uint16_t)(nRectangles * 16) };
-        (*m_pEncoder) << GfxStream::DataChunk{ nRectangles * 16, pRectangles };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PushClipList, GfxStream::SpxFormat::Int32_dec, (uint16_t)(nRectangles * 16) };
+        (*m_pEncoder) << GfxStream::WriteBytes{ nRectangles * 16, pRectangles };
         return true;
     }
 
@@ -307,7 +323,7 @@ namespace wg
     {
         GfxDevice::popClipList();
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PopClipList, 0, 0};
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PopClipList, GfxStream::SpxFormat::Int32_dec, 0};
         return true;
     }
 
@@ -320,7 +336,7 @@ namespace wg
 		
         GfxDevice::setTintColor(color);
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintColor, 0, 8 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintColor, GfxStream::SpxFormat::Int32_dec, 8 };
         (*m_pEncoder) << color;
     }
 
@@ -333,7 +349,7 @@ namespace wg
 		
         GfxDevice::setTintGradient(rect, gradient);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, 0, 16 + 34 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, GfxStream::SpxFormat::Int32_dec, 16 + 34 };
         (*m_pEncoder) << rect;
         (*m_pEncoder) << gradient;
     }
@@ -347,7 +363,7 @@ namespace wg
 		
         GfxDevice::clearTintGradient();
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ClearTintGradient, 0, 0 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ClearTintGradient, GfxStream::SpxFormat::Int32_dec, 0 };
     }
 
     //____ setBlendMode() __________________________________________________________
@@ -365,7 +381,7 @@ namespace wg
 		
         GfxDevice::setBlendMode(blendMode);
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlendMode, 0, 2 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlendMode, GfxStream::SpxFormat::Int32_dec, 2 };
         (*m_pEncoder) << blendMode;
 
         return true;
@@ -386,7 +402,7 @@ namespace wg
 		
         GfxDevice::setBlitSource(pSource);
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlitSource, 0, 2 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlitSource, GfxStream::SpxFormat::Int32_dec, 2 };
         (*m_pEncoder) << static_cast<GfxStreamSurface*>(pSource)->m_inStreamId;
         return true;
     }
@@ -400,7 +416,7 @@ namespace wg
 		
         GfxDevice::setMorphFactor(factor);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetMorphFactor, 0, 4 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetMorphFactor, GfxStream::SpxFormat::Int32_dec, 4 };
         (*m_pEncoder) << factor;
     }
 
@@ -413,7 +429,7 @@ namespace wg
 		
 		GfxDevice::setFixedBlendColor(color);
 		
-		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetFixedBlendColor, 0, 8 };
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetFixedBlendColor, GfxStream::SpxFormat::Int32_dec, 8 };
 		(*m_pEncoder) << color;
 	}
 
@@ -426,7 +442,7 @@ namespace wg
 		
         GfxDevice::setRenderLayer(layer);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetRenderLayer, 0, 2 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetRenderLayer, GfxStream::SpxFormat::Int32_dec, 2 };
         (*m_pEncoder) << (uint16_t) layer;
     }
 
@@ -437,7 +453,7 @@ namespace wg
 		if( m_bRendering == true )
 			return false;
 
-		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginRender, 0, 0 };
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginRender, GfxStream::SpxFormat::Int32_dec, 0 };
 
         GfxDevice::setBlitSource(nullptr);                 // We don't optimize blit source between frames.
 
@@ -452,7 +468,7 @@ namespace wg
 		if( m_bRendering == false )
 			return false;
 
-		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::EndRender, 0, 0 };
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::EndRender, GfxStream::SpxFormat::Int32_dec, 0 };
 		m_pEncoder->flush();
 
 		m_bRendering = false;
@@ -463,7 +479,7 @@ namespace wg
 
     void GfxStreamDevice::flush()
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Flush, 0, 0 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Flush, GfxStream::SpxFormat::Int32_dec, 0 };
         m_pEncoder->flush();
     }
 
@@ -471,7 +487,7 @@ namespace wg
 
     void GfxStreamDevice::endCanvasUpdate()
     {
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::EndCanvasUpdate, 0, 0 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::EndCanvasUpdate, GfxStream::SpxFormat::Int32_dec, 0 };
 
     }
 
@@ -482,7 +498,7 @@ namespace wg
         if( _col.a  == 0 )
             return;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Fill, 0, 8 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::Fill, GfxStream::SpxFormat::Int32_dec, 8 };
         (*m_pEncoder) << _col;
 
         return;
@@ -496,7 +512,7 @@ namespace wg
 		if( _clippedOut(_rect) )
 			return;
 		
-		uint8_t spxFormat = _evaluateMask( _spxMask(_rect) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(_rect) );
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FillRect, spxFormat, GfxStream::spxSize(spxFormat)*4 + 8 };
         (*m_pEncoder) << _rect;
@@ -524,9 +540,9 @@ namespace wg
 
         while (nCoords > 0)
         {
-            (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PlotPixels, 0, (uint16_t)(chunkCoords * 16) };
-            (*m_pEncoder) << GfxStream::DataChunk{ chunkCoords * 8, pCoords };
-            (*m_pEncoder) << GfxStream::DataChunk{ chunkCoords * 8, pColors };
+            (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PlotPixels, GfxStream::SpxFormat::Int32_dec, (uint16_t)(chunkCoords * 16) };
+            (*m_pEncoder) << GfxStream::WriteBytes{ chunkCoords * 8, pCoords };
+            (*m_pEncoder) << GfxStream::WriteBytes{ chunkCoords * 8, pColors };
 
             nCoords -= chunkCoords;
             pCoords += chunkCoords;
@@ -541,7 +557,7 @@ namespace wg
     {
 		//TODO: ClipOut!!!
 
-		uint8_t spxFormat = _evaluateMask(_spxMask(begin ) | _spxMask(end) | _spxMask(thickness) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(begin ) | _spxMask(end) | _spxMask(thickness) );
 		
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineFromTo, spxFormat, (((GfxStream::spxSize(spxFormat)*5)+1)&0xFFFE) + 8  };
         (*m_pEncoder) << begin;
@@ -573,7 +589,7 @@ namespace wg
 		if( _clippedOut( clip ) )
 			return;
 		
-		uint8_t spxFormat = _evaluateMask(_spxMask(begin ) | _spxMask(length) | _spxMask(thickness) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(begin ) | _spxMask(length) | _spxMask(thickness) );
 		
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineStraight, spxFormat, GfxStream::spxSize(spxFormat)*4 + 10 };
         (*m_pEncoder) << begin;
@@ -590,7 +606,7 @@ namespace wg
 		if( _clippedOut( {dest,m_pBlitSource->pixelSize()} ) )
 			return;
 		
-		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(dest ) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::Blit, spxFormat, GfxStream::spxSize(spxFormat)*2 };
         (*m_pEncoder) << dest;
@@ -604,7 +620,7 @@ namespace wg
 		if( _clippedOut( {dest,src.w,src.h} ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(src) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(src) );
 		
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitRect, spxFormat, GfxStream::spxSize(spxFormat)*6 };
         (*m_pEncoder) << dest;
@@ -617,7 +633,7 @@ namespace wg
     {
 		//TODO: ClipOut!!!
 		
-		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(dest ) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlit, spxFormat, GfxStream::spxSize(spxFormat)*2 + 2 };
         (*m_pEncoder) << dest;
@@ -628,7 +644,7 @@ namespace wg
     {
 		//TODO: ClipOut!!!
 
-		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(src) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(src) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlitRect, spxFormat, GfxStream::spxSize(spxFormat)*6 + 2 };
         (*m_pEncoder) << dest;
@@ -643,7 +659,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(dest ) );
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlit, spxFormat, GfxStream::spxSize(spxFormat)*4 };
         (*m_pEncoder) << dest;
@@ -654,7 +670,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(source) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(source) );
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRect, spxFormat, GfxStream::spxSize(spxFormat)*8 };
         (*m_pEncoder) << dest;
@@ -668,7 +684,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(dest ) );
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchFlipBlit, spxFormat, GfxStream::spxSize(spxFormat)*4+2 };
         (*m_pEncoder) << dest;
@@ -680,7 +696,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(source) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(source) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::StretchBlitRect, spxFormat, GfxStream::spxSize(spxFormat)*8+2 };
         (*m_pEncoder) << dest;
@@ -695,7 +711,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(dest ) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::PrecisionBlit, spxFormat, GfxStream::spxSize(spxFormat)*4 + 16 };
 		(*m_pEncoder) << dest;
@@ -709,7 +725,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(dest ) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::PrecisionBlit, spxFormat, GfxStream::spxSize(spxFormat)*4 + 24 };
 		(*m_pEncoder) << dest;
@@ -727,7 +743,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask( _spxMask(dest ) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(dest ) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::RotScaleBlit, spxFormat, GfxStream::spxSize(spxFormat)*4 + 24 };
         (*m_pEncoder) << dest;
@@ -744,7 +760,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
 		
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::Tile, spxFormat, GfxStream::spxSize(spxFormat)*6 };
         (*m_pEncoder) << dest;
@@ -756,7 +772,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipTile, spxFormat, GfxStream::spxSize(spxFormat)*6 + 2 };
         (*m_pEncoder) << dest;
@@ -769,7 +785,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleTile, spxFormat, GfxStream::spxSize(spxFormat)*6 + 4 };
         (*m_pEncoder) << dest;
@@ -782,7 +798,7 @@ namespace wg
 		if( _clippedOut( dest ) )
 			return;
 
-		uint8_t spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
+		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::ScaleFlipTile, spxFormat, GfxStream::spxSize(spxFormat)*6 + 6 };
         (*m_pEncoder) << dest;
@@ -800,7 +816,7 @@ namespace wg
 		
 		int size = 16 + 20 + 20 + 8 + 8;
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawWave, 0, (uint16_t) size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawWave, GfxStream::SpxFormat::Int32_dec, (uint16_t) size };
         (*m_pEncoder) << dest;
 
         (*m_pEncoder) << pTopBorder->length;
@@ -832,7 +848,7 @@ namespace wg
 
 		uint16_t size = 16 + 20 + 20 + 8 + 8 + 2;
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawWave, 0, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawWave, GfxStream::SpxFormat::Int32_dec, size };
         (*m_pEncoder) << dest;
 
         (*m_pEncoder) << pTopBorder->length;
@@ -880,14 +896,17 @@ namespace wg
             pSamples = pSampleBuffer;
         }
         
-        int nSamples = nLines * samplesPerLine;
-        
+        int	nSamples = nLines * samplesPerLine;
+
+		auto spxFormat = _spxFieldFormat( pSamples, pSamples + nSamples, nullptr );
+		int spxSize = GfxStream::spxSize(spxFormat);
+		
         while (nSamples > 0)
         {
             uint16_t chunkSamples = min(nSamples, maxSamplesPerChunk);
 
-            (*m_pEncoder) << GfxStream::Header{ GfxChunkId::EdgeSamples, 0, (uint16_t) (chunkSamples*4) };
-            (*m_pEncoder) << GfxStream::DataChunk{ chunkSamples*4, pSamples };
+            (*m_pEncoder) << GfxStream::Header{ GfxChunkId::EdgeSamples, spxFormat, (uint16_t) (chunkSamples*spxSize) };
+            (*m_pEncoder) << GfxStream::WriteSpxArray{ chunkSamples, spxFormat, pSamples, nullptr };
 
             pSamples += chunkSamples;
             nSamples -= chunkSamples;
@@ -905,7 +924,7 @@ namespace wg
 		if( _clippedOut( canvas ) )
 			return;
 		
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawElipse, 0, 40 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawElipse, GfxStream::SpxFormat::Int32_dec, 40 };
         (*m_pEncoder) << canvas;
         (*m_pEncoder) << thickness;
         (*m_pEncoder) << color;
@@ -922,7 +941,7 @@ namespace wg
 
 		uint16_t size = 16 + 4 + 4 + 4 + 8 + 8 + 2 + nSlices*(4+8);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawPieChart, 0, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawPieChart, GfxStream::SpxFormat::Int32_dec, size };
         (*m_pEncoder) << canvas;
         (*m_pEncoder) << start;
         (*m_pEncoder) << nSlices;
@@ -931,8 +950,8 @@ namespace wg
         (*m_pEncoder) << backColor;
         (*m_pEncoder) << bRectangular;
         
-        (*m_pEncoder) << GfxStream::DataChunk{ nSlices*4, pSliceSizes };
-        (*m_pEncoder) << GfxStream::DataChunk{ nSlices*8, pSliceColors };
+        (*m_pEncoder) << GfxStream::WriteBytes{ nSlices*4, pSliceSizes };
+        (*m_pEncoder) << GfxStream::WriteBytes{ nSlices*8, pSliceColors };
     }
 
     //____ drawSegments() _________________________________________________________________
@@ -961,13 +980,13 @@ namespace wg
 
         uint16_t size = 16 + 2 + 2 + 2 + nColors*8;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawSegments, 0, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawSegments, GfxStream::SpxFormat::Int32_dec, size };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << (uint16_t) nSegments;
         (*m_pEncoder) << (uint16_t) nEdgeStrips;
         (*m_pEncoder) << tintMode;
 
-        (*m_pEncoder) << GfxStream::DataChunk{ nColors*8, pSegmentColors };
+        (*m_pEncoder) << GfxStream::WriteBytes{ nColors*8, pSegmentColors };
 
         _streamEdgeSamples( nEdgeStrips, nSegments-1, edgeStripPitch, pEdgeStrips );
     }
@@ -998,14 +1017,14 @@ namespace wg
 
         uint16_t size = 16 + 2 + 2 + 2 + 2 + nColors*8;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawSegments, 0, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawSegments, GfxStream::SpxFormat::Int32_dec, size };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << (uint16_t) nSegments;
         (*m_pEncoder) << (uint16_t) nEdgeStrips;
         (*m_pEncoder) << flip;
         (*m_pEncoder) << tintMode;
 
-        (*m_pEncoder) << GfxStream::DataChunk{ nColors*8, pSegmentColors };
+        (*m_pEncoder) << GfxStream::WriteBytes{ nColors*8, pSegmentColors };
 
         _streamEdgeSamples( nEdgeStrips, nSegments-1, edgeStripPitch, pEdgeStrips );
     }
@@ -1020,7 +1039,7 @@ namespace wg
 
 		uint16_t size = 16 + 16 + ( 16 + 8 + 10 + 10 ) + 4;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitNinePatch, 0, size };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitNinePatch, GfxStream::SpxFormat::Int32_dec, size };
         (*m_pEncoder) << dstRect;
         (*m_pEncoder) << dstFrame;
 
@@ -1087,7 +1106,7 @@ namespace wg
  		(*m_pEncoder) << (pCanvasSurface ? static_cast<GfxStreamSurface*>(pCanvasSurface)->m_inStreamId : (uint16_t) 0);
         (*m_pEncoder) << canvasRef;
         (*m_pEncoder) << (uint8_t) 0;				// Dummy, was nUpdateRects;
-        (*m_pEncoder) << GfxStream::DataChunk{ nUpdateRects*16, pUpdateRects };
+        (*m_pEncoder) << GfxStream::WriteBytes{ nUpdateRects*16, pUpdateRects };
 		
 		m_canvas.ref = canvasRef;
 		m_canvas.pSurface = pCanvasSurface;

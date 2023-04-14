@@ -1705,8 +1705,18 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 		}
 
 		default:
-			assert(false);		// Should never get here.
+		{
+			int srcPitch = width * srcPixelBits / 8 + srcPitchAdd;
+			int dstPitch = width * srcPixelBits / 8 + dstPitchAdd;
+
+			for( int y = 0 ; y < height ; y++ )
+			{
+				pReadFunc( pSrc, pDst, width, pTab1, pTab2 );
+				pSrc += srcPitch;
+				pDst += dstPitch;
+			}
 			break;
+		}
 	}
 	
 	return true;
@@ -2090,9 +2100,9 @@ static std::tuple<PixelReadFunc, const void*, const void*, int> getReadFuncFor64
 				readConv_planes_5i_a1_be, nullptr, nullptr, readConv_planes_8i_a1_be };
 
 			if (srcDesc.A_mask == 0)
-				pTab2 = readFunc_planes_nonAlpha[srcDesc.bits - 1];
+				pTab2 = (const void*) (readFunc_planes_nonAlpha[srcDesc.bits - 1]);
 			else
-				pTab2 = readFunc_planes_withAlpha[srcDesc.bits - 2];
+				pTab2 = (const void*) (readFunc_planes_withAlpha[srcDesc.bits - 2]);
 
 			pTab1 = pSrcPalette;
 
@@ -2290,6 +2300,85 @@ static bool copyToChunkyDestination(int width, int height, const uint8_t* pSrc, 
 
 }
 
+
+//____ identicalPalettes() ____________________________________________________
+
+static bool identicalPalettes( const Color8* pPalette1, const Color8* pPalette2, int nEntries )
+{
+	for( int i = 0 ; i < nEntries ; i++ )
+		if( pPalette1[i] != pPalette2[i] )
+			return false;
+	
+	return true;
+}
+
+//____ initPaletteRemapTable() ________________________________________________
+
+static bool	initPaletteRemapTable( uint16_t * pRemapTab, const Color8 * pSrcPalette, int srcPaletteEntries, Color8 * pDstPalette, int& dstPaletteEntries, int maxDstPaletteEntries, int width, int height, const uint8_t * pSrcPixels, int srcPitchAdd, int pixelBits )
+{
+	
+	// Create a "color use mask" to know which colors are actually used
+	
+	int allocBytes = srcPaletteEntries*sizeof(bool);
+	bool * pColorsInUse = (bool*) GfxBase::memStackAlloc(allocBytes);
+	memset( pColorsInUse, 0, srcPaletteEntries );
+
+	if( pixelBits == 8 )
+	{
+		const uint8_t * p = pSrcPixels;
+		for( int y = 0 ; y < height ; y++ )
+		{
+			for( int x = 0 ; x < width ; x++ )
+				pColorsInUse[*p++] = true;
+			p += srcPitchAdd;
+		}
+	}
+	else
+	{
+		const uint16_t * p = (uint16_t*) pSrcPixels;
+		for( int y = 0 ; y < height ; y++ )
+		{
+			for( int x = 0 ; x < width ; x++ )
+				pColorsInUse[*p++] = true;
+			p += srcPitchAdd/2;
+		}
+	}
+	
+	// Remap colors
+	
+	for( int i = 0 ; i < srcPaletteEntries ; i++ )
+	{
+		if( pColorsInUse[i] )
+		{
+			Color8 src = pSrcPalette[i];
+			
+			int ofs = 0;
+			while( ofs < dstPaletteEntries && src != pDstPalette[ofs] )
+				ofs++;
+
+			if( ofs == dstPaletteEntries )
+			{
+				if( dstPaletteEntries == maxDstPaletteEntries )
+				{
+					GfxBase::memStackFree(allocBytes);
+					return false;
+				}
+				
+				dstPaletteEntries++;
+			}
+			pRemapTab[i] = ofs;
+		}
+	}
+
+	// All colors remapped. Cleanup and return.
+	
+	GfxBase::memStackFree(allocBytes);
+	return true;
+}
+
+
+
+
 //____ copyToIndexedDestination() _____________________________________________
 
 static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc, PixelFormat srcFmt, int srcPitchAdd,
@@ -2300,23 +2389,202 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 	auto& srcDesc = Util::pixelFormatToDescription(srcFmt);
 	auto& dstDesc = Util::pixelFormatToDescription(dstFmt);
 
-	if (srcDesc.type == PixelType::Index || srcDesc.type == PixelType::Bitplanes)
+	if (srcDesc.type == PixelType::Index)
 	{
-		// Both source and dest are palette-based.
+		int allocSize1 = 0;
+		
+		// Make sure source palette is in same color space as
+		// destination palette
+		
+		if( srcDesc.colorSpace != dstDesc.colorSpace )
+		{
+			// Palettes have different color space. We need
+			// to convert source palette before proceeding.
+			
+			allocSize1 = srcPaletteEntries*sizeof(Color8);
+			
+			auto pFixedPalette = (Color8*) GfxBase::memStackAlloc(allocSize1);
+			
+			auto pConvTab = srcDesc.colorSpace == ColorSpace::Linear ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
 
+			for( int i = 0 ; i < srcPaletteEntries ; i++ )
+			{
+				pFixedPalette[i].r = pConvTab[pSrcPalette[i].r];
+				pFixedPalette[i].g = pConvTab[pSrcPalette[i].g];
+				pFixedPalette[i].b = pConvTab[pSrcPalette[i].b];
+				pFixedPalette[i].a = pSrcPalette[i].a;
+			}
+			
+			pSrcPalette = pFixedPalette;
+		}
+		
+		// Check if we can do a fast, straight pixel copy.
+		
+		if( (srcDesc.type == PixelType::Index && srcDesc.bits == dstDesc.bits) && (srcPaletteEntries <= dstPaletteEntries) && identicalPalettes( pSrcPalette, pDstPalette, srcPaletteEntries ) )
+		{
+			// We can do a straight pixel copy.
+			
+			int bytes = width * srcDesc.bits / 8;
 
+			for (int y = 0; y < height; y++)
+			{
+				memcpy(pDst, pSrc, bytes);
+				pSrc += srcPitchAdd + bytes;
+				pDst += dstPitchAdd + bytes;
+			}
+			
+			GfxBase::memStackFree(allocSize1);
+			return true;
+		}
+		
+		// We need to remap colors and possibly add to dest palette.
+		// Start by creating a palette remap tab and add colors to destination palette as needed
 
+		int allocSize2 = srcPaletteEntries*sizeof(uint16_t);
+		auto pRemapTab = (uint16_t*) GfxBase::memStackAlloc(allocSize2);
 
+		if( !initPaletteRemapTable( pRemapTab, pSrcPalette, srcPaletteEntries, pDstPalette, dstPaletteEntries, maxDstPaletteEntries, width, height, pSrc, srcPitchAdd, srcDesc.bits ) )
+		{
+			// Not enough/right colors in destination palette.
+			
+			GfxBase::memStackFree(allocSize2);
+			GfxBase::memStackFree(allocSize1);
+			return false;
+		}
+		
+		// Copy pixels and remap indexes.
+		
+		if( srcFmt == PixelFormat::Index_8 )
+		{
+			if( dstFmt == PixelFormat::Index_8 )
+			{
+				for( int y = 0 ; y < height ; y++ )
+				{
+					for( int x = 0 ; x < width ; x++ )
+						* pDst++ = pRemapTab[*pSrc++];
+					
+					pSrc += srcPitchAdd;
+					pDst += dstPitchAdd;
+				}
+			}
+			else
+			{
+				uint16_t * pDst2 = (uint16_t*) pDst;
+				for( int y = 0 ; y < height ; y++ )
+				{
+					for( int x = 0 ; x < width ; x++ )
+						* pDst2++ = pRemapTab[*pSrc++];
+					
+					pSrc += srcPitchAdd;
+					pDst2 += dstPitchAdd/2;
+				}
+			}
+		}
+		else
+		{
+			uint16_t * pSrc2 = (uint16_t*) pSrc;
 
+			if( dstFmt == PixelFormat::Index_8 )
+			{
+				for( int y = 0 ; y < height ; y++ )
+				{
+					for( int x = 0 ; x < width ; x++ )
+						* pDst++ = pRemapTab[*pSrc2++];
+					
+					pSrc2 += srcPitchAdd/2;
+					pDst += dstPitchAdd;
+				}
+			}
+			else
+			{
+				uint16_t * pDst2 = (uint16_t*) pDst;
+				for( int y = 0 ; y < height ; y++ )
+				{
+					for( int x = 0 ; x < width ; x++ )
+						* pDst2++ = pRemapTab[*pSrc2++];
+					
+					pSrc2 += srcPitchAdd/2;
+					pDst2 += dstPitchAdd/2;
+				}
+			}
+		}
+		
+		return true;
 	}
 	else
 	{
+		PixelReadFunc pReadFunc = nullptr;
 
+		const void* pTab1 = nullptr;
+		const void* pTab2 = nullptr;
+
+		int nAllocatedBytes = 0;
+
+		std::tie(pReadFunc, pTab1, pTab2, nAllocatedBytes) = getReadFuncFor32bitDest(srcFmt, dstFmt, pSrcPalette, srcPaletteEntries);
+		if (pReadFunc == nullptr)
+			return false;
+		
+		uint32_t buffer[64];
+		
+		
+		
+		
+		
+		
+		
+		
+		return false;
 	}
 
 
 
 }
+
+struct ChunkyIndex
+{
+	uint32_t chunkyValue;
+	int		index;
+};
+
+
+static bool chunkyToIndex(const uint32_t * pSrc, uint16_t * pDst, int nPixels, Color8 * pPalette, int& nPaletteEntries, int maxPaletteEntries,
+						  ChunkyIndex * pTable, int& nTableEntries )
+{
+	
+	for( int i = 0 ; i < nPixels ; i++ )
+	{
+		uint32_t pixel = * pSrc++;
+		
+		int left = 0;
+		int right = nTableEntries-1;
+		
+		while (right - left > 1)
+		{
+			int mid = left + (right - left) / 2;
+
+			if (pTable[mid].chunkyValue < pixel)
+			  left = mid;
+			else
+			  right = mid;
+		}
+		
+		if(pTable[left].chunkyValue == pixel)
+			* pDst++ = pTable[left].index;
+		else if(pTable[right].chunkyValue == pixel)
+			* pDst++ = pTable[right].index;
+		else
+		{
+			
+		}
+		
+		
+	}
+	
+	
+	
+}
+
+
 
 
 //____ copyPixels() [PixelFormat] _____________________________________________

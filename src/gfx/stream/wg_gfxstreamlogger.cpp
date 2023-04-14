@@ -656,8 +656,8 @@ namespace wg
 
 				assert(nSlices <= 32);
 				
-				*m_pDecoder >> GfxStream::DataChunk{ nSlices*4, sliceSizes };
-				*m_pDecoder >> GfxStream::DataChunk{ nSlices*8, sliceColors };
+				*m_pDecoder >> GfxStream::ReadBytes{ nSlices*4, sliceSizes };
+				*m_pDecoder >> GfxStream::ReadBytes{ nSlices*8, sliceColors };
 
 				_printRect(     "    canvas          ", canvas );
 				m_charStream << "    start           = " << start << std::endl;

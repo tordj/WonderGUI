@@ -47,18 +47,52 @@ namespace wg
 			spx value;
 		};
 
+		enum SpxFormat : uint8_t
+		{
+			Int32_dec = 0,			// 32 bit signed subpixel values.
+			Uint16_dec = 1,			// 16 bit unsigned pixel values.
+			Int16_int = 2,			// 16 bit signed pixel values.
+			Uint8_int = 3,			// 8 bit unsigned pixel values.
+			Delta16_dec = 4,		// 16 bit delta subpixel values.
+			Delta16_int = 5,		// 16 bit delta pixel values.
+			Delta8_dec = 6,			// 8 bit delta subpixel values.
+			Delta8_int = 7			// 8 bit delta pixel values.
+		};
+		
 		struct Header
 		{
 			GfxChunkId      type;
-            uint8_t			spxFormat;
+            SpxFormat		spxFormat;
     		int				size;
 		};
 
-		struct DataChunk
+		struct WriteBytes
 		{
 			int				bytes;
 			const void *	pBuffer;
 		};
+
+		struct ReadBytes
+		{
+			int				bytes;
+			void *			pBuffer;
+		};
+
+		struct WriteSpxArray
+		{
+			int				size;
+			SpxFormat		spxFormat;
+			const spx *		pData;
+			const spx *		pCompareData;		// For creating delta values.
+		};
+		
+		struct ReadSpxField
+		{
+			int				size;
+			SpxFormat		spxFormat;
+			spx *			pField;
+		};
+
 
 
 		class Chunk

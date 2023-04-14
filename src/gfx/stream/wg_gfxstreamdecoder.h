@@ -100,7 +100,8 @@ namespace wg
 		inline GfxStreamDecoder& operator>> (YSections&);
 		inline GfxStreamDecoder& operator>> (CanvasRef&);
 		
-		inline GfxStreamDecoder& operator>> (const GfxStream::DataChunk&);
+		inline GfxStreamDecoder& operator>> (const GfxStream::ReadBytes&);
+		inline GfxStreamDecoder& operator>> (const GfxStream::ReadSpxField&);
 
 		inline GfxStreamDecoder& operator>> (int[2][2]);
 		inline GfxStreamDecoder& operator>> (float[2][2]);
@@ -117,10 +118,10 @@ namespace wg
 		inline short	_pullShort();
 		inline int		_pullInt();
 		inline float	_pullFloat();
-		inline void		_pullBytes(int nBytes, char* pBytes);
+		inline void		_pullBytes(int nBytes, void* pBytes);
 		inline void		_skipBytes(int nBytes);
 
-		int				m_spxFormat;
+		GfxStream::SpxFormat	m_spxFormat;
 
 		typedef	const uint8_t* (*SpxOp_p)(const uint8_t* pStream, spx& output);
 		typedef	const uint8_t*(*CoordOp_p)(const uint8_t* pStream, CoordI& output);
@@ -143,8 +144,8 @@ namespace wg
 		{
 			header.type = (GfxChunkId)_pullChar();
 			uint8_t sizeEtc = _pullChar();
-			header.spxFormat = sizeEtc >> 5;
-			m_spxFormat = sizeEtc >> 5;
+			m_spxFormat = (GfxStream::SpxFormat) (sizeEtc >> 5);
+			header.spxFormat = m_spxFormat;
 
 			sizeEtc &= 0x1F;
 			if (sizeEtc <= 30)
@@ -155,7 +156,7 @@ namespace wg
 		else
 		{
 			header.type = GfxChunkId::OutOfData;
-			header.spxFormat = 0;
+			header.spxFormat = GfxStream::SpxFormat::Int32_dec;
 			header.size = 0;
 		}
 
@@ -201,13 +202,13 @@ namespace wg
 
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (GfxStream::SPX& value)
 	{
-		if(m_spxFormat == 0 )
+		if(m_spxFormat == GfxStream::SpxFormat::Int32_dec )
 			value.value = _pullInt();
-		else if(m_spxFormat == 1 )
+		else if(m_spxFormat == GfxStream::SpxFormat::Uint16_dec )
 			value.value = uint16_t(_pullShort());			// Value is unsigned.
-		else if(m_spxFormat == 2 )
+		else if(m_spxFormat == GfxStream::SpxFormat::Int16_int )
 			value.value = int(_pullShort()) << 6;
-		else if(m_spxFormat == 3 )
+		else if(m_spxFormat == GfxStream::SpxFormat::Uint8_int )
 			value.value = int(uint8_t(_pullChar())) << 6;	// Make sure value is unsigned.
 		return *this;
 	}
@@ -215,7 +216,7 @@ namespace wg
 
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (CoordI& coord)
 	{
-		m_pDataRead = s_coordOps[m_spxFormat](m_pDataRead, coord);
+		m_pDataRead = s_coordOps[int(m_spxFormat)](m_pDataRead, coord);
 		return *this;
 	}
 
@@ -228,7 +229,7 @@ namespace wg
 
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (SizeI& sz)
 	{
-		m_pDataRead = s_sizeOps[m_spxFormat](m_pDataRead, sz);
+		m_pDataRead = s_sizeOps[int(m_spxFormat)](m_pDataRead, sz);
 		return *this;
 	}
 
@@ -241,7 +242,7 @@ namespace wg
 
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (RectI& rect)
 	{
-		m_pDataRead = s_rectOps[m_spxFormat](m_pDataRead, rect);
+		m_pDataRead = s_rectOps[int(m_spxFormat)](m_pDataRead, rect);
 		return *this;
 	}
 
@@ -351,11 +352,79 @@ namespace wg
 		return *this;
 	}
 
-	GfxStreamDecoder& GfxStreamDecoder::operator>> (const GfxStream::DataChunk& data)
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (const GfxStream::ReadBytes& data)
 	{
-		_pullBytes(data.bytes, (char*)data.pBuffer);
+		_pullBytes(data.bytes, data.pBuffer);
 		return *this;
 	}
+
+	GfxStreamDecoder& GfxStreamDecoder::operator>> (const GfxStream::ReadSpxField& field)
+	{
+		switch( field.spxFormat )
+		{
+			case GfxStream::SpxFormat::Int32_dec:
+				_pullBytes(field.size*4, field.pField);
+				break;
+			
+			case GfxStream::SpxFormat::Int16_int:
+			{
+				auto p = field.pField;
+				for( int i = 0 ; i < field.size ; i++ )
+					* p++ = int(_pullShort()) << 6;
+				break;
+			}
+
+			case GfxStream::SpxFormat::Uint16_dec:
+			{
+				auto p = field.pField;
+				for( int i = 0 ; i < field.size ; i++ )
+					* p++ = (unsigned short) _pullShort();
+				break;
+			}
+				
+			case GfxStream::SpxFormat::Uint8_int:
+			{
+				auto p = field.pField;
+				for( int i = 0 ; i < field.size ; i++ )
+					* p++ = int((unsigned char) _pullChar()) << 6;
+				break;
+			}
+
+			case GfxStream::SpxFormat::Delta16_dec:
+			{
+				auto p = field.pField;
+				for( int i = 0 ; i < field.size ; i++ )
+					* p++ += _pullShort();
+				break;
+			}
+
+			case GfxStream::SpxFormat::Delta16_int:
+			{
+				auto p = field.pField;
+				for( int i = 0 ; i < field.size ; i++ )
+					* p++ += int(_pullShort()) << 6;
+				break;
+			}
+
+			case GfxStream::SpxFormat::Delta8_dec:
+			{
+				auto p = field.pField;
+				for( int i = 0 ; i < field.size ; i++ )
+					* p++ += _pullChar();
+				break;
+			}
+
+			case GfxStream::SpxFormat::Delta8_int:
+			{
+				auto p = field.pField;
+				for( int i = 0 ; i < field.size ; i++ )
+					* p++ += int(_pullChar()) << 6;
+				break;
+			}
+		}
+		return *this;
+	}
+
 
 	GfxStreamDecoder& GfxStreamDecoder::operator>> (int mtx[2][2])
 	{
@@ -406,7 +475,7 @@ namespace wg
 
 		header.type = (GfxChunkId) m_pDataRead[0];
 		uint8_t sizeEtc = m_pDataRead[1];
-		header.spxFormat = sizeEtc >> 5;
+		header.spxFormat = (GfxStream::SpxFormat) (sizeEtc >> 5);
 		
 		sizeEtc &= 0x1F;
 		if (sizeEtc <= 30)
@@ -462,7 +531,7 @@ namespace wg
 
 	//____ _pullBytes() ______________________________________________________
 
-	void GfxStreamDecoder::_pullBytes(int nBytes, char* pBytes)
+	void GfxStreamDecoder::_pullBytes(int nBytes, void* pBytes)
 	{
 		std::memcpy(pBytes, m_pDataRead, nBytes);
 		m_pDataRead += nBytes;

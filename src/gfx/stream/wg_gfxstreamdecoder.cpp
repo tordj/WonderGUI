@@ -178,7 +178,7 @@ namespace wg
 
 	GfxStreamDecoder::GfxStreamDecoder()
 	{
-		m_spxFormat = 0;
+		m_spxFormat = GfxStream::SpxFormat::Int32_dec;
 	}
 
 	//____ destructor ________________________________________________________

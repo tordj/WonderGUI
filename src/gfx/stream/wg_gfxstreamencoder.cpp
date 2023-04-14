@@ -93,4 +93,77 @@ namespace wg
 
 		m_pFreeIdStack[m_freeIdStackSize++] = id;
 	}
+
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const GfxStream::WriteSpxArray& array)
+	{
+		switch( array.spxFormat )
+		{
+			case GfxStream::SpxFormat::Int32_dec:
+				_pushBytes(array.size*4, array.pData);
+				break;
+			
+			case GfxStream::SpxFormat::Int16_int:
+			{
+				auto p = array.pData;
+				for( int i = 0 ; i < array.size ; i++ )
+					_pushShort(* p++ >> 6);
+				break;
+			}
+
+			case GfxStream::SpxFormat::Uint16_dec:
+			{
+				auto p = array.pData;
+				for( int i = 0 ; i < array.size ; i++ )
+					_pushShort(* p++);
+				break;
+			}
+				
+			case GfxStream::SpxFormat::Uint8_int:
+			{
+				auto p = array.pData;
+				for( int i = 0 ; i < array.size ; i++ )
+					_pushChar(* p++ >> 6);
+				break;
+			}
+
+			case GfxStream::SpxFormat::Delta16_dec:
+			{
+				auto p1 = array.pData;
+				auto p2 = array.pCompareData;
+				for( int i = 0 ; i < array.size ; i++ )
+					_pushShort((* p1++) - (* p2++));
+				break;
+			}
+
+			case GfxStream::SpxFormat::Delta16_int:
+			{
+				auto p1 = array.pData;
+				auto p2 = array.pCompareData;
+				for( int i = 0 ; i < array.size ; i++ )
+					_pushShort( ((* p1++) - (* p2++)) << 6);
+				break;
+			}
+
+			case GfxStream::SpxFormat::Delta8_dec:
+			{
+				auto p1 = array.pData;
+				auto p2 = array.pCompareData;
+				for( int i = 0 ; i < array.size ; i++ )
+					_pushChar((* p1++) - (* p2++));
+				break;
+			}
+
+			case GfxStream::SpxFormat::Delta8_int:
+			{
+				auto p1 = array.pData;
+				auto p2 = array.pCompareData;
+				for( int i = 0 ; i < array.size ; i++ )
+					_pushChar( ((* p1++) - (* p2++)) << 6);
+				break;
+			}
+		}
+		return *this;
+	}
+
+
 }

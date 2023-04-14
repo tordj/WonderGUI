@@ -387,7 +387,7 @@ namespace wg
 
 			// Load all data to buffer
 
-			*m_pDecoder >> GfxStream::DataChunk{ header.size, pBuffer };
+			*m_pDecoder >> GfxStream::ReadBytes{ header.size, pBuffer };
 
 			//
 
@@ -727,8 +727,8 @@ namespace wg
 
 			assert(nSlices <= 32);
 			
-			*m_pDecoder >> GfxStream::DataChunk{ nSlices*4, sliceSizes };
-			*m_pDecoder >> GfxStream::DataChunk{ nSlices*8, sliceColors };
+			*m_pDecoder >> GfxStream::ReadBytes{ nSlices*4, sliceSizes };
+			*m_pDecoder >> GfxStream::ReadBytes{ nSlices*8, sliceColors };
 
 			m_pDevice->drawPieChart(canvas, start, nSlices, sliceSizes, sliceColors, hubSize, hubColor, backColor, bRectangular );
 			break;
@@ -794,17 +794,17 @@ namespace wg
 
 		case GfxChunkId::EdgeSamples:
 		{
-			int nBytes = header.size;
+			int nSPX = header.size / GfxStream::spxSize(header.spxFormat);
 
-			assert(m_pTempBuffer != nullptr && nBytes <= m_bufferSize - m_bytesLoaded);
+			assert(m_pTempBuffer != nullptr && nSPX*4 <= m_bufferSize - m_bytesLoaded);
 
 			// Stream the compressed samples to end of destination and unpack them.
 
-			*m_pDecoder >> GfxStream::DataChunk{ nBytes, &m_pTempBuffer[m_bytesLoaded] };
+			*m_pDecoder >> GfxStream::ReadSpxField{ nSPX, header.spxFormat, (spx*) &m_pTempBuffer[m_bytesLoaded] };
 
 			// Increase counter and possibly render the segment
 
-			m_bytesLoaded += nBytes;
+			m_bytesLoaded += nSPX*4;
 			if (m_bytesLoaded == m_bufferSize)
 			{
 				switch (m_drawTypeInProgress)
@@ -882,8 +882,9 @@ namespace wg
 
 			if (header.size > 1024)
 			{
-				bp.palette = (Color8*) GfxBase::memStackAlloc(1024);
-				*m_pDecoder >> GfxStream::DataChunk{ 1024, bp.palette };
+				auto pPalette = (Color8*) GfxBase::memStackAlloc(1024);
+				*m_pDecoder >> GfxStream::ReadBytes{ 1024, pPalette };
+				bp.palette = pPalette;
 			}
 
 			if (m_vSurfaces.size() <= surfaceId)
@@ -932,7 +933,7 @@ namespace wg
             while( chunkBytesLeft > 0 )
             {
                 int toRead = std::min(chunkBytesLeft, bytesPerLine - ofs);
-                *m_pDecoder >> GfxStream::DataChunk{ toRead, m_pWritePixels };
+                *m_pDecoder >> GfxStream::ReadBytes{ toRead, m_pWritePixels };
                 chunkBytesLeft -= toRead;
 
                 if(toRead + ofs == bytesPerLine)
@@ -1082,7 +1083,7 @@ namespace wg
 
 		auto pRects = m_clipListBuffer.pRects + m_clipListBuffer.nRects;
 
-		*m_pDecoder >> GfxStream::DataChunk{ nRects * 16, pRects };
+		*m_pDecoder >> GfxStream::ReadBytes{ nRects * 16, pRects };
 
 		m_clipListBuffer.nRects += nRects;
 		m_clipList.nRects = nRects;

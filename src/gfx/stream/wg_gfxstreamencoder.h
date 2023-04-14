@@ -100,7 +100,8 @@ namespace wg
 		inline GfxStreamEncoder& operator<< (YSections);
 		inline GfxStreamEncoder& operator<< (CanvasRef);
 
-		inline GfxStreamEncoder& operator<< (const GfxStream::DataChunk&);
+		inline GfxStreamEncoder& operator<< (const GfxStream::WriteBytes&);
+		GfxStreamEncoder& operator<< (const GfxStream::WriteSpxArray&);
 
 		inline GfxStreamEncoder& operator<< (const int[2][2]);
 		inline GfxStreamEncoder& operator<< (const float[2][2]);
@@ -116,7 +117,7 @@ namespace wg
 		inline void	_pushShort(short s);
 		inline void	_pushInt(int i);
 		inline void	_pushFloat(float f);
-		inline void	_pushBytes(int nBytes, char* pBytes);
+		inline void	_pushBytes(int nBytes, const void* pBytes);
 		
 		short		m_idCounter = 1;
 
@@ -127,7 +128,7 @@ namespace wg
 		int			m_freeIdStackCapacity = 0;
 		int			m_freeIdStackSize = 0;
 		
-		int			m_spxFormat = 0;
+		GfxStream::SpxFormat	m_spxFormat = GfxStream::SpxFormat::Int32_dec;
 
 		ComponentPtr<GfxStreamSink>	m_pStream;
 		
@@ -182,7 +183,7 @@ namespace wg
 
 	//____ _pushBytes() _________________________________________________________
 
-	void GfxStreamEncoder::_pushBytes(int nBytes, char* pBytes)
+	void GfxStreamEncoder::_pushBytes(int nBytes, const void* pBytes)
 	{
 		std::memcpy(m_pWriteData, pBytes, nBytes);
 		m_pWriteData += nBytes;
@@ -236,15 +237,15 @@ namespace wg
 
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const GfxStream::SPX& v)
 	{
-		if( m_spxFormat == 0 )
+		if( m_spxFormat == GfxStream::SpxFormat::Int32_dec )
 		{
 			_pushInt(v.value);
 		}
-		else if( m_spxFormat == 1 )
+		else if( m_spxFormat == GfxStream::SpxFormat::Uint16_dec )
 		{
 			_pushShort(v.value);
 		}
-		else if( m_spxFormat == 2 )
+		else if( m_spxFormat == GfxStream::SpxFormat::Int16_int )
 		{
 			_pushShort(v.value >> 6);
 		}
@@ -257,17 +258,17 @@ namespace wg
 
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const CoordI& c)
 	{
-		if( m_spxFormat == 0 )
+		if( m_spxFormat == GfxStream::SpxFormat::Int32_dec )
 		{
 			_pushInt(c.x);
 			_pushInt(c.y);
 		}
-		else if( m_spxFormat == 1 )
+		else if( m_spxFormat == GfxStream::SpxFormat::Uint16_dec )
 		{
 			_pushShort(c.x);
 			_pushShort(c.y);
 		}
-		else if( m_spxFormat == 2 )
+		else if( m_spxFormat == GfxStream::SpxFormat::Int16_int )
 		{
 			_pushShort(c.x >> 6);
 			_pushShort(c.y >> 6);
@@ -289,17 +290,17 @@ namespace wg
 
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const SizeI& sz)
 	{
-		if( m_spxFormat == 0 )
+		if( m_spxFormat == GfxStream::SpxFormat::Int32_dec  )
 		{
 			_pushInt(sz.w);
 			_pushInt(sz.h);
 		}
-		else if( m_spxFormat == 1 )
+		else if( m_spxFormat == GfxStream::SpxFormat::Uint16_dec )
 		{
 			_pushShort(sz.w);
 			_pushShort(sz.h);
 		}
-		else if( m_spxFormat == 2 )
+		else if( m_spxFormat == GfxStream::SpxFormat::Int16_int )
 		{
 			_pushShort(sz.w >> 6);
 			_pushShort(sz.h >> 6);
@@ -321,21 +322,21 @@ namespace wg
 
 	GfxStreamEncoder& GfxStreamEncoder::operator<< (const RectI& rect)
 	{
-		if( m_spxFormat == 0 )
+		if( m_spxFormat == GfxStream::SpxFormat::Int32_dec )
 		{
 			_pushInt(rect.x);
 			_pushInt(rect.y);
 			_pushInt(rect.w);
 			_pushInt(rect.h);
 		}
-		else if( m_spxFormat == 1 )
+		else if( m_spxFormat == GfxStream::SpxFormat::Uint16_dec )
 		{
 			_pushShort(rect.x);
 			_pushShort(rect.y);
 			_pushShort(rect.w);
 			_pushShort(rect.h);
 		}
-		else if( m_spxFormat == 2 )
+		else if( m_spxFormat == GfxStream::SpxFormat::Int16_int )
 		{
 			_pushShort(rect.x >> 6);
 			_pushShort(rect.y >> 6);
@@ -460,7 +461,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxStreamEncoder& GfxStreamEncoder::operator<< (const GfxStream::DataChunk& data)
+	GfxStreamEncoder& GfxStreamEncoder::operator<< (const GfxStream::WriteBytes& data)
 	{
 		_pushBytes(data.bytes, (char*)data.pBuffer);
 		return *this;

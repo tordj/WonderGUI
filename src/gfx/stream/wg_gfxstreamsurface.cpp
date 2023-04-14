@@ -335,7 +335,7 @@ namespace wg
 	{
 		// Stream the call
 
-		*m_pEncoder << GfxStream::Header{ GfxChunkId::FillSurface, 0, 14 };
+		*m_pEncoder << GfxStream::Header{ GfxChunkId::FillSurface, GfxStream::SpxFormat::Int32_dec, 14 };
 		*m_pEncoder << m_inStreamId;
 		*m_pEncoder << region;
 		*m_pEncoder << color;
@@ -366,7 +366,7 @@ namespace wg
 
 		uint16_t blockSize = 30 + (m_pPalette ? 1024 : 0);
 
-		*pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, 0, blockSize };
+		*pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, GfxStream::SpxFormat::Int32_dec, blockSize };
 		*pEncoder << m_inStreamId;
 		*pEncoder << m_bCanvas;
 		*pEncoder << m_bDynamic;
@@ -379,7 +379,7 @@ namespace wg
 		*pEncoder << m_bTiling;
 
 		if (m_pPalette)
-			*pEncoder << GfxStream::DataChunk{ 1024, m_pPalette };
+			*pEncoder << GfxStream::WriteBytes{ 1024, m_pPalette };
 
 		_sendPixels(pEncoder, m_size, (uint8_t*)m_pBlob->data(), m_pitch);
 		pEncoder->flush();
@@ -395,7 +395,7 @@ namespace wg
 
 		uint16_t blockSize = 30 + (bp.palette ? 1024 : 0);
 
-		*m_pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, 0, blockSize };
+		*m_pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, GfxStream::SpxFormat::Int32_dec, blockSize };
 		*m_pEncoder << surfaceId;
 		*m_pEncoder << bp.canvas;
 		*m_pEncoder << bp.dynamic;
@@ -408,7 +408,7 @@ namespace wg
 		*m_pEncoder << bp.tiling;
 
 		if(bp.palette)
-			*m_pEncoder << GfxStream::DataChunk{ 1024, bp.palette };
+			*m_pEncoder << GfxStream::WriteBytes{ 1024, bp.palette };
 
 		return surfaceId;
 	}
@@ -440,7 +440,7 @@ namespace wg
 
 	void GfxStreamSurface::_sendPixels(GfxStreamEncoder* pEncoder, RectI rect, const uint8_t * pSource, int pitch)
 	{
-		*pEncoder << GfxStream::Header{ GfxChunkId::BeginSurfaceUpdate, 0, 18 };
+		*pEncoder << GfxStream::Header{ GfxChunkId::BeginSurfaceUpdate, GfxStream::SpxFormat::Int32_dec, 18 };
 		*pEncoder << m_inStreamId;
 		*pEncoder << rect;
 
@@ -455,20 +455,20 @@ namespace wg
 			uint16_t chunkSize = std::min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
 			dataSize -= chunkSize;
 
-			*pEncoder << GfxStream::Header{ GfxChunkId::SurfacePixels, 0, uint16_t((chunkSize+1)&0xFFFE) };
+			*pEncoder << GfxStream::Header{ GfxChunkId::SurfacePixels, GfxStream::SpxFormat::Int32_dec, uint16_t((chunkSize+1)&0xFFFE) };
 
 			while (chunkSize > 0)
 			{
 				int len = rect.w * pixelSize - ofs;
 				if (chunkSize < len)
 				{
-					*pEncoder << GfxStream::DataChunk{ chunkSize, (void *) (pLine + ofs) };
+					*pEncoder << GfxStream::WriteBytes{ chunkSize, (void *) (pLine + ofs) };
 					ofs += chunkSize;
 					chunkSize = 0;
 				}
 				else
 				{
-					*pEncoder << GfxStream::DataChunk{ len, (void *)(pLine + ofs) };
+					*pEncoder << GfxStream::WriteBytes{ len, (void *)(pLine + ofs) };
 					ofs = 0;
 					chunkSize -= len;
 					pLine += pitch;
@@ -478,14 +478,14 @@ namespace wg
 			pEncoder->align();
 		}
 
-		*pEncoder << GfxStream::Header{ GfxChunkId::EndSurfaceUpdate, 0, 0 };
+		*pEncoder << GfxStream::Header{ GfxChunkId::EndSurfaceUpdate, GfxStream::SpxFormat::Int32_dec, 0 };
 	}
 
 	//____ _sendDeleteSurface() _______________________________________________
 
 	void GfxStreamSurface::_sendDeleteSurface()
 	{
-		*m_pEncoder << GfxStream::Header{ GfxChunkId::DeleteSurface, 0, 2 };
+		*m_pEncoder << GfxStream::Header{ GfxChunkId::DeleteSurface, GfxStream::SpxFormat::Int32_dec, 2 };
 		*m_pEncoder << m_inStreamId;
 
 	}
