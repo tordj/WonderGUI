@@ -123,11 +123,11 @@ const PixelDescription	pixelDescTab[PixelFormat_size] = {
 	{5, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 0},								// Bitplanes_5
 	{8, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 0},								// Bitplanes_8
 
-	{2, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_1_A1
-	{3, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_2_A1
-	{5, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_4_A1
-	{6, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_5_A1
-	{9, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_8_A1
+	{2, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_A1_1
+	{3, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_A1_2
+	{5, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_A1_4
+	{6, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_A1_5
+	{9, PixelType::Bitplanes, ColorSpace::Linear, 0, 0, 0, 1},								// Bitplanes_A1_8
 
 	{64, PixelType::Chunky, ColorSpace::Linear, 0xFFFF00000000, 0xFFFF0000, 0xFFFF, 0},						// BGRX_16_linear
 	{64, PixelType::Chunky, ColorSpace::Linear, 0xFFFF00000000, 0xFFFF0000, 0xFFFF, 0xFFFF000000000000}		// BGRA_16_linear

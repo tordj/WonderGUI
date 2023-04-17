@@ -246,11 +246,11 @@ namespace wg
 		Bitplanes_5,
 		Bitplanes_8,
 
-		Bitplanes_1_A1,
-		Bitplanes_2_A1,
-		Bitplanes_4_A1,
-		Bitplanes_5_A1,
-		Bitplanes_8_A1,
+		Bitplanes_A1_1,
+		Bitplanes_A1_2,
+		Bitplanes_A1_4,
+		Bitplanes_A1_5,
+		Bitplanes_A1_8,
 
 		BGRX_16_linear,
 		BGRA_16_linear

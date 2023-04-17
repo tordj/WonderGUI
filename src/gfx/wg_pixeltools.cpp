@@ -767,21 +767,21 @@ static void readConv_planes_1i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixe
 	}
 }
 
-static void readConv_planes_8i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
+static void readConv_planes_a1_8i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
 {
 	auto pPalette = (const uint32_t *) _pPalette;
 
 	while (nbPixels > 0)
 	{
-		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
-		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
-		uint16_t	plane3 = (pSrc[4] << 8) + pSrc[5];
-		uint16_t	plane4 = (pSrc[6] << 8) + pSrc[7];
-		uint16_t	plane5 = (pSrc[8] << 8) + pSrc[9];
-		uint16_t	plane6 = (pSrc[10] << 8) + pSrc[11];
-		uint16_t	plane7 = (pSrc[12] << 8) + pSrc[13];
-		uint16_t	plane8 = (pSrc[14] << 8) + pSrc[15];
-		uint16_t	planeA = (pSrc[16] << 8) + pSrc[17];
+		uint16_t	planeA = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane1 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	plane2 = (pSrc[4] << 8) + pSrc[5];
+		uint16_t	plane3 = (pSrc[6] << 8) + pSrc[7];
+		uint16_t	plane4 = (pSrc[8] << 8) + pSrc[9];
+		uint16_t	plane5 = (pSrc[10] << 8) + pSrc[11];
+		uint16_t	plane6 = (pSrc[12] << 8) + pSrc[13];
+		uint16_t	plane7 = (pSrc[14] << 8) + pSrc[15];
+		uint16_t	plane8 = (pSrc[16] << 8) + pSrc[17];
 
 		int pixNow = std::min(16, nbPixels);
 		for (int i = 0; i < pixNow; i++)
@@ -796,6 +796,7 @@ static void readConv_planes_8i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 			*(uint32_t*)pDst = argb;
 			pDst += 4;
 
+			planeA <<= 1;
 			plane1 <<= 1;
 			plane2 <<= 1;
 			plane3 <<= 1;
@@ -804,7 +805,6 @@ static void readConv_planes_8i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 			plane6 <<= 1;
 			plane7 <<= 1;
 			plane8 <<= 1;
-			planeA <<= 1;
 		}
 
 		pSrc += 18;
@@ -812,18 +812,18 @@ static void readConv_planes_8i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 	}
 }
 
-static void readConv_planes_5i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
+static void readConv_planes_a1_5i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
 {
 	auto pPalette = (const uint32_t *) _pPalette;
 
 	while (nbPixels > 0)
 	{
-		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
-		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
-		uint16_t	plane3 = (pSrc[4] << 8) + pSrc[5];
-		uint16_t	plane4 = (pSrc[6] << 8) + pSrc[7];
-		uint16_t	plane5 = (pSrc[8] << 8) + pSrc[9];
-		uint16_t	planeA = (pSrc[10] << 8) + pSrc[11];
+		uint16_t	planeA = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane1 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	plane2 = (pSrc[4] << 8) + pSrc[5];
+		uint16_t	plane3 = (pSrc[6] << 8) + pSrc[7];
+		uint16_t	plane4 = (pSrc[8] << 8) + pSrc[9];
+		uint16_t	plane5 = (pSrc[10] << 8) + pSrc[11];
 
 		int pixNow = std::min(16, nbPixels);
 		for (int i = 0; i < pixNow; i++)
@@ -837,12 +837,12 @@ static void readConv_planes_5i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 			*(uint32_t*)pDst = argb;
 			pDst += 4;
 
+			planeA <<= 1;
 			plane1 <<= 1;
 			plane2 <<= 1;
 			plane3 <<= 1;
 			plane4 <<= 1;
 			plane5 <<= 1;
-			planeA <<= 1;
 		}
 
 		pSrc += 12;
@@ -850,17 +850,17 @@ static void readConv_planes_5i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 	}
 }
 
-static void readConv_planes_4i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
+static void readConv_planes_a1_4i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
 {
 	auto pPalette = (const uint32_t *) _pPalette;
 
 	while (nbPixels > 0)
 	{
-		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
-		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
-		uint16_t	plane3 = (pSrc[4] << 8) + pSrc[5];
-		uint16_t	plane4 = (pSrc[6] << 8) + pSrc[7];
-		uint16_t	planeA = (pSrc[8] << 8) + pSrc[9];
+		uint16_t	planeA = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane1 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	plane2 = (pSrc[4] << 8) + pSrc[5];
+		uint16_t	plane3 = (pSrc[6] << 8) + pSrc[7];
+		uint16_t	plane4 = (pSrc[8] << 8) + pSrc[9];
 
 		int pixNow = std::min(16, nbPixels);
 		for (int i = 0; i < pixNow; i++)
@@ -874,11 +874,11 @@ static void readConv_planes_4i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 			*(uint32_t*)pDst = argb;
 			pDst += 4;
 
+			planeA <<= 1;
 			plane1 <<= 1;
 			plane2 <<= 1;
 			plane3 <<= 1;
 			plane4 <<= 1;
-			planeA <<= 1;
 		}
 
 		pSrc += 10;
@@ -886,15 +886,15 @@ static void readConv_planes_4i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 	}
 }
 
-static void readConv_planes_2i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
+static void readConv_planes_a1_2i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
 {
 	auto pPalette = (const uint32_t *) _pPalette;
 
 	while (nbPixels > 0)
 	{
-		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
-		uint16_t	plane2 = (pSrc[2] << 8) + pSrc[3];
-		uint16_t	planeA = (pSrc[4] << 8) + pSrc[5];
+		uint16_t	planeA = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane1 = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	plane2 = (pSrc[4] << 8) + pSrc[5];
 
 		int pixNow = std::min(16, nbPixels);
 		for (int i = 0; i < pixNow; i++)
@@ -908,9 +908,9 @@ static void readConv_planes_2i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 			*(uint32_t*)pDst = argb;
 			pDst += 4;
 
+			planeA <<= 1;
 			plane1 <<= 1;
 			plane2 <<= 1;
-			planeA <<= 1;
 		}
 
 		pSrc += 6;
@@ -918,14 +918,14 @@ static void readConv_planes_2i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 	}
 }
 
-static void readConv_planes_1i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
+static void readConv_planes_a1_1i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
 {
 	auto pPalette = (const uint32_t *) _pPalette;
 
 	while (nbPixels > 0)
 	{
-		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
-		uint16_t	planeA = (pSrc[2] << 8) + pSrc[3];
+		uint16_t	planeA = (pSrc[0] << 8) + pSrc[1];
+		uint16_t	plane1 = (pSrc[2] << 8) + pSrc[3];
 
 		int pixNow = std::min(16, nbPixels);
 		for (int i = 0; i < pixNow; i++)
@@ -939,8 +939,8 @@ static void readConv_planes_1i_a1_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 			*(uint32_t*)pDst = argb;
 			pDst += 4;
 
-			plane1 <<= 1;
 			planeA <<= 1;
+			plane1 <<= 1;
 		}
 
 		pSrc += 4;
@@ -1913,8 +1913,8 @@ static std::tuple<PixelReadFunc, const void *, const void *, int> getReadFuncFor
 				readConv_planes_5i_be, nullptr, nullptr, readConv_planes_8i_be };
 
 			const PixelReadFunc readFunc_planes_withAlpha[8] = {
-				readConv_planes_1i_a1_be, readConv_planes_2i_a1_be, nullptr, readConv_planes_4i_a1_be,
-				readConv_planes_5i_a1_be, nullptr, nullptr, readConv_planes_8i_a1_be };
+				readConv_planes_a1_1i_be, readConv_planes_a1_2i_be, nullptr, readConv_planes_a1_4i_be,
+				readConv_planes_a1_5i_be, nullptr, nullptr, readConv_planes_a1_8i_be };
 
 			if (srcDesc.A_mask == 0)
 				pReadFunc = readFunc_planes_nonAlpha[srcDesc.bits - 1];
@@ -2096,8 +2096,8 @@ static std::tuple<PixelReadFunc, const void*, const void*, int> getReadFuncFor64
 				readConv_planes_5i_be, nullptr, nullptr, readConv_planes_8i_be };
 
 			const PixelReadFunc readFunc_planes_withAlpha[8] = {
-				readConv_planes_1i_a1_be, readConv_planes_2i_a1_be, nullptr, readConv_planes_4i_a1_be,
-				readConv_planes_5i_a1_be, nullptr, nullptr, readConv_planes_8i_a1_be };
+				readConv_planes_a1_1i_be, readConv_planes_a1_2i_be, nullptr, readConv_planes_a1_4i_be,
+				readConv_planes_a1_5i_be, nullptr, nullptr, readConv_planes_a1_8i_be };
 
 			if (srcDesc.A_mask == 0)
 				pTab2 = (const void*) (readFunc_planes_nonAlpha[srcDesc.bits - 1]);
@@ -2377,6 +2377,180 @@ static bool	initPaletteRemapTable( uint16_t * pRemapTab, const Color8 * pSrcPale
 }
 
 
+class ChunkyToIndexConverter
+{
+public:
+	ChunkyToIndexConverter( Color8 * pPalette, int nPaletteEntries, int maxPaletteEntries, int indexBits );
+	~ChunkyToIndexConverter() { delete [] m_pTable; }
+
+	bool convert(uint8_t * pDst, const uint32_t * pSrc, int nPixels );
+
+	inline int nbPaletteEntries() const { return m_nPaletteEntries; }
+	
+protected:
+
+	bool _convertPixelsToIndex8(uint8_t * pDst, const uint32_t * pSrc, int nPixels );
+	bool _convertPixelsToIndex16(uint16_t * pDst, const uint32_t * pSrc, int nPixels );
+
+	Color8 *	m_pPalette;
+	int			m_nPaletteEntries;
+	int			m_maxPaletteEntries;
+	int			m_indexBits;
+	
+	struct ChunkyIndex
+	{
+		uint32_t chunkyValue;
+		int		index;
+	};
+	
+	ChunkyIndex *	m_pTable;
+	int				m_nTableEntries;
+		
+};
+
+//____ ChunkyToIndexConverter constructor ______________________________________________
+
+ChunkyToIndexConverter::ChunkyToIndexConverter( Color8 * pPalette, int nPaletteEntries, int maxPaletteEntries, int indexBits )
+{
+	m_pPalette = pPalette;
+	m_nPaletteEntries = nPaletteEntries;
+	m_maxPaletteEntries = maxPaletteEntries;
+	m_indexBits = indexBits;
+	
+	m_pTable = new ChunkyIndex[m_maxPaletteEntries];
+	m_nTableEntries = nPaletteEntries;
+
+	// Init the table
+
+	uint32_t * pPal = (uint32_t*) pPalette;
+	
+	for( int i = 0 ; i < nPaletteEntries ; i++ )
+	{
+		m_pTable[i].index = i;
+		m_pTable[i].chunkyValue = pPal[i];
+	}
+
+	std::sort( m_pTable, m_pTable + m_nTableEntries, [](ChunkyIndex& a, ChunkyIndex& b){ return a.chunkyValue > b.chunkyValue; } );
+}
+
+//____ convert() ________________________________________________________
+
+bool ChunkyToIndexConverter::convert(uint8_t * pDst, const uint32_t * pSrc, int nPixels )
+{
+	if( m_indexBits == 8 )
+		return _convertPixelsToIndex8(pDst, pSrc, nPixels );
+	else
+		return _convertPixelsToIndex16( (uint16_t*) pDst, pSrc, nPixels );
+}
+
+//____ _convertPixelsToIndex8() ________________________________________________________
+
+bool ChunkyToIndexConverter::_convertPixelsToIndex8(uint8_t * pDst, const uint32_t * pSrc, int nPixels )
+{
+	for( int i = 0 ; i < nPixels ; i++ )
+	{
+		uint32_t pixel = * pSrc++;
+		
+		int left = 0;
+		int right = m_nTableEntries-1;
+		
+		if( pixel < m_pTable[left].chunkyValue )
+			right = 0;
+		else if( pixel > m_pTable[right].chunkyValue )
+			left = right;
+		else
+		{
+			while (right - left > 1)
+			{
+				int mid = left + (right - left) / 2;
+
+				if (m_pTable[mid].chunkyValue < pixel)
+				  left = mid;
+				else
+				  right = mid;
+			}
+
+			if(m_pTable[left].chunkyValue == pixel)
+			{
+				* pDst++ = m_pTable[left].index;
+				continue;
+			}
+			
+			if(m_pTable[right].chunkyValue == pixel)
+			{
+				* pDst++ = m_pTable[right].index;
+				continue;
+			}
+		}
+		
+		if( m_nPaletteEntries == m_maxPaletteEntries )
+			return false;										// Out of palette entries!
+
+		memmove(&m_pTable[right+1], &m_pTable[right], sizeof(ChunkyIndex)*(m_nTableEntries-right) );
+		m_pTable[right].index = m_nPaletteEntries;
+		m_pTable[right].chunkyValue = pixel;
+		m_nTableEntries++;
+
+		* pDst++ = m_nPaletteEntries++;
+	}
+	
+	return true;
+}
+
+//____ _convertPixelsToIndex16() ________________________________________________________
+
+bool ChunkyToIndexConverter::_convertPixelsToIndex16(uint16_t * pDst, const uint32_t * pSrc, int nPixels )
+{
+	for( int i = 0 ; i < nPixels ; i++ )
+	{
+		uint32_t pixel = * pSrc++;
+		
+		int left = 0;
+		int right = m_nTableEntries-1;
+		
+		if( pixel < m_pTable[left].chunkyValue )
+			right = 0;
+		else if( pixel > m_pTable[right].chunkyValue )
+			left = right;
+		else
+		{
+			while (right - left > 1)
+			{
+				int mid = left + (right - left) / 2;
+
+				if (m_pTable[mid].chunkyValue < pixel)
+				  left = mid;
+				else
+				  right = mid;
+			}
+
+			if(m_pTable[left].chunkyValue == pixel)
+			{
+				* pDst++ = m_pTable[left].index;
+				continue;
+			}
+			
+			if(m_pTable[right].chunkyValue == pixel)
+			{
+				* pDst++ = m_pTable[right].index;
+				continue;
+			}
+		}
+		
+		if( m_nPaletteEntries == m_maxPaletteEntries )
+			return false;										// Out of palette entries!
+
+		memmove(&m_pTable[right+1], &m_pTable[right], sizeof(ChunkyIndex)*(m_nTableEntries-right) );
+		m_pTable[right].index = m_nPaletteEntries;
+		m_pTable[right].chunkyValue = pixel;
+		m_nTableEntries++;
+
+		* pDst++ = m_nPaletteEntries++;
+	}
+	
+	return true;
+}
+
 
 
 //____ copyToIndexedDestination() _____________________________________________
@@ -2523,68 +2697,47 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 		std::tie(pReadFunc, pTab1, pTab2, nAllocatedBytes) = getReadFuncFor32bitDest(srcFmt, dstFmt, pSrcPalette, srcPaletteEntries);
 		if (pReadFunc == nullptr)
 			return false;
-		
-		uint32_t buffer[64];
-		
-		
-		
-		
-		
-		
-		
-		
-		return false;
-	}
 
+		ChunkyToIndexConverter conv(pDstPalette, dstPaletteEntries, maxDstPaletteEntries, dstDesc.bits );
+					
+		uint8_t	buffer[64 * 4];
 
-
-}
-
-struct ChunkyIndex
-{
-	uint32_t chunkyValue;
-	int		index;
-};
-
-
-static bool chunkyToIndex(const uint32_t * pSrc, uint16_t * pDst, int nPixels, Color8 * pPalette, int& nPaletteEntries, int maxPaletteEntries,
-						  ChunkyIndex * pTable, int& nTableEntries )
-{
-	
-	for( int i = 0 ; i < nPixels ; i++ )
-	{
-		uint32_t pixel = * pSrc++;
-		
-		int left = 0;
-		int right = nTableEntries-1;
-		
-		while (right - left > 1)
+		for (int y = 0; y < height; y++)
 		{
-			int mid = left + (right - left) / 2;
+			int x = 0;
+			int widthLeft = width;
+			while (widthLeft > 64)
+			{
+				pReadFunc(pSrc, buffer, 64, pTab1, pTab2);
+				pSrc += srcDesc.bits * 8;
 
-			if (pTable[mid].chunkyValue < pixel)
-			  left = mid;
-			else
-			  right = mid;
+				if( !conv.convert(pDst, (uint32_t*) buffer, 64) )
+					return false;
+				
+				pDst += dstDesc.bits * 8;
+
+				widthLeft -= 64;
+			}
+
+			if (widthLeft > 0)
+			{
+				pReadFunc(pSrc, buffer, widthLeft, pTab1, pTab2);
+				pSrc += srcDesc.bits / 8 * widthLeft;
+
+				if( !conv.convert(pDst, (uint32_t*) buffer, widthLeft) )
+					return false;
+
+				pDst += dstDesc.bits * 8;
+			}
+
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
 		}
 		
-		if(pTable[left].chunkyValue == pixel)
-			* pDst++ = pTable[left].index;
-		else if(pTable[right].chunkyValue == pixel)
-			* pDst++ = pTable[right].index;
-		else
-		{
-			
-		}
-		
-		
+		return true;
 	}
-	
-	
-	
+
 }
-
-
 
 
 //____ copyPixels() [PixelFormat] _____________________________________________
@@ -2614,11 +2767,9 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, PixelFormat srcFmt, 
 			case PixelType::Chunky_BE:
 				return copyToChunkyDestination(width, height, pSrc, srcFmt, srcPitchAdd, pDst, dstFmt, dstPitchAdd, pSrcPalette, srcPaletteEntries);
 
-
-
 			case PixelType::Index:
-				return false;				// Not supported yet!
-
+				return copyToIndexedDestination(width, height, pSrc, srcFmt, srcPitchAdd, pDst, dstFmt, dstPitchAdd, pSrcPalette,
+												pDstPalette, srcPaletteEntries, dstPaletteEntries, maxDstPaletteEntries);
 		}
 
 	}
