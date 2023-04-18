@@ -60,15 +60,15 @@ namespace wg
 	}
 
 	Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
-												PixelFormat format, int pitch, const Color8 * pPalette)
+												PixelFormat format, int pitch, const Color8 * pPalette, int paletteSize)
 	{
-		return MetalSurface::create(blueprint, pPixels, format, pitch, pPalette);
+		return MetalSurface::create(blueprint, pPixels, format, pitch, pPalette, paletteSize);
 	}
 
 	Surface_p MetalSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
-												const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
+												const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize)
 	{
-		return MetalSurface::create(blueprint, pPixels, pixelDescription, pitch, pPalette);
+		return MetalSurface::create(blueprint, pPixels, pixelDescription, pitch, pPalette, paletteSize);
 	}
 
 } // namespace wg

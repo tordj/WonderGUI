@@ -79,7 +79,7 @@ struct SurfaceFileHeader
 	
 	//	-- 56 bytes header ends here.
 
-	int32_t			paletteEntries 			= 0;
+	int32_t			paletteSize 			= 0;
 	char			paletteFiltering[4]		= { 'N','O','N','E' };
 	char			paletteFilteringParams[8] = { 0,0,0,0,0,0,0,0 };
 	char 			paletteCompression[4]	= { 'N','O','N','E' };

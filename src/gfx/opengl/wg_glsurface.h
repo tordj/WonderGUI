@@ -63,11 +63,11 @@ namespace wg
 		
 		static GlSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
 									   PixelFormat format = PixelFormat::Undefined, int pitch = 0,
-									   const Color8 * pPalette = nullptr);
+									   const Color8 * pPalette = nullptr, int paletteSize = 0 );
 		
 		static GlSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
 									   const PixelDescription& pixelDescription, int pitch = 0,
-									   const Color8 * pPalette = nullptr);
+									   const Color8 * pPalette = nullptr, int paletteSize = 0 );
 
 
 		//.____ Identification __________________________________________
@@ -109,8 +109,8 @@ namespace wg
 	private:
 		GlSurface(const Blueprint& blueprint);
 		GlSurface(const Blueprint& blueprint, Blob* pBlob, int pitch);
-		GlSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette);
-		GlSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette);
+		GlSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette, int paletteSize);
+		GlSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize);
 
 		~GlSurface();
 

@@ -81,21 +81,21 @@ namespace wg
 	}
 
 	GlSurface_p	GlSurface::create(const Blueprint& bp, const uint8_t* pPixels,
-								  PixelFormat format, int pitch, const Color8 * pPalette)
+								  PixelFormat format, int pitch, const Color8 * pPalette, int paletteSize)
 	{
 		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
 
-		return  GlSurface_p(new GlSurface(bp, pPixels, format, pitch, pPalette));
+		return  GlSurface_p(new GlSurface(bp, pPixels, format, pitch, pPalette, paletteSize));
 	};
 
 	GlSurface_p	GlSurface::create(const Blueprint& bp, const uint8_t* pPixels,
-								  const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
+								  const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize)
 	{
 		if (!_isBlueprintValid(bp, maxSize()))
 			return GlSurface_p();
 
-		return  GlSurface_p(new GlSurface(bp, pPixels, pixelDescription, pitch, pPalette));
+		return  GlSurface_p(new GlSurface(bp, pPixels, pixelDescription, pitch, pPalette, paletteSize));
 	};
 
 
@@ -113,22 +113,22 @@ namespace wg
         {
             g_backingPixels += m_size.w*m_size.h;
             m_pitch = ((m_size.w * m_pPixelDescription->bits / 8) + 3) & 0xFFFFFFFC;
-            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.palette ? 1024 : 0));
+            m_pBlob = Blob::create(m_pitch * m_size.h + m_paletteCapacity*sizeof(Color8));
 
-            if (bp.palette)
-            {
-                m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-                memcpy(m_pPalette, bp.palette, 1024);
+            if (m_paletteCapacity > 0)
+			{
+				m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
+				memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8));
             }
         }
         else
 		{
 			m_pitch = 0;
 
-			if (bp.palette)
+			if (m_paletteCapacity > 0)
 			{
-				m_pPalette = new Color8[256];
-				memcpy(m_pPalette, bp.palette, 1024);
+				m_pPalette = new Color8[m_paletteCapacity];
+				memcpy(m_pPalette, bp.palette, m_paletteSize);
 			}
 
 			if (m_pPixelDescription->A_mask > 0)
@@ -162,10 +162,10 @@ namespace wg
 		{
 			m_pitch = 0;
 
-			if (bp.palette)
+			if (m_paletteCapacity > 0)
 			{
-				m_pPalette = new Color8[256];
-				memcpy(m_pPalette, bp.palette, 1024);
+				m_pPalette = new Color8[m_paletteCapacity];
+				memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8));
 			}
 
 			if (m_pPixelDescription->A_mask > 0)
@@ -189,16 +189,17 @@ namespace wg
 		_setupGlTexture(pBlob->data(), pitch);
 	}
 
-	GlSurface::GlSurface(const Blueprint& bp, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette)
-	: GlSurface(bp, pPixels, Util::pixelFormatToDescription(format), pitch, pPalette)
+	GlSurface::GlSurface(const Blueprint& bp, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette, int paletteSize)
+	: GlSurface(bp, pPixels, format == PixelFormat::Undefined ? (bp.format == PixelFormat::Undefined ? Util::pixelFormatToDescription(PixelFormat::BGRA_8)
+																 : Util::pixelFormatToDescription(bp.format)) : Util::pixelFormatToDescription(format), pitch, pPalette, paletteSize)
 	{
-	
+		// Calling constructor with PixelDescription could be slow (but should be ok, once we optimize copyPixels() to take fast route).
 	}
 
-	GlSurface::GlSurface(const Blueprint& bp, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
+	GlSurface::GlSurface(const Blueprint& bp, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize)
 	: Surface(bp, PixelFormat::BGRA_8, SampleMethod::Bilinear)
 	{
-		//TODO: Not just default to BGRA_8 if PixelFormat not specified in Blueprint. Instead we should take the most suitable PixelFormat base on pPixelDescription
+		//TODO: Not just default to BGRA_8 if PixelFormat not specified in Blueprint. Instead we should take the most suitable PixelFormat based on pPixelDescription (same for SoftSurface, MetalSurface etc.)
 		
 		_setPixelDetails(m_pixelFormat);
 		m_pPalette = nullptr;
@@ -213,23 +214,25 @@ namespace wg
 			// Create our blob
 			
             m_pitch = ((m_size.w * m_pPixelDescription->bits / 8) + 3) & 0xFFFFFFFC;
-            m_pBlob = Blob::create(m_pitch * m_size.h + (bp.palette ? 1024 : 0));
+            m_pBlob = Blob::create(m_pitch * m_size.h + m_paletteCapacity*sizeof(Color8));
 
 			// Setup palette
 
-			if (bp.palette)
+			if (m_paletteCapacity > 0)
 			{
 				m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-				memcpy(m_pPalette, bp.palette, 1024);
+				memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8));
 			}
 
 			// Copy pixels
 			
-			int dstPaletteEntries = 256;
+			_fixSrcParam(pixelDescription, pPalette, paletteSize);
 			
-			PixelTools::copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, pitch - m_size.w * pixelDescription.bits/8,
+			int srcPitchAdd = (pitch == 0) ? 0 : pitch - pixelDescription.bits/8 * m_size.w;
+			
+			PixelTools::copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, srcPitchAdd,
 					   (uint8_t*) m_pBlob->data(), m_pixelFormat, m_pitch - m_size.w * m_pPixelDescription->bits / 8,
-					   pPalette, m_pPalette, 256, dstPaletteEntries, 256);
+					   pPalette, m_pPalette, paletteSize, m_paletteSize, m_paletteCapacity);
 
 			// Setup GL-texture
 			
@@ -239,10 +242,10 @@ namespace wg
 		{
 			// Setup palette, not part of Blob since we should keep this.
 
-			if (bp.palette)
+			if (m_paletteCapacity > 0)
 			{
-				m_pPalette = new Color8[256];
-				memcpy(m_pPalette, bp.palette, 1024);
+				m_pPalette = new Color8[m_paletteCapacity];
+				memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8));
 			}
 			
 			// Convert/copy pixels to temporary buffer.
@@ -253,12 +256,10 @@ namespace wg
 			uint8_t * pTempPixelBuffer = new uint8_t[tempBufPitch * m_size.h];
 
 			// Copy pixels
-
-			int dstPaletteEntries = 256;
 		
 			PixelTools::copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, pitch - m_size.w * pixelDescription.bits/8,
 					   pTempPixelBuffer, m_pixelFormat, 0,
-					   pPalette, m_pPalette, 256, dstPaletteEntries, 256);
+					   pPalette, m_pPalette, paletteSize, m_paletteSize, m_paletteCapacity);
 
 			// Setup GL-texture
 

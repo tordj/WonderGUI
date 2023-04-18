@@ -71,17 +71,17 @@ namespace wg
 	}
 
 	Surface_p GfxStreamSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
-													 PixelFormat format, int pitch, const Color8 * pPalette)
+													 PixelFormat format, int pitch, const Color8 * pPalette, int paletteSize)
 	{
-		auto p = GfxStreamSurface::create(m_pEncoder, blueprint, pPixels, format, pitch, pPalette);
+		auto p = GfxStreamSurface::create(m_pEncoder, blueprint, pPixels, format, pitch, pPalette, paletteSize);
 		_addReference(p);
 		return p;
 	}
 
 	Surface_p GfxStreamSurfaceFactory::createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
-												const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
+												const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize)
 	{
-		auto p = GfxStreamSurface::create(m_pEncoder, blueprint, pPixels, pixelDescription, pitch, pPalette );
+		auto p = GfxStreamSurface::create(m_pEncoder, blueprint, pPixels, pixelDescription, pitch, pPalette, paletteSize );
 		_addReference(p);
 		return p;
 	}

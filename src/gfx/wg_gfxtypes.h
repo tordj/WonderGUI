@@ -435,7 +435,7 @@ namespace wg
 
 		EdgeSamples = 45,
 
-		CreateSurface = 46,
+		CreateSurfaceDeprecated = 46,
 		BeginSurfaceUpdate = 47,
 		SurfacePixels = 48,
 		EndSurfaceUpdate = 49,
@@ -448,7 +448,7 @@ namespace wg
 		CanvasList = 55,
 		
 		SetFixedBlendColor = 56,
-		
+		CreateSurface = 57
 	};
 
 	typedef uint8_t GfxChunkFlags;

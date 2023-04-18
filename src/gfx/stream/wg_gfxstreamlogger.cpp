@@ -729,7 +729,7 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::CreateSurface:
+			case GfxChunkId::CreateSurfaceDeprecated:
 			{
 				uint16_t	surfaceId;
 				Surface::Blueprint	bp;
@@ -758,6 +758,40 @@ namespace wg
 				break;
 			}
 
+			case GfxChunkId::CreateSurface:
+			{
+				uint16_t	surfaceId;
+				Surface::Blueprint	bp;
+
+				*m_pDecoder >> surfaceId;
+				*m_pDecoder >> bp.canvas;
+				*m_pDecoder >> bp.dynamic;
+				*m_pDecoder >> bp.format;
+				*m_pDecoder >> bp.identity;
+				*m_pDecoder >> bp.mipmap;
+				*m_pDecoder >> bp.sampleMethod;
+				*m_pDecoder >> bp.scale;
+				*m_pDecoder >> bp.size;
+				*m_pDecoder >> bp.tiling;
+				*m_pDecoder >> bp.paletteCapacity;
+				*m_pDecoder >> bp.paletteSize;
+
+
+				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
+				m_charStream << "    canvas      = " << bp.canvas << std::endl;
+				m_charStream << "    dynamic     = " << bp.dynamic << std::endl;
+				m_charStream << "    format      = " << toString(bp.format) << std::endl;
+				m_charStream << "    identity    = " << bp.identity << std::endl;
+				m_charStream << "    mipmap      = " << bp.mipmap << std::endl;
+				m_charStream << "    sampling    = " << toString(bp.sampleMethod) << std::endl;
+				m_charStream << "    scale       = " << bp.scale << std::endl;
+				m_charStream << "    size        = " << bp.size.w << ", " << bp.size.h << std::endl;
+				m_charStream << "    tiling      = " << bp.tiling << std::endl;
+				m_charStream << "    paletteCap. = " << bp.paletteCapacity << std::endl;
+				m_charStream << "    paletteSize = " << bp.paletteSize << std::endl;
+				break;
+			}
+				
 			case GfxChunkId::BeginSurfaceUpdate:
 			{
 				uint16_t	surfaceId;

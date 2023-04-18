@@ -58,14 +58,14 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(blueprint, pBlob, pitch));
 	}
 
-	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette )
+	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize )
 	{
-		return SoftSurface_p(new SoftSurface(blueprint, pPixels, pixelDescription, pitch, pPalette));
+		return SoftSurface_p(new SoftSurface(blueprint, pPixels, pixelDescription, pitch, pPalette, paletteSize));
 	}
 
-	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette )
+	SoftSurface_p SoftSurface::create(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette, int paletteSize )
 	{
-		return SoftSurface_p(new SoftSurface(blueprint, pPixels, format, pitch, pPalette));
+		return SoftSurface_p(new SoftSurface(blueprint, pPixels, format, pitch, pPalette, paletteSize));
 	}
 
 
@@ -79,13 +79,13 @@ namespace wg
 	SoftSurface::SoftSurface( const Blueprint& bp ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest )
 	{
 		m_pitch = ((bp.size.w+3)&0xFFFFFFFC)*m_pPixelDescription->bits/8;
-		m_pBlob = Blob::create( m_pitch*bp.size.h + (bp.palette ? 1024 : 0) );
+		m_pBlob = Blob::create( m_pitch*bp.size.h + m_paletteCapacity*sizeof(Color8) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
-		if (bp.palette)
+		if (m_paletteCapacity > 0)
 		{
 			m_pPalette = (Color8*)(m_pData + m_pitch * bp.size.h);
-			memcpy(m_pPalette, bp.palette, 1024);
+			memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8) );
 			_makePalette4096();
 		}
 		else
@@ -129,17 +129,17 @@ namespace wg
 	}
 
 	SoftSurface::SoftSurface(const Blueprint& bp, const uint8_t * pPixels,
-							 PixelFormat format, int pitch, const Color8 * pPalette) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
+							 PixelFormat format, int pitch, const Color8 * pPalette, int paletteSize ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
 	{
 				
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pPixelDescription->bits / 8;
-		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.palette ? 1024 : 0) );
+		m_pBlob = Blob::create(m_pitch*m_size.h + m_paletteCapacity*sizeof(Color8) );
 		m_pData = (uint8_t*)m_pBlob->data();
 
-		if (bp.palette)
+		if (m_paletteCapacity > 0)
 		{
 			m_pPalette = (Color8*)(m_pData + m_pitch * bp.size.h);
-			memcpy(m_pPalette, bp.palette, 1024);
+			memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8) );
 			_makePalette4096();
 		}
 		else
@@ -149,27 +149,29 @@ namespace wg
 		
 		// Copy pixels
 
-		int dstPaletteEntries = 256;
+		_fixSrcParam(format, pPalette, paletteSize);
+		
 		int srcPitchAdd = (pitch == 0) ? 0 : pitch - Util::pixelFormatToDescription(format).bits/8 * m_size.w;
-
+		
 		PixelTools::copyPixels(m_size.w, m_size.h, pPixels, format, srcPitchAdd,
 							   m_pData, m_pixelFormat, m_pitch - m_pPixelDescription->bits/8 * m_size.w, pPalette,
-							   m_pPalette, 256, dstPaletteEntries, 256);
+							   m_pPalette, paletteSize, m_paletteSize, m_paletteCapacity);
 	}
 
 
 	SoftSurface::SoftSurface(const Blueprint& bp, const uint8_t * pPixels,
-							 const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
+							 const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize ) : Surface(bp, PixelFormat::BGRA_8, SampleMethod::Nearest)
 	{
 		
+		
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pPixelDescription->bits / 8;
-		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.palette ? 1024 : 0) );
+		m_pBlob = Blob::create(m_pitch*m_size.h + m_paletteCapacity*sizeof(Color8) );
 		m_pData = (uint8_t*)m_pBlob->data();
 
-		if (bp.palette)
+		if (m_paletteCapacity)
 		{
 			m_pPalette = (Color8*)(m_pData + m_pitch * bp.size.h);
-			memcpy(m_pPalette, bp.palette, 1024);
+			memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8) );
 			_makePalette4096();
 		}
 		else
@@ -179,12 +181,13 @@ namespace wg
 		
 		// Copy pixels
 		
-		int dstPaletteEntries = 256;
-		int srcPitchAdd = pitch == 0 ? 0 : pitch - pixelDescription.bits/8 * m_size.w;
+		_fixSrcParam(pixelDescription, pPalette, paletteSize);
 
+		int srcPitchAdd = pitch == 0 ? 0 : pitch - pixelDescription.bits/8 * m_size.w;
+		
 		PixelTools::copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, srcPitchAdd,
 							   m_pData, m_pixelFormat, m_pitch - m_pPixelDescription->bits/8 * m_size.w, pPalette,
-							   m_pPalette, 256, dstPaletteEntries, 256);
+							   m_pPalette, paletteSize, m_paletteSize, m_paletteCapacity);
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -319,12 +322,12 @@ namespace wg
 
 	void SoftSurface::_makePalette4096()
 	{
-		m_pPalette4096 = new HiColor[256];
+		m_pPalette4096 = new HiColor[m_paletteCapacity];
 
 		HiColor * p = m_pPalette4096;
 		const int16_t* pUnpackTab = GfxBase::defaultToSRGB() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
-		for (int i = 0; i < 256; i++)
+		for (int i = 0; i < m_paletteSize; i++)
 		{
 			p[i].r = pUnpackTab[m_pPalette[i].r];
 			p[i].g = pUnpackTab[m_pPalette[i].g];
@@ -332,6 +335,5 @@ namespace wg
 			p[i].a = HiColor::unpackLinearTab[m_pPalette[i].a];
 		}
 	}
-
 
 } // namespace wg

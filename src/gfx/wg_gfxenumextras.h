@@ -64,7 +64,7 @@ namespace wg
 	const static ColorSpace      ColorSpace_max      = ColorSpace::sRGB;
 	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
 	const static CanvasRef       CanvasRef_max       = CanvasRef::Canvas_32;
-	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::SetFixedBlendColor;
+	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::CreateSurface;
 
 	const static int             TintMode_size       = (int)TintMode::GradientXY + 1;
 	const static int             BlendMode_size      = (int)BlendMode::BlendFixedColor + 1;
@@ -78,7 +78,7 @@ namespace wg
 	const static int             ColorSpace_size     = (int)ColorSpace::sRGB + 1;
 	const static int             GfxFlip_size        = (int)GfxFlip::Rot270FlipY + 1;
 	const static int             CanvasRef_size      = (int)CanvasRef::Canvas_32 + 1;
-	const static int             GfxChunkId_size     = (int)GfxChunkId::SetFixedBlendColor + 1;
+	const static int             GfxChunkId_size     = (int)GfxChunkId::CreateSurface + 1;
 
 	const char * toString(TintMode);
 	const char * toString(BlendMode);

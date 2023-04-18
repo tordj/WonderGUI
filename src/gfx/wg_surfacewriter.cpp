@@ -69,7 +69,7 @@ namespace wg
 		// Write palette
 
 		if( pSurface->palette() )
-			stream.write( (char*) pSurface->palette(), 256*sizeof(Color8) );
+			stream.write( (char*) pSurface->palette(), pSurface->paletteSize()*sizeof(Color8) );
 
 		// Write pixels
 
@@ -128,8 +128,8 @@ namespace wg
 
 		if( pSurface->palette() )
 		{
-			std::memcpy(pWrite, pSurface->palette(), 256*sizeof(Color8) );
-			pWrite += 256*sizeof(Color8);
+			std::memcpy(pWrite, pSurface->palette(), pSurface->paletteSize()*sizeof(Color8) );
+			pWrite += pSurface->paletteSize()*sizeof(Color8);
 		}
 
 		// Write pixels
@@ -209,8 +209,8 @@ namespace wg
 
 		if( bp.palette )
 		{
-			pHeader->paletteBytes = 256*sizeof(Color8);
-			pHeader->paletteEntries = 256;
+			pHeader->paletteBytes = bp.paletteSize*sizeof(Color8);
+			pHeader->paletteSize = bp.paletteSize;
 		}
 
 

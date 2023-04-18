@@ -178,13 +178,15 @@ namespace wg
 			bool				buffered = false;
 			bool				canvas = false;
 			const Color8* 		palette = nullptr;
+			int					paletteCapacity = 0;		// Default to paletteSize. Must be >= paletteSize if set.
+			int					paletteSize = 0;			// Default to max for format when palette != nullptr.
 			bool				dynamic = false;
 			PixelFormat			format = PixelFormat::Undefined;
 			int					identity = 0;
 			bool				mipmap = false;
 			SampleMethod		sampleMethod = SampleMethod::Undefined;
 			int					scale = 0;
-			SizeI				size;					// Mandatory, except when creating from other surface.
+			SizeI				size;					// Mandatory.
 			bool				tiling = false;
 		};
 
@@ -220,6 +222,7 @@ namespace wg
 		virtual int			alpha( CoordSPX coord ) = 0;	///< @brief Get Alpha value of subpixel at specified coordinate.
 
 		inline const Color8* palette() const;
+		inline int			paletteSize() const;
 
 		inline const PixelDescription*	pixelDescription() const; ///< @brief Get the pixel description for the surface.
 		inline PixelFormat	pixelFormat() const;
@@ -278,6 +281,9 @@ namespace wg
 		int					_alpha(CoordSPX coord, const PixelBuffer& buffer);
 
         static bool         _isBlueprintValid( const Blueprint& bp, SizeI maxSize);
+		
+		void				_fixSrcParam( PixelFormat& format, const Color8*& pPalette, int& paletteSize );
+		void				_fixSrcParam( const PixelDescription& format, const Color8*& pPalette, int& paletteSize );
 
 		int                 m_id = 0;
 
@@ -296,7 +302,9 @@ namespace wg
 //		bool				m_bOpaque = false;
 
 		Color8 *			m_pPalette = nullptr;					// Pointer at color lookup table. Always 256 entries long.
-
+		int					m_paletteSize = 0;
+		int					m_paletteCapacity = 0;
+		
 		Object_p			m_pBaggage;
 		Observer *			m_pObserver = nullptr;
 	};
@@ -440,6 +448,13 @@ namespace wg
 	const Color8* Surface::palette() const
 	{
 		return m_pPalette;
+	}
+
+	//____ paletteSiz() _____________________________________________________________
+
+	int Surface::paletteSize() const
+	{
+		return m_paletteSize;
 	}
 
 	//____ pixelFormat() ______________________________________________________

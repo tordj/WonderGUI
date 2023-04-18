@@ -2777,7 +2777,7 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, PixelFormat srcFmt, 
 
 //____ colorToPixelBytes() ____________________________________________________
 
-int colorToPixelBytes( HiColor color, PixelFormat format, uint8_t pixelArea[18], Color8* pPalette, int paletteEntries )
+int colorToPixelBytes( HiColor color, PixelFormat format, uint8_t pixelArea[18], Color8* pPalette, int paletteSize )
 {
 	auto& desc = Util::pixelFormatToDescription(format);
 
@@ -2785,7 +2785,7 @@ int colorToPixelBytes( HiColor color, PixelFormat format, uint8_t pixelArea[18],
 	{
 		HiColor alphaLess = color;
 		alphaLess.a = 0xFF;
-		int colorNb = findBestMatchInPalette(alphaLess, pPalette, paletteEntries, ColorSpace::Linear);
+		int colorNb = findBestMatchInPalette(alphaLess, pPalette, paletteSize, ColorSpace::Linear);
 
 		uint16_t* pOutput = (uint16_t*) pixelArea;
 		int mask = colorNb ^ 0xFFFF;
@@ -2877,7 +2877,7 @@ int colorToPixelBytes( HiColor color, PixelFormat format, uint8_t pixelArea[18],
 		case PixelFormat::Index_8_sRGB:
 		case PixelFormat::Index_8_linear:
 		{
-			pixelArea[0] = (uint8_t)findBestMatchInPalette(color, pPalette, paletteEntries, desc.colorSpace);
+			pixelArea[0] = (uint8_t)findBestMatchInPalette(color, pPalette, paletteSize, desc.colorSpace);
 			return 1;
 		}
 
@@ -2885,7 +2885,7 @@ int colorToPixelBytes( HiColor color, PixelFormat format, uint8_t pixelArea[18],
 		case PixelFormat::Index_16_sRGB:
 		case PixelFormat::Index_16_linear:
 		{
-			*reinterpret_cast<uint16_t*>(pixelArea) = (uint16_t)findBestMatchInPalette(color, pPalette, paletteEntries, desc.colorSpace);
+			*reinterpret_cast<uint16_t*>(pixelArea) = (uint16_t)findBestMatchInPalette(color, pPalette, paletteSize, desc.colorSpace);
 			return 2;
 		}
 
@@ -2938,14 +2938,14 @@ int colorToPixelBytes( HiColor color, PixelFormat format, uint8_t pixelArea[18],
 
 //____ fillBitmap() ___________________________________________________________
 
-void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fillRect, HiColor color, Color8* pPalette, int paletteEntries)
+void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fillRect, HiColor color, Color8* pPalette, int paletteSize)
 {
 	pixelFormat = Util::clarifyPixelFormat(pixelFormat);
 	
 	auto&	pixelDesc = Util::pixelFormatToDescription(pixelFormat);
 	
 	uint8_t pixelArea[18];
-	int pixelBytes = colorToPixelBytes(color, pixelFormat, pixelArea, pPalette, paletteEntries);
+	int pixelBytes = colorToPixelBytes(color, pixelFormat, pixelArea, pPalette, paletteSize);
 
 	if( pixelDesc.type == PixelType::Bitplanes )
 	{
@@ -3095,7 +3095,7 @@ void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fill
 
 //____ findBestMatchInPalette() ____________________________________________
 
-int findBestMatchInPalette(HiColor color, Color8* pPalette, int paletteEntries, ColorSpace paletteColorSpace)
+int findBestMatchInPalette(HiColor color, Color8* pPalette, int paletteSize, ColorSpace paletteColorSpace)
 {
 	uint8_t* pConvTab;
 	if (paletteColorSpace == ColorSpace::Undefined)
@@ -3114,7 +3114,7 @@ int findBestMatchInPalette(HiColor color, Color8* pPalette, int paletteEntries, 
 
 	// First we make a quick check for exact match
 	
-	for( int i = 0 ; i < paletteEntries ; i++ )
+	for( int i = 0 ; i < paletteSize ; i++ )
 		if( col == pPalette[i] )
 			return i;
 	
@@ -3123,7 +3123,7 @@ int findBestMatchInPalette(HiColor color, Color8* pPalette, int paletteEntries, 
 	int bestMatchIndex = 0;
 	int bestMatchDiff = 256*256*4;
 	
-	for( int i = 0 ; i < paletteEntries ; i++ )
+	for( int i = 0 ; i < paletteSize ; i++ )
 	{
 		Color8& palCol = pPalette[i];
 		

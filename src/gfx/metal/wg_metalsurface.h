@@ -51,11 +51,11 @@ namespace wg
 		
 		static MetalSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
 									   PixelFormat format = PixelFormat::Undefined, int pitch = 0,
-									   const Color8 * pPalette = nullptr);
+									   const Color8 * pPalette = nullptr, int paletteSize = 0);
 		
 		static MetalSurface_p	create(const Blueprint& blueprint, const uint8_t* pPixels,
 									   const PixelDescription& pixelDescription, int pitch = 0,
-									   const Color8 * pPalette = nullptr);
+									   const Color8 * pPalette = nullptr, int paletteSize = 0);
 
 		//.____ Identification __________________________________________
 
@@ -93,15 +93,15 @@ namespace wg
 
 		MetalSurface(const Blueprint& blueprint);
 		MetalSurface(const Blueprint& blueprint, Blob* pBlob, int pitch);
-		MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette);
-		MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette);
+		MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette, int paletteSize);
+		MetalSurface(const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize);
 
 
 		~MetalSurface();
 
 		void		    _setPixelDetails( PixelFormat format );
 		void 			_setupMetalTexture(const void * pPixels, int pitch, PixelFormat srcFormat, const PixelDescription * pSrcPixelDesc,
-										   const Color * pSrcPalette, const Color * pDstPalette );
+										   const Color * pSrcPalette, const Color * pDstPalette, int srcPaletteSize );
 
         void            _createAndSyncTextures( bool bHasTextureData );
         

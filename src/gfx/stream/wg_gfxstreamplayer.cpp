@@ -861,7 +861,7 @@ namespace wg
 		}
 
 				
-		case GfxChunkId::CreateSurface:
+		case GfxChunkId::CreateSurfaceDeprecated:
 		{
 			uint16_t	surfaceId;
 			Surface::Blueprint	bp;
@@ -898,6 +898,45 @@ namespace wg
 			break;
 		}
 
+		case GfxChunkId::CreateSurface:
+		{
+			uint16_t	surfaceId;
+			Surface::Blueprint	bp;
+
+			*m_pDecoder >> surfaceId;
+			*m_pDecoder >> bp.canvas;
+			*m_pDecoder >> bp.dynamic;
+			*m_pDecoder >> bp.format;
+			*m_pDecoder >> bp.identity;
+			*m_pDecoder >> bp.mipmap;
+			*m_pDecoder >> bp.sampleMethod;
+			*m_pDecoder >> bp.scale;
+			*m_pDecoder >> bp.size;
+			*m_pDecoder >> bp.tiling;
+			*m_pDecoder >> bp.paletteCapacity;
+			*m_pDecoder >> bp.paletteSize;
+
+			bp.buffered = false;
+			bp.palette = nullptr;
+
+			if (bp.paletteSize > 0)
+			{
+				auto pPalette = (Color8*) GfxBase::memStackAlloc(bp.paletteSize*4);
+				*m_pDecoder >> GfxStream::ReadBytes{ bp.paletteSize*4, pPalette };
+				bp.palette = pPalette;
+			}
+
+			if (m_vSurfaces.size() <= surfaceId)
+				m_vSurfaces.resize(surfaceId + 16, nullptr);
+
+			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(bp);
+
+			if (bp.palette)
+				GfxBase::memStackFree(bp.paletteSize*4);
+
+			break;
+		}
+				
 		case GfxChunkId::BeginSurfaceUpdate:
 		{
 			uint16_t	surfaceId;

@@ -55,8 +55,20 @@ namespace wg
 		m_bBuffered		= bp.buffered;
 		m_bDynamic		= bp.dynamic;
 		m_id			= bp.identity;
-	}
 
+		// Caculate and set palette size and capacity.
+		
+		if( bp.format == PixelFormat::Index_8 )
+		{
+			m_paletteSize = bp.paletteSize != 0 ? bp.paletteSize : (bp.palette ? 256 : 0);
+			m_paletteCapacity = std::max( bp.paletteCapacity, m_paletteSize );
+		}
+		else if( bp.format == PixelFormat::Index_16 )
+		{
+			m_paletteSize = bp.paletteSize != 0 ? bp.paletteSize : (bp.palette ? 65536 : 0);
+			m_paletteCapacity = std::max( bp.paletteCapacity, m_paletteSize );
+		}
+	}
 
 	//____ ~Surface() ____________________________________________________________
 
@@ -392,31 +404,90 @@ namespace wg
         if( format == PixelFormat::Undefined )
             format = PixelFormat::BGRA_8;
 
+		PixelDescription desc = Util::pixelFormatToDescription(format);
+		
+		
 		if( size.isEmpty() )
 			return false;
 		
         if (size.w > maxSize.w || size.h > maxSize.h)
             return false;
 
-        bool bIsIndexed = (format == PixelFormat::Index_8 || format == PixelFormat::Index_8_sRGB || format == PixelFormat::Index_8_linear);
-
-        if (format < PixelFormat_min || format > PixelFormat_max || (bIsIndexed && bp.palette == nullptr))
+        if (format < PixelFormat_min || format > PixelFormat_max)
             return false;
 
-        if (bp.canvas && bIsIndexed)
-            return false;
-
-        if( bIsIndexed )
+        if( desc.type == PixelType::Index )
         {
-            if( bp.mipmap )
+			if (bp.canvas)
+				return false;			// Indexed can't be canvas.
+
+			if( bp.mipmap )
                 return false;            // Indexed can't be mipmapped.
 
-            if( bp.palette == nullptr )
-                return false;           // Indexed but palette is missing.
+			int paletteSize = 0;
+			if( bp.palette )
+				paletteSize = desc.bits == 8 ? 256 : 65536;
+			
+			if( bp.paletteSize != 0 )
+			{
+				if( bp.paletteSize < 0 )
+					return false;
+
+				if( bp.palette == nullptr )
+					return false;			// paletteSize specified, but no palette pointer.
+				
+				if( bp.paletteSize > paletteSize )
+					return false;			// Too large capacity specified.
+				
+				paletteSize = bp.paletteSize;
+			}
+
+			int paletteCapacity = paletteSize;
+			if( bp.paletteCapacity != 0 )
+			{
+				if( bp.paletteCapacity < 0 )
+					return false;
+				
+				if( bp.paletteCapacity < paletteSize )
+					return false;			// Capacity specified to less than size.
+
+				if( bp.paletteCapacity > 65536 || (desc.bits == 8 && bp.paletteCapacity > 256) )
+					return false;			// Too large capacity specified.
+			}
         }
                 
         return true;
     }
+
+	//____ _fixSrcParam() ________________________________________________________
+
+	void Surface::_fixSrcParam( PixelFormat& format, const Color8*& pPalette, int& paletteSize )
+	{
+		if( format == PixelFormat::Undefined )
+			format = m_pixelFormat;
+		
+		auto srcDesc = Util::pixelFormatToDescription(format);
+		if( srcDesc.type == PixelType::Index || srcDesc.type == PixelType::Bitplanes )
+		{
+			if( pPalette == nullptr )
+			{
+				pPalette = m_pPalette;
+				paletteSize = m_paletteSize;
+			}			
+		}
+	}
+
+	void Surface::_fixSrcParam( const PixelDescription& pixelDesc, const Color8*& pPalette, int& paletteSize )
+	{
+		if( pixelDesc.type == PixelType::Index || pixelDesc.type == PixelType::Bitplanes )
+		{
+			if( pPalette == nullptr )
+			{
+				pPalette = m_pPalette;
+				paletteSize = m_paletteSize;
+			}
+		}
+	}
 
 
 	/**

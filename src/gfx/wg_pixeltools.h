@@ -46,11 +46,11 @@ namespace wg
 			uint8_t* pDst, PixelFormat dstFmt, int dstPitchAdd, const Color8* pSrcPalette,
 			Color8* pDstPalette, int srcPaletteEntries, int& dstPaletteEntries, int maxDstPaletteEntries);
 
-		void fillBitmap(uint8_t* pBitmap, PixelFormat type, int pitch, RectI fillRect, HiColor color, Color8* pPalette = nullptr, int paletteEntries = 0);
+		void fillBitmap(uint8_t* pBitmap, PixelFormat type, int pitch, RectI fillRect, HiColor color, Color8* pPalette = nullptr, int paletteSize = 0);
 	
-		int colorToPixelBytes( HiColor color, PixelFormat type, uint8_t pixelArea[18], Color8* pPalette = nullptr, int paletteEntries = 0 );
+		int colorToPixelBytes( HiColor color, PixelFormat type, uint8_t pixelArea[18], Color8* pPalette = nullptr, int paletteSize = 0 );
 	
-		int findBestMatchInPalette( HiColor color, Color8* pPalette, int paletteEntries = 256, ColorSpace paletteColorSpace = ColorSpace::Undefined );
+		int findBestMatchInPalette( HiColor color, Color8* pPalette, int paletteSize = 256, ColorSpace paletteColorSpace = ColorSpace::Undefined );
 	
 		bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, RectI srcRect, uint8_t* pDst, int dstPitch, const Color8* pPalette);
 

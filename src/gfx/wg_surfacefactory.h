@@ -65,9 +65,9 @@ namespace wg
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint) = 0;
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch = 0) = 0;
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
-										  const PixelDescription& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr) = 0;
+										  const PixelDescription& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr, int paletteSize = 0) = 0;
 		virtual Surface_p	createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format = PixelFormat::Undefined, int pitch = 0,
-										  const Color8 * pPalette = nullptr) = 0;
+										  const Color8 * pPalette = nullptr, int paletteSize = 0) = 0;
 
 	protected:
 		virtual ~SurfaceFactory() {}

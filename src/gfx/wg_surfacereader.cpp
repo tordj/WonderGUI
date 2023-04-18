@@ -105,7 +105,7 @@ namespace wg
 
 		// Read and prepare palette
 
-		int paletteBytes = header.paletteEntries*sizeof(Color8) + header.paletteDecompressMargin;
+		int paletteBytes = header.paletteSize*sizeof(Color8) + header.paletteDecompressMargin;
 		Color8 * pPalette = nullptr;
 		if( paletteBytes > 0 )
 		{
@@ -231,7 +231,7 @@ namespace wg
 
 		// Prepare palette
 
-		int paletteBytes = header.paletteEntries*sizeof(Color8);
+		int paletteBytes = header.paletteSize*sizeof(Color8);
 		if( paletteBytes > 0 )
 		{
 			bp.palette = (Color8*) pData;
@@ -288,7 +288,8 @@ Surface::Blueprint SurfaceReader::_blueprintFromHeader( const SurfaceFileHeader 
 				_.mipmap 		= pHeader->mipmap,
 				_.identity		= pHeader->identity,
 				_.tiling		= pHeader->tiling,
-				_.sampleMethod 	= pHeader->sampleMethod );
+				_.sampleMethod 	= pHeader->sampleMethod,
+				_.paletteSize	= pHeader->paletteSize );
 }
 
 //____ _addFlagsFromOtherBlueprint() __________________________________________

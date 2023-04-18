@@ -57,15 +57,15 @@ namespace wg
 	}
 
 	GfxStreamSurface_p GfxStreamSurface::create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels,
-												const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette)
+												const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize)
 	{
-		return GfxStreamSurface_p(new GfxStreamSurface(pEncoder, blueprint, pPixels, pixelDescription, pitch, pPalette));
+		return GfxStreamSurface_p(new GfxStreamSurface(pEncoder, blueprint, pPixels, pixelDescription, pitch, pPalette, paletteSize));
 	}
 
 	GfxStreamSurface_p GfxStreamSurface::create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels,
-												PixelFormat format, int pitch, const Color8 * pPalette)
+												PixelFormat format, int pitch, const Color8 * pPalette, int paletteSize)
 	{
-		return GfxStreamSurface_p(new GfxStreamSurface(pEncoder, blueprint, pPixels, format, pitch, pPalette));
+		return GfxStreamSurface_p(new GfxStreamSurface(pEncoder, blueprint, pPixels, format, pitch, pPalette, paletteSize));
 	}
 
 
@@ -75,20 +75,19 @@ namespace wg
 	GfxStreamSurface::GfxStreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp) : Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod() )
 	{
 		m_pEncoder = pEncoder;
+		m_inStreamId = pEncoder->allocObjectId();
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pPixelDescription->bits / 8;
 		m_bDynamic = bp.dynamic;
 
-		m_inStreamId = _sendCreateSurface(bp);
-
 		if (m_pPixelDescription->bits <= 8 || bp.buffered)
 		{
-			m_pBlob = Blob::create(m_pitch*bp.size.h + (bp.palette ? 1024 : 0) );
+			m_pBlob = Blob::create(m_pitch*bp.size.h + m_paletteCapacity*sizeof(Color8) );
 			std::memset(m_pBlob->data(), 0, m_pitch*bp.size.h);
 
 			if (bp.palette)
 			{
 				m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * bp.size.h);
-				memcpy(m_pPalette, bp.palette, 1024);
+				memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8) );
 			}
 			else
 				m_pPalette = nullptr;
@@ -105,6 +104,8 @@ namespace wg
 				std::memset(m_pAlphaLayer, 0, bp.size.w*bp.size.h);
 			}
 		}
+
+		_sendCreateSurface(pEncoder);
 		m_pEncoder->flush();
 	}
 
@@ -112,10 +113,10 @@ namespace wg
 		: Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod())
 	{
 		m_pEncoder = pEncoder;
+		m_inStreamId = pEncoder->allocObjectId();
 		m_pitch = pitch;
 		m_bDynamic = bp.dynamic;
 
-		m_inStreamId = _sendCreateSurface(bp);
 
 		if (m_pPixelDescription->bits <= 8 || bp.buffered)
 		{
@@ -131,50 +132,46 @@ namespace wg
 				m_pAlphaLayer = _genAlphaLayer((char*)pBlob->data(), pitch);
 		}
 
+		_sendCreateSurface(pEncoder);
 		_sendPixels(m_pEncoder, bp.size, (uint8_t*) pBlob->data(), pitch);
 		m_pEncoder->flush();
 	}
 
-	GfxStreamSurface::GfxStreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp, const uint8_t * pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette )
+	GfxStreamSurface::GfxStreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp, const uint8_t * pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize )
 		: Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod())
 	{
 		m_pEncoder = pEncoder;
+		m_inStreamId = pEncoder->allocObjectId();
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pPixelDescription->bits / 8;
 		m_bDynamic = bp.dynamic;
-
-		m_inStreamId = _sendCreateSurface(bp);
 
 		// We always convert the data even if we throw it away, since we need to stream the converted data.
 		// (but we could optimize and skip conversion if format already is correct)
 
-		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.palette ? 1024 : 0) );
+		m_pBlob = Blob::create(m_pitch*m_size.h + m_paletteCapacity*sizeof(Color8) );
 
-		
-		int dstPaletteEntries = 256;
+		if( m_paletteCapacity > 0 )
+		{
+			m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * bp.size.h);
+			memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8));
+		}
+				
 		int srcPitchAdd = pitch == 0 ? 0 : pitch - pixelDescription.bits/8 * m_size.w;
 
 		PixelTools::copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, srcPitchAdd,
 							 (uint8_t*) m_pBlob->data(), m_pixelFormat, m_pitch - m_pPixelDescription->bits/8 * m_size.w, pPalette,
-							 const_cast<Color8*>(bp.palette), 256, dstPaletteEntries, 256);
+							 m_pPalette, paletteSize, m_paletteSize, m_paletteCapacity);
 		
+		_sendCreateSurface(pEncoder);
 		_sendPixels(m_pEncoder, m_size, (uint8_t*) m_pBlob->data(), m_pitch);
 		m_pEncoder->flush();
 
 		if (m_pPixelDescription->bits <= 8 || bp.buffered)
-		{
-			if (bp.palette)
-			{
-				m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * bp.size.h);
-				memcpy(m_pPalette, bp.palette, 1024);
-			}
-			else
-				m_pPalette = nullptr;
-			
 			m_pAlphaLayer = nullptr;
-		}
 		else
 		{
 			m_pBlob = nullptr;
+			m_pPalette = nullptr;
 
 			if (m_pPixelDescription->A_mask == 0)
 				m_pAlphaLayer = nullptr;
@@ -183,45 +180,42 @@ namespace wg
 		}
 	}
 
-	GfxStreamSurface::GfxStreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp, const uint8_t * pPixels, PixelFormat srcFormat, int pitch, const Color8 * pPalette )
+	GfxStreamSurface::GfxStreamSurface( GfxStreamEncoder * pEncoder, const Blueprint& bp, const uint8_t * pPixels, PixelFormat srcFormat, int pitch, const Color8 * pPalette, int paletteSize )
 		: Surface(bp, pEncoder->defaultPixelFormat(), pEncoder->defaultSampleMethod())
 	{
 		m_pEncoder = pEncoder;
+		m_inStreamId = pEncoder->allocObjectId();
 		m_pitch = ((bp.size.w + 3) & 0xFFFFFFFC)*m_pPixelDescription->bits / 8;
 		m_bDynamic = bp.dynamic;
 
-		m_inStreamId = _sendCreateSurface(bp);
 
 		// We always convert the data even if we throw it away, since we need to stream the converted data.
 		// (but we could optimize and skip conversion if format already is correct)
 
-		m_pBlob = Blob::create(m_pitch*m_size.h + (bp.palette ? 1024 : 0) );
+		m_pBlob = Blob::create(m_pitch*m_size.h + m_paletteCapacity*sizeof(Color8) );
 
-		int dstPaletteEntries = 256;
+		if( m_paletteCapacity > 0 )
+		{
+			m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * bp.size.h);
+			memcpy(m_pPalette, bp.palette, m_paletteSize*sizeof(Color8));
+		}
+		
 		int srcPitchAdd = pitch == 0 ? 0 : pitch - Util::pixelFormatToDescription(srcFormat).bits/8 * m_size.w;
 
+		_sendCreateSurface(pEncoder);
 		PixelTools::copyPixels(m_size.w, m_size.h, pPixels, srcFormat, srcPitchAdd,
 							 (uint8_t*) m_pBlob->data(), m_pixelFormat, m_pitch - m_pPixelDescription->bits/8 * m_size.w, pPalette,
-							 const_cast<Color8*>(bp.palette), 256, dstPaletteEntries, 256);
+							 m_pPalette, paletteSize, m_paletteSize, m_paletteCapacity);
 		
 		_sendPixels(m_pEncoder, m_size, (uint8_t*) m_pBlob->data(), m_pitch);
 		m_pEncoder->flush();
 
 		if (m_pPixelDescription->bits <= 8 || bp.buffered)
-		{
-			if (bp.palette)
-			{
-				m_pPalette = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * bp.size.h);
-				memcpy(m_pPalette, bp.palette, 1024);
-			}
-			else
-				m_pPalette = nullptr;
-			
 			m_pAlphaLayer = nullptr;
-		}
 		else
 		{
 			m_pBlob = nullptr;
+			m_pPalette = nullptr;
 
 			if (m_pPixelDescription->A_mask == 0)
 				m_pAlphaLayer = nullptr;
@@ -364,7 +358,21 @@ namespace wg
 		if (!m_pBlob)
 			return false;
 
-		uint16_t blockSize = 30 + (m_pPalette ? 1024 : 0);
+		_sendCreateSurface(pEncoder);
+
+		_sendPixels(pEncoder, m_size, (uint8_t*)m_pBlob->data(), m_pitch);
+		pEncoder->flush();
+		return true;
+	}
+
+
+	//____ _sendCreateSurface() _______________________________________________
+
+	uint16_t GfxStreamSurface::_sendCreateSurface(GfxStreamEncoder* pEncoder)
+	{
+		uint16_t surfaceId = m_pEncoder->allocObjectId();
+
+		uint16_t blockSize = 38 + m_paletteSize*4;
 
 		*pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, GfxStream::SpxFormat::Int32_dec, blockSize };
 		*pEncoder << m_inStreamId;
@@ -377,38 +385,11 @@ namespace wg
 		*pEncoder << m_scale;
 		*pEncoder << m_size;
 		*pEncoder << m_bTiling;
+		*pEncoder << m_paletteCapacity;
+		*pEncoder << m_paletteSize;
 
 		if (m_pPalette)
-			*pEncoder << GfxStream::WriteBytes{ 1024, m_pPalette };
-
-		_sendPixels(pEncoder, m_size, (uint8_t*)m_pBlob->data(), m_pitch);
-		pEncoder->flush();
-		return true;
-	}
-
-
-	//____ _sendCreateSurface() _______________________________________________
-
-	uint16_t GfxStreamSurface::_sendCreateSurface(const Blueprint& bp)
-	{
-		uint16_t surfaceId = m_pEncoder->allocObjectId();
-
-		uint16_t blockSize = 30 + (bp.palette ? 1024 : 0);
-
-		*m_pEncoder << GfxStream::Header{ GfxChunkId::CreateSurface, GfxStream::SpxFormat::Int32_dec, blockSize };
-		*m_pEncoder << surfaceId;
-		*m_pEncoder << bp.canvas;
-		*m_pEncoder << bp.dynamic;
-		*m_pEncoder << bp.format;
-		*m_pEncoder << bp.identity;
-		*m_pEncoder << bp.mipmap;
-		*m_pEncoder << bp.sampleMethod;
-		*m_pEncoder << bp.scale;
-		*m_pEncoder << bp.size;
-		*m_pEncoder << bp.tiling;
-
-		if(bp.palette)
-			*m_pEncoder << GfxStream::WriteBytes{ 1024, bp.palette };
+			* pEncoder << GfxStream::WriteBytes{ m_paletteSize*4, m_pPalette };
 
 		return surfaceId;
 	}

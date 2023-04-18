@@ -49,9 +49,9 @@ namespace wg
 		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint);
 		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Blob* pBlob, int pitch = 0 );
 		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels,
-										   PixelFormat format = PixelFormat::Undefined, int pitch = 0, const Color8 * pPalette = nullptr);
+										   PixelFormat format = PixelFormat::Undefined, int pitch = 0, const Color8 * pPalette = nullptr, int paletteSize = 0);
 		static GfxStreamSurface_p	create(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels,
-										   const PixelDescription& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr);
+										   const PixelDescription& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr, int paletteSize = 0);
 
 		//.____ Identification __________________________________________
 
@@ -87,12 +87,12 @@ namespace wg
 	private:
 		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint);
 		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, Blob* pBlob, int pitch = 0);
-		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette);
-		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette);
+		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format, int pitch, const Color8 * pPalette, int paletteSize);
+		GfxStreamSurface(GfxStreamEncoder * pEncoder, const Blueprint& blueprint, const uint8_t* pPixels, const PixelDescription& pixelDescription, int pitch, const Color8 * pPalette, int paletteSize);
 
 		~GfxStreamSurface();
 
-		uint16_t	_sendCreateSurface(const Blueprint& bp);
+		uint16_t	_sendCreateSurface(GfxStreamEncoder* pEncoder);
 		void		_sendPixels(GfxStreamEncoder* pEncoder, RectI rect, const uint8_t * pSource, int pitch);
 		void		_sendDeleteSurface();
 		uint8_t*	_genAlphaLayer(const char * pSource, int pitch);

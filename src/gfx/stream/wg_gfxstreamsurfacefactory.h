@@ -59,9 +59,9 @@ namespace wg
 		Surface_p	createSurface(const Surface::Blueprint& blueprint) override;
 		Surface_p	createSurface(const Surface::Blueprint& blueprint, Blob* pBlob, int pitch) override;
 		Surface_p	createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels,
-								  const PixelDescription& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr) override;
+								  const PixelDescription& pixelDescription, int pitch = 0, const Color8 * pPalette = nullptr, int paletteSize = 0) override;
 		Surface_p	createSurface(const Surface::Blueprint& blueprint, const uint8_t* pPixels, PixelFormat format = PixelFormat::Undefined, int pitch = 0,
-										  const Color8 * pPalette = nullptr) override;
+										  const Color8 * pPalette = nullptr, int paletteSize = 0) override;
 
 		void		setRememberSurfacesCreated(bool bRemember);
 

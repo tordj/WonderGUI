@@ -293,7 +293,7 @@ namespace wg
 			"FlipDrawSegments",
 			"BlitNinePatch",
 			"EdgeSamples",
-			"CreateSurface",
+			"CreateSurfaceDeprecated",
 			"BeginSurfaceUpdate",
 			"SurfacePixels",
 			"EndSurfaceUpdate",
@@ -303,7 +303,8 @@ namespace wg
 			"ProtocolVersion",
 			"TimeStampMS",
 			"CanvasList",
-			"SetFixedBlendColor"
+			"SetFixedBlendColor",
+			"CreateSurface"
 		};
 
 		return names[(int)i];
