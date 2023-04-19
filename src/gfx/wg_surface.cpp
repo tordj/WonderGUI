@@ -58,15 +58,15 @@ namespace wg
 
 		// Caculate and set palette size and capacity.
 		
-		if( bp.format == PixelFormat::Index_8 )
+		if( m_pPixelDescription->type == PixelType::Index || m_pPixelDescription->type == PixelType::Bitplanes )
 		{
-			m_paletteSize = bp.paletteSize != 0 ? bp.paletteSize : (bp.palette ? 256 : 0);
+			int maxPaletteSize = 1 << m_pPixelDescription->bits;
+			
+			m_paletteSize = bp.paletteSize != 0 ? bp.paletteSize : (bp.palette ? maxPaletteSize : 0);
+
 			m_paletteCapacity = std::max( bp.paletteCapacity, m_paletteSize );
-		}
-		else if( bp.format == PixelFormat::Index_16 )
-		{
-			m_paletteSize = bp.paletteSize != 0 ? bp.paletteSize : (bp.palette ? 65536 : 0);
-			m_paletteCapacity = std::max( bp.paletteCapacity, m_paletteSize );
+			if( m_paletteCapacity == 0 )
+				m_paletteCapacity = maxPaletteSize;
 		}
 	}
 
@@ -229,6 +229,8 @@ namespace wg
 		bp.scale = m_scale;
 		bp.size = m_size;
 		bp.tiling = m_bTiling;
+		bp.paletteSize = m_paletteSize;
+		bp.paletteCapacity = m_paletteCapacity;
 
 		return bp;
 	}
@@ -307,12 +309,10 @@ namespace wg
 		
 		auto& srcDesc = Util::pixelFormatToDescription(srcbuf.format);
 		auto& dstDesc = Util::pixelFormatToDescription(m_pixelFormat);
-		
-		int dstPaletteEntries = 256;
-		
+				
 		bool retVal = PixelTools::copyPixels(srcbuf.rect.w, srcbuf.rect.h, srcbuf.pixels, srcbuf.format, srcbuf.pitch - srcbuf.rect.w*srcDesc.bits/8,
-								dstbuf.pixels, dstbuf.format, dstbuf.pitch - dstbuf.rect.w*dstDesc.bits/8, srcbuf.palette,
-								m_pPalette, 256, dstPaletteEntries, 256);
+								dstbuf.pixels, dstbuf.format, dstbuf.pitch - dstbuf.rect.w*dstDesc.bits/8, pSrcSurface->palette(),
+								m_pPalette, pSrcSurface->paletteSize(), m_paletteSize, m_paletteCapacity);
 
 		pullPixels(dstbuf);
 		freePixelBuffer(dstbuf);

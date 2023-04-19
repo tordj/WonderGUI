@@ -2454,10 +2454,12 @@ bool ChunkyToIndexConverter::_convertPixelsToIndex8(uint8_t * pDst, const uint32
 		int left = 0;
 		int right = m_nTableEntries-1;
 		
-		if( pixel < m_pTable[left].chunkyValue )
+		if( m_nTableEntries == 0 )
+			right = 0;
+		else if( pixel < m_pTable[left].chunkyValue )
 			right = 0;
 		else if( pixel > m_pTable[right].chunkyValue )
-			left = right;
+			right++;
 		else
 		{
 			while (right - left > 1)
@@ -2486,12 +2488,18 @@ bool ChunkyToIndexConverter::_convertPixelsToIndex8(uint8_t * pDst, const uint32
 		if( m_nPaletteEntries == m_maxPaletteEntries )
 			return false;										// Out of palette entries!
 
-		memmove(&m_pTable[right+1], &m_pTable[right], sizeof(ChunkyIndex)*(m_nTableEntries-right) );
+		if( right < m_nTableEntries )
+			memmove(&m_pTable[right+1], &m_pTable[right], sizeof(ChunkyIndex)*(m_nTableEntries-right) );
+		
 		m_pTable[right].index = m_nPaletteEntries;
 		m_pTable[right].chunkyValue = pixel;
 		m_nTableEntries++;
+		
+		m_pPalette[m_nPaletteEntries] = pixel;
 
 		* pDst++ = m_nPaletteEntries++;
+		
+		
 	}
 	
 	return true;
@@ -2508,10 +2516,12 @@ bool ChunkyToIndexConverter::_convertPixelsToIndex16(uint16_t * pDst, const uint
 		int left = 0;
 		int right = m_nTableEntries-1;
 		
-		if( pixel < m_pTable[left].chunkyValue )
+		if( m_nTableEntries == 0 )
+			right = 0;
+		else if( pixel < m_pTable[left].chunkyValue )
 			right = 0;
 		else if( pixel > m_pTable[right].chunkyValue )
-			left = right;
+			right++;
 		else
 		{
 			while (right - left > 1)
@@ -2540,17 +2550,22 @@ bool ChunkyToIndexConverter::_convertPixelsToIndex16(uint16_t * pDst, const uint
 		if( m_nPaletteEntries == m_maxPaletteEntries )
 			return false;										// Out of palette entries!
 
-		memmove(&m_pTable[right+1], &m_pTable[right], sizeof(ChunkyIndex)*(m_nTableEntries-right) );
+		if( right < m_nTableEntries )
+			memmove(&m_pTable[right+1], &m_pTable[right], sizeof(ChunkyIndex)*(m_nTableEntries-right) );
+		
 		m_pTable[right].index = m_nPaletteEntries;
 		m_pTable[right].chunkyValue = pixel;
 		m_nTableEntries++;
+		
+		m_pPalette[m_nPaletteEntries] = pixel;
 
 		* pDst++ = m_nPaletteEntries++;
+		
+		
 	}
 	
 	return true;
 }
-
 
 
 //____ copyToIndexedDestination() _____________________________________________
@@ -2727,13 +2742,14 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 				if( !conv.convert(pDst, (uint32_t*) buffer, widthLeft) )
 					return false;
 
-				pDst += dstDesc.bits * 8;
+				pDst += dstDesc.bits / 8 * widthLeft;
 			}
 
 			pSrc += srcPitchAdd;
 			pDst += dstPitchAdd;
 		}
 		
+		dstPaletteEntries = conv.nbPaletteEntries();
 		return true;
 	}
 
