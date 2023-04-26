@@ -89,8 +89,6 @@ namespace wg
 
 	spx PopupOpener::_matchingHeight(spx width, int scale) const
 	{
-		scale = _fixScale(scale);
-
 		spx height = m_skin.defaultSize(scale).h;
 
 		if (!label.isEmpty())
@@ -112,8 +110,6 @@ namespace wg
 
 	SizeSPX PopupOpener::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		SizeSPX defaultSize;
 
 		if (!label.isEmpty())

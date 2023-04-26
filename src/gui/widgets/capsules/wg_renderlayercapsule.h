@@ -52,7 +52,6 @@ namespace wg
 			int				pickCategory	= 0;
 			PointerStyle	pointer			= PointerStyle::Default;
 			int				renderLayer		= -1;
-			int				scale			= 64;
 			bool			selectable		= true;
 			Skin_p			skin;
 			bool			tabLock			= false;

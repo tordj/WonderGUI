@@ -171,7 +171,7 @@ namespace wg
 		// Overloaded from Widget
 
 		void            _render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
-		void			_resize( const SizeSPX& size, int scale = -1 ) override;
+		void			_resize( const SizeSPX& size, int scale ) override;
 		void			_receive( Msg * pMsg ) override;
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
 

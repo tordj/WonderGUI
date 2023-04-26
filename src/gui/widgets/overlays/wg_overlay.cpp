@@ -202,7 +202,7 @@ namespace wg
 		{
 			mainSlot._setWidget(pNewWidget);
 			if( pNewWidget )
-				pNewWidget->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
+				pNewWidget->_resize(m_size, m_scale);			//TODO: Should be content size here (and in all other _setWidget() methods?)
 			_onRequestRender(RectSPX(0, 0, m_size), 0);
 			_requestResize();
 		}

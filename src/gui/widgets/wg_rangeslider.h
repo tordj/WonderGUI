@@ -65,7 +65,6 @@ namespace wg
 			pts				defaultSlideLength = 64;
 			float			rangeBegin = 0.f;
 			float			rangeEnd = 1.f;
-			int				scale = -1;
 			bool			selectable = true;
 			Skin_p			skin;
 			int				steps = 0;
@@ -113,7 +112,7 @@ namespace wg
 
 		//.____ Internal _______________________________________________________
 
-		SizeSPX			_defaultSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale) const override;
 
 	protected:
 		RangeSlider();

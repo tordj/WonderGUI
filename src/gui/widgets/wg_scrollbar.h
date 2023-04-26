@@ -67,7 +67,6 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
-			int				scale = -1;
 			Scroller::Blueprint	scrollbar;
 			bool			selectable = true;
 			pts				singleStepMovement = 8;
@@ -115,7 +114,7 @@ namespace wg
 		Scrollbar(const Blueprint& bp);
 		virtual	~Scrollbar();
 
-		virtual SizeSPX	_defaultSize(int scale = -1) const override;
+		virtual SizeSPX	_defaultSize(int scale) const override;
 
 		void	_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void	_receive( Msg * pMsg ) override;

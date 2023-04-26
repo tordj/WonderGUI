@@ -52,8 +52,6 @@ namespace wg
 
 	spx Capsule::_matchingHeight( spx width, int scale ) const
 	{
-		scale = _fixScale(scale);
-
 		if( slot._widget() )
 		{
 			SizeSPX padding = m_skin.contentPaddingSize(scale);
@@ -68,16 +66,14 @@ namespace wg
 
 	spx Capsule::_matchingWidth( spx height, int scale ) const
 	{
-		scale = _fixScale(scale);
-
 		if( slot._widget() )
 		{
 			SizeSPX padding = m_skin.contentPaddingSize(scale);
 
-			return slot._widget()->_matchingWidth(height - padding.h) + padding.w;
+			return slot._widget()->_matchingWidth(height - padding.h, scale) + padding.w;
 		}
 		else
-			return Widget::_matchingWidth(height);
+			return Widget::_matchingWidth(height, scale);
 	}
 
 	//____ _defaultSize() ___________________________________________________________
@@ -85,12 +81,29 @@ namespace wg
 	SizeSPX Capsule::_defaultSize( int scale ) const
 	{
 		if (slot._widget())
-		{
-			scale = _fixScale(scale);
 			return slot._widget()->_defaultSize(scale) + m_skin.contentPaddingSize(scale);
-		}
 
 		return Widget::_defaultSize(scale);
+	}
+
+	//____ _minSize() ___________________________________________________________
+
+	SizeSPX Capsule::_minSize(int scale) const
+	{
+		if (slot._widget())
+			return slot._widget()->_minSize(scale) + m_skin.contentPaddingSize(scale);
+		else
+			return Widget::_minSize(scale);
+	}
+
+	 //____ maxSize() ______________________________________________________________
+
+	SizeSPX Capsule::_maxSize(int scale) const
+	{
+		if (slot._widget())
+			return slot._widget()->_maxSize(scale) + m_skin.contentPaddingSize(scale);
+		else
+			return Widget::_maxSize(scale);
 	}
 
 	//____ _childPos() ___________________________________________________________
@@ -169,8 +182,8 @@ namespace wg
 
 		if ( slot._widget())
 		{
-			SizeSPX sz = size - m_skin.contentPaddingSize(m_scale);
-			slot._widget()->_resize(sz);
+			SizeSPX sz = size - m_skin.contentPaddingSize(scale);
+			slot._widget()->_resize(sz, scale);
 		}
 	}
 
@@ -235,7 +248,7 @@ namespace wg
 		if (pWidget)
 		{
 			SizeSPX sz = m_size - m_skin.contentPaddingSize(m_scale);
-			pWidget->_resize(sz);
+			pWidget->_resize(sz, m_scale);
 		}
 
 		_requestRender();

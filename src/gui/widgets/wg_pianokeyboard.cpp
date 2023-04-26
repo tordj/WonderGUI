@@ -375,8 +375,6 @@ namespace wg
 
 	SizeSPX PianoKeyboard::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		return align(ptsToSpx(m_defaultKeyboardSize,scale)) + m_skin.contentPaddingSize(scale);
 	}
 
@@ -384,8 +382,6 @@ namespace wg
 
 	SizeSPX PianoKeyboard::_minSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		return align(ptsToSpx(m_defaultKeyboardSize, scale)) + m_skin.contentPaddingSize(scale);
 	}
 

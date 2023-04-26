@@ -232,6 +232,8 @@ set( SOURCES
 	widgets/capsules/wg_capsule.h
 	widgets/capsules/wg_renderlayercapsule.cpp
 	widgets/capsules/wg_renderlayercapsule.h
+	widgets/capsules/wg_scalecapsule.cpp
+	widgets/capsules/wg_scalecapsule.h
 	widgets/capsules/wg_sizecapsule.cpp
 	widgets/capsules/wg_sizecapsule.h
 	widgets/overlays/wg_designoverlay.cpp

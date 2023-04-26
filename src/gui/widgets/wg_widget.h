@@ -68,7 +68,6 @@ namespace wg
 	bool			pickable = false;
 	int				pickCategory = 0;
 	PointerStyle	pointer = PointerStyle::Default;
-	int				scale = -1;
 	bool			selectable = true;
 	Skin_p			skin;
 	bool			tabLock = false;
@@ -108,11 +107,8 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		virtual bool		setScale(int scale);
-		inline void			clearScale();
 		inline int			scale() const;
-		inline bool			isScaleSet() const;
-
+	
 		inline Coord		pos() const;
 		inline const Size	size() const;
 		inline Rect			geo() const;
@@ -207,12 +203,12 @@ namespace wg
 		inline Widget* _nextSibling() const { return m_pHolder ? m_pHolder->_nextChild(m_pSlot) : nullptr; }
 		inline Widget* _prevSibling() const { return m_pHolder ? m_pHolder->_prevChild(m_pSlot) : nullptr; }
 
-		virtual spx			_matchingHeight(spx width, int scale = -1) const;
-		virtual spx			_matchingWidth(spx height, int scale = -1) const;
+		virtual spx			_matchingHeight(spx width, int scale) const;
+		virtual spx			_matchingWidth(spx height, int scale) const;
 
-		virtual SizeSPX		_defaultSize(int scale = -1) const;
-		virtual SizeSPX		_minSize(int scale = -1) const;
-		virtual SizeSPX		_maxSize(int scale = -1) const;
+		virtual SizeSPX		_defaultSize(int scale) const;
+		virtual SizeSPX		_minSize(int scale) const;
+		virtual SizeSPX		_maxSize(int scale) const;
 
 		inline const SizeSPX& _size() const;
 		inline int			_scale() const override;
@@ -235,7 +231,7 @@ namespace wg
 		virtual void    	_preRender();
 		virtual void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window);
 
-		virtual void		_resize(const SizeSPX& size, int scale = -1);
+		virtual void		_resize(const SizeSPX& size, int scale);
 		virtual void		_setState(State state);
 
 		virtual void		_receive(Msg* pMsg);
@@ -266,12 +262,6 @@ namespace wg
 			if( bp.finalizer )
 				setFinalizer(bp.finalizer);
 
-			if (bp.scale > 0)
-			{
-				m_scale = bp.scale;
-				m_bScaleSet = true;
-			}
-
 			if (bp.skin)
 			{
 				m_skin.set(bp.skin);
@@ -289,7 +279,6 @@ namespace wg
 		virtual BlendMode	_getBlendMode() const;
 
 		int					_listAncestors(Widget* array[], int max);
-		inline int			_fixScale(int scale) const;
 
 		int64_t				_startReceiveUpdates();
 		void				_stopReceiveUpdates();
@@ -355,26 +344,23 @@ namespace wg
 		int				m_id = 0;
 		PointerStyle	m_pointerStyle = PointerStyle::Default;
 		MarkPolicy		m_markPolicy = MarkPolicy::AlphaTest;
+		State			m_state;						// Current state of widget.
 
-		bool			m_bScaleSet = false;			// Set when scale is explicitly specified and not just inherited.
+		uint16_t		m_scale = 64;
 
-		bool            m_bPickable = false;        // Set if this widget accepts to be the source of drag-n-drop operations.
-		uint8_t         m_pickCategory = 0;     // Category of drag-n-drop operations. User defined.
+		bool            m_bPickable = false;			// Set if this widget accepts to be the source of drag-n-drop operations.
+		uint8_t         m_pickCategory = 0;				// Category of drag-n-drop operations. User defined.
 
-		bool            m_bDropTarget = false;      // Set if this widget accepts to be the target of drag-n-drop operations.
+		bool            m_bDropTarget = false;			// Set if this widget accepts to be the target of drag-n-drop operations.
 
 		bool			m_bOpaque = false;				// Set if widget is totally opaque, no need to render anything behind.
 		bool			m_bTabLock = false;				// If set, the widget prevents focus shifting away from it with tab.
 		bool			m_bSelectable = true;			// Set if widget is allowed to be selected.
 		bool			m_bReceivingUpdates = false;	//
+		bool			m_bPressed = false;				// Keeps track of pressed button when mouse leaves/re-enters widget.
 
-		State			m_state;						// Current state of widget.
+
 		SizeSPX			m_size = { 256 * 64,256 * 64 };	// Current size of widget.
-		int				m_scale = 64;
-
-//	private:
-		bool			m_bPressed = false;			// Keeps track of pressed button when mouse leaves/re-enters widget.
-
 	};
 
 
@@ -410,27 +396,11 @@ namespace wg
 		return m_id;
 	}
 
-	//____ clearScale() _______________________________________
-	/**
-	 * @brief Clear previously set scale.
-	 * 
-	 * Clear previously set scale. This is equivalent to setScale(0).
-	 * 
-	 * Once cleared, control of the widgets scale factor is returned back to 
-	 * its parent, which in most cases will set the scale itself has.
-	 * 
-	 */
-	void Widget::clearScale()
-	{
-		setScale(0);
-	}
-
 	//____ scale() _______________________________________
 	/**
 	 * @brief Get scale of widget.
 	 *
-	 * Get the scale of the widget as it is, independently of
-	 * if it is specifically set or inherited from parent. 
+	 * Get the scale of the widget.
 	 * 
 	 * The scale value specifies the size of a point in subpixels (1/64th pixel),
 	 * thus is 64 the default scale where one point equals one pixel. A scale
@@ -444,22 +414,6 @@ namespace wg
 	{
 		return m_scale;
 	}
-
-	//____ isScaleSet() _______________________________
-	/**
-	 * @brief Check if scale has been explicitly set
-	 * 
-	 * Check wether scale has been explicitly set through setScale() or is controlled by parent.
-	 * 
-	 * @return True if scale is explicitly set.
-	 * 
-	 **/
-
-	bool Widget::isScaleSet() const
-	{
-		return m_bScaleSet;
-	}
-
 
 	//____ pos() __________________________
 	/**
@@ -629,7 +583,7 @@ namespace wg
 
 	pts Widget::matchingHeight( pts width ) const
 	{
-		return Util::spxToPts(_matchingHeight( Util::ptsToSpx(width, m_scale) ), m_scale);
+		return Util::spxToPts(_matchingHeight( Util::ptsToSpx(width, m_scale), m_scale ), m_scale);
 	}
 
 	//____ matchingWidth() _______________________________________________________
@@ -648,7 +602,7 @@ namespace wg
 	 
 	pts Widget::matchingWidth( pts height ) const
 	{
-		return Util::spxToPts(_matchingWidth(Util::ptsToSpx(height, m_scale)), m_scale);		// Default is to stick with default height no matter what width.
+		return Util::spxToPts(_matchingWidth(Util::ptsToSpx(height, m_scale), m_scale), m_scale);		// Default is to stick with default height no matter what width.
 	}
 
 	//____ defaultSize() ________________________________________________________
@@ -671,7 +625,7 @@ namespace wg
 
 	Size Widget::defaultSize() const
 	{
-		return Util::spxToPts(_defaultSize(), m_scale);
+		return Util::spxToPts(_defaultSize(m_scale), m_scale);
 	}
 
 	//____ minSize() ______________________________________________________________
@@ -692,7 +646,7 @@ namespace wg
 
 	Size Widget::minSize() const
 	{
-		return Util::spxToPts(_minSize(), m_scale);
+		return Util::spxToPts(_minSize(m_scale), m_scale);
 	}
 
 	//____ maxSize() ______________________________________________________________
@@ -715,20 +669,8 @@ namespace wg
 
 	Size Widget::maxSize() const
 	{
-		return Util::spxToPts(_maxSize(), m_scale);
+		return Util::spxToPts(_maxSize(m_scale), m_scale);
 	}
-
-	//____ _fixScale() _________________________
-
-	int Widget::_fixScale(int scale) const
-	{
-		// if scale is -1, we replace it with content of
-		// m_scale.
-
-		int mask = scale >> 30;	// Becomes all ones or all zeroes.
-		return (scale & ~mask) | (m_scale & mask);
-	}
-
 
 	//____ _pos() __________________________
 

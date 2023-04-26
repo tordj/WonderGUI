@@ -64,11 +64,12 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
-		virtual spx		_matchingHeight(spx width, int scale = -1) const override;
-		virtual spx		_matchingWidth(spx height, int scale = -1) const override;
+		virtual spx		_matchingHeight(spx width, int scale) const override;
+		virtual spx		_matchingWidth(spx height, int scale) const override;
 
-		SizeSPX			_defaultSize(int scale = -1) const override;
-
+		SizeSPX			_defaultSize(int scale) const override;
+		SizeSPX			_minSize(int scale) const override;
+		SizeSPX			_maxSize(int scale) const override;
 
 	protected:
 		Capsule();
@@ -78,7 +79,7 @@ namespace wg
 
 		void		_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip) override;
 		void		_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode) override;
-		void		_resize(const SizeSPX& size, int scale = -1) override;
+		void		_resize(const SizeSPX& size, int scale) override;
 
 		// Overloaded from Container
 

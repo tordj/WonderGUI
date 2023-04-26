@@ -124,8 +124,8 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
-		SizeSPX		_defaultSize(int scale = -1) const override;
-		spx			_matchingHeight(spx width, int scale = -1) const override;
+		SizeSPX		_defaultSize(int scale) const override;
+		spx			_matchingHeight(spx width, int scale) const override;
 
 	protected:
 		SelectBox();
@@ -133,7 +133,7 @@ namespace wg
 		void 			_receive(Msg* pMsg) override;
 
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
-		void		_resize(const SizeSPX& size, int scale = -1) override;
+		void		_resize(const SizeSPX& size, int scale) override;
 		void		_setState(State state) override;
 
 		void		_open();
@@ -164,12 +164,12 @@ namespace wg
 
 		//
 		
-		spx			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, spx width, int scale = -1 ) const override;
-		spx			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, spx height, int scale = -1 ) const override;
+		spx			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, spx width, int scale ) const override;
+		spx			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, spx height, int scale ) const override;
 
-		SizeSPX		_sideCanvasDefaultSize( const SideCanvas * pCanvas, int scale = -1 ) const  override;
+		SizeSPX		_sideCanvasDefaultSize( const SideCanvas * pCanvas, int scale ) const  override;
 		void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
-		void		_sideCanvasResize( SideCanvas * pCanvas, const SizeSPX& size, int scale = -1 ) override;
+		void		_sideCanvasResize( SideCanvas * pCanvas, const SizeSPX& size, int scale ) override;
 
 		void		_sideCanvasReceive( SideCanvas * pCanvas,  Msg * pMsg ) override;
 		bool		_sideCanvasAlphaTest( SideCanvas * pCanvas,  const CoordSPX& ofs ) override;			

@@ -31,6 +31,9 @@ void convertSurfaceBlueprint(Surface::Blueprint* pDest, const wg_surfaceBP* pSou
 	pDest->buffered = pSource->buffered;
 	pDest->canvas = pSource->canvas;
 	pDest->palette = (Color8*)pSource->palette;
+	pDest->paletteCapacity = pSource->paletteCapacity;
+	pDest->paletteSize = pSource->paletteSize;
+	pDest->palette = (Color8*)pSource->palette;
 	pDest->dynamic = pSource->dynamic;
 	pDest->format = (PixelFormat)pSource->format;
 	pDest->identity = pSource->identity;

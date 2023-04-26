@@ -263,7 +263,7 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
-		SizeSPX			_defaultSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale) const override;
 
 
 	protected:
@@ -302,7 +302,7 @@ namespace wg
 		void		_refreshRealGeo(Slot * pSlot, bool bForceRefresh = false);
 		SizeSPX		_size() const { return m_size; }
 
-		void		_resize( const SizeSPX& size, int scale = -1 ) override;
+		void		_resize( const SizeSPX& size, int scale ) override;
 
 		void		_onRequestRender( const RectSPX& rect, const Slot * pSlot );
 

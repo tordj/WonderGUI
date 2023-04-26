@@ -62,7 +62,6 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
-			int				scale = -1;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			tabLock = false;
@@ -96,7 +95,7 @@ namespace wg
 
 		//.____ Internal ____________________________________________
 
-		SizeSPX	_defaultSize(int scale = -1) const override;
+		SizeSPX	_defaultSize(int scale) const override;
 
 
 	protected:

@@ -68,7 +68,6 @@ namespace wg
 			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
 			PointerStyle	pointer			= PointerStyle::Default;
 			int				renderLayer		= -1;
-			int				scale			= -1;
 			bool			selectable		= true;
 			Skin_p			skin;
 			SurfaceFactory_p surfaceFactory;

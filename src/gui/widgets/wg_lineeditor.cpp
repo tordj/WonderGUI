@@ -66,8 +66,6 @@ namespace wg
 
 	SizeSPX LineEditor::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		//TODO: Use real text size as default size instead. They should use a SizeCapsule to limit the size if needed.
 
 		SizeSPX	contentSize;

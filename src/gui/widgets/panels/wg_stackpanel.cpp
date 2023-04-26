@@ -64,8 +64,6 @@ namespace wg
 
 	spx StackPanel::_matchingHeight( spx width, int scale ) const
 	{
-		scale = _fixScale(scale);
-
 		spx height = 0;
 
 		Slot * pSlot = slots._begin();
@@ -86,8 +84,6 @@ namespace wg
 
 	spx StackPanel::_matchingWidth( spx height, int scale ) const
 	{
-		scale = _fixScale(scale);
-
 		spx width = 0;
 
 		Slot * pSlot = slots._begin();
@@ -109,8 +105,6 @@ namespace wg
 
 	SizeSPX StackPanel::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		if (scale == m_scale)
 			return m_defaultSize;
 		else

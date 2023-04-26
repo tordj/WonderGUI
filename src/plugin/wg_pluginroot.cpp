@@ -536,7 +536,7 @@ namespace wg
 		slot._setWidget(pWidget);
 
 		if (pWidget)
-			pWidget->_resize(m_size);
+			pWidget->_resize(m_size,m_scale);
 
 		if (m_pluginCapsule)
 		{

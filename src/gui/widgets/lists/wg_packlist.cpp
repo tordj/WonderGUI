@@ -165,8 +165,6 @@ namespace wg
 
 	SizeSPX PackList::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		if( scale == m_scale )
 		{
 			SizeSPX sz = m_skin.contentPaddingSize(scale);
@@ -196,8 +194,6 @@ namespace wg
 
 	spx PackList::_matchingHeight(spx width, int scale) const
 	{
-		scale = _fixScale(scale);
-
 		//TODO: Support other scale than what we already have!
 		assert(scale == m_scale);
 
@@ -227,8 +223,6 @@ namespace wg
 
 	spx PackList::_matchingWidth(spx height, int scale) const
 	{
-		scale = _fixScale(scale);
-
 		//TODO: Support other scale than what we already have!
 		assert(scale == m_scale);
 
@@ -406,8 +400,6 @@ namespace wg
 
 	void PackList::_resize( const SizeSPX& _size, int scale )
 	{
-		scale = _fixScale(scale);
-
 		//TODO: Recalc MORE stuff if scale changes.
 
 		if (scale != m_scale)

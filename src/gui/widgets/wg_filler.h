@@ -65,7 +65,6 @@ namespace wg
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
 			Size			defaultSize = { -1,-1 };
-			int				scale = -1;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			tabLock = false;
@@ -92,7 +91,7 @@ namespace wg
 		Filler(const Blueprint& blueprint);
 		virtual ~Filler();
 
-		SizeSPX	_defaultSize(int scale = -1) const override;
+		SizeSPX	_defaultSize(int scale) const override;
 
 	private:
 		Size			m_defaultSize;

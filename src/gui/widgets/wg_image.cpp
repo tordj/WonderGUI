@@ -114,7 +114,6 @@ namespace wg
 
 		if (m_pSurface)
 		{
-			scale = _fixScale(scale);
 			return m_skin.sizeForContent( align(ptsToSpx(m_rect.size(),scale)), scale );
 		}
 		else

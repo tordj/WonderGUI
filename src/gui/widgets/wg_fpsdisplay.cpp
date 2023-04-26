@@ -86,8 +86,6 @@ namespace wg
 
 	SizeSPX FpsDisplay::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		SizeSPX contentSize = labels._defaultSize(scale);
 
 		TextAttr attr;

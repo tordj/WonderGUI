@@ -154,9 +154,9 @@ namespace wg
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		SizeSPX		_defaultSize(int scale = -1) const override;
-		SizeSPX		_minSize(int scale = -1) const override;
-		SizeSPX		_maxSize(int scale = -1) const override;
+		SizeSPX		_defaultSize(int scale) const override;
+		SizeSPX		_minSize(int scale) const override;
+		SizeSPX		_maxSize(int scale) const override;
 
 		Widget *	_firstChild() const override;
 		Widget *	_lastChild() const override;
@@ -185,7 +185,7 @@ namespace wg
 	private:
 		void		_updateSlotGeo(StaticSlot * pSlot, int nb);
 
-		void		_resize( const SizeSPX& size, int scale = -1 ) override;
+		void		_resize( const SizeSPX& size, int scale ) override;
 		void		_updateGeo(Slot * pSlot, bool bForceResize = false);
 
 		void		_onRequestRender( const RectSPX& rect, const Slot * pSlot );

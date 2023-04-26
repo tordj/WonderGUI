@@ -158,10 +158,10 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
-		spx				_matchingHeight(spx width, int scale = -1) const override;
-		spx				_matchingWidth(spx height, int scale = -1) const override;
+		spx				_matchingHeight(spx width, int scale) const override;
+		spx				_matchingWidth(spx height, int scale) const override;
 
-		SizeSPX			_defaultSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale) const override;
 
 
 	protected:
@@ -170,7 +170,7 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void		_resize( const SizeSPX& size, int scale = -1 ) override;
+		void		_resize( const SizeSPX& size, int scale ) override;
 
 
 		// Overloaded from Container

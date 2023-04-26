@@ -72,8 +72,6 @@ namespace wg
 
 	spx Button::_matchingHeight( spx width, int scale ) const
 	{
-		scale = _fixScale(scale);
-
 		spx height = m_skin.defaultSize(scale).h;
 
 		if( !label.isEmpty() )
@@ -95,8 +93,6 @@ namespace wg
 
 	SizeSPX Button::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		SizeSPX defaultSize;
 
 		// Get size of text

@@ -116,7 +116,7 @@ namespace wg
 
 		//.____ Internal _______________________________________________________
 
-		SizeSPX			_defaultSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale) const override;
 
 
 	protected:
@@ -133,7 +133,7 @@ namespace wg
 		
 		// Overloaded from Widget
 
-		void		_resize(const SizeSPX& size, int scale = -1) override;
+		void		_resize(const SizeSPX& size, int scale) override;
 		void		_setState(State state) override;
 		void		_receive(Msg * pMsg) override;
 

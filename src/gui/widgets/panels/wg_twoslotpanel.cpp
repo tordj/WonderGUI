@@ -102,8 +102,6 @@ namespace wg
 
 	SizeSPX  TwoSlotPanel::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		if (scale == m_scale)
 			return m_defaultSize;
 		else

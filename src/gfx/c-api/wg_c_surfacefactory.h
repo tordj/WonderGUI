@@ -39,9 +39,9 @@ extern "C" {
 	wg_obj	wg_createSurface(wg_obj factory, const wg_surfaceBP* blueprint);
 	wg_obj	wg_createSurfaceFromBlob(wg_obj factory, const wg_surfaceBP* blueprint, wg_obj blob, int pitch);
 	wg_obj	wg_createSurfaceFromBitmap(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels,
-									   wg_pixelFormat pixelFormat, int pitch, const wg_color8 * pPalette );
+									   wg_pixelFormat pixelFormat, int pitch, const wg_color8 * pPalette, int paletteSize );
 	wg_obj	wg_createSurfaceFromRawData(wg_obj factory, const wg_surfaceBP* blueprint, const uint8_t* pPixels,
-										const wg_pixelDescription * pPixelDescription, int pitch, const wg_color8 * pPalette );
+										const wg_pixelDescription * pPixelDescription, int pitch, const wg_color8 * pPalette, int paletteSize );
 
 #ifdef __cplusplus
 }

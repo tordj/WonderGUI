@@ -53,7 +53,6 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
-			int				scale = -1;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			tabLock = false;
@@ -81,9 +80,9 @@ namespace wg
 
 		//.____ Internal _________________________________________________
 
-		spx				_matchingWidth(spx height, int scale = -1) const override;
-		spx				_matchingHeight(spx width, int scale = -1) const override;
-		SizeSPX			_defaultSize(int scale = -1) const override;
+		spx				_matchingWidth(spx height, int scale) const override;
+		spx				_matchingHeight(spx width, int scale) const override;
+		SizeSPX			_defaultSize(int scale) const override;
 
 
 	protected:
@@ -93,7 +92,7 @@ namespace wg
 
 
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
-		void			_resize( const SizeSPX& size, int scale = -1 ) override;
+		void			_resize( const SizeSPX& size, int scale ) override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
 

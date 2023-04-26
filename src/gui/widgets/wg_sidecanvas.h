@@ -47,19 +47,19 @@ namespace wg
 			friend class SideCanvas;
 		protected:
 
-			virtual spx			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, spx width, int scale = -1 ) const;
-			virtual spx			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, spx height, int scale = -1 ) const;
+			virtual spx			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, spx width, int scale ) const;
+			virtual spx			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, spx height, int scale ) const;
 
-			virtual SizeSPX		_sideCanvasDefaultSize( const SideCanvas * pCanvas, int scale = -1) const = 0;
-			virtual SizeSPX		_sideCanvasMinSize( const SideCanvas * pCanvas, int scale = -1) const;
-			virtual SizeSPX		_sideCanvasMaxSize( const SideCanvas * pCanvas, int scale = -1) const;
+			virtual SizeSPX		_sideCanvasDefaultSize( const SideCanvas * pCanvas, int scale) const = 0;
+			virtual SizeSPX		_sideCanvasMinSize( const SideCanvas * pCanvas, int scale) const;
+			virtual SizeSPX		_sideCanvasMaxSize( const SideCanvas * pCanvas, int scale) const;
 
 			virtual void		_sideCanvasCollectPatches( SideCanvas * pCanvas, PatchesSPX& container, const RectSPX& geo, const RectSPX& clip );
 			virtual void		_sideCanvasMaskPatches( SideCanvas * pCanvas, PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode );
 
 			virtual void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) = 0;
 
-			virtual void		_sideCanvasResize( SideCanvas * pCanvas, const SizeSPX& size, int scale = -1 ) = 0;
+			virtual void		_sideCanvasResize( SideCanvas * pCanvas, const SizeSPX& size, int scale ) = 0;
 			virtual void		_sideCanvasSetSkin( SideCanvas * pCanvas,  Skin * pSkin ) ;
 			virtual void		_sideCanvasSetState( SideCanvas * pCanvas,  State state );
 
@@ -78,12 +78,12 @@ namespace wg
 		SideCanvas( Holder * pHolder );
 		virtual ~SideCanvas();
 
-		spx			_matchingHeight(spx width, int scale = -1) const override;
-		spx			_matchingWidth(spx height, int scale = -1) const override;
+		spx			_matchingHeight(spx width, int scale) const override;
+		spx			_matchingWidth(spx height, int scale) const override;
 
-		SizeSPX		_defaultSize(int scale = -1) const override;
-		SizeSPX		_minSize(int scale = -1) const override;
-		SizeSPX		_maxSize(int scale = -1) const override;
+		SizeSPX		_defaultSize(int scale) const override;
+		SizeSPX		_minSize(int scale) const override;
+		SizeSPX		_maxSize(int scale) const override;
 
 		void		_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip ) override;
 		void		_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;

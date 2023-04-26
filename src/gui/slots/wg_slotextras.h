@@ -44,12 +44,12 @@
 										spx			_paddedMatchingWidth(spx paddedHeight, int scale) const \
 										{ \
 											SizeSPX paddingSize = Util::align(Util::ptsToSpx(m_padding, scale)); \
-											return m_pWidget->_matchingWidth(paddedHeight - paddingSize.h) + paddingSize.w; \
+											return m_pWidget->_matchingWidth(paddedHeight - paddingSize.h, scale) + paddingSize.w; \
 										} \
 										spx			_paddedMatchingHeight(spx paddedWidth, int scale) const \
 										{ \
 											SizeSPX paddingSize = Util::align(Util::ptsToSpx(m_padding, scale)); \
-											return m_pWidget->_matchingHeight(paddedWidth - paddingSize.w) + paddingSize.h; \
+											return m_pWidget->_matchingHeight(paddedWidth - paddingSize.w, scale) + paddingSize.h; \
 										} 
 
 #define		SLOT_SELECTING_METHODS(HOLDERTYPE) \

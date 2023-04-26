@@ -139,7 +139,6 @@ namespace wg
 
 	SizeSPX PackPanel::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
 		if (scale != m_scale)
 			return _calcDefaultSize(scale);
 		else
@@ -150,8 +149,6 @@ namespace wg
 
 	spx PackPanel::_matchingHeight( spx width, int scale ) const
 	{
-		scale = _fixScale(scale);
-
 		spx height = 0;
 
 		if (slots.size() > 0)
@@ -251,8 +248,6 @@ namespace wg
 
 	spx PackPanel::_matchingWidth( spx height, int scale ) const
 	{
-		scale = _fixScale(scale);
-
 		spx width = 0;
 		
 		if (slots.size() > 0)
@@ -701,8 +696,6 @@ namespace wg
 
 	void PackPanel::_resize( const SizeSPX& size, int scale )
 	{
-		scale = _fixScale(scale);
-
 		if( scale != m_scale )
 		{
 			for (auto pSlot = slots._begin(); pSlot != slots._end(); pSlot++)

@@ -82,7 +82,6 @@ namespace wg
 
 	spx TextDisplay::_matchingWidth(spx height, int scale) const
 	{
-		scale = _fixScale(scale);
 		SizeSPX padding = _contentPaddingSize();
 
 		height -= padding.h;
@@ -95,7 +94,6 @@ namespace wg
 
 	spx TextDisplay::_matchingHeight(spx width, int scale) const
 	{
-		scale = _fixScale(scale);
 		SizeSPX padding = _contentPaddingSize();
 
 		width -= padding.w;
@@ -108,8 +106,6 @@ namespace wg
 
 	SizeSPX TextDisplay::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		SizeSPX contentSize = display._defaultSize(scale);
 
 		return m_skin.sizeForContent(contentSize, scale);

@@ -72,6 +72,8 @@ extern "C" {
 		uint8_t				buffered;
 		uint8_t				canvas;
 		const wg_color8* 	palette;
+		int					paletteSize;
+		int					paletteCapacity;
 		uint8_t				dynamic;
 		wg_pixelFormat		format;
 		int					identity;

@@ -131,10 +131,8 @@ namespace wg
 
 	//____ _defaultSize() ________________________________________________________
 
-	SizeSPX SizeCapsule::_defaultSize(int _scale) const
+	SizeSPX SizeCapsule::_defaultSize(int scale) const
 	{
-		int scale = _fixScale(_scale);
-
 		SizeSPX defaultSize	= align(ptsToSpx(m_defaultSize, scale));
 		SizeSPX minSize		= align(ptsToSpx(m_minSize, scale));
 		SizeSPX maxSize		= align(ptsToSpx(m_maxSize, scale));
@@ -185,7 +183,7 @@ namespace wg
 			// Default size not set in size capsule.
 			// We take default from child and check against our min/max.
 
-			pref = slot._widget()->_defaultSize(_scale);
+			pref = slot._widget()->_defaultSize(scale);
 
 			if (pref.w > maxSize.w && pref.h > maxSize.h)
 			{
@@ -295,8 +293,6 @@ namespace wg
 
 	SizeSPX SizeCapsule::_minSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		if( slot._widget() )
 			return SizeSPX::max(align(ptsToSpx(m_minSize,scale)),slot._widget()->_minSize(scale));
 		else
@@ -307,8 +303,6 @@ namespace wg
 
 	SizeSPX SizeCapsule::_maxSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		if( slot._widget() )
 			return SizeSPX::min(align(ptsToSpx(m_maxSize, scale)),slot._widget()->_maxSize(scale));
 		else
@@ -321,8 +315,6 @@ namespace wg
 	{
 		if( m_defaultSize.h >= 0 )
 		{
-			scale = _fixScale(scale);
-
 			pts h = m_defaultSize.h;
 
 			if( slot._widget() )
@@ -350,8 +342,6 @@ namespace wg
 
 		if( m_defaultSize.w >= 0 )
 		{
-			scale = _fixScale(scale);
-
 			pts w = m_defaultSize.w;
 
 			if( slot._widget() )

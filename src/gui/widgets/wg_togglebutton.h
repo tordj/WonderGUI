@@ -87,7 +87,6 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
-			int				scale = -1;
 			bool			selected = false;
 			bool			selectable = true;
 			Skin_p			skin;
@@ -129,7 +128,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		SizeSPX			_defaultSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale) const override;
 
 
 	protected:
@@ -139,7 +138,7 @@ namespace wg
 
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void		_receive( Msg * pMsg ) override;
-		void		_resize( const SizeSPX& size, int scale = -1 ) override;
+		void		_resize( const SizeSPX& size, int scale ) override;
 		bool		_alphaTest( const CoordSPX& ofs ) override;
 		void		_setState(State state) override { _setState(state, false); }
 		void		_setState( State state, bool bPostMsg );

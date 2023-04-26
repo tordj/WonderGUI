@@ -457,8 +457,6 @@ namespace wg
 
 	SizeSPX ScrollPanel::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		SizeSPX sz;
 			
 		if( slot._widget() )
@@ -713,8 +711,6 @@ namespace wg
 
 	void ScrollPanel::_resize(const SizeSPX& size, int scale)
 	{
-		scale = _fixScale(scale);
-
 		bool bSizeChanged = (size != m_size);
 		bool bScaleChanged = (scale != m_scale);
 

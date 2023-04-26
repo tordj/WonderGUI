@@ -102,8 +102,6 @@ namespace wg
 
 	SizeSPX ToggleButton::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		SizeSPX defaultSize;
 
 		// Get size of text

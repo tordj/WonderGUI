@@ -193,28 +193,22 @@ namespace wg
 
 	//____ _defaultSize() _____________________________________________________
 
-	SizeSPX LambdaPanel::_defaultSize(int _scale) const
+	SizeSPX LambdaPanel::_defaultSize(int scale) const
 	{
-		int scale = _fixScale(_scale);
-
 		return SizeSPX(m_defaultSize*scale);
 	}
 
 	//____ _minSize() _____________________________________________________
 
-	SizeSPX LambdaPanel::_minSize(int _scale) const
+	SizeSPX LambdaPanel::_minSize(int scale) const
 	{
-		int scale = _fixScale(_scale);
-
 		return SizeSPX(m_minSize * scale);
 	}
 
 	//____ _maxSize() _____________________________________________________
 
-	SizeSPX LambdaPanel::_maxSize(int _scale) const
+	SizeSPX LambdaPanel::_maxSize(int scale) const
 	{
-		int scale = _fixScale(_scale);
-
 		return SizeSPX(m_maxSize * scale);
 	}
 
@@ -490,7 +484,7 @@ namespace wg
 			geo = align(ptsToSpx(ptsGeo,m_scale));
 		}
 		else
-			geo = { 0,0, align(pSlot->_widget()->_defaultSize()) };
+			geo = { 0,0, align(pSlot->_widget()->_defaultSize(m_scale)) };
 
 		if (geo != pSlot->m_geo)
 		{
@@ -524,7 +518,7 @@ namespace wg
 		pSlot->m_geo = geo;
 		auto pWidget = pSlot->_widget();
 
-		if (bForceResize || pWidget->_size() != geo.size() || (pWidget->isScaleSet() == false && pWidget->_scale() != m_scale ))
+		if (bForceResize || pWidget->_size() != geo.size() || pWidget->_scale() != m_scale )
 			pSlot->_setSize(geo, m_scale);
 	}
 

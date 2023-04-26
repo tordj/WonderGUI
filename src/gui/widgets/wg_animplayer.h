@@ -89,7 +89,7 @@ namespace wg
 		AnimPlayer();
 		virtual ~AnimPlayer();
 
-		SizeSPX			_defaultSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale) const override;
 
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;

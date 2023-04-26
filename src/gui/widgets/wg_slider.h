@@ -62,7 +62,6 @@ namespace wg
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
 			pts				defaultSlideLength = 64;
-			int				scale = -1;
 			bool			selectable = true;
 			Skin_p			skin;
 			int				steps = 0;
@@ -107,7 +106,7 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
-		SizeSPX			_defaultSize(int scale = -1) const override;
+		SizeSPX			_defaultSize(int scale) const override;
 
 
 	protected:
@@ -118,7 +117,7 @@ namespace wg
 
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		bool		_alphaTest(const CoordSPX& ofs) override;
-        void        _resize(const SizeSPX& size, int scale = -1) override;
+        void        _resize(const SizeSPX& size, int scale) override;
 
 		SizeSPX		_calcDefaultSize(int scale) const;
 		void		_updateDefaultSize(bool bRequestResize = true);

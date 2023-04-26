@@ -229,7 +229,7 @@ namespace wg
 			Placement placement = pSlot->m_placement;
 			BorderSPX palettePadding = m_pToolboxSkin ? m_pToolboxSkin->_contentPadding(m_scale, State::Normal) : BorderSPX();
 
-			SizeSPX wantedSize = pSlot->_widget()->_defaultSize() + palettePadding;
+			SizeSPX wantedSize = pSlot->_widget()->_defaultSize(pSlot->_widget()->_scale()) + palettePadding;
 
 			RectSPX selectedGeo = m_pSelectedWidget->_globalGeo() - _globalPos();
 			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->_contentPadding(m_scale, State::Normal) : BorderSPX();

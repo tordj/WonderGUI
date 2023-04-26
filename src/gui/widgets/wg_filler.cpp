@@ -69,15 +69,14 @@ namespace wg
 
 	//____ defaultSize() __________________________________________________________
 
-	SizeSPX Filler::_defaultSize(int _scale) const
+	SizeSPX Filler::_defaultSize(int scale) const
 	{
 		if (m_defaultSize.w >= 0 && m_defaultSize.h >= 0)
 		{
-			int scale = _fixScale(_scale);
 			return SizeSPX(m_defaultSize*scale);
 		}
 		else
-			return Widget::_defaultSize(_scale);
+			return Widget::_defaultSize(scale);
 	}
 
 } // namespace wg

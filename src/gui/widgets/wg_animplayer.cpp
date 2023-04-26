@@ -146,10 +146,8 @@ namespace wg
 
 	//____ _defaultSize() ___________________________________________________________
 
-	SizeSPX AnimPlayer::_defaultSize(int _scale) const
+	SizeSPX AnimPlayer::_defaultSize(int scale) const
 	{
-		int scale = _fixScale(_scale);
-
 		return m_skin.sizeForContent(align(ptsToSpx(frames.frameSize(),scale)),scale);
 	}
 

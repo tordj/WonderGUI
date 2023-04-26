@@ -179,8 +179,6 @@ namespace wg
 
 	SizeSPX SelectBox::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		//TODO: Handle defaultSize in other scale than our current.
 
 		return m_defaultSize;
@@ -190,8 +188,6 @@ namespace wg
 
 	spx SelectBox::_matchingHeight(spx width, int scale) const
 	{
-		scale = _fixScale(scale);
-
 		if (width == m_size.w)
 			return m_matchingHeight;
 		else
@@ -503,8 +499,6 @@ namespace wg
 
 	spx SelectBox::_sideCanvasMatchingHeight(const SideCanvas * pCanvas, spx width, int scale) const
 	{
-		scale = _fixScale(scale);
-
 		if (width == m_pListCanvas->m_size.w)
 			return m_listCanvasMatchingHeight;
 		else
@@ -568,8 +562,6 @@ namespace wg
 
 	void SelectBox::_sideCanvasResize(SideCanvas * pCanvas, const SizeSPX& size, int scale)
 	{
-		scale = _fixScale(scale);
-
 		TextLayout* pMapper = _listTextLayout();
 
 		SizeSPX listCanvasPaddingSize = m_pListCanvas->m_skin.contentPaddingSize(scale);

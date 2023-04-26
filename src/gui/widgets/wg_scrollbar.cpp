@@ -133,8 +133,6 @@ namespace wg
 
 	SizeSPX Scrollbar::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		SizeSPX defaultSize = scrollbar._defaultSize(scale);
 
 		if (!m_skin.isEmpty())

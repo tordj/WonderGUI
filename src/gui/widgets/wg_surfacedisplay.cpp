@@ -159,7 +159,6 @@ namespace wg
 
 	SizeSPX SurfaceDisplay::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
 		return _surfaceDisplayRect(scale) + m_skin.contentPaddingSize(scale);
 	}
 
@@ -167,8 +166,6 @@ namespace wg
 
 	spx SurfaceDisplay::_matchingHeight(spx width, int scale) const
 	{
-		scale = _fixScale(scale);
-
 		auto padding = m_skin.contentPaddingSize(scale);
 		auto wantedSize = _surfaceDisplayRect(scale);
 
@@ -190,8 +187,6 @@ namespace wg
 
 	spx SurfaceDisplay::_matchingWidth(spx height, int scale) const
 	{
-		scale = _fixScale(scale);
-
 		auto padding = m_skin.contentPaddingSize(scale);
 		auto wantedSize = _surfaceDisplayRect(scale);
 

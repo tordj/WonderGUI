@@ -59,8 +59,6 @@ namespace wg
 
 	SizeSPX NumberDisplay::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
-
 		SizeSPX size = display._defaultSize(scale);
 
 		return m_skin.sizeForContent(size, scale);

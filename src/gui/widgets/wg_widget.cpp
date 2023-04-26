@@ -67,45 +67,6 @@ namespace wg
 		return false;
 	}
 
-	//____ setScale() ___________________________________________________________
-	/**
-	 * @brief Explicitly set scale of widget.
-	 *
-	 * Explicitly set the scale of widget, overridding the scale provided by
-	 * parent.
-	 * 
-	 * @param scale Scale to be set or 0 to clear, returning widget to the 
-	 *              scale determined by parent.
-	 *				
-	 * Scale defines the size of a point, measured in 1/64ths of a pixel. Thus
-	 * is 64 the default size where one point equals one pixel and 128 is a 
-	 * 200% zoom factor.
-	 *
-	 * Setting the scale on a container or RootWidget will propagate the scale
-	 * to all children that doesn't have an explicitly set scale.
-	 * 
-	 *  @return True if scale was accepted.
-	 */
-
-	bool Widget::setScale(int scale)
-	{
-		if (scale < 0 || scale > 64 * 64)
-			return false;
-
-		m_bScaleSet = (scale > 0);
-
-		if (scale == 0)
-			scale = m_pHolder ? m_pHolder->_scale() : m_scale;
-
-		if (scale != m_scale)
-		{
-			m_scale = scale;
-			_requestResize();
-		}
-
-		return true;
-	}
-
 	//____ parent() _______________________________________________________________
 	/**
 	 * @brief Returns the parent of the widget.
@@ -380,7 +341,6 @@ namespace wg
 
 	spx Widget::_matchingHeight( spx width, int scale ) const
 	{
-		scale = _fixScale(scale);
 		return _defaultSize(scale).h;		// Default is to stick with default height no matter what width.
 	}
 
@@ -400,7 +360,6 @@ namespace wg
 	 
 	spx Widget::_matchingWidth( spx height, int scale ) const
 	{
-		scale = _fixScale(scale);
 		return _defaultSize(scale).w;		// Default behavior is to stick with default width no matter what height.
 	}
 
@@ -424,7 +383,6 @@ namespace wg
 
 	SizeSPX Widget::_defaultSize(int scale) const
 	{
-		scale = _fixScale(scale);
 		return m_skin.defaultSize(scale);
 	}
 
@@ -446,7 +404,6 @@ namespace wg
 
 	SizeSPX Widget::_minSize(int scale) const
 	{
-		scale = _fixScale(scale);
 		return m_skin.minSize(scale);
 	}
 
@@ -470,7 +427,6 @@ namespace wg
 
 	SizeSPX Widget::_maxSize(int scale) const
 	{
-		scale = _fixScale(scale);
 		return SizeSPX(0x6FFFFFC0, 0x6FFFFFC0);
 	}
 
@@ -619,9 +575,6 @@ namespace wg
 
 	void Widget::_resize( const SizeSPX& size, int scale )
 	{
-		if( !m_bScaleSet )
-			m_scale = _fixScale(scale);
-
 		m_size = size;
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
