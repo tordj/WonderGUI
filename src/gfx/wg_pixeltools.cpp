@@ -24,6 +24,7 @@
 #include <wg_gfxbase.h>
 
 #include <cstring>
+#include <algorithm>
 
 namespace wg { namespace PixelTools
 {
@@ -624,7 +625,7 @@ static void shiftReadConv_8bit(const uint8_t* pSrc, uint8_t* pDst, int nbPixels,
 static void readConv_planes_8i_be(const uint8_t* pSrc, uint8_t* pDst, int nbPixels, const void* _pPalette, const void* pDummy)
 {
 	auto pPalette = (const uint32_t *) _pPalette;
-	
+
 	while(nbPixels > 0)
 	{
 		uint16_t	plane1 = (pSrc[0] << 8) + pSrc[1];
@@ -788,7 +789,7 @@ static void readConv_planes_a1_8i_be(const uint8_t* pSrc, uint8_t* pDst, int nbP
 		{
 			int		index = ((plane1 & 0x80) >> 15) | ((plane2 & 0x80) >> 14) | ((plane3 & 0x80) >> 13) | ((plane4 & 0x80) >> 12)
 				| ((plane5 & 0x80) >> 11) | ((plane6 & 0x80) >> 10) | ((plane7 & 0x80) >> 9) | ((plane8 & 0x80) >> 8);
-			
+
 			uint32_t argb = pPalette[index];
 
 			argb |= conv_1_to_8_straight[((planeA & 0x80) >> 15)];
@@ -1374,7 +1375,6 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 			for( int y = 0 ; y < height ; y++ )
 			{
-				int x = 0;
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
@@ -1418,7 +1418,6 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 			for( int y = 0 ; y < height ; y++ )
 			{
-				int x = 0;
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
@@ -1468,7 +1467,6 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 			for( int y = 0 ; y < height ; y++ )
 			{
-				int x = 0;
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
@@ -1511,7 +1509,6 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 			for( int y = 0 ; y < height ; y++ )
 			{
-				int x = 0;
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
@@ -1532,7 +1529,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 								GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Pixel copying aborted. Out of palette entries in destination.", nullptr, nullptr, __func__, __FILE__, __LINE__ );
 								return false;
 							}
-							
+
 							pDstPalette[ofs] = col;
 							nColors++;
 						}
@@ -1561,7 +1558,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 								GfxBase::throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "Pixel copying aborted. Out of palette entries in destination.", nullptr, nullptr, __func__, __FILE__, __LINE__ );
 								return false;
 							}
-							
+
 							pDstPalette[ofs] = col;
 							nColors++;
 						}
@@ -1572,7 +1569,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 				pSrc += srcPitchAdd;
 				pDst += dstPitchAdd;
 			}
-			
+
 			dstPaletteEntries = nColors;
 			break;
 		}
@@ -1584,7 +1581,6 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 			for( int y = 0 ; y < height ; y++ )
 			{
-				int x = 0;
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
@@ -1630,7 +1626,6 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 
 			for( int y = 0 ; y < height ; y++ )
 			{
-				int x = 0;
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
@@ -1669,14 +1664,13 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 			}
 			break;
 		}
-			
+
 		case PixelFormat::Alpha_8:
 		{
 			uint8_t	buffer[64*4];
 
 			for( int y = 0 ; y < height ; y++ )
 			{
-				int x = 0;
 				int widthLeft = width;
 				while( widthLeft > 64 )
 				{
@@ -1718,7 +1712,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 			break;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -1728,10 +1722,10 @@ static inline void shiftAndBitsFromMask( uint64_t mask64, int& shift, int& bits 
 {
 	shift = 0;
 	bits = 0;
-	
+
 	if( mask64 == 0 )
 		return;
-	
+
 	while( (mask64 & 0xFF) == 0)
 	{
 		shift += 8;
@@ -1769,8 +1763,8 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescripti
 	auto dstDesc = Util::pixelFormatToDescription( dstFmt );
 
 	//TODO: Optimize by calling other copyPixels() if source pixel format is known.
-	
-	
+
+
 	if (srcDesc.type == PixelType::Bitplanes)
 	{
 		GfxBase::throwError(ErrorLevel::Error, ErrorCode::IllegalCall, "Conversion from bitplanes not supported yet", nullptr, nullptr, __func__, __FILE__, __LINE__);
@@ -1796,7 +1790,7 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescripti
 		convTab.maskA64 = srcDesc.A_mask;
 
 		int bitsR, bitsG, bitsB, bitsA;
-		
+
 		shiftAndBitsFromMask( srcDesc.R_mask, convTab.shiftR, bitsR );
 		shiftAndBitsFromMask( srcDesc.G_mask, convTab.shiftG, bitsG );
 		shiftAndBitsFromMask( srcDesc.B_mask, convTab.shiftB, bitsB );
@@ -1865,8 +1859,8 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescripti
 				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Conversion from chunky pixels requires 8, 16, 24 or 32 bit pixels.", nullptr, nullptr, __func__, __FILE__, __LINE__);
 				return false;
 			}
-		}			
-		
+		}
+
 		return convertPixelsToKnownType(width, height, pSrc, srcDesc.bits, srcPitchAdd, pDst, dstFmt, dstPitchAdd,
 										  pDstPalette, dstPaletteEntries, maxDstPaletteEntries, pReadFunc, &convTab, nullptr );
 	}
@@ -2260,6 +2254,7 @@ static bool copyToChunkyDestination(int width, int height, const uint8_t* pSrc, 
 			pSrc += srcPitchAdd + bytes;
 			pDst += dstPitchAdd + bytes;
 		}
+		return true;
 	}
 	else if ( srcDesc.colorSpace == dstDesc.colorSpace && (srcFmt == PixelFormat::BGRA_8_linear || srcFmt == PixelFormat::BGRA_8_sRGB ||
 		srcFmt == PixelFormat::BGRX_8_linear || srcFmt == PixelFormat::BGRX_8_sRGB) )
@@ -2275,7 +2270,7 @@ static bool copyToChunkyDestination(int width, int height, const uint8_t* pSrc, 
 			pSrc += srcPitchAdd + width * srcDesc.bits / 8;
 			pDst += dstPitchAdd + width * dstDesc.bits / 8;
 		}
-
+		return true;
 	}
 	else
 	{
@@ -2308,7 +2303,7 @@ static bool identicalPalettes( const Color8* pPalette1, const Color8* pPalette2,
 	for( int i = 0 ; i < nEntries ; i++ )
 		if( pPalette1[i] != pPalette2[i] )
 			return false;
-	
+
 	return true;
 }
 
@@ -2316,9 +2311,9 @@ static bool identicalPalettes( const Color8* pPalette1, const Color8* pPalette2,
 
 static bool	initPaletteRemapTable( uint16_t * pRemapTab, const Color8 * pSrcPalette, int srcPaletteEntries, Color8 * pDstPalette, int& dstPaletteEntries, int maxDstPaletteEntries, int width, int height, const uint8_t * pSrcPixels, int srcPitchAdd, int pixelBits )
 {
-	
+
 	// Create a "color use mask" to know which colors are actually used
-	
+
 	int allocBytes = srcPaletteEntries*sizeof(bool);
 	bool * pColorsInUse = (bool*) GfxBase::memStackAlloc(allocBytes);
 	memset( pColorsInUse, 0, srcPaletteEntries );
@@ -2343,15 +2338,15 @@ static bool	initPaletteRemapTable( uint16_t * pRemapTab, const Color8 * pSrcPale
 			p += srcPitchAdd/2;
 		}
 	}
-	
+
 	// Remap colors
-	
+
 	for( int i = 0 ; i < srcPaletteEntries ; i++ )
 	{
 		if( pColorsInUse[i] )
 		{
 			Color8 src = pSrcPalette[i];
-			
+
 			int ofs = 0;
 			while( ofs < dstPaletteEntries && src != pDstPalette[ofs] )
 				ofs++;
@@ -2363,7 +2358,7 @@ static bool	initPaletteRemapTable( uint16_t * pRemapTab, const Color8 * pSrcPale
 					GfxBase::memStackFree(allocBytes);
 					return false;
 				}
-				
+
 				dstPaletteEntries++;
 			}
 			pRemapTab[i] = ofs;
@@ -2371,7 +2366,7 @@ static bool	initPaletteRemapTable( uint16_t * pRemapTab, const Color8 * pSrcPale
 	}
 
 	// All colors remapped. Cleanup and return.
-	
+
 	GfxBase::memStackFree(allocBytes);
 	return true;
 }
@@ -2386,7 +2381,7 @@ public:
 	bool convert(uint8_t * pDst, const uint32_t * pSrc, int nPixels );
 
 	inline int nbPaletteEntries() const { return m_nPaletteEntries; }
-	
+
 protected:
 
 	bool _convertPixelsToIndex8(uint8_t * pDst, const uint32_t * pSrc, int nPixels );
@@ -2396,16 +2391,16 @@ protected:
 	int			m_nPaletteEntries;
 	int			m_maxPaletteEntries;
 	int			m_indexBits;
-	
+
 	struct ChunkyIndex
 	{
 		uint32_t chunkyValue;
 		int		index;
 	};
-	
+
 	ChunkyIndex *	m_pTable;
 	int				m_nTableEntries;
-		
+
 };
 
 //____ ChunkyToIndexConverter constructor ______________________________________________
@@ -2416,14 +2411,14 @@ ChunkyToIndexConverter::ChunkyToIndexConverter( Color8 * pPalette, int nPaletteE
 	m_nPaletteEntries = nPaletteEntries;
 	m_maxPaletteEntries = maxPaletteEntries;
 	m_indexBits = indexBits;
-	
+
 	m_pTable = new ChunkyIndex[m_maxPaletteEntries];
 	m_nTableEntries = nPaletteEntries;
 
 	// Init the table
 
 	uint32_t * pPal = (uint32_t*) pPalette;
-	
+
 	for( int i = 0 ; i < nPaletteEntries ; i++ )
 	{
 		m_pTable[i].index = i;
@@ -2450,10 +2445,10 @@ bool ChunkyToIndexConverter::_convertPixelsToIndex8(uint8_t * pDst, const uint32
 	for( int i = 0 ; i < nPixels ; i++ )
 	{
 		uint32_t pixel = * pSrc++;
-		
+
 		int left = 0;
 		int right = m_nTableEntries-1;
-		
+
 		if( m_nTableEntries == 0 )
 			right = 0;
 		else if( pixel < m_pTable[left].chunkyValue )
@@ -2477,31 +2472,31 @@ bool ChunkyToIndexConverter::_convertPixelsToIndex8(uint8_t * pDst, const uint32
 				* pDst++ = m_pTable[left].index;
 				continue;
 			}
-			
+
 			if(m_pTable[right].chunkyValue == pixel)
 			{
 				* pDst++ = m_pTable[right].index;
 				continue;
 			}
 		}
-		
+
 		if( m_nPaletteEntries == m_maxPaletteEntries )
 			return false;										// Out of palette entries!
 
 		if( right < m_nTableEntries )
 			memmove(&m_pTable[right+1], &m_pTable[right], sizeof(ChunkyIndex)*(m_nTableEntries-right) );
-		
+
 		m_pTable[right].index = m_nPaletteEntries;
 		m_pTable[right].chunkyValue = pixel;
 		m_nTableEntries++;
-		
+
 		m_pPalette[m_nPaletteEntries] = pixel;
 
 		* pDst++ = m_nPaletteEntries++;
-		
-		
+
+
 	}
-	
+
 	return true;
 }
 
@@ -2512,10 +2507,10 @@ bool ChunkyToIndexConverter::_convertPixelsToIndex16(uint16_t * pDst, const uint
 	for( int i = 0 ; i < nPixels ; i++ )
 	{
 		uint32_t pixel = * pSrc++;
-		
+
 		int left = 0;
 		int right = m_nTableEntries-1;
-		
+
 		if( m_nTableEntries == 0 )
 			right = 0;
 		else if( pixel < m_pTable[left].chunkyValue )
@@ -2539,31 +2534,31 @@ bool ChunkyToIndexConverter::_convertPixelsToIndex16(uint16_t * pDst, const uint
 				* pDst++ = m_pTable[left].index;
 				continue;
 			}
-			
+
 			if(m_pTable[right].chunkyValue == pixel)
 			{
 				* pDst++ = m_pTable[right].index;
 				continue;
 			}
 		}
-		
+
 		if( m_nPaletteEntries == m_maxPaletteEntries )
 			return false;										// Out of palette entries!
 
 		if( right < m_nTableEntries )
 			memmove(&m_pTable[right+1], &m_pTable[right], sizeof(ChunkyIndex)*(m_nTableEntries-right) );
-		
+
 		m_pTable[right].index = m_nPaletteEntries;
 		m_pTable[right].chunkyValue = pixel;
 		m_nTableEntries++;
-		
+
 		m_pPalette[m_nPaletteEntries] = pixel;
 
 		* pDst++ = m_nPaletteEntries++;
-		
-		
+
+
 	}
-	
+
 	return true;
 }
 
@@ -2581,19 +2576,19 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 	if (srcDesc.type == PixelType::Index)
 	{
 		int allocSize1 = 0;
-		
+
 		// Make sure source palette is in same color space as
 		// destination palette
-		
+
 		if( srcDesc.colorSpace != dstDesc.colorSpace )
 		{
 			// Palettes have different color space. We need
 			// to convert source palette before proceeding.
-			
+
 			allocSize1 = srcPaletteEntries*sizeof(Color8);
-			
+
 			auto pFixedPalette = (Color8*) GfxBase::memStackAlloc(allocSize1);
-			
+
 			auto pConvTab = srcDesc.colorSpace == ColorSpace::Linear ? conv_8_linear_to_8_sRGB : conv_8_sRGB_to_8_linear;
 
 			for( int i = 0 ; i < srcPaletteEntries ; i++ )
@@ -2603,16 +2598,16 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 				pFixedPalette[i].b = pConvTab[pSrcPalette[i].b];
 				pFixedPalette[i].a = pSrcPalette[i].a;
 			}
-			
+
 			pSrcPalette = pFixedPalette;
 		}
-		
+
 		// Check if we can do a fast, straight pixel copy.
-		
+
 		if( (srcDesc.type == PixelType::Index && srcDesc.bits == dstDesc.bits) && (srcPaletteEntries <= dstPaletteEntries) && identicalPalettes( pSrcPalette, pDstPalette, srcPaletteEntries ) )
 		{
 			// We can do a straight pixel copy.
-			
+
 			int bytes = width * srcDesc.bits / 8;
 
 			for (int y = 0; y < height; y++)
@@ -2621,11 +2616,11 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 				pSrc += srcPitchAdd + bytes;
 				pDst += dstPitchAdd + bytes;
 			}
-			
+
 			GfxBase::memStackFree(allocSize1);
 			return true;
 		}
-		
+
 		// We need to remap colors and possibly add to dest palette.
 		// Start by creating a palette remap tab and add colors to destination palette as needed
 
@@ -2635,14 +2630,14 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 		if( !initPaletteRemapTable( pRemapTab, pSrcPalette, srcPaletteEntries, pDstPalette, dstPaletteEntries, maxDstPaletteEntries, width, height, pSrc, srcPitchAdd, srcDesc.bits ) )
 		{
 			// Not enough/right colors in destination palette.
-			
+
 			GfxBase::memStackFree(allocSize2);
 			GfxBase::memStackFree(allocSize1);
 			return false;
 		}
-		
+
 		// Copy pixels and remap indexes.
-		
+
 		if( srcFmt == PixelFormat::Index_8 )
 		{
 			if( dstFmt == PixelFormat::Index_8 )
@@ -2651,7 +2646,7 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 				{
 					for( int x = 0 ; x < width ; x++ )
 						* pDst++ = pRemapTab[*pSrc++];
-					
+
 					pSrc += srcPitchAdd;
 					pDst += dstPitchAdd;
 				}
@@ -2663,7 +2658,7 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 				{
 					for( int x = 0 ; x < width ; x++ )
 						* pDst2++ = pRemapTab[*pSrc++];
-					
+
 					pSrc += srcPitchAdd;
 					pDst2 += dstPitchAdd/2;
 				}
@@ -2679,7 +2674,7 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 				{
 					for( int x = 0 ; x < width ; x++ )
 						* pDst++ = pRemapTab[*pSrc2++];
-					
+
 					pSrc2 += srcPitchAdd/2;
 					pDst += dstPitchAdd;
 				}
@@ -2691,13 +2686,13 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 				{
 					for( int x = 0 ; x < width ; x++ )
 						* pDst2++ = pRemapTab[*pSrc2++];
-					
+
 					pSrc2 += srcPitchAdd/2;
 					pDst2 += dstPitchAdd/2;
 				}
 			}
 		}
-		
+
 		return true;
 	}
 	else
@@ -2714,7 +2709,7 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 			return false;
 
 		ChunkyToIndexConverter conv(pDstPalette, dstPaletteEntries, maxDstPaletteEntries, dstDesc.bits );
-					
+
 		uint8_t	buffer[64 * 4];
 
 		for (int y = 0; y < height; y++)
@@ -2728,7 +2723,7 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 
 				if( !conv.convert(pDst, (uint32_t*) buffer, 64) )
 					return false;
-				
+
 				pDst += dstDesc.bits * 8;
 
 				widthLeft -= 64;
@@ -2748,7 +2743,7 @@ static bool copyToIndexedDestination(int width, int height, const uint8_t* pSrc,
 			pSrc += srcPitchAdd;
 			pDst += dstPitchAdd;
 		}
-		
+
 		dstPaletteEntries = conv.nbPaletteEntries();
 		return true;
 	}
@@ -2787,8 +2782,8 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, PixelFormat srcFmt, 
 				return copyToIndexedDestination(width, height, pSrc, srcFmt, srcPitchAdd, pDst, dstFmt, dstPitchAdd, pSrcPalette,
 												pDstPalette, srcPaletteEntries, dstPaletteEntries, maxDstPaletteEntries);
 		}
-
 	}
+	return false;
 }
 
 //____ colorToPixelBytes() ____________________________________________________
@@ -2957,16 +2952,16 @@ int colorToPixelBytes( HiColor color, PixelFormat format, uint8_t pixelArea[18],
 void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fillRect, HiColor color, Color8* pPalette, int paletteSize)
 {
 	pixelFormat = Util::clarifyPixelFormat(pixelFormat);
-	
+
 	auto&	pixelDesc = Util::pixelFormatToDescription(pixelFormat);
-	
+
 	uint8_t pixelArea[18];
 	int pixelBytes = colorToPixelBytes(color, pixelFormat, pixelArea, pPalette, paletteSize);
 
 	if( pixelDesc.type == PixelType::Bitplanes )
 	{
 		int pixelWords = pixelBytes / 2;
-	
+
 		uint16_t leftPixelMask = 0xFFFF >> (fillRect.x & 0xF);
 		uint16_t rightPixelMask = 0xFFFF << (15 - ((fillRect.x + fillRect.w) & 0xF));
 
@@ -3005,20 +3000,20 @@ void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fill
 					*pDest = ((*pDest) & invLeftMask) | (wordArea[plane] & leftPixelMask);
 					pDest++;
 				}
-				
+
 				for( int x = 0 ; x < (wordWidth - 2) ; x++ )
 					for (int plane = 0; plane < pixelWords; plane++)
 					{
 						*pDest = wordArea[plane];
 						pDest++;
 					}
-				
+
 				for (int plane = 0; plane < pixelWords; plane++)
 				{
 					*pDest = ((*pDest) & invRightMask) | (wordArea[plane] & rightPixelMask);
 					pDest++;
 				}
-				
+
 				pDest += eolAdd;
 			}
 		}
@@ -3027,13 +3022,13 @@ void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fill
 	{
 		uint8_t * pDest = pBitmap + fillRect.y*pitch + fillRect.x*pixelBytes;
 		int eolAdd = pitch - fillRect.w * pixelBytes;
-		
+
 		switch(pixelBytes)
 		{
 			case 1:
 			{
 				uint8_t pixel = pixelArea[0];
-				
+
 				for( int y = 0 ; y < fillRect.h ; y++ )
 				{
 					for( int x = 0 ; x < fillRect.w ; x++ )
@@ -3046,7 +3041,7 @@ void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fill
 			case 2:
 			{
 				uint16_t pixel = * (uint16_t*) pixelArea;
-				
+
 				for( int y = 0 ; y < fillRect.h ; y++ )
 				{
 					for( int x = 0 ; x < fillRect.w ; x++ )
@@ -3077,7 +3072,7 @@ void fillBitmap(uint8_t* pBitmap, PixelFormat pixelFormat, int pitch, RectI fill
 			case 4:
 			{
 				uint32_t pixel = * (uint32_t*) pixelArea;
-				
+
 				for( int y = 0 ; y < fillRect.h ; y++ )
 				{
 					for( int x = 0 ; x < fillRect.w ; x++ )
@@ -3122,27 +3117,27 @@ int findBestMatchInPalette(HiColor color, Color8* pPalette, int paletteSize, Col
 		pConvTab = HiColor::packSRGBTab;
 
 	Color8 col;
-	
+
 	col.b = pConvTab[color.b];
 	col.g = pConvTab[color.b];
 	col.r = pConvTab[color.b];
 	col.a = pConvTab[color.b];
 
 	// First we make a quick check for exact match
-	
+
 	for( int i = 0 ; i < paletteSize ; i++ )
 		if( col == pPalette[i] )
 			return i;
-	
+
 	// Find best match
-	
+
 	int bestMatchIndex = 0;
 	int bestMatchDiff = 256*256*4;
-	
+
 	for( int i = 0 ; i < paletteSize ; i++ )
 	{
 		Color8& palCol = pPalette[i];
-		
+
 		int diffB = abs(col.b - palCol.b);
 		int diffG = abs(col.g - palCol.g);
 		int diffR = abs(col.r - palCol.r);
@@ -3155,7 +3150,7 @@ int findBestMatchInPalette(HiColor color, Color8* pPalette, int paletteSize, Col
 			bestMatchIndex = i;
 		}
 	}
-	
+
 	return bestMatchIndex;
 }
 
@@ -3266,7 +3261,7 @@ bool extractAlphaChannel(PixelFormat format, const uint8_t* pSrc, int srcPitch, 
 			}
 
 		}
-		
+
 		default:
 			return false;		// PixelFormat not supported yet.
 	}

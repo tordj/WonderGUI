@@ -1949,7 +1949,7 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 					else
 					{
 						frac = ((((pEdges[edge].coverage + 65536) / 2) * (pEdges[edge].end - pEdges[edge].begin)) >> 8)
-							+ (256 - pEdges[edge].end & 0xFF) * 65536 / 256;
+							+ (256 - (pEdges[edge].end & 0xFF)) * 65536 / 256;
 					}
 
 					segmentFractions[edge] = remainingFractions - frac;

@@ -131,9 +131,6 @@ namespace wg
 		if (!m_pInput || !m_pOutput)
 			return false;
 
-		int	nSegments;
-		const DataSegment* pSegments;
-
 		return _pumpUntilChunk(GfxChunkId::BeginRender, false);
 	}
 
@@ -292,8 +289,6 @@ namespace wg
 
 				const uint8_t* pChunkData = p + GfxStream::headerSize(p);
 
-				int chunkSize = GfxStream::chunkSize(p);
-
 				uint16_t	surfaceId	= *(const uint16_t*)pChunkData;
 				CanvasRef	canvasRef	= (CanvasRef) pChunkData[2];
 				totalRects += pChunkData[3];
@@ -303,13 +298,13 @@ namespace wg
 				// See if we already have this canvas, otherwise add it to our vector.
 
 				int idx = 0;
-				for( ; idx < canvases.size() ; idx++ )
+				for( ; idx < (int) canvases.size() ; idx++ )
 				{
 					if (canvases[idx].id == id)
 						break;
 				}
 
-				if( idx == canvases.size() )
+				if( idx == (int) canvases.size() )
 					canvases.push_back( id );
 
 				// Add our frame to the list
@@ -330,7 +325,7 @@ namespace wg
 		{
 			int maskBegin = clipRects.size();				// Where canvases we mask against begin
 
-			for (int i = canvas.frames.size() - 1; i >= 0; i--)
+			for (int i = int(canvas.frames.size()) - 1; i >= 0; i--)
 			{
 				// Only optimize against last 4 frames of updates for this canvas.
 
@@ -376,7 +371,7 @@ namespace wg
 		
 				// For last frame we just copy the rects
 
-				if (i == canvas.frames.size() - 1)
+				if (i == int(canvas.frames.size()) - 1)
 				{
 					for (int r = 0; r < nRects; r++)
 					{

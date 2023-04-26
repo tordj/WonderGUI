@@ -34,18 +34,22 @@ namespace wg
 	public:
 
 		Gradient() :
+			isValid(false),
 			topLeft(HiColor::Undefined),
 			topRight(HiColor::Undefined),
 			bottomRight(HiColor::Undefined),
-			bottomLeft(HiColor::Undefined),
-			isValid(false) {}
+			bottomLeft(HiColor::Undefined)
+		{
+		}
 
 		Gradient(HiColor topLeft, HiColor topRight, HiColor bottomRight, HiColor bottomLeft) :
+			isValid(true),
 			topLeft(topLeft),
 			topRight(topRight),
 			bottomRight(bottomRight),
-			bottomLeft(bottomLeft),
-			isValid(true) {}
+			bottomLeft(bottomLeft)
+		{
+		}
 
 		Gradient(Placement start, HiColor startColor, HiColor endColor);
 

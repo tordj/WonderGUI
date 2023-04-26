@@ -92,6 +92,7 @@ void wg_setErrorHandler( void (*errorHandler)(const wg_errorInfo * pError) )
 
 			default:
 				errorCode = WG_ERROR_OTHER;
+				break;
 		}
 
 		switch( error.severity )
@@ -104,12 +105,13 @@ void wg_setErrorHandler( void (*errorHandler)(const wg_errorInfo * pError) )
 			severity = WG_SILENT_ERROR;
 			break;
 
-			case ErrorLevel::Error:
-			severity = WG_ERROR;
-			break;
-
 			case ErrorLevel::Critical:
 			severity = WG_CRITICAL;
+			break;
+				
+			default:
+			case ErrorLevel::Error:
+			severity = WG_ERROR;
 			break;
 		}
 

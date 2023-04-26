@@ -375,12 +375,12 @@ namespace wg
 	}
 
 	inline constexpr Color8::Color8( uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a )
-	: a(_a), r(_r), g(_g), b(_b)
+	: b(_b), g(_g), r(_r), a(_a)
 	{
 	}
 
 	inline constexpr Color8::Color8( uint32_t rgb, uint8_t _a )
-	: argb( rgb | (a << 24))
+	: argb( rgb | (uint32_t(a) << 24))
 	{
 	}
 
@@ -407,12 +407,12 @@ namespace wg
 	//____ HiColor::HiColor() _________________________________________________________________
 
 	inline constexpr HiColor::HiColor(int r, int g, int b, int a)
-	: r(r), g(g), b(b), a(a)
+	: b(b), g(g), r(r), a(a)
 	{
 	}
 
 	inline constexpr HiColor::HiColor(float r, float g, float b, float a)
-	: r(int16_t(r * 4096)), g(int16_t(g * 4096)), b(int16_t(b * 4096)), a(int16_t(a * 4096))
+	: b(int16_t(b * 4096)), g(int16_t(g * 4096)), r(int16_t(r * 4096)), a(int16_t(a * 4096))
 	{
 	}
 

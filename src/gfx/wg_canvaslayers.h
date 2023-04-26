@@ -97,7 +97,7 @@ namespace wg
 				const std::function<void(GfxDevice* pDevice)>& clearFunc = nullptr,
 				const std::function<void(GfxDevice* pDevice)>& preBlendFunc = nullptr,
 				const std::function<void(GfxDevice* pDevice)>& preBlendCanvasFunc = nullptr)
-				: format(format), blendFunc(blendFunc), clearFunc(clearFunc), preBlendFunc(preBlendFunc), preBlendCanvasFunc(preBlendCanvasFunc) {}
+				: format(format), blendFunc(blendFunc), clearFunc(clearFunc), preBlendCanvasFunc(preBlendCanvasFunc), preBlendFunc(preBlendFunc) {}
 
 
 			PixelFormat format = PixelFormat::BGRA_8;
