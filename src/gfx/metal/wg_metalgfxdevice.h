@@ -77,6 +77,7 @@ namespace wg
         bool    setBlendMode(BlendMode blendMode) override;
         bool    setBlitSource(Surface * pSource) override;
         void    setMorphFactor(float factor) override;
+		void	setFixedBlendColor( HiColor color ) override;
 
         bool    isCanvasReady() const;
             
@@ -161,6 +162,7 @@ namespace wg
             SetTintColor,
             SetTintGradient,
             ClearTintGradient,
+			SetFixedBlendColor,
             SetBlitSource,
             Fill,
             FillSubPixel,                // Includes start/direction lines.
@@ -174,6 +176,7 @@ namespace wg
         id<MTLRenderCommandEncoder> _setCanvas( MetalSurface * pCanvas, int width, int height, CanvasInit initOperation, Color clearColor );
         void            _setBlendMode( id<MTLRenderCommandEncoder>, BlendMode mode);
         void            _setMorphFactor( id<MTLRenderCommandEncoder>, float morphFactor);
+		void            _setFixedBlendColor( id<MTLRenderCommandEncoder>, HiColor color);
         void            _setBlitSource( id<MTLRenderCommandEncoder>, MetalSurface * pSurf);
         void            _setTintColor( id<MTLRenderCommandEncoder>, HiColor color);
         void            _setTintGradient( id<MTLRenderCommandEncoder>, const RectI& rect, const Gradient& gradient);
@@ -300,7 +303,13 @@ namespace wg
         bool            m_bGradientActive   = false;
         BlendMode       m_activeBlendMode   = BlendMode::Blend;
         float           m_activeMorphFactor = 0.5f;
-                
+		HiColor         m_activeFixedBlendColor = HiColor::White;
+
+		float           m_morphFactorInUse = -1;
+		HiColor         m_fixedBlendColorInUse = HiColor::Undefined;
+
+		
+		
         
         id<MTLLibrary>              m_library = nil;
         id<MTLDrawable>             m_drawableToAutoPresent = nil;

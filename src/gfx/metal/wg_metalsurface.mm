@@ -274,7 +274,7 @@ namespace wg
 			
 			if( m_pPalette )
 			{
-				MTLSize paletteSize = { m_paletteSize, 1, 1 };
+				MTLSize paletteSize = { (unsigned long) m_paletteSize, 1, 1 };
 				MTLOrigin paletteOrigin = {0,0,0};
 
 				[blitCommandEncoder copyFromBuffer:     m_paletteBuffer

@@ -380,7 +380,7 @@ namespace wg
 	}
 
 	inline constexpr Color8::Color8( uint32_t rgb, uint8_t _a )
-	: argb( rgb | (uint32_t(a) << 24))
+	: argb( rgb | (uint32_t(_a) << 24))
 	{
 	}
 

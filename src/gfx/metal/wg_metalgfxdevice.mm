@@ -787,6 +787,28 @@ MetalGfxDevice::MetalGfxDevice()
         m_pCommandBuffer[m_commandOfs++] = (int)(factor*1024);
     }
 
+	//____ setFixedBlendColor() __________________________________________________
+
+	void MetalGfxDevice::setFixedBlendColor( HiColor color )
+	{
+		if( color == m_fixedBlendColor )
+			return;
+
+		if (!m_bRendering)
+		{
+			//TODO: Error handling!
+			return;
+		}
+
+		m_fixedBlendColor = color;
+
+		_endCommand();
+		_beginStateCommandWithAlignedData(Command::SetFixedBlendColor, 2);
+		*(int64_t*)(&m_pCommandBuffer[m_commandOfs]) = color.argb;
+		m_commandOfs += 2;
+	}
+
+
     //____ isCanvasReady() ___________________________________________________________
 
     bool MetalGfxDevice::isCanvasReady() const
@@ -841,6 +863,7 @@ MetalGfxDevice::MetalGfxDevice()
         GfxDevice::setBlitSource(nullptr);
         GfxDevice::setBlendMode(BlendMode::Blend);
         GfxDevice::setMorphFactor(0.5f);
+		GfxDevice::setFixedBlendColor(HiColor::Black);
         GfxDevice::setTintColor(HiColor::White);
         GfxDevice::clearTintGradient();
         
@@ -849,7 +872,11 @@ MetalGfxDevice::MetalGfxDevice()
         m_pActiveBlitSource = nullptr;
         m_activeBlendMode   = BlendMode::Blend;
         m_activeMorphFactor = 0.5f;
-        
+		m_activeFixedBlendColor = HiColor::White;
+		
+		m_morphFactorInUse = -1.f;
+		m_fixedBlendColorInUse = HiColor::Undefined;
+		
         m_uniform.flatTint[0] = 1.f;
         m_uniform.flatTint[1] = 1.f;
         m_uniform.flatTint[2] = 1.f;
@@ -2183,6 +2210,13 @@ MetalGfxDevice::MetalGfxDevice()
                     pCmd+=2;
                     break;
                 }
+				case Command::SetFixedBlendColor:
+				{
+					_setFixedBlendColor(renderEncoder, *(HiColor*)(pCmd));
+					pCmd+=2;
+					break;
+				}
+					
                 case Command::SetTintGradient:
                 {
                     RectI& rect = *(RectI*)pCmd;
@@ -2498,15 +2532,48 @@ MetalGfxDevice::MetalGfxDevice()
     void MetalGfxDevice::_setBlendMode( id<MTLRenderCommandEncoder> renderEncoder, BlendMode mode )
     {
         m_activeBlendMode = mode;
+		
+		// If BlendMode is Morph or BlendFixedColor we must make sure Metal's blendColor is set accordingly
+		
+		if( mode == BlendMode::Morph )
+		{
+			if( m_morphFactorInUse != m_activeMorphFactor )
+			{
+				[renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:m_activeMorphFactor];
+
+				m_morphFactorInUse = m_activeMorphFactor;
+				m_fixedBlendColorInUse = HiColor::Undefined;
+			}
+		}
+		else if( mode == BlendMode::BlendFixedColor )
+		{
+			if( m_fixedBlendColorInUse != m_activeFixedBlendColor )
+			{
+				[renderEncoder setBlendColorRed:(m_activeFixedBlendColor.r/4096.f)
+										  green:(m_activeFixedBlendColor.g/4096.f)
+										   blue:(m_activeFixedBlendColor.b/4096.f)
+										  alpha:(m_activeFixedBlendColor.a/4096.f)];
+
+				m_morphFactorInUse = -1;
+				m_fixedBlendColorInUse = m_activeFixedBlendColor;
+			}
+		}
     }
 
     //____ _setMorphFactor() __________________________________________________
 
     void MetalGfxDevice::_setMorphFactor( id<MTLRenderCommandEncoder> renderEncoder, float morphFactor)
     {
-        [renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:morphFactor];
         m_activeMorphFactor = morphFactor;
     }
+
+	//____ _setFixedBlendColor() __________________________________________________
+
+	void MetalGfxDevice::_setFixedBlendColor( id<MTLRenderCommandEncoder> renderEncoder, HiColor color)
+	{
+		m_activeFixedBlendColor = color;
+	}
+
 
     //____ _setBlitSource() _______________________________________________________
 
@@ -2815,6 +2882,27 @@ MetalGfxDevice::MetalGfxDevice()
                 descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
                 break;
 
+			case BlendMode::BlendFixedColor:
+
+				descriptor.colorAttachments[0].blendingEnabled = YES;
+				descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+				descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+				descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
+				descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusBlendAlpha;
+
+				if(bAlphaOnly)
+				{
+					descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
+					descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusBlendColor;
+				}
+				else
+				{
+					descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorBlendAlpha;
+					descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusBlendAlpha;
+				}
+				
+				break;
+				
             default:
                 assert(false);
                 break;
