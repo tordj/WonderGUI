@@ -32,24 +32,24 @@ namespace wg
 															  8 + 4 + 2 + 1, 16 + 4, 16 + 4 + 1, 16 + 8 + 4, 16 + 8 + 4 + 1, 32, 32 + 8 };
 
 
-	const State State::Normal					= 0;
-	const State State::Focused					= 1;
-	const State State::Hovered					= 2;
-	const State State::HoveredFocused			= 3;
-	const State State::Pressed					= 4;
-	const State State::PressedFocused			= 5;
-	const State State::Selected					= 6;
-	const State State::SelectedFocused			= 7;
-	const State State::SelectedHovered			= 8;
-	const State State::SelectedHoveredFocused	= 9;
-	const State State::SelectedPressed			= 10;
-	const State State::SelectedPressedFocused	= 11;
-	const State State::Targeted					= 12;
-	const State State::TargetedFocused			= 13;
-	const State State::TargetedSelected			= 14;
-	const State State::TargetedSelectedFocused	= 15;
-	const State State::Disabled					= 16;
-	const State State::DisabledSelected			= 17;
+	const State State::Normal					= State(0);
+	const State State::Focused					= State(1);
+	const State State::Hovered					= State(2);
+	const State State::HoveredFocused			= State(3);
+	const State State::Pressed					= State(4);
+	const State State::PressedFocused			= State(5);
+	const State State::Selected					= State(6);
+	const State State::SelectedFocused			= State(7);
+	const State State::SelectedHovered			= State(8);
+	const State State::SelectedHoveredFocused	= State(9);
+	const State State::SelectedPressed			= State(10);
+	const State State::SelectedPressedFocused	= State(11);
+	const State State::Targeted					= State(12);
+	const State State::TargetedFocused			= State(13);
+	const State State::TargetedSelected			= State(14);
+	const State State::TargetedSelectedFocused	= State(15);
+	const State State::Disabled					= State(16);
+	const State State::DisabledSelected			= State(17);
 
 	
 }

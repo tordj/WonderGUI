@@ -34,7 +34,7 @@ namespace wg
 
 	class GfxDevice;
 	class Surface;
-	class NinePatch;
+	struct NinePatch;
 
 	//____ Util _________________________________________________________________
 

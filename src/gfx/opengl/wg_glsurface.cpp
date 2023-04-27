@@ -263,7 +263,7 @@ namespace wg
 
 			// Setup GL-texture
 
-            _setupGlTexture(m_pBlob->data(), m_pitch);
+            _setupGlTexture(pTempPixelBuffer, m_pitch);
 
 			//
 			
@@ -709,8 +709,8 @@ namespace wg
 	void GlSurface::_updateAlphaMap(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
 		PixelTools::extractAlphaChannel(m_pixelFormat, buffer.pixels, buffer.pitch,
-			{ buffer.rect.x + bufferRect.x,buffer.rect.y + bufferRect.y, bufferRect.w, bufferRect.h },
-			m_pAlphaMap, m_size.w, m_pPalette);	
+										{ bufferRect.x,bufferRect.y, bufferRect.w, bufferRect.h },
+										m_pAlphaMap + buffer.rect.y * m_size.w + buffer.rect.x, m_size.w, m_pPalette);
 	}
 
 	//____ _readBackTexture() ____________________________________________

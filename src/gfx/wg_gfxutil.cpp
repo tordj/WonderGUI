@@ -382,7 +382,7 @@ int Util::gcd(int a, int b)
 			type = GfxBase::defaultToSRGB() ? PixelFormat::BGR_8_sRGB : PixelFormat::BGR_8_linear;
 
 		if( type == PixelFormat::BGRX_8 )
-			type = GfxBase::defaultToSRGB() ? PixelFormat::BGRX_8_sRGB : PixelFormat::BGR_8_linear;
+			type = GfxBase::defaultToSRGB() ? PixelFormat::BGRX_8_sRGB : PixelFormat::BGRX_8_linear;
 
 		if( type == PixelFormat::BGRA_8 )
 			type = GfxBase::defaultToSRGB() ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
