@@ -867,9 +867,15 @@ bool WgScrollPanel::PositionContentInViewPixels( WgCoord posInContent, WgOrigo v
 
 void WgScrollPanel::ScrollIntoView( WgWidget * pWidget, const WgBorders& margin, const WgRect& viewSection )
 {
+	if( !m_bRubberBorder && !m_pScrollIntoViewChild && m_hoverScrollRemainsX == 0 && m_hoverScrollRemainsY == 0 )
+		_startReceiveTicks();
+
 	m_pScrollIntoViewChild = pWidget;
 	m_scrollIntoViewMargin = margin;
 	m_scrollIntoViewSection = viewSection;
+	
+	m_hoverScrollRemainsX = 0;
+	m_hoverScrollRemainsY = 0;
 }
 
 
@@ -1390,7 +1396,12 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 					}
 
 					if( intoViewScroll == WgCoord(0,0) )
+					{
 						m_pScrollIntoViewChild = nullptr;
+
+						if( !m_bRubberBorder && m_hoverScrollRemainsX == 0 && m_hoverScrollRemainsY == 0 )
+							_stopReceiveTicks();
+					}
 				}
 
 				// Combine distances (scroll the longest distance)
@@ -1497,7 +1508,7 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 
 				if( dirX == 0 && dirY == 0 )
 				{
-					if( !m_bRubberBorder )
+					if( !m_bRubberBorder && !m_pScrollIntoViewChild )
 					{
 						_stopReceiveTicks();
 						m_hoverScrollRemainsX = 0;
@@ -1506,7 +1517,7 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 				}
 				else if( m_hoverScrollX == 0 && m_hoverScrollY == 0 )
 				{
-						if( !m_bRubberBorder )
+						if( !m_bRubberBorder && !m_pScrollIntoViewChild )
 							_startReceiveTicks();
 				}
 
@@ -1524,7 +1535,7 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 			m_hoverScrollRemainsX = 0;
 			m_hoverScrollRemainsY = 0;
 
-			if( !m_bRubberBorder )
+			if( !m_bRubberBorder && !m_pScrollIntoViewChild )
 				_stopReceiveTicks();
 			break;
 		}
