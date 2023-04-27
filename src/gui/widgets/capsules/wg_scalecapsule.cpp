@@ -31,8 +31,6 @@ namespace wg
 	const TypeInfo ScaleCapsule::TYPEINFO = { "ScaleCapsule", &Capsule::TYPEINFO };
 
 
-
-
 	//____ create() _______________________________________________________________
 
 	ScaleCapsule_p ScaleCapsule::create() 
@@ -81,19 +79,18 @@ namespace wg
 
 	//____ setScale() ___________________________________________________________
 	/**
-	* @brief Explicitly set scale of child widget.
+	* @brief Explicitly set scale.
 	*
-	* Explicitly set the scale of child widget, overridding the scale provided by
-	* parent.
+	* Explicitly set the scale of this widget and indirectly of its children.
 	*
-	* @param scale Scale to be set or 0 to clear, returning child widget to the
+	* @param scale Scale to be set or 0 to clear, returning widget to the
 	*              scale determined by parent.
 	*
 	* Scale defines the size of a point, measured in 1/64ths of a pixel. Thus
 	* is 64 the default size where one point equals one pixel and 128 is a
 	* 200% zoom factor.
 	*
-	* Setting the scale on a container or RootWidget will propagate the scale
+	* Setting the scale on a ScaleCapsule or RootWidget will propagate the scale
 	* to all children that doesn't have an explicitly set scale.
 	*
 	*  @return True if scale was accepted.
@@ -125,58 +122,50 @@ namespace wg
 
 	spx ScaleCapsule::_matchingHeight(spx width, int scale) const
 	{
-		if (slot._widget())
-		{
-			SizeSPX padding = m_skin.contentPaddingSize(scale);
+		if (m_bScaleSet)
+			scale = m_scale;
 
-			return slot._widget()->_matchingHeight(width - padding.w, m_scaleAsSet > 0 ? m_scaleAsSet : scale) + padding.h;
-		}
-		else
-			return Widget::_matchingHeight(width, scale);
+		return Capsule::_matchingHeight(width, scale);
 	}
 
 	//____ _matchingWidth() ___________________________________________________________
 
 	spx ScaleCapsule::_matchingWidth(spx height, int scale) const
 	{
-		if (slot._widget())
-		{
-			SizeSPX padding = m_skin.contentPaddingSize(scale);
+		if (m_bScaleSet)
+			scale = m_scale;
 
-			return slot._widget()->_matchingWidth(height - padding.h, m_scaleAsSet > 0 ? m_scaleAsSet : scale) + padding.w;
-		}
-		else
-			return Widget::_matchingWidth(height, scale);
+		return Capsule::_matchingWidth(height, scale);
 	}
 
 	//____ _defaultSize() ___________________________________________________________
 
 	SizeSPX ScaleCapsule::_defaultSize(int scale) const
 	{
-		if (slot._widget())
-			return slot._widget()->_defaultSize(m_scaleAsSet > 0 ? m_scaleAsSet : scale) + m_skin.contentPaddingSize(scale);
+		if (m_bScaleSet)
+			scale = m_scale;
 
-		return Widget::_defaultSize(scale);
+		return Capsule::_defaultSize(scale);
 	}
 
 	//____ _minSize() ___________________________________________________________
 
 	SizeSPX ScaleCapsule::_minSize(int scale) const
 	{
-		if (slot._widget())
-			return slot._widget()->_minSize(m_scaleAsSet > 0 ? m_scaleAsSet : scale) + m_skin.contentPaddingSize(scale);
-		else
-			return Widget::_minSize(scale);
+		if (m_bScaleSet)
+			scale = m_scale;
+
+		return Capsule::_minSize(scale);
 	}
 
 	//____ _maxSize() ___________________________________________________________
 
 	SizeSPX ScaleCapsule::_maxSize(int scale) const
 	{
-		if (slot._widget())
-			return slot._widget()->_maxSize(m_scaleAsSet > 0 ? m_scaleAsSet : scale) + m_skin.contentPaddingSize(scale);
-		else
-			return Widget::_maxSize(scale);
+		if (m_bScaleSet)
+			scale = m_scale;
+
+		return Capsule::_maxSize(scale);
 	}
 
 
@@ -184,7 +173,10 @@ namespace wg
 
 	void ScaleCapsule::_resize(const SizeSPX& size, int scale)
 	{
-		//TODO: Implement!!!
+		if (m_bScaleSet)
+			scale = m_scale;
+
+		return Capsule::_resize(size, scale);
 	}
 
 
