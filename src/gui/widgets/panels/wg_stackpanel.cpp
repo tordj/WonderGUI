@@ -279,7 +279,7 @@ namespace wg
 			{
 				_requestRender(oldGeo);
 				_requestRender(newGeo);
-				pSlot->_setSize(newGeo.size());
+				pSlot->_setSize(newGeo.size(), m_scale);
 				pSlot->m_position = newGeo.pos();
 			}
 		};
@@ -299,7 +299,7 @@ namespace wg
 			{
 				_requestRender(oldGeo);
 				_requestRender(newGeo);
-				pSlot->_setSize(newGeo.size());
+				pSlot->_setSize(newGeo.size(), m_scale);
 				pSlot->m_position = newGeo.pos();
 			}
 		};
@@ -378,7 +378,7 @@ namespace wg
 			if (oldGeo != newGeo)
 			{
 				pSlot->m_position = newGeo.pos();
-				pSlot->_setSize(newGeo.size());
+				pSlot->_setSize(newGeo.size(), m_scale);
 				_requestRender(oldGeo);
 				_requestRender(newGeo);
 			}

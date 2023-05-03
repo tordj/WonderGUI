@@ -260,7 +260,7 @@ namespace wg
 		{
 			m_geo = geoSpx;
 			if (slot._widget())
-				slot._setSize(m_geo.size());
+				slot._setSize(m_geo.size(), m_scale);
 		}
 
 		return true;
@@ -630,7 +630,7 @@ namespace wg
 
 	void RootPanel::_childRequestResize(StaticSlot* pSlot)
 	{
-		slot._setSize(m_geo.size());
+		slot._setSize(m_geo.size(), m_scale);
 	}
 
 	//____ _childRequestFocus() __________________________________________________

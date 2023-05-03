@@ -284,7 +284,7 @@ namespace wg
 			}
 
 			if (pSlot->_widget()->_size() != childGeo.size())
-				pSlot->_setSize(childGeo);
+				pSlot->_setSize(childGeo, m_scale);
 		}
 		else
 		{

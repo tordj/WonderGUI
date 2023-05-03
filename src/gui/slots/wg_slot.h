@@ -148,7 +148,7 @@ namespace wg
 		inline SlotHolder * _holder() { return m_pHolder; }
 		inline const SlotHolder * _holder() const { return m_pHolder; }
 
-		inline void		_setSize( SizeSPX size, int scale = -1 ) const { m_pWidget->_resize(size, scale); }
+		inline void		_setSize( SizeSPX size, int scale ) const { m_pWidget->_resize(size, scale); }
 
 		Widget *		m_pWidget = nullptr;
 		SlotHolder *	m_pHolder;

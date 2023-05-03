@@ -84,8 +84,8 @@ namespace wg
 		protected:
 			Slot(SlotHolder * pHolder) : StaticSlot(pHolder) {}
 
-			inline void _setSize(SizeSPX size) { m_geo.setSize(size); StaticSlot::_setSize(size); }
-			inline void _setGeo(RectSPX geo) { m_geo = geo; StaticSlot::_setSize(geo.size()); }
+			inline void _setSize(SizeSPX size, int scale) { m_geo.setSize(size); StaticSlot::_setSize(size, scale); }
+			inline void _setGeo(RectSPX geo, int scale) { m_geo = geo; StaticSlot::_setSize(geo.size(), scale); }
 
 			RectSPX		m_geo;
 		};

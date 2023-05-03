@@ -280,7 +280,7 @@ namespace wg
 		}
 
 		if (bDoResize)
-			pSlot->_setSize(geo);
+			pSlot->_setSize(geo, m_scale);
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________

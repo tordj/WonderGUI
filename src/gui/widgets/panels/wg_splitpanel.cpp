@@ -168,11 +168,11 @@ namespace wg
 
 			slots[0].m_geo = firstChildGeo;
 			if( slots[0]._widget() )
-				slots[0]._setSize(firstChildGeo);
+				slots[0]._setSize(firstChildGeo, m_scale);
 
 			slots[1].m_geo = secondChildGeo;
 			if (slots[1]._widget())
-				slots[1]._setSize(secondChildGeo);
+				slots[1]._setSize(secondChildGeo, m_scale);
 
 			m_handleGeo = handleGeo;
 		}
@@ -330,11 +330,11 @@ namespace wg
 
 			slots[0].m_geo = firstChildGeo;
 			if( slots[0]._widget() )
-				slots[0]._setSize(firstChildGeo);
+				slots[0]._setSize(firstChildGeo, m_scale);
 
 			slots[1].m_geo = secondChildGeo;
 			if (slots[1]._widget())
-				slots[1]._setSize(secondChildGeo);
+				slots[1]._setSize(secondChildGeo, m_scale);
 
 			m_handleGeo = handleGeo;
 
@@ -682,7 +682,7 @@ namespace wg
 		//TODO: Implement better solution, should be able to adapt width !!!
 
 		auto p = static_cast<Slot*>(pSlot);
-		p->_setSize(p->m_geo);
+		p->_setSize(p->m_geo, m_scale);
 	}
 
 	//____ _prevChild() _______________________________________________________

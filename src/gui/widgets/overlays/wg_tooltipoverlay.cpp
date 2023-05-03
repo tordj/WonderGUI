@@ -165,7 +165,7 @@ namespace wg
 
 			//
 
-			m_tooltipSlot._setGeo({ align(tooltipPos), tooltipSize });
+			m_tooltipSlot._setGeo({ align(tooltipPos), tooltipSize }, m_scale);
 			_requestRender(m_tooltipSlot.m_geo);
 		}
 	}

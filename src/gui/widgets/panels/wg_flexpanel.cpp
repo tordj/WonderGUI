@@ -689,7 +689,7 @@ namespace wg
 		}
 
 		if (bForceResize || pSlot->_widget()->_size() != geo.size())
-			pSlot->_setSize(geo);
+			pSlot->_setSize(geo, m_scale);
 	}
 
 	//____ _sizeNeededForGeo() ________________________________________

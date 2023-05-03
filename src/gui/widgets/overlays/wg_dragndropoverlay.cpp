@@ -111,7 +111,7 @@ namespace wg
 			SizeSPX max = SizeSPX::max(pref, p->m_geo.size());
 
 			_requestRender(RectSPX::overlap({ 0,0,m_size }, { p->m_geo.pos(), max }));
-			p->_setSize(pref);
+			p->_setSize(pref, m_scale);
 		}
 	}
 
@@ -514,7 +514,7 @@ namespace wg
 			//TODO: Allow for tinted image.
 
 			m_dragSlot._setWidget(pImage);
-			m_dragSlot._setSize(sz);
+			m_dragSlot._setSize(sz, m_scale);
 		}
 
 		Overlay::_render(pDevice,_canvas,_window);

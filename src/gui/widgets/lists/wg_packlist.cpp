@@ -1323,7 +1323,7 @@ namespace wg
 
 		RectSPX geo;
 		_getChildGeo(geo, pSlot);
-		pSlot->_setSize(geo.size());
+		pSlot->_setSize(geo.size(), m_scale);
 	}
 
 	//____ _prevChild() __________________________________________________________
