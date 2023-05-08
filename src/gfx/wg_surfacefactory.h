@@ -77,4 +77,4 @@ namespace wg
 	//==============================================================================
 
 } // namespace wg
-#endif // WG_SURFACE_DOT_H
+#endif // WG_SURFACEFACTORY_DOT_H

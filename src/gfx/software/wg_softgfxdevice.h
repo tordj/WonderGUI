@@ -68,6 +68,7 @@ namespace wg
 		const CanvasInfo canvas(CanvasRef ref) const override;
 
 		SurfaceFactory_p	surfaceFactory() override;
+		WaveformFactory_p	waveformFactory() override;
 
 		//.____ State _________________________________________________
 
@@ -104,6 +105,9 @@ namespace wg
 
 		void	scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 }) override;
 		void	scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
+
+		void	drawWaveform(CoordSPX dest, Waveform * pWaveform ) override;
+		void	flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip) override;
 
 
 
@@ -394,6 +398,7 @@ namespace wg
 		//
 
 		SurfaceFactory_p	m_pSurfaceFactory;
+		WaveformFactory_p	m_pWaveformFactory;
 
 
 		// Members controlling render states

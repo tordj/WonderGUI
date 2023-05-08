@@ -26,6 +26,7 @@
 #include "testsuites/tintblittests.h"
 #include "testsuites/tintsegmenttests.h"
 #include "testsuites/wavetests.h"
+#include "testsuites/waveformtests.h"
 
 
 using namespace wg;
@@ -59,7 +60,7 @@ bool GfxDeviceTester::init( WonderApp::Visitor * pVisitor )
 {
 	m_pVisitor = pVisitor;
 
-	m_pWindow = pVisitor->createWindow({ .size = {800,700}, .title = "Font Generator" });
+	m_pWindow = pVisitor->createWindow({ .size = {800,700}, .title = "GfxDevice Tester" });
 
 	//
 	
@@ -516,6 +517,7 @@ void GfxDeviceTester::setup_tests()
 	add_testsuite(new CanvasLayerTests(), new CanvasLayerTests());
 //	add_testsuite(new RGB565BigEndianTests(), new RGB565BigEndianTests());	// Can only be handled by software rendering for now.
 	add_testsuite(new BlendFixedColorTests(), new BlendFixedColorTests());
+	add_testsuite(new WaveformTests(), new WaveformTests());
 
 	regen_testentries();
 }

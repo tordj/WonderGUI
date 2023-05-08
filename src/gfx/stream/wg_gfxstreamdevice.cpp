@@ -286,6 +286,20 @@ namespace wg
 		return m_pSurfaceFactory;
 	}
 
+	//____ waveformFactory() ______________________________________________________
+
+	WaveformFactory_p GfxStreamDevice::waveformFactory()
+	{
+		return nullptr;
+/*
+		if( !m_pWaveformFactory )
+			m_pWaveformFactory = GfxStreamWaveformFactory::create(m_pEncoder);
+
+		return m_pWaveformFactory;
+*/
+	}
+
+
     //____ setClipList() _________________________________________________________
 
     bool GfxStreamDevice::setClipList(int nRectangles, const RectSPX * pRectangles)
@@ -1029,6 +1043,19 @@ namespace wg
         _streamEdgeSamples( nEdgeStrips, nSegments-1, edgeStripPitch, pEdgeStrips );
     }
 
+	//____ drawWaveform() __________________________________________________________
+
+	void GfxStreamDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+	{
+		//TODO: Implement!!!
+	}
+
+	//____ flipDrawWaveform() ______________________________________________________
+
+	void GfxStreamDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip)
+	{
+		//TODO: Implement!!!
+	}
 
     //.____ blitNinePatch() ___________________________________________
 

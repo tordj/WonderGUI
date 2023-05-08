@@ -42,6 +42,8 @@
 #include <wg_surfacefileheader.h>
 #include <wg_surfacereader.h>
 #include <wg_surfacewriter.h>
+#include <wg_waveform.h>
+#include <wg_waveformfactory.h>
 
 
 #endif //WONDERGFX_DOT_H

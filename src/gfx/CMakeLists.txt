@@ -41,6 +41,10 @@ set( SOURCES
 	wg_surfacereader.h
 	wg_surfacewriter.cpp
 	wg_surfacewriter.h
+	wg_waveform.cpp
+	wg_waveform.h
+	wg_waveformfactory.cpp
+	wg_waveformfactory.h
 	wondergfx.h
 
 	c-api/wg_c_bitmapcache.cpp

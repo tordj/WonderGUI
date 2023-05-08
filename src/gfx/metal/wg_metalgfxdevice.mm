@@ -1456,6 +1456,20 @@ MetalGfxDevice::MetalGfxDevice()
         m_pExtrasBuffer[m_extrasOfs++] = radius.h;
     }
 
+	//____ drawWaveform() __________________________________________________________
+
+	void MetalGfxDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+	{
+		//TODO: Implement!!!
+	}
+
+	//____ flipDrawWaveform() ______________________________________________________
+
+	void MetalGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip)
+	{
+		//TODO: Implement!!!
+	}
+
 
     //____ _transformBlitSimple() ______________________________________________________
 

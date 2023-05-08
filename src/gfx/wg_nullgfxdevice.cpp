@@ -73,6 +73,14 @@ namespace wg
 		return SurfaceFactory_p();
 	}
 
+	//____ waveformFactory() ___________________________________________________
+
+	WaveformFactory_p NullGfxDevice::waveformFactory()
+	{
+		return WaveformFactory_p();
+	}
+
+
 	void NullGfxDevice::_canvasWasChanged()
 	{
 	}
@@ -90,6 +98,10 @@ namespace wg
 	}
 
 	void NullGfxDevice::drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness)
+	{
+	}
+
+	void NullGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip)
 	{
 	}
 

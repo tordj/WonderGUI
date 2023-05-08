@@ -42,7 +42,7 @@ namespace wg
 
 	// Transforms for flipping movement over SOURCE when blitting
 
-	static const int blitFlipTransforms[GfxFlip_size][2][2] = { { 1,0,0,1 },			// Normal
+	const int GfxDevice::s_blitFlipTransforms[GfxFlip_size][2][2] = { { 1,0,0,1 },			// Normal
 																{ -1,0,0,1 },			// FlipX
 																{ 1,0,0,-1 },			// FlipY
 																{ 0,-1,1,0 },			// Rot90
@@ -55,7 +55,7 @@ namespace wg
 																{ 0,-1,-1,0 },			// Rot270FlipX
 																{ 0,1,1,0 } };			// Rot270FlipY
 
-	static const int blitFlipOffsets[GfxFlip_size][2] = {	{ 0,0 },				// Normal
+	const int GfxDevice::s_blitFlipOffsets[GfxFlip_size][2] = {	{ 0,0 },				// Normal
 															{ 1,0 },				// FlipX
 															{ 0,1 },				// FlipY
 															{ 0,1 },				// Rot90
@@ -703,14 +703,14 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		_transformBlitSimple({ dest, m_pBlitSource->pixelSize()*64 }, { 0,0 }, blitFlipTransforms[0]);
+		_transformBlitSimple({ dest, m_pBlitSource->pixelSize()*64 }, { 0,0 }, s_blitFlipTransforms[0]);
 	}
 
 	void GfxDevice::blit(CoordSPX dest, const RectSPX& src)
 	{
 		assert(m_pBlitSource != nullptr);
 
-		_transformBlitSimple({ dest, src.size() }, src.pos(), blitFlipTransforms[0]);
+		_transformBlitSimple({ dest, src.size() }, src.pos(), s_blitFlipTransforms[0]);
 	}
 
 	//____ flipBlit() _________________________________________________________
@@ -721,29 +721,29 @@ namespace wg
 
 		SizeSPX srcSize  = m_pBlitSource->pixelSize()*64;
 
-		spx ofsX = srcSize.w * blitFlipOffsets[(int)flip][0];
-		spx ofsY = srcSize.h * blitFlipOffsets[(int)flip][1];
+		spx ofsX = srcSize.w * s_blitFlipOffsets[(int)flip][0];
+		spx ofsY = srcSize.h * s_blitFlipOffsets[(int)flip][1];
 
 		SizeSPX dstSize = srcSize;
-		if (blitFlipTransforms[(int)flip][0][0] == 0)
+		if (s_blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		_transformBlitSimple({ dest, dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
+		_transformBlitSimple({ dest, dstSize }, { ofsX, ofsY }, s_blitFlipTransforms[(int)flip]);
 	}
 
 	void GfxDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip)
 	{
 		assert(m_pBlitSource != nullptr);
 
-		spx ofsX = src.x + src.w * blitFlipOffsets[(int)flip][0];
-		spx ofsY = src.y + src.h * blitFlipOffsets[(int)flip][1];
+		spx ofsX = src.x + src.w * s_blitFlipOffsets[(int)flip][0];
+		spx ofsY = src.y + src.h * s_blitFlipOffsets[(int)flip][1];
 
 		SizeSPX dstSize = src.size();
-		if (blitFlipTransforms[(int)flip][0][0] == 0)
+		if (s_blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
 
-        _transformBlitSimple({ dest, dstSize }, {ofsX, ofsY}, blitFlipTransforms[(int)flip]);
+        _transformBlitSimple({ dest, dstSize }, {ofsX, ofsY}, s_blitFlipTransforms[(int)flip]);
 	}
 
 
@@ -768,7 +768,7 @@ namespace wg
 		{
 			// This is a 1:1 blit, let's use the fast alternative.
 
-			_transformBlitSimple( dest, src.pos(), blitFlipTransforms[0]);
+			_transformBlitSimple( dest, src.pos(), s_blitFlipTransforms[0]);
 		}
 		else
 		{
@@ -838,8 +838,8 @@ namespace wg
 			else
 				scaleY = srcH / ((dest.h/64)-1);
 
-			ofsX = (binalInt(src.x)  * (BINAL_MUL/64)) + srcW * blitFlipOffsets[(int)flip][0];
-			ofsY = (binalInt(src.y)  * (BINAL_MUL/64)) + srcH * blitFlipOffsets[(int)flip][1];
+			ofsX = (binalInt(src.x)  * (BINAL_MUL/64)) + srcW * s_blitFlipOffsets[(int)flip][0];
+			ofsY = (binalInt(src.y)  * (BINAL_MUL/64)) + srcH * s_blitFlipOffsets[(int)flip][1];
 		}
 		else
 		{
@@ -849,16 +849,16 @@ namespace wg
 			scaleX = (srcW / (dest.w/64)) -1;
 			scaleY = (srcH / (dest.h/64)) -1;
 
-			ofsX = (binalInt(src.x) * (BINAL_MUL/64)) + (srcW - scaleX) * blitFlipOffsets[(int)flip][0];
-			ofsY = (binalInt(src.y) * (BINAL_MUL/64)) + (srcH - scaleY) * blitFlipOffsets[(int)flip][1];
+			ofsX = (binalInt(src.x) * (BINAL_MUL/64)) + (srcW - scaleX) * s_blitFlipOffsets[(int)flip][0];
+			ofsY = (binalInt(src.y) * (BINAL_MUL/64)) + (srcH - scaleY) * s_blitFlipOffsets[(int)flip][1];
 		}
 
 		binalInt	mtx[2][2];
 
-		mtx[0][0] = scaleX * blitFlipTransforms[(int)flip][0][0];
-		mtx[0][1] = scaleY * blitFlipTransforms[(int)flip][0][1];
-		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
-		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
+		mtx[0][0] = scaleX * s_blitFlipTransforms[(int)flip][0][0];
+		mtx[0][1] = scaleY * s_blitFlipTransforms[(int)flip][0][1];
+		mtx[1][0] = scaleX * s_blitFlipTransforms[(int)flip][1][0];
+		mtx[1][1] = scaleY * s_blitFlipTransforms[(int)flip][1][1];
 
 		_transformBlitComplex(dest, { ofsX, ofsY }, mtx);
 	}
@@ -954,7 +954,7 @@ namespace wg
 			return;
 		}
 
-		_transformBlitSimple( dest, shift, blitFlipTransforms[0]);
+		_transformBlitSimple( dest, shift, s_blitFlipTransforms[0]);
 	}
 
 	//____ flipTile() _________________________________________________________
@@ -971,17 +971,17 @@ namespace wg
 
 		SizeSPX srcSize = m_pBlitSource->pixelSize()*64;
 
-		spx ofsX = srcSize.w * blitFlipOffsets[(int)flip][0];
-		spx ofsY = srcSize.h * blitFlipOffsets[(int)flip][1];
+		spx ofsX = srcSize.w * s_blitFlipOffsets[(int)flip][0];
+		spx ofsY = srcSize.h * s_blitFlipOffsets[(int)flip][1];
 
-		ofsX += shift.x * blitFlipTransforms[(int)flip][0][0] + shift.y * blitFlipTransforms[(int)flip][1][0];
-		ofsY += shift.x * blitFlipTransforms[(int)flip][0][1] + shift.y * blitFlipTransforms[(int)flip][1][1];
+		ofsX += shift.x * s_blitFlipTransforms[(int)flip][0][0] + shift.y * s_blitFlipTransforms[(int)flip][1][0];
+		ofsY += shift.x * s_blitFlipTransforms[(int)flip][0][1] + shift.y * s_blitFlipTransforms[(int)flip][1][1];
 
 		SizeSPX dstSize = dest.size();
-		if (blitFlipTransforms[(int)flip][0][0] == 0)
+		if (s_blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		_transformBlitSimple({ dest.pos(), dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
+		_transformBlitSimple({ dest.pos(), dstSize }, { ofsX, ofsY }, s_blitFlipTransforms[(int)flip]);
 	}
 
 	//____ scaleTile() _________________________________________________________
@@ -1022,14 +1022,14 @@ namespace wg
 
 		binalInt		mtx[2][2];
 
-		mtx[0][0] = blitFlipTransforms[(int)flip][0][0] * (BINAL_MUL / scale);
-		mtx[0][1] = blitFlipTransforms[(int)flip][0][1] * (BINAL_MUL / scale);
-		mtx[1][0] = blitFlipTransforms[(int)flip][1][0] * (BINAL_MUL / scale);
-		mtx[1][1] = blitFlipTransforms[(int)flip][1][1] * (BINAL_MUL / scale);
+		mtx[0][0] = s_blitFlipTransforms[(int)flip][0][0] * (BINAL_MUL / scale);
+		mtx[0][1] = s_blitFlipTransforms[(int)flip][0][1] * (BINAL_MUL / scale);
+		mtx[1][0] = s_blitFlipTransforms[(int)flip][1][0] * (BINAL_MUL / scale);
+		mtx[1][1] = s_blitFlipTransforms[(int)flip][1][1] * (BINAL_MUL / scale);
 
 		BinalSize srcSize = BinalSize(m_pBlitSource->pixelSize()) * BINAL_MUL;
-		binalInt ofsX = (srcSize.w-BINAL_MUL) * blitFlipOffsets[(int)flip][0];
-		binalInt ofsY = (srcSize.h-BINAL_MUL) * blitFlipOffsets[(int)flip][1];
+		binalInt ofsX = (srcSize.w-BINAL_MUL) * s_blitFlipOffsets[(int)flip][0];
+		binalInt ofsY = (srcSize.h-BINAL_MUL) * s_blitFlipOffsets[(int)flip][1];
 
 		ofsX += (shift.x * mtx[0][0] + shift.y * mtx[1][0]) / 64;
 		ofsY += (shift.x * mtx[0][1] + shift.y * mtx[1][1]) / 64;
@@ -1223,14 +1223,14 @@ namespace wg
 
 	void GfxDevice::drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill )
 	{
-		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)GfxFlip::Normal] );
+		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, s_blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawWave() ______________________________________________________
 
 	void GfxDevice::flipDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip )
 	{
-		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)flip] );
+		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, s_blitFlipTransforms[(int)flip] );
 	}
 
 	//____ _transformDrawWave() ______________________________________________________
@@ -1972,7 +1972,7 @@ namespace wg
 			if (nSegments == 1)
 				fill(quadCanvas[quad], pColors[0]);
 			else
-				_transformDrawSegments(quadCanvas[quad]*64, nSegments, pColors, quadW+1, pEdges, edgePitch, TintMode::Flat, blitFlipTransforms[(int)quadFlip[quad]]);
+				_transformDrawSegments(quadCanvas[quad]*64, nSegments, pColors, quadW+1, pEdges, edgePitch, TintMode::Flat, s_blitFlipTransforms[(int)quadFlip[quad]]);
 		}
 
 		if( hubBufferSize != 0 )
@@ -1985,15 +1985,23 @@ namespace wg
 
 	void GfxDevice::drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
 	{
-		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)GfxFlip::Normal] );
+		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, s_blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawSegments() ______________________________________________________
 
 	void GfxDevice::flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
 	{
-		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)flip] );
+		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, s_blitFlipTransforms[(int)flip] );
 	}
+
+	//____ drawWaveform() __________________________________________________________
+
+	void GfxDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+	{
+		flipDrawWaveform(dest,pWaveform,GfxFlip::Normal);
+	}
+
 
 	//____ _clipListWasChanged() _________________________________________________
 

@@ -100,6 +100,8 @@ namespace wg
 		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64 ) override;
 		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, spx thickness = 64 ) override;
 
+		void	drawWaveform(CoordSPX dest, Waveform * pWaveform ) override;
+		void	flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip) override;
 
 
 	protected:

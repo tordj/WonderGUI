@@ -1422,6 +1422,21 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = radius.h;
 	}
 
+	//____ drawWaveform() __________________________________________________________
+
+	void GlGfxDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+	{
+		//TODO: Implement!!!
+	}
+
+	//____ flipDrawWaveform() ______________________________________________________
+
+	void GlGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip)
+	{
+		//TODO: Implement!!!
+	}
+
+
 	//____ _transformBlitSimple() ______________________________________________________
 
 	void GlGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX src, const int simpleTransform[2][2])

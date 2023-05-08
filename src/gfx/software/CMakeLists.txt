@@ -27,6 +27,10 @@ set(SOURCES
 	wg_softsurface.h
 	wg_softsurfacefactory.cpp
 	wg_softsurfacefactory.h
+	wg_softwaveform.cpp
+	wg_softwaveform.h
+	wg_softwaveformfactory.cpp
+	wg_softwaveformfactory.h
 )
 
 set(INCDIRS

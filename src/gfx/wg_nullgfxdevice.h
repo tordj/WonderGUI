@@ -56,6 +56,7 @@ namespace wg
 		const CanvasInfo canvas(CanvasRef ref) const override;
 
 		SurfaceFactory_p		surfaceFactory() override;
+		WaveformFactory_p		waveformFactory() override;
 
 		//.____ Rendering ________________________________________________
 
@@ -64,6 +65,8 @@ namespace wg
 		void    plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors) override;
 
 		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness) override;
+
+		void	flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip) override;
 
 
 	protected:

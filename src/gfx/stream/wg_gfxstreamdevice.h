@@ -60,7 +60,8 @@ namespace wg
 
 		void		encodeCanvasList();
 		
-		SurfaceFactory_p surfaceFactory() override;
+		SurfaceFactory_p	surfaceFactory() override;
+		WaveformFactory_p	waveformFactory() override;
 
 
 		//.____ State _________________________________________________
@@ -144,7 +145,13 @@ namespace wg
         void    drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat ) override;
         void    flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat) override;
 
+		// Draw waveform methods
+		
+		void	drawWaveform(CoordSPX dest, Waveform * pWaveform ) override;
+		void	flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip) override;
 
+		
+		
         // Special draw/blit methods
 
         void    blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale) override;
@@ -173,7 +180,9 @@ namespace wg
 		std::vector<CanvasInfo>	m_definedCanvases;
 
 		SurfaceFactory_p	m_pSurfaceFactory;
+		WaveformFactory_p	m_pWaveformFactory;
 		GfxStreamEncoder_p	m_pEncoder;
+		
 		bool	m_bRendering;
 	};
 } // namespace wg

@@ -361,6 +361,16 @@ namespace wg
 		Canvas_32
 	};
 
+	//____ WaveOrigo _____________________________________________________________
+
+	enum class WaveOrigo
+	{
+		Top,				// Origo at top, increasing values goes down.
+		MiddleUp,			// Origo at middle, increasing values goes up.
+		MiddleDown,			// Origo at middle, increasing values goes down.
+		Bottom				// Origo at bottom, increasing values goes up.
+	};
+
 	//____ DataSegment ________________________________________________________
 
 	struct DataSegment

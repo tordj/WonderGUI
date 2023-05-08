@@ -99,6 +99,9 @@ namespace wg
 		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness) override;
         void    drawLine(CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness) override;
 
+		void	drawWaveform(CoordSPX dest, Waveform * pWaveform ) override;
+		void	flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip) override;
+
 
 	protected:
 		MetalGfxDevice();

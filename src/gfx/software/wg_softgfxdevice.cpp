@@ -22,6 +22,8 @@
 
 #include <wg_softgfxdevice.h>
 #include <wg_softsurfacefactory.h>
+#include <wg_softwaveformfactory.h>
+#include <wg_softwaveform.h>
 #include <wg_gfxutil.h>
 #include <cmath>
 #include <algorithm>
@@ -435,6 +437,17 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		return m_pSurfaceFactory;
 	}
+
+	//____ waveformFactory() _______________________________________________________
+
+	WaveformFactory_p SoftGfxDevice::waveformFactory()
+	{
+		if( !m_pWaveformFactory )
+			m_pWaveformFactory = SoftWaveformFactory::create();
+
+		return m_pWaveformFactory;
+	}
+
 
 	//____ setTintColor() _____________________________________________________
 
@@ -2257,6 +2270,50 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		GfxDevice::scaleFlipTile(dest, scale, flip, shift);
 		m_bTileSource = false;
 	}
+
+	//____ drawWaveform() __________________________________________________________
+
+	void SoftGfxDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+	{
+		if( pWaveform->typeInfo() != SoftWaveform::TYPEINFO )
+		{
+			//TODO: Throw an error.
+			return;
+		}
+		
+		auto pWave = static_cast<SoftWaveform*>(pWaveform);
+
+		
+		_transformDrawSegments( {dest, pWave->m_size*64}, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
+							   pWave->m_size.w+1, pWave->m_pSamples, pWave->m_nbSegments-1, pWave->m_tintMode,
+							   s_blitFlipTransforms[(int)GfxFlip::Normal] );
+	}
+
+	//____ flipDrawWaveform() __________________________________________________________
+
+	void SoftGfxDevice::flipDrawWaveform(CoordSPX destPos, Waveform * pWaveform, GfxFlip flip)
+	{
+		if( pWaveform->typeInfo() != SoftWaveform::TYPEINFO )
+		{
+			//TODO: Throw an error.
+			return;
+		}
+		
+		auto pWave = static_cast<SoftWaveform*>(pWaveform);
+		
+		const int (&transform)[2][2] = s_blitFlipTransforms[(int)flip];
+		
+		RectSPX dest;
+		dest.x = destPos.x;
+		dest.y = destPos.y;
+		dest.w = pWave->m_size.w * abs(transform[0][0]) + pWave->m_size.h * abs(transform[1][0]);
+		dest.h = pWave->m_size.w * abs(transform[0][1]) + pWave->m_size.h * abs(transform[1][1]);
+		
+		_transformDrawSegments( dest, pWave->m_nbSegments, pWave->m_pRenderColors,
+							   pWave->m_nbRenderSegments-1, pWave->m_pSamples, pWave->m_nbSegments-1, pWave->m_tintMode,
+							   transform );
+	}
+
 
 	//____ _canvasWasChanged() ________________________________________________
 
