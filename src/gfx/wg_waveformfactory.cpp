@@ -19,34 +19,19 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WONDERGFXSTREAM_DOT_H
-#define WONDERGFXSTREAM_DOT_H
-#pragma once
+
+#include <wg_waveformfactory.h>
+
+namespace wg
+{
+
+	const TypeInfo WaveformFactory::TYPEINFO = { "WaveformFactory", &Object::TYPEINFO };
 
 
-#include <wg_gfxstream.h>
-#include <wg_gfxstreambuffer.h>
-#include <wg_gfxstreamdecoder.h>
-#include <wg_gfxstreamdevice.h>
-#include <wg_gfxstreamencoder.h>
-#include <wg_gfxstreamfastencoder.h>
-#include <wg_gfxstreamlogger.h>
-#include <wg_gfxstreamloopwrapper.h>
-#include <wg_gfxstreamplayer.h>
-#include <wg_gfxstreampump.h>
-#include <wg_gfxstreamreader.h>
-#include <wg_gfxstreamsink.h>
-#include <wg_gfxstreamsource.h>
-#include <wg_gfxstreamsplitter.h>
-#include <wg_gfxstreamsurface.h>
-#include <wg_gfxstreamsurfacefactory.h>
-#include <wg_gfxstreamtrimencoder.h>
-#include <wg_gfxstreamwrapper.h>
-#include <wg_gfxstreamwriter.h>
-#include <wg_gfxstreamwaveform.h>
-#include <wg_gfxstreamwaveformfactory.h>
+	//____ typeInfo() _________________________________________________________
 
-
-
-
-#endif //WONDERGFXSTREAM_DOT_H
+	const TypeInfo& WaveformFactory::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+}

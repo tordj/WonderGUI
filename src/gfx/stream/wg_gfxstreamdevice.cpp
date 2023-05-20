@@ -23,6 +23,8 @@
 #include <wg_gfxstreamdevice.h>
 #include <wg_gfxstreamsurface.h>
 #include <wg_gfxstreamsurfacefactory.h>
+#include <wg_gfxstreamwaveform.h>
+#include <wg_gfxstreamwaveformfactory.h>
 #include <wg_gfxbase.h>
 #include <assert.h>
 #include <math.h>
@@ -290,13 +292,10 @@ namespace wg
 
 	WaveformFactory_p GfxStreamDevice::waveformFactory()
 	{
-		return nullptr;
-/*
 		if( !m_pWaveformFactory )
 			m_pWaveformFactory = GfxStreamWaveformFactory::create(m_pEncoder);
 
 		return m_pWaveformFactory;
-*/
 	}
 
 

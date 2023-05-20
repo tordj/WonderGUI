@@ -458,7 +458,14 @@ namespace wg
 		CanvasList = 55,
 		
 		SetFixedBlendColor = 56,
-		CreateSurface = 57
+		CreateSurface = 57,
+		
+		CreateWaveform = 58,
+		SetWaveformRenderSegments = 59,
+		BeginWaveformUpdate = 60,
+		WaveformSamples = 61,
+		EndWaveformUpdate = 62,
+		DeleteWaveform = 63
 	};
 
 	typedef uint8_t GfxChunkFlags;

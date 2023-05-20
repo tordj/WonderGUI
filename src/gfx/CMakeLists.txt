@@ -107,6 +107,10 @@ set( SOURCES
 	stream/wg_gfxstreamsurfacefactory.h
 	stream/wg_gfxstreamtrimencoder.cpp
 	stream/wg_gfxstreamtrimencoder.h	
+	stream/wg_gfxstreamwaveform.cpp
+	stream/wg_gfxstreamwaveform.h
+	stream/wg_gfxstreamwaveformfactory.cpp
+	stream/wg_gfxstreamwaveformfactory.h
 	stream/wg_gfxstreamwrapper.cpp
 	stream/wg_gfxstreamwrapper.h
 	stream/wg_gfxstreamwriter.cpp
