@@ -74,6 +74,10 @@ set( SOURCES
 	c-api/wg_c_surfacereader.h
 	c-api/wg_c_surfacewriter.cpp
 	c-api/wg_c_surfacewriter.h
+	c-api/wg_c_waveform.cpp
+	c-api/wg_c_waveform.h
+	c-api/wg_c_waveformfactory.cpp
+	c-api/wg_c_waveformfactory.h
 	c-api/wondergfx_c.h
 
 	stream/wg_gfxstream.h

@@ -234,6 +234,16 @@ typedef enum
 	WG_CANVAS_32
 } wg_canvasRef;
 
+//____ wg_waveOrigo _____________________________________________________________
+
+typedef enum
+{
+	WG_WAVEORIGO_TOP = 0,				// Origo at top, increasing values goes down.
+	WG_WAVEORIGO_MIDDLE_UP = 1,			// Origo at middle, increasing values goes up.
+	WG_WAVEORIGO_MIDDLE_DOWN = 2,		// Origo at middle, increasing values goes down.
+	WG_WAVEORIGO_BOTTOM = 3				// Origo at bottom, increasing values goes up.
+} wg_waveOrigo;
+
 //____ wg_gfxChunkId ____________________________________________________
 
 typedef enum

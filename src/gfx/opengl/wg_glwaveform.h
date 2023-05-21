@@ -7,9 +7,9 @@
 
 							-----------
 
-  The WonderGUI Graphics Toolkit is free software; you can redistribute
+  The WonderGUI Graphics Toolkit is free Glware; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
-  License as published by the Free Software Foundation; either
+  License as published by the Free Glware Foundation; either
   version 2 of the License, or (at your option) any later version.
 
 							-----------
@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_SOFTWAVEFORM_DOT_H
-#define WG_SOFTWAVEFORM_DOT_H
+#ifndef WG_GLWAVEFORM_DOT_H
+#define WG_GLWAVEFORM_DOT_H
 #pragma once
 
 #include <wg_waveform.h>
@@ -29,20 +29,20 @@
 namespace wg
 {
 
-	class SoftWaveform;
-	typedef StrongPtr<SoftWaveform> SoftWaveform_p;
-	typedef WeakPtr<SoftWaveform> SoftWaveform_wp;
+	class GlWaveform;
+	typedef StrongPtr<GlWaveform> GlWaveform_p;
+	typedef WeakPtr<GlWaveform> GlWaveform_wp;
 
-	class SoftWaveform : public Waveform
+	class GlWaveform : public Waveform
 	{
-		friend class SoftGfxDevice;
+		friend class GlGfxDevice;
 	public:
 
 		//.____ Creation __________________________________________
 		
-		static SoftWaveform_p	create( const Blueprint& blueprint );
-		static SoftWaveform_p	create( const Waveform::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
-		static SoftWaveform_p	create( const Waveform::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
+		static GlWaveform_p	create( const Blueprint& blueprint );
+		static GlWaveform_p	create( const Waveform::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
+		static GlWaveform_p	create( const Waveform::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
 
 
     	//.____ Identification __________________________________________
@@ -67,8 +67,8 @@ namespace wg
 
 	protected:
 
-		SoftWaveform(const Blueprint& bp);
-		~SoftWaveform();
+		GlWaveform(const Blueprint& bp);
+		~GlWaveform();
 
 		void 	_importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch );
@@ -88,4 +88,4 @@ namespace wg
 
 
 } // namespace wg
-#endif // WG_SOFTWAVEFORM_DOT_H
+#endif // WG_GLWAVEFORM_DOT_H

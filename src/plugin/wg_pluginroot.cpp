@@ -238,10 +238,12 @@ namespace wg
 		if (slot.isEmpty())
 			return;
 
-		wg_obj hFactory = PluginCalls::gfxDevice->surfaceFactory(device);
+		wg_obj hSurfFactory = PluginCalls::gfxDevice->surfaceFactory(device);
+		wg_obj hWaveFactory = PluginCalls::gfxDevice->waveformFactory(device);
 
-		auto pFactory = PluginSurfaceFactory::create(hFactory);
-		auto pDevice = PluginGfxDevice::create(device, pFactory);
+		auto pSurfFactory = PluginSurfaceFactory::create(hSurfFactory);
+		auto pWaveFactory = PluginWaveformFactory::create(hWaveFactory);
+		auto pDevice = PluginGfxDevice::create(device, pSurfFactory, pWaveFactory);
 
 		slot._widget()->_render(pDevice, { _canvas.x, _canvas.y, _canvas.w, _canvas.h }, { _window.x, _window.y, _window.w, _window.h });
 	}

@@ -38,6 +38,11 @@ inline GfxDevice* getPtr(wg_obj obj) {
 	return static_cast<GfxDevice*>(reinterpret_cast<Object*>(obj));
 }
 
+inline Waveform* getWaveformPtr(wg_obj obj) {
+	return static_cast<Waveform*>(reinterpret_cast<Object*>(obj));
+}
+
+
 const wg_typeInfo* wg_deviceSurfaceType(wg_obj device)
 {
 	auto& typeInfo = getPtr(device)->surfaceType();
@@ -68,6 +73,12 @@ wg_obj	wg_canvasLayers(wg_obj device)
 wg_obj wg_surfaceFactory(wg_obj device)
 {
 	return getPtr(device)->surfaceFactory().rawPtr();
+}
+
+
+wg_obj wg_waveformFactory(wg_obj device)
+{
+	return getPtr(device)->waveformFactory().rawPtr();
 }
 
 
@@ -132,7 +143,7 @@ void wg_setTintColor(wg_obj device, wg_color color)
 }
 
 
-const wg_color wg_getTintColor(wg_obj device)
+wg_color wg_getTintColor(wg_obj device)
 {
 	auto color = getPtr(device)->tintColor();
 	return { color.b, color.g, color.r, color.a };
@@ -406,6 +417,18 @@ void wg_drawSegments(wg_obj device, const wg_rectSPX* dest, int nSegments, const
 void wg_flipDrawSegments(wg_obj device, const wg_rectSPX* dest, int nSegments, const wg_color* pSegmentColors, int nEdgeStrips, const int* pEdgeStrips, int edgeStripPitch, wg_gfxFlip flip, wg_tintMode tintMode)
 {
 	getPtr(device)->flipDrawSegments(*(const RectSPX*)dest, nSegments, (HiColor*)pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, (GfxFlip) flip, (TintMode)tintMode);
+}
+
+
+void wg_drawWaveform(wg_obj device, wg_coordSPX dest, wg_obj waveform)
+{
+	getPtr(device)->drawWaveform({ dest.x, dest.y }, getWaveformPtr(waveform));
+}
+
+
+void wg_flipDrawWaveform(wg_obj device, wg_coordSPX dest, wg_obj waveform, wg_gfxFlip flip)
+{
+	getPtr(device)->flipDrawWaveform({ dest.x, dest.y }, getWaveformPtr(waveform), (GfxFlip) flip );
 }
 
 

@@ -23,6 +23,7 @@
 #include <wg_plugincalls.h>
 #include <wg_plugingfxdevice.h>
 #include <wg_pluginsurface.h>
+#include <wg_pluginwaveform.h>
 #include <wg_pluginsurfacefactory.h>
 #include <wg_plugincanvaslayers.h>
 
@@ -39,21 +40,22 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	PluginGfxDevice_p PluginGfxDevice::create( wg_obj object, PluginSurfaceFactory * pFactory )
+	PluginGfxDevice_p PluginGfxDevice::create( wg_obj object, PluginSurfaceFactory * pSurfaceFactory, PluginWaveformFactory * pWaveformFactory )
 	{
-		PluginGfxDevice_p p(new PluginGfxDevice( object, pFactory ));
+		PluginGfxDevice_p p(new PluginGfxDevice( object, pSurfaceFactory, pWaveformFactory ));
 		return p;
 	}
 
 
 	//____ constructor _____________________________________________________________
 
-	PluginGfxDevice::PluginGfxDevice( wg_obj object, PluginSurfaceFactory * pFactory )
+	PluginGfxDevice::PluginGfxDevice( wg_obj object, PluginSurfaceFactory * pSurfaceFactory, PluginWaveformFactory * pWaveformFactory )
 	{
         PluginCalls::object->retain(object);
 		m_cDevice = object;
-        m_pSurfaceFactory = pFactory;
-		m_bRendering = false;
+        m_pSurfaceFactory = pSurfaceFactory;
+        m_pWaveformFactory = pWaveformFactory;
+        m_bRendering = false;
 		m_bIsProxyDevice = true;
 	}
 
@@ -99,6 +101,13 @@ namespace wg
 	{
         return m_pSurfaceFactory;
 	}
+
+    //____ waveformFactory() ______________________________________________________
+
+    WaveformFactory_p PluginGfxDevice::waveformFactory()
+    {
+        return m_pWaveformFactory;
+    }
 
     //____ setClipList() _________________________________________________________
 
@@ -484,6 +493,20 @@ namespace wg
     void PluginGfxDevice::flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
     {
         PluginCalls::gfxDevice->flipDrawSegments(m_cDevice, (wg_rectSPX*)&dest, nSegments, (const wg_color*)pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, (wg_gfxFlip) flip, (wg_tintMode)tintMode);
+    }
+
+    //____ drawWaveform() _____________________________________________________
+
+    void PluginGfxDevice::drawWaveform(CoordSPX dest, Waveform* pWaveform)
+    {
+        PluginCalls::gfxDevice->drawWaveform(m_cDevice, { dest.x,dest.y }, static_cast<PluginWaveform*>(pWaveform)->cObject());
+    }
+
+    //____ flipDrawWaveform() _____________________________________________________
+
+    void PluginGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform* pWaveform, GfxFlip flip)
+    {
+        PluginCalls::gfxDevice->flipDrawWaveform(m_cDevice, { dest.x,dest.y }, static_cast<PluginWaveform*>(pWaveform)->cObject(), (wg_gfxFlip) flip);
     }
 
     //.____ blitNinePatch() ___________________________________________________

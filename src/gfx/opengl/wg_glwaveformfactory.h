@@ -7,9 +7,9 @@
 
 							-----------
 
-  The WonderGUI Graphics Toolkit is free software; you can redistribute
+  The WonderGUI Graphics Toolkit is free Glware; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
-  License as published by the Free Software Foundation; either
+  License as published by the Free Glware Foundation; either
   version 2 of the License, or (at your option) any later version.
 
 							-----------
@@ -20,32 +20,31 @@
 
 =========================================================================*/
 
-#ifndef WG_GFXSTREAMWAVEFORMFACTORY_DOT_H
-#define	WG_GFXSTREAMWAVEFORMFACTORY_DOT_H
+#ifndef WG_GLWAVEFORMFACTORY_DOT_H
+#define	WG_GLWAVEFORMFACTORY_DOT_H
 #pragma once
 
 
 #include <wg_waveformfactory.h>
-#include <wg_gfxstreamencoder.h>
 
 namespace wg
 {
 
 
-	class GfxStreamWaveformFactory;
-	typedef	StrongPtr<GfxStreamWaveformFactory>	GfxStreamWaveformFactory_p;
-	typedef	WeakPtr<GfxStreamWaveformFactory>	GfxStreamWaveformFactory_wp;
+	class GlWaveformFactory;
+	typedef	StrongPtr<GlWaveformFactory>	GlWaveformFactory_p;
+	typedef	WeakPtr<GlWaveformFactory>	GlWaveformFactory_wp;
 
 
-	//____ GfxStreamWaveformFactory _______________________________________________________
+	//____ GlWaveformFactory _______________________________________________________
 
-	class GfxStreamWaveformFactory : public WaveformFactory
+	class GlWaveformFactory : public WaveformFactory
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamWaveformFactory_p	create( GfxStreamEncoder * pEncoder ) { return GfxStreamWaveformFactory_p(new GfxStreamWaveformFactory()); }
+		static GlWaveformFactory_p	create() { return GlWaveformFactory_p(new GlWaveformFactory()); }
 
 
 		//.____ Identification _________________________________________________
@@ -60,16 +59,14 @@ namespace wg
 		Waveform_p createWaveform( const Waveform::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0) override;
 
 	protected:
-		virtual ~GfxStreamWaveformFactory() {}
-		
-		GfxStreamEncoder_p	m_pEncoder;
+		virtual ~GlWaveformFactory() {}
 	};
 
 
 	//==============================================================================
 
 } // namespace wg
-#endif // WG_GFXSTREAMWAVEFORMFACTORY_DOT_H
+#endif // WG_GLWAVEFORMFACTORY_DOT_H
 
 
 

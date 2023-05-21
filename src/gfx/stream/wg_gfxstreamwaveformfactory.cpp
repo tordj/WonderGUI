@@ -43,12 +43,12 @@ namespace wg
 		return GfxStreamWaveform::create(m_pEncoder, blueprint);
 	}	
 
-	Waveform_p GfxStreamWaveformFactory::createWaveform( const Waveform::Blueprint& blueprint, WaveOrigo origo, float * pSamples, int edges, int edgePitch, int samplePitch )
+	Waveform_p GfxStreamWaveformFactory::createWaveform( const Waveform::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch, int samplePitch )
 	{
 		return GfxStreamWaveform::create(m_pEncoder, blueprint, origo, pSamples, edges, edgePitch, samplePitch);
 	}
 
-	Waveform_p GfxStreamWaveformFactory::createWaveform( const Waveform::Blueprint& blueprint, WaveOrigo origo, spx * pSamples, int edges, int edgePitch, int samplePitch )
+	Waveform_p GfxStreamWaveformFactory::createWaveform( const Waveform::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch, int samplePitch )
 	{
 		return GfxStreamWaveform::create(m_pEncoder, blueprint, origo, pSamples, edges, edgePitch, samplePitch);
 	}

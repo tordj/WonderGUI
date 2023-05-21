@@ -7,9 +7,9 @@
 
 							-----------
 
-  The WonderGUI Graphics Toolkit is free software; you can redistribute
+  The WonderGUI Graphics Toolkit is free Glware; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
-  License as published by the Free Software Foundation; either
+  License as published by the Free Glware Foundation; either
   version 2 of the License, or (at your option) any later version.
 
 							-----------
@@ -20,25 +20,25 @@
 
 =========================================================================*/
 
-#include <wg_softwaveform.h>
+#include <wg_glwaveform.h>
 
 namespace wg
 {
 
-const TypeInfo SoftWaveform::TYPEINFO = { "SoftWaveform", &Waveform::TYPEINFO };
+const TypeInfo GlWaveform::TYPEINFO = { "GlWaveform", &Waveform::TYPEINFO };
 
 
 //____ create() ______________________________________________________________
 
-SoftWaveform_p	SoftWaveform::create( const Blueprint& blueprint )
+GlWaveform_p	GlWaveform::create( const Blueprint& blueprint )
 {
 	if( !_validateBlueprint(blueprint) )
 		return nullptr;
 	
-	return SoftWaveform_p( new SoftWaveform(blueprint) );
+	return GlWaveform_p( new GlWaveform(blueprint) );
 }
 
-SoftWaveform_p SoftWaveform::create( const Waveform::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch, int samplePitch)
+GlWaveform_p GlWaveform::create( const Waveform::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch, int samplePitch)
 {
 	if( !_validateBlueprint(blueprint) )
 		return nullptr;
@@ -46,7 +46,7 @@ SoftWaveform_p SoftWaveform::create( const Waveform::Blueprint& blueprint, WaveO
 	if(edges >= blueprint.segments )
 		return nullptr;
 
-	auto p = SoftWaveform_p( new SoftWaveform(blueprint) );
+	auto p = GlWaveform_p( new GlWaveform(blueprint) );
 
 	p->_importSamples(origo, pSamples, 0, edges, 0, p->m_size.w+1, edgePitch, samplePitch);
 	p->m_nbRenderSegments = edges+1;
@@ -54,7 +54,7 @@ SoftWaveform_p SoftWaveform::create( const Waveform::Blueprint& blueprint, WaveO
 	return p;
 }
 
-SoftWaveform_p SoftWaveform::create( const Waveform::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch, int samplePitch)
+GlWaveform_p GlWaveform::create( const Waveform::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch, int samplePitch)
 {
 	if( !_validateBlueprint(blueprint) )
 		return nullptr;
@@ -62,7 +62,7 @@ SoftWaveform_p SoftWaveform::create( const Waveform::Blueprint& blueprint, WaveO
 	if(edges >= blueprint.segments )
 		return nullptr;
 	
-	auto p = SoftWaveform_p( new SoftWaveform(blueprint) );
+	auto p = GlWaveform_p( new GlWaveform(blueprint) );
 
 	p->_importSamples(origo, pSamples, 0, edges, 0, p->m_size.w+1, edgePitch, samplePitch);
 	p->m_nbRenderSegments = edges+1;
@@ -72,7 +72,7 @@ SoftWaveform_p SoftWaveform::create( const Waveform::Blueprint& blueprint, WaveO
 
 //____ constructor ___________________________________________________________
 
-SoftWaveform::SoftWaveform(const Blueprint& bp) : Waveform(bp)
+GlWaveform::GlWaveform(const Blueprint& bp) : Waveform(bp)
 {
 	// Analyze gradients to figure out our tint mode and amount of render colors.
 	
@@ -201,21 +201,21 @@ SoftWaveform::SoftWaveform(const Blueprint& bp) : Waveform(bp)
 
 //____ destructor ____________________________________________________________
 
-SoftWaveform::~SoftWaveform()
+GlWaveform::~GlWaveform()
 {
 	delete [] m_pBuffer;
 }
 
 //____ typeInfo() ____________________________________________________________
 
-const TypeInfo& SoftWaveform::typeInfo(void) const
+const TypeInfo& GlWaveform::typeInfo(void) const
 {
 	return TYPEINFO;
 }
 
 //____ importSamples() _________________________________________________________
 
-bool SoftWaveform::importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
+bool GlWaveform::importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( pSource == nullptr || edgeBegin < 0 || edgeBegin > edgeEnd || edgeEnd > (m_nbSegments-1) || sampleBegin < 0 || sampleBegin > sampleEnd || sampleEnd > (m_size.w+1) )
@@ -225,7 +225,7 @@ bool SoftWaveform::importSamples( WaveOrigo origo, const spx * pSource, int edge
 	return true;
 }
 
-bool SoftWaveform::importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
+bool GlWaveform::importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( pSource == nullptr || edgeBegin < 0 || edgeBegin > edgeEnd || edgeEnd > (m_nbSegments-1) || sampleBegin < 0 || sampleBegin > sampleEnd || sampleEnd > (m_size.w+1) )
@@ -238,7 +238,7 @@ bool SoftWaveform::importSamples( WaveOrigo origo, const float * pSource, int ed
 
 //____ exportSamples() _________________________________________________________
 
-bool SoftWaveform::exportSamples( WaveOrigo origo, spx * pDestination, int edgeBegin, int edgeEnd,
+bool GlWaveform::exportSamples( WaveOrigo origo, spx * pDestination, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	//TODO: Implement!!!
@@ -246,7 +246,7 @@ bool SoftWaveform::exportSamples( WaveOrigo origo, spx * pDestination, int edgeB
 	return false;
 }
 
-bool  SoftWaveform::exportSamples( WaveOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
+bool  GlWaveform::exportSamples( WaveOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	//TODO: Implement!!!
@@ -256,7 +256,7 @@ bool  SoftWaveform::exportSamples( WaveOrigo origo, float * pDestination, int ed
 
 //____ _importSamples() ________________________________________________________
 
-void SoftWaveform::_importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
+void GlWaveform::_importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( samplePitch == 0 )
@@ -292,7 +292,7 @@ void SoftWaveform::_importSamples( WaveOrigo origo, const spx * pSource, int edg
 	}
 }
 
-void SoftWaveform::_importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
+void GlWaveform::_importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( samplePitch == 0 )

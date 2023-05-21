@@ -39,6 +39,8 @@ namespace wg
 	wg_streamreader_calls*		PluginCalls::streamReader	= nullptr;
 	wg_surface_calls*			PluginCalls::surface		= nullptr;
 	wg_surfacefactory_calls*	PluginCalls::surfaceFactory = nullptr;
+	wg_waveform_calls*			PluginCalls::waveform		= nullptr;
+	wg_waveformfactory_calls*	PluginCalls::waveformFactory = nullptr;
 	wg_hostbridge_calls*		PluginCalls::hostBridge		= nullptr;
 	wg_plugincapsule_calls*		PluginCalls::pluginCapsule	= nullptr;
 
@@ -88,6 +90,12 @@ namespace wg
 		if (pCallsCollection->pSurfaceFactory->structSize < sizeof(wg_surfacefactory_calls))
 			goto	error_too_old_abi;
 
+		if (pCallsCollection->pWaveform->structSize < sizeof(wg_waveform_calls))
+			goto	error_too_old_abi;
+
+		if (pCallsCollection->pWaveformFactory->structSize < sizeof(wg_waveformfactory_calls))
+			goto	error_too_old_abi;
+
 		if (pCallsCollection->pHostBridge->structSize < sizeof(wg_hostbridge_calls))
 			goto	error_too_old_abi;
 
@@ -106,6 +114,8 @@ namespace wg
 		streamPump		= pCallsCollection->pStreamPump;
 		surface			= pCallsCollection->pSurface;
 		surfaceFactory	= pCallsCollection->pSurfaceFactory;
+		waveform		= pCallsCollection->pWaveform;
+		waveformFactory = pCallsCollection->pWaveformFactory;
 		hostBridge		= pCallsCollection->pHostBridge;
 		pluginCapsule	= pCallsCollection->pPluginCapsule;
 

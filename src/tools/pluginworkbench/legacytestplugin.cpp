@@ -18,7 +18,7 @@ using namespace std;
 
 extern "C" {
 	DLLEXPORTPREFIX int		init( wg_plugin_interface * pInterface, void * pRealHostBridge,
-								  wg_obj hPluginCapsule, wg_obj hGfxDevice, wg_obj hSurfaceFactory );
+								  wg_obj hPluginCapsule, wg_obj hGfxDevice, wg_obj hSurfaceFactory, wg_obj hWaveformFactory );
 	DLLEXPORTPREFIX int		update(void);
 	DLLEXPORTPREFIX void	exitX(void);
 
@@ -36,12 +36,13 @@ WgPluginRoot * 	g_pPluginRoot;
 
 //____ init() _________________________________________________________________
 
-DLLEXPORTPREFIX int init( wg_plugin_interface * pInterface, void * pRealHostBridge, wg_obj hPluginCapsule, wg_obj hGfxDevice, wg_obj hSurfaceFactory )
+DLLEXPORTPREFIX int init( wg_plugin_interface * pInterface, void * pRealHostBridge, wg_obj hPluginCapsule, wg_obj hGfxDevice, wg_obj hSurfaceFactory, wg_obj hWaveformFactory )
 {
 	WgPluginBase::init(pInterface, pRealHostBridge);
 	
 	auto pSurfaceFactory 	= PluginSurfaceFactory::create(hSurfaceFactory);
-	auto pGfxDevice 		= PluginGfxDevice::create(hGfxDevice,pSurfaceFactory);
+	auto pWaveformFactory	= PluginWaveformFactory::create(hWaveformFactory);
+	auto pGfxDevice 		= PluginGfxDevice::create(hGfxDevice,pSurfaceFactory, pWaveformFactory);
 	
 	WgPluginBase::setDefaultSurfaceFactory(pSurfaceFactory);
 	WgPluginBase::setDefaultGfxDevice(pGfxDevice);

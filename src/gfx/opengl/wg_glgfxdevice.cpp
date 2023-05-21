@@ -28,6 +28,8 @@
 #include <wg_glgfxdevice.h>
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
+#include <wg_glwaveform.h>
+#include <wg_glwaveformfactory.h>
 #include <wg_gfxbase.h>
 #include <wg_gfxutil.h>
 
@@ -414,6 +416,17 @@ namespace wg
 
 		return m_pSurfaceFactory;
 	}
+
+	//____ waveformFactory() ______________________________________________________
+
+	WaveformFactory_p GlGfxDevice::waveformFactory()
+	{
+		if (!m_pWaveformFactory)
+			m_pWaveformFactory = GlWaveformFactory::create();
+
+		return m_pWaveformFactory;
+	}
+
 
 	//____ setDefaultCanvas() ___________________________________________
 

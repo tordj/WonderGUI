@@ -36,6 +36,7 @@
 #include <wg_c_font.h>
 #include <wg_c_gfxstreamreader.h>
 #include <wg_c_gfxdevice.h>
+#include <wg_c_waveform.h>
 
 
 #ifdef __cplusplus
@@ -175,6 +176,7 @@ typedef struct wg_gfxdevice_calls_struct
 	wg_canvasInfo		(*getCanvasRef)(wg_obj device, wg_canvasRef ref);
 	wg_obj				(*canvasLayers)(wg_obj device);
 	wg_obj				(*surfaceFactory)(wg_obj device);
+	wg_obj				(*waveformFactory)(wg_obj device);
 	int					(*maxSegments)();
 	wg_sizeSPX			(*canvasSize)(wg_obj device);
 	int					(*setClipList)(wg_obj device, int nRectangles, const wg_rectSPX* pRectangles);
@@ -185,7 +187,7 @@ typedef struct wg_gfxdevice_calls_struct
 	int					(*clipListSize)(wg_obj device);
 	const wg_rectSPX*	(*clipBounds)(wg_obj device);
 	void				(*setTintColor)(wg_obj device, wg_color color);
-	const wg_color		(*getTintColor)(wg_obj device);
+	wg_color			(*getTintColor)(wg_obj device);
 	void				(*setTintGradient)(wg_obj device, const wg_rectSPX* rect, const wg_gradient* gradient);
 	void				(*clearTintGradient)(wg_obj device);
 	int					(*setBlendMode)(wg_obj device, wg_blendMode blendMode);
@@ -230,6 +232,8 @@ typedef struct wg_gfxdevice_calls_struct
 	void				(*drawPieChart)(wg_obj device, const wg_rectSPX* canvas, float start, int nSlices, const float* pSliceSizes, const wg_color* pSliceColors, float hubSize, wg_color hubColor, wg_color backColor, int bRectangular);
 	void				(*drawSegments)(wg_obj device, const wg_rectSPX* dest, int nSegments, const wg_color* pSegmentColors, int nEdgeStrips, const int* pEdgeStrips, int edgeStripPitch, wg_tintMode tintMode);
 	void				(*flipDrawSegments)(wg_obj device, const wg_rectSPX* dest, int nSegments, const wg_color* pSegmentColors, int nEdgeStrips, const int* pEdgeStrips, int edgeStripPitch, wg_gfxFlip flip, wg_tintMode tintMode);
+	void				(*drawWaveform)(wg_obj device, wg_coordSPX dest, wg_obj waveform);
+	void				(*flipDrawWaveform)(wg_obj device, wg_coordSPX dest, wg_obj waveform, wg_gfxFlip flip);
 	void				(*blitNinePatch)(wg_obj device, const wg_rectSPX* dstRect, const wg_borderSPX* dstFrame, const wg_ninePatch* patch, int scale);
 
 } wg_gfxdevice_calls;
@@ -378,6 +382,41 @@ typedef struct wg_surfacefactory_calls_struct
 } wg_surfacefactory_calls;
 
 
+//____ wg_waveform_calls ______________________________________________________
+
+typedef struct wg_waveform_calls_struct
+{
+	int					structSize;
+
+	wg_sizeI			(*waveformPixelSize)(wg_obj waveform);
+	int					(*setRenderSegments)(wg_obj waveform, int nSegments);
+	int					(*getRenderSegments)(wg_obj waveform);
+	wg_color			(*waveformColor)(wg_obj waveform, int segment);
+	wg_gradient			(*waveformGradient)(wg_obj waveform, int segment);
+	int					(*waveformSegments)(wg_obj waveform);
+	int					(*waveformSamples)(wg_obj waveform);
+	int 				(*importSpxSamples)(wg_obj waveform, wg_waveOrigo origo, const wg_spx* pSource, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
+	int 				(*importFloatSamples)(wg_obj waveform, wg_waveOrigo origo, const float* pSource, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
+	int 				(*exportSpxSamples)(wg_obj waveform, wg_waveOrigo origo, wg_spx* pDestination, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
+	int 				(*exportFloatSamples)(wg_obj waveform, wg_waveOrigo origo, float* pDestination, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
+
+} wg_waveform_calls;
+
+
+//____ wg_waveformfactory_calls ________________________________________________
+
+typedef struct wg_waveformfactory_calls_struct
+{
+	int					structSize;
+
+	wg_obj				(*createWaveform)(wg_obj factory, const wg_waveformBP* blueprint);
+	wg_obj				(*createWaveformFromFloats)(wg_obj factory, const wg_waveformBP* blueprint, wg_waveOrigo origo, const float* pSamples, int edges, int edgePitch, int samplePitch);
+	wg_obj				(*createWaveformFromSpx)(wg_obj factory, const wg_waveformBP* blueprint, wg_waveOrigo origo, const wg_spx* pSamples, int edges, int edgePitch, int samplePitch);
+
+} wg_waveformfactory_calls;
+
+
+
 //____ wg_plugincapsule_calls __________________________________________________
 
 typedef	struct wg_plugincapsule_calls_struct
@@ -419,6 +458,8 @@ typedef struct wg_plugin_interface_struct
 	wg_streamreader_calls *		pStreamReader;
 	wg_surface_calls *			pSurface;
 	wg_surfacefactory_calls *	pSurfaceFactory;
+	wg_waveform_calls*			pWaveform;
+	wg_waveformfactory_calls*	pWaveformFactory;
 	wg_hostbridge_calls *		pHostBridge;
 	wg_plugincapsule_calls *	pPluginCapsule;
 

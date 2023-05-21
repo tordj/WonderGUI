@@ -59,6 +59,9 @@ namespace wg
 		static void					setDefaultSurfaceFactory( SurfaceFactory * pFactory );
 		static inline SurfaceFactory_p	defaultSurfaceFactory() { return s_pDefaultSurfaceFactory; };
 
+		static void					setDefaultWaveformFactory(WaveformFactory* pFactory);
+		static inline WaveformFactory_p	defaultWaveformFactory() { return s_pDefaultWaveformFactory; };
+
 		static void					setDefaultGfxDevice( GfxDevice * pDevice );
 		static inline GfxDevice_p	defaultGfxDevice() { return s_pDefaultGfxDevice; };
 
@@ -73,6 +76,8 @@ namespace wg
 		static bool					s_bSRGB;
 		
 		static SurfaceFactory_p		s_pDefaultSurfaceFactory;
+		static WaveformFactory_p	s_pDefaultWaveformFactory;
+
 		static GfxDevice_p			s_pDefaultGfxDevice;
 
 		static BitmapCache_p		s_pDefaultBitmapCache;

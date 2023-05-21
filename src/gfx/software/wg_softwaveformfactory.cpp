@@ -46,12 +46,12 @@ namespace wg
 		return SoftWaveform::create(blueprint);
 	}	
 
-	Waveform_p SoftWaveformFactory::createWaveform( const Waveform::Blueprint& blueprint, WaveOrigo origo, float * pSamples, int edges, int edgePitch, int samplePitch )
+	Waveform_p SoftWaveformFactory::createWaveform( const Waveform::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch, int samplePitch )
 	{
 		return SoftWaveform::create(blueprint, origo, pSamples, edges, edgePitch, samplePitch);
 	}
 
-	Waveform_p SoftWaveformFactory::createWaveform( const Waveform::Blueprint& blueprint, WaveOrigo origo, spx * pSamples, int edges, int edgePitch, int samplePitch )
+	Waveform_p SoftWaveformFactory::createWaveform( const Waveform::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch, int samplePitch )
 	{
 		return SoftWaveform::create(blueprint, origo, pSamples, edges, edgePitch, samplePitch);
 	}

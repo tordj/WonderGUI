@@ -67,6 +67,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		SurfaceFactory_p	surfaceFactory() override;
+		WaveformFactory_p	waveformFactory() override;
 
 		bool	setDefaultCanvas(SizeSPX size, int scale = 64);
 
@@ -175,6 +176,7 @@ namespace wg
 		void	_writeTintInfo();
 
 		SurfaceFactory_p	m_pSurfaceFactory = nullptr;
+		WaveformFactory_p	m_pWaveformFactory = nullptr;
 
 		float	m_lineThicknessTable[17];
 

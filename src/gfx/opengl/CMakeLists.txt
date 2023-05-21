@@ -9,6 +9,10 @@ set(SOURCES
 	wg_glsurface.h
 	wg_glsurfacefactory.cpp
 	wg_glsurfacefactory.h
+	wg_glwaveform.cpp
+	wg_glwaveform.h
+	wg_glwaveformfactory.cpp
+	wg_glwaveformfactory.h
 )
 
 set(INCDIRS

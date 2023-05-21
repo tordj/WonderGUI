@@ -34,6 +34,7 @@ namespace wg
 	bool				GfxBase::s_bSRGB = true;
 
 	SurfaceFactory_p	GfxBase::s_pDefaultSurfaceFactory;
+	WaveformFactory_p	GfxBase::s_pDefaultWaveformFactory;
 	GfxDevice_p			GfxBase::s_pDefaultGfxDevice;
 
 	BitmapCache_p		GfxBase::s_pDefaultBitmapCache;
@@ -82,6 +83,7 @@ namespace wg
 
 		s_pDefaultGfxDevice 		= nullptr;
 		s_pDefaultSurfaceFactory 	= nullptr;
+		s_pDefaultWaveformFactory	= nullptr;
 
 		if( s_pDefaultBitmapCache )
 		{
@@ -110,6 +112,13 @@ namespace wg
 	void GfxBase::setDefaultSurfaceFactory( SurfaceFactory * pFactory )
 	{
 		s_pDefaultSurfaceFactory = pFactory;
+	}
+
+	//____ setDefaultWaveformFactory() ____________________________________________
+
+	void GfxBase::setDefaultWaveformFactory(WaveformFactory* pFactory)
+	{
+		s_pDefaultWaveformFactory = pFactory;
 	}
 
 	//____ setDefaultGfxDevice() _________________________________________________

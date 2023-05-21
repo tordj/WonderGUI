@@ -42,8 +42,8 @@ namespace wg
 		//.____ Creation __________________________________________
 		
 		static GfxStreamWaveform_p	create( GfxStreamEncoder * pEncoder, const Blueprint& blueprint );
-		static GfxStreamWaveform_p	create( GfxStreamEncoder * pEncoder, const Waveform::Blueprint& blueprint, WaveOrigo origo, float * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
-		static GfxStreamWaveform_p	create( GfxStreamEncoder * pEncoder, const Waveform::Blueprint& blueprint, WaveOrigo origo, spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
+		static GfxStreamWaveform_p	create( GfxStreamEncoder * pEncoder, const Waveform::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
+		static GfxStreamWaveform_p	create( GfxStreamEncoder * pEncoder, const Waveform::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
 
 
     	//.____ Identification __________________________________________

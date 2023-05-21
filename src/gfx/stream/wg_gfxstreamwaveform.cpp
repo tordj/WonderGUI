@@ -43,7 +43,8 @@ GfxStreamWaveform_p	GfxStreamWaveform::create( GfxStreamEncoder * pEncoder, cons
 	return p;
 }
 
-GfxStreamWaveform_p GfxStreamWaveform::create( GfxStreamEncoder * pEncoder, const Waveform::Blueprint& blueprint, WaveOrigo origo, float * pSamples, int edges, int edgePitch, int samplePitch)
+GfxStreamWaveform_p GfxStreamWaveform::create( GfxStreamEncoder * pEncoder, const Waveform::Blueprint& blueprint, WaveOrigo origo, 
+												const float * pSamples, int edges, int edgePitch, int samplePitch)
 {
 	if( !pEncoder )
 		return nullptr;
@@ -62,7 +63,8 @@ GfxStreamWaveform_p GfxStreamWaveform::create( GfxStreamEncoder * pEncoder, cons
 	return p;
 }
 
-GfxStreamWaveform_p GfxStreamWaveform::create( GfxStreamEncoder * pEncoder, const Waveform::Blueprint& blueprint, WaveOrigo origo, spx * pSamples, int edges, int edgePitch, int samplePitch)
+GfxStreamWaveform_p GfxStreamWaveform::create( GfxStreamEncoder * pEncoder, const Waveform::Blueprint& blueprint, WaveOrigo origo, 
+												const spx * pSamples, int edges, int edgePitch, int samplePitch)
 {
 	if( !pEncoder )
 		return nullptr;

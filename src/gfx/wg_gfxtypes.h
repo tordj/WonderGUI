@@ -363,7 +363,7 @@ namespace wg
 
 	//____ WaveOrigo _____________________________________________________________
 
-	enum class WaveOrigo
+	enum class WaveOrigo			//.autoExtras
 	{
 		Top,				// Origo at top, increasing values goes down.
 		MiddleUp,			// Origo at middle, increasing values goes up.

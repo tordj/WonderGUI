@@ -21,6 +21,7 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectI& canvas, WonderApp::Visitor * pAppVisitor)
 	{
+
 		m_pClockFace = pAppVisitor->loadSurface( "resources/clockface_2500.png", pDevice->surfaceFactory(), { .buffered = true, .sampleMethod = SampleMethod::Bilinear } );
 		if (!m_pClockFace)
 			return false;
@@ -35,6 +36,7 @@ public:
 
 		RectI	copySource = RectI(m_pClockFace->pixelSize()).center({ 400,400 });
 		m_pAlphaOnly->copy({ 0,0 },m_pClockFace, copySource );
+
 
 		return true;
 	}

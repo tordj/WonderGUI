@@ -41,7 +41,7 @@ namespace wg
 	{
 	public:
 
-		const static int maxSegments = 16;
+		const static int maxSegments = 16;			// We keep this global for now. Might never need to restrict it more.
 		
 		struct Blueprint
 		{
@@ -57,7 +57,23 @@ namespace wg
 		const TypeInfo&     typeInfo(void) const override;
 		const static TypeInfo   TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		inline SizeI	pixelSize() const { return m_size; }
+
+		//.____ Appearance ____________________________________________________
+
+		virtual bool	setRenderSegments(int nSegments);
+		inline int		renderSegments() const { return m_nbRenderSegments; }
+
+		virtual HiColor	color(int segment) const;
+		virtual Gradient gradient(int segment) const;
+
 		//.____ Content _______________________________________________________
+
+		inline int		segments() const { return m_nbSegments; }
+
+		inline int		samples() const { return m_size.w + 1; }
 
 		virtual bool 	importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) = 0;
@@ -71,18 +87,6 @@ namespace wg
 		virtual bool 	exportSamples( WaveOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) = 0;
 
-		virtual bool	setRenderSegments(int nSegments);
-		inline int		renderSegments() const { return m_nbRenderSegments; }
-
-		
-		inline int		segments() const { return m_nbSegments; }
-
-		inline int		samples() const { return m_size.w+1; }
-		
-		HiColor			color(int segment) const;
-		Gradient		gradient(int segment) const;
-
-		SizeI			pixelSize() const { return m_size; }
 		
 	protected:
 

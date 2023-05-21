@@ -27,6 +27,7 @@
 
 #include <wg_gfxdevice.h>
 #include <wg_pluginsurfacefactory.h>
+#include <wg_pluginwaveformfactory.h>
 
 typedef void* wg_obj;
 
@@ -43,7 +44,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static PluginGfxDevice_p	create( wg_obj hDevice, PluginSurfaceFactory * pSurfaceFactory );
+		static PluginGfxDevice_p	create( wg_obj hDevice, PluginSurfaceFactory * pSurfaceFactory, PluginWaveformFactory * pWaveformFactory );
 
 		//.____ Identification __________________________________________
 
@@ -58,6 +59,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		SurfaceFactory_p surfaceFactory() override;
+        WaveformFactory_p waveformFactory() override;
 
 
 		//.____ State _________________________________________________
@@ -149,6 +151,8 @@ namespace wg
         void    drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat ) override;
         void    flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat) override;
 
+        void	drawWaveform(CoordSPX dest, Waveform* pWaveform);
+        void	flipDrawWaveform(CoordSPX dest, Waveform* pWaveform, GfxFlip flip);
 
         // Special draw/blit methods
 
@@ -156,7 +160,7 @@ namespace wg
 
  
 	protected:
-		PluginGfxDevice( wg_obj object, PluginSurfaceFactory * pFactory );
+		PluginGfxDevice( wg_obj object, PluginSurfaceFactory * pSurfaceFactory, PluginWaveformFactory * pWaveformFactory );
 		~PluginGfxDevice();
 
         bool    _beginCanvasUpdate( CanvasRef canvasRef, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;
@@ -172,7 +176,9 @@ namespace wg
         wg_obj  m_cDevice;
 
 		PluginSurfaceFactory_p	m_pSurfaceFactory;
-		bool	m_bRendering;
+        PluginWaveformFactory_p	m_pWaveformFactory;
+
+        bool	m_bRendering;
 	};
 } // namespace wg
 #endif //WG_PLUGINGFXDEVICE_DOT_H

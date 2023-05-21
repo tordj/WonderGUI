@@ -40,6 +40,7 @@ add_executable(gfxdevicetester
 
 target_include_directories(gfxdevicetester PRIVATE
 	${WAPP_INCDIRS}
+	${WGSOFTGFX_INCDIRS}
 )
 
 target_link_directories(gfxdevicetester PRIVATE 
