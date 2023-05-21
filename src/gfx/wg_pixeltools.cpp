@@ -1277,11 +1277,8 @@ static void copy_RGBA_8_to_RGB_555BE(const uint8_t* _pSrc, uint8_t* _pDst, int a
 	}
 }
 
-static void copy_RGBA_8_to_Alpha_8(const uint8_t* _pSrc, uint8_t* _pDst, int amount)
+static void copy_RGBA_8_to_Alpha_8(const uint8_t* pSrc, uint8_t* pDst, int amount)
 {
-	auto pSrc = (uint32_t*)_pSrc;
-	auto pDst = (uint16_t*)_pDst;
-
 	for (int i = 0; i < amount; i++)
 	{
 		pSrc += 3;
@@ -1348,8 +1345,8 @@ static bool twoStepCopyToChunky(int width, int height, const uint8_t* pSrc, int 
 			pReadFunc(pSrc, buffer, widthLeft, pTab1, pTab2);
 			pSrc += srcPixelBits / 8 * widthLeft;
 
-			pWriteFunc(buffer, pDst, 64);
-			pDst += dstPixelBits * 8;
+			pWriteFunc(buffer, pDst, widthLeft);
+			pDst += dstPixelBits / 8 * widthLeft;
 		}
 
 		pSrc += srcPitchAdd;
@@ -2241,7 +2238,6 @@ static bool copyToChunkyDestination(int width, int height, const uint8_t* pSrc, 
 	auto& srcDesc = Util::pixelFormatToDescription(srcFmt);
 	auto& dstDesc = Util::pixelFormatToDescription(dstFmt);
 
-
 	if (srcFmt == dstFmt)
 	{
 		// We can do a straight memcopy
@@ -2256,7 +2252,7 @@ static bool copyToChunkyDestination(int width, int height, const uint8_t* pSrc, 
 		}
 		return true;
 	}
-	else if ( srcDesc.colorSpace == dstDesc.colorSpace && (srcFmt == PixelFormat::BGRA_8_linear || srcFmt == PixelFormat::BGRA_8_sRGB ||
+	else if ( (srcDesc.colorSpace == dstDesc.colorSpace || dstFmt == PixelFormat::Alpha_8) && (srcFmt == PixelFormat::BGRA_8_linear || srcFmt == PixelFormat::BGRA_8_sRGB ||
 		srcFmt == PixelFormat::BGRX_8_linear || srcFmt == PixelFormat::BGRX_8_sRGB) )
 	{
 		// We can do a one step process
