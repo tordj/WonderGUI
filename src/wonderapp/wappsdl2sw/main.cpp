@@ -132,9 +132,6 @@ Surface_p generateWindowSurface(SDL_Window* pWindow, int widht, int height);
 
 float				g_scale;
 
-GfxDevice_p			g_pGfxDevice;
-SurfaceFactory_p	g_pSurfaceFactory;
-
 MyHostBridge *		g_pHostBridge = nullptr;
 
 std::vector<MyWindow_wp>	g_windows;
@@ -339,9 +336,6 @@ bool init_wondergui()
 
 void exit_wondergui()
 {
-	g_pGfxDevice = nullptr;
-	g_pSurfaceFactory = nullptr;
-
 	Base::exit();
 	delete g_pHostBridge;
 	g_pHostBridge = nullptr;
@@ -1072,7 +1066,7 @@ MyWindow_p MyWindow::create(const Blueprint& blueprint)
 	if (pWindowSurface == nullptr)
 		return nullptr;
 
-	auto pRootPanel = RootPanel::create(pWindowSurface, g_pGfxDevice);
+	auto pRootPanel = RootPanel::create(pWindowSurface, nullptr);
 
 	MyWindow_p pWindow = new MyWindow(blueprint.title, pRootPanel, geo, pSDLWindow);
 
@@ -1086,7 +1080,7 @@ MyWindow_p MyWindow::create(const Blueprint& blueprint)
 
 //____ MyWindow constructor ___________________________________________________
 
-MyWindow::MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo, SDL_Window* pSDLWindow)
+MyWindow::MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::RectI& geo, SDL_Window* pSDLWindow)
 	: Window(pRootPanel, geo)
 {
 	m_pSDLWindow = pSDLWindow;

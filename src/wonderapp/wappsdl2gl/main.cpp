@@ -130,9 +130,6 @@ MouseButton translateSDLMouseButton(Uint8 button);
 
 float				g_scale;
 
-GlGfxDevice_p		g_pGfxDevice;
-SurfaceFactory_p	g_pSurfaceFactory;
-
 MyHostBridge *		g_pHostBridge = nullptr;
 
 std::vector<MyWindow_wp>	g_windows;
@@ -336,9 +333,6 @@ bool init_wondergui()
 
 void exit_wondergui()
 {
-	g_pGfxDevice = nullptr;
-	g_pSurfaceFactory = nullptr;
-
 	Base::exit();
 	delete g_pHostBridge;
 	g_pHostBridge = nullptr;
@@ -362,7 +356,7 @@ int eventWatcher(void * pNull, SDL_Event* pEvent)
 
 				int width = pEvent->window.data1;
 				int height = pEvent->window.data2;
-				g_pGfxDevice->setDefaultCanvas(SizeSPX(width * 64, height * 64), 64);
+				wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(SizeSPX(width * 64, height * 64), 64);
 				pWindow->rootPanel()->setCanvas(CanvasRef::Default);
 				pWindow->render();
 				break;
@@ -1051,8 +1045,11 @@ MyWindow_p MyWindow::create(const Blueprint& blueprint)
 	if (pSDLWindow == NULL)
 		return nullptr;
 
-	SDL_GL_CreateContext(pSDLWindow);
-
+	SDL_GLContext glContext = SDL_GL_CreateContext(pSDLWindow);
+	
+	SDL_GL_MakeCurrent( pSDLWindow, glContext );
+	
+	wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(geo.w),int(geo.h)});
 
 	if( !blueprint.minSize.isEmpty() )
 		SDL_SetWindowMinimumSize(pSDLWindow,blueprint.minSize.w, blueprint.minSize.h);
@@ -1060,7 +1057,7 @@ MyWindow_p MyWindow::create(const Blueprint& blueprint)
 	if( !blueprint.maxSize.isEmpty() )
 		SDL_SetWindowMaximumSize(pSDLWindow,blueprint.maxSize.w, blueprint.maxSize.h);
 
-	auto pRootPanel = RootPanel::create(CanvasRef::Default, g_pGfxDevice);
+	auto pRootPanel = RootPanel::create(CanvasRef::Default, nullptr);
 
 	MyWindow_p pWindow = new MyWindow(blueprint.title, pRootPanel, geo, pSDLWindow);
 

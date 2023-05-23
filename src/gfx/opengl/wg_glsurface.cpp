@@ -240,6 +240,8 @@ namespace wg
         }
         else
 		{
+			m_pitch = 0;
+
 			// Setup palette, not part of Blob since we should keep this.
 
 			if (m_paletteCapacity > 0)
@@ -263,7 +265,7 @@ namespace wg
 
 			// Setup GL-texture
 
-            _setupGlTexture(pTempPixelBuffer, m_pitch);
+            _setupGlTexture(pTempPixelBuffer, tempBufPitch);
 
 			//
 			

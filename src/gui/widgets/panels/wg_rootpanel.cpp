@@ -66,7 +66,8 @@ namespace wg
 			return nullptr;
 		}
 
-		if( pDevice == nullptr || pDevice->canvas(ref).size.isEmpty() )
+		GfxDevice* pUseDevice = pDevice ? pDevice : Base::defaultGfxDevice().rawPtr();
+		if( pUseDevice == nullptr || pUseDevice->canvas(ref).size.isEmpty() )
 		{
 			//TODO: Error handling!
 			return nullptr;
@@ -109,7 +110,9 @@ namespace wg
 
 	RootPanel::RootPanel(CanvasRef ref, GfxDevice* pGfxDevice) : RootPanel()
 	{
-		m_canvas = pGfxDevice->canvas(ref);
+		GfxDevice* pUseGfxDevice = pGfxDevice ? pGfxDevice : Base::defaultGfxDevice().rawPtr();
+
+		m_canvas = pUseGfxDevice->canvas(ref);
 
 		m_geo = m_canvas.size;
 		m_pGfxDevice = pGfxDevice;
