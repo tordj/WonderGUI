@@ -686,7 +686,7 @@ int main(int argc, char** argv)
 //	packPanelTest(pSlot);
 //	glyphAsSurfaceTest(pSlot, pFont);
 //	memHeapFragmentationTest(pSlot);
-	blendRGB565BigendianTest( pSlot );
+//	blendRGB565BigendianTest( pSlot );
 //	twoSlotPanelTest(pSlot);
 
 

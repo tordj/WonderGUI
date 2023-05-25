@@ -181,6 +181,9 @@ public:
 
 	bool	MarkTest(const WgCoord& ofs) override;
 
+	void	SetOnlyHandlesPressable(bool bOnlyHandles) { m_bOnlyHandlesPressable = bOnlyHandles; }
+
+	
 	wg::Skin_p GetHandleSkin(int sliderId)
 	{
 		Slider * s  = _findSlider(sliderId);
@@ -329,6 +332,11 @@ private:
     bool                   m_bPointAlignSliders = false;
     bool                   m_CheckStateForMove = false;
 
+	bool				m_bOnlyHandlesPressable = false;
+	bool				m_ignoredPresses[WG_MAX_BUTTONS+1];
+
+	
+	
     WgModifierKeys         m_axisLockModifier = WG_MODKEY_ALT;
     WgModifierKeys         m_finetuneModifier = WG_MODKEY_CTRL;
     WgModifierKeys         m_overrideModifier = WG_MODKEY_NONE;             // If pressed, we only do callback and send event, we don't grab or move slider.

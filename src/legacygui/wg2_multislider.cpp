@@ -34,6 +34,9 @@ static const char	c_widgetType[] = {"MultiSlider"};
 
 WgMultiSlider::WgMultiSlider()
 {
+	for( int i = 0 ; i < WG_MAX_BUTTONS+1 ; i++)
+		m_ignoredPresses[i] = false;
+
 }
 
 //____ Destructor _____________________________________________________________
@@ -895,6 +898,8 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			if ((modKeys & m_axisLockModifier) != m_axisLockModifier)
 				m_axisLockState = AxisLockState::Unlocked;
+
+			WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -935,6 +940,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 				}
 			}
 			_updatePointerStyle(pEvent->PointerPixelPos());
+			WgWidget::_onEvent(pEvent, pHandler);
 			break;
 
 		case WG_EVENT_MOUSEBUTTON_PRESS:
@@ -944,20 +950,23 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			const WgEvent::MouseButtonPress * pEv = static_cast<const WgEvent::MouseButtonPress*>(pEvent);
 			WgCoord	pointerPos = pEvent->PointerPixelPos();
-
+			
+			
 			// Find pressed slider and whether handle was pressed
 
 			WgCoord markOfs;
 			Slider * pMarked = _markedSliderHandle(pointerPos, nullptr);
 			bool		bHandlePressed = pMarked;		// If press really was on handle, needed for message.
 
-			if(!bHandlePressed)
+			if(!bHandlePressed && !m_bOnlyHandlesPressable)
 				pMarked = _markedSlider(pointerPos, &markOfs);
 
 			// Queue the event. Need to do this before we update any handle position.
 
 			if (pMarked)
 			{
+				m_ignoredPresses[pEv->Button()] = false;
+
 				// Set pressOfs for the event
 
 				WgOrigo pressOfs = WgOrigo::Center;
@@ -1002,6 +1011,13 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 				pHandler->QueueEvent(new WgEvent::SliderPressed(this, pMarked->id, pEv->Button(), pressOfs));
 			}
+			else
+			{
+				m_ignoredPresses[pEv->Button()] = true;
+				WgWidget::_onEvent(pEvent, pHandler);
+				break;
+			}
+
 
 			// Do everyting else
 
@@ -1076,8 +1092,17 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		{
+			
 			const WgEvent::MouseButtonRelease * p = static_cast<const WgEvent::MouseButtonRelease*>(pEvent);
 
+			if( m_ignoredPresses[p->Button()] == true )
+			{
+//				m_ignoredPresses[p->Button()] = false;		// Can not clear flag here, CLICK & DOUBLE_CLICK comes after this call.
+				WgWidget::_onEvent(pEvent, pHandler);
+				break;
+			}
+
+			
 			if (m_state.isEnabled() && p->Button() == 1)
 			{
 				m_state.setPressed(false);
@@ -1107,6 +1132,12 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 		{
 			const WgEvent::MouseButtonDrag * pEv = static_cast<const WgEvent::MouseButtonDrag*>(pEvent);
 
+			if( m_ignoredPresses[pEv->Button()] == true )
+			{
+				WgWidget::_onEvent(pEvent, pHandler);
+				break;
+			}
+			
             if( pEv->Button() != 1 || !m_state.isEnabled() || (m_overrideModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_overrideModifier) ) )
                 break;
 
@@ -1307,7 +1338,20 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			break;
 		}
+			
+		case WG_EVENT_MOUSEBUTTON_CLICK:
+		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
+		case WG_EVENT_MOUSEBUTTON_REPEAT:
+		{
+			const WgEvent::MouseButtonDrag * pEv = static_cast<const WgEvent::MouseButtonDrag*>(pEvent);
+			if( m_ignoredPresses[pEv->Button()] == true )
+				WgWidget::_onEvent(pEvent, pHandler);
+
+			break;
+		}
+
 		default:
+			WgWidget::_onEvent(pEvent, pHandler);
 			break;
 	}
 }

@@ -78,6 +78,9 @@ bool flowPanelTest(WgRootPanel* pRoot);
 bool fullStateSupportTest(WgRootPanel* pRoot);
 bool gfxStreamingTest(WgRootPanel* pRoot);
 bool blendFixedColorTest(WgRootPanel* pRoot);
+bool multiSliderClickThroughTest(WgRootPanel* pRoot);
+
+
 
 
 //#define USE_OPEN_GL
@@ -331,8 +334,9 @@ int main ( int argc, char** argv )
 //    flowPanelTest(pRoot);
 //	fullStateSupportTest(pRoot);
 //    gfxStreamingTest(pRoot);
-	blendFixedColorTest(pRoot);
-	
+//	blendFixedColorTest(pRoot);
+	multiSliderClickThroughTest(pRoot);
+
 	// Setup debug overlays
 	auto pOverlaySkin = wg::BoxSkin::create( { .color = WgColor(255,0,0,128), .outline = 1, .outlineColor = WgColor::Red,
 		.states = { {wg::StateEnum::Normal, {.color = WgColor::Transparent } }
@@ -455,6 +459,33 @@ void updateOscilloscope( WgOscilloscope * pOsc, int ofs, float freq, float ampli
 		}
 
 		pOsc->SetLinePoints(256,points);
+}
+
+
+//____ multiSliderClickThroughTest() __________________________________________________
+
+bool multiSliderClickThroughTest(WgRootPanel* pRoot)
+{
+	auto pBaseFlex = new WgFlexPanel();
+	pRoot->SetChild(pBaseFlex);
+
+	pBaseFlex->SetSkin(wg::ColorSkin::create(WgColor::Black));
+	
+	auto pSliders = new WgMultiSlider();
+	pSliders->SetSkin( wg::ColorSkin::create(WgColor::HotPink) );
+
+	pSliders->AddSlider( 1, WgDirection::Right, [](WgMultiSlider::SetGeoVisitor& visitor){ return WgRectF(0.05f, 0.05f, 0.9f, 0.05f); }, 0.f, 0.f, 1.f, 0,
+						nullptr, wg::ColorSkin::create(WgColor::Yellow),wg::ColorSkin::create( { .color = WgColor::Green, .padding = 20 } ) );
+
+	pSliders->AddSlider2D( 1, WgOrigo::NorthWest, [](WgMultiSlider::SetGeoVisitor& visitor){ return WgRectF(0.05f, 0.20f, 0.9f, 0.70f); }, 0.f, 0.f,
+						  0.f, 1.f, 0, 0.f, 1.f, 0,
+						nullptr, wg::ColorSkin::create(WgColor::Yellow),wg::ColorSkin::create( { .color = WgColor::Green, .padding = 20 } ) );
+
+
+	pSliders->SetOnlyHandlesPressable(true);
+	
+	pBaseFlex->AddChild(pSliders, WgRect(20,20,300,300) );
+	return true;
 }
 
 //____ blendFixedColorTest() __________________________________________________
