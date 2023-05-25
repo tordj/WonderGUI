@@ -110,6 +110,7 @@ bool glyphAsSurfaceTest(ComponentPtr<DynamicSlot> pSlot, Font_p pFont );
 bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot);
 bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pSlot);
 bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pSlot);
+bool customSkinTest(ComponentPtr<DynamicSlot> pSlot);
 
 
 void nisBlendTest();
@@ -688,6 +689,7 @@ int main(int argc, char** argv)
 //	memHeapFragmentationTest(pSlot);
 //	blendRGB565BigendianTest( pSlot );
 //	twoSlotPanelTest(pSlot);
+	customSkinTest(pSlot);
 
 
 	// Test IChild and IChildIterator baseclasses
@@ -3276,6 +3278,35 @@ bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pEntry)
 	pPanel->setLayout(pLayout);
 
 	*pEntry = pPanel;
+
+	return true;
+}
+
+//____ customSkinTest() ______________________________________________________
+
+bool customSkinTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pFlex = FlexPanel::create();
+	
+	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
+	
+	auto pFiller = Filler::create();
+
+	auto pCustomSkin = CustomSkin::create( WGBP(CustomSkin,
+												_.renderFunc = [](GfxDevice* pDevice,const RectSPX& canvas, int scale, State state, float value1, float value2)
+												{
+		pDevice->fill( canvas, HiColor::White );
+		pDevice->drawElipse(canvas, 64*4, Color8::Green, 64, Color8::Black );
+		
+												} ));
+
+	pFiller->setSkin( pCustomSkin );
+	
+	
+	
+	pFlex->slots.pushBackMovable( pFiller, {10,10,200,200} );
+
+	*pEntry = pFlex;
 
 	return true;
 }

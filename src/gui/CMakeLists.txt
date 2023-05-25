@@ -134,6 +134,8 @@ set( SOURCES
 	skins/meter/wg_spinmeterskin.h
 	skins/misc/wg_bakeskin.cpp
 	skins/misc/wg_bakeskin.h
+	skins/misc/wg_customskin.cpp
+	skins/misc/wg_customskin.h
 	skins/misc/wg_doubleskin.cpp
 	skins/misc/wg_doubleskin.h
 	skins/state/wg_blockskin.cpp
