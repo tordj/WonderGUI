@@ -11,6 +11,7 @@ add_subdirectory(surfviewer)
 add_subdirectory(streamanalyzer)
 add_subdirectory(streamgenerator)
 add_subdirectory(streamtrimmer)
+add_subdirectory(texteditor)
 add_subdirectory(unittester)
 add_subdirectory(workbench)
 add_subdirectory(legacyworkbench)
@@ -33,6 +34,7 @@ set_target_properties(
 	streamgenerator
 	streamtrimmer
 	surfviewer
+	texteditor
 	unittester
 	workbench
 	PROPERTIES FOLDER "Tools" )

@@ -1080,7 +1080,7 @@ MyWindow_p MyWindow::create(const Blueprint& blueprint)
 
 //____ MyWindow constructor ___________________________________________________
 
-MyWindow::MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::RectI& geo, SDL_Window* pSDLWindow)
+MyWindow::MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo, SDL_Window* pSDLWindow)
 	: Window(pRootPanel, geo)
 {
 	m_pSDLWindow = pSDLWindow;
