@@ -205,9 +205,7 @@ namespace wg
 		HiColor			m_selectionCharColor;
 		BlendMode		m_selectionCharBlend;
 
-
-		TextItem *			m_pFocusedText = nullptr;
-		RouteId			m_tickRouteId = 0;
+		TextItem *		m_pFocusedText = nullptr;
 	};
 
 

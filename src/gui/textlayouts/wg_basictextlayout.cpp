@@ -93,8 +93,11 @@ namespace wg
 		if( pText == m_pFocusedText )
 		{
 			m_pFocusedText = 0;
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
-			m_tickRouteId = 0;
+			if( m_bReceivingUpdates )
+			{
+				Base::_stopReceiveUpdates(this);
+				m_bReceivingUpdates = false;
+			}			
 		}
 	}
 
@@ -710,7 +713,7 @@ namespace wg
 				m_pFocusedText = 0;
 				if( m_bReceivingUpdates )
 				{
-					Base::_stopReceiveUpdates(this);;
+					Base::_stopReceiveUpdates(this);
 					m_bReceivingUpdates = false;
 				}
 			}
