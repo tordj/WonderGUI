@@ -48,7 +48,7 @@ public:
 
 protected:
 	MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo, SDL_Window* pSDLWindow);
-	~MyWindow() {}
+	~MyWindow() { SDL_DestroyWindow(m_pSDLWindow); }
 
 	wg::Rect		_updateWindowGeo(const wg::Rect& geo) override;
 

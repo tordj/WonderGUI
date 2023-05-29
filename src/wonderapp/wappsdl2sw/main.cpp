@@ -583,7 +583,28 @@ bool process_system_events()
 					}
 					break;
 				}
+					
+				case SDL_WINDOWEVENT_CLOSE:
+				{
+					pWindow->retain();			// We want to delay window destruction until _onCloseRequest() has returned.
+					bool bClose = pWindow->_onCloseRequest();
+					pWindow->release();
+					break;
+				}
 
+				case SDL_WINDOWEVENT_FOCUS_GAINED:
+				{
+					Base::inputHandler()->setFocusedWindow(pWindow->rootPanel());
+					break;
+				}
+
+				case SDL_WINDOWEVENT_FOCUS_LOST:
+				{
+					Base::inputHandler()->setFocusedWindow(nullptr);
+					break;
+				}
+
+					
 				default:
 					break;
 			}

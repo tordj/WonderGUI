@@ -118,6 +118,16 @@ public:
 
 		virtual bool			setIcon(wg::Surface * pIcon) = 0;
 
+		//.____ Control _____________________________________________________________
+
+		void	setCloseRequestHandler( std::function<bool(void)> handler );
+
+		//.____ Internal ____________________________________________________________
+		
+		bool	_onCloseRequest();
+
+		
+		
 	protected:
 		Window(wg::RootPanel* pRootPanel, const wg::Rect& geo);
 		~Window() {}
@@ -126,6 +136,7 @@ public:
 
 		wg::RootPanel_p		m_pRootPanel;
 		wg::Rect			m_geo;
+		std::function<bool(void)>	m_closeRequestHandler;
 
 	};
 
@@ -177,7 +188,7 @@ public:
 	virtual bool	init(Visitor* pVisitor) = 0;
 	virtual bool	update() = 0;
 	virtual void	exit() = 0;
-	
+		
 protected:
 
 	~WonderApp() {}

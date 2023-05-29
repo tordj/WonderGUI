@@ -36,7 +36,7 @@ bool MyApp::init(Visitor* pVisitor)
 	if( arguments.empty() )
 	{
 		createEditorWindow("Untitled 1");
-//		createEditorWindow("Untitled 2");
+		createEditorWindow("Untitled 2");
 
 	}
 	for ( auto& arg : arguments )
@@ -262,13 +262,22 @@ bool MyApp::createEditorWindow( const std::string& windowTitle )
 	instance.pWindow = pWindow;
 	instance.pRootPanel = pWindow->rootPanel();
 	
-	
 	m_editorWindows.push_back(instance);
 	
 	if( m_editorWindows.size() == 1 )
 		setupGUI();
 	
 	setupWindowGUI(m_editorWindows.back());
+	
+	auto pWindowRaw = pWindow.rawPtr();
+	auto pThis = this;
+	pWindow->setCloseRequestHandler([pThis,pWindowRaw](void) {
+		
+		pThis->m_editorWindows.erase(std::remove_if(pThis->m_editorWindows.begin(), pThis->m_editorWindows.end(), [pWindowRaw](const EditorWindow& instance ) {return instance.pWindow.rawPtr() == pWindowRaw;}  ), pThis->m_editorWindows.end());
+
+		return true;
+	});
+	
 }
 
 
