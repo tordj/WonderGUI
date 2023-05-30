@@ -244,14 +244,6 @@ bool init_wondergui()
 	g_pHostBridge = new MyHostBridge();
 	
 	Base::init(g_pHostBridge);
-
-
-	auto pGfxDevice = GlGfxDevice::create();
-
-	auto pSurfaceFactory = GlSurfaceFactory::create();
-	
-    Base::setDefaultSurfaceFactory(pSurfaceFactory);
-	Base::setDefaultGfxDevice(pGfxDevice);
 	Base::setDefaultToSRGB(true);
 
 	InputHandler_p pInput = Base::inputHandler();
@@ -357,7 +349,14 @@ int eventWatcher(void * pNull, SDL_Event* pEvent)
 				int width = pEvent->window.data1;
 				int height = pEvent->window.data2;
 				wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(SizeSPX(width * 64, height * 64), 64);
-				pWindow->rootPanel()->setCanvas(CanvasRef::Default);
+
+                
+                wg::Rect geo = pWindow->geo();
+                geo.w = width;
+                geo.h = height;
+                pWindow->windowGeoUpdated(geo);
+                            
+                pWindow->rootPanel()->setCanvas(CanvasRef::Default);
 				pWindow->render();
 				break;
 			}
@@ -391,15 +390,6 @@ bool init_system()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
-
-
-
-	SDL_Window* pSDLWindow = SDL_CreateWindow("Dummy Window", 10, 10, 60, 10, SDL_WINDOW_OPENGL);
-	if (pSDLWindow == NULL)
-		return false;
-
-	SDL_GL_CreateContext(pSDLWindow);
-
 
 
 #if defined(_WIN32) || defined(__linux__)
@@ -567,12 +557,31 @@ bool process_system_events()
 					{
 //						auto pWindowSurface = generateWindowSurface(pWindow->SDLWindow(), e.window.data1, e.window.data2 );
 //						pWindow->rootPanel()->setCanvas(pWindowSurface);
-
-
 					}
 					break;
 				}
+					
+				case SDL_WINDOWEVENT_CLOSE:
+				{
+					pWindow->retain();			// We want to delay window destruction until _onCloseRequest() has returned.
+					bool bClose = pWindow->_onCloseRequest();
+					pWindow->release();
+					break;
+				}
 
+				case SDL_WINDOWEVENT_FOCUS_GAINED:
+				{
+					Base::inputHandler()->setFocusedWindow(pWindow->rootPanel());
+					break;
+				}
+
+				case SDL_WINDOWEVENT_FOCUS_LOST:
+				{
+					Base::inputHandler()->setFocusedWindow(nullptr);
+					break;
+				}
+
+					
 				default:
 					break;
 			}
@@ -941,8 +950,8 @@ std::string MyAppVisitor::selectFolderDialog(const std::string& title, const std
 
 WonderApp::Window_p MyAppVisitor::createWindow(const WonderApp::Window::Blueprint& blueprint)
 {
-	auto pWindow =  MyWindow::create(blueprint);
-
+	auto pWindow =  MyWindow::create(blueprint, wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice()) );
+    
 	g_windows.push_back(pWindow.rawPtr());
 
 	return pWindow;
@@ -1029,7 +1038,7 @@ bool MyHostBridge::setClipboardText(const std::string& text )
 
 //____ create() _______________________________________________________________
 
-MyWindow_p MyWindow::create(const Blueprint& blueprint)
+MyWindow_p MyWindow::create(const Blueprint& blueprint, GlGfxDevice * pDevice)
 {
 	Rect geo;
 
@@ -1039,27 +1048,42 @@ MyWindow_p MyWindow::create(const Blueprint& blueprint)
 
 	if (blueprint.resizable)
 		flags |= SDL_WINDOW_RESIZABLE;
-
+ 
 
 	SDL_Window* pSDLWindow = SDL_CreateWindow(blueprint.title.c_str(), geo.x, geo.y, geo.w, geo.h, flags);
 	if (pSDLWindow == NULL)
 		return nullptr;
 
+    if( !blueprint.minSize.isEmpty() )
+        SDL_SetWindowMinimumSize(pSDLWindow,blueprint.minSize.w, blueprint.minSize.h);
+
+    if( !blueprint.maxSize.isEmpty() )
+        SDL_SetWindowMaximumSize(pSDLWindow,blueprint.maxSize.w, blueprint.maxSize.h);
+
+    
 	SDL_GLContext glContext = SDL_GL_CreateContext(pSDLWindow);
 	
 	SDL_GL_MakeCurrent( pSDLWindow, glContext );
-	
-	wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(geo.w),int(geo.h)});
-
-	if( !blueprint.minSize.isEmpty() )
-		SDL_SetWindowMinimumSize(pSDLWindow,blueprint.minSize.w, blueprint.minSize.h);
-
-	if( !blueprint.maxSize.isEmpty() )
-		SDL_SetWindowMaximumSize(pSDLWindow,blueprint.maxSize.w, blueprint.maxSize.h);
-
+/*
+    glDrawBuffer(GL_FRONT);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glFlush();
+*/
+    
+    if( !pDevice )
+    {
+        auto _pDevice = GlGfxDevice::create();
+        Base::setDefaultGfxDevice(_pDevice);
+        
+        auto pFactory = GlSurfaceFactory::create();
+        Base::setDefaultSurfaceFactory(pFactory);
+    }
+    
+    wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(geo.w)*64,int(geo.h)*64});
 	auto pRootPanel = RootPanel::create(CanvasRef::Default, nullptr);
 
-	MyWindow_p pWindow = new MyWindow(blueprint.title, pRootPanel, geo, pSDLWindow);
+	MyWindow_p pWindow = new MyWindow(blueprint.title, pRootPanel, geo, pSDLWindow, glContext);
 
 	//TODO: This is ugly. It should be handled when windows gets focused.
 
@@ -1071,10 +1095,12 @@ MyWindow_p MyWindow::create(const Blueprint& blueprint)
 
 //____ MyWindow constructor ___________________________________________________
 
-MyWindow::MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo, SDL_Window* pSDLWindow)
+MyWindow::MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo,
+                   SDL_Window* pSDLWindow, SDL_GLContext glContext)
 	: Window(pRootPanel, geo)
 {
 	m_pSDLWindow = pSDLWindow;
+    m_SDLGLContext = glContext;
 }
 
 
@@ -1108,11 +1134,35 @@ std::string MyWindow::title() const
 
 void MyWindow::render()
 {
+    SDL_GL_MakeCurrent( m_pSDLWindow, m_SDLGLContext );
+    
+    wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(m_geo.w)*64,int(m_geo.h)*64});
+
+    
 	m_pRootPanel->render();
 
 	//TODO: Just update the dirty rectangles!
 
-	SDL_UpdateWindowSurface(m_pSDLWindow);
+    int nRects = m_pRootPanel->nbUpdatedRects();
+    if( nRects == 0 )
+        return;
+
+    const RectSPX * pUpdatedRects = m_pRootPanel->firstUpdatedRect();
+/*    SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
+
+    for( int i = 0 ; i < nRects ; i++ )
+    {
+        pSDLRects[i].x = pUpdatedRects[i].x/64;
+        pSDLRects[i].y = pUpdatedRects[i].y/64;
+        pSDLRects[i].w = pUpdatedRects[i].w/64;
+        pSDLRects[i].h = pUpdatedRects[i].h/64;
+    }
+
+    SDL_UpdateWindowSurfaceRects( m_pSDLWindow, pSDLRects, nRects );
+
+    Base::memStackFree( sizeof(SDL_Rect) * nRects );
+*/
+//	SDL_UpdateWindowSurface(m_pSDLWindow);
 }
 
 
@@ -1124,6 +1174,14 @@ Rect MyWindow::_updateWindowGeo(const Rect& geo)
 	//TODO: Calculate and update position as well.
 
 	SDL_SetWindowSize(m_pSDLWindow, geo.w, geo.h);
-	return m_geo;
+	return geo;
 }
+
+//_____ windowGeoUpdated() ____________________________________________________
+
+void MyWindow::windowGeoUpdated(const wg::Rect& geo)
+{
+    m_geo = geo;
+}
+
 

@@ -175,7 +175,9 @@ namespace wg
 
 	bool RootPanel::setCanvas(CanvasRef canvasRef)
 	{
-		if( !m_pGfxDevice || m_pGfxDevice->canvas(canvasRef).size.isEmpty() )
+        GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
+
+        if( !pGfxDevice || pGfxDevice->canvas(canvasRef).size.isEmpty() )
 		{
 			//TODO: Error handling!
 			return false;
@@ -184,7 +186,7 @@ namespace wg
 		int oldScale = m_scale;
 		SizeSPX oldSize = m_geo.size();
 
-		m_canvas = m_pGfxDevice->canvas(canvasRef);
+		m_canvas = pGfxDevice->canvas(canvasRef);
 
 		if (!m_bScaleSet)
 			m_scale = m_canvas.scale;

@@ -329,7 +329,7 @@ int main(int argc, char** argv)
 #ifdef USE_OPEN_GL
 	pCanvas = nullptr;
 	auto pGlDevice = GlGfxDevice::create();
-	pGlDevice->setDefaultCanvas({ width,height });
+	pGlDevice->setDefaultCanvas({ width*64,height*64 });
 	pDevice = pGlDevice;
 
 	pFactory = GlSurfaceFactory::create();
@@ -662,7 +662,7 @@ int main(int argc, char** argv)
 //	modalLayerTest(pSlot);
 //	splitPanelTest(pSlot);
 //	designLayerTest(pSlot);
-//	pianoKeyboardTest(pSlot);
+	pianoKeyboardTest(pSlot);
 //	sliderTest(pSlot);
 //	rangeSliderTest(pSlot);
 //	pieKnobTest(pSlot);

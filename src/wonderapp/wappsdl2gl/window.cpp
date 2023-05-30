@@ -66,4 +66,19 @@ wg::Size WonderApp::Window::setSize(wg::Size size)
 	return m_geo.size();
 }
 
+//____ setCloseRequestHandler() _______________________________________________
 
+void WonderApp::Window::setCloseRequestHandler( std::function<bool(void)> handler )
+{
+	m_closeRequestHandler = handler;
+}
+
+//____ _onCloseRequest() ______________________________________________________
+
+bool WonderApp::Window::_onCloseRequest()
+{
+	if( m_closeRequestHandler )
+		return m_closeRequestHandler();
+	else
+		return true;
+}

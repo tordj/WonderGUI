@@ -34,7 +34,7 @@ typedef	wg::WeakPtr<MyWindow>		MyWindow_wp;
 class MyWindow : public WonderApp::Window
 {
 public:
-	static MyWindow_p		create(const Blueprint& blueprint);
+	static MyWindow_p		create(const Blueprint& blueprint, wg::GlGfxDevice * pDevice);
 
 	bool			setTitle(std::string& title) override;
 	std::string		title() const override;
@@ -46,11 +46,14 @@ public:
 	Uint32			SDLWindowId() { return SDL_GetWindowID(m_pSDLWindow); }
 	SDL_Window*		SDLWindow() { return m_pSDLWindow; }
 
+    void            windowGeoUpdated(const wg::Rect& geo);
+
 protected:
-	MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo, SDL_Window* pSDLWindow);
-	~MyWindow() {}
+	MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo, SDL_Window* pSDLWindow, SDL_GLContext );
+	~MyWindow() { SDL_DestroyWindow(m_pSDLWindow); }
 
 	wg::Rect		_updateWindowGeo(const wg::Rect& geo) override;
-
+    
 	SDL_Window*		m_pSDLWindow;
+    SDL_GLContext   m_SDLGLContext;
 };
