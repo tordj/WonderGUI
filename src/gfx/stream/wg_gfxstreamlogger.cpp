@@ -233,7 +233,7 @@ namespace wg
 				BlendMode	blendMode;
 				*m_pDecoder >> blendMode;
 
-				m_charStream << "    mode        = " << (int)blendMode << std::endl;
+				m_charStream << "    mode        = " << toString(blendMode) << std::endl;
 				break;
 			}
 
@@ -1027,5 +1027,33 @@ namespace wg
 		m_charStream << header << " = " << border.top << ", " << border.right << ", " << border.bottom << ", " << border.left << std::endl;
 	}
 
+	//____ _printSPX() ___________________________________________________
+
+	void GfxStreamLogger::_printSPX( spx value )
+	{
+		switch( m_spxPrintMode )
+		{
+			default:
+			case 0:
+				m_charStream << value;
+				break;
+			case 1:
+			{
+				int integer = value / 64;
+				int decimal = value % 64;
+				m_charStream << integer << ":" << decimal;
+				break;
+			}
+			case 2:
+			{
+				int integer = value / 64;
+				int decimal = value % 64;
+				m_charStream << integer;
+				if( decimal != 0 )
+					m_charStream << ":" << decimal;
+				break;
+			}
+		}
+	}
 
 } //namespace wg

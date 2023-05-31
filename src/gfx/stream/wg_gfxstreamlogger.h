@@ -80,6 +80,8 @@ namespace wg
 		void	_printBorder( const char * header, const BorderI& border );
 		void	_printBorder(const char* header, const Border& border);
 
+		void	_printSPX(spx value);
+
 		std::ostream&	m_charStream;
 
 		GfxStreamDecoder_p m_pDecoder;
@@ -88,6 +90,8 @@ namespace wg
 		bool			m_bDisplayChunkNb = true;
 		uint64_t		m_streamOffset = 0;
 		int				m_chunkNb = 0;
+		
+		int				m_spxPrintMode = 0;
 	};
 
 }

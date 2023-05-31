@@ -27,6 +27,7 @@
 
 #include <wg_gfxdevice.h>
 #include <wg_gfxstreamencoder.h>
+#include <wg_gfxstreamsurface.h>
 
 namespace wg
 {
@@ -177,13 +178,57 @@ namespace wg
 
 		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
+		inline void	_streamStatesIfUpdated()
+		{
+			if( m_streamedTintColor != m_tintColor )
+			{
+				(*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintColor, GfxStream::SpxFormat::Int32_dec, 8 };
+				(*m_pEncoder) << m_tintColor;
+				m_streamedTintColor = m_tintColor;
+			}
+			
+			if( m_streamedBlendMode != m_blendMode )
+			{
+				(*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlendMode, GfxStream::SpxFormat::Int32_dec, 2 };
+				(*m_pEncoder) << m_blendMode;
+				m_streamedBlendMode = m_blendMode;
+			}
+			
+			if( m_streamedRenderLayer != m_renderLayer )
+			{
+				(*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetRenderLayer, GfxStream::SpxFormat::Int32_dec, 2 };
+				(*m_pEncoder) << (uint16_t) m_renderLayer;
+				m_streamedRenderLayer = m_renderLayer;
+			}
+		}
+
+		inline void	_streamBlitSourceIfUpdated()
+		{
+			if( m_pStreamedBlitSource != m_pBlitSource )
+			{
+				(*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetBlitSource, GfxStream::SpxFormat::Int32_dec, 2 };
+				(*m_pEncoder) << static_cast<GfxStreamSurface*>(m_pBlitSource.rawPtr())->m_inStreamId;
+				m_pStreamedBlitSource = m_pBlitSource;
+			}
+		}
+
+		
 		std::vector<CanvasInfo>	m_definedCanvases;
 
 		SurfaceFactory_p	m_pSurfaceFactory;
 		WaveformFactory_p	m_pWaveformFactory;
 		GfxStreamEncoder_p	m_pEncoder;
 		
-		bool	m_bRendering;
+		BlendMode			m_streamedBlendMode = BlendMode::Undefined;
+		HiColor				m_streamedTintColor = HiColor::Undefined;
+		int					m_streamedRenderLayer = -1;
+		
+		void *				m_pStreamedBlitSource = nullptr;
+		
+		bool				m_bRendering;
+		
+		
+		
 	};
 } // namespace wg
 #endif //WG_STREAMGFXDEVICE_DOT_H

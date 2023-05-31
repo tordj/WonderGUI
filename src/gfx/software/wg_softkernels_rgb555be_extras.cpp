@@ -386,29 +386,32 @@ static void _straight_blit_bgra8linear_to_rgb555bigendian_notint_blend(const uin
 
 
 static uint16_t s_fixedBlendCache[256];
-static HiColor	s_fixedBlendCacheColor = HiColor::Undefined;
+static HiColor	s_fixedBlendCacheFgColor = HiColor::Undefined;
+static HiColor	s_fixedBlendCacheBgColor = HiColor::Undefined;
 
 //____ updateFixedBlendCache() ___________________________________________
 
-static void updateFixedBlendCache( HiColor col )
+static void updateFixedBlendCache( HiColor bgCol, HiColor fgCol )
 {
-	s_fixedBlendCacheColor = col;
-	
-	int backB = col.b;
-	int backG = col.g;
-	int backR = col.r;
+	s_fixedBlendCacheBgColor = bgCol;
+	s_fixedBlendCacheFgColor = bgCol;
 
-	for( int alpha = 0 ; alpha < 256 ; alpha++ )
+	int backB = bgCol.b;
+	int backG = bgCol.g;
+	int backR = bgCol.r;
+
+	for( int i = 0 ; i < 256 ; i++ )
 	{
+		int alpha = (fgCol.a * i) / 4096;
 		int invAlpha = 255 - alpha;
 
-		int outB = (backB * invAlpha + 4096 * alpha) >> 15;
-		int outG = (backG * invAlpha + 4096 * alpha) >> 15;
-		int outR = (backR * invAlpha + 4096 * alpha) >> 15;
+		int outB = (backB * invAlpha + fgCol.b * alpha) >> 15;
+		int outG = (backG * invAlpha + fgCol.g * alpha) >> 15;
+		int outR = (backR * invAlpha + fgCol.r * alpha) >> 15;
 		
 		uint16_t out = outR | (outG << 6) | (outB << 11 );
 		out = (out >> 8 | out << 8);
-		s_fixedBlendCache[alpha] = out;
+		s_fixedBlendCache[i] = out;
 	}
 }
 
@@ -416,12 +419,12 @@ static void updateFixedBlendCache( HiColor col )
 
 //____ _straight_blit_alpha8_to_rgb555bigendian_notint_fixedblend() ____________________________________________________________
 
-static void _straight_blit_alpha8_to_rgb555bigendian_notint_fixedblend(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
+static void _straight_blit_alpha8_to_rgb555bigendian_no_or_flat_tint_fixedblend(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
 {
 	// Setup conversion table
 
-	if( s_fixedBlendCacheColor != tint.fixedBlendColor )
-		updateFixedBlendCache(tint.fixedBlendColor);
+	if( s_fixedBlendCacheBgColor != tint.fixedBlendColor || s_fixedBlendCacheFgColor != tint.flatTintColor )
+		updateFixedBlendCache(tint.fixedBlendColor, tint.flatTintColor );
 	
 	// Copy loop
 	
@@ -439,34 +442,6 @@ static void _straight_blit_alpha8_to_rgb555bigendian_notint_fixedblend(const uin
 	}
 }
 
-//____ _straight_blit_alpha8_to_rgb555bigendian_flattint_fixedblend() ____________________________________________________________
-
-static void _straight_blit_alpha8_to_rgb555bigendian_flattint_fixedblend(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
-{
-	// Setup conversion table
-
-	HiColor col = HiColor( (uint16_t) ((int(tint.fixedBlendColor.r) * int(tint.flatTintColor.r)) >> 12),
-						   (uint16_t) ((int(tint.fixedBlendColor.g) * int(tint.flatTintColor.g)) >> 12),
-						   (uint16_t) ((int(tint.fixedBlendColor.b) * int(tint.flatTintColor.b)) >> 12));
-	
-	if( s_fixedBlendCacheColor != col )
-		updateFixedBlendCache(col);
-	
-	// Copy loop
-	
-	for (int y = 0; y < nLines; y++)
-	{
-		for (int x = 0; x < lineLength; x++)
-		{
-			* (uint16_t*)pDst = s_fixedBlendCache[* pSrc];
-			pSrc += pitches.srcX;
-			pDst += pitches.dstX;
-		}
-
-		pSrc += pitches.srcY;
-		pDst += pitches.dstY;
-	}
-}
 
 //____ wg_addExtraSoftKernelsForRGB555BECanvas() __________________________________
 
@@ -503,9 +478,9 @@ bool wg::addExtraSoftKernelsForRGB555BECanvas( SoftGfxDevice * pDevice )
 	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::EdgeOp::None, TintMode::Flat, BlendMode::Blend, PixelFormat::RGB_555_bigendian, _straight_blit_alpha8_to_rgb555bigendian_flattint_blend );
 
 	
-	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::BlendFixedColor, PixelFormat::RGB_555_bigendian, _straight_blit_alpha8_to_rgb555bigendian_notint_fixedblend );
+	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::BlendFixedColor, PixelFormat::RGB_555_bigendian, _straight_blit_alpha8_to_rgb555bigendian_no_or_flat_tint_fixedblend );
 
-	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::EdgeOp::None, TintMode::Flat, BlendMode::BlendFixedColor, PixelFormat::RGB_555_bigendian, _straight_blit_alpha8_to_rgb555bigendian_flattint_fixedblend );
+	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::EdgeOp::None, TintMode::Flat, BlendMode::BlendFixedColor, PixelFormat::RGB_555_bigendian, _straight_blit_alpha8_to_rgb555bigendian_no_or_flat_tint_fixedblend );
 
 	
 	pDevice->setStraightBlitKernel( PixelFormat::BGRA_8_linear, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_555_bigendian, _straight_blit_bgrxa8linear_to_rgb555bigendian_notint_noblend );

@@ -796,11 +796,17 @@ namespace wg
 		{
 			int nSPX = header.size / GfxStream::spxSize(header.spxFormat);
 
-			assert(m_pTempBuffer != nullptr && nSPX*4 <= m_bufferSize - m_bytesLoaded);
+			assert(m_pTempBuffer != nullptr && nSPX*4-4 <= m_bufferSize - m_bytesLoaded);
 
 			// Stream the compressed samples to end of destination and unpack them.
 
+			
+			
+			if( m_bytesLoaded + nSPX*4 > m_bufferSize )
+				nSPX--;											// Last chunk was padded with one byte for alignment.
+						
 			*m_pDecoder >> GfxStream::ReadSpxField{ nSPX, header.spxFormat, (spx*) &m_pTempBuffer[m_bytesLoaded] };
+			m_pDecoder->align();
 
 			// Increase counter and possibly render the segment
 

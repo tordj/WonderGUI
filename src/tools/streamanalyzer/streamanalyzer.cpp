@@ -983,7 +983,10 @@ void MyApp::_playFrames( int begin, int end, bool bOptimize )
 	m_pStreamPlayer->clearDirtyRects();
 
 	if( bOptimize )
+	{
 		m_pStreamPump->pumpAllFramesOptimizeClipping();
+		m_pStreamPump->pumpAll();						// To make sure any data outside frame following it is included.
+	}
 	else
 		m_pStreamPump->pumpAll();
 }
