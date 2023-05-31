@@ -73,7 +73,9 @@ namespace wg
 		if (!_isBlueprintValid(bp, maxSize()) )
 			return GlSurface_p();
 
-		if ( !pBlob || (pitch > 0 && pitch % 4 != 0))
+        int realPitch = pitch > 0 ? pitch : bp.size.w * Util::pixelFormatToDescription( bp.format ).bits/8;
+        
+		if ( !pBlob || realPitch % 4 != 0 )
 			return GlSurface_p();
 
 
@@ -252,15 +254,15 @@ namespace wg
 			
 			// Convert/copy pixels to temporary buffer.
 
-			//TODO: Skip temporary buffer and copy if source format is same as destination.
+			//TODO: Skip temporary buffer and copy if source format is same as destination (and pitch/4 == 0).
 
-			int tempBufPitch = m_size.w * m_pPixelDescription->bits / 8;
+			int tempBufPitch = ((m_size.w * m_pPixelDescription->bits / 8)+3) & 0xFFFFFFFC;
 			uint8_t * pTempPixelBuffer = new uint8_t[tempBufPitch * m_size.h];
 
 			// Copy pixels
 		
 			PixelTools::copyPixels(m_size.w, m_size.h, pPixels, pixelDescription, pitch - m_size.w * pixelDescription.bits/8,
-					   pTempPixelBuffer, m_pixelFormat, 0,
+					   pTempPixelBuffer, m_pixelFormat, tempBufPitch - m_size.w * m_pPixelDescription->bits/8,
 					   pPalette, m_pPalette, paletteSize, m_paletteSize, m_paletteCapacity);
 
 			// Setup GL-texture

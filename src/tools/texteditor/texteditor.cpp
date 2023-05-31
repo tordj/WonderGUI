@@ -23,12 +23,6 @@ bool MyApp::init(Visitor* pVisitor)
 {
 	m_pAppVisitor = pVisitor;
 
-	if (!setupGUI())
-	{
-		printf("ERROR: Failed to setup GUI!\n");
-		return false;
-	}
-	
 	// Add any text-file from the argument list
 
 	auto arguments = pVisitor->programArguments();
