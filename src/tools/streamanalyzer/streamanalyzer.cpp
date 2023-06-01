@@ -277,6 +277,11 @@ Widget_p MyApp::createLogPanel()
 											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Resources" )
 											));
 
+	auto pStatisticsButton = ToggleButton::create( WGBP(ToggleButton,
+											_.skin = m_pToggleButtonSkin,
+											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Statistics" )
+											));
+
 	auto pErrorLogButton = ToggleButton::create( WGBP(ToggleButton,
 											_.skin = m_pToggleButtonSkin,
 											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Errors" )
@@ -289,6 +294,7 @@ Widget_p MyApp::createLogPanel()
 	pToggleGroup->add(pOptimizerInLogButton);
 	pToggleGroup->add(pOptimizerOutLogButton);
 	pToggleGroup->add(pResourcesButton);
+	pToggleGroup->add(pStatisticsButton);
 	pToggleGroup->add(pErrorLogButton);
 
 	Base::msgRouter()->addRoute(pFrameLogButton, MsgType::Select, [this](Msg* pMsg)
@@ -316,17 +322,22 @@ Widget_p MyApp::createLogPanel()
 			this->showResources();
 		});
 
+	Base::msgRouter()->addRoute(pStatisticsButton, MsgType::Select, [this](Msg* pMsg)
+		{
+			this->showStatistics();
+		});
+
 	Base::msgRouter()->addRoute(pErrorLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->showErrors();
 		});
-
 	
 	pLogButtonRow->slots << pFrameLogButton;
 	pLogButtonRow->slots << pFullLogButton;
 	pLogButtonRow->slots << pOptimizerInLogButton;
 	pLogButtonRow->slots << pOptimizerOutLogButton;
 	pLogButtonRow->slots << pResourcesButton;
+	pLogButtonRow->slots << pStatisticsButton;
 	pLogButtonRow->slots << pErrorLogButton;
 	
 	TextEditor::Blueprint displayBP;
@@ -410,6 +421,18 @@ Widget_p MyApp::createLogPanel()
 	m_pResourcePanel = pResourcesPanel;
 	
 	m_pResourceContainer = pResourcesWindow;
+	
+	// Create statistics view hierarchy
+	
+	auto pStatisticsContainer = _standardScrollPanel();
+
+	auto pStatisticsDisplay = TextEditor::create( displayBP );
+	pStatisticsContainer->slot = pStatisticsDisplay;
+
+	m_pStatisticsDisplay = pStatisticsDisplay;
+
+	m_pStatisticsContainer = pStatisticsContainer;
+	
 	
 	// Finish it it up
 	
@@ -812,6 +835,10 @@ void MyApp::updateGUIAfterReload()
 	
 	_logFullStream();
 	_updateFrameCounterAndSlider();
+	
+	_generateFrameStatistics();
+	_displayFrameStatistics();
+	
 }
 
 //____ setFrame() _____________________________________________________________
@@ -934,6 +961,13 @@ void MyApp::showOptimizerOutLog()
 void MyApp::showResources()
 {
 	m_pLogCapsule->slot = m_pResourceContainer;
+}
+
+//____ showStatistics() ________________________________________________________
+
+void MyApp::showStatistics()
+{
+	m_pLogCapsule->slot = m_pStatisticsContainer;
 }
 
 //____ showErrors() ___________________________________________________________
@@ -1171,4 +1205,92 @@ Widget_p MyApp::_buildSurfaceDisplayWithIndexTag( Surface * pSurf, int index )
 	pBase->slots.setPadding( 0, 1, {0,0,4,0} );
 	
 	return pBase;
+}
+
+//____ 	_generateFrameStatistics() ____________________________________________
+
+void MyApp::_generateFrameStatistics()
+{
+	m_frameStatistics.clear();
+	
+	auto pDecoder = GfxStreamDecoder::create();
+	pDecoder->setInput( m_pStreamBlob->begin(), m_pStreamBlob->end() );
+
+	GfxStream::Header header;
+	
+	* pDecoder >> header;
+	while( header.type != GfxChunkId::OutOfData )
+	{
+		switch( header.type )
+		{
+			case GfxChunkId::BeginRender:
+			{
+				m_frameStatistics.push_back(FrameStats());
+				pDecoder->skip(header.size);
+				break;
+			}
+			case GfxChunkId::BeginCanvasUpdate:
+			{
+				uint16_t	surfaceId;
+				CanvasRef	canvasRef;
+				uint8_t		dummy;
+					
+				*pDecoder >> surfaceId;
+				*pDecoder >> canvasRef;
+				*pDecoder >> dummy;
+
+				int nUpdateRects = (header.size - 4) / 16;
+				int allocBytes = nUpdateRects*sizeof(RectSPX);
+				
+				RectSPX * pRects = (RectSPX *) Base::memStackAlloc(allocBytes);
+				* pDecoder >> GfxStream::ReadSpxField{ nUpdateRects*4, header.spxFormat, (spx*) pRects };
+				
+				auto& frame = m_frameStatistics.back();
+				
+				for( int i = 0 ; i < nUpdateRects ; i++ )
+					frame.canvasPixels[(int)canvasRef] += (pRects[i].w/64) * (pRects[i].h/64);
+				
+				frame.canvasRects[(int)canvasRef] = nUpdateRects;
+				
+				Base::memStackFree(allocBytes);
+				break;
+			}
+			default:
+				pDecoder->skip(header.size);
+				break;
+		}
+		* pDecoder >> header;
+	}
+}
+
+//____ _displayFrameStatistics() ______________________________________________
+
+void MyApp::_displayFrameStatistics()
+{
+	std::ostringstream	logStream;
+
+	logStream << "frame ";
+	for( int i = 1 ; i < m_screens.size() ; i++ )
+	{
+		logStream << ", " << toString((CanvasRef)i) << " rects";
+		logStream << ", " << toString((CanvasRef)i) << " pixels";
+	}
+	logStream << std::endl;
+	
+	
+	int frameNb = 0;
+	for( auto& frame : m_frameStatistics )
+	{
+		logStream << frameNb++;
+
+		for( int i = 1 ; i < m_screens.size() ; i++ )
+		{
+			logStream << ", " << frame.canvasRects[i];
+			logStream << ", " << frame.canvasPixels[i];
+		}
+		logStream << std::endl;
+	}
+
+	m_pStatisticsDisplay->editor.setText( logStream.str() );
+
 }

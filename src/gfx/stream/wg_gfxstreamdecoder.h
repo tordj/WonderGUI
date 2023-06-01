@@ -56,7 +56,7 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		void				setInput( const uint8_t * pBegin, const uint8_t * pEnd);
+		void				setInput( const void * pBegin, const void * pEnd);
 
 		bool				isEmpty();
 		GfxStream::Header	peek();

@@ -42,6 +42,7 @@ public:
 	void		showOptimizerOutLog();
 
 	void		showResources();
+	void		showStatistics();
 	void		showErrors();
 
 	void		toggleDebugRects(bool bShow);
@@ -59,6 +60,9 @@ private:
 	bool		_setupGUI(Visitor* pVisitor);
 	bool		_loadSkins(Visitor* pVisitor);
 	
+	void		_generateFrameStatistics();
+	void		_displayFrameStatistics();
+
 	ScrollPanel_p	_standardScrollPanel();
 	Widget_p		_buildSurfaceDisplayWithIndexTag( Surface * pSurf, int index );
 	
@@ -77,6 +81,25 @@ private:
 	vector<SurfaceDisplay_p>	m_overlayDisplays;
 	vector<StackPanel_p>		m_screenStacks;
 
+	
+	class FrameStats
+	{
+	public:
+		FrameStats()
+		{
+			for( int i = 0 ; i < CanvasRef_size ; i++ )
+			{
+				canvasRects[i] = 0;
+				canvasPixels[i] = 0;
+			}
+		}
+		
+		int canvasRects[CanvasRef_size];
+		int canvasPixels[CanvasRef_size];
+	};
+	
+	vector<FrameStats>	m_frameStatistics;
+	
 	int					m_currentFrame = 0;			// First frame is 0.
 	bool				m_bShowDebugRects = false;
 
@@ -103,6 +126,10 @@ private:
 	Widget_p			m_pErrorsContainer;
 	TextEditor_p		m_pErrorsDisplay;
 
+	Widget_p			m_pStatisticsContainer;
+	TextEditor_p		m_pStatisticsDisplay;
+
+	
 	TextDisplay_p		m_pProgressText;
 	Slider_p			m_pProgressSlider;
 

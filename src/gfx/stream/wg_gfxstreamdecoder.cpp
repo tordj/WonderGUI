@@ -197,11 +197,11 @@ namespace wg
 
 	//____ setInput() ________________________________________________________
 
-	void GfxStreamDecoder::setInput(const uint8_t* pBegin, const uint8_t* pEnd)
+	void GfxStreamDecoder::setInput(const void * pBegin, const void * pEnd)
 	{
-		m_pDataBegin = pBegin;
-		m_pDataEnd = pEnd;
-		m_pDataRead = pBegin;
+		m_pDataBegin = (const uint8_t*) pBegin;
+		m_pDataEnd = (const uint8_t*) pEnd;
+		m_pDataRead = (const uint8_t*) pBegin;
 	}
 
 	//____ isEmpty() __________________________________________________________
