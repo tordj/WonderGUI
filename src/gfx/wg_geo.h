@@ -113,6 +113,7 @@ namespace wg
 		inline CoordT<Type>& operator-=(const CoordT<Type>& k) { x -= k.x; y -= k.y; return *this; }
 		inline CoordT<Type> operator+(const CoordT<Type>& k) const { return { x + k.x, y + k.y }; }
 		inline CoordT<Type> operator-(const CoordT<Type>& k) const { return { x - k.x, y - k.y }; }
+        inline CoordT<Type> operator-() const { return { -x, -y }; }
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline CoordT<Type>& operator*=(Type2 v) { x = (Type)(x*v); y = (Type)(y*v); return *this; }
@@ -282,6 +283,7 @@ namespace wg
 		inline SizeT<Type>& operator-=(const SizeT<Type>& k)		{ w -= k.w; h -= k.h; return *this;}
 		inline SizeT<Type> operator+(const SizeT<Type>& k) const	{ return { w + k.w, h + k.h }; }
 		inline SizeT<Type> operator-(const SizeT<Type>& k) const	{ return { w - k.w, h - k.h }; }
+        inline SizeT<Type> operator-() const                        { return { -w, -h }; }
 
 		inline SizeT<Type>& operator+=(const BorderT<Type>& k)		{ w += k.left + k.right; h += k.top + k.bottom; return *this; }
 		inline SizeT<Type>& operator-=(const BorderT<Type>& k)		{ w -= k.left + k.right; h -= k.top + k.bottom; return *this;}
