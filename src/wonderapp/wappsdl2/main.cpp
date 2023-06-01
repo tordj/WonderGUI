@@ -28,7 +28,6 @@
 #	include <SDL_image.h>
 #	include <Windows.h>
 #	include <libloaderapi.h>
-#   include <GL/glew.h>
 #elif __APPLE__
 #	include <SDL2/SDL.h>
 #	include <SDL2_image/SDL_image.h>
@@ -36,17 +35,18 @@
 #else
 #	include <SDL2/SDL.h>
 #	include <SDL2/SDL_image.h>
-#   include <GL/glew.h>
 #	include <dlfcn.h>
 #endif
+
 
 #include <fstream>
 #include <mutex>
 
-#include <wg_glgfxdevice.h>
-#include <wg_glsurfacefactory.h>
+#include <wg_softgfxdevice.h>
+#include <wg_softsurfacefactory.h>
+#include <wg_softkernels_default.h>
 
-#include "window.h"
+#include "sdlwindow.h"
 #include "tinyfiledialogs.h"
 
 using namespace wg;
@@ -89,7 +89,7 @@ public:
 
 	std::string		selectFolderDialog(const std::string& title, const std::string& defaultPath) override;
 	
-	WonderApp::Window_p	createWindow(const WonderApp::Window::Blueprint& blueprint) override;
+	Window_p	createWindow(const Window::Blueprint& blueprint) override;
 
 	WonderApp::LibId	openLibrary(const std::string& path) override;
 	void*			loadSymbol(WonderApp::LibId lib, const std::string& symbol) override;
@@ -127,12 +127,14 @@ void		exit_wondergui();
 
 MouseButton translateSDLMouseButton(Uint8 button);
 
+Surface_p generateWindowSurface(SDL_Window* pWindow, int widht, int height);
+
 
 float				g_scale;
 
 MyHostBridge *		g_pHostBridge = nullptr;
 
-std::vector<MyWindow_wp>	g_windows;
+std::vector<SDLWindow_wp>	g_windows;
 
 int			g_argc = 0;
 char**		g_argv = nullptr;
@@ -244,7 +246,17 @@ bool init_wondergui()
 	g_pHostBridge = new MyHostBridge();
 	
 	Base::init(g_pHostBridge);
-	Base::setDefaultToSRGB(true);
+
+/*
+	auto pGfxDevice = SoftGfxDevice::create();
+	addDefaultSoftKernels( pGfxDevice );
+
+	auto pSurfaceFactory = SoftSurfaceFactory::create();
+	
+    Base::setDefaultSurfaceFactory(pSurfaceFactory);
+	Base::setDefaultGfxDevice(pGfxDevice);
+*/
+ Base::setDefaultToSRGB(true);
 
 	InputHandler_p pInput = Base::inputHandler();
 	
@@ -344,19 +356,9 @@ int eventWatcher(void * pNull, SDL_Event* pEvent)
 		{
 			if( g_windows[i] && g_windows[i]->SDLWindowId() == pEvent->window.windowID )
 			{
-				MyWindow * pWindow = g_windows[i];
+				SDLWindow * pWindow = g_windows[i];
 
-				int width = pEvent->window.data1;
-				int height = pEvent->window.data2;
-				wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(SizeSPX(width * 64, height * 64), 64);
-
-                
-                wg::Rect geo = pWindow->geo();
-                geo.w = width;
-                geo.h = height;
-                pWindow->windowGeoUpdated(geo);
-                            
-                pWindow->rootPanel()->setCanvas(CanvasRef::Default);
+                pWindow->onWindowSizeUpdated(pEvent->window.data1, pEvent->window.data2);
 				pWindow->render();
 				break;
 			}
@@ -385,19 +387,20 @@ bool init_system()
  
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
+#if defined(USE_OPENGL)
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
 
 
 #if defined(_WIN32) || defined(__linux__)
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
+    glewExperimental = GL_TRUE;
+    GLenum err = glewInit();
 #endif
-
-
+    
+#endif
 	return true;
 }
 
@@ -469,7 +472,7 @@ bool process_system_events()
 				if (wpWindow == nullptr)
 					continue;
 
-				MyWindow* pWin = wpWindow;
+				SDLWindow* pWin = wpWindow;
 				if (pWin->SDLWindowId() == e.motion.windowID)
 				{
 					pRootPanel = pWin->rootPanel();
@@ -526,7 +529,7 @@ bool process_system_events()
 
 		case SDL_WINDOWEVENT:
 		{
-			MyWindow* pWindow = nullptr;
+			SDLWindow* pWindow = nullptr;
 
 			for (auto& pWin : g_windows)
 			{
@@ -554,11 +557,9 @@ bool process_system_events()
 					Size size(e.window.data1, e.window.data2);
 
 					if (size != pWindow->rootPanel()->geo().size())
-					{
-//						auto pWindowSurface = generateWindowSurface(pWindow->SDLWindow(), e.window.data1, e.window.data2 );
-//						pWindow->rootPanel()->setCanvas(pWindowSurface);
-					}
-					break;
+                        pWindow->onWindowSizeUpdated( e.window.data1, e.window.data2 );
+
+                    break;
 				}
 					
 				case SDL_WINDOWEVENT_CLOSE:
@@ -948,10 +949,10 @@ std::string MyAppVisitor::selectFolderDialog(const std::string& title, const std
 
 //____ createWindow() _________________________________________________________
 
-WonderApp::Window_p MyAppVisitor::createWindow(const WonderApp::Window::Blueprint& blueprint)
+Window_p MyAppVisitor::createWindow(const Window::Blueprint& blueprint)
 {
-	auto pWindow =  MyWindow::create(blueprint, wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice()) );
-    
+	auto pWindow =  SDLWindow::create(blueprint);
+
 	g_windows.push_back(pWindow.rawPtr());
 
 	return pWindow;
@@ -1035,153 +1036,4 @@ bool MyHostBridge::setClipboardText(const std::string& text )
 	
 	return true;
 }
-
-//____ create() _______________________________________________________________
-
-MyWindow_p MyWindow::create(const Blueprint& blueprint, GlGfxDevice * pDevice)
-{
-	Rect geo;
-
-	geo = { blueprint.pos + Coord(4,20), blueprint.size};
-
-	uint32_t flags = SDL_WINDOW_OPENGL;
-
-	if (blueprint.resizable)
-		flags |= SDL_WINDOW_RESIZABLE;
- 
-
-	SDL_Window* pSDLWindow = SDL_CreateWindow(blueprint.title.c_str(), geo.x, geo.y, geo.w, geo.h, flags);
-	if (pSDLWindow == NULL)
-		return nullptr;
-
-    if( !blueprint.minSize.isEmpty() )
-        SDL_SetWindowMinimumSize(pSDLWindow,blueprint.minSize.w, blueprint.minSize.h);
-
-    if( !blueprint.maxSize.isEmpty() )
-        SDL_SetWindowMaximumSize(pSDLWindow,blueprint.maxSize.w, blueprint.maxSize.h);
-
-    
-	SDL_GLContext glContext = SDL_GL_CreateContext(pSDLWindow);
-	
-	SDL_GL_MakeCurrent( pSDLWindow, glContext );
-/*
-    glDrawBuffer(GL_FRONT);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glFlush();
-*/
-    
-    if( !pDevice )
-    {
-        auto _pDevice = GlGfxDevice::create();
-        Base::setDefaultGfxDevice(_pDevice);
-        
-        auto pFactory = GlSurfaceFactory::create();
-        Base::setDefaultSurfaceFactory(pFactory);
-    }
-    
-    wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(geo.w)*64,int(geo.h)*64});
-	auto pRootPanel = RootPanel::create(CanvasRef::Default, nullptr);
-
-	MyWindow_p pWindow = new MyWindow(blueprint.title, pRootPanel, geo, pSDLWindow, glContext);
-
-	//TODO: This is ugly. It should be handled when windows gets focused.
-
-	Base::inputHandler()->setFocusedWindow(pRootPanel);
-
-	return pWindow;
-}
-
-
-//____ MyWindow constructor ___________________________________________________
-
-MyWindow::MyWindow(const std::string& title, wg::RootPanel* pRootPanel, const wg::Rect& geo,
-                   SDL_Window* pSDLWindow, SDL_GLContext glContext)
-	: Window(pRootPanel, geo)
-{
-	m_pSDLWindow = pSDLWindow;
-    m_SDLGLContext = glContext;
-}
-
-
-//___ setTitle() ______________________________________________________________
-
-bool MyWindow::setTitle(std::string& title)
-{
-	SDL_SetWindowTitle(m_pSDLWindow, title.c_str());
-	return true;
-}
-
-//____ setIcon() ______________________________________________________________
-
-bool MyWindow::setIcon(Surface* pIcon)
-{
-	//TODO: IMPLEMENT!
-
-	return false;
-}
-
-
-//____ title() ________________________________________________________________
-
-std::string MyWindow::title() const
-{
-	return std::string(SDL_GetWindowTitle(m_pSDLWindow));
-}
-
-
-//____ render() _______________________________________________________________
-
-void MyWindow::render()
-{
-    SDL_GL_MakeCurrent( m_pSDLWindow, m_SDLGLContext );
-    
-    wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(m_geo.w)*64,int(m_geo.h)*64});
-
-    
-	m_pRootPanel->render();
-
-	//TODO: Just update the dirty rectangles!
-
-    int nRects = m_pRootPanel->nbUpdatedRects();
-    if( nRects == 0 )
-        return;
-
-    const RectSPX * pUpdatedRects = m_pRootPanel->firstUpdatedRect();
-/*    SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
-
-    for( int i = 0 ; i < nRects ; i++ )
-    {
-        pSDLRects[i].x = pUpdatedRects[i].x/64;
-        pSDLRects[i].y = pUpdatedRects[i].y/64;
-        pSDLRects[i].w = pUpdatedRects[i].w/64;
-        pSDLRects[i].h = pUpdatedRects[i].h/64;
-    }
-
-    SDL_UpdateWindowSurfaceRects( m_pSDLWindow, pSDLRects, nRects );
-
-    Base::memStackFree( sizeof(SDL_Rect) * nRects );
-*/
-//	SDL_UpdateWindowSurface(m_pSDLWindow);
-}
-
-
-
-//____ _updateWindowGeo() _____________________________________________________
-
-Rect MyWindow::_updateWindowGeo(const Rect& geo)
-{
-	//TODO: Calculate and update position as well.
-
-	SDL_SetWindowSize(m_pSDLWindow, geo.w, geo.h);
-	return geo;
-}
-
-//_____ windowGeoUpdated() ____________________________________________________
-
-void MyWindow::windowGeoUpdated(const wg::Rect& geo)
-{
-    m_geo = geo;
-}
-
 

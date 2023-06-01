@@ -2,14 +2,21 @@ set(CMAKE_CXX_STANDARD 20)
 
 source_group(Files REGULAR_EXPRESSION ".*")
 
+
 set(SOURCES
 
 	main.cpp
-	window.h
-	window.cpp
+    	sdlwindow.h
+	sdlwindow.cpp
+#	sdlwindow_sw.h
+#	sdlwindow_sw.cpp
+	sdlwindow_gl.h
+	sdlwindow_gl.cpp
 	tinyfiledialogs.h
 	tinyfiledialogs.c
-	../include/wonderapp.h
+	../common/wonderapp.h
+	../common/window.h
+	../common/window.cpp
 )
 
 set(INCDIRS
@@ -17,30 +24,33 @@ set(INCDIRS
 	${WONDERGUI_INCDIRS}
 	${WGFREETYPEFONT_INCDIRS}
 	${WGOPENGLGFX_INCDIRS}
-	${PROJECT_SOURCE_DIR}/wonderapp/include
+	${WGSOFTGFX_INCDIRS}
+	${PROJECT_SOURCE_DIR}/wonderapp/common
 	${PROJECT_SOURCE_DIR}
 )
 
-add_library(wappsdl2gl STATIC ${SOURCES} )
+add_library(wappsdl2 STATIC ${SOURCES} )
 
+target_compile_definitions(wappsdl2 PRIVATE USE_OPENGL)
 
-target_include_directories(wappsdl2gl PRIVATE 
+target_include_directories(wappsdl2 PRIVATE 
 	${INCDIRS}
 	${SDL2_INCDIR}
 	${SDL2IMAGE_INCDIR}
 )
 
-set_target_properties(wappsdl2gl PROPERTIES FOLDER "WonderApp/Frameworks" )
+set_target_properties(wappsdl2 PROPERTIES FOLDER "WonderApp/Frameworks" )
 
-target_link_directories(wappsdl2gl PUBLIC
+target_link_directories(wappsdl2 PUBLIC
 	${SDL2_LIBDIR}
 	${SDL2IMAGE_LIBDIR}
 	${FREETYPE2_LIBDIR}
 	${GLEW_LIBDIR}
 )
 
-target_link_libraries(wappsdl2gl PRIVATE
+target_link_libraries(wappsdl2 PRIVATE
 	wgopenglgfx
+	wgsoftgfx
 	wgfreetypefont
 	wondergui
 	${FREETYPE2_LIB}

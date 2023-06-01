@@ -17,7 +17,7 @@ public:
 
 	struct EditorWindow
 	{
-		WonderApp::Window_p	pWindow;
+		Window_p	        pWindow;
 		RootPanel_p			pRootPanel;
 		std::string			path;
 		TextEditor_p		pEditor;
@@ -47,7 +47,7 @@ private:
 	bool			_loadSkins(Visitor* pVisitor);
 
 	WonderApp::Visitor * m_pAppVisitor = nullptr;
-	WonderApp::Window_p m_pWindow = nullptr;
+	Window_p             m_pWindow = nullptr;
 
 
 	
