@@ -9,86 +9,42 @@
 //#include <wg_plugingfxdevice.h>
 
 using namespace wg;
+using namespace std;
+
+class Device;
+typedef StrongPtr<Device>   Device_p;
+typedef WeakPtr<Device>     Device_wp;
 
 
-class Device
+class Device : public Object
 {
 public:
 
-	virtual ~Device() {};
+    static Device_p create( const string& name, GfxDevice * pDevice, Surface * pSurface ) { return new Device(name, pDevice, pSurface);};
 
-	virtual const char * name() const = 0;
+    const string&   name() const { return m_name; }
 
-	virtual bool			init(SizeI canvasSize, PixelFormat canvasFormat) = 0;
-	virtual void			exit() = 0;
+	GfxDevice_p		beginRender() const;
+	void			endRender() const;
 
-	virtual GfxDevice_p		beginRender() const = 0;
-	virtual void			endRender() const = 0;
+    GfxDevice_p		gfxDevice() const { return m_pDevice; }
+    Surface_p		canvas() const { return m_pCanvas; }
 
-	virtual GfxDevice_p		gfxDevice() const = 0;
-	virtual Surface_p		canvas() const = 0;
-};
+protected:
+    Device( const string& name, GfxDevice * pDevice, Surface * pSurface ) : m_name(name), m_pDevice(pDevice), m_pCanvas(pSurface) {};
+    virtual ~Device() {};
 
+    
+    string          m_name;
+    GfxDevice_p     m_pDevice;
+    Surface_p       m_pCanvas;
 
-class SoftwareDevice : public Device
-{
-public:
-	SoftwareDevice()
-	{
-	}
-
-	const char * name() const
-	{
-		return m_pName;
-	}
-
-	bool init(SizeI canvasSize, PixelFormat canvasFormat)
-	{
-		m_pCanvas = SoftSurface::create( WGBP(Surface, _.size = canvasSize, _.format = canvasFormat, _.canvas = true) );
-		m_pDevice = SoftGfxDevice::create();
-		addDefaultSoftKernels(m_pDevice);
-		return true;
-	}
-
-	void exit()
-	{
-		m_pDevice = nullptr;
-		m_pCanvas = nullptr;
-	}
-
-	GfxDevice_p beginRender() const
-	{
-		m_pDevice->beginRender();
-		m_pDevice->beginCanvasUpdate(m_pCanvas);
-		return m_pDevice;
-	}
-
-	void endRender() const
-	{
-		m_pDevice->endCanvasUpdate();
-		m_pDevice->endRender();
-	}
-
-	GfxDevice_p	gfxDevice() const
-	{
-		return m_pDevice;
-	}
-
-	Surface_p canvas() const
-	{
-		return m_pCanvas;
-	}
-
-private:
-
-	const char * m_pName = { "Software" };
-
-	SoftGfxDevice_p		m_pDevice;
-	SoftSurface_p		m_pCanvas;
+    
 };
 
 
 
+/*
 class StreamToSoftwareDevice : public Device
 {
 public:

@@ -64,8 +64,24 @@ bool GfxDeviceTester::init( WonderApp::Visitor * pVisitor )
 
 	//
 	
-	addTestDevice(new SoftwareDevice());
-	addTestDevice(new SoftwareDevice());
+    Surface::Blueprint canvasBP = WGBP(Surface,
+                                       _.size = {512,512},
+                                       _.canvas = true );
+    
+    
+    auto pSoftGfxDevice = SoftGfxDevice::create();
+    addDefaultSoftKernels( pSoftGfxDevice );
+    
+    auto pReferenceDevice = Device::create( "Reference (SoftGfxDevice)", pSoftGfxDevice, SoftSurface::create( canvasBP ) );
+
+    auto pNativeGfxDevice = Base::defaultGfxDevice();
+    string nativeDeviceName = string("Native (" + string(pNativeGfxDevice->typeInfo().className) + ")" );
+    
+    auto pNativeDevice = Device::create(nativeDeviceName, pNativeGfxDevice, Base::defaultSurfaceFactory()->createSurface(canvasBP) );
+    
+    
+	addTestDevice(pReferenceDevice);
+	addTestDevice(pNativeDevice);
 
 	// Init textmappers
 
@@ -144,9 +160,8 @@ void GfxDeviceTester::exit()
 
 //____ addTestDevice() ___________________________________________________________
 
-void GfxDeviceTester::addTestDevice( Device * pDevice )
+void GfxDeviceTester::addTestDevice( Device_p pDevice )
 {
-	pDevice->init(g_canvasSize, PixelFormat::BGRA_8);
 	g_testdevices.push_back(pDevice);
 
 	if( g_pReferenceDevice == nullptr )
@@ -159,11 +174,6 @@ void GfxDeviceTester::addTestDevice( Device * pDevice )
 
 void GfxDeviceTester::destroy_testdevices()
 {
-	for (auto pDevice : g_testdevices)
-	{
-		pDevice->exit();
-		delete pDevice;
-	}
 	g_testdevices.clear();
 
 	g_pTesteeDevice = nullptr;

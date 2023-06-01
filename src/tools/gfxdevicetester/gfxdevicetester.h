@@ -23,7 +23,7 @@ public:
 
 	// Pre-init configuration
 
-	void	addTestDevice(Device* pDevice);
+	void	addTestDevice(Device_p pDevice);
 	void	destroy_testdevices();
 
 
@@ -111,8 +111,8 @@ protected:
 
 	ScrollPanel_p		g_pViewPanel = nullptr;
 
-	Device* g_pTesteeDevice = nullptr;
-	Device* g_pReferenceDevice = nullptr;
+	Device_p            g_pTesteeDevice = nullptr;
+	Device_p            g_pReferenceDevice = nullptr;
 
 	SurfaceDisplay_p	g_pTesteeCanvas = nullptr;
 	SurfaceDisplay_p	g_pReferenceCanvas = nullptr;
@@ -122,7 +122,7 @@ protected:
 	TextLayout_p		g_pPerformanceValueMapper = nullptr;
 	PackLayout_p		g_pPerformanceEntryLayout = nullptr;
 
-	vector<Device*>		g_testdevices;
+	vector<Device_p>	g_testdevices;
 	vector<SuiteEntry>	g_testsuites;
 	vector<TestEntry>	g_tests;
 
