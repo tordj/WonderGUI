@@ -46,6 +46,7 @@ using namespace wg;
 const TypeInfo SDLWindowGL::TYPEINFO = { "SDLOpenGLWindow", &SDLWindow::TYPEINFO };
 
 int SDLWindowGL::s_windowCounter = 0;
+bool SDLWindowGL::s_bInitialized = false;
 
 
 //____ create() _______________________________________________________________
@@ -61,6 +62,17 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
     if (blueprint.resizable)
         flags |= SDL_WINDOW_RESIZABLE;
 
+
+    if (SDLWindowGL::s_bInitialized == false)
+    {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
+    }
+
+
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, SDLWindowGL::s_windowCounter > 0 );
     
     SDL_Window* pSDLWindow = SDL_CreateWindow(blueprint.title.c_str(), geo.x, geo.y, geo.w, geo.h, flags);
@@ -73,10 +85,31 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
     if( !blueprint.maxSize.isEmpty() )
         SDL_SetWindowMaximumSize(pSDLWindow,blueprint.maxSize.w, blueprint.maxSize.h);
 
-    
     SDL_GLContext glContext = SDL_GL_CreateContext(pSDLWindow);
-    
-    SDL_GL_MakeCurrent( pSDLWindow, glContext );
+    SDL_GL_MakeCurrent(pSDLWindow, glContext);
+
+    if (SDLWindowGL::s_bInitialized == false)
+    {
+#if defined(_WIN32) || defined(__linux__)
+        glewExperimental = GL_TRUE;
+        GLenum err = glewInit();
+        if (GLEW_OK != err)
+        {
+            auto* pError = glewGetErrorString(err);
+            int x = 0;
+        }
+
+#endif
+
+        auto pDevice = GlGfxDevice::create();
+        Base::setDefaultGfxDevice(pDevice);
+
+        auto pFactory = GlSurfaceFactory::create();
+        Base::setDefaultSurfaceFactory(pFactory);
+
+    }
+
+        
 /*
     glDrawBuffer(GL_FRONT);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -84,17 +117,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
     glFlush();
 */
     
-    auto pDevice = Base::defaultGfxDevice();
-    if( !pDevice )
-    {
-        pDevice = GlGfxDevice::create();
-        Base::setDefaultGfxDevice(pDevice);
-        
-        auto pFactory = GlSurfaceFactory::create();
-        Base::setDefaultSurfaceFactory(pFactory);
-    }
-    
-    wg_static_cast<GlGfxDevice_p>(pDevice)->setDefaultCanvas({int(geo.w)*64,int(geo.h)*64});
+    wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(geo.w)*64,int(geo.h)*64});
     auto pRootPanel = RootPanel::create(CanvasRef::Default, nullptr);
 
     SDLWindowGL_p pWindow = new SDLWindowGL(blueprint.title, pRootPanel, geo, pSDLWindow, glContext);
@@ -103,6 +126,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
 
     Base::inputHandler()->setFocusedWindow(pRootPanel);
 
+    SDLWindowGL::s_bInitialized = true;
     return pWindow;
 }
 
@@ -140,7 +164,7 @@ void SDLWindowGL::onWindowSizeUpdated( int width, int height )
 void SDLWindowGL::render()
 {
     SDL_GL_MakeCurrent( m_pSDLWindow, m_SDLGLContext );
-    
+
     wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(m_geo.w)*64,int(m_geo.h)*64});
 
     

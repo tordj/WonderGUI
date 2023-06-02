@@ -272,6 +272,7 @@ bool MyApp::createEditorWindow( const std::string& windowTitle )
 		return true;
 	});
 	
+	return true;
 }
 
 

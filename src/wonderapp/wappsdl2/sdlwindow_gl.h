@@ -64,6 +64,7 @@ protected:
 
     SDL_GLContext       m_SDLGLContext = 0;
 
-    static int         s_windowCounter;
+    static int          s_windowCounter;
+    static bool         s_bInitialized;
 
 };

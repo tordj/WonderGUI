@@ -31,7 +31,7 @@ set(INCDIRS
 
 add_library(wappsdl2 STATIC ${SOURCES} )
 
-target_compile_definitions(wappsdl2 PRIVATE USE_OPENGL)
+#target_compile_definitions(wappsdl2 PRIVATE USE_OPENGL)
 
 target_include_directories(wappsdl2 PRIVATE 
 	${INCDIRS}
