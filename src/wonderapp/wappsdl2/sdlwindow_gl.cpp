@@ -48,6 +48,7 @@ const TypeInfo SDLWindowGL::TYPEINFO = { "SDLOpenGLWindow", &SDLWindow::TYPEINFO
 int SDLWindowGL::s_windowCounter = 0;
 bool SDLWindowGL::s_bInitialized = false;
 
+SDL_GLContext s_globalContext;
 
 //____ create() _______________________________________________________________
 
@@ -88,8 +89,11 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
     SDL_GLContext glContext = SDL_GL_CreateContext(pSDLWindow);
     SDL_GL_MakeCurrent(pSDLWindow, glContext);
 
+
     if (SDLWindowGL::s_bInitialized == false)
     {
+        s_globalContext = glContext;
+
 #if defined(_WIN32) || defined(__linux__)
         glewExperimental = GL_TRUE;
         GLenum err = glewInit();
@@ -163,10 +167,12 @@ void SDLWindowGL::onWindowSizeUpdated( int width, int height )
 
 void SDLWindowGL::render()
 {
-    SDL_GL_MakeCurrent( m_pSDLWindow, m_SDLGLContext );
+    // We use a single context for all our windows since we otherwise would
+    // need to have a separate GlGfxDevice for each context to make things work on Windows.
+
+    SDL_GL_MakeCurrent( m_pSDLWindow, s_globalContext );
 
     wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(m_geo.w)*64,int(m_geo.h)*64});
-
     
     m_pRootPanel->render();
 
