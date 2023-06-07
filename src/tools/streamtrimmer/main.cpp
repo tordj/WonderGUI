@@ -76,8 +76,8 @@ int main ( int argc, char** argv )
 	auto pStreamPump = GfxStreamPump::create( {pStreamReader, pStreamReader->output}, {pInputSplitter, pInputSplitter->input} );
 	
 	
-	pDevice->defineCanvas(CanvasRef::Canvas_1, {240,240}, 64);
-	pDevice->defineCanvas(CanvasRef::Canvas_2, {240,240}, 64);
+	pDevice->defineCanvas(CanvasRef::Canvas_1, {240,240}, PixelFormat::Undefined, 64);
+	pDevice->defineCanvas(CanvasRef::Canvas_2, {240,240}, PixelFormat::Undefined, 64);
 
 	pStraightLogger->setDisplayOffset(false);
 	pStraightLogger->setDisplayChunkNb(false);

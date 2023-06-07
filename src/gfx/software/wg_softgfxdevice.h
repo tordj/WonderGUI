@@ -440,6 +440,7 @@ namespace wg
 		uint8_t *		m_pCanvasPixels;	// Pixels of render layer surface
 		int				m_canvasPixelBits;	// PixelBits of render layer surface
 		int				m_canvasPitch;
+		PixelFormat		m_canvasPixelFormat = PixelFormat::Undefined;
 	};
 
 

@@ -295,8 +295,8 @@ int main ( int argc, char** argv )
 	// StreamGfxDevice and StreamSurfaceFactory feeding encoder
 
 	auto pStreamDevice = GfxStreamDevice::create(pEncoder);
-    pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {240,240} );
-	pStreamDevice->defineCanvas(CanvasRef::Canvas_2, {240,240} );
+    pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {240,240}, PixelFormat::Undefined );
+	pStreamDevice->defineCanvas(CanvasRef::Canvas_2, {240,240}, PixelFormat::Undefined );
 
 	auto pSurfaceFactory = GfxStreamSurfaceFactory::create(pEncoder);
 

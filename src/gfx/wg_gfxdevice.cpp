@@ -407,11 +407,18 @@ namespace wg
 	{
 
 		SizeSPX sz;
+		PixelFormat format;
 
 		if( ref != CanvasRef::None )
+		{
 			sz = canvas(ref).size;
+			format = canvas(ref).format;
+		}
 		else if( pSurface )
+		{
 			sz = pSurface->pixelSize()*64;
+			format = pSurface->pixelFormat();
+		}
 		else
 		{
 			//TODO: Error handling!
@@ -475,6 +482,7 @@ namespace wg
 		m_canvas.ref = ref;
 		m_canvas.pSurface = pSurface;
 		m_canvas.size = sz;
+		m_canvas.format = format;
 
 		m_pCanvasLayers = pCanvasLayers;
 

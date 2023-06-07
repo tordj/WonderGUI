@@ -15,6 +15,7 @@ add_subdirectory(texteditor)
 add_subdirectory(unittester)
 add_subdirectory(workbench)
 add_subdirectory(legacyworkbench)
+add_subdirectory(lineargfxworkbench)
 add_subdirectory(embeddedworkbench)
 
 

@@ -132,6 +132,9 @@ namespace wg
 		void					setCanvasLayers( CanvasLayers * pLayers );
 		inline CanvasLayers_p	canvasLayers() const;
 
+		void					setDirtyRectAlignment( int alignment );
+		int						dirtyRectAlignment() const { return m_dirtyRectAlignment; }
+		
 		Widget_p				findWidget(const Coord& ofs, SearchMode mode) override;
 
 		inline int				nbDirtyRects() const;
@@ -215,6 +218,8 @@ namespace wg
 		int					m_afterglowFrames;
 		std::deque<PatchesSPX>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 
+		int					m_dirtyRectAlignment = 1;
+		
 		GfxDevice_p			m_pGfxDevice;
 		CanvasInfo			m_canvas;			// Size of canvas in subpixels, when m_pCanvas is null.
 		CanvasLayers_p		m_pCanvasLayers;
@@ -327,8 +332,23 @@ namespace wg
 	//____ addDirtyPatch() ____________________________________________________
 
 	void RootPanel::addDirtyPatch(const RectSPX& rect) 
-	{ 
-		m_dirtyPatches.add(rect); 
+	{
+		if( m_dirtyRectAlignment > 1 )
+		{
+			RectSPX aligned;
+			
+			int adder = m_dirtyRectAlignment-1;
+			int mask = ~adder;
+			
+			aligned.x = rect.x & mask;
+			aligned.y = rect.y;
+			aligned.w = ((rect.x + rect.w + adder) & mask) - aligned.x;
+			aligned.h = rect.h;
+
+			m_dirtyPatches.add( aligned );
+		}
+		else
+			m_dirtyPatches.add( rect );
 	}
 
 	//____ addPreRenderCall() _________________________________________________

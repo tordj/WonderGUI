@@ -31,6 +31,10 @@ set(SOURCES
 	wg_softwaveform.h
 	wg_softwaveformfactory.cpp
 	wg_softwaveformfactory.h
+
+	wg_lineargfxdevice.cpp
+	wg_lineargfxdevice.h
+
 )
 
 set(INCDIRS

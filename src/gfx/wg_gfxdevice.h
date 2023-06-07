@@ -70,16 +70,19 @@ namespace wg
 	struct CanvasInfo
 	{
 		CanvasInfo() {};
-		CanvasInfo( CanvasRef _ref, Surface_p _pSurface, SizeI _size, int _scale ) :
+		CanvasInfo( CanvasRef _ref, Surface_p _pSurface, SizeI _size, PixelFormat _format, int _scale  ) :
 			ref(_ref),
 			pSurface(_pSurface),
 			size(_size),
-			scale(_scale) {}
+			scale(_scale),
+			format(_format) {}
 		
 		CanvasRef	ref = CanvasRef::None;
 		Surface_p	pSurface = nullptr;
 		SizeSPX		size;
 		int			scale = 64;
+
+		PixelFormat	format = PixelFormat::Undefined;
 	};
 
 

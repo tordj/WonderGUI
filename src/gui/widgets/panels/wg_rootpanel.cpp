@@ -622,13 +622,13 @@ namespace wg
 	void RootPanel::_childRequestRender(StaticSlot* pSlot)
 	{
 		if (m_bVisible)
-			m_dirtyPatches.add(m_geo);
+			addDirtyPatch(m_geo);
 	}
 
 	void RootPanel::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)
 	{
 		if (m_bVisible)
-			m_dirtyPatches.add(rect + m_geo.pos());
+			addDirtyPatch(rect + m_geo.pos());
 	}
 
 	//____ _childRequestResize() __________________________________________________

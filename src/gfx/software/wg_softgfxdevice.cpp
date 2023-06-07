@@ -397,7 +397,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		if( it == m_definedCanvases.end() )
 		{
 			if( pSurface )
-				m_definedCanvases.push_back( CanvasInfo( ref, pSurface, pSurface->pixelSize()*64, pSurface->scale() ) );
+				m_definedCanvases.push_back( CanvasInfo( ref, pSurface, pSurface->pixelSize()*64, pSurface->pixelFormat(), pSurface->scale() ) );
 		}
 		else
 		{
@@ -406,6 +406,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 				it->pSurface = pSurface;
 				it->size = pSurface->pixelSize()*64;
 				it->scale = pSurface->scale();
+				it->format = pSurface->pixelFormat();
 			}
 			else
 			{
@@ -2353,6 +2354,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			m_pCanvasPixels = nullptr;
 			m_canvasPixelBits = 0;
 			m_canvasPitch = 0;
+			m_canvasPixelFormat = PixelFormat::Undefined;
 
 			_updateBlitFunctions();		// Good to have dummies in place when we are not allowed to blit.
 		}
@@ -2390,7 +2392,8 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		m_canvasPitch = m_canvasPixelBuffer.pitch;
 
 		m_canvasPixelBits = m_pRenderLayerSurface->pixelDescription()->bits;
-
+		m_canvasPixelFormat = m_pRenderLayerSurface->pixelFormat();
+		
 		_updateTintSettings();
 		_updateBlitFunctions();
 
@@ -2731,7 +2734,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			m_bTileSource ? "true" : "false",
 			toString(m_colTrans.mode),
 			toString(m_blendMode),
-			toString(m_pRenderLayerSurface->pixelFormat()) );
+			toString(m_canvasPixelFormat) );
 		
 		GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 	}
@@ -2751,7 +2754,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			m_bClipSource ? "true" : "false",
 			toString(m_colTrans.mode),
 			toString(m_blendMode),
-			toString(m_pRenderLayerSurface->pixelFormat()) );
+			toString(m_canvasPixelFormat) );
 		
 		GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 	}
@@ -2772,14 +2775,14 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		// Sanity checking...
 
-		if (!m_pRenderLayerSurface || !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData || m_blendMode == BlendMode::Ignore )
+		if (/*!m_pRenderLayerSurface ||*/ !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData || m_blendMode == BlendMode::Ignore )
 			return;
 
 		//
 
 		SampleMethod	sampleMethod = m_pBlitSource->sampleMethod();
 		PixelFormat		srcFormat = m_pBlitSource->m_pixelFormat;
-		PixelFormat		dstFormat = m_pRenderLayerSurface->pixelFormat();
+		PixelFormat		dstFormat = m_canvasPixelFormat;
 
 		BlendMode		blendMode = m_blendMode;
 		
@@ -2805,10 +2808,10 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		
 		// Add two-pass rendering fallback.
 
-		auto pPixelDescSource = m_pBlitSource->pixelDescription();
-		auto pPixelDescDest = m_pRenderLayerSurface->pixelDescription();
+		auto pixelDescSource = Util::pixelFormatToDescription(srcFormat);
+		auto pixelDescDest = Util::pixelFormatToDescription(dstFormat);
 		
-		if ((pPixelDescDest->colorSpace == ColorSpace::Linear || dstFormat == PixelFormat::Alpha_8) && (pPixelDescSource->colorSpace == ColorSpace::Linear || srcFormat == PixelFormat::Alpha_8) )
+		if ((pixelDescDest.colorSpace == ColorSpace::Linear || dstFormat == PixelFormat::Alpha_8) && (pixelDescSource.colorSpace == ColorSpace::Linear || srcFormat == PixelFormat::Alpha_8) )
 		{
 			m_pStraightBlitFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(EdgeOp::None)];
 			m_pStraightTileFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(EdgeOp::Tile)];

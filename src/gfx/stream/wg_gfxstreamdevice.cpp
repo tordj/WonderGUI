@@ -216,7 +216,7 @@ namespace wg
         if (it == m_definedCanvases.end())
         {
             if (pSurface)
-                m_definedCanvases.push_back(CanvasInfo(ref, pSurface, pSurface->pixelSize() * 64, pSurface->scale()));
+                m_definedCanvases.push_back(CanvasInfo(ref, pSurface, pSurface->pixelSize() * 64, pSurface->pixelFormat(), pSurface->scale()));
         }
         else
         {
@@ -235,7 +235,7 @@ namespace wg
         return true;
     }
 
-	bool GfxStreamDevice::defineCanvas( CanvasRef ref, const SizeI& size, int scale )
+	bool GfxStreamDevice::defineCanvas( CanvasRef ref, const SizeI& size, PixelFormat format, int scale )
 	{
 	
 		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (CanvasInfo& entry) { return (ref == entry.ref); } );
@@ -243,7 +243,7 @@ namespace wg
 		if( it == m_definedCanvases.end() )
 		{
 			if( !size.isEmpty() )
-				m_definedCanvases.push_back( CanvasInfo( ref, nullptr, size * 64, scale ) );
+				m_definedCanvases.push_back( CanvasInfo( ref, nullptr, size * 64, format, scale ) );
 		}
 		else
 		{

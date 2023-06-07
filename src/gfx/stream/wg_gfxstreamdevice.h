@@ -57,7 +57,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		bool		defineCanvas( CanvasRef ref, GfxStreamSurface * pSurface );
-		bool		defineCanvas( CanvasRef ref, const SizeI& pixelSize, int scale = 64 );
+		bool		defineCanvas( CanvasRef ref, const SizeI& pixelSize, PixelFormat pixelFormat, int scale = 64 );
 
 		void		encodeCanvasList();
 		
