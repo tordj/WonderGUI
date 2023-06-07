@@ -502,6 +502,19 @@ MetalGfxDevice::MetalGfxDevice()
         return m_pSurfaceFactory;
 	}
 
+    //____ waveformFactory() ______________________________________________________
+
+    WaveformFactory_p MetalGfxDevice::waveformFactory()
+    {
+        return nullptr;
+/*
+        if (!m_pWaveformFactory)
+            m_pWaveformFactory = MetalWaveformFactory::create();
+
+        return m_pWaveformFactory;
+*/
+    }
+
 	//____ canvas() ____________________________________________________________
 
     const CanvasInfo MetalGfxDevice::canvas(CanvasRef ref) const

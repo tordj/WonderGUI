@@ -22,8 +22,8 @@
 
 #include <memory.h>
 
-#include <wg_metalsurface.h>
-#include <wg_metalsurfacefactory.h>
+#include "wg_metalsurface.h"
+#include "wg_metalsurfacefactory.h"
 #include <wg_gfxutil.h>
 
 

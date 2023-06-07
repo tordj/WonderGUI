@@ -42,10 +42,6 @@
 #include <fstream>
 #include <mutex>
 
-#include <wg_softgfxdevice.h>
-#include <wg_softsurfacefactory.h>
-#include <wg_softkernels_default.h>
-
 #include "sdlwindow.h"
 #include "tinyfiledialogs.h"
 

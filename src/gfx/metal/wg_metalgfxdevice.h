@@ -62,6 +62,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		SurfaceFactory_p		surfaceFactory() override;
+        WaveformFactory_p       waveformFactory() override;
 
         bool    setDefaultCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI pixelSize, PixelFormat pixelFormat, int scale = 64 );
  
@@ -209,6 +210,7 @@ namespace wg
         void    _resetBuffers();
 
         SurfaceFactory_p    m_pSurfaceFactory = nullptr;
+        WaveformFactory_p   m_pWaveformFactory = nullptr;
 
         float    m_lineThicknessTable[17];
 

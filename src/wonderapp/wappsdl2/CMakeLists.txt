@@ -6,12 +6,8 @@ source_group(Files REGULAR_EXPRESSION ".*")
 set(SOURCES
 
 	main.cpp
-    	sdlwindow.h
+    sdlwindow.h
 	sdlwindow.cpp
-#	sdlwindow_sw.h
-#	sdlwindow_sw.cpp
-	sdlwindow_gl.h
-	sdlwindow_gl.cpp
 	tinyfiledialogs.h
 	tinyfiledialogs.c
 	../common/wonderapp.h
@@ -23,41 +19,117 @@ set(INCDIRS
 	${CMAKE_CURRENT_LIST_DIR}
 	${WONDERGUI_INCDIRS}
 	${WGFREETYPEFONT_INCDIRS}
-	${WGOPENGLGFX_INCDIRS}
-	${WGSOFTGFX_INCDIRS}
 	${PROJECT_SOURCE_DIR}/wonderapp/common
 	${PROJECT_SOURCE_DIR}
 )
 
-add_library(wappsdl2 STATIC ${SOURCES} )
+### Software rendering version
 
-#target_compile_definitions(wappsdl2 PRIVATE USE_OPENGL)
-
-target_include_directories(wappsdl2 PRIVATE 
-	${INCDIRS}
-	${SDL2_INCDIR}
-	${SDL2IMAGE_INCDIR}
+add_library(wappsdl2sw STATIC
+    ${SOURCES}
+    sdlwindow_sw.h
+    sdlwindow_sw.cpp
 )
 
-set_target_properties(wappsdl2 PROPERTIES FOLDER "WonderApp/Frameworks" )
-
-target_link_directories(wappsdl2 PUBLIC
-	${SDL2_LIBDIR}
-	${SDL2IMAGE_LIBDIR}
-	${FREETYPE2_LIBDIR}
-	${GLEW_LIBDIR}
+target_include_directories(wappsdl2sw PRIVATE
+    ${INCDIRS}
+    ${WGSOFTGFX_INCDIRS}
+    ${SDL2_INCDIR}
+    ${SDL2IMAGE_INCDIR}
 )
 
-target_link_libraries(wappsdl2 PRIVATE
-	wgopenglgfx
-	wgsoftgfx
-	wgfreetypefont
-	wondergui
-	${FREETYPE2_LIB}
-	${SDL2_LIBS}
-	${SDL2IMAGE_LIBS}
-	${OPENGL_LIBS}
+set_target_properties(wappsdl2sw PROPERTIES FOLDER "WonderApp/Frameworks" )
+
+target_link_directories(wappsdl2sw PUBLIC
+    ${SDL2_LIBDIR}
+    ${SDL2IMAGE_LIBDIR}
+    ${FREETYPE2_LIBDIR}
 )
+
+target_link_libraries(wappsdl2sw PRIVATE
+    wgsoftgfx
+    wgfreetypefont
+    wondergui
+    ${FREETYPE2_LIB}
+    ${SDL2_LIBS}
+    ${SDL2IMAGE_LIBS}
+)
+
+### OpenGL-version
+
+add_library(wappsdl2gl STATIC
+    ${SOURCES}
+    sdlwindow_gl.h
+    sdlwindow_gl.cpp
+)
+
+#target_compile_definitions(wappsdl2gl PRIVATE USE_OPENGL)
+
+target_include_directories(wappsdl2gl PRIVATE
+    ${INCDIRS}
+    ${WGOPENGLGFX_INCDIRS}
+    ${SDL2_INCDIR}
+    ${SDL2IMAGE_INCDIR}
+)
+
+set_target_properties(wappsdl2gl PROPERTIES FOLDER "WonderApp/Frameworks" )
+
+target_link_directories(wappsdl2gl PUBLIC
+    ${SDL2_LIBDIR}
+    ${SDL2IMAGE_LIBDIR}
+    ${FREETYPE2_LIBDIR}
+    ${GLEW_LIBDIR}
+)
+
+target_link_libraries(wappsdl2gl PRIVATE
+    wgopenglgfx
+    wgfreetypefont
+    wondergui
+    ${FREETYPE2_LIB}
+    ${SDL2_LIBS}
+    ${SDL2IMAGE_LIBS}
+    ${OPENGL_LIBS}
+)
+
+
+### Metal-version
+
+
+add_library(wappsdl2metal STATIC
+    ${SOURCES}
+    sdlwindow_metal.h
+    sdlwindow_metal.mm
+)
+
+#target_compile_definitions(wappsdl2metal PRIVATE USE_OPENGL)
+
+target_include_directories(wappsdl2metal PRIVATE
+    ${INCDIRS}
+    ${WGMETALGFX_INCDIRS}
+    ${SDL2_INCDIR}
+    ${SDL2IMAGE_INCDIR}
+)
+
+set_target_properties(wappsdl2metal PROPERTIES FOLDER "WonderApp/Frameworks" )
+
+target_link_directories(wappsdl2metal PUBLIC
+    ${SDL2_LIBDIR}
+    ${SDL2IMAGE_LIBDIR}
+    ${FREETYPE2_LIBDIR}
+ )
+
+
+target_link_libraries(wappsdl2metal PRIVATE
+    wgmetalgfx
+    wgfreetypefont
+    wondergui
+    ${FREETYPE2_LIB}
+    ${SDL2_LIBS}
+    ${SDL2IMAGE_LIBS}
+    ${APPKIT_LIB}
+    ${METAL_LIB}
+)
+
 
 list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
 set(WAPP_SOURCES ${SOURCES} PARENT_SCOPE)

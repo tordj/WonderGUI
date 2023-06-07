@@ -46,6 +46,10 @@ elseif(APPLE)
 
 	find_library(OPENGL_LIBS OpenGL)
 
+    find_library(APPKIT_LIB AppKit)
+    find_library(METAL_LIB Metal)
+
+
 else()
     set(FREETYPE2_LIB freetype)
 
@@ -66,7 +70,7 @@ endif()
 #------------------------------------------------------------------------------
 
 
-set(WAPPLIB wappsdl2)			# WonderApp framework based on SDL2. Works on Windows, Mac and Linux.
+set(WAPPLIB wappsdl2metal)			# WonderApp framework based on SDL2. Works on Windows, Mac and Linux.
 
 
 #------------------------------------------------------------------------------
@@ -121,6 +125,6 @@ add_subdirectory(gfx/software)
 
 
 add_subdirectory(plugin)
-add_subdirectory(wonderapp/${WAPPLIB})
+add_subdirectory(wonderapp/wappsdl2)
 add_subdirectory(tools)
 add_subdirectory(examples)

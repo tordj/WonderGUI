@@ -14,20 +14,19 @@ set(SOURCES
 set_source_files_properties(wg3_metalshaders.mm.template wg3_shadercontent.mm PROPERTIES HEADER_FILE_ONLY YES)
 
 
-set(WGMETALGFX_INCDIRS
+set(INCDIRS
 	${CMAKE_CURRENT_LIST_DIR}
-
-	PARENT_SCOPE
 )
 
 add_library( wgmetalgfx STATIC ${SOURCES} )
 
 target_include_directories(wgmetalgfx PRIVATE 
 	${WONDERGFX_INCDIRS}
-	${WGMETALGFX_INCDIRS}
+	${INCDIRS}
 )
 
 set_target_properties( wgmetalgfx PROPERTIES FOLDER "Extensions" )
 
 list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
 set(WGMETALGFX_SOURCES ${SOURCES} PARENT_SCOPE)
+set(WGMETALGFX_INCDIRS ${INCDIRS} PARENT_SCOPE)
