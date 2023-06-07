@@ -310,7 +310,7 @@ namespace wg
 		BlendMode	m_blendMode = BlendMode::Blend;		// Current BlendMode.
 		float		m_morphFactor = 0.5f;				// Factor used for morphing in BlendMode::Morph.
 
-		HiColor		m_fixedBlendColor = HiColor::Black;
+		HiColor		m_fixedBlendColor = HiColor::Undefined;
 		
 		Gradient	m_tintGradient;
 		RectSPX		m_tintGradientRect = { 0,0,0,0 };
