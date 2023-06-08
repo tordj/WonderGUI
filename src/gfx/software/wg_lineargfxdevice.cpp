@@ -328,4 +328,115 @@ void LinearGfxDevice::fill(const RectSPX& rect, HiColor col)
 	}
 }
 
+
+
+void LinearGfxDevice::plotPixels( int nCoords, const CoordSPX * pCoords, const HiColor * pColors)
+{
+}
+
+void LinearGfxDevice::drawLine( CoordSPX begin, CoordSPX end, HiColor color, spx thickness )
+{
+}
+
+void LinearGfxDevice::drawLine( CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness )
+{
+}
+
+void LinearGfxDevice::blit(CoordSPX dest)
+{
+}
+
+void LinearGfxDevice::blit(CoordSPX dest, const RectSPX& src)
+{
+}
+
+void LinearGfxDevice::flipBlit(CoordSPX dest, GfxFlip flip )
+{
+}
+
+void LinearGfxDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip )
+{
+}
+
+void LinearGfxDevice::stretchBlit(const RectSPX& dest)
+{
+}
+
+void LinearGfxDevice::stretchBlit(const RectSPX& dest, const RectSPX& src)
+{
+}
+
+void LinearGfxDevice::stretchFlipBlit(const RectSPX& dest, GfxFlip flip)
+{
+}
+
+void LinearGfxDevice::stretchFlipBlit(const RectSPX& dest, const RectSPX& src, GfxFlip flip)
+{
+}
+
+void LinearGfxDevice::precisionBlit(const RectSPX& dest, const RectF& srcSPX)
+{
+}
+
+void LinearGfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
+{
+}
+
+void LinearGfxDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
+{
+}
+
+void LinearGfxDevice::tile(const RectSPX& dest, CoordSPX shift)
+{
+}
+
+void LinearGfxDevice::flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift)
+{
+}
+
+void LinearGfxDevice::scaleTile(const RectSPX& dest, float scale, CoordSPX shift)
+{
+}
+
+void LinearGfxDevice::scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift)
+{
+}
+
+void LinearGfxDevice::drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill)
+{
+}
+
+void LinearGfxDevice::flipDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip)
+{
+}
+
+void LinearGfxDevice::drawElipse(const RectSPX& canvas, spx thickness, HiColor color, spx outlineThickness, HiColor outlineColor)
+{
+}
+
+void LinearGfxDevice::drawPieChart(const RectSPX& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
+{
+}
+
+void LinearGfxDevice::drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
+{
+}
+
+void LinearGfxDevice::flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
+{
+}
+
+void LinearGfxDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+{
+}
+
+void LinearGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip)
+{
+}
+
+void LinearGfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)
+{
+}
+
+
 } //namespace wg

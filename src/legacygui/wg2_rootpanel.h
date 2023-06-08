@@ -53,6 +53,10 @@ public:
 
 	void					SetMaxDirtyRects( int max );
 	inline int				MaxDirtyRects() const { return m_maxDirtyRects; }
+
+	void					SetDirtyRectAlignment( int alignment );
+	int						DirtyRectAlignment() const { return m_dirtyRectAlignment; }
+
 	
 	bool					SetGfxDevice( wg::GfxDevice * pDevice );
 	inline wg::GfxDevice_p 	GfxDevice() const { return m_pGfxDevice; };
@@ -115,7 +119,7 @@ public:
 
 	void	SetUpdatedRectOverlay( wg::Skin * pUpdatedRectOverlay, int afterglowFrames = 3 );
 
-	inline void	AddDirtyPatch( const WgRect& rect ) { m_dirtyPatches.add( rect ); }
+	void 	AddDirtyPatch( const WgRect& rect );
     inline void ClearDirtyPatches( const WgRect& rect ) { m_dirtyPatches.clear(); }
 
 	WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode ) override;
@@ -168,6 +172,8 @@ protected:
 	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
 	int					m_maxDirtyRects = 0;	// 0 = unlimited
+	int					m_dirtyRectAlignment = 1;
+
 	bool				m_bWasAlreadyRendering = false;
 	
 	std::vector<WgWidgetWeakPtr>   m_preRenderCalls;

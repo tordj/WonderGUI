@@ -4,6 +4,8 @@ set(SOURCES
 
 	c-api/wg_c_softgfx.cpp
 	c-api/wg_c_softgfx.h
+	c-api/wg_c_lineargfx.cpp
+	c-api/wg_c_lineargfx.h
 	c-api/wg_c_softkernels_default.h
 	c-api/wg_c_softkernels_rgb555be_base.h
 	c-api/wg_c_softkernels_rgb555be_extras.h

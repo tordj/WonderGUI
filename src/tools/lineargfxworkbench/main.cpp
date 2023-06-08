@@ -25,6 +25,8 @@
 #include <wg_softkernels_rgb555be_base.h>
 #include <wg_softkernels_rgb555be_extras.h>
 
+#include <wg_c_lineargfx.h>
+
 using namespace wg;
 
 void 			translateEvents();

@@ -337,7 +337,7 @@ namespace wg
 		{
 			RectSPX aligned;
 			
-			int adder = m_dirtyRectAlignment-1;
+			int adder = (m_dirtyRectAlignment*64)-1;
 			int mask = ~adder;
 			
 			aligned.x = rect.x & mask;

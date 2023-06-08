@@ -275,6 +275,27 @@ void WgRootPanel::SetUpdatedRectOverlay( wg::Skin * pUpdatedRectOverlay, int aft
 	m_afterglowFrames = afterglowFrames;
 }
 
+//____ AddDirtyPatch() __________________________________________________________
+
+void WgRootPanel::AddDirtyPatch( const WgRect& rect )
+{
+	if( m_dirtyRectAlignment > 1 )
+	{
+		WgRect aligned;
+		
+		int adder = m_dirtyRectAlignment-1;
+		int mask = ~adder;
+		
+		aligned.x = rect.x & mask;
+		aligned.y = rect.y;
+		aligned.w = ((rect.x + rect.w + adder) & mask) - aligned.x;
+		aligned.h = rect.h;
+
+		m_dirtyPatches.add( aligned );
+	}
+	else
+		m_dirtyPatches.add( rect );
+}
 
 
 //____ Render() _______________________________________________________________
