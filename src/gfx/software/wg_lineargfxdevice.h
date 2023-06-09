@@ -62,6 +62,8 @@ namespace wg
 		using SoftGfxDevice::canvas;
 		const CanvasInfo canvas(CanvasRef ref) const override;
 
+		void		setSegmentPadding( int bytes );
+		inline int	segmentPadding() const { return m_segmentPadding; }
 
 		//.____ State _________________________________________________
 
@@ -81,12 +83,6 @@ namespace wg
 		void	drawLine( CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64 ) override;
 		void	drawLine( CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness = 64 ) override;
 
-
-		void	blit(CoordSPX dest) override;
-		void	blit(CoordSPX dest, const RectSPX& src) override;
-
-		void	flipBlit(CoordSPX dest, GfxFlip flip ) override;
-		void	flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip ) override;
 
 		void	stretchBlit(const RectSPX& dest) override;
 		void	stretchBlit(const RectSPX& dest, const RectSPX& src) override;
@@ -131,14 +127,38 @@ namespace wg
 
 		void	_canvasWasChanged() override;
 		void 	_clipListWasChanged() override;
+		void	_updateBlitFunctions() override;
 
 		bool 	_beginCanvasUpdate(CanvasRef ref, Surface * pCanvas, int nUpdateRects,
 								   const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;
+		
+		void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
+		void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2]) override;
+
 
 		
 		std::function<void*(CanvasRef ref, int nBytes)> m_beginCanvasRenderCallback;
 		std::function<void(CanvasRef ref, int nSegments, const Segment * pSegments)> m_endCanvasRenderCallback;
 
+		typedef void(LinearGfxDevice::*LinearStraightBlitProxy_Op)(uint8_t * pDst, int destPitch, int width, int height, CoordI src, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp);
+		typedef void(LinearGfxDevice::*LinearTransformBlitProxy_Op)(uint8_t * pDst, int destPitch, int width, int height, BinalCoord pos, const binalInt matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp);
+		
+		LinearStraightBlitProxy_Op	m_pLinearStraightBlitOp 	= nullptr;		// Function called to perform a straight blit.
+		LinearStraightBlitProxy_Op	m_pLinearStraightTileOp 	= nullptr;		// Function called to perform a straight tile.
+
+		LinearTransformBlitProxy_Op m_pLinearTransformBlitOp 	= nullptr;		// Function called to perform a transform blit.
+		LinearTransformBlitProxy_Op m_pLinearTransformClipBlitOp= nullptr;	// Function called to perform a transform clip blit.
+		LinearTransformBlitProxy_Op m_pLinearTransformTileOp 	= nullptr;		// Function called to perform a transform tile.
+
+		void	_onePassLinearStraightBlit(uint8_t * pDst, int destPitch, int width, int height, CoordI pos, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp);
+		void	_twoPassLinearStraightBlit(uint8_t * pDst, int destPitch, int width, int height, CoordI pos, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp);
+		void	_dummyLinearStraightBlit(uint8_t * pDst, int destPitch, int width, int height, CoordI pos, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp);
+
+		void	_onePassLinearTransformBlit(uint8_t * pDst, int destPitch, int width, int height, BinalCoord pos, const binalInt matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp);
+		void	_twoPassLinearTransformBlit(uint8_t * pDst, int destPitch, int width, int height, BinalCoord pos, const binalInt matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp);
+		void	_dummyLinearTransformBlit(uint8_t * pDst, int destPitch, int width, int height, BinalCoord pos, const binalInt matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp);
+		
+		
 		CanvasInfo					m_canvasDefinitions[CanvasRef_size];
 
 		std::vector<Segment>		m_canvasSegments;
@@ -150,6 +170,7 @@ namespace wg
 		int							m_canvasPixelBytes;
 		int							m_nbSurfaceCanvases = 0;
 		
+		int							m_segmentPadding = 0;
 
 	};
 

@@ -47,6 +47,7 @@ namespace wg
 	class SoftGfxDevice : public GfxDevice
 	{
 		friend class SoftSurface;
+		friend class LinearGfxDevice;
 	public:
 
 		//.____ Creation __________________________________________
@@ -324,7 +325,7 @@ namespace wg
 		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
 
 		static void	_initTables();
-		void	_updateBlitFunctions();
+		virtual void	_updateBlitFunctions();
 		int 	_scaleLineThickness(float thickness, int slope);
 
 		void	_updateTintSettings();

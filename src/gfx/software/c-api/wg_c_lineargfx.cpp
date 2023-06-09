@@ -44,6 +44,7 @@ wg_obj wg_createLinearGfxDevice(void*(*beginCanvasRenderFunc)(wg_canvasRef ref, 
 	return (wg_obj) static_cast<Object*>(pDevice.rawPtr());
 }
 
+
 int wg_defineLinearGfxDeviceCanvas( wg_obj device, wg_canvasRef ref, wg_sizeSPX size, wg_pixelFormat format, int scale )
 {
 	auto pDevice = static_cast<LinearGfxDevice*>(reinterpret_cast<Object*>(device));
@@ -51,3 +52,18 @@ int wg_defineLinearGfxDeviceCanvas( wg_obj device, wg_canvasRef ref, wg_sizeSPX 
 	return pDevice->defineCanvas((CanvasRef) ref, {size.w,size.h}, (PixelFormat) format, scale);
 }
 
+
+void wg_setLinearGfxDeviceSegmentPadding( wg_obj device, int bytes )
+{
+	auto pDevice = static_cast<LinearGfxDevice*>(reinterpret_cast<Object*>(device));
+
+	pDevice->setSegmentPadding(bytes);
+}
+
+
+int wg_linearGfxDeviceSegmentPadding( wg_obj device)
+{
+	auto pDevice = static_cast<LinearGfxDevice*>(reinterpret_cast<Object*>(device));
+
+	return pDevice->segmentPadding();
+}

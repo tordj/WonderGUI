@@ -42,6 +42,10 @@ extern "C" {
 
 	int		wg_defineLinearGfxDeviceCanvas( wg_obj device, wg_canvasRef ref, wg_sizeSPX size, wg_pixelFormat format, int scale );
 
+	void	wg_setLinearGfxDeviceSegmentPadding( wg_obj device, int bytes );
+	int		wg_linearGfxDeviceSegmentPadding( wg_obj device);
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -2775,7 +2775,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		// Sanity checking...
 
-		if (/*!m_pRenderLayerSurface ||*/ !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData || m_blendMode == BlendMode::Ignore )
+		if (/*!m_pRenderLayerSurface ||*/ !m_pBlitSource /*|| !m_pCanvasPixels*/ || !m_pBlitSource->m_pData || m_blendMode == BlendMode::Ignore )
 			return;
 
 		//

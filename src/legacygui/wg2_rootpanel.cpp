@@ -93,6 +93,14 @@ void WgRootPanel::SetMaxDirtyRects( int max )
 	m_maxDirtyRects = max;
 }
 
+//____ SetDirtyRectAlignment() ________________________________________________
+
+void WgRootPanel::SetDirtyRectAlignment( int alignment )
+{
+	m_dirtyRectAlignment = alignment;
+}
+
+
 //____ SetGfxDevice() _________________________________________________________
 
 bool WgRootPanel::SetGfxDevice( wg::GfxDevice * pDevice )

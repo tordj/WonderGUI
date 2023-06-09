@@ -73,6 +73,7 @@ bool LinearGfxDevice::defineCanvas( CanvasRef ref, const SizeSPX size, PixelForm
 	def.ref = ref;
 	def.pSurface = nullptr;
 	def.format = pixelFormat;
+	return true;
 }
 
 //____ canvas() _____________________________________________________
@@ -85,6 +86,12 @@ const CanvasInfo LinearGfxDevice::canvas(CanvasRef ref) const
 	return m_dummyCanvas;
 }
 
+//____ setSegmentPadding() ____________________________________________________
+
+void LinearGfxDevice::setSegmentPadding( int bytes )
+{
+	m_segmentPadding = bytes;
+}
 
 //____ beginRender() __________________________________________________________
 
@@ -127,6 +134,7 @@ bool LinearGfxDevice::_beginCanvasUpdate(CanvasRef ref, Surface * pCanvas, int n
 			bytesNeeded += (pUpdateRects[i].w * pUpdateRects[i].h)/(64*64);
 
 		bytesNeeded *= m_canvasPixelBytes;
+		bytesNeeded += nUpdateRects*m_segmentPadding;
 		
 		uint8_t * pCanvasBuffer = (uint8_t*) m_beginCanvasRenderCallback( ref, bytesNeeded );
 		
@@ -138,7 +146,7 @@ bool LinearGfxDevice::_beginCanvasUpdate(CanvasRef ref, Surface * pCanvas, int n
 			m_canvasSegments[i].rect = updateRect;
 			m_canvasSegments[i].pitch = updateRect.w * m_canvasPixelBytes;
 			m_canvasSegments[i].pBuffer = pCanvasBuffer + ofs;
-			ofs += updateRect.w * updateRect.h * m_canvasPixelBytes;
+			ofs += updateRect.w * updateRect.h * m_canvasPixelBytes + m_segmentPadding;
 		}
 		
 		m_pClipSegments = m_canvasSegments.data();
@@ -257,6 +265,29 @@ void LinearGfxDevice::_clipListWasChanged()
 	}
 }
 
+//____ _updateBlitFunctions() _________________________________________________
+
+void LinearGfxDevice::_updateBlitFunctions()
+{
+	SoftGfxDevice::_updateBlitFunctions();
+
+	if( m_pStraightBlitOp == &SoftGfxDevice::_onePassStraightBlit )
+		m_pLinearStraightBlitOp = &LinearGfxDevice::_onePassLinearStraightBlit;
+	else if( m_pStraightBlitOp == &SoftGfxDevice::_twoPassStraightBlit )
+		m_pLinearStraightBlitOp = &LinearGfxDevice::_twoPassLinearStraightBlit;
+	else
+		m_pLinearStraightBlitOp = &LinearGfxDevice::_dummyLinearStraightBlit;
+
+	if( m_pStraightTileOp == &SoftGfxDevice::_onePassStraightBlit )
+		m_pLinearStraightTileOp = &LinearGfxDevice::_onePassLinearStraightBlit;
+	else if( m_pStraightTileOp == &SoftGfxDevice::_twoPassStraightBlit )
+		m_pLinearStraightTileOp = &LinearGfxDevice::_twoPassLinearStraightBlit;
+	else
+		m_pLinearStraightTileOp = &LinearGfxDevice::_dummyLinearStraightBlit;
+
+}
+
+
 //____ fill() _________________________________________________________________
 
 void LinearGfxDevice::fill(const RectSPX& rect, HiColor col)
@@ -342,22 +373,6 @@ void LinearGfxDevice::drawLine( CoordSPX begin, Direction dir, spx length, HiCol
 {
 }
 
-void LinearGfxDevice::blit(CoordSPX dest)
-{
-}
-
-void LinearGfxDevice::blit(CoordSPX dest, const RectSPX& src)
-{
-}
-
-void LinearGfxDevice::flipBlit(CoordSPX dest, GfxFlip flip )
-{
-}
-
-void LinearGfxDevice::flipBlit(CoordSPX dest, const RectSPX& src, GfxFlip flip )
-{
-}
-
 void LinearGfxDevice::stretchBlit(const RectSPX& dest)
 {
 }
@@ -437,6 +452,180 @@ void LinearGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxF
 void LinearGfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)
 {
 }
+
+void LinearGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX _src, const int simpleTransform[2][2])
+{
+
+	if( m_canvas.pSurface )
+	{
+		SoftGfxDevice::_transformBlitSimple(_dest,_src,simpleTransform);
+		return;
+	}
+	
+	// For this method, source and dest should be pixel aligned.
+
+	// Clip and render the patches
+
+	if (!_dest.isOverlapping(m_clipBounds))
+		return;
+
+
+	//TODO: Proper 26:6 support
+	RectI dest = roundToPixels(_dest);
+
+	const RectI& clip = dest;
+
+	// Step forward _src by half a pixel, so we start from correct pixel.
+
+	_src.x = _src.x + (simpleTransform[0][0] + simpleTransform[1][0])*32;
+	_src.y = _src.y + (simpleTransform[0][1] + simpleTransform[1][1])*32;
+
+	//
+
+	for (int i = 0; i < m_nClipSegments; i++)
+	{
+		RectI  patch = m_pClipSegments[i].rect;
+
+		CoordI src = _src/64;
+
+		CoordI	patchOfs = patch.pos() - dest.pos();
+
+
+		if ((clip.x > patch.x) || (clip.x + clip.w < patch.x + patch.w) ||
+			(clip.y > patch.y) || (clip.y + clip.h < patch.y + patch.h))
+		{
+
+			if ((clip.x > patch.x + patch.w) || (clip.x + clip.w < patch.x) ||
+				(clip.y > patch.y + patch.h) || (clip.y + clip.h < patch.y))
+				continue;																					// Totally outside clip-rect.
+
+			if (patch.x < clip.x)
+			{
+				int xDiff = clip.x - patch.x;
+				patch.w -= xDiff;
+				patch.x = clip.x;
+				patchOfs.x += xDiff;
+			}
+
+			if (patch.y < clip.y)
+			{
+				int yDiff = clip.y - patch.y;
+				patch.h -= yDiff;
+				patch.y = clip.y;
+				patchOfs.y += yDiff;
+			}
+
+			if (patch.x + patch.w > clip.x + clip.w)
+				patch.w = (clip.x + clip.w) - patch.x;
+
+			if (patch.y + patch.h > clip.y + clip.h)
+				patch.h = (clip.y + clip.h) - patch.y;
+		}
+
+		//
+
+		src.x += patchOfs.x * simpleTransform[0][0] + patchOfs.y * simpleTransform[1][0];
+		src.y += patchOfs.x * simpleTransform[0][1] + patchOfs.y * simpleTransform[1][1];
+
+		uint8_t * pDst = m_pClipSegments[i].pBuffer + (patch.y-m_pClipSegments[i].rect.y) * m_pClipSegments[i].pitch + (patch.x - m_pClipSegments[i].rect.x) * m_canvasPixelBytes;
+		
+		
+		if( m_bTileSource )
+			(this->*m_pLinearStraightTileOp)(pDst, m_pClipSegments[i].pitch, patch.w, patch.h, src, simpleTransform, patch.pos(), m_pStraightTileFirstPassOp);
+		else
+			(this->*m_pLinearStraightBlitOp)(pDst, m_pClipSegments[i].pitch, patch.w, patch.h, src, simpleTransform, patch.pos(), m_pStraightBlitFirstPassOp);
+	}
+}
+
+void LinearGfxDevice::_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2])
+{
+	
+}
+
+
+//____ _onePassLinearStraightBlit() _____________________________________________
+
+void LinearGfxDevice::_onePassLinearStraightBlit(uint8_t * pDst, int destPitch, int width, int height, CoordI src, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp)
+{
+	const SoftSurface * pSource = m_pBlitSource;
+
+	int srcPixelBytes = pSource->m_pPixelDescription->bits / 8;
+	int dstPixelBytes = m_canvasPixelBytes;
+
+	Pitches pitches;
+
+	pitches.srcX = srcPixelBytes * simpleTransform[0][0] + pSource->m_pitch * simpleTransform[0][1];
+	pitches.dstX = dstPixelBytes;
+	pitches.srcY = srcPixelBytes * simpleTransform[1][0] + pSource->m_pitch * simpleTransform[1][1] - pitches.srcX*width;
+	pitches.dstY = destPitch - width * dstPixelBytes;
+
+	uint8_t * pSrc = pSource->m_pData + src.y * pSource->m_pitch + src.x * srcPixelBytes;
+
+	pPassOneOp(pSrc, pDst, pSource, pitches, height, width, m_colTrans, patchPos, simpleTransform);
+}
+
+//____ _twoPassLinearStraightBlit() _____________________________________________
+
+void LinearGfxDevice::_twoPassLinearStraightBlit(uint8_t * pDst, int destPitch, int width, int height, CoordI src, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp)
+{
+	SoftSurface * pSource = m_pBlitSource;
+
+	int srcPixelBytes = pSource->m_pPixelDescription->bits / 8;
+	int dstPixelBytes = m_canvasPixelBits / 8;
+
+	Pitches pitchesPass1, pitchesPass2;
+
+	pitchesPass1.srcX = srcPixelBytes * simpleTransform[0][0] + pSource->m_pitch * simpleTransform[0][1];
+	pitchesPass1.dstX = 8;
+	pitchesPass1.srcY = srcPixelBytes * simpleTransform[1][0] + pSource->m_pitch * simpleTransform[1][1] - pitchesPass1.srcX*width;
+	pitchesPass1.dstY = 0;
+
+	pitchesPass2.srcX = 8;
+	pitchesPass2.dstX = dstPixelBytes;
+	pitchesPass2.srcY = 0;
+	pitchesPass2.dstY = destPitch - width * dstPixelBytes;
+
+	int chunkLines;
+
+	if (width>= 2048)
+		chunkLines = 1;
+	else if (width*height <= 2048)
+		chunkLines = height;
+	else
+		chunkLines = 2048 / width;
+
+	int memBufferSize = chunkLines * width*8;
+
+	uint8_t * pChunkBuffer = (uint8_t*) GfxBase::memStackAlloc(memBufferSize);
+
+	int line = 0;
+
+	while (line < height)
+	{
+		int thisChunkLines = min(height - line, chunkLines);
+
+		uint8_t * pSrc = pSource->m_pData + src.y * pSource->m_pitch + line*(srcPixelBytes * simpleTransform[1][0] + pSource->m_pitch * simpleTransform[1][1]) + src.x * srcPixelBytes;
+//			uint8_t * pSrc = pSource->m_pData + (src.y+line) * pSource->m_pitch + src.x * srcPixelBytes;
+
+		pPassOneOp(pSrc, pChunkBuffer, pSource, pitchesPass1, thisChunkLines, width, m_colTrans, { 0,0 }, simpleTransform);
+		m_pBlitSecondPassOp(pChunkBuffer, pDst, pSource, pitchesPass2, thisChunkLines, width, m_colTrans, patchPos, nullptr);
+
+		patchPos.y += thisChunkLines;
+		line += thisChunkLines;
+		
+		pDst += width*dstPixelBytes;
+	}
+
+	GfxBase::memStackFree(memBufferSize);
+}
+
+//____ _dummyLinearStraightBlit() _____________________________________________
+
+void LinearGfxDevice::_dummyLinearStraightBlit(uint8_t * pDst, int destPitch, int width, int height, CoordI pos, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp)
+{
+}
+
+
 
 
 } //namespace wg

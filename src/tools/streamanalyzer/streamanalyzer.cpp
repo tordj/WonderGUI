@@ -2,8 +2,13 @@
 #include "streamanalyzer.h"
 
 #include <wg_softgfxdevice.h>
+#include <wg_softkernels_rgb555be_base.h>
 #include <wg_softkernels_rgb555be_extras.h>
+
+#include <wg_softkernels_rgb565be_base.h>
 #include <wg_softkernels_rgb565be_extras.h>
+
+#include <wg_lineargfxdevice.h>
 
 #include <string>
 #include <fstream>
@@ -713,7 +718,64 @@ bool MyApp::loadStream(std::string path)
 
 	// Setup streamwrapper and pump
 	
-	m_pStreamPlayer	= GfxStreamPlayer::create( GfxBase::defaultGfxDevice(), GfxBase::defaultSurfaceFactory() );
+
+	auto pStreamGfxDevice = LinearGfxDevice::create(
+		[this](CanvasRef ref, int bytes)
+		{
+			m_pLinearCanvasBuffer = new char[bytes];
+			memset(m_pLinearCanvasBuffer, 0, bytes);
+			
+			return m_pLinearCanvasBuffer;
+		},
+		[this](CanvasRef ref, int nSegments, const LinearGfxDevice::Segment * pSegments)
+		{
+			Surface_p pScreen = m_screens[int(ref) - int(CanvasRef::Default)];
+			
+			auto pixbuf = pScreen->allocPixelBuffer();
+			pScreen->pushPixels(pixbuf);
+
+			int pixelBytes = Util::pixelFormatToDescription(pixbuf.format).bits / 8;
+			
+			for( int i = 0 ; i < nSegments ; i++ )
+			{
+				auto& seg = pSegments[i];
+				
+				uint8_t * pSrc = seg.pBuffer;
+				uint8_t * pDst = pixbuf.pixels + seg.rect.y * pixbuf.pitch + seg.rect.x * pixelBytes;
+				
+				for( int y = 0 ; y < seg.rect.h ; y++ )
+				{
+					memcpy( pDst, pSrc, seg.rect.w * pixelBytes );
+					pSrc += seg.pitch;
+					pDst += pixbuf.pitch;
+				}
+			}
+			
+			pScreen->pullPixels(pixbuf);
+			pScreen->freePixelBuffer(pixbuf);
+			
+			delete [] m_pLinearCanvasBuffer;
+			m_pLinearCanvasBuffer = nullptr;
+		} );
+
+	
+	
+//	auto pStreamGfxDevice = SoftGfxDevice::create();
+	
+//	auto pStreamGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::defaultGfxDevice());
+	
+
+	addBaseSoftKernelsForRGB555BECanvas(pStreamGfxDevice);
+	addExtraSoftKernelsForRGB555BECanvas(pStreamGfxDevice);
+
+	addBaseSoftKernelsForRGB565BECanvas(pStreamGfxDevice);
+	addExtraSoftKernelsForRGB565BECanvas(pStreamGfxDevice);
+
+	
+	m_pStreamSurfaceFactory = pStreamGfxDevice->surfaceFactory();
+	m_pStreamGfxDevice = pStreamGfxDevice;
+	
+	m_pStreamPlayer	= GfxStreamPlayer::create( m_pStreamGfxDevice, m_pStreamSurfaceFactory );
 	m_pStreamPlayer->setStoreDirtyRects(true);
 	m_pStreamPlayer->setMaxDirtyRects(10000);
 	
@@ -738,7 +800,9 @@ void MyApp::setupScreens()
 	SurfaceFactory_p	pFactory = GfxBase::defaultSurfaceFactory();
 
 	// Ugly typecast! Will only work with SoftGfxDevice!
-	SoftGfxDevice_p		pGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(GfxBase::defaultGfxDevice());
+	
+	LinearGfxDevice_p		pLinearGfxDevice = wg_dynamic_cast<LinearGfxDevice_p>(m_pStreamGfxDevice);
+	SoftGfxDevice_p			pSoftGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(m_pStreamGfxDevice);
 	
 	for (int i = 0; i < 11; i++)
 	{
@@ -746,10 +810,14 @@ void MyApp::setupScreens()
 		pSurf->fill(HiColor::Black);
 
 		m_screens.push_back(pSurf);
-		
-		pGfxDevice->defineCanvas(CanvasRef(int(CanvasRef::Default) + i), wg_dynamic_cast<SoftSurface_p>(pSurf));
+
+		if( pLinearGfxDevice )
+			pLinearGfxDevice->defineCanvas(CanvasRef(int(CanvasRef::Default) + i), {240*64,240*64}, PixelFormat::RGB_555_bigendian, 64 );
+		else
+			pSoftGfxDevice->defineCanvas(CanvasRef(int(CanvasRef::Default) + i), wg_dynamic_cast<SoftSurface_p>(pSurf));
 	}
 }
+
 
 //____ updateGUIAfterReload() ________________________________________________
 
@@ -1118,28 +1186,17 @@ void MyApp::_updateDebugOverlays()
 		CanvasRef canvas = (CanvasRef) (i+1);
 		auto pOverlay = m_debugOverlays[i];
 		auto [nRects, pRects] = m_pStreamPlayer->dirtyRects(canvas);
-		if( nRects == 0 )
-		{
-			pDevice->beginCanvasUpdate(m_debugOverlays[i]);
-			pDevice->setBlendMode(BlendMode::Replace);
-			pDevice->fill(Color::Transparent);
-			pDevice->setBlendMode(BlendMode::Blend);
-			pDevice->endCanvasUpdate();
-		}
-		else
-		{
-			pDevice->beginCanvasUpdate(m_debugOverlays[i]);
-			pDevice->setBlendMode(BlendMode::Replace);
-			pDevice->fill(Color::Transparent);
-			pDevice->setBlendMode(BlendMode::Blend);
-			for( int x = 0 ; x < nRects ; x++ )
-			{
-				pOverlaySkin->_render(pDevice, pRects[x], 64, State::Normal);
-			}
-			pDevice->endCanvasUpdate();
 
-			
+		pDevice->beginCanvasUpdate(m_debugOverlays[i]);
+		pDevice->setBlendMode(BlendMode::Replace);
+		pDevice->fill(Color::Transparent);
+		pDevice->setBlendMode(BlendMode::Blend);
+		for( int x = 0 ; x < nRects ; x++ )
+		{
+			pOverlaySkin->_render(pDevice, pRects[x], 64, State::Normal);
 		}
+		pDevice->endCanvasUpdate();
+
 
 		pDevice->endRender();
 	}

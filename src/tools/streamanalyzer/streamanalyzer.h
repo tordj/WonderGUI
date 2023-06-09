@@ -69,6 +69,10 @@ private:
 	Visitor * 			m_pAppVisitor = nullptr;
 	Window_p			m_pWindow;
 
+	GfxDevice_p			m_pStreamGfxDevice;
+	SurfaceFactory_p	m_pStreamSurfaceFactory;
+	char *				m_pLinearCanvasBuffer = nullptr;
+	
 	Blob_p				m_pStreamBlob;
 	GfxStreamPlayer_p	m_pStreamPlayer;
 	GfxStreamLogger_p	m_pStreamLogger;
