@@ -757,8 +757,6 @@ bool MyApp::loadStream(std::string path)
 			delete [] m_pLinearCanvasBuffer;
 			m_pLinearCanvasBuffer = nullptr;
 		} );
-
-	
 	
 //	auto pStreamGfxDevice = SoftGfxDevice::create();
 	

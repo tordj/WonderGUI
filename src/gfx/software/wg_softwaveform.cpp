@@ -22,6 +22,8 @@
 
 #include <wg_softwaveform.h>
 
+#include <cstring>
+
 namespace wg
 {
 

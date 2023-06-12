@@ -100,6 +100,14 @@ void WgRootPanel::SetDirtyRectAlignment( int alignment )
 	m_dirtyRectAlignment = alignment;
 }
 
+//____ SetMaxDirtyRectPixels() ________________________________________________
+
+void WgRootPanel::SetMaxDirtyRectPixels( int maxDirtyRectPixels )
+{
+	m_maxDirtyRectPixels = maxDirtyRectPixels;
+}
+
+
 
 //____ SetGfxDevice() _________________________________________________________
 
@@ -366,6 +374,39 @@ bool WgRootPanel::BeginRender()
 
     m_dirtyPatches.clip(PixelGeo());
     
+	// Apply any limits to pixel-size of dirty rects.
+	
+	if( m_maxDirtyRectPixels > 0 )
+	{
+		int orgSize = m_dirtyPatches.size();
+
+		for( int i = 0 ; i < orgSize ; i++ )
+		{
+			auto p = m_dirtyPatches.begin() + i;
+			
+			if( p->w * p->h > m_maxDirtyRectPixels )
+			{
+				int maxLines = m_maxDirtyRectPixels / p->w;
+
+				int linesLeft = p->h - maxLines;
+				int yPos = p->y + maxLines;
+				
+				const_cast<WgRect*>(p)->h = maxLines;
+				
+				while( linesLeft > maxLines )
+				{
+					m_dirtyPatches.add( WgRect(p->x,yPos,p->w,maxLines) );
+					linesLeft -= maxLines;
+					yPos += maxLines;
+				}
+
+				if( linesLeft > 0 )
+					m_dirtyPatches.add( WgRect(p->x,yPos,p->w,linesLeft) );
+			}
+		}
+	}
+	
+	
     //
     
 	if( m_pUpdatedRectOverlay )

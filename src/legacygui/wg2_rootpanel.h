@@ -57,6 +57,9 @@ public:
 	void					SetDirtyRectAlignment( int alignment );
 	int						DirtyRectAlignment() const { return m_dirtyRectAlignment; }
 
+	void					SetMaxDirtyRectPixels( int maxDirtyRectPixels );
+	inline int				MaxDirtyRectPixels() const { return m_maxDirtyRectPixels; }
+
 	
 	bool					SetGfxDevice( wg::GfxDevice * pDevice );
 	inline wg::GfxDevice_p 	GfxDevice() const { return m_pGfxDevice; };
@@ -173,6 +176,7 @@ protected:
 
 	int					m_maxDirtyRects = 0;	// 0 = unlimited
 	int					m_dirtyRectAlignment = 1;
+	int					m_maxDirtyRectPixels = 0;
 
 	bool				m_bWasAlreadyRendering = false;
 	

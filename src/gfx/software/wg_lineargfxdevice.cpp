@@ -152,6 +152,8 @@ bool LinearGfxDevice::_beginCanvasUpdate(CanvasRef ref, Surface * pCanvas, int n
 		m_pClipSegments = m_canvasSegments.data();
 		m_nClipSegments = m_canvasSegments.size();
 	}
+	
+	return true;
 }
 
 //____ endCanvasUpdate() ______________________________________________________
