@@ -138,7 +138,7 @@ namespace wg
 		{
 			uint16_t	version;
 			*m_pDecoder >> version;
-			
+
 			//TODO: Something if version isn't supported.
 
 			break;
@@ -147,11 +147,11 @@ namespace wg
 		case GfxChunkId::CanvasList:
 		{
 			uint16_t nbCanvases;
-			
+
 			*m_pDecoder >> nbCanvases;
-			
+
 			CanvasInfo	canvas[CanvasRef_size];
-			
+
 			for( int i = 0 ; i < nbCanvases ; i++ )
 			{
 				uint16_t 	ref;
@@ -161,7 +161,7 @@ namespace wg
 				*m_pDecoder >> ref;
 				*m_pDecoder >> size;
 				*m_pDecoder >> scale;
-				
+
 				canvas[i].ref = (CanvasRef) ref;
 				canvas[i].size = size;
 				canvas[i].scale = scale;
@@ -179,23 +179,23 @@ namespace wg
 			assert(m_clipListBufferStack.empty() && m_clipListInfoStack.empty() && m_clipListBuffer.nRects == 0);
             m_pDevice->endRender();
             break;
-                
+
         case GfxChunkId::Flush:
             m_pDevice->flush();
             break;
-             
+
 		case GfxChunkId::BeginCanvasUpdate:
 		{
 			uint16_t	surfaceId;
 			CanvasRef	canvasRef;
 			uint8_t		dummy;
-				
+
 			*m_pDecoder >> surfaceId;
  			*m_pDecoder >> canvasRef;
 			*m_pDecoder >> dummy;
 
 			int nUpdateRects = (header.size - 4) / 16;
-			
+
 			auto pRects = _pushClipListCanvas(nUpdateRects);
 
 			if( surfaceId > 0 )
@@ -205,7 +205,7 @@ namespace wg
 
 			break;
 		}
-				
+
 		case GfxChunkId::EndCanvasUpdate:
 		{
 
@@ -273,7 +273,7 @@ namespace wg
 			m_pDevice->pushClipList(nRects, pRects);
 			break;
 		}
-			
+
 		case GfxChunkId::PopClipList:
 			_popClipList();
 			m_pDevice->popClipList();
@@ -291,10 +291,10 @@ namespace wg
 		{
 			RectI rect;
 			Gradient gradient;
-			
+
 			*m_pDecoder >> rect;
 			*m_pDecoder >> gradient;
-			
+
 			m_pDevice->setTintGradient(rect, gradient );
 		   break;
 		}
@@ -331,7 +331,7 @@ namespace wg
 			float	factor;
 
 			*m_pDecoder >> factor;
-			
+
 			m_pDevice->setRenderLayer(factor);
 			break;
 		}
@@ -341,17 +341,17 @@ namespace wg
 			HiColor	col;
 
 			*m_pDecoder >> col;
-			
+
 			m_pDevice->setFixedBlendColor(col);
 			break;
 		}
-				
+
 		case GfxChunkId::SetRenderLayer:
 		{
 			uint16_t	layer;
 
 			*m_pDecoder >> layer;
-			
+
 			m_pDevice->setRenderLayer(layer);
 			break;
 		}
@@ -365,7 +365,7 @@ namespace wg
 			m_pDevice->fill(col);
 			break;
 		}
-			
+
 		case GfxChunkId::FillRect:
 		{
 			RectSPX	rect;
@@ -450,7 +450,7 @@ namespace wg
 				break;
 			}
 
-				
+
 		case GfxChunkId::Blit:
 		{
 			CoordSPX	dest;
@@ -520,7 +520,7 @@ namespace wg
 			m_pDevice->stretchBlit(dest, source);
 			break;
 		}
-			
+
 		case GfxChunkId::StretchFlipBlit:
 		{
 			RectSPX		dest;
@@ -558,7 +558,7 @@ namespace wg
 			m_pDevice->precisionBlit(dest, source);
 			break;
 		}
-				
+
 		case GfxChunkId::TransformBlit:
 		{
 			RectSPX		dest;
@@ -583,7 +583,7 @@ namespace wg
 			float		scale;
 			CoordF		srcCenter;
 			CoordF		destCenter;
-			
+
 			*m_pDecoder >> dest;
 			*m_pDecoder >> rotationDegrees;
 			*m_pDecoder >> scale;
@@ -598,7 +598,7 @@ namespace wg
 		{
 			RectSPX		dest;
 			CoordSPX	shift;
-			
+
 			*m_pDecoder >> dest;
 			*m_pDecoder >> shift;
 
@@ -611,7 +611,7 @@ namespace wg
 			RectSPX		dest;
 			GfxFlip		flip;
 			CoordSPX	shift;
-			
+
 			*m_pDecoder >> dest;
 			*m_pDecoder >> flip;
 			*m_pDecoder >> shift;
@@ -619,13 +619,13 @@ namespace wg
 			m_pDevice->flipTile(dest, flip, shift);
 			break;
 		}
-			
+
 		case GfxChunkId::ScaleTile:
 		{
 			RectSPX		dest;
 			float		scale;
 			CoordSPX	shift;
-			
+
 			*m_pDecoder >> dest;
 			*m_pDecoder >> scale;
 			*m_pDecoder >> shift;
@@ -640,7 +640,7 @@ namespace wg
 			float		scale;
 			GfxFlip		flip;
 			CoordSPX	shift;
-			
+
 			*m_pDecoder >> dest;
 			*m_pDecoder >> scale;
 			*m_pDecoder >> flip;
@@ -684,7 +684,7 @@ namespace wg
 			m_wave.bottomBorder.pWave = reinterpret_cast<int*>(m_pTempBuffer) + m_wave.topBorder.length;
 			break;
 		}
-			
+
 		case GfxChunkId::DrawElipse:
 		{
 			RectSPX	canvas;
@@ -699,16 +699,16 @@ namespace wg
 			*m_pDecoder >> outlineThickness;
 			*m_pDecoder >> outlineColor;
 
-			
+
 			m_pDevice->drawElipse(canvas, thickness, color, outlineThickness, outlineColor);
 			break;
 		}
-				
+
 		case GfxChunkId::DrawPieChart:
 		{
 			float sliceSizes[32];
 			HiColor sliceColors[32];
-			
+
 			RectSPX	canvas;
 			float 	start;
 			int 	nSlices;
@@ -716,7 +716,7 @@ namespace wg
 			HiColor hubColor;
 			HiColor backColor;
 			bool	bRectangular;
-			
+
 			*m_pDecoder >> canvas;
 			*m_pDecoder >> start;
 			*m_pDecoder >> nSlices;
@@ -726,7 +726,7 @@ namespace wg
 			*m_pDecoder >> bRectangular;
 
 			assert(nSlices <= 32);
-			
+
 			*m_pDecoder >> GfxStream::ReadBytes{ nSlices*4, sliceSizes };
 			*m_pDecoder >> GfxStream::ReadBytes{ nSlices*8, sliceColors };
 
@@ -738,13 +738,13 @@ namespace wg
 		case GfxChunkId::FlipDrawSegments:
 		{
 			m_drawTypeInProgress = header.type;
-			
+
 			RectI		dest;
 			uint16_t	nSegments;
 			uint16_t	nEdgeStrips;
 			GfxFlip		flip = GfxFlip::Normal;
 			TintMode	tintMode;
-			
+
 			*m_pDecoder >> dest;
 			*m_pDecoder >> nSegments;
 			*m_pDecoder >> nEdgeStrips;
@@ -771,7 +771,7 @@ namespace wg
 			}
 
 			int bufferSize = sizeof(HiColor)*nColors+sizeof(int)*nTotalSamples;
-			
+
 			m_pTempBuffer = new char[bufferSize];
 			m_bytesLoaded = sizeof(HiColor)*nColors;
 			m_bufferSize = bufferSize;
@@ -784,7 +784,7 @@ namespace wg
 			m_seg.edgeStripPitch = nSegments-1;
 			m_seg.flip = flip;
 			m_seg.tintMode = tintMode;
-						
+
 			for (int i = 0; i < nColors; i++)
 				*m_pDecoder >> m_seg.pSegmentColors[i];
 
@@ -845,7 +845,7 @@ namespace wg
 			BorderSPX 	dstFrame;
 			NinePatch 	patch;
 			int			scale;
-				
+
 			*m_pDecoder >> dstRect;
 			*m_pDecoder >> dstFrame;
 
@@ -866,7 +866,7 @@ namespace wg
 			break;
 		}
 
-				
+
 		case GfxChunkId::CreateSurfaceDeprecated:
 		{
 			uint16_t	surfaceId;
@@ -942,7 +942,7 @@ namespace wg
 
 			break;
 		}
-				
+
 		case GfxChunkId::BeginSurfaceUpdate:
 		{
 			uint16_t	surfaceId;
@@ -955,7 +955,7 @@ namespace wg
 			m_pixelBuffer = m_pUpdatingSurface->allocPixelBuffer(rect);
 
 			m_pWritePixels = m_pixelBuffer.pixels;
-			
+
 			m_surfaceBytesLeft = rect.w * rect.h * m_pUpdatingSurface->pixelBits()/8;
 			break;
 		}
@@ -966,15 +966,15 @@ namespace wg
             int ofs = (m_pWritePixels - m_pixelBuffer.pixels) % m_pixelBuffer.pitch;
 
             int bytesPerLine = m_pixelBuffer.rect.w * m_pUpdatingSurface->pixelBits()/8;
-            
+
             int chunkBytesLeft = header.size;
-			
+
 			if( chunkBytesLeft > m_surfaceBytesLeft )
 				chunkBytesLeft = m_surfaceBytesLeft;		// Last chunk was padded with an extra byte.
-			
+
 			m_surfaceBytesLeft -= chunkBytesLeft;
-			
-            
+
+
             while( chunkBytesLeft > 0 )
             {
                 int toRead = std::min(chunkBytesLeft, bytesPerLine - ofs);
@@ -1000,13 +1000,13 @@ namespace wg
 		case GfxChunkId::EndSurfaceUpdate:
 		{
 			assert(m_surfaceBytesLeft == 0);
-			
+
 			m_pUpdatingSurface->pullPixels(m_pixelBuffer);
 			m_pUpdatingSurface->freePixelBuffer(m_pixelBuffer);
 			m_pUpdatingSurface = nullptr;
 			break;
 		}
-			
+
 		case GfxChunkId::FillSurface:
 		{
 			uint16_t	surfaceId;
@@ -1085,7 +1085,7 @@ namespace wg
 	{
 		while( !m_clipList.bCanvas )
 			_popClipList();
-		
+
 		_popClipList();
 	}
 
@@ -1118,7 +1118,7 @@ namespace wg
 		if (m_clipListBuffer.capacity < m_clipListBuffer.nRects + nRects)
 		{
 			m_clipListBufferStack.push_back(m_clipListBuffer);
-			
+
 			m_clipListBuffer.pRects = new RectI[c_clipListBufferSize];
 			m_clipListBuffer.nRects = 0;
 			m_clipListBuffer.capacity = c_clipListBufferSize;
@@ -1141,7 +1141,7 @@ namespace wg
 	void GfxStreamPlayer::_popClipList()
 	{
 		assert(m_clipListBuffer.nRects >= m_clipList.nRects);
-		
+
 		if (m_clipListBuffer.nRects == m_clipList.nRects && !m_clipListBufferStack.empty() )
 		{
 			delete[] m_clipListBuffer.pRects;
