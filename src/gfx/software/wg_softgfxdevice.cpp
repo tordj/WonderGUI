@@ -1099,7 +1099,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			const RectI& clip = m_pClipRects[i]/64;
+			const RectI clip = m_pClipRects[i]/64;
 
 			CoordI begin = _begin;
 			int length = _length;

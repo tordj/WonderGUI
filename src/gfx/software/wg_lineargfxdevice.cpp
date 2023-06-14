@@ -367,13 +367,366 @@ void LinearGfxDevice::plotPixels( int nCoords, const CoordSPX * pCoords, const H
 {
 }
 
-void LinearGfxDevice::drawLine( CoordSPX begin, CoordSPX end, HiColor color, spx thickness )
+//____ drawLine() ____ [from/to] __________________________________________
+
+void LinearGfxDevice::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thickness)
 {
+	if( m_canvas.pSurface )
+	{
+		SoftGfxDevice::drawLine(beg, end, color, thickness);
+		return;
+	}
+	
+	//TODO: Proper 26:6 support
+	beg = roundToPixels(beg);
+	end = roundToPixels(end);
+
+	HiColor fillColor = color * m_tintColor;
+
+	// Skip calls that won't affect destination
+
+	if (fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract))
+		return;
+
+	//
+
+	ClipLineOp_p pOp = nullptr;
+
+	auto pKernels = m_pKernels[(int)m_canvasPixelFormat];
+	if (pKernels)
+		pOp = pKernels->pClipLineKernels[(int)m_blendMode];
+
+	if (pOp == nullptr )
+	{
+		if( m_blendMode == BlendMode::Ignore )
+			return;
+		
+		char errorMsg[1024];
+		
+		sprintf(errorMsg, "Failed drawLine operation. SoftGfxDevice is missing clipLine kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+			toString(m_blendMode),
+			toString(m_canvasPixelFormat) );
+		
+		GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	if (std::abs(beg.x - end.x) > std::abs(beg.y - end.y))
+	{
+		// Prepare mainly horizontal line segment
+
+		if (beg.x > end.x)
+			swap(beg, end);
+
+		int length = end.x - beg.x;
+		int slope = ((end.y - beg.y) * 65536) / length;
+
+		int width = _scaleLineThickness(thickness/64.f, slope);
+
+
+
+		// Loop through patches
+
+		for( int i = 0 ; i < m_nClipSegments ; i++ )
+		{
+			Segment& seg = m_pClipSegments[i];
+
+			int pos = ((beg.y-seg.rect.y) << 16) - width / 2 + 32768;
+
+			int rowInc = m_canvasPixelBytes;
+			int pixelInc = seg.pitch;
+
+			// Do clipping
+
+			int _length = length;
+			uint8_t * pRow = seg.pBuffer + (beg.x - seg.rect.x) * rowInc;
+
+			if (beg.x < seg.rect.x)
+			{
+				int cut = seg.rect.x - beg.x;
+				_length -= cut;
+				pRow = seg.pBuffer;
+				pos += slope * cut;
+			}
+
+			if (end.x > seg.rect.x + seg.rect.w)
+				_length -= end.x - (seg.rect.x + seg.rect.w);
+
+			int clipStart = 0;
+			int clipEnd = seg.rect.h << 16;
+
+			//  Draw
+
+			pOp(clipStart, clipEnd, pRow, rowInc, pixelInc, _length, width, pos, slope, fillColor, m_colTrans, { 0,0 });
+		}
+	}
+	else
+	{
+		// Prepare mainly vertical line segment
+
+		if (beg.y > end.y)
+			swap(beg, end);
+
+		int length = end.y - beg.y;
+		if (length == 0)
+			return;											// TODO: Should stil draw the caps!
+
+		// Need multiplication instead of shift as operand might be negative
+		int slope = ((end.x - beg.x) * 65536) / length;
+		int width = _scaleLineThickness(thickness/64.f, slope);
+
+
+		// Loop through patches
+
+		for (int i = 0; i < m_nClipSegments; i++)
+		{
+			Segment& seg = m_pClipSegments[i];
+			
+			int pos = ((beg.x-seg.rect.x) << 16) - width / 2 + 32768;
+
+
+			int rowInc = seg.pitch;
+			int pixelInc = m_canvasPixelBytes;
+
+
+			// Do clipping
+
+			int _length = length;
+			uint8_t * pRow = seg.pBuffer + (beg.y - seg.rect.y) * rowInc;
+
+			if (beg.y < seg.rect.y)
+			{
+				int cut = seg.rect.y - beg.y;
+				_length -= cut;
+				pRow = seg.pBuffer;
+				pos += slope * cut;
+			}
+
+			if (end.y > seg.rect.y + seg.rect.h)
+				_length -= end.y - (seg.rect.y + seg.rect.h);
+
+			int clipStart = 0;
+			int clipEnd = seg.rect.w << 16;
+
+			//  Draw
+
+			pOp(clipStart, clipEnd, pRow, rowInc, pixelInc, _length, width, pos, slope, fillColor, m_colTrans, { 0,0 });
+		}
+	}
 }
 
-void LinearGfxDevice::drawLine( CoordSPX begin, Direction dir, spx length, HiColor color, spx thickness )
+
+//____ drawLine() ____ [start/direction] ________________________________
+
+// Coordinates for start are considered to be + 0.5 in the width dimension, so they start in the middle of a line/column.
+// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
+// where the outer pixels are faded.
+
+void LinearGfxDevice::drawLine(CoordSPX _begin, Direction dir, spx _length, HiColor _col, spx _thickness)
 {
+	if( m_canvas.pSurface )
+	{
+		SoftGfxDevice::drawLine(_begin, dir, _length, _col, _thickness);
+		return;
+	}
+	
+	float thickness = _thickness / 64.f;
+
+	//TODO: Proper 26:6 support
+	_begin = roundToPixels(_begin);
+	_length = roundToPixels(_length);
+
+	//TODO: Optimize!
+
+	if (thickness <= 0.f)
+		return;
+
+	BlendMode edgeBlendMode = m_blendMode;
+	if (m_blendMode == BlendMode::Replace)
+	{
+		_col.a = 4096;							// Needed since we still blend the edges.
+		edgeBlendMode = BlendMode::Blend;
+	}
+
+	_col = _col * m_tintColor;
+
+	int pixelBytes = m_canvasPixelBits / 8;
+	FillOp_p	pCenterOp = nullptr;
+	FillOp_p	pEdgeOp = nullptr;
+
+	auto pKernels = m_pKernels[(int)m_canvasPixelFormat];
+	if (pKernels)
+	{
+		pCenterOp = pKernels->pFillKernels[(int)TintMode::None][(int)m_blendMode];
+		pEdgeOp = pKernels->pFillKernels[(int)TintMode::None][(int)edgeBlendMode];
+	}
+
+
+	if (pCenterOp == nullptr || pEdgeOp == nullptr )
+	{
+		if( m_blendMode == BlendMode::Ignore )
+			return;
+		
+		char errorMsg[1024];
+		
+		sprintf(errorMsg, "Failed drawLine operation. SoftGfxDevice is missing fill kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+			toString(m_blendMode),
+			toString(m_canvasPixelFormat) );
+		
+		GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	
+	
+	for (int i = 0; i < m_nClipSegments; i++)
+	{
+		const Segment& clipSeg = m_pClipSegments[i];
+		
+		const RectI& clip = clipSeg.rect;
+
+		CoordI begin = _begin;
+		int length = _length;
+
+		switch (dir)
+		{
+		case Direction::Left:
+			begin.x -= length;
+		case Direction::Right:
+		{
+			if (begin.x > clip.x + clip.w)
+				continue;
+
+			if (begin.x < clip.x)
+			{
+				length -= clip.x - begin.x;
+				if (length <= 0)
+					continue;
+				begin.x = clip.x;
+			}
+
+			if (begin.x + length > clip.x + clip.w)
+			{
+				length = clip.x + clip.w - begin.x;
+				if (length <= 0)
+					continue;
+			}
+
+			if (thickness <= 1.f)
+			{
+				if (begin.y < clip.y || begin.y >= clip.y + clip.h)
+					continue;
+
+				HiColor col = _col;
+				col.a = (int16_t)(thickness * col.a);
+
+				uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + (begin.x - clip.x) * pixelBytes;
+				pEdgeOp(pBegin, pixelBytes, 0, 1, length, col, m_colTrans, { 0,0 });
+			}
+			else
+			{
+				int expanse = (int)(1 + (thickness - 1) / 2);
+				HiColor edgeColor(_col.r, _col.g, _col.b, (int16_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
+
+				if (begin.y + expanse <= clip.y || begin.y - expanse >= clip.y + clip.h)
+					continue;
+
+				int beginY = begin.y - expanse;
+				int endY = begin.y + expanse + 1;
+
+				if (beginY < clip.y)
+					beginY = clip.y - 1;
+				else
+				{
+					uint8_t * pBegin = clipSeg.pBuffer + (beginY - clip.y) * clipSeg.pitch + (begin.x - clip.x) * pixelBytes;
+					pEdgeOp(pBegin, pixelBytes, 0, 1, length, edgeColor, m_colTrans, { 0,0 });
+				}
+
+				if (endY > clip.y + clip.h)
+					endY = clip.y + clip.h + 1;
+				else
+				{
+					uint8_t * pBegin = clipSeg.pBuffer + (endY - 1 - clip.y) * clipSeg.pitch + (begin.x - clip.x) * pixelBytes;
+					pEdgeOp(pBegin, pixelBytes, 0, 1, length, edgeColor, m_colTrans, { 0,0 });
+				}
+
+				int bodyThickness = endY - beginY - 2;
+				uint8_t * pBegin = clipSeg.pBuffer  + (beginY + 1 -clip.y) * clipSeg.pitch + (begin.x - clip.x) * pixelBytes;
+				pCenterOp(pBegin, pixelBytes, m_canvasPitch - length * pixelBytes, bodyThickness, length, _col, m_colTrans, { 0,0 });
+			}
+
+			break;
+		}
+		case Direction::Up:
+			begin.y -= length;
+		case Direction::Down:
+			if (begin.y > clip.y + clip.h)
+				continue;
+
+			if (begin.y < clip.y)
+			{
+				length -= clip.y - begin.y;
+				if (length <= 0)
+					continue;
+				begin.y = clip.y;
+			}
+
+			if (begin.y + length > clip.y + clip.h)
+			{
+				length = clip.y + clip.h - begin.y;
+				if (length <= 0)
+					continue;
+			}
+
+			if (thickness <= 1.f)
+			{
+				if (begin.x < clip.x || begin.x >= clip.x + clip.w)
+					continue;
+
+				HiColor col = _col;
+				col.a = (int16_t)(thickness * col.a);
+
+				uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + (begin.x - clip.x) * pixelBytes;
+				pEdgeOp(pBegin, clipSeg.pitch, 0, 1, length, col, m_colTrans, { 0,0 });
+			}
+			else
+			{
+				int expanse = (int)(1 + (thickness - 1) / 2);
+				HiColor edgeColor(_col.r, _col.g, _col.b, (int16_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
+
+				if (begin.x + expanse <= clip.x || begin.x - expanse >= clip.x + clip.w)
+					continue;
+
+				int beginX = begin.x - expanse;
+				int endX = begin.x + expanse + 1;
+
+				if (beginX < clip.x)
+					beginX = clip.x - 1;
+				else
+				{
+					uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + beginX * pixelBytes;
+					pEdgeOp(pBegin, clipSeg.pitch, 0, 1, length, edgeColor, m_colTrans, { 0,0 });
+				}
+
+				if (endX > clip.x + clip.w)
+					endX = clip.x + clip.w + 1;
+				else
+				{
+					uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + (endX - 1) * pixelBytes;
+					pEdgeOp(pBegin, clipSeg.pitch, 0, 1, length, edgeColor, m_colTrans, { 0,0 });
+				}
+
+
+				int bodyThickness = endX - beginX - 2;
+				uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + (beginX + 1) * pixelBytes;
+				pCenterOp(pBegin, clipSeg.pitch, pixelBytes - length * m_canvasPitch, bodyThickness, length, _col, m_colTrans, { 0,0 });
+			}
+
+			break;
+		}
+	}
 }
+
 
 void LinearGfxDevice::stretchBlit(const RectSPX& dest)
 {
