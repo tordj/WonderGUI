@@ -287,6 +287,22 @@ void LinearGfxDevice::_updateBlitFunctions()
 	else
 		m_pLinearStraightTileOp = &LinearGfxDevice::_dummyLinearStraightBlit;
 
+	if( m_pTransformBlitOp == &SoftGfxDevice::_onePassTransformBlit )
+		m_pLinearTransformBlitOp = &LinearGfxDevice::_onePassLinearTransformBlit;
+	else if( m_pTransformBlitOp == &SoftGfxDevice::_twoPassTransformBlit )
+		m_pLinearTransformBlitOp = &LinearGfxDevice::_twoPassLinearTransformBlit;
+	else
+		m_pLinearTransformBlitOp = &LinearGfxDevice::_dummyLinearTransformBlit;
+
+	if( m_pTransformTileOp == &SoftGfxDevice::_onePassTransformBlit )
+		m_pLinearTransformTileOp = &LinearGfxDevice::_onePassLinearTransformBlit;
+	else if( m_pTransformTileOp == &SoftGfxDevice::_twoPassTransformBlit )
+		m_pLinearTransformTileOp = &LinearGfxDevice::_twoPassLinearTransformBlit;
+	else
+		m_pLinearTransformTileOp = &LinearGfxDevice::_dummyLinearTransformBlit;
+
+	
+	
 }
 
 
@@ -363,10 +379,40 @@ void LinearGfxDevice::fill(const RectSPX& rect, HiColor col)
 
 
 
-void LinearGfxDevice::plotPixels( int nCoords, const CoordSPX * pCoords, const HiColor * pColors)
-{
-}
+//____ plotPixels() _________________________________________________
 
+void LinearGfxDevice::plotPixels(int nCoords, const CoordSPX * pCoords, const HiColor * pColors)
+{
+	PlotListOp_p pOp = nullptr;
+	auto pKernels = m_pKernels[(int)m_canvasPixelFormat];
+	if (pKernels)
+		pOp = pKernels->pPlotListKernels[(int)m_blendMode];
+
+	if (pOp == nullptr )
+	{
+		if( m_blendMode == BlendMode::Ignore )
+			return;
+		
+		char errorMsg[1024];
+		
+		sprintf(errorMsg, "Failed plotPixels operation. SoftGfxDevice is missing plotList kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+			toString(m_blendMode),
+			toString(m_canvasPixelFormat) );
+		
+		GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	for (int i = 0; i < m_nClipSegments; i++)
+	{
+		
+		auto& seg = m_pClipSegments[i];
+
+		uint8_t * pCanvas = seg.pBuffer - seg.rect.y * seg.pitch - seg.rect.x * m_canvasPixelBytes;
+		
+		pOp(seg.rect*64, nCoords, pCoords, pColors, pCanvas, m_canvasPixelBytes, seg.pitch, m_colTrans);
+	}
+}
 //____ drawLine() ____ [from/to] __________________________________________
 
 void LinearGfxDevice::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx thickness)
@@ -727,86 +773,7 @@ void LinearGfxDevice::drawLine(CoordSPX _begin, Direction dir, spx _length, HiCo
 	}
 }
 
-
-void LinearGfxDevice::stretchBlit(const RectSPX& dest)
-{
-}
-
-void LinearGfxDevice::stretchBlit(const RectSPX& dest, const RectSPX& src)
-{
-}
-
-void LinearGfxDevice::stretchFlipBlit(const RectSPX& dest, GfxFlip flip)
-{
-}
-
-void LinearGfxDevice::stretchFlipBlit(const RectSPX& dest, const RectSPX& src, GfxFlip flip)
-{
-}
-
-void LinearGfxDevice::precisionBlit(const RectSPX& dest, const RectF& srcSPX)
-{
-}
-
-void LinearGfxDevice::transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
-{
-}
-
-void LinearGfxDevice::rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
-{
-}
-
-void LinearGfxDevice::tile(const RectSPX& dest, CoordSPX shift)
-{
-}
-
-void LinearGfxDevice::flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift)
-{
-}
-
-void LinearGfxDevice::scaleTile(const RectSPX& dest, float scale, CoordSPX shift)
-{
-}
-
-void LinearGfxDevice::scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift)
-{
-}
-
-void LinearGfxDevice::drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill)
-{
-}
-
-void LinearGfxDevice::flipDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip)
-{
-}
-
-void LinearGfxDevice::drawElipse(const RectSPX& canvas, spx thickness, HiColor color, spx outlineThickness, HiColor outlineColor)
-{
-}
-
-void LinearGfxDevice::drawPieChart(const RectSPX& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
-{
-}
-
-void LinearGfxDevice::drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
-{
-}
-
-void LinearGfxDevice::flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
-{
-}
-
-void LinearGfxDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
-{
-}
-
-void LinearGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip)
-{
-}
-
-void LinearGfxDevice::blitNinePatch(const RectSPX& dstRect, const BorderSPX& dstFrame, const NinePatch& patch, int scale)
-{
-}
+//____ _transformBlitSimple() _________________________________________________
 
 void LinearGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX _src, const int simpleTransform[2][2])
 {
@@ -892,11 +859,119 @@ void LinearGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX _src, 
 	}
 }
 
-void LinearGfxDevice::_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2])
-{
-	
-}
 
+
+//____ _transformBlitComplex() _______________________________________________
+
+void LinearGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord _src, const binalInt complexTransform[2][2])
+{
+	if( m_canvas.pSurface )
+	{
+		SoftGfxDevice::_transformBlitComplex(_dest,_src,complexTransform);
+		return;
+	}
+
+	// Clip and render the patches
+
+	if (!_dest.isOverlapping(m_clipBounds))
+		return;
+
+	//TODO: Proper 26:6 support
+	RectI dest = roundToPixels(_dest);
+
+	const RectI& clip = dest;
+
+	for (int i = 0; i < m_nClipSegments; i++)
+	{
+		RectI  patch = m_pClipSegments[i].rect;
+
+		BinalCoord src = _src;
+
+		CoordI	patchOfs = patch.pos() - dest.pos();
+
+
+		if ((clip.x > patch.x) || (clip.x + clip.w < patch.x + patch.w) ||
+			(clip.y > patch.y) || (clip.y + clip.h < patch.y + patch.h))
+		{
+
+			if ((clip.x > patch.x + patch.w) || (clip.x + clip.w < patch.x) ||
+				(clip.y > patch.y + patch.h) || (clip.y + clip.h < patch.y))
+				continue;																					// Totally outside clip-rect.
+
+			if (patch.x < clip.x)
+			{
+				int xDiff = clip.x - patch.x;
+				patch.w -= xDiff;
+				patch.x = clip.x;
+				patchOfs.x += xDiff;
+			}
+
+			if (patch.y < clip.y)
+			{
+				int yDiff = clip.y - patch.y;
+				patch.h -= yDiff;
+				patch.y = clip.y;
+				patchOfs.y += yDiff;
+			}
+
+			if (patch.x + patch.w > clip.x + clip.w)
+				patch.w = (clip.x + clip.w) - patch.x;
+
+			if (patch.y + patch.h > clip.y + clip.h)
+				patch.h = (clip.y + clip.h) - patch.y;
+		}
+
+		//
+
+		src.x += patchOfs.x * complexTransform[0][0] + patchOfs.y * complexTransform[1][0];
+		src.y += patchOfs.x * complexTransform[0][1] + patchOfs.y * complexTransform[1][1];
+
+		// See if we can skip the expensive source clipping....
+
+		bool bClipSource = false;
+		if (m_bClipSource)
+		{
+			BinalSize clipMax = (static_cast<BinalSize>(m_pBlitSource->m_size))*BINAL_MUL;
+			
+			if (m_pBlitSource->m_sampleMethod == SampleMethod::Bilinear)
+				clipMax -= BinalSize( BINAL_MUL, BINAL_MUL);
+
+			
+			
+			BinalCoord src2 = src;		// Source pixel to read for top-right destination corner.
+			BinalCoord src3 = src;		// Source pixel to read for bottom-right destination corner.
+			BinalCoord src4 = src;		// Source pixel to read for bottom-left destination corner.
+
+			src2.x += (patch.w - 1) * complexTransform[0][0];
+			src2.y += (patch.w - 1) * complexTransform[0][1];
+
+			src3.x += (patch.w - 1) * complexTransform[0][0] + (patch.h - 1) * complexTransform[1][0];
+			src3.y += (patch.w - 1) * complexTransform[0][1] + (patch.h - 1) * complexTransform[1][1];
+
+			src4.x += (patch.h - 1) * complexTransform[1][0];
+			src4.y += (patch.h - 1) * complexTransform[1][1];
+
+			if (src.x < 0 || src.y < 0 || src.x >= clipMax.w || src.y >= clipMax.h ||
+				src2.x < 0 || src2.y < 0 || src2.x > clipMax.w || src2.y > clipMax.h ||
+				src3.x < 0 || src3.y < 0 || src3.x > clipMax.w || src3.y > clipMax.h ||
+				src4.x < 0 || src4.y < 0 || src4.x > clipMax.w || src4.y > clipMax.h )
+			{
+				bClipSource = true;
+			}
+		}
+
+		//
+
+		uint8_t * pDst = m_pClipSegments[i].pBuffer + (patch.y-m_pClipSegments[i].rect.y) * m_pClipSegments[i].pitch + (patch.x - m_pClipSegments[i].rect.x) * m_canvasPixelBytes;
+		
+		if( m_bTileSource )
+			(this->*m_pLinearTransformTileOp)(pDst, m_pClipSegments[i].pitch, patch.w, patch.h, src, complexTransform, patch.pos(), m_pTransformTileFirstPassOp);
+		else if( bClipSource )
+			(this->*m_pLinearTransformClipBlitOp)(pDst, m_pClipSegments[i].pitch, patch.w, patch.h, src, complexTransform, patch.pos(), m_pTransformClipBlitFirstPassOp);
+		else
+			(this->*m_pLinearTransformBlitOp)(pDst, m_pClipSegments[i].pitch, patch.w, patch.h, src, complexTransform,patch.pos(), m_pTransformBlitFirstPassOp);
+	}
+}
 
 //____ _onePassLinearStraightBlit() _____________________________________________
 
@@ -926,7 +1001,7 @@ void LinearGfxDevice::_twoPassLinearStraightBlit(uint8_t * pDst, int destPitch, 
 	SoftSurface * pSource = m_pBlitSource;
 
 	int srcPixelBytes = pSource->m_pPixelDescription->bits / 8;
-	int dstPixelBytes = m_canvasPixelBits / 8;
+	int dstPixelBytes = m_canvasPixelBytes;
 
 	Pitches pitchesPass1, pitchesPass2;
 
@@ -968,7 +1043,7 @@ void LinearGfxDevice::_twoPassLinearStraightBlit(uint8_t * pDst, int destPitch, 
 		patchPos.y += thisChunkLines;
 		line += thisChunkLines;
 		
-		pDst += width*dstPixelBytes;
+		pDst += destPitch*thisChunkLines;
 	}
 
 	GfxBase::memStackFree(memBufferSize);
@@ -979,6 +1054,644 @@ void LinearGfxDevice::_twoPassLinearStraightBlit(uint8_t * pDst, int destPitch, 
 void LinearGfxDevice::_dummyLinearStraightBlit(uint8_t * pDst, int destPitch, int width, int height, CoordI pos, const int simpleTransform[2][2], CoordI patchPos, StraightBlitOp_p pPassOneOp)
 {
 }
+
+
+//____ _onePassLinearTransformBlit() ____________________________________________
+
+void LinearGfxDevice::_onePassLinearTransformBlit(uint8_t * pDst, int destPitch, int destWidth, int destHeight, BinalCoord pos, const binalInt transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
+{
+	pPassOneOp(m_pBlitSource, pos, transformMatrix, pDst, m_canvasPixelBytes, destPitch - m_canvasPixelBytes * destWidth, destHeight, destWidth, m_colTrans, patchPos);
+}
+
+//____ _twoPassLinearTransformBlit() ____________________________________________
+
+void LinearGfxDevice::_twoPassLinearTransformBlit(	uint8_t * pDst, int destPitch, int destWidth, int destHeight, BinalCoord pos, const binalInt transformMatrix[2][2],
+											CoordI patchPos, TransformBlitOp_p pPassOneOp)
+{
+	const SoftSurface * pSource = m_pBlitSource;
+
+	int dstPixelBytes = m_canvasPixelBytes;
+
+	Pitches pitchesPass2;
+
+	pitchesPass2.srcX = 8;
+	pitchesPass2.dstX = dstPixelBytes;
+	pitchesPass2.srcY = 0;
+	pitchesPass2.dstY = destPitch - dstPixelBytes * destWidth;
+
+	int chunkLines;
+
+	if (destWidth >= 2048)
+		chunkLines = 1;
+	else if (destWidth*destHeight <= 2048)
+		chunkLines = destHeight;
+	else
+		chunkLines = 2048 / destHeight;
+
+	int memBufferSize = chunkLines * destWidth * 8;
+
+	uint8_t * pChunkBuffer = (uint8_t*)GfxBase::memStackAlloc(memBufferSize);
+
+	int line = 0;
+
+	while (line < destHeight)
+	{
+		int thisChunkLines = min(destHeight - line, chunkLines);
+
+//		uint8_t * pDst = m_pCanvasPixels + (dest.y + line) * m_canvasPitch + dest.x * dstPixelBytes;
+
+		pPassOneOp(pSource, pos, transformMatrix, pChunkBuffer, 8, 0, thisChunkLines, destWidth, m_colTrans, { 0,0 });
+		m_pBlitSecondPassOp(pChunkBuffer, pDst, pSource, pitchesPass2, thisChunkLines, destWidth, m_colTrans, patchPos, nullptr);
+
+		pos.x += transformMatrix[1][0] * thisChunkLines;
+		pos.y += transformMatrix[1][1] * thisChunkLines;
+
+		patchPos.y += thisChunkLines;
+		line += thisChunkLines;
+		
+		pDst += destPitch*thisChunkLines;
+	}
+
+	GfxBase::memStackFree(memBufferSize);
+}
+
+
+//____ _dummyLinearTransformBlit() _____________________________________________
+
+void LinearGfxDevice::_dummyLinearTransformBlit(uint8_t * pDst, int destPitch, int width, int height, BinalCoord pos, const binalInt matrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
+{
+}
+
+
+//____ _transformDrawSegments() _________________________________________
+
+void LinearGfxDevice::_transformDrawSegments(const RectSPX& _destIn, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
+{
+	if( m_canvas.pSurface )
+	{
+		SoftGfxDevice::_transformDrawSegments(_destIn, nSegments, pSegmentColors, nEdgeStrips, _pEdgeStrips, edgeStripPitch, tintMode, _simpleTransform);
+		return;
+	}
+	
+	//TODO: Proper 26:6 support
+	RectI _dest = roundToPixels(_destIn);
+
+	RectI dest = _dest;
+
+	SegmentEdge edges[c_maxSegments - 1];
+
+
+	// We need to modify our transform since we are moving the destination pointer, not the source pointer, according to the transform.
+
+	int simpleTransform[2][2];
+
+	simpleTransform[0][0] = _simpleTransform[0][0];
+	simpleTransform[1][1] = _simpleTransform[1][1];
+
+	if ((_simpleTransform[0][0] | _simpleTransform[1][1]) == 0)
+	{
+		simpleTransform[0][1] = _simpleTransform[1][0];
+		simpleTransform[1][0] = _simpleTransform[0][1];
+	}
+	else
+	{
+		simpleTransform[0][1] = _simpleTransform[0][1];
+		simpleTransform[1][0] = _simpleTransform[1][0];
+	}
+
+	// Calculate start coordinate
+
+	CoordI start = dest.pos();
+
+	if (simpleTransform[0][0] + simpleTransform[1][0] < 0)
+		start.x += dest.w - 1;
+
+	if (simpleTransform[0][1] + simpleTransform[1][1] < 0)
+		start.y += dest.h - 1;
+
+	// Detect if strip columns are lined horizontally or verically
+
+	bool bHorizontalColumns = (simpleTransform[0][0] != 0);
+
+	// Limit size of destination rect by number of edgestrips.
+
+	if (bHorizontalColumns)
+	{
+		if (dest.w > nEdgeStrips - 1)
+		{
+			if (simpleTransform[0][0] < 0)
+				dest.x += dest.w - nEdgeStrips - 1;
+
+			dest.w = nEdgeStrips - 1;
+		}
+	}
+	else
+	{
+		if (dest.h > nEdgeStrips - 1)
+		{
+			if (simpleTransform[0][1] < 0)
+				dest.y += dest.h - nEdgeStrips - 1;
+
+			dest.h = nEdgeStrips - 1;
+		}
+	}
+
+	// Apply tinting
+
+	int16_t	colors[c_maxSegments*4][4];				// RGBA order of elements
+	bool	transparentSegments[c_maxSegments];
+	bool	opaqueSegments[c_maxSegments];
+
+	SegmentGradient* pGradientsY = nullptr;
+	SegmentGradient* pGradientsX = nullptr;
+	int		gradientsYBufferSize = 0;
+	int		gradientsXBufferSize = 0;
+
+	// Determine combined tint-mode
+
+	bool	bTintFlat = false;			// Set if we tint in any way, flat, x, y, or xy.
+	bool	bTintX = false;
+	bool	bTintY = false;
+
+	if (tintMode != TintMode::None)
+	{
+		bTintFlat = !m_tintColor.isOpaqueWhite();
+
+		if (tintMode == TintMode::GradientXY || m_colTrans.mode == TintMode::GradientXY)
+		{
+			bTintX = bTintY = true;
+		}
+		else
+		{
+			if (tintMode == TintMode::GradientY || m_colTrans.mode == TintMode::GradientY)
+				bTintY = true;
+			if (tintMode == TintMode::GradientX || m_colTrans.mode == TintMode::GradientX)
+				bTintX = true;
+		}
+	}
+
+	// Unpack input colors and fill in transparentSegments
+
+	if (!bTintX && !bTintY)
+	{
+		// If we just use flat tinting (or no tint at all), we tint our segment colors right away
+
+		for (int i = 0; i < nSegments; i++)
+		{
+			colors[i][0] = (pSegmentColors[i].r * m_colTrans.flatTintColor.r) >> 12;
+			colors[i][1] = (pSegmentColors[i].g * m_colTrans.flatTintColor.g) >> 12;
+			colors[i][2] = (pSegmentColors[i].b * m_colTrans.flatTintColor.b) >> 12;
+			colors[i][3] = (pSegmentColors[i].a * m_colTrans.flatTintColor.a) >> 12;
+
+			transparentSegments[i] = (colors[i][3] == 0);
+			opaqueSegments[i] = (colors[i][3] == 4096);
+		}
+	}
+	else
+	{
+		int colorsPerSegment = bTintX && bTintY ? 4 : 2;
+
+		for (int i = 0; i < nSegments*colorsPerSegment; i++)
+		{
+			colors[i][0] = pSegmentColors[i].r;
+			colors[i][1] = pSegmentColors[i].g;
+			colors[i][2] = pSegmentColors[i].b;
+			colors[i][3] = pSegmentColors[i].a;
+		}
+	}
+
+
+	// If we instead have gradients we have things to take care of...
+
+	if (bTintX || bTintY)
+	{
+		// Generate the buffers that we will need
+
+		if (bTintY)
+		{
+			gradientsYBufferSize = sizeof(SegmentGradient) * nSegments;
+			pGradientsY = (SegmentGradient*)GfxBase::memStackAlloc(gradientsYBufferSize);
+		}
+
+		if (bTintX)
+		{
+			// We use two gradients per segment in X, one for top and bottom of rectangle each.
+
+			gradientsXBufferSize = sizeof(SegmentGradient) * nSegments * 2;
+			pGradientsX = (SegmentGradient*)GfxBase::memStackAlloc(gradientsXBufferSize);
+		}
+
+
+		// Calculate RGBA values from m_colTrans for our four corners.
+
+		int		baseB[4], baseG[4], baseR[4], baseA[4];
+		int		tempB[4], tempG[4], tempR[4], tempA[4];
+
+		_colTransRect(tempB, tempG, tempR, tempA, _dest);
+
+		// Rotate the colors of our four corners if we are flipped
+
+		static const int cornerSwitchMap[2][2][2][4] =
+						{ {{{0,3,2,1},				// [ 0,-1,-1, 0] = Rot90FlipY
+							{1,2,3,0}},				// [ 0,-1, 1, 0] = Rot90
+							{{3,0,1,2},				// [ 0, 1,-1, 0] = Rot270
+							{2,1,0,3}}},			// [ 0, 1, 1, 0] = Rot90FlipX
+							{{{2,3,0,1},			// [-1, 0, 0,-1] = Rot180
+							{1,0,3,2}},				// [-1, 0, 0, 1] = FlipX
+							{{3,2,1,0},				// [ 1, 0, 0,-1] = FlipY
+							{0,1,2,3}}} };			// [ 1, 0, 0, 1] = Normal
+
+		int i1, i2, i3;
+		if (_simpleTransform[0][0] == 0)
+		{
+			i1 = 0;
+			i2 = _simpleTransform[0][1] == 1 ? 1 : 0;
+			i3 = _simpleTransform[1][0] == 1 ? 1 : 0;
+		}
+		else
+		{
+			i1 = 1;
+			i2 = _simpleTransform[0][0] == 1 ? 1 : 0;
+			i3 = _simpleTransform[1][1] == 1 ? 1 : 0;
+		}
+
+		const int* pSwitch = cornerSwitchMap[i1][i2][i3];
+
+		for (int i = 0; i < 4; i++)
+		{
+			int n = pSwitch[i];
+			baseB[i] = tempB[n];
+			baseG[i] = tempG[n];
+			baseR[i] = tempR[n];
+			baseA[i] = tempA[n];
+		}
+
+		// Lets process each segment
+
+		for (int seg = 0; seg < nSegments; seg++)
+		{
+
+			int		segB[4], segG[4], segR[4], segA[4];
+
+			// Calculate RGBA values for our four corners
+
+			if (tintMode == TintMode::Flat)
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					segR[i] = baseR[i] * colors[seg][0];
+					segG[i] = baseG[i] * colors[seg][1];
+					segB[i] = baseB[i] * colors[seg][2];
+					segA[i] = baseA[i] * colors[seg][3];
+				}
+			}
+			else
+			{
+				if (tintMode == TintMode::GradientX)
+				{
+					segR[0] = baseR[0] * colors[seg*2][0];
+					segG[0] = baseG[0] * colors[seg * 2][1];
+					segB[0] = baseB[0] * colors[seg * 2][2];
+					segA[0] = baseA[0] * colors[seg * 2][3];
+
+					segR[1] = baseR[1] * colors[seg * 2+1][0];
+					segG[1] = baseG[1] * colors[seg * 2+1][1];
+					segB[1] = baseB[1] * colors[seg * 2+1][2];
+					segA[1] = baseA[1] * colors[seg * 2+1][3];
+
+					segR[2] = baseR[2] * colors[seg * 2 + 1][0];
+					segG[2] = baseG[2] * colors[seg * 2 + 1][1];
+					segB[2] = baseB[2] * colors[seg * 2 + 1][2];
+					segA[2] = baseA[2] * colors[seg * 2 + 1][3];
+
+					segR[3] = baseR[3] * colors[seg * 2][0];
+					segG[3] = baseG[3] * colors[seg * 2][1];
+					segB[3] = baseB[3] * colors[seg * 2][2];
+					segA[3] = baseA[3] * colors[seg * 2][3];
+				}
+				else if (tintMode == TintMode::GradientY)
+				{
+					segR[0] = baseR[0] * colors[seg * 2][0];
+					segG[0] = baseG[0] * colors[seg * 2][1];
+					segB[0] = baseB[0] * colors[seg * 2][2];
+					segA[0] = baseA[0] * colors[seg * 2][3];
+
+					segR[1] = baseR[1] * colors[seg * 2][0];
+					segG[1] = baseG[1] * colors[seg * 2][1];
+					segB[1] = baseB[1] * colors[seg * 2][2];
+					segA[1] = baseA[1] * colors[seg * 2][3];
+
+					segR[2] = baseR[2] * colors[seg * 2 + 1][0];
+					segG[2] = baseG[2] * colors[seg * 2 + 1][1];
+					segB[2] = baseB[2] * colors[seg * 2 + 1][2];
+					segA[2] = baseA[2] * colors[seg * 2 + 1][3];
+
+					segR[3] = baseR[3] * colors[seg * 2 + 1][0];
+					segG[3] = baseG[3] * colors[seg * 2 + 1][1];
+					segB[3] = baseB[3] * colors[seg * 2 + 1][2];
+					segA[3] = baseA[3] * colors[seg * 2 + 1][3];
+				}
+				else
+				{
+					segR[0] = baseR[0] * colors[seg * 4][0];
+					segG[0] = baseG[0] * colors[seg * 4][1];
+					segB[0] = baseB[0] * colors[seg * 4][2];
+					segA[0] = baseA[0] * colors[seg * 4][3];
+
+					segR[1] = baseR[1] * colors[seg * 4 + 1][0];
+					segG[1] = baseG[1] * colors[seg * 4 + 1][1];
+					segB[1] = baseB[1] * colors[seg * 4 + 1][2];
+					segA[1] = baseA[1] * colors[seg * 4 + 1][3];
+
+					segR[2] = baseR[2] * colors[seg * 4 + 2][0];
+					segG[2] = baseG[2] * colors[seg * 4 + 2][1];
+					segB[2] = baseB[2] * colors[seg * 4 + 2][2];
+					segA[2] = baseA[2] * colors[seg * 4 + 2][3];
+
+					segR[3] = baseR[3] * colors[seg * 4 + 3][0];
+					segG[3] = baseG[3] * colors[seg * 4 + 3][1];
+					segB[3] = baseB[3] * colors[seg * 4 + 3][2];
+					segA[3] = baseA[3] * colors[seg * 4 + 3][3];
+				}
+			}
+
+			// We now have the segments corner colors. Let's save
+			// that information in the correct format for future
+			// processing depending on tint mode.
+
+			// Filling in the x-gradient if we have one. Two SegmentGradient structs for
+			// each segment, one for gradient along top and of dest rectangle and one along the bottom.
+
+			if (bTintX)
+			{
+				// Fill in top gradient
+
+				auto p = &pGradientsX[seg * 2];
+
+				p->begB = segB[0];
+				p->begG = segG[0];
+				p->begR = segR[0];
+				p->begA = segA[0];
+
+				p->incB = (segB[1] - segB[0]) / dest.w;
+				p->incG = (segG[1] - segG[0]) / dest.w;
+				p->incR = (segR[1] - segR[0]) / dest.w;
+				p->incA = (segA[1] - segA[0]) / dest.w;
+
+				// Fill in bottom gradient
+
+				p++;
+
+				p->begB = segB[3];
+				p->begG = segG[3];
+				p->begR = segR[3];
+				p->begA = segA[3];
+
+				p->incB = (segB[2] - segB[3]) / dest.w;
+				p->incG = (segG[2] - segG[3]) / dest.w;
+				p->incR = (segR[2] - segR[3]) / dest.w;
+				p->incA = (segA[2] - segA[3]) / dest.w;
+			}
+
+			// If we don't have any x-gradient we can fill in y-gradient once and for all
+
+			if (bTintY && !bTintX)
+			{
+				auto p = &pGradientsY[seg];
+
+				p->begB = segB[0];
+				p->begG = segG[0];
+				p->begR = segR[0];
+				p->begA = segA[0];
+
+				p->incB = (segB[3] - segB[0]) / dest.h;
+				p->incG = (segG[3] - segG[0]) / dest.h;
+				p->incR = (segR[3] - segR[0]) / dest.h;
+				p->incA = (segA[3] - segA[0]) / dest.h;
+			}
+
+			// Possibly mark this segment as transparent
+
+			transparentSegments[seg] = (segA[0] + segA[1] + segA[2] + segA[3] == 0);
+			opaqueSegments[seg] = (segA[0] + segA[1] + segA[2] + segA[3] == 4096*4096*4);
+		}
+	}
+
+	// Modify opaqueSegments if our state isn't blend
+	
+	if( m_blendMode != BlendMode::Blend && m_blendMode != BlendMode::BlendFixedColor )
+	{
+		bool val = (m_blendMode == BlendMode::Replace);
+		
+		for (int seg = 0; seg < nSegments; seg++)
+			opaqueSegments[seg] = val;
+	}
+	
+	// Modify transparentSegments if our state is BlendFixedColor
+	
+	if( m_blendMode == BlendMode::BlendFixedColor )
+	{
+		for (int seg = 0; seg < nSegments; seg++)
+			transparentSegments[seg] = false;
+	}
+	
+	// Set start position and clip dest
+
+	if (!dest.isOverlapping(m_clipBounds/64))
+		return;
+
+	SegmentOp_p	pOp = nullptr;
+	auto pKernels = m_pKernels[(int) m_canvasPixelFormat];
+	if (pKernels)
+		pOp = pKernels->pSegmentKernels[(int)bTintY][(int)m_blendMode];
+
+	if (pOp == nullptr )
+	{
+		if( m_blendMode == BlendMode::Ignore )
+			return;
+		
+		char errorMsg[1024];
+		
+		sprintf(errorMsg, "Failed draw segments operation. SoftGfxDevice is missing segments kernel %s Y-tint for BlendMode::%s onto surface of PixelFormat:%s.",
+			bTintY ? "with" : "without",
+			toString(m_blendMode),
+			toString(m_canvasPixelFormat ));
+		
+		GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::RenderFailure, errorMsg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
+		return;
+	}
+
+	// Loop through patches
+
+	for (int patchIdx = 0; patchIdx < m_nClipSegments; patchIdx++)
+	{
+		auto& seg = m_pClipSegments[patchIdx];
+			
+		int xPitch = m_canvasPixelBytes;
+		int yPitch = seg.pitch;
+
+		// Calculate pitches
+
+		int colPitch = simpleTransform[0][0] * xPitch + simpleTransform[0][1] * yPitch;
+		int rowPitch = simpleTransform[1][0] * xPitch + simpleTransform[1][1] * yPitch;
+
+		
+		uint8_t* pOrigo = seg.pBuffer - seg.rect.y * yPitch - seg.rect.x * xPitch + start.y * yPitch + start.x * xPitch;
+
+		
+		// Clip patch
+
+		RectI patch = RectI::overlap(dest, seg.rect);
+		if (patch.w == 0 || patch.h == 0)
+			continue;
+
+		// Calculate stripstart, clipBeg/clipEnd and first edge for patch
+
+		int columnOfs;
+		int rowOfs;
+
+		int columns;
+		int rows;
+
+		if (bHorizontalColumns)
+		{
+			columnOfs = colPitch > 0 ? patch.x - dest.x : dest.right() - patch.right();
+			rowOfs = rowPitch > 0 ? patch.y - dest.y : dest.bottom() - patch.bottom();
+
+			columns = patch.w;
+			rows = patch.h;
+		}
+		else
+		{
+			columnOfs = colPitch > 0 ? patch.y - dest.y : dest.bottom() - patch.bottom();
+			rowOfs = rowPitch > 0 ? patch.x - dest.x : dest.right() - patch.right();
+
+			columns = patch.h;
+			rows = patch.w;
+		}
+
+		const int* pEdgeStrips = _pEdgeStrips + columnOfs * edgeStripPitch;
+		uint8_t* pStripStart = pOrigo + columnOfs * colPitch;
+
+		int clipBeg = rowOfs * 256;
+		int clipEnd = clipBeg + (rows * 256);
+
+		for (int x = 0; x < columns; x++)
+		{
+			int nEdges = 0;
+			int skippedSegments = 0;
+
+			for (int y = 0; y < nSegments - 1; y++)
+			{
+				int beg = pEdgeStrips[y] * 4;
+				int end = pEdgeStrips[y + edgeStripPitch] * 4;
+
+				if (beg > end)
+					swap(beg, end);
+
+				if (beg >= clipEnd)
+					break;
+
+				if (end > clipBeg)
+				{
+					int coverageInc = (end == beg) ? 0 : (65536 * 256) / (end - beg);
+					int coverage = 0;
+
+					if (beg < clipBeg)
+					{
+						int cut = clipBeg - beg;
+						beg = clipBeg;
+						coverage += (coverageInc * cut) >> 8;
+					}
+
+					if (end > clipEnd)
+						end = clipEnd;
+
+
+					edges[nEdges].begin = beg;
+					edges[nEdges].end = end;
+					edges[nEdges].coverage = coverage;
+					edges[nEdges].coverageInc = coverageInc;
+					nEdges++;
+				}
+				else
+					skippedSegments++;
+			}
+
+			// Update tinting if we have X-gradient
+
+			const int16_t * pColors = &colors[skippedSegments][0];
+
+			if (bTintX)
+			{
+				if (bTintY)
+				{
+					auto pOut = pGradientsY + skippedSegments;
+					auto pIn = pGradientsX + skippedSegments * 2;
+
+					for (int i = 0; i < nEdges + 1; i++)
+					{
+						int beg = pIn[0].begB + pIn[0].incB * columnOfs;
+						int inc = (pIn[1].begB + pIn[1].incB * columnOfs - beg) / dest.h;
+						pOut[i].begB = beg;
+						pOut[i].incB = inc;
+
+						beg = pIn[0].begG + pIn[0].incG * columnOfs;
+						inc = (pIn[1].begG + pIn[1].incG * columnOfs - beg) / dest.h;
+						pOut[i].begG = beg;
+						pOut[i].incG = inc;
+
+						beg = pIn[0].begR + pIn[0].incR * columnOfs;
+						inc = (pIn[1].begR + pIn[1].incR * columnOfs - beg) / dest.h;
+						pOut[i].begR = beg;
+						pOut[i].incR = inc;
+
+						beg = pIn[0].begA + pIn[0].incA * columnOfs;
+						inc = (pIn[1].begA + pIn[1].incA * columnOfs - beg) / dest.h;
+						pOut[i].begA = beg;
+						pOut[i].incA = inc;
+
+						pIn += 2;
+					}
+				}
+				else
+				{
+					// We just use the color array and fill in correct color values for this column.
+
+					auto pGrad = pGradientsX + skippedSegments * 2;
+
+					for (int i = 0; i < nEdges + 1; i++)
+					{
+						colors[i][0] = (pGrad->begR + pGrad->incR * columnOfs) >> 12;
+						colors[i][1] = (pGrad->begG + pGrad->incG * columnOfs) >> 12;
+						colors[i][2] = (pGrad->begB + pGrad->incB * columnOfs) >> 12;
+						colors[i][3] = (pGrad->begA + pGrad->incA * columnOfs) >> 12;
+						pGrad += 2;												// Skipping bottom gradient data since we don't need it.
+					}
+
+					pColors = &colors[0][0];
+				}
+			}
+
+			//
+			auto gradientPointer = pGradientsY != nullptr ? pGradientsY + skippedSegments : nullptr;
+			pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, gradientPointer, transparentSegments + skippedSegments, opaqueSegments + skippedSegments, m_colTrans);
+			pEdgeStrips += edgeStripPitch;
+			pStripStart += colPitch;
+			columnOfs++;
+		}
+	}
+
+	// Free what we have reserved on the memStack.
+
+	if (gradientsXBufferSize > 0)
+		GfxBase::memStackFree(gradientsXBufferSize);
+
+	if (gradientsYBufferSize > 0)
+		GfxBase::memStackFree(gradientsYBufferSize);
+
+}
+
 
 
 

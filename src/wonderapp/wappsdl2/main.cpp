@@ -206,7 +206,7 @@ int main(int argc, char *argv[] )
 
 			for (auto& pWin : g_windows )
 			{
-				pWin->render();		
+				pWin->render();
 			}
 
 			// Sleep for a while

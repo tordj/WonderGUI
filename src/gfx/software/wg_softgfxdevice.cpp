@@ -2657,7 +2657,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		GfxBase::memStackFree(memBufferSize);
 	}
 
-	//____ _onePassTransforBlit() ____________________________________________
+	//____ _onePassTransformBlit() ____________________________________________
 
 	void SoftGfxDevice::_onePassTransformBlit(const RectI& dest, BinalCoord pos, const binalInt transformMatrix[2][2], CoordI patchPos, TransformBlitOp_p pPassOneOp)
 	{
