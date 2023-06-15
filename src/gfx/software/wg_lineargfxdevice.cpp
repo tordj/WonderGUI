@@ -405,7 +405,6 @@ void LinearGfxDevice::plotPixels(int nCoords, const CoordSPX * pCoords, const Hi
 
 	for (int i = 0; i < m_nClipSegments; i++)
 	{
-		
 		auto& seg = m_pClipSegments[i];
 
 		uint8_t * pCanvas = seg.pBuffer - seg.rect.y * seg.pitch - seg.rect.x * m_canvasPixelBytes;

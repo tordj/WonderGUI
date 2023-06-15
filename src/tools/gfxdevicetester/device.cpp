@@ -1,18 +1,106 @@
 
 #include "device.h"
+#include "gfxdevicetester.h"
 
 
-GfxDevice_p Device::beginRender() const
+Device::Device( const string& name, GfxDevice * pDevice, Surface * pSurface, Theme * pTheme )
+  : m_name(name),
+	m_pDevice(pDevice),
+	m_pCanvas(pSurface)
+{
+	setSkin( pTheme->backPlateSkin() );
+
+	auto pTitleBar = PackPanel::create();
+	pTitleBar->setAxis(Axis::X);
+	pTitleBar->setLayout(PackLayout::create( WGBP(PackLayout,
+												  _.expandFactor = PackLayout::Factor::Weight )));
+	
+
+	auto pTesteeButton = Button::create( WGBP(Button,
+											 _.skin = pTheme->buttonSkin(),
+											 _.label.text = "TEST",
+											 _.label.style = pTheme->smallTextStyle()
+										));
+
+	auto pDiffButton = Button::create( WGBP(Button,
+											 _.skin = pTheme->buttonSkin(),
+											 _.label.text = "DIFF",
+											 _.label.style = pTheme->smallTextStyle()
+									  ));
+
+	auto pRefButton = Button::create( WGBP(Button,
+											 _.skin = pTheme->buttonSkin(),
+											 _.label.text = "REF",
+										   _.label.style = pTheme->smallTextStyle()
+									  ));
+
+
+	
+	auto pTitle = TextDisplay::create( WGBP(TextDisplay,
+											_.display.text = name
+											));
+
+	auto pCloseButton = Button::create( WGBP(Button,
+											 _.skin = pTheme->buttonSkin(),
+											 _.label.text = "CLOSE",
+											 _.label.style = pTheme->smallTextStyle()
+										));
+
+
+	
+	pTitleBar->slots << pTesteeButton;
+	pTitleBar->slots << pDiffButton;
+	pTitleBar->slots << pRefButton;
+
+	pTitleBar->slots << pTitle;
+
+	pTitleBar->slots << pCloseButton;
+
+	pTitleBar->slots.setWeight(0, 5, {0.f,0.f,0.f,1.f,0.f});
+	
+
+	SizeI canvasSize = pSurface ? pSurface->pixelSize() : pDevice->canvas(CanvasRef::Default).size/64;
+	
+	
+	m_pDisplaySurface = Base::defaultSurfaceFactory()->createSurface(WGBP(Surface, _.size = canvasSize ));
+	
+	
+	m_pDisplay = SurfaceDisplay::create( WGBP(SurfaceDisplay,
+											  _.skin = BoxSkin::create(WGBP(BoxSkin,
+																			_.color = Color::Black,
+																			_.outline = 2,
+																			_.outlineColor = Color::White,
+																			_.padding = 2 )),
+											  _.surface = m_pDisplaySurface
+											  )
+										);
+	
+	setAxis(Axis::Y);
+	slots << pTitleBar;
+	slots << m_pDisplay;
+};
+
+
+
+GfxDevice_p Device::beginRender()
 {
     m_pDevice->beginRender();
-    m_pDevice->beginCanvasUpdate(m_pCanvas);
-    return m_pDevice;
+	if( m_pCanvas )
+		m_pDevice->beginCanvasUpdate(m_pCanvas);
+	else
+		m_pDevice->beginCanvasUpdate(CanvasRef::Default);
+
+	return m_pDevice;
 }
 
 
-void Device::endRender() const
+void Device::endRender()
 {
     m_pDevice->endCanvasUpdate();
     m_pDevice->endRender();
+
+	if( m_pCanvas )
+		m_pDisplaySurface->copy( { 0,0 }, m_pCanvas );
+	m_bNeedsRedraw = false;
 }
 

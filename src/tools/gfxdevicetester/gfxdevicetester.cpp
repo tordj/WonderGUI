@@ -63,26 +63,7 @@ bool GfxDeviceTester::init( WonderApp::Visitor * pVisitor )
 	m_pWindow = pVisitor->createWindow({ .size = {800,700}, .title = "GfxDevice Tester" });
 
 	//
-	
-    Surface::Blueprint canvasBP = WGBP(Surface,
-                                       _.size = {512,512},
-                                       _.canvas = true );
     
-    
-    auto pSoftGfxDevice = SoftGfxDevice::create();
-    addDefaultSoftKernels( pSoftGfxDevice );
-    
-    auto pReferenceDevice = Device::create( "Reference (SoftGfxDevice)", pSoftGfxDevice, SoftSurface::create( canvasBP ) );
-
-    auto pNativeGfxDevice = Base::defaultGfxDevice();
-    string nativeDeviceName = string("Native (" + string(pNativeGfxDevice->typeInfo().className) + ")" );
-    
-    auto pNativeDevice = Device::create(nativeDeviceName, pNativeGfxDevice, Base::defaultSurfaceFactory()->createSurface(canvasBP) );
-    
-    
-	addTestDevice(pReferenceDevice);
-	addTestDevice(pNativeDevice);
-
 	// Init textmappers
 
 	auto pMapper = BasicTextLayout::create({ .placement = Placement::Center });
@@ -98,11 +79,21 @@ bool GfxDeviceTester::init( WonderApp::Visitor * pVisitor )
 
 	g_pButtonLabelStyle = TextStyle::create({ .color = HiColor::Black, .font = pFont, .size = 16 });
 
+	m_pSmallTextStyle = TextStyle::create({ .color = HiColor::Black, .font = pFont, .size = 10 });
+
+	
 	//
 
+	setup_theme();
+	
+	setup_testdevices();
+
+	
 	setup_cliplist(ClipList::One);
 	setup_tests();
 
+	set_devices(g_testdevices[0], g_testdevices[1]);
+	
 	if (!setup_chrome())
 		return false;
 
@@ -126,19 +117,11 @@ bool GfxDeviceTester::update()
 
 	if (g_displayMode != DisplayMode::Time)
 	{
-		if (g_bRedrawTestee)
+		for( auto pDevice : g_testdevices )
 		{
-			run_tests(g_pTesteeDevice, TESTEE);
-			g_bRedrawTestee = false;
+			if( pDevice->needsRedraw() )
+				run_tests(pDevice, TESTEE);
 		}
-
-		if (g_bRedrawReference)
-		{
-			run_tests(g_pReferenceDevice, REFERENCE);
-			g_bRedrawReference = false;
-		}
-
-		display_test_results();
 	}
 
 	return true;
@@ -154,20 +137,86 @@ void GfxDeviceTester::exit()
 
 	g_pButtonLabelStyle = nullptr;
 	g_pViewPanel = nullptr;
-	g_pTesteeCanvas = nullptr;
-	g_pReferenceCanvas = nullptr;
 }
 
-//____ addTestDevice() ___________________________________________________________
+//____ setup_testdevices() ___________________________________________________________
 
-void GfxDeviceTester::addTestDevice( Device_p pDevice )
+void GfxDeviceTester::setup_testdevices()
 {
-	g_testdevices.push_back(pDevice);
+	Surface::Blueprint canvasBP = WGBP(Surface,
+									   _.size = {512,512},
+									   _.canvas = true );
+	
+	// Reference
+	
+	auto pSoftGfxDevice = SoftGfxDevice::create();
+	addDefaultSoftKernels( pSoftGfxDevice );
+	
+	auto pReferenceDevice = Device::create( "Reference (SoftGfxDevice)", pSoftGfxDevice, SoftSurface::create( canvasBP ), this );
 
-	if( g_pReferenceDevice == nullptr )
-		g_pReferenceDevice = pDevice;
-	else if( g_pTesteeDevice == nullptr )
-		g_pTesteeDevice = pDevice;
+	g_testdevices.push_back(pReferenceDevice);
+
+	// Native
+
+	auto pNativeGfxDevice = Base::defaultGfxDevice();
+	string nativeDeviceName = string("Native (" + string(pNativeGfxDevice->typeInfo().className) + ")" );
+	
+	auto pNativeDevice = Device::create(nativeDeviceName, pNativeGfxDevice, Base::defaultSurfaceFactory()->createSurface(canvasBP), this );
+	
+//	g_testdevices.push_back(pNativeDevice);
+	
+	// Linear
+	
+	auto pLinearOutputBlob = Blob::create(512*512*4);
+	m_pSavedBlob = pLinearOutputBlob;
+		
+	auto pLinearGfxDevice = LinearGfxDevice::create(
+
+		[this](CanvasRef ref, int bytes)
+		{
+			assert( bytes <= 512*512*4 );
+			
+			return m_pSavedBlob->data();
+		},
+		[this](CanvasRef ref, int nSegments, const LinearGfxDevice::Segment * pSegments )
+		{
+			auto buffer = m_pLinearDeviceSurface->allocPixelBuffer();
+			
+			int pixelBytes = Util::pixelFormatToDescription(buffer.format).bits/8;
+
+			for( int i = 0 ; i < nSegments ; i++ )
+			{
+				auto& seg = pSegments[i];
+				
+				uint8_t * pDest = ((uint8_t*)buffer.pixels) + seg.rect.y * buffer.pitch + seg.rect.x * pixelBytes;
+				uint8_t * pSrc = seg.pBuffer;
+				
+				for( int y = 0 ; y < seg.rect.h ; y++ )
+				{
+					memcpy( pDest, pSrc, seg.rect.w*pixelBytes );
+					pDest += buffer.pitch;
+					pSrc += seg.pitch;
+				}
+			}
+
+			m_pLinearDeviceSurface->pullPixels(buffer);
+			m_pLinearDeviceSurface->freePixelBuffer(buffer);
+		}
+	);
+	
+	addDefaultSoftKernels( pLinearGfxDevice );
+	pLinearGfxDevice->defineCanvas(CanvasRef::Default, g_canvasSize*64, PixelFormat::BGRA_8_sRGB);
+
+	auto pLinearDevice = Device::create( pLinearGfxDevice->typeInfo().className, pLinearGfxDevice, nullptr, this );
+	
+	m_pLinearDeviceSurface = pLinearDevice->displaySurface();
+	
+	g_testdevices.push_back(pLinearDevice);
+
+	//
+	
+	g_pReferenceDevice = pReferenceDevice;
+	g_pTesteeDevice = pNativeDevice;
 }
 
 //____ destroy_testdevices() ____________________________________________________
@@ -176,7 +225,6 @@ void GfxDeviceTester::destroy_testdevices()
 {
 	g_testdevices.clear();
 
-	g_pTesteeDevice = nullptr;
 	g_pReferenceDevice = nullptr;
 }
 
@@ -184,78 +232,32 @@ void GfxDeviceTester::destroy_testdevices()
 
 void GfxDeviceTester::update_displaymode()
 {
-	Widget_p viewChild;
 
 	// Setup view panel
 
 
 	switch (g_displayMode)
 	{
-	case DisplayMode::Testee:
-		g_pTesteeCanvas = create_canvas();
-		g_pReferenceCanvas = nullptr;
-		viewChild = g_pTesteeCanvas;
-		break;
+		default:
+		{
+			auto pPack = PackPanel::create();
+			pPack->setAxis(Axis::X);
 
-	case DisplayMode::Reference:
-		g_pTesteeCanvas = nullptr;
-		g_pReferenceCanvas = create_canvas();
-		viewChild = g_pReferenceCanvas;
-		break;
+			for( auto pDevice : g_testdevices )
+				pPack->slots << pDevice;
 
-	case DisplayMode::Both:
-	{
-		g_pTesteeCanvas = create_canvas();
-		g_pReferenceCanvas = create_canvas();
+			g_pViewPanel->slot = pPack;
 
-		auto pPack = PackPanel::create();
-		pPack->setAxis(Axis::X);
-		pPack->slots << g_pTesteeCanvas;
-		pPack->slots << g_pReferenceCanvas;
-		viewChild = pPack;
-
-		break;
-	}
-	case DisplayMode::Diff:
-		break;
-	case DisplayMode::Time:
-		refresh_performance_display();
-		viewChild = g_pPerformanceDisplay;
-		break;
+			break;
+		}
+		case DisplayMode::Diff:
+			break;
+		case DisplayMode::Time:
+			refresh_performance_display();
+			g_pViewPanel->slot = g_pPerformanceDisplay;
+			break;
 	}
 
-	// Set zoom factor
-
-	if (g_pTesteeCanvas)
-		g_pTesteeCanvas->setZoom(g_zoomFactor);
-
-	if (g_pReferenceCanvas)
-		g_pReferenceCanvas->setZoom(g_zoomFactor);
-
-
-/*
-	if (g_zoomFactor != 1.f)
-	{
-		Size size{ (512 * g_zoomFactor), (512 * g_zoomFactor) };
-
-		if (g_pTesteeCanvas)
-			g_pTesteeCanvas->canvas.setPresentationScaling(SizePolicy2D::Scale);
-
-		if (g_pReferenceCanvas)
-			g_pReferenceCanvas->canvas.setPresentationScaling(SizePolicy2D::Scale);
-
-
-		auto pZoomer = SizeCapsule::create();
-		pZoomer->setSizes(size, size, size);
-		pZoomer->slot = viewChild;
-		viewChild = pZoomer;
-
-	}
-*/
-
-	//
-
-	g_pViewPanel->slot = viewChild;
 
 }
 
@@ -339,38 +341,6 @@ SurfaceDisplay_p GfxDeviceTester::create_canvas()
 	return pCanvas;
 }
 
-//____ display_test_results() _________________________________________________
-
-void GfxDeviceTester::display_test_results()
-{
-	switch (g_displayMode)
-	{
-	case DisplayMode::Testee:
-		g_pTesteeCanvas->surface()->copy( { 0,0 }, g_pTesteeDevice->canvas() );
-//		g_pTesteeCanvas->canvas.present();
-		break;
-
-	case DisplayMode::Reference:
-		g_pReferenceCanvas->surface()->copy( { 0,0 }, g_pReferenceDevice->canvas() );
-//		g_pReferenceCanvas->canvas.present();
-		break;
-
-	case DisplayMode::Both:
-		g_pTesteeCanvas->surface()->copy( { 0,0 }, g_pTesteeDevice->canvas() );
-//		g_pTesteeCanvas->canvas.present();
-
-		g_pReferenceCanvas->surface()->copy( { 0,0 }, g_pReferenceDevice->canvas() );
-//		g_pReferenceCanvas->canvas.present();
-		break;
-
-	case DisplayMode::Diff:
-		break;
-
-	case DisplayMode::Time:
-		break;
-	}
-}
-
 //____ setup_cliplist() _________________________________________________________
 
 void GfxDeviceTester::setup_cliplist(ClipList list)
@@ -411,8 +381,8 @@ void GfxDeviceTester::setup_cliplist(ClipList list)
 		rectOfs.y += rectSize.h;
 	}
 
-	g_bRedrawTestee = true;
-	g_bRedrawReference = true;
+	g_pReferenceDevice->setNeedsRedraw();
+	g_pTesteeDevice->setNeedsRedraw();
 }
 
 
@@ -424,7 +394,6 @@ void GfxDeviceTester::run_tests(Device* pDevice, DeviceEnum device)
 		return;
 
 	auto pGfxDevice = pDevice->beginRender();
-	//	pDevice->setClip(g_canvasSize);
 
 	pGfxDevice->fill(g_canvasSize*64, HiColor::Black);
 	pGfxDevice->setClipList((int)g_clipList.size(), &g_clipList[0]);
@@ -507,49 +476,71 @@ void GfxDeviceTester::setup_tests()
 {
 	destroy_tests();
 
-	add_testsuite(new BlitConsistencyTests(), new BlitConsistencyTests());
-	add_testsuite(new FillTests(), new FillTests());
-	add_testsuite(new BlendTests(), new BlendTests());
-	add_testsuite(new PlotTests(), new PlotTests());
-	add_testsuite(new LineTests(), new LineTests());
-	add_testsuite(new CanvasFormatTests(), new CanvasFormatTests());
-	add_testsuite(new PatchBlitTests(), new PatchBlitTests());
-	add_testsuite(new SegmentTests(), new SegmentTests());
-	add_testsuite(new WaveTests(), new WaveTests());
-	add_testsuite(new PaletteBlitTests(), new PaletteBlitTests());
-	add_testsuite(new MipmapTests(), new MipmapTests());
-	add_testsuite(new PieChartTests(), new PieChartTests());
-	add_testsuite(new TintBlitTests(), new TintBlitTests());
-	add_testsuite(new TintSegmentTests(), new TintSegmentTests());
-	add_testsuite(new BlitBlendTests(), new BlitBlendTests());
-	add_testsuite(new A8Tests(), new A8Tests());
-	add_testsuite(new TileTests(), new TileTests());
-	add_testsuite(new CanvasLayerTests(), new CanvasLayerTests());
-//	add_testsuite(new RGB565BigEndianTests(), new RGB565BigEndianTests());	// Can only be handled by software rendering for now.
-	add_testsuite(new BlendFixedColorTests(), new BlendFixedColorTests());
-	add_testsuite(new WaveformTests(), new WaveformTests());
+	add_testsuite([](){ return new BlitConsistencyTests();});
+	add_testsuite([](){ return new FillTests();});
+	add_testsuite([](){ return new BlendTests();});
+	add_testsuite([](){ return new PlotTests();});
+	add_testsuite([](){ return new LineTests();});
+	add_testsuite([](){ return new CanvasFormatTests();});
+	add_testsuite([](){ return new PatchBlitTests();});
+	add_testsuite([](){ return new SegmentTests();});
+	add_testsuite([](){ return new WaveTests();});
+	add_testsuite([](){ return new PaletteBlitTests();});
+	add_testsuite([](){ return new MipmapTests();});
+	add_testsuite([](){ return new PieChartTests();});
+	add_testsuite([](){ return new TintBlitTests();});
+	add_testsuite([](){ return new BlitBlendTests();});
+	add_testsuite([](){ return new A8Tests();});
+	add_testsuite([](){ return new TileTests();});
+	add_testsuite([](){ return new CanvasLayerTests();});
+	add_testsuite([](){ return new RGB565BigEndianTests();});
+	add_testsuite([](){ return new BlendFixedColorTests();});
+	add_testsuite([](){ return new WaveformTests();});
 
 	regen_testentries();
 }
 
+//____ set_devices() ___________________________________________________________
+
+bool GfxDeviceTester::set_devices( Device_p pReference, Device_p pTestee )
+{
+	for( auto& se : g_testsuites )
+	{
+		if( se.bActive )
+		{
+			se.pReferenceSuite->exit( g_pReferenceDevice->gfxDevice(), g_canvasSize*64 );
+			se.pTesteeSuite->exit( g_pTesteeDevice->gfxDevice(), g_canvasSize*64 );
+
+			se.pReferenceSuite->init(pReference->gfxDevice(), g_canvasSize*64, m_pVisitor);
+			se.pTesteeSuite->init(pTestee->gfxDevice(), g_canvasSize*64, m_pVisitor);
+		}
+	}
+	
+	g_pReferenceDevice = pReference;
+	g_pTesteeDevice = pTestee;
+	
+	return true;
+}
+
+
 //____ add_testsuite() _____________________________________________________________
 
-bool GfxDeviceTester::add_testsuite(TestSuite* pTesteeSuite, TestSuite* pReferenceSuite)
+bool GfxDeviceTester::add_testsuite( const std::function<TestSuite*()>& testSuiteFactory)
 {
 	SuiteEntry se;
+	
+	se.factory 			= testSuiteFactory;
+	se.pReferenceSuite 	= testSuiteFactory();
+	se.pTesteeSuite		= testSuiteFactory();
+	se.nbTests 			= (int)se.pReferenceSuite->tests.size();
 
-	se.pTesteeSuite = pTesteeSuite;
-	se.pRefSuite = pReferenceSuite;
-
-	bool bTesteeWorking = pTesteeSuite->init(g_pTesteeDevice->gfxDevice(), g_canvasSize*64, m_pVisitor);
-	bool bRefWorking = pReferenceSuite->init(g_pReferenceDevice->gfxDevice(), g_canvasSize*64, m_pVisitor);
-
-	bool bWorking = (bTesteeWorking && bRefWorking);
-
+	auto pTempDevice = SoftGfxDevice::create();
+	bool bWorking = se.pReferenceSuite->init(pTempDevice, g_canvasSize*64, m_pVisitor);
+	se.pReferenceSuite->exit(pTempDevice, g_canvasSize*64);
+	
 	se.bWorking = bWorking;
-	se.bActive = bWorking;
-	se.nbTests = (int)pTesteeSuite->tests.size();
-
+	se.bActive	= bWorking;
+	
 	g_testsuites.push_back(se);
 
 	return bWorking;
@@ -571,10 +562,10 @@ void GfxDeviceTester::regen_testentries()
 
 				t.bWorking = suite.bWorking;
 				t.bActive = false;
-				t.name = suite.pTesteeSuite->tests[i].name;
+				t.name = suite.pReferenceSuite->tests[i].name;
 
 				t.devices[TESTEE].pTest = &suite.pTesteeSuite->tests[i];
-				t.devices[REFERENCE].pTest = &suite.pRefSuite->tests[i];
+				t.devices[REFERENCE].pTest = &suite.pReferenceSuite->tests[i];
 
 				g_tests.push_back(t);
 			}
@@ -589,31 +580,38 @@ void GfxDeviceTester::destroy_tests()
 {
 	for (auto& suite : g_testsuites)
 	{
+		delete suite.pReferenceSuite;
 		delete suite.pTesteeSuite;
-		delete suite.pRefSuite;
 	}
 
 	g_tests.clear();
 	g_testsuites.clear();
 }
 
-//____ setup_chrome() _________________________________________________________
+//____ setup_theme() __________________________________________________________
 
-bool GfxDeviceTester::setup_chrome()
+bool GfxDeviceTester::setup_theme()
 {
 	// Load resources
 
 	auto pPlateSurface = m_pVisitor->loadSurface("resources/grey_plate.bmp");
 	assert(pPlateSurface);
 	BlockSkin_p pPlateSkin = BlockSkin::create({ .frame = 3, .padding = 5, .surface = pPlateSurface } );
-
-	auto pPressablePlateSurface = m_pVisitor->loadSurface("resources/grey_pressable_plate.bmp");
-	assert(pPressablePlateSurface);
-	BlockSkin_p pPressablePlateSkin = BlockSkin::create({ .axis = Axis::X, .frame = Border(3), .padding = Border(3), .states = { State::Hovered, State::Pressed, State::Disabled }, .surface = pPressablePlateSurface });
-
+	m_pBackPlateSkin = pPlateSkin;
+	
+	
 	auto pButtonSurface = m_pVisitor->loadSurface("resources/simple_button.bmp");
 	assert(pButtonSurface);
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({ .axis = Axis::X, .frame = Border(3), .padding = Border(5), .states = { State::Hovered, {}, State::Pressed, {}, State::Disabled, {} }, .surface = pButtonSurface });
+	m_pButtonSkin = pSimpleButtonSkin;
+
+}
+
+
+//____ setup_chrome() _________________________________________________________
+
+bool GfxDeviceTester::setup_chrome()
+{
 
 
 
@@ -642,7 +640,7 @@ bool GfxDeviceTester::setup_chrome()
 
 	auto pSidebar = PackPanel::create();
 	pSidebar->setAxis(Axis::Y);
-	pSidebar->setSkin( pPlateSkin );
+	pSidebar->setSkin( m_pBackPlateSkin );
 	pSidebar->setLayout(pUniformLayout);
 
 	auto pCanvasPanel = PackPanel::create();
@@ -652,7 +650,7 @@ bool GfxDeviceTester::setup_chrome()
 	auto pViewNav = PackPanel::create();
 	pViewNav->setAxis(Axis::X);
 	pViewNav->setLayout(pUniformLayout);
-	pViewNav->setSkin( pPlateSkin );
+	pViewNav->setSkin( m_pBackPlateSkin );
 
 	auto pViewPanel = ScrollPanel::create();
 	pViewPanel->setSkin( StaticColorSkin::create(Color8::SlateGrey) );
@@ -703,19 +701,19 @@ bool GfxDeviceTester::setup_chrome()
 
 
 	auto pNoClipButton = Button::create();
-	pNoClipButton->setSkin( pSimpleButtonSkin );
+	pNoClipButton->setSkin( m_pButtonSkin );
 	pNoClipButton->label.setText("One");
 	pNoClipButton->label.setStyle(g_pButtonLabelStyle);
 	pNoClipButton->label.setLayout(g_pButtonLabelMapper);
 
 	auto pFewButton = Button::create();
-	pFewButton->setSkin( pSimpleButtonSkin );
+	pFewButton->setSkin( m_pButtonSkin );
 	pFewButton->label.setText("Few");
 	pFewButton->label.setStyle(g_pButtonLabelStyle);
 	pFewButton->label.setLayout(g_pButtonLabelMapper);
 
 	auto pManyButton = Button::create();
-	pManyButton->setSkin( pSimpleButtonSkin );
+	pManyButton->setSkin( m_pButtonSkin );
 	pManyButton->label.setText("Many");
 	pManyButton->label.setStyle(g_pButtonLabelStyle);
 	pManyButton->label.setLayout(g_pButtonLabelMapper);
@@ -736,32 +734,32 @@ bool GfxDeviceTester::setup_chrome()
 
 
 	auto pTesteeButton = Button::create();
-	pTesteeButton->setSkin( pSimpleButtonSkin );
+	pTesteeButton->setSkin( m_pButtonSkin );
 	pTesteeButton->label.setText("Testee");
 	pTesteeButton->label.setStyle(g_pButtonLabelStyle);
 	pTesteeButton->label.setLayout(g_pButtonLabelMapper);
 
 	auto pRefButton = Button::create();
-	pRefButton->setSkin( pSimpleButtonSkin );
+	pRefButton->setSkin( m_pButtonSkin );
 	pRefButton->label.setText("Reference");
 	pRefButton->label.setStyle(g_pButtonLabelStyle);
 	pRefButton->label.setLayout(g_pButtonLabelMapper);
 
 	auto pBothButton = Button::create();
-	pBothButton->setSkin( pSimpleButtonSkin );
+	pBothButton->setSkin( m_pButtonSkin );
 //	pBothButton->text = { "Both", g_pButtonLabelStyle, g_pButtonLabelMapper }
 	pBothButton->label.setText("Both");
 	pBothButton->label.setStyle(g_pButtonLabelStyle);
 	pBothButton->label.setLayout(g_pButtonLabelMapper);
 
 	auto pDiffButton = Button::create();
-	pDiffButton->setSkin( pSimpleButtonSkin );
+	pDiffButton->setSkin( m_pButtonSkin );
 	pDiffButton->label.setText("Diff");
 	pDiffButton->label.setStyle(g_pButtonLabelStyle);
 	pDiffButton->label.setLayout(g_pButtonLabelMapper);
 
 	auto pTimeButton = Button::create();
-	pTimeButton->setSkin( pSimpleButtonSkin );
+	pTimeButton->setSkin( m_pButtonSkin );
 	pTimeButton->label.setText("Time");
 	pTimeButton->label.setStyle(g_pButtonLabelStyle);
 	pTimeButton->label.setLayout(g_pButtonLabelMapper);
@@ -803,25 +801,25 @@ bool GfxDeviceTester::setup_chrome()
 	pDispModeSection->setLayout(pUniformLayout);
 
 	auto pX1Button = Button::create();
-	pX1Button->setSkin( pSimpleButtonSkin );
+	pX1Button->setSkin( m_pButtonSkin );
 	pX1Button->label.setText(" X1 ");
 	pX1Button->label.setStyle(g_pButtonLabelStyle);
 	pX1Button->label.setLayout(g_pButtonLabelMapper);
 
 	auto pX2Button = Button::create();
-	pX2Button->setSkin( pSimpleButtonSkin );
+	pX2Button->setSkin( m_pButtonSkin );
 	pX2Button->label.setText(" X2 ");
 	pX2Button->label.setStyle(g_pButtonLabelStyle);
 	pX2Button->label.setLayout(g_pButtonLabelMapper);
 
 	auto pX4Button = Button::create();
-	pX4Button->setSkin( pSimpleButtonSkin );
+	pX4Button->setSkin( m_pButtonSkin );
 	pX4Button->label.setText(" X4 ");
 	pX4Button->label.setStyle(g_pButtonLabelStyle);
 	pX4Button->label.setLayout(g_pButtonLabelMapper);
 
 	auto pX8Button = Button::create();
-	pX8Button->setSkin( pSimpleButtonSkin );
+	pX8Button->setSkin( m_pButtonSkin );
 	pX8Button->label.setText(" X8 ");
 	pX8Button->label.setStyle(g_pButtonLabelStyle);
 	pX8Button->label.setLayout(g_pButtonLabelMapper);
@@ -863,8 +861,9 @@ bool GfxDeviceTester::setup_chrome()
 		for (int x = 0; x < pMsg->nbItems(); x++)
 			g_tests[p[x].id].bActive = true;
 
-		g_bRedrawTestee = true;
-		g_bRedrawReference = true;
+
+		g_pReferenceDevice->setNeedsRedraw();
+		g_pTesteeDevice->setNeedsRedraw();
 	});
 
 	Base::msgRouter()->addRoute(pTestList, MsgType::ItemsUnselect, [&](Msg* _pMsg) {
@@ -874,8 +873,8 @@ bool GfxDeviceTester::setup_chrome()
 		for (int x = 0; x < pMsg->nbItems(); x++)
 			g_tests[p[x].id].bActive = false;
 
-		g_bRedrawTestee = true;
-		g_bRedrawReference = true;
+		g_pReferenceDevice->setNeedsRedraw();
+		g_pTesteeDevice->setNeedsRedraw();
 	});
 
 
@@ -906,7 +905,7 @@ bool GfxDeviceTester::setup_chrome()
 	pTestScrollPanel->slot = pTestList;
 
 	pTestScrollPanel->scrollbarY.setBackground(StaticColorSkin::create(Color::Green));
-	pTestScrollPanel->scrollbarY.setBar(pSimpleButtonSkin);
+	pTestScrollPanel->scrollbarY.setBar(m_pButtonSkin);
 
 	pSidebar->slots << pTestScrollPanel;
 
@@ -935,12 +934,12 @@ bool GfxDeviceTester::setup_chrome()
 		// Create the bottom section
 
 		auto pBottom = PackPanel::create();
-		pBottom->setSkin( pPlateSkin );
+		pBottom->setSkin( m_pBackPlateSkin );
 		pBottom->setAxis(Axis::X);
 		pBottom->setLayout(pUniformLayout);
 
 		auto pRefresh = Button::create();
-		pRefresh->setSkin( pSimpleButtonSkin );
+		pRefresh->setSkin( m_pButtonSkin );
 		pRefresh->label.setText("REFRESH");
 		pRefresh->label.setStyle(g_pButtonLabelStyle);
 		pRefresh->label.setLayout(g_pButtonLabelMapper);

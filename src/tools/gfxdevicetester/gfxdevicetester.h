@@ -4,12 +4,33 @@
 
 #include <wonderapp.h>
 
+#include <wg_softgfxdevice.h>
+#include <wg_softkernels_default.h>
+
+#include <wg_lineargfxdevice.h>
+
+
 #include "device.h"
 #include "testsuites/testsuite.h"
 
+class Theme
+{
+public:
+	Skin_p		backPlateSkin() const { return m_pBackPlateSkin; }
+	Skin_p		buttonSkin() const { return m_pButtonSkin; }
+	TextStyle_p	smallTextStyle() const { return m_pSmallTextStyle; }
+	
+protected:
+	Skin_p		m_pBackPlateSkin;
+	Skin_p		m_pButtonSkin;
+
+	TextStyle_p	m_pSmallTextStyle;
+};
 
 
-class GfxDeviceTester : public WonderApp
+
+
+class GfxDeviceTester : public WonderApp, public Theme
 {
 	friend class WonderApp;
 public:
@@ -60,9 +81,11 @@ protected:
 	{
 		bool		bActive = true;
 		bool		bWorking;
+		string		name;
 		int			nbTests;
-		TestSuite* pTesteeSuite;
-		TestSuite* pRefSuite;
+		std::function<TestSuite*()> factory;
+		TestSuite *	pReferenceSuite;
+		TestSuite *	pTesteeSuite;
 	};
 
 
@@ -83,13 +106,17 @@ protected:
 	};
 
 
+	bool		setup_theme();
 	bool		setup_chrome();
 	void		teardown_chrome();
 
+	void		setup_testdevices();
 	void		setup_tests();
-	bool		add_testsuite(TestSuite* pTesteeSuite, TestSuite* pReferenceSuite);
+	bool		add_testsuite( const std::function<TestSuite*()>& testSuiteFactory);
 	void		regen_testentries();
 
+	
+	bool 		set_devices( Device_p pReference, Device_p pTestee );
 	void		run_tests(Device* pDevice, DeviceEnum device);
 	void		clock_test(DeviceTest* pDeviceTest, int rounds, Device* pDevice);
 	void		destroy_tests();
@@ -114,9 +141,6 @@ protected:
 	Device_p            g_pTesteeDevice = nullptr;
 	Device_p            g_pReferenceDevice = nullptr;
 
-	SurfaceDisplay_p	g_pTesteeCanvas = nullptr;
-	SurfaceDisplay_p	g_pReferenceCanvas = nullptr;
-
 	Widget_p			g_pPerformanceDisplay = nullptr;
 	PackList_p			g_pPerformanceList = nullptr;
 	TextLayout_p		g_pPerformanceValueMapper = nullptr;
@@ -134,9 +158,10 @@ protected:
 	DisplayMode			g_displayMode = DisplayMode::Testee;
 	float				g_zoomFactor = 1.f;
 
-	bool				g_bRedrawTestee = true;
-	bool				g_bRedrawReference = true;
 	bool				g_bRefreshPerformance = false;
 
 
+	Surface_p			m_pLinearDeviceSurface;
+	
+	Blob_p				m_pSavedBlob;
 };
