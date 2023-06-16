@@ -81,7 +81,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
    Base::setDefaultSurfaceFactory(pFactory);
 
     
-    wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, {int(geo.w),int(geo.h)}, PixelFormat::BGRA_8_linear);
+    wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, {int(geo.w),int(geo.h)}, PixelFormat::BGRA_8_sRGB);
     auto pRootPanel = RootPanel::create(CanvasRef::Default, nullptr);
 
     SDLWindowMetal_p pWindow = new SDLWindowMetal(blueprint.title, pRootPanel, geo, pSDLWindow, renderer);
@@ -118,7 +118,7 @@ void SDLWindowMetal::onWindowSizeUpdated( int width, int height )
     m_geo.w = width;
     m_geo.h = height;
     
-    wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, SizeSPX(width, height), wg::PixelFormat::BGRA_8_linear, 64);
+    wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, SizeSPX(width, height), wg::PixelFormat::BGRA_8_sRGB, 64);
 
     m_pRootPanel->setCanvas(CanvasRef::Default);
 }
@@ -127,6 +127,9 @@ void SDLWindowMetal::onWindowSizeUpdated( int width, int height )
 
 void SDLWindowMetal::render()
 {
+	if( m_pRootPanel->nbDirtyRects() == 0 )
+		return;
+	
     // We use a single context for all our windows since we otherwise would
     // need to have a separate GlGfxDevice for each context to make things work on Windows.
 
@@ -134,6 +137,7 @@ void SDLWindowMetal::render()
     const id<MTLCommandQueue> queue = [swapchain.device newCommandQueue];
 	const id<MTLDevice> gpu = swapchain.device;
 
+	swapchain.pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
 	
     @autoreleasepool {
         id<CAMetalDrawable> surface = [swapchain nextDrawable];
@@ -148,7 +152,7 @@ void SDLWindowMetal::render()
 
   
 //		wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setMetalDevice(gpu);
-        wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(pass, {int(m_geo.w),int(m_geo.h)}, wg::PixelFormat::BGRA_8_linear);
+        wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(pass, {int(m_geo.w),int(m_geo.h)}, wg::PixelFormat::BGRA_8_sRGB);
 
         wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->autopresent(surface);
         
