@@ -365,6 +365,7 @@ namespace wg
 		}
 
 		m_pPixelDescription = &Util::pixelFormatToDescription(format);
+		m_pixelFormat = format;											// We do convert form BGR to BGRX
         m_pixelSize = m_pPixelDescription->bits / 8;
 	}
 

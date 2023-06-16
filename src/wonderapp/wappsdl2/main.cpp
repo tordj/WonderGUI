@@ -705,12 +705,11 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 			}
 			pPalette = palette;
 		}
-
 		else if (format.A_mask > 0)
 			px = PixelFormat::BGRA_8;
 		else
-			px = PixelFormat::BGR_8;
-
+			px = PixelFormat::BGRX_8;
+		
 		if (!pFactory)
 			pFactory = Base::defaultSurfaceFactory();
 

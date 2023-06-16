@@ -81,7 +81,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
    Base::setDefaultSurfaceFactory(pFactory);
 
     
-    wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, {int(geo.w)*64,int(geo.h)*64}, PixelFormat::BGRA_8_linear);
+    wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, {int(geo.w),int(geo.h)}, PixelFormat::BGRA_8_linear);
     auto pRootPanel = RootPanel::create(CanvasRef::Default, nullptr);
 
     SDLWindowMetal_p pWindow = new SDLWindowMetal(blueprint.title, pRootPanel, geo, pSDLWindow, renderer);
@@ -118,7 +118,7 @@ void SDLWindowMetal::onWindowSizeUpdated( int width, int height )
     m_geo.w = width;
     m_geo.h = height;
     
-    wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, SizeSPX(width * 64, height * 64), wg::PixelFormat::BGRA_8_linear, 64);
+    wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, SizeSPX(width, height), wg::PixelFormat::BGRA_8_linear, 64);
 
     m_pRootPanel->setCanvas(CanvasRef::Default);
 }
@@ -132,31 +132,36 @@ void SDLWindowMetal::render()
 
     const CAMetalLayer *swapchain = (__bridge CAMetalLayer *)SDL_RenderGetMetalLayer(m_pSDLRenderer);
     const id<MTLCommandQueue> queue = [swapchain.device newCommandQueue];
-    
+	const id<MTLDevice> gpu = swapchain.device;
+
+	
     @autoreleasepool {
         id<CAMetalDrawable> surface = [swapchain nextDrawable];
 
-        MTLClearColor color = MTLClearColorMake(0, 0, 1, 1);
+//        MTLClearColor color = MTLClearColorMake(0, 0, 0, 0);
 
         MTLRenderPassDescriptor *pass = [MTLRenderPassDescriptor renderPassDescriptor];
-        pass.colorAttachments[0].clearColor = color;
-        pass.colorAttachments[0].loadAction  = MTLLoadActionClear;
+//        pass.colorAttachments[0].clearColor = color;
+        pass.colorAttachments[0].loadAction  = MTLLoadActionLoad;
         pass.colorAttachments[0].storeAction = MTLStoreActionStore;
         pass.colorAttachments[0].texture = surface.texture;
 
   
-        wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(pass, {int(m_geo.w)*64,int(m_geo.h)*64}, wg::PixelFormat::BGRA_8_linear);
+//		wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setMetalDevice(gpu);
+        wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(pass, {int(m_geo.w),int(m_geo.h)}, wg::PixelFormat::BGRA_8_linear);
 
-//        wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->autopresent(surface);
+        wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->autopresent(surface);
         
+		m_pRootPanel->addDirtyPatch({0,0,int(m_geo.w)*64,int(m_geo.h)*64});
+		
         m_pRootPanel->render();
-
+/*
         id<MTLCommandBuffer> buffer = [queue commandBuffer];
         id<MTLRenderCommandEncoder> encoder = [buffer renderCommandEncoderWithDescriptor:pass];
         [encoder endEncoding];
         [buffer presentDrawable:surface];
         [buffer commit];
-
+*/
         
     }
     
