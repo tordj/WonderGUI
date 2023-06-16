@@ -1027,12 +1027,12 @@ void _plot(uint8_t* pDst, HiColor color, const SoftGfxDevice::ColTrans& tint)
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		srcB = pPackTab[color.b];
 		srcG = pPackTab[color.g];
 		srcR = pPackTab[color.r];
-		srcA = HiColor::packLinearTab[color.a];
+		srcA = pPackTab[color.a];
 	}
 	else
 	{
@@ -1058,12 +1058,12 @@ void _plot(uint8_t* pDst, HiColor color, const SoftGfxDevice::ColTrans& tint)
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		fixedB = pPackTab[tint.fixedBlendColor.b];
 		fixedG = pPackTab[tint.fixedBlendColor.g];
 		fixedR = pPackTab[tint.fixedBlendColor.r];
-		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+		fixedA = pPackTab[tint.fixedBlendColor.a];
 	}
 	else
 	{
@@ -1119,7 +1119,7 @@ void _plot_list(const RectI& clip, int nCoords, const CoordI* pCoords, const HiC
 		tintA = tint.flatTintColor.a;
 	}
 
-	const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+	const uint8_t* pPackTab = HiColor::packLinearTab;
 
 	RectI pixelClip = clip / 64;
 
@@ -1168,7 +1168,7 @@ void _plot_list(const RectI& clip, int nCoords, const CoordI* pCoords, const HiC
 
 			if (bFast8)
 			{
-				const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+				const uint8_t* pPackTab = HiColor::packLinearTab;
 
 				fixedB = pPackTab[tint.fixedBlendColor.b];
 				fixedG = pPackTab[tint.fixedBlendColor.g];
@@ -1232,7 +1232,7 @@ void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, 
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		srcB = pPackTab[color.b];
 		srcG = pPackTab[color.g];
@@ -1264,7 +1264,7 @@ void _draw_line(uint8_t* pRow, int rowInc, int pixelInc, int length, int width, 
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		fixedB = pPackTab[tint.fixedBlendColor.b];
 		fixedG = pPackTab[tint.fixedBlendColor.g];
@@ -1420,7 +1420,7 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		srcB = pPackTab[color.b];
 		srcG = pPackTab[color.g];
@@ -1451,7 +1451,7 @@ void _clip_draw_line(int clipStart, int clipEnd, uint8_t* pRow, int rowInc, int 
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		fixedB = pPackTab[tint.fixedBlendColor.b];
 		fixedG = pPackTab[tint.fixedBlendColor.g];
@@ -1648,12 +1648,12 @@ void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, Hi
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		srcB = pPackTab[col.b];
 		srcG = pPackTab[col.g];
 		srcR = pPackTab[col.r];
-		srcA = HiColor::packLinearTab[col.a];
+		srcA = pPackTab[col.a];
 	}
 	else
 	{
@@ -1675,12 +1675,12 @@ void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, Hi
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		fixedB = pPackTab[tint.fixedBlendColor.b];
 		fixedG = pPackTab[tint.fixedBlendColor.g];
 		fixedR = pPackTab[tint.fixedBlendColor.r];
-		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+		fixedA = pPackTab[tint.fixedBlendColor.a];
 	}
 	else
 	{
@@ -1786,12 +1786,12 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		fixedB = pPackTab[tint.fixedBlendColor.b];
 		fixedG = pPackTab[tint.fixedBlendColor.g];
 		fixedR = pPackTab[tint.fixedBlendColor.r];
-		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+		fixedA = pPackTab[tint.fixedBlendColor.a];
 	}
 	else
 	{
@@ -2238,12 +2238,12 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		fixedB = pPackTab[tint.fixedBlendColor.b];
 		fixedG = pPackTab[tint.fixedBlendColor.g];
 		fixedR = pPackTab[tint.fixedBlendColor.r];
-		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+		fixedA = pPackTab[tint.fixedBlendColor.a];
 	}
 	else
 	{
@@ -2383,12 +2383,12 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 
 	if (bFast8)
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		const uint8_t* pPackTab = HiColor::packLinearTab;
 
 		fixedB = pPackTab[tint.fixedBlendColor.b];
 		fixedG = pPackTab[tint.fixedBlendColor.g];
 		fixedR = pPackTab[tint.fixedBlendColor.r];
-		fixedA = HiColor::packLinearTab[tint.fixedBlendColor.a];
+		fixedA = pPackTab[tint.fixedBlendColor.a];
 	}
 	else
 	{
