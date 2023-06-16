@@ -129,71 +129,26 @@ void SDLWindowMetal::render()
 {
 	if( m_pRootPanel->nbDirtyRects() == 0 )
 		return;
-	
-    // We use a single context for all our windows since we otherwise would
-    // need to have a separate GlGfxDevice for each context to make things work on Windows.
 
-    const CAMetalLayer *swapchain = (__bridge CAMetalLayer *)SDL_RenderGetMetalLayer(m_pSDLRenderer);
-    const id<MTLCommandQueue> queue = [swapchain.device newCommandQueue];
-	const id<MTLDevice> gpu = swapchain.device;
-
-	swapchain.pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
-	
     @autoreleasepool {
-        id<CAMetalDrawable> surface = [swapchain nextDrawable];
+		
+		const CAMetalLayer *swapchain = (__bridge CAMetalLayer *)SDL_RenderGetMetalLayer(m_pSDLRenderer);
+	
+		swapchain.pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
 
-//        MTLClearColor color = MTLClearColorMake(0, 0, 0, 0);
+		id<CAMetalDrawable> surface = [swapchain nextDrawable];
 
         MTLRenderPassDescriptor *pass = [MTLRenderPassDescriptor renderPassDescriptor];
-//        pass.colorAttachments[0].clearColor = color;
-        pass.colorAttachments[0].loadAction  = MTLLoadActionLoad;
+        pass.colorAttachments[0].loadAction  = MTLLoadActionDontCare;
         pass.colorAttachments[0].storeAction = MTLStoreActionStore;
         pass.colorAttachments[0].texture = surface.texture;
 
-  
-//		wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setMetalDevice(gpu);
-        wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(pass, {int(m_geo.w),int(m_geo.h)}, wg::PixelFormat::BGRA_8_sRGB);
+		wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(pass, {int(m_geo.w),int(m_geo.h)}, wg::PixelFormat::BGRA_8_sRGB);
 
         wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->autopresent(surface);
         
 		m_pRootPanel->addDirtyPatch({0,0,int(m_geo.w)*64,int(m_geo.h)*64});
 		
         m_pRootPanel->render();
-/*
-        id<MTLCommandBuffer> buffer = [queue commandBuffer];
-        id<MTLRenderCommandEncoder> encoder = [buffer renderCommandEncoderWithDescriptor:pass];
-        [encoder endEncoding];
-        [buffer presentDrawable:surface];
-        [buffer commit];
-*/
-        
     }
-    
-    
-    
-
-    //TODO: Just update the dirty rectangles!
-/*
- 
-    int nRects = m_pRootPanel->nbUpdatedRects();
-    if( nRects == 0 )
-        return;
-
-    const RectSPX * pUpdatedRects = m_pRootPanel->firstUpdatedRect();
-    SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
-
-    for( int i = 0 ; i < nRects ; i++ )
-    {
-        pSDLRects[i].x = pUpdatedRects[i].x/64;
-        pSDLRects[i].y = pUpdatedRects[i].y/64;
-        pSDLRects[i].w = pUpdatedRects[i].w/64;
-        pSDLRects[i].h = pUpdatedRects[i].h/64;
-    }
-
-    SDL_UpdateWindowSurfaceRects( m_pSDLWindow, pSDLRects, nRects );
-
-    Base::memStackFree( sizeof(SDL_Rect) * nRects );
- */
- 
-//    SDL_UpdateWindowSurface(m_pSDLWindow);
 }

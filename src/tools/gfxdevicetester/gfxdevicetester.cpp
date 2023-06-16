@@ -117,11 +117,20 @@ bool GfxDeviceTester::update()
 
 	if (g_displayMode != DisplayMode::Time)
 	{
+		if( g_pReferenceDevice->needsRedraw() )
+			run_tests(g_pReferenceDevice, REFERENCE );
+		
+		if( g_pTesteeDevice->needsRedraw() )
+			run_tests(g_pTesteeDevice, TESTEE );
+
+		
+/*
 		for( auto pDevice : g_testdevices )
 		{
 			if( pDevice->needsRedraw() )
 				run_tests(pDevice, TESTEE);
 		}
+*/
 	}
 
 	return true;
@@ -163,7 +172,7 @@ void GfxDeviceTester::setup_testdevices()
 	
 	auto pNativeDevice = Device::create(nativeDeviceName, pNativeGfxDevice, Base::defaultSurfaceFactory()->createSurface(canvasBP), this );
 	
-//	g_testdevices.push_back(pNativeDevice);
+	g_testdevices.push_back(pNativeDevice);
 	
 	// Linear
 	
@@ -211,12 +220,10 @@ void GfxDeviceTester::setup_testdevices()
 	
 	m_pLinearDeviceSurface = pLinearDevice->displaySurface();
 	
-	g_testdevices.push_back(pLinearDevice);
+//	g_testdevices.push_back(pLinearDevice);
 
 	//
 	
-	g_pReferenceDevice = pReferenceDevice;
-	g_pTesteeDevice = pNativeDevice;
 }
 
 //____ destroy_testdevices() ____________________________________________________
@@ -381,8 +388,11 @@ void GfxDeviceTester::setup_cliplist(ClipList list)
 		rectOfs.y += rectSize.h;
 	}
 
-	g_pReferenceDevice->setNeedsRedraw();
-	g_pTesteeDevice->setNeedsRedraw();
+	if( g_pReferenceDevice )
+		g_pReferenceDevice->setNeedsRedraw();
+
+	if( g_pTesteeDevice )
+		g_pTesteeDevice->setNeedsRedraw();
 }
 
 
@@ -425,8 +435,8 @@ void GfxDeviceTester::refresh_performance_measurements()
 	{
 		if (test.bActive)
 		{
-			clock_test(&test.devices[TESTEE], 1000, g_pTesteeDevice);
-			clock_test(&test.devices[REFERENCE], 1000, g_pReferenceDevice);
+			clock_test(&test.devices[TESTEE], 10000, g_pTesteeDevice);
+			clock_test(&test.devices[REFERENCE], 10000, g_pReferenceDevice);
 		}
 	}
 }
@@ -493,7 +503,7 @@ void GfxDeviceTester::setup_tests()
 	add_testsuite([](){ return new A8Tests();});
 	add_testsuite([](){ return new TileTests();});
 	add_testsuite([](){ return new CanvasLayerTests();});
-	add_testsuite([](){ return new RGB565BigEndianTests();});
+//	add_testsuite([](){ return new RGB565BigEndianTests();});
 	add_testsuite([](){ return new BlendFixedColorTests();});
 	add_testsuite([](){ return new WaveformTests();});
 
@@ -508,8 +518,10 @@ bool GfxDeviceTester::set_devices( Device_p pReference, Device_p pTestee )
 	{
 		if( se.bActive )
 		{
-			se.pReferenceSuite->exit( g_pReferenceDevice->gfxDevice(), g_canvasSize*64 );
-			se.pTesteeSuite->exit( g_pTesteeDevice->gfxDevice(), g_canvasSize*64 );
+			if( g_pReferenceDevice )
+				se.pReferenceSuite->exit( g_pReferenceDevice->gfxDevice(), g_canvasSize*64 );
+			if( g_pTesteeDevice )
+				se.pTesteeSuite->exit( g_pTesteeDevice->gfxDevice(), g_canvasSize*64 );
 
 			se.pReferenceSuite->init(pReference->gfxDevice(), g_canvasSize*64, m_pVisitor);
 			se.pTesteeSuite->init(pTestee->gfxDevice(), g_canvasSize*64, m_pVisitor);

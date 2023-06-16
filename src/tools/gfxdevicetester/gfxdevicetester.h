@@ -65,8 +65,8 @@ protected:
 
 	enum DeviceEnum
 	{
-		TESTEE = 0,
-		REFERENCE = 1
+		REFERENCE = 0,
+		TESTEE = 1,
 	};
 
 	enum class ClipList
