@@ -24,6 +24,8 @@
 
 #include <wg_metalgfxdevice.h>
 #include <wg_metalsurfacefactory.h>
+#include <wg_metalwaveformfactory.h>
+#include <wg_metalwaveform.h>
 #include <wg_gfxbase.h>
 #include <wg_gfxutil.h>
 
@@ -506,13 +508,11 @@ MetalGfxDevice::MetalGfxDevice()
 
     WaveformFactory_p MetalGfxDevice::waveformFactory()
     {
-        return nullptr;
-/*
         if (!m_pWaveformFactory)
             m_pWaveformFactory = MetalWaveformFactory::create();
 
         return m_pWaveformFactory;
-*/
+
     }
 
 	//____ canvas() ____________________________________________________________
@@ -1471,18 +1471,46 @@ MetalGfxDevice::MetalGfxDevice()
 
 	//____ drawWaveform() __________________________________________________________
 
-	void MetalGfxDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+	void MetalGfxDevice::drawWaveform(CoordSPX destPos, Waveform * pWaveform )
 	{
-		//TODO: Implement!!!
+		if( pWaveform->typeInfo() != MetalWaveform::TYPEINFO )
+		{
+			//TODO: Throw an error.
+			return;
+		}
+		
+		auto pWave = static_cast<MetalWaveform*>(pWaveform);
+
+
+		_transformDrawSegments( {destPos,pWave->m_size*64}, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
+							   pWave->m_size.w+1, pWave->m_pSamples, pWave->m_nbSegments-1, pWave->m_tintMode,
+							   s_blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawWaveform() ______________________________________________________
 
-	void MetalGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip)
+	void MetalGfxDevice::flipDrawWaveform(CoordSPX destPos, Waveform * pWaveform, GfxFlip flip)
 	{
-		//TODO: Implement!!!
-	}
+		if( pWaveform->typeInfo() != MetalWaveform::TYPEINFO )
+		{
+			//TODO: Throw an error.
+			return;
+		}
+		
+		auto pWave = static_cast<MetalWaveform*>(pWaveform);
 
+		const int (&transform)[2][2] = s_blitFlipTransforms[(int)flip];
+
+		RectSPX dest;
+		dest.x = destPos.x;
+		dest.y = destPos.y;
+		dest.w = pWave->m_size.w*64 * abs(transform[0][0]) + pWave->m_size.h*64 * abs(transform[1][0]);
+		dest.h = pWave->m_size.w*64 * abs(transform[0][1]) + pWave->m_size.h*64 * abs(transform[1][1]);
+
+		_transformDrawSegments( dest, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
+							   pWave->m_size.w+1, pWave->m_pSamples, pWave->m_nbSegments-1, pWave->m_tintMode,
+							   transform );
+	}
 
     //____ _transformBlitSimple() ______________________________________________________
 

@@ -9,6 +9,11 @@ set(SOURCES
 	wg_metalsurface.mm
 	wg_metalsurfacefactory.h
 	wg_metalsurfacefactory.mm
+	wg_metalwaveform.h
+	wg_metalwaveform.cpp
+	wg_metalwaveformfactory.h
+	wg_metalwaveformfactory.cpp
+
 )
 
 set_source_files_properties(wg3_metalshaders.mm.template wg3_shadercontent.mm PROPERTIES HEADER_FILE_ONLY YES)

@@ -2303,15 +2303,15 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		auto pWave = static_cast<SoftWaveform*>(pWaveform);
 		
 		const int (&transform)[2][2] = s_blitFlipTransforms[(int)flip];
-		
+
 		RectSPX dest;
 		dest.x = destPos.x;
 		dest.y = destPos.y;
-		dest.w = pWave->m_size.w * abs(transform[0][0]) + pWave->m_size.h * abs(transform[1][0]);
-		dest.h = pWave->m_size.w * abs(transform[0][1]) + pWave->m_size.h * abs(transform[1][1]);
-		
-		_transformDrawSegments( dest, pWave->m_nbSegments, pWave->m_pRenderColors,
-							   pWave->m_nbRenderSegments-1, pWave->m_pSamples, pWave->m_nbSegments-1, pWave->m_tintMode,
+		dest.w = pWave->m_size.w*64 * abs(transform[0][0]) + pWave->m_size.h*64 * abs(transform[1][0]);
+		dest.h = pWave->m_size.w*64 * abs(transform[0][1]) + pWave->m_size.h*64 * abs(transform[1][1]);
+
+		_transformDrawSegments( dest, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
+							   pWave->m_size.w+1, pWave->m_pSamples, pWave->m_nbSegments-1, pWave->m_tintMode,
 							   transform );
 	}
 
