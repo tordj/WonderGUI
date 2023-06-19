@@ -1698,7 +1698,7 @@ static bool convertPixelsToKnownType( int width, int height, const uint8_t * pSr
 		default:
 		{
 			int srcPitch = width * srcPixelBits / 8 + srcPitchAdd;
-			int dstPitch = width * srcPixelBits / 8 + dstPitchAdd;
+			int dstPitch = width * 32 / 8 + dstPitchAdd;
 
 			for( int y = 0 ; y < height ; y++ )
 			{

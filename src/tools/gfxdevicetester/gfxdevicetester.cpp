@@ -617,6 +617,7 @@ bool GfxDeviceTester::setup_theme()
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::create({ .axis = Axis::X, .frame = Border(3), .padding = Border(5), .states = { State::Hovered, {}, State::Pressed, {}, State::Disabled, {} }, .surface = pButtonSurface });
 	m_pButtonSkin = pSimpleButtonSkin;
 
+	return true;
 }
 
 

@@ -1435,20 +1435,49 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = radius.h;
 	}
 
+
 	//____ drawWaveform() __________________________________________________________
 
-	void GlGfxDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+	void GlGfxDevice::drawWaveform(CoordSPX dest, Waveform* pWaveform)
 	{
-		//TODO: Implement!!!
+		if (pWaveform->typeInfo() != GlWaveform::TYPEINFO)
+		{
+			//TODO: Throw an error.
+			return;
+		}
+
+		auto pWave = static_cast<GlWaveform*>(pWaveform);
+
+
+		_transformDrawSegments({ dest, pWave->m_size * 64 }, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
+			pWave->m_size.w + 1, pWave->m_pSamples, pWave->m_nbSegments - 1, pWave->m_tintMode,
+			s_blitFlipTransforms[(int)GfxFlip::Normal]);
 	}
 
-	//____ flipDrawWaveform() ______________________________________________________
+	//____ flipDrawWaveform() __________________________________________________________
 
-	void GlGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip)
+	void GlGfxDevice::flipDrawWaveform(CoordSPX destPos, Waveform* pWaveform, GfxFlip flip)
 	{
-		//TODO: Implement!!!
-	}
+		if (pWaveform->typeInfo() != GlWaveform::TYPEINFO)
+		{
+			//TODO: Throw an error.
+			return;
+		}
 
+		auto pWave = static_cast<GlWaveform*>(pWaveform);
+
+		const int(&transform)[2][2] = s_blitFlipTransforms[(int)flip];
+
+		RectSPX dest;
+		dest.x = destPos.x;
+		dest.y = destPos.y;
+		dest.w = pWave->m_size.w * 64 * abs(transform[0][0]) + pWave->m_size.h * 64 * abs(transform[1][0]);
+		dest.h = pWave->m_size.w * 64 * abs(transform[0][1]) + pWave->m_size.h * 64 * abs(transform[1][1]);
+
+		_transformDrawSegments(dest, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
+			pWave->m_size.w + 1, pWave->m_pSamples, pWave->m_nbSegments - 1, pWave->m_tintMode,
+			transform);
+	}
 
 	//____ _transformBlitSimple() ______________________________________________________
 
