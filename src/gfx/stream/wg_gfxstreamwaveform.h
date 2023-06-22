@@ -72,19 +72,23 @@ namespace wg
 		~GfxStreamWaveform();
 
 		void 	_importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
-									  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch );
+								int sampleBegin, int sampleEnd, int edgePitch, int samplePitch );
 
 		void 	_importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
-									  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch );
+								int sampleBegin, int sampleEnd, int edgePitch, int samplePitch );
 
 		void	_sendCreateWaveform(GfxStreamEncoder * pEncoder);
 		void 	_sendSamples( GfxStreamEncoder* pEncoder, int edgeBegin, int edgeEnd,
-							 int sampleBegin, int sampleEnd );
+								int sampleBegin, int sampleEnd, spx * pNewSamples );
+
+		GfxStream::SpxFormat _findBestPackFormat( int spxMask, int deltaMask, int deltaMin, int deltaMax );
 
 		
 		GfxStreamEncoder_p	m_pEncoder;
 		uint16_t			m_inStreamId;		// Id of this waveform in the stream.
 
+		bool				m_bEmpty = true;
+		
 		char *				m_pBuffer;
 		spx *				m_pSamples;					// Stored vertically, e.g. samples for first column for all edges before samples for second column etc
 		

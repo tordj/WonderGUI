@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_gfxstreamwaveform.h>
+#include <wg_gfxbase.h>
 
 namespace wg
 {
@@ -200,6 +201,25 @@ void GfxStreamWaveform::_importSamples( WaveOrigo origo, const spx * pSource, in
 	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
 		offset = m_size.h*32;
 
+	spx * pPrevSamples = nullptr;
+	int nBytesAllocated = 0;
+	
+	if( !m_bEmpty )
+	{
+		nBytesAllocated = (edgeEnd-edgeBegin) * (sampleEnd-sampleBegin);
+		pPrevSamples = (spx *) GfxBase::memStackAlloc( nBytesAllocated  );
+
+		spx * pDst = pPrevSamples;
+		for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
+		{
+			spx * pSrc = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+			for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
+				* pDst++ = * pSrc++;
+		}
+
+		m_bEmpty = true;
+	}
+	
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
 	{
 		const spx * pSrc = (const spx*) (((const char*)pSource) + edgePitch * edge + samplePitch * sampleBegin);
@@ -212,7 +232,9 @@ void GfxStreamWaveform::_importSamples( WaveOrigo origo, const spx * pSource, in
 		}
 	}
 	
-	_sendSamples(m_pEncoder, edgeBegin, edgeEnd, sampleBegin, sampleEnd );
+	_sendSamples(m_pEncoder, edgeBegin, edgeEnd, sampleBegin, sampleEnd, pPrevSamples );
+	
+	GfxBase::memStackFree(nBytesAllocated);
 }
 
 void GfxStreamWaveform::_importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
@@ -237,20 +259,32 @@ void GfxStreamWaveform::_importSamples( WaveOrigo origo, const float * pSource, 
 		mul *= m_size.h*32;
 	else
 		mul *= m_size.h*64;
+
+	// Convert and copy input to temporary, linear buffer
 	
+	int nEdges = edgeEnd - edgeBegin;
+	int nSamplesPerEdge = sampleEnd - sampleBegin;
+	
+	int nBytesAllocated = nEdges * nSamplesPerEdge * sizeof(spx);
+	spx * pTempBuffer = (spx *) GfxBase::memStackAlloc( nBytesAllocated  );
+
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
 	{
 		const float * pSrc = (const float*) (((const char*)pSource) + edgePitch * edge + samplePitch * sampleBegin);
-		spx * pDst = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+		spx * pDst = pTempBuffer;
 
 		for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
 		{
-			* pDst++ = (* pSrc * mul) + offset;
+			spx src = (* pSrc * mul) + offset;
+			* pDst++ = src;
 			pSrc += samplePitch/4;
 		}
 	}
+
+	_sendSamples(m_pEncoder, edgeBegin, edgeEnd, sampleBegin, sampleEnd, pTempBuffer );
+
+	GfxBase::memStackFree(nBytesAllocated);
 	
-	_sendSamples(m_pEncoder, edgeBegin, edgeEnd, sampleBegin, sampleEnd );
 }
 
 //____ _sendCreateWaveform() ___________________________________________________
@@ -280,8 +314,10 @@ void GfxStreamWaveform::_sendCreateWaveform( GfxStreamEncoder* pEncoder )
 //____ _sendSamples() ___________________________________________________
 
 void GfxStreamWaveform::_sendSamples( GfxStreamEncoder* pEncoder, int edgeBegin, int edgeEnd,
-											int sampleBegin, int sampleEnd )
+											int sampleBegin, int sampleEnd, spx * pNewSamples )
 {
+	// Send header
+	
 	int beginBlockSize = 2 + 1 + 1 + 2 + 2;
 	
 	*pEncoder << GfxStream::Header{ GfxChunkId::BeginWaveformUpdate, GfxStream::SpxFormat::Int32_dec, beginBlockSize };
@@ -290,28 +326,237 @@ void GfxStreamWaveform::_sendSamples( GfxStreamEncoder* pEncoder, int edgeBegin,
 	*pEncoder << (uint8_t) edgeEnd;
 	*pEncoder << (uint16_t) sampleBegin;
 	*pEncoder << (uint16_t) sampleEnd;
+	
+	
+	// Check sample max/min and max/min diff against old samples
+	// and find best spxFormat for transfer.
+	
+	const int add = (1 << 21);
+	int spxMask = 0;
+	int deltaMask = 0;
 
-	
-	
-	
-	*pEncoder << GfxStream::Header{ GfxChunkId::WaveformSamples, GfxStream::SpxFormat::Int32_dec, beginBlockSize };
+	int deltaMin = 0;
+	int deltaMax = 0;
 
+	spx * pNewSample = pNewSamples;
+	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
+	{
+		spx * pOldSample = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+
+		for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
+		{
+			int value = * pNewSample++;
+			int delta = value - * pOldSample++;
+			
+			if( delta < deltaMin )
+				deltaMin = delta;
+			
+			if( delta > deltaMax )
+				deltaMax = delta;
+			
+			spxMask |= value + add;
+			deltaMask |= delta;
+		}
+	}
 	
+	auto spxFormat = _findBestPackFormat(spxMask, deltaMask, deltaMin, deltaMax);
 	
+	// Compress bytes for transfer and replace old samples with new ones in one go
 	
+	spx * pNew = pNewSamples;
+
+	int dataSize;
+	
+	switch( spxFormat )
+	{
+		case GfxStream::SpxFormat::Int32_dec:
+		{
+			// No compression needed, just replace old
+			
+			for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
+			{
+				spx * pOld = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+
+				for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
+				{
+					* pOld++ = * pNew;
+					pNew++;
+				}
+			}
+			dataSize = (pNew - pNewSamples) * sizeof(spx);
+		}
+			
+		case GfxStream::SpxFormat::Uint16_dec:
+		{
+			uint16_t * pPacked = reinterpret_cast<uint16_t*>(pNew);
+			for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
+			{
+				spx * pOld = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+
+				for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
+				{
+					uint16_t value = (uint16_t) * pNew;
+					* pOld++ = * pNew++;
+					* pPacked++ = value;
+				}
+			}
+			dataSize = ((int8_t*)pPacked) - ((int8_t*)pNewSamples);
+		}
+
+		case GfxStream::SpxFormat::Int16_int:
+		{
+			int16_t * pPacked = reinterpret_cast<int16_t*>(pNew);
+			for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
+			{
+				spx * pOld = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+
+				for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
+				{
+					int16_t value = (int16_t) ((* pNew) >> 6);
+					* pOld++ = * pNew++;
+					* pPacked++ = value;
+				}
+			}
+			dataSize = ((int8_t*)pPacked) - ((int8_t*)pNewSamples);
+		}
+
+		case GfxStream::SpxFormat::Uint8_int:
+		{
+			uint8_t * pPacked = reinterpret_cast<uint8_t*>(pNew);
+			for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
+			{
+				spx * pOld = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+
+				for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
+				{
+					uint8_t value = (uint8_t) ((* pNew) >> 6);
+					* pOld++ = * pNew++;
+					* pPacked++ = value;
+				}
+			}
+			dataSize = ((int8_t*)pPacked) - ((int8_t*)pNewSamples);
+		}
+
+		case GfxStream::SpxFormat::Delta16_dec:
+		{
+			int16_t * pPacked = reinterpret_cast<int16_t*>(pNew);
+			for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
+			{
+				spx * pOld = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+
+				for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
+				{
+					int16_t value = (int16_t) ((* pNew) - (* pOld));
+					* pOld++ = * pNew++;
+					* pPacked++ = value;
+				}
+			}
+			dataSize = ((int8_t*)pPacked) - ((int8_t*)pNewSamples);
+		}
+
+		case GfxStream::SpxFormat::Delta16_int:
+		{
+			int16_t * pPacked = reinterpret_cast<int16_t*>(pNew);
+			for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
+			{
+				spx * pOld = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+
+				for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
+				{
+					int16_t value = (int16_t) (((* pNew) - (* pOld)) >> 6);
+					* pOld++ = * pNew++;
+					* pPacked++ = value;
+				}
+			}
+			dataSize = ((int8_t*)pPacked) - ((int8_t*)pNewSamples);
+		}
+
+		case GfxStream::SpxFormat::Delta8_dec:
+		{
+			int8_t * pPacked = reinterpret_cast<int8_t*>(pNew);
+			for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
+			{
+				spx * pOld = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+
+				for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
+				{
+					int8_t value = (int8_t) ((* pNew) - (* pOld));
+					* pOld++ = * pNew++;
+					* pPacked++ = value;
+				}
+			}
+			dataSize = ((int8_t*)pPacked) - ((int8_t*)pNewSamples);
+		}
+
+		case GfxStream::SpxFormat::Delta8_int:
+		{
+			int8_t * pPacked = reinterpret_cast<int8_t*>(pNew);
+			for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
+			{
+				spx * pOld = m_pSamples + edge*(m_nbSegments-1) + sampleBegin;
+
+				for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
+				{
+					int8_t value = (int8_t) (((* pNew) - (* pOld)) >> 6);
+					* pOld++ = * pNew++;
+					* pPacked++ = value;
+				}
+			}
+			dataSize = ((int8_t*)pPacked) - ((int8_t*)pNewSamples);
+		}
+	}
+	
+	// Stream data
+	
+	const uint8_t * pSrc =(uint8_t*) pNewSamples;
+		
+	while( dataSize > 0 )
+	{
+		uint16_t chunkSize = std::min(dataSize, (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)));
+		dataSize -= chunkSize;
+
+		*pEncoder << GfxStream::Header{ GfxChunkId::WaveformSamples, spxFormat, uint16_t((chunkSize+1)&0xFFFE) };
+
+		*pEncoder << GfxStream::WriteBytes{ chunkSize, (void *) pSrc };
+		pSrc += chunkSize;
+	}
+		
+	pEncoder->align();
+	
+	// Stream footer
 	
 	*pEncoder << GfxStream::Header{ GfxChunkId::EndWaveformUpdate, GfxStream::SpxFormat::Int32_dec, 0 };
-
 }
 
+GfxStream::SpxFormat GfxStreamWaveform::_findBestPackFormat( int spxMask, int deltaMask, int deltaMin, int deltaMax )
+{
+	// See if it will fit in any of the 8-bit formats.
+	
+	if( (spxMask & 0xFFDFC03F) == 0 )
+		return GfxStream::SpxFormat::Uint8_int;						// Fits as non-delta values in uint8_t without binals.
 
-/*
-CreateWaveform = 58,
-BeginWaveformUpdate = 59,
-WaveformSamples = 60,
-EndWaveformUpdate = 61,
-DeleteWaveform = 62
-*/
+	if( deltaMin >= -128 && deltaMax <= 127 )
+		return GfxStream::SpxFormat::Delta8_dec;						// Fits as delta values in int8_t with binals.
+	
+	if( ((deltaMask & 0x3F) == 0) && (deltaMin >= -128*64 && deltaMax <= 128*64-1) )
+		return GfxStream::SpxFormat::Delta8_int;						// Fits as delta values in int8_t without binals.
+
+	// See if it will fit in any of the 16-bit formats
+	
+	if( (spxMask & 0xFFDF0000) == 0 )
+		return GfxStream::SpxFormat::Uint16_dec;						// Fits in uint16_t with binals.
+
+	if( (spxMask & 0xFFC0003F) == 0 )
+		return GfxStream::SpxFormat::Int16_int;						// Fits in int16_t without binals.
+
+	if( deltaMin >= -32768 && deltaMax <= 32767 )
+		return GfxStream::SpxFormat::Delta16_dec;						// Fits as delta values in int16_t with binals.
+	
+	if( ((deltaMask & 0x3F) == 0) && (deltaMin >= -32768 && deltaMax <= 32768*64-1) )
+		return GfxStream::SpxFormat::Delta16_int;						// Fits as delta values in int16_t without binals.
+	
+	return GfxStream::SpxFormat::Int32_dec;							// We need 32 bits.
+}
 
 } // namespace wg
 
