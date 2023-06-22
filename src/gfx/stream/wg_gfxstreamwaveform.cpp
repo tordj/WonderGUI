@@ -138,6 +138,20 @@ const TypeInfo& GfxStreamWaveform::typeInfo(void) const
 	return TYPEINFO;
 }
 
+//____ setRenderSegments() ____________________________________________________
+
+bool GfxStreamWaveform::setRenderSegments(int nSegments)
+{
+	if (!Waveform::setRenderSegments(nSegments))
+		return false;
+
+	*m_pEncoder << GfxStream::Header{ GfxChunkId::SetWaveformRenderSegments, GfxStream::SpxFormat::Int32_dec, 4 };
+	*m_pEncoder << m_inStreamId;
+	*m_pEncoder << (int16_t) nSegments;
+	return true;
+}
+
+
 //____ importSamples() _________________________________________________________
 
 bool GfxStreamWaveform::importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,

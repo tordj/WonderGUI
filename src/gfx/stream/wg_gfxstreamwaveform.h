@@ -51,6 +51,9 @@ namespace wg
 		const TypeInfo&     typeInfo(void) const override;
 		const static TypeInfo   TYPEINFO;
 
+		//.____ Appearance ____________________________________________________
+
+		bool	setRenderSegments(int nSegments) override;
 
 		//.____ Content _______________________________________________________
 
