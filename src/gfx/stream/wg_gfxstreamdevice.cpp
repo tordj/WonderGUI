@@ -1101,17 +1101,52 @@ namespace wg
 
 	//____ drawWaveform() __________________________________________________________
 
-	void GfxStreamDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+	void GfxStreamDevice::drawWaveform(CoordSPX dest, Waveform * _pWaveform )
 	{
-		//TODO: Implement!!!
+        auto pWaveform = dynamic_cast<GfxStreamWaveform*>(_pWaveform);
+        if (!pWaveform)
+        {
+            //TODO: Errorhandling
+
+            return;
+        }
+
+        if (_clippedOut(dest))
+            return;
+
+        _streamStatesIfUpdated();
+
+        GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest));
+
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawWaveform, spxFormat, GfxStream::spxSize(spxFormat) * 4 + 2 };
+        (*m_pEncoder) << dest;
+        (*m_pEncoder) << pWaveform->m_inStreamId;
 	}
 
 	//____ flipDrawWaveform() ______________________________________________________
 
-	void GfxStreamDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip)
+	void GfxStreamDevice::flipDrawWaveform(CoordSPX dest, Waveform * _pWaveform, GfxFlip flip)
 	{
-		//TODO: Implement!!!
-	}
+        auto pWaveform = dynamic_cast<GfxStreamWaveform*>(_pWaveform);
+        if (!pWaveform)
+        {
+            //TODO: Errorhandling
+
+            return;
+        }
+
+        if (_clippedOut(dest))
+            return;
+
+        _streamStatesIfUpdated();
+
+        GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest));
+
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawWaveform, spxFormat, GfxStream::spxSize(spxFormat) * 4 + 2 + 2 };
+        (*m_pEncoder) << dest;
+        (*m_pEncoder) << pWaveform->m_inStreamId;
+        (*m_pEncoder) << flip;
+    }
 
     //.____ blitNinePatch() ___________________________________________
 

@@ -39,7 +39,7 @@ namespace wg
 	{
 	public:
 
-		typedef std::function<void(const CoordSPX&,const RectSPX&,int,State,float,float,int)> MarkTestFunc;
+		typedef std::function<bool(const CoordSPX&,const RectSPX&,int,State,float,float,int)> MarkTestFunc;
 		typedef std::function<void(GfxDevice*,const RectSPX&,int,State,float,float)> RenderFunc;
 
 		//____ Blueprint ______________________________________________________

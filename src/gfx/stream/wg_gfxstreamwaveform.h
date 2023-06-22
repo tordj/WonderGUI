@@ -36,7 +36,7 @@ namespace wg
 
 	class GfxStreamWaveform : public Waveform
 	{
-		friend class SoftGfxDevice;
+		friend class GfxStreamDevice;
 	public:
 
 		//.____ Creation __________________________________________

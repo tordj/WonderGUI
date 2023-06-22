@@ -465,7 +465,10 @@ namespace wg
 		BeginWaveformUpdate = 60,
 		WaveformSamples = 61,
 		EndWaveformUpdate = 62,
-		DeleteWaveform = 63
+		DeleteWaveform = 63,
+
+		DrawWaveform = 64,
+		FlipDrawWaveform = 65
 	};
 
 	typedef uint8_t GfxChunkFlags;
