@@ -91,89 +91,6 @@ bool MyApp::setupGUI()
 	return true;
 }
 
-//____ setupWindowGUI() _______________________________________________________
-
-bool MyApp::setupWindowGUI(EditorWindow& instance)
-{
-	// Create our TextEditor widget
-
-	auto pTextEditor = TextEditor::create( WGBP(TextEditor,
-												_.skin = m_pSectionSkin ));
-
-	// Create and setup a scrollpanel to wrap the text editor.
-	
-	auto pScrollPanel = ScrollPanel::create();
-
-	pScrollPanel->scrollbarX.setBackground(BoxSkin::create(WGBP(BoxSkin,
-		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
-		_.outlineColor = Color8::Black)));
-	pScrollPanel->scrollbarX.setBar(m_pPlateSkin);
-
-	pScrollPanel->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
-		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
-		_.outlineColor = Color8::Black)));
-	pScrollPanel->scrollbarY.setBar(m_pPlateSkin);
-
-	pScrollPanel->setAutohideScrollbars(true, true);
-	pScrollPanel->setSizeConstraints(SizeConstraint::GreaterOrEqual, SizeConstraint::GreaterOrEqual);
-
-	
-	pScrollPanel->slot = pTextEditor;
-	
-
-	instance.pRootPanel->slot = pScrollPanel;
-	instance.pEditor = pTextEditor;
-	return true;
-}
-
-
-
-//____ createTopBar() ________________________________________________________
-
-Widget_p MyApp::createTopBar()
-{
-	
-	auto pBar = PackPanel::create();
-	pBar->setAxis(Axis::X);
-	pBar->setLayout(m_pLayout);
-	pBar->setSkin(m_pPlateSkin);
-
-	auto pLoadButton = Button::create( WGBP(Button,
-											_.skin = m_pButtonSkin,
-											_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = "Load" )
-											));
-
-	auto pSpacer = Filler::create( WGBP(Filler, _.defaultSize = { 20,1 } ));
-
-	
-	pBar->slots << pLoadButton;
-	pBar->slots << pSpacer;
-
-	pBar->slots.setWeight( 0, 2, {0.f, 1.f});
-	
-
-
-	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadImage();});
-
-	return pBar;
-}
-
-//____ createInfoPanel() _____________________________________________________
-
-Widget_p MyApp::createInfoPanel()
-{
-	auto pBase = PackPanel::create();
-	pBase->setAxis(Axis::Y);
-	pBase->setLayout(m_pLayout);
-	pBase->setSkin(m_pPlateSkin);
-
-	
-	return pBase;
-}
-
-
 //____ _loadSkins() ___________________________________________________________
 
 bool MyApp::_loadSkins(Visitor * pVisitor)
@@ -230,50 +147,72 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 	return true;
 }
 
-//____ selectAndLoadImage() ___________________________________________________
-
-void MyApp::selectAndLoadImage()
-{
-/*
- auto selectedFiles = m_pAppVisitor->openMultiFileDialog("Select Images", "", { "*.surf", "*.qoi" }, "Image files");
-	
-	if( selectedFiles.empty()  )
-		return;
-
-	m_imagePaths = selectedFiles;
-	loadImage(0);
-*/
-}
-
 //____ createEditorWindow() ______________________________________________________
 
 bool MyApp::createEditorWindow( const std::string& windowTitle )
 {
-	EditorWindow instance;
 	
 	auto pWindow = m_pAppVisitor->createWindow({ .size = {800,600}, .title = windowTitle });
 
-	instance.pWindow = pWindow;
-	instance.pRootPanel = pWindow->rootPanel();
-	
-	m_editorWindows.push_back(instance);
-	
-	if( m_editorWindows.size() == 1 )
+	if (m_editorWindows.empty())
 		setupGUI();
+
+
+	auto pEditorWindow = EditorWindow::create(pWindow, this);
+
+	m_editorWindows.push_back(pEditorWindow);
 	
-	setupWindowGUI(m_editorWindows.back());
-	
-	auto pWindowRaw = pWindow.rawPtr();
+		
+	auto pWindowRaw = pEditorWindow.rawPtr();
 	auto pThis = this;
 	pWindow->setCloseRequestHandler([pThis,pWindowRaw](void) {
 		
-		pThis->m_editorWindows.erase(std::remove_if(pThis->m_editorWindows.begin(), pThis->m_editorWindows.end(), [pWindowRaw](const EditorWindow& instance ) {return instance.pWindow.rawPtr() == pWindowRaw;}  ), pThis->m_editorWindows.end());
+		pThis->m_editorWindows.erase(std::remove_if(pThis->m_editorWindows.begin(),
+		pThis->m_editorWindows.end(),
+		[pWindowRaw](const EditorWindow_p& pWindow ) {return pWindow.rawPtr() == pWindowRaw;}  ),
+		pThis->m_editorWindows.end());
 
 		return true;
 	});
 	
 	return true;
 }
+
+//____ createButton() _________________________________________________________
+
+Button_p MyApp::createButton(const char* label)
+{
+	return Button::create(WGBP(Button,
+		_.skin = m_pButtonSkin,
+		_.label = WGBP(Text, _.layout = m_pTextLayoutCentered, _.style = m_pTextStyle, _.text = label)
+	));
+}
+
+//____ createScrollPanel() ____________________________________________________
+
+ScrollPanel_p MyApp::createScrollPanel()
+{
+	auto pScrollPanel = ScrollPanel::create();
+
+	pScrollPanel->scrollbarX.setBackground(BoxSkin::create(WGBP(BoxSkin,
+		_.color = Color8::DarkOliveGreen,
+		_.outline = 1,
+		_.outlineColor = Color8::Black)));
+	pScrollPanel->scrollbarX.setBar(m_pPlateSkin);
+
+	pScrollPanel->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
+		_.color = Color8::DarkOliveGreen,
+		_.outline = 1,
+		_.outlineColor = Color8::Black)));
+	pScrollPanel->scrollbarY.setBar(m_pPlateSkin);
+
+	pScrollPanel->setAutohideScrollbars(true, true);
+	pScrollPanel->setSizeConstraints(SizeConstraint::GreaterOrEqual, SizeConstraint::GreaterOrEqual);
+
+	return pScrollPanel;
+}
+
+
 
 
 
@@ -307,7 +246,7 @@ bool MyApp::openFile(const std::string& path)
 	
 	pText[size] = 0;
 	
-	m_editorWindows.back().pEditor->editor.setText(pText);
+	m_editorWindows.back()->setContent(pText);
 	
 	return true;
 }

@@ -34,7 +34,7 @@ private:
 	bool			_loadSkins(Visitor* pVisitor);
 
 	WonderApp::Visitor * m_pAppVisitor = nullptr;
-	WonderApp::Window_p m_pWindow = nullptr;
+	Window_p			m_pWindow = nullptr;
 
 	SurfaceDisplay_p	m_pImageDisplay;
 	TextDisplay_p		m_pPathDisplay;

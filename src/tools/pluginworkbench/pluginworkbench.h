@@ -39,7 +39,7 @@ private:
 
 
 	WonderApp::Visitor * m_pAppVisitor = nullptr;
-	WonderApp::Window_p m_pWindow = nullptr;
+	Window_p			m_pWindow = nullptr;
 	WonderApp::LibId	m_libId = 0;
 
 

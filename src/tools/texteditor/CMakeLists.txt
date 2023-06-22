@@ -6,6 +6,8 @@ add_executable(texteditor
 
 	texteditor.cpp
 	texteditor.h
+	editorwindow.cpp
+	editorwindow.h
 )
 
 target_include_directories(texteditor PRIVATE 
