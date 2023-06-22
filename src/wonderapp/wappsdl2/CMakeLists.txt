@@ -94,44 +94,46 @@ target_link_libraries(wappsdl2gl PRIVATE
 
 ### Metal-version
 
+if(APPLE)
 
-add_library(wappsdl2metal STATIC
-    ${SOURCES}
-    sdlwindow_metal.h
-    sdlwindow_metal.mm
-)
+    add_library(wappsdl2metal STATIC
+        ${SOURCES}
+        sdlwindow_metal.h
+        sdlwindow_metal.mm
+    )
 
-#target_compile_definitions(wappsdl2metal PRIVATE USE_OPENGL)
+    #target_compile_definitions(wappsdl2metal PRIVATE USE_OPENGL)
 
-target_include_directories(wappsdl2metal PRIVATE
-    ${INCDIRS}
-    ${WGMETALGFX_INCDIRS}
-    ${SDL2_INCDIR}
-    ${SDL2IMAGE_INCDIR}
-)
+    target_include_directories(wappsdl2metal PRIVATE
+        ${INCDIRS}
+        ${WGMETALGFX_INCDIRS}
+        ${SDL2_INCDIR}
+        ${SDL2IMAGE_INCDIR}
+    )
 
-set_target_properties(wappsdl2metal PROPERTIES FOLDER "WonderApp/Frameworks" )
+    set_target_properties(wappsdl2metal PROPERTIES FOLDER "WonderApp/Frameworks" )
 
-target_link_directories(wappsdl2metal PUBLIC
-    ${SDL2_LIBDIR}
-    ${SDL2IMAGE_LIBDIR}
-    ${FREETYPE2_LIBDIR}
- )
-
-
-target_link_libraries(wappsdl2metal PRIVATE
-    wgmetalgfx
-    wgfreetypefont
-    wondergui
-    ${FREETYPE2_LIB}
-    ${SDL2_LIBS}
-    ${SDL2IMAGE_LIBS}
-    ${APPKIT_LIB}
-    ${METAL_LIB}
-)
+    target_link_directories(wappsdl2metal PUBLIC
+        ${SDL2_LIBDIR}
+        ${SDL2IMAGE_LIBDIR}
+        ${FREETYPE2_LIBDIR}
+     )
 
 
-list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
-set(WAPP_SOURCES ${SOURCES} PARENT_SCOPE)
-set(WAPP_INCDIRS ${INCDIRS} PARENT_SCOPE)
+    target_link_libraries(wappsdl2metal PRIVATE
+        wgmetalgfx
+        wgfreetypefont
+        wondergui
+        ${FREETYPE2_LIB}
+        ${SDL2_LIBS}
+        ${SDL2IMAGE_LIBS}
+        ${APPKIT_LIB}
+        ${METAL_LIB}
+    )
+endif()
+
+
+    list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_LIST_DIR}/ )
+    set(WAPP_SOURCES ${SOURCES} PARENT_SCOPE)
+    set(WAPP_INCDIRS ${INCDIRS} PARENT_SCOPE)
 
