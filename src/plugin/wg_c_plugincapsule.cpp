@@ -35,9 +35,10 @@ void wg_pluginRequestRender(wg_obj pluginCapsule, wg_rectSPX rect)
 	getCapsule(pluginCapsule)->_pluginRequestRender({ rect.x, rect.y, rect.w, rect.h });
 }
 
-void wg_pluginRequestResize(wg_obj	pluginCapsule)
+wg_sizeSPX wg_pluginRequestResize(wg_obj	pluginCapsule)
 {
-	getCapsule(pluginCapsule)->_pluginRequestResize();
+	SizeSPX sz = getCapsule(pluginCapsule)->_pluginRequestResize();
+	return { sz.w, sz.h };
 }
 
 int wg_isPluginVisible(wg_obj pluginCapsule)

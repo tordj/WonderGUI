@@ -113,7 +113,7 @@ namespace wg
 		RectSPX		_pluginWindowSection() const;		// Returns the window section within the childs canvas.
 		
 		void		_pluginRequestRender(const RectSPX& rect);
-		void		_pluginRequestResize();
+		SizeSPX		_pluginRequestResize();
 
 		bool		_pluginRequestFocus();
 		bool		_pluginReleaseFocus();

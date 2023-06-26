@@ -71,12 +71,17 @@ namespace wg
 			slots[0].m_length = 0;
 			slots[1].m_length = 0;
 
-			_requestResize();
-/*
+			SizeSPX newSize = _requestResize();
+			if (newSize != m_size)
+			{
+				Panel::_resize(newSize, m_scale);
+
+			}
+			/*
 			// This should only be done if _requestResize() fails.
 			{
 				_requestRender();
-				_updateGeo();
+ 				_updateGeo();
 			}
 */
 		}
@@ -167,7 +172,7 @@ namespace wg
 
 	//____ _updateGeo() __________________________________________________________
 
-	bool TwoSlotPanel::_updateGeo(bool bForce)
+	SizeSPX TwoSlotPanel::_updateGeo(StaticSlot * pRequestingSlot)
 	{
 		RectSPX contentGeo = _contentRect();
 
@@ -305,22 +310,29 @@ namespace wg
 	
 		// Request render and set sizes
 		
-		if (bForce || len1 != slots[0].m_length || len2 != slots[1].m_length)
+		if (len1 != slots[0].m_length || len2 != slots[1].m_length)
 		{
+			SizeSPX requestingSlotSize;
+
 			_requestRender(contentGeo);
 
 			slots[0].m_length = len1;
-			if( slots[0]._widget() )
+			slots[1].m_length = len2;
+
+			if (&slots[0] != pRequestingSlot)
+				requestingSlotSize = _slotOneRect(contentGeo);
+			else if( slots[0]._widget() )
 				slots[0]._setSize(_slotOneRect(contentGeo), m_scale);
 
-			slots[1].m_length = len2;
-			if (slots[1]._widget())
+			if (&slots[1] != pRequestingSlot)
+				requestingSlotSize = _slotTwoRect(contentGeo);
+			else if (slots[1]._widget())
 				slots[1]._setSize(_slotTwoRect(contentGeo), m_scale);
 
-			return true;
+			return requestingSlotSize;
 		}
 
-		return false;
+		return SizeSPX();
 	}
 
 
@@ -371,7 +383,7 @@ namespace wg
 		bool bForceUpdate = (scale != m_scale || breadthDiff != 0);
 			
 		Panel::_resize(size,scale);
-		_updateGeo( bForceUpdate );
+		_updateGeo( nullptr );
 			
 	}
 
@@ -479,10 +491,17 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void TwoSlotPanel::_childRequestResize(StaticSlot * pSlot)
+	SizeSPX TwoSlotPanel::_childRequestResize(StaticSlot * pSlot)
 	{
 		m_defaultSize = _calcDefaultSize(m_scale);
-		_requestResize();
+		SizeSPX size = _requestResize();
+
+		spx breadthDiff = m_bHorizontal ? m_size.w - size.w : m_size.h - size.h;
+
+		if( size != m_size )
+			Panel::_resize(size, m_scale);
+	
+		return _updateGeo(pSlot);
 	}
 
 	//____ _prevChild() _______________________________________________________

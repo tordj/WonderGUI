@@ -426,7 +426,7 @@ typedef	struct wg_plugincapsule_calls_struct
 		int			structSize;
 
 		void		(*requestRender)(wg_obj hostCapsule, wg_rectSPX rect);
-		void		(*requestResize)(wg_obj	hostCapsule);
+		wg_sizeSPX	(*requestResize)(wg_obj	hostCapsule);
 		int			(*isVisible)(wg_obj hostCapsule);
 		wg_rectSPX	(*windowSection)(wg_obj hostCapsule);
 		int			(*requestFocus)(wg_obj hostCapsule);

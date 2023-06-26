@@ -104,7 +104,7 @@ namespace wg
 
 		Widget*			_findWidget(const CoordSPX& ofs, SearchMode mode) override;
 
-		void			_childRequestResize(StaticSlot* pSlot) override;
+		SizeSPX			_childRequestResize(StaticSlot* pSlot) override;
 
 
 		// Overloaded from Layer

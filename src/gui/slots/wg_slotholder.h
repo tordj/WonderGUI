@@ -57,7 +57,7 @@ namespace wg
 
 		virtual void		_childRequestRender( StaticSlot * pSlot ) = 0;
 		virtual void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) = 0;
-		virtual void		_childRequestResize( StaticSlot * pSlot ) = 0;
+		virtual SizeSPX		_childRequestResize( StaticSlot * pSlot ) = 0;
 
 		virtual bool		_childRequestFocus( StaticSlot * pSlot, Widget * pWidget ) = 0;					// Request focus on behalf of me, child or grandchild.
 		virtual bool		_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget ) = 0;

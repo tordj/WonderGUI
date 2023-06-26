@@ -146,7 +146,7 @@ namespace wg
 
 		void			_childRequestRender(StaticSlot* pSlot) override;
 		void			_childRequestRender(StaticSlot* pSlot, const RectSPX& rect) override;
-		void			_childRequestResize(StaticSlot* pSlot) override;
+		SizeSPX			_childRequestResize(StaticSlot* pSlot) override;
 
 		bool			_childRequestFocus(StaticSlot* pSlot, Widget* pWidget) override;
 		bool			_childReleaseFocus(StaticSlot* pSlot, Widget* pWidget) override;

@@ -132,7 +132,7 @@ namespace wg
 
 		void		_childRequestRender(StaticSlot * pSlot) override;
 		void		_childRequestRender(StaticSlot * pSlot, const RectSPX& rect) override;
-		void		_childRequestResize(StaticSlot * pSlot) override;
+		SizeSPX		_childRequestResize(StaticSlot * pSlot) override;
 
 		void		_childRequestInView(StaticSlot * pSlot) override;
 		void		_childRequestInView(StaticSlot * pSlot, const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea) override;

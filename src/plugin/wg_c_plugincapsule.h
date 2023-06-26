@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 	void		wg_pluginRequestRender(wg_obj pluginCapsule, wg_rectSPX rect);
-	void		wg_pluginRequestResize(wg_obj	pluginCapsule);
+	wg_sizeSPX	wg_pluginRequestResize(wg_obj pluginCapsule);
 	int			wg_isPluginVisible(wg_obj pluginCapsule);
 	wg_rectSPX 	wg_pluginWindowSection(wg_obj pluginCapsule);
 	int 		wg_pluginRequestFocus(wg_obj pluginCapsule);

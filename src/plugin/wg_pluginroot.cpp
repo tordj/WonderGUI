@@ -441,10 +441,18 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void PluginRoot::_childRequestResize(StaticSlot* pSlot)
+	SizeSPX PluginRoot::_childRequestResize(StaticSlot* pSlot)
 	{
 		if (m_pluginCapsule)
-			PluginCalls::pluginCapsule->requestResize(m_pluginCapsule);
+		{
+			wg_sizeSPX newSize = PluginCalls::pluginCapsule->requestResize(m_pluginCapsule);
+
+			m_size.w = newSize.w;
+			m_size.h = newSize.h;
+			return m_size;
+		}
+
+		return m_size;
 	}
 
 	//____ _childRequestFocus() ___________________________________________________

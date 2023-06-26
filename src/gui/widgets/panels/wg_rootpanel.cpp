@@ -633,9 +633,9 @@ namespace wg
 
 	//____ _childRequestResize() __________________________________________________
 
-	void RootPanel::_childRequestResize(StaticSlot* pSlot)
+	SizeSPX RootPanel::_childRequestResize(StaticSlot* pSlot)
 	{
-		slot._setSize(m_geo.size(), m_scale);
+		return m_geo.size();
 	}
 
 	//____ _childRequestFocus() __________________________________________________

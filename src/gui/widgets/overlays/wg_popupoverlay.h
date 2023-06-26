@@ -151,7 +151,7 @@ namespace wg
 		// Only base slot can have child replaced, we need error handling...
 		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Overlay::_replaceChild(pSlot, pNewChild); }
 
-		void			_childRequestResize(StaticSlot * pSlot) override;
+		SizeSPX			_childRequestResize(StaticSlot * pSlot) override;
 		void			_releaseChild(StaticSlot * pSlot) override;
 
 		// Overloaded from Layer

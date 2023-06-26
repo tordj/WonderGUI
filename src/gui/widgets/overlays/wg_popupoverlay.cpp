@@ -809,12 +809,28 @@ namespace wg
 
 	//____ _childRequestResize() _______________________________________________
 
-	void PopupOverlay::_childRequestResize(StaticSlot * pSlot)
+	SizeSPX PopupOverlay::_childRequestResize(StaticSlot * pSlot)
 	{
-		if( pSlot == &mainSlot )
-			_requestResize();
+		if (pSlot == &mainSlot)
+		{
+			SizeSPX newSize = _requestResize();
+
+			if (newSize != m_size)
+			{
+				for (Slot* pSlot = popupSlots._begin(); pSlot != popupSlots._end(); pSlot++)
+					_updateGeo(pSlot, true);
+			}
+
+			m_size = newSize;
+			return newSize;
+		}
 		else
-			_updateGeo( (Slot *) pSlot, true );
+		{
+			auto pFullSlot = (Slot*)pSlot;
+
+			_updateGeo( pFullSlot, true );
+			return pFullSlot->m_geo.size();
+		}
 	}
 
 	//____ _releaseChild() _____________________________________________________

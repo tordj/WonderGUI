@@ -99,10 +99,14 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void DragNDropOverlay::_childRequestResize(StaticSlot * pSlot)
+	SizeSPX DragNDropOverlay::_childRequestResize(StaticSlot * pSlot)
 	{
-		if( pSlot == &mainSlot )
-			_requestResize();
+		if (pSlot == &mainSlot)
+		{
+			SizeSPX newSize = _requestResize();
+			m_size = newSize;
+			return newSize;
+		}
 		else
 		{
 			auto p = static_cast<Slot*>(pSlot);
@@ -111,7 +115,9 @@ namespace wg
 			SizeSPX max = SizeSPX::max(pref, p->m_geo.size());
 
 			_requestRender(RectSPX::overlap({ 0,0,m_size }, { p->m_geo.pos(), max }));
-			p->_setSize(pref, m_scale);
+			p->m_geo.w = pref.w;
+			p->m_geo.h = pref.h;
+			return pref;
 		}
 	}
 

@@ -293,7 +293,7 @@ namespace wg
 
 		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
 		inline void			_requestRender( const RectSPX& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
-		inline void			_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
+		inline SizeSPX		_requestResize();
 		inline void			_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
 		inline void			_requestInView( const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
 
@@ -982,6 +982,18 @@ namespace wg
 	{ 
 		return m_bOpaque; 
 	}
+
+	//____ _requestResize() ___________________________________________________
+
+	SizeSPX Widget::_requestResize()
+	{ 
+		if (m_pHolder)
+			return m_pHolder->_childRequestResize(m_pSlot);
+		else
+			return _defaultSize(m_scale);
+	}
+
+
 
 } // namespace wg
 #endif

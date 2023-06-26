@@ -129,9 +129,12 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void Capsule::_childRequestResize( StaticSlot * pSlot )
+	SizeSPX Capsule::_childRequestResize( StaticSlot * pSlot )
 	{
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		Container::_resize(newSize, m_scale);
+
+		return newSize - m_skin.contentPaddingSize(m_scale);
 	}
 
 	//____ _prevChild() __________________________________________________________
@@ -236,7 +239,9 @@ namespace wg
 	{
 		slot._setWidget(nullptr);
 		_requestRender();
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		if (newSize != m_size)
+			_resize(newSize, m_scale);
 	}
 
 	//____ _replaceChild() ____________________________________________________________
@@ -252,7 +257,9 @@ namespace wg
 		}
 
 		_requestRender();
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		if (newSize != m_size)
+			_resize(newSize, m_scale);
 	}
 
 

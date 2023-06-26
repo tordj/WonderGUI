@@ -134,7 +134,7 @@ namespace wg
 		//TODO: We should allow replacement of modal slots.
 		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Overlay::_replaceChild(pSlot, pNewChild); }
 
-		void			_childRequestResize( StaticSlot * pSlot ) override;
+		SizeSPX			_childRequestResize( StaticSlot * pSlot ) override;
 		void			_releaseChild(StaticSlot * pSlot) override;
 
 		// Overloaded from Overlay

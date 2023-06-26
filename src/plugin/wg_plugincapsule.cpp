@@ -305,9 +305,9 @@ namespace wg
 
 	//____ _pluginRequestResize() _______________________________________________
 
-	void PluginCapsule::_pluginRequestResize()
+	SizeSPX PluginCapsule::_pluginRequestResize()
 	{
-		_requestResize();
+		return _requestResize();
 	}
 
 	//____ _pluginRequestFocus() ________________________________________________

@@ -94,7 +94,7 @@ namespace wg
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
 		void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;
-		void		_childRequestResize( StaticSlot * pSlot ) override;
+		SizeSPX		_childRequestResize( StaticSlot * pSlot ) override;
 
 		void		_releaseChild( StaticSlot * pSlot ) override;
 		void		_replaceChild(StaticSlot * pSlot, Widget * pWidget) override;
