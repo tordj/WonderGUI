@@ -31,7 +31,7 @@
 extern "C" {
 #endif
 
-	wg_obj			wg_createStreamPlayer(wg_obj device, wg_obj surfaceFactory);
+	wg_obj			wg_createStreamPlayer(wg_obj device, wg_obj surfaceFactory, wg_obj waveformFactory);
 
 	wg_component	wg_getStreamPlayerInput(wg_obj streamPlayer);
 

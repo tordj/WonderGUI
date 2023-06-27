@@ -32,12 +32,13 @@ inline GfxStreamPlayer* getPtr(wg_obj obj) {
 	return static_cast<GfxStreamPlayer*>(reinterpret_cast<Object*>(obj));
 }
 
-wg_obj wg_createStreamPlayer(wg_obj device, wg_obj surfaceFactory)
+wg_obj wg_createStreamPlayer(wg_obj device, wg_obj surfaceFactory, wg_obj waveformFactory)
 {
 	GfxDevice* pDevice = static_cast<GfxDevice*>(reinterpret_cast<Object*>(device));
-	SurfaceFactory* pFactory = static_cast<SurfaceFactory*>(reinterpret_cast<Object*>(surfaceFactory));
+	SurfaceFactory* pSurfaceFactory = static_cast<SurfaceFactory*>(reinterpret_cast<Object*>(surfaceFactory));
+	WaveformFactory* pWaveformFactory = static_cast<WaveformFactory*>(reinterpret_cast<Object*>(waveformFactory));
 
-	auto p = GfxStreamPlayer::create(pDevice, pFactory);
+	auto p = GfxStreamPlayer::create(pDevice, pSurfaceFactory, pWaveformFactory);
 	p->retain();
 	return p.rawPtr();
 }

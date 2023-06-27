@@ -99,28 +99,16 @@ namespace wg
 
 			switch( header.spxFormat )
 			{
-				case 0:
+				case GfxStream::SpxFormat::Int32_dec:
 					break;
-				case 1:
+				case GfxStream::SpxFormat::Uint16_dec:
 					m_charStream << " (spx16_dec)";
 					break;
-				case 2:
+				case GfxStream::SpxFormat::Int16_int:
 					m_charStream << " (spx16_int)";
 					break;
-				case 3:
+				case GfxStream::SpxFormat::Uint8_int:
 					m_charStream << " (spx8_int)";
-					break;
-				case 4:
-					m_charStream << " (spx16_dec deltas)";
-					break;
-				case 5:
-					m_charStream << " (spx16_int deltas)";
-					break;
-				case 6:
-					m_charStream << " (spx8_dec deltas)";
-					break;
-				case 7:
-					m_charStream << " (spx8_int deltas)";
 					break;
 			}
 			

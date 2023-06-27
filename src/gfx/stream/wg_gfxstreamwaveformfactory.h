@@ -45,7 +45,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamWaveformFactory_p	create( GfxStreamEncoder * pEncoder ) { return GfxStreamWaveformFactory_p(new GfxStreamWaveformFactory()); }
+		static GfxStreamWaveformFactory_p	create( GfxStreamEncoder * pEncoder ) { return GfxStreamWaveformFactory_p(new GfxStreamWaveformFactory(pEncoder)); }
 
 
 		//.____ Identification _________________________________________________
@@ -60,6 +60,7 @@ namespace wg
 		Waveform_p createWaveform( const Waveform::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0) override;
 
 	protected:
+		GfxStreamWaveformFactory(GfxStreamEncoder * pEncoder) : m_pEncoder(pEncoder) {}
 		virtual ~GfxStreamWaveformFactory() {}
 		
 		GfxStreamEncoder_p	m_pEncoder;

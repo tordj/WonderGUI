@@ -21,7 +21,7 @@ class Device : public PackPanel
 {
 public:
 
-    static Device_p create( const string& name, GfxDevice * pDevice, Surface * pSurface, Theme * pTheme ) { return new Device(name, pDevice, pSurface, pTheme);};
+    static Device_p create( const string& name, GfxDevice * pDevice, CanvasRef canvasRef, Surface * pSurface, Theme * pTheme ) { return new Device(name, pDevice, canvasRef, pSurface, pTheme);};
 
     const string&   name() const { return m_name; }
 
@@ -36,12 +36,13 @@ public:
 	bool			needsRedraw() { return m_bNeedsRedraw; };
 
 protected:
-	Device( const string& name, GfxDevice * pDevice, Surface * pSurface, Theme * pTheme );
+	Device( const string& name, GfxDevice * pDevice, CanvasRef canvasRef, Surface * pSurface, Theme * pTheme );
     virtual ~Device() {};
 
     
     string          	m_name;
     GfxDevice_p     	m_pDevice;
+	CanvasRef			m_canvasRef;
     Surface_p       	m_pCanvas;
 	Surface_p			m_pDisplaySurface;
 	SurfaceDisplay_p	m_pDisplay;

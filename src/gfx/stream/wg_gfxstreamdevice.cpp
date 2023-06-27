@@ -87,69 +87,25 @@ namespace wg
 		return GfxStream::SpxFormat::Int32_dec;
 	}
 
-	inline GfxStream::SpxFormat _spxFieldFormat( const spx * pBegin, const spx * pEnd, const spx * pPrevValues )
+	inline GfxStream::SpxFormat _spxFieldFormat( const spx * pBegin, const spx * pEnd )
 	{
 		const int add = (1 << 21);
 		int spxMask = 0;
-		int deltaMask = 0;
 
-		int deltaMin = 0;
-		int deltaMax = 0;
-
-		if( pPrevValues )
+		while( pBegin < pEnd )
 		{
-			while( pBegin < pEnd )
-			{
-				int value = * pBegin++;
-				int delta = value - * pPrevValues++;
-				
-				if( delta < deltaMin )
-					deltaMin = delta;
-				
-				if( delta > deltaMax )
-					deltaMax = delta;
-				
-				spxMask |= value + add;
-				deltaMask |= delta;
-			}
+			int value = * pBegin++;
+			spxMask |= value + add;
 		}
-		else
-		{
-			while( pBegin < pEnd )
-			{
-				int value = * pBegin++;
-				spxMask |= value + add;
-			}
 			
-			deltaMin = INT_MIN;
-			deltaMax = INT_MAX;
-		}
-		
-		
-		// See if it will fit in any of the 8-bit formats.
-		
 		if( (spxMask & 0xFFDFC03F) == 0 )
-			return GfxStream::SpxFormat::Uint8_int;						// Fits as non-delta values in uint8_t without binals.
-
-		if( deltaMin >= -128 && deltaMax <= 127 )
-			return GfxStream::SpxFormat::Delta8_dec;						// Fits as delta values in int8_t with binals.
-		
-		if( ((deltaMask & 0x3F) == 0) && (deltaMin >= -128*64 && deltaMax <= 128*64-1) )
-			return GfxStream::SpxFormat::Delta8_int;						// Fits as delta values in int8_t without binals.
-
-		// See if it will fit in any of the 16-bit formats
+			return GfxStream::SpxFormat::Uint8_int;						// Fits in uint8_t without binals.
 		
 		if( (spxMask & 0xFFDF0000) == 0 )
-			return GfxStream::SpxFormat::Uint16_dec;						// Fits in uint16_t with binals.
+			return GfxStream::SpxFormat::Uint16_dec;					// Fits in uint16_t with binals.
 
 		if( (spxMask & 0xFFC0003F) == 0 )
 			return GfxStream::SpxFormat::Int16_int;						// Fits in int16_t without binals.
-
-		if( deltaMin >= -32768 && deltaMax <= 32767 )
-			return GfxStream::SpxFormat::Delta16_dec;						// Fits as delta values in int16_t with binals.
-		
-		if( ((deltaMask & 0x3F) == 0) && (deltaMin >= -32768 && deltaMax <= 32768*64-1) )
-			return GfxStream::SpxFormat::Delta16_int;						// Fits as delta values in int16_t without binals.
 		
 		return GfxStream::SpxFormat::Int32_dec;							// We need 32 bits.
 	}
@@ -354,7 +310,7 @@ namespace wg
 
     void GfxStreamDevice::setTintGradient(const RectSPX& rect, const Gradient& gradient)
     {
-		if( rect == m_tintGradientRect && m_tintGradient == gradient )
+		if( m_bTintGradient && rect == m_tintGradientRect && m_tintGradient == gradient )
 			return;
 		
         GfxDevice::setTintGradient(rect, gradient);
@@ -957,7 +913,7 @@ namespace wg
         
         int	nSamples = nLines * samplesPerLine;
 
-		auto spxFormat = _spxFieldFormat( pSamples, pSamples + nSamples, nullptr );
+		auto spxFormat = _spxFieldFormat( pSamples, pSamples + nSamples );
 		int spxSize = GfxStream::spxSize(spxFormat);
 		
 		int maxSamplesPerChunk = (GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)) / spxSize;
@@ -1111,7 +1067,7 @@ namespace wg
             return;
         }
 
-        if (_clippedOut(dest))
+		if (_clippedOut({dest,pWaveform->pixelSize()*64}))
             return;
 
         _streamStatesIfUpdated();
@@ -1127,6 +1083,8 @@ namespace wg
 
 	void GfxStreamDevice::flipDrawWaveform(CoordSPX dest, Waveform * _pWaveform, GfxFlip flip)
 	{
+		//TODO: ClipOut!!!
+		
         auto pWaveform = dynamic_cast<GfxStreamWaveform*>(_pWaveform);
         if (!pWaveform)
         {
@@ -1135,8 +1093,8 @@ namespace wg
             return;
         }
 
-        if (_clippedOut(dest))
-            return;
+//        if (_clippedOut(dest))
+//            return;
 
         _streamStatesIfUpdated();
 
@@ -1214,7 +1172,7 @@ namespace wg
 			return false;
 		}
 		
-		SizeI sz = (canvasRef != CanvasRef::None) ? canvas(canvasRef).size : pCanvasSurface->pixelSize();
+		SizeI sz = (canvasRef != CanvasRef::None) ? canvas(canvasRef).size : pCanvasSurface->pixelSize()*64;
 		if( sz.isEmpty() )
 		{
 			// TODO: Error handling!
@@ -1231,8 +1189,8 @@ namespace wg
 		
 		m_canvas.ref = canvasRef;
 		m_canvas.pSurface = pCanvasSurface;
-		
 		m_canvas.size = sz;
+		m_canvas.format = pCanvasSurface ? pCanvasSurface->pixelFormat() : canvas(canvasRef).format;
 	
 		// These need to be reset.
 		
@@ -1248,6 +1206,37 @@ namespace wg
 		m_streamedBlendMode = m_blendMode;
 		m_streamedRenderLayer = m_renderLayer;
 		m_streamedTintColor = m_tintColor;
+		
+		
+		RectSPX bounds;
+
+		if (nUpdateRects > 0)
+		{
+			bounds = *pUpdateRects;
+			for (int i = 1; i < nUpdateRects; i++)
+				bounds.growToContain(pUpdateRects[i]);
+
+			if (bounds.x < 0 || bounds.y < 0 || bounds.w > sz.w || bounds.h > sz.h)
+			{
+				//TODO: Error handling!
+
+				return false;
+			}
+		}
+		else
+		{
+			bounds = sz;
+			nUpdateRects = 1;
+			pUpdateRects = &m_canvasUpdateBounds;
+		}
+
+		m_pCanvasUpdateRects = pUpdateRects;
+		m_nCanvasUpdateRects = nUpdateRects;
+		m_canvasUpdateBounds = bounds;
+
+		m_pClipRects = pUpdateRects;
+		m_nClipRects = nUpdateRects;
+		m_clipBounds = bounds;
 		
         return true;
     }

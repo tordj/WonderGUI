@@ -262,11 +262,11 @@ void SoftWaveform::_importSamples( WaveOrigo origo, const spx * pSource, int edg
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( samplePitch == 0 )
-		samplePitch = 4;
+		samplePitch = 1;
 	
 	
 	if( edgePitch == 0 )
-		edgePitch = samplePitch * (m_size.w+1);
+		edgePitch = samplePitch * (sampleEnd - sampleBegin);
 	
 	int destSamplePitch = m_nbSegments-1;
 	int destEdgePitch = 1;
@@ -282,14 +282,14 @@ void SoftWaveform::_importSamples( WaveOrigo origo, const spx * pSource, int edg
 
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
 	{
-		const spx * pSrc = (const spx*) (((const char*)pSource) + edgePitch * edge + samplePitch * sampleBegin);
+		const spx * pSrc = pSource + edgePitch * edge + samplePitch * sampleBegin;
 		spx * pDst = m_pSamples + edge + sampleBegin*(m_nbSegments-1);
 
 		for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
 		{
 			* pDst = (* pSrc * mul) + offset;
 			pDst += destSamplePitch;
-			pSrc += samplePitch/4;
+			pSrc += samplePitch;
 		}
 	}
 }
@@ -298,11 +298,11 @@ void SoftWaveform::_importSamples( WaveOrigo origo, const float * pSource, int e
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( samplePitch == 0 )
-		samplePitch = 4;
+		samplePitch = 1;
 	
 	
 	if( edgePitch == 0 )
-		edgePitch = samplePitch * (m_size.w+1);
+		edgePitch = samplePitch * (sampleEnd - sampleBegin);
 	
 	int destSamplePitch = m_nbSegments-1;
 	int destEdgePitch = 1;
@@ -323,14 +323,14 @@ void SoftWaveform::_importSamples( WaveOrigo origo, const float * pSource, int e
 	
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
 	{
-		const float * pSrc = (const float*) (((const char*)pSource) + edgePitch * edge + samplePitch * sampleBegin);
+		const float * pSrc = pSource + edgePitch * edge + samplePitch * sampleBegin;
 		spx * pDst = m_pSamples + edge + sampleBegin*(m_nbSegments-1);
 
 		for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
 		{
 			* pDst = (* pSrc * mul) + offset;
 			pDst += destSamplePitch;
-			pSrc += samplePitch/4;
+			pSrc += samplePitch;
 		}
 	}
 }

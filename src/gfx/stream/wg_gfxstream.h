@@ -47,16 +47,16 @@ namespace wg
 			spx value;
 		};
 
-		enum SpxFormat : uint8_t
+		enum class SpxFormat : uint8_t
 		{
 			Int32_dec = 0,			// 32 bit signed subpixel values.
 			Uint16_dec = 1,			// 16 bit unsigned pixel values.
 			Int16_int = 2,			// 16 bit signed pixel values.
 			Uint8_int = 3,			// 8 bit unsigned pixel values.
-			Delta16_dec = 4,		// 16 bit delta subpixel values.
-			Delta16_int = 5,		// 16 bit delta pixel values.
-			Delta8_dec = 6,			// 8 bit delta subpixel values.
-			Delta8_int = 7			// 8 bit delta pixel values.
+//			Delta16_dec = 4,		// 16 bit delta subpixel values.
+//			Delta16_int = 5,		// 16 bit delta pixel values.
+//			Delta8_dec = 6,			// 8 bit delta subpixel values.
+//			Delta8_int = 7			// 8 bit delta pixel values.
 		};
 		
 		struct Header
@@ -236,11 +236,11 @@ namespace wg
 				return *(uint16_t*)&pChunk[2];
 		}
 		
-		inline static int spxSize(int spxFormat)
+		inline static int spxSize(SpxFormat spxFormat)
 		{
-			static const int size[8] = {4,2,2,1,2,2,1,1};
+			static const int size[4] = {4,2,2,1};
 		
-			return size[spxFormat];
+			return size[int(spxFormat)];
 		}
 	};
 

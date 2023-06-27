@@ -82,9 +82,9 @@ namespace wg
 
 		void	_sendCreateWaveform(GfxStreamEncoder * pEncoder);
 		void 	_sendSamples( GfxStreamEncoder* pEncoder, int edgeBegin, int edgeEnd,
-								int sampleBegin, int sampleEnd, spx * pNewSamples );
+								int sampleBegin, int sampleEnd );
 
-		GfxStream::SpxFormat _findBestPackFormat( int spxMask, int deltaMask, int deltaMin, int deltaMax );
+		GfxStream::SpxFormat _findBestPackFormat( int spxMask );
 
 		
 		GfxStreamEncoder_p	m_pEncoder;

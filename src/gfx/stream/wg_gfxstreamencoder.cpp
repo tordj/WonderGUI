@@ -125,42 +125,6 @@ namespace wg
 					_pushChar(* p++ >> 6);
 				break;
 			}
-
-			case GfxStream::SpxFormat::Delta16_dec:
-			{
-				auto p1 = array.pData;
-				auto p2 = array.pCompareData;
-				for( int i = 0 ; i < array.size ; i++ )
-					_pushShort((* p1++) - (* p2++));
-				break;
-			}
-
-			case GfxStream::SpxFormat::Delta16_int:
-			{
-				auto p1 = array.pData;
-				auto p2 = array.pCompareData;
-				for( int i = 0 ; i < array.size ; i++ )
-					_pushShort( ((* p1++) - (* p2++)) << 6);
-				break;
-			}
-
-			case GfxStream::SpxFormat::Delta8_dec:
-			{
-				auto p1 = array.pData;
-				auto p2 = array.pCompareData;
-				for( int i = 0 ; i < array.size ; i++ )
-					_pushChar((* p1++) - (* p2++));
-				break;
-			}
-
-			case GfxStream::SpxFormat::Delta8_int:
-			{
-				auto p1 = array.pData;
-				auto p2 = array.pCompareData;
-				for( int i = 0 ; i < array.size ; i++ )
-					_pushChar( ((* p1++) - (* p2++)) << 6);
-				break;
-			}
 		}
 		return *this;
 	}

@@ -68,14 +68,14 @@ namespace wg
 		
 		struct ChunkInfo
 		{
-			ChunkInfo(GfxChunkId type, int dataOfs, int dataSize, int spxFormat, int extra )
+			ChunkInfo(GfxChunkId type, int dataOfs, int dataSize, GfxStream::SpxFormat spxFormat, int extra )
 			: type(type), dataOfs(dataOfs), dataSize(dataSize), spxFormat(spxFormat), extra(extra) {}
 			
 			
 			GfxChunkId	type;
 			int 		dataOfs;		// Offset into data-vector for this chunks data.
 			int			dataSize;
-			int			spxFormat;
+			GfxStream::SpxFormat	spxFormat;
 			int			extra;			// Additional chunk-specific info. Used by BeginCanvasUpdate to number new scope.
 		};
 		

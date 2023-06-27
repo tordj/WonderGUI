@@ -389,38 +389,6 @@ namespace wg
 					* p++ = int((unsigned char) _pullChar()) << 6;
 				break;
 			}
-
-			case GfxStream::SpxFormat::Delta16_dec:
-			{
-				auto p = field.pField;
-				for( int i = 0 ; i < field.size ; i++ )
-					* p++ += _pullShort();
-				break;
-			}
-
-			case GfxStream::SpxFormat::Delta16_int:
-			{
-				auto p = field.pField;
-				for( int i = 0 ; i < field.size ; i++ )
-					* p++ += int(_pullShort()) << 6;
-				break;
-			}
-
-			case GfxStream::SpxFormat::Delta8_dec:
-			{
-				auto p = field.pField;
-				for( int i = 0 ; i < field.size ; i++ )
-					* p++ += _pullChar();
-				break;
-			}
-
-			case GfxStream::SpxFormat::Delta8_int:
-			{
-				auto p = field.pField;
-				for( int i = 0 ; i < field.size ; i++ )
-					* p++ += int(_pullChar()) << 6;
-				break;
-			}
 		}
 		return *this;
 	}

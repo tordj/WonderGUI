@@ -3,10 +3,11 @@
 #include "gfxdevicetester.h"
 
 
-Device::Device( const string& name, GfxDevice * pDevice, Surface * pSurface, Theme * pTheme )
+Device::Device( const string& name, GfxDevice * pDevice, CanvasRef canvasRef, Surface * pSurface, Theme * pTheme )
   : m_name(name),
 	m_pDevice(pDevice),
-	m_pCanvas(pSurface)
+	m_pCanvas(pSurface),
+	m_canvasRef(canvasRef)
 {
 	setSkin( pTheme->backPlateSkin() );
 
@@ -85,10 +86,10 @@ Device::Device( const string& name, GfxDevice * pDevice, Surface * pSurface, The
 GfxDevice_p Device::beginRender()
 {
     m_pDevice->beginRender();
-	if( m_pCanvas )
-		m_pDevice->beginCanvasUpdate(m_pCanvas);
+	if( m_canvasRef != CanvasRef::None )
+		m_pDevice->beginCanvasUpdate(m_canvasRef);
 	else
-		m_pDevice->beginCanvasUpdate(CanvasRef::Default);
+		m_pDevice->beginCanvasUpdate(m_pCanvas);
 
 	return m_pDevice;
 }

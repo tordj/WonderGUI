@@ -261,7 +261,7 @@ typedef struct wg_streamplayer_calls_struct
 {
 	int					structSize;
 
-	wg_obj				(*createStreamPlayer)(wg_obj device, wg_obj surfaceFactory);
+	wg_obj				(*createStreamPlayer)(wg_obj device, wg_obj surfaceFactory, wg_obj waveformFactory);
 	wg_component		(*getStreamPlayerInput)(wg_obj streamPlayer);
 	void				(*setStreamPlayerStoreDirtyRects)(wg_obj streamPlayer, int bStore);
 	void				(*setStreamPlayerMaxDirtyRects)(wg_obj streamPlayer, int max);

@@ -73,13 +73,13 @@ namespace wg
 				m_scopes.emplace_back(m_activeScope);
 				m_activeScope = m_scopes.size() -1;
 
-				m_scopes[m_activeScope].chunks.emplace_back( GfxChunkId::BeginRender, (int) m_data.size(), 0, 0, 0 );
+				m_scopes[m_activeScope].chunks.emplace_back( GfxChunkId::BeginRender, (int) m_data.size(), 0, GfxStream::SpxFormat::Int32_dec, 0 );
 				break;
 			}
 
 			case GfxChunkId::EndRender:
 			{
-				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndRender, (int) m_data.size(), 0, 0, 0);
+				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndRender, (int) m_data.size(), 0, GfxStream::SpxFormat::Int32_dec, 0);
 				_processScopes();
 				flush();
 
@@ -95,7 +95,7 @@ namespace wg
 
 				// Signal jump to subscope in our scope with a special chunk.
 				
-				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId(-1), dataOfs, 0, 0, newScopeIdx);
+				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId(-1), dataOfs, 0, GfxStream::SpxFormat::Int32_dec, newScopeIdx);
 
 				// Create/setup our subscope
 				
@@ -104,7 +104,7 @@ namespace wg
 				
 				// Put BeginCanvasUpdate-chunk inside our subscope.
 				
-				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::BeginCanvasUpdate, dataOfs, header.size, 0, 0 );
+				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::BeginCanvasUpdate, dataOfs, header.size, GfxStream::SpxFormat::Int32_dec, 0 );
 
 				// Prepare data buffer for writes.
 
@@ -115,7 +115,7 @@ namespace wg
 
 			case GfxChunkId::EndCanvasUpdate:
 			{
-				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndCanvasUpdate, (int) m_data.size(), 0, 0, 0);
+				m_scopes[m_activeScope].chunks.emplace_back(GfxChunkId::EndCanvasUpdate, (int) m_data.size(), 0, GfxStream::SpxFormat::Int32_dec, 0);
 				m_activeScope = m_scopes[m_activeScope].prevScope;
 				break;
 			}
@@ -133,7 +133,7 @@ namespace wg
 						m_pWriteData = m_outputBuffer.data() + ofs;
 
 						_pushChar((char)header.type);
-						_pushChar(header.size + (header.spxFormat << 5));
+						_pushChar(header.size + (int(header.spxFormat) << 5));
 					}
 					else
 					{
@@ -141,7 +141,7 @@ namespace wg
 						m_pWriteData = m_outputBuffer.data() + ofs;
 
 						_pushChar((char)header.type);
-						_pushChar(31 + (header.spxFormat << 5));
+						_pushChar(31 + (int(header.spxFormat) << 5));
 						_pushShort((short)header.size);
 					}
 				}
@@ -204,7 +204,7 @@ namespace wg
 					m_pWriteData = m_outputBuffer.data() + ofs;
 
 					_pushChar((char)chunk.type);
-					_pushChar(chunk.dataSize | (chunk.spxFormat << 5));
+					_pushChar(chunk.dataSize | (int(chunk.spxFormat) << 5));
 				}
 				else
 				{
@@ -212,7 +212,7 @@ namespace wg
 					m_pWriteData = m_outputBuffer.data() + ofs;
 
 					_pushChar((char)chunk.type);
-					_pushChar(31 | (chunk.spxFormat << 5) );
+					_pushChar(31 | (int(chunk.spxFormat) << 5) );
 					_pushShort((short)chunk.dataSize);
 				}
 				

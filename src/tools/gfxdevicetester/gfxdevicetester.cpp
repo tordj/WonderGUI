@@ -4,6 +4,8 @@
 
 #include "gfxdevicetester.h"
 
+#include <wondergfxstream.h>
+
 #include "testsuites/testsuite.h"
 
 #include "testsuites/a8tests.h"
@@ -160,8 +162,9 @@ void GfxDeviceTester::setup_testdevices()
 	
 	auto pSoftGfxDevice = SoftGfxDevice::create();
 	addDefaultSoftKernels( pSoftGfxDevice );
+	auto pCanvasSurface = SoftSurface::create( canvasBP );
 	
-	auto pReferenceDevice = Device::create( "Reference (SoftGfxDevice)", pSoftGfxDevice, SoftSurface::create( canvasBP ), this );
+	auto pReferenceDevice = Device::create( "Reference (SoftGfxDevice)", pSoftGfxDevice, CanvasRef::None, pCanvasSurface, this );
 
 	g_testdevices.push_back(pReferenceDevice);
 
@@ -170,9 +173,9 @@ void GfxDeviceTester::setup_testdevices()
 	auto pNativeGfxDevice = Base::defaultGfxDevice();
 	string nativeDeviceName = string("Native (" + string(pNativeGfxDevice->typeInfo().className) + ")" );
 	
-	auto pNativeDevice = Device::create(nativeDeviceName, pNativeGfxDevice, Base::defaultSurfaceFactory()->createSurface(canvasBP), this );
+	auto pNativeDevice = Device::create(nativeDeviceName, pNativeGfxDevice, CanvasRef::None, Base::defaultSurfaceFactory()->createSurface(canvasBP), this );
 	
-	g_testdevices.push_back(pNativeDevice);
+//	g_testdevices.push_back(pNativeDevice);
 	
 	// Linear
 	
@@ -215,14 +218,36 @@ void GfxDeviceTester::setup_testdevices()
 	
 	addDefaultSoftKernels( pLinearGfxDevice );
 	pLinearGfxDevice->defineCanvas(CanvasRef::Default, g_canvasSize*64, PixelFormat::BGRA_8_sRGB);
-
-	auto pLinearDevice = Device::create( pLinearGfxDevice->typeInfo().className, pLinearGfxDevice, nullptr, this );
+	
+	auto pLinearDevice = Device::create( pLinearGfxDevice->typeInfo().className, pLinearGfxDevice, CanvasRef::Default, nullptr, this );
 	
 	m_pLinearDeviceSurface = pLinearDevice->displaySurface();
 	
 //	g_testdevices.push_back(pLinearDevice);
 
-	//
+	// Stream to Software
+
+	{
+		auto pSoftGfxDevice = SoftGfxDevice::create();
+		addDefaultSoftKernels( pSoftGfxDevice );
+
+		Surface::Blueprint canvasBP = WGBP(Surface,
+										   _.size = {512,512},
+										   _.canvas = true );
+
+		auto pCanvasSurface = SoftSurface::create(canvasBP);		
+		pSoftGfxDevice->defineCanvas(CanvasRef::Default, pCanvasSurface);
+		
+		auto pStreamPlayer = GfxStreamPlayer::create(pSoftGfxDevice, SoftSurfaceFactory::create(), SoftWaveformFactory::create());
+		
+		auto pStreamEncoder = GfxStreamFastEncoder::create( {pStreamPlayer, pStreamPlayer->input} );
+		auto pStreamGfxDevice = GfxStreamDevice::create(pStreamEncoder);
+		pStreamGfxDevice->defineCanvas(CanvasRef::Default, {512,512}, PixelFormat::BGRA_8_sRGB);
+		
+		auto pStreamDevice = Device::create( "Stream to Software", pStreamGfxDevice, CanvasRef::Default, pCanvasSurface, this );
+
+		g_testdevices.push_back(pStreamDevice);
+	}
 	
 }
 

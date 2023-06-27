@@ -72,7 +72,7 @@ namespace wg
 				flush();
 
 			_pushChar((char)header.type);
-			_pushChar(header.size + (header.spxFormat << 5));
+			_pushChar(header.size + (int(header.spxFormat) << 5));
 		}
 		else
 		{
@@ -80,7 +80,7 @@ namespace wg
 				flush();
 
 			_pushChar((char)header.type);
-			_pushChar(31  + (header.spxFormat << 5));
+			_pushChar(31  + (int(header.spxFormat) << 5));
 			_pushShort((short)header.size);
 		}
 	}

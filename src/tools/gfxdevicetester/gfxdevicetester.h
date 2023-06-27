@@ -6,8 +6,11 @@
 
 #include <wg_softgfxdevice.h>
 #include <wg_softkernels_default.h>
+#include <wg_softwaveformfactory.h>
+#include <wg_softsurfacefactory.h>
 
 #include <wg_lineargfxdevice.h>
+
 
 
 #include "device.h"

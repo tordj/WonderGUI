@@ -47,7 +47,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamPlayer_p	create(GfxDevice * pDevice, SurfaceFactory * pFactory);
+		static GfxStreamPlayer_p	create(GfxDevice * pDevice, SurfaceFactory * pSurfaceFactory, WaveformFactory * pWaveformFactory);
 
 		//.____ Components _______________________________________
 
@@ -73,7 +73,7 @@ namespace wg
 		const std::vector<Surface_p>& surfaces() const { return m_vSurfaces; }
 		
 	protected:
-		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pFactory);
+		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pSurfaceFactory, WaveformFactory * pWaveformFactory);
 		~GfxStreamPlayer();
 
 		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
@@ -89,14 +89,27 @@ namespace wg
 		GfxStreamDecoder_p	m_pDecoder;
 		GfxDevice_p			m_pDevice;
 		SurfaceFactory_p	m_pSurfaceFactory;
+		WaveformFactory_p	m_pWaveformFactory;
 
 		std::vector<Surface_p>	m_vSurfaces;
+		std::vector<Waveform_p>	m_vWaveforms;
 
 		Surface_p			m_pUpdatingSurface;
 		PixelBuffer			m_pixelBuffer;
 		uint8_t *			m_pWritePixels;
 		int					m_surfaceBytesLeft = 0;
 
+		Waveform_p			m_pUpdatingWaveform;
+		spx *				m_pWaveSampleBuffer;
+		spx *				m_pWaveWriteSamples;
+		int					m_waveSamplesLeft;
+
+		int					m_waveUpdateEdgeBegin;
+		int					m_waveUpdateEdgeEnd;
+		int					m_waveUpdateSampleBegin;
+		int					m_waveUpdateSampleEnd;
+		
+		
 		// For multi-chunk drawing operations (DrawSegments, FlipDrawSegments, DrawWave and FlipDrawWave), telling which one we are receiving edge samples for.
 		
 		GfxChunkId			m_drawTypeInProgress = GfxChunkId::OutOfData;
