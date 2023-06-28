@@ -229,6 +229,17 @@ namespace wg
 		
 		
 		
+		struct StashedStreamedStates
+		{
+			BlendMode		blendMode;
+			HiColor			tintColor;
+			int				renderLayer;
+		};
+		
+		std::vector<StashedStreamedStates>		m_stateStack;
+
+		
+		
 	};
 } // namespace wg
 #endif //WG_STREAMGFXDEVICE_DOT_H

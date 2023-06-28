@@ -444,8 +444,16 @@ namespace wg
 
     void GfxStreamDevice::endCanvasUpdate()
     {
+		auto& renderStates = m_stateStack.back();
+		
+		m_streamedBlendMode = renderStates.blendMode;
+		m_streamedRenderLayer = renderStates.renderLayer;
+		m_streamedTintColor = renderStates.tintColor;
+		
+		m_stateStack.pop_back();
+		
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::EndCanvasUpdate, GfxStream::SpxFormat::Int32_dec, 0 };
-
+		GfxDevice::endCanvasUpdate();
     }
 
     //____ fill() __________________________________________________________________
@@ -465,7 +473,10 @@ namespace wg
 
     void GfxStreamDevice::fill( const RectSPX& _rect, HiColor _col )
     {
-        if( _col.a  == 0 || _rect.w < 1 || _rect.h < 1 )
+		if ((_col.a == 0 || m_tintColor.a == 0) && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract ) )
+			return;
+		
+        if( _rect.w < 1 || _rect.h < 1 )
             return;
 
 		if( _clippedOut(_rect) )
@@ -1158,95 +1169,43 @@ namespace wg
 
     bool GfxStreamDevice::_beginCanvasUpdate(CanvasRef canvasRef, Surface * pCanvasSurface, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer)
     {
-        if( pLayers )
-        {
-            // No support for canvas layers yet!
-            
-            return false;
-        }
-        
-		if( (canvasRef == CanvasRef::None && pCanvasSurface == nullptr) ||
-		    (canvasRef != CanvasRef::None && pCanvasSurface != nullptr )  )
+		if( pLayers )
 		{
-			//TODO: Error handling!
+			// No support for canvas layers yet!
+			
 			return false;
 		}
-		
-		SizeI sz = (canvasRef != CanvasRef::None) ? canvas(canvasRef).size : pCanvasSurface->pixelSize()*64;
-		if( sz.isEmpty() )
-		{
-			// TODO: Error handling!
-			return false;
-		}
-		
-        uint16_t size = 2 + 1 + 1 + nUpdateRects * 16;
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginCanvasUpdate, {}, size };
- 		(*m_pEncoder) << (pCanvasSurface ? static_cast<GfxStreamSurface*>(pCanvasSurface)->m_inStreamId : (uint16_t) 0);
-        (*m_pEncoder) << canvasRef;
-        (*m_pEncoder) << (uint8_t) 0;				// Dummy, was nUpdateRects;
-        (*m_pEncoder) << GfxStream::WriteBytes{ nUpdateRects*16, pUpdateRects };
-		
-		m_canvas.ref = canvasRef;
-		m_canvas.pSurface = pCanvasSurface;
-		m_canvas.size = sz;
-		m_canvas.format = pCanvasSurface ? pCanvasSurface->pixelFormat() : canvas(canvasRef).format;
-	
-		// These need to be reset.
-		
-		m_renderLayer = startLayer;
-		m_tintColor = HiColor::White;
-		m_tintGradient.clear();
-		m_tintGradientRect = sz;
-		m_bTintGradient = false;
-		m_blendMode = BlendMode::Blend;
-		m_morphFactor = 0.5f;
+		m_stateStack.push_back({ m_streamedBlendMode, m_streamedTintColor, m_streamedRenderLayer});
 		
 		
+		if( !GfxDevice::_beginCanvasUpdate(canvasRef, pCanvasSurface, nUpdateRects, pUpdateRects, pLayers, startLayer) )
+		{
+			m_stateStack.pop_back();
+			return false;
+		}
+
 		m_streamedBlendMode = m_blendMode;
 		m_streamedRenderLayer = m_renderLayer;
 		m_streamedTintColor = m_tintColor;
+
 		
-		
-		RectSPX bounds;
+		uint16_t size = 2 + 1 + 1 + nUpdateRects * 16;
 
-		if (nUpdateRects > 0)
-		{
-			bounds = *pUpdateRects;
-			for (int i = 1; i < nUpdateRects; i++)
-				bounds.growToContain(pUpdateRects[i]);
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginCanvasUpdate, {}, size };
+		(*m_pEncoder) << (pCanvasSurface ? static_cast<GfxStreamSurface*>(pCanvasSurface)->m_inStreamId : (uint16_t) 0);
+		(*m_pEncoder) << canvasRef;
+		(*m_pEncoder) << (uint8_t) 0;				// Dummy, was nUpdateRects;
+		(*m_pEncoder) << GfxStream::WriteBytes{ nUpdateRects*16, pUpdateRects };
 
-			if (bounds.x < 0 || bounds.y < 0 || bounds.w > sz.w || bounds.h > sz.h)
-			{
-				//TODO: Error handling!
-
-				return false;
-			}
-		}
-		else
-		{
-			bounds = sz;
-			nUpdateRects = 1;
-			pUpdateRects = &m_canvasUpdateBounds;
-		}
-
-		m_pCanvasUpdateRects = pUpdateRects;
-		m_nCanvasUpdateRects = nUpdateRects;
-		m_canvasUpdateBounds = bounds;
-
-		m_pClipRects = pUpdateRects;
-		m_nClipRects = nUpdateRects;
-		m_clipBounds = bounds;
-		
         return true;
     }
 
+	//____ _canvasWasChanged() ___________________________________________________
+
     void GfxStreamDevice::_canvasWasChanged()
     {
-        //This method should never be called, but is pure virtual in super class.
-        
-        assert(false);
-    }
+	}
 
     void GfxStreamDevice::_renderLayerWasChanged()
     {
