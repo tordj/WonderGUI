@@ -19,31 +19,26 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WONDERGFX_DOT_H
-#define WONDERGFX_DOT_H
+#ifndef WAVEFORMTOOLS_DOT_H
+#define WAVEFORMTOOLS_DOT_H
 #pragma once
 
-#include <wondergear.h>
-
-#include <wg_bitmapcache.h>
-#include <wg_canvaslayers.h>
-#include <wg_color.h>
-#include <wg_geo.h>
-#include <wg_gfxbase.h>
-#include <wg_gfxdevice.h>
-#include <wg_gfxtypes.h>
-#include <wg_gfxutil.h>
-#include <wg_gradient.h>
-#include <wg_nullgfxdevice.h>
-#include <wg_patches.h>
-#include <wg_pixeltools.h>
-#include <wg_surface.h>
-#include <wg_surfacefactory.h>
-#include <wg_surfacefileheader.h>
-#include <wg_surfacereader.h>
-#include <wg_surfacewriter.h>
 #include <wg_waveform.h>
-#include <wg_waveformfactory.h>
-#include <wg_waveformtools.h>
 
-#endif //WONDERGFX_DOT_H
+namespace wg
+{
+namespace WaveformTools
+{
+	void	init();
+	void	exit();
+
+	bool drawOutlinedDonut(Waveform * pWaveform, spx thickness, spx outlineThickness );
+
+
+
+
+}
+
+}
+
+#endif //WAVEFORMTOOLS_DOT_H

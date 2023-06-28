@@ -29,6 +29,7 @@
 #include "testsuites/tintsegmenttests.h"
 #include "testsuites/wavetests.h"
 #include "testsuites/waveformtests.h"
+#include "testsuites/waveformtoolstests.h"
 
 
 using namespace wg;
@@ -531,6 +532,7 @@ void GfxDeviceTester::setup_tests()
 //	add_testsuite([](){ return new RGB565BigEndianTests();});
 	add_testsuite([](){ return new BlendFixedColorTests();});
 	add_testsuite([](){ return new WaveformTests();});
+	add_testsuite([](){ return new WaveformToolsTests();});
 
 	regen_testentries();
 }

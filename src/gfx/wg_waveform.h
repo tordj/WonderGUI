@@ -45,7 +45,7 @@ namespace wg
 		
 		struct Blueprint
 		{
-			const HiColor *		colors 		= nullptr;
+			const HiColor*		colors 		= nullptr;
 			const Gradient *	gradients 	= nullptr;
 			int					segments	= 0;				// Mandatory.
 			SizeI				size;							// Mandatory.

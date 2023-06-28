@@ -218,7 +218,7 @@ void GfxStreamWaveform::_importSamples( WaveOrigo origo, const spx * pSource, in
 
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
 	{
-		const spx * pSrc = pSource + edgePitch * edge + samplePitch * sampleBegin;
+		const spx * pSrc = pSource + edgePitch * (edge-edgeBegin);
 		spx * pDst = m_pSamples + edge*(m_size.w+1) + sampleBegin;
 
 		for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
@@ -256,7 +256,7 @@ void GfxStreamWaveform::_importSamples( WaveOrigo origo, const float * pSource, 
 	
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
 	{
-		const float * pSrc = pSource + edgePitch * edge + samplePitch * sampleBegin;
+		const float * pSrc = pSource + edgePitch * (edge-edgeBegin);
 		spx * pDst = m_pSamples + edge*(m_size.w+1) + sampleBegin;
 
 		for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )

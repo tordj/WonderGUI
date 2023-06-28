@@ -25,6 +25,7 @@
 #include <wg_gfxbase.h>
 #include <wg_bitmapcache.h>
 #include <wg_pixeltools.h>
+#include <wg_waveformtools.h>
 
 
 namespace wg
@@ -52,8 +53,9 @@ namespace wg
 	{
 		if( s_gfxInitCounter == 0 )
 		{
-			wg::HiColor::_initTables();
-
+			HiColor::_initTables();
+			WaveformTools::init();
+			
 			s_gfxInitCounter++;
 			return GearBase::init();
 		}
@@ -85,6 +87,8 @@ namespace wg
 		s_pDefaultSurfaceFactory 	= nullptr;
 		s_pDefaultWaveformFactory	= nullptr;
 
+		WaveformTools::exit();
+		
 		if( s_pDefaultBitmapCache )
 		{
 			s_pDefaultBitmapCache->clear();

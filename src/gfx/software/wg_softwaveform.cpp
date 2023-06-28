@@ -282,7 +282,7 @@ void SoftWaveform::_importSamples( WaveOrigo origo, const spx * pSource, int edg
 
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
 	{
-		const spx * pSrc = pSource + edgePitch * edge + samplePitch * sampleBegin;
+		const spx * pSrc = pSource + edgePitch * (edge-edgeBegin);
 		spx * pDst = m_pSamples + edge + sampleBegin*(m_nbSegments-1);
 
 		for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )

@@ -45,6 +45,8 @@ set( SOURCES
 	wg_waveform.h
 	wg_waveformfactory.cpp
 	wg_waveformfactory.h
+	wg_waveformtools.cpp
+	wg_waveformtools.h
 	wondergfx.h
 
 	c-api/wg_c_bitmapcache.cpp

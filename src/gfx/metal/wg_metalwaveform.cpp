@@ -280,7 +280,7 @@ void MetalWaveform::_importSamples( WaveOrigo origo, const spx * pSource, int ed
 
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
 	{
-		const spx * pSrc = pSource + edgePitch * edge + samplePitch * sampleBegin;
+		const spx * pSrc = pSource + edgePitch * (edge-edgeBegin);
 		spx * pDst = m_pSamples + edge + sampleBegin*(m_nbSegments-1);
 
 		for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
@@ -316,12 +316,12 @@ void MetalWaveform::_importSamples( WaveOrigo origo, const float * pSource, int 
 
 	if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
 		mul *= m_size.h*32;
-	else
+	else.
 		mul *= m_size.h*64;
 	
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
 	{
-		const float * pSrc = pSource + edgePitch * edge + samplePitch * sampleBegin;
+		const float * pSrc = pSource + edgePitch * (edge-edgeBegin);
 		spx * pDst = m_pSamples + edge + sampleBegin*(m_nbSegments-1);
 
 		for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )

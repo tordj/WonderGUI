@@ -35,6 +35,7 @@ add_executable(gfxdevicetester
 	testsuites/tintsegmenttests.h
 	testsuites/wavetests.h
 	testsuites/waveformtests.h
+	testsuites/waveformtoolstests.h
 	testsuites/blendfixedcolortests.h
 )
 
