@@ -461,8 +461,8 @@ void GfxDeviceTester::refresh_performance_measurements()
 	{
 		if (test.bActive)
 		{
-			clock_test(&test.devices[TESTEE], 10000, g_pTesteeDevice);
-			clock_test(&test.devices[REFERENCE], 10000, g_pReferenceDevice);
+			clock_test(&test.devices[TESTEE], 1000, g_pTesteeDevice);
+			clock_test(&test.devices[REFERENCE], 1000, g_pReferenceDevice);
 		}
 	}
 }
@@ -483,17 +483,17 @@ void GfxDeviceTester::clock_test(DeviceTest* pDeviceTest, int rounds, Device* pD
 	pDevice->gfxDevice()->setClipList((int)g_clipList.size(), &g_clipList[0]);
 
 	if (pDeviceTest->pTest->init != nullptr)
-		pDeviceTest->pTest->init(pDevice->gfxDevice(), g_canvasSize);
+		pDeviceTest->pTest->init(pDevice->gfxDevice(), g_canvasSize*64);
 
 	do { start = m_pVisitor->time(); } while (start == first);
 
 	for (int i = 0; i < rounds; i++)
-		pDeviceTest->pTest->run(pDevice->gfxDevice(), g_canvasSize);
+		pDeviceTest->pTest->run(pDevice->gfxDevice(), g_canvasSize*64);
 
 	end = m_pVisitor->time();
 
 	if (pDeviceTest->pTest->exit != nullptr)
-		pDeviceTest->pTest->exit(pDevice->gfxDevice(), g_canvasSize);
+		pDeviceTest->pTest->exit(pDevice->gfxDevice(), g_canvasSize*64);
 
 	stallBegin = m_pVisitor->time();
 

@@ -24,6 +24,7 @@
 #pragma once
 
 #include <wg_waveform.h>
+#include <wg_waveformfactory.h>
 
 namespace wg
 {
@@ -31,6 +32,9 @@ namespace WaveformTools
 {
 	void	init();
 	void	exit();
+
+
+	Waveform_p createDonut(const SizeSPX size, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor, WaveformFactory * pFactory = nullptr );
 
 	bool drawOutlinedDonut(Waveform * pWaveform, spx thickness, spx outlineThickness );
 

@@ -40,6 +40,7 @@
 
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
+#include <wg_softwaveformfactory.h>
 #include <wg_softgfxdevice.h>
 #include <wg_softkernels_default.h>
 
@@ -85,9 +86,13 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
         Base::setDefaultGfxDevice(pSoftDevice);
         pDevice = pSoftDevice;
         
-        auto pFactory = SoftSurfaceFactory::create();
-        Base::setDefaultSurfaceFactory(pFactory);
-    }
+        auto pSurfaceFactory = SoftSurfaceFactory::create();
+        Base::setDefaultSurfaceFactory(pSurfaceFactory);
+
+		auto pWaveformFactory = SoftWaveformFactory::create();
+		Base::setDefaultWaveformFactory(pWaveformFactory);
+
+	}
     
     auto pWindowSurface = SDLWindowSW::_generateWindowSurface(pSDLWindow, geo.w, geo.h);
     if (pWindowSurface == nullptr)

@@ -32,6 +32,7 @@
 
 #include <wg_metalsurface.h>
 #include <wg_metalsurfacefactory.h>
+#include <wg_metalwaveformfactory.h>
 #include <wg_metalgfxdevice.h>
 
 
@@ -72,14 +73,21 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
     SDL_Renderer *renderer = SDL_CreateRenderer(pSDLWindow, -1, SDL_RENDERER_PRESENTVSYNC);
         const CAMetalLayer *swapchain = (__bridge CAMetalLayer *)SDL_RenderGetMetalLayer(renderer);
         const id<MTLDevice> gpu = swapchain.device;
-    
-   MetalGfxDevice::setMetalDevice(gpu);
-   auto pDevice = MetalGfxDevice::create();
-   Base::setDefaultGfxDevice(pDevice);
 
-   auto pFactory = MetalSurfaceFactory::create();
-   Base::setDefaultSurfaceFactory(pFactory);
+	auto pDevice = Base::defaultGfxDevice();
+	if( !pDevice )
+	{
+	   MetalGfxDevice::setMetalDevice(gpu);
+	   auto pDevice = MetalGfxDevice::create();
+	   Base::setDefaultGfxDevice(pDevice);
 
+	   auto pSurfaceFactory = MetalSurfaceFactory::create();
+	   Base::setDefaultSurfaceFactory(pSurfaceFactory);
+
+		auto pWaveformFactory = MetalWaveformFactory::create();
+		Base::setDefaultWaveformFactory(pWaveformFactory);
+	}
+	
     
     wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, {int(geo.w),int(geo.h)}, PixelFormat::BGRA_8_sRGB);
     auto pRootPanel = RootPanel::create(CanvasRef::Default, nullptr);

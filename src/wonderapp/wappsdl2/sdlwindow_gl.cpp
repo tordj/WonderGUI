@@ -36,6 +36,7 @@
 
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
+#include <wg_glwaveformfactory.h>
 #include <wg_glgfxdevice.h>
 
 
@@ -108,8 +109,11 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
         auto pDevice = GlGfxDevice::create();
         Base::setDefaultGfxDevice(pDevice);
 
-        auto pFactory = GlSurfaceFactory::create();
-        Base::setDefaultSurfaceFactory(pFactory);
+        auto pSurfaceFactory = GlSurfaceFactory::create();
+        Base::setDefaultSurfaceFactory(pSurfaceFactory);
+
+		auto pWaveformFactory = GlWaveformFactory::create();
+		Base::setDefaultWaveformFactory(pWaveformFactory);
 
     }
 
