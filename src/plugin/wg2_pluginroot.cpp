@@ -252,10 +252,10 @@ void WgPluginRoot::_render(wg_obj device, const RectSPX& _canvas, const RectSPX&
 		return;
 
 	wg_obj hSurfFactory = PluginCalls::gfxDevice->surfaceFactory(device);
-	wg_obj hWaveFactory = PluginCalls::gfxDevice->waveformFactory(device);
+	wg_obj hWaveFactory = PluginCalls::gfxDevice->edgemapFactory(device);
 
 	auto pSurfFactory = PluginSurfaceFactory::create(hSurfFactory);
-	auto pWaveFactory = PluginWaveformFactory::create(hWaveFactory);
+	auto pWaveFactory = PluginEdgemapFactory::create(hWaveFactory);
 	auto pDevice = PluginGfxDevice::create(device, pSurfFactory, pWaveFactory);
 
 	WgPatches patches;

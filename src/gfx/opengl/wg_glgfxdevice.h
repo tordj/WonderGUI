@@ -67,7 +67,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		SurfaceFactory_p	surfaceFactory() override;
-		WaveformFactory_p	waveformFactory() override;
+		EdgemapFactory_p	edgemapFactory() override;
 
 		bool	setDefaultCanvas(SizeSPX size, int scale = 64);
 
@@ -101,8 +101,8 @@ namespace wg
 		void	drawLine(CoordSPX begin, CoordSPX end, HiColor color, spx thickness = 64 ) override;
 		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, spx thickness = 64 ) override;
 
-		void	drawWaveform(CoordSPX dest, Waveform * pWaveform ) override;
-		void	flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip) override;
+		void	drawEdgemap(CoordSPX dest, Edgemap * pEdgemap ) override;
+		void	flipDrawEdgemap(CoordSPX dest, Edgemap * pEdgemap, GfxFlip flip) override;
 
 
 	protected:
@@ -176,7 +176,7 @@ namespace wg
 		void	_writeTintInfo();
 
 		SurfaceFactory_p	m_pSurfaceFactory = nullptr;
-		WaveformFactory_p	m_pWaveformFactory = nullptr;
+		EdgemapFactory_p	m_pEdgemapFactory = nullptr;
 
 		float	m_lineThicknessTable[17];
 

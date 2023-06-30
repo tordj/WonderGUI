@@ -2003,11 +2003,11 @@ namespace wg
 		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, s_blitFlipTransforms[(int)flip] );
 	}
 
-	//____ drawWaveform() __________________________________________________________
+	//____ drawEdgemap() __________________________________________________________
 
-	void GfxDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+	void GfxDevice::drawEdgemap(CoordSPX dest, Edgemap * pEdgemap )
 	{
-		flipDrawWaveform(dest,pWaveform,GfxFlip::Normal);
+		flipDrawEdgemap(dest,pEdgemap,GfxFlip::Normal);
 	}
 
 

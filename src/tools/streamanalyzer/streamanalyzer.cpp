@@ -773,7 +773,7 @@ bool MyApp::loadStream(std::string path)
 	m_pStreamSurfaceFactory = pStreamGfxDevice->surfaceFactory();
 	m_pStreamGfxDevice = pStreamGfxDevice;
 	
-	m_pStreamPlayer	= GfxStreamPlayer::create( m_pStreamGfxDevice, m_pStreamSurfaceFactory, pStreamGfxDevice->waveformFactory() );
+	m_pStreamPlayer	= GfxStreamPlayer::create( m_pStreamGfxDevice, m_pStreamSurfaceFactory, pStreamGfxDevice->edgemapFactory() );
 	m_pStreamPlayer->setStoreDirtyRects(true);
 	m_pStreamPlayer->setMaxDirtyRects(10000);
 	

@@ -36,8 +36,8 @@
 #include <wg_c_object.h>
 #include <wg_c_surface.h>
 #include <wg_c_surfacefactory.h>
-#include <wg_c_waveform.h>
-#include <wg_c_waveformfactory.h>
+#include <wg_c_edgemap.h>
+#include <wg_c_edgemapfactory.h>
 #include <wg_c_plugincapsule.h>
 
 
@@ -55,8 +55,8 @@ struct wg_c_calls_body
 	wg_streamreader_calls		streamReader;
 	wg_surface_calls			surface;
 	wg_surfacefactory_calls		surfaceFactory;
-	wg_waveform_calls			waveform;
-	wg_waveformfactory_calls	waveformFactory;
+	wg_edgemap_calls			edgemap;
+	wg_edgemapfactory_calls	edgemapFactory;
 	wg_hostbridge_calls			hostBridge;
 	wg_plugincapsule_calls		pluginCapsule;
 };
@@ -119,7 +119,7 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pBody->gfxDevice.getCanvasRef			= &wg_getCanvasRef;
 	pBody->gfxDevice.canvasLayers			= &wg_canvasLayers;
 	pBody->gfxDevice.surfaceFactory			= &wg_surfaceFactory;
-	pBody->gfxDevice.waveformFactory		= &wg_waveformFactory;
+	pBody->gfxDevice.edgemapFactory		= &wg_edgemapFactory;
 	pBody->gfxDevice.maxSegments			= &wg_maxSegments;
 	pBody->gfxDevice.canvasSize				= &wg_canvasSize;
 	pBody->gfxDevice.setClipList			= &wg_setClipList;
@@ -175,8 +175,8 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pBody->gfxDevice.drawPieChart			= &wg_drawPieChart;
 	pBody->gfxDevice.drawSegments			= &wg_drawSegments;
 	pBody->gfxDevice.flipDrawSegments		= &wg_flipDrawSegments;
-	pBody->gfxDevice.drawWaveform			= &wg_drawWaveform;
-	pBody->gfxDevice.flipDrawWaveform		= &wg_flipDrawWaveform;
+	pBody->gfxDevice.drawEdgemap			= &wg_drawEdgemap;
+	pBody->gfxDevice.flipDrawEdgemap		= &wg_flipDrawEdgemap;
 	pBody->gfxDevice.blitNinePatch			= &wg_blitNinePatch;
 
 
@@ -273,23 +273,23 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pBody->surfaceFactory.createSurfaceFromBitmap = &wg_createSurfaceFromBitmap;
 	pBody->surfaceFactory.createSurfaceFromRawData = &wg_createSurfaceFromRawData;
 
-	pBody->waveform.structSize				= sizeof(wg_waveform_calls);
-	pBody->waveform.waveformPixelSize		= &wg_waveformPixelSize;
-	pBody->waveform.setRenderSegments		= &wg_setRenderSegments;
-	pBody->waveform.getRenderSegments		= &wg_getRenderSegments;
-	pBody->waveform.waveformColor			= &wg_waveformColor;
-	pBody->waveform.waveformGradient		= &wg_waveformGradient;
-	pBody->waveform.waveformSegments		= &wg_waveformSegments;
-	pBody->waveform.waveformSamples			= &wg_waveformSamples;
-	pBody->waveform.importSpxSamples		= &wg_importSpxSamples;
-	pBody->waveform.importFloatSamples		= &wg_importFloatSamples;
-	pBody->waveform.exportSpxSamples		= &wg_exportSpxSamples;
-	pBody->waveform.exportFloatSamples		= &wg_exportFloatSamples;
+	pBody->edgemap.structSize				= sizeof(wg_edgemap_calls);
+	pBody->edgemap.edgemapPixelSize		= &wg_edgemapPixelSize;
+	pBody->edgemap.setRenderSegments		= &wg_setRenderSegments;
+	pBody->edgemap.getRenderSegments		= &wg_getRenderSegments;
+	pBody->edgemap.edgemapColor			= &wg_edgemapColor;
+	pBody->edgemap.edgemapGradient		= &wg_edgemapGradient;
+	pBody->edgemap.edgemapSegments		= &wg_edgemapSegments;
+	pBody->edgemap.edgemapSamples			= &wg_edgemapSamples;
+	pBody->edgemap.importSpxSamples		= &wg_importSpxSamples;
+	pBody->edgemap.importFloatSamples		= &wg_importFloatSamples;
+	pBody->edgemap.exportSpxSamples		= &wg_exportSpxSamples;
+	pBody->edgemap.exportFloatSamples		= &wg_exportFloatSamples;
 
-	pBody->waveformFactory.structSize		= sizeof(wg_waveformfactory_calls);
-	pBody->waveformFactory.createWaveform	= &wg_createWaveform;
-	pBody->waveformFactory.createWaveformFromFloats = &wg_createWaveformFromFloats;
-	pBody->waveformFactory.createWaveformFromSpx = &wg_createWaveformFromSpx;
+	pBody->edgemapFactory.structSize		= sizeof(wg_edgemapfactory_calls);
+	pBody->edgemapFactory.createEdgemap	= &wg_createEdgemap;
+	pBody->edgemapFactory.createEdgemapFromFloats = &wg_createEdgemapFromFloats;
+	pBody->edgemapFactory.createEdgemapFromSpx = &wg_createEdgemapFromSpx;
 
 	pBody->hostBridge.structSize			= sizeof(wg_hostbridge_calls);
 	pBody->hostBridge.hidePointer			= &wg_hidePointer;
@@ -322,8 +322,8 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pHeader->pStreamReader		= &pBody->streamReader;
 	pHeader->pSurface			= &pBody->surface;
 	pHeader->pSurfaceFactory	= &pBody->surfaceFactory;
-	pHeader->pWaveform			= &pBody->waveform;
-	pHeader->pWaveformFactory	= &pBody->waveformFactory;
+	pHeader->pEdgemap			= &pBody->edgemap;
+	pHeader->pEdgemapFactory	= &pBody->edgemapFactory;
 	pHeader->pHostBridge		= &pBody->hostBridge;
 	pHeader->pPluginCapsule		= &pBody->pluginCapsule;
 }

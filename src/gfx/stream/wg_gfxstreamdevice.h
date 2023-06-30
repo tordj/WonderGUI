@@ -62,7 +62,7 @@ namespace wg
 		void		encodeCanvasList();
 		
 		SurfaceFactory_p	surfaceFactory() override;
-		WaveformFactory_p	waveformFactory() override;
+		EdgemapFactory_p	edgemapFactory() override;
 
 
 		//.____ State _________________________________________________
@@ -146,10 +146,10 @@ namespace wg
         void    drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat ) override;
         void    flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat) override;
 
-		// Draw waveform methods
+		// Draw edgemap methods
 		
-		void	drawWaveform(CoordSPX dest, Waveform * pWaveform ) override;
-		void	flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip) override;
+		void	drawEdgemap(CoordSPX dest, Edgemap * pEdgemap ) override;
+		void	flipDrawEdgemap(CoordSPX dest, Edgemap * pEdgemap, GfxFlip flip) override;
 
 		
 		
@@ -216,7 +216,7 @@ namespace wg
 		std::vector<CanvasInfo>	m_definedCanvases;
 
 		SurfaceFactory_p	m_pSurfaceFactory;
-		WaveformFactory_p	m_pWaveformFactory;
+		EdgemapFactory_p	m_pEdgemapFactory;
 		GfxStreamEncoder_p	m_pEncoder;
 		
 		BlendMode			m_streamedBlendMode = BlendMode::Undefined;

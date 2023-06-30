@@ -43,8 +43,8 @@
 #include <wg_gfxstreamtrimencoder.h>
 #include <wg_gfxstreamwrapper.h>
 #include <wg_gfxstreamwriter.h>
-#include <wg_gfxstreamwaveform.h>
-#include <wg_gfxstreamwaveformfactory.h>
+#include <wg_gfxstreamedgemap.h>
+#include <wg_gfxstreamedgemapfactory.h>
 
 
 

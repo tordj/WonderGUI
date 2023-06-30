@@ -22,8 +22,8 @@
 
 #include <wg_softgfxdevice.h>
 #include <wg_softsurfacefactory.h>
-#include <wg_softwaveformfactory.h>
-#include <wg_softwaveform.h>
+#include <wg_softedgemapfactory.h>
+#include <wg_softedgemap.h>
 #include <wg_gfxutil.h>
 #include <cmath>
 #include <algorithm>
@@ -439,14 +439,14 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		return m_pSurfaceFactory;
 	}
 
-	//____ waveformFactory() _______________________________________________________
+	//____ edgemapFactory() _______________________________________________________
 
-	WaveformFactory_p SoftGfxDevice::waveformFactory()
+	EdgemapFactory_p SoftGfxDevice::edgemapFactory()
 	{
-		if( !m_pWaveformFactory )
-			m_pWaveformFactory = SoftWaveformFactory::create();
+		if( !m_pEdgemapFactory )
+			m_pEdgemapFactory = SoftEdgemapFactory::create();
 
-		return m_pWaveformFactory;
+		return m_pEdgemapFactory;
 	}
 
 
@@ -2272,17 +2272,17 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		m_bTileSource = false;
 	}
 
-	//____ drawWaveform() __________________________________________________________
+	//____ drawEdgemap() __________________________________________________________
 
-	void SoftGfxDevice::drawWaveform(CoordSPX dest, Waveform * pWaveform )
+	void SoftGfxDevice::drawEdgemap(CoordSPX dest, Edgemap * pEdgemap )
 	{
-		if( pWaveform->typeInfo() != SoftWaveform::TYPEINFO )
+		if( pEdgemap->typeInfo() != SoftEdgemap::TYPEINFO )
 		{
 			//TODO: Throw an error.
 			return;
 		}
 		
-		auto pWave = static_cast<SoftWaveform*>(pWaveform);
+		auto pWave = static_cast<SoftEdgemap*>(pEdgemap);
 
 		
 		_transformDrawSegments( {dest, pWave->m_size*64}, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
@@ -2290,17 +2290,17 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 							   s_blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
-	//____ flipDrawWaveform() __________________________________________________________
+	//____ flipDrawEdgemap() __________________________________________________________
 
-	void SoftGfxDevice::flipDrawWaveform(CoordSPX destPos, Waveform * pWaveform, GfxFlip flip)
+	void SoftGfxDevice::flipDrawEdgemap(CoordSPX destPos, Edgemap * pEdgemap, GfxFlip flip)
 	{
-		if( pWaveform->typeInfo() != SoftWaveform::TYPEINFO )
+		if( pEdgemap->typeInfo() != SoftEdgemap::TYPEINFO )
 		{
 			//TODO: Throw an error.
 			return;
 		}
 		
-		auto pWave = static_cast<SoftWaveform*>(pWaveform);
+		auto pWave = static_cast<SoftEdgemap*>(pEdgemap);
 		
 		const int (&transform)[2][2] = s_blitFlipTransforms[(int)flip];
 

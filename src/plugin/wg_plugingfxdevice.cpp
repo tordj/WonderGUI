@@ -23,7 +23,7 @@
 #include <wg_plugincalls.h>
 #include <wg_plugingfxdevice.h>
 #include <wg_pluginsurface.h>
-#include <wg_pluginwaveform.h>
+#include <wg_pluginedgemap.h>
 #include <wg_pluginsurfacefactory.h>
 #include <wg_plugincanvaslayers.h>
 
@@ -40,21 +40,21 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	PluginGfxDevice_p PluginGfxDevice::create( wg_obj object, PluginSurfaceFactory * pSurfaceFactory, PluginWaveformFactory * pWaveformFactory )
+	PluginGfxDevice_p PluginGfxDevice::create( wg_obj object, PluginSurfaceFactory * pSurfaceFactory, PluginEdgemapFactory * pEdgemapFactory )
 	{
-		PluginGfxDevice_p p(new PluginGfxDevice( object, pSurfaceFactory, pWaveformFactory ));
+		PluginGfxDevice_p p(new PluginGfxDevice( object, pSurfaceFactory, pEdgemapFactory ));
 		return p;
 	}
 
 
 	//____ constructor _____________________________________________________________
 
-	PluginGfxDevice::PluginGfxDevice( wg_obj object, PluginSurfaceFactory * pSurfaceFactory, PluginWaveformFactory * pWaveformFactory )
+	PluginGfxDevice::PluginGfxDevice( wg_obj object, PluginSurfaceFactory * pSurfaceFactory, PluginEdgemapFactory * pEdgemapFactory )
 	{
         PluginCalls::object->retain(object);
 		m_cDevice = object;
         m_pSurfaceFactory = pSurfaceFactory;
-        m_pWaveformFactory = pWaveformFactory;
+        m_pEdgemapFactory = pEdgemapFactory;
         m_bRendering = false;
 		m_bIsProxyDevice = true;
 	}
@@ -102,11 +102,11 @@ namespace wg
         return m_pSurfaceFactory;
 	}
 
-    //____ waveformFactory() ______________________________________________________
+    //____ edgemapFactory() ______________________________________________________
 
-    WaveformFactory_p PluginGfxDevice::waveformFactory()
+    EdgemapFactory_p PluginGfxDevice::edgemapFactory()
     {
-        return m_pWaveformFactory;
+        return m_pEdgemapFactory;
     }
 
     //____ setClipList() _________________________________________________________
@@ -495,18 +495,18 @@ namespace wg
         PluginCalls::gfxDevice->flipDrawSegments(m_cDevice, (wg_rectSPX*)&dest, nSegments, (const wg_color*)pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, (wg_gfxFlip) flip, (wg_tintMode)tintMode);
     }
 
-    //____ drawWaveform() _____________________________________________________
+    //____ drawEdgemap() _____________________________________________________
 
-    void PluginGfxDevice::drawWaveform(CoordSPX dest, Waveform* pWaveform)
+    void PluginGfxDevice::drawEdgemap(CoordSPX dest, Edgemap* pEdgemap)
     {
-        PluginCalls::gfxDevice->drawWaveform(m_cDevice, { dest.x,dest.y }, static_cast<PluginWaveform*>(pWaveform)->cObject());
+        PluginCalls::gfxDevice->drawEdgemap(m_cDevice, { dest.x,dest.y }, static_cast<PluginEdgemap*>(pEdgemap)->cObject());
     }
 
-    //____ flipDrawWaveform() _____________________________________________________
+    //____ flipDrawEdgemap() _____________________________________________________
 
-    void PluginGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform* pWaveform, GfxFlip flip)
+    void PluginGfxDevice::flipDrawEdgemap(CoordSPX dest, Edgemap* pEdgemap, GfxFlip flip)
     {
-        PluginCalls::gfxDevice->flipDrawWaveform(m_cDevice, { dest.x,dest.y }, static_cast<PluginWaveform*>(pWaveform)->cObject(), (wg_gfxFlip) flip);
+        PluginCalls::gfxDevice->flipDrawEdgemap(m_cDevice, { dest.x,dest.y }, static_cast<PluginEdgemap*>(pEdgemap)->cObject(), (wg_gfxFlip) flip);
     }
 
     //.____ blitNinePatch() ___________________________________________________

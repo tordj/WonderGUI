@@ -30,13 +30,13 @@
 #include <wg_gfxtypes.h>
 #include <wg_color.h>
 #include <wg_gradient.h>
-#include <wg_waveform.h>
+#include <wg_edgemap.h>
 
 
 #include <wg_geo.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
-#include <wg_waveformfactory.h>
+#include <wg_edgemapfactory.h>
 #include <wg_canvaslayers.h>
 
 #include <vector>
@@ -107,7 +107,7 @@ namespace wg
 		inline CanvasLayers_p 		canvasLayers() const { return m_pCanvasLayers; }
 
 		virtual SurfaceFactory_p	surfaceFactory() = 0;
-		virtual WaveformFactory_p	waveformFactory() = 0;
+		virtual EdgemapFactory_p	edgemapFactory() = 0;
 
 		static constexpr int		maxSegments() { return c_maxSegments; }
 		
@@ -208,8 +208,8 @@ namespace wg
 		virtual void	drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat );
 		virtual void	flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat);
 
-		virtual void	drawWaveform(CoordSPX dest, Waveform * pWaveform );
-		virtual void	flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip) = 0;
+		virtual void	drawEdgemap(CoordSPX dest, Edgemap * pEdgemap );
+		virtual void	flipDrawEdgemap(CoordSPX dest, Edgemap * pEdgemap, GfxFlip flip) = 0;
 
 				
 

@@ -73,11 +73,11 @@ namespace wg
 		return SurfaceFactory_p();
 	}
 
-	//____ waveformFactory() ___________________________________________________
+	//____ edgemapFactory() ___________________________________________________
 
-	WaveformFactory_p NullGfxDevice::waveformFactory()
+	EdgemapFactory_p NullGfxDevice::edgemapFactory()
 	{
-		return WaveformFactory_p();
+		return EdgemapFactory_p();
 	}
 
 
@@ -101,7 +101,7 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::flipDrawWaveform(CoordSPX dest, Waveform * pWaveform, GfxFlip flip)
+	void NullGfxDevice::flipDrawEdgemap(CoordSPX dest, Edgemap * pEdgemap, GfxFlip flip)
 	{
 	}
 

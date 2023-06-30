@@ -36,8 +36,8 @@
 #include <wg_c_surface.h>
 #include <wg_c_surfacefactory.h>
 #include <wg_c_surfacereader.h>
-#include <wg_c_waveform.h>
-#include <wg_c_waveformfactory.h>
+#include <wg_c_edgemap.h>
+#include <wg_c_edgemapfactory.h>
 
 
 #endif //WONDERGFX_C_DOT_H

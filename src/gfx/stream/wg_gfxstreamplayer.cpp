@@ -32,18 +32,18 @@ namespace wg
 
 	//____ create() ___________________________________________________________
 
-	GfxStreamPlayer_p GfxStreamPlayer::create(GfxDevice * pDevice, SurfaceFactory * pSurfaceFactory, WaveformFactory * pWaveformFactory )
+	GfxStreamPlayer_p GfxStreamPlayer::create(GfxDevice * pDevice, SurfaceFactory * pSurfaceFactory, EdgemapFactory * pEdgemapFactory )
 	{
-		return new GfxStreamPlayer(pDevice, pSurfaceFactory, pWaveformFactory);
+		return new GfxStreamPlayer(pDevice, pSurfaceFactory, pEdgemapFactory);
 	}
 
 	//____ constructor _____________________________________________________________
 
-	GfxStreamPlayer::GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pSurfaceFactory, WaveformFactory * pWaveformFactory) : input(this)
+	GfxStreamPlayer::GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pSurfaceFactory, EdgemapFactory * pEdgemapFactory) : input(this)
 	{
 		m_pDevice = pDevice;
 		m_pSurfaceFactory = pSurfaceFactory;
-		m_pWaveformFactory = pWaveformFactory;
+		m_pEdgemapFactory = pEdgemapFactory;
 
 		m_pDecoder = GfxStreamDecoder::create();
 
@@ -1052,16 +1052,16 @@ namespace wg
 		}
 
 
-		case GfxChunkId::CreateWaveform:
+		case GfxChunkId::CreateEdgemap:
 		{
 
-			uint16_t	waveformId;
+			uint16_t	edgemapId;
 			SizeI		size;
 			uint16_t	nbSegments;
 			bool		bHasColors;
 			bool		bHasGradients;
 
-			*m_pDecoder >> waveformId;
+			*m_pDecoder >> edgemapId;
 			*m_pDecoder >> size;
 			*m_pDecoder >> nbSegments;
 			*m_pDecoder >> bHasColors;
@@ -1096,45 +1096,45 @@ namespace wg
 				}
 			}
 
-			if (m_vWaveforms.size() <= waveformId)
-				m_vWaveforms.resize(waveformId + 16, nullptr);
+			if (m_vEdgemaps.size() <= edgemapId)
+				m_vEdgemaps.resize(edgemapId + 16, nullptr);
 
-			Waveform::Blueprint		bp;
+			Edgemap::Blueprint		bp;
 			
 			bp.size = size;
 			bp.colors = pColors;
 			bp.gradients = pGradients;
 			bp.segments = nbSegments;
 			
-			m_vWaveforms[waveformId] = m_pWaveformFactory->createWaveform(bp);
+			m_vEdgemaps[edgemapId] = m_pEdgemapFactory->createEdgemap(bp);
 
 			GfxBase::memStackFree(memSize);
 						
 			break;
 		}
 
-		case GfxChunkId::SetWaveformRenderSegments:
+		case GfxChunkId::SetEdgemapRenderSegments:
 		{
-			uint16_t	waveformId;
+			uint16_t	edgemapId;
 			uint16_t	nbSegments;
 
-			*m_pDecoder >> waveformId;
+			*m_pDecoder >> edgemapId;
 			*m_pDecoder >> nbSegments;
 
-			m_vWaveforms[waveformId]->setRenderSegments(nbSegments);
+			m_vEdgemaps[edgemapId]->setRenderSegments(nbSegments);
 			
 			break;
 		}
 
-		case GfxChunkId::BeginWaveformUpdate:
+		case GfxChunkId::BeginEdgemapUpdate:
 		{
-			uint16_t	waveformId;
+			uint16_t	edgemapId;
 			uint8_t		edgeBegin;
 			uint8_t		edgeEnd;
 			uint16_t	sampleBegin;
 			uint16_t	sampleEnd;
 
-			*m_pDecoder >> waveformId;
+			*m_pDecoder >> edgemapId;
 			*m_pDecoder >> edgeBegin;
 			*m_pDecoder >> edgeEnd;
 			*m_pDecoder >> sampleBegin;
@@ -1143,7 +1143,7 @@ namespace wg
 			int nEdges = edgeEnd - edgeBegin;
 			int nSamples = sampleEnd - sampleBegin;
 			
-			m_pUpdatingWaveform = m_vWaveforms[waveformId];
+			m_pUpdatingEdgemap = m_vEdgemaps[edgemapId];
 			m_pWaveSampleBuffer = new spx[nEdges*nSamples+1];
 
 			m_pWaveWriteSamples = m_pWaveSampleBuffer;
@@ -1158,7 +1158,7 @@ namespace wg
 			break;
 		}
 				
-		case GfxChunkId::WaveformSamples:
+		case GfxChunkId::EdgemapSamples:
 		{
 			int bytes = header.size;
 
@@ -1176,11 +1176,11 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::EndWaveformUpdate:
+		case GfxChunkId::EndEdgemapUpdate:
 		{
-			m_pUpdatingWaveform->importSamples(WaveOrigo::Top, m_pWaveSampleBuffer, m_waveUpdateEdgeBegin, m_waveUpdateEdgeEnd, m_waveUpdateSampleBegin, m_waveUpdateSampleEnd);
+			m_pUpdatingEdgemap->importSamples(WaveOrigo::Top, m_pWaveSampleBuffer, m_waveUpdateEdgeBegin, m_waveUpdateEdgeEnd, m_waveUpdateSampleBegin, m_waveUpdateSampleEnd);
 						
-			m_pUpdatingWaveform = nullptr;
+			m_pUpdatingEdgemap = nullptr;
 			
 			delete [] m_pWaveSampleBuffer;
 			m_pWaveSampleBuffer = nullptr;
@@ -1188,39 +1188,39 @@ namespace wg
 		}
 				
 
-		case GfxChunkId::DeleteWaveform:
+		case GfxChunkId::DeleteEdgemap:
 		{
-			uint16_t	waveformId;
+			uint16_t	edgemapId;
 
-			*m_pDecoder >> waveformId;
+			*m_pDecoder >> edgemapId;
 
-			m_vWaveforms[waveformId] = nullptr;
+			m_vEdgemaps[edgemapId] = nullptr;
 			break;
 		}
 
-		case GfxChunkId::DrawWaveform:
+		case GfxChunkId::DrawEdgemap:
 		{
 			CoordSPX	dest;
-			uint16_t	waveformId;
+			uint16_t	edgemapId;
 
 			*m_pDecoder >> dest;
-			*m_pDecoder >> waveformId;
+			*m_pDecoder >> edgemapId;
 
-			m_pDevice->drawWaveform(dest, m_vWaveforms[waveformId]);
+			m_pDevice->drawEdgemap(dest, m_vEdgemaps[edgemapId]);
 			break;
 		}
 
-		case GfxChunkId::FlipDrawWaveform:
+		case GfxChunkId::FlipDrawEdgemap:
 		{
 			CoordSPX	dest;
-			uint16_t	waveformId;
+			uint16_t	edgemapId;
 			GfxFlip		flip;
 
 			*m_pDecoder >> dest;
-			*m_pDecoder >> waveformId;
+			*m_pDecoder >> edgemapId;
 			*m_pDecoder >> flip;
 
-			m_pDevice->flipDrawWaveform(dest, m_vWaveforms[waveformId], flip);
+			m_pDevice->flipDrawEdgemap(dest, m_vEdgemaps[edgemapId], flip);
 			break;
 		}
 				

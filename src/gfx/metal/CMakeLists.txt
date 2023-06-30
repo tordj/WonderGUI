@@ -9,10 +9,10 @@ set(SOURCES
 	wg_metalsurface.mm
 	wg_metalsurfacefactory.h
 	wg_metalsurfacefactory.mm
-	wg_metalwaveform.h
-	wg_metalwaveform.cpp
-	wg_metalwaveformfactory.h
-	wg_metalwaveformfactory.cpp
+	wg_metaledgemap.h
+	wg_metaledgemap.cpp
+	wg_metaledgemapfactory.h
+	wg_metaledgemapfactory.cpp
 
 )
 

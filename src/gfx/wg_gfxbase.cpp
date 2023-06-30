@@ -25,7 +25,7 @@
 #include <wg_gfxbase.h>
 #include <wg_bitmapcache.h>
 #include <wg_pixeltools.h>
-#include <wg_waveformtools.h>
+#include <wg_edgemaptools.h>
 
 
 namespace wg
@@ -35,7 +35,7 @@ namespace wg
 	bool				GfxBase::s_bSRGB = true;
 
 	SurfaceFactory_p	GfxBase::s_pDefaultSurfaceFactory;
-	WaveformFactory_p	GfxBase::s_pDefaultWaveformFactory;
+	EdgemapFactory_p	GfxBase::s_pDefaultEdgemapFactory;
 	GfxDevice_p			GfxBase::s_pDefaultGfxDevice;
 
 	BitmapCache_p		GfxBase::s_pDefaultBitmapCache;
@@ -54,7 +54,7 @@ namespace wg
 		if( s_gfxInitCounter == 0 )
 		{
 			HiColor::_initTables();
-			WaveformTools::init();
+			EdgemapTools::init();
 			
 			s_gfxInitCounter++;
 			return GearBase::init();
@@ -85,9 +85,9 @@ namespace wg
 
 		s_pDefaultGfxDevice 		= nullptr;
 		s_pDefaultSurfaceFactory 	= nullptr;
-		s_pDefaultWaveformFactory	= nullptr;
+		s_pDefaultEdgemapFactory	= nullptr;
 
-		WaveformTools::exit();
+		EdgemapTools::exit();
 		
 		if( s_pDefaultBitmapCache )
 		{
@@ -118,11 +118,11 @@ namespace wg
 		s_pDefaultSurfaceFactory = pFactory;
 	}
 
-	//____ setDefaultWaveformFactory() ____________________________________________
+	//____ setDefaultEdgemapFactory() ____________________________________________
 
-	void GfxBase::setDefaultWaveformFactory(WaveformFactory* pFactory)
+	void GfxBase::setDefaultEdgemapFactory(EdgemapFactory* pFactory)
 	{
-		s_pDefaultWaveformFactory = pFactory;
+		s_pDefaultEdgemapFactory = pFactory;
 	}
 
 	//____ setDefaultGfxDevice() _________________________________________________

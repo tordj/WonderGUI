@@ -239,10 +239,10 @@ namespace wg
 			return;
 
 		wg_obj hSurfFactory = PluginCalls::gfxDevice->surfaceFactory(device);
-		wg_obj hWaveFactory = PluginCalls::gfxDevice->waveformFactory(device);
+		wg_obj hWaveFactory = PluginCalls::gfxDevice->edgemapFactory(device);
 
 		auto pSurfFactory = PluginSurfaceFactory::create(hSurfFactory);
-		auto pWaveFactory = PluginWaveformFactory::create(hWaveFactory);
+		auto pWaveFactory = PluginEdgemapFactory::create(hWaveFactory);
 		auto pDevice = PluginGfxDevice::create(device, pSurfFactory, pWaveFactory);
 
 		slot._widget()->_render(pDevice, { _canvas.x, _canvas.y, _canvas.w, _canvas.h }, { _window.x, _window.y, _window.w, _window.h });

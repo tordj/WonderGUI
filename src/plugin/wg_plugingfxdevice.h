@@ -27,7 +27,7 @@
 
 #include <wg_gfxdevice.h>
 #include <wg_pluginsurfacefactory.h>
-#include <wg_pluginwaveformfactory.h>
+#include <wg_pluginedgemapfactory.h>
 
 typedef void* wg_obj;
 
@@ -44,7 +44,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static PluginGfxDevice_p	create( wg_obj hDevice, PluginSurfaceFactory * pSurfaceFactory, PluginWaveformFactory * pWaveformFactory );
+		static PluginGfxDevice_p	create( wg_obj hDevice, PluginSurfaceFactory * pSurfaceFactory, PluginEdgemapFactory * pEdgemapFactory );
 
 		//.____ Identification __________________________________________
 
@@ -59,7 +59,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		SurfaceFactory_p surfaceFactory() override;
-        WaveformFactory_p waveformFactory() override;
+        EdgemapFactory_p edgemapFactory() override;
 
 
 		//.____ State _________________________________________________
@@ -151,8 +151,8 @@ namespace wg
         void    drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat ) override;
         void    flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat) override;
 
-        void	drawWaveform(CoordSPX dest, Waveform* pWaveform);
-        void	flipDrawWaveform(CoordSPX dest, Waveform* pWaveform, GfxFlip flip);
+        void	drawEdgemap(CoordSPX dest, Edgemap* pEdgemap);
+        void	flipDrawEdgemap(CoordSPX dest, Edgemap* pEdgemap, GfxFlip flip);
 
         // Special draw/blit methods
 
@@ -160,7 +160,7 @@ namespace wg
 
  
 	protected:
-		PluginGfxDevice( wg_obj object, PluginSurfaceFactory * pSurfaceFactory, PluginWaveformFactory * pWaveformFactory );
+		PluginGfxDevice( wg_obj object, PluginSurfaceFactory * pSurfaceFactory, PluginEdgemapFactory * pEdgemapFactory );
 		~PluginGfxDevice();
 
         bool    _beginCanvasUpdate( CanvasRef canvasRef, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer) override;
@@ -176,7 +176,7 @@ namespace wg
         wg_obj  m_cDevice;
 
 		PluginSurfaceFactory_p	m_pSurfaceFactory;
-        PluginWaveformFactory_p	m_pWaveformFactory;
+        PluginEdgemapFactory_p	m_pEdgemapFactory;
 
         bool	m_bRendering;
 	};

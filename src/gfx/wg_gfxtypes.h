@@ -460,15 +460,15 @@ namespace wg
 		SetFixedBlendColor = 56,
 		CreateSurface = 57,
 		
-		CreateWaveform = 58,
-		SetWaveformRenderSegments = 59,
-		BeginWaveformUpdate = 60,
-		WaveformSamples = 61,
-		EndWaveformUpdate = 62,
-		DeleteWaveform = 63,
+		CreateEdgemap = 58,
+		SetEdgemapRenderSegments = 59,
+		BeginEdgemapUpdate = 60,
+		EdgemapSamples = 61,
+		EndEdgemapUpdate = 62,
+		DeleteEdgemap = 63,
 
-		DrawWaveform = 64,
-		FlipDrawWaveform = 65
+		DrawEdgemap = 64,
+		FlipDrawEdgemap = 65
 	};
 
 	typedef uint8_t GfxChunkFlags;

@@ -28,8 +28,8 @@
 #include <wg_glgfxdevice.h>
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
-#include <wg_glwaveform.h>
-#include <wg_glwaveformfactory.h>
+#include <wg_gledgemap.h>
+#include <wg_gledgemapfactory.h>
 #include <wg_gfxbase.h>
 #include <wg_gfxutil.h>
 
@@ -417,14 +417,14 @@ namespace wg
 		return m_pSurfaceFactory;
 	}
 
-	//____ waveformFactory() ______________________________________________________
+	//____ edgemapFactory() ______________________________________________________
 
-	WaveformFactory_p GlGfxDevice::waveformFactory()
+	EdgemapFactory_p GlGfxDevice::edgemapFactory()
 	{
-		if (!m_pWaveformFactory)
-			m_pWaveformFactory = GlWaveformFactory::create();
+		if (!m_pEdgemapFactory)
+			m_pEdgemapFactory = GlEdgemapFactory::create();
 
-		return m_pWaveformFactory;
+		return m_pEdgemapFactory;
 	}
 
 
@@ -1436,17 +1436,17 @@ namespace wg
 	}
 
 
-	//____ drawWaveform() __________________________________________________________
+	//____ drawEdgemap() __________________________________________________________
 
-	void GlGfxDevice::drawWaveform(CoordSPX dest, Waveform* pWaveform)
+	void GlGfxDevice::drawEdgemap(CoordSPX dest, Edgemap* pEdgemap)
 	{
-		if (pWaveform->typeInfo() != GlWaveform::TYPEINFO)
+		if (pEdgemap->typeInfo() != GlEdgemap::TYPEINFO)
 		{
 			//TODO: Throw an error.
 			return;
 		}
 
-		auto pWave = static_cast<GlWaveform*>(pWaveform);
+		auto pWave = static_cast<GlEdgemap*>(pEdgemap);
 
 
 		_transformDrawSegments({ dest, pWave->m_size * 64 }, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
@@ -1454,17 +1454,17 @@ namespace wg
 			s_blitFlipTransforms[(int)GfxFlip::Normal]);
 	}
 
-	//____ flipDrawWaveform() __________________________________________________________
+	//____ flipDrawEdgemap() __________________________________________________________
 
-	void GlGfxDevice::flipDrawWaveform(CoordSPX destPos, Waveform* pWaveform, GfxFlip flip)
+	void GlGfxDevice::flipDrawEdgemap(CoordSPX destPos, Edgemap* pEdgemap, GfxFlip flip)
 	{
-		if (pWaveform->typeInfo() != GlWaveform::TYPEINFO)
+		if (pEdgemap->typeInfo() != GlEdgemap::TYPEINFO)
 		{
 			//TODO: Throw an error.
 			return;
 		}
 
-		auto pWave = static_cast<GlWaveform*>(pWaveform);
+		auto pWave = static_cast<GlEdgemap*>(pEdgemap);
 
 		const int(&transform)[2][2] = s_blitFlipTransforms[(int)flip];
 

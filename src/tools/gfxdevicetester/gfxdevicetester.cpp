@@ -28,8 +28,8 @@
 #include "testsuites/tintblittests.h"
 #include "testsuites/tintsegmenttests.h"
 #include "testsuites/wavetests.h"
-#include "testsuites/waveformtests.h"
-#include "testsuites/waveformtoolstests.h"
+#include "testsuites/edgemaptests.h"
+#include "testsuites/edgemaptoolstests.h"
 
 
 using namespace wg;
@@ -239,7 +239,7 @@ void GfxDeviceTester::setup_testdevices()
 		auto pCanvasSurface = SoftSurface::create(canvasBP);		
 		pSoftGfxDevice->defineCanvas(CanvasRef::Default, pCanvasSurface);
 		
-		auto pStreamPlayer = GfxStreamPlayer::create(pSoftGfxDevice, SoftSurfaceFactory::create(), SoftWaveformFactory::create());
+		auto pStreamPlayer = GfxStreamPlayer::create(pSoftGfxDevice, SoftSurfaceFactory::create(), SoftEdgemapFactory::create());
 		
 		auto pStreamEncoder = GfxStreamFastEncoder::create( {pStreamPlayer, pStreamPlayer->input} );
 		auto pStreamGfxDevice = GfxStreamDevice::create(pStreamEncoder);
@@ -531,8 +531,8 @@ void GfxDeviceTester::setup_tests()
 	add_testsuite([](){ return new CanvasLayerTests();});
 //	add_testsuite([](){ return new RGB565BigEndianTests();});
 	add_testsuite([](){ return new BlendFixedColorTests();});
-	add_testsuite([](){ return new WaveformTests();});
-	add_testsuite([](){ return new WaveformToolsTests();});
+	add_testsuite([](){ return new EdgemapTests();});
+	add_testsuite([](){ return new EdgemapToolsTests();});
 
 	regen_testentries();
 }

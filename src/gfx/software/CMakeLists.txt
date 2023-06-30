@@ -29,10 +29,10 @@ set(SOURCES
 	wg_softsurface.h
 	wg_softsurfacefactory.cpp
 	wg_softsurfacefactory.h
-	wg_softwaveform.cpp
-	wg_softwaveform.h
-	wg_softwaveformfactory.cpp
-	wg_softwaveformfactory.h
+	wg_softedgemap.cpp
+	wg_softedgemap.h
+	wg_softedgemapfactory.cpp
+	wg_softedgemapfactory.h
 
 	wg_lineargfxdevice.cpp
 	wg_lineargfxdevice.h

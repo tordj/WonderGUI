@@ -23,8 +23,8 @@
 #include <wg_gfxstreamdevice.h>
 #include <wg_gfxstreamsurface.h>
 #include <wg_gfxstreamsurfacefactory.h>
-#include <wg_gfxstreamwaveform.h>
-#include <wg_gfxstreamwaveformfactory.h>
+#include <wg_gfxstreamedgemap.h>
+#include <wg_gfxstreamedgemapfactory.h>
 #include <wg_gfxbase.h>
 #include <assert.h>
 #include <math.h>
@@ -244,14 +244,14 @@ namespace wg
 		return m_pSurfaceFactory;
 	}
 
-	//____ waveformFactory() ______________________________________________________
+	//____ edgemapFactory() ______________________________________________________
 
-	WaveformFactory_p GfxStreamDevice::waveformFactory()
+	EdgemapFactory_p GfxStreamDevice::edgemapFactory()
 	{
-		if( !m_pWaveformFactory )
-			m_pWaveformFactory = GfxStreamWaveformFactory::create(m_pEncoder);
+		if( !m_pEdgemapFactory )
+			m_pEdgemapFactory = GfxStreamEdgemapFactory::create(m_pEncoder);
 
-		return m_pWaveformFactory;
+		return m_pEdgemapFactory;
 	}
 
 
@@ -1066,38 +1066,38 @@ namespace wg
         _streamEdgeSamples( nEdgeStrips, nSegments-1, edgeStripPitch, pEdgeStrips );
     }
 
-	//____ drawWaveform() __________________________________________________________
+	//____ drawEdgemap() __________________________________________________________
 
-	void GfxStreamDevice::drawWaveform(CoordSPX dest, Waveform * _pWaveform )
+	void GfxStreamDevice::drawEdgemap(CoordSPX dest, Edgemap * _pEdgemap )
 	{
-        auto pWaveform = dynamic_cast<GfxStreamWaveform*>(_pWaveform);
-        if (!pWaveform)
+        auto pEdgemap = dynamic_cast<GfxStreamEdgemap*>(_pEdgemap);
+        if (!pEdgemap)
         {
             //TODO: Errorhandling
 
             return;
         }
 
-		if (_clippedOut({dest,pWaveform->pixelSize()*64}))
+		if (_clippedOut({dest,pEdgemap->pixelSize()*64}))
             return;
 
         _streamStatesIfUpdated();
 
         GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest));
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawWaveform, spxFormat, GfxStream::spxSize(spxFormat) * 4 + 2 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawEdgemap, spxFormat, GfxStream::spxSize(spxFormat) * 4 + 2 };
         (*m_pEncoder) << dest;
-        (*m_pEncoder) << pWaveform->m_inStreamId;
+        (*m_pEncoder) << pEdgemap->m_inStreamId;
 	}
 
-	//____ flipDrawWaveform() ______________________________________________________
+	//____ flipDrawEdgemap() ______________________________________________________
 
-	void GfxStreamDevice::flipDrawWaveform(CoordSPX dest, Waveform * _pWaveform, GfxFlip flip)
+	void GfxStreamDevice::flipDrawEdgemap(CoordSPX dest, Edgemap * _pEdgemap, GfxFlip flip)
 	{
 		//TODO: ClipOut!!!
 		
-        auto pWaveform = dynamic_cast<GfxStreamWaveform*>(_pWaveform);
-        if (!pWaveform)
+        auto pEdgemap = dynamic_cast<GfxStreamEdgemap*>(_pEdgemap);
+        if (!pEdgemap)
         {
             //TODO: Errorhandling
 
@@ -1111,9 +1111,9 @@ namespace wg
 
         GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest));
 
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawWaveform, spxFormat, GfxStream::spxSize(spxFormat) * 4 + 2 + 2 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawEdgemap, spxFormat, GfxStream::spxSize(spxFormat) * 4 + 2 + 2 };
         (*m_pEncoder) << dest;
-        (*m_pEncoder) << pWaveform->m_inStreamId;
+        (*m_pEncoder) << pEdgemap->m_inStreamId;
         (*m_pEncoder) << flip;
     }
 

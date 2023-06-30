@@ -68,7 +68,7 @@ extern "C" {
 	wg_obj					wg_canvasLayers(wg_obj device);
 
 	wg_obj					wg_surfaceFactory(wg_obj device);
-	wg_obj					wg_waveformFactory(wg_obj device);
+	wg_obj					wg_edgemapFactory(wg_obj device);
 
 
 	int						wg_maxSegments(void);
@@ -166,8 +166,8 @@ extern "C" {
 	void					wg_drawSegments(wg_obj device, const wg_rectSPX* dest, int nSegments, const wg_color* pSegmentColors, int nEdgeStrips, const int* pEdgeStrips, int edgeStripPitch, wg_tintMode tintMode);
 	void					wg_flipDrawSegments(wg_obj device, const wg_rectSPX* dest, int nSegments, const wg_color* pSegmentColors, int nEdgeStrips, const int* pEdgeStrips, int edgeStripPitch, wg_gfxFlip flip, wg_tintMode tintMode);
 
-	void					wg_drawWaveform(wg_obj device, wg_coordSPX dest, wg_obj waveform);
-	void					wg_flipDrawWaveform(wg_obj device, wg_coordSPX dest, wg_obj waveform, wg_gfxFlip flip);
+	void					wg_drawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap);
+	void					wg_flipDrawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap, wg_gfxFlip flip);
 
 	// Special draw/blit methods
 

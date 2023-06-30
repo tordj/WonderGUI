@@ -850,10 +850,10 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::CreateWaveform:
+			case GfxChunkId::CreateEdgemap:
 			{
 
-				uint16_t	waveformId;
+				uint16_t	edgemapId;
 				SizeI		size;
 				uint16_t	nbSegments;
 				bool		bHasColors;
@@ -865,7 +865,7 @@ namespace wg
 				*m_pDecoder >> bHasGradients;
 
 
-				m_charStream << "    waveformId  = " << waveformId << std::endl;
+				m_charStream << "    edgemapId  = " << edgemapId << std::endl;
 				m_charStream << "    size        = " << size.w << ", " << size.h << std::endl;
 				m_charStream << "    segments    = " << nbSegments << std::endl;
 
@@ -901,34 +901,34 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::SetWaveformRenderSegments:
+			case GfxChunkId::SetEdgemapRenderSegments:
 			{
-				uint16_t	waveformId;
+				uint16_t	edgemapId;
 				uint16_t	segments;
 
-				*m_pDecoder >> waveformId;
+				*m_pDecoder >> edgemapId;
 				*m_pDecoder >> segments;
 
-				m_charStream << "    waveformId  = " << waveformId << std::endl;
+				m_charStream << "    edgemapId  = " << edgemapId << std::endl;
 				m_charStream << "    segments    = " << segments << std::endl;
 				break;
 			}
 
-			case GfxChunkId::BeginWaveformUpdate:
+			case GfxChunkId::BeginEdgemapUpdate:
 			{
-				uint16_t	waveformId;
+				uint16_t	edgemapId;
 				uint8_t		edgeBegin;
 				uint8_t		edgeEnd;
 				uint16_t	sampleBegin;
 				uint16_t	sampleEnd;
 
-				*m_pDecoder >> waveformId;
+				*m_pDecoder >> edgemapId;
 				*m_pDecoder >> edgeBegin;
 				*m_pDecoder >> edgeEnd;
 				*m_pDecoder >> sampleBegin;
 				*m_pDecoder >> sampleEnd;
 
-				m_charStream << "    waveformId  = " << waveformId << std::endl;
+				m_charStream << "    edgemapId  = " << edgemapId << std::endl;
 				m_charStream << "    edgeBegin   = " << edgeBegin << std::endl;
 				m_charStream << "    edgeEnd     = " << edgeEnd << std::endl;
 				m_charStream << "    sampleBegin = " << sampleBegin << std::endl;
@@ -937,7 +937,7 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::WaveformSamples:
+			case GfxChunkId::EdgemapSamples:
 			{
 				m_pDecoder->skip(header.size);
 
@@ -945,43 +945,43 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::EndWaveformUpdate:
+			case GfxChunkId::EndEdgemapUpdate:
 				break;
 
-			case GfxChunkId::DeleteWaveform:
+			case GfxChunkId::DeleteEdgemap:
 			{
-				uint16_t	waveformId;
+				uint16_t	edgemapId;
 
-				*m_pDecoder >> waveformId;
-				m_charStream << "    waveformId  = " << waveformId << std::endl;
+				*m_pDecoder >> edgemapId;
+				m_charStream << "    edgemapId  = " << edgemapId << std::endl;
 				break;
 			}
 
-			case GfxChunkId::DrawWaveform:
+			case GfxChunkId::DrawEdgemap:
 			{
 				CoordSPX	dest;
-				uint16_t	waveformId;
+				uint16_t	edgemapId;
 
 				*m_pDecoder >> dest;
-				*m_pDecoder >> waveformId;
+				*m_pDecoder >> edgemapId;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
-				m_charStream << "    waveformId  = " << waveformId << std::endl;
+				m_charStream << "    edgemapId  = " << edgemapId << std::endl;
 				break;
 			}
 
-			case GfxChunkId::FlipDrawWaveform:
+			case GfxChunkId::FlipDrawEdgemap:
 			{
 				CoordSPX	dest;
-				uint16_t	waveformId;
+				uint16_t	edgemapId;
 				GfxFlip		flip;
 
 				*m_pDecoder >> dest;
-				*m_pDecoder >> waveformId;
+				*m_pDecoder >> edgemapId;
 				*m_pDecoder >> flip;
 
 				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
-				m_charStream << "    waveformId  = " << waveformId << std::endl;
+				m_charStream << "    edgemapId  = " << edgemapId << std::endl;
 				m_charStream << "    flip        = " << toString(flip) << std::endl;
 				break;
 			}

@@ -33,10 +33,10 @@ set( PLUGIN_SOURCES
 	wg_pluginsurface.h
 	wg_pluginsurfacefactory.cpp
 	wg_pluginsurfacefactory.h
-	wg_pluginwaveform.cpp
-	wg_pluginwaveform.h
-	wg_pluginwaveformfactory.cpp
-	wg_pluginwaveformfactory.h
+	wg_pluginedgemap.cpp
+	wg_pluginedgemap.h
+	wg_pluginedgemapfactory.cpp
+	wg_pluginedgemapfactory.h
 
 	wonderplugin.h
 )
@@ -75,10 +75,10 @@ set( LEGACYPLUGIN_SOURCES
 	wg_pluginsurface.h
 	wg_pluginsurfacefactory.cpp
 	wg_pluginsurfacefactory.h	
-	wg_pluginwaveform.cpp
-	wg_pluginwaveform.h
-	wg_pluginwaveformfactory.cpp
-	wg_pluginwaveformfactory.h
+	wg_pluginedgemap.cpp
+	wg_pluginedgemap.h
+	wg_pluginedgemapfactory.cpp
+	wg_pluginedgemapfactory.h
 )
 
 set( HOST_SOURCES

@@ -40,7 +40,7 @@
 
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
-#include <wg_softwaveformfactory.h>
+#include <wg_softedgemapfactory.h>
 #include <wg_softgfxdevice.h>
 #include <wg_softkernels_default.h>
 
@@ -89,8 +89,8 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
         auto pSurfaceFactory = SoftSurfaceFactory::create();
         Base::setDefaultSurfaceFactory(pSurfaceFactory);
 
-		auto pWaveformFactory = SoftWaveformFactory::create();
-		Base::setDefaultWaveformFactory(pWaveformFactory);
+		auto pEdgemapFactory = SoftEdgemapFactory::create();
+		Base::setDefaultEdgemapFactory(pEdgemapFactory);
 
 	}
     

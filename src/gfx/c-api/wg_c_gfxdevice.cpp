@@ -38,8 +38,8 @@ inline GfxDevice* getPtr(wg_obj obj) {
 	return static_cast<GfxDevice*>(reinterpret_cast<Object*>(obj));
 }
 
-inline Waveform* getWaveformPtr(wg_obj obj) {
-	return static_cast<Waveform*>(reinterpret_cast<Object*>(obj));
+inline Edgemap* getEdgemapPtr(wg_obj obj) {
+	return static_cast<Edgemap*>(reinterpret_cast<Object*>(obj));
 }
 
 
@@ -76,9 +76,9 @@ wg_obj wg_surfaceFactory(wg_obj device)
 }
 
 
-wg_obj wg_waveformFactory(wg_obj device)
+wg_obj wg_edgemapFactory(wg_obj device)
 {
-	return getPtr(device)->waveformFactory().rawPtr();
+	return getPtr(device)->edgemapFactory().rawPtr();
 }
 
 
@@ -420,15 +420,15 @@ void wg_flipDrawSegments(wg_obj device, const wg_rectSPX* dest, int nSegments, c
 }
 
 
-void wg_drawWaveform(wg_obj device, wg_coordSPX dest, wg_obj waveform)
+void wg_drawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap)
 {
-	getPtr(device)->drawWaveform({ dest.x, dest.y }, getWaveformPtr(waveform));
+	getPtr(device)->drawEdgemap({ dest.x, dest.y }, getEdgemapPtr(edgemap));
 }
 
 
-void wg_flipDrawWaveform(wg_obj device, wg_coordSPX dest, wg_obj waveform, wg_gfxFlip flip)
+void wg_flipDrawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap, wg_gfxFlip flip)
 {
-	getPtr(device)->flipDrawWaveform({ dest.x, dest.y }, getWaveformPtr(waveform), (GfxFlip) flip );
+	getPtr(device)->flipDrawEdgemap({ dest.x, dest.y }, getEdgemapPtr(edgemap), (GfxFlip) flip );
 }
 
 

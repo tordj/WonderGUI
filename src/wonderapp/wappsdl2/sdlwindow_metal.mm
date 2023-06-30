@@ -32,7 +32,7 @@
 
 #include <wg_metalsurface.h>
 #include <wg_metalsurfacefactory.h>
-#include <wg_metalwaveformfactory.h>
+#include <wg_metaledgemapfactory.h>
 #include <wg_metalgfxdevice.h>
 
 
@@ -84,8 +84,8 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
 	   auto pSurfaceFactory = MetalSurfaceFactory::create();
 	   Base::setDefaultSurfaceFactory(pSurfaceFactory);
 
-		auto pWaveformFactory = MetalWaveformFactory::create();
-		Base::setDefaultWaveformFactory(pWaveformFactory);
+		auto pEdgemapFactory = MetalEdgemapFactory::create();
+		Base::setDefaultEdgemapFactory(pEdgemapFactory);
 	}
 	
     

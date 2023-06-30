@@ -24,8 +24,8 @@
 
 #include <wg_metalgfxdevice.h>
 #include <wg_metalsurfacefactory.h>
-#include <wg_metalwaveformfactory.h>
-#include <wg_metalwaveform.h>
+#include <wg_metaledgemapfactory.h>
+#include <wg_metaledgemap.h>
 #include <wg_gfxbase.h>
 #include <wg_gfxutil.h>
 
@@ -504,14 +504,14 @@ MetalGfxDevice::MetalGfxDevice()
         return m_pSurfaceFactory;
 	}
 
-    //____ waveformFactory() ______________________________________________________
+    //____ edgemapFactory() ______________________________________________________
 
-    WaveformFactory_p MetalGfxDevice::waveformFactory()
+    EdgemapFactory_p MetalGfxDevice::edgemapFactory()
     {
-        if (!m_pWaveformFactory)
-            m_pWaveformFactory = MetalWaveformFactory::create();
+        if (!m_pEdgemapFactory)
+            m_pEdgemapFactory = MetalEdgemapFactory::create();
 
-        return m_pWaveformFactory;
+        return m_pEdgemapFactory;
 
     }
 
@@ -1469,17 +1469,17 @@ MetalGfxDevice::MetalGfxDevice()
         m_pExtrasBuffer[m_extrasOfs++] = radius.h;
     }
 
-	//____ drawWaveform() __________________________________________________________
+	//____ drawEdgemap() __________________________________________________________
 
-	void MetalGfxDevice::drawWaveform(CoordSPX destPos, Waveform * pWaveform )
+	void MetalGfxDevice::drawEdgemap(CoordSPX destPos, Edgemap * pEdgemap )
 	{
-		if( pWaveform->typeInfo() != MetalWaveform::TYPEINFO )
+		if( pEdgemap->typeInfo() != MetalEdgemap::TYPEINFO )
 		{
 			//TODO: Throw an error.
 			return;
 		}
 		
-		auto pWave = static_cast<MetalWaveform*>(pWaveform);
+		auto pWave = static_cast<MetalEdgemap*>(pEdgemap);
 
 
 		_transformDrawSegments( {destPos,pWave->m_size*64}, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
@@ -1487,17 +1487,17 @@ MetalGfxDevice::MetalGfxDevice()
 							   s_blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
-	//____ flipDrawWaveform() ______________________________________________________
+	//____ flipDrawEdgemap() ______________________________________________________
 
-	void MetalGfxDevice::flipDrawWaveform(CoordSPX destPos, Waveform * pWaveform, GfxFlip flip)
+	void MetalGfxDevice::flipDrawEdgemap(CoordSPX destPos, Edgemap * pEdgemap, GfxFlip flip)
 	{
-		if( pWaveform->typeInfo() != MetalWaveform::TYPEINFO )
+		if( pEdgemap->typeInfo() != MetalEdgemap::TYPEINFO )
 		{
 			//TODO: Throw an error.
 			return;
 		}
 		
-		auto pWave = static_cast<MetalWaveform*>(pWaveform);
+		auto pWave = static_cast<MetalEdgemap*>(pEdgemap);
 
 		const int (&transform)[2][2] = s_blitFlipTransforms[(int)flip];
 

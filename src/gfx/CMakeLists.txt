@@ -41,12 +41,12 @@ set( SOURCES
 	wg_surfacereader.h
 	wg_surfacewriter.cpp
 	wg_surfacewriter.h
-	wg_waveform.cpp
-	wg_waveform.h
-	wg_waveformfactory.cpp
-	wg_waveformfactory.h
-	wg_waveformtools.cpp
-	wg_waveformtools.h
+	wg_edgemap.cpp
+	wg_edgemap.h
+	wg_edgemapfactory.cpp
+	wg_edgemapfactory.h
+	wg_edgemaptools.cpp
+	wg_edgemaptools.h
 	wondergfx.h
 
 	c-api/wg_c_bitmapcache.cpp
@@ -76,10 +76,10 @@ set( SOURCES
 	c-api/wg_c_surfacereader.h
 	c-api/wg_c_surfacewriter.cpp
 	c-api/wg_c_surfacewriter.h
-	c-api/wg_c_waveform.cpp
-	c-api/wg_c_waveform.h
-	c-api/wg_c_waveformfactory.cpp
-	c-api/wg_c_waveformfactory.h
+	c-api/wg_c_edgemap.cpp
+	c-api/wg_c_edgemap.h
+	c-api/wg_c_edgemapfactory.cpp
+	c-api/wg_c_edgemapfactory.h
 	c-api/wondergfx_c.h
 
 	stream/wg_gfxstream.h
@@ -113,10 +113,10 @@ set( SOURCES
 	stream/wg_gfxstreamsurfacefactory.h
 	stream/wg_gfxstreamtrimencoder.cpp
 	stream/wg_gfxstreamtrimencoder.h	
-	stream/wg_gfxstreamwaveform.cpp
-	stream/wg_gfxstreamwaveform.h
-	stream/wg_gfxstreamwaveformfactory.cpp
-	stream/wg_gfxstreamwaveformfactory.h
+	stream/wg_gfxstreamedgemap.cpp
+	stream/wg_gfxstreamedgemap.h
+	stream/wg_gfxstreamedgemapfactory.cpp
+	stream/wg_gfxstreamedgemapfactory.h
 	stream/wg_gfxstreamwrapper.cpp
 	stream/wg_gfxstreamwrapper.h
 	stream/wg_gfxstreamwriter.cpp

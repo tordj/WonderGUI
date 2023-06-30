@@ -47,7 +47,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamPlayer_p	create(GfxDevice * pDevice, SurfaceFactory * pSurfaceFactory, WaveformFactory * pWaveformFactory);
+		static GfxStreamPlayer_p	create(GfxDevice * pDevice, SurfaceFactory * pSurfaceFactory, EdgemapFactory * pEdgemapFactory);
 
 		//.____ Components _______________________________________
 
@@ -73,7 +73,7 @@ namespace wg
 		const std::vector<Surface_p>& surfaces() const { return m_vSurfaces; }
 		
 	protected:
-		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pSurfaceFactory, WaveformFactory * pWaveformFactory);
+		GfxStreamPlayer(GfxDevice * pDevice, SurfaceFactory * pSurfaceFactory, EdgemapFactory * pEdgemapFactory);
 		~GfxStreamPlayer();
 
 		void	_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd) override;
@@ -89,17 +89,17 @@ namespace wg
 		GfxStreamDecoder_p	m_pDecoder;
 		GfxDevice_p			m_pDevice;
 		SurfaceFactory_p	m_pSurfaceFactory;
-		WaveformFactory_p	m_pWaveformFactory;
+		EdgemapFactory_p	m_pEdgemapFactory;
 
 		std::vector<Surface_p>	m_vSurfaces;
-		std::vector<Waveform_p>	m_vWaveforms;
+		std::vector<Edgemap_p>	m_vEdgemaps;
 
 		Surface_p			m_pUpdatingSurface;
 		PixelBuffer			m_pixelBuffer;
 		uint8_t *			m_pWritePixels;
 		int					m_surfaceBytesLeft = 0;
 
-		Waveform_p			m_pUpdatingWaveform;
+		Edgemap_p			m_pUpdatingEdgemap;
 		spx *				m_pWaveSampleBuffer;
 		spx *				m_pWaveWriteSamples;
 		int					m_waveSamplesLeft;

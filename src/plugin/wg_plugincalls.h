@@ -47,8 +47,8 @@ namespace wg
 		static wg_streamreader_calls*	streamReader;
 		static wg_surface_calls*		surface;
 		static wg_surfacefactory_calls* surfaceFactory;
-		static wg_waveform_calls*		waveform;
-		static wg_waveformfactory_calls*waveformFactory;
+		static wg_edgemap_calls*		edgemap;
+		static wg_edgemapfactory_calls*edgemapFactory;
 		static wg_hostbridge_calls*		hostBridge;
 		static wg_plugincapsule_calls*	pluginCapsule;
 
