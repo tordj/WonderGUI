@@ -87,14 +87,13 @@ namespace wg
 		virtual bool 	exportSamples( WaveOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) = 0;
 
-		
 	protected:
 
 		Edgemap( const Blueprint& bp ) : m_size(bp.size), m_nbSegments(bp.segments), m_nbRenderSegments(bp.segments) {};
 		virtual ~Edgemap() {};
 		
 		static bool	_validateBlueprint(const Blueprint& bp);
-
+		
 		SizeI       m_size;
 		int			m_nbSegments;
 		int			m_nbRenderSegments;

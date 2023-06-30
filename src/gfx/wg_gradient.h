@@ -42,6 +42,15 @@ namespace wg
 		{
 		}
 
+		Gradient(HiColor fixedColor) :
+			isValid(true),
+			topLeft(fixedColor),
+			topRight(fixedColor),
+			bottomRight(fixedColor),
+			bottomLeft(fixedColor)
+		{
+		}
+		
 		Gradient(HiColor topLeft, HiColor topRight, HiColor bottomRight, HiColor bottomLeft) :
 			isValid(true),
 			topLeft(topLeft),

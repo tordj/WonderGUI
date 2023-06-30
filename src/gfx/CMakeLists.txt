@@ -11,6 +11,12 @@ set( SOURCES
 	wg_canvaslayers.h
 	wg_color.cpp
 	wg_color.h
+	wg_edgemap.cpp
+	wg_edgemap.h
+	wg_edgemapfactory.cpp
+	wg_edgemapfactory.h
+	wg_edgemaptools.cpp
+	wg_edgemaptools.h
 	wg_geo.cpp
 	wg_geo.h
 	wg_gfxbase.cpp
@@ -41,12 +47,8 @@ set( SOURCES
 	wg_surfacereader.h
 	wg_surfacewriter.cpp
 	wg_surfacewriter.h
-	wg_edgemap.cpp
-	wg_edgemap.h
-	wg_edgemapfactory.cpp
-	wg_edgemapfactory.h
-	wg_edgemaptools.cpp
-	wg_edgemaptools.h
+	wg_waveform.cpp
+	wg_waveform.h
 	wondergfx.h
 
 	c-api/wg_c_bitmapcache.cpp

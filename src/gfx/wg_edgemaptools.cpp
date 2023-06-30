@@ -417,7 +417,88 @@ bool drawOutlinedDonut(Edgemap * pEdgemap, spx thickness, spx outlineThickness )
 }
 
 
+//____ convertSamples() _____________________________________________________
 
+void convertSamples( spx * pDest, const spx * pSource, WaveOrigo origo, spx height, int nEdges, int nSamples, int srcEdgePitch, int srcSamplePitch, int destEdgePitch, int destSamplePitch )
+{
+	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx offset = 0;
+	
+	if( origo == WaveOrigo::Bottom )
+		offset = height;
+	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+		offset = height/2;
+
+	for( int edge = 0 ; edge < nEdges ; edge++ )
+	{
+		const spx * pSrc = pSource + srcEdgePitch * edge;
+		spx * pDst = pDest + destEdgePitch * edge;
+
+		for( int sample = 0 ; sample < nSamples ; sample++ )
+		{
+			* pDst = (* pSrc * mul) + offset;
+			pDst += destSamplePitch;
+			pSrc += srcSamplePitch;
+		}
+	}
+}
+
+void convertSamples( spx * pDest, const float * pSource, WaveOrigo origo, spx height, int nEdges, int nSamples, int srcEdgePitch, int srcSamplePitch, int destEdgePitch, int destSamplePitch )
+{
+	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx offset = 0;
+	
+	if( origo == WaveOrigo::Bottom )
+		offset = height;
+	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+		offset = height/2;
+
+	if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+		mul *= height/2;
+	else
+		mul *= height;
+	
+	for( int edge = 0 ; edge < nEdges ; edge++ )
+	{
+		const float * pSrc = pSource + srcEdgePitch * edge;
+		spx * pDst = pDest + destEdgePitch * edge;
+
+		for( int sample = 0 ; sample < nSamples ; sample++ )
+		{
+			* pDst = (* pSrc * mul) + offset;
+			pDst += destSamplePitch;
+			pSrc += srcSamplePitch;
+		}
+	}
+}
+
+//____ convertSample() _____________________________________________________
+
+spx convertSample( spx sample, WaveOrigo origo, spx height )
+{
+	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx offset = 0;
+	
+	if( origo == WaveOrigo::Bottom )
+		offset = height;
+	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+		offset = height/2;
+
+	return (sample * mul) + offset;
+}
+
+spx convertSample( float sample, WaveOrigo origo, spx height )
+{
+	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx offset = 0;
+	
+	if( origo == WaveOrigo::Bottom )
+		offset = height;
+	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+		offset = height/2;
+
+	return (sample * mul) + offset;
+}
 
 }	// namespace EdgemapTools
 }	// namespace wg
