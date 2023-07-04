@@ -40,14 +40,14 @@ namespace wg
 		
 		struct Blueprint
 		{
-			spx					bottomOutlineThickness = 1.f;
+			spx					bottomOutlineThickness = 64;
 			HiColor				color = Color8::LightGrey;
 			Gradient			gradient;								// Overrides color when set.
 			WaveOrigo			origo = WaveOrigo::Top;
 			HiColor				outlineColor = Color8::DarkGrey;
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
 			SizeI				size;									// Mandatory
-			spx					topOutlineThickness = 1.f;
+			spx					topOutlineThickness = 64;
 		};
 		
 
@@ -78,19 +78,36 @@ namespace wg
 
 		Waveform( const Blueprint& bp, EdgemapFactory * pFactory );
 		virtual ~Waveform();
+
+		struct Brush
+		{
+			spx		thickness;
+			spx		influenceSlope[32*4+4];			// Max 64 pixels wide brush with 4x oversampling + room for 4 zeroes.
+		};
+
+		void _setFlatLine( spx * pSamples, int sampleBegin, int sampleEnd, spx sample );
+		void _drawLine(spx * pSrc, spx * pDestTop, spx * pDestBottom, int nPoints, Brush& brush);
+		void _generateInfluenceSlope( Brush& brush );
+		
+		
 		
 		WaveOrigo	m_origo;
 		
 		HiColor		m_color;
 
 		HiColor		m_outlineColor;
-		spx			m_topOutlineThickness;
-		spx			m_bottomOutlineThickness;
+		Brush		m_topBrush;
+		Brush		m_bottomBrush;
 
 		Edgemap_p	m_pEdgemap;
 
 		int			m_nbSamples;
-		spx *		m_pSamples;				// Top/bottom interleaved.
+		spx *		m_pTopSamples;
+		spx *		m_pBottomSamples;
+		int			m_topSamplesPadding;		// Extra space before/after samples for top and bottom.
+		int			m_bottomSamplesPadding;
+		
+		spx *		m_pSampleBuffer;
 		
 		int			m_dirtBegin;
 		int			m_dirtEnd;

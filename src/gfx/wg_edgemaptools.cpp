@@ -29,37 +29,13 @@ using namespace std;
 namespace wg {
 namespace EdgemapTools {
 
-const static int c_nCurveTabEntries = 1024;
-static int *	s_pCurveTab = nullptr;
-
-//____ init() ______________________________________________________
-
-void init()
-{
-	s_pCurveTab = new int[c_nCurveTabEntries];
-
-	//		double factor = 3.14159265 / (2.0 * c_nCurveTabEntries);
-
-	for (int i = 0; i < c_nCurveTabEntries; i++)
-	{
-		double y = 1.f - i / (double)c_nCurveTabEntries;
-		s_pCurveTab[i] = (int)(Util::squareRoot(1.f - y*y)*65536.f);
-	}
-}
-
-//____ exit() ______________________________________________________
-
-void exit()
-{
-	delete [] s_pCurveTab;
-	s_pCurveTab = nullptr;
-}
-
-
 //____ createDonut() ______________________________________________________
 
 Edgemap_p createDonut(const SizeSPX size, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor, EdgemapFactory * pFactory )
 {
+	auto pCurveTab = GfxBase::curveTab();
+	int curveTabSize = GfxBase::curveTabSize();
+
 	// Center in 26.6 format.
 
 	CoordI center = { size.w / 2, size.h / 2 };
@@ -132,7 +108,7 @@ Edgemap_p createDonut(const SizeSPX size, spx thickness, HiColor fillColor, spx 
 			int xEnd = (centerOfs + radiusX[edge]) >> 6;			// Last pixel-edge inside curve.
 
 
-			int curveInc = int(int64_t((65536 * 64)-1) * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
+			int curveInc = int(int64_t((65536 * 64)-1) * (curveTabSize - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
 			int curvePos = int((((radiusX[edge] - centerOfs) & 0x3F) * ((int64_t)curveInc)) >> 6);
 
 			if (clipLeft > 0)
@@ -170,7 +146,7 @@ Edgemap_p createDonut(const SizeSPX size, spx thickness, HiColor fillColor, spx 
 				int i = curvePos >> 16;
 				uint32_t f = curvePos & 0xFFFF;
 
-				uint32_t heightFactor = (s_pCurveTab[i] * (65535 - f) + s_pCurveTab[i + 1] * f) >> 16;
+				uint32_t heightFactor = (pCurveTab[i] * (65535 - f) + pCurveTab[i + 1] * f) >> 16;
 				int height = ((radiusY[edge] >> 16) * heightFactor) + ((radiusY[edge] & 0xFFFF) * heightFactor >> 16);  // = (radiusY[edge] * heightFactor) / 65536, but without overflow.
 
 				pOutUpper[sample*samplePitch] = yMid + yAdjust - height;
@@ -179,14 +155,14 @@ Edgemap_p createDonut(const SizeSPX size, spx thickness, HiColor fillColor, spx 
 				curvePos += curveInc;
 			}
 
-			curvePos = (c_nCurveTabEntries - 1) * 65536 * 2 - curvePos;
+			curvePos = (curveTabSize - 1) * 65536 * 2 - curvePos;
 
 			while (sample <= xEnd)
 			{
 				int i = curvePos >> 16;
 				uint32_t f = curvePos & 0xFFFF;
 
-				uint32_t heightFactor = (s_pCurveTab[i] * (65535 - f) + s_pCurveTab[i + 1] * f) >> 16;
+				uint32_t heightFactor = (pCurveTab[i] * (65535 - f) + pCurveTab[i + 1] * f) >> 16;
 				int height = ((radiusY[edge] >> 16) * heightFactor) + ((radiusY[edge] & 0xFFFF) * heightFactor >> 16); // = (radiusY[edge] * heightFactor) / 65536, but without overflow.
 
 				pOutUpper[sample*samplePitch] = yMid + yAdjust - height;
@@ -264,6 +240,10 @@ bool drawOutlinedDonut(Edgemap * pEdgemap, spx thickness, spx outlineThickness )
 {
 	if( pEdgemap->segments() < 9 )
 		return false;
+
+	auto pCurveTab = GfxBase::curveTab();
+	int curveTabSize = GfxBase::curveTabSize();
+
 	
 	// Center and corners in 26.6 format.
 
@@ -323,7 +303,7 @@ bool drawOutlinedDonut(Edgemap * pEdgemap, spx thickness, spx outlineThickness )
 			int xEnd = (centerOfs + radiusX[edge]) >> 6;			// Last pixel-edge inside curve.
 
 
-			int curveInc = int(int64_t((65536 * 64)-1) * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
+			int curveInc = int(int64_t((65536 * 64)-1) * (curveTabSize - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
 			int curvePos = int((((radiusX[edge] - centerOfs) & 0x3F) * ((int64_t)curveInc)) >> 6);
 
 			// Clip xStart, xMid and xEnd
@@ -351,7 +331,7 @@ bool drawOutlinedDonut(Edgemap * pEdgemap, spx thickness, spx outlineThickness )
 				int i = curvePos >> 16;
 				uint32_t f = curvePos & 0xFFFF;
 
-				uint32_t heightFactor = (s_pCurveTab[i] * (65535 - f) + s_pCurveTab[i + 1] * f) >> 16;
+				uint32_t heightFactor = (pCurveTab[i] * (65535 - f) + pCurveTab[i + 1] * f) >> 16;
 				int height = ((radiusY[edge] >> 16) * heightFactor) + ((radiusY[edge] & 0xFFFF) * heightFactor >> 16);  // = (radiusY[edge] * heightFactor) / 65536, but without overflow.
 
 				pOutUpper[sample*samplePitch] = yMid + yAdjust - height;
@@ -360,14 +340,14 @@ bool drawOutlinedDonut(Edgemap * pEdgemap, spx thickness, spx outlineThickness )
 				curvePos += curveInc;
 			}
 
-			curvePos = (c_nCurveTabEntries - 1) * 65536 * 2 - curvePos;
+			curvePos = (curveTabSize - 1) * 65536 * 2 - curvePos;
 
 			while (sample <= xEnd)
 			{
 				int i = curvePos >> 16;
 				uint32_t f = curvePos & 0xFFFF;
 
-				uint32_t heightFactor = (s_pCurveTab[i] * (65535 - f) + s_pCurveTab[i + 1] * f) >> 16;
+				uint32_t heightFactor = (pCurveTab[i] * (65535 - f) + pCurveTab[i + 1] * f) >> 16;
 				int height = ((radiusY[edge] >> 16) * heightFactor) + ((radiusY[edge] & 0xFFFF) * heightFactor >> 16); // = (radiusY[edge] * heightFactor) / 65536, but without overflow.
 
 				pOutUpper[sample*samplePitch] = yMid + yAdjust - height;

@@ -15,12 +15,15 @@ add_executable(gfxdevicetester
 	testunit.h
 	
 	testsuites/a8tests.h
+	testsuites/blendfixedcolortests.h
 	testsuites/blendtests.h
 	testsuites/blitblendtests.h
 	testsuites/blitconsistencytest.h
 	testsuites/blittests.h
 	testsuites/canvasformattests.h
 	testsuites/canvaslayertests.h
+	testsuites/edgemaptests.h
+	testsuites/edgemaptoolstests.h
 	testsuites/filltests.h
 	testsuites/linetests.h
 	testsuites/mipmaptests.h
@@ -34,9 +37,7 @@ add_executable(gfxdevicetester
 	testsuites/tintblittests.h
 	testsuites/tintsegmenttests.h
 	testsuites/wavetests.h
-	testsuites/edgemaptests.h
-	testsuites/edgemaptoolstests.h
-	testsuites/blendfixedcolortests.h
+	testsuites/waveformtests.h
 )
 
 target_include_directories(gfxdevicetester PRIVATE

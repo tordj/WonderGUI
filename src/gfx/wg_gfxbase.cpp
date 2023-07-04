@@ -26,6 +26,7 @@
 #include <wg_bitmapcache.h>
 #include <wg_pixeltools.h>
 #include <wg_edgemaptools.h>
+#include <wg_gfxutil.h>
 
 
 namespace wg
@@ -39,6 +40,9 @@ namespace wg
 	GfxDevice_p			GfxBase::s_pDefaultGfxDevice;
 
 	BitmapCache_p		GfxBase::s_pDefaultBitmapCache;
+
+	int 				GfxBase::s_curveTab[c_nCurveTabEntries];
+
 
 	namespace PixelTools
 	{
@@ -54,8 +58,8 @@ namespace wg
 		if( s_gfxInitCounter == 0 )
 		{
 			HiColor::_initTables();
-			EdgemapTools::init();
-			
+			_genCurveTab();
+
 			s_gfxInitCounter++;
 			return GearBase::init();
 		}
@@ -87,8 +91,6 @@ namespace wg
 		s_pDefaultSurfaceFactory 	= nullptr;
 		s_pDefaultEdgemapFactory	= nullptr;
 
-		EdgemapTools::exit();
-		
 		if( s_pDefaultBitmapCache )
 		{
 			s_pDefaultBitmapCache->clear();
@@ -139,5 +141,17 @@ namespace wg
 		s_bSRGB = bSRGB;
 	}
 
+	//____ _genCurveTab() ___________________________________________________________
+
+	void GfxBase::_genCurveTab()
+	{
+		//		double factor = 3.14159265 / (2.0 * c_nCurveTabEntries);
+
+		for (int i = 0; i < c_nCurveTabEntries; i++)
+		{
+			double y = 1.f - i / (double)c_nCurveTabEntries;
+			s_curveTab[i] = (int)(Util::squareRoot(1.f - y*y)*65536.f);
+		}
+	}
 
 } // namespace wg

@@ -238,11 +238,7 @@ namespace wg
 		virtual void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) = 0;
 
 
-		// Static, shared data
 
-		static	int		s_gfxDeviceCount;				// Number of existing gfxDevices. Ref count for shared data.
-
-		void	_genCurveTab();
 		void	_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset);
 
 		virtual bool _beginCanvasUpdate(CanvasRef ref, Surface * pCanvas, int nUpdateRects, const RectSPX* pUpdateRects, CanvasLayers * pLayers, int startLayer);
@@ -251,10 +247,6 @@ namespace wg
 
 		void	_stretchBlitWithRigidPartX(const RectSPX& src, const RectSPX& dst, spx rigidPartOfs, spx rigidPartLength, spx rigidPartLengthDst);
 		void	_stretchBlitWithRigidPartY(const RectSPX& src, const RectSPX& dst, spx rigidPartOfs, spx rigidPartLength, spx rigidPartLengthDst);
-
-
-		const static int c_nCurveTabEntries = 1024;
-		static int *	s_pCurveTab;
 
 		//
 

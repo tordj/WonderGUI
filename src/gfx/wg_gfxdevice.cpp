@@ -37,9 +37,6 @@ namespace wg
 
 	const TypeInfo GfxDevice::TYPEINFO = { "GfxDevice", &Object::TYPEINFO };
 
-	int GfxDevice::s_gfxDeviceCount = 0;
-	int *	GfxDevice::s_pCurveTab = nullptr;
-
 	// Transforms for flipping movement over SOURCE when blitting
 
 	const int GfxDevice::s_blitFlipTransforms[GfxFlip_size][2][2] = { { 1,0,0,1 },			// Normal
@@ -93,22 +90,12 @@ namespace wg
 
 	GfxDevice::GfxDevice()
 	{
-		if (s_gfxDeviceCount == 0)
-		{
-			_genCurveTab();
-		}
-		s_gfxDeviceCount++;
 	}
 
 	//____ Destructor _________________________________________________________
 
 	GfxDevice::~GfxDevice()
 	{
-		s_gfxDeviceCount--;
-		if (s_gfxDeviceCount == 0)
-		{
-			delete [] s_pCurveTab;
-		}
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -1420,6 +1407,10 @@ namespace wg
 
 	void GfxDevice::drawElipse(const RectSPX& canvas, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor )
 	{
+		auto pCurveTab = GfxBase::curveTab();
+		int curveTabSize = GfxBase::curveTabSize();
+
+
 		// Center and corners in 26.6 format.
 
 		int x1 = (int) canvas.x;
@@ -1497,7 +1488,7 @@ namespace wg
 				int xEnd = (centerOfs + radiusX[edge]) >> 6;			// Last pixel-edge inside curve.
 
 
-				int curveInc = int(int64_t((65536 * 64)-1) * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
+				int curveInc = int(int64_t((65536 * 64)-1) * (curveTabSize - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
 				int curvePos = int((((radiusX[edge] - centerOfs) & 0x3F) * ((int64_t)curveInc)) >> 6);
 
 				if (clipLeft > 0)
@@ -1535,7 +1526,7 @@ namespace wg
 					int i = curvePos >> 16;
 					uint32_t f = curvePos & 0xFFFF;
 
-					uint32_t heightFactor = (s_pCurveTab[i] * (65535 - f) + s_pCurveTab[i + 1] * f) >> 16;
+					uint32_t heightFactor = (pCurveTab[i] * (65535 - f) + pCurveTab[i + 1] * f) >> 16;
 					int height = ((radiusY[edge] >> 16) * heightFactor) + ((radiusY[edge] & 0xFFFF) * heightFactor >> 16);  // = (radiusY[edge] * heightFactor) / 65536, but without overflow.
 
 					pOutUpper[sample*samplePitch] = yMid + yAdjust - height;
@@ -1544,14 +1535,14 @@ namespace wg
 					curvePos += curveInc;
 				}
 
-				curvePos = (c_nCurveTabEntries - 1) * 65536 * 2 - curvePos;
+				curvePos = (curveTabSize - 1) * 65536 * 2 - curvePos;
 
 				while (sample <= xEnd)
 				{
 					int i = curvePos >> 16;
 					uint32_t f = curvePos & 0xFFFF;
 
-					uint32_t heightFactor = (s_pCurveTab[i] * (65535 - f) + s_pCurveTab[i + 1] * f) >> 16;
+					uint32_t heightFactor = (pCurveTab[i] * (65535 - f) + pCurveTab[i + 1] * f) >> 16;
 					int height = ((radiusY[edge] >> 16) * heightFactor) + ((radiusY[edge] & 0xFFFF) * heightFactor >> 16); // = (radiusY[edge] * heightFactor) / 65536, but without overflow.
 
 					pOutUpper[sample*samplePitch] = yMid + yAdjust - height;
@@ -1798,6 +1789,9 @@ namespace wg
 
 		int * pBuffer = (int*) GfxBase::memStackAlloc(bufferSize);
 
+		
+		auto pCurveTab = GfxBase::curveTab();
+		int curveTabSize = GfxBase::curveTabSize();
 
 		// Setting the outer edge (same for all quads)
 
@@ -1814,12 +1808,12 @@ namespace wg
 		{
 			int * pEdge = pBuffer;
 
-			int curveTabInc = ((c_nCurveTabEntries << 16)-1) / (quadW);
+			int curveTabInc = ((curveTabSize << 16)-1) / (quadW);
 
 			int curveTabOfs = 0;
 			for (int i = 0; i <= quadW; i++)
 			{
-				*pEdge = (quadH<<6) - ((s_pCurveTab[(c_nCurveTabEntries-1)-(curveTabOfs >> 16)] * quadH) >> 10);
+				*pEdge = (quadH<<6) - ((pCurveTab[(curveTabSize-1)-(curveTabOfs >> 16)] * quadH) >> 10);
 				pEdge += edgePitch;
 				curveTabOfs += curveTabInc;
 			}
@@ -1840,12 +1834,12 @@ namespace wg
 			int ringW = int(hubSize * quadW);
 			int ringH = int(hubSize * quadH);
 
-			int inc = ((c_nCurveTabEntries << 16)-1) / (ringW);
+			int inc = ((curveTabSize << 16)-1) / (ringW);
 			int ofs = 0;
 
 			for (int i = 0; i <= ringW; i++)
 			{
-				*p++ = (quadH << 6) - ((s_pCurveTab[(c_nCurveTabEntries - 1) - (ofs >> 16)] * ringH) >> 10);
+				*p++ = (quadH << 6) - ((pCurveTab[(curveTabSize - 1) - (ofs >> 16)] * ringH) >> 10);
 				ofs += inc;
 			}
 
@@ -2017,25 +2011,14 @@ namespace wg
 	{
 		// Do nothing.
 	}
-	//____ _genCurveTab() ___________________________________________________________
-
-	void GfxDevice::_genCurveTab()
-	{
-		s_pCurveTab = new int[c_nCurveTabEntries];
-
-		//		double factor = 3.14159265 / (2.0 * c_nCurveTabEntries);
-
-		for (int i = 0; i < c_nCurveTabEntries; i++)
-		{
-			double y = 1.f - i / (double)c_nCurveTabEntries;
-			s_pCurveTab[i] = (int)(Util::squareRoot(1.f - y*y)*65536.f);
-		}
-	}
 
 	//____ _traceLine() __________________________________________________________
 
 	void GfxDevice::_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset)
 	{
+		auto pCurveTab = GfxBase::curveTab();
+		int curveTabSize = GfxBase::curveTabSize();
+		
 		static const int c_supersamples = 4;
 
 		static int brush[128 * c_supersamples];
@@ -2050,7 +2033,7 @@ namespace wg
 		{
 			brush[0] = thickness / 2;
 			for (int i = 1; i <= brushSteps; i++)
-				brush[i] = (thickness * s_pCurveTab[c_nCurveTabEntries - (i*c_nCurveTabEntries) / brushSteps]) >> (16+1);
+				brush[i] = (thickness * pCurveTab[curveTabSize - (i*curveTabSize) / brushSteps]) >> (16+1);
 			prevThickness = thickness;
 		}
 

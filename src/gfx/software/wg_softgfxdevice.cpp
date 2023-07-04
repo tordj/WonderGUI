@@ -1995,6 +1995,9 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 	void SoftGfxDevice::_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch )
 	{
+		auto pCurveTab = GfxBase::curveTab();
+		int curveTabSize = GfxBase::curveTabSize();
+		
 		static int brush[128];
 		static float prevThickness = -1.f;
 
@@ -2010,7 +2013,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			brush[0] = scaledThickness;
 			for (int i = 1; i < brushSteps; i++)
 			{
-				brush[i] = (scaledThickness * s_pCurveTab[c_nCurveTabEntries - (i*c_nCurveTabEntries) / brushSteps - 1]) >> 16;
+				brush[i] = (scaledThickness * pCurveTab[curveTabSize - (i*curveTabSize) / brushSteps - 1]) >> 16;
 				//				printf( "%d - %d - %d\n", i, brush[i], m_pCurveTab[0][(c_nCurveTabEntries - 1) - (i * c_nCurveTabEntries) / brushSteps]);
 			}
 			prevThickness = thickness;

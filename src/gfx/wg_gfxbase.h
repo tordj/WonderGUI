@@ -68,9 +68,14 @@ namespace wg
 		static void					setDefaultToSRGB( bool bSRGB );
 		static inline bool			defaultToSRGB() { return s_bSRGB; }
 		
+		static constexpr int *		curveTab() { return s_curveTab; }
+		static constexpr int		curveTabSize() { return c_nCurveTabEntries; }
+
 		
 	private:
 		
+		static void					_genCurveTab();
+
 		static int					s_gfxInitCounter;
 		
 		static bool					s_bSRGB;
@@ -82,6 +87,10 @@ namespace wg
 
 		static BitmapCache_p		s_pDefaultBitmapCache;
 
+		const static int 			c_nCurveTabEntries = 1024;
+		static int 					s_curveTab[c_nCurveTabEntries];
+
+		
 	};
 
 

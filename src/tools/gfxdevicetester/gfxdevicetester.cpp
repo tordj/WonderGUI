@@ -30,6 +30,7 @@
 #include "testsuites/wavetests.h"
 #include "testsuites/edgemaptests.h"
 #include "testsuites/edgemaptoolstests.h"
+#include "testsuites/waveformtests.h"
 
 
 using namespace wg;
@@ -533,6 +534,7 @@ void GfxDeviceTester::setup_tests()
 	add_testsuite([](){ return new BlendFixedColorTests();});
 	add_testsuite([](){ return new EdgemapTests();});
 	add_testsuite([](){ return new EdgemapToolsTests();});
+	add_testsuite([](){ return new WaveformTests();});
 
 	regen_testentries();
 }
