@@ -7,6 +7,7 @@ set(SOURCES
 	c-api/wg_c_lineargfx.cpp
 	c-api/wg_c_lineargfx.h
 	c-api/wg_c_softkernels_default.h
+	c-api/wg_c_softkernels_tinylinear.h
 	c-api/wg_c_softkernels_rgb555be_base.h
 	c-api/wg_c_softkernels_rgb555be_extras.h
 	c-api/wg_c_softkernels_rgb565be_base.h
@@ -14,6 +15,8 @@ set(SOURCES
 
 	wg_softkernels_default.cpp
 	wg_softkernels_default.h
+	wg_softkernels_tinylinear.cpp
+	wg_softkernels_tinylinear.h
 	wg_softkernels_rgb555be_base.cpp
 	wg_softkernels_rgb555be_base.h
 	wg_softkernels_rgb555be_extras.cpp
