@@ -223,6 +223,7 @@ namespace wg
 
 		inline const Color8* palette() const;
 		inline int			paletteSize() const;
+		inline int			paletteCapacity() const;
 
 		inline const PixelDescription*	pixelDescription() const; ///< @brief Get the pixel description for the surface.
 		inline PixelFormat	pixelFormat() const;
@@ -450,11 +451,18 @@ namespace wg
 		return m_pPalette;
 	}
 
-	//____ paletteSiz() _____________________________________________________________
+	//____ paletteSize() _____________________________________________________________
 
 	int Surface::paletteSize() const
 	{
 		return m_paletteSize;
+	}
+
+	//____ paletteCapacity() _____________________________________________________________
+
+	int Surface::paletteCapacity() const
+	{
+		return m_paletteCapacity;
 	}
 
 	//____ pixelFormat() ______________________________________________________

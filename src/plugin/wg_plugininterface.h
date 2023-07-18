@@ -336,12 +336,14 @@ typedef struct wg_surface_calls_struct
 	wg_size				(*surfacePointSize)(wg_obj surface);
 	wg_pts				(*surfacePointWidth)(wg_obj surface);
 	wg_pts				(*surfacePointHeight)(wg_obj surface);
-	int					(*getSurfaceScale)(wg_obj surface);
+	int					(*surfaceScale)(wg_obj surface);
 	wg_sampleMethod		(*surfaceSampleMethod)(wg_obj surface);
 	int					(*surfaceIsTiling)(wg_obj surface);
 	int					(*surfaceIsMipmapped)(wg_obj surface);
 	int					(*surfaceAlpha)(wg_obj surface, wg_coordSPX coord);
 	const wg_color8*	(*surfacePalette)(wg_obj surface);
+	int					(*surfacePaletteSize)(wg_obj surface);
+	int					(*surfacePaletteCapacity)(wg_obj surface);
 	const wg_pixelDescription* (*surfacePixelDescription)(wg_obj surface);
 	wg_pixelFormat		(*surfacePixelFormat)(wg_obj surface);
 	int					(*surfacePixelBits)(wg_obj surface);

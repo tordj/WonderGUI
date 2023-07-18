@@ -100,7 +100,7 @@ extern "C" {
 	wg_pts			wg_surfacePointWidth(wg_obj surface);
 	wg_pts			wg_surfacePointHeight(wg_obj surface);
 
-	int				wg_getSurfaceScale(wg_obj surface);
+	int				wg_surfaceScale(wg_obj surface);
 
 
 	//____ Appearance ____________________________________________________
@@ -114,6 +114,8 @@ extern "C" {
 	int				wg_surfaceAlpha(wg_obj surface, wg_coordSPX coord);	///< @brief Get Alpha value of subpixel at specified coordinate.
 
 	const wg_color8* wg_surfacePalette(wg_obj surface);
+	int 			wg_surfaceSize(wg_obj surface);
+	int 			wg_surfaceCapacity(wg_obj surface);
 
 	const wg_pixelDescription* wg_surfacePixelDescription(wg_obj surface); ///< @brief Get the pixel description for the surface.
 	wg_pixelFormat	wg_surfacePixelFormat(wg_obj surface);

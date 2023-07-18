@@ -47,7 +47,8 @@ namespace wg
 		// We have initialized with an empty Blueprint. Now lets set correct values.
 
 		m_id				= PluginCalls::surface->getSurfaceIdentity(object);
-		m_scale				= PluginCalls::surface->getSurfaceScale(object);
+		m_scale				= PluginCalls::surface->surfaceScale(object);
+		m_pixelFormat		= (PixelFormat)PluginCalls::surface->surfacePixelFormat(object);
 		m_pPixelDescription	= (PixelDescription*)PluginCalls::surface->surfacePixelDescription(object);
 		
 		wg_sizeI pixSize 	= PluginCalls::surface->surfacePixelSize(object);
@@ -57,10 +58,24 @@ namespace wg
 		m_bTiling			= PluginCalls::surface->surfaceIsTiling(object);
 		m_bCanvas			= PluginCalls::surface->surfaceCanBeCanvas(object);
 		m_pPalette			= (Color8*)PluginCalls::surface->surfacePalette(object);
+		m_paletteSize		= PluginCalls::surface->surfacePaletteSize(object);
+		m_paletteCapacity	= PluginCalls::surface->surfacePaletteCapacity(object);
 		m_pBaggage			= reinterpret_cast<Object*>(PluginCalls::surface->getSurfaceBaggage(object));
 	}
 
 
+
+m_pixelFormat	= format;
+m_pPixelDescription = &Util::pixelFormatToDescription(format);
+
+m_size			= bp.size;
+m_scale			= bp.scale == 0 ? 64 : bp.scale;
+m_sampleMethod	= method;
+m_bTiling		= bp.tiling;
+m_bCanvas		= bp.canvas;
+m_bBuffered		= bp.buffered;
+m_bDynamic		= bp.dynamic;
+m_id			= bp.identity;
 
 	//____ Destructor ______________________________________________________________
 
@@ -83,7 +98,7 @@ namespace wg
 
 	int PluginSurface::scale() const
 	{
-		return PluginCalls::surface->getSurfaceScale(m_cSurface);
+		return PluginCalls::surface->surfaceScale(m_cSurface);
 	}
 
 	//____ allocPixelBuffer() _________________________________________________

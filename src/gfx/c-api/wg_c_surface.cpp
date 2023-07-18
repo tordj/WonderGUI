@@ -88,7 +88,7 @@ wg_pts wg_surfacePointHeight(wg_obj surface)
 }
 
 
-int wg_getSurfaceScale(wg_obj surface)
+int wg_surfaceScale(wg_obj surface)
 {
 	return getPtr(surface)->scale();
 }
@@ -124,6 +124,15 @@ const wg_color8* wg_surfacePalette(wg_obj surface)
 	return (const wg_color8 *) getPtr(surface)->palette();
 }
 
+int wg_surfaceSize(wg_obj surface)
+{
+	return getPtr(surface)->paletteSize();
+}
+
+int wg_surfaceCapacity(wg_obj surface)
+{
+	return getPtr(surface)->paletteCapacity();
+}
 
 const wg_pixelDescription* wg_surfacePixelDescription(wg_obj surface)
 {

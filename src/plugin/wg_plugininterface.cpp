@@ -237,12 +237,14 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pBody->surface.surfacePointSize			= &wg_surfacePointSize;
 	pBody->surface.surfacePointWidth		= &wg_surfacePointWidth;
 	pBody->surface.surfacePointHeight		= &wg_surfacePointHeight;
-	pBody->surface.getSurfaceScale			= &wg_getSurfaceScale;
+	pBody->surface.surfaceScale				= &wg_surfaceScale;
 	pBody->surface.surfaceSampleMethod		= &wg_surfaceSampleMethod;
 	pBody->surface.surfaceIsTiling			= &wg_surfaceIsTiling;
 	pBody->surface.surfaceIsMipmapped		= &wg_surfaceIsMipmapped;
 	pBody->surface.surfaceAlpha				= &wg_surfaceAlpha;
 	pBody->surface.surfacePalette			= &wg_surfacePalette;
+	pBody->surface.surfacePaletteSize		= &wg_surfacePaletteSize;
+	pBody->surface.surfacePaletteCapacity	= &wg_surfacePaletteCapacity;
 	pBody->surface.surfacePixelDescription	= &wg_surfacePixelDescription;
 	pBody->surface.surfacePixelFormat		= &wg_surfacePixelFormat;
 	pBody->surface.surfacePixelBits			= &wg_surfacePixelBits;
