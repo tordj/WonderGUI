@@ -819,9 +819,10 @@ namespace wg
 			{
 				for (Slot* pSlot = popupSlots._begin(); pSlot != popupSlots._end(); pSlot++)
 					_updateGeo(pSlot, true);
+
+				m_size = newSize;
 			}
 
-			m_size = newSize;
 			return newSize;
 		}
 		else

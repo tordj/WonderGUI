@@ -398,7 +398,14 @@ namespace wg
 
 	//____ _resize() ___________________________________________________________
 
-	void PackList::_resize( const SizeSPX& _size, int scale )
+	void PackList::_resize(const SizeSPX& size, int scale)
+	{
+		_resizeWithNotifyException(size, scale, nullptr);
+	}
+
+	//____ _resizeWithException() ___________________________________________________________
+
+	void PackList::_resizeWithNotifyException( const SizeSPX& _size, int scale, Slot * pDoNotNotify )
 	{
 		//TODO: Recalc MORE stuff if scale changes.
 
@@ -474,7 +481,8 @@ namespace wg
 				pSlot->m_length = newEntryLength;
 				ofs += newEntryLength;
 
-				pWidget->_resize( newEntrySize, m_scale );
+				if(pSlot != pDoNotNotify)
+					pWidget->_resize( newEntrySize, m_scale );
 			}
 			m_contentLength = ofs;
 		}
@@ -593,8 +601,8 @@ namespace wg
 
 		// Finish up
 
-		_requestRender();
-		_requestResize();						// This should preferably be done first once we have changed the method.
+		SizeSPX newSize = _requestResize();
+		_resize(newSize, m_scale);
 	}
 
 	//____ _receive() _____________________________________________________________
@@ -788,7 +796,8 @@ namespace wg
 		}
 
 		_updateChildOfsFrom(pSlot);
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		_resize(newSize, m_scale);
 	}
 
 	//____ _unhideSlots() _____________________________________________________
@@ -843,8 +852,12 @@ namespace wg
 		// Finish up
 
 		_updateChildOfsFrom(pSlot);
-		_requestRenderChildren(pSlot, slots._end());	// Request render on dirty area
-		_requestResize();						// This should preferably be done first once we have changed the method.	}
+
+		SizeSPX newSize = _requestResize();
+		if (newSize != m_size)
+			_resize(newSize, m_scale);
+		else
+			_requestRenderChildren(pSlot, slots._end());	// Request render on dirty area
 	}
 
 	//____ _selectSlots() ________________________________________________________
@@ -1119,7 +1132,8 @@ namespace wg
 				m_contentDefaultLength += lengthDiff;
 				m_contentDefaultBreadth += breadthDiff;
 
-				_requestResize();
+				SizeSPX newSize = _requestResize();
+				_resize(newSize, m_scale);
 			}
 		}
 	}
@@ -1264,7 +1278,7 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void PackList::_childRequestResize( StaticSlot * _pSlot )
+	SizeSPX PackList::_childRequestResize( StaticSlot * _pSlot )
 	{
 		bool	bReqResize = false;
 
@@ -1309,21 +1323,22 @@ namespace wg
 
 				_updateChildOfsFrom( pSlot );
 				_requestRenderChildren( pSlot, slots._end() );
-
-				RectSPX childGeo;
-				_getChildGeo(childGeo,pSlot);
-				pSlot->_widget()->_resize(childGeo, m_scale);
 			}
 		}
 
-		if( bReqResize )
-			_requestResize();
+		if (bReqResize)
+		{
+			SizeSPX newSize = _requestResize();
+			if (newSize != m_size)
+				_resizeWithNotifyException(newSize, m_scale, pSlot );
+		}
 
-		// Always set size on request since our _resize() won't do it unless breadth has changed.
+		//
 
 		RectSPX geo;
 		_getChildGeo(geo, pSlot);
-		pSlot->_setSize(geo.size(), m_scale);
+
+		return geo.size();
 	}
 
 	//____ _prevChild() __________________________________________________________
@@ -1485,8 +1500,11 @@ namespace wg
 				bRequestResize = true;
 		}
 
-		if( bRequestResize )
-			_requestResize();
+		if (bRequestResize)
+		{
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
+		}
 	}
 
 	//____ _sortEntries() _________________________________________________________

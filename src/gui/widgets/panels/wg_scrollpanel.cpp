@@ -607,7 +607,7 @@ namespace wg
 
 	//____ _updateCanvasSize() ________________________________________________
 
-	void ScrollPanel::_updateCanvasSize()
+	void ScrollPanel::_updateCanvasSize(bool bNotify)
 	{
 		auto pWidget = slot._widget();
 		if (pWidget)
@@ -650,10 +650,9 @@ namespace wg
 				m_childCanvas.setSize(size);
 			}
 
-			if (m_bChildRequestedResize || pWidget->_size() != size || pWidget->scale() != m_scale)
+			if (bNotify && (pWidget->_size() != size || pWidget->scale() != m_scale) )
 			{
 				pWidget->_resize(size, m_scale);
-				m_bChildRequestedResize = false;
 			}
 		}
 		else
@@ -963,7 +962,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void ScrollPanel::_childRequestResize(StaticSlot* pSlot)
+	SizeSPX ScrollPanel::_childRequestResize(StaticSlot* pSlot)
 	{
 		_updateCanvasSize();
 		_updateRegions();
@@ -980,9 +979,20 @@ namespace wg
 
 
 		_updateScrollbars();
-		
-		m_bChildRequestedResize = true;		// So that _resize() will know...
-		_requestResize();
+				
+		SizeSPX newSize = _requestResize();
+
+		if (newSize != m_size)
+		{
+			m_size = newSize;
+
+			_updateCanvasSize(false);
+			_updateRegions();
+			_childWindowCorrection();
+			_updateScrollbars();
+		}
+
+		return slot._widget()->_size();
 	}
 
 	//____ _childRequestInView() ______________________________________________
@@ -1061,7 +1071,8 @@ namespace wg
 		_updateScrollbars();
 
 		_requestRender();
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		_resize(newSize, m_scale);
 	}
 
 	//____ _replaceChild() ____________________________________________________
@@ -1075,7 +1086,8 @@ namespace wg
 		_updateScrollbars();
 
 		_requestRender();
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		_resize(newSize, m_scale);
 	}
 
 	//____ _componentPos() ____________________________________________________

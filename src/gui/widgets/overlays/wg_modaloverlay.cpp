@@ -119,7 +119,7 @@ namespace wg
 
 	//____ _refreshRealGeo() __________________________________________________
 
-	void ModalOverlay::_refreshRealGeo( Slot * pSlot, bool bForceResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
+	void ModalOverlay::_refreshRealGeo( Slot * pSlot, bool bNotifyResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
 		RectSPX placementGeo = align(ptsToSpx(pSlot->m_placementGeo,m_scale));
 
@@ -149,20 +149,32 @@ namespace wg
 			_onRequestRender(pSlot->m_geo, pSlot);
 		}
 
-		if (bForceResize || pSlot->m_geo.size() != geo.size())
+		if (bNotifyResize || pSlot->m_geo.size() != geo.size())
 			pSlot->_setSize(geo, m_scale);
 	}
 
 	//____ _childRequestResize() ______________________________________________
 
-	void ModalOverlay::_childRequestResize( StaticSlot * pSlot )
+	SizeSPX ModalOverlay::_childRequestResize( StaticSlot * pSlot )
 	{
-		if( pSlot == &mainSlot )
-			_requestResize();
+		if (pSlot == &mainSlot)
+		{
+			SizeSPX newSize = _requestResize();
+
+			if (newSize != m_size)
+			{
+				for (auto pSlot = modalSlots._begin(); pSlot != modalSlots._end(); pSlot++)
+					_refreshRealGeo(pSlot);
+
+				m_size = newSize;
+			}
+			return newSize;
+		}
 		else
 		{
 			auto p = static_cast<Slot*>(pSlot);
-			_refreshRealGeo( p, true );
+			_refreshRealGeo( p, false );
+			return p->m_geo.size();
 		}
 	}
 

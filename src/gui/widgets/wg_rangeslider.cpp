@@ -320,7 +320,8 @@ namespace wg
 		if (sz != m_defaultSize)
 		{
 			m_defaultSize = sz;
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 
 	}

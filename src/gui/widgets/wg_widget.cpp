@@ -258,7 +258,10 @@ namespace wg
 
 		if (!pNewSkin || !pOldSkin || pNewSkin->_contentPaddingSize(m_scale) != pOldSkin->_contentPaddingSize(m_scale) ||
 			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
-			_requestResize();
+		{
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
+		}
 	}
 
 	//____ setBaggage() _______________________________________________________
@@ -690,7 +693,8 @@ namespace wg
 
 	void Widget::_componentRequestResize( const Component * pComponent )
 	{
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		_resize(newSize, m_scale);
 		_requestRender();
 	}
 

@@ -142,7 +142,7 @@ namespace wg
 
 	private:
 
-		void            _refreshRealGeo(Slot * pSlot, bool bForceResize = false);
+		void            _refreshRealGeo(Slot * pSlot, bool bNotifyResize = true);
 
 		ModalOverlay *	_getModalOverlay() const  override { return const_cast<ModalOverlay*>(this); }
 

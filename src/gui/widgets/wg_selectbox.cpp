@@ -74,7 +74,8 @@ namespace wg
 			m_listCanvasDefaultSize.h += (newPadding.h - oldPadding.h) * entries.size();
 
 			m_entryContentPaddingSize = newPadding;
-			m_pListCanvas->_requestResize();
+			SizeSPX newSize = m_pListCanvas->_requestResize();
+			m_pListCanvas->_resize(newSize, m_scale);
 		}
 
 		m_pListCanvas->_requestRender();
@@ -89,7 +90,8 @@ namespace wg
 		{
 			m_pEntryStyle = pStyle;
 
-			m_pListCanvas->_requestResize();
+			SizeSPX newSize = m_pListCanvas->_requestResize();
+			m_pListCanvas->_resize(newSize, m_scale);
 			m_pListCanvas->_requestRender();
 		}
 	}
@@ -114,7 +116,8 @@ namespace wg
 	void SelectBox::setListTextLayout(TextLayout * pTextLayout)
 	{
 		m_pListTextLayout = pTextLayout;
-		m_pListCanvas->_requestResize();
+		SizeSPX newSize = m_pListCanvas->_requestResize();
+		m_pListCanvas->_resize(newSize, m_scale);
 		m_pListCanvas->_requestRender();
 	}
 
@@ -473,12 +476,15 @@ namespace wg
 		// Check if we need to adjust defaultSize for the SelectBox.
 
 		if (m_defaultSize != oldDefaultSize)
-			_requestResize();
+		{
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
+		}
 
 		// No use to requestRender here, added content is outside canvas content rect.
 
-		m_pListCanvas->_requestResize();
-
+		SizeSPX newSize = m_pListCanvas->_requestResize();
+		m_pListCanvas->_resize(newSize, m_scale);
 	}
 
 	//____ _didMoveEntries() __________________________________________________

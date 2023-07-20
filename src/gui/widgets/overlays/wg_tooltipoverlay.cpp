@@ -303,12 +303,29 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void TooltipOverlay::_childRequestResize(StaticSlot* pSlot)
+	SizeSPX TooltipOverlay::_childRequestResize(StaticSlot* pSlot)
 	{
 		if (pSlot == &mainSlot)
-			_requestResize();
+		{
+			SizeSPX newSize = _requestResize();
+
+			if (newSize != m_size)
+			{
+				_updateTooltipGeo();
+
+				//TODO: Notify tooltip that size has changed.
+
+				m_size = newSize;
+			}
+
+			return newSize;
+		}
 		else
+		{
 			_updateTooltipGeo();
+			return m_tooltipSlot.m_geo.size();
+		}
+
 	}
 
 	//____ _beginOverlaySlots() _________________________________________________

@@ -112,7 +112,8 @@ namespace wg
 		if (scale != m_scale)
 		{
 			m_scale = scale;
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 
 		return true;

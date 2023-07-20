@@ -574,7 +574,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void PackPanel::_childRequestResize(StaticSlot * _pSlot)
+	SizeSPX PackPanel::_childRequestResize(StaticSlot * _pSlot)
 	{
 		// Update cached preferred size of child
 
@@ -582,7 +582,8 @@ namespace wg
 		pSlot->m_defaultSize = pSlot->_paddedDefaultSize(m_scale);
 		pSlot->m_bResizeRequired = true;
 
-		_refreshGeometries();
+		_refreshGeometries(pSlot);
+		return pSlot->m_geo.size();
 	}
 
 	//____ _prevChild() _______________________________________________________
@@ -673,7 +674,7 @@ namespace wg
 */
 	//____ _refreshGeometries() _____________________________________________________
 
-	void PackPanel::_refreshGeometries()
+	void PackPanel::_refreshGeometries( Slot * pDoNotNotify )
 	{
 		// Recalculate preferred sizes for widget and content.
 
@@ -685,10 +686,11 @@ namespace wg
 		if (newDefaultContentSize != m_defaultContentSize || newDefaultSize != m_size)
 		{
 			m_defaultContentSize = newDefaultContentSize;
-			_requestResize();
+
+			m_size = _requestResize();
 		}
-		else
-			_refreshChildGeo();
+
+		_refreshChildGeo(true, pDoNotNotify);
 	}
 
 
@@ -819,7 +821,7 @@ namespace wg
 
 	//____ _refreshChildGeo() _________________________________________________________
 
-	void PackPanel::_refreshChildGeo( bool bRequestRender )
+	void PackPanel::_refreshChildGeo( bool bRequestRender, Slot * pDoNotNotify )
 	{
 		if( slots.isEmpty() )
 			return;
@@ -872,7 +874,8 @@ namespace wg
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
-							p->_widget()->_resize( geo.size(), m_scale );
+							if( p != pDoNotNotify )
+								p->_widget()->_resize( geo.size(), m_scale );
 							p->m_bResizeRequired = false;
 						}
 
@@ -899,7 +902,8 @@ namespace wg
 
 				if( p->m_bResizeRequired )
 				{
-					p->_widget()->_resize(geo.size(), m_scale);
+					if( p != pDoNotNotify )
+						p->_widget()->_resize(geo.size(), m_scale);
 					p->m_bResizeRequired = false;
 				}
 			}
@@ -954,7 +958,8 @@ namespace wg
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
-							p->_widget()->_resize( geo.size(), m_scale );
+							if( p != pDoNotNotify )
+								p->_widget()->_resize( geo.size(), m_scale );
 							p->m_bResizeRequired = false;
 						}
 					}
@@ -981,7 +986,8 @@ namespace wg
 
 				if (p->m_bResizeRequired)
 				{
-					p->_widget()->_resize(geo.size(), m_scale);
+					if (p != pDoNotNotify)
+						p->_widget()->_resize(geo.size(), m_scale);
 					p->m_bResizeRequired = false;
 				}
 			}

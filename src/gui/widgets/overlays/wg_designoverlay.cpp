@@ -365,14 +365,27 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void DesignOverlay::_childRequestResize( StaticSlot * pSlot )
+	SizeSPX DesignOverlay::_childRequestResize( StaticSlot * pSlot )
 	{
-		if( pSlot == &mainSlot )
-			_requestResize();
+		if (pSlot == &mainSlot)
+		{
+			SizeSPX newSize = _requestResize();
+
+			if (newSize != m_size)
+			{
+				for (auto pSlot = palettes._begin(); pSlot != palettes._end(); pSlot++)
+					_refreshRealGeo(pSlot);
+	
+				m_size = newSize;
+			}
+
+			return newSize;
+		}
 		else
 		{
 			auto p = static_cast<ToolboxSlot*>(pSlot);
 			_refreshRealGeo( p );
+			return p->m_geo.size();
 		}
 	}
 

@@ -182,6 +182,7 @@ namespace wg
 		void			_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void			_resize( const SizeSPX& size, int scale = -1) override;
+		void			_resizeWithNotifyException(const SizeSPX& size, int scale, Slot* pDoNotNotify = nullptr);
 
 		void			_receive( Msg * pMsg ) override;
 		SizeSPX			_windowPadding() const override;

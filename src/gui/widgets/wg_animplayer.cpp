@@ -277,7 +277,8 @@ namespace wg
 
 	void AnimPlayer::_didSetAnimFrameSize(AnimFrames* pComponent)
 	{
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		_resize(newSize, m_scale);
 	}
 
 	//____ _didSetAnimSurface() _______________________________________________

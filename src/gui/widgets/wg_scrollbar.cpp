@@ -86,7 +86,8 @@ namespace wg
 		{
 			scrollbar._setAxis(axis);
 			_requestRender();
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 	}
 

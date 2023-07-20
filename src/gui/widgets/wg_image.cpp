@@ -80,8 +80,11 @@ namespace wg
 			else
 				m_rect.clear();
 
-			if( bResize )
-				_requestResize();
+			if (bResize)
+			{
+				SizeSPX newSize = _requestResize();
+				_resize(newSize, m_scale);
+			}
 			_requestRender();
 		}
 	}
@@ -102,7 +105,10 @@ namespace wg
 				m_rect.clear();
 
 			if( bResize )
-				_requestResize();
+			{
+				SizeSPX newSize = _requestResize();
+				_resize(newSize, m_scale);
+			}
 			_requestRender();
 		}
 	}

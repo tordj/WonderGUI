@@ -81,7 +81,8 @@ namespace wg
 		if( size != m_defaultSize )
 		{
 			m_defaultSize = size;
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 	}
 
@@ -98,7 +99,8 @@ namespace wg
 			m_minSize = minSize;
 			m_defaultSize = defaultSize;
 			m_maxSize = maxSize;
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 		return true;
 	}
@@ -112,7 +114,8 @@ namespace wg
 		if( size != m_minSize )
 		{
 			m_minSize = size;
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 	}
 
@@ -125,7 +128,8 @@ namespace wg
 		if( size != m_maxSize )
 		{
 			m_maxSize = size;
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 	}
 

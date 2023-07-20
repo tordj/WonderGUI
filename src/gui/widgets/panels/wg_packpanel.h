@@ -212,12 +212,12 @@ namespace wg
 
 		//
 
-		void		_refreshChildGeo(bool bRequestRender);
+		void		_refreshChildGeo(bool bRequestRender, Slot * pDoNotNotify = nullptr );
 
 		void		_hideChildren(Slot * pSlot, int nb);
 		void		_unhideChildren(Slot * pSlot, int nb);
 
-		void		_refreshGeometries();
+		void		_refreshGeometries(Slot * pDoNotNotify = nullptr );
 		SizeSPX		_calcDefaultSize( int scale ) const;
 		int			_populateLayoutArray( PackLayout::Item * pArray ) const;
 		int			_populateLayoutArray(PackLayout::Item* pArray, spx forcedBreadth ) const;

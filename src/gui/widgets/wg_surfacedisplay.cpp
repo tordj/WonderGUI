@@ -122,7 +122,8 @@ namespace wg
 		{
 			m_zoom = factor;
 			_adjustOffset();
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 			_requestRender();
 		}
 	}

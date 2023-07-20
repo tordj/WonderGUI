@@ -131,7 +131,8 @@ namespace wg
 			if( m_defaultSize.h < min.h )
 				m_defaultSize.h = min.h;
 
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 		return true;
 	}
@@ -154,7 +155,8 @@ namespace wg
 			if( m_defaultSize.h > max.h )
 				m_defaultSize.h = max.h;
 
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 		return true;
 	}
@@ -173,7 +175,8 @@ namespace wg
 		limit( m_defaultSize.w, m_minSize.w, m_maxSize.w );
 		limit( m_defaultSize.h, m_minSize.h, m_maxSize.h );
 
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		_resize(newSize, m_scale);
 		return true;
 	}
 
@@ -187,7 +190,8 @@ namespace wg
 			return false;
 
 		m_defaultSize = defaultSize;
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		_resize(newSize, m_scale);
 		return true;
 	}
 
@@ -405,9 +409,12 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void LambdaPanel::_childRequestResize( StaticSlot * pSlot )
+	SizeSPX LambdaPanel::_childRequestResize( StaticSlot * _pSlot )
 	{
-		_updateGeo(static_cast<Slot*>(pSlot), true);
+		auto pSlot = static_cast<Slot*>(_pSlot);
+		_updateGeo(pSlot, false);
+
+		return pSlot->m_geo.size();
 	}
 
 	//____ _prevChild() __________________________________________________________
@@ -471,7 +478,7 @@ namespace wg
 
 	//____ _updateGeo() _______________________________________________________
 
-	void LambdaPanel::_updateGeo(Slot * pSlot, bool bForceResize )
+	void LambdaPanel::_updateGeo(Slot * pSlot, bool bNotifyResize )
 	{
 		//TODO: Don't requestRender if slot is hidden.
 
@@ -518,7 +525,7 @@ namespace wg
 		pSlot->m_geo = geo;
 		auto pWidget = pSlot->_widget();
 
-		if (bForceResize || pWidget->_size() != geo.size() || pWidget->_scale() != m_scale )
+		if (bNotifyResize && (pWidget->_size() != geo.size() || pWidget->_scale() != m_scale) )
 			pSlot->_setSize(geo, m_scale);
 	}
 

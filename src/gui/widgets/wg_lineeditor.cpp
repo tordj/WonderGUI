@@ -209,8 +209,11 @@ namespace wg
 
 		spx height = m_size.h - m_skin.contentPaddingSize(m_scale).h;
 
-		if(defaultSize.h != height )
-			_requestResize();
+		if (defaultSize.h != height)
+		{
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
+		}
 
 		editor._setSize( SizeSPX(defaultSize.w, height ),m_scale);	// Component gets the default width right away.
 	}

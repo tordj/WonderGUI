@@ -224,7 +224,8 @@ namespace wg
 //		if (sz != m_defaultSize)
 		{
 			m_defaultSize = sz;
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 
 	}
@@ -677,12 +678,11 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void SplitPanel::_childRequestResize(StaticSlot * pSlot)
+	SizeSPX SplitPanel::_childRequestResize(StaticSlot * pSlot)
 	{
 		//TODO: Implement better solution, should be able to adapt width !!!
 
-		auto p = static_cast<Slot*>(pSlot);
-		p->_setSize(p->m_geo, m_scale);
+		return static_cast<Slot*>(pSlot)->m_geo.size();
 	}
 
 	//____ _prevChild() _______________________________________________________

@@ -299,7 +299,7 @@ namespace wg
 		void		_unhideSlots(StaticSlot *, int nb);
 
 	private:
-		void		_refreshRealGeo(Slot * pSlot, bool bForceRefresh = false);
+		void		_refreshRealGeo(Slot * pSlot, bool bNotifyResize = true);
 		SizeSPX		_size() const { return m_size; }
 
 		void		_resize( const SizeSPX& size, int scale ) override;

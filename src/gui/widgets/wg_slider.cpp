@@ -276,8 +276,11 @@ namespace wg
 		if (sz != m_defaultSize)
 		{
 			m_defaultSize = sz;
-			if( bRequestResize )
-				_requestResize();
+			if (bRequestResize)
+			{
+				SizeSPX newSize = _requestResize();
+				_resize(newSize, m_scale);
+			}
 		}
 	}
 

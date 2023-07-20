@@ -506,10 +506,11 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void FlexPanel::_childRequestResize( StaticSlot * _pSlot )
+	SizeSPX FlexPanel::_childRequestResize( StaticSlot * _pSlot )
 	{
 		Slot * pSlot = static_cast<Slot*>(_pSlot);
-		_refreshRealGeo(pSlot, true);
+		_refreshRealGeo(pSlot, false);
+		return pSlot->m_realGeo.size();
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -623,7 +624,7 @@ namespace wg
 
 	//____ _refreshRealGeo() ___________________________________________
 
-	void FlexPanel::_refreshRealGeo( Slot * pSlot, bool bForceResize )
+	void FlexPanel::_refreshRealGeo( Slot * pSlot, bool bNotifyResize )
 	{
 		RectSPX	geo;
 
@@ -688,7 +689,7 @@ namespace wg
 			_onRequestRender(pSlot->m_realGeo, pSlot);
 		}
 
-		if (bForceResize || pSlot->_widget()->_size() != geo.size())
+		if (bNotifyResize && pSlot->_widget()->_size() != geo.size())
 			pSlot->_setSize(geo, m_scale);
 	}
 

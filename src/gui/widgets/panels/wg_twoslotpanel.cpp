@@ -95,9 +95,8 @@ namespace wg
 		{
 			m_pLayout = pLayout;
 			m_defaultSize = _calcDefaultSize(m_scale);
-			_requestResize();
-// This will only be needed once _requestResize can fail.
-//			_updateGeo();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 	}
 
@@ -122,7 +121,8 @@ namespace wg
 //		if (sz != m_defaultSize)
 		{
 			m_defaultSize = sz;
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 
 	}
@@ -550,7 +550,8 @@ namespace wg
 		pNewWidget->_resize(rect.size(), m_scale);
 		
 		m_defaultSize = _calcDefaultSize(m_scale);
-		_requestResize();
+		SizeSPX newSize = _requestResize();
+		_resize(newSize, m_scale);
 	
 /*
 *	Needs to be called if we are not resized.

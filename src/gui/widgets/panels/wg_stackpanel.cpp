@@ -246,7 +246,10 @@ namespace wg
 
 		SizeSPX newDefault =_calcDefaultSize(m_scale);
 		if (newDefault != m_defaultSize || m_defaultSize != m_size)
-			_requestResize();
+		{
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
+		}
 	}
 
 	void StackPanel::_repadSlots(StaticSlot * _pSlot, int nb, const Border * pPaddings)
@@ -262,7 +265,11 @@ namespace wg
 
 		SizeSPX newDefault = _calcDefaultSize(m_scale);
 		if (newDefault != m_defaultSize || m_defaultSize != m_size)
-			_requestResize();
+		{
+			SizeSPX newSize = _requestResize();
+			if (newSize != m_size)
+				_resize(newSize, m_scale);
+		}
 	}
 
 	//____ _setSizePolicy() ___________________________________________________
@@ -359,7 +366,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void StackPanel::_childRequestResize( StaticSlot * _pSlot )
+	SizeSPX StackPanel::_childRequestResize( StaticSlot * _pSlot )
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
@@ -368,7 +375,26 @@ namespace wg
 		if(newDefault != m_defaultSize || m_defaultSize != m_size )
 		{
 			m_defaultSize = newDefault;
-			_requestResize();
+
+			SizeSPX newSize = _requestResize();
+
+			if (newSize != m_size)
+			{
+				for (Slot* p = slots._begin(); p != slots._end(); p++)
+				{
+					if (p->m_bVisible && p != pSlot )
+					{
+						RectSPX geo = _childGeo(p);
+						p->m_position = geo.pos();
+						if( geo.size() != p->_widget()->_size() )
+							p->_setSize(geo.size(), m_scale);
+					}
+				}
+
+				m_size = newSize;
+			}
+
+			return pSlot->_widget()->_size();
 		}
 		else
 		{
@@ -378,10 +404,10 @@ namespace wg
 			if (oldGeo != newGeo)
 			{
 				pSlot->m_position = newGeo.pos();
-				pSlot->_setSize(newGeo.size(), m_scale);
 				_requestRender(oldGeo);
 				_requestRender(newGeo);
 			}
+			return newGeo.size();
 		}
 
 	}
@@ -465,8 +491,12 @@ namespace wg
 			pSlot++;
 		}
 
-		if( bRequestResize )
-			_requestResize();
+		if (bRequestResize)
+		{
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
+
+		}
 	}
 
 	//____ _hideChildren() __________________________________________________
@@ -517,8 +547,11 @@ namespace wg
 */
 		//
 
-		if( bRequestResize )
-			_requestResize();
+		if (bRequestResize)
+		{
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
+		}
 	}
 
 

@@ -190,7 +190,8 @@ namespace wg
 		{
 			mainSlot._setWidget(nullptr);
 			_onRequestRender(RectSPX(0, 0, m_size), 0);
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 	}
 
@@ -204,7 +205,8 @@ namespace wg
 			if( pNewWidget )
 				pNewWidget->_resize(m_size, m_scale);			//TODO: Should be content size here (and in all other _setWidget() methods?)
 			_onRequestRender(RectSPX(0, 0, m_size), 0);
-			_requestResize();
+			SizeSPX newSize = _requestResize();
+			_resize(newSize, m_scale);
 		}
 	}
 
