@@ -76,6 +76,8 @@ pRaw->release();	// Decrease the ref count once you are done. This will destroy
 
 Not that this is anything we recommend since it negates the advantages of smart pointers, but it is a good trick to know since it might come in handy in special cases, like when writing wrappers for other languages.
 
+
+
 #### Casting
 
 A StrongPtr (or WeakPtr) is implicitly cast to smart pointers of a base classes:
@@ -108,6 +110,8 @@ Finally there is one more way to cast. Since we can assign to a StrongPtr from a
 
 Which is exactly what wg_static_cast does.
 
+
+
 #### Finalizers
 
 A finalizer is a function that is called when an Objects reference count has reached zero, right before its destructor is called.
@@ -124,6 +128,35 @@ auto pWidget = Button::create();
 pWidget->setFinalizer([](Object * p) { /* Do something here */ });
 //                     ^
 // Note:       Capture | must be empty!
+
+```
+
+
+
+#### Introspection
+
+All Objects have an associated TypeInfo structure which allows you to check the class-type of the object and what class it inherits from. The name of the class is also accessible as a printable c-string.
+
+The method typeInfo() returns a reference to the type-info for the object and the TypeInfo-struct for any class can be accessed by <classname>::TYPEINFO. 
+
+Here are a few examples of what you can use that for:
+
+```
+// Determine if an object is a Widget, i.e. a subclass of the Widget-class:
+
+bool isWidget = pObject->isInstanceOf(Widget::TYPEINFO);
+
+// Determine if an object is a Button-widget specifically (not a subclass thereof):
+
+bool isButton = (pObject->typeInfo == Button::TYPEINFO);
+
+// Get the class-name of an object:
+
+const char * pClassName = pObject->typeInfo().className;
+
+// Get TypeInfo-struct for the class inherited from:
+
+TypeInfo * pSuperClass = pObject->typeInfo().pSuperClass;
 
 ```
 

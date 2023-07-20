@@ -30,14 +30,8 @@ The chunk header is 2-4 bytes long, depending on the size of the chunk and has t
 | 1               | 16 bit unsigned values with binals.   |
 | 2               | 16 bit signed values without binals.  |
 | 3               | 8 bit unsigned values without binals. |
-| 4               | 16 bit signed deltas with binals.     |
-| 5               | 16 bit signed deltas without binals.  |
-| 6               | 8 bit signed deltas with binals.      |
-| 7               | 8 bit signed deltas without binals.   |
 
-The first four alternatives can be used in any header and affects all the data stored in SPX format, this means all CoordSPX, SizeSPX, RectSPX, BorderSPX and anything just saved as an SPX.
-
-The last four alternatives with delta values can only be used in specific chunks supporting delta values which have special support for it.
+Any SPX storage format can be used in any header and affects all the data stored in SPX format, this means all CoordSPX, SizeSPX, RectSPX, BorderSPX and anything just saved as an SPX.
 
 Also, most data in a chunk needs to be align on word-bundary, so a single SPX saved in an 8-bit format will need to be padded with an additional byte.
 
