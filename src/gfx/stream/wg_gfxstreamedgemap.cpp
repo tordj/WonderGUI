@@ -152,6 +152,37 @@ bool GfxStreamEdgemap::setRenderSegments(int nSegments)
 	return true;
 }
 
+//____ setColors() ____________________________________________________________
+
+bool GfxStreamEdgemap::setColors( int begin, int end, const HiColor * pColors )
+{
+	if (!Edgemap::setColors(begin,end,pColors))
+		return false;
+
+		*m_pEncoder << GfxStream::Header{ GfxChunkId::SetEdgemapColors, GfxStream::SpxFormat::Int32_dec, 6 + (begin-end)*8 };
+		*m_pEncoder << m_inStreamId;
+		*m_pEncoder << (int16_t) begin;
+		*m_pEncoder << (int16_t) end;
+	
+	for( int i = begin ; i < end ; i++ )
+		*m_pEncoder << m_pColors[i];
+}
+
+//____ setGradients() _________________________________________________________
+
+bool GfxStreamEdgemap::setGradients( int begin, int end, const Gradient * pGradients )
+{
+	if (!Edgemap::setGradients(begin,end,pGradients))
+		return false;
+
+		*m_pEncoder << GfxStream::Header{ GfxChunkId::SetEdgemapGradients, GfxStream::SpxFormat::Int32_dec, 6 + (begin-end)*34 };
+		*m_pEncoder << m_inStreamId;
+		*m_pEncoder << (int16_t) begin;
+		*m_pEncoder << (int16_t) end;
+
+	for( int i = begin ; i < end ; i++ )
+		*m_pEncoder << m_pGradients[i];
+}
 
 //____ importSamples() _________________________________________________________
 

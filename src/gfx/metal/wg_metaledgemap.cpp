@@ -7,9 +7,9 @@
 
 							-----------
 
-  The WonderGUI Graphics Toolkit is free Glware; you can redistribute
+  The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
-  License as published by the Free Glware Foundation; either
+  License as published by the Free Metalware Foundation; either
   version 2 of the License, or (at your option) any later version.
 
 							-----------
@@ -21,6 +21,8 @@
 =========================================================================*/
 
 #include <wg_metaledgemap.h>
+
+#include <cstring>
 
 namespace wg
 {
@@ -74,55 +76,14 @@ MetalEdgemap_p MetalEdgemap::create( const Edgemap::Blueprint& blueprint, WaveOr
 
 MetalEdgemap::MetalEdgemap(const Blueprint& bp) : Edgemap(bp)
 {
-	// Analyze gradients to figure out our tint mode and amount of render colors.
-	
-	int renderColorsExtraBytes;
-	
-	if( bp.gradients == nullptr )
-	{
-		m_tintMode = TintMode::Flat;
-		renderColorsExtraBytes = 0;
-	}
-	else
-	{
-		bool bHorizontal = false;
-		bool bVertical = false;
-		
-		for( int i = 0 ; i < bp.segments ; i++ )
-		{
-			const Gradient& grad = bp.gradients[i];
-			
-			if(grad.topLeft != grad.topRight)
-				bHorizontal = true;
-
-	 		if(grad.topLeft != grad.bottomLeft)
-				bVertical = true;
-		}
-		
-		if( bHorizontal && bVertical )
-		{
-			m_tintMode = TintMode::GradientXY;
-			renderColorsExtraBytes = bp.segments * sizeof(HiColor) * 4;
-		}
-		else if( bVertical )
-		{
-			m_tintMode = TintMode::GradientY;
-			renderColorsExtraBytes = bp.segments * sizeof(HiColor) * 2;
-		}
-		else										// Defaults to GradientX even if all colors were identical since that is the fastest one.
-		{
-			m_tintMode = TintMode::GradientX;
-			renderColorsExtraBytes = bp.segments * sizeof(HiColor) * 2;
-		}
-	}
-	
 	// Setup buffers
 	
 	int sampleArraySize = (bp.size.w+1) * bp.segments * sizeof(spx);
 	int colorArraySize = bp.colors ? bp.segments*sizeof(HiColor) : 0;
 	int gradientArraySize = bp.gradients ? bp.segments*sizeof(Gradient) : 0;
+	int renderColorsBytes = bp.gradients ? bp.segments * sizeof(HiColor) * 4 : 0;		// Reserve space for XY-gradient colors.
 
-	int bytes = sampleArraySize + colorArraySize + gradientArraySize + renderColorsExtraBytes;
+	int bytes = sampleArraySize + colorArraySize + gradientArraySize + renderColorsBytes;
 	
 	m_pBuffer = new char[bytes];
 	
@@ -133,6 +94,9 @@ MetalEdgemap::MetalEdgemap(const Blueprint& bp) : Edgemap(bp)
 		m_pGradients = (Gradient*) pBuffer;
 		memcpy(m_pGradients, bp.gradients, gradientArraySize);
 		pBuffer += gradientArraySize;
+
+		m_pRenderColors = (HiColor*) pBuffer;
+		pBuffer += renderColorsBytes;
 	}
 
 	if( colorArraySize > 0 )
@@ -140,61 +104,11 @@ MetalEdgemap::MetalEdgemap(const Blueprint& bp) : Edgemap(bp)
 		m_pColors = (HiColor*) pBuffer;
 		memcpy(m_pColors, bp.colors, colorArraySize);
 		pBuffer += colorArraySize;
+
+		m_pRenderColors = m_pColors;
 	}
 
-	switch( m_tintMode )
-	{
-		default:
-		case TintMode::Flat:
-			m_pRenderColors = m_pColors;
-			break;
-			
-		case TintMode::GradientX:
-		{
-			m_pRenderColors = (HiColor*) pBuffer;
-
-			for( int i = 0 ; i < bp.segments ; i++ )
-			{
-				const Gradient& grad = bp.gradients[i];
-
-				m_pRenderColors[i*2] = grad.topLeft;
-				m_pRenderColors[i*2+1] = grad.topRight;
-			}
-			
-			pBuffer += renderColorsExtraBytes;
-		}
-		case TintMode::GradientY:
-		{
-			m_pRenderColors = (HiColor*) pBuffer;
-
-			for( int i = 0 ; i < bp.segments ; i++ )
-			{
-				const Gradient& grad = bp.gradients[i];
-
-				m_pRenderColors[i*2] = grad.topLeft;
-				m_pRenderColors[i*2+1] = grad.bottomLeft;
-			}
-			
-			pBuffer += renderColorsExtraBytes;
-		}
-		case TintMode::GradientXY:
-		{
-			m_pRenderColors = (HiColor*) pBuffer;
-
-			for( int i = 0 ; i < bp.segments ; i++ )
-			{
-				const Gradient& grad = bp.gradients[i];
-
-				m_pRenderColors[i*4]   = grad.topLeft;
-				m_pRenderColors[i*4+1] = grad.topRight;
-				m_pRenderColors[i*4+2] = grad.bottomRight;
-				m_pRenderColors[i*4+3] = grad.bottomLeft;
-			}
-			
-			pBuffer += renderColorsExtraBytes;
-		}
-			break;
-	}
+	_updateRenderColors();
 	
 	m_pSamples = (spx*) pBuffer;
 }
@@ -212,6 +126,30 @@ const TypeInfo& MetalEdgemap::typeInfo(void) const
 {
 	return TYPEINFO;
 }
+
+//____ setColors() ____________________________________________________________
+
+bool MetalEdgemap::setColors( int begin, int end, const HiColor * pColors )
+{
+	if( !Edgemap::setColors(begin,end,pColors))
+		return false;
+	
+	_updateRenderColors();
+	return true;
+}
+
+//____ setGradients() _________________________________________________________
+
+bool MetalEdgemap::setGradients( int begin, int end, const Gradient * pGradients )
+{
+	if( !Edgemap::setGradients(begin,end,pGradients))
+		return false;
+	
+	_updateRenderColors();
+	return true;
+}
+
+
 
 //____ importSamples() _________________________________________________________
 
@@ -316,12 +254,12 @@ void MetalEdgemap::_importSamples( WaveOrigo origo, const float * pSource, int e
 
 	if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
 		mul *= m_size.h*32;
-	else.
+	else
 		mul *= m_size.h*64;
 	
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
 	{
-		const float * pSrc = pSource + edgePitch * (edge-edgeBegin);
+		const float * pSrc = pSource + edgePitch * edge + samplePitch * sampleBegin;
 		spx * pDst = m_pSamples + edge + sampleBegin*(m_nbSegments-1);
 
 		for( int sample = sampleBegin ; sample < sampleEnd ; sample++ )
@@ -334,6 +272,98 @@ void MetalEdgemap::_importSamples( WaveOrigo origo, const float * pSource, int e
 }
 
 
+//____ _updateRenderColors() __________________________________________________
+
+void MetalEdgemap::_updateRenderColors()
+{
+	// Analyze gradients to figure out our tint mode and update our render colors.
+		
+	if( m_pGradients )
+	{
+		// Figure out and set optimal TintMode.
+		
+		bool bHorizontal = false;
+		bool bVertical = false;
+		bool bFlat = true;
+		
+		for( int i = 0 ; i < m_nbSegments ; i++ )
+		{
+			const Gradient& grad = m_pGradients[i];
+			
+			if(grad.topLeft != grad.topRight)
+				bHorizontal = true;
+
+			if(grad.topLeft != grad.bottomLeft)
+				bVertical = true;
+			
+			if(grad.topLeft != grad.topRight || grad.topLeft != grad.bottomRight || grad.topLeft != grad.bottomLeft )
+				bFlat = false;
+		}
+		
+		if( bFlat )
+			m_tintMode = TintMode::Flat;
+		else if( bHorizontal && bVertical )
+			m_tintMode = TintMode::GradientXY;
+		else if( bVertical )
+			m_tintMode = TintMode::GradientY;
+		else
+			m_tintMode = TintMode::GradientX;
+
+		// Copy gradient colors to render colors.
+		
+		switch( m_tintMode )
+		{
+			case TintMode::None:
+			case TintMode::Flat:
+			{
+				for( int i = 0 ; i < m_nbSegments ; i++ )
+					m_pRenderColors[i] = m_pGradients[i].topLeft;
+
+				break;
+			}
+
+			case TintMode::GradientX:
+			{
+				for( int i = 0 ; i < m_nbSegments ; i++ )
+				{
+					const Gradient& grad = m_pGradients[i];
+
+					m_pRenderColors[i*2] = grad.topLeft;
+					m_pRenderColors[i*2+1] = grad.topRight;
+				}
+				break;
+			}
+			case TintMode::GradientY:
+			{
+				for( int i = 0 ; i < m_nbSegments ; i++ )
+				{
+					const Gradient& grad = m_pGradients[i];
+
+					m_pRenderColors[i*2] = grad.topLeft;
+					m_pRenderColors[i*2+1] = grad.bottomLeft;
+				}
+				break;
+			}
+			case TintMode::GradientXY:
+			{
+				for( int i = 0 ; i < m_nbSegments ; i++ )
+				{
+					const Gradient& grad = m_pGradients[i];
+
+					m_pRenderColors[i*4]   = grad.topLeft;
+					m_pRenderColors[i*4+1] = grad.topRight;
+					m_pRenderColors[i*4+2] = grad.bottomRight;
+					m_pRenderColors[i*4+3] = grad.bottomLeft;
+				}
+				break;
+			}
+		}
+	}
+	else
+	{
+		m_tintMode = TintMode::Flat;
+	}
+}
 
 } // namespace wg
 

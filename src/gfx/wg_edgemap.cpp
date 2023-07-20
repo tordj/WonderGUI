@@ -46,6 +46,65 @@ namespace wg
 		return true;
 	}
 
+	//____ setColors() ____________________________________________________________
+
+	bool Edgemap::setColors( int begin, int end, const HiColor * pColors )
+	{
+		if( !m_pColors )
+		{
+			//TODO: Error handling!
+			return false;
+		}
+		
+		if( begin < 0 || end < begin || end > m_nbSegments )
+		{
+			//TODO: Error handling!
+		
+			return false;
+		}
+		
+		memcpy( m_pColors + begin, pColors, (end-begin)*sizeof(HiColor) );
+		return true;
+	}
+
+	//____ setGradients() _________________________________________________________
+
+	bool Edgemap::setGradients( int begin, int end, const Gradient * pGradients )
+	{
+		if( !m_pGradients )
+		{
+			//TODO: Error handling!
+			return false;
+		}
+		
+		if( begin < 0 || end < begin || end > m_nbSegments )
+		{
+			//TODO: Error handling!
+		
+			return false;
+		}
+		
+		memcpy( m_pGradients + begin, pGradients, (end-begin)*sizeof(Gradient) );
+		return true;
+	}
+
+
+	//____ colors() ______________________________________________________________
+
+	const HiColor * Edgemap::colors() const
+	{
+		return m_pColors;
+	}
+
+	//____ gradients() ___________________________________________________________
+
+	const Gradient * Edgemap::gradients() const
+	{
+		return m_pGradients;
+	}
+
+
+
 	//____ color() ____________________________________________________________
 
 	HiColor Edgemap::color(int segment) const
@@ -79,6 +138,9 @@ namespace wg
 			return false;
 		
 		if( bp.colors == nullptr && bp.gradients == nullptr )
+			return false;
+
+		if( bp.colors != nullptr && bp.gradients != nullptr )
 			return false;
 		
 		return true;		

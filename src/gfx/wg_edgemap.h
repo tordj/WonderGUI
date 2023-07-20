@@ -45,8 +45,8 @@ namespace wg
 		
 		struct Blueprint
 		{
-			const HiColor*		colors 		= nullptr;
-			const Gradient *	gradients 	= nullptr;
+			const HiColor*		colors 		= nullptr;			// Edgemap has either colors or gradients, never both. Setting one is mandatory.
+			const Gradient *	gradients 	= nullptr;			// Edgemap has either colors or gradients, never both. Setting one is mandatory.
 			int					segments	= 0;				// Mandatory.
 			SizeI				size;							// Mandatory.
 		};
@@ -66,6 +66,12 @@ namespace wg
 		virtual bool	setRenderSegments(int nSegments);
 		inline int		renderSegments() const { return m_nbRenderSegments; }
 
+		virtual bool	setColors( int begin, int end, const HiColor * pColors );
+		virtual bool	setGradients( int begin, int end, const Gradient * pGradients );
+		
+		virtual const HiColor * colors() const;
+		virtual const Gradient * gradients() const;
+		
 		virtual HiColor	color(int segment) const;
 		virtual Gradient gradient(int segment) const;
 
@@ -89,8 +95,8 @@ namespace wg
 
 	protected:
 
-		Edgemap( const Blueprint& bp ) : m_size(bp.size), m_nbSegments(bp.segments), m_nbRenderSegments(bp.segments) {};
-		virtual ~Edgemap() {};
+		Edgemap( const Blueprint& bp ) : m_size(bp.size), m_nbSegments(bp.segments), m_nbRenderSegments(bp.segments) {}
+		virtual ~Edgemap() {}
 		
 		static bool	_validateBlueprint(const Blueprint& bp);
 		

@@ -18,6 +18,8 @@ set( SOURCES
 	wg2_capsule.h
 	wg2_chart.cpp
 	wg2_chart.h
+	wg2_chart2.cpp
+	wg2_chart2.h
 	wg2_checkbox.cpp
 	wg2_checkbox.h
 	wg2_color.h

@@ -79,6 +79,7 @@ bool fullStateSupportTest(WgRootPanel* pRoot);
 bool gfxStreamingTest(WgRootPanel* pRoot);
 bool blendFixedColorTest(WgRootPanel* pRoot);
 bool multiSliderClickThroughTest(WgRootPanel* pRoot);
+bool chartTest(WgRootPanel* pRoot);
 
 
 
@@ -335,7 +336,8 @@ int main ( int argc, char** argv )
 //	fullStateSupportTest(pRoot);
 //    gfxStreamingTest(pRoot);
 //	blendFixedColorTest(pRoot);
-	multiSliderClickThroughTest(pRoot);
+//	multiSliderClickThroughTest(pRoot);
+	chartTest(pRoot);
 
 	// Setup debug overlays
 	auto pOverlaySkin = wg::BoxSkin::create( { .color = WgColor(255,0,0,128), .outline = 1, .outlineColor = WgColor::Red,
@@ -460,6 +462,34 @@ void updateOscilloscope( WgOscilloscope * pOsc, int ofs, float freq, float ampli
 
 		pOsc->SetLinePoints(256,points);
 }
+
+
+//____ chartTest() __________________________________________________
+
+bool chartTest(WgRootPanel* pRoot)
+{
+	float samples[101];
+	
+	for( int i = 0 ; i < 101 ; i++ )
+		samples[i] = float(i % 30);
+	
+	
+	
+	auto pBaseFlex = new WgFlexPanel();
+	pRoot->SetChild(pBaseFlex);
+
+	pBaseFlex->SetSkin(wg::ColorSkin::create(WgColor::Black));
+	
+	auto pChart = new WgChart();
+	
+	int waveId = pChart->AddWave();
+	pChart->SetWaveStyle(waveId, WgColor::DarkBlue, WgColor::Red, 6.f, WgColor::LightBlue, 1.f, WgColor::LightBlue );
+	pChart->SetWaveSamples(waveId, 0, 100, samples );
+	
+	pBaseFlex->AddChild(pChart, WgRect(20,20,500,200) );
+	return true;
+}
+
 
 
 //____ multiSliderClickThroughTest() __________________________________________________

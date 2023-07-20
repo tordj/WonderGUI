@@ -55,6 +55,9 @@ namespace wg
 
 		bool	setRenderSegments(int nSegments) override;
 
+		bool	setColors( int begin, int end, const HiColor * pColors ) override;
+		bool	setGradients( int begin, int end, const Gradient * pGradients ) override;
+		
 		//.____ Content _______________________________________________________
 
 		bool 	importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,

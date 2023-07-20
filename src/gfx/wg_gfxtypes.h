@@ -462,13 +462,15 @@ namespace wg
 		
 		CreateEdgemap = 58,
 		SetEdgemapRenderSegments = 59,
-		BeginEdgemapUpdate = 60,
-		EdgemapSamples = 61,
-		EndEdgemapUpdate = 62,
-		DeleteEdgemap = 63,
+		SetEdgemapColors = 60,
+		SetEdgemapGradients = 61,
+		BeginEdgemapUpdate = 62,
+		EdgemapSamples = 63,
+		EndEdgemapUpdate = 64,
+		DeleteEdgemap = 65,
 
-		DrawEdgemap = 64,
-		FlipDrawEdgemap = 65
+		DrawEdgemap = 66,
+		FlipDrawEdgemap = 67
 	};
 
 	typedef uint8_t GfxChunkFlags;

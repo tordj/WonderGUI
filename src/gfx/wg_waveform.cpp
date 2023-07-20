@@ -42,8 +42,12 @@ namespace wg
 	Waveform::Waveform( const Blueprint& bp , EdgemapFactory * pFactory )
 	: 	m_color(bp.color),
 		m_outlineColor(bp.outlineColor),
+		m_gradient(bp.gradient),
+		m_outlineGradient(bp.outlineGradient),
 		m_origo(bp.origo),
-		m_nbSamples(bp.size.w+1)
+		m_nbSamples(bp.size.w+1),
+		m_pFactory(pFactory),
+		m_size(bp.size)
 	{
 
 		m_topBrush.thickness = bp.topOutlineThickness;
@@ -53,25 +57,8 @@ namespace wg
 
 		_generateInfluenceSlope( m_topBrush );
 		_generateInfluenceSlope( m_bottomBrush );
-		
-		if( pFactory == nullptr )
-			pFactory = GfxBase::defaultEdgemapFactory();
 
-		if( bp.gradient.isValid || bp.outlineGradient.isValid )
-		{
-			Gradient transparent(Color::Transparent);
-			Gradient outline = bp.outlineGradient.isValid ? bp.outlineGradient : Gradient(bp.color);
-			Gradient fill = bp.gradient.isValid ? bp.gradient : Gradient(bp.color);
-
-			Gradient	gradients[5] = { transparent, outline, fill, outline, transparent };
-
-			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.gradients = gradients, _.size = bp.size, _.segments = 5 ) );
-		}
-		else
-		{
-			HiColor	colors[5] = { Color::Transparent, bp.outlineColor, bp.color, bp.outlineColor, Color::Transparent };
-			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.colors = colors, _.size = bp.size, _.segments = 5 ) );
-		}
+		//
 		
 		m_topSamplesPadding = (bp.topOutlineThickness/2 / 64) + 1;
 		m_bottomSamplesPadding = (bp.bottomOutlineThickness/2 / 64) + 1;
@@ -84,6 +71,8 @@ namespace wg
 		
 		m_dirtBegin	= 0;
 		m_dirtEnd 	= m_nbSamples;
+
+		_regenEdgemap();
 	}
 
 	//____ destructor ____________________________________________________________
@@ -99,6 +88,105 @@ namespace wg
 	{
 		return TYPEINFO;
 	}
+
+	//____ setSize() ______________________________________________________________
+
+	bool Waveform::setSize( SizeI size )
+	{
+		if( size.w <= 0 || size.h <= 0 )
+		{
+			return false;
+		}
+			
+		if( size == m_size )
+			return true;
+		
+		int nSamples = size.w + 1;
+		if( nSamples != m_nbSamples )
+		{
+			delete [] m_pSampleBuffer;
+			m_pSampleBuffer = new spx[(m_nbSamples+m_topSamplesPadding*2)+(m_nbSamples+m_bottomSamplesPadding*2)];
+			
+			m_pTopSamples = m_pSampleBuffer + m_topSamplesPadding;
+			m_pBottomSamples = m_pSampleBuffer + (m_nbSamples + m_topSamplesPadding*2) + m_bottomSamplesPadding;
+			
+			m_nbSamples = nSamples;
+			m_size = size;
+			
+			m_dirtBegin	= 0;
+			m_dirtEnd 	= m_nbSamples;
+			
+			_regenEdgemap();
+		}
+				
+		return true;
+	}
+
+	//____ setColor() _____________________________________________________________
+
+	bool Waveform::setColor( HiColor col )
+	{
+		if( !col.isValid() )
+			return false;
+		
+		m_color = col;
+		_updateEdgemapColors();
+		return true;
+	}
+
+
+	//____ setGradient() _________________________________________________________
+
+	bool Waveform::setGradient( const Gradient& gradient )
+	{
+		if( !gradient.isValid )
+			return false;
+			
+		m_gradient = gradient;
+		_updateEdgemapColors();
+		return true;
+	}
+
+	//____ clearGradient() _________________________________________________________
+
+	void Waveform::clearGradient()
+	{
+		m_gradient = Gradient();
+		_updateEdgemapColors();
+	}
+
+	//____ setOutlineColor() _____________________________________________________
+
+	bool Waveform::setOutlineColor( HiColor col )
+	{
+		if( !col.isValid() )
+			return false;
+		
+		m_outlineColor = col;
+		_updateEdgemapColors();
+		return true;
+	}
+
+	//____ setOutlineGradient() __________________________________________________
+
+	bool Waveform::setOutlineGradient( const Gradient& gradient )
+	{
+		if( !gradient.isValid )
+			return false;
+			
+		m_outlineGradient = gradient;
+		_updateEdgemapColors();
+		return true;
+	}
+
+	//____ clearOutlineGradient() _________________________________________________________
+
+	void Waveform::clearOutlineGradient()
+	{
+		m_outlineGradient = Gradient();
+		_updateEdgemapColors();
+	}
+
 
 	//____ setSamples() __________________________________________________________
 
@@ -358,5 +446,67 @@ void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
 		brush.influenceSlope[nSteps+3] 	= 0;
 	}
 
+	//____ _updateEdgemapColors() ______________________________________________________
+
+	void Waveform::_updateEdgemapColors()
+	{
+		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : pFactory = GfxBase::defaultEdgemapFactory();
+
+		
+		bool bUseGradient = m_gradient.isValid || m_outlineGradient.isValid;
+		
+		if( bUseGradient )
+		{
+			Gradient transparent(Color::Transparent);
+			Gradient outline = m_outlineGradient.isValid ? m_outlineGradient : Gradient(m_outlineColor);
+			Gradient fill = m_gradient.isValid ? m_gradient : Gradient(m_color);
+
+			Gradient	gradients[5] = { transparent, outline, fill, outline, transparent };
+
+			if( m_pEdgemap == nullptr || m_pEdgemap->gradients() == nullptr )
+				m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.gradients = gradients, _.size = m_size, _.segments = 5 ) );
+			else
+				m_pEdgemap->setGradients( 0, 5, gradients );
+		}
+		else
+		{
+			HiColor	colors[5] = { Color::Transparent, m_outlineColor, m_color, m_outlineColor, Color::Transparent };
+			
+			if( m_pEdgemap && m_pEdgemap->gradients() == nullptr )
+				m_pEdgemap->setColors( 0, 5, colors );
+			else
+			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.colors = colors, _.size = m_size, _.segments = 5 ) );
+		}
+	}
+
+	//____ _regenEdgemap() ______________________________________________________
+
+	void Waveform::_regenEdgemap()
+	{
+		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : pFactory = GfxBase::defaultEdgemapFactory();
+
+		
+		bool bUseGradient = m_gradient.isValid || m_outlineGradient.isValid;
+		
+		
+		if( bUseGradient )
+		{
+			Gradient transparent(Color::Transparent);
+			Gradient outline = m_outlineGradient.isValid ? m_outlineGradient : Gradient(m_outlineColor);
+			Gradient fill = m_gradient.isValid ? m_gradient : Gradient(m_color);
+
+			Gradient	gradients[5] = { transparent, outline, fill, outline, transparent };
+
+			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.gradients = gradients, _.size = m_size, _.segments = 5 ) );
+		}
+		else
+		{
+			HiColor	colors[5] = { Color::Transparent, m_outlineColor, m_color, m_outlineColor, Color::Transparent };
+			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.colors = colors, _.size = m_size, _.segments = 5 ) );
+		}
+	}
+
 
 }
+
+

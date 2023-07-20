@@ -204,10 +204,7 @@ namespace wg
 
 				_printRect(  "    rect         ", rect );
 				m_charStream << "    isValid      " << gradient.isValid << std::endl;
-				_printColor( "    topLeft      ", gradient.topLeft );
-				_printColor( "    topRight     ", gradient.topRight );
-				_printColor( "    bottomRight  ", gradient.bottomRight );
-				_printColor( "    bottomLeft   ", gradient.bottomLeft );
+				_printGradient( gradient );
 				break;
 			}
 
@@ -892,10 +889,7 @@ namespace wg
 						*m_pDecoder >> gradient;
 
 						m_charStream << "        isValid      " << gradient.isValid << std::endl;
-						_printColor("        topLeft      ", gradient.topLeft);
-						_printColor("        topRight     ", gradient.topRight);
-						_printColor("        bottomRight  ", gradient.bottomRight);
-						_printColor("        bottomLeft   ", gradient.bottomLeft);
+						_printGradient( gradient );
 					}
 				}
 				break;
@@ -914,6 +908,53 @@ namespace wg
 				break;
 			}
 
+			case GfxChunkId::SetEdgemapColors:
+			{
+				uint16_t	edgemapId;
+				uint16_t	begin;
+				uint16_t	end;
+				
+				*m_pDecoder >> edgemapId;
+				*m_pDecoder >> begin;
+				*m_pDecoder >> end;
+
+				m_charStream << "    edgemapId  = " << edgemapId << std::endl;
+				m_charStream << "    begin       = " << begin << std::endl;
+				m_charStream << "    end         = " << end << std::endl;
+
+				for( int i = begin ; i < end ; i++ )
+				{
+					HiColor	col;
+					*m_pDecoder >> col;
+					_printColor("             ", col);
+				}
+				break;
+			}
+				
+			case GfxChunkId::SetEdgemapGradients:
+			{
+				uint16_t	edgemapId;
+				uint16_t	begin;
+				uint16_t	end;
+				
+				*m_pDecoder >> edgemapId;
+				*m_pDecoder >> begin;
+				*m_pDecoder >> end;
+
+				m_charStream << "    edgemapId  = " << edgemapId << std::endl;
+				m_charStream << "    begin       = " << begin << std::endl;
+				m_charStream << "    end         = " << end << std::endl;
+
+				for( int i = begin ; i < end ; i++ )
+				{
+					Gradient	gradient;
+					*m_pDecoder >> gradient;
+					_printGradient(gradient);
+				}
+				break;
+			}
+
+				
 			case GfxChunkId::BeginEdgemapUpdate:
 			{
 				uint16_t	edgemapId;
@@ -1138,6 +1179,17 @@ namespace wg
 	{
 		m_charStream << header << " = " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << ", " << (int)color.a << std::endl;
 	}
+
+	//____ _printGradient() _________________________________________________
+
+	void GfxStreamLogger::_printGradient( const Gradient& gradient )
+	{
+		_printColor("        topLeft      ", gradient.topLeft);
+		_printColor("        topRight     ", gradient.topRight);
+		_printColor("        bottomRight  ", gradient.bottomRight);
+		_printColor("        bottomLeft   ", gradient.bottomLeft);
+	}
+
 
 	//____ _printBorder() _________________________________________________
 

@@ -1126,6 +1126,53 @@ namespace wg
 			break;
 		}
 
+			case GfxChunkId::SetEdgemapColors:
+			{
+				uint16_t	edgemapId;
+				uint16_t	begin;
+				uint16_t	end;
+				
+				*m_pDecoder >> edgemapId;
+				*m_pDecoder >> begin;
+				*m_pDecoder >> end;
+
+				int nColors = end - begin;
+
+				int memAllocated = sizeof(HiColor)*nColors;
+				auto * pColors = (HiColor*) GfxBase::memStackAlloc(memAllocated);
+				
+				for( int i = 0 ; i < nColors ; i++ )
+					*m_pDecoder >> pColors[i];
+
+				m_vEdgemaps[edgemapId]->setColors(begin, end, pColors);
+				GfxBase::memStackFree(memAllocated);
+				break;
+			}
+				
+			case GfxChunkId::SetEdgemapGradients:
+			{
+				uint16_t	edgemapId;
+				uint16_t	begin;
+				uint16_t	end;
+				
+				*m_pDecoder >> edgemapId;
+				*m_pDecoder >> begin;
+				*m_pDecoder >> end;
+
+				int nGradients = end - begin;
+
+				int memAllocated = sizeof(Gradient)*nGradients;
+				auto * pGradients = (Gradient*) GfxBase::memStackAlloc(memAllocated);
+				
+				for( int i = 0 ; i < nGradients ; i++ )
+					*m_pDecoder >> pGradients[i];
+
+				m_vEdgemaps[edgemapId]->setGradients(begin, end, pGradients);
+				GfxBase::memStackFree(memAllocated);
+				break;
+			}
+				
+				
 		case GfxChunkId::BeginEdgemapUpdate:
 		{
 			uint16_t	edgemapId;

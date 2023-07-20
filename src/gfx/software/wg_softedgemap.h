@@ -50,7 +50,11 @@ namespace wg
 		const TypeInfo&     typeInfo(void) const override;
 		const static TypeInfo   TYPEINFO;
 
+		//.____ Appearance ____________________________________________________
 
+		bool	setColors( int begin, int end, const HiColor * pColors ) override;
+		bool	setGradients( int begin, int end, const Gradient * pGradients ) override;
+		
 		//.____ Content _______________________________________________________
 
 		bool 	importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
@@ -76,7 +80,8 @@ namespace wg
 		void 	_importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch );
 
-		
+		void	_updateRenderColors();
+				
 		char *	m_pBuffer;
 		spx *	m_pSamples;					// Stored vertically, e.g. samples for first column for all edges before samples for second column etc
 

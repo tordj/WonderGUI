@@ -329,7 +329,7 @@ namespace wg
 	{
 		// Stream the call
 
-		*m_pEncoder << GfxStream::Header{ GfxChunkId::FillSurface, GfxStream::SpxFormat::Int32_dec, 14 };
+		*m_pEncoder << GfxStream::Header{ GfxChunkId::FillSurface, GfxStream::SpxFormat::Int32_dec, 2+16+8 };
 		*m_pEncoder << m_inStreamId;
 		*m_pEncoder << region;
 		*m_pEncoder << color;
@@ -343,8 +343,12 @@ namespace wg
 		}
 		else if (m_pAlphaLayer)
 		{
-			for (int i = 0; i < m_size.w*m_size.h; i++)
-				m_pAlphaLayer[i] = color.a;
+			for (int y = region.y ; y < region.y + region.h ; y++ )
+			{
+				uint8_t * p = m_pAlphaLayer + y * m_size.w + region.x;
+				for( int x = 0 ; x < region.h ; x++ )
+					* p++ = color.a;
+			}
 		}
 
 		//

@@ -61,8 +61,31 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Content __________________________________________________
+		//.____ Geometry ____________________________________________________
+		
+		bool		setSize( SizeI size );							// Destroys all samples. Will need to be set again.
+		SizeI		size() const { return m_size; }
+		
+		//.____ Appearance ____________________________________________________
 
+		bool		setColor( HiColor col );
+		HiColor		color() const { return m_color; }
+		
+		bool		setGradient( const Gradient& gradient );
+		void		clearGradient();
+		Gradient	gradient() const { return m_gradient; }
+
+		bool		setOutlineColor( HiColor col );
+		HiColor		outlineColor() const { return m_outlineColor; }
+
+		bool		setOutlineGradient( const Gradient& gradient );
+		void		clearOutlineGradient();
+		Gradient	outlineGradient() const { return m_outlineGradient; }
+
+		//.____ Content __________________________________________________
+		
+		int			nbSamples() const { return m_nbSamples;  }
+		
 		void setSamples( int sampleBegin, int sampleEnd, spx * pTopSamples, spx * pBottomSamples );
 		void setSamples( int sampleBegin, int sampleEnd, float * pTopSamples, float * pBottomSamples );
 
@@ -85,20 +108,27 @@ namespace wg
 			spx		influenceSlope[32*4+4];			// Max 64 pixels wide brush with 4x oversampling + room for 4 zeroes.
 		};
 
-		void _setFlatLine( spx * pSamples, int sampleBegin, int sampleEnd, spx sample );
-		void _drawLine(spx * pSrc, spx * pDestTop, spx * pDestBottom, int nPoints, Brush& brush);
-		void _generateInfluenceSlope( Brush& brush );
+		void 		_setFlatLine( spx * pSamples, int sampleBegin, int sampleEnd, spx sample );
+		void 		_drawLine(spx * pSrc, spx * pDestTop, spx * pDestBottom, int nPoints, Brush& brush);
+		void 		_generateInfluenceSlope( Brush& brush );
 		
-		
+		void 		_updateEdgemapColors();
+		void 		_regenEdgemap();
+
+		RectI		m_size;
 		
 		WaveOrigo	m_origo;
 		
-		HiColor		m_color;
+		HiColor		m_color = HiColor::Undefined;
+		HiColor		m_outlineColor = HiColor::Undefined;
 
-		HiColor		m_outlineColor;
+		Gradient	m_gradient;
+		Gradient	m_outlineGradient;
+
 		Brush		m_topBrush;
 		Brush		m_bottomBrush;
 
+		EdgemapFactory_p	m_pFactory;
 		Edgemap_p	m_pEdgemap;
 
 		int			m_nbSamples;
