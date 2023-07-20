@@ -31,7 +31,7 @@ namespace wg
 namespace EdgemapTools
 {
 
-	Edgemap_p createDonut(const SizeSPX size, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor, EdgemapFactory * pFactory = nullptr );
+	Edgemap_p createDonut(SizeSPX size, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor, EdgemapFactory * pFactory = nullptr );
 
 	bool drawOutlinedDonut(Edgemap * pEdgemap, spx thickness, spx outlineThickness );
 

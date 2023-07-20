@@ -24,7 +24,6 @@
 #define	WG_EDGEMAPFACTORY_DOT_H
 #pragma once
 
-
 #include <wg_edgemap.h>
 
 namespace wg

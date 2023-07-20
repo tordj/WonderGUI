@@ -31,7 +31,7 @@ namespace EdgemapTools {
 
 //____ createDonut() ______________________________________________________
 
-Edgemap_p createDonut(const SizeSPX size, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor, EdgemapFactory * pFactory )
+Edgemap_p createDonut(SizeSPX size, spx thickness, HiColor fillColor, spx outlineThickness, HiColor outlineColor, EdgemapFactory * pFactory )
 {
 	auto pCurveTab = GfxBase::curveTab();
 	int curveTabSize = GfxBase::curveTabSize();
@@ -52,7 +52,7 @@ Edgemap_p createDonut(const SizeSPX size, spx thickness, HiColor fillColor, spx 
 
 	RectI clip = outerRect;
 	if (clip.w == 0 || clip.h == 0)
-		return;
+		return nullptr;
 
 	int clipLeft = clip.x - outerRect.x;
 
