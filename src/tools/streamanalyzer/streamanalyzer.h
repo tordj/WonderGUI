@@ -3,6 +3,7 @@
 
 #include <wonderapp.h>
 #include <wondergui.h>
+#include <wondergfxstream.h>
 #include <wg_freetypefont.h>
 
 #include <initializer_list>

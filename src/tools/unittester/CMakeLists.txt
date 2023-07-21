@@ -19,6 +19,7 @@ target_working_directory(unittester ${WG_ROOT} )
 target_include_directories(unittester PRIVATE 
 	${WONDERGUI_INCDIRS}
 	${WGSOFTGFX_INCDIRS}
+	${GFXSTREAM_INCDIRS}
 	${WGFREETYPEFONT_INCDIRS}
 )
 
@@ -26,5 +27,6 @@ target_link_libraries(unittester PRIVATE
 	wgfreetypefont
 	wondergui
 	wgsoftgfx
+	wggfxstream
 )
 

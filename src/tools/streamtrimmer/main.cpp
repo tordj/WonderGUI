@@ -62,11 +62,13 @@ int main ( int argc, char** argv )
 	
 	auto pTrimEncoder = GfxStreamTrimEncoder::create( {pTrimmedSplitter, pTrimmedSplitter->input} );
 	
-	auto pFactory = GfxStreamSurfaceFactory::create(pTrimEncoder);
+	auto pSurfaceFactory = GfxStreamSurfaceFactory::create(pTrimEncoder);
+	auto pEdgemapFactory = GfxStreamEdgemapFactory::create(pTrimEncoder);
+
 	auto pDevice = GfxStreamDevice::create(pTrimEncoder);
 	
 	
-	auto pPlayer = GfxStreamPlayer::create(pDevice, pFactory);
+	auto pPlayer = GfxStreamPlayer::create(pDevice, pSurfaceFactory, pEdgemapFactory);
 	
 	auto pStraightLogger = GfxStreamLogger::create( log );
 

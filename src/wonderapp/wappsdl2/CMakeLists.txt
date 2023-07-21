@@ -38,7 +38,7 @@ target_include_directories(wappsdl2sw PRIVATE
     ${SDL2IMAGE_INCDIR}
 )
 
-set_target_properties(wappsdl2sw PROPERTIES FOLDER "WonderApp/Frameworks" )
+set_target_properties(wappsdl2sw PROPERTIES FOLDER "WonderApp" )
 
 target_link_directories(wappsdl2sw PUBLIC
     ${SDL2_LIBDIR}
@@ -72,7 +72,7 @@ target_include_directories(wappsdl2gl PRIVATE
     ${SDL2IMAGE_INCDIR}
 )
 
-set_target_properties(wappsdl2gl PROPERTIES FOLDER "WonderApp/Frameworks" )
+set_target_properties(wappsdl2gl PROPERTIES FOLDER "WonderApp" )
 
 target_link_directories(wappsdl2gl PUBLIC
     ${SDL2_LIBDIR}
@@ -111,7 +111,7 @@ if(APPLE)
         ${SDL2IMAGE_INCDIR}
     )
 
-    set_target_properties(wappsdl2metal PROPERTIES FOLDER "WonderApp/Frameworks" )
+    set_target_properties(wappsdl2metal PROPERTIES FOLDER "WonderApp" )
 
     target_link_directories(wappsdl2metal PUBLIC
         ${SDL2_LIBDIR}

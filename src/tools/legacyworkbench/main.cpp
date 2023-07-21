@@ -29,10 +29,12 @@
 #include <wg2_knob.h>
 #include <iostream>
 
+/*
 #include <wg_gfxstreamsurface.h>
 #include <wg_gfxstreamsurfacefactory.h>
 #include <wg_gfxstreamdevice.h>
 #include <wg_gfxstreamplayer.h>
+*/
 
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>

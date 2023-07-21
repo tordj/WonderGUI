@@ -1,8 +1,10 @@
 #include <string.h>
 
+
 #include "gfxstream.h"
 
 #include <wondergui.h>
+#include <wondergfxstream.h>
 
 #include <wg_string.h>
 

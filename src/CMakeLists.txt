@@ -107,24 +107,25 @@ endif()
 
 #------------------------------------------------------------------------------
 
-add_subdirectory(gear)
-add_subdirectory(gfx)
-add_subdirectory(glyphs)
-add_subdirectory(gui)
+add_subdirectory(wondergear)
+add_subdirectory(wondergfx)
+add_subdirectory(wonderglyphs)
+add_subdirectory(wondergui)
 
-add_subdirectory(glyphs/freetype)
+add_subdirectory(extensions/freetypefont)
 
-add_subdirectory(legacygui)
+add_subdirectory(extensions/legacygui)
 
 if(APPLE)
-	add_subdirectory(gfx/metal)
+	add_subdirectory(extensions/metalgfx)
 endif()
 
-add_subdirectory(gfx/opengl)
-add_subdirectory(gfx/software)
+add_subdirectory(extensions/gfxstream)
+add_subdirectory(extensions/openglgfx)
+add_subdirectory(extensions/softgfx)
+add_subdirectory(extensions/plugin)
 
-
-add_subdirectory(plugin)
 add_subdirectory(wonderapp/wappsdl2)
+
 add_subdirectory(tools)
 add_subdirectory(examples)

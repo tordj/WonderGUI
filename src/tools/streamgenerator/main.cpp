@@ -23,6 +23,8 @@
 #include <wg_freetypefont.h>
 
 #include <wg_softsurface.h>
+#include <wg_softedgemap.h>
+#include <wg_softedgemapfactory.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
 #include <wg_softkernels_default.h>
@@ -283,7 +285,7 @@ int main ( int argc, char** argv )
 
 	// Player
 
-	auto pStreamPlayer = GfxStreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create());
+	auto pStreamPlayer = GfxStreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create(), SoftEdgemapFactory::create() );
 
 
 	// Streampump taking from buffer and feeding logger and/or player
