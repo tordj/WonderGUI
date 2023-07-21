@@ -37,7 +37,7 @@ namespace wg
 
 	StaticGradientSkin_p StaticGradientSkin::create(const Gradient& gradient)
 	{
-		if (!gradient.isValid)
+		if (!gradient.isValid())
 			return nullptr;
 
 		Blueprint blueprint;
@@ -48,7 +48,7 @@ namespace wg
 
 	StaticGradientSkin_p StaticGradientSkin::create( const Blueprint& blueprint )
 	{
-		if (!blueprint.gradient.isValid)
+		if (!blueprint.gradient.isValid())
 			return nullptr;
 
 		return StaticGradientSkin_p(new StaticGradientSkin(blueprint));

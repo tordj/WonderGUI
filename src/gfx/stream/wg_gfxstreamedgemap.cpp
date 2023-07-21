@@ -166,6 +166,8 @@ bool GfxStreamEdgemap::setColors( int begin, int end, const HiColor * pColors )
 	
 	for( int i = begin ; i < end ; i++ )
 		*m_pEncoder << m_pColors[i];
+
+	return true;
 }
 
 //____ setGradients() _________________________________________________________
@@ -175,13 +177,15 @@ bool GfxStreamEdgemap::setGradients( int begin, int end, const Gradient * pGradi
 	if (!Edgemap::setGradients(begin,end,pGradients))
 		return false;
 
-		*m_pEncoder << GfxStream::Header{ GfxChunkId::SetEdgemapGradients, GfxStream::SpxFormat::Int32_dec, 6 + (begin-end)*34 };
+		*m_pEncoder << GfxStream::Header{ GfxChunkId::SetEdgemapGradients, GfxStream::SpxFormat::Int32_dec, 6 + (begin-end)*GfxStream::GradientSize };
 		*m_pEncoder << m_inStreamId;
 		*m_pEncoder << (int16_t) begin;
 		*m_pEncoder << (int16_t) end;
 
 	for( int i = begin ; i < end ; i++ )
 		*m_pEncoder << m_pGradients[i];
+
+	return true;
 }
 
 //____ importSamples() _________________________________________________________
@@ -308,7 +312,7 @@ void GfxStreamEdgemap::_sendCreateEdgemap( GfxStreamEncoder* pEncoder )
 	int nbGradients = ( m_pGradients != nullptr ) ? m_nbSegments : 0;
 
 
-	int blockSize = 14 + nbColors * 8 + nbGradients * 34;
+	int blockSize = 14 + nbColors * 8 + nbGradients * GfxStream::GradientSize;
 	
 	*pEncoder << GfxStream::Header{ GfxChunkId::CreateEdgemap, GfxStream::SpxFormat::Int32_dec, blockSize };
 	*pEncoder << m_inStreamId;

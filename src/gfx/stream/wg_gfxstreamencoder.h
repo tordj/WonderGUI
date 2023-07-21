@@ -386,7 +386,6 @@ namespace wg
 		* this << gradient.topRight;
 		* this << gradient.bottomRight;
 		* this << gradient.bottomLeft;
-		* this << gradient.isValid;
 		return *this;
 	}
 

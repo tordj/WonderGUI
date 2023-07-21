@@ -104,7 +104,7 @@ namespace wg
 				pDevice->setBlendMode(blendMode);
 			}
 
-			if (tintGradient.isValid)
+			if (!tintGradient.isUndefined())
 			{
 				pDevice->setTintGradient(rect, tintGradient);
 				m_bGradient = true;

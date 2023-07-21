@@ -24,6 +24,7 @@ set_target_properties(
 	embeddedworkbench
 	legacyworkbench
 	legacytestplugin
+	lineargfxworkbench
 	testplugin
 	fontgenerator
 	gfxworkbench

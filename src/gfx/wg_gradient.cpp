@@ -82,8 +82,6 @@ namespace wg
 		default:
 			return;
 		}
-
-		isValid = true;
 	}
 
 }

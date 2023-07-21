@@ -139,7 +139,7 @@ namespace wg
 
 	bool Waveform::setGradient( const Gradient& gradient )
 	{
-		if( !gradient.isValid )
+		if( !gradient.isValid() )
 			return false;
 			
 		m_gradient = gradient;
@@ -171,7 +171,7 @@ namespace wg
 
 	bool Waveform::setOutlineGradient( const Gradient& gradient )
 	{
-		if( !gradient.isValid )
+		if( !gradient.isValid() )
 			return false;
 			
 		m_outlineGradient = gradient;
@@ -453,13 +453,13 @@ void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
 		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : pFactory = GfxBase::defaultEdgemapFactory();
 
 		
-		bool bUseGradient = m_gradient.isValid || m_outlineGradient.isValid;
+		bool bUseGradient = !m_gradient.isUndefined() || !m_outlineGradient.isUndefined();
 		
 		if( bUseGradient )
 		{
 			Gradient transparent(Color::Transparent);
-			Gradient outline = m_outlineGradient.isValid ? m_outlineGradient : Gradient(m_outlineColor);
-			Gradient fill = m_gradient.isValid ? m_gradient : Gradient(m_color);
+			Gradient outline = m_outlineGradient.isUndefined() ? Gradient(m_outlineColor) : m_outlineGradient;
+			Gradient fill = m_gradient.isUndefined() ? Gradient(m_color) : m_gradient;
 
 			Gradient	gradients[5] = { transparent, outline, fill, outline, transparent };
 
@@ -486,14 +486,14 @@ void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
 		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : pFactory = GfxBase::defaultEdgemapFactory();
 
 		
-		bool bUseGradient = m_gradient.isValid || m_outlineGradient.isValid;
+		bool bUseGradient = !m_gradient.isUndefined() || !m_outlineGradient.isUndefined();
 		
 		
 		if( bUseGradient )
 		{
 			Gradient transparent(Color::Transparent);
-			Gradient outline = m_outlineGradient.isValid ? m_outlineGradient : Gradient(m_outlineColor);
-			Gradient fill = m_gradient.isValid ? m_gradient : Gradient(m_color);
+			Gradient outline = m_outlineGradient.isUndefined() ? Gradient(m_outlineColor) : m_outlineGradient;
+			Gradient fill = m_gradient.isUndefined() ? Gradient(m_color): m_gradient;
 
 			Gradient	gradients[5] = { transparent, outline, fill, outline, transparent };
 

@@ -34,7 +34,6 @@ namespace wg
 	public:
 
 		Gradient() :
-			isValid(false),
 			topLeft(HiColor::Undefined),
 			topRight(HiColor::Undefined),
 			bottomRight(HiColor::Undefined),
@@ -43,7 +42,6 @@ namespace wg
 		}
 
 		Gradient(HiColor fixedColor) :
-			isValid(true),
 			topLeft(fixedColor),
 			topRight(fixedColor),
 			bottomRight(fixedColor),
@@ -52,7 +50,6 @@ namespace wg
 		}
 		
 		Gradient(HiColor topLeft, HiColor topRight, HiColor bottomRight, HiColor bottomLeft) :
-			isValid(true),
 			topLeft(topLeft),
 			topRight(topRight),
 			bottomRight(bottomRight),
@@ -63,7 +60,9 @@ namespace wg
 		Gradient(Placement start, HiColor startColor, HiColor endColor);
 
 		inline void clear() { topLeft = topRight = bottomRight = bottomLeft = HiColor::White; }
-		inline bool isOpaque() { return (topLeft.a + topRight.a + bottomRight.a + bottomLeft.a) == 4096 * 4; }
+		inline bool isOpaque() const { return (topLeft.a + topRight.a + bottomRight.a + bottomLeft.a) == 4096 * 4; }
+		inline bool isUndefined() const { return topLeft.isUndefined(); }
+		inline bool isValid() const { return topLeft.isValid() && topRight.isValid() && bottomLeft.isValid() && bottomRight.isValid(); }
 
 		inline bool operator==(const Gradient& other) const
 		{
@@ -71,14 +70,11 @@ namespace wg
 					 (bottomRight.argb ^ other.bottomRight.argb) | (bottomLeft.argb ^ other.bottomLeft.argb)) == 0;
 		}
 
-		bool		isValid;
-
 		HiColor		topLeft;
 		HiColor		topRight;
 		HiColor		bottomRight;
 		HiColor		bottomLeft;
 	};
-
 
 }
 

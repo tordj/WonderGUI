@@ -321,6 +321,17 @@ namespace wg
 		Rot270FlipY,
 	};
 
+	//____ TransitionCurve ________________________________________________________
+
+	enum class TransitionCurve	//. autoExtras
+	{
+		Linear,
+		EaseIn,
+		EaseOut,
+		EaseInOut
+	};
+
+
 	//____ CanvasRef ____________________________________________________________
 
 	enum class CanvasRef			//.autoExtras

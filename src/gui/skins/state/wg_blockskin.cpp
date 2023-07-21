@@ -636,7 +636,7 @@ namespace wg
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_gradient.isValid && !m_gradient.isOpaque())
+		else if (!m_gradient.isUndefined() && !m_gradient.isOpaque())
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Blend )
 		{

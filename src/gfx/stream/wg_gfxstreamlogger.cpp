@@ -203,7 +203,6 @@ namespace wg
 				*m_pDecoder >> gradient;
 
 				_printRect(  "    rect         ", rect );
-				m_charStream << "    isValid      " << gradient.isValid << std::endl;
 				_printGradient( gradient );
 				break;
 			}
@@ -888,7 +887,6 @@ namespace wg
 						Gradient gradient;
 						*m_pDecoder >> gradient;
 
-						m_charStream << "        isValid      " << gradient.isValid << std::endl;
 						_printGradient( gradient );
 					}
 				}

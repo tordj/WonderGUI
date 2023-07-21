@@ -42,21 +42,23 @@ class SurfaceReader : public Object
 {
 public:
 
+	//.____ Blueprint _________________________________________________________
+
 	struct Blueprint
 	{
 		SurfaceFactory_p	factory;
 	};
 
-	//.____ Creation __________________________________________
+	//.____ Creation __________________________________________________________
 
 	static SurfaceReader_p	create( const Blueprint& blueprint );
 
-	//.____ Identification _________________________________________________
+	//.____ Identification ____________________________________________________
 
 	const TypeInfo&		typeInfo(void) const override;
 	const static TypeInfo	TYPEINFO;
 
-	//.____ Misc _________________________________________________________________
+	//.____ Misc ______________________________________________________________
 	
 	Surface_p		readSurfaceFromStream( std::istream& stream );
 	Surface_p		readSurfaceFromStream(std::istream& stream, const Surface::Blueprint& extraFlags );

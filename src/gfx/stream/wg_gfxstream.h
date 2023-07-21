@@ -202,7 +202,9 @@ namespace wg
 	
 		};
 
-
+		static const int ColorSize = 8;
+		static const int GradientSize = 8 * 4;
+		static const int NinePatchSize = 16 + 8 + 10 + 10;
 
 		inline static GfxChunkId chunkType(const uint8_t* pChunk)
 		{

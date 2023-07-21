@@ -34,8 +34,6 @@ extern "C" {
 
 	typedef struct wg_gradient_struct
 	{
-		uint8_t		isValid;
-
 		wg_color	topLeft;
 		wg_color	topRight;
 		wg_color	bottomRight;

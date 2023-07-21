@@ -212,7 +212,7 @@ namespace wg
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{
-			if ((m_gradient.isValid && !m_gradient.isOpaque()) || m_color.a != 4096)
+			if ((!m_gradient.isUndefined() && !m_gradient.isOpaque()) || m_color.a != 4096)
 				m_bOpaque = false;
 			else
 				m_bOpaque = m_pSurface->isOpaque();

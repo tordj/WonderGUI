@@ -55,6 +55,7 @@ namespace wg
 		m_bBuffered		= bp.buffered;
 		m_bDynamic		= bp.dynamic;
 		m_id			= bp.identity;
+		m_pBaggage		= bp.baggage;
 
 		// Caculate and set palette size and capacity.
 		
@@ -218,6 +219,7 @@ namespace wg
 	{
 		Blueprint bp;
 
+		bp.baggage = m_pBaggage;
 		bp.buffered = m_bBuffered;
 		bp.canvas = m_bCanvas;
 		bp.palette = m_pPalette;

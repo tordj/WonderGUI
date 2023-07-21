@@ -39,10 +39,6 @@ namespace wg
 	typedef	StrongPtr<Surface>	Surface_p;
 	typedef	WeakPtr<Surface>	Surface_wp;
 
-	class BasicDataset;
-	typedef	StrongPtr<BasicDataset>	BasicDataset_p;
-	typedef	WeakPtr<BasicDataset>	BasicDataset_wp;
-
 
 	//____ PixelBuffer ________________________________________________________
 	/**
@@ -175,6 +171,7 @@ namespace wg
 
 		struct Blueprint
 		{
+			Object_p			baggage;
 			bool				buffered = false;
 			bool				canvas = false;
 			const Color8* 		palette = nullptr;

@@ -445,7 +445,7 @@ namespace wg
 			bOpaque = true;
 			opaqueStates = 0xFFFFFFFF;
 		}
-		else if (m_blendMode != BlendMode::Blend || m_tintColor.a < 4096 || (m_gradient.isValid && !m_gradient.isOpaque()) )
+		else if (m_blendMode != BlendMode::Blend || m_tintColor.a < 4096 || (!m_gradient.isUndefined() && !m_gradient.isOpaque()) )
 		{
 			bOpaque = false;
 			opaqueStates = 0;

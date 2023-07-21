@@ -315,7 +315,7 @@ namespace wg
 		
         GfxDevice::setTintGradient(rect, gradient);
         
-        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, GfxStream::SpxFormat::Int32_dec, 16 + 34 };
+        (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, GfxStream::SpxFormat::Int32_dec, 16 + GfxStream::GradientSize };
         (*m_pEncoder) << rect;
         (*m_pEncoder) << gradient;
     }
@@ -1127,7 +1127,7 @@ namespace wg
 		_streamStatesIfUpdated();
 		_streamBlitSourceIfUpdated();
 
-		uint16_t size = 16 + 16 + ( 16 + 8 + 10 + 10 ) + 4;
+		uint16_t size = 16 + 16 + GfxStream::NinePatchSize + 4;
 
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitNinePatch, GfxStream::SpxFormat::Int32_dec, size };
         (*m_pEncoder) << dstRect;
