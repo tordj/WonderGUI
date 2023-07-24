@@ -193,6 +193,8 @@ set( SOURCES
 	widgets/wg_filler.h
 	widgets/wg_fpsdisplay.cpp
 	widgets/wg_fpsdisplay.h
+	widgets/wg_graphdisplay.cpp
+	widgets/wg_graphdisplay.h
 	widgets/wg_image.cpp
 	widgets/wg_image.h
 	widgets/wg_knob.cpp
