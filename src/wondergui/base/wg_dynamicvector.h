@@ -68,7 +68,6 @@ namespace wg
 		//.____ Operators __________________________________________
 
 		inline iterator operator<<(const EntryType& entry) { return pushBack(entry); }
-		inline iterator operator<<(const std::initializer_list<EntryType>& entries) { return pushBack(entries); }
 
 	protected:
 

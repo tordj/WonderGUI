@@ -26,6 +26,8 @@
 
 #include <wg_widget.h>
 #include <wg_dynamicvector.h>
+#include <wg_transitions.h>
+#include <wg_gradient.h>
 
 namespace wg
 {
@@ -33,7 +35,99 @@ namespace wg
 
 	class Graph
 	{
-		
+		friend class GraphDisplay;
+	public:
+
+		struct Blueprint
+		{
+			pts					bottomOutlineThickness = 1;
+			HiColor				color = Color8::LightGrey;
+			Gradient			gradient;								// Overrides color when set.
+			SampleOrigo			origo = SampleOrigo::Top;
+			HiColor				outlineColor = Color8::DarkGrey;
+			Gradient			outlineGradient;						// Overrides outlineColor when set.
+			float				rangeBegin = 0.f;
+			float				rangeEnd = 1.f;
+			pts					topOutlineThickness = 1;
+			bool				visible = true;
+
+		};
+
+		Graph() {}
+		Graph(const Blueprint& bp);
+
+		void	setColors(HiColor fill, HiColor outline, ColorTransition* pTransition = nullptr);
+		void	setGradients(Gradient fill, Gradient outline);
+
+		void	setRange(float begin, float end);
+
+		void	setTopSamples(int nSamples, float* pSamples);
+		void	setBottomSamples(int nSamples, float* pSamples);
+
+		void	transitionSamples(ArrayTransition* pTransition, int nTopSamples, float* pNewTopSamples, int nBottomSamples, float* pNewBottomSamples);
+
+		void	setVisible(bool bVisible);
+		bool	isVisible() const { return m_bVisible; }
+
+		bool	isTransitioningColors() const { return m_pColorTransition; }
+		bool	isTransitioningSamples() const { return m_pSampleTransition; }
+
+		HiColor	color() const { return m_fillColor; }
+		HiColor	outlineColor() const { return m_outlineColor; }
+
+		std::tuple<int, const float*>	topSamples() const;
+		std::tuple<int, const float*>	bottomSamples() const;
+
+	protected:
+
+		GraphDisplay*		m_pDisplay = nullptr;
+
+		// Appearance
+
+		bool				m_bVisible = true;
+
+		HiColor				m_fillColor = Color::LightGray;
+		HiColor				m_outlineColor = Color::Black;
+		pts					m_topOutlineThickness		= 1;
+		pts					m_bottomOutlineThickness	= 1;
+
+		// Transitions
+
+		ColorTransition_p	m_pColorTransition;
+		int					m_colorTransitionProgress = 0;
+
+		HiColor				m_startFillColor;
+		HiColor				m_endFillColor;
+
+		HiColor				m_startOutlineColor;
+		HiColor				m_endOutlineColor;
+
+		ArrayTransition_p	m_pSampleTransition;
+		int					m_sampleTransitionProgress = 0;
+
+		std::vector<float>	m_startTopSamples;
+		std::vector<float>	m_endTopSamples;
+
+		std::vector<float>	m_startBottomSamples;
+		std::vector<float>	m_endBottomSamples;
+
+		// Graph samples
+
+		float				m_begin = 0.f;			// Offset in GraphDisplay where this graph begins.
+		float				m_end = 1.f;			// Offset in GraphDisplay where this graph ends.
+		std::vector<float>	m_topSamples;			// Samples for top of this graph.
+		std::vector<float>	m_bottomSamples;		// Samples for bottom of this graph.
+
+		float				m_sampleMin = 0;
+		float				m_sampleMax = 0;
+
+		// Output
+
+		bool				m_bSamplesChanged = false;
+		bool				m_bColorsChanged = false;
+
+		SampleOrigo			m_pWaveform;
+
 	};
 
 
@@ -81,6 +175,12 @@ namespace wg
 		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Appearance _______________________________________________
+
+		SampleOrigo origo() const { return m_origo; }
+
+
+
 		//.____ Internal _________________________________________________
 
 	protected:
@@ -96,6 +196,8 @@ namespace wg
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 
 	private:
+
+		SampleOrigo	m_origo = SampleOrigo::MiddleUp;
 
 	};
 

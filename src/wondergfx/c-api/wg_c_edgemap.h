@@ -65,19 +65,19 @@ extern "C" {
 
 	int		wg_edgemapSamples(wg_obj edgemap);
 
-	int 	wg_importSpxSamples(wg_obj edgemap, wg_waveOrigo origo, const wg_spx* pSource, 
+	int 	wg_importSpxSamples(wg_obj edgemap, wg_sampleOrigo origo, const wg_spx* pSource, 
 								int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, 
 								int edgePitch, int samplePitch);
 
-	int 	wg_importFloatSamples(	wg_obj edgemap, wg_waveOrigo origo, const float* pSource, 
+	int 	wg_importFloatSamples(	wg_obj edgemap, wg_sampleOrigo origo, const float* pSource, 
 									int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, 
 									int edgePitch, int samplePitch);
 
-	int 	wg_exportSpxSamples(wg_obj edgemap, wg_waveOrigo origo, wg_spx* pDestination, 
+	int 	wg_exportSpxSamples(wg_obj edgemap, wg_sampleOrigo origo, wg_spx* pDestination, 
 								int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, 
 								int edgePitch, int samplePitch);
 
-	int 	wg_exportFloatSamples(	wg_obj edgemap, wg_waveOrigo origo, float* pDestination, 
+	int 	wg_exportFloatSamples(	wg_obj edgemap, wg_sampleOrigo origo, float* pDestination, 
 									int edgeBegin, int edgeEnd,	int sampleBegin, int sampleEnd, 
 									int edgePitch, int samplePitch);
 

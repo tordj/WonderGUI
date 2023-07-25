@@ -84,33 +84,33 @@ namespace wg
 
 	//____ importSamples() ____________________________________________________
 
-	bool PluginEdgemap::importSamples(WaveOrigo origo, const spx* pSource, int edgeBegin, int edgeEnd,
+	bool PluginEdgemap::importSamples(SampleOrigo origo, const spx* pSource, int edgeBegin, int edgeEnd,
 		int sampleBegin, int sampleEnd, int edgePitch, int samplePitch)
 	{
-		return (bool) PluginCalls::edgemap->importSpxSamples(m_cEdgemap, (wg_waveOrigo)origo, pSource, edgeBegin, edgeEnd,
+		return (bool) PluginCalls::edgemap->importSpxSamples(m_cEdgemap, (wg_sampleOrigo)origo, pSource, edgeBegin, edgeEnd,
 			sampleBegin, sampleEnd, edgePitch, samplePitch);
 	}
 
-	bool PluginEdgemap::importSamples(WaveOrigo origo, const float* pSource, int edgeBegin, int edgeEnd,
+	bool PluginEdgemap::importSamples(SampleOrigo origo, const float* pSource, int edgeBegin, int edgeEnd,
 		int sampleBegin, int sampleEnd, int edgePitch, int samplePitch)
 	{
-		return (bool)PluginCalls::edgemap->importFloatSamples(m_cEdgemap, (wg_waveOrigo)origo, pSource, edgeBegin, edgeEnd,
+		return (bool)PluginCalls::edgemap->importFloatSamples(m_cEdgemap, (wg_sampleOrigo)origo, pSource, edgeBegin, edgeEnd,
 			sampleBegin, sampleEnd, edgePitch, samplePitch);
 	}
 
 	//____ exportSamples() ____________________________________________________
 
-	bool PluginEdgemap::exportSamples(WaveOrigo origo, spx* pDestination, int edgeBegin, int edgeEnd,
+	bool PluginEdgemap::exportSamples(SampleOrigo origo, spx* pDestination, int edgeBegin, int edgeEnd,
 		int sampleBegin, int sampleEnd, int edgePitch, int samplePitch)
 	{
-		return (bool)PluginCalls::edgemap->exportSpxSamples(m_cEdgemap, (wg_waveOrigo)origo, pDestination, edgeBegin, edgeEnd,
+		return (bool)PluginCalls::edgemap->exportSpxSamples(m_cEdgemap, (wg_sampleOrigo)origo, pDestination, edgeBegin, edgeEnd,
 			sampleBegin, sampleEnd, edgePitch, samplePitch);
 	}
 
-	bool PluginEdgemap::exportSamples(WaveOrigo origo, float* pDestination, int edgeBegin, int edgeEnd,
+	bool PluginEdgemap::exportSamples(SampleOrigo origo, float* pDestination, int edgeBegin, int edgeEnd,
 		int sampleBegin, int sampleEnd, int edgePitch, int samplePitch)
 	{
-		return (bool)PluginCalls::edgemap->exportFloatSamples(m_cEdgemap, (wg_waveOrigo)origo, pDestination, edgeBegin, edgeEnd,
+		return (bool)PluginCalls::edgemap->exportFloatSamples(m_cEdgemap, (wg_sampleOrigo)origo, pDestination, edgeBegin, edgeEnd,
 			sampleBegin, sampleEnd, edgePitch, samplePitch);
 	}
 

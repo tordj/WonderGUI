@@ -46,12 +46,12 @@ namespace wg
 		return SoftEdgemap::create(blueprint);
 	}	
 
-	Edgemap_p SoftEdgemapFactory::createEdgemap( const Edgemap::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch, int samplePitch )
+	Edgemap_p SoftEdgemapFactory::createEdgemap( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const float * pSamples, int edges, int edgePitch, int samplePitch )
 	{
 		return SoftEdgemap::create(blueprint, origo, pSamples, edges, edgePitch, samplePitch);
 	}
 
-	Edgemap_p SoftEdgemapFactory::createEdgemap( const Edgemap::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch, int samplePitch )
+	Edgemap_p SoftEdgemapFactory::createEdgemap( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const spx * pSamples, int edges, int edgePitch, int samplePitch )
 	{
 		return SoftEdgemap::create(blueprint, origo, pSamples, edges, edgePitch, samplePitch);
 	}

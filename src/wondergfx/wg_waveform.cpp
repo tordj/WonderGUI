@@ -320,8 +320,8 @@ void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
 		
 		// Update edgemap.
 		
-		m_pEdgemap->importSamples(WaveOrigo::Top, pBuffer, 0, 2, dirtBegin, dirtEnd);
-		m_pEdgemap->importSamples(WaveOrigo::Top, pBuffer + dirtSize*2, 2, 4, dirtBegin, dirtEnd);
+		m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer, 0, 2, dirtBegin, dirtEnd);
+		m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer + dirtSize*2, 2, 4, dirtBegin, dirtEnd);
 		
 		GfxBase::memStackFree(allocated);
 		

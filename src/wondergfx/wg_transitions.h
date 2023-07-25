@@ -69,12 +69,10 @@ namespace wg
 		{
 			TransitionCurve		curve = TransitionCurve::Linear;
 			int					duration = 250;
-			HiColor				from;					// Mandatory!
-			HiColor				midPoint;
+			HiColor				midPointColor;
 			int					midPointDelay = 0;
 			TransitionCurve		midPointCurve = TransitionCurve::Linear;
 			int					midPointOffset = 0;
-			HiColor				to;						// Mandatory!
 		};
 
 		//.____ Creation ______________________________________________________
@@ -90,7 +88,7 @@ namespace wg
 
 		int		duration() const { return m_duration; }
 
-		HiColor	snapshot(int timestamp);
+		HiColor	snapshot(int timestamp, HiColor startColor, HiColor endColor );
 
 	protected:
 		ColorTransition( const Blueprint& blueprint );
@@ -101,9 +99,43 @@ namespace wg
 		int				m_midPointBegin;
 		int				m_midPointEnd;
 
-		HiColor			m_from;
 		HiColor			m_midPoint;
-		HiColor			m_to;
+	};
+
+
+	//____ ArrayTransition ____________________________________________________
+
+	class ArrayTransition;
+	typedef	StrongPtr<ArrayTransition>	ArrayTransition_p;
+	typedef	WeakPtr<ArrayTransition>	ArrayTransition_wp;
+
+	class ArrayTransition : public Transition
+	{
+	public:
+
+		//.____ Creation ______________________________________________________
+
+		static ArrayTransition_p	create( int duration, TransitionCurve curve = TransitionCurve::Linear);
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Misc ___________________________________________________________
+
+		int		duration() const { return m_duration; }
+
+		void	snapshot(int timestamp, int nValues, const int * pStartValues, const int * pEndValues, int * pOutput);
+		void	snapshot(int timestamp, int nValues, const float * pStartValues, const float * pEndValues, float * pOutput);
+
+	protected:
+		ArrayTransition(int duration, TransitionCurve curve);
+
+		TransitionCurve	m_curve;
+		int				m_duration;		// Milliseconds
+
+
 	};
 
 

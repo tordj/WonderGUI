@@ -220,8 +220,8 @@ Edgemap_p createDonut(SizeSPX size, spx thickness, HiColor fillColor, spx outlin
 													_.colors = col) );
 	
 
-	pEdgemap->importSamples(WaveOrigo::Top, pBuffer, 0, 4, 0, samplePoints, 1, 4);
-	pEdgemap->importSamples(WaveOrigo::Top, pBuffer+samplePoints * 4, 4, 8, 0, samplePoints, 1, 4);
+	pEdgemap->importSamples(SampleOrigo::Top, pBuffer, 0, 4, 0, samplePoints, 1, 4);
+	pEdgemap->importSamples(SampleOrigo::Top, pBuffer+samplePoints * 4, 4, 8, 0, samplePoints, 1, 4);
 
 	pEdgemap->setRenderSegments(9);
 	
@@ -385,8 +385,8 @@ bool drawOutlinedDonut(Edgemap * pEdgemap, spx thickness, spx outlineThickness )
 
 	// Import generated samples to edgemap
 
-	pEdgemap->importSamples(WaveOrigo::Top, pBuffer, 0, 4, 0, samplePoints, 1, 4);
-	pEdgemap->importSamples(WaveOrigo::Top, pBuffer+samplePoints * 4, 4, 8, 0, samplePoints, 1, 4);
+	pEdgemap->importSamples(SampleOrigo::Top, pBuffer, 0, 4, 0, samplePoints, 1, 4);
+	pEdgemap->importSamples(SampleOrigo::Top, pBuffer+samplePoints * 4, 4, 8, 0, samplePoints, 1, 4);
 
 	// Free temporary work memory
 
@@ -399,14 +399,14 @@ bool drawOutlinedDonut(Edgemap * pEdgemap, spx thickness, spx outlineThickness )
 
 //____ convertSamples() _____________________________________________________
 
-void convertSamples( spx * pDest, const spx * pSource, WaveOrigo origo, spx height, int nEdges, int nSamples, int srcEdgePitch, int srcSamplePitch, int destEdgePitch, int destSamplePitch )
+void convertSamples( spx * pDest, const spx * pSource, SampleOrigo origo, spx height, int nEdges, int nSamples, int srcEdgePitch, int srcSamplePitch, int destEdgePitch, int destSamplePitch )
 {
-	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx mul = (origo == SampleOrigo::Top || origo == SampleOrigo::MiddleDown) ? 1 : -1;
 	spx offset = 0;
 	
-	if( origo == WaveOrigo::Bottom )
+	if( origo == SampleOrigo::Bottom )
 		offset = height;
-	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	else if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		offset = height/2;
 
 	for( int edge = 0 ; edge < nEdges ; edge++ )
@@ -423,17 +423,17 @@ void convertSamples( spx * pDest, const spx * pSource, WaveOrigo origo, spx heig
 	}
 }
 
-void convertSamples( spx * pDest, const float * pSource, WaveOrigo origo, spx height, int nEdges, int nSamples, int srcEdgePitch, int srcSamplePitch, int destEdgePitch, int destSamplePitch )
+void convertSamples( spx * pDest, const float * pSource, SampleOrigo origo, spx height, int nEdges, int nSamples, int srcEdgePitch, int srcSamplePitch, int destEdgePitch, int destSamplePitch )
 {
-	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx mul = (origo == SampleOrigo::Top || origo == SampleOrigo::MiddleDown) ? 1 : -1;
 	spx offset = 0;
 	
-	if( origo == WaveOrigo::Bottom )
+	if( origo == SampleOrigo::Bottom )
 		offset = height;
-	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	else if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		offset = height/2;
 
-	if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		mul *= height/2;
 	else
 		mul *= height;
@@ -454,27 +454,27 @@ void convertSamples( spx * pDest, const float * pSource, WaveOrigo origo, spx he
 
 //____ convertSample() _____________________________________________________
 
-spx convertSample( spx sample, WaveOrigo origo, spx height )
+spx convertSample( spx sample, SampleOrigo origo, spx height )
 {
-	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx mul = (origo == SampleOrigo::Top || origo == SampleOrigo::MiddleDown) ? 1 : -1;
 	spx offset = 0;
 	
-	if( origo == WaveOrigo::Bottom )
+	if( origo == SampleOrigo::Bottom )
 		offset = height;
-	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	else if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		offset = height/2;
 
 	return (sample * mul) + offset;
 }
 
-spx convertSample( float sample, WaveOrigo origo, spx height )
+spx convertSample( float sample, SampleOrigo origo, spx height )
 {
-	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx mul = (origo == SampleOrigo::Top || origo == SampleOrigo::MiddleDown) ? 1 : -1;
 	spx offset = 0;
 	
-	if( origo == WaveOrigo::Bottom )
+	if( origo == SampleOrigo::Bottom )
 		offset = height;
-	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	else if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		offset = height/2;
 
 	return (sample * mul) + offset;

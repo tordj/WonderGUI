@@ -35,10 +35,10 @@ extern "C" {
 
 	wg_obj wg_createEdgemap( wg_obj factory, const wg_edgemapBP* blueprint);
 
-	wg_obj wg_createEdgemapFromFloats( wg_obj factory, const wg_edgemapBP* blueprint, wg_waveOrigo origo, 
+	wg_obj wg_createEdgemapFromFloats( wg_obj factory, const wg_edgemapBP* blueprint, wg_sampleOrigo origo, 
 										const float* pSamples, int edges, int edgePitch, int samplePitch);
 
-	wg_obj wg_createEdgemapFromSpx( wg_obj factory, const wg_edgemapBP* blueprint, wg_waveOrigo origo, 
+	wg_obj wg_createEdgemapFromSpx( wg_obj factory, const wg_edgemapBP* blueprint, wg_sampleOrigo origo, 
 									 const wg_spx* pSamples, int edges, int edgePitch, int samplePitch);
 
 #ifdef __cplusplus

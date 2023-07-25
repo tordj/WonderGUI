@@ -40,7 +40,7 @@ SoftEdgemap_p	SoftEdgemap::create( const Blueprint& blueprint )
 	return SoftEdgemap_p( new SoftEdgemap(blueprint) );
 }
 
-SoftEdgemap_p SoftEdgemap::create( const Edgemap::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch, int samplePitch)
+SoftEdgemap_p SoftEdgemap::create( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const float * pSamples, int edges, int edgePitch, int samplePitch)
 {
 	if( !_validateBlueprint(blueprint) )
 		return nullptr;
@@ -56,7 +56,7 @@ SoftEdgemap_p SoftEdgemap::create( const Edgemap::Blueprint& blueprint, WaveOrig
 	return p;
 }
 
-SoftEdgemap_p SoftEdgemap::create( const Edgemap::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch, int samplePitch)
+SoftEdgemap_p SoftEdgemap::create( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const spx * pSamples, int edges, int edgePitch, int samplePitch)
 {
 	if( !_validateBlueprint(blueprint) )
 		return nullptr;
@@ -151,7 +151,7 @@ bool SoftEdgemap::setGradients( int begin, int end, const Gradient * pGradients 
 
 //____ importSamples() _________________________________________________________
 
-bool SoftEdgemap::importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
+bool SoftEdgemap::importSamples( SampleOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( pSource == nullptr || edgeBegin < 0 || edgeBegin > edgeEnd || edgeEnd > (m_nbSegments-1) || sampleBegin < 0 || sampleBegin > sampleEnd || sampleEnd > (m_size.w+1) )
@@ -161,7 +161,7 @@ bool SoftEdgemap::importSamples( WaveOrigo origo, const spx * pSource, int edgeB
 	return true;
 }
 
-bool SoftEdgemap::importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
+bool SoftEdgemap::importSamples( SampleOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( pSource == nullptr || edgeBegin < 0 || edgeBegin > edgeEnd || edgeEnd > (m_nbSegments-1) || sampleBegin < 0 || sampleBegin > sampleEnd || sampleEnd > (m_size.w+1) )
@@ -174,7 +174,7 @@ bool SoftEdgemap::importSamples( WaveOrigo origo, const float * pSource, int edg
 
 //____ exportSamples() _________________________________________________________
 
-bool SoftEdgemap::exportSamples( WaveOrigo origo, spx * pDestination, int edgeBegin, int edgeEnd,
+bool SoftEdgemap::exportSamples( SampleOrigo origo, spx * pDestination, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	//TODO: Implement!!!
@@ -182,7 +182,7 @@ bool SoftEdgemap::exportSamples( WaveOrigo origo, spx * pDestination, int edgeBe
 	return false;
 }
 
-bool  SoftEdgemap::exportSamples( WaveOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
+bool  SoftEdgemap::exportSamples( SampleOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	//TODO: Implement!!!
@@ -192,7 +192,7 @@ bool  SoftEdgemap::exportSamples( WaveOrigo origo, float * pDestination, int edg
 
 //____ _importSamples() ________________________________________________________
 
-void SoftEdgemap::_importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
+void SoftEdgemap::_importSamples( SampleOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( samplePitch == 0 )
@@ -206,12 +206,12 @@ void SoftEdgemap::_importSamples( WaveOrigo origo, const spx * pSource, int edge
 	int destEdgePitch = 1;
 
 
-	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx mul = (origo == SampleOrigo::Top || origo == SampleOrigo::MiddleDown) ? 1 : -1;
 	spx offset = 0;
 	
-	if( origo == WaveOrigo::Bottom )
+	if( origo == SampleOrigo::Bottom )
 		offset = m_size.h*64;
-	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	else if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		offset = m_size.h*32;
 
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
@@ -228,7 +228,7 @@ void SoftEdgemap::_importSamples( WaveOrigo origo, const spx * pSource, int edge
 	}
 }
 
-void SoftEdgemap::_importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
+void SoftEdgemap::_importSamples( SampleOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( samplePitch == 0 )
@@ -242,15 +242,15 @@ void SoftEdgemap::_importSamples( WaveOrigo origo, const float * pSource, int ed
 	int destEdgePitch = 1;
 
 
-	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx mul = (origo == SampleOrigo::Top || origo == SampleOrigo::MiddleDown) ? 1 : -1;
 	spx offset = 0;
 
-	if( origo == WaveOrigo::Bottom )
+	if( origo == SampleOrigo::Bottom )
 		offset = m_size.h*64;
-	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	else if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		offset = m_size.h*32;
 
-	if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		mul *= m_size.h*32;
 	else
 		mul *= m_size.h*64;

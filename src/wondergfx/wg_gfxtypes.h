@@ -372,9 +372,9 @@ namespace wg
 		Canvas_32
 	};
 
-	//____ WaveOrigo _____________________________________________________________
+	//____ SampleOrigo _____________________________________________________________
 
-	enum class WaveOrigo			//.autoExtras
+	enum class SampleOrigo			//.autoExtras
 	{
 		Top,				// Origo at top, increasing values goes down.
 		MiddleUp,			// Origo at middle, increasing values goes up.

@@ -56,8 +56,8 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		Edgemap_p createEdgemap( const Edgemap::Blueprint& blueprint) override;	
-		Edgemap_p createEdgemap( const Edgemap::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch = 0, int samplePitch = 0) override;
-		Edgemap_p createEdgemap( const Edgemap::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0) override;
+		Edgemap_p createEdgemap( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const float * pSamples, int edges, int edgePitch = 0, int samplePitch = 0) override;
+		Edgemap_p createEdgemap( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0) override;
 
 	protected:
 		GfxStreamEdgemapFactory(GfxStreamEncoder * pEncoder) : m_pEncoder(pEncoder) {}

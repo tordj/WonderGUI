@@ -36,7 +36,7 @@ public:
 		auto pFactory = pDevice->edgemapFactory();
 		
 		m_pEdgemapSPX1 = pFactory->createEdgemap( WGBP(Edgemap, _.size = canvas.size()/64, _.segments = 8, _.colors = m_rainbowColors ),
-												  WaveOrigo::Top, sampleBuffer[0], 7 );
+												  SampleOrigo::Top, sampleBuffer[0], 7 );
 
 		
 		return true;

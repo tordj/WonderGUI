@@ -43,7 +43,7 @@ namespace wg
 			spx					bottomOutlineThickness = 64;
 			HiColor				color = Color8::LightGrey;
 			Gradient			gradient;								// Overrides color when set.
-			WaveOrigo			origo = WaveOrigo::Top;
+			SampleOrigo			origo = SampleOrigo::Top;
 			HiColor				outlineColor = Color8::DarkGrey;
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
 			SizeI				size;									// Mandatory
@@ -117,7 +117,7 @@ namespace wg
 
 		RectI		m_size;
 		
-		WaveOrigo	m_origo;
+		SampleOrigo	m_origo;
 		
 		HiColor		m_color = HiColor::Undefined;
 		HiColor		m_outlineColor = HiColor::Undefined;

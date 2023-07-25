@@ -81,16 +81,16 @@ namespace wg
 
 		inline int		samples() const { return m_size.w + 1; }
 
-		virtual bool 	importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
+		virtual bool 	importSamples( SampleOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) = 0;
 
-		virtual bool 	importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
+		virtual bool 	importSamples( SampleOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) = 0;
 
-		virtual bool 	exportSamples( WaveOrigo origo, spx * pDestination, int edgeBegin, int edgeEnd,
+		virtual bool 	exportSamples( SampleOrigo origo, spx * pDestination, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) = 0;
 
-		virtual bool 	exportSamples( WaveOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
+		virtual bool 	exportSamples( SampleOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) = 0;
 
 	protected:

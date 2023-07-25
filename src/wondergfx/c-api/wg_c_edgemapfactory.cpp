@@ -37,18 +37,18 @@ wg_obj wg_createEdgemap(wg_obj factory, const wg_edgemapBP* blueprint)
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }
 
-wg_obj wg_createEdgemapFromFloats(wg_obj factory, const wg_edgemapBP* blueprint, wg_waveOrigo origo,
+wg_obj wg_createEdgemapFromFloats(wg_obj factory, const wg_edgemapBP* blueprint, wg_sampleOrigo origo,
 	const float* pSamples, int edges, int edgePitch, int samplePitch)
 {
-	auto p = getPtr(factory)->createEdgemap(*(const Edgemap::Blueprint*)blueprint, (WaveOrigo) origo, pSamples, edges, edgePitch, samplePitch);
+	auto p = getPtr(factory)->createEdgemap(*(const Edgemap::Blueprint*)blueprint, (SampleOrigo) origo, pSamples, edges, edgePitch, samplePitch);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }
 
-wg_obj wg_createEdgemapFromSpx(wg_obj factory, const wg_edgemapBP* blueprint, wg_waveOrigo origo,
+wg_obj wg_createEdgemapFromSpx(wg_obj factory, const wg_edgemapBP* blueprint, wg_sampleOrigo origo,
 	const wg_spx* pSamples, int edges, int edgePitch, int samplePitch)
 {
-	auto p = getPtr(factory)->createEdgemap(*(const Edgemap::Blueprint*)blueprint, (WaveOrigo)origo, (const spx*) pSamples, edges, edgePitch, samplePitch);
+	auto p = getPtr(factory)->createEdgemap(*(const Edgemap::Blueprint*)blueprint, (SampleOrigo)origo, (const spx*) pSamples, edges, edgePitch, samplePitch);
 	p->retain();
 	return (wg_obj) static_cast<Object*>(p.rawPtr());
 }

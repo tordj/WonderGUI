@@ -397,10 +397,10 @@ typedef struct wg_edgemap_calls_struct
 	wg_gradient			(*edgemapGradient)(wg_obj edgemap, int segment);
 	int					(*edgemapSegments)(wg_obj edgemap);
 	int					(*edgemapSamples)(wg_obj edgemap);
-	int 				(*importSpxSamples)(wg_obj edgemap, wg_waveOrigo origo, const wg_spx* pSource, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
-	int 				(*importFloatSamples)(wg_obj edgemap, wg_waveOrigo origo, const float* pSource, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
-	int 				(*exportSpxSamples)(wg_obj edgemap, wg_waveOrigo origo, wg_spx* pDestination, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
-	int 				(*exportFloatSamples)(wg_obj edgemap, wg_waveOrigo origo, float* pDestination, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
+	int 				(*importSpxSamples)(wg_obj edgemap, wg_sampleOrigo origo, const wg_spx* pSource, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
+	int 				(*importFloatSamples)(wg_obj edgemap, wg_sampleOrigo origo, const float* pSource, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
+	int 				(*exportSpxSamples)(wg_obj edgemap, wg_sampleOrigo origo, wg_spx* pDestination, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
+	int 				(*exportFloatSamples)(wg_obj edgemap, wg_sampleOrigo origo, float* pDestination, int edgeBegin, int edgeEnd, int sampleBegin, int sampleEnd, int edgePitch, int samplePitch);
 
 } wg_edgemap_calls;
 
@@ -412,8 +412,8 @@ typedef struct wg_edgemapfactory_calls_struct
 	int					structSize;
 
 	wg_obj				(*createEdgemap)(wg_obj factory, const wg_edgemapBP* blueprint);
-	wg_obj				(*createEdgemapFromFloats)(wg_obj factory, const wg_edgemapBP* blueprint, wg_waveOrigo origo, const float* pSamples, int edges, int edgePitch, int samplePitch);
-	wg_obj				(*createEdgemapFromSpx)(wg_obj factory, const wg_edgemapBP* blueprint, wg_waveOrigo origo, const wg_spx* pSamples, int edges, int edgePitch, int samplePitch);
+	wg_obj				(*createEdgemapFromFloats)(wg_obj factory, const wg_edgemapBP* blueprint, wg_sampleOrigo origo, const float* pSamples, int edges, int edgePitch, int samplePitch);
+	wg_obj				(*createEdgemapFromSpx)(wg_obj factory, const wg_edgemapBP* blueprint, wg_sampleOrigo origo, const wg_spx* pSamples, int edges, int edgePitch, int samplePitch);
 
 } wg_edgemapfactory_calls;
 

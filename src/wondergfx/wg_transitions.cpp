@@ -26,6 +26,7 @@ namespace wg
 {
 	const TypeInfo Transition::TYPEINFO = { "Transition", &Object::TYPEINFO };
 	const TypeInfo ColorTransition::TYPEINFO = { "ColorTransition", &Transition::TYPEINFO };
+	const TypeInfo ArrayTransition::TYPEINFO = { "ArrayTransition", &Transition::TYPEINFO };
 
 
 	//____ typeInfo() ____________________________________________________________
@@ -75,9 +76,7 @@ namespace wg
 	ColorTransition::ColorTransition(const Blueprint& bp) :
 
 		m_duration(bp.duration),
-		m_from(bp.from),
-		m_midPoint(bp.midPoint),
-		m_to(bp.to)
+		m_midPoint(bp.midPointColor)
 	{
 		
 
@@ -133,7 +132,7 @@ namespace wg
 
 	//____ ColorTransition::snapshot() ________________________________________
 
-	HiColor	ColorTransition::snapshot(int timestamp)
+	HiColor	ColorTransition::snapshot(int timestamp, HiColor startColor, HiColor endColor)
 	{
 		limit(timestamp, 0, m_duration);
 
@@ -142,12 +141,12 @@ namespace wg
 			if (timestamp < m_midPointBegin)
 			{
 				int progress = _normalize(m_curve, m_midPointBegin, timestamp);
-				return HiColor::mix(m_from, m_midPoint, progress >> 4);
+				return HiColor::mix(startColor, m_midPoint, progress >> 4);
 			}
 			else if (timestamp >= m_midPointEnd)
 			{
 				int progress = _normalize(m_curve2, m_duration - m_midPointEnd, timestamp - m_midPointEnd);
-				return HiColor::mix(m_midPoint, m_to, progress >> 4);
+				return HiColor::mix(m_midPoint, endColor, progress >> 4);
 			}
 			else
 				return m_midPoint;
@@ -155,9 +154,65 @@ namespace wg
 		else
 		{
 			int progress = _normalize(m_curve, m_duration, timestamp);
-			return HiColor::mix(m_from, m_to, progress >> 4);
+			return HiColor::mix(startColor, endColor, progress >> 4);
 		}
 	}
 
 
+
+	//____ ArrayTransition::create() __________________________________________
+
+	ArrayTransition_p ArrayTransition::create(int duration, TransitionCurve curve)
+	{
+		return ArrayTransition_p(new ArrayTransition(duration, curve));
+	}
+
+	//____ ArrayTransition::constructor ________________________________________
+
+	ArrayTransition::ArrayTransition(int duration, TransitionCurve curve) :
+		m_duration(duration),
+		m_curve(curve)
+	{
+	}
+
+	//____ typeInfo() ____________________________________________________________
+
+	const TypeInfo& ArrayTransition::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+	//____ ArrayTransition::snapshot() ________________________________________
+
+	void ArrayTransition::snapshot(int timestamp, int nValues, const int* pStartValues, const int* pEndValues, int* pOutput)
+	{
+		limit(timestamp, 0, m_duration);
+
+		int64_t progress = _normalize(m_curve, m_duration, timestamp);
+
+		for (int i = 0; i < nValues; i++)
+		{
+			int start = pStartValues[i];
+			int end = pEndValues[i];
+
+			pOutput[i] = start + int(((end - start) * progress) >> 16);
+		}
+	}
+
+	//____ ArrayTransition::snapshot() ________________________________________
+
+	void ArrayTransition::snapshot(int timestamp, int nValues, const float* pStartValues, const float* pEndValues, float* pOutput)
+	{
+		limit(timestamp, 0, m_duration);
+
+		float progress = float(_normalize(m_curve, m_duration, timestamp)) / 65536.f;
+
+		for (int i = 0; i < nValues; i++)
+		{
+			float start = pStartValues[i];
+			float end = pEndValues[i];
+
+			pOutput[i] = start + (end - start) * progress;
+		}
+	}
 }

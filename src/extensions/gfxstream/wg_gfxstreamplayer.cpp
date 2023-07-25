@@ -1225,7 +1225,7 @@ namespace wg
 
 		case GfxChunkId::EndEdgemapUpdate:
 		{
-			m_pUpdatingEdgemap->importSamples(WaveOrigo::Top, m_pWaveSampleBuffer, m_waveUpdateEdgeBegin, m_waveUpdateEdgeEnd, m_waveUpdateSampleBegin, m_waveUpdateSampleEnd);
+			m_pUpdatingEdgemap->importSamples(SampleOrigo::Top, m_pWaveSampleBuffer, m_waveUpdateEdgeBegin, m_waveUpdateEdgeEnd, m_waveUpdateSampleBegin, m_waveUpdateSampleEnd);
 						
 			m_pUpdatingEdgemap = nullptr;
 			

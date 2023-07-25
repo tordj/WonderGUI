@@ -530,7 +530,9 @@ Widget_p MyApp::createInputPanel()
 	for( int i = 6 ; i <= 32 ; i++ )
 	{
 		sprintf( tmp, "%i", i);
-		pSizeSelector->entries.pushBack(SelectBoxEntry(i, String(tmp)));
+//		pSizeSelector->entries.pushBack(SelectBoxEntry(i, String(tmp)));
+		pSizeSelector->entries.pushBack({ i, String(tmp) } );
+
 	}
 	
 	auto pModeLabel = TextDisplay::create( WGBP(TextDisplay,

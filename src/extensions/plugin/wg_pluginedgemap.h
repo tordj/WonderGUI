@@ -63,16 +63,16 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		bool 		importSamples(	WaveOrigo origo, const spx* pSource, int edgeBegin, int edgeEnd,
+		bool 		importSamples(	SampleOrigo origo, const spx* pSource, int edgeBegin, int edgeEnd,
 									int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0) override;
 
-		bool 		importSamples(	WaveOrigo origo, const float* pSource, int edgeBegin, int edgeEnd,
+		bool 		importSamples(	SampleOrigo origo, const float* pSource, int edgeBegin, int edgeEnd,
 									int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0) override;
 
-		bool 		exportSamples(	WaveOrigo origo, spx* pDestination, int edgeBegin, int edgeEnd,
+		bool 		exportSamples(	SampleOrigo origo, spx* pDestination, int edgeBegin, int edgeEnd,
 									int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0) override;
 
-		bool 		exportSamples(	WaveOrigo origo, float* pDestination, int edgeBegin, int edgeEnd,
+		bool 		exportSamples(	SampleOrigo origo, float* pDestination, int edgeBegin, int edgeEnd,
 									int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0) override;
 
 		//.____ Misc _________________________________________________________

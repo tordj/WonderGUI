@@ -30,4 +30,59 @@ namespace wg
 
 
 
+	Graph::Graph(const Blueprint& bp)
+	{
+
+	}
+
+	void Graph::setColors(HiColor fill, HiColor outline, ColorTransition* pTransition)
+	{
+
+	}
+
+	void Graph::setGradients(Gradient fill, Gradient outline)
+	{
+
+	}
+
+	void Graph::setRange(float begin, float end)
+	{
+
+	}
+
+	void Graph::setTopSamples(int nSamples, float* pSamples)
+	{
+
+	}
+
+	void Graph::setBottomSamples(int nSamples, float* pSamples)
+	{
+
+	}
+
+	void Graph::transitionSamples(ArrayTransition* pTransition, int nTopSamples, float* pNewTopSamples, int nBottomSamples, float* pNewBottomSamples)
+	{
+
+	}
+
+	void Graph::setVisible(bool bVisible)
+	{
+
+	}
+
+	//____ topSamples() _______________________________________________________
+
+	std::tuple<int, const float*>  Graph::topSamples() const 
+	{ 
+		return std::make_tuple(m_topSamples.size(), m_topSamples.data()); 
+	}
+
+	//____ bottomSamples() ____________________________________________________
+
+	std::tuple<int, const float*>  Graph::bottomSamples() const 
+	{ 
+		return std::make_tuple(m_bottomSamples.size(), m_bottomSamples.data()); 
+	}
+
+
 }

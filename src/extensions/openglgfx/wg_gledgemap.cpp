@@ -40,7 +40,7 @@ GlEdgemap_p	GlEdgemap::create( const Blueprint& blueprint )
 	return GlEdgemap_p( new GlEdgemap(blueprint) );
 }
 
-GlEdgemap_p GlEdgemap::create( const Edgemap::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch, int samplePitch)
+GlEdgemap_p GlEdgemap::create( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const float * pSamples, int edges, int edgePitch, int samplePitch)
 {
 	if( !_validateBlueprint(blueprint) )
 		return nullptr;
@@ -56,7 +56,7 @@ GlEdgemap_p GlEdgemap::create( const Edgemap::Blueprint& blueprint, WaveOrigo or
 	return p;
 }
 
-GlEdgemap_p GlEdgemap::create( const Edgemap::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch, int samplePitch)
+GlEdgemap_p GlEdgemap::create( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const spx * pSamples, int edges, int edgePitch, int samplePitch)
 {
 	if( !_validateBlueprint(blueprint) )
 		return nullptr;
@@ -151,7 +151,7 @@ bool GlEdgemap::setGradients( int begin, int end, const Gradient * pGradients )
 
 //____ importSamples() _________________________________________________________
 
-bool GlEdgemap::importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
+bool GlEdgemap::importSamples( SampleOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( pSource == nullptr || edgeBegin < 0 || edgeBegin > edgeEnd || edgeEnd > (m_nbSegments-1) || sampleBegin < 0 || sampleBegin > sampleEnd || sampleEnd > (m_size.w+1) )
@@ -161,7 +161,7 @@ bool GlEdgemap::importSamples( WaveOrigo origo, const spx * pSource, int edgeBeg
 	return true;
 }
 
-bool GlEdgemap::importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
+bool GlEdgemap::importSamples( SampleOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( pSource == nullptr || edgeBegin < 0 || edgeBegin > edgeEnd || edgeEnd > (m_nbSegments-1) || sampleBegin < 0 || sampleBegin > sampleEnd || sampleEnd > (m_size.w+1) )
@@ -174,7 +174,7 @@ bool GlEdgemap::importSamples( WaveOrigo origo, const float * pSource, int edgeB
 
 //____ exportSamples() _________________________________________________________
 
-bool GlEdgemap::exportSamples( WaveOrigo origo, spx * pDestination, int edgeBegin, int edgeEnd,
+bool GlEdgemap::exportSamples( SampleOrigo origo, spx * pDestination, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	//TODO: Implement!!!
@@ -182,7 +182,7 @@ bool GlEdgemap::exportSamples( WaveOrigo origo, spx * pDestination, int edgeBegi
 	return false;
 }
 
-bool  GlEdgemap::exportSamples( WaveOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
+bool  GlEdgemap::exportSamples( SampleOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	//TODO: Implement!!!
@@ -192,7 +192,7 @@ bool  GlEdgemap::exportSamples( WaveOrigo origo, float * pDestination, int edgeB
 
 //____ _importSamples() ________________________________________________________
 
-void GlEdgemap::_importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
+void GlEdgemap::_importSamples( SampleOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( samplePitch == 0 )
@@ -206,12 +206,12 @@ void GlEdgemap::_importSamples( WaveOrigo origo, const spx * pSource, int edgeBe
 	int destEdgePitch = 1;
 
 
-	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx mul = (origo == SampleOrigo::Top || origo == SampleOrigo::MiddleDown) ? 1 : -1;
 	spx offset = 0;
 	
-	if( origo == WaveOrigo::Bottom )
+	if( origo == SampleOrigo::Bottom )
 		offset = m_size.h*64;
-	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	else if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		offset = m_size.h*32;
 
 	for( int edge = edgeBegin ; edge < edgeEnd ; edge++ )
@@ -228,7 +228,7 @@ void GlEdgemap::_importSamples( WaveOrigo origo, const spx * pSource, int edgeBe
 	}
 }
 
-void GlEdgemap::_importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
+void GlEdgemap::_importSamples( SampleOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
 							  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch )
 {
 	if( samplePitch == 0 )
@@ -242,15 +242,15 @@ void GlEdgemap::_importSamples( WaveOrigo origo, const float * pSource, int edge
 	int destEdgePitch = 1;
 
 
-	spx mul = (origo == WaveOrigo::Top || origo == WaveOrigo::MiddleDown) ? 1 : -1;
+	spx mul = (origo == SampleOrigo::Top || origo == SampleOrigo::MiddleDown) ? 1 : -1;
 	spx offset = 0;
 
-	if( origo == WaveOrigo::Bottom )
+	if( origo == SampleOrigo::Bottom )
 		offset = m_size.h*64;
-	else if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	else if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		offset = m_size.h*32;
 
-	if( origo == WaveOrigo::MiddleDown || origo == WaveOrigo::MiddleUp )
+	if( origo == SampleOrigo::MiddleDown || origo == SampleOrigo::MiddleUp )
 		mul *= m_size.h*32;
 	else
 		mul *= m_size.h*64;
