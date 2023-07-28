@@ -328,7 +328,10 @@ namespace wg
 		Linear,
 		EaseIn,
 		EaseOut,
-		EaseInOut
+		EaseInOut,
+		Bezier,
+		Parametric
+
 	};
 
 

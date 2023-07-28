@@ -32,6 +32,7 @@ namespace wg
 	class Gradient
 	{
 	public:
+		const static Gradient	Undefined;
 
 		Gradient() :
 			topLeft(HiColor::Undefined),

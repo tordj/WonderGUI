@@ -49,7 +49,7 @@ namespace wg
 	protected:
 		Transition() {}
 
-		int		_normalize(TransitionCurve curve, int duration, int timestamp);
+		int		_normalize(TransitionCurve curve, int durationMicrosec , int timestampMicrosec);
 
 	};
 
@@ -68,7 +68,7 @@ namespace wg
 		struct Blueprint
 		{
 			TransitionCurve		curve = TransitionCurve::Linear;
-			int					duration = 250;
+			int					duration = 250*1000;					// Microseconds!
 			HiColor				midPointColor;
 			int					midPointDelay = 0;
 			TransitionCurve		midPointCurve = TransitionCurve::Linear;
@@ -88,14 +88,14 @@ namespace wg
 
 		int		duration() const { return m_duration; }
 
-		HiColor	snapshot(int timestamp, HiColor startColor, HiColor endColor );
+		HiColor	snapshot(int timestampMicroSec, HiColor startColor, HiColor endColor );
 
 	protected:
 		ColorTransition( const Blueprint& blueprint );
 
 		TransitionCurve	m_curve;		// Curve for transition before midpoint or for whole curve if no midpoint.
 		TransitionCurve	m_curve2;		// Curve for transition after midpoint.
-		int				m_duration;		// Milliseconds
+		int				m_duration;		// Microseconds
 		int				m_midPointBegin;
 		int				m_midPointEnd;
 
@@ -126,14 +126,14 @@ namespace wg
 
 		int		duration() const { return m_duration; }
 
-		void	snapshot(int timestamp, int nValues, const int * pStartValues, const int * pEndValues, int * pOutput);
-		void	snapshot(int timestamp, int nValues, const float * pStartValues, const float * pEndValues, float * pOutput);
+		void	snapshot(int timestampMicroSec, int nValues, const int * pStartValues, const int * pEndValues, int * pOutput);
+		void	snapshot(int timestampMicroSec, int nValues, const float * pStartValues, const float * pEndValues, float * pOutput);
 
 	protected:
 		ArrayTransition(int duration, TransitionCurve curve);
 
 		TransitionCurve	m_curve;
-		int				m_duration;		// Milliseconds
+		int				m_duration;		// Microseconds
 
 
 	};

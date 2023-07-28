@@ -25,6 +25,10 @@
 
 namespace wg
 {
+
+	const Gradient Gradient::Undefined = Gradient();
+
+
 	//____ constructor ________________________________________________________
 
 	Gradient::Gradient(Placement start, HiColor startColor, HiColor endColor)

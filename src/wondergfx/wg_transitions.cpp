@@ -40,28 +40,48 @@ namespace wg
 
 	int	Transition::_normalize(TransitionCurve type, int duration, int timestamp)
 	{
-		int normalizedTimestamp = (timestamp << 16) / duration;
+		// 8.24 binal format.
+
+		// Methods adapted from Creak's answer on StackOverflow.
+		// https://stackoverflow.com/questions/13462001/ease-in-and-ease-out-animation-formula
+
+
+		int64_t normTS = int((int64_t(timestamp) << 24) / duration);
 
 		switch (type)
 		{
-		case TransitionCurve::Linear:
-			// Do nothing;
-			break;
+			default:
+			case TransitionCurve::Linear:
+				return (int)normTS;
 
-		case TransitionCurve::EaseIn:
-			//TODO: Implement!!!
-			break;
+			case TransitionCurve::EaseIn:
+				return int((normTS * normTS) >> 24);
 
-		case TransitionCurve::EaseOut:
-			//TODO: Implement!!!
-			break;
+			case TransitionCurve::EaseOut:
+				return int((normTS * ((1 << 24) - normTS)) >> 24);
 
-		case TransitionCurve::EaseInOut:
-			//TODO: Implement!!!
-			break;
+			case TransitionCurve::EaseInOut:
+			{
+				int64_t halfpoint = 1 << 23;
 
+				if (normTS <= halfpoint)
+					return int((2 * (normTS * normTS)) >> 24);
+
+				normTS -= halfpoint;
+				return int((2 * normTS * ((1 << 24) - normTS)) >> 24) + halfpoint;
+			}
+
+			case TransitionCurve::Bezier:
+				return int((((normTS * normTS) >> 24) * ((3 << 24) - ((2 << 24) * normTS))) >> 24);
+
+			case TransitionCurve::Parametric:
+			{
+				int64_t sqt = (normTS * normTS) >> 24;
+
+				return (sqt << 24) / (2 * (sqt - normTS) + (1 << 24));
+			}
 		}
-		return normalizedTimestamp;
+
 	}
 
 	//____ ColorTransition::create() __________________________________________
@@ -141,12 +161,12 @@ namespace wg
 			if (timestamp < m_midPointBegin)
 			{
 				int progress = _normalize(m_curve, m_midPointBegin, timestamp);
-				return HiColor::mix(startColor, m_midPoint, progress >> 4);
+				return HiColor::mix(startColor, m_midPoint, progress >> (24-12));
 			}
 			else if (timestamp >= m_midPointEnd)
 			{
 				int progress = _normalize(m_curve2, m_duration - m_midPointEnd, timestamp - m_midPointEnd);
-				return HiColor::mix(m_midPoint, endColor, progress >> 4);
+				return HiColor::mix(m_midPoint, endColor, progress >> (24-12));
 			}
 			else
 				return m_midPoint;
@@ -154,7 +174,7 @@ namespace wg
 		else
 		{
 			int progress = _normalize(m_curve, m_duration, timestamp);
-			return HiColor::mix(startColor, endColor, progress >> 4);
+			return HiColor::mix(startColor, endColor, progress >> (24-12));
 		}
 	}
 
@@ -195,7 +215,7 @@ namespace wg
 			int start = pStartValues[i];
 			int end = pEndValues[i];
 
-			pOutput[i] = start + int(((end - start) * progress) >> 16);
+			pOutput[i] = start + int(((end - start) * progress) >> 24);
 		}
 	}
 
@@ -205,7 +225,7 @@ namespace wg
 	{
 		limit(timestamp, 0, m_duration);
 
-		float progress = float(_normalize(m_curve, m_duration, timestamp)) / 65536.f;
+		float progress = float(_normalize(m_curve, m_duration, timestamp)) / (65536.f*65536.f);
 
 		for (int i = 0; i < nValues; i++)
 		{
