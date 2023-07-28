@@ -2,11 +2,7 @@
 set(CMAKE_CXX_STANDARD 20)
 
 
-source_group(Files REGULAR_EXPRESSION ".*")
-source_group(Files/TestSuites REGULAR_EXPRESSION "testsuites/*")
-
-
-add_executable(gfxdevicetester
+set( SOURCES
 
 	device.cpp
 	device.h
@@ -39,6 +35,14 @@ add_executable(gfxdevicetester
 	testsuites/wavetests.h
 	testsuites/waveformtests.h
 )
+
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
+
+add_executable(gfxdevicetester
+	${SOURCES}
+)
+
 
 target_include_directories(gfxdevicetester PRIVATE
 	${WAPP_INCDIRS}

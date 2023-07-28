@@ -1,4 +1,3 @@
-source_group(Files REGULAR_EXPRESSION ".*")
 
 set(SOURCES
 
@@ -22,6 +21,8 @@ set_source_files_properties(wg3_metalshaders.mm.template wg3_shadercontent.mm PR
 set(INCDIRS
 	${CMAKE_CURRENT_LIST_DIR}
 )
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 add_library( wgmetalgfx STATIC ${SOURCES} )
 

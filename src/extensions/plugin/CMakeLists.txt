@@ -1,4 +1,3 @@
-source_group(Files REGULAR_EXPRESSION ".*")
 
 set( PLUGIN_SOURCES
 	wonderplugin.h
@@ -100,6 +99,7 @@ set(INCDIRS
 )
 
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${PLUGIN_SOURCES})
 
 add_library( wgplugin STATIC ${PLUGIN_SOURCES} )
 
@@ -108,6 +108,7 @@ target_include_directories(wgplugin PRIVATE
 	${INCDIRS}
 )
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${LEGACYPLUGIN_SOURCES})
 
 add_library( wglegacyplugin STATIC ${LEGACYPLUGIN_SOURCES} )
 
@@ -116,7 +117,8 @@ target_include_directories(wglegacyplugin PRIVATE
 	${INCDIRS}
 )
 
- 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${HOST_SOURCES})
+
 add_library( wgpluginhost STATIC ${HOST_SOURCES} )
 
 target_include_directories(wgpluginhost PRIVATE

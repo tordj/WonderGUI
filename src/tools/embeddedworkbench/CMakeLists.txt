@@ -1,18 +1,19 @@
 set(CMAKE_CXX_STANDARD 11)
 
-source_group(Files REGULAR_EXPRESSION ".*")
-
-
 
 # target_compile_options(wg-display PRIVATE -fno-exceptions -fno-rtti)
 
 
-
-add_executable(embeddedworkbench
-
+set( SOURCES
 	cpp_necessities.cpp
 	cpp_necessities.h
 	main.c
+)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
+
+add_executable(embeddedworkbench
+	${SOURCES}
 )
 
 target_compile_options(embeddedworkbench PRIVATE -lm -lstd=c99)

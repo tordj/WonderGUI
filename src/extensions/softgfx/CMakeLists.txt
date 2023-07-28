@@ -1,4 +1,3 @@
-source_group(Files REGULAR_EXPRESSION ".*")
 
 set(SOURCES
 
@@ -46,6 +45,8 @@ set(INCDIRS
 	${CMAKE_CURRENT_LIST_DIR}
 	${CMAKE_CURRENT_LIST_DIR}/c-api
 )
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 add_library( wgsoftgfx STATIC ${SOURCES} )
 

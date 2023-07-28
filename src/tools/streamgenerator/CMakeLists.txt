@@ -1,12 +1,16 @@
 set(CMAKE_CXX_STANDARD 20)
 
-
-source_group(Files REGULAR_EXPRESSION ".*")
-
-add_executable(streamgenerator
+set( SOURCES
 
 	main.cpp
 )
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
+
+add_executable(streamgenerator
+	${SOURCES}
+)
+
 
 target_link_directories(streamgenerator PRIVATE 
 	${FREETYPE2_LIBDIR}

@@ -1,28 +1,4 @@
 
-source_group(Base REGULAR_EXPRESSION "base//*")
-
-source_group(C-API REGULAR_EXPRESSION "c-api//*")
-
-source_group(Components REGULAR_EXPRESSION "components//*")
-
-source_group(Skins REGULAR_EXPRESSION "skins//*")
-source_group(Skins/Anim REGULAR_EXPRESSION "skins/anim//*")
-source_group(Skins/Meter REGULAR_EXPRESSION "skins/meter//*")
-source_group(Skins/Misc REGULAR_EXPRESSION "skins/misc//*")
-source_group(Skins/State REGULAR_EXPRESSION "skins/state//*")
-source_group(Skins/Static REGULAR_EXPRESSION "skins/static//*")
-
-source_group(Slots REGULAR_EXPRESSION "slots//*")
-source_group(TextLayouts REGULAR_EXPRESSION "textlayouts//*")
-source_group(NumberLayouts REGULAR_EXPRESSION "numberlayouts//*")
-
-source_group(Widgets REGULAR_EXPRESSION "widgets//*")
-source_group(Widgets/Capsules REGULAR_EXPRESSION "widgets/capsules//*")
-source_group(Widgets/Overlays REGULAR_EXPRESSION "widgets/overlays//*")
-source_group(Widgets/Lists REGULAR_EXPRESSION "widgets/lists//*")
-source_group(Widgets/Panels REGULAR_EXPRESSION "widgets/panels//*")
-
-
 
 set( SOURCES
 	base/wg_animframes.cpp
@@ -274,6 +250,8 @@ set( SOURCES
 	widgets/panels/wg_stackpanel.h
 	widgets/panels/wg_twoslotpanel.cpp
 	widgets/panels/wg_twoslotpanel.h
+
+	wondergui.h
 )
 
 
@@ -299,7 +277,7 @@ set(INCDIRS
 	${CMAKE_CURRENT_LIST_DIR}/widgets/panels/
 )
 
-
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 add_library( wondergui STATIC ${SOURCES} )
 target_include_directories(wondergui PRIVATE ${INCDIRS} )

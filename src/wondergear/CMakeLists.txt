@@ -1,5 +1,3 @@
-source_group(Code REGULAR_EXPRESSION "wg_*|wonder*")
-source_group(C-API REGULAR_EXPRESSION "c-api//*")
 
 
 set(SOURCES
@@ -48,6 +46,7 @@ set(INCDIRS
 	${CMAKE_CURRENT_LIST_DIR}/c-api
 )
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 add_library( wondergear STATIC ${SOURCES} )
 target_include_directories(wondergear PRIVATE ${INCDIRS})

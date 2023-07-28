@@ -1,5 +1,3 @@
-source_group(Files REGULAR_EXPRESSION ".*")
-
 set(SOURCES
     wg_freetypefont.h
     wg_freetypefont.cpp
@@ -12,6 +10,7 @@ set(INCDIRS
    ${CMAKE_CURRENT_LIST_DIR}
 )
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 add_library( wgfreetypefont STATIC ${SOURCES} )
 

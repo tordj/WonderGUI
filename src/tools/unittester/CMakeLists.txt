@@ -1,8 +1,6 @@
 set(CMAKE_CXX_STANDARD 20)
 
-source_group(Files REGULAR_EXPRESSION ".*")
-
-add_executable(unittester
+set( SOURCES
 
 	main.cpp
 	testframework.cpp
@@ -11,6 +9,12 @@ add_executable(unittester
 	tests/gfxstream.h
 	tests/softgfxdevice.cpp
 	tests/softgfxdevice.h
+)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
+
+add_executable(unittester
+	${SOURCES}
 )
 
 target_working_directory(unittester ${WG_ROOT} )

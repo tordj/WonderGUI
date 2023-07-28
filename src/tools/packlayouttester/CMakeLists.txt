@@ -1,10 +1,15 @@
 set(CMAKE_CXX_STANDARD 20)
 
-source_group(Files REGULAR_EXPRESSION ".*")
 
-add_executable(packlayouttester
+set( SOURCES
 	packlayouttester.cpp
 	packlayouttester.h
+)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
+
+add_executable(packlayouttester
+	${SOURCES}
 )
 
 target_include_directories(packlayouttester PRIVATE 

@@ -1,11 +1,15 @@
 set(CMAKE_CXX_STANDARD 20)
 
-source_group(Files REGULAR_EXPRESSION ".*")
-
-add_executable(surfviewer
+set( SOURCES
 
 	surfviewer.cpp
 	surfviewer.h
+)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
+
+add_executable(surfviewer
+	${SOURCES}
 )
 
 target_include_directories(surfviewer PRIVATE 
