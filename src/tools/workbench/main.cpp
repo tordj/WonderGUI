@@ -27,11 +27,13 @@
 
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
+#include <wg_softedgemapfactory.h>
 #include <wg_softgfxdevice.h>
 #include <wg_softkernels_default.h>
 
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
+#include <wg_gledgemapfactory.h>
 #include <wg_glgfxdevice.h>
 
 
@@ -111,6 +113,7 @@ bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot);
 bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pSlot);
 bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pSlot);
 bool customSkinTest(ComponentPtr<DynamicSlot> pSlot);
+bool graphDisplayTest(ComponentPtr<DynamicSlot> pSlot);
 
 
 void nisBlendTest();
@@ -131,7 +134,8 @@ int main(int argc, char** argv)
 	
 	SoftSurface_p		pCanvas;
 	GfxDevice_p			pDevice;
-	SurfaceFactory_p	pFactory;
+	SurfaceFactory_p	pSurfaceFactory;
+	EdgemapFactory_p	pEdgemapFactory;
 
 
 	Coord muC;
@@ -333,6 +337,7 @@ int main(int argc, char** argv)
 	pDevice = pGlDevice;
 
 	pFactory = GlSurfaceFactory::create();
+	pEdgemapFactory = GlEdgemapFactory::create();
 
 #else
 	{
@@ -359,11 +364,13 @@ int main(int argc, char** argv)
 		pSoftDevice->defineCanvas(CanvasRef::Default, pCanvas);
 		pDevice = pSoftDevice;
 
-		pFactory = SoftSurfaceFactory::create();
+		pSurfaceFactory = SoftSurfaceFactory::create();
+		pEdgemapFactory = SoftEdgemapFactory::create();
 	}
 #endif
 
-	Base::setDefaultSurfaceFactory(pFactory);
+	Base::setDefaultSurfaceFactory(pSurfaceFactory);
+	Base::setDefaultEdgemapFactory(pEdgemapFactory);
 	Base::setDefaultGfxDevice(pDevice);
 
 //	nisBlendTest();
@@ -440,7 +447,7 @@ int main(int argc, char** argv)
 		SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 */
 	GfxDevice_p pGfxDevice				= Base::defaultGfxDevice();
-	SurfaceFactory_p pSurfaceFactory	= Base::defaultSurfaceFactory();
+//	SurfaceFactory_p pSurfaceFactory	= Base::defaultSurfaceFactory();
 
 
 	RootPanel_p pRoot = RootPanel::create(CanvasRef::Default, pGfxDevice);
@@ -689,8 +696,8 @@ int main(int argc, char** argv)
 //	memHeapFragmentationTest(pSlot);
 //	blendRGB565BigendianTest( pSlot );
 //	twoSlotPanelTest(pSlot);
-	customSkinTest(pSlot);
-
+//	customSkinTest(pSlot);
+	graphDisplayTest(pSlot);
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -3310,3 +3317,94 @@ bool customSkinTest(ComponentPtr<DynamicSlot> pEntry)
 
 	return true;
 }
+
+//____ graphDisplayTest() ______________________________________________________
+
+bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pFlex = FlexPanel::create();
+
+	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
+
+	auto pGraph = GraphDisplay::create(WGBP(GraphDisplay,
+		_.displayCeiling = 0.5f,
+		_.displayFloor = - 0.5f,
+		_.skin = StaticColorSkin::create(Color::Black)
+	));
+
+
+
+
+	pFlex->slots.pushBackMovable(pGraph, { 10,10,200,200 });
+
+	*pEntry = pFlex;
+
+
+	pGraph->graphs.pushBack(Graph({
+		.outlineColor = Color::Red,
+		.topOutlineThickness = 5
+
+		}));
+
+
+	static float topSamples[5] = { 0, -0.25f, 0.25f, 0.23f, 0.5f };
+
+	static float topSamples2[5] = { 0, 0.25f, -0.25f, -0.23f, -0.5f };
+	static float bottomSamples2[1] = { 0.f };
+
+
+	pGraph->graphs.back().setTopSamples(5, topSamples);
+
+	auto pTransition = ArrayTransition::create(2000000, TransitionCurve::Bezier);
+
+	pGraph->graphs.back().transitionSamples(pTransition, 5, topSamples2, 1, bottomSamples2);
+
+	pGraph->graphs.pushBack(Graph({
+		.bottomOutlineThickness = 0,
+		.color = Color::Transparent,
+		.outlineColor = Color::Blue,
+		.topOutlineThickness = 2
+		}));
+
+	static float curveSamples[6][201];
+
+	static float beg[1] = { 0.5f };
+	static float end[1] = { -0.5f };
+
+	auto pLinear = ArrayTransition::create(201, TransitionCurve::Linear);
+	auto pEaseIn = ArrayTransition::create(201, TransitionCurve::EaseIn);
+	auto pEaseOut = ArrayTransition::create(201, TransitionCurve::EaseOut);
+	auto pEaseInOut = ArrayTransition::create(201, TransitionCurve::EaseInOut);
+	auto pBezier = ArrayTransition::create(201, TransitionCurve::Bezier);
+	auto pParametric = ArrayTransition::create(201, TransitionCurve::Parametric);
+
+
+	for (int i = 0 ; i < 201 ; i++ )
+	{
+		pLinear->snapshot(i, 1, beg, end, &curveSamples[0][i]);
+		pEaseIn->snapshot(i, 1, beg, end, &curveSamples[1][i]);
+		pEaseOut->snapshot(i, 1, beg, end, &curveSamples[2][i]);
+		pEaseInOut->snapshot(i, 1, beg, end, &curveSamples[3][i]);
+		pBezier->snapshot(i, 1, beg, end, &curveSamples[4][i]);
+		pParametric->snapshot(i, 1, beg, end, &curveSamples[5][i]);
+	}
+
+
+	Color colors[6] = { Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Pink, Color::Brown };
+
+	for (int i = 0; i < 6; i++)
+	{
+		pGraph->graphs.pushBack(Graph({
+			.bottomOutlineThickness = 0,
+			.color = Color::Transparent,
+			.outlineColor = colors[i],
+			.topOutlineThickness = 2
+			}));
+
+		pGraph->graphs.back().setTopSamples(201, curveSamples[i] );
+	}
+
+
+	return true;
+}
+

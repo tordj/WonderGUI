@@ -483,7 +483,7 @@ void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
 
 	void Waveform::_regenEdgemap()
 	{
-		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : pFactory = GfxBase::defaultEdgemapFactory();
+		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : GfxBase::defaultEdgemapFactory();
 
 		
 		bool bUseGradient = !m_gradient.isUndefined() || !m_outlineGradient.isUndefined();

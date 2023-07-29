@@ -74,6 +74,7 @@
 #include <wg_geo.h>
 #include <wg_gfxdevice.h>
 #include <wg_gradient.h>
+#include <wg_graphdisplay.h>
 #include <wg_gridwalker.h>
 #include <wg_hostbridge.h>
 #include <wg_icon.h>
@@ -173,6 +174,7 @@
 #include <wg_togglebutton.h>
 #include <wg_togglegroup.h>
 #include <wg_tooltipoverlay.h>
+#include <wg_transitions.h>
 #include <wg_twoslotpanel.h>
 #include <wg_types.h>
 #include <wg_util.h>

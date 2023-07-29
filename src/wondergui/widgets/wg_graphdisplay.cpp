@@ -126,7 +126,10 @@ namespace wg
 	void GraphDisplay::_didAddEntries(Graph* pEntry, int nb)
 	{
 		for (int i = 0; i < nb; i++)
-			_waveformNeedsRefresh(pEntry+i, true, true, true);
+		{
+			pEntry->m_pDisplay = this;
+			_waveformNeedsRefresh(pEntry + i, true, true, true);
+		}
 	}
 
 	//____ _didMoveEntries() ___________________________________________________
@@ -207,10 +210,7 @@ namespace wg
 		}
 
 		if (pGraph->m_bVisible && !m_bPreRenderRequested)
-		{
-			_requestPreRenderCall();
-			m_bPreRenderRequested = true;
-		}
+			m_bPreRenderRequested = _requestPreRenderCall();
 	}
 
 	//____ _fullRefreshOfAllWaveforms() _______________________________________
@@ -221,10 +221,7 @@ namespace wg
 			graph.m_pWaveform = nullptr;
 
 		if (!m_bPreRenderRequested)
-		{
-			_requestPreRenderCall();
-			m_bPreRenderRequested = true;
-		}
+			m_bPreRenderRequested = _requestPreRenderCall();
 	}
 
 
@@ -335,14 +332,14 @@ namespace wg
 					graph.m_waveformPos = rect.pos();
 					
 					graph.m_pWaveform = Waveform::create(WGBP(Waveform,
-						_.size = rect.size(),
-						_.bottomOutlineThickness = graph.m_bottomOutlineThickness,
+						_.size = rect.size()/64,
+						_.bottomOutlineThickness = graph.m_bottomOutlineThickness*m_scale,
 						_.color = graph.m_fillColor,
 						_.gradient = graph.m_fillGradient,
 						_.origo = SampleOrigo::Top,
 						_.outlineColor = graph.m_outlineColor,
 						_.outlineGradient = graph.m_outlineGradient,
-						_.topOutlineThickness = graph.m_topOutlineThickness 
+						_.topOutlineThickness = graph.m_topOutlineThickness*m_scale
 					) );
 
 					// Interpolate and set samples
@@ -429,8 +426,8 @@ namespace wg
 				float frac2 = sample - ofs;
 				float frac1 = 1.f - frac2;
 
-				float val1 = (pSamples[ofs] - m_displayFloor) * valueFactor;
-				float val2 = (pSamples[ofs + 1] - m_displayFloor) * valueFactor;
+				float val1 = (pSamples[ofs] - m_displayCeiling) * valueFactor;
+				float val2 = (pSamples[ofs + 1] - m_displayCeiling) * valueFactor;
 
 				pConverted[i] = int(val1 * frac1 + val2 * frac2);
 			}

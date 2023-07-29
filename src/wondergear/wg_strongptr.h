@@ -37,8 +37,13 @@ namespace wg
 
 		//.____ Creation ___________________________________________________________
 
+		StrongPtr()
+		{
+			m_pObj = nullptr;
+		};
 
-		StrongPtr(Cls * const _p=0)
+
+		StrongPtr(Cls * const _p)
 		{
 			m_pObj = _p;
 			if( _p )

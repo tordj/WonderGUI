@@ -58,7 +58,7 @@ namespace wg
 				return int((normTS * normTS) >> 24);
 
 			case TransitionCurve::EaseOut:
-				return int((normTS * ((1 << 24) - normTS)) >> 24);
+				return int((normTS * ((2 << 24) - normTS)) >> 24);
 
 			case TransitionCurve::EaseInOut:
 			{
@@ -72,7 +72,7 @@ namespace wg
 			}
 
 			case TransitionCurve::Bezier:
-				return int((((normTS * normTS) >> 24) * ((3 << 24) - ((2 << 24) * normTS))) >> 24);
+				return int((((normTS * normTS) >> 24) * ((3 << 24) - (((2 << 24) * normTS)>>24))) >> 24);
 
 			case TransitionCurve::Parametric:
 			{
@@ -225,7 +225,7 @@ namespace wg
 	{
 		limit(timestamp, 0, m_duration);
 
-		float progress = float(_normalize(m_curve, m_duration, timestamp)) / (65536.f*65536.f);
+		float progress = float(_normalize(m_curve, m_duration, timestamp)) / (65536.f*256.f);
 
 		for (int i = 0; i < nValues; i++)
 		{
