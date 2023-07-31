@@ -32,7 +32,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	GraphDisplay::GraphDisplay(const Blueprint& bp) : graphs(this)
+	GraphDisplay::GraphDisplay(const Blueprint& bp) : graphs(this), xLines(this), yLines(this)
 	{
 		_initFromBlueprint(bp);
 
@@ -151,6 +151,21 @@ namespace wg
 			_requestRenderGraph(p, p->m_begin, p->m_end);
 		}
 	}
+
+
+	void GraphDisplay::_didAddEntries(GridLine* pEntry, int nb)
+	{
+		
+	}
+
+	void GraphDisplay::_didMoveEntries(GridLine* pFrom, GridLine* pTo, int nb)
+	{
+	}
+
+	void GraphDisplay::_willEraseEntries(GridLine* pEntry, int nb)
+	{
+	}
+
 
 	//____ _requestRenderGraph() ______________________________________________
 
@@ -454,9 +469,46 @@ namespace wg
 
 	void GraphDisplay::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
+		RectSPX graphCanvas = m_graphCanvas + _canvas.pos();
+
+		// Render grid xLines
+
+		{
+			float	rangeMin = std::min(m_displayCeiling, m_displayFloor);
+			float	rangeMax = std::max(m_displayCeiling, m_displayFloor);
+
+			for (auto& line : xLines)
+			{
+				if (line.m_bVisible && line.m_value >= rangeMin && line.m_value <= rangeMax )
+				{
+					float valueFactor = (m_displayFloor - m_displayCeiling) * m_graphCanvas.h;
+
+					CoordSPX pos = graphCanvas.pos();
+					pos.y += line.m_value * valueFactor;
+
+					pDevice->drawLine(pos, Direction::Right, graphCanvas.w, m_xLineColor, line.m_thickness * m_scale );
+				}
+			}
+		}
+
+		// Render grid yLines
+
+		{
+			for (auto& line : yLines)
+			{
+				if (line.m_bVisible)
+				{	
+					CoordSPX pos = graphCanvas.pos();
+					pos.x += line.m_value * graphCanvas.w;
+
+					pDevice->drawLine(pos, Direction::Down, graphCanvas.h, m_yLineColor, line.m_thickness * m_scale);
+				}
+			}
+		}
+
+
 		// Render graphs
 
-		RectSPX graphCanvas = m_graphCanvas + _canvas.pos();
 
 		auto popData = Util::limitClipList(pDevice, graphCanvas);
 

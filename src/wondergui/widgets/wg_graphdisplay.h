@@ -145,6 +145,24 @@ namespace wg
 	};
 
 
+	class GridLine
+	{
+		friend class GraphDisplay;
+	public:
+
+
+
+	protected:
+
+		float	m_value;
+		pts		m_thickness;
+
+		bool	m_bVisible;
+
+		String	m_label;
+
+	};
+
 
 
 
@@ -152,7 +170,7 @@ namespace wg
 	typedef	StrongPtr<GraphDisplay>		GraphDisplay_p;
 	typedef	WeakPtr<GraphDisplay>	GraphDisplay_wp;
 
-	class GraphDisplay : public Widget , private DynamicVector<Graph>::Holder
+	class GraphDisplay : public Widget , private DynamicVector<Graph>::Holder, private DynamicVector<GridLine>::Holder
 	{
 		friend class Graph;
 	public:
@@ -187,7 +205,8 @@ namespace wg
 		//.____ Components _______________________________________
 
 		DynamicVector<Graph>	graphs;
-
+		DynamicVector<GridLine>	xLines;
+		DynamicVector<GridLine>	yLines;
 
 		//.____ Identification __________________________________________
 
@@ -234,6 +253,14 @@ namespace wg
 		void		_waveformNeedsRefresh(Graph* pGraph, bool bGeo, bool bSamples, bool bColor);
 		void		_fullRefreshOfAllWaveforms();
 
+		//
+
+		void		_didAddEntries(GridLine* pEntry, int nb) override;
+		void		_didMoveEntries(GridLine* pFrom, GridLine* pTo, int nb) override;
+		void		_willEraseEntries(GridLine* pEntry, int nb) override;
+
+
+
 	private:
 
 		bool		m_bPreRenderRequested = false;
@@ -242,6 +269,21 @@ namespace wg
 
 		float		m_displayCeiling;
 		float		m_displayFloor;
+
+
+		//
+
+		HiColor		m_xLineColor = Color::Black;
+		TextStyle_p	m_xLineLabelStyle;
+		Skin_p		m_xLineLabelSkin;
+		Placement	m_xLineLabelPlacement = Placement::West;
+		Coord		m_xLineLabelOfs;
+
+		HiColor		m_yLineColor = Color::Black;
+		TextStyle_p	m_yLineLabelStyle;
+		Skin_p		m_yLineLabelSkin;
+		Placement	m_yLineLabelPlacement = Placement::South;
+		Coord		m_yLineLabelOfs;
 
 //		float		m_sampleMin = 0;	// Minimum sample value of all graphs.
 //		float		m_sampleMax = 0;
