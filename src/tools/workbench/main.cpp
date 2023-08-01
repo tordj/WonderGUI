@@ -669,7 +669,7 @@ int main(int argc, char** argv)
 //	modalLayerTest(pSlot);
 //	splitPanelTest(pSlot);
 //	designLayerTest(pSlot);
-	pianoKeyboardTest(pSlot);
+//	pianoKeyboardTest(pSlot);
 //	sliderTest(pSlot);
 //	rangeSliderTest(pSlot);
 //	pieKnobTest(pSlot);
@@ -3341,8 +3341,9 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 
 
 	pGraph->graphs.pushBack(Graph({
+		.bottomOutlineThickness = 0,
 		.outlineColor = Color::Red,
-		.topOutlineThickness = 5
+		.topOutlineThickness = 5,
 
 		}));
 
@@ -3359,12 +3360,6 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 
 	pGraph->graphs.back().transitionSamples(pTransition, 5, topSamples2, 1, bottomSamples2);
 
-	pGraph->graphs.pushBack(Graph({
-		.bottomOutlineThickness = 0,
-		.color = Color::Transparent,
-		.outlineColor = Color::Blue,
-		.topOutlineThickness = 2
-		}));
 
 	static float curveSamples[6][201];
 
@@ -3377,7 +3372,6 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pEaseInOut = ArrayTransition::create(201, TransitionCurve::EaseInOut);
 	auto pBezier = ArrayTransition::create(201, TransitionCurve::Bezier);
 	auto pParametric = ArrayTransition::create(201, TransitionCurve::Parametric);
-
 
 	for (int i = 0 ; i < 201 ; i++ )
 	{
@@ -3398,11 +3392,21 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 			.bottomOutlineThickness = 0,
 			.color = Color::Transparent,
 			.outlineColor = colors[i],
-			.topOutlineThickness = 2
+			.topOutlineThickness = 2,
 			}));
 
 		pGraph->graphs.back().setTopSamples(201, curveSamples[i] );
 	}
+
+	// Setup grid
+
+	pGraph->xLines.pushBack(GridLine(-0.25f, String("-0.25"), 0.5f));
+	pGraph->xLines.pushBack(GridLine(0.0f, String("0.0"), 1.0f));
+	pGraph->xLines.pushBack(GridLine( 0.25f, String("0.25"), 0.5f));
+
+	pGraph->yLines.pushBack(GridLine(0.0f, String("0.0"), 0.5f));
+	pGraph->yLines.pushBack(GridLine(0.1f, String("0.1"), 0.5f));
+	pGraph->yLines.pushBack(GridLine(0.2f, String("0.2"), 0.5f));
 
 
 	return true;

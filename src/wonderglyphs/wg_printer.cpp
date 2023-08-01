@@ -26,8 +26,8 @@ namespace wg
 
 	const TypeInfo Printer::TYPEINFO = { "Printer", &Object::TYPEINFO };
 
-	const static int g_placementMulX[Placement_size] = { 0, 1, 2, 2, 2, 1, 0, 0, 1 };
-	const static int g_placementMulY[Placement_size] = { 0, 0, 0, 1, 2, 2, 2, 1, 1 };
+	const static int g_placementMulX[Placement_size] = { 0, 0, 1, 2, 2, 2, 1, 0, 0, 1 };
+	const static int g_placementMulY[Placement_size] = { 0, 0, 0, 0, 1, 2, 2, 2, 1, 1 };
 
 
 	//____ Create _________________________________________________________________

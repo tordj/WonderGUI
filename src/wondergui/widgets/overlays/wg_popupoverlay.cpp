@@ -136,6 +136,7 @@ namespace wg
 				break;
 			}
 
+			default:
 			case Placement::NorthWest:					// Left-aligned above launcher.
 			{
 				geo.x = pSlot->m_launcherGeo.left();
@@ -178,9 +179,6 @@ namespace wg
 				break;
 			}
 
-			default:
-				assert(false);
-				break;
 
 		}
 

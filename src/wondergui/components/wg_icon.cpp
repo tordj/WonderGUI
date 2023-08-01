@@ -173,6 +173,7 @@ namespace wg
 
 			switch( m_placement )
 			{
+				default:
 				case Placement::NorthWest:
 				case Placement::SouthWest:
 				case Placement::West:

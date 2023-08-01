@@ -29,6 +29,7 @@
 #include <wg_transitions.h>
 #include <wg_gradient.h>
 #include <wg_waveform.h>
+#include <wg_text.h>
 
 namespace wg
 {
@@ -150,20 +151,57 @@ namespace wg
 		friend class GraphDisplay;
 	public:
 
+		struct Blueprint
+		{
+			HiColor		color = HiColor::Undefined;
+			
+			String		label;
+			Coord		labelAdjustment;
+			Placement	labelPlacement;
+			Skin_p		labelSkin;
+			TextStyle_p	labelStyle;
 
+			pts			thickness = 0;					// 0 = Undefined.
+			float		value;
+			bool		visible = true;
+		};
+
+
+
+		GridLine(float value, const String& label, pts thickness = 1, bool bVisible = true) 
+			: m_value(value),
+			m_thickness(thickness),
+			m_bVisible(bVisible),
+			m_label(label)
+		{
+		};
+
+		GridLine(const Blueprint& bp)
+			: m_value(bp.value),
+			m_color(bp.color),
+			m_thickness(bp.thickness),
+			m_bVisible(bp.visible),
+			m_label(bp.label),
+			m_labelSkin(bp.labelSkin),
+			m_labelPlacement(bp.labelPlacement),
+			m_labelAdjustment(bp.labelAdjustment)
+		{
+		};
 
 	protected:
 
-		float	m_value;
-		pts		m_thickness;
+		float		m_value;
+		HiColor		m_color;
+		pts			m_thickness;
 
-		bool	m_bVisible;
+		bool		m_bVisible;
 
-		String	m_label;
+		Text::Blueprint label;
 
+		Skin_p		m_labelSkin;
+		Placement	m_labelPlacement = Placement::Undefined;	// Defaults to West or South depending on x- or y-line.
+		Coord		m_labelAdjustment;
 	};
-
-
 
 
 	class GraphDisplay;
@@ -194,6 +232,15 @@ namespace wg
 			Skin_p			skin;
 			bool			tabLock = false;
 			String			tooltip;
+
+			HiColor			gridColor = Color::DarkGray;
+			pts				gridThickness = 1;
+			TextStyle_p		textStyle;
+			Skin_p			labelSkin;
+
+			Placement		sideLabelPlacement = Placement::West;
+			Placement		bottomLabelPlacement = Placement::South;
+
 		};
 
 
@@ -219,7 +266,6 @@ namespace wg
 
 		float	displayCeiling() const { return m_displayCeiling;  }
 		float	displayFloor() const { return m_displayFloor; }
-
 
 
 		//.____ Internal _________________________________________________
@@ -259,6 +305,7 @@ namespace wg
 		void		_didMoveEntries(GridLine* pFrom, GridLine* pTo, int nb) override;
 		void		_willEraseEntries(GridLine* pEntry, int nb) override;
 
+		void		_recalcGraphCanvas();
 
 
 	private:
@@ -270,20 +317,15 @@ namespace wg
 		float		m_displayCeiling;
 		float		m_displayFloor;
 
+		HiColor		m_gridColor = Color::DarkGray;
+		pts			m_gridThickness = 1;
+		TextStyle_p	m_labelStyle;
+		Skin_p		m_labelSkin;
+
+		Placement	m_sideLabelPlacement = Placement::West;
+		Placement	m_bottomLabelPlacement = Placement::South;
 
 		//
-
-		HiColor		m_xLineColor = Color::Black;
-		TextStyle_p	m_xLineLabelStyle;
-		Skin_p		m_xLineLabelSkin;
-		Placement	m_xLineLabelPlacement = Placement::West;
-		Coord		m_xLineLabelOfs;
-
-		HiColor		m_yLineColor = Color::Black;
-		TextStyle_p	m_yLineLabelStyle;
-		Skin_p		m_yLineLabelSkin;
-		Placement	m_yLineLabelPlacement = Placement::South;
-		Coord		m_yLineLabelOfs;
 
 //		float		m_sampleMin = 0;	// Minimum sample value of all graphs.
 //		float		m_sampleMax = 0;

@@ -532,6 +532,7 @@ namespace wg
 		{
 			switch (m_smallChildPlacement)
 			{
+				default:
 				case Placement::West:
 				case Placement::NorthWest:
 				case Placement::SouthWest:
@@ -570,6 +571,7 @@ namespace wg
 		{
 			switch (m_smallChildPlacement)
 			{
+				default:
 				case Placement::North:
 				case Placement::NorthWest:
 				case Placement::NorthEast:

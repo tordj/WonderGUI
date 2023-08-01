@@ -339,6 +339,7 @@ namespace wg
 		{
 			switch (m_placement)
 			{
+				default:
 				case Placement::West:
 				case Placement::NorthWest:
 				case Placement::SouthWest:
@@ -372,23 +373,24 @@ namespace wg
 		{
 			switch (m_placement)
 			{
-			case Placement::NorthWest:
-			case Placement::North:
-			case Placement::NorthEast:
-				pos.y = 0;
-				break;
+				default:
+				case Placement::NorthWest:
+				case Placement::North:
+				case Placement::NorthEast:
+					pos.y = 0;
+					break;
 
-			case Placement::West:
-			case Placement::Center:
-			case Placement::East:
-				pos.y = align((m_size.h - dispRect.h) / 2);
-				break;
+				case Placement::West:
+				case Placement::Center:
+				case Placement::East:
+					pos.y = align((m_size.h - dispRect.h) / 2);
+					break;
 
-			case Placement::SouthWest:
-			case Placement::South:
-			case Placement::SouthEast:
-				pos.y = m_size.h - dispRect.h;
-				break;
+				case Placement::SouthWest:
+				case Placement::South:
+				case Placement::SouthEast:
+					pos.y = m_size.h - dispRect.h;
+					break;
 			}
 		}
 		else

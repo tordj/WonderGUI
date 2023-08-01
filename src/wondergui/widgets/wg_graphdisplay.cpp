@@ -38,6 +38,14 @@ namespace wg
 
 		m_displayCeiling = bp.displayCeiling;
 		m_displayFloor = bp.displayFloor;
+
+		m_gridColor		= bp.gridColor;
+		m_gridThickness = bp.gridThickness;
+		m_labelStyle	= bp.labelStyle;
+		m_labelSkin		= bp.labelSkin;
+
+		m_sideLabelPlacement = bp.sideLabelPlacement;
+		m_bottomLabelPlacement = bp.bottomLabelPlacement;
 	}
 
 	//____ destructor _____________________________________________________________
@@ -65,7 +73,6 @@ namespace wg
 
 		_fullRefreshOfAllWaveforms();
 	}
-
 
 	//____ _startedOrEndedTransition() __________________________________________
 
@@ -155,18 +162,36 @@ namespace wg
 		}
 	}
 
+	//____ _didAddEntries() ___________________________________________________
 
 	void GraphDisplay::_didAddEntries(GridLine* pEntry, int nb)
 	{
-		
+		_recalcGraphCanvas();
+		_requestRender();
 	}
+
+	//____ _didMoveEntries() __________________________________________________
 
 	void GraphDisplay::_didMoveEntries(GridLine* pFrom, GridLine* pTo, int nb)
 	{
+		// Re-render in case 
+
+		_requestRender();
 	}
+
+	//____ _willEraseEntries() ________________________________________________
 
 	void GraphDisplay::_willEraseEntries(GridLine* pEntry, int nb)
 	{
+		_recalcGraphCanvas();
+		_requestRender();
+	}
+
+	//____ _recalcGraphCanvas() _______________________________________________
+
+	void GraphDisplay::_recalcGraphCanvas()
+	{
+
 	}
 
 
@@ -481,9 +506,12 @@ namespace wg
 					float valueFactor = (m_displayFloor - m_displayCeiling) * m_graphCanvas.h;
 
 					CoordSPX pos = graphCanvas.pos();
-					pos.y += line.m_value * valueFactor;
+					pos.y += (line.m_value - m_displayCeiling) * valueFactor;
 
-					pDevice->drawLine(pos, Direction::Right, graphCanvas.w, m_xLineColor, line.m_thickness * m_scale );
+					HiColor color = line.m_color == HiColor::Undefined ? m_gridColor : line.m_color;
+					pts thickness = line.m_thickness > 0 ? line.m_thickness : m_gridThickness;
+
+					pDevice->drawLine(pos, Direction::Right, graphCanvas.w, color, thickness * m_scale );
 				}
 			}
 		}
@@ -498,14 +526,16 @@ namespace wg
 					CoordSPX pos = graphCanvas.pos();
 					pos.x += line.m_value * graphCanvas.w;
 
-					pDevice->drawLine(pos, Direction::Down, graphCanvas.h, m_yLineColor, line.m_thickness * m_scale);
+					HiColor color = line.m_color == HiColor::Undefined ? m_gridColor : line.m_color;
+					pts thickness = line.m_thickness > 0 ? line.m_thickness : m_gridThickness;
+
+					pDevice->drawLine(pos, Direction::Down, graphCanvas.h, color, thickness * m_scale);
 				}
 			}
 		}
 
 
 		// Render graphs
-
 
 		auto popData = Util::limitClipList(pDevice, graphCanvas);
 
@@ -519,6 +549,31 @@ namespace wg
 		}
 
 		Util::popClipList(pDevice, popData);
+
+		// Render labels
+
+
+
+		{
+			float	rangeMin = std::min(m_displayCeiling, m_displayFloor);
+			float	rangeMax = std::max(m_displayCeiling, m_displayFloor);
+
+			for (auto& line : xLines)
+			{
+				if (line.m_bVisible && line.m_value >= rangeMin && line.m_value <= rangeMax)
+				{
+					float valueFactor = (m_displayFloor - m_displayCeiling) * m_graphCanvas.h;
+
+					CoordSPX pos = graphCanvas.pos();
+					pos.y += (line.m_value - m_displayCeiling) * valueFactor;
+
+					
+
+				}
+			}
+		}
+
+
 	}
 
 	//____ _resize() __________________________________________________________

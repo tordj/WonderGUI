@@ -118,8 +118,8 @@ namespace wg
 
 	enum class Placement : uint8_t	//. autoExtras
 	{
-		// Clockwise from upper left corner, center last. Must be in range 0-8
-
+		// Must be this specific order. Clockwise from upper left corner, center last. Must be in range 0-9
+		Undefined,
 		NorthWest,
 		North,
 		NorthEast,
