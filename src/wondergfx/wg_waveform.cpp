@@ -51,14 +51,19 @@ namespace wg
 		m_size(bp.size)
 	{
 
+		m_bHasOutlines = bp.topOutlineThickness > 0 || bp.bottomOutlineThickness > 0;
+
 		m_topBrush.thickness = bp.topOutlineThickness;
 		m_bottomBrush.thickness = bp.bottomOutlineThickness;
 
 		// Generate brush slope
 
-		_generateInfluenceSlope( m_topBrush );
-		_generateInfluenceSlope( m_bottomBrush );
-
+		if( m_bHasOutlines )
+		{
+			_generateInfluenceSlope( m_topBrush );
+			_generateInfluenceSlope( m_bottomBrush );
+		}
+		
 		//
 		
 		m_topSamplesPadding = (bp.topOutlineThickness/2 / 64) + 1;
@@ -346,19 +351,19 @@ namespace wg
 
 	//____ setFlatBottomLine() ___________________________________________________
 
-void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, spx sample )
-{
-	spx out = EdgemapTools::convertSample(sample, m_origo, m_pEdgemap->pixelSize().h*64);
+	void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, spx sample )
+	{
+		spx out = EdgemapTools::convertSample(sample, m_origo, m_pEdgemap->pixelSize().h*64);
 
-	_setFlatLine(m_pBottomSamples, sampleBegin, sampleEnd, out);
-}
+		_setFlatLine(m_pBottomSamples, sampleBegin, sampleEnd, out);
+	}
 
-void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
-{
-	spx out = EdgemapTools::convertSample(sample, m_origo, m_pEdgemap->pixelSize().h*64);
+	void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
+	{
+		spx out = EdgemapTools::convertSample(sample, m_origo, m_pEdgemap->pixelSize().h*64);
 
-	_setFlatLine(m_pBottomSamples, sampleBegin, sampleEnd, out);
-}
+		_setFlatLine(m_pBottomSamples, sampleBegin, sampleEnd, out);
+	}
 
 	//____ refresh() _____________________________________________________________
 
@@ -401,42 +406,71 @@ void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
 		int dirtEnd = std::min(m_nbSamples,m_dirtEnd+padding);
 		int dirtSize = dirtEnd - dirtBegin;
 
-		
-		int allocated = (dirtSize)*4*sizeof(spx);
-		
-		spx * pBuffer = (spx*) GfxBase::memStackAlloc(allocated);
-		
-		_drawLine(m_pTopSamples + m_dirtBegin, pBuffer, pBuffer + dirtSize, dirtSize, m_topBrush );
-		_drawLine(m_pBottomSamples + m_dirtBegin, pBuffer+dirtSize*2, pBuffer + dirtSize*3, dirtSize, m_bottomBrush );
-
-		// Loop through new edges and fix possible issues.
-		
-		for (int i = 0; i < dirtSize; i++)
+		if( !m_bHasOutlines )
 		{
-			// Flip lines if they cross
+			int allocated = (dirtSize)*2*sizeof(spx);
 			
-			if( pBuffer[i] > pBuffer[i+dirtSize*2])
+			spx * pBuffer = (spx*) GfxBase::memStackAlloc(allocated);
+
+			memcpy(pBuffer, m_pTopSamples + m_dirtBegin, dirtSize*sizeof(spx) );
+			memcpy(pBuffer+dirtSize, m_pBottomSamples + m_dirtBegin, dirtSize*sizeof(spx) );
+
+			// Loop through new edges and fix possible issues.
+
+ 			for (int i = 0; i < dirtSize; i++)
 			{
-				std::swap( pBuffer[i], pBuffer[i+dirtSize*2]);
-				std::swap( pBuffer[i+dirtSize], pBuffer[i+dirtSize*3]);
+				// Flip lines if they cross
+				
+				if( pBuffer[i] > pBuffer[i+dirtSize])
+					std::swap( pBuffer[i], pBuffer[i+dirtSize]);
 			}
+
+
+			// Update edgemap.
 			
-			// Handle outline overlapping
+			m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer, 0, 1, dirtBegin, dirtEnd);
+			m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer + dirtSize, 1, 2, dirtBegin, dirtEnd);
 			
-			if (pBuffer[i+dirtSize*2] < pBuffer[i+dirtSize] )
-			{
-				pBuffer[i+dirtSize*2] = pBuffer[i+dirtSize];
-				if (pBuffer[i+dirtSize*3] < pBuffer[i+dirtSize*2] )
-					pBuffer[i+dirtSize*3] = pBuffer[i+dirtSize*2];
-			}
+			GfxBase::memStackFree(allocated);
 		}
-		
-		// Update edgemap.
-		
-		m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer, 0, 2, dirtBegin, dirtEnd);
-		m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer + dirtSize*2, 2, 4, dirtBegin, dirtEnd);
-		
-		GfxBase::memStackFree(allocated);
+		else
+		{
+			int allocated = (dirtSize)*4*sizeof(spx);
+			
+			spx * pBuffer = (spx*) GfxBase::memStackAlloc(allocated);
+			
+			_drawLine(m_pTopSamples + m_dirtBegin, pBuffer, pBuffer + dirtSize, dirtSize, m_topBrush );
+			_drawLine(m_pBottomSamples + m_dirtBegin, pBuffer+dirtSize*2, pBuffer + dirtSize*3, dirtSize, m_bottomBrush );
+
+			// Loop through new edges and fix possible issues.
+			
+			for (int i = 0; i < dirtSize; i++)
+			{
+				// Flip lines if they cross
+				
+				if( pBuffer[i] > pBuffer[i+dirtSize*2])
+				{
+					std::swap( pBuffer[i], pBuffer[i+dirtSize*2]);
+					std::swap( pBuffer[i+dirtSize], pBuffer[i+dirtSize*3]);
+				}
+				
+				// Handle outline overlapping
+				
+				if (pBuffer[i+dirtSize*2] < pBuffer[i+dirtSize] )
+				{
+					pBuffer[i+dirtSize*2] = pBuffer[i+dirtSize];
+					if (pBuffer[i+dirtSize*3] < pBuffer[i+dirtSize*2] )
+						pBuffer[i+dirtSize*3] = pBuffer[i+dirtSize*2];
+				}
+			}
+			
+			// Update edgemap.
+			
+			m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer, 0, 2, dirtBegin, dirtEnd);
+			m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer + dirtSize*2, 2, 4, dirtBegin, dirtEnd);
+			
+			GfxBase::memStackFree(allocated);
+		}
 		
 		m_dirtBegin = m_nbSamples;
 		m_dirtEnd = 0;
@@ -470,8 +504,6 @@ void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
 
 		for (int i = 0; i < nPoints; i++)
 		{
-			
-			
 			// Start with top and bottom for current point
 
 			int top = pSrc[i] - brush.influenceSlope[0];
@@ -565,30 +597,27 @@ void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
 	{
 		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : pFactory = GfxBase::defaultEdgemapFactory();
 
-		
 		bool bUseGradient = !m_gradient.isUndefined() || !m_outlineGradient.isUndefined();
 		
 		if( bUseGradient )
 		{
-			Gradient transparent(Color::Transparent);
-			Gradient outline = m_outlineGradient.isUndefined() ? Gradient(m_outlineColor) : m_outlineGradient;
-			Gradient fill = m_gradient.isUndefined() ? Gradient(m_color) : m_gradient;
-
-			Gradient	gradients[5] = { transparent, outline, fill, outline, transparent };
+			Gradient	gradients[5];
+			int nSegments = _generateGradientPalette(gradients);
 
 			if( m_pEdgemap == nullptr || m_pEdgemap->gradients() == nullptr )
-				m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.gradients = gradients, _.size = m_size, _.segments = 5 ) );
+				m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.gradients = gradients, _.size = m_size, _.segments = nSegments ) );
 			else
-				m_pEdgemap->setGradients( 0, 5, gradients );
+				m_pEdgemap->setGradients( 0, nSegments, gradients );
 		}
 		else
 		{
-			HiColor	colors[5] = { Color::Transparent, m_outlineColor, m_color, m_outlineColor, Color::Transparent };
-			
+			HiColor	colors[5];
+			int nSegments = _generateColorPalette(colors);
+						
 			if( m_pEdgemap && m_pEdgemap->gradients() == nullptr )
-				m_pEdgemap->setColors( 0, 5, colors );
+				m_pEdgemap->setColors( 0, nSegments, colors );
 			else
-			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.colors = colors, _.size = m_size, _.segments = 5 ) );
+			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.colors = colors, _.size = m_size, _.segments = nSegments ) );
 		}
 	}
 
@@ -598,25 +627,58 @@ void Waveform::setFlatBottomLine( int sampleBegin, int sampleEnd, float sample )
 	{
 		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : GfxBase::defaultEdgemapFactory();
 
-		
 		bool bUseGradient = !m_gradient.isUndefined() || !m_outlineGradient.isUndefined();
-		
-		
+			
 		if( bUseGradient )
 		{
-			Gradient transparent(Color::Transparent);
-			Gradient outline = m_outlineGradient.isUndefined() ? Gradient(m_outlineColor) : m_outlineGradient;
-			Gradient fill = m_gradient.isUndefined() ? Gradient(m_color): m_gradient;
-
-			Gradient	gradients[5] = { transparent, outline, fill, outline, transparent };
-
-			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.gradients = gradients, _.size = m_size, _.segments = 5 ) );
+			Gradient	gradients[5];
+			int nSegments = _generateGradientPalette( gradients );
+			
+			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.gradients = gradients, _.size = m_size, _.segments = nSegments ) );
 		}
 		else
 		{
-			HiColor	colors[5] = { Color::Transparent, m_outlineColor, m_color, m_outlineColor, Color::Transparent };
-			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.colors = colors, _.size = m_size, _.segments = 5 ) );
+			HiColor	colors[5];
+			int nSegments = _generateColorPalette( colors );
+			
+			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.colors = colors, _.size = m_size, _.segments = nSegments ) );
 		}
+	}
+
+	//____ _generateColorPalette() _______________________________________________
+
+	int Waveform::_generateColorPalette( HiColor * pDest )
+	{
+		HiColor * p = pDest;
+		* p++ = Color::Transparent;
+		if( m_bHasOutlines )
+			* p++ = m_outlineColor;
+		* p++ = m_color;
+		if( m_bHasOutlines )
+			* p++ = m_outlineColor;
+		* p++ = Color::Transparent;
+
+		return p - pDest;
+	}
+
+	//____ _generateGradientPalette() ____________________________________________
+
+	int Waveform::_generateGradientPalette( Gradient * pDest )
+	{
+		Gradient transparent(Color::Transparent);
+		Gradient outline = m_outlineGradient.isUndefined() ? Gradient(m_outlineColor) : m_outlineGradient;
+		Gradient fill = m_gradient.isUndefined() ? Gradient(m_color): m_gradient;
+
+		Gradient * p = pDest;
+		* p++ = transparent;
+		if( m_bHasOutlines )
+			* p++ = outline;
+		* p++ = fill;
+		if( m_bHasOutlines )
+			* p++ = outline;
+		* p++ = transparent;
+		
+		return p - pDest;
 	}
 
 

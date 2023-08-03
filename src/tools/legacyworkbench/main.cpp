@@ -482,8 +482,6 @@ bool chartTest(WgRootPanel* pRoot)
 	for( int i = 0 ; i < 101 ; i++ )
 		samples[i] = float(i % 30);
 	
-	
-	
 	auto pBaseFlex = new WgFlexPanel();
 	pRoot->SetChild(pBaseFlex);
 
@@ -496,8 +494,21 @@ bool chartTest(WgRootPanel* pRoot)
 //	pChart->SetWaveStyle(waveId, WgColor::DarkBlue, WgColor::Red, 6.f, WgColor::LightBlue, 1.f, WgColor::LightBlue );
 	pChart->SetWaveStyle(waveId, WgColor::DarkBlue, WgColor::LightBlue, 6.f, 1.f );
 	pChart->SetWaveSamples(waveId, 0, 100, samples );
+
+//	pBaseFlex->AddChild(pChart, WgRect(20,20,500,200) );
+
+	//
+
+	auto pChart2 = new WgChart2();
+	pChart2->SetSkin(wg::ColorSkin::create(WgColor::DarkRed));
 	
-	pBaseFlex->AddChild(pChart, WgRect(20,20,500,200) );
+	int waveId2 = pChart2->AddWave();
+//	pChart->SetWaveStyle(waveId, WgColor::DarkBlue, WgColor::Red, 6.f, WgColor::LightBlue, 1.f, WgColor::LightBlue );
+	pChart2->SetWaveStyle(waveId2, WgColor::DarkBlue, WgColor::LightBlue, 0.f, 0.f );
+	pChart2->SetWaveSamples(waveId2, 0, 100, samples );
+
+	pBaseFlex->AddChild(pChart2, WgRect(20,240,500,200) );
+
 	return true;
 }
 

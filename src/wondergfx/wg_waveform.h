@@ -117,13 +117,19 @@ namespace wg
 		void 		_regenEdgemap();
 
 		
-		void _optimizeRangeSetSamples( spx * pDestBegin, spx * pDestEnd, const spx * pSource, spx * pSampleStart );
-		void _optimizeRangeSetSamples( spx * pDestBegin, spx * pDestEnd, const float * pSource, spx * pSampleStart );
+		void		_optimizeRangeSetSamples( spx * pDestBegin, spx * pDestEnd, const spx * pSource, spx * pSampleStart );
+		void		_optimizeRangeSetSamples( spx * pDestBegin, spx * pDestEnd, const float * pSource, spx * pSampleStart );
+
+		int			_generateColorPalette( HiColor * pDest );
+		int			_generateGradientPalette( Gradient * pDest );
+
 
 		
 		RectI		m_size;
 		
 		SampleOrigo	m_origo;
+		
+		bool		m_bHasOutlines;
 		
 		HiColor		m_color = HiColor::Undefined;
 		HiColor		m_outlineColor = HiColor::Undefined;
