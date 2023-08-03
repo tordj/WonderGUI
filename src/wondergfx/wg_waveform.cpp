@@ -43,6 +43,7 @@ namespace wg
 	: 	m_color(bp.color),
 		m_outlineColor(bp.outlineColor),
 		m_gradient(bp.gradient),
+		m_bOptimizeDirtRange(bp.optimize),
 		m_outlineGradient(bp.outlineGradient),
 		m_origo(bp.origo),
 		m_nbSamples(bp.size.w+1),
@@ -63,8 +64,12 @@ namespace wg
 		m_topSamplesPadding = (bp.topOutlineThickness/2 / 64) + 1;
 		m_bottomSamplesPadding = (bp.bottomOutlineThickness/2 / 64) + 1;
 
+		int bufferSize = (m_nbSamples+m_topSamplesPadding*2)+(m_nbSamples+m_bottomSamplesPadding*2);
 		
 		m_pSampleBuffer = new spx[(m_nbSamples+m_topSamplesPadding*2)+(m_nbSamples+m_bottomSamplesPadding*2)];
+		
+		if( m_bOptimizeDirtRange )
+			memset( m_pSampleBuffer, 0, bufferSize*sizeof(spx));			// Need to start with known value if we are optimizing and using gfxStreams.
 		
 		m_pTopSamples = m_pSampleBuffer + m_topSamplesPadding;
 		m_pBottomSamples = m_pSampleBuffer + (m_nbSamples + m_topSamplesPadding*2) + m_bottomSamplesPadding;
@@ -195,11 +200,28 @@ namespace wg
 		limit(sampleBegin, 0, m_nbSamples);
 		limit(sampleEnd, sampleBegin, m_nbSamples);
 
-		if( pTopSamples )
-			EdgemapTools::convertSamples(m_pTopSamples + sampleBegin, pTopSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+		if( sampleBegin == sampleEnd )
+			return;
+		
+		if( m_bOptimizeDirtRange )
+		{
+			if( pTopSamples )
+				_optimizeRangeSetSamples(m_pTopSamples + sampleBegin, m_pTopSamples + sampleEnd, pTopSamples, m_pTopSamples);
 
-		if( pBottomSamples )
-			EdgemapTools::convertSamples(m_pBottomSamples + sampleBegin, pBottomSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+			if( pBottomSamples )
+				_optimizeRangeSetSamples(m_pBottomSamples + sampleBegin, m_pBottomSamples + sampleEnd, pBottomSamples, m_pBottomSamples);
+		}
+		else
+		{
+			if( pTopSamples )
+				EdgemapTools::convertSamples(m_pTopSamples + sampleBegin, pTopSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+
+			if( pBottomSamples )
+				EdgemapTools::convertSamples(m_pBottomSamples + sampleBegin, pBottomSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+
+			m_dirtBegin = std::min(sampleBegin,m_dirtBegin);
+			m_dirtEnd = std::max(sampleEnd,m_dirtEnd);
+		}
 	}
 
 	void Waveform::setSamples( int sampleBegin, int sampleEnd, float * pTopSamples, float * pBottomSamples )
@@ -207,13 +229,104 @@ namespace wg
 		limit(sampleBegin, 0, m_nbSamples);
 		limit(sampleEnd, sampleBegin, m_nbSamples);
 
-		if( pTopSamples )
-			EdgemapTools::convertSamples(m_pTopSamples + sampleBegin, pTopSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+		if( sampleBegin == sampleEnd )
+			return;
+		
+		if( m_bOptimizeDirtRange )
+		{
+			if( pTopSamples )
+				_optimizeRangeSetSamples(m_pTopSamples + sampleBegin, m_pTopSamples + sampleEnd, pTopSamples, m_pTopSamples);
 
-		if( pBottomSamples )
-			EdgemapTools::convertSamples(m_pBottomSamples + sampleBegin, pBottomSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+			if( pBottomSamples )
+				_optimizeRangeSetSamples(m_pBottomSamples + sampleBegin, m_pBottomSamples + sampleEnd, pBottomSamples, m_pBottomSamples);
+		}
+		else
+		{
+			if( pTopSamples )
+				EdgemapTools::convertSamples(m_pTopSamples + sampleBegin, pTopSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
 
+			if( pBottomSamples )
+				EdgemapTools::convertSamples(m_pBottomSamples + sampleBegin, pBottomSamples, m_origo, m_pEdgemap->pixelSize().h*64, 1, sampleEnd-sampleBegin, 0, 1, 0, 1);
+
+			m_dirtBegin = std::min(sampleBegin,m_dirtBegin);
+			m_dirtEnd = std::max(sampleEnd,m_dirtEnd);
+		}
 	}
+
+	//____ _optimizeRangeSetSamples() ____________________________________________
+
+	void Waveform::_optimizeRangeSetSamples( spx * _pDestBegin, spx * _pDestEnd, const spx * pSource, spx * pSampleStart )
+	{
+		spx * pDestBegin = _pDestBegin;
+		spx * pDestEnd = _pDestEnd;
+		
+		int nbSamples = pDestEnd - pDestBegin;
+		int allocBytes= (pDestEnd - pDestBegin) * sizeof(spx);
+		spx * pConverted = (spx*) GfxBase::memStackAlloc(allocBytes);
+		EdgemapTools::convertSamples(pConverted, pSource, m_origo, m_pEdgemap->pixelSize().h*64, 1, nbSamples, 0, 1, 0, 1);
+						
+		int bufferBeg = 0;
+		int bufferEnd = nbSamples;
+
+		while( pDestBegin < pDestEnd && pConverted[bufferBeg] == pDestBegin[0] )
+		{
+			pDestBegin++;
+			bufferBeg++;
+		}
+		
+		while( pDestBegin < pDestEnd && pConverted[bufferEnd-1] == pDestEnd[-1] )
+		{
+			pDestEnd--;
+			bufferEnd--;
+		}
+
+		if( pDestEnd > pDestBegin )
+		{
+			memcpy( pDestBegin, pConverted + bufferBeg, (pDestEnd-pDestBegin)*sizeof(spx) );
+
+			m_dirtBegin = std::min(int(pDestBegin - pSampleStart),m_dirtBegin);
+			m_dirtEnd = std::max(int(pDestEnd - pSampleStart),m_dirtEnd);
+		}
+
+		GfxBase::memStackFree(allocBytes);
+	}
+
+	void Waveform::_optimizeRangeSetSamples( spx * _pDestBegin, spx * _pDestEnd, const float * pSource, spx * pSampleStart )
+	{
+		spx * pDestBegin = _pDestBegin;
+		spx * pDestEnd = _pDestEnd;
+		
+		int nbSamples = pDestEnd - pDestBegin;
+		int allocBytes= (pDestEnd - pDestBegin) * sizeof(spx);
+		spx * pConverted = (spx*) GfxBase::memStackAlloc(allocBytes);
+		EdgemapTools::convertSamples(pConverted, pSource, m_origo, m_pEdgemap->pixelSize().h*64, 1, nbSamples, 0, 1, 0, 1);
+						
+		int bufferBeg = 0;
+		int bufferEnd = nbSamples;
+
+		while( pDestBegin < pDestEnd && pConverted[bufferBeg] == pDestBegin[0] )
+		{
+			pDestBegin++;
+			bufferBeg++;
+		}
+		
+		while( pDestBegin < pDestEnd && pConverted[bufferEnd-1] == pDestEnd[-1] )
+		{
+			pDestEnd--;
+			bufferEnd--;
+		}
+
+		if( pDestEnd > pDestBegin )
+		{
+			memcpy( pDestBegin, pConverted + bufferBeg, (pDestEnd-pDestBegin)*sizeof(spx) );
+
+			m_dirtBegin = std::min(int(pDestBegin - pSampleStart),m_dirtBegin);
+			m_dirtEnd = std::max(int(pDestEnd - pSampleStart),m_dirtEnd);
+		}
+
+		GfxBase::memStackFree(allocBytes);
+	}
+
 
 	//____ setFlatTopLine() ______________________________________________________
 

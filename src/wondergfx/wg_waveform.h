@@ -43,6 +43,7 @@ namespace wg
 			spx					bottomOutlineThickness = 64;
 			HiColor				color = Color8::LightGrey;
 			Gradient			gradient;								// Overrides color when set.
+			bool				optimize = true;						// Check for re-setting of same values to minimize updated regions.
 			SampleOrigo			origo = SampleOrigo::Top;
 			HiColor				outlineColor = Color8::DarkGrey;
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
@@ -115,6 +116,11 @@ namespace wg
 		void 		_updateEdgemapColors();
 		void 		_regenEdgemap();
 
+		
+		void _optimizeRangeSetSamples( spx * pDestBegin, spx * pDestEnd, const spx * pSource, spx * pSampleStart );
+		void _optimizeRangeSetSamples( spx * pDestBegin, spx * pDestEnd, const float * pSource, spx * pSampleStart );
+
+		
 		RectI		m_size;
 		
 		SampleOrigo	m_origo;
@@ -131,6 +137,7 @@ namespace wg
 		EdgemapFactory_p	m_pFactory;
 		Edgemap_p	m_pEdgemap;
 
+		
 		int			m_nbSamples;
 		spx *		m_pTopSamples;
 		spx *		m_pBottomSamples;
@@ -141,6 +148,8 @@ namespace wg
 		
 		int			m_dirtBegin;
 		int			m_dirtEnd;
+		
+		bool		m_bOptimizeDirtRange = true;
 	};
 
 }

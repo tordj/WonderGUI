@@ -38,6 +38,7 @@
 
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
+#include <wg_softedgemapfactory.h>
 #include <wg_softgfxdevice.h>
 #include <wg_softkernels_default.h>
 #include <wg_boxskin.h>
@@ -61,6 +62,7 @@
 #include <wg2_tooltiplayer.h>
 #include <wg2_mouseblocker.h>
 
+#include <wg2_chart2.h>
 
 
 void manuBlendTest();
@@ -95,6 +97,7 @@ wg::StreamSurfaceFactory_p  g_pStreamSurfaceFactory;
  */
 wg::SoftSurfaceFactory_p    g_pSoftSurfaceFactory;
 wg::SurfaceFactory_p	    g_pSurfaceFactory;
+wg::EdgemapFactory_p	    g_pEdgemapFactory;
 wg::GfxDevice_p		        g_pGfxDevice;
 wg::Surface_p               g_pCanvas;
 //wg::SurfaceFactory_p g_pModernSurfaceFactory = nullptr;
@@ -226,6 +229,8 @@ int main ( int argc, char** argv )
 #ifdef USE_OPEN_GL
 	g_pGfxDevice = new WgGlGfxDevice( WgSize(width,height) );
 	g_pSurfaceFactory = new WgGlSurfaceFactory();
+	g_pEdgemapFactory = new WgGlEdgemapFactory();
+	
 //    g_pModernSurfaceFactory = wg::GlSurfaceFactory::create();
 #else
 	SDL_Surface * pScreen = SDL_GetWindowSurface(pWin);
@@ -254,11 +259,13 @@ int main ( int argc, char** argv )
 	
 	g_pSoftSurfaceFactory = wg::SoftSurfaceFactory::create();
 	g_pSurfaceFactory = g_pSoftSurfaceFactory;
+	g_pEdgemapFactory = wg::SoftEdgemapFactory::create();
 
 #endif
 	
 	WgBase::setDefaultGfxDevice(g_pGfxDevice);
 	WgBase::setDefaultSurfaceFactory(g_pSurfaceFactory);
+	WgBase::setDefaultEdgemapFactory(g_pEdgemapFactory);
 
 	
 	//	pGfxDevice->SetBilinearFiltering( true );
@@ -482,10 +489,12 @@ bool chartTest(WgRootPanel* pRoot)
 
 	pBaseFlex->SetSkin(wg::ColorSkin::create(WgColor::Black));
 	
-	auto pChart = new WgChart();
+	auto pChart = new WgChart2();
+	pChart->SetSkin(wg::ColorSkin::create(WgColor::DarkGreen));
 	
 	int waveId = pChart->AddWave();
-	pChart->SetWaveStyle(waveId, WgColor::DarkBlue, WgColor::Red, 6.f, WgColor::LightBlue, 1.f, WgColor::LightBlue );
+//	pChart->SetWaveStyle(waveId, WgColor::DarkBlue, WgColor::Red, 6.f, WgColor::LightBlue, 1.f, WgColor::LightBlue );
+	pChart->SetWaveStyle(waveId, WgColor::DarkBlue, WgColor::LightBlue, 6.f, 1.f );
 	pChart->SetWaveSamples(waveId, 0, 100, samples );
 	
 	pBaseFlex->AddChild(pChart, WgRect(20,20,500,200) );
