@@ -113,7 +113,7 @@ namespace WgUtil
 				return "center";
 		}
 
-		return "northwest";				// Should never get here!!!
+		return "undefined";
 	}
 
 
@@ -222,7 +222,7 @@ namespace WgUtil
 		else if(str == "center") a = WgOrigo::Center;
 		else
 		{
-			a = WgOrigo::NorthWest;
+			a = WgOrigo::Undefined;
 			return false;
 		}
 		return true;

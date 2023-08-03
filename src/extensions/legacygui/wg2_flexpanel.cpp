@@ -27,14 +27,16 @@
 static const char	c_widgetType[] = {"FlexPanel"};
 static const char	c_hookType[] = {"FlexHook"};
 
-WgFlexAnchor		WgFlexPanel::g_baseAnchors[9] = { WgFlexAnchor(0.f, 0.f, WgCoord(0,0)),
-														 WgFlexAnchor(0.5f, 0.f, WgCoord(0,0)),
-														 WgFlexAnchor(1.f, 0.f, WgCoord(0,0)),
-														 WgFlexAnchor(1.f, 0.5f, WgCoord(0,0)),
-														 WgFlexAnchor(1.f, 1.f, WgCoord(0,0)),
-														 WgFlexAnchor(0.5f, 1.f, WgCoord(0,0)),
-														 WgFlexAnchor(0.f, 1.f, WgCoord(0,0)),														 WgFlexAnchor(0.f, 0.5f, WgCoord(0,0)),
-														 WgFlexAnchor(0.5f, 0.5f, WgCoord(0,0)) };
+WgFlexAnchor		WgFlexPanel::g_baseAnchors[wg::Placement_size] = {	WgFlexAnchor(0.f, 0.f, WgCoord(0,0)),
+														WgFlexAnchor(0.f, 0.f, WgCoord(0,0)),
+														WgFlexAnchor(0.5f, 0.f, WgCoord(0,0)),
+														WgFlexAnchor(1.f, 0.f, WgCoord(0,0)),
+														WgFlexAnchor(1.f, 0.5f, WgCoord(0,0)),
+														WgFlexAnchor(1.f, 1.f, WgCoord(0,0)),
+														WgFlexAnchor(0.5f, 1.f, WgCoord(0,0)),
+														WgFlexAnchor(0.f, 1.f, WgCoord(0,0)),
+														WgFlexAnchor(0.f, 0.5f, WgCoord(0,0)),
+														WgFlexAnchor(0.5f, 0.5f, WgCoord(0,0)) };
 
 //____ WgFlexHook::Constructor ________________________________________________
 
@@ -1067,17 +1069,17 @@ bool WgFlexPanel::ReleaseAllChildren()
 int WgFlexPanel::AddAnchor( float relativeX, float relativeY, const WgCoord& pixelOfs )
 {
 	m_anchors.push_back( WgFlexAnchor( relativeX, relativeY, pixelOfs ) );
-	return int(m_anchors.size())+9-1;
+	return int(m_anchors.size())+wg::Placement_size-1;
 }
 
 //____ ReplaceAnchor() ________________________________________________________
 
 bool WgFlexPanel::ReplaceAnchor( int index, float relativeX, float relativeY, const WgCoord& pixelOfs )
 {
-	if( index < 9 || index >= NbAnchors() )
+	if( index < wg::Placement_size || index >= NbAnchors() )
 		return false;
 
-	m_anchors[index-9] = WgFlexAnchor( relativeX, relativeY, pixelOfs );
+	m_anchors[index-wg::Placement_size] = WgFlexAnchor( relativeX, relativeY, pixelOfs );
 
 	// Update geometry for all widgets using this anchor.
 
@@ -1098,11 +1100,11 @@ bool WgFlexPanel::ReplaceAnchor( int index, float relativeX, float relativeY, co
 
 bool WgFlexPanel::DeleteAnchor( int index )
 {
-	if( index < 9 || index >= NbAnchors() )
+	if( index < wg::Placement_size || index >= NbAnchors() )
 		return false;
 
 
-	m_anchors.erase( m_anchors.begin()+(index-9) );
+	m_anchors.erase( m_anchors.begin()+(index-wg::Placement_size) );
 
 	// Update hooks with affected anchors. Save list of affected hooks for later
 	// update of geometry since we need to update all anchors first.
@@ -1164,19 +1166,19 @@ void WgFlexPanel::DeleteAllAnchors()
 	{
 		// Check if this widget will have its geometry altered.
 
-		if( (pHook->m_bFloating && pHook->m_anchor >= 9) ||
-			(!pHook->m_bFloating && (pHook->m_anchorTopLeft >= 9 || pHook->m_anchorBottomRight >= 9)) )
+		if( (pHook->m_bFloating && pHook->m_anchor >= wg::Placement_size) ||
+			(!pHook->m_bFloating && (pHook->m_anchorTopLeft >= wg::Placement_size || pHook->m_anchorBottomRight >= wg::Placement_size)) )
 			vNeedsUpdate.push_back(pHook);
 
 		// Update hooks anchor references.
 
-		if( pHook->m_anchor >= 9 )
+		if( pHook->m_anchor >= wg::Placement_size )
 			pHook->m_anchor = int(WgOrigo::NorthWest);
 
-		if( pHook->m_anchorTopLeft >= 9 )
+		if( pHook->m_anchorTopLeft >= wg::Placement_size )
 			pHook->m_anchorTopLeft = int(WgOrigo::NorthWest);
 
-		if( pHook->m_anchorBottomRight >= 9 )
+		if( pHook->m_anchorBottomRight >= wg::Placement_size )
 			pHook->m_anchorBottomRight = int(WgOrigo::SouthEast);
 
 		pHook = pHook->Next();
@@ -1195,11 +1197,11 @@ void WgFlexPanel::DeleteAllAnchors()
 
 const WgFlexAnchor * WgFlexPanel::Anchor( int index )
 {
-	if( index < 9 )
+	if( index < wg::Placement_size )
 		return &g_baseAnchors[index];
 	else
 	{
-		index -= 9;
+		index -= wg::Placement_size;
 		if( index < (int) m_anchors.size() )
 			return &m_anchors[index];
 	}

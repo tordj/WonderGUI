@@ -313,7 +313,7 @@ private:
 	bool			m_bConfineChildren;
 	WgSize          m_preferredSize;
 
-	static WgFlexAnchor	g_baseAnchors[9];
+	static WgFlexAnchor	g_baseAnchors[wg::Placement_size];
 };
 
 

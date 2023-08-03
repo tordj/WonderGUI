@@ -155,6 +155,7 @@ WgRect WgIconHolder::_getTextRect( const WgRect& contentRect, const WgRect& icon
 	{
 		switch( m_iconOrigo )
 		{
+			default:
 			case WgOrigo::NorthWest:
 			case WgOrigo::SouthWest:
 			case WgOrigo::West:
