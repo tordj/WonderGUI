@@ -146,7 +146,7 @@ namespace wg
 	};
 
 
-	class GridLine
+	class GridLine : protected TextItem, protected SkinSlot::Holder
 	{
 		friend class GraphDisplay;
 	public:
@@ -155,52 +155,97 @@ namespace wg
 		{
 			HiColor		color = HiColor::Undefined;
 			
-			String		label;
-			Coord		labelAdjustment;
-			Placement	labelPlacement;
-			Skin_p		labelSkin;
-			TextStyle_p	labelStyle;
+			String			label;
+			Coord			labelAdjustment;
+			TextLayout_p	textLayout;
+			Placement		labelPlacement;
+			Skin_p			labelSkin;
+			TextStyle_p		textStyle;
 
-			pts			thickness = 0;					// 0 = Undefined.
-			float		value;
-			bool		visible = true;
+			pts				thickness = 0;					// 0 = Undefined.
+			float			value;
+			bool			visible = true;
 		};
 
 
 
-		GridLine(float value, const String& label, pts thickness = 1, bool bVisible = true) 
-			: m_value(value),
+		GridLine(float value, const String& label, pts thickness = 0, bool bVisible = true) 
+			: m_labelSkin(this),
+			m_value(value),
 			m_thickness(thickness),
 			m_bVisible(bVisible),
-			m_label(label)
+			m_label(label),
+			m_color(HiColor::Undefined)
 		{
 		};
 
 		GridLine(const Blueprint& bp)
-			: m_value(bp.value),
+			: m_labelSkin(this),
+			m_value(bp.value),
 			m_color(bp.color),
 			m_thickness(bp.thickness),
 			m_bVisible(bp.visible),
 			m_label(bp.label),
-			m_labelSkin(bp.labelSkin),
+			m_labelAdjustment(bp.labelAdjustment),
+			m_pTextLayout(bp.textLayout),
 			m_labelPlacement(bp.labelPlacement),
-			m_labelAdjustment(bp.labelAdjustment)
+			m_pTextStyle(bp.textStyle)
 		{
+			m_labelSkin.set(bp.labelSkin);
 		};
+
 
 	protected:
 
-		float		m_value;
-		HiColor		m_color;
-		pts			m_thickness;
+		SizeSPX			_textSize() const override;
+		State			_textState() const override;
+		TextStyle*		_textStyle() const override;
 
-		bool		m_bVisible;
+		const Char*		_textBegin() const override;
+		int 			_textLength() const override;
 
-		Text::Blueprint label;
+		bool			_caretVisible() const override;
+		int				_caretOffset() const override;
+		std::tuple<int, int> _selectedText() const override;		// Begin/end of selection
 
-		Skin_p		m_labelSkin;
-		Placement	m_labelPlacement = Placement::Undefined;	// Defaults to West or South depending on x- or y-line.
-		Coord		m_labelAdjustment;
+		void			_mapperRequestRender() override;
+		void			_mapperRequestRender(const RectSPX& rect) override;
+		void			_mapperRequestResize() override;
+
+		int				_scale() const override;
+
+		float			_skinValue(const SkinSlot* pSlot) const override;
+		float			_skinValue2(const SkinSlot* pSlot) const override;
+		State			_skinState(const SkinSlot* pSlot) const override;
+
+		SizeSPX			_skinSize(const SkinSlot* pSlot) const override;
+
+		void			_skinRequestRender(const SkinSlot* pSlot) override;
+		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
+
+
+
+		//
+
+		void			_resizeLabel(int scale, int oldScale );
+
+
+		GraphDisplay*	m_pDisplay = nullptr;
+
+		RectSPX			m_labelGeo;
+
+		float			m_value;
+		HiColor			m_color;
+		pts				m_thickness;
+
+		bool			m_bVisible;
+
+		String			m_label;
+		Coord			m_labelAdjustment;
+		TextLayout_p	m_pTextLayout;
+		Placement		m_labelPlacement = Placement::Undefined;	// Defaults to West or South depending on x- or y-line.
+		TextStyle_p		m_pTextStyle;
+		SkinSlot		m_labelSkin;
 	};
 
 
@@ -211,6 +256,7 @@ namespace wg
 	class GraphDisplay : public Widget , private DynamicVector<Graph>::Holder, private DynamicVector<GridLine>::Holder
 	{
 		friend class Graph;
+		friend class GridLine;
 	public:
 
 		struct Blueprint
@@ -219,6 +265,7 @@ namespace wg
 
 			float			displayCeiling = 0.f;
 			float			displayFloor = 1.f;
+			Skin_p			displaySkin;
 
 			bool			dropTarget = false;
 			bool			enabled = true;
@@ -235,11 +282,15 @@ namespace wg
 
 			HiColor			gridColor = Color::DarkGray;
 			pts				gridThickness = 1;
+			TextLayout_p	textLayout;
 			TextStyle_p		textStyle;
 			Skin_p			labelSkin;
 
 			Placement		sideLabelPlacement = Placement::West;
 			Placement		bottomLabelPlacement = Placement::South;
+
+			pts				sideLabelSpacing = 4;
+			pts				bottomLabelSpacing = 1;
 
 		};
 
@@ -305,25 +356,32 @@ namespace wg
 		void		_didMoveEntries(GridLine* pFrom, GridLine* pTo, int nb) override;
 		void		_willEraseEntries(GridLine* pEntry, int nb) override;
 
-		void		_recalcGraphCanvas();
+		bool		_recalcGraphCanvas();
+		void		_repositionAllLabels();
+		CoordSPX	_sideLabelOffset(GridLine* pLine);
+		CoordSPX	_bottomLabelOffset(GridLine* pLine);
 
 
 	private:
 
-		bool		m_bPreRenderRequested = false;
+		bool			m_bPreRenderRequested = false;
 
-		RectSPX		m_graphCanvas;
+		RectSPX			m_graphCanvas;
 
-		float		m_displayCeiling;
-		float		m_displayFloor;
+		float			m_displayCeiling;
+		float			m_displayFloor;
+		SkinSlot		m_displaySkin;
 
-		HiColor		m_gridColor = Color::DarkGray;
-		pts			m_gridThickness = 1;
-		TextStyle_p	m_labelStyle;
-		Skin_p		m_labelSkin;
+		HiColor			m_gridColor = Color::DarkGray;
+		pts				m_gridThickness = 1;
+		TextStyle_p		m_pTextStyle;
+		TextLayout_p	m_pTextLayout;
 
-		Placement	m_sideLabelPlacement = Placement::West;
-		Placement	m_bottomLabelPlacement = Placement::South;
+		SkinSlot		m_labelSkin;
+		Placement		m_sideLabelPlacement = Placement::West;
+		Placement		m_bottomLabelPlacement = Placement::South;
+		pts				m_sideLabelSpacing = 1;
+		pts				m_bottomLabelSpacing = 1;
 
 		//
 

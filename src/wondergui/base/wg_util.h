@@ -48,6 +48,8 @@ namespace wg
 
 		CoordSPX 	placementToOfs( Placement placement, SizeSPX base );
 		RectSPX		placementToRect( Placement placement, SizeSPX base, SizeSPX rect );
+		CoordSPX	placeRectAroundCoord(Placement placement, CoordSPX coord, SizeSPX rectSize);
+
 
 		SizeSPX		scaleToFit(SizeSPX object, SizeSPX boundaries);
 

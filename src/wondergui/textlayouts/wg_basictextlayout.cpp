@@ -77,7 +77,7 @@ namespace wg
 		const Char * pChars = _chars(pText);
 		int nLines = _countLines( pText, pChars );
 
-		_setTextDataBlock(pText,0);					// Make sure pointer is null for the realloc call.
+		_setTextDataBlock(pText,nullptr);					// Make sure pointer is null for the realloc call.
 		void * pBlock = _reallocBlock(pText,nLines);
 
 		_updateLineInfo( pText, pBlock, pChars );
@@ -88,7 +88,7 @@ namespace wg
 	void BasicTextLayout::removeText( TextItem * pText )
 	{
 		free( _dataBlock(pText) );
-		_setTextDataBlock(pText, 0);
+		_setTextDataBlock(pText, nullptr);
 
 		if( pText == m_pFocusedText )
 		{
@@ -100,6 +100,14 @@ namespace wg
 			}			
 		}
 	}
+
+	//____ didMoveText() _________________________________________________________
+
+	void BasicTextLayout::didMoveText(TextItem* pFrom, TextItem* pTo)
+	{
+		// Do nothing.
+	}
+
 
 	//____ charAtPos() _________________________________________________________
 

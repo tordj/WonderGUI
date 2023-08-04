@@ -87,6 +87,7 @@ namespace wg
 
 		virtual void	addText( TextItem * pText ) = 0;
 		virtual void	removeText( TextItem * pText ) = 0;
+		virtual void	didMoveText(TextItem* pFrom, TextItem* pTo) = 0;
 
 		virtual int		charAtPos( const TextItem * pText, CoordSPX pos ) const = 0;
 		virtual CoordSPX charPos( const TextItem * pText, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!

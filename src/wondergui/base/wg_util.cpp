@@ -389,6 +389,17 @@ RectI sourceOfs;
 		}
 	}
 
+	//____ placeRectAroundCoord() _____________________________________________
+
+	CoordSPX Util::placeRectAroundCoord(Placement placement, CoordSPX coord, SizeSPX rectSize)
+	{
+		const static int placementMulX[Placement_size] = { -2, -2, -1, 0, 0, 0, -1, -2, -2, -1 };
+		const static int placementMulY[Placement_size] = { -2, -2, -2, -2, -1, 0, 0, 0, -1, -1 };
+
+		return coord + CoordSPX(placementMulX[int(placement)] * rectSize.w / 2, placementMulY[int(placement)] * rectSize.h / 2);
+	}
+
+
 	//____ scaleToFit() _______________________________________________________
 
 	SizeSPX Util::scaleToFit(SizeSPX object, SizeSPX boundaries)
