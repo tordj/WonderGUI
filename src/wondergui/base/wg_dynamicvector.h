@@ -55,10 +55,10 @@ namespace wg
 		inline void		reserve(int amount) { StaticVector<EntryType>::m_entries.reserve( amount ); }
 		inline void		shrinkToFit() { StaticVector<EntryType>::m_entries.shrink_to_fit(); }
 
-		iterator		pushBack( const EntryType& entry );
-		iterator		pushBack( const std::initializer_list<EntryType>& entries );
+		iterator		pushBack( const struct EntryType::Blueprint& entry );
+		iterator		pushBack( const std::initializer_list<struct EntryType::Blueprint>& entries );
 
-		iterator		insert( int index, const EntryType& entry );
+		iterator		insert( int index, const struct EntryType::Blueprint& entry );
 
 		iterator		erase( int index );
 		iterator		erase( int index, int amount );
@@ -83,20 +83,21 @@ namespace wg
 	//____ pushBack() _________________________________________________________________
 
 	template < class EntryType>
-	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack(const EntryType& entry)
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack(const struct EntryType::Blueprint& entry)
 	{
-		StaticVector<EntryType>::m_entries.push_back(entry);
+		
+		StaticVector<EntryType>::m_entries.emplace_back(entry);
 		_didAddEntries(&StaticVector<EntryType>::m_entries.back(), 1);
 		return StaticVector<EntryType>::m_entries.end() - 1;
 	}
 
 	template < class EntryType>
-	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack( const std::initializer_list<EntryType>& entries)
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack( const std::initializer_list<struct EntryType::Blueprint>& entries)
 	{
 		int amount = (int)StaticVector<EntryType>::m_entries.size();
 
 		for (auto& entry : entries)
-			StaticVector<EntryType>::m_entries.push_back(entry);
+			StaticVector<EntryType>::m_entries.emplace_back(entry);
 
 		_didAddEntries(&StaticVector<EntryType>::m_entries[amount], int(StaticVector<EntryType>::m_entries.size()) - amount);
 		return StaticVector<EntryType>::m_entries.begin() + amount;
@@ -105,11 +106,11 @@ namespace wg
 	//____ insert() ______________________________________________________________
 
 	template < class EntryType>
-	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert(int index, const EntryType& entry)
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert(int index, const struct EntryType::Blueprint& entry)
 	{
 		//TODO: Add assert
 
-		auto it = StaticVector<EntryType>::m_entries.insert(StaticVector<EntryType>::m_entries.begin() + index, entry);
+		auto it = StaticVector<EntryType>::m_entries.emplace(StaticVector<EntryType>::m_entries.begin() + index, entry);
 		_didAddEntries(&StaticVector<EntryType>::m_entries[index], 1);
 		return it;
 	}

@@ -14,6 +14,11 @@ namespace wg
 	{
 	}
 
+	String::String( const char * pStr )
+	{
+		m_buffer.pushBack(pStr);
+	}
+
 	String::String( const String& str )
 	{
 		m_buffer = str.m_buffer;

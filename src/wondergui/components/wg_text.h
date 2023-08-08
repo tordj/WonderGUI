@@ -59,6 +59,7 @@ namespace wg
 
 		inline void			clear() { _clear(); }
 
+		inline void			setText(const char * str) { _setText(CharSeq(str)); }
 		inline void			setText(const CharSeq& seq) { _setText(seq); }
 		inline void			setText(const CharBuffer * buffer) { _setText(buffer); }
 		inline void			setText(const String& str) { _setText(str); }

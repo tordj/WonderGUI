@@ -40,7 +40,14 @@ namespace wg
 	{
 		friend class SelectBox;
 	public:
-		SelectBoxEntry( int id, const String& text ) : m_id(id), m_string(text) {};
+		
+		struct Blueprint
+		{
+			int		id;
+			String	text;
+		};
+		
+		SelectBoxEntry( const Blueprint& bp ) : m_id(bp.id), m_string(bp.text) {};
 		
 		inline int		id() const { return m_id; }
 		inline String	text() const { return m_string; }

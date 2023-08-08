@@ -153,35 +153,26 @@ class GraphDisplay;
 
 		struct Blueprint
 		{
-			HiColor		color = HiColor::Undefined;
+			HiColor			color = HiColor::Undefined;
 			
 			String			label;
 			Coord			labelAdjustment;
-			TextLayout_p	textLayout;
 			Placement		labelPlacement;
 			Skin_p			labelSkin;
+
+			float			pos = 0.f;
+
+			TextLayout_p	textLayout;
 			TextStyle_p		textStyle;
 
 			pts				thickness = 0;					// 0 = Undefined.
-			float			value;
 			bool			visible = true;
 		};
 
 
-
-		GridLine(float value, const String& label, pts thickness = 0, bool bVisible = true) 
-			: m_labelSkin(this),
-			m_value(value),
-			m_thickness(thickness),
-			m_bVisible(bVisible),
-			m_label(label),
-			m_color(HiColor::Undefined)
-		{
-		};
-
 		GridLine(const Blueprint& bp)
 			: m_labelSkin(this),
-			m_value(bp.value),
+			m_value(bp.pos),
 			m_color(bp.color),
 			m_thickness(bp.thickness),
 			m_bVisible(bp.visible),
@@ -263,6 +254,9 @@ class GraphDisplay;
 		{
 			Object_p		baggage;
 
+			Placement		bottomLabelPlacement = Placement::South;
+			pts				bottomLabelSpacing = 1;
+
 			float			displayCeiling = 0.f;
 			float			displayFloor = 1.f;
 			Skin_p			displaySkin;
@@ -270,28 +264,28 @@ class GraphDisplay;
 			bool			dropTarget = false;
 			bool			enabled = true;
 			Finalizer_p		finalizer = nullptr;
+
+			HiColor			gridColor = Color::DarkGray;
+			pts				gridThickness = 1;
+
 			int				id = 0;
+			Skin_p			labelSkin;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
 			bool			selectable = true;
-			Skin_p			skin;
-			bool			tabLock = false;
-			String			tooltip;
-
-			HiColor			gridColor = Color::DarkGray;
-			pts				gridThickness = 1;
-			TextLayout_p	textLayout;
-			TextStyle_p		textStyle;
-			Skin_p			labelSkin;
 
 			Placement		sideLabelPlacement = Placement::West;
-			Placement		bottomLabelPlacement = Placement::South;
-
 			pts				sideLabelSpacing = 4;
-			pts				bottomLabelSpacing = 1;
 
+			Skin_p			skin;
+			bool			tabLock = false;
+
+			TextLayout_p	textLayout;
+			TextStyle_p		textStyle;
+
+			String			tooltip;
 		};
 
 
@@ -339,7 +333,7 @@ class GraphDisplay;
 
 		void    	_preRender() override;
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
-		void		_resize(const SizeSPX& size, int scale);
+		void		_resize(const SizeSPX& size, int scale) override;
 
 		void		_updateGraphs();
 

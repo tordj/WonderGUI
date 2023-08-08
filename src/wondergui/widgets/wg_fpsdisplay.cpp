@@ -171,7 +171,7 @@ namespace wg
 
 		char	temp[100];
 		snprintf( temp, 100, "%.2f\n%.2f\n%.2f\n%.2f", fpsCurrent, fpsMin, fpsAvg, fpsMax );
-		values._setText(temp);
+		values._setText(CharSeq(temp));
 
 		_requestRender();
 	}

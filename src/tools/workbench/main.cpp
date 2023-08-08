@@ -1876,7 +1876,7 @@ bool animPlayerTest(ComponentPtr<DynamicSlot> pSlot)
 	{
 		for (int x = 0; x < 5; x++)
 		{
-			pPlayer->frames.pushBack(AnimFrame({ pts(x*204),pts(y*180) }, 150));
+			pPlayer->frames.pushBack( { .source = {x*204.f,y*180.f}, .duration = 150} );
 		}
 	}
 
@@ -1917,8 +1917,8 @@ bool selectBoxTest(ComponentPtr<DynamicSlot> pSlot)
 	pSelectBox->setListSkin(pListSkin);
 	pSelectBox->setEntrySkin(pListEntrySkin);
 
-	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("ENTRY 1")));
-	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("ENTRY 2")));
+	pSelectBox->entries.pushBack({ .id = 1, .text = "ENTRY 1"});
+	pSelectBox->entries.pushBack({ .id = 1, .text = "ENTRY 2" });
 
 	pBaseLayer->slots.pushBackMovable(pSelectBox, Coord(10, 10));
 	pPopupOverlay->mainSlot = pBaseLayer;
@@ -2681,6 +2681,11 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 
 	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
 
+	GraphDisplay::Blueprint bp;
+	
+	
+	
+	
 	auto pGraph = GraphDisplay::create(WGBP(GraphDisplay,
 		_.displayCeiling = 0.5f,
 		_.displayFloor = - 0.5f,
@@ -2700,12 +2705,12 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 	*pEntry = pFlex;
 
 
-	pGraph->graphs.pushBack(Graph({
+	pGraph->graphs.pushBack({
 		.bottomOutlineThickness = 0,
 		.outlineColor = Color::Red,
 		.topOutlineThickness = 5,
 
-		}));
+		});
 
 
 	static float topSamples[5] = { 0, -0.25f, 0.25f, 0.23f, 0.5f };
@@ -2748,35 +2753,27 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 
 	for (int i = 0; i < 6; i++)
 	{
-		pGraph->graphs.pushBack(Graph({
+		pGraph->graphs.pushBack({
 			.bottomOutlineThickness = 0,
 			.color = Color::Transparent,
 			.outlineColor = colors[i],
 			.topOutlineThickness = 2,
-			}));
+			});
 
 		pGraph->graphs.back().setTopSamples(201, curveSamples[i] );
 	}
 
 	// Setup grid
 
-	pGraph->xLines.pushBack(GridLine(0.5f, String("-0.5"), 0.5f));
-	pGraph->xLines.pushBack(GridLine(-0.25f, String("-0.25"), 0.5f));
-	pGraph->xLines.pushBack(GridLine(0.0f, String("0.0"), 1.0f));
-	pGraph->xLines.pushBack(GridLine( 0.25f, String("0.25"), 0.5f));
+	pGraph->xLines.pushBack({ .pos = 0.5f, .label = "-0.5", .thickness = 0.5f });
+	pGraph->xLines.pushBack({ .pos = -0.25f, .label = "-0.25", .thickness = 0.5f });
+	pGraph->xLines.pushBack({ .pos = 0.0f, .label = "0.0", .thickness = 1.0f });
+	pGraph->xLines.pushBack({ .pos = 0.25f, .label = "0.25", .thickness = 0.5f });
 
-	pGraph->yLines.pushBack(GridLine(0.0f, String("0.0"), 0.5f));
-	pGraph->yLines.pushBack(GridLine(0.25f, String("0.25"), 0.5f));
-	pGraph->yLines.pushBack(GridLine(0.5f, String("0.5"), 0.5f));
-	pGraph->yLines.pushBack(GridLine(1.0f, String("1.0"), 0.5f));
-
-
-//	pGraph->xLines.pushBack({ .value = -0.25f } );
-
-
-	pGraph->xLines.pushBack(WGBP(GridLine,
-							_.value = -0.25f
-							));
+	pGraph->yLines.pushBack({ .pos = 0.0f, .label = "0.0", .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .pos = 0.25f, .label = "0.25", .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .pos = 0.5f, .label = "0.5", .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .pos = 1.0f, .label = "0.75", .thickness = 0.5f });
 
 
 

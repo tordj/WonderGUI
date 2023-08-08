@@ -43,6 +43,7 @@ namespace wg
 		void			setSkin(Skin * pSkin);
 		inline Skin_p	skin() const { return m_skin.get(); }
 
+		void			setText(const char * str) { setText(CharSeq(str));}
 		void			setText(const CharSeq& seq);
 		void			setText(const String& str);
 		inline String	text() const { return m_text; }

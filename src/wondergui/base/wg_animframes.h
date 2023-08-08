@@ -36,7 +36,15 @@ namespace wg
 	{
 		friend class AnimFrames;
 	public:
-		AnimFrame(Coord source, int duration, GfxFlip flip = GfxFlip::Normal) : m_source(source), m_timestamp(0), m_duration(duration), m_flip(flip) {}
+		
+		struct Blueprint
+		{
+			Coord	source;
+			int	 	duration = 1;
+			GfxFlip	flip = GfxFlip::Normal;
+		};
+		
+		AnimFrame(const Blueprint& bp) : m_source(bp.source), m_timestamp(0), m_duration(bp.duration), m_flip(bp.flip) {}
 
 		int		duration() const { return m_duration; }
 		GfxFlip	flip() const { return m_flip; }

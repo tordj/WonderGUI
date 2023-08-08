@@ -30,6 +30,7 @@ namespace wg
 		//.____ Creation ______________________________________________________
 
 		String();
+		String( const char * str );
 		String( const String& str );
 		String( const CharBuffer* pBuffer );
 		String( const CharSeq& seq );
