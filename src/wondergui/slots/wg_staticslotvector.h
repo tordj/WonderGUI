@@ -24,7 +24,6 @@
 #define	WG_STATICSLOTVECTOR_DOT_H
 #pragma once
 
-#include <wg_staticslotcollection.h>
 #include <wg_base.h>
 
 namespace wg
@@ -32,16 +31,17 @@ namespace wg
 
 	//____ StaticSlotVector _________________________________________________________
 
-	template<class SlotType> class StaticSlotVector : public StaticSlotCollection
+	template<class SlotType> class StaticSlotVector
 	{
 	public:
 
-		using		iterator = SlotArrayIterator<SlotType>;
+		using		iterator = SlotType*;
+		using		const_iterator = const SlotType*;
 
 		//.____ Content _______________________________________________________
 
-		inline int		size() const override { return m_size; }
-		inline bool		isEmpty() const override { return (m_size == 0); }
+		inline int		size() const { return m_size; }
+		inline bool		isEmpty() const { return (m_size == 0); }
 
 		inline SlotType& at(int index) const
 		{
@@ -55,7 +55,7 @@ namespace wg
 			return m_pArray[index];
 		}
 
-		inline int		index(const Widget * pWidget) const override
+		inline int		index(const Widget * pWidget) const
 		{
 			auto pSlot = static_cast<SlotType*>(pWidget->_slot());
 
@@ -78,10 +78,6 @@ namespace wg
 	protected:
 		StaticSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
 		~StaticSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
-
-		SlotIterator	_begin_iterator() override;
-		SlotIterator	_end_iterator() override;
-		StaticSlot&		_at(int index) override;
 
 		void			_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard);
 

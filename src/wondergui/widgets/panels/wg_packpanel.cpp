@@ -57,12 +57,12 @@ namespace wg
 		return true;
 	}
 
-	bool PackPanel::CSlots::setWeight(const SlotIterator& beg, const SlotIterator& end, float weight)
+	bool PackPanel::CSlots::setWeight(iterator beg, iterator end, float weight)
 	{
 		//TODO: Add assert
 
-		auto pBeg = static_cast<Slot*>(beg._slot());
-		auto pEnd = static_cast<Slot*>(end._slot());
+		auto pBeg = beg;
+		auto pEnd = end;
 		_holder()->_reweightSlots(pBeg, int(pEnd - pBeg), weight);
 		return true;
 	}
@@ -77,12 +77,12 @@ namespace wg
 		return true;
 	}
 
-	bool PackPanel::CSlots::setWeight(const SlotIterator& beg, const SlotIterator& end, std::initializer_list<float> weights)
+	bool PackPanel::CSlots::setWeight(iterator beg, iterator end, std::initializer_list<float> weights)
 	{
 		//TODO: Add assert
 
-		auto pBeg = static_cast<Slot*>(beg._slot());
-		auto pEnd = static_cast<Slot*>(end._slot());
+		auto pBeg = beg;
+		auto pEnd = end;
 		_holder()->_reweightSlots(pBeg, int(pEnd - pBeg), weights.begin());
 		return true;
 	}

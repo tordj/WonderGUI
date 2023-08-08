@@ -45,8 +45,8 @@ namespace wg
 	{
 		//TODO: Assert
 
-		auto pBeg = static_cast<SlotType*>(beg._slot());
-		auto pEnd = static_cast<SlotType*>(end._slot());
+		auto pBeg = beg;
+		auto pEnd = end;
 		_holder()->_repadSlots(pBeg, int(pEnd - pBeg), padding);
 		return true;
 	}
@@ -65,8 +65,8 @@ namespace wg
 	{
 		//TODO: Assert
 
-		auto pBeg = static_cast<SlotType*>(beg._slot());
-		auto pEnd = static_cast<SlotType*>(end._slot());
+		auto pBeg = beg;
+		auto pEnd = end;
 		_holder()->_repadSlots(pBeg, int(pEnd - pBeg), padding.begin());
 		return true;
 	}
@@ -87,8 +87,8 @@ namespace wg
 	{
 		//TODO: Error handling!
 
-		auto pBeg = static_cast<SlotType*>(beg._slot());
-		auto pEnd = static_cast<SlotType*>(end._slot());
+		auto pBeg = beg;
+		auto pEnd = end;
 		_holder()->_selectSlots(pBeg, int(pEnd - pBeg));
 	};
 
@@ -115,8 +115,8 @@ namespace wg
 	{
 		//TODO: Error handling!
 
-		auto pBeg = static_cast<SlotType*>(beg._slot());
-		auto pEnd = static_cast<SlotType*>(end._slot());
+		auto pBeg = beg;
+		auto pEnd = end;
 		_holder()->_unselectSlots(pBeg, int(pEnd - pBeg));
 	};
 
@@ -144,8 +144,8 @@ namespace wg
 	{
 		//TODO: Error handling!
 
-		SlotType* pBeg = static_cast<SlotType*>(beg._slot());
-		SlotType* pEnd = static_cast<SlotType*>(end._slot());
+		SlotType* pBeg = beg;
+		SlotType* pEnd = end;
 		_holder()->_hideSlots(pBeg, int(pEnd - pBeg));
 	};
 
@@ -172,8 +172,8 @@ namespace wg
 	{
 		//TODO: Error handling!
 
-		SlotType* pBeg = static_cast<SlotType*>(beg._slot());
-		SlotType* pEnd = static_cast<SlotType*>(end._slot());
+		SlotType* pBeg = beg;
+		SlotType* pEnd = end;
 		_holder()->_unhideSlots(pBeg, int(pEnd - pBeg));
 	};
 

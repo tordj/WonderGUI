@@ -59,7 +59,6 @@
 #include <wg_doubleskin.h>
 #include <wg_dragndropoverlay.h>
 #include <wg_dummyfont.h>
-#include <wg_dynamicslotcollection.h>
 #include <wg_dynamicslotvector.h>
 #include <wg_dynamicvector.h>
 #include <wg_editablenumber.h>
@@ -130,10 +129,8 @@
 #include <wg_slider.h>
 #include <wg_slot.h>
 #include <wg_slotarray.h>
-#include <wg_slotarray2.h>
 #include <wg_slotextras.h>
 #include <wg_slotholder.h>
-#include <wg_slotiterator.h>
 #include <wg_spinanimskin.h>
 #include <wg_spinmeterskin.h>
 #include <wg_splitpanel.h>
@@ -145,7 +142,6 @@
 #include <wg_staticcolorskin.h>
 #include <wg_staticgradientskin.h>
 #include <wg_staticnumber.h>
-#include <wg_staticslotcollection.h>
 #include <wg_staticslotvector.h>
 #include <wg_statictext.h>
 #include <wg_statictileskin.h>

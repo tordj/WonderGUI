@@ -46,19 +46,29 @@ namespace wg
 
 		void			clear();
 
+		void			set( const char * str ) { set(CharSeq(str)); }
 		void			set( const String& str );
 		void			set( const CharBuffer* pBuffer );
 		void			set( const CharSeq& seq );
 
+		void			append( const char * str ) { append(CharSeq(str)); }
 		void			append( const String& str );
 		void			append( const CharBuffer* pBuffer );
 		void			append( const CharSeq& seq );
 
+		void			prepend( const char * str ) { prepend(CharSeq(str)); }
 		void			prepend( const String& str );
 		void			prepend( const CharBuffer* pBuffer );
 		void			prepend( const CharSeq& seq );
 
 		//.____ Operators _____________________________________________________
+
+		inline String& operator = ( const char * str )
+		{
+			set( str );
+			return *this;
+		}
+
 
 		inline String& operator = ( const String& kSource )
 		{

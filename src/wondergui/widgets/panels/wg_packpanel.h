@@ -99,7 +99,7 @@ namespace wg
 			SizeSPX		m_defaultSize;				// Cached padded default size from the child.
 		};
 
-		using		iterator = SlotArrayIterator<Slot>;
+		using		iterator = DynamicSlotVector<Slot>::iterator;
 
 		//____ CSlots ________________________________________________________
 
@@ -114,9 +114,9 @@ namespace wg
 			//.____ Geometry _______________________________________________________
 
 			bool		setWeight(int index, int amount, float weight);
-			bool		setWeight(const SlotIterator&  beg, const SlotIterator&  end, float weight);
+			bool		setWeight(iterator  beg, iterator end, float weight);
 			bool		setWeight(int index, int amount, std::initializer_list<float> weights);
-			bool		setWeight(const SlotIterator&  beg, const SlotIterator&  end, std::initializer_list<float> weights);
+			bool		setWeight(iterator beg, iterator end, std::initializer_list<float> weights);
 
 		protected:
 			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}

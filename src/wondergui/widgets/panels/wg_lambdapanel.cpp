@@ -86,7 +86,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		Slot * pSlot = _insertEmpty(pos._slot());
+		Slot * pSlot = _insertEmpty(pos);
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
 		pSlot->m_func = func;

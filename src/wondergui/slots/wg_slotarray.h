@@ -20,11 +20,10 @@
 
 =========================================================================*/
 
-#ifndef	WG_SLOTARRAY_DOT_H
-#define	WG_SLOTARRAY_DOT_H
+#ifndef	WG_SLOTARRAY2_DOT_H
+#define	WG_SLOTARRAY2_DOT_H
 #pragma once
 
-#include <wg_staticslotcollection.h>
 #include <wg_base.h>
 
 namespace wg
@@ -32,11 +31,12 @@ namespace wg
 
 	//____ SlotArray _________________________________________________________
 
-	template<class SlotType, int SIZE> class SlotArray : public StaticSlotCollection
+	template<class SlotType, int SIZE> class SlotArray
 	{
 	public:
 
-		using		iterator = SlotArrayIterator<SlotType>;
+		using		iterator = SlotType*;
+		using		const_iterator = const SlotType*;
 
 		//.____ Creation _______________________________________________________
 
@@ -48,18 +48,23 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline int		size() const override { return SIZE; }
-		inline bool		isEmpty() const override { return false; }		// Technically never empty since that would mean has no slots.
+		inline int		size() const { return SIZE; }
+		inline bool		isEmpty() const { return false; }		// Technically never empty since that would mean has no slots.
 
 		inline SlotType& at(int index) const
 		{
-//			if (index < 0 || index >= m_pSlotArray->size())
-//				return nullptr;
+			if (index < 0 || index >= SIZE)
+			{
+				auto pObject = dynamic_cast<Object*>(m_pHolder);
+				const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
+
+				Base::throwError(ErrorLevel::Error, ErrorCode::OutOfRange, "Slot index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
+			}
 
 			return m_slots[index];
 		}
 
-		int		index(const Widget * pWidget) const override
+		int		index(const Widget * pWidget) const
 		{
 			auto pSlot = static_cast<SlotType*>(pWidget->_slot());
 
@@ -71,8 +76,11 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline iterator	begin() const { return iterator(&m_slots[0]); }
-		inline iterator	end() const { return iterator(&m_slots[SIZE]); }
+		inline iterator	begin() const { return &m_slots[0]; }
+		inline iterator	end() const { return &m_slots[SIZE]; }
+
+		inline SlotType& back() { return m_slots[0]; }
+		inline SlotType& front() { return m_slots[SIZE]; };
 
 		//.____ Operators __________________________________________
 
@@ -81,37 +89,8 @@ namespace wg
 
 	protected:
 
-		SlotIterator	_begin_iterator() override { return iterator(&m_slots[0]); }
-		SlotIterator	_end_iterator() override { return iterator(&m_slots[SIZE]); }
-
-		StaticSlot&		_at(int index) override 
-		{ 
-			if (index < 0 || index >= SIZE)
-			{			
-				auto pObject = dynamic_cast<Object*>(m_pHolder);
-				const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
-				Base::throwError(ErrorLevel::Error, ErrorCode::OutOfRange, "Slot index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
-			}
-
-			return m_slots[index];
-		}
-
-	//////
-		inline SlotHolder *			_holder() { return m_pHolder; }
-		inline const SlotHolder *	_holder() const { return m_pHolder; }
-
-		bool		_contains(const SlotType * pSlot) const { return (pSlot >= m_slots && pSlot < &m_slots[SIZE]); }
-
-		SlotType*	_slot(int index) const { return &m_slots[index]; }
-
-		int			_index(const SlotType* pSlot) const { return int(pSlot - m_slots); }
-
-		SlotType*	_first() const { return m_slots; }
-		SlotType*	_last() const { return &m_slots[SIZE-1]; }
-
-		SlotType*	_begin() const { return &m_slots[0]; }
-		SlotType*	_end() const { return &m_slots[SIZE]; }
-
+		//
+	
 	private:
 
 		SlotType	 m_slots[SIZE];

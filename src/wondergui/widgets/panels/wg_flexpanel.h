@@ -198,7 +198,7 @@ namespace wg
 
 		};
 
-		using		iterator = SlotArrayIterator<Slot>;
+		using		iterator = DynamicSlotVector<Slot>::iterator;
 
 
 		//____ CSlots ________________________________________________________

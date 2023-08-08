@@ -144,13 +144,9 @@ set( SOURCES
 	slots/wg_slotextras.impl.h
 	slots/wg_slotextras.h
 	slots/wg_slotholder.h
-	slots/wg_slotiterator.h
-	slots/wg_dynamicslotcollection.h
 	slots/wg_dynamicslotvector.h
 	slots/wg_dynamicslotvector.impl.h
 	slots/wg_slotarray.h
-	slots/wg_slotarray2.h
-	slots/wg_staticslotcollection.h
 	slots/wg_staticslotvector.h
 	slots/wg_staticslotvector.impl.h
 

@@ -28,7 +28,7 @@
 
 #include <wg_panel.h>
 #include <wg_slot.h>
-#include <wg_slotarray2.h>
+#include <wg_slotarray.h>
 #include <wg_packlayout.h>
 
 
@@ -51,7 +51,7 @@ namespace wg
 		class Slot : public DynamicSlot
 		{
 			friend class TwoSlotPanel;
-			template<class S, int X> friend class SlotArray2;
+			template<class S, int X> friend class SlotArray;
 
 		public: 
 
@@ -82,7 +82,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		SlotArray2<Slot, 2>		slots;
+		SlotArray<Slot, 2>		slots;
 
 		//.____ Identification __________________________________________
 

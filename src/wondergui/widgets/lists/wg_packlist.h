@@ -95,7 +95,7 @@ namespace wg
 			spx				m_prefBreadth;		// Prefereed breadth of this widget.
 		};
 
-		using		iterator = SlotArrayIterator<Slot>;
+		using		iterator = DynamicSlotVector<Slot>::iterator;
 
 		//____ CSlots ______________________________________________________
 

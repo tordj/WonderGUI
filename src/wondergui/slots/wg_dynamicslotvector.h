@@ -24,8 +24,7 @@
 #define	WG_DYNAMICSLOTVECTOR_DOT_H
 #pragma once
 
-#include <wg_dynamicslotcollection.h>
-#include <wg_staticslotvector.h>
+#include <wg_base.h>
 
 namespace wg
 {
@@ -33,16 +32,18 @@ namespace wg
 	//____ DynamicSlotVector _________________________________________________________
 
 	template<class SlotType> 
-	class DynamicSlotVector : public DynamicSlotCollection
+	class DynamicSlotVector
 	{
 	public:
 
-		using		iterator = SlotArrayIterator<SlotType>;
+		using		iterator = SlotType*;
+		using		const_iterator = const SlotType*;
+
 
 		//.____ Content _______________________________________________________
 
-		inline int		size() const override { return m_size; }
-		inline bool		isEmpty() const override { return (m_size == 0); }
+		inline int		size() const { return m_size; }
+		inline bool		isEmpty() const { return (m_size == 0); }
 
 		inline SlotType& at(int index) const
 		{
@@ -57,7 +58,7 @@ namespace wg
 			return m_pArray[index];
 		}
 
-		inline int		index(const Widget * pWidget) const override
+		inline int		index(const Widget * pWidget) const
 		{
 			auto pSlot = static_cast<SlotType*>(pWidget->_slot());
 
@@ -119,28 +120,28 @@ namespace wg
 			return begin() + oldSize;
 		}
 
-		void			insert(int index, const Widget_p& pWidget) override;
-		iterator		insert(const SlotIterator& it, const Widget_p& pWidget);
-		void			insert(int index, const Widget_p pWidgets[], int amount) override;
-		iterator		insert(const SlotIterator& it, const Widget_p pWidgets[], int amount);
+		void			insert(int index, const Widget_p& pWidget);
+		iterator		insert(iterator it, const Widget_p& pWidget);
+		void			insert(int index, const Widget_p pWidgets[], int amount);
+		iterator		insert(iterator it, const Widget_p pWidgets[], int amount);
 
-		void			erase(int index) override;
-		iterator		erase(const SlotIterator& pos);
-		void			erase(int index, int amount) override;
-		iterator		erase(const SlotIterator& beg, const SlotIterator& end);
+		void			erase(int index);
+		iterator		erase(iterator pos);
+		void			erase(int index, int amount);
+		iterator		erase(iterator beg, iterator end);
 
-		void			clear() override;
+		void			clear();
 
 		//.____ Ordering ______________________________________________________
 
-		void			moveToFront(int index) override;
-		iterator		moveToFront(const SlotIterator& it);
+		void			moveToFront(int index);
+		iterator		moveToFront(iterator it);
 
-		void			moveToBack(int index) override;
-		iterator		moveToBack(const SlotIterator& it);
+		void			moveToBack(int index);
+		iterator		moveToBack(iterator it);
 
-		void			moveBefore(int index, int sibling) override;
-		iterator		moveBefore(const SlotIterator& it, const SlotIterator& sibling);
+		void			moveBefore(int index, int sibling);
+		iterator		moveBefore(iterator it, iterator sibling);
 
 
 		//.____ Misc _______________________________________________________
@@ -158,25 +159,6 @@ namespace wg
 	protected:
 		DynamicSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
 		~DynamicSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
-
-		SlotIterator	_begin_iterator() override;
-		SlotIterator	_end_iterator() override;
-		StaticSlot&		_at(int index) override;
-
-		SlotIterator	_pushFront(Widget * pWidget) override;
-		SlotIterator	_pushFront(const Widget_p pWidgets[], int amount) override;
-
-		SlotIterator	_pushBack(Widget * pWidget) override;
-		SlotIterator	_pushBack(const Widget_p pWidgets[], int amount) override;
-
-		SlotIterator	_insert(const SlotIterator& it, Widget * pWidget) override;
-		SlotIterator	_insert(const SlotIterator& it, const Widget_p pWidgets[], int amount) override;
-		SlotIterator	_erase(const SlotIterator& it) override;
-		SlotIterator	_erase(const SlotIterator& beg, const SlotIterator& end) override;
-
-		SlotIterator	_moveToFront(const SlotIterator& it) override;
-		SlotIterator	_moveToBack(const SlotIterator& it) override;
-		SlotIterator	_moveBefore(const SlotIterator& it, const SlotIterator& sibling) override;
 
 		void			_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard);
 

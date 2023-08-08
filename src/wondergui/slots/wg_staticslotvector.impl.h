@@ -33,37 +33,6 @@ namespace wg
 {
 	class Widget;
 
-	//____ _begin_iterator() ___________________________________________________________
-
-	template < class SlotType>
-	SlotIterator StaticSlotVector<SlotType>::_begin_iterator()
-	{
-		return iterator(_begin());
-	}
-
-	//____ _end_iterator() _____________________________________________________________
-
-	template < class SlotType>
-	SlotIterator StaticSlotVector<SlotType>::_end_iterator()
-	{
-		return iterator(_end());
-	}
-
-	//____ _at() _____________________________________________________________
-
-	template < class SlotType>
-	StaticSlot& StaticSlotVector<SlotType>::_at(int index)
-	{
-		if (index < 0 || index >= m_size)
-		{
-			auto pObject = dynamic_cast<Object*>(m_pHolder);
-			const TypeInfo* pTypeInfo = pObject ? &pObject->typeInfo() : nullptr;
-			Base::throwError(ErrorLevel::Error, ErrorCode::OutOfRange, "Slot index out of range", pObject, pTypeInfo, __func__, __FILE__, __LINE__);
-		}
-
-		return *_slot(index);
-	}
-
 
 	//____ _releaseGuardPointer() _____________________________________________
 

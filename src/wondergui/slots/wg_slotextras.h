@@ -24,7 +24,6 @@
 #define WG_SLOTEXTRAS_DOT_H
 #pragma once
 
-#include <wg_slotiterator.h>
 #include <wg_geo.h>
 
 

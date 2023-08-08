@@ -100,7 +100,7 @@ namespace wg
 			CoordSPX			m_position;
 		};
 
-		using		iterator = SlotArrayIterator<Slot>;
+		using		iterator = DynamicSlotVector<Slot>::iterator;
 
 		//____ CSlots ________________________________________________________
 
