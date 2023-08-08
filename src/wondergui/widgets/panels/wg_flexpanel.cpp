@@ -39,15 +39,16 @@ namespace wg
 	const TypeInfo FlexPanel::TYPEINFO = { "FlexPanel", &Panel::TYPEINFO };
 	const TypeInfo FlexPanel::Slot::TYPEINFO = { "FlexPanel::Slot", &DynamicSlot::TYPEINFO };
 
-	float	FlexPos::s_origoTab[9][2] = {	0.f, 0.f,
-												0.5f, 0.f,
-												1.f, 0.f,
-												1.f, 0.5f,
-												1.f, 1.f,
-												0.5f, 1.f,
-												0.f, 1.f,
-												0.f, 0.5f,
-												0.5f, 0.5f };
+	float	FlexPos::s_origoTab[Placement_size][2] = {	-1.f, -1.f,			// Signals undefined.
+														0.f, 0.f,
+														0.5f, 0.f,
+														1.f, 0.f,
+														1.f, 0.5f,
+														1.f, 1.f,
+														0.5f, 1.f,
+														0.f, 1.f,
+														0.f, 0.5f,
+														0.5f, 0.5f };
 
 
 
@@ -90,7 +91,7 @@ namespace wg
 
 			m_bPinned = false;
 			m_origo = origo;
-			m_hotspot = hotspot;
+			m_hotspot = hotspot.origo.x < 0 ? origo : hotspot;
 			m_placementGeo = geo - origo.pos(_holder()->size()) + hotspot.pos(geo);
 
 			_holder()->_refreshRealGeo(this);
@@ -101,7 +102,7 @@ namespace wg
 	{
 		m_bPinned = false;
 		m_origo = origo;
-		m_hotspot = hotspot;
+		m_hotspot = hotspot.origo.x < 0 ? origo : hotspot;
 		m_placementGeo = geometry;
 
 		_holder()->_refreshRealGeo(this);
@@ -213,7 +214,7 @@ namespace wg
 
 		pSlot->m_placementGeo = geometry;
 		pSlot->m_origo = origo;
-		pSlot->m_hotspot = hotspot;
+		pSlot->m_hotspot = hotspot.origo.x < 0 ? origo : hotspot;
 
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -249,7 +250,7 @@ namespace wg
 
 		pSlot->m_placementGeo = geometry;
 		pSlot->m_origo = origo;
-		pSlot->m_hotspot = hotspot;
+		pSlot->m_hotspot = hotspot.origo.x < 0 ? origo : hotspot;
 
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -286,7 +287,7 @@ namespace wg
 
 		pSlot->m_placementGeo = geometry;
 		pSlot->m_origo = origo;
-		pSlot->m_hotspot = hotspot;
+		pSlot->m_hotspot = hotspot.origo.x < 0 ? origo : hotspot;
 
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);

@@ -33,7 +33,7 @@
 
 namespace wg
 {
-
+class GraphDisplay;
 
 	class Graph
 	{

@@ -84,7 +84,7 @@ namespace wg
 		}
 
 	private:
-		static float	s_origoTab[9][2];
+		static float	s_origoTab[Placement_size][2];
 	};
 
 
@@ -126,8 +126,8 @@ namespace wg
 			void			setPinned(const FlexPos& topLeft, const FlexPos& bottomRight);
 			inline bool		isPinned() const { return m_bPinned; }
 
-			void			setMovable(const FlexPos& origo = Placement::NorthWest, const FlexPos& hotspot = Placement::NorthWest);
-			void			setMovable(const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot);
+			void			setMovable(const FlexPos& origo = Placement::NorthWest, const FlexPos& hotspot = Placement::Undefined);
+			void			setMovable(const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot = Placement::Undefined);
 			inline bool		isMovable() const { return !m_bPinned; }
 
 
@@ -214,17 +214,17 @@ namespace wg
 			iterator	pushFrontPinned(const Widget_p& pWidget, const FlexPos& topLeft,
 				const FlexPos& bottomRight);
 			iterator	pushFrontMovable(const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Placement::NorthWest,
-				const FlexPos& hotspot = Placement::NorthWest);
+				const FlexPos& hotspot = Placement::Undefined);
 
 			iterator	pushBackPinned(const Widget_p& pWidget, const FlexPos& topLeft,
 				const FlexPos& bottomRight);
 			iterator	pushBackMovable(const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Placement::NorthWest,
-				const FlexPos& hotspot = Placement::NorthWest);
+				const FlexPos& hotspot = Placement::Undefined);
 
 			iterator	insertPinned(int index, const Widget_p& pWidget, const FlexPos& topLeft,
 				const FlexPos& bottomRight);
 			iterator	insertMovable(int index, const Widget_p& pWidget, const Rect& geometry,
-				const FlexPos& origo = Placement::NorthWest, const FlexPos& hotspot = Placement::NorthWest);
+				const FlexPos& origo = Placement::NorthWest, const FlexPos& hotspot = Placement::Undefined);
 
 
 		protected:
@@ -309,7 +309,6 @@ namespace wg
 		SizeSPX		_sizeNeededForGeo( Slot * pSlot ) const;
 
 		bool		m_bConfineWidgets = false;
-//		int			m_qpixPerPoint;
 	};
 
 
