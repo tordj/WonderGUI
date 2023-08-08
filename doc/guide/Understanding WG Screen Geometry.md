@@ -36,5 +36,6 @@ It is worth noting that although everything is expressed in a resolution of 1/64
 
 The scale specifies the relation between points and subpixels and is defined as *the number of subpixels corresponding to one point*. The default scale is 64, resulting in one point corresponding to one pixel.
 
-Scale can be applied to widgets in a quite flexible way, with individual widgets being scaled differently than the rest of the GUI.
+A scale of 128 means that there are 128 subpixels per point, i.e. 2 pixels per point.
 
+Scale is set on the Root-widget, but can be changed for a branch in the widget hierarchy by inserting a ScaleCapsule, through which you can set a new scale for all its descendants. 

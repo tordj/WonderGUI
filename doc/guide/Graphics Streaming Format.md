@@ -1,6 +1,6 @@
 ### Graphics Streaming Format
 
-WonderGUI can be redirected to render graphics to a byte-stream instead of a a Surface or the screen. This document describes the format of this byte-stream.
+*WonderGUI can be redirected to render graphics to a byte-stream instead of a a Surface or the screen. This document describes the format of this byte-stream.*
 
 
 
