@@ -228,7 +228,7 @@ namespace wg
 			m_skin.valueChanged(value, oldValue);
 
 			if( bPostMsg )
-				Base::msgRouter()->post(ValueUpdateMsg::create(this, 0, m_value, false));
+				Base::msgRouter()->post(ValueUpdateMsg::create(this, m_value, false));
 		}
 	}
 

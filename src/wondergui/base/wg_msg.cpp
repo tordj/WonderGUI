@@ -780,23 +780,17 @@ namespace wg
 
 	const TypeInfo ValueUpdateMsg::TYPEINFO = { "ValueUpdateMsg", &Msg::TYPEINFO };
 
-	ValueUpdateMsg::ValueUpdateMsg( Object * pSource, int64_t value, double fraction, bool bFinal )
+	ValueUpdateMsg::ValueUpdateMsg( Object * pSource, float value, bool bFinal )
 	{
 		m_type = MsgType::ValueUpdate;
 		m_pSource = pSource;
 		m_value = value;
-		m_fraction = fraction;
 		m_bFinal = bFinal;
 	}
 
-	int64_t ValueUpdateMsg::value() const
+	float ValueUpdateMsg::value() const
 	{
 		return m_value;
-	}
-
-	double ValueUpdateMsg::fraction() const
-	{
-		return m_fraction;
 	}
 
 	bool ValueUpdateMsg::isFinal() const

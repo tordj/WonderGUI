@@ -303,7 +303,7 @@ namespace wg
 			case MsgType::ValueUpdate:
 			{
 				ValueUpdateMsg_p pMsg = static_cast<ValueUpdateMsg*>(_pMsg);
-				snprintf( params, c_paramLen, " value=%lld fraction=%f", (long long int) pMsg->value(), pMsg->fraction() );
+				snprintf( params, c_paramLen, " value=%f", pMsg->value() );
 				break;
 			}
 

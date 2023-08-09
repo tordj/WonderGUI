@@ -969,7 +969,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		inline static ValueUpdateMsg_p	create( Object * pSource, int64_t value, double fraction, bool bFinal ) { return new ValueUpdateMsg(pSource, value, fraction, bFinal ); }
+		inline static ValueUpdateMsg_p	create( Object * pSource, float value, bool bFinal ) { return new ValueUpdateMsg(pSource, value, bFinal ); }
 
 		//.____ Identification __________________________________________
 
@@ -978,15 +978,13 @@ namespace wg
 
 		//.____ Content ________________________________________________________
 
-		int64_t		value() const;
-		double		fraction() const;
+		float		value() const;
 		bool		isFinal() const;
 
 	protected:
-		ValueUpdateMsg( Object * pSource, int64_t value, double fraction, bool bFinal );
+		ValueUpdateMsg( Object * pSource, float value, bool bFinal );
 
-		int64_t		m_value;
-		double		m_fraction;
+		float		m_value;
 		bool		m_bFinal;
 	};
 
