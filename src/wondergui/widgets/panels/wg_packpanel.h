@@ -59,6 +59,17 @@ namespace wg
 			friend class DynamicSlotVector<Slot>;
 
 		public:
+
+			//.____ Blueprint _______________________________________________________
+
+			struct Blueprint
+			{
+				Border	padding = 0;
+				bool	visible = true;
+				float	weight = 1;
+			};
+			
+
 			//.____ Identification ________________________________________________
 
 			const static TypeInfo	TYPEINFO;
@@ -87,6 +98,8 @@ namespace wg
 			Slot(SlotHolder *pHolder) : DynamicSlot(pHolder) {}
 			Slot(Slot&& o) = default;
 			Slot& operator=(Slot&& o) = default;
+
+			bool _setBlueprint( const Blueprint& bp );
 
 			SLOT_PADDING_HELPER_METHODS
 

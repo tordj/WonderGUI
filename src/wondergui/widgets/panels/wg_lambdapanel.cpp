@@ -40,6 +40,15 @@ namespace wg
 	const TypeInfo LambdaPanel::TYPEINFO = { "LambdaPanel", &Panel::TYPEINFO };
 	const TypeInfo LambdaPanel::Slot::TYPEINFO = { "LambdaPanel::Slot", &DynamicSlot::TYPEINFO };
 
+	//____ Slot::_setBlueprint() ____________________________________________________
+
+	bool LambdaPanel::Slot::_setBlueprint( const Blueprint& bp )
+	{
+		m_func = bp.func;
+		return true;
+	}
+
+
 	//____ CSlots::pushFront() ________________________________________________
 
 	LambdaPanel::CSlots::iterator LambdaPanel::CSlots::pushFront(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
@@ -106,6 +115,7 @@ namespace wg
 	LambdaPanel::~LambdaPanel()
 	{
 	}
+
 
 	//____ typeInfo() _________________________________________________________
 

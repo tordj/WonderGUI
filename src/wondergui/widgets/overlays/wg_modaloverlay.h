@@ -54,6 +54,15 @@ namespace wg
 
 		public:
 
+			//.____ Blueprint _____________________________________________________
+			
+			struct Blueprint
+			{
+				Placement	origo = Placement::Center;
+				Coord		pos;
+				Size		size;
+			};
+			
 			//.____ Identification ________________________________________________
 
 			const static TypeInfo	TYPEINFO;
@@ -76,6 +85,8 @@ namespace wg
 
 			Slot(SlotHolder * pHolder) : Overlay::Slot(pHolder) {}
 
+			bool _setBlueprint( const Blueprint& bp );
+			
 			inline ModalOverlay * _holder() { return static_cast<ModalOverlay*>(Overlay::Slot::_holder()); }
 			inline const ModalOverlay * _holder() const { return static_cast<const ModalOverlay*>(Overlay::Slot::_holder()); }
 

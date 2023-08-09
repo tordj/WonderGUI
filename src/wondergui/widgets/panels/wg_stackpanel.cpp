@@ -39,6 +39,18 @@ namespace wg
 	const TypeInfo StackPanel::TYPEINFO = { "StackPanel", &Panel::TYPEINFO };
 	const TypeInfo StackPanel::Slot::TYPEINFO = { "StackPanel::Slot", &DynamicSlot::TYPEINFO };
 
+	//____ Slot::_setBlueprint() ____________________________________________________
+
+	bool StackPanel::Slot::_setBlueprint( const Blueprint& bp )
+	{
+		m_padding		= bp.padding;
+		m_placement		= bp.placement;
+		m_position		= bp.position;
+		m_sizePolicy	= bp.sizePolicy;
+		m_bVisible		= bp.visible;
+		
+		return true;
+	}
 
 	//____ constructor ____________________________________________________________
 

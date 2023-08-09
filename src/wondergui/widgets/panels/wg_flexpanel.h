@@ -116,6 +116,20 @@ namespace wg
 
 		public:
 			 
+			//.____ Blueprint _____________________________________________________
+			
+			struct Blueprint
+			{
+				FlexPos		pin1 = Placement::Undefined;
+				FlexPos		pin2 = Placement::Undefined;
+
+				FlexPos		origo = Placement::NorthWest;
+				FlexPos		hotspot = Placement::Undefined;
+				Coord		pos;
+				Size		size;
+			};
+			
+			
 			//.____ Identification ________________________________________________
 
 			const static TypeInfo	TYPEINFO;
@@ -178,6 +192,8 @@ namespace wg
 			Slot& operator=(Slot&& o) = default;
 
 
+			bool _setBlueprint( const Blueprint& bp );
+			
 			inline FlexPanel * _holder() { return static_cast<FlexPanel*>(DynamicSlot::_holder()); }
 			inline const FlexPanel * _holder() const { return static_cast<const FlexPanel*>(DynamicSlot::_holder()); }
 
@@ -208,23 +224,6 @@ namespace wg
 		{
 			friend class FlexPanel;
 		public:
-
-			//.____ Content _______________________________________________________
-
-			iterator	pushFrontPinned(const Widget_p& pWidget, const FlexPos& topLeft,
-				const FlexPos& bottomRight);
-			iterator	pushFrontMovable(const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Placement::NorthWest,
-				const FlexPos& hotspot = Placement::Undefined);
-
-			iterator	pushBackPinned(const Widget_p& pWidget, const FlexPos& topLeft,
-				const FlexPos& bottomRight);
-			iterator	pushBackMovable(const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Placement::NorthWest,
-				const FlexPos& hotspot = Placement::Undefined);
-
-			iterator	insertPinned(int index, const Widget_p& pWidget, const FlexPos& topLeft,
-				const FlexPos& bottomRight);
-			iterator	insertMovable(int index, const Widget_p& pWidget, const Rect& geometry,
-				const FlexPos& origo = Placement::NorthWest, const FlexPos& hotspot = Placement::Undefined);
 
 
 		protected:

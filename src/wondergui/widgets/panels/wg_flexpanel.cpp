@@ -52,6 +52,26 @@ namespace wg
 
 
 
+	//____ Slot::_setBlueprint() ________________________________________
+
+	bool FlexPanel::Slot::_setBlueprint( const Blueprint& bp )
+	{
+		if(bp.pin1.origo.x >= 0.f && bp.pin2.origo.x >= 0.f )
+		{
+			m_bPinned = true;
+			m_topLeftPin = bp.pin1;
+			m_bottomRightPin = bp.pin2;
+		}
+		else
+		{
+			m_placementGeo = Rect( bp.pos, bp.size );
+			m_origo = bp.origo;
+			m_hotspot = bp.hotspot.origo.x < 0 ? bp.origo : bp.hotspot;
+
+		}
+		return true;
+	}
+
 
 	//____ Slot::setPinned() _______________________________________________
 
@@ -178,119 +198,6 @@ namespace wg
 		m_placementGeo += ofs;
 		_holder()->_refreshRealGeo(this);
 		return true;
-	}
-
-
-
-
-
-	//____ pushFrontPinned() _________________________________________________________
-
-	FlexPanel::CSlots::iterator FlexPanel::CSlots::pushFrontPinned( const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
-	{
-		//TODO: Assert
-
-		pWidget->releaseFromParent();
-		Slot * pSlot = _pushFrontEmpty();
-		pSlot->_setWidget(pWidget);
-
-		pSlot->m_bPinned = true;
-		pSlot->m_topLeftPin = topLeft;
-		pSlot->m_bottomRightPin = bottomRight;
-
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
-	}
-
-	//____ pushFrontMovable() ________________________________________________________
-
-	FlexPanel::CSlots::iterator FlexPanel::CSlots::pushFrontMovable( const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
-	{
-		//TODO: Assert
-
-		pWidget->releaseFromParent();
-		Slot * pSlot = _pushFrontEmpty();
-		pSlot->_setWidget(pWidget);
-
-		pSlot->m_placementGeo = geometry;
-		pSlot->m_origo = origo;
-		pSlot->m_hotspot = hotspot.origo.x < 0 ? origo : hotspot;
-
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
-	}
-
-	//____ pushBackPinned() _________________________________________________________
-
-	FlexPanel::CSlots::iterator FlexPanel::CSlots::pushBackPinned(const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight)
-	{
-		//TODO: Assert
-
-		pWidget->releaseFromParent();
-		Slot * pSlot = _pushBackEmpty();
-		pSlot->_setWidget(pWidget);
-
-		pSlot->m_bPinned = true;
-		pSlot->m_topLeftPin = topLeft;
-		pSlot->m_bottomRightPin = bottomRight;
-
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
-	}
-
-	//____ pushBackMovable() ________________________________________________________
-
-	FlexPanel::CSlots::iterator FlexPanel::CSlots::pushBackMovable(const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
-	{
-		//TODO: Assert
-
-		pWidget->releaseFromParent();
-		Slot * pSlot = _pushBackEmpty();
-		pSlot->_setWidget(pWidget);
-
-		pSlot->m_placementGeo = geometry;
-		pSlot->m_origo = origo;
-		pSlot->m_hotspot = hotspot.origo.x < 0 ? origo : hotspot;
-
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
-	}
-
-
-	//____ insertPinned() ________________________________________________________
-
-	FlexPanel::CSlots::iterator FlexPanel::CSlots::insertPinned( int index, const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
-	{
-		//TODO: Assert
-
-		Slot * pSlot = _insertEmpty(index);
-		_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->_setWidget(pWidget);
-
-		pSlot->m_bPinned = true;
-		pSlot->m_topLeftPin = topLeft;
-		pSlot->m_bottomRightPin = bottomRight;
-
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
-	}
-
-	//____ insertMovable() ________________________________________________________
-
-	FlexPanel::CSlots::iterator FlexPanel::CSlots::insertMovable( int index, const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
-	{
-		//TODO: Assert
-
-		Slot * pSlot = _insertEmpty(index);
-		_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->_setWidget(pWidget);
-
-		pSlot->m_placementGeo = geometry;
-		pSlot->m_origo = origo;
-		pSlot->m_hotspot = hotspot.origo.x < 0 ? origo : hotspot;
-
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
 	}
 
 	//____ constructor ____________________________________________________________

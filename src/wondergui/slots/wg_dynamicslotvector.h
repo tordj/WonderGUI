@@ -77,6 +77,8 @@ namespace wg
 		iterator		pushFront(const Widget_p& pWidget);
 		iterator		pushFront(const Widget_p pWidgets[], int amount);
 
+		iterator		pushFront(const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint );
+		
 		template<typename Iterator>
 		iterator		pushFront(const Iterator& beg, const Iterator& end)
 		{
@@ -102,6 +104,8 @@ namespace wg
 		iterator		pushBack(const Widget_p& pWidget);
 		iterator		pushBack(const Widget_p pWidgets[], int amount);
 
+		iterator		pushBack(const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint );
+
 		template<typename Iterator>
 		iterator		pushBack(const Iterator& beg, const Iterator& end)
 		{
@@ -125,6 +129,9 @@ namespace wg
 		void			insert(int index, const Widget_p pWidgets[], int amount);
 		iterator		insert(iterator it, const Widget_p pWidgets[], int amount);
 
+		void			insert(int index, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint);
+		iterator		insert(iterator it, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint);
+		
 		void			erase(int index);
 		iterator		erase(iterator pos);
 		void			erase(int index, int amount);

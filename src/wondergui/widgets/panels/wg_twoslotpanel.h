@@ -55,6 +55,13 @@ namespace wg
 
 		public: 
 
+			//.____ Blueprint _______________________________________________________
+
+			struct Blueprint
+			{
+				float	weight = 1;
+			};
+			
 			//.____ Identification ________________________________________________
 
 			const static TypeInfo	TYPEINFO;
@@ -72,6 +79,9 @@ namespace wg
 		protected:
 			Slot() : DynamicSlot(nullptr) {}
 
+			bool _setBlueprint( const Blueprint& bp );
+
+			
 			int		m_weight = 65536;			// Float scaled down to 16.16 format.
 			int		m_length = 0;
 		};
@@ -107,7 +117,7 @@ namespace wg
 	protected:
 		TwoSlotPanel();
 		virtual ~TwoSlotPanel();
-
+		
 		void		_updateDefaultSize();
 		SizeSPX		_calcDefaultSize(int scale) const;
 		bool		_updateGeo( bool bForce );

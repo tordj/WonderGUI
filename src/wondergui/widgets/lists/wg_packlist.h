@@ -67,6 +67,13 @@ namespace wg
 
 		public:
 
+			//.____ Blueprint _____________________________________________________
+			
+			struct Blueprint
+			{
+				bool		visible = true;
+			};
+			
 			//.____ Identification ________________________________________________
 
 			const static TypeInfo	TYPEINFO;
@@ -86,6 +93,8 @@ namespace wg
 		protected:
 
 			Slot(SlotHolder *pHolder) : List::Slot(pHolder) {}
+
+			bool _setBlueprint( const Blueprint& bp );
 
 			Slot(Slot&& o) = default;
 			Slot& operator=(Slot&& o) = default;

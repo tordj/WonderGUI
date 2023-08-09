@@ -125,7 +125,7 @@ namespace wg
 
 
 		
-		RectI		m_size;
+		SizeI		m_size;
 		
 		SampleOrigo	m_origo;
 		

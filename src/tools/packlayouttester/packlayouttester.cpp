@@ -92,8 +92,8 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	auto pControlPanel = _createControlPanel();
 	auto pStretchPanel = _createStretchPanel();
 
-	pBasePanel->slots.pushBackPinned(pControlPanel, Placement::NorthWest, FlexPos(Placement::NorthEast, Coord(0, 250)));
-	pBasePanel->slots.pushBackMovable(pStretchPanel, Rect(2, 260, 500, 200));
+	pBasePanel->slots.pushBack(pControlPanel, { .pin1 = Placement::NorthWest, .pin2 = FlexPos(Placement::NorthEast, Coord(0, 250)) });
+	pBasePanel->slots.pushBack(pStretchPanel, { .pos = {2, 260}, .size = {500, 200} });
 
 	m_pBasePanel = pBasePanel;
 
@@ -182,58 +182,58 @@ Widget_p MyApp::_createControlPanel()
 
 	pts xSpacingSizeSelectors = 100;
 
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("MinSize")} }), pos + labelOffset);
-	pBase->slots.pushBackMovable(m_pMinSizeSourceSelector, pos);
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("MinSize")} }), { .pos = pos + labelOffset } );
+	pBase->slots.pushBack(m_pMinSizeSourceSelector, { .pos = pos } );
 
 	pos.x += xSpacingSizeSelectors;
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("DefaultSize")} }), pos + labelOffset);
-	pBase->slots.pushBackMovable(m_pDefaultSizeSourceSelector, pos);
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("DefaultSize")} }), { .pos = pos + labelOffset } );
+	pBase->slots.pushBack(m_pDefaultSizeSourceSelector, { .pos = pos });
 
 	pos.x += xSpacingSizeSelectors;
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("MaxSize")} }), pos + labelOffset);
-	pBase->slots.pushBackMovable(m_pMaxSizeSourceSelector, pos);
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("MaxSize")} }), { .pos = pos + labelOffset } );
+	pBase->slots.pushBack(m_pMaxSizeSourceSelector, { .pos = pos });
 
 	pos.x = 4;
 	pos.y += 50;
 
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("Start size")} }), pos + labelOffset );
-	pBase->slots.pushBackMovable(m_pStartSizeSelector, pos);
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("Start size")} }), { .pos = pos + labelOffset } );
+	pBase->slots.pushBack(m_pStartSizeSelector, { .pos = pos });
 
 	pos.x += m_pStartSizeSelector->size().w + xSpacing;
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("Expand factor")} }), pos + labelOffset );
-	pBase->slots.pushBackMovable(m_pExpandFactorSelector, pos);
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("Expand factor")} }), { .pos = pos + labelOffset } );
+	pBase->slots.pushBack(m_pExpandFactorSelector, { .pos = pos });
 
 	pos.x += m_pExpandFactorSelector->size().w + xSpacing;
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("Shrink factor")} }), pos + labelOffset );
-	pBase->slots.pushBackMovable(m_pShrinkFactorSelector, pos);
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("Shrink factor")} }), { .pos = pos + labelOffset } );
+	pBase->slots.pushBack(m_pShrinkFactorSelector, { .pos = pos });
 
 	pos.x += m_pShrinkFactorSelector->size().w + xSpacing;
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("Hide setting")} }), pos + labelOffset );
-	pBase->slots.pushBackMovable(m_pHideSelector, pos);
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("Hide setting")} }), { .pos = pos + labelOffset } );
+	pBase->slots.pushBack(m_pHideSelector, { .pos = pos });
 
 	pos.x = 4;
 	pos.y += 40;
 	pts inputFieldOfsX = 90;
 	pts inputFieldSpacingY = 24;
 
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("List 1")} }), pos);
-	pBase->slots.pushBackPinned(m_pList1Input, { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, { Placement::NorthEast, {-10,pos.y + 20} });
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("List 1")} }), { .pos = pos });
+	pBase->slots.pushBack(m_pList1Input, { .pin1 = { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, .pin2 = { Placement::NorthEast, {-10,pos.y + 20} }});
 
 	pos.y += inputFieldSpacingY;
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("List 2")} }), pos);
-	pBase->slots.pushBackPinned(m_pList2Input, { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, { Placement::NorthEast, {-10,pos.y + 20} });
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("List 2")} }), { .pos = pos });
+	pBase->slots.pushBack(m_pList2Input, { .pin1 = { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, .pin2 = { Placement::NorthEast, {-10,pos.y + 20} }});
 
 	pos.y += inputFieldSpacingY;
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("List 3")} }), pos);
-	pBase->slots.pushBackPinned(m_pList3Input, { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, { Placement::NorthEast, {-10,pos.y + 20} });
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("List 3")} }), { .pos = pos });
+	pBase->slots.pushBack(m_pList3Input, { .pin1 = { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, .pin2 = { Placement::NorthEast, {-10,pos.y + 20} }});
 
 	pos.y += inputFieldSpacingY;
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("Expand order")} }), pos);
-	pBase->slots.pushBackPinned(m_pExpandOrderInput, { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, { Placement::NorthEast, {-10,pos.y + 20} });
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("Expand order")} }), { .pos = pos });
+	pBase->slots.pushBack(m_pExpandOrderInput, { .pin1 = { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, .pin2 = { Placement::NorthEast, {-10,pos.y + 20} }});
 
 	pos.y += inputFieldSpacingY;
-	pBase->slots.pushBackMovable(TextDisplay::create({ .display = {.text = String("Shrink order")} }), pos);
-	pBase->slots.pushBackPinned(m_pShrinkOrderInput, { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, { Placement::NorthEast, {-10,pos.y + 20} });
+	pBase->slots.pushBack(TextDisplay::create({ .display = {.text = String("Shrink order")} }), { .pos = pos });
+	pBase->slots.pushBack(m_pShrinkOrderInput, { .pin1 = { Placement::NorthWest, {pos.x + inputFieldOfsX,pos.y } }, .pin2 = { Placement::NorthEast, {-10,pos.y + 20} }});
 
 
 	m_pStartSizeSelector->selectEntryById(int(PackLayout::WantedSize::Default));
@@ -307,11 +307,11 @@ Widget_p MyApp::_createStretchPanel()
 		pPackPanel->slots << TextEditor::create({ .skin = pItemSkin } );
 
 
-	pBase->slots.pushBackPinned(pPackPanel, Placement::NorthWest, FlexPos(Placement::SouthEast, Coord(-8, 0)));
+	pBase->slots.pushBack(pPackPanel, { .pin1 = Placement::NorthWest, .pin2 = FlexPos(Placement::SouthEast, Coord(-8, 0)) });
 
 	auto pHandle = Filler::create({ .skin = m_pTightButtonSkin });
 
-	pBase->slots.pushBackPinned(pHandle, { Placement::NorthEast, {-8,0} }, Placement::SouthEast);
+	pBase->slots.pushBack(pHandle, { .pin1 = {Placement::NorthEast, {-8,0}}, .pin2 = Placement::SouthEast });
 
 	Base::msgRouter()->addRoute(pHandle, MsgType::MousePress, [this,pBase](Msg* _pMsg) {
 			auto pMsg = static_cast<MousePressMsg*>(_pMsg);

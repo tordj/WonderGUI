@@ -41,6 +41,14 @@ namespace wg
 	const TypeInfo PackList::Slot::TYPEINFO = { "PackList::Slot", &List::Slot::TYPEINFO };
 
 
+	//____ Slot::_setBlueprint() ________________________________________
+
+	bool PackList::Slot::_setBlueprint( const Blueprint& bp )
+	{
+		m_bVisible = bp.visible;
+		return true;
+	}
+
 	//____ insertSorted() ___________________________________________________
 
 	PackList::CSlots::iterator PackList::CSlots::insertSorted(Widget * pWidget)

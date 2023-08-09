@@ -396,31 +396,16 @@ void WgValueFormat::setFormat( int _nInt, int _nDec, int _grouping, bool _bPlus,
 	scale			= 1;
 }
 
-//____ setPrefix(1) ___________________________________________________________
+//____ setPrefix() ___________________________________________________________
 
 void WgValueFormat::setPrefix( const wg::String& str )
 {
 	prefix = str;
 }
 
-//____ setPrefix(2) ___________________________________________________________
-
-void WgValueFormat::setPrefix( const wg::CharSeq& seq )
-{
-	prefix = seq;
-}
-
-//____ setSuffix(1) ___________________________________________________________
+//____ setSuffix() ___________________________________________________________
 
 void WgValueFormat::setSuffix( const wg::String& str )
 {
 	suffix = str;
 }
-
-//____ setSuffix(2) ___________________________________________________________
-
-void WgValueFormat::setSuffix( const wg::CharSeq& seq )
-{
-	suffix = seq;
-}
-

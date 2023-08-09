@@ -33,6 +33,15 @@ namespace wg
 
 	using namespace Util;
 
+
+	//____ Slot::_setBlueprint() _________________________________________________
+
+	bool TwoSlotPanel::Slot::_setBlueprint( const Blueprint& bp )
+	{
+		m_weight		= bp.weight;
+		return true;
+	}
+
 	//____ constructor ____________________________________________________________
 
 	TwoSlotPanel::TwoSlotPanel() : slots(this)

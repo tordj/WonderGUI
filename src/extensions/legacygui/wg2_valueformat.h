@@ -52,11 +52,9 @@ class WgValueFormat
 						Uint16 _separator = 0, Uint16 period = 0, bool bForcePeriod = false );
 
 		void setPrefix( const wg::String& str );
-		void setPrefix( const wg::CharSeq& seq );
 		inline const wg::String& getPrefix() const { return prefix; }
 
 		void setSuffix( const wg::String& str );
-		void setSuffix( const wg::CharSeq& seq );
 		inline const wg::String& getSuffix() const { return suffix; }
 
 		inline void setTextStyle( wg::TextStyle * _pStyle ) { pTextStyle = _pStyle; bSetTextStyle = true; }

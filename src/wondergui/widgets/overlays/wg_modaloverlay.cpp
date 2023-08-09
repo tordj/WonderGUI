@@ -41,6 +41,15 @@ namespace wg
 
 	//TODO: Improve Modal geometry handling, should be able to run on DefaultSize by default, answering to resize-requests.
 
+	//____ Slot::_setBlueprint() _________________________________________________
+
+	bool ModalOverlay::Slot::_setBlueprint( const Blueprint& bp )
+	{
+		m_origo = bp.origo;
+		m_placementGeo = Rect( bp.pos, bp.size );
+		return true;
+	}
+
 
 	//____ Slot::setOrigo() ____________________________________________________
 

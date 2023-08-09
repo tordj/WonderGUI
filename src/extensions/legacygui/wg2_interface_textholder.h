@@ -92,7 +92,6 @@ public:
 
 	void				ClearText();
 
-	void		SetText( const wg::CharSeq& seq );
 	void		SetText( const wg::CharBuffer * buffer );
 	void		SetText( const wg::String& str );
 	void		SetText( const WgText * pText );

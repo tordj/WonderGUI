@@ -44,6 +44,7 @@ namespace wg
 
 	public:
 
+		
 		//____ Slot ____________________________________________________________
 
 		class Slot : public DynamicSlot
@@ -54,6 +55,13 @@ namespace wg
 
 		public:
 
+			//.____ Blueprint _______________________________________________________
+
+			struct Blueprint
+			{
+				std::function<Rect(Widget * pWidget, Size parentSize)> func;
+			};
+			
 			//.____ Identification ________________________________________________
 
 			const static TypeInfo	TYPEINFO;
@@ -81,6 +89,7 @@ namespace wg
 
 			const static bool safe_to_relocate = false;
 
+			bool _setBlueprint( const Blueprint& bp );
 
 			std::function<Rect(Widget * pWidget, Size parentSize)>	m_func = nullptr;
 			bool			m_bVisible = false;
@@ -124,8 +133,8 @@ namespace wg
 		friend class Slot;
 		friend class CSlots;
 		friend class HideableSlotCollectionMethods<LambdaPanel::Slot, iterator, LambdaPanel>;
-
-
+		
+		
 		//.____ Creation __________________________________________
 
 		static LambdaPanel_p	create() { return LambdaPanel_p(new LambdaPanel()); }

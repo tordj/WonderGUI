@@ -108,14 +108,6 @@ void Wg_Interface_TextHolder::ClearText()
 }
 
 
-void Wg_Interface_TextHolder::SetText( const wg::CharSeq& seq )
-{
-//    DBGM(DBG_GUI_APP, ("GUI_APP: SetText 1 called: %s", seq.GetUTF8().ptr) );
-
-	m_pText->setText( seq );
-	_textModified();
-}
-
 void Wg_Interface_TextHolder::SetText( const wg::CharBuffer * pBuffer )
 {
 	m_pText->setText( pBuffer );

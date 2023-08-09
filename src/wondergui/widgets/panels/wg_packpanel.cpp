@@ -40,6 +40,14 @@ namespace wg
 	const TypeInfo PackPanel::Slot::TYPEINFO = { "PackPanel::Slot", &DynamicSlot::TYPEINFO };
 
 
+	bool PackPanel::Slot::_setBlueprint( const Blueprint& bp )
+	{
+		m_weight = bp.weight;
+		m_bVisible = bp.visible;
+		m_padding = bp.padding;
+		return true;
+	}
+
 	void PackPanel::Slot::setWeight(float weight) 
 	{ 
 		if (weight != m_weight) 

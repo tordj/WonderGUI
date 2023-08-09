@@ -56,6 +56,17 @@ namespace wg
 			friend class DynamicSlotVector<Slot>;
 
 		public:
+			
+			//.____ Blueprint _______________________________________________________
+
+			struct Blueprint
+			{
+				Border			padding = 0;
+				Placement		placement = Placement::Center;
+				CoordSPX		position;
+				SizePolicy2D	sizePolicy = SizePolicy2D::Original;
+				bool			visible = true;
+			};
 
 			//.____ Identification ________________________________________________
 
@@ -86,6 +97,8 @@ namespace wg
 			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder) {}
 			Slot(Slot&& o) = default;
 			Slot& operator=(Slot&& o) = default;
+
+			bool _setBlueprint( const Blueprint& bp );
 
 			StackPanel* _holder() { return static_cast<StackPanel*>(DynamicSlot::_holder()); }
 			const StackPanel* _holder() const { return static_cast<const StackPanel*>(DynamicSlot::_holder()); }

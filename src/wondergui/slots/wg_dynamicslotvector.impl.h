@@ -63,6 +63,17 @@ namespace wg
 		return iterator(pSlot);
 	}
 
+	template < class SlotType>
+	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushFront(const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint)
+	{
+		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
+
+		SlotType * pSlot = _pushFrontEmpty();
+		pSlot->_setWidget(pWidget);
+		pSlot->_setBlueprint(blueprint);
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
+	}
 
 
 	//____ pushBack() _________________________________________________________________
@@ -93,6 +104,19 @@ namespace wg
 		m_pHolder->_didAddSlots(pSlot, amount);
 		return iterator(pSlot);
 	}
+
+	template < class SlotType>
+	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint)
+	{
+		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
+
+		SlotType * pSlot = _pushBackEmpty();
+		pSlot->_setWidget(pWidget);
+		pSlot->_setBlueprint(blueprint);
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
+	}
+
 
 	//____ insert() ______________________________________________________________
 
@@ -151,6 +175,34 @@ namespace wg
 			pSlot[i]._setWidget(pWidgets[i]);
 		}
 		m_pHolder->_didAddSlots(pSlot, amount);
+		return iterator(pSlot);
+	}
+
+	template < class SlotType>
+	void DynamicSlotVector<SlotType>::insert(int index, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint )
+	{
+		//TODO: Add assert
+
+		SlotType * pSlot = _insertEmpty(index);
+
+		this->_releaseGuardPointer(pWidget, &pSlot);
+		pSlot->_setWidget(pWidget);
+		pSlot->_setBlueprint(blueprint);
+		m_pHolder->_didAddSlots(pSlot, 1);
+	}
+
+	template < class SlotType>
+	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::insert(iterator pos, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint)
+	{
+		//TODO: Add assert
+
+		SlotType * pSlot = pos;
+		pSlot = _insertEmpty(pSlot);
+
+		this->_releaseGuardPointer(pWidget, &pSlot);
+		pSlot->_setWidget(pWidget);
+		pSlot->_setBlueprint(blueprint);
+		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
