@@ -141,7 +141,6 @@ set( SOURCES
 
 	slots/wg_slot.cpp
 	slots/wg_slot.h
-	slots/wg_slotextras.impl.h
 	slots/wg_slotextras.h
 	slots/wg_slotholder.h
 	slots/wg_dynamicslotvector.h

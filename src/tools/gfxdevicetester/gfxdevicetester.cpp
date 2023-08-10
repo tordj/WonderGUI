@@ -354,8 +354,8 @@ void GfxDeviceTester::refresh_performance_display()
 			//			pEntry->slots.add(1, 2);
 			pEntry->slots.pushBack(v.begin(), v.end());
 
-			pEntry->slots.setWeight(0, 2, { 0.f,1.f });
-			//			pEntry->slots.setPadding(1, { 0,0,0,10 });
+			pEntry->setSlotWeight(0, 2, { 0.f,1.f });
+			//			pEntry->setSlotPadding(1, { 0,0,0,10 });
 
 			g_pPerformanceList->slots << pEntry;
 		}

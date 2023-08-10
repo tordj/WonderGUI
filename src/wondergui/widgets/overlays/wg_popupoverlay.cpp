@@ -43,7 +43,7 @@ namespace wg
 
 	//____ pushFront() ________________________________________________
 
-	void PopupOverlay::CSlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bAutoClose, Size maxSize )
+	void PopupOverlay::MySlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bAutoClose, Size maxSize )
 	{
 		int scale = _holder()->_scale();
 
@@ -52,7 +52,7 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void PopupOverlay::CSlots::pop(int nb)
+	void PopupOverlay::MySlots::pop(int nb)
 	{
 		if( nb <= 0 )
 			return;
@@ -64,7 +64,7 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void PopupOverlay::CSlots::pop(Widget * pPopup)
+	void PopupOverlay::MySlots::pop(Widget * pPopup)
 	{
 		int i = index(pPopup);
 		if (i > -1)
@@ -73,7 +73,7 @@ namespace wg
 
 	//____ clear() ________________________________________________
 
-	void PopupOverlay::CSlots::clear()
+	void PopupOverlay::MySlots::clear()
 	{
 		if( isEmpty() )
 			return;
@@ -83,7 +83,7 @@ namespace wg
 
 	//____ _pushFront() ________________________________________________
 
-	void PopupOverlay::CSlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bAutoClose, SizeSPX maxSize)
+	void PopupOverlay::MySlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bAutoClose, SizeSPX maxSize)
 	{
 		pPopup->releaseFromParent();
 		_holder()->_addSlot(pPopup, pOpener, launcherGeo, attachPoint, bAutoClose, maxSize);

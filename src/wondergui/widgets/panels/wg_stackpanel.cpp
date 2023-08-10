@@ -26,15 +26,12 @@
 #include <wg_patches.h>
 
 #include <wg_dynamicslotvector.impl.h>
-#include <wg_slotextras.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
 	template class DynamicSlotVector<StackPanel::Slot>;
-	template class PaddedSlotCollectionMethods<StackPanel::Slot,StackPanel::iterator,StackPanel>;
-	template class HideableSlotCollectionMethods<StackPanel::Slot, StackPanel::iterator, StackPanel>;
 
 	const TypeInfo StackPanel::TYPEINFO = { "StackPanel", &Panel::TYPEINFO };
 	const TypeInfo StackPanel::Slot::TYPEINFO = { "StackPanel::Slot", &DynamicSlot::TYPEINFO };
@@ -72,14 +69,69 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ hideSlots() ___________________________________________________________
+
+	void StackPanel::hideSlots(int index, int amount)
+	{
+		_hideSlots( &slots[index], amount);
+	}
+	void StackPanel::hideSlots(iterator beg, iterator end)
+	{
+		_hideSlots( beg, end - beg);
+	}
+
+	//____ unhideSlots() ___________________________________________________________
+
+	void StackPanel::unhideSlots(int index, int amount)
+	{
+		_unhideSlots( &slots[index], amount);
+	}
+	void StackPanel::unhideSlots(iterator beg, iterator end)
+	{
+		_unhideSlots( beg, end - beg);
+	}
+
+	//____ setPadding() _______________________________________________________
+
+	bool StackPanel::setSlotPadding(int index, int amount, Border padding)
+	{
+		_repadSlots( &slots[index], amount, padding);
+		return true;
+	}
+
+	bool StackPanel::setSlotPadding(iterator beg, iterator end, Border padding)
+	{
+		_repadSlots(beg, int(end - beg), padding);
+		return true;
+	}
+
+	bool StackPanel::setSlotPadding(int index, int amount, std::initializer_list<Border> padding)
+	{
+		if( padding.size() < amount )
+			return false;
+		
+		_repadSlots( &slots[index], amount, padding.begin());
+		return true;
+	}
+
+	bool StackPanel::setSlotPadding(iterator beg, iterator end, std::initializer_list<Border> padding)
+	{
+		if( padding.size() < (end - beg) )
+			return false;
+
+		_repadSlots(beg, int(end - beg), padding.begin());
+		return true;
+	}
+
+
 	//____ _matchingHeight() _______________________________________________________
 
 	spx StackPanel::_matchingHeight( spx width, int scale ) const
 	{
 		spx height = 0;
 
-		Slot * pSlot = slots._begin();
-		Slot * pEnd = slots._end();
+		Slot * pSlot = slots.begin();
+		Slot * pEnd = slots.end();
 
 		while( pSlot != pEnd )
 		{
@@ -98,8 +150,8 @@ namespace wg
 	{
 		spx width = 0;
 
-		Slot * pSlot = slots._begin();
-		Slot * pEnd = slots._end();
+		Slot * pSlot = slots.begin();
+		Slot * pEnd = slots.end();
 
 		while( pSlot != pEnd )
 		{
@@ -130,7 +182,7 @@ namespace wg
 		//TODO: Optimize. If size is same then we only need to update those that have requested resize.
 
 		Panel::_resize(size,scale);
-		_updateChildGeo(slots._begin(),slots._end());
+		_updateChildGeo(slots.begin(),slots.end());
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -147,7 +199,7 @@ namespace wg
 		if( slots.isEmpty() )
 			return nullptr;
 
-		return slots._first()->_widget();
+		return slots.front()._widget();
 	}
 
 	//____ _lastChild() ________________________________________________________
@@ -157,7 +209,7 @@ namespace wg
 		if( slots.isEmpty() )
 			return nullptr;
 
-		return slots._last()->_widget();
+		return slots.back()._widget();
 
 	}
 
@@ -170,12 +222,12 @@ namespace wg
 			package.pSlot = nullptr;
 		else
 		{
-			Slot * pSlot = slots._first();
+			Slot * pSlot = slots.begin();
 			
 			while( !pSlot->m_bVisible )
 			{
 				pSlot++;
-				if( pSlot == slots._end() )
+				if( pSlot == slots.end() )
 				{
 					package.pSlot = nullptr;
 					return;
@@ -193,7 +245,7 @@ namespace wg
 	{
 		Slot * pSlot = (Slot*) package.pSlot;
 
-		if( pSlot == slots._last() )
+		if( pSlot == &slots.back() )
 			package.pSlot = nullptr;
 		else
 		{
@@ -202,7 +254,7 @@ namespace wg
 			while( !pSlot->m_bVisible )
 			{
 				pSlot++;
-				if( pSlot == slots._end() )
+				if( pSlot == slots.end() )
 				{
 					package.pSlot = nullptr;
 					return;
@@ -356,7 +408,7 @@ namespace wg
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
-		for( auto pCover = slots._begin() ; pCover < pSlot ; pCover++ )
+		for( auto pCover = slots.begin() ; pCover < pSlot ; pCover++ )
 		{
 			RectSPX geo = { pCover->m_position, pCover->_widget()->_size() };
 			if( pCover->m_bVisible && geo.isOverlapping( rect ) )
@@ -404,7 +456,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const Slot *>(_pSlot);
 
-		if( pSlot > slots._begin() )
+		if( pSlot > slots.begin() )
 			return pSlot[-1]._widget();
 
 		return nullptr;
@@ -416,10 +468,12 @@ namespace wg
 	{
 		auto pSlot = static_cast<const Slot *>(_pSlot);
 
-		if( pSlot < slots._last() )
-			return pSlot[1]._widget();
+		pSlot++;
+		
+		if( pSlot == slots.end() )
+			return nullptr;
 
-		return nullptr;
+		return pSlot->_widget();
 	}
 
 	//____ _releaseChild() ____________________________________________________
@@ -427,7 +481,7 @@ namespace wg
 	void StackPanel::_releaseChild(StaticSlot * pSlot)
 	{
 		_willEraseSlots(pSlot, 1);
-		slots._erase(static_cast<Slot*>(pSlot));
+		slots.erase(static_cast<Slot*>(pSlot));
 	}
 
 	//____ _replaceChild() ____________________________________________________
@@ -501,9 +555,9 @@ namespace wg
 		// Update m_defaultSize
 
 		SizeSPX	defaultSize;
-		Slot * p = slots._begin();
+		Slot * p = slots.begin();
 
-		while( p != slots._end() )
+		while( p != slots.end() )
 		{
 			if( p->m_bVisible )
 			{
@@ -550,8 +604,8 @@ namespace wg
 	{
 		SizeSPX	defaultSize;
 
-		auto * pSlot = slots._begin();
-		auto * pEnd = slots._end();
+		auto * pSlot = slots.begin();
+		auto * pEnd = slots.end();
 
 		while( pSlot != pEnd )
 		{

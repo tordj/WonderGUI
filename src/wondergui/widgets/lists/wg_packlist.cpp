@@ -28,13 +28,11 @@
 #include <wg_gfxdevice.h>
 
 #include <wg_dynamicslotvector.impl.h>
-#include <wg_slotextras.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
-	template class SelectableSlotCollectionMethods<PackList::Slot, PackList::iterator, PackList>;
 	template class DynamicSlotVector<PackList::Slot>;
 
 	const TypeInfo PackList::TYPEINFO = { "PackList", &List::TYPEINFO };
@@ -47,29 +45,6 @@ namespace wg
 	{
 		m_bVisible = bp.visible;
 		return true;
-	}
-
-	//____ insertSorted() ___________________________________________________
-
-	PackList::CSlots::iterator PackList::CSlots::insertSorted(Widget * pWidget)
-	{
-		//TODO: Replace with assert
-//		if (!pWidget)
-//			return false;
-
-		if (isEmpty() || !_holder()->_hasSortFunction())
-			return pushBack(pWidget);
-
-		int index = _holder()->_getInsertionPoint(pWidget);
-		insert(index, pWidget);
-		return iterator(_slot(index));
-	}
-
-	//____ sort() __________________________________________________________
-
-	void PackList::CSlots::sort()
-	{
-		_holder()->_sortEntries();
 	}
 
 
@@ -124,7 +99,7 @@ namespace wg
 		{
 			m_sortOrder = order;
 			_header()._setSortOrder( order );
-			_sortEntries();
+			sortSlots();
 			_requestRender();		// So we also render the header, which has an arrow with new state.
 		}
 	}
@@ -134,7 +109,23 @@ namespace wg
 	void PackList::setSortFunction( std::function<int(const Widget *,const Widget *)> func )
 	{
 		m_sortFunc = func;
-		_sortEntries();
+		sortSlots();
+	}
+
+	//____ insertSorted() ___________________________________________________
+
+	PackList::iterator PackList::insertSorted(Widget * pWidget)
+	{
+		//TODO: Replace with assert
+	//		if (!pWidget)
+	//			return false;
+
+		if (slots.isEmpty() || !_hasSortFunction())
+			return slots.pushBack(pWidget);
+
+		int index = _getInsertionPoint(pWidget);
+		slots.insert(index, pWidget);
+		return &slots[index];
 	}
 
 	//____ setMinEntrySize() ______________________________________________________
@@ -168,6 +159,41 @@ namespace wg
 		_refreshList();
 		return true;
 	}
+
+
+	//____ select() ___________________________________________________________
+
+	void PackList::selectSlots(int index, int amount)
+	{
+		//TODO: Error handling!
+
+		_selectSlots( &slots[index], amount);
+	};
+
+	void PackList::selectSlots(iterator beg, iterator end)
+	{
+		//TODO: Error handling!
+
+		_selectSlots(beg, int(end - beg));
+	};
+
+
+	//____ unselect() _________________________________________________________
+
+	void PackList::unselectSlots(int index, int amount)
+	{
+		//TODO: Error handling!
+
+		_unselectSlots( &slots[index], amount);
+	};
+
+	void PackList::unselectSlots(iterator beg, iterator end)
+	{
+		//TODO: Error handling!
+
+		_unselectSlots(beg, int(end - beg));
+	};
+
 
 	//____ _defaultSize() ________________________________________________________
 
@@ -219,7 +245,7 @@ namespace wg
 
 			width -= m_entryPadding.w;
 
-			for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
+			for (auto pSlot = slots.begin(); pSlot < slots.end(); pSlot++)
 				height += pSlot->_widget()->_matchingHeight(width,scale);
 
 			height += m_entryPadding.h*slots.size();
@@ -243,7 +269,7 @@ namespace wg
 
 			height -= m_entryPadding.h;
 
-			for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
+			for (auto pSlot = slots.begin(); pSlot < slots.end(); pSlot++)
 				width += pSlot->_widget()->_matchingWidth(width, scale);
 
 			width += m_entryPadding.w*slots.size();
@@ -320,7 +346,7 @@ namespace wg
 
 		for( int i = _getEntryAt( startOfs ) ; i < slots.size() ; i++ )
 		{
-			Slot * pSlot = slots._slot(i);
+			Slot * pSlot = &slots[i];
 			Widget * pChild = pSlot->_widget();
 
 			// Get entry geometry, skin and state
@@ -422,7 +448,7 @@ namespace wg
 			m_contentDefaultBreadth = 0;
 			m_nbEntriesOfDefaultBreadth = 0;
 
-			for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
+			for (auto pSlot = slots.begin(); pSlot < slots.end(); pSlot++)
 			{
 				SizeSPX pref = _paddedLimitedDefaultSize( pSlot, scale );
 
@@ -460,7 +486,7 @@ namespace wg
 			m_contentBreadth = newContentBreadth;
 			spx ofs = 0;
 
-			for( auto pSlot = slots._begin() ; pSlot < slots._end() ; pSlot++ )
+			for( auto pSlot = slots.begin() ; pSlot < slots.end() ; pSlot++ )
 			{
 				Widget * pWidget = pSlot->_widget();
 
@@ -505,7 +531,7 @@ namespace wg
 		SizeSPX		maxEntrySize = align(ptsToSpx(m_maxEntrySize, scale));
 
 		
-		for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
+		for (auto pSlot = slots.begin(); pSlot < slots.end(); pSlot++)
 		{
 			// Calc "_paddedLimitedDefaultSize" for slot
 		
@@ -563,7 +589,7 @@ namespace wg
 		m_nbEntriesOfDefaultBreadth = 0;
 		spx ofs = 0;
 
-		for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
+		for (auto pSlot = slots.begin(); pSlot < slots.end(); pSlot++)
 		{
 			SizeSPX pref = _paddedLimitedDefaultSize( pSlot, m_scale );
 
@@ -717,7 +743,7 @@ namespace wg
 				end = oldLast+1;
 			}
 
-			_flipSelection( slots._slot(beg), slots._slot(end), true );
+			_flipSelection( &slots[beg], &slots[end], true );
 		}
 		else
 		{
@@ -726,7 +752,7 @@ namespace wg
 				int beg = std::min(oldFirst,newFirst);
 				int end = std::max(oldFirst,newFirst);
 
-				_flipSelection( slots._slot(beg), slots._slot(end), true );
+				_flipSelection( &slots[beg], &slots[end], true );
 			}
 
 			if( oldLast != newLast )
@@ -734,7 +760,7 @@ namespace wg
 				int beg = std::min(oldLast,newLast)+1;
 				int end = std::max(oldLast,newLast)+1;
 
-				_flipSelection( slots._slot(beg), slots._slot(end), true );
+				_flipSelection( &slots[beg], &slots[end], true );
 			}
 		}
 	}
@@ -776,7 +802,7 @@ namespace wg
 	{
 		Slot * pSlot = static_cast<Slot*>(_pSlot);
 
-		_requestRenderChildren(pSlot,slots._end());	// Request render on dirty area
+		_requestRenderChildren(pSlot,slots.end());	// Request render on dirty area
 
 		for (int i = 0; i < nb; i++)
 		{
@@ -851,7 +877,7 @@ namespace wg
 		// Finish up
 
 		_updateChildOfsFrom(pSlot);
-		_requestRenderChildren(pSlot, slots._end());	// Request render on dirty area
+		_requestRenderChildren(pSlot, slots.end());	// Request render on dirty area
 		_requestResize();						// This should preferably be done first once we have changed the method.	}
 	}
 
@@ -874,14 +900,14 @@ namespace wg
 
 	List::List::Slot * PackList::_beginSlots() const
 	{
-		return slots._begin();
+		return slots.begin();
 	}
 
 	//____ _endSlots() _____________________________________________________
 
 	List::List::Slot * PackList::_endSlots() const
 	{
-		return slots._end();
+		return slots.end();
 	}
 
 
@@ -897,7 +923,7 @@ namespace wg
 
 		while( first <= last )
 		{
-			const Slot * pSlot = slots._slot(middle);
+			const Slot * pSlot = &slots[middle];
 
 			if( pSlot->m_ofs + pSlot->m_length < ofs )
 				first = middle + 1;
@@ -923,7 +949,7 @@ namespace wg
 
 		while( first <= last )
 		{
-			const Slot * pSlot = slots._slot(middle);
+			const Slot * pSlot = &slots[middle];
 
 			int cmpRes = m_sortFunc( pSlot->_widget(), pWidget )*negator;
 
@@ -957,7 +983,7 @@ namespace wg
 				entry = _getEntryAt(ofs.y-list.y);
 
 			if( entry != slots.size() )
-				return slots._slot(entry);
+				return &slots[entry];
 		}
 
 		return 0;
@@ -980,7 +1006,7 @@ namespace wg
 
 			if( entry != slots.size() )
 			{
-				Slot * pSlot = slots._slot(entry);
+				Slot * pSlot = &slots[entry];
 				RectSPX childGeo;
 				_getChildGeo( childGeo, pSlot );
 				if( childGeo.contains(ofs) )
@@ -1036,7 +1062,7 @@ namespace wg
 			if( m_nbEntriesOfDefaultBreadth == 0 )
 			{
 				spx highest = 0;
-				for( Slot * p = slots._begin() ; p < slots._end() ; p++ )
+				for( Slot * p = slots.begin() ; p < slots.end() ; p++ )
 				{
 					if (p->m_prefBreadth == breadth)
 						continue;
@@ -1062,7 +1088,7 @@ namespace wg
 		RectSPX box = _listArea();
 
 		spx beg = pBegin->m_ofs;
-		spx end = pEnd < slots._end() ? pEnd->m_ofs + pEnd->m_length : m_contentLength;
+		spx end = pEnd < slots.end() ? pEnd->m_ofs + pEnd->m_length : m_contentLength;
 
 
 		if (m_bHorizontal)
@@ -1085,10 +1111,10 @@ namespace wg
 	void PackList::_updateChildOfsFrom( Slot * pSlot )
 	{
 		spx ofs = 0;
-		if( pSlot > slots._begin() )
+		if( pSlot > slots.begin() )
 			ofs = pSlot[-1].m_ofs + pSlot[-1].m_length;
 
-		while( pSlot < slots._end() )
+		while( pSlot < slots.end() )
 		{
 			pSlot->m_ofs = ofs;
 			ofs += pSlot->m_length;
@@ -1174,7 +1200,7 @@ namespace wg
 
 		if( pSlot->m_bVisible )
 		{
-			int index = slots._index( pSlot );
+			int index = pSlot - slots.begin();
 			if( m_pEntrySkin[index&0x1] )
 				geo = m_pEntrySkin[index&0x1]->_contentRect( geo, m_scale, pSlot->_widget()->state() );
 		}
@@ -1316,7 +1342,7 @@ namespace wg
 				bReqResize = true;
 
 				_updateChildOfsFrom( pSlot );
-				_requestRenderChildren( pSlot, slots._end() );
+				_requestRenderChildren( pSlot, slots.end() );
 
 				RectSPX childGeo;
 				_getChildGeo(childGeo,pSlot);
@@ -1340,7 +1366,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const Slot*>(_pSlot);
 
-		if (pSlot > slots._begin())
+		if (pSlot > slots.begin())
 			return pSlot[-1]._widget();
 
 		return nullptr;
@@ -1352,7 +1378,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const Slot*>(_pSlot);
 
-		if (pSlot < slots._last())
+		if (pSlot < &slots.back())
 			return pSlot[1]._widget();
 
 		return nullptr;
@@ -1363,7 +1389,7 @@ namespace wg
 	void PackList::_releaseChild(StaticSlot * pSlot)
 	{
 		_willEraseSlots(pSlot, 1);
-		slots._erase(static_cast<Slot*>(pSlot));
+		slots.erase(static_cast<Slot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________
@@ -1389,7 +1415,7 @@ namespace wg
 			package.pSlot = nullptr;
 		else
 		{
-			Slot * pSlot = slots._first();
+			Slot * pSlot = slots.begin();
 			package.pSlot = pSlot;
 			_getChildGeo(package.geo, pSlot);
 		}
@@ -1401,7 +1427,7 @@ namespace wg
 	{
 		Slot * pSlot = (Slot*)package.pSlot;
 
-		if (pSlot == slots._last())
+		if (pSlot == &slots.back())
 			package.pSlot = nullptr;
 		else
 		{
@@ -1497,9 +1523,9 @@ namespace wg
 			_requestResize();
 	}
 
-	//____ _sortEntries() _________________________________________________________
+	//____ sortSlots() _________________________________________________________
 
-	bool PackList::_sortEntries()
+	bool PackList::sortSlots()
 	{
 		if( !m_sortFunc )
 			return false;
@@ -1516,7 +1542,7 @@ namespace wg
 		pOrderList[0] = 0;
 		for( int entry = 1 ; entry < slots.size() ; entry++ )
 		{
-			Widget * pWidget = slots._slot(entry)->_widget();
+			Widget * pWidget = slots[entry]._widget();
 
 			int first = 0;
 			int last = entry-1;
@@ -1524,7 +1550,7 @@ namespace wg
 
 			while( first <= last )
 			{
-				Widget * pEntry = slots._slot(pOrderList[middle])->_widget();
+				Widget * pEntry = slots[pOrderList[middle]]._widget();
 
 				int cmpRes = m_sortFunc( pEntry, pWidget ) * negator;
 
@@ -1552,8 +1578,8 @@ namespace wg
 
 		// Update ofs in the slots
 
-		_updateChildOfsFrom( slots._begin() );
-		_requestRenderChildren( slots._begin(), slots._end() );	// Request render on dirty area
+		_updateChildOfsFrom( slots.begin() );
+		_requestRenderChildren( slots.begin(), slots.end() );	// Request render on dirty area
 		return true;
 	}
 
@@ -1586,7 +1612,7 @@ namespace wg
 		if( notification == ComponentNotif::SortOrderChanged )
 		{
 			m_sortOrder = _header()._sortOrder();
-			_sortEntries();
+			sortSlots();
 		}
 	}
 

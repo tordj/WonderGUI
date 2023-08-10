@@ -42,7 +42,7 @@ namespace wg
 	class PopupOverlay : public Overlay
 	{
 		friend class Slot;
-		friend class CSlots;
+		friend class MySlots;
 
 	public:
 
@@ -51,7 +51,7 @@ namespace wg
 		class Slot : public Overlay::Slot
 		{
 			friend class PopupOverlay;
-			friend class CSlots;
+			friend class MySlots;
 			friend class StaticSlotVector<Slot>;
 
 		public:
@@ -89,9 +89,9 @@ namespace wg
 		};
 
 
-		//____ CSlots ________________________________________________________
+		//____ MySlots ________________________________________________________
 
-		class CSlots : public StaticSlotVector<Slot>
+		class MySlots : public StaticSlotVector<Slot>
 		{
 			friend class PopupOverlay;
 
@@ -111,7 +111,7 @@ namespace wg
 
 		protected:
 
-			CSlots(SlotHolder * pHolder) : StaticSlotVector<Slot>(pHolder) {}
+			MySlots(SlotHolder * pHolder) : StaticSlotVector<Slot>(pHolder) {}
 
 			const PopupOverlay *	_holder() const { return static_cast<const PopupOverlay*>(StaticSlotVector<Slot>::_holder()); }
 			PopupOverlay *	_holder() { return static_cast<PopupOverlay*>(StaticSlotVector<Slot>::_holder()); }
@@ -124,7 +124,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CSlots	popupSlots;
+		MySlots	popupSlots;
 
 		//.____ Identification __________________________________________
 
@@ -176,7 +176,7 @@ namespace wg
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
 
 
-		// Needed by CSlots
+		// Needed by MySlots
 
 		void			_removeSlots(int ofs, int nb);
 		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bAutoClose, SizeSPX maxSize);

@@ -91,41 +91,6 @@ namespace wg
 		_holder()->_refreshRealGeo(this);
 	}
 
-
-	//____ pushFront() _________________________________________________________________
-
-	ModalOverlay::CSlots::iterator ModalOverlay::CSlots::pushFront(const Widget_p& pWidget, const Rect& geometry, Placement origo)
-	{
-		//TODO: Assert
-
-		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
-
-		Slot * pSlot = _pushFrontEmpty();
-		pSlot->m_geo = ptsToSpx(geometry,_holder()->_scale());
-		pSlot->m_origo = origo;
-
-		pSlot->_setWidget(pWidget);
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
-	}
-
-	//____ pushBack() _________________________________________________________________
-
-	ModalOverlay::CSlots::iterator ModalOverlay::CSlots::pushBack(const Widget_p& pWidget, const Rect& geometry, Placement origo)
-	{
-		//TODO: Assert
-
-		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
-
-		Slot * pSlot = _pushBackEmpty();
-		pSlot->m_geo = ptsToSpx(geometry, _holder()->_scale());
-		pSlot->m_origo = origo;
-
-		pSlot->_setWidget(pWidget);
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
-	}
-
 	//____ _refreshRealGeo() __________________________________________________
 
 	void ModalOverlay::_refreshRealGeo( Slot * pSlot, bool bForceResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
@@ -184,7 +149,7 @@ namespace wg
 		else
 		{
 			_willEraseSlots(pSlot, 1);
-			modalSlots._erase((Slot*)pSlot);
+			modalSlots.erase((Slot*)pSlot);
 		}
 	}
 
@@ -259,7 +224,7 @@ namespace wg
 		{
 			if( !modalSlots.isEmpty() )
 			{
-				Slot * pSlot = modalSlots._last();
+				Slot * pSlot = &modalSlots.back();
 
 				if( pSlot->_widget()->isContainer() )
 				{
@@ -332,15 +297,15 @@ namespace wg
 
 		// Find which child-branch to focus and switch to our previously saved focus
 
-		Slot * pSlot = modalSlots._last();
+		Slot * pSlot = &modalSlots.back();
 
 		Widget * 	pSavedFocus = nullptr;
 		StaticSlot *		pBranch	= nullptr;
 
-		while( pSlot >= modalSlots._first() && pSlot->m_geo.isEmpty() )
+		while( pSlot >= modalSlots.begin() && pSlot->m_geo.isEmpty() )
 			pSlot--;
 
-		if( pSlot >= modalSlots._first() )
+		if( pSlot >= modalSlots.begin() )
 		{
 			pSavedFocus = pSlot->m_pKeyFocus.rawPtr();
 			pSlot->m_pKeyFocus = nullptr;								// Needs to be cleared for the future.
@@ -462,14 +427,14 @@ namespace wg
 
 	const Overlay::Overlay::Slot * ModalOverlay::_beginOverlaySlots() const
 	{
-		return modalSlots._begin();
+		return modalSlots.begin();
 	}
 
 	//____ _endOverlaySlots() ____________________________________________________
 
 	const Overlay::Overlay::Slot *  ModalOverlay::_endOverlaySlots() const
 	{
-		return modalSlots._end();
+		return modalSlots.end();
 	}
 
 	//____ _sizeOfOverlaySlot() __________________________________________________
@@ -488,7 +453,7 @@ namespace wg
 
 		// Refresh modal widgets geometry, their positions might have changed.
 
-		for( auto pSlot = modalSlots._begin() ; pSlot != modalSlots._end() ; pSlot++ )
+		for( auto pSlot = modalSlots.begin() ; pSlot != modalSlots.end() ; pSlot++ )
 			_refreshRealGeo( pSlot );
 	}
 

@@ -642,7 +642,7 @@ int main(int argc, char** argv)
 		pImage0->setSkin(pTestSkin);
 		pImage0->setPointerStyle(PointerStyle::Crosshair);
 
-		pBasePanel->slots.pushBack(pImage0, [](Widget* pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
+		pBasePanel->slots.pushBack(pImage0, { .func = [](Widget* pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); }});
 
 		Base::msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 

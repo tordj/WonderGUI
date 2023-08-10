@@ -52,7 +52,6 @@ namespace wg
 		class Slot : public DynamicSlot
 		{
 			friend class StackPanel;
-			friend class CSlots;
 			friend class DynamicSlotVector<Slot>;
 
 		public:
@@ -115,30 +114,7 @@ namespace wg
 
 		using		iterator = DynamicSlotVector<Slot>::iterator;
 
-		//____ CSlots ________________________________________________________
-
-		class CSlots : public DynamicSlotVector<Slot>, 
-			public PaddedSlotCollectionMethods<Slot,iterator,StackPanel>,
-			public HideableSlotCollectionMethods<Slot, iterator, StackPanel>
-		{
-			friend class StackPanel;
-
-
-		protected:
-			
-			inline StackPanel* _holder() override { return static_cast<StackPanel*>(DynamicSlotVector<Slot>::_holder()); }
-			inline const StackPanel* _holder() const { return static_cast<const StackPanel*>(DynamicSlotVector<Slot>::_holder()); }
-
-			Slot* _slot(int index) override { return DynamicSlotVector<Slot>::_slot(index); }
-			inline int _size() const override { return DynamicSlotVector<Slot>::size(); }
-
-			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
-		};
-
 		friend class Slot;
-		friend class CSlots;
-		friend class PaddedSlotCollectionMethods<StackPanel::Slot, iterator, StackPanel>;
-		friend class HideableSlotCollectionMethods<StackPanel::Slot, iterator, StackPanel>;
 
 		//.____ Creation __________________________________________
 
@@ -146,13 +122,27 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CSlots		slots;
+		DynamicSlotVector<Slot>	slots;
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Misc _____________________________________________________
+		
+		bool			setSlotPadding(int index, int amount, Border padding);
+		bool			setSlotPadding(iterator beg, iterator end, Border padding);
+		bool			setSlotPadding(int index, int amount, std::initializer_list<Border> padding);
+		bool			setSlotPadding(iterator beg, iterator end, std::initializer_list<Border> padding);
+
+		void			hideSlots(int index, int amount);
+		void			hideSlots(iterator beg, iterator end);
+
+		void			unhideSlots(int index, int amount);
+		void			unhideSlots(iterator beg, iterator end);
+		
+		
 		//.____ Internal _________________________________________________
 
 		spx			_matchingHeight(spx width, int scale) const override;

@@ -102,7 +102,6 @@ namespace wg
 	class FlexPanel : public Panel
 	{
 		friend class Slot;
-		friend class CSlots;
 
 	public:
 
@@ -111,7 +110,6 @@ namespace wg
 		class Slot : public DynamicSlot
 		{
 			friend class FlexPanel;
-			friend class CSlots;
 			template<class S> friend class DynamicSlotVector;
 
 		public:
@@ -216,39 +214,13 @@ namespace wg
 
 		using		iterator = DynamicSlotVector<Slot>::iterator;
 
-
-		//____ CSlots ________________________________________________________
-
-		class CSlots : public DynamicSlotVector<Slot>,
-			public HideableSlotCollectionMethods<Slot, iterator, FlexPanel>
-		{
-			friend class FlexPanel;
-		public:
-
-
-		protected:
-
-			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
-
-			inline FlexPanel * _holder() override { return static_cast<FlexPanel*>(DynamicSlotVector<Slot>::_holder()); }
-			inline const FlexPanel * _holder() const { return static_cast<const FlexPanel*>(DynamicSlotVector<Slot>::_holder()); }
-
-			inline Slot* _slot(int index) override { return DynamicSlotVector::_slot(index); }
-			inline const Slot* _slot(int index) const { return DynamicSlotVector::_slot(index); }
-
-			inline int _size() const override {	return DynamicSlotVector<Slot>::size(); }
-
-		};
-
-		friend class HideableSlotCollectionMethods<FlexPanel::Slot, iterator, FlexPanel>;
-
 		//.____ Creation __________________________________________
 
 		static FlexPanel_p	create() { return FlexPanel_p(new FlexPanel()); }
 
 		//.____ Components _______________________________________
 
-		CSlots			slots;
+		DynamicSlotVector<Slot>		slots;
 
 		//.____ Identification __________________________________________
 
@@ -260,6 +232,14 @@ namespace wg
 		void			setConfineWidgets( bool bConfineWidgets );
 		bool			isConfiningWidgets() const { return m_bConfineWidgets; }
 
+		//.____ Misc ___________________________________________________________
+		
+		void			hideSlots(int index, int amount);
+		void			hideSlots(iterator beg, iterator end);
+
+		void			unhideSlots(int index, int amount);
+		void			unhideSlots(iterator beg, iterator end);
+		
 		//.____ Internal ______________________________________________________
 
 		SizeSPX			_defaultSize(int scale) const override;

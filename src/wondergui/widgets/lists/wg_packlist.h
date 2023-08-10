@@ -52,7 +52,6 @@ namespace wg
 	class PackList : public List
 	{
 		friend class Slot;
-		friend class CSlots;
 
 	public:
 
@@ -60,7 +59,6 @@ namespace wg
 
 		class Slot : public List::Slot
 		{
-			friend class CSlots;
 			friend class PackList;
 			template<class S> friend class SlotVector;
 			friend class DynamicSlotVector<Slot>;
@@ -106,41 +104,6 @@ namespace wg
 
 		using		iterator = DynamicSlotVector<Slot>::iterator;
 
-		//____ CSlots ______________________________________________________
-
-		class CSlots : public DynamicSlotVector<Slot>,
-			 public SelectableSlotCollectionMethods< PackList::Slot, iterator, PackList >
-		{
-			friend class PackList;
-		public:
-
-			//.____ Content _______________________________________________________
-
-			iterator	insertSorted(Widget * pWidget);
-
-			//.____ Ordering ______________________________________________________
-
-			void		sort();
-
-		protected:
-
-			//____ Holder _________________________________________________________
-
-			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
-
-
-			inline const PackList *	_holder() const { return static_cast<const PackList*>(DynamicSlotVector<Slot>::_holder()); }
-			inline PackList *		_holder() override { return static_cast<PackList*>(DynamicSlotVector<Slot>::_holder()); }
-
-			inline Slot* _slot(int index) override { return DynamicSlotVector::_slot(index); }
-			inline const Slot* _slot(int index) const { return DynamicSlotVector::_slot(index); }
-
-			inline int _size() const override {	return DynamicSlotVector<Slot>::size(); }
-
-		};
-
-		friend class SelectableSlotCollectionMethods<PackList::Slot, iterator, PackList>;
-
 
 		//.____ Creation __________________________________________
 
@@ -148,8 +111,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		ColumnHeader		header;
-		CSlots	slots;
+		ColumnHeader			header;
+		DynamicSlotVector<Slot>	slots;
 
 		//.____ Identification __________________________________________
 
@@ -166,7 +129,7 @@ namespace wg
 		Size				minEntrySize() const { return m_minEntrySize; }
 		Size				maxEntrySize() const { return m_maxEntrySize; }
 
-		//.____ Behavior ________________________________________________________
+		//.____ Ordering ______________________________________________________
 
 		void				setSortOrder( SortOrder order );
 		SortOrder			sortOrder() const { return m_sortOrder; }
@@ -174,6 +137,20 @@ namespace wg
 		void				setSortFunction( std::function<int(const Widget *, const Widget *)> func );
 		std::function<int(const Widget *, const Widget *)> sortFunction() const { return m_sortFunc; }
 
+		bool				sortSlots();
+
+		
+		//.____ Misc _____________________________________________________________
+		
+		iterator			insertSorted(Widget * pWidget);
+		
+		void				selectSlots(int index, int amount);
+		void				selectSlots(iterator beg, iterator end);
+
+		void				unselectSlots(int index, int amount);
+		void				unselectSlots(iterator beg, iterator end);
+
+		
 		//.____ Internal _________________________________________________________
 
 		SizeSPX				_defaultSize(int scale = -1) const override;
@@ -256,7 +233,6 @@ namespace wg
 
 		int				_getInsertionPoint(const Widget * pWidget) const;
 		bool			_hasSortFunction() const { return m_sortFunc != nullptr; }
-		bool			_sortEntries();
 
 
 		void			_requestRenderChildren(Slot * pBegin, Slot * pEnd);

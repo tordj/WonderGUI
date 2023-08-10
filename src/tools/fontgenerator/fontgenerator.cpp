@@ -115,7 +115,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	pBasePanel->slots << createInputPanel();
 	pBasePanel->slots << pSplitPanel;
 
-	pBasePanel->slots.setWeight(0, 2, {0.f,1.f});
+	pBasePanel->setSlotWeight(0, 2, {0.f,1.f});
 
 	pPopupOverlay->mainSlot = pBasePanel;
 	
@@ -509,7 +509,7 @@ Widget_p MyApp::createInputPanel()
 	pTopRow->slots << pPath;
 	pTopRow->slots << pLoadButton;
 	
-	pTopRow->slots.setWeight( 0, 3, {0.f, 1.f, 0.f});
+	pTopRow->setSlotWeight( 0, 3, {0.f, 1.f, 0.f});
 	
 	auto pBottomRow = PackPanel::create();
 	pBottomRow->setAxis(Axis::X);
@@ -569,7 +569,7 @@ Widget_p MyApp::createInputPanel()
 	pBottomRow->slots << pSRGBLabel;
 	pBottomRow->slots << pStemDarkeningSelector;
 
-	pBottomRow->slots.setPadding( 0, 6, Border(0,0,6,6) );
+	pBottomRow->setSlotPadding( 0, 6, Border(0,0,6,6) );
 	
 	
 	pBase->slots << pTopRow;
@@ -631,7 +631,7 @@ Widget_p MyApp::createCharsPanel()
 	pBase->slots << pLabel;
 	pBase->slots << pWindow;
 
-	pBase->slots.setWeight(0, 2, {0.f, 1.f} );
+	pBase->setSlotWeight(0, 2, {0.f, 1.f} );
 
 	return pBase;
 }
@@ -676,8 +676,8 @@ Widget_p MyApp::createOutputPanel()
 	pTopPanel->slots << pImageFormatSelector;
 	pTopPanel->slots << pSaveButton;
 
-	pTopPanel->slots.setWeight(0, 5, {0.f,1.f,0.f,0.f,0.f});
-	pTopPanel->slots.setPadding( 0,5, Border(0,4,4,4) );
+	pTopPanel->setSlotWeight(0, 5, {0.f,1.f,0.f,0.f,0.f});
+	pTopPanel->setSlotPadding( 0,5, Border(0,4,4,4) );
 	
 	
 	auto pWindow = ScrollPanel::create();
@@ -701,7 +701,7 @@ Widget_p MyApp::createOutputPanel()
 	pBase->slots << pTopPanel;
 	pBase->slots << pWindow;
 
-	pBase->slots.setWeight(0, 2, {0.f, 1.f} );
+	pBase->setSlotWeight(0, 2, {0.f, 1.f} );
 	
 	m_pBitmapDisplay = Image::create();
 	pWindow->slot = m_pBitmapDisplay;

@@ -119,7 +119,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	pBasePanel->slots << createTopBar();
 	pBasePanel->slots << pSplitPanel;
 
-	pBasePanel->slots.setWeight(0, 2, {0.f,1.f});
+	pBasePanel->setSlotWeight(0, 2, {0.f,1.f});
 
 	pPopupOverlay->mainSlot = pBasePanel;
 	
@@ -170,7 +170,7 @@ Widget_p MyApp::createTopBar()
 	pBar->slots << pPath;
 	pBar->slots << pRightButton;
 
-	pBar->slots.setWeight( 0, 5, {0.f, 0.f, 0.f, 1.f, 0.f});
+	pBar->setSlotWeight( 0, 5, {0.f, 0.f, 0.f, 1.f, 0.f});
 	
 
 

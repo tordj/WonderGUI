@@ -39,7 +39,7 @@ namespace wg
 	class ModalOverlay : public Overlay
 	{
 		friend class Slot;
-		friend class CSlots;
+		friend class MySlots;
 
 	public:
 
@@ -48,7 +48,7 @@ namespace wg
 		class Slot : public Overlay::Slot
 		{
 			friend class ModalOverlay;
-			friend class CSlots;
+			friend class MySlots;
 			template<class S> friend class DynamicSlotVector;
 			template<class S> friend class SlotVector;
 
@@ -100,39 +100,13 @@ namespace wg
 
 		};
 
-
-		//____ CSlots ________________________________________________________
-
-		class CSlots : public DynamicSlotVector<Slot>
-		{
-			friend class ModalOverlay;
-		public:
-
-			//.____ Content _______________________________________________________
-
-			iterator	pushFront(const Widget_p& pWidget, const Rect& geometry, Placement origo = Placement::NorthWest);
-			iterator	pushFront(const Widget_p& pWidget, const Coord& pos, Placement origo = Placement::NorthWest) { return pushFront(pWidget, Rect(pos, 0, 0), origo); }
-
-			iterator	pushBack(const Widget_p& pWidget, const Rect& geometry, Placement origo = Placement::NorthWest);
-			iterator	pushBack(const Widget_p& pWidget, const Coord& pos, Placement origo = Placement::NorthWest) { return pushBack(pWidget, Rect(pos, 0, 0), origo); }
-
-		protected:
-
-			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
-
-			const ModalOverlay *	_holder() const { return static_cast<const ModalOverlay*>(DynamicSlotVector<Slot>::_holder()); }
-			ModalOverlay *	_holder() { return static_cast<ModalOverlay*>(DynamicSlotVector<Slot>::_holder()); }
-
-		};
-
-
 		//.____ Creation __________________________________________
 
 		static ModalOverlay_p	create() { return ModalOverlay_p(new ModalOverlay()); }
 
 		//.____ Components _______________________________________
 
-		CSlots		modalSlots;
+		DynamicSlotVector<Slot>		modalSlots;
 
 		//.____ Identification __________________________________________
 

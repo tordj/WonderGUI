@@ -25,7 +25,6 @@
 #include <wg_util.h>
 
 #include <wg_dynamicslotvector.impl.h>
-#include <wg_slotextras.impl.h>
 #include <assert.h>
 
 
@@ -34,7 +33,6 @@ namespace wg
 	using namespace Util;
 
 	template class DynamicSlotVector<LambdaPanel::Slot>;
-	template class HideableSlotCollectionMethods<LambdaPanel::Slot, LambdaPanel::iterator, LambdaPanel>;
 
 
 	const TypeInfo LambdaPanel::TYPEINFO = { "LambdaPanel", &Panel::TYPEINFO };
@@ -46,61 +44,6 @@ namespace wg
 	{
 		m_func = bp.func;
 		return true;
-	}
-
-
-	//____ CSlots::pushFront() ________________________________________________
-
-	LambdaPanel::CSlots::iterator LambdaPanel::CSlots::pushFront(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
-	{
-		//TODO: Assert
-
-		pWidget->releaseFromParent();
-		Slot * pSlot = _pushFrontEmpty();
-		pSlot->_setWidget(pWidget);
-		pSlot->m_func = func;
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
-	}
-
-	//____ CSlots::pushBack() ________________________________________________
-
-	LambdaPanel::CSlots::iterator LambdaPanel::CSlots::pushBack(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func)
-	{
-		//TODO: Assert
-
-		pWidget->releaseFromParent();
-		Slot * pSlot = _pushBackEmpty();
-		pSlot->_setWidget(pWidget);
-		pSlot->m_func = func;
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
-	}
-
-	//____ CSlots::insert() ________________________________________________
-
-	LambdaPanel::CSlots::iterator LambdaPanel::CSlots::insert( int index, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
-	{
-		//TODO: Assert
-
-		Slot * pSlot = _insertEmpty(index);
-		_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->_setWidget(pWidget);
-		pSlot->m_func = func;
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
-	}
-
-	LambdaPanel::CSlots::iterator LambdaPanel::CSlots::insert( iterator pos, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
-	{
-		//TODO: Assert
-
-		Slot * pSlot = _insertEmpty(pos);
-		_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->_setWidget(pWidget);
-		pSlot->m_func = func;
-		_holder()->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
 	}
 
 	//____ constructor ____________________________________________________________
@@ -201,6 +144,28 @@ namespace wg
 		return true;
 	}
 
+	//____ hideSlots() ___________________________________________________________
+
+	void LambdaPanel::hideSlots(int index, int amount)
+	{
+		_hideSlots( &slots[index], amount);
+	}
+	void LambdaPanel::hideSlots(iterator beg, iterator end)
+	{
+		_hideSlots( beg, end - beg);
+	}
+
+	//____ unhideSlots() ___________________________________________________________
+
+	void LambdaPanel::unhideSlots(int index, int amount)
+	{
+		_unhideSlots( &slots[index], amount);
+	}
+	void LambdaPanel::unhideSlots(iterator beg, iterator end)
+	{
+		_unhideSlots( beg, end - beg);
+	}
+
 	//____ _defaultSize() _____________________________________________________
 
 	SizeSPX LambdaPanel::_defaultSize(int scale) const
@@ -237,7 +202,7 @@ namespace wg
 		if (slots.isEmpty())
 			return nullptr;
 
-		return slots._first()->_widget();
+		return slots.front()._widget();
 	}
 
 	//____ _lastChild() ________________________________________________________
@@ -247,7 +212,7 @@ namespace wg
 		if (slots.isEmpty())
 			return nullptr;
 
-		return slots._last()->_widget();
+		return slots.back()._widget();
 	}
 
 	//____ _firstSlotWithGeo() _________________________________________________
@@ -258,7 +223,7 @@ namespace wg
 			package.pSlot = nullptr;
 		else
 		{
-			Slot * pSlot = slots._first();
+			Slot * pSlot = slots.begin();
 			package.pSlot = pSlot;
 			package.geo = pSlot->m_geo;
 		}
@@ -270,12 +235,12 @@ namespace wg
 	void LambdaPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
 		Slot * pSlot = (Slot*) package.pSlot;
-
-		if( pSlot == slots._last() )
+		pSlot++;
+		
+		if( pSlot == slots.end() )
 			package.pSlot = nullptr;
 		else
 		{
-			pSlot++;
 			package.pSlot = pSlot;
 			package.geo = pSlot->m_geo;
 		}
@@ -426,7 +391,7 @@ namespace wg
 	{
 		const Slot * pSlot = static_cast<const Slot*>(_pSlot);
 
-		if (pSlot > slots._begin())
+		if (pSlot > slots.begin())
 			return pSlot[-1]._widget();
 
 		return nullptr;
@@ -439,7 +404,7 @@ namespace wg
 	{
 		const Slot * pSlot = static_cast<const Slot*>(_pSlot);
 
-		if (pSlot < slots._last())
+		if (pSlot < slots.end()-1)
 			return pSlot[1]._widget();
 
 		return nullptr;
@@ -449,8 +414,7 @@ namespace wg
 
 	void LambdaPanel::_releaseChild(StaticSlot * pSlot)
 	{
-		_willEraseSlots(pSlot, 1);
-		slots._erase(static_cast<Slot*>(pSlot));
+		slots.erase(static_cast<Slot*>(pSlot));
 	}
 
 	//____ _replaceChild() ______________________________________________________
@@ -475,7 +439,7 @@ namespace wg
 	{
 		Panel::_resize( size, scale );
 
-		for (auto * pSlot = slots._begin() ; pSlot != slots._end() ; pSlot++)
+		for (auto * pSlot = slots.begin() ; pSlot != slots.end() ; pSlot++)
 			_updateGeo(pSlot);
 	}
 
@@ -509,7 +473,7 @@ namespace wg
 				// Remove portions of patches that are covered by opaque upper siblings
 
 				const Slot * pCover = pSlot + 1;
-				while (pCover < slots._end())
+				while (pCover < slots.end())
 				{
 					if (pCover->m_bVisible && (pCover->m_geo.isOverlapping(pSlot->m_geo) || pCover->m_geo.isOverlapping(geo)) )
 						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());
@@ -546,7 +510,7 @@ namespace wg
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
-		for (Slot * pCover = slots._begin(); pCover < pSlot ; pCover++)
+		for (Slot * pCover = slots.begin(); pCover < pSlot ; pCover++)
 		{
 			if (pCover->m_bVisible && pCover->m_geo.isOverlapping(rect))
 				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());

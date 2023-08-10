@@ -26,15 +26,12 @@
 #include <wg_base.h>
 
 #include <wg_dynamicslotvector.impl.h>
-#include <wg_slotextras.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
 	template class DynamicSlotVector<PackPanel::Slot>;
-	template class PaddedSlotCollectionMethods<PackPanel::Slot,PackPanel::iterator,PackPanel>;
-	template class HideableSlotCollectionMethods<PackPanel::Slot, PackPanel::iterator, PackPanel>;
 
 	const TypeInfo PackPanel::TYPEINFO = { "PackPanel", &Panel::TYPEINFO };
 	const TypeInfo PackPanel::Slot::TYPEINFO = { "PackPanel::Slot", &DynamicSlot::TYPEINFO };
@@ -52,47 +49,6 @@ namespace wg
 	{ 
 		if (weight != m_weight) 
 			static_cast<PackPanel*>(_holder())->_reweightSlots(this, 1, weight); 
-	}
-
-
-	bool PackPanel::CSlots::setWeight(int index, int amount, float weight)
-	{
-		if (index < 0 || amount <= 0 || index + amount >= size() || weight < 0.f)
-			return false;
-
-		auto pSlot = _slot(index);
-		_holder()->_reweightSlots(pSlot, amount, weight);
-		return true;
-	}
-
-	bool PackPanel::CSlots::setWeight(iterator beg, iterator end, float weight)
-	{
-		//TODO: Add assert
-
-		auto pBeg = beg;
-		auto pEnd = end;
-		_holder()->_reweightSlots(pBeg, int(pEnd - pBeg), weight);
-		return true;
-	}
-
-	bool PackPanel::CSlots::setWeight(int index, int amount, std::initializer_list<float> weights)
-	{
-		if (index < 0 || amount <= 0 || index + amount > size() || amount >(int) weights.size())
-			return false;
-
-		auto pSlot = _slot(index);
-		_holder()->_reweightSlots(pSlot, amount, weights.begin());
-		return true;
-	}
-
-	bool PackPanel::CSlots::setWeight(iterator beg, iterator end, std::initializer_list<float> weights)
-	{
-		//TODO: Add assert
-
-		auto pBeg = beg;
-		auto pEnd = end;
-		_holder()->_reweightSlots(pBeg, int(pEnd - pBeg), weights.begin());
-		return true;
 	}
 
 	//____ constructor ____________________________________________________________
@@ -130,7 +86,6 @@ namespace wg
 		}
 	}
 
-
 	//____ setLayout() _______________________________________________________
 
 	void PackPanel::setLayout( PackLayout * pLayout )
@@ -142,6 +97,97 @@ namespace wg
 
 		}
 	}
+
+	//____ hideSlots() ___________________________________________________________
+
+	void PackPanel::hideSlots(int index, int amount)
+	{
+		_hideSlots( &slots[index], amount);
+	}
+	void PackPanel::hideSlots(iterator beg, iterator end)
+	{
+		_hideSlots( beg, end - beg);
+	}
+
+	//____ unhideSlots() ___________________________________________________________
+
+	void PackPanel::unhideSlots(int index, int amount)
+	{
+		_unhideSlots( &slots[index], amount);
+	}
+	void PackPanel::unhideSlots(iterator beg, iterator end)
+	{
+		_unhideSlots( beg, end - beg);
+	}
+
+	//____ setPadding() _______________________________________________________
+
+	bool PackPanel::setSlotPadding(int index, int amount, Border padding)
+	{
+		_repadSlots( &slots[index], amount, padding);
+		return true;
+	}
+
+	bool PackPanel::setSlotPadding(iterator beg, iterator end, Border padding)
+	{
+		_repadSlots(beg, int(end - beg), padding);
+		return true;
+	}
+
+	bool PackPanel::setSlotPadding(int index, int amount, std::initializer_list<Border> padding)
+	{
+		if( padding.size() < amount )
+			return false;
+		
+		_repadSlots( &slots[index], amount, padding.begin());
+		return true;
+	}
+
+	bool PackPanel::setSlotPadding(iterator beg, iterator end, std::initializer_list<Border> padding)
+	{
+		if( padding.size() < (end - beg) )
+			return false;
+
+		_repadSlots(beg, int(end - beg), padding.begin());
+		return true;
+	}
+
+	//____ setWeight() ___________________________________________________________
+
+	bool PackPanel::setSlotWeight(int index, int amount, float weight)
+	{
+		if (index < 0 || amount <= 0 || index + amount >= slots.size() || weight < 0.f)
+			return false;
+
+		_reweightSlots( &slots[index], amount, weight);
+		return true;
+	}
+
+	bool PackPanel::setSlotWeight(iterator beg, iterator end, float weight)
+	{
+		_reweightSlots(beg, int(end - beg), weight);
+		return true;
+	}
+
+	bool PackPanel::setSlotWeight(int index, int amount, std::initializer_list<float> weights)
+	{
+		if (index < 0 || amount <= 0 || index + amount > slots.size() || amount >(int) weights.size())
+			return false;
+
+		_reweightSlots(&slots[index], amount, weights.begin());
+		return true;
+	}
+
+	bool PackPanel::setSlotWeight(iterator beg, iterator end, std::initializer_list<float> weights)
+	{
+		if( weights.size() < (end - beg) )
+			return false;
+
+		_reweightSlots(beg, int(end - beg), weights.begin());
+		return true;
+	}
+
+
 
 	//____ _defaultSize() _______________________________________________________
 
@@ -177,7 +223,7 @@ namespace wg
 
 					m_pLayout->getItemSizes(pOutput, width, m_scale, nItems, pItemArea);
 
-					for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+					for( auto pS = slots.begin() ; pS != slots.end() ; pS++ )
 					{
 						if( pS->m_bVisible )
 						{
@@ -196,7 +242,7 @@ namespace wg
 				{
 					if (scale == m_scale)
 					{
-						for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+						for( auto pS = slots.begin() ; pS != slots.end() ; pS++ )
 						{
 							if( pS->m_bVisible && pS->m_defaultSize.h > height )
 									height = pS->m_defaultSize.h;
@@ -204,7 +250,7 @@ namespace wg
 					}
 					else
 					{
-						for (auto pS = slots._begin(); pS != slots._end(); pS++)
+						for (auto pS = slots.begin(); pS != slots.end(); pS++)
 						{
 							if (pS->m_bVisible)
 							{
@@ -238,7 +284,7 @@ namespace wg
 				}
 				else
 				{
-					for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+					for( auto pS = slots.begin() ; pS != slots.end() ; pS++ )
 					{
 						if( pS->m_bVisible )
 							height += pS->_paddedMatchingHeight( width, scale );
@@ -277,7 +323,7 @@ namespace wg
 
 					m_pLayout->getItemSizes(pOutput, height, m_scale, nItems, pItemArea);
 
-					for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+					for( auto pS = slots.begin() ; pS != slots.end() ; pS++ )
 					{
 						if( pS->m_bVisible )
 						{
@@ -296,7 +342,7 @@ namespace wg
 				{
 					if (scale == m_scale)
 					{
-						for (auto pS = slots._begin(); pS != slots._end(); pS++)
+						for (auto pS = slots.begin(); pS != slots.end(); pS++)
 						{
 							if (pS->m_bVisible && pS->m_defaultSize.w > width)
 								width = pS->m_defaultSize.w;
@@ -304,7 +350,7 @@ namespace wg
 					}
 					else
 					{
-						for (auto pS = slots._begin(); pS != slots._end(); pS++)
+						for (auto pS = slots.begin(); pS != slots.end(); pS++)
 						{
 							if (pS->m_bVisible)
 							{
@@ -338,7 +384,7 @@ namespace wg
 				}
 				else
 				{
-					for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
+					for( auto pS = slots.begin() ; pS != slots.end() ; pS++ )
 					{
 						if( pS->m_bVisible )
 							width += pS->_paddedMatchingWidth( height, scale );
@@ -366,7 +412,7 @@ namespace wg
 		if (slots.isEmpty())
 			return nullptr;
 
-		return slots._first()->_widget();
+		return slots.front()._widget();
 	}
 
 	//____ _lastChild() __________________________________________________________
@@ -376,7 +422,7 @@ namespace wg
 		if (slots.isEmpty())
 			return nullptr;
 
-		return slots._last()->_widget();
+		return slots.back()._widget();
 	}
 
 
@@ -388,11 +434,11 @@ namespace wg
 			package.pSlot = nullptr;
 		else
 		{
-			Slot * pSlot = slots._first();
+			Slot * pSlot = slots.begin();
 
 			while (!pSlot->m_bVisible)
 			{
-				if (pSlot == slots._last())
+				if (pSlot == &slots.back())
 				{
 					package.pSlot = nullptr;
 					return;
@@ -411,7 +457,7 @@ namespace wg
 	{
 		Slot * pSlot = (Slot*) package.pSlot;
 
-		if( pSlot == slots._last() )
+		if( pSlot == &slots.back() )
 			package.pSlot = nullptr;
 		else
 		{
@@ -419,7 +465,7 @@ namespace wg
 
 			while (!pSlot->m_bVisible)
 			{
-				if (pSlot == slots._last())
+				if (pSlot == &slots.back())
 				{
 					package.pSlot = nullptr;
 					return;
@@ -533,7 +579,7 @@ namespace wg
 			if (m_pLayout && m_pLayout->doesCalcWantedLength())
 				_refreshGeometries();
 			else
-				_refreshChildGeo();
+				_refreshChildGeo(true);
 		}
 	}
 
@@ -556,7 +602,7 @@ namespace wg
 			if (m_pLayout && m_pLayout->doesCalcWantedLength())
 				_refreshGeometries();
 			else
-				_refreshChildGeo();
+				_refreshChildGeo(true);
 		}
 	}
 
@@ -599,7 +645,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const Slot*>(_pSlot);
 
-		if (pSlot > slots._begin())
+		if (pSlot > slots.begin())
 			return pSlot[-1]._widget();
 
 		return nullptr;
@@ -611,7 +657,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const Slot*>(_pSlot);
 
-		if (pSlot < slots._last())
+		if (pSlot < &slots.back())
 			return pSlot[1]._widget();
 
 		return nullptr;
@@ -622,7 +668,7 @@ namespace wg
 	void PackPanel::_releaseChild(StaticSlot * pSlot)
 	{
 		_willEraseSlots(pSlot, 1);
-		slots._erase(static_cast<Slot*>(pSlot));
+		slots.erase(static_cast<Slot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________
@@ -696,7 +742,7 @@ namespace wg
 			_requestResize();
 		}
 		else
-			_refreshChildGeo();
+			_refreshChildGeo(true);
 	}
 
 
@@ -706,7 +752,7 @@ namespace wg
 	{
 		if( scale != m_scale )
 		{
-			for (auto pSlot = slots._begin(); pSlot != slots._end(); pSlot++)
+			for (auto pSlot = slots.begin(); pSlot != slots.end(); pSlot++)
 			{
 				pSlot->m_bResizeRequired = true;
 				pSlot->m_defaultSize = pSlot->_paddedDefaultSize(scale);
@@ -724,7 +770,7 @@ namespace wg
 		spx length = 0;
 		spx breadth = 0;
 
-		if (slots._size() > 0)
+		if (slots.size() > 0)
 		{
 			if( m_pLayout && m_pLayout->doesCalcWantedLength() )
 			{
@@ -741,7 +787,7 @@ namespace wg
 				length = m_pLayout->getWantedSizes(pOutput, m_scale, nItems, pItemArea);
 
 				PackLayout::Item* pI = pItemArea;
-				for (auto pS = slots._begin(); pS != slots._end(); pS++)
+				for (auto pS = slots.begin(); pS != slots.end(); pS++)
 				{
 					if( pS->m_bVisible )
 					{
@@ -764,7 +810,7 @@ namespace wg
 				{
 					if( m_bHorizontal )
 					{
-						for (auto p = slots._begin(); p != slots._end(); p++)
+						for (auto p = slots.begin(); p != slots.end(); p++)
 						{
 							if( p->m_bVisible )
 							{
@@ -776,7 +822,7 @@ namespace wg
 					}
 					else
 					{
-						for (auto p = slots._begin(); p != slots._end(); p++)
+						for (auto p = slots.begin(); p != slots.end(); p++)
 						{
 							if( p->m_bVisible )
 							{
@@ -791,7 +837,7 @@ namespace wg
 				{
 					if( m_bHorizontal )
 					{
-						for (auto p = slots._begin(); p != slots._end(); p++)
+						for (auto p = slots.begin(); p != slots.end(); p++)
 						{
 							if( p->m_bVisible )
 							{
@@ -804,7 +850,7 @@ namespace wg
 					}
 					else
 					{
-						for (auto p = slots._begin(); p != slots._end(); p++)
+						for (auto p = slots.begin(); p != slots.end(); p++)
 						{
 							if( p->m_bVisible )
 							{
@@ -846,7 +892,7 @@ namespace wg
 		{
 			CoordSPX pos;
 			RectSPX geo;
-			for (auto p = slots._begin(); p != slots._end(); p++)
+			for (auto p = slots.begin(); p != slots.end(); p++)
 			{
 				if( p->m_bVisible )
 				{
@@ -929,7 +975,7 @@ namespace wg
 
 			CoordSPX pos;
 			RectSPX geo;
-			for (auto p = slots._begin(); p != slots._end(); p++)
+			for (auto p = slots.begin(); p != slots.end(); p++)
 			{
 				if( p->m_bVisible )
 				{
@@ -1008,7 +1054,7 @@ namespace wg
 
 		if( m_bHorizontal )
 		{
-			for (auto pS = slots._begin(); pS != slots._end(); pS++)
+			for (auto pS = slots.begin(); pS != slots.end(); pS++)
 			{
 				if( pS->m_bVisible )
 				{
@@ -1022,7 +1068,7 @@ namespace wg
 		}
 		else
 		{
-			for (auto pS = slots._begin(); pS != slots._end(); pS++)
+			for (auto pS = slots.begin(); pS != slots.end(); pS++)
 			{
 				if( pS->m_bVisible )
 				{
@@ -1044,7 +1090,7 @@ namespace wg
 
 		if( m_bHorizontal )
 		{
-			for (auto pS = slots._begin(); pS != slots._end(); pS++)
+			for (auto pS = slots.begin(); pS != slots.end(); pS++)
 			{
 				if( pS->m_bVisible )
 				{
@@ -1058,7 +1104,7 @@ namespace wg
 		}
 		else
 		{
-			for (auto pS = slots._begin(); pS != slots._end(); pS++)
+			for (auto pS = slots.begin(); pS != slots.end(); pS++)
 			{
 				if( pS->m_bVisible )
 				{

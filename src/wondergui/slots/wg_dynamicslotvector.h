@@ -39,6 +39,8 @@ namespace wg
 		using		iterator = SlotType*;
 		using		const_iterator = const SlotType*;
 
+		DynamicSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
+		~DynamicSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
 		//.____ Content _______________________________________________________
 
@@ -156,6 +158,11 @@ namespace wg
 		inline iterator	begin() const { return iterator(_begin()); }
 		inline iterator	end() const { return iterator(_end()); }
 
+		inline SlotType&	front() const { return * m_pArray; }
+		inline SlotType&	back() const { return  m_pArray[m_size - 1]; }
+
+		
+		
 		//.____ Operators __________________________________________
 
 		inline iterator operator<<(const Widget_p& pWidget) { return pushBack(pWidget); }
@@ -163,14 +170,15 @@ namespace wg
 		inline SlotType& operator[](int index) { return m_pArray[index]; }
 		inline const SlotType& operator[](int index) const { return m_pArray[index]; }
 
+		//.____ Internal ____________________________________________
+		
+		void	_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard);
+		void	_reorder(int order[]);
+
+		
 	protected:
-		DynamicSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
-		~DynamicSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
-
-		void			_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard);
 
 
-	//////
 		inline SlotHolder *		_holder() { return m_pHolder; }
 		inline const SlotHolder *	_holder() const { return m_pHolder; }
 
@@ -232,8 +240,6 @@ namespace wg
 
 		SlotType*	_begin() const { return m_pArray; }
 		SlotType*	_end() const { return m_pArray + m_size; }
-
-		void		_reorder(int order[]);
 
 	private:
 

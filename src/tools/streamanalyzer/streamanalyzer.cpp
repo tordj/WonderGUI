@@ -144,7 +144,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 	pBasePanel->slots << pSplitPanel;
 
-	pBasePanel->slots.setWeight(0, 2, {0.f,1.f});
+	pBasePanel->setSlotWeight(0, 2, {0.f,1.f});
 
 	pPopupOverlay->mainSlot = pBasePanel;
 	
@@ -187,7 +187,7 @@ Widget_p MyApp::createTopBar()
 	pBar->slots << pSpacer2;
 
 
-	pBar->slots.setWeight( 0, 4, {0.f, 1.f, 0.f, 1.f});
+	pBar->setSlotWeight( 0, 4, {0.f, 1.f, 0.f, 1.f});
 	
 
 
@@ -448,7 +448,7 @@ Widget_p MyApp::createLogPanel()
 	pMain->slots << pLogButtonRow;
 	pMain->slots << pLogCapsule;
 
-	pMain->slots.setWeight(0, 1, 0.f);
+	pMain->setSlotWeight(0, 1, 0.f);
 	
 	return pMain;
 }
@@ -482,7 +482,7 @@ Widget_p MyApp::createNavigationPanel()
 	Base::msgRouter()->addRoute(pSlider, MsgType::ValueUpdate, [this](Msg* pMsg)
 		{
 			auto pMyMsg = static_cast<ValueUpdateMsg*>(pMsg);
-	this->setFrame(int(pMyMsg->fraction() * this->m_frames.size() + 0.5f));
+	this->setFrame(int(pMyMsg->value() * this->m_frames.size() + 0.5f));
 		});
 
 	m_pProgressSlider = pSlider;
@@ -530,7 +530,7 @@ Widget_p MyApp::createNavigationPanel()
 	pPlayButtons->slots << pLongRightButton;
 	pPlayButtons->slots << Filler::create();
 
-	pPlayButtons->slots.setWeight(1, 5, 0.f);
+	pPlayButtons->setSlotWeight(1, 5, 0.f);
 
 	Base::msgRouter()->addRoute(pLongLeftButton, MsgType::Select, [this](Msg* pMsg)
 		{
@@ -581,7 +581,7 @@ Widget_p MyApp::createNavigationPanel()
 	}
 
 	pSkipButtons->slots << Filler::create();
-	pSkipButtons->slots.setWeight(1, 5, 0.f);
+	pSkipButtons->setSlotWeight(1, 5, 0.f);
 
 
 
@@ -616,8 +616,8 @@ Widget_p MyApp::createNavigationPanel()
 
 	pMain->slots << Filler::create();
 
-	pMain->slots.setWeight(pMain->slots.begin(), pMain->slots.end() - 1, 0);
-	pMain->slots.setPadding(pMain->slots.begin(), pMain->slots.end(), 2);
+	pMain->setSlotWeight(pMain->slots.begin(), pMain->slots.end() - 1, 0);
+	pMain->setSlotPadding(pMain->slots.begin(), pMain->slots.end(), 2);
 
 	return pMain;
 }
@@ -892,7 +892,7 @@ void MyApp::updateGUIAfterReload()
 		toggleNb++;
 	}
 
-	m_pScreenLineup->slots.setPadding(m_pScreenLineup->slots.begin(), m_pScreenLineup->slots.end(), 6);
+	m_pScreenLineup->setSlotPadding(m_pScreenLineup->slots.begin(), m_pScreenLineup->slots.end(), 6);
 
 	//
 	
@@ -1166,7 +1166,7 @@ void MyApp::_updateResourcesView()
 		index++;
 	}
 	
-	m_pResourcePanel->slots.setPadding( m_pResourcePanel->slots.begin(), m_pResourcePanel->slots.end(), 6 );
+	m_pResourcePanel->setSlotPadding( m_pResourcePanel->slots.begin(), m_pResourcePanel->slots.end(), 6 );
 }
 
 //____ _updateDebugOverlays() _________________________________________________
@@ -1257,7 +1257,7 @@ Widget_p MyApp::_buildSurfaceDisplayWithIndexTag( Surface * pSurf, int index )
 	pBase->slots << pLabel;
 	pBase->slots << pCentering;
 	
-	pBase->slots.setPadding( 0, 1, {0,0,4,0} );
+	pBase->setSlotPadding( 0, 1, {0,0,4,0} );
 	
 	return pBase;
 }

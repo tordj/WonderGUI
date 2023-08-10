@@ -50,7 +50,6 @@ namespace wg
 		class Slot : public DynamicSlot
 		{
 			friend class LambdaPanel;
-			friend class CSlots;
 			friend class DynamicSlotVector<Slot>;
 
 		public:
@@ -99,40 +98,8 @@ namespace wg
 
 		using		iterator = DynamicSlotVector<Slot>::iterator;
 
-		//____ CSlots ________________________________________________________
-
-		class CSlots : public DynamicSlotVector<Slot>,
-			public HideableSlotCollectionMethods<Slot, iterator, LambdaPanel>
-
-		{
-			friend class LambdaPanel;
-		public:
-
-
-			//.____ Content _______________________________________________________
-
-			iterator	pushFront(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parenSize)> func);
-			iterator	pushBack(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parenSize)> func);
-
-			iterator	insert(int index, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func);
-			iterator	insert(iterator pos, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func);
-
-		protected:
-
-			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
-
-			LambdaPanel *	_holder() override { return static_cast<LambdaPanel*>(DynamicSlotVector<Slot>::_holder()); }
-			const LambdaPanel *	_holder() const { return static_cast<const LambdaPanel*>(DynamicSlotVector<Slot>::_holder()); }
-
-			inline Slot* _slot(int index) override { return DynamicSlotVector::_slot(index); }
-			inline const Slot* _slot(int index) const { return DynamicSlotVector::_slot(index); }
-
-			inline int _size() const override { return DynamicSlotVector<Slot>::size(); }
-		};
 
 		friend class Slot;
-		friend class CSlots;
-		friend class HideableSlotCollectionMethods<LambdaPanel::Slot, iterator, LambdaPanel>;
 		
 		
 		//.____ Creation __________________________________________
@@ -141,7 +108,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CSlots	slots;
+		DynamicSlotVector<Slot>	slots;
 
 		//.____ Identification __________________________________________
 
@@ -155,6 +122,14 @@ namespace wg
 		bool				setSizeLimits( Size minSize, Size maxSize );
 		bool				setDefaultSize(Size defaultSize);
 
+		//.____ Misc ___________________________________________________________
+		
+		void			hideSlots(int index, int amount);
+		void			hideSlots(iterator beg, iterator end);
+
+		void			unhideSlots(int index, int amount);
+		void			unhideSlots(iterator beg, iterator end);
+		
 	protected:
 		LambdaPanel();
 		virtual ~LambdaPanel();

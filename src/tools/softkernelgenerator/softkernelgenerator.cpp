@@ -102,7 +102,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 		
 	pBasePanel->slots << _buildButtonRow();
 	pBasePanel->slots << pWindow;
-	pBasePanel->slots.setWeight(0, 1, 0.f);
+	pBasePanel->setSlotWeight(0, 1, 0.f);
 
 	pRoot->slot = pBasePanel;
 
@@ -430,7 +430,7 @@ Widget_p	MyApp::_buildButtonRow()
 	pButtonRow->slots << pResetButton;
 	pButtonRow->slots << pLoadButton;
 	pButtonRow->slots << pSaveButton;
-	pButtonRow->slots.setPadding(pButtonRow->slots.begin(), pButtonRow->slots.end(), Border( 0, 2, 0, 2 ) );
+	pButtonRow->setSlotPadding(pButtonRow->slots.begin(), pButtonRow->slots.end(), Border( 0, 2, 0, 2 ) );
 
 	return pButtonRow;
 }
@@ -627,7 +627,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 
 	//
 
-	pTopSection->slots.setPadding(0, pTopSection->slots.size(), Border( 0, 5, 0, 5 ) );
+	pTopSection->setSlotPadding(0, pTopSection->slots.size(), Border( 0, 5, 0, 5 ) );
 	return pTopSection;
 }
 
@@ -716,7 +716,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 		pBodyRow->slots << _buildToggleButtonRow("Source Formats", activeSourceFormats, it->sourceFormats, [this, index](Msg* pMsg) { this->customBlitSourceFormatToggled(index, pMsg); });
 		pBodyRow->slots << _buildToggleButtonRow("Dest Formats", activeDestFormats, it->destFormats, [this, index](Msg* pMsg) { this->customBlitDestFormatToggled(index, pMsg); });
 
-		pBodyRow->slots.setPadding(0, pBodyRow->slots.size(), Border( 0, 5, 0, 5 ) );
+		pBodyRow->setSlotPadding(0, pBodyRow->slots.size(), Border( 0, 5, 0, 5 ) );
 
 		// Bottom Row
 
@@ -823,7 +823,7 @@ wg::Widget_p MyApp::_buildListSummarySection()
 		_.display.text = amount.c_str(),
 		_.display.style = m_pLabelStyle));
 
-	pSection->slots.setPadding(0, pSection->slots.size(), Border( 0, 5, 0, 5 ) );
+	pSection->setSlotPadding(0, pSection->slots.size(), Border( 0, 5, 0, 5 ) );
 
 
 

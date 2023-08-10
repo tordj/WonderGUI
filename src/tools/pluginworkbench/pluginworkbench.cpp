@@ -221,7 +221,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 	pBasePanel->slots << pSplitPanel;
 
-	pBasePanel->slots.setWeight(0, 2, {0.f,1.f});
+	pBasePanel->setSlotWeight(0, 2, {0.f,1.f});
 
 	pPopupOverlay->mainSlot = pBasePanel;
 	

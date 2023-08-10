@@ -25,7 +25,6 @@
 #include <wg_util.h>
 
 #include <wg_dynamicslotvector.impl.h>
-#include <wg_slotextras.impl.h>
 
 #include <assert.h>
 
@@ -34,7 +33,6 @@ namespace wg
 	using namespace Util;
 
 	template class DynamicSlotVector<FlexPanel::Slot>;
-	template class HideableSlotCollectionMethods<FlexPanel::Slot, FlexPanel::iterator, FlexPanel>;
 
 	const TypeInfo FlexPanel::TYPEINFO = { "FlexPanel", &Panel::TYPEINFO };
 	const TypeInfo FlexPanel::Slot::TYPEINFO = { "FlexPanel::Slot", &DynamicSlot::TYPEINFO };
@@ -228,14 +226,36 @@ namespace wg
 		{
 			m_bConfineWidgets = bConfineWidgets;
 
-			Slot * p = slots._begin();
+			Slot * p = slots.begin();
 
-			while( p < slots._end() )
+			while( p < slots.end() )
 			{
 				_refreshRealGeo( p );
 				p++;
 			}
 		}
+	}
+
+	//____ hideSlots() ___________________________________________________________
+
+	void FlexPanel::hideSlots(int index, int amount)
+	{
+		_hideSlots( &slots[index], amount);
+	}
+	void FlexPanel::hideSlots(iterator beg, iterator end)
+	{
+		_hideSlots( beg, end - beg);
+	}
+
+	//____ unhideSlots() ___________________________________________________________
+
+	void FlexPanel::unhideSlots(int index, int amount)
+	{
+		_unhideSlots( &slots[index], amount);
+	}
+	void FlexPanel::unhideSlots(iterator beg, iterator end)
+	{
+		_unhideSlots( beg, end - beg);
 	}
 
 	//____ _defaultSize() _____________________________________________________________
@@ -244,8 +264,8 @@ namespace wg
 	{
 		SizeSPX minSize;
 
-		Slot * p = slots._begin();
-		while( p < slots._end() )
+		Slot * p = slots.begin();
+		while( p < slots.end() )
 		{
 			minSize = SizeSPX::max(minSize,_sizeNeededForGeo(p));
 			p++;
@@ -365,7 +385,7 @@ namespace wg
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
-		for(Slot * pCover = slots._begin() ; pCover < pSlot ; pCover++ )
+		for(Slot * pCover = slots.begin() ; pCover < pSlot ; pCover++ )
 		{
 			if( pCover->m_bVisible && pCover->m_realGeo.isOverlapping( rect ) )
 				pCover->_widget()->_maskPatches( patches, pCover->m_realGeo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
@@ -383,8 +403,8 @@ namespace wg
 	{
 		Panel::_resize(size,scale);
 
-		Slot * p = slots._begin();
-		while( p < slots._end() )
+		Slot * p = slots.begin();
+		while( p < slots.end() )
 		{
 			_refreshRealGeo(p);
 			p++;
@@ -435,7 +455,7 @@ namespace wg
 		if (slots.isEmpty())
 			return nullptr;
 
-		return slots._first()->_widget();
+		return slots.front()._widget();
 	}
 
 	//____ _lastChild() __________________________________________________________
@@ -445,7 +465,7 @@ namespace wg
 		if (slots.isEmpty())
 			return nullptr;
 
-		return slots._last()->_widget();
+		return slots.back()._widget();
 	}
 
 
@@ -455,7 +475,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const Slot*>(_pSlot);
 
-		if (pSlot > slots._begin())
+		if (pSlot > slots.begin())
 			return pSlot[-1]._widget();
 
 		return nullptr;
@@ -467,7 +487,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const Slot*>(_pSlot);
 
-		if (pSlot < slots._last())
+		if (pSlot < slots.end()-1 )
 			return pSlot[1]._widget();
 
 		return nullptr;
@@ -477,8 +497,7 @@ namespace wg
 
 	void FlexPanel::_releaseChild(StaticSlot * pSlot)
 	{
-		_willEraseSlots(pSlot, 1);
-		slots._erase(static_cast<Slot*>(pSlot));
+		slots.erase(static_cast<Slot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________
@@ -506,7 +525,7 @@ namespace wg
 			package.pSlot = nullptr;
 		else
 		{
-			Slot * pSlot = slots._first();
+			Slot * pSlot = slots.begin();
 			package.pSlot = pSlot;
 			package.geo = pSlot->m_realGeo;
 		}
@@ -517,12 +536,12 @@ namespace wg
 	void FlexPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
 		Slot * pSlot = (Slot*) package.pSlot;
-
-		if( pSlot == slots._last() )
+		pSlot++;
+		
+		if( pSlot == slots.end() )
 			package.pSlot = nullptr;
 		else
 		{
-			pSlot++;
 			package.pSlot = pSlot;
 			package.geo = pSlot->m_realGeo;
 		}

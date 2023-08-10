@@ -72,7 +72,7 @@ bool EditorWindow::_setupGUI()
 
 	pMainContainer->slots << pTopBar;
 	pMainContainer->slots << pScrollPanel;
-	pMainContainer->slots.setWeight(0, 2, { 0.f, 1.f });
+	pMainContainer->setSlotWeight(0, 2, { 0.f, 1.f });
 	pMainContainer->setLayout(PackLayout::create(WGBP(PackLayout,
 		_.expandFactor = PackLayout::Factor::Weight
 		)));
@@ -106,7 +106,7 @@ Widget_p EditorWindow::_createTopBar()
 	pBar->slots << pSaveButton;
 	pBar->slots << pSpacer;
 
-	pBar->slots.setWeight(0, 3, { 0.f, 0.f, 1.f });
+	pBar->setSlotWeight(0, 3, { 0.f, 0.f, 1.f });
 
 
 

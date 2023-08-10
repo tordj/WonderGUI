@@ -54,7 +54,6 @@ namespace wg
 		class Slot : public DynamicSlot
 		{
 			friend class PackPanel;
-			friend class CSlots;
 			template<class S> friend class SlotVector;
 			friend class DynamicSlotVector<Slot>;
 
@@ -114,44 +113,13 @@ namespace wg
 
 		using		iterator = DynamicSlotVector<Slot>::iterator;
 
-		//____ CSlots ________________________________________________________
-
-
-		class CSlots : public DynamicSlotVector<Slot>, 
-			public PaddedSlotCollectionMethods<Slot, iterator, PackPanel>,
-			public HideableSlotCollectionMethods<Slot, iterator, PackPanel>
-		{
-			friend class PackPanel;
-		public:
-
-			//.____ Geometry _______________________________________________________
-
-			bool		setWeight(int index, int amount, float weight);
-			bool		setWeight(iterator  beg, iterator end, float weight);
-			bool		setWeight(int index, int amount, std::initializer_list<float> weights);
-			bool		setWeight(iterator beg, iterator end, std::initializer_list<float> weights);
-
-		protected:
-			CSlots(SlotHolder * pHolder) : DynamicSlotVector<Slot>(pHolder) {}
-
-			inline PackPanel *		_holder() override { return static_cast<PackPanel*>(DynamicSlotVector<Slot>::_holder()); }
-			inline const PackPanel *	_holder() const { return static_cast<const PackPanel*>(DynamicSlotVector<Slot>::_holder()); }
-
-			Slot* _slot(int index) override { return DynamicSlotVector<Slot>::_slot(index); }
-
-			inline int _size() const override { return DynamicSlotVector<Slot>::size(); }
-		};
-
-		friend class PaddedSlotCollectionMethods<PackPanel::Slot, iterator, PackPanel>;
-		friend class HideableSlotCollectionMethods<PackPanel::Slot, iterator, PackPanel>;
-
 		//.____ Creation __________________________________________
 
 		static PackPanel_p	create() { return PackPanel_p(new PackPanel()); }
 
 		//.____ Components _______________________________________
 
-		CSlots		slots;
+		DynamicSlotVector<Slot>	slots;
 
 		//.____ Identification __________________________________________
 
@@ -167,6 +135,24 @@ namespace wg
 
 		void			setLayout(PackLayout* pLayout);
 		PackLayout_p	layout() const { return m_pLayout; }
+
+		//.____ Misc ________________________________________________________________
+		
+		bool			setSlotWeight(int index, int amount, float weight);
+		bool			setSlotWeight(iterator  beg, iterator end, float weight);
+		bool			setSlotWeight(int index, int amount, std::initializer_list<float> weights);
+		bool			setSlotWeight(iterator beg, iterator end, std::initializer_list<float> weights);
+
+		bool			setSlotPadding(int index, int amount, Border padding);
+		bool			setSlotPadding(iterator beg, iterator end, Border padding);
+		bool			setSlotPadding(int index, int amount, std::initializer_list<Border> padding);
+		bool			setSlotPadding(iterator beg, iterator end, std::initializer_list<Border> padding);
+
+		void			hideSlots(int index, int amount);
+		void			hideSlots(iterator beg, iterator end);
+
+		void			unhideSlots(int index, int amount);
+		void			unhideSlots(iterator beg, iterator end);
 
 
 		//.____ Internal ______________________________________________________
@@ -217,11 +203,9 @@ namespace wg
 		void		_repadSlots(StaticSlot *, int nb, Border padding);
 		void		_repadSlots(StaticSlot *, int nb, const Border * pPaddings);
 
-		// Needed by CSlots
-
 		void		_reweightSlots(Slot * pSlot, int nb, float weight);
 		void		_reweightSlots(Slot * pSlot, int nb, const float * pWeights);
-		void		_refreshChildGeo() { _refreshChildGeo(true); }
+//		void		_refreshChildGeo() { _refreshChildGeo(true); }
 
 		//
 

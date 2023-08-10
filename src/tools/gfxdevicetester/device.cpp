@@ -57,7 +57,7 @@ Device::Device( const string& name, GfxDevice * pDevice, CanvasRef canvasRef, Su
 
 	pTitleBar->slots << pCloseButton;
 
-	pTitleBar->slots.setWeight(0, 5, {0.f,0.f,0.f,1.f,0.f});
+	pTitleBar->setSlotWeight(0, 5, {0.f,0.f,0.f,1.f,0.f});
 	
 
 	SizeI canvasSize = pSurface ? pSurface->pixelSize() : pDevice->canvas(CanvasRef::Default).size/64;

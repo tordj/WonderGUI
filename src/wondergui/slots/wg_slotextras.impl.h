@@ -184,10 +184,6 @@ namespace wg
 	{
 		_holder()->_unhideSlots(_slot(0), _size());
 	};
-
-
 }
-
-
 
 #endif //WG_SLOTEXTRAS_IMPL_DOT_H
