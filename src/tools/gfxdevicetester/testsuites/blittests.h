@@ -9,6 +9,8 @@ public:
 
 		addTest("Blit", &PatchBlitTests::setSplash, &PatchBlitTests::blit, &PatchBlitTests::dummy);
 		addTest("BlitAlphaOnly", &PatchBlitTests::setAlphaOnly, &PatchBlitTests::blit, &PatchBlitTests::dummy);
+		addTest("TintBlitAlphaOnly", &PatchBlitTests::setAlphaOnlyWithTint, &PatchBlitTests::blit, &PatchBlitTests::resetTint);
+		addTest("TintShrinkBlitAlphaOnly", &PatchBlitTests::setAlphaOnlyWithTint, &PatchBlitTests::shrinkBlit, &PatchBlitTests::resetTint);
 
 		addTest("FlipBlit90", &PatchBlitTests::setSplash, &PatchBlitTests::flipBlit90, &PatchBlitTests::dummy);
 		addTest("FlipBlit180", &PatchBlitTests::setSplash, &PatchBlitTests::flipBlit180, &PatchBlitTests::dummy);
@@ -72,13 +74,33 @@ public:
 		return true;
 	}
 
+	bool setAlphaOnlyWithTint(GfxDevice * pDevice, const RectI& canvas)
+	{
+		pDevice->setBlitSource(m_pAlphaOnly);
+		pDevice->setTintColor( Color::DarkBlue );
+		return true;
+	}
 
+	bool resetTint(GfxDevice * pDevice, const RectI& canvas)
+	{
+		pDevice->setTintColor( Color::White );
+		return true;
+	}
+
+	
 	bool	blit(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->blit(canvas);
 		return true;
 	}
 
+	bool	shrinkBlit(GfxDevice * pDevice, const RectI& canvas)
+	{
+		pDevice->stretchBlit( canvas/4 );
+		return true;
+	}
+
+	
 	bool	flipBlit90(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipBlit(canvas, GfxFlip::Rot90);
