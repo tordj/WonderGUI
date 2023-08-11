@@ -185,6 +185,13 @@ class GraphDisplay;
 			m_labelSkin.set(bp.labelSkin);
 		};
 
+		GridLine()
+			: m_labelSkin(this)
+		{
+			// This constructor is only used to expand vector at insertion of multiple elements.
+			// We don't care about setting default values, they should be overwritten immediately anyway.
+			
+		};
 
 	protected:
 

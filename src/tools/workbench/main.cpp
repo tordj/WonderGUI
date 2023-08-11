@@ -2760,17 +2760,55 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 
 	// Setup grid
 
-	pGraph->xLines.pushBack({ .pos = 0.5f, .label = "-0.5", .thickness = 0.5f });
-	pGraph->xLines.pushBack({ .pos = -0.25f, .label = "-0.25", .thickness = 0.5f });
-	pGraph->xLines.pushBack({ .pos = 0.0f, .label = "0.0", .thickness = 1.0f });
-	pGraph->xLines.pushBack({ .pos = 0.25f, .label = "0.25", .thickness = 0.5f });
 
-	pGraph->yLines.pushBack({ .pos = 0.0f, .label = "0.0", .thickness = 0.5f });
-	pGraph->yLines.pushBack({ .pos = 0.25f, .label = "0.25", .thickness = 0.5f });
-	pGraph->yLines.pushBack({ .pos = 0.5f, .label = "0.5", .thickness = 0.5f });
-	pGraph->yLines.pushBack({ .pos = 1.0f, .label = "0.75", .thickness = 0.5f });
+	pGraph->xLines = 		{	{ .pos = 0.5f, .label = "-0.5", .thickness = 0.5f },
+								{ .pos = -0.25f, .label = "-0.25", .thickness = 0.5f },
+								{ .pos = 0.0f, .label = "0.0", .thickness = 1.0f },
+								{ .pos = 0.25f, .label = "0.25", .thickness = 0.5f } };
+
+/*
+	pGraph->xLines = 		{ .pos = 0.5f, .label = "-0.5", .thickness = 0.5f };
+	
+	
+	pGraph->xLines	<<	({ .pos = -0.25f, .label = "-0.25", .thickness = 0.5f });
+	<<	GridLine::Blueprint{ .pos = 0.0f, .label = "0.0", .thickness = 1.0f };
+	<<	GridLine::Blueprint{ .pos = 0.25f, .label = "0.25", .thickness = 0.5f };
+*/
+	
+	
+	std::vector<GridLine::Blueprint> vec = {	{ .pos = 0.0f, .label = "0.0", .thickness = 0.5f },
+								{ .pos = 0.25f, .label = "0.25", .thickness = 0.5f },
+								{ .pos = 0.5f, .label = "0.5", .thickness = 0.5f },
+								{ .pos = 1.0f, .label = "1.0", .thickness = 0.5f } };
+
+	pGraph->yLines.pushBack( vec.begin(), vec.end() );
+
+	
+	pGraph->yLines.insert( 3, { { .pos = 0.75, .label = "0.75", .thickness = 2.f },
+								{ .pos = 0.8, .thickness = 0.5f },
+								{ .pos = 0.85, .thickness = 0.5f },
+								{ .pos = 0.9, .thickness = 0.5f },
+								{ .pos = 0.95, .thickness = 0.5f } });
+
+	
+	std::vector<GridLine::Blueprint> vec2 = { { .pos = 0.05, .thickness = 0.5f },
+								{ .pos = 0.1, .thickness = 0.5f },
+								{ .pos = 0.15, .thickness = 0.5f },
+								{ .pos = 0.20, .thickness = 0.5f } };
 
 
+	pGraph->yLines.insert( pGraph->yLines.begin()+1, vec2.begin(), vec2.end() );
+	
+	
+	
+/*
+	
+	pGraph->yLines.pushBack({	{ .pos = 0.0f, .label = "0.0", .thickness = 0.5f },
+								{ .pos = 0.25f, .label = "0.25", .thickness = 0.5f },
+								{ .pos = 0.5f, .label = "0.5", .thickness = 0.5f },
+								{ .pos = 1.0f, .label = "0.75", .thickness = 0.5f } });
+
+*/
 
 	return true;
 }

@@ -37,6 +37,7 @@ namespace wg
 	public:
 
 		using iterator = typename StaticVector<EntryType>::iterator;
+		using const_iterator = typename StaticVector<EntryType>::const_iterator;
 
 		class Holder	/** @private */
 		{
@@ -58,16 +59,36 @@ namespace wg
 		iterator		pushBack( const struct EntryType::Blueprint& entry );
 		iterator		pushBack( const std::initializer_list<struct EntryType::Blueprint>& entries );
 
+		template<typename Iterator>
+		iterator		pushBack(const Iterator& beg, const Iterator& end);
+		
 		iterator		insert( int index, const struct EntryType::Blueprint& entry );
+		iterator		insert( int index, const std::initializer_list<struct EntryType::Blueprint>& entries );
 
+		template<typename Iterator>
+		iterator		insert( int index, const Iterator& beg, const Iterator& end);
+
+		iterator		insert( const_iterator pos, const struct EntryType::Blueprint& entry );
+		iterator		insert( const_iterator pos, const std::initializer_list<struct EntryType::Blueprint>& entries );
+
+		template<typename Iterator>
+		iterator		insert( const_iterator pos, const Iterator& beg, const Iterator& end);
+
+		
 		iterator		erase( int index );
 		iterator		erase( int index, int amount );
-
+		iterator		erase( const_iterator pos );
+		iterator		erase( const_iterator begin, const_iterator end );
+		
 		void			clear();
 
 		//.____ Operators __________________________________________
 
-		inline iterator operator<<(const EntryType& entry) { return pushBack(entry); }
+		inline void operator=(const struct EntryType::Blueprint& entry) { clear(); pushBack(entry); }
+		inline void operator=(const std::initializer_list<struct EntryType::Blueprint>& entries) { clear(); pushBack(entries); }
+
+		
+		inline DynamicVector<EntryType>& operator<<(const struct EntryType::Blueprint& entry) { pushBack(entry); return * this; }
 
 	protected:
 
@@ -94,33 +115,146 @@ namespace wg
 	template < class EntryType>
 	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack( const std::initializer_list<struct EntryType::Blueprint>& entries)
 	{
-		int amount = (int)StaticVector<EntryType>::m_entries.size();
+		int oldSize = (int)StaticVector<EntryType>::m_entries.size();
 
+		StaticVector<EntryType>::m_entries.reserve(StaticVector<EntryType>::m_entries.size() + entries.size());
+		
 		for (auto& entry : entries)
 			StaticVector<EntryType>::m_entries.emplace_back(entry);
 
-		_didAddEntries(&StaticVector<EntryType>::m_entries[amount], int(StaticVector<EntryType>::m_entries.size()) - amount);
-		return StaticVector<EntryType>::m_entries.begin() + amount;
+		_didAddEntries(&StaticVector<EntryType>::m_entries[oldSize], int(StaticVector<EntryType>::m_entries.size()) - oldSize);
+		return StaticVector<EntryType>::m_entries.begin() + oldSize;
 	}
+
+	template < class EntryType>
+	template< typename Iterator>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack(const Iterator& beg, const Iterator& end)
+	{
+		static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
+			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, struct EntryType::Blueprint>::value,
+			"Begin and end parameters must be iterators or raw pointers to blueprint.");
+
+		int oldSize = StaticVector<EntryType>::m_entries.size();
+
+		StaticVector<EntryType>::m_entries.reserve(StaticVector<EntryType>::m_entries.size() + (end - beg));
+
+		Iterator it = beg;
+		while (it != end)
+			StaticVector<EntryType>::m_entries.emplace_back(*it++);
+
+		_didAddEntries(&StaticVector<EntryType>::m_entries[oldSize], int(StaticVector<EntryType>::m_entries.size()) - oldSize);
+		return StaticVector<EntryType>::m_entries.begin() + oldSize;
+	}
+
 
 	//____ insert() ______________________________________________________________
 
 	template < class EntryType>
 	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert(int index, const struct EntryType::Blueprint& entry)
 	{
-		//TODO: Add assert
+		//TODO: Add error checking
 
 		auto it = StaticVector<EntryType>::m_entries.emplace(StaticVector<EntryType>::m_entries.begin() + index, entry);
 		_didAddEntries(&StaticVector<EntryType>::m_entries[index], 1);
 		return it;
 	}
 
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert( int index, const std::initializer_list<struct EntryType::Blueprint>& entries)
+	{
+		//TODO: Add error checking
+
+		int nEntries = (int) entries.size();
+		auto insertPos = StaticVector<EntryType>::m_entries.insert(StaticVector<EntryType>::m_entries.begin() + index, nEntries, EntryType() );
+
+		auto it = insertPos;
+		for (auto& entry : entries)
+			* it++ = EntryType(entry);
+
+		_didAddEntries(&insertPos[0], nEntries);
+		return insertPos;
+	}
+
+	template < class EntryType>
+	template< typename Iterator>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert( int index, const Iterator& beg, const Iterator& end)
+	{
+		//TODO: Add error checking
+
+		static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
+			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, struct EntryType::Blueprint>::value,
+			"Begin and end parameters must be iterators or raw pointers to blueprint.");
+
+		int nEntries = (int) (end - beg);
+
+		auto insertPos = StaticVector<EntryType>::m_entries.insert(StaticVector<EntryType>::m_entries.begin() + index, nEntries, EntryType() );
+
+		
+		auto dst = insertPos;
+		Iterator src = beg;
+		while (src != end)
+			* dst++ = * src++;
+
+		_didAddEntries(&insertPos[0], nEntries);
+		return insertPos;
+	}
+
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert(const_iterator pos, const struct EntryType::Blueprint& entry)
+	{
+		//TODO: Add error checking
+
+		auto it = StaticVector<EntryType>::m_entries.emplace(pos, entry);
+		_didAddEntries(&it[0], 1);
+		return it;
+	}
+
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert( const_iterator pos, const std::initializer_list<struct EntryType::Blueprint>& entries)
+	{
+		//TODO: Add error checking
+
+		int nEntries = (int) entries.size();
+		auto insertPos = StaticVector<EntryType>::m_entries.insert(pos, nEntries, EntryType() );
+
+		auto it = insertPos;
+		for (auto& entry : entries)
+			* it++ = EntryType(entry);
+
+		_didAddEntries(&insertPos[0], nEntries);
+		return insertPos;
+	}
+
+	template < class EntryType>
+	template< typename Iterator>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert( const_iterator pos, const Iterator& beg, const Iterator& end)
+	{
+		//TODO: Add error checking
+
+		static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
+			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, struct EntryType::Blueprint>::value,
+			"Begin and end parameters must be iterators or raw pointers to blueprint.");
+
+		int nEntries = (int) (end - beg);
+
+		auto insertPos = StaticVector<EntryType>::m_entries.insert(pos, nEntries, EntryType() );
+
+		auto dst = insertPos;
+		Iterator src = beg;
+		while (src != end)
+			* dst++ = * src++;
+
+		_didAddEntries(&insertPos[0], nEntries);
+		return insertPos;
+	}
+
+
 	//____ erase() ________________________________________________________________
 
 	template < class EntryType>
 	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::erase(int index)
 	{
-		//TODO: Add assert
+		//TODO: Add error checking
 
 		_willEraseEntries(&StaticVector<EntryType>::m_entries[index], 1);
 		return StaticVector<EntryType>::m_entries.erase(StaticVector<EntryType>::m_entries.begin() + index);
@@ -130,11 +264,31 @@ namespace wg
 	template < class EntryType>
 	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::erase(int index, int amount)
 	{
-		//TODO: Add assert
+		//TODO: Add error checking
 
 		_willEraseEntries(&StaticVector<EntryType>::m_entries[index], amount);
 		return StaticVector<EntryType>::m_entries.erase(StaticVector<EntryType>::m_entries.begin() + index, StaticVector<EntryType>::m_entries.begin() + index + amount);
 	}
+
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::erase(const_iterator pos)
+	{
+		//TODO: Add error checking
+
+		_willEraseEntries(pos, 1);
+		return StaticVector<EntryType>::m_entries.erase(pos);
+	}
+
+	template < class EntryType>
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::erase(const_iterator begin, const_iterator end)
+	{
+		//TODO: Add error checking
+
+		_willEraseEntries(begin, end - begin);
+		return StaticVector<EntryType>::m_entries.erase(begin,end);
+	}
+
+
 
 	//____ clear() ____________________________________________________________
 
