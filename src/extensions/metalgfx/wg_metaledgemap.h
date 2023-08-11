@@ -41,8 +41,8 @@ namespace wg
 		//.____ Creation __________________________________________
 		
 		static MetalEdgemap_p	create( const Blueprint& blueprint );
-		static MetalEdgemap_p	create( const Edgemap::Blueprint& blueprint, WaveOrigo origo, const float * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
-		static MetalEdgemap_p	create( const Edgemap::Blueprint& blueprint, WaveOrigo origo, const spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
+		static MetalEdgemap_p	create( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const float * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
+		static MetalEdgemap_p	create( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0);
 
 
     	//.____ Identification __________________________________________
@@ -57,16 +57,16 @@ namespace wg
 		
 		//.____ Content _______________________________________________________
 
-		bool 	importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
+		bool 	importSamples( SampleOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) override;
 
-		bool 	importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
+		bool 	importSamples( SampleOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) override;
 
-		bool 	exportSamples( WaveOrigo origo, spx * pDestination, int edgeBegin, int edgeEnd,
+		bool 	exportSamples( SampleOrigo origo, spx * pDestination, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) override;
 
-		bool 	exportSamples( WaveOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
+		bool 	exportSamples( SampleOrigo origo, float * pDestination, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch = 0, int samplePitch = 0 ) override;
 
 	protected:
@@ -74,10 +74,10 @@ namespace wg
 		MetalEdgemap(const Blueprint& bp);
 		~MetalEdgemap();
 
-		void 	_importSamples( WaveOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
+		void 	_importSamples( SampleOrigo origo, const spx * pSource, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch );
 
-		void 	_importSamples( WaveOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
+		void 	_importSamples( SampleOrigo origo, const float * pSource, int edgeBegin, int edgeEnd,
 									  int sampleBegin, int sampleEnd, int edgePitch, int samplePitch );
 
 		void	_updateRenderColors();

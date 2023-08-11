@@ -28,20 +28,16 @@
 #include <wg_weakptr.h>
 #include <wg_componentptr.h>
 
-namespace wg
-{
+template <class Type_p>
+Type_p wg_dynamic_cast(wg::Object * pObject) {
 
-	template <class Type_p>
-	Type_p wg_dynamic_cast(Object * pObject) {
+	return dynamic_cast<typename Type_p::raw_type>(pObject);
+}
 
-		return dynamic_cast<typename Type_p::raw_type>(pObject);
-	}
+template <class Type_p>
+Type_p wg_static_cast(wg::Object * pObject) {
 
-	template <class Type_p>
-	Type_p wg_static_cast(Object * pObject) {
-
-		return static_cast<typename Type_p::raw_type>(pObject);
-	}
+	return static_cast<typename Type_p::raw_type>(pObject);
 }
 
 
