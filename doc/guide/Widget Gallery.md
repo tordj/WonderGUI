@@ -1,8 +1,8 @@
-### Widget Gallery
+## Widget Gallery
 
 
 
-#### Panels
+### Panels
 
 *Panels are used for managing the layout of widgets.*
 
@@ -20,7 +20,7 @@ Children can be either have their corners pinned to locations of the panel (such
 
 ##### LambaPanel
 
-The geometry of each child is decided through a callback that is called whenever the parent is resized or the child signals a need for resize. This allows for very flexible rule-based layouts. Has the same downside as FlexPanel in that childrens need to resize isn't propagated to parents.
+The geometry of each child is decided through a callback that is called whenever the parent is resized or the requests a resize. This allows for very flexible rule-based layouts. Has the same downside as FlexPanel in that childrens need to resize isn't propagated to parents.
 
 ##### StackPanel
 
@@ -40,7 +40,7 @@ Simpler version of PackPanel where only two slots are present. Faster with less 
 
 
 
-#### Lists
+### Lists
 
 *Lists provides layouts similar to panels, but also provides functionality for the user to select/unselect children using mouse and keyboard.*
 
@@ -50,7 +50,7 @@ Children are lined up horizontally or vertically, depending of the setting of th
 
 
 
-#### Overlays
+### Overlays
 
 *Overlays provide for overlaying the hierarchy with certain widgets that exists outside the hierarchy, such as pop-up menus, modal dialogs, tooltips and notifications. They are typically placed near the root in the hierarchy and are necessary for certain aspects of the GUI to work. They can also be placed further down the hierarchy, e.g. putting a ModalOverlay over a window in a GUI that looks like a desktop can provide dialog boxes that are modal only to the content of that window.*
 
@@ -76,11 +76,9 @@ A work in progress. Intended to become a simple GUI-designer in an overlay. Allo
 
 
 
-#### Capsules
+### Capsules
 
-A Capsule only has one child and is placed in the widget hierarchy to modify the characteristics of it, thus affect the branch below it in various ways.
-
-
+*A Capsule only has one child and is placed in the widget hierarchy to modify the characteristics of it, thus affect the branch below it in various ways.*
 
 ##### CanvasCapsule
 
@@ -102,7 +100,7 @@ Overrides the canvas default, min and max size with specific values. Can be used
 
 
 
-#### Buttons
+### Buttons
 
 ##### Button
 
@@ -118,7 +116,7 @@ Toggles between selected/unselected when pressed. Used as Checkboxes and Radiobu
 
 
 
-#### Text widgets
+### Text widgets
 
 ##### TextDisplay
 
@@ -138,7 +136,7 @@ Displays a value in textual form, using a NumberLayout object to format the valu
 
 
 
-#### Knobs & Sliders
+### Knobs & Sliders
 
 ##### Knob
 
@@ -158,7 +156,7 @@ Typical scrollbar with optional buttons at the ends.
 
 
 
-#### Select widgets
+### Select widgets
 
 ##### SelectBox
 
@@ -166,7 +164,7 @@ Displays a text-entry with a drop-down menu from which to select entries.
 
 
 
-#### Displays
+### Displays
 
 ##### GraphDisplay
 
@@ -178,7 +176,7 @@ Displays the content of a Surface. Display is automatically updated when content
 
 
 
-#### Simple, non-interactive widgets
+### Simple, non-interactive widgets
 
 ##### Filler
 
@@ -194,7 +192,7 @@ A widget that simply keeps track of time. Combine with Animation-skins to create
 
 
 
-#### Special widgets
+### Special widgets
 
 **FPSDisplay**
 

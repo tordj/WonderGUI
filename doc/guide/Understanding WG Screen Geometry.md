@@ -1,8 +1,8 @@
-### Understanding WG Screen Geometry
+## Understanding WG Screen Geometry
 
 
 
-#### Coordinate system
+### Coordinate system
 
 The WG global coordinate system starts in the upper left corner of the screen with coordinate (0,0). The horizontal axis goes to the right and the vertical axis goes down.
 
@@ -10,11 +10,11 @@ Widgets however resides in local coordinate systems that goes in the same direct
 
 
 
-#### Points, subpixels and scale
+### Points, subpixels and scale
 
 WonderGUI very rarely measures anything in pixels. Instead two complimentary units of measurement are used - *points* and *subpixels*.
 
-##### Points (pts)
+#### Points (pts)
 
 Points is the canonical unit used for specifying position and size of widgets and what you will use almost all the time. Points are independent of the screens pixel resolution and therefore scales with the specified scale. The type ***pts*** is used for points and by default resolves to a *float*, but can be set to *int* if performance of floating point math is a concern and limitations in scaling capabilities can be accepted.
 
@@ -22,7 +22,7 @@ The basic geometry classes *Coord, Size, Rect* and *Border* all use *pts* as uni
 
 WonderGUI however currently limits the placement of widgets to pixel boundaries with appropriate rounding of coordinates.
 
-##### Subpixels (spx)
+#### Subpixels (spx)
 
 Subpixels is a high-precision integer measurement unit that measures everything in 1/64th of a pixel. This is used extensively inside WonderGUI but is rarely seen through the API with one exception - the graphics subsystem. All calls to GfxDevice including setting of clip-rectangles, drawing of lines an blitting of graphics use subpixels.
 
@@ -32,7 +32,7 @@ The type ***spx*** is defined for subpixels and resolves to an *int*. A set of g
 
 It is worth noting that although everything is expressed in a resolution of 1/64th of a pixel, a lot of methods currently operates on a pixel boundary, requiring values to be rounded or truncated.
 
-##### Scale
+#### Scale
 
 The scale specifies the relation between points and subpixels and is defined as *the number of subpixels corresponding to one point*. The default scale is 64, resulting in one point corresponding to one pixel.
 

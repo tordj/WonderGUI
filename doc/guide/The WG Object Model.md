@@ -1,4 +1,4 @@
-### The WG Object Model
+## The WG Object Model
 
 *WonderGUI uses its own system of reference counted objects with smart pointers. From a user perspective It is in many ways similar to, STL's shared_ptr and weak_ptr but it is very different under the hood and more tightly integrated with WonderGUI.*
 

@@ -1,4 +1,4 @@
-### Immutable Resource Objects
+## Immutable Resource Objects
 
 Some objects in WonderGUI are *immutable*, meaning that once created they can't be modified. These are all fundamental resources meant to be shared by a large amount of widgets. Therefore, allowing them to change while in use would require expensive book-keeping to make sure any widget affected is updated accordingly.
 

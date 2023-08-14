@@ -1,10 +1,10 @@
-### Graphics Streaming Format
+## Graphics Streaming Format
 
 *WonderGUI can be redirected to render graphics to a byte-stream instead of a a Surface or the screen. This document describes the format of this byte-stream.*
 
 
 
-#### Chunks and Chunk Headers
+### Chunks and Chunk Headers
 
 The stream is built up as a series of individual chunks of data. Each chunk starts with a header that states the type of chunk, size of the chunk and a number of flags determining how data in the chunk is stored.
 
