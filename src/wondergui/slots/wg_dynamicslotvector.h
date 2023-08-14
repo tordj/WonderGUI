@@ -70,69 +70,49 @@ namespace wg
 			return -1;
 		}
 
-		inline int		capacity() const { return m_capacity; }
+		inline int		frontCapacity() const { return m_pArray - m_pBuffer; }
+		inline int		backCapacity() const { return (m_pBuffer + m_capacity) - (m_pArray + m_size); }
 
 //		inline void		setCapacity(int capacity) { if (capacity != m_capacity) _reallocArray(capacity); }
 		inline void		reserveFront(int n) { if (m_pBuffer + n > m_pArray) _reallocArray(m_size + n, n); }
 		inline void		reserveBack(int n) { if (m_pArray + m_size + n > m_pBuffer + m_capacity) _reallocArray(m_size + n, 0); }
 
 		iterator		pushFront(const Widget_p& pWidget);
-		iterator		pushFront(const Widget_p pWidgets[], int amount);
+		iterator		pushFront( const std::initializer_list<Widget_p>& entries );
 
 		iterator		pushFront(const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint );
-		
+		iterator		pushFront( const std::initializer_list< std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries );
+
 		template<typename Iterator>
-		iterator		pushFront(const Iterator& beg, const Iterator& end)
-		{
-			static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
-				std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
-				"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
-
-			if (beg != end)
-			{
-				Iterator it = end;
-				--it;
-				while (it != beg)
-				{
-					pushFront(*it);
-					--it;
-				}
-			}
-
-			return begin();
-		}
-
+		iterator		pushFront(const Iterator& beg, const Iterator& end);
+		
 
 		iterator		pushBack(const Widget_p& pWidget);
-		iterator		pushBack(const Widget_p pWidgets[], int amount);
+		iterator		pushBack( const std::initializer_list<Widget_p>& entries );
 
 		iterator		pushBack(const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint );
+		iterator		pushBack( const std::initializer_list< std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries );
+		
+		template<typename Iterator>
+		iterator		pushBack(const Iterator& beg, const Iterator& end);
+
+
+		iterator		insert(int index, const Widget_p& pWidget);
+		iterator		insert(iterator it, const Widget_p& pWidget);
+
+		iterator		insert( int index, const std::initializer_list<Widget_p>& entries );
+		iterator		insert( iterator it, const std::initializer_list<Widget_p>& entries );
+		
+		iterator		insert(int index, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint);
+		iterator		insert(iterator it, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint);
+		iterator		insert( int index, const std::initializer_list<std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries );
+		iterator		insert( iterator it, const std::initializer_list<std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries );
 
 		template<typename Iterator>
-		iterator		pushBack(const Iterator& beg, const Iterator& end)
-		{
-			static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
-				std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
-				"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
+		iterator		insert(int index, Iterator beg, Iterator end);
 
-			int oldSize = size();
-
-			Iterator it = beg;
-			while (it != end)
-			{
-				pushBack(*it++);
-			}
-
-			return begin() + oldSize;
-		}
-
-		void			insert(int index, const Widget_p& pWidget);
-		iterator		insert(iterator it, const Widget_p& pWidget);
-		void			insert(int index, const Widget_p pWidgets[], int amount);
-		iterator		insert(iterator it, const Widget_p pWidgets[], int amount);
-
-		void			insert(int index, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint);
-		iterator		insert(iterator it, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint);
+		template<typename Iterator>
+		iterator		insert(iterator it, Iterator beg, Iterator end);
 		
 		void			erase(int index);
 		iterator		erase(iterator pos);
@@ -165,7 +145,7 @@ namespace wg
 		
 		//.____ Operators __________________________________________
 
-		inline iterator operator<<(const Widget_p& pWidget) { return pushBack(pWidget); }
+		inline DynamicSlotVector<SlotType>& operator<<(const Widget_p& pWidget) { pushBack(pWidget); return *this; }
 
 		inline SlotType& operator[](int index) { return m_pArray[index]; }
 		inline const SlotType& operator[](int index) const { return m_pArray[index]; }
@@ -273,6 +253,110 @@ namespace wg
 
 		SlotHolder * m_pHolder;
 	};
+
+
+	//____ pushFront() ___________________________________________________________
+
+	template < class SlotType>
+	template<typename Iterator>
+	typename DynamicSlotVector<SlotType>::iterator	DynamicSlotVector<SlotType>::pushFront(const Iterator& beg, const Iterator& end)
+	{
+		static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
+			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
+			"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
+
+		int nbElements = std::distance(beg,end);
+
+		SlotType * pInsertionPoint = _pushFrontEmpty(nbElements);
+
+		SlotType * pSlot = pInsertionPoint;
+		while( beg != end)
+		{
+			pSlot->_setWidget(*beg);
+			pSlot++;
+			beg++;
+		}
+
+		m_pHolder->_didAddSlots(pInsertionPoint, nbElements);
+		return iterator(pInsertionPoint);
+	}
+
+	//____ pushBack() ___________________________________________________________
+
+	template < class SlotType>
+	template<typename Iterator>
+	typename DynamicSlotVector<SlotType>::iterator	DynamicSlotVector<SlotType>::pushBack(const Iterator& beg, const Iterator& end)
+	{
+		static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
+			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
+			"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
+
+		int nbElements = std::distance(beg,end);
+
+		SlotType * pInsertionPoint = _pushBackEmpty(nbElements);
+
+		SlotType * pSlot = pInsertionPoint;
+		while( beg != end)
+		{
+			pSlot->_setWidget(*beg);
+			pSlot++;
+			beg++;
+		}
+
+		m_pHolder->_didAddSlots(pInsertionPoint, nbElements);
+		return iterator(pInsertionPoint);
+	}
+
+	//____ insert() ______________________________________________________________
+
+	template < class SlotType>
+	template<typename Iterator>
+	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::insert(int index, Iterator beg, Iterator end)
+	{
+		static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
+			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
+			"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
+
+		int nbElements = std::distance(beg,end);
+
+		SlotType * pInsertionPoint = _insertEmpty(index, nbElements);
+
+		SlotType * pSlot = pInsertionPoint;
+		while( beg != end)
+		{
+			pSlot->_setWidget(*beg);
+			pSlot++;
+			beg++;
+		}
+
+		m_pHolder->_didAddSlots(pInsertionPoint, nbElements);
+		return iterator(pInsertionPoint);
+	}
+
+	template < class SlotType>
+	template<typename Iterator>
+	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::insert(iterator it, Iterator beg, Iterator end)
+	{
+		static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
+			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
+			"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
+
+		int nbElements = std::distance(beg,end);
+
+		SlotType * pInsertionPoint = _insertEmpty(it, nbElements);
+
+		SlotType * pSlot = pInsertionPoint;
+		while( beg != end)
+		{
+			pSlot->_setWidget(*beg);
+			pSlot++;
+			beg++;
+		}
+
+		m_pHolder->_didAddSlots(pInsertionPoint, nbElements);
+		return iterator(pInsertionPoint);
+	}
+
 
 } // namespace wg
 #endif //WG_DYNAMICSLOTVECTOR_DOT_H
