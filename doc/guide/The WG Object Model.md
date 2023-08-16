@@ -74,7 +74,7 @@ pRaw->release();	// Decrease the ref count once you are done. This will destroy
 
 ```
 
-Not that this is anything we recommend since it negates the advantages of smart pointers, but it is a good trick to know since it might come in handy in special cases, like when writing wrappers for other languages.
+Not that this is not anything we recommend since it negates the advantages of smart pointers, but it is a good trick to know since it might come in handy in special cases, like when writing wrappers for other languages.
 
 
 
@@ -159,4 +159,38 @@ const char * pClassName = pObject->typeInfo().className;
 TypeInfo * pSuperClass = pObject->typeInfo().pSuperClass;
 
 ```
+
+
+
+#### Components and Component Pointers
+
+The term *Component* is used in WonderGUI to refer to a public member of an Object with its own API. Components are used to easily add functionality to Objects, particularly Widgets, through composition instead of inheritance such as a text-field or a container for child widgets. Typically (but not always) they contain a reference to the object containing them so they can notify the object of changes.
+
+Sometimes it might be useful to point to a specific component inside an object directly. This can naturally be done using raw pointers like this:
+
+```
+Text * pLabel = pMyButton->label;
+```
+
+However, that only works as long as you keep a strong pointer to the object around, so it isn't destroyed. In order to make sure the object isn't destroyed under your feet, you can use a *ComponentPtr* which points at the component but keeps a reference to the Object, guaranteeing that it isn't destroyed while the pointer is being used. It works like this:
+
+```
+auto pLabel = ComponentPtr( pMyButton, pMyButton->label );
+```
+
+First parameter is a pointer to the object and the second is a reference to the component.
+
+If you need to declare it, it can be declared like this:
+
+```
+ComponentPtr<Text>	pLabel;
+```
+
+But in most cases the component has a typedef:ed pointer that can be used for brevity and readability:
+
+```
+Text_p	pLabel;
+```
+
+A weak-pointer version currently does not exist but can easily be added if needed.
 

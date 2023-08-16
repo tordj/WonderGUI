@@ -16,7 +16,7 @@ The chunk header is 2-4 bytes long, depending on the size of the chunk and has t
 
 | Bit    | Content                                                      |
 | ------ | ------------------------------------------------------------ |
-| 0..7   | Identifier (enum GxChunkId)                                  |
+| 0..7   | Identifier (enum GfxChunkId)                                 |
 | 8..10  | SPX storage format. An SPX can be stored as full 32 bits or 16 or 8 bits with optionally discarded binals to make it fit. See separate table for explanation |
 | 11..15 | Size of chunk, excluding the header, in the range of 0-30 bytes. If value is set to 31 it means that the header is extended to 4 bytes and the value should be discarded. Instead the size of the chunk is saved in the next 2 bytes and in the range of 0-65535 bytes. |
 

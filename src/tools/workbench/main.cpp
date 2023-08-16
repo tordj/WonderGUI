@@ -642,7 +642,7 @@ int main(int argc, char** argv)
 		pImage0->setSkin(pTestSkin);
 		pImage0->setPointerStyle(PointerStyle::Crosshair);
 
-		pBasePanel->slots.pushBack(pImage0, { .func = [](Widget* pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); }});
+		pBasePanel->slots.pushBack(pImage0, [](Widget* pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
 
 		Base::msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 
@@ -1182,7 +1182,7 @@ bool stretchBlitTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pImage = Image::create();
 	pImage->setImage(pImgSurface, { 0,0,256,256 });
 //	pImage->setImage(pImgSurface, { 1,1,254,254 });
-	pBack->slots.pushBack(pImage, { .pos = { 10,10 }, .size = {256,256 }} );
+	pBack->slots.pushBackMovable(pImage, { 10,10,256,256 } );
 
 	Base::msgRouter()->addRoute(pImage, MsgType::MouseDrag, [pBack,pImage](Msg* pMsg) { 
 	
@@ -1210,7 +1210,7 @@ bool scrollIntoViewTest(ComponentPtr<DynamicSlot> pEntry)
 
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.pushBack(pScrollPanel, { .pos = { 10,10 }, .size = {200,50 }} );
+	pFlex->slots.pushBackMovable(pScrollPanel, { 10,10,200,50 });
 
 	* pEntry = pFlex;
 
@@ -1229,7 +1229,7 @@ bool textClipTest(ComponentPtr<DynamicSlot> pEntry)
 	pEditor->setSkin( pSkin );
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.pushBack(pEditor, { .pos = { 10,10 }, .size = {50,30 }} );
+	pFlex->slots.pushBackMovable(pEditor, { 10,10,50,30 });
 
 	*pEntry = pFlex;
 
@@ -1246,7 +1246,7 @@ bool textEditorTest(ComponentPtr<DynamicSlot> pEntry)
 											.skin = pSkin});
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.pushBack(pEditor, { .pos = { 10,10 }, .size = {150,0 }} );
+	pFlex->slots.pushBackMovable(pEditor, { 10,10,150,0 });
 
 	*pEntry = pFlex;
 
@@ -1266,7 +1266,7 @@ bool lineEditorTest(ComponentPtr<DynamicSlot> pEntry)
 	pEditor->setSkin( pSkin );
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.pushBack(pEditor, { .pos = { 10,100 }, .size = {80,40 }} );
+	pFlex->slots.pushBackMovable(pEditor, { 10,100,80,40 });
 
 	* pEntry = pFlex;
 
@@ -1290,7 +1290,7 @@ bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 	auto  pOpener = PopupOpener::create();
 	pOpener->setSkin( pButtonSkin );
 	pOpener->label.setText("OPEN POPUP");
-	pFlex->slots.pushBack(pOpener, { .pos = { 50,50 }, .size = {50,30 }} );
+	pFlex->slots.pushBackMovable(pOpener, { 50,50,50,30 });
 
 	auto pOpened = Filler::create();
 	pOpened->setSkin( pButtonSkin );
@@ -1321,7 +1321,7 @@ bool scrollbarTest(ComponentPtr<DynamicSlot> pEntry)
 
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.pushBack(pScrollPanel, { .pos = { 10,10 }, .size = {200,50 }} );
+	pFlex->slots.pushBackMovable(pScrollPanel, { 10,10,200,50 });
 
 	* pEntry = pFlex;
 
@@ -1405,9 +1405,9 @@ bool designLayerTest(ComponentPtr<DynamicSlot> pSlot)
 	pFiller3->setSkin( ColorSkin::create(Color::CadetBlue) );
 	pFiller3->setDefaultSize({ 20,20 });
 
-	pFlexPanel->slots.pushFront(pFiller1, { .pos = { 10,10 }, .size = {50,50 }} );
-	pFlexPanel->slots.pushFront(pFiller2, { .pos = { 20,20 }, .size = {50,50 }} );
-	pFlexPanel->slots.pushFront(pFiller3, { .pos = { 30,30 }, .size = {50,50 }} );
+	pFlexPanel->slots.pushFrontMovable(pFiller1, Rect(10, 10, 50, 50));
+	pFlexPanel->slots.pushFrontMovable(pFiller2, Rect(20, 20, 50, 50));
+	pFlexPanel->slots.pushFrontMovable(pFiller3, Rect(30, 30, 50, 50));
 
 	pDesignOverlay->mainSlot = pFlexPanel;
 	*pSlot = pDesignOverlay;
@@ -1450,7 +1450,7 @@ bool pianoKeyboardTest(ComponentPtr<DynamicSlot> pSlot)
 		pSimplePiano->setLayout(7, std::bitset<7>("1101110"));
 		pSimplePiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { State::Normal, State::Hovered, State::Pressed });
 */
-		pBaseLayer->slots.pushFront(pSimplePiano, { .pos = { 20,20 } } );
+		pBaseLayer->slots.pushFrontMovable(pSimplePiano, { 20,20,0,0 });
 
 		pSimplePiano->selectKey(3);
 		pSimplePiano->selectKey(6);
@@ -1540,12 +1540,11 @@ bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pKnob4 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin4, .value = 0.5f });
 	auto pKnob5 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin5, .value = 0.5f });
 
-	pBaseLayer->slots.pushBack(pKnob1, { .pos = { 10,10 }, .size = {100,100 }} );
-	pBaseLayer->slots.pushBack(pKnob2, { .pos = { 120,10 }, .size = {100,100 }} );
-	pBaseLayer->slots.pushBack(pKnob3, { .pos = { 230,10 }, .size = {100,100 }} );
-	pBaseLayer->slots.pushBack(pKnob4, { .pos = { 340,10 }, .size = {100,100 }} );
-	pBaseLayer->slots.pushBack(pKnob5, { .pos = { 450,10 }, .size = {100,100 }} );
-
+	pBaseLayer->slots.pushBackMovable(pKnob1, Rect(10, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pKnob2, Rect(120, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pKnob3, Rect(230, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pKnob4, Rect(340, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pKnob5, Rect(450, 10, 200, 100));
 	*pSlot = pBaseLayer;
 	return true;
 }
@@ -1586,7 +1585,7 @@ bool spinKnobTest(ComponentPtr<DynamicSlot> pSlot)
 		pKnob4->setDragAxis(Axis::Y);
 	*/
 
-	pBaseLayer->slots.pushBack(pKnob1, { .pos = {10,10}, .size = {400, 100} });
+	pBaseLayer->slots.pushBackMovable(pKnob1, Rect(10, 10, 400, 100));
 	//	pBaseLayer->slots.pushBackMovable(pKnob2, Rect(120, 10, 100, 100));
 	//	pBaseLayer->slots.pushBackMovable(pKnob3, Rect(230, 10, 100, 100));
 	//	pBaseLayer->slots.pushBackMovable(pKnob4, Rect(340, 10, 100, 100));
@@ -1622,7 +1621,7 @@ bool animKnobTest(ComponentPtr<DynamicSlot> pSlot)
 	pKnob1->setValue(0.5f);
 	pKnob1->setDragRange(500);
 
-	pBaseLayer->slots.pushBack(pKnob1, { .pos =  {10, 10} } );
+	pBaseLayer->slots.pushBackMovable(pKnob1, Rect(10, 10, 0, 0));
 	*pSlot = pBaseLayer;
 	return true;
 }
@@ -1663,8 +1662,8 @@ bool sliderTest(ComponentPtr<DynamicSlot> pSlot)
 		pSliderY->setDefaultSlideLength(100);
 	}
 
-	pBaseLayer->slots.pushBack(pSliderY, { .pos = {10, 10} });
-	pBaseLayer->slots.pushBack(pSliderX, { .pos = {40, 10} });
+	pBaseLayer->slots.pushBackMovable(pSliderY, Coord(10, 10));
+	pBaseLayer->slots.pushBackMovable(pSliderX, Coord(40, 10));
 	*pSlot = pBaseLayer;
 	return true;
 }
@@ -1706,8 +1705,8 @@ bool rangeSliderTest(ComponentPtr<DynamicSlot> pSlot)
 		pSliderY->setDefaultSlideLength(100);
 	}
 
-	pBaseLayer->slots.pushBack(pSliderY, { .pos = {10, 10} });
-	pBaseLayer->slots.pushBack(pSliderX, { .pos = {40, 10} });
+	pBaseLayer->slots.pushBackMovable(pSliderY, Coord(10, 10));
+	pBaseLayer->slots.pushBackMovable(pSliderX, Coord(40, 10));
 	*pSlot = pBaseLayer;
 	return true;
 }
@@ -1827,7 +1826,7 @@ bool doubleSkinTest(ComponentPtr<DynamicSlot> pSlot)
 	pKnob1->setValue(0.5f);
 	pKnob1->setDragRange(500);
 
-	pBaseLayer->slots.pushBack(pKnob1, { .pos = {10,10}, .size = {400,100} });
+	pBaseLayer->slots.pushBackMovable(pKnob1, Rect(10, 10, 400, 100));
 	*pSlot = pBaseLayer;
 	return true;
 }
@@ -1851,8 +1850,8 @@ bool timerTest(ComponentPtr<DynamicSlot> pSlot)
 	pTimer1->setPlayMode(PlayMode::BackwardPingPong);
 	pTimer1->start();
 
-//	pBaseLayer->slots.pushBack(pTimer1, { .pos = {10, 10}, .size = {419, 419} });
-	pBaseLayer->slots.pushBack(pTimer1, { .pos = {10, 10}, .size = {419, 50} });
+//	pBaseLayer->slots.pushBackMovable(pTimer1, Rect(10, 10, 419, 419));
+	pBaseLayer->slots.pushBackMovable(pTimer1, Rect(10, 10, 419, 50));
 
 	*pSlot = pBaseLayer;
 	return true;
@@ -1877,13 +1876,13 @@ bool animPlayerTest(ComponentPtr<DynamicSlot> pSlot)
 	{
 		for (int x = 0; x < 5; x++)
 		{
-			pPlayer->frames.pushBack( { .source = {x*204.f,y*180.f}, .duration = 150} );
+			pPlayer->frames.pushBack(AnimFrame({ pts(x*204),pts(y*180) }, 150));
 		}
 	}
 
 	pPlayer->play();
 
-	pBaseLayer->slots.pushBack(pPlayer, { .pos = {10, 10} });
+	pBaseLayer->slots.pushBackMovable(pPlayer, Coord(10, 10));
 	*pSlot = pBaseLayer;
 	return true;
 }
@@ -1918,10 +1917,10 @@ bool selectBoxTest(ComponentPtr<DynamicSlot> pSlot)
 	pSelectBox->setListSkin(pListSkin);
 	pSelectBox->setEntrySkin(pListEntrySkin);
 
-	pSelectBox->entries.pushBack({ .id = 1, .text = "ENTRY 1"});
-	pSelectBox->entries.pushBack({ .id = 1, .text = "ENTRY 2" });
+	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("ENTRY 1")));
+	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("ENTRY 2")));
 
-	pBaseLayer->slots.pushBack(pSelectBox, { .pos = {10, 10} });
+	pBaseLayer->slots.pushBackMovable(pSelectBox, Coord(10, 10));
 	pPopupOverlay->mainSlot = pBaseLayer;
 
 	*pSlot = pPopupOverlay;
@@ -1953,8 +1952,8 @@ bool tileSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 
 
-	pBaseLayer->slots.pushBack(pFiller1, { .pos = {10, 10}, .size = {100, 100} });
-	pBaseLayer->slots.pushBack(pFiller2, { .pos = {10, 120}, .size = {400, 100} });
+	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pFiller2, Rect(10, 120, 400, 100));
 
 	*pSlot = pBaseLayer;
 	return true;
@@ -1982,8 +1981,8 @@ bool gradientSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 
 
-	pBaseLayer->slots.pushBack(pFiller1, { .pos = {10,10}, .size = {100,100} });
-	pBaseLayer->slots.pushBack(pFiller2, { .pos = {10,10}, .size = {400,100} });
+	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pFiller2, Rect(10, 120, 400, 100));
 
 	*pSlot = pBaseLayer;
 	return true;
@@ -2021,7 +2020,7 @@ bool bakeSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 
 
-	pBaseLayer->slots.pushBack(pFiller1, {.pos = {10,10}, .size = {100,100} });
+	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 100, 100));
 
 	*pSlot = pBaseLayer;
 	return true;
@@ -2056,7 +2055,7 @@ bool animSkinTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pFiller1 = Filler::create();
 	pFiller1->setSkin( pBakeSkin );
 
-	pBaseLayer->slots.pushBack(pFiller1, { .pos = {10,10}, .size = {256,256} });
+	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 256, 256));
 
 	*pSlot = pBaseLayer;
 	return true;
@@ -2086,7 +2085,7 @@ bool renderLayerTest(ComponentPtr<DynamicSlot> pSlot)
 		auto pWidget = Filler::create();
 		pWidget->setSkin( pDaSkin );
 
-		pBaseLayer->slots.pushBack(pWidget, { .pos = Coord(i*30,i*30), .size = {100, 100} });
+		pBaseLayer->slots.pushBackMovable(pWidget, Rect(i*30, i*30, 100, 100));
 
 		Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer, i](Msg* pMsg) { pBaseLayer->slots[i].move(static_cast<MouseDragMsg*>(pMsg)->draggedNow()); });
 	}
@@ -2122,7 +2121,7 @@ bool rigidPartNinePatchTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pWidget = Filler::create();
 	pWidget->setSkin( pSkin );
 
-	pBaseLayer->slots.pushBack(pWidget, { .pos = {10,10}, .size = {256, 256} });
+	pBaseLayer->slots.pushBackMovable(pWidget, Rect(10, 10, 256, 256));
 
 	Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer](Msg* pMsg) { pBaseLayer->slots[0].setSize(pBaseLayer->slots[0].size() + Size(static_cast<MouseDragMsg*>(pMsg)->draggedNow())); });
 
@@ -2156,7 +2155,7 @@ bool scrollSkinTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pWidget = ToggleButton::create();
 	pWidget->setSkin( pComboSkin );
 
-	pBaseLayer->slots.pushBack(pWidget, { .pos = {10, 10}, .size = {84, 36} });
+	pBaseLayer->slots.pushBackMovable(pWidget, Rect(10, 10, 84, 36));
 
 	*pSlot = pBaseLayer;
 	return true;
@@ -2204,12 +2203,12 @@ bool tooltipLayerTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pWidget1 = Filler::create();
 	pWidget1->setSkin( ColorSkin::create(Color::Blue) );
 	pWidget1->setTooltip( String("This is widget 1.") );
-	pBaseLayer->slots.pushBack(pWidget1, { .pos = {20, 20}, .size = {100, 100} });
+	pBaseLayer->slots.pushBackMovable(pWidget1, Rect(20, 20, 100, 100));
 
 	auto pWidget2 = Filler::create();
 	pWidget2->setSkin( ColorSkin::create(Color::Green) );
 	pWidget2->setTooltip(String("This is widget 2."));
-	pBaseLayer->slots.pushBack(pWidget2, { .pos = {150, 20}, .size = {100, 100} });
+	pBaseLayer->slots.pushBackMovable(pWidget2, Rect(150, 20, 100, 100));
 
 	pTooltipOverlay->mainSlot = pBaseLayer;
 	*pSlot = pTooltipOverlay;
@@ -2233,7 +2232,7 @@ bool kerningTest(ComponentPtr<DynamicSlot> pSlot)
 	pDisplay1->display.setText("HHTATHHWAW");
 	pDisplay1->display.setStyle(pBigStyle);
 
-	pBaseLayer->slots.pushBack(pDisplay1, { .pos = {10, 10}, .size = {300, 100} });
+	pBaseLayer->slots.pushBackMovable(pDisplay1, Rect(10, 10, 300, 100));
 
 	*pSlot = pBaseLayer;
 	return true;
@@ -2258,7 +2257,7 @@ bool circleSkinTest(ComponentPtr<DynamicSlot> pSlot)
 	pWidget->setSkin( pSkin );
 
 
-	pBaseLayer->slots.pushBack(pWidget, { .pos = {10, 10}, .size = {300, 100} });
+	pBaseLayer->slots.pushBackMovable(pWidget, Rect(10, 10, 300, 100));
 
 
 	*pSlot = pBaseLayer;
@@ -2299,10 +2298,16 @@ bool packListTest(ComponentPtr<DynamicSlot> pSlot)
 
 	}
 
-	pBaseLayer->slots.pushBack(pPackList, { .pos = {10, 10}, .size = {200, 400} });
+
+
+
+
+	pBaseLayer->slots.pushBackMovable(pPackList, Rect(10, 10, 200, 400));
+
 
 	*pSlot = pBaseLayer;
 	return true;
+
 }
 
 
@@ -2661,8 +2666,8 @@ bool customSkinTest(ComponentPtr<DynamicSlot> pEntry)
 	
 	
 	
-	pFlex->slots.pushBack( pFiller, { .pos = {10,10}, .size = {200,200} } );
-	
+	pFlex->slots.pushBackMovable( pFiller, {10,10,200,200} );
+
 	*pEntry = pFlex;
 
 	return true;
@@ -2676,11 +2681,6 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 
 	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
 
-	GraphDisplay::Blueprint bp;
-	
-	
-	
-	
 	auto pGraph = GraphDisplay::create(WGBP(GraphDisplay,
 		_.displayCeiling = 0.5f,
 		_.displayFloor = - 0.5f,
@@ -2695,17 +2695,17 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 
 
 
-	pFlex->slots.pushBack(pGraph, { .pin1 = Placement::NorthWest, .pin2 = Placement::Center });
+	pFlex->slots.pushBackMovable(pGraph, { 10,10,200,200 });
 
 	*pEntry = pFlex;
 
 
-	pGraph->graphs.pushBack({
+	pGraph->graphs.pushBack(Graph({
 		.bottomOutlineThickness = 0,
 		.outlineColor = Color::Red,
 		.topOutlineThickness = 5,
 
-		});
+		}));
 
 
 	static float topSamples[5] = { 0, -0.25f, 0.25f, 0.23f, 0.5f };
@@ -2748,67 +2748,38 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 
 	for (int i = 0; i < 6; i++)
 	{
-		pGraph->graphs.pushBack({
+		pGraph->graphs.pushBack(Graph({
 			.bottomOutlineThickness = 0,
 			.color = Color::Transparent,
 			.outlineColor = colors[i],
 			.topOutlineThickness = 2,
-			});
+			}));
 
 		pGraph->graphs.back().setTopSamples(201, curveSamples[i] );
 	}
 
 	// Setup grid
 
+	pGraph->xLines.pushBack(GridLine(0.5f, String("-0.5"), 0.5f));
+	pGraph->xLines.pushBack(GridLine(-0.25f, String("-0.25"), 0.5f));
+	pGraph->xLines.pushBack(GridLine(0.0f, String("0.0"), 1.0f));
+	pGraph->xLines.pushBack(GridLine( 0.25f, String("0.25"), 0.5f));
 
-	pGraph->xLines = 		{	{ .pos = 0.5f, .label = "-0.5", .thickness = 0.5f },
-								{ .pos = -0.25f, .label = "-0.25", .thickness = 0.5f },
-								{ .pos = 0.0f, .label = "0.0", .thickness = 1.0f },
-								{ .pos = 0.25f, .label = "0.25", .thickness = 0.5f } };
+	pGraph->yLines.pushBack(GridLine(0.0f, String("0.0"), 0.5f));
+	pGraph->yLines.pushBack(GridLine(0.25f, String("0.25"), 0.5f));
+	pGraph->yLines.pushBack(GridLine(0.5f, String("0.5"), 0.5f));
+	pGraph->yLines.pushBack(GridLine(1.0f, String("1.0"), 0.5f));
+
+
+//	pGraph->xLines.pushBack({ .value = -0.25f } );
 
 /*
-	pGraph->xLines = 		{ .pos = 0.5f, .label = "-0.5", .thickness = 0.5f };
-	
-	
-	pGraph->xLines	<<	({ .pos = -0.25f, .label = "-0.25", .thickness = 0.5f });
-	<<	GridLine::Blueprint{ .pos = 0.0f, .label = "0.0", .thickness = 1.0f };
-	<<	GridLine::Blueprint{ .pos = 0.25f, .label = "0.25", .thickness = 0.5f };
+	pGraph->xLines.pushBack(WGBP(GridLine,
+							_.value = -0.25f
+							));
 */
-	
-	
-	std::vector<GridLine::Blueprint> vec = {	{ .pos = 0.0f, .label = "0.0", .thickness = 0.5f },
-								{ .pos = 0.25f, .label = "0.25", .thickness = 0.5f },
-								{ .pos = 0.5f, .label = "0.5", .thickness = 0.5f },
-								{ .pos = 1.0f, .label = "1.0", .thickness = 0.5f } };
-
-	pGraph->yLines.pushBack( vec.begin(), vec.end() );
-
-	
-	pGraph->yLines.insert( 3, { { .pos = 0.75, .label = "0.75", .thickness = 2.f },
-								{ .pos = 0.8, .thickness = 0.5f },
-								{ .pos = 0.85, .thickness = 0.5f },
-								{ .pos = 0.9, .thickness = 0.5f },
-								{ .pos = 0.95, .thickness = 0.5f } });
-
-	
-	std::vector<GridLine::Blueprint> vec2 = { { .pos = 0.05, .thickness = 0.5f },
-								{ .pos = 0.1, .thickness = 0.5f },
-								{ .pos = 0.15, .thickness = 0.5f },
-								{ .pos = 0.20, .thickness = 0.5f } };
 
 
-	pGraph->yLines.insert( pGraph->yLines.begin()+1, vec2.begin(), vec2.end() );
-	
-	
-	
-/*
-	
-	pGraph->yLines.pushBack({	{ .pos = 0.0f, .label = "0.0", .thickness = 0.5f },
-								{ .pos = 0.25f, .label = "0.25", .thickness = 0.5f },
-								{ .pos = 0.5f, .label = "0.5", .thickness = 0.5f },
-								{ .pos = 1.0f, .label = "0.75", .thickness = 0.5f } });
-
-*/
 
 	return true;
 }
