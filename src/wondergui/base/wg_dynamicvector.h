@@ -60,19 +60,19 @@ namespace wg
 		iterator		pushBack( const std::initializer_list<struct EntryType::Blueprint>& entries );
 
 		template<typename Iterator>
-		iterator		pushBack(const Iterator& beg, const Iterator& end);
+		iterator		pushBack(Iterator beg, Iterator end);
 		
 		iterator		insert( int index, const struct EntryType::Blueprint& entry );
 		iterator		insert( int index, const std::initializer_list<struct EntryType::Blueprint>& entries );
 
 		template<typename Iterator>
-		iterator		insert( int index, const Iterator& beg, const Iterator& end);
+		iterator		insert( int index, Iterator beg, Iterator end);
 
 		iterator		insert( const_iterator pos, const struct EntryType::Blueprint& entry );
 		iterator		insert( const_iterator pos, const std::initializer_list<struct EntryType::Blueprint>& entries );
 
 		template<typename Iterator>
-		iterator		insert( const_iterator pos, const Iterator& beg, const Iterator& end);
+		iterator		insert( const_iterator pos, Iterator beg, Iterator end);
 
 		
 		iterator		erase( int index );
@@ -128,7 +128,7 @@ namespace wg
 
 	template < class EntryType>
 	template< typename Iterator>
-	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack(const Iterator& beg, const Iterator& end)
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::pushBack(Iterator beg, Iterator end)
 	{
 		static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
 			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, struct EntryType::Blueprint>::value,
@@ -177,7 +177,7 @@ namespace wg
 
 	template < class EntryType>
 	template< typename Iterator>
-	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert( int index, const Iterator& beg, const Iterator& end)
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert( int index, Iterator beg, Iterator end)
 	{
 		//TODO: Add error checking
 
@@ -227,7 +227,7 @@ namespace wg
 
 	template < class EntryType>
 	template< typename Iterator>
-	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert( const_iterator pos, const Iterator& beg, const Iterator& end)
+	typename DynamicVector<EntryType>::iterator DynamicVector<EntryType>::insert( const_iterator pos, Iterator beg, Iterator end)
 	{
 		//TODO: Add error checking
 

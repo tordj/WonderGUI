@@ -226,11 +226,11 @@ int main ( int argc, char** argv )
 
     auto pOutput1 = Image::create();
     pOutput1->setSkin( BoxSkin::create(2, Color8::Black, Color8::HotPink) );
-    pBasePanel->slots.pushBack(pOutput1, [](Widget * pWidget, Size sz) { return Rect(10,10,244,244); } );
+	pBasePanel->slots.pushBack(pOutput1, { .func = [](Widget* pWidget, Size sz) { return Rect(10,10,244,244); } });
 
 	auto pOutput2 = Image::create();
 	pOutput2->setSkin( BoxSkin::create(2, Color8::Black, Color8::HotPink) );
-	pBasePanel->slots.pushBack(pOutput2, [](Widget * pWidget, Size sz) { return Rect(244+20,10,244,244); } );
+	pBasePanel->slots.pushBack(pOutput2, { .func = [](Widget* pWidget, Size sz) { return Rect(244 + 20,10,244,244); } });
 
 
 	//------------------------------------------------------

@@ -677,8 +677,8 @@ bool GfxDeviceTester::setup_chrome()
 	auto pMidSection = PackPanel::create();
 	pMidSection->setAxis(Axis::X);
 	pMidSection->setLayout(pUniformLayout);
-	auto it = pLayerStack->slots << pMidSection;
-	(*it).setSizePolicy(SizePolicy2D::Stretch);
+	pLayerStack->slots << pMidSection;
+	pLayerStack->slots.back().setSizePolicy(SizePolicy2D::Stretch);
 
 	auto pSidebar = PackPanel::create();
 	pSidebar->setAxis(Axis::Y);

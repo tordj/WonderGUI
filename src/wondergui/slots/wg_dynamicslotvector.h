@@ -84,7 +84,7 @@ namespace wg
 		iterator		pushFront( const std::initializer_list< std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries );
 
 		template<typename Iterator>
-		iterator		pushFront(const Iterator& beg, const Iterator& end);
+		iterator		pushFront(Iterator beg, Iterator end);
 		
 
 		iterator		pushBack(const Widget_p& pWidget);
@@ -94,7 +94,7 @@ namespace wg
 		iterator		pushBack( const std::initializer_list< std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries );
 		
 		template<typename Iterator>
-		iterator		pushBack(const Iterator& beg, const Iterator& end);
+		iterator		pushBack(Iterator beg, Iterator end);
 
 
 		iterator		insert(int index, const Widget_p& pWidget);
@@ -259,7 +259,7 @@ namespace wg
 
 	template < class SlotType>
 	template<typename Iterator>
-	typename DynamicSlotVector<SlotType>::iterator	DynamicSlotVector<SlotType>::pushFront(const Iterator& beg, const Iterator& end)
+	typename DynamicSlotVector<SlotType>::iterator	DynamicSlotVector<SlotType>::pushFront(Iterator beg, Iterator end)
 	{
 		static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
 			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
@@ -285,7 +285,7 @@ namespace wg
 
 	template < class SlotType>
 	template<typename Iterator>
-	typename DynamicSlotVector<SlotType>::iterator	DynamicSlotVector<SlotType>::pushBack(const Iterator& beg, const Iterator& end)
+	typename DynamicSlotVector<SlotType>::iterator	DynamicSlotVector<SlotType>::pushBack(Iterator beg, Iterator end)
 	{
 		static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
 			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
