@@ -31,6 +31,8 @@
 #	include <wg2_color.h>
 #endif
 
+#include <wg_string.h>
+
 //____ Wg_Interface_TextHolder ________________________________________________
 
 class Wg_Interface_TextHolder : protected WgTextHolder
