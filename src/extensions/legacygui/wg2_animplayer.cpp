@@ -32,7 +32,7 @@
 static const char	c_widgetType[] = {"AnimPlayer"};
 
 #ifdef SOFTUBE_USE_PACE_FUSION
-#include "PaceFusion.h"
+#include "PaceFusionAnnotations.h"
 #endif
 
 //____ Constructor _________________________________________________________________

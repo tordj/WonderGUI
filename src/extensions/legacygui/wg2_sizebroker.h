@@ -71,6 +71,14 @@ public:
 	int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
 };
 
+class WgOSDFaderTrackSizeBroker : public WgSizeBroker
+{
+public:
+    WgOSDFaderTrackSizeBroker(){};
+    ~WgOSDFaderTrackSizeBroker(){};
+
+    int SetItemLengths(WgSizeBrokerItem *pItems, int nItems, int totalLength) const;
+};
 
 class WgScalePreferredSizeBroker : public WgSizeBroker
 {

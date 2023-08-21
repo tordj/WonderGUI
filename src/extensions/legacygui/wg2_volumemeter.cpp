@@ -415,7 +415,11 @@ void WgVolumeMeter::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 		else
 			color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
 
-		pDevice->fill( wg::RectSPX(ledRect*64), color);
+		wg::RectSPX drawRect = wg::RectSPX(ledRect*64);
+		if( !m_bUseAntiAlias )
+			drawRect = wg::Util::align(drawRect);
+		
+		pDevice->fill( drawRect, color);
 
 		ledRect.x += stepX;
 		ledRect.y += stepY;

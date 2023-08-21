@@ -109,6 +109,9 @@ public:
 	void            FreezeGeo();
 	void            UnfreezeGeo();
 
+	void			SetSkin(wg::Skin* pSkin) override;
+
+
 protected:
 
 	// Overloaded from Widget

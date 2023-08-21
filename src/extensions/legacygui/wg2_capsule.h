@@ -31,7 +31,7 @@
 class WgCapsule : public WgContainer
 {
 public:
-	~WgCapsule() {}
+	virtual ~WgCapsule() {}
 
 	virtual WgHook * SetChild( WgWidget * pWidget );
 	WgWidget *		Child() const { return m_hook.Widget(); }

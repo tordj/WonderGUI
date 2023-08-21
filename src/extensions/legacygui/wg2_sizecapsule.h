@@ -33,7 +33,7 @@ class WgSizeCapsule : public WgCapsule
 {
 public:
 	WgSizeCapsule();
-	~WgSizeCapsule();
+	virtual ~WgSizeCapsule();
 
 	virtual const char *Type( void ) const override;
 	static const char * GetClass();

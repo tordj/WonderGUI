@@ -76,7 +76,7 @@ friend class WgStackHook;
 
 public:
 	WgStackPanel();
-	~WgStackPanel();
+	virtual ~WgStackPanel();
 
 	const char * Type() const;
 	static const char * GetClass();

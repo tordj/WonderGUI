@@ -40,6 +40,8 @@
 
 #include <wg_surfacefactory.h>
 #include <wg_skin.h>
+#include <wg_gradient.h>
+
 
 //____ WgChart ____________________________________________________________
 
@@ -74,6 +76,8 @@ public:
 
     bool	SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, float topLineThickness = 0.f, WgColor topLineColor = WgColor::Black, float bottomLineThickness = 0.f, WgColor bottomLineColor = WgColor::Black, int transitionMs = 0);
 
+    bool    SetWaveGradient(int waveId, wg::Gradient gradient);
+
 	bool	SetWaveSamples(int waveId, int firstSample, int nSamples, float * pTopBorderSamples, float * pBottomBorderSamples);
 	bool	SetWaveSamples(int waveId, int firstSample, int nSamples, float * pSamples, float floor = 0.f);
 
@@ -91,7 +95,7 @@ public:
     void    SetDynamicMinSize(float minsize) { m_fDynamicMinSize = minsize; }
     void    IgnoreDynamicScaling(int waveId, bool ignore = true);
     void    SetDefaultValue(float v) { m_defaultValue = v; }
-    
+
 	float	ValueRangeStart() { return m_topValue; }
 	float	ValueRangeEnd() { return m_bottomValue; }
 
@@ -113,6 +117,7 @@ public:
 
     void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle, bool bLabelsOnRight = false );
 	void	SetValueGridLines(int nLines, GridLine * pLines);
+    void    SetShowGrid(bool show) { m_bShowGrid = show; }
 
 	void	SetResizeResponder(std::function<void(WgChart * pWidget, WgSize newSize)> func);	// Called when widgets size has changed.
 	void	SetSampleRangeResponder(std::function<void(WgChart * pWidget, float firstSample, float lastSample)> func);	// Called when widgets sample range has changed.
@@ -180,6 +185,8 @@ protected:
 		int					resampledFirst;
 
         bool                ignoreDynamicScaling = false;
+
+        wg::Gradient        m_waveGradient;
 	};
 
 	struct LabelStyle
@@ -244,6 +251,7 @@ private:
 	std::vector<Wave>		m_waves;
 	std::vector<GridLine>	m_sampleGridLines;
 	std::vector<GridLine>	m_valueGridLines;
+    bool m_bShowGrid = true;
 
 	bool		m_bDynamicValueRange;
 	bool		m_bDynamicSampleRange;
@@ -269,7 +277,7 @@ private:
     wg::SurfaceFactory_p  m_pSurfaceFactory;
     wg::Surface_p         m_pCacheBitmap;
     WgPatches           m_cacheDirt;
-    
+
     int                 m_cacheFirst = 0;
     int                 m_cacheLast = 0;
 

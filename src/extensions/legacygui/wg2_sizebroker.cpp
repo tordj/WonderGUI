@@ -189,6 +189,45 @@ int WgOSDTrackMetersSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int n
 	return totalUsed;
 }
 
+int WgOSDFaderTrackSizeBroker::SetItemLengths(WgSizeBrokerItem *pItems, int nItems, int totalLength) const
+{
+    if (nItems == 0)
+        return 0;
+
+    // Gather some data we need
+     // Total preferred length of all static (non-stretching) items
+    float totalWeight = 0; // Total weight of all items.
+
+    for (int i = 0; i < nItems; i++)
+    {
+            totalWeight += pItems[i].weight;
+    }
+
+    // Calculate baseLength and extraLengthPerWeightUnit
+
+    float lengthPerWeightUnit = totalWeight > 0 ? (totalLength) / totalWeight : 0;
+
+    if (lengthPerWeightUnit < 0.f)
+        lengthPerWeightUnit = 0;
+
+    // Loop through items and set their length
+
+    int total = 0;
+    int length;
+
+    for (int i = 0; i < nItems; i++)
+    {
+        if (pItems[i].weight <= 0)
+            length = pItems[i].preferred;
+        else
+            length = pItems[i].weight * lengthPerWeightUnit;
+
+        pItems[i].output = length;
+        total += length;
+    }
+    return total;
+}
+
 int WgScalePreferredSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const
 {
 	int total = 0;

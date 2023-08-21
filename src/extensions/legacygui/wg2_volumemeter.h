@@ -47,6 +47,8 @@ public:
 
     void            SetUseBackgroundColor(bool bUse) { m_bUseBackgroundColor = bUse; }
     void            SetBackgroundColor(WgColor kColor) { m_BackgroundColor = kColor; }
+	
+	void			SetUseAntiAlias(bool bUse) { m_bUseAntiAlias = bUse; _requestRender(); }
 
 protected:
 
@@ -81,6 +83,7 @@ protected:
 	bool            m_bTunerCorrect = false;
 
 	bool            m_bActive = true;
+	bool			m_bUseAntiAlias = true;
 
 	std::vector<float> m_LEDStates;
 

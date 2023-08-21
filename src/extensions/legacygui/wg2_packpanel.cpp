@@ -101,7 +101,7 @@ WgPackPanel::WgPackPanel()
 {
 	m_bHorizontal = true;
 	m_bBaselineMode = false;
-	m_pSizeBroker = 0;
+	m_pSizeBroker = nullptr;
 	m_bSiblingsOverlap = false;
 }
 
@@ -123,6 +123,25 @@ const char * WgPackPanel::Type( void ) const
 const char * WgPackPanel::GetClass()
 {
 	return c_widgetType;
+}
+
+
+void WgPackPanel::SetSkin(wg::Skin* pSkin)
+{
+	bool bGeoAffected = false;
+	if (!m_pSkin || !pSkin || (pSkin->defaultSize() != m_pSkin->defaultSize()) || (pSkin->_contentPadding(m_scale, m_state) != m_pSkin->_contentPadding(m_scale, m_state)) )
+		bGeoAffected = true;
+
+	WgPanel::SetSkin(pSkin);
+
+	if (bGeoAffected)
+	{
+		m_bChildGeoNeedsRefresh = true;
+		_updatePreferredPixelSize();
+		if (m_bChildGeoNeedsRefresh)
+			_refreshChildGeo();
+	}
+
 }
 
 

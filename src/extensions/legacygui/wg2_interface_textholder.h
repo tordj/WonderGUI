@@ -96,6 +96,9 @@ public:
 	void		SetText( const wg::String& str );
 	void		SetText( const WgText * pText );
 
+	void        SetText( const std::string& str ) { SetText(wg::String(str)); }
+	void        SetText( const char* str ) { SetText(wg::String(str)); }
+	
 	int			AddText( const wg::CharSeq& seq );
 	int			InsertText( int ofs, const wg::CharSeq& seq );
 	int			ReplaceText( int ofs, int nDelete, const wg::CharSeq& seq );

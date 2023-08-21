@@ -28,6 +28,9 @@
 #include <wg2_util.h>
 #include <wg_surfacefactory.h>
 
+#include <wg_gfxstreamdevice.h>
+#include <wg_softgfxdevice.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -308,6 +311,17 @@ bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, floa
 	return true;
 }
 
+//____ SetWaveGradient() _________________________________________________________
+
+bool WgChart::SetWaveGradient(int waveId, wg::Gradient gradient)
+{
+    Wave * p = _getWave(waveId);
+    if (!p)
+        return false;
+
+    p->m_waveGradient = gradient;
+    return true;
+}
 
 void WgChart::SetSampleLabelColor(WgColor col)
 {
@@ -812,7 +826,7 @@ void WgChart::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 		if( !m_pCacheBitmap )
 		{
 			m_pCacheBitmap = m_pSurfaceFactory->createSurface( WGBP(Surface,
-																_.size = _canvas.size(), 
+																_.size = _canvas.size(),
 																_.format = wg::PixelFormat::BGRA_8) );
 			m_cacheDirt.add( _canvas.size()*64 );
 		}
@@ -884,7 +898,8 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 
 	// Draw sample grid lines
 
-	if (!m_sampleGridLines.empty())
+
+	if (!m_sampleGridLines.empty() && m_bShowGrid)
 	{
 		for (auto& line : m_sampleGridLines)
 		{
@@ -932,7 +947,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 
 	// Draw value grid lines
 
-	if (!m_valueGridLines.empty())
+	if (!m_valueGridLines.empty() && m_bShowGrid)
 	{
 		float top = std::min(m_topValue, m_bottomValue);
 		float bottom = std::max(m_topValue, m_bottomValue);
@@ -1054,9 +1069,25 @@ void WgChart::_renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& wa
 
 	int length = std::max(top.length, bottom.length)-1;
 
+    // Check if gradient is set by SetWaveGradient
+    bool useGradient = wave.m_waveGradient.isValid;
+    // Don't use gradient on "slow" devices
+    useGradient &= !((pDevice->typeInfo() == wg::SoftGfxDevice::TYPEINFO) ||
+                    (pDevice->typeInfo() == wg::GfxStreamDevice::TYPEINFO));
+
 	if(length >= 1)
 	{
+        if(useGradient)
+        {
+            pDevice->setTintGradient(WgRect(waveCanvas.x + xOfs, waveCanvas.y, length, waveCanvas.h)*64, wave.m_waveGradient);
+        }
+
 		pDevice->drawWave(WgRect(waveCanvas.x + xOfs, waveCanvas.y, length, waveCanvas.h)*64, &top, &bottom, wave.frontFill, wave.backFill);
+
+        if(useGradient)
+        {
+            pDevice->clearTintGradient();
+        }
 //        pDevice->ClipDrawHorrWave(waveClip, WgCoord(waveCanvas.x + xOfs, waveCanvas.y), length, top, bottom, wave.frontFill, wave.backFill);
 	}
 }
@@ -1228,6 +1259,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 
 	canvas -= m_pixelPadding;
 
+    // sampleScale < 1 means upsampling
 	float sampleScale = (m_lastSample - m_firstSample) / (canvas.w + 1);
 
 	int nResampled = 0;
@@ -1289,22 +1321,52 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		{
 			if(nResampled > 0.0f)
 			{
-				float stepFactor = (pWave->orgTopSamples.size() - 1) / (float) nResampled;
+                if(sampleScale < 1.0f) // upsampling
+                {
+                    float stepFactor = (pWave->orgTopSamples.size() - 1) / (float) nResampled;
 
-				for (int i = 0; i < nResampled; i++)
-				{
-					float sample = stepFactor*i;
-					int ofs = (int)sample;
-					int frac2 = ((int)(sample * 64)) & 0x3F;
-					int frac1 = 64 - frac2;
+                    for (int i = 0; i < nResampled; i++)
+                    {
+                        float sample = stepFactor*i;
+                        int ofs = (int)sample;
+                        int frac2 = ((int)(sample * 64)) & 0x3F;
+                        int frac1 = 64 - frac2;
 
-					float val1 = (pWave->orgTopSamples[ofs] - floor) * valueFactor * 64;
-					float val2 = (pWave->orgTopSamples[ofs+1] - floor) * valueFactor * 64;
-					if(std::isfinite(val1) && std::isfinite(val2))
-						pNewTopSamples[i] = int(yOfs) + ((((int)val1)*frac1 + ((int)val2)*frac2) >> 6);
-					else
-						pNewTopSamples[i] = 0;
-				}
+                        float val1 = (pWave->orgTopSamples[ofs] - floor) * valueFactor * 64;
+                        float val2 = (pWave->orgTopSamples[ofs+1] - floor) * valueFactor * 64;
+                        if(std::isfinite(val1) && std::isfinite(val2))
+                            pNewTopSamples[i] = int(yOfs) + ((((int)val1)*frac1 + ((int)val2)*frac2) >> 6);
+                        else
+                            pNewTopSamples[i] = 0;
+                    }
+                }
+                else // downsampling
+                {
+                    // stepFactor is > 1
+                    float stepFactor = (pWave->orgTopSamples.size() - 1) / (float) nResampled;
+
+                    int j = 0;
+                    for (int i = 0; i < nResampled; i++)
+                    {
+                        // For each new sample, check which sample is the furthest
+                        // away from 0. Use that one. This mode was designed for EQ curves,
+                        // but will probably work for most curves.
+
+                        float val = 0.f;
+                        // TODO: Can we overrun here? j = stepFactor*i = (orgSize-1) * (n_Resampled-1) / nResampled. NOPE
+                        while(j <= stepFactor*i)
+                        {
+                            float cur = pWave->orgTopSamples[j];
+                            val = (std::abs(cur) > std::abs(val)) ? cur : val;
+                            j++;
+                        }
+
+                        if(std::isfinite(val))
+                            pNewTopSamples[i] = int(yOfs) + (int)((val-floor) * valueFactor * 64);
+                        else
+                            pNewTopSamples[i] = 0;
+                    }
+                }
 			}
 		}
 	}
@@ -1334,23 +1396,53 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		{
 			if(nResampled > 0.0f)
 			{
-				float stepFactor = (pWave->orgTopSamples.size() - 1) / (float)nResampled;
+                if(sampleScale < 1.0f) // upsampling
+                {
 
-				for (int i = 0; i < nResampled; i++)
-				{
-					float sample = stepFactor*i;
-					int ofs = (int)sample;
-					int frac2 = ((int)(sample * 64)) & 0x3F;
-					int frac1 = 64 - frac2;
+                    float stepFactor = (pWave->orgTopSamples.size() - 1) / (float)nResampled;
 
-					float val1 = (pWave->orgBottomSamples[ofs] - floor) * valueFactor * 64;
-					float val2 = (pWave->orgBottomSamples[ofs + 1] - floor) * valueFactor * 64;
+                    for (int i = 0; i < nResampled; i++)
+                    {
+                        float sample = stepFactor*i;
+                        int ofs = (int)sample;
+                        int frac2 = ((int)(sample * 64)) & 0x3F;
+                        int frac1 = 64 - frac2;
 
-					if(std::isfinite(val1) && std::isfinite(val2))
-						pNewBottomSamples[i] = int(yOfs) + ((((int)val1)*frac1 + ((int)val2)*frac2) >> 6);
-					else
-						pNewBottomSamples[i] = 0;
-				}
+                        float val1 = (pWave->orgBottomSamples[ofs] - floor) * valueFactor * 64;
+                        float val2 = (pWave->orgBottomSamples[ofs + 1] - floor) * valueFactor * 64;
+
+                        if(std::isfinite(val1) && std::isfinite(val2))
+                            pNewBottomSamples[i] = int(yOfs) + ((((int)val1)*frac1 + ((int)val2)*frac2) >> 6);
+                        else
+                            pNewBottomSamples[i] = 0;
+                    }
+                }
+                else // downsampling
+                {
+                    // stepFactor is > 1
+                    float stepFactor = (pWave->orgTopSamples.size() - 1) / (float) nResampled;
+
+                    int j = 0;
+                    for (int i = 0; i < nResampled; i++)
+                    {
+                        // For each new sample, check which sample is the furthest
+                        // away from 0. Use that one. This mode was designed for EQ curves,
+                        // but will probably work for most curves.
+
+                        float val = 0.f;
+                        while(j <= stepFactor*i)
+                        {
+                            float cur = pWave->orgBottomSamples[j];
+                            val = (std::abs(cur) > std::abs(val)) ? cur : val;
+                            j++;
+                        }
+
+                        if(std::isfinite(val))
+                            pNewBottomSamples[i] = int(yOfs) + (int)((val-floor) * valueFactor * 64);
+                        else
+                            pNewBottomSamples[i] = 0;
+                    }
+                }
 			}
 		}
 	}
