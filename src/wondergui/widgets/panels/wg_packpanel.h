@@ -113,9 +113,31 @@ namespace wg
 
 		using		iterator = DynamicSlotVector<Slot>::iterator;
 
+		//.____ Blueprint _____________________________________________________
+		
+		struct Blueprint
+		{
+			Axis			axis = Axis::X;
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer = nullptr;
+			int				id = 0;
+			PackLayout_p		layout;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+		
 		//.____ Creation __________________________________________
 
 		static PackPanel_p	create() { return PackPanel_p(new PackPanel()); }
+		static PackPanel_p	create(const Blueprint& blueprint) { return PackPanel_p(new PackPanel(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -165,6 +187,7 @@ namespace wg
 
 	protected:
 		PackPanel();
+		PackPanel(const Blueprint& bp);
 		virtual ~PackPanel();
 
 		// Overloaded from Widget

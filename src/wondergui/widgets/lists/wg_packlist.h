@@ -104,10 +104,36 @@ namespace wg
 
 		using		iterator = DynamicSlotVector<Slot>::iterator;
 
-
+		//.____ Blueprint _________________________________________
+		
+		struct Blueprint
+		{
+			Object_p				baggage;
+			bool					dropTarget 	= false;
+			bool					enabled 	= true;
+			Finalizer_p				finalizer 	= nullptr;
+			ColumnHeader::Blueprint	header;
+			int						id 			= 0;
+			MarkPolicy				markPolicy 	= MarkPolicy::AlphaTest;
+			bool					pickable 	= false;
+			int						pickCategory= 0;
+			PointerStyle			pointer 	= PointerStyle::Default;
+			bool					selectable 	= true;
+			Skin_p					skin;
+			bool					tabLock 	= false;
+			String					tooltip;
+			
+			Axis					axis 		= Axis::X;
+			Size					minEntrySize= {0,0};
+			Size					maxEntrySize= { 1000000,1000000 };
+			SortOrder				sortOrder	= SortOrder::Ascending;
+			std::function<int(const Widget *, const Widget *)> sortFunc;
+		};
+		
 		//.____ Creation __________________________________________
 
 		static PackList_p	create() { return PackList_p(new PackList()); }
+		static PackList_p	create(const Blueprint& blueprint) { return PackList_p(new PackList(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -160,6 +186,7 @@ namespace wg
 
 	protected:
 		PackList();
+		PackList(const Blueprint& bp);
 		virtual ~PackList();
 
 		// Overloaded from Widget

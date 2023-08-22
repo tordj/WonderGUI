@@ -44,6 +44,21 @@ namespace wg
 		_layout()->removeText(this);
 	}
 
+	//____ _initFromBlueprint() ___________________________________________________
+
+	void ColumnHeader::_initFromBlueprint(const Blueprint& bp)
+	{
+		m_skin.set( bp.skin );
+		m_text = bp.text;
+		m_pStyle = bp.style;
+
+		if( bp.layout )
+		{
+			m_pLayout = bp.layout;
+			_layout()->addText(this);
+		}
+	}
+
 	//____ setSkin() _____________________________________________________________
 
 	void ColumnHeader::setSkin( Skin * pSkin )

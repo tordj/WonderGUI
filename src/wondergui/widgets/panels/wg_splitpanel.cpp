@@ -44,6 +44,22 @@ namespace wg
 		m_bSiblingsOverlap = false;
 	}
 
+	SplitPanel::SplitPanel(const Blueprint& bp) : slots(this), m_handleSkin(this)
+	{
+		_initFromBlueprint(bp);
+		
+		m_bHorizontal 	= (bp.axis == Axis::X);
+		m_handleSkin.set( bp.handleSkin );
+		m_handleThickness = bp.handleThickness;
+		m_resizeRatio = bp.resizeRatio;
+
+		m_bSiblingsOverlap = false;
+
+		_updateDefaultSize();
+		_updateGeo();
+	}
+
+
 	//____ Destructor _____________________________________________________________
 
 	SplitPanel::~SplitPanel()

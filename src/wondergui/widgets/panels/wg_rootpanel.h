@@ -62,9 +62,27 @@ namespace wg
 
 	public:
 
+		//.____ Blueprint _____________________________________________________
+		
+		struct Blueprint
+		{
+			CanvasLayers_p	canvasLayers;
+			CanvasRef		canvasRef = CanvasRef::None;
+			Surface_p		canvasSurface;
+			Skin_p			debugOverlay;
+			int				debugAfterglow = 4;
+			Finalizer_p		finalizer = nullptr;
+			Rect			geo;
+			GfxDevice_p		gfxDevice;
+			int				scale = 0;
+			Skin_p			skin;
+		};
+		
+		
 		//.____ Creation __________________________________________
 
 		static RootPanel_p	create();
+		static RootPanel_p	create(const Blueprint& blueprint);
 		static RootPanel_p	create(Surface* pCanvasSurface, GfxDevice* pDevice = nullptr);
 		static RootPanel_p	create(CanvasRef canvasRef, GfxDevice* pDevice = nullptr);
 
@@ -149,6 +167,7 @@ namespace wg
 
 	protected:
 		RootPanel();
+		RootPanel(const Blueprint& bp);
 		RootPanel(Surface* pCanvasSurface, GfxDevice* pGfxDevice );
 		RootPanel(CanvasRef canvasRef, GfxDevice* pGfxDevice);
 		~RootPanel();

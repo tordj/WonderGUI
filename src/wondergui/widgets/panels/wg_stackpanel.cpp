@@ -56,6 +56,12 @@ namespace wg
 		m_bSiblingsOverlap = true;
 	}
 
+	StackPanel::StackPanel(const Blueprint& bp) : slots(this)
+	{
+		_initFromBlueprint(bp);
+		m_bSiblingsOverlap = true;
+	}
+
 	//____ Destructor _____________________________________________________________
 
 	StackPanel::~StackPanel()

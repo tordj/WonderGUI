@@ -38,15 +38,51 @@ namespace wg
 	typedef	WeakPtr<ScrollPanel>	ScrollPanel_wp;
 
 
-	//____ ScrollPanel ________________________________________________________
+	//____ ScrollPanel ___________________________________________________________
 
 	class ScrollPanel : public Panel, protected Scroller::Holder
 	{
 	public:
 
+		//.____ Blueprint _____________________________________________________
+		
+		struct Blueprint
+		{
+			bool				autohideScrollbars 	= true;
+			bool				autoscroll 			= false;
+			Object_p			baggage;
+			Widget_p			child;
+			Placement			childPlacement 		= Placement::NorthWest;
+			SizeConstraint		childConstraintX 	= SizeConstraint::None;
+			SizeConstraint		childConstraintY 	= SizeConstraint::None;
+			bool				dropTarget 			= false;
+			bool				enabled 			= true;
+			Finalizer_p			finalizer 			= nullptr;
+			int					id 					= 0;
+			MarkPolicy			markPolicy 			= MarkPolicy::AlphaTest;
+			bool				overlayScrollbars 	= false;
+			pts					pageOverlap 		= 8;
+			bool				pickable 			= false;
+			int					pickCategory 		= 0;
+			PointerStyle		pointer 			= PointerStyle::Default;
+			Scroller::Blueprint	scrollbarX;
+			Scroller::Blueprint	scrollbarY;
+			bool				selectable 			= true;
+			Skin_p				skin;
+			bool				stealWheelFromScrollbars = true;
+			pts					stepSize 			= 8;
+			bool				tabLock 			= false;
+			String				tooltip;
+			int					wheelForX 			= 2;
+			int					wheelForY 			= 1;
+			ModKeys				wheelShift 			= ModKeys::Alt;
+			pts					wheelStepSize 		= 8*3;
+		};
+		
 		//.____ Creation __________________________________________
 
 		static ScrollPanel_p	create() { return ScrollPanel_p(new ScrollPanel()); }
+		static ScrollPanel_p	create( const Blueprint& blueprint ) { return ScrollPanel_p(new ScrollPanel(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -91,6 +127,7 @@ namespace wg
 
 	protected:
 		ScrollPanel();
+		ScrollPanel(const Blueprint& bp);
 		virtual ~ScrollPanel();
 
 		void		_updateRegions();

@@ -38,6 +38,16 @@ namespace wg
 		ColumnHeader(Widget * pWidget);
 		~ColumnHeader();
 
+		//.____ Blueprint _____________________________________________
+		
+		struct Blueprint
+		{
+			TextLayout_p	layout;
+			Skin_p			skin;
+			TextStyle_p		style;
+			String			text;
+		};
+		
 		//.____ Appearance ____________________________________________
 
 		void			setSkin(Skin * pSkin);
@@ -56,6 +66,9 @@ namespace wg
 		void			clearLayout();
 		TextLayout_p	layout() const { return m_pLayout; }
 
+		//.____ Internal ______________________________________________________
+
+		void			_initFromBlueprint(const Blueprint& blueprint);
 
 	protected:
 		void			_setSortOrder(SortOrder order);

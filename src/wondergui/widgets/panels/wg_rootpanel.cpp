@@ -47,6 +47,11 @@ namespace wg
 		return RootPanel_p(new RootPanel()); 
 	}
 
+	RootPanel_p	RootPanel::create(const Blueprint& bp)
+	{
+		return RootPanel_p(new RootPanel(bp));
+	}
+
 	RootPanel_p	RootPanel::create( Surface* pCanvas, GfxDevice* pDevice )
 	{ 
 		if (!pCanvas)
@@ -94,6 +99,68 @@ namespace wg
 
 		m_pDebugOverlay = BoxSkin::create(bp);
 		m_afterglowFrames = 4;
+	}
+
+	RootPanel::RootPanel(const Blueprint& bp) : slot(this), m_skin(this)
+	{
+		m_afterglowFrames = bp.debugAfterglow;
+		m_pGfxDevice = bp.gfxDevice;
+		m_pCanvasLayers = bp.canvasLayers;
+				
+		GfxDevice* pUseGfxDevice = bp.gfxDevice ? bp.gfxDevice.rawPtr() : Base::defaultGfxDevice().rawPtr();
+
+		if( bp.canvasRef != CanvasRef::None )
+		{
+			m_canvas = pUseGfxDevice->canvas(bp.canvasRef);
+		}
+		else if( bp.canvasSurface )
+		{
+			m_canvas.ref = CanvasRef::None;
+			m_canvas.pSurface = bp.canvasSurface;
+			m_canvas.size = bp.canvasSurface->pixelSize()*64;
+			m_canvas.scale = bp.canvasSurface->scale();
+		}
+
+		m_geo = m_canvas.size;
+
+		if( bp.scale > 0 )
+			m_scale = bp.scale;
+		else
+			m_scale = m_canvas.scale;
+		
+		if( !bp.geo.isEmpty() )
+		{
+			RectSPX geoSpx = RectSPX::overlap(m_canvas.size, align(ptsToSpx(bp.geo,m_scale)));
+			if( !geoSpx.isEmpty() )
+			{
+				m_bHasGeo = true;
+				m_geo = geoSpx;
+			}
+		}
+	
+		if( bp.finalizer )
+			setFinalizer(bp.finalizer);
+
+		if (bp.skin)
+			m_skin.set(bp.skin);
+
+		if( bp.debugOverlay )
+			m_pDebugOverlay = bp.debugOverlay;
+		else
+		{
+			BoxSkin::Blueprint bp;
+			bp.color = HiColor(4096, 0, 0, 2048);
+			bp.outline = 1;
+			bp.outlineColor = HiColor(4096, 0, 0, 2048);
+			
+			BoxSkin::StateBP sbp;
+			sbp.state = State::Focused;
+			sbp.data.color = HiColor(4096, 0, 0, 2048);
+			sbp.data.outlineColor = HiColor(4096, 0, 0, 4096);
+			bp.states.push_back(sbp);
+
+			m_pDebugOverlay = BoxSkin::create(bp);
+		}
 	}
 
 	RootPanel::RootPanel(Surface* pSurface, GfxDevice * pGfxDevice ) : RootPanel()

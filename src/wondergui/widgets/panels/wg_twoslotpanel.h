@@ -86,9 +86,32 @@ namespace wg
 			int		m_length = 0;
 		};
 
+		//.____ Blueprint _________________________________________
+		
+		struct Blueprint
+		{
+			Axis			axis = Axis::X;
+			Object_p		baggage;
+			bool			dropTarget		= false;
+			bool			enabled			= true;
+			Finalizer_p		finalizer		= nullptr;
+			int				id				= 0;
+			PackLayout_p	layout;
+			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
+			bool			pickable		= false;
+			int				pickCategory	= 0;
+			PointerStyle	pointer			= PointerStyle::Default;
+			bool			selectable		= true;
+			Skin_p			skin;
+			bool			tabLock			= false;
+			String			tooltip;
+
+		};
+		
 		//.____ Creation __________________________________________
 
 		static TwoSlotPanel_p	create() { return TwoSlotPanel_p(new TwoSlotPanel()); }
+		static TwoSlotPanel_p	create(const Blueprint& blueprint) { return TwoSlotPanel_p(new TwoSlotPanel(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -116,6 +139,7 @@ namespace wg
 
 	protected:
 		TwoSlotPanel();
+		TwoSlotPanel(const Blueprint& blueprint);
 		virtual ~TwoSlotPanel();
 		
 		void		_updateDefaultSize();

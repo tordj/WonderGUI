@@ -75,9 +75,33 @@ namespace wg
 			RectSPX	m_geo;
 		};
 
+		//.____ Blueprint ___________________________________________________________
+
+		struct Blueprint
+		{
+			Axis			axis			= Axis::X;
+			Object_p		baggage;
+			bool			dropTarget		= false;
+			bool			enabled			= true;
+			Finalizer_p		finalizer		= nullptr;
+			Skin_p			handleSkin;
+			pts				handleThickness = 0;
+			int				id				= 0;
+			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
+			bool			pickable		= false;
+			int				pickCategory	= 0;
+			PointerStyle	pointer			= PointerStyle::Default;
+			float			resizeRatio		= 0.5f;
+			bool			selectable		= true;
+			Skin_p			skin;
+			bool			tabLock			= false;
+			String			tooltip;
+		};
+		
 		//.____ Creation __________________________________________
 
 		static SplitPanel_p	create() { return SplitPanel_p(new SplitPanel()); }
+		static SplitPanel_p	create(const Blueprint& blueprint) { return SplitPanel_p(new SplitPanel(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -121,6 +145,7 @@ namespace wg
 
 	protected:
 		SplitPanel();
+		SplitPanel(const Blueprint& bp);
 		virtual ~SplitPanel();
 
 		spx			_handleThickness(int scale) const;					// Takes both m_handleThickness and m_pHandleSkin into account.

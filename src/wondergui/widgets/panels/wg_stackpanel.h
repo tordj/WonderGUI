@@ -116,9 +116,30 @@ namespace wg
 
 		friend class Slot;
 
+		//.____ Blueprint ___________________________________________________________
+		
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget 		= false;
+			bool			enabled			= true;
+			Finalizer_p		finalizer		= nullptr;
+			int				id				= 0;
+			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
+			bool			pickable		= false;
+			int				pickCategory	= 0;
+			PointerStyle	pointer			= PointerStyle::Default;
+			bool			selectable		= true;
+			Skin_p			skin;
+			bool			tabLock			= false;
+			String			tooltip;
+		};
+		
+		
 		//.____ Creation __________________________________________
 
 		static StackPanel_p	create() { return StackPanel_p(new StackPanel()); }
+		static StackPanel_p	create(const Blueprint& blueprint) { return StackPanel_p(new StackPanel(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -150,9 +171,9 @@ namespace wg
 
 		SizeSPX		_defaultSize(int scale) const override;
 
-
 	protected:
 		StackPanel();
+		StackPanel(const Blueprint& bp);
 		virtual ~StackPanel();
 
 		// Overloaded from Widget
