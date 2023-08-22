@@ -19,6 +19,7 @@ target_include_directories(legacyworkbench PRIVATE
 	${SDL2_INCDIR}
 	${SDL2IMAGE_INCDIR}
 	${WGLEGACYGUI_INCDIRS}
+	${GFXSTREAM_INCDIRS}
 	${WGSOFTGFX_INCDIRS}
 	${WGOPENGLGFX_INCDIRS}
 )
@@ -36,7 +37,8 @@ target_working_directory(legacyworkbench ${WG_ROOT} )
 target_link_libraries(legacyworkbench PRIVATE
 	wgsoftgfx
 	wgopenglgfx
-	wglegacygui 
+	wggfxstream
+	wglegacygui
 	${SDL2_LIBS}
 	${SDL2IMAGE_LIBS}
 	${OPENGL_LIBS}

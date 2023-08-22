@@ -70,7 +70,7 @@ endif()
 #------------------------------------------------------------------------------
 
 
-set(WAPPLIB wappsdl2sw)			# WonderApp framework based on SDL2. Works on Windows, Mac and Linux.
+set(WAPPLIB wappsdl2metal)			# WonderApp framework based on SDL2. Works on Windows, Mac and Linux.
 
 
 #------------------------------------------------------------------------------
@@ -112,17 +112,18 @@ add_subdirectory(wondergfx)
 add_subdirectory(wonderglyphs)
 add_subdirectory(wondergui)
 
-add_subdirectory(extensions/freetypefont)
-
-add_subdirectory(extensions/legacygui)
-
 if(APPLE)
 	add_subdirectory(extensions/metalgfx)
 endif()
 
-add_subdirectory(extensions/gfxstream)
 add_subdirectory(extensions/openglgfx)
+add_subdirectory(extensions/gfxstream)
 add_subdirectory(extensions/softgfx)
+
+add_subdirectory(extensions/freetypefont)
+
+add_subdirectory(extensions/legacygui)
+
 add_subdirectory(extensions/plugin)
 
 add_subdirectory(wonderapp/wappsdl2)

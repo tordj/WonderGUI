@@ -23,6 +23,7 @@ target_working_directory(streamanalyzer ${WG_ROOT} )
 target_link_libraries(streamanalyzer PRIVATE
 	${WAPPLIB}
 	wggfxstream
+	wgsoftgfx
 )
 
 
