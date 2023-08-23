@@ -150,13 +150,6 @@ int main(int argc, char *argv[] )
 	g_argc = argc;
 	g_argv = argv;
 
-	// Create app and visitor, make any app-specif initialization
-
-	auto pApp = WonderApp::create();
-	auto pVisitor = new MyAppVisitor();
-
-	// Get apps window size before we continue
-
 	g_scale = 1.f;
 
 
@@ -165,6 +158,11 @@ int main(int argc, char *argv[] )
 	
 	if (!init_wondergui() )
 		return -1;
+	
+	// Create app and visitor, make any app-specif initialization
+
+	auto pApp = WonderApp::create();
+	auto pVisitor = new MyAppVisitor();
 
 	// Initialize the app
 

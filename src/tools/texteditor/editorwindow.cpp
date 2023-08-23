@@ -73,6 +73,8 @@ bool EditorWindow::_setupGUI()
 	pMainContainer->slots << pTopBar;
 	pMainContainer->slots << pScrollPanel;
 	pMainContainer->setSlotWeight(0, 2, { 0.f, 1.f });
+
+
 	pMainContainer->setLayout(PackLayout::create(WGBP(PackLayout,
 		_.expandFactor = PackLayout::Factor::Weight
 		)));
@@ -100,15 +102,10 @@ Widget_p EditorWindow::_createTopBar()
 	auto pNewButton = m_pApp->createButton("New");
 
 	auto pSpacer = Filler::create(WGBP(Filler, _.defaultSize = { 20,1 }));
-
-
-	pBar->slots << pLoadButton;
-	pBar->slots << pSaveButton;
-	pBar->slots << pSpacer;
-
-	pBar->setSlotWeight(0, 3, { 0.f, 0.f, 1.f });
-
-
+	
+	pBar->slots.pushBack( { {pLoadButton, { .weight = 0 }},
+							{pSaveButton, { .weight = 0 }},
+							{pSpacer, { .weight = 1 }} } );
 
 	Base::msgRouter()->addRoute(pLoadButton, MsgType::Select, [this](Msg* pMsg) {this->_selectAndLoadFile(); });
 	Base::msgRouter()->addRoute(pLoadButton, MsgType::Select, [this](Msg* pMsg) {this->_saveFile(); });

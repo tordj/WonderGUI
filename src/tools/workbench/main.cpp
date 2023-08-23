@@ -323,8 +323,8 @@ int main(int argc, char** argv)
 */
 
 
-	Base::beginObjectTracking();
 	Base::init(nullptr);
+	Base::beginObjectTracking();
 
 
 //	Base::setErrorHandler([](Error&) { int x = 0; });
@@ -730,9 +730,9 @@ int main(int argc, char** argv)
 
 	// Exit WonderGUI
 
-	Base::exit();
 	Base::printObjects(std::cout);
 	Base::endObjectTracking();
+	Base::exit();
 
 	// Exit SDL
 

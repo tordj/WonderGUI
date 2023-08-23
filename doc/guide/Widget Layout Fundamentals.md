@@ -30,7 +30,7 @@ The content of the menubar is irrelevant for this exercise, so is the content of
 
 The whole design can be implemented in one single FlexPanel. In FlexPanel you can specify position and size of individual Slots in both absolute positions and sizes as well as positions and sizes that are relative to the size of the FlexPanel. You can even combine relative positions with absolute offsets for adjustments which makes positioning very flexible and powerful.
 
-##### Pinned and Movable
+##### Pinned and movable
 
 FlexPanels provide two modes for controlling the position and size for of a slot called *Pinned* and *Movable*. You can mix them and switch between them, but each individual slot is either Pinned or Movable at any given moment.
 
@@ -42,7 +42,7 @@ In Movable mode you simply specify the position and size of the Slot in absolute
 
 To make things slightly more complicated and much more flexible, the pin also contains an offset (in absolute points) that modifies its position. The position of the pin is specified through a tiny class called a *FlexPos* and can be created like this:
 
-```
+```c++
 FlexPos({0.5f, 0.f}, {6,10} );
 ```
 
@@ -50,7 +50,7 @@ The first two values specify a relative position along the X- and Y-axis of the 
 
 There are more ways to specify the position, like replacing the relative position with a Placement like this:
 
-```
+```c++
 FlexPos( Placement::North, {6,10} );
 ```
 
@@ -58,34 +58,34 @@ But they translates to the same result, one relative coordinate in the range 0.0
 
 So, to create a slot that starts 10 pixels from the top-left corner of the FlexPanel and ends at the center you can do the following:
 
-```
+```c++
 pFlexPanel->slots.pushBack( pMyWidget, {.pin1 = FlexPos( {0.f,0.f}, {10,10} ),
 										.pin2 = FlexPos( {0.5f,0.5f},{0,0} ) });
 ```
 
 Or, express the same in a more readable syntax, taking advantage of the Placement enum, parameter defaults and type deducation:
 
-```
+```c++
 pFlexPanel->slots.pushBack( pMyWidget, {.pin1 = { Placement::NorthWest, {10,10} },
 										.pin2 = { Placement::Center } });
 ```
 
-##### Adding the Menubar
+##### Adding the menubar
 
 So now we know enough to correctly create a slot for the menubar:
 
-```
+```c++
 pFlexPanel->slots.pushBack( pMyMenubar, {.pin1 = { Placement::NorthWest },
 										 .pin2 = { Placement::NorthEast, {0,20} } });
 ```
 
 We pin the menubar to the top-left corner and a position 20 points down from the top-right corner. This give us a menubar that is always 20 points high but stretches from the left to the right of the window.
 
-##### Adding the Panes
+##### Adding the panes
 
 The two panes can be placed using the same technique:
 
-```
+```c++
 pFlexPanel->slots.pushBack( pPane1, {.pin1 = { Placement::NorthWest, { 5, 20+5 } },
 										 .pin2 = { Placement::South, { -50-5,-5 } } });
 										 
@@ -101,7 +101,7 @@ Pane 2 is specified in the same way, with a relative position and adjustments in
 
 This places the two panes so that they irregardless of the FlexPanels size takes up half the window each after having left room for  a 20 points high menubar, a 100 points wide middle section for the buttons and a padding of 5 points each.
 
-##### Adding the Buttons
+##### Adding the buttons
 
 The buttons should not be resized as the size of the FlexPanel is changed. Neither should they move, they should be clustered around the center with one button straight in the center and the others directly above and below with some padding inbetween.
 
@@ -116,7 +116,7 @@ Top-left corner being moved up half the center buttons size + padding + size of 
 
 However, that is an awkward way to express a slot of a fixed size being placed at a fixed distance from the center. Instead we can set the slot as movable. If we skip setting the *pin1* and *pin2* members of the slots blueprint the slot will be created as *movable* and we can instead set *orgio*, *pos* and *size*:
 
-```
+```c++
 pFlexPanel->slots.pushBack( pCopyButton, { .origo = Placement::Center, 
 										   .pos = {0, -(15+5+30)}, 
 										   .size = {30,100} } );
@@ -130,7 +130,7 @@ Attentive readers might ask, can't we just include the position adjustment in th
 
 Lets sum it all together and also take advantage of the fact that we can define and push all the sluts in one operation as an initializer list. The result can look something like this:
 
-```
+```c++
 pFlexPanel->slots.pushBack({
 	{ pMyMenubar, {	.pin1 = { Placement::NorthWest }, 
 	               	.pin2 = { Placement::NorthEast, {0,20} }
@@ -206,37 +206,128 @@ By default the slots in a PackPanel are given the space along their axis that th
 
 This is usually not what you want. Usually you want the slots to fill out the area of the PackPanel but not extend beyond it so they get clipped and you also want some way to control how much space is assigned to what slot. For this we use a PackLayout-object.
 
-##### The PackLayout Object
+##### The PackLayout object
 
 A PackLayout Object is created as any other Object, a create method taking a Blueprint as input. PackLayout objects are immutable, once created you can't change their content. You need to replace it with a new object if you want to change things.
 
-The Blueprint for the PackLayout Object contains what rules that should apply when allocating the size of the PackPanel to the slots it contains. It can be configured in many ways that is beyond the scope of this chapter. However, one particular configuration has turned out to be very useful...
+The Blueprint for the PackLayout Object contains what rules that should apply when allocating the size of the PackPanel to the slots it contains. It can be configured in many ways that is beyond the scope of this chapter. However, one particular configuration has turned out to be very useful and is the only one we need for typical layouts like this:
 
- 
-
-
-
-
-
-We start with creating the three panels we need, Two vertical and one horizontal.
-
-```
-PackPanel_p pWindowPanel = PackPanel::create( { .axis = Y } );
-PackPanel_p pMainSection = PackPanel::create( { .axis = X });
-PackPanel_p pButtonColumn = PackPanel::create( { .axis = Y });
+```c++
+PackLayout_p pLayout = PackLayout::create( {.expandFactor = PackLayout::Factor::Weight, 
+                                            .shrinkFactor = PackLayout::Factor::Weight });
 ```
 
-We now need to populate them with content. That is easiest done from the innermost and outward, so we start with the button column. To create the 5 boxes we need to add five slots. Since we are not allowed to have empty slots we use Filler-widgets for the top and bottom slots:
+ A PackLayout configured like this, when applied to a horizontal PackPanel, will do the following:
 
+1. It starts with giving each slot the width that corresponds to the default size of the widget it holds.
+2. If there is space left, it will assign that space based on each slots weight. The default weight of a slot is 1.0. If all slots have the same weight, the space left is distributed evenly. If one slot has twice the weight it gets a twice as big slice of the space left. If a slot has the weight 0, it doesn't get any part of the space left. If a slot reaches the maximum width of the widget it contains it stops there.
+3. If on the other hand the space has been exhausted and slots needs to be shrunk in order for all of them to fit in, it will shrink them based on the weight. A slot is not shrunk more than the minimum width of the widget it contains.
+
+In cases where the default, minimum or maximum width of the widget is larger or smaller than you would like, you can limit it by wrapping it in a SizeCapsule before putting it in the slot.
+
+
+
+##### Creating and configuring the PackPanels
+
+We start with creating the layout and three panels we need, two vertical and one horizontal.
+
+```c++
+PackLayout_p pLayout = PackLayout::create( {.expandFactor = PackLayout::Factor::Weight, 
+                                            .shrinkFactor = PackLayout::Factor::Weight });
+
+PackPanel_p pWindowPanel = PackPanel::create( { .axis = Y, .layout = pLayout } );
+PackPanel_p pMainSection = PackPanel::create( { .axis = X, .layout = pLayout });
+PackPanel_p pButtonColumn = PackPanel::create( { .axis = Y, layout = pLayout });
 ```
-pButtonColumn->slots.pushBack( {Filler::create() { .weight = 1.f },
-								})
+
+They all use the same PackLayout since a basic use of weights fullfills all our requirements. The only difference is that the one for the main seciont is horizontal while the others are vertical.
+
+##### Building the button column
+
+We now need to populate our PackPanels with content, thus building the hierarchy. Hierarchies like these are best built from the bottom up, so we start with adding the slots to the innermost PackPanel, the one for the bottom column. To create the 5 boxes we need to add five slots. Since we are not allowed to have empty slots we use Filler-widgets for the top and bottom slots:
+
+```c++
+pButtonColumn->slots.pushBack({ {Filler::create(), { .weight = 1.f }},
+															  {pCopyButton, { .weight = 0.f }},
+															  {pMoveButton, { .weight = 0.f }},
+															  {pDeleteButton, { .weight = 0.f }},
+															  {Filler::create(), { .weight = 1.f }}
+														  });
 ```
 
+Let's go through what we do here. We add five slots to the PackPanel for the button column. The three middle gets the buttons we want to display while we create Fillers for the top and bottom one. We create the Fillers in place since we don't need any pointer to them anyway, they are just there to fill out the slots. For the Filler slots we set a weight of 1, while we set the weight to 0 for the button slots. 
 
+With the PackLayout we use this means that the buttons will always be displayed in their default size, which should be the right size for a nice looking button. The Fillers will stretch though and since they have the same value they will evenly split all the extra space between them, thus forcing the buttons to the middle of the PackLayout. Fillers have by default a size of 0 points, so they won't take any space if the window shrinks down so only the buttons fit.
 
+We could have skipped setting the weight of the Filler-slots since weight defaults to 1, but we added it to make the example more clear.
 
+##### Building the main section
 
+The main section is what contains the left pane, the button column and the right pane. That is three slots where the left and right ones should have a padding of 5 pixels. The middle slot should have the size needed for the buttons while the left and right ones should share the rest of the space. Setting this up is easy:
 
+```c++
+pMainSection->slots.pushBack({ {pPane1, { .padding = 5, .weight = 1.f} },
+                               {pButtonColumn, { .weight = 0.f } },
+                               {pPane2, { .padding = 5, .weight = 1.f} }
+                            });
+```
 
-To create the empty areas we use Filler-widgets
+Given all we know already this is quite self-explanatory.
+
+##### Adding the final piece
+
+Now that we have the main section completed we just need to add the menubar. We want the menubar to have the height it needs and the main section to get all the rest of it:
+
+```c++
+pWindowPanel->slots.pushBack({ {pMyMenubar, { .weight = 0.f}},
+                               {pMainSection, { .weight = 1.f }}
+                            });
+```
+
+Now the layout is complete and can be added to the Root-widget of the window. It will adjust accordingly to the size of the window, giving just enough space to the menubar and button column while assigning the rest to the two panes.
+
+##### The result
+
+Let's put it all together to see the whole picture. This time we remove unnecessary setting of weights:
+
+```c++
+PackLayout_p pLayout = PackLayout::create( {.expandFactor = PackLayout::Factor::Weight, 
+                                            .shrinkFactor = PackLayout::Factor::Weight });
+
+PackPanel_p pWindowPanel = PackPanel::create( { .axis = Y, .layout = pLayout } );
+PackPanel_p pMainSection = PackPanel::create( { .axis = X, .layout = pLayout });
+PackPanel_p pButtonColumn = PackPanel::create( { .axis = Y, layout = pLayout });
+
+pButtonColumn->slots.pushBack({ {Filler::create(), {} },
+															  {pCopyButton, { .weight = 0.f }},
+															  {pMoveButton, { .weight = 0.f }},
+															  {pDeleteButton, { .weight = 0.f }},
+															  {Filler::create(), {} }
+														  });
+
+pMainSection->slots.pushBack({ {pPane1, { .padding = 5 } },
+                               {pButtonColumn, { .weight = 0.f } },
+                               {pPane2, { .padding = 5 } }
+                             });
+
+pWindowPanel->slots.pushBack({ {pMyMenubar, { .weight = 0.f}},
+                              {pMainSection, {} }
+                             });
+```
+
+This is a several step process so it doesn't look as elegant as the FlexPanel example. However, it has several advantages, so lets discuss those.
+
+##### Advantages and disadvantages
+
+The advantages of building the design with PackPanels is that it adapts automatically to changes and therefore is easy to modify. What if we change the font size so that the space needed for the menubar and buttons increase? It just works. What if we want to add a fourth button to the column? Just add it, the placement of the other buttons will be adjusted automatically. What if we want the buttons not centered but at the top? Just remove the top filler. With PackPanels you get a high level of maintainability since later changes often can be done easily without breaking anything.
+
+There are some disadvantages though. The first one is that you are restricted to a rigid grid layout. You can not place a widget at an exact point or move it around. You can't have widgets that overlap or move outside the window.
+
+As mentioned before, the code can also be harder to read since it doesn't look as clean and it is a several step process that you need to read through to understand.
+
+### Conclusion
+
+I believe this example has given you a better idea of when to use what layout mechanism. In reality you shouldn't stick to just one that we did in this example. You might have sections of the GUI where a rigid, adaptive, box-layout is preferable while other sections needs the flexibility.
+
+The main warning I have is to not insert FlexPanels into a rigid PackPanel layout since they don't report default size or adapt to resize in the same way. Sometimes it makes sense, but often there is a better alternative.
+
