@@ -157,7 +157,7 @@ namespace wg
 
 			case MsgType::MouseRelease:
 			{
-				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+				auto pMsg = static_cast<MouseReleaseMsg*>(_pMsg);
 
 				if (pMsg->button() != MouseButton::Left)
 					break;

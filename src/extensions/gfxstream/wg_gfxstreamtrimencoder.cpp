@@ -375,7 +375,7 @@ namespace wg
 	{
 		int chunkId = int(chunkType);
 		
-		if( chunkId >= 17 && chunkId <= 44 && chunkId != 19 )
+		if( (chunkId >= 17 && chunkId <= 44) || chunkId == 66 || chunkId == 67 )
 			return true;
 		
 		return false;

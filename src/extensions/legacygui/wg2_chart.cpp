@@ -404,6 +404,8 @@ bool WgChart::_setWaveSamples(int waveId, int firstSample, int nSamples, float *
 		if(std::abs(sum) < 0.001f)
 			earlyOut = true;
 	}
+	else
+		_requestRender();			// Hack! Possibly solves "staircase"-problem of C1 screens.
 
 	if(earlyOut)
 		return true;

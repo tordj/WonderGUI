@@ -114,6 +114,7 @@ bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pSlot);
 bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pSlot);
 bool customSkinTest(ComponentPtr<DynamicSlot> pSlot);
 bool graphDisplayTest(ComponentPtr<DynamicSlot> pSlot);
+bool nortonCommanderTest(ComponentPtr<DynamicSlot> pSlot);
 
 
 void nisBlendTest();
@@ -697,7 +698,8 @@ int main(int argc, char** argv)
 		//	blendRGB565BigendianTest( pSlot );
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
-		graphDisplayTest(pSlot);
+		//	graphDisplayTest(pSlot);
+			nortonCommanderTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -2778,3 +2780,101 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 }
 
+//____ splitPanelTest() ______________________________________________________
+
+bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pPaneSkin = BoxSkin::create( { .color = Color8::White,
+										.outlineColor = Color8::Black,
+										.outline = 1,
+										.padding = 3
+	});
+	
+	auto pPane1 = Filler::create( { .skin = pPaneSkin });
+	auto pPane2 = Filler::create( { .skin = pPaneSkin });
+
+	auto pButtonSkin = BoxSkin::create( { .color = Color8::Grey,
+										  .outlineColor = Color8::Black,
+										  .outline = 1,
+										  .padding = 3
+	});
+
+	auto pCopyButton = Button::create( {
+		.label = { .text = "COPY" },
+		.skin = pButtonSkin
+	 });
+
+	auto pMoveButton = Button::create( {
+		.label = { .text = "MOVE" },
+		.skin = pButtonSkin
+	 });
+
+	auto pDeleteButton = Button::create( {
+		.label = { .text = "DELETE" },
+		.skin = pButtonSkin
+	 });
+
+	auto pMyMenubar = Filler::create( { .defaultSize = { 20, 20}, .skin = ColorSkin::create( {.color = Color8::Grey }) });
+	
+
+
+	// The FlexPanel way.
+/*
+	auto pFlexPanel = FlexPanel::create();
+ 
+	pFlexPanel->slots.pushBack({
+		{ pMyMenubar, {	.pin1 = { Placement::NorthWest },
+						.pin2 = { Placement::NorthEast, {0,20} }
+		}},
+		{ pPane1,     {	.pin1 = { Placement::NorthWest, {5,20+5} },
+						.pin2 = { Placement::South, {-50-5,-5} }
+		}},
+		{ pPane2,     {	.pin1 = { Placement::North, {5+50,20+5} },
+						.pin2 = { Placement::SouthEast, {-5,-5} }
+		}},
+		{ pCopyButton,{ .origo = Placement::Center,
+						.pos = {0, -(15+5+30)},
+						.size = {100,30}
+		}},
+		{ pMoveButton, { .origo = Placement::Center,
+						 .pos = {0,-15},
+						 .size = {100,30}
+		}},
+		{ pDeleteButton, { .origo = Placement::Center,
+						   .pos = {0, (15+5)},
+						   .size = {100,30}
+		}}
+	});
+
+	*pEntry = pFlexPanel;
+*/
+
+	// The PackPanel way.
+	
+	PackLayout_p pLayout = PackLayout::create( {.expandFactor = PackLayout::Factor::Weight,
+												.shrinkFactor = PackLayout::Factor::Weight });
+
+	PackPanel_p pWindowPanel = PackPanel::create( { .axis = Axis::Y, .layout = pLayout } );
+	PackPanel_p pMainSection = PackPanel::create( { .axis = Axis::X, .layout = pLayout });
+	PackPanel_p pButtonColumn = PackPanel::create( { .axis = Axis::Y, .layout = pLayout });
+
+	pButtonColumn->slots.pushBack({ {Filler::create(), {} },
+																  {pCopyButton, { .weight = 0.f }},
+																  {pMoveButton, { .weight = 0.f }},
+																  {pDeleteButton, { .weight = 0.f }},
+																  {Filler::create(), {} }
+															  });
+
+	pMainSection->slots.pushBack({ {pPane1, { .padding = 5 } },
+								   {pButtonColumn, { .weight = 0.f } },
+								   {pPane2, { .padding = 5 } }
+								 });
+
+	pWindowPanel->slots.pushBack({ {pMyMenubar, { .weight = 0.f}},
+								  {pMainSection, {} }
+								 });
+	
+	*pEntry = pWindowPanel;
+	
+	return true;
+}
