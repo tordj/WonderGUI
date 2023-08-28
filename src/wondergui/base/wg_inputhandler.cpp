@@ -283,7 +283,9 @@ namespace wg
 
 		for (int i = 0; i < MouseButton_size; i++)
 		{
-			if (m_bButtonPressed[i])
+			//TODO: The pRoot-check is just a quick hack to prevent crashes. How should this really work?
+			
+			if (m_bButtonPressed[i] && pRoot)
 			{
 				CoordSPX pressPosSPX = Util::ptsToSpx(m_latestPressPosition[i], pRoot->scale());
 
