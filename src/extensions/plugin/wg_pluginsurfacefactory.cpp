@@ -119,6 +119,8 @@ namespace wg
 		pDest->buffered = pSource->buffered;
 		pDest->canvas = pSource->canvas;
 		pDest->palette = (wg_color8*)pSource->palette;
+		pDest->paletteSize = pSource->paletteSize;
+		pDest->paletteCapacity = pSource->paletteCapacity;
 		pDest->dynamic = pSource->dynamic;
 		pDest->format = (wg_pixelFormat)pSource->format;
 		pDest->identity = pSource->identity;

@@ -266,7 +266,9 @@ wg_surfaceBP wg_getSurfaceBlueprint(wg_obj surface)
 
 	dest.buffered		= src.buffered;
 	dest.canvas			= src.canvas;
-	dest.palette			= (wg_color8*)src.palette;
+	dest.palette		= (wg_color8*)src.palette;
+	dest.paletteSize	= src.paletteSize;
+	dest.paletteCapacity= src.paletteCapacity;
 	dest.dynamic		= src.dynamic;
 	dest.format			= (wg_pixelFormat) src.format;
 	dest.identity		= src.identity;
