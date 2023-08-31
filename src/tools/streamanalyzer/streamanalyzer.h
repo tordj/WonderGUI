@@ -48,6 +48,8 @@ public:
 
 	void		toggleDebugRects(bool bShow);
 	
+	void		openRecordedStepsWindow();
+	
 private:
 
 	void		_resetStream();							// Clear displays, delete surfaces.
@@ -69,6 +71,7 @@ private:
 	
 	Visitor * 			m_pAppVisitor = nullptr;
 	Window_p			m_pWindow;
+	Window_p			m_pRecordedStepsWindow;
 
 	GfxDevice_p			m_pStreamGfxDevice;
 	SurfaceFactory_p	m_pStreamSurfaceFactory;
@@ -104,10 +107,21 @@ private:
 	};
 	
 	vector<FrameStats>	m_frameStatistics;
+
+	struct RecordedSteps
+	{
+		CanvasRef	canvas;
+		Surface_p	before;
+		Surface_p	change;
+		Surface_p	after;
+	};
+
+	vector<RecordedSteps>	m_recordedSteps;
 	
 	int					m_currentFrame = 0;			// First frame is 0.
 	bool				m_bShowDebugRects = false;
-
+	bool				m_bRecordSteps = false;
+	
 	PackPanel_p			m_pDisplayToggles;
 	PackPanel_p			m_pScreenLineup;
 	Capsule_p			m_pLogCapsule;
@@ -139,6 +153,7 @@ private:
 	Slider_p			m_pProgressSlider;
 
 	ToggleButton_p		m_pDebugRectsToggle;
+	ToggleButton_p		m_pRecordStepsToggle;
 
 	
 	int				m_imageIdx;

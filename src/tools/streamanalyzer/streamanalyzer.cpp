@@ -79,6 +79,10 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 {
 	m_pWindow = pVisitor->createWindow({ .minSize = { 600, 200 }, .size = {1600,800}, .title = "Stream Analyzer" });
 
+	m_pWindow->setCloseRequestHandler([](void) {
+		return true;
+	});
+	
 	auto pRoot = m_pWindow->rootPanel();
 
 
@@ -575,7 +579,10 @@ Widget_p MyApp::createNavigationPanel()
 		int skip = skipButtonAdvances[i];
 		Base::msgRouter()->addRoute(pButton, MsgType::Select, [this,skip](Msg* pMsg)
 			{
+				m_recordedSteps.clear();
+				this->m_bRecordSteps = this->m_pRecordStepsToggle->isSelected();
 				this->skipFrames( skip );
+				this->m_bRecordSteps = false;
 			});
 
 	}
@@ -587,10 +594,10 @@ Widget_p MyApp::createNavigationPanel()
 
 	// Setup extra controls
 
-	auto pExtraControls = PackPanel::create();
-	pExtraControls->setAxis(Axis::X);
-	pExtraControls->setLayout(m_pLayout);
+	auto pExtraControls = PackPanel::create( { .axis = Axis::Y, .layout = m_pLayout } );
 
+	//
+	
 	auto pRectToggle = ToggleButton::create(WGBP(ToggleButton,
 		_.label = WGBP(Text, _.style = m_pTextStyle, _.text = "Show debug rectangles"),
 		_.icon = WGBP(Icon, _.skin = m_pToggleButtonSkin, _.padding = { 0,8,0,0 })
@@ -603,8 +610,33 @@ Widget_p MyApp::createNavigationPanel()
 
 
 	m_pDebugRectsToggle = pRectToggle;
-
 	pExtraControls->slots << pRectToggle;
+
+	//
+	
+	auto pRecordStepsToggle = ToggleButton::create(WGBP(ToggleButton,
+		_.label = WGBP(Text, _.style = m_pTextStyle, _.text = "Record optimize steps"),
+		_.icon = WGBP(Icon, _.skin = m_pToggleButtonSkin, _.padding = { 0,8,0,0 })
+	));
+
+	m_pRecordStepsToggle = pRecordStepsToggle;
+	
+	
+	pExtraControls->slots << pRecordStepsToggle;
+
+	//
+	
+	auto pShowRecordedSteps = Button::create({
+		.label = { .layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = "Show recorded steps" },
+		.skin = m_pButtonSkin
+	});
+	
+	Base::msgRouter()->addRoute(pShowRecordedSteps, MsgType::Select, [this](Msg* pMsg)
+	{
+		this->openRecordedStepsWindow();
+	});
+	
+	pExtraControls->slots << pShowRecordedSteps;
 
 	// Put it all together
 
@@ -730,6 +762,15 @@ bool MyApp::loadStream(std::string path)
 		[this](CanvasRef ref, int nSegments, const LinearGfxDevice::Segment * pSegments)
 		{
 			Surface_p pScreen = m_screens[int(ref) - int(CanvasRef::Default)];
+
+			RecordedSteps rec;
+			
+			if( this->m_bRecordSteps )
+			{
+				rec.canvas = ref;
+				rec.before = pScreen->convert(pScreen->blueprint());
+				
+			}
 			
 			auto pixbuf = pScreen->allocPixelBuffer();
 			pScreen->pushPixels(pixbuf);
@@ -756,6 +797,12 @@ bool MyApp::loadStream(std::string path)
 			
 			delete [] m_pLinearCanvasBuffer;
 			m_pLinearCanvasBuffer = nullptr;
+
+			if( this->m_bRecordSteps )
+			{
+				rec.after = pScreen->convert(pScreen->blueprint());
+				m_recordedSteps.push_back(rec);
+			}
 		} );
 	
 //	auto pStreamGfxDevice = SoftGfxDevice::create();
@@ -1061,6 +1108,43 @@ void MyApp::toggleDebugRects(bool bShow)
 	if (m_bShowDebugRects)
 		_updateDebugOverlays();
 }
+
+//____ openRecordedStepsWindow() ______________________________________________
+
+void MyApp::openRecordedStepsWindow()
+{
+	if( !m_pRecordedStepsWindow )
+	{
+		m_pRecordedStepsWindow = m_pAppVisitor->createWindow( { .title = "Recorded Steps" } );
+
+		m_pRecordedStepsWindow->setCloseRequestHandler([this](void) {
+			this->m_pRecordedStepsWindow = nullptr;
+			return true;
+		});
+		
+		auto pRoot = m_pRecordedStepsWindow->rootPanel();
+
+		auto pScroll = ScrollPanel::create( { .skin = m_pPlateSkin } );
+		pRoot->slot = pScroll;
+		
+		auto pStepList = PackPanel::create( { .axis = Axis::Y } );
+		
+		for( auto& step : m_recordedSteps )
+		{
+			auto pRow = PackPanel::create( { .axis = Axis::X } );
+			pRow->slots.pushBack( SurfaceDisplay::create( { .surface = step.before } ), { .padding = 2 } );
+			pRow->slots.pushBack( SurfaceDisplay::create( { .surface = step.after } ) );
+			pStepList->slots.pushBack(pRow);
+		}
+		
+		pScroll->slot = pStepList;
+		
+	}
+	
+	
+}
+
+
 
 //____ _resetStream() _________________________________________________________
 
