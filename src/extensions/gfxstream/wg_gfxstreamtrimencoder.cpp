@@ -84,6 +84,7 @@ namespace wg
 				flush();
 
 				m_scopes.clear();
+				m_data.clear();
 				m_activeScope = -1;
 				break;
 			}
