@@ -327,7 +327,7 @@ namespace wg
 
 			for (int i = int(canvas.frames.size()) - 1; i >= 0; i--)
 			{
-				// Only optimize against last 4 frames of updates for this canvas.
+				// Only optimize against last X frames of updates for this canvas.
 
 				if( i + optimizationDepth < canvas.frames.size() )
 					maskBegin = canvas.frames[i+optimizationDepth].ofsClipRects;
@@ -405,7 +405,13 @@ namespace wg
 				}
 
 				canvas.frames[i].ofsClipRects = startOfs;
-				canvas.frames[i].nClipRects = clipRects.size() - startOfs;
+
+				int nRectsLeft = clipRects.size() - startOfs;
+
+				if( nRects > 0 && nRectsLeft == 0 )
+					nRectsLeft = -1;		// Signal that the whole frame should be skipped.
+
+				canvas.frames[i].nClipRects = nRectsLeft;
 			}
 		}
 
