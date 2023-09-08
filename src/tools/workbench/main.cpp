@@ -2785,8 +2785,8 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pPaneSkin = BoxSkin::create( { .color = Color8::White,
-										.outlineColor = Color8::Black,
 										.outline = 1,
+										.outlineColor = Color8::Black,
 										.padding = 3
 	});
 	
@@ -2794,8 +2794,8 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pPane2 = Filler::create( { .skin = pPaneSkin });
 
 	auto pButtonSkin = BoxSkin::create( { .color = Color8::Grey,
-										  .outlineColor = Color8::Black,
 										  .outline = 1,
+										  .outlineColor = Color8::Black,
 										  .padding = 3
 	});
 

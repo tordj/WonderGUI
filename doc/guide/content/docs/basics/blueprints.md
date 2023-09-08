@@ -1,10 +1,14 @@
-## Blueprints
+---
+title: 'Blueprints'
+weight: 30
+---
+
+# Blueprints
 
 *Blueprints is a central concept in WonderGUI and provides the default way to initialize an object. By using blueprints we can create and initialize complex objects in one call without long lists of parameters that needs to be set in a specific and hard to remember order. The code also gets easier to read and understand since initialization gets more descriptive.*
 
 
-
-### Introduction
+## Introduction
 
 Technically, a blueprint is just a plain C-style struct (also called POD, Plain Old Data object) that is used as an input parameter to the create() method for a class. It has no methods and all data members are public and directly accessible.
 
@@ -16,13 +20,13 @@ You don't need to set all parameters in a blueprint, we provide sane defaults fo
 
 
 
-### Creating Blueprints
+## Creating blueprints
 
 There are three ways to create and use a Blueprint depending on conditions and personal preferences. Let's quickly go through them:
 
 
 
-1. #### Creating and setting members explicitly
+1. ### Creating and setting members explicitly
 
    This is the simplest way to do it, but also results in the most cluttered and verbose code. You simply create the blueprint and set its members one by one before use:
 
@@ -40,7 +44,7 @@ There are three ways to create and use a Blueprint depending on conditions and p
 
    
 
-2. #### Using C++20 designated initializers
+2. ### Using C++20 designated initializers
 
    If you are allowed to use C++20 features you can use *designated initializers* to create the blueprint and set all parameters directly in the create call.
 
@@ -60,7 +64,7 @@ There are three ways to create and use a Blueprint depending on conditions and p
 
    
 
-3. #### Using the WGBP macro
+3. ### Using the WGBP macro
 
    By some clever usage of a lambda inside a macro we have created something similar to designated intializers that work on C++11 and avoids the need to order parameters alphabetically. It looks like this:
 
@@ -107,13 +111,13 @@ TextStyle::Blueprint bp2 = WGBP(TextStyle,
 
 
 
-### Hierarchical Blueprints
+## Hierarchical blueprints
 
 The examples above are sweet and simple, but you will likely end up creating more complex, hierarchical blueprints when adding state-specific data to Skins and TextStyles. Let's take a look at how that works, using BoxSkin as an example:
 
 A BoxSkin is a simple skin displaying a filled rectangle with an outline. You can specify the color of the rectangle and the color of the frame individually and also the size of the frame. You can also alter the colors depending on the state of the widget using the skin, such that a dark box gets brighter or gets a different outline when the mouse pointer enters it. There are more parameters, but let's ignore them.
 
-#### The basic way - step by step
+### The basic way - step by step
 
 Let's say we want a green box with a thin black outline. We can create a Blueprint for it like this:
 
@@ -139,12 +143,12 @@ struct StateBP
 This pattern is identical for all blueprints supporting states, only the format of the StateData differs. For BoxSkin it looks as follows:
 
 ```c++
-		struct StateData
-		{
-			HiColor		color = HiColor::Undefined;
-			Coord		contentShift = {0,0};
-			HiColor		outlineColor = HiColor::Undefined;
-		};
+struct StateData
+{
+	HiColor		color = HiColor::Undefined;
+	Coord		contentShift = {0,0};
+	HiColor		outlineColor = HiColor::Undefined;
+};
 ```
 
 Knowing this, we can add our color for state Hovered to our blueprint. Let's start by doing it in the most explainatory step-by-step way before showing how to do it with less code:
@@ -159,7 +163,7 @@ bp.states.push_back(hovered);
 
 
 
-#### The designated initializer way (C++20)
+### The designated initializer way (C++20)
 
 Above we simply create a struct containing the state-specific information and push it onto the stack. That is however quite much code. If we use C++20 designated initializers we can make it much shorter:
 
@@ -169,7 +173,7 @@ bp.states.push_back( {State::Hovered, {.color = Color::Red}} );
 
 
 
-#### The WGBP-compatible alternative
+### The WGBP-compatible alternative
 
 Unfortunately we can not reuse the designated initializer pattern with the WGBP macro. The reason is that the macro only works with the Blueprint structs themselves, not the structs contained within such as StateBP. Instead we have opted to take a step back from the POD-principle and add a bunch of constructors to our StateBP-structs. For BoxSkin::StateBP we have the following constructors:
 
@@ -217,7 +221,7 @@ auto pMySkin = BoxSkin::create( WGBP(BoxSkin,
 
 
 
-### More about Blueprints
+## More about blueprints
 
 There are a few more things related to blueprints that is worth pointing out. 
 

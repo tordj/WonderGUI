@@ -74,8 +74,8 @@ namespace wg
 
 			void			setGeo(const Rect& geometry);
 
-			void			setOffset(const Coord& ofs);
-			inline Coord	offset() const { return m_placementGeo.pos(); }
+			void			setPos(const Coord& ofs);
+			inline Coord	pos() const { return m_placementGeo.pos(); }
 
 			void			setSize(const Size& size);
 
@@ -100,9 +100,31 @@ namespace wg
 
 		};
 
+		//.____ Blueprint _________________________________________
+
+		struct Blueprint
+		{
+
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer = nullptr;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
+
 		//.____ Creation __________________________________________
 
 		static ModalOverlay_p	create() { return ModalOverlay_p(new ModalOverlay()); }
+		static ModalOverlay_p	create( const Blueprint& blueprint ) { return ModalOverlay_p(new ModalOverlay(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -122,6 +144,7 @@ namespace wg
 
 	protected:
 		ModalOverlay();
+		ModalOverlay(const Blueprint& bp);
 		virtual ~ModalOverlay();
 
 

@@ -1,6 +1,12 @@
-## Skins
+---
+title: 'Skins'
+weight: 20
+---
 
-Skins are a very important part of WonderGUI and defines the look and (to some extent) the feel of a widget. A typical widget doesn't draw anything at all unless you apply a skin to it. All widgets have at least one skin, which is considered the background skin, covering the whole area of the widget. This is enough for most widgets, but some widgets have additional skins that covers different parts of the widget. A slider for example has two skins, one for the background and one for the handle.
+
+# Skins
+
+Skins are a very important part of WonderGUI and defines the look and (to some extent) the feel of a widget. A typical widget doesn't draw anything at all on the screen unless you apply a skin to it. All widgets have at least one skin, which is considered the background skin, covering the whole area of the widget. This is enough for most widgets, but some widgets have additional skins that covers different parts of the widget. A slider for example has two skins, one for the background and one for the handle.
 
 Skins are very generic in that the same skin can be applied to widgets of all different kinds, we don't have a specific type of skin for say Buttons, although some skins have features that are only useful for certain categories of widgets. 
 

@@ -67,9 +67,9 @@ namespace wg
 		_holder()->_refreshRealGeo(this);
 	}
 
-	//____ Slot::setOffset() ____________________________________________________
+	//____ Slot::setPos() ____________________________________________________
 
-	void ModalOverlay::Slot::setOffset(const Coord& ofs)
+	void ModalOverlay::Slot::setPos(const Coord& ofs)
 	{
 		m_placementGeo.setPos(ofs);
 		_holder()->_refreshRealGeo(this);
@@ -157,6 +157,11 @@ namespace wg
 
 	ModalOverlay::ModalOverlay() : modalSlots(this)
 	{
+	}
+
+	ModalOverlay::ModalOverlay(const Blueprint& bp) : modalSlots(this)
+	{
+		_initFromBlueprint(bp);
 	}
 
 	//____ Destructor _____________________________________________________________

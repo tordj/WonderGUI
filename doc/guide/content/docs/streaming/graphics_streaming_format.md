@@ -1,10 +1,15 @@
-## Graphics Streaming Format
+---
+title: 'Stream format'
+weight: 10
+---
 
-*WonderGUI can be redirected to render graphics to a byte-stream instead of a a Surface or the screen. This document describes the format of this byte-stream.*
+# Stream format
+
+*This document describes the format of this graphics stream.*
 
 
 
-### Chunks and Chunk Headers
+## Chunks and chunk headers
 
 The stream is built up as a series of individual chunks of data. Each chunk starts with a header that states the type of chunk, size of the chunk and a number of flags determining how data in the chunk is stored.
 
@@ -12,7 +17,7 @@ The chunk header is 2-4 bytes long, depending on the size of the chunk and has t
 
 
 
-##### First two bytes of header
+### First two bytes of header
 
 | Bit    | Content                                                      |
 | ------ | ------------------------------------------------------------ |
@@ -22,7 +27,7 @@ The chunk header is 2-4 bytes long, depending on the size of the chunk and has t
 
 
 
-##### SPX storage format
+### SPX storage format
 
 | Value in Header | Meaning                               |
 | :-------------- | ------------------------------------- |
@@ -30,8 +35,9 @@ The chunk header is 2-4 bytes long, depending on the size of the chunk and has t
 | 1               | 16 bit unsigned values with binals.   |
 | 2               | 16 bit signed values without binals.  |
 | 3               | 8 bit unsigned values without binals. |
+| 4-7             | Reserved for future use.              |
 
 Any SPX storage format can be used in any header and affects all the data stored in SPX format, this means all CoordSPX, SizeSPX, RectSPX, BorderSPX and anything just saved as an SPX.
 
-Also, most data in a chunk needs to be align on word-bundary, so a single SPX saved in an 8-bit format will need to be padded with an additional byte.
+Also, most data in a chunk needs to be aligned on word-bundary, so a single SPX saved in an 8-bit format will need to be padded with an additional byte.
 

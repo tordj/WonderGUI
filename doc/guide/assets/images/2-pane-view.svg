@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1658 1115" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g transform="matrix(1,0,0,1,-470.371,-234.151)">
+        <g transform="matrix(1.23375,0,0,1.47828,-232.715,-314.384)">
+            <rect x="571.555" y="372.464" width="1340.26" height="751.033" style="fill:rgb(235,235,235);stroke:black;stroke-width:3.04px;"/>
+        </g>
+        <g transform="matrix(1,0,0,0.972973,-1.13687e-13,34.4754)">
+            <rect x="519.685" y="401.575" width="614.173" height="874.016" style="fill:white;stroke:black;stroke-width:4.2px;"/>
+        </g>
+        <g transform="matrix(2.69231,0,0,0.135135,-926.711,181.954)">
+            <rect x="519.685" y="401.575" width="614.173" height="874.016" style="fill:white;stroke:black;stroke-width:2.17px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-169.107,37.633)">
+            <text x="1291.22px" y="286.98px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;">Menubar</text>
+        </g>
+        <g transform="matrix(1,0,0,1,-634.326,564.254)">
+            <text x="1330.5px" y="286.98px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;">Pane 1</text>
+        </g>
+        <g transform="matrix(1,0,0,0.972973,944.882,34.4754)">
+            <rect x="519.685" y="401.575" width="614.173" height="874.016" style="fill:white;stroke:black;stroke-width:4.2px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,437.008,-1116.14)">
+            <path d="M992.126,1753.94C992.126,1737.64 978.895,1724.41 962.598,1724.41L761.811,1724.41C745.514,1724.41 732.283,1737.64 732.283,1753.94L732.283,1812.99C732.283,1829.29 745.514,1842.52 761.811,1842.52L962.598,1842.52C978.895,1842.52 992.126,1829.29 992.126,1812.99L992.126,1753.94Z" style="fill:white;stroke:black;stroke-width:4.14px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,437.008,-950.787)">
+            <path d="M992.126,1753.94C992.126,1737.64 978.895,1724.41 962.598,1724.41L761.811,1724.41C745.514,1724.41 732.283,1737.64 732.283,1753.94L732.283,1812.99C732.283,1829.29 745.514,1842.52 761.811,1842.52L962.598,1842.52C978.895,1842.52 992.126,1829.29 992.126,1812.99L992.126,1753.94Z" style="fill:white;stroke:black;stroke-width:4.14px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,437.008,-797.244)">
+            <path d="M992.126,1753.94C992.126,1737.64 978.895,1724.41 962.598,1724.41L761.811,1724.41C745.514,1724.41 732.283,1737.64 732.283,1753.94L732.283,1812.99C732.283,1829.29 745.514,1842.52 761.811,1842.52L962.598,1842.52C978.895,1842.52 992.126,1829.29 992.126,1812.99L992.126,1753.94Z" style="fill:white;stroke:black;stroke-width:4.14px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,305.877,562.437)">
+            <text x="1330.5px" y="286.98px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:83.333px;">Pane 2</text>
+        </g>
+        <g transform="matrix(1,0,0,1,-150.915,395.439)">
+            <text x="1376.3px" y="286.98px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:58.333px;">Copy</text>
+        </g>
+        <g transform="matrix(1,0,0,1,-147.813,719.777)">
+            <text x="1358.54px" y="286.98px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:58.333px;">Delete</text>
+        </g>
+        <g transform="matrix(1,0,0,1,-150.293,566.233)">
+            <text x="1374.31px" y="286.98px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:58.333px;">Move</text>
+        </g>
+    </g>
+</svg>

@@ -1,4 +1,10 @@
-## The WG Object Model
+---
+title: 'Object model'
+weight: 10
+---
+
+
+# The object model
 
 *WonderGUI uses its own system of reference counted objects with smart pointers. From a user perspective It is in many ways similar to, STL's shared_ptr and weak_ptr but it is very different under the hood and more tightly integrated with WonderGUI.*
 
@@ -10,13 +16,13 @@ Although you can use STL's smart pointers in software using WonderGUI, you can *
 
 
 
-#### Object
+## Object
 
 wg::Object is the base class for all reference counted objects. It contains the reference counter and methods for increasing, decreasing and reading the reference count. It also contains some limited means of introspection and allows for a "finalizer" callback that is called right before the object is destroyed.
 
 
 
-#### Creating objects
+## Creating objects
 
 Every class derived from Object that can be instantiated has a static method called create(). To create a Button (one of the simplest widgets) you simply call Button::create(). A shared pointer to the object is returned if object could be created. An error is sent to the error handler (registered in wg::Base) and a nullptr is returned if the object could not be created.
 
@@ -24,7 +30,7 @@ Object creation in WonderGUI will fail more often than when using new, because W
 
 
 
-#### Shared and weak pointers
+## Shared and weak pointers
 
 WonderGUI supports shared and weak pointers. There is no pointer equivalent to stl::unique_ptr, we found them to be of little use in WonderGUI and prone to cause errors when used casually. WonderGUI shared pointers have less overhead than stl::shared_ptr so the benefit of a unique_ptr would be small.
 
@@ -48,7 +54,7 @@ A WeakPtr on the other hand adds some extra overhead. A separate, small struct i
 
 
 
-#### Raw C-style pointers
+## Raw C-style pointers
 
 Contrary to STL's smart pointers, a raw pointer to a WonderGUI Object can be converted back to a StrongPtr again, since the reference counter is located in the Object itself.
 
@@ -78,7 +84,7 @@ Not that this is not anything we recommend since it negates the advantages of sm
 
 
 
-#### Casting
+## Casting
 
 A StrongPtr (or WeakPtr) is implicitly cast to smart pointers of a base classes:
 
@@ -112,7 +118,7 @@ Which is exactly what wg_static_cast does.
 
 
 
-#### Finalizers
+## Finalizers
 
 A finalizer is a function that is called when an Objects reference count has reached zero, right before its destructor is called.
 
@@ -122,7 +128,7 @@ A finalizer-pointer is stored in the same struct used by weak pointers, so they 
 
 Here is an example on how to set a finalizer for a widget using a Lambda:
 
-```
+```c++
 auto pWidget = Button::create();
 
 pWidget->setFinalizer([](Object * p) { /* Do something here */ });
@@ -133,7 +139,7 @@ pWidget->setFinalizer([](Object * p) { /* Do something here */ });
 
 
 
-#### Introspection
+## Introspection
 
 All Objects have an associated TypeInfo structure which allows you to check the class-type of the object and what class it inherits from. The name of the class is also accessible as a printable c-string.
 
@@ -141,7 +147,7 @@ The method typeInfo() returns a reference to the type-info for the object and th
 
 Here are a few examples of what you can use that for:
 
-```
+```c++
 // Determine if an object is a Widget, i.e. a subclass of the Widget-class:
 
 bool isWidget = pObject->isInstanceOf(Widget::TYPEINFO);
@@ -162,19 +168,19 @@ TypeInfo * pSuperClass = pObject->typeInfo().pSuperClass;
 
 
 
-#### Components and Component Pointers
+## Components and component pointers
 
 The term *Component* is used in WonderGUI to refer to a public member of an Object with its own API. Components are used to easily add functionality to Objects, particularly Widgets, through composition instead of inheritance such as a text-field or a container for child widgets. Typically (but not always) they contain a reference to the object containing them so they can notify the object of changes.
 
 Sometimes it might be useful to point to a specific component inside an object directly. This can naturally be done using raw pointers like this:
 
-```
+```c++
 Text * pLabel = pMyButton->label;
 ```
 
 However, that only works as long as you keep a strong pointer to the object around, so it isn't destroyed. In order to make sure the object isn't destroyed under your feet, you can use a *ComponentPtr* which points at the component but keeps a reference to the Object, guaranteeing that it isn't destroyed while the pointer is being used. It works like this:
 
-```
+```c++
 auto pLabel = ComponentPtr( pMyButton, pMyButton->label );
 ```
 
@@ -182,13 +188,13 @@ First parameter is a pointer to the object and the second is a reference to the 
 
 If you need to declare it, it can be declared like this:
 
-```
+```c++
 ComponentPtr<Text>	pLabel;
 ```
 
 But in most cases the component has a typedef:ed pointer that can be used for brevity and readability:
 
-```
+```c++
 Text_p	pLabel;
 ```
 

@@ -70,7 +70,7 @@ endif()
 #------------------------------------------------------------------------------
 
 
-set(WAPPLIB wappsdl2metal)			# WonderApp framework based on SDL2. Works on Windows, Mac and Linux.
+set(WAPPLIB wappsdl2sw)			# WonderApp framework based on SDL2. Works on Windows, Mac and Linux.
 
 
 #------------------------------------------------------------------------------

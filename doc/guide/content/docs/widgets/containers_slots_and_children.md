@@ -1,16 +1,21 @@
-## Containers, Slots and Children
+---
+title: 'Containers, slots and children'
+weight: 20
+---
+
+# Containers, slots and children
 
 *The layout of a user interfaces is built up by placing widgets inside widgets. A widget that can hold one or more other widgets is called a Container. The are several categories of containers, see the chapter "Widget Overview" to learn more about those.*
 
 
 
-### What is a Container?
+## What is a container?
 
 A container is simply a Widget which can contain one or more other widgets. The contained widgets are called children and the container are the childrens parent.
 
 
 
-### What is a Slot?
+## What is a slot?
 
 A Slot is simply an object in which the Container stores the pointer to a widget and all information associated with it, such as its position, size and other parameters needed to properly place and display it.
 
@@ -22,15 +27,15 @@ Some containers have a fixed amount of slots while others can add and remove slo
 
 
 
-### Accessing Slots
+## Accessing slots
 
 A container typically presents its slots as public members that can be accessed directly. A container which has strictly one slot (like any *Capsule* or the *ScrollPanel*) has a member simply named *slot*. Accessing the slot and any member of it is easy:
 
 ```c++
-Widget_p pWidget = pContainer->slot.widget();		// Get a pointer to the widget in the slot.
-Size size = pContainer->slot.size();						// Get the size of the slot (and therefore the widget).
-Coord pos = pContainer->slot.pos();							// Get the position of the widget inside the container.
-Rect geo = pContainer->slot.geo();							// Get the geometry (position and size) of widget.
+Widget_p pWidget = pContainer->slot.widget();	// Get a pointer to the widget in the slot.
+Size size = pContainer->slot.size();			// Get the size of the slot (and therefore the widget).
+Coord pos = pContainer->slot.pos(); 			// Get the position of the widget inside the container.
+Rect geo = pContainer->slot.geo();				// Get the geometry (position and size) of widget.
 ```
 
 The four methods above are available for all slots irregardless of container.
@@ -38,8 +43,8 @@ The four methods above are available for all slots irregardless of container.
 A slot can be either *static* or *dynamic*. Most slots are dynamic, which means that you can change the widget inside.
 
 ```c++
-pContainer->slot.setWidget( pNewWidget );				// Replace widget in slot with a new one.
-pContainer->slot = pNewWidget;									// Shorthand expression for above.
+pContainer->slot.setWidget( pNewWidget );		// Replace widget in slot with a new one.
+pContainer->slot = pNewWidget;					// Shorthand expression for above.
 ```
 
 
@@ -47,7 +52,7 @@ pContainer->slot = pNewWidget;									// Shorthand expression for above.
 Most containers have more than one slot though. These are typically arranged in an array (fixed amount of slots) or vector (dynamic amount of slots) which is named *slots*. These can be accessed like the content of a normal std::vector:
 
 ```c++
-Widget_p pWidget = pContainer->slots[0].widget();			// Get a pointer to the widget in the first slot.
+Widget_p pWidget = pContainer->slots[0].widget();		// Get a pointer to the widget in the first slot.
 Widget_p pWidget = pContainer.slots.front().widget();	// Same result as above.
 
 Widget_p pWidget = pContainer.slots.back().widget();	// Get a pointer to the widget in the last slot.
@@ -99,11 +104,11 @@ pContainer->slots.pushFront( pWidget );
 pContainer->slots.pushBack( pAnotherWidget );
 ```
 
-Another notable difference is that DynamicSlotVector follows WonderGUI's naming convention, using camelCase instead of snake_case and some methods differ slightly in naming (such as empty() vs isEmpty()).
+Another notable difference is that DynamicSlotVector follows WonderGUI's naming convention, using camelCase instead of snake_case and some methods differ slightly in naming (such as isEmpty() instead of  empty()).
 
 
 
-Not all containers have all their slots in one public member though. Overlayes in particular always have two sets of slots. One is what is called the *mainSlot*, which is a single slot for the normal hierarchy of widgets continuing below the overlay. A second slot, or vector of slots, contains the widgets that resides in the overlay. A good example is the ModalOverlay, which besides the mainSlot has a DynamicSlotVector named *modalSlots*, in which you should place any widget that should become modal (prevent access to any widget below it).
+Not all containers have all their slots in one public member though. Overlays in particular always have two sets of slots. One is what is called the *mainSlot*, which is a single slot for the normal hierarchy of widgets continuing below the overlay. A second slot, or vector of slots, contains the widgets that resides in the overlay. A good example is the ModalOverlay, which besides the mainSlot has a DynamicSlotVector named *modalSlots*, in which you should place any widget that should become modal (prevent access to any widget below it).
 
 ```c++
 pModalOverlay->mainSlot.setWidget( pMyWidgetHierarchy );		// Set the main GUI below the modal widgets
@@ -152,7 +157,7 @@ This keeps the object alive but adds some slight overhead.
 
 
 
-### Adding slots
+## Adding slots
 
 When you add a slot to a DynamicSlotVector, you do not create a Slot object and push it. The slots are internal to the containers and can only exist within containers. Instead you either just push a widget to the slot vector, in which case a new slot with default values and the specifed widget is added, or you push the widget together with a Blueprint for the slot. Here is an example for PackPanel:
 
@@ -247,9 +252,9 @@ Unfortunately you can not use begin/end-iterators with Blueprints yet. It can pr
 
 
 
-### Clearing and removing slots
+## Clearing and removing slots
 
 
 
-### Moving widgets around
+## Moving widgets around
 
