@@ -605,7 +605,9 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			m_colTrans.mode = tintMode;
 			_updateBlitFunctions();
 		}
-
+		
+		m_colTrans.morphFactor = m_morphFactor;
+		m_colTrans.fixedBlendColor = m_fixedBlendColor;
 	}
 
 	//____ setBlendMode() _____________________________________________________

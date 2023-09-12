@@ -460,6 +460,7 @@ namespace wg
 		back.bTintGradient = m_bTintGradient;
 		back.blendMode = m_blendMode;
 		back.morphFactor = m_morphFactor;
+		back.fixedBlendColor = m_fixedBlendColor;
 
 		memcpy(back.layerSurfaces, m_layerSurfaces, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
 		memset(m_layerSurfaces, 0, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
@@ -494,6 +495,7 @@ namespace wg
 		m_bTintGradient = false;
 		m_blendMode = BlendMode::Blend;
 		m_morphFactor = 0.5f;
+		m_fixedBlendColor = HiColor::Black;
 		_canvasWasChanged();
 
         // Call Canvas Initializer
@@ -618,6 +620,7 @@ namespace wg
 			m_bTintGradient = back.bTintGradient;
 			m_blendMode = back.blendMode;
 			m_morphFactor = back.morphFactor;
+			m_fixedBlendColor = back.fixedBlendColor;
 
 
 			// Move surface pointers from stack without referencing/dereferencing.

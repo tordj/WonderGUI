@@ -271,6 +271,7 @@ namespace wg
 			bool			bTintGradient;
 			BlendMode		blendMode;
 			float			morphFactor;
+			HiColor			fixedBlendColor;
 
 			Surface_p		layerSurfaces[CanvasLayers::c_maxLayers];		// Should maybe be a separate stack...
 		};
