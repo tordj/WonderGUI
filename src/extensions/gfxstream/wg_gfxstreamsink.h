@@ -55,7 +55,7 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		inline void	processChunks(const uint8_t* pBegin, const uint8_t* pEnd) { m_pHolder->_processStreamChunks(pBegin, pEnd); }
+		inline void	processChunks(const void* pBegin, const void* pEnd) { m_pHolder->_processStreamChunks( (uint8_t*) pBegin, (uint8_t*) pEnd); }
 
 	protected:
 

@@ -54,6 +54,10 @@ set( SOURCES
 	c-api/wg_c_gfxstreampump.h
 	c-api/wg_c_gfxstreamreader.cpp
 	c-api/wg_c_gfxstreamreader.h
+	c-api/wg_c_gfxstreamsink.cpp
+	c-api/wg_c_gfxstreamsink.h
+	c-api/wg_c_gfxstreamsource.cpp
+	c-api/wg_c_gfxstreamsource.h
 	c-api/wg_c_gfxstreamsplitter.cpp
 	c-api/wg_c_gfxstreamsplitter.h
 	c-api/wg_c_gfxstreamwrapper.cpp
