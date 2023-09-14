@@ -60,6 +60,7 @@ namespace wg
 		virtual Edgemap_p createEdgemap( const Edgemap::Blueprint& blueprint, SampleOrigo origo, const spx * pSamples, int edges, int edgePitch = 0, int samplePitch = 0) = 0;
 
 	protected:
+		EdgemapFactory() {}
 		virtual ~EdgemapFactory() {}
 	};
 

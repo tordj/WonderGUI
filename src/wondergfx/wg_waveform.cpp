@@ -24,6 +24,7 @@
 #include <wg_gfxbase.h>
 
 #include <algorithm>
+#include <cstring>
 
 namespace wg
 {
@@ -63,22 +64,22 @@ namespace wg
 			_generateInfluenceSlope( m_topBrush );
 			_generateInfluenceSlope( m_bottomBrush );
 		}
-		
+
 		//
-		
+
 		m_topSamplesPadding = (bp.topOutlineThickness/2 / 64) + 1;
 		m_bottomSamplesPadding = (bp.bottomOutlineThickness/2 / 64) + 1;
 
 		int bufferSize = (m_nbSamples+m_topSamplesPadding*2)+(m_nbSamples+m_bottomSamplesPadding*2);
-		
+
 		m_pSampleBuffer = new spx[(m_nbSamples+m_topSamplesPadding*2)+(m_nbSamples+m_bottomSamplesPadding*2)];
-		
+
 		if( m_bOptimizeDirtRange )
 			memset( m_pSampleBuffer, 0, bufferSize*sizeof(spx));			// Need to start with known value if we are optimizing and using gfxStreams.
-		
+
 		m_pTopSamples = m_pSampleBuffer + m_topSamplesPadding;
 		m_pBottomSamples = m_pSampleBuffer + (m_nbSamples + m_topSamplesPadding*2) + m_bottomSamplesPadding;
-		
+
 		m_dirtBegin	= 0;
 		m_dirtEnd 	= m_nbSamples;
 
@@ -107,28 +108,28 @@ namespace wg
 		{
 			return false;
 		}
-			
+
 		if( size == m_size )
 			return true;
-		
+
 		int nSamples = size.w + 1;
 		if( nSamples != m_nbSamples )
 		{
 			delete [] m_pSampleBuffer;
 			m_pSampleBuffer = new spx[(m_nbSamples+m_topSamplesPadding*2)+(m_nbSamples+m_bottomSamplesPadding*2)];
-			
+
 			m_pTopSamples = m_pSampleBuffer + m_topSamplesPadding;
 			m_pBottomSamples = m_pSampleBuffer + (m_nbSamples + m_topSamplesPadding*2) + m_bottomSamplesPadding;
-			
+
 			m_nbSamples = nSamples;
 			m_size = size;
-			
+
 			m_dirtBegin	= 0;
 			m_dirtEnd 	= m_nbSamples;
-			
+
 			_regenEdgemap();
 		}
-				
+
 		return true;
 	}
 
@@ -138,7 +139,7 @@ namespace wg
 	{
 		if( !col.isValid() )
 			return false;
-		
+
 		m_color = col;
 		_updateEdgemapColors();
 		return true;
@@ -151,7 +152,7 @@ namespace wg
 	{
 		if( !gradient.isValid() )
 			return false;
-			
+
 		m_gradient = gradient;
 		_updateEdgemapColors();
 		return true;
@@ -171,7 +172,7 @@ namespace wg
 	{
 		if( !col.isValid() )
 			return false;
-		
+
 		m_outlineColor = col;
 		_updateEdgemapColors();
 		return true;
@@ -183,7 +184,7 @@ namespace wg
 	{
 		if( !gradient.isValid() )
 			return false;
-			
+
 		m_outlineGradient = gradient;
 		_updateEdgemapColors();
 		return true;
@@ -207,7 +208,7 @@ namespace wg
 
 		if( sampleBegin == sampleEnd )
 			return;
-		
+
 		if( m_bOptimizeDirtRange )
 		{
 			if( pTopSamples )
@@ -236,7 +237,7 @@ namespace wg
 
 		if( sampleBegin == sampleEnd )
 			return;
-		
+
 		if( m_bOptimizeDirtRange )
 		{
 			if( pTopSamples )
@@ -264,12 +265,12 @@ namespace wg
 	{
 		spx * pDestBegin = _pDestBegin;
 		spx * pDestEnd = _pDestEnd;
-		
+
 		int nbSamples = pDestEnd - pDestBegin;
 		int allocBytes= (pDestEnd - pDestBegin) * sizeof(spx);
 		spx * pConverted = (spx*) GfxBase::memStackAlloc(allocBytes);
 		EdgemapTools::convertSamples(pConverted, pSource, m_origo, m_pEdgemap->pixelSize().h*64, 1, nbSamples, 0, 1, 0, 1);
-						
+
 		int bufferBeg = 0;
 		int bufferEnd = nbSamples;
 
@@ -278,7 +279,7 @@ namespace wg
 			pDestBegin++;
 			bufferBeg++;
 		}
-		
+
 		while( pDestBegin < pDestEnd && pConverted[bufferEnd-1] == pDestEnd[-1] )
 		{
 			pDestEnd--;
@@ -300,12 +301,12 @@ namespace wg
 	{
 		spx * pDestBegin = _pDestBegin;
 		spx * pDestEnd = _pDestEnd;
-		
+
 		int nbSamples = pDestEnd - pDestBegin;
 		int allocBytes= (pDestEnd - pDestBegin) * sizeof(spx);
 		spx * pConverted = (spx*) GfxBase::memStackAlloc(allocBytes);
 		EdgemapTools::convertSamples(pConverted, pSource, m_origo, m_pEdgemap->pixelSize().h*64, 1, nbSamples, 0, 1, 0, 1);
-						
+
 		int bufferBeg = 0;
 		int bufferEnd = nbSamples;
 
@@ -314,7 +315,7 @@ namespace wg
 			pDestBegin++;
 			bufferBeg++;
 		}
-		
+
 		while( pDestBegin < pDestEnd && pConverted[bufferEnd-1] == pDestEnd[-1] )
 		{
 			pDestEnd--;
@@ -371,9 +372,9 @@ namespace wg
 	{
 		if( m_dirtEnd - m_dirtBegin <= 0  )
 			return m_pEdgemap;
-			
+
 		// Copy first/last samples to padding if changed.
-		
+
 		if( m_dirtBegin == 0 )
 		{
 			spx value = m_pTopSamples[0];
@@ -386,7 +387,7 @@ namespace wg
 			while( p != m_pBottomSamples )
 				* p++ = value;
 		}
-		
+
 		if( m_dirtEnd == m_nbSamples )
 		{
 			spx value = m_pTopSamples[m_nbSamples-1];
@@ -401,7 +402,7 @@ namespace wg
 		}
 
 		int padding = std::max(m_topSamplesPadding,m_bottomSamplesPadding);
-		
+
 		int dirtBegin = std::max(0,m_dirtBegin-padding);
 		int dirtEnd = std::min(m_nbSamples,m_dirtEnd+padding);
 		int dirtSize = dirtEnd - dirtBegin;
@@ -409,7 +410,7 @@ namespace wg
 		if( !m_bHasOutlines )
 		{
 			int allocated = (dirtSize)*2*sizeof(spx);
-			
+
 			spx * pBuffer = (spx*) GfxBase::memStackAlloc(allocated);
 
 			memcpy(pBuffer, m_pTopSamples + m_dirtBegin, dirtSize*sizeof(spx) );
@@ -420,42 +421,42 @@ namespace wg
  			for (int i = 0; i < dirtSize; i++)
 			{
 				// Flip lines if they cross
-				
+
 				if( pBuffer[i] > pBuffer[i+dirtSize])
 					std::swap( pBuffer[i], pBuffer[i+dirtSize]);
 			}
 
 
 			// Update edgemap.
-			
+
 			m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer, 0, 1, dirtBegin, dirtEnd);
 			m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer + dirtSize, 1, 2, dirtBegin, dirtEnd);
-			
+
 			GfxBase::memStackFree(allocated);
 		}
 		else
 		{
 			int allocated = (dirtSize)*4*sizeof(spx);
-			
+
 			spx * pBuffer = (spx*) GfxBase::memStackAlloc(allocated);
-			
+
 			_drawLine(m_pTopSamples + m_dirtBegin, pBuffer, pBuffer + dirtSize, dirtSize, m_topBrush );
 			_drawLine(m_pBottomSamples + m_dirtBegin, pBuffer+dirtSize*2, pBuffer + dirtSize*3, dirtSize, m_bottomBrush );
 
 			// Loop through new edges and fix possible issues.
-			
+
 			for (int i = 0; i < dirtSize; i++)
 			{
 				// Flip lines if they cross
-				
+
 				if( pBuffer[i] > pBuffer[i+dirtSize*2])
 				{
 					std::swap( pBuffer[i], pBuffer[i+dirtSize*2]);
 					std::swap( pBuffer[i+dirtSize], pBuffer[i+dirtSize*3]);
 				}
-				
+
 				// Handle outline overlapping
-				
+
 				if (pBuffer[i+dirtSize*2] < pBuffer[i+dirtSize] )
 				{
 					pBuffer[i+dirtSize*2] = pBuffer[i+dirtSize];
@@ -463,15 +464,15 @@ namespace wg
 						pBuffer[i+dirtSize*3] = pBuffer[i+dirtSize*2];
 				}
 			}
-			
+
 			// Update edgemap.
-			
+
 			m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer, 0, 2, dirtBegin, dirtEnd);
 			m_pEdgemap->importSamples(SampleOrigo::Top, pBuffer + dirtSize*2, 2, 4, dirtBegin, dirtEnd);
-			
+
 			GfxBase::memStackFree(allocated);
 		}
-		
+
 		m_dirtBegin = m_nbSamples;
 		m_dirtEnd = 0;
 
@@ -484,7 +485,7 @@ namespace wg
 	{
 		limit(sampleBegin, 0, m_nbSamples);
 		limit(sampleEnd, sampleBegin, m_nbSamples);
-		
+
 		spx * p = pSamples + sampleBegin;
 		for( int i = 0 ; i < sampleEnd - sampleBegin ; i++ )
 			* p++ = sample;
@@ -513,13 +514,13 @@ namespace wg
 
 			spx * pInfluence = brush.influenceSlope;
 			spx * _pSrc = pSrc + i;
-			
-			
+
+
 			while( * pInfluence != 0 )
 			{
 				spx inc = (_pSrc[-1] - _pSrc[0])/4;
 				spx sample = * _pSrc--;
-				
+
 				for( int j = 0 ; j < 4 ; j++ )
 				{
 					sample += inc;
@@ -531,7 +532,7 @@ namespace wg
 						top = topCover;
 					else if (bottomCover > bottom)
 						bottom = bottomCover;
-					
+
 					pInfluence++;
 				}
 			}
@@ -545,7 +546,7 @@ namespace wg
 			{
 				spx inc = (_pSrc[1] - _pSrc[0])/4;
 				spx sample = * _pSrc++;
-				
+
 				for( int j = 0 ; j < 4 ; j++ )
 				{
 					sample += inc;
@@ -557,7 +558,7 @@ namespace wg
 						top = topCover;
 					else if (bottomCover > bottom)
 						bottom = bottomCover;
-					
+
 					pInfluence++;
 				}
 			}
@@ -575,13 +576,13 @@ namespace wg
 	{
 		auto pCurveTab = GfxBase::curveTab();
 		int curveTabSize = GfxBase::curveTabSize();
-		
+
 		int radius = brush.thickness / 2;
-		
+
 		brush.influenceSlope[0] = radius;
 
 		int nSteps = radius * 4 / 64;
-		
+
 		for( int i = 0 ; i < nSteps ; i++ )
 			brush.influenceSlope[i] = (pCurveTab[curveTabSize -1 -(curveTabSize * i*(64/4) / radius)] * radius) >> 16;
 
@@ -598,7 +599,7 @@ namespace wg
 		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : pFactory = GfxBase::defaultEdgemapFactory();
 
 		bool bUseGradient = !m_gradient.isUndefined() || !m_outlineGradient.isUndefined();
-		
+
 		if( bUseGradient )
 		{
 			Gradient	gradients[5];
@@ -613,7 +614,7 @@ namespace wg
 		{
 			HiColor	colors[5];
 			int nSegments = _generateColorPalette(colors);
-						
+
 			if( m_pEdgemap && m_pEdgemap->gradients() == nullptr )
 				m_pEdgemap->setColors( 0, nSegments, colors );
 			else
@@ -628,19 +629,19 @@ namespace wg
 		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : GfxBase::defaultEdgemapFactory();
 
 		bool bUseGradient = !m_gradient.isUndefined() || !m_outlineGradient.isUndefined();
-			
+
 		if( bUseGradient )
 		{
 			Gradient	gradients[5];
 			int nSegments = _generateGradientPalette( gradients );
-			
+
 			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.gradients = gradients, _.size = m_size, _.segments = nSegments ) );
 		}
 		else
 		{
 			HiColor	colors[5];
 			int nSegments = _generateColorPalette( colors );
-			
+
 			m_pEdgemap = pFactory->createEdgemap( WGBP(Edgemap, _.colors = colors, _.size = m_size, _.segments = nSegments ) );
 		}
 	}
@@ -677,7 +678,7 @@ namespace wg
 		if( m_bHasOutlines )
 			* p++ = outline;
 		* p++ = transparent;
-		
+
 		return p - pDest;
 	}
 

@@ -97,16 +97,16 @@ namespace wg
 			int value = * pBegin++;
 			spxMask |= value + add;
 		}
-			
+
 		if( (spxMask & 0xFFDFC03F) == 0 )
 			return GfxStream::SpxFormat::Uint8_int;						// Fits in uint8_t without binals.
-		
+
 		if( (spxMask & 0xFFDF0000) == 0 )
 			return GfxStream::SpxFormat::Uint16_dec;					// Fits in uint16_t with binals.
 
 		if( (spxMask & 0xFFC0003F) == 0 )
 			return GfxStream::SpxFormat::Int16_int;						// Fits in int16_t without binals.
-		
+
 		return GfxStream::SpxFormat::Int32_dec;							// We need 32 bits.
 	}
 
@@ -166,7 +166,7 @@ namespace wg
 	//____ defineCanvas() ____________________________________________________
 
 	bool GfxStreamDevice::defineCanvas( CanvasRef ref, GfxStreamSurface * pSurface )
-	{ 
+	{
         auto it = std::find_if(m_definedCanvases.begin(), m_definedCanvases.end(), [ref](CanvasInfo& entry) { return (ref == entry.ref); });
 
         if (it == m_definedCanvases.end())
@@ -193,7 +193,7 @@ namespace wg
 
 	bool GfxStreamDevice::defineCanvas( CanvasRef ref, const SizeI& size, PixelFormat format, int scale )
 	{
-	
+
 		auto it = std::find_if( m_definedCanvases.begin(), m_definedCanvases.end(), [ref] (CanvasInfo& entry) { return (ref == entry.ref); } );
 
 		if( it == m_definedCanvases.end() )
@@ -225,13 +225,13 @@ namespace wg
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::CanvasList, GfxStream::SpxFormat::Int32_dec, (uint16_t)(m_definedCanvases.size()*12) };
 
 		(*m_pEncoder) << (uint16_t) m_definedCanvases.size();
-		
+
 		for( auto& canvas : m_definedCanvases )
 		{
 			(*m_pEncoder) << (uint16_t) canvas.ref;
 			(*m_pEncoder) << canvas.size;
 			(*m_pEncoder) << (uint16_t) canvas.scale;
-		}		
+		}
 	}
 
 	//____ surfaceFactory() ______________________________________________________
@@ -260,7 +260,7 @@ namespace wg
     bool GfxStreamDevice::setClipList(int nRectangles, const RectSPX * pRectangles)
     {
         GfxDevice::setClipList(nRectangles, pRectangles);
-        
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetClipList, GfxStream::SpxFormat::Int32_dec, (uint16_t)(nRectangles * 16) };
         (*m_pEncoder) << GfxStream::WriteBytes{ nRectangles * 16, pRectangles };
         return true;
@@ -271,7 +271,7 @@ namespace wg
     void GfxStreamDevice::resetClipList()
     {
         GfxDevice::resetClipList();
-        
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ResetClipList, GfxStream::SpxFormat::Int32_dec, 0 };
     }
 
@@ -280,7 +280,7 @@ namespace wg
     bool GfxStreamDevice::pushClipList(int nRectangles, const RectSPX* pRectangles)
     {
         GfxDevice::pushClipList(nRectangles, pRectangles);
-        
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PushClipList, GfxStream::SpxFormat::Int32_dec, (uint16_t)(nRectangles * 16) };
         (*m_pEncoder) << GfxStream::WriteBytes{ nRectangles * 16, pRectangles };
         return true;
@@ -291,7 +291,7 @@ namespace wg
     bool GfxStreamDevice::popClipList()
     {
         GfxDevice::popClipList();
-        
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::PopClipList, GfxStream::SpxFormat::Int32_dec, 0};
         return true;
     }
@@ -302,7 +302,7 @@ namespace wg
     {
 		if( color == m_tintColor )
 			return;
-		
+
         GfxDevice::setTintColor(color);
     }
 
@@ -312,9 +312,9 @@ namespace wg
     {
 		if( m_bTintGradient && rect == m_tintGradientRect && m_tintGradient == gradient )
 			return;
-		
+
         GfxDevice::setTintGradient(rect, gradient);
-        
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetTintGradient, GfxStream::SpxFormat::Int32_dec, 16 + GfxStream::GradientSize };
         (*m_pEncoder) << rect;
         (*m_pEncoder) << gradient;
@@ -326,9 +326,9 @@ namespace wg
     {
 		if( m_bTintGradient == false )
 			return;
-		
+
         GfxDevice::clearTintGradient();
-        
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::ClearTintGradient, GfxStream::SpxFormat::Int32_dec, 0 };
     }
 
@@ -344,7 +344,7 @@ namespace wg
 
 		if( blendMode == m_blendMode )
 			return true;
-		
+
         GfxDevice::setBlendMode(blendMode);
 		return true;
     }
@@ -361,7 +361,7 @@ namespace wg
 
 		if( pSource == m_pBlitSource )
 			return true;
-		
+
         GfxDevice::setBlitSource(pSource);
         return true;
     }
@@ -372,9 +372,9 @@ namespace wg
     {
 		if( factor == m_morphFactor )
 			return;
-		
+
         GfxDevice::setMorphFactor(factor);
-        
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetMorphFactor, GfxStream::SpxFormat::Int32_dec, 4 };
         (*m_pEncoder) << factor;
     }
@@ -385,9 +385,9 @@ namespace wg
 	{
 		if( color == m_fixedBlendColor )
 			return;
-		
+
 		GfxDevice::setFixedBlendColor(color);
-		
+
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::SetFixedBlendColor, GfxStream::SpxFormat::Int32_dec, 8 };
 		(*m_pEncoder) << color;
 	}
@@ -398,8 +398,8 @@ namespace wg
     {
 		if( layer == m_renderLayer )
 			return;
-		
-        GfxDevice::setRenderLayer(layer);        
+
+        GfxDevice::setRenderLayer(layer);
     }
 
 	//____ beginRender() ___________________________________________________________
@@ -413,7 +413,7 @@ namespace wg
 
         GfxDevice::setBlitSource(nullptr);                 // We don't optimize blit source between frames.
 		m_pStreamedBlitSource = nullptr;
-		
+
 		m_bRendering = true;
 		return true;
 	}
@@ -445,13 +445,13 @@ namespace wg
     void GfxStreamDevice::endCanvasUpdate()
     {
 		auto& renderStates = m_stateStack.back();
-		
+
 		m_streamedBlendMode = renderStates.blendMode;
 		m_streamedRenderLayer = renderStates.renderLayer;
 		m_streamedTintColor = renderStates.tintColor;
-		
+
 		m_stateStack.pop_back();
-		
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::EndCanvasUpdate, GfxStream::SpxFormat::Int32_dec, 0 };
 		GfxDevice::endCanvasUpdate();
     }
@@ -475,13 +475,13 @@ namespace wg
     {
 		if ((_col.a == 0 || m_tintColor.a == 0) && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract ) )
 			return;
-		
+
         if( _rect.w < 1 || _rect.h < 1 )
             return;
 
 		if( _clippedOut(_rect) )
 			return;
-		
+
 		_streamStatesIfUpdated();
 
 		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(_rect) );
@@ -507,7 +507,7 @@ namespace wg
             return;
 
 		_streamStatesIfUpdated();
-		
+
         int maxChunkCoords = (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)) / 16;
 
         int chunkCoords = min(nCoords, maxChunkCoords);
@@ -534,7 +534,7 @@ namespace wg
 		_streamStatesIfUpdated();
 
 		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(begin ) | _spxMask(end) | _spxMask(thickness) );
-		
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineFromTo, spxFormat, (((GfxStream::spxSize(spxFormat)*5)+1)&0xFFFE) + 8  };
         (*m_pEncoder) << begin;
         (*m_pEncoder) << end;
@@ -568,7 +568,7 @@ namespace wg
 		_streamStatesIfUpdated();
 
 		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(begin ) | _spxMask(length) | _spxMask(thickness) );
-		
+
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawLineStraight, spxFormat, GfxStream::spxSize(spxFormat)*4 + 10 };
         (*m_pEncoder) << begin;
         (*m_pEncoder) << dir;
@@ -586,7 +586,7 @@ namespace wg
 
 		_streamStatesIfUpdated();
 		_streamBlitSourceIfUpdated();
-		
+
 		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(dest ) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::Blit, spxFormat, GfxStream::spxSize(spxFormat)*2 };
@@ -605,7 +605,7 @@ namespace wg
 		_streamBlitSourceIfUpdated();
 
 		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(src) );
-		
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::BlitRect, spxFormat, GfxStream::spxSize(spxFormat)*6 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << src;
@@ -619,7 +619,7 @@ namespace wg
 
 		_streamStatesIfUpdated();
 		_streamBlitSourceIfUpdated();
-		
+
 		GfxStream::SpxFormat spxFormat = _evaluateMask( _spxMask(dest ) );
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipBlit, spxFormat, GfxStream::spxSize(spxFormat)*2 + 2 };
@@ -775,7 +775,7 @@ namespace wg
 		_streamBlitSourceIfUpdated();
 
 		GfxStream::SpxFormat spxFormat = _evaluateMask(_spxMask(dest ) | _spxMask(shift) );
-		
+
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::Tile, spxFormat, GfxStream::spxSize(spxFormat)*6 };
         (*m_pEncoder) << dest;
         (*m_pEncoder) << shift;
@@ -840,7 +840,7 @@ namespace wg
 		_streamStatesIfUpdated();
 
 		int size = 16 + 20 + 20 + 8 + 8;
-        
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawWave, GfxStream::SpxFormat::Int32_dec, (uint16_t) size };
         (*m_pEncoder) << dest;
 
@@ -859,7 +859,7 @@ namespace wg
 
         if( pTopBorder->length > 0 )
             _streamEdgeSamples( pTopBorder->length, 1, 1, pTopBorder->pWave );
-        
+
         if( pBottomBorder->length > 0 )
             _streamEdgeSamples( pBottomBorder->length, 1, 1, pBottomBorder->pWave );
     }
@@ -874,7 +874,7 @@ namespace wg
 		_streamStatesIfUpdated();
 
 		uint16_t size = 16 + 20 + 20 + 8 + 8 + 2;
-        
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::FlipDrawWave, GfxStream::SpxFormat::Int32_dec, size };
         (*m_pEncoder) << dest;
 
@@ -894,7 +894,7 @@ namespace wg
 
         if( pTopBorder->length > 0 )
             _streamEdgeSamples( pTopBorder->length, 1, 1, pTopBorder->pWave );
-        
+
         if( pBottomBorder->length > 0 )
             _streamEdgeSamples( pBottomBorder->length, 1, 1, pBottomBorder->pWave );
     }
@@ -904,7 +904,7 @@ namespace wg
     void GfxStreamDevice::_streamEdgeSamples( int nLines, int samplesPerLine, int linePitch, const int * pSamples )
     {
         int allocSize = 0;
-        
+
 		if( samplesPerLine != linePitch )
         {
             allocSize = nLines * samplesPerLine * 4;
@@ -921,12 +921,12 @@ namespace wg
 
             pSamples = pSampleBuffer;
         }
-        
+
         int	nSamples = nLines * samplesPerLine;
 
 		auto spxFormat = _spxFieldFormat( pSamples, pSamples + nSamples );
 		int spxSize = GfxStream::spxSize(spxFormat);
-		
+
 		int maxSamplesPerChunk = (GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)) / spxSize;
 
         while (nSamples > 0)
@@ -940,7 +940,7 @@ namespace wg
             nSamples -= chunkSamples;
         }
 		m_pEncoder->align();
-		
+
         if( allocSize > 0 )
             GfxBase::memStackFree(allocSize);
 
@@ -973,7 +973,7 @@ namespace wg
 		_streamStatesIfUpdated();
 
 		uint16_t size = 16 + 4 + 4 + 4 + 8 + 8 + 2 + nSlices*(4+8);
-        
+
         (*m_pEncoder) << GfxStream::Header{ GfxChunkId::DrawPieChart, GfxStream::SpxFormat::Int32_dec, size };
         (*m_pEncoder) << canvas;
         (*m_pEncoder) << start;
@@ -982,7 +982,7 @@ namespace wg
         (*m_pEncoder) << hubColor;
         (*m_pEncoder) << backColor;
         (*m_pEncoder) << bRectangular;
-        
+
         (*m_pEncoder) << GfxStream::WriteBytes{ nSlices*4, pSliceSizes };
         (*m_pEncoder) << GfxStream::WriteBytes{ nSlices*8, pSliceColors };
     }
@@ -1070,15 +1070,14 @@ namespace wg
 
 	void GfxStreamDevice::drawEdgemap(CoordSPX dest, Edgemap * _pEdgemap )
 	{
-        auto pEdgemap = dynamic_cast<GfxStreamEdgemap*>(_pEdgemap);
-        if (!pEdgemap)
-        {
-            //TODO: Errorhandling
+		if( !_pEdgemap->isInstanceOf(GfxStreamEdgemap::TYPEINFO) )
+		{
+			//TODO: Errorhandling
+			return;
+		}
+		auto pEdgemap = static_cast<GfxStreamEdgemap*>(_pEdgemap);
 
-            return;
-        }
-
-		if (_clippedOut({dest,pEdgemap->pixelSize()*64}))
+		if (_clippedOut(RectSPX(dest,pEdgemap->pixelSize()*64)))
             return;
 
         _streamStatesIfUpdated();
@@ -1095,14 +1094,13 @@ namespace wg
 	void GfxStreamDevice::flipDrawEdgemap(CoordSPX dest, Edgemap * _pEdgemap, GfxFlip flip)
 	{
 		//TODO: ClipOut!!!
-		
-        auto pEdgemap = dynamic_cast<GfxStreamEdgemap*>(_pEdgemap);
-        if (!pEdgemap)
-        {
-            //TODO: Errorhandling
 
-            return;
-        }
+		if( !_pEdgemap->isInstanceOf(GfxStreamEdgemap::TYPEINFO) )
+		{
+			//TODO: Errorhandling
+			return;
+		}
+        auto pEdgemap = static_cast<GfxStreamEdgemap*>(_pEdgemap);
 
 //        if (_clippedOut(dest))
 //            return;
@@ -1153,10 +1151,10 @@ namespace wg
 	{
 		if( !rect.isOverlapping(m_clipBounds) )
 			return true;
-		
+
 		if( m_nClipRects < 1 )
 			return false;
-		
+
 		for( int i = 0 ; i < m_nClipRects ; i++ )
 			if( rect.isOverlapping(m_pClipRects[i]) )
 				return false;
@@ -1172,13 +1170,13 @@ namespace wg
 		if( pLayers )
 		{
 			// No support for canvas layers yet!
-			
+
 			return false;
 		}
 
 		m_stateStack.push_back({ m_streamedBlendMode, m_streamedTintColor, m_streamedRenderLayer});
-		
-		
+
+
 		if( !GfxDevice::_beginCanvasUpdate(canvasRef, pCanvasSurface, nUpdateRects, pUpdateRects, pLayers, startLayer) )
 		{
 			m_stateStack.pop_back();
@@ -1189,7 +1187,7 @@ namespace wg
 		m_streamedRenderLayer = m_renderLayer;
 		m_streamedTintColor = m_tintColor;
 
-		
+
 		uint16_t size = 2 + 1 + 1 + nUpdateRects * 16;
 
 		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::BeginCanvasUpdate, {}, size };
@@ -1210,21 +1208,21 @@ namespace wg
     void GfxStreamDevice::_renderLayerWasChanged()
     {
         //This method should never be called, but is pure virtual in super class.
-        
+
         assert(false);
     }
 
     void GfxStreamDevice::_transformBlitSimple(const RectI& dest, CoordI src, const int simpleTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
-        
+
         assert(false);
     }
 
     void GfxStreamDevice::_transformBlitComplex(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2])
     {
         //This method should never be called, but is pure virtual in super class.
-        
+
         assert(false);
     }
 
@@ -1233,7 +1231,7 @@ namespace wg
 	void GfxStreamDevice::_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
         //This method should never be called, but is pure virtual in super class.
-        
+
         assert(false);
 	}
 

@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_edgemap.h>
+#include <cstring>
 
 namespace wg
 {
@@ -41,7 +42,7 @@ namespace wg
 	{
 		if( segments < 1 || segments > m_nbSegments )
 			return false;
-		
+
 		m_nbRenderSegments = segments;
 		return true;
 	}
@@ -55,14 +56,14 @@ namespace wg
 			//TODO: Error handling!
 			return false;
 		}
-		
+
 		if( begin < 0 || end < begin || end > m_nbSegments )
 		{
 			//TODO: Error handling!
-		
+
 			return false;
 		}
-		
+
 		memcpy( m_pColors + begin, pColors, (end-begin)*sizeof(HiColor) );
 		return true;
 	}
@@ -76,14 +77,14 @@ namespace wg
 			//TODO: Error handling!
 			return false;
 		}
-		
+
 		if( begin < 0 || end < begin || end > m_nbSegments )
 		{
 			//TODO: Error handling!
-		
+
 			return false;
 		}
-		
+
 		memcpy( m_pGradients + begin, pGradients, (end-begin)*sizeof(Gradient) );
 		return true;
 	}
@@ -111,7 +112,7 @@ namespace wg
 	{
 		if( segment < 0 || segment >= m_nbSegments || m_pColors == nullptr )
 			return HiColor::Undefined;
-		
+
 		return m_pColors[segment];
 	}
 
@@ -121,7 +122,7 @@ namespace wg
 	{
 		if( segment < 0 || segment >= m_nbSegments || m_pGradients == nullptr )
 			return Gradient();
-		
+
 		return m_pGradients[segment];
 	}
 
@@ -130,20 +131,20 @@ namespace wg
 	bool Edgemap::_validateBlueprint(const Blueprint& bp)
 	{
 		//TODO: Throw errors, not just return false.
-		
+
 		if( bp.size.w <= 0 || bp.size.h <= 0 )
 			return false;
-		
+
 		if( bp.segments <= 0 || bp.segments > maxSegments )
 			return false;
-		
+
 		if( bp.colors == nullptr && bp.gradients == nullptr )
 			return false;
 
 		if( bp.colors != nullptr && bp.gradients != nullptr )
 			return false;
-		
-		return true;		
+
+		return true;
 	}
 
 
