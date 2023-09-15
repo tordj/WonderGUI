@@ -37,9 +37,12 @@ extern "C" {
 
 	int				wg_streamBufferCapacity(wg_obj streamBuffer);
 	int				wg_streamBufferHasChunk(wg_obj streamBuffer);
-	int				wg_streamBufferBytes(wg_obj streamBuffer);
+	int				wg_streamBufferSize(wg_obj streamBuffer);
 
 	void			wg_resetStreamBuffer(wg_obj streamBuffer);
+	int				wg_setStreamBufferCapacity( wg_obj streamBuffer, int capacity );
+
+
 
 #ifdef __cplusplus
 }

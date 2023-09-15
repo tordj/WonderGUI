@@ -29,9 +29,12 @@
 #include <wg_c_gfxstreamplayer.h>
 #include <wg_c_gfxstreampump.h>
 #include <wg_c_gfxstreamreader.h>
+#include <wg_c_gfxstreamsink.h>
+#include <wg_c_gfxstreamsource.h>
 #include <wg_c_gfxstreamsplitter.h>
 #include <wg_c_gfxstreamwrapper.h>
 #include <wg_c_gfxstreamwriter.h>
+
 
 
 #endif //WONDERGFXSTREAM_C_DOT_H

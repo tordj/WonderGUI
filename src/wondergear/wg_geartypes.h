@@ -113,6 +113,7 @@ template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T
 		IllegalCall,
 		ResourceExhausted,			// A limited internal resource has been exhausted
 		RenderFailure,
+		Performance,				// Only used with ErrorLevel::Warning for performance warnings.
 		Other
 	};
 

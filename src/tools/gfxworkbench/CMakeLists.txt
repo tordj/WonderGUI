@@ -17,6 +17,8 @@ target_include_directories(gfxworkbench PRIVATE
 	${SDL2IMAGE_INCDIR}
 	${WONDERGUI_INCDIRS}
 	${WGSOFTGFX_INCDIRS}
+	${GFXSTREAM_INCDIRS}
+
 )
 
 
@@ -32,6 +34,7 @@ target_working_directory(gfxworkbench ${WG_ROOT})
 target_link_libraries(gfxworkbench PRIVATE
 	wgsoftgfx
 	wgopenglgfx
+	wggfxstream
 	wondergui 
 	wgfreetypefont
 	${SDL2_LIBS}

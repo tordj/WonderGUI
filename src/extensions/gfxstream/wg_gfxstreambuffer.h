@@ -49,7 +49,7 @@ namespace wg
 		//.____ Components _______________________________________
 
 		GfxStreamSink		input;
-		GfxStreamSource	output;
+		GfxStreamSource		output;
 
 		//.____ Identification __________________________________________
 
@@ -58,11 +58,16 @@ namespace wg
 
 		//.____ Misc _____________________________________________________
 		
-		void	reset( int newBufferSize = 0 );
+		void		reset( int newBufferSize = 0 );
 		
-		inline int	bufferCapacity() const { return m_bufferSize; };
-		inline bool	chunkInBuffer() { return _hasStreamChunks(); };
-		int			bytesInBuffer() const;
+		inline int	capacity() const { return m_bufferSize-2; };
+		inline bool	hasChunk() { return _hasStreamChunks(); };
+		int			size() const;
+		
+		int			setCapacity( int capacity );
+		
+		
+		
 		
 	protected:
 

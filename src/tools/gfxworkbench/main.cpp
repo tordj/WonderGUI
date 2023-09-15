@@ -16,6 +16,8 @@
 #endif
 
 #include <wondergui.h>
+#include <wondergfx_c.h>
+#include <wondergfxstream_c.h>
 
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
@@ -126,6 +128,37 @@ int main ( int argc, char** argv )
 	SoftSurface_p pSRGBSurface = SoftSurface::create({ .format = PixelFormat::BGRA_8_sRGB, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, PixelFormat::BGRA_8_sRGB, pSDLSurf->pitch, 0);
 	SDL_FreeSurface(pSDLSurf);
 
+	//
+/*
+	{
+		
+	wg_obj buffer = wg_createStreamBuffer( 600000 );
+	
+	wg_component input = wg_getStreamBufferInput(buffer);
+	wg_component output = wg_getStreamBufferOutput(buffer);
+
+	
+	std::ifstream file( "softube_hw_stream_channel_FA0900000005.dat", std::ios::binary );
+
+	// copies all data into buffer
+	std::vector<unsigned char> filebuffer(std::istreambuf_iterator<char>(file), {});
+
+
+	
+	wg_processStreamChunks(input, filebuffer.data(), filebuffer.data() + 5000);
+	
+	
+	wg_obj buffer2 = wg_createStreamBuffer( 800000 );
+	wg_component input2 = wg_getStreamBufferInput(buffer2);
+
+	
+	
+	wg_obj pump = wg_createStreamPumpWithInputOutput(output, input2);
+	
+	wg_pumpAll(pump);
+	
+	}
+ */
 	
 	//------------------------------------------------------
 	// Program Main Loop

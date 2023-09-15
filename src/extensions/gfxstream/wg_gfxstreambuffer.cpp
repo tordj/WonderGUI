@@ -23,6 +23,7 @@
 #include <cstring>
 
 #include <wg_gfxstreambuffer.h>
+#include <wg_gfxbase.h>
 
 namespace wg
 {
@@ -80,14 +81,28 @@ namespace wg
 	}
 
 
-	//____ bytesInBuffer() ____________________________________________________
+	//____ size() ____________________________________________________
 
-	int GfxStreamBuffer::bytesInBuffer() const
+	int GfxStreamBuffer::size() const
 	{
 		if( m_readOfs <= m_writeOfs )
 			return m_writeOfs - m_readOfs;
 		else
 			return m_writeOfs + m_bufferSize - m_readOfs;
+	}
+
+	//____ setCapacity() _________________________________________________________
+
+	int GfxStreamBuffer::setCapacity( int capacity )
+	{
+		int minCapacity = size();
+				
+		if( capacity < minCapacity)
+			capacity = minCapacity;
+
+		_resizeBuffer(capacity+2);			// Two byte margin since writeOf may not catch up to readOfs.
+		
+		return capacity;
 	}
 
 	//____ _processStreamChunks() _____________________________________________
@@ -109,8 +124,13 @@ namespace wg
 		}
 
 		if (bufferSizeNeeded > m_bufferSize)
-			_resizeBuffer(bufferSizeNeeded);
+		{
+			char	msg[64];
+			sprintf( msg, "GfxStreamBuffer reallocated to %d bytes", bufferSizeNeeded);
+			GfxBase::throwError(ErrorLevel::Warning, ErrorCode::Performance, msg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 
+			_resizeBuffer(bufferSizeNeeded);
+		}
 		//---------------------------
 		// Copy data into buffer
 		//---------------------------
@@ -256,7 +276,6 @@ namespace wg
 			m_readOfs = 0;
 			m_writeOfs = 0;
 			m_processedOfs = 0;
-			m_bufferOverflow = 0;
 		}
 		else if (m_writeOfs > m_readOfs)
 		{
@@ -266,22 +285,21 @@ namespace wg
 			m_readOfs -= ofsSub;
 			m_writeOfs -= ofsSub;
 			m_processedOfs -= ofsSub;
-			m_bufferOverflow = 0;
 		}
 		else
 		{
 			int chunkSize1 = oldBufferSize - m_readOfs;
 			int chunkSize2 = m_writeOfs;
 
-			memcpy(m_pBuffer, pOldBuffer + m_readOfs, oldBufferSize - m_readOfs);
+			memcpy(m_pBuffer, pOldBuffer + m_readOfs, chunkSize1);
 			memcpy(m_pBuffer + chunkSize1, pOldBuffer, chunkSize2);
 
 			m_readOfs = 0;
 			m_writeOfs = chunkSize1 + chunkSize2;
 			m_processedOfs = (m_processedOfs - m_readOfs + oldBufferSize) % oldBufferSize;
-			m_bufferOverflow = 0;
 		}
 
+		m_bufferOverflow = 0;
 		delete[] pOldBuffer;
 	}
 
