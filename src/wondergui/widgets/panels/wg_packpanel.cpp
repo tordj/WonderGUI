@@ -165,7 +165,7 @@ namespace wg
 
 	bool PackPanel::setSlotWeight(int index, int amount, float weight)
 	{
-		if (index < 0 || amount <= 0 || index + amount >= slots.size() || weight < 0.f)
+		if (index < 0 || amount <= 0 || index + amount > slots.size() || weight < 0.f)
 			return false;
 
 		_reweightSlots( &slots[index], amount, weight);
