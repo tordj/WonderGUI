@@ -615,6 +615,67 @@ namespace wg
 		return true;
 	}
 
+	//____ pumpBytes() __________________________________________________________
+
+	int GfxStreamPump::pumpBytes( int maxBytes )
+	{
+		if (!m_pInput || !m_pOutput)
+			return false;
+
+		int bytesLeft = maxBytes;
+		bool done = false;
+		
+		while (!done)
+		{
+			if (!m_pInput->hasChunks())
+			{
+				m_pInput->fetchChunks();
+				if( !m_pInput->hasChunks())
+					return maxBytes - bytesLeft;				// Out of data!
+			}
+
+			int	nSegments;
+			const DataSegment* pSegments;
+			std::tie(nSegments, pSegments) = m_pInput->showChunks();
+
+			int	bytesProcessed = 0;
+			for (int i = 0; i < nSegments && !done; i++)
+			{
+				const uint8_t* pBegin = pSegments[i].pBegin;
+				const uint8_t* pEnd = pSegments[i].pEnd;
+				const uint8_t* p = pBegin;
+
+				if( bytesLeft >= (pEnd - pBegin) )
+					p = pEnd;
+				else
+				{
+					int chunkSize = GfxStream::chunkSize(p);
+
+					while( p + chunkSize - pBegin <= bytesLeft )
+					{
+						p += chunkSize;
+						chunkSize = GfxStream::chunkSize(p);
+					}
+
+					done = true;
+				}
+
+				if( p > pBegin )
+				{
+					m_pOutput->processChunks(pBegin, p);
+					bytesProcessed += p - pBegin;
+					bytesLeft -= p - pBegin;
+				}
+				
+			}
+
+			m_pInput->discardChunks(bytesProcessed);
+		}
+
+		return maxBytes - bytesLeft;
+	}
+
+
 	//____ _findChunk() _______________________________________________________
 
 	const uint8_t* GfxStreamPump::_findChunk(GfxChunkId id, const uint8_t * pBegin, const uint8_t * pEnd)
