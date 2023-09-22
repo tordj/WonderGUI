@@ -159,10 +159,6 @@ namespace wg
 	{
 	}
 
-	ModalOverlay::ModalOverlay(const Blueprint& bp) : modalSlots(this)
-	{
-		_initFromBlueprint(bp);
-	}
 
 	//____ Destructor _____________________________________________________________
 

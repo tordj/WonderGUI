@@ -36,14 +36,7 @@ namespace wg
 		m_defaultSize = Size(-1,-1);
 	}
 
-	Filler::Filler( const Blueprint& bp )
-	{
-		_initFromBlueprint(bp); 
-		m_defaultSize = bp.defaultSize;
-	}
-
-
-	//____ Destructor _____________________________________________________________
+	//____ destructor _____________________________________________________________
 
 	Filler::~Filler()
 	{

@@ -31,30 +31,6 @@ namespace wg
 
 	const TypeInfo Image::TYPEINFO = { "Image", &Widget::TYPEINFO };
 
-	//____ constructor ____________________________________________________________
-
-	Image::Image()
-	{
-	}
-
-	Image::Image(const Blueprint& bp)
-	{
-		_initFromBlueprint(bp);
-
-		m_pSurface	= bp.image;
-		m_rect = bp.imageRect;
-		m_imageMarkAlpha = bp.imageMarkAlpha;
-		
-		if( m_rect.isEmpty() && m_pSurface )
-			m_rect = m_pSurface->pointSize();
-	}
-
-
-	//____ Destructor _____________________________________________________________
-
-	Image::~Image()
-	{
-	}
 
 	//____ typeInfo() _________________________________________________________
 

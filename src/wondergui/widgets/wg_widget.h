@@ -243,10 +243,7 @@ namespace wg
 
 	protected:
 		Widget();
-		virtual ~Widget();
-
-		template<class BP>
-		void				_initFromBlueprint( const BP& bp) 
+		template<class BP> Widget( const BP& bp ) : m_skin(this)
 		{
 			m_pBaggage		= bp.baggage;
 			m_bDropTarget	= bp.dropTarget;
@@ -270,7 +267,9 @@ namespace wg
 
 			if( !bp.enabled )
 				setEnabled(bp.enabled);
-		};
+		}
+
+		virtual ~Widget();
 
 		void				_setSlot(StaticSlot * pSlot);
 		SlotHolder *		_holder() { return m_pHolder; }

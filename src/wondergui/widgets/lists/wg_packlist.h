@@ -29,6 +29,7 @@
 #include <wg_columnheader.h>
 #include <wg_dynamicslotvector.h>
 #include <wg_slotextras.h>
+#include <wg_util.h>
 
 
 namespace wg
@@ -108,26 +109,28 @@ namespace wg
 		
 		struct Blueprint
 		{
+			Axis					axis 		= Axis::X;
 			Object_p				baggage;
 			bool					dropTarget 	= false;
 			bool					enabled 	= true;
+			Skin_p					entrySkin;
+			Skin_p					entrySkin2;
 			Finalizer_p				finalizer 	= nullptr;
 			ColumnHeader::Blueprint	header;
 			int						id 			= 0;
+			Skin_p					lassoSkin;
 			MarkPolicy				markPolicy 	= MarkPolicy::AlphaTest;
+			Size					maxEntrySize= { 1000000,1000000 };
+			Size					minEntrySize= {0,0};
 			bool					pickable 	= false;
 			int						pickCategory= 0;
 			PointerStyle			pointer 	= PointerStyle::Default;
 			bool					selectable 	= true;
 			Skin_p					skin;
+			std::function<int(const Widget *, const Widget *)> sortFunc;
+			SortOrder				sortOrder	= SortOrder::Ascending;
 			bool					tabLock 	= false;
 			String					tooltip;
-			
-			Axis					axis 		= Axis::X;
-			Size					minEntrySize= {0,0};
-			Size					maxEntrySize= { 1000000,1000000 };
-			SortOrder				sortOrder	= SortOrder::Ascending;
-			std::function<int(const Widget *, const Widget *)> sortFunc;
 		};
 		
 		//.____ Creation __________________________________________
@@ -186,7 +189,32 @@ namespace wg
 
 	protected:
 		PackList();
-		PackList(const Blueprint& bp);
+		template<class BP> PackList(const BP& bp) : header(this), slots(this), List(bp)
+		{
+			header._initFromBlueprint(bp.header);
+			
+			m_sizeOfSlot = sizeof(Slot);
+			m_bSiblingsOverlap = false;
+
+			m_contentBreadth = 0;
+			m_contentLength = 0;
+			m_contentDefaultLength = 0;
+			m_contentDefaultBreadth = 0;
+			m_nbEntriesOfDefaultBreadth = 0;
+			
+			m_bHorizontal = (bp.axis == Axis::X);
+			m_sortOrder = bp.sortOrder;
+			_header()._setSortOrder( m_sortOrder );
+
+			m_sortFunc = bp.sortFunc;
+
+			m_minEntrySize = bp.minEntrySize;
+			m_minEntrySizeSPX = Util::align(Util::ptsToSpx(bp.minEntrySize, m_scale));
+
+			m_maxEntrySize = bp.maxEntrySize;
+			m_maxEntrySizeSPX = Util::align(Util::ptsToSpx(bp.maxEntrySize, m_scale));
+		}
+		
 		virtual ~PackList();
 
 		// Overloaded from Widget

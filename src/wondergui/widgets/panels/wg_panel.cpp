@@ -33,7 +33,7 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	Panel::Panel() : m_bTooltipGroup(false), m_maskOp(MaskOp::Recurse)
+	Panel::Panel() : m_maskOp(MaskOp::Recurse)
 	{
 	}
 

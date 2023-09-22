@@ -92,21 +92,46 @@ namespace wg
 	{
 		friend class SelectBoxEntry;
 	public:
-		//.____ Creation __________________________________________
+
+		//.____ Blueprint ___________________________________________________________
+		
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Skin_p			entrySkin;
+			TextStyle_p		entryTextStyle;
+			TextLayout_p	entryTextLayout;
+			Finalizer_p		finalizer = nullptr;
+			int				id = 0;
+			Skin_p			listSkin;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
+		//.____ Creation ____________________________________________________________
 
 		static SelectBox_p	create() { return SelectBox_p(new SelectBox()); }
+		static SelectBox_p	create( const Blueprint& blueprint ) { return SelectBox_p(new SelectBox(blueprint)); }
 
-		//.____ Components ____________________________________
+		//.____ Components __________________________________________________________
 
 		Text			text;
 		DynamicVector<SelectBoxEntry>	entries;
-
-		//.____ Identification __________________________________________
+		
+		//.____ Identification ______________________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Appearance ________________________________________________________
+		//.____ Appearance __________________________________________________________
 
 		void			setEntrySkin(Skin * pSkin);
 		Skin_p			entrySkin() const { return m_pEntrySkin;  }
@@ -114,8 +139,8 @@ namespace wg
 		void			setEntryStyle(TextStyle * pStyle);
 		TextStyle_p		entryStyle() const { return m_pEntryStyle; }
 
-		void			setListTextLayout(TextLayout * pTextLayout);
-		TextLayout_p	listTextLayout() const { return m_pListTextLayout; }
+		void			setEntryTextLayout(TextLayout * pTextLayout);
+		TextLayout_p	entryTextLayout() const { return m_pEntryTextLayout; }
 
 		void			setListSkin(Skin * pSkin);
 		Skin_p			listSkin() const { return m_pListCanvas->skin(); }
@@ -136,6 +161,32 @@ namespace wg
 
 	protected:
 		SelectBox();
+		template<class BP> SelectBox(const BP& bp) : text(this), entries(this), Widget(bp)
+		{
+			m_pListCanvas = new MySideCanvas(this);
+
+			m_pEntryStyle 		= bp.entryTextStyle;
+			m_pEntryTextLayout 	= bp.entryTextLayout;
+
+			if( bp.listSkin )
+			{
+				m_listCanvasDefaultSize = bp.listSkin->_contentPaddingSize(m_scale);
+				m_pListCanvas->m_skin.set(bp.listSkin);
+			}
+			
+			if( bp.entrySkin )
+			{
+				SizeSPX padding = bp.entrySkin->_contentPaddingSize(m_scale);
+
+				m_pEntrySkin = bp.entrySkin;
+				m_listCanvasDefaultSize.w += padding.w;
+				m_entryContentPaddingSize = padding;
+
+				_updateListCanvasOpacity();
+			}
+		}
+
+
 		virtual ~SelectBox();
 		void 			_receive(Msg* pMsg) override;
 
@@ -160,8 +211,8 @@ namespace wg
 		void		_selectEntry(int idx);
 		int			_findEntry(const CoordSPX& ofsInListPanel, CoordSPX * pOfsOut = nullptr);
 
-		inline TextLayout * _listTextLayout() { return m_pListTextLayout ? m_pListTextLayout : Base::defaultTextLayout(); }
-		inline const TextLayout * _listTextLayout() const { return m_pListTextLayout ? m_pListTextLayout: Base::defaultTextLayout();  }
+		inline TextLayout * _entryTextLayout() { return m_pEntryTextLayout ? m_pEntryTextLayout : Base::defaultTextLayout(); }
+		inline const TextLayout * _entryTextLayout() const { return m_pEntryTextLayout ? m_pEntryTextLayout: Base::defaultTextLayout();  }
 
 		//
 		
@@ -189,12 +240,12 @@ namespace wg
 	private:
 
 		MySideCanvas_p	m_pListCanvas;
-		TextLayout_p	m_pListTextLayout;
 		int				m_selectedEntryIndex = -1;
 		int				m_markedEntryIndex = -1;		// Marked through mouse hover or keyboard input.
 
 		Skin_p			m_pEntrySkin;
 		TextStyle_p		m_pEntryStyle;
+		TextLayout_p	m_pEntryTextLayout;
 
 		spx				m_entryContentWidth;			// Width of content of an entry in the list.
 		SizeSPX			m_entryContentPaddingSize;		// Size of padding of content of an entry in the list.

@@ -51,51 +51,6 @@ namespace wg
 
 	}
 
-	ScrollPanel::ScrollPanel(const Blueprint& bp) : slot(this), scrollbarX(this, this, Axis::X), scrollbarY(this, this, Axis::Y)
-	{
-		_initFromBlueprint(bp);
-		scrollbarX._initFromBlueprint(bp.scrollbarX);
-		scrollbarY._initFromBlueprint(bp.scrollbarY);
-
-		m_smallChildPlacement	= bp.childPlacement;
-		m_widthConstraint		= bp.childConstraintX;
-		m_heightConstraint		= bp.childConstraintY;
-
-		m_bAutoscrollX			= bp.autoscroll;
-		m_bAutoscrollY			= bp.autoscroll;
-
-		m_bAutohideScrollbarX	= bp.autohideScrollbars;
-		m_bAutohideScrollbarY	= bp.autohideScrollbars;
-		
-		m_bOverlayScrollbarX	= bp.overlayScrollbars;
-		m_bOverlayScrollbarY	= bp.overlayScrollbars;
-
-		m_stepSizeX 			= bp.stepSize;
-		m_stepSizeY				= bp.stepSize;
-
-		m_wheelStepSizeX		= bp.wheelStepSize;
-		m_wheelStepSizeY		= bp.wheelStepSize;
-
-		m_pageOverlapX			= bp.pageOverlap;
-		m_pageOverlapY			= bp.pageOverlap;
-
-		m_wheelForScrollX		= bp.wheelForX;
-		m_wheelForScrollY		= bp.wheelForY;
-
-		m_wheelAxisShiftCombo	= bp.wheelShift;
-		m_bStealWheelFromScrollbars = bp.stealWheelFromScrollbars;
-
-		_updateRegions();
-		_updateCanvasSize();
-		
-		if( bp.child )
-		slot._setWidget(bp.child);
-
-		_childWindowCorrection();
-		_updateScrollbars();
-	}
-
-
 	//____ Destructor _________________________________________________________
 
 	ScrollPanel::~ScrollPanel()

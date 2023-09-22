@@ -83,9 +83,14 @@ namespace wg
 
 
 	protected:
-		NumberDisplay();
-		NumberDisplay( const Blueprint& blueprint );
-		virtual ~NumberDisplay();
+		NumberDisplay()  : display(this) {}
+
+		template<class BP> NumberDisplay( const BP& bp ) : display(this), Widget(bp)
+		{
+			display._initFromBlueprint(bp.display);
+		}
+		
+		virtual ~NumberDisplay() {}
 
 		void	_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void	_setState( State state ) override;

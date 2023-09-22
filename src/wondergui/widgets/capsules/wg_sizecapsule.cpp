@@ -49,19 +49,8 @@ namespace wg
 	{
 	}
 
-	SizeCapsule::SizeCapsule( const Blueprint& bp )
-	{
-		_initFromBlueprint(bp);
 
-		m_minSize		= bp.minSize;
-		m_maxSize		= bp.maxSize;
-		m_defaultSize	= bp.defaultSize;
-
-		if (bp.child)
-			slot.setWidget(bp.child);
-	}
-
-	//____ Destructor _____________________________________________________________
+	//____ destructor _____________________________________________________________
 
 	SizeCapsule::~SizeCapsule()
 	{

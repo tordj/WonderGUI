@@ -111,7 +111,20 @@ namespace wg
 
 	protected:
 		Scrollbar();
-		Scrollbar(const Blueprint& bp);
+		
+		template<class BP> Scrollbar(const BP& bp) : scrollbar(this, this, bp.axis), Widget(bp)
+		{
+			scrollbar._initFromBlueprint(bp.scrollbar);
+
+			m_singleStep	= bp.singleStepMovement;
+			m_wheelRoll		= bp.wheelRollMovement;
+			m_pageOverlap   = bp.pageOverlap;
+
+			m_viewPos		= bp.viewPos;
+			m_viewLen		= bp.viewLength;
+			m_contentLen	= bp.contentLength;
+		}
+		
 		virtual	~Scrollbar();
 
 		virtual SizeSPX	_defaultSize(int scale) const override;

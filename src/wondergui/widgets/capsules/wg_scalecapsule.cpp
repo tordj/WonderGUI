@@ -50,20 +50,6 @@ namespace wg
 	{
 	}
 
-	ScaleCapsule::ScaleCapsule( const Blueprint& bp )
-	{
-		_initFromBlueprint(bp);
-
-		if (bp.scale != 0)
-		{
-			m_scale = bp.scale;
-			m_bScaleSet = true;
-		}
-
-		if (bp.child)
-			slot.setWidget(bp.child);
-	}
-
 	//____ Destructor _____________________________________________________________
 
 	ScaleCapsule::~ScaleCapsule()

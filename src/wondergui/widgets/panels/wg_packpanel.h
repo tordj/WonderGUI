@@ -119,18 +119,19 @@ namespace wg
 		{
 			Axis			axis = Axis::X;
 			Object_p		baggage;
-			bool			dropTarget = false;
-			bool			enabled = true;
-			Finalizer_p		finalizer = nullptr;
-			int				id = 0;
-			PackLayout_p		layout;
-			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
-			bool			pickable = false;
-			int				pickCategory = 0;
-			PointerStyle	pointer = PointerStyle::Default;
-			bool			selectable = true;
+			bool			dropTarget 		= false;
+			bool			enabled 		= true;
+			Finalizer_p		finalizer 		= nullptr;
+			int				id 				= 0;
+			PackLayout_p	layout;
+			MarkPolicy		markPolicy 		= MarkPolicy::AlphaTest;
+			MaskOp			maskOp			= MaskOp::Recurse;
+			bool			pickable 		= false;
+			int				pickCategory	= 0;
+			PointerStyle	pointer 		= PointerStyle::Default;
+			bool			selectable 		= true;
 			Skin_p			skin;
-			bool			tabLock = false;
+			bool			tabLock 		= false;
 			String			tooltip;
 		};
 		
@@ -187,7 +188,13 @@ namespace wg
 
 	protected:
 		PackPanel();
-		PackPanel(const Blueprint& bp);
+		template< class BP> PackPanel(const BP& bp) : slots(this), Panel(bp)
+		{
+			m_bSiblingsOverlap = false;
+			m_bHorizontal = bp.axis == Axis::X;
+			m_pLayout = bp.layout;
+		}
+		
 		virtual ~PackPanel();
 
 		// Overloaded from Widget

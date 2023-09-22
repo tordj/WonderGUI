@@ -101,7 +101,19 @@ namespace wg
 
 	protected:
 		ScaleCapsule();
-		ScaleCapsule( const Blueprint& bp );
+		
+		template<class BP> ScaleCapsule( const BP& bp ) : Capsule(bp)
+		{
+			if (bp.scale != 0)
+			{
+				m_scale = bp.scale;
+				m_bScaleSet = true;
+			}
+
+			if (bp.child)
+				slot.setWidget(bp.child);
+		}
+		
 		virtual ~ScaleCapsule();
 
 		void		_resize(const SizeSPX& size, int scale) override;

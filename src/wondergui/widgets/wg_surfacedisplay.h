@@ -133,7 +133,28 @@ namespace wg
 
 	protected:
 		SurfaceDisplay();
-		SurfaceDisplay(const Blueprint& bp);
+		template<class BP> SurfaceDisplay(const BP& bp) : Widget(bp)
+		{
+			m_placement = bp.surfacePlacement;
+			m_offset = bp.surfaceOffset;
+
+			if (bp.zoomToFit)
+			{
+				m_bZoomToFit = true;
+			}
+			else
+			{
+				m_bZoomToFit = false;
+				m_zoom = bp.zoom;
+
+				m_minZoom = bp.minUserZoom;
+				m_maxZoom = bp.maxUserZoom;
+			}
+
+			if (bp.surface)
+				setSurface(bp.surface);
+		}
+		
 		virtual ~SurfaceDisplay();
 
 		void			_surfaceModified(int nRects, const RectSPX* pRects);

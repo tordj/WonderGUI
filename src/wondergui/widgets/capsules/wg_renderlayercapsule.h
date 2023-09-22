@@ -76,7 +76,15 @@ namespace wg
 
 	protected:
 		RenderLayerCapsule();
-		RenderLayerCapsule( const Blueprint& blueprint );
+
+		template<class BP> RenderLayerCapsule( const BP& bp ) : Capsule(bp)
+		{
+			 m_renderLayer = bp.renderLayer;
+
+			 if (bp.child)
+				 slot.setWidget(bp.child);
+		}
+
 		virtual ~RenderLayerCapsule();
 
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

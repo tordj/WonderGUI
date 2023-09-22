@@ -41,25 +41,8 @@ namespace wg
 
 	ToggleButton::ToggleButton() : label(this), icon(this)
 	{
-		m_bPressed			= false;
-		m_bReturnPressed	= false;
 		m_bFlipOnRelease	= false;
-
 		m_clickArea			= ClickArea::Default;
-	}
-
-	ToggleButton::ToggleButton(const Blueprint& bp) : ToggleButton()
-	{
-		_initFromBlueprint(bp);
-
-		label._initFromBlueprint(bp.label);
-		icon._initFromBlueprint(bp.icon);
-
-		m_clickArea		= bp.clickArea;
-		m_bFlipOnRelease = bp.flipOnRelease;
-
-		if (bp.selected)
-			setSelected(true);
 	}
 
 	//____ destructor _____________________________________________________________

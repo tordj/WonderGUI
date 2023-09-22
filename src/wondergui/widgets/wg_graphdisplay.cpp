@@ -32,25 +32,20 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	GraphDisplay::GraphDisplay(const Blueprint& bp) : graphs(this), xLines(this), yLines(this), 
+	GraphDisplay::GraphDisplay() : graphs(this), xLines(this), yLines(this),
 		m_displaySkin(this), m_labelSkin(this)
 	{
-		_initFromBlueprint(bp);
+		m_displayCeiling = 0.f;
+		m_displayFloor = 1.f;
 
-		m_displayCeiling = bp.displayCeiling;
-		m_displayFloor = bp.displayFloor;
-		m_displaySkin.set(bp.displaySkin);
+		m_gridColor		= Color::DarkGray;
+		m_gridThickness = 1;
 
-		m_gridColor		= bp.gridColor;
-		m_gridThickness = bp.gridThickness;
-		m_pTextStyle	= bp.textStyle;
-		m_labelSkin.set(bp.labelSkin);
+		m_sideLabelPlacement = Placement::West;
+		m_bottomLabelPlacement = Placement::South;
 
-		m_sideLabelPlacement = bp.sideLabelPlacement;
-		m_bottomLabelPlacement = bp.bottomLabelPlacement;
-
-		m_sideLabelSpacing = bp.sideLabelSpacing;
-		m_bottomLabelSpacing = bp.bottomLabelSpacing;
+		m_sideLabelSpacing = 4;
+		m_bottomLabelSpacing = 1;
 	}
 
 	//____ destructor _____________________________________________________________

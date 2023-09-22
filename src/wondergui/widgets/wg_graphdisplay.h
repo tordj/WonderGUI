@@ -323,7 +323,27 @@ class GraphDisplay;
 		//.____ Internal _________________________________________________
 
 	protected:
-		GraphDisplay( const Blueprint& bp );
+		GraphDisplay();
+		
+		template<class BP> GraphDisplay( const BP& bp ) : graphs(this), xLines(this), yLines(this),
+			m_displaySkin(this), m_labelSkin(this), Widget(bp)
+		{
+			m_displayCeiling = bp.displayCeiling;
+			m_displayFloor = bp.displayFloor;
+			m_displaySkin.set(bp.displaySkin);
+
+			m_gridColor		= bp.gridColor;
+			m_gridThickness = bp.gridThickness;
+			m_pTextStyle	= bp.textStyle;
+			m_labelSkin.set(bp.labelSkin);
+
+			m_sideLabelPlacement = bp.sideLabelPlacement;
+			m_bottomLabelPlacement = bp.bottomLabelPlacement;
+
+			m_sideLabelSpacing = bp.sideLabelSpacing;
+			m_bottomLabelSpacing = bp.bottomLabelSpacing;
+		}
+
 		virtual ~GraphDisplay();
 
 		void		_startedOrEndedTransition();

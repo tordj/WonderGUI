@@ -53,22 +53,22 @@ namespace wg
 
 		//.____ Behavior _______________________________________________________
 
-		void		setTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
-		bool		isTooltipGroup() const { return m_bTooltipGroup; }
-
 		void		setMaskOp( MaskOp operation );
 		MaskOp		maskOp() const { return m_maskOp; }
 
 
 	protected:
 		Panel();
+		template<class BP> Panel(const BP& bp) : Container(bp)
+		{
+			m_maskOp = bp.maskOp;
+		}
+		
 		virtual ~Panel() {};
 
 		bool			_isPanel() const override;
 		virtual void	_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 
-
-		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
 		MaskOp		m_maskOp;			// Specifies how container masks background.
 	};
 

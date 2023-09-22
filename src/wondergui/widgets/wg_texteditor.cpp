@@ -31,26 +31,6 @@ namespace wg
 
 	const TypeInfo TextEditor::TYPEINFO = { "TextEditor", &Widget::TYPEINFO };
 
-
-
-	//____ TextEditor() _________________________________________________________________
-
-	TextEditor::TextEditor() : editor(this)
-	{
-	}
-
-	TextEditor::TextEditor(const Blueprint& bp) : editor(this)
-	{
-		_initFromBlueprint(bp);
-		editor._initFromBlueprint(bp.editor);
-	}
-
-	//____ Destructor _____________________________________________________________
-
-	TextEditor::~TextEditor()
-	{
-	}
-
 	//____ typeInfo() _________________________________________________________
 
 	const TypeInfo& TextEditor::typeInfo(void) const

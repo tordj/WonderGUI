@@ -109,6 +109,7 @@ namespace wg
 
 	protected:
 		Overlay();
+		template<class BP> Overlay(const BP& bp) : mainSlot(this), Container(bp) {}
 
 		// Overloaded from Container
 

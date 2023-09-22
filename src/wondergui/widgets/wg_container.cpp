@@ -34,12 +34,6 @@ namespace wg
 
 	const TypeInfo Container::TYPEINFO = { "Container", &Widget::TYPEINFO };
 
-	//____ constructor _____________________________________________________________
-
-	Container::Container() : m_bSiblingsOverlap(true)
-	{
-	}
-
 	//____ typeInfo() _________________________________________________________
 
 	const TypeInfo& Container::typeInfo(void) const

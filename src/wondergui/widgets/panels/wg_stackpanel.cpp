@@ -51,14 +51,8 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	StackPanel::StackPanel() : slots(this)
+	StackPanel::StackPanel() : slots(this), Panel()
 	{
-		m_bSiblingsOverlap = true;
-	}
-
-	StackPanel::StackPanel(const Blueprint& bp) : slots(this)
-	{
-		_initFromBlueprint(bp);
 		m_bSiblingsOverlap = true;
 	}
 

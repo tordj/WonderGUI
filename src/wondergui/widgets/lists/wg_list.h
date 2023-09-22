@@ -68,6 +68,28 @@ namespace wg
 			bool		m_bSelected = false;
 		};
 
+		//.____ Blueprint _________________________________________
+		
+		struct Blueprint
+		{
+			Object_p				baggage;
+			bool					dropTarget 	= false;
+			bool					enabled 	= true;
+			Skin_p					entrySkin;
+			Skin_p					entrySkin2;
+			Finalizer_p				finalizer 	= nullptr;
+			int						id 			= 0;
+			Skin_p					lassoSkin;
+			MarkPolicy				markPolicy 	= MarkPolicy::AlphaTest;
+			bool					pickable 	= false;
+			int						pickCategory= 0;
+			PointerStyle			pointer 	= PointerStyle::Default;
+			bool					selectable 	= true;
+			SelectMode				selectMode 	= SelectMode::SingleEntry;
+			Skin_p					skin;
+			bool					tabLock 	= false;
+			String					tooltip;
+		};
 
 		//.____ Identification __________________________________________
 
@@ -93,6 +115,13 @@ namespace wg
 	protected:
 
 		List();
+		template<class BP> List(const BP& bp) : m_lassoSkin(this), m_selectMode(SelectMode::SingleEntry), Container(bp)
+		{
+			m_lassoSkin.set(bp.lassoSkin);
+			m_pEntrySkin[0] = bp.entrySkin;
+			m_pEntrySkin[1] = bp.entrySkin2;
+		}
+		
 		virtual ~List();
 
 		virtual void	_receive( Msg * pMsg ) override;

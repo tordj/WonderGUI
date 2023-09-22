@@ -60,15 +60,6 @@ namespace wg
 		m_pLayout = 0;
 	}
 
-	PackPanel::PackPanel(const Blueprint& bp) : slots(this)
-	{
-		_initFromBlueprint(bp);
-		m_bSiblingsOverlap = false;
-		m_bHorizontal = bp.axis == Axis::X;
-		m_pLayout = bp.layout;
-	}
-
-
 	//____ Destructor _____________________________________________________________
 
 	PackPanel::~PackPanel()

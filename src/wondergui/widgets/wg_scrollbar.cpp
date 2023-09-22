@@ -43,20 +43,6 @@ namespace wg
 
 	}
 
-	Scrollbar::Scrollbar(const Blueprint& bp) : scrollbar(this, this, bp.axis)
-	{
-		_initFromBlueprint(bp);
-		scrollbar._initFromBlueprint(bp.scrollbar);
-
-		m_singleStep	= bp.singleStepMovement;
-		m_wheelRoll		= bp.wheelRollMovement;
-		m_pageOverlap   = bp.pageOverlap;
-
-		m_viewPos		= bp.viewPos;
-		m_viewLen		= bp.viewLength;
-		m_contentLen	= bp.contentLength;
-	}
-
 	//____ Destructor _________________________________________________________
 
 	Scrollbar::~Scrollbar( void )

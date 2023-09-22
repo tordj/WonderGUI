@@ -144,7 +144,9 @@ namespace wg
 
 	protected:
 		ModalOverlay();
-		ModalOverlay(const Blueprint& bp);
+		
+		template<class BP> ModalOverlay(const BP& bp) : modalSlots(this), Overlay(bp) {}
+		
 		virtual ~ModalOverlay();
 
 

@@ -133,7 +133,18 @@ namespace wg
 
 	protected:
 		ToggleButton();
-		ToggleButton(const Blueprint& bp);
+		template<class BP> ToggleButton(const BP& bp) : label(this), icon(this), Widget(bp)
+		{
+			label._initFromBlueprint(bp.label);
+			icon._initFromBlueprint(bp.icon);
+
+			m_clickArea		= bp.clickArea;
+			m_bFlipOnRelease = bp.flipOnRelease;
+
+			if (bp.selected)
+				setSelected(true);
+		}
+		
 		virtual ~ToggleButton();
 
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
@@ -161,8 +172,8 @@ namespace wg
 //		void	_refreshTextArea();
 		bool	_markTestTextArea( const CoordSPX& pos );
 
-		bool			m_bPressed;						// Set when mouse is pressed and over.
-		bool			m_bReturnPressed;
+		bool			m_bPressed 			= false;						// Set when mouse is pressed and over.
+		bool			m_bReturnPressed	= false;
 		bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 
 		ToggleGroup_p	m_pToggleGroup;

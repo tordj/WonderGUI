@@ -39,18 +39,6 @@ namespace wg
 		m_bSelectable = false;
 	}
 
-	PopupOpener::PopupOpener( const Blueprint& bp ) : label(this), icon(this)
-	{
-		_initFromBlueprint(bp);
-		icon._initFromBlueprint(bp.icon);
-		label._initFromBlueprint(bp.label);
-
-		m_bSelectable = false;
-		m_pPopup = bp.popup;
-		m_bOpenOnHover = bp.openOnHover;
-		m_attachPoint = bp.attachPoint;
-	}
-
 	//____ Destructor _____________________________________________________________
 
 	PopupOpener::~PopupOpener()

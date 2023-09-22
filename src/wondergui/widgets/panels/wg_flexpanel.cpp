@@ -205,14 +205,6 @@ namespace wg
 		m_bSiblingsOverlap = true;
 	}
 
-	FlexPanel::FlexPanel(const Blueprint& bp) : slots(this)
-	{
-		_initFromBlueprint(bp);
-		m_bSiblingsOverlap = true;
-		m_bConfineWidgets = bp.confineWidgets;
-	}
-
-
 	//____ Destructor _____________________________________________________________
 
 	FlexPanel::~FlexPanel()

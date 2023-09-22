@@ -65,35 +65,6 @@ namespace wg
 		m_nbEntriesOfDefaultBreadth = 0;
 	}
 
-	PackList::PackList(const Blueprint& bp) : header(this), slots(this)
-	{
-		_initFromBlueprint(bp);
-		header._initFromBlueprint(bp.header);
-		
-		m_sizeOfSlot = sizeof(Slot);
-		m_bSiblingsOverlap = false;
-
-		m_contentBreadth = 0;
-		m_contentLength = 0;
-		m_contentDefaultLength = 0;
-		m_contentDefaultBreadth = 0;
-		m_nbEntriesOfDefaultBreadth = 0;
-		
-		m_bHorizontal = (bp.axis == Axis::X);
-		m_sortOrder = bp.sortOrder;
-		_header()._setSortOrder( m_sortOrder );
-
-		m_sortFunc = bp.sortFunc;
-
-		m_minEntrySize = bp.minEntrySize;
-		m_minEntrySizeSPX = align(ptsToSpx(bp.minEntrySize, m_scale));
-
-		m_maxEntrySize = bp.maxEntrySize;
-		m_maxEntrySizeSPX = align(ptsToSpx(bp.maxEntrySize, m_scale));
-	}
-
-
-
 	//____ Destructor _____________________________________________________________
 
 	PackList::~PackList()

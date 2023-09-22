@@ -126,6 +126,7 @@ namespace wg
 			Finalizer_p		finalizer		= nullptr;
 			int				id				= 0;
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
+			MaskOp			maskOp			= MaskOp::Recurse;
 			bool			pickable		= false;
 			int				pickCategory	= 0;
 			PointerStyle	pointer			= PointerStyle::Default;
@@ -173,7 +174,11 @@ namespace wg
 
 	protected:
 		StackPanel();
-		StackPanel(const Blueprint& bp);
+		template<class BP> StackPanel(const BP& bp) : slots(this), Panel(bp)
+		{
+			m_bSiblingsOverlap = true;
+		}
+
 		virtual ~StackPanel();
 
 		// Overloaded from Widget

@@ -111,7 +111,22 @@ namespace wg
 
 	protected:
 		CanvasCapsule();
-		CanvasCapsule(const Blueprint& bp);
+		
+		template<class BP> CanvasCapsule(const BP& bp) : Capsule(bp)
+		{
+			m_pFactory		= bp.surfaceFactory;
+			m_canvasFormat	= bp.pixelFormat;
+			m_pCanvasLayers = bp.layers;
+			m_renderLayer	= bp.renderLayer;
+
+			m_renderMode	= bp.blendMode;
+			m_tintColor		= bp.tintColor;
+			m_tintMode		= bp.tintColorBlend;
+
+			if( bp.child )
+				slot.setWidget(bp.child);
+		}
+		
 		virtual ~CanvasCapsule();
 
 		void				_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

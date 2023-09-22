@@ -102,9 +102,18 @@ namespace wg
 
 
 	protected:
-		Knob();
-		Knob(const Blueprint& bp);
-		virtual ~Knob();
+		Knob() {};
+		
+		template<class BP> Knob(const BP& bp) : Widget(bp)
+		{
+			m_nbSteps = bp.steps;
+			m_dragAxis = bp.dragAxis;
+			m_dragRange = bp.dragRange;
+			m_value		= bp.value;
+			m_wheelStepSize = bp.wheelStepSize;
+		}
+		
+		virtual ~Knob() {};
 
 		void		_receive(Msg* pMsg) override;
 		void 		_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window) override;

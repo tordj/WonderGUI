@@ -98,6 +98,7 @@ namespace wg
 			int				id				= 0;
 			PackLayout_p	layout;
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
+			MaskOp			maskOp			= MaskOp::Recurse;
 			bool			pickable		= false;
 			int				pickCategory	= 0;
 			PointerStyle	pointer			= PointerStyle::Default;
@@ -139,7 +140,14 @@ namespace wg
 
 	protected:
 		TwoSlotPanel();
-		TwoSlotPanel(const Blueprint& blueprint);
+		template<class BP> TwoSlotPanel(const BP& bp) : slots(this), Panel(bp)
+		{
+			m_bHorizontal = (bp.axis == Axis::X);
+			m_pLayout = bp.layout;
+
+			m_bSiblingsOverlap = false;
+		};
+		
 		virtual ~TwoSlotPanel();
 		
 		void		_updateDefaultSize();

@@ -38,22 +38,6 @@ namespace wg
 	{
 	}
 
-	RangeSlider::RangeSlider(const Blueprint& bp) : m_beginHandleSkin(this), m_endHandleSkin(this)
-	{
-		_initFromBlueprint(bp);
-
-		m_axis = bp.axis;
-		m_beginHandleSkin.set(bp.beginHandle);
-		m_endHandleSkin.set(bp.endHandle);
-
-		m_defaultSlideLength = bp.defaultSlideLength;
-		m_nbSteps = bp.steps;
-
-		_updateDefaultSize();
-		_setRange(bp.rangeBegin,bp.rangeEnd);
-	}
-
-
 	//____ Destructor _____________________________________________________________
 
 	RangeSlider::~RangeSlider()

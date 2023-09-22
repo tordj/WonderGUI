@@ -110,7 +110,13 @@ namespace wg
 
 	protected:
 		Timer() {};
-		Timer(const Blueprint& bp);
+		template<class BP> Timer(const BP& bp) : Widget(bp)
+		{
+			m_duration	= bp.duration;
+			m_stepSize	= bp.stepSize;
+			m_playMode	= bp.playMode;
+			m_value		= bp.value;
+		}
 
 		void		_update(int microPassed, int64_t microsecTimestamp) override;
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

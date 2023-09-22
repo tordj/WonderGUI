@@ -30,38 +30,8 @@ namespace wg
 
 	const TypeInfo SurfaceDisplay::TYPEINFO = { "SurfaceDisplay", &Widget::TYPEINFO };
 
-	//____ constructor ____________________________________________________________
 
-	SurfaceDisplay::SurfaceDisplay()
-	{
-	}
-
-	SurfaceDisplay::SurfaceDisplay(const Blueprint& bp)
-	{
-		_initFromBlueprint(bp);
-
-		m_placement = bp.surfacePlacement;
-		m_offset = bp.surfaceOffset;
-
-		if (bp.zoomToFit)
-		{
-			m_bZoomToFit = true;
-		}
-		else 
-		{
-			m_bZoomToFit = false;
-			m_zoom = bp.zoom;
-
-			m_minZoom = bp.minUserZoom;
-			m_maxZoom = bp.maxUserZoom;
-		}
-
-		if (bp.surface)
-			setSurface(bp.surface);
-	}
-
-
-	//____ Destructor _____________________________________________________________
+	//____ destructor _____________________________________________________________
 
 	SurfaceDisplay::~SurfaceDisplay()
 	{

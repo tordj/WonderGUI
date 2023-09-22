@@ -79,7 +79,13 @@ namespace wg
 
 	protected:
 		LineEditor();
-		LineEditor(const Blueprint& bp);
+		
+		template<class BP> LineEditor(const BP& bp) : editor(this), m_textScrollOfs(0), Widget(bp)
+		{
+			editor._initFromBlueprint(bp.editor);
+			editor.setMaxLines(1);
+		}
+
 		virtual ~LineEditor();
 
 

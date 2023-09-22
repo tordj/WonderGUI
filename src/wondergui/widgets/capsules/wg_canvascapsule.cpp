@@ -37,25 +37,7 @@ namespace wg
 	{
 	}
 
-	CanvasCapsule::CanvasCapsule(const Blueprint& bp)
-	{
-		_initFromBlueprint(bp);
-
-		m_pFactory		= bp.surfaceFactory;
-		m_canvasFormat	= bp.pixelFormat;
-		m_pCanvasLayers = bp.layers;
-		m_renderLayer	= bp.renderLayer;
-
-		m_renderMode	= bp.blendMode;
-		m_tintColor		= bp.tintColor;
-		m_tintMode		= bp.tintColorBlend;
-
-		if( bp.child )
-			slot.setWidget(bp.child);
-	}
-
-
-	//____ Destructor _____________________________________________________________
+	//____ destructor _____________________________________________________________
 
 	CanvasCapsule::~CanvasCapsule()
 	{

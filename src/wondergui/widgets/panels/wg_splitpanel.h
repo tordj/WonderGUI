@@ -88,6 +88,7 @@ namespace wg
 			pts				handleThickness = 0;
 			int				id				= 0;
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
+			MaskOp			maskOp			= MaskOp::Recurse;
 			bool			pickable		= false;
 			int				pickCategory	= 0;
 			PointerStyle	pointer			= PointerStyle::Default;
@@ -145,7 +146,19 @@ namespace wg
 
 	protected:
 		SplitPanel();
-		SplitPanel(const Blueprint& bp);
+		template<class BP> SplitPanel(const BP& bp) : slots(this), m_handleSkin(this), Panel(bp)
+		{
+			m_bHorizontal 	= (bp.axis == Axis::X);
+			m_handleSkin.set( bp.handleSkin );
+			m_handleThickness = bp.handleThickness;
+			m_resizeRatio = bp.resizeRatio;
+
+			m_bSiblingsOverlap = false;
+
+			_updateDefaultSize();
+			_updateGeo();
+		}
+		
 		virtual ~SplitPanel();
 
 		spx			_handleThickness(int scale) const;					// Takes both m_handleThickness and m_pHandleSkin into account.

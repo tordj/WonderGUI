@@ -88,7 +88,12 @@ namespace wg
 
 	protected:
 		Filler();
-		Filler(const Blueprint& blueprint);
+		
+		template<class BP> Filler(const BP& bp) : Widget(bp)
+		{
+			m_defaultSize = bp.defaultSize;
+		}
+		
 		virtual ~Filler();
 
 		SizeSPX	_defaultSize(int scale) const override;

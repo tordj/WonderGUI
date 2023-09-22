@@ -32,30 +32,6 @@ namespace wg
 
 	const TypeInfo Knob::TYPEINFO = { "Knob", &Widget::TYPEINFO };
 
-	//____ constructor ____________________________________________________________
-
-	Knob::Knob()
-	{
-	}
-
-	Knob::Knob(const Blueprint& bp)
-	{
-		_initFromBlueprint(bp);
-
-		m_nbSteps = bp.steps;
-		m_dragAxis = bp.dragAxis;
-		m_dragRange = bp.dragRange;
-		m_value		= bp.value;
-		m_wheelStepSize = bp.wheelStepSize;
-	}
-
-
-	//____ Destructor _____________________________________________________________
-
-	Knob::~Knob()
-	{
-	}
-
 	//____ typeInfo() _________________________________________________________
 
 	const TypeInfo& Knob::typeInfo(void) const

@@ -73,7 +73,6 @@ namespace wg
 			Skin_p			skin;
 			bool			tabLock = false;
 			String			tooltip;
-
 		};
 
 		//.____ Creation __________________________________________
@@ -123,9 +122,17 @@ namespace wg
 
 
 	protected:
-		PianoKeyboard();
-		PianoKeyboard(const Blueprint& blueprint);
-		virtual ~PianoKeyboard();
+		PianoKeyboard() {};
+		
+		template<class BP> PianoKeyboard(const BP& bp) : Widget(bp)
+		{
+			setLayout(bp.nbWhiteKeys, bp.keyLayout);
+			setSurfaces(bp.oddWhiteKeys, bp.evenWhiteKeys, bp.blackKeys, bp.keyStates);
+
+			m_bFlipOnPress = bp.keyFlipOnPress;
+		}
+		
+		virtual ~PianoKeyboard() {};
 
 		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void		_receive(Msg * pMsg) override;

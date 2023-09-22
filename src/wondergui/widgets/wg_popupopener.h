@@ -99,7 +99,18 @@ namespace wg
 
 	protected:
 		PopupOpener();
-		PopupOpener( const Blueprint& blueprint );
+
+		template<class BP> PopupOpener( const BP& bp ) : label(this), icon(this), Widget(bp)
+		{
+			icon._initFromBlueprint(bp.icon);
+			label._initFromBlueprint(bp.label);
+
+			m_bSelectable = false;
+			m_pPopup = bp.popup;
+			m_bOpenOnHover = bp.openOnHover;
+			m_attachPoint = bp.attachPoint;
+		}
+		
 		virtual ~PopupOpener();
 
 		void			_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;

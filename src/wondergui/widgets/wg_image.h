@@ -99,9 +99,19 @@ namespace wg
 
 
 	protected:
-		Image();
-		Image( const Blueprint& bp );
-		virtual ~Image();
+		Image() {};
+		
+		template<class BP> Image( const BP& bp ) : Widget(bp)
+		{
+			m_pSurface	= bp.image;
+			m_rect = bp.imageRect;
+			m_imageMarkAlpha = bp.imageMarkAlpha;
+			
+			if( m_rect.isEmpty() && m_pSurface )
+				m_rect = m_pSurface->pointSize();
+		}
+		
+		virtual ~Image() {};
 
 		void		_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		bool		_alphaTest( const CoordSPX& ofs ) override;

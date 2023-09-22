@@ -31,26 +31,6 @@ namespace wg
 
 	const TypeInfo TextDisplay::TYPEINFO = { "TextDisplay", &Widget::TYPEINFO };
 
-
-
-	//____ TextDisplay() _________________________________________________________________
-
-	TextDisplay::TextDisplay() : display(this)
-	{
-	}
-
-	TextDisplay::TextDisplay(const Blueprint& bp) : display(this)
-	{
-		_initFromBlueprint(bp);
-		display._initFromBlueprint(bp.display);
-	}
-
-	//____ Destructor _____________________________________________________________
-
-	TextDisplay::~TextDisplay()
-	{
-	}
-
 	//____ typeInfo() _________________________________________________________
 
 	const TypeInfo& TextDisplay ::typeInfo(void) const

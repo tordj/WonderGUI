@@ -34,28 +34,6 @@ namespace wg
 
 	const TypeInfo PianoKeyboard::TYPEINFO = { "PianoKeyboard", &Widget::TYPEINFO };
 
-	//____ constructor ____________________________________________________________
-
-	PianoKeyboard::PianoKeyboard()
-	{
-	}
-
-	PianoKeyboard::PianoKeyboard(const Blueprint& bp)
-	{
-		_initFromBlueprint(bp);
-
-		setLayout(bp.nbWhiteKeys, bp.keyLayout);
-		setSurfaces(bp.oddWhiteKeys, bp.evenWhiteKeys, bp.blackKeys, bp.keyStates);
-
-		m_bFlipOnPress = bp.keyFlipOnPress;
-	}
-
-	//____ Destructor _____________________________________________________________
-
-	PianoKeyboard::~PianoKeyboard()
-	{
-	}
-
 	//____ typeInfo() _________________________________________________________
 
 	const TypeInfo& PianoKeyboard::typeInfo(void) const

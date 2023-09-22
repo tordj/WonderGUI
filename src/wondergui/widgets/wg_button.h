@@ -96,7 +96,14 @@ namespace wg
 
 	protected:
 		Button();
-		Button( const Blueprint& blueprint );
+		
+		template<class BP> Button( const BP& bp ) : icon(this), label(this), Widget(bp)
+		{
+			icon._initFromBlueprint(bp.icon);
+			label._initFromBlueprint(bp.label);
+			m_bSelectOnPress = bp.selectOnPress;
+		}
+		
 		virtual ~Button();
 
 		//	virtual int		_matchingWidth( int height ) const override;

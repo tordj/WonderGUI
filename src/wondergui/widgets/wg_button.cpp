@@ -40,14 +40,6 @@ namespace wg
 	{
 	}
 
-	Button::Button(const Blueprint& bp) : icon(this), label(this)
-	{
-		_initFromBlueprint(bp);
-		icon._initFromBlueprint(bp.icon);
-		label._initFromBlueprint(bp.label);
-		m_bSelectOnPress = bp.selectOnPress;
-	}
-
 	//____ Destructor _____________________________________________________________
 
 	Button::~Button()

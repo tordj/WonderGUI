@@ -48,20 +48,7 @@ namespace wg
 	{
 	}
 
-	//____ constructor ____________________________________________________________
-
-	RenderLayerCapsule::RenderLayerCapsule( const Blueprint& bp )
-	{
-		_initFromBlueprint(bp);
-
-		m_renderLayer = bp.renderLayer;
-
-		if (bp.child)
-			slot.setWidget(bp.child);
-	}
-
-
-	//____ Destructor _____________________________________________________________
+	//____ destructor _____________________________________________________________
 
 	RenderLayerCapsule::~RenderLayerCapsule()
 	{

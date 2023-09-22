@@ -86,9 +86,13 @@ namespace wg
 
 
 	protected:
-		TextDisplay();
-		TextDisplay(const Blueprint& bp);
-		virtual ~TextDisplay();
+		TextDisplay() : display(this) {}
+		template<class BP> TextDisplay(const BP& bp) : display(this), Widget(bp)
+		{
+			display._initFromBlueprint(bp.display);
+		}
+		
+		virtual ~TextDisplay() {};
 
 
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;

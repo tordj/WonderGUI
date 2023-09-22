@@ -73,6 +73,7 @@ namespace wg
 
 	protected:
 		Capsule();
+		template<class BP> Capsule(const BP& bp) : slot(this), Container(bp) {}
 		virtual ~Capsule();
 
 		// Overloaded from Widget

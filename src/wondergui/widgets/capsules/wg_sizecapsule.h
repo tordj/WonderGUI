@@ -106,7 +106,17 @@ namespace wg
 
 	protected:
 		SizeCapsule();
-		SizeCapsule( const Blueprint& bp );
+		
+		template<class BP> SizeCapsule( const BP& bp ) : Capsule(bp)
+		{
+			m_minSize		= bp.minSize;
+			m_maxSize		= bp.maxSize;
+			m_defaultSize	= bp.defaultSize;
+
+			if (bp.child)
+				slot.setWidget(bp.child);
+		}
+
 		virtual ~SizeCapsule();
 
 

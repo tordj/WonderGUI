@@ -83,9 +83,13 @@ namespace wg
 		SizeSPX			_defaultSize(int scale) const override;
 
 	protected:
-		TextEditor();
-		TextEditor(const Blueprint& bp);
-		virtual ~TextEditor();
+		TextEditor() : editor(this) {}
+		template<class BP> TextEditor(const BP& bp) : editor(this), Widget(bp)
+		{
+			editor._initFromBlueprint(bp.editor);
+		}
+		
+		virtual ~TextEditor() {};
 
 		void			_render( GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window ) override;
 		void			_resize( const SizeSPX& size, int scale ) override;

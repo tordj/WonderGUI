@@ -30,24 +30,6 @@ namespace wg
 	const TypeInfo NumberDisplay::TYPEINFO = { "NumberDisplay", &Widget::TYPEINFO };
 
 
-	//____ NumberDisplay() _________________________________________________________________
-
-	NumberDisplay::NumberDisplay() : display(this)
-	{
-	}
-
-	NumberDisplay::NumberDisplay(const Blueprint& bp) : display(this)
-	{
-		_initFromBlueprint(bp);
-		display._initFromBlueprint(bp.display);
-	}
-
-	//____ ~NumberDisplay() ___________________________________________________________
-
-	NumberDisplay::~NumberDisplay()
-	{
-	}
-
 	//____ typeInfo() _________________________________________________________
 
 	const TypeInfo& NumberDisplay::typeInfo(void) const

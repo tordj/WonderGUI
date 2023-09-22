@@ -44,21 +44,12 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	TwoSlotPanel::TwoSlotPanel() : slots(this)
+	TwoSlotPanel::TwoSlotPanel() : slots(this), Panel()
 	{
 		m_bHorizontal = false;
 		m_bSiblingsOverlap = false;
 	}
 
-	TwoSlotPanel::TwoSlotPanel(const Blueprint& bp) : slots(this)
-	{
-		_initFromBlueprint(bp);
-		
-		m_bHorizontal = (bp.axis == Axis::X);
-		m_pLayout = bp.layout;
-
-		m_bSiblingsOverlap = false;
-	}
 
 	//____ Destructor _____________________________________________________________
 
