@@ -53,13 +53,6 @@ namespace wg
 		std::memset(&m_calls, 0, sizeof(m_calls));
 	}
 
-	PluginCapsule::PluginCapsule(const Blueprint& bp) : PluginCapsule()
-	{
-		_initFromBlueprint(bp);
-
-	
-	}
-
 	//____ Destructor _________________________________________________________
 
 	PluginCapsule::~PluginCapsule()

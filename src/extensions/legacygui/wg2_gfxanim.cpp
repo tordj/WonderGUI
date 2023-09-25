@@ -268,7 +268,7 @@ std::tuple<WgBlock, WgBlock, float> WgGfxAnim::GetInterpolatedBlock( double tick
 
     return { WgBlock( pFrame1->pSurf[alt], WgRect( pFrame1->ofs[alt], m_size[alt]), m_borders[alt], WgBorders(), WgBorders(), WgCoord(), WG_SCALE_BASE, m_blockFlags ),
         WgBlock( pFrame2->pSurf[alt], WgRect( pFrame2->ofs[alt], m_size[alt]), m_borders[alt], WgBorders(), WgBorders(), WgCoord(), WG_SCALE_BASE, m_blockFlags ),
-        weight };
+        (float) weight };
 }
 
 //___________________________________________________________________

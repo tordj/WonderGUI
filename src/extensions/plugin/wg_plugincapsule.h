@@ -26,6 +26,7 @@
 #include <wg_widget.h>
 #include <wg_plugininterface.h>
 
+#include <cstring>
 
 //TODO: Need to support skin padding.
 
@@ -126,7 +127,12 @@ namespace wg
 
 	protected:
 		PluginCapsule();
-		PluginCapsule(const Blueprint& bp);
+
+		template<class BP> PluginCapsule(const BP& bp) : Widget(bp)
+		{
+			std::memset(&m_calls, 0, sizeof(m_calls));
+		}
+
 		 ~PluginCapsule();
 
 		void	_update(int microPassed, int64_t microsecTimestamp) override;

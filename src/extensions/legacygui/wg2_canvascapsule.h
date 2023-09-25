@@ -76,6 +76,9 @@ public:
     WgSize              PreferredPixelSize() const override;
 
     void                ForceRedraw();
+
+	void				SetFlip(wg::GfxFlip flip);
+	wg::GfxFlip			flip() const { return m_flip; }
     
 protected:
 	void            _onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler);
@@ -95,6 +98,9 @@ protected:
 
 
 private:
+
+	wg::GfxFlip			m_flip = wg::GfxFlip::Normal;
+
 	WgColor            m_tintColor;
 	WgColor            m_fadeStartColor;
 	WgColor            m_fadeEndColor;

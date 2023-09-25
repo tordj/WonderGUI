@@ -192,8 +192,25 @@ WgSize WgCanvasCapsule::PreferredPixelSize() const
 {
     if( m_preferredSize.w != -1 )
         return m_preferredSize * m_scale / WG_SCALE_BASE;
-    else
-        return WgCapsule::PreferredPixelSize();
+	else
+	{
+		WgSize sz, szFlipped;
+
+		if (m_hook.Widget())
+			sz = m_hook.Widget()->PreferredPixelSize();
+		else
+			sz = WgSize(1, 1);
+
+		auto mtx = wg::Util::flipMatrix(m_flip);
+
+		szFlipped.w = abs(sz.w * mtx.xx + sz.h * mtx.xy);
+		szFlipped.h = abs(sz.w * mtx.yx + sz.h * mtx.yy);
+
+		if (m_pSkin)
+			szFlipped += _skinContentPadding(m_pSkin, m_scale);
+
+		return szFlipped;
+	}
 }
 
 //____ ForceRedraw() ___________________________________________________________
@@ -204,6 +221,19 @@ void WgCanvasCapsule::ForceRedraw()
     m_dirtyPatches.push(PixelSize());
     _requestRender();
 }
+
+//____ SetFlip() ______________________________________________________________
+
+void WgCanvasCapsule::SetFlip(wg::GfxFlip flip)
+{
+	if (flip != m_flip)
+	{
+		m_flip = flip;
+		_requestRender();
+		_requestResize();
+	}
+}
+
 
 //____ _onEvent() _____________________________________________________________
 
@@ -287,12 +317,15 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 		if (_canvas.w > maxSize.w || _canvas.h > maxSize.h)
 			return;                            // Can't create a canvas of the required size!
 
+		WgSize sz = wg::Util::flipSize(_canvas.size(), m_flip);
+
+
 		m_pCanvas = pFactory->createSurface( WGBP(Surface,
-												  _.size = _canvas.size(),
+												  _.size = sz,
 												  _.format = WgPixelType::BGRA_8,
 												  _.canvas = true) );
 		m_dirtyPatches.clear();
-		m_dirtyPatches.add(_canvas.size());
+		m_dirtyPatches.add(sz);
 	}
 
 	// Go through dirty patches from screen canvas and update our back canvas where they overlap with our own
@@ -395,7 +428,7 @@ void WgCanvasCapsule::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, 
 	// Copy from our back canvas to the screen canvas
 
 	pDevice->setBlitSource(m_pCanvas);
-	pDevice->blit( WgCoord(_canvas.x, _canvas.y)*64, { 0,0,_canvas.w*64,_canvas.h*64 });
+	pDevice->flipBlit( WgCoord(_canvas.x, _canvas.y)*64, { 0,0,_canvas.w*64,_canvas.h*64 }, m_flip );
 }
 
 
@@ -428,13 +461,20 @@ void WgCanvasCapsule::_onNewSize(const WgSize& size)
 void WgCanvasCapsule::_onRenderRequested()
 {
 	m_dirtyPatches.clear();
-	m_dirtyPatches.add(PixelSize());
+
+	WgSize sz = wg::Util::flipSize(PixelSize(), m_flip);
+	m_dirtyPatches.add(sz);
 	_requestRender();
 }
 
 void WgCanvasCapsule::_onRenderRequested(const WgRect& rect)
 {
 	m_dirtyPatches.add(rect);
+
+	WgRect flippedRect;
+
+
+
 	_requestRender(rect);
 }
 

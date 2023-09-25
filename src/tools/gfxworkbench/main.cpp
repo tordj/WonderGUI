@@ -41,6 +41,23 @@ bool			bQuit = false;	// Set to false by myButtonClickCallback() or translateEve
 
 int main ( int argc, char** argv )
 {
+
+	for (int i = 0; i < GfxFlip_size; i++)
+	{
+		GfxFlip flip = GfxFlip(i);
+
+		CoordI org = { 320,200 };
+		CoordI flipped = Util::flipCoord(org, flip);
+		CoordI unflipped = Util::unflipCoord(flipped, flip);
+
+		assert(unflipped == org);
+	}
+
+
+
+
+
+
 	//------------------------------------------------------
 	// Init SDL
 	//------------------------------------------------------

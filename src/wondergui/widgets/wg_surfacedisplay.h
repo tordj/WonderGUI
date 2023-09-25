@@ -132,7 +132,7 @@ namespace wg
 		spx		_matchingWidth(spx height, int scale) const override;
 
 	protected:
-		SurfaceDisplay();
+		SurfaceDisplay() {};
 		template<class BP> SurfaceDisplay(const BP& bp) : Widget(bp)
 		{
 			m_placement = bp.surfacePlacement;

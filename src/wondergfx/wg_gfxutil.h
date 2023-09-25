@@ -37,6 +37,50 @@ namespace wg
 
 	namespace Util		/** @private */
 	{
+		struct Matrix22
+		{
+			int xx, xy;
+			int yx, yy;
+		};
+
+		extern const Matrix22 _flipMatrix[GfxFlip_size];
+		extern const Matrix22 _unflipMatrix[GfxFlip_size];
+
+		inline const Matrix22& flipMatrix(GfxFlip flip)
+		{
+			return _flipMatrix[(int)flip];
+		}
+
+		inline SizeI flipSize(SizeI size, GfxFlip flip)
+		{
+			const Matrix22& mtx = _flipMatrix[(int)flip];
+
+			return { abs(size.w * mtx.xx + size.h * mtx.xy), abs(size.w * mtx.yx + size.h * mtx.yy) };
+		}
+
+		inline SizeI unflipSize(SizeI size, GfxFlip flip)
+		{
+			const Matrix22& mtx = _unflipMatrix[(int)flip];
+
+			return { abs(size.w * mtx.xx + size.h * mtx.xy), abs(size.w * mtx.yx + size.h * mtx.yy) };
+		}
+
+		inline CoordI flipCoord(CoordI size, GfxFlip flip)
+		{
+			const Matrix22& mtx = _flipMatrix[(int)flip];
+
+			return { size.x * mtx.xx + size.y * mtx.xy, size.x * mtx.yx + size.y * mtx.yy };
+		}
+
+		inline CoordI unflipCoord(CoordI size, GfxFlip flip)
+		{
+			const Matrix22& mtx = _unflipMatrix[(int)flip];
+
+			return { size.x * mtx.xx + size.y * mtx.xy, size.x * mtx.yx + size.y * mtx.yy };
+		}
+
+
+
 		inline binalInt toBinalInt(float floatSPX)
 		{
 			return binalInt(floatSPX * BINAL_MUL/64);

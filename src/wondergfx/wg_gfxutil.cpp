@@ -33,6 +33,35 @@
 namespace wg
 {
 
+	const Util::Matrix22 Util::_flipMatrix[GfxFlip_size] = { { 1,0,0,1 },			// Normal
+															{ -1,0,0,1 },			// FlipX
+															{ 1,0,0,-1 },			// FlipY
+															{ 0,-1,1,0 },			// Rot90
+															{ 0,1,1,0 },			// Rot90FlipX
+															{ 0,-1,-1,0 },			// Rot90FlipY
+															{ -1,0,0,-1 },			// Rot180
+															{ 1,0,0,-1 },			// Rot180FlipX
+															{ -1,0,0,1 },			// Rot180FlipY
+															{ 0,1,-1,0 },			// Rot270
+															{ 0,-1,-1,0 },			// Rot270FlipX
+															{ 0,1,1,0 } };			// Rot270FlipY
+
+	const Util::Matrix22 Util::_unflipMatrix[GfxFlip_size]= { { 1,0,0,1 },			// Normal
+															{ -1,0,0,1 },			// FlipX
+															{ 1,0,0,-1 },			// FlipY
+															{ 0,1,-1,0 },			// Rot90
+															{ 0,1,1,0 },			// Rot90FlipX
+															{ 0,-1,-1,0 },			// Rot90FlipY
+															{ -1,0,0,-1 },			// Rot180
+															{ 1,0,0,-1 },			// Rot180FlipX
+															{ -1,0,0,1 },			// Rot180FlipY
+															{ 0,-1,1,0 },			// Rot270
+															{ 0,-1,-1,0 },			// Rot270FlipX
+															{ 0,1,1,0 } };			// Rot270FlipY
+
+
+
+
 	uint8_t Util::_limitUint8Table[768] = {	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 										0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 										0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
