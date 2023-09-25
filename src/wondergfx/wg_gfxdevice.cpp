@@ -1566,13 +1566,13 @@ namespace wg
 				int pixFracLeft = (xStart << 6) - (centerOfs - radiusX[edge]);
 				int pixFracRight = (centerOfs + radiusX[edge]) & 0x3F;
 
-				if (pixFracLeft > 0 && xStart > 0)
+				if (pixFracLeft > 0 && xStart > 0 && xStart <= samplePoints )
 				{
 					pOutUpper[(xStart - 1)*samplePitch] = pOutUpper[xStart*samplePitch] + (yMid + yAdjust - pOutUpper[xStart*samplePitch]) * 64 / pixFracLeft;
 					pOutLower[(xStart - 1)*samplePitch] = pOutLower[xStart*samplePitch] + (yMid + yAdjust - pOutLower[xStart*samplePitch]) * 64 / pixFracLeft;
 
 				}
-				if (pixFracRight > 0 && xEnd < samplePoints - 1)
+				if (pixFracRight > 0 && xEnd < samplePoints - 1 && xEnd >= -1)
 				{
 					pOutUpper[(xEnd + 1)*samplePitch] = pOutUpper[xEnd*samplePitch] + (yMid + yAdjust - pOutUpper[xEnd*samplePitch]) * 64 / pixFracRight;
 					pOutLower[(xEnd + 1)*samplePitch] = pOutLower[xEnd*samplePitch] + (yMid + yAdjust - pOutLower[xEnd*samplePitch]) * 64 / pixFracRight;
