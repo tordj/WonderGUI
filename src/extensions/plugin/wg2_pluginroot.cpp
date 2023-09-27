@@ -277,20 +277,26 @@ void WgPluginRoot::_render(wg_obj device, const RectSPX& _canvas, const RectSPX&
 
 void WgPluginRoot::_resize(const SizeSPX& size, int scale)
 {
+
 	if( scale == -1 )
 		scale = m_scale;
 	
 	if( m_hook.Widget() )
 	{
+		m_bBlockRequestResize = true;			// _setScale() might issue requestResize() calls.
+
 		if( scale != m_scale )
 			m_hook.Widget()->_setScale(scale*WG_SCALE_BASE/64);
 
 		if( size != m_size )
 			m_hook.Widget()->_onNewSize({size.w/64,size.h/64});
+
+		m_bBlockRequestResize = false;
 	}
 	
 	m_size = size;
 	m_scale = scale;
+
 }
 
 //____ _setState() ____________________________________________________________
@@ -424,7 +430,7 @@ void WgPluginRoot::_inViewRequested( WgHook * pChild, const WgRect& mustHaveArea
 
 void WgPluginRoot::_childRequestResize()
 {
-	if (m_pluginCapsule)
+	if (m_pluginCapsule && !m_bBlockRequestResize)
 		PluginCalls::pluginCapsule->requestResize(m_pluginCapsule);
 }
 
@@ -432,13 +438,13 @@ void WgPluginRoot::_childRequestResize()
 
 void WgPluginRoot::_childRequestRender()
 {
-	if (m_pluginCapsule)
+	if (m_pluginCapsule && !m_bBlockRequestResize)
 		PluginCalls::pluginCapsule->requestRender(m_pluginCapsule, { 0,0,m_size.w,m_size.h });
 }
 
 void WgPluginRoot::_childRequestRender( const WgRect& rect )
 {
-	if (m_pluginCapsule)
+	if (m_pluginCapsule && !m_bBlockRequestResize)
 		PluginCalls::pluginCapsule->requestRender(m_pluginCapsule, { rect.x*64,rect.y*64,rect.w*64,rect.h*64 });
 }
 

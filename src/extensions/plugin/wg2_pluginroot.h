@@ -171,6 +171,7 @@ protected:
 	wg_pluginroot_calls		m_interface;
 	
 	int						m_microsecStored = 0;
+	bool					m_bBlockRequestResize = false;
 };
 
 
