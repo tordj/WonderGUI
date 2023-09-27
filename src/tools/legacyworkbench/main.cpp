@@ -84,6 +84,7 @@ bool gfxStreamingTest(WgRootPanel* pRoot);
 bool blendFixedColorTest(WgRootPanel* pRoot);
 bool multiSliderClickThroughTest(WgRootPanel* pRoot);
 bool chartTest(WgRootPanel* pRoot);
+bool flipCanvasTest(WgRootPanel* pRoot);
 
 
 
@@ -346,7 +347,8 @@ int main ( int argc, char** argv )
 //    gfxStreamingTest(pRoot);
 //	blendFixedColorTest(pRoot);
 //	multiSliderClickThroughTest(pRoot);
-	chartTest(pRoot);
+//	chartTest(pRoot);
+	flipCanvasTest(pRoot);
 
 	// Setup debug overlays
 	auto pOverlaySkin = wg::BoxSkin::create( { .color = WgColor(255,0,0,128), .outline = 1, .outlineColor = WgColor::Red,
@@ -512,6 +514,59 @@ bool chartTest(WgRootPanel* pRoot)
 	return true;
 }
 
+//____ flipCanvasTest() __________________________________________________
+
+bool flipCanvasTest(WgRootPanel* pRoot)
+{
+	auto pBaseFlex = new WgFlexPanel();
+	pRoot->SetChild(pBaseFlex);
+	pBaseFlex->SetSkin( wg::ColorSkin::create(WgColor::Yellow));
+	
+	auto pPanelSkin = wg::ColorSkin::create( { .color = WgColor::Red, .padding = 10 } );
+	
+	
+	
+	auto pPackPanel = new WgPackPanel();
+	pPackPanel->SetOrientation( wg::Axis::Y);
+	pPackPanel->SetSkin(pPanelSkin);
+	
+	auto pSizeConstrainer = new WgSizeCapsule();
+	pSizeConstrainer->SetChild(pPackPanel);
+	pSizeConstrainer->SetPreferredSize( {300,-1} );
+
+	auto pCanvasCapsule = new WgCanvasCapsule();
+	pCanvasCapsule->SetFlip(wg::GfxFlip::Rot90);
+	pCanvasCapsule->SetChild(pSizeConstrainer);
+	pCanvasCapsule->SetSkin(wg::ColorSkin::create(wg::Color::Cyan));
+	
+	pBaseFlex->AddChild( pCanvasCapsule, {10,10} );
+
+	auto pTextSkin = wg::ColorSkin::create( { .color = WgColor::Green, .padding = 5 } );
+	
+	auto pText = new WgTextDisplay();
+	pText->SetText("\nTEXT  1.");
+	pText->SetSkin( pTextSkin );
+	//    pText->SetTextWrap(true);
+	// pText->SetEditMode(WgTextEditMode::Editable);
+	pPackPanel->AddChild(pText);
+
+	auto pText2 = new WgTextDisplay();
+	pText2->SetText("\nTEXT 2.");
+	pText2->SetSkin( pTextSkin );
+	//    pText2->SetTextWrap(true);
+	pText2->SetEditMode(WgTextEditMode::Editable);
+
+	auto pInterferer = new WgPackPanel();
+	pInterferer->SetSizeBroker(new WgUniformSizeBroker());
+	pInterferer->AddChild(pText2);
+	
+	auto pBalast = new WgFiller();
+	pBalast->SetPreferredPointSize({20,20});
+	pInterferer->AddChild(pBalast)->SetWeight(0.f);
+	
+	pPackPanel->AddChild(pInterferer);
+	return true;
+}
 
 
 //____ multiSliderClickThroughTest() __________________________________________________

@@ -28,6 +28,8 @@
 #include <wg_gfxtypes.h>
 #include <wg_patches.h>
 
+#include <algorithm>
+
 namespace wg
 {
 
@@ -45,6 +47,8 @@ namespace wg
 
 		extern const Matrix22 _flipMatrix[GfxFlip_size];
 		extern const Matrix22 _unflipMatrix[GfxFlip_size];
+		extern const Matrix22 _flipOrigoMatrix[GfxFlip_size];
+		extern const Matrix22 _unflipOrigoMatrix[GfxFlip_size];
 
 		inline const Matrix22& flipMatrix(GfxFlip flip)
 		{
@@ -65,21 +69,67 @@ namespace wg
 			return { abs(size.w * mtx.xx + size.h * mtx.xy), abs(size.w * mtx.yx + size.h * mtx.yy) };
 		}
 
-		inline CoordI flipCoord(CoordI size, GfxFlip flip)
+		inline CoordI flipCoord(CoordI coord, GfxFlip flip, SizeI canvasSize )
 		{
 			const Matrix22& mtx = _flipMatrix[(int)flip];
+			const Matrix22& omtx = _flipOrigoMatrix[(int)flip];
 
-			return { size.x * mtx.xx + size.y * mtx.xy, size.x * mtx.yx + size.y * mtx.yy };
+			int ofsX = canvasSize.w * omtx.xx + canvasSize.h * omtx.xy;
+			int ofsY = canvasSize.w * omtx.yx + canvasSize.h * omtx.yy;
+			
+			return { ofsX + coord.x * mtx.xx + coord.y * mtx.xy, ofsY + coord.x * mtx.yx + coord.y * mtx.yy };
 		}
 
-		inline CoordI unflipCoord(CoordI size, GfxFlip flip)
+		inline CoordI unflipCoord(CoordI coord, GfxFlip flip, SizeI canvasSize )
 		{
 			const Matrix22& mtx = _unflipMatrix[(int)flip];
+			const Matrix22& omtx = _unflipOrigoMatrix[(int)flip];
 
-			return { size.x * mtx.xx + size.y * mtx.xy, size.x * mtx.yx + size.y * mtx.yy };
+			int ofsX = canvasSize.w * omtx.xx + canvasSize.h * omtx.xy;
+			int ofsY = canvasSize.w * omtx.yx + canvasSize.h * omtx.yy;
+			
+			return { ofsX + coord.x * mtx.xx + coord.y * mtx.xy, ofsY + coord.x * mtx.yx + coord.y * mtx.yy };
 		}
 
+		inline RectI flipRect(RectI rect, GfxFlip flip, SizeI canvasSize )
+		{
+			const Matrix22& mtx = _flipMatrix[(int)flip];
+			const Matrix22& omtx = _flipOrigoMatrix[(int)flip];
 
+			int ofsX = canvasSize.w * omtx.xx + canvasSize.h * omtx.xy;
+			int ofsY = canvasSize.w * omtx.yx + canvasSize.h * omtx.yy;
+			
+			CoordI c1 = rect.topLeft();
+			CoordI c2 = rect.bottomRight();
+
+			CoordI trans1 = { c1.x * mtx.xx + c1.y * mtx.xy, c1.x * mtx.yx + c1.y * mtx.yy };
+			CoordI trans2 = { c2.x * mtx.xx + c2.y * mtx.xy, c2.x * mtx.yx + c2.y * mtx.yy };
+
+			CoordI topLeft = { std::min(trans1.x, trans2.x), std::min(trans1.y, trans2.y) };
+			CoordI bottomRight = { std::max(trans1.x, trans2.x), std::max(trans1.y, trans2.y) };
+
+			return { ofsX + topLeft.x, ofsY + topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y };
+		}
+
+		inline RectI unflipRect(RectI rect, GfxFlip flip, SizeI canvasSize )
+		{
+			const Matrix22& mtx = _unflipMatrix[(int)flip];
+			const Matrix22& omtx = _unflipOrigoMatrix[(int)flip];
+
+			int ofsX = canvasSize.w * omtx.xx + canvasSize.h * omtx.xy;
+			int ofsY = canvasSize.w * omtx.yx + canvasSize.h * omtx.yy;
+			
+			CoordI c1 = rect.topLeft();
+			CoordI c2 = rect.bottomRight();
+
+			CoordI trans1 = { c1.x * mtx.xx + c1.y * mtx.xy, c1.x * mtx.yx + c1.y * mtx.yy };
+			CoordI trans2 = { c2.x * mtx.xx + c2.y * mtx.xy, c2.x * mtx.yx + c2.y * mtx.yy };
+
+			CoordI topLeft = { std::min(trans1.x, trans2.x), std::min(trans1.y, trans2.y) };
+			CoordI bottomRight = { std::max(trans1.x, trans2.x), std::max(trans1.y, trans2.y) };
+
+			return { ofsX + topLeft.x, ofsY + topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y };
+		}
 
 		inline binalInt toBinalInt(float floatSPX)
 		{

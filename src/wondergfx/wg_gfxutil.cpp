@@ -58,9 +58,46 @@ namespace wg
 															{ 0,-1,1,0 },			// Rot270
 															{ 0,-1,-1,0 },			// Rot270FlipX
 															{ 0,1,1,0 } };			// Rot270FlipY
+/*
+	const int Util::_flipOrigoMatrix[GfxFlip_size][2] = {	{ 0,0 },				// Normal
+															{ 1,0 },				// FlipX
+															{ 0,1 },				// FlipY
+															{ 0,1 },				// Rot90
+															{ 0,0 },				// Rot90FlipX
+															{ 1,1 },				// Rot90FlipY
+															{ 1,1 },				// Rot180
+															{ 0,1 },				// Rot180FlipX
+															{ 1,0 },				// Rot180FlipY
+															{ 1,0 },				// Rot270
+															{ 1,1 },				// Rot270FlipX
+															{ 0,0 } };				// Rot270FlipY
+*/
 
+const Util::Matrix22 Util::_flipOrigoMatrix[GfxFlip_size] = {	{ 0,0,0,0 },				// Normal
+																{ 1,0,0,0 },				// FlipX
+																{ 0,0,0,1 },				// FlipY
+																{ 0,1,0,0 },				// Rot90
+																{ 0,0,0,0 },				// Rot90FlipX
+																{ 0,1,1,0 },				// Rot90FlipY
+																{ 1,0,0,1 },				// Rot180
+																{ 0,0,0,1 },				// Rot180FlipX
+																{ 1,0,0,0 },				// Rot180FlipY
+																{ 0,0,1,0 },				// Rot270
+																{ 0,1,1,0 },				// Rot270FlipX
+																{ 0,0,0,0 } };				// Rot270FlipY
 
-
+const Util::Matrix22 Util::_unflipOrigoMatrix[GfxFlip_size] = {	{ 0,0,0,0 },				// Normal
+																{ 1,0,0,0 },				// FlipX
+																{ 0,0,0,1 },				// FlipY
+																{ 0,0,1,0 },				// Rot90
+																{ 0,0,0,0 },				// Rot90FlipX
+																{ 0,1,1,0 },				// Rot90FlipY
+																{ 1,0,0,1 },				// Rot180
+																{ 0,0,0,1 },				// Rot180FlipX
+																{ 1,0,0,0 },				// Rot180FlipY
+																{ 0,1,0,0 },				// Rot270
+																{ 0,1,1,0 },				// Rot270FlipX
+																{ 0,0,0,0 } };				// Rot270FlipY
 
 	uint8_t Util::_limitUint8Table[768] = {	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 										0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

@@ -148,7 +148,35 @@ void WgCanvasCapsule::StopFade()
 WgWidget * WgCanvasCapsule::FindWidget(const WgCoord& ofs, WgSearchMode mode)
 {
 	if (mode == WgSearchMode::Geometry || m_tintColor.a > 0 || m_blendMode == WgBlendMode::Replace)
-		return WgCapsule::FindWidget(ofs, mode);
+	{
+		WgRect childGeo;
+		WgHook * pHook = _lastHookWithGeo( childGeo );
+		WgWidget * pResult = 0;
+
+		
+		if( childGeo.contains( ofs ) )
+		{
+			WgCoord flippedOfs = wg::Util::unflipCoord(ofs - childGeo.pos(), m_flip, PixelSize() );
+			
+			if( pHook->Widget()->IsContainer() )
+			{
+				pResult = pHook->Widget()->CastToContainer()->FindWidget( flippedOfs, mode );
+			}
+			else if( mode == WgSearchMode::Geometry || pHook->Widget()->MarkTest( flippedOfs ) )
+			{
+				pResult = pHook->Widget();
+			}
+		}
+
+		// Return us if search mode is GEOMETRY
+
+		if( !pResult && (mode == WgSearchMode::Geometry || MarkTest(ofs)) )
+			pResult = this;
+
+		return pResult;
+	}
+
+
 
 	return nullptr;
 }
@@ -194,17 +222,16 @@ WgSize WgCanvasCapsule::PreferredPixelSize() const
         return m_preferredSize * m_scale / WG_SCALE_BASE;
 	else
 	{
-		WgSize sz, szFlipped;
+		WgSize szFlipped;
 
 		if (m_hook.Widget())
-			sz = m_hook.Widget()->PreferredPixelSize();
+		{
+			WgSize sz = m_hook.Widget()->PreferredPixelSize();
+			szFlipped = wg::Util::flipSize(sz, m_flip);
+		}
 		else
-			sz = WgSize(1, 1);
+			szFlipped = WgSize(1, 1);
 
-		auto mtx = wg::Util::flipMatrix(m_flip);
-
-		szFlipped.w = abs(sz.w * mtx.xx + sz.h * mtx.xy);
-		szFlipped.h = abs(sz.w * mtx.yx + sz.h * mtx.yy);
 
 		if (m_pSkin)
 			szFlipped += _skinContentPadding(m_pSkin, m_scale);
@@ -212,6 +239,47 @@ WgSize WgCanvasCapsule::PreferredPixelSize() const
 		return szFlipped;
 	}
 }
+
+//____ MatchingPixelHeight() ________________________________________
+
+int WgCanvasCapsule::MatchingPixelHeight( int width ) const
+{
+	WgSize padding;
+	if( m_pSkin )
+		padding = _skinContentPadding( m_pSkin, m_scale);
+
+	if( m_hook.Widget() )
+	{
+		auto& mtx = wg::Util::flipMatrix(m_flip);
+		if( mtx.xy == 0 && mtx.yx == 0 )
+			return m_hook.Widget()->MatchingPixelHeight( width - padding.w ) + padding.h;
+		else
+			return m_hook.Widget()->MatchingPixelWidth( width - padding.w ) + padding.h;
+	}
+	else
+		return WgWidget::MatchingPixelHeight(width);
+}
+
+//____ MatchingPixelWidth() ___________________________________________
+
+int WgCanvasCapsule::MatchingPixelWidth( int height ) const
+{
+	WgSize padding;
+	if( m_pSkin )
+		padding = _skinContentPadding( m_pSkin, m_scale);
+
+	if( m_hook.Widget() )
+	{
+		auto& mtx = wg::Util::flipMatrix(m_flip);
+		if( mtx.xy == 0 && mtx.yx == 0 )
+			return m_hook.Widget()->MatchingPixelWidth( height - padding.h ) + padding.w;
+		else
+			return m_hook.Widget()->MatchingPixelHeight( height - padding.h ) + padding.w;
+	}
+	else
+		return WgWidget::MatchingPixelWidth(height);
+}
+
 
 //____ ForceRedraw() ___________________________________________________________
 
@@ -304,6 +372,10 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
     if (!m_hook.Widget() && m_canvasFillColor.a == 0)
 		return;
 
+	
+	WgSize canvasSize = wg::Util::unflipSize(_canvas.size(), m_flip);
+
+	
 	// Make sure we have a canvas
 
 	if (!m_pCanvas)
@@ -312,20 +384,20 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
         
 		if (!pFactory)
 			return;                            // No SurfaceFactory set!
-
+		
 		WgSize maxSize = pFactory->maxSize();
-		if (_canvas.w > maxSize.w || _canvas.h > maxSize.h)
+
+
+		if (canvasSize.w > maxSize.w || canvasSize.h > maxSize.h)
 			return;                            // Can't create a canvas of the required size!
 
-		WgSize sz = wg::Util::flipSize(_canvas.size(), m_flip);
-
-
+		
 		m_pCanvas = pFactory->createSurface( WGBP(Surface,
-												  _.size = sz,
+												  _.size = canvasSize,
 												  _.format = WgPixelType::BGRA_8,
 												  _.canvas = true) );
 		m_dirtyPatches.clear();
-		m_dirtyPatches.add(sz);
+		m_dirtyPatches.add(canvasSize);
 	}
 
 	// Go through dirty patches from screen canvas and update our back canvas where they overlap with our own
@@ -342,11 +414,14 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 			r.x -= _canvas.x;
 			r.y -= _canvas.y;
 
+			WgRect r2 = wg::Util::unflipRect(r, m_flip, _canvas.size());
+
+			
 			for (const WgRect * pLocalDirt = m_dirtyPatches.begin(); pLocalDirt != m_dirtyPatches.end(); pLocalDirt++)
 			{
-				if (pLocalDirt->isOverlapping(r))
+				if (pLocalDirt->isOverlapping(r2))
 				{
-					renderStack.push(WgRect::overlap(*pLocalDirt,r));
+					renderStack.push(WgRect::overlap(*pLocalDirt,r2));
 					bIntersected = true;
 				}
 			}
@@ -390,7 +465,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 		pDevice->setBlendMode(WgBlendMode::Blend);
         
         if(m_hook.Widget())
-            m_hook.Widget()->_renderPatches(pDevice, _canvas.size(), _canvas.size(), &renderStack);
+            m_hook.Widget()->_renderPatches(pDevice, canvasSize, canvasSize, &renderStack);
 
 //		_popAndReleaseClipList( pDevice, bytesToRelease);
         pDevice->endCanvasUpdate();
@@ -428,7 +503,7 @@ void WgCanvasCapsule::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, 
 	// Copy from our back canvas to the screen canvas
 
 	pDevice->setBlitSource(m_pCanvas);
-	pDevice->flipBlit( WgCoord(_canvas.x, _canvas.y)*64, { 0,0,_canvas.w*64,_canvas.h*64 }, m_flip );
+	pDevice->flipBlit( WgCoord(_canvas.x, _canvas.y)*64, m_pCanvas->pixelSize()*64, m_flip );
 }
 
 
@@ -447,13 +522,22 @@ void WgCanvasCapsule::_onCloneContent( const WgWidget * _pOrg )
 
 void WgCanvasCapsule::_onNewSize(const WgSize& size)
 {
-	if (m_pCanvas && size != m_pCanvas->pixelSize() )
+	WgSize flippedSize = wg::Util::flipSize(size, m_flip);
+	
+	if (m_pCanvas && flippedSize != m_pCanvas->pixelSize() )
 	{
 		m_pCanvas = nullptr;
 		_requestRender();
 	}
 
-	WgCapsule::_onNewSize(size);
+	if( m_hook.Widget() )
+	{
+		WgSize sz = flippedSize;
+		if( m_pSkin )
+			sz -= _skinContentPadding( m_pSkin, m_scale);
+
+		m_hook.Widget()->_onNewSize(sz);
+	}
 }
 
 //____ _onRenderRequested() ___________________________________________________
@@ -471,11 +555,11 @@ void WgCanvasCapsule::_onRenderRequested(const WgRect& rect)
 {
 	m_dirtyPatches.add(rect);
 
-	WgRect flippedRect;
+	WgSize flippedSize = wg::Util::flipSize(PixelSize(), m_flip);
 
+	WgRect unflippedRect = wg::Util::flipRect(rect, m_flip, flippedSize);
 
-
-	_requestRender(rect);
+	_requestRender(unflippedRect);
 }
 
 //____ _onCollectPatches() ____________________________________________________
@@ -498,3 +582,27 @@ void WgCanvasCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, con
 	return;
 }
 
+//____ _childSize() _____________________________________________________________
+
+WgSize WgCanvasCapsule::_childSize()
+{
+	
+	WgSize sz = wg::Util::flipSize(PixelSize(), m_flip);
+	
+	if( m_pSkin )
+		sz -= _skinContentPadding( m_pSkin, m_scale);
+
+	return sz;
+}
+
+//____ _childGeo() _____________________________________________________________
+
+WgRect WgCanvasCapsule::_childGeo()
+{
+	WgSize sz = wg::Util::flipSize(PixelSize(), m_flip);
+
+	if( m_pSkin )
+		return _skinContentRect( m_pSkin, { 0,0, sz }, m_state, m_scale );
+	else
+		return { 0,0, sz };
+}

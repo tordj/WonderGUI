@@ -74,7 +74,11 @@ public:
     void                SetPreferredSize( WgSize preferred );
 
     WgSize              PreferredPixelSize() const override;
+	int					MatchingPixelHeight( int pixelWidth ) const override;
+	int					MatchingPixelWidth( int pixelHeight ) const override;
 
+	
+	
     void                ForceRedraw();
 
 	void				SetFlip(wg::GfxFlip flip);
@@ -96,6 +100,8 @@ protected:
 
 	void _onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 
+	WgSize  		_childSize() override;
+	WgRect  		_childGeo() override;
 
 private:
 

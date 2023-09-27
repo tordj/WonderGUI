@@ -46,11 +46,19 @@ int main ( int argc, char** argv )
 	{
 		GfxFlip flip = GfxFlip(i);
 
+		SizeI orgCanvas = { 768, 512 };
+		
 		CoordI org = { 320,200 };
-		CoordI flipped = Util::flipCoord(org, flip);
-		CoordI unflipped = Util::unflipCoord(flipped, flip);
+		CoordI flipped = Util::flipCoord(org, flip, orgCanvas);
+
+		SizeI flippedCanvas = Util::flipSize(orgCanvas, flip);
+		CoordI unflipped = Util::unflipCoord(flipped, flip, flippedCanvas);
+
+		SizeI unflippedCanvas = Util::unflipSize(flippedCanvas, flip);
 
 		assert(unflipped == org);
+		assert(unflippedCanvas == orgCanvas);
+
 	}
 
 
@@ -197,6 +205,45 @@ int main ( int argc, char** argv )
 
 		pGfxDevice->fill(Color8::Black);
 
+		//
+		
+		for( int i = 0 ; i < GfxFlip_size ; i++ )
+		{
+			RectI canvas = RectSPX( 4, i * 22, 20, 16 )*64;
+			
+			pGfxDevice->fill( canvas, Color8::Blue );
+	
+			RectI flippedCanvas = { canvas.x+22*64, canvas.y, Util::flipSize({canvas.w, canvas.h}, (GfxFlip) i ) };
+
+			pGfxDevice->fill( flippedCanvas, Color8::Blue );
+
+			RectI unflippedCanvas = { canvas.x+44*64, canvas.y, Util::unflipSize(flippedCanvas, (GfxFlip) i ) };
+
+			pGfxDevice->fill( unflippedCanvas, Color8::Blue );
+
+			
+			RectI org1 = RectSPX( 2,2,5,5 )*64;
+			RectI org2 = RectSPX( 13,2,5,5 )*64;
+
+			pGfxDevice->fill( org1 + canvas.pos(), Color8::Red );
+			pGfxDevice->fill( org2 + canvas.pos(), Color8::Green );
+
+			RectI flipped1 = Util::flipRect(org1, (GfxFlip)i, canvas);
+			RectI flipped2 = Util::flipRect(org2, (GfxFlip)i, canvas);
+
+			pGfxDevice->fill( flipped1 + flippedCanvas.pos(), Color8::Red );
+			pGfxDevice->fill( flipped2 + flippedCanvas.pos(), Color8::Green );
+
+			RectI unflipped1 = Util::unflipRect(flipped1, (GfxFlip)i, flippedCanvas);
+			RectI unflipped2 = Util::unflipRect(flipped2, (GfxFlip)i, flippedCanvas);
+
+			pGfxDevice->fill( unflipped1 + unflippedCanvas.pos(), Color8::Red );
+			pGfxDevice->fill( unflipped2 + unflippedCanvas.pos(), Color8::Green );
+
+			
+		}
+		
+		
 /*
  
  		pFont->setSize(10*64);
@@ -240,7 +287,7 @@ int main ( int argc, char** argv )
 		pGfxDevice->fill( RectI((18*16)*64,0, 64*10, 64*300), HiColor(4096/16,0,0,4096) );
 */
 		
-
+/*
 		auto pHWCanvas = SoftSurface::create( { .canvas = true, .format = PixelFormat::RGB_555_bigendian, .size = {256,256}} );
 		pHWCanvas->fill(Color8::Green);
 
@@ -267,12 +314,12 @@ int main ( int argc, char** argv )
 
 		pGfxDevice->setBlitSource( pSRGBSurface );
 		pGfxDevice->blit({0,10*64});
-		
+*/
 		
 		pGfxDevice->endCanvasUpdate();
 		pGfxDevice->endRender();
 
-		
+/*
 		uint8_t * pScreen = (uint8_t*) pWinSurf->pixels;
 		for( int y = 0 ; y < 10 ; y++ )
 		{
@@ -285,7 +332,7 @@ int main ( int argc, char** argv )
 			}
 			pScreen += pWinSurf->pitch - 256*4;
 		}
-		
+*/
 		SDL_UnlockSurface(pWinSurf);
 
 		SDL_UpdateWindowSurface( pWin );
