@@ -576,6 +576,7 @@ namespace wg
 	void Widget::_resize( const SizeSPX& size, int scale )
 	{
 		m_size = size;
+		m_scale = scale;
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
 
