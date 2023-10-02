@@ -427,7 +427,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 			}
 
 			if (bIntersected)
-				m_dirtyPatches.sub(r);
+				m_dirtyPatches.sub(r2);
 		}
 	}
 
