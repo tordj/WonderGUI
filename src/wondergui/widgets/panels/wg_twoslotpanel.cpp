@@ -377,7 +377,7 @@ namespace wg
 
 	void TwoSlotPanel::_resize(const SizeSPX& size, int scale)
 	{
-		spx breadthDiff = m_bHorizontal ? m_size.w - size.w : m_size.h - size.h;
+		spx breadthDiff = m_bHorizontal ? m_size.h - size.h : m_size.w - size.w;
 		bool bForceUpdate = (scale != m_scale || breadthDiff != 0);
 			
 		Panel::_resize(size,scale);
