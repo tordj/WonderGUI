@@ -256,7 +256,7 @@ namespace wg
 
 		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
 
-		if (!pNewSkin || !pOldSkin || pNewSkin->_contentPaddingSize(m_scale) != pOldSkin->_contentPaddingSize(m_scale) ||
+		if (!pNewSkin || !pOldSkin || pNewSkin->_paddingSize(m_scale) != pOldSkin->_paddingSize(m_scale) ||
 			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
 			_requestResize();
 	}

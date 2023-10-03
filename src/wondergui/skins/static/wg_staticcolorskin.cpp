@@ -59,13 +59,16 @@ namespace wg
 	{
 		m_color				= blueprint.color;
 		m_bOpaque			= (m_color.a == 4096);
-		m_contentPadding	= blueprint.padding;
+		m_padding			= blueprint.padding;
+		m_margin			= blueprint.margin;
 		m_layer				= blueprint.layer;
 		m_markAlpha			= blueprint.markAlpha;
 		m_overflow			= blueprint.overflow;
 		m_blendMode			= blueprint.blendMode;
 
-		if (m_blendMode == BlendMode::Replace)
+		if(!m_margin.isEmpty())
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 			m_bOpaque = (m_color.a == 4096);
@@ -84,9 +87,11 @@ namespace wg
 
 	void StaticColorSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
+		RectSPX canvasWithoutMargin = canvas - align(ptsToSpx(m_margin,scale));
+		
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		pDevice->fill(canvas, m_color);
+		pDevice->fill(canvasWithoutMargin, m_color);
 	}
 
 	//____ _markTest() _________________________________________________________
@@ -95,7 +100,9 @@ namespace wg
 	{
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 
-		return ( canvas.contains(ofs) && m_color.a >= alpha );
+		RectSPX canvasWithoutMargin = canvas - align(ptsToSpx(m_margin,scale));
+
+		return ( canvasWithoutMargin.contains(ofs) && m_color.a >= alpha );
 	}
 
 

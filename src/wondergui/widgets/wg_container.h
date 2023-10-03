@@ -35,7 +35,7 @@ namespace wg
 	class PopupOverlay;
 
 	class Container;
-	typedef	StrongPtr<Container>			Container_p;
+	typedef	StrongPtr<Container>	Container_p;
 	typedef	WeakPtr<Container>		Container_wp;
 
 	/**
@@ -140,7 +140,7 @@ namespace wg
 			virtual void			_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 			virtual void			_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip ) override;
 
-			bool				m_bSiblingsOverlap = true;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
+			bool					m_bSiblingsOverlap = true;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
 
 	};
 

@@ -202,7 +202,7 @@ namespace wg
 		m_bOpaque = blueprint.surface->isOpaque();
 		m_blendMode = blueprint.blendMode;
 		m_gradient = blueprint.gradient;
-		m_contentPadding = blueprint.padding;
+		m_padding = blueprint.padding;
 		m_layer = blueprint.layer;
 		m_markAlpha = blueprint.markAlpha;
 		m_overflow = blueprint.overflow;
@@ -555,7 +555,7 @@ namespace wg
 
 	SizeSPX BlockSkin::_minSize(int scale) const
 	{
-		SizeSPX content = align(ptsToSpx(m_contentPadding,scale));
+		SizeSPX content = align(ptsToSpx(m_padding,scale));
 		SizeSPX frame = align(ptsToSpx(m_ninePatch.frame,scale));
 		return SizeSPX::max( content, frame );
 	}

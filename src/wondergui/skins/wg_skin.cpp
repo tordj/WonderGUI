@@ -41,49 +41,63 @@ namespace wg
 
 	SizeSPX Skin::_minSize(int scale) const
 	{
-		return SizeSPX(align(ptsToSpx(m_contentPadding,scale)));
+		return SizeSPX(align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_padding,scale)));
 	}
 
 	//____ _defaultSize() ______________________________________________________________
 
 	SizeSPX Skin::_defaultSize(int scale) const
 	{
-		return SizeSPX(align(ptsToSpx(m_contentPadding, scale)));
+		return SizeSPX(align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_padding,scale)));
 	}
 
-	//____ _contentPadding() ______________________________________________________________
+	//____ _margin() ______________________________________________________________
 
-	BorderSPX Skin::_contentPadding(int scale, State state) const
+	BorderSPX Skin::_margin(int scale, State state) const
 	{
-		return align(ptsToSpx(m_contentPadding, scale));
+		return align(ptsToSpx(m_margin, scale));
 	}
 
-	//____ _contentPaddingSize() ______________________________________________________________
+	//____ _marginSize() ______________________________________________________________
 
-	SizeSPX Skin::_contentPaddingSize(int scale) const
+	SizeSPX Skin::_marginSize(int scale) const
 	{
-		return SizeSPX(align(ptsToSpx(m_contentPadding, scale)));
+		return SizeSPX(align(ptsToSpx(m_margin, scale)));
+	}
+
+	//____ _padding() ______________________________________________________________
+
+	BorderSPX Skin::_padding(int scale, State state) const
+	{
+		return align(ptsToSpx(m_padding, scale));
+	}
+
+	//____ _paddingSize() ______________________________________________________________
+
+	SizeSPX Skin::_paddingSize(int scale) const
+	{
+		return SizeSPX(align(ptsToSpx(m_padding, scale)));
 	}
 
 	//____ _contentOfs() ______________________________________________________________
 
 	CoordSPX Skin::_contentOfs(int scale, State state) const
 	{
-		return align(ptsToSpx(Coord(m_contentPadding.left, m_contentPadding.top), scale));
+		return align(ptsToSpx(Coord(m_margin.left, m_margin.top), scale)) + align(ptsToSpx(Coord(m_padding.left, m_padding.top), scale));
 	}
 
 	//____ _sizeForContent() ___________________________________________________
 
 	SizeSPX Skin::_sizeForContent(const SizeSPX& contentSize, int scale) const
 	{
-		return contentSize + SizeSPX(align(ptsToSpx(m_contentPadding, scale)));
+		return contentSize + SizeSPX(align(ptsToSpx(m_margin, scale))) + SizeSPX(align(ptsToSpx(m_padding, scale)));
 	}
 
 	//____ _contentRect() ______________________________________________________
 
 	RectSPX Skin::_contentRect(const RectSPX& canvas, int scale, State state) const
 	{
-		return canvas - align(ptsToSpx(m_contentPadding, scale));
+		return canvas - align(ptsToSpx(m_margin, scale)) - align(ptsToSpx(m_padding, scale));
 	}
 
 	//____ _isOpaque() ________________________________________________________

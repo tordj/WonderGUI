@@ -90,11 +90,11 @@ namespace wg
 		return Coord();
 	}
 
-	//____ _contentPadding() _______________________________________________________
+	//____ _padding() _______________________________________________________
 
-	BorderSPX StateSkin::_contentPadding(int scale, State state) const
+	BorderSPX StateSkin::_padding(int scale, State state) const
 	{
-		BorderSPX b = align(ptsToSpx(m_contentPadding,scale));
+		BorderSPX b = align(ptsToSpx(m_padding,scale));
 		CoordSPX ofs = align(ptsToSpx(m_contentShift[state], scale));
 
 		b.left += ofs.x;
@@ -107,14 +107,14 @@ namespace wg
 
 	RectSPX StateSkin::_contentRect( const RectSPX& canvas, int scale, State state ) const
 	{
-		return canvas - align(ptsToSpx(m_contentPadding,scale)) + align(ptsToSpx(m_contentShift[state],scale));
+		return canvas - align(ptsToSpx(m_padding,scale)) + align(ptsToSpx(m_contentShift[state],scale));
 	}
 
 	//____ _contentofs() __________________________________________________________
 
 	CoordSPX StateSkin::_contentOfs( int scale, State state ) const
 	{
-		return align(ptsToSpx(Coord(m_contentPadding.left, m_contentPadding.top), scale)) + 
+		return align(ptsToSpx(Coord(m_padding.left, m_padding.top), scale)) + 
 			   align(ptsToSpx(m_contentShift[state], scale));
 	}
 

@@ -850,7 +850,7 @@ wg::SizeI WgWidget::_skinSizeForContent(wg::Skin * pSkin, const wg::SizeI conten
 
 wg::SizeI WgWidget::_skinContentPadding(wg::Skin * pSkin, int scale) const
 {
-	return pSkin->_contentPadding(scale >> 6, m_state) / 64;
+	return pSkin->_padding(scale >> 6, m_state) / 64;
 }
 
 //____ _skinContentOfs() __________________________________________________________

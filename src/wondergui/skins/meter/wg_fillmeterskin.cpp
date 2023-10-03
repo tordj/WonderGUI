@@ -58,7 +58,7 @@ namespace wg
 		m_gfxPadding		= bp.gfxPadding;
 		m_backColor			= bp.backColor;
 		m_blendMode			= bp.blendMode;
-		m_contentPadding	= bp.padding;
+		m_padding	= bp.padding;
 		m_direction			= bp.direction;
 		m_gradient			= bp.gradient;
 		m_layer				= bp.layer;
@@ -71,7 +71,7 @@ namespace wg
 		if (bp.defaultSize.isEmpty())
 		{
 			Size pref = (bp.direction == Direction::Up || bp.direction == Direction::Down) ? Size(10, 50) : Size(50, 10);
-			m_defaultSize = Size::max(pref, m_contentPadding.size());
+			m_defaultSize = Size::max(pref, m_padding.size());
 		}
 		else
 			m_defaultSize = bp.defaultSize;
@@ -169,7 +169,7 @@ namespace wg
 		if (m_barColorFull != m_barColorEmpty)
 			return _canvas;
 
-		RectSPX canvas = _canvas - align(ptsToSpx(m_contentPadding, scale));
+		RectSPX canvas = _canvas - align(ptsToSpx(m_padding, scale));
 
 		RectSPX result1;
 		RectSPX result2;

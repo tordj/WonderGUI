@@ -42,7 +42,7 @@ namespace wg
 
 	spx TextEditor::_matchingWidth(spx height, int scale) const
 	{
-		SizeSPX padding = _contentPaddingSize();
+		SizeSPX padding = _paddingSize();
 
 		height -= padding.h;
 		spx textWidth = editor._matchingWidth(height, scale);
@@ -54,7 +54,7 @@ namespace wg
 
 	spx TextEditor::_matchingHeight( spx width, int scale ) const
 	{
-		SizeSPX padding = _contentPaddingSize();
+		SizeSPX padding = _paddingSize();
 
 		width -= padding.w;
 		spx textHeight = editor._matchingHeight( width, scale );

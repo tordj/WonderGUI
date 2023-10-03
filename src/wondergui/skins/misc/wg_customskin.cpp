@@ -45,7 +45,7 @@ namespace wg
 	CustomSkin::CustomSkin( const Blueprint& blueprint )
 	{
 		m_bOpaque			= blueprint.opaque;
-		m_contentPadding	= blueprint.padding;
+		m_padding	= blueprint.padding;
 		m_overflow			= blueprint.overflow;
 	
 		m_markTestFunc		= blueprint.markTestFunc;

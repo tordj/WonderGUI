@@ -67,8 +67,8 @@ namespace wg
 		SizeSPX			_defaultSize(int scale) const override;
 		SizeSPX			_sizeForContent(const SizeSPX& contentSize, int scale) const override;
 
-		BorderSPX		_contentPadding(int scale, State state) const override;
-		SizeSPX			_contentPaddingSize(int scale) const override;
+		BorderSPX		_padding(int scale, State state) const override;
+		SizeSPX			_paddingSize(int scale) const override;
 		CoordSPX		_contentOfs(int scale, State state) const override;
 		RectSPX			_contentRect(const RectSPX& canvas, int scale, State state) const override;
 

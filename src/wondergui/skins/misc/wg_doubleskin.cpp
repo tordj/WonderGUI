@@ -55,7 +55,7 @@ namespace wg
 		m_pBackSkin = blueprint.skins[1];
 		m_bSkinInSkin = blueprint.skinInSkin;
 
-		m_contentPadding = blueprint.padding;
+		m_padding = blueprint.padding;
 		m_bContentPaddingSet = !blueprint.padding.isEmpty();
 
 		m_layer = blueprint.layer;
@@ -117,29 +117,29 @@ namespace wg
 	}
 
 
-	//____ _contentPadding() _______________________________________________
+	//____ _padding() _______________________________________________
 
-	BorderSPX DoubleSkin::_contentPadding(int scale, State state) const
+	BorderSPX DoubleSkin::_padding(int scale, State state) const
 	{
 		if (m_bContentPaddingSet)
-			return align(ptsToSpx(m_contentPadding,scale));
+			return align(ptsToSpx(m_padding,scale));
 		else if (m_bSkinInSkin)
-			return m_pFrontSkin->_contentPadding(scale, state) + m_pBackSkin->_contentPadding(scale, state);
+			return m_pFrontSkin->_padding(scale, state) + m_pBackSkin->_padding(scale, state);
 		else
-			return m_pFrontSkin->_contentPadding(scale, state);
+			return m_pFrontSkin->_padding(scale, state);
 	}
 
 
-	//____ _contentPaddingSize() _______________________________________________
+	//____ _paddingSize() _______________________________________________
 
-	SizeSPX DoubleSkin::_contentPaddingSize(int scale) const
+	SizeSPX DoubleSkin::_paddingSize(int scale) const
 	{
 		if (m_bContentPaddingSet)
-			return align(ptsToSpx(m_contentPadding, scale));
+			return align(ptsToSpx(m_padding, scale));
 		else if (m_bSkinInSkin)
-			return m_pFrontSkin->_contentPaddingSize(scale) + m_pBackSkin->_contentPaddingSize(scale);
+			return m_pFrontSkin->_paddingSize(scale) + m_pBackSkin->_paddingSize(scale);
 		else
-			return m_pFrontSkin->_contentPaddingSize(scale);
+			return m_pFrontSkin->_paddingSize(scale);
 	}
 
 	//____ _contentOfs() _______________________________________________________
@@ -147,7 +147,7 @@ namespace wg
 	CoordSPX DoubleSkin::_contentOfs(int scale, State state) const
 	{
 		if( m_bContentPaddingSet )
-			return align(ptsToSpx(Coord(m_contentPadding.left, m_contentPadding.top),scale));
+			return align(ptsToSpx(Coord(m_padding.left, m_padding.top),scale));
 		else if( m_bSkinInSkin )
 			return m_pFrontSkin->_contentOfs(scale, state) + m_pBackSkin->_contentOfs(scale, state);
 		else
@@ -159,7 +159,7 @@ namespace wg
 	RectSPX DoubleSkin::_contentRect(const RectSPX& canvas, int scale, State state) const
 	{
 		if (m_bContentPaddingSet)
-			return (canvas - align(ptsToSpx(m_contentPadding,scale)));
+			return (canvas - align(ptsToSpx(m_padding,scale)));
 
 		RectSPX content = m_bSkinInSkin ? m_pBackSkin->_contentRect(canvas, scale, state) : canvas;
 
@@ -176,7 +176,7 @@ namespace wg
 		if (m_pBackSkin->_isOpaque(state))
 			return true;
 
-		return m_pFrontSkin->_isOpaque(state) && (!m_bSkinInSkin || m_pBackSkin->_hasContentPadding() );
+		return m_pFrontSkin->_isOpaque(state) && (!m_bSkinInSkin || m_pBackSkin->_hasPadding() );
 	}
 
 	bool DoubleSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
@@ -321,7 +321,7 @@ namespace wg
 
 		if (m_pFrontSkin)
 		{
-			if (m_pFrontSkin->isOpaque() && (!m_pBackSkin || !m_bSkinInSkin || m_pBackSkin->_hasContentPadding() ))
+			if (m_pFrontSkin->isOpaque() && (!m_pBackSkin || !m_bSkinInSkin || m_pBackSkin->_hasPadding() ))
 				m_bOpaque = true;
 
 			if (!m_pFrontSkin->_ignoresValue())

@@ -79,7 +79,8 @@ namespace wg
 
 		m_blendMode			= blueprint.blendMode;
 		m_color				= blueprint.color;
-		m_contentPadding	= blueprint.padding;
+		m_padding			= blueprint.padding;
+		m_margin			= blueprint.margin;
 		m_gradient			= blueprint.gradient;
 		m_layer				= blueprint.layer;
 		m_markAlpha			= blueprint.markAlpha;
@@ -178,7 +179,7 @@ namespace wg
 
 	SizeSPX StaticBlockSkin::_defaultSize(int scale) const
 	{
-		return SizeSPX::max(align(ptsToSpx(m_ninePatch.block.size(),scale)),_sizeForContent( SizeSPX(), scale));
+		return SizeSPX::max(align(ptsToSpx(m_ninePatch.block.size(),scale)),_sizeForContent( SizeSPX(), scale)) + align(ptsToSpx(m_margin,scale)).size();
 	}
 
 	//____ _render() ______________________________________________________________
@@ -191,8 +192,10 @@ namespace wg
 
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
+		RectSPX canvasWithoutMargin = canvas - align(ptsToSpx(m_margin,scale));
+		
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch(canvas, align(ptsToSpx(m_gfxFrame,scale)), m_ninePatch, scale);
+		pDevice->blitNinePatch(canvasWithoutMargin, align(ptsToSpx(m_gfxFrame,scale)), m_ninePatch, scale);
 	}
 
 	//____ _markTest() _________________________________________________________
@@ -201,14 +204,18 @@ namespace wg
 	{
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 
-		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, scale, alpha);
+		RectSPX canvasWithoutMargin = canvas - align(ptsToSpx(m_margin,scale));
+
+		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvasWithoutMargin, scale, alpha);
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________
 
 	void StaticBlockSkin::_updateOpacityFlag()
 	{
-		if (m_blendMode == BlendMode::Replace)
+		if( !m_margin.isEmpty() )
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{

@@ -48,7 +48,7 @@ namespace wg
 	{
 		m_blendMode			= bp.blendMode;
 		m_color				= bp.color;
-		m_contentPadding	= bp.padding;
+		m_padding	= bp.padding;
 		m_gfxPadding		= bp.gfxPadding;
 		m_gradient			= bp.gradient;
 		m_layer				= bp.layer;
@@ -84,14 +84,14 @@ namespace wg
 
 	SizeSPX FrameMeterSkin::_defaultSize(int scale) const
 	{
-		return SizeSPX::max(align(ptsToSpx(m_size,scale)), align(ptsToSpx(m_contentPadding,scale)));
+		return SizeSPX::max(align(ptsToSpx(m_size,scale)), align(ptsToSpx(m_padding,scale)));
 	}
 
 	//____ _minSize() ______________________________________________________________
 
 	SizeSPX FrameMeterSkin::_minSize(int scale) const
 	{
-		return SizeSPX::max(SizeSPX(align(ptsToSpx(m_gfxPadding,scale))), SizeSPX(align(ptsToSpx(m_contentPadding,scale))));
+		return SizeSPX::max(SizeSPX(align(ptsToSpx(m_gfxPadding,scale))), SizeSPX(align(ptsToSpx(m_padding,scale))));
 	}
 
 

@@ -58,15 +58,16 @@ namespace wg
 
 	StaticTileSkin::StaticTileSkin(const Blueprint& blueprint)
 	{
-		m_pSurface = blueprint.surface;
-		m_bOpaque = m_pSurface->isOpaque();
-		m_blendMode = blueprint.blendMode;
-		m_color = blueprint.color;
-		m_gradient = blueprint.gradient;
-		m_contentPadding = blueprint.padding;
-		m_layer = blueprint.layer;
-		m_markAlpha = blueprint.markAlpha;
-		m_overflow = blueprint.overflow;
+		m_pSurface	= blueprint.surface;
+		m_bOpaque	= m_pSurface->isOpaque();
+		m_blendMode	= blueprint.blendMode;
+		m_color		= blueprint.color;
+		m_gradient	= blueprint.gradient;
+		m_margin	= blueprint.margin;
+		m_padding	= blueprint.padding;
+		m_layer		= blueprint.layer;
+		m_markAlpha	= blueprint.markAlpha;
+		m_overflow	= blueprint.overflow;
 
 		_updateOpacityFlag();
 	}
@@ -83,18 +84,20 @@ namespace wg
 	SizeSPX StaticTileSkin::_defaultSize(int scale) const
 	{
 		if (!m_pSurface)
-			return SizeSPX();
+			return SizeSPX(align(ptsToSpx(m_margin,scale)));
 
-		return SizeSPX::max(ptsToSpx(m_pSurface->pointSize(), scale),Skin::_defaultSize(scale));
+		return SizeSPX(align(ptsToSpx(m_margin,scale))) + SizeSPX::max(ptsToSpx(m_pSurface->pointSize(), scale),Skin::_defaultSize(scale));
 	}
 
 	//____ _render() ______________________________________________________________
 
-	void StaticTileSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void StaticTileSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pSurface)
 			return;
 
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
+		
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient );
 
 		pDevice->setBlitSource(m_pSurface);
@@ -103,9 +106,11 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticTileSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride ) const
+	bool StaticTileSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride ) const
 	{
 		//TODO: Take tint into account.
+
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
 
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 		
@@ -116,7 +121,9 @@ namespace wg
 
 	void StaticTileSkin::_updateOpacityFlag()
 	{
-		if (m_blendMode == BlendMode::Replace)
+		if( !m_margin.isEmpty() )
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{

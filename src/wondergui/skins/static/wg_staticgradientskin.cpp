@@ -61,12 +61,15 @@ namespace wg
 		m_gradient			= blueprint.gradient;
 		m_bOpaque			= m_gradient.isOpaque();
 		m_blendMode			= blueprint.blendMode;
-		m_contentPadding	= blueprint.padding;
+		m_padding			= blueprint.padding;
+		m_margin			= blueprint.margin;
 		m_layer				= blueprint.layer;
 		m_markAlpha			= blueprint.markAlpha;
 		m_overflow			= blueprint.overflow;
 
-		if (m_blendMode == BlendMode::Replace)
+		if(!m_margin.isEmpty())
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 			m_bOpaque = m_gradient.isOpaque();
@@ -83,17 +86,21 @@ namespace wg
 
 	//____ _render() ______________________________________________________________
 
-	void StaticGradientSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void StaticGradientSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, HiColor::White, canvas, m_gradient);
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
 
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, HiColor::White, canvas, m_gradient);
+		
 		pDevice->fill(canvas, HiColor::White);
 	}
 
 	//____ _markTest() _________________________________________________________
 
-	bool StaticGradientSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
+	bool StaticGradientSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
+
 		if (!canvas.contains(ofs) )
 			return false;
 

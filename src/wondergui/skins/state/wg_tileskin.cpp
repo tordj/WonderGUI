@@ -69,7 +69,7 @@ namespace wg
 		m_layer			= blueprint.layer;
 		m_blendMode		= blueprint.blendMode;
 		m_gradient		= blueprint.gradient;
-		m_contentPadding= blueprint.padding;
+		m_padding= blueprint.padding;
 		m_markAlpha		= blueprint.markAlpha;
 		m_overflow		= blueprint.overflow;
 
@@ -138,7 +138,7 @@ namespace wg
 
 	SizeSPX TileSkin::_defaultSize(int scale) const
 	{
-		SizeSPX content = align(ptsToSpx(m_contentPadding,scale));
+		SizeSPX content = align(ptsToSpx(m_padding,scale));
 		SizeSPX surface;
 
 		Surface * pSurface = m_stateSurfaces[0];

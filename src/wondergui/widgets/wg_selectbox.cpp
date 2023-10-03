@@ -62,7 +62,7 @@ namespace wg
 	void SelectBox::setEntrySkin(Skin * pSkin)
 	{
 		SizeSPX oldPadding = m_entryContentPaddingSize;
-		SizeSPX newPadding = pSkin ? pSkin->_contentPaddingSize(m_scale) : SizeSPX();
+		SizeSPX newPadding = pSkin ? pSkin->_paddingSize(m_scale) : SizeSPX();
 
 		m_pEntrySkin = pSkin;
 		if (oldPadding != newPadding)
@@ -109,8 +109,8 @@ namespace wg
 	{
 		Skin* pOldSkin = m_pListCanvas->m_skin.get();
 
-		SizeSPX oldPadding = pOldSkin ? pOldSkin->_contentPaddingSize(m_scale) : SizeSPX();
-		SizeSPX newPadding = pSkin ? pSkin->_contentPaddingSize(m_scale) : SizeSPX();
+		SizeSPX oldPadding = pOldSkin ? pOldSkin->_paddingSize(m_scale) : SizeSPX();
+		SizeSPX newPadding = pSkin ? pSkin->_paddingSize(m_scale) : SizeSPX();
 
 		if (oldPadding != newPadding)
 			m_listCanvasDefaultSize += newPadding - oldPadding;
@@ -423,7 +423,7 @@ namespace wg
 	{
 		auto pMapper = _entryTextLayout();
 
-		SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_contentPaddingSize(m_scale) : SizeSPX();
+		SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_paddingSize(m_scale) : SizeSPX();
 		SizeSPX boxPadding = m_skin.contentPaddingSize(m_scale);
 		SizeSPX listPadding = m_pListCanvas->m_skin.contentPaddingSize(m_scale);
 
@@ -502,8 +502,8 @@ namespace wg
 			return m_listCanvasMatchingHeight;
 		else
 		{
-			SizeSPX canvasPadding = m_pListCanvas->_contentPaddingSize();
-			SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_contentPaddingSize(m_scale) : SizeSPX();
+			SizeSPX canvasPadding = m_pListCanvas->_paddingSize();
+			SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_paddingSize(m_scale) : SizeSPX();
 
 			spx contentWidth = width - canvasPadding.w - entryPadding.w;
 

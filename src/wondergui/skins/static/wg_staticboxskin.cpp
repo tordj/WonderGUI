@@ -52,11 +52,12 @@ namespace wg
 
 	StaticBoxSkin::StaticBoxSkin(const Blueprint& blueprint)
 	{
-		m_outline				= blueprint.outline;
+		m_outline			= blueprint.outline;
 		m_fillColor			= blueprint.color;
 		m_outlineColor		= blueprint.outlineColor;
 		m_blendMode			= blueprint.blendMode;
-		m_contentPadding	= blueprint.padding;
+		m_padding			= blueprint.padding;
+		m_margin			= blueprint.margin;
 		m_layer				= blueprint.layer;
 		m_markAlpha			= blueprint.markAlpha;
 		m_overflow			= blueprint.overflow;
@@ -78,7 +79,7 @@ namespace wg
 		SizeSPX content = Skin::_minSize(scale);
 		SizeSPX outline = align(ptsToSpx(m_outline,scale));
 
-		return SizeSPX::max(content, outline);
+		return align(ptsToSpx(m_margin,scale)).size() + SizeSPX::max(content, outline);
 	}
 
 
@@ -89,14 +90,16 @@ namespace wg
 		SizeSPX content = Skin::_minSize(scale);
 		SizeSPX outline = align(ptsToSpx(m_outline,scale));
 
-		return SizeSPX::max(content, outline);
+		return align(ptsToSpx(m_margin,scale)).size() + SizeSPX::max(content, outline);
 	}
 
 	//____ _markTest() _________________________________________________________
 
 	bool StaticBoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
-		if (!canvas.contains(ofs))
+		RectSPX canvasWithoutMargin = canvas - align(ptsToSpx(m_margin,scale));
+				
+		if (!canvasWithoutMargin.contains(ofs))
 			return false;
 
 		int opacity;
@@ -105,7 +108,7 @@ namespace wg
 			opacity = 4096;
 		else
 		{
-			RectSPX center = canvas - align(ptsToSpx(m_outline,scale));
+			RectSPX center = canvasWithoutMargin - align(ptsToSpx(m_outline,scale));
 			opacity =  center.contains(ofs) ? m_fillColor.a : m_outlineColor.a;
 		}
 
@@ -116,10 +119,12 @@ namespace wg
 
 	//____ _render() ______________________________________________________________
 
-	void StaticBoxSkin::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void StaticBoxSkin::_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin,scale));
+		
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		BorderSPX outline = align(ptsToSpx(m_outline,scale));
@@ -158,20 +163,25 @@ namespace wg
 
 	void StaticBoxSkin::_updateOpaqueFlag()
 	{
-		switch (m_blendMode)
-		{
-		case BlendMode::Replace:
-			m_bOpaque = true;
-			break;
-
-		case BlendMode::Blend:
-		{
-			m_bOpaque = (m_fillColor.a == 4096 && (m_outline.isEmpty() || m_outlineColor.a == 4096));
-			break;
-		}
-
-		default:
+		if( !m_margin.isEmpty() )
 			m_bOpaque = false;
+		else
+		{
+			switch (m_blendMode)
+			{
+			case BlendMode::Replace:
+				m_bOpaque = true;
+				break;
+
+			case BlendMode::Blend:
+			{
+				m_bOpaque = (m_fillColor.a == 4096 && (m_outline.isEmpty() || m_outlineColor.a == 4096));
+				break;
+			}
+
+			default:
+				m_bOpaque = false;
+			}
 		}
 	}
 

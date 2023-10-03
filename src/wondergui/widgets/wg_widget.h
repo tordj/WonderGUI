@@ -286,7 +286,7 @@ namespace wg
 
 		inline RectSPX		_contentRect() const { return m_skin.contentRect(m_size, m_scale, m_state); }
 		inline RectSPX		_contentRect(const RectSPX& canvas) const { return m_skin.contentRect(canvas, m_scale, m_state); }
-		inline SizeSPX		_contentPaddingSize() const { return m_skin.contentPaddingSize(m_scale); }
+		inline SizeSPX		_paddingSize() const { return m_skin.contentPaddingSize(m_scale); }
 
 		// Convenient calls to holder
 

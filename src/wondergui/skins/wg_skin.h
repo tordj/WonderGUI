@@ -70,9 +70,14 @@ namespace wg
 		virtual SizeSPX		_minSize(int scale) const;
 		virtual SizeSPX		_defaultSize(int scale) const;
 
-		inline  bool		_hasContentPadding() const { return m_contentPadding.isEmpty();  }
-		virtual BorderSPX	_contentPadding(int scale, State state) const;
-		virtual SizeSPX		_contentPaddingSize(int scale) const;
+		inline  bool		_hasMargin() const { return m_margin.isEmpty();  }
+		virtual BorderSPX	_margin(int scale, State state) const;
+		virtual SizeSPX		_marginSize(int scale) const;
+		
+		inline  bool		_hasPadding() const { return m_padding.isEmpty();  }
+		virtual BorderSPX	_padding(int scale, State state) const;
+		virtual SizeSPX		_paddingSize(int scale) const;
+
 		virtual SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const;
 		virtual CoordSPX	_contentOfs(int scale, State state) const;
 		virtual RectSPX		_contentRect(const RectSPX& canvas, int scale, State state ) const;
@@ -118,7 +123,8 @@ namespace wg
 		Border			m_overflow;
 		int				m_markAlpha = 1;
 
-		Border			m_contentPadding;
+		Border			m_margin;
+		Border			m_padding;
 		bool			m_bContentShifting = false;
 		bool			m_bIgnoresValue = true;
 		bool			m_bIgnoresState = true;

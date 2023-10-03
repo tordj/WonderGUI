@@ -442,7 +442,7 @@ namespace wg
 			m_maxEntrySizeSPX = align(ptsToSpx(m_maxEntrySize, scale));
 			
 			if( m_pEntrySkin[0] )
-				m_entryPadding = m_pEntrySkin[0]->_contentPaddingSize(scale);
+				m_entryPadding = m_pEntrySkin[0]->_paddingSize(scale);
 			
 			m_contentDefaultLength = 0;
 			m_contentDefaultBreadth = 0;
@@ -523,7 +523,7 @@ namespace wg
 		SizeSPX entryPadding;
 		
 		if( m_pEntrySkin[0] )
-			entryPadding = m_pEntrySkin[0]->_contentPaddingSize(scale);
+			entryPadding = m_pEntrySkin[0]->_paddingSize(scale);
 
 		SizeSPX 	defaultSize;
 
@@ -582,7 +582,7 @@ namespace wg
 	void PackList::_refreshList()
 	{
 		if( m_pEntrySkin[0] )
-			m_entryPadding = m_pEntrySkin[0]->_contentPaddingSize(m_scale);
+			m_entryPadding = m_pEntrySkin[0]->_paddingSize(m_scale);
 
 		m_contentDefaultLength = 0;
 		m_contentDefaultBreadth = 0;

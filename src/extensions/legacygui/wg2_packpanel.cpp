@@ -129,7 +129,7 @@ const char * WgPackPanel::GetClass()
 void WgPackPanel::SetSkin(wg::Skin* pSkin)
 {
 	bool bGeoAffected = false;
-	if (!m_pSkin || !pSkin || (pSkin->defaultSize() != m_pSkin->defaultSize()) || (pSkin->_contentPadding(m_scale, m_state) != m_pSkin->_contentPadding(m_scale, m_state)) )
+	if (!m_pSkin || !pSkin || (pSkin->defaultSize() != m_pSkin->defaultSize()) || (pSkin->_padding(m_scale, m_state) != m_pSkin->_padding(m_scale, m_state)) )
 		bGeoAffected = true;
 
 	WgPanel::SetSkin(pSkin);

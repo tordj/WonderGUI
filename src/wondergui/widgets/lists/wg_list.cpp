@@ -72,25 +72,25 @@ namespace wg
 
 	void List::setEntrySkin( Skin * pSkin )
 	{
-		SizeSPX oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentPaddingSize(m_scale) : SizeSPX();
+		SizeSPX oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_paddingSize(m_scale) : SizeSPX();
 
 		m_pEntrySkin[0] = pSkin;
 		m_pEntrySkin[1] = pSkin;
 		m_bOpaqueEntries = pSkin ? pSkin->isOpaque() : false;
 
-		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->_contentPaddingSize(m_scale) : SizeSPX() );
+		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->_paddingSize(m_scale) : SizeSPX() );
 	}
 
 	bool List::setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin )
 	{
-//		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentPaddingSize() : SizeI();
+//		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_paddingSize() : SizeI();
 		SizeSPX padding[2];
 
 		if( pOddEntrySkin )
-			padding[0] = pOddEntrySkin->_contentPaddingSize(m_scale);
+			padding[0] = pOddEntrySkin->_paddingSize(m_scale);
 
 		if( pEvenEntrySkin )
-			padding[1] = pEvenEntrySkin->_contentPaddingSize(m_scale);
+			padding[1] = pEvenEntrySkin->_paddingSize(m_scale);
 
 		if( (padding[0].w != padding[1].w) || (padding[0].h != padding[1].h) )
 			return false;
@@ -99,7 +99,7 @@ namespace wg
 		m_pEntrySkin[1] = pEvenEntrySkin;
 		m_bOpaqueEntries = (pOddEntrySkin->isOpaque() && pEvenEntrySkin->isOpaque());
 
-		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->_contentPaddingSize(m_scale) : SizeSPX() );
+		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->_paddingSize(m_scale) : SizeSPX() );
 		return true;
 	}
 

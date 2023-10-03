@@ -58,7 +58,7 @@ namespace wg
 		m_bSkinInSkin = blueprint.skinInSkin;
 		m_layer = blueprint.layer;
 
-		m_contentPadding = blueprint.padding;
+		m_padding = blueprint.padding;
 		m_bContentPaddingSet = !blueprint.padding.isEmpty();
 
 		//TODO: DynamicVector should have a pushBack( iterator begin, interator end ) which we should use.
@@ -111,9 +111,9 @@ namespace wg
 
 	}
 
-	//____ _contentPadding() _______________________________________________
+	//____ _padding() _______________________________________________
 
-	BorderSPX BakeSkin::_contentPadding(int scale, State state) const
+	BorderSPX BakeSkin::_padding(int scale, State state) const
 	{
 		if (m_cachedScale != scale)
 			_updateCachedGeo(scale);
@@ -122,9 +122,9 @@ namespace wg
 	}
 
 
-	//____ _contentPaddingSize() _______________________________________________
+	//____ _paddingSize() _______________________________________________
 
-	SizeSPX BakeSkin::_contentPaddingSize(int scale ) const
+	SizeSPX BakeSkin::_paddingSize(int scale ) const
 	{
 		if (m_cachedScale != scale)
 			_updateCachedGeo(scale);
@@ -356,7 +356,7 @@ namespace wg
 		{
 			// Content padding is specified.
 
-			BorderSPX padding = align(ptsToSpx(m_contentPadding,scale));
+			BorderSPX padding = align(ptsToSpx(m_padding,scale));
 
 			for (int index = 0; index < State::IndexAmount; index++)
 				m_cachedContentPadding[index] = padding;
@@ -391,7 +391,7 @@ namespace wg
 					if (pSkin)
 					{
 						for (int index = 0; index < State::IndexAmount; index++)
-							m_cachedContentPadding[index] = pSkin->_contentPadding(scale,State(index));
+							m_cachedContentPadding[index] = pSkin->_padding(scale,State(index));
 						break;
 					}
 				}
@@ -410,7 +410,7 @@ namespace wg
 		for (auto& pSkin : m_skins)
 		{
 			if (pSkin)
-				padding += pSkin->_contentPadding(scale,state);
+				padding += pSkin->_padding(scale,state);
 		}
 		
 		return padding;
@@ -467,7 +467,7 @@ namespace wg
 							break;
 						}
 
-						if (!(*it)->_hasContentPadding())
+						if (!(*it)->_hasPadding() )
 						{
 							// Skin is not opaque and padds child, thus we are not opaque.
 							bOpaque = false;
@@ -507,7 +507,7 @@ namespace wg
 								break;
 							}
 
-							if (m_bSkinInSkin && !(*it)->_hasContentPadding())
+							if (m_bSkinInSkin && !(*it)->_hasPadding())
 								break;			// is padding inner/upper skins, thus they are irrelevant.
 						}
 					}

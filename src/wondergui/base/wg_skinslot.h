@@ -69,8 +69,8 @@ namespace wg
 		inline SizeSPX	minSize(int scale) const { return m_pSkin ? m_pSkin->_minSize(scale) : SizeSPX(); }
 		inline SizeSPX	defaultSize(int scale) const { return m_pSkin ? m_pSkin->_defaultSize(scale) : SizeSPX(); }
 
-		inline SizeSPX	contentPaddingSize(int scale) const { return m_pSkin ? m_pSkin->_contentPaddingSize(scale) : SizeSPX(); }
-		inline BorderSPX contentPadding(int scale, State state ) const { return m_pSkin ? m_pSkin->_contentPadding(scale, state) : BorderSPX(); }
+		inline SizeSPX	contentPaddingSize(int scale) const { return m_pSkin ? m_pSkin->_paddingSize(scale) : SizeSPX(); }
+		inline BorderSPX contentPadding(int scale, State state ) const { return m_pSkin ? m_pSkin->_padding(scale, state) : BorderSPX(); }
 		inline SizeSPX	sizeForContent(const SizeSPX& contentSize, int scale) const { return m_pSkin ? m_pSkin->_sizeForContent(contentSize, scale) : contentSize; }
 		inline CoordSPX	contentOfs(int scale, State state) const { return m_pSkin ? m_pSkin->_contentOfs(scale, state) : CoordSPX(); }
 		inline RectSPX	contentRect(const RectSPX& canvas, int scale, State state) const { return m_pSkin ? m_pSkin->_contentRect(canvas, scale, state) : canvas; }
