@@ -483,9 +483,13 @@ namespace wg
 		spx scrollbarYwidth = scrollbarY._defaultSize(m_scale).w;
 		spx scrollbarXheight = scrollbarX._defaultSize(m_scale).h;
 
-		bool bShowScrollbarY = scrollbarY.inWorkingOrder() && (!m_bAutohideScrollbarY || content.h < m_childCanvas.h);
-		bool bShowScrollbarX = scrollbarX.inWorkingOrder() && (!m_bAutohideScrollbarX || content.w < m_childCanvas.w);
-
+		bool bShowScrollbarY  = scrollbarY.inWorkingOrder()
+								&& (m_heightConstraint == SizeConstraint::None || m_heightConstraint == SizeConstraint::GreaterOrEqual )
+								&& (!m_bAutohideScrollbarY || content.h < m_childCanvas.h);
+		
+		bool bShowScrollbarX = scrollbarX.inWorkingOrder()
+								&& (m_widthConstraint == SizeConstraint::None || m_widthConstraint == SizeConstraint::GreaterOrEqual )
+								&& (!m_bAutohideScrollbarX || content.w < m_childCanvas.w);
 
 		if (bShowScrollbarY && !m_bOverlayScrollbarY && !bShowScrollbarX)
 			bShowScrollbarX = (content.w - scrollbarYwidth < m_childCanvas.w);
