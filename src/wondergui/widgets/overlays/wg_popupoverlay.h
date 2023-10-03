@@ -71,16 +71,17 @@ namespace wg
 			{
 				OpeningDelay,			// Popup is in "delayed opening" mode. Some ms before it starts to open.
 				Opening,				// Popup is opening (fading in).
-				PeekOpen,				// Popup is open until pointer leaves launcherGeo (mode only allowed if bAutoClose is set).
-				WeakOpen,				// Popup is open, but closed if other entry of ancestors is peeked (mode only allowed if bAutoClose is set).
+				PeekOpen,				// Popup is open until pointer leaves launcherGeo (mode only allowed if bPeek is set).
+				WeakOpen,				// Popup is open, but closed if other entry of ancestors is peeked (mode only allowed if bPeek is set).
 				FixedOpen,				// Popup is open until it is closed by a pop() call.
-				ClosingDelay,			// Popup is in countdown to closing mode (mode only allowed if bAutoClose is set).
+				ClosingDelay,			// Popup is in countdown to closing mode (mode only allowed if bPeek is set).
 				Closing,				// Popup is closing (fading out).
 			};
 
 			RectSPX		m_launcherGeo;		// Launcher geo relative sibling or parent.
 			Placement	m_attachPoint = Placement::NorthWest;
-			bool		m_bAutoClose;		// Has been opened in auto-close mode.
+			bool		m_bPeek;			// Has been opened in peek-mode.
+			bool		m_bCloseOnSelect = true;	// Close popups on selection.
 			State		m_state;
 			int			m_stateCounter;		// Counts millisec the slot has been in a transitative state (Delay, Opening, Coundown and Closing).
 			SizeSPX		m_maxSize = { spx_max, spx_max };
@@ -99,14 +100,14 @@ namespace wg
 
 			//.____ Content _______________________________________________________
 
-			void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bAutoClose = false, Size maxSize = Size(1000000, 1000000));
+			void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bPeek = false, bool bCloseOnSelect = true, Size maxSize = Size(1000000, 1000000));
 			void	pop(int nb = 1);
 			void	pop(Widget * pPopup);
 			void	clear();
 
 			//.____ Internal ______________________________________________________
 
-			void	_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bAutoClose = false, SizeSPX maxSize = SizeSPX(spx_max, spx_max));
+			void	_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bPeek = false, bool bCloseOnSelect = true, SizeSPX maxSize = SizeSPX(spx_max, spx_max));
 
 
 		protected:
@@ -179,7 +180,7 @@ namespace wg
 		// Needed by MySlots
 
 		void			_removeSlots(int ofs, int nb);
-		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bAutoClose, SizeSPX maxSize);
+		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, SizeSPX maxSize);
 
 		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
 

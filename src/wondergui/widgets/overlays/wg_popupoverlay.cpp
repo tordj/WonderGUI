@@ -43,11 +43,11 @@ namespace wg
 
 	//____ pushFront() ________________________________________________
 
-	void PopupOverlay::MySlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bAutoClose, Size maxSize )
+	void PopupOverlay::MySlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, Size maxSize )
 	{
 		int scale = _holder()->_scale();
 
-		_pushFront(pPopup, pOpener, align(ptsToSpx(launcherGeo, scale)), attachPoint, bAutoClose, align(ptsToSpx(maxSize,scale)));
+		_pushFront(pPopup, pOpener, align(ptsToSpx(launcherGeo, scale)), attachPoint, bPeek, bCloseOnSelect, align(ptsToSpx(maxSize,scale)));
 	}
 
 	//____ pop() ________________________________________________
@@ -83,10 +83,10 @@ namespace wg
 
 	//____ _pushFront() ________________________________________________
 
-	void PopupOverlay::MySlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bAutoClose, SizeSPX maxSize)
+	void PopupOverlay::MySlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, SizeSPX maxSize)
 	{
 		pPopup->releaseFromParent();
-		_holder()->_addSlot(pPopup, pOpener, launcherGeo, attachPoint, bAutoClose, maxSize);
+		_holder()->_addSlot(pPopup, pOpener, launcherGeo, attachPoint, bPeek, bCloseOnSelect, maxSize);
 	}
 
 
@@ -296,7 +296,7 @@ namespace wg
 
 	Widget *  PopupOverlay::_findWidget( const CoordSPX& ofs, SearchMode mode )
 	{
-		// MenuPanel has its own _findWidget() method since we need special treatment of
+		// PopupOverlay has its own _findWidget() method since we need special treatment of
 		// searchmode ACTION_TARGET when a menu is open.
 
 		if( mode == SearchMode::ActionTarget && !popupSlots.isEmpty() )
@@ -572,14 +572,14 @@ namespace wg
 				}
 
 				// If pointer has entered a selectable widget of a popup that isn't the top one
-				// and all widgets between them have bAutoClose=true, they should all enter
+				// and all widgets between them have bPeek=true, they should all enter
 				// state ClosingDelay (unless already in state Closing).
 
 
 //				Widget * pTop = popupSlots._first()->_widget();
 				Widget * pMarked = _findWidget(pointerPos, SearchMode::ActionTarget);
 
-				if (pMarked != this && pMarked->isSelectable() && popupSlots._first()->m_bAutoClose)
+				if (pMarked != this && pMarked->isSelectable() && popupSlots._first()->m_bPeek)
 				{
 					// Trace hierarchy from marked to one of our children.
 
@@ -589,7 +589,7 @@ namespace wg
 					//
 
 					auto p = popupSlots._first();
-					while (p->m_bAutoClose && p->_widget() != pMarked)
+					while (p->m_bPeek && p->_widget() != pMarked)
 					{
 						if (p->m_state != Slot::State::Closing && p->m_state != Slot::State::ClosingDelay)
 						{
@@ -653,7 +653,8 @@ namespace wg
 					if (pRouter)
 						pRouter->post(SelectMsg::create(pSource));
 
-					_removeSlots(0, popupSlots.size());
+					if( pSlot->m_bCloseOnSelect )
+						_removeSlots(0, popupSlots.size());
 				}
 
 				_pMsg->swallow();
@@ -731,7 +732,7 @@ namespace wg
 				if (popup.m_stateCounter >= m_openingFadeMs)
 				{
 					popup.m_stateCounter = 0;
-					popup.m_state = popup.m_bAutoClose ? Slot::State::PeekOpen : Slot::State::FixedOpen;
+					popup.m_state = popup.m_bPeek ? Slot::State::PeekOpen : Slot::State::FixedOpen;
 				}
 				break;
 
@@ -831,13 +832,14 @@ namespace wg
 
 	//____ _addSlot() ____________________________________________________________
 
-	void PopupOverlay::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectSPX& _launcherGeo, Placement _attachPoint, bool _bAutoClose, SizeSPX _maxSize)
+	void PopupOverlay::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectSPX& _launcherGeo, Placement _attachPoint, bool _bPeek, bool _bCloseOnSelect, SizeSPX _maxSize)
 	{
 		Slot * pSlot = popupSlots._pushFrontEmpty();
 		pSlot->m_pOpener = _pOpener;
 		pSlot->m_launcherGeo = _launcherGeo;
 		pSlot->m_attachPoint = _attachPoint;
-		pSlot->m_bAutoClose = _bAutoClose;
+		pSlot->m_bPeek = _bPeek;
+		pSlot->m_bCloseOnSelect = _bCloseOnSelect;
 		pSlot->m_state = Slot::State::OpeningDelay;
 		pSlot->m_stateCounter = 0;
 		pSlot->m_maxSize = _maxSize;

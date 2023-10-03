@@ -44,6 +44,7 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+			bool			closeOnSelect = true;
 			bool			dropTarget = false;
 			bool			enabled = true;
 			Finalizer_p		finalizer = nullptr;
@@ -105,10 +106,11 @@ namespace wg
 			icon._initFromBlueprint(bp.icon);
 			label._initFromBlueprint(bp.label);
 
-			m_bSelectable = false;
-			m_pPopup = bp.popup;
-			m_bOpenOnHover = bp.openOnHover;
-			m_attachPoint = bp.attachPoint;
+			m_bSelectable	= false;
+			m_pPopup		= bp.popup;
+			m_bOpenOnHover	= bp.openOnHover;
+			m_bCloseOnSelect= bp.closeOnSelect;
+			m_attachPoint	= bp.attachPoint;
 		}
 		
 		virtual ~PopupOpener();
@@ -137,6 +139,7 @@ namespace wg
 		Placement		m_attachPoint = Placement::SouthWest;
 		bool			m_bOpenOnHover = false;
 		bool			m_bOpen = false;
+		bool			m_bCloseOnSelect = true;
 		State			m_closeState;
 	};
 
