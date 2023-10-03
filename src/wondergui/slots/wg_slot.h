@@ -40,6 +40,13 @@ namespace wg
 
 	public:
 
+		//.____ Blueprint _______________________________________________________
+
+		struct Blueprint
+		{
+			// No members for base slot type
+		};
+		
 		//.____ Identification ________________________________________________
 
 //		const TypeInfo& typeInfo(void) const { return m_pHolder->_slotTypeInfo(this); }
@@ -141,7 +148,8 @@ namespace wg
 			return *this;
 		}
 
-
+		bool _setBlueprint( const Blueprint& bp ) { return true; };
+		
 		inline void _relink() { m_pWidget->_setSlot( this ); }
 
 
@@ -163,7 +171,7 @@ namespace wg
 		friend class SlotHolder;
 
 	public:
-
+		
 		//.____ Creation ______________________________________________________
 
 		DynamicSlot(SlotHolder* pHolder) : StaticSlot(pHolder) {}

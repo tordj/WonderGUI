@@ -1002,6 +1002,22 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ PopupSelectMsg _________________________________________________________
+
+	const TypeInfo PopupSelectMsg::TYPEINFO = { "PopupSelectMsg", &Msg::TYPEINFO };
+
+	PopupSelectMsg::PopupSelectMsg( Object * pSource, Widget * pSelected )
+	{
+		m_type		= MsgType::PopupSelect;
+		m_pSource	= pSource;
+		m_pSelected	= pSelected;
+	}
+
+	const TypeInfo& PopupSelectMsg::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
 	//____ PopupClosedMsg ____________________________________________
 
 	const TypeInfo PopupClosedMsg::TYPEINFO = { "PopupClosedMsg", &Msg::TYPEINFO };

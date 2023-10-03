@@ -630,9 +630,10 @@ namespace wg
 				// Allow us to release the mouse within opener without closing any popups
 
 				Slot * pSlot = popupSlots._first();
-				if (pSlot->m_pOpener)
+				Widget * pOpener = pSlot->m_pOpener.rawPtr();
+
+				if (pOpener)
 				{
-					Widget * pOpener = pSlot->m_pOpener.rawPtr();
 
 					Coord 	absPos = static_cast<MouseReleaseMsg*>(_pMsg)->pointerPos();
 					Rect	openerGeo = pOpener->globalGeo();
@@ -648,11 +649,23 @@ namespace wg
 					_removeSlots(0, popupSlots.size());
 				else if (pSource->isSelectable())
 				{
+					// We send 2 messages on selected:
+					// PopupSelectMsg from opener (like a PopupOpener if availabe) or PopupOverlay itself.
+					// Normal SelectMsg from selected widget itself.
+					
 					MsgRouter* pRouter = Base::msgRouter().rawPtr();
 
 					if (pRouter)
-						pRouter->post(SelectMsg::create(pSource));
+					{
+						if( pOpener )
+							pRouter->post(PopupSelectMsg::create(pOpener, pSource));
+						else
+							pRouter->post(PopupSelectMsg::create(this, pSource));
 
+
+						pRouter->post( SelectMsg::create(pSource) );
+					}
+										
 					if( pSlot->m_bCloseOnSelect )
 						_removeSlots(0, popupSlots.size());
 				}

@@ -249,6 +249,7 @@ namespace wg
 		ItemsSelect,
 		ItemsUnselect,
 
+		PopupSelect,
 		PopupClosed,
 
 		ModalMoveOutside,

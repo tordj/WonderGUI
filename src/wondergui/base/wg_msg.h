@@ -238,6 +238,10 @@ namespace wg
 	typedef	StrongPtr<ItemMousePressMsg>		ItemMousePressMsg_p;
 	typedef	WeakPtr<ItemMousePressMsg>	ItemMousePressMsg_wp;
 
+	class PopupSelectMsg;
+	typedef	StrongPtr<PopupSelectMsg>		PopupSelectMsg_p;
+	typedef	WeakPtr<PopupSelectMsg>			PopupSelectMsg_Wp;
+
 	class PopupClosedMsg;
 	typedef	StrongPtr<PopupClosedMsg>		PopupClosedMsg_p;
 	typedef	WeakPtr<PopupClosedMsg>	PopupClosedMsg_wp;
@@ -1187,6 +1191,30 @@ namespace wg
 
 	};
 
+	//____ PopupSelectMsg ___________________________________________________________
+
+	class PopupSelectMsg : public Msg
+	{
+	public:
+		//.____ Creation __________________________________________
+
+		inline static PopupSelectMsg_p	create( Object * pSource, Widget * pSelected ) { return new PopupSelectMsg(pSource, pSelected); }
+
+		//.____ Identification __________________________________________
+
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content ________________________________________________________
+
+		Widget_p	selected() const { return m_pSelected; }
+
+	protected:
+		PopupSelectMsg( Object * pSource, Widget * pSelected );
+		
+		Widget_p	m_pSelected;
+	};
+
 	//____ PopupClosedMsg ______________________________________________________
 
 	class PopupClosedMsg : public Msg
@@ -1202,6 +1230,7 @@ namespace wg
 		PopupClosedMsg( Widget * pPopup, const Widget_wp& pCaller );
 
 	};
+
 
 	//____ WidgetModalOverlay messages _________________________________________________
 
