@@ -64,6 +64,7 @@ namespace wg
 		m_layer = blueprint.layer;
 		m_bOpaque = m_pSurface->isOpaque();
 		m_padding = blueprint.padding;
+		m_margin = blueprint.margin;
 		m_markAlpha = blueprint.markAlpha;
 		m_overflow = blueprint.overflow;
 
@@ -94,14 +95,15 @@ namespace wg
 
 		// Scale zoom to fit content of default size into canvas size.
 
-		RectSPX canvas = _canvas;
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+
 		if (!m_defaultSize.isEmpty())
 		{
 			SizeSPX prefSize = align(ptsToSpx(m_defaultSize, scale));
 			if (canvas.size() != prefSize)
 			{
-				float xScale = float(_canvas.w) / float(prefSize.w);
-				float yScale = float(_canvas.h) / float(prefSize.h);
+				float xScale = float(canvas.w) / float(prefSize.w);
+				float yScale = float(canvas.h) / float(prefSize.h);
 				float scaleSrc = std::min(xScale, yScale);
 
 				spx w = prefSize.w * scaleSrc;
@@ -137,13 +139,15 @@ namespace wg
 
 	SizeSPX SpinAnimSkin::_defaultSize(int scale) const
 	{
-		return align(ptsToSpx(m_defaultSize, scale));
+		return SizeSPX(align(ptsToSpx(m_margin, scale))) + align(ptsToSpx(m_defaultSize, scale));
 	}
 
 	//____ _markTest() _________________________________________________________
 
-	bool SpinAnimSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride ) const
+	bool SpinAnimSkin::_markTest(const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride ) const
 	{
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+
 		if (!canvas.contains(ofs))
 			return false;
 
@@ -165,7 +169,7 @@ namespace wg
 		if (newAnimPos == oldAnimPos)
 			return RectSPX();
 
-		return _canvas;
+		return _canvas - align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _animationLength() __________________________________________________
@@ -179,7 +183,9 @@ namespace wg
 
 	void SpinAnimSkin::_updateOpacityFlag()
 	{
-		if (m_blendMode == BlendMode::Replace)
+		if (!m_margin.isEmpty())
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{
