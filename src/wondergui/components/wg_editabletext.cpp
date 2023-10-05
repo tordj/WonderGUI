@@ -251,7 +251,7 @@ namespace wg
 						m_editState.bButtonDown = true;
 					}
 					else
-						_requestFocus();
+						_requestFocus(true);
 				}
 				break;
 			}

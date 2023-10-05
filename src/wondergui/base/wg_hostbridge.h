@@ -35,6 +35,8 @@ namespace wg
 		used throughout the GUI lifecycle until Base::exit() is called.
 	*/
 
+	class Root;
+
 	class HostBridge
 	{
 	public:
@@ -43,6 +45,8 @@ namespace wg
 		
 		virtual std::string	getClipboardText() = 0;
 		virtual bool		setClipboardText(const std::string& text) = 0;
+		
+		virtual bool		raiseWindow(Root * pRoot) = 0;
 	};
 }
 

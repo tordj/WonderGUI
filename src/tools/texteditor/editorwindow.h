@@ -25,6 +25,8 @@ public:
 
 	void	setContent(const char* pContent);
 
+	void	focus() { m_pEditor->grabFocus(true); }
+	
 protected:
 
 	EditorWindow(Window_p pWindow, MyApp* pApp);

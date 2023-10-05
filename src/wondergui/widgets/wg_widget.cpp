@@ -231,6 +231,59 @@ namespace wg
 		m_bSelectable = bSelectable;
 	}
 
+	//____ grabFocus() ____________________________________________________________
+	/**
+	* @brief Get keyboard focus.
+	*
+	* Attempt to get keyboard focus. This can be blocked by parent or further up the hierarchy.
+	* Widget needs to descend from a RootPanel in order to be able to get keyboard focus.
+	*
+	* @return True if widget has focus now, no matter if it already had focus or not before the call.
+	*/
+
+	bool Widget::grabFocus(bool bRaiseWindow)
+	{
+		if (m_state.isFocused())
+			return true;
+
+		if( m_pHolder )
+			return m_pHolder->_childRequestFocus( m_pSlot, this, bRaiseWindow );
+		return false;
+	}
+
+	//____ releaseFocus() ____________________________________________________________
+	/**
+	* @brief Release keyboard focus.
+	*
+	* Attempt to release keyboard focus, returning it to previous widget being focused.
+	*
+	* @return True if widget no longer has focus, no matter if it had focus or not before the call.
+	*/
+
+	bool Widget::releaseFocus()
+	{
+		if (!m_state.isFocused())
+			return true;
+
+		if( m_pHolder )
+			return m_pHolder->_childReleaseFocus( m_pSlot, this );
+		return false;
+	}
+
+	//____ isFocused() ____________________________________________________________
+	/**
+	 * @brief Check if widget has keyboard focus.
+	 *
+	 * Check if widget has keyboard focus.
+	 *
+	 * @return True if widget has focus, otherwise false.
+	 */
+
+	bool Widget::isFocused()
+	{
+		return m_state.isFocused();
+	}
+
 	//____ setSkin() __________________________________________________________
 	/**
 	* @brief Set the skin of this widget.
@@ -697,9 +750,9 @@ namespace wg
 
 	//____ _componentRequestFocus() ___________________________________________________
 
-	void Widget::_componentRequestFocus( const Component * pComponent )
+	void Widget::_componentRequestFocus( const Component * pComponent, bool bRaiseWindow )
 	{
-		grabFocus();
+		grabFocus(bRaiseWindow);
 	}
 
 	//____ _componentRequestInView() ______________________________________________

@@ -153,9 +153,9 @@ namespace wg
 		void				setSelectable(bool bSelectable);
 		inline bool			isSelectable() const;
 
-		inline bool			grabFocus();
-		inline bool			releaseFocus();
-		inline bool			isFocused();
+		bool				grabFocus(bool bRaiseWindow = false);
+		bool				releaseFocus();
+		bool				isFocused();
 
 
 		//.____ Appearance ____________________________________________________
@@ -312,7 +312,7 @@ namespace wg
 		virtual void		_componentRequestRender( const Component * pComponent, const RectSPX& rect );
 		virtual void		_componentRequestResize( const Component * pComponent );
 
-		virtual void		_componentRequestFocus( const Component * pComponent );
+		virtual void		_componentRequestFocus( const Component * pComponent, bool bRaiseWindow );
 		virtual void		_componentRequestInView( const Component * pComponent );
 		virtual void		_componentRequestInView( const Component * pComponent, const RectSPX& mustHave, const RectSPX& niceToHave );
 
@@ -785,61 +785,6 @@ namespace wg
 	bool Widget::isSelectable() const
 	{
 		return m_bSelectable;
-	}
-
-
-
-	//____ grabFocus() ____________________________________________________________
-	/** 
-	* @brief Get keyboard focus.
-	*
-	* Attempt to get keyboard focus. This can be blocked by parent or further up the hierarchy.
-	* Widget needs to descend from a RootPanel in order to be able to get keyboard focus.
-	*
-	* @return True if widget has focus now, no matter if it already had focus or not before the call.
-	*/
-
-	bool Widget::grabFocus()
-	{
-		if (m_state.isFocused())
-			return true;
-
-		if( m_pHolder )
-			return m_pHolder->_childRequestFocus( m_pSlot, this );
-		return false;
-	}
-
-	//____ releaseFocus() ____________________________________________________________
-	/** 
-	* @brief Release keyboard focus.
-	*
-	* Attempt to release keyboard focus, returning it to previous widget being focused.
-	*
-	* @return True if widget no longer has focus, no matter if it had focus or not before the call.
-	*/
-
-	bool Widget::releaseFocus()
-	{
-		if (!m_state.isFocused())
-			return true;
-
-		if( m_pHolder )
-			return m_pHolder->_childReleaseFocus( m_pSlot, this );
-		return false;
-	}
-
-	//____ isFocused() ____________________________________________________________
-	/** 
-	 * @brief Check if widget has keyboard focus.
-	 *
-	 * Check if widget has keyboard focus.
-	 *
-	 * @return True if widget has focus, otherwise false.
-	 */
-
-	bool Widget::isFocused()
-	{
-		return m_state.isFocused();
 	}
 
 	//____ nextSibling() ____________________________________________________________

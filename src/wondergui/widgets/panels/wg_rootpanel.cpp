@@ -707,13 +707,24 @@ namespace wg
 
 	//____ _childRequestFocus() __________________________________________________
 
-	bool RootPanel::_childRequestFocus(StaticSlot* pSlot, Widget* pWidget)
+	bool RootPanel::_childRequestFocus(StaticSlot* pSlot, Widget* pWidget, bool bRaiseWindow)
 	{
-		if (pWidget == m_pFocusedChild.rawPtr())
-			return true;
-
+		// Set new focused widget for this Root
+		
 		Widget* pOldFocus = m_pFocusedChild.rawPtr();
 		m_pFocusedChild = pWidget;
+
+		// Check if we need to raise window.
+
+		if( bRaiseWindow && Base::inputHandler()->focusedWindow() != this )
+			if( !Base::hostBridge()->raiseWindow(this) )
+				return false;
+		
+		//
+
+		if( pOldFocus == pWidget )
+			return true;
+		
 		return Base::inputHandler()->_focusChanged(this, pOldFocus, pWidget);
 	}
 

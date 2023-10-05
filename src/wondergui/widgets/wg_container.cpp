@@ -131,9 +131,9 @@ namespace wg
 
 	//____ _childRequestFocus() ______________________________________________________
 
-	bool Container::_childRequestFocus(StaticSlot * pSlot, Widget * pWidget )
+	bool Container::_childRequestFocus(StaticSlot * pSlot, Widget * pWidget, bool bRaiseWindow )
 	{
-		return m_pHolder ? m_pHolder->_childRequestFocus( m_pSlot, pWidget ) : false;
+		return m_pHolder ? m_pHolder->_childRequestFocus( m_pSlot, pWidget, bRaiseWindow ) : false;
 	}
 
 	//____ _ChildReleaseFocus() ______________________________________________________

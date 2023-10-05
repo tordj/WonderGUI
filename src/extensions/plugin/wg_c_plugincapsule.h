@@ -36,7 +36,7 @@ extern "C" {
 	void		wg_pluginRequestResize(wg_obj	pluginCapsule);
 	int			wg_isPluginVisible(wg_obj pluginCapsule);
 	wg_rectSPX 	wg_pluginWindowSection(wg_obj pluginCapsule);
-	int 		wg_pluginRequestFocus(wg_obj pluginCapsule);
+	int 		wg_pluginRequestFocus(wg_obj pluginCapsule, int bRaiseWindow);
 	int 		wg_pluginReleaseFocus(wg_obj pluginCapsule);
 	int 		wg_pluginRequestPreRenderCall(wg_obj pluginCapsule);
 	void 		wg_pluginRequestInView(wg_obj pluginCapsule, wg_rectSPX mustHaveArea, wg_rectSPX niceToHaveArea);

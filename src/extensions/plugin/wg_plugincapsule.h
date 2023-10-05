@@ -116,7 +116,7 @@ namespace wg
 		void		_pluginRequestRender(const RectSPX& rect);
 		void		_pluginRequestResize();
 
-		bool		_pluginRequestFocus();
+		bool		_pluginRequestFocus(bool bRaiseWindow = false);
 		bool		_pluginReleaseFocus();
 
 		void		_pluginRequestInView(const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea);

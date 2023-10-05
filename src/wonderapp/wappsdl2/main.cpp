@@ -107,6 +107,8 @@ public:
 	
 	std::string	getClipboardText() override;
 	bool		setClipboardText(const std::string& text) override;
+	
+	bool		raiseWindow(Root * pRoot) override;
 };
 
 
@@ -1015,4 +1017,46 @@ bool MyHostBridge::setClipboardText(const std::string& text )
 	
 	return true;
 }
+
+//____ raiseWindow() _________________________________________________________
+
+bool MyHostBridge::raiseWindow(Root * pRoot)
+{
+	SDLWindow_p	pFoundWindow;
+	
+	for( auto& pWindow : g_windows )
+	{
+		if( pWindow && pWindow->rootPanel() == pRoot )
+		{
+			pFoundWindow = pWindow;
+			break;
+		}
+	}
+	
+	if( pFoundWindow )
+	{
+		auto pWin = pFoundWindow->SDLWindowPtr();
+	
+		
+		
+		auto flags = SDL_GetWindowFlags(pWin);
+		
+		if( flags & SDL_WINDOW_HIDDEN )
+		{
+			SDL_ShowWindow(pWin);
+//			printf( "Show window: %d\n", pWin);
+		}
+		if( flags & SDL_WINDOW_MINIMIZED )
+		{
+			SDL_RestoreWindow(pWin);
+//			printf( "Restored window: %d\n", pWin);
+		}
+		SDL_RaiseWindow(pWin);
+//		printf( "Raised window: %d\n", pWin);
+		return true;
+	}
+	
+	return false;
+}
+
 

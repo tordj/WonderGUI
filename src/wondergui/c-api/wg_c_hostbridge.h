@@ -36,6 +36,10 @@ extern "C" {
 	int		wg_getClipboardText( void * pHostBridge, int maxChars, char * pDest );
 	int		wg_setClipboardText( void * pHostBridge, const char * pText );
 
+	int		wg_raiseWindow( void * pHostBridge, wg_obj root);
+
+	
+
 #ifdef __cplusplus
 }
 #endif

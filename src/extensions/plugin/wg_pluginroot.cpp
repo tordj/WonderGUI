@@ -449,7 +449,7 @@ namespace wg
 
 	//____ _childRequestFocus() ___________________________________________________
 
-	bool PluginRoot::_childRequestFocus(StaticSlot* pSlot, Widget* pWidget)
+	bool PluginRoot::_childRequestFocus(StaticSlot* pSlot, Widget* pWidget, bool bRaiseWindow)
 	{
 		if (!m_pluginCapsule)
 			return false;
@@ -469,7 +469,7 @@ namespace wg
 		}
 		else
 		{
-			bool result = (bool) PluginCalls::pluginCapsule->requestFocus(m_pluginCapsule);
+			bool result = (bool) PluginCalls::pluginCapsule->requestFocus(m_pluginCapsule, bRaiseWindow);
 			if( result )
 				m_pFocusedChild = pWidget;
 			

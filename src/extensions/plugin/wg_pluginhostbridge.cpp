@@ -23,6 +23,7 @@
 
 #include <wg_pluginhostbridge.h>
 #include <wg_plugincalls.h>
+#include <wg_root.h>
 
 namespace wg
 {
@@ -57,5 +58,14 @@ namespace wg
 	{
 		return PluginCalls::hostBridge->setClipboardText(m_pHostBridge,text.c_str());
 	}
+	
+	//____ raiseWindow() _________________________________________________________
+
+	bool PluginHostBridge::raiseWindow(Root * pRoot)
+	{
+		return PluginCalls::hostBridge->raiseWindow(m_pHostBridge, static_cast<Object*>(pRoot) );
+	}
+
+
 
 } // namespace wg

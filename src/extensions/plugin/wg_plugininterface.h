@@ -88,6 +88,7 @@ typedef struct wg_hostbridge_calls_struct
 
 	int					(*getClipboardText)( void * pHostBridge, int maxChars, char * pDest );
 	int					(*setClipboardText)( void * pHostBridge, const char * pText );
+	int					(*raiseWindow)( void * pHostBridge, wg_obj root );
 
 } wg_hostbridge_calls;
 
@@ -429,7 +430,7 @@ typedef	struct wg_plugincapsule_calls_struct
 		void		(*requestResize)(wg_obj	hostCapsule);
 		int			(*isVisible)(wg_obj hostCapsule);
 		wg_rectSPX	(*windowSection)(wg_obj hostCapsule);
-		int			(*requestFocus)(wg_obj hostCapsule);
+		int			(*requestFocus)(wg_obj hostCapsule, int bRaiseWindow);
 		int			(*releaseFocus)(wg_obj hostCapsule);
 		int			(*requestPreRenderCall)(wg_obj hostCapsule);
 

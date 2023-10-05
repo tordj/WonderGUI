@@ -60,7 +60,7 @@ struct wg_c_calls_body
 	wg_surface_calls			surface;
 	wg_surfacefactory_calls		surfaceFactory;
 	wg_edgemap_calls			edgemap;
-	wg_edgemapfactory_calls	edgemapFactory;
+	wg_edgemapfactory_calls		edgemapFactory;
 	wg_hostbridge_calls			hostBridge;
 	wg_plugincapsule_calls		pluginCapsule;
 };
@@ -303,6 +303,7 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pBody->hostBridge.showPointer			= &wg_showPointer;
 	pBody->hostBridge.getClipboardText		= &wg_getClipboardText;
 	pBody->hostBridge.setClipboardText		= &wg_setClipboardText;
+	pBody->hostBridge.raiseWindow			= &wg_raiseWindow;
 
 	pBody->pluginCapsule.structSize			= sizeof(wg_plugincapsule_calls);
 	pBody->pluginCapsule.requestRender 		= &wg_pluginRequestRender;

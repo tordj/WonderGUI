@@ -32,6 +32,8 @@
 namespace wg
 {
 
+	class Root;
+
 	//____ PluginHostBridge _____________________________________________________
 
 	class PluginHostBridge : public HostBridge
@@ -46,6 +48,9 @@ namespace wg
 		
 		std::string	getClipboardText() override;
 		bool		setClipboardText(const std::string& text) override;
+		
+		bool		raiseWindow(Root * pRoot) override;
+
 		
 	protected:
 

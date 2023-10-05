@@ -385,7 +385,7 @@ bool WgPluginRoot::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesti
 	}
 	else
 	{
-		bool result = (bool) PluginCalls::pluginCapsule->requestFocus(m_pluginCapsule);
+		bool result = (bool) PluginCalls::pluginCapsule->requestFocus(m_pluginCapsule, false);		//TODO: Support raising of window.
 
 		if( !result )
 			return false;

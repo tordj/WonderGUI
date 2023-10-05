@@ -52,9 +52,9 @@ wg_rectSPX wg_pluginWindowSection(wg_obj pluginCapsule)
 	return { rect.x, rect.y, rect.w, rect.h };
 }
 
-int wg_pluginRequestFocus(wg_obj pluginCapsule)
+int wg_pluginRequestFocus(wg_obj pluginCapsule, int bRaiseWindow)
 {
-	return getCapsule(pluginCapsule)->_pluginRequestFocus();
+	return getCapsule(pluginCapsule)->_pluginRequestFocus(bool(bRaiseWindow));
 }
 
 int wg_pluginReleaseFocus(wg_obj pluginCapsule)

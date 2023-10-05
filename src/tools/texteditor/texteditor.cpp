@@ -10,6 +10,8 @@
 using namespace wg;
 using namespace std;
 
+uint64_t	startTime;
+
 //____ create() _______________________________________________________________
 
 WonderApp_p WonderApp::create()
@@ -38,6 +40,8 @@ bool MyApp::init(Visitor* pVisitor)
 		openFile(arg);
 	}
 
+	startTime = m_pAppVisitor->time();
+
 	return true;
 }
 
@@ -45,6 +49,15 @@ bool MyApp::init(Visitor* pVisitor)
 
 bool MyApp::update()
 {
+/*
+	auto time = m_pAppVisitor->time();
+	
+	if( time - startTime > 5000000 )
+	{
+		m_editorWindows.front()->focus();
+		startTime = time;
+	}
+*/
 	return true;
 }
 

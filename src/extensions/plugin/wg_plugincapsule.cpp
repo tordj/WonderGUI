@@ -305,9 +305,9 @@ namespace wg
 
 	//____ _pluginRequestFocus() ________________________________________________
 
-	bool PluginCapsule::_pluginRequestFocus()
+	bool PluginCapsule::_pluginRequestFocus(bool bRaiseWindow)
 	{
-		return grabFocus();
+		return grabFocus(bRaiseWindow);
 	}
 
 	//____ _pluginReleaseFocus() ________________________________________________
