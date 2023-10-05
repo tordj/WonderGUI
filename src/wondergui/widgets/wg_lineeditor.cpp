@@ -68,14 +68,14 @@ namespace wg
 
 		if (pFont)
 		{
-			pFont->setSize( pStyle->size( State::Normal ) );
+			pFont->setSize( pStyle->size( State::Normal ) * m_scale );
 			contentSize.w = pFont->whitespaceAdvance() * 20;
 			contentSize.h = pFont->maxAscend() + pFont->maxDescend();
 		}
 		else
 		{
-			contentSize.w = 100*64;
-			contentSize.h = 16*64;
+			contentSize.w = 100 * m_scale;
+			contentSize.h = 16 * m_scale;
 		}
 
 		contentSize = alignUp(contentSize);
