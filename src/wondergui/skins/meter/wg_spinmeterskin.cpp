@@ -63,6 +63,7 @@ namespace wg
 		m_bOpaque = blueprint.surface->isOpaque();
 		m_bIgnoresValue = false;
 		m_padding = blueprint.padding;
+		m_margin = blueprint.margin;
 		m_layer = blueprint.layer;
 		m_markAlpha = blueprint.markAlpha;
 		m_overflow = blueprint.overflow;
@@ -87,14 +88,14 @@ namespace wg
 		// Scale zoom to fit content of default size into canvas size.
 
 
-		RectSPX canvas = _canvas;
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 		if (!m_defaultSize.isEmpty() )
 		{
 			SizeSPX defaultSize = align(ptsToSpx(m_defaultSize, scale));
 			if (canvas.size() != defaultSize)
 			{
-				float xScale = float(_canvas.w) / float(defaultSize.w);
-				float yScale = float(_canvas.h) / float(defaultSize.h);
+				float xScale = float(canvas.w) / float(defaultSize.w);
+				float yScale = float(canvas.h) / float(defaultSize.h);
 				float scaleSrc = std::min(xScale, yScale);
 
 				spx w = defaultSize.w * scaleSrc;
@@ -123,20 +124,22 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->rotScaleBlit(_canvas, degrees, zoom, m_pivot, m_placement);
+		pDevice->rotScaleBlit(canvas, degrees, zoom, m_pivot, m_placement);
 	}
 
 	//____ _defaultSize() ______________________________________________________________
 
 	SizeSPX SpinMeterSkin::_defaultSize(int scale) const
 	{
-		return align(ptsToSpx(m_defaultSize, scale));
+		return align(ptsToSpx(m_defaultSize, scale)) +  align(ptsToSpx(m_margin, scale)).size();
 	}
 
 	//____ _markTest() _________________________________________________________
 
-	bool SpinMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
+	bool SpinMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+
 		if (!canvas.contains(ofs))
 			return false;
 
@@ -155,7 +158,7 @@ namespace wg
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (newValue != oldValue)
-			return canvas;
+			return canvas - align(ptsToSpx(m_margin, scale));
 
 		return RectSPX();
 	}
@@ -164,7 +167,9 @@ namespace wg
 
 	void SpinMeterSkin::_updateOpacityFlag()
 	{
-		if (m_blendMode == BlendMode::Replace)
+		if( !m_margin.isEmpty() )
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{

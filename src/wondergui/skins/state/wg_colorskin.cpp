@@ -54,7 +54,8 @@ namespace wg
 	ColorSkin::ColorSkin(const Blueprint& blueprint)
 	{
 		m_blendMode		= blueprint.blendMode;
-		m_padding= blueprint.padding;
+		m_padding		= blueprint.padding;
+		m_margin		= blueprint.margin;
 		m_layer			= blueprint.layer;
 		m_markAlpha		= blueprint.markAlpha;
 		m_overflow		= blueprint.overflow;
@@ -96,12 +97,12 @@ namespace wg
 
 	bool ColorSkin::_isOpaque(State state) const
 	{
-		return (m_color[state].a == 4096);
+		return (m_color[state].a == 4096 && m_margin.isEmpty());
 	}
 
 	bool ColorSkin::_isOpaque(const RectSPX& rect, const SizeSPX& canvasSize, int scale, State state) const
 	{
-		return (m_color[state].a == 4096);
+		return (m_color[state].a == 4096 && m_margin.isEmpty());
 	}
 
 	//____ _render() _______________________________________________________________
@@ -111,13 +112,15 @@ namespace wg
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		int i = state;
-		pDevice->fill( canvas, m_color[i] );
+		pDevice->fill( canvas - align(ptsToSpx(m_margin, scale)), m_color[i] );
 	}
 
 	//____ _markTest() _____________________________________________________________
 
-	bool ColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
+	bool ColorSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+
 		if( !canvas.contains(ofs) )
 			return false;
 
@@ -128,7 +131,7 @@ namespace wg
 
 	//____ _dirtyRect() ______________________________________________________
 
-	RectSPX ColorSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, 
+	RectSPX ColorSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState,
 		float newValue, float oldValue, float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
@@ -138,6 +141,8 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		
 		if (m_color[i1] != m_color[i2])
 			return canvas;
 
@@ -149,6 +154,12 @@ namespace wg
 
 	void ColorSkin::_updateOpaqueFlag()
 	{
+		if( !m_margin.isEmpty() )
+		{
+			m_bOpaque = false;
+			return;
+		}
+		
 		switch (m_blendMode)
 		{
 			case BlendMode::Replace:

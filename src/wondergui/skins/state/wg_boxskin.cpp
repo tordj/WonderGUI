@@ -60,6 +60,7 @@ namespace wg
 		m_blendMode		= blueprint.blendMode;
 		m_padding= blueprint.padding;
 		m_layer			= blueprint.layer;
+		m_margin		= blueprint.margin;
 		m_markAlpha		= blueprint.markAlpha;
 		m_overflow		= blueprint.overflow;
 
@@ -105,10 +106,12 @@ namespace wg
 
 	//____ _render() _______________________________________________________________
 
-	void BoxSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void BoxSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		int i = state;
@@ -152,7 +155,7 @@ namespace wg
 		SizeSPX content = StateSkin::_minSize(scale);
 		SizeSPX outline = align(ptsToSpx(m_outline,scale));
 
-		return SizeSPX::max(content,outline);
+		return SizeSPX::max(content,outline) + align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _defaultSize() ________________________________________________________
@@ -162,7 +165,7 @@ namespace wg
 		SizeSPX content = StateSkin::_minSize(scale);
 		SizeSPX outline = align(ptsToSpx(m_outline, scale));
 
-		return SizeSPX::max(content, outline);
+		return SizeSPX::max(content, outline) + align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _sizeForContent() _______________________________________________________
@@ -172,13 +175,15 @@ namespace wg
 		SizeSPX content = StateSkin::_sizeForContent(contentSize,scale);
 		SizeSPX outline = align(ptsToSpx(m_outline, scale));
 
-		return SizeSPX::max(content, outline);
+		return SizeSPX::max(content, outline) + align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _markTest() _____________________________________________________________
 
-	bool BoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
+	bool BoxSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+
 		if( !canvas.contains(ofs) )
 			return false;
 
@@ -207,7 +212,7 @@ namespace wg
 	bool BoxSkin::_isOpaque( State state ) const
 	{
 		int i = state;
-		if( m_bOpaque || (m_fillColor[i].a == 4096 && (m_outlineColor[i].a == 4096 || (m_outline.width() + m_outline.height() == 0))) )
+		if( m_bOpaque || (m_margin.isEmpty() && m_fillColor[i].a == 4096 && (m_outlineColor[i].a == 4096 || (m_outline.width() + m_outline.height() == 0))) )
 			return true;
 
 		return false;
@@ -217,7 +222,12 @@ namespace wg
 	{
 		if( m_bOpaque )
 			return true;
+		
+		RectSPX canvas = RectSPX(canvasSize) - align(ptsToSpx(m_margin, scale));
 
+		if( !canvas.contains(rect) )
+			return false;
+		
 		RectSPX center = RectSPX(canvasSize) - align(ptsToSpx(m_outline,scale));
 		int i = state;
 		if( center.contains(rect) )
@@ -230,7 +240,7 @@ namespace wg
 
 	//____ _dirtyRect() ______________________________________________________
 
-	RectSPX BoxSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
+	RectSPX BoxSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
@@ -239,6 +249,8 @@ namespace wg
 
 		int i1 = newState;
 		int i2 = oldState;
+
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
 		if (m_fillColor[i1] != m_fillColor[i2] || (!m_outline.isEmpty() && m_outlineColor[i1] != m_outlineColor[i2]))
 			return canvas;
@@ -251,6 +263,12 @@ namespace wg
 
 	void BoxSkin::_updateOpaqueFlag()
 	{
+		if( !m_margin.isEmpty() )
+		{
+			m_bOpaque = false;
+			return;
+		}
+		
 		switch (m_blendMode)
 		{
 			case BlendMode::Replace:

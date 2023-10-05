@@ -74,6 +74,7 @@ namespace wg
 			HiColor			color = HiColor::Undefined;
 			Gradient		gradient;
 			int				layer = -1;
+			Border			margin;
 			int				markAlpha = 1;
 			Border			overflow;
 			Border			padding;

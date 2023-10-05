@@ -65,14 +65,13 @@ namespace wg
 	{
 		int index = State::Normal;
 
-
 		m_layer			= blueprint.layer;
 		m_blendMode		= blueprint.blendMode;
 		m_gradient		= blueprint.gradient;
-		m_padding= blueprint.padding;
+		m_padding		= blueprint.padding;
+		m_margin		= blueprint.margin;
 		m_markAlpha		= blueprint.markAlpha;
 		m_overflow		= blueprint.overflow;
-
 
 		m_stateSurfaces[index] = blueprint.surface;
 		m_stateColors[index] = blueprint.color;
@@ -119,7 +118,7 @@ namespace wg
 
 	//____ _render() _______________________________________________________________
 
-	void TileSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float * pStateFractions) const
+	void TileSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float * pStateFractions) const
 	{
 		int idx = state;
 
@@ -127,6 +126,8 @@ namespace wg
 
 		if( !pSurf )
 			return;
+
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
 
@@ -145,7 +146,7 @@ namespace wg
 		if (pSurface)
 			surface = align(ptsToSpx(pSurface->pointSize(),scale));
 
-		return SizeSPX::max(content, surface);
+		return SizeSPX::max(content, surface) + align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _markTest() _____________________________________________________________
@@ -158,7 +159,7 @@ namespace wg
 
 		int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;
 
-		return markTestTileRect(_ofs, pSurf, canvas, scale, alpha);
+		return markTestTileRect(_ofs, pSurf, canvas - align(ptsToSpx(m_margin, scale)), scale, alpha);
 	}
 
 	//____ _isOpaque() _____________________________________________________________
@@ -175,7 +176,7 @@ namespace wg
 
 	//____ _dirtyRect() ______________________________________________________
 
-	RectSPX TileSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
+	RectSPX TileSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
@@ -184,6 +185,8 @@ namespace wg
 
 		int i1 = newState;
 		int i2 = oldState;
+
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
 		if(m_stateSurfaces[i1] != m_stateSurfaces[i2])
 			return canvas;
@@ -199,7 +202,9 @@ namespace wg
 
 		bool bTintDecides = false;
 
-		if (m_blendMode == BlendMode::Replace)
+		if( !m_margin.isEmpty() )
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (!m_gradient.isUndefined() && !m_gradient.isOpaque())
 			m_bOpaque = false;

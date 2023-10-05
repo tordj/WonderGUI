@@ -78,6 +78,7 @@ namespace wg
 			HiColor			color = HiColor::White;
 
 			int				layer = -1;
+			Border			margin;
 			int				markAlpha = 1;
 
 			HiColor			outlineColor = HiColor::Black;

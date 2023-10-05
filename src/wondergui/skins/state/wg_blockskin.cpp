@@ -203,6 +203,7 @@ namespace wg
 		m_blendMode = blueprint.blendMode;
 		m_gradient = blueprint.gradient;
 		m_padding = blueprint.padding;
+		m_margin = blueprint.margin;
 		m_layer = blueprint.layer;
 		m_markAlpha = blueprint.markAlpha;
 		m_overflow = blueprint.overflow;
@@ -535,11 +536,13 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void BlockSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void BlockSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if( !m_pSurface )
 			return;
 
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		
 		int idx = state;
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
 
@@ -557,7 +560,7 @@ namespace wg
 	{
 		SizeSPX content = align(ptsToSpx(m_padding,scale));
 		SizeSPX frame = align(ptsToSpx(m_ninePatch.frame,scale));
-		return SizeSPX::max( content, frame );
+		return SizeSPX::max( content, frame ) + align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _defaultSize() ________________________________________________________
@@ -567,7 +570,7 @@ namespace wg
         //This takes the scale of the surface into account
         // Default size is when each point of the surface maps to a point of the skinarea.
         
-        return align(ptsToSpx(m_ninePatch.block.size(),scale));
+		return align(ptsToSpx(m_ninePatch.block.size(),scale)) + align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _sizeForContent() _______________________________________________________
@@ -577,14 +580,16 @@ namespace wg
 		SizeSPX sz = StateSkin::_sizeForContent(contentSize,scale);
 		SizeSPX min = align(ptsToSpx(m_ninePatch.frame,scale));
 
-		return SizeSPX::max(sz, min);
+		return SizeSPX::max(sz, min) + align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _markTest() _____________________________________________________________
 
-	bool BlockSkin::_markTest( const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
+	bool BlockSkin::_markTest( const CoordSPX& _ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
+
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
 		NinePatch	patch = m_ninePatch;
 		patch.block.setPos(m_stateBlocks[state]);
@@ -608,7 +613,7 @@ namespace wg
 
 	//____ _dirtyRect() ______________________________________________________
 
-	RectSPX BlockSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
+	RectSPX BlockSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
@@ -618,6 +623,8 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		
 		if (m_stateBlocks[i1] != m_stateBlocks[i2])
 			return canvas;
 
@@ -632,7 +639,7 @@ namespace wg
 	{
 		bool bTintDecides = false;
 
-		if (!m_pSurface)
+		if (!m_pSurface || !m_margin.isEmpty() )
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;

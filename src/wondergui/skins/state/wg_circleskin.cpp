@@ -48,7 +48,8 @@ namespace wg
 	CircleSkin::CircleSkin(const Blueprint& blueprint)
 	{
 		m_blendMode		= blueprint.blendMode;
-		m_padding= blueprint.padding;
+		m_padding		= blueprint.padding;
+		m_margin		= blueprint.margin;
 		m_layer			= blueprint.layer;
 		m_markAlpha		= blueprint.markAlpha;
 		m_overflow		= blueprint.overflow;
@@ -130,11 +131,12 @@ namespace wg
 
 	void CircleSkin::_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+
 		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		int i = state;
 
-		RectSPX canvas = _canvas;
 		if (canvas.w != canvas.h || m_stateInfo[i].size != 1.f )
 		{
 			spx sideLength = std::min(canvas.w, canvas.h) * m_stateInfo[i].size;
@@ -158,7 +160,7 @@ namespace wg
 	{
 		int i = state;
 
-		RectSPX	canvas = _canvas;
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 		CoordSPX ofs = _ofs;
 
 		spx sideLength = std::min(canvas.w, canvas.h) * m_stateInfo[i].size;
@@ -207,7 +209,7 @@ namespace wg
 
 	//____ _dirtyRect() ______________________________________________________
 
-	RectSPX CircleSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
+	RectSPX CircleSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
@@ -217,7 +219,9 @@ namespace wg
 		int i1 = newState;
 		int i2 = oldState;
 
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
+		
 		if ( m_stateInfo[i1].color != m_stateInfo[i2].color || m_stateInfo[i1].size != m_stateInfo[i2].size ||
 			m_stateInfo[i1].thickness != m_stateInfo[i2].thickness || m_stateInfo[i1].outlineThickness != m_stateInfo[i2].outlineThickness ||
 			m_stateInfo[i1].outlineColor != m_stateInfo[i2].outlineColor)

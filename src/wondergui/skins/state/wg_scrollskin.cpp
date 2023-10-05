@@ -55,6 +55,8 @@ namespace wg
 		m_layer		= blueprint.layer;
 		m_markAlpha	= blueprint.markAlpha;
 		m_overflow	= blueprint.overflow;
+		m_padding	= blueprint.padding;
+		m_margin	= blueprint.margin;
 
 		m_transitionTimes[int(m_scrollState)] = m_scrollDuration;
 
@@ -152,15 +154,17 @@ namespace wg
 		// Default size is when each point of the surface maps to a point of the skinarea,
 		// independent of differences in scale.
 
-		return align(ptsToSpx(m_blockSize, scale));
+		return align(ptsToSpx(m_blockSize, scale))  + align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _render() _______________________________________________________________
 
-	void ScrollSkin::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void ScrollSkin::_render(GfxDevice* pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pSurface)
 			return;
+
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
 		int idx = state;
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient);
@@ -237,11 +241,16 @@ namespace wg
 
 	//____ _markTest() _____________________________________________________________
 
-	bool ScrollSkin::_markTest(const CoordSPX& _ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
+	bool ScrollSkin::_markTest(const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
-		//TODO: Implement!
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+
+		if( !canvas.contains(ofs) )
+			return false;
+
+		//TODO: Implement the rest!
 
 		return true;
 	}
@@ -260,11 +269,13 @@ namespace wg
 
 	//____ _dirtyRect() ______________________________________________________
 
-	RectSPX ScrollSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
+	RectSPX ScrollSkin::_dirtyRect(const RectSPX& _canvas, int scale, State newState, State oldState, float newValue, float oldValue,
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		//TODO: Implement!
+
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
 		return canvas;
 
@@ -306,7 +317,7 @@ namespace wg
 	{
 		bool bTintDecides = false;
 
-		if (!m_pSurface)
+		if (!m_pSurface || !m_margin.isEmpty())
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;

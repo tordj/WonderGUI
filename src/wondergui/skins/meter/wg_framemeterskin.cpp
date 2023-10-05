@@ -48,7 +48,8 @@ namespace wg
 	{
 		m_blendMode			= bp.blendMode;
 		m_color				= bp.color;
-		m_padding	= bp.padding;
+		m_padding			= bp.padding;
+		m_margin			= bp.margin;
 		m_gfxPadding		= bp.gfxPadding;
 		m_gradient			= bp.gradient;
 		m_layer				= bp.layer;
@@ -84,26 +85,28 @@ namespace wg
 
 	SizeSPX FrameMeterSkin::_defaultSize(int scale) const
 	{
-		return SizeSPX::max(align(ptsToSpx(m_size,scale)), align(ptsToSpx(m_padding,scale)));
+		return SizeSPX::max(align(ptsToSpx(m_size,scale)), align(ptsToSpx(m_padding,scale))) + align(ptsToSpx(m_margin, scale)).size();
 	}
 
 	//____ _minSize() ______________________________________________________________
 
 	SizeSPX FrameMeterSkin::_minSize(int scale) const
 	{
-		return SizeSPX::max(SizeSPX(align(ptsToSpx(m_gfxPadding,scale))), SizeSPX(align(ptsToSpx(m_padding,scale))));
+		return SizeSPX::max(SizeSPX(align(ptsToSpx(m_gfxPadding,scale))), SizeSPX(align(ptsToSpx(m_padding,scale)))) + align(ptsToSpx(m_margin, scale)).size();
 	}
 
 
 	//____ _render() ______________________________________________________________
 
-	void FrameMeterSkin::_render(GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void FrameMeterSkin::_render(GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Support flip!
 
 		auto pFrame = _valueToFrame(value);
 		if (pFrame)
 		{
+			RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+			
 			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient);
 
 			pDevice->setBlitSource(m_pSurface);
@@ -117,10 +120,12 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool FrameMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
+	bool FrameMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
 		//TODO: Support flip!
 		//TODO: Support tint!
+
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
 		if (!canvas.contains(ofs))
 			return false;
@@ -155,14 +160,16 @@ namespace wg
 		if (pOldFrame == pNewFrame)
 			return RectSPX();
 		else
-			return canvas;
+			return canvas - align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________
 
 	void FrameMeterSkin::_updateOpacityFlag()
 	{
-		if (m_blendMode == BlendMode::Replace)
+		if( m_margin.isEmpty() )
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{

@@ -70,6 +70,7 @@ namespace wg
 			BlendMode		blendMode = BlendMode::Undefined;
 			HiColor			color = HiColor::White;
 			int				layer = -1;
+			Border			margin;
 			int				markAlpha = 1;
 			Border			outline;
 			HiColor			outlineColor = HiColor::Black;

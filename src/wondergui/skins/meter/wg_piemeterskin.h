@@ -64,6 +64,7 @@ namespace wg
 			float		hubSize = 0.75f;
 
 			int			layer = -1;
+			Border		margin;
 			int			markAlpha = 1;
 
 			float		maxLength = 0.9f;

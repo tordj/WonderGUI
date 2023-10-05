@@ -56,6 +56,7 @@ namespace wg
 
 		m_gfxPadding = bp.gfxPadding;
 		m_padding = bp.padding;
+		m_margin = bp.margin;
 		m_bStaticSections = !bp.movingSlices;
 		m_bRectangular = bp.rectangular;
 
@@ -108,7 +109,8 @@ namespace wg
 
 		bool	bFramed = false;
 
-		RectSPX canvas = _canvas;
+		RectSPX outerCanvas = _canvas - align(ptsToSpx(m_margin, scale));
+		RectSPX canvas = outerCanvas;
 
 		// Shrink canvas with padding
 
@@ -118,7 +120,7 @@ namespace wg
 
 			if (canvas.w <= 0 || canvas.h <= 0)
 			{
-				pDevice->fill(_canvas, m_backColor);
+				pDevice->fill(outerCanvas, m_backColor);
 				return;
 			}
 			bFramed = true;
@@ -128,7 +130,7 @@ namespace wg
 
 		// Force canvas to be square.
 
-		if (_canvas.w != _canvas.h)
+		if (canvas.w != canvas.h)
 		{
 			if (canvas.w > canvas.h)
 			{
@@ -147,7 +149,7 @@ namespace wg
 
 		if (bFramed && m_backColor.a > 0.f)
 		{
-			RectSPX	outer = _canvas;
+			RectSPX	outer = outerCanvas;
 			RectSPX	inner = canvas;
 			BorderSPX frame = { inner.y - outer.y, outer.right() - inner.right(), outer.bottom() - inner.bottom(), inner.x - outer.x };
 
@@ -230,13 +232,15 @@ namespace wg
 
 	SizeSPX	PieMeterSkin::_defaultSize(int scale) const
 	{
-		return align(ptsToSpx(m_defaultSize, scale));
+		return align(ptsToSpx(m_defaultSize, scale)) + align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _markTest() _________________________________________________________
 
-	bool PieMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride) const
+	bool PieMeterSkin::_markTest(const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride) const
 	{
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+		
 		if (!canvas.contains(ofs))
 			return false;
 
@@ -266,7 +270,9 @@ namespace wg
 
 	void PieMeterSkin::_updateOpacity()
 	{
-		if (m_blendMode == BlendMode::Replace)
+		if( !m_margin.isEmpty() )
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (m_blendMode != BlendMode::Blend || m_backColor.a < 4096 || (m_hubSize > 0.f && m_hubColor.a < 4096) )
 			m_bOpaque = false;
@@ -283,7 +289,5 @@ namespace wg
 			m_bOpaque = (totalAlpha == m_nSlices * 2 * 4096);
 		}
 	}
-
-
 
 } // namespace wg
