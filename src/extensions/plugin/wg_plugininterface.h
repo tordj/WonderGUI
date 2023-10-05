@@ -88,7 +88,7 @@ typedef struct wg_hostbridge_calls_struct
 
 	int					(*getClipboardText)( void * pHostBridge, int maxChars, char * pDest );
 	int					(*setClipboardText)( void * pHostBridge, const char * pText );
-	int					(*raiseWindow)( void * pHostBridge, wg_obj root );
+	int					(*raiseWindow)( void * pHostBridge, uintptr_t root );
 
 } wg_hostbridge_calls;
 
