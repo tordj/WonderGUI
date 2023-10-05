@@ -94,6 +94,8 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
 
     SDLWindowMetal_p pWindow = new SDLWindowMetal(blueprint.title, pRootPanel, geo, pSDLWindow, renderer);
 
+	pRootPanel->setWindowRef((uintptr_t) pWindow.rawPtr());
+
     //TODO: This is ugly. It should be handled when windows gets focused.
 
     Base::inputHandler()->setFocusedWindow(pRootPanel);

@@ -108,7 +108,7 @@ public:
 	std::string	getClipboardText() override;
 	bool		setClipboardText(const std::string& text) override;
 	
-	bool		raiseWindow(Root * pRoot) override;
+	bool		raiseWindow(uintptr_t windowRef) override;
 };
 
 
@@ -1020,24 +1020,13 @@ bool MyHostBridge::setClipboardText(const std::string& text )
 
 //____ raiseWindow() _________________________________________________________
 
-bool MyHostBridge::raiseWindow(Root * pRoot)
+bool MyHostBridge::raiseWindow(uintptr_t windowRef)
 {
-	SDLWindow_p	pFoundWindow;
+	auto pWindow = reinterpret_cast<SDLWindow*>(windowRef);
 	
-	for( auto& pWindow : g_windows )
+	if( pWindow )
 	{
-		if( pWindow && pWindow->rootPanel() == pRoot )
-		{
-			pFoundWindow = pWindow;
-			break;
-		}
-	}
-	
-	if( pFoundWindow )
-	{
-		auto pWin = pFoundWindow->SDLWindowPtr();
-	
-		
+		auto pWin = pWindow->SDLWindowPtr();
 		
 		auto flags = SDL_GetWindowFlags(pWin);
 		

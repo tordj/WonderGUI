@@ -98,10 +98,12 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
     if (pWindowSurface == nullptr)
         return nullptr;
 
-    auto pRootPanel = RootPanel::create(pWindowSurface, nullptr);
+	auto pRootPanel = RootPanel::create( { .canvasSurface = pWindowSurface } );
 
     SDLWindowSW_p pWindow = new SDLWindowSW(blueprint.title, pRootPanel, geo, pSDLWindow);
 
+	pRootPanel->setWindowRef((uintptr_t) pWindow.rawPtr());
+	
     //TODO: This is ugly. It should be handled when windows gets focused.
 
     Base::inputHandler()->setFocusedWindow(pRootPanel);

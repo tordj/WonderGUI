@@ -130,6 +130,8 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
 
     SDLWindowGL_p pWindow = new SDLWindowGL(blueprint.title, pRootPanel, geo, pSDLWindow, glContext);
 
+	pRootPanel->setWindowRef((uintptr_t) pWindow.rawPtr());
+
     //TODO: This is ugly. It should be handled when windows gets focused.
 
     Base::inputHandler()->setFocusedWindow(pRootPanel);

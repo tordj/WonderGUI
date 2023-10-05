@@ -60,7 +60,7 @@ int wg_setClipboardText( void * pHostBridge, const char * pText )
 	return getPtr(pHostBridge)->setClipboardText(pText);
 }
 
-int wg_raiseWindow( void * pHostBridge, wg_obj root)
+int wg_raiseWindow( void * pHostBridge, uintptr_t windowRef)
 {
-	return getPtr(pHostBridge)->raiseWindow( static_cast<Root*>(reinterpret_cast<Object*>(root)) );
+	return getPtr(pHostBridge)->raiseWindow( windowRef );
 }

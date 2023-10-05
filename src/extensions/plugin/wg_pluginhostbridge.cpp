@@ -61,9 +61,9 @@ namespace wg
 	
 	//____ raiseWindow() _________________________________________________________
 
-	bool PluginHostBridge::raiseWindow(Root * pRoot)
+	bool PluginHostBridge::raiseWindow(uintptr_t windowRef)
 	{
-		return PluginCalls::hostBridge->raiseWindow(m_pHostBridge, static_cast<Object*>(pRoot) );
+		return PluginCalls::hostBridge->raiseWindow(m_pHostBridge, windowRef);
 	}
 
 

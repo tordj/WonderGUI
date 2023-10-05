@@ -106,6 +106,7 @@ namespace wg
 		m_afterglowFrames = bp.debugAfterglow;
 		m_pGfxDevice = bp.gfxDevice;
 		m_pCanvasLayers = bp.canvasLayers;
+		m_windowRef = bp.windowRef;
 				
 		GfxDevice* pUseGfxDevice = bp.gfxDevice ? bp.gfxDevice.rawPtr() : Base::defaultGfxDevice().rawPtr();
 
@@ -208,6 +209,13 @@ namespace wg
 
 		m_dirtyPatches.add( m_geo );
 		return true;
+	}
+
+	//____setWindowRef() _________________________________________________________
+
+	void RootPanel::setWindowRef( uintptr_t windowRef )
+	{
+		m_windowRef = windowRef;
 	}
 
 	//____ setCanvas() ________________________________________________________
@@ -717,7 +725,7 @@ namespace wg
 		// Check if we need to raise window.
 
 		if( bRaiseWindow && Base::inputHandler()->focusedWindow() != this )
-			if( !Base::hostBridge()->raiseWindow(this) )
+			if( !Base::hostBridge()->raiseWindow(m_windowRef) )
 				return false;
 		
 		//

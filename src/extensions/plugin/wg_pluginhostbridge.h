@@ -49,7 +49,7 @@ namespace wg
 		std::string	getClipboardText() override;
 		bool		setClipboardText(const std::string& text) override;
 		
-		bool		raiseWindow(Root * pRoot) override;
+		bool		raiseWindow(uintptr_t windowRef) override;
 
 		
 	protected:

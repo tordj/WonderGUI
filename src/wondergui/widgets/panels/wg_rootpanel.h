@@ -76,6 +76,7 @@ namespace wg
 			GfxDevice_p		gfxDevice;
 			int				scale = 0;
 			Skin_p			skin;
+			uintptr_t		windowRef = 0;
 		};
 		
 		
@@ -142,6 +143,10 @@ namespace wg
 		bool					setGfxDevice( GfxDevice * pDevice );
 		inline GfxDevice_p 		gfxDevice() const;
 
+		void					setWindowRef( uintptr_t windowRef );
+		uintptr_t				windowRef() const { return m_windowRef; }
+
+		
 		bool					setCanvas(Surface* pCanvasSurface);
 		bool					setCanvas(CanvasRef canvasRef);
 		inline const CanvasInfo&canvasInfo() const;
@@ -253,6 +258,7 @@ namespace wg
 
 		SkinSlot			m_skin;				//TODO: Padding is not respected yet.
 
+		uintptr_t			m_windowRef = 0;
 
 		Widget_wp			m_pFocusedChild;
 	};
