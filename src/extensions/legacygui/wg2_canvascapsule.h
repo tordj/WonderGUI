@@ -40,9 +40,9 @@ public:
 	WgCanvasCapsule();
 	~WgCanvasCapsule();
 
-	virtual const char *Type( void ) const;
+	virtual const char *Type( void ) const override;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgCanvasCapsule(); };
+	virtual WgWidget * NewOfMyType() const override { return new WgCanvasCapsule(); };
 
 //    void                SetSkin(wg::Skin * pSkin);        // Method added separately to those widgets that support skin so far.
 
@@ -63,7 +63,7 @@ public:
 	inline WgBlendMode  BlendMode() { return m_blendMode; }
 	inline WgTintMode   TintMode() { return m_tintMode; }
 
-	WgWidget * 			FindWidget(const WgCoord& ofs, WgSearchMode mode);
+	WgWidget * 			FindWidget(const WgCoord& ofs, WgSearchMode mode) override;
 
     void                SetCanvasLayers(wg::CanvasLayers * pLayers);
     wg::CanvasLayers_p  CanvasLayers() const { return m_pCanvasLayers; }
@@ -85,20 +85,20 @@ public:
 	wg::GfxFlip			flip() const { return m_flip; }
     
 protected:
-	void            _onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler);
-	void            _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-	void            _onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window);
-	void            _onCloneContent( const WgWidget * _pOrg );
-	WgBlendMode     _getBlendMode() const;
+	void            _onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler) override;
+	void            _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches ) override;
+	void            _onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window) override;
+	void            _onCloneContent( const WgWidget * _pOrg ) override;
+	WgBlendMode     _getBlendMode() const override;
 
-	void            _onNewSize(const WgSize& size);
+	void            _onNewSize(const WgSize& size) override;
 
-	void            _onRenderRequested();
-	void            _onRenderRequested(const WgRect& rect);
+	void            _onRenderRequested() override;
+	void            _onRenderRequested(const WgRect& rect) override;
 
-	void _onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+	void _onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip ) override;
 
-	void _onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+	void _onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode ) override;
 
 	WgSize  		_childSize() override;
 	WgRect  		_childGeo() override;

@@ -111,9 +111,9 @@ namespace WgUtil
 				return "west";
 			case WgOrigo::Center:
 				return "center";
+			default:
+				return "undefined";
 		}
-
-		return "undefined";
 	}
 
 

@@ -41,20 +41,20 @@ public:
 	WgMouseBlocker();
 	virtual ~WgMouseBlocker();
 
-	virtual const char *Type( void ) const;
+	virtual const char *Type( void ) const override;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgMouseBlocker(); };
+	virtual WgWidget * NewOfMyType() const override { return new WgMouseBlocker(); };
 
 	void	SetPreferredPointSize( const WgSize& size );
-	WgSize	PreferredPixelSize() const;
+	WgSize	PreferredPixelSize() const override;
 
 	void	SetHoles( int nbHoles, const WgRect * pHoles );
 	
 
 protected:
 
-	void	_onCloneContent( const WgWidget * _pOrg );
-	bool	_onAlphaTest( const WgCoord& ofs );
+	void	_onCloneContent( const WgWidget * _pOrg ) override;
+	bool	_onAlphaTest( const WgCoord& ofs ) override;
 	void	_setScale(int scale) override;
 
 private:

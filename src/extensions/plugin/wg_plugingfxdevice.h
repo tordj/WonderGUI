@@ -151,8 +151,8 @@ namespace wg
         void    drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat ) override;
         void    flipDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat) override;
 
-        void	drawEdgemap(CoordSPX dest, Edgemap* pEdgemap);
-        void	flipDrawEdgemap(CoordSPX dest, Edgemap* pEdgemap, GfxFlip flip);
+        void	drawEdgemap(CoordSPX dest, Edgemap* pEdgemap) override;
+        void	flipDrawEdgemap(CoordSPX dest, Edgemap* pEdgemap, GfxFlip flip) override;
 
         // Special draw/blit methods
 

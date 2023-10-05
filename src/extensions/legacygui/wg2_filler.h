@@ -39,24 +39,24 @@ public:
 	WgFiller();
 	virtual ~WgFiller();
 
-	virtual const char *Type( void ) const;
+	virtual const char *Type( void ) const override;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgFiller(); };
+	virtual WgWidget * NewOfMyType() const override{ return new WgFiller(); };
 
 	void	SetColors( const WgColorsetPtr& pColors );
 	const	WgColorsetPtr	GetColors() const		{ return m_pColors; }
 
 	void	SetPreferredPointSize( const WgSize& size );
-	WgSize	PreferredPixelSize() const;
+	WgSize	PreferredPixelSize() const override;
 
 protected:
 
 	bool	_isColorChanged( WgMode newMode ) const;
-	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
-	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onEnable();
-	void	_onDisable();
+	void	_onCloneContent( const WgWidget * _pOrg ) override;
+	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window ) override;
+	bool	_onAlphaTest( const WgCoord& ofs ) override;
+	void	_onEnable() override;
+	void	_onDisable() override;
 	void	_setScale(int scale) override;
 
 private:

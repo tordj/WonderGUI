@@ -116,6 +116,7 @@ void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 			switch( pLabel->text.alignment() )
 			{
+				case WgOrigo::Undefined:
 				case WgOrigo::NorthWest:
 				case WgOrigo::North:
 				case WgOrigo::NorthEast:
@@ -148,6 +149,7 @@ void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 			switch( pLabel->text.alignment() )
 			{
+				case WgOrigo::Undefined:
 				case WgOrigo::NorthWest:
 				case WgOrigo::SouthWest:
 				case WgOrigo::West:

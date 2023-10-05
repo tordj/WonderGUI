@@ -79,9 +79,9 @@ public:
 	WgPackPanel();
 	virtual ~WgPackPanel();
 
-	virtual const char *Type( void ) const;
+	virtual const char *Type( void ) const override;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgPackPanel(); };
+	virtual WgWidget * NewOfMyType() const override { return new WgPackPanel(); };
 
     virtual inline WgPackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChild(pWidget)); }
 	inline WgPackHook * AddChildren( WgWidget * pWidgets[], int nb ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChildren(pWidgets, nb)); }
@@ -101,10 +101,10 @@ public:
 	bool            BaselineMode( bool bBaseline ) const { return m_bBaselineMode; }
 	float           Baseline() const { return m_baseline; }
 
-	int				MatchingPixelHeight( int width ) const;
-	int				MatchingPixelWidth( int height ) const;
+	int				MatchingPixelHeight( int width ) const override;
+	int				MatchingPixelWidth( int height ) const override;
 
-	WgSize			PreferredPixelSize() const;
+	WgSize			PreferredPixelSize() const override;
 
 	void            FreezeGeo();
 	void            UnfreezeGeo();
@@ -116,32 +116,32 @@ protected:
 
 	// Overloaded from Widget
 
-	void			_onNewSize( const WgSize& size );
-	void			_setScale(int scale);
+	void			_onNewSize( const WgSize& size ) override;
+	void			_setScale(int scale) override;
 
 
 	// Overloaded from Container
 
-	WgHook*			_firstHookWithGeo( WgRect& geo ) const;
-	WgHook*			_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+	WgHook*			_firstHookWithGeo( WgRect& geo ) const override;
+	WgHook*			_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const override;
 
-	WgHook*			_lastHookWithGeo( WgRect& geo ) const;
-	WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+	WgHook*			_lastHookWithGeo( WgRect& geo ) const override;
+	WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const override;
 
 
 	// Overloaded from VectorPanel
 
-	WgRect			_hookGeo( const WgVectorHook * pHook );
-	void			_onResizeRequested( WgVectorHook * pHook );
-	void			_onRenderRequested( WgVectorHook * pHook );
-	void			_onRenderRequested( WgVectorHook * pHook, const WgRect& rect );
-	void			_onWidgetAppeared( WgVectorHook * pInserted );				// so parent can update geometry and possibly request render.
-	void            _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast );
-	void			_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
-    void            _onWidgetsDisappeared( WgVectorHook * pFirst, WgVectorHook * pLast );        // so parent can update geometry and possibly request render.
-	void			_onWidgetsReordered();
-	void			_refreshAllWidgets();
-	WgVectorHook *	_newHook();
+	WgRect			_hookGeo( const WgVectorHook * pHook ) override;
+	void			_onResizeRequested( WgVectorHook * pHook ) override;
+	void			_onRenderRequested( WgVectorHook * pHook ) override;
+	void			_onRenderRequested( WgVectorHook * pHook, const WgRect& rect ) override;
+	void			_onWidgetAppeared( WgVectorHook * pInserted ) override;				// so parent can update geometry and possibly request render.
+	void            _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast ) override;
+	void			_onWidgetDisappeared( WgVectorHook * pToBeRemoved ) override;		// so parent can update geometry and possibly request render.
+    void            _onWidgetsDisappeared( WgVectorHook * pFirst, WgVectorHook * pLast ) override;        // so parent can update geometry and possibly request render.
+	void			_onWidgetsReordered() override;
+	void			_refreshAllWidgets() override;
+	WgVectorHook *	_newHook() override;
 
 	//
 

@@ -43,7 +43,7 @@ public:
 	virtual ~WgRangeSlider();
 
 
-	virtual const char* Type(void) const;
+	virtual const char* Type(void) const override;
 	static const char* GetClass();
 	WgWidget* NewOfMyType() const override { return new WgRangeSlider(); };
 

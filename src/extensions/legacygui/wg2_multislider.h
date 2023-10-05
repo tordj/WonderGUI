@@ -43,11 +43,11 @@ public:
 	WgMultiSlider();
 	virtual ~WgMultiSlider();
 
-	virtual const char *Type( void ) const;
+	virtual const char *Type( void ) const override;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgMultiSlider(); };
+	virtual WgWidget * NewOfMyType() const override{ return new WgMultiSlider(); };
 
-	WgSize	PreferredPixelSize() const;
+	WgSize	PreferredPixelSize() const override;
 
 	enum PressMode
 	{
