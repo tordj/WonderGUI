@@ -53,7 +53,7 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
-			ReturnKeyAction	returnKeyAction = ReturnKeyAction::ReleaseFocus;
+			KeyAction		returnKeyAction = KeyAction::ReleaseFocus;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			tabLock = false;
@@ -76,8 +76,8 @@ namespace wg
 
 		//.____ Behavior ______________________________________________________
 
-		void			setReturnKeyAction(ReturnKeyAction action);
-		inline ReturnKeyAction	returnKeyAction() { return m_returnKeyAction;  }
+		void				setReturnKeyAction(KeyAction action);
+		inline KeyAction	returnKeyAction() { return m_returnKeyAction;  }
 
 		//.____ Internal _________________________________________________
 
@@ -113,7 +113,7 @@ namespace wg
 	private:
 
 		spx				m_textScrollOfs;
-		ReturnKeyAction	m_returnKeyAction = ReturnKeyAction::ReleaseFocus;
+		KeyAction	m_returnKeyAction = KeyAction::ReleaseFocus;
 	};
 
 

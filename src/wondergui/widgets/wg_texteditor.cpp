@@ -40,11 +40,17 @@ namespace wg
 
 	//____ setReturnKeyAction() ______________________________________________
 
-	void TextEditor::setReturnKeyAction(ReturnKeyAction action)
+	void TextEditor::setReturnKeyAction(KeyAction action)
 	{
 		m_returnKeyAction = action;
 	}
 
+	//____ setTabKeyAction() ______________________________________________
+
+	void TextEditor::setTabKeyAction(KeyAction action)
+	{
+		m_tabKeyAction = action;
+	}
 
 	//____ _matchingWidth() _______________________________________________________
 
@@ -109,30 +115,32 @@ namespace wg
 		{
 			auto keyCode = static_cast<KeyPressMsg*>(pMsg)->translatedKeyCode();
 
-			// We don't swallow msg on purpose. Parent might also want to react on escape.
-
-			if (keyCode == Key::Return)
+			if (keyCode == Key::Tab || keyCode == Key::Return)
 			{
-				switch (m_returnKeyAction)
+				auto action = keyCode == Key::Tab ? m_tabKeyAction : m_returnKeyAction;
+
+				switch (action)
 				{
-					case ReturnKeyAction::None:
-						return;
-					case ReturnKeyAction::Insert:
-						break;
-					case ReturnKeyAction::ReleaseFocus:
+					case KeyAction::None:
+						return;								// We don't swallow msg here, let parent react as well.
+					case KeyAction::Insert:
+						break;								// Msg should be swallowed by editor later.
+					case KeyAction::ReleaseFocus:
 					{
 						releaseFocus();
+						pMsg->swallow();
 						return;
 					}
-					case ReturnKeyAction::CycleFocus:
+					case KeyAction::CycleFocus:
 					{
+
 						//TODO: Implement!!!
+						pMsg->swallow();
 						return;
 					}
 				}
 			}
 		}
-
 
 		Widget::_receive( pMsg );
 		editor._receive( pMsg );

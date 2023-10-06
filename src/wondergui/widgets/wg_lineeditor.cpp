@@ -56,7 +56,7 @@ namespace wg
 
 	//____ setReturnKeyAction() ______________________________________________
 
-	void LineEditor::setReturnKeyAction(ReturnKeyAction action)
+	void LineEditor::setReturnKeyAction(KeyAction action)
 	{
 		m_returnKeyAction = action;
 	}
@@ -134,24 +134,24 @@ namespace wg
 				return;						// We don't swallow msg on purpose. Parent might also want to react on escape.
 			}
 
-			// We don't swallow msg on purpose. Parent might also want to react on escape.
-
 			if (keyCode == Key::Return)
 			{
 				switch (m_returnKeyAction)
 				{
-					case ReturnKeyAction::None:
-						return;
-					case ReturnKeyAction::Insert:
-						break;
-					case ReturnKeyAction::ReleaseFocus:
+					case KeyAction::None:
+						return;								// We don't swallow msg here, let parent react as well.
+					case KeyAction::Insert:
+						break;								// Msg should be swallowed by editor later.
+					case KeyAction::ReleaseFocus:
 					{
 						releaseFocus();
+						pMsg->swallow();
 						return;
 					}
-					case ReturnKeyAction::CycleFocus:
+					case KeyAction::CycleFocus:
 					{
 						//TODO: Implement!!!
+						pMsg->swallow();
 						return;
 					}
 				}

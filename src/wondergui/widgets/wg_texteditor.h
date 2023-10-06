@@ -56,7 +56,7 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Default;
-			ReturnKeyAction	returnKeyAction = ReturnKeyAction::Insert;
+			KeyAction		returnKeyAction = KeyAction::Insert;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			tabLock = false;
@@ -79,8 +79,12 @@ namespace wg
 
 		//.____ Behavior ______________________________________________________
 
-		void			setReturnKeyAction(ReturnKeyAction action);
-		inline ReturnKeyAction	returnKeyAction() { return m_returnKeyAction; }
+		void				setReturnKeyAction(KeyAction action);
+		inline KeyAction	returnKeyAction() { return m_returnKeyAction; }
+
+		void				setTabKeyAction(KeyAction action);
+		inline KeyAction	tabKeyAction() { return m_tabKeyAction; }
+
 
 		//.____ Internal _________________________________________________
 
@@ -103,7 +107,8 @@ namespace wg
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
 
-		ReturnKeyAction	m_returnKeyAction = ReturnKeyAction::Insert;
+		KeyAction	m_returnKeyAction = KeyAction::Insert;
+		KeyAction	m_tabKeyAction = KeyAction::Insert;
 	};
 
 } // namespace wg

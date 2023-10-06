@@ -306,9 +306,9 @@ namespace wg
 		Break
 	};
 
-	//____ ReturnKeyAction _______________________________________________________
+	//____ KeyAction _______________________________________________________
 
-	enum class ReturnKeyAction
+	enum class KeyAction
 	{
 		None,					// Return is ignored
 		Insert,					// Return is inserted into the text
