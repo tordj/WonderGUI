@@ -65,6 +65,7 @@ namespace wg
 			bool			selectable = true;
 			Skin_p			skin;
 			int				steps = 0;
+			bool			stickyFocus = false;
 			bool			tabLock = false;
 			String			tooltip;
 			float			value = 0.f;

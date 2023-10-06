@@ -72,6 +72,7 @@ namespace wg
 			Skin_p				skin;
 			bool				stealWheelFromScrollbars = true;
 			pts					stepSize 			= 8;
+			bool				stickyFocus			= false;
 			bool				tabLock 			= false;
 			String				tooltip;
 			int					wheelForX 			= 2;

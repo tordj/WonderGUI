@@ -439,9 +439,23 @@ namespace wg
 		// Save info for the future
 
 		m_latestPressWidgets[(int)button]		= pWidget;
-		m_latestPressTimestamps[(int)button] 	= timestamp;
-		m_latestPressPosition[(int)button] 		= m_pointerPos;
-		m_latestPressDoubleClick[(int)button] 	= doubleClick;
+		m_latestPressTimestamps[(int)button]	= timestamp;
+		m_latestPressPosition[(int)button]		= m_pointerPos;
+		m_latestPressDoubleClick[(int)button]	= doubleClick;
+
+		// Check stickiness of focus, i.e. wether widget should keep focus when mouse pressed outside.
+
+		Widget* pFocused = _focusedWidget();
+		if (pFocused)
+		{
+			bool focusedIsSameOrAncestor = pFocused == pWidget ? true : pFocused->isContainer() && static_cast<Container*>(pFocused)->contains(pWidget);
+
+			if (!focusedIsSameOrAncestor)
+			{
+				if (!pFocused->hasStickyFocus())
+					pFocused->releaseFocus();
+			}
+		}
 	}
 
 

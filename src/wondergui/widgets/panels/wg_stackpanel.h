@@ -132,6 +132,7 @@ namespace wg
 			PointerStyle	pointer			= PointerStyle::Default;
 			bool			selectable		= true;
 			Skin_p			skin;
+			bool			stickyFocus		= false;
 			bool			tabLock			= false;
 			String			tooltip;
 		};

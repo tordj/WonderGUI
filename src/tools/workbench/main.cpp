@@ -1263,7 +1263,7 @@ bool lineEditorTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pSkin = ColorSkin::create(Color::YellowGreen, 10);
 	auto pFlex = FlexPanel::create();
 
-	auto pEditor = LineEditor::create( { .skin = pSkin });
+	auto pEditor = LineEditor::create( { .skin = pSkin, .stickyFocus = true });
 	pEditor->editor.setText("TEXT.");
 	pFlex->slots.pushBack(pEditor, { .pos = {10,100}, .size = {80,40} });
 

@@ -184,6 +184,12 @@ namespace wg
 		m_bDropTarget = bDropTarget;
 	}
 
+	//____ setStickyFocus() ___________________________________________________
+
+	void Widget::setStickyFocus(bool bSticky)
+	{
+		m_bStickyFocus = bSticky;
+	}
 
 	//____ setEnabled() _______________________________________________________________
 	/**

@@ -129,6 +129,7 @@ namespace wg
 			Skin_p					skin;
 			std::function<int(const Widget *, const Widget *)> sortFunc;
 			SortOrder				sortOrder	= SortOrder::Ascending;
+			bool					stickyFocus = false;
 			bool					tabLock 	= false;
 			String					tooltip;
 		};

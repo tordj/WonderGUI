@@ -71,6 +71,7 @@ namespace wg
 			bool			selectable = true;
 			pts				singleStepMovement = 8;
 			Skin_p			skin;
+			bool			stickyFocus = false;
 			bool			tabLock = false;
 			String			tooltip;
 			pts				viewLength = 0;

@@ -90,6 +90,7 @@ namespace wg
 			bool			selected = false;
 			bool			selectable = true;
 			Skin_p			skin;
+			bool			stickyFocus = false;
 			bool			tabLock = false;
 			String			tooltip;
 		};

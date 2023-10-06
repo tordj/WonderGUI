@@ -59,6 +59,7 @@ namespace wg
 			KeyAction		returnKeyAction = KeyAction::Insert;
 			bool			selectable = true;
 			Skin_p			skin;
+			bool			stickyFocus = false;
 			bool			tabLock = false;
 			String			tooltip;
 		};

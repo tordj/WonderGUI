@@ -82,6 +82,7 @@ namespace wg
 			PointerStyle	pointer = PointerStyle::Default;
 			bool			selectable = true;
 			Skin_p			skin;
+			bool			stickyFocus = false;
 			Surface_p		surface;
 			Coord			surfaceOffset;
 			Placement		surfacePlacement = Placement::Center;

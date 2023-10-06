@@ -70,6 +70,7 @@ namespace wg
 	PointerStyle	pointer = PointerStyle::Default;
 	bool			selectable = true;
 	Skin_p			skin;
+	bool			stickyFocus = false;
 	bool			tabLock = false;
 	String			tooltip;
 */
@@ -185,6 +186,9 @@ namespace wg
 		void                setDropTarget( bool bDropTarget );
 		inline bool         isDropTarget() const;
 
+		void				setStickyFocus(bool bSticky);
+		inline bool			hasStickyFocus() const { return m_bStickyFocus; }
+
 
 		//.____ Misc __________________________________________________________
 
@@ -253,6 +257,7 @@ namespace wg
 			m_pickCategory	= bp.pickCategory;
 			m_pointerStyle	= bp.pointer;
 			m_bSelectable	= bp.selectable;
+			m_bStickyFocus	= bp.stickyFocus;
 			m_bTabLock		= bp.tabLock;
 			m_tooltip		= bp.tooltip;
 			
@@ -357,6 +362,7 @@ namespace wg
 		bool			m_bSelectable = true;			// Set if widget is allowed to be selected.
 		bool			m_bReceivingUpdates = false;	//
 		bool			m_bPressed = false;				// Keeps track of pressed button when mouse leaves/re-enters widget.
+		bool			m_bStickyFocus = true;			// Set if widget should keep keyboard focus when mouse button pressed outside it.
 
 
 		SizeSPX			m_size = { 256 * 64,256 * 64 };	// Current size of widget.

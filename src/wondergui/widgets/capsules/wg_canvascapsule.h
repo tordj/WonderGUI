@@ -70,6 +70,7 @@ namespace wg
 			int				renderLayer		= -1;
 			bool			selectable		= true;
 			Skin_p			skin;
+			bool			stickyFocus		= false;
 			SurfaceFactory_p surfaceFactory;
 			bool			tabLock			= false;
 			HiColor			tintColor		= HiColor::Undefined;

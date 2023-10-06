@@ -71,6 +71,7 @@ namespace wg
 			int				scale = 64;
 			bool			selectable = true;
 			Skin_p			skin;
+			bool			stickyFocus = false;
 			bool			tabLock = false;
 			String			tooltip;
 		};

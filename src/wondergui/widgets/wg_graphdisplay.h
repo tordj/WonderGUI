@@ -287,6 +287,7 @@ class GraphDisplay;
 			pts				sideLabelSpacing = 4;
 
 			Skin_p			skin;
+			bool			stickyFocus = false;
 			bool			tabLock = false;
 
 			TextLayout_p	textLayout;

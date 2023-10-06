@@ -54,6 +54,7 @@ namespace wg
 			int				renderLayer		= -1;
 			bool			selectable		= true;
 			Skin_p			skin;
+			bool			stickyFocus = false;
 			bool			tabLock			= false;
 			String			tooltip;
 		};
