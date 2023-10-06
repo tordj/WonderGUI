@@ -49,7 +49,8 @@ namespace wg
 		std::string	getClipboardText() override;
 		bool		setClipboardText(const std::string& text) override;
 		
-		bool		raiseWindow(uintptr_t windowRef) override;
+		bool		requestFocus(uintptr_t windowRef) override;
+		bool		yieldFocus(uintptr_t windowRef) override;
 
 		
 	protected:

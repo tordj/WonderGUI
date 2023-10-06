@@ -722,11 +722,15 @@ namespace wg
 		Widget* pOldFocus = m_pFocusedChild.rawPtr();
 		m_pFocusedChild = pWidget;
 
-		// Check if we need to raise window.
+		// Check if we need to request window focus.
 
-		if( bRaiseWindow && Base::inputHandler()->focusedWindow() != this )
-			if( !Base::hostBridge()->raiseWindow(m_windowRef) )
+		if (bRaiseWindow && Base::inputHandler()->focusedWindow() != this)
+		{
+			if (!Base::hostBridge()->requestFocus(m_windowRef))
 				return false;
+
+			Base::inputHandler()->setFocusedWindow(this);
+		}
 		
 		//
 
@@ -741,14 +745,17 @@ namespace wg
 	bool RootPanel::_childReleaseFocus(StaticSlot* pSlot, Widget* pWidget)
 	{
 		if (pWidget != m_pFocusedChild.rawPtr())
-			return true;					// Never had focus, although widget seems to believe it.
-
-		if (pWidget == slot._widget())
-			return false;
+			return true;					// Didn't have focus, although widget seems to believe it.
 
 		Widget* pOldFocus = m_pFocusedChild;
 		m_pFocusedChild = slot._widget();
-		return Base::inputHandler()->_focusChanged(this, pOldFocus, slot._widget());
+
+		if (Base::hostBridge()->yieldFocus(m_windowRef)) // Let OS know that we don't need focus anymore.
+			Base::inputHandler()->setFocusedWindow(nullptr);
+		else if( m_pFocusedChild != pOldFocus )
+			Base::inputHandler()->_focusChanged(this, pOldFocus, m_pFocusedChild);
+
+		return (Base::inputHandler()->focusedWidget() != pWidget);
 	}
 
 	//____ _childRequestInView() __________________________________________________

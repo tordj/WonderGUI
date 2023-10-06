@@ -36,7 +36,8 @@ extern "C" {
 	int		wg_getClipboardText( void * pHostBridge, int maxChars, char * pDest );
 	int		wg_setClipboardText( void * pHostBridge, const char * pText );
 
-	int		wg_raiseWindow( void * pHostBridge, uintptr_t windowRef);
+	int		wg_requestWindowFocus( void * pHostBridge, uintptr_t windowRef);
+	int		wg_yieldWindowFocus(void* pHostBridge, uintptr_t windowRef);
 
 	
 

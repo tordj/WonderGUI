@@ -44,7 +44,8 @@ namespace wg
 		virtual std::string	getClipboardText() = 0;
 		virtual bool		setClipboardText(const std::string& text) = 0;
 		
-		virtual bool		raiseWindow(uintptr_t windowRef) = 0;
+		virtual bool		requestFocus(uintptr_t windowRef) = 0;
+		virtual bool		yieldFocus(uintptr_t windowRef) = 0;
 	};
 }
 

@@ -303,7 +303,8 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pBody->hostBridge.showPointer			= &wg_showPointer;
 	pBody->hostBridge.getClipboardText		= &wg_getClipboardText;
 	pBody->hostBridge.setClipboardText		= &wg_setClipboardText;
-	pBody->hostBridge.raiseWindow			= &wg_raiseWindow;
+	pBody->hostBridge.requestWindowFocus	= &wg_requestWindowFocus;
+	pBody->hostBridge.yieldWindowFocus		= &wg_yieldWindowFocus;
 
 	pBody->pluginCapsule.structSize			= sizeof(wg_plugincapsule_calls);
 	pBody->pluginCapsule.requestRender 		= &wg_pluginRequestRender;

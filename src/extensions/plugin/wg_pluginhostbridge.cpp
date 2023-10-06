@@ -59,13 +59,19 @@ namespace wg
 		return PluginCalls::hostBridge->setClipboardText(m_pHostBridge,text.c_str());
 	}
 	
-	//____ raiseWindow() _________________________________________________________
+	//____ requestFocus() _________________________________________________________
 
-	bool PluginHostBridge::raiseWindow(uintptr_t windowRef)
+	bool PluginHostBridge::requestFocus(uintptr_t windowRef)
 	{
-		return PluginCalls::hostBridge->raiseWindow(m_pHostBridge, windowRef);
+		return PluginCalls::hostBridge->requestWindowFocus(m_pHostBridge, windowRef);
 	}
 
+	//____ yieldFocus() _________________________________________________________
+
+	bool PluginHostBridge::yieldFocus(uintptr_t windowRef)
+	{
+		return PluginCalls::hostBridge->yieldWindowFocus(m_pHostBridge, windowRef);
+	}
 
 
 } // namespace wg

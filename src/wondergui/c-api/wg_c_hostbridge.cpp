@@ -60,7 +60,12 @@ int wg_setClipboardText( void * pHostBridge, const char * pText )
 	return getPtr(pHostBridge)->setClipboardText(pText);
 }
 
-int wg_raiseWindow( void * pHostBridge, uintptr_t windowRef)
+int wg_requestWindowFocus( void * pHostBridge, uintptr_t windowRef)
 {
-	return getPtr(pHostBridge)->raiseWindow( windowRef );
+	return getPtr(pHostBridge)->requestFocus( windowRef );
+}
+
+int wg_yieldWindowFocus(void* pHostBridge, uintptr_t windowRef)
+{
+	return getPtr(pHostBridge)->yieldFocus(windowRef);
 }

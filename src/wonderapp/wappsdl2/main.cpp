@@ -108,7 +108,8 @@ public:
 	std::string	getClipboardText() override;
 	bool		setClipboardText(const std::string& text) override;
 	
-	bool		raiseWindow(uintptr_t windowRef) override;
+	bool		requestFocus(uintptr_t windowRef) override;
+	bool		yieldFocus(uintptr_t windowRef) override;
 };
 
 
@@ -1018,9 +1019,9 @@ bool MyHostBridge::setClipboardText(const std::string& text )
 	return true;
 }
 
-//____ raiseWindow() _________________________________________________________
+//____ requestFocus() _________________________________________________________
 
-bool MyHostBridge::raiseWindow(uintptr_t windowRef)
+bool MyHostBridge::requestFocus(uintptr_t windowRef)
 {
 	auto pWindow = reinterpret_cast<SDLWindow*>(windowRef);
 	
@@ -1048,4 +1049,9 @@ bool MyHostBridge::raiseWindow(uintptr_t windowRef)
 	return false;
 }
 
+//____ yieldFocus() _________________________________________________________
 
+bool MyHostBridge::yieldFocus(uintptr_t windowRef)
+{
+	return false;		// Window still has focus.
+}
