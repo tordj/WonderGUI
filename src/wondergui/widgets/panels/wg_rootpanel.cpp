@@ -726,7 +726,7 @@ namespace wg
 
 		if (bRaiseWindow && Base::inputHandler()->focusedWindow() != this)
 		{
-			if (!Base::hostBridge()->requestFocus(m_windowRef))
+			if (Base::hostBridge() && !Base::hostBridge()->requestFocus(m_windowRef))
 				return false;
 
 			Base::inputHandler()->setFocusedWindow(this);
@@ -750,7 +750,7 @@ namespace wg
 		Widget* pOldFocus = m_pFocusedChild;
 		m_pFocusedChild = slot._widget();
 
-		if (Base::hostBridge()->yieldFocus(m_windowRef)) // Let OS know that we don't need focus anymore.
+		if (Base::hostBridge() && Base::hostBridge()->yieldFocus(m_windowRef)) // Let OS know that we don't need focus anymore.
 			Base::inputHandler()->setFocusedWindow(nullptr);
 		else if( m_pFocusedChild != pOldFocus )
 			Base::inputHandler()->_focusChanged(this, pOldFocus, m_pFocusedChild);

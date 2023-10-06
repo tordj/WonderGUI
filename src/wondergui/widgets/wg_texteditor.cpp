@@ -38,6 +38,14 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ setReturnKeyAction() ______________________________________________
+
+	void TextEditor::setReturnKeyAction(ReturnKeyAction action)
+	{
+		m_returnKeyAction = action;
+	}
+
+
 	//____ _matchingWidth() _______________________________________________________
 
 	spx TextEditor::_matchingWidth(spx height, int scale) const
@@ -97,6 +105,35 @@ namespace wg
 
 	void TextEditor::_receive( Msg * pMsg )
 	{
+		if (pMsg->type() == MsgType::KeyPress)
+		{
+			auto keyCode = static_cast<KeyPressMsg*>(pMsg)->translatedKeyCode();
+
+			// We don't swallow msg on purpose. Parent might also want to react on escape.
+
+			if (keyCode == Key::Return)
+			{
+				switch (m_returnKeyAction)
+				{
+					case ReturnKeyAction::None:
+						return;
+					case ReturnKeyAction::Insert:
+						break;
+					case ReturnKeyAction::ReleaseFocus:
+					{
+						releaseFocus();
+						return;
+					}
+					case ReturnKeyAction::CycleFocus:
+					{
+						//TODO: Implement!!!
+						return;
+					}
+				}
+			}
+		}
+
+
 		Widget::_receive( pMsg );
 		editor._receive( pMsg );
 	}

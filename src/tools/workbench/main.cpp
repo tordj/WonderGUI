@@ -664,7 +664,7 @@ int main(int argc, char** argv)
 		//	scrollIntoViewTest(pRoot->child.ptr());
 		//	textClipTest(pSlot);
 		//	textEditorTest(pSlot);
-		//	lineEditorTest(pSlot);
+			lineEditorTest(pSlot);
 		//	popupOpenerTest(pSlot);
 		//	scrollbarTest(pSlot);
 		//	modalLayerTest(pSlot);
@@ -699,7 +699,7 @@ int main(int argc, char** argv)
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
 		//	graphDisplayTest(pSlot);
-			nortonCommanderTest(pSlot);
+		//	nortonCommanderTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -1261,17 +1261,17 @@ bool textEditorTest(ComponentPtr<DynamicSlot> pEntry)
 bool lineEditorTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen, 10);
-
-	auto pEditor = LineEditor::create();
-
-	pEditor->editor.setText("TEXT.");
-	pEditor->setSkin( pSkin );
-
 	auto pFlex = FlexPanel::create();
+
+	auto pEditor = LineEditor::create( { .skin = pSkin });
+	pEditor->editor.setText("TEXT.");
 	pFlex->slots.pushBack(pEditor, { .pos = {10,100}, .size = {80,40} });
 
-	* pEntry = pFlex;
+	auto pEditor2 = LineEditor::create({ .skin = pSkin });
+	pEditor2->editor.setText("TEXT.");
+	pFlex->slots.pushBack(pEditor2, { .pos = {10,150}, .size = {80,40} });
 
+	* pEntry = pFlex;
 	return true;
 }
 

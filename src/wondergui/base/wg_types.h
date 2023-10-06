@@ -306,6 +306,16 @@ namespace wg
 		Break
 	};
 
+	//____ ReturnKeyAction _______________________________________________________
+
+	enum class ReturnKeyAction
+	{
+		None,					// Return is ignored
+		Insert,					// Return is inserted into the text
+		ReleaseFocus,			// Return releases focus, just like Escape
+		CycleFocus				// Return cycles focus, just like Tab
+	};
+
 	//___  TextDecoration ________________________________________________________
 
 	enum class TextDecoration
