@@ -855,6 +855,7 @@ namespace wg
 				bool		bHasColors;
 				bool		bHasGradients;
 
+				*m_pDecoder >> edgemapId;
 				*m_pDecoder >> size;
 				*m_pDecoder >> nbSegments;
 				*m_pDecoder >> bHasColors;
