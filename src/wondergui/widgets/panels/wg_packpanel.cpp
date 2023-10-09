@@ -41,7 +41,6 @@ namespace wg
 	{
 		m_weight = bp.weight;
 		m_bVisible = bp.visible;
-		m_padding = bp.padding;
 		return true;
 	}
 
@@ -98,6 +97,32 @@ namespace wg
 		}
 	}
 
+	//____ setSpacing() _______________________________________________________
+
+	void PackPanel::setSpacing(pts before, pts between, pts after)
+	{
+		if (before == m_spacingBefore && between == m_spacingBetween && after == m_spacingAfter)
+			return;
+
+		m_spacingBefore = before;
+		m_spacingBetween = between;
+		m_spacingAfter = after;
+		_refreshGeometries();
+	}
+
+	void PackPanel::setSpacing(pts between)
+	{
+		if (0 == m_spacingBefore && between == m_spacingBetween && 0 == m_spacingAfter)
+			return;
+
+		m_spacingBefore = 0;
+		m_spacingBetween = between;
+		m_spacingAfter = 0;
+		_refreshGeometries();
+	}
+
+
+
 	//____ hideSlots() ___________________________________________________________
 
 	void PackPanel::hideSlots(int index, int amount)
@@ -118,38 +143,6 @@ namespace wg
 	void PackPanel::unhideSlots(iterator beg, iterator end)
 	{
 		_unhideSlots( beg, end - beg);
-	}
-
-	//____ setPadding() _______________________________________________________
-
-	bool PackPanel::setSlotPadding(int index, int amount, Border padding)
-	{
-		_repadSlots( &slots[index], amount, padding);
-		return true;
-	}
-
-	bool PackPanel::setSlotPadding(iterator beg, iterator end, Border padding)
-	{
-		_repadSlots(beg, int(end - beg), padding);
-		return true;
-	}
-
-	bool PackPanel::setSlotPadding(int index, int amount, std::initializer_list<Border> padding)
-	{
-		if( padding.size() < amount )
-			return false;
-		
-		_repadSlots( &slots[index], amount, padding.begin());
-		return true;
-	}
-
-	bool PackPanel::setSlotPadding(iterator beg, iterator end, std::initializer_list<Border> padding)
-	{
-		if( padding.size() < (end - beg) )
-			return false;
-
-		_repadSlots(beg, int(end - beg), padding.begin());
-		return true;
 	}
 
 	//____ setWeight() ___________________________________________________________
@@ -196,7 +189,7 @@ namespace wg
 		if (scale != m_scale)
 			return _calcDefaultSize(scale);
 		else
-			return m_defaultContentSize + m_skin.contentPaddingSize(scale);
+			return m_defaultContentSize + m_skin.contentBorderSize(scale);
 	}
 
 	//____ _matchingHeight() _______________________________________________________
@@ -209,6 +202,10 @@ namespace wg
 		{
 			if( m_bHorizontal )
 			{
+				width -= align(ptsToSpx(m_spacingBefore, scale)) +
+					align(ptsToSpx(m_spacingAfter, scale)) +
+					align(ptsToSpx(m_spacingBetween, scale)) * (slots.size() - 1);
+
 				if( m_pLayout )
 				{
 					// Allocate and populate Layout array
@@ -227,7 +224,7 @@ namespace wg
 					{
 						if( pS->m_bVisible )
 						{
-							spx itemHeight = pS->_paddedMatchingHeight( *pOutput, scale );
+							spx itemHeight = pS->_widget()->_matchingHeight( *pOutput, scale );
 							if( itemHeight > height )
 								height = itemHeight;
 							pOutput++;
@@ -254,7 +251,7 @@ namespace wg
 						{
 							if (pS->m_bVisible)
 							{
-								spx h = pS->_paddedDefaultSize(scale).h;
+								spx h = pS->_widget()->_defaultSize(scale).h;
 								if (h > height)
 									height = h;
 							}
@@ -287,13 +284,17 @@ namespace wg
 					for( auto pS = slots.begin() ; pS != slots.end() ; pS++ )
 					{
 						if( pS->m_bVisible )
-							height += pS->_paddedMatchingHeight( width, scale );
+							height += pS->_widget()->_matchingHeight( width, scale );
 					}
 				}
+
+				height += align(ptsToSpx(m_spacingBefore, scale)) +
+					align(ptsToSpx(m_spacingAfter, scale)) +
+					align(ptsToSpx(m_spacingBetween, scale)) * (slots.size() - 1);
 			}
 		}
 
-		height += m_skin.contentPaddingSize(scale).h;
+		height += m_skin.contentBorderSize(scale).h;
 
 		return height;
 	}
@@ -308,6 +309,10 @@ namespace wg
 		{
 			if( !m_bHorizontal )
 			{
+				height -= align(ptsToSpx(m_spacingBefore, scale)) +
+					align(ptsToSpx(m_spacingAfter, scale)) +
+					align(ptsToSpx(m_spacingBetween, scale)) * (slots.size() - 1);
+
 				if( m_pLayout )
 				{
 					// Allocate and populate SizeBroker array
@@ -327,7 +332,7 @@ namespace wg
 					{
 						if( pS->m_bVisible )
 						{
-							spx itemWidth = pS->_paddedMatchingWidth( *pOutput, scale );
+							spx itemWidth = pS->_widget()->_matchingWidth( *pOutput, scale );
 							if( itemWidth > width )
 								width = itemWidth;
 							pOutput++;
@@ -354,7 +359,7 @@ namespace wg
 						{
 							if (pS->m_bVisible)
 							{
-								spx w = pS->_paddedDefaultSize(scale).w;
+								spx w = pS->_widget()->_defaultSize(scale).w;
 								if (w > width)
 									width = w;
 							}
@@ -387,13 +392,17 @@ namespace wg
 					for( auto pS = slots.begin() ; pS != slots.end() ; pS++ )
 					{
 						if( pS->m_bVisible )
-							width += pS->_paddedMatchingWidth( height, scale );
+							width += pS->_widget()->_matchingWidth( height, scale );
 					}
 				}
+
+				width += align(ptsToSpx(m_spacingBefore, scale)) +
+					align(ptsToSpx(m_spacingAfter, scale)) +
+					align(ptsToSpx(m_spacingBetween, scale)) * (slots.size() - 1);
 			}
 		}
 
-		width += m_skin.contentPaddingSize(scale).w;
+		width += m_skin.contentBorderSize(scale).w;
 
 		return width;
 	}
@@ -487,7 +496,7 @@ namespace wg
 		for (int i = 0; i < nb; i++)
 		{
 			if (pSlot[i].m_bVisible == true)
-				pSlot[i].m_defaultSize = pSlot[i]._paddedDefaultSize(m_scale);
+				pSlot[i].m_defaultSize = pSlot[i]._widget()->_defaultSize(m_scale);
 		}
 
 		_refreshGeometries();
@@ -523,40 +532,6 @@ namespace wg
 	void PackPanel::_unhideSlots(StaticSlot * pSlot, int nb)
 	{
 		_unhideChildren((Slot*) pSlot, nb);
-	}
-
-	//____ _repadSlots() ______________________________________________________
-
-	void PackPanel::_repadSlots(StaticSlot * _pSlot, int nb, Border padding)
-	{
-//		TJFIX!!!  Also set m_paddingSPX and use that for geometry instead!
-
-	//TODO: Optimize. No need to ask widget for defaultSize, just recalc padding in spx
-
-		Slot* pSlot = static_cast<Slot*>(_pSlot);
-
-		for (int i = 0; i < nb; i++)
-		{
-			pSlot[i].m_padding = padding;
-			pSlot[i].m_defaultSize = pSlot[i]._paddedDefaultSize(m_scale);
-		}
-
-		_refreshGeometries();
-	}
-
-	void PackPanel::_repadSlots(StaticSlot * _pSlot, int nb, const Border * pPaddings)
-	{
-		//TODO: Optimize. No need to ask widget for defaultSize, just recalc padding in spx
-
-		Slot* pSlot = static_cast<Slot*>(_pSlot);
-
-		for (int i = 0; i < nb; i++)
-		{
-			pSlot[i].m_padding = * pPaddings++;
-			pSlot[i].m_defaultSize = pSlot[i]._paddedDefaultSize(m_scale);
-		}
-
-		_refreshGeometries();
 	}
 
 	//____ _reweightSlots() ______________________________________________________
@@ -633,7 +608,7 @@ namespace wg
 		// Update cached preferred size of child
 
 		Slot * pSlot = static_cast<Slot*>(_pSlot);
-		pSlot->m_defaultSize = pSlot->_paddedDefaultSize(m_scale);
+		pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(m_scale);
 		pSlot->m_bResizeRequired = true;
 
 		_refreshGeometries();
@@ -685,7 +660,7 @@ namespace wg
 		if (pSlot->m_bVisible)
 		{
 			pSlot->m_bVisible = true;
-			pSlot->m_defaultSize = pSlot->_paddedDefaultSize(m_scale);
+			pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(m_scale);
 		}
 
 	}
@@ -700,7 +675,7 @@ namespace wg
 			if (pSlot[i].m_bVisible == false)
 			{
 				pSlot[i].m_bVisible = true;
-				pSlot[i].m_defaultSize = pSlot[i]._paddedDefaultSize(m_scale);
+				pSlot[i].m_defaultSize = pSlot[i]._widget()->_defaultSize(m_scale);
 			}
 		}
 
@@ -732,7 +707,7 @@ namespace wg
 		// Recalculate preferred sizes for widget and content.
 
 		SizeSPX newDefaultContentSize = _calcDefaultSize(m_scale);
-		SizeSPX newDefaultSize = newDefaultContentSize + m_skin.contentPaddingSize(m_scale);
+		SizeSPX newDefaultSize = newDefaultContentSize + m_skin.contentBorderSize(m_scale);
 
 		// request resize or just refresh child geo, depending on what is needed.
 
@@ -755,7 +730,7 @@ namespace wg
 			for (auto pSlot = slots.begin(); pSlot != slots.end(); pSlot++)
 			{
 				pSlot->m_bResizeRequired = true;
-				pSlot->m_defaultSize = pSlot->_paddedDefaultSize(scale);
+				pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(scale);
 			}
 		}
 		
@@ -791,7 +766,7 @@ namespace wg
 				{
 					if( pS->m_bVisible )
 					{
-						spx b = m_bHorizontal?pS->_paddedMatchingHeight(*pOutput, scale):pS->_paddedMatchingWidth(*pOutput, scale);
+						spx b = m_bHorizontal?pS->_widget()->_matchingHeight(*pOutput, scale):pS->_widget()->_matchingWidth(*pOutput, scale);
 						if( b > breadth )
 							breadth = b;
 						pI++;
@@ -864,9 +839,14 @@ namespace wg
 				}
 			
 			}
+
+			length += align(ptsToSpx(m_spacingBefore, m_scale)) +
+				align(ptsToSpx(m_spacingAfter, m_scale)) +
+				align(ptsToSpx(m_spacingBetween, m_scale)) * (slots.size() - 1);
 		}
 
 		//
+
 
 		return m_bHorizontal?SizeSPX(length,breadth):SizeSPX(breadth,length);
 	}
@@ -878,12 +858,18 @@ namespace wg
 		if( slots.isEmpty() )
 			return;
 
-		SizeSPX sz = m_size - m_skin.contentPaddingSize(m_scale);
+		SizeSPX sz = m_size - m_skin.contentBorderSize(m_scale);
 		CoordSPX contentOfs = m_skin.contentOfs(m_scale, State::Normal);			//TODO: Support offset changing in different states.
 
 		spx wantedLength = m_bHorizontal?m_defaultContentSize.w:m_defaultContentSize.h;
 		spx givenLength = m_bHorizontal?sz.w:sz.h;
 		spx givenBreadth = m_bHorizontal?sz.h:sz.w;
+
+		spx spacingBefore = align(ptsToSpx(m_spacingBefore, m_scale));
+		spx spacingAfter = align(ptsToSpx(m_spacingAfter, m_scale));
+		spx spacingBetween = align(ptsToSpx(m_spacingBetween, m_scale));
+
+		givenLength -= spacingBefore + spacingAfter + spacingBetween * (slots.size()-1);
 
 		// Optimized special case, just copy preferred to length.
 		//TODO: We probably need to use matchingWidth()/matchingHeight() here anyway... prefered length might change with given breadth
@@ -892,6 +878,12 @@ namespace wg
 		{
 			CoordSPX pos;
 			RectSPX geo;
+
+			if (m_bHorizontal)
+				pos.x = spacingBefore;
+			else
+				pos.y = spacingBefore;
+
 			for (auto p = slots.begin(); p != slots.end(); p++)
 			{
 				if( p->m_bVisible )
@@ -902,15 +894,14 @@ namespace wg
 					{
 						geo.w = p->m_defaultSize.w;
 						geo.h = sz.h;
-						pos.x += p->m_defaultSize.w;
+						pos.x += p->m_defaultSize.w + spacingBetween;
 					}
 					else
 					{
 						geo.w = sz.w;
 						geo.h = p->m_defaultSize.h;
-						pos.y += p->m_defaultSize.h;
+						pos.y += p->m_defaultSize.h + spacingBetween;
 					}
-					geo -= align(ptsToSpx(p->m_padding,m_scale));
 					geo += contentOfs;
 
 					if( geo != p->m_geo )
@@ -975,6 +966,12 @@ namespace wg
 
 			CoordSPX pos;
 			RectSPX geo;
+
+			if (m_bHorizontal)
+				pos.x = spacingBefore;
+			else
+				pos.y = spacingBefore;
+
 			for (auto p = slots.begin(); p != slots.end(); p++)
 			{
 				if( p->m_bVisible )
@@ -985,15 +982,14 @@ namespace wg
 					{
 						geo.w = *pOutput;
 						geo.h = sz.h;
-						pos.x += *pOutput;
+						pos.x += *pOutput + spacingBetween;
 					}
 					else
 					{
 						geo.w = sz.w;
 						geo.h = *pOutput;
-						pos.y += *pOutput;
+						pos.y += *pOutput + spacingBetween;
 					}
-					geo -= align(ptsToSpx(p->m_padding,m_scale));
 					geo += contentOfs;
 
 					if( geo != p->m_geo )
@@ -1059,8 +1055,8 @@ namespace wg
 				if( pS->m_bVisible )
 				{
 					pI->def = pS->m_defaultSize.w;
-					pI->min = pS->_paddedMinSize(m_scale).w;
-					pI->max = pS->_paddedMaxSize(m_scale).w;
+					pI->min = pS->_widget()->_minSize(m_scale).w;
+					pI->max = pS->_widget()->_maxSize(m_scale).w;
 					pI->weight = pS->m_weight*65536;
 					pI++;
 				}
@@ -1073,8 +1069,8 @@ namespace wg
 				if( pS->m_bVisible )
 				{
 					pI->def = pS->m_defaultSize.h;
-					pI->min = pS->_paddedMinSize(m_scale).h;
-					pI->max = pS->_paddedMaxSize(m_scale).h;
+					pI->min = pS->_widget()->_minSize(m_scale).h;
+					pI->max = pS->_widget()->_maxSize(m_scale).h;
 					pI->weight = pS->m_weight*65536;
 					pI++;
 				}
@@ -1094,9 +1090,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->def = pS->_paddedMatchingWidth(forcedBreadth,m_scale);
-					pI->min = pS->_paddedMinSize(m_scale).w;
-					pI->max = pS->_paddedMaxSize(m_scale).w;
+					pI->def = pS->_widget()->_matchingWidth(forcedBreadth,m_scale);
+					pI->min = pS->_widget()->_minSize(m_scale).w;
+					pI->max = pS->_widget()->_maxSize(m_scale).w;
 					pI->weight = pS->m_weight*65536;
 					pI++;
 				}
@@ -1108,9 +1104,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->def = pS->_paddedMatchingHeight(forcedBreadth,m_scale);
-					pI->min = pS->_paddedMinSize(m_scale).h;
-					pI->max = pS->_paddedMaxSize(m_scale).h;
+					pI->def = pS->_widget()->_matchingHeight(forcedBreadth,m_scale);
+					pI->min = pS->_widget()->_minSize(m_scale).h;
+					pI->max = pS->_widget()->_maxSize(m_scale).h;
 					pI->weight = pS->m_weight*65536;
 					pI++;
 				}

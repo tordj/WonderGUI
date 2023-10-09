@@ -315,7 +315,7 @@ namespace wg
 
 		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
 
-		if (!pNewSkin || !pOldSkin || pNewSkin->_paddingSize(m_scale) != pOldSkin->_paddingSize(m_scale) ||
+		if (!pNewSkin || !pOldSkin || pNewSkin->_contentBorderSize(m_scale) != pOldSkin->_contentBorderSize(m_scale) ||
 			pNewSkin->_defaultSize(m_scale) != pOldSkin->_defaultSize(m_scale) || pNewSkin->_minSize(m_scale) != pOldSkin->_minSize(m_scale))
 			_requestResize();
 	}
@@ -794,7 +794,7 @@ namespace wg
 
 	SizeSPX Widget::_componentSize( const Component * pComponent ) const
 	{
-			return m_size - m_skin.contentPaddingSize(m_scale);
+			return m_size - m_skin.contentBorderSize(m_scale);
 	}
 
 	//____ _componentGeo() ____________________________________________________

@@ -56,7 +56,7 @@ namespace wg
 
 	spx TextEditor::_matchingWidth(spx height, int scale) const
 	{
-		SizeSPX padding = _paddingSize();
+		SizeSPX padding = _contentBorderSize();
 
 		height -= padding.h;
 		spx textWidth = editor._matchingWidth(height, scale);
@@ -68,7 +68,7 @@ namespace wg
 
 	spx TextEditor::_matchingHeight( spx width, int scale ) const
 	{
-		SizeSPX padding = _paddingSize();
+		SizeSPX padding = _contentBorderSize();
 
 		width -= padding.w;
 		spx textHeight = editor._matchingHeight( width, scale );
@@ -153,7 +153,7 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		editor._setSize(size - m_skin.contentPaddingSize(m_scale), m_scale);
+		editor._setSize(size - m_skin.contentBorderSize(m_scale), m_scale);
 	}
 
 } // namespace wg

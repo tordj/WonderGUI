@@ -569,13 +569,13 @@ Widget_p MyApp::createInputPanel()
 	pBottomRow->slots << pSRGBLabel;
 	pBottomRow->slots << pStemDarkeningSelector;
 
-	pBottomRow->setSlotPadding( 0, 6, Border(0,0,6,6) );
+	pBottomRow->setSpacing(6);
 	
 	
 	pBase->slots << pTopRow;
 	pBase->slots << pBottomRow;
 
-	pBase->slots[1].setPadding({4,0,0,0});
+	pBase->setSpacing(4,8,4);
 
 	m_pTTFPathDisplay = pPath;
 	m_pSizeSelector = pSizeSelector;
@@ -601,8 +601,6 @@ Widget_p MyApp::createCharsPanel()
 	pBase->setSkin(m_pPlateSkin);
 	
 	auto pLabel = TextDisplay::create( { .display = { .text = String("Characters to include") } } );
-	
-	
 	
 	auto pWindow = ScrollPanel::create();
 
@@ -630,6 +628,7 @@ Widget_p MyApp::createCharsPanel()
 	
 	pBase->slots << pLabel;
 	pBase->slots << pWindow;
+	pBase->setSpacing(4);
 
 	pBase->setSlotWeight(0, 2, {0.f, 1.f} );
 
@@ -677,7 +676,7 @@ Widget_p MyApp::createOutputPanel()
 	pTopPanel->slots << pSaveButton;
 
 	pTopPanel->setSlotWeight(0, 5, {0.f,1.f,0.f,0.f,0.f});
-	pTopPanel->setSlotPadding( 0,5, Border(0,4,4,4) );
+	pTopPanel->setSpacing(0,8,4 );
 	
 	
 	auto pWindow = ScrollPanel::create();
@@ -702,6 +701,7 @@ Widget_p MyApp::createOutputPanel()
 	pBase->slots << pWindow;
 
 	pBase->setSlotWeight(0, 2, {0.f, 1.f} );
+	pBase->setSpacing(4);
 	
 	m_pBitmapDisplay = Image::create();
 	pWindow->slot = m_pBitmapDisplay;

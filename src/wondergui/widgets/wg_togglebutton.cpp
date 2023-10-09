@@ -382,7 +382,7 @@ namespace wg
 
 	SizeSPX ToggleButton::_componentSize(const Component* pComponent) const
 	{
-		SizeSPX	sz = m_size - m_skin.contentPaddingSize(m_scale);
+		SizeSPX	sz = m_size - m_skin.contentBorderSize(m_scale);
 
 		RectSPX iconRect = _icon()._getIconRect(sz, m_scale);
 

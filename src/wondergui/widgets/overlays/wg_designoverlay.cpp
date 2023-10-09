@@ -190,7 +190,7 @@ namespace wg
 				RectSPX geo = palette.m_geo + _canvas.pos();
 
 				if (m_pToolboxSkin)
-					m_pToolboxSkin->_render(pDevice, geo + m_pToolboxSkin->_padding(m_scale, State::Normal), m_scale, State::Normal);
+					m_pToolboxSkin->_render(pDevice, geo + m_pToolboxSkin->_contentBorder(m_scale, State::Normal), m_scale, State::Normal);
 
 				RectSPX pxPaletteGeo = palette.m_geo;
 				if (pDevice->clipBounds().isOverlapping(pxPaletteGeo))
@@ -214,7 +214,7 @@ namespace wg
 		RectSPX selectedGeo = m_pSelectedWidget->_globalGeo() - _globalPos();
 
 		if (m_pSelectionSkin)
-			selectedGeo += m_pSelectionSkin->_padding(m_scale, State::Normal);
+			selectedGeo += m_pSelectionSkin->_contentBorder(m_scale, State::Normal);
 
 		return selectedGeo;
 	}
@@ -227,12 +227,12 @@ namespace wg
 		if (m_pSelectedWidget)
 		{
 			Placement placement = pSlot->m_placement;
-			BorderSPX palettePadding = m_pToolboxSkin ? m_pToolboxSkin->_padding(m_scale, State::Normal) : BorderSPX();
+			BorderSPX palettePadding = m_pToolboxSkin ? m_pToolboxSkin->_contentBorder(m_scale, State::Normal) : BorderSPX();
 
 			SizeSPX wantedSize = pSlot->_widget()->_defaultSize(pSlot->_widget()->_scale()) + palettePadding;
 
 			RectSPX selectedGeo = m_pSelectedWidget->_globalGeo() - _globalPos();
-			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->_padding(m_scale, State::Normal) : BorderSPX();
+			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->_contentBorder(m_scale, State::Normal) : BorderSPX();
 			RectSPX surroundBox = selectedGeo + BorderSPX(wantedSize.h+4, wantedSize.w+4);
 
 			CoordSPX ofs = placementToOfs(placement, surroundBox.size()) - placementToOfs(placement, wantedSize) + surroundBox.pos();
@@ -305,7 +305,7 @@ namespace wg
 			if (m_pSelectedWidget)
 			{
 				RectSPX geo = m_pSelectedWidget->_globalGeo() - _globalPos();
-				geo += m_pSelectionSkin->_padding(m_scale, State::Normal);
+				geo += m_pSelectionSkin->_contentBorder(m_scale, State::Normal);
 				_requestRender(geo);
 			}
 
@@ -314,7 +314,7 @@ namespace wg
 			if (m_pSelectedWidget)
 			{
 				RectSPX geo = m_pSelectedWidget->_globalGeo() - _globalPos();
-				geo += m_pSelectionSkin->_padding(m_scale, State::Normal);
+				geo += m_pSelectionSkin->_contentBorder(m_scale, State::Normal);
 				_requestRender(geo);
 			}
 		}
@@ -337,7 +337,7 @@ namespace wg
 		}
 		else
 		{
-			BorderSPX palettePadding = m_pToolboxSkin ? m_pToolboxSkin->_padding(m_scale, State::Normal) : BorderSPX();
+			BorderSPX palettePadding = m_pToolboxSkin ? m_pToolboxSkin->_contentBorder(m_scale, State::Normal) : BorderSPX();
 			for (auto& palette : palettes)
 			{
 				if (palette.m_bVisible)
@@ -450,11 +450,11 @@ namespace wg
 
 						if (m_pToolboxSkin)
 						{
-							BorderSPX	contentPadding = m_pToolboxSkin->_padding(m_scale, State::Normal);
+							BorderSPX	contentBorder = m_pToolboxSkin->_contentBorder(m_scale, State::Normal);
 
 							for (int i = 0; i < palettes.size(); i++)
 							{
-								if ((palettes[i].m_geo + contentPadding).contains(mousePos) )
+								if ((palettes[i].m_geo + contentBorder).contains(mousePos) )
 								{
 									m_pressedToolbox = i;
 									m_pressedToolboxStartOfs = palettes[i].m_placementPos;

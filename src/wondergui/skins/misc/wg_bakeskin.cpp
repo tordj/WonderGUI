@@ -112,7 +112,7 @@ namespace wg
 	}
 
 	//____ _padding() _______________________________________________
-
+/*
 	BorderSPX BakeSkin::_padding(int scale, State state) const
 	{
 		if (m_cachedScale != scale)
@@ -131,6 +131,7 @@ namespace wg
 
 		return m_cachedContentPadding[0].size();
 	}
+*/
 
 	//____ _contentOfs() _______________________________________________________
 
@@ -370,11 +371,11 @@ namespace wg
 				if (m_bContentShifting)
 				{
 					for (int index = 0; index < State::IndexAmount; index++)
-						m_cachedContentPadding[index] = _stateContentPadding(scale,State(index));
+						m_cachedContentPadding[index] = _stateContentBorder(scale,State(index));
 				}
 				else
 				{
-					BorderSPX padding = _stateContentPadding(scale,State::Normal);
+					BorderSPX padding = _stateContentBorder(scale,State::Normal);
 
 					for (int index = 0; index < State::IndexAmount; index++)
 						m_cachedContentPadding[index] = padding;
@@ -384,14 +385,14 @@ namespace wg
 			{
 				// Content padding is that of top skin.
 
-				BorderSPX contentPadding;
+				BorderSPX contentBorder;
 
 				for (auto& pSkin : m_skins)
 				{
 					if (pSkin)
 					{
 						for (int index = 0; index < State::IndexAmount; index++)
-							m_cachedContentPadding[index] = pSkin->_padding(scale,State(index));
+							m_cachedContentPadding[index] = pSkin->_contentBorder(scale,State(index));
 						break;
 					}
 				}
@@ -399,9 +400,9 @@ namespace wg
 		}
 	}
 
-	//____ _stateContentPadding() _____________________________________________
+	//____ _stateContentBorder() _____________________________________________
 
-	BorderSPX BakeSkin::_stateContentPadding(int scale, State state) const
+	BorderSPX BakeSkin::_stateContentBorder(int scale, State state) const
 	{
 		// Only called if we are skin-in-skin.
 
@@ -410,7 +411,7 @@ namespace wg
 		for (auto& pSkin : m_skins)
 		{
 			if (pSkin)
-				padding += pSkin->_padding(scale,state);
+				padding += pSkin->_contentBorder(scale,state);
 		}
 		
 		return padding;

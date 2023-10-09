@@ -118,7 +118,7 @@ namespace wg
 
 
 	//____ _padding() _______________________________________________
-
+/*
 	BorderSPX DoubleSkin::_padding(int scale, State state) const
 	{
 		if (m_bContentPaddingSet)
@@ -137,10 +137,12 @@ namespace wg
 		if (m_bContentPaddingSet)
 			return align(ptsToSpx(m_padding, scale));
 		else if (m_bSkinInSkin)
-			return m_pFrontSkin->_paddingSize(scale) + m_pBackSkin->_paddingSize(scale);
+			return m_pFrontSkin->_contentBorderSize(scale) + m_pBackSkin->_contentBorderSize(scale);
 		else
-			return m_pFrontSkin->_paddingSize(scale);
+			return m_pFrontSkin->_contentBorderSize(scale);
 	}
+*/
+
 
 	//____ _contentOfs() _______________________________________________________
 

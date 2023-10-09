@@ -353,14 +353,14 @@ namespace wg
 
 	SizeSPX PianoKeyboard::_defaultSize(int scale) const
 	{
-		return align(ptsToSpx(m_defaultKeyboardSize,scale)) + m_skin.contentPaddingSize(scale);
+		return align(ptsToSpx(m_defaultKeyboardSize,scale)) + m_skin.contentBorderSize(scale);
 	}
 
 	//____ _minSize() __________________________________________________________
 
 	SizeSPX PianoKeyboard::_minSize(int scale) const
 	{
-		return align(ptsToSpx(m_defaultKeyboardSize, scale)) + m_skin.contentPaddingSize(scale);
+		return align(ptsToSpx(m_defaultKeyboardSize, scale)) + m_skin.contentBorderSize(scale);
 	}
 
 	//____ _maxSize() __________________________________________________________

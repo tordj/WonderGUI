@@ -344,7 +344,7 @@ void WgRangeSlider::_updatePreferredSize()
 
 	if (m_pSkin)
 	{
-		sz += m_pSkin->_paddingSize(m_scale >> 6);
+		sz += m_pSkin->_contentBorderSize(m_scale >> 6);
 		sz = WgSize::max(sz, _skinPreferredSize(m_pSkin, m_scale));
 	}
 

@@ -81,6 +81,8 @@ namespace wg
 		virtual SizeSPX		_sizeForContent(const SizeSPX& contentSize, int scale) const;
 		virtual CoordSPX	_contentOfs(int scale, State state) const;
 		virtual RectSPX		_contentRect(const RectSPX& canvas, int scale, State state ) const;
+		virtual BorderSPX	_contentBorder(int scale, State state) const;
+		virtual SizeSPX		_contentBorderSize(int scale) const;
 
 		bool				_isOpaque() const { return m_bOpaque; }
 		virtual bool		_isOpaque(State state) const;

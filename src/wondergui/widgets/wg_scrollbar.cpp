@@ -122,7 +122,7 @@ namespace wg
 		SizeSPX defaultSize = scrollbar._defaultSize(scale);
 
 		if (!m_skin.isEmpty())
-			defaultSize += m_skin.contentPaddingSize(scale);
+			defaultSize += m_skin.contentBorderSize(scale);
 
 		return defaultSize;
 	}

@@ -469,7 +469,7 @@ namespace wg
 			sz.h += scrollbarX._defaultSize(scale).h;
 
 
-		sz += m_skin.contentPaddingSize(scale);
+		sz += m_skin.contentBorderSize(scale);
 
 		return sz;
 	}

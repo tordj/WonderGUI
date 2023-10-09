@@ -205,7 +205,7 @@ namespace wg
 				{
 					auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
 
-					SizeSPX contentSize = m_size - m_skin.contentPaddingSize(m_scale);
+					SizeSPX contentSize = m_size - m_skin.contentBorderSize(m_scale);
 					SizeSPX handleSize = _handleGeo(m_size).size();
 					CoordSPX totalDrag = pMsg->_draggedTotal();
 
@@ -279,7 +279,7 @@ namespace wg
 		else
 			sz.h += align(ptsToSpx(m_defaultSlideLength,scale));
 
-		sz += m_skin.contentPaddingSize(scale);
+		sz += m_skin.contentBorderSize(scale);
 		sz = SizeSPX::max(sz, m_skin.defaultSize(scale));
 
 		return sz;

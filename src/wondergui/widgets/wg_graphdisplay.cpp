@@ -235,7 +235,7 @@ namespace wg
 		BorderSPX margin;
 
 		if (!m_displaySkin.isEmpty())
-			margin = m_displaySkin.contentPadding(m_scale, m_state);
+			margin = m_displaySkin.contentBorder(m_scale, m_state);
 
 
 
@@ -759,7 +759,7 @@ namespace wg
 		RectSPX graphCanvas = m_graphCanvas + _canvas.pos();
 
 		if (!m_displaySkin.isEmpty())
-			m_displaySkin.render(pDevice, graphCanvas + m_displaySkin.contentPadding(m_scale, m_state), m_scale, m_state);
+			m_displaySkin.render(pDevice, graphCanvas + m_displaySkin.contentBorder(m_scale, m_state), m_scale, m_state);
 
 		float	rangeMin = std::min(m_displayCeiling, m_displayFloor);
 		float	rangeMax = std::max(m_displayCeiling, m_displayFloor);
@@ -1118,9 +1118,9 @@ namespace wg
 	SizeSPX GridLine::_textSize() const
 	{
 		if (!m_labelSkin.isEmpty())
-			return m_labelGeo.size() - m_labelSkin.contentPaddingSize(m_pDisplay->_scale());
+			return m_labelGeo.size() - m_labelSkin.contentBorderSize(m_pDisplay->_scale());
 		else if( !m_pDisplay->m_labelSkin.isEmpty() )
-			return m_labelGeo.size() - m_pDisplay->m_labelSkin.contentPaddingSize(m_pDisplay->_scale());
+			return m_labelGeo.size() - m_pDisplay->m_labelSkin.contentBorderSize(m_pDisplay->_scale());
 		else
 			return m_labelGeo.size();
 	}
@@ -1186,9 +1186,9 @@ namespace wg
 		RectSPX textGeo = m_labelGeo;
 
 		if (!m_labelSkin.isEmpty() )
-			textGeo -= m_labelSkin.contentPadding(m_pDisplay->m_scale, m_pDisplay->m_state);
+			textGeo -= m_labelSkin.contentBorder(m_pDisplay->m_scale, m_pDisplay->m_state);
 		else if (!m_pDisplay->m_labelSkin.isEmpty())
-			textGeo -= m_pDisplay->m_labelSkin.contentPadding(m_pDisplay->m_scale, m_pDisplay->m_state);
+			textGeo -= m_pDisplay->m_labelSkin.contentBorder(m_pDisplay->m_scale, m_pDisplay->m_state);
 
 		m_pDisplay->_requestRender(textGeo);
 	}
@@ -1231,8 +1231,8 @@ namespace wg
 
 		if( !pLabelSkin->isEmpty() )
 		{
-			oldLabelPadding = pLabelSkin->contentPaddingSize(oldScale);
-			newLabelPadding = pLabelSkin->contentPaddingSize(scale);
+			oldLabelPadding = pLabelSkin->contentBorderSize(oldScale);
+			newLabelPadding = pLabelSkin->contentBorderSize(scale);
 		}
 
 		SizeSPX newSize = pLayout->defaultSize(this, scale);

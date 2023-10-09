@@ -180,11 +180,11 @@ namespace wg
 
 	spx ColumnHeader::_matchingWidth( spx height, int scale ) const
 	{
-		SizeSPX padding = m_skin.contentPaddingSize(scale);
+		SizeSPX border = m_skin.contentBorderSize(scale);
 
-		height -= padding.h;
+		height -= border.h;
 		spx width = _layout()->matchingWidth(this, height, scale);
-		width += padding.w;
+		width += border.w;
 
 		return width;
 	}
@@ -193,11 +193,11 @@ namespace wg
 
 	spx ColumnHeader::_matchingHeight( spx width, int scale ) const
 	{
-		SizeSPX padding = m_skin.contentPaddingSize(scale);
+		SizeSPX border = m_skin.contentBorderSize(scale);
 
-		width -= padding.w;
+		width -= border.w;
 		spx height = _layout()->matchingHeight(this, width, scale);
-		height += padding.h;
+		height += border.h;
 
 		return height;
 	}

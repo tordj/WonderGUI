@@ -83,7 +83,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BoxSkin_p	create( const Blueprint& blueprint );
-		static BoxSkin_p 	create(Border frame, HiColor fillColor, HiColor frameColor, Border contentPadding = Border() );
+		static BoxSkin_p 	create(Border frame, HiColor fillColor, HiColor frameColor, Border contentBorder = Border() );
 
 		//.____ Identification __________________________________________
 

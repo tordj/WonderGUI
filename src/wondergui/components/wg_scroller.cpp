@@ -143,7 +143,7 @@ namespace wg
 		SizeSPX prefSize = m_skins[Part::Bar] ? m_skins[Part::Bar]->_defaultSize(scale) : SizeSPX();
 
 		if (m_skins[Part::Back])
-			prefSize += m_skins[Part::Back]->_paddingSize(scale);
+			prefSize += m_skins[Part::Back]->_contentBorderSize(scale);
 
 		if (m_axis == Axis::X)
 		{

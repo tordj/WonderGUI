@@ -263,7 +263,7 @@ namespace wg
 
 		if (!m_skin.isEmpty())
 		{
-			sz += m_skin.contentPaddingSize(scale);
+			sz += m_skin.contentBorderSize(scale);
 			SizeSPX skinSz = m_skin.defaultSize(scale);
 			if (skinSz.w > sz.w)
 				sz.w = skinSz.w;

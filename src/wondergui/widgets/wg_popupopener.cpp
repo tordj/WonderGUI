@@ -81,7 +81,7 @@ namespace wg
 
 		if (!label.isEmpty())
 		{
-			SizeSPX padding = m_skin.contentPaddingSize(scale);
+			SizeSPX padding = m_skin.contentBorderSize(scale);
 
 			spx heightForText = label._matchingHeight(width - padding.w, scale) + padding.h;
 			if (heightForText > height)
@@ -143,7 +143,7 @@ namespace wg
 
 		RectSPX	contentRect(0, 0, _size);
 
-		contentRect -= m_skin.contentPaddingSize(m_scale);
+		contentRect -= m_skin.contentBorderSize(m_scale);
 
 		RectSPX textRect = _icon()._getTextRect(contentRect, _icon()._getIconRect(contentRect,m_scale),m_scale);
 
@@ -267,7 +267,7 @@ namespace wg
 
 	SizeSPX PopupOpener::_componentSize(const Component * pComponent) const
 	{
-		SizeSPX sz = m_size - m_skin.contentPaddingSize(m_scale);
+		SizeSPX sz = m_size - m_skin.contentBorderSize(m_scale);
 
 		RectSPX iconRect = _icon()._getIconRect(sz,m_scale);
 

@@ -664,7 +664,7 @@ int main(int argc, char** argv)
 		//	scrollIntoViewTest(pRoot->child.ptr());
 		//	textClipTest(pSlot);
 		//	textEditorTest(pSlot);
-			lineEditorTest(pSlot);
+		//	lineEditorTest(pSlot);
 		//	popupOpenerTest(pSlot);
 		//	scrollbarTest(pSlot);
 		//	modalLayerTest(pSlot);
@@ -699,7 +699,7 @@ int main(int argc, char** argv)
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
 		//	graphDisplayTest(pSlot);
-		//	nortonCommanderTest(pSlot);
+			nortonCommanderTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -2785,6 +2785,7 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pPaneSkin = BoxSkin::create( { .color = Color8::White,
+										.margin = 5,
 										.outline = 1,
 										.outlineColor = Color8::Black,
 										.padding = 3
@@ -2819,7 +2820,7 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 
 
 	// The FlexPanel way.
-/*
+
 	auto pFlexPanel = FlexPanel::create();
  
 	pFlexPanel->slots.pushBack({
@@ -2847,8 +2848,8 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 	});
 
 	*pEntry = pFlexPanel;
-*/
 
+/*
 	// The PackPanel way.
 	
 	PackLayout_p pLayout = PackLayout::create( {.expandFactor = PackLayout::Factor::Weight,
@@ -2859,15 +2860,15 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 	PackPanel_p pButtonColumn = PackPanel::create( { .axis = Axis::Y, .layout = pLayout });
 
 	pButtonColumn->slots.pushBack({ {Filler::create(), {} },
-																  {pCopyButton, { .weight = 0.f }},
-																  {pMoveButton, { .weight = 0.f }},
-																  {pDeleteButton, { .weight = 0.f }},
-																  {Filler::create(), {} }
-															  });
+								  {pCopyButton, { .weight = 0.f }},
+								  {pMoveButton, { .weight = 0.f }},
+								  {pDeleteButton, { .weight = 0.f }},
+								  {Filler::create(), {} }
+							  });
 
-	pMainSection->slots.pushBack({ {pPane1, { .padding = 5 } },
+	pMainSection->slots.pushBack({ {pPane1, {} },
 								   {pButtonColumn, { .weight = 0.f } },
-								   {pPane2, { .padding = 5 } }
+								   {pPane2, {} }
 								 });
 
 	pWindowPanel->slots.pushBack({ {pMyMenubar, { .weight = 0.f}},
@@ -2876,5 +2877,6 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 	
 	*pEntry = pWindowPanel;
 	
+*/
 	return true;
 }

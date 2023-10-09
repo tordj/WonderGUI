@@ -91,7 +91,7 @@ namespace wg
 	}
 
 	//____ _padding() _______________________________________________________
-
+/*
 	BorderSPX StateSkin::_padding(int scale, State state) const
 	{
 		BorderSPX b = align(ptsToSpx(m_padding,scale));
@@ -102,19 +102,35 @@ namespace wg
 
 		return b;
 	}
+*/
+
+	//____ _contentBorder() _______________________________________________________
+
+	BorderSPX StateSkin::_contentBorder(int scale, State state) const
+	{
+		BorderSPX b = align(ptsToSpx(m_margin, scale)) + align(ptsToSpx(m_padding, scale));
+		CoordSPX ofs = align(ptsToSpx(m_contentShift[state], scale));
+
+		b.left += ofs.x;
+		b.top += ofs.y;
+
+		return b;
+	}
+
 
 	//____ _contentRect() __________________________________________________________
 
 	RectSPX StateSkin::_contentRect( const RectSPX& canvas, int scale, State state ) const
 	{
-		return canvas - align(ptsToSpx(m_padding,scale)) + align(ptsToSpx(m_contentShift[state],scale));
+		return canvas - align(ptsToSpx(m_margin, scale)) - align(ptsToSpx(m_padding,scale)) + align(ptsToSpx(m_contentShift[state],scale));
 	}
 
 	//____ _contentofs() __________________________________________________________
 
 	CoordSPX StateSkin::_contentOfs( int scale, State state ) const
 	{
-		return align(ptsToSpx(Coord(m_padding.left, m_padding.top), scale)) + 
+		return align(ptsToSpx(Coord(m_margin.left, m_margin.top), scale)) +
+			   align(ptsToSpx(Coord(m_padding.left, m_padding.top), scale)) + 
 			   align(ptsToSpx(m_contentShift[state], scale));
 	}
 
@@ -124,10 +140,12 @@ namespace wg
 		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
+
+
 		if (m_contentShift[newState] == m_contentShift[oldState])
 			return RectSPX();
 		else
-			return canvas;
+			return canvas - align(ptsToSpx(m_margin, scale));
 	}
 
 	//____ _updateContentShift() _________________________________________________

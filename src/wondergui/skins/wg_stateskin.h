@@ -52,7 +52,10 @@ namespace wg
 
 		//.____ Internal ________________________________________________________
 
-		BorderSPX		_padding(int scale, State state) const override;
+//		BorderSPX		_padding(int scale, State state) const override;
+
+		BorderSPX		_contentBorder(int scale, State state) const override;
+
 		CoordSPX		_contentOfs(int scale, State state) const override;
 		RectSPX			_contentRect(const RectSPX& canvas, int scale, State state) const override;
 

@@ -54,7 +54,7 @@ namespace wg
 	{
 		if( slot._widget() )
 		{
-			SizeSPX padding = m_skin.contentPaddingSize(scale);
+			SizeSPX padding = m_skin.contentBorderSize(scale);
 
 			return slot._widget()->_matchingHeight( width-padding.w, scale ) + padding.h;
 		}
@@ -68,7 +68,7 @@ namespace wg
 	{
 		if( slot._widget() )
 		{
-			SizeSPX padding = m_skin.contentPaddingSize(scale);
+			SizeSPX padding = m_skin.contentBorderSize(scale);
 
 			return slot._widget()->_matchingWidth(height - padding.h, scale) + padding.w;
 		}
@@ -81,7 +81,7 @@ namespace wg
 	SizeSPX Capsule::_defaultSize( int scale ) const
 	{
 		if (slot._widget())
-			return slot._widget()->_defaultSize(scale) + m_skin.contentPaddingSize(scale);
+			return slot._widget()->_defaultSize(scale) + m_skin.contentBorderSize(scale);
 
 		return Widget::_defaultSize(scale);
 	}
@@ -91,7 +91,7 @@ namespace wg
 	SizeSPX Capsule::_minSize(int scale) const
 	{
 		if (slot._widget())
-			return slot._widget()->_minSize(scale) + m_skin.contentPaddingSize(scale);
+			return slot._widget()->_minSize(scale) + m_skin.contentBorderSize(scale);
 		else
 			return Widget::_minSize(scale);
 	}
@@ -101,7 +101,7 @@ namespace wg
 	SizeSPX Capsule::_maxSize(int scale) const
 	{
 		if (slot._widget())
-			return slot._widget()->_maxSize(scale) + m_skin.contentPaddingSize(scale);
+			return slot._widget()->_maxSize(scale) + m_skin.contentBorderSize(scale);
 		else
 			return Widget::_maxSize(scale);
 	}
@@ -182,7 +182,7 @@ namespace wg
 
 		if ( slot._widget())
 		{
-			SizeSPX sz = size - m_skin.contentPaddingSize(scale);
+			SizeSPX sz = size - m_skin.contentBorderSize(scale);
 			slot._widget()->_resize(sz, scale);
 		}
 	}
@@ -247,7 +247,7 @@ namespace wg
 
 		if (pWidget)
 		{
-			SizeSPX sz = m_size - m_skin.contentPaddingSize(m_scale);
+			SizeSPX sz = m_size - m_skin.contentBorderSize(m_scale);
 			pWidget->_resize(sz, m_scale);
 		}
 

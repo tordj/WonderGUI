@@ -63,7 +63,6 @@ namespace wg
 
 			struct Blueprint
 			{
-				Border	padding = 0;
 				bool	visible = true;
 				float	weight = 1;
 			};
@@ -82,8 +81,6 @@ namespace wg
 			inline Size		size() const { return Util::spxToPts(m_geo.size(), _holder()->_scale()); }
 			inline Rect		geo() const { return Util::spxToPts(m_geo, _holder()->_scale()); }
 
-			SLOT_PADDING_METHODS(PackPanel)
-
 			//.____ Appearance ________________________________________________
 
 			SLOT_HIDING_METHODS(PackPanel)
@@ -100,14 +97,11 @@ namespace wg
 
 			bool _setBlueprint( const Blueprint& bp );
 
-			SLOT_PADDING_HELPER_METHODS
-
-			Border		m_padding;
 			bool		m_bVisible = true;
 
 			bool		m_bResizeRequired = false;
 			float		m_weight = 1.f;				// Weight for space allocation.
-			RectSPX		m_geo;						// Real geo of child (no padding included).
+			RectSPX		m_geo;						// Real geo of child.
 			SizeSPX		m_defaultSize;				// Cached padded default size from the child.
 		};
 
@@ -131,6 +125,9 @@ namespace wg
 			PointerStyle	pointer 		= PointerStyle::Default;
 			bool			selectable 		= true;
 			Skin_p			skin;
+			pts				spacing			= 0;
+			pts				spacingAfter	= 0;
+			pts				spacingBefore	= 0;
 			bool			stickyFocus		= false;
 			bool			tabLock 		= false;
 			String			tooltip;
@@ -160,17 +157,15 @@ namespace wg
 		void			setLayout(PackLayout* pLayout);
 		PackLayout_p	layout() const { return m_pLayout; }
 
+		void			setSpacing(pts before, pts between, pts after);
+		void			setSpacing(pts between);
+
 		//.____ Misc ________________________________________________________________
 		
 		bool			setSlotWeight(int index, int amount, float weight);
 		bool			setSlotWeight(iterator  beg, iterator end, float weight);
 		bool			setSlotWeight(int index, int amount, std::initializer_list<float> weights);
 		bool			setSlotWeight(iterator beg, iterator end, std::initializer_list<float> weights);
-
-		bool			setSlotPadding(int index, int amount, Border padding);
-		bool			setSlotPadding(iterator beg, iterator end, Border padding);
-		bool			setSlotPadding(int index, int amount, std::initializer_list<Border> padding);
-		bool			setSlotPadding(iterator beg, iterator end, std::initializer_list<Border> padding);
 
 		void			hideSlots(int index, int amount);
 		void			hideSlots(iterator beg, iterator end);
@@ -191,9 +186,12 @@ namespace wg
 		PackPanel();
 		template< class BP> PackPanel(const BP& bp) : slots(this), Panel(bp)
 		{
-			m_bSiblingsOverlap = false;
-			m_bHorizontal = bp.axis == Axis::X;
-			m_pLayout = bp.layout;
+			m_bSiblingsOverlap	= false;
+			m_bHorizontal		= bp.axis == Axis::X;
+			m_pLayout			= bp.layout;
+			m_spacingBefore		= bp.spacingBefore;
+			m_spacingBetween	= bp.spacing;
+			m_spacingAfter		= bp.spacingAfter;
 		}
 		
 		virtual ~PackPanel();
@@ -231,8 +229,6 @@ namespace wg
 
 		void		_hideSlots(StaticSlot *, int nb);
 		void		_unhideSlots(StaticSlot *, int nb);
-		void		_repadSlots(StaticSlot *, int nb, Border padding);
-		void		_repadSlots(StaticSlot *, int nb, const Border * pPaddings);
 
 		void		_reweightSlots(Slot * pSlot, int nb, float weight);
 		void		_reweightSlots(Slot * pSlot, int nb, const float * pWeights);
@@ -253,6 +249,10 @@ namespace wg
 		bool			m_bHorizontal;
 		PackLayout_p	m_pLayout;
 		SizeSPX			m_defaultContentSize;
+
+		pts				m_spacingBefore = 0;
+		pts				m_spacingBetween = 0;
+		pts				m_spacingAfter = 0;
 
 	};
 

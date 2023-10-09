@@ -62,7 +62,7 @@ namespace wg
 	void SelectBox::setEntrySkin(Skin * pSkin)
 	{
 		SizeSPX oldPadding = m_entryContentPaddingSize;
-		SizeSPX newPadding = pSkin ? pSkin->_paddingSize(m_scale) : SizeSPX();
+		SizeSPX newPadding = pSkin ? pSkin->_contentBorderSize(m_scale) : SizeSPX();
 
 		m_pEntrySkin = pSkin;
 		if (oldPadding != newPadding)
@@ -109,8 +109,8 @@ namespace wg
 	{
 		Skin* pOldSkin = m_pListCanvas->m_skin.get();
 
-		SizeSPX oldPadding = pOldSkin ? pOldSkin->_paddingSize(m_scale) : SizeSPX();
-		SizeSPX newPadding = pSkin ? pSkin->_paddingSize(m_scale) : SizeSPX();
+		SizeSPX oldPadding = pOldSkin ? pOldSkin->_contentBorderSize(m_scale) : SizeSPX();
+		SizeSPX newPadding = pSkin ? pSkin->_contentBorderSize(m_scale) : SizeSPX();
 
 		if (oldPadding != newPadding)
 			m_listCanvasDefaultSize += newPadding - oldPadding;
@@ -191,9 +191,9 @@ namespace wg
 			return m_matchingHeight;
 		else
 		{
-			SizeSPX contentPadding = m_skin.contentPaddingSize(scale);
+			SizeSPX contentBorder = m_skin.contentBorderSize(scale);
 
-			spx contentWidth = width - contentPadding.w;
+			spx contentWidth = width - contentBorder.w;
 			spx contentHeight = 0;
 
 			auto pMapper = _entryTextLayout();
@@ -201,7 +201,7 @@ namespace wg
 			{
 				contentHeight = std::max(contentHeight, pMapper->matchingHeight(&entry, contentWidth, scale) );
 			}
-			return contentHeight + contentPadding.h;
+			return contentHeight + contentBorder.h;
 		}
 	}
 
@@ -311,7 +311,7 @@ namespace wg
 	{
 		bool bOpaque = m_pListCanvas->m_skin.isOpaque();
 
-		if (m_pEntrySkin && m_pEntrySkin->isOpaque() && m_pListCanvas->m_skin.contentPaddingSize(m_scale).isEmpty())
+		if (m_pEntrySkin && m_pEntrySkin->isOpaque() && m_pListCanvas->m_skin.contentBorderSize(m_scale).isEmpty())
 			bOpaque = true;
 
 		m_pListCanvas->m_bOpaque = bOpaque;
@@ -423,9 +423,9 @@ namespace wg
 	{
 		auto pMapper = _entryTextLayout();
 
-		SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_paddingSize(m_scale) : SizeSPX();
-		SizeSPX boxPadding = m_skin.contentPaddingSize(m_scale);
-		SizeSPX listPadding = m_pListCanvas->m_skin.contentPaddingSize(m_scale);
+		SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_contentBorderSize(m_scale) : SizeSPX();
+		SizeSPX boxPadding = m_skin.contentBorderSize(m_scale);
+		SizeSPX listPadding = m_pListCanvas->m_skin.contentBorderSize(m_scale);
 
 		SizeSPX	oldDefaultSize		= m_defaultSize;
 //		int		oldMatchingHeight = m_matchingHeight;
@@ -502,8 +502,8 @@ namespace wg
 			return m_listCanvasMatchingHeight;
 		else
 		{
-			SizeSPX canvasPadding = m_pListCanvas->_paddingSize();
-			SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_paddingSize(m_scale) : SizeSPX();
+			SizeSPX canvasPadding = m_pListCanvas->_contentBorderSize();
+			SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_contentBorderSize(m_scale) : SizeSPX();
 
 			spx contentWidth = width - canvasPadding.w - entryPadding.w;
 
@@ -563,7 +563,7 @@ namespace wg
 	{
 		TextLayout* pMapper = _entryTextLayout();
 
-		SizeSPX listCanvasPaddingSize = m_pListCanvas->m_skin.contentPaddingSize(scale);
+		SizeSPX listCanvasPaddingSize = m_pListCanvas->m_skin.contentBorderSize(scale);
 
 		spx newContentWidth = size.w - listCanvasPaddingSize.w;
 		spx matchingHeight = listCanvasPaddingSize.h;

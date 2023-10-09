@@ -47,6 +47,7 @@ namespace wg
 			int			layer = -1;
 			Border		padding;
 
+
 			bool		skinInSkin = true;
 			Skin_p		skins[2];
 		};
@@ -67,8 +68,12 @@ namespace wg
 		SizeSPX			_defaultSize(int scale) const override;
 		SizeSPX			_sizeForContent(const SizeSPX& contentSize, int scale) const override;
 
-		BorderSPX		_padding(int scale, State state) const override;
-		SizeSPX			_paddingSize(int scale) const override;
+//		BorderSPX		_padding(int scale, State state) const override;
+//		SizeSPX			_paddingSize(int scale) const override;
+
+//		BorderSPX		_contentBorder(int scale, State state) const override;
+//		SizeSPX			_contentBorderSize(int scale) const override;
+
 		CoordSPX		_contentOfs(int scale, State state) const override;
 		RectSPX			_contentRect(const RectSPX& canvas, int scale, State state) const override;
 

@@ -62,7 +62,7 @@ namespace wg
 
 	spx TextDisplay::_matchingWidth(spx height, int scale) const
 	{
-		SizeSPX padding = _paddingSize();
+		SizeSPX padding = _contentBorderSize();
 
 		height -= padding.h;
 		spx textWidth = display._matchingWidth(height, scale);
@@ -74,7 +74,7 @@ namespace wg
 
 	spx TextDisplay::_matchingHeight(spx width, int scale) const
 	{
-		SizeSPX padding = _paddingSize();
+		SizeSPX padding = _contentBorderSize();
 
 		width -= padding.w;
 		spx textHeight = display._matchingHeight(width, scale);
@@ -133,7 +133,7 @@ namespace wg
 	{
 		Widget::_resize(size, scale);
 
-		SizeSPX textSize = size - m_skin.contentPaddingSize(m_scale);		// Using m_scale here, since that has been fixed.
+		SizeSPX textSize = size - m_skin.contentBorderSize(m_scale);		// Using m_scale here, since that has been fixed.
 
 		display._setSize( textSize, scale );
 	}

@@ -201,7 +201,7 @@ namespace wg
 	{
 		if( scale == m_scale )
 		{
-			SizeSPX sz = m_skin.contentPaddingSize(scale);
+			SizeSPX sz = m_skin.contentBorderSize(scale);
 			SizeSPX headerSize = _header()._defaultSize(scale);
 
 			if (m_bHorizontal)
@@ -233,13 +233,13 @@ namespace wg
 
 		if (m_bHorizontal)
 		{
-			spx height = m_contentDefaultBreadth + m_skin.contentPaddingSize(scale).h;
+			spx height = m_contentDefaultBreadth + m_skin.contentBorderSize(scale).h;
 			return std::max(height, _header()._defaultSize(scale).h);
 		}
 		else
 		{
 			spx height = _header()._matchingHeight(width, scale);
-			SizeSPX pad = m_skin.contentPaddingSize(scale);
+			SizeSPX pad = m_skin.contentBorderSize(scale);
 			width -= pad.w;
 			height += pad.h;
 
@@ -263,7 +263,7 @@ namespace wg
 		if (m_bHorizontal)
 		{
 			spx width = _header()._matchingWidth(height,scale);
-			SizeSPX pad = m_skin.contentPaddingSize(scale);
+			SizeSPX pad = m_skin.contentBorderSize(scale);
 			height -= pad.w;
 			width += pad.h;
 
@@ -277,7 +277,7 @@ namespace wg
 		}
 		else
 		{
-			spx width = m_contentDefaultBreadth + m_skin.contentPaddingSize(scale).w;
+			spx width = m_contentDefaultBreadth + m_skin.contentBorderSize(scale).w;
 
 			return std::max(width, _header()._defaultSize(scale).w);
 		}
@@ -442,7 +442,7 @@ namespace wg
 			m_maxEntrySizeSPX = align(ptsToSpx(m_maxEntrySize, scale));
 			
 			if( m_pEntrySkin[0] )
-				m_entryPadding = m_pEntrySkin[0]->_paddingSize(scale);
+				m_entryPadding = m_pEntrySkin[0]->_contentBorderSize(scale);
 			
 			m_contentDefaultLength = 0;
 			m_contentDefaultBreadth = 0;
@@ -472,7 +472,7 @@ namespace wg
 		SizeSPX headerSize = m_bHorizontal ? SizeSPX(_header()._matchingWidth(_size.h,m_scale), _size.h) : SizeSPX( _size.w, _header()._matchingHeight( _size.w, m_scale ));
 		_header()._setSize( headerSize, m_scale );
 
-		SizeSPX size = _size - m_skin.contentPaddingSize(m_scale);
+		SizeSPX size = _size - m_skin.contentBorderSize(m_scale);
 
 		spx newContentBreadth;
 
@@ -523,7 +523,7 @@ namespace wg
 		SizeSPX entryPadding;
 		
 		if( m_pEntrySkin[0] )
-			entryPadding = m_pEntrySkin[0]->_paddingSize(scale);
+			entryPadding = m_pEntrySkin[0]->_contentBorderSize(scale);
 
 		SizeSPX 	defaultSize;
 
@@ -582,7 +582,7 @@ namespace wg
 	void PackList::_refreshList()
 	{
 		if( m_pEntrySkin[0] )
-			m_entryPadding = m_pEntrySkin[0]->_paddingSize(m_scale);
+			m_entryPadding = m_pEntrySkin[0]->_contentBorderSize(m_scale);
 
 		m_contentDefaultLength = 0;
 		m_contentDefaultBreadth = 0;

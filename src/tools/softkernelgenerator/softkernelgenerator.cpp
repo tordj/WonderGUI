@@ -397,9 +397,8 @@ void MyApp::_refreshList()
 
 Widget_p	MyApp::_buildButtonRow()
 {
-	auto pButtonRow = PackPanel::create();
-	pButtonRow->setAxis(Axis::X);
-	pButtonRow->setSkin(m_pPlateSkin);
+	auto pButtonRow = PackPanel::create( { .axis = Axis::X, .skin = m_pPlateSkin });
+	pButtonRow->setSpacing(2, 4, 2);
 
 	auto pClearButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
@@ -430,7 +429,7 @@ Widget_p	MyApp::_buildButtonRow()
 	pButtonRow->slots << pResetButton;
 	pButtonRow->slots << pLoadButton;
 	pButtonRow->slots << pSaveButton;
-	pButtonRow->setSlotPadding(pButtonRow->slots.begin(), pButtonRow->slots.end(), Border( 0, 2, 0, 2 ) );
+
 
 	return pButtonRow;
 }
@@ -570,6 +569,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 	pTopSection->setAxis(Axis::X);
 	pTopSection->setSkin(m_pSectionSkin);
 	pTopSection->setLayout(PackLayout::create( { .expandFactor = PackLayout::Factor::Weight }));
+	pTopSection->setSpacing(5, 10, 5);
 
 
 	// Togglebuttons for TintModes
@@ -627,7 +627,6 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 
 	//
 
-	pTopSection->setSlotPadding(0, pTopSection->slots.size(), Border( 0, 5, 0, 5 ) );
 	return pTopSection;
 }
 
@@ -709,6 +708,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 		auto pBodyRow = PackPanel::create();
 		pBodyRow->setAxis(Axis::X);
 		pBodyRow->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
+		pBodyRow->setSpacing(5, 10, 5);
 
 		pBodyRow->slots << _buildToggleButtonRow("Operations", activeBlitTypes, it->blitTypes, [this, index](Msg* pMsg) { this->customBlitTypeToggled(index, pMsg); });
 		pBodyRow->slots << _buildToggleButtonRow("Tint Modes", activeTintModes, it->tintModes, [this, index](Msg* pMsg) { this->customBlitTintModeToggled(index,pMsg); });
@@ -716,7 +716,6 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 		pBodyRow->slots << _buildToggleButtonRow("Source Formats", activeSourceFormats, it->sourceFormats, [this, index](Msg* pMsg) { this->customBlitSourceFormatToggled(index, pMsg); });
 		pBodyRow->slots << _buildToggleButtonRow("Dest Formats", activeDestFormats, it->destFormats, [this, index](Msg* pMsg) { this->customBlitDestFormatToggled(index, pMsg); });
 
-		pBodyRow->setSlotPadding(0, pBodyRow->slots.size(), Border( 0, 5, 0, 5 ) );
 
 		// Bottom Row
 
@@ -787,6 +786,7 @@ wg::Widget_p MyApp::_buildListSummarySection()
 		_.outlineColor = Color8::Black,
 		_.padding = { 4,2,4,2 }
 	)));
+	pSection->setSpacing(5, 10, 5);
 
 	auto kernelCount = m_pDB->countKernels();
 
@@ -822,10 +822,6 @@ wg::Widget_p MyApp::_buildListSummarySection()
 	pSection->slots << TextDisplay::create(WGBP(TextDisplay,
 		_.display.text = amount.c_str(),
 		_.display.style = m_pLabelStyle));
-
-	pSection->setSlotPadding(0, pSection->slots.size(), Border( 0, 5, 0, 5 ) );
-
-
 
 	return pSection;
 

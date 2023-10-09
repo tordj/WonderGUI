@@ -207,7 +207,7 @@ Widget_p MyApp::createDisplayPanel()
 {
 	auto pWindow = _standardScrollPanel();
 
-	pWindow->setSkin(ColorSkin::create(Color::DarkSlateBlue));
+	pWindow->setSkin(ColorSkin::create({ .color = Color::DarkSlateBlue, .padding = 6 }));
 	pWindow->setSizeConstraints(SizeConstraint::None, SizeConstraint::None);
 	pWindow->setPlacement(Placement::Center);
 
@@ -649,7 +649,7 @@ Widget_p MyApp::createNavigationPanel()
 	pMain->slots << Filler::create();
 
 	pMain->setSlotWeight(pMain->slots.begin(), pMain->slots.end() - 1, 0);
-	pMain->setSlotPadding(pMain->slots.begin(), pMain->slots.end(), 2);
+	pMain->setSpacing(2,4,2);
 
 	return pMain;
 }
@@ -939,7 +939,7 @@ void MyApp::updateGUIAfterReload()
 		toggleNb++;
 	}
 
-	m_pScreenLineup->setSlotPadding(m_pScreenLineup->slots.begin(), m_pScreenLineup->slots.end(), 6);
+	m_pScreenLineup->setSpacing(12);
 
 	//
 	
@@ -1131,8 +1131,8 @@ void MyApp::openRecordedStepsWindow()
 		
 		for( auto& step : m_recordedSteps )
 		{
-			auto pRow = PackPanel::create( { .axis = Axis::X } );
-			pRow->slots.pushBack( SurfaceDisplay::create( { .surface = step.before } ), { .padding = 2 } );
+			auto pRow = PackPanel::create( { .axis = Axis::X, .spacing = 4 } );
+			pRow->slots.pushBack( SurfaceDisplay::create( { .surface = step.before } ) );
 			pRow->slots.pushBack( SurfaceDisplay::create( { .surface = step.after } ) );
 			pStepList->slots.pushBack(pRow);
 		}
@@ -1250,7 +1250,7 @@ void MyApp::_updateResourcesView()
 		index++;
 	}
 	
-	m_pResourcePanel->setSlotPadding( m_pResourcePanel->slots.begin(), m_pResourcePanel->slots.end(), 6 );
+	m_pResourcePanel->setSpacing(6,12,6);
 }
 
 //____ _updateDebugOverlays() _________________________________________________
@@ -1314,7 +1314,7 @@ ScrollPanel_p MyApp::_standardScrollPanel()
 
 Widget_p MyApp::_buildSurfaceDisplayWithIndexTag( Surface * pSurf, int index )
 {
-	auto pBase = PackPanel::create();
+	auto pBase = PackPanel::create( { .axis = Axis::Y, .id = index, .spacing = 4 });
 	pBase->setAxis(Axis::Y);
 	pBase->setId(index);
 	
@@ -1326,7 +1326,6 @@ Widget_p MyApp::_buildSurfaceDisplayWithIndexTag( Surface * pSurf, int index )
 						 _.display.text = label,
 						_.display.layout = m_pTextLayoutCentered
 				));
-	
 	
 	auto pDisplay = SurfaceDisplay::create( WGBP(SurfaceDisplay,
 												 _.surface = pSurf,
@@ -1340,9 +1339,7 @@ Widget_p MyApp::_buildSurfaceDisplayWithIndexTag( Surface * pSurf, int index )
 	
 	pBase->slots << pLabel;
 	pBase->slots << pCentering;
-	
-	pBase->setSlotPadding( 0, 1, {0,0,4,0} );
-	
+		
 	return pBase;
 }
 

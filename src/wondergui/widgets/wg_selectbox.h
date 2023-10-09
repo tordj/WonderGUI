@@ -171,13 +171,13 @@ namespace wg
 
 			if( bp.listSkin )
 			{
-				m_listCanvasDefaultSize = bp.listSkin->_paddingSize(m_scale);
+				m_listCanvasDefaultSize = bp.listSkin->_contentBorderSize(m_scale);
 				m_pListCanvas->m_skin.set(bp.listSkin);
 			}
 			
 			if( bp.entrySkin )
 			{
-				SizeSPX padding = bp.entrySkin->_paddingSize(m_scale);
+				SizeSPX padding = bp.entrySkin->_contentBorderSize(m_scale);
 
 				m_pEntrySkin = bp.entrySkin;
 				m_listCanvasDefaultSize.w += padding.w;

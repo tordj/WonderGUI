@@ -168,7 +168,7 @@ namespace wg
 	{
 		Widget::_resize( size, scale );
 
-		editor._setSize( SizeSPX( editor._defaultSize(m_scale).w, size.h - m_skin.contentPaddingSize(m_scale).h ), m_scale );
+		editor._setSize( SizeSPX( editor._defaultSize(m_scale).w, size.h - m_skin.contentBorderSize(m_scale).h ), m_scale );
 	}
 
 	//____ _componentPos() __________________________________________________________
@@ -190,7 +190,7 @@ namespace wg
 		if (pComponent != &editor)
 			return m_size;
 
-		return SizeSPX( editor._defaultSize(m_scale).w, m_size.h - m_skin.contentPaddingSize(m_scale).h );
+		return SizeSPX( editor._defaultSize(m_scale).w, m_size.h - m_skin.contentBorderSize(m_scale).h );
 	}
 
 	//____ _componentGeo() __________________________________________________________
@@ -240,7 +240,7 @@ namespace wg
 
 		SizeSPX defaultSize = editor._defaultSize(m_scale);
 
-		spx height = m_size.h - m_skin.contentPaddingSize(m_scale).h;
+		spx height = m_size.h - m_skin.contentBorderSize(m_scale).h;
 
 		if(defaultSize.h != height )
 			_requestResize();
@@ -255,7 +255,7 @@ namespace wg
 		spx scrollOfs = m_textScrollOfs;
 		SizeSPX canvas = _componentSize(pComponent);
 
-		SizeSPX window = m_size - m_skin.contentPaddingSize(m_scale);
+		SizeSPX window = m_size - m_skin.contentBorderSize(m_scale);
 
 		if (scrollOfs > 0 && canvas.w - scrollOfs < window.w)
 			scrollOfs = canvas.w < window.w ? 0 : canvas.w - window.w;
