@@ -1398,7 +1398,7 @@ void WgChart2::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSamp
 
 	// Calculate needed margin (in pixels) for line thickness
 
-	int margin = int(maxLineThickness) / 2 + 2;
+	int margin = int(maxLineThickness/2) + 2;
 
 	// Calculate what section we need to start in
 
@@ -1416,7 +1416,7 @@ void WgChart2::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSamp
 
 		int orgSampleOfs = sectionBeg - begOrgSamples - margin;
 		int newSampleOfs = sectionBeg - begNewSamples - margin;
-		int nSamples = m_renderSectionWidth + margin * 2;
+		int nSamples = sectionWidth + margin * 2;
 
 		int min1=0;
 		int max1=0;
@@ -1430,7 +1430,7 @@ void WgChart2::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSamp
 			if (_lineFragmentMinMax(orgSampleOfs, nSamples, nbOrgTopSamples, pOrgTopSamples, orgDefaultSample, &min1, &max1))
 			{
 				topDirtOfs = min1 / 64 - margin;
-				topDirtHeight = max1 / 64 + 2 + margin - topDirtOfs;
+				topDirtHeight = max1 / 64 + 2 + margin*2 - topDirtOfs;
 			}
 
 			if (_lineFragmentMinMax(newSampleOfs, nSamples, nbNewTopSamples, pNewTopSamples, newDefaultSample, &min2, &max2))
@@ -1445,7 +1445,7 @@ void WgChart2::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSamp
 				else
 				{
 					int newOfs = min2 / 64 - margin;
-					int newHeight = max2 / 64 + 2 + margin - newOfs;
+					int newHeight = max2 / 64 + 2 + margin*2 - newOfs;
 
 					if (newOfs < topDirtOfs)
 					{
@@ -1467,7 +1467,7 @@ void WgChart2::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSamp
 			if (_lineFragmentMinMax(orgSampleOfs, nSamples, nbOrgBottomSamples, pOrgBottomSamples, orgDefaultSample, &min1, &max1))
 			{
 				bottomDirtOfs = min1 / 64 - margin;
-				bottomDirtHeight = max1 / 64 + 2 + margin - bottomDirtOfs;
+				bottomDirtHeight = max1 / 64 + 2 + margin*2 - bottomDirtOfs;
 			}
 
 			if (_lineFragmentMinMax(newSampleOfs, nSamples, nbNewBottomSamples, pNewBottomSamples, newDefaultSample, &min2, &max2))
@@ -1482,7 +1482,7 @@ void WgChart2::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSamp
 				else
 				{
 					int newOfs = min2 / 64 - margin;
-					int newHeight = max2 / 64 + 2 + margin - newOfs;
+					int newHeight = max2 / 64 + 2 + margin*2 - newOfs;
 
 					if (newOfs < bottomDirtOfs)
 					{
@@ -1572,7 +1572,7 @@ void WgChart2::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSamp
 
 		//
 
-		sectionBeg += m_renderSectionWidth;
+		sectionBeg += sectionWidth;
 	}
 
 }
@@ -1624,7 +1624,6 @@ bool WgChart2::_lineFragmentMinMax(int begin, int length, int nbSamples, int * p
 		return false;
 
 	max = min = pSamples[begin];
-	length--;
 
 	for (int i = begin+1; i < begin + length; i++)
 	{
