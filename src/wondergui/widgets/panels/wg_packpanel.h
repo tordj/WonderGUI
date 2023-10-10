@@ -27,7 +27,6 @@
 #include <wg_panel.h>
 #include <wg_slot.h>
 #include <wg_slotextras.h>
-#include <wg_dynamicslotvector.h>
 
 
 namespace wg
@@ -37,6 +36,53 @@ namespace wg
 	typedef	StrongPtr<PackPanel>		PackPanel_p;
 	typedef	WeakPtr<PackPanel>			PackPanel_wp;
 
+
+	//____ PackPanelSlot ____________________________________________________________
+
+	class PackPanelSlot : public PanelSlot
+	{
+		friend class PackPanel;
+		template<class S> friend class SlotVector;
+		friend class DynamicSlotVector<PackPanelSlot>;
+
+	public:
+
+		//.____ Blueprint _______________________________________________________
+
+		struct Blueprint
+		{
+			bool	visible = true;
+			float	weight = 1;
+		};
+		
+
+		//.____ Identification ________________________________________________
+
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Geometry _________________________________________________
+
+		void			setWeight(float weight);
+		inline float	weight() const { return m_weight; }
+
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+	protected:
+
+		PackPanelSlot(SlotHolder *pHolder) : PanelSlot(pHolder) {}
+		PackPanelSlot(PackPanelSlot&& o) = default;
+		PackPanelSlot& operator=(PackPanelSlot&& o) = default;
+
+		bool _setBlueprint( const Blueprint& bp );
+
+		bool		m_bResizeRequired = false;
+		float		m_weight = 1.f;				// Weight for space allocation.
+		SizeSPX		m_defaultSize;				// Cached padded default size from the child.
+	};
+
+
 	//____ PackPanel ________________________________________________________________
 	/**
 	 * @brief	A widget for arranging children horizontally or vertically.
@@ -44,68 +90,11 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 
-	class PackPanel : public Panel
+	class PackPanel : public Panel<PackPanelSlot>
 	{
-
+		friend class PackPanelSlot;
 	public:
 
-		//____ Slot ____________________________________________________________
-
-		class Slot : public DynamicSlot
-		{
-			friend class PackPanel;
-			template<class S> friend class SlotVector;
-			friend class DynamicSlotVector<Slot>;
-
-		public:
-
-			//.____ Blueprint _______________________________________________________
-
-			struct Blueprint
-			{
-				bool	visible = true;
-				float	weight = 1;
-			};
-			
-
-			//.____ Identification ________________________________________________
-
-			const static TypeInfo	TYPEINFO;
-
-			//.____ Geometry _________________________________________________
-
-			void			setWeight(float weight);
-			inline float	weight() const { return m_weight; }
-
-			inline Coord	pos() const { return Util::spxToPts(m_geo.pos(),_holder()->_scale()); }
-			inline Size		size() const { return Util::spxToPts(m_geo.size(), _holder()->_scale()); }
-			inline Rect		geo() const { return Util::spxToPts(m_geo, _holder()->_scale()); }
-
-			//.____ Appearance ________________________________________________
-
-			SLOT_HIDING_METHODS(PackPanel)
-
-			//.____ Operators __________________________________________
-
-			inline void operator=(Widget * pWidget) { setWidget(pWidget); }
-
-		protected:
-
-			Slot(SlotHolder *pHolder) : DynamicSlot(pHolder) {}
-			Slot(Slot&& o) = default;
-			Slot& operator=(Slot&& o) = default;
-
-			bool _setBlueprint( const Blueprint& bp );
-
-			bool		m_bVisible = true;
-
-			bool		m_bResizeRequired = false;
-			float		m_weight = 1.f;				// Weight for space allocation.
-			RectSPX		m_geo;						// Real geo of child.
-			SizeSPX		m_defaultSize;				// Cached padded default size from the child.
-		};
-
-		using		iterator = DynamicSlotVector<Slot>::iterator;
 
 		//.____ Blueprint _____________________________________________________
 		
@@ -138,10 +127,6 @@ namespace wg
 		static PackPanel_p	create() { return PackPanel_p(new PackPanel()); }
 		static PackPanel_p	create(const Blueprint& blueprint) { return PackPanel_p(new PackPanel(blueprint)); }
 
-		//.____ Components _______________________________________
-
-		DynamicSlotVector<Slot>	slots;
-
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
@@ -167,13 +152,6 @@ namespace wg
 		bool			setSlotWeight(int index, int amount, std::initializer_list<float> weights);
 		bool			setSlotWeight(iterator beg, iterator end, std::initializer_list<float> weights);
 
-		void			hideSlots(int index, int amount);
-		void			hideSlots(iterator beg, iterator end);
-
-		void			unhideSlots(int index, int amount);
-		void			unhideSlots(iterator beg, iterator end);
-
-
 		//.____ Internal ______________________________________________________
 
 		spx				_matchingHeight(spx width, int scale) const override;
@@ -184,7 +162,7 @@ namespace wg
 
 	protected:
 		PackPanel();
-		template< class BP> PackPanel(const BP& bp) : slots(this), Panel(bp)
+		template< class BP> PackPanel(const BP& bp) : Panel(bp)
 		{
 			m_bSiblingsOverlap	= false;
 			m_bHorizontal		= bp.axis == Axis::X;
@@ -205,20 +183,9 @@ namespace wg
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		Widget *	_firstChild() const override;
-		Widget *	_lastChild() const override;
-
-		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
-		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
-
-		CoordSPX	_childPos(const StaticSlot * pSlot) const override;
-
 		void		_childRequestRender(StaticSlot * pSlot) override;
 		void		_childRequestRender(StaticSlot * pSlot, const RectSPX& rect) override;
 		void		_childRequestResize(StaticSlot * pSlot) override;
-
-		Widget *	_prevChild(const StaticSlot * pSlot) const override;
-		Widget *	_nextChild(const StaticSlot * pSlot) const override;
 
 		void		_releaseChild(StaticSlot * pSlot) override;
 		void		_replaceChild(StaticSlot * pSlot, Widget * pNewWidget) override;
@@ -227,19 +194,19 @@ namespace wg
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
 
-		void		_hideSlots(StaticSlot *, int nb);
-		void		_unhideSlots(StaticSlot *, int nb);
+		void		_hideSlots(StaticSlot *, int nb) override;
+		void		_unhideSlots(StaticSlot *, int nb) override;
 
-		void		_reweightSlots(Slot * pSlot, int nb, float weight);
-		void		_reweightSlots(Slot * pSlot, int nb, const float * pWeights);
+		void		_reweightSlots(PackPanelSlot * pSlot, int nb, float weight);
+		void		_reweightSlots(PackPanelSlot * pSlot, int nb, const float * pWeights);
 //		void		_refreshChildGeo() { _refreshChildGeo(true); }
 
 		//
 
 		void		_refreshChildGeo(bool bRequestRender);
 
-		void		_hideChildren(Slot * pSlot, int nb);
-		void		_unhideChildren(Slot * pSlot, int nb);
+		void		_hideChildren(PackPanelSlot * pSlot, int nb);
+		void		_unhideChildren(PackPanelSlot * pSlot, int nb);
 
 		void		_refreshGeometries();
 		SizeSPX		_calcDefaultSize( int scale ) const;

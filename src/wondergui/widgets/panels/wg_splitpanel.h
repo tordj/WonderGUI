@@ -26,7 +26,7 @@
 
 
 
-#include <wg_panel.h>
+#include <wg_container.h>
 #include <wg_slot.h>
 #include <wg_slotarray.h>
 
@@ -40,7 +40,7 @@ namespace wg
 	typedef	StrongPtr<SplitPanel>	SplitPanel_p;
 	typedef	WeakPtr<SplitPanel>	SplitPanel_wp;
 
-	class SplitPanel : public Panel
+	class SplitPanel : public Container
 	{
 
 	public:
@@ -147,7 +147,7 @@ namespace wg
 
 	protected:
 		SplitPanel();
-		template<class BP> SplitPanel(const BP& bp) : slots(this), m_handleSkin(this), Panel(bp)
+		template<class BP> SplitPanel(const BP& bp) : slots(this), m_handleSkin(this), Container(bp)
 		{
 			m_bHorizontal 	= (bp.axis == Axis::X);
 			m_handleSkin.set( bp.handleSkin );

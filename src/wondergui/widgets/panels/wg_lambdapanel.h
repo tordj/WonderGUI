@@ -37,78 +37,62 @@ namespace wg
 	typedef	WeakPtr<LambdaPanel>		LambdaPanel_wp;
 
 
+	//____ LambdaPanelSlot ____________________________________________________________
+
+	class LambdaPanelSlot : public PanelSlot
+	{
+		friend class LambdaPanel;
+		friend class DynamicSlotVector<LambdaPanelSlot>;
+
+	public:
+
+		//.____ Blueprint _______________________________________________________
+
+		struct Blueprint
+		{
+			std::function<Rect(Widget * pWidget, Size parentSize)> func;
+		};
+		
+		//.____ Identification ________________________________________________
+
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Properties _________________________________________________
+
+		void	setFunction(const std::function<Rect(Widget * pWidget, Size parentSize)>& func);
+		inline const std::function<Rect(Widget * pWidget, Size parentSize)>& function() const { return m_func; }
+
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+	protected:
+
+		LambdaPanelSlot(SlotHolder * pHolder) : PanelSlot(pHolder) {}
+	//			Slot(Slot&& o) noexcept = default;
+	//			Slot& operator=(Slot&& o) = default;
+
+		const static bool safe_to_relocate = false;
+
+		bool _setBlueprint( const Blueprint& bp );
+
+		std::function<Rect(Widget * pWidget, Size parentSize)>	m_func = nullptr;
+	};
+
+
 	//____ LambdaPanel _________________________________________________________
 
-	class LambdaPanel : public Panel
+	class LambdaPanel : public Panel<LambdaPanelSlot>
 	{
 
 	public:
 
-		
-		//____ Slot ____________________________________________________________
-
-		class Slot : public DynamicSlot
-		{
-			friend class LambdaPanel;
-			friend class DynamicSlotVector<Slot>;
-
-		public:
-
-			//.____ Blueprint _______________________________________________________
-
-			struct Blueprint
-			{
-				std::function<Rect(Widget * pWidget, Size parentSize)> func;
-			};
-			
-			//.____ Identification ________________________________________________
-
-			const static TypeInfo	TYPEINFO;
-
-			//.____ Properties _________________________________________________
-
-			inline void	setFunction(const std::function<Rect(Widget * pWidget, Size parentSize)>& func) { m_func = func; static_cast<LambdaPanel*>(_holder())->_updateSlotGeo(this, 1); }
-			inline const std::function<Rect(Widget * pWidget, Size parentSize)>& function() const { return m_func; }
-
-			//.____ Geometry _________________________________________________
-
-			inline Coord	pos() const { return Util::spxToPts(m_geo.pos(), _holder()->_scale()); }
-			inline Size		size() const { return Util::spxToPts(m_geo.size(), _holder()->_scale()); }
-			inline Rect		geo() const { return Util::spxToPts(m_geo, _holder()->_scale()); }
-
-			//.____ Operators __________________________________________
-
-			inline void operator=(Widget * pWidget) { setWidget(pWidget); }
-
-		protected:
-
-			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder) {}
-//			Slot(Slot&& o) noexcept = default;
-//			Slot& operator=(Slot&& o) = default;
-
-			const static bool safe_to_relocate = false;
-
-			bool _setBlueprint( const Blueprint& bp );
-
-			std::function<Rect(Widget * pWidget, Size parentSize)>	m_func = nullptr;
-			bool			m_bVisible = false;
-			RectSPX			m_geo;				// Widgets geo relative parent
-		};
-
-
-		using		iterator = DynamicSlotVector<Slot>::iterator;
-
-
-		friend class Slot;
+		friend class LambdaPanelSlot;
 		
 		
 		//.____ Creation __________________________________________
 
 		static LambdaPanel_p	create() { return LambdaPanel_p(new LambdaPanel()); }
-
-		//.____ Components _______________________________________
-
-		DynamicSlotVector<Slot>	slots;
 
 		//.____ Identification __________________________________________
 
@@ -121,14 +105,6 @@ namespace wg
 		bool				setMaxSize(Size maxSize);
 		bool				setSizeLimits( Size minSize, Size maxSize );
 		bool				setDefaultSize(Size defaultSize);
-
-		//.____ Misc ___________________________________________________________
-		
-		void			hideSlots(int index, int amount);
-		void			hideSlots(iterator beg, iterator end);
-
-		void			unhideSlots(int index, int amount);
-		void			unhideSlots(iterator beg, iterator end);
 		
 	protected:
 		LambdaPanel();
@@ -142,20 +118,9 @@ namespace wg
 		SizeSPX		_minSize(int scale) const override;
 		SizeSPX		_maxSize(int scale) const override;
 
-		Widget *	_firstChild() const override;
-		Widget *	_lastChild() const override;
-
-		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
-		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
-
-		CoordSPX	_childPos(const StaticSlot * pSlot) const override;
-
 		void		_childRequestRender( StaticSlot * pSlot ) override;
 		void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;
 		void		_childRequestResize( StaticSlot * pSlot ) override;
-
-		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
-		Widget *	_nextChild( const StaticSlot * pSlot ) const override;
 
 		void		_releaseChild(StaticSlot * pSlot) override;
 		void		_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override;
@@ -163,16 +128,16 @@ namespace wg
 		void		_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
-		void		_hideSlots(StaticSlot * pSlot, int nb);
-		void		_unhideSlots(StaticSlot * pSlot, int nb);
+		void		_hideSlots(StaticSlot * pSlot, int nb) override;
+		void		_unhideSlots(StaticSlot * pSlot, int nb) override;
 
 	private:
 		void		_updateSlotGeo(StaticSlot * pSlot, int nb);
 
 		void		_resize( const SizeSPX& size, int scale ) override;
-		void		_updateGeo(Slot * pSlot, bool bForceResize = false);
+		void		_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize = false);
 
-		void		_onRequestRender( const RectSPX& rect, const Slot * pSlot );
+		void		_onRequestRender( const RectSPX& rect, const LambdaPanelSlot * pSlot );
 
 		Size		m_minSize;
 		Size		m_maxSize;

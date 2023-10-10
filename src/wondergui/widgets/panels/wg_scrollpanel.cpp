@@ -40,7 +40,7 @@ namespace wg
 {
 	using namespace Util;
 
-	const TypeInfo ScrollPanel::TYPEINFO = { "ScrollPanel", &Panel::TYPEINFO };
+	const TypeInfo ScrollPanel::TYPEINFO = { "ScrollPanel", &Container::TYPEINFO };
 
 	//____ Constructor _______________________________________________________
 

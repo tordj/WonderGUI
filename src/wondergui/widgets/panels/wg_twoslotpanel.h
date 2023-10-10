@@ -26,7 +26,7 @@
 
 
 
-#include <wg_panel.h>
+#include <wg_container.h>
 #include <wg_slot.h>
 #include <wg_slotarray.h>
 #include <wg_packlayout.h>
@@ -41,7 +41,7 @@ namespace wg
 	typedef	StrongPtr<TwoSlotPanel>	TwoSlotPanel_p;
 	typedef	WeakPtr<TwoSlotPanel>	TwoSlotPanel_wp;
 
-	class TwoSlotPanel : public Panel
+	class TwoSlotPanel : public Container
 	{
 
 	public:
@@ -141,7 +141,7 @@ namespace wg
 
 	protected:
 		TwoSlotPanel();
-		template<class BP> TwoSlotPanel(const BP& bp) : slots(this), Panel(bp)
+		template<class BP> TwoSlotPanel(const BP& bp) : slots(this), Container(bp)
 		{
 			m_bHorizontal = (bp.axis == Axis::X);
 			m_pLayout = bp.layout;

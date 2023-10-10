@@ -25,6 +25,7 @@
 #include <wg_util.h>
 
 #include <wg_dynamicslotvector.impl.h>
+#include <wg_panel.impl.h>
 
 #include <assert.h>
 
@@ -32,10 +33,11 @@ namespace wg
 {
 	using namespace Util;
 
-	template class DynamicSlotVector<FlexPanel::Slot>;
+	template class DynamicSlotVector<FlexPanelSlot>;
+	template class Panel<FlexPanelSlot>;
 
 	const TypeInfo FlexPanel::TYPEINFO = { "FlexPanel", &Panel::TYPEINFO };
-	const TypeInfo FlexPanel::Slot::TYPEINFO = { "FlexPanel::Slot", &DynamicSlot::TYPEINFO };
+	const TypeInfo FlexPanelSlot::TYPEINFO = { "FlexPanelSlot", &DynamicSlot::TYPEINFO };
 
 	float	FlexPos::s_origoTab[Placement_size][2] = {	-1.f, -1.f,			// Signals undefined.
 														0.f, 0.f,
@@ -50,9 +52,9 @@ namespace wg
 
 
 
-	//____ Slot::_setBlueprint() ________________________________________
+	//____ FlexPanelSlot::_setBlueprint() ________________________________________
 
-	bool FlexPanel::Slot::_setBlueprint( const Blueprint& bp )
+	bool FlexPanelSlot::_setBlueprint( const Blueprint& bp )
 	{
 		if(bp.pin1.origo.x >= 0.f && bp.pin2.origo.x >= 0.f )
 		{
@@ -71,136 +73,136 @@ namespace wg
 	}
 
 
-	//____ Slot::setPinned() _______________________________________________
+	//____ FlexPanelSlot::setPinned() _______________________________________________
 
-	void FlexPanel::Slot::setPinned()
+	void FlexPanelSlot::setPinned()
 	{
 		if (!m_bPinned)
 		{
 			m_bPinned = true;
 
-			SizeSPX sz = _holder()->_size();
+			SizeSPX sz = static_cast<FlexPanel*>(_holder())->_size();
 
-			m_topLeftPin = FlexPos(m_realGeo.x / (float)sz.w, m_realGeo.y / (float)sz.h);
-			m_bottomRightPin = FlexPos(m_realGeo.right() / (float)sz.w, m_realGeo.bottom() / (float)sz.h);
+			m_topLeftPin = FlexPos(m_geo.x / (float)sz.w, m_geo.y / (float)sz.h);
+			m_bottomRightPin = FlexPos(m_geo.right() / (float)sz.w, m_geo.bottom() / (float)sz.h);
 
-			_holder()->_refreshRealGeo(this);
+			static_cast<FlexPanel*>(_holder())->_refreshRealGeo(this);
 		}
 	}
 
-	void FlexPanel::Slot::setPinned(const FlexPos& topLeft, const FlexPos& bottomRight)
+	void FlexPanelSlot::setPinned(const FlexPos& topLeft, const FlexPos& bottomRight)
 	{
 		m_bPinned = true;
 		m_topLeftPin = topLeft;
 		m_bottomRightPin = bottomRight;
 
-		_holder()->_refreshRealGeo(this);
+		static_cast<FlexPanel*>(_holder())->_refreshRealGeo(this);
 	}
 
-	//____ Slot::setMovable() _______________________________________________
+	//____ FlexPanelSlot::setMovable() _______________________________________________
 
-	void FlexPanel::Slot::setMovable(const FlexPos& origo, const FlexPos& hotspot)
+	void FlexPanelSlot::setMovable(const FlexPos& origo, const FlexPos& hotspot)
 	{
 		if (m_bPinned)
 		{
 			int scale = _holder()->_scale();
-			Rect geo = spxToPts(m_realGeo, scale);
+			Rect geo = spxToPts(m_geo, scale);
 
 
 			m_bPinned = false;
 			m_origo = origo;
 			m_hotspot = hotspot.origo.x < 0 ? origo : hotspot;
-			m_placementGeo = geo - origo.pos(_holder()->size()) + hotspot.pos(geo);
+			m_placementGeo = geo - origo.pos(static_cast<FlexPanel*>(_holder())->size()) + hotspot.pos(geo);
 
-			_holder()->_refreshRealGeo(this);
+			static_cast<FlexPanel*>(_holder())->_refreshRealGeo(this);
 		}
 	}
 
-	void FlexPanel::Slot::setMovable(const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	void FlexPanelSlot::setMovable(const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
 	{
 		m_bPinned = false;
 		m_origo = origo;
 		m_hotspot = hotspot.origo.x < 0 ? origo : hotspot;
 		m_placementGeo = geometry;
 
-		_holder()->_refreshRealGeo(this);
+		static_cast<FlexPanel*>(_holder())->_refreshRealGeo(this);
 	}
 
-	//____ Slot::setOrigo() __________________________________________________
+	//____ FlexPanelSlot::setOrigo() __________________________________________________
 
-	bool FlexPanel::Slot::setOrigo(const FlexPos& origo)
+	bool FlexPanelSlot::setOrigo(const FlexPos& origo)
 	{
 		if (m_bPinned)
 			return false;
 
 		m_origo = origo;
-		_holder()->_refreshRealGeo(this);
+		static_cast<FlexPanel*>(_holder())->_refreshRealGeo(this);
 		return true;
 	}
 
-	//____ Slot::setHotspot() _________________________________________________
+	//____ FlexPanelSlot::setHotspot() _________________________________________________
 
-	bool FlexPanel::Slot::setHotspot(const FlexPos& hotspot)
+	bool FlexPanelSlot::setHotspot(const FlexPos& hotspot)
 	{
 		if (m_bPinned)
 			return false;
 
 		m_hotspot = hotspot;
-		_holder()->_refreshRealGeo(this);
+		static_cast<FlexPanel*>(_holder())->_refreshRealGeo(this);
 		return true;
 	}
 
-	//____ Slot::setGeo() ____________________________________________________
+	//____ FlexPanelSlot::setGeo() ____________________________________________________
 
-	bool FlexPanel::Slot::setGeo(const Rect& geometry)
+	bool FlexPanelSlot::setGeo(const Rect& geometry)
 	{
 		if (m_bPinned)
 			return false;
 
 		m_placementGeo = geometry;
-		_holder()->_refreshRealGeo(this);
+		static_cast<FlexPanel*>(_holder())->_refreshRealGeo(this);
 		return true;
 	}
 
-	//____ Slot::setOffset() __________________________________________________
+	//____ FlexPanelSlot::setOffset() __________________________________________________
 
-	bool FlexPanel::Slot::setOffset(const Coord& ofs)
+	bool FlexPanelSlot::setOffset(const Coord& ofs)
 	{
 		if (m_bPinned)
 			return false;
 
 		m_placementGeo.setPos(ofs);
-		_holder()->_refreshRealGeo(this);
+		static_cast<FlexPanel*>(_holder())->_refreshRealGeo(this);
 		return true;
 	}
 
-	//____ Slot::setSize() _____________________________________________________
+	//____ FlexPanelSlot::setSize() _____________________________________________________
 
-	bool FlexPanel::Slot::setSize(const Size& size)
+	bool FlexPanelSlot::setSize(const Size& size)
 	{
 		if (m_bPinned)
 			return false;
 
 		m_placementGeo.setSize(size);
-		_holder()->_refreshRealGeo(this);
+		static_cast<FlexPanel*>(_holder())->_refreshRealGeo(this);
 		return true;
 	}
 
-	//____ Slot::move() _______________________________________________________
+	//____ FlexPanelSlot::move() _______________________________________________________
 
-	bool FlexPanel::Slot::move(const Coord& ofs)
+	bool FlexPanelSlot::move(const Coord& ofs)
 	{
 		if (m_bPinned)
 			return false;
 
 		m_placementGeo += ofs;
-		_holder()->_refreshRealGeo(this);
+		static_cast<FlexPanel*>(_holder())->_refreshRealGeo(this);
 		return true;
 	}
 
 	//____ constructor ____________________________________________________________
 
-	FlexPanel::FlexPanel() : slots(this)
+	FlexPanel::FlexPanel()
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -226,7 +228,7 @@ namespace wg
 		{
 			m_bConfineWidgets = bConfineWidgets;
 
-			Slot * p = slots.begin();
+			auto p = slots.begin();
 
 			while( p < slots.end() )
 			{
@@ -236,35 +238,13 @@ namespace wg
 		}
 	}
 
-	//____ hideSlots() ___________________________________________________________
-
-	void FlexPanel::hideSlots(int index, int amount)
-	{
-		_hideSlots( &slots[index], amount);
-	}
-	void FlexPanel::hideSlots(iterator beg, iterator end)
-	{
-		_hideSlots( beg, end - beg);
-	}
-
-	//____ unhideSlots() ___________________________________________________________
-
-	void FlexPanel::unhideSlots(int index, int amount)
-	{
-		_unhideSlots( &slots[index], amount);
-	}
-	void FlexPanel::unhideSlots(iterator beg, iterator end)
-	{
-		_unhideSlots( beg, end - beg);
-	}
-
 	//____ _defaultSize() _____________________________________________________________
 
 	SizeSPX FlexPanel::_defaultSize(int scale) const
 	{
 		SizeSPX minSize;
 
-		Slot * p = slots.begin();
+		auto p = slots.begin();
 		while( p < slots.end() )
 		{
 			minSize = SizeSPX::max(minSize,_sizeNeededForGeo(p));
@@ -284,8 +264,8 @@ namespace wg
 			return;
 		}
 
-		Slot * pFrom = static_cast<Slot*>(_pFrom);
-		Slot * pTo = static_cast<Slot*>(_pTo);
+		auto pFrom = static_cast<FlexPanelSlot*>(_pFrom);
+		auto pTo = static_cast<FlexPanelSlot*>(_pTo);
 
 		if (pTo->m_bVisible)		// This is correct, we have already switched places...
 		{
@@ -293,10 +273,10 @@ namespace wg
 			{
 				// Request render on all areas covered by siblings we have skipped in front of.
 
-				Slot * p = pTo+1;
+				auto p = pTo+1;
 				while (p <= pFrom)
 				{
-					RectSPX cover = RectSPX::overlap(pTo->m_realGeo, p->m_realGeo);
+					RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -307,10 +287,10 @@ namespace wg
 			{
 				// Request render on our siblings for the area we previously have covered.
 
-				Slot * p = pFrom;
+				auto p = pFrom;
 				while (p < pTo)
 				{
-					RectSPX cover = RectSPX::overlap(pTo->m_realGeo, p->m_realGeo);
+					RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -325,7 +305,7 @@ namespace wg
 
 	void FlexPanel::_didAddSlots( StaticSlot * _pSlot, int nb )
 	{
-		Slot * pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		_unhideSlots(pSlot,nb);
 	}
 
@@ -333,7 +313,7 @@ namespace wg
 
 	void FlexPanel::_willEraseSlots( StaticSlot * _pSlot, int nb )
 	{
-		Slot * pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		_hideSlots(pSlot,nb);
 	}
 
@@ -341,13 +321,13 @@ namespace wg
 
 	void FlexPanel::_hideSlots( StaticSlot * _pSlot, int nb )
 	{
-		Slot * pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( pSlot[i].m_bVisible == true )
 			{
-				_onRequestRender(pSlot[i].m_realGeo, &pSlot[i]);
+				_onRequestRender(pSlot[i].m_geo, &pSlot[i]);
 				pSlot[i].m_bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
@@ -357,7 +337,7 @@ namespace wg
 
 	void FlexPanel::_unhideSlots( StaticSlot * _pSlot, int nb )
 	{
-		Slot * pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
@@ -365,7 +345,7 @@ namespace wg
 			{
 				pSlot[i].m_bVisible = true;
 				_refreshRealGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i].m_realGeo, &pSlot[i]);
+				_onRequestRender(pSlot[i].m_geo, &pSlot[i]);
 			}
 		}
 	}
@@ -373,7 +353,7 @@ namespace wg
 
 	//____ _onRequestRender() ______________________________________________________
 
-	void FlexPanel::_onRequestRender( const RectSPX& rect, const Slot * pSlot )
+	void FlexPanel::_onRequestRender( const RectSPX& rect, const FlexPanelSlot * pSlot )
 	{
 		if( !pSlot->m_bVisible )
 			return;
@@ -385,10 +365,10 @@ namespace wg
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
-		for(Slot * pCover = slots.begin() ; pCover < pSlot ; pCover++ )
+		for(auto pCover = slots.begin() ; pCover < pSlot ; pCover++ )
 		{
-			if( pCover->m_bVisible && pCover->m_realGeo.isOverlapping( rect ) )
-				pCover->_widget()->_maskPatches( patches, pCover->m_realGeo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
+			if( pCover->m_bVisible && pCover->m_geo.isOverlapping( rect ) )
+				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectSPX(0,0,65536,65536 ), _getBlendMode() );
 		}
 
 		// Make request render calls
@@ -403,7 +383,7 @@ namespace wg
 	{
 		Panel::_resize(size,scale);
 
-		Slot * p = slots.begin();
+		auto p = slots.begin();
 		while( p < slots.end() )
 		{
 			_refreshRealGeo(p);
@@ -411,32 +391,25 @@ namespace wg
 		}
 	}
 
-	//____ _childPos() ________________________________________________________
-
-	CoordSPX FlexPanel::_childPos( const StaticSlot * pSlot ) const
-	{
-		return ((Slot*)pSlot)->m_realGeo.pos();
-	}
-
 	//____ _childRequestRender() _________________________________________________
 
 	void FlexPanel::_childRequestRender( StaticSlot * _pSlot )
 	{
-		Slot * pSlot = static_cast<Slot*>(_pSlot);
-		_onRequestRender( pSlot->m_realGeo, pSlot );
+		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
+		_onRequestRender( pSlot->m_geo, pSlot );
 	}
 
 	void FlexPanel::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
 	{
-		Slot * pSlot = static_cast<Slot*>(_pSlot);
-		_onRequestRender( rect + pSlot->m_realGeo.pos(), pSlot );
+		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
+		_onRequestRender( rect + pSlot->m_geo.pos(), pSlot );
 	}
 
 	//____ _childRequestResize() _________________________________________________
 
 	void FlexPanel::_childRequestResize( StaticSlot * _pSlot )
 	{
-		Slot * pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		_refreshRealGeo(pSlot, true);
 	}
 
@@ -444,67 +417,21 @@ namespace wg
 
 	const TypeInfo&	FlexPanel::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
-		return Slot::TYPEINFO;
-	}
-
-
-	//____ _firstChild() __________________________________________________________
-
-	Widget * FlexPanel::_firstChild() const
-	{
-		if (slots.isEmpty())
-			return nullptr;
-
-		return slots.front()._widget();
-	}
-
-	//____ _lastChild() __________________________________________________________
-
-	Widget * FlexPanel::_lastChild() const
-	{
-		if (slots.isEmpty())
-			return nullptr;
-
-		return slots.back()._widget();
-	}
-
-
-	//____ _prevChild() __________________________________________________________
-
-	Widget * FlexPanel::_prevChild( const StaticSlot * _pSlot ) const
-	{
-		auto pSlot = static_cast<const Slot*>(_pSlot);
-
-		if (pSlot > slots.begin())
-			return pSlot[-1]._widget();
-
-		return nullptr;
-	}
-
-	//____ _nextChild() __________________________________________________________
-
-	Widget * FlexPanel::_nextChild( const StaticSlot * _pSlot ) const
-	{
-		auto pSlot = static_cast<const Slot*>(_pSlot);
-
-		if (pSlot < slots.end()-1 )
-			return pSlot[1]._widget();
-
-		return nullptr;
+		return FlexPanelSlot::TYPEINFO;
 	}
 
 	//____ _releaseChild() ____________________________________________________
 
 	void FlexPanel::_releaseChild(StaticSlot * pSlot)
 	{
-		slots.erase(static_cast<Slot*>(pSlot));
+		slots.erase(static_cast<FlexPanelSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________
 
 	void FlexPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewWidget)
 	{
-		auto pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		slots._releaseGuardPointer(pNewWidget, &pSlot);
 
 		pSlot->_setWidget(pNewWidget);
@@ -512,45 +439,13 @@ namespace wg
 		if (pSlot->m_bVisible )
 		{
 			_refreshRealGeo(pSlot, true);
-			_onRequestRender(pSlot->m_realGeo, pSlot);
+			_onRequestRender(pSlot->m_geo, pSlot);
 		}
 	}
-
-
-	//____ _firstSlotWithGeo() _____________________________________________________
-
-	void FlexPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
-	{
-		if( slots.isEmpty() )
-			package.pSlot = nullptr;
-		else
-		{
-			Slot * pSlot = slots.begin();
-			package.pSlot = pSlot;
-			package.geo = pSlot->m_realGeo;
-		}
-	}
-
-	//____ _nextSlotWithGeo() ______________________________________________________
-
-	void FlexPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
-	{
-		Slot * pSlot = (Slot*) package.pSlot;
-		pSlot++;
-		
-		if( pSlot == slots.end() )
-			package.pSlot = nullptr;
-		else
-		{
-			package.pSlot = pSlot;
-			package.geo = pSlot->m_realGeo;
-		}
-	}
-
 
 	//____ _refreshRealGeo() ___________________________________________
 
-	void FlexPanel::_refreshRealGeo( Slot * pSlot, bool bForceResize )
+	void FlexPanel::_refreshRealGeo( FlexPanelSlot * pSlot, bool bForceResize )
 	{
 		RectSPX	geo;
 
@@ -608,11 +503,11 @@ namespace wg
 
 		// Request render and update positions.
 
-		if (geo != pSlot->m_realGeo)
+		if (geo != pSlot->m_geo)
 		{
-			_onRequestRender(pSlot->m_realGeo, pSlot);
-			pSlot->m_realGeo = geo;
-			_onRequestRender(pSlot->m_realGeo, pSlot);
+			_onRequestRender(pSlot->m_geo, pSlot);
+			pSlot->m_geo = geo;
+			_onRequestRender(pSlot->m_geo, pSlot);
 		}
 
 		if (bForceResize || pSlot->_widget()->_size() != geo.size())
@@ -621,7 +516,7 @@ namespace wg
 
 	//____ _sizeNeededForGeo() ________________________________________
 
-	SizeSPX FlexPanel::_sizeNeededForGeo( Slot * pSlot ) const
+	SizeSPX FlexPanel::_sizeNeededForGeo( FlexPanelSlot * pSlot ) const
 	{
 		SizeSPX sz;
 

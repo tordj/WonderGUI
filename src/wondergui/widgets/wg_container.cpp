@@ -184,13 +184,6 @@ namespace wg
 		return;				// By default we don't support adding/moving/erasing slots
 	}
 
-	//____ _isPanel() ______________________________________________________________
-
-	bool Container::_isPanel() const
-	{
-		return false;
-	}
-
 	//____ _findWidget() ____________________________________________________________
 
 	Widget * Container::_findWidget( const CoordSPX& ofs, SearchMode mode )

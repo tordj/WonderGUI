@@ -26,13 +26,11 @@
 
 #include <wg_container.h>
 #include <wg_slot.h>
+#include <wg_dynamicslotvector.h>
+#include <wg_util.h>
 
 namespace wg
 {
-
-	class Panel;
-	typedef	StrongPtr<Panel>	Panel_p;
-	typedef	WeakPtr<Panel>		Panel_wp;
 
 	/**
 	 * @brief	Base class for layout widgets.
@@ -42,33 +40,118 @@ namespace wg
 
 	//____ Panel ________________________________________________________________
 
-	class Panel : public Container
+	class PanelBase : public Container
+	{
+		friend class PanelSlot;
+	protected:
+		PanelBase() {}
+		template<class BP> PanelBase(const BP& bp) : Container(bp) {}
+
+		virtual void _hideSlots(StaticSlot *, int nb) = 0;
+		virtual void _unhideSlots(StaticSlot *, int nb) = 0;
+
+	};
+
+
+	//____ PanelSlot ____________________________________________________________
+
+	class PanelSlot : public DynamicSlot
+	{
+		template<typename T>
+		friend class Panel;
+
+	public:
+		
+		PanelSlot(SlotHolder* pHolder) : DynamicSlot(pHolder) {}
+
+		//.____ Appearance ________________________________________________
+
+		inline void		hide() { static_cast<PanelBase*>(_holder())->_hideSlots(this, 1); }
+		inline void		unhide() { static_cast<PanelBase*>(_holder())->_unhideSlots(this, 1); }
+
+		inline void		setVisible(bool bVisible)
+						{
+							if (bVisible)
+								static_cast<PanelBase*>(_holder())->_unhideSlots(this, 1);
+							else
+								static_cast<PanelBase*>(_holder())->_hideSlots(this, 1);
+						}
+		
+		inline bool		isVisible() const { return m_bVisible; }
+
+		//.____ Geometry _________________________________________________
+		
+		inline Coord	pos() const { return Util::spxToPts(m_geo.pos(),_holder()->_scale()); }
+		inline Size		size() const { return Util::spxToPts(m_geo.size(), _holder()->_scale()); }
+		inline Rect		geo() const { return Util::spxToPts(m_geo, _holder()->_scale()); }
+
+	protected:
+		RectSPX		m_geo;
+		bool		m_bVisible = true;
+	};
+
+
+
+
+
+	template<class SlotType>
+	class Panel : public PanelBase
 	{
 	public:
+		
+		using		iterator = typename DynamicSlotVector<SlotType>::iterator;
 
+		//.____ Components _______________________________________
+
+		DynamicSlotVector<SlotType>		slots;
+		
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Appearance _____________________________________________________
+		
+		void			hideSlots(int index, int amount);
+		void			hideSlots(iterator beg, iterator end);
+
+		void			unhideSlots(int index, int amount);
+		void			unhideSlots(iterator beg, iterator end);
+
+		
 		//.____ Behavior _______________________________________________________
 
 		void		setMaskOp( MaskOp operation );
 		MaskOp		maskOp() const { return m_maskOp; }
 
+		
 
 	protected:
 		Panel();
-		template<class BP> Panel(const BP& bp) : Container(bp)
+		template<class BP> Panel(const BP& bp) : PanelBase(bp), slots(this)
 		{
 			m_maskOp = bp.maskOp;
 		}
 		
 		virtual ~Panel() {};
 
-		bool			_isPanel() const override;
 		virtual void	_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode ) override;
 
+		Widget *	_firstChild() const override;
+		Widget *	_lastChild() const override;
+
+		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
+		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
+
+		CoordSPX	_childPos(const StaticSlot * pSlot) const override;
+
+		void		_childRequestRender(StaticSlot * pSlot) override;
+		void		_childRequestRender(StaticSlot * pSlot, const RectSPX& rect) override;
+
+		Widget *	_prevChild(const StaticSlot * pSlot) const override;
+		Widget *	_nextChild(const StaticSlot * pSlot) const override;
+
+		
 		MaskOp		m_maskOp;			// Specifies how container masks background.
 	};
 

@@ -233,7 +233,7 @@ set( SOURCES
 	widgets/panels/wg_lambdapanel.h
 	widgets/panels/wg_packpanel.cpp
 	widgets/panels/wg_packpanel.h
-	widgets/panels/wg_panel.cpp
+	widgets/panels/wg_panel.impl.h
 	widgets/panels/wg_panel.h
 	widgets/panels/wg_rootpanel.cpp
 	widgets/panels/wg_rootpanel.h

@@ -117,10 +117,6 @@ namespace wg
 
 			//
 
-
-
-			virtual bool			_isPanel() const;
-
 			virtual Widget *		_firstChild() const = 0;
 			virtual Widget *		_lastChild() const = 0;
 

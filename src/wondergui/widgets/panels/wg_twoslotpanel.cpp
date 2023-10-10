@@ -28,7 +28,7 @@
 
 namespace wg
 {
-	const TypeInfo TwoSlotPanel::TYPEINFO = { "TwoSlotPanel", &Panel::TYPEINFO };
+	const TypeInfo TwoSlotPanel::TYPEINFO = { "TwoSlotPanel", &Container::TYPEINFO };
 	const TypeInfo TwoSlotPanel::Slot::TYPEINFO = { "TwoSlotPanel::Slot", &DynamicSlot::TYPEINFO };
 
 	using namespace Util;
@@ -44,7 +44,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	TwoSlotPanel::TwoSlotPanel() : slots(this), Panel()
+	TwoSlotPanel::TwoSlotPanel() : slots(this), Container()
 	{
 		m_bHorizontal = false;
 		m_bSiblingsOverlap = false;
@@ -380,7 +380,7 @@ namespace wg
 		spx breadthDiff = m_bHorizontal ? m_size.h - size.h : m_size.w - size.w;
 		bool bForceUpdate = (scale != m_scale || breadthDiff != 0);
 			
-		Panel::_resize(size,scale);
+		Container::_resize(size,scale);
 		_updateGeo( bForceUpdate );
 			
 	}

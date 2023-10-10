@@ -36,7 +36,6 @@ namespace wg
 {
 	class GfxDevice;
 	class Container;
-	class Panel;
 	class List;
 	class Capsule;
 	class Layer;

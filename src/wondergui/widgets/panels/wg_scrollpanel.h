@@ -26,7 +26,7 @@
 
 
 
-#include <wg_panel.h>
+#include <wg_container.h>
 #include <wg_slot.h>
 #include <wg_scroller.h>
 
@@ -40,7 +40,7 @@ namespace wg
 
 	//____ ScrollPanel ___________________________________________________________
 
-	class ScrollPanel : public Panel, protected Scroller::Holder
+	class ScrollPanel : public Container, protected Scroller::Holder
 	{
 	public:
 
@@ -129,7 +129,7 @@ namespace wg
 
 	protected:
 		ScrollPanel();
-		template<class BP> ScrollPanel(const BP& bp) : slot(this), scrollbarX(this, this, Axis::X), scrollbarY(this, this, Axis::Y), Panel(bp)
+		template<class BP> ScrollPanel(const BP& bp) : slot(this), scrollbarX(this, this, Axis::X), scrollbarY(this, this, Axis::Y), Container(bp)
 		{
 			scrollbarX._initFromBlueprint(bp.scrollbarX);
 			scrollbarY._initFromBlueprint(bp.scrollbarY);

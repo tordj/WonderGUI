@@ -25,6 +25,7 @@
 #include <wg_util.h>
 
 #include <wg_dynamicslotvector.impl.h>
+#include <wg_panel.impl.h>
 #include <assert.h>
 
 
@@ -32,15 +33,24 @@ namespace wg
 {
 	using namespace Util;
 
-	template class DynamicSlotVector<LambdaPanel::Slot>;
+	template class DynamicSlotVector<LambdaPanelSlot>;
+	template class Panel<LambdaPanelSlot>;
 
 
 	const TypeInfo LambdaPanel::TYPEINFO = { "LambdaPanel", &Panel::TYPEINFO };
-	const TypeInfo LambdaPanel::Slot::TYPEINFO = { "LambdaPanel::Slot", &DynamicSlot::TYPEINFO };
+	const TypeInfo LambdaPanelSlot::TYPEINFO = { "LambdaPanelSlot", &DynamicSlot::TYPEINFO };
 
-	//____ Slot::_setBlueprint() ____________________________________________________
+//____ LambdaPanelSlot::setFunction() ____________________________________________________
 
-	bool LambdaPanel::Slot::_setBlueprint( const Blueprint& bp )
+	void LambdaPanelSlot::setFunction(const std::function<Rect(Widget * pWidget, Size parentSize)>& func)
+	{
+		m_func = func;
+		static_cast<LambdaPanel*>(_holder())->_updateSlotGeo(this, 1);
+	}
+
+	//____ LambdaPanelSlot::_setBlueprint() ____________________________________________________
+
+	bool LambdaPanelSlot::_setBlueprint( const Blueprint& bp )
 	{
 		m_func = bp.func;
 		return true;
@@ -48,7 +58,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	LambdaPanel::LambdaPanel() : slots(this), m_minSize(0,0), m_defaultSize(512,512), m_maxSize(16000000, 16000000)
+	LambdaPanel::LambdaPanel() : m_minSize(0,0), m_defaultSize(512,512), m_maxSize(16000000, 16000000)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -144,28 +154,6 @@ namespace wg
 		return true;
 	}
 
-	//____ hideSlots() ___________________________________________________________
-
-	void LambdaPanel::hideSlots(int index, int amount)
-	{
-		_hideSlots( &slots[index], amount);
-	}
-	void LambdaPanel::hideSlots(iterator beg, iterator end)
-	{
-		_hideSlots( beg, end - beg);
-	}
-
-	//____ unhideSlots() ___________________________________________________________
-
-	void LambdaPanel::unhideSlots(int index, int amount)
-	{
-		_unhideSlots( &slots[index], amount);
-	}
-	void LambdaPanel::unhideSlots(iterator beg, iterator end)
-	{
-		_unhideSlots( beg, end - beg);
-	}
-
 	//____ _defaultSize() _____________________________________________________
 
 	SizeSPX LambdaPanel::_defaultSize(int scale) const
@@ -191,80 +179,28 @@ namespace wg
 
 	const TypeInfo&	LambdaPanel::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
-		return Slot::TYPEINFO;
-	}
-
-
-	//____ _firstChild() _______________________________________________________
-
-	Widget * LambdaPanel::_firstChild() const
-	{
-		if (slots.isEmpty())
-			return nullptr;
-
-		return slots.front()._widget();
-	}
-
-	//____ _lastChild() ________________________________________________________
-
-	Widget * LambdaPanel::_lastChild() const
-	{
-		if (slots.isEmpty())
-			return nullptr;
-
-		return slots.back()._widget();
-	}
-
-	//____ _firstSlotWithGeo() _________________________________________________
-
-	void LambdaPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
-	{
-		if( slots.isEmpty() )
-			package.pSlot = nullptr;
-		else
-		{
-			Slot * pSlot = slots.begin();
-			package.pSlot = pSlot;
-			package.geo = pSlot->m_geo;
-		}
-
-	}
-
-	//____ _nextSlotWithGeo() _________________________________________________
-
-	void LambdaPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
-	{
-		Slot * pSlot = (Slot*) package.pSlot;
-		pSlot++;
-		
-		if( pSlot == slots.end() )
-			package.pSlot = nullptr;
-		else
-		{
-			package.pSlot = pSlot;
-			package.geo = pSlot->m_geo;
-		}
+		return LambdaPanelSlot::TYPEINFO;
 	}
 
 	//____ _didAddSlots() ________________________________________________________
 
 	void LambdaPanel::_didAddSlots( StaticSlot * pSlot, int nb )
 	{
-		_unhideSlots(static_cast<Slot*>(pSlot), nb);
+		_unhideSlots(static_cast<LambdaPanelSlot*>(pSlot), nb);
 	}
 
 	//____ _willEraseSlots() _________________________________________________
 
 	void LambdaPanel::_willEraseSlots( StaticSlot * pSlot, int nb )
 	{
-		_hideSlots(static_cast<Slot*>(pSlot), nb);
+		_hideSlots(static_cast<LambdaPanelSlot*>(pSlot), nb);
 	}
 
 	//____ _hideSlots() __________________________________________________________
 
 	void LambdaPanel::_hideSlots( StaticSlot * _pSlot, int nb )
 	{
-		auto pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
@@ -280,7 +216,7 @@ namespace wg
 
 	void LambdaPanel::_unhideSlots( StaticSlot * _pSlot, int nb )
 	{
-		auto pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
@@ -298,7 +234,7 @@ namespace wg
 
 	void LambdaPanel::_updateSlotGeo(StaticSlot * _pSlot, int nb)
 	{
-		auto pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
 
 		for (int i = 0; i < nb; i++)
 		{
@@ -320,8 +256,8 @@ namespace wg
 			return;
 		}
 
-		auto pFrom = static_cast<Slot*>(_pFrom);
-		auto pTo = static_cast<Slot*>(_pTo);
+		auto pFrom = static_cast<LambdaPanelSlot*>(_pFrom);
+		auto pTo = static_cast<LambdaPanelSlot*>(_pTo);
 
 		if (pTo->m_bVisible)		// This is correct, we have already switched places...
 		{
@@ -329,7 +265,7 @@ namespace wg
 			{
 				// Request render on all areas covered by siblings we have skipped in front of.
 
-				Slot * p = pTo+1;
+				auto p = pTo+1;
 				while (p <= pFrom)
 				{
 					RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
@@ -343,7 +279,7 @@ namespace wg
 			{
 				// Request render on our siblings for the area we previously have covered.
 
-				Slot * p = pFrom;
+				auto p = pFrom;
 				while (p < pTo)
 				{
 					RectSPX cover = RectSPX::overlap(pTo->m_geo, p->m_geo);
@@ -356,25 +292,17 @@ namespace wg
 		}
 	}
 
-
-	//____ _childPos() __________________________________________________________
-
-	CoordSPX LambdaPanel::_childPos( const StaticSlot * pSlot ) const
-	{
-		return ((Slot*)pSlot)->m_geo.pos();
-	}
-
 	//____ _childRequestRender() _________________________________________________
 
 	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot )
 	{
-		Slot * pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
 		_onRequestRender( pSlot->m_geo, pSlot );
 	}
 
 	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot, const RectSPX& rect )
 	{
-		Slot * pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
 		_onRequestRender( rect + pSlot->m_geo.pos(), pSlot );
 	}
 
@@ -382,46 +310,21 @@ namespace wg
 
 	void LambdaPanel::_childRequestResize( StaticSlot * pSlot )
 	{
-		_updateGeo(static_cast<Slot*>(pSlot), true);
-	}
-
-	//____ _prevChild() __________________________________________________________
-
-	Widget * LambdaPanel::_prevChild( const StaticSlot * _pSlot ) const
-	{
-		const Slot * pSlot = static_cast<const Slot*>(_pSlot);
-
-		if (pSlot > slots.begin())
-			return pSlot[-1]._widget();
-
-		return nullptr;
-
-	}
-
-	//____ _nextChild() __________________________________________________________
-
-	Widget * LambdaPanel::_nextChild( const StaticSlot * _pSlot ) const
-	{
-		const Slot * pSlot = static_cast<const Slot*>(_pSlot);
-
-		if (pSlot < slots.end()-1)
-			return pSlot[1]._widget();
-
-		return nullptr;
+		_updateGeo(static_cast<LambdaPanelSlot*>(pSlot), true);
 	}
 
 	//____ _releaseChild() ____________________________________________________
 
 	void LambdaPanel::_releaseChild(StaticSlot * pSlot)
 	{
-		slots.erase(static_cast<Slot*>(pSlot));
+		slots.erase(static_cast<LambdaPanelSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() ______________________________________________________
 
 	void LambdaPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
 	{
-		Slot * pSlot = static_cast<Slot*>(_pSlot);
+		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
 
 		slots._releaseGuardPointer(pNewChild, &pSlot);
 		pSlot->_setWidget(pNewChild);
@@ -439,13 +342,13 @@ namespace wg
 	{
 		Panel::_resize( size, scale );
 
-		for (auto * pSlot = slots.begin() ; pSlot != slots.end() ; pSlot++)
+		for (auto pSlot = slots.begin() ; pSlot != slots.end() ; pSlot++)
 			_updateGeo(pSlot);
 	}
 
 	//____ _updateGeo() _______________________________________________________
 
-	void LambdaPanel::_updateGeo(Slot * pSlot, bool bForceResize )
+	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize )
 	{
 		//TODO: Don't requestRender if slot is hidden.
 
@@ -472,7 +375,7 @@ namespace wg
 
 				// Remove portions of patches that are covered by opaque upper siblings
 
-				const Slot * pCover = pSlot + 1;
+				auto pCover = pSlot + 1;
 				while (pCover < slots.end())
 				{
 					if (pCover->m_bVisible && (pCover->m_geo.isOverlapping(pSlot->m_geo) || pCover->m_geo.isOverlapping(geo)) )
@@ -498,7 +401,7 @@ namespace wg
 
 	//____ _onRequestRender() ____________________________________________________
 
-	void LambdaPanel::_onRequestRender( const RectSPX& rect, const Slot * pSlot )
+	void LambdaPanel::_onRequestRender( const RectSPX& rect, const LambdaPanelSlot * pSlot )
 	{
 		if (!pSlot->m_bVisible)
 			return;
@@ -510,7 +413,7 @@ namespace wg
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
-		for (Slot * pCover = slots.begin(); pCover < pSlot ; pCover++)
+		for (auto pCover = slots.begin(); pCover < pSlot ; pCover++)
 		{
 			if (pCover->m_bVisible && pCover->m_geo.isOverlapping(rect))
 				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectSPX(0, 0, 0x7FFFFFC0, 0x7FFFFFC0), _getBlendMode());

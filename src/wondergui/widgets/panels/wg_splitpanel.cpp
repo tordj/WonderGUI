@@ -28,7 +28,7 @@
 
 namespace wg
 {
-	const TypeInfo SplitPanel::TYPEINFO = { "SplitPanel", &Panel::TYPEINFO };
+	const TypeInfo SplitPanel::TYPEINFO = { "SplitPanel", &Container::TYPEINFO };
 	const TypeInfo SplitPanel::Slot::TYPEINFO = { "SplitPanel::Slot", &DynamicSlot::TYPEINFO };
 
 	using namespace Util;
@@ -519,7 +519,7 @@ namespace wg
 
 	void SplitPanel::_render(GfxDevice * pDevice, const RectSPX& canvas, const RectSPX& window)
 	{
-		Panel::_render(pDevice, canvas, window);
+		Container::_render(pDevice, canvas, window);
 
 		m_handleSkin.render(pDevice, m_handleGeo + canvas.pos(), m_scale, m_handleState);
 	}
@@ -570,7 +570,7 @@ namespace wg
 
 	bool SplitPanel::_alphaTest(const CoordSPX& ofs)
 	{
-		bool bHit = Panel::_alphaTest(ofs);
+		bool bHit = Container::_alphaTest(ofs);
 
 		if( !bHit )
 			bHit = m_handleSkin.markTest(ofs, m_handleGeo, m_scale, m_handleState);
@@ -582,7 +582,7 @@ namespace wg
 
 	void SplitPanel::_resize(const SizeSPX& size, int scale)
 	{
-		Panel::_resize(size,scale);
+		Container::_resize(size,scale);
 		_updateGeo();
 	}
 
@@ -593,7 +593,7 @@ namespace wg
 		// Disable handle when panel is disabled
 
 		m_handleState.setEnabled(state.isEnabled());
-		Panel::_setState(state);
+		Container::_setState(state);
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________

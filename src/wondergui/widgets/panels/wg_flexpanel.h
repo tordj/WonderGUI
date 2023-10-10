@@ -88,6 +88,102 @@ namespace wg
 	};
 
 
+	//____ FlexPanelSlot ____________________________________________________________
+
+	class FlexPanelSlot : public PanelSlot
+	{
+		friend class FlexPanel;
+		template<class S> friend class DynamicSlotVector;
+
+	public:
+		 
+		//.____ Blueprint _____________________________________________________
+		
+		struct Blueprint
+		{
+			FlexPos		pin1 = Placement::Undefined;
+			FlexPos		pin2 = Placement::Undefined;
+
+			FlexPos		origo = Placement::NorthWest;
+			FlexPos		hotspot = Placement::Undefined;
+			Coord		pos;
+			Size		size;
+		};
+		
+		
+		//.____ Identification ________________________________________________
+
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Properties _________________________________________________________
+
+		void			setPinned();
+		void			setPinned(const FlexPos& topLeft, const FlexPos& bottomRight);
+		inline bool		isPinned() const { return m_bPinned; }
+
+		void			setMovable(const FlexPos& origo = Placement::NorthWest, const FlexPos& hotspot = Placement::Undefined);
+		void			setMovable(const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot = Placement::Undefined);
+		inline bool		isMovable() const { return !m_bPinned; }
+
+
+		//.____ Geometry ______________________________________________________
+
+		// Methods for movable children
+
+		bool			setOrigo(const FlexPos& origo);
+		inline FlexPos	origo() const { return m_origo; }
+
+		bool			setHotspot(const FlexPos& hotspot);
+		inline FlexPos	hotspot() const { return m_hotspot; }
+
+		bool			setGeo(const Rect& geometry);
+
+		bool			setOffset(const Coord& ofs);
+		inline Coord	offset() const { return m_placementGeo.pos(); }
+
+		bool			setSize(const Size& size);
+
+		bool			move(const Coord& ofs);
+
+		// Methods for pinned children
+
+		inline FlexPos	topLeftPin() const { return m_topLeftPin; }
+		inline FlexPos	bottomRightPin() const { return m_bottomRightPin; }
+
+		
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+	protected:
+
+		FlexPanelSlot(SlotHolder * pHolder) : PanelSlot(pHolder) {}
+
+		FlexPanelSlot(FlexPanelSlot&& o) = default;
+		FlexPanelSlot& operator=(FlexPanelSlot&& o) = default;
+
+
+		bool _setBlueprint( const Blueprint& bp );
+		
+//		inline FlexPanel * _holder() { return static_cast<FlexPanel*>(DynamicSlot::_holder()); }
+//		inline const FlexPanel * _holder() const { return static_cast<const FlexPanel*>(DynamicSlot::_holder()); }
+
+		bool			m_bPinned = false;
+		bool			m_bVisible = false;
+
+		// Positioned children
+
+		FlexPos			m_origo = Placement::NorthWest;
+		FlexPos			m_hotspot = Placement::NorthWest;
+		Rect			m_placementGeo;		// Widgets geo relative anchor and hotspot, not pixel aligned.
+
+		//	Stretched children
+
+		FlexPos			m_topLeftPin;
+		FlexPos			m_bottomRightPin;
+
+	};
+
 
 	//____ FlexPanel _________________________________________________________
 
@@ -99,122 +195,12 @@ namespace wg
 	 */
 
 
-	class FlexPanel : public Panel
+	class FlexPanel : public Panel<FlexPanelSlot>
 	{
-		friend class Slot;
+		friend class FlexPanelSlot;
 
 	public:
 
-		//____ Slot ____________________________________________________________
-
-		class Slot : public DynamicSlot
-		{
-			friend class FlexPanel;
-			template<class S> friend class DynamicSlotVector;
-
-		public:
-			 
-			//.____ Blueprint _____________________________________________________
-			
-			struct Blueprint
-			{
-				FlexPos		pin1 = Placement::Undefined;
-				FlexPos		pin2 = Placement::Undefined;
-
-				FlexPos		origo = Placement::NorthWest;
-				FlexPos		hotspot = Placement::Undefined;
-				Coord		pos;
-				Size		size;
-			};
-			
-			
-			//.____ Identification ________________________________________________
-
-			const static TypeInfo	TYPEINFO;
-
-			//.____ Properties _________________________________________________________
-
-			void			setPinned();
-			void			setPinned(const FlexPos& topLeft, const FlexPos& bottomRight);
-			inline bool		isPinned() const { return m_bPinned; }
-
-			void			setMovable(const FlexPos& origo = Placement::NorthWest, const FlexPos& hotspot = Placement::Undefined);
-			void			setMovable(const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot = Placement::Undefined);
-			inline bool		isMovable() const { return !m_bPinned; }
-
-
-			//.____ Geometry ______________________________________________________
-
-			// Methods for movable children
-
-			bool			setOrigo(const FlexPos& origo);
-			inline FlexPos	origo() const { return m_origo; }
-
-			bool			setHotspot(const FlexPos& hotspot);
-			inline FlexPos	hotspot() const { return m_hotspot; }
-
-			bool			setGeo(const Rect& geometry);
-
-			bool			setOffset(const Coord& ofs);
-			inline Coord	offset() const { return m_placementGeo.pos(); }
-
-			bool			setSize(const Size& size);
-
-			bool			move(const Coord& ofs);
-
-			// Methods for pinned children
-
-			inline FlexPos	topLeftPin() const { return m_topLeftPin; }
-			inline FlexPos	bottomRightPin() const { return m_bottomRightPin; }
-
-			//
-
-			inline Coord	pos() const { return Util::spxToPts(m_realGeo.pos(),_holder()->_scale()); }
-			inline Size		size() const { return Util::spxToPts(m_realGeo.size(), _holder()->_scale()); }
-			inline Rect		geo() const { return Util::spxToPts(m_realGeo, _holder()->_scale()); }
-
-			//.____ Appearance ________________________________________________
-
-			SLOT_HIDING_METHODS(FlexPanel)
-
-			//.____ Operators __________________________________________
-
-			inline void operator=(Widget * pWidget) { setWidget(pWidget); }
-
-
-		protected:
-
-			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder) {}
-
-			Slot(Slot&& o) = default;
-			Slot& operator=(Slot&& o) = default;
-
-
-			bool _setBlueprint( const Blueprint& bp );
-			
-			inline FlexPanel * _holder() { return static_cast<FlexPanel*>(DynamicSlot::_holder()); }
-			inline const FlexPanel * _holder() const { return static_cast<const FlexPanel*>(DynamicSlot::_holder()); }
-
-			bool			m_bPinned = false;
-			bool			m_bVisible = false;
-			RectSPX			m_realGeo;			// Widgets geo relative parent, pixel aligned.
-
-			// Positioned children
-
-			FlexPos			m_origo = Placement::NorthWest;
-			FlexPos			m_hotspot = Placement::NorthWest;
-			Rect			m_placementGeo;		// Widgets geo relative anchor and hotspot, not pixel aligned.
-
-			//	Stretched children
-
-			FlexPos			m_topLeftPin;
-			FlexPos			m_bottomRightPin;
-
-		};
-
-		using		iterator = DynamicSlotVector<Slot>::iterator;
-
-		
 		//.____ Blueprint _____________________________________________________
 		
 		struct Blueprint
@@ -242,10 +228,6 @@ namespace wg
 		static FlexPanel_p	create() { return FlexPanel_p(new FlexPanel()); }
 		static FlexPanel_p	create( const Blueprint& blueprint ) { return FlexPanel_p(new FlexPanel(blueprint)); }
 
-		//.____ Components _______________________________________
-
-		DynamicSlotVector<Slot>		slots;
-
 		//.____ Identification __________________________________________
 
 		const TypeInfo&	typeInfo(void) const override;
@@ -255,14 +237,6 @@ namespace wg
 
 		void			setConfineWidgets( bool bConfineWidgets );
 		bool			isConfiningWidgets() const { return m_bConfineWidgets; }
-
-		//.____ Misc ___________________________________________________________
-		
-		void			hideSlots(int index, int amount);
-		void			hideSlots(iterator beg, iterator end);
-
-		void			unhideSlots(int index, int amount);
-		void			unhideSlots(iterator beg, iterator end);
 		
 		//.____ Internal ______________________________________________________
 
@@ -271,7 +245,7 @@ namespace wg
 
 	protected:
 		FlexPanel();
-		template<class BP> FlexPanel(const BP& bp) : slots(this), Panel(bp)
+		template<class BP> FlexPanel(const BP& bp) : Panel(bp)
 		{
 			m_bSiblingsOverlap = true;
 			m_bConfineWidgets = bp.confineWidgets;
@@ -284,16 +258,6 @@ namespace wg
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		Widget *	_firstChild() const override;
-		Widget *	_lastChild() const override;
-		Widget *	_prevChild(const StaticSlot * pSlot) const override;
-		Widget *	_nextChild(const StaticSlot * pSlot) const override;
-
-		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
-		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
-
-		CoordSPX	_childPos(const StaticSlot * pSlot) const override;
-
 		void		_childRequestRender( StaticSlot * pSlot ) override;
 		void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;
 		void		_childRequestResize( StaticSlot * pSlot ) override;
@@ -304,18 +268,18 @@ namespace wg
 		void		_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
 		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
-		void		_hideSlots(StaticSlot *, int nb);
-		void		_unhideSlots(StaticSlot *, int nb);
+		void		_hideSlots(StaticSlot *, int nb) override;
+		void		_unhideSlots(StaticSlot *, int nb) override;
 
 	private:
-		void		_refreshRealGeo(Slot * pSlot, bool bForceRefresh = false);
+		void		_refreshRealGeo(FlexPanelSlot * pSlot, bool bForceRefresh = false);
 		SizeSPX		_size() const { return m_size; }
 
 		void		_resize( const SizeSPX& size, int scale ) override;
 
-		void		_onRequestRender( const RectSPX& rect, const Slot * pSlot );
+		void		_onRequestRender( const RectSPX& rect, const FlexPanelSlot * pSlot );
 
-		SizeSPX		_sizeNeededForGeo( Slot * pSlot ) const;
+		SizeSPX		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
 
 		bool		m_bConfineWidgets = false;
 	};
