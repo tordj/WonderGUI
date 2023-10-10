@@ -60,9 +60,8 @@ namespace wg
 
 			struct Blueprint
 			{
-				Border			padding = 0;
+				Border			margin = 0;
 				Placement		placement = Placement::Center;
-				CoordSPX		position;
 				SizePolicy2D	sizePolicy = SizePolicy2D::Original;
 				bool			visible = true;
 			};
@@ -73,7 +72,8 @@ namespace wg
 
 			//.____ Geometry ______________________________________________________
 
-			SLOT_PADDING_METHODS(StackPanel)
+			inline void		setMargin(Border padding) { static_cast<StackPanel*>(_holder())->_setSlotMargins(this, 1, padding); }
+			inline Border	margin() const { return m_margin; }
 
 			//.____ Appearance ________________________________________________
 
@@ -102,9 +102,9 @@ namespace wg
 			StackPanel* _holder() { return static_cast<StackPanel*>(DynamicSlot::_holder()); }
 			const StackPanel* _holder() const { return static_cast<const StackPanel*>(DynamicSlot::_holder()); }
 
-			SLOT_PADDING_HELPER_METHODS
-
-			Border				m_padding;
+			SizeSPX		_defaultSizeWithMargin(int scale) const { return m_pWidget->_defaultSize(scale) + Util::align(Util::ptsToSpx(m_margin, scale)); }
+			
+			Border				m_margin;
 			bool				m_bVisible = 0;
 
 			Placement			m_placement = Placement::Center;
@@ -154,10 +154,10 @@ namespace wg
 
 		//.____ Misc _____________________________________________________
 		
-		bool			setSlotPadding(int index, int amount, Border padding);
-		bool			setSlotPadding(iterator beg, iterator end, Border padding);
-		bool			setSlotPadding(int index, int amount, std::initializer_list<Border> padding);
-		bool			setSlotPadding(iterator beg, iterator end, std::initializer_list<Border> padding);
+		bool			setSlotMargin(int index, int amount, Border padding);
+		bool			setSlotMargin(iterator beg, iterator end, Border padding);
+		bool			setSlotMargin(int index, int amount, std::initializer_list<Border> padding);
+		bool			setSlotMargin(iterator beg, iterator end, std::initializer_list<Border> padding);
 
 		void			hideSlots(int index, int amount);
 		void			hideSlots(iterator beg, iterator end);
@@ -213,8 +213,8 @@ namespace wg
 		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
 		void		_hideSlots(StaticSlot *, int nb);
 		void		_unhideSlots(StaticSlot *, int nb);
-		void		_repadSlots(StaticSlot *, int nb, Border padding);
-		void		_repadSlots(StaticSlot *, int nb, const Border * pPaddings);
+		void		_setSlotMargins(StaticSlot *, int nb, Border padding);
+		void		_setSlotMargins(StaticSlot *, int nb, const Border * pPaddings);
 
 		//
 

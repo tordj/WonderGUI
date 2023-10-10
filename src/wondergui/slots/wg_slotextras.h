@@ -27,29 +27,12 @@
 #include <wg_geo.h>
 
 
-#define		SLOT_PADDING_METHODS(HOLDERTYPE) \
-	inline void		setPadding(Border padding) { static_cast<HOLDERTYPE*>(_holder())->_repadSlots(this, 1, padding); } \
-	inline Border	padding() const { return m_padding; }
-
 #define		SLOT_HIDING_METHODS(HOLDERTYPE) \
 	inline void		hide() { static_cast<HOLDERTYPE*>(_holder())->_hideSlots(this, 1); } \
 	inline void		unhide() { static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); } \
 	inline void		setVisible(bool bVisible) { if (bVisible) static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); else static_cast<HOLDERTYPE*>(_holder())->_hideSlots(this, 1); } \
 	inline bool		isVisible() const { return m_bVisible; }
 
-#define		SLOT_PADDING_HELPER_METHODS	SizeSPX		_paddedDefaultSize(int scale) const { return m_pWidget->_defaultSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); } \
-										SizeSPX		_paddedMinSize(int scale) const { return m_pWidget->_minSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); } \
-										SizeSPX		_paddedMaxSize(int scale) const { return m_pWidget->_maxSize(scale) + Util::align(Util::ptsToSpx(m_padding, scale)); } \
-										spx			_paddedMatchingWidth(spx paddedHeight, int scale) const \
-										{ \
-											SizeSPX paddingSize = Util::align(Util::ptsToSpx(m_padding, scale)); \
-											return m_pWidget->_matchingWidth(paddedHeight - paddingSize.h, scale) + paddingSize.w; \
-										} \
-										spx			_paddedMatchingHeight(spx paddedWidth, int scale) const \
-										{ \
-											SizeSPX paddingSize = Util::align(Util::ptsToSpx(m_padding, scale)); \
-											return m_pWidget->_matchingHeight(paddedWidth - paddingSize.w, scale) + paddingSize.h; \
-										} 
 
 #define		SLOT_SELECTING_METHODS(HOLDERTYPE) \
 	inline void	select() { static_cast<HOLDERTYPE*>(_holder())->_selectSlots(this, 1); } \

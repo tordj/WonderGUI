@@ -40,9 +40,8 @@ namespace wg
 
 	bool StackPanel::Slot::_setBlueprint( const Blueprint& bp )
 	{
-		m_padding		= bp.padding;
+		m_margin		= bp.margin;
 		m_placement		= bp.placement;
-		m_position		= bp.position;
 		m_sizePolicy	= bp.sizePolicy;
 		m_bVisible		= bp.visible;
 		
@@ -91,35 +90,35 @@ namespace wg
 		_unhideSlots( beg, end - beg);
 	}
 
-	//____ setPadding() _______________________________________________________
+	//____ setSlotMargin() _______________________________________________________
 
-	bool StackPanel::setSlotPadding(int index, int amount, Border padding)
+	bool StackPanel::setSlotMargin(int index, int amount, Border padding)
 	{
-		_repadSlots( &slots[index], amount, padding);
+		_setSlotMargins( &slots[index], amount, padding);
 		return true;
 	}
 
-	bool StackPanel::setSlotPadding(iterator beg, iterator end, Border padding)
+	bool StackPanel::setSlotMargin(iterator beg, iterator end, Border padding)
 	{
-		_repadSlots(beg, int(end - beg), padding);
+		_setSlotMargins(beg, int(end - beg), padding);
 		return true;
 	}
 
-	bool StackPanel::setSlotPadding(int index, int amount, std::initializer_list<Border> padding)
+	bool StackPanel::setSlotMargin(int index, int amount, std::initializer_list<Border> padding)
 	{
 		if( padding.size() < amount )
 			return false;
 		
-		_repadSlots( &slots[index], amount, padding.begin());
+		_setSlotMargins( &slots[index], amount, padding.begin());
 		return true;
 	}
 
-	bool StackPanel::setSlotPadding(iterator beg, iterator end, std::initializer_list<Border> padding)
+	bool StackPanel::setSlotMargin(iterator beg, iterator end, std::initializer_list<Border> padding)
 	{
 		if( padding.size() < (end - beg) )
 			return false;
 
-		_repadSlots(beg, int(end - beg), padding.begin());
+		_setSlotMargins(beg, int(end - beg), padding.begin());
 		return true;
 	}
 
@@ -135,7 +134,8 @@ namespace wg
 
 		while( pSlot != pEnd )
 		{
-			spx h = pSlot->_paddedMatchingHeight(width,scale);
+			SizeSPX marginSize = Util::align(Util::ptsToSpx(pSlot->m_margin, scale));
+			spx h = pSlot->m_pWidget->_matchingHeight(width - marginSize.w, scale) + marginSize.h;
 			if( h > height )
 				height = h;
 			pSlot++;
@@ -155,7 +155,8 @@ namespace wg
 
 		while( pSlot != pEnd )
 		{
-			spx w = pSlot->_paddedMatchingWidth(height,scale);
+			SizeSPX marginSize = Util::align(Util::ptsToSpx(pSlot->m_margin, scale));
+			spx w = pSlot->m_pWidget->_matchingWidth(height - marginSize.h, scale) + marginSize.w;
 			if( w > width )
 				width = w;
 			pSlot++;
@@ -295,14 +296,14 @@ namespace wg
 		_unhideChildren( (Slot*) pSlot, ((Slot*)pSlot) + nb);
 	}
 
-	//____ _repadSlots() _________________________________________________________
+	//____ _setSlotMargins() _________________________________________________________
 
-	void StackPanel::_repadSlots( StaticSlot * _pSlot, int nb, Border padding )
+	void StackPanel::_setSlotMargins( StaticSlot * _pSlot, int nb, Border padding )
 	{
 		Slot* pSlot = static_cast<Slot*>(_pSlot);
 
 		for (int i = 0; i < nb; i++)
-			pSlot[i].m_padding	= padding;
+			pSlot[i].m_margin	= padding;
 
 		_updateChildGeo(pSlot,pSlot+nb);
 		_requestRender();				// This is needed here since children might have repositioned.
@@ -313,12 +314,12 @@ namespace wg
 			_requestResize();
 	}
 
-	void StackPanel::_repadSlots(StaticSlot * _pSlot, int nb, const Border * pPaddings)
+	void StackPanel::_setSlotMargins(StaticSlot * _pSlot, int nb, const Border * pPaddings)
 	{
 		Slot* pSlot = static_cast<Slot*>(_pSlot);
 
 		for (int i = 0; i < nb; i++)
-			pSlot[i].m_padding	= *pPaddings++;
+			pSlot[i].m_margin	= *pPaddings++;
 
 		_updateChildGeo(pSlot,pSlot+nb);
 		_requestRender();				// This is needed here since children might have repositioned.
@@ -506,7 +507,7 @@ namespace wg
 
 			if( !pSlot->m_bVisible )
 			{
-				SizeSPX defaultSize = pSlot->_paddedDefaultSize(m_scale);
+				SizeSPX defaultSize = pSlot->_defaultSizeWithMargin(m_scale);
 
 				if(defaultSize.w > m_defaultSize.w )
 				{
@@ -561,7 +562,7 @@ namespace wg
 		{
 			if( p->m_bVisible )
 			{
-				SizeSPX sz = p->_paddedDefaultSize(m_scale);
+				SizeSPX sz = p->_defaultSizeWithMargin(m_scale);
 				if( sz.w > defaultSize.w )
 					defaultSize.w = sz.w;
 				if( sz.h > defaultSize.h )
@@ -611,7 +612,7 @@ namespace wg
 		{
 			if( pSlot->m_bVisible )
 			{
-				SizeSPX sz = pSlot->_paddedDefaultSize(scale);
+				SizeSPX sz = pSlot->_defaultSizeWithMargin(scale);
 				if( sz.w > defaultSize.w )
 					defaultSize.w = sz.w;
 				if( sz.h > defaultSize.h )
@@ -643,7 +644,7 @@ namespace wg
 
 	RectSPX StackPanel::_childGeo( const Slot * pSlot ) const
 	{
-		RectSPX base = RectSPX( m_size ) - align(ptsToSpx(pSlot->m_padding,m_scale));
+		RectSPX base = RectSPX( m_size ) - align(ptsToSpx(pSlot->m_margin,m_scale));
 
 		if( base.w <= 0 || base.h <= 0 )
 			return RectSPX();
