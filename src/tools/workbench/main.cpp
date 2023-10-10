@@ -115,6 +115,7 @@ bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pSlot);
 bool customSkinTest(ComponentPtr<DynamicSlot> pSlot);
 bool graphDisplayTest(ComponentPtr<DynamicSlot> pSlot);
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pSlot);
+bool skinMarginTest(ComponentPtr<DynamicSlot> pSlot);
 
 
 void nisBlendTest();
@@ -699,7 +700,8 @@ int main(int argc, char** argv)
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
 		//	graphDisplayTest(pSlot);
-			nortonCommanderTest(pSlot);
+		//	nortonCommanderTest(pSlot);
+			skinMarginTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -1289,15 +1291,18 @@ bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pFlex = FlexPanel::create();
 	pPopupOverlay->mainSlot = pFlex;
 
-	auto  pOpener = PopupOpener::create();
-	pOpener->setSkin( pButtonSkin );
-	pOpener->label.setText("OPEN POPUP");
+	auto  pOpener = PopupOpener::create( { .closeOnSelect = false, .skin = pButtonSkin, .label.text = "OPEN POPUP" } );
 	pFlex->slots.pushBack(pOpener, { .pos = {50,50}, .size = {50,30} });
 
-	auto pOpened = Filler::create();
-	pOpened->setSkin( pButtonSkin );
-	pOpened->setDefaultSize({ 50,100 });
+	auto pOpened = PackPanel::create( { .axis = Axis::Y, .skin = pButtonSkin } );
 	pOpener->setPopup(pOpened);
+
+	auto pEntry1 = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
+	pOpened->slots << pEntry1;
+
+	auto pEntry2 = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
+	pOpened->slots << pEntry2;
+
 
 	return true;
 }
@@ -2780,7 +2785,7 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 }
 
-//____ splitPanelTest() ______________________________________________________
+//____ nortonCommanderTest() ______________________________________________________
 
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 {
@@ -2878,5 +2883,31 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 	*pEntry = pWindowPanel;
 	
 */
+	return true;
+}
+
+//____ skinMarginTest() ______________________________________________________
+
+bool skinMarginTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pWrapTextLayout = BasicTextLayout::create( { .wrap = true });
+
+	auto pPanel = TwoSlotPanel::create();
+	pPanel->setAxis(Axis::X);
+
+	auto pContent1 = TextEditor::create({ .editor = {.layout = pWrapTextLayout } } );
+	pContent1->setSkin(StaticColorSkin::create( { .color = Color::Red, .margin = 20 } ));
+	pPanel->slots[0] = pContent1;
+
+	auto pContent2 = TextEditor::create({ .editor = {.layout = pWrapTextLayout } });
+	pContent2->setSkin(StaticColorSkin::create( { .color = Color::Green, .margin = 50 }));
+	pPanel->slots[1] = pContent2;
+
+
+	auto pLayout = PackLayout::create( { .expandFactor = PackLayout::Factor::One, .shrinkFactor = PackLayout::Factor::Weight } );
+	pPanel->setLayout(pLayout);
+
+	*pEntry = pPanel;
+
 	return true;
 }
