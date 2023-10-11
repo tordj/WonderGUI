@@ -47,6 +47,7 @@ public:
 	struct Blueprint
 	{
 		SurfaceFactory_p	factory;
+		Finalizer_p			finalizer = nullptr;
 	};
 
 	//.____ Creation __________________________________________________________
@@ -70,7 +71,15 @@ public:
 	Surface_p		readSurfaceFromMemory( const char * pData, const Surface::Blueprint& extraFlags );
 	
 protected:
-	SurfaceReader( const Blueprint& bp );
+
+	template<class BP> SurfaceReader(const BP& bp)
+	{
+		m_pFactory = bp.factory;
+
+		if (bp.finalizer)
+			setFinalizer(bp.finalizer);
+	}
+
 	virtual ~SurfaceReader() {}
 	
 	Surface::Blueprint	_blueprintFromHeader( const SurfaceFileHeader * pHeader );

@@ -44,6 +44,7 @@ namespace wg
 		struct Blueprint
 		{
 			Caret_p		caret = nullptr;
+			Finalizer_p	finalizer = nullptr;
 
 			Placement	placement = Placement::NorthWest;
 

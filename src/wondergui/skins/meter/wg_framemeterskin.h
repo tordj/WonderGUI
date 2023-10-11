@@ -53,6 +53,7 @@ namespace wg
 		{
 			BlendMode				blendMode = BlendMode::Undefined;
 			HiColor					color = HiColor::Undefined;
+			Finalizer_p				finalizer = nullptr;
 			std::vector<FrameBP>	frames;			// Mandatory
 			Border					gfxPadding;
 			Gradient				gradient;

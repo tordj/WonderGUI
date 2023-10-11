@@ -58,6 +58,7 @@ namespace wg
 			Size		defaultSize;
 			HiColor		emptyColor = Color::DarkBlue;
 
+			Finalizer_p	finalizer = nullptr;
 			Border		gfxPadding;
 
 			HiColor		hubColor = HiColor::Transparent;

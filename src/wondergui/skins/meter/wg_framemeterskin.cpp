@@ -44,19 +44,14 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	FrameMeterSkin::FrameMeterSkin( const Blueprint& bp)
+	FrameMeterSkin::FrameMeterSkin( const Blueprint& bp) : Skin(bp)
 	{
 		m_blendMode			= bp.blendMode;
 		m_color				= bp.color;
-		m_padding			= bp.padding;
-		m_margin			= bp.margin;
 		m_gfxPadding		= bp.gfxPadding;
 		m_gradient			= bp.gradient;
-		m_layer				= bp.layer;
 		m_size				= bp.size;
 		m_pSurface			= bp.surface;
-		m_markAlpha			= bp.markAlpha;
-		m_overflow			= bp.overflow;
 
 		m_frames.reserve(bp.frames.size());
 		

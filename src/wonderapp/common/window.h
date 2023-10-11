@@ -39,13 +39,14 @@ public:
         // The origo-relative positioning of this blueprint will be recalculated
         // to a position in a coordinate system with origo at NorthWest.
 
+        wg::Finalizer_p		finalizer = nullptr;
         wg::Size            maxSize;
         wg::Size            minSize;
-        wg::Placement        origo = wg::Placement::Center;
-        wg::Coord            pos;
+        wg::Placement       origo = wg::Placement::Center;
+        wg::Coord           pos;
         bool                resizable = true;
         wg::Size            size = { 640,480 };
-        std::string            title = "WonderGUI Application";
+        std::string         title = "WonderGUI Application";
     };
 
     //.____ Identification __________________________________________

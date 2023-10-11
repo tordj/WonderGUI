@@ -44,6 +44,7 @@ namespace wg
 		struct Blueprint
 		{
 			BlendMode	blendMode = BlendMode::Undefined;
+			Finalizer_p	finalizer = nullptr;
 			Gradient	gradient;
 			int			layer = -1;
 			Border		margin;

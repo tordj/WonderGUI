@@ -58,6 +58,7 @@ public:
 	
 	struct Blueprint
 	{
+		Finalizer_p			finalizer = nullptr;
 		SaveInfo			saveInfo;
 	};
 
@@ -74,7 +75,16 @@ public:
 	Blob_p			writeSurfaceToBlob( Surface * pSurface, int extraDataSize = 0, char * pExtraData = nullptr );
 
 protected:
-	SurfaceWriter( const Blueprint& bp );
+
+	template<class BP>
+	SurfaceWriter(const BP& bp)
+	{
+		m_saveInfo = bp.saveInfo;
+
+		if (bp.finalizer)
+			setFinalizer(bp.finalizer);
+	}
+
 	virtual ~SurfaceWriter() {}
 	
 	int				_generateHeader( SurfaceFileHeader * pHeader, Surface * pSurface, int extraDataSize );

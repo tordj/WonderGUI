@@ -42,14 +42,12 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	CustomSkin::CustomSkin( const Blueprint& blueprint )
+	CustomSkin::CustomSkin( const Blueprint& bp ) : Skin(bp)
 	{
-		m_bOpaque			= blueprint.opaque;
-		m_padding	= blueprint.padding;
-		m_overflow			= blueprint.overflow;
+		m_bOpaque			= bp.opaque;
 	
-		m_markTestFunc		= blueprint.markTestFunc;
-		m_renderFunc		= blueprint.renderFunc;
+		m_markTestFunc		= bp.markTestFunc;
+		m_renderFunc		= bp.renderFunc;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -61,21 +59,41 @@ namespace wg
 
 	//____ _render() ______________________________________________________________
 
-	void CustomSkin::_render( GfxDevice * pDevice, const RectSPX& canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void CustomSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		if( m_renderFunc )
-			m_renderFunc(pDevice,canvas,scale,state,value,value2);
+		if (m_renderFunc)
+		{
+			RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
+
+			int prevLayer = -1;
+			if (m_layer != -1 && pDevice->renderLayer() != m_layer)
+			{
+				prevLayer = pDevice->renderLayer();
+				pDevice->setRenderLayer(m_layer);
+			}
+
+			m_renderFunc(pDevice, canvas, scale, state, value, value2);
+
+			if (prevLayer != -1)
+				pDevice->setRenderLayer(prevLayer);
+		}
 	}
 
 	//____ _markTest() _________________________________________________________
 
-	bool CustomSkin::_markTest( const CoordSPX& ofs, const RectSPX& canvas, int scale, State state, float value, float value2, int alphaOverride ) const
+	bool CustomSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride ) const
 	{
-		if( m_markTestFunc )
-			return m_markTestFunc(ofs,canvas,scale,state,value,value2,alphaOverride);
-		else
-			return m_bOpaque;
-	}
+		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
+		if( m_markTestFunc )
+			return m_markTestFunc(ofs,canvas,scale,state,value,value2,alphaOverride != -1 ? alphaOverride : m_markAlpha);
+		else
+		{
+			if (canvas.contains(ofs))
+				return m_bOpaque;
+			else
+				return false;
+		}
+	}
 
 } // namespace wg

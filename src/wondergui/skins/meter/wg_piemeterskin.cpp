@@ -42,7 +42,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	PieMeterSkin::PieMeterSkin( const Blueprint& bp )
+	PieMeterSkin::PieMeterSkin( const Blueprint& bp ) : Skin(bp)
 	{
 
 		m_rangeStart = bp.rotation;
@@ -55,8 +55,6 @@ namespace wg
 		m_emptyColor = bp.emptyColor;
 
 		m_gfxPadding = bp.gfxPadding;
-		m_padding = bp.padding;
-		m_margin = bp.margin;
 		m_bStaticSections = !bp.movingSlices;
 		m_bRectangular = bp.rectangular;
 
@@ -86,10 +84,7 @@ namespace wg
 		
 		_updateOpacity();
 		
-		m_layer = bp.layer;
 		m_blendMode = bp.blendMode;
-		m_markAlpha = bp.markAlpha;
-		m_overflow = bp.overflow;
 		m_defaultSize = bp.defaultSize.isEmpty() ? Size(64, 64) : bp.defaultSize;
 		m_bIgnoresValue = false;
 	}

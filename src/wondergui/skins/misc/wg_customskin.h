@@ -46,6 +46,10 @@ namespace wg
 
 		struct Blueprint
 		{
+			Finalizer_p		finalizer = nullptr;
+			int				layer = -1;
+			Border			margin;
+			int				markAlpha = 1;
 			MarkTestFunc	markTestFunc;
 			bool			opaque = false;
 			Border			overflow;

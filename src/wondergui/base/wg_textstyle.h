@@ -107,6 +107,7 @@ namespace wg
 			BlendMode		blendMode = BlendMode::Undefined;
 			HiColor			color = HiColor::Undefined;
 			TextDecoration	decoration = TextDecoration::Undefined;
+			Finalizer_p		finalizer = nullptr;
 			Font_p			font = nullptr;
 			TextLink_p		link = nullptr;
 			pts				size = -1;

@@ -99,6 +99,8 @@ namespace wg
 
 		struct Blueprint
 		{
+			Finalizer_p			finalizer = nullptr;
+
 			WantedSize			wantedSize = WantedSize::Default;
 			Factor				expandFactor = Factor::Zero;
 			Factor				shrinkFactor = Factor::Zero;

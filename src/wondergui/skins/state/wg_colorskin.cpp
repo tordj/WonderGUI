@@ -51,19 +51,13 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	ColorSkin::ColorSkin(const Blueprint& blueprint)
+	ColorSkin::ColorSkin(const Blueprint& bp) : StateSkin(bp)
 	{
-		m_blendMode		= blueprint.blendMode;
-		m_padding		= blueprint.padding;
-		m_margin		= blueprint.margin;
-		m_layer			= blueprint.layer;
-		m_markAlpha		= blueprint.markAlpha;
-		m_overflow		= blueprint.overflow;
+		m_blendMode		= bp.blendMode;
+	
+		m_color[0] = bp.color;
 
-		m_color[0] = blueprint.color;
-
-
-		for (auto& stateInfo : blueprint.states)
+		for (auto& stateInfo : bp.states)
 		{
 			int index = stateInfo.state;
 

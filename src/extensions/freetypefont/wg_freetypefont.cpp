@@ -121,6 +121,9 @@ namespace wg
 		}
 #endif
 		m_pCache->addListener(this);
+
+		if (bp.finalizer)
+			setFinalizer(bp.finalizer);
 	}
 
 	//____ Destructor _____________________________________________________________

@@ -73,6 +73,7 @@ namespace wg
 
 			HiColor			color = HiColor::Undefined;
 
+			Finalizer_p		finalizer = nullptr;
 			Rect			firstBlock;
 			Gradient		gradient;
 			int				layer = -1;

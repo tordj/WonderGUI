@@ -69,6 +69,7 @@ namespace wg
 		{
 			TransitionCurve		curve = TransitionCurve::Linear;
 			int					duration = 250*1000;					// Microseconds!
+			Finalizer_p			finalizer = nullptr;
 			HiColor				midPointColor;
 			int					midPointDelay = 0;
 			TransitionCurve		midPointCurve = TransitionCurve::Linear;
@@ -113,9 +114,20 @@ namespace wg
 	{
 	public:
 
+		//.____ Blueprint _____________________________________________________
+
+		struct Blueprint
+		{
+			TransitionCurve		curve = TransitionCurve::Linear;
+			int					duration = 250 * 1000;					// Microseconds!
+			Finalizer_p			finalizer = nullptr;
+		};
+
+
 		//.____ Creation ______________________________________________________
 
 		static ArrayTransition_p	create( int duration, TransitionCurve curve = TransitionCurve::Linear);
+		static ArrayTransition_p	create( const Blueprint& blueprint);
 
 		//.____ Identification _________________________________________________
 
@@ -131,6 +143,15 @@ namespace wg
 
 	protected:
 		ArrayTransition(int duration, TransitionCurve curve);
+
+		template<class BP>
+		ArrayTransition(const Blueprint& bp) :
+			m_duration(bp.duration),
+			m_curve(bp.curve)
+		{
+			if (bp.finalizer)
+				setFinalizer(bp.finalizer);
+		}
 
 		TransitionCurve	m_curve;
 		int				m_duration;		// Microseconds

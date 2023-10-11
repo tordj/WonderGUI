@@ -38,17 +38,20 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	BasicTextLayout::BasicTextLayout(const Blueprint& blueprint)
+	BasicTextLayout::BasicTextLayout(const Blueprint& bp)
 	{
-		m_pCaret				= blueprint.caret;
-		m_placement				= blueprint.placement;
+		m_pCaret				= bp.caret;
+		m_placement				= bp.placement;
 
-		m_selectionBackBlend	= blueprint.selectionBackBlend;
-		m_selectionBackColor	= blueprint.selectionBackColor;
-		m_selectionCharBlend	= blueprint.selectionCharBlend;
-		m_selectionCharColor	= blueprint.selectionCharColor;
+		m_selectionBackBlend	= bp.selectionBackBlend;
+		m_selectionBackColor	= bp.selectionBackColor;
+		m_selectionCharBlend	= bp.selectionCharBlend;
+		m_selectionCharColor	= bp.selectionCharColor;
 
-		m_bLineWrap				= blueprint.wrap;
+		m_bLineWrap				= bp.wrap;
+
+		if (bp.finalizer)
+			setFinalizer(bp.finalizer);
 	}
 
 	//____ Destructor ______________________________________________________________

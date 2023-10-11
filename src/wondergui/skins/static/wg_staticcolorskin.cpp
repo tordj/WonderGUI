@@ -55,16 +55,11 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	StaticColorSkin::StaticColorSkin( const Blueprint& blueprint )
+	StaticColorSkin::StaticColorSkin( const Blueprint& bp ) : Skin(bp)
 	{
-		m_color				= blueprint.color;
+		m_color				= bp.color;
 		m_bOpaque			= (m_color.a == 4096);
-		m_padding			= blueprint.padding;
-		m_margin			= blueprint.margin;
-		m_layer				= blueprint.layer;
-		m_markAlpha			= blueprint.markAlpha;
-		m_overflow			= blueprint.overflow;
-		m_blendMode			= blueprint.blendMode;
+		m_blendMode			= bp.blendMode;
 
 		if(!m_margin.isEmpty())
 			m_bOpaque = false;

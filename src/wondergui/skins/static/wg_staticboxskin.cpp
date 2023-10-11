@@ -50,17 +50,12 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	StaticBoxSkin::StaticBoxSkin(const Blueprint& blueprint)
+	StaticBoxSkin::StaticBoxSkin(const Blueprint& bp) : Skin(bp)
 	{
-		m_outline			= blueprint.outline;
-		m_fillColor			= blueprint.color;
-		m_outlineColor		= blueprint.outlineColor;
-		m_blendMode			= blueprint.blendMode;
-		m_padding			= blueprint.padding;
-		m_margin			= blueprint.margin;
-		m_layer				= blueprint.layer;
-		m_markAlpha			= blueprint.markAlpha;
-		m_overflow			= blueprint.overflow;
+		m_outline			= bp.outline;
+		m_fillColor			= bp.color;
+		m_outlineColor		= bp.outlineColor;
+		m_blendMode			= bp.blendMode;
 
 		_updateOpaqueFlag();
 	}

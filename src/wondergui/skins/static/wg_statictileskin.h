@@ -45,6 +45,7 @@ namespace wg
 		{
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
+			Finalizer_p	finalizer = nullptr;
 			Gradient	gradient;
 			int			layer = -1;
 			Border		margin;

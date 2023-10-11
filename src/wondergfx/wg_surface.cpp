@@ -35,41 +35,6 @@ namespace wg
 
 	const TypeInfo Surface::TYPEINFO = { "Surface", &Object::TYPEINFO };
 
-	//____ Surface() ____________________________________________________________
-
-	Surface::Surface(const Blueprint& bp, PixelFormat defaultPixelFormat, SampleMethod defaultSampleMethod )
-	{
-		PixelFormat format = bp.format == PixelFormat::Undefined ? defaultPixelFormat : bp.format;
-		SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? defaultSampleMethod : bp.sampleMethod;
-
-		format = Util::clarifyPixelFormat(format);
-
-		m_pixelFormat	= format;
-		m_pPixelDescription = &Util::pixelFormatToDescription(format);
-
-		m_size			= bp.size;
-		m_scale			= bp.scale == 0 ? 64 : bp.scale;
-		m_sampleMethod	= method;
-		m_bTiling		= bp.tiling;
-        m_bCanvas		= bp.canvas;
-		m_bBuffered		= bp.buffered;
-		m_bDynamic		= bp.dynamic;
-		m_id			= bp.identity;
-		m_pBaggage		= bp.baggage;
-
-		// Caculate and set palette size and capacity.
-		
-		if( m_pPixelDescription->type == PixelType::Index || m_pPixelDescription->type == PixelType::Bitplanes )
-		{
-			int maxPaletteSize = 1 << m_pPixelDescription->bits;
-			
-			m_paletteSize = bp.paletteSize != 0 ? bp.paletteSize : (bp.palette ? maxPaletteSize : 0);
-
-			m_paletteCapacity = std::max( bp.paletteCapacity, m_paletteSize );
-			if( m_paletteCapacity == 0 )
-				m_paletteCapacity = maxPaletteSize;
-		}
-	}
 
 	//____ ~Surface() ____________________________________________________________
 

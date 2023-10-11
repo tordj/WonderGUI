@@ -30,6 +30,7 @@
 #include <wg_color.h>
 #include <wg_pointers.h>
 #include <wg_blob.h>
+#include <wg_gfxutil.h>
 
 namespace wg
 {
@@ -174,6 +175,7 @@ namespace wg
 			Object_p			baggage;
 			bool				buffered = false;
 			bool				canvas = false;
+			Finalizer_p			finalizer = nullptr;
 			const Color8* 		palette = nullptr;
 			int					paletteCapacity = 0;		// Default to paletteSize. Must be >= paletteSize if set.
 			int					paletteSize = 0;			// Default to max for format when palette != nullptr.
@@ -263,7 +265,44 @@ namespace wg
 		Blueprint			blueprint() const;
 
 	protected:
-		Surface(const Blueprint& bp, PixelFormat defaultPixelFormat, SampleMethod defaultSampleMethod );
+
+		template<class BP>
+		Surface(const BP& bp, PixelFormat defaultPixelFormat, SampleMethod defaultSampleMethod)
+		{
+			PixelFormat format = bp.format == PixelFormat::Undefined ? defaultPixelFormat : bp.format;
+			SampleMethod method = bp.sampleMethod == SampleMethod::Undefined ? defaultSampleMethod : bp.sampleMethod;
+
+			format = Util::clarifyPixelFormat(format);
+
+			m_pixelFormat = format;
+			m_pPixelDescription = &Util::pixelFormatToDescription(format);
+
+			m_size = bp.size;
+			m_scale = bp.scale == 0 ? 64 : bp.scale;
+			m_sampleMethod = method;
+			m_bTiling = bp.tiling;
+			m_bCanvas = bp.canvas;
+			m_bBuffered = bp.buffered;
+			m_bDynamic = bp.dynamic;
+			m_id = bp.identity;
+			m_pBaggage = bp.baggage;
+
+			if (bp.finalizer)
+				setFinalizer(bp.finalizer);
+
+			// Caculate and set palette size and capacity.
+
+			if (m_pPixelDescription->type == PixelType::Index || m_pPixelDescription->type == PixelType::Bitplanes)
+			{
+				int maxPaletteSize = 1 << m_pPixelDescription->bits;
+
+				m_paletteSize = bp.paletteSize != 0 ? bp.paletteSize : (bp.palette ? maxPaletteSize : 0);
+
+				m_paletteCapacity = std::max(bp.paletteCapacity, m_paletteSize);
+				if (m_paletteCapacity == 0)
+					m_paletteCapacity = maxPaletteSize;
+			}
+		}
 		virtual ~Surface();
 
 		struct Observer

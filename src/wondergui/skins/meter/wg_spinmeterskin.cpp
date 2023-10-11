@@ -45,29 +45,23 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	SpinMeterSkin::SpinMeterSkin( const Blueprint& blueprint ) : 
-		m_pSurface(blueprint.surface),
-		m_defaultSize(blueprint.defaultSize),
-		m_pivot(blueprint.pivot),
-		m_placement(blueprint.placement),
-		m_fromDegrees(blueprint.angleBegin),
-		m_toDegrees(blueprint.angleEnd),
-		m_zoom(blueprint.zoom),
-		m_gfxPadding(blueprint.gfxPadding),
-		m_color(blueprint.color),
-		m_gradient(blueprint.gradient),
-		m_blendMode(blueprint.blendMode)
+	SpinMeterSkin::SpinMeterSkin( const Blueprint& bp ) : Skin(bp),
+		m_pSurface(bp.surface),
+		m_defaultSize(bp.defaultSize),
+		m_pivot(bp.pivot),
+		m_placement(bp.placement),
+		m_fromDegrees(bp.angleBegin),
+		m_toDegrees(bp.angleEnd),
+		m_zoom(bp.zoom),
+		m_gfxPadding(bp.gfxPadding),
+		m_color(bp.color),
+		m_gradient(bp.gradient),
+		m_blendMode(bp.blendMode)
 	{
 		//TODO: Also take frame opacity into account.
 
-		m_bOpaque = blueprint.surface->isOpaque();
+		m_bOpaque = bp.surface->isOpaque();
 		m_bIgnoresValue = false;
-		m_padding = blueprint.padding;
-		m_margin = blueprint.margin;
-		m_layer = blueprint.layer;
-		m_markAlpha = blueprint.markAlpha;
-		m_overflow = blueprint.overflow;
-
 
 		_updateOpacityFlag();
 	}

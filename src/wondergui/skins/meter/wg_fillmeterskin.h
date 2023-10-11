@@ -48,6 +48,7 @@ namespace wg
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = Color::Blue;
 			Direction	direction = Direction::Right;
+			Finalizer_p	finalizer = nullptr;
 			Border		gfxPadding;
 			Gradient	gradient;
 

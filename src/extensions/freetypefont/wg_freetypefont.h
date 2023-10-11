@@ -66,6 +66,7 @@ namespace wg
 			Blob_p			blob;
 			BitmapCache_p	cache;
 			int				faceIndex = 0;
+			Finalizer_p		finalizer = nullptr;
 			RenderMode		renderMode = RenderMode::BestShapes;
 			bool			stemDarkening = GfxBase::defaultToSRGB();
 		};

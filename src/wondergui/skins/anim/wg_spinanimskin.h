@@ -51,6 +51,7 @@ namespace wg
 			HiColor		color = HiColor::Undefined;
 			int			cycleDuration = 1000;
 			Border		destPadding;
+			Finalizer_p	finalizer = nullptr;
 			Gradient	gradient;
 			int			layer = -1;
 			Border		margin;

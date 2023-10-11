@@ -141,6 +141,8 @@ namespace wg
 			m_midPointEnd = -1;
 		}
 
+		if (bp.finalizer)
+			setFinalizer(bp.finalizer);
 	}
 
 	//____ typeInfo() ____________________________________________________________

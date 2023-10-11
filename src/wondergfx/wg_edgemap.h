@@ -46,6 +46,7 @@ namespace wg
 		struct Blueprint
 		{
 			const HiColor*		colors 		= nullptr;			// Edgemap has either colors or gradients, never both. Setting one is mandatory.
+			Finalizer_p			finalizer	= nullptr;
 			const Gradient *	gradients 	= nullptr;			// Edgemap has either colors or gradients, never both. Setting one is mandatory.
 			int					segments	= 0;				// Mandatory.
 			SizeI				size;							// Mandatory.
@@ -95,7 +96,11 @@ namespace wg
 
 	protected:
 
-		Edgemap( const Blueprint& bp ) : m_size(bp.size), m_nbSegments(bp.segments), m_nbRenderSegments(bp.segments) {}
+		Edgemap( const Blueprint& bp ) : m_size(bp.size), m_nbSegments(bp.segments), m_nbRenderSegments(bp.segments) 
+		{
+			if (bp.finalizer)
+				setFinalizer(bp.finalizer);
+		}
 		virtual ~Edgemap() {}
 		
 		static bool	_validateBlueprint(const Blueprint& bp);

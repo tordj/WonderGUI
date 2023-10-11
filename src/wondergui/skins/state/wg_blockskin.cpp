@@ -195,42 +195,37 @@ namespace wg
 		}
 	}
 
-	BlockSkin::BlockSkin(const Blueprint& blueprint)
+	BlockSkin::BlockSkin(const Blueprint& bp) : StateSkin(bp)
 	{
-		m_pSurface = blueprint.surface;
-		m_ninePatch.frame = blueprint.frame;
-		m_bOpaque = blueprint.surface->isOpaque();
-		m_blendMode = blueprint.blendMode;
-		m_gradient = blueprint.gradient;
-		m_padding = blueprint.padding;
-		m_margin = blueprint.margin;
-		m_layer = blueprint.layer;
-		m_markAlpha = blueprint.markAlpha;
-		m_overflow = blueprint.overflow;
+		m_pSurface = bp.surface;
+		m_ninePatch.frame = bp.frame;
+		m_bOpaque = bp.surface->isOpaque();
+		m_blendMode = bp.blendMode;
+		m_gradient = bp.gradient;
 
 		// Make sure we have a correct block
 
-		Rect block = blueprint.firstBlock;
+		Rect block = bp.firstBlock;
 
 		if (block.isEmpty())
 		{
 			int nStateBlocks = 1;
-			for ( auto& entry : blueprint.states )
+			for ( auto& entry : bp.states )
 			{
 				if( entry.state != State::Normal && entry.data.reuseBlock == false)
 					nStateBlocks++;
 			}
 
 
-			if (blueprint.axis == Axis::X)
+			if (bp.axis == Axis::X)
 			{
-				block.w = (m_pSurface->pointWidth() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.w = (m_pSurface->pointWidth() - bp.spacing * (nStateBlocks - 1)) / nStateBlocks;
 				block.h = m_pSurface->pointHeight();
 			}
 			else
 			{
 				block.w = m_pSurface->pointWidth();
-				block.h = (m_pSurface->pointHeight() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.h = (m_pSurface->pointHeight() - bp.spacing * (nStateBlocks - 1)) / nStateBlocks;
 			}
 		}
 
@@ -240,13 +235,13 @@ namespace wg
 		// Default state
 
 		m_stateBlocks[0] = block;
-		m_stateColors[0] = blueprint.color;
+		m_stateColors[0] = bp.color;
 
 		// RigidPartX
 
 		{
-			pts ofs = blueprint.rigidPartX.begin;
-			pts length = blueprint.rigidPartX.length;
+			pts ofs = bp.rigidPartX.begin;
+			pts length = bp.rigidPartX.length;
 
 			pts	midSecLen = m_ninePatch.block.w - m_ninePatch.frame.width();
 			ofs -= m_ninePatch.frame.left;
@@ -262,14 +257,14 @@ namespace wg
 
 			m_ninePatch.rigidPartXOfs = ofs;
 			m_ninePatch.rigidPartXLength = length;
-			m_ninePatch.rigidPartXSections = blueprint.rigidPartX.sections;
+			m_ninePatch.rigidPartXSections = bp.rigidPartX.sections;
 		}
 
 		// RigidPartY
 
 		{
-			pts ofs = blueprint.rigidPartY.begin;
-			pts length = blueprint.rigidPartY.length;
+			pts ofs = bp.rigidPartY.begin;
+			pts length = bp.rigidPartY.length;
 			
 			pts	midSecLen = m_ninePatch.block.h - m_ninePatch.frame.height();
 			ofs -= m_ninePatch.frame.top;
@@ -285,17 +280,17 @@ namespace wg
 
 			m_ninePatch.rigidPartYOfs = ofs;
 			m_ninePatch.rigidPartYLength = length;
-			m_ninePatch.rigidPartYSections = blueprint.rigidPartY.sections;
+			m_ninePatch.rigidPartYSections = bp.rigidPartY.sections;
 		}
 
 		// States
 
 		Coord blockOfs = block.pos();
 
-		Coord pitch = blueprint.axis == Axis::X ? Coord(block.w + blueprint.spacing, 0) : Coord(0, block.h + blueprint.spacing);
+		Coord pitch = bp.axis == Axis::X ? Coord(block.w + bp.spacing, 0) : Coord(0, block.h + bp.spacing);
 
 		int ofs = 0;
-		for (auto& stateInfo : blueprint.states)
+		for (auto& stateInfo : bp.states)
 		{
 			int index = stateInfo.state;
 

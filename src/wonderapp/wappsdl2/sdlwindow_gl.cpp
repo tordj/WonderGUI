@@ -115,6 +115,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
 		auto pEdgemapFactory = GlEdgemapFactory::create();
 		Base::setDefaultEdgemapFactory(pEdgemapFactory);
 
+
     }
 
         
@@ -132,9 +133,14 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
 
 	pRootPanel->setWindowRef((uintptr_t) pWindow.rawPtr());
 
+    if (blueprint.finalizer)
+        pWindow->setFinalizer(blueprint.finalizer);
+
+
     //TODO: This is ugly. It should be handled when windows gets focused.
 
     Base::inputHandler()->setFocusedWindow(pRootPanel);
+
 
     SDLWindowGL::s_bInitialized = true;
     return pWindow;

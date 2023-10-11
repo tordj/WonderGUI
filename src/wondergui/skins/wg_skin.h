@@ -47,6 +47,19 @@ namespace wg
 
 	public:
 
+		//.____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+			Finalizer_p	finalizer = nullptr;
+			int			layer = -1;
+			Border		margin;
+			int			markAlpha = 1;
+			Border		overflow;
+			Border		padding;
+		};
+
+
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
@@ -114,6 +127,18 @@ namespace wg
 
 	protected:
 		Skin() {};
+		template<class BP> Skin(const BP& bp)
+		{
+			m_layer		= bp.layer;
+			m_margin	= bp.margin;
+			m_padding	= bp.padding;
+			m_markAlpha = bp.markAlpha;
+			m_overflow	= bp.overflow;
+
+			if (bp.finalizer)
+				setFinalizer(bp.finalizer);
+		}
+
 		virtual ~Skin() {};
 
         inline void     _doIncUseCount(Skin * pSkin) { pSkin->_incUseCount();}
@@ -134,9 +159,6 @@ namespace wg
 		int				m_useCount = 0;						// Counter of instances of this skin in use.
 		int				m_layer = -1;
 	};
-
-
-
 
 } // namespace wg
 #endif //WG_SKIN_DOT_H

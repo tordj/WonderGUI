@@ -45,24 +45,19 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	CircleSkin::CircleSkin(const Blueprint& blueprint)
+	CircleSkin::CircleSkin(const Blueprint& bp) : StateSkin(bp)
 	{
-		m_blendMode		= blueprint.blendMode;
-		m_padding		= blueprint.padding;
-		m_margin		= blueprint.margin;
-		m_layer			= blueprint.layer;
-		m_markAlpha		= blueprint.markAlpha;
-		m_overflow		= blueprint.overflow;
+		m_blendMode		= bp.blendMode;
 
 		m_bOpaque = false;
 
-		m_stateInfo[0].color = blueprint.color;
-		m_stateInfo[0].outlineColor = blueprint.outlineColor;
-		m_stateInfo[0].outlineThickness = blueprint.outlineThickness;
-		m_stateInfo[0].size = blueprint.size;
-		m_stateInfo[0].thickness = blueprint.thickness;
+		m_stateInfo[0].color = bp.color;
+		m_stateInfo[0].outlineColor = bp.outlineColor;
+		m_stateInfo[0].outlineThickness = bp.outlineThickness;
+		m_stateInfo[0].size = bp.size;
+		m_stateInfo[0].thickness = bp.thickness;
 
-		for (auto& stateInfo : blueprint.states)
+		for (auto& stateInfo : bp.states)
 		{
 			int index = stateInfo.state;
 

@@ -42,6 +42,7 @@ namespace wg
 		{
 			spx					bottomOutlineThickness = 64;
 			HiColor				color = Color8::LightGrey;
+			Finalizer_p			finalizer = nullptr;
 			Gradient			gradient;								// Overrides color when set.
 			bool				optimize = true;						// Check for re-setting of same values to minimize updated regions.
 			SampleOrigo			origo = SampleOrigo::Top;
@@ -55,7 +56,6 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static Waveform_p	create( const Blueprint& blueprint, EdgemapFactory * pFactory = nullptr );
-
 
 		//.____ Identification __________________________________________
 

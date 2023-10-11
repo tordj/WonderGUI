@@ -65,6 +65,12 @@ namespace wg
 
 	protected:
 		StateSkin() { m_bIgnoresState = false; }
+		template<class BP> 
+		StateSkin(const BP& bp) : Skin(bp)
+		{
+			m_bIgnoresState = false;
+		}
+
 		~StateSkin() {}
 
 		void			_updateContentShift();

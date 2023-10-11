@@ -61,23 +61,18 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	TileSkin::TileSkin(const Blueprint& blueprint)
+	TileSkin::TileSkin(const Blueprint& bp) : StateSkin(bp)
 	{
 		int index = State::Normal;
 
-		m_layer			= blueprint.layer;
-		m_blendMode		= blueprint.blendMode;
-		m_gradient		= blueprint.gradient;
-		m_padding		= blueprint.padding;
-		m_margin		= blueprint.margin;
-		m_markAlpha		= blueprint.markAlpha;
-		m_overflow		= blueprint.overflow;
+		m_blendMode		= bp.blendMode;
+		m_gradient		= bp.gradient;
 
-		m_stateSurfaces[index] = blueprint.surface;
-		m_stateColors[index] = blueprint.color;
+		m_stateSurfaces[index] = bp.surface;
+		m_stateColors[index] = bp.color;
 
 
-		for (auto& stateInfo : blueprint.states)
+		for (auto& stateInfo : bp.states)
 		{
 			index = stateInfo.state;
 

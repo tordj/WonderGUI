@@ -71,6 +71,9 @@ namespace wg
 
 		if (m_minSizeSource == SizeSource::Weight || m_defaultSizeSource == SizeSource::Weight || m_maxSizeSource == SizeSource::Weight)
 			m_bUseSpxWeight = true;
+
+		if (bp.finalizer)
+			setFinalizer(bp.finalizer);
 	}
 
 	//____ Destructor _____________________________________________________________

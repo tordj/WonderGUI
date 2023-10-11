@@ -45,31 +45,26 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	SpinAnimSkin::SpinAnimSkin(	const Blueprint& blueprint) : 
-		m_pSurface(blueprint.surface),
-		m_defaultSize(blueprint.defaultSize),
-		m_pivot(blueprint.pivot),
-		m_placement(blueprint.placement),
-		m_fromDegrees(blueprint.angleBegin),
-		m_toDegrees(blueprint.angleEnd),
-		m_zoom(blueprint.zoom),
-		m_gfxPadding(blueprint.destPadding),
-		m_cycleDuration(blueprint.cycleDuration),
-		m_color(blueprint.color),
-		m_gradient(blueprint.gradient),
-		m_blendMode(blueprint.blendMode)
+	SpinAnimSkin::SpinAnimSkin(	const Blueprint& bp) : AnimSkin(bp),
+		m_pSurface(bp.surface),
+		m_defaultSize(bp.defaultSize),
+		m_pivot(bp.pivot),
+		m_placement(bp.placement),
+		m_fromDegrees(bp.angleBegin),
+		m_toDegrees(bp.angleEnd),
+		m_zoom(bp.zoom),
+		m_gfxPadding(bp.destPadding),
+		m_cycleDuration(bp.cycleDuration),
+		m_color(bp.color),
+		m_gradient(bp.gradient),
+		m_blendMode(bp.blendMode)
 	{
 		//TODO: Also take frame opacity into account.
 
-		m_layer = blueprint.layer;
 		m_bOpaque = m_pSurface->isOpaque();
-		m_padding = blueprint.padding;
-		m_margin = blueprint.margin;
-		m_markAlpha = blueprint.markAlpha;
-		m_overflow = blueprint.overflow;
-
+	
 		for (int i = 0; i < StateBits_Nb; i++)
-			m_animationCycles[i] = blueprint.cycleDuration;
+			m_animationCycles[i] = bp.cycleDuration;
 
 		_updateOpacityFlag();
 	}

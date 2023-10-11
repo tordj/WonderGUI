@@ -86,6 +86,7 @@ namespace wg
 			Axis		axis = Axis::Y;
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
+			Finalizer_p	finalizer = nullptr;
 			Rect		firstBlock;
 			Border		frame;
 			Gradient	gradient;

@@ -43,37 +43,32 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	ScrollSkin::ScrollSkin( const Blueprint& blueprint)
+	ScrollSkin::ScrollSkin( const Blueprint& bp) : StateSkin(bp)
 	{	
-		m_pSurface = blueprint.surface;
-		m_scrollDirection = blueprint.scrollDirection;
-		m_scrollDuration = blueprint.scrollDuration;
-		m_scrollState = blueprint.scrollState;
+		m_pSurface = bp.surface;
+		m_scrollDirection = bp.scrollDirection;
+		m_scrollDuration = bp.scrollDuration;
+		m_scrollState = bp.scrollState;
 
-		m_gradient	= blueprint.gradient;
-		m_blendMode = blueprint.blendMode;
-		m_layer		= blueprint.layer;
-		m_markAlpha	= blueprint.markAlpha;
-		m_overflow	= blueprint.overflow;
-		m_padding	= blueprint.padding;
-		m_margin	= blueprint.margin;
+		m_gradient	= bp.gradient;
+		m_blendMode = bp.blendMode;
 
 		m_transitionTimes[int(m_scrollState)] = m_scrollDuration;
 
-		m_stateColors[0] = blueprint.color;
+		m_stateColors[0] = bp.color;
 
 
 
-		Axis scrollAxis = blueprint.scrollDirection == Direction::Up || blueprint.scrollDirection == Direction::Down ? Axis::Y : Axis::X;
+		Axis scrollAxis = bp.scrollDirection == Direction::Up || bp.scrollDirection == Direction::Down ? Axis::Y : Axis::X;
 
 
-		Rect block = blueprint.firstBlock;
+		Rect block = bp.firstBlock;
 
 		if (block.isEmpty())
 		{
 
 			int nStateBlocks = 1;
-			for ( auto& entry : blueprint.states)
+			for ( auto& entry : bp.states)
 			{
 				if (entry.state != State::Normal && entry.data.blockless == false)
 					nStateBlocks++;
@@ -82,18 +77,18 @@ namespace wg
 
 			if (scrollAxis == Axis::X)
 			{
-				block.w = m_pSurface->pointWidth() - blueprint.scrollDistance;
-				block.h = (m_pSurface->pointHeight() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.w = m_pSurface->pointWidth() - bp.scrollDistance;
+				block.h = (m_pSurface->pointHeight() - bp.spacing * (nStateBlocks - 1)) / nStateBlocks;
 			}
 			else
 			{
-				block.w = (m_pSurface->pointWidth() - blueprint.spacing * (nStateBlocks - 1)) / nStateBlocks;
-				block.h = m_pSurface->pointHeight() - blueprint.scrollDistance;
+				block.w = (m_pSurface->pointWidth() - bp.spacing * (nStateBlocks - 1)) / nStateBlocks;
+				block.h = m_pSurface->pointHeight() - bp.scrollDistance;
 			}
 		}
 
 		m_blockSize = block.size();
-		m_scrollDistance = blueprint.scrollDistance;
+		m_scrollDistance = bp.scrollDistance;
 
 		if (m_scrollDirection == Direction::Up)
 			block.y += m_scrollDistance;
@@ -103,10 +98,10 @@ namespace wg
 		m_stateBlocks[0] = block.pos();
 
 
-		Coord pitch = scrollAxis == Axis::X ? Coord(0, block.h + blueprint.spacing) : Coord(block.w + blueprint.spacing, 0);
+		Coord pitch = scrollAxis == Axis::X ? Coord(0, block.h + bp.spacing) : Coord(block.w + bp.spacing, 0);
 
 		int ofs = 0;
-		for ( auto& stateInfo : blueprint.states )
+		for ( auto& stateInfo : bp.states )
 		{
 			{
 				int index = stateInfo.state;

@@ -70,7 +70,7 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	TextStyle::TextStyle( const Blueprint& blueprint )
+	TextStyle::TextStyle( const Blueprint& bp )
 	{
 		m_handle = TextStyleManager::_reserveHandle(this);
 
@@ -84,26 +84,26 @@ namespace wg
 
 		// Setting everyting for State::Normal
 
-		m_pFont = blueprint.font;
-		m_pLink = blueprint.link;
-		m_blendMode = blueprint.blendMode;
-		m_backBlendMode = blueprint.backBlendMode;
+		m_pFont = bp.font;
+		m_pLink = bp.link;
+		m_blendMode = bp.blendMode;
+		m_backBlendMode = bp.backBlendMode;
 
 		int idx = State::Normal;
 
-		m_size[idx] = blueprint.size;
-		m_color[idx] = blueprint.color;
-		m_backColor[idx] = blueprint.backColor;
-		m_decoration[idx] = blueprint.decoration;
+		m_size[idx] = bp.size;
+		m_color[idx] = bp.color;
+		m_backColor[idx] = bp.backColor;
+		m_decoration[idx] = bp.decoration;
 
-		m_sizeSetMask.setBit(idx, blueprint.size >= 0);
-		m_colorSetMask.setBit(idx, blueprint.color != HiColor::Undefined);
-		m_backColorSetMask.setBit(idx, blueprint.backColor != HiColor::Undefined);
-		m_decorationSetMask.setBit(idx, blueprint.decoration != TextDecoration::Undefined);
+		m_sizeSetMask.setBit(idx, bp.size >= 0);
+		m_colorSetMask.setBit(idx, bp.color != HiColor::Undefined);
+		m_backColorSetMask.setBit(idx, bp.backColor != HiColor::Undefined);
+		m_decorationSetMask.setBit(idx, bp.decoration != TextDecoration::Undefined);
 
 		// Setting state specific parameters
 
-		for ( auto& entry : blueprint.states )
+		for ( auto& entry : bp.states )
 		{
 			idx = entry.state;
 
@@ -138,6 +138,9 @@ namespace wg
 		_refreshColor();
 		_refreshBgColor();
 		_refreshDecoration();
+
+		if (bp.finalizer)
+			setFinalizer(bp.finalizer);
 	}
 
 

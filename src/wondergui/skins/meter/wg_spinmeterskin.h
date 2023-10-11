@@ -52,6 +52,7 @@ namespace wg
 			HiColor		color = HiColor::Undefined;
 			Size		defaultSize;						// Mandatory
 
+			Finalizer_p	finalizer = nullptr;
 			Border		gfxPadding;
 			Gradient	gradient;
 			int			layer = -1;

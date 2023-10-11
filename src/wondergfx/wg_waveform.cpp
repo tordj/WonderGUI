@@ -84,6 +84,9 @@ namespace wg
 		m_dirtEnd 	= m_nbSamples;
 
 		_regenEdgemap();
+
+		if (bp.finalizer)
+			setFinalizer(bp.finalizer);
 	}
 
 	//____ destructor ____________________________________________________________

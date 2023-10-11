@@ -54,21 +54,16 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	BoxSkin::BoxSkin( const Blueprint& blueprint )
+	BoxSkin::BoxSkin( const Blueprint& bp ) : StateSkin(bp)
 	{
-		m_outline		= blueprint.outline;
-		m_blendMode		= blueprint.blendMode;
-		m_padding= blueprint.padding;
-		m_layer			= blueprint.layer;
-		m_margin		= blueprint.margin;
-		m_markAlpha		= blueprint.markAlpha;
-		m_overflow		= blueprint.overflow;
+		m_outline		= bp.outline;
+		m_blendMode		= bp.blendMode;
 
-		m_fillColor[0] = blueprint.color;
-		m_outlineColor[0] = blueprint.outlineColor;
+		m_fillColor[0] = bp.color;
+		m_outlineColor[0] = bp.outlineColor;
 
 
-		for (auto& stateInfo : blueprint.states)
+		for (auto& stateInfo : bp.states)
 		{
 			int index = stateInfo.state;
 

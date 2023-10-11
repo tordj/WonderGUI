@@ -47,6 +47,10 @@ namespace wg
 
 	protected:
 		AnimSkin();
+
+		template<class BP>
+		AnimSkin(const BP& bp) : Skin(bp) {}
+
 		~AnimSkin();
 
 	};

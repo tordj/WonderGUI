@@ -63,6 +63,7 @@ namespace wg
 			BlendMode		blendMode = BlendMode::Undefined;
 
 			HiColor			color = HiColor::White;
+			Finalizer_p		finalizer = nullptr;
 
 			int				layer = -1;
 			Border			margin;

@@ -56,18 +56,13 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	StaticTileSkin::StaticTileSkin(const Blueprint& blueprint)
+	StaticTileSkin::StaticTileSkin(const Blueprint& bp) : Skin(bp)
 	{
-		m_pSurface	= blueprint.surface;
+		m_pSurface	= bp.surface;
 		m_bOpaque	= m_pSurface->isOpaque();
-		m_blendMode	= blueprint.blendMode;
-		m_color		= blueprint.color;
-		m_gradient	= blueprint.gradient;
-		m_margin	= blueprint.margin;
-		m_padding	= blueprint.padding;
-		m_layer		= blueprint.layer;
-		m_markAlpha	= blueprint.markAlpha;
-		m_overflow	= blueprint.overflow;
+		m_blendMode	= bp.blendMode;
+		m_color		= bp.color;
+		m_gradient	= bp.gradient;
 
 		_updateOpacityFlag();
 	}

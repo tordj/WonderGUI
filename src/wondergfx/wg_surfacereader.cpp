@@ -38,13 +38,6 @@ namespace wg
 		return SurfaceReader_p( new SurfaceReader(blueprint) );
 	}
 
-	//____ constructor ___________________________________________________________
-
-	SurfaceReader::SurfaceReader( const Blueprint& bp )
-	{
-		m_pFactory = bp.factory;
-	}
-
 	//____ typeInfo() _________________________________________________________
 
 	const TypeInfo& SurfaceReader::typeInfo(void) const

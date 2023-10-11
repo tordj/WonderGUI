@@ -37,13 +37,6 @@ namespace wg
 
 	}
 
-	//____ constructor ___________________________________________________________
-
-	SurfaceWriter::SurfaceWriter( const Blueprint& bp )
-	{
-		m_saveInfo = bp.saveInfo;
-	}
-
 	//____ typeInfo() _________________________________________________________
 
 	const TypeInfo& SurfaceWriter::typeInfo(void) const

@@ -63,31 +63,26 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	StaticBlockSkin::StaticBlockSkin( const Blueprint& blueprint )
+	StaticBlockSkin::StaticBlockSkin( const Blueprint& bp )
 	{
-		m_pSurface = blueprint.surface;
+		m_pSurface = bp.surface;
 
-		if (blueprint.block.isEmpty())
+		if (bp.block.isEmpty())
 			m_ninePatch.block = m_pSurface->pointSize();
 		else
-			m_ninePatch.block = blueprint.block;
+			m_ninePatch.block = bp.block;
 
-		m_ninePatch.frame	= blueprint.frame;
-		m_gfxFrame			= blueprint.frame;
+		m_ninePatch.frame	= bp.frame;
+		m_gfxFrame			= bp.frame;
 
 		m_bOpaque			= m_pSurface->isOpaque();
 
-		m_blendMode			= blueprint.blendMode;
-		m_color				= blueprint.color;
-		m_padding			= blueprint.padding;
-		m_margin			= blueprint.margin;
-		m_gradient			= blueprint.gradient;
-		m_layer				= blueprint.layer;
-		m_markAlpha			= blueprint.markAlpha;
-		m_overflow			= blueprint.overflow;
+		m_blendMode			= bp.blendMode;
+		m_color				= bp.color;
+		m_gradient			= bp.gradient;
 
-		_setRigidPartX(blueprint.rigidPartX.ofs, blueprint.rigidPartX.length, blueprint.rigidPartX.sections);
-		_setRigidPartY(blueprint.rigidPartY.ofs, blueprint.rigidPartY.length, blueprint.rigidPartY.sections);
+		_setRigidPartX(bp.rigidPartX.ofs, bp.rigidPartX.length, bp.rigidPartX.sections);
+		_setRigidPartY(bp.rigidPartY.ofs, bp.rigidPartY.length, bp.rigidPartY.sections);
 
 		_updateOpacityFlag();
 	}

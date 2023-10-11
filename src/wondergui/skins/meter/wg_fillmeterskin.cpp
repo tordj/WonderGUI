@@ -42,7 +42,7 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	FillMeterSkin::FillMeterSkin( const Blueprint& bp)
+	FillMeterSkin::FillMeterSkin( const Blueprint& bp) : Skin(bp)
 	{
 		if (bp.minColor != HiColor::Undefined && bp.maxColor != HiColor::Undefined)
 		{
@@ -58,13 +58,8 @@ namespace wg
 		m_gfxPadding		= bp.gfxPadding;
 		m_backColor			= bp.backColor;
 		m_blendMode			= bp.blendMode;
-		m_padding			= bp.padding;
-		m_margin			= bp.margin;
 		m_direction			= bp.direction;
 		m_gradient			= bp.gradient;
-		m_layer				= bp.layer;
-		m_markAlpha			= bp.markAlpha;
-		m_overflow			= bp.overflow;
 
 		m_minBarLength		= bp.startLength;
 		m_bCenteredBarOrigin = bp.startFromCenter;

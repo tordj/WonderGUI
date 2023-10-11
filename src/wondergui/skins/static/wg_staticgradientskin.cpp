@@ -56,16 +56,11 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	StaticGradientSkin::StaticGradientSkin( const Blueprint& blueprint )
+	StaticGradientSkin::StaticGradientSkin( const Blueprint& bp ) : Skin(bp)
 	{
-		m_gradient			= blueprint.gradient;
+		m_gradient			= bp.gradient;
 		m_bOpaque			= m_gradient.isOpaque();
-		m_blendMode			= blueprint.blendMode;
-		m_padding			= blueprint.padding;
-		m_margin			= blueprint.margin;
-		m_layer				= blueprint.layer;
-		m_markAlpha			= blueprint.markAlpha;
-		m_overflow			= blueprint.overflow;
+		m_blendMode			= bp.blendMode;
 
 		if(!m_margin.isEmpty())
 			m_bOpaque = false;
