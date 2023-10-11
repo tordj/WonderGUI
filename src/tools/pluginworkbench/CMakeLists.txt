@@ -59,7 +59,7 @@ set_target_properties(legacytestplugin PROPERTIES
 
 target_include_directories(legacytestplugin PRIVATE ${FREETYPE2_INCDIR} )
 target_link_directories(legacytestplugin PRIVATE ${FREETYPE2_LIBDIR} )
-target_link_libraries(legacytestplugin PRIVATE ${FREETYPE2_LIB} )
+target_link_libraries(legacytestplugin PRIVATE ${FREETYPE2_LIB} wggfxstream wgsoftgfx )
 
 #========================================================================
 

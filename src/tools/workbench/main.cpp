@@ -1291,7 +1291,7 @@ bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pFlex = FlexPanel::create();
 	pPopupOverlay->mainSlot = pFlex;
 
-	auto  pOpener = PopupOpener::create( { .closeOnSelect = false, .skin = pButtonSkin, .label.text = "OPEN POPUP" } );
+	auto  pOpener = PopupOpener::create({ .closeOnSelect = false, .label = {.text = "OPEN POPUP"}, .skin = pButtonSkin });
 	pFlex->slots.pushBack(pOpener, { .pos = {50,50}, .size = {50,30} });
 
 	auto pOpened = PackPanel::create( { .axis = Axis::Y, .skin = pButtonSkin } );
