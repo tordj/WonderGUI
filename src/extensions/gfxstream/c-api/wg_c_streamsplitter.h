@@ -19,34 +19,34 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WONDERSTREAM_DOT_H
-#define WONDERSTREAM_DOT_H
+
+#ifndef WG_C_STREAMLOOPWRAPPER_DOT_H
+#define WG_C_STREAMLOOPWRAPPER_DOT_H
 #pragma once
 
+#include <wg_c_gfxtypes.h>
+#include <wg_c_geo.h>
 
-#include <wg_gfxstream.h>
-#include <wg_streambuffer.h>
-#include <wg_streamdecoder.h>
-#include <wg_streamdevice.h>
-#include <wg_streamencoder.h>
-#include <wg_streamfastencoder.h>
-#include <wg_streamlogger.h>
-#include <wg_streamloopwrapper.h>
-#include <wg_streamplayer.h>
-#include <wg_streampump.h>
-#include <wg_streamreader.h>
-#include <wg_streamsink.h>
-#include <wg_streamsource.h>
-#include <wg_streamsplitter.h>
-#include <wg_streamsurface.h>
-#include <wg_streamsurfacefactory.h>
-#include <wg_streamtrimencoder.h>
-#include <wg_streamwrapper.h>
-#include <wg_streamwriter.h>
-#include <wg_streamedgemap.h>
-#include <wg_streamedgemapfactory.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	wg_obj			wg_createStreamSplitter();
+	wg_obj			wg_createStreamSplitterWithOutputs( wg_component output1, wg_component output2 );
+
+	wg_component	wg_getStreamSplitterInput(wg_obj streamSplitter);
+
+	void			wg_clearStreamSplitterOutputs(wg_obj streamSplitter);
+	void			wg_addStreamSplitterOutput(wg_obj streamSplitter, wg_component output);
+	void			wg_removeStreamSplitterOutput(wg_obj streamSplitter, wg_component output);
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
-#endif //WONDERSTREAM_DOT_H
+#endif
+
+
+

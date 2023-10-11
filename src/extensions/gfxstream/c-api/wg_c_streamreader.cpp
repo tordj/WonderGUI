@@ -19,34 +19,45 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WONDERSTREAM_DOT_H
-#define WONDERSTREAM_DOT_H
-#pragma once
 
-
-#include <wg_gfxstream.h>
-#include <wg_streambuffer.h>
-#include <wg_streamdecoder.h>
-#include <wg_streamdevice.h>
-#include <wg_streamencoder.h>
-#include <wg_streamfastencoder.h>
-#include <wg_streamlogger.h>
-#include <wg_streamloopwrapper.h>
-#include <wg_streamplayer.h>
-#include <wg_streampump.h>
+#include <wg_c_streamreader.h>
 #include <wg_streamreader.h>
-#include <wg_streamsink.h>
-#include <wg_streamsource.h>
-#include <wg_streamsplitter.h>
-#include <wg_streamsurface.h>
-#include <wg_streamsurfacefactory.h>
-#include <wg_streamtrimencoder.h>
-#include <wg_streamwrapper.h>
-#include <wg_streamwriter.h>
-#include <wg_streamedgemap.h>
-#include <wg_streamedgemapfactory.h>
 
+using namespace wg;
 
+inline StreamReader* getPtr(wg_obj obj) {
+	return static_cast<StreamReader*>(reinterpret_cast<Object*>(obj));
+}
 
+wg_obj wg_createStreamReader(wg_readStream_func callback)
+{
+	auto p = StreamReader::create(callback);
+	p->retain();
+	return p.rawPtr();
+}
 
-#endif //WONDERSTREAM_DOT_H
+wg_component wg_getStreamReaderOutput(wg_obj streamReader)
+{
+	auto p = getPtr(streamReader);
+	return { static_cast<Object*>(p), &p->output };
+}
+
+void wg_resetStreamReader(wg_obj streamReader)
+{
+	getPtr(streamReader)->reset();
+}
+
+int wg_streamReaderCapacity(wg_obj streamReader)
+{
+	return getPtr(streamReader)->bufferCapacity();
+}
+
+int wg_streamReaderHasChunk(wg_obj streamReader)
+{
+	return getPtr(streamReader)->chunkInBuffer();
+}
+
+int wg_streamReaderBytes(wg_obj streamReader)
+{
+	return getPtr(streamReader)->bytesInBuffer();
+}

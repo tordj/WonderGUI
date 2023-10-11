@@ -44,7 +44,7 @@ int main ( int argc, char** argv )
 	
 	GfxBase::init();
 	
-	auto pStreamReader = GfxStreamReader::create( [&](int amount, void * pDest){
+	auto pStreamReader = StreamReader::create( [&](int amount, void * pDest){
 		int toRead = min(length,amount);
 		input.read((char *)pDest, toRead);
 		length -= toRead;
@@ -52,30 +52,30 @@ int main ( int argc, char** argv )
 	} );
 
 	
-	auto pTrimmedLogger = GfxStreamLogger::create(log_trimmed);
+	auto pTrimmedLogger = StreamLogger::create(log_trimmed);
 	
-	auto pTrimmedWriter = GfxStreamWriter::create( [&](int amount, const void * pDest){
+	auto pTrimmedWriter = StreamWriter::create( [&](int amount, const void * pDest){
 		trimmed.write((const char*)pDest, amount);
 	} );
 
-	auto pTrimmedSplitter = GfxStreamSplitter::create( {{pTrimmedLogger, pTrimmedLogger->input}, {pTrimmedWriter, pTrimmedWriter->input}});
+	auto pTrimmedSplitter = StreamSplitter::create( {{pTrimmedLogger, pTrimmedLogger->input}, {pTrimmedWriter, pTrimmedWriter->input}});
 	
-	auto pTrimEncoder = GfxStreamTrimEncoder::create( {pTrimmedSplitter, pTrimmedSplitter->input} );
+	auto pTrimEncoder = StreamTrimEncoder::create( {pTrimmedSplitter, pTrimmedSplitter->input} );
 	
-	auto pSurfaceFactory = GfxStreamSurfaceFactory::create(pTrimEncoder);
-	auto pEdgemapFactory = GfxStreamEdgemapFactory::create(pTrimEncoder);
+	auto pSurfaceFactory = StreamSurfaceFactory::create(pTrimEncoder);
+	auto pEdgemapFactory = StreamEdgemapFactory::create(pTrimEncoder);
 
-	auto pDevice = GfxStreamDevice::create(pTrimEncoder);
+	auto pDevice = StreamDevice::create(pTrimEncoder);
 	
 	
-	auto pPlayer = GfxStreamPlayer::create(pDevice, pSurfaceFactory, pEdgemapFactory);
+	auto pPlayer = StreamPlayer::create(pDevice, pSurfaceFactory, pEdgemapFactory);
 	
-	auto pStraightLogger = GfxStreamLogger::create( log );
+	auto pStraightLogger = StreamLogger::create( log );
 
-	auto pInputSplitter = GfxStreamSplitter::create( {{pStraightLogger, pStraightLogger->input}, {pPlayer, pPlayer->input}} );
-//	auto pInputSplitter = GfxStreamSplitter::create( {{pPlayer, pPlayer->input}} );
+	auto pInputSplitter = StreamSplitter::create( {{pStraightLogger, pStraightLogger->input}, {pPlayer, pPlayer->input}} );
+//	auto pInputSplitter = StreamSplitter::create( {{pPlayer, pPlayer->input}} );
 
-	auto pStreamPump = GfxStreamPump::create( {pStreamReader, pStreamReader->output}, {pInputSplitter, pInputSplitter->input} );
+	auto pStreamPump = StreamPump::create( {pStreamReader, pStreamReader->output}, {pInputSplitter, pInputSplitter->input} );
 	
 	
 	pDevice->defineCanvas(CanvasRef::Canvas_1, {240,240}, PixelFormat::Undefined, 64);

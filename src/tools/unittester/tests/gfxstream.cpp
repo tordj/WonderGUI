@@ -45,16 +45,16 @@ bool GfxStreamTest::streamLoopWrapperTest(std::ostream& output)
 	char * pBufferWrite = loopBuffer;
 	char * pBufferRead = loopBuffer;
 		
-	auto pStreamLoopWrapper = GfxStreamLoopWrapper::create(loopBuffer, loopBuffer+loopBufferSize,
+	auto pStreamLoopWrapper = StreamLoopWrapper::create(loopBuffer, loopBuffer+loopBufferSize,
 														   [&pBufferWrite] () { return pBufferWrite; },
 														   [&pBufferRead] (const void * pReadPos) { pBufferRead = (char *) pReadPos; } );
 
-	auto pStreamWriter = GfxStreamWriter::create([&pOutputWrite](int nBytes, const void * pBytes) {
+	auto pStreamWriter = StreamWriter::create([&pOutputWrite](int nBytes, const void * pBytes) {
 		memcpy( pOutputWrite, pBytes, nBytes), pOutputWrite += nBytes;
 		
 	} );
 	
-	auto pStreamPump = GfxStreamPump::create( {pStreamLoopWrapper, pStreamLoopWrapper->output}, {pStreamWriter, pStreamWriter->input} );
+	auto pStreamPump = StreamPump::create( {pStreamLoopWrapper, pStreamLoopWrapper->output}, {pStreamWriter, pStreamWriter->input} );
 	
 	
 	char * pBlobRead = (char *) pBlob->begin();
@@ -139,7 +139,7 @@ bool GfxStreamTest::streamReaderPumpWithOptimizationTest(std::ostream& output)
 	char* pBlobEnd = (char *) pBlob->end();
 
 
-	auto pStreamReader = GfxStreamReader::create([&pBlobRead, &pBlobReadMax](int nBytes, void* pDest) {
+	auto pStreamReader = StreamReader::create([&pBlobRead, &pBlobReadMax](int nBytes, void* pDest) {
 
 		int bytes = std::min(nBytes, int(pBlobReadMax - pBlobRead));
 
@@ -150,12 +150,12 @@ bool GfxStreamTest::streamReaderPumpWithOptimizationTest(std::ostream& output)
 	});
 		
 
-	auto pStreamWriter = GfxStreamWriter::create([&pOutputWrite](int nBytes, const void* pBytes) {
+	auto pStreamWriter = StreamWriter::create([&pOutputWrite](int nBytes, const void* pBytes) {
 		memcpy(pOutputWrite, pBytes, nBytes), pOutputWrite += nBytes;
 
 		});
 
-	auto pStreamPump = GfxStreamPump::create({ pStreamReader, pStreamReader->output }, { pStreamWriter, pStreamWriter->input });
+	auto pStreamPump = StreamPump::create({ pStreamReader, pStreamReader->output }, { pStreamWriter, pStreamWriter->input });
 
 
 	while (pBlobRead < pBlobEnd)

@@ -30,10 +30,10 @@
 #include <iostream>
 
 /*
-#include <wg_gfxstreamsurface.h>
-#include <wg_gfxstreamsurfacefactory.h>
-#include <wg_gfxstreamdevice.h>
-#include <wg_gfxstreamplayer.h>
+#include <wg_streamsurface.h>
+#include <wg_streamsurfacefactory.h>
+#include <wg_streamdevice.h>
+#include <wg_streamplayer.h>
 */
 
 #include <wg_softsurface.h>
@@ -92,7 +92,7 @@ bool flipCanvasTest(WgRootPanel* pRoot);
 //#define USE_OPEN_GL
 /*
  wg::GfxStreamPlug_p         g_pGfxStreamPlug;
-wg::GfxStreamPlayer_p       g_pGfxStreamPlayer;
+wg::StreamPlayer_p       g_pStreamPlayer;
 wg::StreamGfxDevice_p       g_pStreamGfxDevice;
 wg::StreamSurfaceFactory_p  g_pStreamSurfaceFactory;
  */
@@ -377,8 +377,8 @@ int main ( int argc, char** argv )
 		SDL_UnlockSurface( pScreen );
 
 		
-//        if( g_pGfxStreamPlayer )
-//            g_pGfxStreamPlayer->playAll();
+//        if( g_pStreamPlayer )
+//            g_pStreamPlayer->playAll();
 		
 		// DRAWING ENDS HERE
 

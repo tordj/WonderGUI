@@ -820,11 +820,11 @@ bool MyApp::loadStream(std::string path)
 	m_pStreamSurfaceFactory = pStreamGfxDevice->surfaceFactory();
 	m_pStreamGfxDevice = pStreamGfxDevice;
 	
-	m_pStreamPlayer	= GfxStreamPlayer::create( m_pStreamGfxDevice, m_pStreamSurfaceFactory, pStreamGfxDevice->edgemapFactory() );
+	m_pStreamPlayer	= StreamPlayer::create( m_pStreamGfxDevice, m_pStreamSurfaceFactory, pStreamGfxDevice->edgemapFactory() );
 	m_pStreamPlayer->setStoreDirtyRects(true);
 	m_pStreamPlayer->setMaxDirtyRects(10000);
 	
-	m_pStreamPump = GfxStreamPump::create( GfxStreamSource_p(), GfxStreamSink_p(m_pStreamPlayer.rawPtr(),m_pStreamPlayer->input) );
+	m_pStreamPump = StreamPump::create( StreamSource_p(), StreamSink_p(m_pStreamPlayer.rawPtr(),m_pStreamPlayer->input) );
 	
 	//
 	
@@ -1160,7 +1160,7 @@ void MyApp::_playFrames( int begin, int end, bool bOptimize )
 	uint8_t * pBegin = begin == 0 ? (uint8_t*) m_pStreamBlob->begin() : (uint8_t*) m_frames[begin];
 	uint8_t * pEnd = end == m_frames.size() ? (uint8_t*) m_pStreamBlob->end() : (uint8_t*) m_frames[end];
 
-	auto pWrapper = GfxStreamWrapper::create( pBegin, pEnd );
+	auto pWrapper = StreamWrapper::create( pBegin, pEnd );
 	
 	m_pStreamPump->setInput({pWrapper, pWrapper->output});
 
@@ -1182,13 +1182,13 @@ void MyApp::_logFrames( int begin, int end, bool bOptimize, TextEditor * pDispla
 	uint8_t * pBegin = begin == 0 ? (uint8_t*) m_pStreamBlob->begin() : (uint8_t*) m_frames[begin];
 	uint8_t * pEnd = end == m_frames.size() ? (uint8_t*) m_pStreamBlob->end() : (uint8_t*) m_frames[end];
 
-	auto pWrapper = GfxStreamWrapper::create( pBegin, pEnd );
+	auto pWrapper = StreamWrapper::create( pBegin, pEnd );
 
 	std::ostringstream	logStream;
-	auto pLogger = GfxStreamLogger::create( logStream );
+	auto pLogger = StreamLogger::create( logStream );
 	pLogger->setDisplayOffset(false);
 	
-	auto pPump = GfxStreamPump::create( {pWrapper, pWrapper->output}, {pLogger, pLogger->input} );
+	auto pPump = StreamPump::create( {pWrapper, pWrapper->output}, {pLogger, pLogger->input} );
 
 	
 	if( bOptimize )
@@ -1218,13 +1218,13 @@ void MyApp::_updateFrameCounterAndSlider()
 
 void MyApp::_logFullStream()
 {
-	auto pWrapper = GfxStreamWrapper::create( m_pStreamBlob->begin(), m_pStreamBlob->end()  );
+	auto pWrapper = StreamWrapper::create( m_pStreamBlob->begin(), m_pStreamBlob->end()  );
 
 	std::ostringstream	logStream;
-	auto pLogger = GfxStreamLogger::create( logStream );
+	auto pLogger = StreamLogger::create( logStream );
 	pLogger->setDisplayChunkNb(true);
 	
-	auto pPump = GfxStreamPump::create( {pWrapper, pWrapper->output}, {pLogger, pLogger->input} );
+	auto pPump = StreamPump::create( {pWrapper, pWrapper->output}, {pLogger, pLogger->input} );
 	pPump->pumpAll();
 
 	m_pFullLogDisplay->editor.setText( logStream.str() );
@@ -1349,7 +1349,7 @@ void MyApp::_generateFrameStatistics()
 {
 	m_frameStatistics.clear();
 	
-	auto pDecoder = GfxStreamDecoder::create();
+	auto pDecoder = StreamDecoder::create();
 	pDecoder->setInput( m_pStreamBlob->begin(), m_pStreamBlob->end() );
 
 	GfxStream::Header header;

@@ -1,3 +1,4 @@
+
 /*=========================================================================
 
 						 >>> WonderGUI <<<
@@ -19,34 +20,45 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WONDERSTREAM_DOT_H
-#define WONDERSTREAM_DOT_H
-#pragma once
 
-
-#include <wg_gfxstream.h>
-#include <wg_streambuffer.h>
-#include <wg_streamdecoder.h>
-#include <wg_streamdevice.h>
-#include <wg_streamencoder.h>
-#include <wg_streamfastencoder.h>
-#include <wg_streamlogger.h>
-#include <wg_streamloopwrapper.h>
-#include <wg_streamplayer.h>
-#include <wg_streampump.h>
-#include <wg_streamreader.h>
-#include <wg_streamsink.h>
-#include <wg_streamsource.h>
-#include <wg_streamsplitter.h>
-#include <wg_streamsurface.h>
-#include <wg_streamsurfacefactory.h>
-#include <wg_streamtrimencoder.h>
+#include <wg_c_streamwrapper.h>
 #include <wg_streamwrapper.h>
-#include <wg_streamwriter.h>
-#include <wg_streamedgemap.h>
-#include <wg_streamedgemapfactory.h>
+
+using namespace wg;
+
+inline StreamWrapper* getPtr(wg_obj obj) {
+	return static_cast<StreamWrapper*>(reinterpret_cast<Object*>(obj));
+}
+
+wg_obj wg_createStreamWrapper( const void * pBegin, const void * pEnd )
+{
+	auto p = StreamWrapper::create(pBegin, pEnd);
+	p->retain();
+	return p.rawPtr();
+}
+
+wg_component wg_getStreamWrapperOutput(wg_obj streamWrapper)
+{
+	auto p = getPtr(streamWrapper);
+	return { static_cast<Object*>(p), &p->output };
+}
+
+int wg_chunkInStreamWrapper(wg_obj streamWrapper)
+{
+	auto p = getPtr(streamWrapper);
+	return p->chunkInBuffer();
+}
+
+int wg_bytesInStreamWrapper(wg_obj streamWrapper)
+{
+	auto p = getPtr(streamWrapper);
+	return p->bytesInBuffer();
+}
+
+void	wg_restartStreamWrapper(wg_obj streamWrapper)
+{
+	auto p = getPtr(streamWrapper);
+	p->restart();
+}
 
 
-
-
-#endif //WONDERSTREAM_DOT_H

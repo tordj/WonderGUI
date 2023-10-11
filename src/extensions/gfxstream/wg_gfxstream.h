@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_GFXSTREAM_DOT_H
-#define	WG_GFXSTREAM_DOT_H
+#ifndef	WG_STREAM_DOT_H
+#define	WG_STREAM_DOT_H
 #pragma once
 
 #include <wg_gfxtypes.h>
@@ -249,4 +249,4 @@ namespace wg
 };
 
 
-#endif //WG_GFXSTREAM_DOT_H
+#endif //WG_STREAM_DOT_H

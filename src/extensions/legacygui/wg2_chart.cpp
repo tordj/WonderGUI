@@ -28,7 +28,7 @@
 #include <wg2_util.h>
 #include <wg_surfacefactory.h>
 
-#include <wg_gfxstreamdevice.h>
+#include <wg_streamdevice.h>
 #include <wg_softgfxdevice.h>
 
 #include <algorithm>
@@ -1075,7 +1075,7 @@ void WgChart::_renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& wa
     bool useGradient = wave.m_waveGradient.isValid();
     // Don't use gradient on "slow" devices
     useGradient &= !((pDevice->typeInfo() == wg::SoftGfxDevice::TYPEINFO) ||
-                    (pDevice->typeInfo() == wg::GfxStreamDevice::TYPEINFO));
+                    (pDevice->typeInfo() == wg::StreamDevice::TYPEINFO));
 
 	if(length >= 1)
 	{

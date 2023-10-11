@@ -19,22 +19,22 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WONDERGFXSTREAM_C_DOT_H
-#define WONDERGFXSTREAM_C_DOT_H
+#ifndef WONDERSTREAM_C_DOT_H
+#define WONDERSTREAM_C_DOT_H
 #pragma once
 
-#include <wg_c_gfxstreambuffer.h>
-#include <wg_c_gfxstreamlogger.h>
-#include <wg_c_gfxstreamloopwrapper.h>
-#include <wg_c_gfxstreamplayer.h>
-#include <wg_c_gfxstreampump.h>
-#include <wg_c_gfxstreamreader.h>
-#include <wg_c_gfxstreamsink.h>
-#include <wg_c_gfxstreamsource.h>
-#include <wg_c_gfxstreamsplitter.h>
-#include <wg_c_gfxstreamwrapper.h>
-#include <wg_c_gfxstreamwriter.h>
+#include <wg_c_streambuffer.h>
+#include <wg_c_streamlogger.h>
+#include <wg_c_streamloopwrapper.h>
+#include <wg_c_streamplayer.h>
+#include <wg_c_streampump.h>
+#include <wg_c_streamreader.h>
+#include <wg_c_streamsink.h>
+#include <wg_c_streamsource.h>
+#include <wg_c_streamsplitter.h>
+#include <wg_c_streamwrapper.h>
+#include <wg_c_streamwriter.h>
 
 
 
-#endif //WONDERGFXSTREAM_C_DOT_H
+#endif //WONDERSTREAM_C_DOT_H

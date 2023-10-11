@@ -252,14 +252,14 @@ int main ( int argc, char** argv )
     
 //	auto pStreamPlug = GfxStreamPlug::create();
 
-//	auto pGfxPlayer = GfxStreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create());
+//	auto pGfxPlayer = StreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create());
 
 	// Writer
 
 	char* pBigBuffer = new char[10000000];
 	char* pWrite = pBigBuffer;
 
-	auto pStreamWriter = GfxStreamWriter::create([&pWrite](int nBytes, const void* pData) 
+	auto pStreamWriter = StreamWriter::create([&pWrite](int nBytes, const void* pData) 
 		{
 			memcpy(pWrite, pData, nBytes);
 			pWrite += nBytes;
@@ -267,47 +267,47 @@ int main ( int argc, char** argv )
 
 	// Buffer
 
-	auto pStreamBuffer = GfxStreamBuffer::create();
+	auto pStreamBuffer = StreamBuffer::create();
 	
 	// Encoder with splitter, feeding writer and buffer.
 
-//	auto pEncoder = GfxStreamEncoder::create(pGfxPlayer->stream.ptr());
-//	auto pEncoder = GfxStreamEncoder::create(pStreamLogger->stream.ptr());
+//	auto pEncoder = StreamEncoder::create(pGfxPlayer->stream.ptr());
+//	auto pEncoder = StreamEncoder::create(pStreamLogger->stream.ptr());
 
-	auto pFirstSplitter = GfxStreamSplitter::create( { GfxStreamSink_p( pStreamBuffer, pStreamBuffer->input), GfxStreamSink_p( pStreamWriter, pStreamWriter->input) });
+	auto pFirstSplitter = StreamSplitter::create( { StreamSink_p( pStreamBuffer, pStreamBuffer->input), StreamSink_p( pStreamWriter, pStreamWriter->input) });
 
-//	auto pEncoder = GfxStreamFastEncoder::create(GfxStreamSink_p( pFirstSplitter, pFirstSplitter->input) );
-	auto pEncoder = GfxStreamTrimEncoder::create(GfxStreamSink_p( pFirstSplitter, pFirstSplitter->input) );
+//	auto pEncoder = StreamFastEncoder::create(StreamSink_p( pFirstSplitter, pFirstSplitter->input) );
+	auto pEncoder = StreamTrimEncoder::create(StreamSink_p( pFirstSplitter, pFirstSplitter->input) );
 
 	// Logger
 
-	auto pStreamLogger = GfxStreamLogger::create(std::cout);
+	auto pStreamLogger = StreamLogger::create(std::cout);
 
 	// Player
 
-	auto pStreamPlayer = GfxStreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create(), SoftEdgemapFactory::create() );
+	auto pStreamPlayer = StreamPlayer::create(pGfxDevice, SoftSurfaceFactory::create(), SoftEdgemapFactory::create() );
 
 
 	// Streampump taking from buffer and feeding logger and/or player
 
-	auto pAfterBufferSplitter = GfxStreamSplitter::create({ GfxStreamSink_p( pStreamLogger, pStreamLogger->input ), GfxStreamSink_p( pStreamPlayer, pStreamPlayer->input) });
+	auto pAfterBufferSplitter = StreamSplitter::create({ StreamSink_p( pStreamLogger, pStreamLogger->input ), StreamSink_p( pStreamPlayer, pStreamPlayer->input) });
 
-	auto pStreamPump = GfxStreamPump::create(GfxStreamSource_p(pStreamBuffer, pStreamBuffer->output), GfxStreamSink_p( pAfterBufferSplitter, pAfterBufferSplitter->input) );
+	auto pStreamPump = StreamPump::create(StreamSource_p(pStreamBuffer, pStreamBuffer->output), StreamSink_p( pAfterBufferSplitter, pAfterBufferSplitter->input) );
 
 	// StreamGfxDevice and StreamSurfaceFactory feeding encoder
 
-	auto pStreamDevice = GfxStreamDevice::create(pEncoder);
+	auto pStreamDevice = StreamDevice::create(pEncoder);
     pStreamDevice->defineCanvas(CanvasRef::Canvas_1, {240,240}, PixelFormat::Undefined );
 	pStreamDevice->defineCanvas(CanvasRef::Canvas_2, {240,240}, PixelFormat::Undefined );
 
-	auto pSurfaceFactory = GfxStreamSurfaceFactory::create(pEncoder);
+	auto pSurfaceFactory = StreamSurfaceFactory::create(pEncoder);
 
 
 //	pStreamPlug->openOutput(0);
-//	auto pStreamLogger = GfxStreamLogger::create(pStreamPlug->output[0], std::cout);
+//	auto pStreamLogger = StreamLogger::create(pStreamPlug->output[0], std::cout);
 
 //	pStreamPlug->openOutput(1);
-//	auto pGfxPlayer = GfxStreamPlayer::create(pStreamPlug->output[1], pGfxDevice, SoftSurfaceFactory::create());
+//	auto pGfxPlayer = StreamPlayer::create(pStreamPlug->output[1], pGfxDevice, SoftSurfaceFactory::create());
     
     //------------------------------------------------------
     // Setup stream saving

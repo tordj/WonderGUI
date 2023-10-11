@@ -19,34 +19,34 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WONDERSTREAM_DOT_H
-#define WONDERSTREAM_DOT_H
+
+#ifndef WG_C_STREAMPLAYER_DOT_H
+#define WG_C_STREAMPLAYER_DOT_H
 #pragma once
 
+#include <wg_c_gfxtypes.h>
+#include <wg_c_geo.h>
 
-#include <wg_gfxstream.h>
-#include <wg_streambuffer.h>
-#include <wg_streamdecoder.h>
-#include <wg_streamdevice.h>
-#include <wg_streamencoder.h>
-#include <wg_streamfastencoder.h>
-#include <wg_streamlogger.h>
-#include <wg_streamloopwrapper.h>
-#include <wg_streamplayer.h>
-#include <wg_streampump.h>
-#include <wg_streamreader.h>
-#include <wg_streamsink.h>
-#include <wg_streamsource.h>
-#include <wg_streamsplitter.h>
-#include <wg_streamsurface.h>
-#include <wg_streamsurfacefactory.h>
-#include <wg_streamtrimencoder.h>
-#include <wg_streamwrapper.h>
-#include <wg_streamwriter.h>
-#include <wg_streamedgemap.h>
-#include <wg_streamedgemapfactory.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	wg_obj			wg_createStreamPlayer(wg_obj device, wg_obj surfaceFactory, wg_obj edgemapFactory);
+
+	wg_component	wg_getStreamPlayerInput(wg_obj streamPlayer);
+
+	void			wg_resetStreamPlayer(wg_obj streamPlayer);
+
+	void			wg_setStreamPlayerStoreDirtyRects(wg_obj streamPlayer, int bStore);
+	void			wg_setStreamPlayerMaxDirtyRects(wg_obj streamPlayer, int max);
+
+	int				wg_getStreamPlayerDirtyRects(wg_obj streamPlayer, wg_canvasRef canvas, const wg_rectI **pRects );
+
+	void			wg_clearStreamPlayerDirtyRects(wg_obj streamPlayer);
+
+#ifdef __cplusplus
+}
+#endif
 
 
-
-
-#endif //WONDERSTREAM_DOT_H
+#endif

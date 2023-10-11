@@ -19,34 +19,19 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WONDERSTREAM_DOT_H
-#define WONDERSTREAM_DOT_H
-#pragma once
 
 
-#include <wg_gfxstream.h>
-#include <wg_streambuffer.h>
-#include <wg_streamdecoder.h>
-#include <wg_streamdevice.h>
-#include <wg_streamencoder.h>
-#include <wg_streamfastencoder.h>
-#include <wg_streamlogger.h>
-#include <wg_streamloopwrapper.h>
-#include <wg_streamplayer.h>
-#include <wg_streampump.h>
-#include <wg_streamreader.h>
+#include <wg_c_streamsink.h>
 #include <wg_streamsink.h>
-#include <wg_streamsource.h>
-#include <wg_streamsplitter.h>
-#include <wg_streamsurface.h>
-#include <wg_streamsurfacefactory.h>
-#include <wg_streamtrimencoder.h>
-#include <wg_streamwrapper.h>
-#include <wg_streamwriter.h>
-#include <wg_streamedgemap.h>
-#include <wg_streamedgemapfactory.h>
 
+using namespace wg;
 
+inline StreamSink* getPtr(wg_component sink) {
+	return static_cast<StreamSink*>(reinterpret_cast<StreamSink*>(sink.pInterface));
+}
 
-
-#endif //WONDERSTREAM_DOT_H
+void wg_processStreamChunks( wg_component streamSink, const void * pBegin, const void * pEnd )
+{
+    auto p = getPtr(streamSink);
+    p->processChunks(pBegin, pEnd);
+}

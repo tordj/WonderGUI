@@ -19,34 +19,33 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WONDERSTREAM_DOT_H
-#define WONDERSTREAM_DOT_H
+
+#ifndef WG_C_STREAMBUFFER_DOT_H
+#define WG_C_STREAMBUFFER_DOT_H
 #pragma once
 
+#include <wg_c_gfxtypes.h>
 
-#include <wg_gfxstream.h>
-#include <wg_streambuffer.h>
-#include <wg_streamdecoder.h>
-#include <wg_streamdevice.h>
-#include <wg_streamencoder.h>
-#include <wg_streamfastencoder.h>
-#include <wg_streamlogger.h>
-#include <wg_streamloopwrapper.h>
-#include <wg_streamplayer.h>
-#include <wg_streampump.h>
-#include <wg_streamreader.h>
-#include <wg_streamsink.h>
-#include <wg_streamsource.h>
-#include <wg_streamsplitter.h>
-#include <wg_streamsurface.h>
-#include <wg_streamsurfacefactory.h>
-#include <wg_streamtrimencoder.h>
-#include <wg_streamwrapper.h>
-#include <wg_streamwriter.h>
-#include <wg_streamedgemap.h>
-#include <wg_streamedgemapfactory.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	wg_obj			wg_createStreamBuffer(int initialCapacity);
+
+	wg_component	wg_getStreamBufferOutput(wg_obj streamBuffer);
+	wg_component	wg_getStreamBufferInput(wg_obj streamBuffer);
+
+	int				wg_streamBufferCapacity(wg_obj streamBuffer);
+	int				wg_streamBufferHasChunk(wg_obj streamBuffer);
+	int				wg_streamBufferSize(wg_obj streamBuffer);
+
+	void			wg_resetStreamBuffer(wg_obj streamBuffer);
+	int				wg_setStreamBufferCapacity( wg_obj streamBuffer, int capacity );
 
 
 
+#ifdef __cplusplus
+}
+#endif
 
-#endif //WONDERSTREAM_DOT_H
+#endif

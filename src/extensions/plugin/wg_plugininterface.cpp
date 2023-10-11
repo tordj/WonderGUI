@@ -30,10 +30,10 @@
 #include <wg_c_font.h>
 #include <wg_c_gfxdevice.h>
 /*
-#include <wg_c_gfxstreambuffer.h>
-#include <wg_c_gfxstreamplayer.h>
-#include <wg_c_gfxstreampump.h>
-#include <wg_c_gfxstreamreader.h>
+#include <wg_c_streambuffer.h>
+#include <wg_c_streamplayer.h>
+#include <wg_c_streampump.h>
+#include <wg_c_streamreader.h>
 */
 #include <wg_c_object.h>
 #include <wg_c_surface.h>

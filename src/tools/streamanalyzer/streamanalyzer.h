@@ -78,9 +78,9 @@ private:
 	char *				m_pLinearCanvasBuffer = nullptr;
 	
 	Blob_p				m_pStreamBlob;
-	GfxStreamPlayer_p	m_pStreamPlayer;
-	GfxStreamLogger_p	m_pStreamLogger;
-	GfxStreamPump_p		m_pStreamPump;
+	StreamPlayer_p	m_pStreamPlayer;
+	StreamLogger_p	m_pStreamLogger;
+	StreamPump_p		m_pStreamPump;
 
 	
 	vector<GfxStream::iterator>	m_frames;
