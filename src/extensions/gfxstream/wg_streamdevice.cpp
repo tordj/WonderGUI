@@ -222,7 +222,7 @@ namespace wg
 
 	void StreamDevice::encodeCanvasList()
 	{
-		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::CanvasList, GfxStream::SpxFormat::Int32_dec, (uint16_t)(m_definedCanvases.size()*12) };
+		(*m_pEncoder) << GfxStream::Header{ GfxChunkId::CanvasList, GfxStream::SpxFormat::Int32_dec, (uint16_t)(m_definedCanvases.size()*14) };
 
 		(*m_pEncoder) << (uint16_t) m_definedCanvases.size();
 
@@ -231,6 +231,7 @@ namespace wg
 			(*m_pEncoder) << (uint16_t) canvas.ref;
 			(*m_pEncoder) << canvas.size;
 			(*m_pEncoder) << (uint16_t) canvas.scale;
+            (*m_pEncoder) << canvas.format;
 		}
 	}
 

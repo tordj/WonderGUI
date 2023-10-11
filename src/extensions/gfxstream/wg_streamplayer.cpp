@@ -158,14 +158,17 @@ namespace wg
 				uint16_t 	ref;
 				SizeSPX		size;
 				uint16_t	scale;
+				PixelFormat	format;
 
 				*m_pDecoder >> ref;
 				*m_pDecoder >> size;
 				*m_pDecoder >> scale;
+				*m_pDecoder >> format;
 
 				canvas[i].ref = (CanvasRef) ref;
 				canvas[i].size = size;
 				canvas[i].scale = scale;
+				canvas[i].format = format;
 			}
 
 			if( m_canvasInfoCallback )
