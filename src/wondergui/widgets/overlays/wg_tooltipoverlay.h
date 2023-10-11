@@ -45,14 +45,38 @@ namespace wg
 
 		struct Position
 		{
-			Placement	placement;
-			Border		spacing;
-			bool		bAroundPointer;
+			Placement	placement = Placement::SouthEast;
+			Border		spacing = { 2, 16, 16, 2 };
+			bool		bAroundPointer = true;
+		};
+
+		//.____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			int				delay = 300;
+			bool			enabled = true;
+			Finalizer_p		finalizer = nullptr;
+			std::function<Widget_p(Position& position, const Widget* pHovered, const Border& margin)> generator;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			Position		position;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			stickyFocus = false;
+			bool			tabLock = false;
+			String			tooltip;
 		};
 
 		//.____ Creation __________________________________________
 
 		static TooltipOverlay_p	create() { return TooltipOverlay_p(new TooltipOverlay()); }
+		static TooltipOverlay_p	create(const Blueprint& blueprint) { return TooltipOverlay_p(new TooltipOverlay(blueprint)); }
 
 		//.____ Identification ________________________________________________
 
@@ -71,6 +95,12 @@ namespace wg
 
 	protected:
 		TooltipOverlay();
+		template<class BP> TooltipOverlay(const BP& bp) : m_tooltipSlot(this), Overlay(bp)
+		{
+			m_hoverMillisec = bp.delay;
+			m_defaultPosition = bp.position;
+			m_tooltipGenerator = bp.generator;
+		}
 		virtual ~TooltipOverlay();
 
 

@@ -129,7 +129,6 @@
 #include <wg_slider.h>
 #include <wg_slot.h>
 #include <wg_slotarray.h>
-#include <wg_slotextras.h>
 #include <wg_slotholder.h>
 #include <wg_spinanimskin.h>
 #include <wg_spinmeterskin.h>

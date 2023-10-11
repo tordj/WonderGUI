@@ -56,25 +56,6 @@ namespace wg
 	typedef	WeakPtr<Msg>			Msg_wp;
 
 
-/*	Common blueprint content for all Widgets.
-
-	Object_p		baggage;
-	bool			dropTarget = false;
-	bool			enabled = true;
-	Finalizer_p		finalizer = nullptr;
-	int				id = 0;
-	MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
-	bool			pickable = false;
-	int				pickCategory = 0;
-	PointerStyle	pointer = PointerStyle::Default;
-	bool			selectable = true;
-	Skin_p			skin;
-	bool			stickyFocus = false;
-	bool			tabLock = false;
-	String			tooltip;
-*/
-
-
 	/**
 	 * @brief Base class for widgets.
 	 *
@@ -94,6 +75,26 @@ namespace wg
 		template<class S, int X> friend class SlotArray;
 
 	public:
+
+		//.____ Blueprint _____________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer = nullptr;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			stickyFocus = false;
+			bool			tabLock = false;
+			String			tooltip;
+		};
 
 		//.____ Identification ________________________________________________
 

@@ -118,10 +118,34 @@ namespace wg
 			PopupOverlay *	_holder() { return static_cast<PopupOverlay*>(StaticSlotVector<Slot>::_holder()); }
 		};
 
+		//.____ Blueprint __________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			int				closingDelay = 200;
+			int				closingFade = 200;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer = nullptr;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				openingDelay = 100;
+			int				openingFade = 100;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Default;
+			bool			selectable = true;
+			Skin_p			skin;
+			bool			stickyFocus = false;
+			bool			tabLock = false;
+			String			tooltip;
+		};
 
 		//.____ Creation __________________________________________
 
 		static PopupOverlay_p	create() { return PopupOverlay_p(new PopupOverlay()); }
+		static PopupOverlay_p	create(const Blueprint& blueprint) { return PopupOverlay_p(new PopupOverlay(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -134,6 +158,13 @@ namespace wg
 
 	protected:
 		PopupOverlay();
+		template<class BP> PopupOverlay(const BP& bp) : popupSlots(this), Overlay(bp)
+		{
+			m_openingDelayMs	= bp.openingDelay;
+			m_openingFadeMs		= bp.openingFade;
+			m_closingDelayMs	= bp.closingDelay;
+			m_closingFadeMs		= bp.closingFade;
+		}
 		virtual ~PopupOverlay();
 
 		PopupOverlay *	_getPopupOverlay() const override { return const_cast<PopupOverlay*>(this); }

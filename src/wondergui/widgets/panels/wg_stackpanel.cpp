@@ -51,14 +51,22 @@ namespace wg
 
 	void StackPanelSlot::setSizePolicy(SizePolicy2D policy)
 	{
-		static_cast<StackPanel*>(DynamicSlot::_holder())->_setSizePolicy(this, policy);
+		if (policy != m_sizePolicy)
+		{
+			m_sizePolicy = policy;
+			static_cast<StackPanel*>(DynamicSlot::_holder())->_updateChildGeo(this,this+1);
+		}
 	}
 
 	//____ Slot::setPlacement() __________________________________________________
 
 	void StackPanelSlot::setPlacement(Placement placement)
 	{
-		static_cast<StackPanel*>(DynamicSlot::_holder())->_setPlacement(this, placement);
+		if (placement != m_placement)
+		{
+			m_placement = placement;
+			static_cast<StackPanel*>(DynamicSlot::_holder())->_updateChildGeo(this, this + 1);
+		}
 	}
 
 	//____ Slot::_setBlueprint() ____________________________________________________
@@ -235,8 +243,6 @@ namespace wg
 			pSlot[i].m_margin	= padding;
 
 		_updateChildGeo(pSlot,pSlot+nb);
-		_requestRender();				// This is needed here since children might have repositioned.
-										//TODO: Optimize! Only render what really is needed due to changes.
 
 		SizeSPX newDefault =_calcDefaultSize(m_scale);
 		if (newDefault != m_defaultSize || m_defaultSize != m_size)
@@ -251,52 +257,10 @@ namespace wg
 			pSlot[i].m_margin	= *pPaddings++;
 
 		_updateChildGeo(pSlot,pSlot+nb);
-		_requestRender();				// This is needed here since children might have repositioned.
-										//TODO: Optimize! Only render what really is needed due to changes.
 
 		SizeSPX newDefault = _calcDefaultSize(m_scale);
 		if (newDefault != m_defaultSize || m_defaultSize != m_size)
 			_requestResize();
-	}
-
-	//____ _setSizePolicy() ___________________________________________________
-
-	void StackPanel::_setSizePolicy(StackPanelSlot * pSlot, SizePolicy2D policy)
-	{
-		if (policy != pSlot->m_sizePolicy)
-		{
-			RectSPX oldGeo = pSlot->m_geo;
-			pSlot->m_sizePolicy = policy;
-			RectSPX newGeo = _childGeo(pSlot);
-
-			if (newGeo != oldGeo)
-			{
-				_requestRender(oldGeo);
-				_requestRender(newGeo);
-				pSlot->_setSize(newGeo.size(), m_scale);
-				pSlot->m_geo = newGeo;
-			}
-		};
-	}
-
-	//____ _setPlacement() ________________________________________________________
-
-	void StackPanel::_setPlacement(StackPanelSlot * pSlot, Placement placement)
-	{
-		if (placement != pSlot->m_placement)
-		{
-			RectSPX oldGeo = pSlot->m_geo;
-			pSlot->m_placement = placement;
-			RectSPX newGeo = _childGeo(pSlot);
-
-			if (newGeo != oldGeo)
-			{
-				_requestRender(oldGeo);
-				_requestRender(newGeo);
-				pSlot->_setSize(newGeo.size(), m_scale);
-				pSlot->m_geo = newGeo;
-			}
-		};
 	}
 
 	//____ _didMoveSlots() ________________________________________________________
@@ -366,8 +330,12 @@ namespace wg
 			{
 				pSlot->m_geo = newGeo;
 				pSlot->_setSize(newGeo.size(), m_scale);
-				_requestRender(oldGeo);
-				_requestRender(newGeo);
+
+				if (pSlot->m_bVisible)
+				{
+					_requestRender(oldGeo);
+					_requestRender(newGeo);
+				}
 			}
 		}
 
@@ -526,12 +494,19 @@ namespace wg
 	{
 		while( pSlot != pEnd )
 		{
-			if (pSlot->m_bVisible)
+			RectSPX newGeo = _childGeo(pSlot);
+
+			if (newGeo != pSlot->m_geo)
 			{
-				RectSPX geo = _childGeo(pSlot);
-				pSlot->m_geo = geo;
-				pSlot->_setSize( geo.size(),m_scale );
+				if (pSlot->m_bVisible)
+				{
+					_requestRender(pSlot->m_geo);
+					_requestRender(newGeo);
+				}
+				pSlot->m_geo = newGeo;
+ 				pSlot->_setSize(newGeo.size(), m_scale);
 			}
+
 			pSlot++;
 		}
 	}

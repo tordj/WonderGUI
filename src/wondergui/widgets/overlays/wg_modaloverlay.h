@@ -100,28 +100,6 @@ namespace wg
 
 		};
 
-		//.____ Blueprint _________________________________________
-
-		struct Blueprint
-		{
-
-			Object_p		baggage;
-			bool			dropTarget = false;
-			bool			enabled = true;
-			Finalizer_p		finalizer = nullptr;
-			int				id = 0;
-			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
-			bool			pickable = false;
-			int				pickCategory = 0;
-			PointerStyle	pointer = PointerStyle::Default;
-			bool			selectable = true;
-			Skin_p			skin;
-			bool			stickyFocus = false;
-			bool			tabLock = false;
-			String			tooltip;
-		};
-
-
 		//.____ Creation __________________________________________
 
 		static ModalOverlay_p	create() { return ModalOverlay_p(new ModalOverlay()); }

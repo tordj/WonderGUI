@@ -28,7 +28,6 @@
 #include <wg_list.h>
 #include <wg_columnheader.h>
 #include <wg_dynamicslotvector.h>
-#include <wg_slotextras.h>
 #include <wg_util.h>
 
 
@@ -79,11 +78,17 @@ namespace wg
 
 			//.____ State __________________________________________________________
 
-			SLOT_SELECTING_METHODS(PackList)
+				inline void	select() { static_cast<PackList*>(_holder())->_selectSlots(this, 1); }
+				inline void	unselect() { static_cast<PackList*>(_holder())->_selectSlots(this, 1); }
+				inline void	setSelected(bool bSelected) { if (bSelected) static_cast<PackList*>(_holder())->_selectSlots(this, 1); else static_cast<PackList*>(_holder())->_unselectSlots(this, 1); }
+				inline bool isSelected() const { return m_bSelected; }
 
 			//.____ Appearance _________________________________________________
 
-			SLOT_HIDING_METHODS(PackList)
+				inline void		hide() { static_cast<PackList*>(_holder())->_hideSlots(this, 1); }
+				inline void		unhide() { static_cast<PackList*>(_holder())->_unhideSlots(this, 1); }
+				inline void		setVisible(bool bVisible) { if (bVisible) static_cast<PackList*>(_holder())->_unhideSlots(this, 1); else static_cast<PackList*>(_holder())->_hideSlots(this, 1); }
+				inline bool		isVisible() const { return m_bVisible; }
 
 			//.____ Operators __________________________________________
 

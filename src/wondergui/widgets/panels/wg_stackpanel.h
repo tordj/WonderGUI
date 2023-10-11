@@ -26,8 +26,6 @@
 
 #include <wg_panel.h>
 #include <wg_slot.h>
-#include <wg_slotextras.h>
-#include <wg_dynamicslotvector.h>
 
 namespace wg
 {
@@ -184,11 +182,6 @@ namespace wg
 		void		_unhideSlots(StaticSlot *, int nb) override;
 		void		_setSlotMargins(StaticSlot *, int nb, Border padding);
 		void		_setSlotMargins(StaticSlot *, int nb, const Border * pPaddings);
-
-		//
-
-		void		_setSizePolicy(StackPanelSlot * pSlot, SizePolicy2D policy);
-		void		_setPlacement(StackPanelSlot * pSlot, Placement placement);
 
 
 		// Internal to StackPanel

@@ -24,21 +24,6 @@
 #define WG_SLOTEXTRAS_DOT_H
 #pragma once
 
-#include <wg_geo.h>
-
-
-#define		SLOT_HIDING_METHODS(HOLDERTYPE) \
-	inline void		hide() { static_cast<HOLDERTYPE*>(_holder())->_hideSlots(this, 1); } \
-	inline void		unhide() { static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); } \
-	inline void		setVisible(bool bVisible) { if (bVisible) static_cast<HOLDERTYPE*>(_holder())->_unhideSlots(this, 1); else static_cast<HOLDERTYPE*>(_holder())->_hideSlots(this, 1); } \
-	inline bool		isVisible() const { return m_bVisible; }
-
-
-#define		SLOT_SELECTING_METHODS(HOLDERTYPE) \
-	inline void	select() { static_cast<HOLDERTYPE*>(_holder())->_selectSlots(this, 1); } \
-	inline void	unselect() { static_cast<HOLDERTYPE*>(_holder())->_selectSlots(this, 1); } \
-	inline void	setSelected(bool bSelected) { if (bSelected) static_cast<HOLDERTYPE*>(_holder())->_selectSlots(this, 1); else static_cast<HOLDERTYPE*>(_holder())->_unselectSlots(this, 1); } \
-	inline bool isSelected() const { return m_bSelected; }
-
+// THIS HEADER SHOULD BE REMOVED!
 
 #endif //WG_SLOTEXTRAS_DOT_H

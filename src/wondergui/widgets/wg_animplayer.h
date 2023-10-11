@@ -45,9 +45,33 @@ namespace wg
 	{
 	public:
 
+		//.____ Blueprint _____________________________________________________
+
+		struct Blueprint
+		{
+			Object_p		baggage;
+			bool			dropTarget = false;
+			bool			enabled = true;
+			Finalizer_p		finalizer = nullptr;
+			int				id = 0;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			bool			playing = false;
+			PlayMode		playMode = PlayMode::Looping;
+			PointerStyle	pointer = PointerStyle::Default;
+			bool			selectable = true;
+			Skin_p			skin;
+			float			speed = 1.f;
+			bool			stickyFocus = false;
+			bool			tabLock = false;
+			String			tooltip;
+		};
+
 		//.____ Creation __________________________________________
 
 		static AnimPlayer_p	create() { return AnimPlayer_p(new AnimPlayer()); }
+		static AnimPlayer_p	create(const Blueprint& blueprint) { return AnimPlayer_p(new AnimPlayer(blueprint)); }
 
 		//.____ Components _______________________________________
 
@@ -87,6 +111,14 @@ namespace wg
 
 	protected:
 		AnimPlayer();
+		template<class BP> AnimPlayer(const BP& bp) : frames(this), Widget(bp)
+		{
+			m_bPlaying	= bp.playing;
+			m_playMode	= bp.playMode;
+			m_speed		= bp.speed;
+		}
+
+
 		virtual ~AnimPlayer();
 
 		SizeSPX			_defaultSize(int scale) const override;
@@ -108,7 +140,7 @@ namespace wg
 
 	private:
 
-		PlayMode	m_playMode	= PlayMode::Forward;
+		PlayMode	m_playMode	= PlayMode::Looping;
 		int			m_playPos	= 0;
 		int			m_cycleDuration = 0;
 		int			m_frameTimestamp = -1;		// Timestamp for last rendered frame.

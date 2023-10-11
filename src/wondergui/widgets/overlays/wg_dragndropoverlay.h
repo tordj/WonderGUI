@@ -58,9 +58,12 @@ namespace wg
 		};
 
 
+
+
 		//.____ Creation __________________________________________
 
 		static DragNDropOverlay_p  create() { return DragNDropOverlay_p(new DragNDropOverlay()); }
+		static DragNDropOverlay_p  create( const Blueprint& blueprint ) { return DragNDropOverlay_p(new DragNDropOverlay(blueprint)); }
 
 		//.____ Identification __________________________________________
 
@@ -69,6 +72,7 @@ namespace wg
 
 	protected:
 		DragNDropOverlay();
+		template<class BP> DragNDropOverlay(const BP& bp) : m_dragSlot(this), Overlay(bp) {}
 		virtual ~DragNDropOverlay();
 
 

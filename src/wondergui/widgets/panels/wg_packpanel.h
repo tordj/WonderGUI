@@ -25,8 +25,6 @@
 
 #include <wg_packlayout.h>
 #include <wg_panel.h>
-#include <wg_slot.h>
-#include <wg_slotextras.h>
 
 
 namespace wg

@@ -26,8 +26,6 @@
 
 
 #include <wg_panel.h>
-#include <wg_dynamicslotvector.h>
-#include <wg_slotextras.h>
 
 namespace wg
 {
