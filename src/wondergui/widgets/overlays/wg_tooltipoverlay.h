@@ -155,7 +155,7 @@ namespace wg
 		bool		m_bBlockReopen		= false;
 		bool		m_bDisplayTooltips	= true;
 
-		Position	m_defaultPosition = { Placement::SouthEast, {2,16,16,2}, true };
+		Position	m_defaultPosition;
 		Position	m_activePosition;
 
 		std::function<Widget_p(Position& position, const Widget* pHovered, const Border& margin)>	m_tooltipGenerator = _defaultTooltipGenerator;
