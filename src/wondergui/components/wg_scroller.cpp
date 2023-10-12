@@ -655,7 +655,7 @@ namespace wg
 
 	RectSPX Scroller::_dragbarArea(const RectSPX& availableArea, int scale, spx viewOfs, spx viewLen, spx contentLen) const
 	{
-		float fracLen = float(viewLen) / float(contentLen);
+		float fracLen = contentLen == 0 ? 1.f : float(viewLen) / float(contentLen);
 		float fracOfs = contentLen == viewLen ? 0 : float(viewOfs) / float(contentLen - viewLen);
 
 		spx maxLen = m_axis == Axis::X ? availableArea.w : availableArea.h;

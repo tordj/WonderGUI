@@ -52,7 +52,9 @@ namespace wg
 	{
 		if( bytes == 0 )
 			return nullptr;
-		
+
+		bytes = (bytes+7) & 0xFFFFFFF8;			// 64-bit alignment
+
 		BlockHeader * p = m_blocks.last();
 
 		if( !p || p->size - p->allocated < bytes )
@@ -76,6 +78,8 @@ namespace wg
 		if (bytes == 0)
 			return;
 
+		bytes = (bytes+7) & 0xFFFFFFF8;			// 64-bit alignment
+		
 //		assert( bytes == m_allocSizes.back() );	// Debug code, should be disabled by default.
 //		m_allocSizes.pop_back();				// Debug coce, should be disabled by default.
 		
