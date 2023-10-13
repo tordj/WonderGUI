@@ -268,7 +268,37 @@ void WgTooltipLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pH
     switch (pEvent->Type())
     {
         case WG_EVENT_TICK:
-            if (pHandler->IsMouseButtonPressed(1) || pHandler->IsMouseButtonPressed(2) )
+		{
+			{
+				WgCoord mousePos = pEvent->PointerScreenPixelPos() - ScreenPixelPos();
+				WgWidget* pHovered = FindWidget(mousePos, WgSearchMode::ActionTarget);
+
+				if (pHovered && pHovered->GetTooltipString().isEmpty())
+					pHovered = nullptr;
+				
+				if (m_tooltipHook.Widget())
+				{
+					if (pHovered != m_pHoverWidget)
+					{
+						_closeTooltip();
+
+						m_pHoverWidget = pHovered;
+						m_hoverPos = mousePos;
+						m_hoverCountdown = m_hoverMillisec;
+					}
+				}
+				else
+				{
+					if (pHovered != m_pHoverWidget)
+					{
+						m_bBlockReopen = false;
+						m_pHoverWidget = pHovered;
+					}
+				}
+			}
+
+
+			if (pHandler->IsMouseButtonPressed(1) || pHandler->IsMouseButtonPressed(2) )
                 return;
 
             if (m_hoverCountdown > 0 && m_pHoverWidget && !m_bBlockReopen)
@@ -282,7 +312,7 @@ void WgTooltipLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pH
                 }
             }
             break;
-            
+		}
         case WG_EVENT_MOUSE_ENTER:
         _startReceiveTicks();
         // No break, fall through to next case on purpose.
