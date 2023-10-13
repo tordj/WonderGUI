@@ -23,10 +23,12 @@
 #define	WG_STRONGPTR_DOT_H
 #pragma once
 
+#include <cassert>
 
 namespace wg
 {
 	struct TypeInfo;
+class Object;
 
 	template<class Cls> class StrongPtr		/** @private */
 	{
@@ -46,29 +48,45 @@ namespace wg
 		StrongPtr(Cls * const _p)
 		{
 			m_pObj = _p;
-			if( _p )
-				_p->_incRefCount();
+			if( m_pObj )
+			{
+				assert( dynamic_cast<Object*>(m_pObj) != nullptr );
+				assert( m_pObj->refcount() >= 0 );
+				m_pObj->_incRefCount();
+			}
 		};
 
 		StrongPtr(const StrongPtr<Cls>& _p)
 		{
 			m_pObj = _p.m_pObj;
-			if( _p.m_pObj )
-				_p->_incRefCount();
+			if( m_pObj )
+			{
+				assert( dynamic_cast<Object*>(m_pObj) != nullptr );
+				assert( m_pObj->refcount() >= 0 );
+				m_pObj->_incRefCount();
+			}
 		};
 
 
 		template<typename _Tp1> StrongPtr( const StrongPtr<_Tp1>& _p)
 		{
 			m_pObj = _p.m_pObj;
-			if( _p.m_pObj )
-				_p.m_pObj->_incRefCount();
+			if( m_pObj )
+			{
+				assert( dynamic_cast<Object*>(m_pObj) != nullptr );
+				assert( m_pObj->refcount() >= 0 );
+				m_pObj->_incRefCount();
+			}
 		}
 
 		~StrongPtr()
 		{
 			if( m_pObj )
+			{
+				assert( dynamic_cast<Object*>(m_pObj) != nullptr );
+				assert( m_pObj->refcount() > 0 );
 				m_pObj->_decRefCount();
+			}
 		}
 
 		//.____ Misc ___________________________________________________________
