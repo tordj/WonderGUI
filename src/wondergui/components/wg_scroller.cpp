@@ -237,7 +237,7 @@ namespace wg
 			case MsgType::MouseLeave:		// Continue to MouseMove
 			case MsgType::MouseMove:
 			{
-				auto pMsg = static_cast<MouseMoveMsg*>(_pMsg);
+				auto pMsg = static_cast<InputMsg*>(_pMsg);
 
 				_pointerMoved(pMsg->pointerSpxPos() - _globalPos());
 				break;

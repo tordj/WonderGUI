@@ -188,8 +188,8 @@ namespace wg
 			return m_pArray;
 		}
 
-		SlotType*		_pushBackEmpty() { if (m_pArray + m_size == m_pBuffer + m_capacity) _reallocArray(((m_capacity + 1) * 2), 0); _initBlock(_end()); return &m_pArray[m_size++]; }
-		SlotType*		_pushBackEmpty(int entries) { if (m_pArray + m_size + entries > m_pBuffer + m_capacity) _reallocArray(m_size + entries, 0); _initBlock(_end(), _end() + entries); int ofs = m_size; m_size += entries; return &m_pArray[ofs]; }
+		SlotType*		_pushBackEmpty() { if (m_pBuffer == nullptr || (m_pArray + m_size == m_pBuffer + m_capacity)) _reallocArray(((m_capacity + 1) * 2), 0); _initBlock(_end()); return &m_pArray[m_size++]; }
+		SlotType*		_pushBackEmpty(int entries) { if (m_pBuffer == nullptr || (m_pArray + m_size + entries > m_pBuffer + m_capacity)) _reallocArray(m_size + entries, 0); _initBlock(_end(), _end() + entries); int ofs = m_size; m_size += entries; return &m_pArray[ofs]; }
 
 		SlotType*		_insertEmpty(int index) { return _insertBlock(&m_pArray[index], 1); }
 		SlotType*		_insertEmpty(int index, int entries) { return _insertBlock(&m_pArray[index], entries); }
