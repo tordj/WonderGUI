@@ -206,7 +206,7 @@ When we have done this we are done. Each box either nicely contains one of the w
 
 ![2-pane-packpanels](/docs/manual/2-pane-packpanels.png)
 
-Once we have divided the design into boxes like this, we can implement it with PackPanels. Each box will be implemented as a slot in a PackPanel. Since we shouldn't have any empty slots, we use a special dummy Widget for the empty areas called Filler.
+Once we have divided the design into boxes like this, we can implement it with PackPanels. Each box will be implemented as a slot in a PackPanel. Since PackPanels can't have any empty slots, we use a special dummy Widget for the empty areas called Filler.
 
 However, there is one more thing we need to understand before we can implement it: How the space of a PackPanel is divided between the boxes it contains. 
 
@@ -240,15 +240,20 @@ In cases where the default, minimum or maximum width of the widget is larger or 
 We start with creating the layout and three panels we need, two vertical and one horizontal.
 
 ```c++
+
 PackLayout_p pLayout = PackLayout::create( {.expandFactor = PackLayout::Factor::Weight, 
                                             .shrinkFactor = PackLayout::Factor::Weight });
 
 PackPanel_p pWindowPanel = PackPanel::create( { .axis = Axis::Y, .layout = pLayout } );
-PackPanel_p pMainSection = PackPanel::create( { .axis = Axis::X, .layout = pLayout });
+PackPanel_p pMainSection = PackPanel::create( { .axis = Axis::X, .layout = pLayout, .skin = ColorSkin::create( { .color = Color::Transparent, .padding = 5 } ), .spacing = 5 });
 PackPanel_p pButtonColumn = PackPanel::create( { .axis = Axis::Y, .layout = pLayout });
 ```
 
-They all use the same PackLayout since a basic use of weights fullfills all our requirements. The only difference is that the one for the main seciont is horizontal while the others are vertical.
+They all use the same PackLayout since a basic use of weights fulfills all our requirements. The only difference is that the one for the main section is horizontal while the others are vertical.
+
+The main section is somewhat different since we want to create some spacing around our panes. We do  that by first adding an invisible skin with a 5 point padding, which pushes the content of the PackPanel 5 points in from each side. This creates top, bottom, left and right spacing for its content. We also need to add some spacing between the panes and the buttons, this is done by setting the spacing attribute of the PackPanel.
+
+
 
 ### Building the button column
 
@@ -274,9 +279,9 @@ We could have skipped setting the weight of the Filler-slots since weight defaul
 The main section is what contains the left pane, the button column and the right pane. That is three slots where the left and right ones should have a padding of 5 pixels. The middle slot should have the size needed for the buttons while the left and right ones should share the rest of the space. Setting this up is easy:
 
 ```c++
-pMainSection->slots.pushBack({ {pPane1, { .padding = 5, .weight = 1.f} },
+pMainSection->slots.pushBack({ {pPane1, { .weight = 1.f} },
                                {pButtonColumn, { .weight = 0.f } },
-                               {pPane2, { .padding = 5, .weight = 1.f} }
+                               {pPane2, { .weight = 1.f} }
                             });
 ```
 
@@ -303,7 +308,7 @@ PackLayout_p pLayout = PackLayout::create( {.expandFactor = PackLayout::Factor::
                                             .shrinkFactor = PackLayout::Factor::Weight });
 
 PackPanel_p pWindowPanel = PackPanel::create( { .axis = Axis::Y, .layout = pLayout } );
-PackPanel_p pMainSection = PackPanel::create( { .axis = Axis::X, .layout = pLayout });
+PackPanel_p pMainSection = PackPanel::create( { .axis = Axis::X, .layout = pLayout, .skin = ColorSkin::create( { .color = Color::Transparent, .padding = 5 }), .spacing = 5 });
 PackPanel_p pButtonColumn = PackPanel::create( { .axis = Axis::Y, .layout = pLayout });
 
 pButtonColumn->slots.pushBack({ {Filler::create(), {} },
@@ -313,9 +318,9 @@ pButtonColumn->slots.pushBack({ {Filler::create(), {} },
 								{Filler::create(), {} }
 							  });
 
-pMainSection->slots.pushBack({ {pPane1, { .padding = 5 } },
+pMainSection->slots.pushBack({ {pPane1, {} },
                                {pButtonColumn, { .weight = 0.f } },
-                               {pPane2, { .padding = 5 } }
+                               {pPane2, {} }
                              });
 
 pWindowPanel->slots.pushBack({ {pMyMenubar, { .weight = 0.f}},

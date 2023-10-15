@@ -700,8 +700,8 @@ int main(int argc, char** argv)
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
 		//	graphDisplayTest(pSlot);
-		//	nortonCommanderTest(pSlot);
-			skinMarginTest(pSlot);
+			nortonCommanderTest(pSlot);
+		//	skinMarginTest(pSlot);
 
 
 		//------------------------------------------------------
@@ -2823,9 +2823,8 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pMyMenubar = Filler::create( { .defaultSize = { 20, 20}, .skin = ColorSkin::create( {.color = Color8::Grey }) });
 	
 
-
 	// The FlexPanel way.
-
+/*
 	auto pFlexPanel = FlexPanel::create();
  
 	pFlexPanel->slots.pushBack({
@@ -2853,36 +2852,36 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 	});
 
 	*pEntry = pFlexPanel;
+*/
 
-/*
+
 	// The PackPanel way.
 	
-	PackLayout_p pLayout = PackLayout::create( {.expandFactor = PackLayout::Factor::Weight,
+	PackLayout_p pLayout = PackLayout::create({ .expandFactor = PackLayout::Factor::Weight,
 												.shrinkFactor = PackLayout::Factor::Weight });
 
-	PackPanel_p pWindowPanel = PackPanel::create( { .axis = Axis::Y, .layout = pLayout } );
-	PackPanel_p pMainSection = PackPanel::create( { .axis = Axis::X, .layout = pLayout });
-	PackPanel_p pButtonColumn = PackPanel::create( { .axis = Axis::Y, .layout = pLayout });
+	PackPanel_p pWindowPanel = PackPanel::create({ .axis = Axis::Y, .layout = pLayout });
+	PackPanel_p pMainSection = PackPanel::create({ .axis = Axis::X, .layout = pLayout, .skin = ColorSkin::create({.color = Color::Transparent, .padding = 5 }), .spacing = 5 });
+	PackPanel_p pButtonColumn = PackPanel::create({ .axis = Axis::Y, .layout = pLayout });
 
 	pButtonColumn->slots.pushBack({ {Filler::create(), {} },
-								  {pCopyButton, { .weight = 0.f }},
-								  {pMoveButton, { .weight = 0.f }},
-								  {pDeleteButton, { .weight = 0.f }},
-								  {Filler::create(), {} }
-							  });
+									{pCopyButton, {.weight = 0.f }},
+									{pMoveButton, {.weight = 0.f }},
+									{pDeleteButton, {.weight = 0.f }},
+									{Filler::create(), {} }
+		});
 
 	pMainSection->slots.pushBack({ {pPane1, {} },
-								   {pButtonColumn, { .weight = 0.f } },
+								   {pButtonColumn, {.weight = 0.f } },
 								   {pPane2, {} }
-								 });
+		});
 
-	pWindowPanel->slots.pushBack({ {pMyMenubar, { .weight = 0.f}},
-								  {pMainSection, {} }
-								 });
-	
+	pWindowPanel->slots.pushBack({ {pMyMenubar, {.weight = 0.f}},
+								   {pMainSection, {} }
+		});
+
 	*pEntry = pWindowPanel;
-	
-*/
+
 	return true;
 }
 

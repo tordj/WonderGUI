@@ -1,0 +1,4 @@
+baseURL = 'http://wondergui.com/docs/manual/'
+languageCode = 'en-us'
+title = 'WonderGUI Manual'
+theme = 'hugo-book'
