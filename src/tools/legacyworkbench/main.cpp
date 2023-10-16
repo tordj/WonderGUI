@@ -352,7 +352,7 @@ int main ( int argc, char** argv )
 
 	// Setup debug overlays
 	auto pOverlaySkin = wg::BoxSkin::create( { .color = WgColor(255,0,0,128), .outline = 1, .outlineColor = WgColor::Red,
-		.states = { {wg::StateEnum::Normal, {.color = WgColor::Transparent } }
+		.states = { {wg::StateEnum::Default, {.color = WgColor::Transparent } }
 		}
 	});
 	pRoot->SetUpdatedRectOverlay( pOverlaySkin,0);
@@ -1068,7 +1068,7 @@ bool pianoKeyboardTest(WgRootPanel * pRoot)
 
 		pSimplePiano->SetSkin(pSkin);
 		pSimplePiano->setLayout(7, std::bitset<7>("1101110"));
-		pSimplePiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed });
+		pSimplePiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { wg::StateEnum::Default, wg::StateEnum::Hovered, wg::StateEnum::Pressed });
 
 		pBaseLayer->AddChild(pSimplePiano, { 20,20 });
 	}
@@ -1081,7 +1081,7 @@ bool pianoKeyboardTest(WgRootPanel * pRoot)
 		auto pNisPiano = new WgPianoKeyboard();
 		pNisPiano->SetSkin(pSkin);
 		pNisPiano->setLayout(26, std::bitset<7>("1110110"));
-		pNisPiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { wg::StateEnum::Normal, wg::StateEnum::Pressed });
+		pNisPiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { wg::StateEnum::Default, wg::StateEnum::Pressed });
 
 		pNisPiano->setGeoTweak(3, {16,0,0,0});
 		pNisPiano->setGeoTweak(5, {16,0,0,0});
@@ -1316,7 +1316,7 @@ bool fullStateSupportTest(WgRootPanel* pRoot)
 	auto pTextSkin = wg::ColorSkin::create( {
 	   .padding = {10,10,10,30},
 	   .states = {
-		   {WgStateEnum::Normal, { .color = wg::HiColor(0,4096,0) }},
+		   {WgStateEnum::Default, { .color = wg::HiColor(0,4096,0) }},
 		   {WgStateEnum::Hovered, { .color = wg::HiColor(4096,4096,0) }},
 		   {WgStateEnum::Focused, { .color = wg::HiColor(4096,0,0) }},
 		   {WgStateEnum::HoveredFocused, { .color = wg::HiColor(4096,0,0) }}
@@ -1430,7 +1430,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 		.axis = wg::Axis::X,
 		.firstBlock = wg::Rect(0,0,pPlateImg->pointSize().w/3,pPlateImg->pointSize().h),
 		.frame = 3,
-		.states = { wg::StateEnum::Normal, {},
+		.states = { wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {}
 				

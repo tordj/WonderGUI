@@ -55,8 +55,8 @@ namespace wg
 			Placement			childPlacement 		= Placement::NorthWest;
 			SizeConstraint		childConstraintX 	= SizeConstraint::None;
 			SizeConstraint		childConstraintY 	= SizeConstraint::None;
+			bool				disabled 			= false;
 			bool				dropTarget 			= false;
-			bool				enabled 			= true;
 			Finalizer_p			finalizer 			= nullptr;
 			int					id 					= 0;
 			MarkPolicy			markPolicy 			= MarkPolicy::AlphaTest;

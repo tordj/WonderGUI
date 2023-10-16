@@ -364,7 +364,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.axis = Axis::X,
 		_.frame = 4,
 		_.padding = { 4,10,4,10 },
-		_.states = { State::Normal, State::Hovered, State::Pressed, State::Disabled }
+		_.states = { State::Default, State::Hovered, State::Pressed, State::Disabled }
 	));
 
 	m_pTightButtonSkin = BlockSkin::create(WGBP(BlockSkin,
@@ -372,7 +372,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.axis = Axis::X,
 		_.frame = 4,
 		_.padding = { 4,4,4,4 },
-		_.states = { State::Normal, State::Hovered, State::Pressed, State::Disabled }
+		_.states = { State::Default, State::Hovered, State::Pressed, State::Disabled }
 	));
 
 
@@ -381,7 +381,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.axis = Axis::X,
 		_.frame = 4,
 		_.padding = 4,
-		_.states = { State::Normal, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }
+		_.states = { State::Default, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }
 	));
 
 	m_pCheckBoxSkin = BlockSkin::create(WGBP(BlockSkin,
@@ -389,7 +389,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.axis = Axis::Y,
 		_.frame = 3,
 //		_.defaultSize = { 12,12 },
-		_.states = { State::Normal, State::Selected }
+		_.states = { State::Default, State::Selected }
 	));
 
 	m_pSectionSkin = BoxSkin::create(WGBP(BoxSkin,

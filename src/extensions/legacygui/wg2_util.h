@@ -56,7 +56,7 @@ namespace WgUtil
 
 	inline WgStateEnum _indexToState(int index)
 	{
-		static WgStateEnum	s_indexToStateTable[WG_NB_STATES] = { WgStateEnum::Normal, WgStateEnum::Focused, WgStateEnum::Hovered, WgStateEnum::HoveredFocused, WgStateEnum::Pressed,
+		static WgStateEnum	s_indexToStateTable[WG_NB_STATES] = { WgStateEnum::Default, WgStateEnum::Focused, WgStateEnum::Hovered, WgStateEnum::HoveredFocused, WgStateEnum::Pressed,
 			WgStateEnum::PressedFocused, WgStateEnum::Selected, WgStateEnum::SelectedFocused, WgStateEnum::SelectedHovered, WgStateEnum::SelectedHoveredFocused,
 			WgStateEnum::SelectedPressed, WgStateEnum::SelectedPressedFocused, WgStateEnum::Targeted,
 			WgStateEnum::TargetedFocused, WgStateEnum::TargetedSelected, WgStateEnum::TargetedSelectedFocused,

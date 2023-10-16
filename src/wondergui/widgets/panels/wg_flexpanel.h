@@ -205,8 +205,8 @@ namespace wg
 		{
 			Object_p		baggage;
 			bool			confineWidgets	= false;
+			bool			disabled		= false;
 			bool			dropTarget		= false;
-			bool			enabled			= true;
 			Finalizer_p		finalizer		= nullptr;
 			int				id				= 0;
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;

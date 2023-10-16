@@ -337,7 +337,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.axis = Axis::X,
 		_.frame = 4,
 		_.padding = { 4,6,4,6 },
-		_.states = { State::Normal, State::Hovered, State::Pressed, State::Disabled }
+		_.states = { State::Default, State::Hovered, State::Pressed, State::Disabled }
 	));
 
 	m_pToggleButtonSkin = BlockSkin::create(WGBP(BlockSkin,
@@ -345,7 +345,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.axis = Axis::X,
 		_.frame = 4,
 		_.padding = 4,
-		_.states = { State::Normal, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }
+		_.states = { State::Default, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }
 	));
 
 	m_pCheckBoxSkin = BlockSkin::create(WGBP(BlockSkin,
@@ -353,7 +353,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.axis = Axis::Y,
 		_.frame = 3,
 //		_.defaultSize = { 12,12 },
-		_.states = { State::Normal, State::Selected }
+		_.states = { State::Default, State::Selected }
 	));
 
 	m_pSectionSkin = BoxSkin::create(WGBP(BoxSkin,
@@ -411,12 +411,12 @@ Widget_p	MyApp::_buildButtonRow()
 	auto pLoadButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
 		_.label.text = "Load",
-		_.enabled = false ));
+		_.disabled = true ));
 
 	auto pSaveButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
 		_.label.text = "Save",
-		_.enabled = false ));
+		_.disabled = true ));
 
 
 	Base::msgRouter()->addRoute( pClearButton, MsgType::Select, [this](Msg*) {this->clear(); });
@@ -579,7 +579,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 
 	for (auto& p : pColumn->slots)
 		if (p->id() == int(TintMode::None) )
-			p->setEnabled(false);
+			p->setDisabled(true);
 
 	pTopSection->slots << pColumn;
 
@@ -590,7 +590,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 
 	for (auto& p : pColumn->slots)
 		if (p->id() == int(BlendMode::Replace) || p->id() == int(BlendMode::Blend))
-			p->setEnabled(false);
+			p->setDisabled(true);
 
 	pTopSection->slots << pColumn;
 

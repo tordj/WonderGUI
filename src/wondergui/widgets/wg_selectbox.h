@@ -77,7 +77,7 @@ namespace wg
 		spx			m_height;
 		String 		m_string;
 		SelectBox * m_pParent = nullptr;
-		State		m_state = State::Normal;
+		State		m_state = State::Default;
 	};
 		
 
@@ -98,8 +98,8 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+			bool			disabled = false;
 			bool			dropTarget = false;
-			bool			enabled = true;
 			Skin_p			entrySkin;
 			TextStyle_p		entryTextStyle;
 			TextLayout_p	entryTextLayout;

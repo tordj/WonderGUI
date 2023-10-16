@@ -47,9 +47,9 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+			bool			disabled = false;
 			bool			dropTarget = false;
 			EditableText::Blueprint	editor;
-			bool			enabled = true;
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;

@@ -125,8 +125,8 @@ namespace wg
 			Object_p		baggage;
 			int				closingDelay = 200;
 			int				closingFade = 200;
+			bool			disabled = false;
 			bool			dropTarget = false;
-			bool			enabled = true;
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;

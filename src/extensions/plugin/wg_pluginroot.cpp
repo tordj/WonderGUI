@@ -271,8 +271,8 @@ namespace wg
 
 		if (!slot.isEmpty())
 		{
-			if (oldState.isEnabled() != state.isEnabled())
-				slot._widget()->setEnabled(state.isEnabled());
+			if (oldState.isDisabled() != state.isDisabled())
+				slot._widget()->setDisabled(state.isDisabled());
 
 			if (oldState.isSelected() != state.isSelected())
 			{

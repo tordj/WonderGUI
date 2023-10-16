@@ -170,8 +170,8 @@ int WgMultiSlider::AddSlider(	int id, WgDirection dir, SetGeoFunc pSetGeoFunc, f
 	s.pSetGeoFunc = pSetGeoFunc;
 
 	s.handleHotspot = handleHotspot;
-	s.sliderState = WgStateEnum::Normal;
-	s.handleState = WgStateEnum::Normal;
+	s.sliderState = WgStateEnum::Default;
+	s.handleState = WgStateEnum::Default;
 
 	_updateHandlePos(s);
 	_updateGeo(s);
@@ -220,8 +220,8 @@ int WgMultiSlider::AddSlider2D( int id, WgOrigo origo, SetGeoFunc pSetGeoFunc, f
 	s.pSetGeoFunc = pSetGeoFunc;
 
 	s.handleHotspot = handleHotspot;
-	s.sliderState = WgStateEnum::Normal;
-	s.handleState = WgStateEnum::Normal;
+	s.sliderState = WgStateEnum::Default;
+	s.handleState = WgStateEnum::Default;
 
 	_updateHandlePos(s);
 	_updateGeo(s);
@@ -449,9 +449,9 @@ WgMultiSlider::Slider * WgMultiSlider::_markedSliderHandle(WgCoord ofs, WgCoord 
 			WgRect sliderGeo = _sliderGeo(slider, PixelSize());
 			WgRect handleGeo = _sliderHandleGeo(slider, sliderGeo);
 
-			// We are using WgStateEnum::Normal on purpose here, so that hover hightlights are not included. Not perfect, but the lesser of two evils...
+			// We are using WgStateEnum::Default on purpose here, so that hover hightlights are not included. Not perfect, but the lesser of two evils...
 
-			if (handleGeo.contains(ofs) && _markTestSkin( pHandleSkin, ofs - handleGeo.pos(), handleGeo.size(), WgStateEnum::Normal, m_markOpacity, m_scale))
+			if (handleGeo.contains(ofs) && _markTestSkin( pHandleSkin, ofs - handleGeo.pos(), handleGeo.size(), WgStateEnum::Default, m_markOpacity, m_scale))
 			{
 				fullyMarkedOfs = ofs - handleGeo.pos();
 				pFullyMarked = &slider;
@@ -642,7 +642,7 @@ bool WgMultiSlider::GetSliderEnabled(int iSliderID)
     {
         if (slider.id == iSliderID)
         {
-            return slider.sliderState.isEnabled();
+            return !slider.sliderState.isDisabled();
         }
     }
     return false;
@@ -657,7 +657,7 @@ void WgMultiSlider::SetSliderState(int iSliderID, bool bEnabled)
             if(!bEnabled)
                 _setSliderStates(slider, WgStateEnum::Disabled, WgStateEnum::Disabled);
             else
-                _setSliderStates(slider, WgStateEnum::Normal, WgStateEnum::Normal);
+                _setSliderStates(slider, WgStateEnum::Default, WgStateEnum::Default);
             break;
         }
     }
@@ -668,11 +668,11 @@ void WgMultiSlider::SetSliderState(int iSliderID, bool bEnabled)
 void WgMultiSlider::_updateSliderStates()
 {
 
-	if (!m_state.isEnabled())
+	if (m_state.isDisabled())
 	{
 		for (auto& slider : m_sliders)
 		{
-			if (slider.sliderState.isEnabled())
+			if (!slider.sliderState.isDisabled())
 				_setSliderStates(slider, WgStateEnum::Disabled, WgStateEnum::Disabled);
 		}
 		return;
@@ -945,7 +945,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 		{
-			if (!m_state.isEnabled())
+			if (m_state.isDisabled())
 				break;
 
 			const WgEvent::MouseButtonPress * pEv = static_cast<const WgEvent::MouseButtonPress*>(pEvent);
@@ -1103,7 +1103,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 			}
 
 			
-			if (m_state.isEnabled() && p->Button() == 1)
+			if (!m_state.isDisabled() && p->Button() == 1)
 			{
 				m_state.setPressed(false);
 
@@ -1138,7 +1138,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 				break;
 			}
 			
-            if( pEv->Button() != 1 || !m_state.isEnabled() || (m_overrideModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_overrideModifier) ) )
+            if( pEv->Button() != 1 || m_state.isDisabled() || (m_overrideModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_overrideModifier) ) )
                 break;
 
 			// If a modKey that we don't support is pressed, we ignore all modkeys.

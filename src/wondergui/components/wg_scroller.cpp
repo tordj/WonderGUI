@@ -427,16 +427,16 @@ namespace wg
 		// We just copy Enabled/Focused/Selected to all our skins.
 		// We ignore Targeted since that won't work without hover anyway.
 
-		bool bEnabled = state.isEnabled();
+		bool bDisabled = !state.isDisabled();
 		bool bFocused = state.isFocused();
 		bool bSelected = state.isSelected();
 
-		if (bEnabled != m_states[Part::Back].isEnabled() || bFocused != m_states[Part::Back].isFocused() ||
+		if (bDisabled != m_states[Part::Back].isDisabled() || bFocused != m_states[Part::Back].isFocused() ||
 			bSelected != m_states[Part::Back].isSelected() )
 		{
 			for (int i = 0; i < Part_size; i++)
 			{
-				m_states[i].setEnabled(bEnabled);
+				m_states[i].setDisabled(bDisabled);
 				m_states[i].setFocused(bFocused);
 				m_states[i].setSelected(bSelected);
 			}

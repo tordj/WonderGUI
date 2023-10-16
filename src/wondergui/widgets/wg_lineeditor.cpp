@@ -75,7 +75,7 @@ namespace wg
 
 		if (pFont)
 		{
-			pFont->setSize( pStyle->size( State::Normal ) * m_scale );
+			pFont->setSize( pStyle->size( State::Default ) * m_scale );
 			contentSize.w = pFont->whitespaceAdvance() * 20;
 			contentSize.h = pFont->maxAscend() + pFont->maxDescend();
 		}

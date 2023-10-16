@@ -179,7 +179,7 @@ void WgLineEditor::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 {
 	WgWidget::_onRender(pDevice, _canvas, _window);
 
-	WgRect textCanvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, WgStateEnum::Normal, m_scale) : _canvas;
+	WgRect textCanvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, WgStateEnum::Default, m_scale) : _canvas;
 
 	WgText * pText = &m_text;
 	if( m_bPasswordMode )
@@ -258,7 +258,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 			int y = 0;
 
 			if (m_pSkin)
-				x -= _skinContentOfs( m_pSkin, WgStateEnum::Normal, m_scale).x;
+				x -= _skinContentOfs( m_pSkin, WgStateEnum::Default, m_scale).x;
 
 			if( m_bPasswordMode )
 			{
@@ -574,12 +574,12 @@ void WgLineEditor::_onEnable()
     if( m_bFullStateSupport )
     {
         WgState state = m_state;
-        state.setEnabled(true);
+        state.setDisabled(false);
         _setState(state);
     }
     else
     {
-        m_text.setState(wg::StateEnum::Normal);
+        m_text.setState(wg::StateEnum::Default);
         _requestRender();
     }
 }
@@ -591,7 +591,7 @@ void WgLineEditor::_onDisable()
     if( m_bFullStateSupport )
     {
         WgState state = m_state;
-        state.setEnabled(false);
+        state.setDisabled(true);
         _setState(state);
     }
     else

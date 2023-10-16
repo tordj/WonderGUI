@@ -81,7 +81,7 @@ void WgWidget::SetEnabled( bool bEnabled )
 	if( m_bEnabled != bEnabled || IsContainer() )
 	{
 		m_bEnabled = bEnabled;
-		m_state.setEnabled(bEnabled);
+		m_state.setDisabled(!bEnabled);
 		if( bEnabled )
 			_onEnable();
 		else
@@ -739,7 +739,7 @@ void WgWidget::_setState( WgState state )
 bool WgWidget::_onAlphaTest( const WgCoord& ofs )
 {
 	if (m_pSkin)
-		return _markTestSkin( m_pSkin, ofs, PixelSize(), WgStateEnum::Normal, m_markOpacity, m_scale);
+		return _markTestSkin( m_pSkin, ofs, PixelSize(), WgStateEnum::Default, m_markOpacity, m_scale);
 	else
 		return false;
 }
@@ -749,7 +749,7 @@ void WgWidget::_onEnable()
     if( m_bFullStateSupport )
     {
         WgState state = m_state;
-        state.setEnabled(true);
+        state.setDisabled(false);
         _setState(state);
     }
 	_requestRender();
@@ -760,7 +760,7 @@ void WgWidget::_onDisable()
     if( m_bFullStateSupport )
     {
         WgState state = m_state;
-        state.setEnabled(false);
+        state.setDisabled(true);
         _setState(state);
     }
 	_requestRender();

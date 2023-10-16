@@ -112,7 +112,7 @@ private:
 	float       m_outerZoom = 1.f;
 	WgColor     m_tint = WgColor::White;
 
-	WgState     m_buttonState = WgStateEnum::Normal;
+	WgState     m_buttonState = WgStateEnum::Default;
 	bool        m_bButtonPressed = false;
 
 	bool        m_bOutlineMode = false;

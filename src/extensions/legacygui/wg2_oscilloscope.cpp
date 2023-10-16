@@ -421,7 +421,7 @@ void WgOscilloscope::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 {
 	// Render background
 	if( m_pBG )
-		_renderSkin( m_pBG, pDevice, WgStateEnum::Normal, _canvas, m_scale );
+		_renderSkin( m_pBG, pDevice, WgStateEnum::Default, _canvas, m_scale );
 
 	float centerX = _canvas.x + _canvas.w/2.f;
 	float centerY = _canvas.y + _canvas.h/2.f;
@@ -475,7 +475,7 @@ void WgOscilloscope::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 		dest.x = x - dest.w / 2;
 		dest.y = y - dest.h / 2;
 
-		_renderSkin(m_pMarkerSkin, pDevice, wg::StateEnum::Normal, dest, m_scale);
+		_renderSkin(m_pMarkerSkin, pDevice, wg::StateEnum::Default, dest, m_scale);
 	}
 
 }

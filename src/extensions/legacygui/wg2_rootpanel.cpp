@@ -529,7 +529,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 		{
 			for( const WgRect * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
 			{
-				m_pUpdatedRectOverlay->_render( m_pGfxDevice, (*pRect)*64, m_scale >> 6, WgStateEnum::Normal );
+				m_pUpdatedRectOverlay->_render( m_pGfxDevice, (*pRect)*64, m_scale >> 6, WgStateEnum::Default );
 			}
 		}
         

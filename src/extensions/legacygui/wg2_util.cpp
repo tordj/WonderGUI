@@ -274,7 +274,7 @@ WgMode WgUtil::StateToMode(WgState state)
 {
 	WgMode mode = WG_MODE_NORMAL;
 
-	if (!state.isEnabled())
+	if (state.isDisabled())
 		mode = WG_MODE_DISABLED;
 	else if (state.isHovered() && state.isSelected())
 		mode = WG_MODE_SPECIAL;
@@ -290,12 +290,12 @@ WgMode WgUtil::StateToMode(WgState state)
 
 WgState WgUtil::ModeToState(WgMode mode)
 {
-	WgState state = WgStateEnum::Normal;
+	WgState state = WgStateEnum::Default;
 
 	switch( mode )
 	{
 		case WG_MODE_NORMAL:
-			state = WgStateEnum::Normal;
+			state = WgStateEnum::Default;
 			break;
 		case WG_MODE_MARKED:
 			state = WgStateEnum::Hovered;

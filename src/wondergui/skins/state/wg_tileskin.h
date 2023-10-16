@@ -64,7 +64,7 @@ namespace wg
 			StateBP( State state, Coord contentShift ) : state(state)	{ data.contentShift = contentShift; }
 			StateBP( State state, Surface_p surface ) : state(state)	{ data.surface = surface; }
 
-			State			state = State::Normal;
+			State			state = State::Default;
 			StateData		data;
 		};
 

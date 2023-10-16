@@ -249,7 +249,7 @@ namespace sdl_wglib
 			.padding = 4,
 			.spacing = 2,
 			.states = {
-				wg::StateEnum::Normal, {},
+				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {}
@@ -282,7 +282,7 @@ namespace sdl_wglib
 			.padding = 3,
 			.spacing = 2,
 			.states = {
-				wg::StateEnum::Normal, {},
+				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {}
@@ -299,7 +299,7 @@ namespace sdl_wglib
 			.padding = 3,
 			.spacing = 2,
 			.states = {
-				wg::StateEnum::Normal, {},
+				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {}
@@ -314,7 +314,7 @@ namespace sdl_wglib
 			.padding = 3,
 			.spacing = 2,
 			.states = {
-				wg::StateEnum::Normal, {},
+				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {},
@@ -388,7 +388,7 @@ namespace sdl_wglib
 			.padding = 4,
 			.spacing = 2,
 			.states = {
-				wg::StateEnum::Normal, {},
+				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {}
@@ -410,7 +410,7 @@ namespace sdl_wglib
 			.padding = {2,2,21,2},
 			.spacing = 2,
 			.states = {
-				wg::StateEnum::Normal, {},
+				wg::StateEnum::Default, {},
 				wg::StateEnum::Hovered, {},
 				wg::StateEnum::Pressed, {},
 				wg::StateEnum::Disabled, {}

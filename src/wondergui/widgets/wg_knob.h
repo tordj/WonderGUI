@@ -51,10 +51,10 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+			bool			disabled	= false;
 			Axis			dragAxis = Axis::Y;
 			pts				dragRange = 200;
 			bool			dropTarget	= false;
-			bool			enabled		= true;
 			Finalizer_p		finalizer	= nullptr;
 			int				id			= 0;
 			MarkPolicy		markPolicy	= MarkPolicy::AlphaTest;

@@ -41,7 +41,7 @@ namespace wg
 
 		//.____ State __________________________________________________________
 
-		inline bool	setEnabled(bool bEnabled) { if (bEnabled) m_state &= ~Disabled.m_state; else m_state = (m_state & Selected.m_state) | Disabled.m_state; return true; }
+		inline bool	setDisabled(bool bDisabled) { if (!bDisabled) m_state &= ~Disabled.m_state; else m_state = (m_state & Selected.m_state) | Disabled.m_state; return true; }
 		inline bool	setSelected(bool bSelected) { if (bSelected) m_state |= Selected.m_state; else m_state &= ~Selected.m_state; return true; }
 		inline bool	setFocused(bool bFocused) { if (m_state & Disabled.m_state) return false; if (bFocused) m_state |= Focused.m_state; else m_state &= ~Focused.m_state; return true; }
 		inline bool	setHovered(bool bHovered) { if (m_state & Disabled.m_state) return false; if (bHovered) m_state |= Hovered.m_state; else m_state &= ~(Pressed.m_state | Targeted.m_state); return true; }
@@ -49,7 +49,7 @@ namespace wg
 		inline bool	setTargeted(bool bTargeted) { if (m_state & Disabled.m_state) return false; if (bTargeted) m_state |= Targeted.m_state; else m_state &= ~Targeted.m_state; return true; }
 
 
-		inline bool	isEnabled() const { return (m_state & Disabled.m_state) == 0; }
+		inline bool	isDisabled() const { return (m_state & Disabled.m_state) == Disabled.m_state; }
 		inline bool	isSelected() const { return (m_state & Selected.m_state) == Selected.m_state; }
 		inline bool	isFocused() const { return (m_state & Focused.m_state) == Focused.m_state; }
 		inline bool	isHovered() const { return (m_state & Hovered.m_state) == Hovered.m_state; }
@@ -123,7 +123,7 @@ namespace wg
 
 		//.____ Definitions _________________________________________
 
-		const static State Normal;						///< Element is neither hovered, pressed, selected or focused.
+		const static State Default;						///< Element is neither hovered, pressed, selected or focused.
 		const static State Focused;						///< Element has keyboard focus
 		const static State Hovered;						///< Mouse pointer is hovering over element.
 		const static State HoveredFocused;

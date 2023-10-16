@@ -52,8 +52,8 @@ namespace wg
 		{
 			Axis			axis = Axis::X;
 			Object_p		baggage;
+			bool			disabled = false;
 			bool			dropTarget = false;
-			bool			enabled = true;
 			Finalizer_p		finalizer = nullptr;
 			Skin_p			handle;
 			int				id = 0;

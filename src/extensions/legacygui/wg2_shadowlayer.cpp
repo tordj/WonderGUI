@@ -217,7 +217,7 @@ bool WgShadowLayer::AddShadow(WgWidget * pWidget, wg::Skin * pShadow)
 	WgCoord pos;
 	_descendantPos(pWidget, pos);
 
-	WgRect geo = { pos - _skinContentOfs( pShadow, WgStateEnum::Normal, scale), _skinSizeForContent( pShadow, pWidget->PixelSize(), scale) };
+	WgRect geo = { pos - _skinContentOfs( pShadow, WgStateEnum::Default, scale), _skinSizeForContent( pShadow, pWidget->PixelSize(), scale) };
 
 	m_shadows.push_back( WgShadow(pWidget,pShadow,geo));
 
@@ -507,7 +507,7 @@ void WgShadowLayer::_preRender()
 			int scale = pWidget->Scale();
 
 			wg::Skin * pSkin = pShadow->shadow();
-			WgRect geo = { pos - _skinContentOfs( pSkin, WgStateEnum::Normal,scale), _skinSizeForContent( pSkin, widgetSize, scale) };
+			WgRect geo = { pos - _skinContentOfs( pSkin, WgStateEnum::Default,scale), _skinSizeForContent( pSkin, widgetSize, scale) };
 
 			if (geo != oldGeo)
 			{
@@ -639,7 +639,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 				for (auto& shadow : m_shadows)
 					if( !shadow.m_geo.isEmpty() && shadow.widget() )
-						_renderSkin( shadow.shadow(), pDevice, WgStateEnum::Normal, shadow.m_geo, shadow.widget()->Scale());
+						_renderSkin( shadow.shadow(), pDevice, WgStateEnum::Default, shadow.m_geo, shadow.widget()->Scale());
 
 
 				pDevice->endCanvasUpdate();

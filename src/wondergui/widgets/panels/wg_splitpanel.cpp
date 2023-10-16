@@ -592,7 +592,7 @@ namespace wg
 	{
 		// Disable handle when panel is disabled
 
-		m_handleState.setEnabled(state.isEnabled());
+		m_handleState.setDisabled(state.isDisabled());
 		Container::_setState(state);
 	}
 

@@ -302,7 +302,7 @@ namespace wg
 
 		if (button != 0 && p )
 			newStyle = p->pointerStyle();
-		else if( pNowMarked && pNowMarked->isEnabled() )
+		else if( pNowMarked && !pNowMarked->isDisabled() )
 			newStyle = pNowMarked->pointerStyle();
 		else
 			newStyle = PointerStyle::Default;

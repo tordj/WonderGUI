@@ -265,7 +265,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.axis = Axis::X,
 		_.frame = 4,
 		_.padding = { 4,10,4,10 },
-		_.states = { State::Normal, State::Hovered, State::Pressed, State::Disabled }
+		_.states = { State::Default, State::Hovered, State::Pressed, State::Disabled }
 	));
 
 	m_pToggleButtonSkin = BlockSkin::create(WGBP(BlockSkin,
@@ -273,7 +273,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.axis = Axis::X,
 		_.frame = 4,
 		_.padding = 4,
-		_.states = { State::Normal, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }
+		_.states = { State::Default, State::Hovered, State::Selected, State::SelectedHovered, State::Disabled }
 	));
 
 	m_pCheckBoxSkin = BlockSkin::create(WGBP(BlockSkin,
@@ -281,7 +281,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 		_.axis = Axis::Y,
 		_.frame = 3,
 //		_.defaultSize = { 12,12 },
-		_.states = { State::Normal, State::Selected }
+		_.states = { State::Default, State::Selected }
 	));
 
 	m_pSectionSkin = BoxSkin::create(WGBP(BoxSkin,
@@ -320,8 +320,8 @@ bool MyApp::loadImage(int idx)
 	m_pImageDisplay->setSurface(pSurface);
 	m_pPathDisplay->display.setText(m_imagePaths[idx]);
 
-	m_pPrevButton->setEnabled( idx != 0 );
-	m_pNextButton->setEnabled( idx != m_imagePaths.size()-1 );
+	m_pPrevButton->setDisabled( idx == 0 );
+	m_pNextButton->setDisabled( idx == m_imagePaths.size()-1 );
 
 	return true;
 }

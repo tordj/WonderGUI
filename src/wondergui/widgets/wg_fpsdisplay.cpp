@@ -89,7 +89,7 @@ namespace wg
 		SizeSPX contentSize = labels._defaultSize(scale);
 
 		TextAttr attr;
-		values._style()->exportAttr( State(State::Normal), &attr, scale );
+		values._style()->exportAttr( State(State::Default), &attr, scale );
 
 		int prevSize = attr.pFont->size();
 		attr.pFont->setSize(attr.size);
@@ -185,10 +185,10 @@ namespace wg
 		values._setState(state);
 		_requestRender();							//TODO: Check if there has been changes to text appearance.
 
-		if (state.isEnabled() && !m_state.isEnabled())
+		if (!state.isDisabled() && m_state.isDisabled())
 			_startReceiveUpdates();
 
-		if (!state.isEnabled() && m_state.isEnabled())
+		if (state.isDisabled() && !m_state.isDisabled())
 			_stopReceiveUpdates();
 
 		Widget::_setState(state);

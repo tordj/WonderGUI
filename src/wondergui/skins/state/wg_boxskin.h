@@ -61,7 +61,7 @@ namespace wg
 				data.outlineColor = outlineColor;
 			}
 			
-			State			state = State::Normal;
+			State			state = State::Default;
 			StateData		data;
 		};
 

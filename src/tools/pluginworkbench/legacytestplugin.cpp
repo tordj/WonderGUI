@@ -62,9 +62,9 @@ DLLEXPORTPREFIX int init( wg_plugin_interface * pInterface, void * pRealHostBrid
 
 //	WgPluginBase::setDefaultStyle(g_pTextStyle);
 
-	auto pSkin1 = ColorSkin::create({ .padding = 1, .states = { {State::Normal, Color::Red}, {State::Hovered, Color::Pink}, {State::Pressed, Color::DarkRed} }  });
-	auto pSkin2 = ColorSkin::create({ .padding = 1, .states = { {State::Normal, Color::Green}, {State::Hovered, Color::LightGreen}, {State::Pressed, Color::DarkGreen} }  });
-	auto pSkin3 = ColorSkin::create({ .states = { {State::Normal, Color::Blue}, {State::Hovered, Color::LightBlue}, {State::Pressed, Color::DarkBlue} }  });
+	auto pSkin1 = ColorSkin::create({ .padding = 1, .states = { {State::Default, Color::Red}, {State::Hovered, Color::Pink}, {State::Pressed, Color::DarkRed} }  });
+	auto pSkin2 = ColorSkin::create({ .padding = 1, .states = { {State::Default, Color::Green}, {State::Hovered, Color::LightGreen}, {State::Pressed, Color::DarkGreen} }  });
+	auto pSkin3 = ColorSkin::create({ .states = { {State::Default, Color::Blue}, {State::Hovered, Color::LightBlue}, {State::Pressed, Color::DarkBlue} }  });
 
 	
 	auto pPacker = new WgPackPanel();

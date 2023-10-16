@@ -314,7 +314,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 		WgRect textCanvas = PixelSize();
 		if( m_pSkin )
-			textCanvas = _skinContentRect( m_pSkin, textCanvas, WgStateEnum::Normal, m_scale );
+			textCanvas = _skinContentRect( m_pSkin, textCanvas, WgStateEnum::Default, m_scale );
 
 		m_pText->CursorGotoCoord( pEvent->PointerPixelPos(), textCanvas );
 		_bringCursorInView();
@@ -576,7 +576,7 @@ void WgTextDisplay::_setState(WgState state)
 
 void WgTextDisplay::_onEnable( void )
 {
-	m_text.setState(wg::StateEnum::Normal);
+	m_text.setState(wg::StateEnum::Default);
 	_requestRender();
 }
 
@@ -595,7 +595,7 @@ void WgTextDisplay::_onNewSize( const WgSize& size )
 	WgRect	contentRect(0, 0, PixelSize());
 
 	if (m_pSkin)
-		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
+		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Default, m_scale);
 
 	m_text.setLineWidth( contentRect.w );
 }
@@ -643,7 +643,7 @@ void WgTextDisplay::_setScale( int scale )
 	WgRect    contentRect(0, 0, PixelSize());
 
 	if (m_pSkin)
-		contentRect = _skinContentRect(m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
+		contentRect = _skinContentRect(m_pSkin, contentRect, WgStateEnum::Default, m_scale);
 
 	m_text.setLineWidth( contentRect.w );
 

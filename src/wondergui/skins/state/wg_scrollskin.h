@@ -62,7 +62,7 @@ namespace wg
 			StateBP( State state, HiColor color, bool blockless = false ) : state(state) { data.color = color; data.blockless = blockless; }
 			StateBP( State state, Coord contentShift, bool blockless = false ) : state(state)	{ data.contentShift = contentShift; data.blockless = blockless; }
 			
-			State			state = State::Normal;
+			State			state = State::Default;
 			StateData		data;
 		};
 

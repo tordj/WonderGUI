@@ -32,7 +32,7 @@ namespace wg
 															  8 + 4 + 2 + 1, 16 + 4, 16 + 4 + 1, 16 + 8 + 4, 16 + 8 + 4 + 1, 32, 32 + 8 };
 
 
-	const State State::Normal					= State(0);
+	const State State::Default					= State(0);
 	const State State::Focused					= State(1);
 	const State State::Hovered					= State(2);
 	const State State::HoveredFocused			= State(3);

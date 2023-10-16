@@ -935,7 +935,7 @@ void WgPackPanel::_refreshChildGeo()
 
 	WgRect contentRect = PixelSize();
 	if (m_pSkin)
-		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
+		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Default, m_scale);
 
 	WgSize size = contentRect.size();
 

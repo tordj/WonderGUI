@@ -52,7 +52,7 @@ namespace wg
 			HiColor			color = HiColor::Undefined;
 			Coord			contentShift;
 			bool			reuseBlock = false;
-			State			reuseBlockFrom = State::Normal;
+			State			reuseBlockFrom = State::Default;
 		};
 
 		struct StateBP
@@ -60,10 +60,10 @@ namespace wg
 			StateBP() {}
 			StateBP( State state ) : state(state) {}
 			StateBP( State state, StateData data ) : state(state), data(data) {}
-			StateBP( State state, HiColor color, bool reuseBlock = false, State reuseBlockFrom = State::Normal ) : state(state) { data.color = color; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
-			StateBP( State state, Coord contentShift, bool reuseBlock = false, State reuseBlockFrom = State::Normal ) : state(state)	{ data.contentShift = contentShift; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
+			StateBP( State state, HiColor color, bool reuseBlock = false, State reuseBlockFrom = State::Default ) : state(state) { data.color = color; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
+			StateBP( State state, Coord contentShift, bool reuseBlock = false, State reuseBlockFrom = State::Default ) : state(state)	{ data.contentShift = contentShift; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
 
-			State			state = State::Normal;
+			State			state = State::Default;
 			StateData		data;
 		};
 

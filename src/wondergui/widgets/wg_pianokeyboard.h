@@ -55,8 +55,8 @@ namespace wg
 
 			Object_p		baggage;
 			Surface_p		blackKeys;
+			bool			disabled = false;
 			bool			dropTarget = false;
-			bool			enabled = true;
 			Surface_p		evenWhiteKeys;
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;

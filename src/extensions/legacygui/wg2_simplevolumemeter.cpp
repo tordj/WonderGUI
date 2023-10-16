@@ -446,7 +446,7 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 			}
 
 			if (m_pHoldSkin)
-				_renderSkin( m_pHoldSkin, pDevice, WgStateEnum::Normal, _rect, m_scale);
+				_renderSkin( m_pHoldSkin, pDevice, WgStateEnum::Default, _rect, m_scale);
 			else
 				pDevice->fill( r*64, c );
 		}
@@ -480,7 +480,7 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 			break;
 		}
 
-		_renderSkin( m_pPeakSkin, pDevice, WgStateEnum::Normal, r, m_scale);
+		_renderSkin( m_pPeakSkin, pDevice, WgStateEnum::Default, r, m_scale);
 	}
 	else
 	{
@@ -524,7 +524,7 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 	}
 
     if(m_pGradientSkin)
-        _renderSkin( m_pGradientSkin, pDevice, WgStateEnum::Normal, _rect, m_scale);
+        _renderSkin( m_pGradientSkin, pDevice, WgStateEnum::Default, _rect, m_scale);
 }
 
 //____ _updateIValues() ______________________________________________________

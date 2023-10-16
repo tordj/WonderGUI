@@ -437,7 +437,7 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 void WgZoomOutCapsule::_updateButtonState( WgSize gizmoCanvas, WgCoord pointerPos )
 {
 	WgRect r = _buttonArea(gizmoCanvas);
-	WgState buttonState = WgStateEnum::Normal;
+	WgState buttonState = WgStateEnum::Default;
 
 	if( r.contains(pointerPos) )
 	{

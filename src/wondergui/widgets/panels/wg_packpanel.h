@@ -101,7 +101,7 @@ namespace wg
 			Axis			axis = Axis::X;
 			Object_p		baggage;
 			bool			dropTarget 		= false;
-			bool			enabled 		= true;
+			bool			disabled 		= false;
 			Finalizer_p		finalizer 		= nullptr;
 			int				id 				= 0;
 			PackLayout_p	layout;

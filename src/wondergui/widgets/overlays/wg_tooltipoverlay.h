@@ -55,9 +55,9 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
-			bool			dropTarget = false;
 			int				delay = 300;
-			bool			enabled = true;
+			bool			disabled = false;
+			bool			dropTarget = false;
 			Finalizer_p		finalizer = nullptr;
 			std::function<Widget_p(Position& position, const Widget* pHovered, const Border& margin)> generator;
 			int				id = 0;

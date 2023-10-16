@@ -269,7 +269,7 @@ class GraphDisplay;
 			Skin_p			displaySkin;
 
 			bool			dropTarget = false;
-			bool			enabled = true;
+			bool			disabled = false;
 			Finalizer_p		finalizer = nullptr;
 
 			HiColor			gridColor = Color::DarkGray;

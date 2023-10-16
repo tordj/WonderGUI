@@ -63,7 +63,7 @@ namespace wg
 
 	TileSkin::TileSkin(const Blueprint& bp) : StateSkin(bp)
 	{
-		int index = State::Normal;
+		int index = State::Default;
 
 		m_blendMode		= bp.blendMode;
 		m_gradient		= bp.gradient;

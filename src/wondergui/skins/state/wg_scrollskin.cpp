@@ -70,7 +70,7 @@ namespace wg
 			int nStateBlocks = 1;
 			for ( auto& entry : bp.states)
 			{
-				if (entry.state != State::Normal && entry.data.blockless == false)
+				if (entry.state != State::Default && entry.data.blockless == false)
 					nStateBlocks++;
 			}
 
@@ -113,7 +113,7 @@ namespace wg
 					m_bContentShifting = true;
 				}
 
-				if ( !stateInfo.data.blockless && stateInfo.state != State::Normal )
+				if ( !stateInfo.data.blockless && stateInfo.state != State::Default )
 				{
 					ofs++;
 					m_stateBlockMask.setBit(index);

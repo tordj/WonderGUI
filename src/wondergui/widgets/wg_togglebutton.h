@@ -76,8 +76,8 @@ namespace wg
 		{
 			Object_p		baggage;
 			ClickArea		clickArea = ClickArea::Default;
+			bool			disabled = false;
 			bool			dropTarget = false;
-			bool			enabled = true;
 			Finalizer_p		finalizer = nullptr;
 			bool			flipOnRelease = false;
 			Icon::Blueprint	icon;

@@ -144,10 +144,11 @@ int main ( int argc, char** argv )
 	pPrinter->setGfxDevice(pGfxDevice);
 	pPrinter->setCursorOrigo({0,20*64});
 	
-	
+/*
 	pSDLSurf = SDL_LoadBMP( "resources/definitely_srgb.bmp" );
 	SoftSurface_p pSRGBSurface = SoftSurface::create({ .format = PixelFormat::BGRA_8_sRGB, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, PixelFormat::BGRA_8_sRGB, pSDLSurf->pitch, 0);
 	SDL_FreeSurface(pSDLSurf);
+*/
 
 	//
 /*
@@ -181,6 +182,14 @@ int main ( int argc, char** argv )
 	}
  */
 	
+	auto pFocusSkin = ColorSkin::create({ .states = { {State::Default, Color::Red}, {State::Focused, Color::Green} } });
+	auto pHoverSkin = ColorSkin::create({ .states = { {State::Default, Color::Red}, {State::Hovered, Color::Green} } });
+	auto pHoverAndFocusSkin = ColorSkin::create({ .states = { {State::Default, Color::Red}, {State::Hovered, Color::Yellow}, {State::Focused, Color::Blue} } });
+	auto pSelectedHoverAndFocusSkin = ColorSkin::create({ .states = { {State::Default, Color::Red}, {State::Selected, Color::Pink}, {State::Hovered, Color::Yellow}, {State::Focused, Color::Blue} } });
+
+	auto pHoverWithFocusSkin = ColorSkin::create({ .states = {  {State::Selected, Color::Purple}, {State::Default, Color::Red}, {State::HoveredFocused, Color::Red}, {State::Hovered, Color::Yellow}, {State::Focused, Color::Blue} } });
+
+
 	//------------------------------------------------------
 	// Program Main Loop
 	//------------------------------------------------------
@@ -201,8 +210,17 @@ int main ( int argc, char** argv )
 
 		pGfxDevice->fill(Color8::Black);
 
+		pFocusSkin->_render(pGfxDevice, RectSPX(5, 5, 20, 20) * 64, 64, State::HoveredFocused);
+		pHoverSkin->_render(pGfxDevice, RectSPX(5, 30, 20, 20) * 64, 64, State::HoveredFocused);
+		pHoverAndFocusSkin->_render(pGfxDevice, RectSPX(5, 55, 20, 20) * 64, 64, State::SelectedHoveredFocused);
+		pSelectedHoverAndFocusSkin->_render(pGfxDevice, RectSPX(5, 80, 20, 20) * 64, 64, State::SelectedHoveredFocused);
+		pHoverWithFocusSkin->_render(pGfxDevice, RectSPX(5, 105, 20, 20) * 64, 64, State::SelectedHoveredFocused);
+
+
+
+
 		//
-		
+/*
 		for( int i = 0 ; i < GfxFlip_size ; i++ )
 		{
 			RectI canvas = RectSPX( 4, i * 22, 20, 16 )*64;
@@ -238,7 +256,7 @@ int main ( int argc, char** argv )
 
 			
 		}
-		
+*/		
 		
 /*
  

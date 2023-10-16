@@ -82,14 +82,14 @@ namespace wg
 			m_decoration[i]		= TextDecoration::Undefined;
 		}
 
-		// Setting everyting for State::Normal
+		// Setting everyting for State::Default
 
 		m_pFont = bp.font;
 		m_pLink = bp.link;
 		m_blendMode = bp.blendMode;
 		m_backBlendMode = bp.backBlendMode;
 
-		int idx = State::Normal;
+		int idx = State::Default;
 
 		m_size[idx] = bp.size;
 		m_color[idx] = bp.color;
@@ -280,7 +280,7 @@ namespace wg
 		bp.link = m_pLink;
 		bp.font = m_pFont;
 		
-		int idx = State::Normal;
+		int idx = State::Default;
 
 		bp.size = m_size[idx];
 		bp.backColor = m_backColor[idx];

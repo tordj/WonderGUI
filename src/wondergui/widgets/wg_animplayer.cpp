@@ -155,7 +155,7 @@ namespace wg
 
 	void AnimPlayer::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		if (m_cycleDuration == 0 || !m_state.isEnabled())
+		if (m_cycleDuration == 0 || m_state.isDisabled())
 			return;
 
 		m_playPos += int(microPassed * m_speed / 1000);
@@ -169,7 +169,7 @@ namespace wg
 	{
 		Widget::_render( pDevice, _canvas, _window );
 
-		if (m_cycleDuration > 0 && m_state.isEnabled())
+		if (m_cycleDuration > 0 && !m_state.isDisabled())
 		{
 			RectSPX canv = _contentRect();
 			pDevice->setBlitSource(frames._surface());
@@ -187,7 +187,7 @@ namespace wg
 		if (Widget::_alphaTest(ofs))
 			return true;
 
-		if (m_cycleDuration > 0 && m_state.isEnabled())
+		if (m_cycleDuration > 0 && !m_state.isDisabled())
 		{
 			Rect source = Rect(frames.find(_playPosToTimestamp(m_playPos))->source(), frames.frameSize());
 			return Util::markTestStretchRect(ofs, frames._surface(), align(ptsToSpx(source, m_scale)), RectSPX(m_size), m_animMarkAlpha);
@@ -200,12 +200,12 @@ namespace wg
 
 	void AnimPlayer::_setState( State state )
 	{
-		if( state.isEnabled() != m_state.isEnabled() && m_bPlaying )
+		if( state.isDisabled() != m_state.isDisabled() && m_bPlaying )
 		{
-			if (state.isEnabled())
-				_startReceiveUpdates();
-			else
+			if (state.isDisabled())
 				_stopReceiveUpdates();
+			else
+				_startReceiveUpdates();
 
 			_requestRender();
 		}

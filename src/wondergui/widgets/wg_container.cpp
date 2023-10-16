@@ -249,13 +249,13 @@ namespace wg
 
 		Widget::_setState(state);						// Doing this call first is an optimization, possibly less dirty rects generated.
 
-		if( oldState.isEnabled() != state.isEnabled() )
+		if( oldState.isDisabled() != state.isDisabled() )
 		{
-			bool bEnabled = state.isEnabled();
+			bool bDisabled = state.isDisabled();
 			Widget * p = _firstChild();
 			while( p )
 			{
-				p->setEnabled(bEnabled);
+				p->setDisabled(bDisabled);
 				p = p->_nextSibling();
 			}
 		}

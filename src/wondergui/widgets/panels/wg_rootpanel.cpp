@@ -531,7 +531,7 @@ namespace wg
 			else
 				pGfxDevice->beginCanvasUpdate(m_canvas.ref, nRects, pRects, m_pCanvasLayers);
 
-			m_skin.render(pGfxDevice, geo, m_scale, State::Normal);
+			m_skin.render(pGfxDevice, geo, m_scale, State::Default);
 
 			slot._widget()->_render( pGfxDevice, geo, geo );
 
@@ -562,7 +562,7 @@ namespace wg
 			{
 				for (const RectSPX* pRect = m_afterglowRects[1].begin(); pRect != m_afterglowRects[1].end(); pRect++)
 				{
-					m_pDebugOverlay->_render(pGfxDevice, *pRect, m_scale, State::Normal);
+					m_pDebugOverlay->_render(pGfxDevice, *pRect, m_scale, State::Default);
 				}
 			}
 
@@ -847,7 +847,7 @@ namespace wg
 
 	State RootPanel::_skinState(const SkinSlot* pSlot) const
 	{
-		return State::Normal;
+		return State::Default;
 	}
 
 	//____ _skinSize() ________________________________________________________

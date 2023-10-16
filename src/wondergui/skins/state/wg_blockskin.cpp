@@ -156,7 +156,7 @@ namespace wg
 				spacing = blockPitch.h - blockGeo.h;
 			}
 
-			p->setBlocks({ State::Normal, State::Hovered, State::Pressed, State::Disabled }, o, spacing, blockStartOfs);
+			p->setBlocks({ State::Default, State::Hovered, State::Pressed, State::Disabled }, o, spacing, blockStartOfs);
 		}
 		return BlockSkin_p(p);
 	}
@@ -212,7 +212,7 @@ namespace wg
 			int nStateBlocks = 1;
 			for ( auto& entry : bp.states )
 			{
-				if( entry.state != State::Normal && entry.data.reuseBlock == false)
+				if( entry.state != State::Default && entry.data.reuseBlock == false)
 					nStateBlocks++;
 			}
 
@@ -306,7 +306,7 @@ namespace wg
 				m_stateBlockMask.setBit(index);
 				m_stateBlocks[index] = m_stateBlocks[stateInfo.data.reuseBlockFrom];
 			}
-			else if ( stateInfo.state != State::Normal )
+			else if ( stateInfo.state != State::Default )
 			{
 				ofs++;
 				m_stateBlockMask.setBit(index);

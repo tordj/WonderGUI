@@ -58,8 +58,8 @@ namespace wg
 
 			Object_p		baggage;
 			Widget_p		child;
+			bool			disabled = false;
 			bool			dropTarget = false;
-			bool			enabled = true;
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;

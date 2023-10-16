@@ -96,7 +96,7 @@ namespace wg
 			}
 
 			
-			State			state = State::Normal;
+			State			state = State::Default;
 			StateData		data;
 		};
 

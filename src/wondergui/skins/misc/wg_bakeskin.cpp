@@ -375,7 +375,7 @@ namespace wg
 				}
 				else
 				{
-					BorderSPX padding = _stateContentBorder(scale,State::Normal);
+					BorderSPX padding = _stateContentBorder(scale,State::Default);
 
 					for (int index = 0; index < State::IndexAmount; index++)
 						m_cachedContentPadding[index] = padding;

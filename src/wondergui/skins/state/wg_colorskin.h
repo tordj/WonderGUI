@@ -54,7 +54,7 @@ namespace wg
 			StateBP( State state, HiColor color ) : state(state) { data.color = color; }
 			StateBP( State state, Coord contentShift ) : state(state)	{ data.contentShift = contentShift; }
 			
-			State			state = State::Normal;
+			State			state = State::Default;
 			StateData		data;
 		};
 

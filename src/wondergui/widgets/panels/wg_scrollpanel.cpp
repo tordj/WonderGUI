@@ -689,7 +689,7 @@ namespace wg
 			if (m_viewXLen == m_canvasXLen && oldViewLen != oldCanvasLen)
 				scrollbarX._setState(State::Disabled);
 			else if (m_viewXLen != m_canvasXLen && oldViewLen == oldCanvasLen)
-				scrollbarX._setState(State::Normal);
+				scrollbarX._setState(State::Default);
 		}
 
 		if (scrollbarY.inWorkingOrder())
@@ -708,7 +708,7 @@ namespace wg
 			if (m_viewYLen == m_canvasYLen && oldViewLen != oldCanvasLen)
 				scrollbarY._setState(State::Disabled);
 			else if (m_viewYLen != m_canvasYLen && oldViewLen == oldCanvasLen)
-				scrollbarY._setState(State::Normal);
+				scrollbarY._setState(State::Default);
 		}
 
 	}

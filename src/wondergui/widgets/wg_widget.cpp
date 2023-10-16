@@ -191,13 +191,13 @@ namespace wg
 		m_bStickyFocus = bSticky;
 	}
 
-	//____ setEnabled() _______________________________________________________________
+	//____ setDisabled() _______________________________________________________________
 	/**
 	 * @brief Enables or disables the widget.
 	 *
 	 * Enables or disables the widget and all child widgets if the widget is a container.
 	 *
-	 * @param bEnabled	True to enable Widget, false to disable.Coordinate to check in widgets own coordinate system.
+	 * @param bDisabled	True to disable Widget, false to enable.
 	 *
 	 * A Widget that is disabled does not react on mouse or keyboard events or updates its content.
 	 * A disabled Widget is rendered in disabled state, how that looks depends on the skin.
@@ -205,12 +205,12 @@ namespace wg
 	 * This method never fails.
 	 */
 
-	void Widget::setEnabled( bool bEnabled )
+	void Widget::setDisabled( bool bDisabled )
 	{
-		if( m_state.isEnabled() != bEnabled || isContainer() )
+		if( m_state.isDisabled() != bDisabled || isContainer() )
 		{
 			State s = m_state;
-			s.setEnabled(bEnabled);
+			s.setDisabled(bDisabled);
 			_setState(s);
 		}
 	}

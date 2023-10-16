@@ -45,8 +45,8 @@ namespace wg
 		{
 			Object_p		baggage;
 			bool			closeOnSelect = true;
+			bool			disabled = false;
 			bool			dropTarget = false;
-			bool			enabled = true;
 			Finalizer_p		finalizer = nullptr;
 			Icon::Blueprint	icon;
 			int				id = 0;

@@ -130,7 +130,7 @@ Uint32 WgPopupOpener::GetTextAreaWidth()
 	WgRect	contentRect(0,0, PixelSize());
 
 	if( m_pSkin )
-		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
+		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Default, m_scale);
 
 	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin, m_scale ) );
 
@@ -212,7 +212,7 @@ void WgPopupOpener::_setState(WgState state)
 
 void WgPopupOpener::_onEnable()
 {
-	m_state.setEnabled(true);
+	m_state.setDisabled(false);
 	_requestRender();
 }
 
@@ -220,7 +220,7 @@ void WgPopupOpener::_onEnable()
 
 void WgPopupOpener::_onDisable()
 {
-	m_state.setEnabled(false);
+	m_state.setDisabled(true);
 	_requestRender();
 }
 
@@ -231,7 +231,7 @@ void WgPopupOpener::_onNewSize( const WgSize& size )
 	WgRect	contentRect(0,0, PixelSize());
 
 	if (m_pSkin)
-		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
+		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Default, m_scale);
 
 	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin, m_scale ) );
 

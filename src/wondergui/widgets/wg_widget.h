@@ -81,8 +81,8 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+			bool			disabled = false;
 			bool			dropTarget = false;
-			bool			enabled = true;
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
@@ -148,8 +148,8 @@ namespace wg
 
 		inline const State&	state() const;
 
-		void				setEnabled(bool bEnabled);
-		inline bool			isEnabled() const;
+		void				setDisabled(bool bEnabled);
+		inline bool			isDisabled() const;
 
 		void				setSelectable(bool bSelectable);
 		inline bool			isSelectable() const;
@@ -270,8 +270,8 @@ namespace wg
 				m_bOpaque = bp.skin->isOpaque(m_state);
 			}
 
-			if( !bp.enabled )
-				setEnabled(bp.enabled);
+			if( bp.disabled )
+				setDisabled(bp.disabled);
 		}
 
 		virtual ~Widget();
@@ -765,16 +765,16 @@ namespace wg
 		return m_state;
 	}
 
-	//____ isEnabled() ____________________________________________________________
+	//____ isDisabled() ____________________________________________________________
 	/**
 	 * @brief	Get the enabled/disabled state of widget.
 	 *
-	 * @return 	True if widget is enabled, otherwise false.
+	 * @return 	True if widget is disabled, otherwise false.
 	 */
 
-	bool Widget::isEnabled() const
+	bool Widget::isDisabled() const
 	{
-		return m_state.isEnabled();
+		return m_state.isDisabled();
 	}
 
 	//____ isSelectable() ____________________________________________________________
