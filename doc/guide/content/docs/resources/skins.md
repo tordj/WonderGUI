@@ -16,3 +16,39 @@ Skins are *Immutable Resource Objects* and are therefore created once, never mod
 
 
 
+## Categories
+
+Most skins falls into one of four different categories:
+
+* **State skins:** Change their appearance depending on the state of the widget, such as if it is normal, pressed, selected, disabled, has keyboard focus etc. These are most commonly used.
+* **Meter skins:** Change their appearance depending on the value of the widget and can be used for things such as progress indicators, value indicators, knobs etc.
+* **Animation skins:** Skins that are animated and continuously change their appearance independently of state and value.
+* **Static skins:** Skins that are not animated at all. 
+
+A skin isn't limited to any of these categories and some falls entirely outside, such as CustomSkin, DoubleSkin and BakeSkin.
+
+
+
+## Common properties for all skins
+
+There are three properties that are common for all skins: margin, padding, markAlpha and layer.
+
+### Margin and padding
+
+Margin and padding both specifies *Borders* and deals with the geometry of the widget. Margin is an empty area around the skin that is not rendered while padding specifies the distance from the edge of the skin to the area where the content of the widget is drawn. In the case of a button, the content is the text and/or icon. For a container the content is where all child widgets are drawn. Although a widget can place content outside the content area and even in the margin, all current widgets refrains from doing so.
+
+![skin-borders](/docs/manual/skin-borders.png)
+
+### MarkAlpha
+
+MarkAlpha is simply a value that determines what alpha-value a pixel of the skin should have in order to be clickable. Setting this to 0 makes the whole skin (except for the margin) opaque to the mouse. Setting it to higher than 4096 makes it transparent to the mouse.
+
+### Layer
+
+Layer simply specifies what layer to render the skin into when rendering to multiple layers. Layered rendering is a large topic on its own and will not be covered here.
+
+
+
+## Common aspects of all state skins
+
+...
