@@ -384,6 +384,13 @@ int WgWidget::MatchingPixelWidth( int height ) const
 	return PreferredPixelSize().w;		// Default is to stick with best width no matter what height.
 }
 
+//____ MatchingPointHeight() _______________________________________________________
+
+int WgWidget::MatchingPointHeight( int pixelWidth ) const
+{
+    return MatchingPixelHeight(pixelWidth) * WG_SCALE_BASE / Scale();
+}
+
 //____ MinPixelSize() ______________________________________________________________
 
 WgSize WgWidget::MinPixelSize() const

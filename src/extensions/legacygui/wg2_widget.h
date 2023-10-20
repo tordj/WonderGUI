@@ -174,6 +174,8 @@ public:
 
 	virtual int		MatchingPixelHeight( int pixelWidth ) const;
 	virtual int		MatchingPixelWidth( int pixelHeight ) const;
+    
+    int             MatchingPointHeight( int pixelWidth ) const;
 
 	virtual WgSize	PreferredPixelSize() const = 0;
 	virtual WgSize	MinPixelSize() const;
