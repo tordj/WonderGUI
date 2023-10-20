@@ -10,8 +10,6 @@ FrameMeterSkin contains a bitmap animation consisting of two or more frames. All
 
 The widget provided single value determines the offset into the animation to display as a fraction of the animations total length. The length of each frame can be set individually to make animations that lingers longer on certain frames. Frames can also be rotated in steps of 90 degrees and flipped, making it possible to reuse the same pixels for multiple frames in certain kinds of animations.
 
-<<
-
 ## Properties
 
 | Property  | Description                 |
@@ -28,7 +26,7 @@ The individual frames have the following properties:
 
 | Property | Description                                                  |
 | -------- | ------------------------------------------------------------ |
-| coord    | Coordinate (pts) of the top left corner of pixels in the surface to use for this frame. |
+| pos      | Position (pts) of the top left corner of pixels in the surface to use for this frame. |
 | duration | Relative duration of this frame. Must be >= 1, defaults to 1. |
 | flip     | The rotation/flipping of the frame. Defaults to None.        |
 
@@ -46,7 +44,7 @@ auto pSkin = FrameMeterSkin::create({
 });
 ```
 
-We here use the shorthand form for the frames, just specifying the coordinate for each frame.
+We here use the shorthand form for the frames, just specifying the coordinate for each frame. This can be followed by duration and flip.
 
 However if we have many frames it is usually easier to create the blueprint outside the create function and fill in the frames using a loop:
 
@@ -54,7 +52,7 @@ However if we have many frames it is usually easier to create the blueprint outs
 FrameMeterSkin::Blueprint bp = { .size = {16,16}, .surface = pSurface };
 
 for (int i = 0; i < 20; i++)
-		bp.frames.push_back({ .coord = {0,i*16.f} });
+		bp.frames.push_back({ .pos = {0,i*16.f} });
 
 auto pSkin = FrameMeterSkin::create(bp);
 ```

@@ -44,7 +44,7 @@ namespace wg
 
 		struct FrameBP
 		{
-			Coord	coord;
+			Coord	pos;
 			int		duration = 1;					// Relative duration
 			GfxFlip	flip = GfxFlip::Normal;
 		};
@@ -100,10 +100,10 @@ namespace wg
 		class Frame
 		{
         public:
-            Frame( Coord _coord, int _duration, int _timestamp, GfxFlip _flip )
-            : coord(_coord), duration(_duration), timestamp(_timestamp), flip(_flip) {}
+            Frame( Coord _pos, int _duration, int _timestamp, GfxFlip _flip )
+            : pos(_pos), duration(_duration), timestamp(_timestamp), flip(_flip) {}
             
-			Coord	coord;
+			Coord	pos;
 			int		duration;					// Millisec
 			int		timestamp;					// Millisec
 			GfxFlip	flip = GfxFlip::Normal;

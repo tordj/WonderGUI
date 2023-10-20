@@ -58,7 +58,7 @@ namespace wg
 		int timestamp = 0;
 		for (auto& frame : bp.frames)
 		{
-			m_frames.push_back({frame.coord, frame.duration, timestamp, frame.flip });
+			m_frames.push_back({frame.pos, frame.duration, timestamp, frame.flip });
 			timestamp += frame.duration;
 		}
 
@@ -107,7 +107,7 @@ namespace wg
 			pDevice->setBlitSource(m_pSurface);
 
 			NinePatch patch;
-			patch.block = Rect(pFrame->coord, m_size);
+			patch.block = Rect(pFrame->pos, m_size);
 			patch.frame = m_gfxPadding;
 			pDevice->blitNinePatch(canvas, align(ptsToSpx(m_gfxPadding,scale)), patch,scale);
 		}
@@ -129,7 +129,7 @@ namespace wg
 		if (pFrame)
 		{
 			NinePatch patch;
-			patch.block = Rect(pFrame->coord, m_size);
+			patch.block = Rect(pFrame->pos, m_size);
 			patch.frame = m_gfxPadding;
 			
 			int alpha = alphaOverride == -1 ? m_markAlpha : alphaOverride;

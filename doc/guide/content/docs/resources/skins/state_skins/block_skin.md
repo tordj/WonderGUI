@@ -46,7 +46,7 @@ This makes nine-patches very suitable for resizing rectangular shapes with a sin
 
 In WonderGUI we simply define the size of the four sections with a Border called *frame* in the Blueprint. The frame is set to mark the center patch and the rest of the patches can be deducted from that:
 
-[image]
+![9-patch](/docs/manual/9-patch.svg)
 
 ## Reusing blocks between states
 
