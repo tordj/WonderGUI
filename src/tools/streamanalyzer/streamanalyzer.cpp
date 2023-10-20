@@ -207,15 +207,14 @@ Widget_p MyApp::createDisplayPanel()
 {
 	auto pWindow = _standardScrollPanel();
 
-	pWindow->setSkin(ColorSkin::create({ .color = Color::DarkSlateBlue, .padding = 6 }));
+	pWindow->setSkin(ColorSkin::create({ .color = Color::DarkSlateBlue }));
 	pWindow->setSizeConstraints(SizeConstraint::None, SizeConstraint::None);
 	pWindow->setPlacement(Placement::Center);
 
-	auto pLineup = PackPanel::create();
-	pLineup->setAxis(Axis::X);
-
-
 	
+	auto pPaddingSkin = ColorSkin::create( { .color = HiColor::Transparent, .padding = 6 });
+	auto pLineup = PackPanel::create( { .axis = Axis::X, .skin = pPaddingSkin });
+
 	pWindow->slot = pLineup;
 	
 	m_pScreenLineup = pLineup;
@@ -630,7 +629,7 @@ Widget_p MyApp::createNavigationPanel()
 		.label = { .layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = "Show recorded steps" },
 		.skin = m_pButtonSkin
 	});
-	
+
 	Base::msgRouter()->addRoute(pShowRecordedSteps, MsgType::Select, [this](Msg* pMsg)
 	{
 		this->openRecordedStepsWindow();
@@ -638,6 +637,54 @@ Widget_p MyApp::createNavigationPanel()
 	
 	pExtraControls->slots << pShowRecordedSteps;
 
+	//
+	
+	auto pSkipTo = Button::create({
+		.label = { .layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = "Skip to 254" },
+		.skin = m_pButtonSkin
+	});
+
+	Base::msgRouter()->addRoute(pSkipTo, MsgType::Select, [this](Msg* pMsg)
+	{
+
+		m_recordedSteps.clear();
+		this->m_bRecordSteps = this->m_pRecordStepsToggle->isSelected();
+
+		int frame = 252;
+		
+
+		_resetStream();
+		_playFrames( 0, frame, true );
+//		_playFrames( frame, frame+1, false );
+
+		// Update the log
+		
+		_logFrames( frame, frame+1, false, m_pFrameLogDisplay );
+
+		_logFrames( 0, frame, false, m_pOptimizerInLogDisplay);
+		_logFrames( 0, frame, true, m_pOptimizerOutLogDisplay);
+		
+		//
+
+		m_currentFrame = frame;
+		
+		// Update slider and frame counter
+		
+		_updateFrameCounterAndSlider();
+		_updateResourcesView();
+
+		if (m_bShowDebugRects)
+			_updateDebugOverlays();
+
+		this->m_bRecordSteps = false;
+
+
+
+	});
+	
+	pExtraControls->slots << pSkipTo;
+
+	
 	// Put it all together
 
 	pMain->slots << pProgressText;
@@ -702,14 +749,14 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 
 	m_pSectionSkin = BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black,
 		_.padding = { 2,2,2,2 }
 	));
 
 	m_pRedOutlinedBlackSkin = BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::Black,
-		_.outline = 2,
+		_.outlineThickness = 2,
 		_.outlineColor = Color8::Red,
 		_.padding = { 3,3,3,3 }
 	));
@@ -1293,13 +1340,13 @@ ScrollPanel_p MyApp::_standardScrollPanel()
 
 	pWidget->scrollbarX.setBackground(BoxSkin::create(WGBP(BoxSkin,
 		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black)));
 	pWidget->scrollbarX.setBar(m_pPlateSkin);
 
 	pWidget->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
 		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black)));
 	pWidget->scrollbarY.setBar(m_pPlateSkin);
 

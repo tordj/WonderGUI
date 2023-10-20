@@ -85,6 +85,7 @@ bool blendFixedColorTest(WgRootPanel* pRoot);
 bool multiSliderClickThroughTest(WgRootPanel* pRoot);
 bool chartTest(WgRootPanel* pRoot);
 bool flipCanvasTest(WgRootPanel* pRoot);
+bool mouseOverMovingObjectsTest(WgRootPanel* pRoot);
 
 
 
@@ -144,6 +145,11 @@ int				m_hWave1 = 0;
 WgFlexHook * g_pSpriteHook = nullptr;
 
 WgKnob *		g_pKnob = nullptr;
+
+WgWidget *		m_pMovingObject1 = nullptr;
+WgWidget *		m_pMovingObject2 = nullptr;
+int				m_moveSpeed1 = 1;
+int				m_moveSpeed2 = 1;
 
 
 //volatile int	m_bGotVsync = 0;
@@ -348,21 +354,40 @@ int main ( int argc, char** argv )
 //	blendFixedColorTest(pRoot);
 //	multiSliderClickThroughTest(pRoot);
 //	chartTest(pRoot);
-	flipCanvasTest(pRoot);
+//	flipCanvasTest(pRoot);
+	mouseOverMovingObjectsTest(pRoot);
 
+/*
 	// Setup debug overlays
 	auto pOverlaySkin = wg::BoxSkin::create( { .color = WgColor(255,0,0,128), .outline = 1, .outlineColor = WgColor::Red,
 		.states = { {wg::StateEnum::Default, {.color = WgColor::Transparent } }
 		}
 	});
 	pRoot->SetUpdatedRectOverlay( pOverlaySkin,0);
-
+*/
    // program main loop
 
 	int counter = 0;
 
 	while (eventLoop( pRoot->EventHandler() ))
 	{
+
+		if( m_pMovingObject1 )
+		{
+			auto pHook = static_cast<WgFlexHook*>(m_pMovingObject1->Hook());
+			pHook->MovePoints({m_moveSpeed1,0});
+			if( pHook->PointPos().x > 300 || pHook->PointPos().x <= 0 )
+				m_moveSpeed1 *= -1;
+		}
+
+		if( m_pMovingObject2 )
+		{
+			auto pHook = static_cast<WgFlexHook*>(m_pMovingObject2->Hook());
+			pHook->MovePoints({0,m_moveSpeed2});
+			if( pHook->PointPos().y > 300 || pHook->PointPos().y <= 0 )
+				m_moveSpeed2 *= -1;
+		}
+
 		// DRAWING STARTS HERE
 
 //		pRoot->AddDirtyPatch( pRoot->Geo().Size() );
@@ -511,6 +536,34 @@ bool chartTest(WgRootPanel* pRoot)
 
 	pBaseFlex->AddChild(pChart2, WgRect(20,240,500,200) );
 
+	return true;
+}
+
+//____ mouseOverMovingObjectsTest() ___________________________________________
+
+bool mouseOverMovingObjectsTest(WgRootPanel* pRoot)
+{
+	auto pBaseFlex = new WgFlexPanel();
+	pRoot->SetChild(pBaseFlex);
+	pBaseFlex->SetSkin( wg::ColorSkin::create(WgColor::DarkBlue));
+
+	
+	auto pSkin = wg::ColorSkin::create( { .states = {{ wg::State::Normal, wg::Color8::White}, { wg::State::Hovered, wg::Color8::Pink }}} );
+	
+	
+	auto pFiller1 = new WgButton();
+	pFiller1->SetSkin( pSkin );
+	m_pMovingObject1 = pFiller1;
+	
+	pBaseFlex->AddChild( pFiller1, {10,100,50,50} );
+
+	auto pFiller2 = new WgButton();
+	pFiller2->SetSkin( pSkin );
+	m_pMovingObject2 = pFiller2;
+
+	pBaseFlex->AddChild( pFiller2, {200,10, 70,70} );
+
+	
 	return true;
 }
 

@@ -33,12 +33,12 @@ namespace wg
 {
 
 
-	class ScrollSkin;
-	typedef	StrongPtr<ScrollSkin>	ScrollSkin_p;
-	typedef	WeakPtr<ScrollSkin>		ScrollSkin_wp;
+	class BlockSlideSkin;
+	typedef	StrongPtr<BlockSlideSkin>	BlockSlideSkin_p;
+	typedef	WeakPtr<BlockSlideSkin>		BlockSlideSkin_wp;
 
 
-	class ScrollSkin : public StateSkin
+	class BlockSlideSkin : public StateSkin
 	{
 		//TODO: Add sanity-checking to all Set-methods.
 		//TODO: Optimize rendering based on invisibleSections and opaqueSections!
@@ -49,9 +49,9 @@ namespace wg
 
 		struct StateData
 		{
+			bool			blockless = false;
 			HiColor			color = HiColor::Undefined;
 			Coord			contentShift;
-			bool			blockless = false;
 		};
 
 		struct StateBP
@@ -71,10 +71,11 @@ namespace wg
 
 			BlendMode		blendMode = BlendMode::Undefined;
 
+			pts				blockLength;					// Required!
 			HiColor			color = HiColor::Undefined;
 
 			Finalizer_p		finalizer = nullptr;
-			Rect			firstBlock;
+			Rect			firstLane;
 			Gradient		gradient;
 			int				layer = -1;
 			Border			margin;
@@ -82,10 +83,9 @@ namespace wg
 			Border			overflow;
 			Border			padding;
 
-			Direction		scrollDirection = Direction::Right;
-			pts				scrollDistance = 0;
-			int				scrollDuration = 250;
-			StateBits		scrollState = StateBits::Selected;			
+			Direction		slideDirection = Direction::Right;
+			int				slideDuration = 250;
+			StateBits		slideState = StateBits::Selected;
 
 			pts				spacing = 0;
 			std::vector<StateBP> states;
@@ -94,7 +94,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static ScrollSkin_p	create( const Blueprint& blueprint );
+		static BlockSlideSkin_p	create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
@@ -125,9 +125,9 @@ namespace wg
 
 	private:
 
-		ScrollSkin();
-		ScrollSkin( const Blueprint& blueprint);
-		~ScrollSkin() {};
+		BlockSlideSkin();
+		BlockSlideSkin( const Blueprint& blueprint);
+		~BlockSlideSkin() {};
 
 		void		_updateOpaqueFlags();
 		void		_updateUnsetStateBlocks();
@@ -136,11 +136,11 @@ namespace wg
 		RectSPX		_partInCanvas(int scale, State state, float* pStateFractions) const;
 
 		Surface_p	m_pSurface;
-		Direction	m_scrollDirection = Direction::Right;
+		Direction	m_slideDirection = Direction::Right;
 		Size		m_blockSize;
-		pts			m_scrollDistance = 0;
-		int			m_scrollDuration = 250;						// Millisec
-		StateBits	m_scrollState = StateBits::Selected;
+		pts			m_slideDistance = 0;
+		int			m_slideDuration = 250;						// Millisec
+		StateBits	m_slideState = StateBits::Selected;
 
 		Gradient	m_gradient;
 

@@ -35,6 +35,7 @@
 #include <wg_bitmapfont.h>
 #include <wg_blob.h>
 #include <wg_blockskin.h>
+#include <wg_blockslideskin.h>
 #include <wg_boxskin.h>
 #include <wg_button.h>
 #include <wg_canvascapsule.h>
@@ -118,7 +119,7 @@
 #include <wg_scrollbar.h>
 #include <wg_scroller.h>
 #include <wg_scrollpanel.h>
-#include <wg_scrollskin.h>
+#include <wg_blockslideskin.h>
 #include <wg_selectbox.h>
 #include <wg_sidecanvas.h>
 #include <wg_sizecapsule.h>

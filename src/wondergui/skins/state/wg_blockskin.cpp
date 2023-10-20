@@ -212,7 +212,7 @@ namespace wg
 			int nStateBlocks = 1;
 			for ( auto& entry : bp.states )
 			{
-				if( entry.state != State::Default && entry.data.reuseBlock == false)
+				if( entry.state != State::Default && entry.data.blockless == false)
 					nStateBlocks++;
 			}
 
@@ -301,12 +301,7 @@ namespace wg
 				m_bContentShifting = true;
 			}
 
-			if( stateInfo.data.reuseBlock )
-			{
-				m_stateBlockMask.setBit(index);
-				m_stateBlocks[index] = m_stateBlocks[stateInfo.data.reuseBlockFrom];
-			}
-			else if ( stateInfo.state != State::Default )
+			if ( stateInfo.state != State::Default && !stateInfo.data.blockless )
 			{
 				ofs++;
 				m_stateBlockMask.setBit(index);

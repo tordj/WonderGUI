@@ -116,6 +116,8 @@ set( SOURCES
 	skins/misc/wg_doubleskin.h
 	skins/state/wg_blockskin.cpp
 	skins/state/wg_blockskin.h
+	skins/state/wg_blockslideskin.cpp
+	skins/state/wg_blockslideskin.h
 	skins/state/wg_boxskin.cpp
 	skins/state/wg_boxskin.h
 	skins/state/wg_circleskin.cpp
@@ -124,8 +126,6 @@ set( SOURCES
 	skins/state/wg_colorskin.h
 	skins/state/wg_multiblockskin.cpp
 	skins/state/wg_multiblockskin.h
-	skins/state/wg_scrollskin.cpp
-	skins/state/wg_scrollskin.h
 	skins/state/wg_tileskin.cpp
 	skins/state/wg_tileskin.h
 	skins/static/wg_staticblockskin.cpp

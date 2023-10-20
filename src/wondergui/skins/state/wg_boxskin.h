@@ -73,7 +73,7 @@ namespace wg
 			int				layer = -1;
 			Border			margin;
 			int				markAlpha = 1;
-			Border			outline;
+			Border			outlineThickness = 1;
 			HiColor			outlineColor = HiColor::Black;
 			Border			overflow;
 			Border			padding;
@@ -84,7 +84,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BoxSkin_p	create( const Blueprint& blueprint );
-		static BoxSkin_p 	create(Border frame, HiColor fillColor, HiColor frameColor, Border contentBorder = Border() );
+		static BoxSkin_p 	create(Border outlineThickness, HiColor fillColor, HiColor outlineColor, Border padding = Border() );
 
 		//.____ Identification __________________________________________
 

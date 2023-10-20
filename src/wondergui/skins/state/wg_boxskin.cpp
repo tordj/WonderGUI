@@ -43,7 +43,7 @@ namespace wg
 	BoxSkin_p BoxSkin::create(Border outline, HiColor fillColor, HiColor outlineColor, Border padding )
 	{
 		Blueprint bp;
-		bp.outline = outline;
+		bp.outlineThickness = outline;
 		bp.color = fillColor;
 		bp.outlineColor = outlineColor;
 		bp.padding = padding;
@@ -56,7 +56,7 @@ namespace wg
 
 	BoxSkin::BoxSkin( const Blueprint& bp ) : StateSkin(bp)
 	{
-		m_outline		= bp.outline;
+		m_outline		= bp.outlineThickness;
 		m_blendMode		= bp.blendMode;
 
 		m_fillColor[0] = bp.color;

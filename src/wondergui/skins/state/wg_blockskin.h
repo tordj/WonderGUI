@@ -49,10 +49,9 @@ namespace wg
 
 		struct StateData
 		{
+			bool			blockless = false;
 			HiColor			color = HiColor::Undefined;
 			Coord			contentShift;
-			bool			reuseBlock = false;
-			State			reuseBlockFrom = State::Default;
 		};
 
 		struct StateBP
@@ -60,8 +59,12 @@ namespace wg
 			StateBP() {}
 			StateBP( State state ) : state(state) {}
 			StateBP( State state, StateData data ) : state(state), data(data) {}
-			StateBP( State state, HiColor color, bool reuseBlock = false, State reuseBlockFrom = State::Default ) : state(state) { data.color = color; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
-			StateBP( State state, Coord contentShift, bool reuseBlock = false, State reuseBlockFrom = State::Default ) : state(state)	{ data.contentShift = contentShift; data.reuseBlock = reuseBlock; data.reuseBlockFrom = reuseBlockFrom; }
+
+			StateBP( State state, HiColor color, bool blockless = false ) : state(state)
+					{ data.color = color; data.blockless = blockless; }
+
+			StateBP( State state, Coord contentShift, bool blockless = false ) : state(state)
+					{ data.contentShift = contentShift; data.blockless = blockless; }
 
 			State			state = State::Default;
 			StateData		data;
@@ -87,7 +90,7 @@ namespace wg
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
 			Finalizer_p	finalizer = nullptr;
-			Rect		firstBlock;
+			Rect		firstBlock;						// Mandatory!
 			Border		frame;
 			Gradient	gradient;
 			int			layer = -1;
@@ -102,7 +105,7 @@ namespace wg
 			pts			spacing = 0;
 			std::vector<StateBP>	states;
 			
-			Surface_p	surface;
+			Surface_p	surface;					// Mandatory!
 		};
 
 

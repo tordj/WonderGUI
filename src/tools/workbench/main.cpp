@@ -296,9 +296,8 @@ int main(int argc, char** argv)
 		int yy, zz;
 	};
 
-
-	const char * p = Dataset<StructX>::CLASSNAME;
-	const char * q = Dataset<StructY>::CLASSNAME;
+	const char * p = Dataset<StructX>::TYPEINFO.className;
+	const char * q = Dataset<StructY>::TYPEINFO.className;
 
 	Dataset_p<StructX> pX = Dataset<StructX>::create();
 
@@ -306,25 +305,27 @@ int main(int argc, char** argv)
 
 	Dataset_p<StructX> pX3 = Dataset<StructX>::create();
 
-	Dataset_p<StructY> pY = Dataset<StructY>::create();
+	Dataset_p<StructY> pY = Dataset<StructY>::create( { .yy = 10, .zz = 20} );
 
-	if (pY->className() != pX->className())
+	int x = pY->data.yy;
+	
+	if (pY->typeInfo() != pX->typeInfo())
 	{
 		int success = true;
 	}
 
 
-	if ( p == pX->className() )
+	if ( p == pX->typeInfo().className )
 	{
 		int success = true;
 	}
 
-	if ( pX2->className() == pX3->className() )
+	if ( pX2->typeInfo() == pX3->typeInfo() )
 	{
 		int success = true;
 	}
-
 */
+
 
 
 	Base::init(nullptr);
@@ -674,7 +675,7 @@ int main(int argc, char** argv)
 		//	splitPanelTest(pSlot);
 		//	designLayerTest(pSlot);
 		//	pianoKeyboardTest(pSlot);
-		//	sliderTest(pSlot);
+			sliderTest(pSlot);
 		//	rangeSliderTest(pSlot);
 		//	pieKnobTest(pSlot);
 		//	spinKnobTest(pSlot);
@@ -702,7 +703,7 @@ int main(int argc, char** argv)
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
 		//	graphDisplayTest(pSlot);
-			nortonCommanderTest(pSlot);
+		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
 
 
@@ -1918,7 +1919,7 @@ bool selectBoxTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pListSkin = BoxSkin::create(1, Color::White, Color::Black, 3);
 
-	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .outline = 1, .outlineColor = Color::Transparent, .padding = 3,
+	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .outlineThickness = 1, .outlineColor = Color::Transparent, .padding = 3,
 											 .states = {{State::Hovered, {.color = Color::Yellow, .outlineColor = Color::Orange }},
 														{State::Selected, {.color = Color::LightBlue, .outlineColor = Color::White }} } });
 
@@ -2148,11 +2149,11 @@ bool scrollSkinTest(ComponentPtr<DynamicSlot> pSlot)
 	Surface_p pSliderSurf = loadSurface("resources/sliding_statebutton.png");
 	Surface_p pCoverSurf = loadSurface("resources/sliding_statebutton_cover.png");
 
-	auto pSliderSkin = ScrollSkin::create({
-											.scrollDirection = Direction::Left,
-											.scrollDistance = 48,
-											.scrollDuration = 100,
-											.scrollState = StateBits::Selected,
+	auto pSliderSkin = BlockSlideSkin::create({
+											.blockLength = 84,
+											.slideDirection = Direction::Left,
+											.slideDuration = 100,
+											.slideState = StateBits::Selected,
 											.spacing = 0,
 											.states = { State::Default, {}, State::Hovered, {}, State::Disabled, {} },
 											.surface = pSliderSurf });
@@ -2793,7 +2794,7 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pPaneSkin = BoxSkin::create( { .color = Color8::White,
 										.margin = 5,
-										.outline = 1,
+										.outlineThickness = 1,
 										.outlineColor = Color8::Black,
 										.padding = 3
 	});
@@ -2802,7 +2803,7 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pPane2 = Filler::create( { .skin = pPaneSkin });
 
 	auto pButtonSkin = BoxSkin::create( { .color = Color8::Grey,
-										  .outline = 1,
+										  .outlineThickness = 1,
 										  .outlineColor = Color8::Black,
 										  .padding = 3
 	});

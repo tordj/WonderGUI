@@ -88,7 +88,7 @@ namespace wg
 	{
 		BoxSkin::Blueprint bp;
 		bp.color = HiColor(4096, 0, 0, 2048);
-		bp.outline = 1;
+		bp.outlineThickness = 1;
 		bp.outlineColor = HiColor(4096, 0, 0, 2048);
 		
 		BoxSkin::StateBP sbp;
@@ -151,7 +151,7 @@ namespace wg
 		{
 			BoxSkin::Blueprint bp;
 			bp.color = HiColor(4096, 0, 0, 2048);
-			bp.outline = 1;
+			bp.outlineThickness = 1;
 			bp.outlineColor = HiColor(4096, 0, 0, 2048);
 			
 			BoxSkin::StateBP sbp;

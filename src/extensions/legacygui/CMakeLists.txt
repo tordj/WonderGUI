@@ -209,6 +209,8 @@ set( SOURCES
 	../../wondergui/skins/misc/wg_doubleskin.h
 	../../wondergui/skins/state/wg_blockskin.cpp
 	../../wondergui/skins/state/wg_blockskin.h
+	../../wondergui/skins/state/wg_blockslideskin.cpp
+	../../wondergui/skins/state/wg_blockslideskin.h
 	../../wondergui/skins/state/wg_boxskin.cpp
 	../../wondergui/skins/state/wg_boxskin.h
 	../../wondergui/skins/state/wg_circleskin.cpp
@@ -217,8 +219,6 @@ set( SOURCES
 	../../wondergui/skins/state/wg_colorskin.h
 	../../wondergui/skins/state/wg_multiblockskin.cpp
 	../../wondergui/skins/state/wg_multiblockskin.h
-	../../wondergui/skins/state/wg_scrollskin.cpp
-	../../wondergui/skins/state/wg_scrollskin.h
 	../../wondergui/skins/state/wg_tileskin.cpp
 	../../wondergui/skins/state/wg_tileskin.h
 	../../wondergui/skins/static/wg_staticblockskin.cpp
