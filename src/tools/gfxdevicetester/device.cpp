@@ -69,7 +69,7 @@ Device::Device( const string& name, GfxDevice * pDevice, CanvasRef canvasRef, Su
 	m_pDisplay = SurfaceDisplay::create( WGBP(SurfaceDisplay,
 											  _.skin = BoxSkin::create(WGBP(BoxSkin,
 																			_.color = Color::Black,
-																			_.outline = 2,
+																			_.outlineThickness = 2,
 																			_.outlineColor = Color::White,
 																			_.padding = 2 )),
 											  _.surface = m_pDisplaySurface

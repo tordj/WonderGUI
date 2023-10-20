@@ -606,13 +606,13 @@ Widget_p MyApp::createCharsPanel()
 
 	pWindow->scrollbarX.setBackground(BoxSkin::create(WGBP(BoxSkin,
 		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black)));
 	pWindow->scrollbarX.setBar(m_pPlateSkin);
 
 	pWindow->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
 		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black)));
 	pWindow->scrollbarY.setBar(m_pPlateSkin);
 
@@ -684,13 +684,13 @@ Widget_p MyApp::createOutputPanel()
 	
 	pWindow->scrollbarX.setBackground(BoxSkin::create(WGBP(BoxSkin,
 		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black)));
 	pWindow->scrollbarX.setBar(m_pPlateSkin);
 	
 	pWindow->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
 		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black)));
 	pWindow->scrollbarY.setBar(m_pPlateSkin);
 	
@@ -762,7 +762,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 
 	m_pSectionSkin = BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black,
 		_.padding = { 2,2,2,2 }
 	));

@@ -93,7 +93,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	pWindow->setSkin(ColorSkin::create(Color8::AntiqueWhite));
 	pWindow->scrollbarY.setBackground(BoxSkin::create(WGBP(BoxSkin,
 		_.color = Color8::DarkOliveGreen,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black)));
 	pWindow->scrollbarY.setBar(m_pPlateSkin);
 	pWindow->setAutohideScrollbars(true, false);
@@ -358,14 +358,14 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 
 	m_pSectionSkin = BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black,
 		_.padding = { 4,2,4,2 }
 	));
 
 	m_pInputBoxSkin = BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Grey,
 		_.padding = { 4,2,4,2 }
 	));
@@ -747,7 +747,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 	pRow->setAxis(Axis::X);
 	pRow->setSkin(BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black,
 		_.padding = { 4,2,4,2 }
 	)));
@@ -782,7 +782,7 @@ wg::Widget_p MyApp::_buildListSummarySection()
 	pSection->setAxis(Axis::Y);
 	pSection->setSkin(BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black,
 		_.padding = { 4,2,4,2 }
 	)));
@@ -886,7 +886,7 @@ wg::Widget_p MyApp::_buildExportSection()
 	pSection->setAxis(Axis::X);
 	pSection->setSkin(BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black,
 		_.padding = { 4,2,4,2 }
 	)));

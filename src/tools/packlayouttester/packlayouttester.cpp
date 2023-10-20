@@ -394,7 +394,7 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 
 	m_pSectionSkin = BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
-		_.outline = 1,
+		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black,
 		_.padding = { 2,2,2,2 }
 	));
