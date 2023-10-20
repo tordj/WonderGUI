@@ -128,7 +128,7 @@ bool WgFiller::_onAlphaTest( const WgCoord& ofs )
 		return true;
 
 	if(m_pSkin)
-		return _markTestSkin(m_pSkin, ofs, PixelSize(), wg::State::Normal, m_markOpacity, m_scale);
+		return _markTestSkin(m_pSkin, ofs, PixelSize(), wg::State::Default, m_markOpacity, m_scale);
 	
 	return false;
 }
