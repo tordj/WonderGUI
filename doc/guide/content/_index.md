@@ -20,7 +20,9 @@ BookToC: false
 
 ## Resources
 
-[Immutable objects](docs/resources/immutable_resource_objects)
+[Blobs](docs/resources/blobs)
+
+[Datasets](docs/resources/datasets)
 
 [Skins](docs/resources/skins)
 
@@ -29,6 +31,8 @@ BookToC: false
 ## Working with widgets
 
 [Overview](docs/widgets/widget_overview)
+
+[States](docs/widgets/widget_states)
 
 [Containers, Slots and children](docs/widgets/containers_slots_and_children)
 

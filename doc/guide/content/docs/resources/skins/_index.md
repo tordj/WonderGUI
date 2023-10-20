@@ -1,6 +1,6 @@
 ---
 title: 'Skins'
-weight: 20
+weight: 30
 ---
 
 
@@ -29,26 +29,49 @@ A skin isn't limited to any of these categories and some falls entirely outside,
 
 
 
-## Common properties for all skins
+## Properties available in all skins
 
-There are three properties that are common for all skins: margin, padding, markAlpha and layer.
+There are four properties that are available in all skins:
 
-### Margin and padding
+| Property  | Set in state | Description                                                  |
+| --------- | ------------ | ------------------------------------------------------------ |
+| finalizer | no           | A function that is called right before the Skin is destroyed. |
+| layer     | no           | CanvasLayer that skin is draw in. Defaults to 0.             |
+| margin    | no           | Border around skin.                                          |
+| markAlpha | no           | Lowest alpha value that results in hovering and press.       |
+| padding   | no           | Border around skin content inside skin.                      |
 
-Margin and padding both specifies *Borders* and deals with the geometry of the widget. Margin is an empty area around the skin that is not rendered while padding specifies the distance from the edge of the skin to the area where the content of the widget is drawn. In the case of a button, the content is the text and/or icon. For a container the content is where all child widgets are drawn. Although a widget can place content outside the content area and even in the margin, all current widgets refrains from doing so.
+### *margin* and *padding*
+
+Margin and padding both specifies *Borders* and deals with the geometry of the widget. Margin is an empty area around the skin that is not rendered while padding specifies the distance from the edge of the skin to the area where the content of the widget is drawn. In the case of a button, the content is the text and/or icon. For a container the content is where all child widgets are drawn. Although a widget can place content outside the content area and even in the margin, all current widgets refrain from doing so.
 
 ![skin-borders](/docs/manual/skin-borders.png)
 
-### MarkAlpha
+### *markAlpha*
 
 MarkAlpha is simply a value that determines what alpha-value a pixel of the skin should have in order to be clickable. Setting this to 0 makes the whole skin (except for the margin) opaque to the mouse. Setting it to higher than 4096 makes it transparent to the mouse.
 
-### Layer
+### *layer*
 
-Layer simply specifies what layer to render the skin into when rendering to multiple layers. Layered rendering is a large topic on its own and will not be covered here.
+Layer simply specifies what layer to render the skin into when rendering to multiple layers. Layered rendering is both an experimental feature and a large topic on its own and will therefore not be covered here.
 
 
 
-## Common aspects of all state skins
+## Properties available in most skins
 
-...
+The following properties are available in most skins and works the same across them all.
+
+### *blendMode*
+
+The *blendMode* property specifies which blend mode to use when rendering the skin. Default is always *Blend*. Change this for various graphical effects. This is usually set for the whole skin and can't be  change with state or value.
+
+### *color*
+
+The color used for drawing or tinting the skin (for bitmap-based skins). This can usually be set per state in a StateSkin.
+
+### *gradient*
+
+Color gradient uses to tint the skin. If both color and gradient is defined, these are combined. This is usually set for the whole skin and can't be changed with state or value.
+
+
+
