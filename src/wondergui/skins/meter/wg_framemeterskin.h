@@ -45,7 +45,7 @@ namespace wg
 		struct FrameBP
 		{
 			Coord	coord;
-			int		duration;					// Millisec
+			int		duration = 1;					// Relative duration
 			GfxFlip	flip = GfxFlip::Normal;
 		};
 

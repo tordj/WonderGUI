@@ -1622,6 +1622,10 @@ bool animKnobTest(ComponentPtr<DynamicSlot> pSlot)
 	{
 		bp.frames.push_back({ { pts(0),pts(y * 64) },150 });
 	}
+	
+	bp.frames = { {{0,0}} , {{0,16}}, {{0,32}} };
+
+
 
 	auto pAnimSkin = FrameMeterSkin::create(bp);
 
