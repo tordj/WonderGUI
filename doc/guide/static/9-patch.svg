@@ -29,19 +29,19 @@
         <g transform="matrix(-4.59243e-17,-0.75,-0.4375,2.67891e-17,763.287,1272.64)">
             <path d="M826.772,354.331C802.507,355.227 826.336,396.751 803.15,401.575C826.205,405.977 802.37,448.385 826.772,448.819" style="fill:none;stroke:black;stroke-width:2.13px;"/>
         </g>
-        <g transform="matrix(1,0,0,1,-29.1711,4.68903)">
-            <text x="429.658px" y="687.812px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20.833px;">Left border</text>
+        <g transform="matrix(1,0,0,1,-18.3708,4.58031)">
+            <text x="429.658px" y="687.812px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:16.667px;">Left border</text>
         </g>
-        <g transform="matrix(1,0,0,1,99.657,4.68903)">
-            <text x="429.658px" y="687.812px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20.833px;">Right border</text>
+        <g transform="matrix(1,0,0,1,111.096,4.37686)">
+            <text x="429.658px" y="687.812px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:16.667px;">Right border</text>
         </g>
-        <g transform="matrix(1,0,0,1,207.649,-176.836)">
-            <text x="429.658px" y="687.812px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20.833px;">T<tspan x="440.075px 451.661px " y="687.812px 687.812px ">op</tspan></text>
-            <text x="429.658px" y="709.327px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20.833px;">border</text>
+        <g transform="matrix(1,0,0,1,207.649,-179.836)">
+            <text x="429.658px" y="687.812px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:16.667px;">T<tspan x="437.991px 447.261px " y="687.812px 687.812px ">op</tspan></text>
+            <text x="429.658px" y="705.024px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:16.667px;">border</text>
         </g>
-        <g transform="matrix(1,0,0,1,206.774,-71.7756)">
-            <text x="429.658px" y="687.812px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20.833px;">Bottom</text>
-            <text x="429.658px" y="709.327px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:20.833px;">border</text>
+        <g transform="matrix(1,0,0,1,206.949,-65.7083)">
+            <text x="429.658px" y="687.812px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:16.667px;">Bottom</text>
+            <text x="429.658px" y="705.024px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:16.667px;">border</text>
         </g>
         <g id="Forward--small-" serif:id="Forward (small)" transform="matrix(0.468691,1.98521e-32,0,0.536865,397.45,399.011)">
             <path d="M311.2,217.5L300,206.5L300,213L286,213L286,222L300,222L300,228.5L311.2,217.5Z" style="fill-rule:nonzero;"/>

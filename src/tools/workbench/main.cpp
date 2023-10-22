@@ -61,6 +61,9 @@ void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, cons
 
 bool	bQuit = false;
 
+BlockSkin_p m_pSimpleButtonSkin;
+FreeTypeFont_p m_pFont;
+
 
 void freeSDLSurfCallback( void * pSDLSurf )
 {
@@ -116,7 +119,7 @@ bool customSkinTest(ComponentPtr<DynamicSlot> pSlot);
 bool graphDisplayTest(ComponentPtr<DynamicSlot> pSlot);
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pSlot);
 bool skinMarginTest(ComponentPtr<DynamicSlot> pSlot);
-
+bool widgetRecording(ComponentPtr<DynamicSlot> pSlot);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -504,14 +507,14 @@ int main(int argc, char** argv)
 
 		Blob_p pFontFile = loadBlob("resources/DroidSans.ttf");
 
-		FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile);
+		m_pFont = FreeTypeFont::create(pFontFile);
 
-		TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .font = pFont, .size = 16 });
+		TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .font = m_pFont, .size = 16 });
 		Base::setDefaultStyle(pStyle);
 
 
 		TextStyle_p pStyle2 = TextStyle::create({ .color = Color::Black,
-													.font = pFont,
+													.font = m_pFont,
 													.size = 16,
 													.states = { {State::Hovered, {.color = Color::Grey, .size = 17} }, {State::Pressed, {.color = Color::Red }} }
 			});
@@ -530,11 +533,11 @@ int main(int argc, char** argv)
 		convertSDLFormat(&pixelDesc, pSDLSurf->format);
 		Surface_p pButtonSurface = pSurfaceFactory->createSurface({ .format = PixelFormat::BGR_8, .size = SizeI(pSDLSurf->w, pSDLSurf->h) }, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 		SDL_FreeSurface(pSDLSurf);
-		BlockSkin_p pSimpleButtonSkin = BlockSkin::create({
+		m_pSimpleButtonSkin = BlockSkin::create({
 			.axis = wg::Axis::X,
 			.frame = 3,
 			.padding = 5,
-			.states = { State::Hovered, {}, State::Pressed, {}, State::Disabled, {} },
+			.states = { {State::Hovered}, {State::Pressed, {.contentShift = Coord(2.f,2.f) }}, {State::Disabled} },
 			.surface = pButtonSurface
 			});
 
@@ -675,7 +678,7 @@ int main(int argc, char** argv)
 		//	splitPanelTest(pSlot);
 		//	designLayerTest(pSlot);
 		//	pianoKeyboardTest(pSlot);
-			sliderTest(pSlot);
+		//	sliderTest(pSlot);
 		//	rangeSliderTest(pSlot);
 		//	pieKnobTest(pSlot);
 		//	spinKnobTest(pSlot);
@@ -705,6 +708,7 @@ int main(int argc, char** argv)
 		//	graphDisplayTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
+		widgetRecording(pSlot);
 
 
 		//------------------------------------------------------
@@ -1508,8 +1512,8 @@ bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 											.emptyColor = Color::DarkGrey,
 											.hubColor = Color::Transparent,
 											.hubSize = 0.75f,
-											.maxLength = 4.f / 12.f,
-											.minLength = 0.05f,
+											.maxPie = 4.f / 12.f,
+											.minPie = 0.05f,
 											.rotation = 10.f / 12.f,
 											.slices = { 1.f, Color::Green, Color::Red } 
 										});
@@ -1520,8 +1524,8 @@ bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 										.emptyColor = Color::DarkGrey,
 										.hubColor = Color::Transparent,
 										.hubSize = 0.75f,
-										.maxLength = 4.f / 12.f,
-										.minLength = 1 / 24.f,
+										.maxPie = 4.f / 12.f,
+										.minPie = 1 / 24.f,
 										.rotation = 10.f / 12.f,
 										.slices = { {0.2f, Color::Red, Color::Red}, 
 													{0.2f, Color::Orange, Color::Orange}, 
@@ -1533,8 +1537,8 @@ bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 									.emptyColor = Color::DarkGrey,
 									.hubColor = Color::Yellow,
 									.hubSize = 0.25f,
-									.maxLength = 4.f / 12.f,
-									.minLength = 0 / 24.f,
+									.maxPie = 4.f / 12.f,
+									.minPie = 0 / 24.f,
 									.movingSlices = true,
 									.rotation = 10.f / 12.f,
 									.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
@@ -2914,6 +2918,31 @@ bool skinMarginTest(ComponentPtr<DynamicSlot> pEntry)
 	pPanel->setLayout(pLayout);
 
 	*pEntry = pPanel;
+
+	return true;
+}
+
+//____ widgetRecording() ______________________________________________________
+
+bool widgetRecording(ComponentPtr<DynamicSlot> pEntry)
+{
+
+	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::White) });
+
+	auto pButton = Button::create({ .skin = m_pSimpleButtonSkin });
+	pBack->slots.pushBack( pButton, { .pos = {20,20}, .size = { 100, 50} } );
+
+	TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .font = m_pFont, .size = 20 });
+
+	auto pLayout = BasicTextLayout::create({ .placement = Placement::Center });
+
+
+	pButton->label.setText("EDIT");
+	pButton->label.setStyle(pStyle);
+	pButton->label.setLayout(pLayout);
+
+
+	*pEntry = pBack;
 
 	return true;
 }

@@ -46,8 +46,8 @@ namespace wg
 	{
 
 		m_rangeStart = bp.rotation;
-		m_minRange = bp.minLength;
-		m_maxRange = bp.maxLength;
+		m_minRange = bp.minPie;
+		m_maxRange = bp.maxPie;
 		m_hubSize = bp.hubSize;
 		
 		m_hubColor = bp.hubColor;

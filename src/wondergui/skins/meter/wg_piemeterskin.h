@@ -68,8 +68,8 @@ namespace wg
 			Border		margin;
 			int			markAlpha = 1;
 
-			float		maxLength = 0.9f;
-			float		minLength = 0.01f;
+			float		maxPie = 0.9f;
+			float		minPie = 0.01f;
 
 			bool		movingSlices = false;
 
