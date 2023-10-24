@@ -49,7 +49,6 @@ bool EditorWindow::_setupGUI()
 	auto pMainContainer = PackPanel::create();
 	pMainContainer->setAxis(Axis::Y);
 
-
 	// Create and setup the top-bar
 
 	auto pTopBar = _createTopBar();
@@ -76,7 +75,8 @@ bool EditorWindow::_setupGUI()
 
 
 	pMainContainer->setLayout(PackLayout::create(WGBP(PackLayout,
-		_.expandFactor = PackLayout::Factor::Weight
+		_.expandFactor = PackLayout::Factor::Weight,
+		_.shrinkFactor = PackLayout::Factor::Weight
 		)));
 
 
