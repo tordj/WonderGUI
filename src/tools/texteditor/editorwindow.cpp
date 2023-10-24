@@ -56,8 +56,7 @@ bool EditorWindow::_setupGUI()
 
 	// Create our TextEditor widget
 
-	auto pTextEditor = TextEditor::create(WGBP(TextEditor,
-		_.skin = m_pApp->m_pSectionSkin));
+	auto pTextEditor = TextEditor::create( { .skin = m_pApp->m_pSectionSkin });
 
 
 	// Create and setup a scrollpanel to wrap the text editor.
@@ -74,10 +73,10 @@ bool EditorWindow::_setupGUI()
 	pMainContainer->setSlotWeight(0, 2, { 0.f, 1.f });
 
 
-	pMainContainer->setLayout(PackLayout::create(WGBP(PackLayout,
-		_.expandFactor = PackLayout::Factor::Weight,
-		_.shrinkFactor = PackLayout::Factor::Weight
-		)));
+	pMainContainer->setLayout(PackLayout::create( {
+		.expandFactor = PackLayout::Factor::Weight,
+		.shrinkFactor = PackLayout::Factor::Weight
+	} ));
 
 
 	m_pRootPanel->slot = pMainContainer;

@@ -50,8 +50,8 @@ namespace wg
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = HiColor::Undefined;
 			int			cycleDuration = 1000;
-			Border		destPadding;
 			Finalizer_p	finalizer = nullptr;
+			Border		gfxPadding;
 			Gradient	gradient;
 			int			layer = -1;
 			Border		margin;

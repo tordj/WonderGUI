@@ -14,7 +14,7 @@ The widget provided single value determines the offset into the animation to dis
 
 | Property  | Description                 |
 | --------- | --------------------------- |
-| blendMode | BlendMode used for bar and its background. |
+| blendMode | BlendMode used. |
 | color | Tint color for the frames. |
 | frames | A vector with the frames of the animation. |
 | gfxPadding | Like contentPadding, but for the animation. |

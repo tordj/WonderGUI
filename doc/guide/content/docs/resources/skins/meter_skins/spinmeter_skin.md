@@ -14,7 +14,7 @@ Displays a surface that is rotated according to the widget provided single value
 | --------- | --------------------------- |
 | angleBegin | The rotation angle in degrees for value 0.0. Defaults to 0. |
 | angleEnd | The rotation angle in degrees for value 1.0. Defaults to 360. |
-| blendMode | BlendMode used for bar and its background. |
+| blendMode | BlendMode used. |
 | color | Tint color for the surface. |
 | defaultSize | Default size for this skin. |
 | gfxPadding | Like contentPadding, but for the graphics of the skin. |

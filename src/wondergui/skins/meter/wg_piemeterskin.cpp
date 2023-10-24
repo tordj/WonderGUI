@@ -45,9 +45,13 @@ namespace wg
 	PieMeterSkin::PieMeterSkin( const Blueprint& bp ) : Skin(bp)
 	{
 
-		m_rangeStart = bp.rotation;
-		m_minRange = bp.minPie;
-		m_maxRange = bp.maxPie;
+		m_rangeStart = bp.rotation / 360;
+		if( m_rangeStart < 0.f )
+			m_rangeStart += 1.f;
+		
+		
+		m_maxRange = bp.length / 360.f;
+		m_minRange = bp.min * (bp.length / 360.f);
 		m_hubSize = bp.hubSize;
 		
 		m_hubColor = bp.hubColor;
@@ -56,7 +60,7 @@ namespace wg
 
 		m_gfxPadding = bp.gfxPadding;
 		m_bStaticSections = !bp.movingSlices;
-		m_bRectangular = bp.rectangular;
+		m_bRectangular = bp.square;
 
 		// Copy slices
 

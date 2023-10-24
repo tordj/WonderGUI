@@ -53,7 +53,7 @@ namespace wg
 		m_fromDegrees(bp.angleBegin),
 		m_toDegrees(bp.angleEnd),
 		m_zoom(bp.zoom),
-		m_gfxPadding(bp.destPadding),
+		m_gfxPadding(bp.gfxPadding),
 		m_cycleDuration(bp.cycleDuration),
 		m_color(bp.color),
 		m_gradient(bp.gradient),
