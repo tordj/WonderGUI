@@ -692,7 +692,7 @@ int main(int argc, char** argv)
 		//	tileSkinTest(pSlot);
 		//	gradientSkinTest(pSlot);
 		//	bakeSkinTest(pSlot);
-			animSkinTest(pSlot);
+		//	animSkinTest(pSlot);
 		//	renderLayerTest(pSlot);
 		//	rigidPartNinePatchTest(pSlot);
 		//	scrollSkinTest(pSlot);
@@ -705,7 +705,7 @@ int main(int argc, char** argv)
 		//	memHeapFragmentationTest(pSlot);
 		//	blendRGB565BigendianTest( pSlot );
 		//	twoSlotPanelTest(pSlot);
-		//	customSkinTest(pSlot);
+			customSkinTest(pSlot);
 		//	graphDisplayTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
@@ -2687,20 +2687,43 @@ bool customSkinTest(ComponentPtr<DynamicSlot> pEntry)
 	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
 	
 	auto pFiller = Filler::create();
-
-	auto pCustomSkin = CustomSkin::create( WGBP(CustomSkin,
+/*
+	auto pLambdaSkin = LambdaSkin::create( WGBP(LambdaSkin,
 												_.renderFunc = [](GfxDevice* pDevice,const RectSPX& canvas, int scale, State state, float value1, float value2)
 												{
 		pDevice->fill( canvas, HiColor::White );
 		pDevice->drawElipse(canvas, 64*4, Color8::Green, 64, Color8::Black );
 		
 												} ));
+*/
 
-	pFiller->setSkin( pCustomSkin );
+	auto pLambdaSkin = LambdaSkin::create({
+		.markTestFunc = [](const CoordSPX& pos, const RectSPX& canvas, int scale, State state, float value1, float value2, int minAlpha )
+		{
+			RectSPX canv = canvas;
+			canv.w = canvas.w * value1;
+			return canv.contains(pos);
+		},
+		
+		.renderFunc = [](GfxDevice* pDevice,const RectSPX& canvas,
+						 int scale, State state, float value1, float value2)
+		{
+			RectSPX canv = canvas;
+			canv.w = canvas.w * value1;
+			pDevice->fill( canv, Color::Green );
+		},
+		.ignoreState = true
+	});
+
+
+	auto pKnob = Knob::create( { .skin = pLambdaSkin } );
 	
+	pKnob->setValue(1.f);
 	
-	
-	pFlex->slots.pushBack(pFiller, { .pos = {10,10}, .size = {200,200} });
+//	pFiller->setSkin( pLambdaSkin );
+
+//	pFlex->slots.pushBack(pFiller, { .pos = {10,10}, .size = {200,200} });
+	pFlex->slots.pushBack(pKnob, { .pos = {10,10}, .size = {200,200} });
 
 	*pEntry = pFlex;
 

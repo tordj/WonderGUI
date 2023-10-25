@@ -54,7 +54,7 @@
 #include <wg_component.h>
 #include <wg_componentptr.h>
 #include <wg_container.h>
-#include <wg_customskin.h>
+#include <wg_lambdaskin.h>
 #include <wg_dataset.h>
 #include <wg_designoverlay.h>
 #include <wg_doubleskin.h>

@@ -230,4 +230,11 @@ namespace wg
 		return m_value;
 	}
 
+	//____ _alphaTest() _________________________________________________________
+
+	bool Knob::_alphaTest( const CoordSPX& ofs )
+	{
+		return m_skin.markTest( ofs, RectSPX(m_size), m_scale, m_state, m_value );
+	}
+
 } // namespace wg

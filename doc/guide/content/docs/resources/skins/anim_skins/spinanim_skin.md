@@ -61,30 +61,28 @@ The *zoom* property can be used to make your graphics larger or smaller. A zoom 
 Continous clockwise rotation of a surface at one revolution per two seconds:
 
 ```c++
-	auto pTransition = ValueTransition::create( 2000000, TransitionCurve::Linear );
-);
+auto pTransition = ValueTransition::create( 2000000, TransitionCurve::Linear );
 
-	auto pAnimSkin = SpinAnimSkin::create({
-		.angleBegin = 0.f,
-		.angleEnd = 360.f,
-		.surface = pWheelSurf,
-		.transition = pTransition
-	});
+auto pAnimSkin = SpinAnimSkin::create({
+	.angleBegin = 0.f,
+	.angleEnd = 360.f,
+	.surface = pWheelSurf,
+	.transition = pTransition
+});
 ```
 
 Animation of a hammer that rotates 90 degrees to hit an imaginary nail and then returns back for another round:
 
 ```c++
-	auto pTransition = ValueTransition::create( 500000, TransitionCurve::EaseIn );
-	auto pReturnTransition = ValueTransition::create( 500000, TransitionCurve::EaseOut );
+auto pTransition = ValueTransition::create( 500000, TransitionCurve::EaseIn );
+auto pReturnTransition = ValueTransition::create( 500000, TransitionCurve::EaseOut );
 
-	auto pAnimSkin = SpinAnimSkin::create({
-		.angleBegin = 0.f,
-		.angleEnd = 90.f,
-		.returnTransition = pReturnTransition,
-		.surface = pHammerSurf,
-		.transition = pTransition
-	});
-
+auto pAnimSkin = SpinAnimSkin::create({
+	.angleBegin = 0.f,
+	.angleEnd = 90.f,
+	.returnTransition = pReturnTransition,
+	.surface = pHammerSurf,
+	.transition = pTransition
+});
 ```
 

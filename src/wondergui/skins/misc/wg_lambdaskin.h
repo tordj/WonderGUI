@@ -29,13 +29,13 @@
 namespace wg
 {
 
-	class CustomSkin;
+	class LambdaSkin;
 
-	typedef	StrongPtr<CustomSkin>	CustomSkin_p;
-	typedef	WeakPtr<CustomSkin>	CustomSkin_wp;
+	typedef	StrongPtr<LambdaSkin>	LambdaSkin_p;
+	typedef	WeakPtr<LambdaSkin>	LambdaSkin_wp;
 
 
-	class CustomSkin : public Skin
+	class LambdaSkin : public Skin
 	{
 	public:
 
@@ -46,7 +46,10 @@ namespace wg
 
 		struct Blueprint
 		{
+			Size			defaultSize;
 			Finalizer_p		finalizer = nullptr;
+			bool			ignoreState = false;
+			bool			ignoreValue = false;
 			int				layer = -1;
 			Border			margin;
 			int				markAlpha = 1;
@@ -59,7 +62,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static CustomSkin_p create( const Blueprint& blueprint );
+		static LambdaSkin_p create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
@@ -74,12 +77,21 @@ namespace wg
 		void		_render(	GfxDevice * pDevice, const RectSPX& canvas, int scale, State state,
 							float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
+		SizeSPX		_defaultSize(int scale) const override;
+
+		RectSPX		_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState,
+									float newValue = 1.f, float oldValue = 1.f,
+									float newValue2 = -1.f, float oldValue2 = -1.f,
+									int newAnimPos = 0, int oldAnimPos = 0,
+									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
+
 	private:
-		CustomSkin( const Blueprint& blueprint );
-		~CustomSkin() {};
+		LambdaSkin( const Blueprint& blueprint );
+		~LambdaSkin() {};
 
 		MarkTestFunc	m_markTestFunc;
 		RenderFunc		m_renderFunc;
+		Size			m_defaultSize;
 	};
 
 

@@ -104,7 +104,11 @@ namespace wg
 		void			setValue(float value);
 		inline float	value() const { return m_value;	}
 
+		//.____ Internal ______________________________________________________
 
+		bool		_alphaTest(const CoordSPX& ofs) override;
+
+		
 	protected:
 		Knob() {};
 		
@@ -125,6 +129,7 @@ namespace wg
 		void		_setValue(float value, bool bPostMsg = true);
 
 		float		_skinValue(const SkinSlot* pSlot) const override;
+
 
 	private:
 		pts			m_dragRange = 200;

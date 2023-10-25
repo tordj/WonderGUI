@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_customskin.h>
+#include <wg_lambdaskin.h>
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
@@ -29,37 +29,41 @@
 namespace wg
 {
 
-	const TypeInfo CustomSkin::TYPEINFO = { "CustomSkin", &Skin::TYPEINFO };
+	const TypeInfo LambdaSkin::TYPEINFO = { "LambdaSkin", &Skin::TYPEINFO };
 
 	using namespace Util;
 
 	//____ create() _______________________________________________________________
 
-	CustomSkin_p CustomSkin::create(const Blueprint& blueprint)
+	LambdaSkin_p LambdaSkin::create(const Blueprint& blueprint)
 	{
-		return CustomSkin_p(new CustomSkin(blueprint));
+		return LambdaSkin_p(new LambdaSkin(blueprint));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	CustomSkin::CustomSkin( const Blueprint& bp ) : Skin(bp)
+	LambdaSkin::LambdaSkin( const Blueprint& bp ) : Skin(bp)
 	{
+		m_defaultSize		= bp.defaultSize;
 		m_bOpaque			= bp.opaque;
 	
 		m_markTestFunc		= bp.markTestFunc;
 		m_renderFunc		= bp.renderFunc;
+		
+		m_bIgnoresState		= bp.ignoreState;
+		m_bIgnoresValue		= bp.ignoreValue;
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& CustomSkin::typeInfo(void) const
+	const TypeInfo& LambdaSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ _render() ______________________________________________________________
 
-	void CustomSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void LambdaSkin::_render( GfxDevice * pDevice, const RectSPX& _canvas, int scale, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (m_renderFunc)
 		{
@@ -81,12 +85,19 @@ namespace wg
 
 	//____ _markTest() _________________________________________________________
 
-	bool CustomSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride ) const
+	bool LambdaSkin::_markTest( const CoordSPX& ofs, const RectSPX& _canvas, int scale, State state, float value, float value2, int alphaOverride ) const
 	{
 		RectSPX canvas = _canvas - align(ptsToSpx(m_margin, scale));
 
+		int alpha = alphaOverride != -1 ? alphaOverride : m_markAlpha;
+		
+		if( alpha == 0 )
+			return true;
+		else if( alpha > 4096 )
+			return true;
+		
 		if( m_markTestFunc )
-			return m_markTestFunc(ofs,canvas,scale,state,value,value2,alphaOverride != -1 ? alphaOverride : m_markAlpha);
+			return m_markTestFunc(ofs,canvas,scale,state,value,value2,alpha);
 		else
 		{
 			if (canvas.contains(ofs))
@@ -94,6 +105,31 @@ namespace wg
 			else
 				return false;
 		}
+	}
+
+	//____ _defaultSize() ______________________________________________________________
+
+	SizeSPX LambdaSkin::_defaultSize(int scale) const
+	{
+		if( m_defaultSize.isEmpty() )
+			return SizeSPX(align(ptsToSpx(m_margin,scale)) + align(ptsToSpx(m_padding,scale)));
+		else
+			return align(ptsToSpx(m_defaultSize,scale));
+	}
+
+	//____ _dirtyRect() ________________________________________________________
+
+	RectSPX LambdaSkin::_dirtyRect(const RectSPX& canvas, int scale, State newState, State oldState, float newValue, float oldValue,
+								   float newValue2, float oldValue2, int newAnimPos, int oldAnimPos, float* pNewStateFractions,
+								   float* pOldStateFractions) const
+	{
+		if( newState != oldState && !m_bIgnoresState )
+			return canvas;
+
+		if( (newValue != oldValue || newValue2 != oldValue2) && !m_bIgnoresValue )
+			return canvas;
+
+		return RectSPX();
 	}
 
 } // namespace wg
