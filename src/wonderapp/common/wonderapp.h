@@ -105,8 +105,6 @@ public:
 		virtual LibId			openLibrary(const std::string& path) = 0;
 		virtual void*			loadSymbol(LibId lib, const std::string& symbol) = 0;
 		virtual bool			closeLibrary(LibId lib) = 0;
-
-
 	};
 
 	virtual bool	init(Visitor* pVisitor) = 0;

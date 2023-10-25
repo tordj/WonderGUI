@@ -51,7 +51,8 @@ namespace wg
 		
 		bool		requestFocus(uintptr_t windowRef) override;
 		bool		yieldFocus(uintptr_t windowRef) override;
-
+		bool		lockHidePointer() override;
+		bool		unlockShowPointer() override;
 		
 	protected:
 

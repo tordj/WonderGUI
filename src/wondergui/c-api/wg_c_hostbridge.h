@@ -39,7 +39,9 @@ extern "C" {
 	int		wg_requestWindowFocus( void * pHostBridge, uintptr_t windowRef);
 	int		wg_yieldWindowFocus(void* pHostBridge, uintptr_t windowRef);
 
-	
+	int		wg_lockHidePointer(void* pHostBridge);
+	int		wg_unlockShowPointer(void* pHostBridge);
+
 
 #ifdef __cplusplus
 }

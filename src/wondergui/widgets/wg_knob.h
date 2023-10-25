@@ -57,6 +57,7 @@ namespace wg
 			bool			dropTarget	= false;
 			Finalizer_p		finalizer	= nullptr;
 			int				id			= 0;
+			bool			lockMouse	= true;
 			MarkPolicy		markPolicy	= MarkPolicy::AlphaTest;
 			bool			pickable	= false;
 			int				pickCategory= 0;
@@ -95,6 +96,8 @@ namespace wg
 		void			setWheelStepSize(float stepSize);
 		float			wheelStepSize() const { return m_wheelStepSize; }
 
+		void			setLockMouse(bool bLock);
+		bool			isLockingMouse() const { return m_bLockMouse;  }
 
 		//.____ Content _______________________________________________________
 
@@ -112,6 +115,7 @@ namespace wg
 			m_dragRange = bp.dragRange;
 			m_value		= bp.value;
 			m_wheelStepSize = bp.wheelStepSize;
+			m_bLockMouse = bp.lockMouse;
 		}
 		
 		virtual ~Knob() {};
@@ -124,12 +128,13 @@ namespace wg
 
 	private:
 		pts			m_dragRange = 200;
-		pts			m_dragged;
+		pts			m_dragged = 0;
 		float		m_value = 0.f;
 		float		m_valueAtPress = 0.f;
 		float		m_wheelStepSize = 0.01f;
 		int			m_nbSteps = 0;
 		Axis		m_dragAxis = Axis::Y;
+		bool		m_bLockMouse = true;
 	};
 
 

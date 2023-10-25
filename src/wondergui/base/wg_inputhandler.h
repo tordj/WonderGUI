@@ -74,6 +74,9 @@ namespace wg
 
 		bool		putText(const CharSeq& text);
 
+		bool		lockHidePointer();
+		bool		unlockShowPointer();
+
 		//.____ Behavior ____________________________________________________________
 
 		void		mapKey(int native_keycode, Key translated_keycode);

@@ -801,5 +801,26 @@ namespace wg
 		}
 	}
 
+	//____ lockHidePointer() __________________________________________________
+
+	bool InputHandler::lockHidePointer()
+	{
+		auto pHost = Base::hostBridge();
+		if (pHost)
+			return pHost->lockHidePointer();
+		else
+			return false;
+	}
+
+	//____ unlockShowPointer() __________________________________________________
+
+	bool InputHandler::unlockShowPointer()
+	{
+		auto pHost = Base::hostBridge();
+		if (pHost)
+			return pHost->unlockShowPointer();
+		else
+			return false;
+	}
 
 } // namespace wg

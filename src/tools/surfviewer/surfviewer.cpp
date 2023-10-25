@@ -192,6 +192,12 @@ Widget_p MyApp::createTopBar()
 	m_pPrevButton = pLeftButton;
 	m_pNextButton = pRightButton;
 
+
+	auto pKnobSkin = FillMeterSkin::create({ .defaultSize = {100,20 }, .direction = Direction::Right});
+	auto pKnob = Knob::create({ .skin = pKnobSkin });
+
+	pBar->slots << pKnob;
+
 	return pBar;
 }
 

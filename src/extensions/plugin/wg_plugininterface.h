@@ -91,6 +91,9 @@ typedef struct wg_hostbridge_calls_struct
 	int					(*requestWindowFocus)( void * pHostBridge, uintptr_t root );
 	int					(*yieldWindowFocus)(void* pHostBridge, uintptr_t root);
 
+	int					(*lockHidePointer)(void* pHostBridge);
+	int					(*unlockShowPointer)(void* pHostBridge);
+
 } wg_hostbridge_calls;
 
 //____ wg_bitmapcache_calls ___________________________________________________

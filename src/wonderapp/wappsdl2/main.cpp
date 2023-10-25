@@ -91,7 +91,6 @@ public:
 	void*			loadSymbol(WonderApp::LibId lib, const std::string& symbol) override;
 	bool			closeLibrary(WonderApp::LibId lib) override;
 
-
 protected:
 	void			convertSDLFormat(PixelDescription* pWGFormat, const SDL_PixelFormat* pSDLFormat);
 
@@ -104,6 +103,10 @@ class MyHostBridge : public HostBridge
 public:
 	bool		hidePointer() override;
 	bool		showPointer() override;
+
+	bool		lockHidePointer() override;
+	bool		unlockShowPointer() override;
+
 	
 	std::string	getClipboardText() override;
 	bool		setClipboardText(const std::string& text) override;
@@ -144,6 +147,11 @@ static const char * dialogNames[4] = { "ok", "okcancel", "yesno", "yesnocancel" 
 
 
 std::mutex g_winResizeEventMutex;
+
+SDL_Window*	g_pFocusedWindow = nullptr;
+
+CoordI		g_lockedPointerPos;
+CoordI		g_relModeVirtualPos;
 
 
 //____ main() _________________________________________________________________
@@ -464,7 +472,17 @@ bool process_system_events()
 
 			}
 
-			pInput->setPointer(pRootPanel, Coord(e.motion.x, e.motion.y));
+		
+			if (SDL_GetRelativeMouseMode() && g_pFocusedWindow)
+			{
+				g_relModeVirtualPos.x += e.motion.xrel;
+				g_relModeVirtualPos.y += e.motion.yrel;
+
+				pInput->setPointer(pRootPanel, { float(g_relModeVirtualPos.x), float(g_relModeVirtualPos.y) } );
+			}
+			else
+				pInput->setPointer(pRootPanel, Coord(e.motion.x, e.motion.y));
+
 			break;
 		}
 
@@ -555,12 +573,14 @@ bool process_system_events()
 
 				case SDL_WINDOWEVENT_FOCUS_GAINED:
 				{
+					g_pFocusedWindow = pWindow->SDLWindowPtr();
 					Base::inputHandler()->setFocusedWindow(pWindow->rootPanel());
 					break;
 				}
 
 				case SDL_WINDOWEVENT_FOCUS_LOST:
 				{
+					g_pFocusedWindow = nullptr;
 					Base::inputHandler()->setFocusedWindow(nullptr);
 					break;
 				}
@@ -993,6 +1013,50 @@ bool MyHostBridge::showPointer()
 	
 	return false;
 }
+
+//____ lockHidePointer() ______________________________________________________
+
+bool MyHostBridge::lockHidePointer()
+{
+
+
+	if (SDL_SetRelativeMouseMode(SDL_TRUE) == 0)
+	{
+		// Store mouse position and warp mouse to center of window so we can get large movements.
+
+		if (g_pFocusedWindow)
+		{
+			int w, h;
+
+			SDL_GetMouseState(&g_lockedPointerPos.x, &g_lockedPointerPos.y);
+			g_relModeVirtualPos = g_lockedPointerPos;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+//____ unlockShowPointer() ____________________________________________________
+
+bool MyHostBridge::unlockShowPointer()
+{
+	if (SDL_SetRelativeMouseMode(SDL_FALSE) == 0)
+	{
+		// Restore mouse position
+
+		if (g_pFocusedWindow)
+		{
+			SDL_WarpMouseInWindow(g_pFocusedWindow, g_lockedPointerPos.x, g_lockedPointerPos.y);
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 
 //____ getClipboardText() _____________________________________________________
 

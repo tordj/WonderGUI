@@ -25,6 +25,7 @@
 #include <wg_msg.h>
 #include <wg_base.h>
 #include <wg_msgrouter.h>
+#include <wg_inputhandler.h>
 
 namespace wg
 {
@@ -83,6 +84,14 @@ namespace wg
 		m_wheelStepSize = stepSize;
 	}
 
+	//____ setLockMouse() _____________________________________________________
+
+	void Knob::setLockMouse(bool bLock)
+	{
+		m_bLockMouse = bLock;
+	}
+
+
 	//____ setValue() _________________________________________________________
 
 	void Knob::setValue(float value)
@@ -124,6 +133,9 @@ namespace wg
 
 				if (pMsg->button() != MouseButton::Left)
 					break;
+			
+				if( m_bLockMouse )
+					Base::inputHandler()->lockHidePointer();
 
 				m_valueAtPress = m_value;
 				m_dragged = 0;
@@ -137,6 +149,9 @@ namespace wg
 
 				if (pMsg->button() != MouseButton::Left)
 					break;
+
+				if( m_bLockMouse )
+					Base::inputHandler()->unlockShowPointer();
 
 				pMsg->swallow();
 				break;

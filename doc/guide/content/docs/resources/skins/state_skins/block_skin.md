@@ -109,7 +109,7 @@ This only results in the lower border section being split up into three sections
 
 ## Examples
 
-In this example we have four blocks representing the states Default, Hovered, Pressed and Disabled of a simple button. Each block is 10x10 pixels, they are arranged horizontally and there is no spacing between them. The border around the center piece of the NinePatch is 4 pixels all around.
+In this example we have four blocks representing the states Default, Hovered, Pressed and Disabled of a simple button. Each block is 10x10 pixels, they are arranged horizontally and there is no spacing between them. The border around the center piece of the NinePatch should be set to 3 or 4 pixels all around. We set it to 4 to avoid any bleeding of nearby pixel when stretching the center.
 
 ![skin-borders](/docs/manual/9-patch-button.png)
 
@@ -131,13 +131,13 @@ auto pButtonSkin = BlockSkin::create( {
 
 As you can see we can just specify the states without any curly brackets or data when there is no state-specific data. We need to specify the same amount of states as we have blocks and in the right order.
 
-When stretching this graphics and changing states we now get the desired result:
+When stretching this graphics and changing states we now get the desired result. The animation below shows the button in default state (grey), hovered state (highlighted) and pressed state (dark grey, with inverted bevel, giving the impression of being pressed down):
 
-[animated gif]
+![state-animation](/docs/manual/9-patch-button-anim-1.gif)
 
 However, there is one more thing we want to do before we are done. If we add some text to the button we get the following effect:
 
-[animated gif]
+![state-animation](/docs/manual/9-patch-button-anim-2.gif)
 
 As you can see, the skin has a nice 3D-effect when pressed, but the text remains static, which looks weird. We solve this by adding some contentShifting to the pressed state:
 
@@ -152,7 +152,7 @@ auto pButtonSkin = BlockSkin::create( {
 });
 ```
 
-And finally we have a good looking button:
+And finally we have a decent looking button:
 
-[animated gif]
+![state-animation](/docs/manual/9-patch-button-anim-3.gif)
 

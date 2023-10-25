@@ -73,5 +73,19 @@ namespace wg
 		return PluginCalls::hostBridge->yieldWindowFocus(m_pHostBridge, windowRef);
 	}
 
+	//____ lockHidePointer() __________________________________________________
+
+	bool PluginHostBridge::lockHidePointer()
+	{
+		return PluginCalls::hostBridge->lockHidePointer(m_pHostBridge);
+	}
+
+	//____ unlockShowPointer() __________________________________________________
+
+	bool PluginHostBridge::unlockShowPointer()
+	{
+		return PluginCalls::hostBridge->unlockShowPointer(m_pHostBridge);
+	}
+
 
 } // namespace wg

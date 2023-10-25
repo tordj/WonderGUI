@@ -47,6 +47,7 @@ namespace wg
 			HiColor		backColor = HiColor::Transparent;
 			BlendMode	blendMode = BlendMode::Undefined;
 			HiColor		color = Color::Blue;
+			Size		defaultSize;						// Mandatory
 			Direction	direction = Direction::Right;
 			Finalizer_p	finalizer = nullptr;
 			Border		gfxPadding;
@@ -61,7 +62,6 @@ namespace wg
 
 			Border		overflow;
 			Border		padding;
-			Size		defaultSize;						// Mandatory
 			bool		startFromCenter = false;
 			pts			startLength = 0;
 		};

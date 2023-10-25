@@ -69,3 +69,13 @@ int wg_yieldWindowFocus(void* pHostBridge, uintptr_t windowRef)
 {
 	return getPtr(pHostBridge)->yieldFocus(windowRef);
 }
+
+int wg_lockHidePointer(void* pHostBridge)
+{
+	return getPtr(pHostBridge)->lockHidePointer();
+}
+
+int wg_unlockShowPointer(void* pHostBridge)
+{
+	return getPtr(pHostBridge)->unlockShowPointer();
+}

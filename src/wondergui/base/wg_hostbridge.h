@@ -40,6 +40,10 @@ namespace wg
 	public:
 		virtual bool		hidePointer() = 0;
 		virtual bool		showPointer() = 0;
+
+		virtual bool		lockHidePointer() = 0;
+		virtual bool		unlockShowPointer() = 0;
+
 		
 		virtual std::string	getClipboardText() = 0;
 		virtual bool		setClipboardText(const std::string& text) = 0;
