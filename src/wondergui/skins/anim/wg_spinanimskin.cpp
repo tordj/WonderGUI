@@ -54,18 +54,23 @@ namespace wg
 		m_toDegrees(bp.angleEnd),
 		m_zoom(bp.zoom),
 		m_gfxPadding(bp.gfxPadding),
-		m_cycleDuration(bp.cycleDuration),
 		m_color(bp.color),
 		m_gradient(bp.gradient),
-		m_blendMode(bp.blendMode)
+		m_blendMode(bp.blendMode),
+		m_pTransition(bp.transition),
+		m_pReturnTransition(bp.returnTransition)
 	{
 		//TODO: Also take frame opacity into account.
 
 		m_bOpaque = m_pSurface->isOpaque();
 	
-		for (int i = 0; i < StateBits_Nb; i++)
-			m_animationCycles[i] = bp.cycleDuration;
-
+		if( m_pTransition == nullptr )
+			m_pTransition = ValueTransition::create(1000000);
+		
+		m_cycleDuration = m_pTransition->duration();
+		if( m_pReturnTransition )
+			m_cycleDuration += m_pReturnTransition->duration();
+				
 		_updateOpacityFlag();
 	}
 
@@ -117,7 +122,21 @@ namespace wg
 
 		canvas -= align(ptsToSpx(m_gfxPadding, scale));
 
-		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees) * animPos / (float)m_cycleDuration;
+		float	degrees;
+		animPos = (animPos*1000) % m_cycleDuration;
+
+		if( animPos < m_pTransition->duration() )
+		{
+			degrees = m_pTransition->snapshot(animPos, m_fromDegrees, m_toDegrees);
+		}
+		else
+		{
+			// We do have a return transition if m_cycleDuration is larger than m_pTransition->duration().
+
+			animPos -= m_pTransition->duration();
+			degrees = m_pReturnTransition->snapshot(animPos, m_toDegrees, m_fromDegrees);
+		}
+
 
 		if (degrees < 0.f)
 			degrees = 360.f + (float)fmod(degrees, 360.f);

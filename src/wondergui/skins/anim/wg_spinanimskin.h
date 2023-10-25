@@ -27,6 +27,7 @@
 #include <wg_color.h>
 #include <wg_gradient.h>
 #include <wg_surface.h>
+#include <wg_transitions.h>
 
 namespace wg
 {
@@ -45,24 +46,25 @@ namespace wg
 
 		struct Blueprint
 		{
-			float		angleBegin = 0.f;
-			float		angleEnd = 360.f;
-			BlendMode	blendMode = BlendMode::Undefined;
-			HiColor		color = HiColor::Undefined;
-			int			cycleDuration = 1000;
-			Finalizer_p	finalizer = nullptr;
-			Border		gfxPadding;
-			Gradient	gradient;
-			int			layer = -1;
-			Border		margin;
-			int			markAlpha = 1;
-			Border		overflow;
-			Border		padding;
-			CoordF		pivot = { 0.5f, 0.5f };
-			CoordF		placement = { 0.5f, 0.5f };
-			Size		defaultSize;							// Mandatory
-			Surface_p	surface;								// Mandatory
-			float		zoom = 1.f;
+			float				angleBegin = 0.f;
+			float				angleEnd = 360.f;
+			BlendMode			blendMode = BlendMode::Undefined;
+			HiColor				color = HiColor::Undefined;
+			Size				defaultSize;							// Mandatory
+			Finalizer_p			finalizer = nullptr;
+			Border				gfxPadding;
+			Gradient			gradient;
+			int					layer = -1;
+			Border				margin;
+			int					markAlpha = 1;
+			Border				overflow;
+			Border				padding;
+			CoordF				pivot = { 0.5f, 0.5f };
+			CoordF				placement = { 0.5f, 0.5f };
+			ValueTransition_p	returnTransition;
+			Surface_p			surface;								// Mandatory
+			ValueTransition_p	transition;
+			float				zoom = 1.f;
 		};
 
 		//.____ Creation __________________________________________
@@ -97,8 +99,6 @@ namespace wg
 
 		void		_updateOpacityFlag();
 
-		int			m_animationCycles[StateBits_Nb];
-
 		int			m_cycleDuration;			// In millisec
 
 		Surface_p	m_pSurface;
@@ -113,6 +113,9 @@ namespace wg
 		BlendMode		m_blendMode = BlendMode::Undefined;
 		HiColor			m_color = HiColor::White;
 		Gradient		m_gradient;
+		
+		ValueTransition_p	m_pTransition;
+		ValueTransition_p	m_pReturnTransition;
 	};
 
 

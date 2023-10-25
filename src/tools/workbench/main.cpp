@@ -119,6 +119,7 @@ bool customSkinTest(ComponentPtr<DynamicSlot> pSlot);
 bool graphDisplayTest(ComponentPtr<DynamicSlot> pSlot);
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pSlot);
 bool skinMarginTest(ComponentPtr<DynamicSlot> pSlot);
+bool wgcombTest(ComponentPtr<DynamicSlot> pSlot);
 bool widgetRecording(ComponentPtr<DynamicSlot> pSlot);
 
 void nisBlendTest();
@@ -708,6 +709,7 @@ int main(int argc, char** argv)
 		//	graphDisplayTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
+		//  wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
 
 
@@ -1499,6 +1501,7 @@ bool pianoKeyboardTest(ComponentPtr<DynamicSlot> pSlot)
 
 bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 {
+
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin( ColorSkin::create(Color::PapayaWhip) );
 
@@ -1515,7 +1518,7 @@ bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 											.length = 4.f / 12.f * 360,
 											.min = 0.05f,
 											.rotation = 10.f / 12.f * 360,
-											.slices = { 1.f, Color::Green, Color::Red } 
+											.slices = {{ 1.f, Color::Green, Color::Red }}
 										});
 
 
@@ -1562,6 +1565,8 @@ bool pieKnobTest(ComponentPtr<DynamicSlot> pSlot)
 	pBaseLayer->slots.pushBack(pKnob4, { .pos = {340, 10}, .size = {100, 200} });
 	pBaseLayer->slots.pushBack(pKnob5, { .pos = {450, 10}, .size = {200, 100} });
 	*pSlot = pBaseLayer;
+ 
+ 
 	return true;
 }
 
@@ -2056,18 +2061,20 @@ bool animSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	Surface_p pSplashSurf = loadSurface("resources/splash.png");
 
-
+	auto pTransition = ValueTransition::create( 500000, TransitionCurve::EaseIn );
+	auto pReturnTransition = ValueTransition::create( 500000, TransitionCurve::EaseOut );
 
 	auto pAnimSkin = SpinAnimSkin::create({
 		.angleBegin = 0.f,
-		.angleEnd = 90.f,
+		.angleEnd = 360.f,
+		.padding = 80,
+		.defaultSize = { 256,256 },
+//		.returnTransition = pReturnTransition,
+		.surface = pSplashSurf,
+//		.transition = pTransition
+	});
 
-		.cycleDuration = 10000,
-											.padding = 80,
-											.defaultSize = { 256,256 },
-											.surface = pSplashSurf });
-
-	auto pAnimSkin2 = SpinAnimSkin::create({ .cycleDuration = 5000, .padding = 10, .defaultSize = { 256,256 }, .surface = pSplashSurf });
+	auto pAnimSkin2 = SpinAnimSkin::create({ .padding = 10, .defaultSize = { 256,256 }, .surface = pSplashSurf });
 
 	auto pBoxSkin = BoxSkin::create(2, Color::Red, Color::Black);
 
@@ -2966,7 +2973,7 @@ bool widgetRecording(ComponentPtr<DynamicSlot> pEntry)
 											.length = 120,
 											.min = 0.10f,
 											.rotation = -60,
-											.slices = { 1.f, Color::DarkBlue, Color::Blue }
+											.slices = {{ 1.f, Color::DarkBlue, Color::Blue }}
 										});
 
 
@@ -3011,6 +3018,81 @@ bool widgetRecording(ComponentPtr<DynamicSlot> pEntry)
 //	pBaseLayer->slots.pushBack(pKnob5, { .pos = {450, 10}, .size = {200, 100} });
 	
 	
+
+	return true;
+}
+
+//____ wgcombTest() ______________________________________________________
+
+bool wgcombTest(ComponentPtr<DynamicSlot> pEntry)
+{
+
+	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::White) });
+	*pEntry = pBack;
+
+	//
+
+	TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .font = m_pFont, .size = 20 });
+	auto pLayout = BasicTextLayout::create({ .placement = Placement::Center });
+
+	
+	Button::Blueprint bp = { .skin = m_pSimpleButtonSkin,
+							 .label.style = pStyle,
+							 .label.layout = pLayout
+	};
+
+	auto pButton1 = Button::create( WGOVR( bp, _.label.text = "OK" ));
+	auto pButton2 = Button::create( WGOVR( bp, _.label.text = "CANCEL" ));
+
+	pBack->slots.pushBack( pButton1, { .pos = {20,20}, .size = { 100, 50} } );
+	pBack->slots.pushBack( pButton2, { .pos = {140,20}, .size = { 100, 50} } );
+
+
+/*
+	PieMeterSkin::Blueprint baseBP = {
+		.backColor = Color::Black,
+		.emptyColor = Color::DarkGrey,
+		.hubColor = Color::Transparent,
+		.hubSize = 0.75f,
+		.length = 120,
+		.min = 0.10f,
+		.rotation = -60
+	};
+
+	//
+
+	auto pBgSkin1 = PieMeterSkin::create( WGCOMB( baseBP, _.movingSlices = true ));
+
+
+	auto pBgSkin2 = PieMeterSkin::create( WGCOMB( baseBP,
+		_.slices = { {1.f, Color::Green, Color::Green},
+		 			 {1.f, Color::Yellow, Color::Yellow},
+					 {1.f,Color::Red,Color::Red}
+					}
+	));
+
+	auto pBgSkin3 = PieMeterSkin::create( WGCOMB( baseBP,
+									_.hubColor = Color::Yellow,
+									_.hubSize = 0.25f,
+									_.movingSlices = true,
+									_.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
+												{0.2f,Color::Blue,Color::Blue},
+												{0.1f,Color::LightBlue,Color::LightBlue}
+									}
+		));
+
+
+	auto pKnob1 = Knob::create( { .dragAxis = Axis::X, .skin = pBgSkin1, .value = 0.0f });
+	auto pKnob2 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin2, .value = 0.5f });
+	auto pKnob3 = Knob::create( { .dragAxis = Axis::Y, .skin = pBgSkin3, .value = 1.0f });
+
+	pBack->slots.pushBack(pKnob1, { .pos = {10, 10}, .size = {150, 150} });
+	pBack->slots.pushBack(pKnob2, { .pos = {170, 10}, .size = {150, 150} });
+	pBack->slots.pushBack(pKnob3, { .pos = {330, 10}, .size = {150, 150} });
+//	pBaseLayer->slots.pushBack(pKnob4, { .pos = {340, 10}, .size = {100, 200} });
+//	pBaseLayer->slots.pushBack(pKnob5, { .pos = {450, 10}, .size = {200, 100} });
+	
+*/
 	
 	return true;
 }
