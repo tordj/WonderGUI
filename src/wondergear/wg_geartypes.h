@@ -86,6 +86,10 @@ template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T
 #define WGBP(T, ...)\
 	([&]{ wg::T::Blueprint _{}; __VA_ARGS__; return _; }())
 
+#define WGOVR(T, ...)\
+([&]{ auto _ = T; __VA_ARGS__; return _; }())
+
+
 #define WGTRACK(pObj) wg::Base::_trackObj(pObj, __FILE__, __LINE__ ) 
 
 

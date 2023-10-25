@@ -103,6 +103,59 @@ namespace wg
 		HiColor			m_midPoint;
 	};
 
+	//____ ValueTransition ____________________________________________________
+
+	class ValueTransition;
+	typedef	StrongPtr<ValueTransition>	ValueTransition_p;
+	typedef	WeakPtr<ValueTransition>	ValueTransition_wp;
+
+	class ValueTransition : public Transition
+	{
+	public:
+
+		//.____ Blueprint _____________________________________________________
+
+		struct Blueprint
+		{
+			TransitionCurve		curve = TransitionCurve::Linear;
+			int					duration = 250 * 1000;					// Microseconds!
+			Finalizer_p			finalizer = nullptr;
+		};
+
+
+		//.____ Creation ______________________________________________________
+
+		static ValueTransition_p	create( int duration, TransitionCurve curve = TransitionCurve::Linear);
+		static ValueTransition_p	create( const Blueprint& blueprint);
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Misc ___________________________________________________________
+
+		int		duration() const { return m_duration; }
+
+		float	snapshot(int timestampMicroSec, float startValue, float endValue);
+		int		snapshot(int timestampMicroSec, int startValue, int endValue);
+
+	protected:
+		ValueTransition(int duration, TransitionCurve curve);
+
+		template<class BP>
+		ValueTransition(const Blueprint& bp) :
+			m_duration(bp.duration),
+			m_curve(bp.curve)
+		{
+			if (bp.finalizer)
+				setFinalizer(bp.finalizer);
+		}
+
+		TransitionCurve	m_curve;
+		int				m_duration;		// Microseconds
+	};
+
 
 	//____ ArrayTransition ____________________________________________________
 
@@ -122,7 +175,6 @@ namespace wg
 			int					duration = 250 * 1000;					// Microseconds!
 			Finalizer_p			finalizer = nullptr;
 		};
-
 
 		//.____ Creation ______________________________________________________
 
@@ -155,12 +207,7 @@ namespace wg
 
 		TransitionCurve	m_curve;
 		int				m_duration;		// Microseconds
-
-
 	};
-
-
-
 }
 
 #endif //TRANSITIONS_DOT_H

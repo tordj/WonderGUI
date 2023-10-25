@@ -26,6 +26,7 @@ namespace wg
 {
 	const TypeInfo Transition::TYPEINFO = { "Transition", &Object::TYPEINFO };
 	const TypeInfo ColorTransition::TYPEINFO = { "ColorTransition", &Transition::TYPEINFO };
+	const TypeInfo ValueTransition::TYPEINFO = { "ValueTransition", &Transition::TYPEINFO };
 	const TypeInfo ArrayTransition::TYPEINFO = { "ArrayTransition", &Transition::TYPEINFO };
 
 
@@ -180,6 +181,50 @@ namespace wg
 		}
 	}
 
+
+	//____ ValueTransition::create() __________________________________________
+
+	ValueTransition_p ValueTransition::create(int duration, TransitionCurve curve)
+	{
+		return ValueTransition_p(new ValueTransition(duration, curve));
+	}
+
+	//____ ValueTransition::constructor ________________________________________
+
+	ValueTransition::ValueTransition(int duration, TransitionCurve curve) :
+		m_duration(duration),
+		m_curve(curve)
+	{
+	}
+
+	//____ typeInfo() ____________________________________________________________
+
+	const TypeInfo& ValueTransition::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+	//____ ValueTransition::snapshot() ________________________________________
+
+	int ValueTransition::snapshot(int timestamp, int startValue, int endValue)
+	{
+		limit(timestamp, 0, m_duration);
+
+		int64_t progress = _normalize(m_curve, m_duration, timestamp);
+		
+		return startValue + int(((endValue - startValue) * progress) >> 24);
+	}
+
+	//____ ValueTransition::snapshot() ________________________________________
+
+	float ValueTransition::snapshot(int timestamp, float startValue, float endValue)
+	{
+		limit(timestamp, 0, m_duration);
+
+		float progress = float(_normalize(m_curve, m_duration, timestamp)) / (65536.f*256.f);
+
+		return startValue + (endValue - startValue) * progress;
+	}
 
 
 	//____ ArrayTransition::create() __________________________________________
