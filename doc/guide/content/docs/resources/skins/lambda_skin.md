@@ -1,6 +1,6 @@
 ---
 title: 'LambdaSkin'
-weight: 30
+weight: 40
 ---
 
 
@@ -14,10 +14,10 @@ This makes it easy to make a simple skin with custom graphics. it doesn't suppor
 
 | Property  | Description                 |
 | --------- | --------------------------- |
-| ignoreState | Set to true if skin looks the same in all states. Defaults to false. |
-| ignoreValue | Set to false if skin looks the same independently of value parameters. Defaults to false. |
+| ignoreState | Set to true if skin looks the same regardless of state. Defaults to false. |
+| ignoreValue | Set to false if skin looks the same regardless of value parameters. Defaults to false. |
 | markTestFunc | Lambda expression for testing skin for mouse hovering. |
-| opaque | Set to true if skin will be totally opaque. Used for rendering optimisations and mouse pointer testing. |
+| opaque | Set to true if skin will be totally opaque under all circumstances. Used for rendering optimisations and mouse pointer testing. |
 | renderFunc | Lambda expression for rendering skin. |
 | defaultSize | Default size for this skin. |
 
@@ -54,7 +54,8 @@ Mark tests are done to determine if the pointer hovers above a certain widget or
 The mark test expression has the following declaration:
 
 ```c++
-void myMarkTestgFunction(bool(const CoordSPX& pos,const RectSPX& canvas,int scale,State state, float value1,float value2, int minAlpha )
+bool myMarkTestgFunction(const CoordSPX& pos, const RectSPX& canvas, int scale, 
+                         State state, float value1, float value2, int minAlpha )
 ```
 
 * pos - The coordinate to markTest.
@@ -81,8 +82,8 @@ auto pMySkin = LambdaSkin::create({
 	.renderFunc = [](GfxDevice* pDevice,const RectSPX& canvas, 
                      int scale, State state, float value1, float value2)
 	{
-		pDevice->fill( canvas, HiColor::White );
-		pDevice->drawElipse(canvas, 64*4, Color8::Green, 64, Color8::Black );
+		pDevice->fill( canvas, Color::White );
+		pDevice->drawElipse(canvas, scale*4, Color::Green, scale*1, Color::Black);
 	}
     .ignoreState = true,
     .ignoreValue = true
@@ -93,7 +94,7 @@ auto pMySkin = LambdaSkin::create({
 Create a meter skin similar to FillMeterSkin that gradually fills its canvas from left to right and where we only mark test the filled area (which doesn't make much sense, but makes a good example):
 
 ```c++
-auto pMySkin = CustomSkin::create({
+auto pMySkin = LambdaSkin::create({
 	.markTestFunc = [](const CoordSPX& pos, const RectSPX& canvas, int scale,
                        State state, float value1, float value2, int minAlpha )
 	{

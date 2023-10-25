@@ -63,9 +63,9 @@ namespace wg
 
 			CoordF		pivot = { 0.5f, 0.5f };
 			CoordF		placement = { 0.5f, 0.5f };
-			float		zoom = 1.f;
 
 			Surface_p	surface;							// Mandatory
+			float		zoom = 1.f;
 		};
 
 		//.____ Creation __________________________________________

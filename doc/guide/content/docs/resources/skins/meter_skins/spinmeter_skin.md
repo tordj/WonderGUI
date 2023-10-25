@@ -21,8 +21,8 @@ Displays a surface that is rotated according to the widget provided single value
 | gradient | Tint gradient for the frames. |
 | pivot | Center of rotation in the surface, expressed as coordinates in range 0.0 -> 1.0. Defaults to {0.5, 0.5}, placing the pivot in the center of the surface. |
 | placement | Where the pivot of the surface should be placed within the skin, expressed as coordinates in range 0.0 -> 1.0. Defaults to {0.5, 0.5}, placing the pivot of the surface in the center of the render rectangle. |
-| zoom | A zoom factor for the surface. 1.0 means that it will be stretched so that it nice fits the destination when not rotated. Defaults to 1.0. |
 | surface | The surface to rotate. |
+| zoom | A zoom factor for the surface. 1.0 means that it will be stretched so that it nice fits the destination when not rotated. Defaults to 1.0. |
 
 ## Designing graphics to rotate
 

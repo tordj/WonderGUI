@@ -18,7 +18,7 @@ It's very similar to SpinMeterSkin in properties and behavior, except that it ro
 | --------- | --------------------------- |
 | angleBegin | Rotation angle in degrees for the start of a rotation cycle. Default 0. |
 | angleEnd | Rotation angle in degrees for the end of a rotation cycle. Default 360. |
-| blendModde | BlendMode used. |
+| blendMode | BlendMode used. |
 | color | Tint color for the surface. |
 | defaultSize | Default size for this skin n pts. |
 | gfxPadding | Like contentPadding, but for the graphics of the skin.s |
