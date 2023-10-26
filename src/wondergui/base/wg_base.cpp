@@ -37,6 +37,7 @@
 #include <wg_textstylemanager.h>
 #include <wg_skinslotmanager.h>
 #include <wg_bitmapcache.h>
+#include <wg_packlayout.h>
 
 #include <iostream>
 #include <algorithm>
@@ -53,6 +54,7 @@ namespace wg
 	Caret_p			Base::s_pDefaultCaret;
 	NumberLayout_p	Base::s_pDefaultNumberLayout;
 	TextStyle_p		Base::s_pDefaultStyle;
+	PackLayout_p	Base::s_pDefaultPackLayout;
 
 	String			Base::s_clipboardText;
 
@@ -93,8 +95,12 @@ namespace wg
 
 		s_pDefaultTextLayout = BasicTextLayout::create({});
 
-
 		s_pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
+
+		s_pDefaultPackLayout = PackLayout::create( WGBP(PackLayout,
+														_.expandFactor = PackLayout::Factor::Weight,
+														_.shrinkFactor = PackLayout::Factor::Weight
+														));
 
 		s_pMsgRouter = MsgRouter::create();
       	s_pInputHandler = InputHandler::create();
@@ -176,7 +182,6 @@ namespace wg
 		return s_pDefaultTextLayout;
 	}
 
-
 	//____ setDefaultTextLayout() ___________________________________________________
 
 	void Base::setDefaultTextLayout( TextLayout * pTextLayout )
@@ -196,6 +201,20 @@ namespace wg
 	void Base::setDefaultNumberLayout(NumberLayout * pFormatter)
 	{
 		s_pDefaultNumberLayout = pFormatter;
+	}
+
+	//_____ defaultPackLayout() ________________________________________________
+
+	PackLayout_p Base::defaultPackLayout()
+	{
+		return s_pDefaultPackLayout;
+	}
+
+	//____ setDefaultPackLayout() ___________________________________________________
+
+	void Base::setDefaultPackLayout( PackLayout * pTextLayout )
+	{
+		s_pDefaultPackLayout = pTextLayout;
 	}
 
 	//____ defaultStyle() ______________________________________________________

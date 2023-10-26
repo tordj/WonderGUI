@@ -47,6 +47,7 @@ namespace wg
 	class NumberLayout;
 	class InputHandler;
 	class TextLayout;
+	class PackLayout;
 	class Caret;
 	class TextStyle;
 	class Receiver;
@@ -57,6 +58,7 @@ namespace wg
 	typedef	StrongPtr<TextLayout>		TextLayout_p;
 	typedef	StrongPtr<Caret>			Caret_p;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
+	typedef	StrongPtr<PackLayout>		PackLayout_p;
 
 
 
@@ -101,6 +103,9 @@ namespace wg
 		static void			setDefaultNumberLayout(NumberLayout * pFormatter);
 		static NumberLayout_p defaultNumberLayout();
 
+		static void			setDefaultPackLayout( PackLayout * pPackLayout );
+		static PackLayout_p defaultPackLayout();
+		
 		static void			setClipboardText( const String& text );
 		static String		getClipboardText();
 		
@@ -134,6 +139,7 @@ namespace wg
 		static	Caret_p			s_pDefaultCaret;
 		static	NumberLayout_p	s_pDefaultNumberLayout;
 		static	TextStyle_p		s_pDefaultStyle;
+		static	PackLayout_p	s_pDefaultPackLayout;
 
 
 		static	String			s_clipboardText;

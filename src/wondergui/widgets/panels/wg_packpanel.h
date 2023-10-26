@@ -133,7 +133,7 @@ namespace wg
 		//.____ Geometry ____________________________________________
 
 		void			setAxis( Axis orientaiton );
-		Axis			axis() const { return m_bHorizontal?Axis::X:Axis::Y; }
+		Axis			axis() const { return m_axis; }
 
 		//.____ Behavior ________________________________________________________
 
@@ -163,7 +163,7 @@ namespace wg
 		template< class BP> PackPanel(const BP& bp) : Panel(bp)
 		{
 			m_bSiblingsOverlap	= false;
-			m_bHorizontal		= bp.axis == Axis::X;
+			m_axis				= bp.axis;
 			m_pLayout			= bp.layout;
 			m_spacingBefore		= bp.spacingBefore;
 			m_spacingBetween	= bp.spacing;
@@ -207,11 +207,11 @@ namespace wg
 		void		_unhideChildren(PackPanelSlot * pSlot, int nb);
 
 		void		_refreshGeometries();
-		SizeSPX		_calcDefaultSize( int scale ) const;
+		SizeSPX		_calcDefaultContentSize( int scale ) const;
 		int			_populateLayoutArray( PackLayout::Item * pArray ) const;
 		int			_populateLayoutArray(PackLayout::Item* pArray, spx forcedBreadth ) const;
 
-		bool			m_bHorizontal;
+		Axis			m_axis = Axis::X;
 		PackLayout_p	m_pLayout;
 		SizeSPX			m_defaultContentSize;
 
