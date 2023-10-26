@@ -128,27 +128,25 @@ namespace wg
 		virtual ~Slider();
 		void 			_receive(Msg* pMsg) override;
 
-		void		_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
-		bool		_alphaTest(const CoordSPX& ofs) override;
-        void        _resize(const SizeSPX& size, int scale) override;
+		void			_render(GfxDevice * pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
+		bool			_alphaTest(const CoordSPX& ofs) override;
+        void        	_resize(const SizeSPX& size, int scale) override;
 
-		SizeSPX		_calcDefaultSize(int scale) const;
-		void		_updateDefaultSize(bool bRequestResize = true);
+		SizeSPX			_calcDefaultSize(int scale) const;
+		void			_updateDefaultSize(bool bRequestResize = true);
 
-		void		_setValue(float value, bool bPostMsg = true);
-		void		_setHandleState(State state);
-		RectSPX		_handleGeo(const RectSPX& widgetGeo) const;
+		virtual void	_setValue(float value, bool bPostMsg = true);
+		void			_setHandleState(State state);
+		RectSPX			_handleGeo(const RectSPX& widgetGeo) const;
 
-		float		_skinValue(const SkinSlot* pSlot) const override;
+		float			_skinValue(const SkinSlot* pSlot) const override;
 
-		State		_skinState(const SkinSlot* pSlot) const override;
-		SizeSPX		_skinSize(const SkinSlot* pSlot) const override;
-		void		_skinRequestRender(const SkinSlot* pSlot) override;
-		void		_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
+		State			_skinState(const SkinSlot* pSlot) const override;
+		SizeSPX			_skinSize(const SkinSlot* pSlot) const override;
+		void			_skinRequestRender(const SkinSlot* pSlot) override;
+		void			_skinRequestRender(const SkinSlot* pSlot, const RectSPX& rect) override;
 
-
-
-	private:
+		
 		SkinSlot	m_handleSkin;
 		SizeSPX		m_defaultSize;
 		pts			m_defaultSlideLength = 64;

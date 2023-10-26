@@ -299,6 +299,8 @@ namespace wg
 
 	void Slider::_setValue(float value, bool bPostMsg)
 	{
+		limit(value,0.0f,1.0f);
+		
 		if (m_nbSteps > 0)
 		{
 			int val = int(value * m_nbSteps + 0.5f);
