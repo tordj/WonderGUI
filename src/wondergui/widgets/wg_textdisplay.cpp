@@ -62,7 +62,7 @@ namespace wg
 
 	spx TextDisplay::_matchingWidth(spx height, int scale) const
 	{
-		SizeSPX padding = _contentBorderSize();
+		SizeSPX padding = m_skin.contentBorderSize(scale);
 
 		height -= padding.h;
 		spx textWidth = display._matchingWidth(height, scale);
@@ -74,7 +74,7 @@ namespace wg
 
 	spx TextDisplay::_matchingHeight(spx width, int scale) const
 	{
-		SizeSPX padding = _contentBorderSize();
+		SizeSPX padding = m_skin.contentBorderSize(scale);
 
 		width -= padding.w;
 		spx textHeight = display._matchingHeight(width, scale);

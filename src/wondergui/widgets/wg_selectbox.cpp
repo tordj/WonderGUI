@@ -502,7 +502,7 @@ namespace wg
 			return m_listCanvasMatchingHeight;
 		else
 		{
-			SizeSPX canvasPadding = m_pListCanvas->_contentBorderSize();
+			SizeSPX canvasPadding = m_pListCanvas->_contentBorderSize(scale);
 			SizeSPX entryPadding = m_pEntrySkin ? m_pEntrySkin->_contentBorderSize(m_scale) : SizeSPX();
 
 			spx contentWidth = width - canvasPadding.w - entryPadding.w;
