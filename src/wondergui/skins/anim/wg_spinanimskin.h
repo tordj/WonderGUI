@@ -35,7 +35,7 @@ namespace wg
 	class SpinAnimSkin;
 
 	typedef	StrongPtr<SpinAnimSkin>	SpinAnimSkin_p;
-	typedef	WeakPtr<SpinAnimSkin>		SpinAnimSkin_wp;
+	typedef	WeakPtr<SpinAnimSkin>	SpinAnimSkin_wp;
 
 
 	class SpinAnimSkin : public AnimSkin
@@ -48,7 +48,7 @@ namespace wg
 		{
 			float				angleBegin = 0.f;
 			float				angleEnd = 360.f;
-			BlendMode			blendMode = BlendMode::Undefined;
+			BlendMode			blendMode = BlendMode::Blend;
 			HiColor				color = HiColor::Undefined;
 			Size				defaultSize;							// Mandatory
 			Finalizer_p			finalizer = nullptr;
@@ -110,7 +110,7 @@ namespace wg
 		float		m_zoom;
 		Border		m_gfxPadding;
 
-		BlendMode		m_blendMode = BlendMode::Undefined;
+		BlendMode		m_blendMode = BlendMode::Blend;
 		HiColor			m_color = HiColor::White;
 		Gradient		m_gradient;
 		

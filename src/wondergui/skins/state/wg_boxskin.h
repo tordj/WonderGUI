@@ -67,7 +67,7 @@ namespace wg
 
 		struct Blueprint
 		{
-			BlendMode		blendMode = BlendMode::Undefined;
+			BlendMode		blendMode = BlendMode::Blend;
 			HiColor			color = HiColor::White;
 			Finalizer_p		finalizer = nullptr;
 			int				layer = -1;
@@ -120,7 +120,7 @@ namespace wg
 		void	_updateUnsetColors();
 
 		Border		m_outline;
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 		Bitmask<uint32_t>	m_stateOutlineColorMask = 1;

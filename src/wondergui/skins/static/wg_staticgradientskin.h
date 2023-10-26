@@ -43,7 +43,7 @@ namespace wg
 
 		struct Blueprint
 		{
-			BlendMode	blendMode = BlendMode::Undefined;
+			BlendMode	blendMode = BlendMode::Blend;
 			Finalizer_p	finalizer = nullptr;
 			Gradient	gradient;
 			int			layer = -1;

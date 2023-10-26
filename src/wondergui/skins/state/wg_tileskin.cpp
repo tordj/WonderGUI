@@ -97,9 +97,9 @@ namespace wg
 		}
 
 		_updateContentShift();
-		_updateOpaqueFlags();
 		_updateUnsetStateSurfaces();
 		_updateUnsetStateColors();
+		_updateOpaqueFlags();
 	}
 
 

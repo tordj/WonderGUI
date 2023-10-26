@@ -76,8 +76,8 @@ namespace wg
 		}
 
 		_updateContentShift();
-		_updateOpaqueFlag();
 		_updateUnsetColors();
+		_updateOpaqueFlag();
 	}
 
 	//____ typeInfo() _________________________________________________________

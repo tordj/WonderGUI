@@ -43,7 +43,7 @@ namespace wg
 
 		struct Blueprint
 		{
-			BlendMode	blendMode = BlendMode::Undefined;
+			BlendMode	blendMode = BlendMode::Blend;
 			HiColor		color = HiColor::White;
 			Finalizer_p	finalizer = nullptr;
 			int			layer = -1;

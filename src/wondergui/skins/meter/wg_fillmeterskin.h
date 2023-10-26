@@ -45,7 +45,7 @@ namespace wg
 		struct Blueprint
 		{
 			HiColor		backColor = HiColor::Transparent;
-			BlendMode	blendMode = BlendMode::Undefined;
+			BlendMode	blendMode = BlendMode::Blend;
 			HiColor		color = Color::Blue;
 			Size		defaultSize;						// Mandatory
 			Direction	direction = Direction::Right;
@@ -98,7 +98,7 @@ namespace wg
 		void		_updateOpacity();
 		RectSPX		_valueChangeRect(const RectSPX& canvas, int scale, State state, float oldFraction, float newFraction) const;
 
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode = BlendMode::Blend;
 		Direction	m_direction;
 		Border		m_gfxPadding;
         pts		    m_minBarLength;

@@ -54,7 +54,7 @@ namespace wg
 		{
 			HiColor		backColor = HiColor::Transparent;
 
-			BlendMode	blendMode = BlendMode::Undefined;
+			BlendMode	blendMode = BlendMode::Blend;
 			Size		defaultSize;
 			HiColor		emptyColor = Color::DarkBlue;
 
@@ -126,7 +126,7 @@ namespace wg
 
 		Border		m_gfxPadding;
 
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode = BlendMode::Blend;
 		HiColor		m_hubColor = HiColor::Transparent;
 		HiColor		m_backColor = HiColor::Transparent;
 		HiColor		m_emptyColor = Color::DarkBlue;

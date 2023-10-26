@@ -51,7 +51,7 @@ namespace wg
 
 		struct Blueprint
 		{
-			BlendMode				blendMode = BlendMode::Undefined;
+			BlendMode				blendMode = BlendMode::Blend;
 			HiColor					color = HiColor::Undefined;
 			Finalizer_p				finalizer = nullptr;
 			std::vector<FrameBP>	frames;			// Mandatory

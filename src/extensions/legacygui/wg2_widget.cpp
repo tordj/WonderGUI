@@ -644,7 +644,7 @@ void WgWidget::_onCollectPatches( WgPatches& container, const WgRect& geo, const
 
 void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-	if( (m_bOpaque && blendMode == WgBlendMode::Blend) || blendMode == WgBlendMode::Replace )
+	if( ((m_bOpaque || (m_pSkin && m_pSkin->isOpaque())) && blendMode == WgBlendMode::Blend) || blendMode == WgBlendMode::Replace )
 	{
 		patches.sub( WgRect::overlap( geo, clip ) );
 	}

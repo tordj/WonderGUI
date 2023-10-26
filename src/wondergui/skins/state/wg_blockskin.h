@@ -87,7 +87,7 @@ namespace wg
 		struct Blueprint
 		{
 			Axis		axis = Axis::Y;
-			BlendMode	blendMode = BlendMode::Undefined;
+			BlendMode	blendMode = BlendMode::Blend;
 			HiColor		color = HiColor::Undefined;
 			Finalizer_p	finalizer = nullptr;
 			Rect		firstBlock;						// Mandatory!
@@ -201,7 +201,7 @@ namespace wg
 		Surface_p	m_pSurface;
 		Gradient	m_gradient;
 
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateBlockMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;

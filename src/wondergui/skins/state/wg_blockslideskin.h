@@ -69,7 +69,7 @@ namespace wg
 		struct Blueprint
 		{
 
-			BlendMode		blendMode = BlendMode::Undefined;
+			BlendMode		blendMode = BlendMode::Blend;
 
 			pts				blockLength;					// Required!
 			HiColor			color = HiColor::Undefined;

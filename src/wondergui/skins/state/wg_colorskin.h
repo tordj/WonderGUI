@@ -60,7 +60,7 @@ namespace wg
 
 		struct Blueprint
 		{
-			BlendMode		blendMode = BlendMode::Undefined;
+			BlendMode		blendMode = BlendMode::Blend;
 
 			HiColor			color = HiColor::White;
 			Finalizer_p		finalizer = nullptr;
@@ -109,7 +109,7 @@ namespace wg
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();
 
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
