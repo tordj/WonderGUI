@@ -64,6 +64,17 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ resetCounters() ____________________________________________________
+
+	void StreamLogger::resetCounters()
+	{
+		m_streamOffset = 0;
+		m_chunkNb = 0;
+		m_beginRenderNb = 0;
+	}
+
+
+
 	//____ _processStreamChunks() _____________________________________________
 
 	void StreamLogger::_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd)
@@ -97,6 +108,13 @@ namespace wg
 		{			
 			m_charStream << toString(header.type);
 
+			if (header.type == GfxChunkId::BeginRender)
+			{
+				m_beginRenderNb++;
+				m_charStream << " [" << m_beginRenderNb << "]";
+			}
+
+
 			switch( header.spxFormat )
 			{
 				case GfxStream::SpxFormat::Int32_dec:
@@ -111,7 +129,7 @@ namespace wg
 					m_charStream << " (spx8_int)";
 					break;
 			}
-			
+
 			m_charStream << std::endl;
 		}
 

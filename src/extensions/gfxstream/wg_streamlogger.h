@@ -63,6 +63,9 @@ namespace wg
 		void	setDisplayChunkNb(bool bDisplay) { m_bDisplayChunkNb = bDisplay; }
 		bool	displayChunkNb() const { return m_bDisplayChunkNb; }
 
+		void	resetCounters();
+
+
 	protected:
 		StreamLogger( std::ostream& out );
 		~StreamLogger();
@@ -89,10 +92,14 @@ namespace wg
 		
 		bool			m_bDisplayStreamOffset = true;
 		bool			m_bDisplayChunkNb = true;
-		uint64_t		m_streamOffset = 0;
-		int				m_chunkNb = 0;
 		
 		int				m_spxPrintMode = 0;
+
+
+		uint64_t		m_streamOffset = 0;
+		int				m_chunkNb = 0;
+		int				m_beginRenderNb = 0;
+
 	};
 
 }
