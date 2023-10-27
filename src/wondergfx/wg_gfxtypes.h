@@ -307,7 +307,7 @@ namespace wg
 
 	enum class GfxFlip : uint8_t	//. autoExtras
 	{
-		Normal = 0,
+		None = 0,
 		FlipX,
 		FlipY,
 		Rot90,

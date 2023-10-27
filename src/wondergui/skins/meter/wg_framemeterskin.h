@@ -46,7 +46,7 @@ namespace wg
 		{
 			Coord	pos;
 			int		duration = 1;					// Relative duration
-			GfxFlip	flip = GfxFlip::Normal;
+			GfxFlip	flip = GfxFlip::None;
 		};
 
 		struct Blueprint
@@ -106,7 +106,7 @@ namespace wg
 			Coord	pos;
 			int		duration;					// Millisec
 			int		timestamp;					// Millisec
-			GfxFlip	flip = GfxFlip::Normal;
+			GfxFlip	flip = GfxFlip::None;
 
 		};
 

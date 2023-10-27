@@ -1221,7 +1221,7 @@ namespace wg
 
 	void GfxDevice::drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill )
 	{
-		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, s_blitFlipTransforms[(int)GfxFlip::Normal] );
+		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, s_blitFlipTransforms[(int)GfxFlip::None] );
 	}
 
 	//____ flipDrawWave() ______________________________________________________
@@ -1782,7 +1782,7 @@ namespace wg
 								{canvas.x, canvas.y + quadH, quadW, quadH},
 								{canvas.x, canvas.y, quadW, quadH} };
 
-		GfxFlip quadFlip[4] = { GfxFlip::Normal, GfxFlip::Rot90, GfxFlip::Rot180, GfxFlip::Rot270 };
+		GfxFlip quadFlip[4] = { GfxFlip::None, GfxFlip::Rot90, GfxFlip::Rot180, GfxFlip::Rot270 };
 
 		HiColor colors[c_maxSegments];
 
@@ -1990,7 +1990,7 @@ namespace wg
 
 	void GfxDevice::drawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
 	{
-		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, s_blitFlipTransforms[(int)GfxFlip::Normal] );
+		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, s_blitFlipTransforms[(int)GfxFlip::None] );
 	}
 
 	//____ flipDrawSegments() ______________________________________________________
@@ -2004,7 +2004,7 @@ namespace wg
 
 	void GfxDevice::drawEdgemap(CoordSPX dest, Edgemap * pEdgemap )
 	{
-		flipDrawEdgemap(dest,pEdgemap,GfxFlip::Normal);
+		flipDrawEdgemap(dest,pEdgemap,GfxFlip::None);
 	}
 
 

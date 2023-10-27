@@ -85,7 +85,7 @@ public:
 
 	bool	resetTint(GfxDevice * pDevice, const RectI& canvas)
 	{
-        m_flip = GfxFlip::Normal;
+        m_flip = GfxFlip::None;
 		pDevice->setTintColor(Color::White);
 		pDevice->clearTintGradient();
 		return true;
@@ -160,7 +160,7 @@ public:
 
 	bool	resetFlip(GfxDevice* pDevice, const RectI& canvas)
 	{
-		m_flip = GfxFlip::Normal;
+		m_flip = GfxFlip::None;
 		return true;
 	}
 
@@ -207,7 +207,7 @@ public:
 
 private:
 
-	GfxFlip	m_flip = GfxFlip::Normal;
+	GfxFlip	m_flip = GfxFlip::None;
 
 	HiColor	m_rainbowColors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, Color( 255,255,255,128 ) };
 

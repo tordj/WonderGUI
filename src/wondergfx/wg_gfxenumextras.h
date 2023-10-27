@@ -48,7 +48,7 @@ namespace wg
 	const static PixelFormat     PixelFormat_min     = PixelFormat::Undefined;
 	const static PixelType       PixelType_min       = PixelType::Chunky;
 	const static ColorSpace      ColorSpace_min      = ColorSpace::Undefined;
-	const static GfxFlip         GfxFlip_min         = GfxFlip::Normal;
+	const static GfxFlip         GfxFlip_min         = GfxFlip::None;
 	const static CanvasRef       CanvasRef_min       = CanvasRef::None;
 	const static GfxChunkId      GfxChunkId_min      = GfxChunkId::OutOfData;
 

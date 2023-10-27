@@ -105,7 +105,7 @@ protected:
 
 private:
 
-	wg::GfxFlip			m_flip = wg::GfxFlip::Normal;
+	wg::GfxFlip			m_flip = wg::GfxFlip::None;
 
 	WgColor            m_tintColor;
 	WgColor            m_fadeStartColor;

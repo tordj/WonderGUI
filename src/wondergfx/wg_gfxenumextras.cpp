@@ -187,7 +187,7 @@ namespace wg
 	const char * toString(GfxFlip i)
 	{
 		static const char * names[] = { 
-			"Normal",
+			"None",
 			"FlipX",
 			"FlipY",
 			"Rot90",

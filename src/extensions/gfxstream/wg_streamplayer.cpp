@@ -746,7 +746,7 @@ namespace wg
 			RectI		dest;
 			uint16_t	nSegments;
 			uint16_t	nEdgeStrips;
-			GfxFlip		flip = GfxFlip::Normal;
+			GfxFlip		flip = GfxFlip::None;
 			TintMode	tintMode;
 
 			*m_pDecoder >> dest;

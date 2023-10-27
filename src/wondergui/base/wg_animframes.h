@@ -41,7 +41,7 @@ namespace wg
 		{
 			Coord	source;
 			int	 	duration = 1;
-			GfxFlip	flip = GfxFlip::Normal;
+			GfxFlip	flip = GfxFlip::None;
 		};
 		
 		AnimFrame(const Blueprint& bp) : m_source(bp.source), m_timestamp(0), m_duration(bp.duration), m_flip(bp.flip) {}
