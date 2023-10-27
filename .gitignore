@@ -14,6 +14,7 @@ doc/html/
 
 doc/temp/
 doc/guide/resources/_gen
+doc/guide/public
 .hugo_build.lock
 
 resources/parallels/
