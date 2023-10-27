@@ -2067,14 +2067,14 @@ bool animSkinTest(ComponentPtr<DynamicSlot> pSlot)
 	auto pAnimSkin = SpinAnimSkin::create({
 		.angleBegin = 0.f,
 		.angleEnd = 360.f,
-		.padding = 80,
 		.defaultSize = { 256,256 },
+		.padding = 80,
 //		.returnTransition = pReturnTransition,
 		.surface = pSplashSurf,
 //		.transition = pTransition
 	});
 
-	auto pAnimSkin2 = SpinAnimSkin::create({ .padding = 10, .defaultSize = { 256,256 }, .surface = pSplashSurf });
+	auto pAnimSkin2 = SpinAnimSkin::create({ .defaultSize = { 256,256 }, .padding = 10, .surface = pSplashSurf });
 
 	auto pBoxSkin = BoxSkin::create(2, Color::Red, Color::Black);
 
@@ -2698,6 +2698,7 @@ bool customSkinTest(ComponentPtr<DynamicSlot> pEntry)
 */
 
 	auto pLambdaSkin = LambdaSkin::create({
+		.ignoreState = true,
 		.markTestFunc = [](const CoordSPX& pos, const RectSPX& canvas, int scale, State state, float value1, float value2, int minAlpha )
 		{
 			RectSPX canv = canvas;
@@ -2711,8 +2712,7 @@ bool customSkinTest(ComponentPtr<DynamicSlot> pEntry)
 			RectSPX canv = canvas;
 			canv.w = canvas.w * value1;
 			pDevice->fill( canv, Color::Green );
-		},
-		.ignoreState = true
+		}
 	});
 
 
@@ -3059,9 +3059,8 @@ bool wgcombTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pLayout = BasicTextLayout::create({ .placement = Placement::Center });
 
 	
-	Button::Blueprint bp = { .skin = m_pSimpleButtonSkin,
-							 .label.style = pStyle,
-							 .label.layout = pLayout
+	Button::Blueprint bp = { .label = {.layout = pLayout, .style = pStyle },
+							 .skin = m_pSimpleButtonSkin
 	};
 
 	auto pButton1 = Button::create( WGOVR( bp, _.label.text = "OK" ));

@@ -300,28 +300,28 @@ namespace wg
 
 	//____ _matchingHeight() _______________________________________________________
 
-	spx SizeCapsule::_matchingHeight( spx width, int scale ) const
+	spx SizeCapsule::_matchingHeight(spx width, int scale) const
 	{
-		if( m_defaultSize.h >= 0 )
+		if (m_defaultSize.h >= 0)
 		{
 			pts h = m_defaultSize.h;
 
-			if( slot._widget() )
+			if (slot._widget())
 			{
 				pts max = slot._widget()->maxSize().h;
 				pts min = slot._widget()->minSize().h;
-				limit( h, min, max );
+				limit(h, min, max);
 			}
-			return h;
+			return align(ptsToSpx(h, scale));
 		}
-		else if( slot._widget() )
+		else if (slot._widget())
 		{
-			pts h = slot._widget()->_matchingHeight(width,scale);
-			limit( h, m_minSize.h, m_maxSize.h );
-			return h;
+			pts h = slot._widget()->_matchingHeight(width, scale);
+			limit(h, m_minSize.h, m_maxSize.h);
+			return align(ptsToSpx(h, scale));
 		}
 		else
-			return m_minSize.h;
+			return align(ptsToSpx(m_minSize.h, scale));
 	}
 
 	//____ _matchingWidth() _______________________________________________________
@@ -339,16 +339,16 @@ namespace wg
 				pts min = slot._widget()->minSize().w;
 				limit( w, min, max );
 			}
-			return w;
+			return align(ptsToSpx(w, scale));
 		}
 		else if( slot._widget() )
 		{
 			pts w = slot._widget()->_matchingWidth(height,scale);
 			limit( w, m_minSize.w, m_maxSize.w );
-			return w;
+			return align(ptsToSpx(w, scale));
 		}
 		else
-			return m_minSize.w;
+			return align(ptsToSpx(m_minSize.w, scale));
 	}
 
 

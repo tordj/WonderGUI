@@ -243,9 +243,6 @@ void LinearGfxDevice::_clipListWasChanged()
 	{
 		m_clipSegments.resize(m_nClipRects);
 		
-		const Segment * pCanvasSeg = m_canvasSegments.data();
-		int j = 0;
-
 		for( int i = 0 ; i < m_nClipRects ; i++ )
 		{
 			RectI clipRect = m_pClipRects[i]/64;
@@ -254,6 +251,7 @@ void LinearGfxDevice::_clipListWasChanged()
 						
 			CoordI pos = clipRect.pos();
 
+			const Segment* pCanvasSeg = m_canvasSegments.data();
 			while( !pCanvasSeg->rect.contains(pos) )
 				pCanvasSeg++;
 
