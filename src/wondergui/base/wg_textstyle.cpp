@@ -167,27 +167,39 @@ namespace wg
 	{
 		int idx = state;
 
+		auto pDef = Base::_defaultStyle();
+
 		pDest->pFont 		= m_pFont;
 		pDest->pLink 		= m_pLink;
 		pDest->blendMode	= m_blendMode;
 		pDest->backBlendMode = m_backBlendMode;
 
-		pDest->size 		= ptsToSpx(m_size[idx],scale);
+		pDest->size 		= ptsToSpx(m_size[idx], scale);
 		pDest->color		= m_color[idx];
 		pDest->backColor	= m_backColor[idx];
 		pDest->decoration	= m_decoration[idx];
 
-		if( pDest->size == -1 )
-			pDest->size = ptsToSpx(12,scale);				// Default to size 12.
+		if (!pDest->pFont)
+			pDest->pFont = pDef->m_pFont;
+
+		if( pDest->size < 0 )
+			pDest->size = ptsToSpx((pDef->m_size[idx] >= 0 ? pDef->m_size[idx] : 12),scale);				// Default to size 12.
 
 		if( pDest->color == HiColor::Undefined )
-			pDest->color = HiColor::Black;
+			pDest->color = pDef->m_color[idx] == HiColor::Undefined ? HiColor::Black : pDef->m_color[idx];
 		
 		if( pDest->decoration == TextDecoration::Undefined )
-			pDest->decoration = TextDecoration::None;
+			pDest->decoration = pDef->m_decoration[idx] == TextDecoration::Undefined ? TextDecoration::None : pDef->m_decoration[idx];
 
 		if (pDest->blendMode == BlendMode::Undefined)
-			pDest->blendMode = BlendMode::Blend;			// Default to Blend.
+			pDest->blendMode = pDef->m_blendMode == BlendMode::Undefined ? BlendMode::Blend : pDef->m_blendMode;			// Default to Blend.
+
+		if (pDest->backColor == HiColor::Undefined)
+			pDest->color = pDef->m_color[idx];
+
+		if (pDest->backBlendMode == BlendMode::Undefined)
+			pDest->backBlendMode = pDef->m_backBlendMode;
+
 	}
 
 	//____ addToAttr() _____________________________________________________________

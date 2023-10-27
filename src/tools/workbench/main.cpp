@@ -705,11 +705,11 @@ int main(int argc, char** argv)
 		//	memHeapFragmentationTest(pSlot);
 		//	blendRGB565BigendianTest( pSlot );
 		//	twoSlotPanelTest(pSlot);
-			customSkinTest(pSlot);
+		//	customSkinTest(pSlot);
 		//	graphDisplayTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
-		//  wgcombTest(pSlot);
+			wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
 
 
@@ -3055,7 +3055,7 @@ bool wgcombTest(ComponentPtr<DynamicSlot> pEntry)
 
 	//
 
-	TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .font = m_pFont, .size = 20 });
+	TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .size = 20 });
 	auto pLayout = BasicTextLayout::create({ .placement = Placement::Center });
 
 	

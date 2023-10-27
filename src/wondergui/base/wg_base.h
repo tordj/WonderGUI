@@ -128,6 +128,9 @@ namespace wg
 		static int64_t		_startReceiveUpdates(Receiver* pReceiver);
 		static void			_stopReceiveUpdates(Receiver* pReceiver);
 
+		static TextStyle*	_defaultStyle() { return s_pDefaultStyle.rawPtr(); }
+
+
 
 	private:
 
