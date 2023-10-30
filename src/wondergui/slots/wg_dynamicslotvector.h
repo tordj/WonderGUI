@@ -28,46 +28,7 @@
 
 namespace wg
 {
-	template<class SlotType>
-	class ChildWithBP
-	{
-		//			template<typename T>
-		friend class DynamicSlotVector<SlotType>;
 
-	public:
-		
-		template<typename T>
-		constexpr ChildWithBP(const T pChild)
-		{
-			m_pChild = pChild;
-			m_pBP = nullptr;
-		}
-/*
-		ChildWithBP(const Widget_p& pChild)
-		{
-			m_pChild = pChild;
-			m_pBP = nullptr;
-		}
-*/
-
-
-		ChildWithBP(Widget* pChild, const struct SlotType::Blueprint& bp)
-		{
-			m_pChild = pChild;
-			m_pBP = &bp;
-		}
-/*
-		ChildWithBP(const Widget_p& pChild, const struct SlotType::Blueprint& bp)
-		{
-			m_pChild = pChild;
-			m_pBP = &bp;
-		}
-*/
-
-	protected:
-		Widget* m_pChild;
-		const struct SlotType::Blueprint* m_pBP;
-	};
 
 
 
@@ -85,7 +46,26 @@ namespace wg
 		~DynamicSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
 
+		class ChildWithBP
+		{
+			friend class DynamicSlotVector<SlotType>;
 
+		public:
+			template<typename T>
+			constexpr ChildWithBP(const T pChild) : m_pChild(pChild), m_pBP(nullptr)
+			{
+			}
+
+			ChildWithBP(Widget* pChild, const struct SlotType::Blueprint& bp) : m_pChild(pChild), m_pBP(&bp)
+			{
+			}
+
+		protected:
+			Widget* m_pChild;
+			const struct SlotType::Blueprint* m_pBP;
+		};
+
+		
 		//.____ Content _______________________________________________________
 
 		inline int		size() const { return m_size; }
@@ -117,22 +97,19 @@ namespace wg
 		inline int		frontCapacity() const { return m_pArray - m_pBuffer; }
 		inline int		backCapacity() const { return (m_pBuffer + m_capacity) - (m_pArray + m_size); }
 
-//		inline void		setCapacity(int capacity) { if (capacity != m_capacity) _reallocArray(capacity); }
 		inline void		reserveFront(int n) { if (m_pBuffer + n > m_pArray) _reallocArray(m_size + n, n); }
 		inline void		reserveBack(int n) { if (m_pArray + m_size + n > m_pBuffer + m_capacity) _reallocArray(m_size + n, 0); }
 
 		iterator		pushFront(const Widget_p& pWidget);
-		iterator		pushFront( const std::initializer_list<Widget_p>& entries );
-
 		iterator		pushFront(const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint );
-		iterator		pushFront( const std::initializer_list< std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries );
+		iterator		pushFront( const std::initializer_list<ChildWithBP>& entries );
 
 		template<typename Iterator>
 		iterator		pushFront(Iterator beg, Iterator end);
 		
 		iterator		pushBack( Widget * pWidget);
 		iterator		pushBack( Widget * pWidget, const struct SlotType::Blueprint& blueprint);
-		iterator		pushBack( const std::initializer_list<ChildWithBP<SlotType>>& entries );
+		iterator		pushBack( const std::initializer_list<ChildWithBP>& entries );
 		
 		template<typename Iterator>
 		iterator		pushBack(Iterator beg, Iterator end);
@@ -141,13 +118,11 @@ namespace wg
 		iterator		insert(int index, const Widget_p& pWidget);
 		iterator		insert(iterator it, const Widget_p& pWidget);
 
-		iterator		insert( int index, const std::initializer_list<Widget_p>& entries );
-		iterator		insert( iterator it, const std::initializer_list<Widget_p>& entries );
-		
 		iterator		insert(int index, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint);
 		iterator		insert(iterator it, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint);
-		iterator		insert( int index, const std::initializer_list<std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries );
-		iterator		insert( iterator it, const std::initializer_list<std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries );
+		
+		iterator		insert( int index, const std::initializer_list<ChildWithBP>& entries );
+		iterator		insert( iterator it, const std::initializer_list<ChildWithBP>& entries );
 
 		template<typename Iterator>
 		iterator		insert(int index, Iterator beg, Iterator end);
@@ -182,7 +157,6 @@ namespace wg
 		inline SlotType&	front() const { return * m_pArray; }
 		inline SlotType&	back() const { return  m_pArray[m_size - 1]; }
 
-		
 		
 		//.____ Operators __________________________________________
 
