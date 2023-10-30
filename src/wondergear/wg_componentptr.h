@@ -75,6 +75,7 @@ namespace wg
 		inline Object* rawObjectPtr() const { return m_pObject; }
 		inline Comp* rawComponentPtr() const { return m_pComponent; }
 
+		void		clear() { if (m_pObject) m_pObject->release(); m_pObject = nullptr; m_pComponent = nullptr; }
 
 		//.____ Operators ______________________________________________________
 

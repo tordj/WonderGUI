@@ -102,9 +102,15 @@ Widget_p EditorWindow::_createTopBar()
 
 	auto pSpacer = Filler::create(WGBP(Filler, _.defaultSize = { 20,1 }));
 	
-	pBar->slots.pushBack( { {pLoadButton, { .weight = 0 }},
-							{pSaveButton, { .weight = 0 }},
-							{pSpacer, { .weight = 1 }} } );
+	pBar->slots.pushBack({ {pLoadButton.rawPtr(), {.weight = 0}},
+							{pSaveButton, {.weight = 0 }},
+							pSpacer });
+
+	pBar->slots.pushBack({ pLoadButton,
+							pSaveButton,
+							pSpacer });
+
+
 
 	Base::msgRouter()->addRoute(pLoadButton, MsgType::Select, [this](Msg* pMsg) {this->_selectAndLoadFile(); });
 	Base::msgRouter()->addRoute(pLoadButton, MsgType::Select, [this](Msg* pMsg) {this->_saveFile(); });

@@ -28,6 +28,48 @@
 
 namespace wg
 {
+	template<class SlotType>
+	class ChildWithBP
+	{
+		//			template<typename T>
+		friend class DynamicSlotVector<SlotType>;
+
+	public:
+		
+		template<typename T>
+		constexpr ChildWithBP(const T pChild)
+		{
+			m_pChild = pChild;
+			m_pBP = nullptr;
+		}
+/*
+		ChildWithBP(const Widget_p& pChild)
+		{
+			m_pChild = pChild;
+			m_pBP = nullptr;
+		}
+*/
+
+
+		ChildWithBP(Widget* pChild, const struct SlotType::Blueprint& bp)
+		{
+			m_pChild = pChild;
+			m_pBP = &bp;
+		}
+/*
+		ChildWithBP(const Widget_p& pChild, const struct SlotType::Blueprint& bp)
+		{
+			m_pChild = pChild;
+			m_pBP = &bp;
+		}
+*/
+
+	protected:
+		Widget* m_pChild;
+		const struct SlotType::Blueprint* m_pBP;
+	};
+
+
 
 	//____ DynamicSlotVector _________________________________________________________
 
@@ -41,6 +83,8 @@ namespace wg
 
 		DynamicSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
 		~DynamicSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
+
+
 
 		//.____ Content _______________________________________________________
 
@@ -86,12 +130,9 @@ namespace wg
 		template<typename Iterator>
 		iterator		pushFront(Iterator beg, Iterator end);
 		
-
-		iterator		pushBack(const Widget_p& pWidget);
-		iterator		pushBack( const std::initializer_list<Widget_p>& entries );
-
-		iterator		pushBack(const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint );
-		iterator		pushBack( const std::initializer_list< std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries );
+		iterator		pushBack( Widget * pWidget);
+		iterator		pushBack( Widget * pWidget, const struct SlotType::Blueprint& blueprint);
+		iterator		pushBack( const std::initializer_list<ChildWithBP<SlotType>>& entries );
 		
 		template<typename Iterator>
 		iterator		pushBack(Iterator beg, Iterator end);

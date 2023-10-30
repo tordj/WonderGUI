@@ -101,60 +101,43 @@ namespace wg
 	//____ pushBack() _________________________________________________________________
 
 	template < class SlotType>
-	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(const Widget_p& pWidget)
+	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(Widget * pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		SlotType * pSlot = _pushBackEmpty();
+		SlotType* pSlot = _pushBackEmpty();
 		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
 	template < class SlotType>
-	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint)
+	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(Widget * pWidget, const struct SlotType::Blueprint& blueprint)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		SlotType * pSlot = _pushBackEmpty();
+		SlotType* pSlot = _pushBackEmpty();
 		pSlot->_setWidget(pWidget);
 		pSlot->_setBlueprint(blueprint);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
+	
 	template < class SlotType>
-	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(const std::initializer_list<Widget_p>& entries)
+	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(const std::initializer_list<ChildWithBP<SlotType>>& entries)
 	{
 		for (auto& entry : entries)
-			entry->releaseFromParent();
+			entry.m_pChild->releaseFromParent();
 
 		SlotType * pInsertionPoint = _pushBackEmpty(entries.size());
 
 		SlotType * pSlot = pInsertionPoint;
 		for (auto& entry : entries)
 		{
-			pSlot->_setWidget(entry);
-			pSlot++;
-		}
-
-		m_pHolder->_didAddSlots(pInsertionPoint, entries.size());
-		return iterator(pInsertionPoint);
-	}
-
-	template < class SlotType>
-	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(const std::initializer_list<std::tuple<Widget_p,const struct SlotType::Blueprint&>>& entries)
-	{
-		for (auto& entry : entries)
-			std::get<0>(entry)->releaseFromParent();
-
-		SlotType * pInsertionPoint = _pushBackEmpty(entries.size());
-
-		SlotType * pSlot = pInsertionPoint;
-		for (auto& entry : entries)
-		{
-			pSlot->_setWidget(std::get<0>(entry));
-			pSlot->_setBlueprint(std::get<1>(entry));
+			pSlot->_setWidget(entry.m_pChild);
+			if( entry.m_pBP	)
+				pSlot->_setBlueprint(*entry.m_pBP);
 			pSlot++;
 		}
 
