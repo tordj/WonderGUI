@@ -695,7 +695,7 @@ void LinearGfxDevice::drawLine(CoordSPX _begin, Direction dir, spx _length, HiCo
 
 				int bodyThickness = endY - beginY - 2;
 				uint8_t * pBegin = clipSeg.pBuffer  + (beginY + 1 -clip.y) * clipSeg.pitch + (begin.x - clip.x) * pixelBytes;
-				pCenterOp(pBegin, pixelBytes, m_canvasPitch - length * pixelBytes, bodyThickness, length, _col, m_colTrans, { 0,0 });
+				pCenterOp(pBegin, pixelBytes, clipSeg.pitch - length * pixelBytes, bodyThickness, length, _col, m_colTrans, { 0,0 });
 			}
 
 			break;
@@ -747,7 +747,7 @@ void LinearGfxDevice::drawLine(CoordSPX _begin, Direction dir, spx _length, HiCo
 					beginX = clip.x - 1;
 				else
 				{
-					uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + beginX * pixelBytes;
+					uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + (beginX - clip.x) * pixelBytes;
 					pEdgeOp(pBegin, clipSeg.pitch, 0, 1, length, edgeColor, m_colTrans, { 0,0 });
 				}
 
@@ -755,14 +755,23 @@ void LinearGfxDevice::drawLine(CoordSPX _begin, Direction dir, spx _length, HiCo
 					endX = clip.x + clip.w + 1;
 				else
 				{
-					uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + (endX - 1) * pixelBytes;
+					uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + (endX - 1 - clip.x) * pixelBytes;
 					pEdgeOp(pBegin, clipSeg.pitch, 0, 1, length, edgeColor, m_colTrans, { 0,0 });
 				}
 
 
 				int bodyThickness = endX - beginX - 2;
-				uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + (beginX + 1) * pixelBytes;
-				pCenterOp(pBegin, clipSeg.pitch, pixelBytes - length * m_canvasPitch, bodyThickness, length, _col, m_colTrans, { 0,0 });
+				uint8_t * pBegin = clipSeg.pBuffer + (begin.y - clip.y) * clipSeg.pitch + (beginX + 1 - clip.x) * pixelBytes;
+				pCenterOp(pBegin, pixelBytes, clipSeg.pitch - pixelBytes * bodyThickness, length, bodyThickness, _col, m_colTrans, { 0,0 });
+
+				
+				
+//				uint8_t * pBegin = clipSeg.pBuffer  + (beginY + 1 -clip.y) * clipSeg.pitch + (begin.x - clip.x) * pixelBytes;
+//				pCenterOp(pBegin, pixelBytes, m_canvasPitch - length * pixelBytes, bodyThickness, length, _col, m_colTrans, { 0,0 });
+
+//				void _fill(uint8_t* pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
+
+				
 			}
 
 			break;

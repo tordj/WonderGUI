@@ -642,7 +642,7 @@ Widget_p MyApp::createNavigationPanel()
 	//
 	
 	auto pSkipTo = Button::create({
-		.label = { .layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = "Skip to 254" },
+		.label = { .layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = "Skip to 84" },
 		.skin = m_pButtonSkin
 	});
 
@@ -652,12 +652,12 @@ Widget_p MyApp::createNavigationPanel()
 		m_recordedSteps.clear();
 		this->m_bRecordSteps = this->m_pRecordStepsToggle->isSelected();
 
-		int frame = 252;
+		int frame = 83;
 		
 
 		_resetStream();
 		_playFrames( 0, frame, true );
-//		_playFrames( frame, frame+1, false );
+		_playFrames( frame, frame+1, false );
 
 		// Update the log
 		
