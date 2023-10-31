@@ -1,6 +1,7 @@
 ---
 title: 'AnimSkins'
 weight: 10
+BookToC: false
 ---
 
 
