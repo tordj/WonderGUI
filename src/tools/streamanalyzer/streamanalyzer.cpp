@@ -208,12 +208,15 @@ Widget_p MyApp::createDisplayPanel()
 	auto pWindow = _standardScrollPanel();
 
 	pWindow->setSkin(ColorSkin::create({ .color = Color::DarkSlateBlue }));
-	pWindow->setSizeConstraints(SizeConstraint::None, SizeConstraint::None);
+	pWindow->setSizeConstraints(SizeConstraint::None, SizeConstraint::GreaterOrEqual);
 	pWindow->setPlacement(Placement::Center);
 
-	
-	auto pPaddingSkin = ColorSkin::create( { .color = HiColor::Transparent, .padding = 6 });
-	auto pLineup = PackPanel::create( { .axis = Axis::X, .skin = pPaddingSkin });
+	auto pLineup = PackPanel::create( { .axis = Axis::X,
+										.spacing = 12,
+										.spacingAfter = 6,
+										.spacingBefore = 6,
+										.slotAlignment = Alignment::Center
+	});
 
 	pWindow->slot = pLineup;
 	

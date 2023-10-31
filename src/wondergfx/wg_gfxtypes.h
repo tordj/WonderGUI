@@ -114,6 +114,19 @@ namespace wg
 							///< Color Blending: Same as Blend
 	};
 
+
+
+	//____ Alignment _____________________________________________________________
+
+	enum class Alignment : uint8_t	//. autoExtras
+	{
+	   Begin,
+	   Center,
+	   End,
+	   Justify,
+	};
+
+
 	//____ Placement _____________________________________________________________
 
 	enum class Placement : uint8_t	//. autoExtras

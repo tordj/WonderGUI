@@ -51,6 +51,7 @@ namespace wg
 		{
 			bool	visible = true;
 			float	weight = 1;
+			float	baseline = 0.f;
 		};
 		
 
@@ -63,6 +64,9 @@ namespace wg
 		void			setWeight(float weight);
 		inline float	weight() const { return m_weight; }
 
+		void			setBaseline(float baseline);
+		inline float	baseline() const { return m_baseline; }
+		
 		//.____ Operators __________________________________________
 
 		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
@@ -77,6 +81,7 @@ namespace wg
 
 		bool		m_bResizeRequired = false;
 		float		m_weight = 1.f;				// Weight for space allocation.
+		float		m_baseline = 0.f;
 		SizeSPX		m_defaultSize;				// Cached padded default size from the child.
 	};
 
@@ -112,6 +117,7 @@ namespace wg
 			PointerStyle	pointer 		= PointerStyle::Default;
 			bool			selectable 		= true;
 			Skin_p			skin;
+			Alignment		slotAlignment	= Alignment::Justify;
 			pts				spacing			= 0;
 			pts				spacingAfter	= 0;
 			pts				spacingBefore	= 0;
@@ -134,7 +140,7 @@ namespace wg
 
 		void			setAxis( Axis orientaiton );
 		Axis			axis() const { return m_axis; }
-
+		
 		//.____ Behavior ________________________________________________________
 
 		void			setLayout(PackLayout* pLayout);
@@ -143,6 +149,9 @@ namespace wg
 		void			setSpacing(pts before, pts between, pts after);
 		void			setSpacing(pts between);
 
+		void			setSlotAlignment( Alignment alignment );
+		Alignment		slotAlignment() const { return m_slotAlignment; }
+
 		//.____ Misc ________________________________________________________________
 		
 		bool			setSlotWeight(int index, int amount, float weight);
@@ -150,6 +159,12 @@ namespace wg
 		bool			setSlotWeight(int index, int amount, std::initializer_list<float> weights);
 		bool			setSlotWeight(iterator beg, iterator end, std::initializer_list<float> weights);
 
+		bool			setSlotBaseline(int index, int amount, float weight);
+		bool			setSlotBaseline(iterator  beg, iterator end, float weight);
+		bool			setSlotBaseline(int index, int amount, std::initializer_list<float> weights);
+		bool			setSlotBaseline(iterator beg, iterator end, std::initializer_list<float> weights);
+
+		
 		//.____ Internal ______________________________________________________
 
 		spx				_matchingHeight(spx width, int scale) const override;
@@ -168,6 +183,7 @@ namespace wg
 			m_spacingBefore		= bp.spacingBefore;
 			m_spacingBetween	= bp.spacing;
 			m_spacingAfter		= bp.spacingAfter;
+			m_slotAlignment		= bp.slotAlignment;
 		}
 		
 		virtual ~PackPanel();
@@ -197,17 +213,25 @@ namespace wg
 
 		void		_reweightSlots(PackPanelSlot * pSlot, int nb, float weight);
 		void		_reweightSlots(PackPanelSlot * pSlot, int nb, const float * pWeights);
-//		void		_refreshChildGeo() { _refreshChildGeo(true); }
+
+		void		_setBaselines(PackPanelSlot * pSlot, int nb, float weight);
+		void		_setBaselines(PackPanelSlot * pSlot, int nb, const float * pWeights);
+		
+		//		void		_refreshChildGeo() { _refreshChildGeo(true); }
 
 		//
 
 		void		_refreshChildGeo(bool bRequestRender);
+		void		_realignChildGeo(bool bRequestRender);
 
 		void		_hideChildren(PackPanelSlot * pSlot, int nb);
 		void		_unhideChildren(PackPanelSlot * pSlot, int nb);
 
 		void		_refreshGeometries();
-		SizeSPX		_calcDefaultContentSize( int scale ) const;
+		SizeSPX		_calcDefaultContentSize( int scale, spx& maxAscend, spx& maxDescend ) const;
+		spx 		_calcBaselineOffset(spx givenBreadth);
+		spx			_calcTotalSpacing( int scale ) const;
+
 		int			_populateLayoutArray( PackLayout::Item * pArray ) const;
 		int			_populateLayoutArray(PackLayout::Item* pArray, spx forcedBreadth ) const;
 
@@ -219,6 +243,13 @@ namespace wg
 		pts				m_spacingBetween = 0;
 		pts				m_spacingAfter = 0;
 
+		Alignment		m_slotAlignment = Alignment::Justify;
+		spx				m_maxAscend = 0;
+		spx				m_maxDescend = 0;
+		
+		spx				m_totalSpacing = 0;
+		
+		int				m_nbVisibleSlots = 0;
 	};
 
 

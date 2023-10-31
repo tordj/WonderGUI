@@ -79,6 +79,8 @@ namespace wg
 		if (placement == m_smallChildPlacement)
 			return;
 
+		m_smallChildPlacement = placement;
+		
 		if (m_childCanvas.w < m_viewRegion.w || m_childCanvas.h < m_viewRegion.h)
 		{
 			_childWindowCorrection();
