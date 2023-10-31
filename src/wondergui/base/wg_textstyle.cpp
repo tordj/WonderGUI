@@ -30,6 +30,7 @@ namespace wg
 
 	const TypeInfo TextStyle::TYPEINFO = { "TextStyle", &Object::TYPEINFO };
 
+	TextStyle_p	TextStyle::s_pDefaultStyle;
 
 	//____ Blueprint::modifyState() ___________________________________________________
 
@@ -167,7 +168,8 @@ namespace wg
 	{
 		int idx = state;
 
-		auto pDef = Base::_defaultStyle();
+		
+		auto pDef = s_pDefaultStyle;
 
 		pDest->pFont 		= m_pFont;
 		pDest->pLink 		= m_pLink;

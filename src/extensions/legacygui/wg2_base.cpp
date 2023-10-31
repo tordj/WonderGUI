@@ -40,7 +40,6 @@ WgBase::Data *			WgBase::s_pData = 0;
 int WgBase::s_iSoftubeNumberOfInstances = 0;
 
 wg::HostBridge *		WgBase::s_pHostBridge = nullptr;
-wg::TextStyle_p			WgBase::s_pDefaultStyle;
 
 //____ Init() __________________________________________________________________
 
@@ -62,7 +61,7 @@ void WgBase::Init( wg::HostBridge * pHostBridge)
 	wg::TextStyle::Blueprint textStyleBP;
 	textStyleBP.font = wg::DummyFont::create();
 
-	s_pDefaultStyle = wg::TextStyle::create( textStyleBP );
+	wg::TextStyle::s_pDefaultStyle = wg::TextStyle::create( textStyleBP );
 	
 	assert( s_pData == 0 );
 	s_pData = new Data;
@@ -94,7 +93,7 @@ void WgBase::Exit()
 	delete s_pData;
 	s_pData = 0;
 	
-	s_pDefaultStyle = nullptr;
+	wg::TextStyle::s_pDefaultStyle = nullptr;
 
 	wg::GfxBase::exit();
 }
@@ -198,5 +197,5 @@ WgKey WgBase::TranslateKey( int native_keycode )
 
 void WgBase::setDefaultStyle( wg::TextStyle* pStyle )
 {
-	s_pDefaultStyle = pStyle;
+	wg::TextStyle::s_pDefaultStyle = pStyle;
 }

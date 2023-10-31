@@ -257,7 +257,8 @@ namespace wg
 		ModalBlockedRelease,
 
 		PianoKeyPress,
-		PianoKeyRelease
+		PianoKeyRelease,
+		Custom
 
 	};
 

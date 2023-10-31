@@ -128,7 +128,7 @@ namespace wg
 		static int64_t		_startReceiveUpdates(Receiver* pReceiver);
 		static void			_stopReceiveUpdates(Receiver* pReceiver);
 
-		static TextStyle*	_defaultStyle() { return s_pDefaultStyle.rawPtr(); }
+		static TextStyle*	_defaultStyle() { return TextStyle::s_pDefaultStyle.rawPtr(); }
 
 
 
@@ -141,7 +141,7 @@ namespace wg
 		static	TextLayout_p	s_pDefaultTextLayout;
 		static	Caret_p			s_pDefaultCaret;
 		static	NumberLayout_p	s_pDefaultNumberLayout;
-		static	TextStyle_p		s_pDefaultStyle;
+//		static	TextStyle_p		s_pDefaultStyle;			// Moved to TextStyle itself for WG2 compatibility reasons.
 		static	PackLayout_p	s_pDefaultPackLayout;
 
 

@@ -246,11 +246,11 @@ typedef enum
 
 //____ wg_dataSegment _________________________________________________________
 
-struct wg_dataSegment
+typedef struct wg_dataSegment_struct
 {
 	uint8_t*	pBegin;
 	uint8_t*	pEnd;
-};
+} wg_dataSegment;
 
 //____ wg_gfxChunkId ____________________________________________________
 

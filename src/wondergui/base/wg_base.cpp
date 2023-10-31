@@ -53,7 +53,7 @@ namespace wg
 	TextLayout_p	Base::s_pDefaultTextLayout;
 	Caret_p			Base::s_pDefaultCaret;
 	NumberLayout_p	Base::s_pDefaultNumberLayout;
-	TextStyle_p		Base::s_pDefaultStyle;
+//	TextStyle_p		Base::s_pDefaultStyle;
 	PackLayout_p	Base::s_pDefaultPackLayout;
 
 	String			Base::s_clipboardText;
@@ -89,7 +89,7 @@ namespace wg
 		TextStyle::Blueprint textStyleBP;
 		textStyleBP.font = DummyFont::create();
 
-		s_pDefaultStyle = TextStyle::create( textStyleBP );
+		TextStyle::s_pDefaultStyle = TextStyle::create( textStyleBP );
 
 		s_pDefaultCaret = Caret::create();
 
@@ -130,7 +130,7 @@ namespace wg
 		s_pDefaultTextLayout = nullptr;
 		s_pDefaultCaret = nullptr;
 		s_pDefaultNumberLayout = nullptr;
-		s_pDefaultStyle = nullptr;
+		TextStyle::s_pDefaultStyle = nullptr;
 
 		s_clipboardText.clear();
 
@@ -221,14 +221,14 @@ namespace wg
 
 	TextStyle_p Base::defaultStyle()
 	{
-		return s_pDefaultStyle;
+		return TextStyle::s_pDefaultStyle;
 	}
 
 	//____ setDefaultStyle() _______________________________________________________
 
 	void Base::setDefaultStyle( TextStyle * pStyle )
 	{
-		s_pDefaultStyle = pStyle;
+		TextStyle::s_pDefaultStyle = pStyle;
 	}
 
 	//____ setClipboardText() ____________________________________________________

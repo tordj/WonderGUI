@@ -56,7 +56,7 @@ namespace wg
 			uint16_t	integerGroupSeparator = ' ';	///< Character used to separate groups of integers. Default is whitespace.
 			int			integerMin = 1;					///< Minimum number of integers displayed. Default is 1. Valid range is 0-32.
 
-			Placement	placement = Placement::East;	///< Alignment of displayed value. Default is East, i.e. right justified and vertically centered.
+			Placement	placement = Placement::East;	///< Placement of displayed value. Default is East, i.e. right aligned and vertically centered.
 
 			String		prefix;							///< A prefix to be displayed left of the value e.g. '$' or '£'. Negative values display the minus sign before this prefix unless prefixNegative is set. 
 			String		prefixNegative;					///< A separate prefix to display for negative values only, should include the minus sign.

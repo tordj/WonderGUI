@@ -99,7 +99,7 @@ public:
 	static wg::HostBridge * hostBridge() { return s_pHostBridge; }
 	
 	static void		setDefaultStyle( wg::TextStyle* pStyle );
-	static wg::TextStyle_p	defaultStyle() { return s_pDefaultStyle; }
+	static wg::TextStyle_p	defaultStyle() { return wg::TextStyle::s_pDefaultStyle; }
 
 private:
 
@@ -128,7 +128,6 @@ private:
 	static Data *							s_pData;
 	
 	static wg::HostBridge *					s_pHostBridge;
-	static wg::TextStyle_p					s_pDefaultStyle;
 	
 };
 

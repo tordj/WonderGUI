@@ -32,6 +32,8 @@
 #include <wg_textlink.h>
 #include <wg_state.h>
 
+class WgBase;					// Legacy GUI also uses modern TextStyle.
+
 namespace wg
 {
 
@@ -67,6 +69,8 @@ namespace wg
 		friend class Char;
 		friend class CharBuffer;
 		friend class TextTool;
+		friend class Base;
+		friend class ::WgBase;
 
 		 
 	public:
@@ -185,8 +189,10 @@ namespace wg
 		bool				m_bStaticSize = true;          // Combined size is identical for in states.
 		bool				m_bStaticDecoration = true;    // Combined decoration is identical in all states.
 
+		TextStyle_h			m_handle;
 
-		TextStyle_h	m_handle;
+		static TextStyle_p	s_pDefaultStyle;
+
 	};
 
 

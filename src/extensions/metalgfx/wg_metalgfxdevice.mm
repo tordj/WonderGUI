@@ -1484,7 +1484,7 @@ MetalGfxDevice::MetalGfxDevice()
 
 		_transformDrawSegments( {destPos,pWave->m_size*64}, pWave->m_nbRenderSegments, pWave->m_pRenderColors,
 							   pWave->m_size.w+1, pWave->m_pSamples, pWave->m_nbSegments-1, pWave->m_tintMode,
-							   s_blitFlipTransforms[(int)GfxFlip::Normal] );
+							   s_blitFlipTransforms[(int)GfxFlip::None] );
 	}
 
 	//____ flipDrawEdgemap() ______________________________________________________
