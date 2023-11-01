@@ -61,7 +61,15 @@ namespace wg
 		friend class Panel;
 
 	public:
-		
+
+		//.____ Blueprint _______________________________________________________
+
+		struct Blueprint
+		{
+			bool	visible = true;
+		};
+
+
 		PanelSlot(SlotHolder* pHolder) : DynamicSlot(pHolder) {}
 
 		//.____ Appearance ________________________________________________

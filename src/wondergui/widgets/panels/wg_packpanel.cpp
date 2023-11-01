@@ -567,18 +567,6 @@ namespace wg
 		}
 	}
 
-	//____ _childRequestRender() ______________________________________________
-
-	void PackPanel::_childRequestRender(StaticSlot * pSlot)
-	{
-		_requestRender( ((PackPanelSlot*)pSlot)->m_geo );
-	}
-
-	void PackPanel::_childRequestRender(StaticSlot * pSlot, const RectSPX& rect)
-	{
-		_requestRender(rect + ((PackPanelSlot*)pSlot)->m_geo.pos());
-	}
-
 	//____ _childRequestResize() ______________________________________________
 
 	void PackPanel::_childRequestResize(StaticSlot * _pSlot)
