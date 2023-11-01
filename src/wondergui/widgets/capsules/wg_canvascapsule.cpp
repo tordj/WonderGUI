@@ -145,19 +145,9 @@ namespace wg
 //		if (m_pCanvas->scale() != m_scale)
 //			m_pCanvas->setScale(m_scale);
 
-		// Generate the clip buffer
-
-		int allocSize = m_patches.size() * sizeof(RectSPX);
-		RectSPX * pClipBuffer = (RectSPX*) Base::memStackAlloc(allocSize);
-
-		RectSPX* pDst = pClipBuffer;
-		const RectSPX* pSrc = m_patches.begin();
-		while (pSrc != m_patches.end())
-			*pDst++ = (*pSrc++);
-
 		// Render 
 
-		pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), pClipBuffer, m_pCanvasLayers, m_renderLayer);
+		pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), m_patches.begin(), m_pCanvasLayers, m_renderLayer);
 
 		m_skin.render(pDevice, _canvas.size(), m_scale, m_state);
 		
@@ -175,8 +165,9 @@ namespace wg
 			slot._widget()->_render(pDevice, canvas, canvas);
 
 		pDevice->endCanvasUpdate();
-		Base::memStackFree(allocSize);
-		
+
+		m_patches.clear();
+
 		// Blit our canvas
 
 		int		rl = pDevice->renderLayer();
