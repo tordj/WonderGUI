@@ -1312,7 +1312,7 @@ namespace wg
 			}
 			else
 			{
-				if (width > maxLineWidth - eolCaretWidth && pBreakpoint != nullptr)
+				if (pBreakpoint != nullptr && width > maxLineWidth - eolCaretWidth)
 				{
 					bpWidth += eolCaretWidth;
 
@@ -1347,7 +1347,7 @@ namespace wg
 				else
 				{
 					int code = pChars->code();
-					if (code == 32)
+					if (code == 32 && m_bLineWrap)
 					{
 						pBreakpoint = pChars + 1;
 						bpWidth = width;
