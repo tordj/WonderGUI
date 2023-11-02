@@ -139,7 +139,7 @@ namespace wg
 		Surface_p			m_pCanvas;
 		CanvasLayers_p		m_pCanvasLayers;
 		SurfaceFactory_p	m_pFactory;
-		PixelFormat			m_canvasFormat = PixelFormat::BGR_8;
+		PixelFormat			m_canvasFormat = PixelFormat::BGRA_8;
 		int					m_renderLayer = -1;
 
 		HiColor				m_tintColor = HiColor::Undefined;

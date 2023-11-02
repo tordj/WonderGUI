@@ -153,7 +153,7 @@ namespace wg
 		
 		// Render children recursively
 
-		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
+		RectSPX canvas = m_skin.contentRect(_canvas.size(), m_scale, m_state);
 
 		if (canvas != _canvas)
 		{
