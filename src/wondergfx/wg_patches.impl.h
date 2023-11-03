@@ -105,7 +105,9 @@ namespace wg
 		if( capacity > 0 )
 		{
 			pNew = new RectT<T>[capacity];
-			memcpy( pNew, m_pFirst, sizeof(RectT<T>)*m_size );
+
+			if( m_size > 0 )
+				memcpy( pNew, m_pFirst, sizeof(RectT<T>)*m_size );
 		}
 
 		if( m_bOwnsArray )
