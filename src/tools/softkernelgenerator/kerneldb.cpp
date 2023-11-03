@@ -644,7 +644,7 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 								auto pFormat = toString((PixelFormat)destFormat);
 								auto pTint = toString((TintMode)tintMode);
 
-								snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::Undefined, SoftGfxDevice::EdgeOp::None, TintMode::%s, BlendMode::%s, PixelFormat::%s, _straight_blit<PixelFormat::Undefined, TintMode::%s, BlendMode::%s, PixelFormat::%s, false> );\n",
+								snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::Undefined, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::%s, BlendMode::%s, PixelFormat::%s, _straight_blit<PixelFormat::Undefined, SampleMethod::Nearest, TintMode::%s, BlendMode::%s, PixelFormat::%s, false> );\n",
 									pTint, pBlend, pFormat, pTint, pBlend, pFormat);
 
 								out << temp;
@@ -716,11 +716,11 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 		{
 			auto pFormat = toString((PixelFormat)srcFormat);
 
-			snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, _straight_blit<PixelFormat::%s, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false> );\n",
+			snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, _straight_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, false> );\n",
 				pFormat, pFormat);
 			out << temp;
 
-			snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SoftGfxDevice::EdgeOp::Tile, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, _straight_blit<PixelFormat::%s, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true> );\n",
+			snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::Tile, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, _straight_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::Undefined, true> );\n",
 				pFormat, pFormat);
 			out << temp;
 		}
@@ -737,11 +737,11 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 			{
 				auto pFormat = toString((PixelFormat)srcFormat);
 
-				snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, _straight_blit<PixelFormat::%s, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, false> );\n",
+				snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, _straight_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, false> );\n",
 					pFormat, pFormat);
 				out << temp;
 
-				snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SoftGfxDevice::EdgeOp::Tile, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, _straight_blit<PixelFormat::%s, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, true> );\n",
+				sprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::Tile, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, _straight_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_linear, true> );\n",
 					pFormat, pFormat);
 				out << temp;
 			}
@@ -840,7 +840,7 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 						{
 							if (entry.blitTypes[(int)BlitType::StraightBlit])
 							{
-								snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SoftGfxDevice::EdgeOp::None, TintMode::%s, BlendMode::%s, PixelFormat::%s, _straight_blit<PixelFormat::%s, TintMode::%s, BlendMode::%s, PixelFormat::%s, false> );\n",
+								snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::%s, BlendMode::%s, PixelFormat::%s, _straight_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::%s, BlendMode::%s, PixelFormat::%s, false> );\n",
 									toString((PixelFormat)srcFmt),
 									toString((TintMode)tintMode),
 									toString((BlendMode)blendMode),
@@ -855,7 +855,7 @@ bool KernelDB::generateSource(std::ostream& out, const std::string& kernelLabel 
 
 							if (entry.blitTypes[(int)BlitType::StraightTile])
 							{
-								snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SoftGfxDevice::EdgeOp::Tile, TintMode::%s, BlendMode::%s, PixelFormat::%s, _straight_blit<PixelFormat::%s, TintMode::%s, BlendMode::%s, PixelFormat::%s, true> );\n",
+								snprintf(temp, 4096, "pDevice->setStraightBlitKernel( PixelFormat::%s, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::Tile, TintMode::%s, BlendMode::%s, PixelFormat::%s, _straight_blit<PixelFormat::%s, SampleMethod::Nearest, TintMode::%s, BlendMode::%s, PixelFormat::%s, true> );\n",
 									toString((PixelFormat)srcFmt),
 									toString((TintMode)tintMode),
 									toString((BlendMode)blendMode),

@@ -447,8 +447,7 @@ Widget_p	MyApp::_buildButtonRow()
 
 Widget_p MyApp::_buildList()
 {
-	auto pList = PackPanel::create();
-	pList->setAxis(Axis::Y);
+	auto pList = PackPanel::create( { .axis = Axis::Y, .layout = m_pNoExpandLayout } );
 
 	pList->slots << _buildGlobalSettingsSection();
 	pList->slots << _buildOptimizedBlitsSection();
@@ -467,8 +466,7 @@ Widget_p MyApp::_buildList()
 
 PackPanel_p MyApp::_buildToggleButtonRow(std::string title, std::vector<KernelDB::BlitType> blitTypes, const bool selected[], std::function<void(wg::Msg*)> pressCallback)
 {
-	auto pColumn = PackPanel::create();
-	pColumn->setAxis(Axis::Y);
+	auto pColumn = PackPanel::create( { .axis = Axis::Y, .layout = m_pNoExpandLayout } );
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
 		_.display.text = title,
 		_.display.style = m_pLabelStyle));
@@ -497,8 +495,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(std::string title, std::vector<KernelDB
 
 PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<BlendMode> blendModes, const bool selected[], function<void(Msg*)> pressCallback )
 {
-	auto pColumn = PackPanel::create();
-	pColumn->setAxis(Axis::Y);
+	auto pColumn = PackPanel::create( { .axis = Axis::Y, .layout = m_pNoExpandLayout } );
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
 			_.display.text = title,
 			_.display.style = m_pLabelStyle));
@@ -523,8 +520,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<BlendMode> bl
 
 PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<TintMode> tintModes, const bool selected[], function<void(Msg*)> pressCallback)
 {
-	auto pColumn = PackPanel::create();
-	pColumn->setAxis(Axis::Y);
+	auto pColumn = PackPanel::create({ .axis = Axis::Y, .layout = m_pNoExpandLayout });
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
 		_.display.text = title,
 		_.display.style = m_pLabelStyle));
@@ -550,8 +546,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<TintMode> tin
 
 PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<PixelFormat> formats, const bool selected[], function<void(Msg*)> pressCallback)
 {
-	auto pColumn = PackPanel::create();
-	pColumn->setAxis(Axis::Y);
+	auto pColumn = PackPanel::create({ .axis = Axis::Y, .layout = m_pNoExpandLayout });
 	pColumn->slots << TextDisplay::create(WGBP(TextDisplay,
 		_.display.text = title,
 		_.display.style = m_pLabelStyle));
@@ -579,12 +574,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<PixelFormat> 
 
 Widget_p MyApp::_buildGlobalSettingsSection()
 {
-	auto pTopSection = PackPanel::create();
-	pTopSection->setAxis(Axis::X);
-	pTopSection->setSkin(m_pSectionSkin);
-	pTopSection->setLayout(PackLayout::create( { .expandFactor = PackLayout::Factor::Weight }));
-	pTopSection->setSpacing(5, 10, 5);
-
+	auto pTopSection = PackPanel::create( { .axis = Axis::X, .skin = m_pSectionSkin, .spacingAfter = 5, .spacingBefore = 5, .spacing = 10 } );
 
 	// Togglebuttons for TintModes
 
@@ -648,8 +638,7 @@ Widget_p MyApp::_buildGlobalSettingsSection()
 
 Widget_p MyApp::_buildHeaderWithCloseButton(std::string title, std::function<void(wg::Msg*)> pressCallback)
 {
-	auto pRow = PackPanel::create();
-	pRow->setAxis(Axis::X);
+	auto pRow = PackPanel::create({ .axis = Axis::X });
 
 	pRow->slots << TextDisplay::create(WGBP(TextDisplay,
 		_.display.text = title,
@@ -673,7 +662,6 @@ Widget_p MyApp::_buildHeaderWithCloseButton(std::string title, std::function<voi
 	pRow->slots << pButton;
 
 	pRow->slots[1].setWeight(0.f);
-	pRow->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
 
 	return pRow;
 }
@@ -683,8 +671,7 @@ Widget_p MyApp::_buildHeaderWithCloseButton(std::string title, std::function<voi
 
 Widget_p MyApp::_buildOptimizedBlitsSection()
 {
-	auto pSection = PackPanel::create();
-	pSection->setAxis(Axis::Y);
+	auto pSection = PackPanel::create( { .axis = Axis::Y } );
 
 	vector<KernelDB::BlitType>	activeBlitTypes = { KernelDB::BlitType::StraightBlit, KernelDB::BlitType::StraightTile,
 		KernelDB::BlitType::TransformBlitNearest, KernelDB::BlitType::TransformClipBlitNearest, KernelDB::BlitType::TransformTileNearest,
@@ -716,9 +703,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 	int index = 0;
 	for (auto it = m_pDB->beginCustomBlits(); it < m_pDB->endCustomBlits(); it++)
 	{
-		auto pEntry = PackPanel::create();
-		pEntry->setAxis(Axis::Y);
-		pEntry->setSkin(m_pSectionSkin);
+		auto pEntry = PackPanel::create( { .axis = Axis::Y, .skin = m_pSectionSkin } );
 
 		// Top Row
 
@@ -726,10 +711,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 
 		// Body Row
 
-		auto pBodyRow = PackPanel::create();
-		pBodyRow->setAxis(Axis::X);
-		pBodyRow->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
-		pBodyRow->setSpacing(5, 10, 5);
+		auto pBodyRow = PackPanel::create( { .axis = Axis::X, .spacingAfter = 5, .spacing = 10, .spacingBefore = 5 } );
 
 		pBodyRow->slots << _buildToggleButtonRow("Operations", activeBlitTypes, it->blitTypes, [this, index](Msg* pMsg) { this->customBlitTypeToggled(index, pMsg); });
 		pBodyRow->slots << _buildToggleButtonRow("Tint Modes", activeTintModes, it->tintModes, [this, index](Msg* pMsg) { this->customBlitTintModeToggled(index,pMsg); });
@@ -740,8 +722,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 
 		// Bottom Row
 
-		auto pBottomRow = PackPanel::create();
-		pBottomRow->setAxis(Axis::X);
+		auto pBottomRow = PackPanel::create( { .axis = Axis::X, .layout = m_pNoExpandLayout } );
 
 		pBottomRow->slots << TextDisplay::create(WGBP(TextDisplay,
 			_.display.style = m_pTextStyle,
@@ -764,8 +745,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 
 	// "Add Entry" button
 
-	auto pRow = PackPanel::create();
-	pRow->setAxis(Axis::X);
+	auto pRow = PackPanel::create( { .axis = Axis::X } );
 	pRow->setSkin(BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
 		_.outlineThickness = 1,
@@ -799,8 +779,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 
 wg::Widget_p MyApp::_buildListSummarySection()
 {
-	auto pSection = PackPanel::create();
-	pSection->setAxis(Axis::Y);
+	auto pSection = PackPanel::create( { .axis = Axis::Y } );
 	pSection->setSkin(BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
 		_.outlineThickness = 1,
@@ -852,22 +831,17 @@ wg::Widget_p MyApp::_buildListSummarySection()
 
 wg::Widget_p MyApp::_buildLabeledList(int nColumns, std::initializer_list < std::pair<string, int>> list)
 {
-	auto pSection = PackPanel::create();
-	pSection->setAxis(Axis::X);
-	pSection->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
+	auto pSection = PackPanel::create( { .axis = Axis::X } );
 
 	PackPanel_p columns[16][2];
 
 	for (int i = 0; i < nColumns; i++)
 	{
-		auto pMain = PackPanel::create();
-		pMain->setAxis(Axis::X);
+		auto pMain = PackPanel::create( { .axis = Axis::X, .layout = m_pNoExpandLayout });
 
-		auto pLabels = PackPanel::create();
-		pLabels->setAxis(Axis::Y);
+		auto pLabels = PackPanel::create( { .axis = Axis::Y, .layout = m_pNoExpandLayout });
 
-		auto pValues = PackPanel::create();
-		pValues->setAxis(Axis::Y);
+		auto pValues = PackPanel::create( { .axis = Axis::Y, .layout = m_pNoExpandLayout });
 		
 		pMain->slots.pushBack( pLabels, { .weight = 0.f } );
 		pMain->slots.pushBack( pValues, { .weight = 0.f } );
@@ -904,8 +878,7 @@ wg::Widget_p MyApp::_buildLabeledList(int nColumns, std::initializer_list < std:
 
 wg::Widget_p MyApp::_buildExportSection()
 {
-	auto pSection = PackPanel::create();
-	pSection->setAxis(Axis::X);
+	auto pSection = PackPanel::create({ .axis = Axis::X });
 	pSection->setSkin(BoxSkin::create(WGBP(BoxSkin,
 		_.color = HiColor::White,
 		_.outlineThickness = 1,

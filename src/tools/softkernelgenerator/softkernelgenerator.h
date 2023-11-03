@@ -83,4 +83,6 @@ private:
 	wg::ScrollPanel_p	m_pScrollPanel;
 	wg::PackPanel_p		m_pList;
 	wg::LineEditor_p	m_pKernelFuncNameEditor;
+
+	wg::PackLayout_p	m_pNoExpandLayout;
 };
