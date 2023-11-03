@@ -221,6 +221,7 @@ namespace wg
 		// Get kerning info
 
 		FT_Vector	delta;
+		delta.x = 0;
 		FT_Get_Kerning( m_ftFace, leftGlyph.kerningIndex, rightGlyph.kerningIndex, FT_KERNING_DEFAULT, &delta );
 
 		return delta.x;

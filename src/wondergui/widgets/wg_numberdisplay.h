@@ -99,8 +99,8 @@ namespace wg
 	private:
 
 		class DisplayAccess : public Number { friend class NumberDisplay; };
-		const DisplayAccess& _display() const { return static_cast<const DisplayAccess&>(display); }
-		DisplayAccess& _display() { return static_cast<DisplayAccess&>(display); }
+		const DisplayAccess& _display() const { return reinterpret_cast<const DisplayAccess&>(display); }
+		DisplayAccess& _display() { return reinterpret_cast<DisplayAccess&>(display); }
 
 	};
 

@@ -318,8 +318,8 @@ namespace wg
 		void			_subFromContentDefaultSize(spx length, spx breadth);
 
 		class ColumnHeaderAccess : public ColumnHeader { friend class PackList; };
-		const ColumnHeaderAccess& _header() const { return static_cast<const ColumnHeaderAccess&>(header); }
-		ColumnHeaderAccess& _header() { return static_cast<ColumnHeaderAccess&>(header); }
+		const ColumnHeaderAccess& _header() const { return reinterpret_cast<const ColumnHeaderAccess&>(header); }
+		ColumnHeaderAccess& _header() { return reinterpret_cast<ColumnHeaderAccess&>(header); }
 
 
 		bool				m_bHorizontal;

@@ -123,8 +123,8 @@ namespace wg
 		RectSPX			_componentGeo( const Component * pComponent ) const override;
 
 		class IconAccess : public Icon { friend class Button; };
-		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
-		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }
+		const IconAccess& _icon() const { return reinterpret_cast<const IconAccess&>(icon); }
+		IconAccess& _icon() { return reinterpret_cast<IconAccess&>(icon); }
 
 
 		bool		m_bPressed			= false;				// Set when left mousebutton was pressed inside.

@@ -518,24 +518,6 @@ namespace wg
 		Type	h;		///< Height, i.e. length of rectangle along the Y axis.
 	};
 
-	//____ RectT() _______________________________________________________________
-	/**
-	 * Create rectangle from overlap of specified rectangles.
-	 *
-	 * @param r1	First overlapping rectangle.
-	 * @param r2	Second overlapping rectangle.
-	 *
-	 * If specified rectangles don't overlap, width and height will be set to zero.
-	 *
-	 **/
-	/*
-	template<typename Type>
-	RectT<Type>::RectT(const RectT<Type>& r1, const RectT<Type>& r2)
-	{
-		* this = RectT<Type>::overlap(r1, r2);
-	}
-	*/
-
 	/**
 	 * Create rectangle to cover the area between the specified coordinates.
 	 *
