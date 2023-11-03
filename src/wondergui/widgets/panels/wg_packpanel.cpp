@@ -923,6 +923,7 @@ namespace wg
 	{
 		switch( m_slotAlignment )
 		{
+			default:
 			case Alignment::Begin:
 				return m_maxAscend;
 			case Alignment::Center:
