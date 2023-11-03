@@ -291,7 +291,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 	//____ setStraightBlitKernel() ____________________________________________
 
-	bool SoftGfxDevice::setStraightBlitKernel(PixelFormat sourceFormat, SoftGfxDevice::EdgeOp edgeOp, TintMode tintMode, BlendMode blendMode, PixelFormat destFormat, StraightBlitOp_p pKernel)
+	bool SoftGfxDevice::setStraightBlitKernel(PixelFormat sourceFormat, SampleMethod sampleMethod, SoftGfxDevice::EdgeOp edgeOp, TintMode tintMode, BlendMode blendMode, PixelFormat destFormat, StraightBlitOp_p pKernel)
 	{
 		bool success = false;
 		

@@ -219,7 +219,7 @@ namespace wg
 
 		bool	setSegmentStripKernel(bool bTint, BlendMode blendMode, PixelFormat destFormat, SegmentOp_p pKernel);
 
-		bool	setStraightBlitKernel(PixelFormat sourceFormat, EdgeOp edgeOp, TintMode tintMode,
+		bool	setStraightBlitKernel(PixelFormat sourceFormat, SampleMethod sampleMethod, EdgeOp edgeOp, TintMode tintMode,
 									  BlendMode blendMode, PixelFormat destFormat, StraightBlitOp_p pKernel);
 		
 		bool	setTransformBlitKernel(PixelFormat sourceFormat, SampleMethod sampleMethod, EdgeOp edgeOp,

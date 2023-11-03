@@ -2172,7 +2172,7 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 
 //_____ _straight_blit() ____________________________________________________________
 
-template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool TILE>
+template<PixelFormat SRCFORMAT, SampleMethod SAMPLEMETHOD, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool TILE>
 void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
 {
 	bool	bFast8 = false;
