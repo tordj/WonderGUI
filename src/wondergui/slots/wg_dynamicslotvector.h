@@ -94,6 +94,16 @@ namespace wg
 			return -1;
 		}
 
+		inline iterator	find(const Widget * pWidget) const
+		{
+			auto pSlot = static_cast<SlotType*>(pWidget->_slot());
+
+			if (pSlot >= m_pArray && pSlot < m_pArray + m_size )
+				return iterator(pSlot);
+
+			return iterator(_end());
+		}
+
 		inline int		frontCapacity() const { return m_pArray - m_pBuffer; }
 		inline int		backCapacity() const { return (m_pBuffer + m_capacity) - (m_pArray + m_size); }
 
