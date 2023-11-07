@@ -121,7 +121,7 @@ public:
 	WgWidget * 		FindWidget(const WgCoord& ofs, WgSearchMode mode) override;
 
 	bool			DeleteChild(WgWidget * pWidget) override { return 0; }
-	WgWidget *		ReleaseChild(WgWidget * pWidget) override { return 0; }
+	WgWidget *		ReleaseChild(WgWidget * pWidget) override { Pop(pWidget); return pWidget; }	// Needs to be here since called by Hook when Child is deleted.
 
 	bool			DeleteAllChildren() override { return 0; }
 	bool			ReleaseAllChildren() override { return 0; }

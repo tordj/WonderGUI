@@ -127,6 +127,10 @@ WgPopupLayer::~WgPopupLayer()
 		pHook->_releaseWidget();
 		pHook = pHook->_next();
 	}
+	
+	// Need to do this since children might be deleted recursively and make _requestRender calls back to us.
+	
+	_removeSlots(m_popupHooks.size());	
 }
 
 //____ Type() _________________________________________________________________

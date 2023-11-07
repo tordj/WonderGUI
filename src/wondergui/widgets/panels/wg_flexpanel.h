@@ -167,7 +167,6 @@ namespace wg
 //		inline const FlexPanel * _holder() const { return static_cast<const FlexPanel*>(DynamicSlot::_holder()); }
 
 		bool			m_bPinned = false;
-		bool			m_bVisible = false;
 
 		// Positioned children
 
