@@ -304,21 +304,21 @@ namespace wg
 	{
 		if (m_defaultSize.h >= 0)
 		{
-			pts h = m_defaultSize.h;
+			spx h = ptsToSpx(m_defaultSize.h, scale);
 
 			if (slot._widget())
 			{
-				pts max = slot._widget()->maxSize().h;
-				pts min = slot._widget()->minSize().h;
+				spx max = slot._widget()->_maxSize(scale).h;
+				spx min = slot._widget()->_minSize(scale).h;
 				limit(h, min, max);
 			}
-			return align(ptsToSpx(h, scale));
+			return align(h);
 		}
 		else if (slot._widget())
 		{
-			pts h = slot._widget()->_matchingHeight(width, scale);
-			limit(h, m_minSize.h, m_maxSize.h);
-			return align(ptsToSpx(h, scale));
+			spx h = slot._widget()->_matchingHeight(width, scale);
+			limit(h, ptsToSpx(m_minSize.h,scale), ptsToSpx(m_maxSize.h,scale));
+			return align(h);
 		}
 		else
 			return align(ptsToSpx(m_minSize.h, scale));
@@ -331,21 +331,21 @@ namespace wg
 
 		if( m_defaultSize.w >= 0 )
 		{
-			pts w = m_defaultSize.w;
+			spx w = ptsToSpx(m_defaultSize.w, scale);
 
 			if( slot._widget() )
 			{
-				pts max = slot._widget()->maxSize().w;
-				pts min = slot._widget()->minSize().w;
+				spx max = slot._widget()->_maxSize(scale).w;
+				spx min = slot._widget()->_minSize(scale).w;
 				limit( w, min, max );
 			}
-			return align(ptsToSpx(w, scale));
+			return align(w);
 		}
 		else if( slot._widget() )
 		{
-			pts w = slot._widget()->_matchingWidth(height,scale);
-			limit( w, m_minSize.w, m_maxSize.w );
-			return align(ptsToSpx(w, scale));
+			spx w = slot._widget()->_matchingWidth(height,scale);
+			limit( w, ptsToSpx(m_minSize.w,scale), ptsToSpx(m_maxSize.w,scale) );
+			return align(w);
 		}
 		else
 			return align(ptsToSpx(m_minSize.w, scale));

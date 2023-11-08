@@ -61,19 +61,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setSelected() __________________________________________________________
-
-	bool ToggleButton::setSelected( bool bSelected )
-	{
-		if( m_state.isSelected() != bSelected )
-		{
-			State state = m_state;
-			state.setSelected(bSelected);
-			_setState(state, false);
-		}
-		return true;
-	}
-
 	//____ setFlipOnRelease() _____________________________________________________
 
 	void ToggleButton::setFlipOnRelease( bool bFlipOnRelease )

@@ -154,6 +154,10 @@ namespace wg
 		void				setSelectable(bool bSelectable);
 		inline bool			isSelectable() const;
 
+		virtual bool		setSelected( bool bSelected );
+		inline bool			isSelected();
+
+		
 		bool				grabFocus(bool bRaiseWindow = false);
 		bool				releaseFocus();
 		bool				isFocused();
@@ -787,11 +791,17 @@ namespace wg
 	 * @return 	True if widget is selectable, otherwise false.
 	 */
 
-
 	bool Widget::isSelectable() const
 	{
 		return m_bSelectable;
 	}
+
+	//____ isSelected() __________________________________________________________
+
+	inline bool Widget::isSelected()
+	{
+		return m_state.isSelected();
+	};
 
 	//____ nextSibling() ____________________________________________________________
 	/** 

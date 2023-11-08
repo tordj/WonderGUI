@@ -122,6 +122,7 @@ namespace wg
 
 		static void			update( int64_t timestamp_microseconds );
 
+		static int64_t 		timestamp() { return s_timestamp; }
 
 		//.____ Internal ____________________________________________________________
 
@@ -147,9 +148,9 @@ namespace wg
 
 		static	String			s_clipboardText;
 
-		static HostBridge*					s_pHostBridge;
+		static HostBridge*		s_pHostBridge;
 
-		static int64_t						s_timestamp;
+		static int64_t			s_timestamp;
 
 		static std::vector<Receiver*>		s_updateReceivers;
 	};

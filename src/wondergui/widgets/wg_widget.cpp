@@ -237,6 +237,19 @@ namespace wg
 		m_bSelectable = bSelectable;
 	}
 
+	//____ setSelected() __________________________________________________________
+
+	bool Widget::setSelected( bool bSelected )
+	{
+		if( m_state.isSelected() != bSelected )
+		{
+			State state = m_state;
+			state.setSelected(bSelected);
+			_setState(state);
+		}
+		return true;
+	}
+
 	//____ grabFocus() ____________________________________________________________
 	/**
 	* @brief Get keyboard focus.

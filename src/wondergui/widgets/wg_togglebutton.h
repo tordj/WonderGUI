@@ -110,11 +110,6 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ State _________________________________________________
-
-		inline bool			isSelected();
-		virtual bool		setSelected( bool bSelected );
-
 		//.____ Behavior _______________________________________________________
 
 	 	void				setClickArea( ClickArea clickArea );
@@ -192,11 +187,6 @@ namespace wg
 	{
 		m_clickArea = clickArea;
 	}
-
-	inline bool ToggleButton::isSelected()
-	{
-		return m_state.isSelected();
-	};
 
 	inline bool ToggleButton::flipOnRelease()
 	{
