@@ -81,6 +81,7 @@ namespace wg
 		bool		setBlendMode(BlendMode blendMode) override;
 		void		setMorphFactor(float factor) override;
 		void		setFixedBlendColor( HiColor color ) override;
+		void		setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9], const float alpha[9] ) override;
 
 		//.____ Rendering ________________________________________________
 
@@ -156,6 +157,14 @@ namespace wg
 			int			morphFactor;	// Scale: 0 -> 4096
 			
 			HiColor	fixedBlendColor;
+			
+			int			blurMtxR[9];
+			int			blurMtxG[9];
+			int			blurMtxB[9];
+			int			blurMtxA[9];
+
+			CoordSPX	blurOfsSPX[9];
+			CoordI		blurOfsPixel[9];			
 		};
 
 
@@ -349,14 +358,14 @@ namespace wg
 
 		//
 	
-		struct SinglePassStraightBlitKernels // 60 bytes on 32-bit system
+		struct SinglePassStraightBlitKernels // 240 bytes on 32-bit system
 		{
-			StraightBlitOp_p	pKernels[EdgeOp_size][TintMode_size];
+			StraightBlitOp_p	pKernels[SampleMethod_size][EdgeOp_size][TintMode_size];		// Optimization opportunity: Only 2 sample methods used
 		};
 
-		struct SinglePassTransformBlitKernels // 180 bytes on 32-bit system
+		struct SinglePassTransformBlitKernels // 240 bytes on 32-bit system
 		{
-			TransformBlitOp_p	pKernels[SampleMethod_size][EdgeOp_size][TintMode_size];
+			TransformBlitOp_p	pKernels[SampleMethod_size][EdgeOp_size][TintMode_size];		// Optimization opportunity: Only 3 sample methods used
 		};
 
 		struct SinglePassBlitKernels	// 44 bytes on all systems
@@ -384,9 +393,9 @@ namespace wg
 			uint16_t				singlePassBlitKernels[PixelFormat_size];		// PixelFormat of blit source. Offset into m_singlePassBlitKernels +1.
 		};
 
-		StraightBlitOp_p	m_pStraightMoveToBGRA8Kernels[PixelFormat_size][EdgeOp_size];
+		StraightBlitOp_p	m_pStraightMoveToBGRA8Kernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
 		TransformBlitOp_p	m_pTransformMoveToBGRA8Kernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
-		StraightBlitOp_p	m_pStraightMoveToHiColorKernels[PixelFormat_size][EdgeOp_size];
+		StraightBlitOp_p	m_pStraightMoveToHiColorKernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
 		TransformBlitOp_p	m_pTransformMoveToHiColorKernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
 
 		DestFormatKernels *	m_pKernels[PixelFormat_size];

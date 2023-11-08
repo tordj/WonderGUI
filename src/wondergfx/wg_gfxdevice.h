@@ -142,11 +142,16 @@ namespace wg
 		virtual void		setMorphFactor(float factor);
 		virtual float		morphFactor() const { return m_morphFactor; }
 
+		virtual void		setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9], const float alpha[9] );
+		
 		virtual void		setFixedBlendColor( HiColor color );
 		virtual HiColor		fixedBlendColor() const { return m_fixedBlendColor; }
 
 		virtual void		setRenderLayer(int layer);
 		virtual int			renderLayer() const { return m_renderLayer; }
+
+		
+		
 		
 		//.____ Rendering ________________________________________________
 
@@ -315,6 +320,13 @@ namespace wg
 		bool        m_bRendering = false;
 		
 		bool		m_bIsProxyDevice = false;		// Set by subclasses that just wrap calls and rendering is performed elsewhere.
+
+		spx			m_blurRadius = 64;
+		
+		float		m_blurMtxR[9];
+		float		m_blurMtxG[9];
+		float		m_blurMtxB[9];
+		float		m_blurMtxA[9];
 	};
 
 

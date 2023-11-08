@@ -175,23 +175,35 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		{
 			m_pKernels[i] = nullptr;
 			
-			m_pStraightMoveToBGRA8Kernels[i][0] = nullptr;
-			m_pStraightMoveToBGRA8Kernels[i][1] = nullptr;
+			m_pStraightMoveToBGRA8Kernels[i][0][0] = nullptr;
+			m_pStraightMoveToBGRA8Kernels[i][0][1] = nullptr;
+			m_pStraightMoveToBGRA8Kernels[i][2][0] = nullptr;
+			m_pStraightMoveToBGRA8Kernels[i][2][1] = nullptr;
+
 			m_pTransformMoveToBGRA8Kernels[i][0][0] = nullptr;
 			m_pTransformMoveToBGRA8Kernels[i][0][1] = nullptr;
 			m_pTransformMoveToBGRA8Kernels[i][0][2] = nullptr;
 			m_pTransformMoveToBGRA8Kernels[i][1][0] = nullptr;
 			m_pTransformMoveToBGRA8Kernels[i][1][1] = nullptr;
 			m_pTransformMoveToBGRA8Kernels[i][1][2] = nullptr;
+			m_pTransformMoveToBGRA8Kernels[i][2][0] = nullptr;
+			m_pTransformMoveToBGRA8Kernels[i][2][1] = nullptr;
+			m_pTransformMoveToBGRA8Kernels[i][2][2] = nullptr;
 
-			m_pStraightMoveToHiColorKernels[i][0] = nullptr;
-			m_pStraightMoveToHiColorKernels[i][1] = nullptr;
+			
+			m_pStraightMoveToHiColorKernels[i][0][0] = nullptr;
+			m_pStraightMoveToHiColorKernels[i][0][1] = nullptr;
+			m_pStraightMoveToHiColorKernels[i][2][0] = nullptr;
+			m_pStraightMoveToHiColorKernels[i][2][1] = nullptr;
 			m_pTransformMoveToHiColorKernels[i][0][0] = nullptr;
 			m_pTransformMoveToHiColorKernels[i][0][1] = nullptr;
 			m_pTransformMoveToHiColorKernels[i][0][2] = nullptr;
 			m_pTransformMoveToHiColorKernels[i][1][0] = nullptr;
 			m_pTransformMoveToHiColorKernels[i][1][1] = nullptr;
 			m_pTransformMoveToHiColorKernels[i][1][2] = nullptr;
+			m_pTransformMoveToHiColorKernels[i][2][0] = nullptr;
+			m_pTransformMoveToHiColorKernels[i][2][1] = nullptr;
+			m_pTransformMoveToHiColorKernels[i][2][2] = nullptr;
 		}
 	}
 
@@ -315,7 +327,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			}
 			straightBlitKernelsIdx--;
 			
-			m_singlePassStraightBlitKernels[straightBlitKernelsIdx].pKernels[(int)edgeOp][(int)tintMode] = pKernel;
+			m_singlePassStraightBlitKernels[straightBlitKernelsIdx].pKernels[(int)edgeOp][(int)sampleMethod][(int)tintMode] = pKernel;
 			success = true;
 			
 			if(sourceFormat == PixelFormat::Undefined && edgeOp == EdgeOp::None )
@@ -327,15 +339,20 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		
 		if( destFormat == PixelFormat::Undefined && blendMode == BlendMode::Replace && tintMode == TintMode::None )			// Special case for HiColor destination.
 		{
-			m_pStraightMoveToHiColorKernels[(int)sourceFormat][(int)edgeOp] = pKernel;
+			m_pStraightMoveToHiColorKernels[(int)sourceFormat][(int)sampleMethod][(int)edgeOp] = pKernel;
 			success = true;
 		}
 			
 		if( destFormat == PixelFormat::BGRA_8_linear && blendMode == BlendMode::Replace && tintMode == TintMode::None )		// Special case for HiColor destination.
 		{
-			m_pStraightMoveToBGRA8Kernels[(int)sourceFormat][(int)edgeOp] = pKernel;
+			m_pStraightMoveToBGRA8Kernels[(int)sourceFormat][(int)sampleMethod][(int)edgeOp] = pKernel;
 			success = true;
 		}
+		
+		// For straight blit kernels we can reuse Nearest for Bilinear.
+		
+		if( sampleMethod == SampleMethod::Nearest )
+			setStraightBlitKernel(sourceFormat, SampleMethod::Bilinear, edgeOp, tintMode, blendMode, destFormat, pKernel );
 		
 		return success;
 	}
@@ -638,6 +655,37 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 	{
 		m_fixedBlendColor = color;
 		m_colTrans.fixedBlendColor = color;
+	}
+
+	//____ setBlurMatrices() _____________________________________________________
+
+	void SoftGfxDevice::setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9], const float alpha[9] )
+	{
+		GfxDevice::setBlurMatrices(radius, red, green, blue, alpha);
+
+		spx cornerRadius = radius * 724 / 1024;
+		
+		m_colTrans.blurOfsSPX[0] = { -cornerRadius, -cornerRadius };
+		m_colTrans.blurOfsSPX[1] = { 0, -radius };
+		m_colTrans.blurOfsSPX[2] = { cornerRadius, -cornerRadius };
+		m_colTrans.blurOfsSPX[3] = { -radius, 0 };
+		m_colTrans.blurOfsSPX[4] = { 0, 0 };
+		m_colTrans.blurOfsSPX[5] = { radius, 0 };
+		m_colTrans.blurOfsSPX[6] = { -cornerRadius, cornerRadius };
+		m_colTrans.blurOfsSPX[7] = { 0, radius };
+		m_colTrans.blurOfsSPX[8] = { cornerRadius, cornerRadius };
+
+		for( int i = 0 ; i < 9 ; i++ )
+		{
+			m_colTrans.blurOfsPixel[i].x = (m_colTrans.blurOfsSPX[i].x + 32)/64;
+			m_colTrans.blurOfsPixel[i].y = (m_colTrans.blurOfsSPX[i].y + 32)/64;
+
+			m_colTrans.blurMtxR[i] = int(red[i] * 65536);
+			m_colTrans.blurMtxG[i] = int(green[i] * 65536);
+			m_colTrans.blurMtxB[i] = int(blue[i] * 65536);
+			m_colTrans.blurMtxA[i] = int(alpha[i] * 65536);
+		}
+		
 	}
 
 	//____ beginRender() _______________________________________________________
@@ -2818,8 +2866,8 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		
 		if ((pixelDescDest.colorSpace == ColorSpace::Linear || dstFormat == PixelFormat::Alpha_8) && (pixelDescSource.colorSpace == ColorSpace::Linear || srcFormat == PixelFormat::Alpha_8) )
 		{
-			m_pStraightBlitFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(EdgeOp::None)];
-			m_pStraightTileFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(EdgeOp::Tile)];
+			m_pStraightBlitFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::None)];
+			m_pStraightTileFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Tile)];
 			m_pTransformBlitFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::None)];
 			m_pTransformTileFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Tile)];
 			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Clip)];
@@ -2828,8 +2876,8 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		}
 		else
 		{
-			m_pStraightBlitFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][int(EdgeOp::None)];
-			m_pStraightTileFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][int(EdgeOp::Tile)];
+			m_pStraightBlitFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::None)];
+			m_pStraightTileFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Tile)];
 			m_pTransformBlitFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::None)];
 			m_pTransformTileFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Tile)];
 			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(EdgeOp::Clip)];
@@ -2859,8 +2907,8 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			{
 				auto pStraightBlitKernels = m_singlePassStraightBlitKernels[straightBlitKernelsIdx - 1].pKernels;
 
-				pStraightBlitSinglePassKernel = pStraightBlitKernels[int(EdgeOp::None)][int(m_colTrans.mode)];
-				pStraightTileSinglePassKernel = pStraightBlitKernels[int(EdgeOp::Tile)][int(m_colTrans.mode)];
+				pStraightBlitSinglePassKernel = pStraightBlitKernels[int(EdgeOp::None)][(int)sampleMethod][int(m_colTrans.mode)];
+				pStraightTileSinglePassKernel = pStraightBlitKernels[int(EdgeOp::Tile)][(int)sampleMethod][int(m_colTrans.mode)];
 			}
 
 			if (transformBlitKernelsIdx > 0)

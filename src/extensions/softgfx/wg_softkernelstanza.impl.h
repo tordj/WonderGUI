@@ -2190,21 +2190,22 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 
 	if ((srcIsLinear && dstIsLinear) || (!srcIsLinear && !dstIsLinear && TINT == TintMode::None && BLEND == BlendMode::Replace))
 	{
-		if (SRCFORMAT != PixelFormat::Undefined && DSTFORMAT != PixelFormat::Undefined)
+		if (SRCFORMAT != PixelFormat::Undefined && DSTFORMAT != PixelFormat::Undefined && SAMPLEMETHOD != SampleMethod::Blur )
 		{
 			bFast8 = true;
 			bits = 8;
 		}
 	}
 
-	// Preapare tiling
+	
+	// Preapare tiling and blurring
 
 	int srcX, srcY;
 	int maskX, maskY;
 	int xPitch, yPitch;
 
-
-	if (TILE)
+	
+	if (TILE || SAMPLEMETHOD == SampleMethod::Blur)
 	{
 		xPitch = pSrcSurf->pixelBits()/8;
 		yPitch = pSrcSurf->pitch();
@@ -2217,6 +2218,13 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 		maskY = pSrcSurf->tileMaskY();
 	}
 
+	SizeI surfSize;
+
+	if (SAMPLEMETHOD == SampleMethod::Blur)
+	{
+		surfSize = pSrcSurf->pixelSize();
+	}
+	
 	const Color8 * pPalette = pSrcSurf->palette();
 	const HiColor * pPalette4096 = pSrcSurf->palette4096();
 
@@ -2268,14 +2276,66 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 			{
 				srcX &= maskX;
 				srcY &= maskY;
-				pSrc = pSrcSurf->pixels() + srcY * yPitch + srcX * xPitch;
+				if( SAMPLEMETHOD != SampleMethod::Blur )
+					pSrc = pSrcSurf->pixels() + srcY * yPitch + srcX * xPitch;
 			}
 
 			int16_t srcB, srcG, srcR, srcA;
-			if (bFast8)
-				_read_pixel_fast8(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
+
+			if( SAMPLEMETHOD == SampleMethod::Blur )
+			{
+				int16_t inB[9], inG[9], inR[9], inA[9];
+
+				for( int i = 0 ; i < 9 ; i++ )
+				{
+					CoordI center(srcX,srcY);
+					
+					CoordI ofs = center + tint.blurOfsPixel[i];
+					
+					if(TILE)
+					{
+						ofs.x &= maskX;
+						ofs.y &= maskY;
+					}
+					else
+					{
+						if( ofs.x < 0 )
+							ofs.x = 0;
+						if( ofs.y < 0 )
+							ofs.y = 0;
+						if( ofs.x >= surfSize.w )
+							ofs.x = surfSize.w -1;
+						if( ofs.y >= surfSize.h )
+							ofs.y = surfSize.h -1;
+					}
+					
+					_read_pixel(pSrc + srcY * yPitch + srcX * xPitch, SRCFORMAT, pPalette, pPalette4096, inB[i], inG[i], inR[i], inA[i]);
+				}
+				
+				srcB = 	( inB[0] * tint.blurMtxB[0] + inB[1] * tint.blurMtxB[1] + inB[2] * tint.blurMtxB[2]
+						+ inB[3] * tint.blurMtxB[3] + inB[4] * tint.blurMtxB[4] + inB[5] * tint.blurMtxB[5]
+						+ inB[6] * tint.blurMtxB[6] + inB[7] * tint.blurMtxB[7] + inB[8] * tint.blurMtxB[8]) / 65536;
+
+				srcG = 	( inG[0] * tint.blurMtxG[0] + inG[1] * tint.blurMtxG[1] + inG[2] * tint.blurMtxG[2]
+						+ inG[3] * tint.blurMtxG[3] + inG[4] * tint.blurMtxG[4] + inG[5] * tint.blurMtxG[5]
+						+ inG[6] * tint.blurMtxG[6] + inG[7] * tint.blurMtxG[7] + inG[8] * tint.blurMtxG[8]) / 65536;
+
+				srcR = 	( inR[0] * tint.blurMtxR[0] + inR[1] * tint.blurMtxR[1] + inR[2] * tint.blurMtxR[2]
+						+ inR[3] * tint.blurMtxR[3] + inR[4] * tint.blurMtxR[4] + inR[5] * tint.blurMtxR[5]
+						+ inR[6] * tint.blurMtxR[6] + inR[7] * tint.blurMtxR[7] + inR[8] * tint.blurMtxR[8]) / 65536;
+
+				srcA = 	( inA[0] * tint.blurMtxA[0] + inA[1] * tint.blurMtxA[1] + inA[2] * tint.blurMtxA[2]
+						+ inA[3] * tint.blurMtxA[3] + inA[4] * tint.blurMtxA[4] + inA[5] * tint.blurMtxA[5]
+						+ inA[6] * tint.blurMtxA[6] + inA[7] * tint.blurMtxA[7] + inA[8] * tint.blurMtxA[8]) / 65536;
+			}
 			else
-				_read_pixel(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
+			{
+				if (bFast8)
+					_read_pixel_fast8(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
+				else
+					_read_pixel(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
+			}
+
 
 			// Step 5: Apply any tint
 
@@ -2306,7 +2366,7 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 
 			// Step 9: Increment source and destination pointers
 
-			if (TILE)
+			if (TILE || SAMPLEMETHOD == SampleMethod::Blur)
 			{
 				srcX += simpleTransform[0][0];
 				srcY += simpleTransform[0][1];
@@ -2317,7 +2377,7 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 			pDst += pitches.dstX;
 		}
 
-		if (TILE)
+		if (TILE || SAMPLEMETHOD == SampleMethod::Blur)
 		{
 			srcX += simpleTransform[1][0];
 			srcY += simpleTransform[1][1];
