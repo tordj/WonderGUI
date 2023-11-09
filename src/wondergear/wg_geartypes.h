@@ -90,7 +90,7 @@ template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T
 ([&]{ auto _ = T; __VA_ARGS__; return _; }())
 
 #define WGCREATE(T, ...)\
-	T::create([&]{ wg::T::Blueprint _{}; __VA_ARGS__; return _; }())
+	wg::T::create([&]{ wg::T::Blueprint _{}; __VA_ARGS__; return _; }())
 
 
 
