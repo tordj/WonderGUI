@@ -69,6 +69,8 @@ namespace wg
 			m_hotspot = bp.hotspot.origo.x < 0 ? bp.origo : bp.hotspot;
 
 		}
+		
+		m_bVisible = bp.visible;
 		return true;
 	}
 
@@ -300,13 +302,20 @@ namespace wg
 		}
 	}
 
-
 	//____ _didAddSlots() _____________________________________________________________
 
 	void FlexPanel::_didAddSlots( StaticSlot * _pSlot, int nb )
 	{
 		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
-		_unhideSlots(pSlot,nb);
+
+		for( int i = 0 ; i < nb ; i++ )
+		{
+			if( pSlot[i].m_bVisible == true )
+			{
+				_refreshRealGeo(&pSlot[i]);
+				_onRequestRender(pSlot[i].m_geo, &pSlot[i]);
+			}
+		}
 	}
 
 	//____ _willEraseSlots() _____________________________________________________________

@@ -49,9 +49,9 @@ namespace wg
 
 		struct Blueprint
 		{
+			float	baseline = 0.f;
 			bool	visible = true;
 			float	weight = 1;
-			float	baseline = 0.f;
 		};
 		
 

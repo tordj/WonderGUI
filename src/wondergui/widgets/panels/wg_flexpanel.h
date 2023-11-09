@@ -99,13 +99,25 @@ namespace wg
 		
 		struct Blueprint
 		{
+			// We slightly deviate from keeping things in alphabetical order here
+			// to keep the two alternatives grouped. Doesn't matter though,
+			// all members that should be used in same blueprint still comes in alphabetical order.
+
+			// Set for pinned geo only.
+			
 			FlexPos		pin1 = Placement::Undefined;
 			FlexPos		pin2 = Placement::Undefined;
 
-			FlexPos		origo = Placement::NorthWest;
+			// Set for movable geo only.
+			
 			FlexPos		hotspot = Placement::Undefined;
+			FlexPos		origo = Placement::NorthWest;
 			Coord		pos;
 			Size		size;
+			
+			// Set for both
+			
+			bool		visible = true;
 		};
 		
 		
