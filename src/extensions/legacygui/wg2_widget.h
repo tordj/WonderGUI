@@ -119,7 +119,7 @@ public:
 	void			SetTabLock( bool bLock ) { m_bTabLock = bLock; }
 	bool			IsTabLocked() const { return m_bTabLock; }
 
-	void			SetMarkOpacity( int opacity ) { m_markOpacity = opacity; }
+	virtual void	SetMarkOpacity( int opacity ) { m_markOpacity = opacity; }
 	int				GetMarkOpacity() const { return m_markOpacity; }
 	virtual bool	MarkTest( const WgCoord& ofs );
 
