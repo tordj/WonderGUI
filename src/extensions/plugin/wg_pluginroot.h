@@ -87,7 +87,11 @@ namespace wg
 		//.____ State _________________________________________________
 
 		inline Widget_p		focusedChild() const { return _focusedChild(); }
+		
+		//.____ Appearance ____________________________________________________
 
+		void				setPointerStyle( PointerStyle style );
+		inline PointerStyle pointerStyle() const override { return m_pointerStyle; }
 
 		//.____ Misc ___________________________________________________________
 
@@ -180,7 +184,8 @@ namespace wg
 
 		std::vector<Widget_wp>   m_preRenderCalls;
 
-
+		PointerStyle		m_pointerStyle = PointerStyle::Undefined;
+		
 		GfxDevice_p			m_pGfxDevice;
 		CanvasLayers_p		m_pCanvasLayers;
 

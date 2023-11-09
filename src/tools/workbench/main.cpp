@@ -3063,6 +3063,11 @@ bool wgcombTest(ComponentPtr<DynamicSlot> pEntry)
 							 .skin = m_pSimpleButtonSkin
 	};
 
+	auto bp2 = bp;
+	bp2.label.text = "OK";
+	auto pButton1 = Button::create( bp2 );
+
+
 	auto pButton1 = Button::create( WGOVR( bp, _.label.text = "OK" ));
 	auto pButton2 = Button::create( WGOVR( bp, _.label.text = "CANCEL" ));
 
@@ -3094,14 +3099,14 @@ bool wgcombTest(ComponentPtr<DynamicSlot> pEntry)
 	));
 
 	auto pBgSkin3 = PieMeterSkin::create( WGCOMB( baseBP,
-									_.hubColor = Color::Yellow,
-									_.hubSize = 0.25f,
-									_.movingSlices = true,
-									_.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
-												{0.2f,Color::Blue,Color::Blue},
-												{0.1f,Color::LightBlue,Color::LightBlue}
-									}
-		));
+		_.hubColor = Color::Yellow,
+		_.hubSize = 0.25f,
+		_.movingSlices = true,
+		_.slices = { {0.7f,Color::DarkBlue,Color::DarkBlue},
+					{0.2f,Color::Blue,Color::Blue},
+					{0.1f,Color::LightBlue,Color::LightBlue}
+		}
+	));
 
 
 	auto pKnob1 = Knob::create( { .dragAxis = Axis::X, .skin = pBgSkin1, .value = 0.0f });

@@ -134,7 +134,7 @@ namespace wg
 			int				openingDelay = 100;
 			int				openingFade = 100;
 			int				pickCategory = 0;
-			PointerStyle	pointer = PointerStyle::Default;
+			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			stickyFocus = false;

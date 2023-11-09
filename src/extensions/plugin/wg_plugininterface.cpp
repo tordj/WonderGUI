@@ -307,6 +307,7 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pBody->hostBridge.yieldWindowFocus		= &wg_yieldWindowFocus;
 	pBody->hostBridge.lockHidePointer		= &wg_lockHidePointer;
 	pBody->hostBridge.unlockShowPointer		= &wg_unlockShowPointer;
+	pBody->hostBridge.setPointerStyle		= &wg_setPointerStyle;
 
 	pBody->pluginCapsule.structSize			= sizeof(wg_plugincapsule_calls);
 	pBody->pluginCapsule.requestRender 		= &wg_pluginRequestRender;

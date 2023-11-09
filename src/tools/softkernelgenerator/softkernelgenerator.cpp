@@ -400,10 +400,15 @@ Widget_p	MyApp::_buildButtonRow()
 	auto pButtonRow = PackPanel::create( { .axis = Axis::X, .skin = m_pPlateSkin });
 	pButtonRow->setSpacing(2, 4, 2);
 
+	auto pClearButton = WGCREATE(Button,
+		_.skin = m_pButtonSkin,
+		_.label.text = "Clear" );
+
+/*
 	auto pClearButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
 		_.label.text = "Clear"));
-
+*/
 	auto pResetButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
 		_.label.text = "Reset"));
@@ -412,11 +417,17 @@ Widget_p	MyApp::_buildButtonRow()
 		_.skin = m_pButtonSkin,
 		_.label.text = "Load",
 		_.disabled = true ));
-
+/*
 	auto pSaveButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
 		_.label.text = "Save",
 		_.disabled = true ));
+*/
+
+	auto pSaveButton = Button::create({
+		.skin = m_pButtonSkin,
+		.label.text = "Save",
+		.disabled = true });
 
 
 	Base::msgRouter()->addRoute( pClearButton, MsgType::Select, [this](Msg*) {this->clear(); });

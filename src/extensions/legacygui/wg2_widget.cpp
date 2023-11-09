@@ -36,7 +36,7 @@
 
 //____ Constructor ____________________________________________________________
 
-WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WgPointerStyle::Default),
+WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WgPointerStyle::Arrow),
 					m_markOpacity( 1 ), m_bEnabled(true), m_bOpaque(false),
 					m_bFocused(false), m_bSelected(false), m_bTabLock(false), m_bReceiveTick(false), m_scale(WG_SCALE_BASE),
 					m_bPickable(false), m_bDropTarget(false)

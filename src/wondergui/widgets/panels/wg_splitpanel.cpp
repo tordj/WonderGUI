@@ -97,6 +97,16 @@ namespace wg
 		}
 	}
 
+	//____ pointerStyle() ______________________________________________________Ä_
+
+	PointerStyle SplitPanel::pointerStyle() const
+	{
+		if( m_handleState.isHovered() )
+			return m_bHorizontal ? PointerStyle::ResizeBeamWE : PointerStyle::ResizeBeamNS;
+
+		return m_pointerStyle;
+	}
+
 	//____ setResizeRatio() ___________________________________________________
 
 	void SplitPanel::setResizeRatio(float ratio)

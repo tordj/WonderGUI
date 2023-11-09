@@ -66,7 +66,7 @@ namespace wg
 			bool			pickable		= false;
 			int				pickCategory	= 0;
 			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
-			PointerStyle	pointer			= PointerStyle::Default;
+			PointerStyle	pointer			= PointerStyle::Undefined;
 			int				renderLayer		= -1;
 			bool			selectable		= true;
 			Skin_p			skin;

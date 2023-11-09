@@ -378,6 +378,12 @@ namespace wg
 		m_dirtyPatches.add(m_geo);
 	}
 
+	//____ setPointerStyle() _____________________________________________________
+
+	void RootPanel::setPointerStyle( PointerStyle style )
+	{
+		m_pointerStyle = style;
+	}
 
 	//____ setDebugMode() ______________________________________________________
 

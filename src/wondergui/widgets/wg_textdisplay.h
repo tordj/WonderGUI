@@ -52,7 +52,7 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
-			PointerStyle	pointer = PointerStyle::Default;
+			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			stickyFocus = false;

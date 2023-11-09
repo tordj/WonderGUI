@@ -129,7 +129,7 @@ namespace wg
 			Size					minEntrySize= {0,0};
 			bool					pickable 	= false;
 			int						pickCategory= 0;
-			PointerStyle			pointer 	= PointerStyle::Default;
+			PointerStyle			pointer 	= PointerStyle::Undefined;
 			bool					selectable 	= true;
 			Skin_p					skin;
 			std::function<int(const Widget *, const Widget *)> sortFunc;

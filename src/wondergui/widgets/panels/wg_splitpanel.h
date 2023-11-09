@@ -91,7 +91,7 @@ namespace wg
 			MaskOp			maskOp			= MaskOp::Recurse;
 			bool			pickable		= false;
 			int				pickCategory	= 0;
-			PointerStyle	pointer			= PointerStyle::Default;
+			PointerStyle	pointer			= PointerStyle::Undefined;
 			float			resizeRatio		= 0.5f;
 			bool			selectable		= true;
 			Skin_p			skin;
@@ -126,6 +126,8 @@ namespace wg
 
 		void			setHandleThickness(pts thickness);
 		pts				handleThickness() const { return m_handleThickness;  }
+
+		PointerStyle 	pointerStyle() const override;
 
 		//.____ Behavior _______________________________________________________
 

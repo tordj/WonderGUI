@@ -40,7 +40,7 @@ namespace wg
 =========================================================================*/
 
 	const static CodePage        CodePage_min        = CodePage::Latin1;
-	const static PointerStyle    PointerStyle_min    = PointerStyle::Arrow;
+	const static PointerStyle    PointerStyle_min    = PointerStyle::Undefined;
 	const static MouseButton     MouseButton_min     = MouseButton::None;
 	const static PlayMode        PlayMode_min        = PlayMode::Forward;
 	const static SearchMode      SearchMode_min      = SearchMode::MarkPolicy;

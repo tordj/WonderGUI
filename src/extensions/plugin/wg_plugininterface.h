@@ -94,6 +94,8 @@ typedef struct wg_hostbridge_calls_struct
 	int					(*lockHidePointer)(void* pHostBridge);
 	int					(*unlockShowPointer)(void* pHostBridge);
 
+	int					(*setPointerStyle)(void* pHostBridge, wg_pointerStyle style );
+
 } wg_hostbridge_calls;
 
 //____ wg_bitmapcache_calls ___________________________________________________

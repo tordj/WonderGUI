@@ -84,8 +84,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	});
 	
 	auto pRoot = m_pWindow->rootPanel();
-
-
+	
 	//
 
 	auto pFontBlob = pVisitor->loadBlob("resources/DroidSans.ttf");

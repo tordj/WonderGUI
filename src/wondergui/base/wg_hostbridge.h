@@ -24,6 +24,7 @@
 #pragma once
 
 #include <string>
+#include <wg_types.h>
 
 namespace wg
 {
@@ -44,6 +45,7 @@ namespace wg
 		virtual bool		lockHidePointer() = 0;
 		virtual bool		unlockShowPointer() = 0;
 
+		virtual bool		setPointerStyle( PointerStyle style ) = 0;
 		
 		virtual std::string	getClipboardText() = 0;
 		virtual bool		setClipboardText(const std::string& text) = 0;

@@ -158,6 +158,13 @@ namespace wg
 	{
 		return Util::spxToPts(m_size,m_scale);
 	}
+	
+	//____ setPointerStyle() _____________________________________________________
+
+	void PluginRoot::setPointerStyle( PointerStyle style )
+	{
+		m_pointerStyle = style;
+	}
 
 	//____ _matchingHeight() __________________________________________________
 
@@ -315,7 +322,7 @@ namespace wg
 	{
 		//TODO: Implement!!!
 
-		return PointerStyle::Default;
+		return PointerStyle::Arrow;
 	}
 
 	//____ _setPointerPos() ___________________________________________________

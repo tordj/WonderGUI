@@ -96,8 +96,8 @@ namespace wg
 
 	enum class PointerStyle : uint8_t	//. autoExtras
 	{
+		Undefined,
 		Arrow,				// default arrow
-		Default = Arrow,	// default arrow
 		Hourglass,			// hourglass
 		Hand,				// hand
 		OpenHand,			// open hand

@@ -68,7 +68,7 @@ namespace wg
 			Size			minSize = { 0,0 };
 			bool			pickable = false;
 			int				pickCategory = 0;
-			PointerStyle	pointer = PointerStyle::Default;
+			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			stickyFocus = false;

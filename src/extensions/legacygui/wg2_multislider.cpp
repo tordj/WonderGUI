@@ -633,7 +633,7 @@ void WgMultiSlider::_updatePointerStyle(WgCoord pointerOfs)
 		}
 	}
 	else
-		m_pointerStyle = WgPointerStyle::Default;
+		m_pointerStyle = WgPointerStyle::Arrow;
 }
 
 bool WgMultiSlider::GetSliderEnabled(int iSliderID)

@@ -59,7 +59,7 @@ namespace wg
 			int				pickCategory = 0;
 			bool			playing = false;
 			PlayMode		playMode = PlayMode::Looping;
-			PointerStyle	pointer = PointerStyle::Default;
+			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
 			float			speed = 1.f;

@@ -45,6 +45,8 @@ namespace wg
 		
 		bool		hidePointer() override;
 		bool		showPointer() override;
+
+		bool		setPointerStyle( PointerStyle style ) override;
 		
 		std::string	getClipboardText() override;
 		bool		setClipboardText(const std::string& text) override;

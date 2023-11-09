@@ -56,8 +56,8 @@ namespace wg
 	const char * toString(PointerStyle i)
 	{
 		static const char * names[] = { 
+			"Undefined",
 			"Arrow",
-			"Default",
 			"Hourglass",
 			"Hand",
 			"OpenHand",

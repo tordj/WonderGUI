@@ -60,7 +60,7 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PlayMode		playMode = PlayMode::Forward;
-			PointerStyle	pointer = PointerStyle::Default;
+			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
 			int				stepSize = 1;

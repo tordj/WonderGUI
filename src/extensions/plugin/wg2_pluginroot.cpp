@@ -319,7 +319,7 @@ void WgPluginRoot::_setState(State state)
 PointerStyle WgPluginRoot::_pointerStyle() const
 {
 	//TODO: Implement!!!
-	return PointerStyle::Default;
+	return PointerStyle::Arrow;
 }
 
 //____ _setPointerPos() _______________________________________________________

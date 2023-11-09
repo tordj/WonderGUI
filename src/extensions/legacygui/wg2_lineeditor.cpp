@@ -81,7 +81,7 @@ void WgLineEditor::SetEditMode(WgTextEditMode mode)
 	}
 	else
 	{
-		m_pointerStyle = WgPointerStyle::Default;
+		m_pointerStyle = WgPointerStyle::Arrow;
 	}
 }
 

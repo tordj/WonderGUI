@@ -74,6 +74,7 @@ namespace wg
 			Finalizer_p		finalizer = nullptr;
 			Rect			geo;
 			GfxDevice_p		gfxDevice;
+			PointerStyle	pointerStyle = PointerStyle::Undefined;
 			int				scale = 0;
 			Skin_p			skin;
 			uintptr_t		windowRef = 0;
@@ -117,6 +118,9 @@ namespace wg
 
 		virtual void		setSkin(Skin* pSkin);
 		inline Skin_p		skin() const;
+		
+		void				setPointerStyle( PointerStyle style );
+		inline PointerStyle pointerStyle() const override { return m_pointerStyle; }
 
 		//.____ Rendering ________________________________________________
 
@@ -261,6 +265,8 @@ namespace wg
 		uintptr_t			m_windowRef = 0;
 
 		Widget_wp			m_pFocusedChild;
+		
+		PointerStyle		m_pointerStyle = PointerStyle::Undefined;
 	};
 
 	//____ isScaleSet() _______________________________________________________

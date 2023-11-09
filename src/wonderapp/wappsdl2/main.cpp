@@ -104,9 +104,10 @@ public:
 	bool		hidePointer() override;
 	bool		showPointer() override;
 
+	bool		setPointerStyle( PointerStyle style ) override;
+	
 	bool		lockHidePointer() override;
 	bool		unlockShowPointer() override;
-
 	
 	std::string	getClipboardText() override;
 	bool		setClipboardText(const std::string& text) override;
@@ -153,6 +154,9 @@ SDL_Window*	g_pFocusedWindow = nullptr;
 CoordI		g_lockedPointerPos;
 CoordI		g_relModeVirtualPos;
 
+SDL_Cursor * g_mousePointers[PointerStyle_size];
+
+
 
 //____ main() _________________________________________________________________
 
@@ -162,7 +166,6 @@ int main(int argc, char *argv[] )
 	g_argv = argv;
 
 	g_scale = 1.f;
-
 
 	if (!init_system() )
 		return -1;
@@ -376,6 +379,10 @@ int eventWatcher(void * pNull, SDL_Event* pEvent)
 
 bool init_system()
 {
+	for( int i = 0 ; i < PointerStyle_size ; i++ )
+		g_mousePointers[i] = NULL;
+
+	
 	// initialize SDL video
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
@@ -401,6 +408,12 @@ void exit_system()
 {
 //	SDL_DelEventWatch(eventWatcher, nullptr);
 
+	for( int i = 0 ; i < PointerStyle_size ; i++ )
+	{
+		if( g_mousePointers[i] != NULL )
+			SDL_FreeCursor(g_mousePointers[i]);
+	}
+	
 	IMG_Quit();
 }
 
@@ -1012,6 +1025,91 @@ bool MyHostBridge::showPointer()
 		return true;
 	
 	return false;
+}
+
+//____ setPointerStyle() ______________________________________________________
+
+bool MyHostBridge::setPointerStyle( PointerStyle style )
+{
+
+	if( g_mousePointers[(int)style] != NULL )
+	{
+		SDL_SetCursor(g_mousePointers[(int)style]);
+		return true;
+	}
+	else
+	{
+		SDL_SystemCursor cursor;
+		switch( style )
+		{
+			case PointerStyle::Arrow:
+				cursor = SDL_SYSTEM_CURSOR_ARROW;
+				break;
+				
+			case PointerStyle::Hourglass:
+				cursor = SDL_SYSTEM_CURSOR_WAIT;
+				break;
+				
+			case PointerStyle::Hand:
+			case PointerStyle::OpenHand:
+			case PointerStyle::ClosedHand:
+				cursor = SDL_SYSTEM_CURSOR_HAND;
+				break;
+				
+			case PointerStyle::Crosshair:
+				cursor = SDL_SYSTEM_CURSOR_CROSSHAIR;
+				break;
+				
+			case PointerStyle::Ibeam:
+				cursor = SDL_SYSTEM_CURSOR_IBEAM;
+				break;
+
+			case PointerStyle::Stop:
+				cursor = SDL_SYSTEM_CURSOR_NO;
+				break;
+				
+			case PointerStyle::ResizeAll:
+				cursor = SDL_SYSTEM_CURSOR_SIZEALL;
+				break;
+
+			case PointerStyle::ResizeNeSw:
+				cursor = SDL_SYSTEM_CURSOR_SIZENESW;
+				break;
+
+			case PointerStyle::ResizeNwSe:
+				cursor = SDL_SYSTEM_CURSOR_SIZENWSE;
+				break;
+
+			case PointerStyle::ResizeNS:
+				cursor = SDL_SYSTEM_CURSOR_SIZENS;
+				break;
+
+			case PointerStyle::ResizeWE:
+				cursor = SDL_SYSTEM_CURSOR_SIZEWE;
+				break;
+
+			case PointerStyle::ResizeBeamNS:
+				cursor = SDL_SYSTEM_CURSOR_SIZENS;
+				break;
+
+			case PointerStyle::ResizeBeamWE:
+				cursor = SDL_SYSTEM_CURSOR_SIZEWE;
+				break;
+
+			default:
+
+				if( g_mousePointers[(int)PointerStyle::Arrow] == NULL )
+					g_mousePointers[(int)PointerStyle::Arrow] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+
+				SDL_SetCursor(g_mousePointers[(int)PointerStyle::Arrow]);
+				return false;
+		}
+		
+		g_mousePointers[(int)style] = SDL_CreateSystemCursor(cursor);
+		SDL_SetCursor(g_mousePointers[(int)style]);
+		return true;
+		
+	}
 }
 
 //____ lockHidePointer() ______________________________________________________

@@ -36,7 +36,7 @@ namespace wg
 		m_inputId 		= 1;	//TODO: Make unique between input handlers.
 
 		m_timeStamp 	= 0;
-		m_pointerStyle 	= PointerStyle::Default;
+		m_pointerStyle 	= PointerStyle::Arrow;
 		m_modKeys 		= ModKeys::None;
 
 		m_doubleClickTimeTreshold 		= 250;
@@ -296,19 +296,47 @@ namespace wg
 		}
 		// Update PointerStyle
 
-		PointerStyle newStyle;
+		PointerStyle newStyle = PointerStyle::Undefined;
 
 		Widget * p = m_latestPressWidgets[button].rawPtr();
 
 		if (button != 0 && p )
-			newStyle = p->pointerStyle();
-		else if( pNowMarked && !pNowMarked->isDisabled() )
-			newStyle = pNowMarked->pointerStyle();
-		else
-			newStyle = PointerStyle::Default;
+			pNowMarked = p;
+
+		if( pNowMarked )
+		{
+			Widget_p pLastWidget = nullptr;
+			auto pWidget = pNowMarked;
+
+			while( pWidget )
+			{
+				if( !pWidget->isDisabled() )
+				{
+					auto style = pWidget->pointerStyle();
+					
+					if( style != PointerStyle::Undefined )
+						newStyle = style;
+				}
+				pLastWidget = pWidget;
+				pWidget = pWidget->parent();
+			}
+			
+			auto pRoot = pLastWidget->_holder()->_root();
+			if( pRoot )
+			{
+				auto style = pRoot->pointerStyle();
+				
+				if( style != PointerStyle::Undefined )
+					newStyle = style;
+			}
+		}
+		
+		if( newStyle == PointerStyle::Undefined )
+			newStyle = PointerStyle::Arrow;
 
 		if( newStyle != m_pointerStyle )
 		{
+			Base::hostBridge()->setPointerStyle(newStyle);
 			Base::msgRouter()->post( new PointerChangeMsg( m_inputId, newStyle ) );
 			m_pointerStyle = newStyle;
 		}

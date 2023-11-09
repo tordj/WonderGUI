@@ -35,7 +35,7 @@ WgEventHandler::WgEventHandler( WgRoot * pRoot )
 	m_pRoot					= pRoot;
 	m_time					= 0;
 	m_modKeys				= WG_MODKEY_NONE;
-	m_pointerStyle			= WgPointerStyle::Default;
+	m_pointerStyle			= WgPointerStyle::Arrow;
 
 	m_bIsProcessing			= false;
 	m_bWindowFocus			= true;
@@ -1335,7 +1335,7 @@ void WgEventHandler::_updateMarkedWidget(bool bMouseMoved)
 	else if (pNowMarked && pNowMarked->IsEnabled())
 		newStyle = pNowMarked->GetPointerStyle();
 	else
-		newStyle = WgPointerStyle::Default;
+		newStyle = WgPointerStyle::Arrow;
 
 	if( newStyle != m_pointerStyle )
 	{

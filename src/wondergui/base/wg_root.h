@@ -47,6 +47,10 @@ namespace wg
 		virtual int			scale() const = 0;
 		virtual Rect		geo() const = 0;
 				
+		//.____ Appearance ____________________________________________________
+
+		virtual PointerStyle pointerStyle() const = 0;
+		
 		//.____ Misc ___________________________________________________________
 		
 		virtual void		addDirtyPatch(const RectSPX& rect) = 0;

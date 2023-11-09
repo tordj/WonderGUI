@@ -42,6 +42,14 @@ namespace wg
 		return PluginCalls::hostBridge->showPointer(m_pHostBridge);
 	}
 
+	//____ setPointerStyle() ______________________________________________________
+
+	bool PluginHostBridge::setPointerStyle( PointerStyle style )
+	{
+		return PluginCalls::hostBridge->setPointerStyle(m_pHostBridge, (wg_pointerStyle) style);
+	}
+
+
 	//____ getClipboardText() _____________________________________________________
 
 	std::string PluginHostBridge::getClipboardText()

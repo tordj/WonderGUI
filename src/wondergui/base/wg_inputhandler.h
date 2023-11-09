@@ -76,7 +76,7 @@ namespace wg
 
 		bool		lockHidePointer();
 		bool		unlockShowPointer();
-
+		
 		//.____ Behavior ____________________________________________________________
 
 		void		mapKey(int native_keycode, Key translated_keycode);

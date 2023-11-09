@@ -83,7 +83,7 @@ namespace wg
 			MarkPolicy				markPolicy 	= MarkPolicy::AlphaTest;
 			bool					pickable 	= false;
 			int						pickCategory= 0;
-			PointerStyle			pointer 	= PointerStyle::Default;
+			PointerStyle			pointer 	= PointerStyle::Undefined;
 			bool					selectable 	= true;
 			SelectMode				selectMode 	= SelectMode::SingleEntry;
 			Skin_p					skin;

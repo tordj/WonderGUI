@@ -33,6 +33,8 @@ extern "C" {
 	int		wg_hidePointer( void * pHostBridge );
 	int		wg_showPointer( void * pHostBridge );
 
+	int		wg_setPointerStyle( void * pHostBridge, wg_pointerStyle style );
+
 	int		wg_getClipboardText( void * pHostBridge, int maxChars, char * pDest );
 	int		wg_setClipboardText( void * pHostBridge, const char * pText );
 

@@ -69,6 +69,7 @@ namespace wg
 		friend class StaticSlot;
 		friend class DynamicSlot;
 		friend class Base;
+		friend class InputHandler;
 
 		template<class S> friend class StaticSlotVector;
 		template<class S> friend class DynamicSlotVector;
@@ -88,7 +89,7 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
-			PointerStyle	pointer = PointerStyle::Default;
+			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			stickyFocus = false;
@@ -350,7 +351,7 @@ namespace wg
 		String			m_tooltip;
 
 		int				m_id = 0;
-		PointerStyle	m_pointerStyle = PointerStyle::Default;
+		PointerStyle	m_pointerStyle = PointerStyle::Undefined;
 		MarkPolicy		m_markPolicy = MarkPolicy::AlphaTest;
 		State			m_state;						// Current state of widget.
 

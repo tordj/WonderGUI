@@ -42,6 +42,11 @@ int wg_showPointer( void * pHostBridge )
 	return getPtr(pHostBridge)->showPointer();
 }
 
+int wg_setPointerStyle( void * pHostBridge, wg_pointerStyle style )
+{
+	return getPtr(pHostBridge)->setPointerStyle( (PointerStyle) style );
+}
+
 int wg_getClipboardText( void * pHostBridge, int maxChars, char * pDest )
 {
 	std::string str = getPtr(pHostBridge)->getClipboardText();
