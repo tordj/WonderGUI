@@ -211,10 +211,10 @@ Widget_p MyApp::createDisplayPanel()
 	pWindow->setPlacement(Placement::Center);
 
 	auto pLineup = PackPanel::create( { .axis = Axis::X,
+										.slotAlignment = Alignment::Center,
 										.spacing = 12,
 										.spacingAfter = 6,
-										.spacingBefore = 6,
-										.slotAlignment = Alignment::Center
+										.spacingBefore = 6
 	});
 
 	pWindow->slot = pLineup;

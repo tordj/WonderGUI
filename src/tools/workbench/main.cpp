@@ -3063,11 +3063,6 @@ bool wgcombTest(ComponentPtr<DynamicSlot> pEntry)
 							 .skin = m_pSimpleButtonSkin
 	};
 
-	auto bp2 = bp;
-	bp2.label.text = "OK";
-	auto pButton1 = Button::create( bp2 );
-
-
 	auto pButton1 = Button::create( WGOVR( bp, _.label.text = "OK" ));
 	auto pButton2 = Button::create( WGOVR( bp, _.label.text = "CANCEL" ));
 

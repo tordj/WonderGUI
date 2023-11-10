@@ -397,18 +397,18 @@ void MyApp::_refreshList()
 
 Widget_p	MyApp::_buildButtonRow()
 {
-	auto pButtonRow = PackPanel::create( { .axis = Axis::X, .skin = m_pPlateSkin });
+	auto pButtonRow = PackPanel::create({ .axis = Axis::X, .skin = m_pPlateSkin });
 	pButtonRow->setSpacing(2, 4, 2);
 
 	auto pClearButton = WGCREATE(Button,
 		_.skin = m_pButtonSkin,
-		_.label.text = "Clear" );
+		_.label.text = "Clear");
 
-/*
-	auto pClearButton = Button::create(WGBP(Button,
-		_.skin = m_pButtonSkin,
-		_.label.text = "Clear"));
-*/
+	/*
+		auto pClearButton = Button::create(WGBP(Button,
+			_.skin = m_pButtonSkin,
+			_.label.text = "Clear"));
+	*/
 	auto pResetButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
 		_.label.text = "Reset"));
@@ -416,18 +416,19 @@ Widget_p	MyApp::_buildButtonRow()
 	auto pLoadButton = Button::create(WGBP(Button,
 		_.skin = m_pButtonSkin,
 		_.label.text = "Load",
-		_.disabled = true ));
-/*
-	auto pSaveButton = Button::create(WGBP(Button,
-		_.skin = m_pButtonSkin,
-		_.label.text = "Save",
-		_.disabled = true ));
-*/
+		_.disabled = true));
+	/*
+		auto pSaveButton = Button::create(WGBP(Button,
+			_.skin = m_pButtonSkin,
+			_.label.text = "Save",
+			_.disabled = true ));
+	*/
 
 	auto pSaveButton = Button::create({
-		.skin = m_pButtonSkin,
-		.label.text = "Save",
-		.disabled = true });
+		.disabled = true,
+		.label = { .text = "Save" },
+		.skin = m_pButtonSkin
+	});
 
 
 	Base::msgRouter()->addRoute( pClearButton, MsgType::Select, [this](Msg*) {this->clear(); });
@@ -651,12 +652,19 @@ Widget_p MyApp::_buildHeaderWithCloseButton(std::string title, std::function<voi
 	pRow->slots << TextDisplay::create(WGBP(TextDisplay,
 		_.display.text = title,
 		_.display.style = m_pLabelStyle,
-		_.display.layout = m_pTextLayoutCentered;
+		_.display.layout = m_pTextLayoutCentered
 	));
 
+	auto pButton = Button::create({ .label = {.text = "CLOSE" },
+									.skin = m_pButtonSkin });
+
+
+
+/*
 	auto pButton =  Button::create(WGBP(Button,
 		_.label.text = "CLOSE",
 		_.skin = m_pButtonSkin));
+*/
 
 	Base::msgRouter()->addRoute(pButton, MsgType::Select, pressCallback);
 
