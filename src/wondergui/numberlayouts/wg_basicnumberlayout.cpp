@@ -242,7 +242,7 @@ namespace wg
 
 		while ((fracpart > 0 || nbDecimals < m_blueprint.decimalMin) && nbDecimals < m_blueprint.decimalMax)
 		{
-			int printval = (fracpart / divider);
+			int printval = int(fracpart / divider);
 			fracpart -= int64_t(printval) * divider;
 			divider /= m_blueprint.base;
 

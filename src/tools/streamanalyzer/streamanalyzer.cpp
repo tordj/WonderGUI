@@ -415,7 +415,7 @@ Widget_p MyApp::createLogPanel()
 	{
 		char temp[1024];
 		
-		sprintf(temp, "%s: %s - %s\n", toString( err.severity ), err.function, err.message );
+		snprintf(temp, 1024, "%s: %s - %s\n", toString( err.severity ), err.function, err.message );
 		
 		m_pErrorsDisplay->editor.append(temp);
 	});
@@ -970,7 +970,7 @@ void MyApp::updateGUIAfterReload()
 		// Fill in toggles
 
 		char label[6];
-		sprintf(label, " %d ", toggleNb);
+		snprintf(label, 6, " %d ", toggleNb);
 
 		auto pToggle = ToggleButton::create( WGBP(ToggleButton,
 												_.skin = m_pToggleButtonSkin,
@@ -994,7 +994,7 @@ void MyApp::updateGUIAfterReload()
 
 	//
 	
-	m_pProgressSlider->setSteps( m_frames.size() );
+	m_pProgressSlider->setSteps( (int) m_frames.size() );
 
 	
 	_logFullStream();
@@ -1015,7 +1015,7 @@ void MyApp::setFrame( int frame )
 	if( frame < 0 )
 		frame = 0;
 	if( frame >= m_frames.size() )
-		frame = m_frames.size() -1;
+		frame = int(m_frames.size()) -1;
 	
 	if( frame == m_currentFrame )
 		return;
@@ -1061,7 +1061,7 @@ void MyApp::skipFrames(int frames)
 	int destFrame = m_currentFrame + frames;
 	
 	if( destFrame >= m_frames.size() )
-		destFrame = m_frames.size() -1;
+		destFrame = int(m_frames.size()) -1;
 
 	if( destFrame == m_currentFrame )
 		return;
@@ -1256,7 +1256,7 @@ void MyApp::_updateFrameCounterAndSlider()
 {
 	char temp[20];
 	
-	sprintf( temp, "%d / %d", m_currentFrame+1, (int) m_frames.size() );
+	snprintf( temp, 20, "%d / %d", m_currentFrame+1, (int) m_frames.size() );
 	
 	
 	m_pProgressText->display.setText(temp);
@@ -1370,7 +1370,7 @@ Widget_p MyApp::_buildSurfaceDisplayWithIndexTag( Surface * pSurf, int index )
 	pBase->setId(index);
 	
 	char	label[256];
-	sprintf( label, "%d: %dx%d %s", index, pSurf->pixelWidth(), pSurf->pixelHeight(), toString(pSurf->pixelFormat()) );
+	snprintf( label, 256, "%d: %dx%d %s", index, pSurf->pixelWidth(), pSurf->pixelHeight(), toString(pSurf->pixelFormat()) );
 	
 	auto pLabel = TextDisplay::create( WGBP(TextDisplay,
 						 _.display.style = m_pBigWhiteStyle,

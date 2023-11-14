@@ -1200,7 +1200,7 @@ namespace wg
 
 		if( pSlot->m_bVisible )
 		{
-			int index = pSlot - slots.begin();
+			int index = int(pSlot - slots.begin());
 			if( m_pEntrySkin[index&0x1] )
 				geo = m_pEntrySkin[index&0x1]->_contentRect( geo, m_scale, pSlot->_widget()->state() );
 		}

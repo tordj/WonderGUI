@@ -63,8 +63,8 @@ namespace wg
 			return false;
 
 		m_cell.x = 0;
-		m_cell.y = (pBeg - m_pBuffer->pixels) / m_pBuffer->pitch;
-		m_cell.h = (pPixels - pBeg) / m_pBuffer->pitch;
+		m_cell.y = int(pBeg - m_pBuffer->pixels) / m_pBuffer->pitch;
+		m_cell.h = int(pPixels - pBeg) / m_pBuffer->pitch;
 		return true;
 	}
 
@@ -82,7 +82,7 @@ namespace wg
 		if (pPixels >= pPixelsEnd)
 			return RectI();
 
-		m_cell.w = (pPixels - pBeg) / m_pixelBytes;
+		m_cell.w = int(pPixels - pBeg) / m_pixelBytes;
 
 		return m_cell;
 	}
@@ -102,8 +102,8 @@ namespace wg
 		if (pPixels >= pPixelsEnd)
 			return RectI();
 
-		m_cell.x = (pBeg - (m_pBuffer->pixels + m_cell.y * m_pBuffer->pitch)) / m_pixelBytes;
-		m_cell.w = (pPixels - pBeg) / m_pixelBytes;
+		m_cell.x = int(pBeg - (m_pBuffer->pixels + m_cell.y * m_pBuffer->pitch)) / m_pixelBytes;
+		m_cell.w = int(pPixels - pBeg) / m_pixelBytes;
 
 		return m_cell;
 	}

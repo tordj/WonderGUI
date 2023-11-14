@@ -226,7 +226,7 @@ namespace wg
 
 			if (pI > items)
 			{
-				spx combinedLength =  m_pLayout->getItemSizes(results, m_bHorizontal ? contentGeo.w : contentGeo.h, m_scale, pI - items, items );
+				spx combinedLength =  m_pLayout->getItemSizes(results, m_bHorizontal ? contentGeo.w : contentGeo.h, m_scale, int(pI - items), items );
 
 				if (slots[0].m_pWidget)
 				{

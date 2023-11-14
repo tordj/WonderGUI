@@ -224,7 +224,7 @@ namespace wg
 		delta.x = 0;
 		FT_Get_Kerning( m_ftFace, leftGlyph.kerningIndex, rightGlyph.kerningIndex, FT_KERNING_DEFAULT, &delta );
 
-		return delta.x;
+		return int(delta.x);
 	}
 
 	//____ whitespaceAdvance() _________________________________________________
@@ -250,7 +250,7 @@ namespace wg
 				return 0;
 
 			// Get and return advance
-			m_pCachedFontSizes[pxSize]->whitespaceAdvance = align(m_ftFace->glyph->advance.x);
+			m_pCachedFontSizes[pxSize]->whitespaceAdvance = align(int(m_ftFace->glyph->advance.x));
 		}
 
         return m_pCachedFontSizes[pxSize]->whitespaceAdvance;
@@ -260,7 +260,7 @@ namespace wg
 
 	spx FreeTypeFont::lineGap()
 	{
-		return align(m_ftFace->size->metrics.height - m_ftFace->size->metrics.ascender + m_ftFace->size->metrics.descender);
+		return align(int(m_ftFace->size->metrics.height - m_ftFace->size->metrics.ascender + m_ftFace->size->metrics.descender));
 	}
 
 
@@ -268,14 +268,14 @@ namespace wg
 
 	spx FreeTypeFont::maxAscend()
 	{
-		return m_ftFace->size->metrics.ascender;
+		return int(m_ftFace->size->metrics.ascender);
 	}
 
 	//____ maxDescend() ____________________________________________________________
 
 	spx FreeTypeFont::maxDescend()
 	{
-		return -(m_ftFace->size->metrics.descender);
+		return -int(m_ftFace->size->metrics.descender);
 	}
 
 
@@ -304,7 +304,7 @@ namespace wg
 
 	spx FreeTypeFont::maxAdvance()
 	{
-		return align(m_ftFace->size->metrics.max_advance);
+		return align(int(m_ftFace->size->metrics.max_advance));
 	}
 
 
@@ -358,7 +358,7 @@ namespace wg
 
 			// Get some details about the glyph
 
-			spx advance = align(m_ftFace->glyph->advance.x);
+			spx advance = align(int(m_ftFace->glyph->advance.x));
 
 			// Get a MyGlyph object and fill in details
 
@@ -421,7 +421,7 @@ namespace wg
 
 			// Get some details about the glyph
 
-			spx advance = align(m_ftFace->glyph->advance.x);
+			spx advance = align(int(m_ftFace->glyph->advance.x));
 
 			// Get a MyGlyph object and fill in details
 

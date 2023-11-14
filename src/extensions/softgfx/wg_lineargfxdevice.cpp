@@ -150,7 +150,7 @@ bool LinearGfxDevice::_beginCanvasUpdate(CanvasRef ref, Surface * pCanvas, int n
 		}
 		
 		m_pClipSegments = m_canvasSegments.data();
-		m_nClipSegments = m_canvasSegments.size();
+		m_nClipSegments = (int) m_canvasSegments.size();
 	}
 	
 	return true;
@@ -237,7 +237,7 @@ void LinearGfxDevice::_clipListWasChanged()
 	if( m_pClipRects == m_pCanvasUpdateRects )
 	{
 		m_pClipSegments = m_canvasSegments.data();
-		m_nClipSegments = m_canvasSegments.size();
+		m_nClipSegments = (int) m_canvasSegments.size();
 	}
 	else
 	{
@@ -261,7 +261,7 @@ void LinearGfxDevice::_clipListWasChanged()
 		}
 		
 		m_pClipSegments = m_clipSegments.data();
-		m_nClipSegments = m_clipSegments.size();
+		m_nClipSegments = (int) m_clipSegments.size();
 	}
 }
 
@@ -352,7 +352,7 @@ void LinearGfxDevice::fill(const RectSPX& rect, HiColor col)
 		
 		char errorMsg[1024];
 		
-		sprintf(errorMsg, "Failed fill operation. SoftGfxDevice is missing fill kernel for TintMode::%s, BlendMode::%s onto surface of PixelFormat:%s.",
+		snprintf(errorMsg, 1024, "Failed fill operation. SoftGfxDevice is missing fill kernel for TintMode::%s, BlendMode::%s onto surface of PixelFormat:%s.",
 			toString(m_colTrans.mode),
 			toString(m_blendMode),
 			toString(m_canvasPixelFormat));
@@ -393,7 +393,7 @@ void LinearGfxDevice::plotPixels(int nCoords, const CoordSPX * pCoords, const Hi
 		
 		char errorMsg[1024];
 		
-		sprintf(errorMsg, "Failed plotPixels operation. SoftGfxDevice is missing plotList kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+		snprintf(errorMsg, 1024, "Failed plotPixels operation. SoftGfxDevice is missing plotList kernel for BlendMode::%s onto surface of PixelFormat:%s.",
 			toString(m_blendMode),
 			toString(m_canvasPixelFormat) );
 		
@@ -446,7 +446,7 @@ void LinearGfxDevice::drawLine(CoordSPX beg, CoordSPX end, HiColor color, spx th
 		
 		char errorMsg[1024];
 		
-		sprintf(errorMsg, "Failed drawLine operation. SoftGfxDevice is missing clipLine kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+		snprintf(errorMsg, 1024, "Failed drawLine operation. SoftGfxDevice is missing clipLine kernel for BlendMode::%s onto surface of PixelFormat:%s.",
 			toString(m_blendMode),
 			toString(m_canvasPixelFormat) );
 		
@@ -612,7 +612,7 @@ void LinearGfxDevice::drawLine(CoordSPX _begin, Direction dir, spx _length, HiCo
 		
 		char errorMsg[1024];
 		
-		sprintf(errorMsg, "Failed drawLine operation. SoftGfxDevice is missing fill kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+		snprintf(errorMsg, 1024, "Failed drawLine operation. SoftGfxDevice is missing fill kernel for BlendMode::%s onto surface of PixelFormat:%s.",
 			toString(m_blendMode),
 			toString(m_canvasPixelFormat) );
 		
@@ -1518,7 +1518,7 @@ void LinearGfxDevice::_transformDrawSegments(const RectSPX& _destIn, int nSegmen
 		
 		char errorMsg[1024];
 		
-		sprintf(errorMsg, "Failed draw segments operation. SoftGfxDevice is missing segments kernel %s Y-tint for BlendMode::%s onto surface of PixelFormat:%s.",
+		snprintf(errorMsg, 1024, "Failed draw segments operation. SoftGfxDevice is missing segments kernel %s Y-tint for BlendMode::%s onto surface of PixelFormat:%s.",
 			bTintY ? "with" : "without",
 			toString(m_blendMode),
 			toString(m_canvasPixelFormat ));

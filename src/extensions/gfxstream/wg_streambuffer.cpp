@@ -113,7 +113,7 @@ namespace wg
 		// Grow buffer if needed.
 		//---------------------------
 
-		int neededSpace = pEnd - pBegin;
+		int neededSpace = int(pEnd - pBegin);
 		int currentSpace = m_bufferSize - ((m_writeOfs - m_readOfs + m_bufferSize) % m_bufferSize) - 2;		// -2 since we may not catch up to readOfs
 
 		int bufferSizeNeeded = m_bufferSize;
@@ -126,7 +126,7 @@ namespace wg
 		if (bufferSizeNeeded > m_bufferSize)
 		{
 			char	msg[64];
-			sprintf( msg, "StreamBuffer reallocated to %d bytes", bufferSizeNeeded);
+			snprintf( msg, 64, "StreamBuffer reallocated to %d bytes", bufferSizeNeeded);
 			GfxBase::throwError(ErrorLevel::Warning, ErrorCode::Performance, msg, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 
 			_resizeBuffer(bufferSizeNeeded);

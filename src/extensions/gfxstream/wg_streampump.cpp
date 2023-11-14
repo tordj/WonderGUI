@@ -323,7 +323,7 @@ namespace wg
 
 		for (auto& canvas : canvases)
 		{
-			int maskBegin = clipRects.size();				// Where canvases we mask against begin
+			int maskBegin = int(clipRects.size());				// Where canvases we mask against begin
 
 			for (int i = int(canvas.frames.size()) - 1; i >= 0; i--)
 			{
@@ -333,7 +333,7 @@ namespace wg
 					maskBegin = canvas.frames[i+optimizationDepth].ofsClipRects;
 				
 				
-				int maskEnd = clipRects.size();				// Where we stop masking for this frame
+				int maskEnd = int(clipRects.size());				// Where we stop masking for this frame
 				
 				// Get data from header
 
@@ -367,7 +367,7 @@ namespace wg
 
 				// Mask and copy rectangles for this frame
 
-				int startOfs = clipRects.size();
+				int startOfs = int(clipRects.size());
 		
 				// For last frame we just copy the rects
 
@@ -406,7 +406,7 @@ namespace wg
 
 				canvas.frames[i].ofsClipRects = startOfs;
 
-				int nRectsLeft = clipRects.size() - startOfs;
+				int nRectsLeft = int(clipRects.size()) - startOfs;
 
 				if( nRects > 0 && nRectsLeft == 0 )
 					nRectsLeft = -1;		// Signal that the whole frame should be skipped.
@@ -557,7 +557,7 @@ namespace wg
 						}
 					}
 
-					int nDstRect = pDst - (RectSPX*)(pTempChunk + 4);
+					int nDstRect = int(pDst - (RectSPX*)(pTempChunk + 4));
 
 					// Create the header
 

@@ -966,8 +966,8 @@ namespace wg
 
 		case GfxChunkId::SurfacePixels:
 		{
-            int line = (m_pWritePixels - m_pixelBuffer.pixels) / m_pixelBuffer.pitch;
-            int ofs = (m_pWritePixels - m_pixelBuffer.pixels) % m_pixelBuffer.pitch;
+            int line = int(m_pWritePixels - m_pixelBuffer.pixels) / m_pixelBuffer.pitch;
+            int ofs = int(m_pWritePixels - m_pixelBuffer.pixels) % m_pixelBuffer.pitch;
 
             int bytesPerLine = m_pixelBuffer.rect.w * m_pUpdatingSurface->pixelBits()/8;
 

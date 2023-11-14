@@ -157,7 +157,7 @@ namespace wg
 		
 		if( pDataEnd < pChunk )
 		{
-			int endBufferBytes = m_pBufferEnd - pChunk;
+			int endBufferBytes = int(m_pBufferEnd - pChunk);
 			
 			// Advance pChunk over chunks to the last, incomplete chunk in the buffer
 			
@@ -193,7 +193,7 @@ namespace wg
 			{
 				// We have an broken chunk at the end
 				
-				int dataSize = (m_pBufferEnd - pChunk) + (pDataEnd - m_pBufferBegin);
+				int dataSize = int(m_pBufferEnd - pChunk) + int(pDataEnd - m_pBufferBegin);
 
 				int chunkSize;
 				
@@ -217,7 +217,7 @@ namespace wg
 				
 				// Rejoin our chunk, set pointer
 				
-				int part1Size = m_pBufferEnd - pChunk;
+				int part1Size = int(m_pBufferEnd - pChunk);
 				memcpy( m_rejoinedChunk, pChunk, part1Size );
 				memcpy( m_rejoinedChunk + part1Size, m_pBufferBegin, chunkSize - part1Size );
 				

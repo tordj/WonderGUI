@@ -74,7 +74,7 @@ namespace wg
 	template < class SlotType>
 	void Panel<SlotType>::hideSlots(iterator beg, iterator end)
 	{
-		_hideSlots( beg, end - beg);
+		_hideSlots( beg, int(end - beg));
 	}
 
 	//____ unhideSlots() ___________________________________________________________
@@ -88,7 +88,7 @@ namespace wg
 	template < class SlotType>
 	void Panel<SlotType>::unhideSlots(iterator beg, iterator end)
 	{
-		_unhideSlots( beg, end - beg);
+		_unhideSlots( beg, int(end - beg));
 	}
 
 

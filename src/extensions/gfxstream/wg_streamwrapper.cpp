@@ -71,7 +71,7 @@ namespace wg
 
 	int StreamWrapper::bytesInBuffer() const
 	{
-		return m_dataSegment.pEnd - m_dataSegment.pBegin;
+		return int(m_dataSegment.pEnd - m_dataSegment.pBegin);
 	}
 
 

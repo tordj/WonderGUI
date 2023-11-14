@@ -104,8 +104,8 @@ namespace wg
 			return iterator(_end());
 		}
 
-		inline int		frontCapacity() const { return m_pArray - m_pBuffer; }
-		inline int		backCapacity() const { return (m_pBuffer + m_capacity) - (m_pArray + m_size); }
+		inline int		frontCapacity() const { return (int) (m_pArray - m_pBuffer); }
+		inline int		backCapacity() const { return int((m_pBuffer + m_capacity) - (m_pArray + m_size)); }
 
 		inline void		reserveFront(int n) { if (m_pBuffer + n > m_pArray) _reallocArray(m_size + n, n); }
 		inline void		reserveBack(int n) { if (m_pArray + m_size + n > m_pBuffer + m_capacity) _reallocArray(m_size + n, 0); }

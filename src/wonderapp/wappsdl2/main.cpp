@@ -887,7 +887,7 @@ std::string MyAppVisitor::saveFileDialog(	const std::string& title, const std::s
 	for (int i = 0; i < filterPatterns.size(); i++)
 		pPatternPointers[i] = filterPatterns[i].c_str();
 
-	auto pResult = tinyfd_saveFileDialog( title.c_str(), defaultPathAndFile.c_str(), filterPatterns.size(), pPatterns, singleFilterDescription.c_str() );
+	auto pResult = tinyfd_saveFileDialog( title.c_str(), defaultPathAndFile.c_str(), int(filterPatterns.size()), pPatterns, singleFilterDescription.c_str() );
 	
 	if(pResult == NULL)
 		return std::string();
@@ -907,7 +907,7 @@ std::string MyAppVisitor::openFileDialog(	const std::string& title, const std::s
 	for (int i = 0; i < filterPatterns.size(); i++)
 		pPatternPointers[i] = filterPatterns[i].c_str();
 
-	auto pResult = tinyfd_openFileDialog( title.c_str(), defaultPathAndFile.c_str(), filterPatterns.size(), pPatterns, singleFilterDescription.c_str(), false);
+	auto pResult = tinyfd_openFileDialog( title.c_str(), defaultPathAndFile.c_str(), int(filterPatterns.size()), pPatterns, singleFilterDescription.c_str(), false);
 
 	if (pResult == NULL)
 		return std::string();
@@ -928,7 +928,7 @@ std::vector<std::string> MyAppVisitor::openMultiFileDialog(	const std::string& t
 	for (int i = 0; i < filterPatterns.size(); i++)
 		pPatternPointers[i] = filterPatterns[i].c_str();
 
-	auto pResult = tinyfd_openFileDialog(title.c_str(), defaultPathAndFile.c_str(), filterPatterns.size(), pPatterns, singleFilterDescription.c_str(), true);
+	auto pResult = tinyfd_openFileDialog(title.c_str(), defaultPathAndFile.c_str(), int(filterPatterns.size()), pPatterns, singleFilterDescription.c_str(), true);
 
 	if (pResult == NULL)
 		return std::vector<std::string>();

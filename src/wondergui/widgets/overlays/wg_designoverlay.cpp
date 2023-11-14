@@ -537,7 +537,7 @@ namespace wg
 			CoordF pos = slot.pos();
 
 			char buffer[256];
-			sprintf(buffer, "%.2f, %.2f", pos.x, pos.y);
+			snprintf(buffer, 256, "%.2f, %.2f", pos.x, pos.y);
 
 			auto pValue = TextDisplay::create();
 			pValue->display.setText(buffer);
@@ -555,7 +555,7 @@ namespace wg
 			SizeF size = slot.size();
 
 			char buffer[256];
-			sprintf(buffer, "%.2f, %.2f", size.w, size.h);
+			snprintf(buffer, 256, "%.2f, %.2f", size.w, size.h);
 
 			auto pValue = TextDisplay::create();
 			pValue->display.setText(buffer);

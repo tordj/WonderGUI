@@ -429,10 +429,10 @@ static void readRGB_555_bigendian( const uint8_t * pSrc, uint8_t * pDst, int nbP
 
 struct ShiftReadConvTab
 {
-	int maskR;
-	int maskG;
-	int maskB;
-	int maskA;
+	uint32_t maskR;
+	uint32_t maskG;
+	uint32_t maskB;
+	uint32_t maskA;
 	int shiftR;
 	int shiftG;
 	int shiftB;
@@ -1776,10 +1776,10 @@ bool copyPixels(int width, int height, const uint8_t* pSrc, const PixelDescripti
 	{
 		ShiftReadConvTab convTab;
 
-		convTab.maskR = srcDesc.R_mask;
-		convTab.maskG = srcDesc.G_mask;
-		convTab.maskB = srcDesc.B_mask;
-		convTab.maskA = srcDesc.A_mask;
+		convTab.maskR = (uint32_t) srcDesc.R_mask;
+		convTab.maskG = (uint32_t) srcDesc.G_mask;
+		convTab.maskB = (uint32_t) srcDesc.B_mask;
+		convTab.maskA = (uint32_t) srcDesc.A_mask;
 
 		convTab.maskR64 = srcDesc.R_mask;
 		convTab.maskG64 = srcDesc.G_mask;

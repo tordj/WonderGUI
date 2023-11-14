@@ -269,8 +269,8 @@ namespace wg
 		spx * pDestBegin = _pDestBegin;
 		spx * pDestEnd = _pDestEnd;
 
-		int nbSamples = pDestEnd - pDestBegin;
-		int allocBytes= (pDestEnd - pDestBegin) * sizeof(spx);
+		int nbSamples = int(pDestEnd - pDestBegin);
+		int allocBytes= nbSamples * sizeof(spx);
 		spx * pConverted = (spx*) GfxBase::memStackAlloc(allocBytes);
 		EdgemapTools::convertSamples(pConverted, pSource, m_origo, m_pEdgemap->pixelSize().h*64, 1, nbSamples, 0, 1, 0, 1);
 
@@ -305,8 +305,8 @@ namespace wg
 		spx * pDestBegin = _pDestBegin;
 		spx * pDestEnd = _pDestEnd;
 
-		int nbSamples = pDestEnd - pDestBegin;
-		int allocBytes= (pDestEnd - pDestBegin) * sizeof(spx);
+		int nbSamples = int(pDestEnd - pDestBegin);
+		int allocBytes= nbSamples * sizeof(spx);
 		spx * pConverted = (spx*) GfxBase::memStackAlloc(allocBytes);
 		EdgemapTools::convertSamples(pConverted, pSource, m_origo, m_pEdgemap->pixelSize().h*64, 1, nbSamples, 0, 1, 0, 1);
 
@@ -599,7 +599,7 @@ namespace wg
 
 	void Waveform::_updateEdgemapColors()
 	{
-		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : pFactory = GfxBase::defaultEdgemapFactory();
+		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : GfxBase::defaultEdgemapFactory();
 
 		bool bUseGradient = !m_gradient.isUndefined() || !m_outlineGradient.isUndefined();
 
@@ -662,7 +662,7 @@ namespace wg
 			* p++ = m_outlineColor;
 		* p++ = Color::Transparent;
 
-		return p - pDest;
+		return int(p - pDest);
 	}
 
 	//____ _generateGradientPalette() ____________________________________________
@@ -682,7 +682,7 @@ namespace wg
 			* p++ = outline;
 		* p++ = transparent;
 
-		return p - pDest;
+		return int( p - pDest );
 	}
 
 

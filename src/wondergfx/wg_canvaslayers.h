@@ -129,7 +129,7 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline int				size() const { return m_layers.size(); }
+		inline int				size() const { return int(m_layers.size()); }
 
 		PixelFormat				layerFormat(int layer) const;
 		inline int				baseLayer() const { return m_baseLayer;  }

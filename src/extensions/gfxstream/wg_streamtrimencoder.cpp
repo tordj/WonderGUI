@@ -71,7 +71,7 @@ namespace wg
 			case GfxChunkId::BeginRender:
 			{
 				m_scopes.emplace_back(m_activeScope);
-				m_activeScope = m_scopes.size() -1;
+				m_activeScope = int(m_scopes.size()) -1;
 
 				m_scopes[m_activeScope].chunks.emplace_back( GfxChunkId::BeginRender, (int) m_data.size(), 0, GfxStream::SpxFormat::Int32_dec, 0 );
 				break;
@@ -91,7 +91,7 @@ namespace wg
 
 			case GfxChunkId::BeginCanvasUpdate:
 			{
-				int newScopeIdx = m_scopes.size();
+				int newScopeIdx = (int) m_scopes.size();
 				int dataOfs = (int) m_data.size();
 
 				// Signal jump to subscope in our scope with a special chunk.
@@ -198,7 +198,7 @@ namespace wg
 					int dummy = 0;
 				}
 				
-				int ofs = m_outputBuffer.size();
+				int ofs = (int) m_outputBuffer.size();
 				if (chunk.dataSize <= 30)
 				{
 					m_outputBuffer.resize(ofs + chunk.dataSize + 2);

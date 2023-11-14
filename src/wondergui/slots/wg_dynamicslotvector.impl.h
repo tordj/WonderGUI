@@ -64,7 +64,7 @@ namespace wg
 		for (auto& entry : entries)
 			entry.m_pChild->releaseFromParent();
 
-		SlotType * pInsertionPoint = _pushFrontEmpty(entries.size());
+		SlotType * pInsertionPoint = _pushFrontEmpty( (int) entries.size());
 
 		SlotType * pSlot = pInsertionPoint;
 		for (auto& entry : entries)
@@ -75,7 +75,7 @@ namespace wg
 			pSlot++;
 		}
 
-		m_pHolder->_didAddSlots(pInsertionPoint, entries.size());
+		m_pHolder->_didAddSlots(pInsertionPoint, (int) entries.size());
 		return iterator(pInsertionPoint);
 	}
 
@@ -111,7 +111,7 @@ namespace wg
 		for (auto& entry : entries)
 			entry.m_pChild->releaseFromParent();
 
-		SlotType * pInsertionPoint = _pushBackEmpty(entries.size());
+		SlotType * pInsertionPoint = _pushBackEmpty( (int) entries.size());
 
 		SlotType * pSlot = pInsertionPoint;
 		for (auto& entry : entries)
@@ -122,7 +122,7 @@ namespace wg
 			pSlot++;
 		}
 
-		m_pHolder->_didAddSlots(pInsertionPoint, entries.size());
+		m_pHolder->_didAddSlots(pInsertionPoint, (int) entries.size());
 		return iterator(pInsertionPoint);
 	}
 
@@ -191,7 +191,7 @@ namespace wg
 	{
 		//TODO: Add assert
 
-		SlotType * pInsertionPoint = _insertEmpty(index, entries.size());
+		SlotType * pInsertionPoint = _insertEmpty(index, (int) entries.size());
 
 		SlotType * pSlot = pInsertionPoint;
 		for (auto& entry : entries)
@@ -204,7 +204,7 @@ namespace wg
 			pSlot++;
 		}
 
-		m_pHolder->_didAddSlots(pInsertionPoint, entries.size());
+		m_pHolder->_didAddSlots(pInsertionPoint, (int) entries.size());
 		return iterator(pInsertionPoint);
 	}
 
@@ -213,7 +213,7 @@ namespace wg
 	{
 		//TODO: Add assert
 
-		SlotType * pInsertionPoint = _insertEmpty(pos, entries.size());
+		SlotType * pInsertionPoint = _insertEmpty(pos, (int) entries.size());
 
 		SlotType * pSlot = pInsertionPoint;
 		for (auto& entry : entries)
@@ -226,7 +226,7 @@ namespace wg
 			pSlot++;
 		}
 
-		m_pHolder->_didAddSlots(pInsertionPoint, entries.size());
+		m_pHolder->_didAddSlots(pInsertionPoint, (int) entries.size());
 		return iterator(pInsertionPoint);
 	}
 

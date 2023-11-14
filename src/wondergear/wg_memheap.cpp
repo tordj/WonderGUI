@@ -40,7 +40,7 @@ namespace wg
 	char * pStart = (char*) ((((size_t)pHeap)+3) & (size_t) 0xFFFFFFFFFFFFFFFC);
 	char * pEnd = (char*) ((((size_t)pHeap)+bytes) & (size_t) 0xFFFFFFFFFFFFFFFC);
 
-	int capacity = pEnd - pStart - sizeof(Header)*2;
+	int capacity = int(pEnd - pStart) - sizeof(Header)*2;
 
     m_capacity = capacity;
     m_reserved = 0;
@@ -96,7 +96,7 @@ namespace wg
 		return nullptr;
 	}
 
-    int blockCapacity = ((char*)pHead->pNextBlock) - ((char*)&pHead[1]);
+    int blockCapacity = (int) (((char*)pHead->pNextBlock) - ((char*)&pHead[1]));
 
     if( blockCapacity > bytes + sizeof(Header) )
     {
@@ -383,7 +383,7 @@ int MemHeap::largestAvailableBlock() const
 	{
 		if( p->pNextBlock )
 		{
-			int sz = ((char*)p->pNextBlock) - ((char*)p) - sizeof(Header);
+			int sz = (int) (((char*)p->pNextBlock) - ((char*)p) - sizeof(Header));
 			if( sz > largest )
 				largest = sz;
 		}

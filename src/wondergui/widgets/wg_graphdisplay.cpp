@@ -539,12 +539,12 @@ namespace wg
 				{
 					graph.m_sampleTransitionProgress = timestamp;
 
-					graph.m_pSampleTransition->snapshot(timestamp, graph.m_topSamples.size(), 
-														graph.m_startTopSamples.data(), 
+					graph.m_pSampleTransition->snapshot(timestamp, (int) graph.m_topSamples.size(),
+														graph.m_startTopSamples.data(),
 														graph.m_endTopSamples.data(), 
 														graph.m_topSamples.data());	
 
-					graph.m_pSampleTransition->snapshot(timestamp, graph.m_bottomSamples.size(),
+					graph.m_pSampleTransition->snapshot(timestamp, (int) graph.m_bottomSamples.size(),
 														graph.m_startBottomSamples.data(),
 														graph.m_endBottomSamples.data(),
 														graph.m_bottomSamples.data());
@@ -632,8 +632,8 @@ namespace wg
 
 					// Interpolate and set samples
 
-					_updateWaveformEdge(graph.m_pWaveform, true, graph.m_topSamples.size(), graph.m_topSamples.data() );
-					_updateWaveformEdge(graph.m_pWaveform, false, graph.m_bottomSamples.size(), graph.m_bottomSamples.data());
+					_updateWaveformEdge(graph.m_pWaveform, true, (int) graph.m_topSamples.size(), graph.m_topSamples.data() );
+					_updateWaveformEdge(graph.m_pWaveform, false, (int) graph.m_bottomSamples.size(), graph.m_bottomSamples.data());
 
 					bNeedsRendering = true;
 				}
@@ -663,8 +663,8 @@ namespace wg
 
 					if (graph.m_bSamplesChanged)
 					{
-						_updateWaveformEdge(graph.m_pWaveform, true, graph.m_topSamples.size(), graph.m_topSamples.data());
-						_updateWaveformEdge(graph.m_pWaveform, false, graph.m_bottomSamples.size(), graph.m_bottomSamples.data());
+						_updateWaveformEdge(graph.m_pWaveform, true, (int) graph.m_topSamples.size(), graph.m_topSamples.data());
+						_updateWaveformEdge(graph.m_pWaveform, false, (int) graph.m_bottomSamples.size(), graph.m_bottomSamples.data());
 						graph.m_bSamplesChanged = false;
 
 						bNeedsRendering = true;

@@ -715,7 +715,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 				
 				char errorMsg[1024];
 				
-				sprintf(errorMsg, "Failed fill operation. SoftGfxDevice is missing fill kernel for TintMode::%s, BlendMode::%s onto surface of PixelFormat:%s.",
+				snprintf(errorMsg, 1024, "Failed fill operation. SoftGfxDevice is missing fill kernel for TintMode::%s, BlendMode::%s onto surface of PixelFormat:%s.",
 					toString(m_colTrans.mode),
 					toString(m_blendMode),
 					toString(m_pRenderLayerSurface->pixelFormat()) );
@@ -758,7 +758,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 				
 				char errorMsg[1024];
 				
-				sprintf(errorMsg, "Failed fill operation. SoftGfxDevice is missing fill kernel for TintMode::%s, BlendMode::%s onto surface of PixelFormat:%s.",
+				snprintf(errorMsg, 1024, "Failed fill operation. SoftGfxDevice is missing fill kernel for TintMode::%s, BlendMode::%s onto surface of PixelFormat:%s.",
 					toString(m_colTrans.mode),
 					toString(m_blendMode),
 					toString(m_pRenderLayerSurface->pixelFormat()) );
@@ -923,7 +923,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			
 			char errorMsg[1024];
 			
-			sprintf(errorMsg, "Failed drawLine operation. SoftGfxDevice is missing clipLine kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+			snprintf(errorMsg, 1024, "Failed drawLine operation. SoftGfxDevice is missing clipLine kernel for BlendMode::%s onto surface of PixelFormat:%s.",
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
@@ -1089,7 +1089,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			
 			char errorMsg[1024];
 			
-			sprintf(errorMsg, "Failed drawLine operation. SoftGfxDevice is missing fill kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+			snprintf(errorMsg, 1024, "Failed drawLine operation. SoftGfxDevice is missing fill kernel for BlendMode::%s onto surface of PixelFormat:%s.",
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
@@ -1638,7 +1638,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			
 			char errorMsg[1024];
 			
-			sprintf(errorMsg, "Failed draw segments operation. SoftGfxDevice is missing segments kernel %s Y-tint for BlendMode::%s onto surface of PixelFormat:%s.",
+			snprintf(errorMsg, 1024, "Failed draw segments operation. SoftGfxDevice is missing segments kernel %s Y-tint for BlendMode::%s onto surface of PixelFormat:%s.",
 				bTintY ? "with" : "without",
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
@@ -2161,7 +2161,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			
 			char errorMsg[1024];
 			
-			sprintf(errorMsg, "Failed plotPixels operation. SoftGfxDevice is missing plotList kernel for BlendMode::%s onto surface of PixelFormat:%s.",
+			snprintf(errorMsg, 1024, "Failed plotPixels operation. SoftGfxDevice is missing plotList kernel for BlendMode::%s onto surface of PixelFormat:%s.",
 				toString(m_blendMode),
 				toString(m_pRenderLayerSurface->pixelFormat()) );
 			
@@ -2735,7 +2735,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			
 		char errorMsg[1024];
 		
-		sprintf(errorMsg, "Failed blit operation. SoftGfxDevice is missing straight blit kernel for:\n source format = %s\n tile = %s\n tint mode = %s\n blend mode = %s\n, dest format = %s\n", toString(m_pBlitSource->pixelFormat()),
+		snprintf(errorMsg, 1024, "Failed blit operation. SoftGfxDevice is missing straight blit kernel for:\n source format = %s\n tile = %s\n tint mode = %s\n blend mode = %s\n, dest format = %s\n", toString(m_pBlitSource->pixelFormat()),
 			m_bTileSource ? "true" : "false",
 			toString(m_colTrans.mode),
 			toString(m_blendMode),
@@ -2753,7 +2753,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		char errorMsg[1024];
 		
-		sprintf(errorMsg, "Failed blit operation. SoftGfxDevice is missing transform blit kernel for:\n source format = %s\n sample method = %s\n tile = %s\n clip = %s\n tint mode = %s\n blend mode = %s\n, dest format = %s\n", toString(m_pBlitSource->pixelFormat()),
+		snprintf(errorMsg, 1024, "Failed blit operation. SoftGfxDevice is missing transform blit kernel for:\n source format = %s\n sample method = %s\n tile = %s\n clip = %s\n tint mode = %s\n blend mode = %s\n, dest format = %s\n", toString(m_pBlitSource->pixelFormat()),
 			toString(m_pBlitSource->sampleMethod()),
 			m_bTileSource ? "true" : "false",
 			m_bClipSource ? "true" : "false",

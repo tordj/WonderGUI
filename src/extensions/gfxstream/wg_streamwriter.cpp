@@ -62,7 +62,7 @@ namespace wg
 
 	void StreamWriter::_processStreamChunks(const uint8_t* pBegin, const uint8_t* pEnd)
 	{
-		m_dispatcher(pEnd - pBegin, pBegin);
+		m_dispatcher(int(pEnd - pBegin), pBegin);
 	}
 
 

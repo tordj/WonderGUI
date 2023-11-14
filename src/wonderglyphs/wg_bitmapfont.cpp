@@ -213,19 +213,19 @@ namespace wg
 		const char* pLineGap = strstr(pInfoBeg, "LINEGAP:");
 
 		if (pSize && pSize < pInfoEnd)
-			size = strtol(pSize + 5, nullptr, 10);
+			size = (int) strtol(pSize + 5, nullptr, 10);
 
 		if (pWhitespace && pWhitespace < pInfoEnd)
-			whitespace = strtol(pWhitespace + 11, nullptr, 10);
+			whitespace = (int) strtol(pWhitespace + 11, nullptr, 10);
 
 		if(pMonochrome && pMonochrome < pInfoEnd)
-			monochrome = strtol(pMonochrome + 11, nullptr, 10);
+			monochrome = (int) strtol(pMonochrome + 11, nullptr, 10);
 
 		if (pBaseline && pBaseline < pInfoEnd)
-			baseline = strtol(pBaseline + 9, nullptr, 10);
+			baseline = (int) strtol(pBaseline + 9, nullptr, 10);
 
 		if (pLineGap && pLineGap < pInfoEnd)
-			linegap = strtol(pLineGap + 8, nullptr, 10);
+			linegap = (int) strtol(pLineGap + 8, nullptr, 10);
 
 
 		// Read charmap and surface-grid

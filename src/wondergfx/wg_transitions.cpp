@@ -63,7 +63,7 @@ namespace wg
 
 			case TransitionCurve::EaseInOut:
 			{
-				int64_t halfpoint = 1 << 23;
+				int halfpoint = 1 << 23;
 
 				if (normTS <= halfpoint)
 					return int((2 * (normTS * normTS)) >> 24);
@@ -79,7 +79,7 @@ namespace wg
 			{
 				int64_t sqt = (normTS * normTS) >> 24;
 
-				return (sqt << 24) / (2 * (sqt - normTS) + (1 << 24));
+				return int((sqt << 24) / (2 * (sqt - normTS) + (1 << 24)));
 			}
 		}
 
