@@ -187,7 +187,7 @@ namespace wg
 
 	spx SelectBox::_matchingHeight(spx width, int scale) const
 	{
-		if (width == m_size.w)
+		if (width == m_size.w && scale == m_scale)
 			return m_matchingHeight;
 		else
 		{
@@ -448,7 +448,7 @@ namespace wg
 
 			spx boxHeight = pMapper->matchingHeight(pEntry, (m_size.w - boxPadding.w), m_scale ) + boxPadding.h;
 
-			if (boxHeight < m_matchingHeight)
+			if (boxHeight > m_matchingHeight)
 				m_matchingHeight = boxHeight;
 
 			// Update m_defaultSize and m_listCanvasDefaultSize

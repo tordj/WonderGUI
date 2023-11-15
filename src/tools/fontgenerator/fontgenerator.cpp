@@ -98,16 +98,9 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	auto pPopupOverlay = PopupOverlay::create();
 	
 	
+	auto pBasePanel = PackPanel::create( { .axis = Axis::Y, .layout = m_pLayout });
 	
-	auto pBasePanel = PackPanel::create();
-	pBasePanel->setAxis(Axis::Y);
-	pBasePanel->setLayout(m_pLayout);
-	
-	auto pSplitPanel = SplitPanel::create();
-	pSplitPanel->setAxis(Axis::Y);
-	pSplitPanel->setResizeRatio(0.f);
-	pSplitPanel->setSplit(0.5f);			//TODO: SplitPanel::setSplitFactor() does not work! Replace with some other function?
-	pSplitPanel->setHandleSkin(m_pButtonSkin);
+	auto pSplitPanel = SplitPanel::create( { .axis = Axis::Y, .handleSkin = m_pButtonSkin, .resizeRatio = 0.f });
 	
 	pSplitPanel->slots[0] = createCharsPanel();
 	pSplitPanel->slots[1] = createOutputPanel();
@@ -121,6 +114,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	
 	pRoot->slot = pPopupOverlay;
 
+	pSplitPanel->setSplit(0.3f);		// Needs to be done once it has the right size.
 	return true;
 }
 
@@ -483,10 +477,12 @@ Widget_p MyApp::createInputPanel()
 	pBase->setAxis(Axis::Y);
 	pBase->setLayout(m_pLayout);
 	pBase->setSkin(m_pPlateSkin);
+	pBase->setId(1);
 	
 	auto pTopRow = PackPanel::create();
 	pTopRow->setAxis(Axis::X);
 	pTopRow->setLayout(m_pLayout);
+	pTopRow->setId( 2 );
 	
 	auto pLabel = TextDisplay::create( WGBP(TextDisplay,
 											_.display = WGBP(Text,
@@ -513,6 +509,7 @@ Widget_p MyApp::createInputPanel()
 	
 	auto pBottomRow = PackPanel::create();
 	pBottomRow->setAxis(Axis::X);
+	pBottomRow->setId(3);
 //	pBottomRow->setSizeBroker(m_pSizeBroker);
 
 	auto pSizeLabel = TextDisplay::create( WGBP(TextDisplay,
