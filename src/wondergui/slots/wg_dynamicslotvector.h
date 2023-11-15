@@ -316,7 +316,7 @@ namespace wg
 			std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
 			"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
 
-		int nbElements = std::distance(beg,end);
+		int nbElements = (int) std::distance(beg,end);
 
 		SlotType * pInsertionPoint = _pushBackEmpty(nbElements);
 

@@ -98,7 +98,7 @@ namespace wg
 		}
 
 
-		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, pErrorName );
+		snprintf( buffer, 1024, "OpenGL error 0x%x: %s", errorCode, pErrorName );
 		GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::OpenGL, buffer, pObject, pClassType, func, file, line);
 	}
 
@@ -2838,7 +2838,7 @@ namespace wg
 
 				char	buffer[2048 * 3 + 256];
 
-				sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
+				snprintf(buffer, 2048*3+256, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
 				GfxBase::throwError(ErrorLevel::SilentError, ErrorCode::OpenGL, buffer, this, &TYPEINFO, __func__, __FILE__, __LINE__);
 			}
 

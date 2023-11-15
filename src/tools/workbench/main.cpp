@@ -2322,7 +2322,7 @@ bool packListTest(ComponentPtr<DynamicSlot> pSlot)
 	for (int i = 0; i < 10; i++)
 	{
 		char label[20];
-		sprintf(label, "Value: %d", i);
+		snprintf(label, 20, "Value: %d", i);
 		auto pWidget = TextDisplay::create();
 		pWidget->display.setText(label);
 		pWidget->setId(i);

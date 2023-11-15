@@ -31,6 +31,8 @@
 #include <assert.h>
 
 
+#define GL_SILENCE_DEPRECATION
+
 
 namespace wg
 {

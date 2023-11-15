@@ -231,7 +231,7 @@ bool MyApp::saveBitmapFont()
 
 				PixelDescription pixdesc = Util::pixelFormatToDescription(pixbuf.format);
 
-				auto pSDLSurf = SDL_CreateRGBSurfaceFrom(pixbuf.pixels, pixbuf.rect.w, pixbuf.rect.h, pixdesc.bits, pixbuf.pitch, pixdesc.R_mask, pixdesc.G_mask, pixdesc.B_mask, pixdesc.A_mask);
+				auto pSDLSurf = SDL_CreateRGBSurfaceFrom(pixbuf.pixels, pixbuf.rect.w, pixbuf.rect.h, pixdesc.bits, pixbuf.pitch, (Uint32) pixdesc.R_mask, (Uint32) pixdesc.G_mask, (Uint32) pixdesc.B_mask, (Uint32) pixdesc.A_mask);
 
 				IMG_SavePNG(pSDLSurf, pngPath.c_str());
 				m_pBitmapFontSurface->freePixelBuffer(pixbuf);
@@ -295,7 +295,7 @@ bool MyApp::generateFontSpec( FreeTypeFont * pFont, String& charmap )
 	
 	char buffer[1024];
 	
-	sprintf( buffer, "[INFO BEGIN]\n\nSIZE: %d\nWHITESPACE: %d\nMONOCHROME: %d\nBASELINE: %d\nLINEGAP: %d\n\n[INFO END]\n\n",
+	snprintf( buffer, 1024, "[INFO BEGIN]\n\nSIZE: %d\nWHITESPACE: %d\nMONOCHROME: %d\nBASELINE: %d\nLINEGAP: %d\n\n[INFO END]\n\n",
 			size, whitespace, monochrome, baseline, linegap );
 	
 	m_bitmapFontSpec = buffer;
@@ -333,7 +333,7 @@ bool MyApp::generateFontSpec( FreeTypeFont * pFont, String& charmap )
 				char buff2[4] = {0,0,0,0};
 				TextTool::uint16ToUtf8(code2, buff2, 4);
 
-				sprintf( buffer, "%s%s %d ", buff1, buff2, kerning );
+				snprintf( buffer, 1024, "%s%s %d ", buff1, buff2, kerning );
 				m_bitmapFontSpec += buffer;
 			}
 		}
@@ -529,7 +529,7 @@ Widget_p MyApp::createInputPanel()
 	char tmp[8];
 	for( int i = 6 ; i <= 32 ; i++ )
 	{
-		sprintf( tmp, "%i", i);
+		snprintf( tmp, 8, "%i", i);
 //		pSizeSelector->entries.pushBack(SelectBoxEntry(i, String(tmp)));
 		pSizeSelector->entries.pushBack({ i, String(tmp) } );
 

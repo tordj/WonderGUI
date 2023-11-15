@@ -322,20 +322,14 @@ void GfxDeviceTester::refresh_performance_display()
 
 			auto pValueTestee = TextDisplay::create();
 
-#ifdef WIN32			
-			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
-#else
-			sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
-#endif
+			snprintf(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
+
 			pValueTestee->display.setText(value);
 			pValueTestee->display.setLayout(g_pPerformanceValueMapper);
 
 			auto pValueRef = TextDisplay::create();
-#ifdef WIN32			
-			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
-#else
-			sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
-#endif
+
+			snprintf(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
 			pValueRef->display.setText(value);
 			pValueRef->display.setLayout(g_pPerformanceValueMapper);
 
