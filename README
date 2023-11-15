@@ -73,22 +73,21 @@ into the WonderGUI directory and you have everything setup.
 Mac OSX
 =======
 
-1. Download the SDL and SDL_image frameworks from libsdl.org and install them
-   to /Library/Frameworks (or to <Your home directory>/Library/Frameworks if 
-   your access priviliges are not high enough). SDL_image is for some reason
-   not linked from the main page of libsdl.org, so I recommend you google
-   for SDL_image and find the page from libsdl.org. 
+1. Download the SDL2 framework from libsdl.org and copy it to 
+   /Library/Frameworks (or to <Your home directory>/Library/Frameworks if 
+   your access priviliges are not high enough).
 
+2. The libraries SDL2_image and freetype are also needed and are supplied in
+   dependency-packages/wondergui-dev-additions-osx.zip. Extract the content of
+   the package and copy the freetype folder to the WonderGUI directory.
+
+   Copy SDL2_image.framework to the same directory as the SDL2 framework.
+   
    Worth noting is also that I had some problems with priviliges for SDL_image
    since the package wasn't correctly signed. I therefore had to run the following
    command:
 
    xattr -dr com.apple.quarantine /Library/Frameworks/SDL2_image.framework
-
-2. My CMake script expects the treetype library and header files to be located
-   in freetype/lib and freetype/include. Therefore extract 
-   dependency-packages/wondergui-dev-additions-osx.zip into the WonderGUI 
-   directory.
 
 
 **************************************************
