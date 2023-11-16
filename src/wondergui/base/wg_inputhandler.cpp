@@ -234,16 +234,14 @@ namespace wg
 			timestamp = m_timeStamp;
 
 		m_pointerPos = pos;
-		m_pMarkedRoot = 0;
-		m_pointerPosSPX.clear();
+		m_pMarkedRoot = pRoot;
+		m_pointerPosSPX = Util::ptsToSpx(pos, pRoot->scale());
 
 		Widget_p pNowMarked = 0;
 		Widget_p pWidgetTarget = 0;
 
 		if( pRoot && pRoot->geo().contains( pos ) )
 		{
-			m_pMarkedRoot = pRoot;
-			m_pointerPosSPX = Util::ptsToSpx(pos, pRoot->scale());
 			pWidgetTarget = pRoot->findWidget( m_pointerPos, SearchMode::ActionTarget );
 		}
 
