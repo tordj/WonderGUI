@@ -147,7 +147,7 @@ namespace wg
 			spx spacing;			// Offset from start of line to start of next line.
 		};
 
-		void			_refresh(TextItem * pText);
+		void			_refresh(TextItem * pText, bool bAllowRequestResize );
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
 
 		inline void		_getGlyphWithoutBitmap( Font * pFont, uint16_t charCode, Glyph& glyph ) const;
@@ -161,7 +161,7 @@ namespace wg
 
 		void *			_reallocBlock( TextItem * pText, int lines );
 
-		void			_updateLineInfo(TextItem * pText, void * pBlock, const Char * pChars );
+		void			_updateLineInfo(TextItem * pText, void * pBlock, const Char * pChars, bool bAllowRequestResize );
 
 		SizeSPX			_updateFixedLineInfo(LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state );
 		SizeSPX			_updateWrapLineInfo(LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth);

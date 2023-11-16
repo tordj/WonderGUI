@@ -83,7 +83,7 @@ namespace wg
 		_setTextDataBlock(pText,nullptr);					// Make sure pointer is null for the realloc call.
 		void * pBlock = _reallocBlock(pText,nLines);
 
-		_updateLineInfo( pText, pBlock, pChars );
+		_updateLineInfo( pText, pBlock, pChars, true );
 	}
 
 	//____ removeText() _________________________________________________________
@@ -688,7 +688,7 @@ namespace wg
 
 	void BasicTextLayout::onTextModified( TextItem * pText, int ofs, int charsRemoved, int charsAdded )
 	{
-		_refresh(pText);
+		_refresh(pText, true);
 	}
 
 	//____ onResized() ___________________________________________________________
@@ -696,7 +696,7 @@ namespace wg
 	void BasicTextLayout::onResized( TextItem * pText, SizeSPX newSize, SizeSPX oldSize, int newScale, int oldScale )
 	{
 		if (m_bLineWrap || newScale != oldScale)
-			_refresh(pText);
+			_refresh(pText, false);
 
 
 		///TODO: Implement!
@@ -735,7 +735,7 @@ namespace wg
 
 	void BasicTextLayout::onStyleChanged( TextItem * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
-		_refresh(pText);
+		_refresh(pText, true);
 /*
 		//TODO: Optimize: only update line info if textsize possibly affected.
 
@@ -751,7 +751,7 @@ namespace wg
 
 	void BasicTextLayout::onCharStyleChanged( TextItem * pText, int ofs, int len )
 	{
-		_refresh(pText);
+		_refresh(pText, true);
 /*
 		void * pBlock = _dataBlock(pText);
 
@@ -763,7 +763,7 @@ namespace wg
 
 	//____ _refresh() ___________________________________________________________
 
-	void BasicTextLayout::_refresh( TextItem * pText )
+	void BasicTextLayout::_refresh( TextItem * pText, bool bAllowRequestResize )
 	{
 		const Char * pChars = _chars(pText);
 		int nLines = _countLines( pText, pChars );
@@ -772,7 +772,7 @@ namespace wg
 		if( !pBlock || _header(pBlock)->nbLines != nLines )
 			pBlock = _reallocBlock(pText,nLines);
 
-		_updateLineInfo( pText, pBlock, pChars );
+		_updateLineInfo( pText, pBlock, pChars, bAllowRequestResize );
 		_setTextDirty(pText);
 	}
 
@@ -1384,7 +1384,7 @@ namespace wg
 
 	//____ _updateLineInfo() _______________________________________________________
 
-	void BasicTextLayout::_updateLineInfo( TextItem * pText, void * pBlock, const Char * pChars )
+	void BasicTextLayout::_updateLineInfo( TextItem * pText, void * pBlock, const Char * pChars, bool bAllowRequestResize )
 	{
 		BlockHeader * pHeader = _header(_dataBlock(pText));
 		SizeSPX defaultSize;
@@ -1407,7 +1407,8 @@ namespace wg
 		{
 			pHeader->textSize = textSize;
 			pHeader->defaultSize = defaultSize;
-			_requestTextResize(pText);
+			if( bAllowRequestResize )
+				_requestTextResize(pText);
 		}
 	}
 
