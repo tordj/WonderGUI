@@ -82,12 +82,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 	if (!_loadSkins(pVisitor))
 		return false;
 
-
-	auto pLayout = PackLayout::create( { .expandFactor = PackLayout::Factor::Weight });
-
-	auto pBasePanel = PackPanel::create();
-	pBasePanel->setAxis(Axis::Y);
-	pBasePanel->setLayout(pLayout);
+	auto pBasePanel = PackPanel::create( { .axis = Axis::Y });
 
 	auto pWindow = ScrollPanel::create();
 	pWindow->setSkin(ColorSkin::create(Color8::AntiqueWhite));
@@ -96,7 +91,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 		_.outlineThickness = 1,
 		_.outlineColor = Color8::Black)));
 	pWindow->scrollbarY.setBar(m_pPlateSkin);
-	pWindow->setAutohideScrollbars(true, false);
+	pWindow->setAutohideScrollbars(true, true);
 	pWindow->setSizeConstraints(SizeConstraint::Equal, SizeConstraint::GreaterOrEqual);
 	pWindow->slot = _buildList();
 		
@@ -442,6 +437,7 @@ Widget_p	MyApp::_buildButtonRow()
 	pButtonRow->slots << pLoadButton;
 	pButtonRow->slots << pSaveButton;
 
+	pButtonRow->setSlotWeight(pButtonRow->slots.begin(), pButtonRow->slots.end(), 0.f);
 
 	return pButtonRow;
 }
@@ -459,6 +455,8 @@ Widget_p MyApp::_buildList()
 	pList->slots << _buildListSummarySection();
 	pList->slots << _buildExportSection();
 
+	pList->setSlotWeight(pList->slots.begin(), pList->slots.end(), 0.f);
+	
 	m_pList = pList;
 
 	return pList;
@@ -492,6 +490,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(std::string title, std::vector<KernelDB
 		pColumn->slots << pWidget;
 	}
 
+	pColumn->setSlotWeight(pColumn->slots.begin(), pColumn->slots.end(), 0.f);
 	return pColumn;
 }
 
@@ -518,6 +517,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<BlendMode> bl
 		pColumn->slots << pWidget;
 	}
 
+	pColumn->setSlotWeight(pColumn->slots.begin(), pColumn->slots.end(), 0.f);
 	return pColumn;
 }
 
@@ -544,6 +544,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<TintMode> tin
 		pColumn->slots << pWidget;
 	}
 
+	pColumn->setSlotWeight(pColumn->slots.begin(), pColumn->slots.end(), 0.f);
 	return pColumn;
 }
 
@@ -569,6 +570,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<PixelFormat> 
 		pColumn->slots << pWidget;
 	}
 
+	pColumn->setSlotWeight(pColumn->slots.begin(), pColumn->slots.end(), 0.f);
 	return pColumn;
 }
 
@@ -655,7 +657,7 @@ Widget_p MyApp::_buildHeaderWithCloseButton(std::string title, std::function<voi
 		_.display.layout = m_pTextLayoutCentered
 	));
 
-	auto pButton = Button::create({ .label = {.text = "CLOSE" },
+	auto pButton = Button::create({ .label = {.text = "Delete" },
 									.skin = m_pButtonSkin });
 
 
@@ -748,7 +750,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 		pBottomRow->slots << NumberDisplay::create(WGBP(NumberDisplay,
 			_.display.value = m_pDB->countEntryKernels(index) ));
 
-
+		pBottomRow->setSlotWeight(0, 2, 0.f);
 
 		// Tie everything together
 
@@ -867,10 +869,8 @@ wg::Widget_p MyApp::_buildLabeledList(int nColumns, std::initializer_list < std:
 		auto pValues = PackPanel::create();
 		pValues->setAxis(Axis::Y);
 		
-		pMain->slots << pLabels;
-		pMain->slots << pValues;
-				
-		pSection->slots << pMain;
+		pMain->slots.pushBack( pLabels, { .weight = 0.f } );
+		pMain->slots.pushBack( pValues, { .weight = 0.f } );
 
 		columns[i][0] = pLabels;
 		columns[i][1] = pValues;
@@ -881,15 +881,18 @@ wg::Widget_p MyApp::_buildLabeledList(int nColumns, std::initializer_list < std:
 	int column = 0;
 	for (auto& entry : list)
 	{
-		columns[column][0]->slots << TextDisplay::create(WGBP(TextDisplay,
-									_.display.text = entry.first.c_str() ));
+		columns[column][0]->slots.pushBack( TextDisplay::create(WGBP(TextDisplay,
+																	 _.display.text = entry.first.c_str()
+																	 )),
+										   { .weight = 0.f });
 
-		columns[column][1]->slots << NumberDisplay::create(WGBP(NumberDisplay,
-			_.display.value = entry.second ));
+		columns[column][1]->slots.pushBack( NumberDisplay::create(WGBP(NumberDisplay,
+																	   _.display.value = entry.second 
+																	   )),
+										   { .weight = 0.f });
 
 		column = (column + 1) % (nColumns);
 	}
-
 
 
 	return pSection;
