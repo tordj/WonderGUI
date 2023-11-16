@@ -245,7 +245,13 @@ PackLayout_p pLayout = PackLayout::create( {.expandFactor = PackLayout::Factor::
                                             .shrinkFactor = PackLayout::Factor::Weight });
 
 PackPanel_p pWindowPanel = PackPanel::create( { .axis = Axis::Y, .layout = pLayout } );
-PackPanel_p pMainSection = PackPanel::create( { .axis = Axis::X, .layout = pLayout, .skin = ColorSkin::create( { .color = Color::Transparent, .padding = 5 } ), .spacing = 5 });
+
+PackPanel_p pMainSection = PackPanel::create({
+    .axis = Axis::X, .layout = pLayout, 
+    .skin = ColorSkin::create( { .color = Color::Transparent, .padding = 5 } ), 
+    .spacing = 5 }
+);
+
 PackPanel_p pButtonColumn = PackPanel::create( { .axis = Axis::Y, .layout = pLayout });
 ```
 
@@ -301,7 +307,7 @@ Now the layout is complete and can be added to the Root-widget of the window. It
 
 ### The result
 
-Let's put it all together to see the whole picture. This time we remove unnecessary setting of weights:
+Let's put it all together to see the whole picture. This time we remove unnecessary setting of slot properties where default values are correct for us:
 
 ```c++
 PackLayout_p pLayout = PackLayout::create( {.expandFactor = PackLayout::Factor::Weight, 
@@ -311,20 +317,20 @@ PackPanel_p pWindowPanel = PackPanel::create( { .axis = Axis::Y, .layout = pLayo
 PackPanel_p pMainSection = PackPanel::create( { .axis = Axis::X, .layout = pLayout, .skin = ColorSkin::create( { .color = Color::Transparent, .padding = 5 }), .spacing = 5 });
 PackPanel_p pButtonColumn = PackPanel::create( { .axis = Axis::Y, .layout = pLayout });
 
-pButtonColumn->slots.pushBack({ {Filler::create(), {} },
+pButtonColumn->slots.pushBack({ Filler::create(),
 								{pCopyButton, { .weight = 0.f }},
 								{pMoveButton, { .weight = 0.f }},
 								{pDeleteButton, { .weight = 0.f }},
-								{Filler::create(), {} }
+								Filler::create()
 							  });
 
-pMainSection->slots.pushBack({ {pPane1, {} },
+pMainSection->slots.pushBack({ pPane1,
                                {pButtonColumn, { .weight = 0.f } },
-                               {pPane2, {} }
+                               pPane2
                              });
 
 pWindowPanel->slots.pushBack({ {pMyMenubar, { .weight = 0.f}},
-                               {pMainSection, {} }
+                               pMainSection
                              });
 ```
 
