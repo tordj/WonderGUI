@@ -126,10 +126,9 @@ namespace wg
 		const IconAccess& _icon() const { return reinterpret_cast<const IconAccess&>(icon); }
 		IconAccess& _icon() { return reinterpret_cast<IconAccess&>(icon); }
 
-
-		bool		m_bPressed			= false;				// Set when left mousebutton was pressed inside.
 		bool		m_bReturnPressed	= false;
 		bool		m_bSelectOnPress	= false;
+		bool		m_bHovered			= false;				// Set when widget actually is hovered.
 	};
 
 

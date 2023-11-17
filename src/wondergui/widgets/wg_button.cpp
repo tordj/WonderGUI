@@ -194,10 +194,10 @@ namespace wg
 				break;
 
 			case MsgType::MouseEnter:
-				state.setHovered(true);
+				m_bHovered = true;
 				break;
 			case MsgType::MouseLeave:
-				state.setHovered(false);
+				m_bHovered = false;
 				break;
 			case MsgType::MousePress:
 				if( static_cast<MousePressMsg*>(_pMsg)->button() == MouseButton::Left )
@@ -257,7 +257,7 @@ namespace wg
 			case MsgType::FocusLost:
 				state.setFocused(false);
 				m_bReturnPressed = false;
-				m_bPressed = false;
+				m_bPressed = false;				// Is this correct behaviour?
 				break;
 
 			default:
@@ -265,6 +265,7 @@ namespace wg
 		}
 
 		state.setPressed(m_bReturnPressed || m_bPressed);
+		state.setHovered(m_bHovered);						// Needs to be after setPressed() due to their interdependence.
 
 		if( state != m_state )
 			_setState(state);
