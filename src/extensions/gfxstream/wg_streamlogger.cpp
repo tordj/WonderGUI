@@ -599,20 +599,54 @@ namespace wg
 				break;
 			}
 				
+			case GfxChunkId::FlipDrawWave:
 			case GfxChunkId::DrawWave:
 			{
-				m_charStream << "    no data printout implemented yet." << std::endl;
-				m_pDecoder->skip(header.size);
+				RectI		dest;
+				WaveLine	topBorder;
+				WaveLine	bottomBorder;
+				HiColor		frontFill;
+				HiColor		backFill;
+				GfxFlip		flip;			// Onlu used when m_drawTypeInProgress == flipDrawWave.
+				
+				*m_pDecoder >> dest;
+				*m_pDecoder >> topBorder.length;
+				*m_pDecoder >> topBorder.thickness;
+				*m_pDecoder >> topBorder.color;
+				*m_pDecoder >> topBorder.hold;
+				
+				*m_pDecoder >> bottomBorder.length;
+				*m_pDecoder >> bottomBorder.thickness;
+				*m_pDecoder >> bottomBorder.color;
+				*m_pDecoder >> bottomBorder.hold;
+				
+				*m_pDecoder >> frontFill;
+				*m_pDecoder >> backFill;
+				
+				if (header.type == GfxChunkId::FlipDrawWave)
+					*m_pDecoder >> flip;
+				
+				
+				_printRect(     "    dest                  ", dest );
+				m_charStream << "    topBorder.length       = " << topBorder.length << std::endl;
+				m_charStream << "    topBorder.thickness    = " << topBorder.thickness << std::endl;
+				_printColor(    "    topBorder.color       ", topBorder.color );
+				m_charStream << "    topBorder.hold         = " << topBorder.hold << std::endl;
+				m_charStream << std::endl;
+				
+				m_charStream << "    bottomBorder.length    = " << bottomBorder.length << std::endl;
+				m_charStream << "    bottomBorder.thickness = " << bottomBorder.thickness << std::endl;
+				_printColor(    "    bottomBorder.color    ", bottomBorder.color );
+				m_charStream << "    bottomBorder.hold      = " << bottomBorder.hold << std::endl;
+				m_charStream << std::endl;
+				
+				_printColor(    "    frontFill             ", frontFill );
+				_printColor(    "    backFill              ", backFill );
+				m_charStream << std::endl;
+				
 				break;
 			}
-
-			case GfxChunkId::FlipDrawWave:
-			{
-				m_charStream << "    no data printout implemented yet." << std::endl;
-				m_pDecoder->skip(header.size);
-				break;
-			}
-
+				
 			case GfxChunkId::DrawElipse:
 			{
 				RectSPX	canvas;

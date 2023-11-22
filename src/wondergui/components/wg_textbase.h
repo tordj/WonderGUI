@@ -134,7 +134,7 @@ namespace wg
 	protected:
 
 		SizeSPX				m_size;
-		int					m_scale; 
+		int					m_scale = 64; 
 
 		State				m_state;
 		TextStyle_p			m_pStyle;
