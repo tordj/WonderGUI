@@ -336,11 +336,11 @@ namespace wg
 
 					// All earlier frames can be skipped 
 
-					while (i >= 0)
+					while (i > 0)
 					{
+						i--;
 						canvas.frames[i].ofsClipRects = maskBegin;
 						canvas.frames[i].nClipRects = -1;
-						i--;
 					}
 
 					clipRects.resize(maskBegin);
@@ -411,22 +411,28 @@ namespace wg
 			bytesToDiscard += pEnd - pBegin;
 
 			const uint8_t* p = pBegin;
-			
+
+
 			while( p < pEnd )
 			{
 				// Process any chunks before BeginCanvasUpdate
 					
+				const uint8_t* p2 = p;
+
 				while (p != pEnd )
 				{
 					auto chunkType = GfxStream::chunkType(p);
+
+					assert(chunkType != GfxChunkId::EndCanvasUpdate);
+
 					if (chunkType == GfxChunkId::BeginCanvasUpdate)
 						break;
 					p += GfxStream::chunkSize(p);
 				}
 				
-				if (p != pBegin)
+				if (p != p2)
 				{
-					m_pOutput->processChunks(pBegin, p);
+					m_pOutput->processChunks(p2, p);
 				}
 				
 				if (p != pEnd)
@@ -451,9 +457,9 @@ namespace wg
 
 	//____ _optimizeCanvasUpdate() _______________________________________________
 
-	const uint8_t * StreamPump::_optimizeCanvasUpdate( const uint8_t *& pBegin, const uint8_t *& pEnd, 
-													   std::vector<CanvasData>& canvases, std::vector<RectSPX>	clipRects,
-													   std::function<void(const uint8_t*& pBegin, const uint8_t*& pEnd)> fetch )
+	void StreamPump::_optimizeCanvasUpdate( const uint8_t *& pBegin, const uint8_t *& pEnd, 
+										   std::vector<CanvasData>& canvases, std::vector<RectSPX>	clipRects,
+										   std::function<void(const uint8_t*& pBegin, const uint8_t*& pEnd)> fetch )
 	{
 		GfxChunkId chunkType;
 
@@ -493,8 +499,11 @@ namespace wg
 				
 				auto chunkType = GfxStream::chunkType(pBegin);
 				
-				if( chunkType == GfxChunkId::EndCanvasUpdate )
-					break;
+				if (chunkType == GfxChunkId::EndCanvasUpdate)
+				{
+					pBegin += GfxStream::chunkSize(pBegin);
+					return;
+				}
 				
 				if( chunkType == GfxChunkId::BeginCanvasUpdate )
 					_optimizeCanvasUpdate(pBegin, pEnd, canvases, clipRects, fetch);
@@ -539,14 +548,12 @@ namespace wg
 				m_pOutput->processChunks(pBegin, pBegin + GfxStream::chunkSize(pBegin) );
 			}
 
+			pBegin += GfxStream::chunkSize(pBegin);
 
 			// BeginCanvasUpdate chunk processed, now proceed with content.
 			
 			while( true )
 			{
-				// Skip previous, processed chunk
-
-				pBegin += GfxStream::chunkSize(pBegin);
 				
 				// Fetch more data if needed
 				
@@ -638,6 +645,8 @@ namespace wg
 					m_pOutput->processChunks( pTempChunk, (uint8_t*) pDst );
 
 					GfxBase::memStackFree(nBytesAllocated);
+
+					pBegin += GfxStream::chunkSize(pBegin);
 				}
 			}
 		}

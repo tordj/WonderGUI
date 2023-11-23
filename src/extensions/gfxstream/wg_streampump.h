@@ -31,6 +31,7 @@
 #include <wg_streamsink.h>
 
 #include <vector>
+#include <functional>
 
 namespace wg
 {
@@ -89,7 +90,7 @@ namespace wg
 		};
 		
 		
-		const uint8_t * _optimizeCanvasUpdate( const uint8_t *& pBegin, const uint8_t *& pEnd, 
+		void			_optimizeCanvasUpdate( const uint8_t *& pBegin, const uint8_t *& pEnd, 
 											   std::vector<CanvasData>& canvases, std::vector<RectSPX> clipRects,
 											   std::function<void(const uint8_t*& pBegin, const uint8_t*& pEnd)> fetch );
 		
