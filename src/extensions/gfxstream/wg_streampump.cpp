@@ -259,23 +259,6 @@ namespace wg
 
 		// Build up our canvas info
 
-		struct CanvasFrame
-		{
-			const uint8_t*	pBegin;
-			int				ofsClipRects;
-			int				nClipRects;
-		};
-
-		struct CanvasData
-		{
-			CanvasData(int _id) : id(_id), framesPlayed(0) {}
-
-			int id;				// surfaceId + canvasRef << 16;
-			std::vector<CanvasFrame>	frames;
-			int framesPlayed;
-		};
-
-
 		std::vector<CanvasData>	canvases;
 		int totalRects = 0;
 
@@ -418,9 +401,6 @@ namespace wg
 		// Play stream, replacing BeginRenderCanvas with our opimized one and
 		// filtering set/push clip-rect against canvas cliplist.
 				
-		RectSPX*	pActiveUpdateRects = nullptr;
-		int			nActiveUpdateRects = 0;
-
 		int			bytesToDiscard = 0;
 
 		for (int seg = 0; seg <= nFullSegments; seg++)
@@ -430,114 +410,202 @@ namespace wg
 
 			bytesToDiscard += pEnd - pBegin;
 
-			while (true)
+			const uint8_t* p = pBegin;
+			
+			while( p < pEnd )
 			{
-				auto p = pBegin;
-
-				GfxChunkId chunkType;
+				// Process any chunks before BeginCanvasUpdate
+					
 				while (p != pEnd )
 				{
-					chunkType = GfxStream::chunkType(p);
-					if (chunkType == GfxChunkId::BeginCanvasUpdate || chunkType == GfxChunkId::SetClipList || chunkType == GfxChunkId::PushClipList)
+					auto chunkType = GfxStream::chunkType(p);
+					if (chunkType == GfxChunkId::BeginCanvasUpdate)
 						break;
 					p += GfxStream::chunkSize(p);
 				}
-
+				
 				if (p != pBegin)
+				{
 					m_pOutput->processChunks(pBegin, p);
-
-				if (p == pEnd)
-					break;
-
-				if (chunkType == GfxChunkId::BeginCanvasUpdate)
-				{
-					// Find the optimized rects for our canvas
-
-					auto pChunkData = p + GfxStream::headerSize(p);
-
-					uint16_t	surfaceId = *(uint16_t*) pChunkData;
-					CanvasRef	canvasRef = (CanvasRef) pChunkData[2];
-
-					int id = surfaceId + (int(canvasRef) << 16);
-
-					CanvasData* pCanvasData = canvases.data();
-					while ( pCanvasData->id != id)
-						pCanvasData++;
-
-					CanvasFrame* pFrameData = &pCanvasData->frames[pCanvasData->framesPlayed++];
-
-		
-					if (pFrameData->nClipRects == 0)
-					{
-						// Full canvas redraw, just process BeginCanvasUpdate as it is.
-						
-						m_pOutput->processChunks(p, p + GfxStream::chunkSize(p) );
-					}
-					else if (pFrameData->nClipRects == -1 )
-					{
-						// No updates for this canvas, just skip it
-						
-						int nCanvasUpdate = 1;
-						while( nCanvasUpdate > 0 )
-						{
-							p += GfxStream::chunkSize(p);
-
-							if (p == pEnd)
-							{
-								// We reached segment boundary but need to keep our loop going.
-
-								seg++;
-
-								pBegin = pSegments[seg].pBegin;
-								pEnd = (seg == nFullSegments) ? pLastFoundEndRender + GfxStream::chunkSize(pLastFoundEndRender) : pSegments[seg].pEnd;
-								p = pBegin;
-
-								bytesToDiscard += pEnd - pBegin;
-							}
-
-							GfxChunkId type = GfxStream::chunkType(p);
-							if( type == GfxChunkId::BeginCanvasUpdate )
-								nCanvasUpdate++;
-							else if( type == GfxChunkId::EndCanvasUpdate )
-								nCanvasUpdate--;
-						}
-					}
-					else
-					{
-						nActiveUpdateRects = pFrameData->nClipRects;
-						pActiveUpdateRects = clipRects.data() + pFrameData->ofsClipRects;
-
-//						assert(nActiveUpdateRects < 256 );
-						
-						uint8_t * pTempChunk = (uint8_t*) GfxBase::memStackAlloc(16+16*nActiveUpdateRects);
-						
-						// Create our own BeginCanvasUpdate
-
-						int dataSize = nActiveUpdateRects * sizeof(RectSPX) + 4;
-						
-						pTempChunk[0] = (uint8_t) GfxChunkId::BeginCanvasUpdate;
-						pTempChunk[1] = 31;		// Force long header.
-						*(uint16_t*)(pTempChunk + 2) = dataSize;
-						*(uint16_t*)(pTempChunk + 4) = surfaceId;
-						pTempChunk[6] = (uint8_t) canvasRef;
-						pTempChunk[7] = 0;						// Dummy, used to be number of rects.
-
-						std::memcpy(pTempChunk + 8, pActiveUpdateRects, nActiveUpdateRects * sizeof(RectSPX));
-						
-						// Process our created chunk
-
-						m_pOutput->processChunks(pTempChunk, pTempChunk + 4 + dataSize);
-						
-						GfxBase::memStackFree(16+16*nActiveUpdateRects);
-					}
-
 				}
-				else // PushClipList or SetClipList
+				
+				if (p != pEnd)
 				{
+					_optimizeCanvasUpdate(p, pEnd, canvases, clipRects, [&](const uint8_t*& pBegin, const uint8_t*& pEnd)
+					{
+						seg++;
+						pBegin = pSegments[seg].pBegin;
+						pEnd = (seg == nFullSegments) ? pLastFoundEndRender + GfxStream::chunkSize(pLastFoundEndRender) : pSegments[seg].pEnd;
+						
+						bytesToDiscard += pEnd - pBegin;
+					} );
+				}
+			}
+		}
+
+		// Discard our processed chunks
+
+		m_pInput->discardChunks(bytesToDiscard);
+		return true;
+	}
+
+	//____ _optimizeCanvasUpdate() _______________________________________________
+
+	const uint8_t * StreamPump::_optimizeCanvasUpdate( const uint8_t *& pBegin, const uint8_t *& pEnd, 
+													   std::vector<CanvasData>& canvases, std::vector<RectSPX>	clipRects,
+													   std::function<void(const uint8_t*& pBegin, const uint8_t*& pEnd)> fetch )
+	{
+		GfxChunkId chunkType;
+
+		int			nActiveUpdateRects = 0;
+		RectSPX *	pActiveUpdateRects = nullptr;
+
+			
+		// We are now pointing at our BeginCanvasUpdate
+		// Find the optimized rects for our canvas
+
+		auto pChunkData = pBegin + GfxStream::headerSize(pBegin);
+
+		uint16_t	surfaceId = *(uint16_t*) pChunkData;
+		CanvasRef	canvasRef = (CanvasRef) pChunkData[2];
+
+		int id = surfaceId + (int(canvasRef) << 16);
+
+		CanvasData* pCanvasData = canvases.data();
+		while ( pCanvasData->id != id)
+			pCanvasData++;
+
+		CanvasFrame* pFrameData = &pCanvasData->frames[pCanvasData->framesPlayed++];
+		
+		//
+	
+		if( pFrameData->nClipRects == -1 )
+		{
+			// No updates for this canvas, just skip it, but
+			// make sure to not skip any canvasUpdate inside.
+						
+			while( true )
+			{
+				pBegin += GfxStream::chunkSize(pBegin);
+
+				if( pBegin == pEnd )
+					fetch( pBegin, pEnd );
+				
+				auto chunkType = GfxStream::chunkType(pBegin);
+				
+				if( chunkType == GfxChunkId::EndCanvasUpdate )
+					break;
+				
+				if( chunkType == GfxChunkId::BeginCanvasUpdate )
+					_optimizeCanvasUpdate(pBegin, pEnd, canvases, clipRects, fetch);
+			}
+		}
+		else
+		{
+			if (pFrameData->nClipRects > 0)
+			{
+				// Use our (possibly) modified clip rects
+
+				nActiveUpdateRects = pFrameData->nClipRects;
+				pActiveUpdateRects = clipRects.data() + pFrameData->ofsClipRects;
+
+	//						assert(nActiveUpdateRects < 256 );
+				
+				uint8_t * pTempChunk = (uint8_t*) GfxBase::memStackAlloc(16+16*nActiveUpdateRects);
+				
+				// Create our own BeginCanvasUpdate
+
+				int dataSize = nActiveUpdateRects * sizeof(RectSPX) + 4;
+				
+				pTempChunk[0] = (uint8_t) GfxChunkId::BeginCanvasUpdate;
+				pTempChunk[1] = 31;		// Force long header.
+				*(uint16_t*)(pTempChunk + 2) = dataSize;
+				*(uint16_t*)(pTempChunk + 4) = surfaceId;
+				pTempChunk[6] = (uint8_t) canvasRef;
+				pTempChunk[7] = 0;						// Dummy, used to be number of rects.
+
+				std::memcpy(pTempChunk + 8, pActiveUpdateRects, nActiveUpdateRects * sizeof(RectSPX));
+				
+				// Process our created chunk
+
+				m_pOutput->processChunks(pTempChunk, pTempChunk + 4 + dataSize);
+				
+				GfxBase::memStackFree(16+16*nActiveUpdateRects);
+			}
+			else
+			{
+				// Full canvas redraw, just process BeginCanvasUpdate as it is.
+
+				m_pOutput->processChunks(pBegin, pBegin + GfxStream::chunkSize(pBegin) );
+			}
+
+
+			// BeginCanvasUpdate chunk processed, now proceed with content.
+			
+			while( true )
+			{
+				// Skip previous, processed chunk
+
+				pBegin += GfxStream::chunkSize(pBegin);
+				
+				// Fetch more data if needed
+				
+				if( pBegin == pEnd )
+				{
+					fetch( pBegin, pEnd );
+				}
+				
+				// Process all chunks until we find a chunk that needs special treatment
+
+				{
+					auto p = pBegin;
+					chunkType = GfxStream::chunkType(p);
+					
+					while( chunkType != GfxChunkId::BeginCanvasUpdate && chunkType != GfxChunkId::EndCanvasUpdate &&
+						  chunkType != GfxChunkId::PushClipList && chunkType != GfxChunkId::SetClipList )
+					{
+						p += GfxStream::chunkSize(p);
+						
+						if( p == pEnd )
+						{
+							m_pOutput->processChunks(pBegin, p );
+							fetch( pBegin, pEnd );
+							p = pBegin;
+						}
+						
+						chunkType = GfxStream::chunkType(p);
+					}
+					
+					if( p != pBegin )
+					{
+						m_pOutput->processChunks(pBegin, p );
+						pBegin = p;
+					}
+					
+				}
+				
+				// Process special chunks
+				
+				if( chunkType == GfxChunkId::EndCanvasUpdate )
+				{
+					auto pChunkEnd = pBegin + GfxStream::chunkSize(pBegin);
+					m_pOutput->processChunks(pBegin, pChunkEnd );
+					pBegin = pChunkEnd;
+					return;
+				}
+				
+				if( chunkType == GfxChunkId::BeginCanvasUpdate )
+				{
+					_optimizeCanvasUpdate(pBegin, pEnd, canvases, clipRects, fetch);
+				}
+				else
+				{
+					// Push or set cliplist
+					
 					// Get info from the chunk
 
-					int nSrcRect = GfxStream::dataSize(p) / sizeof(RectSPX);
-					const RectSPX* pSrcRect = (const RectSPX*)(p + GfxStream::headerSize(p));
+					int nSrcRect = GfxStream::dataSize(pBegin) / sizeof(RectSPX);
+					const RectSPX* pSrcRect = (const RectSPX*)(pBegin + GfxStream::headerSize(pBegin));
 
 					// Create our own PushClipList/SetClipList, start by filtering and pushing rectangles.
 
@@ -571,15 +639,9 @@ namespace wg
 
 					GfxBase::memStackFree(nBytesAllocated);
 				}
-
-				pBegin = p + GfxStream::chunkSize(p);
 			}
 		}
-
-		// Discard our processed chunks
-
-		m_pInput->discardChunks(bytesToDiscard);
-		return true;
+		
 	}
 
 
