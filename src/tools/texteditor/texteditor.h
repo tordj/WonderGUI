@@ -9,7 +9,7 @@
 #include <initializer_list>
 #include <string>
 
-#include "EditorWindow.h"
+#include "editorwindow.h"
 
 using namespace wg;
 

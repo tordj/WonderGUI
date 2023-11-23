@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <limits>
 
 static const char	c_widgetType[] = {"Chart"};
 

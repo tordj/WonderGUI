@@ -52,7 +52,8 @@ elseif(APPLE)
 
 
 else()
-    set(FREETYPE2_LIB freetype)
+    	set(FREETYPE2_LIB freetype)
+	set(FREETYPE2_INCDIR /usr/include/freetype2)
 
 	set(SDL2_LIBS SDL2)
 	set(SDL2IMAGE_LIBS SDL2_image)

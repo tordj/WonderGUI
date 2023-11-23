@@ -26,8 +26,8 @@ target_include_directories(streamtrimmer PRIVATE
 target_working_directory(streamtrimmer ${WG_ROOT} )
 
 target_link_libraries(streamtrimmer PRIVATE
-	wondergfx
 	wggfxstream
+	wondergfx
 )
 
 
