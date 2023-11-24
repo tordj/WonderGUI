@@ -174,7 +174,6 @@ void WgTooltipLayer::_openTooltip()
 
     if (pWidget)
     {
-        
         pWidget->_setScale(m_scale);
         WgSize tooltipSize = pWidget->PreferredPixelSize();
 
