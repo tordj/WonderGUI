@@ -644,7 +644,7 @@ Widget_p MyApp::createNavigationPanel()
 	//
 	
 	auto pSkipTo = Button::create({
-		.label = { .layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = "Skip to 84" },
+		.label = { .layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = "Skip to 236" },
 		.skin = m_pButtonSkin
 	});
 
@@ -654,7 +654,7 @@ Widget_p MyApp::createNavigationPanel()
 		m_recordedSteps.clear();
 		this->m_bRecordSteps = this->m_pRecordStepsToggle->isSelected();
 
-		int frame = 83;
+		int frame = 235;
 		
 
 		_resetStream();
@@ -687,6 +687,23 @@ Widget_p MyApp::createNavigationPanel()
 	});
 	
 	pExtraControls->slots << pSkipTo;
+
+
+	//
+
+	auto pLog8Frames = Button::create({
+		.label = {.layout = m_pTextLayoutCentered, .style = m_pTextStyle, .text = "Log optimized 8 frames" },
+		.skin = m_pButtonSkin
+		});
+
+	Base::msgRouter()->addRoute(pLog8Frames, MsgType::Select, [this](Msg* pMsg)
+		{
+			_logFrames(m_currentFrame, m_currentFrame +8, false, m_pOptimizerInLogDisplay);
+			_logFrames(m_currentFrame, m_currentFrame +8, true, m_pOptimizerOutLogDisplay);
+		});
+
+
+	pExtraControls->slots << pLog8Frames;
 
 	
 	// Put it all together

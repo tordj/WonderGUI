@@ -331,6 +331,9 @@ namespace wg
 				
 				if (nRects == 0)
 				{
+					//TODO: We should possibly mask against later frames and not automatically redraw whole canvas.
+
+
 					canvas.frames[i].ofsClipRects = 0;							// Signal that this is a complete redraw.
 					canvas.frames[i].nClipRects = 0;
 
@@ -343,7 +346,6 @@ namespace wg
 						canvas.frames[i].nClipRects = -1;
 					}
 
-					clipRects.resize(maskBegin);
 					break;
 				}
 
@@ -490,10 +492,9 @@ namespace wg
 			// No updates for this canvas, just skip it, but
 			// make sure to not skip any canvasUpdate inside.
 						
+			pBegin += GfxStream::chunkSize(pBegin);
 			while( true )
 			{
-				pBegin += GfxStream::chunkSize(pBegin);
-
 				if( pBegin == pEnd )
 					fetch( pBegin, pEnd );
 				
@@ -507,6 +508,8 @@ namespace wg
 				
 				if( chunkType == GfxChunkId::BeginCanvasUpdate )
 					_optimizeCanvasUpdate(pBegin, pEnd, canvases, clipRects, fetch);
+				else
+					pBegin += GfxStream::chunkSize(pBegin);
 			}
 		}
 		else
