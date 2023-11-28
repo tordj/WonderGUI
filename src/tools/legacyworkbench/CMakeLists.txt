@@ -39,6 +39,7 @@ target_link_libraries(legacyworkbench PRIVATE
 	wgopenglgfx
 	wggfxstream
 	wglegacygui
+	wgfreetypefont
 	${SDL2_LIBS}
 	${SDL2IMAGE_LIBS}
 	${OPENGL_LIBS}
