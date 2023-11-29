@@ -100,9 +100,6 @@ public:
 	float	ValueRangeStart() { return m_topValue; }
 	float	ValueRangeEnd() { return m_bottomValue; }
 
-
-
-
 	int		StartLineWave( float startSample, float thickness = 1.f, WgColor color = WgColor::Black, std::function<float(uint64_t timeCode)> sampleFeeder = nullptr );
 
 	int		StartSimpleWave( float startSample, float floor, float topLineThickness, WgColor topLineColor,
@@ -113,6 +110,8 @@ public:
 
 	bool	StopWave(int waveId );
 	void	StopAllWaves();
+
+	bool	SetWaveColors( int waveId, WgColor topLineColor, WgColor bottomLineColor, WgColor fillColor, WgColor backColor );
 
 	bool	IsWaveDisplayed(int waveId) const;
 	bool	HideWave(int waveId);

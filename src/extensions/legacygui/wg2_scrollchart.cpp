@@ -518,6 +518,23 @@ void WgScrollChart::StopAllWaves()
 		wave.bHidden = true;
 }
 
+//____ SetWaveColors() ________________________________________________________
+
+bool WgScrollChart::SetWaveColors( int waveId, WgColor topLineColor, WgColor bottomLineColor, WgColor fillColor, WgColor backColor )
+{
+	Wave * p = _getWave(waveId);
+	if (!p)
+		return false;
+
+	p->topLineColor = topLineColor;
+	p->bottomLineColor = bottomLineColor;
+	p->frontFill = fillColor;
+	p->backFill = backColor;
+	
+	m_bRefreshCanvas = true;
+	return true;
+}
+
 //____ IsWaveDisplayed() ______________________________________________________
 
 bool WgScrollChart::IsWaveDisplayed(int waveId) const
