@@ -311,7 +311,7 @@ namespace wg
 				CoordSPX	begin;
 				CoordSPX	end;
 				HiColor		color;
-				spx			thickness;
+				GfxStream::SPX	thickness;
 
 				*m_pDecoder >> begin;
 				*m_pDecoder >> end;
@@ -750,7 +750,7 @@ namespace wg
 				*m_pDecoder >> scale;
 
 				_printRect(     "    dstRect        ", dstRect );
-				_printBorder(   "    dstRect        ", dstFrame );
+				_printBorder(   "    dstFrame       ", dstFrame );
 				_printRect(     "    patch.block    ", patch.block );
 				_printBorder(   "    patch.frame    ", patch.frame );
 				m_charStream << "    (rigid parts not printed)" << std::endl;

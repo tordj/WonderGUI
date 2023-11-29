@@ -1313,7 +1313,7 @@ void MyApp::_updateResourcesView()
 		if( pSurf != nullptr )
 		{
 			auto pWidget = _buildSurfaceDisplayWithIndexTag( pSurf, index );
-			m_pResourcePanel->slots << pWidget;
+			m_pResourcePanel->slots.pushBack( pWidget, { .weight = 0 } );
 		}
 		index++;
 	}
