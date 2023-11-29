@@ -1466,7 +1466,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 
 		auto topPointer    = pWave->resampledTop.size() > 0    ? &pWave->resampledTop[0] : nullptr;
 		auto bottomPointer = pWave->resampledBottom.size() > 0 ? &pWave->resampledBottom[0] : nullptr;
-		_requestRenderOnNewSamples(	begOrgSamples, pWave->resampledTop.size(), topPointer, pWave->resampledBottom.size(), bottomPointer,
+		_requestRenderOnNewSamples(	begOrgSamples, int(pWave->resampledTop.size()), topPointer, int(pWave->resampledBottom.size()), bottomPointer,
 									begNewSamples, nbNewTopSamples, pNewTopSamples, nbNewBottomSamples, pNewBottomSamples,
 									pWave->resampledDefault, newDefault, maxLineThickness, bInCache );
 

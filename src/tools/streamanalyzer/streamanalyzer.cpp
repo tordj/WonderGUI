@@ -1378,7 +1378,7 @@ ScrollPanel_p MyApp::_standardScrollPanel()
 }
 
 
-//____ _buildSurfaceDisplaWithIndexTag() ______________________________________
+//____ _buildSurfaceDisplayWithIndexTag() ______________________________________
 
 Widget_p MyApp::_buildSurfaceDisplayWithIndexTag( Surface * pSurf, int index )
 {

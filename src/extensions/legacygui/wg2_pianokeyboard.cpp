@@ -103,7 +103,7 @@ void WgPianoKeyboard::setLayout(int nbWhiteKeys, const std::bitset<7>& blackKeyP
 	pInfo->isSetToPressed = false;
 	pInfo++;
 
-	m_nbKeys = pInfo - m_keyInfo;
+	m_nbKeys = int(pInfo - m_keyInfo);
 }
 
 //____ setGeoTweak() ______________________________________________________
@@ -727,7 +727,7 @@ int WgPianoKeyboard::_markTestKey(const wg::CoordI& pos)
 	for (auto& key : m_keyInfo)
 	{
 		if (key.keyPos == keyPos && key.isBlack == isBlack )
-			return &key - m_keyInfo;
+			return int(&key - m_keyInfo);
 	}
 
 	return -1;

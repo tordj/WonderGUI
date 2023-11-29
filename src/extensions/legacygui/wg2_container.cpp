@@ -397,7 +397,7 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 
 		// Go through WidgetRenderContexts in reverse order (topmost first), push and mask dirt
 
-		for( int i = renderList.size()-1 ; i >= 0 ; i-- )
+		for( int i = int(renderList.size()-1) ; i >= 0 ; i-- )
 		{
 			WidgetRenderContext * p = &renderList[i];
 

@@ -149,27 +149,27 @@ void WgFpsDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	int height = pen.GetLineSpacing();
 
 	pTemp = temp;
-	sprintf( temp, "Now: %.2f", fpsCurrent );
+	snprintf( temp, 40, "Now: %.2f", fpsCurrent );
 	wg::TextTool::readString( pTemp, temp2, 39 );
 
 	WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
-	sprintf( temp, "Min: %.2f", fpsMin );
-	wg::TextTool::readString( pTemp, temp2, 39 );
-	pen.SetPosX( _canvas.x );
-	pen.MoveY( height );
-	WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
-
-	pTemp = temp;
-	sprintf( temp, "Avg: %.2f", fpsAvg );
+	snprintf( temp, 40, "Min: %.2f", fpsMin );
 	wg::TextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
 	WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
-	sprintf( temp, "Max: %.2f", fpsMax );
+	snprintf( temp, 40, "Avg: %.2f", fpsAvg );
+	wg::TextTool::readString( pTemp, temp2, 39 );
+	pen.SetPosX( _canvas.x );
+	pen.MoveY( height );
+	WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
+
+	pTemp = temp;
+	snprintf( temp, 40, "Max: %.2f", fpsMax );
 	wg::TextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );

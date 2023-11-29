@@ -1389,7 +1389,7 @@ void WgText::posSoft2Hard( int &line, int &col ) const
 		ln++;
 
 	line = ln;
-	col = pOfs - (m_buffer.chars() + m_pHardLines[ln].ofs);
+	col = int(pOfs - (m_buffer.chars() + m_pHardLines[ln].ofs));
 	return;
 }
 
@@ -1417,7 +1417,7 @@ void WgText::posHard2Soft( int &line, int &col ) const
 		ln++;
 
 	line = ln;
-	col = pOfs - (m_buffer.chars() + m_pSoftLines[ln].ofs);
+	col = int(pOfs - (m_buffer.chars() + m_pSoftLines[ln].ofs));
 	return;
 }
 
@@ -1455,7 +1455,7 @@ int WgText::_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextL
 
 			if( p->styleHandle() != hStyle )
 			{
-				GetCharAttr(attr, p - m_buffer.chars());
+				GetCharAttr(attr, int(p - m_buffer.chars()));
 				pen.SetAttributes(attr);
 				hStyle = p->styleHandle();
 			}
@@ -1560,8 +1560,8 @@ int WgText::_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextL
 
 		if( nSoftLines < maxWrite )
 		{
-			pWriteLines[nSoftLines].ofs = pLineStart - pStart;
-			pWriteLines[nSoftLines].nChars = p - pLineStart;
+			pWriteLines[nSoftLines].ofs = int(pLineStart - pStart);
+			pWriteLines[nSoftLines].nChars = int(p - pLineStart);
 		}
 
 		if( bBreakSkips )

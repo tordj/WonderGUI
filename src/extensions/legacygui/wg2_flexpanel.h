@@ -275,7 +275,7 @@ public:
 	bool			DeleteAnchor( int index );
 	void			DeleteAllAnchors();
 
-	int				NbAnchors() const { return m_anchors.size() + wg::Placement_size; }
+	int				NbAnchors() const { return int(m_anchors.size()) + wg::Placement_size; }
 	const WgFlexAnchor *	Anchor( int index );
 
 	WgFlexHook*		FirstHook() const { return m_hooks.first(); }
