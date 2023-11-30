@@ -132,8 +132,9 @@ public:
 	void	SetResizeResponder(std::function<void(WgScrollChart * pWidget, WgSize newSize)> func);	// Called when widgets size has changed.
 	void	SetValueRangeResponder(std::function<void(WgScrollChart * pWidget, float topValue, float bottomValue)> func);		// Called when widgets sample range has changed.
 
-    void     SetPixelType(WgPixelType pixelType) { m_pixelType = pixelType; _regenCanvas(); }
-    
+    void    SetPixelType(WgPixelType pixelType) { m_pixelType = pixelType; _regenCanvas(); }
+	void	SetGridToForeground( bool bForeground ) { m_bForegroundGrid = bForeground; }
+	
 protected:
 
 	enum WaveType
@@ -273,6 +274,7 @@ private:
 	std::function<void(WgScrollChart * pWidget, float topValue, float bottomValue)> m_valueRangeResponder;
     
     WgPixelType m_pixelType = WgPixelType::BGRX_8;
+	bool		m_bForegroundGrid = false;
 };
 
 
