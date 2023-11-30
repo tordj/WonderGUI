@@ -50,6 +50,10 @@ class WgCapsule;
 class WgLayer;
 class WgEventHandler;
 
+namespace wg
+{
+	class LegacyRootCapsule;
+}
 
 class WgWidget : public WgWeakPtrTarget
 {
@@ -90,6 +94,8 @@ class WgWidget : public WgWeakPtrTarget
     friend class WgTableRow;
 
     friend class WgZoomOutCapsule;
+	
+	friend class wg::LegacyRootCapsule;
 
 public:
 	WgWidget();

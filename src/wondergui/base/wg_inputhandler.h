@@ -114,7 +114,8 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 
-		Key			translateKey( int native_keycode );
+		Key			translateKey( int nativeKeyCode );
+		int			nativeKeyCode( Key translatedKeyCode );
 
 		EditCmd		translateCommand( int native_keycode, ModKeys modKeys );
 

@@ -142,6 +142,18 @@ namespace wg
 			return Key::Unmapped;
 	}
 
+	//____ nativeKeyCode() _______________________________________________________
+
+	int InputHandler::nativeKeyCode( Key translatedKeyCode )
+	{
+		for( auto it = m_keycodeMap.begin() ; it != m_keycodeMap.end() ; it++ )
+			if( it->second == translatedKeyCode )
+				return it->first;
+		
+		return 0;
+	}
+
+
 	//____ mapCommand() ________________________________________________________
 
 	void InputHandler::mapCommand( int native_keycode, ModKeys modKeys, EditCmd command )

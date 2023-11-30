@@ -17,6 +17,7 @@ add_subdirectory(workbench)
 add_subdirectory(legacyworkbench)
 add_subdirectory(lineargfxworkbench)
 add_subdirectory(embeddedworkbench)
+add_subdirectory(legacyrunner)
 
 
 set_target_properties(
@@ -39,4 +40,5 @@ set_target_properties(
 	texteditor
 	unittester
 	workbench
+	legacyrunner
 	PROPERTIES FOLDER "Tools" )
