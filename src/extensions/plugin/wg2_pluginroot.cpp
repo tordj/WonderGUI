@@ -277,26 +277,27 @@ void WgPluginRoot::_render(wg_obj device, const RectSPX& _canvas, const RectSPX&
 
 void WgPluginRoot::_resize(const SizeSPX& size, int scale)
 {
-
 	if( scale == -1 )
 		scale = m_scale;
+
+	auto oldSize = m_size;
+	auto oldScale = m_scale;
+	
+	m_size = size;
+	m_scale = scale;
 	
 	if( m_hook.Widget() )
 	{
 		m_bBlockRequestResize = true;			// _setScale() might issue requestResize() calls.
 
-		if( scale != m_scale )
+		if( scale != oldScale )
 			m_hook.Widget()->_setScale(scale*WG_SCALE_BASE/64);
 
-		if( size != m_size )
+		if( size != oldSize )
 			m_hook.Widget()->_onNewSize({size.w/64,size.h/64});
 
 		m_bBlockRequestResize = false;
 	}
-	
-	m_size = size;
-	m_scale = scale;
-
 }
 
 //____ _setState() ____________________________________________________________
