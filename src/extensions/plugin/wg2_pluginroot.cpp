@@ -344,7 +344,12 @@ void WgPluginRoot::_setButtonState( int button, bool bPressed, int64_t timestamp
 void WgPluginRoot::_setKeyState( int nativeKeyCode, bool bPressed, int64_t timestamp )
 {
 	if( bPressed )
+	{
 		m_pEventHandler->QueueEvent( new WgEvent::KeyPress( nativeKeyCode ) );
+		
+		if( WgBase::TranslateKey(nativeKeyCode) == WG_KEY_RETURN )
+			m_pEventHandler->QueueEvent( new WgEvent::Character( 13 ) );
+	}
 	else
 		m_pEventHandler->QueueEvent( new WgEvent::KeyRelease( nativeKeyCode ) );
 }
@@ -367,7 +372,7 @@ void WgPluginRoot::_putText( const char * pUTF8Text )
 void WgPluginRoot::_update(int microPassed, int64_t microsecTimestamp)
 {
 	int passed = microPassed + m_microsecStored;
-	m_microsecStored = microPassed % 1000;
+	m_microsecStored = passed % 1000;
 	m_pEventHandler->QueueEvent( new WgEvent::Tick( passed / 1000 ) );
 	m_pEventHandler->ProcessEvents();
 }
