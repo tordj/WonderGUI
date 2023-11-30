@@ -1330,7 +1330,7 @@ void WgEventHandler::_updateMarkedWidget(bool bMouseMoved)
 
 	WgWidget * p = m_latestPressWidgets[button].GetRealPtr();
 
-	if (button != 0 && p)
+	if (button != 0 && p && p->IsEnabled())
 		newStyle = p->GetPointerStyle();
 	else if (pNowMarked && pNowMarked->IsEnabled())
 		newStyle = pNowMarked->GetPointerStyle();
