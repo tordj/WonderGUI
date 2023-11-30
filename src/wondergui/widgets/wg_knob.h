@@ -62,9 +62,9 @@ namespace wg
 			bool			pickable	= false;
 			int				pickCategory= 0;
 			PointerStyle	pointer		= PointerStyle::Undefined;
-			int				steps = 0;
 			bool			selectable	= true;
 			Skin_p			skin;
+			int				steps = 0;
 			bool			stickyFocus = false;
 			bool			tabLock		= false;
 			String			tooltip;
