@@ -100,9 +100,6 @@ public:
 	float	ValueRangeStart() { return m_topValue; }
 	float	ValueRangeEnd() { return m_bottomValue; }
 
-
-
-
 	int		StartLineWave( float startSample, float thickness = 1.f, WgColor color = WgColor::Black, std::function<float(uint64_t timeCode)> sampleFeeder = nullptr );
 
 	int		StartSimpleWave( float startSample, float floor, float topLineThickness, WgColor topLineColor,
@@ -113,6 +110,8 @@ public:
 
 	bool	StopWave(int waveId );
 	void	StopAllWaves();
+
+	bool	SetWaveColors( int waveId, WgColor topLineColor, WgColor bottomLineColor, WgColor fillColor, WgColor backColor );
 
 	bool	IsWaveDisplayed(int waveId) const;
 	bool	HideWave(int waveId);
@@ -133,7 +132,8 @@ public:
 	void	SetResizeResponder(std::function<void(WgScrollChart * pWidget, WgSize newSize)> func);	// Called when widgets size has changed.
 	void	SetValueRangeResponder(std::function<void(WgScrollChart * pWidget, float topValue, float bottomValue)> func);		// Called when widgets sample range has changed.
 
-
+    void     SetPixelType(WgPixelType pixelType) { m_pixelType = pixelType; _regenCanvas(); }
+    
 protected:
 
 	enum WaveType
@@ -215,7 +215,7 @@ protected:
 	void	_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _canvas, double startTimeStamp, double endTimeStamp, float timestampInc );
 
 	void		_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop, int * pOutBottom, const WgScrollChart::Wave& wave, double startTimeStamp, double endTimeStamp, float timestampInc);
-	void		_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window);
+	void		_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas);
 
 	float			_thickestLine() const;
 
@@ -271,6 +271,8 @@ private:
 
 	std::function<void(WgScrollChart * pWidget, WgSize newSize)>	m_resizeResponder;
 	std::function<void(WgScrollChart * pWidget, float topValue, float bottomValue)> m_valueRangeResponder;
+    
+    WgPixelType m_pixelType = WgPixelType::BGRX_8;
 };
 
 

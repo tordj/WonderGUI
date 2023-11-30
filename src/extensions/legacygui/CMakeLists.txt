@@ -157,81 +157,6 @@ set( SOURCES
 	wg2_zoomoutcapsule.h
 
 	wglegacygui.h
-
-	../../wondergui/base/wg_animframes.cpp
-	../../wondergui/base/wg_animframes.h
-	../../wondergui/base/wg_char.h
-	../../wondergui/base/wg_charbuffer.cpp
-	../../wondergui/base/wg_charbuffer.h
-	../../wondergui/base/wg_charseq.cpp
-	../../wondergui/base/wg_charseq.h
-	../../wondergui/base/wg_codepages.cpp
-	../../wondergui/base/wg_codepages.h
-	../../wondergui/base/wg_dynamicvector.h
-	../../wondergui/base/wg_skinslotmanager.cpp
-	../../wondergui/base/wg_skinslotmanager.h
-	../../wondergui/base/wg_state.cpp
-	../../wondergui/base/wg_state.h
-	../../wondergui/base/wg_staticvector.h
-	../../wondergui/base/wg_string.cpp
-	../../wondergui/base/wg_string.h
-	../../wondergui/base/wg_textlink.cpp
-	../../wondergui/base/wg_textlink.h
-	../../wondergui/base/wg_textstyle.cpp
-	../../wondergui/base/wg_textstyle.h
-	../../wondergui/base/wg_textstylemanager.cpp
-	../../wondergui/base/wg_textstylemanager.h
-	../../wondergui/base/wg_texttool.cpp
-	../../wondergui/base/wg_texttool.h
-	../../wondergui/base/wg_util.cpp
-	../../wondergui/base/wg_util.h
-
-	../../wondergui/skins/wg_animskin.cpp
-	../../wondergui/skins/wg_animskin.h
-	../../wondergui/skins/wg_skin.cpp
-	../../wondergui/skins/wg_skin.h
-	../../wondergui/skins/wg_skin.impl.h
-	../../wondergui/skins/wg_stateskin.cpp
-	../../wondergui/skins/wg_stateskin.h	
-	../../wondergui/skins/anim/wg_spinanimskin.cpp
-	../../wondergui/skins/anim/wg_spinanimskin.h
-	../../wondergui/skins/meter/wg_fillmeterskin.cpp
-	../../wondergui/skins/meter/wg_fillmeterskin.h
-	../../wondergui/skins/meter/wg_framemeterskin.cpp
-	../../wondergui/skins/meter/wg_framemeterskin.h
-	../../wondergui/skins/meter/wg_piemeterskin.cpp
-	../../wondergui/skins/meter/wg_piemeterskin.h
-	../../wondergui/skins/meter/wg_spinmeterskin.cpp
-	../../wondergui/skins/meter/wg_spinmeterskin.h
-	../../wondergui/skins/misc/wg_bakeskin.cpp
-	../../wondergui/skins/misc/wg_bakeskin.h
-	../../wondergui/skins/misc/wg_doubleskin.cpp
-	../../wondergui/skins/misc/wg_doubleskin.h
-	../../wondergui/skins/state/wg_blockskin.cpp
-	../../wondergui/skins/state/wg_blockskin.h
-	../../wondergui/skins/state/wg_blockslideskin.cpp
-	../../wondergui/skins/state/wg_blockslideskin.h
-	../../wondergui/skins/state/wg_boxskin.cpp
-	../../wondergui/skins/state/wg_boxskin.h
-	../../wondergui/skins/state/wg_circleskin.cpp
-	../../wondergui/skins/state/wg_circleskin.h
-	../../wondergui/skins/state/wg_colorskin.cpp
-	../../wondergui/skins/state/wg_colorskin.h
-	../../wondergui/skins/state/wg_multiblockskin.cpp
-	../../wondergui/skins/state/wg_multiblockskin.h
-	../../wondergui/skins/state/wg_tileskin.cpp
-	../../wondergui/skins/state/wg_tileskin.h
-	../../wondergui/skins/static/wg_staticblockskin.cpp
-	../../wondergui/skins/static/wg_staticblockskin.h
-	../../wondergui/skins/static/wg_staticboxskin.cpp
-	../../wondergui/skins/static/wg_staticboxskin.h
-	../../wondergui/skins/static/wg_staticcolorskin.cpp
-	../../wondergui/skins/static/wg_staticcolorskin.h
-	../../wondergui/skins/static/wg_staticgradientskin.cpp
-	../../wondergui/skins/static/wg_staticgradientskin.h
-	../../wondergui/skins/static/wg_statictileskin.cpp
-	../../wondergui/skins/static/wg_statictileskin.h
-
 )
 
 set(INCDIRS
@@ -245,7 +170,7 @@ set(INCDIRS
 
 add_library( wglegacygui STATIC ${SOURCES} )
 target_include_directories(wglegacygui PRIVATE ${INCDIRS} )
-target_link_libraries(wglegacygui PUBLIC wonderglyphs wgfreetypefont )
+target_link_libraries(wglegacygui PUBLIC wondergui )
 
 set_target_properties( wglegacygui PROPERTIES FOLDER "Extensions" )
 

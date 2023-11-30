@@ -176,7 +176,7 @@ int WgMultiSlider::AddSlider(	int id, WgDirection dir, SetGeoFunc pSetGeoFunc, f
 	_updateHandlePos(s);
 	_updateGeo(s);
 
-	return m_sliders.size() - 1;
+	return int(m_sliders.size() - 1);
 }
 
 //____ AddSlider2D() __________________________________________________________
@@ -226,7 +226,7 @@ int WgMultiSlider::AddSlider2D( int id, WgOrigo origo, SetGeoFunc pSetGeoFunc, f
 	_updateHandlePos(s);
 	_updateGeo(s);
 
-	return m_sliders.size() - 1;
+	return int(m_sliders.size() - 1);
 }
 
 //____ RemoveAllSliders() _______________________________________________________
@@ -273,7 +273,7 @@ void WgMultiSlider::SetSliderVisible( int id, bool bVisible )
 
 	if( !bVisible )
 	{
-		int idx = pSlider - &m_sliders[0];
+		int idx = int(pSlider - &m_sliders[0]);
 
 		if( idx == m_selectedSlider )
 		{
@@ -500,7 +500,7 @@ WgMultiSlider::Slider * WgMultiSlider::_markedSliderHandle(WgCoord ofs, WgCoord 
 void WgMultiSlider::_markSliderHandle(Slider * pSlider)
 {
 	if (pSlider)
-		m_hoveredSliderHandle = pSlider - &m_sliders.front();
+		m_hoveredSliderHandle = int(pSlider - &m_sliders.front());
 	else
 		m_hoveredSliderHandle = -1;
 
@@ -523,7 +523,7 @@ void WgMultiSlider::_selectSliderHandle(Slider * pSlider)
 		m_dragFraction = { 0.f,0.f };
 		m_dragStartFraction = pSlider->handlePos;
 		m_finetuneRemainder = { 0,0 };
-		m_selectedSliderHandle = pSlider - &m_sliders.front();
+		m_selectedSliderHandle = int(pSlider - &m_sliders.front());
 	}
 	else
 		m_selectedSliderHandle = -1;
@@ -932,7 +932,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 					p = _markedSlider(pEvent->PointerPixelPos());
 					if (p)
-						m_hoveredSlider = p - &m_sliders.front();
+						m_hoveredSlider = int(p - &m_sliders.front());
 					else
 						int dbg = 1;
 
@@ -1042,7 +1042,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
             {
                 WgSize widgetContentSize = m_pSkin ? PixelSize() - _skinContentPadding( m_pSkin, m_scale) : PixelSize();
 
-                m_selectedSlider = pMarked - &m_sliders.front();
+                m_selectedSlider = int(pMarked - &m_sliders.front());
                 m_selectedSliderHandle = -1;
 
                 // Convert the press offset to fraction.
@@ -1058,7 +1058,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
                     else
                         _setHandlePosition(*pMarked, relPos);
 
-                    m_hoveredSliderHandle = pMarked - &m_sliders.front();
+                    m_hoveredSliderHandle = int(pMarked - &m_sliders.front());
                     m_hoveredSlider = -1;
                 }
 
@@ -1115,12 +1115,12 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 				Slider * p = _markedSliderHandle(pEvent->PointerPixelPos());
 				if (p)
-					m_hoveredSliderHandle = p - &m_sliders.front();
+					m_hoveredSliderHandle = int(p - &m_sliders.front());
 				else
 				{
 					p = _markedSlider(pEvent->PointerPixelPos());
 					if (p)
-						m_hoveredSlider = p - &m_sliders.front();
+						m_hoveredSlider = int(p - &m_sliders.front());
 				}
 
 				_updateSliderStates();

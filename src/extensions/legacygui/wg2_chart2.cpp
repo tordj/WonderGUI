@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <limits>
 
 static const char	c_widgetType[] = {"Chart2"};
 
@@ -1006,7 +1007,7 @@ void WgChart2::_renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& w
 	   return;
 
 
-	int samples = std::max( wave.resampledTop.size(), wave.resampledBottom.size() );
+	int samples = int(std::max( wave.resampledTop.size(), wave.resampledBottom.size() ));
 	if( samples < 2)
 		return;
 
@@ -1027,13 +1028,13 @@ void WgChart2::_renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& w
 
 	
 	int samplesBegin = 0;
-	int samplesEnd = wave.resampledTop.size();
+	int samplesEnd = int(wave.resampledTop.size());
 	wave.pWaveform->setSamples(samplesBegin, samplesEnd, wave.resampledTop.data(), nullptr);
 	if( samplesEnd < samples )
 		wave.pWaveform->setFlatTopLine(samplesEnd, samples, wave.resampledDefault);
 	
 	samplesBegin = 0;
-	samplesEnd = wave.resampledBottom.size();
+	samplesEnd = int(wave.resampledBottom.size());
 	wave.pWaveform->setSamples(samplesBegin, samplesEnd, nullptr, wave.resampledBottom.data());
 	if( samplesEnd < samples )
 		wave.pWaveform->setFlatBottomLine(samplesEnd, samples, wave.resampledDefault);
@@ -1350,7 +1351,7 @@ void WgChart2::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 
 		auto topPointer    = pWave->resampledTop.size() > 0    ? &pWave->resampledTop[0] : nullptr;
 		auto bottomPointer = pWave->resampledBottom.size() > 0 ? &pWave->resampledBottom[0] : nullptr;
-		_requestRenderOnNewSamples(	begOrgSamples, pWave->resampledTop.size(), topPointer, pWave->resampledBottom.size(), bottomPointer,
+		_requestRenderOnNewSamples(	begOrgSamples, int(pWave->resampledTop.size()), topPointer, int(pWave->resampledBottom.size()), bottomPointer,
 									begNewSamples, nbNewTopSamples, pNewTopSamples, nbNewBottomSamples, pNewBottomSamples,
 									pWave->resampledDefault, newDefault, maxLineThickness, bInCache );
 

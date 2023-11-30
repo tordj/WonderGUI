@@ -250,7 +250,7 @@ void WgShadowLayer::RemoveShadow(WgWidget * pWidget)
 	{
 		if (it->widget() == pWidget)
 		{
-			_willRemoveShadows(it - m_shadows.begin(), 1);
+			_willRemoveShadows(int(it - m_shadows.begin()), 1);
 			m_shadows.erase(it);
 			break;
 		}

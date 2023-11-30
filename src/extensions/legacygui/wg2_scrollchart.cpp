@@ -31,6 +31,7 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 #include <wg2_eventhandler.h>
 
 #include <algorithm>
+#include <limits>
 
 
 #include <assert.h>
@@ -517,6 +518,23 @@ void WgScrollChart::StopAllWaves()
 		wave.bHidden = true;
 }
 
+//____ SetWaveColors() ________________________________________________________
+
+bool WgScrollChart::SetWaveColors( int waveId, WgColor topLineColor, WgColor bottomLineColor, WgColor fillColor, WgColor backColor )
+{
+	Wave * p = _getWave(waveId);
+	if (!p)
+		return false;
+
+	p->topLineColor = topLineColor;
+	p->bottomLineColor = bottomLineColor;
+	p->frontFill = fillColor;
+	p->backFill = backColor;
+	
+	m_bRefreshCanvas = true;
+	return true;
+}
+
 //____ IsWaveDisplayed() ______________________________________________________
 
 bool WgScrollChart::IsWaveDisplayed(int waveId) const
@@ -776,20 +794,8 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		if (m_bRefreshCanvas || m_scrollAmount >= sz.w)
 		{
             pDevice->beginCanvasUpdate(m_pCanvas);
-
 			pDevice->fill(sz*64, m_chartColor);
-			_renderGridLines(pDevice, sz, sz );
-
-/*
-			double winBeg = m_windowBegin;
-
-			for (int i = 0; i < sz.w; i++)
-			{
-				_renderWaveSegment(pDevice, { i,0,1,sz.h }, winBeg, winBeg+timestampInc, timestampInc);
-				winBeg += timestampInc;
-			}
-*/
-
+			_renderGridLines(pDevice, sz );
 			_renderWaveSegment(pDevice, sz, m_windowBegin, m_windowEnd, timestampInc);
 			pDevice->endCanvasUpdate();
 
@@ -815,8 +821,6 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 			//
 
-			pDevice->beginCanvasUpdate(m_pCanvas);
-
 			if (m_canvasOfs + m_scrollAmount <= sz.w )
 			{
 				double windowBegin = m_windowEnd - m_scrollAmount*timestampInc;
@@ -824,9 +828,10 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 				WgRect canvas(m_canvasOfs, 0, m_scrollAmount, sz.h);
 				WgRect canvasClip = canvas * 64;
-				pDevice->setClipList( 1, &canvasClip );
-				pDevice->fill(canvas*64, m_chartColor);
-				_renderGridLines(pDevice, canvas, canvas);
+
+				pDevice->beginCanvasUpdate(m_pCanvas, 1, &canvasClip);
+				pDevice->fill(m_chartColor);
+				_renderGridLines(pDevice, sz);
 				_renderWaveSegment(pDevice, canvas, windowBegin, windowEnd, timestampInc);
 			}
 			else
@@ -834,27 +839,24 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				int width1 = sz.w - m_canvasOfs;
 				int width2 = m_scrollAmount - width1;
 
+				WgRect canvas1(m_canvasOfs, 0, width1, sz.h);
+				WgRect canvas2(0, 0, width2, sz.h);
+
+				WgRect cliplist[2] = { canvas1*64, canvas2*64 };
+
+				pDevice->beginCanvasUpdate(m_pCanvas, 2, cliplist);
+				pDevice->fill(m_chartColor);
+				
+				_renderGridLines(pDevice, sz);
+
 				double windowBegin = m_windowEnd - m_scrollAmount*timestampInc;
 				double windowEnd = m_windowEnd - width2*timestampInc;
-
-				WgRect canvas(m_canvasOfs, 0, width1, sz.h);
-				WgRect canvasClip = canvas * 64;
-				pDevice->setClipList( 1, &canvasClip );
-				pDevice->fill(canvas*64, m_chartColor);
-				_renderGridLines(pDevice, canvas, canvas);
-				_renderWaveSegment(pDevice, canvas, windowBegin, windowEnd, timestampInc);
+				_renderWaveSegment(pDevice, canvas1, windowBegin, windowEnd, timestampInc);
 
 				windowBegin = m_windowEnd - width2*timestampInc;
 				windowEnd = m_windowEnd;
-
-				WgRect canvas2(0, 0, width2, sz.h);
-				WgRect canvas2Clip = canvas2 * 64;
-				pDevice->setClipList( 1, &canvas2Clip );
-				pDevice->fill(canvas2*64, m_chartColor);
-				_renderGridLines(pDevice, canvas2, canvas2);
 				_renderWaveSegment(pDevice, canvas2, windowBegin, windowEnd, timestampInc);
 			}
-
 
             pDevice->endCanvasUpdate();
 
@@ -948,11 +950,9 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 				bottomLine.length = 0;
 				bottomLine.pWave = nullptr;
 				pDevice->drawWave( WgRect( _canvas.x - margin + waveSamplesOffset,_canvas.y, waveSamples-1,_canvas.h )*64, &topLine, &bottomLine, wave.frontFill, wave.backFill);
-//                pDevice->ClipDrawHorrWave(_canvas, { _canvas.x - margin + waveSamplesOffset,_canvas.y }, waveSamples-1, topLine, bottomLine, wave.frontFill, wave.backFill);
 				break;
 			case WaveType::Complex:
 				pDevice->drawWave( WgRect( _canvas.x - margin + waveSamplesOffset,_canvas.y, waveSamples-1,_canvas.h )*64, &topLine, &bottomLine, wave.frontFill, wave.backFill);
-//				pDevice->ClipDrawHorrWave(_canvas, { _canvas.x - margin + waveSamplesOffset,_canvas.y }, waveSamples-1, topLine, bottomLine, wave.frontFill, wave.backFill);
 				break;
 			}
 		}
@@ -1042,7 +1042,7 @@ void WgScrollChart::_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop,
 
 //____ _renderGridLines() _____________________________________________________
 
-void WgScrollChart::_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window)
+void WgScrollChart::_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas)
 {
 	// Draw value grid lines
 
@@ -1260,7 +1260,7 @@ void WgScrollChart::_regenCanvas()
 
 		m_pCanvas = m_pFactory->createSurface( WGBP(Surface,
 													_.size = sz,
-													_.format = WgPixelType::BGRX_8,
+													_.format = m_pixelType,
 													_.canvas = true ));
 //		m_pCanvas->Fill(m_chartColor);
 		m_canvasOfs = 0;

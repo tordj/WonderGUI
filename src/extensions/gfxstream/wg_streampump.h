@@ -31,6 +31,7 @@
 #include <wg_streamsink.h>
 
 #include <vector>
+#include <functional>
 
 namespace wg
 {
@@ -72,6 +73,27 @@ namespace wg
 		StreamPump(const StreamSource_p& pInput, const StreamSink_p& pOutput);
 		~StreamPump();
 
+		struct CanvasFrame
+		{
+			const uint8_t*	pBegin;
+			int				ofsClipRects;
+			int				nClipRects;
+		};
+
+		struct CanvasData
+		{
+			CanvasData(int _id) : id(_id), framesPlayed(0) {}
+
+			int id;				// surfaceId + canvasRef << 16;
+			std::vector<CanvasFrame>	frames;
+			int framesPlayed;
+		};
+		
+		
+		void			_optimizeCanvasUpdate( const uint8_t *& pBegin, const uint8_t *& pEnd, 
+											   std::vector<CanvasData>& canvases, std::vector<RectSPX> clipRects,
+											   std::function<void(const uint8_t*& pBegin, const uint8_t*& pEnd)> fetch );
+		
 		const uint8_t*	_findChunk(GfxChunkId id, const uint8_t* pBegin, const uint8_t* pEnd);
 		void			_maskAddRect(std::vector<RectI>& vRects, int startOffset, int endOffset, const RectI& rect);
 

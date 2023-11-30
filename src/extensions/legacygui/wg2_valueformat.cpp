@@ -279,7 +279,7 @@ void WgValueFormat::setFormat( const wg::CharSeq& format )
 		p++;
 	}
 
-	prefix = wg::CharSeq( pBeg, p - pBeg );
+	prefix = wg::CharSeq( pBeg, int(p - pBeg) );
 
 	pBeg = p;
 
@@ -375,7 +375,7 @@ void WgValueFormat::setFormat( const wg::CharSeq& format )
 
 	// Copy suffix
 
-	suffix = wg::CharSeq( pBeg, pEnd - pBeg );
+	suffix = wg::CharSeq( pBeg, int(pEnd - pBeg) );
 }
 
 //____ setFormat() ____________________________________________________________

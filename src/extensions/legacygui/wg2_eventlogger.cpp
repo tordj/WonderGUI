@@ -200,11 +200,11 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		case WG_EVENT_TICK:
 			id = "Tick";
-			sprintf( params, " millisec=%d", ((const WgEvent::Tick*)_pEvent)->Millisec() );
+			snprintf( params, 256, " millisec=%d", ((const WgEvent::Tick*)_pEvent)->Millisec() );
 			break;
 		case WG_EVENT_POINTER_CHANGE:
 			id = "PointerChange";
-			sprintf( params, " style=%s", _formatPointerStyle( (const WgEvent::PointerChange*)_pEvent).c_str() );
+			snprintf( params, 256, " style=%s", _formatPointerStyle( (const WgEvent::PointerChange*)_pEvent).c_str() );
 			break;
 		case WG_EVENT_FOCUS_GAINED:
 			id = "FocusGained";
@@ -226,11 +226,11 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 			id = "MouseButtonPress";
-			sprintf( params, " button=%d", ((const WgEvent::MouseButtonPress*)_pEvent)->Button() );
+			snprintf( params, 256, " button=%d", ((const WgEvent::MouseButtonPress*)_pEvent)->Button() );
 			break;
 		case WG_EVENT_MOUSEBUTTON_REPEAT:
 			id = "MouseButtonRepeat";
-			sprintf( params, " button=%d", ((const WgEvent::MouseButtonRepeat*)_pEvent)->Button() );
+			snprintf( params, 256, " button=%d", ((const WgEvent::MouseButtonRepeat*)_pEvent)->Button() );
 			break;
 		case WG_EVENT_MOUSEBUTTON_DRAG:
 		{
@@ -245,7 +245,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			WgCoord	dragNow	= pEvent->DraggedNowPixels();
 			WgCoord	dragTotal=pEvent->DraggedTotalPixels();
 
-			sprintf( params, " button=%d position(start=%d,%d prev=%d,%d now=%d,%d) dragged(now=%d,%d total=%d,%d)",
+			snprintf( params, 256, " button=%d position(start=%d,%d prev=%d,%d now=%d,%d) dragged(now=%d,%d total=%d,%d)",
 					pEvent->Button(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
 			break;
 		}
@@ -266,48 +266,48 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			if( pEvent->ReleaseInside() )
 				pRelease = inside;
 
-			sprintf( params, " button=%d press=%s release=%s", pEvent->Button(), pPress, pRelease );
+			snprintf( params, 256, " button=%d press=%s release=%s", pEvent->Button(), pPress, pRelease );
 			break;
 		}
 		case WG_EVENT_MOUSEBUTTON_CLICK:
 			id = "MouseButtonClick";
-			sprintf( params, " button=%d", static_cast<const WgEvent::MouseButtonClick*>(_pEvent)->Button() );
+			snprintf( params, 256, " button=%d", static_cast<const WgEvent::MouseButtonClick*>(_pEvent)->Button() );
 			break;
 		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 			id = "MouseButtonDoubleClick";
-			sprintf( params, " button=%d", static_cast<const WgEvent::MouseButtonDoubleClick*>(_pEvent)->Button() );
+			snprintf( params, 256, " button=%d", static_cast<const WgEvent::MouseButtonDoubleClick*>(_pEvent)->Button() );
 			break;
 
 		case WG_EVENT_KEY_PRESS:
 		{
 			id = "KeyPress";
 			const WgEvent::KeyPress * pEvent = static_cast<const WgEvent::KeyPress*>(_pEvent);
-			sprintf( params, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
+			snprintf( params, 256, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
 			break;
 		}
 		case WG_EVENT_KEY_REPEAT:
 		{
 			id = "KeyRepeat";
 			const WgEvent::KeyRepeat * pEvent = static_cast<const WgEvent::KeyRepeat*>(_pEvent);
-			sprintf( params, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
+			snprintf( params, 256, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
 			break;
 		}
 		case WG_EVENT_KEY_RELEASE:
 		{
 			id = "KeyRelease";
 			const WgEvent::KeyRelease * pEvent = static_cast<const WgEvent::KeyRelease*>(_pEvent);
-			sprintf( params, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
+			snprintf( params, 256, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
 			break;
 		}
 		case WG_EVENT_CHARACTER:
 			id = "Character";
-			sprintf( params, " char=%X", static_cast<const WgEvent::Character*>(_pEvent)->Char() );
+			snprintf( params, 256, " char=%X", static_cast<const WgEvent::Character*>(_pEvent)->Char() );
 			break;
 		case WG_EVENT_MOUSEWHEEL_ROLL:
 		{
 			id = "MouseWheelRoll";
 			const WgEvent::MouseWheelRoll * pEvent = static_cast<const WgEvent::MouseWheelRoll*>(_pEvent);
-			sprintf( params, "wheel=%d distance=%d invertScroll=%d", pEvent->Wheel(), pEvent->Distance(), (int) pEvent->InvertScroll() );
+			snprintf( params, 256, "wheel=%d distance=%d invertScroll=%d", pEvent->Wheel(), pEvent->Distance(), (int) pEvent->InvertScroll() );
 			break;
 		}
 
@@ -369,7 +369,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 
 		case WG_EVENT_CHECKBOX_TOGGLE:
 			id = "CheckboxToggle";
-			sprintf( params, "checked=%d", (int) (static_cast<const WgEvent::CheckboxToggle*>(_pEvent)->IsChecked()) );
+			snprintf( params, 256, "checked=%d", (int) (static_cast<const WgEvent::CheckboxToggle*>(_pEvent)->IsChecked()) );
 			break;
 
 		case WG_EVENT_RADIOBUTTON_SELECT:
@@ -382,14 +382,14 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 
 		case WG_EVENT_RADIOBUTTON_TOGGLE:
 			id = "RadiobuttonToggle";
-			sprintf( params, "selected=%d", (int) (static_cast<const WgEvent::RadiobuttonToggle*>(_pEvent)->IsSelected()) );
+			snprintf( params, 256, "selected=%d", (int) (static_cast<const WgEvent::RadiobuttonToggle*>(_pEvent)->IsSelected()) );
 			break;
 
 		case WG_EVENT_ANIMATION_UPDATE:
 		{
 			id = "AnimationUpdate";
 			const WgEvent::AnimationUpdate * pEvent = static_cast<const WgEvent::AnimationUpdate*>(_pEvent);
-			sprintf( params, "frame=%d fraction=%f", pEvent->Frame(), pEvent->Fraction() );
+			snprintf( params, 256, "frame=%d fraction=%f", pEvent->Frame(), pEvent->Fraction() );
 			break;
 		}
 
@@ -397,7 +397,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "SliderMove";
 			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
-			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
+			snprintf( params, 256, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 
@@ -405,7 +405,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "SliderStepFwd";
 			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
-			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
+			snprintf( params, 256, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 
@@ -413,7 +413,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "SliderStepBwd";
 			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
-			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
+			snprintf( params, 256, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 
@@ -421,7 +421,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "SliderJumpFwd";
 			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
-			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
+			snprintf( params, 256, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 
@@ -429,7 +429,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "SliderJumpBwd";
 			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
-			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
+			snprintf( params, 256, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 
@@ -437,7 +437,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "SliderWheelRoll";
 			const WgEvent::SliderWheelRolled * pEvent = static_cast<const WgEvent::SliderWheelRolled*>(_pEvent);
-			sprintf( params, "distance=%d pos=%f length=%f", pEvent->Distance(), pEvent->Pos(), pEvent->Length() );
+			snprintf( params, 256, "distance=%d pos=%f length=%f", pEvent->Distance(), pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 
@@ -459,7 +459,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "KnobTurn";
 			const WgEvent::KnobTurn* pEvent = static_cast<const WgEvent::KnobTurn*>(_pEvent);
-			sprintf(params, "pos=%d fraction=%f", pEvent->Pos(), pEvent->Fraction());
+			snprintf(params, 256, "pos=%d fraction=%f", pEvent->Pos(), pEvent->Fraction());
 			break;
 		}
 
@@ -467,7 +467,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "RangeChanged";
 			const WgEvent::RangeChanged* pEvent = static_cast<const WgEvent::RangeChanged*>(_pEvent);
-			sprintf(params, "begin=%f end=%f", pEvent->Begin(), pEvent->End());
+			snprintf(params, 256, "begin=%f end=%f", pEvent->Begin(), pEvent->End());
 			break;
 		}
 
@@ -476,7 +476,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "MenuitemSelect";
 			const WgEvent::MenuitemEvent * pEvent = static_cast<const WgEvent::MenuitemEvent*>(_pEvent);
-			sprintf( params, "itemId=%d", pEvent->ItemId() );
+			snprintf( params, 256, "itemId=%d", pEvent->ItemId() );
 			break;
 		}
 
@@ -484,7 +484,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "MenuitemCheck";
 			const WgEvent::MenuitemEvent * pEvent = static_cast<const WgEvent::MenuitemEvent*>(_pEvent);
-			sprintf( params, "itemId=%d", pEvent->ItemId() );
+			snprintf( params, 256, "itemId=%d", pEvent->ItemId() );
 			break;
 		}
 
@@ -492,7 +492,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "MenuitemUncheck";
 			const WgEvent::MenuitemEvent * pEvent = static_cast<const WgEvent::MenuitemEvent*>(_pEvent);
-			sprintf( params, "itemId=%d", pEvent->ItemId() );
+			snprintf( params, 256, "itemId=%d", pEvent->ItemId() );
 			break;
 		}
 
@@ -500,7 +500,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		{
 			id = "MenuClosed";
 			const WgEvent::MenuClosed * pEvent = static_cast<const WgEvent::MenuClosed*>(_pEvent);
-			sprintf( params, "menu=%ld", (long int)pEvent->Menu() );
+			snprintf( params, 256, "menu=%ld", (long int)pEvent->Menu() );
 			break;
 		}
 				*/
@@ -510,11 +510,11 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		case WG_EVENT_MODAL_BLOCKED_PRESS:
 			id = "ModalBlockedPress";
-			sprintf( params, " button=%d", ((const WgEvent::ModalBlockedPress*)_pEvent)->Button() );
+			snprintf( params, 256, " button=%d", ((const WgEvent::ModalBlockedPress*)_pEvent)->Button() );
 			break;
 		case WG_EVENT_MODAL_BLOCKED_RELEASE:
 			id = "ModalBlockedRelease";
-			sprintf( params, " button=%d", ((const WgEvent::ModalBlockedRelease*)_pEvent)->Button() );
+			snprintf( params, 256, " button=%d", ((const WgEvent::ModalBlockedRelease*)_pEvent)->Button() );
 			break;
 
 		case WG_EVENT_EAVESDROP:
@@ -523,13 +523,13 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			WgEvent::Event * pOrgEvent = ((const WgEvent::Eavesdrop*)_pEvent)->Event();
 			string orgWidget = _formatWidget(pOrgEvent);
 
-			sprintf( params, " org event=%d for %s", pOrgEvent->Type(), orgWidget.c_str() );
+			snprintf( params, 256, " org event=%d for %s", pOrgEvent->Type(), orgWidget.c_str() );
 			break;
 		}
 
 		default:
 			id = "Unknown Event";
-			sprintf( params, " type enum=%d", (_pEvent)->Type() );
+			snprintf( params, 256, " type enum=%d", (_pEvent)->Type() );
 			break;
 	};
 
@@ -552,7 +552,7 @@ string WgEventLogger::_formatTimestamp( int64_t ms )
 	int min		= (int) ((ms/60000) % 60);
 	int hour	= (int) (ms/3600000);
 
-	sprintf( temp, "%d:%02d:%02d.%03d", hour, min, sec, milli );
+	snprintf( temp, 20, "%d:%02d:%02d.%03d", hour, min, sec, milli );
 	return string( temp );
 }
 
@@ -573,7 +573,7 @@ string WgEventLogger::_formatWidget( const WgEvent::Event * _pEvent )
 		if( pWidget )
 			pType = pWidget->Type();
 
-		sprintf( temp, " widget=%p (%s)", pWidget, pType );
+		snprintf( temp, 64, " widget=%p (%s)", pWidget, pType );
 		out = temp;
 	}
 
@@ -591,7 +591,7 @@ string WgEventLogger::_formatModkeys( const WgEvent::Event * _pEvent )
 	if( keys != WG_MODKEY_NONE )
 	{
 		char	temp[64];
-		sprintf( temp, " modkeys=%X", keys );
+		snprintf( temp, 64, " modkeys=%X", keys );
 		out = temp;
 	}
 
@@ -609,9 +609,9 @@ string WgEventLogger::_formatPointerPos( const WgEvent::Event * _pEvent )
 	char	temp[64];
 
 	if( globalPos == localPos )
-		sprintf( temp, " pointer=%d,%d", localPos.x, localPos.y );
+		snprintf( temp, 64, " pointer=%d,%d", localPos.x, localPos.y );
 	else
-		sprintf( temp, " pointer=%d,%d (%d,%d)", localPos.x, localPos.y, globalPos.x, globalPos.y );
+		snprintf( temp, 64, " pointer=%d,%d (%d,%d)", localPos.x, localPos.y, globalPos.x, globalPos.y );
 
 	return string(temp);
 }
@@ -659,7 +659,7 @@ string WgEventLogger::_formatPointerStyle( const WgEvent::PointerChange * _pEven
 		default:
 		{
 			char	temp[64];
-			sprintf( temp, "%d (unkown enum)", (int) _pEvent->Style() );
+			snprintf( temp, 64, "%d (unkown enum)", (int) _pEvent->Style() );
 			return string(temp);
 		}
 	}

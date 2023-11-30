@@ -244,12 +244,12 @@ namespace WgUtil
 		if(str.empty())
 			return;
 		int i0 = 0;
-		int i1 = str.find(',');
+		int i1 = int(str.find(','));
 		do
 		{
 			tokens.push_back(str.substr(i0, i1 - i0));
 			i0 = i1 + 1;
-			i1 = str.find(',', i0);
+			i1 = int(str.find(',', i0));
 		}
 		while(i0 > 0);
 	}
@@ -302,18 +302,6 @@ namespace WgUtil
 		if(!FromString<T5>(tokens[5], f)) return 5;
 		return 6;
 	}
-
-	inline void XMLEscape(const std::string& text, std::string& escaped )
-	{
-		escaped = text;
-		int ofs;
-		ofs =-5; while((ofs = escaped.find_first_of('&', ofs+5)) >= 0)	escaped.replace(ofs, 1, "&amp;");
-		ofs =-4; while((ofs = escaped.find_first_of('<', ofs+4)) >= 0)	escaped.replace(ofs, 1, "&lt;");
-		ofs =-4; while((ofs = escaped.find_first_of('>', ofs+4)) >= 0)	escaped.replace(ofs, 1, "&gt;");
-		ofs =-6; while((ofs = escaped.find_first_of('"', ofs+6)) >= 0)	escaped.replace(ofs, 1, "&quot;");
-		ofs =-6; while((ofs = escaped.find_first_of('\'',ofs+6)) >= 0)	escaped.replace(ofs, 1, "&apos;");
-	}
-
 }
 
 

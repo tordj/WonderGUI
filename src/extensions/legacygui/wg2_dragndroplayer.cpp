@@ -748,7 +748,7 @@ int WgDragNDropLayer::_widgetPosInList( const WgWidget * pWidget, const std::vec
 {
 	for( size_t i = 0 ; i < list.size() ; i++ )
 		if( list[i].GetRealPtr() == pWidget )
-			return i;
+			return (int) i;
 
 	return -1;
 }

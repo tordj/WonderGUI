@@ -125,7 +125,7 @@ namespace sdl_wglib
 		WgSize size = pSurface->pixelSize();
 		const WgPixelFormat * pFmt = pSurface->pixelDescription();
 
-		SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, pFmt->R_mask, pFmt->G_mask, pFmt->B_mask, pFmt->A_mask);
+		SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, (uint) pFmt->R_mask, (uint) pFmt->G_mask, (uint) pFmt->B_mask, (uint) pFmt->A_mask);
 
 
 		int err = SDL_LockSurface(pOutput);
@@ -545,7 +545,7 @@ namespace sdl_wglib
 			return 0;
 
 		fseek( fp, 0, SEEK_END );
-		int size = ftell(fp);
+		int size = (int) ftell(fp);
 		fseek( fp, 0, SEEK_SET );
 		fclose( fp );
 
@@ -561,12 +561,12 @@ namespace sdl_wglib
 			return 0;
 
 		fseek( fp, 0, SEEK_END );
-		int size = ftell(fp);
+		int size = (int) ftell(fp);
 		fseek( fp, 0, SEEK_SET );
 
 		char * pMem = (char*) malloc( size+1 );
 		pMem[size] = 0;
-		int nRead = fread( pMem, 1, size, fp );
+		int nRead = (int) fread( pMem, 1, size, fp );
 		fclose( fp );
 
 		if( nRead < size )

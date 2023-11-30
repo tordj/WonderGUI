@@ -176,7 +176,7 @@ public:
     WgCoord HandlePointPos( int sliderId );
 	WgCoord HandlePixelPos( int sliderId );
 
-    int     NbSliders() const { return m_sliders.size(); }
+    int     NbSliders() const { return (int) m_sliders.size(); }
     int     SliderId(int index) { return m_sliders[index].id; }
 
 	bool	MarkTest(const WgCoord& ofs) override;

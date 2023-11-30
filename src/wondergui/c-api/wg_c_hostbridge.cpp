@@ -25,6 +25,7 @@
 #include <wg_root.h>
 
 #include <algorithm>
+#include <cstring>
 
 using namespace wg;
 

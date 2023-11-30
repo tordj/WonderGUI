@@ -929,6 +929,8 @@ namespace wg
 			case Alignment::Justify:
 				return 0;
 		}
+		
+		return 0;
 	}
 
 	//____ _calcTotalSpacing() _______________________________________________________

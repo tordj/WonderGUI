@@ -24,6 +24,8 @@
 #include	<wg_gfxdevice.h>
 #include	<wg_base.h>
 
+#include	<cstring>
+
 namespace wg
 {
 

@@ -1253,7 +1253,7 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 		}
 	}
 
-	return pI - pArray;
+	return (int) (pI - pArray);
 }
 
 int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forcedBreadth ) const
@@ -1296,5 +1296,5 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forced
 		}
 	}
 
-	return pI - pArray;
+	return (int) (pI - pArray);
 }

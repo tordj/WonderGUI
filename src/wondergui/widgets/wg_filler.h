@@ -56,6 +56,7 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+			Size			defaultSize = { -1,-1 };
 			bool			disabled = false;
 			bool			dropTarget = false;
 			Finalizer_p		finalizer = nullptr;
@@ -64,7 +65,6 @@ namespace wg
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
-			Size			defaultSize = { -1,-1 };
 			bool			selectable = true;
 			Skin_p			skin;
 			bool			stickyFocus = false;
