@@ -61,7 +61,7 @@ namespace wg
 			}
 
 		protected:
-			Widget* m_pChild;
+			Widget_p	m_pChild;
 			const struct SlotType::Blueprint* m_pBP;
 		};
 
