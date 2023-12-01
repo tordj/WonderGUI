@@ -243,14 +243,42 @@ namespace wg
 		switch( pMsg->type() )
 		{
 			case MsgType::MouseEnter:
+			{
+				m_bMouseInside = true;
+				auto pMess = static_cast<InputMsg*>(pMsg);
+				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
+				m_pEventHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( localPos.x/64, localPos.y/64 ) ) );
+				break;
+			}
+
 			case MsgType::MouseMove:
-			case MsgType::MouseLeave:
 			{
 				auto pMess = static_cast<InputMsg*>(pMsg);
 				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
 				m_pEventHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( localPos.x/64, localPos.y/64 ) ) );
 				break;
 			}
+
+			case MsgType::MouseLeave:
+			{
+				m_bMouseInside = false;
+				auto pMess = static_cast<InputMsg*>(pMsg);
+				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
+				m_pEventHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( localPos.x/64, localPos.y/64 ) ) );
+				break;
+			}
+			
+			case MsgType::MouseDrag:
+			{
+				if( !m_bMouseInside )
+				{
+					auto pMess = static_cast<InputMsg*>(pMsg);
+					CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
+					m_pEventHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( localPos.x/64, localPos.y/64 ) ) );
+				}
+				break;
+			}
+
 				
 			case MsgType::MousePress:
 			{

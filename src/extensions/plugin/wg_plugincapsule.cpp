@@ -192,8 +192,16 @@ namespace wg
 		switch( pMsg->type() )
 		{
 			case MsgType::MouseEnter:
+			{
+				m_bMouseInside = true;
+				auto pMess = static_cast<InputMsg*>(pMsg);
+				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
+				m_calls.setPointerPos(m_pPluginRoot, { localPos.x, localPos.y }, pMess->timestamp() );
+				
+				break;
+			}
+
 			case MsgType::MouseMove:
-			case MsgType::MouseLeave:
 			{
 				auto pMess = static_cast<InputMsg*>(pMsg);
 				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
@@ -201,6 +209,28 @@ namespace wg
 				
 				break;
 			}
+
+			case MsgType::MouseLeave:
+			{
+				m_bMouseInside = false;
+				auto pMess = static_cast<InputMsg*>(pMsg);
+				CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
+				m_calls.setPointerPos(m_pPluginRoot, { localPos.x, localPos.y }, pMess->timestamp() );
+				
+				break;
+			}
+
+			case MsgType::MouseDrag:
+			{
+				if( !m_bMouseInside )
+				{
+					auto pMess = static_cast<InputMsg*>(pMsg);
+					CoordSPX localPos = _toLocal( pMess->pointerSpxPos() );
+					m_calls.setPointerPos(m_pPluginRoot, { localPos.x, localPos.y }, pMess->timestamp() );
+				}
+				break;
+			}
+
 				
 			case MsgType::MousePress:
 			{

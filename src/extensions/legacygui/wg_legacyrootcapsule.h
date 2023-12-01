@@ -209,6 +209,7 @@ namespace wg
 
 		int						m_microsecStored = 0;
 		bool					m_bBlockRequestResize = false;
+		bool					m_bMouseInside = false;
 
 	};
 
