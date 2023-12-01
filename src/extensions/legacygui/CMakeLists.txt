@@ -2,6 +2,8 @@ source_group(Files REGULAR_EXPRESSION ".*")
 
 			
 set( SOURCES
+	wg_legacyrootcapsule.cpp
+	wg_legacyrootcapsule.h
 	wg2_anim.cpp
 	wg2_anim.h
 	wg2_animplayer.cpp

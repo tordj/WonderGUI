@@ -141,6 +141,8 @@ namespace wg
 		
 		wg_pluginroot_calls	m_calls;
 
+		bool m_bMouseInside = false;
+
 	};
 
 

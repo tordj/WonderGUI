@@ -277,26 +277,27 @@ void WgPluginRoot::_render(wg_obj device, const RectSPX& _canvas, const RectSPX&
 
 void WgPluginRoot::_resize(const SizeSPX& size, int scale)
 {
-
 	if( scale == -1 )
 		scale = m_scale;
+
+	auto oldSize = m_size;
+	auto oldScale = m_scale;
+	
+	m_size = size;
+	m_scale = scale;
 	
 	if( m_hook.Widget() )
 	{
 		m_bBlockRequestResize = true;			// _setScale() might issue requestResize() calls.
 
-		if( scale != m_scale )
+		if( scale != oldScale )
 			m_hook.Widget()->_setScale(scale*WG_SCALE_BASE/64);
 
-		if( size != m_size )
+		if( size != oldSize )
 			m_hook.Widget()->_onNewSize({size.w/64,size.h/64});
 
 		m_bBlockRequestResize = false;
 	}
-	
-	m_size = size;
-	m_scale = scale;
-
 }
 
 //____ _setState() ____________________________________________________________
@@ -344,7 +345,12 @@ void WgPluginRoot::_setButtonState( int button, bool bPressed, int64_t timestamp
 void WgPluginRoot::_setKeyState( int nativeKeyCode, bool bPressed, int64_t timestamp )
 {
 	if( bPressed )
+	{
 		m_pEventHandler->QueueEvent( new WgEvent::KeyPress( nativeKeyCode ) );
+		
+		if( WgBase::TranslateKey(nativeKeyCode) == WG_KEY_RETURN )
+			m_pEventHandler->QueueEvent( new WgEvent::Character( 13 ) );
+	}
 	else
 		m_pEventHandler->QueueEvent( new WgEvent::KeyRelease( nativeKeyCode ) );
 }
@@ -367,7 +373,7 @@ void WgPluginRoot::_putText( const char * pUTF8Text )
 void WgPluginRoot::_update(int microPassed, int64_t microsecTimestamp)
 {
 	int passed = microPassed + m_microsecStored;
-	m_microsecStored = microPassed % 1000;
+	m_microsecStored = passed % 1000;
 	m_pEventHandler->QueueEvent( new WgEvent::Tick( passed / 1000 ) );
 	m_pEventHandler->ProcessEvents();
 }
