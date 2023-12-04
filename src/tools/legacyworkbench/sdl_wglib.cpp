@@ -125,7 +125,7 @@ namespace sdl_wglib
 		WgSize size = pSurface->pixelSize();
 		const WgPixelFormat * pFmt = pSurface->pixelDescription();
 
-		SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, (uint) pFmt->R_mask, (uint) pFmt->G_mask, (uint) pFmt->B_mask, (uint) pFmt->A_mask);
+		SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, (unsigned int) pFmt->R_mask, (unsigned int) pFmt->G_mask, (unsigned int) pFmt->B_mask, (unsigned int) pFmt->A_mask);
 
 
 		int err = SDL_LockSurface(pOutput);
