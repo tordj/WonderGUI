@@ -108,7 +108,6 @@ namespace wg
 		static const char * names[] = { 
 			"Nearest",
 			"Bilinear",
-			"Blur",
 			"Undefined" };
 
 		return names[(int)i];

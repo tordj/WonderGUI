@@ -555,7 +555,7 @@ namespace wg
 
     //____ _transformBlitSimple() ___________________________________________________
 
-    void PluginGfxDevice::_transformBlitSimple(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+    void PluginGfxDevice::_transformBlitSimple(const RectI& dest, CoordI src, const int simpleTransform[2][2], OpType type)
     {
         //This method should never be called, but is pure virtual in super class.
         
@@ -564,7 +564,7 @@ namespace wg
 
     //____ _transformBlitComplex() ___________________________________________________
 
-    void PluginGfxDevice::_transformBlitComplex(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2])
+    void PluginGfxDevice::_transformBlitComplex(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type)
     {
         //This method should never be called, but is pure virtual in super class.
         

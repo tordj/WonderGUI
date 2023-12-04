@@ -207,7 +207,6 @@ namespace wg
 	{
 		Nearest,
 		Bilinear,
-		Blur,
 		Undefined			// Needs to be last! Default to Bilinear if it is accelerated, otherwise Nearest.
 	};
 

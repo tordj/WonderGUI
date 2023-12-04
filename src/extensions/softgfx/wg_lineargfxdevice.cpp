@@ -781,12 +781,12 @@ void LinearGfxDevice::drawLine(CoordSPX _begin, Direction dir, spx _length, HiCo
 
 //____ _transformBlitSimple() _________________________________________________
 
-void LinearGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX _src, const int simpleTransform[2][2])
+void LinearGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX _src, const int simpleTransform[2][2], OpType type)
 {
 
 	if( m_canvas.pSurface )
 	{
-		SoftGfxDevice::_transformBlitSimple(_dest,_src,simpleTransform);
+		SoftGfxDevice::_transformBlitSimple(_dest, _src, simpleTransform, type);
 		return;
 	}
 	
@@ -858,7 +858,7 @@ void LinearGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX _src, 
 		uint8_t * pDst = m_pClipSegments[i].pBuffer + (patch.y-m_pClipSegments[i].rect.y) * m_pClipSegments[i].pitch + (patch.x - m_pClipSegments[i].rect.x) * m_canvasPixelBytes;
 		
 		
-		if( m_bTileSource )
+		if( type == OpType::Tile )
 			(this->*m_pLinearStraightTileOp)(pDst, m_pClipSegments[i].pitch, patch.w, patch.h, src, simpleTransform, patch.pos(), m_pStraightTileFirstPassOp);
 		else
 			(this->*m_pLinearStraightBlitOp)(pDst, m_pClipSegments[i].pitch, patch.w, patch.h, src, simpleTransform, patch.pos(), m_pStraightBlitFirstPassOp);
@@ -869,11 +869,11 @@ void LinearGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX _src, 
 
 //____ _transformBlitComplex() _______________________________________________
 
-void LinearGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord _src, const binalInt complexTransform[2][2])
+void LinearGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord _src, const binalInt complexTransform[2][2], OpType type)
 {
 	if( m_canvas.pSurface )
 	{
-		SoftGfxDevice::_transformBlitComplex(_dest,_src,complexTransform);
+		SoftGfxDevice::_transformBlitComplex(_dest, _src, complexTransform, type);
 		return;
 	}
 
@@ -970,7 +970,7 @@ void LinearGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord _sr
 
 		uint8_t * pDst = m_pClipSegments[i].pBuffer + (patch.y-m_pClipSegments[i].rect.y) * m_pClipSegments[i].pitch + (patch.x - m_pClipSegments[i].rect.x) * m_canvasPixelBytes;
 		
-		if( m_bTileSource )
+		if( type == OpType::Tile )
 			(this->*m_pLinearTransformTileOp)(pDst, m_pClipSegments[i].pitch, patch.w, patch.h, src, complexTransform, patch.pos(), m_pTransformTileFirstPassOp);
 		else if( bClipSource )
 			(this->*m_pLinearTransformClipBlitOp)(pDst, m_pClipSegments[i].pitch, patch.w, patch.h, src, complexTransform, patch.pos(), m_pTransformClipBlitFirstPassOp);

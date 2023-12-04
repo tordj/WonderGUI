@@ -99,14 +99,6 @@ namespace wg
 		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, spx thickness = 64) override;
 
 		bool	setBlitSource(Surface * pSource) override;
-		void	transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2]) override;
-		void	rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
-
-		void	tile(const RectSPX& dest, CoordSPX shift = { 0,0 }) override;
-		void	flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
-
-		void	scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 }) override;
-		void	scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
 		void	drawEdgemap(CoordSPX dest, Edgemap * pEdgemap ) override;
 		void	flipDrawEdgemap(CoordSPX dest, Edgemap * pEdgemap, GfxFlip flip) override;
@@ -115,14 +107,15 @@ namespace wg
 
 		//.____ Internal _____________________________________________________
 
-		enum EdgeOp
+		enum ReadOp
 		{
 			None,
 			Tile,
-			Clip
+			Clip,
+			Blur
 		};
 
-		const static int             EdgeOp_size = 3;
+		const static int             ReadOp_size = 4;
 
 		struct ColTrans
 		{
@@ -228,10 +221,10 @@ namespace wg
 
 		bool	setSegmentStripKernel(bool bTint, BlendMode blendMode, PixelFormat destFormat, SegmentOp_p pKernel);
 
-		bool	setStraightBlitKernel(PixelFormat sourceFormat, SampleMethod sampleMethod, EdgeOp edgeOp, TintMode tintMode,
+		bool	setStraightBlitKernel(PixelFormat sourceFormat, ReadOp readOp, TintMode tintMode,
 									  BlendMode blendMode, PixelFormat destFormat, StraightBlitOp_p pKernel);
 		
-		bool	setTransformBlitKernel(PixelFormat sourceFormat, SampleMethod sampleMethod, EdgeOp edgeOp,
+		bool	setTransformBlitKernel(PixelFormat sourceFormat, SampleMethod sampleMethod, ReadOp readOp,
 									   TintMode tintMode, BlendMode blendMode, PixelFormat destFormat, TransformBlitOp_p pKernel);
 
 	protected:
@@ -242,8 +235,8 @@ namespace wg
 		void	_renderLayerWasChanged() override;
 
 
-		void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
-		void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2]) override;
+		void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2], OpType type) override;
+		void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type) override;
 
 		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
@@ -358,14 +351,14 @@ namespace wg
 
 		//
 	
-		struct SinglePassStraightBlitKernels // 240 bytes on 32-bit system
+		struct SinglePassStraightBlitKernels // 80 bytes on 32-bit system
 		{
-			StraightBlitOp_p	pKernels[SampleMethod_size][EdgeOp_size][TintMode_size];		// Optimization opportunity: Only 2 sample methods used
+			StraightBlitOp_p	pKernels[ReadOp_size][TintMode_size];
 		};
 
 		struct SinglePassTransformBlitKernels // 240 bytes on 32-bit system
 		{
-			TransformBlitOp_p	pKernels[SampleMethod_size][EdgeOp_size][TintMode_size];		// Optimization opportunity: Only 3 sample methods used
+			TransformBlitOp_p	pKernels[SampleMethod_size][ReadOp_size][TintMode_size];		// Optimization opportunity: Only 2 sample methods used
 		};
 
 		struct SinglePassBlitKernels	// 44 bytes on all systems
@@ -393,10 +386,11 @@ namespace wg
 			uint16_t				singlePassBlitKernels[PixelFormat_size];		// PixelFormat of blit source. Offset into m_singlePassBlitKernels +1.
 		};
 
-		StraightBlitOp_p	m_pStraightMoveToBGRA8Kernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
-		TransformBlitOp_p	m_pTransformMoveToBGRA8Kernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
-		StraightBlitOp_p	m_pStraightMoveToHiColorKernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
-		TransformBlitOp_p	m_pTransformMoveToHiColorKernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
+		StraightBlitOp_p	m_pStraightMoveToBGRA8Kernels[PixelFormat_size][ReadOp_size];
+		StraightBlitOp_p	m_pStraightMoveToHiColorKernels[PixelFormat_size][ReadOp_size];
+
+		TransformBlitOp_p	m_pTransformMoveToBGRA8Kernels[PixelFormat_size][SampleMethod_size][ReadOp_size];
+		TransformBlitOp_p	m_pTransformMoveToHiColorKernels[PixelFormat_size][SampleMethod_size][ReadOp_size];
 
 		DestFormatKernels *	m_pKernels[PixelFormat_size];
 	
@@ -419,7 +413,6 @@ namespace wg
 
 		SoftSurface_p		m_pBlitSource				= nullptr;		// Source surface for blits.
 		bool				m_bClipSource				= false;		// Set if transform blit might need to do clipping.
-		bool				m_bTileSource				= false;		// Set when we are processing Tile-call.
 
 		// These are called to perform blit/tile operations
 

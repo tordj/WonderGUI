@@ -355,21 +355,21 @@ bool wg::addExtraSoftKernelsForRGB565BECanvas( SoftGfxDevice * pDevice )
 {
 	pDevice->setFillKernel( TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, &_fill_rgb565bigendian_noblend_notint );
 	
-	pDevice->setStraightBlitKernel( PixelFormat::RGB_565_bigendian, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_rgb565bigendian_to_same_notint_noblend );
+	pDevice->setStraightBlitKernel( PixelFormat::RGB_565_bigendian, SoftGfxDevice::ReadOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_rgb565bigendian_to_same_notint_noblend );
 	
-	pDevice->setStraightBlitKernel( PixelFormat::Index_8_linear, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_index8linear_to_rgb565bigendian_notint_noblend );
+	pDevice->setStraightBlitKernel( PixelFormat::Index_8_linear, SoftGfxDevice::ReadOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_index8linear_to_rgb565bigendian_notint_noblend );
 
-	pDevice->setStraightBlitKernel( PixelFormat::Index_8_linear, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_index8linear_to_rgb565bigendian_notint_blend );
+	pDevice->setStraightBlitKernel( PixelFormat::Index_8_linear, SoftGfxDevice::ReadOp::None, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_index8linear_to_rgb565bigendian_notint_blend );
 
-	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_alpha8_to_rgb565bigendian_notint_blend );
+	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::ReadOp::None, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_alpha8_to_rgb565bigendian_notint_blend );
 
-	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::Flat, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_alpha8_to_rgb565bigendian_flattint_blend );
+	pDevice->setStraightBlitKernel( PixelFormat::Alpha_8, SoftGfxDevice::ReadOp::None, TintMode::Flat, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_alpha8_to_rgb565bigendian_flattint_blend );
 
-	pDevice->setStraightBlitKernel( PixelFormat::BGRA_8_linear, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_bgrxa8linear_to_rgb565bigendian_notint_noblend );
+	pDevice->setStraightBlitKernel( PixelFormat::BGRA_8_linear, SoftGfxDevice::ReadOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_bgrxa8linear_to_rgb565bigendian_notint_noblend );
 
-	pDevice->setStraightBlitKernel( PixelFormat::BGRX_8_linear, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_bgrxa8linear_to_rgb565bigendian_notint_noblend );
+	pDevice->setStraightBlitKernel( PixelFormat::BGRX_8_linear, SoftGfxDevice::ReadOp::None, TintMode::None, BlendMode::Replace, PixelFormat::RGB_565_bigendian, _straight_blit_bgrxa8linear_to_rgb565bigendian_notint_noblend );
 	
-	pDevice->setStraightBlitKernel( PixelFormat::BGRA_8_linear, SampleMethod::Nearest, SoftGfxDevice::EdgeOp::None, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_bgra8linear_to_rgb565bigendian_notint_blend );
+	pDevice->setStraightBlitKernel( PixelFormat::BGRA_8_linear, SoftGfxDevice::ReadOp::None, TintMode::None, BlendMode::Blend, PixelFormat::RGB_565_bigendian, _straight_blit_bgra8linear_to_rgb565bigendian_notint_blend );
 	
 	return true;
 };

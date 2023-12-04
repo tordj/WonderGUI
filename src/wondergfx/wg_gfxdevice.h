@@ -200,6 +200,9 @@ namespace wg
 		virtual void	scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 });
 		virtual void	scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 });
 
+		virtual void	blur(CoordSPX dest);
+		virtual void	blur(CoordSPX dest, const RectSPX& src);
+
 
 		// Draw segments methods
 
@@ -230,14 +233,21 @@ namespace wg
 
 		const static int	c_maxSegments = 16;
 
+		enum class OpType {
+			Blit,
+			Tile,
+			Blur
+		};
+
+
 		//
 
 		virtual void	_canvasWasChanged() = 0;
 		virtual void	_renderLayerWasChanged() = 0;	// Checked for errors before we get here.
 		virtual void	_clipListWasChanged();			// Called when cliplist has been changed.
 
-		virtual void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) = 0;
-		virtual void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2]) = 0;
+		virtual void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2], OpType type ) = 0;
+		virtual void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type ) = 0;
 
 		virtual void	_transformDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, const int simpleTransform[2][2]);
 		virtual void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) = 0;
