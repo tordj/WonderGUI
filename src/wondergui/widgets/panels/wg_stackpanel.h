@@ -192,6 +192,7 @@ namespace wg
 		void	_hideChildren( StackPanelSlot * pBegin, StackPanelSlot * pEnd );
 		void	_unhideChildren( StackPanelSlot * pBegin, StackPanelSlot * pEnd );
 
+		bool 	_makeWidgetAppear( StackPanelSlot * pSlot );
 
 		RectSPX	_childGeo( const StackPanelSlot * pSlot ) const;
 

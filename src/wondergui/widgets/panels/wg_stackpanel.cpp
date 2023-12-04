@@ -207,10 +207,56 @@ namespace wg
 
 	//____ _didAddSlots() ________________________________________________________
 
-	void StackPanel::_didAddSlots( StaticSlot * pSlot, int nb )
+	void StackPanel::_didAddSlots( StaticSlot * _pSlot, int nb )
 	{
-		_unhideChildren( (StackPanelSlot*) pSlot, ((StackPanelSlot*)pSlot)+nb );
+		StackPanelSlot * pSlot = static_cast<StackPanelSlot*>(_pSlot);
+		StackPanelSlot * pEnd = pSlot+nb;
+		
+		bool	bRequestResize = false;
+
+		while( pSlot != pEnd )
+		{
+			// Update m_defaultSize
+
+			if( pSlot->m_bVisible )
+				bRequestResize = bRequestResize || _makeWidgetAppear(pSlot);
+
+			pSlot++;
+		}
+
+		if( bRequestResize )
+			_requestResize();
 	}
+
+	//____ _makeWidgetAppear() _______________________________________________________
+
+	bool StackPanel::_makeWidgetAppear( StackPanelSlot * pSlot )
+	{
+		bool bRequestResize = false;
+		
+		SizeSPX defaultSize = pSlot->_defaultSizeWithMargin(m_scale);
+
+		if(defaultSize.w > m_defaultSize.w )
+		{
+			m_defaultSize.w = defaultSize.w;
+			bRequestResize = true;
+		}
+		if(defaultSize.h > m_defaultSize.h )
+		{
+			m_defaultSize.h = defaultSize.h;
+			bRequestResize = true;
+		}
+
+		// Make unhidden Widgets visible, adapt them to our size and scale and force a render.
+
+		RectSPX geo = _childGeo(pSlot);
+		pSlot->m_geo = geo;
+		pSlot->_setSize(geo.size(),m_scale);
+		_childRequestRender(pSlot);
+		
+		return bRequestResize;
+	}
+
 
 	//____ _willEraseSlots() ____________________________________________________
 
@@ -371,27 +417,8 @@ namespace wg
 
 			if( !pSlot->m_bVisible )
 			{
-				SizeSPX defaultSize = pSlot->_defaultSizeWithMargin(m_scale);
-
-				if(defaultSize.w > m_defaultSize.w )
-				{
-					m_defaultSize.w = defaultSize.w;
-					bRequestResize = true;
-				}
-				if(defaultSize.h > m_defaultSize.h )
-				{
-					m_defaultSize.h = defaultSize.h;
-					bRequestResize = true;
-				}
-
-				// Make unhidden Widgets visible, adapt them to our size and scale and force a render.
-
 				pSlot->m_bVisible = true;
-				
-				RectSPX geo = _childGeo(pSlot);
-				pSlot->m_geo = geo;
-				pSlot->_setSize(geo.size(),m_scale);
-				_childRequestRender(pSlot);
+				bRequestResize = bRequestResize || _makeWidgetAppear(pSlot);
 			}
 			pSlot++;
 		}
