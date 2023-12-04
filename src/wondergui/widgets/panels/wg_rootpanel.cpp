@@ -227,6 +227,11 @@ namespace wg
 			return false;
 		}
 
+		if( pSurface == m_canvas.pSurface )
+		{
+			return true;
+		}
+		
 		int oldScale = m_scale;
 		SizeSPX oldSize = m_geo.size();
 
