@@ -1487,7 +1487,8 @@ namespace wg
 				if (pCaret)
 				{
 					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
-					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
+					spx w = pCaret->eolWidth(eolCellSize, scale);
+					eolCaretWidth = alignUp(std::max(w, eolCellSize.w));
 				}
 				else
 					eolCaretWidth = 0;
@@ -1729,8 +1730,8 @@ namespace wg
 				{
 					SizeSPX eolCellSize( pGlyph->advance, pFont->maxAscend() + pFont->maxDescend() );
 					spx w = pCaret->eolWidth( eolCellSize, scale );
-					if( w > eolCellSize.w )
-						width += w - eolCellSize.w;
+					width += alignUp(std::max(w, eolCellSize.w));
+
 				}
 
 				// Finish this line
@@ -1877,7 +1878,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 			{
 				SizeSPX eolCellSize( pGlyph->advance > 0 ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend() );
 				spx w = pCaret->eolWidth( eolCellSize, scale );
-				width += std::max(w, eolCellSize.w);
+				width += alignUp(std::max(w, eolCellSize.w));
 			}
 
 			// Update size

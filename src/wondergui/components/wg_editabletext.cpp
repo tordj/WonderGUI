@@ -758,7 +758,7 @@ namespace wg
 		else													// Just insert the put content
 			retVal = insert( m_editState.caretOfs, &buffer );
 
-		_updateDisplayArea();
+//		_updateDisplayArea();		// Already done in both replace() and insert().
 		return retVal;
 	}
 

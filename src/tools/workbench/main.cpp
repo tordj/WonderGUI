@@ -121,6 +121,7 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pSlot);
 bool skinMarginTest(ComponentPtr<DynamicSlot> pSlot);
 bool wgcombTest(ComponentPtr<DynamicSlot> pSlot);
 bool widgetRecording(ComponentPtr<DynamicSlot> pSlot);
+bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pSlot);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -709,9 +710,9 @@ int main(int argc, char** argv)
 		//	graphDisplayTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
-			wgcombTest(pSlot);
+		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
-
+			canvasCapsuleTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -3118,3 +3119,35 @@ bool wgcombTest(ComponentPtr<DynamicSlot> pEntry)
 	
 	return true;
 }
+
+//____ canvasCapsuleTest() ______________________________________________________
+
+bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::White) });
+	*pEntry = pBack;
+
+	
+	auto pWrapTextLayout = BasicTextLayout::create( { .wrap = true });
+
+	auto pPanel = TwoSlotPanel::create({ .skin = StaticColorSkin::create(Color::Pink) });
+	pPanel->setAxis(Axis::X);
+
+	auto pContent1 = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .text = "TEST1" } } );
+	pContent1->setSkin(StaticColorSkin::create( { .color = Color::Red, .margin = 20 } ));
+	pPanel->slots[0] = pContent1;
+
+	auto pContent2 = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .text = "TEST2" } });
+	pContent2->setSkin(StaticColorSkin::create( { .color = Color::Green, .margin = 50 }));
+	pPanel->slots[1] = pContent2;
+
+	
+	auto pCanvasCapsule = CanvasCapsule::create( { .scaleCanvas = true, .skin = StaticColorSkin::create({ .color = Color::Yellow, .padding = 2 }) });
+	pCanvasCapsule->slot = pPanel;
+
+	pBack->slots.pushBack(pCanvasCapsule, { .pos = {10,10}, .size = { 400, 200 } });
+
+	
+	return true;
+}
+

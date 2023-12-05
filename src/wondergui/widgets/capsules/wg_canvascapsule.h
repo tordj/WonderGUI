@@ -66,8 +66,10 @@ namespace wg
 			bool			pickable		= false;
 			int				pickCategory	= 0;
 			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
+			Placement		placement		= Placement::Center;
 			PointerStyle	pointer			= PointerStyle::Undefined;
 			int				renderLayer		= -1;
+			bool			scaleCanvas		= false;
 			bool			selectable		= true;
 			Skin_p			skin;
 			bool			stickyFocus		= false;
@@ -90,6 +92,8 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
+		void				setSkin(Skin* pSkin) override;
+
 		void				setTintColor(HiColor color, BlendMode operation = BlendMode::Replace);
 		void				setRenderMode(BlendMode mode);
 
@@ -105,6 +109,8 @@ namespace wg
 		void				setRenderLayer(int layer);
 		int					renderLayer() const { return m_renderLayer; }
 
+		void				setScaleCanvas(bool bScale);
+		bool				isCanvasScaling() { return m_bScaleCanvas; }
 		
 		inline HiColor		tintColor() { return m_tintColor; }
 		inline BlendMode	renderMode() { return m_renderMode; }
@@ -123,6 +129,8 @@ namespace wg
 			m_renderMode	= bp.blendMode;
 			m_tintColor		= bp.tintColor;
 			m_tintMode		= bp.tintColorBlend;
+			m_bScaleCanvas  = bp.scaleCanvas;
+			m_placement		= bp.placement;
 
 			if( bp.child )
 				slot.setWidget(bp.child);
@@ -130,14 +138,26 @@ namespace wg
 		
 		virtual ~CanvasCapsule();
 
+		void				_resizeCanvasAndChild();
+
 		void				_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void				_resize(const SizeSPX& size, int scale) override;
 
+		void				_releaseChild( StaticSlot * pSlot ) override;
+		void				_replaceChild(StaticSlot * pSlot, Widget * pWidget) override;
+
+		
 		void				_childRequestRender(StaticSlot* pSlot) override;
 		void				_childRequestRender(StaticSlot* pSlot, const RectSPX& rect) override;
+		void				_childRequestResize( StaticSlot * pSlot ) override;
 
+		RectSPX				_canvasWindow( RectSPX window );
+
+		
 		Surface_p			m_pCanvas;
 		CanvasLayers_p		m_pCanvasLayers;
+		RectSPX				m_canvasSize;
+		
 		SurfaceFactory_p	m_pFactory;
 		PixelFormat			m_canvasFormat = PixelFormat::BGRA_8;
 		int					m_renderLayer = -1;
@@ -147,6 +167,9 @@ namespace wg
 		BlendMode			m_renderMode = BlendMode::Blend;
 
 		PatchesSPX			m_patches;
+
+		bool				m_bScaleCanvas = false;
+		Placement			m_placement = Placement::Center;
 	};
 
 
