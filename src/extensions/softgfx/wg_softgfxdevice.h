@@ -109,7 +109,7 @@ namespace wg
 
 		enum ReadOp
 		{
-			None,
+			Normal,
 			Tile,
 			Clip,
 			Blur

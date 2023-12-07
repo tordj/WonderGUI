@@ -326,10 +326,10 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			m_singlePassStraightBlitKernels[straightBlitKernelsIdx].pKernels[(int)readOp][(int)tintMode] = pKernel;
 			success = true;
 			
-			if(sourceFormat == PixelFormat::Undefined && readOp == ReadOp::None )
+			if(sourceFormat == PixelFormat::Undefined && readOp == ReadOp::Normal )
 				m_pKernels[(int)destFormat]->pStraightBlitFromHiColorKernels[(int)tintMode][(int)blendMode] = pKernel;
 
-			if(sourceFormat == PixelFormat::BGRA_8_linear && readOp == ReadOp::None )
+			if(sourceFormat == PixelFormat::BGRA_8_linear && readOp == ReadOp::Normal )
 				m_pKernels[(int)destFormat]->pStraightBlitFromBGRA8Kernels[(int)tintMode][(int)blendMode] = pKernel;
 		}
 		
@@ -2783,9 +2783,9 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		
 		if ((pixelDescDest.colorSpace == ColorSpace::Linear || dstFormat == PixelFormat::Alpha_8) && (pixelDescSource.colorSpace == ColorSpace::Linear || srcFormat == PixelFormat::Alpha_8) )
 		{
-			m_pStraightBlitFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(ReadOp::None)];
+			m_pStraightBlitFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(ReadOp::Normal)];
 			m_pStraightTileFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(ReadOp::Tile)];
-			m_pTransformBlitFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::None)];
+			m_pTransformBlitFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Normal)];
 			m_pTransformTileFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Tile)];
 			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Clip)];
 		
@@ -2793,9 +2793,9 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		}
 		else
 		{
-			m_pStraightBlitFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][int(ReadOp::None)];
+			m_pStraightBlitFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][int(ReadOp::Normal)];
 			m_pStraightTileFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][int(ReadOp::Tile)];
-			m_pTransformBlitFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::None)];
+			m_pTransformBlitFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Normal)];
 			m_pTransformTileFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Tile)];
 			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Clip)];
 
@@ -2824,7 +2824,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			{
 				auto pStraightBlitKernels = m_singlePassStraightBlitKernels[straightBlitKernelsIdx - 1].pKernels;
 
-				pStraightBlitSinglePassKernel = pStraightBlitKernels[int(ReadOp::None)][int(m_colTrans.mode)];
+				pStraightBlitSinglePassKernel = pStraightBlitKernels[int(ReadOp::Normal)][int(m_colTrans.mode)];
 				pStraightTileSinglePassKernel = pStraightBlitKernels[int(ReadOp::Tile)][int(m_colTrans.mode)];
 			}
 
@@ -2832,7 +2832,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			{
 				auto pTransformBlitKernels = m_singlePassTransformBlitKernels[transformBlitKernelsIdx - 1].pKernels;
 
-				pTransformBlitSinglePassKernel = pTransformBlitKernels[(int)sampleMethod][int(ReadOp::None)][int(m_colTrans.mode)];
+				pTransformBlitSinglePassKernel = pTransformBlitKernels[(int)sampleMethod][int(ReadOp::Normal)][int(m_colTrans.mode)];
 				pTransformTileSinglePassKernel = pTransformBlitKernels[(int)sampleMethod][int(ReadOp::Tile)][int(m_colTrans.mode)];
 				pTransformClipBlitSinglePassKernel = pTransformBlitKernels[(int)sampleMethod][int(ReadOp::Clip)][int(m_colTrans.mode)];
 			}
