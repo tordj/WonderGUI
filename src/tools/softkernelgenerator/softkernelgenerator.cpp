@@ -471,8 +471,9 @@ PackPanel_p MyApp::_buildToggleButtonRow(std::string title, std::vector<KernelDB
 		_.display.text = title,
 		_.display.style = m_pLabelStyle));
 
-	const static string labels[] = {	"Straight Blit", "Straight Tile", "Trans Blit Nearest", "Trans Clip Blit Nearest", "Trans Tile Nearest",
-										"Trans Blit Bilinear", "Trans Clip Blit Bilinear", "Trans Tile Bilinear" };
+	const static string labels[] = {	"Straight Blit", "Straight Tile", "Straight Blur", 
+										"Trans Blit Nearest", "Trans Clip Blit Nearest", "Trans Tile Nearest", "Trans Blur Nearest",
+										"Trans Blit Bilinear", "Trans Clip Blit Bilinear", "Trans Tile Bilinear", "Trans Blur Bilinear" };
 
 	for (auto blitType : blitTypes)
 	{
@@ -673,9 +674,9 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 {
 	auto pSection = PackPanel::create( { .axis = Axis::Y } );
 
-	vector<KernelDB::BlitType>	activeBlitTypes = { KernelDB::BlitType::StraightBlit, KernelDB::BlitType::StraightTile,
-		KernelDB::BlitType::TransformBlitNearest, KernelDB::BlitType::TransformClipBlitNearest, KernelDB::BlitType::TransformTileNearest,
-		KernelDB::BlitType::TransformBlitBilinear, KernelDB::BlitType::TransformClipBlitBilinear, KernelDB::BlitType::TransformTileBilinear };
+	vector<KernelDB::BlitType>	activeBlitTypes = { KernelDB::BlitType::StraightBlit, KernelDB::BlitType::StraightTile, KernelDB::BlitType::StraightBlur,
+		KernelDB::BlitType::TransformBlitNearest, KernelDB::BlitType::TransformClipBlitNearest, KernelDB::BlitType::TransformTileNearest, KernelDB::BlitType::TransformBlurNearest,
+		KernelDB::BlitType::TransformBlitBilinear, KernelDB::BlitType::TransformClipBlitBilinear, KernelDB::BlitType::TransformTileBilinear, KernelDB::BlitType::TransformBlurBilinear };
 
 	vector<TintMode>	activeTintModes;
 	vector<BlendMode>	activeBlendModes;

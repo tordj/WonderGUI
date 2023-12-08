@@ -14,17 +14,20 @@ public:
 	{
 		StraightBlit,
 		StraightTile,
+		StraightBlur,
 
 		TransformBlitNearest,
 		TransformClipBlitNearest,
 		TransformTileNearest,
+		TransformBlurNearest,
 
 		TransformBlitBilinear,
 		TransformClipBlitBilinear,
 		TransformTileBilinear,
+		TransformBlurBilinear
 	};
 
-	const static int BlitType_size = 8;
+	const static int BlitType_size = 11;
 
 
 	struct CustomBlitSpec

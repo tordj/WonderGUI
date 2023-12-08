@@ -2203,7 +2203,8 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 	int srcX, srcY;
 	int maskX, maskY;
 	int xPitch, yPitch;
-
+	
+	int	srcXstart;
 	
 	if (READOP == SoftGfxDevice::ReadOp::Tile || READOP == SoftGfxDevice::ReadOp::Blur)
 	{
@@ -2216,6 +2217,8 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 		pSrc = pSrcSurf->pixels();
 		maskX = pSrcSurf->tileMaskX();
 		maskY = pSrcSurf->tileMaskY();
+		
+		srcXstart = srcX;
 	}
 
 	SizeI surfSize;
@@ -2261,8 +2264,16 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 		fixedA = tint.fixedBlendColor.a;
 	}
 	
+	
+	
+	
 	for (int y = 0; y < nLines; y++)
 	{
+		if( READOP == SoftGfxDevice::ReadOp::Blur )
+		{
+			srcX = srcXstart;
+		}
+		
 		// Step 3: Prepare tint for any vertical gradient
 
 		_texel_tint_line(TINT, tint, bits, leftB, leftG, leftR, leftA, rightB, rightG, rightR, rightA,
@@ -2300,7 +2311,7 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 					if( ofs.y >= surfSize.h )
 						ofs.y = surfSize.h -1;
 					
-					_read_pixel(pSrc + srcY * yPitch + srcX * xPitch, SRCFORMAT, pPalette, pPalette4096, inB[i], inG[i], inR[i], inA[i]);
+					_read_pixel(pSrc + ofs.y * yPitch + ofs.x * xPitch, SRCFORMAT, pPalette, pPalette4096, inB[i], inG[i], inR[i], inA[i]);
 				}
 				
 				srcB = 	( inB[0] * tint.blurMtxB[0] + inB[1] * tint.blurMtxB[1] + inB[2] * tint.blurMtxB[2]
@@ -2318,6 +2329,19 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 				srcA = 	( inA[0] * tint.blurMtxA[0] + inA[1] * tint.blurMtxA[1] + inA[2] * tint.blurMtxA[2]
 						+ inA[3] * tint.blurMtxA[3] + inA[4] * tint.blurMtxA[4] + inA[5] * tint.blurMtxA[5]
 						+ inA[6] * tint.blurMtxA[6] + inA[7] * tint.blurMtxA[7] + inA[8] * tint.blurMtxA[8]) / 65536;
+				
+				if( srcB > 4096 )
+					srcB = 4096;
+					
+				if( srcG > 4096 )
+					srcG = 4096;
+
+				if( srcR > 4096 )
+					srcR = 4096;
+
+				if( srcA > 4096 )
+					srcA = 4096;
+
 			}
 			else
 			{
@@ -2400,7 +2424,7 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 
 	if ((srcIsLinear && dstIsLinear) || (!srcIsLinear && !dstIsLinear && TINT == TintMode::None && BLEND == BlendMode::Replace))
 	{
-		if (SRCFORMAT != PixelFormat::Undefined && DSTFORMAT != PixelFormat::Undefined)
+		if (SRCFORMAT != PixelFormat::Undefined && DSTFORMAT != PixelFormat::Undefined && READOP != SoftGfxDevice::ReadOp::Blur )
 		{
 			bFast8 = true;
 			bits = 8;
@@ -2599,7 +2623,64 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 			}
 			else
 			{
-				if (READOP == SoftGfxDevice::ReadOp::Clip && ((ofsX | ofsY | (srcMax_w - 1 - ofsX) | (srcMax_h - 1 - ofsY)) < 0))
+				if(READOP == SoftGfxDevice::ReadOp::Blur)
+				{
+					int16_t inB[9], inG[9], inR[9], inA[9];
+
+					binalInt x = (ofsX >> BINAL_SHIFT), y = (ofsY >> BINAL_SHIFT);
+
+					auto surfSize = pSrcSurf->pixelSize();
+					
+					auto p = pSrcSurf->pixels();
+					
+					for( int i = 0 ; i < 9 ; i++ )
+					{
+						CoordI center((int)x,(int)y);
+						
+						CoordI ofs = center + tint.blurOfsPixel[i];
+						
+						if( ofs.x < 0 )
+							ofs.x = 0;
+						if( ofs.y < 0 )
+							ofs.y = 0;
+						if( ofs.x >= surfSize.w )
+							ofs.x = surfSize.w -1;
+						if( ofs.y >= surfSize.h )
+							ofs.y = surfSize.h -1;
+						
+						_read_pixel(p + ofs.y * srcPitch + ofs.x * srcPixelBytes, SRCFORMAT, pPalette, pPalette4096, inB[i], inG[i], inR[i], inA[i]);
+					}
+					
+					srcB = 	( inB[0] * tint.blurMtxB[0] + inB[1] * tint.blurMtxB[1] + inB[2] * tint.blurMtxB[2]
+							+ inB[3] * tint.blurMtxB[3] + inB[4] * tint.blurMtxB[4] + inB[5] * tint.blurMtxB[5]
+							+ inB[6] * tint.blurMtxB[6] + inB[7] * tint.blurMtxB[7] + inB[8] * tint.blurMtxB[8]) / 65536;
+
+					srcG = 	( inG[0] * tint.blurMtxG[0] + inG[1] * tint.blurMtxG[1] + inG[2] * tint.blurMtxG[2]
+							+ inG[3] * tint.blurMtxG[3] + inG[4] * tint.blurMtxG[4] + inG[5] * tint.blurMtxG[5]
+							+ inG[6] * tint.blurMtxG[6] + inG[7] * tint.blurMtxG[7] + inG[8] * tint.blurMtxG[8]) / 65536;
+
+					srcR = 	( inR[0] * tint.blurMtxR[0] + inR[1] * tint.blurMtxR[1] + inR[2] * tint.blurMtxR[2]
+							+ inR[3] * tint.blurMtxR[3] + inR[4] * tint.blurMtxR[4] + inR[5] * tint.blurMtxR[5]
+							+ inR[6] * tint.blurMtxR[6] + inR[7] * tint.blurMtxR[7] + inR[8] * tint.blurMtxR[8]) / 65536;
+
+					srcA = 	( inA[0] * tint.blurMtxA[0] + inA[1] * tint.blurMtxA[1] + inA[2] * tint.blurMtxA[2]
+							+ inA[3] * tint.blurMtxA[3] + inA[4] * tint.blurMtxA[4] + inA[5] * tint.blurMtxA[5]
+							+ inA[6] * tint.blurMtxA[6] + inA[7] * tint.blurMtxA[7] + inA[8] * tint.blurMtxA[8]) / 65536;
+					
+					if( srcB > 4096 )
+						srcB = 4096;
+						
+					if( srcG > 4096 )
+						srcG = 4096;
+
+					if( srcR > 4096 )
+						srcR = 4096;
+
+					if( srcA > 4096 )
+						srcA = 4096;
+
+				}
+				else if (READOP == SoftGfxDevice::ReadOp::Clip && ((ofsX | ofsY | (srcMax_w - 1 - ofsX) | (srcMax_h - 1 - ofsY)) < 0))
 				{
 					ofsX += pixelIncX;
 					ofsY += pixelIncY;

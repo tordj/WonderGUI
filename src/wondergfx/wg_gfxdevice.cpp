@@ -1070,6 +1070,40 @@ namespace wg
 		_transformBlitSimple({ dest, src.size() }, src.pos(), s_blitFlipTransforms[0], OpType::Blur);
 	}
 
+	//____ rotScaleBlur() _____________________________________________________
+
+	void GfxDevice::rotScaleBlur(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
+	{
+		assert(m_pBlitSource != nullptr);
+
+		if (m_pBlitSource->m_size.w * scale < 1.f || m_pBlitSource->m_size.h * scale < 1.f )			// Values very close to zero gives overflow in calculations.
+			return;
+
+		BinalCoord	src;
+		binalInt	mtx[2][2];
+
+		float	sz = (float)sin(-rotationDegrees*3.14159265/180);
+		float	cz = (float)cos(-rotationDegrees*3.14159265 / 180);
+
+		scale = 1.f / scale;
+
+		mtx[0][0] = cz * scale * BINAL_MUL;
+		mtx[0][1] = sz * scale * BINAL_MUL;
+
+		mtx[1][0] = -sz * scale * BINAL_MUL;
+		mtx[1][1] = cz * scale * BINAL_MUL;
+
+		src = { binalInt(srcCenter.x * m_pBlitSource->m_size.w * BINAL_MUL), binalInt(srcCenter.y * m_pBlitSource->m_size.h * BINAL_MUL) };
+
+	//		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
+	//		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
+
+		src.x -= (dest.w * destCenter.x * mtx[0][0] + dest.h * destCenter.y * mtx[1][0]) / 64;
+		src.y -= (dest.w * destCenter.x * mtx[0][1] + dest.h * destCenter.y * mtx[1][1]) / 64;
+
+		_transformBlitComplex(dest, { src.x,src.y }, mtx, OpType::Blur);
+	}
+
 
 	//____ blitNinePatch() ________________________________________________
 

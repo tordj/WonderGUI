@@ -418,19 +418,23 @@ namespace wg
 
 		StraightBlitProxy_Op	m_pStraightBlitOp = nullptr;		// Function called to perform a straight blit.
 		StraightBlitProxy_Op	m_pStraightTileOp = nullptr;		// Function called to perform a straight tile.
+		StraightBlitProxy_Op	m_pStraightBlurOp = nullptr;		// Function called to perform a straight blur.
 
 		TransformBlitProxy_Op m_pTransformBlitOp = nullptr;		// Function called to perform a transform blit.
 		TransformBlitProxy_Op m_pTransformClipBlitOp = nullptr;	// Function called to perform a transform clip blit.
 		TransformBlitProxy_Op m_pTransformTileOp = nullptr;		// Function called to perform a transform tile.
+		TransformBlitProxy_Op m_pTransformBlurOp = nullptr;		// Function called to perform a transform blur.
 
 
 		// These need to be provided to calls to StraightBlitProxy_Op and TransformBlitProxy_Op.
 
 		StraightBlitOp_p		m_pStraightBlitFirstPassOp		= nullptr;
 		StraightBlitOp_p		m_pStraightTileFirstPassOp		= nullptr;
+		StraightBlitOp_p		m_pStraightBlurFirstPassOp		= nullptr;
 		TransformBlitOp_p		m_pTransformBlitFirstPassOp		= nullptr;
 		TransformBlitOp_p		m_pTransformClipBlitFirstPassOp	= nullptr;
 		TransformBlitOp_p		m_pTransformTileFirstPassOp		= nullptr;
+		TransformBlitOp_p		m_pTransformBlurFirstPassOp		= nullptr;
 
 		StraightBlitOp_p		m_pBlitSecondPassOp				= nullptr;		// Second pass is same for straight and transform blits and tiles (always a simple blit).
 

@@ -202,6 +202,7 @@ namespace wg
 
 		virtual void	blur(CoordSPX dest);
 		virtual void	blur(CoordSPX dest, const RectSPX& src);
+		virtual void	rotScaleBlur(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f });
 
 
 		// Draw segments methods

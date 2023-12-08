@@ -181,14 +181,33 @@ int main ( int argc, char** argv )
 	
 	}
  */
-	
+/*
 	auto pFocusSkin = ColorSkin::create({ .states = { {State::Default, Color::Red}, {State::Focused, Color::Green} } });
 	auto pHoverSkin = ColorSkin::create({ .states = { {State::Default, Color::Red}, {State::Hovered, Color::Green} } });
 	auto pHoverAndFocusSkin = ColorSkin::create({ .states = { {State::Default, Color::Red}, {State::Hovered, Color::Yellow}, {State::Focused, Color::Blue} } });
 	auto pSelectedHoverAndFocusSkin = ColorSkin::create({ .states = { {State::Default, Color::Red}, {State::Selected, Color::Pink}, {State::Hovered, Color::Yellow}, {State::Focused, Color::Blue} } });
 
 	auto pHoverWithFocusSkin = ColorSkin::create({ .states = {  {State::Selected, Color::Purple}, {State::Default, Color::Red}, {State::HoveredFocused, Color::Red}, {State::Hovered, Color::Yellow}, {State::Focused, Color::Blue} } });
+*/
+	
+	float redMtx[9] = {	0.14f,0.1f,0.14f,
+						0.1f, 0.0f, 0.1f,
+						0.14f, 0.1f, 0.14f};
+	
+	float blueMtx[9] = {0.15f, 0.15f, 0.15f, 0, 0.4f, 0, 0,0,0};
+	float greenMtx[9] = {0,0,0, 0,0.7f,0, 0,0,0};
+	float alphaMtx[9] = {0,0,0, 0,0.7f,0, 0,0,0};
 
+	auto pCanvas1 = SoftSurface::create({ .canvas = true, .format = PixelFormat::BGRX_8_sRGB, .size = {320,200} } );
+	auto pCanvas2 = SoftSurface::create({ .canvas = true, .format = PixelFormat::BGRX_8_sRGB, .size = {320,200} } );
+
+	pCanvas1->fill( Color::Black );
+	pCanvas2->fill( Color::Black );
+
+	
+	int dirX = 64, dirY = 64;
+
+	CoordSPX ball = {0,0};
 
 	//------------------------------------------------------
 	// Program Main Loop
@@ -198,26 +217,62 @@ int main ( int argc, char** argv )
 	{
 		// Loop through SDL events, translate them to WonderGUI events
 		// and process them.
-
+		
 		translateEvents();
-
+		
 		// Let WonderGUI render any updated/dirty regions of the screen.
-
+		
 		SDL_LockSurface(pWinSurf);
-
+		
 		pGfxDevice->beginRender();
-		pGfxDevice->beginCanvasUpdate(pCanvas);		
-
+		pGfxDevice->beginCanvasUpdate(pCanvas);
+		
 		pGfxDevice->fill(Color8::Black);
+		
+		//
+		/*
+		 pFocusSkin->_render(pGfxDevice, RectSPX(5, 5, 20, 20) * 64, 64, State::HoveredFocused);
+		 pHoverSkin->_render(pGfxDevice, RectSPX(5, 30, 20, 20) * 64, 64, State::HoveredFocused);
+		 pHoverAndFocusSkin->_render(pGfxDevice, RectSPX(5, 55, 20, 20) * 64, 64, State::SelectedHoveredFocused);
+		 pSelectedHoverAndFocusSkin->_render(pGfxDevice, RectSPX(5, 80, 20, 20) * 64, 64, State::SelectedHoveredFocused);
+		 pHoverWithFocusSkin->_render(pGfxDevice, RectSPX(5, 105, 20, 20) * 64, 64, State::SelectedHoveredFocused);
+		 */
+		
+		//
+		
+		
+		ball.x += dirX;
+		ball.y += dirY;
+		
+		if( ball.x > 320*64 || ball.x < 0 )
+			dirX = -dirX;
 
-		pFocusSkin->_render(pGfxDevice, RectSPX(5, 5, 20, 20) * 64, 64, State::HoveredFocused);
-		pHoverSkin->_render(pGfxDevice, RectSPX(5, 30, 20, 20) * 64, 64, State::HoveredFocused);
-		pHoverAndFocusSkin->_render(pGfxDevice, RectSPX(5, 55, 20, 20) * 64, 64, State::SelectedHoveredFocused);
-		pSelectedHoverAndFocusSkin->_render(pGfxDevice, RectSPX(5, 80, 20, 20) * 64, 64, State::SelectedHoveredFocused);
-		pHoverWithFocusSkin->_render(pGfxDevice, RectSPX(5, 105, 20, 20) * 64, 64, State::SelectedHoveredFocused);
+		if( ball.y > 200*64 || ball.y < 0 )
+			dirY = -dirY;
 
+		
+		
+		pGfxDevice->setBlurMatrices(64*4, redMtx, greenMtx, blueMtx, alphaMtx);
+		
+		pGfxDevice->beginCanvasUpdate(pCanvas1);
+		pGfxDevice->fill( RectSPX(ball.x,ball.y,20*64,20*64), Color::White );
 
+//		pGfxDevice->fill( RectSPX(0,1,20,20)*64, Color::White );
 
+		pGfxDevice->endCanvasUpdate();
+		
+		pGfxDevice->beginCanvasUpdate(pCanvas2);
+		pGfxDevice->setBlitSource(pCanvas1);
+		
+		pGfxDevice->rotScaleBlur({0,0,320*64,200*64}, 7.f, 1.06f);
+		
+		//		pGfxDevice->blur( {0,0} );
+		pGfxDevice->endCanvasUpdate();
+
+		pGfxDevice->setBlitSource(pCanvas2);
+		pGfxDevice->blit( {0,0} );
+		
+		std::swap(pCanvas1, pCanvas2);
 
 		//
 /*

@@ -668,8 +668,8 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		for( int i = 0 ; i < 9 ; i++ )
 		{
-			m_colTrans.blurOfsPixel[i].x = (m_colTrans.blurOfsSPX[i].x + 32)/64;
-			m_colTrans.blurOfsPixel[i].y = (m_colTrans.blurOfsSPX[i].y + 32)/64;
+			m_colTrans.blurOfsPixel[i].x = (m_colTrans.blurOfsSPX[i].x)/64;
+			m_colTrans.blurOfsPixel[i].y = (m_colTrans.blurOfsSPX[i].y)/64;
 
 			m_colTrans.blurMtxR[i] = int(red[i] * 65536);
 			m_colTrans.blurMtxG[i] = int(green[i] * 65536);
@@ -2440,10 +2440,13 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			src.x += patchOfs.x * simpleTransform[0][0] + patchOfs.y * simpleTransform[1][0];
 			src.y += patchOfs.x * simpleTransform[0][1] + patchOfs.y * simpleTransform[1][1];
 
-			if( type == OpType::Tile )
+			if( type == OpType::Blit)
+				(this->*m_pStraightBlitOp)(patch, src, simpleTransform, patch.pos(), m_pStraightBlitFirstPassOp);
+			else if( type == OpType::Tile )
 				(this->*m_pStraightTileOp)(patch, src, simpleTransform, patch.pos(), m_pStraightTileFirstPassOp);
 			else
-				(this->*m_pStraightBlitOp)(patch, src, simpleTransform, patch.pos(), m_pStraightBlitFirstPassOp);
+				(this->*m_pStraightBlurOp)(patch, src, simpleTransform, patch.pos(), m_pStraightBlurFirstPassOp);
+			
 		}
 	}
 
@@ -2542,7 +2545,9 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 			//
 
-			if(type == OpType::Tile)
+			if(type == OpType::Blur)
+				(this->*m_pTransformBlurOp)(patch, src, complexTransform, patch.pos(), m_pTransformBlurFirstPassOp);
+			else if(type == OpType::Tile)
 				(this->*m_pTransformTileOp)(patch, src, complexTransform, patch.pos(), m_pTransformTileFirstPassOp);
 			else if( bClipSource )
 				(this->*m_pTransformClipBlitOp)(patch, src, complexTransform, patch.pos(), m_pTransformClipBlitFirstPassOp);
@@ -2738,10 +2743,12 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		
 		m_pStraightBlitOp = &SoftGfxDevice::_dummyStraightBlit;
 		m_pStraightTileOp = &SoftGfxDevice::_dummyStraightBlit;
+		m_pStraightBlurOp = &SoftGfxDevice::_dummyStraightBlit;
 
 		m_pTransformBlitOp = &SoftGfxDevice::_dummyTransformBlit;
 		m_pTransformClipBlitOp = &SoftGfxDevice::_dummyTransformBlit;
 		m_pTransformTileOp = &SoftGfxDevice::_dummyTransformBlit;
+		m_pTransformBlurOp = &SoftGfxDevice::_dummyTransformBlit;
 
 		// Sanity checking...
 
@@ -2785,19 +2792,23 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		{
 			m_pStraightBlitFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(ReadOp::Normal)];
 			m_pStraightTileFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(ReadOp::Tile)];
+			m_pStraightBlurFirstPassOp		= m_pStraightMoveToBGRA8Kernels[(int)srcFormat][int(ReadOp::Blur)];
 			m_pTransformBlitFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Normal)];
 			m_pTransformTileFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Tile)];
 			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Clip)];
-		
+			m_pTransformBlurFirstPassOp		= m_pTransformMoveToBGRA8Kernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Blur)];
+
 			m_pBlitSecondPassOp				= m_pKernels[(int)dstFormat]->pStraightBlitFromBGRA8Kernels[(int)m_colTrans.mode][(int)blendMode];
 		}
 		else
 		{
 			m_pStraightBlitFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][int(ReadOp::Normal)];
 			m_pStraightTileFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][int(ReadOp::Tile)];
+			m_pStraightBlurFirstPassOp		= m_pStraightMoveToHiColorKernels[(int)srcFormat][int(ReadOp::Blur)];
 			m_pTransformBlitFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Normal)];
 			m_pTransformTileFirstPassOp		= m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Tile)];
 			m_pTransformClipBlitFirstPassOp = m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Clip)];
+			m_pTransformBlurFirstPassOp = m_pTransformMoveToHiColorKernels[(int)srcFormat][(int)sampleMethod][int(ReadOp::Blur)];
 
 			m_pBlitSecondPassOp				= m_pKernels[(int)dstFormat]->pStraightBlitFromHiColorKernels[(int)m_colTrans.mode][(int)blendMode];
 		}
@@ -2807,9 +2818,11 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 		StraightBlitOp_p	pStraightBlitSinglePassKernel = nullptr;
 		StraightBlitOp_p	pStraightTileSinglePassKernel = nullptr;
+		StraightBlitOp_p	pStraightBlurSinglePassKernel = nullptr;
 		TransformBlitOp_p	pTransformBlitSinglePassKernel = nullptr;
 		TransformBlitOp_p	pTransformTileSinglePassKernel = nullptr;
 		TransformBlitOp_p	pTransformClipBlitSinglePassKernel = nullptr;
+		TransformBlitOp_p	pTransformBlurSinglePassKernel = nullptr;
 
 		
 		int singleBlitKernelsIdx = m_pKernels[(int)dstFormat]->singlePassBlitKernels[(int)srcFormat];
@@ -2826,6 +2839,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 				pStraightBlitSinglePassKernel = pStraightBlitKernels[int(ReadOp::Normal)][int(m_colTrans.mode)];
 				pStraightTileSinglePassKernel = pStraightBlitKernels[int(ReadOp::Tile)][int(m_colTrans.mode)];
+				pStraightBlurSinglePassKernel = pStraightBlitKernels[int(ReadOp::Blur)][int(m_colTrans.mode)];
 			}
 
 			if (transformBlitKernelsIdx > 0)
@@ -2835,6 +2849,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 				pTransformBlitSinglePassKernel = pTransformBlitKernels[(int)sampleMethod][int(ReadOp::Normal)][int(m_colTrans.mode)];
 				pTransformTileSinglePassKernel = pTransformBlitKernels[(int)sampleMethod][int(ReadOp::Tile)][int(m_colTrans.mode)];
 				pTransformClipBlitSinglePassKernel = pTransformBlitKernels[(int)sampleMethod][int(ReadOp::Clip)][int(m_colTrans.mode)];
+				pTransformBlurSinglePassKernel = pTransformBlitKernels[(int)sampleMethod][int(ReadOp::Blur)][int(m_colTrans.mode)];
 			}
 		}
 
@@ -2857,6 +2872,15 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		else if (m_pStraightTileFirstPassOp && m_pBlitSecondPassOp)
 			m_pStraightTileOp = &SoftGfxDevice::_twoPassStraightBlit;
 
+		if (pStraightBlurSinglePassKernel)
+		{
+			m_pStraightBlurOp = &SoftGfxDevice::_onePassStraightBlit;
+			m_pStraightBlurFirstPassOp = pStraightBlurSinglePassKernel;
+		}
+		else if (m_pStraightBlurFirstPassOp && m_pBlitSecondPassOp)
+			m_pStraightBlurOp = &SoftGfxDevice::_twoPassStraightBlit;
+
+		
 		
 		if (pTransformBlitSinglePassKernel)
 		{
@@ -2883,6 +2907,15 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 		}
 		else if (m_pTransformTileFirstPassOp && m_pBlitSecondPassOp)
 			m_pTransformTileOp = &SoftGfxDevice::_twoPassTransformBlit;
+
+		if (pTransformBlurSinglePassKernel)
+		{
+			m_pTransformBlurOp = &SoftGfxDevice::_onePassTransformBlit;
+			m_pTransformBlurFirstPassOp = pTransformBlurSinglePassKernel;
+		}
+		else if (m_pTransformBlurFirstPassOp && m_pBlitSecondPassOp)
+			m_pTransformBlurOp = &SoftGfxDevice::_twoPassTransformBlit;
+
 		
 		return;
 	}
