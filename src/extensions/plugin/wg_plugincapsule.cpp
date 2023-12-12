@@ -372,6 +372,7 @@ namespace wg
 	{
 		_stopReceiveUpdates();
 		std::memset(&m_calls, 0, sizeof(m_calls));
+		m_pPluginRoot = nullptr;
 	}
 
 

@@ -707,7 +707,7 @@ namespace wg
 
 			float stepFactor = (nSamples - 1) / (float) wfSamples;
 
-			float valueFactor = (m_displayFloor - m_displayCeiling) * m_graphCanvas.h;
+			float valueFactor = m_graphCanvas.h / (m_displayFloor - m_displayCeiling);
 
 			for (int i = 0; i < wfSamples; i++)
 			{
