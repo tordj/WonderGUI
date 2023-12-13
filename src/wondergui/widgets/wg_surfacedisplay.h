@@ -40,25 +40,7 @@ namespace wg
 
 	//____ SurfaceDisplay ____________________________________________________________
 	/**
-	 * @brief Widget displaying a surface on which rendering operations can be performed.
-	 *
-	 * The SurfaceDisplay widget displays a surface onto which various rendering operations can be
-	 * performed using a GfxDevice.
-	 *
-	 * To setup a SurfaceDisplay, you at least need to provide a GfxDevice of your choice, that
-	 * should be unique to this SurfaceDisplay and not used for anything else. Optionally you
-	 * can also provide a SurfaceFactory and specify PixelFormat and size for the surface. Please see
-	 * the CSurfaceDisplay interface documentation for details.
-	 *
-	 * Please note that "canvas" is not only the name of this widget, but used throughout
-	 * WonderGUI for surfaces and rectangular areas that are destinations for drawing operations.
-	 * To make a clearer distinction we try to write SurfaceDisplay with a capital C when
-	 * referring to the widget and a small c everywhere else, but through
-	 * CamelCasing we still end up writing canvas with a capital C when not referring to this widget
-	 * (like "setSurfaceDisplay()" or "pSurfaceDisplay").
-	 *
 	 **/
-
 
 	class SurfaceDisplay : public Widget
 	{

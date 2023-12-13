@@ -247,7 +247,7 @@ namespace wg
 				{
 					if( m_state.isFocused() )
 					{
-						caretToPos(p->pointerSpxPos() - _globalPos());
+						caretToPos( _toLocal(p->pointerSpxPos()) );
 						m_editState.bButtonDown = true;
 					}
 					else
@@ -261,7 +261,7 @@ namespace wg
 				auto p = static_cast<MouseDragMsg*>(pMsg);
 				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
 					if( m_state.isFocused() )
-						caretToPos(p->pointerSpxPos() - _globalPos());
+						caretToPos( _toLocal(p->pointerSpxPos()) );
 				break;
 			}
 

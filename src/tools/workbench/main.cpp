@@ -281,7 +281,7 @@ int main(int argc, char** argv)
 
 
 #else
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
+	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0/*SDL_WINDOW_ALLOW_HIGHDPI*/);
 #endif
 
 
@@ -3148,6 +3148,12 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	pBack->slots.pushBack(pCanvasCapsule, { .pos = {10,10}, .size = { 400, 200 } });
 
 	
+	auto pCanvasDisplay1 = CanvasDisplay::create({	.canvas = pCanvasCapsule, 
+													.skin = BoxSkin::create({ .color = Color::Black, .outlineThickness = 1, 
+													.outlineColor = Color::Blue }) });
+
+	pBack->slots.pushBack(pCanvasDisplay1, { .pos = {10, 240}, .size = {200,200} });
+
 	return true;
 }
 

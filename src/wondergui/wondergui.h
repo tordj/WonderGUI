@@ -39,6 +39,7 @@
 #include <wg_boxskin.h>
 #include <wg_button.h>
 #include <wg_canvascapsule.h>
+#include <wg_canvasdisplay.h>
 #include <wg_canvaslayers.h>
 #include <wg_capsule.h>
 #include <wg_caret.h>

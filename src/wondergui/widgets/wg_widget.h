@@ -318,6 +318,13 @@ namespace wg
 		virtual CoordSPX	_globalComponentPos( const Component * pComponent ) const;
 		virtual RectSPX		_globalComponentGeo( const Component * pComponent ) const;
 
+		virtual CoordSPX	_componentToGlobal( const Component * pComponent, CoordSPX coord ) const;
+		virtual CoordSPX	_componentToGlobal( const Component * pComponent, RectSPX rect ) const;
+
+		virtual CoordSPX	_componentToLocal( const Component * pComponent, CoordSPX coord ) const;
+		virtual CoordSPX	_componentToLocal( const Component * pComponent, RectSPX rect ) const;
+
+		
 		virtual void		_componentRequestRender( const Component * pComponent );
 		virtual void		_componentRequestRender( const Component * pComponent, const RectSPX& rect );
 		virtual void		_componentRequestResize( const Component * pComponent );
@@ -718,38 +725,38 @@ namespace wg
 
 	CoordSPX Widget::_globalPos() const
 	{
-		return m_pHolder ? m_pHolder->_childGlobalPos(m_pSlot) : CoordSPX();
+		return m_pHolder ? (CoordSPX) m_pHolder->_childRectToGlobal(m_pSlot, m_size) : CoordSPX();
 	}
 
 	//____ _globalGeo() __________________________
 
 	RectSPX Widget::_globalGeo() const
 	{
-		return  m_pHolder ? RectSPX(m_pHolder->_childGlobalPos(m_pSlot), m_size) : RectSPX(m_size);
+		return  m_pHolder ? m_pHolder->_childRectToGlobal(m_pSlot, m_size) : RectSPX(m_size);
 	}
 
 	//____ _toGlobal() __________________________
 
 	CoordSPX Widget::_toGlobal(const CoordSPX& coord) const
 	{
-		return _globalPos() + coord;
+		return m_pHolder ? (CoordSPX) m_pHolder->_childRectToGlobal(m_pSlot, coord) : coord;
 	}
 
 	RectSPX Widget::_toGlobal(const RectSPX& rect) const
 	{
-		return rect + _globalPos();
+		return m_pHolder ? m_pHolder->_childRectToGlobal(m_pSlot, rect) : rect;
 	}
 
 	//____ _toLocal() ____________________________________________________________
 
 	CoordSPX Widget::_toLocal(const CoordSPX& coord) const
 	{
-		return coord - _globalPos();
+		return m_pHolder ? (CoordSPX) m_pHolder->_childRectToLocal(m_pSlot, coord) : coord;
 	}
 
 	RectSPX Widget::_toLocal(const RectSPX& rect) const
 	{
-		return rect - _globalPos();
+		return m_pHolder ? m_pHolder->_childRectToLocal(m_pSlot, rect) : rect;
 	}
 
 	//____ state() ____________________________________________________________

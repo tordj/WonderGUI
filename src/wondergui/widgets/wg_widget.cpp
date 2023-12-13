@@ -831,6 +831,30 @@ namespace wg
 		return _componentGeo( pComponent ) + _globalPos();
 	}
 
+	//____ _componentToGlobal() ______________________________________________
+
+	CoordSPX Widget::_componentToGlobal( const Component * pComponent, CoordSPX coord ) const
+	{
+		return _toGlobal( coord + _componentPos( pComponent ) );
+	}
+
+	CoordSPX Widget::_componentToGlobal( const Component * pComponent, RectSPX rect ) const
+	{
+		return _toGlobal( rect + _componentPos( pComponent ) );
+	}
+
+	//____ _componentToLocal() ______________________________________________
+
+	CoordSPX Widget::_componentToLocal( const Component * pComponent, CoordSPX coord ) const
+	{
+		return _toLocal( coord ) - _componentPos( pComponent );
+	}
+
+	CoordSPX Widget::_componentToLocal( const Component * pComponent, RectSPX rect ) const
+	{
+		return _toLocal( rect ) - _componentPos( pComponent );
+	}
+
 	//____ _receiveComponentNotif() ___________________________________________
 
 	void Widget::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )

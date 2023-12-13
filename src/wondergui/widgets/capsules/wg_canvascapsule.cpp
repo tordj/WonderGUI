@@ -21,6 +21,8 @@
 =========================================================================*/
 
 #include <wg_canvascapsule.h>
+#include <wg_canvasdisplay.h>
+
 #include <wg_gfxdevice.h>
 #include <wg_base.h>
 #include <wg_util.h>
@@ -62,7 +64,7 @@ namespace wg
 			if( oldBorderSize != newBorderSize )
 			{
 				m_pCanvas = nullptr;
-				m_canvasSize = _contentRect();
+				_setCanvasSize( _contentRect() );
 			}
 		}
 		
@@ -105,9 +107,9 @@ namespace wg
 		}
 	}
 
-	//____ setCanvasFormat() _____________________________________________________
+	//____ setFormat() _____________________________________________________
 
-	void CanvasCapsule::setCanvasFormat(PixelFormat format)
+	void CanvasCapsule::setFormat(PixelFormat format)
 	{
 		if (format != m_canvasFormat)
 		{
@@ -128,6 +130,19 @@ namespace wg
 		}
 	}
 
+	//____ setPlacement() _______________________________________________
+
+	void CanvasCapsule::setPlacement(Placement placement)
+	{
+		if (placement != m_placement)
+		{
+			m_placement = placement;
+			if( m_bScaleCanvas )
+			_requestRender();
+		}
+	}
+
+
 	//____ setRenderLayer() ___________________________________________________
 
 	void CanvasCapsule::setRenderLayer(int renderLayer)
@@ -147,6 +162,7 @@ namespace wg
 		{
 			m_bScaleCanvas = bScale;
 			_resizeCanvasAndChild();
+			_requestRender();
 		}
 	}
 
@@ -167,21 +183,17 @@ namespace wg
 
 		if( newSize != m_canvasSize )
 		{
-			m_canvasSize = newSize;
+			_setCanvasSize( newSize );
 			m_pCanvas = nullptr;
 			if( slot.widget() )
 				slot.widget()->_resize(newSize, m_scale);
 		}
 	}
 
-	//____ _render() _____________________________________________________________
+	//____ _renderCanvas() ____________________________________________________
 
-	void CanvasCapsule::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window)
+	Surface* CanvasCapsule::_renderCanvas(GfxDevice* pDevice)
 	{
-		m_skin.render(pDevice, _canvas, m_scale, m_state);
-
-		RectSPX contentRect = _contentRect(_canvas);
-
 		// Possibly regenerate the canvas
 
 		if (!m_pCanvas)
@@ -190,26 +202,42 @@ namespace wg
 			if (!pFactory)
 			{
 				//TODO: Error handling!
-				return;
+				return nullptr;
 			}
 
 			SizeI pixelSize = m_canvasSize / 64;
-			m_pCanvas = pFactory->createSurface( WGBP(Surface, _.size = pixelSize, _.format = m_canvasFormat, 
-													  _.canvas = true, _.scale = m_scale ));
+			m_pCanvas = pFactory->createSurface(WGBP(Surface, _.size = pixelSize, _.format = m_canvasFormat,
+				_.canvas = true, _.scale = m_scale));
 			m_patches.clear();
 			m_patches.add(m_canvasSize);
 		}
 
 		// Render children into canvas surface
-		
-		pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), m_patches.begin(), m_pCanvasLayers, m_renderLayer);
-		
-		RectSPX canvas = {0,0, m_canvasSize};
-		slot._widget()->_render(pDevice, canvas, canvas);
 
-		pDevice->endCanvasUpdate();
+		if (!m_patches.isEmpty())
+		{
+			pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), m_patches.begin(), m_pCanvasLayers, m_renderLayer);
 
-		m_patches.clear();
+			RectSPX canvas = { 0,0, m_canvasSize };
+			slot._widget()->_render(pDevice, canvas, canvas);
+
+			pDevice->endCanvasUpdate();
+
+			m_patches.clear();
+		}
+
+		return m_pCanvas;
+	}
+
+	//____ _render() _____________________________________________________________
+
+	void CanvasCapsule::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window)
+	{
+		_renderCanvas(pDevice);
+
+		m_skin.render(pDevice, _canvas, m_scale, m_state);
+
+		RectSPX contentRect = _contentRect(_canvas);
 
 		// Blit our canvas
 
@@ -249,7 +277,7 @@ namespace wg
 		if( !m_bScaleCanvas )
 		{
 			m_pCanvas = nullptr;
-			m_canvasSize = _contentRect(size);
+			_setCanvasSize( _contentRect(size) );
 			Capsule::_resize(size, scale);
 		}
 		else
@@ -266,7 +294,7 @@ namespace wg
 	void CanvasCapsule::_releaseChild( StaticSlot * pSlot )
 	{
 		Capsule::_releaseChild(pSlot);
-		m_canvasSize.clear();
+		_setCanvasSize( { 0,0 } );
 		m_pCanvas = nullptr;
 	}
 
@@ -276,6 +304,44 @@ namespace wg
 	{
 		Capsule::_replaceChild(pSlot, pWidget);
 		_resizeCanvasAndChild();
+	}
+
+	//____ _findWidget() ____________________________________________________________
+
+	Widget * CanvasCapsule::_findWidget( const CoordSPX& ofs, SearchMode mode )
+	{
+		if( m_bScaleCanvas )
+		{
+			if( !slot.isEmpty() )
+			{
+				RectSPX content = _contentRect();
+				RectSPX geo = _canvasWindow(_contentRect());
+				if( geo.contains(ofs) )
+				{
+					Widget * pWidget = slot._widget();
+
+					CoordSPX ofsInCanvas = (ofs - geo.pos()) * (m_canvasSize.w / (float) geo.w);
+					
+					if (pWidget->isContainer())
+					{
+						Widget * pRes = static_cast<Container*>(pWidget)->_findWidget(ofsInCanvas, mode);
+						if (pRes)
+							return pRes;
+					}
+					else if( mode == SearchMode::Geometry || slot._widget()->_markTest( ofsInCanvas ) )
+						return pWidget;
+				}
+			}
+		
+			// Check against ourselves
+
+			if( mode == SearchMode::Geometry || _markTest(ofs) )
+				return this;
+
+			return nullptr;
+		}
+		else
+			return Capsule::_findWidget(ofs, mode);
 	}
 
 	//____ _childRequestRender() _________________________________________________
@@ -306,7 +372,10 @@ namespace wg
 			dirt = rect + contentRect.pos();
 
 		_requestRender(dirt);
-//		_requestRender();
+
+		for (auto pDisplay : m_sideDisplays)
+			pDisplay->_canvasDirtyRect(rect);
+
 	}
 
 	//____ _childRequestResize() _________________________________________________
@@ -318,7 +387,7 @@ namespace wg
 			auto def = pSlot->widget()->_defaultSize(m_scale);
 			if( def != m_canvasSize )
 			{
-				m_canvasSize = def;
+				_setCanvasSize( def );
 				m_pCanvas = nullptr;
 				pSlot->widget()->_resize(def, m_scale);
 				_requestRender();
@@ -328,11 +397,57 @@ namespace wg
 			Capsule::_requestResize();
 	}
 
-					   
+	//____ _childPos() ___________________________________________________________
+
+	CoordSPX CanvasCapsule::_childPos(const StaticSlot* pSlot) const
+	{
+		if (m_bScaleCanvas)
+		{
+			RectSPX contentRect = _contentRect(m_size);
+			return _canvasWindow(contentRect).pos();
+		}
+		else
+			return m_skin.contentOfs(m_scale, m_state);
+	}
+
+	//____ _childRectToGlobal() _______________________________________________
+
+	RectSPX CanvasCapsule::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		if (m_bScaleCanvas)
+		{
+			RectSPX window = _canvasWindow(_contentRect(m_size));
+
+			float scaleFactor = window.w / (float) m_canvasSize.w;
+
+			auto global = _toGlobal((rect * scaleFactor) + window.pos());
+			return global;
+		}
+		else
+			return _toGlobal(rect + _childPos(pSlot));
+
+	}
+
+	//____ _childRectToLocal() ________________________________________________
+
+	RectSPX CanvasCapsule::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		if (m_bScaleCanvas)
+		{
+			RectSPX window = _canvasWindow(_contentRect(m_size));
+
+			float scaleFactor = (float)m_canvasSize.w / window.w;
+
+			auto local = (_toLocal(rect) - window.pos()) * scaleFactor;
+			return local;
+		}
+		else
+			return _toLocal(rect - _childPos(pSlot));
+	}
 					   
 	//____ _canvasWindow() _______________________________________________________
 
-	RectSPX CanvasCapsule::_canvasWindow( RectSPX window )
+	RectSPX CanvasCapsule::_canvasWindow( RectSPX window ) const
 	{
 		float scaleFactor = std::min( { 1.f, window.w / (float) m_canvasSize.w, window.h / (float) m_canvasSize.h } );
 		
@@ -341,4 +456,27 @@ namespace wg
 		return Util::placementToRect(m_placement, window.size(), canvasInWindowSize) + window.pos();
 	}
 
+	//____ _addSideDisplay() __________________________________________________
+
+	void CanvasCapsule::_addSideDisplay(CanvasDisplay* pSideDisplay)
+	{
+		m_sideDisplays.push_back(pSideDisplay);
+	}
+
+	//____ _removeSideDisplay() _______________________________________________
+
+	void CanvasCapsule::_removeSideDisplay(CanvasDisplay* pSideDisplay)
+	{
+		m_sideDisplays.erase(std::remove(m_sideDisplays.begin(), m_sideDisplays.end(), pSideDisplay));
+	}
+
+	//____ _setCanvasSize() ______________________________________________
+
+	void CanvasCapsule::_setCanvasSize(SizeSPX canvasSize)
+	{
+		m_canvasSize = canvasSize;
+
+		for (auto pDisplay : m_sideDisplays)
+			pDisplay->_canvasReset(canvasSize);
+	}
 }

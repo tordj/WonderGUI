@@ -661,6 +661,21 @@ namespace wg
 		return m_geo.pos();
 	}
 
+	//____ _childRectToGlobal() _______________________________________________
+
+	RectSPX RootPanel::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return rect + m_geo.pos();
+	}
+
+	//____ _childRectToLocal() ________________________________________________
+
+	RectSPX RootPanel::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return rect - m_geo.pos();
+	}
+
+
 	//____ _isChildVisible() __________________________________________________
 
 	bool RootPanel::_isChildVisible(const StaticSlot* pSlot) const

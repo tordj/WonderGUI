@@ -192,6 +192,9 @@ namespace wg
 		CoordSPX		_childPos( const StaticSlot * pSlot ) const override;
 		CoordSPX		_childGlobalPos( const StaticSlot * pSlot ) const override;
 
+		RectSPX			_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const;
+		RectSPX			_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const;
+
 		bool			_isChildVisible( const StaticSlot * pSlot ) const override;
 		RectSPX			_childWindowSection( const StaticSlot * pSlot ) const override;
 

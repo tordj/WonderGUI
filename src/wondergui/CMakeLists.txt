@@ -158,6 +158,8 @@ set( SOURCES
 	widgets/wg_animplayer.h
 	widgets/wg_button.cpp
 	widgets/wg_button.h
+	widgets/wg_canvasdisplay.cpp
+	widgets/wg_canvasdisplay.h
 	widgets/wg_container.cpp
 	widgets/wg_container.h
 	widgets/wg_filler.cpp

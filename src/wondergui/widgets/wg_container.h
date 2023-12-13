@@ -92,6 +92,9 @@ namespace wg
 			virtual CoordSPX		_childPos( const StaticSlot * pSlot ) const override = 0;				///< Get the local position of a child.
 			virtual CoordSPX		_childGlobalPos( const StaticSlot * pSlot ) const override;
 
+			RectSPX					_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
+			RectSPX					_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
+
 			virtual bool			_isChildVisible( const StaticSlot * pSlot ) const override;
 			virtual RectSPX			_childWindowSection( const StaticSlot * pSlot ) const override;		// Returns the window section within the childs canvas.
 

@@ -35,6 +35,7 @@ namespace wg
 	typedef	StrongPtr<CanvasCapsule>	CanvasCapsule_p;
 	typedef	WeakPtr<CanvasCapsule>		CanvasCapsule_wp;
 
+	class CanvasDisplay;
 
 	//____ CanvasCapsule ______________________________________________________
 	/**
@@ -48,6 +49,8 @@ namespace wg
 
 	class CanvasCapsule : public Capsule
 	{
+		friend CanvasDisplay;
+
 	public:
 
 		//____ Blueprint __________________________________________
@@ -100,17 +103,22 @@ namespace wg
 		void				setSurfaceFactory(SurfaceFactory* pFactory);
 		SurfaceFactory_p	surfaceFactory() const { return m_pFactory; }
 		
-		void				setCanvasFormat(PixelFormat format);
-		PixelFormat			canvasFormat() const { return m_canvasFormat; }
+		void				setFormat(PixelFormat format);
+		PixelFormat			format() const { return m_canvasFormat; }
 		
 		void				setCanvasLayers(CanvasLayers * pLayers);
-		CanvasLayers_p		canvasLayers() const { return m_pCanvasLayers; }
+		CanvasLayers_p	 	canvasLayers() const { return m_pCanvasLayers; }
+
+		void				setPlacement(Placement placement);
+		Placement			placement() const { return m_placement;  }
+
+		void				setScaleCanvas(bool bScale);
+		bool				isCanvasScaling() { return m_bScaleCanvas; }
+
 
 		void				setRenderLayer(int layer);
 		int					renderLayer() const { return m_renderLayer; }
 
-		void				setScaleCanvas(bool bScale);
-		bool				isCanvasScaling() { return m_bScaleCanvas; }
 		
 		inline HiColor		tintColor() { return m_tintColor; }
 		inline BlendMode	renderMode() { return m_renderMode; }
@@ -138,8 +146,11 @@ namespace wg
 		
 		virtual ~CanvasCapsule();
 
+		Widget* 			_findWidget(const CoordSPX& ofs, SearchMode mode) override;
+
 		void				_resizeCanvasAndChild();
 
+		Surface*			_renderCanvas(GfxDevice* pDevice);
 		void				_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void				_resize(const SizeSPX& size, int scale) override;
 
@@ -151,12 +162,22 @@ namespace wg
 		void				_childRequestRender(StaticSlot* pSlot, const RectSPX& rect) override;
 		void				_childRequestResize( StaticSlot * pSlot ) override;
 
-		RectSPX				_canvasWindow( RectSPX window );
+		CoordSPX			_childPos(const StaticSlot* pSlot) const override;
 
+		RectSPX				_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
+		RectSPX				_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
+
+		RectSPX				_canvasWindow( RectSPX window ) const;
+
+		void				_addSideDisplay(CanvasDisplay* pSideDisplay);
+		void				_removeSideDisplay(CanvasDisplay* pSideDisplay);
+		SizeSPX				_canvasSize() const { return m_canvasSize; }
+
+		void				_setCanvasSize( SizeSPX canvasSize );
 		
 		Surface_p			m_pCanvas;
 		CanvasLayers_p		m_pCanvasLayers;
-		RectSPX				m_canvasSize;
+		SizeSPX				m_canvasSize;
 		
 		SurfaceFactory_p	m_pFactory;
 		PixelFormat			m_canvasFormat = PixelFormat::BGRA_8;
@@ -170,8 +191,10 @@ namespace wg
 
 		bool				m_bScaleCanvas = false;
 		Placement			m_placement = Placement::Center;
+
+		std::vector<CanvasDisplay*>	m_sideDisplays;
 	};
 
 
 } // namespace wg
-#endif //WG_SHADERCAPSULE_DOT_H
+#endif //WG_CANVASCAPSULE_DOT_H

@@ -32,17 +32,22 @@ namespace wg
 	//____ Component _________________________________________________________________
 
 	class Component	/** @private */
-	{
-	public:
+{
+public:
+	
+	Component( Widget * pWidget ) : m_pWidget(pWidget) {}
+	
+	//.____ Internal _______________________________________________________
+	
+	inline CoordSPX	_pos() const { return m_pWidget->_componentPos(this); }
+	inline int		_scale() const { return m_pWidget->_scale(); }
+	inline SizeSPX	_size() const { return m_pWidget->_componentSize(this); }
+	inline RectSPX	_geo() const { return m_pWidget->_componentGeo(this); }
+	inline CoordSPX _toGlobal(const CoordSPX& coord) const { return m_pWidget->_componentToGlobal(this, coord); }
+	inline CoordSPX _toGlobal(const RectSPX& rect) const { return m_pWidget->_componentToGlobal(this, rect); }
+	inline CoordSPX _toLocal(const CoordSPX& coord) const { return m_pWidget->_componentToLocal(this, coord); }
+	inline CoordSPX _toLocal(const RectSPX& rect) const { return m_pWidget->_componentToLocal(this, rect); }
 
-		Component( Widget * pWidget ) : m_pWidget(pWidget) {}
-
-		//.____ Internal _______________________________________________________
-
-		inline CoordSPX	_pos() const { return m_pWidget->_componentPos(this); }
-		inline int		_scale() const { return m_pWidget->_scale(); }
-		inline SizeSPX	_size() const { return m_pWidget->_componentSize(this); }
-		inline RectSPX	_geo() const { return m_pWidget->_componentGeo(this); }
 		inline CoordSPX	_globalPos() const { return m_pWidget->_globalComponentPos(this); }
 		inline RectSPX	_globalGeo() const { return m_pWidget->_globalComponentGeo(this); }
 		inline Widget* _widget() const { return m_pWidget;  }
