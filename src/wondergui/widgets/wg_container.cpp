@@ -86,14 +86,30 @@ namespace wg
 		return true;
 	}
 
-	//____ _childGlobalPos() _______________________________________________________
+	//____ _childGlobalPos() __________________________________________________
 
 	CoordSPX Container::_childGlobalPos( const StaticSlot * pSlot ) const
 	{
 		return _childPos(pSlot) + _globalPos();
 	}
 
-	//____ _isChildVisible() ________________________________________________________
+	//____ _childRectToGlobal() _______________________________________________
+
+	RectSPX Container::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return _toGlobal(rect + _childPos(pSlot));
+	}
+
+	//____ _childRectToLocal() ________________________________________________
+
+	RectSPX Container::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return _toLocal(rect) - _childPos(pSlot);
+
+	}
+
+
+	//____ _isChildVisible() __________________________________________________
 
 	bool Container::_isChildVisible( const StaticSlot * pSlot ) const
 	{

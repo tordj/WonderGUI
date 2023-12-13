@@ -69,10 +69,10 @@ WgPluginRoot::WgPluginRoot( wg_obj myPluginCapsule )
 
 WgPluginRoot::~WgPluginRoot()
 {
+	if (m_pluginCapsule)
+		PluginCalls::pluginCapsule->disconnect(m_pluginCapsule);
+
 	delete m_pEventHandler;
-	
-	
-	
 }
 
 //____ FindWidget() ___________________________________________________________

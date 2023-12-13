@@ -247,7 +247,7 @@ namespace wg
 				{
 					if( m_state.isFocused() )
 					{
-						caretToPos(p->pointerSpxPos() - _globalPos());
+						caretToPos( _toLocal(p->pointerSpxPos()) );
 						m_editState.bButtonDown = true;
 					}
 					else
@@ -261,7 +261,7 @@ namespace wg
 				auto p = static_cast<MouseDragMsg*>(pMsg);
 				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
 					if( m_state.isFocused() )
-						caretToPos(p->pointerSpxPos() - _globalPos());
+						caretToPos( _toLocal(p->pointerSpxPos()) );
 				break;
 			}
 
@@ -758,7 +758,7 @@ namespace wg
 		else													// Just insert the put content
 			retVal = insert( m_editState.caretOfs, &buffer );
 
-		_updateDisplayArea();
+//		_updateDisplayArea();		// Already done in both replace() and insert().
 		return retVal;
 	}
 

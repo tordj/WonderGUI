@@ -35,6 +35,7 @@ namespace wg
 	typedef	StrongPtr<CanvasCapsule>	CanvasCapsule_p;
 	typedef	WeakPtr<CanvasCapsule>		CanvasCapsule_wp;
 
+	class CanvasDisplay;
 
 	//____ CanvasCapsule ______________________________________________________
 	/**
@@ -48,6 +49,8 @@ namespace wg
 
 	class CanvasCapsule : public Capsule
 	{
+		friend CanvasDisplay;
+
 	public:
 
 		//____ Blueprint __________________________________________
@@ -66,8 +69,10 @@ namespace wg
 			bool			pickable		= false;
 			int				pickCategory	= 0;
 			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
+			Placement		placement		= Placement::Center;
 			PointerStyle	pointer			= PointerStyle::Undefined;
 			int				renderLayer		= -1;
+			bool			scaleCanvas		= false;
 			bool			selectable		= true;
 			Skin_p			skin;
 			bool			stickyFocus		= false;
@@ -90,17 +95,26 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
+		void				setSkin(Skin* pSkin) override;
+
 		void				setTintColor(HiColor color, BlendMode operation = BlendMode::Replace);
 		void				setRenderMode(BlendMode mode);
 
 		void				setSurfaceFactory(SurfaceFactory* pFactory);
 		SurfaceFactory_p	surfaceFactory() const { return m_pFactory; }
 		
-		void				setCanvasFormat(PixelFormat format);
-		PixelFormat			canvasFormat() const { return m_canvasFormat; }
+		void				setFormat(PixelFormat format);
+		PixelFormat			format() const { return m_canvasFormat; }
 		
 		void				setCanvasLayers(CanvasLayers * pLayers);
-		CanvasLayers_p		canvasLayers() const { return m_pCanvasLayers; }
+		CanvasLayers_p	 	canvasLayers() const { return m_pCanvasLayers; }
+
+		void				setPlacement(Placement placement);
+		Placement			placement() const { return m_placement;  }
+
+		void				setScaleCanvas(bool bScale);
+		bool				isCanvasScaling() { return m_bScaleCanvas; }
+
 
 		void				setRenderLayer(int layer);
 		int					renderLayer() const { return m_renderLayer; }
@@ -123,6 +137,8 @@ namespace wg
 			m_renderMode	= bp.blendMode;
 			m_tintColor		= bp.tintColor;
 			m_tintMode		= bp.tintColorBlend;
+			m_bScaleCanvas  = bp.scaleCanvas;
+			m_placement		= bp.placement;
 
 			if( bp.child )
 				slot.setWidget(bp.child);
@@ -130,14 +146,39 @@ namespace wg
 		
 		virtual ~CanvasCapsule();
 
+		Widget* 			_findWidget(const CoordSPX& ofs, SearchMode mode) override;
+
+		void				_resizeCanvasAndChild();
+
+		Surface*			_renderCanvas(GfxDevice* pDevice);
 		void				_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void				_resize(const SizeSPX& size, int scale) override;
 
+		void				_releaseChild( StaticSlot * pSlot ) override;
+		void				_replaceChild(StaticSlot * pSlot, Widget * pWidget) override;
+
+		
 		void				_childRequestRender(StaticSlot* pSlot) override;
 		void				_childRequestRender(StaticSlot* pSlot, const RectSPX& rect) override;
+		void				_childRequestResize( StaticSlot * pSlot ) override;
 
+		CoordSPX			_childPos(const StaticSlot* pSlot) const override;
+
+		RectSPX				_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
+		RectSPX				_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
+
+		RectSPX				_canvasWindow( RectSPX window ) const;
+
+		void				_addSideDisplay(CanvasDisplay* pSideDisplay);
+		void				_removeSideDisplay(CanvasDisplay* pSideDisplay);
+		SizeSPX				_canvasSize() const { return m_canvasSize; }
+
+		void				_setCanvasSize( SizeSPX canvasSize );
+		
 		Surface_p			m_pCanvas;
 		CanvasLayers_p		m_pCanvasLayers;
+		SizeSPX				m_canvasSize;
+		
 		SurfaceFactory_p	m_pFactory;
 		PixelFormat			m_canvasFormat = PixelFormat::BGRA_8;
 		int					m_renderLayer = -1;
@@ -147,8 +188,13 @@ namespace wg
 		BlendMode			m_renderMode = BlendMode::Blend;
 
 		PatchesSPX			m_patches;
+
+		bool				m_bScaleCanvas = false;
+		Placement			m_placement = Placement::Center;
+
+		std::vector<CanvasDisplay*>	m_sideDisplays;
 	};
 
 
 } // namespace wg
-#endif //WG_SHADERCAPSULE_DOT_H
+#endif //WG_CANVASCAPSULE_DOT_H

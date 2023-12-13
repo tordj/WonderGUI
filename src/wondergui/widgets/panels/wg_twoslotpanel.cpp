@@ -181,136 +181,58 @@ namespace wg
 	{
 		RectSPX contentGeo = _contentRect();
 
-
-		// Calculate new lengths using broker
-
+		// Calculate new lengths using layout object
 
 		spx totalLength = (m_bHorizontal ? contentGeo.w : contentGeo.h);
 		spx len1 = 0, len2 = 0;
 
-		if (m_pLayout)
+		auto pLayout = m_pLayout ? m_pLayout : Base::defaultPackLayout();
+
+		PackLayout::Item items[2];
+		PackLayout::Item* pI = items;
+
+		spx	results[2];
+
+		if (m_bHorizontal)
 		{
-			PackLayout::Item items[2];
-			PackLayout::Item* pI = items;
-
-			spx	results[2];
-
-			if (m_bHorizontal)
+			for (int i = 0; i < 2; i++)
 			{
-				for (int i = 0; i < 2; i++)
+				if (slots[i].m_pWidget)
 				{
-					if (slots[i].m_pWidget)
-					{
-						pI->def = slots[i].m_pWidget->_matchingWidth(contentGeo.h, m_scale);
-						pI->min = slots[i].m_pWidget->_minSize(m_scale).w;
-						pI->max = slots[i].m_pWidget->_maxSize(m_scale).w;
-						pI->weight = slots[i].m_weight;
-						pI++;
-					}
+					pI->def = slots[i].m_pWidget->_matchingWidth(contentGeo.h, m_scale);
+					pI->min = slots[i].m_pWidget->_minSize(m_scale).w;
+					pI->max = slots[i].m_pWidget->_maxSize(m_scale).w;
+					pI->weight = slots[i].m_weight;
+					pI++;
 				}
 			}
-			else
-			{
-				for (int i = 0; i < 2; i++)
-				{
-					if (slots[i].m_pWidget)
-					{
-						pI->def = slots[i].m_pWidget->_matchingHeight(contentGeo.w, m_scale);
-						pI->min = slots[i].m_pWidget->_minSize(m_scale).h;
-						pI->max = slots[i].m_pWidget->_maxSize(m_scale).h;
-						pI->weight = slots[i].m_weight;
-						pI++;
-					}
-				}
-			}
-
-			if (pI > items)
-			{
-				spx combinedLength =  m_pLayout->getItemSizes(results, m_bHorizontal ? contentGeo.w : contentGeo.h, m_scale, int(pI - items), items );
-
-				if (slots[0].m_pWidget)
-				{
-					len1 = results[0];
-					combinedLength -= len1;
-				}
-
-				len2 = combinedLength;
-			}
-
 		}
 		else
 		{
-			// Default behavior is to divide the length between the two widgets
-			// relative to their preferred length, but keep them within their min/max lengths.
-
-			spx minLen1 = 0, minLen2 = 0;
-			spx maxLen1 = 0, maxLen2 = 0;
-			if (m_bHorizontal)
+			for (int i = 0; i < 2; i++)
 			{
-				if (slots[0].m_pWidget)
+				if (slots[i].m_pWidget)
 				{
-					len1 = slots[0].m_pWidget->_matchingWidth(contentGeo.h, m_scale);
-					minLen1 = slots[0].m_pWidget->_minSize(m_scale).w;
-					maxLen1 = slots[0].m_pWidget->_maxSize(m_scale).w;
-				}
-
-				if (slots[1].m_pWidget)
-				{
-					len2 = slots[1].m_pWidget->_matchingWidth(contentGeo.h, m_scale);
-					minLen2 = slots[1].m_pWidget->_minSize(m_scale).w;
-					maxLen2 = slots[1].m_pWidget->_maxSize(m_scale).w;
+					pI->def = slots[i].m_pWidget->_matchingHeight(contentGeo.w, m_scale);
+					pI->min = slots[i].m_pWidget->_minSize(m_scale).h;
+					pI->max = slots[i].m_pWidget->_maxSize(m_scale).h;
+					pI->weight = slots[i].m_weight;
+					pI++;
 				}
 			}
-			else
-			{
-				if (slots[0].m_pWidget)
-				{
-					len1 = slots[0].m_pWidget->_matchingHeight(contentGeo.w, m_scale);
-					minLen1 = slots[0].m_pWidget->_minSize(m_scale).h;
-					maxLen1 = slots[0].m_pWidget->_maxSize(m_scale).h;
-				}
+		}
 
-				if (slots[1].m_pWidget)
-				{
-					len2 = slots[1].m_pWidget->_matchingHeight(contentGeo.w, m_scale);
-					minLen2 = slots[1].m_pWidget->_minSize(m_scale).h;
-					maxLen2 = slots[1].m_pWidget->_maxSize(m_scale).h;
-				}
+		if (pI > items)
+		{
+			spx combinedLength =  pLayout->getItemSizes(results, m_bHorizontal ? contentGeo.w : contentGeo.h, m_scale, int(pI - items), items );
+
+			if (slots[0].m_pWidget)
+			{
+				len1 = results[0];
+				combinedLength -= len1;
 			}
 
-			if (minLen1 + minLen2 > totalLength)
-			{
-				len1 = minLen1;
-				len2 = minLen2;
-			}
-			else if (maxLen1 < totalLength && maxLen2 < totalLength && maxLen1 + maxLen2 < totalLength)
-			{
-				// ^ Checked them individually first, so we don't get overflow when adding two large numbers.
-
-				len1 = maxLen1;
-				len2 = maxLen2;
-			}
-			else
-			{
-				len1 = align(int32_t(int64_t(len1 * totalLength) / (len1 + len2)));
-
-				if (len1 > maxLen1)
-					len1 = maxLen1;
-				else if (len1 < minLen1)
-					len1 = minLen1;
-
-				len2 = totalLength - len1;
-				if (len2 > maxLen2)
-				{
-					len2 = maxLen2;
-					len1 = totalLength - len2;
-				}
-				else if (len2 < minLen2)
-				{
-					len2 = minLen2;
-					len1 = totalLength - len2;
-				}
-			}
+			len2 = combinedLength;
 		}
 	
 		// Request render and set sizes

@@ -418,6 +418,20 @@ namespace wg
 		return CoordSPX();
 	}
 
+	//____ _childRectToGlobal() __________________________________________________
+
+	RectSPX PluginRoot::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return rect;
+	}
+
+	//____ _childRectToLocal() ___________________________________________________
+
+	RectSPX PluginRoot::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return rect;
+	}
+
 	//____ _isChildVisible() __________________________________________________
 
 	bool PluginRoot::_isChildVisible(const StaticSlot* pSlot) const

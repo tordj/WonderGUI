@@ -501,13 +501,13 @@ namespace wg
 		inline RectT<Type> operator*(SizeT<Type2> v) const { return { x * v.w, y * v.h, w * v.w, h * v.h }; }
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline RectT<Type> operator*(Type2 v) const { return { x * v, y * v, w * v, h * v }; }
+		inline RectT<Type> operator*(Type2 v) const { return { Type(x * v), Type(y * v), Type(w * v), Type(h * v) }; }
 
 		template<typename Type2>
 		inline RectT<Type> operator/(SizeT<Type2> v) const { return { x / v.w, y / v.h, w / v.w, h / v.h }; }
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
-		inline RectT<Type> operator/(Type2 v) const { return { x / v, y / v, w / v, h / v }; }
+		inline RectT<Type> operator/(Type2 v) const { return { Type(x / v), Type(y / v), Type(w / v), Type(h / v) }; }
 
 
 		//.____ Properties __________________________________________

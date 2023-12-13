@@ -601,8 +601,11 @@ namespace wg
 
 		if (pSlot->m_bVisible)
 		{
-			pSlot->m_bVisible = true;
 			pSlot->m_defaultSize = pSlot->_widget()->_defaultSize(m_scale);
+			pSlot->_widget()->_resize(pSlot->m_geo.size(), m_scale);
+			_requestRender(pSlot->m_geo);
+			m_totalSpacing = _calcTotalSpacing(m_scale);
+			_refreshGeometries();
 		}
 
 	}

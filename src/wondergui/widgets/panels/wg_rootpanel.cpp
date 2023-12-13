@@ -227,6 +227,11 @@ namespace wg
 			return false;
 		}
 
+		if( pSurface == m_canvas.pSurface )
+		{
+			return true;
+		}
+		
 		int oldScale = m_scale;
 		SizeSPX oldSize = m_geo.size();
 
@@ -655,6 +660,21 @@ namespace wg
 	{
 		return m_geo.pos();
 	}
+
+	//____ _childRectToGlobal() _______________________________________________
+
+	RectSPX RootPanel::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return rect + m_geo.pos();
+	}
+
+	//____ _childRectToLocal() ________________________________________________
+
+	RectSPX RootPanel::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return rect - m_geo.pos();
+	}
+
 
 	//____ _isChildVisible() __________________________________________________
 
