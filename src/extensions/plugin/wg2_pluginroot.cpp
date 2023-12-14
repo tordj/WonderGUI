@@ -170,7 +170,7 @@ spx WgPluginRoot::_matchingHeight(spx width, int scale) const
 	//NOTE! This does not take change of scale into account!
 	
 	if( m_hook.Widget() )
-		return m_hook.Widget()->MatchingPixelHeight(width/64)*64;
+		return m_hook.Widget()->MatchingPixelHeight(width/64)*scale;	// This is incorrect but works when child is a WgFlexPanel and the best we can do without a lot of rewrite.
 	else
 		return 0;
 }
@@ -182,7 +182,7 @@ spx WgPluginRoot::_matchingWidth(spx height, int scale) const
 	//NOTE! This does not take change of scale into account!
 	
 	if( m_hook.Widget() )
-		return m_hook.Widget()->MatchingPixelWidth(height/64)*64;
+		return m_hook.Widget()->MatchingPixelWidth(height/64)*scale;	// This is incorrect but works when child is a WgFlexPanel and the best we can do without a lot of rewrite.
 	else
 		return 0;
 
@@ -195,7 +195,7 @@ SizeSPX WgPluginRoot::_defaultSize(int scale) const
 	//NOTE! This does not take change of scale into account!
 	
 	if( m_hook.Widget() )
-		return m_hook.Widget()->PreferredPixelSize()*64;
+		return m_hook.Widget()->PreferredPointSize()*scale;
 	else
 		return {0,0};
 }

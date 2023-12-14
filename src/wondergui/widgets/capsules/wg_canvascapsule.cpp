@@ -63,7 +63,6 @@ namespace wg
 			
 			if( oldBorderSize != newBorderSize )
 			{
-				m_pCanvas = nullptr;
 				_setCanvasSize( _contentRect() );
 			}
 		}
@@ -184,7 +183,6 @@ namespace wg
 		if( newSize != m_canvasSize )
 		{
 			_setCanvasSize( newSize );
-			m_pCanvas = nullptr;
 			if( slot.widget() )
 				slot.widget()->_resize(newSize, m_scale);
 		}
@@ -276,12 +274,17 @@ namespace wg
 	{
 		if( !m_bScaleCanvas )
 		{
-			m_pCanvas = nullptr;
 			_setCanvasSize( _contentRect(size) );
 			Capsule::_resize(size, scale);
 		}
 		else
 		{
+			if( scale != m_scale && slot._widget())
+			{
+				auto sz = slot._widget()->_defaultSize(scale);
+				slot._widget()->_resize(sz, scale);
+				_setCanvasSize(sz);
+			}
 			m_size = size;
 			m_scale = scale;
 		}
@@ -295,7 +298,6 @@ namespace wg
 	{
 		Capsule::_releaseChild(pSlot);
 		_setCanvasSize( { 0,0 } );
-		m_pCanvas = nullptr;
 	}
 
 	//____ _replaceChild() _______________________________________________________
@@ -388,7 +390,6 @@ namespace wg
 			if( def != m_canvasSize )
 			{
 				_setCanvasSize( def );
-				m_pCanvas = nullptr;
 				pSlot->widget()->_resize(def, m_scale);
 				_requestRender();
 			}
@@ -475,6 +476,7 @@ namespace wg
 	void CanvasCapsule::_setCanvasSize(SizeSPX canvasSize)
 	{
 		m_canvasSize = canvasSize;
+		m_pCanvas = nullptr;
 
 		for (auto pDisplay : m_sideDisplays)
 			pDisplay->_canvasReset(canvasSize);

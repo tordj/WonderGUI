@@ -440,9 +440,26 @@ namespace wg
 		if( timestamp == 0 )
 			timestamp = m_timeStamp;
 
-		// Post BUTTON_PRESS events for marked widgets and remember which one we have posted it for
+		Widget* pWidget = m_pMarkedWidget.rawPtr();
 
-		Widget * pWidget = m_pMarkedWidget.rawPtr();
+		// Check stickiness of focus, i.e. wether widget should keep focus when mouse pressed outside.
+		// This needs to be done before we post any MousePress messages, so that any FocusLost messages
+		// comes before any FocusGained generated from (and inserted right after) the MousePress 
+		// message.
+
+		Widget* pFocused = _focusedWidget();
+		if (pFocused)
+		{
+			bool focusedIsSameOrAncestor = pFocused == pWidget ? true : pFocused->isContainer() && static_cast<Container*>(pFocused)->contains(pWidget);
+
+			if (!focusedIsSameOrAncestor)
+			{
+				if (!pFocused->hasStickyFocus())
+					pFocused->releaseFocus();
+			}
+		}
+
+		// Post BUTTON_PRESS events for marked widgets and remember which one we have posted it for
 
 		auto pMsg = MousePressMsg::create( m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp );
 		pMsg->setCopyTo(pWidget);
@@ -480,20 +497,6 @@ namespace wg
 		m_latestPressTimestamps[(int)button]	= timestamp;
 		m_latestPressPosition[(int)button]		= m_pointerPos;
 		m_latestPressDoubleClick[(int)button]	= doubleClick;
-
-		// Check stickiness of focus, i.e. wether widget should keep focus when mouse pressed outside.
-
-		Widget* pFocused = _focusedWidget();
-		if (pFocused)
-		{
-			bool focusedIsSameOrAncestor = pFocused == pWidget ? true : pFocused->isContainer() && static_cast<Container*>(pFocused)->contains(pWidget);
-
-			if (!focusedIsSameOrAncestor)
-			{
-				if (!pFocused->hasStickyFocus())
-					pFocused->releaseFocus();
-			}
-		}
 	}
 
 
