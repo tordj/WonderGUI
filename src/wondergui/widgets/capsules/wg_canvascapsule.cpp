@@ -398,17 +398,17 @@ namespace wg
 			Capsule::_requestResize();
 	}
 
-	//____ _childPos() ___________________________________________________________
+	//____ _slotGeo() ___________________________________________________________
 
-	CoordSPX CanvasCapsule::_childPos(const StaticSlot* pSlot) const
+	RectSPX CanvasCapsule::_slotGeo(const StaticSlot* pSlot) const
 	{
 		if (m_bScaleCanvas)
 		{
 			RectSPX contentRect = _contentRect(m_size);
-			return _canvasWindow(contentRect).pos();
+			return _canvasWindow(contentRect);
 		}
 		else
-			return m_skin.contentOfs(m_scale, m_state);
+			return m_skin.contentRect(m_size, m_scale, m_state);
 	}
 
 	//____ _childRectToGlobal() _______________________________________________
@@ -425,7 +425,7 @@ namespace wg
 			return global;
 		}
 		else
-			return _toGlobal(rect + _childPos(pSlot));
+			return _toGlobal(rect + _slotGeo(pSlot).pos());
 
 	}
 
@@ -443,7 +443,7 @@ namespace wg
 			return local;
 		}
 		else
-			return _toLocal(rect - _childPos(pSlot));
+			return _toLocal(rect - _slotGeo(pSlot).pos());
 	}
 					   
 	//____ _canvasWindow() _______________________________________________________

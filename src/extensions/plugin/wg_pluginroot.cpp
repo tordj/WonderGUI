@@ -404,18 +404,11 @@ namespace wg
 	}
 
 
-	//____ _childPos() ________________________________________________________
+	//____ _slotGeo() ________________________________________________________
 
-	CoordSPX PluginRoot::_childPos(const StaticSlot* pSlot) const
+	RectSPX PluginRoot::_slotGeo(const StaticSlot* pSlot) const
 	{
-		return CoordSPX();
-	}
-
-	//____ _childGlobalPos() __________________________________________________
-
-	CoordSPX PluginRoot::_childGlobalPos(const StaticSlot* pSlot) const
-	{
-		return CoordSPX();
+		return RectSPX(0,0,m_size);
 	}
 
 	//____ _childRectToGlobal() __________________________________________________

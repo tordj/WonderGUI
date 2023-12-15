@@ -49,12 +49,10 @@ namespace wg
 
 		virtual const TypeInfo& _slotTypeInfo(const StaticSlot * pSlot) const = 0;
 
-		virtual CoordSPX	_childPos( const StaticSlot * pSlot ) const = 0;				///< Get the local position of the widget.
-
+		virtual RectSPX		_slotGeo( const StaticSlot * pSlot ) const = 0;
+		
 		virtual RectSPX		_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const = 0;
 		virtual RectSPX		_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const = 0;
-
-		virtual CoordSPX	_childGlobalPos( const StaticSlot * pSlot ) const = 0;
 
 		virtual bool		_isChildVisible( const StaticSlot * pSlot ) const = 0;
 		virtual RectSPX		_childWindowSection( const StaticSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.

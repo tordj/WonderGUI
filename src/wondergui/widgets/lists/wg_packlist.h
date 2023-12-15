@@ -258,7 +258,7 @@ namespace wg
 
 		Widget * 		_findWidget(const CoordSPX& ofs, SearchMode mode) override;
 
-		CoordSPX		_childPos(const StaticSlot * pSlot) const override;
+		RectSPX			_slotGeo(const StaticSlot * pSlot) const override;
 
 		void			_childRequestRender(StaticSlot * pSlot) override;
 		void			_childRequestRender(StaticSlot * pSlot, const RectSPX& rect) override;

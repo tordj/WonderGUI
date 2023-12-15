@@ -694,7 +694,7 @@ namespace wg
 	CoordSPX Widget::_pos() const
 	{
 		if (m_pHolder)
-			return m_pHolder->_childPos(m_pSlot);
+			return m_pHolder->_slotGeo(m_pSlot).pos();
 		return CoordSPX(0, 0);
 	}
 
@@ -717,7 +717,7 @@ namespace wg
 	RectSPX Widget::_geo() const
 	{
 		if (m_pHolder)
-			return RectSPX(m_pHolder->_childPos(m_pSlot), m_size);
+			return m_pHolder->_slotGeo(m_pSlot);
 		return RectSPX(m_size);
 	}
 

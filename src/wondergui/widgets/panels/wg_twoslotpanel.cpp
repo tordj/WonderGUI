@@ -367,21 +367,16 @@ namespace wg
 			package.pSlot = nullptr;
 	}
 
-	//_____ _childPos() _______________________________________________________
+	//_____ _slotGeo() _______________________________________________________
 
-	CoordSPX TwoSlotPanel::_childPos(const StaticSlot * pSlot) const
+	RectSPX TwoSlotPanel::_slotGeo(const StaticSlot * pSlot) const
 	{
-		CoordSPX pos = m_skin.contentOfs(m_scale, m_state);
+		RectSPX content = m_skin.contentRect(m_size, m_scale, m_state);
 
-		if (pSlot == &slots[1])
-		{
-			if (m_bHorizontal)
-				pos.x += slots[0].m_length;
-			else
-				pos.y += slots[0].m_length;
-		}
-
-		return pos;
+		if (pSlot == &slots[0])
+			return _slotOneRect(_contentRect());
+		else
+			return _slotTwoRect(_contentRect());
 	}
 
 	//____ _childRequestRender() ______________________________________________

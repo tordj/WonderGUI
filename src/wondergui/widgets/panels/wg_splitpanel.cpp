@@ -666,11 +666,11 @@ namespace wg
 			package.pSlot = nullptr;
 	}
 
-	//_____ _childPos() _______________________________________________________
+	//_____ _slotGeo() _______________________________________________________
 
-	CoordSPX SplitPanel::_childPos(const StaticSlot * pSlot) const
+	RectSPX SplitPanel::_slotGeo(const StaticSlot * pSlot) const
 	{
-		return static_cast<const Slot*>(pSlot)->m_geo.pos();
+		return static_cast<const Slot*>(pSlot)->m_geo;
 	}
 
 	//____ _childRequestRender() ______________________________________________

@@ -142,8 +142,7 @@ namespace wg
 		Root*			_root() override;
 		int				_scale() const override;
 
-		CoordSPX		_childPos(const StaticSlot* pSlot) const override;
-		CoordSPX		_childGlobalPos(const StaticSlot* pSlot) const override;
+		RectSPX			_slotGeo(const StaticSlot* pSlot) const override;
 
 		RectSPX			_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
 		RectSPX			_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;

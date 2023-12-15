@@ -162,7 +162,7 @@ namespace wg
 		void				_childRequestRender(StaticSlot* pSlot, const RectSPX& rect) override;
 		void				_childRequestResize( StaticSlot * pSlot ) override;
 
-		CoordSPX			_childPos(const StaticSlot* pSlot) const override;
+		RectSPX				_slotGeo(const StaticSlot* pSlot) const override;
 
 		RectSPX				_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
 		RectSPX				_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;

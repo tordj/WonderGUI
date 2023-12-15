@@ -647,18 +647,11 @@ namespace wg
 	}
 
 
-	//____ _childPos() ________________________________________________________
+	//____ _slotGeo() ________________________________________________________
 
-	CoordSPX RootPanel::_childPos(const StaticSlot* pSlot) const
+	RectSPX RootPanel::_slotGeo(const StaticSlot* pSlot) const
 	{
-		return m_geo.pos();
-	}
-
-	//____ _childGlobalPos() __________________________________________________
-
-	CoordSPX RootPanel::_childGlobalPos(const StaticSlot* pSlot) const
-	{
-		return m_geo.pos();
+		return m_geo;
 	}
 
 	//____ _childRectToGlobal() _______________________________________________

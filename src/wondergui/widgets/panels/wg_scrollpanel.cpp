@@ -939,11 +939,11 @@ namespace wg
 		package.pSlot = nullptr;
 	}
 
-	//____ _childPos() ________________________________________________________
+	//____ _slotGeo() ________________________________________________________
 
-	CoordSPX ScrollPanel::_childPos(const StaticSlot* pSlot) const
+	RectSPX ScrollPanel::_slotGeo(const StaticSlot* pSlot) const
 	{
-		return m_childCanvas.pos();
+		return m_viewRegion;
 	}
 
 	//____ _childWindowSection() ______________________________________________

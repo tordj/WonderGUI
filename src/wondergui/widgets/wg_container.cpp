@@ -66,45 +66,18 @@ namespace wg
 		return false;
 	}
 
-	//____ _descendantPos() _____________________________________________________
-
-	bool Container::_descendantPos( Widget * pDescendant, CoordSPX& pos )
-	{
-		pos.clear();
-
-		Widget * p = pDescendant;
-		while( p != this )
-		{
-			if( p == nullptr )
-				return false;
-
-			auto pHolder = p->_holder();
-			pos += pHolder->_childPos( p->_slot() );
-			p = pHolder->_container();
-		}
-
-		return true;
-	}
-
-	//____ _childGlobalPos() __________________________________________________
-
-	CoordSPX Container::_childGlobalPos( const StaticSlot * pSlot ) const
-	{
-		return _childPos(pSlot) + _globalPos();
-	}
-
 	//____ _childRectToGlobal() _______________________________________________
 
 	RectSPX Container::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
-		return _toGlobal(rect + _childPos(pSlot));
+		return _toGlobal(rect + _slotGeo(pSlot).pos());
 	}
 
 	//____ _childRectToLocal() ________________________________________________
 
 	RectSPX Container::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
-		return _toLocal(rect) - _childPos(pSlot);
+		return _toLocal(rect) - _slotGeo(pSlot).pos();
 
 	}
 
@@ -165,16 +138,18 @@ namespace wg
 	{
 		if( m_pHolder )
 		{
-			RectSPX area( _childPos( pSlot ), pSlot->_widget()->_size() );
+			RectSPX area = _slotGeo( pSlot );
 			m_pHolder->_childRequestInView( m_pSlot, area, area );
 		}
 	}
 
 	void Container::_childRequestInView(StaticSlot * pSlot, const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea )
 	{
+		// This goes wrong for scaling CanvasCapsule!
+		
 		if( m_pHolder )
 		{
-			CoordSPX pos( _childPos( pSlot ) );
+			CoordSPX pos( _slotGeo( pSlot ).pos() );
 			m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
 		}
 	}
