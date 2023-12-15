@@ -131,6 +131,9 @@ namespace wg
 		bool			caretLeft();
 		bool			caretRight();
 
+		bool			caretPageUp();
+		bool			caretPageDown();
+		
 		bool			caretNextWord();
 		bool			caretPrevWord();
 

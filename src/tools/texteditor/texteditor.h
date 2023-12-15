@@ -24,8 +24,7 @@ public:
 
 	bool		setupGUI();
 	bool		openFile(const std::string& path);
-	bool 		createEditorWindow( const std::string& windowTitle );
-
+	bool 		createEditorWindow( const std::string& windowTitle, const std::string& path );
 	
 	// These are made public for our subclasses.
 
@@ -51,6 +50,8 @@ public:
 private:
 
 	bool			_loadSkins(Visitor* pVisitor);
+	
+	std::string		_createWindowTitle( const std::string& path );
 	
 	std::vector<EditorWindow_p>	m_editorWindows;
 	
