@@ -1031,12 +1031,12 @@ namespace wg
 	{
 		if (!m_childWindow.contains(niceToHaveArea + m_childCanvas.pos()))
 		{
-/*
-			RectSPX window = { m_viewPixOfs, m_elements[WINDOW].m_windowGeo.size() };
-
+			RectSPX window = m_childWindow - m_childCanvas.pos();
+			RectSPX	startPos = window.pos();
+			
 			for (int i = 0; i < 2; i++)
 			{
-				WgRect inside = i == 0 ? niceToHaveArea : mustHaveArea;
+				RectSPX inside = i == 0 ? niceToHaveArea : mustHaveArea;
 
 				int diffLeft = inside.x - window.x;
 				int diffRight = inside.right() - window.right();
@@ -1054,17 +1054,23 @@ namespace wg
 					window.y += std::max(diffTop, diffBottom);
 			}
 
-			if (window.pos() != m_viewPixOfs)
-				SetViewPixelOfs(window.x, window.y);
+			if (window.pos() != startPos)
+			{
+				m_childCanvas.x -= window.x - startPos.x;
+				m_childCanvas.y -= window.y - startPos.y;
+
+				_childWindowCorrection();
+				_updateScrollbars();
+				_requestRender();
+			}
 
 			// Forward to any outer ScrollPanel
 
-			WgRect newMustHaveArea(mustHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo);
-			WgRect newNiceToHaveArea(niceToHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo);
+			RectSPX newMustHaveArea = RectSPX::overlap(mustHaveArea + m_childCanvas.pos(), m_childWindow);
+			RectSPX newNiceToHaveArea = RectSPX::overlap(niceToHaveArea + m_childCanvas.pos(), m_childWindow);
 
 			_requestInView(newMustHaveArea, newNiceToHaveArea);
 
-*/
 		}
 	}
 
