@@ -211,8 +211,8 @@ namespace wg
 			case MsgType::MouseMove:
 			{
 				MouseMoveMsg_p pMsg = static_cast<MouseMoveMsg*>(_pMsg);
-				CoordSPX ofs = pMsg->pointerSpxPos();
-				RectSPX geo = _globalGeo();
+				CoordSPX ofs = _toLocal(pMsg->pointerSpxPos());
+				RectSPX geo = {0,0,_size()};
 				bool bHovered = geo.contains(ofs) && (!Base::inputHandler()->isAnyButtonPressed() ||
 					(Base::inputHandler()->isButtonPressed(MouseButton::Left) && m_bPressed));
 				if( bHovered != m_state.isHovered() )
@@ -238,8 +238,8 @@ namespace wg
 			case MsgType::MousePress:
 			{
 				MousePressMsg_p pMsg = static_cast<MousePressMsg*>(_pMsg);
-				CoordSPX ofs = pMsg->pointerSpxPos();
-				RectSPX geo = _globalGeo();
+				CoordSPX ofs = _toLocal(pMsg->pointerSpxPos());
+				RectSPX geo = {0,0,_size()};
 				if(pMsg->button() == MouseButton::Left && geo.contains(ofs))
 				{
 					m_bPressed = true;
@@ -256,8 +256,8 @@ namespace wg
 				MouseDragMsg_p pMsg = static_cast<MouseDragMsg*>(_pMsg);
 				if( m_bPressed )
 				{
-					CoordSPX ofs = pMsg->pointerSpxPos();
-					bool bHovered = _globalGeo().contains(ofs);
+					CoordSPX ofs = _toLocal(pMsg->pointerSpxPos());
+					bool bHovered = RectSPX(_size()).contains(ofs);
 					if( bHovered != m_state.isHovered() )
 					{
 						m_state.setHovered(bHovered);
@@ -279,8 +279,8 @@ namespace wg
 					m_state.setPressed(false);
 					_requestRender();
 
-					CoordSPX ofs = pMsg->pointerSpxPos();
-					if( _globalGeo().contains(ofs) )
+					CoordSPX ofs = _toLocal(pMsg->pointerSpxPos());
+					if( RectSPX(_size()).contains(ofs) )
 					{
 						if( m_sortOrder == SortOrder::Ascending )
 							m_sortOrder = SortOrder::Descending;

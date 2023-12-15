@@ -953,6 +953,30 @@ namespace wg
 		return m_childWindow - m_childCanvas.pos();
 	}
 
+	//____ _childLocalToGlobal() _______________________________________________
+
+	RectSPX ScrollPanel::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return _toGlobal(rect + m_childCanvas.pos());
+	}
+
+	//____ _globalToChildLocal() ________________________________________________
+
+	RectSPX ScrollPanel::_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return _toLocal(rect) - m_childCanvas.pos();
+
+	}
+
+	//____ _globalPtsToChildLocalSpx() ___________________________________________
+
+	RectSPX ScrollPanel::_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const
+	{
+		RectSPX rectSPX = m_pHolder ? m_pHolder->_globalPtsToChildLocalSpx(m_pSlot, rect) : Util::align(Util::ptsToSpx(rect, m_scale));
+
+		return rectSPX - m_childCanvas.pos();
+	}
+
 	//____ _childRequestRender() ______________________________________________
 
 	void ScrollPanel::_childRequestRender(StaticSlot* pSlot)

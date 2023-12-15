@@ -411,19 +411,27 @@ namespace wg
 		return RectSPX(0,0,m_size);
 	}
 
-	//____ _childRectToGlobal() __________________________________________________
+	//____ _childLocalToGlobal() __________________________________________________
 
-	RectSPX PluginRoot::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX PluginRoot::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		return rect;
 	}
 
-	//____ _childRectToLocal() ___________________________________________________
+	//____ _globalToChildLocal() ___________________________________________________
 
-	RectSPX PluginRoot::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX PluginRoot::_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		return rect;
 	}
+
+	//____ _globalPtsToChildLocalSpx() ___________________________________________
+
+	RectSPX PluginRoot::_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const
+	{
+		return Util::ptsToSpx(rect, m_scale);
+	}
+
 
 	//____ _isChildVisible() __________________________________________________
 

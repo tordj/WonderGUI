@@ -398,6 +398,37 @@ namespace wg
 			Capsule::_requestResize();
 	}
 
+	//____ _childRequestInView() _________________________________________________
+
+	void CanvasCapsule::_childRequestInView( StaticSlot * pSlot )
+	{
+		if( m_pHolder )
+		{
+			RectSPX area = _slotGeo( pSlot );
+			m_pHolder->_childRequestInView( m_pSlot, area, area );
+		}
+	}
+
+	void CanvasCapsule::_childRequestInView( StaticSlot * pSlot, const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea )
+	{
+		if( m_pHolder )
+		{
+			if( m_bScaleCanvas )
+			{
+				RectSPX window = _canvasWindow(_contentRect(m_size));
+				float scaleFactor = window.w / (float) m_canvasSize.w;
+
+				m_pHolder->_childRequestInView( m_pSlot, Util::alignUp(mustHaveArea*scaleFactor) + window.pos(), Util::alignUp(niceToHaveArea*scaleFactor) + window.pos() );
+			}
+			else
+			{
+				CoordSPX pos( _slotGeo( pSlot ).pos() );
+				m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
+			}
+		}
+	}
+
+
 	//____ _slotGeo() ___________________________________________________________
 
 	RectSPX CanvasCapsule::_slotGeo(const StaticSlot* pSlot) const
@@ -411,9 +442,9 @@ namespace wg
 			return m_skin.contentRect(m_size, m_scale, m_state);
 	}
 
-	//____ _childRectToGlobal() _______________________________________________
+	//____ _childLocalToGlobal() _______________________________________________
 
-	RectSPX CanvasCapsule::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX CanvasCapsule::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		if (m_bScaleCanvas)
 		{
@@ -429,9 +460,9 @@ namespace wg
 
 	}
 
-	//____ _childRectToLocal() ________________________________________________
+	//____ _globalToChildLocal() ________________________________________________
 
-	RectSPX CanvasCapsule::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX CanvasCapsule::_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		if (m_bScaleCanvas)
 		{
@@ -445,7 +476,28 @@ namespace wg
 		else
 			return _toLocal(rect - _slotGeo(pSlot).pos());
 	}
-					   
+			
+	//____ _globalPtsToChildLocalSpx() ___________________________________________
+
+	RectSPX CanvasCapsule::_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const
+	{
+		RectSPX rectSPX = m_pHolder ? m_pHolder->_globalPtsToChildLocalSpx(m_pSlot, rect) : Util::align(Util::ptsToSpx(rect, m_scale));
+		
+		if (m_bScaleCanvas)
+		{
+			RectSPX window = _canvasWindow(_contentRect(m_size));
+
+			float scaleFactor = (float)m_canvasSize.w / window.w;
+
+			auto local = (rectSPX - window.pos()) * scaleFactor;
+			return local;
+		}
+		else
+		{
+			return rectSPX - _slotGeo(pSlot).pos();
+		}
+	}
+
 	//____ _canvasWindow() _______________________________________________________
 
 	RectSPX CanvasCapsule::_canvasWindow( RectSPX window ) const

@@ -654,18 +654,25 @@ namespace wg
 		return m_geo;
 	}
 
-	//____ _childRectToGlobal() _______________________________________________
+	//____ _childLocalToGlobal() _______________________________________________
 
-	RectSPX RootPanel::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX RootPanel::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		return rect + m_geo.pos();
 	}
 
-	//____ _childRectToLocal() ________________________________________________
+	//____ _globalToChildLocal() ________________________________________________
 
-	RectSPX RootPanel::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX RootPanel::_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		return rect - m_geo.pos();
+	}
+
+	//____ _globalPtsToChildLocalSpx() ___________________________________________
+
+	RectSPX RootPanel::_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const
+	{
+		return Util::ptsToSpx(rect, m_scale) - m_geo.pos();
 	}
 
 

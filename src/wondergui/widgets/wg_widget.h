@@ -111,10 +111,7 @@ namespace wg
 
 		inline int			scale() const;
 	
-		inline Coord		pos() const;
 		inline const Size	size() const;
-		inline Rect			geo() const;
-		inline Coord		globalPos() const;
 		inline Rect			globalGeo() const;
 
 		inline Coord		toGlobal( const Coord& coord ) const;
@@ -129,11 +126,8 @@ namespace wg
 		inline Size			minSize() const;
 		inline Size			maxSize() const;
 
-		inline CoordSPX			spxPos() const { return _pos(); }
 		inline const SizeSPX& spxSize() const { return _size(); }
-		inline RectSPX			spxGeo() const { return _geo(); }
-		inline CoordSPX			spxGlobalPos() const { return _globalPos(); }
-		inline RectSPX			spxGlobalGeo() const { return _globalGeo(); }
+		inline RectSPX		spxGlobalGeo() const { return _globalGeo(); }
 
 		//.____ Hierarchy _____________________________________________________
 
@@ -222,9 +216,6 @@ namespace wg
 		inline const SizeSPX& _size() const;
 		inline int			_scale() const override;
 
-		inline CoordSPX		_pos() const;
-		inline RectSPX		_geo() const;
-		inline CoordSPX		_globalPos() const;
 		inline RectSPX		_globalGeo() const;
 
 		inline CoordSPX		_toGlobal(const CoordSPX& coord) const;
@@ -432,20 +423,6 @@ namespace wg
 		return m_scale;
 	}
 
-	//____ pos() __________________________
-	/**
-	 * @brief	Get the local position of widget.
-	 *
-	 * Get the local position of the widget, which is the position 
-	 * of its north-west corner relative to parents north-west corner.
-	 *
-	 * @return Widgets position relative to its parent.
-	 */
-	Coord Widget::pos() const
-	{
-		return Util::spxToPts(_pos(), m_scale);
-	}
-
 	//____ size() __________________________
 	/**
 	 * @brief	Get the size of of widget.
@@ -457,33 +434,6 @@ namespace wg
 	const Size Widget::size() const
 	{
 		return Util::spxToPts(_size(), m_scale);
-	}
-
-	//____ geo() __________________________
-	/**
-	 * @brief	Get the local geometry of widget.
-	 *
-	 * Get widgets geometry, e.g. position and size of widget relative to its parent. If widget doesn't have a parent, it's position
-	 * defaults to (0,0).
-	 *
-	 * @return Position and size of widget relative to its parent.
-	 */
-	Rect Widget::geo() const
-	{
-		return Util::spxToPts(_geo(), m_scale);
-	}
-
-	//____ globalPos() __________________________
-	/**
-	 * @brief	Get the global position of widget.
-	 *
-	 * Get position of widgets top-left corner in the global coordinate space.
-	 *
-	 * @return Position of widget in global coordinate space.
-	 */
-	Coord Widget::globalPos() const
-	{
-		return Util::spxToPts(_globalPos(), m_scale);
 	}
 
 	//____ globalGeo() __________________________
@@ -506,7 +456,7 @@ namespace wg
 	 *
 	 * Convert coordinate from widgets local coordinate space to the global coordinate space.
 	 *
-	 * @param coord		Coordinate in widgets local coordinate system.
+	 * @param coord		Coordinate in widgets local coordinate space.
 	 *
 	 * Please note that the widgets local coordinate space originates from the top-left
 	 * corner of its geometry box and is NOT the same as the (parents) local coordinate
@@ -518,7 +468,8 @@ namespace wg
 
 	Coord Widget::toGlobal(const Coord& coord) const
 	{
-		return globalPos() + coord;
+		CoordSPX	global = _toGlobal(Util::ptsToSpx(coord, m_scale));
+		return Util::spxToPts(global,m_scale);
 	}
 
 	//____ toGlobal() __________________________
@@ -527,7 +478,7 @@ namespace wg
 	 *
 	 * Convert rectangle from widgets local coordinate space to the global coordinate space.
 	 *
-	 * @param rect		Rectangle in widgets local coordinate system.
+	 * @param rect		Rectangle in widgets local coordinate space.
 	 *
 	 * Please note that the widgets local coordinate space originates from the top-left
 	 * corner of its geometry box and is NOT the same as the (parents) local coordinate
@@ -539,7 +490,8 @@ namespace wg
 
 	Rect Widget::toGlobal(const Rect& rect) const
 	{
-		return rect + globalPos();
+		RectSPX	global = _toGlobal(Util::ptsToSpx(rect, m_scale));
+		return Util::spxToPts(global,m_scale);
 	}
 
 	//____ toLocal() ____________________________________________________________
@@ -548,19 +500,25 @@ namespace wg
 	 *
 	 * Convert coordinate from the global coordinate space to widgets local coordinate space.
 	 *
-	 * @param coord		Coordinate in widgets local coordinate system.
+	 * @param coord		Coordinate in global coordinate space.
 	 *
 	 * Please note that the widgets local coordinate space originates from the top-left
 	 * corner of its geometry box and is NOT the same as the (parents) local coordinate
 	 * space in which it lives.
 	 * The coordinate (0,0) is always the top-left corner of the widget.
 	 *
-	 * @return Coordinate in local coordinate space.
+	 * @return Coordinate in widgets local coordinate space.
 	 */
 
 	Coord Widget::toLocal(const Coord& coord) const
 	{
-		return coord - globalPos();
+		if( m_pHolder )
+		{
+			RectSPX localSPX = m_pHolder->_globalPtsToChildLocalSpx(m_pSlot, coord);
+			return Util::spxToPts(localSPX.pos(), m_scale);
+		}
+		else
+			return coord;
 	}
 
 	//____ toLocal() ____________________________________________________________
@@ -569,19 +527,25 @@ namespace wg
 	 *
 	 * Convert rectangle from the global coordinate space to widgets local coordinate space.
 	 *
-	 * @param rect		Rectangle in widgets local coordinate system.
+	 * @param rect		Rectangle in global coordinate space.
 	 *
 	 * Please note that the widgets local coordinate space originates from the top-left
 	 * corner of its geometry box and is NOT the same as the (parents) local coordinate
 	 * space in which it lives.
 	 * The coordinate (0,0) is always the top-left corner of the widget.
 	 *
-	 * @return Rectangle in local coordinate space.
+	 * @return Rectangle in widgets local coordinate space.
 	 */
 
 	Rect Widget::toLocal(const Rect& rect) const
 	{
-		return rect - globalPos();
+		if( m_pHolder )
+		{
+			RectSPX localSPX = m_pHolder->_globalPtsToChildLocalSpx(m_pSlot, rect);
+			return Util::spxToPts(localSPX, m_scale);
+		}
+		else
+			return rect;
 	}
 
 	//____ matchingHeight() _______________________________________________________
@@ -689,15 +653,6 @@ namespace wg
 		return Util::spxToPts(_maxSize(m_scale), m_scale);
 	}
 
-	//____ _pos() __________________________
-
-	CoordSPX Widget::_pos() const
-	{
-		if (m_pHolder)
-			return m_pHolder->_slotGeo(m_pSlot).pos();
-		return CoordSPX(0, 0);
-	}
-
 	//____ size() __________________________
 
 	const SizeSPX& Widget::_size() const
@@ -712,51 +667,35 @@ namespace wg
 		return m_scale;
 	}
 
-	//____ _geo() __________________________
-
-	RectSPX Widget::_geo() const
-	{
-		if (m_pHolder)
-			return m_pHolder->_slotGeo(m_pSlot);
-		return RectSPX(m_size);
-	}
-
-	//____ _globalPos() __________________________
-
-	CoordSPX Widget::_globalPos() const
-	{
-		return m_pHolder ? (CoordSPX) m_pHolder->_childRectToGlobal(m_pSlot, m_size) : CoordSPX();
-	}
-
 	//____ _globalGeo() __________________________
 
 	RectSPX Widget::_globalGeo() const
 	{
-		return  m_pHolder ? m_pHolder->_childRectToGlobal(m_pSlot, m_size) : RectSPX(m_size);
+		return  m_pHolder ? m_pHolder->_childLocalToGlobal(m_pSlot, m_size) : RectSPX(m_size);
 	}
 
 	//____ _toGlobal() __________________________
 
 	CoordSPX Widget::_toGlobal(const CoordSPX& coord) const
 	{
-		return m_pHolder ? (CoordSPX) m_pHolder->_childRectToGlobal(m_pSlot, coord) : coord;
+		return m_pHolder ? (CoordSPX) m_pHolder->_childLocalToGlobal(m_pSlot, coord) : coord;
 	}
 
 	RectSPX Widget::_toGlobal(const RectSPX& rect) const
 	{
-		return m_pHolder ? m_pHolder->_childRectToGlobal(m_pSlot, rect) : rect;
+		return m_pHolder ? m_pHolder->_childLocalToGlobal(m_pSlot, rect) : rect;
 	}
 
 	//____ _toLocal() ____________________________________________________________
 
 	CoordSPX Widget::_toLocal(const CoordSPX& coord) const
 	{
-		return m_pHolder ? (CoordSPX) m_pHolder->_childRectToLocal(m_pSlot, coord) : coord;
+		return m_pHolder ? (CoordSPX) m_pHolder->_globalToChildLocal(m_pSlot, coord) : coord;
 	}
 
 	RectSPX Widget::_toLocal(const RectSPX& rect) const
 	{
-		return m_pHolder ? m_pHolder->_childRectToLocal(m_pSlot, rect) : rect;
+		return m_pHolder ? m_pHolder->_globalToChildLocal(m_pSlot, rect) : rect;
 	}
 
 	//____ state() ____________________________________________________________

@@ -211,7 +211,7 @@ namespace wg
 		if (!m_pSelectedWidget)
 			return RectSPX();
 
-		RectSPX selectedGeo = m_pSelectedWidget->_globalGeo() - _globalPos();
+		RectSPX selectedGeo = _toLocal(m_pSelectedWidget->_globalGeo());
 
 		if (m_pSelectionSkin)
 			selectedGeo += m_pSelectionSkin->_contentBorder(m_scale, State::Default);
@@ -231,7 +231,7 @@ namespace wg
 
 			SizeSPX wantedSize = pSlot->_widget()->_defaultSize(pSlot->_widget()->_scale()) + palettePadding;
 
-			RectSPX selectedGeo = m_pSelectedWidget->_globalGeo() - _globalPos();
+			RectSPX selectedGeo = _toLocal(m_pSelectedWidget->_globalGeo());
 			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->_contentBorder(m_scale, State::Default) : BorderSPX();
 			RectSPX surroundBox = selectedGeo + BorderSPX(wantedSize.h+4, wantedSize.w+4);
 
@@ -304,7 +304,7 @@ namespace wg
 		{
 			if (m_pSelectedWidget)
 			{
-				RectSPX geo = m_pSelectedWidget->_globalGeo() - _globalPos();
+				RectSPX geo = _toLocal(m_pSelectedWidget->_globalGeo());
 				geo += m_pSelectionSkin->_contentBorder(m_scale, State::Default);
 				_requestRender(geo);
 			}
@@ -313,7 +313,7 @@ namespace wg
 
 			if (m_pSelectedWidget)
 			{
-				RectSPX geo = m_pSelectedWidget->_globalGeo() - _globalPos();
+				RectSPX geo = _toLocal(m_pSelectedWidget->_globalGeo());
 				geo += m_pSelectionSkin->_contentBorder(m_scale, State::Default);
 				_requestRender(geo);
 			}
@@ -444,7 +444,7 @@ namespace wg
 
 					if (pMsg->button() == MouseButton::Left)
 					{
-						CoordSPX mousePos = pMsg->pointerSpxPos() - _globalPos();
+						CoordSPX mousePos = _toLocal(pMsg->pointerSpxPos());
 
 						// Check for press on palette edge
 

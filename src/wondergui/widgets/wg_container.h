@@ -88,9 +88,10 @@ namespace wg
 
 			virtual RectSPX			_slotGeo( const StaticSlot * pSlot ) const override = 0;				///< Get the local position of a child.
 
-			RectSPX					_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
-			RectSPX					_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
-
+			RectSPX					_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
+			RectSPX					_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
+			RectSPX					_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const override;
+		
 			virtual bool			_isChildVisible( const StaticSlot * pSlot ) const override;
 			virtual RectSPX			_childWindowSection( const StaticSlot * pSlot ) const override;		// Returns the window section within the childs canvas.
 

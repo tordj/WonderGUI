@@ -180,7 +180,7 @@ namespace wg
 						CoordSPX total = pMsg->_draggedTotal();
 						if (abs(total.x) + abs(total.y) > ptsToSpx(m_dragStartTreshold,m_scale))
 						{
-							Coord pickOfs = pMsg->startPos() - m_pPicked->globalPos();
+							Coord pickOfs = pMsg->startPos() - m_pPicked->globalGeo().pos();
 							Base::msgRouter()->post(new DropPickMsg(m_pPicked, pickOfs, this, pMsg->modKeys(), pMsg->pointerPos()));
 							m_dragState = DragState::Picked;
 						}

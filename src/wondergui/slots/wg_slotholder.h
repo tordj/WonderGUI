@@ -50,10 +50,12 @@ namespace wg
 		virtual const TypeInfo& _slotTypeInfo(const StaticSlot * pSlot) const = 0;
 
 		virtual RectSPX		_slotGeo( const StaticSlot * pSlot ) const = 0;
-		
-		virtual RectSPX		_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const = 0;
-		virtual RectSPX		_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const = 0;
 
+		virtual RectSPX		_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const = 0;
+		virtual RectSPX		_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const = 0;
+
+		virtual RectSPX		_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const = 0;
+		
 		virtual bool		_isChildVisible( const StaticSlot * pSlot ) const = 0;
 		virtual RectSPX		_childWindowSection( const StaticSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.
 

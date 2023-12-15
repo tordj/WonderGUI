@@ -48,9 +48,8 @@ public:
 	inline CoordSPX _toLocal(const CoordSPX& coord) const { return m_pWidget->_componentToLocal(this, coord); }
 	inline CoordSPX _toLocal(const RectSPX& rect) const { return m_pWidget->_componentToLocal(this, rect); }
 
-		inline CoordSPX	_globalPos() const { return m_pWidget->_globalComponentPos(this); }
-		inline RectSPX	_globalGeo() const { return m_pWidget->_globalComponentGeo(this); }
-		inline Widget* _widget() const { return m_pWidget;  }
+	inline RectSPX	_globalGeo() const { return m_pWidget->_globalComponentGeo(this); }
+	inline Widget*	_widget() const { return m_pWidget;  }
 
 
 	protected:

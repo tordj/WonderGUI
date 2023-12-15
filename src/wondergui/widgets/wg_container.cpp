@@ -66,19 +66,28 @@ namespace wg
 		return false;
 	}
 
-	//____ _childRectToGlobal() _______________________________________________
+	//____ _childLocalToGlobal() _______________________________________________
 
-	RectSPX Container::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX Container::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		return _toGlobal(rect + _slotGeo(pSlot).pos());
 	}
 
-	//____ _childRectToLocal() ________________________________________________
+	//____ _globalToChildLocal() ________________________________________________
 
-	RectSPX Container::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX Container::_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		return _toLocal(rect) - _slotGeo(pSlot).pos();
 
+	}
+
+	//____ _globalPtsToChildLocalSpx() ___________________________________________
+
+	RectSPX Container::_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const
+	{
+		RectSPX rectSPX = m_pHolder ? m_pHolder->_globalPtsToChildLocalSpx(m_pSlot, rect) : Util::align(Util::ptsToSpx(rect, m_scale));
+
+		return rectSPX - _slotGeo(pSlot).pos();
 	}
 
 
@@ -117,7 +126,6 @@ namespace wg
 		return m_scale;
 	}
 
-
 	//____ _childRequestFocus() ______________________________________________________
 
 	bool Container::_childRequestFocus(StaticSlot * pSlot, Widget * pWidget, bool bRaiseWindow )
@@ -145,8 +153,6 @@ namespace wg
 
 	void Container::_childRequestInView(StaticSlot * pSlot, const RectSPX& mustHaveArea, const RectSPX& niceToHaveArea )
 	{
-		// This goes wrong for scaling CanvasCapsule!
-		
 		if( m_pHolder )
 		{
 			CoordSPX pos( _slotGeo( pSlot ).pos() );
