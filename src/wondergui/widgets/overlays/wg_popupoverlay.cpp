@@ -327,10 +327,10 @@ namespace wg
 				{
 					Widget * pOpener = pSlot->m_pOpener.rawPtr();
 
-					CoordSPX 	absPos 		= ofs + _globalPos();
-					RectSPX		openerGeo 	= pOpener->_globalGeo();
+					CoordSPX	openerLocalPos = pOpener->_toLocal(_toGlobal(ofs));
+					RectSPX		openerGeo 	= RectSPX(0,0,pOpener->_size());
 
-					if( openerGeo.contains(absPos) && pOpener->_markTest( absPos - openerGeo.pos() ) )
+					if( openerGeo.contains(openerLocalPos) && pOpener->_markTest( openerLocalPos ) )
 						pResult = pOpener;
 				}
 
@@ -522,7 +522,7 @@ namespace wg
 				if (popupSlots.isEmpty())
 					break;
 
-				CoordSPX 	pointerPos = static_cast<InputMsg*>(_pMsg)->pointerSpxPos() - _globalPos();
+				CoordSPX 	pointerPos = _toLocal(static_cast<InputMsg*>(_pMsg)->pointerSpxPos());
 
 				// Top popup can be in state PeekOpen, which needs special attention.
 
@@ -634,11 +634,9 @@ namespace wg
 
 				if (pOpener)
 				{
+					Coord 	pos = pOpener->toLocal(static_cast<MouseReleaseMsg*>(_pMsg)->pointerPos());
 
-					Coord 	absPos = static_cast<MouseReleaseMsg*>(_pMsg)->pointerPos();
-					Rect	openerGeo = pOpener->globalGeo();
-
-					if (pOpener->markTest(absPos - openerGeo.pos()))
+					if (pOpener->markTest(pos))
 						break;
 				}
 

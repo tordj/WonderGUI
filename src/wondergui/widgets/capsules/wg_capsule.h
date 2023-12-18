@@ -91,7 +91,7 @@ namespace wg
 		Widget *	_prevChild(const StaticSlot * pSlot) const override;
 		Widget *	_nextChild(const StaticSlot * pSlot) const override;
 
-		CoordSPX	_childPos( const StaticSlot * pSlot ) const override;
+		RectSPX		_slotGeo( const StaticSlot * pSlot ) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
 		void		_childRequestRender( StaticSlot * pSlot, const RectSPX& rect ) override;

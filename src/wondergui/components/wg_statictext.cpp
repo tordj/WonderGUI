@@ -73,7 +73,7 @@ namespace wg
 
 				// Get link from character properties
 
-				CoordSPX localPos = static_cast<InputMsg*>( pMsg )->pointerSpxPos() - _globalPos();
+				CoordSPX localPos = _toLocal(static_cast<InputMsg*>( pMsg )->pointerSpxPos());
 				int markedChar = _layout()->charAtPos(this, localPos );
 				if( markedChar >= 0 )
 				{

@@ -177,6 +177,14 @@ namespace wg
 						caretPut( "\n" );
 						break;
 
+					case Key::PageUp:
+						caretPageUp();
+						break;
+
+					case Key::PageDown:
+						caretPageDown();
+						break;
+
 					default:
 						break;
 
@@ -811,6 +819,25 @@ namespace wg
 		int caretOfs = _layout()->caretRight(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
+
+	//____ caretPageUp() _________________________________________________________
+
+	bool EditableText::caretPageUp()
+	{
+//		RectSPX window = m_pWidget->_windowSection();
+//		RectSPX geo = _geo();
+		
+		
+		return false;
+	}
+
+	//____ caretPageDown() _______________________________________________________
+
+	bool EditableText::caretPageDown()
+	{
+		return false;
+	}
+
 
 	//____ caretNextWord() _____________________________________________________
 

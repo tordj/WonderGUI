@@ -207,9 +207,12 @@ namespace wg
 		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
-		CoordSPX	_childPos(const StaticSlot * pSlot) const override;
+		RectSPX		_slotGeo(const StaticSlot * pSlot) const override;
 		RectSPX		_childWindowSection(const StaticSlot * pSlot) const override;
 
+		RectSPX		_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
+		RectSPX		_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
+		RectSPX		_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const override;
 
 		void		_childRequestRender(StaticSlot * pSlot) override;
 		void		_childRequestRender(StaticSlot * pSlot, const RectSPX& rect) override;

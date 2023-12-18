@@ -97,7 +97,7 @@ namespace wg
 		if (pHovered == nullptr || pHovered->tooltip().isEmpty() )
 			return;
 
-		RectSPX hoveredGeo = pHovered->_globalGeo() - _globalPos();
+		RectSPX hoveredGeo = _toLocal(pHovered->_globalGeo());
 		BorderSPX widgetMargin{ hoveredGeo.y, m_size.w - hoveredGeo.right(), m_size.h - hoveredGeo.bottom(), hoveredGeo.x };
 
 		m_activePosition = m_defaultPosition;
@@ -201,7 +201,7 @@ namespace wg
 			// No break, fall through to next case on purpose.
 		case MsgType::MouseMove:
 		{
-			CoordSPX mousePos = static_cast<InputMsg*>(_pMsg)->pointerSpxPos() - _globalPos();
+			CoordSPX mousePos = _toLocal(static_cast<InputMsg*>(_pMsg)->pointerSpxPos());
 			Widget* pHovered = _findWidget(mousePos, SearchMode::ActionTarget);
 
 			if (pHovered->tooltip().isEmpty())

@@ -14,15 +14,19 @@ using namespace std;
 
 //____ constructor ____________________________________________________________
 
-EditorWindow::EditorWindow(Window_p pWindow, MyApp* pApp)
+EditorWindow::EditorWindow(Window_p pWindow, MyApp* pApp, std::string title, std::string path )
 {
 	m_pWindow = pWindow;
 	m_pRootPanel = m_pWindow->rootPanel();
 
 	m_pApp = pApp;
-
+	m_title = title;
+	m_path = path;
+		
 	_setupGUI();
-
+	
+	if( !path.empty() )
+		_loadFile(path);
 }
 
 //____ destructor _____________________________________________________________
@@ -96,32 +100,59 @@ Widget_p EditorWindow::_createTopBar()
 	pBar->setLayout(m_pApp->m_pLayout);
 	pBar->setSkin(m_pApp->m_pPlateSkin);
 
+	auto pClearButton = m_pApp->createButton("Clear");
+	auto pNewButton = m_pApp->createButton("New");
 	auto pLoadButton = m_pApp->createButton("Load");
 	auto pSaveButton = m_pApp->createButton("Save");
-	auto pNewButton = m_pApp->createButton("New");
+	auto pSaveAsButton = m_pApp->createButton("Save as...");
 
 	auto pSpacer = Filler::create(WGBP(Filler, _.defaultSize = { 20,1 }));
 	
-	pBar->slots.pushBack({ {pLoadButton.rawPtr(), {.weight = 0}},
-							{pSaveButton, {.weight = 0 }},
+	pBar->slots.pushBack({ { pClearButton, {.weight = 0} },
+						   { pNewButton, {.weight = 0} },
+						   { pLoadButton, {.weight = 0} },
+						   { pSaveButton, {.weight = 0 }},
+						   { pSaveAsButton, {.weight = 0 }},
 							pSpacer });
 
-	pBar->slots.pushBack({ pLoadButton,
-							pSaveButton,
-							pSpacer });
-
-
+	Base::msgRouter()->addRoute(pClearButton, MsgType::Select, [this](Msg* pMsg) {this->_clear(); });
+	Base::msgRouter()->addRoute(pNewButton, MsgType::Select, [this](Msg* pMsg) {this->m_pApp->createEditorWindow( "", "" ); });
 
 	Base::msgRouter()->addRoute(pLoadButton, MsgType::Select, [this](Msg* pMsg) {this->_selectAndLoadFile(); });
-	Base::msgRouter()->addRoute(pLoadButton, MsgType::Select, [this](Msg* pMsg) {this->_saveFile(); });
+	Base::msgRouter()->addRoute(pSaveButton, MsgType::Select, [this](Msg* pMsg) {this->_saveFile(); });
+	Base::msgRouter()->addRoute(pSaveAsButton, MsgType::Select, [this](Msg* pMsg) {this->_selectAndSaveFile(); });
 
 	return pBar;
 }
 
 
+//____ _clear() ___________________________________________________
+
+void EditorWindow::_clear()
+{
+	m_pEditor->editor.clear();
+}
+
+
 //____ _selectAndLoadFile() ___________________________________________________
 
-void EditorWindow::_selectAndLoadFile()
+bool EditorWindow::_selectAndLoadFile()
+{
+	auto path = m_pApp->m_pAppVisitor->openFileDialog("Load File", "", { "*.txt", "*.*" }, "Text Files");
+	
+	if( path.empty() )
+		return false;
+	
+	
+	if( !m_pEditor->editor.isEmpty() )
+		return m_pApp->createEditorWindow("", path );
+	else
+		return _loadFile(path);
+}
+
+//____ _selectAndSaveFile() ___________________________________________________
+
+bool EditorWindow::_selectAndSaveFile()
 {
 	/*
 	 auto selectedFiles = m_pAppVisitor->openMultiFileDialog("Select Images", "", { "*.surf", "*.qoi" }, "Image files");
@@ -132,12 +163,35 @@ void EditorWindow::_selectAndLoadFile()
 		m_imagePaths = selectedFiles;
 		loadImage(0);
 	*/
+	
+	return false;
 }
+
+//____ _loadFile() ____________________________________________________
+
+bool EditorWindow::_loadFile( const std::string& path )
+{
+	auto pBlob = m_pApp->m_pAppVisitor->loadBlob(path);
+	if( !pBlob )
+		return false;
+	
+	m_pEditor->editor.setText((char*) pBlob->data());
+
+	return true;
+}
+
 
 //____ _saveFile() ___________________________________________________
 
 bool EditorWindow::_saveFile()
 {
+	if( m_path.empty() )
+	{
+		return _selectAndSaveFile();
+	}
+	
+	
+	
 	return false;
 }
 

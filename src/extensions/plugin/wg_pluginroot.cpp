@@ -404,33 +404,34 @@ namespace wg
 	}
 
 
-	//____ _childPos() ________________________________________________________
+	//____ _slotGeo() ________________________________________________________
 
-	CoordSPX PluginRoot::_childPos(const StaticSlot* pSlot) const
+	RectSPX PluginRoot::_slotGeo(const StaticSlot* pSlot) const
 	{
-		return CoordSPX();
+		return RectSPX(0,0,m_size);
 	}
 
-	//____ _childGlobalPos() __________________________________________________
+	//____ _childLocalToGlobal() __________________________________________________
 
-	CoordSPX PluginRoot::_childGlobalPos(const StaticSlot* pSlot) const
-	{
-		return CoordSPX();
-	}
-
-	//____ _childRectToGlobal() __________________________________________________
-
-	RectSPX PluginRoot::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX PluginRoot::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		return rect;
 	}
 
-	//____ _childRectToLocal() ___________________________________________________
+	//____ _globalToChildLocal() ___________________________________________________
 
-	RectSPX PluginRoot::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX PluginRoot::_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		return rect;
 	}
+
+	//____ _globalPtsToChildLocalSpx() ___________________________________________
+
+	RectSPX PluginRoot::_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const
+	{
+		return Util::ptsToSpx(rect, m_scale);
+	}
+
 
 	//____ _isChildVisible() __________________________________________________
 

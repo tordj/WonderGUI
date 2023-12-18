@@ -61,9 +61,9 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		inline Coord	pos() const { return Util::spxToPts(m_pHolder->_childPos(this),m_pHolder->_scale()); }
-		inline Size		size() const { return Util::spxToPts(m_pWidget->m_size,m_pHolder->_scale()); }
-		inline Rect		geo() const { return Util::spxToPts(RectSPX(m_pHolder->_childPos(this), m_pWidget->m_size), m_pHolder->_scale()); }
+		inline Coord	pos() const { return Util::spxToPts(m_pHolder->_slotGeo(this).pos(),m_pHolder->_scale()); }
+		inline Size		size() const { return Util::spxToPts(m_pHolder->_slotGeo(this).size(),m_pHolder->_scale()); }
+		inline Rect		geo() const { return Util::spxToPts(m_pHolder->_slotGeo(this), m_pHolder->_scale()); }
 
 		//.____ Operators __________________________________________
 

@@ -122,7 +122,7 @@ namespace wg
 			m_nbSteps = bp.steps;
 
 			_updateDefaultSize();
-			_setValue(bp.value);
+			_setValue(bp.value, false);
 		}
 
 		virtual ~Slider();
@@ -137,7 +137,7 @@ namespace wg
 
 		virtual void	_setValue(float value, bool bPostMsg = true);
 		void			_setHandleState(State state);
-		RectSPX			_handleGeo(const RectSPX& widgetGeo) const;
+		virtual RectSPX	_handleGeo(const RectSPX& widgetGeo) const;
 
 		float			_skinValue(const SkinSlot* pSlot) const override;
 

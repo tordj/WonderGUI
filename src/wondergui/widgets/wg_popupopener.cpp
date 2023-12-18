@@ -229,7 +229,7 @@ namespace wg
 		auto pLayer = _parent()->_getPopupOverlay();
 		if (pLayer && m_pPopup)
 		{
-			pLayer->popupSlots.pushFront(m_pPopup, this, globalGeo(), m_attachPoint, m_bOpenOnHover, m_bCloseOnSelect );
+			pLayer->popupSlots.pushFront(m_pPopup, this, pLayer->toLocal(globalGeo()), m_attachPoint, m_bOpenOnHover, m_bCloseOnSelect );
 			m_bOpen = true;
 			m_closeState = m_state;
 		}

@@ -939,11 +939,11 @@ namespace wg
 		package.pSlot = nullptr;
 	}
 
-	//____ _childPos() ________________________________________________________
+	//____ _slotGeo() ________________________________________________________
 
-	CoordSPX ScrollPanel::_childPos(const StaticSlot* pSlot) const
+	RectSPX ScrollPanel::_slotGeo(const StaticSlot* pSlot) const
 	{
-		return m_childCanvas.pos();
+		return m_viewRegion;
 	}
 
 	//____ _childWindowSection() ______________________________________________
@@ -951,6 +951,30 @@ namespace wg
 	RectSPX ScrollPanel::_childWindowSection(const StaticSlot* pSlot) const
 	{
 		return m_childWindow - m_childCanvas.pos();
+	}
+
+	//____ _childLocalToGlobal() _______________________________________________
+
+	RectSPX ScrollPanel::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return _toGlobal(rect + m_childCanvas.pos());
+	}
+
+	//____ _globalToChildLocal() ________________________________________________
+
+	RectSPX ScrollPanel::_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return _toLocal(rect) - m_childCanvas.pos();
+
+	}
+
+	//____ _globalPtsToChildLocalSpx() ___________________________________________
+
+	RectSPX ScrollPanel::_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const
+	{
+		RectSPX rectSPX = m_pHolder ? m_pHolder->_globalPtsToChildLocalSpx(m_pSlot, rect) : Util::align(Util::ptsToSpx(rect, m_scale));
+
+		return rectSPX - m_childCanvas.pos();
 	}
 
 	//____ _childRequestRender() ______________________________________________
@@ -1007,12 +1031,12 @@ namespace wg
 	{
 		if (!m_childWindow.contains(niceToHaveArea + m_childCanvas.pos()))
 		{
-/*
-			RectSPX window = { m_viewPixOfs, m_elements[WINDOW].m_windowGeo.size() };
-
+			RectSPX window = m_childWindow - m_childCanvas.pos();
+			RectSPX	startPos = window.pos();
+			
 			for (int i = 0; i < 2; i++)
 			{
-				WgRect inside = i == 0 ? niceToHaveArea : mustHaveArea;
+				RectSPX inside = i == 0 ? niceToHaveArea : mustHaveArea;
 
 				int diffLeft = inside.x - window.x;
 				int diffRight = inside.right() - window.right();
@@ -1030,17 +1054,23 @@ namespace wg
 					window.y += std::max(diffTop, diffBottom);
 			}
 
-			if (window.pos() != m_viewPixOfs)
-				SetViewPixelOfs(window.x, window.y);
+			if (window.pos() != startPos)
+			{
+				m_childCanvas.x -= window.x - startPos.x;
+				m_childCanvas.y -= window.y - startPos.y;
+
+				_childWindowCorrection();
+				_updateScrollbars();
+				_requestRender();
+			}
 
 			// Forward to any outer ScrollPanel
 
-			WgRect newMustHaveArea(mustHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo);
-			WgRect newNiceToHaveArea(niceToHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo);
+			RectSPX newMustHaveArea = RectSPX::overlap(mustHaveArea + m_childCanvas.pos(), m_childWindow);
+			RectSPX newNiceToHaveArea = RectSPX::overlap(niceToHaveArea + m_childCanvas.pos(), m_childWindow);
 
 			_requestInView(newMustHaveArea, newNiceToHaveArea);
 
-*/
 		}
 	}
 

@@ -128,10 +128,10 @@ namespace wg
 		}
 	}
 
-//____ _childPos() _______________________________________________________
+//____ _slotGeo() _______________________________________________________
 
 	template < class SlotType>
-	CoordSPX Panel<SlotType>::_childPos(const StaticSlot * pSlot) const
+	RectSPX Panel<SlotType>::_slotGeo(const StaticSlot * pSlot) const
 	{
 		return ((PanelSlot*)pSlot)->m_geo;
 	}

@@ -647,32 +647,32 @@ namespace wg
 	}
 
 
-	//____ _childPos() ________________________________________________________
+	//____ _slotGeo() ________________________________________________________
 
-	CoordSPX RootPanel::_childPos(const StaticSlot* pSlot) const
+	RectSPX RootPanel::_slotGeo(const StaticSlot* pSlot) const
 	{
-		return m_geo.pos();
+		return m_geo;
 	}
 
-	//____ _childGlobalPos() __________________________________________________
+	//____ _childLocalToGlobal() _______________________________________________
 
-	CoordSPX RootPanel::_childGlobalPos(const StaticSlot* pSlot) const
-	{
-		return m_geo.pos();
-	}
-
-	//____ _childRectToGlobal() _______________________________________________
-
-	RectSPX RootPanel::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX RootPanel::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		return rect + m_geo.pos();
 	}
 
-	//____ _childRectToLocal() ________________________________________________
+	//____ _globalToChildLocal() ________________________________________________
 
-	RectSPX RootPanel::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX RootPanel::_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
 		return rect - m_geo.pos();
+	}
+
+	//____ _globalPtsToChildLocalSpx() ___________________________________________
+
+	RectSPX RootPanel::_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const
+	{
+		return Util::ptsToSpx(rect, m_scale) - m_geo.pos();
 	}
 
 

@@ -221,12 +221,12 @@ namespace wg
 	}
 
 
-	//____ _childPos() _________________________________________________________
+	//____ _slotGeo() _________________________________________________________
 
-	CoordSPX Overlay::_childPos( const StaticSlot * pSlot ) const
+	RectSPX Overlay::_slotGeo( const StaticSlot * pSlot ) const
 	{
 		if( pSlot == &mainSlot )
-			return CoordSPX();
+			return m_skin.contentRect( m_size, m_scale, m_state );
 
 		return ((Slot*)pSlot)->m_geo;
 	}

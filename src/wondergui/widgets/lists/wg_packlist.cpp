@@ -1260,16 +1260,16 @@ namespace wg
 		return sz;
 	}
 
-	//____ _childPos() ________________________________________________________
+	//____ _slotGeo() ________________________________________________________
 
-	CoordSPX PackList::_childPos( const StaticSlot * _pSlot ) const
+	RectSPX PackList::_slotGeo( const StaticSlot * _pSlot ) const
 	{
 		const Slot * pSlot = reinterpret_cast<const Slot*>(_pSlot);
 
 		RectSPX geo;
 		_getChildGeo(geo, pSlot);
 
-		return geo.pos();
+		return geo;
 	}
 
 	//____ _childRequestRender() _________________________________________________

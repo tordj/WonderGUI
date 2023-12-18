@@ -449,7 +449,7 @@ namespace wg
 				if (m_handleState.isPressed())
 					return;
 
-				CoordSPX pos = static_cast<InputMsg*>(pMsg)->pointerSpxPos() - _globalPos();
+				CoordSPX pos = _toLocal(static_cast<InputMsg*>(pMsg)->pointerSpxPos());
 
 				bool bHovered = m_handleGeo.contains(pos);
 				handleState.setHovered(bHovered);
@@ -471,7 +471,7 @@ namespace wg
 				if (p->button() != MouseButton::Left)
 					return;
 
-				CoordSPX pos = p->pointerSpxPos() - _globalPos();
+				CoordSPX pos = _toLocal(p->pointerSpxPos());
 				if (m_handleGeo.contains(pos))
 				{
 					m_handlePressOfs = m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y;
@@ -505,7 +505,7 @@ namespace wg
 
 				if (handleState.isPressed())
 				{
-					CoordSPX pos = p->pointerSpxPos() - _globalPos();
+					CoordSPX pos = _toLocal(p->pointerSpxPos());
 					spx diff = (m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y) - m_handlePressOfs;
 
 					_updateGeo(diff);
@@ -666,11 +666,11 @@ namespace wg
 			package.pSlot = nullptr;
 	}
 
-	//_____ _childPos() _______________________________________________________
+	//_____ _slotGeo() _______________________________________________________
 
-	CoordSPX SplitPanel::_childPos(const StaticSlot * pSlot) const
+	RectSPX SplitPanel::_slotGeo(const StaticSlot * pSlot) const
 	{
-		return static_cast<const Slot*>(pSlot)->m_geo.pos();
+		return static_cast<const Slot*>(pSlot)->m_geo;
 	}
 
 	//____ _childRequestRender() ______________________________________________

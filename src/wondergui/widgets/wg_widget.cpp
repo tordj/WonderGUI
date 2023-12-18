@@ -821,14 +821,14 @@ namespace wg
 
 	CoordSPX Widget::_globalComponentPos( const Component * pComponent ) const
 	{
-		return _componentPos( pComponent ) + _globalPos();
+		return _toGlobal(_componentPos( pComponent ));
 	}
 
 	//____ _globalComponentGeo() ______________________________________________
 
 	RectSPX Widget::_globalComponentGeo( const Component * pComponent ) const
 	{
-		return _componentGeo( pComponent ) + _globalPos();
+		return _toGlobal(_componentGeo( pComponent ));
 	}
 
 	//____ _componentToGlobal() ______________________________________________

@@ -31,8 +31,8 @@ bool MyApp::init(Visitor* pVisitor)
 
 	if( arguments.empty() )
 	{
-		createEditorWindow("Untitled 1");
-		createEditorWindow("Untitled 2");
+		createEditorWindow("Untitled 1", "");
+		createEditorWindow("Untitled 2", "");
 
 	}
 	for ( auto& arg : arguments )
@@ -162,16 +162,22 @@ bool MyApp::_loadSkins(Visitor * pVisitor)
 
 //____ createEditorWindow() ______________________________________________________
 
-bool MyApp::createEditorWindow( const std::string& windowTitle )
+bool MyApp::createEditorWindow( const std::string& windowTitle, const std::string& path )
 {
+	std::string title;
 	
-	auto pWindow = m_pAppVisitor->createWindow({ .size = {800,600}, .title = windowTitle });
+	if( windowTitle.empty() )
+		title = _createWindowTitle(path);
+	else
+		title = windowTitle;
+	
+	auto pWindow = m_pAppVisitor->createWindow({ .size = {800,600}, .title = title });
 
 	if (m_editorWindows.empty())
 		setupGUI();
 
 
-	auto pEditorWindow = EditorWindow::create(pWindow, this);
+	auto pEditorWindow = EditorWindow::create(pWindow, this, title, path );
 
 	m_editorWindows.push_back(pEditorWindow);
 	
@@ -233,7 +239,7 @@ ScrollPanel_p MyApp::createScrollPanel()
 
 bool MyApp::openFile(const std::string& path)
 {
-	createEditorWindow(path);
+	createEditorWindow("",path);
 
 	
 	FILE* fp;
@@ -262,4 +268,38 @@ bool MyApp::openFile(const std::string& path)
 	m_editorWindows.back()->setContent(pText);
 	
 	return true;
+}
+
+//____ _createWindowTitle() ___________________________________________________
+
+std::string MyApp::_createWindowTitle( const std::string& path )
+{
+	std::string title;
+	
+	if( !path.empty() )
+	{
+		title = path.substr(path.find_last_of("/\\") + 1);
+	}
+	else
+	{
+		int nb = 1;
+
+		bool bUnique = false;
+		while(!bUnique)
+		{
+			title = "Untitled " + std::to_string(nb++);
+			bUnique = true;
+
+			for( auto pWin : m_editorWindows )
+			{
+				if( title.compare(pWin->title()) == 0 )
+				{
+					bUnique = false;
+					break;
+				}
+			}
+		}
+	}
+	
+	return title;
 }

@@ -66,46 +66,28 @@ namespace wg
 		return false;
 	}
 
-	//____ _descendantPos() _____________________________________________________
+	//____ _childLocalToGlobal() _______________________________________________
 
-	bool Container::_descendantPos( Widget * pDescendant, CoordSPX& pos )
+	RectSPX Container::_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
-		pos.clear();
-
-		Widget * p = pDescendant;
-		while( p != this )
-		{
-			if( p == nullptr )
-				return false;
-
-			auto pHolder = p->_holder();
-			pos += pHolder->_childPos( p->_slot() );
-			p = pHolder->_container();
-		}
-
-		return true;
+		return _toGlobal(rect + _slotGeo(pSlot).pos());
 	}
 
-	//____ _childGlobalPos() __________________________________________________
+	//____ _globalToChildLocal() ________________________________________________
 
-	CoordSPX Container::_childGlobalPos( const StaticSlot * pSlot ) const
+	RectSPX Container::_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const
 	{
-		return _childPos(pSlot) + _globalPos();
+		return _toLocal(rect) - _slotGeo(pSlot).pos();
+
 	}
 
-	//____ _childRectToGlobal() _______________________________________________
+	//____ _globalPtsToChildLocalSpx() ___________________________________________
 
-	RectSPX Container::_childRectToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const
+	RectSPX Container::_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const
 	{
-		return _toGlobal(rect + _childPos(pSlot));
-	}
+		RectSPX rectSPX = m_pHolder ? m_pHolder->_globalPtsToChildLocalSpx(m_pSlot, rect) : Util::align(Util::ptsToSpx(rect, m_scale));
 
-	//____ _childRectToLocal() ________________________________________________
-
-	RectSPX Container::_childRectToLocal(const StaticSlot* pSlot, const RectSPX& rect) const
-	{
-		return _toLocal(rect) - _childPos(pSlot);
-
+		return rectSPX - _slotGeo(pSlot).pos();
 	}
 
 
@@ -144,7 +126,6 @@ namespace wg
 		return m_scale;
 	}
 
-
 	//____ _childRequestFocus() ______________________________________________________
 
 	bool Container::_childRequestFocus(StaticSlot * pSlot, Widget * pWidget, bool bRaiseWindow )
@@ -165,7 +146,7 @@ namespace wg
 	{
 		if( m_pHolder )
 		{
-			RectSPX area( _childPos( pSlot ), pSlot->_widget()->_size() );
+			RectSPX area = _slotGeo( pSlot );
 			m_pHolder->_childRequestInView( m_pSlot, area, area );
 		}
 	}
@@ -174,7 +155,7 @@ namespace wg
 	{
 		if( m_pHolder )
 		{
-			CoordSPX pos( _childPos( pSlot ) );
+			CoordSPX pos( _slotGeo( pSlot ).pos() );
 			m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
 		}
 	}

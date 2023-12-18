@@ -288,7 +288,7 @@ namespace wg
 		auto pLayer = _parent()->_getPopupOverlay();
 		if (pLayer && m_pListCanvas)
 		{
-			pLayer->popupSlots.pushFront(m_pListCanvas, this, globalGeo(), Placement::SouthWest, false);
+			pLayer->popupSlots.pushFront(m_pListCanvas, this, pLayer->toLocal(globalGeo()), Placement::SouthWest, false);
 			m_bOpen = true;
 			m_closeState = m_state;
 		}

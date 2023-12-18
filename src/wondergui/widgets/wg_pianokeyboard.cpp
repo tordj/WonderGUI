@@ -469,7 +469,7 @@ namespace wg
 			case MsgType::MouseEnter:
 			case MsgType::MouseMove:
 			{
-				CoordSPX pos = static_cast<InputMsg*>(pMsg)->pointerSpxPos() - _globalPos();
+				CoordSPX pos = _toLocal(static_cast<InputMsg*>(pMsg)->pointerSpxPos());
 				int keyIdx = _markTestKey(pos);
 				_setHoveredKey(keyIdx, static_cast<InputMsg*>(pMsg)->timestamp());
 				break;

@@ -106,11 +106,11 @@ namespace wg
 			return Widget::_maxSize(scale);
 	}
 
-	//____ _childPos() ___________________________________________________________
+	//____ _slotGeo() ___________________________________________________________
 
-	CoordSPX Capsule::_childPos( const StaticSlot * pSlot ) const
+	RectSPX Capsule::_slotGeo( const StaticSlot * pSlot ) const
 	{
-		return m_skin.contentOfs( m_scale, m_state );
+		return m_skin.contentRect( m_size, m_scale, m_state );
 	}
 
 	//____ _childRequestRender() _________________________________________________
