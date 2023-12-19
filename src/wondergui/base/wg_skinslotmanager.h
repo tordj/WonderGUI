@@ -47,7 +47,7 @@ namespace wg
 		int					animationCounter;	// Count animation progress in millisec.
 
 		Bitmask<uint8_t>	transitionFrom;	// Bitmask representation of state we transition from.
-		Bitmask<uint8_t>	transitionTo;	// Bitmask representation of tstate we transition to.
+		Bitmask<uint8_t>	transitionTo;	// Bitmask representation of state we transition to.
 		float				fractionalState[StateBits_Nb];
 		void* instance = 0;
 	};

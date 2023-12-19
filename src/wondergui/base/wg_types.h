@@ -36,8 +36,8 @@ namespace wg
 	enum class StateBits
 	{
 		Focused = 0,
-		Hovered = 1,
-		Pressed = 2,
+		Pressed = 1,
+		Hovered = 2,
 		Selected = 3,
 		Targeted = 4,
 		Disabled = 5

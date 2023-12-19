@@ -76,6 +76,11 @@ namespace wg
 
 		//.____ Internal ______________________________________________________
 
+		inline CoordSPX	_pos() const { return m_pHolder->_slotGeo(this).pos(); }
+		inline SizeSPX	_size() const { return m_pHolder->_slotGeo(this).size(); }
+		inline RectSPX	_geo() const { return m_pHolder->_slotGeo(this); }
+
+		
 		inline Widget * _widget() const { return m_pWidget; }
 
 		inline void _setWidget(Widget* pWidget)
