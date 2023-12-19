@@ -72,6 +72,11 @@ namespace wg
 		if (!m_pSkin || newState == oldState || m_pSkin->_ignoresState() )
 			return;
 
+		if( newState.isPressed() != oldState.isPressed() )
+		{
+			int dummy = 0;
+		}
+		
 		// Update transitions based on state change.
 
 		Bitmask<uint8_t> changedStatesMask = newState.mask() ^ oldState.mask();
@@ -109,7 +114,7 @@ namespace wg
 				{
 					if (changedStatesMask.bit(i))
 					{
-						if (pTransitionTimes[i] == 0)
+						if (pTransitionTimes[i] == 0 || (m_pPocket->fractionalState[i] > 0.f && m_pPocket->fractionalState[i] < 1.f) )
 							m_pPocket->transitionFrom.flipBit(i);
 					}
 				}
