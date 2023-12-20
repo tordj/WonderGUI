@@ -1032,7 +1032,7 @@ namespace wg
 		if (!m_childWindow.contains(niceToHaveArea + m_childCanvas.pos()))
 		{
 			RectSPX window = m_childWindow - m_childCanvas.pos();
-			RectSPX	startPos = window.pos();
+			CoordSPX	startPos = window.pos();
 			
 			for (int i = 0; i < 2; i++)
 			{

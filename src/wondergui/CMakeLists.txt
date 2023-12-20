@@ -207,6 +207,8 @@ set( SOURCES
 	widgets/capsules/wg_canvascapsule.h
 	widgets/capsules/wg_capsule.cpp
 	widgets/capsules/wg_capsule.h
+	widgets/capsules/wg_glowcapsule.cpp
+	widgets/capsules/wg_glowcapsule.h
 	widgets/capsules/wg_renderlayercapsule.cpp
 	widgets/capsules/wg_renderlayercapsule.h
 	widgets/capsules/wg_scalecapsule.cpp

@@ -122,6 +122,7 @@ bool skinMarginTest(ComponentPtr<DynamicSlot> pSlot);
 bool wgcombTest(ComponentPtr<DynamicSlot> pSlot);
 bool widgetRecording(ComponentPtr<DynamicSlot> pSlot);
 bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pSlot);
+bool glowCapsuleTest(ComponentPtr<DynamicSlot> pSlot);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -712,7 +713,8 @@ int main(int argc, char** argv)
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
-			canvasCapsuleTest(pSlot);
+		//	canvasCapsuleTest(pSlot);
+			glowCapsuleTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -3153,6 +3155,42 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 													.outlineColor = Color::Blue }) });
 
 	pBack->slots.pushBack(pCanvasDisplay1, { .pos = {10, 240}, .size = {200,200} });
+
+	return true;
+}
+
+//____ glowCapsuleTest() ______________________________________________________
+
+bool glowCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::Black) });
+	*pEntry = pBack;
+
+	auto pMyStyle = TextStyle::create( WGOVR(Base::defaultStyle()->blueprint(), _.size = 30, _.color = Color::White ));
+
+
+	auto pGlowCapsule = GlowCapsule::create();
+
+	float mtx[9] = { 0.1f, 0.1f, 0.1f,
+					 0.1f, 0.1f, 0.1f,
+					 0.1f, 0.1f, 0.1f };
+
+	float mtx2[9] = { 0.1f, 0.1f, 0.1f,
+					 0.1f, 0.15f, 0.1f,
+					 0.1f, 0.1f, 0.1f };
+
+
+
+	pGlowCapsule->setBlurMatrices(96, mtx2, mtx, mtx);
+	pGlowCapsule->setBlurSpeed(31);
+
+
+	pBack->slots.pushBack(pGlowCapsule, { .pos = {10, 10}, .size = {200,200} });
+
+	auto pWrapTextLayout = BasicTextLayout::create({ .wrap = true });
+
+	auto pContent = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .style = pMyStyle, .text = "TEST1" } });
+	pGlowCapsule->slot = pContent;
 
 	return true;
 }

@@ -575,7 +575,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<PixelFormat> 
 
 Widget_p MyApp::_buildGlobalSettingsSection()
 {
-	auto pTopSection = PackPanel::create( { .axis = Axis::X, .skin = m_pSectionSkin, .spacingAfter = 5, .spacingBefore = 5, .spacing = 10 } );
+	auto pTopSection = PackPanel::create( { .axis = Axis::X, .skin = m_pSectionSkin, .spacing = 10, .spacingAfter = 5, .spacingBefore = 5 } );
 
 	// Togglebuttons for TintModes
 
@@ -712,7 +712,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 
 		// Body Row
 
-		auto pBodyRow = PackPanel::create( { .axis = Axis::X, .spacingAfter = 5, .spacing = 10, .spacingBefore = 5 } );
+		auto pBodyRow = PackPanel::create( { .axis = Axis::X, .spacing = 10, .spacingAfter = 5, .spacingBefore = 5 } );
 
 		pBodyRow->slots << _buildToggleButtonRow("Operations", activeBlitTypes, it->blitTypes, [this, index](Msg* pMsg) { this->customBlitTypeToggled(index, pMsg); });
 		pBodyRow->slots << _buildToggleButtonRow("Tint Modes", activeTintModes, it->tintModes, [this, index](Msg* pMsg) { this->customBlitTintModeToggled(index,pMsg); });

@@ -101,8 +101,8 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline const CanvasInfo& canvas() const { return m_canvas; }
-		virtual const CanvasInfo canvas(CanvasRef ref) const = 0;
+		inline const CanvasInfo&	canvas() const { return m_canvas; }
+		virtual const CanvasInfo	canvas(CanvasRef ref) const = 0;
 
 		inline CanvasLayers_p 		canvasLayers() const { return m_pCanvasLayers; }
 
@@ -142,7 +142,7 @@ namespace wg
 		virtual void		setMorphFactor(float factor);
 		virtual float		morphFactor() const { return m_morphFactor; }
 
-		virtual void		setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9], const float alpha[9] );
+		virtual void		setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9] );
 		
 		virtual void		setFixedBlendColor( HiColor color );
 		virtual HiColor		fixedBlendColor() const { return m_fixedBlendColor; }

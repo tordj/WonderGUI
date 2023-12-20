@@ -2314,34 +2314,41 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 					_read_pixel(pSrc + ofs.y * yPitch + ofs.x * xPitch, SRCFORMAT, pPalette, pPalette4096, inB[i], inG[i], inR[i], inA[i]);
 				}
 				
-				srcB = 	( inB[0] * tint.blurMtxB[0] + inB[1] * tint.blurMtxB[1] + inB[2] * tint.blurMtxB[2]
-						+ inB[3] * tint.blurMtxB[3] + inB[4] * tint.blurMtxB[4] + inB[5] * tint.blurMtxB[5]
-						+ inB[6] * tint.blurMtxB[6] + inB[7] * tint.blurMtxB[7] + inB[8] * tint.blurMtxB[8]) / 65536;
+				int tSrcB = ( inB[0] * tint.blurMtxB[0] + inB[1] * tint.blurMtxB[1] + inB[2] * tint.blurMtxB[2]
+							+ inB[3] * tint.blurMtxB[3] + inB[4] * tint.blurMtxB[4] + inB[5] * tint.blurMtxB[5]
+							+ inB[6] * tint.blurMtxB[6] + inB[7] * tint.blurMtxB[7] + inB[8] * tint.blurMtxB[8]) / 65536;
 
-				srcG = 	( inG[0] * tint.blurMtxG[0] + inG[1] * tint.blurMtxG[1] + inG[2] * tint.blurMtxG[2]
-						+ inG[3] * tint.blurMtxG[3] + inG[4] * tint.blurMtxG[4] + inG[5] * tint.blurMtxG[5]
-						+ inG[6] * tint.blurMtxG[6] + inG[7] * tint.blurMtxG[7] + inG[8] * tint.blurMtxG[8]) / 65536;
+				int tSrcG = ( inG[0] * tint.blurMtxG[0] + inG[1] * tint.blurMtxG[1] + inG[2] * tint.blurMtxG[2]
+							+ inG[3] * tint.blurMtxG[3] + inG[4] * tint.blurMtxG[4] + inG[5] * tint.blurMtxG[5]
+							+ inG[6] * tint.blurMtxG[6] + inG[7] * tint.blurMtxG[7] + inG[8] * tint.blurMtxG[8]) / 65536;
 
-				srcR = 	( inR[0] * tint.blurMtxR[0] + inR[1] * tint.blurMtxR[1] + inR[2] * tint.blurMtxR[2]
-						+ inR[3] * tint.blurMtxR[3] + inR[4] * tint.blurMtxR[4] + inR[5] * tint.blurMtxR[5]
-						+ inR[6] * tint.blurMtxR[6] + inR[7] * tint.blurMtxR[7] + inR[8] * tint.blurMtxR[8]) / 65536;
+				int tSrcR = ( inR[0] * tint.blurMtxR[0] + inR[1] * tint.blurMtxR[1] + inR[2] * tint.blurMtxR[2]
+							+ inR[3] * tint.blurMtxR[3] + inR[4] * tint.blurMtxR[4] + inR[5] * tint.blurMtxR[5]
+							+ inR[6] * tint.blurMtxR[6] + inR[7] * tint.blurMtxR[7] + inR[8] * tint.blurMtxR[8]) / 65536;
 
-				srcA = 	( inA[0] * tint.blurMtxA[0] + inA[1] * tint.blurMtxA[1] + inA[2] * tint.blurMtxA[2]
-						+ inA[3] * tint.blurMtxA[3] + inA[4] * tint.blurMtxA[4] + inA[5] * tint.blurMtxA[5]
-						+ inA[6] * tint.blurMtxA[6] + inA[7] * tint.blurMtxA[7] + inA[8] * tint.blurMtxA[8]) / 65536;
-				
-				if( srcB > 4096 )
-					srcB = 4096;
-					
-				if( srcG > 4096 )
-					srcG = 4096;
+				srcA = inA[4];
 
-				if( srcR > 4096 )
-					srcR = 4096;
+				if (tSrcB > 4096)
+					tSrcB = 4096;
 
-				if( srcA > 4096 )
-					srcA = 4096;
+				if (tSrcG > 4096)
+					tSrcG = 4096;
 
+				if (tSrcR > 4096)
+					tSrcR = 4096;
+
+				if (tSrcB < 0)
+					tSrcB = 0;
+
+				if (tSrcG < 0)
+					tSrcG = 0;
+
+				if (tSrcR < 0)
+					tSrcR = 0;
+
+				srcB = (int16_t)tSrcB;
+				srcG = (int16_t)tSrcG;
+				srcR = (int16_t)tSrcR;
 			}
 			else
 			{
@@ -2651,33 +2658,41 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 						_read_pixel(p + ofs.y * srcPitch + ofs.x * srcPixelBytes, SRCFORMAT, pPalette, pPalette4096, inB[i], inG[i], inR[i], inA[i]);
 					}
 					
-					srcB = 	( inB[0] * tint.blurMtxB[0] + inB[1] * tint.blurMtxB[1] + inB[2] * tint.blurMtxB[2]
-							+ inB[3] * tint.blurMtxB[3] + inB[4] * tint.blurMtxB[4] + inB[5] * tint.blurMtxB[5]
-							+ inB[6] * tint.blurMtxB[6] + inB[7] * tint.blurMtxB[7] + inB[8] * tint.blurMtxB[8]) / 65536;
+					int tSrcB = ( inB[0] * tint.blurMtxB[0] + inB[1] * tint.blurMtxB[1] + inB[2] * tint.blurMtxB[2]
+								+ inB[3] * tint.blurMtxB[3] + inB[4] * tint.blurMtxB[4] + inB[5] * tint.blurMtxB[5]
+								+ inB[6] * tint.blurMtxB[6] + inB[7] * tint.blurMtxB[7] + inB[8] * tint.blurMtxB[8]) / 65536;
 
-					srcG = 	( inG[0] * tint.blurMtxG[0] + inG[1] * tint.blurMtxG[1] + inG[2] * tint.blurMtxG[2]
-							+ inG[3] * tint.blurMtxG[3] + inG[4] * tint.blurMtxG[4] + inG[5] * tint.blurMtxG[5]
-							+ inG[6] * tint.blurMtxG[6] + inG[7] * tint.blurMtxG[7] + inG[8] * tint.blurMtxG[8]) / 65536;
+					int tSrcG = ( inG[0] * tint.blurMtxG[0] + inG[1] * tint.blurMtxG[1] + inG[2] * tint.blurMtxG[2]
+								+ inG[3] * tint.blurMtxG[3] + inG[4] * tint.blurMtxG[4] + inG[5] * tint.blurMtxG[5]
+								+ inG[6] * tint.blurMtxG[6] + inG[7] * tint.blurMtxG[7] + inG[8] * tint.blurMtxG[8]) / 65536;
 
-					srcR = 	( inR[0] * tint.blurMtxR[0] + inR[1] * tint.blurMtxR[1] + inR[2] * tint.blurMtxR[2]
-							+ inR[3] * tint.blurMtxR[3] + inR[4] * tint.blurMtxR[4] + inR[5] * tint.blurMtxR[5]
-							+ inR[6] * tint.blurMtxR[6] + inR[7] * tint.blurMtxR[7] + inR[8] * tint.blurMtxR[8]) / 65536;
+					int tSrcR = ( inR[0] * tint.blurMtxR[0] + inR[1] * tint.blurMtxR[1] + inR[2] * tint.blurMtxR[2]
+								+ inR[3] * tint.blurMtxR[3] + inR[4] * tint.blurMtxR[4] + inR[5] * tint.blurMtxR[5]
+								+ inR[6] * tint.blurMtxR[6] + inR[7] * tint.blurMtxR[7] + inR[8] * tint.blurMtxR[8]) / 65536;
 
-					srcA = 	( inA[0] * tint.blurMtxA[0] + inA[1] * tint.blurMtxA[1] + inA[2] * tint.blurMtxA[2]
-							+ inA[3] * tint.blurMtxA[3] + inA[4] * tint.blurMtxA[4] + inA[5] * tint.blurMtxA[5]
-							+ inA[6] * tint.blurMtxA[6] + inA[7] * tint.blurMtxA[7] + inA[8] * tint.blurMtxA[8]) / 65536;
-					
-					if( srcB > 4096 )
-						srcB = 4096;
-						
-					if( srcG > 4096 )
-						srcG = 4096;
+					srcA = inA[4];
 
-					if( srcR > 4096 )
-						srcR = 4096;
+					if (tSrcB > 4096)
+						tSrcB = 4096;
 
-					if( srcA > 4096 )
-						srcA = 4096;
+					if (tSrcG > 4096)
+						tSrcG = 4096;
+
+					if (tSrcR > 4096)
+						tSrcR = 4096;
+
+					if (tSrcB < 0)
+						tSrcB = 0;
+
+					if (tSrcG < 0)
+						tSrcG = 0;
+
+					if (tSrcR < 0)
+						tSrcR = 0;
+
+					srcB = (int16_t)tSrcB;
+					srcG = (int16_t)tSrcG;
+					srcR = (int16_t)tSrcR;
 
 				}
 				else if (READOP == SoftGfxDevice::ReadOp::Clip && ((ofsX | ofsY | (srcMax_w - 1 - ofsX) | (srcMax_h - 1 - ofsY)) < 0))

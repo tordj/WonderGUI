@@ -650,9 +650,9 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 
 	//____ setBlurMatrices() _____________________________________________________
 
-	void SoftGfxDevice::setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9], const float alpha[9] )
+	void SoftGfxDevice::setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9] )
 	{
-		GfxDevice::setBlurMatrices(radius, red, green, blue, alpha);
+		GfxDevice::setBlurMatrices(radius, red, green, blue);
 
 		spx cornerRadius = radius * 724 / 1024;
 		
@@ -674,7 +674,6 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 			m_colTrans.blurMtxR[i] = int(red[i] * 65536);
 			m_colTrans.blurMtxG[i] = int(green[i] * 65536);
 			m_colTrans.blurMtxB[i] = int(blue[i] * 65536);
-			m_colTrans.blurMtxA[i] = int(alpha[i] * 65536);
 		}
 		
 	}

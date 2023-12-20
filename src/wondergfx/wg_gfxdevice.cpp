@@ -234,7 +234,7 @@ namespace wg
 
 	//____ setBlurMatrices() _____________________________________________________
 
-	void GfxDevice::setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9], const float alpha[9] )
+	void GfxDevice::setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9] )
 	{
 		m_blurRadius = radius;
 		
@@ -243,7 +243,6 @@ namespace wg
 			m_blurMtxR[i] = red[i];
 			m_blurMtxG[i] = green[i];
 			m_blurMtxB[i] = blue[i];
-			m_blurMtxA[i] = alpha[i];
 		}
 	}
 
