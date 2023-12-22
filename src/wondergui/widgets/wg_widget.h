@@ -86,7 +86,7 @@ namespace wg
 			bool			dropTarget = false;
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
-			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			MarkPolicy		markPolicy = MarkPolicy::Undefined;
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
@@ -248,7 +248,10 @@ namespace wg
 			m_pBaggage		= bp.baggage;
 			m_bDropTarget	= bp.dropTarget;
 			m_id			= bp.id;
-			m_markPolicy	= bp.markPolicy;
+
+			if( bp.markPolicy != MarkPolicy::Undefined )
+				m_markPolicy = bp.markPolicy;
+			
 			m_bPickable		= bp.pickable;
 			m_pickCategory	= bp.pickCategory;
 			m_pointerStyle	= bp.pointer;
