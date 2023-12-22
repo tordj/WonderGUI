@@ -216,7 +216,7 @@ namespace wg
 			assert(false);
 		}
 
-		bool bMaximized = ((slideStateMask.mask() & state.mask()) != 0);
+		bool bMaximized = ((slideStateMask.bitmask() & state.bitmask()) != 0);
 
 		float offset = 0.f;
 		if (pStateFractions != nullptr)

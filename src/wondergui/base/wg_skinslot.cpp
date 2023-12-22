@@ -79,7 +79,7 @@ namespace wg
 		
 		// Update transitions based on state change.
 
-		Bitmask<uint8_t> changedStatesMask = newState.mask() ^ oldState.mask();
+		Bitmask<uint8_t> changedStatesMask = newState.bitmask() ^ oldState.bitmask();
 
 		if (m_pSkin->_transitioningStates() & changedStatesMask )
 		{
@@ -106,7 +106,7 @@ namespace wg
 				if (!m_pPocket)
 					_initPocket(oldState);
 
-				m_pPocket->transitionTo = newState.mask();
+				m_pPocket->transitionTo = newState.bitmask();
 
 				// Step through statebits and update transition progress
 
@@ -283,7 +283,7 @@ namespace wg
 			m_pPocket->pHolder = this;
 		}
 
-		Bitmask<uint8_t> statemask = state.mask();
+		Bitmask<uint8_t> statemask = state.bitmask();
 
 		m_pPocket->transitionFrom = statemask;
 		m_pPocket->transitionTo = statemask;
