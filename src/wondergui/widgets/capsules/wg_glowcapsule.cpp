@@ -53,53 +53,53 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setBlurMatrices() _____________________________________________________
+	//____ setMatrices() _____________________________________________________
 
-	void GlowCapsule::setBlurMatrices(spx radius, const float red[9], const float green[9], const float blue[9])
+	void GlowCapsule::setMatrices(spx radius, const float red[9], const float green[9], const float blue[9])
 	{
-		m_blurRadius = radius;
+		m_glowRadius = radius;
 
 		for (int i = 0; i < 9; i++)
 		{
-			m_redBlurMtx[i] = red[i];
-			m_greenBlurMtx[i] = green[i];
-			m_blueBlurMtx[i] = blue[i];
+			m_redGlowMtx[i] = red[i];
+			m_greenGlowMtx[i] = green[i];
+			m_blueGlowMtx[i] = blue[i];
 		}
 
 	}
 
-	//____ setBlurCanvasPixelSize() _______________________________________________
+	//____ setResolution() _______________________________________________
 
-	void GlowCapsule::setBlurCanvasPixelSize(SizeI size)
+	void GlowCapsule::setResolution(SizeI size)
 	{
-		if (size != m_blurCanvasPixelSize)
+		if (size != m_glowResolution)
 		{
-			SizeI usedSize = _blurCanvasPixelSize();
-			m_blurCanvasPixelSize = size;
+			SizeI usedSize = _glowResolution();
+			m_glowResolution = size;
 
-			if (m_blurCanvas[0] && m_blurCanvas[0]->pixelSize() != size)
+			if (m_glowCanvas[0] && m_glowCanvas[0]->pixelSize() != size)
 			{
-				m_blurCanvas[0] = nullptr;
-				m_blurCanvas[1] = nullptr;
+				m_glowCanvas[0] = nullptr;
+				m_glowCanvas[1] = nullptr;
 				_requestRender();
 			}
 		}
 	}
 
-	//____ setBlurSeeding() ___________________________________________________
+	//____ setGlowSeeding() ___________________________________________________
 
-	void GlowCapsule::setBlurSeeding(HiColor tint, BlendMode blendMode)
+	void GlowCapsule::setGlowSeeding(HiColor tint, BlendMode blendMode)
 	{
-		m_blurSeedTint = tint;
-		m_blurSeedBlend = blendMode;
+		m_glowSeedTint = tint;
+		m_glowSeedBlend = blendMode;
 	}
 
-	//____ setBlurOutput() ____________________________________________________
+	//____ setGlowOutput() ____________________________________________________
 
-	void GlowCapsule::setBlurOutput(HiColor tint, BlendMode blendMode)
+	void GlowCapsule::setGlowOutput(HiColor tint, BlendMode blendMode)
 	{
-		m_blurOutTint = tint;
-		m_blurOutBlend = blendMode;
+		m_glowOutTint = tint;
+		m_glowOutBlend = blendMode;
 
 	}
 
@@ -157,11 +157,11 @@ namespace wg
 		}
 	}
 
-	//____ setBlurSpeed() _____________________________________________________
+	//____ setRefreshRate() _____________________________________________________
 
-	void GlowCapsule::setBlurSpeed(int updatesPerSecond)
+	void GlowCapsule::setRefreshRate(int updatesPerSecond)
 	{
-		if (updatesPerSecond == m_blurSpeed)
+		if (updatesPerSecond == m_glowRefreshRate)
 			return;
 
 		if (updatesPerSecond < 0)
@@ -171,13 +171,13 @@ namespace wg
 			return;
 		}
 
-		if (m_blurSpeed == 0 && updatesPerSecond > 0)
+		if (m_glowRefreshRate == 0 && updatesPerSecond > 0)
 			_startReceiveUpdates();
 
-		if (m_blurSpeed > 0 && updatesPerSecond == 0)
+		if (m_glowRefreshRate > 0 && updatesPerSecond == 0)
 			_stopReceiveUpdates();
 
-		m_blurSpeed = updatesPerSecond;
+		m_glowRefreshRate = updatesPerSecond;
 	}
 
 
@@ -185,7 +185,7 @@ namespace wg
 
 	void GlowCapsule::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		int microsecBetweenUpdates = 1000000 / m_blurSpeed;
+		int microsecBetweenUpdates = 1000000 / m_glowRefreshRate;
 
 		if( m_microSecAccumulator < microsecBetweenUpdates && 
 			((m_microSecAccumulator + microsecTimestamp) > microsecBetweenUpdates) )
@@ -198,6 +198,9 @@ namespace wg
 
 	void GlowCapsule::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
+		auto contentRect = _contentRect( _canvas );
+
+
 		// Possibly regenerate the canvas
 
 		if (!m_pCanvas)
@@ -209,21 +212,16 @@ namespace wg
 				return;
 			}
 
-			SizeI pixelSize = align(m_size) / 64;
+			SizeI pixelSize = contentRect.size() / 64;
 			m_pCanvas = pFactory->createSurface( WGBP(Surface, _.size = pixelSize, _.format = m_canvasFormat, _.canvas = true ));
 			m_patches.clear();
-			m_patches.add(m_size);
-
-			pDevice->beginCanvasUpdate(m_pCanvas);
-			pDevice->setBlendMode(BlendMode::Replace);
-			pDevice->fill(HiColor::Transparent);
-			pDevice->endCanvasUpdate();
+			m_patches.add(contentRect.size());
 
 		}
 
-		// Possibly regenerate the blur surfaces
+		// Possibly regenerate the glow surfaces
 
-		if (m_blurCanvas[0] == nullptr)
+		if (m_glowCanvas[0] == nullptr)
 		{
 			SurfaceFactory* pFactory = m_pFactory ? m_pFactory : Base::defaultSurfaceFactory();
 			if (!pFactory)
@@ -232,58 +230,57 @@ namespace wg
 				return;
 			}
 
-			SizeI pixelSize = _blurCanvasPixelSize();
+			SizeI pixelSize = _glowResolution();
 
 			for (int i = 0; i < 2; i++)
 			{
-				m_blurCanvas[i] = pFactory->createSurface(WGBP(Surface, _.size = pixelSize, _.format = PixelFormat::BGRA_8, _.canvas = true));
-				pDevice->beginCanvasUpdate(m_blurCanvas[i]);
+				m_glowCanvas[i] = pFactory->createSurface(WGBP(Surface, _.size = pixelSize, _.format = PixelFormat::BGRX_8, _.canvas = true));
+				pDevice->beginCanvasUpdate(m_glowCanvas[i]);
 				pDevice->fill(HiColor::Black);
 				pDevice->endCanvasUpdate();
 			}
 
 		}
 
-		// Render 
-
-		m_skin.render(pDevice, _canvas.size(), m_scale, m_state);
-
-		pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), m_patches.begin(), m_pCanvasLayers, m_renderLayer);
+		// Render
 		
+		m_skin.render(pDevice, _canvas, m_scale, m_state);
+
 		// Render children recursively
 
-		RectSPX canvas = m_skin.contentRect(_canvas, m_scale, m_state);
-
-		if (canvas != _canvas)
+		if (!m_patches.isEmpty())
 		{
-			auto savedClipData = Util::limitClipList(pDevice, canvas);
+			pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), m_patches.begin(), m_pCanvasLayers, m_renderLayer);
+
+			pDevice->setBlendMode(BlendMode::Replace);
+			pDevice->fill(HiColor::Transparent);
+			pDevice->setBlendMode(BlendMode::Blend);
+
+			RectSPX canvas = { 0,0, m_pCanvas->pixelSize()*64 };
 			slot._widget()->_render(pDevice, canvas, canvas);
-			Util::popClipList(pDevice, savedClipData);
+
+			pDevice->endCanvasUpdate();
+
+			m_patches.clear();
 		}
-		else
-			slot._widget()->_render(pDevice, canvas, canvas);
+		
+		// Update glow canvases
 
-		pDevice->endCanvasUpdate();
-
-		m_patches.clear();
-
-		// Update blur canvases
-
-		int microsecBetweenUpdates = 1000000 / m_blurSpeed;
+		int microsecBetweenUpdates = 1000000 / m_glowRefreshRate;
 
 		while (m_microSecAccumulator >= microsecBetweenUpdates)
 		{
-			pDevice->beginCanvasUpdate(m_blurCanvas[1]);
-			pDevice->setBlitSource(m_blurCanvas[0]);
-			pDevice->setBlurMatrices(m_blurRadius, m_redBlurMtx, m_greenBlurMtx, m_blueBlurMtx);
+			pDevice->beginCanvasUpdate(m_glowCanvas[1]);
+			pDevice->setBlitSource(m_glowCanvas[0]);
+			pDevice->setBlurMatrices(m_glowRadius, m_redGlowMtx, m_greenGlowMtx, m_blueGlowMtx);
 			pDevice->blur({ 0,0 });
-			pDevice->setTintColor(m_blurSeedTint);
-			pDevice->setBlendMode(m_blurSeedBlend);
+			pDevice->setTintColor(m_glowSeedTint);
+			pDevice->setBlendMode(m_glowSeedBlend);
 			pDevice->setBlitSource(m_pCanvas);
-			pDevice->stretchBlit(m_blurCanvas[0]->pixelSize() * 64);
+			pDevice->stretchBlit(m_glowCanvas[0]->pixelSize() * 64);
 			pDevice->endCanvasUpdate();
 
-			std::swap(m_blurCanvas[0], m_blurCanvas[1]);
+			std::swap(m_glowCanvas[0], m_glowCanvas[1]);
 
 			m_microSecAccumulator -= microsecBetweenUpdates;
 
@@ -293,6 +290,8 @@ namespace wg
 
 		// Blit our canvas
 
+		auto canvas = _contentRect( _canvas );
+		
 		int		rl = pDevice->renderLayer();
 		BlendMode bm = pDevice->blendMode();
 		HiColor c = pDevice->tintColor();	
@@ -301,15 +300,15 @@ namespace wg
 		if (m_renderLayer != -1)
 			pDevice->setRenderLayer(m_renderLayer);
 
-		pDevice->setBlendMode(m_blurOutBlend);
-		pDevice->setTintColor(m_blurOutTint);
-		pDevice->setBlitSource(m_blurCanvas[0]);
-		pDevice->stretchBlit(canvas);
+		pDevice->setBlendMode(m_glowOutBlend);
+		pDevice->setTintColor(m_glowOutTint);
+		pDevice->setBlitSource(m_glowCanvas[0]);
+		pDevice->stretchBlit(contentRect);
 
 		pDevice->setBlendMode(m_canvasOutBlend);
 		pDevice->setTintColor(m_canvasOutTint);
 		pDevice->setBlitSource(m_pCanvas);
-		pDevice->blit(canvas);
+		pDevice->blit(contentRect.pos());
 
 		pDevice->setTintColor(c);
 		pDevice->setBlendMode(bm);
@@ -324,10 +323,10 @@ namespace wg
 		{
 			m_pCanvas = nullptr;
 
-			if (m_blurCanvasPixelSize.isEmpty())
+			if (m_glowResolution.isEmpty())
 			{
-				m_blurCanvas[0] = nullptr;
-				m_blurCanvas[1] = nullptr;
+				m_glowCanvas[0] = nullptr;
+				m_glowCanvas[1] = nullptr;
 			}
 
 		}
@@ -339,24 +338,24 @@ namespace wg
 	void GlowCapsule::_childRequestRender(StaticSlot* pSlot)
 	{
 		m_patches.clear();
-		m_patches.push(m_size);
+		m_patches.push(m_size-_contentBorderSize(m_scale));
 		Capsule::_childRequestRender(pSlot);
 	}
 
 	void GlowCapsule::_childRequestRender(StaticSlot* pSlot, const RectSPX& rect)
 	{
-		RectSPX dirt = rect + _contentRect().pos();
+		m_patches.add(rect);
 
-		m_patches.add(dirt);
+		RectSPX dirt = rect + _contentRect().pos();
 		_requestRender(dirt);
 	}
 
-	//____ _blurCanvasPixelSize() _____________________________________________
+	//____ _glowResolution() _____________________________________________
 
-	SizeI GlowCapsule::_blurCanvasPixelSize()
+	SizeI GlowCapsule::_glowResolution()
 	{
-		if (! m_blurCanvasPixelSize.isEmpty() )
-			return m_blurCanvasPixelSize;
+		if (! m_glowResolution.isEmpty() )
+			return m_glowResolution;
 
 		return (m_size - _contentBorderSize(m_scale)) / 64;				
 	}

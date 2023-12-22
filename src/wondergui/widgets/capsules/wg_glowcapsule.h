@@ -90,14 +90,14 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void				setBlurMatrices(spx radius, const float red[9], const float green[9], const float blue[9]);
+		void				setMatrices(spx radius, const float red[9], const float green[9], const float blue[9]);
 
-		void				setBlurCanvasPixelSize(SizeI size);
+		void				setResolution(SizeI pixels);
 
-		void				setBlurSpeed(int updatesPerSecond);
+		void				setRefreshRate(int updatesPerSecond);
 
-		void				setBlurSeeding(HiColor tint, BlendMode blendMode);
-		void				setBlurOutput(HiColor tint, BlendMode blendMode);
+		void				setGlowSeeding(HiColor tint, BlendMode blendMode);
+		void				setGlowOutput(HiColor tint, BlendMode blendMode);
 		void				setCanvasOutput(HiColor tint, BlendMode blendMode);
 
 
@@ -136,7 +136,7 @@ namespace wg
 		void				_childRequestRender(StaticSlot* pSlot) override;
 		void				_childRequestRender(StaticSlot* pSlot, const RectSPX& rect) override;
 
-		SizeI				_blurCanvasPixelSize();
+		SizeI				_glowResolution();
 
 
 
@@ -148,21 +148,21 @@ namespace wg
 
 		PatchesSPX			m_patches;
 
-		float				m_redBlurMtx[9];
-		float				m_greenBlurMtx[9];
-		float				m_blueBlurMtx[9];
+		float				m_redGlowMtx[9];
+		float				m_greenGlowMtx[9];
+		float				m_blueGlowMtx[9];
 
-		int					m_blurSpeed = 30;
-		spx					m_blurRadius = 96;
+		int					m_glowRefreshRate = 30;
+		spx					m_glowRadius = 96;
 
-		Surface_p			m_blurCanvas[2];
-		SizeI				m_blurCanvasPixelSize;
+		Surface_p			m_glowCanvas[2];
+		SizeI				m_glowResolution;
 
-		HiColor				m_blurSeedTint = HiColor::White;
-		BlendMode			m_blurSeedBlend = BlendMode::Blend;
+		HiColor				m_glowSeedTint = HiColor::White;
+		BlendMode			m_glowSeedBlend = BlendMode::Blend;
 
-		HiColor				m_blurOutTint = HiColor::White;
-		BlendMode			m_blurOutBlend = BlendMode::Add;
+		HiColor				m_glowOutTint = HiColor::White;
+		BlendMode			m_glowOutBlend = BlendMode::Add;
 
 		HiColor				m_canvasOutTint = HiColor::White;
 		BlendMode			m_canvasOutBlend = BlendMode::Blend;

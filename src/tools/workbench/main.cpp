@@ -1088,7 +1088,7 @@ bool savePNG(Surface * pSurface, const char * path)
 	SizeI size = pSurface->pixelSize();
 	const PixelDescription* pFmt = pSurface->pixelDescription();
 
-	SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, pFmt->R_mask, pFmt->G_mask, pFmt->B_mask, pFmt->A_mask);
+	SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, (uint32_t) pFmt->R_mask, (uint32_t) pFmt->G_mask, (uint32_t) pFmt->B_mask, (uint32_t) pFmt->A_mask);
 
 
 	int err = SDL_LockSurface(pOutput);
@@ -3181,15 +3181,19 @@ bool glowCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 
 
-	pGlowCapsule->setBlurMatrices(96, mtx2, mtx, mtx);
-	pGlowCapsule->setBlurSpeed(31);
+//	pGlowCapsule->setResolution( {64,64} );
 
+	pGlowCapsule->setMatrices(96, mtx2, mtx, mtx);
+	pGlowCapsule->setRefreshRate(30);
 
-	pBack->slots.pushBack(pGlowCapsule, { .pos = {10, 10}, .size = {200,200} });
+	pGlowCapsule->setSkin( BoxSkin::create( { .color = HiColor::Transparent, .outlineThickness = 50, .outlineColor = Color::Yellow, .padding = 50 }) );
+
+	pBack->slots.pushBack(pGlowCapsule, { .pos = {  50, 50}, .size = {300,300} });
 
 	auto pWrapTextLayout = BasicTextLayout::create({ .wrap = true });
 
-	auto pContent = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .style = pMyStyle, .text = "TEST1" } });
+	
+	auto pContent = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .style = pMyStyle, .text = "" } });
 	pGlowCapsule->slot = pContent;
 
 	return true;
