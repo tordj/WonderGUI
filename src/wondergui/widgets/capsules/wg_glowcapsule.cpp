@@ -35,8 +35,7 @@ namespace wg
 
 	GlowCapsule::GlowCapsule()
 	{
-
-		_startReceiveUpdates();
+		_init();
 
 	}
 
@@ -52,6 +51,15 @@ namespace wg
 	{
 		return TYPEINFO;
 	}
+
+	//____ clear() ____________________________________________________________
+
+	void GlowCapsule::clear()
+	{
+		m_bClear = true;
+		_requestRender();
+	}
+
 
 	//____ setMatrices() _____________________________________________________
 
@@ -86,9 +94,19 @@ namespace wg
 		}
 	}
 
-	//____ setGlowSeeding() ___________________________________________________
+	//____ setResizeAction() _________________________________________________
 
-	void GlowCapsule::setGlowSeeding(HiColor tint, BlendMode blendMode)
+	void GlowCapsule::setResizeAction(Placement moveGlow, bool bStretchGlow, bool bClearGlow)
+	{
+		m_glowResizePlacement = moveGlow;
+		m_bStretchGlowOnResize = bStretchGlow;
+		m_bClearGlowOnResize = bClearGlow;
+	}
+
+
+	//____ setGlowSeed() ___________________________________________________
+
+	void GlowCapsule::setGlowSeed(HiColor tint, BlendMode blendMode)
 	{
 		m_glowSeedTint = tint;
 		m_glowSeedBlend = blendMode;
@@ -221,25 +239,46 @@ namespace wg
 
 		// Possibly regenerate the glow surfaces
 
-		if (m_glowCanvas[0] == nullptr)
+		if (m_glowCanvas[1] == nullptr)
 		{
-			SurfaceFactory* pFactory = m_pFactory ? m_pFactory : Base::defaultSurfaceFactory();
-			if (!pFactory)
+			m_glowCanvas[1] = _createGlowCanvas();
+
+			if (m_glowCanvas[0] == nullptr)
 			{
-				//TODO: Error handling!
-				return;
+				// Both are missing, we just recreate and clear them.
+
+				m_glowCanvas[0] = _createGlowCanvas();
+				m_bClear = true;
 			}
-
-			SizeI pixelSize = _glowResolution();
-
-			for (int i = 0; i < 2; i++)
+			else
 			{
-				m_glowCanvas[i] = pFactory->createSurface(WGBP(Surface, _.size = pixelSize, _.format = PixelFormat::BGRX_8, _.canvas = true));
-				pDevice->beginCanvasUpdate(m_glowCanvas[i]);
-				pDevice->fill(HiColor::Black);
+				pDevice->beginCanvasUpdate(m_glowCanvas[1]);
+				pDevice->fill(Color::Black);
+
+				pDevice->setBlitSource(m_glowCanvas[0]);
+				SizeSPX destSize = (m_glowCanvas[1]->pixelSize() * 64) - SizeSPX(128, 128);
+				SizeSPX sourceSize = (m_glowCanvas[0]->pixelSize() * 64) - SizeSPX(128, 128);
+
+				if (m_bStretchGlowOnResize)
+				{
+					pDevice->stretchBlit({ 64,64,destSize}, { 64,64,sourceSize});
+				}
+				else
+				{
+					RectSPX dest = Util::placementToRect(m_glowResizePlacement,destSize, sourceSize);
+
+					pDevice->blit({ dest.x + 64,dest.y + 64 }, { 64,64,sourceSize });
+				}
+
 				pDevice->endCanvasUpdate();
-			}
 
+				m_glowCanvas[0] = _createGlowCanvas();
+				pDevice->beginCanvasUpdate(m_glowCanvas[0]);
+				pDevice->fill(Color::Black);
+				pDevice->endCanvasUpdate();
+
+				std::swap(m_glowCanvas[0], m_glowCanvas[1]);
+			}
 		}
 
 		// Render
@@ -264,20 +303,38 @@ namespace wg
 			m_patches.clear();
 		}
 		
+		// Possibly clear glow canvas
+
+		if (m_bClear)
+		{
+			pDevice->beginCanvasUpdate(m_glowCanvas[0]);
+			pDevice->fill(HiColor::Black);
+			pDevice->endCanvasUpdate();
+
+			m_bClear = false;
+		}
+
 		// Update glow canvases
 
 		int microsecBetweenUpdates = 1000000 / m_glowRefreshRate;
+
+		RectSPX srcRect = m_glowCanvas[0]->pixelSize() * 64;
+		srcRect -= BorderSPX(64);
+
+		RectSPX destRect = m_glowCanvas[1]->pixelSize() * 64;
+		destRect -= BorderSPX(64);
+
 
 		while (m_microSecAccumulator >= microsecBetweenUpdates)
 		{
 			pDevice->beginCanvasUpdate(m_glowCanvas[1]);
 			pDevice->setBlitSource(m_glowCanvas[0]);
 			pDevice->setBlurMatrices(m_glowRadius, m_redGlowMtx, m_greenGlowMtx, m_blueGlowMtx);
-			pDevice->blur({ 0,0 });
+			pDevice->blur( destRect.pos(), srcRect);
 			pDevice->setTintColor(m_glowSeedTint);
 			pDevice->setBlendMode(m_glowSeedBlend);
 			pDevice->setBlitSource(m_pCanvas);
-			pDevice->stretchBlit(m_glowCanvas[0]->pixelSize() * 64);
+			pDevice->stretchBlit( destRect );
 			pDevice->endCanvasUpdate();
 
 			std::swap(m_glowCanvas[0], m_glowCanvas[1]);
@@ -288,7 +345,7 @@ namespace wg
 				m_microSecAccumulator = microsecBetweenUpdates;		// Make sure we don't loop more than twice.
 		}
 
-		// Blit our canvas
+		// Blit to destination, first updated blur, then local canvas.
 
 		auto canvas = _contentRect( _canvas );
 		
@@ -303,7 +360,7 @@ namespace wg
 		pDevice->setBlendMode(m_glowOutBlend);
 		pDevice->setTintColor(m_glowOutTint);
 		pDevice->setBlitSource(m_glowCanvas[0]);
-		pDevice->stretchBlit(contentRect);
+		pDevice->stretchBlit(contentRect, destRect );
 
 		pDevice->setBlendMode(m_canvasOutBlend);
 		pDevice->setTintColor(m_canvasOutTint);
@@ -325,8 +382,10 @@ namespace wg
 
 			if (m_glowResolution.isEmpty())
 			{
-				m_glowCanvas[0] = nullptr;
 				m_glowCanvas[1] = nullptr;
+
+				if (m_bClearGlowOnResize)
+					m_glowCanvas[0] = nullptr;
 			}
 
 		}
@@ -360,5 +419,37 @@ namespace wg
 		return (m_size - _contentBorderSize(m_scale)) / 64;				
 	}
 
+	//____ _createGlowCanvas() ________________________________________________
+
+	Surface_p GlowCapsule::_createGlowCanvas()
+	{
+		SurfaceFactory* pFactory = m_pFactory ? m_pFactory : Base::defaultSurfaceFactory();
+		if (!pFactory)
+		{
+			//TODO: Error handling!
+			return nullptr;
+		}
+
+		// Glow surfaces have a border that is not used to make sampling at corners
+		// work better.
+
+		SizeI pixelSize = _glowResolution() + SizeI(2,2);
+
+		return pFactory->createSurface(WGBP(Surface, _.size = pixelSize, _.format = PixelFormat::BGRX_8, _.canvas = true));
+	}
+
+	//____ _init() ____________________________________________________________
+
+	void GlowCapsule::_init()
+	{
+		for (int i = 0; i < 9; i++)
+		{
+			m_redGlowMtx[i] = 0.1f;
+			m_greenGlowMtx[i] = 0.1f;
+			m_blueGlowMtx[i] = 0.1f;
+		}
+
+		_startReceiveUpdates();
+	}
 
 }

@@ -50,6 +50,4 @@ namespace wg
 	const State State::TargetedSelectedFocused	= State(15);
 	const State State::Disabled					= State(16);
 	const State State::DisabledSelected			= State(17);
-
-	
 }

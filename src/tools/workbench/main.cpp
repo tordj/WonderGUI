@@ -3188,7 +3188,7 @@ bool glowCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 	pGlowCapsule->setSkin( BoxSkin::create( { .color = HiColor::Transparent, .outlineThickness = 50, .outlineColor = Color::Yellow, .padding = 50 }) );
 
-	pBack->slots.pushBack(pGlowCapsule, { .pos = {  50, 50}, .size = {300,300} });
+	pBack->slots.pushBack(pGlowCapsule, { .pos = {  50, 50}, .size = {300,0} });
 
 	auto pWrapTextLayout = BasicTextLayout::create({ .wrap = true });
 

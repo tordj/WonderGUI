@@ -65,7 +65,7 @@ namespace wg
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
 			bool			pickable		= false;
 			int				pickCategory	= 0;
-			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;
+			PixelFormat		pixelFormat		= PixelFormat::BGRA_8;			// Pixel format for CANVAS!
 			PointerStyle	pointer			= PointerStyle::Undefined;
 			int				renderLayer		= -1;
 			bool			selectable		= true;
@@ -73,10 +73,25 @@ namespace wg
 			bool			stickyFocus		= false;
 			SurfaceFactory_p surfaceFactory;
 			bool			tabLock			= false;
-			HiColor			tintColor		= HiColor::Undefined;
-			BlendMode		tintColorBlend	= BlendMode::Replace;
 			String			tooltip;
+
+
+			SizeI			resolution;
+			int				refreshRate		= 30;
+			HiColor			seedTint		= HiColor::White;
+			BlendMode		seedBlend		= BlendMode::Blend;
+			HiColor			outputTint		= HiColor::White;
+			BlendMode		outputBlend		= BlendMode::Add;
+			HiColor			canvasTint		= HiColor::White;
+			BlendMode		canvasBlend		= BlendMode::Blend;
+
+			spx				radius			= 96;
+			const float	*	matrixRed		= nullptr;
+			const float	*	matrixGreen		= nullptr;
+			const float	*	matrixBlue		= nullptr;
 		};
+
+
 
 		//.____ Creation __________________________________________
 
@@ -90,13 +105,17 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
+		void				clear();
+
 		void				setMatrices(spx radius, const float red[9], const float green[9], const float blue[9]);
 
 		void				setResolution(SizeI pixels);
 
+		void				setResizeAction(Placement moveGlow, bool bStretchGlow, bool bClearGlow);
+
 		void				setRefreshRate(int updatesPerSecond);
 
-		void				setGlowSeeding(HiColor tint, BlendMode blendMode);
+		void				setGlowSeed(HiColor tint, BlendMode blendMode);
 		void				setGlowOutput(HiColor tint, BlendMode blendMode);
 		void				setCanvasOutput(HiColor tint, BlendMode blendMode);
 
@@ -118,13 +137,38 @@ namespace wg
 		
 		template<class BP> GlowCapsule(const BP& bp) : Capsule(bp)
 		{
-			m_pFactory		= bp.surfaceFactory;
-			m_canvasFormat	= bp.pixelFormat;
-			m_pCanvasLayers = bp.layers;
-			m_renderLayer	= bp.renderLayer;
+			_init();
+
+			m_pFactory			= bp.surfaceFactory;
+			m_canvasFormat		= bp.pixelFormat;
+			m_pCanvasLayers		= bp.layers;
+			m_renderLayer		= bp.renderLayer;
 
 			if( bp.child )
 				slot.setWidget(bp.child);
+
+			m_glowResolution	= bp.resolution;
+			m_glowRefreshRate	= bp.refreshRate;
+			m_glowSeedTint		= bp.seedTint;
+			m_glowSeedBlend		= bp.seedBlend;
+			m_glowOutTint		= bp.outputTint;
+			m_glowOutBlend		= bp.outputBlend;
+			m_canvasOutTint		= bp.canvasTint;
+			m_canvasOutBlend	= bp.canvasBlend;
+
+			m_glowRadius		= bp.radius;
+
+			if (bp.matrixRed)
+				for( int i = 0 ; i < 9 ; i++ )
+					m_redGlowMtx[i] = bp.matrixRed[i];
+
+			if (bp.matrixGreen)
+				for (int i = 0; i < 9; i++)
+					m_greenGlowMtx[i] = bp.matrixGreen[i];
+
+			if (bp.matrixBlue)
+				for (int i = 0; i < 9; i++)
+					m_blueGlowMtx[i] = bp.matrixBlue[i];
 		}
 		
 		virtual ~GlowCapsule();
@@ -137,7 +181,9 @@ namespace wg
 		void				_childRequestRender(StaticSlot* pSlot, const RectSPX& rect) override;
 
 		SizeI				_glowResolution();
+		Surface_p			_createGlowCanvas();
 
+		void				_init();
 
 
 		Surface_p			m_pCanvas;
@@ -168,6 +214,13 @@ namespace wg
 		BlendMode			m_canvasOutBlend = BlendMode::Blend;
 
 		int					m_microSecAccumulator = 0;
+
+		bool				m_bClear = false;
+
+		Placement			m_glowResizePlacement	= Placement::NorthWest;
+		bool				m_bStretchGlowOnResize	= false;
+		bool				m_bClearGlowOnResize	= false;
+
 	};
 
 
