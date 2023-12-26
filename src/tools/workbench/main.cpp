@@ -116,7 +116,7 @@ bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot);
 bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pSlot);
 bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pSlot);
 bool customSkinTest(ComponentPtr<DynamicSlot> pSlot);
-bool graphDisplayTest(ComponentPtr<DynamicSlot> pSlot);
+bool areaChartTest(ComponentPtr<DynamicSlot> pSlot);
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pSlot);
 bool skinMarginTest(ComponentPtr<DynamicSlot> pSlot);
 bool wgcombTest(ComponentPtr<DynamicSlot> pSlot);
@@ -708,13 +708,13 @@ int main(int argc, char** argv)
 		//	blendRGB565BigendianTest( pSlot );
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
-		//	graphDisplayTest(pSlot);
+			areaChartTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
 		//	canvasCapsuleTest(pSlot);
-			glowCapsuleTest(pSlot);
+		//	glowCapsuleTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -2733,15 +2733,15 @@ bool customSkinTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 }
 
-//____ graphDisplayTest() ______________________________________________________
+//____ areaChartTest() ______________________________________________________
 
-bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
+bool areaChartTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pFlex = FlexPanel::create();
 
 	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
 
-	auto pGraph = GraphDisplay::create(WGBP(GraphDisplay,
+	auto pGraph = AreaChart::create(WGBP(AreaChart,
 		_.displayCeiling = 0.5f,
 		_.displayFloor = - 0.5f,
 		_.displaySkin = StaticBoxSkin::create( WGBP(StaticBoxSkin,
@@ -2760,7 +2760,7 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 	*pEntry = pFlex;
 
 
-	pGraph->graphs.pushBack( {
+	pGraph->entries.pushBack( {
 		.bottomOutlineThickness = 0,
 		.outlineColor = Color::Red,
 		.topOutlineThickness = 5
@@ -2773,11 +2773,11 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 	static float bottomSamples2[1] = { 0.f };
 
 
-	pGraph->graphs.back().setTopSamples(5, topSamples);
+	pGraph->entries.back().setTopSamples(5, topSamples);
 
 	auto pTransition = ArrayTransition::create(2000000, TransitionCurve::Bezier);
 
-	pGraph->graphs.back().transitionSamples(pTransition, 5, topSamples2, 1, bottomSamples2);
+	pGraph->entries.back().transitionSamples(pTransition, 5, topSamples2, 1, bottomSamples2);
 
 
 	static float curveSamples[6][201];
@@ -2807,14 +2807,14 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 
 	for (int i = 0; i < 6; i++)
 	{
-		pGraph->graphs.pushBack({
+		pGraph->entries.pushBack({
 			.bottomOutlineThickness = 0,
 			.color = Color::Transparent,
 			.outlineColor = colors[i],
 			.topOutlineThickness = 2,
 			});
 
-		pGraph->graphs.back().setTopSamples(201, curveSamples[i] );
+		pGraph->entries.back().setTopSamples(201, curveSamples[i] );
 	}
 
 	// Setup grid

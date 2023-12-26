@@ -156,18 +156,20 @@ set( SOURCES
 
 	widgets/wg_animplayer.cpp
 	widgets/wg_animplayer.h
+	widgets/wg_areachart.cpp
+	widgets/wg_areachart.h
 	widgets/wg_button.cpp
 	widgets/wg_button.h
 	widgets/wg_canvasdisplay.cpp
 	widgets/wg_canvasdisplay.h
+	widgets/wg_chart.cpp
+	widgets/wg_chart.h
 	widgets/wg_container.cpp
 	widgets/wg_container.h
 	widgets/wg_filler.cpp
 	widgets/wg_filler.h
 	widgets/wg_fpsdisplay.cpp
 	widgets/wg_fpsdisplay.h
-	widgets/wg_graphdisplay.cpp
-	widgets/wg_graphdisplay.h
 	widgets/wg_image.cpp
 	widgets/wg_image.h
 	widgets/wg_knob.cpp
