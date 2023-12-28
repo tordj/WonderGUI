@@ -1514,7 +1514,7 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _transformBlitSimple() ______________________________________________________
 
-	void MetalGfxDevice::_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2])
+	void MetalGfxDevice::_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2],  OpType type)
 	{
         if (m_pBlitSource == nullptr)
             return;
@@ -1593,7 +1593,7 @@ MetalGfxDevice::MetalGfxDevice()
 
     //____ _transformBlitComplex() ______________________________________________________
 
-	void MetalGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord src, const binalInt complexTransform[2][2])
+	void MetalGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type)
 	{
         if (m_pBlitSource == nullptr)
             return;
