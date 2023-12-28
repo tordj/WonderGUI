@@ -155,6 +155,7 @@ namespace wg
 
 	enum class MarkPolicy : uint8_t	//. autoExtras
 	{
+		Undefined,
 		Ignore,				///< Widget can not be marked, hovered or pressed by pointer.
 		AlphaTest,			///< An alpha-test is performed to determine if widget is marked.
 		Geometry			///< Widget is marked if pointer is within its geometry.
@@ -331,6 +332,9 @@ namespace wg
 
 	enum class ComponentNotif
 	{
+		StartReceiveUpdates,
+		StopReceiveUpdates,
+		RequestsPreRenderCall,
 		SortOrderChanged,
 		ValueModified,
 		ValueEdited,

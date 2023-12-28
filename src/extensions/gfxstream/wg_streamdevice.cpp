@@ -1213,14 +1213,14 @@ namespace wg
         assert(false);
     }
 
-    void StreamDevice::_transformBlitSimple(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+    void StreamDevice::_transformBlitSimple(const RectI& dest, CoordI src, const int simpleTransform[2][2], OpType type )
     {
         //This method should never be called, but is pure virtual in super class.
 
         assert(false);
     }
 
-    void StreamDevice::_transformBlitComplex(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2])
+    void StreamDevice::_transformBlitComplex(const RectI& dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type)
     {
         //This method should never be called, but is pure virtual in super class.
 

@@ -1481,7 +1481,7 @@ namespace wg
 
 	//____ _transformBlitSimple() ______________________________________________________
 
-	void GlGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX src, const int simpleTransform[2][2])
+	void GlGfxDevice::_transformBlitSimple(const RectSPX& _dest, CoordSPX src, const int simpleTransform[2][2], OpType type)
 	{
 		if (m_pBlitSource == nullptr)
 			return;
@@ -1595,7 +1595,7 @@ namespace wg
 
 	//____ _transformBlitComplex() ______________________________________________________
 
-	void GlGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord src, const binalInt complexTransform[2][2])
+	void GlGfxDevice::_transformBlitComplex(const RectSPX& _dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type)
 	{
 		if (m_pBlitSource == nullptr)
 			return;

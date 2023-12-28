@@ -42,7 +42,7 @@ namespace wg
 
 	Widget::~Widget()
 	{
-		if (m_bReceivingUpdates)
+		if (m_receivingUpdateCounter > 0)
 			Base::_stopReceiveUpdates(this);
 	}
 
@@ -609,23 +609,20 @@ namespace wg
 
 	int64_t Widget::_startReceiveUpdates()
 	{
-		if (!m_bReceivingUpdates)
-		{
-			m_bReceivingUpdates = true;
+		m_receivingUpdateCounter++;
+		if (m_receivingUpdateCounter == 1)
 			return Base::_startReceiveUpdates(this);
-		}
-		return 0;
+		else
+			return Base::timestamp();
 	}
 
 	//____ _stopReceiveUpdates() ______________________________________________
 
 	void Widget::_stopReceiveUpdates()
 	{
-		if (m_bReceivingUpdates)
-		{
+		m_receivingUpdateCounter--;
+		if (m_receivingUpdateCounter == 0)
 			Base::_stopReceiveUpdates(this);
-			m_bReceivingUpdates = false;
-		}
 	}
 
 	//____ _preRender() ____________________________________________________________
@@ -859,7 +856,18 @@ namespace wg
 
 	void Widget::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )
 	{
-		// By default we do nothing
+		switch (notification)
+		{
+			case ComponentNotif::StartReceiveUpdates:
+				_startReceiveUpdates();
+				break;
+
+			case ComponentNotif::StopReceiveUpdates:
+				_stopReceiveUpdates();
+
+			default:
+				break;
+		}
 	}
 
 	//____ _skinValue() _______________________________________________________

@@ -86,7 +86,7 @@ namespace wg
 			bool			dropTarget = false;
 			Finalizer_p		finalizer = nullptr;
 			int				id = 0;
-			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			MarkPolicy		markPolicy = MarkPolicy::Undefined;
 			bool			pickable = false;
 			int				pickCategory = 0;
 			PointerStyle	pointer = PointerStyle::Undefined;
@@ -248,7 +248,10 @@ namespace wg
 			m_pBaggage		= bp.baggage;
 			m_bDropTarget	= bp.dropTarget;
 			m_id			= bp.id;
-			m_markPolicy	= bp.markPolicy;
+
+			if( bp.markPolicy != MarkPolicy::Undefined )
+				m_markPolicy = bp.markPolicy;
+			
 			m_bPickable		= bp.pickable;
 			m_pickCategory	= bp.pickCategory;
 			m_pointerStyle	= bp.pointer;
@@ -363,7 +366,7 @@ namespace wg
 		bool			m_bOpaque = false;				// Set if widget is totally opaque, no need to render anything behind.
 		bool			m_bTabLock = false;				// If set, the widget prevents focus shifting away from it with tab.
 		bool			m_bSelectable = true;			// Set if widget is allowed to be selected.
-		bool			m_bReceivingUpdates = false;	//
+		uint8_t			m_receivingUpdateCounter = 0;	//
 		bool			m_bPressed = false;				// Keeps track of pressed button when mouse leaves/re-enters widget.
 		bool			m_bStickyFocus = true;			// Set if widget should keep keyboard focus when mouse button pressed outside it.
 

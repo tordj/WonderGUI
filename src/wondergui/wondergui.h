@@ -27,6 +27,7 @@
 #include <wg_animframes.h>
 #include <wg_animplayer.h>
 #include <wg_animskin.h>
+#include <wg_areachart.h>
 #include <wg_bakeskin.h>
 #include <wg_base.h>
 #include <wg_basicnumberlayout.h>
@@ -47,6 +48,7 @@
 #include <wg_char.h>
 #include <wg_charbuffer.h>
 #include <wg_charseq.h>
+#include <wg_chart.h>
 #include <wg_circleskin.h>
 #include <wg_codepages.h>
 #include <wg_color.h>
@@ -74,8 +76,9 @@
 #include <wg_framemeterskin.h>
 #include <wg_geo.h>
 #include <wg_gfxdevice.h>
+#include <wg_glow.h>
+#include <wg_glowcapsule.h>
 #include <wg_gradient.h>
-#include <wg_graphdisplay.h>
 #include <wg_gridwalker.h>
 #include <wg_hostbridge.h>
 #include <wg_icon.h>

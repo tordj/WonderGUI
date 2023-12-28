@@ -81,6 +81,7 @@ namespace wg
 		bool		setBlendMode(BlendMode blendMode) override;
 		void		setMorphFactor(float factor) override;
 		void		setFixedBlendColor( HiColor color ) override;
+		void		setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9] ) override;
 
 		//.____ Rendering ________________________________________________
 
@@ -98,14 +99,6 @@ namespace wg
 		void	drawLine(CoordSPX begin, Direction dir, spx length, HiColor col, spx thickness = 64) override;
 
 		bool	setBlitSource(Surface * pSource) override;
-		void	transformBlit(const RectSPX& dest, CoordF srcSPX, const float transform[2][2]) override;
-		void	rotScaleBlit(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
-
-		void	tile(const RectSPX& dest, CoordSPX shift = { 0,0 }) override;
-		void	flipTile(const RectSPX& dest, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
-
-		void	scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 }) override;
-		void	scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
 		void	drawEdgemap(CoordSPX dest, Edgemap * pEdgemap ) override;
 		void	flipDrawEdgemap(CoordSPX dest, Edgemap * pEdgemap, GfxFlip flip) override;
@@ -114,14 +107,15 @@ namespace wg
 
 		//.____ Internal _____________________________________________________
 
-		enum EdgeOp
+		enum ReadOp
 		{
-			None,
+			Normal,
 			Tile,
-			Clip
+			Clip,
+			Blur
 		};
 
-		const static int             EdgeOp_size = 3;
+		const static int             ReadOp_size = 4;
 
 		struct ColTrans
 		{
@@ -156,6 +150,13 @@ namespace wg
 			int			morphFactor;	// Scale: 0 -> 4096
 			
 			HiColor	fixedBlendColor;
+			
+			int			blurMtxR[9];
+			int			blurMtxG[9];
+			int			blurMtxB[9];
+
+			CoordSPX	blurOfsSPX[9];
+			CoordI		blurOfsPixel[9];			
 		};
 
 
@@ -219,10 +220,10 @@ namespace wg
 
 		bool	setSegmentStripKernel(bool bTint, BlendMode blendMode, PixelFormat destFormat, SegmentOp_p pKernel);
 
-		bool	setStraightBlitKernel(PixelFormat sourceFormat, EdgeOp edgeOp, TintMode tintMode,
+		bool	setStraightBlitKernel(PixelFormat sourceFormat, ReadOp readOp, TintMode tintMode,
 									  BlendMode blendMode, PixelFormat destFormat, StraightBlitOp_p pKernel);
 		
-		bool	setTransformBlitKernel(PixelFormat sourceFormat, SampleMethod sampleMethod, EdgeOp edgeOp,
+		bool	setTransformBlitKernel(PixelFormat sourceFormat, SampleMethod sampleMethod, ReadOp readOp,
 									   TintMode tintMode, BlendMode blendMode, PixelFormat destFormat, TransformBlitOp_p pKernel);
 
 	protected:
@@ -233,8 +234,8 @@ namespace wg
 		void	_renderLayerWasChanged() override;
 
 
-		void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
-		void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2]) override;
+		void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2], OpType type) override;
+		void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type) override;
 
 		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
@@ -349,14 +350,14 @@ namespace wg
 
 		//
 	
-		struct SinglePassStraightBlitKernels // 60 bytes on 32-bit system
+		struct SinglePassStraightBlitKernels // 80 bytes on 32-bit system
 		{
-			StraightBlitOp_p	pKernels[EdgeOp_size][TintMode_size];
+			StraightBlitOp_p	pKernels[ReadOp_size][TintMode_size];
 		};
 
-		struct SinglePassTransformBlitKernels // 180 bytes on 32-bit system
+		struct SinglePassTransformBlitKernels // 240 bytes on 32-bit system
 		{
-			TransformBlitOp_p	pKernels[SampleMethod_size][EdgeOp_size][TintMode_size];
+			TransformBlitOp_p	pKernels[SampleMethod_size][ReadOp_size][TintMode_size];		// Optimization opportunity: Only 2 sample methods used
 		};
 
 		struct SinglePassBlitKernels	// 44 bytes on all systems
@@ -384,10 +385,11 @@ namespace wg
 			uint16_t				singlePassBlitKernels[PixelFormat_size];		// PixelFormat of blit source. Offset into m_singlePassBlitKernels +1.
 		};
 
-		StraightBlitOp_p	m_pStraightMoveToBGRA8Kernels[PixelFormat_size][EdgeOp_size];
-		TransformBlitOp_p	m_pTransformMoveToBGRA8Kernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
-		StraightBlitOp_p	m_pStraightMoveToHiColorKernels[PixelFormat_size][EdgeOp_size];
-		TransformBlitOp_p	m_pTransformMoveToHiColorKernels[PixelFormat_size][SampleMethod_size][EdgeOp_size];
+		StraightBlitOp_p	m_pStraightMoveToBGRA8Kernels[PixelFormat_size][ReadOp_size];
+		StraightBlitOp_p	m_pStraightMoveToHiColorKernels[PixelFormat_size][ReadOp_size];
+
+		TransformBlitOp_p	m_pTransformMoveToBGRA8Kernels[PixelFormat_size][SampleMethod_size][ReadOp_size];
+		TransformBlitOp_p	m_pTransformMoveToHiColorKernels[PixelFormat_size][SampleMethod_size][ReadOp_size];
 
 		DestFormatKernels *	m_pKernels[PixelFormat_size];
 	
@@ -410,25 +412,28 @@ namespace wg
 
 		SoftSurface_p		m_pBlitSource				= nullptr;		// Source surface for blits.
 		bool				m_bClipSource				= false;		// Set if transform blit might need to do clipping.
-		bool				m_bTileSource				= false;		// Set when we are processing Tile-call.
 
 		// These are called to perform blit/tile operations
 
 		StraightBlitProxy_Op	m_pStraightBlitOp = nullptr;		// Function called to perform a straight blit.
 		StraightBlitProxy_Op	m_pStraightTileOp = nullptr;		// Function called to perform a straight tile.
+		StraightBlitProxy_Op	m_pStraightBlurOp = nullptr;		// Function called to perform a straight blur.
 
 		TransformBlitProxy_Op m_pTransformBlitOp = nullptr;		// Function called to perform a transform blit.
 		TransformBlitProxy_Op m_pTransformClipBlitOp = nullptr;	// Function called to perform a transform clip blit.
 		TransformBlitProxy_Op m_pTransformTileOp = nullptr;		// Function called to perform a transform tile.
+		TransformBlitProxy_Op m_pTransformBlurOp = nullptr;		// Function called to perform a transform blur.
 
 
 		// These need to be provided to calls to StraightBlitProxy_Op and TransformBlitProxy_Op.
 
 		StraightBlitOp_p		m_pStraightBlitFirstPassOp		= nullptr;
 		StraightBlitOp_p		m_pStraightTileFirstPassOp		= nullptr;
+		StraightBlitOp_p		m_pStraightBlurFirstPassOp		= nullptr;
 		TransformBlitOp_p		m_pTransformBlitFirstPassOp		= nullptr;
 		TransformBlitOp_p		m_pTransformClipBlitFirstPassOp	= nullptr;
 		TransformBlitOp_p		m_pTransformTileFirstPassOp		= nullptr;
+		TransformBlitOp_p		m_pTransformBlurFirstPassOp		= nullptr;
 
 		StraightBlitOp_p		m_pBlitSecondPassOp				= nullptr;		// Second pass is same for straight and transform blits and tiles (always a simple blit).
 

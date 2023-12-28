@@ -116,12 +116,14 @@ bool memHeapFragmentationTest(ComponentPtr<DynamicSlot> pSlot);
 bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pSlot);
 bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pSlot);
 bool customSkinTest(ComponentPtr<DynamicSlot> pSlot);
-bool graphDisplayTest(ComponentPtr<DynamicSlot> pSlot);
+bool areaChartTest(ComponentPtr<DynamicSlot> pSlot);
+bool areaChartTest2(ComponentPtr<DynamicSlot> pSlot);
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pSlot);
 bool skinMarginTest(ComponentPtr<DynamicSlot> pSlot);
 bool wgcombTest(ComponentPtr<DynamicSlot> pSlot);
 bool widgetRecording(ComponentPtr<DynamicSlot> pSlot);
 bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pSlot);
+bool glowCapsuleTest(ComponentPtr<DynamicSlot> pSlot);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -707,12 +709,14 @@ int main(int argc, char** argv)
 		//	blendRGB565BigendianTest( pSlot );
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
-		//	graphDisplayTest(pSlot);
+		//	areaChartTest(pSlot);
+			areaChartTest2(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
-			canvasCapsuleTest(pSlot);
+		//	canvasCapsuleTest(pSlot);
+		//	glowCapsuleTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -1086,7 +1090,7 @@ bool savePNG(Surface * pSurface, const char * path)
 	SizeI size = pSurface->pixelSize();
 	const PixelDescription* pFmt = pSurface->pixelDescription();
 
-	SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, pFmt->R_mask, pFmt->G_mask, pFmt->B_mask, pFmt->A_mask);
+	SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, (uint32_t) pFmt->R_mask, (uint32_t) pFmt->G_mask, (uint32_t) pFmt->B_mask, (uint32_t) pFmt->A_mask);
 
 
 	int err = SDL_LockSurface(pOutput);
@@ -2731,19 +2735,19 @@ bool customSkinTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 }
 
-//____ graphDisplayTest() ______________________________________________________
+//____ areaChartTest() ______________________________________________________
 
-bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
+bool areaChartTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pFlex = FlexPanel::create();
 
 	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
 
-	auto pGraph = GraphDisplay::create(WGBP(GraphDisplay,
+	auto pGraph = AreaChart::create(WGBP(AreaChart,
 		_.displayCeiling = 0.5f,
 		_.displayFloor = - 0.5f,
 		_.displaySkin = StaticBoxSkin::create( WGBP(StaticBoxSkin,
-														_.color = Color::White,
+														_.color = Color::Black,
 														_.outlineColor = Color::Green,
 														_.padding = 2,
 														_.outline = 2 )),
@@ -2758,7 +2762,7 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 	*pEntry = pFlex;
 
 
-	pGraph->graphs.pushBack( {
+	pGraph->entries.pushBack( {
 		.bottomOutlineThickness = 0,
 		.outlineColor = Color::Red,
 		.topOutlineThickness = 5
@@ -2771,11 +2775,11 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 	static float bottomSamples2[1] = { 0.f };
 
 
-	pGraph->graphs.back().setTopSamples(5, topSamples);
+	pGraph->entries.back().setTopSamples(5, topSamples);
 
 	auto pTransition = ArrayTransition::create(2000000, TransitionCurve::Bezier);
 
-	pGraph->graphs.back().transitionSamples(pTransition, 5, topSamples2, 1, bottomSamples2);
+	pGraph->entries.back().transitionSamples(pTransition, 5, topSamples2, 1, bottomSamples2);
 
 
 	static float curveSamples[6][201];
@@ -2805,14 +2809,14 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 
 	for (int i = 0; i < 6; i++)
 	{
-		pGraph->graphs.pushBack({
+		pGraph->entries.pushBack({
 			.bottomOutlineThickness = 0,
 			.color = Color::Transparent,
 			.outlineColor = colors[i],
 			.topOutlineThickness = 2,
 			});
 
-		pGraph->graphs.back().setTopSamples(201, curveSamples[i] );
+		pGraph->entries.back().setTopSamples(201, curveSamples[i] );
 	}
 
 	// Setup grid
@@ -2833,8 +2837,116 @@ bool graphDisplayTest(ComponentPtr<DynamicSlot> pEntry)
 							));
 */
 
+	//
+
+	pGraph->glow.setActive(true);
+
+
 	return true;
 }
+
+//____ areaChartTest2() ______________________________________________________
+
+bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pFlex = FlexPanel::create();
+
+	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
+
+	auto pGraph = AreaChart::create(WGBP(AreaChart,
+		_.displayCeiling = 0.5f,
+		_.displayFloor = -0.5f,
+		_.displaySkin = StaticBoxSkin::create(WGBP(StaticBoxSkin,
+			_.color = Color::White,
+			_.outlineColor = Color::Green,
+			_.padding = 2,
+			_.outline = 2)),
+		_.skin = StaticColorSkin::create(Color::Pink)
+	));
+
+
+
+
+	pFlex->slots.pushBack(pGraph, { .pos = {10,10}, .size = {200,200} });
+
+	*pEntry = pFlex;
+
+
+	pGraph->entries.pushBack({
+		.bottomOutlineThickness = 0,
+		.color = Color::Transparent,
+		.outlineColor = Color::Red,
+		.topOutlineThickness = 5
+		});
+
+
+	static float topSamples[2][5] = { 0, -0.25f, 0.25f, 0.23f, 0.5f,
+									  0, 0.25f, -0.25f, -0.23f, -0.5f };
+
+	static float bottomSamples[1] = { 0.f };
+
+	static int transitionIndex = 0;
+
+	pGraph->entries.back().setTopSamples(5, topSamples[0]);
+
+
+
+
+
+	Color colors[6] = { Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Pink, Color::Brown };
+
+	// Setup grid
+
+	pGraph->xLines.pushBack({ .label = "-0.5", .pos = -0.5f, .thickness = 0.5f });
+	pGraph->xLines.pushBack({ .label = "-0.25", .pos = -0.25f, .thickness = 0.5f });
+	pGraph->xLines.pushBack({ .label = "0.0", .pos = 0.0f, .thickness = 1.f });
+	pGraph->xLines.pushBack({ .label = "0.25", .pos = 0.25f, .thickness = 0.5f });
+
+	pGraph->yLines.pushBack({ .label = "0.0", .pos = 0.0f, .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .label = "0.25", .pos = 0.25f, .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .label = "0.5", .pos = 0.5f, .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .label = "1.0", .pos = 1.f, .thickness = 0.5f });
+
+	/* 
+		pGraph->xLines.pushBack(WGBP(GridLine,
+								_.value = -0.25f
+								));
+	*/
+
+	//
+
+
+	pGraph->glow.setActive(true);
+
+
+	auto pTransition = ArrayTransition::create(2000000, TransitionCurve::Bezier);
+	pGraph->entries.back().transitionSamples(pTransition, 5, topSamples[1], 1, bottomSamples);
+
+
+
+	auto pButtonSkin = BoxSkin::create({ .color = Color8::Grey,
+									  .outlineThickness = 1,
+									  .outlineColor = Color8::Black,
+									  .padding = 3
+		});
+
+
+	auto pButton = Button::create({ .label = {.text = "TRANSITION"}, .skin = pButtonSkin });
+
+	Base::msgRouter()->addRoute(pButton, MsgType::Select, [pGraph, pTransition](Msg* pMsg) 
+	{ 
+		transitionIndex = (transitionIndex + 1) % 2;
+		pGraph->entries.back().transitionSamples(pTransition, 5, topSamples[transitionIndex], 1, bottomSamples);  
+	});
+
+
+	pFlex->slots.pushBack(pButton, { .pos = {105, 220 } });
+
+
+	return true;
+}
+
+
 
 //____ nortonCommanderTest() ______________________________________________________
 
@@ -3153,6 +3265,46 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 													.outlineColor = Color::Blue }) });
 
 	pBack->slots.pushBack(pCanvasDisplay1, { .pos = {10, 240}, .size = {200,200} });
+
+	return true;
+}
+
+//____ glowCapsuleTest() ______________________________________________________
+
+bool glowCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::Black) });
+	*pEntry = pBack;
+
+	auto pMyStyle = TextStyle::create( WGOVR(Base::defaultStyle()->blueprint(), _.size = 30, _.color = Color::White ));
+
+
+	auto pGlowCapsule = GlowCapsule::create();
+
+	float mtx[9] = { 0.1f, 0.1f, 0.1f,
+					 0.1f, 0.1f, 0.1f,
+					 0.1f, 0.1f, 0.1f };
+
+	float mtx2[9] = { 0.1f, 0.1f, 0.1f,
+					 0.1f, 0.15f, 0.1f,
+					 0.1f, 0.1f, 0.1f };
+
+
+
+//	pGlowCapsule->setResolution( {64,64} );
+
+	pGlowCapsule->setMatrices(96, mtx2, mtx, mtx);
+	pGlowCapsule->setRefreshRate(30);
+
+	pGlowCapsule->setSkin( BoxSkin::create( { .color = HiColor::Transparent, .outlineThickness = 50, .outlineColor = Color::Yellow, .padding = 50 }) );
+
+	pBack->slots.pushBack(pGlowCapsule, { .pos = {  50, 50}, .size = {300,0} });
+
+	auto pWrapTextLayout = BasicTextLayout::create({ .wrap = true });
+
+	
+	auto pContent = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .style = pMyStyle, .text = "" } });
+	pGlowCapsule->slot = pContent;
 
 	return true;
 }

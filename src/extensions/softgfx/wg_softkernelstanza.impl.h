@@ -2172,7 +2172,7 @@ void _draw_segment_strip(int colBeg, int colEnd, uint8_t* pStripStart, int pixel
 
 //_____ _straight_blit() ____________________________________________________________
 
-template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool TILE>
+template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, SoftGfxDevice::ReadOp READOP>
 void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcSurf, const SoftGfxDevice::Pitches& pitches, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2])
 {
 	bool	bFast8 = false;
@@ -2190,21 +2190,23 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 
 	if ((srcIsLinear && dstIsLinear) || (!srcIsLinear && !dstIsLinear && TINT == TintMode::None && BLEND == BlendMode::Replace))
 	{
-		if (SRCFORMAT != PixelFormat::Undefined && DSTFORMAT != PixelFormat::Undefined)
+		if (SRCFORMAT != PixelFormat::Undefined && DSTFORMAT != PixelFormat::Undefined && READOP != SoftGfxDevice::ReadOp::Blur )
 		{
 			bFast8 = true;
 			bits = 8;
 		}
 	}
 
-	// Preapare tiling
+	
+	// Preapare tiling and blurring
 
 	int srcX, srcY;
 	int maskX, maskY;
 	int xPitch, yPitch;
-
-
-	if (TILE)
+	
+	int	srcXstart;
+	
+	if (READOP == SoftGfxDevice::ReadOp::Tile || READOP == SoftGfxDevice::ReadOp::Blur)
 	{
 		xPitch = pSrcSurf->pixelBits()/8;
 		yPitch = pSrcSurf->pitch();
@@ -2215,8 +2217,17 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 		pSrc = pSrcSurf->pixels();
 		maskX = pSrcSurf->tileMaskX();
 		maskY = pSrcSurf->tileMaskY();
+		
+		srcXstart = srcX;
 	}
 
+	SizeI surfSize;
+
+	if (READOP == SoftGfxDevice::ReadOp::Blur)
+	{
+		surfSize = pSrcSurf->pixelSize();
+	}
+	
 	const Color8 * pPalette = pSrcSurf->palette();
 	const HiColor * pPalette4096 = pSrcSurf->palette4096();
 
@@ -2253,8 +2264,16 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 		fixedA = tint.fixedBlendColor.a;
 	}
 	
+	
+	
+	
 	for (int y = 0; y < nLines; y++)
 	{
+		if( READOP == SoftGfxDevice::ReadOp::Blur )
+		{
+			srcX = srcXstart;
+		}
+		
 		// Step 3: Prepare tint for any vertical gradient
 
 		_texel_tint_line(TINT, tint, bits, leftB, leftG, leftR, leftA, rightB, rightG, rightR, rightA,
@@ -2264,7 +2283,7 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 		{
 			// Step 4: Read source pixels
 
-			if (TILE)
+			if (READOP == SoftGfxDevice::ReadOp::Tile)
 			{
 				srcX &= maskX;
 				srcY &= maskY;
@@ -2272,10 +2291,73 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 			}
 
 			int16_t srcB, srcG, srcR, srcA;
-			if (bFast8)
-				_read_pixel_fast8(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
+
+			if(READOP == SoftGfxDevice::ReadOp::Blur)
+			{
+				int16_t inB[9], inG[9], inR[9], inA[9];
+
+				for( int i = 0 ; i < 9 ; i++ )
+				{
+					CoordI center(srcX,srcY);
+					
+					CoordI ofs = center + tint.blurOfsPixel[i];
+					
+					if( ofs.x < 0 )
+						ofs.x = 0;
+					if( ofs.y < 0 )
+						ofs.y = 0;
+					if( ofs.x >= surfSize.w )
+						ofs.x = surfSize.w -1;
+					if( ofs.y >= surfSize.h )
+						ofs.y = surfSize.h -1;
+					
+					_read_pixel(pSrc + ofs.y * yPitch + ofs.x * xPitch, SRCFORMAT, pPalette, pPalette4096, inB[i], inG[i], inR[i], inA[i]);
+				}
+				
+				int tSrcB = ( inB[0] * tint.blurMtxB[0] + inB[1] * tint.blurMtxB[1] + inB[2] * tint.blurMtxB[2]
+							+ inB[3] * tint.blurMtxB[3] + inB[4] * tint.blurMtxB[4] + inB[5] * tint.blurMtxB[5]
+							+ inB[6] * tint.blurMtxB[6] + inB[7] * tint.blurMtxB[7] + inB[8] * tint.blurMtxB[8]) / 65536;
+
+				int tSrcG = ( inG[0] * tint.blurMtxG[0] + inG[1] * tint.blurMtxG[1] + inG[2] * tint.blurMtxG[2]
+							+ inG[3] * tint.blurMtxG[3] + inG[4] * tint.blurMtxG[4] + inG[5] * tint.blurMtxG[5]
+							+ inG[6] * tint.blurMtxG[6] + inG[7] * tint.blurMtxG[7] + inG[8] * tint.blurMtxG[8]) / 65536;
+
+				int tSrcR = ( inR[0] * tint.blurMtxR[0] + inR[1] * tint.blurMtxR[1] + inR[2] * tint.blurMtxR[2]
+							+ inR[3] * tint.blurMtxR[3] + inR[4] * tint.blurMtxR[4] + inR[5] * tint.blurMtxR[5]
+							+ inR[6] * tint.blurMtxR[6] + inR[7] * tint.blurMtxR[7] + inR[8] * tint.blurMtxR[8]) / 65536;
+
+				srcA = inA[4];
+
+				if (tSrcB > 4096)
+					tSrcB = 4096;
+
+				if (tSrcG > 4096)
+					tSrcG = 4096;
+
+				if (tSrcR > 4096)
+					tSrcR = 4096;
+
+				if (tSrcB < 0)
+					tSrcB = 0;
+
+				if (tSrcG < 0)
+					tSrcG = 0;
+
+				if (tSrcR < 0)
+					tSrcR = 0;
+
+				srcB = (int16_t)tSrcB;
+				srcG = (int16_t)tSrcG;
+				srcR = (int16_t)tSrcR;
+			}
 			else
-				_read_pixel(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
+			{
+				if (bFast8)
+					_read_pixel_fast8(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
+				else
+					_read_pixel(pSrc, SRCFORMAT, pPalette, pPalette4096, srcB, srcG, srcR, srcA);
+			}
+
 
 			// Step 5: Apply any tint
 
@@ -2306,7 +2388,7 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 
 			// Step 9: Increment source and destination pointers
 
-			if (TILE)
+			if (READOP == SoftGfxDevice::ReadOp::Tile || READOP == SoftGfxDevice::ReadOp::Blur)
 			{
 				srcX += simpleTransform[0][0];
 				srcY += simpleTransform[0][1];
@@ -2317,7 +2399,7 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 			pDst += pitches.dstX;
 		}
 
-		if (TILE)
+		if (READOP == SoftGfxDevice::ReadOp::Tile || READOP == SoftGfxDevice::ReadOp::Blur)
 		{
 			srcX += simpleTransform[1][0];
 			srcY += simpleTransform[1][1];
@@ -2331,7 +2413,7 @@ void _straight_blit(const uint8_t* pSrc, uint8_t* pDst, const SoftSurface* pSrcS
 
 //____ _transform_blit __________________________________________
 
-template<PixelFormat SRCFORMAT, SampleMethod SAMPLEMETHOD, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, SoftGfxDevice::EdgeOp EDGEOP >
+template<PixelFormat SRCFORMAT, SampleMethod SAMPLEMETHOD, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, SoftGfxDevice::ReadOp READOP >
 void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt matrix[2][2], uint8_t* pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
 {
 	bool	bFast8 = false;
@@ -2349,7 +2431,7 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 
 	if ((srcIsLinear && dstIsLinear) || (!srcIsLinear && !dstIsLinear && TINT == TintMode::None && BLEND == BlendMode::Replace))
 	{
-		if (SRCFORMAT != PixelFormat::Undefined && DSTFORMAT != PixelFormat::Undefined)
+		if (SRCFORMAT != PixelFormat::Undefined && DSTFORMAT != PixelFormat::Undefined && READOP != SoftGfxDevice::ReadOp::Blur )
 		{
 			bFast8 = true;
 			bits = 8;
@@ -2406,7 +2488,7 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 
 		for (int x = 0; x < lineLength; x++)
 		{
-			if (EDGEOP == SoftGfxDevice::EdgeOp::Tile)
+			if (READOP == SoftGfxDevice::ReadOp::Tile)
 			{
 				ofsX &= srcPosMaskX_binals;
 				ofsY &= srcPosMaskY_binals;
@@ -2426,7 +2508,7 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 				int16_t src21_b, src21_g, src21_r, src21_a;
 				int16_t src22_b, src22_g, src22_r, src22_a;
 
-				if (EDGEOP == SoftGfxDevice::EdgeOp::Clip && ((ofsX | ofsY | (srcMax_w - (ofsX + BINAL_MUL + 1)) | (srcMax_h - (ofsY + BINAL_MUL + 1))) < 0))
+				if (READOP == SoftGfxDevice::ReadOp::Clip && ((ofsX | ofsY | (srcMax_w - (ofsX + BINAL_MUL + 1)) | (srcMax_h - (ofsY + BINAL_MUL + 1))) < 0))
 				{
 					if (ofsX > srcMax_w || ofsY > srcMax_h || ofsX < -BINAL_MUL || ofsY < -BINAL_MUL)
 					{
@@ -2491,7 +2573,7 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 				{
 					uint8_t* p2, * p3, * p4;
 
-					if (EDGEOP == SoftGfxDevice::EdgeOp::Tile)
+					if (READOP == SoftGfxDevice::ReadOp::Tile)
 					{
 						binalInt x = (ofsX >> BINAL_SHIFT), y = (ofsY >> BINAL_SHIFT);
 
@@ -2548,7 +2630,72 @@ void _transform_blit(const SoftSurface* pSrcSurf, BinalCoord pos, const binalInt
 			}
 			else
 			{
-				if (EDGEOP == SoftGfxDevice::EdgeOp::Clip && ((ofsX | ofsY | (srcMax_w - 1 - ofsX) | (srcMax_h - 1 - ofsY)) < 0))
+				if(READOP == SoftGfxDevice::ReadOp::Blur)
+				{
+					int16_t inB[9], inG[9], inR[9], inA[9];
+
+					binalInt x = (ofsX >> BINAL_SHIFT), y = (ofsY >> BINAL_SHIFT);
+
+					auto surfSize = pSrcSurf->pixelSize();
+					
+					auto p = pSrcSurf->pixels();
+					
+					for( int i = 0 ; i < 9 ; i++ )
+					{
+						CoordI center((int)x,(int)y);
+						
+						CoordI ofs = center + tint.blurOfsPixel[i];
+						
+						if( ofs.x < 0 )
+							ofs.x = 0;
+						if( ofs.y < 0 )
+							ofs.y = 0;
+						if( ofs.x >= surfSize.w )
+							ofs.x = surfSize.w -1;
+						if( ofs.y >= surfSize.h )
+							ofs.y = surfSize.h -1;
+						
+						_read_pixel(p + ofs.y * srcPitch + ofs.x * srcPixelBytes, SRCFORMAT, pPalette, pPalette4096, inB[i], inG[i], inR[i], inA[i]);
+					}
+					
+					int tSrcB = ( inB[0] * tint.blurMtxB[0] + inB[1] * tint.blurMtxB[1] + inB[2] * tint.blurMtxB[2]
+								+ inB[3] * tint.blurMtxB[3] + inB[4] * tint.blurMtxB[4] + inB[5] * tint.blurMtxB[5]
+								+ inB[6] * tint.blurMtxB[6] + inB[7] * tint.blurMtxB[7] + inB[8] * tint.blurMtxB[8]) / 65536;
+
+					int tSrcG = ( inG[0] * tint.blurMtxG[0] + inG[1] * tint.blurMtxG[1] + inG[2] * tint.blurMtxG[2]
+								+ inG[3] * tint.blurMtxG[3] + inG[4] * tint.blurMtxG[4] + inG[5] * tint.blurMtxG[5]
+								+ inG[6] * tint.blurMtxG[6] + inG[7] * tint.blurMtxG[7] + inG[8] * tint.blurMtxG[8]) / 65536;
+
+					int tSrcR = ( inR[0] * tint.blurMtxR[0] + inR[1] * tint.blurMtxR[1] + inR[2] * tint.blurMtxR[2]
+								+ inR[3] * tint.blurMtxR[3] + inR[4] * tint.blurMtxR[4] + inR[5] * tint.blurMtxR[5]
+								+ inR[6] * tint.blurMtxR[6] + inR[7] * tint.blurMtxR[7] + inR[8] * tint.blurMtxR[8]) / 65536;
+
+					srcA = inA[4];
+
+					if (tSrcB > 4096)
+						tSrcB = 4096;
+
+					if (tSrcG > 4096)
+						tSrcG = 4096;
+
+					if (tSrcR > 4096)
+						tSrcR = 4096;
+
+					if (tSrcB < 0)
+						tSrcB = 0;
+
+					if (tSrcG < 0)
+						tSrcG = 0;
+
+					if (tSrcR < 0)
+						tSrcR = 0;
+
+					srcB = (int16_t)tSrcB;
+					srcG = (int16_t)tSrcG;
+					srcR = (int16_t)tSrcR;
+
+				}
+				else if (READOP == SoftGfxDevice::ReadOp::Clip && ((ofsX | ofsY | (srcMax_w - 1 - ofsX) | (srcMax_h - 1 - ofsY)) < 0))
 				{
 					ofsX += pixelIncX;
 					ofsY += pixelIncY;

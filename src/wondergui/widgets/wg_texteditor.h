@@ -108,6 +108,9 @@ namespace wg
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
 
+		bool			_markTest(const CoordSPX& ofs) override;
+
+		
 		KeyAction	m_returnKeyAction = KeyAction::Insert;
 		KeyAction	m_tabKeyAction = KeyAction::Insert;
 	};

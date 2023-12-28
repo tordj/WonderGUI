@@ -156,4 +156,16 @@ namespace wg
 		editor._setSize(size - m_skin.contentBorderSize(m_scale), m_scale);
 	}
 
+	//____ _markTest() ________________________________________________________
+
+	bool TextEditor::_markTest(const CoordSPX& ofs)
+	{
+		// Always accept marks within text area.
+		
+		if( _contentRect().contains(ofs) )
+			return true;
+		
+		return Widget::_markTest(ofs);
+	}
+
 } // namespace wg

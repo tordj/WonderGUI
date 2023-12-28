@@ -101,8 +101,8 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline const CanvasInfo& canvas() const { return m_canvas; }
-		virtual const CanvasInfo canvas(CanvasRef ref) const = 0;
+		inline const CanvasInfo&	canvas() const { return m_canvas; }
+		virtual const CanvasInfo	canvas(CanvasRef ref) const = 0;
 
 		inline CanvasLayers_p 		canvasLayers() const { return m_pCanvasLayers; }
 
@@ -142,11 +142,16 @@ namespace wg
 		virtual void		setMorphFactor(float factor);
 		virtual float		morphFactor() const { return m_morphFactor; }
 
+		virtual void		setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9] );
+		
 		virtual void		setFixedBlendColor( HiColor color );
 		virtual HiColor		fixedBlendColor() const { return m_fixedBlendColor; }
 
 		virtual void		setRenderLayer(int layer);
 		virtual int			renderLayer() const { return m_renderLayer; }
+
+		
+		
 		
 		//.____ Rendering ________________________________________________
 
@@ -195,6 +200,10 @@ namespace wg
 		virtual void	scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 });
 		virtual void	scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 });
 
+		virtual void	blur(CoordSPX dest);
+		virtual void	blur(CoordSPX dest, const RectSPX& src);
+		virtual void	rotScaleBlur(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f });
+
 
 		// Draw segments methods
 
@@ -225,14 +234,21 @@ namespace wg
 
 		const static int	c_maxSegments = 16;
 
+		enum class OpType {
+			Blit,
+			Tile,
+			Blur
+		};
+
+
 		//
 
 		virtual void	_canvasWasChanged() = 0;
 		virtual void	_renderLayerWasChanged() = 0;	// Checked for errors before we get here.
 		virtual void	_clipListWasChanged();			// Called when cliplist has been changed.
 
-		virtual void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) = 0;
-		virtual void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2]) = 0;
+		virtual void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2], OpType type ) = 0;
+		virtual void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type ) = 0;
 
 		virtual void	_transformDrawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, const int simpleTransform[2][2]);
 		virtual void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) = 0;
@@ -315,6 +331,13 @@ namespace wg
 		bool        m_bRendering = false;
 		
 		bool		m_bIsProxyDevice = false;		// Set by subclasses that just wrap calls and rendering is performed elsewhere.
+
+		spx			m_blurRadius = 64;
+		
+		float		m_blurMtxR[9];
+		float		m_blurMtxG[9];
+		float		m_blurMtxB[9];
+		float		m_blurMtxA[9];
 	};
 
 

@@ -105,11 +105,11 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2])
+	void NullGfxDevice::_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2], OpType type)
 	{
 	}
 
-	void NullGfxDevice::_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2])
+	void NullGfxDevice::_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type)
 	{
 	}
 
