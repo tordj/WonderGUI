@@ -246,6 +246,7 @@ namespace wg
 	private:
 
 		bool			m_bPreRenderRequested = false;
+		bool			m_bTransitioning = false;
 	};
 
 

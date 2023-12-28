@@ -117,6 +117,7 @@ bool blendRGB565BigendianTest(ComponentPtr<DynamicSlot> pSlot);
 bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pSlot);
 bool customSkinTest(ComponentPtr<DynamicSlot> pSlot);
 bool areaChartTest(ComponentPtr<DynamicSlot> pSlot);
+bool areaChartTest2(ComponentPtr<DynamicSlot> pSlot);
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pSlot);
 bool skinMarginTest(ComponentPtr<DynamicSlot> pSlot);
 bool wgcombTest(ComponentPtr<DynamicSlot> pSlot);
@@ -708,7 +709,8 @@ int main(int argc, char** argv)
 		//	blendRGB565BigendianTest( pSlot );
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
-			areaChartTest(pSlot);
+		//	areaChartTest(pSlot);
+			areaChartTest2(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
@@ -2745,7 +2747,7 @@ bool areaChartTest(ComponentPtr<DynamicSlot> pEntry)
 		_.displayCeiling = 0.5f,
 		_.displayFloor = - 0.5f,
 		_.displaySkin = StaticBoxSkin::create( WGBP(StaticBoxSkin,
-														_.color = Color::White,
+														_.color = Color::Black,
 														_.outlineColor = Color::Green,
 														_.padding = 2,
 														_.outline = 2 )),
@@ -2835,8 +2837,116 @@ bool areaChartTest(ComponentPtr<DynamicSlot> pEntry)
 							));
 */
 
+	//
+
+	pGraph->glow.setActive(true);
+
+
 	return true;
 }
+
+//____ areaChartTest2() ______________________________________________________
+
+bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pFlex = FlexPanel::create();
+
+	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
+
+	auto pGraph = AreaChart::create(WGBP(AreaChart,
+		_.displayCeiling = 0.5f,
+		_.displayFloor = -0.5f,
+		_.displaySkin = StaticBoxSkin::create(WGBP(StaticBoxSkin,
+			_.color = Color::White,
+			_.outlineColor = Color::Green,
+			_.padding = 2,
+			_.outline = 2)),
+		_.skin = StaticColorSkin::create(Color::Pink)
+	));
+
+
+
+
+	pFlex->slots.pushBack(pGraph, { .pos = {10,10}, .size = {200,200} });
+
+	*pEntry = pFlex;
+
+
+	pGraph->entries.pushBack({
+		.bottomOutlineThickness = 0,
+		.color = Color::Transparent,
+		.outlineColor = Color::Red,
+		.topOutlineThickness = 5
+		});
+
+
+	static float topSamples[2][5] = { 0, -0.25f, 0.25f, 0.23f, 0.5f,
+									  0, 0.25f, -0.25f, -0.23f, -0.5f };
+
+	static float bottomSamples[1] = { 0.f };
+
+	static int transitionIndex = 0;
+
+	pGraph->entries.back().setTopSamples(5, topSamples[0]);
+
+
+
+
+
+	Color colors[6] = { Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Pink, Color::Brown };
+
+	// Setup grid
+
+	pGraph->xLines.pushBack({ .label = "-0.5", .pos = -0.5f, .thickness = 0.5f });
+	pGraph->xLines.pushBack({ .label = "-0.25", .pos = -0.25f, .thickness = 0.5f });
+	pGraph->xLines.pushBack({ .label = "0.0", .pos = 0.0f, .thickness = 1.f });
+	pGraph->xLines.pushBack({ .label = "0.25", .pos = 0.25f, .thickness = 0.5f });
+
+	pGraph->yLines.pushBack({ .label = "0.0", .pos = 0.0f, .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .label = "0.25", .pos = 0.25f, .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .label = "0.5", .pos = 0.5f, .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .label = "1.0", .pos = 1.f, .thickness = 0.5f });
+
+	/* 
+		pGraph->xLines.pushBack(WGBP(GridLine,
+								_.value = -0.25f
+								));
+	*/
+
+	//
+
+
+	pGraph->glow.setActive(true);
+
+
+	auto pTransition = ArrayTransition::create(2000000, TransitionCurve::Bezier);
+	pGraph->entries.back().transitionSamples(pTransition, 5, topSamples[1], 1, bottomSamples);
+
+
+
+	auto pButtonSkin = BoxSkin::create({ .color = Color8::Grey,
+									  .outlineThickness = 1,
+									  .outlineColor = Color8::Black,
+									  .padding = 3
+		});
+
+
+	auto pButton = Button::create({ .label = {.text = "TRANSITION"}, .skin = pButtonSkin });
+
+	Base::msgRouter()->addRoute(pButton, MsgType::Select, [pGraph, pTransition](Msg* pMsg) 
+	{ 
+		transitionIndex = (transitionIndex + 1) % 2;
+		pGraph->entries.back().transitionSamples(pTransition, 5, topSamples[transitionIndex], 1, bottomSamples);  
+	});
+
+
+	pFlex->slots.pushBack(pButton, { .pos = {105, 220 } });
+
+
+	return true;
+}
+
+
 
 //____ nortonCommanderTest() ______________________________________________________
 

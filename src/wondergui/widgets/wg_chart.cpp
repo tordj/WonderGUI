@@ -34,7 +34,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	Chart::Chart() : xLines(this), yLines(this),
+	Chart::Chart() : xLines(this), yLines(this), glow(this),
 		m_displaySkin(this), m_labelSkin(this)
 	{
 		m_displayCeiling = 0.f;
@@ -75,6 +75,14 @@ namespace wg
 
 		_fullRefreshOfChart();
 	}
+
+	//____ _update() __________________________________________________________
+
+	void Chart::_update(int microPassed, int64_t microsecTimestamp)
+	{
+		glow._update(microPassed);
+	}
+
 
 	//____ _render() ____________________________________________________________
 
@@ -131,7 +139,29 @@ namespace wg
 
 		// Render graphs
 
-		_renderCharts(pDevice,graphCanvas);
+		if (glow.isActive())
+		{
+			if (!m_pChartCanvas)
+			{
+				SizeI chartSize = graphCanvas.size() / 64;
+
+				m_pChartCanvas = pDevice->surfaceFactory()->createSurface(WGBP(Surface,
+					_.size = chartSize,
+					_.format = PixelFormat::BGRA_8,
+					_.canvas = true));
+			}
+
+			pDevice->beginCanvasUpdate(m_pChartCanvas);
+			pDevice->setBlendMode(BlendMode::Replace);
+			pDevice->fill(HiColor::Transparent);
+			pDevice->setBlendMode(BlendMode::Blend);
+			_renderCharts( pDevice, graphCanvas.size() );
+			pDevice->endCanvasUpdate();
+
+			glow._render(pDevice, graphCanvas, m_pChartCanvas, graphCanvas);
+		}
+		else
+			_renderCharts(pDevice,graphCanvas);
 
 		// Render labels
 
@@ -480,6 +510,9 @@ namespace wg
 
 	void Chart::_resize(const SizeSPX& size, int scale)
 	{
+		if( size != m_size )
+			m_pChartCanvas = nullptr;
+
 		int oldScale = m_scale;
 		Widget::_resize(size, scale);
 
@@ -493,7 +526,6 @@ namespace wg
 			for (auto& gridLine : yLines)
 				gridLine._resizeLabel(scale, oldScale);
 		}
-
 
 		_recalcGraphCanvas();
 		_repositionAllLabels();

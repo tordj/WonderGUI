@@ -332,6 +332,9 @@ namespace wg
 
 	enum class ComponentNotif
 	{
+		StartReceiveUpdates,
+		StopReceiveUpdates,
+		RequestsPreRenderCall,
 		SortOrderChanged,
 		ValueModified,
 		ValueEdited,

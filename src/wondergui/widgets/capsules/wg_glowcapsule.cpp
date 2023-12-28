@@ -206,7 +206,7 @@ namespace wg
 		int microsecBetweenUpdates = 1000000 / m_glowRefreshRate;
 
 		if( m_microSecAccumulator < microsecBetweenUpdates && 
-			((m_microSecAccumulator + microsecTimestamp) > microsecBetweenUpdates) )
+			((m_microSecAccumulator + microPassed) > microsecBetweenUpdates) )
 			_requestRender();
 
 		m_microSecAccumulator += microPassed;
@@ -347,8 +347,6 @@ namespace wg
 
 		// Blit to destination, first updated blur, then local canvas.
 
-		auto canvas = _contentRect( _canvas );
-		
 		int		rl = pDevice->renderLayer();
 		BlendMode bm = pDevice->blendMode();
 		HiColor c = pDevice->tintColor();	

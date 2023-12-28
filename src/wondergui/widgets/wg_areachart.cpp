@@ -66,12 +66,14 @@ namespace wg
 			}
 		}
 
-		if( bTransitioning != m_bReceivingUpdates)
+		if( bTransitioning != m_bTransitioning)
 		{
 			if (bTransitioning)
 				_startReceiveUpdates();
 			else
 				_stopReceiveUpdates();
+
+			m_bTransitioning = bTransitioning;
 		}
 	}
 
@@ -215,6 +217,11 @@ namespace wg
 
 	void AreaChart::_update(int microPassed, int64_t microsecTimestamp)
 	{
+		Chart::_update(microPassed, microsecTimestamp);
+
+		if (!m_bTransitioning)
+			return;
+
 		bool	transitionsActive = false;
 
 		// Update all transitions
@@ -295,7 +302,10 @@ namespace wg
 		}
 
 		if (!transitionsActive)
+		{
+			m_bTransitioning = false;
 			_stopReceiveUpdates();
+		}
 	}
 
 	//____ _updateAreaChartEntrys() ______________________________________________________

@@ -29,6 +29,7 @@
 #include <wg_transitions.h>
 #include <wg_gradient.h>
 #include <wg_text.h>
+#include <wg_glow.h>
 
 namespace wg
 {
@@ -151,6 +152,7 @@ class Chart;
 
 		DynamicVector<GridLine>	xLines;
 		DynamicVector<GridLine>	yLines;
+		Glow					glow;
 
 		//.____ Identification __________________________________________
 
@@ -170,7 +172,7 @@ class Chart;
 	protected:
 		Chart();
 		
-		template<class BP> Chart( const BP& bp ) : xLines(this), yLines(this),
+		template<class BP> Chart( const BP& bp ) : xLines(this), yLines(this), glow(this),
 			m_displaySkin(this), m_labelSkin(this), Widget(bp)
 		{
 			m_displayCeiling = bp.displayCeiling;
@@ -195,6 +197,7 @@ class Chart;
 		virtual void	_renderCharts(GfxDevice* pDevice, const RectSPX& canvas) = 0;
 
 		void			_resize(const SizeSPX& size, int scale) override;
+		void			_update(int microPassed, int64_t microsecTimestamp) override;
 		void			_render(GfxDevice* pDevice, const RectSPX& canvas, const RectSPX& window) override;
 
 		//
@@ -202,7 +205,6 @@ class Chart;
 		void		_didAddEntries(GridLine* pEntry, int nb) override;
 		void		_didMoveEntries(GridLine* pFrom, GridLine* pTo, int nb) override;
 		void		_willEraseEntries(GridLine* pEntry, int nb) override;
-
 
 		RectSPX			m_graphCanvas;
 
@@ -229,6 +231,8 @@ class Chart;
 		Placement		m_bottomLabelPlacement = Placement::South;
 		pts				m_sideLabelSpacing = 1;
 		pts				m_bottomLabelSpacing = 1;
+
+		Surface_p		m_pChartCanvas;
 
 	};
 

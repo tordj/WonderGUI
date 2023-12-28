@@ -69,6 +69,8 @@ set( SOURCES
 	components/wg_editablenumber.h
 	components/wg_editabletext.cpp
 	components/wg_editabletext.h
+	components/wg_glow.cpp
+	components/wg_glow.h
 	components/wg_icon.cpp
 	components/wg_icon.h
 	components/wg_number.cpp
