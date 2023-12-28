@@ -112,8 +112,8 @@ namespace wg
         void    _renderLayerWasChanged() override;    // Checked for errors before we get here.
         void    _clipListWasChanged() override;            // Called when cliplist has been changed.
         
-		void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2]) override;
-		void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2]) override;
+		void	_transformBlitSimple(const RectSPX& dest, CoordSPX src, const int simpleTransform[2][2], OpType type) override;
+		void	_transformBlitComplex(const RectSPX& dest, BinalCoord src, const binalInt complexTransform[2][2], OpType type) override;
 
 		void	_transformDrawSegments(const RectSPX& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
