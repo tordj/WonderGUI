@@ -167,6 +167,8 @@ namespace wg
 			bool			disabled = false;
 			Finalizer_p		finalizer = nullptr;
 
+			Glow::Blueprint	glow;
+
 			HiColor			gridColor = Color::DarkGray;
 			pts				gridThickness = 1;
 
@@ -190,7 +192,6 @@ namespace wg
 
 			String			tooltip;
 		};
-
 
 		//.____ Creation __________________________________________
 

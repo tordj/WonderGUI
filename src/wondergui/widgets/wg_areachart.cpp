@@ -77,9 +77,9 @@ namespace wg
 		}
 	}
 
-	//____ _graphVisibilityChanged() _________________________________________
+	//____ _entryVisibilityChanged() _________________________________________
 
-	void AreaChart::_graphVisibilityChanged(AreaChartEntry* pAreaChartEntry)
+	void AreaChart::_entryVisibilityChanged(AreaChartEntry* pAreaChartEntry)
 	{
 		// We need to render the area no matter if graph appeared or disappeared.
 
@@ -149,10 +149,10 @@ namespace wg
 
 		RectSPX dirt;
 
-		dirt.x = m_graphCanvas.x + m_graphCanvas.w * leftmost;
-		dirt.y = m_graphCanvas.y;
-		dirt.w = m_graphCanvas.w * (rightmost - leftmost);
-		dirt.h = m_graphCanvas.h;
+		dirt.x = m_chartCanvas.x + m_chartCanvas.w * leftmost;
+		dirt.y = m_chartCanvas.y;
+		dirt.w = m_chartCanvas.w * (rightmost - leftmost);
+		dirt.h = m_chartCanvas.h;
 
 		pts outlineThickness = std::max(pAreaChartEntry->m_topOutlineThickness, pAreaChartEntry->m_bottomOutlineThickness);
 
@@ -160,7 +160,7 @@ namespace wg
 
 		dirt += BorderSPX(outlineMargin+64);
 
-		_requestRender(RectSPX::overlap(Util::alignUp(dirt), m_graphCanvas) );
+		_requestRender(RectSPX::overlap(Util::alignUp(dirt), m_chartCanvas) );
 	}
 
 	//____ _waveformNeedsRefresh() ____________________________________________
@@ -322,7 +322,7 @@ namespace wg
 				{
 					// Generate waveform
 
-					RectSPX rect = _graphRangeToRect(graph.m_begin, graph.m_end);
+					RectSPX rect = _entryRangeToRect(graph.m_begin, graph.m_end);
 
 					graph.m_waveformPos = rect.pos();
 					
@@ -396,7 +396,7 @@ namespace wg
 		{
 			float sample = nSamples == 0 ? 0.f : pSamples[0];
 			
-			spx spxSample = (sample - m_displayCeiling) / (m_displayFloor - m_displayCeiling) * m_graphCanvas.h;
+			spx spxSample = (sample - m_displayCeiling) / (m_displayFloor - m_displayCeiling) * m_chartCanvas.h;
 
 			if (bTopEdge)
 				pWaveform->setFlatTopLine(0, wfSamples, spxSample);
@@ -408,11 +408,11 @@ namespace wg
 			spx * pConverted = (spx*) Base::memStackAlloc(wfSamples * sizeof(spx));
 
 
-			SizeI	canvas = m_graphCanvas.size() / 64;
+			SizeI	canvas = m_chartCanvas.size() / 64;
 
 			float stepFactor = (nSamples - 1) / (float) wfSamples;
 
-			float valueFactor = m_graphCanvas.h / (m_displayFloor - m_displayCeiling);
+			float valueFactor = m_chartCanvas.h / (m_displayFloor - m_displayCeiling);
 
 			for (int i = 0; i < wfSamples; i++)
 			{
@@ -436,11 +436,11 @@ namespace wg
 		}
 	}
 
-	//____ _graphRangeToRect() __________________________________
+	//____ _entryRangeToRect() __________________________________
 
-	RectSPX AreaChart::_graphRangeToRect(float begin, float end) const
+	RectSPX AreaChart::_entryRangeToRect(float begin, float end) const
 	{
-		RectSPX rect( m_graphCanvas.w * begin, 0, m_graphCanvas.w * (end - begin), m_graphCanvas.h );
+		RectSPX rect( m_chartCanvas.w * begin, 0, m_chartCanvas.w * (end - begin), m_chartCanvas.h );
 		
 		return Util::align(rect);
 	}
@@ -631,7 +631,7 @@ namespace wg
 		if( bVisible != m_bVisible )
 		{
 			m_bVisible = bVisible;
-			m_pDisplay->_graphVisibilityChanged(this);
+			m_pDisplay->_entryVisibilityChanged(this);
 		}
 	}
 

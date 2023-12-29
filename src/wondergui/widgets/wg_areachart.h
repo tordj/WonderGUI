@@ -123,10 +123,10 @@ namespace wg
 
 		// AreaChartEntry samples
 
-		float				m_begin = 0.f;			// Offset in AreaChart where this graph begins.
-		float				m_end = 1.f;			// Offset in AreaChart where this graph ends.
-		std::vector<float>	m_topSamples;			// Samples for top of this graph.
-		std::vector<float>	m_bottomSamples;		// Samples for bottom of this graph.
+		float				m_begin = 0.f;			// Offset in AreaChart where this entry begins.
+		float				m_end = 1.f;			// Offset in AreaChart where this entry ends.
+		std::vector<float>	m_topSamples;			// Samples for top of this entry.
+		std::vector<float>	m_bottomSamples;		// Samples for bottom of this entry.
 
 		//		float				m_sampleMin = 0;
 		//		float				m_sampleMax = 0;
@@ -166,6 +166,8 @@ namespace wg
 			bool			dropTarget = false;
 			bool			disabled = false;
 			Finalizer_p		finalizer = nullptr;
+
+			Glow::Blueprint	glow;
 
 			HiColor			gridColor = Color::DarkGray;
 			pts				gridThickness = 1;
@@ -220,7 +222,7 @@ namespace wg
 		void		_renderCharts(GfxDevice* pDevice, const RectSPX& canvas) override;
 
 		void		_startedOrEndedTransition();
-		void		_graphVisibilityChanged(AreaChartEntry* pAreaChartEntry);
+		void		_entryVisibilityChanged(AreaChartEntry* pAreaChartEntry);
 		void		_setAreaChartEntryRange(AreaChartEntry* pAreaChartEntry, float newBegin, float newEnd);
 
 		void		_didAddEntries(AreaChartEntry* pEntry, int nb) override;
@@ -235,7 +237,7 @@ namespace wg
 
 		void		_updateAreaChartEntrys();
 
-		RectSPX		_graphRangeToRect( float begin, float end) const;
+		RectSPX		_entryRangeToRect( float begin, float end) const;
 
 		void		_requestRenderAreaChartEntry(AreaChartEntry* pAreaChartEntry, float leftmost, float rightmost);
 

@@ -2964,7 +2964,8 @@ bool plotChartTest(ComponentPtr<DynamicSlot> pEntry)
 			_.outlineColor = Color::Green,
 			_.padding = 2,
 			_.outline = 2)),
-		_.skin = StaticColorSkin::create(Color::Pink)
+		_.skin = StaticColorSkin::create(Color::Pink),
+		_.glow.active = true
 	));
 
 
@@ -3016,9 +3017,6 @@ bool plotChartTest(ComponentPtr<DynamicSlot> pEntry)
 	*/
 
 	//
-
-
-	pGraph->glow.setActive(true);
 
 
 	auto pTransition = CoordTransition::create(2000000, TransitionCurve::Bezier);

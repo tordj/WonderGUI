@@ -90,7 +90,7 @@ namespace wg
 	{
 		Widget::_render(pDevice, _canvas, _window);
 
-		RectSPX graphCanvas = m_graphCanvas + _canvas.pos();
+		RectSPX graphCanvas = m_chartCanvas + _canvas.pos();
 
 		if (!m_displaySkin.isEmpty())
 			m_displaySkin.render(pDevice, graphCanvas + m_displaySkin.contentBorder(m_scale, m_state), m_scale, m_state);
@@ -105,7 +105,7 @@ namespace wg
 			{
 				if (line.m_bVisible && line.m_value >= rangeMin && line.m_value <= rangeMax)
 				{
-					float valueFactor = (m_displayFloor - m_displayCeiling) * m_graphCanvas.h;
+					float valueFactor = (m_displayFloor - m_displayCeiling) * m_chartCanvas.h;
 
 					CoordSPX pos = graphCanvas.pos();
 					pos.y += (line.m_value - m_displayCeiling) * valueFactor;
@@ -213,7 +213,7 @@ namespace wg
 
 	void Chart::_requestRenderChartArea()
 	{
-		_requestRender(m_graphCanvas);
+		_requestRender(m_chartCanvas);
 	}
 
 
@@ -235,7 +235,7 @@ namespace wg
 
 		//
 
-		_recalcGraphCanvas();
+		_recalcChartCanvas();
 		_repositionAllLabels();
 		_requestRender();
 	}
@@ -275,7 +275,7 @@ namespace wg
 
 		//
 
-		if (_recalcGraphCanvas())
+		if (_recalcChartCanvas())
 			_repositionAllLabels();
 
 		_requestRender();
@@ -283,7 +283,7 @@ namespace wg
 
 	//____ _recalcGraphCanvas() _______________________________________________
 
-	bool Chart::_recalcGraphCanvas()
+	bool Chart::_recalcChartCanvas()
 	{
 		RectSPX contentGeo = m_skin.isEmpty() ? RectSPX(0,0,m_size) : m_skin.contentRect(RectSPX(0,0,m_size),m_scale, m_state);
 
@@ -444,10 +444,10 @@ namespace wg
 
 		RectSPX graphCanvas = Util::alignDown(contentGeo - margin);
 
-		if (graphCanvas == m_graphCanvas)
+		if (graphCanvas == m_chartCanvas)
 			return false;
 
-		m_graphCanvas = graphCanvas;
+		m_chartCanvas = graphCanvas;
 		return true;
 	}
 
@@ -458,13 +458,13 @@ namespace wg
 		float	rangeMin = std::min(m_displayCeiling, m_displayFloor);
 		float	rangeMax = std::max(m_displayCeiling, m_displayFloor);
 
-		float valueFactor = (m_displayFloor - m_displayCeiling) * m_graphCanvas.h;
+		float valueFactor = (m_displayFloor - m_displayCeiling) * m_chartCanvas.h;
 
 		for (auto& line : xLines)
 		{
 			if (line.m_bVisible && line.m_value >= rangeMin && line.m_value <= rangeMax)
 			{
-				CoordSPX pos = m_graphCanvas.pos();
+				CoordSPX pos = m_chartCanvas.pos();
 				pos.y += (line.m_value - m_displayCeiling) * valueFactor;
 
 				pos += _sideLabelOffset(&line);
@@ -476,8 +476,8 @@ namespace wg
 		{
 			if (line.m_bVisible)
 			{
-				CoordSPX pos = m_graphCanvas.bottomLeft();
-				pos.x += line.m_value * m_graphCanvas.w;
+				CoordSPX pos = m_chartCanvas.bottomLeft();
+				pos.x += line.m_value * m_chartCanvas.w;
 
 				pos += _bottomLabelOffset(&line); 
 				line.m_labelGeo.setPos(Util::align(pos));
@@ -533,7 +533,7 @@ namespace wg
 				gridLine._resizeLabel(scale, oldScale);
 		}
 
-		_recalcGraphCanvas();
+		_recalcChartCanvas();
 		_repositionAllLabels();
 
 		_fullRefreshOfChart();
