@@ -200,6 +200,8 @@ class Chart;
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
 		void			_render(GfxDevice* pDevice, const RectSPX& canvas, const RectSPX& window) override;
 
+		void			_requestRenderChartArea();
+
 		//
 
 		void		_didAddEntries(GridLine* pEntry, int nb) override;

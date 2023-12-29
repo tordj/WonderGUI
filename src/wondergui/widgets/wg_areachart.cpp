@@ -493,6 +493,8 @@ namespace wg
 		if (pTransition)
 		{
 			m_pColorTransition = pTransition;
+			m_colorTransitionProgress = 0;
+
 			m_endFillColor = fill;
 			m_endOutlineColor = outline;
 
@@ -525,6 +527,8 @@ namespace wg
 		if (pTransition)
 		{
 			m_pColorTransition = pTransition;
+			m_colorTransitionProgress = 0;
+
 			m_endFillGradient = fill;
 			m_endOutlineGradient = outline;
 
@@ -595,12 +599,13 @@ namespace wg
 
 	//____ transitionSamples() ________________________________________________
 
-	bool AreaChartEntry::transitionSamples(ArrayTransition* pTransition, int nTopSamples, float* pNewTopSamples, int nBottomSamples, float* pNewBottomSamples)
+	bool AreaChartEntry::transitionSamples(ValueTransition* pTransition, int nTopSamples, float* pNewTopSamples, int nBottomSamples, float* pNewBottomSamples)
 	{
 		if( nTopSamples != m_topSamples.size() || nBottomSamples != m_bottomSamples.size() )
 			return false;
 
 		m_pSampleTransition = pTransition;
+		m_sampleTransitionProgress = 0;
 
 		m_startBottomSamples.resize(nBottomSamples);
 		memcpy(m_startBottomSamples.data(), m_bottomSamples.data(), nBottomSamples * sizeof(float));

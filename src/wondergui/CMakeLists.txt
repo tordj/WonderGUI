@@ -180,6 +180,8 @@ set( SOURCES
 	widgets/wg_lineeditor.h
 	widgets/wg_pianokeyboard.cpp
 	widgets/wg_pianokeyboard.h
+	widgets/wg_plotchart.cpp
+	widgets/wg_plotchart.h
 	widgets/wg_popupopener.cpp
 	widgets/wg_popupopener.h
 	widgets/wg_rangeslider.cpp

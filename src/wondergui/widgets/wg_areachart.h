@@ -61,7 +61,7 @@ namespace wg
 		void	setTopSamples(int nSamples, float* pSamples);
 		void	setBottomSamples(int nSamples, float* pSamples);
 
-		bool	transitionSamples(ArrayTransition* pTransition, int nTopSamples, float* pNewTopSamples, int nBottomSamples, float* pNewBottomSamples);
+		bool	transitionSamples(ValueTransition* pTransition, int nTopSamples, float* pNewTopSamples, int nBottomSamples, float* pNewBottomSamples);
 
 		void	setVisible(bool bVisible);
 		bool	isVisible() const { return m_bVisible; }
@@ -112,7 +112,7 @@ namespace wg
 		Gradient			m_startOutlineGradient;
 		Gradient			m_endOutlineGradient;
 
-		ArrayTransition_p	m_pSampleTransition;
+		ValueTransition_p	m_pSampleTransition;
 		int					m_sampleTransitionProgress = 0;	// In microseconds
 
 		std::vector<float>	m_startTopSamples;

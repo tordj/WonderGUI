@@ -209,6 +209,12 @@ namespace wg
 
 	}
 
+	//____ _requestRenderChartArea() ____________________________________________
+
+	void Chart::_requestRenderChartArea()
+	{
+		_requestRender(m_graphCanvas);
+	}
 
 
 	//____ _didAddEntries() ___________________________________________________
@@ -436,7 +442,7 @@ namespace wg
 
 		// Finish up
 
-		RectSPX graphCanvas = contentGeo - margin;
+		RectSPX graphCanvas = Util::alignDown(contentGeo - margin);
 
 		if (graphCanvas == m_graphCanvas)
 			return false;

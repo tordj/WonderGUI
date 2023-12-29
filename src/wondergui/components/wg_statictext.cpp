@@ -44,7 +44,7 @@ namespace wg
 		return TextLink_p();
 	}
 
-	//____ initFromBlueprint() ________________________________________________
+	//____ _initFromBlueprint() ________________________________________________
 
 	void StaticText::_initFromBlueprint(const Blueprint& bp)
 	{

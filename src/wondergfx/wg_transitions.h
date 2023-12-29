@@ -78,6 +78,7 @@ namespace wg
 
 		//.____ Creation ______________________________________________________
 
+		static ColorTransition_p	create(int duration, TransitionCurve curve = TransitionCurve::Linear);
 		static ColorTransition_p	create(const Blueprint& blueprint);
 
 		//.____ Identification _________________________________________________
@@ -91,6 +92,9 @@ namespace wg
 
 		HiColor	snapshot(int timestampMicroSec, HiColor startColor, HiColor endColor );
 
+		void	snapshot(int timestampMicroSec, int nColors, const HiColor* pStartColors, const HiColor* pEndColors, HiColor* pOutput);
+
+
 	protected:
 		ColorTransition( const Blueprint& blueprint );
 
@@ -102,6 +106,58 @@ namespace wg
 
 		HiColor			m_midPoint;
 	};
+
+	//____ CoordTransition ____________________________________________________
+
+	class CoordTransition;
+	typedef	StrongPtr<CoordTransition>	CoordTransition_p;
+	typedef	WeakPtr<CoordTransition>	CoordTransition_wp;
+
+	class CoordTransition : public Transition
+	{
+	public:
+
+		//.____ Blueprint _____________________________________________________
+
+		struct Blueprint
+		{
+			TransitionCurve		curveX = TransitionCurve::Linear;
+			TransitionCurve		curveY = TransitionCurve::Linear;
+			int					duration = 250 * 1000;					// Microseconds!
+			Finalizer_p			finalizer = nullptr;
+		};
+
+		//.____ Creation ______________________________________________________
+
+		static CoordTransition_p	create(int duration, TransitionCurve curve = TransitionCurve::Linear);
+		static CoordTransition_p	create(int duration, TransitionCurve curveX, TransitionCurve curveY );
+		static CoordTransition_p	create(const Blueprint& blueprint);
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Misc ___________________________________________________________
+
+		int		duration() const { return m_duration; }
+
+		CoordI	snapshot(int timestampMicroSec, CoordI startPos, CoordI endPos);
+		CoordF	snapshot(int timestampMicroSec, CoordF startPos, CoordF endPos);
+
+		void	snapshot(int timestampMicroSec, int nCoords, const CoordI* pStartValues, const CoordI* pEndValues, CoordI* pOutput);
+		void	snapshot(int timestampMicroSec, int nCoords, const CoordF* pStartValues, const CoordF* pEndValues, CoordF* pOutput);
+
+	protected:
+		CoordTransition(const Blueprint& blueprint);
+		CoordTransition(int duration, TransitionCurve curveX, TransitionCurve curveY);
+
+		TransitionCurve	m_curveX;
+		TransitionCurve	m_curveY;
+		int				m_duration;		// Microseconds
+	};
+
+
 
 	//____ ValueTransition ____________________________________________________
 
@@ -126,7 +182,7 @@ namespace wg
 		//.____ Creation ______________________________________________________
 
 		static ValueTransition_p	create( int duration, TransitionCurve curve = TransitionCurve::Linear);
-		static ValueTransition_p	create( const Blueprint& blueprint);
+		static ValueTransition_p	create( const Blueprint& blueprint) { return ValueTransition_p(new ValueTransition(blueprint)); };
 
 		//.____ Identification _________________________________________________
 
@@ -140,70 +196,12 @@ namespace wg
 		float	snapshot(int timestampMicroSec, float startValue, float endValue);
 		int		snapshot(int timestampMicroSec, int startValue, int endValue);
 
+		void	snapshot(int timestampMicroSec, int nValues, const int* pStartValues, const int* pEndValues, int* pOutput);
+		void	snapshot(int timestampMicroSec, int nValues, const float* pStartValues, const float* pEndValues, float* pOutput);
+
 	protected:
 		ValueTransition(int duration, TransitionCurve curve);
-
-		template<class BP>
-		ValueTransition(const Blueprint& bp) :
-			m_duration(bp.duration),
-			m_curve(bp.curve)
-		{
-			if (bp.finalizer)
-				setFinalizer(bp.finalizer);
-		}
-
-		TransitionCurve	m_curve;
-		int				m_duration;		// Microseconds
-	};
-
-
-	//____ ArrayTransition ____________________________________________________
-
-	class ArrayTransition;
-	typedef	StrongPtr<ArrayTransition>	ArrayTransition_p;
-	typedef	WeakPtr<ArrayTransition>	ArrayTransition_wp;
-
-	class ArrayTransition : public Transition
-	{
-	public:
-
-		//.____ Blueprint _____________________________________________________
-
-		struct Blueprint
-		{
-			TransitionCurve		curve = TransitionCurve::Linear;
-			int					duration = 250 * 1000;					// Microseconds!
-			Finalizer_p			finalizer = nullptr;
-		};
-
-		//.____ Creation ______________________________________________________
-
-		static ArrayTransition_p	create( int duration, TransitionCurve curve = TransitionCurve::Linear);
-		static ArrayTransition_p	create( const Blueprint& blueprint);
-
-		//.____ Identification _________________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
-		//.____ Misc ___________________________________________________________
-
-		int		duration() const { return m_duration; }
-
-		void	snapshot(int timestampMicroSec, int nValues, const int * pStartValues, const int * pEndValues, int * pOutput);
-		void	snapshot(int timestampMicroSec, int nValues, const float * pStartValues, const float * pEndValues, float * pOutput);
-
-	protected:
-		ArrayTransition(int duration, TransitionCurve curve);
-
-		template<class BP>
-		ArrayTransition(const Blueprint& bp) :
-			m_duration(bp.duration),
-			m_curve(bp.curve)
-		{
-			if (bp.finalizer)
-				setFinalizer(bp.finalizer);
-		}
+		ValueTransition(const Blueprint& blueprint);
 
 		TransitionCurve	m_curve;
 		int				m_duration;		// Microseconds

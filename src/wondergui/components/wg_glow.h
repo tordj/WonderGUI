@@ -46,6 +46,25 @@ namespace wg
 
 		struct Blueprint
 		{
+			bool				active = false;
+
+			int					refreshRate = 30;
+			spx					radius = 96;
+
+			SizeI				resolution;
+
+			HiColor				seedTint = HiColor::White;
+			BlendMode			seedBlend = BlendMode::Blend;
+
+			HiColor				glowTint = HiColor::White;
+			BlendMode			glowBlend = BlendMode::Add;
+
+			HiColor				canvasTint = HiColor::White;
+			BlendMode			canvasBlend = BlendMode::Blend;
+
+			Placement			resizePlacement = Placement::NorthWest;
+			bool				stretchOnResize = false;
+			bool				clearOnResize	= false;
 		};
 
 		//.____ Control _____________________________________________
@@ -81,14 +100,14 @@ namespace wg
 		void				setPixelResolution(SizeI pixels);
 		SizeI				pixelResolution() const;
 
-		void				setGlowSeedStates(HiColor tint, BlendMode blendMode);
-		void				setGlowRenderStates(HiColor tint, BlendMode blendMode);
-		void				setCanvasRenderStates(HiColor tint, BlendMode blendMode);
+		void				setSeedStates(HiColor seedTint, BlendMode seedBlend);
+		void				setGlowStates(HiColor glowTint, BlendMode glowBlend);
+		void				setCanvasStates(HiColor canvasTint, BlendMode canvasBlend);
 
 
 		//.____ Internal ______________________________________________________
 
-		void				initFromBlueprint(const Blueprint& blueprint);
+		void				_initFromBlueprint(const Blueprint& blueprint);
 
 		void				_setSize(SizeSPX size, int scale);
 		void				_update(int microPassed);
@@ -114,11 +133,11 @@ namespace wg
 		HiColor				m_seedTint = HiColor::White;
 		BlendMode			m_seedBlend = BlendMode::Blend;
 
-		HiColor				m_renderTint = HiColor::White;
-		BlendMode			m_renderBlend = BlendMode::Add;
+		HiColor				m_glowTint = HiColor::White;
+		BlendMode			m_glowBlend = BlendMode::Add;
 
-		HiColor				m_canvasOutTint = HiColor::White;
-		BlendMode			m_canvasOutBlend = BlendMode::Blend;
+		HiColor				m_canvasTint = HiColor::White;
+		BlendMode			m_canvasBlend = BlendMode::Blend;
 
 		int					m_microSecAccumulator = 0;
 

@@ -203,34 +203,54 @@ namespace wg
 		return m_resolution;
 	}
 
-	//____ setGlowSeedStates() ________________________________________________
+	//____ setSeedStates() ________________________________________________
 
-	void Glow::setGlowSeedStates(HiColor tint, BlendMode blendMode)
+	void Glow::setSeedStates(HiColor tint, BlendMode blendMode)
 	{
 		m_seedTint = tint;
 		m_seedBlend = blendMode;
 	}
 
-	//____ setGlowRenderStates() ______________________________________________
+	//____ setGlowStates() ______________________________________________
 
-	void Glow::setGlowRenderStates(HiColor tint, BlendMode blendMode)
+	void Glow::setGlowStates(HiColor tint, BlendMode blendMode)
 	{
-		m_renderTint = tint;
-		m_renderBlend = blendMode;
+		m_glowTint = tint;
+		m_glowBlend = blendMode;
 	}
 
-	//____ setCanvasRenderStates() ____________________________________________
+	//____ setCanvasStates() ____________________________________________
 
-	void Glow::setCanvasRenderStates(HiColor tint, BlendMode blendMode)
+	void Glow::setCanvasStates(HiColor tint, BlendMode blendMode)
 	{
-		m_canvasOutTint = tint;
-		m_canvasOutBlend = blendMode;
+		m_canvasTint = tint;
+		m_canvasBlend = blendMode;
 	}
 
-	//____ initFromBlueprint() ________________________________________________
+	//____ _initFromBlueprint() ________________________________________________
 
-	void Glow::initFromBlueprint(const Blueprint& blueprint)
+	void Glow::_initFromBlueprint(const Blueprint& bp)
 	{
+		m_refreshRate	= bp.refreshRate;
+		m_radius		= bp.radius;
+
+		m_resolution	= bp.resolution;
+
+		m_seedTint		= bp.seedTint;
+		m_seedBlend		= bp.seedBlend;
+
+		m_glowTint		= bp.glowTint;
+		m_glowBlend		= bp.glowBlend;
+
+		m_canvasTint	= bp.canvasTint;
+		m_canvasBlend	= bp.canvasBlend;
+
+		m_resizePlacement	= bp.resizePlacement;
+		m_bStretchOnResize	= bp.stretchOnResize;
+		m_bClearOnResize	= bp.clearOnResize;
+
+		if (bp.active)
+			setActive(true);
 	}
 
 	//____ _update() __________________________________________________________
@@ -242,11 +262,11 @@ namespace wg
 		
 		int microsecBetweenUpdates = 1000000 / m_refreshRate;
 
-		if (m_microSecAccumulator < microsecBetweenUpdates &&
-			((m_microSecAccumulator + microPassed) > microsecBetweenUpdates))
+		m_microSecAccumulator += microPassed;
+
+		if (m_microSecAccumulator >= microsecBetweenUpdates)
 			_requestRender();
 
-		m_microSecAccumulator += microPassed;
 	}
 
 
@@ -254,12 +274,22 @@ namespace wg
 
 	void Glow::_render(GfxDevice* pDevice, const RectSPX& canvas, Surface_p pSeed, const RectSPX& seedArea)
 	{
+		if (!m_bActive)
+		{
+			pDevice->setBlitSource(pSeed);
+			pDevice->blit(seedArea);
+			return;
+		}
+
 
 		// Possibly regenerate the glow surfaces
 
 		if (m_surface[1] == nullptr)
 		{
 			m_surface[1] = _createGlowCanvas(pDevice->surfaceFactory());
+			pDevice->beginCanvasUpdate(m_surface[1]);
+			pDevice->fill(HiColor::Black);
+			pDevice->endCanvasUpdate();
 
 			if (m_surface[0] == nullptr)
 			{
@@ -292,7 +322,7 @@ namespace wg
 
 				m_surface[0] = _createGlowCanvas(pDevice->surfaceFactory());
 				pDevice->beginCanvasUpdate(m_surface[0]);
-				pDevice->fill(Color::Black);
+				pDevice->fill(HiColor::Black);
 				pDevice->endCanvasUpdate();
 
 				std::swap(m_surface[0], m_surface[1]);
@@ -324,8 +354,8 @@ namespace wg
 		float scaleY = destRect.h / (float)canvas.h;
 
 
-		RectSPX scaledSeedRect = RectSPX((	seedArea.x - canvas.x) * scaleX,
-										 (	seedArea.y - canvas.y) * scaleY,
+		RectSPX scaledSeedRect = RectSPX( destRect.x + (seedArea.x - canvas.x) * scaleX,
+										  destRect.y + (seedArea.y - canvas.y) * scaleY,
 											seedArea.w * scaleX,
 											seedArea.h * scaleY );
 
@@ -354,13 +384,13 @@ namespace wg
 		BlendMode bm = pDevice->blendMode();
 		HiColor c = pDevice->tintColor();
 
-		pDevice->setBlendMode(m_renderBlend);
-		pDevice->setTintColor(m_renderTint);
+		pDevice->setBlendMode(m_glowBlend);
+		pDevice->setTintColor(m_glowTint);
 		pDevice->setBlitSource(m_surface[0]);
 		pDevice->stretchBlit(canvas, destRect);
 
-		pDevice->setBlendMode(m_canvasOutBlend);
-		pDevice->setTintColor(m_canvasOutTint);
+		pDevice->setBlendMode(m_canvasBlend);
+		pDevice->setTintColor(m_canvasTint);
 		pDevice->setBlitSource(pSeed);
 		pDevice->blit(seedArea);
 

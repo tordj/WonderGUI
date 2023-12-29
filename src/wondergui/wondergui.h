@@ -111,6 +111,7 @@
 #include <wg_pianokeyboard.h>
 #include <wg_piemeterskin.h>
 #include <wg_pixeltools.h>
+#include <wg_plotchart.h>
 #include <wg_pointers.h>
 #include <wg_popupopener.h>
 #include <wg_popupoverlay.h>
