@@ -77,7 +77,6 @@
 #include <wg_geo.h>
 #include <wg_gfxdevice.h>
 #include <wg_glow.h>
-#include <wg_glowcapsule.h>
 #include <wg_gradient.h>
 #include <wg_gridwalker.h>
 #include <wg_hostbridge.h>
@@ -111,6 +110,7 @@
 #include <wg_pianokeyboard.h>
 #include <wg_piemeterskin.h>
 #include <wg_pixeltools.h>
+#include <wg_plotchart.h>
 #include <wg_pointers.h>
 #include <wg_popupopener.h>
 #include <wg_popupoverlay.h>

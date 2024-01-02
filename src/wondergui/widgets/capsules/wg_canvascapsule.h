@@ -27,6 +27,7 @@
 #include <wg_surfacefactory.h>
 #include <wg_patches.h>
 #include <wg_canvaslayers.h>
+#include <wg_glow.h>
 
 namespace wg
 {
@@ -60,9 +61,11 @@ namespace wg
 			Object_p		baggage;
 			BlendMode		blendMode		= BlendMode::Blend;
 			Widget_p		child;
+			HiColor			clearColor		= HiColor::Undefined;
 			bool			disabled		= false;
 			bool			dropTarget		= false;
 			Finalizer_p		finalizer		= nullptr;
+			Glow::Blueprint glow;
 			int				id = 0;
 			CanvasLayers_p	layers			= nullptr;
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
@@ -88,6 +91,10 @@ namespace wg
 		static CanvasCapsule_p	create() { return CanvasCapsule_p(new CanvasCapsule()); }
 		static CanvasCapsule_p	create( const Blueprint& bp ) { return CanvasCapsule_p(new CanvasCapsule(bp)); }
 
+		//.____ Components _______________________________________
+
+		Glow				glow;
+		
 		//.____ Identification __________________________________________
 
 		const TypeInfo& typeInfo(void) const override;
@@ -115,6 +122,8 @@ namespace wg
 		void				setScaleCanvas(bool bScale);
 		bool				isCanvasScaling() { return m_bScaleCanvas; }
 
+		void				setClearColor( HiColor color );
+		HiColor				clearColor() const { return m_clearColor; }
 
 		void				setRenderLayer(int layer);
 		int					renderLayer() const { return m_renderLayer; }
@@ -127,7 +136,7 @@ namespace wg
 	protected:
 		CanvasCapsule();
 		
-		template<class BP> CanvasCapsule(const BP& bp) : Capsule(bp)
+		template<class BP> CanvasCapsule(const BP& bp) : Capsule(bp), glow(this)
 		{
 			m_pFactory		= bp.surfaceFactory;
 			m_canvasFormat	= bp.pixelFormat;
@@ -139,9 +148,12 @@ namespace wg
 			m_tintMode		= bp.tintColorBlend;
 			m_bScaleCanvas  = bp.scaleCanvas;
 			m_placement		= bp.placement;
-
+			m_clearColor	= bp.clearColor;
+			
 			if( bp.child )
 				slot.setWidget(bp.child);
+			
+			glow._initFromBlueprint(bp.glow);
 		}
 		
 		virtual ~CanvasCapsule();
@@ -149,6 +161,8 @@ namespace wg
 		Widget* 			_findWidget(const CoordSPX& ofs, SearchMode mode) override;
 
 		void				_resizeCanvasAndChild();
+
+		void				_update(int microPassed, int64_t microsecTimestamp) override;
 
 		Surface*			_renderCanvas(GfxDevice* pDevice);
 		void				_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
@@ -185,6 +199,7 @@ namespace wg
 		
 		SurfaceFactory_p	m_pFactory;
 		PixelFormat			m_canvasFormat = PixelFormat::BGRA_8;
+		HiColor				m_clearColor = HiColor::Undefined;
 		int					m_renderLayer = -1;
 
 		HiColor				m_tintColor = HiColor::Undefined;

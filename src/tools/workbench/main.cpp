@@ -118,12 +118,13 @@ bool twoSlotPanelTest(ComponentPtr<DynamicSlot> pSlot);
 bool customSkinTest(ComponentPtr<DynamicSlot> pSlot);
 bool areaChartTest(ComponentPtr<DynamicSlot> pSlot);
 bool areaChartTest2(ComponentPtr<DynamicSlot> pSlot);
+bool plotChartTest(ComponentPtr<DynamicSlot> pSlot);
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pSlot);
 bool skinMarginTest(ComponentPtr<DynamicSlot> pSlot);
 bool wgcombTest(ComponentPtr<DynamicSlot> pSlot);
 bool widgetRecording(ComponentPtr<DynamicSlot> pSlot);
 bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pSlot);
-bool glowCapsuleTest(ComponentPtr<DynamicSlot> pSlot);
+bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pSlot);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -710,13 +711,14 @@ int main(int argc, char** argv)
 		//	twoSlotPanelTest(pSlot);
 		//	customSkinTest(pSlot);
 		//	areaChartTest(pSlot);
-			areaChartTest2(pSlot);
+		//	areaChartTest2(pSlot);
+			plotChartTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
 		//	canvasCapsuleTest(pSlot);
-		//	glowCapsuleTest(pSlot);
+			canvasCapsuleGlowTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -2777,7 +2779,7 @@ bool areaChartTest(ComponentPtr<DynamicSlot> pEntry)
 
 	pGraph->entries.back().setTopSamples(5, topSamples);
 
-	auto pTransition = ArrayTransition::create(2000000, TransitionCurve::Bezier);
+	auto pTransition = ValueTransition::create(2000000, TransitionCurve::Bezier);
 
 	pGraph->entries.back().transitionSamples(pTransition, 5, topSamples2, 1, bottomSamples2);
 
@@ -2787,12 +2789,12 @@ bool areaChartTest(ComponentPtr<DynamicSlot> pEntry)
 	static float beg[1] = { 0.5f };
 	static float end[1] = { -0.5f };
 
-	auto pLinear = ArrayTransition::create(201, TransitionCurve::Linear);
-	auto pEaseIn = ArrayTransition::create(201, TransitionCurve::EaseIn);
-	auto pEaseOut = ArrayTransition::create(201, TransitionCurve::EaseOut);
-	auto pEaseInOut = ArrayTransition::create(201, TransitionCurve::EaseInOut);
-	auto pBezier = ArrayTransition::create(201, TransitionCurve::Bezier);
-	auto pParametric = ArrayTransition::create(201, TransitionCurve::Parametric);
+	auto pLinear = ValueTransition::create(201, TransitionCurve::Linear);
+	auto pEaseIn = ValueTransition::create(201, TransitionCurve::EaseIn);
+	auto pEaseOut = ValueTransition::create(201, TransitionCurve::EaseOut);
+	auto pEaseInOut = ValueTransition::create(201, TransitionCurve::EaseInOut);
+	auto pBezier = ValueTransition::create(201, TransitionCurve::Bezier);
+	auto pParametric = ValueTransition::create(201, TransitionCurve::Parametric);
 
 	for (int i = 0 ; i < 201 ; i++ )
 	{
@@ -2919,7 +2921,7 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 	pGraph->glow.setActive(true);
 
 
-	auto pTransition = ArrayTransition::create(2000000, TransitionCurve::Bezier);
+	auto pTransition = ValueTransition::create(2000000, TransitionCurve::Bezier);
 	pGraph->entries.back().transitionSamples(pTransition, 5, topSamples[1], 1, bottomSamples);
 
 
@@ -2938,6 +2940,104 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 		transitionIndex = (transitionIndex + 1) % 2;
 		pGraph->entries.back().transitionSamples(pTransition, 5, topSamples[transitionIndex], 1, bottomSamples);  
 	});
+
+
+	pFlex->slots.pushBack(pButton, { .pos = {105, 220 } });
+
+
+	return true;
+}
+
+//____ plotChartTest() ______________________________________________________
+
+bool plotChartTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pFlex = FlexPanel::create();
+
+	pFlex->setSkin(StaticColorSkin::create(Color::LightYellow));
+
+	auto pGraph = PlotChart::create(WGBP(PlotChart,
+		_.displayCeiling = 0.5f,
+		_.displayFloor = -0.5f,
+		_.displaySkin = StaticBoxSkin::create(WGBP(StaticBoxSkin,
+			_.color = Color::Black,
+			_.outlineColor = Color::Green,
+			_.padding = 2,
+			_.outline = 2)),
+		_.skin = StaticColorSkin::create(Color::Pink),
+		_.glow.active = true
+	));
+
+
+
+
+	pFlex->slots.pushBack(pGraph, { .pos = {10,10}, .size = {200,200} });
+
+	*pEntry = pFlex;
+
+
+	pGraph->entries.pushBack({
+
+		.color = Color::Red,
+		.outlineColor = Color::Transparent,
+		.outlineThickness = 5/64,
+		.radius = 10
+		});
+
+
+	static CoordF topSamples[2][5] = { {{0.1f,0.f}, { 0.2f, -0.25f}, { 0.4f, 0.25f}, { 0.6f, 0.23f}, { 0.8f, 0.5f}},
+		{{0.5f, 0}, {0.5f, 0}, {0.5f, 0}, {0.5f,0}, {0.5f, 0}} };
+
+	static int transitionIndex = 0;
+
+	pGraph->entries.back().setSamples(5, topSamples[0]);
+
+
+
+
+
+	Color colors[6] = { Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Pink, Color::Brown };
+
+	// Setup grid
+
+	pGraph->xLines.pushBack({ .label = "-0.5", .pos = -0.5f, .thickness = 0.5f });
+	pGraph->xLines.pushBack({ .label = "-0.25", .pos = -0.25f, .thickness = 0.5f });
+	pGraph->xLines.pushBack({ .label = "0.0", .pos = 0.0f, .thickness = 1.f });
+	pGraph->xLines.pushBack({ .label = "0.25", .pos = 0.25f, .thickness = 0.5f });
+
+	pGraph->yLines.pushBack({ .label = "0.0", .pos = 0.0f, .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .label = "0.25", .pos = 0.25f, .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .label = "0.5", .pos = 0.5f, .thickness = 0.5f });
+	pGraph->yLines.pushBack({ .label = "1.0", .pos = 1.f, .thickness = 0.5f });
+
+	/*
+		pGraph->xLines.pushBack(WGBP(GridLine,
+								_.value = -0.25f
+								));
+	*/
+
+	//
+
+
+	auto pTransition = CoordTransition::create(2000000, TransitionCurve::Bezier);
+	pGraph->entries.back().transitionSamples(pTransition, 5, topSamples[1]);
+
+
+
+	auto pButtonSkin = BoxSkin::create({ .color = Color8::Grey,
+									  .outlineThickness = 1,
+									  .outlineColor = Color8::Black,
+									  .padding = 3
+		});
+
+
+	auto pButton = Button::create({ .label = {.text = "TRANSITION"}, .skin = pButtonSkin });
+
+	Base::msgRouter()->addRoute(pButton, MsgType::Select, [pGraph, pTransition](Msg* pMsg)
+		{
+			transitionIndex = (transitionIndex + 1) % 2;
+			pGraph->entries.back().transitionSamples(pTransition, 5, topSamples[transitionIndex]);
+		});
 
 
 	pFlex->slots.pushBack(pButton, { .pos = {105, 220 } });
@@ -3269,9 +3369,9 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 }
 
-//____ glowCapsuleTest() ______________________________________________________
+//____ canvasCapsuleGlowTest() ______________________________________________________
 
-bool glowCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
+bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::Black) });
 	*pEntry = pBack;
@@ -3279,7 +3379,7 @@ bool glowCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pMyStyle = TextStyle::create( WGOVR(Base::defaultStyle()->blueprint(), _.size = 30, _.color = Color::White ));
 
 
-	auto pGlowCapsule = GlowCapsule::create();
+	auto pGlowCapsule = CanvasCapsule::create();
 
 	float mtx[9] = { 0.1f, 0.1f, 0.1f,
 					 0.1f, 0.1f, 0.1f,
@@ -3293,8 +3393,10 @@ bool glowCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 //	pGlowCapsule->setResolution( {64,64} );
 
-	pGlowCapsule->setMatrices(96, mtx2, mtx, mtx);
-	pGlowCapsule->setRefreshRate(30);
+	pGlowCapsule->glow.setMatrices(mtx2, mtx, mtx);
+	pGlowCapsule->glow.setRefreshRate(30);
+	pGlowCapsule->glow.setActive(true);
+	
 
 	pGlowCapsule->setSkin( BoxSkin::create( { .color = HiColor::Transparent, .outlineThickness = 50, .outlineColor = Color::Yellow, .padding = 50 }) );
 

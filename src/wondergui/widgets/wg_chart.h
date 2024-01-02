@@ -189,6 +189,8 @@ class Chart;
 
 			m_sideLabelSpacing = bp.sideLabelSpacing;
 			m_bottomLabelSpacing = bp.bottomLabelSpacing;
+
+			glow._initFromBlueprint(bp.glow);
 		}
 
 		virtual ~Chart();
@@ -200,13 +202,15 @@ class Chart;
 		void			_update(int microPassed, int64_t microsecTimestamp) override;
 		void			_render(GfxDevice* pDevice, const RectSPX& canvas, const RectSPX& window) override;
 
+		void			_requestRenderChartArea();
+
 		//
 
 		void		_didAddEntries(GridLine* pEntry, int nb) override;
 		void		_didMoveEntries(GridLine* pFrom, GridLine* pTo, int nb) override;
 		void		_willEraseEntries(GridLine* pEntry, int nb) override;
 
-		RectSPX			m_graphCanvas;
+		RectSPX			m_chartCanvas;
 
 		float			m_displayCeiling;
 		float			m_displayFloor;
@@ -214,7 +218,7 @@ class Chart;
 
 	private:
 
-		bool		_recalcGraphCanvas();
+		bool		_recalcChartCanvas();
 		void		_repositionAllLabels();
 		CoordSPX	_sideLabelOffset(GridLine* pLine);
 		CoordSPX	_bottomLabelOffset(GridLine* pLine);
