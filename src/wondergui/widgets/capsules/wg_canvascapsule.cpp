@@ -35,7 +35,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	CanvasCapsule::CanvasCapsule()
+	CanvasCapsule::CanvasCapsule() : glow(this)
 	{
 	}
 
@@ -165,6 +165,14 @@ namespace wg
 		}
 	}
 
+	//____ setClearColor() _______________________________________________________
+
+	void CanvasCapsule::setClearColor( HiColor color )
+	{
+		m_clearColor = color;
+		_childRequestRender( &slot );
+	}
+
 	//____ _resizeCanvasAndChild() _______________________________________________
 
 	void CanvasCapsule::_resizeCanvasAndChild()
@@ -209,13 +217,33 @@ namespace wg
 			m_patches.clear();
 			m_patches.add(m_canvasSize);
 		}
-
+		
 		// Render children into canvas surface
 
 		if (!m_patches.isEmpty())
 		{
 			pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), m_patches.begin(), m_pCanvasLayers, m_renderLayer);
 
+			// Possibly clear the canvas before rendering
+			
+			HiColor clearColor = m_clearColor;
+
+			if( clearColor == HiColor::Undefined )
+			{
+				auto canvasDesc = Util::pixelFormatToDescription(m_canvasFormat);
+				if( canvasDesc.A_mask != 0 )
+					clearColor = HiColor::Transparent;
+			}
+						
+			if( clearColor != HiColor::Undefined )
+			{
+				pDevice->setBlendMode(BlendMode::Replace);
+				pDevice->fill( clearColor );
+				pDevice->setBlendMode(BlendMode::Blend);
+			}
+
+			//
+			
 			RectSPX canvas = { 0,0, m_canvasSize };
 			slot._widget()->_render(pDevice, canvas, canvas);
 
@@ -225,6 +253,13 @@ namespace wg
 		}
 
 		return m_pCanvas;
+	}
+
+	//____ _update() __________________________________________________________
+
+	void CanvasCapsule::_update(int microPassed, int64_t microsecTimestamp)
+	{
+		glow._update(microPassed);
 	}
 
 	//____ _render() _____________________________________________________________
@@ -254,14 +289,9 @@ namespace wg
 			pDevice->setTintColor(newCol);
 		}
 
-		pDevice->setBlitSource(m_pCanvas);
+		RectSPX seedArea = m_bScaleCanvas ? _canvasWindow(contentRect) : contentRect;
 		
-		if( m_bScaleCanvas )
-		{
-			pDevice->stretchBlit( _canvasWindow(contentRect) );
-		}
-		else
-			pDevice->blit(contentRect);
+		glow._render(pDevice, contentRect, m_pCanvas, seedArea);
 
 		pDevice->setTintColor(c);
 		pDevice->setBlendMode(bm);
@@ -288,8 +318,8 @@ namespace wg
 			m_size = size;
 			m_scale = scale;
 		}
-		
-		
+	
+		glow._setSize(size,scale);
 	}
 
 	//____ _releaseChild() _______________________________________________________

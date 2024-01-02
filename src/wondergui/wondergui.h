@@ -77,7 +77,6 @@
 #include <wg_geo.h>
 #include <wg_gfxdevice.h>
 #include <wg_glow.h>
-#include <wg_glowcapsule.h>
 #include <wg_gradient.h>
 #include <wg_gridwalker.h>
 #include <wg_hostbridge.h>
