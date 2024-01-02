@@ -1091,7 +1091,7 @@ namespace wg
 				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(1, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
@@ -1240,7 +1240,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(1, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize, scale);
 				}
 				else
@@ -1273,7 +1273,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(1, pFont->maxAscend() + pFont->maxDescend());
 					spx w = pCaret->eolWidth(eolCellSize, scale);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
@@ -1486,7 +1486,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(1, pFont->maxAscend() + pFont->maxDescend());
 					spx w = pCaret->eolWidth(eolCellSize, scale);
 					eolCaretWidth = alignUp(std::max(w, eolCellSize.w));
 				}
@@ -1520,7 +1520,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					SizeSPX eolCellSize(pGlyph->advance, pFont->maxAscend() + pFont->maxDescend());
+					SizeSPX eolCellSize(1, pFont->maxAscend() + pFont->maxDescend());
 					spx w = pCaret->eolWidth(eolCellSize, scale);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
@@ -1728,7 +1728,7 @@ namespace wg
 
 				if( pCaret )
 				{
-					SizeSPX eolCellSize( pGlyph->advance, pFont->maxAscend() + pFont->maxDescend() );
+					SizeSPX eolCellSize( 1, pFont->maxAscend() + pFont->maxDescend() );
 					spx w = pCaret->eolWidth( eolCellSize, scale );
 					width += alignUp(std::max(w, eolCellSize.w));
 
@@ -1876,7 +1876,7 @@ SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle 
 
 			if( pCaret )
 			{
-				SizeSPX eolCellSize( pGlyph->advance > 0 ? pGlyph->advance : 0, pFont->maxAscend() + pFont->maxDescend() );
+				SizeSPX eolCellSize( 1, pFont->maxAscend() + pFont->maxDescend() );
 				spx w = pCaret->eolWidth( eolCellSize, scale );
 				width += alignUp(std::max(w, eolCellSize.w));
 			}
