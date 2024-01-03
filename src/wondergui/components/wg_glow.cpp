@@ -277,7 +277,7 @@ namespace wg
 		if (!m_bActive)
 		{
 			pDevice->setBlitSource(pSeed);
-			pDevice->blit(seedArea);
+			pDevice->stretchBlit(seedArea);
 			return;
 		}
 
@@ -392,7 +392,7 @@ namespace wg
 		pDevice->setBlendMode(m_canvasBlend);
 		pDevice->setTintColor(m_canvasTint);
 		pDevice->setBlitSource(pSeed);
-		pDevice->blit(seedArea);
+		pDevice->stretchBlit(seedArea);
 
 		pDevice->setTintColor(c);
 		pDevice->setBlendMode(bm);
