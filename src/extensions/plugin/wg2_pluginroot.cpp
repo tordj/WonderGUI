@@ -170,7 +170,7 @@ spx WgPluginRoot::_matchingHeight(spx width, int scale) const
 	//NOTE! This does not take change of scale into account!
 	
 	if( m_hook.Widget() )
-		return m_hook.Widget()->MatchingPixelHeight(width/64)*scale;	// This is incorrect but works when child is a WgFlexPanel and the best we can do without a lot of rewrite.
+		return m_hook.Widget()->MatchingPixelHeight(width/64)*64*scale/m_scale;	// This is incorrect but works when child is a WgFlexPanel and the best we can do without a lot of rewrite.
 	else
 		return 0;
 }
@@ -182,7 +182,7 @@ spx WgPluginRoot::_matchingWidth(spx height, int scale) const
 	//NOTE! This does not take change of scale into account!
 	
 	if( m_hook.Widget() )
-		return m_hook.Widget()->MatchingPixelWidth(height/64)*scale;	// This is incorrect but works when child is a WgFlexPanel and the best we can do without a lot of rewrite.
+		return m_hook.Widget()->MatchingPixelWidth(height/64)*64*scale/m_scale;	// This is incorrect but works when child is a WgFlexPanel and the best we can do without a lot of rewrite.
 	else
 		return 0;
 
@@ -195,7 +195,7 @@ SizeSPX WgPluginRoot::_defaultSize(int scale) const
 	//NOTE! This does not take change of scale into account!
 	
 	if( m_hook.Widget() )
-		return m_hook.Widget()->PreferredPointSize()*scale;
+		return m_hook.Widget()->PreferredPointSize()*64*scale/m_scale;
 	else
 		return {0,0};
 }
@@ -207,7 +207,7 @@ SizeSPX WgPluginRoot::_minSize(int scale) const
 	//NOTE! This does not take change of scale into account!
 	
 	if( m_hook.Widget() )
-		return m_hook.Widget()->MinPixelSize()*64;
+		return m_hook.Widget()->MinPixelSize()*64*scale/m_scale;
 	else
 		return {0,0};
 }
@@ -219,7 +219,15 @@ SizeSPX WgPluginRoot::_maxSize(int scale) const
 	//NOTE! This does not take change of scale into account!
 	
 	if( m_hook.Widget() )
-		return m_hook.Widget()->MaxPixelSize()*64;
+	{
+		SizeI sz = m_hook.Widget()->MaxPixelSize();
+
+		uint64_t w = uint64_t(sz.w)*64*scale/m_scale;
+		uint64_t h = uint64_t(sz.h)*64*scale/m_scale;
+
+
+		return { int(w), int(h) };
+	}
 	else
 		return { spx_max, spx_max };
 }
