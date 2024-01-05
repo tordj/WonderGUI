@@ -81,7 +81,7 @@ namespace wg
 		int nLines = _countLines( pText, pChars );
 
 		_setTextDataBlock(pText,nullptr);					// Make sure pointer is null for the realloc call.
-		void * pBlock = _reallocBlock(pText,nLines);
+		void * pBlock = _reallocBlock(pText,nLines, {-1,-1}, {-1,-1} );
 
 		_updateLineInfo( pText, pBlock, pChars, true );
 	}
@@ -770,7 +770,7 @@ namespace wg
 
 		void * pBlock = _dataBlock(pText);
 		if( !pBlock || _header(pBlock)->nbLines != nLines )
-			pBlock = _reallocBlock(pText,nLines);
+			pBlock = _reallocBlock(pText,nLines, _header(pBlock)->defaultSize, _header(pBlock)->textSize);
 
 		_updateLineInfo( pText, pBlock, pChars, bAllowRequestResize );
 		_setTextDirty(pText);
@@ -1367,7 +1367,7 @@ namespace wg
 
 	//____ _reallocBlock() _________________________________________________________
 
-	void * BasicTextLayout::_reallocBlock( TextItem * pText, int nLines )
+	void * BasicTextLayout::_reallocBlock( TextItem * pText, int nLines, SizeSPX defaultSize, SizeSPX textSize )
 	{
 		void * pBlock = _dataBlock(pText);
 		if( pBlock )
@@ -1377,6 +1377,8 @@ namespace wg
 		_setTextDataBlock(pText, pBlock);
 
 		((BlockHeader *)pBlock)->nbLines = nLines;
+		((BlockHeader *)pBlock)->defaultSize = defaultSize;
+		((BlockHeader *)pBlock)->textSize = textSize;
 
 		return pBlock;
 	}
@@ -1670,6 +1672,8 @@ namespace wg
 
 		pLines->offset = int(pChars - pTextStart);
 
+		attr.size = -1;								// Prevent reading uninitialized value further down.
+		
 		while( true )
 		{
 			if( pChars->styleHandle() != hCharStyle )

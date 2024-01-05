@@ -159,7 +159,7 @@ namespace wg
 		int				_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const;
 		spx				_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const;
 
-		void *			_reallocBlock( TextItem * pText, int lines );
+		void *			_reallocBlock( TextItem * pText, int lines, SizeSPX defaultSize, SizeSPX textSize );
 
 		void			_updateLineInfo(TextItem * pText, void * pBlock, const Char * pChars, bool bAllowRequestResize );
 
