@@ -67,7 +67,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static bool init( HostBridge * pHostBridge, GUIContext * pContext = nullptr );
+		static bool init( HostBridge * pHostBridge );
 		static bool exit();
 
 		//.____ Content _____________________________________________

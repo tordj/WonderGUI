@@ -63,7 +63,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static bool init( GearContext * pContext = nullptr );
+		static bool init();
 		static bool exit();
 
 		//.____ Content _____________________________________________

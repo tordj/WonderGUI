@@ -50,7 +50,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static bool init( GfxContext * pContext = nullptr );
+		static bool init();
 		static bool exit();
 
 		//.____ Content _____________________________________________

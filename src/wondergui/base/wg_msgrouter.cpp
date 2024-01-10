@@ -357,11 +357,7 @@ namespace wg
 
 	bool MsgRouter::post( Msg * pMsg )
 	{
-		if( !pMsg )
-		{
-			assert(false);
-		}
-		
+
 		if( m_bIsProcessing )
 		{
 			// Msgs that are posted as a direct result of another event being processed

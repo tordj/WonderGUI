@@ -32,11 +32,6 @@ int wg_initGearBase()
 	return GearBase::init();
 }
 
-int wg_initGearBaseWithContext( wg_obj context )
-{
-	return GearBase::init(static_cast<GearContext*>(reinterpret_cast<Object*>(context)));
-}
-
 int wg_exitGearBase()
 {
 	return GearBase::exit();

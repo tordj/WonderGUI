@@ -52,7 +52,7 @@ namespace wg
 
 	//____ init() __________________________________________________________________
 
-	bool GearBase::init( GearContext * pContext )
+	bool GearBase::init()
 	{
 		if( s_initCounter == 0 )
 		{
@@ -61,13 +61,9 @@ namespace wg
 			s_pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 			s_pMemStack = new MemStack( 4096 );
  
-			if( !pContext )
-				pContext = GearContext::create();
+			s_pContext = GearContext::create();
 		}
 		
-		if( pContext )
-			s_pContext = pContext;
-
 		s_initCounter++;
 		return true;
 	}

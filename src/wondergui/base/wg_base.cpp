@@ -55,21 +55,15 @@ namespace wg
 
 	//____ init() __________________________________________________________________
 
-	bool Base::init( HostBridge * pHostBridge, GUIContext * pContext )
+	bool Base::init( HostBridge * pHostBridge )
 	{
 		if( s_guiInitCounter > 0 )
 		{
-			if( pContext )
-				s_pContext = pContext;
-			
 			s_guiInitCounter++;
 			return true;
 		}
 
-		if( !pContext )
-			pContext = GUIContext::create();
-		
-		if( !GfxBase::init(pContext) )
+		if( !GfxBase::init() )
 			return false;
 		
 		s_pHostBridge = pHostBridge;
@@ -79,7 +73,9 @@ namespace wg
 		TextStyleManager::init();
 		SkinSlotManager::init();
 
-		s_pContext = pContext;
+		s_pContext = GUIContext::create();
+		GfxBase::s_pContext = s_pContext;
+		GearBase::s_pContext = s_pContext;
 		s_guiInitCounter = 1;
 		return true;
 	}
