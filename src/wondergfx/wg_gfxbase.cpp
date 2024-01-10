@@ -45,19 +45,23 @@ namespace wg
 
 	//____ init() __________________________________________________________________
 
-	bool GfxBase::init()
+	bool GfxBase::init( GfxContext * pContext )
 	{
 		if( s_gfxInitCounter == 0 )
 		{
-			if( !GearBase::init() )
-				return false;
 			
 			HiColor::_initTables();
 			_genCurveTab();
 			
-			s_pContext = GfxContext::create();
-			GearBase::s_pContext = s_pContext;
+			if( !pContext )
+				pContext = GfxContext::create();
+				
+			if( !GearBase::init(pContext) )
+				return false;
 		}
+
+		if( pContext )
+			s_pContext = pContext;
 
 		s_gfxInitCounter++;
 		return true;

@@ -34,6 +34,7 @@ extern "C" {
 //TODO: Not a complete wrapper, just contains what is needed for wg-display project to work.
 
 	int		wg_initGearBase(void);
+	int		wg_initGearBaseWithContext( wg_obj context);
 	int		wg_exitGearBase(void);
 	int		wg_isGearBaseInitialized(void);
 
