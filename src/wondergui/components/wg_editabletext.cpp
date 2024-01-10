@@ -515,7 +515,7 @@ namespace wg
 
 				// Check modifier keys, update status
 
-				ModKeys modKeys = Base::inputHandler()->modifierKeys();
+				ModKeys modKeys = Base::context()->inputHandler()->modifierKeys();
 
 				if( modKeys & ModKeys::Shift )
 					m_editState.bShiftDown = true;

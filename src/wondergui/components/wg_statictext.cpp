@@ -92,7 +92,7 @@ namespace wg
 
 				if( pLink != m_pMarkedLink )
 				{
-					MsgRouter_p	pRouter = Base::msgRouter();
+					MsgRouter_p	pRouter = Base::context()->msgRouter();
 
 					if( m_pMarkedLink )
 						pRouter->post( MouseLeaveMsg::create( pMsg->inputId(), m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
@@ -109,7 +109,7 @@ namespace wg
 
 				if( m_pMarkedLink )
 				{
-					Base::msgRouter()->post( MouseLeaveMsg::create( pMsg->inputId(), m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
+					Base::context()->msgRouter()->post( MouseLeaveMsg::create( pMsg->inputId(), m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
 					m_pMarkedLink = 0;
 				}
 				break;
@@ -118,7 +118,7 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MousePressMsg*>(pMsg)->button();
-					Base::msgRouter()->post( MousePressMsg::create( pMsg->inputId(), button, m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
+					Base::context()->msgRouter()->post( MousePressMsg::create( pMsg->inputId(), button, m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();
@@ -134,7 +134,7 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseRepeatMsg*>(pMsg)->button();
-					Base::msgRouter()->post( MouseRepeatMsg::create( pMsg->inputId(), button, m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
+					Base::context()->msgRouter()->post( MouseRepeatMsg::create( pMsg->inputId(), button, m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();
@@ -147,7 +147,7 @@ namespace wg
 				{
 					MouseButton button = static_cast<MouseReleaseMsg*>(pMsg)->button();
 					bool bReleasedInside = static_cast<MouseReleaseMsg*>(pMsg)->releaseInside();
-					Base::msgRouter()->post( MouseReleaseMsg::create( pMsg->inputId(), button, m_pMarkedLink, bReleasedInside, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
+					Base::context()->msgRouter()->post( MouseReleaseMsg::create( pMsg->inputId(), button, m_pMarkedLink, bReleasedInside, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();
@@ -159,11 +159,11 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseClickMsg*>(pMsg)->button();
-					Base::msgRouter()->post( MouseClickMsg::create(pMsg->inputId(), button, m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
+					Base::context()->msgRouter()->post( MouseClickMsg::create(pMsg->inputId(), button, m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
 					{
-						Base::msgRouter()->post( SelectMsg::create( m_pMarkedLink ) );
+						Base::context()->msgRouter()->post( SelectMsg::create( m_pMarkedLink ) );
 						pMsg->swallow();
 					}
 				}
@@ -174,7 +174,7 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseDoubleClickMsg*>(pMsg)->button();
-					Base::msgRouter()->post( MouseDoubleClickMsg::create(pMsg->inputId(), button, m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
+					Base::context()->msgRouter()->post( MouseDoubleClickMsg::create(pMsg->inputId(), button, m_pMarkedLink, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();

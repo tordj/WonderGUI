@@ -184,7 +184,7 @@ namespace wg
 
 	void Scrollbar::_sendMessage()
 	{
-		Base::msgRouter()->post(ScrollbarMoveMsg::create(this, spxToPts(m_viewPos, m_scale), fracViewPos() ));
+		Base::context()->msgRouter()->post(ScrollbarMoveMsg::create(this, spxToPts(m_viewPos, m_scale), fracViewPos() ));
 	}
 
 

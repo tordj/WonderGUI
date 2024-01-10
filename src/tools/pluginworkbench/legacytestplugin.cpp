@@ -126,7 +126,7 @@ DLLEXPORTPREFIX void mapInputKey(uint32_t native_keycode, wg_key translated_keyc
 
 DLLEXPORTPREFIX void mapInputCommand(uint32_t native_keycode, wg_modkeys modkeys, wg_editCommand command)
 {
-//	WgPluginBase::inputHandler()->mapCommand(native_keycode, (WgModKeys) modkeys, (EditCmd) command);
+//	WgPluginBase::context()->inputHandler()->mapCommand(native_keycode, (WgModKeys) modkeys, (EditCmd) command);
 }
 
 

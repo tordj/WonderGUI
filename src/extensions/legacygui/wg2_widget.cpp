@@ -252,8 +252,8 @@ wg::Surface_p WgWidget::Screenshot( const wg::Surface::Blueprint& bp )
 
 wg::Surface_p WgWidget::Screenshot( const WgRect& _rect, const wg::Surface::Blueprint& _bp )
 {
-	auto pDevice = wg::GfxBase::defaultGfxDevice();
-	auto pFactory =  wg::GfxBase::defaultSurfaceFactory();
+	auto pDevice = wg::GfxBase::context()->defaultGfxDevice();
+	auto pFactory =  wg::GfxBase::context()->defaultSurfaceFactory();
 
 	if( !pDevice || !pFactory )
 		return nullptr;

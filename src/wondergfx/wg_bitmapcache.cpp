@@ -170,7 +170,7 @@ namespace wg
 
 	BitmapCache::CacheSurf * BitmapCache::_addCacheSurface( int category, int width, int height )
 	{
-		auto pFactory = m_pFactory ? m_pFactory : GfxBase::defaultSurfaceFactory();
+		auto pFactory = m_pFactory ? m_pFactory : GfxBase::context()->defaultSurfaceFactory();
 		
 		Surface_p pSurf;
 		

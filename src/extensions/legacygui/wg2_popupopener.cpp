@@ -374,7 +374,7 @@ void WgPopupOpener::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				else
 				{
 					_open();
-//					Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, _parent()->_getPopupLayer());
+//					Base::context()->inputHandler()->_yieldButtonEvents(MouseButton::Left, this, _parent()->_getPopupLayer());
 				}
 			}
 			break;

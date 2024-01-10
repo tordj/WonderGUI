@@ -67,7 +67,7 @@ namespace wg
 
 	protected:
 		
-		NumberLayout*		_layout() const { return m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr(); }
+		NumberLayout*		_layout() const { return m_pLayout ? m_pLayout.rawPtr() : Base::context()->defaultNumberLayout().rawPtr(); }
 
 
 		double				m_value = 0.0;

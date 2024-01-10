@@ -125,7 +125,20 @@ template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T
 		Other
 	};
 
+	//____ Error _________________________________________________________________
 
+	class Error
+	{
+	public:
+		ErrorLevel	severity;
+		ErrorCode		code;
+		const char *	message;
+		const class Object *	pObject;
+		const char *	classname;
+		const char *	function;
+		const char *	file;
+		int				line;
+	};
 
 	//____ Bitmask ____________________________________________________
 

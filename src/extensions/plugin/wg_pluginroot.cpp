@@ -303,7 +303,7 @@ namespace wg
 					m_pFocusedChild = nullptr;
 			}
 			
-			Base::inputHandler()->setFocusedWindow(state.isFocused()?this:nullptr);
+			Base::context()->inputHandler()->setFocusedWindow(state.isFocused()?this:nullptr);
 			
 		}
 
@@ -329,35 +329,35 @@ namespace wg
 
 	void PluginRoot::_setPointerPos( CoordSPX pos, int64_t timestamp )
 	{
-		Base::inputHandler()->setPointer(this, Util::spxToPts(pos, m_scale), timestamp );
+		Base::context()->inputHandler()->setPointer(this, Util::spxToPts(pos, m_scale), timestamp );
 	}
 
 	//____ _setButtonState() __________________________________________________
 
 	void PluginRoot::_setButtonState( int button, bool bPressed, int64_t timestamp )
 	{
-		Base::inputHandler()->setButton((MouseButton) button, bPressed, timestamp );
+		Base::context()->inputHandler()->setButton((MouseButton) button, bPressed, timestamp );
 	}
 
 	//____ _setKeyState() __________________________________________________
 
 	void PluginRoot::_setKeyState( int nativeKeyCode, bool bPressed, int64_t timestamp )
 	{
-		Base::inputHandler()->setKey(nativeKeyCode, bPressed, timestamp );
+		Base::context()->inputHandler()->setKey(nativeKeyCode, bPressed, timestamp );
 	}
 
 	//____ _putText() ____________________________________________________________
 
 	void PluginRoot::_putText( const char * pUTF8Text )
 	{
-		Base::inputHandler()->putText(pUTF8Text);
+		Base::context()->inputHandler()->putText(pUTF8Text);
 	}
 
 	//____ _update() __________________________________________________________
 
 	void PluginRoot::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		Base::msgRouter()->dispatch();
+		Base::context()->msgRouter()->dispatch();
 		Base::update(microsecTimestamp);
 	}
 

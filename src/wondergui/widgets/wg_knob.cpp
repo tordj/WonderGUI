@@ -135,7 +135,7 @@ namespace wg
 					break;
 			
 				if( m_bLockMouse )
-					Base::inputHandler()->lockHidePointer();
+					Base::context()->inputHandler()->lockHidePointer();
 
 				m_valueAtPress = m_value;
 				m_dragged = 0;
@@ -151,7 +151,7 @@ namespace wg
 					break;
 
 				if( m_bLockMouse )
-					Base::inputHandler()->unlockShowPointer();
+					Base::context()->inputHandler()->unlockShowPointer();
 
 				pMsg->swallow();
 				break;
@@ -219,7 +219,7 @@ namespace wg
 			m_skin.valueChanged(value, oldValue);
 
 			if( bPostMsg )
-				Base::msgRouter()->post(ValueUpdateMsg::create(this, m_value, false));
+				Base::context()->msgRouter()->post(ValueUpdateMsg::create(this, m_value, false));
 		}
 	}
 

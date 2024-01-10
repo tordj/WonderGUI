@@ -179,7 +179,7 @@ namespace wg
 					geo = pSkin->contentRect(geo, m_scale, m_state);
 				}
 
-				TextLayout* pLayout = line.m_pTextLayout ? line.m_pTextLayout : (m_pTextLayout ? m_pTextLayout : Base::defaultTextLayout());
+				TextLayout* pLayout = line.m_pTextLayout ? line.m_pTextLayout : (m_pTextLayout ? m_pTextLayout : Base::context()->defaultTextLayout());
 
 				pLayout->render(&line, pDevice, geo);
 			}
@@ -199,7 +199,7 @@ namespace wg
 					geo = pSkin->contentRect(geo, m_scale, m_state);
 				}
 
-				TextLayout* pLayout = line.m_pTextLayout ? line.m_pTextLayout : (m_pTextLayout ? m_pTextLayout : Base::defaultTextLayout());
+				TextLayout* pLayout = line.m_pTextLayout ? line.m_pTextLayout : (m_pTextLayout ? m_pTextLayout : Base::context()->defaultTextLayout());
 
 				pLayout->render(&line, pDevice, geo);
 			}
@@ -223,7 +223,7 @@ namespace wg
 	{
 		// Add new TextItems to TextLayout
 
-		TextLayout* pDefaultLayout = m_pTextLayout ? m_pTextLayout : Base::defaultTextLayout();
+		TextLayout* pDefaultLayout = m_pTextLayout ? m_pTextLayout : Base::context()->defaultTextLayout();
 
 		for (int i = 0; i < nb; i++)
 		{
@@ -246,7 +246,7 @@ namespace wg
 	{
 		// Notify TextLayout of moved TextItems
 
-		TextLayout* pDefaultLayout = m_pTextLayout ? m_pTextLayout : Base::defaultTextLayout();
+		TextLayout* pDefaultLayout = m_pTextLayout ? m_pTextLayout : Base::context()->defaultTextLayout();
 
 		for (int i = 0; i < nb; i++)
 		{
@@ -265,7 +265,7 @@ namespace wg
 	{
 		// Remove TextItems from TextLayout
 
-		TextLayout* pDefaultLayout = m_pTextLayout ? m_pTextLayout : Base::defaultTextLayout();
+		TextLayout* pDefaultLayout = m_pTextLayout ? m_pTextLayout : Base::context()->defaultTextLayout();
 
 		for (int i = 0; i < nb; i++)
 		{
@@ -567,7 +567,7 @@ namespace wg
 		else if (m_pDisplay->m_pTextStyle)
 			return m_pDisplay->m_pTextStyle;
 
-		return Base::defaultStyle();
+		return Base::context()->defaultStyle();
 	}
 
 	//____ _textBegin() _______________________________________________________
@@ -650,7 +650,7 @@ namespace wg
 
 	void GridLine::_resizeLabel(int scale, int oldScale)
 	{
-		TextLayout* pLayout			= m_pTextLayout ? m_pTextLayout : (m_pDisplay->m_pTextLayout ? m_pDisplay->m_pTextLayout : Base::defaultTextLayout() );
+		TextLayout* pLayout			= m_pTextLayout ? m_pTextLayout : (m_pDisplay->m_pTextLayout ? m_pDisplay->m_pTextLayout : Base::context()->defaultTextLayout() );
 		SkinSlot *	pLabelSkin		= m_labelSkin.isEmpty() ? &m_pDisplay->m_labelSkin : &m_labelSkin;
 		SizeSPX		oldLabelPadding;
 		SizeSPX		newLabelPadding;

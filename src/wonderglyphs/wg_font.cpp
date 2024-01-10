@@ -57,7 +57,7 @@ namespace wg
 			return nullptr;
 		
 		if( pFactory == nullptr )
-			pFactory = GfxBase::defaultSurfaceFactory();
+			pFactory = GfxBase::context()->defaultSurfaceFactory();
 		
 		if( !pFactory )
 			return nullptr;

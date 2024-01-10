@@ -37,7 +37,12 @@ extern "C" {
 	int		wg_exitGearBase(void);
 	int		wg_isGearBaseInitialized(void);
 
-	void	wg_setErrorHandler(void (*errorHandler)(const wg_errorInfo * pError) );
+	wg_obj	wg_gearContext(void);
+
+	char *	wg_memStackAlloc( int bytes );
+	void	wg_memStackFree( int bytes );
+
+	void	wg_setBaseErrorHandler(void (*errorHandler)(const wg_errorInfo * pError) );
 
 
 #ifdef __cplusplus

@@ -126,7 +126,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
     glFlush();
 */
     
-    wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(geo.w)*64,int(geo.h)*64});
+    wg_static_cast<GlGfxDevice_p>(Base::context()->defaultGfxDevice())->setDefaultCanvas({int(geo.w)*64,int(geo.h)*64});
     auto pRootPanel = RootPanel::create(CanvasRef::Default, nullptr);
 
     SDLWindowGL_p pWindow = new SDLWindowGL(blueprint.title, pRootPanel, geo, pSDLWindow, glContext);
@@ -139,7 +139,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
 
     //TODO: This is ugly. It should be handled when windows gets focused.
 
-    Base::inputHandler()->setFocusedWindow(pRootPanel);
+    Base::context()->inputHandler()->setFocusedWindow(pRootPanel);
 
 
     SDLWindowGL::s_bInitialized = true;
@@ -170,7 +170,7 @@ void SDLWindowGL::onWindowSizeUpdated( int width, int height )
     m_geo.w = width;
     m_geo.h = height;
     
-    wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(SizeSPX(width * 64, height * 64), 64);
+    wg_static_cast<GlGfxDevice_p>(Base::context()->defaultGfxDevice())->setDefaultCanvas(SizeSPX(width * 64, height * 64), 64);
 
     m_pRootPanel->setCanvas(CanvasRef::Default);
 }
@@ -184,7 +184,7 @@ void SDLWindowGL::render()
 
     SDL_GL_MakeCurrent( m_pSDLWindow, s_globalContext );
 
-    wg_static_cast<GlGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas({int(m_geo.w)*64,int(m_geo.h)*64});
+    wg_static_cast<GlGfxDevice_p>(Base::context()->defaultGfxDevice())->setDefaultCanvas({int(m_geo.w)*64,int(m_geo.h)*64});
     
     m_pRootPanel->render();
 

@@ -599,7 +599,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 		if (!m_pShadowSurface)
 		{
-			auto pSurfaceFactory = wg::GfxBase::defaultSurfaceFactory();
+			auto pSurfaceFactory = wg::GfxBase::context()->defaultSurfaceFactory();
 
 			if (pSurfaceFactory)
 			{

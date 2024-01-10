@@ -183,7 +183,7 @@ namespace wg
 					else
 					{
 						_open();
-						Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, m_pPopup);
+						Base::context()->inputHandler()->_yieldButtonEvents(MouseButton::Left, this, m_pPopup);
 						m_bPressed = false;		// We have yielded our press...
 					}
 				}

@@ -240,7 +240,7 @@ namespace wg
 		{
 			m_frameTimestamp = pNewFrame->timestamp();
 			_requestRender();
-//			Base::msgRouter()->post(ValueUpdateMsg::create(this, (int)m_playPos, (float)(m_playPos / (m_cycleDuration)), true));
+//			Base::context()->msgRouter()->post(ValueUpdateMsg::create(this, (int)m_playPos, (float)(m_playPos / (m_cycleDuration)), true));
 		}
 		return true;
 	}

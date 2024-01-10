@@ -32,17 +32,9 @@
 namespace wg
 {
 	int					GfxBase::s_gfxInitCounter = 0;
-
-	bool				GfxBase::s_bSRGB = true;
-
-	SurfaceFactory_p	GfxBase::s_pDefaultSurfaceFactory;
-	EdgemapFactory_p	GfxBase::s_pDefaultEdgemapFactory;
-	GfxDevice_p			GfxBase::s_pDefaultGfxDevice;
-
-	BitmapCache_p		GfxBase::s_pDefaultBitmapCache;
+	GfxContext_p		GfxBase::s_pContext;
 
 	int 				GfxBase::s_curveTab[c_nCurveTabEntries];
-
 
 	namespace PixelTools
 	{
@@ -53,15 +45,18 @@ namespace wg
 
 	//____ init() __________________________________________________________________
 
-	bool GfxBase::init( )
+	bool GfxBase::init()
 	{
 		if( s_gfxInitCounter == 0 )
 		{
+			if( !GearBase::init() )
+				return false;
+			
 			HiColor::_initTables();
 			_genCurveTab();
-
-			s_gfxInitCounter++;
-			return GearBase::init();
+			
+			s_pContext = GfxContext::create();
+			GearBase::s_pContext = s_pContext;
 		}
 
 		s_gfxInitCounter++;
@@ -81,21 +76,12 @@ namespace wg
 		
 		if( s_gfxInitCounter <= 0 )
 		{
-			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to GfxBase::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to GfxBase::exit() ignored, not initialized or already exited.", nullptr, nullptr, __func__, __FILE__, __LINE__);
 			return false;
 		}
 		
 		s_gfxInitCounter = 0;
-
-		s_pDefaultGfxDevice 		= nullptr;
-		s_pDefaultSurfaceFactory 	= nullptr;
-		s_pDefaultEdgemapFactory	= nullptr;
-
-		if( s_pDefaultBitmapCache )
-		{
-			s_pDefaultBitmapCache->clear();
-			s_pDefaultBitmapCache = nullptr;
-		}
+		s_pContext = nullptr;
 		
 		delete [] PixelTools::pConv_16_linear_to_8_sRGB;
 		PixelTools::pConv_16_linear_to_8_sRGB = nullptr;
@@ -103,42 +89,27 @@ namespace wg
 		return GearBase::exit();
 	}
 
-	//____ defaultBitmapCache() __________________________________________________
+	//____ setContext() __________________________________________________________
 
-	BitmapCache_p GfxBase::defaultBitmapCache()
+	bool GfxBase::setContext( GfxContext * pContext )
 	{
-		if( s_pDefaultBitmapCache == nullptr )
-			s_pDefaultBitmapCache = BitmapCache::create(16*1024*1024);
+		if( s_pContext && s_pContext->typeInfo() != GfxContext::TYPEINFO )
+		{
+			throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "A higher level context such as GUIContext is already in place. Use setContext method of GfxBase or GUIBase (or equivalent) to replace it.", nullptr, nullptr, __func__, __FILE__, __LINE__);
 
-		return s_pDefaultBitmapCache;
-	}
+			return false;
+		}
 
-	//____ setDefaultSurfaceFactory() ____________________________________________
+		if( pContext && pContext->typeInfo() != GfxContext::TYPEINFO )
+		{
+			throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "A higher level context such as GUIContext can not be set using GfxBase::setContext(). Use setContext method of GUIBase (or equivalent) to set it.", nullptr, nullptr, __func__, __FILE__, __LINE__);
 
-	void GfxBase::setDefaultSurfaceFactory( SurfaceFactory * pFactory )
-	{
-		s_pDefaultSurfaceFactory = pFactory;
-	}
-
-	//____ setDefaultEdgemapFactory() ____________________________________________
-
-	void GfxBase::setDefaultEdgemapFactory(EdgemapFactory* pFactory)
-	{
-		s_pDefaultEdgemapFactory = pFactory;
-	}
-
-	//____ setDefaultGfxDevice() _________________________________________________
-
-	void GfxBase::setDefaultGfxDevice( GfxDevice * pDevice )
-	{
-		s_pDefaultGfxDevice = pDevice;
-	}
-
-	//____ setDefaultToSRGB() ____________________________________________________
-
-	void GfxBase::setDefaultToSRGB( bool bSRGB )
-	{
-		s_bSRGB = bSRGB;
+			return false;
+		}
+		
+		s_pContext = pContext;
+		GearBase::s_pContext = pContext;
+		return true;
 	}
 
 	//____ _genCurveTab() ___________________________________________________________

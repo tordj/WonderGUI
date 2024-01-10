@@ -104,7 +104,7 @@ int main ( int argc, char** argv )
 	Base::init(nullptr);
 //	FreeTypeFont::init( SoftSurfaceFactory::create() );
 
-	InputHandler_p pInput = Base::inputHandler();
+	InputHandler_p pInput = Base::context()->inputHandler();
 	
 	pInput->mapKey( SDLK_LEFT, Key::Left );
 	pInput->mapKey( SDLK_RIGHT, Key::Right );
@@ -176,14 +176,14 @@ int main ( int argc, char** argv )
 
 //	pRoot->setDebugMode(true);
 	
-	Base::inputHandler()->setFocusedWindow( pRoot );
+	Base::context()->inputHandler()->setFocusedWindow( pRoot );
 
 	// 
 	
 	MsgLogger_p pLogger = MsgLogger::create( std::cout );
 	pLogger->logAllMsgs();
 	
-//	Base::msgRouter()->broadcastTo( pLogger );
+//	Base::context()->msgRouter()->broadcastTo( pLogger );
 
 	// Init font
 /*
@@ -521,7 +521,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 		}
 	}
 	
-	Base::msgRouter()->dispatch();	
+	Base::context()->msgRouter()->dispatch();	
 }
 
 //____ translateMouseButton() __________________________________________________

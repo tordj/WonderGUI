@@ -387,8 +387,8 @@ bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 	
 	// Generate and fill in surface
 	
-	auto pSurface = Base::defaultSurfaceFactory()->createSurface( { .canvas = true, .format = outputFormat, .size = surfaceSize });
-	auto pDevice = Base::defaultGfxDevice();
+	auto pSurface = Base::context()->defaultSurfaceFactory()->createSurface( { .canvas = true, .format = outputFormat, .size = surfaceSize });
+	auto pDevice = Base::context()->defaultGfxDevice();
 
 	HiColor lineColor(1024,0,0,4096);
 	
@@ -447,7 +447,7 @@ bool MyApp::generateFontSurface( FreeTypeFont * pFont, String& chars )
 	
 	m_pBitmapFontSurface = pSurface;
 	
-	m_pFontDisplaySurface = Base::defaultSurfaceFactory()->createSurface( { .canvas = true, .format = PixelFormat::BGRA_8, .size = surfaceSize });
+	m_pFontDisplaySurface = Base::context()->defaultSurfaceFactory()->createSurface( { .canvas = true, .format = PixelFormat::BGRA_8, .size = surfaceSize });
 
 	pDevice->beginRender();
 	pDevice->beginCanvasUpdate(m_pFontDisplaySurface);
@@ -583,7 +583,7 @@ Widget_p MyApp::createInputPanel()
 	m_pModeSelector->selectEntryById(int(FreeTypeFont::RenderMode::BestShapes));
 	m_pStemDarkeningSelector->selectEntryByIndex(0);
 
-	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadTTF();});
+	Base::context()->msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadTTF();});
 
 	return pBase;
 }
@@ -663,7 +663,7 @@ Widget_p MyApp::createOutputPanel()
 	
 	auto pSaveButton = Button::create( { .label = { .text = String("Save")}, .skin = m_pButtonSkin } );
 
-	Base::msgRouter()->addRoute(pGenerateButton, MsgType::Select, [this](Msg*pMsg){this->generateBitmapFont();this->displayBitmapFont();} );
+	Base::context()->msgRouter()->addRoute(pGenerateButton, MsgType::Select, [this](Msg*pMsg){this->generateBitmapFont();this->displayBitmapFont();} );
 	
 	
 	pTopPanel->slots << pLabel;
@@ -704,7 +704,7 @@ Widget_p MyApp::createOutputPanel()
 	pWindow->slot = m_pBitmapDisplay;
 	
 	
-	Base::msgRouter()->addRoute( pSaveButton, MsgType::Select, [this](Msg*pMsg){this->saveBitmapFont();});
+	Base::context()->msgRouter()->addRoute( pSaveButton, MsgType::Select, [this](Msg*pMsg){this->saveBitmapFont();});
 
 
 	

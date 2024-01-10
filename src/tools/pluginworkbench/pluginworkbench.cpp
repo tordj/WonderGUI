@@ -58,7 +58,7 @@ bool MyApp::init(Visitor* pVisitor)
 	wg_populatePluginInterface(&c_calls);
 
 	m_pInitClient(&c_calls, Base::hostBridge(), m_pPluginCapsule,
-				  Base::defaultGfxDevice(), Base::defaultSurfaceFactory(), Base::defaultEdgemapFactory());
+				  Base::context()->defaultGfxDevice(), Base::context()->defaultSurfaceFactory(), Base::context()->defaultEdgemapFactory());
 	
 	// Map keys and commands
 	

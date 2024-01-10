@@ -71,6 +71,7 @@ namespace wg
 		friend class TextTool;
 		friend class Base;
 		friend class ::WgBase;
+		friend class GUIContext;
 
 		 
 	public:

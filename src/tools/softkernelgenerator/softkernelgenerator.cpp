@@ -426,10 +426,10 @@ Widget_p	MyApp::_buildButtonRow()
 	});
 
 
-	Base::msgRouter()->addRoute( pClearButton, MsgType::Select, [this](Msg*) {this->clear(); });
-	Base::msgRouter()->addRoute( pResetButton, MsgType::Select, [this](Msg*) {this->reset(); });
-	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*) {this->load(); });
-	Base::msgRouter()->addRoute( pSaveButton, MsgType::Select, [this](Msg*) {this->save(); });
+	Base::context()->msgRouter()->addRoute( pClearButton, MsgType::Select, [this](Msg*) {this->clear(); });
+	Base::context()->msgRouter()->addRoute( pResetButton, MsgType::Select, [this](Msg*) {this->reset(); });
+	Base::context()->msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*) {this->load(); });
+	Base::context()->msgRouter()->addRoute( pSaveButton, MsgType::Select, [this](Msg*) {this->save(); });
 
 
 	pButtonRow->slots << pClearButton;
@@ -485,7 +485,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(std::string title, std::vector<KernelDB
 			_.selected = selected[int(blitType)]));
 
 		auto pObj = this;
-		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback);
+		Base::context()->msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback);
 		pColumn->slots << pWidget;
 	}
 
@@ -511,7 +511,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<BlendMode> bl
 			_.selected = selected[int(blendMode)] ));
 
 		auto pObj = this;
-		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback );
+		Base::context()->msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback );
 		pColumn->slots << pWidget;
 	}
 
@@ -537,7 +537,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<TintMode> tin
 			_.selected = selected[int(tintMode)] ));
 
 		auto pObj = this;
-		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback );
+		Base::context()->msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback );
 		pColumn->slots << pWidget;
 	}
 
@@ -562,7 +562,7 @@ PackPanel_p MyApp::_buildToggleButtonRow(string title, std::vector<PixelFormat> 
 			_.selected = selected[int(format)]));
 
 		auto pObj = this;
-		Base::msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback );
+		Base::context()->msgRouter()->addRoute(pWidget, MsgType::Toggle, pressCallback );
 		pColumn->slots << pWidget;
 	}
 
@@ -658,7 +658,7 @@ Widget_p MyApp::_buildHeaderWithCloseButton(std::string title, std::function<voi
 		_.skin = m_pButtonSkin));
 */
 
-	Base::msgRouter()->addRoute(pButton, MsgType::Select, pressCallback);
+	Base::context()->msgRouter()->addRoute(pButton, MsgType::Select, pressCallback);
 
 	pRow->slots << pButton;
 
@@ -768,7 +768,7 @@ Widget_p MyApp::_buildOptimizedBlitsSection()
 
 	pRow->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
 
-	Base::msgRouter()->addRoute(pButton, MsgType::Select, [this](Msg* pMsg) {this->addOptimizedBlitEntry(); });
+	Base::context()->msgRouter()->addRoute(pButton, MsgType::Select, [this](Msg* pMsg) {this->addOptimizedBlitEntry(); });
 
 	pSection->slots << pRow;
 
@@ -914,7 +914,7 @@ wg::Widget_p MyApp::_buildExportSection()
 
 	pSection->setLayout(PackLayout::create({ .expandFactor = PackLayout::Factor::Weight }));
 
-	Base::msgRouter()->addRoute(pButton, MsgType::Select, [this](Msg* pMsg) {this->exportSource(); });
+	Base::context()->msgRouter()->addRoute(pButton, MsgType::Select, [this](Msg* pMsg) {this->exportSource(); });
 
 	return pSection;
 }

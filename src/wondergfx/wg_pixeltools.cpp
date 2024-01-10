@@ -2815,7 +2815,7 @@ int colorToPixelBytes( HiColor color, PixelFormat format, uint8_t pixelArea[18],
 	{
 		uint8_t* pConvTab;
 		if (desc.colorSpace == ColorSpace::Undefined )
-			pConvTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+			pConvTab = GfxBase::context()->defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
 		else if(desc.colorSpace == ColorSpace::Linear )
 			pConvTab = HiColor::packLinearTab;
 		else
@@ -3106,7 +3106,7 @@ int findBestMatchInPalette(HiColor color, Color8* pPalette, int paletteSize, Col
 {
 	uint8_t* pConvTab;
 	if (paletteColorSpace == ColorSpace::Undefined)
-		pConvTab = GfxBase::defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+		pConvTab = GfxBase::context()->defaultToSRGB() ? HiColor::packSRGBTab : HiColor::packLinearTab;
 	else if (paletteColorSpace == ColorSpace::Linear)
 		pConvTab = HiColor::packLinearTab;
 	else

@@ -212,7 +212,7 @@ Edgemap_p createDonut(SizeSPX size, spx thickness, HiColor fillColor, spx outlin
 	col[8] = HiColor::Transparent;
 
 	if( !pFactory )
-		pFactory = GfxBase::defaultEdgemapFactory();
+		pFactory = GfxBase::context()->defaultEdgemapFactory();
 		
 	auto pEdgemap = pFactory->createEdgemap( WGBP(Edgemap,
 													_.size = outerRect.size(),

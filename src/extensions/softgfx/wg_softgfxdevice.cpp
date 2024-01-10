@@ -516,7 +516,7 @@ const uint8_t SoftGfxDevice::s_fast8_channel_6[64] = {		0x00, 0x04, 0x08, 0x0c, 
 	{
 		TintMode tintMode;
 
-		const int16_t* pUnpackTab = GfxBase::defaultToSRGB() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
+		const int16_t* pUnpackTab = GfxBase::context()->defaultToSRGB() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		if (!m_bTintGradient)
 		{

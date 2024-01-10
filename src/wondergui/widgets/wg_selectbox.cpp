@@ -231,7 +231,7 @@ namespace wg
 				else
 				{
 					_open();
-					Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, m_pListCanvas);
+					Base::context()->inputHandler()->_yieldButtonEvents(MouseButton::Left, this, m_pListCanvas);
 					m_bPressed = false;		// We have yielded our press...
 				}
 			}
@@ -386,7 +386,7 @@ namespace wg
 		text.setText(entries[index].m_string);
 		_requestRender();
 
-		Base::msgRouter()->post(SelectMsg::create(this));
+		Base::context()->msgRouter()->post(SelectMsg::create(this));
 	}
 
 	//____ _findEntry() _____________________________________________________
@@ -671,7 +671,7 @@ namespace wg
 
 	TextStyle * SelectBoxEntry::_textStyle() const
 	{
-		return m_pParent->m_pEntryStyle ? m_pParent->m_pEntryStyle : Base::defaultStyle();
+		return m_pParent->m_pEntryStyle ? m_pParent->m_pEntryStyle : Base::context()->defaultStyle();
 	}
 
 	const Char * SelectBoxEntry::_textBegin() const

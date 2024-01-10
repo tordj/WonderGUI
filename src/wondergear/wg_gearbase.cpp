@@ -33,8 +33,6 @@
 
 namespace wg
 {
-	const TypeInfo	GearBase::TYPEINFO = { "GearBase", nullptr };
-
 	int							GearBase::s_initCounter = 0;
 
 	MemPool *					GearBase::s_pPtrPool = nullptr;
@@ -50,6 +48,7 @@ namespace wg
 
 	std::unordered_map<Object*, GearBase::ObjectInfo>	GearBase::s_trackedObjects;
 
+	GearContext_p				GearBase::s_pContext;
 
 	//____ init() __________________________________________________________________
 
@@ -61,7 +60,8 @@ namespace wg
 			s_objectsDestroyed = 0;
 			s_pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 			s_pMemStack = new MemStack( 4096 );
-
+ 
+			s_pContext = GearContext::create();
 		}
 		
 		s_initCounter++;
@@ -74,7 +74,7 @@ namespace wg
 	{
 		if( s_initCounter <= 0 )
 		{
-			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to GearBase::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to GearBase::exit() ignored, not initialized or already exited.", nullptr, nullptr, __func__, __FILE__, __LINE__);
 			return false;
 		}
 		
@@ -86,15 +86,16 @@ namespace wg
 		
 		if( !s_pPtrPool->isEmpty() )
 		{
-			throwError(ErrorLevel::SilentError, ErrorCode::SystemIntegrity, "Some weak pointers still in use. Can not exit WonderGUI.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::SilentError, ErrorCode::SystemIntegrity, "Some weak pointers still in use. Can not exit WonderGUI.", nullptr, nullptr, __func__, __FILE__, __LINE__);
 			return false;
 		}
 
+		s_pContext = nullptr;
 		s_initCounter = 0;
 		
 		if( !s_pMemStack->isEmpty() )
 		{
-			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, nullptr, __func__, __FILE__, __LINE__);
 		}
 
 		delete s_pPtrPool;
@@ -104,16 +105,39 @@ namespace wg
 		s_pMemStack = nullptr;
 
 		if (s_objectsCreated != s_objectsDestroyed)
-			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, nullptr, __func__, __FILE__, __LINE__);
 
 		return true;
 	}
+
+	//____ setContext() __________________________________________________________
+
+	bool GearBase::setContext( GearContext * pContext )
+	{
+		if( s_pContext && s_pContext->typeInfo() != GearContext::TYPEINFO )
+		{
+			throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "A higher level context such as GfxContext or GUIContext is already in place. Use setContext method of GfxBase or GUIBase to replace it.", nullptr, nullptr, __func__, __FILE__, __LINE__);
+
+			return false;
+		}
+
+		if( pContext && pContext->typeInfo() != GearContext::TYPEINFO )
+		{
+			throwError(ErrorLevel::Error, ErrorCode::FailedPrerequisite, "A higher level context such as GfxContext or GUIContext can not be set using GearBase::setContext(). Use setContext method of GfxBase or GUIBase to set it.", nullptr, nullptr, __func__, __FILE__, __LINE__);
+
+			return false;
+		}
+		
+		s_pContext = pContext;
+		return true;
+	}
+
 
 	//____ throwError() _________________________________________________________
 
 	void GearBase::throwError(ErrorLevel severity, ErrorCode code, const char * msg, const Object * pObject, const TypeInfo* pClassType, const char * function, const char * file, int line)
 	{
-		if (s_pErrorHandler)
+		if (s_pErrorHandler || (s_pContext && s_pContext->m_pErrorHandler))
 		{
 			Error	error;
 
@@ -126,7 +150,10 @@ namespace wg
 			error.line = line;
 			error.severity = severity;
 
-			s_pErrorHandler(error);
+			if(s_pContext && s_pContext->m_pErrorHandler)
+				s_pContext->m_pErrorHandler(error);
+			else
+				s_pErrorHandler(error);
 		}
 	}
 

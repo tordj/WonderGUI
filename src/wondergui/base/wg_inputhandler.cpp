@@ -228,7 +228,7 @@ namespace wg
 	{
 		if( text.length() > 0 )
 		{
-			Base::msgRouter()->post( new TextInputMsg( m_inputId, text, _focusedWidget() ));
+			Base::context()->msgRouter()->post( new TextInputMsg( m_inputId, text, _focusedWidget() ));
 		}
 		return true;
 	}
@@ -283,7 +283,7 @@ namespace wg
 		{
 			MouseMoveMsg_p p = MouseMoveMsg::create(m_inputId, pFirstAlreadyMarked, m_modKeys, pos, m_pointerPosSPX, timestamp);
 			p->setCopyTo(pFirstAlreadyMarked);
-			Base::msgRouter()->post(p);
+			Base::context()->msgRouter()->post(p);
 		}
 		// Copy content of pNowMarked to m_pMarkedWidget
 
@@ -301,7 +301,7 @@ namespace wg
 
 				MouseDragMsg_p p = MouseDragMsg::create(m_inputId, (MouseButton)i, m_latestPressWidgets[i].rawPtr(), m_latestPressPosition[i], prevPointerPos, pressPosSPX, prevPointerPosSPX, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(m_latestPressWidgets[i].rawPtr());
-				Base::msgRouter()->post(p);
+				Base::context()->msgRouter()->post(p);
 			}
 		}
 		// Update PointerStyle
@@ -347,7 +347,7 @@ namespace wg
 		if( newStyle != m_pointerStyle )
 		{
 			Base::hostBridge()->setPointerStyle(newStyle);
-			Base::msgRouter()->post( new PointerChangeMsg( m_inputId, newStyle ) );
+			Base::context()->msgRouter()->post( new PointerChangeMsg( m_inputId, newStyle ) );
 			m_pointerStyle = newStyle;
 		}
 	}
@@ -375,7 +375,7 @@ namespace wg
 			{
 				MouseEnterMsg_p p = MouseEnterMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(pWidget);
-				Base::msgRouter()->post(p);
+				Base::context()->msgRouter()->post(p);
 			}
 		}
 
@@ -386,7 +386,7 @@ namespace wg
 			{
 				MouseLeaveMsg_p p = MouseLeaveMsg::create(m_inputId, m_vEnteredWidgets[i].rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(m_vEnteredWidgets[i].rawPtr());
-				Base::msgRouter()->post(p);
+				Base::context()->msgRouter()->post(p);
 			}
 		// Replace the old list with a new one.
 
@@ -463,7 +463,7 @@ namespace wg
 
 		auto pMsg = MousePressMsg::create( m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp );
 		pMsg->setCopyTo(pWidget);
-		Base::msgRouter()->post( pMsg );
+		Base::context()->msgRouter()->post( pMsg );
 
 		// Handle possible double-click
 
@@ -482,10 +482,10 @@ namespace wg
 					{
 						auto p = MouseDoubleClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 						p->setCopyTo(pWidget);
-						Base::msgRouter()->post(p);
+						Base::context()->msgRouter()->post(p);
 					}
 					else
-						Base::msgRouter()->post(MouseDoubleClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp));
+						Base::context()->msgRouter()->post(MouseDoubleClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp));
 
 					doubleClick = true;
 				}
@@ -516,7 +516,7 @@ namespace wg
 
 		auto pMsg = MouseReleaseMsg::create( m_inputId, button, pWidget, bIsInside, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp );
 		pMsg->setCopyTo(pWidget);
-		Base::msgRouter()->post( pMsg );
+		Base::context()->msgRouter()->post( pMsg );
 
 		// Post click event, if press didn't already resulted in a double click.
 
@@ -526,10 +526,10 @@ namespace wg
 			{
 				auto p = MouseClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp);
 				p->setCopyTo(pWidget);
-				Base::msgRouter()->post(p);
+				Base::context()->msgRouter()->post(p);
 			}
 			else
-				Base::msgRouter()->post(MouseClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp));
+				Base::context()->msgRouter()->post(MouseClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp));
 		}
 	}
 
@@ -610,7 +610,7 @@ namespace wg
 	void InputHandler::_setFocused( Widget * pWidget )
 	{
 		FocusGainedMsg_p pMsg = new FocusGainedMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, m_timeStamp );
-		Base::msgRouter()->post( pMsg );
+		Base::context()->msgRouter()->post( pMsg );
 	}
 
 	//____ _setUnfocused() _______________________________________________________
@@ -618,7 +618,7 @@ namespace wg
 	void InputHandler::_setUnfocused( Widget * pWidget )
 	{
 		FocusLostMsg_p pMsg = new FocusLostMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, m_timeStamp );
-		Base::msgRouter()->post( pMsg );
+		Base::context()->msgRouter()->post( pMsg );
 	}
 
 	//____ _yieldButtonEvents() ______________________________________________
@@ -673,13 +673,13 @@ namespace wg
 		// Post KEY_PRESS message
 
 		Widget * pWidget = _focusedWidget();
-		Base::msgRouter()->post( new KeyPressMsg( m_inputId, nativeKeyCode, translatedKeyCode, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp ) );
+		Base::context()->msgRouter()->post( new KeyPressMsg( m_inputId, nativeKeyCode, translatedKeyCode, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp ) );
 
 		// Post an EditCommand if that is associated with the key-combo.
 
 		EditCmd cmd = translateCommand( nativeKeyCode, m_modKeys );
 		if( cmd != EditCmd::None )
-			Base::msgRouter()->post( new EditCommandMsg( m_inputId, cmd, pWidget ));
+			Base::context()->msgRouter()->post( new EditCommandMsg( m_inputId, cmd, pWidget ));
 
 
 		// Update modkeys
@@ -726,7 +726,7 @@ namespace wg
 		Key translatedKeyCode = translateKey(nativeKeyCode);
 
 		Widget * pWidget = _focusedWidget();
-		Base::msgRouter()->post( new KeyReleaseMsg( m_inputId, nativeKeyCode, translatedKeyCode, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp ) );
+		Base::context()->msgRouter()->post( new KeyReleaseMsg( m_inputId, nativeKeyCode, translatedKeyCode, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp ) );
 
 		// Update modkeys
 
@@ -758,7 +758,7 @@ namespace wg
 		{
 			if( timestamp == 0 )
 				timestamp = m_timeStamp;
-			Base::msgRouter()->post( new WheelRollMsg( m_inputId, wheel, distance, bInvertScroll, m_pMarkedWidget.rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp ) );
+			Base::context()->msgRouter()->post( new WheelRollMsg( m_inputId, wheel, distance, bInvertScroll, m_pMarkedWidget.rawPtr(), m_modKeys, m_pointerPos, m_pointerPosSPX, timestamp ) );
 		}
 	}
 
@@ -804,7 +804,7 @@ namespace wg
 					auto pWidget = m_latestPressWidgets[button].rawPtr();
 					auto pMsg = MouseRepeatMsg::create(m_inputId, (MouseButton)button, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, repeatPos);
 					pMsg->setCopyTo(pWidget);
-					Base::msgRouter()->post(pMsg);
+					Base::context()->msgRouter()->post(pMsg);
 					repeatPos += m_keyRepeatRate;
 				}
 			}
@@ -831,11 +831,11 @@ namespace wg
 				auto pWidget = key.pWidget.rawPtr();
 				auto pMsg = new KeyRepeatMsg(m_inputId, key.nativeKeyCode, key.translatedKeyCode, pWidget, m_modKeys, m_pointerPos, m_pointerPosSPX, repeatPos);
 				pMsg->setCopyTo(pWidget);
-				Base::msgRouter()->post(pMsg);
+				Base::context()->msgRouter()->post(pMsg);
 
 				EditCmd cmd = translateCommand( key.nativeKeyCode, m_modKeys );
 				if( cmd != EditCmd::None )
-					Base::msgRouter()->post( new EditCommandMsg( m_inputId, cmd, key.pWidget.rawPtr() ));
+					Base::context()->msgRouter()->post( new EditCommandMsg( m_inputId, cmd, key.pWidget.rawPtr() ));
 
 				repeatPos += m_keyRepeatRate;
 			}

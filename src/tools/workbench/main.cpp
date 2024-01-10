@@ -384,9 +384,9 @@ int main(int argc, char** argv)
 		}
 #endif
 
-		Base::setDefaultSurfaceFactory(pSurfaceFactory);
-		Base::setDefaultEdgemapFactory(pEdgemapFactory);
-		Base::setDefaultGfxDevice(pDevice);
+		Base::context()->setDefaultSurfaceFactory(pSurfaceFactory);
+		Base::context()->setDefaultEdgemapFactory(pEdgemapFactory);
+		Base::context()->setDefaultGfxDevice(pDevice);
 
 		//	nisBlendTest();
 		commonAncestorTest();
@@ -394,7 +394,7 @@ int main(int argc, char** argv)
 
 		//	FreeTypeFont::init(SoftSurfaceFactory::create());
 
-		InputHandler_p pInput = Base::inputHandler();
+		InputHandler_p pInput = Base::context()->inputHandler();
 
 		pInput->mapKey(SDLK_LEFT, Key::Left);
 		pInput->mapKey(SDLK_RIGHT, Key::Right);
@@ -479,7 +479,7 @@ int main(int argc, char** argv)
 
 		//		pRoot->setDebugMode(true);
 
-		Base::inputHandler()->setFocusedWindow(pRoot);
+		Base::context()->inputHandler()->setFocusedWindow(pRoot);
 
 		//
 
@@ -489,7 +489,7 @@ int main(int argc, char** argv)
 		pLogger->ignoreMsg(MsgType::MouseDrag);
 		pLogger->ignoreMsg(MsgType::MouseRepeat);
 
-		Base::msgRouter()->broadcastTo(pLogger);
+		Base::context()->msgRouter()->broadcastTo(pLogger);
 
 		// Init font
 
@@ -515,7 +515,7 @@ int main(int argc, char** argv)
 		m_pFont = FreeTypeFont::create(pFontFile);
 
 		TextStyle_p pStyle = TextStyle::create({ .color = Color::Black, .font = m_pFont, .size = 16 });
-		Base::setDefaultStyle(pStyle);
+		Base::context()->setDefaultStyle(pStyle);
 
 
 		TextStyle_p pStyle2 = TextStyle::create({ .color = Color::Black,
@@ -657,7 +657,7 @@ int main(int argc, char** argv)
 
 		pBasePanel->slots.pushBack(pImage0, { .func = [](Widget* pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); } });
 
-		Base::msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
+		Base::context()->msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 
 
 		//	Image_p pImage = Image::create();
@@ -712,13 +712,13 @@ int main(int argc, char** argv)
 		//	customSkinTest(pSlot);
 		//	areaChartTest(pSlot);
 		//	areaChartTest2(pSlot);
-			plotChartTest(pSlot);
+		//	plotChartTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
-		//	canvasCapsuleTest(pSlot);
-			canvasCapsuleGlowTest(pSlot);
+			canvasCapsuleTest(pSlot);
+		//	canvasCapsuleGlowTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -831,7 +831,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 		}
 	}
 
-	Base::msgRouter()->dispatch();
+	Base::context()->msgRouter()->dispatch();
 }
 
 //____ translateMouseButton() __________________________________________________
@@ -1078,7 +1078,7 @@ Surface_p loadSurface(const std::string& path, const Surface::Blueprint& bluepri
 	else
 		bp.format = PixelFormat::BGRA_8;
 
-	Surface_p pImgSurface = Base::defaultSurfaceFactory()->createSurface( bp, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
+	Surface_p pImgSurface = Base::context()->defaultSurfaceFactory()->createSurface( bp, (unsigned char*)pSDLSurf->pixels, pixelDesc, pSDLSurf->pitch);
 
 	SDL_FreeSurface(pSDLSurf);
 
@@ -1168,19 +1168,19 @@ bool shadowLayerTest(ComponentPtr<DynamicSlot> pEntry )
 
 	pFiller1->setId(7);
 
-	Base::msgRouter()->addRoute(pFiller1, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
+	Base::context()->msgRouter()->addRoute(pFiller1, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
 	{
 		MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
 		pFrontLayer->slots.move(0, pMsg->draggedNow());
 	});
 
-	Base::msgRouter()->addRoute(pFiller2, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
+	Base::context()->msgRouter()->addRoute(pFiller2, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
 	{
 		MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
 		pFrontLayer->slots.move(1, pMsg->draggedNow());
 	});
 
-	Base::msgRouter()->addRoute(pFiller3, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
+	Base::context()->msgRouter()->addRoute(pFiller3, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
 	{
 		MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
 		pFrontLayer->slots.move(2, pMsg->draggedNow());
@@ -1204,7 +1204,7 @@ bool stretchBlitTest(ComponentPtr<DynamicSlot> pEntry)
 //	pImage->setImage(pImgSurface, { 1,1,254,254 });
 	pBack->slots.pushBack(pImage, { .pos = {10,10}, .size = {256,256} });
 
-	Base::msgRouter()->addRoute(pImage, MsgType::MouseDrag, [pBack,pImage](Msg* pMsg) { 
+	Base::context()->msgRouter()->addRoute(pImage, MsgType::MouseDrag, [pBack,pImage](Msg* pMsg) { 
 	
 		Coord distance = static_cast<MouseDragMsg*>(pMsg)->draggedNow();
 
@@ -2041,7 +2041,7 @@ bool bakeSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pSplashSkin = BlockSkin::create({ .blendMode = BlendMode::Add, .surface = pSplashSurf });
 
-	Surface_p pBakeSurface = Base::defaultSurfaceFactory()->createSurface({ .size = SizeI(512, 512) });
+	Surface_p pBakeSurface = Base::context()->defaultSurfaceFactory()->createSurface({ .size = SizeI(512, 512) });
 
 	auto pBakedSkin = BakeSkin::create({ .skins = { pSplashSkin, pDynamicSkin }, .surface = pBakeSurface });
 
@@ -2089,7 +2089,7 @@ bool animSkinTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pDoubleSkin = DoubleSkin::create(pAnimSkin2, pFramingSkin, true);
 
-	auto pBakeSurface = Base::defaultSurfaceFactory()->createSurface({ .size = SizeI(512, 512) });
+	auto pBakeSurface = Base::context()->defaultSurfaceFactory()->createSurface({ .size = SizeI(512, 512) });
 
 	auto pBakeSkin = BakeSkin::create({ .skinInSkin = true, .skins = {pAnimSkin2, pBoxSkin,pAnimSkin}, .surface = pBakeSurface });
 
@@ -2128,7 +2128,7 @@ bool renderLayerTest(ComponentPtr<DynamicSlot> pSlot)
 
 		pBaseLayer->slots.pushBack(pWidget, { .pos = {i * 30.f, i * 30.f}, .size = {100, 100} });
 
-		Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer, i](Msg* pMsg) { pBaseLayer->slots[i].move(static_cast<MouseDragMsg*>(pMsg)->draggedNow()); });
+		Base::context()->msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer, i](Msg* pMsg) { pBaseLayer->slots[i].move(static_cast<MouseDragMsg*>(pMsg)->draggedNow()); });
 	}
 
 	*pSlot = pBaseLayer;
@@ -2164,7 +2164,7 @@ bool rigidPartNinePatchTest(ComponentPtr<DynamicSlot> pSlot)
 
 	pBaseLayer->slots.pushBack(pWidget, { .pos = {10, 10}, .size = {256, 256} });
 
-	Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer](Msg* pMsg) { pBaseLayer->slots[0].setSize(pBaseLayer->slots[0].size() + Size(static_cast<MouseDragMsg*>(pMsg)->draggedNow())); });
+	Base::context()->msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer](Msg* pMsg) { pBaseLayer->slots[0].setSize(pBaseLayer->slots[0].size() + Size(static_cast<MouseDragMsg*>(pMsg)->draggedNow())); });
 
 	*pSlot = pBaseLayer;
 	return true;
@@ -2265,7 +2265,7 @@ bool kerningTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pDisplay1 = TextDisplay::create();
 
-	auto bp = Base::defaultStyle()->blueprint();
+	auto bp = Base::context()->defaultStyle()->blueprint();
 	bp.size = 32;
 
 	auto pBigStyle = TextStyle::create(bp);
@@ -2935,7 +2935,7 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 
 	auto pButton = Button::create({ .label = {.text = "TRANSITION"}, .skin = pButtonSkin });
 
-	Base::msgRouter()->addRoute(pButton, MsgType::Select, [pGraph, pTransition](Msg* pMsg) 
+	Base::context()->msgRouter()->addRoute(pButton, MsgType::Select, [pGraph, pTransition](Msg* pMsg) 
 	{ 
 		transitionIndex = (transitionIndex + 1) % 2;
 		pGraph->entries.back().transitionSamples(pTransition, 5, topSamples[transitionIndex], 1, bottomSamples);  
@@ -3033,7 +3033,7 @@ bool plotChartTest(ComponentPtr<DynamicSlot> pEntry)
 
 	auto pButton = Button::create({ .label = {.text = "TRANSITION"}, .skin = pButtonSkin });
 
-	Base::msgRouter()->addRoute(pButton, MsgType::Select, [pGraph, pTransition](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pButton, MsgType::Select, [pGraph, pTransition](Msg* pMsg)
 		{
 			transitionIndex = (transitionIndex + 1) % 2;
 			pGraph->entries.back().transitionSamples(pTransition, 5, topSamples[transitionIndex]);
@@ -3376,7 +3376,7 @@ bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pBack = FlexPanel::create({ .skin = StaticColorSkin::create(Color::Black) });
 	*pEntry = pBack;
 
-	auto pMyStyle = TextStyle::create( WGOVR(Base::defaultStyle()->blueprint(), _.size = 30, _.color = Color::White ));
+	auto pMyStyle = TextStyle::create( WGOVR(Base::context()->defaultStyle()->blueprint(), _.size = 30, _.color = Color::White ));
 
 
 	auto pGlowCapsule = CanvasCapsule::create();

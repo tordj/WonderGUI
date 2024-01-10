@@ -213,8 +213,8 @@ namespace wg
 				MouseMoveMsg_p pMsg = static_cast<MouseMoveMsg*>(_pMsg);
 				CoordSPX ofs = _toLocal(pMsg->pointerSpxPos());
 				RectSPX geo = {0,0,_size()};
-				bool bHovered = geo.contains(ofs) && (!Base::inputHandler()->isAnyButtonPressed() ||
-					(Base::inputHandler()->isButtonPressed(MouseButton::Left) && m_bPressed));
+				bool bHovered = geo.contains(ofs) && (!Base::context()->inputHandler()->isAnyButtonPressed() ||
+					(Base::context()->inputHandler()->isButtonPressed(MouseButton::Left) && m_bPressed));
 				if( bHovered != m_state.isHovered() )
 				{
 					m_state.setHovered(bHovered);

@@ -22,40 +22,25 @@
 
 #include <string>
 
-#include <wg_c_gearbase.h>
-#include <wg_gearbase.h>
+#include <wg_c_gearcontext.h>
+#include <wg_gearcontext.h>
 
 using namespace wg;
 
-int wg_initGearBase()
-{
-	return GearBase::init();
+inline GearContext* getPtr(wg_obj obj) {
+	return static_cast<GearContext*>(reinterpret_cast<Object*>(obj));
 }
 
-int wg_exitGearBase()
+wg_obj wg_createGearContext()
 {
-	return GearBase::exit();
+	auto pContext = GearContext::create();
+	pContext->retain();
+	return static_cast<Object*>(pContext);
 }
 
-int wg_isGearBaseInitialized()
+void wg_setErrorHandler( wg_obj context, void (*errorHandler)(const wg_errorInfo * pError) )
 {
-	return GearBase::isInitialized();
-}
-
-char * wg_memStackAlloc( int bytes )
-{
-	return GearBase::memStackAlloc(bytes);
-}
-
-void wg_memStackFree( int bytes )
-{
-	return GearBase::memStackFree(bytes);
-}
-
-void wg_setBaseErrorHandler( void (*errorHandler)(const wg_errorInfo * pError) )
-{
-
-	GearBase::setErrorHandler( [errorHandler](Error& error)
+	getPtr(context)->setErrorHandler( [errorHandler](Error& error)
 	{
 		wg_errorInfo	errorInfo;
 

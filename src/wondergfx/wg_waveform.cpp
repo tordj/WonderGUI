@@ -599,7 +599,7 @@ namespace wg
 
 	void Waveform::_updateEdgemapColors()
 	{
-		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : GfxBase::defaultEdgemapFactory();
+		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : GfxBase::context()->defaultEdgemapFactory();
 
 		bool bUseGradient = !m_gradient.isUndefined() || !m_outlineGradient.isUndefined();
 
@@ -629,7 +629,7 @@ namespace wg
 
 	void Waveform::_regenEdgemap()
 	{
-		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : GfxBase::defaultEdgemapFactory();
+		EdgemapFactory_p pFactory = m_pFactory ? m_pFactory : GfxBase::context()->defaultEdgemapFactory();
 
 		bool bUseGradient = !m_gradient.isUndefined() || !m_outlineGradient.isUndefined();
 

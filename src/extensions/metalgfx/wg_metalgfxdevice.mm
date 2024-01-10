@@ -645,7 +645,7 @@ MetalGfxDevice::MetalGfxDevice()
         }
 
 		if( pixelFormat == PixelFormat::BGRA_8 )
-			pixelFormat = GfxBase::defaultToSRGB() ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
+			pixelFormat = GfxBase::context()->defaultToSRGB() ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
 		
         if( m_defaultCanvasRenderPassDesc )
             [m_defaultCanvasRenderPassDesc release];
@@ -2498,7 +2498,7 @@ MetalGfxDevice::MetalGfxDevice()
                 case CanvasInit::Clear:
                 {
                     pDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-                    float* pConv = GfxBase::defaultToSRGB() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+                    float* pConv = GfxBase::context()->defaultToSRGB() ? m_sRGBtoLinearTable : m_linearToLinearTable;
                     pDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(pConv[clearColor.r]/4096.f, pConv[clearColor.g]/4096.f, pConv[clearColor.b]/4096.f, clearColor.a/255.f);
                     break;
                 }

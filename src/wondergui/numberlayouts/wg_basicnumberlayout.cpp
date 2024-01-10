@@ -163,7 +163,7 @@ namespace wg
 		if (size.w > canvas.w || size.h > canvas.h)
 			popData = limitClipList(pDevice, canvas);
 
-		_renderString(pDevice, charBuffer.chars(), Base::defaultStyle(), ofs, scale, state);
+		_renderString(pDevice, charBuffer.chars(), Base::context()->defaultStyle(), ofs, scale, state);
 
 		popClipList(pDevice, popData);
 	}
@@ -183,7 +183,7 @@ namespace wg
 
 	bool BasicNumberLayout::stateChangeNeedsRender(State newState, State oldState) const
 	{
-		//TODO: This might fail if we have a Base::defaultStyle() that isn't static.
+		//TODO: This might fail if we have a Base::context()->defaultStyle() that isn't static.
 
 		return !m_bStatesIdentical[newState][oldState];
 	}
@@ -299,7 +299,7 @@ namespace wg
 
 		TextAttr		baseAttr;
 
-		Base::defaultStyle()->exportAttr(state, &baseAttr, scale);
+		Base::context()->defaultStyle()->exportAttr(state, &baseAttr, scale);
 
 		TextAttr		attr;
 		Font_p 			pFont;

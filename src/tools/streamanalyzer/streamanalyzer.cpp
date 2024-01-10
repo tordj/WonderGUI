@@ -48,7 +48,7 @@ bool MyApp::init(Visitor* pVisitor)
 	}
 
 
-	auto pSoftGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::defaultGfxDevice());
+	auto pSoftGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::context()->defaultGfxDevice());
 	if( pSoftGfxDevice )
 	{
 		addExtraSoftKernelsForRGB555BECanvas(pSoftGfxDevice);
@@ -194,7 +194,7 @@ Widget_p MyApp::createTopBar()
 	
 
 
-	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadStream();});
+	Base::context()->msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadStream();});
 
 
 	return pBar;
@@ -307,37 +307,37 @@ Widget_p MyApp::createLogPanel()
 	pToggleGroup->add(pStatisticsButton);
 	pToggleGroup->add(pErrorLogButton);
 
-	Base::msgRouter()->addRoute(pFrameLogButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pFrameLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->showFrameLog();
 		});
 	
-	Base::msgRouter()->addRoute(pFullLogButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pFullLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->showFullLog();
 		});
 
-	Base::msgRouter()->addRoute(pOptimizerInLogButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pOptimizerInLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->showOptimizerInLog();
 		});
 	
-	Base::msgRouter()->addRoute(pOptimizerOutLogButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pOptimizerOutLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->showOptimizerOutLog();
 		});
 	
-	Base::msgRouter()->addRoute(pResourcesButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pResourcesButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->showResources();
 		});
 
-	Base::msgRouter()->addRoute(pStatisticsButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pStatisticsButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->showStatistics();
 		});
 
-	Base::msgRouter()->addRoute(pErrorLogButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pErrorLogButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->showErrors();
 		});
@@ -486,7 +486,7 @@ Widget_p MyApp::createNavigationPanel()
 									 .skin = ColorSkin::create(Color::Black)
 		});
 
-	Base::msgRouter()->addRoute(pSlider, MsgType::ValueUpdate, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pSlider, MsgType::ValueUpdate, [this](Msg* pMsg)
 		{
 			auto pMyMsg = static_cast<ValueUpdateMsg*>(pMsg);
 	this->setFrame(int(pMyMsg->value() * this->m_frames.size() + 0.5f));
@@ -539,22 +539,22 @@ Widget_p MyApp::createNavigationPanel()
 
 	pPlayButtons->setSlotWeight(1, 5, 0.f);
 
-	Base::msgRouter()->addRoute(pLongLeftButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pLongLeftButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->setFrame(this->m_currentFrame - 5);
 		});
 
-	Base::msgRouter()->addRoute(pLeftButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pLeftButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->setFrame(this->m_currentFrame - 1);
 		});
 
-	Base::msgRouter()->addRoute(pRightButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pRightButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->setFrame(this->m_currentFrame + 1);
 		});
 
-	Base::msgRouter()->addRoute(pLongRightButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pLongRightButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			this->setFrame(this->m_currentFrame + 5);
 		});
@@ -580,7 +580,7 @@ Widget_p MyApp::createNavigationPanel()
 		pSkipButtons->slots << pButton;
 
 		int skip = skipButtonAdvances[i];
-		Base::msgRouter()->addRoute(pButton, MsgType::Select, [this,skip](Msg* pMsg)
+		Base::context()->msgRouter()->addRoute(pButton, MsgType::Select, [this,skip](Msg* pMsg)
 			{
 				m_recordedSteps.clear();
 				this->m_bRecordSteps = this->m_pRecordStepsToggle->isSelected();
@@ -606,7 +606,7 @@ Widget_p MyApp::createNavigationPanel()
 		_.icon = WGBP(Icon, _.skin = m_pToggleButtonSkin, _.padding = { 0,8,0,0 })
 	));
 
-	Base::msgRouter()->addRoute(pRectToggle, MsgType::Toggle, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pRectToggle, MsgType::Toggle, [this](Msg* pMsg)
 		{
 			this->toggleDebugRects(static_cast<ToggleMsg*>(pMsg)->isSet());
 		});
@@ -634,7 +634,7 @@ Widget_p MyApp::createNavigationPanel()
 		.skin = m_pButtonSkin
 	});
 
-	Base::msgRouter()->addRoute(pShowRecordedSteps, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pShowRecordedSteps, MsgType::Select, [this](Msg* pMsg)
 	{
 		this->openRecordedStepsWindow();
 	});
@@ -648,7 +648,7 @@ Widget_p MyApp::createNavigationPanel()
 		.skin = m_pButtonSkin
 	});
 
-	Base::msgRouter()->addRoute(pSkipTo, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pSkipTo, MsgType::Select, [this](Msg* pMsg)
 	{
 
 		m_recordedSteps.clear();
@@ -696,7 +696,7 @@ Widget_p MyApp::createNavigationPanel()
 		.skin = m_pButtonSkin
 		});
 
-	Base::msgRouter()->addRoute(pLog8Frames, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pLog8Frames, MsgType::Select, [this](Msg* pMsg)
 		{
 			_logFrames(m_currentFrame, m_currentFrame +8, false, m_pOptimizerInLogDisplay);
 			_logFrames(m_currentFrame, m_currentFrame +8, true, m_pOptimizerOutLogDisplay);
@@ -875,7 +875,7 @@ bool MyApp::loadStream(std::string path)
 	
 //	auto pStreamGfxDevice = SoftGfxDevice::create();
 	
-//	auto pStreamGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::defaultGfxDevice());
+//	auto pStreamGfxDevice = wg_dynamic_cast<SoftGfxDevice_p>(Base::context()->defaultGfxDevice());
 	
 
 	addBaseSoftKernelsForRGB555BECanvas(pStreamGfxDevice);
@@ -910,7 +910,7 @@ void MyApp::setupScreens()
 {
 	m_screens.clear();
 
-	SurfaceFactory_p	pFactory = GfxBase::defaultSurfaceFactory();
+	SurfaceFactory_p	pFactory = GfxBase::context()->defaultSurfaceFactory();
 
 	// Ugly typecast! Will only work with SoftGfxDevice!
 	
@@ -944,7 +944,7 @@ void MyApp::updateGUIAfterReload()
 	m_overlayDisplays.clear();
 
 
-	auto pSurfFactory = GfxBase::defaultSurfaceFactory();
+	auto pSurfFactory = GfxBase::context()->defaultSurfaceFactory();
 
 
 	int toggleNb = 0;
@@ -996,7 +996,7 @@ void MyApp::updateGUIAfterReload()
 											) );
 
 		auto pScreenLineup = m_pScreenLineup;
-		Base::msgRouter()->addRoute(pToggle, MsgType::Toggle, [toggleNb, pScreenLineup](Msg* pMsg)
+		Base::context()->msgRouter()->addRoute(pToggle, MsgType::Toggle, [toggleNb, pScreenLineup](Msg* pMsg)
 			{
 				auto pMessage = static_cast<ToggleMsg*>(pMsg);
 				pScreenLineup->slots[toggleNb].setVisible(pMessage->isSet());
@@ -1325,7 +1325,7 @@ void MyApp::_updateResourcesView()
 
 void MyApp::_updateDebugOverlays()
 {
-	auto pDevice = GfxBase::defaultGfxDevice();
+	auto pDevice = GfxBase::context()->defaultGfxDevice();
 	
 	auto pOverlaySkin = BoxSkin::create( Border(1), HiColor(4096,0,0,1024), HiColor(4096,0,0,4096));
 	

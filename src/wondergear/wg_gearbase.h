@@ -31,6 +31,7 @@
 
 #include <wg_strongptr.h>
 #include <wg_geartypes.h>
+#include <wg_gearcontext.h>
 
 namespace wg
 {
@@ -38,19 +39,6 @@ namespace wg
 	class WeakPtrHub;
 	class MemStack;
 	class Object;
-
-	class Error
-	{
-	public:
-		ErrorLevel	severity;
-		ErrorCode		code;
-		const char *	message;
-		const Object *	pObject;
-		const char *	classname;
-		const char *	function;
-		const char *	file;
-		int				line;
-	};
 
 
 	/**
@@ -80,15 +68,15 @@ namespace wg
 
 		//.____ Content _____________________________________________
 		
+		static GearContext_p	context() { assert(s_pContext); return s_pContext; }
+		static bool				setContext( GearContext * pContext );
+
 		static void			setErrorHandler(std::function<void(Error&)> handler);
-		std::function<void(Error&)>	errorHandler();
-		
+		std::function<void(Error&)> errorHandler();
+
 		//.____ Misc ________________________________________________
 
-		const static TypeInfo	TYPEINFO;
-
 		static bool			isInitialized() { return s_pPtrPool != nullptr; }
-
 
 		static char *		memStackAlloc( int bytes );
 		static void			memStackFree( int bytes );
@@ -126,6 +114,7 @@ namespace wg
 		static MemPool *					s_pPtrPool;
 		static MemStack *					s_pMemStack;
 		static std::function<void(Error&)>	s_pErrorHandler;
+		static GearContext_p				s_pContext;
 		
 		struct ObjectInfo
 		{

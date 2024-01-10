@@ -118,14 +118,14 @@ DLLEXPORTPREFIX void exitX(void)
 
 DLLEXPORTPREFIX void mapInputKey(uint32_t native_keycode, wg_key translated_keycode)
 {
-	Base::inputHandler()->mapKey(native_keycode, (Key) translated_keycode);
+	Base::context()->inputHandler()->mapKey(native_keycode, (Key) translated_keycode);
 }
 
 //____ mapInputCommand() ___________________________________________________
 
 DLLEXPORTPREFIX void mapInputCommand(uint32_t native_keycode, wg_modkeys modkeys, wg_editCommand command)
 {
-	Base::inputHandler()->mapCommand(native_keycode, (ModKeys) modkeys, (EditCmd) command);
+	Base::context()->inputHandler()->mapCommand(native_keycode, (ModKeys) modkeys, (EditCmd) command);
 }
 
 

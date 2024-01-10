@@ -250,7 +250,7 @@ namespace wg
 
 	void TooltipOverlay::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		if (Base::inputHandler()->isAnyButtonPressed())
+		if (Base::context()->inputHandler()->isAnyButtonPressed())
 			return;
 
 		if (m_hoverCountdown > 0 && m_pHoverWidget && !m_bBlockReopen)

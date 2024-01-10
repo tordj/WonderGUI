@@ -71,7 +71,7 @@ namespace wg
 			return nullptr;
 		}
 
-		GfxDevice* pUseDevice = pDevice ? pDevice : Base::defaultGfxDevice().rawPtr();
+		GfxDevice* pUseDevice = pDevice ? pDevice : Base::context()->defaultGfxDevice().rawPtr();
 		if( pUseDevice == nullptr || pUseDevice->canvas(ref).size.isEmpty() )
 		{
 			//TODO: Error handling!
@@ -108,7 +108,7 @@ namespace wg
 		m_pCanvasLayers = bp.canvasLayers;
 		m_windowRef = bp.windowRef;
 				
-		GfxDevice* pUseGfxDevice = bp.gfxDevice ? bp.gfxDevice.rawPtr() : Base::defaultGfxDevice().rawPtr();
+		GfxDevice* pUseGfxDevice = bp.gfxDevice ? bp.gfxDevice.rawPtr() : Base::context()->defaultGfxDevice().rawPtr();
 
 		if( bp.canvasRef != CanvasRef::None )
 		{
@@ -178,7 +178,7 @@ namespace wg
 
 	RootPanel::RootPanel(CanvasRef ref, GfxDevice* pGfxDevice) : RootPanel()
 	{
-		GfxDevice* pUseGfxDevice = pGfxDevice ? pGfxDevice : Base::defaultGfxDevice().rawPtr();
+		GfxDevice* pUseGfxDevice = pGfxDevice ? pGfxDevice : Base::context()->defaultGfxDevice().rawPtr();
 
 		m_canvas = pUseGfxDevice->canvas(ref);
 
@@ -255,7 +255,7 @@ namespace wg
 
 	bool RootPanel::setCanvas(CanvasRef canvasRef)
 	{
-        GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
+        GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::context()->defaultGfxDevice();
 
         if( !pGfxDevice || pGfxDevice->canvas(canvasRef).size.isEmpty() )
 		{
@@ -451,7 +451,7 @@ namespace wg
 
 	bool RootPanel::beginRender()
 	{
-		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
+		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::context()->defaultGfxDevice();
 
 		if( !pGfxDevice || m_canvas.size.isEmpty() || !slot._widget() )
 		{
@@ -506,7 +506,7 @@ namespace wg
 
 	bool RootPanel::renderSection(const Rect& _clip)
 	{
-		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
+		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::context()->defaultGfxDevice();
 
 		if( !pGfxDevice || m_canvas.size.isEmpty() || !slot._widget() )
 		{
@@ -587,7 +587,7 @@ namespace wg
 
 	bool RootPanel::endRender(void)
 	{
-		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::defaultGfxDevice();
+		GfxDevice* pGfxDevice = m_pGfxDevice ? m_pGfxDevice : Base::context()->defaultGfxDevice();
 
 		if( !pGfxDevice || m_canvas.size.isEmpty() || !slot._widget() )
 		{
@@ -750,12 +750,12 @@ namespace wg
 
 		// Check if we need to request window focus.
 
-		if (bRaiseWindow && Base::inputHandler()->focusedWindow() != this)
+		if (bRaiseWindow && Base::context()->inputHandler()->focusedWindow() != this)
 		{
 			if (Base::hostBridge() && !Base::hostBridge()->requestFocus(m_windowRef))
 				return false;
 
-			Base::inputHandler()->setFocusedWindow(this);
+			Base::context()->inputHandler()->setFocusedWindow(this);
 		}
 		
 		//
@@ -763,7 +763,7 @@ namespace wg
 		if( pOldFocus == pWidget )
 			return true;
 		
-		return Base::inputHandler()->_focusChanged(this, pOldFocus, pWidget);
+		return Base::context()->inputHandler()->_focusChanged(this, pOldFocus, pWidget);
 	}
 
 	//____ _childReleaseFocus() __________________________________________________
@@ -777,11 +777,11 @@ namespace wg
 		m_pFocusedChild = slot._widget();
 
 		if (Base::hostBridge() && Base::hostBridge()->yieldFocus(m_windowRef)) // Let OS know that we don't need focus anymore.
-			Base::inputHandler()->setFocusedWindow(nullptr);
+			Base::context()->inputHandler()->setFocusedWindow(nullptr);
 		else if( m_pFocusedChild != pOldFocus )
-			Base::inputHandler()->_focusChanged(this, pOldFocus, m_pFocusedChild);
+			Base::context()->inputHandler()->_focusChanged(this, pOldFocus, m_pFocusedChild);
 
-		return (Base::inputHandler()->focusedWidget() != pWidget);
+		return (Base::context()->inputHandler()->focusedWidget() != pWidget);
 	}
 
 	//____ _childRequestInView() __________________________________________________

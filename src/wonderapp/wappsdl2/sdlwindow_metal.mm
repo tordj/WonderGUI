@@ -74,7 +74,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
         const CAMetalLayer *swapchain = (__bridge CAMetalLayer *)SDL_RenderGetMetalLayer(renderer);
         const id<MTLDevice> gpu = swapchain.device;
 
-	auto pDevice = Base::defaultGfxDevice();
+	auto pDevice = Base::context()->defaultGfxDevice();
 	if( !pDevice )
 	{
 	   MetalGfxDevice::setMetalDevice(gpu);
@@ -89,7 +89,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
 	}
 	
     
-    wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, {int(geo.w),int(geo.h)}, PixelFormat::BGRA_8_sRGB);
+    wg_static_cast<MetalGfxDevice_p>(Base::context()->defaultGfxDevice())->setDefaultCanvas(nullptr, {int(geo.w),int(geo.h)}, PixelFormat::BGRA_8_sRGB);
     auto pRootPanel = RootPanel::create(CanvasRef::Default, nullptr);
 
     SDLWindowMetal_p pWindow = new SDLWindowMetal(blueprint.title, pRootPanel, geo, pSDLWindow, renderer);
@@ -98,7 +98,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
 
     //TODO: This is ugly. It should be handled when windows gets focused.
 
-    Base::inputHandler()->setFocusedWindow(pRootPanel);
+    Base::context()->inputHandler()->setFocusedWindow(pRootPanel);
 
 //    SDLWindowGL::s_bInitialized = true;
     return pWindow;
@@ -128,7 +128,7 @@ void SDLWindowMetal::onWindowSizeUpdated( int width, int height )
     m_geo.w = width;
     m_geo.h = height;
     
-    wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(nullptr, SizeSPX(width, height), wg::PixelFormat::BGRA_8_sRGB, 64);
+    wg_static_cast<MetalGfxDevice_p>(Base::context()->defaultGfxDevice())->setDefaultCanvas(nullptr, SizeSPX(width, height), wg::PixelFormat::BGRA_8_sRGB, 64);
 
     m_pRootPanel->setCanvas(CanvasRef::Default);
 }
@@ -153,9 +153,9 @@ void SDLWindowMetal::render()
         pass.colorAttachments[0].storeAction = MTLStoreActionStore;
         pass.colorAttachments[0].texture = surface.texture;
 
-		wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->setDefaultCanvas(pass, {int(m_geo.w),int(m_geo.h)}, wg::PixelFormat::BGRA_8_sRGB);
+		wg_static_cast<MetalGfxDevice_p>(Base::context()->defaultGfxDevice())->setDefaultCanvas(pass, {int(m_geo.w),int(m_geo.h)}, wg::PixelFormat::BGRA_8_sRGB);
 
-        wg_static_cast<MetalGfxDevice_p>(Base::defaultGfxDevice())->autopresent(surface);
+        wg_static_cast<MetalGfxDevice_p>(Base::context()->defaultGfxDevice())->autopresent(surface);
         
 		m_pRootPanel->addDirtyPatch({0,0,int(m_geo.w)*64,int(m_geo.h)*64});
 		

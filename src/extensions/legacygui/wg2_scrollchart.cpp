@@ -1187,7 +1187,7 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 				WgPen	pen(pDevice, _canvas);
 				wg::TextAttr attr;
 
-				WgBase::defaultStyle()->exportAttr(WgStateEnum::Default, &attr, m_scale >> 6);
+				WgBase::context()->defaultStyle()->exportAttr(WgStateEnum::Default, &attr, m_scale >> 6);
 				if( m_valueLabelStyle.pTextStyle )
 					m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Default, &attr, m_scale >> 6);
 

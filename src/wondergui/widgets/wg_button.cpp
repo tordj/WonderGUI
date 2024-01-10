@@ -160,7 +160,7 @@ namespace wg
 	void Button::_receive( Msg * _pMsg )
 	{
 		State state = m_state;
-		MsgRouter_p	pRouter = Base::msgRouter();
+		MsgRouter_p	pRouter = Base::context()->msgRouter();
 
 		switch( _pMsg->type() )
 		{

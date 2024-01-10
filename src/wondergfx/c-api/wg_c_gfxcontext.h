@@ -1,4 +1,3 @@
-
 /*=========================================================================
 
 						 >>> WonderGUI <<<
@@ -21,28 +20,34 @@
 
 =========================================================================*/
 
-#include <wg_c_gfxbase.h>
-#include <wg_gfxbase.h>
-#include <wg_bitmapcache.h>
 
-using namespace wg;
+#ifndef WG_C_GFXCONTEXT_DOT_H
+#define WG_C_GFXCONTEXT_DOT_H
+#pragma once
 
-int wg_initGfxBase()
-{
-	return GfxBase::init();
+#include <wg_c_gfxtypes.h>
+#include <wg_c_gearcontext.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	wg_obj	wg_createGfxContext();
+
+	wg_obj	wg_defaultBitmapCache( wg_obj context );
+
+	void	wg_setDefaultSurfaceFactory( wg_obj context, wg_obj factory );
+	wg_obj	wg_defaultSurfaceFactory( wg_obj context );
+
+	void	wg_setDefaultGfxDevice( wg_obj context, wg_obj device );
+	wg_obj	wg_defaultGfxDevice( wg_obj context );
+
+	void	wg_setDefaultToSRGB( wg_obj context, int bSRGB );
+	int		wg_defaultToSRGB( wg_obj context );
+
+
+#ifdef __cplusplus
 }
+#endif
 
-int wg_exitGfxBase()
-{
-	return GfxBase::exit();
-}
-
-int wg_isGfxBaseInitialized()
-{
-	return GfxBase::isInitialized();
-}
-
-wg_obj wg_gfxContext(void)
-{
-	return GfxBase::context();
-}
+#endif //WG_C_GFXCONTEXT_DOT_H

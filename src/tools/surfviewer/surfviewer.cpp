@@ -174,15 +174,15 @@ Widget_p MyApp::createTopBar()
 	
 
 
-	Base::msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadImage();});
+	Base::context()->msgRouter()->addRoute( pLoadButton, MsgType::Select, [this](Msg*pMsg){this->selectAndLoadImage();});
 
-	Base::msgRouter()->addRoute(pLeftButton, MsgType::Select, [this](Msg* pMsg) 
+	Base::context()->msgRouter()->addRoute(pLeftButton, MsgType::Select, [this](Msg* pMsg) 
 		{
 			if (m_imageIdx > 0)
 				this->loadImage(--m_imageIdx);
 		});
 
-	Base::msgRouter()->addRoute(pRightButton, MsgType::Select, [this](Msg* pMsg)
+	Base::context()->msgRouter()->addRoute(pRightButton, MsgType::Select, [this](Msg* pMsg)
 		{
 			if (m_imageIdx < m_imagePaths.size()-1 )
 				this->loadImage(++m_imageIdx);

@@ -27,7 +27,8 @@
 #include <assert.h>
 
 #include <wg_gearbase.h>
-#include <wg_gfxdevice.h>
+#include <wg_gfxcontext.h>
+
 
 namespace wg
 {
@@ -53,40 +54,22 @@ namespace wg
 		static bool exit();
 
 		//.____ Content _____________________________________________
-
-		static BitmapCache_p		defaultBitmapCache();
 		
-		static void					setDefaultSurfaceFactory( SurfaceFactory * pFactory );
-		static inline SurfaceFactory_p	defaultSurfaceFactory() { return s_pDefaultSurfaceFactory; };
-
-		static void					setDefaultEdgemapFactory(EdgemapFactory* pFactory);
-		static inline EdgemapFactory_p	defaultEdgemapFactory() { return s_pDefaultEdgemapFactory; };
-
-		static void					setDefaultGfxDevice( GfxDevice * pDevice );
-		static inline GfxDevice_p	defaultGfxDevice() { return s_pDefaultGfxDevice; };
-
-		static void					setDefaultToSRGB( bool bSRGB );
-		static inline bool			defaultToSRGB() { return s_bSRGB; }
+		static GfxContext_p			context() { assert(s_pContext); return s_pContext; }
+		static bool					setContext( GfxContext * pContext );
 		
 		static constexpr int *		curveTab() { return s_curveTab; }
 		static constexpr int		curveTabSize() { return c_nCurveTabEntries; }
 
-		
+	protected:
+		static GfxContext_p			s_pContext;
+
 	private:
 		
 		static void					_genCurveTab();
 
 		static int					s_gfxInitCounter;
 		
-		static bool					s_bSRGB;
-		
-		static SurfaceFactory_p		s_pDefaultSurfaceFactory;
-		static EdgemapFactory_p	s_pDefaultEdgemapFactory;
-
-		static GfxDevice_p			s_pDefaultGfxDevice;
-
-		static BitmapCache_p		s_pDefaultBitmapCache;
-
 		const static int 			c_nCurveTabEntries = 1024;
 		static int 					s_curveTab[c_nCurveTabEntries];
 

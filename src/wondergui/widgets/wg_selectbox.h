@@ -212,8 +212,8 @@ namespace wg
 		void		_selectEntry(int idx);
 		int			_findEntry(const CoordSPX& ofsInListPanel, CoordSPX * pOfsOut = nullptr);
 
-		inline TextLayout * _entryTextLayout() { return m_pEntryTextLayout ? m_pEntryTextLayout : Base::defaultTextLayout(); }
-		inline const TextLayout * _entryTextLayout() const { return m_pEntryTextLayout ? m_pEntryTextLayout: Base::defaultTextLayout();  }
+		inline TextLayout * _entryTextLayout() { return m_pEntryTextLayout ? m_pEntryTextLayout : Base::context()->defaultTextLayout(); }
+		inline const TextLayout * _entryTextLayout() const { return m_pEntryTextLayout ? m_pEntryTextLayout: Base::context()->defaultTextLayout();  }
 
 		//
 		

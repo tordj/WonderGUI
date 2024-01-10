@@ -172,10 +172,10 @@ void GfxDeviceTester::setup_testdevices()
 
 	// Native
 
-	auto pNativeGfxDevice = Base::defaultGfxDevice();
+	auto pNativeGfxDevice = Base::context()->defaultGfxDevice();
 	string nativeDeviceName = string("Native (" + string(pNativeGfxDevice->typeInfo().className) + ")" );
 	
-	auto pNativeDevice = Device::create(nativeDeviceName, pNativeGfxDevice, CanvasRef::None, Base::defaultSurfaceFactory()->createSurface(canvasBP), this );
+	auto pNativeDevice = Device::create(nativeDeviceName, pNativeGfxDevice, CanvasRef::None, Base::context()->defaultSurfaceFactory()->createSurface(canvasBP), this );
 	
 	g_testdevices.push_back(pNativeDevice);
 	
@@ -363,7 +363,7 @@ SurfaceDisplay_p GfxDeviceTester::create_canvas()
 {
 	auto pCanvas = SurfaceDisplay::create();
 	
-	auto pSurface = Base::defaultSurfaceFactory()->createSurface( { .size = g_canvasSize } );
+	auto pSurface = Base::context()->defaultSurfaceFactory()->createSurface( { .size = g_canvasSize } );
 	pCanvas->setSurface(pSurface);
 //	pCanvas->canvas.setBackColor(Color::Black);
 	return pCanvas;
@@ -759,9 +759,9 @@ bool GfxDeviceTester::setup_chrome()
 	pClipSection->slots << pFewButton;
 	pClipSection->slots << pManyButton;
 
-	Base::msgRouter()->addRoute(pNoClipButton, MsgType::Select, [this](Msg* pMsg) { setup_cliplist(ClipList::One); });
-	Base::msgRouter()->addRoute(pFewButton, MsgType::Select, [this](Msg* pMsg) { setup_cliplist(ClipList::Few); });
-	Base::msgRouter()->addRoute(pManyButton, MsgType::Select, [this](Msg* pMsg) { setup_cliplist(ClipList::Many); });
+	Base::context()->msgRouter()->addRoute(pNoClipButton, MsgType::Select, [this](Msg* pMsg) { setup_cliplist(ClipList::One); });
+	Base::context()->msgRouter()->addRoute(pFewButton, MsgType::Select, [this](Msg* pMsg) { setup_cliplist(ClipList::Few); });
+	Base::context()->msgRouter()->addRoute(pManyButton, MsgType::Select, [this](Msg* pMsg) { setup_cliplist(ClipList::Many); });
 
 	// Setup display mode section
 
@@ -806,27 +806,27 @@ bool GfxDeviceTester::setup_chrome()
 	pDispModeSection->slots << pDiffButton;
 	pDispModeSection->slots << pTimeButton;
 
-	Base::msgRouter()->addRoute(pTesteeButton, MsgType::Select, [this](Msg* pMsg) {
+	Base::context()->msgRouter()->addRoute(pTesteeButton, MsgType::Select, [this](Msg* pMsg) {
 		g_displayMode = DisplayMode::Testee;
 		update_displaymode();
 	});
 
-	Base::msgRouter()->addRoute(pRefButton, MsgType::Select, [this](Msg* pMsg) {
+	Base::context()->msgRouter()->addRoute(pRefButton, MsgType::Select, [this](Msg* pMsg) {
 		g_displayMode = DisplayMode::Reference;
 		update_displaymode();
 	});
 
-	Base::msgRouter()->addRoute(pBothButton, MsgType::Select, [this](Msg* pMsg) {
+	Base::context()->msgRouter()->addRoute(pBothButton, MsgType::Select, [this](Msg* pMsg) {
 		g_displayMode = DisplayMode::Both;
 		update_displaymode();
 	});
 
-	Base::msgRouter()->addRoute(pDiffButton, MsgType::Select, [this](Msg* pMsg) {
+	Base::context()->msgRouter()->addRoute(pDiffButton, MsgType::Select, [this](Msg* pMsg) {
 		g_displayMode = DisplayMode::Diff;
 		update_displaymode();
 	});
 
-	Base::msgRouter()->addRoute(pTimeButton, MsgType::Select, [this](Msg* pMsg) {
+	Base::context()->msgRouter()->addRoute(pTimeButton, MsgType::Select, [this](Msg* pMsg) {
 		g_displayMode = DisplayMode::Time;
 		update_displaymode();
 	});
@@ -865,22 +865,22 @@ bool GfxDeviceTester::setup_chrome()
 	pDispZoomSection->slots << pX4Button;
 	pDispZoomSection->slots << pX8Button;
 
-	Base::msgRouter()->addRoute(pX1Button, MsgType::Select, [this](Msg* pMsg) {
+	Base::context()->msgRouter()->addRoute(pX1Button, MsgType::Select, [this](Msg* pMsg) {
 		g_zoomFactor = 1.f;
 		update_displaymode();
 	});
 
-	Base::msgRouter()->addRoute(pX2Button, MsgType::Select, [this](Msg* pMsg) {
+	Base::context()->msgRouter()->addRoute(pX2Button, MsgType::Select, [this](Msg* pMsg) {
 		g_zoomFactor = 2.f;
 		update_displaymode();
 	});
 
-	Base::msgRouter()->addRoute(pX4Button, MsgType::Select, [this](Msg* pMsg) {
+	Base::context()->msgRouter()->addRoute(pX4Button, MsgType::Select, [this](Msg* pMsg) {
 		g_zoomFactor = 4.f;
 		update_displaymode();
 	});
 
-	Base::msgRouter()->addRoute(pX8Button, MsgType::Select, [this](Msg* pMsg) {
+	Base::context()->msgRouter()->addRoute(pX8Button, MsgType::Select, [this](Msg* pMsg) {
 		g_zoomFactor = 8.f;
 		update_displaymode();
 	});
@@ -890,7 +890,7 @@ bool GfxDeviceTester::setup_chrome()
 	auto pTestList = PackList::create();
 	pTestList->setSelectMode(SelectMode::FlipOnSelect);
 
-	Base::msgRouter()->addRoute(pTestList, MsgType::ItemsSelect, [&](Msg* _pMsg) {
+	Base::context()->msgRouter()->addRoute(pTestList, MsgType::ItemsSelect, [&](Msg* _pMsg) {
 
 		auto pMsg = static_cast<ItemsSelectMsg*>(_pMsg);
 		auto p = pMsg->items();
@@ -902,7 +902,7 @@ bool GfxDeviceTester::setup_chrome()
 		g_pTesteeDevice->setNeedsRedraw();
 	});
 
-	Base::msgRouter()->addRoute(pTestList, MsgType::ItemsUnselect, [&](Msg* _pMsg) {
+	Base::context()->msgRouter()->addRoute(pTestList, MsgType::ItemsUnselect, [&](Msg* _pMsg) {
 
 		auto pMsg = static_cast<ItemsUnselectMsg*>(_pMsg);
 		auto p = pMsg->items();
@@ -980,7 +980,7 @@ bool GfxDeviceTester::setup_chrome()
 		pRefresh->label.setStyle(g_pButtonLabelStyle);
 		pRefresh->label.setLayout(g_pButtonLabelMapper);
 
-		Base::msgRouter()->addRoute(pRefresh, MsgType::Select, [this](Msg* pMsg) {
+		Base::context()->msgRouter()->addRoute(pRefresh, MsgType::Select, [this](Msg* pMsg) {
 			g_bRefreshPerformance = true;
 		});
 

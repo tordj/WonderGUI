@@ -68,7 +68,7 @@ namespace wg
 			int				faceIndex = 0;
 			Finalizer_p		finalizer = nullptr;
 			RenderMode		renderMode = RenderMode::BestShapes;
-			bool			stemDarkening = GfxBase::defaultToSRGB();
+			bool			stemDarkening = GfxBase::context()->defaultToSRGB();
 		};
 		
 		

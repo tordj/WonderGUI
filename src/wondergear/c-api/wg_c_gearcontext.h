@@ -1,4 +1,3 @@
-
 /*=========================================================================
 
 						 >>> WonderGUI <<<
@@ -21,28 +20,24 @@
 
 =========================================================================*/
 
-#include <wg_c_gfxbase.h>
-#include <wg_gfxbase.h>
-#include <wg_bitmapcache.h>
 
-using namespace wg;
+#ifndef WG_C_GEARCONTEXT_DOT_H
+#define WG_C_GEARCONTEXT_DOT_H
+#pragma once
 
-int wg_initGfxBase()
-{
-	return GfxBase::init();
+#include <wg_c_geartypes.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	wg_obj	wg_createGearContext();
+
+	void	wg_setErrorHandler(wg_obj context, void (*errorHandler)(const wg_errorInfo * pError) );
+
+
+#ifdef __cplusplus
 }
+#endif
 
-int wg_exitGfxBase()
-{
-	return GfxBase::exit();
-}
-
-int wg_isGfxBaseInitialized()
-{
-	return GfxBase::isInitialized();
-}
-
-wg_obj wg_gfxContext(void)
-{
-	return GfxBase::context();
-}
+#endif //WG_C_GEARCONTEXT_DOT_H

@@ -1377,7 +1377,7 @@ bool fullStateSupportTest(WgRootPanel* pRoot)
 	});
 	
 	
-	auto bp = WgBase::defaultStyle()->blueprint();
+	auto bp = WgBase::context()->defaultStyle()->blueprint();
 	bp.modifyState(wg::StateEnum::Focused, { .color = WgColor::Black } );
 	auto pTextStyle = wg::TextStyle::create(bp);
 	

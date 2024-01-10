@@ -186,7 +186,7 @@ namespace wg
 		spx totalLength = (m_bHorizontal ? contentGeo.w : contentGeo.h);
 		spx len1 = 0, len2 = 0;
 
-		auto pLayout = m_pLayout ? m_pLayout : Base::defaultPackLayout();
+		auto pLayout = m_pLayout ? m_pLayout : Base::context()->defaultPackLayout();
 
 		PackLayout::Item items[2];
 		PackLayout::Item* pI = items;

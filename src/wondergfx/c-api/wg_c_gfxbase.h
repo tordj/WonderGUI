@@ -37,17 +37,7 @@ extern "C" {
 	int		wg_exitGfxBase(void);
 	int		wg_isGfxBaseInitialized(void);
 
-	wg_obj	wg_defaultBitmapCache();
-
-	void	wg_setDefaultSurfaceFactory( wg_obj factory );
-	wg_obj	wg_defaultSurfaceFactory();
-
-	void	wg_setDefaultGfxDevice( wg_obj device );
-	wg_obj	wg_defaultGfxDevice();
-
-	void	wg_setDefaultToSRGB( int bSRGB );
-	int		wg_defaultToSRGB();
-
+	wg_obj	wg_gfxContext(void);
 
 #ifdef __cplusplus
 }

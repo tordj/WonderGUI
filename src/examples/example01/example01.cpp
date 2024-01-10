@@ -160,7 +160,7 @@ int main ( int argc, char** argv )
 
 		// Finally we add a callback to the click-event of the button.
 
-		Base::msgRouter()->addRoute(pButton, MsgType::Select, [&](Msg * pMsg) { bQuit = true; } );
+		Base::context()->msgRouter()->addRoute(pButton, MsgType::Select, [&](Msg * pMsg) { bQuit = true; } );
 	}
 
 
@@ -230,16 +230,16 @@ void translateEvents( RootPanel_p pRoot )
 			case SDL_MOUSEMOTION:
 			{
 				float scale = pRoot->scale()/64.f;
-				Base::inputHandler()->setPointer( pRoot, Coord(e.motion.x/scale, e.motion.y/scale));
+				Base::context()->inputHandler()->setPointer( pRoot, Coord(e.motion.x/scale, e.motion.y/scale));
 				break;
 			}
 
 			case SDL_MOUSEBUTTONDOWN:
-				Base::inputHandler()->setButton( translateMouseButton(e.button.button), true );
+				Base::context()->inputHandler()->setButton( translateMouseButton(e.button.button), true );
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				Base::inputHandler()->setButton( translateMouseButton(e.button.button), false );
+				Base::context()->inputHandler()->setButton( translateMouseButton(e.button.button), false );
 				break;
 
 			default:
@@ -247,7 +247,7 @@ void translateEvents( RootPanel_p pRoot )
 		}
 	}
 
-	Base::msgRouter()->dispatch();
+	Base::context()->msgRouter()->dispatch();
 }
 
 //____ translateMouseButton() __________________________________________________

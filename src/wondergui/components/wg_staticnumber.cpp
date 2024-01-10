@@ -71,7 +71,7 @@ namespace wg
 
 	void StaticNumber::_render(GfxDevice* pDevice, const RectSPX& canvas, int scale, State state)
 	{
-		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
+		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::context()->defaultNumberLayout().rawPtr();
 
 		pLayout->render(pDevice, canvas, m_value, scale, state);
 
@@ -82,7 +82,7 @@ namespace wg
 
 	SizeSPX StaticNumber::_defaultSize(int scale) const
 	{
-		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
+		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::context()->defaultNumberLayout().rawPtr();
 
 		return pLayout->defaultSize(m_value, scale, State::Default);
 	}
@@ -92,7 +92,7 @@ namespace wg
 
 	void StaticNumber::_refresh()
 	{
-		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
+		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::context()->defaultNumberLayout().rawPtr();
 
 //		if (m_pLayout)
 //			m_charBuffer = pLayout->format(m_value, m_scale);
@@ -106,7 +106,7 @@ namespace wg
 
 	bool StaticNumber::_stateChangeNeedsRender(State newState, State oldState) const
 	{
-		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::defaultNumberLayout().rawPtr();
+		NumberLayout* pLayout = m_pLayout ? m_pLayout.rawPtr() : Base::context()->defaultNumberLayout().rawPtr();
 
 		return pLayout->stateChangeNeedsRender(newState, oldState);
 	}

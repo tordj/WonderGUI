@@ -325,7 +325,7 @@ namespace wg
 		m_pPalette4096 = new HiColor[m_paletteCapacity];
 
 		HiColor * p = m_pPalette4096;
-		const int16_t* pUnpackTab = GfxBase::defaultToSRGB() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
+		const int16_t* pUnpackTab = GfxBase::context()->defaultToSRGB() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		for (int i = 0; i < m_paletteSize; i++)
 		{

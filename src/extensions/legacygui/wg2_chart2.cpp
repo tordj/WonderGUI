@@ -871,7 +871,7 @@ void WgChart2::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
 				WgPen	pen(pDevice, _canvas);
 				wg::TextAttr attr;
 
-				WgBase::defaultStyle()->exportAttr(WgStateEnum::Default, &attr, m_scale >> 6);
+				WgBase::context()->defaultStyle()->exportAttr(WgStateEnum::Default, &attr, m_scale >> 6);
 				if( m_sampleLabelStyle.pTextStyle )
 					m_sampleLabelStyle.pTextStyle->addToAttr(WgStateEnum::Default, &attr, m_scale >> 6);
 
@@ -933,7 +933,7 @@ void WgChart2::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
 				WgPen pen(pDevice, _canvas);
 				wg::TextAttr attr;
 
-				WgBase::defaultStyle()->exportAttr(WgStateEnum::Default, &attr, m_scale >> 6);
+				WgBase::context()->defaultStyle()->exportAttr(WgStateEnum::Default, &attr, m_scale >> 6);
 				if( m_valueLabelStyle.pTextStyle )
 					m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Default, &attr, m_scale >> 6);
 

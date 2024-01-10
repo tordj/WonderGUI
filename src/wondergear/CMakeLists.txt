@@ -3,6 +3,8 @@
 set(SOURCES
 	wg_gearbase.cpp
 	wg_gearbase.h
+	wg_gearcontext.cpp
+	wg_gearcontext.h
 	wg_blob.cpp
 	wg_blob.h
 	wg_chain.cpp
@@ -27,6 +29,8 @@ set(SOURCES
 
 	c-api/wg_c_gearbase.cpp
 	c-api/wg_c_gearbase.h
+	c-api/wg_c_gearcontext.cpp
+	c-api/wg_c_gearcontext.h
 	c-api/wg_c_blob.cpp
 	c-api/wg_c_blob.h
 	c-api/wg_c_geartypes.cpp

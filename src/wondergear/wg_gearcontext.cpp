@@ -21,28 +21,42 @@
 
 =========================================================================*/
 
-#include <wg_c_gfxbase.h>
-#include <wg_gfxbase.h>
-#include <wg_bitmapcache.h>
 
-using namespace wg;
+#include <wg_gearbase.h>
+#include <wg_memstack.h>
+#include <wg_mempool.h>
+#include <wg_object.h>
 
-int wg_initGfxBase()
+#include <iostream>
+#include <algorithm>
+#include <cassert>
+
+namespace wg
 {
-	return GfxBase::init();
-}
+	const TypeInfo GearContext::TYPEINFO = { "GearContext", &Object::TYPEINFO };
 
-int wg_exitGfxBase()
-{
-	return GfxBase::exit();
-}
 
-int wg_isGfxBaseInitialized()
-{
-	return GfxBase::isInitialized();
-}
+	//____ typeInfo() _________________________________________________________
 
-wg_obj wg_gfxContext(void)
-{
-	return GfxBase::context();
-}
+	const TypeInfo& GearContext::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+	//____ setErrorHandler() _________________________________________________________
+
+	void GearContext::setErrorHandler(std::function<void(Error&)> handler)
+	{
+		m_pErrorHandler = handler;
+	}
+
+	//____ errorHandler() ____________________________________________________________
+
+	std::function<void(Error&)>	GearContext::errorHandler() const
+	{
+		return m_pErrorHandler;
+	}
+
+
+
+} // namespace wg

@@ -17,6 +17,8 @@ set( SOURCES
 	wg_geo.h
 	wg_gfxbase.cpp
 	wg_gfxbase.h
+	wg_gfxcontext.cpp
+	wg_gfxcontext.h
 	wg_gfxdevice.cpp
 	wg_gfxdevice.h
 	wg_gfxenumextras.cpp
@@ -59,6 +61,8 @@ set( SOURCES
 	c-api/wg_c_geo.h
 	c-api/wg_c_gfxbase.cpp
 	c-api/wg_c_gfxbase.h
+	c-api/wg_c_gfxcontext.cpp
+	c-api/wg_c_gfxcontext.h
 	c-api/wg_c_gfxdevice.cpp
 	c-api/wg_c_gfxdevice.h
 	c-api/wg_c_gfxtypes.h

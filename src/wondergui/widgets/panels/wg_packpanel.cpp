@@ -241,7 +241,7 @@ namespace wg
 
 		if (slots.size() > 0)
 		{
-			auto pLayout = m_pLayout ? m_pLayout : Base::defaultPackLayout();
+			auto pLayout = m_pLayout ? m_pLayout : Base::context()->defaultPackLayout();
 
 			if( m_axis == Axis::X )
 			{
@@ -332,7 +332,7 @@ namespace wg
 		
 		if (slots.size() > 0)
 		{
-			auto pLayout = m_pLayout ? m_pLayout : Base::defaultPackLayout();
+			auto pLayout = m_pLayout ? m_pLayout : Base::context()->defaultPackLayout();
 
 			if( m_axis == Axis::Y )
 			{
@@ -491,7 +491,7 @@ namespace wg
 
 		if (bModified)
 		{
-			auto pLayout = m_pLayout ? m_pLayout : Base::defaultPackLayout();
+			auto pLayout = m_pLayout ? m_pLayout : Base::context()->defaultPackLayout();
 			if (pLayout->doesCalcWantedLength())
 				_refreshGeometries();
 			else
@@ -515,7 +515,7 @@ namespace wg
 
 		if (bModified)
 		{
-			auto pLayout = m_pLayout ? m_pLayout : Base::defaultPackLayout();
+			auto pLayout = m_pLayout ? m_pLayout : Base::context()->defaultPackLayout();
 			if (pLayout->doesCalcWantedLength())
 				_refreshGeometries();
 			else
@@ -702,7 +702,7 @@ namespace wg
 
 		if (slots.size() > 0)
 		{
-			auto pLayout = m_pLayout ? m_pLayout : Base::defaultPackLayout();
+			auto pLayout = m_pLayout ? m_pLayout : Base::context()->defaultPackLayout();
 			if( pLayout->doesCalcWantedLength() )
 			{
 				// Allocate and populate SizeBroker array
@@ -982,7 +982,7 @@ namespace wg
 		// Optimized special case, just copy preferred to length.
 		//TODO: We probably need to use matchingWidth()/matchingHeight() here anyway... prefered length might change with given breadth
 
-		auto pLayout = m_pLayout ? m_pLayout : Base::defaultPackLayout();
+		auto pLayout = m_pLayout ? m_pLayout : Base::context()->defaultPackLayout();
 
 		CoordSPX pos = contentOfs;
 

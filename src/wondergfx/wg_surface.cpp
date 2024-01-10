@@ -294,7 +294,7 @@ namespace wg
 	Surface_p Surface::convert( const Surface::Blueprint& _bp, SurfaceFactory* pFactory)
 	{
 		if (!pFactory)
-			pFactory = GfxBase::defaultSurfaceFactory();
+			pFactory = GfxBase::context()->defaultSurfaceFactory();
 
 		if (!pFactory)
 		{

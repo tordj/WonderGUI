@@ -445,19 +445,19 @@ int Util::gcd(int a, int b)
 	PixelFormat Util::clarifyPixelFormat(PixelFormat type)
 	{
 		if( type == PixelFormat::BGR_8 )
-			type = GfxBase::defaultToSRGB() ? PixelFormat::BGR_8_sRGB : PixelFormat::BGR_8_linear;
+			type = GfxBase::context()->defaultToSRGB() ? PixelFormat::BGR_8_sRGB : PixelFormat::BGR_8_linear;
 
 		if( type == PixelFormat::BGRX_8 )
-			type = GfxBase::defaultToSRGB() ? PixelFormat::BGRX_8_sRGB : PixelFormat::BGRX_8_linear;
+			type = GfxBase::context()->defaultToSRGB() ? PixelFormat::BGRX_8_sRGB : PixelFormat::BGRX_8_linear;
 
 		if( type == PixelFormat::BGRA_8 )
-			type = GfxBase::defaultToSRGB() ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
+			type = GfxBase::context()->defaultToSRGB() ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
 
 		if( type == PixelFormat::Index_8 )
-			type = GfxBase::defaultToSRGB() ? PixelFormat::Index_8_sRGB : PixelFormat::Index_8_linear;
+			type = GfxBase::context()->defaultToSRGB() ? PixelFormat::Index_8_sRGB : PixelFormat::Index_8_linear;
 
 		if (type == PixelFormat::Index_16)
-			type = GfxBase::defaultToSRGB() ? PixelFormat::Index_16_sRGB : PixelFormat::Index_16_linear;
+			type = GfxBase::context()->defaultToSRGB() ? PixelFormat::Index_16_sRGB : PixelFormat::Index_16_linear;
 
 		return type;
 	}

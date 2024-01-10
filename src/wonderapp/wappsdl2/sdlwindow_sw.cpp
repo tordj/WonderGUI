@@ -77,7 +77,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
     if( !blueprint.maxSize.isEmpty() )
         SDL_SetWindowMaximumSize(pSDLWindow,blueprint.maxSize.w, blueprint.maxSize.h);
 
-    auto pDevice = Base::defaultGfxDevice();
+    auto pDevice = Base::context()->defaultGfxDevice();
     if( !pDevice )
     {
         auto pSoftDevice = SoftGfxDevice::create();
@@ -109,7 +109,7 @@ SDLWindow_p SDLWindow::create(const Blueprint& blueprint)
 
     //TODO: This is ugly. It should be handled when windows gets focused.
 
-    Base::inputHandler()->setFocusedWindow(pRootPanel);
+    Base::context()->inputHandler()->setFocusedWindow(pRootPanel);
 
     return pWindow;
 }

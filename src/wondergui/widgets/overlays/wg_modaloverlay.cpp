@@ -274,7 +274,7 @@ namespace wg
 
 		// Retrieve focused Widget and verify it being a descendant to us.
 
-		Widget * pFocused = Base::inputHandler()->focusedWidget().rawPtr();
+		Widget * pFocused = Base::context()->inputHandler()->focusedWidget().rawPtr();
 
 		Widget * p = pFocused;
 		while( p && p->parent() && p->parent().rawPtr() != this )
@@ -475,20 +475,20 @@ namespace wg
 					case MsgType::MousePress:
 					{
 						MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
-						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
+						Base::context()->msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
 					}
 					break;
 
 					case MsgType::MouseRelease:
 					{
 						MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
-						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
+						Base::context()->msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
 					}
 					break;
 
 					case MsgType::MouseMove:
 					{
-						Base::msgRouter()->post( new ModalMoveOutsideMsg( pMsg->inputId(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
+						Base::context()->msgRouter()->post( new ModalMoveOutsideMsg( pMsg->inputId(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->pointerSpxPos(), pMsg->timestamp()) );
 					}
 					break;
 

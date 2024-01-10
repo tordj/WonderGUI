@@ -369,7 +369,7 @@ namespace wg
 			m_skin.valueChanged(begin, oldBegin, end, oldEnd);
 
 			if (bPostMsg)
-				Base::msgRouter()->post(RangeUpdateMsg::create(this, 0, 0, m_rangeBegin, m_rangeEnd - m_rangeBegin, false));
+				Base::context()->msgRouter()->post(RangeUpdateMsg::create(this, 0, 0, m_rangeBegin, m_rangeEnd - m_rangeBegin, false));
 
 		}
 	}

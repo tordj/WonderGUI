@@ -380,7 +380,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 	if (!m_pCanvas)
 	{
-        wg::SurfaceFactory_p pFactory = m_pFactory ? m_pFactory : wg::GfxBase::defaultSurfaceFactory();
+        wg::SurfaceFactory_p pFactory = m_pFactory ? m_pFactory : wg::GfxBase::context()->defaultSurfaceFactory();
         
 		if (!pFactory)
 			return;                            // No SurfaceFactory set!

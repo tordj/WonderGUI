@@ -317,7 +317,7 @@ namespace wg
                 format = PixelFormat::BGRX_8;
             case PixelFormat::BGRX_8:
 			case PixelFormat::BGRA_8:
-				m_internalFormat = GfxBase::defaultToSRGB() ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
+				m_internalFormat = GfxBase::context()->defaultToSRGB() ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
 				break;
                 
             case PixelFormat::BGR_8_sRGB:

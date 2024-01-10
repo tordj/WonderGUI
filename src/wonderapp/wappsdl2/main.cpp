@@ -202,7 +202,7 @@ int main(int argc, char *argv[] )
 
 			// Dispatch messages
 
-			Base::msgRouter()->dispatch();
+			Base::context()->msgRouter()->dispatch();
 
 			// Periodic update
 
@@ -266,7 +266,7 @@ bool init_wondergui()
 */
  Base::setDefaultToSRGB(true);
 
-	InputHandler_p pInput = Base::inputHandler();
+	InputHandler_p pInput = Base::context()->inputHandler();
 	
 	pInput->mapKey(SDLK_LEFT, Key::Left);
 	pInput->mapKey(SDLK_RIGHT, Key::Right);
@@ -457,7 +457,7 @@ bool process_system_events()
 
 	// Process all the SDL events in a loop
 
-	InputHandler_p pInput = Base::inputHandler();
+	InputHandler_p pInput = Base::context()->inputHandler();
 
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
@@ -587,14 +587,14 @@ bool process_system_events()
 				case SDL_WINDOWEVENT_FOCUS_GAINED:
 				{
 					g_pFocusedWindow = pWindow->SDLWindowPtr();
-					Base::inputHandler()->setFocusedWindow(pWindow->rootPanel());
+					Base::context()->inputHandler()->setFocusedWindow(pWindow->rootPanel());
 					break;
 				}
 
 				case SDL_WINDOWEVENT_FOCUS_LOST:
 				{
 					g_pFocusedWindow = nullptr;
-					Base::inputHandler()->setFocusedWindow(nullptr);
+					Base::context()->inputHandler()->setFocusedWindow(nullptr);
 					break;
 				}
 
@@ -705,7 +705,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 		if (!input.good())
 			return nullptr;
 
-		auto pReader = SurfaceReader::create({ .factory = Base::defaultSurfaceFactory() });
+		auto pReader = SurfaceReader::create({ .factory = Base::context()->defaultSurfaceFactory() });
 		Surface_p pSurface = pReader->readSurfaceFromStream(input, _bp);
 		input.close();
 		return pSurface;
@@ -745,7 +745,7 @@ Surface_p MyAppVisitor::loadSurface(const std::string& path, SurfaceFactory* pFa
 			px = PixelFormat::BGRX_8;
 		
 		if (!pFactory)
-			pFactory = Base::defaultSurfaceFactory();
+			pFactory = Base::context()->defaultSurfaceFactory();
 
 		bp.format = px;
 		bp.palette = pPalette;

@@ -153,7 +153,7 @@ namespace wg
 /*
 		if (_caretVisible(pText))
 		{
-			Caret* pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+			Caret* pCaret = m_pCaret ? m_pCaret : Base::context()->defaultCaret();
 
 			if (pCaret)
 			{

@@ -44,26 +44,13 @@
 
 namespace wg
 {
-	const TypeInfo	Base::TYPEINFO = { "Base", &GfxBase::TYPEINFO };
-
 	int				Base::s_guiInitCounter = 0;
-
-	MsgRouter_p		Base::s_pMsgRouter;
-	InputHandler_p	Base::s_pInputHandler;
-	TextLayout_p	Base::s_pDefaultTextLayout;
-	Caret_p			Base::s_pDefaultCaret;
-	NumberLayout_p	Base::s_pDefaultNumberLayout;
-//	TextStyle_p		Base::s_pDefaultStyle;
-	PackLayout_p	Base::s_pDefaultPackLayout;
-
+	GUIContext_p	Base::s_pContext;
 	String			Base::s_clipboardText;
+	HostBridge*		Base::s_pHostBridge = nullptr;
+	int64_t			Base::s_timestamp = 0;
 
-	HostBridge*					Base::s_pHostBridge = nullptr;
-
-	int64_t						Base::s_timestamp = 0;
 	std::vector<Receiver*>		Base::s_updateReceivers;
-
-
 
 
 	//____ init() __________________________________________________________________
@@ -86,25 +73,9 @@ namespace wg
 		TextStyleManager::init();
 		SkinSlotManager::init();
 
-		TextStyle::Blueprint textStyleBP;
-		textStyleBP.font = DummyFont::create();
-
-		TextStyle::s_pDefaultStyle = TextStyle::create( textStyleBP );
-
-		s_pDefaultCaret = Caret::create();
-
-		s_pDefaultTextLayout = BasicTextLayout::create({});
-
-		s_pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
-
-		s_pDefaultPackLayout = PackLayout::create( WGBP(PackLayout,
-														_.expandFactor = PackLayout::Factor::Weight,
-														_.shrinkFactor = PackLayout::Factor::Weight
-														));
-
-		s_pMsgRouter = MsgRouter::create();
-      	s_pInputHandler = InputHandler::create();
-
+		s_pContext = GUIContext::create();
+		GfxBase::s_pContext = s_pContext;
+		GearBase::s_pContext = s_pContext;
 		s_guiInitCounter = 1;
 		return true;
 	}
@@ -115,23 +86,16 @@ namespace wg
 	{
 		if( s_guiInitCounter <= 0 )
 		{
-			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to Base::exit() ignored, not initialized or already exited.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
+			throwError(ErrorLevel::SilentError, ErrorCode::IllegalCall, "Call to Base::exit() ignored, not initialized or already exited.", nullptr, nullptr, __func__, __FILE__, __LINE__);
 			return false;
 		}
 		
 		if( s_guiInitCounter > 1 )
 		{
-			s_guiInitCounter--;			// This belongs to GfxBase, but we do like this anyway.
+			s_guiInitCounter--;
 			return true;
 		}
 	
-		s_pMsgRouter = nullptr;
-		s_pInputHandler = nullptr;
-		s_pDefaultTextLayout = nullptr;
-		s_pDefaultCaret = nullptr;
-		s_pDefaultNumberLayout = nullptr;
-		TextStyle::s_pDefaultStyle = nullptr;
-
 		s_clipboardText.clear();
 
 		s_pHostBridge = nullptr;
@@ -143,92 +107,21 @@ namespace wg
 		TextStyleManager::exit();
 
 		s_guiInitCounter = 0;
+		s_pContext = nullptr;
+
 		return GfxBase::exit();
 	}
 
+	//____ setContext() __________________________________________________________
 
-	//____ msgRouter() _________________________________________________________
-
-	MsgRouter_p	Base::msgRouter()
+	bool Base::setContext( GUIContext * pContext )
 	{
-		return s_pMsgRouter;
-	}
-
-	//____ inputHandler() ______________________________________________________
-
-	InputHandler_p Base::inputHandler()
-	{
-		return s_pInputHandler;
-	}
-
-	//____ defaultCaret() ______________________________________________________
-
-	Caret_p Base::defaultCaret()
-	{
-		return s_pDefaultCaret;
-	}
-
-	//____ setDefaultCaret() ___________________________________________________
-
-	void Base::setDefaultCaret( Caret * pCaret )
-	{
-		s_pDefaultCaret = pCaret;
-	}
-
-	//_____ defaultTextLayout() ________________________________________________
-
-	TextLayout_p Base::defaultTextLayout()
-	{
-		return s_pDefaultTextLayout;
-	}
-
-	//____ setDefaultTextLayout() ___________________________________________________
-
-	void Base::setDefaultTextLayout( TextLayout * pTextLayout )
-	{
-		s_pDefaultTextLayout = pTextLayout;
-	}
-
-	//____ defaultNumberLayout() _____________________________________________
-
-	NumberLayout_p Base::defaultNumberLayout()
-	{
-		return s_pDefaultNumberLayout;
-	}
-
-	//____ setDefaultNumberLayout() _______________________________________________________
-
-	void Base::setDefaultNumberLayout(NumberLayout * pFormatter)
-	{
-		s_pDefaultNumberLayout = pFormatter;
-	}
-
-	//_____ defaultPackLayout() ________________________________________________
-
-	PackLayout_p Base::defaultPackLayout()
-	{
-		return s_pDefaultPackLayout;
-	}
-
-	//____ setDefaultPackLayout() ___________________________________________________
-
-	void Base::setDefaultPackLayout( PackLayout * pTextLayout )
-	{
-		s_pDefaultPackLayout = pTextLayout;
-	}
-
-	//____ defaultStyle() ______________________________________________________
-
-	TextStyle_p Base::defaultStyle()
-	{
-		return TextStyle::s_pDefaultStyle;
-	}
-
-	//____ setDefaultStyle() _______________________________________________________
-
-	void Base::setDefaultStyle( TextStyle * pStyle )
-	{
-		TextStyle::s_pDefaultStyle = pStyle;
+		s_pContext = pContext;
+		GfxBase::s_pContext = pContext;
+		GearBase::s_pContext = pContext;
+		
+		TextStyle::s_pDefaultStyle = s_pContext->defaultStyle();
+		return true;
 	}
 
 	//____ setClipboardText() ____________________________________________________
@@ -269,7 +162,7 @@ namespace wg
 
 		// Update wondergui systems
 
-        s_pInputHandler->_update(timestamp/1000);
+		s_pContext->inputHandler()->_update(timestamp/1000);
         SkinSlotManager::update(microPassed/1000);
 
 		// Update widgets

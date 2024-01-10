@@ -1111,7 +1111,7 @@ namespace wg
 			_beginDrawCommand(Command::Plot);
 		}
 
-		float* pConv = GfxBase::defaultToSRGB() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+		float* pConv = GfxBase::context()->defaultToSRGB() ? m_sRGBtoLinearTable : m_linearToLinearTable;
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
@@ -2401,7 +2401,7 @@ namespace wg
         }
 		else
 		{
-			if( GfxBase::defaultToSRGB() )
+			if( GfxBase::context()->defaultToSRGB() )
 				glEnable(GL_FRAMEBUFFER_SRGB);
 			else
 				glDisable(GL_FRAMEBUFFER_SRGB);

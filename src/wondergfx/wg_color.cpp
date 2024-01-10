@@ -268,7 +268,7 @@ namespace wg
 
 	HiColor::HiColor(Color8 lowColor)
 	{
-		const int16_t* pUnpackTab = GfxBase::defaultToSRGB() ? unpackSRGBTab : unpackLinearTab;
+		const int16_t* pUnpackTab = GfxBase::context()->defaultToSRGB() ? unpackSRGBTab : unpackLinearTab;
 
 		r = pUnpackTab[lowColor.r];
 		g = pUnpackTab[lowColor.g];
@@ -352,7 +352,7 @@ namespace wg
 
 	HiColor::operator Color8() const
 	{
-		const uint8_t* pPackTab = GfxBase::defaultToSRGB() ? packSRGBTab : packLinearTab;
+		const uint8_t* pPackTab = GfxBase::context()->defaultToSRGB() ? packSRGBTab : packLinearTab;
 		return Color8(pPackTab[r], pPackTab[g], pPackTab[b], packLinearTab[a]);
 	}
 

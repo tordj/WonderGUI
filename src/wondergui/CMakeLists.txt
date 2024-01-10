@@ -3,6 +3,8 @@
 set( SOURCES
 	base/wg_animframes.cpp
 	base/wg_animframes.h
+	base/wg_base.cpp
+	base/wg_base.h
 	base/wg_caret.cpp
 	base/wg_caret.h
 	base/wg_char.h
@@ -15,8 +17,8 @@ set( SOURCES
 	base/wg_dynamicvector.h
 	base/wg_enumextras.cpp
 	base/wg_enumextras.h
-	base/wg_base.cpp
-	base/wg_base.h
+	base/wg_guicontext.cpp
+	base/wg_guicontext.h
 	base/wg_hostbridge.h
 	base/wg_inputhandler.cpp
 	base/wg_inputhandler.h

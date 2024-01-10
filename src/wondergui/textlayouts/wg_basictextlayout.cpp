@@ -322,7 +322,7 @@ namespace wg
 	{
 		if( _caretVisible(m_pFocusedText) )
 		{				
-			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+			Caret * pCaret = m_pCaret ? m_pCaret : Base::context()->defaultCaret();
 			if( pCaret )
 			{
 				int ms = microPassed / 1000;
@@ -506,7 +506,7 @@ namespace wg
 
 		if( _caretVisible(pText) )
 		{			
-			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+			Caret * pCaret = m_pCaret ? m_pCaret : Base::context()->defaultCaret();
 
 			if( pCaret )
 			{
@@ -622,7 +622,7 @@ namespace wg
 
 	void BasicTextLayout::caretMove( TextItem * pText, int newOfs, int oldOfs )
 	{
-		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::context()->defaultCaret();
 		if( _caretVisible(pText) && pCaret )
 		{
 			bool bDirty = pCaret->restartCycle();
@@ -846,7 +846,7 @@ namespace wg
 
 	RectSPX BasicTextLayout::rectForCaret( const TextItem * pText ) const
 	{
-		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::context()->defaultCaret();
 		if( !_caretVisible(pText) || !pCaret )
 			return RectSPX();
 
@@ -1088,7 +1088,7 @@ namespace wg
 
 				spaceAdv = pFont->whitespaceAdvance();
 
-				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+				Caret * pCaret = m_pCaret ? m_pCaret : Base::context()->defaultCaret();
 				if (pCaret)
 				{
 					SizeSPX eolCellSize(1, pFont->maxAscend() + pFont->maxDescend());
@@ -1173,7 +1173,7 @@ namespace wg
 
 	spx BasicTextLayout::_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const
 	{
-		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::context()->defaultCaret();
 
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr(state, &baseAttr, scale);
@@ -1418,7 +1418,7 @@ namespace wg
 
 	SizeSPX BasicTextLayout::_updateWrapLineInfo( LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth )
 	{
-		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::context()->defaultCaret();
 		const Char * pTextStart = pChars;
 
 		TextAttr		baseAttr;
@@ -1647,7 +1647,7 @@ namespace wg
 	SizeSPX BasicTextLayout::_updateFixedLineInfo( LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle,
 												int scale, State state )
 	{
-		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::context()->defaultCaret();
 		const Char * pTextStart = pChars;
 
 		SizeSPX			size;
@@ -1799,7 +1799,7 @@ namespace wg
 SizeSPX BasicTextLayout::_calcDefaultSize( const Char * pChars, const TextStyle * pBaseStyle,
 											int scale, State state ) const
 {
-	Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+	Caret * pCaret = m_pCaret ? m_pCaret : Base::context()->defaultCaret();
 	const Char * pTextStart = pChars;
 
 	SizeSPX			size;

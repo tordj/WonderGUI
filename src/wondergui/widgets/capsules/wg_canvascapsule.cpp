@@ -204,7 +204,7 @@ namespace wg
 
 		if (!m_pCanvas)
 		{
-			SurfaceFactory* pFactory = m_pFactory ? m_pFactory : Base::defaultSurfaceFactory();
+			SurfaceFactory* pFactory = m_pFactory ? m_pFactory : Base::context()->defaultSurfaceFactory();
 			if (!pFactory)
 			{
 				//TODO: Error handling!

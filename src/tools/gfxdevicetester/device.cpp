@@ -63,7 +63,7 @@ Device::Device( const string& name, GfxDevice * pDevice, CanvasRef canvasRef, Su
 	SizeI canvasSize = pSurface ? pSurface->pixelSize() : pDevice->canvas(CanvasRef::Default).size/64;
 	
 	
-	m_pDisplaySurface = Base::defaultSurfaceFactory()->createSurface(WGBP(Surface, _.size = canvasSize ));
+	m_pDisplaySurface = Base::context()->defaultSurfaceFactory()->createSurface(WGBP(Surface, _.size = canvasSize ));
 	
 	
 	m_pDisplay = SurfaceDisplay::create( WGBP(SurfaceDisplay,

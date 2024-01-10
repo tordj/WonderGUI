@@ -490,9 +490,9 @@ namespace wg
 						_setAPIPressed(m_hoveredKey, !m_keyInfo[m_hoveredKey].isSetToPressed);
 					
 						if(m_keyInfo[m_hoveredKey].isSetToPressed)
-							Base::msgRouter()->post(new PianoKeyPressMsg(this, m_hoveredKey, static_cast<InputMsg*>(pMsg)->timestamp()));
+							Base::context()->msgRouter()->post(new PianoKeyPressMsg(this, m_hoveredKey, static_cast<InputMsg*>(pMsg)->timestamp()));
 						else
-							Base::msgRouter()->post(new PianoKeyReleaseMsg(this, m_hoveredKey, static_cast<InputMsg*>(pMsg)->timestamp()));
+							Base::context()->msgRouter()->post(new PianoKeyReleaseMsg(this, m_hoveredKey, static_cast<InputMsg*>(pMsg)->timestamp()));
 					}
 					else
 					{
@@ -533,7 +533,7 @@ namespace wg
 			state.setHovered(false);
 
 			if (m_bIsHoveredPressed)
-				Base::msgRouter()->post(new PianoKeyReleaseMsg(this, m_hoveredKey, timestamp));
+				Base::context()->msgRouter()->post(new PianoKeyReleaseMsg(this, m_hoveredKey, timestamp));
 
 			if (m_stateOfsY[oldState] != m_stateOfsY[state])
 				_requestRenderKey(m_hoveredKey);
@@ -550,7 +550,7 @@ namespace wg
 			if (m_bIsHoveredPressed)
 			{
 				state.setPressed(true);
-				Base::msgRouter()->post(new PianoKeyPressMsg(this, m_hoveredKey, timestamp));
+				Base::context()->msgRouter()->post(new PianoKeyPressMsg(this, m_hoveredKey, timestamp));
 			}
 
 			if (m_stateOfsY[oldState] != m_stateOfsY[state])
@@ -577,14 +577,14 @@ namespace wg
 			key.state.setPressed(true);
 			_requestRenderKey(m_hoveredKey);
 
-			Base::msgRouter()->post(new PianoKeyPressMsg(this, m_hoveredKey, timestamp));
+			Base::context()->msgRouter()->post(new PianoKeyPressMsg(this, m_hoveredKey, timestamp));
 		}
 		else if( !key.isSetToPressed )
 		{
 			key.state.setPressed(false);
 			_requestRenderKey(m_hoveredKey);
 
-			Base::msgRouter()->post(new PianoKeyReleaseMsg(this, m_hoveredKey, timestamp));
+			Base::context()->msgRouter()->post(new PianoKeyReleaseMsg(this, m_hoveredKey, timestamp));
 		}
 	}
 

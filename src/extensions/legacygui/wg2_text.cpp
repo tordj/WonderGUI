@@ -2394,8 +2394,8 @@ wg::TextStyle_p WgText::_cloneBaseStyle() const
     if( m_pBaseStyle )
         return m_pBaseStyle->clone();
 
-    if( wg::GfxBase::defaultStyle() )
-        return wg::GfxBase::defaultStyle()->clone();
+    if( wg::GfxBase::context()->defaultStyle() )
+        return wg::GfxBase::context()->defaultStyle()->clone();
 
     return wg::TextStyle::create();
 }
@@ -2525,7 +2525,7 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 
 void WgText::GetBaseAttr( wg::TextAttr& attr ) const
 {
-	WgBase::defaultStyle()->exportAttr(m_state, &attr, m_scale >> 6);
+	WgBase::context()->defaultStyle()->exportAttr(m_state, &attr, m_scale >> 6);
 
 	WgMode mode = WgUtil::StateToMode(m_state);
 	if( m_pBgBlockColors )
@@ -2556,7 +2556,7 @@ bool WgText::GetCharAttr( wg::TextAttr& attr, int charOfs ) const
 			state.setSelected(true);
 	}
 
-	WgBase::defaultStyle()->exportAttr(state, &attr, m_scale >> 6);
+	WgBase::context()->defaultStyle()->exportAttr(state, &attr, m_scale >> 6);
 
 	WgMode mode = WgUtil::StateToMode(state);
 

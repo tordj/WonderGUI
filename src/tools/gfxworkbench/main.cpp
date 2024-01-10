@@ -443,15 +443,15 @@ void translateEvents()
 				break;
 
 			case SDL_MOUSEMOTION:
-//				Base::inputHandler()->setPointer( pRoot, Coord(MU::fromPX(e.motion.x), MU::fromPX(e.motion.y)));
+//				Base::context()->inputHandler()->setPointer( pRoot, Coord(MU::fromPX(e.motion.x), MU::fromPX(e.motion.y)));
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
-//				Base::inputHandler()->setButton( translateMouseButton(e.button.button), true );
+//				Base::context()->inputHandler()->setButton( translateMouseButton(e.button.button), true );
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-//				Base::inputHandler()->setButton( translateMouseButton(e.button.button), false );
+//				Base::context()->inputHandler()->setButton( translateMouseButton(e.button.button), false );
 				break;
 
 			default:
@@ -459,7 +459,7 @@ void translateEvents()
 		}
 	}
 
-	Base::msgRouter()->dispatch();
+	Base::context()->msgRouter()->dispatch();
 }
 
 //____ translateMouseButton() __________________________________________________

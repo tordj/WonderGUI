@@ -85,7 +85,7 @@ namespace wg
         s_nInstances++;
 
 		m_pFontFile = bp.blob;
-		m_pCache 	=  bp.cache ? BitmapCache_p(bp.cache) : GfxBase::defaultBitmapCache();
+		m_pCache 	=  bp.cache ? BitmapCache_p(bp.cache) : GfxBase::context()->defaultBitmapCache();
 		m_size 			= 0;
 
 //		_growCachedFontSizes(c_maxFontSize);

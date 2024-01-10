@@ -137,7 +137,7 @@ namespace wg
 		BlendMode			m_glowBlend = BlendMode::Add;
 
 		HiColor				m_canvasTint = HiColor::White;
-		BlendMode			m_canvasBlend = BlendMode::Blend;
+		BlendMode			m_canvasBlend = BlendMode::Ignore;
 
 		int					m_microSecAccumulator = 0;
 

@@ -414,7 +414,7 @@ void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, co
 
 	wg::TextStyle * pStyle = pText->getStyle();
 	if( !pStyle )
-		pStyle = WgBase::defaultStyle();
+		pStyle = WgBase::context()->defaultStyle();
 
     wg::Color selectionBgColor = pStyle->backColor(state + wg::StateEnum::Selected);
     

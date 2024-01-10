@@ -651,7 +651,7 @@ namespace wg
 					// PopupSelectMsg from opener (like a PopupOpener if availabe) or PopupOverlay itself.
 					// Normal SelectMsg from selected widget itself.
 					
-					MsgRouter* pRouter = Base::msgRouter().rawPtr();
+					MsgRouter* pRouter = Base::context()->msgRouter().rawPtr();
 
 					if (pRouter)
 					{
@@ -789,9 +789,9 @@ namespace wg
 		// Save old keyboard focus, which we assume belonged to previous menu in hierarchy.
 
 		if( popupSlots.size() < 2 )
-			m_pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
+			m_pKeyFocus = Base::context()->inputHandler()->focusedWidget().rawPtr();
 		else
-			popupSlots[1].m_pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
+			popupSlots[1].m_pKeyFocus = Base::context()->inputHandler()->focusedWidget().rawPtr();
 
 		// Steal keyboard focus to top menu
 
@@ -868,7 +868,7 @@ namespace wg
 
 	void PopupOverlay::_removeSlots(int ofs, int nb)
 	{
-		MsgRouter * pEH = Base::msgRouter().rawPtr();
+		MsgRouter * pEH = Base::context()->msgRouter().rawPtr();
 
 		Slot * pSlot = popupSlots._slot(ofs);
 

@@ -119,7 +119,7 @@ bool MyApp::_setupGUI(Visitor* pVisitor)
 
 void MyApp::_setupLegacyKeyMap()
 {
-	auto pInput = Base::inputHandler();
+	auto pInput = Base::context()->inputHandler();
 	for( auto key = Key::Left ; key < Key::Unmapped ; key = (Key) (int(key)+1) )
 	{
 		int native = pInput->nativeKeyCode(key);
@@ -147,7 +147,7 @@ WgWidget * MyApp::_buildLegacyGUI()
 	pPanel->AddChild(pDisplay);
 	
 	
-	auto pKnob = new WgKnob( Base::defaultSurfaceFactory() );
+	auto pKnob = new WgKnob( Base::context()->defaultSurfaceFactory() );
 	
 	pPanel->AddChild(pKnob);
 	
