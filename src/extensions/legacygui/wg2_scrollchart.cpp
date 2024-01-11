@@ -794,9 +794,9 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		if (m_bRefreshCanvas || m_scrollAmount >= sz.w)
 		{
             pDevice->beginCanvasUpdate(m_pCanvas);
-			pDevice->setBlendMode(BlendMode::Replace);
+			pDevice->setBlendMode(wg::BlendMode::Replace);
 			pDevice->fill(sz*64, m_chartColor);
-			pDevice->setBlendMode(BlendMode::Blend);
+			pDevice->setBlendMode(wg::BlendMode::Blend);
 			if( !m_bForegroundGrid )
 				_renderGridLines(pDevice, sz );
 			_renderWaveSegment(pDevice, sz, m_windowBegin, m_windowEnd, timestampInc);
@@ -833,9 +833,9 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				WgRect canvasClip = canvas * 64;
 
 				pDevice->beginCanvasUpdate(m_pCanvas, 1, &canvasClip);
-				pDevice->setBlendMode(BlendMode::Replace);
+				pDevice->setBlendMode(wg::BlendMode::Replace);
 				pDevice->fill(m_chartColor);
-				pDevice->setBlendMode(BlendMode::Blend);
+				pDevice->setBlendMode(wg::BlendMode::Blend);
 				if( !m_bForegroundGrid )
 					_renderGridLines(pDevice, sz);
 				_renderWaveSegment(pDevice, canvas, windowBegin, windowEnd, timestampInc);
@@ -851,9 +851,9 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				WgRect cliplist[2] = { canvas1*64, canvas2*64 };
 
 				pDevice->beginCanvasUpdate(m_pCanvas, 2, cliplist);
-				pDevice->setBlendMode(BlendMode::Replace);
+				pDevice->setBlendMode(wg::BlendMode::Replace);
 				pDevice->fill(m_chartColor);
-				pDevice->setBlendMode(BlendMode::Blend);
+				pDevice->setBlendMode(wg::BlendMode::Blend);
 
 				if( !m_bForegroundGrid )
 					_renderGridLines(pDevice, sz);
