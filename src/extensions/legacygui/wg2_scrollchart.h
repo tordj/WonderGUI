@@ -122,7 +122,6 @@ public:
 	bool	FeedSample(int waveId, float sample);
 	bool	FeedSample(int waveId, SamplePair sample);
 
-
 	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle, bool bLabelsOnRight = false);
 	void	SetValueGridLines(int nLines, GridLine * pLines);
 
@@ -134,7 +133,7 @@ public:
 
     void    SetPixelType(WgPixelType pixelType) { m_pixelType = pixelType; _regenCanvas(); }
 	void	SetGridToForeground( bool bForeground ) { m_bForegroundGrid = bForeground; }
-	
+
 protected:
 
 	enum WaveType

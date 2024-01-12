@@ -530,7 +530,7 @@ bool WgScrollChart::SetWaveColors( int waveId, WgColor topLineColor, WgColor bot
 	p->bottomLineColor = bottomLineColor;
 	p->frontFill = fillColor;
 	p->backFill = backColor;
-	
+
 	m_bRefreshCanvas = true;
 	return true;
 }
@@ -907,7 +907,6 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 	double  resampleStartTimestamp = startTimestamp - timestampInc*margin;
 	double  resampleEndTimestamp = endTimestamp + timestampInc*margin;
 
-
 	// Setup resample buffer
 
 	int nSamples = (_canvas.w+1) + margin*2;
@@ -945,8 +944,6 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 
 			_resampleWavePortion(waveSamplesOffset, waveSamples, pTopBuffer, pBottomBuffer, wave, resampleStartTimestamp, resampleEndTimestamp, timestampInc);
 
-
-
 			int floor = yOfs + (int)((wave.floorValue - graphFloor) * valueFactor * 64);
 
 			WgWaveLine topLine = { waveSamples, wave.topLineThickness*64, wave.topLineColor, pTopBuffer, 0 };
@@ -982,8 +979,6 @@ void WgScrollChart::_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop,
 
 	if (sampleTimestamp < wave.startTimestamp)
 		sampleTimestamp += wave.startTimestamp + sampleTimestamp;
-
-
 
 	// Forward pixels until we have correct prev and next iterators.
 
@@ -1182,7 +1177,28 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 		mul = scrollCanvas.h / (m_bottomValue - m_topValue);
 		startOfs = float(mul > 0 ? scrollCanvas.y : scrollCanvas.y + scrollCanvas.h);
 
-        int   xOfs = m_valueLabelStyle.bLabelAtEnd ? canvas.x + canvas.w : canvas.x;
+        int xOfs = m_valueLabelStyle.bLabelAtEnd ? canvas.x + canvas.w : canvas.x;
+
+        WgPen pen(pDevice, _canvas);
+        wg::TextAttr attr;
+
+        WgBase::defaultStyle()->exportAttr(WgStateEnum::Default, &attr, m_scale >> 6);
+
+        if(m_valueLabelStyle.pTextStyle)
+        {
+            m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Default, &attr, m_scale >> 6);
+        }
+
+        pen.SetScale(m_scale);
+        pen.SetAttributes(attr);
+
+        int width = -1;
+
+        // Find the max width of the labels.
+        for(const auto& line: m_valueGridLines)
+        {
+            width = std::max(width, static_cast<int>(WgUtil::lineWidth(nullptr, attr, wg::StateEnum::Default, line.label.chars(), m_scale)));
+        }
 
 		for (auto& line : m_valueGridLines)
 		{
@@ -1190,18 +1206,8 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 			if (!line.label.isEmpty())
 			{
-				WgPen	pen(pDevice, _canvas);
-				wg::TextAttr attr;
-
-				WgBase::defaultStyle()->exportAttr(WgStateEnum::Default, &attr, m_scale >> 6);
-				if( m_valueLabelStyle.pTextStyle )
-					m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Default, &attr, m_scale >> 6);
-
-                pen.SetScale(m_scale);
-				pen.SetAttributes(attr);
-
 				WgSize labelSize;
-				labelSize.w = WgUtil::lineWidth(nullptr, attr, wg::StateEnum::Default, line.label.chars(),m_scale);
+				labelSize.w = width;
 				labelSize.h = pen.GetLineHeight();
 
 				WgCoord textOfs;
@@ -1221,8 +1227,6 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 			}
 		}
 	}
-
-
 }
 
 //____ _onAlphaTest() _________________________________________________________
@@ -1320,7 +1324,7 @@ bool WgScrollChart::_updateDynamics()
 
 WgCoord	WgScrollChart::_placeLabel(WgCoord startPoint, WgOrigo alignment, WgCoord labelOffset, WgSize labelSize) const
 {
-	return startPoint + (labelOffset*m_scale/WG_SCALE_BASE) - WgCoord(labelSize.w, labelSize.h) + WgUtil::OrigoToOfs(alignment, labelSize);
+	return startPoint + (labelOffset*m_scale/WG_SCALE_BASE) - WgCoord(0, labelSize.h) + WgUtil::OrigoToOfs(alignment, labelSize);
 }
 
 //____ _getWave() _____________________________________________________________
