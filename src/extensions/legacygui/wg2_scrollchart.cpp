@@ -797,9 +797,15 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 			pDevice->setBlendMode(wg::BlendMode::Replace);
 			pDevice->fill(sz*64, m_chartColor);
 			pDevice->setBlendMode(wg::BlendMode::Blend);
+
 			if( !m_bForegroundGrid )
 				_renderGridLines(pDevice, sz );
+
 			_renderWaveSegment(pDevice, sz, m_windowBegin, m_windowEnd, timestampInc);
+
+            if( m_bForegroundGrid )
+				_renderGridLines(pDevice, sz);
+
 			pDevice->endCanvasUpdate();
 
 			if (m_windowEnd - m_windowBegin < m_sampleTTL)
