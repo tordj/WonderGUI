@@ -145,6 +145,8 @@ set( SOURCES
 	slots/wg_slot.h
 	slots/wg_slotextras.h
 	slots/wg_slotholder.h
+	slots/wg_dynamicslottable.h
+	slots/wg_dynamicslottable.impl.h
 	slots/wg_dynamicslotvector.h
 	slots/wg_dynamicslotvector.impl.h
 	slots/wg_slotarray.h
@@ -251,6 +253,8 @@ set( SOURCES
 	widgets/panels/wg_splitpanel.h
 	widgets/panels/wg_stackpanel.cpp
 	widgets/panels/wg_stackpanel.h
+	widgets/panels/wg_tablepanel.cpp
+	widgets/panels/wg_tablepanel.h
 	widgets/panels/wg_twoslotpanel.cpp
 	widgets/panels/wg_twoslotpanel.h
 

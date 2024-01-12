@@ -22,7 +22,6 @@
 
 #include <wg_tablepanel.h>
 #include <wg_dynamicslotvector.impl.h>
-#include <wg_panel.impl.h>
 
 
 namespace wg
@@ -30,9 +29,8 @@ namespace wg
 	using namespace Util;
 
 	template class DynamicSlotTable<TablePanelSlot>;
-	template class Panel<TablePanelSlot>;
 
-	const TypeInfo TablePanel::TYPEINFO = { "TablePanel", &Panel::TYPEINFO };
+	const TypeInfo TablePanel::TYPEINFO = { "TablePanel", &Container::TYPEINFO };
 	const TypeInfo TablePanelSlot::TYPEINFO = { "TablePanelSlot", &DynamicSlot::TYPEINFO };
 
 
@@ -125,7 +123,6 @@ namespace wg
 	{
 		if (scale == m_scale)
 		{
-			for( int row = 0 ; i < slots.nbRows)
 		}
 		else
 		{
