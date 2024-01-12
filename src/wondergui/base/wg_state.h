@@ -217,8 +217,8 @@ namespace wg
 			struct
 			{
 				uint8_t	m_isFocused : 1;
-				uint8_t	m_isHovered : 1;
 				uint8_t m_isPressed : 1;
+				uint8_t	m_isHovered : 1;
 				uint8_t m_isSelected : 1;
 				uint8_t m_isTargeted : 1;
 				uint8_t m_isDisabled : 1;
