@@ -109,9 +109,10 @@ public:
 	virtual void		SetSkin(wg::Skin * pSkin);
 	wg::Skin_p			Skin() const { return m_pSkin; }
 
-	virtual wg::String	GetTooltipString() const { return m_tooltip; }
-	wg::String			GetRealTooltipString() const { return m_tooltip; }
-	inline void			SetTooltipString( const wg::String& str ) { m_tooltip = str; }
+    wg::String          GetTooltipString() const { return m_bShowTooltipString ? m_tooltip : ""; }
+    void                SetTooltipString( const wg::String& str ) { m_tooltip = str; }
+    void                SetShowTooltipString(const bool bShowTooltipString) { m_bShowTooltipString = bShowTooltipString; }
+    bool                GetShowTooltipString() const { return m_bShowTooltipString; }
 
 	inline void			Refresh() { _onRefresh(); }
 	void				SetEnabled(bool bEnabled);
@@ -125,7 +126,7 @@ public:
 	void			SetTabLock( bool bLock ) { m_bTabLock = bLock; }
 	bool			IsTabLocked() const { return m_bTabLock; }
 
-	void			SetMarkOpacity( int opacity ) { m_markOpacity = opacity; }
+	virtual void	SetMarkOpacity( int opacity ) { m_markOpacity = opacity; }
 	int				GetMarkOpacity() const { return m_markOpacity; }
 	virtual bool	MarkTest( const WgCoord& ofs );
 
@@ -324,6 +325,8 @@ protected:
 	bool            m_bDropTarget;      // Set if this widget accepts to be the target of drag-n-drop operations.
     
     bool            m_bPointerLocked = false;
+
+    bool            m_bShowTooltipString = true;
 };
 
 typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;

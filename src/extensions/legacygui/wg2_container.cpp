@@ -202,6 +202,12 @@ bool WgContainer::_descendantPos(WgWidget * pDescendant, WgCoord& pos)
 		if( pHook == nullptr )
 			return false;
 
+		auto pPanelHook = dynamic_cast<WgPanelHook*>(pHook);
+        if(pPanelHook && !pPanelHook->IsVisible())
+        {
+            return false;
+        }
+
 		pos += pHook->PixelPos();
 		p = pHook->Parent();
 	}

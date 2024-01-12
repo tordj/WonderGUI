@@ -198,7 +198,7 @@ namespace wg
 
 		Placement		m_placement;
 		Caret_p			m_pCaret;
-		bool			m_bLineWrap;
+		bool			m_bLineWrap = false;
 		bool			m_bReceivingUpdates = false;
 
 		HiColor			m_selectionBackColor;
