@@ -196,8 +196,16 @@ bool WgScrollChart::Start(int sampleTTL)
 	if (sampleTTL < 100)
 		return false;
 
+    if(m_sampleTTL == sampleTTL)
+        return true;
+
+    bool restart = false;
+
 	if (m_bStarted)
+    {
+        restart = true;
 		Stop();
+    }
 
 	m_sampleTTL = sampleTTL;
 	m_bStarted = true;
@@ -205,11 +213,17 @@ bool WgScrollChart::Start(int sampleTTL)
 	m_sampleBeginTimestamp = 0;
 	m_sampleEndTimestamp = m_bScrollFromStart ? sampleTTL : 0;
 
-
 	// Add start samples so that we start to draw the waves.
-
 	for (auto& wave : m_waves)
-		wave.samples.push_front({ (int) m_sampleEndTimestamp,wave.startTopSample,wave.startBottomSample });
+    {
+        if(restart)
+        {
+            // We need at least two samples to get going.
+            wave.samples.push_back({ (int)(m_sampleEndTimestamp - m_sampleBeginTimestamp), wave.startTopSample, wave.startBottomSample });
+        }
+
+		wave.samples.push_front({ (int)m_sampleEndTimestamp, wave.startTopSample, wave.startBottomSample });
+    }
 
 	if (m_bDynamicValueRange && _updateDynamics() )
 	{
@@ -219,7 +233,6 @@ bool WgScrollChart::Start(int sampleTTL)
 		m_bRefreshCanvas = true;
 		_requestRender();
 	}
-
 
 	_startReceiveTicks();
 	return true;
