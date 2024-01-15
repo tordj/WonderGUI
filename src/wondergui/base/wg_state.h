@@ -81,7 +81,7 @@ namespace wg
 				m_isTargeted = 0;
 			}
 
-			m_isHovered = true;
+			m_isHovered = bHovered;
 			return true;
 		}
 
@@ -171,7 +171,7 @@ namespace wg
 			m_bitmask &= ~state.m_bitmask;
 			if (m_isHovered)
 			{
-				// If we remove hovered we can't keep a state dependant on it.
+				// If we remove hovered we can't keep a state dependent on it.
 				m_isPressed = 0;
 				m_isTargeted = 0;
 			}
