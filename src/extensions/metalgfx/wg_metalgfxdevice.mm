@@ -219,6 +219,32 @@ MetalGfxDevice::MetalGfxDevice()
             }
         }
         
+	// Create and init Blur pipelines
+
+	for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+	{
+//            if( blendMode != int(BlendMode::Ignore) && blendMode != int(BlendMode::Undefined) )
+		{
+		   
+				// [BlitFragShader][bGradient][BlendMode][DestFormat]
+			
+			m_blurPipelines[0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Blur BGRA_8_linear Pipeline", @"blitVertexShader", @"blurFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+			m_blurPipelines[0][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Blur BGRX_8_linear Pipeline", @"blitVertexShader", @"blurFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
+			m_blurPipelines[0][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"Blur BGRA_8_sRGB Pipeline", @"blitVertexShader", @"blurFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+			m_blurPipelines[0][blendMode][(int)DestFormat::BGRX8_sRGB]   = _compileRenderPipeline( @"Blur BGRX_8_sRGB Pipeline", @"blitVertexShader", @"blurFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
+//			m_blurPipelines[0][blendMode][(int)DestFormat::Alpha_8]      = _compileRenderPipeline( @"Blit A_8 Pipeline", @"blitVertexShader", @"blurFragmentShader_A8", (BlendMode) blendMode, PixelFormat::Alpha_8 );
+
+			m_blurPipelines[1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Blit BGRA_8_linear Gradient Pipeline", @"blitGradientVertexShader", @"blurFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+			m_blurPipelines[1][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Blit BGRX_8_linear Gradient Pipeline", @"blitGradientVertexShader", @"blurFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
+			m_blurPipelines[1][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"Blit BGRA_8_sRGB Gradient Pipeline", @"blitGradientVertexShader", @"blurFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+			m_blurPipelines[1][blendMode][(int)DestFormat::BGRX8_sRGB]   = _compileRenderPipeline( @"Blit BGRX_8_sRGB Gradient Pipeline", @"blitGradientVertexShader", @"blurFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
+//			m_blitPipelines[1][blendMode][(int)DestFormat::Alpha_8]      = _compileRenderPipeline( @"Blit A_8 Gradient Pipeline", @"blitGradientVertexShader", @"blitFragmentShader_A8", (BlendMode) blendMode, PixelFormat::Alpha_8 );
+
+		}
+	}
+
+	
+	
         // Create and init Segments pipelines
 
         
@@ -821,6 +847,25 @@ MetalGfxDevice::MetalGfxDevice()
 		m_commandOfs += 2;
 	}
 
+	//____ setBlurMatrices() _____________________________________________________
+
+	void MetalGfxDevice::setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9] )
+	{
+		GfxDevice::setBlurMatrices(radius, red, green, blue);
+		_endCommand();
+		_beginStateCommand(Command::SetBlurMatrices, 28);
+
+		m_pCommandBuffer[m_commandOfs++] = radius;
+
+		// Copy floats as they are
+		
+		memcpy( m_pCommandBuffer + m_commandOfs, red, sizeof(float)*9 );
+		m_commandOfs += 9;
+		memcpy( m_pCommandBuffer + m_commandOfs, green, sizeof(float)*9 );
+		m_commandOfs += 9;
+		memcpy( m_pCommandBuffer + m_commandOfs, blue, sizeof(float)*9 );
+		m_commandOfs += 9;
+	}
 
     //____ isCanvasReady() ___________________________________________________________
 
@@ -1525,7 +1570,13 @@ MetalGfxDevice::MetalGfxDevice()
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8 )
             _resizeBuffers();
 
-        if (m_cmd != Command::Blit)
+		
+		if( type == OpType::Blur && m_cmd != Command::Blur )
+		{
+			_endCommand();
+			_beginDrawCommandWithSource(Command::Blur);
+		}
+        else if (m_cmd != Command::Blit)
         {
             _endCommand();
             _beginDrawCommandWithSource(Command::Blit);
@@ -1604,7 +1655,12 @@ MetalGfxDevice::MetalGfxDevice()
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
             _resizeBuffers();
 
-        if (m_cmd != Command::Blit)
+		if( type == OpType::Blur && m_cmd != Command::Blur )
+		{
+			_endCommand();
+			_beginDrawCommandWithSource(Command::Blur);
+		}
+		else if (m_cmd != Command::Blit)
         {
             _endCommand();
             _beginDrawCommandWithSource(Command::Blit);
@@ -2271,6 +2327,15 @@ MetalGfxDevice::MetalGfxDevice()
 					pCmd+=2;
 					break;
 				}
+				
+				case Command::SetBlurMatrices:
+				{
+					spx radius = * pCmd++;
+					
+					_setBlurMatrices(renderEncoder, radius, (float *)(pCmd), (float *)(pCmd+9), (float *)(pCmd+18) );
+					pCmd+=27;
+					break;
+				}
 					
                 case Command::SetTintGradient:
                 {
@@ -2345,6 +2410,40 @@ MetalGfxDevice::MetalGfxDevice()
                     break;
                 }
     
+				case Command::Blur:
+				{
+					int nVertices = *pCmd++;
+					if (nVertices > 0 && m_pActiveBlitSource)
+					{
+						[renderEncoder setRenderPipelineState:m_blurPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
+						[renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
+						vertexOfs += nVertices;
+						
+						 auto size = m_pActiveBlitSource->pixelSize();
+
+						 float radiusX = m_blurRadius / float(size.w*64);
+						 float radiusY = m_blurRadius / float(size.h*64);
+						 
+						 m_blurUniform.offset[0] = { -radiusX * 0.7f, -radiusY * 0.7f };
+						 m_blurUniform.offset[1] = { 0, -radiusY };
+						 m_blurUniform.offset[2] = { radiusX * 0.7f, -radiusY * 0.7f };
+
+						 m_blurUniform.offset[3] = { -radiusX, 0 };
+						 m_blurUniform.offset[4] = { 0, 0 };
+						 m_blurUniform.offset[5] = { radiusX, 0 };
+
+						 m_blurUniform.offset[6] = { -radiusX * 0.7f, radiusY * 0.7f };
+						 m_blurUniform.offset[7] = { 0, radiusY };
+						 m_blurUniform.offset[8] = { radiusX * 0.7f, radiusY * 0.7f };
+
+						 [renderEncoder setFragmentBytes:&m_blurUniform length:sizeof(BlurUniform) atIndex: (unsigned) FragmentInputIndex::BlurUniform];
+						 
+						if( m_pActiveCanvas )
+							m_pActiveCanvas->m_bMipmapStale = m_pActiveCanvas->m_bMipmapped;
+					}
+					break;
+				}
+					
                 case Command::Fill:
                 {
                     int nVertices = *pCmd++;
@@ -2545,7 +2644,10 @@ MetalGfxDevice::MetalGfxDevice()
         
         [renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
         [renderEncoder setFragmentBuffer:m_segEdgeBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
-        
+
+		[renderEncoder setFragmentBytes:&m_blurUniform length:sizeof(BlurUniform) atIndex: (unsigned) FragmentInputIndex::BlurUniform];
+
+
         //
         
         m_pActiveCanvas = pCanvas;
@@ -2629,6 +2731,23 @@ MetalGfxDevice::MetalGfxDevice()
 		m_activeFixedBlendColor = color;
 	}
 
+	//____ _setBlurMatrices() __________________________________________________
+
+	void MetalGfxDevice::_setBlurMatrices( id<MTLRenderCommandEncoder> renderEncoder, spx radius, const float red[9], const float green[9], const float blue[9] )
+	{
+		m_activeBlurRadius = radius;
+				
+		m_blurUniform.colorMtx[0] = { red[0], green[0], blue[0], 0.f };
+		m_blurUniform.colorMtx[1] = { red[1], green[1], blue[1], 0.f };
+		m_blurUniform.colorMtx[2] = { red[2], green[2], blue[2], 0.f };
+		m_blurUniform.colorMtx[3] = { red[3], green[3], blue[3], 0.f };
+		m_blurUniform.colorMtx[4] = { red[4], green[4], blue[4], 1.f };
+		m_blurUniform.colorMtx[5] = { red[5], green[5], blue[5], 0.f };
+		m_blurUniform.colorMtx[6] = { red[6], green[6], blue[6], 0.f };
+		m_blurUniform.colorMtx[7] = { red[7], green[7], blue[7], 0.f };
+		m_blurUniform.colorMtx[8] = { red[8], green[8], blue[8], 0.f };
+		
+	}
 
     //____ _setBlitSource() _______________________________________________________
 

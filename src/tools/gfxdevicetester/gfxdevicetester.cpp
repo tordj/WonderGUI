@@ -14,6 +14,7 @@
 #include "testsuites/blitblendtests.h"
 #include "testsuites/blitconsistencytest.h"
 #include "testsuites/blittests.h"
+#include "testsuites/blurtests.h"
 #include "testsuites/canvasformattests.h"
 #include "testsuites/canvaslayertests.h"
 #include "testsuites/filltests.h"
@@ -507,6 +508,7 @@ void GfxDeviceTester::setup_tests()
 {
 	destroy_tests();
 
+	add_testsuite([](){ return new BlurTests();});
 	add_testsuite([](){ return new BlitConsistencyTests();});
 	add_testsuite([](){ return new FillTests();});
 	add_testsuite([](){ return new BlendTests();});

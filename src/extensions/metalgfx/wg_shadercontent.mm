@@ -34,6 +34,15 @@ typedef struct             // Uniform buffer object for canvas information.
 } Uniform;
 
 
+//____ BlurUniform ______________________________________________
+
+typedef struct             // Uniform buffer object for fragment shader blur information.
+{                               // DO NOT CHANGE ORDER OF MEMBERS!!!
+    vector_float4     colorMtx[9];
+    vector_float2     offset[9];
+} BlurUniform;
+
+
 //____ PlotFragInput ______________________________________________
 
 typedef struct 
@@ -668,6 +677,29 @@ fragment float4 paletteBlitInterpolateFragmentShader_A8(PaletteBlitInterpolateFr
    float colorSample = (out0 * (1-fract(in.uvFrac.y)) + out1 * fract(in.uvFrac.y));
 
    return { colorSample * in.color.a, 0.0, 0.0, 0.0 };
+};
+
+//____ blurFragmentShader() ____________________________________________
+
+fragment float4 blurFragmentShader(BlitFragInput in [[stage_in]],
+                                    texture2d<float> colorTexture [[ texture(0) ]],
+                                    sampler textureSampler [[ sampler(0) ]],
+                                    constant BlurUniform  *pBlurInfo [[buffer(1)]])
+{
+
+   float4 color = colorTexture.sample(textureSampler, in.texUV + pBlurInfo->offset[0] ) * pBlurInfo->colorMtx[0];
+   color += colorTexture.sample(textureSampler, in.texUV + pBlurInfo->offset[1] ) * pBlurInfo->colorMtx[1];
+   color += colorTexture.sample(textureSampler, in.texUV + pBlurInfo->offset[2] ) * pBlurInfo->colorMtx[2];
+
+   color += colorTexture.sample(textureSampler, in.texUV + pBlurInfo->offset[3] ) * pBlurInfo->colorMtx[3];
+   color += colorTexture.sample(textureSampler, in.texUV + pBlurInfo->offset[4] ) * pBlurInfo->colorMtx[4];
+   color += colorTexture.sample(textureSampler, in.texUV + pBlurInfo->offset[5] ) * pBlurInfo->colorMtx[5];
+
+   color += colorTexture.sample(textureSampler, in.texUV + pBlurInfo->offset[6] ) * pBlurInfo->colorMtx[6];
+   color += colorTexture.sample(textureSampler, in.texUV + pBlurInfo->offset[7] ) * pBlurInfo->colorMtx[7];
+   color += colorTexture.sample(textureSampler, in.texUV + pBlurInfo->offset[8] ) * pBlurInfo->colorMtx[8];
+
+    return color * in.color;
 };
 
 //____ segmentsVertexShader() _______________________________________________
