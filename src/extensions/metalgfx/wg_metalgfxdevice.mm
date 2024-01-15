@@ -2722,6 +2722,16 @@ MetalGfxDevice::MetalGfxDevice()
     void MetalGfxDevice::_setMorphFactor( id<MTLRenderCommandEncoder> renderEncoder, float morphFactor)
     {
         m_activeMorphFactor = morphFactor;
+
+        if( mode == BlendMode::Morph )
+        {
+            if( m_morphFactorInUse != m_activeMorphFactor )
+            {
+                [renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:m_activeMorphFactor];
+
+                m_morphFactorInUse = m_activeMorphFactor;
+            }
+        }
     }
 
 	//____ _setFixedBlendColor() __________________________________________________
@@ -2729,6 +2739,19 @@ MetalGfxDevice::MetalGfxDevice()
 	void MetalGfxDevice::_setFixedBlendColor( id<MTLRenderCommandEncoder> renderEncoder, HiColor color)
 	{
 		m_activeFixedBlendColor = color;
+
+        if( mode == BlendMode::BlendFixedColor )
+        {
+            if( m_fixedBlendColorInUse != m_activeFixedBlendColor )
+            {
+                [renderEncoder setBlendColorRed:(m_activeFixedBlendColor.r/4096.f)
+                                          green:(m_activeFixedBlendColor.g/4096.f)
+                                           blue:(m_activeFixedBlendColor.b/4096.f)
+                                          alpha:(m_activeFixedBlendColor.a/4096.f)];
+
+                m_fixedBlendColorInUse = m_activeFixedBlendColor;
+            }
+        }
 	}
 
 	//____ _setBlurMatrices() __________________________________________________
