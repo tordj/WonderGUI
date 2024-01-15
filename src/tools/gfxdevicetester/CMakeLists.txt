@@ -11,6 +11,7 @@ set( SOURCES
 	testunit.h
 	
 	testsuites/a8tests.h
+	testsuites/blurtests.h
 	testsuites/blendfixedcolortests.h
 	testsuites/blendtests.h
 	testsuites/blitblendtests.h

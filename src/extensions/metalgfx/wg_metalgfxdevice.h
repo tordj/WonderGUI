@@ -79,6 +79,7 @@ namespace wg
         bool    setBlitSource(Surface * pSource) override;
         void    setMorphFactor(float factor) override;
 		void	setFixedBlendColor( HiColor color ) override;
+		void	setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9] ) override;
 
         bool    isCanvasReady() const;
             
@@ -126,7 +127,8 @@ namespace wg
 
         enum class FragmentInputIndex
         {
-            ExtrasBuffer = 0
+            ExtrasBuffer = 0,
+			BlurUniform = 1
         };
 
         
@@ -167,12 +169,14 @@ namespace wg
             SetTintGradient,
             ClearTintGradient,
 			SetFixedBlendColor,
+			SetBlurMatrices,
             SetBlitSource,
             Fill,
             FillSubPixel,                // Includes start/direction lines.
             Plot,
             LineFromTo,
             Blit,
+			Blur,
             Segments,
 
         };
@@ -181,11 +185,12 @@ namespace wg
         void            _setBlendMode( id<MTLRenderCommandEncoder>, BlendMode mode);
         void            _setMorphFactor( id<MTLRenderCommandEncoder>, float morphFactor);
 		void            _setFixedBlendColor( id<MTLRenderCommandEncoder>, HiColor color);
+		void 			_setBlurMatrices( id<MTLRenderCommandEncoder> renderEncoder, spx radius, const float red[9], const float green[9], const float blue[9] );
         void            _setBlitSource( id<MTLRenderCommandEncoder>, MetalSurface * pSurf);
         void            _setTintColor( id<MTLRenderCommandEncoder>, HiColor color);
         void            _setTintGradient( id<MTLRenderCommandEncoder>, const RectI& rect, const Gradient& gradient);
         void            _clearTintGradient( id<MTLRenderCommandEncoder> renderEncoder );
-        
+
         inline void    _beginDrawCommand(Command cmd);
         inline void    _beginDrawCommandWithSource(Command cmd);
         inline void    _beginDrawCommandWithInt(Command cmd, int data);
@@ -250,6 +255,12 @@ namespace wg
             SizeI    textureSize;
         };
 
+		struct BlurUniform
+		{
+			simd_float4   	colorMtx[9];
+			simd_float2		offset[9];
+		};
+		
         struct Vertex
         {
             CoordI          coord;
@@ -260,6 +271,7 @@ namespace wg
         // Buffers
 
         Uniform         m_uniform;
+		BlurUniform		m_blurUniform;
 
         int             m_commandBufferSize = 4096;
         int *           m_pCommandBuffer = nullptr;         // Queue of commands to execute when flushing buffer
@@ -309,6 +321,7 @@ namespace wg
         BlendMode       m_activeBlendMode   = BlendMode::Blend;
         float           m_activeMorphFactor = 0.5f;
 		HiColor         m_activeFixedBlendColor = HiColor::White;
+		spx				m_activeBlurRadius = 64;
 
 		float           m_morphFactorInUse = -1;
 		HiColor         m_fixedBlendColorInUse = HiColor::Undefined;
@@ -334,6 +347,8 @@ namespace wg
         id<MTLRenderPipelineState>  m_fillAAPipelines[2][BlendMode_size][5];     // [bGradient][BlendMode][DestFormat]
         
         id<MTLRenderPipelineState>  m_blitPipelines[5][2][BlendMode_size][5];   // [BlitFragShader][bGradient][BlendMode][DestFormat]
+
+		id<MTLRenderPipelineState>  m_blurPipelines[2][BlendMode_size][5];   	// [bGradient][BlendMode][DestFormat]
 
         id<MTLRenderPipelineState>  m_segmentsPipelines[c_maxSegments][2][BlendMode_size][5];   // [nbEdges][bGradient][BlendMode][DestFormat]
         
