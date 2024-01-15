@@ -231,7 +231,7 @@ void WgTuner::SetPitchValue(float fPeak, float fHold)
     {
         m_ePitch = pitch::flat;
     }
-    else if(fPeak < 0.5 + m_fPitchtolerance )
+    else if(fPeak > 0.5 + m_fPitchtolerance )
     {
         m_ePitch = pitch::sharp;
     }
