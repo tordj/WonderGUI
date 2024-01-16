@@ -2723,7 +2723,7 @@ MetalGfxDevice::MetalGfxDevice()
     {
         m_activeMorphFactor = morphFactor;
 
-        if( mode == BlendMode::Morph )
+        if( m_activeBlendMode == BlendMode::Morph )
         {
             if( m_morphFactorInUse != m_activeMorphFactor )
             {
@@ -2740,7 +2740,7 @@ MetalGfxDevice::MetalGfxDevice()
 	{
 		m_activeFixedBlendColor = color;
 
-        if( mode == BlendMode::BlendFixedColor )
+        if( m_activeBlendMode == BlendMode::BlendFixedColor )
         {
             if( m_fixedBlendColorInUse != m_activeFixedBlendColor )
             {
