@@ -1431,17 +1431,19 @@ namespace wg
 
 			for (int i = startColumn; i <= length + startColumn; i++)
 			{
+				if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
+				{
+					swap(pTopBorderTrace, pBottomBorderTrace);
+					midEdgeFollows ^= 0x2;												// Swap between 1 and 3.
+				}
+
 				pEdges[0] = pTopBorderTrace[i * 2];
 				pEdges[1] = pTopBorderTrace[i * 2 + 1];
 
 				pEdges[3] = pBottomBorderTrace[i * 2];
 				pEdges[4] = pBottomBorderTrace[i * 2 + 1];
 
-				if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
-				{
-					swap(pTopBorderTrace, pBottomBorderTrace);
-					midEdgeFollows ^= 0x2;												// Swap between 1 and 3.
-				}
+
 
 				if (pEdges[3] < pEdges[1])
 				{
