@@ -83,7 +83,7 @@ bool fullStateSupportTest(WgRootPanel* pRoot);
 bool gfxStreamingTest(WgRootPanel* pRoot);
 bool blendFixedColorTest(WgRootPanel* pRoot);
 bool multiSliderClickThroughTest(WgRootPanel* pRoot);
-bool chartTest(WgRootPanel* pRoot);
+bool scrollChartTest(WgRootPanel* pRoot);
 bool flipCanvasTest(WgRootPanel* pRoot);
 bool mouseOverMovingObjectsTest(WgRootPanel* pRoot);
 
@@ -354,8 +354,9 @@ int main ( int argc, char** argv )
 //	blendFixedColorTest(pRoot);
 //	multiSliderClickThroughTest(pRoot);
 //	chartTest(pRoot);
+	scrollChartTest(pRoot);
 //	flipCanvasTest(pRoot);
-	mouseOverMovingObjectsTest(pRoot);
+//	mouseOverMovingObjectsTest(pRoot);
 
 /*
 	// Setup debug overlays
@@ -535,6 +536,23 @@ bool chartTest(WgRootPanel* pRoot)
 	pChart2->SetWaveSamples(waveId2, 0, 100, samples );
 
 	pBaseFlex->AddChild(pChart2, WgRect(20,240,500,200) );
+
+	return true;
+}
+
+//____ scrollChartTest() __________________________________________________
+
+bool scrollChartTest(WgRootPanel* pRoot)
+{
+	auto pBaseFlex = new WgFlexPanel();
+	pRoot->SetChild(pBaseFlex);
+
+	pBaseFlex->SetSkin(wg::ColorSkin::create(WgColor::Blue));
+
+	auto pChart = new WgScrollChart();
+	pChart->SetSkin(wg::ColorSkin::create(WgColor::DarkGreen));
+
+	pBaseFlex->AddChild(pChart, WgRect(20, 20, 500, 200));
 
 	return true;
 }

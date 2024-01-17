@@ -798,7 +798,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 			pDevice->fill(sz*64, m_chartColor);
 			pDevice->setBlendMode(wg::BlendMode::Blend);
 			if( !m_bForegroundGrid )
-				_renderGridLines(pDevice, sz );
+				_renderValueGridLines(pDevice, sz );
 			_renderWaveSegment(pDevice, sz, m_windowBegin, m_windowEnd, timestampInc);
 			pDevice->endCanvasUpdate();
 
@@ -837,7 +837,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				pDevice->fill(m_chartColor);
 				pDevice->setBlendMode(wg::BlendMode::Blend);
 				if( !m_bForegroundGrid )
-					_renderGridLines(pDevice, sz);
+					_renderValueGridLines(pDevice, sz);
 				_renderWaveSegment(pDevice, canvas, windowBegin, windowEnd, timestampInc);
 			}
 			else
@@ -856,7 +856,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				pDevice->setBlendMode(wg::BlendMode::Blend);
 
 				if( !m_bForegroundGrid )
-					_renderGridLines(pDevice, sz);
+					_renderValueGridLines(pDevice, sz);
 
 				double windowBegin = m_windowEnd - m_scrollAmount*timestampInc;
 				double windowEnd = m_windowEnd - width2*timestampInc;
@@ -868,7 +868,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 			}
 
 			if( m_bForegroundGrid )
-				_renderGridLines(pDevice, sz);
+				_renderValueGridLines(pDevice, sz);
             pDevice->endCanvasUpdate();
 
 			m_canvasOfs = (m_canvasOfs + m_scrollAmount) % sz.w;
@@ -1046,9 +1046,9 @@ void WgScrollChart::_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop,
 
 }
 
-//____ _renderGridLines() _____________________________________________________
+//____ _renderValueGridLines() _____________________________________________________
 
-void WgScrollChart::_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas)
+void WgScrollChart::_renderValueGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas)
 {
 	// Draw value grid lines
 
@@ -1072,6 +1072,13 @@ void WgScrollChart::_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _can
 			pDevice->drawLine( WgCoord( _canvas.x, yOfs )*64, WgDirection::Right, _canvas.w*64, line.color, line.thickness*64 * m_scale / WG_SCALE_BASE);
 		}
 	}
+}
+
+//____ _renderSampleGridLines() _____________________________________________________
+
+void WgScrollChart::_renderSampleGridLines(wg::GfxDevice* pDevice, const WgRect& _canvas)
+{
+
 }
 
 //____ _onRender() ____________________________________________________________
@@ -1141,7 +1148,10 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 	WgRect scrollCanvas = canvas - m_pixelPadding;
 
-	// Draw sample grid lines
+	// Draw background sample grid lines (note: opaque chart color will cover backround grid sample lines!)
+
+	if (!m_bForegroundGrid)
+		_renderSampleGridLines(pDevice, scrollCanvas);
 
 	// Draw value grid lines
 
@@ -1164,6 +1174,15 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 			pDevice->blit(WgCoord(scrollCanvas.x + firstPartLen, scrollCanvas.y)*64, WgRect( 0, 0, scrollCanvas.w - firstPartLen, scrollCanvas.h )*64 );
 		}
 	}
+	else if (m_chartColor.a != 0)
+	{
+		pDevice->fill(scrollCanvas*64, m_chartColor);
+	}
+
+	// Draw foreground sample grid lines
+
+	if (m_bForegroundGrid)
+		_renderSampleGridLines(pDevice, scrollCanvas);
 
 	// Draw value grid labels
 
