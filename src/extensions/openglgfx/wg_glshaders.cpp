@@ -204,7 +204,7 @@ const char GlGfxDevice::blitGradientVertexShader[] =
 "layout(location = 1) in vec2 texSize;					   "
 "layout(location = 2) in int extrasOfs;                    "
 "layout(location = 3) in int canvasInfoOfs;                "
-"layout(location = 4) in int tintInfoOfs;                "
+"layout(location = 4) in int tintInfoOfs;				"
 "out vec2 texUV;                                           "
 "out vec4 fragColor;                                       "
 "void main()                                               "
@@ -238,6 +238,36 @@ const char GlGfxDevice::blitGradientVertexShader[] =
 
 "   fragColor = texelFetch(extrasId, tintInfoOfs) * gradientTint;		   "
 "}                                                         ";
+
+
+const char GlGfxDevice::blurFragmentShader[] =
+
+"#version 330 core\n"
+
+"struct BlurInfo"
+"{"
+"	vec4   colorMtx[9];"
+"	vec2   offset[9];"
+"};"
+
+"uniform BlurInfo blurInfo;                     "
+"uniform sampler2D texId;						"
+"in vec2 texUV;									"
+"in vec4 fragColor;								"
+"out vec4 color;								"
+
+"void main()									"
+"{												"
+"	color = texture(texId, texUV + blurInfo.offset[0]) * blurInfo.colorMtx[0];"
+"	color += texture(texId, texUV + blurInfo.offset[1]) * blurInfo.colorMtx[1];"
+"	color += texture(texId, texUV + blurInfo.offset[2]) * blurInfo.colorMtx[2];"
+"	color += texture(texId, texUV + blurInfo.offset[3]) * blurInfo.colorMtx[3];"
+"   color += texture(texId, texUV + blurInfo.offset[4]) * blurInfo.colorMtx[4];  "
+"	color += texture(texId, texUV + blurInfo.offset[5]) * blurInfo.colorMtx[5];"
+"	color += texture(texId, texUV + blurInfo.offset[6]) * blurInfo.colorMtx[6];"
+"	color += texture(texId, texUV + blurInfo.offset[7]) * blurInfo.colorMtx[7];"
+"	color += texture(texId, texUV + blurInfo.offset[8]) * blurInfo.colorMtx[8];"
+"}												";
 
 
 const char GlGfxDevice::blitFragmentShader[] =

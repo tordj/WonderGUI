@@ -718,6 +718,27 @@ namespace wg
 		m_commandBuffer[m_commandOfs++] = (int)(factor*1024);
 	}
 
+	//____ setBlurMatrices() _____________________________________________________
+
+	void GlGfxDevice::setBlurMatrices(spx radius, const float red[9], const float green[9], const float blue[9])
+	{
+		GfxDevice::setBlurMatrices(radius, red, green, blue);
+		_endCommand();
+		_beginStateCommand(Command::SetBlurMatrices, 28);
+
+		m_commandBuffer[m_commandOfs++] = radius;
+
+		// Copy floats as they are
+
+		memcpy(m_commandBuffer + m_commandOfs, red, sizeof(float) * 9);
+		m_commandOfs += 9;
+		memcpy(m_commandBuffer + m_commandOfs, green, sizeof(float) * 9);
+		m_commandOfs += 9;
+		memcpy(m_commandBuffer + m_commandOfs, blue, sizeof(float) * 9);
+		m_commandOfs += 9;
+	}
+
+
 	//____ isCanvasReady() ___________________________________________________________
 
 	bool GlGfxDevice::isCanvasReady() const
@@ -1493,7 +1514,15 @@ namespace wg
 		{
 			_endCommand();
 			_executeBuffer();
-			_beginDrawCommandWithSource(Command::Blit);
+			if( type == OpType::Blur)
+				_beginDrawCommandWithSource(Command::Blur);
+			else
+				_beginDrawCommandWithSource(Command::Blit);
+		}
+		else if (type == OpType::Blur && m_cmd != Command::Blur)
+		{
+			_endCommand();
+			_beginDrawCommandWithSource(Command::Blur);
 		}
 		else if (m_cmd != Command::Blit)
 		{
@@ -1607,7 +1636,15 @@ namespace wg
 		{
 			_endCommand();
 			_executeBuffer();
-			_beginDrawCommandWithSource(Command::Blit);
+			if (type == OpType::Blur)
+				_beginDrawCommandWithSource(Command::Blur);
+			else
+				_beginDrawCommandWithSource(Command::Blit);
+		}
+		else if (type == OpType::Blur && m_cmd != Command::Blur)
+		{
+			_endCommand();
+			_beginDrawCommandWithSource(Command::Blur);
 		}
 		else if (m_cmd != Command::Blit)
 		{
@@ -2168,6 +2205,16 @@ namespace wg
 						_setMorphFactor((*pCmd++) / 1024.f);
 						break;
 					}
+
+					case Command::SetBlurMatrices:
+					{
+						spx radius = *pCmd++;
+
+						_setBlurMatrices(radius, (float*)(pCmd), (float*)(pCmd + 9), (float*)(pCmd + 18));
+						pCmd += 27;
+						break;
+					}
+
 					case Command::SetTintGradient:
 					{
 						m_bGradientActive = true;
@@ -2195,6 +2242,56 @@ namespace wg
 							glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 
 							if( m_bMipmappedActiveCanvas )
+								m_pActiveCanvas->m_bMipmapStale = true;
+						}
+						vertexOfs += nVertices;
+						break;
+					}
+					case Command::Blur:
+					{
+						int nVertices = *pCmd++;
+						if (nVertices > 0 && m_pActiveBlitSource)
+						{
+ 							auto size = m_pActiveBlitSource->pixelSize();
+
+							float radiusX = m_activeBlurRadius / float(size.w * 64);
+							float radiusY = m_activeBlurRadius / float(size.h * 64);
+
+							m_activeBlurInfo.offset[0][0] = -radiusX * 0.7f;
+							m_activeBlurInfo.offset[0][1] = -radiusY * 0.7f;
+					
+							m_activeBlurInfo.offset[1][0] = 0;
+							m_activeBlurInfo.offset[1][1] = -radiusY;
+
+							m_activeBlurInfo.offset[2][0] = radiusX * 0.7f;
+							m_activeBlurInfo.offset[2][1] = -radiusY * 0.7f;
+
+							m_activeBlurInfo.offset[3][0] = -radiusX;
+							m_activeBlurInfo.offset[3][1] = 0;
+
+							m_activeBlurInfo.offset[4][0] = 0;
+							m_activeBlurInfo.offset[4][1] = 0;
+
+							m_activeBlurInfo.offset[5][0] = radiusX;
+							m_activeBlurInfo.offset[5][1] = 0;
+
+							m_activeBlurInfo.offset[6][0] = -radiusX * 0.7f;
+							m_activeBlurInfo.offset[6][1] = radiusY * 0.7f;
+
+							m_activeBlurInfo.offset[7][0] = 0;
+							m_activeBlurInfo.offset[7][1] = radiusY;
+
+							m_activeBlurInfo.offset[8][0] = radiusX * 0.7f;
+							m_activeBlurInfo.offset[8][1] = radiusY * 0.7f;
+
+							glUseProgram(m_blurProg[m_bGradientActive]);
+
+							glUniform2fv(m_blurUniformLocation[m_bGradientActive][1], 9, (GLfloat*)m_activeBlurInfo.offset);
+							glUniform4fv(m_blurUniformLocation[m_bGradientActive][0], 9, (GLfloat*)m_activeBlurInfo.colorMtx);
+
+							glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+
+							if (m_bMipmappedActiveCanvas)
 								m_pActiveCanvas->m_bMipmapStale = true;
 						}
 						vertexOfs += nVertices;
@@ -2560,6 +2657,24 @@ namespace wg
 		glBlendColor(1.f, 1.f, 1.f, morphFactor);
 	}
 
+	//____ _setBlurMatrices() __________________________________________________
+
+	void GlGfxDevice::_setBlurMatrices(spx radius, const float red[9], const float green[9], const float blue[9])
+	{
+		m_activeBlurRadius = radius;
+
+		for (int i = 0; i < 9; i++)
+		{
+			m_activeBlurInfo.colorMtx[i][0] = red[i];
+			m_activeBlurInfo.colorMtx[i][1] = green[i];
+			m_activeBlurInfo.colorMtx[i][2] = blue[i];
+			m_activeBlurInfo.colorMtx[i][3] = 0.f;
+		}
+
+		m_activeBlurInfo.colorMtx[4][3] = 1.f;
+	}
+
+
 	//____ _setBlitSource() _______________________________________________________
 
 	void GlGfxDevice::_setBlitSource( GlSurface * pSurf )
@@ -2642,6 +2757,20 @@ namespace wg
 			GLuint progId = _loadOrCompileProgram(programNb++, aaFillGradientVertexShader, i == 0 ? aaFillFragmentShader : aaFillFragmentShader_A8);
 			_setDrawUniforms(progId, uboBindingPoint);
 			m_aaFillGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
+
+		// Create and init Blur shader
+
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _loadOrCompileProgram(programNb++, i == 0 ? blitVertexShader : blitGradientVertexShader, blurFragmentShader);
+			_setBlitUniforms(progId, uboBindingPoint);
+
+			m_blurUniformLocation[i][0] = glGetUniformLocation(progId, "blurInfo.colorMtx");
+			m_blurUniformLocation[i][1] = glGetUniformLocation(progId, "blurInfo.offset");
+
+			m_blurProg[i] = progId;
 			LOG_INIT_GLERROR(glGetError());
 		}
 
