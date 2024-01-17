@@ -90,8 +90,8 @@ namespace wg
 			if (m_isDisabled)
 				return false;
 
-			if (!bPressed)
-				m_isHovered = 0;
+			if (bPressed)
+				m_isHovered = 1;
 
 			m_isPressed = bPressed;
 			return true; 
@@ -141,14 +141,14 @@ namespace wg
 			State s;
 			if (state.m_isPressed)
 				state.m_isHovered = 0;				// Special case: Don't remove hovered just because we remove pressed.
-			s.m_bitmask &= ~state.m_bitmask;
-			if (s.m_isHovered)
+			s.m_bitmask = m_bitmask & ~state.m_bitmask;
+			if (!s.m_isHovered)
 			{
 				// If we remove hovered we can't keep a state dependant on it.
 				s.m_isPressed = 0;
 				s.m_isTargeted = 0;
 			}
-			return *this;
+			return s;
 		}
 
 		inline State& operator+=(State state)
@@ -169,7 +169,7 @@ namespace wg
 			if (state.m_isPressed)
 				state.m_isHovered = 0;				// Special case: Don't remove hovered just because we remove pressed.
 			m_bitmask &= ~state.m_bitmask;
-			if (m_isHovered)
+			if (!m_isHovered)
 			{
 				// If we remove hovered we can't keep a state dependent on it.
 				m_isPressed = 0;
