@@ -134,6 +134,10 @@ public:
     void    SetPixelType(WgPixelType pixelType) { m_pixelType = pixelType; _regenCanvas(); }
 	void	SetGridToForeground( bool bForeground ) { m_bForegroundGrid = bForeground; }
 
+	void	SetCombinedWavesBlend(WgBlendMode blendMode) { m_combinedWavesBlendMode = blendMode; _requestRender(); };
+	void	SetCombinedWavesTint(WgColor tintColor) { m_combinedWavesTintColor = tintColor; _requestRender(); };
+
+	
 protected:
 
 	enum WaveType
@@ -231,6 +235,9 @@ private:
 	WgMode			m_mode;
 	WgColor			m_chartColor;
 
+	WgColor			m_combinedWavesTintColor = WgColor::White;
+	WgBlendMode		m_combinedWavesBlendMode = WgBlendMode::Blend;
+	
 	WgBorders		m_pointPadding;			// Padding for the canvas in points. To allow thick lines to fully stay inside widget. Grid is allowed outside.
 	WgBorders		m_pixelPadding;			// Same, but in pixels.
 
