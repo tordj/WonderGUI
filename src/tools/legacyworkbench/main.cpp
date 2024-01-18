@@ -552,7 +552,43 @@ bool scrollChartTest(WgRootPanel* pRoot)
 	auto pChart = new WgScrollChart();
 	pChart->SetSkin(wg::ColorSkin::create(WgColor::DarkGreen));
 
+	pChart->SetValueRange(100, -100);
+	pChart->SetPixelType(WgPixelType::BGRA_8);
+	pChart->SetChartColor(WgColor::Transparent);
+	
+	pChart->SetGridToForeground(true);
+	
+	auto hWave = pChart->StartSimpleWave( 50, 0, 1, WgColor::Red, 1, WgColor::Red, WgColor::Green, WgColor::Green );
+
+		
+	WgScrollChart::GridLine	grid[3];
+	
+	grid[0].pos = 0.0f;
+	grid[0].thickness = 3;
+	grid[0].color = WgColor::Red;
+	grid[0].label = "0.0";
+	
+	grid[1].pos = 0.5f;
+	grid[1].thickness = 3;
+	grid[1].color = WgColor::Red;
+	grid[1].label = "0.5";
+
+	
+	grid[2].pos = 1.0f;
+	grid[2].thickness = 3;
+	grid[2].color = WgColor::Red;
+	grid[2].label = "1.0";
+	
 	pBaseFlex->AddChild(pChart, WgRect(20, 20, 500, 200));
+
+	m_pScrollChart = pChart;		// So we get updates.
+	m_hWave1 = hWave;
+
+	pChart->Start( 2000 );
+	
+	pChart->SetSampleGridLines(3, grid);
+	
+	pChart->SetSampleLabelStyle(WgOrigo::South, {0,0}, nullptr, nullptr);
 
 	return true;
 }
@@ -1556,7 +1592,7 @@ bool eventLoop( WgEventHandler * pHandler )
 		int ticks = SDL_GetTicks();
 		
 
-		m_pScrollChart->FeedSample(m_hWave1, sin(ticks / 100.0)*0.9 );
+		m_pScrollChart->FeedSample(m_hWave1, 10 /*sin(ticks / 100.0)*0.9*/ );
 	}
 	sdl_wglib::BeginEvents( pHandler );
 

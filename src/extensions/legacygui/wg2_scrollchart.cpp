@@ -635,6 +635,9 @@ void WgScrollChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 {
 	if (pEvent->Type() == WG_EVENT_TICK)
 	{
+		if( !m_pCanvas )
+			return;
+		
 		// Update timestamps
 
 		int ticks = static_cast<const WgEvent::Tick*>(pEvent)->Millisec();
@@ -1076,9 +1079,16 @@ void WgScrollChart::_renderValueGridLines(wg::GfxDevice * pDevice, const WgRect&
 
 //____ _renderSampleGridLines() _____________________________________________________
 
-void WgScrollChart::_renderSampleGridLines(wg::GfxDevice* pDevice, const WgRect& _canvas)
+void WgScrollChart::_renderSampleGridLines(wg::GfxDevice* pDevice, const WgRect& canvas)
 {
-
+	if (!m_sampleGridLines.empty())
+	{
+		for (auto& line : m_sampleGridLines)
+		{
+			int xOfs = canvas.x + (int) (line.pos * canvas.w);
+			pDevice->drawLine( WgCoord( xOfs, canvas.y )*64, WgDirection::Down, canvas.h*64, line.color, line.thickness*64 * m_scale / WG_SCALE_BASE);
+		}
+	}
 }
 
 //____ _onRender() ____________________________________________________________
@@ -1089,10 +1099,9 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 	if (m_pSkin)
 	{
+		canvas = _skinContentRect( m_pSkin, _canvas, WgStateEnum::Default, m_scale);
 		if (m_chartColor.a == 255)
 		{
-			canvas = _skinContentRect( m_pSkin, _canvas, WgStateEnum::Default, m_scale);
-
 			WgRect& coverage = canvas;
 
 			if ( !coverage.contains( pDevice->clipBounds()/64 ) )
@@ -1246,6 +1255,52 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 			}
 		}
 	}
+	
+	// Draw sample gridline labels
+	
+	if (!m_sampleGridLines.empty() )
+	{
+		int   yOfs2 = m_sampleLabelStyle.bLabelAtEnd ? canvas.y : canvas.y + canvas.h;
+
+		for (auto &line : m_sampleGridLines)
+		{
+			if (!line.label.isEmpty())
+			{
+				int xOfs = scrollCanvas.x + (int)(line.pos * scrollCanvas.w);
+
+				WgPen	pen(pDevice, _canvas);
+				wg::TextAttr attr;
+
+				WgBase::defaultStyle()->exportAttr(WgStateEnum::Default, &attr, m_scale >> 6);
+				if( m_sampleLabelStyle.pTextStyle )
+					m_sampleLabelStyle.pTextStyle->addToAttr(WgStateEnum::Default, &attr, m_scale >> 6);
+
+				pen.SetScale(m_scale);
+				pen.SetAttributes(attr);
+
+				WgSize labelSize;
+				labelSize.w = WgUtil::lineWidth(nullptr, attr, wg::StateEnum::Default, line.label.chars(),m_scale);
+				labelSize.h = pen.GetLineHeight();
+
+				WgCoord textOfs;
+				if (m_sampleLabelStyle.pSkin)
+				{
+					labelSize = _skinSizeForContent( m_sampleLabelStyle.pSkin, labelSize, m_scale);
+					textOfs = _skinContentRect( m_sampleLabelStyle.pSkin, labelSize, WgStateEnum::Default, m_scale ).pos();
+				}
+
+				WgCoord labelPos = _placeLabel({ xOfs, yOfs2 }, m_sampleLabelStyle.alignment, m_sampleLabelStyle.offset, labelSize);
+
+				if (m_sampleLabelStyle.pSkin)
+					_renderSkin( m_sampleLabelStyle.pSkin, pDevice, WgStateEnum::Default, { labelPos,labelSize }, m_scale);
+
+				pen.SetPos(labelPos + textOfs);
+				WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.chars());
+			}
+		}
+	}
+
+	
 }
 
 //____ _onAlphaTest() _________________________________________________________
@@ -1343,7 +1398,7 @@ bool WgScrollChart::_updateDynamics()
 
 WgCoord	WgScrollChart::_placeLabel(WgCoord startPoint, WgOrigo alignment, WgCoord labelOffset, WgSize labelSize) const
 {
-	return startPoint + (labelOffset*m_scale/WG_SCALE_BASE) - WgCoord(0, labelSize.h) + WgUtil::OrigoToOfs(alignment, labelSize);
+	return startPoint + (labelOffset*m_scale/WG_SCALE_BASE) - WgCoord(labelSize.w, labelSize.h) + WgUtil::OrigoToOfs(alignment, labelSize);
 }
 
 //____ _getWave() _____________________________________________________________
