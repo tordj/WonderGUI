@@ -84,6 +84,8 @@ namespace wg
 		bool	setBlendMode(BlendMode blendMode) override;
 		bool	setBlitSource(Surface * pSource) override;
 		void	setMorphFactor(float factor) override;
+		void	setBlurMatrices(spx radius, const float red[9], const float green[9], const float blue[9]) override;
+
 
 		bool    isCanvasReady() const;
 
@@ -130,12 +132,14 @@ namespace wg
 					SetTintColor,
 					SetTintGradient,
 					ClearTintGradient,
+					SetBlurMatrices,
 					SetBlitSource,
 					Fill,
 					FillSubPixel,				// Includes start/direction lines.
 					Plot,
 					LineFromTo,
 					Blit,
+					Blur,
 					Segments,
 
 				};
@@ -143,6 +147,8 @@ namespace wg
 				void	_setCanvas( GlSurface * pCanvas, int width, int height );
 				void	_setBlendMode(BlendMode mode);
 				void	_setMorphFactor(float morphFactor);
+				void	_setBlurMatrices(spx radius, const float red[9], const float green[9], const float blue[9]);
+
 				void	_setBlitSource(GlSurface * pSurf);
 
 				inline void	_beginDrawCommand(Command cmd);
@@ -225,6 +231,7 @@ namespace wg
 		GLuint  m_aaFillProg[2];								// [RGB/A_8 dest]
 		GLuint  m_aaFillGradientProg[2];						// [RGB/A_8 dest]
 
+		GLuint  m_blurProg[2];									// [tintgradient]
 		GLuint  m_blitProg[2];									// [RGB/A_8 dest]
 		GLuint  m_blitGradientProg[2];							// [RGB/A_8 dest]
 
@@ -262,7 +269,6 @@ namespace wg
 			int					nbPrograms;
 			ProgramBlobEntry	programs[c_nbPrograms];
 		};
-
 
 		//
 
@@ -312,6 +318,18 @@ namespace wg
 		ShaderCanvasInfo	m_canvasInfo;
 		GradientTintInfo	m_tintInfo;
 		
+		//
+
+		struct BlurUniform
+		{
+			float   colorMtx[9][4];
+			float   offset[9][2];
+		};
+
+		spx			m_activeBlurRadius;
+		BlurUniform	m_activeBlurInfo;
+		GLint		m_blurUniformLocation[2][2];
+
 
 		// Buffers
 
@@ -385,6 +403,7 @@ namespace wg
 		static const char blitVertexShader[];
 		static const char blitFragmentShader[];
 		static const char blitFragmentShader_A8[];
+		static const char blurFragmentShader[];
 		static const char plotVertexShader[];
 		static const char plotFragmentShader[];
 		static const char plotFragmentShader_A8[];

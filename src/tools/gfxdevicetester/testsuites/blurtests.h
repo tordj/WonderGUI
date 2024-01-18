@@ -16,9 +16,9 @@ public:
 //		if (!m_pImg)
 //			return false;
 
-		m_pCanvasSurface = pDevice->surfaceFactory()->createSurface( { .size = canvas.size()/64, .canvas = true } );
-		m_pBlurSurface[0] = pDevice->surfaceFactory()->createSurface( { .size = canvas.size()/64, .canvas = true, .format = PixelFormat::BGRX_8 } );
-		m_pBlurSurface[1] = pDevice->surfaceFactory()->createSurface( { .size = canvas.size()/64, .canvas = true, .format = PixelFormat::BGRX_8 } );
+		m_pCanvasSurface = pDevice->surfaceFactory()->createSurface( { .canvas = true, .size = canvas.size()/64  } );
+		m_pBlurSurface[0] = pDevice->surfaceFactory()->createSurface( { .canvas = true, .format = PixelFormat::BGRX_8, .size = canvas.size() / 64 } );
+		m_pBlurSurface[1] = pDevice->surfaceFactory()->createSurface( { .canvas = true, .format = PixelFormat::BGRX_8, .size = canvas.size() / 64 } );
 
 		return true;
 	}
@@ -78,6 +78,7 @@ public:
 
 			pDevice->beginCanvasUpdate(m_pBlurSurface[1]);
 			pDevice->setBlitSource(m_pBlurSurface[0]);
+
 			pDevice->blur({0,0});
 			pDevice->endCanvasUpdate();
 

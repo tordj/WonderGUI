@@ -215,7 +215,8 @@ protected:
 	void	_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _canvas, double startTimeStamp, double endTimeStamp, float timestampInc );
 
 	void		_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop, int * pOutBottom, const WgScrollChart::Wave& wave, double startTimeStamp, double endTimeStamp, float timestampInc);
-	void		_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas);
+	void		_renderValueGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas);
+	void		_renderSampleGridLines(wg::GfxDevice* pDevice, const WgRect& _canvas);
 
 	float			_thickestLine() const;
 
