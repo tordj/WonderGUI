@@ -30,6 +30,8 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 #include <wg2_util.h>
 #include <wg2_eventhandler.h>
 
+#include <wg_gradient.h>
+
 #include <algorithm>
 #include <limits>
 
@@ -1182,6 +1184,9 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 		auto oldTintColor = pDevice->tintColor();
 		auto oldBlendMode = pDevice->blendMode();
+
+		if( m_combinedWavesTintGradient.isValid() )
+			pDevice->setTintGradient(scrollCanvas*64, m_combinedWavesTintGradient );
 		
 		pDevice->setBlitSource(m_pCanvas);
 		pDevice->setTintColor(m_combinedWavesTintColor);
@@ -1199,6 +1204,9 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 		pDevice->setTintColor(oldTintColor);
 		pDevice->setBlendMode(oldBlendMode);
+		
+		if( m_combinedWavesTintGradient.isValid() )
+			pDevice->clearTintGradient();
 	}
 	else if (m_chartColor.a != 0)
 	{

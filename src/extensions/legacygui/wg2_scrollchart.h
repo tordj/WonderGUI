@@ -40,6 +40,7 @@
 #include <deque>
 
 #include <wg_surfacefactory.h>
+#include <wg_gradient.h>
 
 //____ WgScrollChart ____________________________________________________________
 
@@ -136,6 +137,7 @@ public:
 
 	void	SetCombinedWavesBlend(WgBlendMode blendMode) { m_combinedWavesBlendMode = blendMode; _requestRender(); };
 	void	SetCombinedWavesTint(WgColor tintColor) { m_combinedWavesTintColor = tintColor; _requestRender(); };
+	void	SetCombinedWavesGradient(wg::Gradient gradient) { m_combinedWavesTintGradient = gradient; _requestRender(); };
 
 	
 protected:
@@ -237,6 +239,7 @@ private:
 
 	WgColor			m_combinedWavesTintColor = WgColor::White;
 	WgBlendMode		m_combinedWavesBlendMode = WgBlendMode::Blend;
+	wg::Gradient	m_combinedWavesTintGradient;
 	
 	WgBorders		m_pointPadding;			// Padding for the canvas in points. To allow thick lines to fully stay inside widget. Grid is allowed outside.
 	WgBorders		m_pixelPadding;			// Same, but in pixels.
