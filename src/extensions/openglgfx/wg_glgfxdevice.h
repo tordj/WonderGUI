@@ -253,8 +253,8 @@ namespace wg
 
 		//
 
-		const static int c_nbPrograms = 28 + (c_maxSegments-1) * 4;
-		const static int c_versionNb = 100;					//
+		const static int c_nbPrograms = 30 + (c_maxSegments-1) * 4;
+		const static int c_versionNb = 101;					//
 
 		struct ProgramBlobEntry
 		{

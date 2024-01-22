@@ -348,6 +348,10 @@ namespace wg
 		glDeleteProgram(m_aaFillProg[1]);
 		glDeleteProgram(m_aaFillGradientProg[0]);
 		glDeleteProgram(m_aaFillGradientProg[1]);
+
+		glDeleteProgram(m_blurProg[0]);
+		glDeleteProgram(m_blurProg[1]);
+
 		glDeleteProgram(m_blitProg[0]);
 		glDeleteProgram(m_blitProg[1]);
 		glDeleteProgram(m_blitGradientProg[0]);
@@ -3004,6 +3008,9 @@ namespace wg
 
 		programs[prg++] = m_aaFillGradientProg[0];
 		programs[prg++] = m_aaFillGradientProg[1];
+
+		programs[prg++] = m_blurProg[0];
+		programs[prg++] = m_blurProg[1];
 
 		programs[prg++] = m_blitProg[0];
 		programs[prg++] = m_blitProg[1];
