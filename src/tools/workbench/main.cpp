@@ -3391,22 +3391,43 @@ bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pEntry)
 
 
 
-//	pGlowCapsule->setResolution( {64,64} );
+	//	pGlowCapsule->setResolution( {64,64} );
 
 	pGlowCapsule->glow.setMatrices(mtx2, mtx, mtx);
 	pGlowCapsule->glow.setRefreshRate(30);
 	pGlowCapsule->glow.setActive(true);
-	
 
-	pGlowCapsule->setSkin( BoxSkin::create( { .color = HiColor::Transparent, .outlineThickness = 50, .outlineColor = Color::Yellow, .padding = 50 }) );
+
+	pGlowCapsule->setSkin(BoxSkin::create({ .color = HiColor::Transparent, .outlineThickness = 50, .outlineColor = Color::Yellow, .padding = 50 }));
 
 	pBack->slots.pushBack(pGlowCapsule, { .pos = {  50, 50}, .size = {300,0} });
 
 	auto pWrapTextLayout = BasicTextLayout::create({ .wrap = true });
 
-	
-	auto pContent = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .style = pMyStyle, .text = "" } });
+
+	auto pContent = TextEditor::create({ .editor = {.layout = pWrapTextLayout, .style = pMyStyle, .text = "HEJ" } });
 	pGlowCapsule->slot = pContent;
+
+	auto pTintWhite = Button::create({ .label = {.text = "WHITE" }, .skin = m_pSimpleButtonSkin });
+	auto pTintBlack = Button::create({ .label = {.text = "BLACK" }, .skin = m_pSimpleButtonSkin });
+
+	auto pTransition = ColorTransition::create(1000*1000, TransitionCurve::EaseOut);
+
+	auto pGradientWhite = Button::create({ .label = {.text = "GRADIENT WHITE" }, .skin = m_pSimpleButtonSkin });
+	auto pGradientBlack = Button::create({ .label = {.text = "GRADIENT BLACK" }, .skin = m_pSimpleButtonSkin });
+
+	Base::msgRouter()->addRoute(pTintWhite, MsgType::Select, [pGlowCapsule,pTransition](Msg* pMsg) {pGlowCapsule->setTintColor(Color::White, pTransition); });
+	Base::msgRouter()->addRoute(pTintBlack, MsgType::Select, [pGlowCapsule, pTransition](Msg* pMsg) {pGlowCapsule->setTintColor(Color::Black, pTransition); });
+
+	Base::msgRouter()->addRoute(pGradientWhite, MsgType::Select, [pGlowCapsule, pTransition](Msg* pMsg) {pGlowCapsule->setTintGradient(Gradient( Placement::NorthWest, HiColor::White, HiColor::Black), pTransition); });
+	Base::msgRouter()->addRoute(pGradientBlack, MsgType::Select, [pGlowCapsule, pTransition](Msg* pMsg) {pGlowCapsule->setTintGradient(Gradient(Placement::SouthEast, HiColor::White, HiColor::Black), pTransition); });
+
+
+	auto pButtons = PackPanel::create({ .axis = Axis::X });
+
+	pButtons->slots << pTintWhite << pTintBlack << pGradientWhite << pGradientBlack;
+
+	pBack->slots.pushBack( pButtons, { .origo = Placement::SouthWest } );
 
 	return true;
 }

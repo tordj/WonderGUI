@@ -159,6 +159,9 @@ namespace wg
 			pDevice->endCanvasUpdate();
 
 			glow._render(pDevice, graphCanvas, m_pChartCanvas, graphCanvas);
+
+			pDevice->setBlitSource(m_pChartCanvas);
+			pDevice->stretchBlit(graphCanvas);
 		}
 		else
 			_renderCharts(pDevice,graphCanvas);

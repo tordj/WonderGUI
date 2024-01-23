@@ -70,7 +70,7 @@ namespace wg
 			TransitionCurve		curve = TransitionCurve::Linear;
 			int					duration = 250*1000;					// Microseconds!
 			Finalizer_p			finalizer = nullptr;
-			HiColor				midPointColor;
+			HiColor				midPointColor = HiColor::Undefined;
 			int					midPointDelay = 0;
 			TransitionCurve		midPointCurve = TransitionCurve::Linear;
 			int					midPointOffset = 0;

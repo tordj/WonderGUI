@@ -211,21 +211,14 @@ namespace wg
 		m_seedBlend = blendMode;
 	}
 
-	//____ setGlowStates() ______________________________________________
+	//____ setRenderStates() ______________________________________________
 
-	void Glow::setGlowStates(HiColor tint, BlendMode blendMode)
+	void Glow::setRenderStates(HiColor tint, BlendMode blendMode)
 	{
 		m_glowTint = tint;
 		m_glowBlend = blendMode;
 	}
 
-	//____ setCanvasStates() ____________________________________________
-
-	void Glow::setCanvasStates(HiColor tint, BlendMode blendMode)
-	{
-		m_canvasTint = tint;
-		m_canvasBlend = blendMode;
-	}
 
 	//____ _initFromBlueprint() ________________________________________________
 
@@ -241,9 +234,6 @@ namespace wg
 
 		m_glowTint		= bp.glowTint;
 		m_glowBlend		= bp.glowBlend;
-
-		m_canvasTint	= bp.canvasTint;
-		m_canvasBlend	= bp.canvasBlend;
 
 		m_resizePlacement	= bp.resizePlacement;
 		m_bStretchOnResize	= bp.stretchOnResize;
@@ -275,11 +265,7 @@ namespace wg
 	void Glow::_render(GfxDevice* pDevice, const RectSPX& canvas, Surface_p pSeed, const RectSPX& seedArea)
 	{
 		if (!m_bActive)
-		{
-			pDevice->setBlitSource(pSeed);
-			pDevice->stretchBlit(seedArea);
 			return;
-		}
 
 
 		// Possibly regenerate the glow surfaces
@@ -388,11 +374,6 @@ namespace wg
 		pDevice->setTintColor(m_glowTint);
 		pDevice->setBlitSource(m_surface[0]);
 		pDevice->stretchBlit(canvas, destRect);
-
-		pDevice->setBlendMode(m_canvasBlend);
-		pDevice->setTintColor(m_canvasTint);
-		pDevice->setBlitSource(pSeed);
-		pDevice->stretchBlit(seedArea);
 
 		pDevice->setTintColor(c);
 		pDevice->setBlendMode(bm);

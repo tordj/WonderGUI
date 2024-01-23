@@ -59,9 +59,6 @@ namespace wg
 			HiColor				glowTint = HiColor::White;
 			BlendMode			glowBlend = BlendMode::Add;
 
-			HiColor				canvasTint = HiColor::White;
-			BlendMode			canvasBlend = BlendMode::Blend;
-
 			Placement			resizePlacement = Placement::NorthWest;
 			bool				stretchOnResize = false;
 			bool				clearOnResize	= false;
@@ -101,9 +98,7 @@ namespace wg
 		SizeI				pixelResolution() const;
 
 		void				setSeedStates(HiColor seedTint, BlendMode seedBlend);
-		void				setGlowStates(HiColor glowTint, BlendMode glowBlend);
-		void				setCanvasStates(HiColor canvasTint, BlendMode canvasBlend);
-
+		void				setRenderStates(HiColor glowTint, BlendMode glowBlend);
 
 		//.____ Internal ______________________________________________________
 
@@ -135,9 +130,6 @@ namespace wg
 
 		HiColor				m_glowTint = HiColor::White;
 		BlendMode			m_glowBlend = BlendMode::Add;
-
-		HiColor				m_canvasTint = HiColor::White;
-		BlendMode			m_canvasBlend = BlendMode::Blend;
 
 		int					m_microSecAccumulator = 0;
 
