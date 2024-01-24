@@ -260,13 +260,13 @@ private:
 	float		m_topValue;
 	float		m_bottomValue;
 
-	int			m_sampleTTL;				// Samples Time To Live in millsec, before it has scrolled out.
+	int			m_sampleTTL;				// Samples Time To Live in microsec, before it has scrolled out.
 	int			m_waveIdCounter;
 
-	double		m_windowBegin;				// In milliseconds, oldest sample displayed
-	double		m_windowEnd;				// In milliseconds, latest sample displayed
+	double		m_windowBegin;				// In microseconds, oldest sample displayed
+	double		m_windowEnd;				// In microseconds, latest sample displayed
 
-	float		m_scrollFraction;			// Fractions of a pixel to scroll, measured in milliseconds
+	float		m_scrollFraction;			// Fractions of a pixel to scroll, measured in microseconds
 	int			m_scrollAmount;				// Number of full pixels to scroll
 
 	uint64_t	m_sampleBeginTimestamp;		// Timestamp of first samples in store

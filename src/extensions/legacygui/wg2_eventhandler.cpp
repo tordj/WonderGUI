@@ -848,7 +848,7 @@ void WgEventHandler::_widgetReleasePointer(WgWidget * pWidget)
 
 //____ _postTickEvents() ______________________________________________________
 
-void WgEventHandler::_postTickEvents( int ticks )
+void WgEventHandler::_postTickEvents( int microsec )
 {
 	std::vector<WgWidgetWeakPtr>::iterator it = m_vTickWidgets.begin();
 
@@ -858,7 +858,7 @@ void WgEventHandler::_postTickEvents( int ticks )
 
 		if( pWidget && pWidget->Hook() && pWidget->Hook()->Root() == m_pRoot && pWidget->m_bReceiveTick )
 		{
-			QueueEvent( new WgEvent::Tick( ticks, pWidget ) );
+			QueueEvent( new WgEvent::Tick( microsec, pWidget, true ) );
 			++it;
 		}
 		else
@@ -921,7 +921,7 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 {
 	// Fill in missing information in the event-class.
 
-	pEvent->m_timestamp	= m_time;
+	pEvent->m_timestamp	= m_time/1000;
 	pEvent->m_modKeys	= m_modKeys;
 	pEvent->m_pointScale = m_pRoot->Scale();
 
@@ -1087,7 +1087,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 			int buttonDelay = WgBase::MouseButtonRepeatDelay();
 			int buttonRate = WgBase::MouseButtonRepeatRate();
 
-			int msSinceRepeatStart = (int) (m_time - m_pLatestPressEvents[button]->Timestamp() - buttonDelay );
+			int msSinceRepeatStart = (int) ((m_time/1000) - m_pLatestPressEvents[button]->Timestamp() - buttonDelay );
 
 			// First BUTTON_REPEAT event posted separately.
 
@@ -1151,7 +1151,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 
 	// Increase time counter
 
-	m_time += pEvent->Millisec();
+	m_time += pEvent->Microsec();
 }
 
 

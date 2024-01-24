@@ -205,7 +205,7 @@ private:
 	std::deque<WgEvent::Event*>::iterator	m_insertPos;		// Position where we insert events being queued when processing.
 	bool									m_bIgnoreNextCharacterEvent;
 
-	int64_t			m_time;
+	int64_t			m_time;			// Time in microseconds
 	WgCoord			m_pointerPos;
 	WgPointerStyle	m_pointerStyle;
 	WgModifierKeys	m_modKeys;
