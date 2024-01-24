@@ -51,7 +51,7 @@ protected:
 	WgPanelHook() : m_bVisible(true) {}
 	 virtual ~WgPanelHook() {};
 
-	 WgWidgetHolder* _holder() const { return _parent(); }
+	 WgWidgetHolder* _holder() const override { return _parent(); }
 
 	WgSize		_paddedPreferredPixelSize( int scale ) const;
 	WgSize		_paddedMinPixelSize( int scale ) const;
@@ -61,6 +61,9 @@ protected:
 
 	WgSize		_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy, int scale ) const;
 
+	bool		_isDisplayed() const override;
+
+	
 	bool			m_bVisible;
 	WgBorders		m_padding;
 };

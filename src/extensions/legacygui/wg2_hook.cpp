@@ -114,6 +114,24 @@ void WgHook::_requestInView( const WgRect& mustHaveArea, const WgRect& niceToHav
 	Parent()->_inViewRequested( this, mustHaveArea, niceToHaveArea );
 }
 
+//____ _isDisplayed() _________________________________________________________
+
+bool WgHook::_isDisplayed() const
+{
+	WgWidgetHolder * pHolder = _holder();
+
+	if( pHolder->IsWidget() )
+	{
+		WgHook * pHook = pHolder->CastToWidget()->Hook();
+		if( pHook )
+			return pHook->_isDisplayed();
+	}
+	else if( pHolder->IsRoot() )
+		return true;
+
+	return false;
+}
+
 
 //____ PointPos() ______________________________________________________________
 

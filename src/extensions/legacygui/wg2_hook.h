@@ -91,7 +91,8 @@ protected:
 	virtual void    _requestInView();
 	virtual void    _requestInView( const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
 
-
+	virtual bool	_isDisplayed() const;
+	
 	//
 
 	virtual WgHook *	_prevHook() const = 0;

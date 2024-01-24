@@ -456,6 +456,15 @@ void WgWidget::SetSelectable(bool bSelectable)
 	m_bSelectable = bSelectable;
 }
 
+//____IsDisplayed() ___________________________________________________________
+
+bool WgWidget::IsDisplayed() const
+{
+	if( m_pHook )
+		return m_pHook->_isDisplayed();
+	
+	return false;
+}
 
 //____ Mode() _________________________________________________________________
 
