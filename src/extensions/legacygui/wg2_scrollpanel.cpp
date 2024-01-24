@@ -557,6 +557,18 @@ bool WgScrollPanel::SetVSlider( WgVSlider* pSlider )
 	return true;
 }
 
+//____ SetShowOverlaySlidersOnlyOnHover() ___________________________________________
+
+void WgScrollPanel::SetShowOverlaySlidersOnlyOnHover( bool bShowOnlyOnHover )
+{
+	if( bShowOnlyOnHover != m_bShowOverlaysOnlyOnHover )
+	{
+		m_bShowOverlaysOnlyOnHover = bShowOnlyOnHover;
+		_requestRender();
+	}
+}
+
+
 //____ ReleaseContent() _______________________________________________________
 
 WgWidget* WgScrollPanel::ReleaseContent()
@@ -1031,19 +1043,23 @@ void WgScrollPanel::_updateElementGeo( WgSize _mySize )
 
 	// Determine which dragbars we need to show, using basic rules
 
-	if( m_elements[XDRAG].Widget() && (newContentSize.w > newWindow.w || !m_bAutoHideSliderX) )
-		bShowDragX = true;
+	if( m_bHovered || !m_bOverlayScrollbars || !m_bShowOverlaysOnlyOnHover || m_bSliderDragInProgress )
+	{
+		if( m_elements[XDRAG].Widget() && (newContentSize.w > newWindow.w || !m_bAutoHideSliderX) )
+			bShowDragX = true;
 
-	if( m_elements[YDRAG].Widget() && (newContentSize.h > newWindow.h || !m_bAutoHideSliderY) )
-		bShowDragY = true;
+		if( m_elements[YDRAG].Widget() && (newContentSize.h > newWindow.h || !m_bAutoHideSliderY) )
+			bShowDragY = true;
 
-	// See if showing one forces us to show the other
+		// See if showing one forces us to show the other
 
-	if( bShowDragY && m_elements[XDRAG].Widget() && newContentSize.w > (newWindow.w - newDragY.w) )
-		bShowDragX = true;
+		if( bShowDragY && m_elements[XDRAG].Widget() && newContentSize.w > (newWindow.w - newDragY.w) )
+			bShowDragX = true;
 
-	if( bShowDragX && m_elements[YDRAG].Widget() && newContentSize.h > (newWindow.h - newDragY.h) )
-		bShowDragY = true;
+		if( bShowDragX && m_elements[YDRAG].Widget() && newContentSize.h > (newWindow.h - newDragY.h) )
+			bShowDragY = true;
+	}
+	
 
 
 	// Adjust view layout to accomodate visible dragbars
@@ -1322,6 +1338,25 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 
 	switch( _pEvent->Type() )
 	{
+		case WG_EVENT_MOUSE_ENTER:
+			bCallSuper = true;
+			m_bHovered = true;
+			if( m_bShowOverlaysOnlyOnHover && m_bOverlayScrollbars )
+			{
+				_updateElementGeo(PixelSize());
+			}
+			break;
+
+		case WG_EVENT_MOUSE_LEAVE:
+			bCallSuper = false;
+			m_bHovered = false;
+			if( m_bShowOverlaysOnlyOnHover && m_bOverlayScrollbars )
+			{
+				_updateElementGeo(PixelSize());
+			}
+			break;
+
+			
 		case WG_EVENT_TICK:
 		{
 			int ms = static_cast<const WgEvent::Tick*>(_pEvent)->Millisec();
@@ -2154,5 +2189,19 @@ float WgScrollPanel::SliderTarget::_getSliderSize()
 		return m_pParent->ViewLenY();
 }
 
+void WgScrollPanel::SliderTarget::_sliderDragStart()
+{
+	m_pParent->m_bSliderDragInProgress = true;
+//	m_pParent->_updateElementGeo(m_pParent->PixelSize());
+//	m_pParent->_requestRender();
+}
+
+void WgScrollPanel::SliderTarget::_sliderDragEnd()
+{
+	m_pParent->m_bSliderDragInProgress = false;
+	
+	if( m_pParent->m_bShowOverlaysOnlyOnHover && m_pParent->m_bOverlayScrollbars )
+		m_pParent->_updateElementGeo(m_pParent->PixelSize());
+}
 
 

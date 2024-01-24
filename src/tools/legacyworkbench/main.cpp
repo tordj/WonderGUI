@@ -90,6 +90,7 @@ bool mouseOverMovingObjectsTest(WgRootPanel* pRoot);
 
 
 
+
 //#define USE_OPEN_GL
 /*
  wg::GfxStreamPlug_p         g_pGfxStreamPlug;
@@ -338,7 +339,7 @@ int main ( int argc, char** argv )
 //    flexHookGrowthTest( pRoot );
 //    packPanelStressTest( pRoot );
 //    baselineTest( pRoot );
-//    scrollPanelTest(pRoot);
+    scrollPanelTest(pRoot);
 //    shadowLayerTest(pRoot);
 //	manuBlendTest();
 
@@ -354,7 +355,7 @@ int main ( int argc, char** argv )
 //	blendFixedColorTest(pRoot);
 //	multiSliderClickThroughTest(pRoot);
 //	chartTest(pRoot);
-	scrollChartTest(pRoot);
+//	scrollChartTest(pRoot);
 //	flipCanvasTest(pRoot);
 //	mouseOverMovingObjectsTest(pRoot);
 
@@ -1084,9 +1085,13 @@ void scrollPanelTest( WgRootPanel * pRoot )
 		pText->AddText( "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." );
   */
 	pScrollPanel->SetContent(pContent);
-	
 
-	pRoot->SetChild(pScrollPanel);
+	pScrollPanel->SetShowOverlaySlidersOnlyOnHover(true);
+	
+	auto pBaseFlex = new WgFlexPanel();
+	pBaseFlex->AddChild(pScrollPanel, WgRect(20,20,200,100));
+
+	pRoot->SetChild(pBaseFlex);
 }
 
 

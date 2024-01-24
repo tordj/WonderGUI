@@ -681,13 +681,19 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
 				break;
 
+			if( m_pSliderTargetWidget.GetRealPtr() != 0 )
+				m_pSliderTargetInterface->_sliderDragEnd();
+
+			
 			_unmarkReqRender();
 			Component c = _findMarkedComponent(pos);
 			if (c != C_NONE)
 			{
 				m_mode[c] = WG_MODE_MARKED;
 				if (c == C_BAR)
+				{
 					m_mode[C_BG] = WG_MODE_MARKED;			// Always also mark bg if bar is marked.
+				}
 			}
 			break;
 		}
@@ -738,6 +744,9 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 
 			if( c == C_BAR )
 			{
+				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
+					m_pSliderTargetInterface->_sliderDragStart();
+
 				m_dragBarPressOfs = pointerOfs - barPos;
 				m_mode[C_BG] = WG_MODE_MARKED;			// Always mark bg if bar is pressed.
 			}

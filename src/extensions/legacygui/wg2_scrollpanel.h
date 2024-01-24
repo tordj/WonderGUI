@@ -226,6 +226,8 @@ public:
 	bool				IsVSliderVisible();
 	bool				IsHSliderVisible();
 
+	void				SetShowOverlaySlidersOnlyOnHover( bool bShowOnlyOnHover );
+	
 	void				SetFillerBlocks( wg::Skin * pFillerSkin );
 	wg::Skin_p          FillerBlocks() const { return m_pFillerBlocks; }
 
@@ -288,7 +290,10 @@ protected:
 		WgWidget*	_getWidget();
 		float		_getSliderPosition();
 		float		_getSliderSize();
+		void		_sliderDragStart();
+		void		_sliderDragEnd();
 
+		
 		void		_updateSlider( float pos, float size ) { WgSliderTarget::_updateSlider(pos,size); }
 
 		bool		m_bHorizontal;
@@ -351,6 +356,9 @@ protected:
     wg::Axis    m_mouseWheelAxis[5];
     
     bool        m_bOverlayScrollbars;
+	bool		m_bShowOverlaysOnlyOnHover = false;
+	bool		m_bHovered = false;			// HACK! Only used by ShowOverlaysOnlyOnHover.
+	bool		m_bSliderDragInProgress = false;
 
 	WgScrollHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag widgets in that order.
 
