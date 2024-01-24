@@ -73,23 +73,68 @@ namespace wg
 
 	//____ setTintColor() ______________________________________________________
 
-	void CanvasCapsule::setTintColor(HiColor color, BlendMode mode)
+	void CanvasCapsule::setTintColor(HiColor color, ColorTransition* pTransition)
 	{
-		if (color != m_tintColor || mode != m_tintMode)
+		if (color != m_tintColor)
 		{
-			m_tintMode = mode;
-			m_tintColor = color;
-			_requestRender();
+			if (pTransition)
+			{
+				if (!m_pTintColorTransition)
+					_startReceiveUpdates();
+
+				m_pTintColorTransition = pTransition;
+				m_tintColorTransitionProgress = 0;
+				m_startTintColor = m_tintColor;
+				m_endTintColor = color;
+			}
+			else
+			{
+				if (m_pTintColorTransition)
+					_stopReceiveUpdates();
+
+				m_pTintColorTransition = nullptr;
+				m_tintColor = color;
+				_requestRender();
+			}	
 		}
 	}
 
-	//____ setRenderMode() __________________________________________________________
+	//____ setTintGradient() __________________________________________________
 
-	void CanvasCapsule::setRenderMode(BlendMode mode)
+	void CanvasCapsule::setTintGradient(const Gradient& gradient, ColorTransition* pTransition)
 	{
-		if (mode != m_renderMode)
+		if (gradient != m_gradient)
 		{
-			m_renderMode = mode;
+			if (pTransition)
+			{
+				if (!m_pGradientTransition)
+					_startReceiveUpdates();
+
+				m_pGradientTransition = pTransition;
+				m_gradientTransitionProgress = 0;
+				m_startGradient = m_gradient;
+				m_endGradient = gradient;
+			}
+			else
+			{
+				if (m_pGradientTransition)
+					_stopReceiveUpdates();
+
+				m_pGradientTransition = nullptr;
+				m_gradient = gradient;
+				_requestRender();
+			}
+			
+		}
+	}
+
+	//____ setBlendMode() __________________________________________________________
+
+	void CanvasCapsule::setBlendMode(BlendMode mode)
+	{
+		if (mode != m_blendMode)
+		{
+			m_blendMode = mode;
 			_requestRender();
 		}
 	}
@@ -260,6 +305,73 @@ namespace wg
 	void CanvasCapsule::_update(int microPassed, int64_t microsecTimestamp)
 	{
 		glow._update(microPassed);
+
+		if (m_pTintColorTransition)
+		{
+			int timestamp = m_tintColorTransitionProgress + microPassed;
+
+			if (timestamp >= m_pTintColorTransition->duration())
+			{
+				m_tintColorTransitionProgress = 0;
+				m_pTintColorTransition = nullptr;
+				m_tintColor = m_endTintColor;
+
+				if (m_tintColor != m_endTintColor)
+				{
+					m_tintColor = m_endTintColor;
+					_requestRender();
+				}
+
+				_stopReceiveUpdates();
+			}
+			else
+			{
+				m_tintColorTransitionProgress = timestamp;
+				HiColor color = m_pTintColorTransition->snapshot(timestamp, m_startTintColor, m_endTintColor);
+
+				if (color != m_tintColor)
+				{
+					m_tintColor = color;
+					_requestRender();
+				}
+			}
+		}
+
+		if (m_pGradientTransition)
+		{
+			int timestamp = m_gradientTransitionProgress + microPassed;
+
+			if (timestamp >= m_pGradientTransition->duration())
+			{
+				m_gradientTransitionProgress = 0;
+				m_pGradientTransition = nullptr;
+
+				if (m_gradient != m_endGradient)
+				{
+					m_gradient = m_endGradient;
+					_requestRender();
+				}
+
+				_stopReceiveUpdates();
+			}
+			else
+			{
+				m_gradientTransitionProgress = timestamp;
+
+				Gradient gradient;
+
+				gradient.topLeft = m_pGradientTransition->snapshot(timestamp, m_startGradient.topLeft, m_endGradient.topLeft);
+				gradient.topRight = m_pGradientTransition->snapshot(timestamp, m_startGradient.topRight, m_endGradient.topRight);
+				gradient.bottomLeft = m_pGradientTransition->snapshot(timestamp, m_startGradient.bottomLeft, m_endGradient.bottomLeft);
+				gradient.bottomRight = m_pGradientTransition->snapshot(timestamp, m_startGradient.bottomRight, m_endGradient.bottomRight);
+
+				if (gradient != m_gradient)
+				{
+					m_gradient = gradient;
+					_requestRender();
+				}
+			}
+		}
 	}
 
 	//____ _render() _____________________________________________________________
@@ -281,17 +393,22 @@ namespace wg
 		if (m_renderLayer != -1)
 			pDevice->setRenderLayer(m_renderLayer);
 
-		pDevice->setBlendMode(m_renderMode);
-
-		if (m_tintColor != HiColor::Undefined)
-		{
-			HiColor newCol = HiColor::blend(c, m_tintColor, m_tintMode);
-			pDevice->setTintColor(newCol);
-		}
-
 		RectSPX seedArea = m_bScaleCanvas ? _canvasWindow(contentRect) : contentRect;
-		
+
 		glow._render(pDevice, contentRect, m_pCanvas, seedArea);
+
+		pDevice->setBlendMode(m_blendMode);
+
+		pDevice->setTintColor(m_tintColor);
+
+		if (m_gradient.isValid() )
+			pDevice->setTintGradient(contentRect, m_gradient);
+
+		pDevice->setBlitSource(m_pCanvas);
+		pDevice->stretchBlit(seedArea);
+
+		if (m_gradient.isValid())
+			pDevice->clearTintGradient();
 
 		pDevice->setTintColor(c);
 		pDevice->setBlendMode(bm);

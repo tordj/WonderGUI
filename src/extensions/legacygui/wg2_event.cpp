@@ -436,16 +436,20 @@ namespace WgEvent
 
 	//____ Tick _______________________________________________________________
 
-	Tick::Tick( int ms )
+	Tick::Tick( int millisec, int microsec  )
 	{
 		m_type = WG_EVENT_TICK;
-		m_millisec = ms;
+
+		if( microsec >= 0 )
+			m_microsec = microsec;
+		else
+			m_microsec = millisec*1000;
 	}
 
-	Tick::Tick( int ms, WgWidget * pWidget )
+	Tick::Tick( int microsec, WgWidget * pWidget, bool b )
 	{
 		m_type 			= WG_EVENT_TICK;
-		m_millisec 		= ms;
+		m_microsec 		= microsec;
 		m_bIsForWidget	= true;
 		m_pWidget 		= pWidget;
 	}
@@ -454,13 +458,18 @@ namespace WgEvent
 	{
 		const Tick * pOrg = static_cast<const Tick*>(_pOrg);
 
-		m_millisec = pOrg->m_millisec;
+		m_microsec = pOrg->m_microsec;
 		Event::_cloneContentFrom( pOrg );
 	}
 
 	int Tick::Millisec() const
 	{
-		return m_millisec;
+		return m_microsec/1000;
+	}
+
+	int Tick::Microsec() const
+	{
+		return m_microsec;
 	}
 
 	//____ PointerChange _______________________________________________________________

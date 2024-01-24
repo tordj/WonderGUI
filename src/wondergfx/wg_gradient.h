@@ -71,6 +71,13 @@ namespace wg
 					 (bottomRight.argb ^ other.bottomRight.argb) | (bottomLeft.argb ^ other.bottomLeft.argb)) == 0;
 		}
 
+		inline bool operator!=(const Gradient& other) const
+		{
+			return	((topLeft.argb ^ other.topLeft.argb) | (topRight.argb ^ other.topRight.argb) |
+				(bottomRight.argb ^ other.bottomRight.argb) | (bottomLeft.argb ^ other.bottomLeft.argb)) != 0;
+		}
+
+
 		HiColor		topLeft;
 		HiColor		topRight;
 		HiColor		bottomRight;

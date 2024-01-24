@@ -95,7 +95,7 @@ namespace WgEvent
 
 			WgEventType		m_type;				// Type of event
 			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
-			int64_t			m_timestamp;		// Timestamp of posting this event
+			int64_t			m_timestamp;		// Timestamp of posting this event in milliseconds.
 			bool			m_bIsForWidget;		// Set if this event is for a specific Widget (m_pWidget set at creation, even if weak pointer now is null).
 			WgWidgetWeakPtr	m_pWidget;			// Widget to receive this event.
 			WgWidgetWeakPtr	m_pForwardedFrom;	// Widget this event was forwarded from.
@@ -267,14 +267,16 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	public:
-		Tick( int ms );
+		Tick( int millisec, int microsec = -1 );	// Uses microsec instead of millisec if postive value.
 
 		int				Millisec() const;
+		int				Microsec() const;
+
 	protected:
-		Tick( int ms, WgWidget * pWidget );
+		Tick( int microsec, WgWidget * pWidget, bool b );
 		virtual void 	_cloneContentFrom( const Event * pOrg );
 
-		int			m_millisec;
+		int				m_microsec;
 	};
 
 	class PointerChange : public Event

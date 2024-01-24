@@ -198,6 +198,8 @@ bool WgScrollChart::Start(int sampleTTL)
 	if (sampleTTL < 100)
 		return false;
 
+	sampleTTL *= 1000;		// Switch from millisec in input to microsec.
+	
     if(m_sampleTTL == sampleTTL)
         return true;
 
@@ -655,7 +657,7 @@ void WgScrollChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 		
 		// Update timestamps
 
-		int ticks = static_cast<const WgEvent::Tick*>(pEvent)->Millisec();
+		int ticks = static_cast<const WgEvent::Tick*>(pEvent)->Microsec();
 		m_sampleEndTimestamp += ticks;
 
 		// Set length of last sample and add our new sample to end of each running wave

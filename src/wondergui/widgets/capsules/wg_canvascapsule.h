@@ -28,6 +28,8 @@
 #include <wg_patches.h>
 #include <wg_canvaslayers.h>
 #include <wg_glow.h>
+#include <wg_gradient.h>
+#include <wg_transitions.h>
 
 namespace wg
 {
@@ -82,7 +84,7 @@ namespace wg
 			SurfaceFactory_p surfaceFactory;
 			bool			tabLock			= false;
 			HiColor			tintColor		= HiColor::Undefined;
-			BlendMode		tintColorBlend	= BlendMode::Replace;
+			Gradient		tintGradient;
 			String			tooltip;
 		};
 
@@ -104,8 +106,9 @@ namespace wg
 
 		void				setSkin(Skin* pSkin) override;
 
-		void				setTintColor(HiColor color, BlendMode operation = BlendMode::Replace);
-		void				setRenderMode(BlendMode mode);
+		void				setTintColor(HiColor color, ColorTransition* pTransition = nullptr);
+		void				setTintGradient(const Gradient& gradient, ColorTransition* pTransition = nullptr);
+		void				setBlendMode(BlendMode mode);
 
 		void				setSurfaceFactory(SurfaceFactory* pFactory);
 		SurfaceFactory_p	surfaceFactory() const { return m_pFactory; }
@@ -130,8 +133,8 @@ namespace wg
 
 		
 		inline HiColor		tintColor() { return m_tintColor; }
-		inline BlendMode	renderMode() { return m_renderMode; }
-		inline BlendMode	tintMode() { return m_tintMode; }
+		inline Gradient		tintGradient() { return m_gradient; }
+		inline BlendMode	blendMode() { return m_blendMode; }
 
 	protected:
 		CanvasCapsule();
@@ -143,9 +146,12 @@ namespace wg
 			m_pCanvasLayers = bp.layers;
 			m_renderLayer	= bp.renderLayer;
 
-			m_renderMode	= bp.blendMode;
-			m_tintColor		= bp.tintColor;
-			m_tintMode		= bp.tintColorBlend;
+			m_blendMode		= bp.blendMode;
+			
+			if( bp.tintColor != HiColor::Undefined )
+				m_tintColor	= bp.tintColor;
+
+			m_gradient		= bp.tintGradient;
 			m_bScaleCanvas  = bp.scaleCanvas;
 			m_placement		= bp.placement;
 			m_clearColor	= bp.clearColor;
@@ -192,8 +198,10 @@ namespace wg
 		SizeSPX				_canvasSize() const { return m_canvasSize; }
 
 		void				_setCanvasSize( SizeSPX canvasSize );
-		
+
 		Surface_p			m_pCanvas;
+		Surface_p			m_pGlowCanvas;	// Extra canvas that may be needed when glow is active.
+
 		CanvasLayers_p		m_pCanvasLayers;
 		SizeSPX				m_canvasSize;
 		
@@ -202,9 +210,11 @@ namespace wg
 		HiColor				m_clearColor = HiColor::Undefined;
 		int					m_renderLayer = -1;
 
-		HiColor				m_tintColor = HiColor::Undefined;
-		BlendMode			m_tintMode = BlendMode::Replace;
-		BlendMode			m_renderMode = BlendMode::Blend;
+
+
+		HiColor				m_tintColor = HiColor::White;
+		Gradient			m_gradient;
+		BlendMode			m_blendMode = BlendMode::Blend;
 
 		PatchesSPX			m_patches;
 
@@ -212,6 +222,20 @@ namespace wg
 		Placement			m_placement = Placement::Center;
 
 		std::vector<CanvasDisplay*>	m_sideDisplays;
+
+		// Transitions
+
+		HiColor				m_startTintColor;
+		HiColor				m_endTintColor;
+
+		Gradient			m_startGradient;
+		Gradient			m_endGradient;
+
+		ColorTransition_p	m_pTintColorTransition;
+		ColorTransition_p	m_pGradientTransition;
+
+		int					m_tintColorTransitionProgress = 0;
+		int					m_gradientTransitionProgress = 0;
 	};
 
 
