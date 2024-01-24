@@ -52,6 +52,10 @@ protected:
 	virtual WgWidget*_getWidget() = 0;
 	virtual float	_getSliderPosition() = 0;
 	virtual float	_getSliderSize() = 0;
+	
+	virtual void	_sliderDragStart() = 0;
+	virtual void	_sliderDragEnd() = 0;
+
 
 	// Calls for Target
 
