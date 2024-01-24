@@ -245,3 +245,11 @@ int WgPanelHook::_paddedMatchingPixelHeight( int paddedWidth, int scale ) const
 
 	return m_pWidget->MatchingPixelHeight( paddedWidth - padding.width() ) + padding.height();
 }
+
+bool WgPanelHook::_isDisplayed() const
+{
+	if( m_bVisible )
+		return WgHook::_isDisplayed();
+	
+	return false;
+}

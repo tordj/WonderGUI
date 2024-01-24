@@ -212,7 +212,8 @@ public:
 	void			SetSelectable(bool bSelectable);
 	inline bool		IsSelectable() const { return m_bSelectable; };
 
-
+	bool			IsDisplayed() const;
+	
 	virtual WgMode	Mode() const;
 
 	virtual void        setPickable( bool bPickable, int category = 0 );
