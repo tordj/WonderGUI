@@ -247,7 +247,7 @@ WgCoord WgWidget::Abs2localPoint( const WgCoord& cord ) const
 
 wg::Surface_p WgWidget::Screenshot( const wg::Surface::Blueprint& bp )
 {
-	return Screenshot( PixelSize(), bp );
+	return Screenshot( WgRect(), bp );
 }
 
 wg::Surface_p WgWidget::Screenshot( const WgRect& _rect, const wg::Surface::Blueprint& _bp )
@@ -259,7 +259,7 @@ wg::Surface_p WgWidget::Screenshot( const WgRect& _rect, const wg::Surface::Blue
 		return nullptr;
 
 	
-	WgRect rect = WgRect::overlap(PixelSize(), _rect*m_scale/WG_SCALE_BASE);
+	WgRect rect = _rect.isEmpty() ? WgRect(0,0,PixelSize()) : WgRect::overlap(PixelSize(), _rect*m_scale/WG_SCALE_BASE);
 
 	wg::Surface::Blueprint bp = _bp;
 	bp.size = rect.size();
