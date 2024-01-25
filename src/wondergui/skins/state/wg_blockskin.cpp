@@ -541,7 +541,7 @@ namespace wg
 		NinePatch	patch = m_ninePatch;
 		patch.block.setPos(m_stateBlocks[idx]);
 
-		pDevice->blitNinePatch(canvas, ptsToSpx(patch.frame,scale), patch, scale);
+		pDevice->blitNinePatch(canvas, align(ptsToSpx(patch.frame,scale)), patch, scale);
 	}
 
 	//____ _minSize() ______________________________________________________________
