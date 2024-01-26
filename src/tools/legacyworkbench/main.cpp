@@ -339,7 +339,7 @@ int main ( int argc, char** argv )
 //    flexHookGrowthTest( pRoot );
 //    packPanelStressTest( pRoot );
 //    baselineTest( pRoot );
-    scrollPanelTest(pRoot);
+//    scrollPanelTest(pRoot);
 //    shadowLayerTest(pRoot);
 //	manuBlendTest();
 
@@ -355,7 +355,7 @@ int main ( int argc, char** argv )
 //	blendFixedColorTest(pRoot);
 //	multiSliderClickThroughTest(pRoot);
 //	chartTest(pRoot);
-//	scrollChartTest(pRoot);
+	scrollChartTest(pRoot);
 //	flipCanvasTest(pRoot);
 //	mouseOverMovingObjectsTest(pRoot);
 
@@ -448,7 +448,7 @@ int main ( int argc, char** argv )
  
 		// Pause for a while
 
-		SDL_Delay(32);
+		SDL_Delay(7);
 
 //		while (!m_bGotVsync)
 //		{
@@ -551,6 +551,7 @@ bool scrollChartTest(WgRootPanel* pRoot)
 	pBaseFlex->SetSkin(wg::ColorSkin::create(WgColor::Blue));
 
 	auto pChart = new WgScrollChart();
+	pChart->SetSurfaceFactory(WgBase::defaultSurfaceFactory());
 	pChart->SetSkin(wg::ColorSkin::create(WgColor::DarkGreen));
 
 	pChart->SetValueRange(100, -100);
@@ -585,7 +586,9 @@ bool scrollChartTest(WgRootPanel* pRoot)
 	m_pScrollChart = pChart;		// So we get updates.
 	m_hWave1 = hWave;
 
-	pChart->Start( 2000 );
+	pChart->Start( 8000 );
+	
+	pChart->SetStaticMode(true);
 	
 	pChart->SetSampleGridLines(3, grid);
 	
@@ -1597,7 +1600,7 @@ bool eventLoop( WgEventHandler * pHandler )
 		int ticks = SDL_GetTicks();
 		
 
-		m_pScrollChart->FeedSample(m_hWave1, 10 /*sin(ticks / 100.0)*0.9*/ );
+		m_pScrollChart->FeedSample(m_hWave1, sin(ticks / 100.0)*50 );
 	}
 	sdl_wglib::BeginEvents( pHandler );
 
