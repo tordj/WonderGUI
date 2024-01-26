@@ -646,6 +646,16 @@ bool WgScrollChart::FeedSample(int waveId, SamplePair sample)
 	return true;
 }
 
+//____ SetStaticMode() ________________________________________________________
+
+void WgScrollChart::SetStaticMode( bool bStatic, int fadeOutTailLength )
+{
+	m_bStaticMode = bStatic;
+	m_fadeTailLength = fadeOutTailLength;
+	_requestRender();
+}
+
+
 //____ _onEvent() _____________________________________________________________
 
 void WgScrollChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler)
@@ -775,8 +785,27 @@ void WgScrollChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 		if (scrollAmount > 0)
 		{
-			_requestRender();
+			if( m_bStaticMode )
+			{
+				auto canvas = _skinContentRect( m_pSkin, {0,0,PixelSize()}, WgStateEnum::Default, m_scale);
 
+				int dirtyLength = m_scrollAmount + (m_fadeTailLength*m_scale/WG_SCALE_BASE);
+				
+				if( m_canvasOfs + dirtyLength <= canvas.w )
+				{
+					_requestRender(  {canvas.x + m_canvasOfs, canvas.y, dirtyLength, canvas.h} );
+				}
+				else
+				{
+					_requestRender( {canvas.x + m_canvasOfs, canvas.y, canvas.w - m_canvasOfs, canvas.h} );
+					_requestRender( {canvas.x, canvas.y, dirtyLength - (canvas.w - m_canvasOfs), canvas.h} );
+				}
+			}
+			else
+				_requestRender();
+
+			
+			
 			// Update window end and window start
 
 			m_windowEnd = m_sampleEndTimestamp - m_scrollFraction;
@@ -1167,43 +1196,75 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	
 	WgRect scrollCanvas = canvas - m_pixelPadding;
 	
-	// Draw background sample grid lines (note: opaque chart color will cover backround grid sample lines!)
+	// Draw background grid lines (note: opaque chart color will cover backround grid lines!)
 	
 	if (!m_bForegroundGrid)
 	{
 		_renderSampleGridLines(pDevice, scrollCanvas);
 		_renderValueGridLines(pDevice, scrollCanvas);
 	}
-	// Draw value grid lines
-
-		// Done on backbuffer instead!
 
 	// Copy wave from backbuffer
 
 	if (m_pCanvas)
 	{
 		assert(m_pCanvas->pixelSize() == scrollCanvas.size());
-
+		
 		auto oldTintColor = pDevice->tintColor();
 		auto oldBlendMode = pDevice->blendMode();
-
+		
 		if( m_combinedWavesTintGradient.isValid() )
 			pDevice->setTintGradient(scrollCanvas*64, m_combinedWavesTintGradient );
 		
 		pDevice->setBlitSource(m_pCanvas);
 		pDevice->setTintColor(m_combinedWavesTintColor);
 		pDevice->setBlendMode(m_combinedWavesBlendMode);
+		
+		if( m_bStaticMode)
+		{
+			int canvasLen = m_pCanvas->pixelSize().w;
 
-		if( m_windowBegin == 0 )
-			pDevice->blit( WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( 0, 0, scrollCanvas.w, scrollCanvas.h )*64 );
+			int tailLength = m_fadeTailLength*m_scale/WG_SCALE_BASE;
+			int tailBegin = m_canvasOfs;
+			int tailEnd = (tailBegin + tailLength) % canvasLen;
+
+			wg::HiColor transparentWhite( 4096, 4096, 4096, 0 );
+			wg::Gradient fade = wg::Gradient( transparentWhite, wg::HiColor::White, wg::HiColor::White, transparentWhite );
+
+			if( tailEnd > tailBegin )
+			{
+				pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( 0, 0, tailBegin, scrollCanvas.h )*64 );
+				pDevice->setTintGradient( WgRect(scrollCanvas.x + tailBegin, scrollCanvas.y, tailLength, scrollCanvas.h)*64, fade );
+				pDevice->blit(WgCoord(scrollCanvas.x + tailBegin, scrollCanvas.y)*64, WgRect( tailBegin, 0, tailLength, scrollCanvas.h )*64 );
+				pDevice->clearTintGradient();
+				pDevice->blit(WgCoord(scrollCanvas.x + tailEnd, scrollCanvas.y)*64, WgRect( tailEnd, 0, canvasLen - tailEnd, scrollCanvas.h )*64 );
+			}
+			else
+			{
+				pDevice->blit(WgCoord(scrollCanvas.x + tailEnd, scrollCanvas.y)*64, WgRect( tailEnd, 0, tailBegin - tailEnd, scrollCanvas.h )*64 );
+
+				pDevice->setTintGradient( WgRect(scrollCanvas.x + tailBegin, scrollCanvas.y, tailLength, scrollCanvas.h)*64, fade );
+				pDevice->blit(WgCoord(scrollCanvas.x + tailBegin, scrollCanvas.y)*64, WgRect( tailBegin, 0, tailLength, scrollCanvas.h )*64 );
+
+				pDevice->setTintGradient( WgRect(scrollCanvas.x - (tailLength - tailEnd), scrollCanvas.y, tailLength, scrollCanvas.h)*64, fade );
+				pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( 0, 0, tailEnd, scrollCanvas.h )*64 );
+				pDevice->clearTintGradient();
+			}
+		}
 		else
 		{
-			int firstPartLen = m_pCanvas->pixelSize().w - m_canvasOfs;
-
-			pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( m_canvasOfs, 0, firstPartLen, scrollCanvas.h )*64 );
-			pDevice->blit(WgCoord(scrollCanvas.x + firstPartLen, scrollCanvas.y)*64, WgRect( 0, 0, scrollCanvas.w - firstPartLen, scrollCanvas.h )*64 );
+			if( m_windowBegin == 0 )
+				pDevice->blit( WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( 0, 0, scrollCanvas.w, scrollCanvas.h )*64 );
+			else
+			{
+				int firstPartLen = m_pCanvas->pixelSize().w - m_canvasOfs;
+				
+				pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( m_canvasOfs, 0, firstPartLen, scrollCanvas.h )*64 );
+				pDevice->blit(WgCoord(scrollCanvas.x + firstPartLen, scrollCanvas.y)*64, WgRect( 0, 0, scrollCanvas.w - firstPartLen, scrollCanvas.h )*64 );
+			}
 		}
 
+			
 		pDevice->setTintColor(oldTintColor);
 		pDevice->setBlendMode(oldBlendMode);
 		
