@@ -290,7 +290,15 @@ namespace wg
 
 	void Base::_stopReceiveUpdates(Receiver* pReceiver)
 	{
-		s_updateReceivers.erase(std::remove(s_updateReceivers.begin(), s_updateReceivers.end(), pReceiver));
+		auto it = std::remove(s_updateReceivers.begin(), s_updateReceivers.end(), pReceiver);
+		
+		if( it == s_updateReceivers.end() )
+		{
+			Base::throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Base::_stopReceiveUpdates() called on object not receiving updates.", pReceiver, nullptr, __func__, __FILE__, __LINE__);
+			return;
+		}
+		
+		s_updateReceivers.erase(it);
 	}
 
 
