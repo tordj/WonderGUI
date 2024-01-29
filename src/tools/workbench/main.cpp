@@ -44,6 +44,27 @@
 
 using namespace wg;
 
+
+
+class MyHostBridge : public HostBridge
+{
+public:
+	bool		hidePointer() override {};
+	bool		showPointer() override {};
+
+	bool		lockHidePointer() override { return false; };
+	bool		unlockShowPointer() override { return false; };
+
+	bool		setPointerStyle( PointerStyle style ) override { return false; };
+	
+	std::string	getClipboardText() override { return ""; };
+	bool		setClipboardText(const std::string& text) override { return ""; };
+	
+	bool		requestFocus(uintptr_t windowRef) override { return true; };
+	bool		yieldFocus(uintptr_t windowRef) override { return true; };
+};
+
+
 void			unitTestMemHeap();
 
 void 			translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot );
@@ -63,6 +84,8 @@ bool	bQuit = false;
 
 BlockSkin_p m_pSimpleButtonSkin;
 FreeTypeFont_p m_pFont;
+
+MyHostBridge * g_pHostBridge = nullptr;
 
 
 void freeSDLSurfCallback( void * pSDLSurf )
@@ -336,7 +359,10 @@ int main(int argc, char** argv)
 
 
 
-	Base::init(nullptr);
+	
+	g_pHostBridge = new MyHostBridge();
+
+	Base::init(g_pHostBridge);
 	Base::beginObjectTracking();
 
 
@@ -680,7 +706,7 @@ int main(int argc, char** argv)
 		//	popupOpenerTest(pSlot);
 		//	scrollbarTest(pSlot);
 		//	modalLayerTest(pSlot);
-		//	splitPanelTest(pSlot);
+			splitPanelTest(pSlot);
 		//	designLayerTest(pSlot);
 		//	pianoKeyboardTest(pSlot);
 		//	sliderTest(pSlot);
@@ -712,13 +738,13 @@ int main(int argc, char** argv)
 		//	customSkinTest(pSlot);
 		//	areaChartTest(pSlot);
 		//	areaChartTest2(pSlot);
-			plotChartTest(pSlot);
+		//	plotChartTest(pSlot);
 		//	nortonCommanderTest(pSlot);
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
 		//	canvasCapsuleTest(pSlot);
-			canvasCapsuleGlowTest(pSlot);
+		//	canvasCapsuleGlowTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -759,6 +785,7 @@ int main(int argc, char** argv)
 	IMG_Quit();
 	SDL_Quit();
 
+	delete g_pHostBridge;
 	return 0;
 }
 
@@ -1289,6 +1316,15 @@ bool lineEditorTest(ComponentPtr<DynamicSlot> pEntry)
 	pEditor2->editor.setText("TEXT.");
 	pFlex->slots.pushBack(pEditor2, { .pos = {10,150}, .size = {80,40} });
 
+	auto pButton = Button::create( { .skin = m_pSimpleButtonSkin, .label = { .text = "SET TEXT" } } );
+
+	Base::msgRouter()->addRoute(pButton, MsgType::Select, [pEditor2](Msg* p){ pEditor2->editor.setText("MODIFIED."); } );
+	
+	pFlex->slots.pushBack(pButton, { .pos = {10, 200} });
+	
+
+	
+	
 	* pEntry = pFlex;
 	return true;
 }
