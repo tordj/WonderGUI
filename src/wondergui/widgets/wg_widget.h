@@ -368,7 +368,7 @@ namespace wg
 		bool			m_bSelectable = true;			// Set if widget is allowed to be selected.
 		uint8_t			m_receivingUpdateCounter = 0;	//
 		bool			m_bPressed = false;				// Keeps track of pressed button when mouse leaves/re-enters widget.
-		bool			m_bStickyFocus = true;			// Set if widget should keep keyboard focus when mouse button pressed outside it.
+		bool			m_bStickyFocus = false;			// Set if widget should keep keyboard focus when mouse button pressed outside it.
 
 
 		SizeSPX			m_size = { 256 * 64,256 * 64 };	// Current size of widget.

@@ -773,14 +773,15 @@ namespace wg
 		if (pWidget != m_pFocusedChild.rawPtr())
 			return true;					// Didn't have focus, although widget seems to believe it.
 
-		Widget* pOldFocus = m_pFocusedChild;
-		m_pFocusedChild = slot._widget();
+		Widget* pNewFocus = slot._widget();	// We revert keyboard focus to our base widget.
 
 		if (Base::hostBridge() && Base::hostBridge()->yieldFocus(m_windowRef)) // Let OS know that we don't need focus anymore.
 			Base::inputHandler()->setFocusedWindow(nullptr);
-		else if( m_pFocusedChild != pOldFocus )
-			Base::inputHandler()->_focusChanged(this, pOldFocus, m_pFocusedChild);
+		else if( m_pFocusedChild != pNewFocus )
+			Base::inputHandler()->_focusChanged(this, m_pFocusedChild, pNewFocus );
 
+		m_pFocusedChild = pNewFocus;
+		
 		return (Base::inputHandler()->focusedWidget() != pWidget);
 	}
 
