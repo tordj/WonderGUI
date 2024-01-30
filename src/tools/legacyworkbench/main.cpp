@@ -557,6 +557,7 @@ bool scrollChartTest(WgRootPanel* pRoot)
 	pChart->SetValueRange(100, -100);
 	pChart->SetPixelType(WgPixelType::BGRA_8);
 	pChart->SetChartColor(WgColor::Transparent);
+	pChart->SetStaticModeFadeOutLength(1);
 	
 	pChart->SetGridToForeground(true);
 	

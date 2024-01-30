@@ -648,12 +648,28 @@ bool WgScrollChart::FeedSample(int waveId, SamplePair sample)
 
 //____ SetStaticMode() ________________________________________________________
 
-void WgScrollChart::SetStaticMode( bool bStatic, int fadeOutTailLength )
+void WgScrollChart::SetStaticMode( bool bStatic )
 {
 	m_bStaticMode = bStatic;
-	m_fadeTailLength = fadeOutTailLength;
 	_requestRender();
 }
+
+//____ SetStaticModeFadeOutLength() ___________________________________________
+
+void WgScrollChart::SetStaticModeFadeOutLength( int length )
+{
+	m_fadeTailLength = length;
+	_requestRender();
+}
+
+//____ SetStaticModeGradient() ________________________________________________
+
+void WgScrollChart::SetStaticModeGradient( const wg::Gradient& gradient )
+{
+	m_fadeTailGradient = gradient;
+	_requestRender();
+}
+
 
 
 //____ _onEvent() _____________________________________________________________
@@ -1228,28 +1244,30 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 			int tailBegin = m_canvasOfs;
 			int tailEnd = (tailBegin + tailLength) % canvasLen;
 
-			wg::HiColor transparentWhite( 4096, 4096, 4096, 0 );
-			wg::Gradient fade = wg::Gradient( transparentWhite, wg::HiColor::White, wg::HiColor::White, transparentWhite );
-
-			if( tailEnd > tailBegin )
+			if( tailLength > 0 )
 			{
-				pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( 0, 0, tailBegin, scrollCanvas.h )*64 );
-				pDevice->setTintGradient( WgRect(scrollCanvas.x + tailBegin, scrollCanvas.y, tailLength, scrollCanvas.h)*64, fade );
-				pDevice->blit(WgCoord(scrollCanvas.x + tailBegin, scrollCanvas.y)*64, WgRect( tailBegin, 0, tailLength, scrollCanvas.h )*64 );
-				pDevice->clearTintGradient();
-				pDevice->blit(WgCoord(scrollCanvas.x + tailEnd, scrollCanvas.y)*64, WgRect( tailEnd, 0, canvasLen - tailEnd, scrollCanvas.h )*64 );
+				if( tailEnd > tailBegin )
+				{
+					pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( 0, 0, tailBegin, scrollCanvas.h )*64 );
+					pDevice->setTintGradient( WgRect(scrollCanvas.x + tailBegin, scrollCanvas.y, tailLength, scrollCanvas.h)*64, m_fadeTailGradient );
+					pDevice->blit(WgCoord(scrollCanvas.x + tailBegin, scrollCanvas.y)*64, WgRect( tailBegin, 0, tailLength, scrollCanvas.h )*64 );
+					pDevice->clearTintGradient();
+					pDevice->blit(WgCoord(scrollCanvas.x + tailEnd, scrollCanvas.y)*64, WgRect( tailEnd, 0, canvasLen - tailEnd, scrollCanvas.h )*64 );
+				}
+				else
+				{
+					pDevice->blit(WgCoord(scrollCanvas.x + tailEnd, scrollCanvas.y)*64, WgRect( tailEnd, 0, tailBegin - tailEnd, scrollCanvas.h )*64 );
+					
+					pDevice->setTintGradient( WgRect(scrollCanvas.x + tailBegin, scrollCanvas.y, tailLength, scrollCanvas.h)*64, m_fadeTailGradient );
+					pDevice->blit(WgCoord(scrollCanvas.x + tailBegin, scrollCanvas.y)*64, WgRect( tailBegin, 0, tailLength, scrollCanvas.h )*64 );
+					
+					pDevice->setTintGradient( WgRect(scrollCanvas.x - (tailLength - tailEnd), scrollCanvas.y, tailLength, scrollCanvas.h)*64, m_fadeTailGradient );
+					pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( 0, 0, tailEnd, scrollCanvas.h )*64 );
+					pDevice->clearTintGradient();
+				}
 			}
 			else
-			{
-				pDevice->blit(WgCoord(scrollCanvas.x + tailEnd, scrollCanvas.y)*64, WgRect( tailEnd, 0, tailBegin - tailEnd, scrollCanvas.h )*64 );
-
-				pDevice->setTintGradient( WgRect(scrollCanvas.x + tailBegin, scrollCanvas.y, tailLength, scrollCanvas.h)*64, fade );
-				pDevice->blit(WgCoord(scrollCanvas.x + tailBegin, scrollCanvas.y)*64, WgRect( tailBegin, 0, tailLength, scrollCanvas.h )*64 );
-
-				pDevice->setTintGradient( WgRect(scrollCanvas.x - (tailLength - tailEnd), scrollCanvas.y, tailLength, scrollCanvas.h)*64, fade );
-				pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y)*64, WgRect( 0, 0, tailEnd, scrollCanvas.h )*64 );
-				pDevice->clearTintGradient();
-			}
+				pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y)*64 );
 		}
 		else
 		{

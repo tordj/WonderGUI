@@ -139,7 +139,10 @@ public:
 	void	SetCombinedWavesTint(WgColor tintColor) { m_combinedWavesTintColor = tintColor; _requestRender(); };
 	void	SetCombinedWavesGradient(wg::Gradient gradient) { m_combinedWavesTintGradient = gradient; _requestRender(); };
 
-	void	SetStaticMode( bool bStatic, int fadeOutTailLength = 16 );
+	void	SetStaticMode( bool bStatic );
+	
+	void	SetStaticModeFadeOutLength( int length );
+	void	SetStaticModeGradient( const wg::Gradient& gradient );
 	
 	
 protected:
@@ -252,6 +255,9 @@ private:
 
 	bool			m_bStaticMode = false;
 	int				m_fadeTailLength = 16;		// Pixels of "fade out tail" if m_bScrolling == false.
+	
+	wg::Gradient 	m_fadeTailGradient = wg::Gradient( wg::HiColor(4096, 4096, 4096, 0), wg::HiColor::White, wg::HiColor::White, wg::HiColor(4096, 4096, 4096, 0) );
+
 	
 	std::vector<Wave>		m_waves;
 	std::vector<GridLine>	m_valueGridLines;
