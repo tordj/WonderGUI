@@ -105,7 +105,7 @@ namespace wg
 			{
 				if (line.m_bVisible && line.m_value >= rangeMin && line.m_value <= rangeMax)
 				{
-					float valueFactor = (m_displayFloor - m_displayCeiling) * m_chartCanvas.h;
+					float valueFactor = m_chartCanvas.h / (m_displayFloor - m_displayCeiling);
 
 					CoordSPX pos = graphCanvas.pos();
 					pos.y += (line.m_value - m_displayCeiling) * valueFactor;
@@ -334,7 +334,7 @@ namespace wg
 		float	rangeMin = std::min(m_displayCeiling, m_displayFloor);
 		float	rangeMax = std::max(m_displayCeiling, m_displayFloor);
 
-		float valueFactor = (m_displayFloor - m_displayCeiling) * contentGeo.h;
+		float valueFactor = contentGeo.h / (m_displayFloor - m_displayCeiling);
 
 		if (!xLines.isEmpty())
 		{
@@ -371,14 +371,14 @@ namespace wg
 
 					spx canvasHeight = contentGeo.h - margin.top - margin.bottom;
 
-					spx topLineOfs = (pTop->m_value - m_displayCeiling) * (m_displayFloor - m_displayCeiling) * canvasHeight;
+					spx topLineOfs = (pTop->m_value - m_displayCeiling) * (canvasHeight / (m_displayFloor - m_displayCeiling));
 					if (margin.top < -(topLineOfs + topLabelOfs) )
 					{
 						margin.top = -(topLineOfs + topLabelOfs);
 						bModified = true;
 					}
 
-					spx bottomLineOfs = (pBottom->m_value - m_displayCeiling) * (m_displayFloor - m_displayCeiling) * canvasHeight;
+					spx bottomLineOfs = (pBottom->m_value - m_displayCeiling) * (canvasHeight / (m_displayFloor - m_displayCeiling));
 					if (margin.bottom < (bottomLineOfs + bottomLabelOfs ) - canvasHeight )
 					{
 						margin.bottom = (bottomLineOfs + bottomLabelOfs) - canvasHeight;
@@ -461,7 +461,7 @@ namespace wg
 		float	rangeMin = std::min(m_displayCeiling, m_displayFloor);
 		float	rangeMax = std::max(m_displayCeiling, m_displayFloor);
 
-		float valueFactor = (m_displayFloor - m_displayCeiling) * m_chartCanvas.h;
+		float valueFactor = m_chartCanvas.h / (m_displayFloor - m_displayCeiling);
 
 		for (auto& line : xLines)
 		{
