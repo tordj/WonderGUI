@@ -105,6 +105,8 @@ namespace wg
 		s_pMsgRouter = MsgRouter::create();
       	s_pInputHandler = InputHandler::create();
 
+		s_timestamp = 0;
+		
 		s_guiInitCounter = 1;
 		return true;
 	}
@@ -264,8 +266,16 @@ namespace wg
 
 	void Base::update( int64_t timestamp )
 	{
-		int microPassed = int(timestamp - s_timestamp);
+	
+		int64_t microPassed = timestamp - s_timestamp;
 		s_timestamp = timestamp;
+		
+		// Any too large delay is transformed into a minor update.
+		// This takes care of first call and freezes not messing
+		// up things too much.
+		
+		if( microPassed > 2000000 )
+			microPassed = 1000;
 
 		// Update wondergui systems
 

@@ -1069,6 +1069,78 @@ namespace wg
 		_transformBlitSimple({ dest, src.size() }, src.pos(), s_blitFlipTransforms[0], OpType::Blur);
 	}
 
+	//____ stretchBlur() ___________________________________________________________
+
+	void GfxDevice::stretchBlur(const RectSPX& dest )
+	{
+		assert(m_pBlitSource != nullptr);
+
+		stretchBlur(dest, RectSPX(0, 0, m_pBlitSource->pixelSize()*64) );
+	}
+
+	void GfxDevice::stretchBlur(const RectSPX& dest, const RectSPX& src )
+	{
+		assert(m_pBlitSource != nullptr);
+
+		if (m_pBlitSource == nullptr || dest.w == 0 || dest.h == 0 || src.w == 0 || src.h == 0)
+			return;
+
+		if (dest.w == src.w && dest.h == src.h)
+		{
+			// This is a 1:1 blit, let's use the fast alternative.
+
+			_transformBlitSimple( dest, src.pos(), s_blitFlipTransforms[0], OpType::Blur);
+		}
+		else
+		{
+			binalInt	mtx[2][2];
+
+			if (m_pBlitSource->sampleMethod() == SampleMethod::Bilinear)
+			{
+				if (dest.w == 64)
+					mtx[0][0] = 0;
+				else
+					mtx[0][0] = binalInt(src.w-64) * (BINAL_MUL/64) / ((dest.w/64) - 1);
+
+				mtx[0][1] = 0;
+				mtx[1][0] = 0;
+
+				if( dest.h == 64)
+					mtx[1][1] = 0;
+				else
+					mtx[1][1] = binalInt(src.h-64) * (BINAL_MUL/64) / ((dest.h/64) - 1);
+			}
+			else
+			{
+				// We want last src sample to be taken as close to the end of the source
+				// rectangle as possible in order to get a more balanced representation.
+
+				mtx[0][0] = (binalInt(src.w) * (BINAL_MUL/64)) / (dest.w/64);
+				mtx[0][1] = 0;
+				mtx[1][0] = 0;
+				mtx[1][1] = (binalInt(src.h) * (BINAL_MUL/64)) / (dest.h/64);
+			}
+
+			_transformBlitComplex(dest, { binalInt(src.x) * (BINAL_MUL/64), binalInt(src.y) * (BINAL_MUL/64) }, mtx, OpType::Blur);
+		}
+	}
+
+	//____ transformBlur() ________________________________________________
+
+	void GfxDevice::transformBlur(const RectSPX& dest, CoordF src, const float transform[2][2])
+	{
+		assert(m_pBlitSource != nullptr);
+
+		binalInt	mtx[2][2];
+
+		mtx[0][0] = binalInt(transform[0][0]*BINAL_MUL);
+		mtx[0][1] = binalInt(transform[0][1]*BINAL_MUL);
+		mtx[1][0] = binalInt(transform[1][0]*BINAL_MUL);
+		mtx[1][1] = binalInt(transform[1][1]*BINAL_MUL);
+
+		_transformBlitComplex(dest, { toBinalInt(src.x), toBinalInt(src.y) }, mtx, OpType::Blur);
+	}
+
 	//____ rotScaleBlur() _____________________________________________________
 
 	void GfxDevice::rotScaleBlur(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)

@@ -197,6 +197,24 @@ float wg_getMorphFactor(wg_obj device)
 	return getPtr(device)->morphFactor();
 }
 
+void wg_setBlurMatrices(wg_obj device, wg_spx radius, const float red[9], const float green[9], const float blue[9] )
+{
+	getPtr(device)->setBlurMatrices( radius, red, green, blue );
+}
+
+
+void wg_setFixedBlendColor(wg_obj device, wg_color color )
+{
+	getPtr(device)->setFixedBlendColor( HiColor( color.r, color.g, color.b, color.a) );
+}
+
+
+wg_color wg_getFixedBlendColor(wg_obj device)
+{
+	auto color = getPtr(device)->fixedBlendColor();
+	return { color.b, color.g, color.r, color.a };
+}
+
 
 void wg_setRenderLayer(wg_obj device, int layer)
 {
@@ -435,4 +453,34 @@ void wg_flipDrawEdgemap(wg_obj device, wg_coordSPX dest, wg_obj edgemap, wg_gfxF
 void wg_blitNinePatch(wg_obj device, const wg_rectSPX* dstRect, const wg_borderSPX* dstFrame, const wg_ninePatch* patch, int scale)
 {
 	getPtr(device)->blitNinePatch(*(const RectSPX*)dstRect, *(BorderSPX*) dstFrame, * (NinePatch*) patch, scale);
+}
+
+void wg_blur(wg_obj device, wg_coordSPX dest)
+{
+	getPtr(device)->blur( {dest.x, dest.y} );
+}
+
+void wg_blurRect(wg_obj device, wg_coordSPX dest, const wg_rectSPX* src)
+{
+	getPtr(device)->blur( { dest.x, dest.y }, * (const RectSPX*) src );
+}
+
+void wg_stretchBlur(wg_obj device, const wg_rectSPX* dest)
+{
+	getPtr(device)->stretchBlur( *(const RectSPX*)dest );
+}
+
+void wg_stretchBlurRect(wg_obj device, const wg_rectSPX* dest, const wg_rectSPX* src)
+{
+	getPtr(device)->stretchBlur( *(const RectSPX*)dest, *(const RectSPX*)src );
+}
+
+void wg_transformBlur(wg_obj device, const wg_rectSPX* dest, wg_coordF srcSPX, const float transform[2][2])
+{
+	getPtr(device)->transformBlur(*(const RectSPX*)dest, {srcSPX.x, srcSPX.y}, transform );
+}
+
+void wg_rotScaleBlur(wg_obj device, const wg_rectSPX* dest, float rotationDegrees, float scale, wg_coordF srcCenter, wg_coordF destCenter)
+{
+	getPtr(device)->rotScaleBlur(*(const RectSPX*)dest, rotationDegrees, scale, {srcCenter.x, srcCenter.y}, {destCenter.x, destCenter.y} );
 }

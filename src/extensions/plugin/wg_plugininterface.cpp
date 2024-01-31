@@ -183,6 +183,17 @@ void wg_populatePluginInterface(wg_plugin_interface * pHeader)
 	pBody->gfxDevice.flipDrawEdgemap		= &wg_flipDrawEdgemap;
 	pBody->gfxDevice.blitNinePatch			= &wg_blitNinePatch;
 
+	pBody->gfxDevice.setBlurMatrices		= &wg_setBlurMatrices;
+	pBody->gfxDevice.setFixedBlendColor		= &wg_setFixedBlendColor;
+	pBody->gfxDevice.getFixedBlendColor		= &wg_getFixedBlendColor;
+	
+	pBody->gfxDevice.blur					= &wg_blur;
+	pBody->gfxDevice.blurRect				= &wg_blurRect;
+	pBody->gfxDevice.stretchBlur			= &wg_stretchBlur;
+	pBody->gfxDevice.stretchBlurRect		= &wg_stretchBlurRect;
+	pBody->gfxDevice.transformBlur			= &wg_transformBlur;
+	pBody->gfxDevice.rotScaleBlur			= &wg_rotScaleBlur;
+	
 /*
 	pBody->streamBuffer.structSize				= sizeof(wg_streambuffer_calls);
 	pBody->streamBuffer.createStreamBuffer		= &wg_createStreamBuffer;

@@ -41,7 +41,8 @@ bool MyApp::init(Visitor* pVisitor)
 	}
 
 	
-	m_libId = pVisitor->openLibrary("legacytestplugin");
+//	m_libId = pVisitor->openLibrary("legacytestplugin");
+	m_libId = pVisitor->openLibrary("testplugin");
 	if( m_libId == 0 )
 		return false;
 	

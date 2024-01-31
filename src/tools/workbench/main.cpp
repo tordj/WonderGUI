@@ -706,7 +706,7 @@ int main(int argc, char** argv)
 		//	popupOpenerTest(pSlot);
 		//	scrollbarTest(pSlot);
 		//	modalLayerTest(pSlot);
-			splitPanelTest(pSlot);
+		//	splitPanelTest(pSlot);
 		//	designLayerTest(pSlot);
 		//	pianoKeyboardTest(pSlot);
 		//	sliderTest(pSlot);
@@ -744,7 +744,7 @@ int main(int argc, char** argv)
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
 		//	canvasCapsuleTest(pSlot);
-		//	canvasCapsuleGlowTest(pSlot);
+			canvasCapsuleGlowTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop

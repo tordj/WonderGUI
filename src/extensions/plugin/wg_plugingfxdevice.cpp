@@ -272,6 +272,33 @@ namespace wg
         return PluginCalls::gfxDevice->getMorphFactor(m_cDevice);
     }
 
+	//____ setBlurMatrices() _____________________________________________________
+
+	void PluginGfxDevice::setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9] )
+	{
+		GfxDevice::setBlurMatrices(radius, red, green, blue);
+
+		return PluginCalls::gfxDevice->setBlurMatrices(m_cDevice, radius, red, green, blue );
+	}
+
+	//____ setFixedBlendColor() __________________________________________________
+
+	void PluginGfxDevice::setFixedBlendColor( HiColor color )
+	{
+		GfxDevice::setFixedBlendColor(color);
+
+		PluginCalls::gfxDevice->setFixedBlendColor(m_cDevice, *(wg_color*)&color);
+	}
+
+	//____ fixedBlendColor() _____________________________________________________
+
+	HiColor PluginGfxDevice::fixedBlendColor() const
+	{
+		wg_color col = PluginCalls::gfxDevice->getFixedBlendColor(m_cDevice);
+
+		return *(HiColor*)&col;
+	}
+
     //____ setRenderLayer() _______________________________________________________
 
     void PluginGfxDevice::setRenderLayer(int layer)
@@ -452,6 +479,44 @@ namespace wg
     {
         PluginCalls::gfxDevice->scaleFlipTile(m_cDevice, (wg_rectSPX*)&dest, scale, (wg_gfxFlip) flip, { shift.x, shift.y });
     }
+
+	//____ blur() ________________________________________________________________
+
+	void PluginGfxDevice::blur(CoordSPX dest)
+	{
+		PluginCalls::gfxDevice->blur(m_cDevice, { dest.x, dest.y });
+	}
+
+	void PluginGfxDevice::blur(CoordSPX dest, const RectSPX& src)
+	{
+		PluginCalls::gfxDevice->blurRect(m_cDevice, { dest.x, dest.y }, (wg_rectSPX*) &src );
+	}
+
+	//____ stretchBlur() _________________________________________________________
+
+	void PluginGfxDevice::stretchBlur(const RectSPX& dest)
+	{
+		PluginCalls::gfxDevice->stretchBlur(m_cDevice, (wg_rectSPX*) &dest);
+	}
+
+	void PluginGfxDevice::stretchBlur(const RectSPX& dest, const RectSPX& source)
+	{
+		PluginCalls::gfxDevice->stretchBlurRect(m_cDevice, (wg_rectSPX*)&dest, (wg_rectSPX*)&source);
+	}
+
+	//____ transformBlur() _______________________________________________________
+
+	void PluginGfxDevice::transformBlur(const RectSPX& dest, CoordF srcSPX, const float transform[2][2])
+	{
+		PluginCalls::gfxDevice->transformBlur(m_cDevice, (wg_rectSPX*)&dest, {srcSPX.x,srcSPX.y}, transform);
+	}
+
+	//____ rotScaleBlur() ________________________________________________________
+
+	void PluginGfxDevice::rotScaleBlur(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
+	{
+		PluginCalls::gfxDevice->rotScaleBlur(m_cDevice, (wg_rectSPX*)&dest, rotationDegrees, scale, { srcCenter.x, srcCenter.y }, { destCenter.x, destCenter.y });
+	}
 
     //____ drawWave() _________________________________________________________
 

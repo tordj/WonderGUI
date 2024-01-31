@@ -113,7 +113,7 @@ namespace wg
 		
 		//.____ Geometry _________________________________________________
 
-		inline 	SizeSPX	canvasSize() const { return m_canvas.size; }
+		inline 	SizeSPX		canvasSize() const { return m_canvas.size; }
 
 
 		//.____ State _________________________________________________
@@ -202,6 +202,9 @@ namespace wg
 
 		virtual void	blur(CoordSPX dest);
 		virtual void	blur(CoordSPX dest, const RectSPX& src);
+		virtual void	stretchBlur(const RectSPX& dest);
+		virtual void	stretchBlur(const RectSPX& dest, const RectSPX& src);
+		virtual void	transformBlur(const RectSPX& dest, CoordF srcSPX, const float transform[2][2]);
 		virtual void	rotScaleBlur(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f });
 
 

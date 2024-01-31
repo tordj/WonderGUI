@@ -103,6 +103,12 @@ extern "C" {
 	void					wg_setMorphFactor(wg_obj device, float factor);
 	float					wg_getMorphFactor(wg_obj device);
 
+	void					wg_setBlurMatrices(wg_obj device, wg_spx radius, const float red[9], const float green[9], const float blue[9] );
+
+	void					wg_setFixedBlendColor(wg_obj device, wg_color color );
+	wg_color				wg_getFixedBlendColor(wg_obj device);
+
+
 	void					wg_setRenderLayer(wg_obj device, int layer);
 	int						wg_getRenderLayer(wg_obj device);
 
@@ -147,11 +153,23 @@ extern "C" {
 	void					wg_transformBlit(wg_obj device, const wg_rectSPX* dest, wg_coordF srcSPX, const float transform[2][2]);
 	void					wg_rotScaleBlit(wg_obj device, const wg_rectSPX* dest, float rotationDegrees, float scale, wg_coordF srcCenter, wg_coordF destCenter);
 
+	// Tile methods
+
 	void					wg_tile(wg_obj device, const wg_rectSPX* dest, wg_coordSPX shift);
 	void					wg_flipTile(wg_obj device, const wg_rectSPX* dest, wg_gfxFlip flip, wg_coordSPX shift);
 
 	void					wg_scaleTile(wg_obj device, const wg_rectSPX* dest, float scale, wg_coordSPX shift);
 	void					wg_scaleFlipTile(wg_obj device, const wg_rectSPX* dest, float scale, wg_gfxFlip flip, wg_coordSPX shift);
+
+	// Blur methods
+
+	void					wg_blur(wg_obj device, wg_coordSPX dest);
+	void					wg_blurRect(wg_obj device, wg_coordSPX dest, const wg_rectSPX* src);
+	void					wg_stretchBlur(wg_obj device, const wg_rectSPX* dest);
+	void					wg_stretchBlurRect(wg_obj device, const wg_rectSPX* dest, const wg_rectSPX* src);
+	void					wg_transformBlur(wg_obj device, const wg_rectSPX* dest, wg_coordF srcSPX, const float transform[2][2]);
+	void					wg_rotScaleBlur(wg_obj device, const wg_rectSPX* dest, float rotationDegrees, float scale, wg_coordF srcCenter, wg_coordF destCenter);
+
 
 
 	// Draw segments methods

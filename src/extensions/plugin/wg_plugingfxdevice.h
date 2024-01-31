@@ -89,6 +89,11 @@ namespace wg
         void        setMorphFactor(float factor) override;
         float		morphFactor() const override;
 
+		void		setBlurMatrices( spx radius, const float red[9], const float green[9], const float blue[9] ) override;
+		
+		void		setFixedBlendColor( HiColor color ) override;
+		HiColor		fixedBlendColor() const override;
+		
         void        setRenderLayer(int layer) override;
         int			renderLayer() const override;
 
@@ -138,7 +143,14 @@ namespace wg
         void    scaleTile(const RectSPX& dest, float scale, CoordSPX shift = { 0,0 }) override;
         void    scaleFlipTile(const RectSPX& dest, float scale, GfxFlip flip, CoordSPX shift = { 0,0 }) override;
 
+		void	blur(CoordSPX dest) override;
+		void	blur(CoordSPX dest, const RectSPX& src) override;
+		void	stretchBlur(const RectSPX& dest) override;
+		void	stretchBlur(const RectSPX& dest, const RectSPX& src) override;
+		void	transformBlur(const RectSPX& dest, CoordF srcSPX, const float transform[2][2]) override;
+		void	rotScaleBlur(const RectSPX& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f }) override;
 
+		
         // Draw segments methods
 
         void    drawWave(const RectSPX& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill) override;
