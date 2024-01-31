@@ -251,9 +251,10 @@ namespace wg
 
     Surface_p PluginGfxDevice::blitSource() const
     {
-        // This method can not be correctly implemented without huge performance loss.
+        // This method can not be correctly implemented without huge performance loss,
+		// so we just assume that blitSource also was set through plugin.
 
-        return nullptr;
+        return GfxDevice::blitSource();
     }
 
     //____ setMorphFactor() ______________________________________________________
