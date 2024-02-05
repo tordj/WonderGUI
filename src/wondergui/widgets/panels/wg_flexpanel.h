@@ -216,6 +216,7 @@ namespace wg
 		{
 			Object_p		baggage;
 			bool			confineWidgets	= false;
+			Size			defaultSize;
 			bool			disabled		= false;
 			bool			dropTarget		= false;
 			Finalizer_p		finalizer		= nullptr;
@@ -246,11 +247,14 @@ namespace wg
 
 		void			setConfineWidgets( bool bConfineWidgets );
 		bool			isConfiningWidgets() const { return m_bConfineWidgets; }
+
+		void			setDefaultSize( Size size );
+		bool			isDefaultSizeSet() const { return !m_defaultSize.isEmpty(); }
+		
 		
 		//.____ Internal ______________________________________________________
 
 		SizeSPX			_defaultSize(int scale) const override;
-
 
 	protected:
 		FlexPanel();
@@ -291,6 +295,7 @@ namespace wg
 		SizeSPX		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
 
 		bool		m_bConfineWidgets = false;
+		Size		m_defaultSize;
 	};
 
 

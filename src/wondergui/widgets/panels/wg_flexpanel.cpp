@@ -240,10 +240,24 @@ namespace wg
 		}
 	}
 
+	//____ setDefaultSize() __________________________________________________________
+
+	void FlexPanel::setDefaultSize( Size size )
+	{
+		if( size != m_defaultSize )
+		{
+			m_defaultSize = size;
+			_requestResize();
+		}
+	}
+
 	//____ _defaultSize() _____________________________________________________________
 
 	SizeSPX FlexPanel::_defaultSize(int scale) const
 	{
+		if( !m_defaultSize.isEmpty() )
+			return align(ptsToSpx(m_defaultSize, m_scale));
+
 		SizeSPX minSize;
 
 		auto p = slots.begin();

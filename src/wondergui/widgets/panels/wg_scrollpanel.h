@@ -118,6 +118,14 @@ namespace wg
 		void			setStealWheelFromScrollbars(bool bSteal);
 		void			setAutoscroll(bool autoscrollX, bool autoscrollY);
 
+		void			setRelativeViewOffset( float x, float y );
+
+		bool			setViewOffset( Coord offset );
+		Coord			viewOffset() const;
+		
+		Size			viewSize() const;
+		Size			contentSize() const;
+		
 		//void			setDragCombo(MouseButton button, ModKeys modkeys); // NOT POSSIBLE YET, NEEDS TO BE ABLE TO INTERCEPT MESSAGES.
 
 		//.____ Internal ______________________________________________________
@@ -127,6 +135,14 @@ namespace wg
 
 		SizeSPX			_defaultSize(int scale) const override;
 
+		bool			_setViewOffset( CoordSPX offset );
+		CoordSPX		_viewOffset() const { return m_childWindow.pos() - m_childCanvas.pos(); } // Can be negative if content is smaller than view and placement is not NorthWest.
+		
+		SizeSPX			_viewSize() const { return m_childWindow.size(); }
+		SizeSPX			_contentSize() const { return m_childCanvas.size(); }
+;
+
+		
 	protected:
 		ScrollPanel();
 		template<class BP> ScrollPanel(const BP& bp) : slot(this), scrollbarX(this, this, Axis::X), scrollbarY(this, this, Axis::Y), Container(bp)

@@ -393,6 +393,78 @@ namespace wg
 		m_bAutoscrollY = autoscrollY;
 	}
 
+	//____ setRelativeViewOffset() _______________________________________________
+
+	void ScrollPanel::setRelativeViewOffset( float x, float y )
+	{
+		if( x < 0.f )
+			x = 0.f;
+		else if( x > 1.f )
+			x = 1.f;
+		
+		if( y < 0.f )
+			y = 0.f;
+		else if( y > 1.f )
+			y = 1.f;
+
+		spx xOfs = align(m_childWindow.x - int((m_childCanvas.w - m_childWindow.w) * x));
+		spx yOfs = align(m_childWindow.y - int((m_childCanvas.h - m_childWindow.h) * y));
+		
+		_setViewOffset({xOfs,yOfs});
+	}
+
+	//____ setViewOffset() _______________________________________________________
+
+	bool ScrollPanel::setViewOffset( Coord _offset )
+	{
+		CoordSPX offset = align(ptsToSpx(_offset, m_scale));
+		return _setViewOffset(offset);
+	}
+
+	//____ viewOffset() __________________________________________________________
+
+	Coord ScrollPanel::viewOffset() const
+	{
+		return spxToPts(_viewOffset(), m_scale);
+	}
+
+	//____ viewSize() ____________________________________________________________
+
+	Size ScrollPanel::viewSize() const
+	{
+		return spxToPts(_viewSize(), m_scale);
+	}
+
+	//____ contentSize() __________________________________________________________
+
+	Size ScrollPanel::contentSize() const
+	{
+		return spxToPts(_contentSize(), m_scale);
+	}
+
+	//____ _setViewOffset() _______________________________________________________
+
+	bool ScrollPanel::_setViewOffset( CoordSPX _offset )
+	{
+		CoordSPX offset = align(_offset);
+		
+		auto oldChildCanvas = m_childCanvas;
+		auto wantedChildCanvas = m_childWindow - offset;
+
+		m_childCanvas = wantedChildCanvas;
+		
+		_childWindowCorrection();
+
+		if( oldChildCanvas != m_childCanvas )
+		{
+			_updateScrollbars();
+			_requestRender();
+		}
+		
+		return ( m_childCanvas == wantedChildCanvas );
+	}
+
+
 	//____ _matchingHeight() __________________________________________________
 
 	spx ScrollPanel::_matchingHeight(spx width, int scale) const
