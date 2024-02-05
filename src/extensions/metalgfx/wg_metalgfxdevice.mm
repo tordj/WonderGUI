@@ -2415,29 +2415,30 @@ MetalGfxDevice::MetalGfxDevice()
 					int nVertices = *pCmd++;
 					if (nVertices > 0 && m_pActiveBlitSource)
 					{
+						auto size = m_pActiveBlitSource->pixelSize();
+
+						float radiusX = m_activeBlurRadius / float(size.w*64);
+						float radiusY = m_activeBlurRadius / float(size.h*64);
+						
+						m_blurUniform.offset[0] = { -radiusX * 0.7f, -radiusY * 0.7f };
+						m_blurUniform.offset[1] = { 0, -radiusY };
+						m_blurUniform.offset[2] = { radiusX * 0.7f, -radiusY * 0.7f };
+
+						m_blurUniform.offset[3] = { -radiusX, 0 };
+						m_blurUniform.offset[4] = { 0, 0 };
+						m_blurUniform.offset[5] = { radiusX, 0 };
+
+						m_blurUniform.offset[6] = { -radiusX * 0.7f, radiusY * 0.7f };
+						m_blurUniform.offset[7] = { 0, radiusY };
+						m_blurUniform.offset[8] = { radiusX * 0.7f, radiusY * 0.7f };
+
+						[renderEncoder setFragmentBytes:&m_blurUniform length:sizeof(BlurUniform) atIndex: (unsigned) FragmentInputIndex::BlurUniform];
+
+
 						[renderEncoder setRenderPipelineState:m_blurPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
 						[renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
 						vertexOfs += nVertices;
-						
-						 auto size = m_pActiveBlitSource->pixelSize();
 
-						 float radiusX = m_blurRadius / float(size.w*64);
-						 float radiusY = m_blurRadius / float(size.h*64);
-						 
-						 m_blurUniform.offset[0] = { -radiusX * 0.7f, -radiusY * 0.7f };
-						 m_blurUniform.offset[1] = { 0, -radiusY };
-						 m_blurUniform.offset[2] = { radiusX * 0.7f, -radiusY * 0.7f };
-
-						 m_blurUniform.offset[3] = { -radiusX, 0 };
-						 m_blurUniform.offset[4] = { 0, 0 };
-						 m_blurUniform.offset[5] = { radiusX, 0 };
-
-						 m_blurUniform.offset[6] = { -radiusX * 0.7f, radiusY * 0.7f };
-						 m_blurUniform.offset[7] = { 0, radiusY };
-						 m_blurUniform.offset[8] = { radiusX * 0.7f, radiusY * 0.7f };
-
-						 [renderEncoder setFragmentBytes:&m_blurUniform length:sizeof(BlurUniform) atIndex: (unsigned) FragmentInputIndex::BlurUniform];
-						 
 						if( m_pActiveCanvas )
 							m_pActiveCanvas->m_bMipmapStale = m_pActiveCanvas->m_bMipmapped;
 					}
