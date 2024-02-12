@@ -48,23 +48,9 @@ namespace wg
 
 	int				Base::s_guiInitCounter = 0;
 
-	MsgRouter_p		Base::s_pMsgRouter;
-	InputHandler_p	Base::s_pInputHandler;
-	TextLayout_p	Base::s_pDefaultTextLayout;
-	Caret_p			Base::s_pDefaultCaret;
-	NumberLayout_p	Base::s_pDefaultNumberLayout;
-//	TextStyle_p		Base::s_pDefaultStyle;
-	PackLayout_p	Base::s_pDefaultPackLayout;
+	GUIContext_p	Base::s_pGUIContext;
 
 	String			Base::s_clipboardText;
-
-	HostBridge*					Base::s_pHostBridge = nullptr;
-
-	int64_t						Base::s_timestamp = 0;
-	std::vector<Receiver*>		Base::s_updateReceivers;
-
-
-
 
 	//____ init() __________________________________________________________________
 
@@ -76,36 +62,41 @@ namespace wg
 			return true;
 		}
 
+		if( s_pContextCreator == nullptr )
+			s_pContextCreator = [] { return GearContext_p(new GUIContext()); };
+
 		if( !GfxBase::init() )
 			return false;
+
+		s_pGUIContext = wg_static_cast<GUIContext_p>(s_pGearContext);
 		
-		s_pHostBridge = pHostBridge;
+		s_pGUIContext->pHostBridge = pHostBridge;
 
 		TextTool::setDefaultBreakRules();
 
 		TextStyleManager::init();
-		SkinSlotManager::init();
 
 		TextStyle::Blueprint textStyleBP;
 		textStyleBP.font = DummyFont::create();
 
 		TextStyle::s_pDefaultStyle = TextStyle::create( textStyleBP );
 
-		s_pDefaultCaret = Caret::create();
+		s_pGUIContext->pDefaultCaret = Caret::create();
 
-		s_pDefaultTextLayout = BasicTextLayout::create({});
+		s_pGUIContext->pDefaultTextLayout = BasicTextLayout::create({});
 
-		s_pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
+		s_pGUIContext->pDefaultNumberLayout = BasicNumberLayout::create( BasicNumberLayout::Blueprint() );
 
-		s_pDefaultPackLayout = PackLayout::create( WGBP(PackLayout,
+		s_pGUIContext->pDefaultPackLayout = PackLayout::create( WGBP(PackLayout,
 														_.expandFactor = PackLayout::Factor::Weight,
 														_.shrinkFactor = PackLayout::Factor::Weight
 														));
 
-		s_pMsgRouter = MsgRouter::create();
-      	s_pInputHandler = InputHandler::create();
-
-		s_timestamp = 0;
+		s_pGUIContext->pMsgRouter = MsgRouter::create();
+		s_pGUIContext->pInputHandler = InputHandler::create();
+		s_pGUIContext->pSkinSlotManager = SkinSlotManager::create();
+				
+		s_pGUIContext->timestamp = 0;
 		
 		s_guiInitCounter = 1;
 		return true;
@@ -127,96 +118,112 @@ namespace wg
 			return true;
 		}
 	
-		s_pMsgRouter = nullptr;
-		s_pInputHandler = nullptr;
-		s_pDefaultTextLayout = nullptr;
-		s_pDefaultCaret = nullptr;
-		s_pDefaultNumberLayout = nullptr;
+		// We need to make sure our objects are destroyed before continuing.
+		
+		s_pGUIContext->pDefaultCaret = nullptr;
+		s_pGUIContext->pDefaultTextLayout = nullptr;
+		s_pGUIContext->pDefaultNumberLayout = nullptr;
+		s_pGUIContext->pDefaultPackLayout = nullptr;
+		s_pGUIContext->pMsgRouter = nullptr;
+		s_pGUIContext->pInputHandler = nullptr;
+		s_pGUIContext->pSkinSlotManager = nullptr;
+
+		s_pGUIContext = nullptr;
+		
 		TextStyle::s_pDefaultStyle = nullptr;
 
 		s_clipboardText.clear();
 
-		s_pHostBridge = nullptr;
-
-		s_timestamp = 0;
-		s_updateReceivers.clear();
-
-		SkinSlotManager::exit();
 		TextStyleManager::exit();
 
 		s_guiInitCounter = 0;
 		return GfxBase::exit();
 	}
 
+	//____ switchContext() _______________________________________________________
+
+	GUIContext_p Base::switchContext( const GUIContext_p& pNewContext )
+	{
+		auto pOld = wg_static_cast<GUIContext_p>(GfxBase::switchContext(pNewContext));
+		s_pGUIContext = wg_static_cast<GUIContext_p>(s_pGearContext);
+		return pOld;
+	}
 
 	//____ msgRouter() _________________________________________________________
 
 	MsgRouter_p	Base::msgRouter()
 	{
-		return s_pMsgRouter;
+		return s_pGUIContext->pMsgRouter;
 	}
 
 	//____ inputHandler() ______________________________________________________
 
 	InputHandler_p Base::inputHandler()
 	{
-		return s_pInputHandler;
+		return s_pGUIContext->pInputHandler;
+	}
+
+	//____ skinSlotManager() _____________________________________________________
+
+	SkinSlotManager_p Base::skinSlotManager()
+	{
+		return s_pGUIContext->pSkinSlotManager;
 	}
 
 	//____ defaultCaret() ______________________________________________________
 
 	Caret_p Base::defaultCaret()
 	{
-		return s_pDefaultCaret;
+		return s_pGUIContext->pDefaultCaret;
 	}
 
 	//____ setDefaultCaret() ___________________________________________________
 
 	void Base::setDefaultCaret( Caret * pCaret )
 	{
-		s_pDefaultCaret = pCaret;
+		s_pGUIContext->pDefaultCaret = pCaret;
 	}
 
 	//_____ defaultTextLayout() ________________________________________________
 
 	TextLayout_p Base::defaultTextLayout()
 	{
-		return s_pDefaultTextLayout;
+		return s_pGUIContext->pDefaultTextLayout;
 	}
 
 	//____ setDefaultTextLayout() ___________________________________________________
 
 	void Base::setDefaultTextLayout( TextLayout * pTextLayout )
 	{
-		s_pDefaultTextLayout = pTextLayout;
+		s_pGUIContext->pDefaultTextLayout = pTextLayout;
 	}
 
 	//____ defaultNumberLayout() _____________________________________________
 
 	NumberLayout_p Base::defaultNumberLayout()
 	{
-		return s_pDefaultNumberLayout;
+		return s_pGUIContext->pDefaultNumberLayout;
 	}
 
 	//____ setDefaultNumberLayout() _______________________________________________________
 
 	void Base::setDefaultNumberLayout(NumberLayout * pFormatter)
 	{
-		s_pDefaultNumberLayout = pFormatter;
+		s_pGUIContext->pDefaultNumberLayout = pFormatter;
 	}
 
 	//_____ defaultPackLayout() ________________________________________________
 
 	PackLayout_p Base::defaultPackLayout()
 	{
-		return s_pDefaultPackLayout;
+		return s_pGUIContext->pDefaultPackLayout;
 	}
 
 	//____ setDefaultPackLayout() ___________________________________________________
 
 	void Base::setDefaultPackLayout( PackLayout * pTextLayout )
 	{
-		s_pDefaultPackLayout = pTextLayout;
+		s_pGUIContext->pDefaultPackLayout = pTextLayout;
 	}
 
 	//____ defaultStyle() ______________________________________________________
@@ -238,11 +245,11 @@ namespace wg
 	void Base::setClipboardText( const String& text )
 	{
 		s_clipboardText = text;
-		if( s_pHostBridge )
+		if( s_pGUIContext->pHostBridge )
 		{
 			auto stdString = CharSeq(text).getStdString();
 			
-			s_pHostBridge->setClipboardText(stdString);
+			s_pGUIContext->pHostBridge->setClipboardText(stdString);
 		}
 	}
 
@@ -250,9 +257,9 @@ namespace wg
 
 	String Base::getClipboardText()
 	{
-		if( s_pHostBridge )
+		if( s_pGUIContext->pHostBridge )
 		{
-			auto stdString = s_pHostBridge->getClipboardText();
+			auto stdString = s_pGUIContext->pHostBridge->getClipboardText();
 			
 			return String(stdString);
 		}
@@ -266,8 +273,8 @@ namespace wg
 
 	void Base::update( int64_t timestamp )
 	{
-		int64_t microPassed = timestamp - s_timestamp;
-		s_timestamp = timestamp;
+		int64_t microPassed = timestamp - s_pGUIContext->timestamp;
+		s_pGUIContext->timestamp = timestamp;
 		
 		// Any too large delay is transformed into a minor update.
 		// This takes care of first call and freezes not messing
@@ -278,14 +285,14 @@ namespace wg
 
 		// Update wondergui systems
 		
-		s_pInputHandler->_update(timestamp/1000);
-		SkinSlotManager::update(int(microPassed/1000));
+		s_pGUIContext->pInputHandler->_update(timestamp/1000);
+		s_pGUIContext->pSkinSlotManager->update(int(microPassed/1000));
 		
 		// Update widgets.
 		
 		bool bEmptyFound = false;
 		
-		for (auto pReceiver : s_updateReceivers)
+		for (auto pReceiver : s_pGUIContext->updateReceivers)
 		{
 			if( pReceiver )
 				pReceiver->_update(int(microPassed), timestamp);
@@ -294,7 +301,7 @@ namespace wg
 		}
 		
 		if( bEmptyFound )
-			s_updateReceivers.erase(std::remove(s_updateReceivers.begin(), s_updateReceivers.end(), nullptr), s_updateReceivers.end() );
+			s_pGUIContext->updateReceivers.erase(std::remove(s_pGUIContext->updateReceivers.begin(), s_pGUIContext->updateReceivers.end(), nullptr), s_pGUIContext->updateReceivers.end() );
 	}
 
 
@@ -302,16 +309,16 @@ namespace wg
 
 	int64_t Base::_startReceiveUpdates(Receiver* pReceiver)
 	{
-		s_updateReceivers.push_back(pReceiver);
-		return s_timestamp;
+		s_pGUIContext->updateReceivers.push_back(pReceiver);
+		return s_pGUIContext->timestamp;
 	}
 
 	//____ _stopReceiveUpdates() _________________________________________________
 
 	void Base::_stopReceiveUpdates(Receiver* pReceiver)
 	{
-		auto it = std::find(s_updateReceivers.begin(), s_updateReceivers.end(), pReceiver);
-		if( it != s_updateReceivers.end() )
+		auto it = std::find(s_pGUIContext->updateReceivers.begin(), s_pGUIContext->updateReceivers.end(), pReceiver);
+		if( it != s_pGUIContext->updateReceivers.end() )
 			* it = nullptr;
 		else
 		{

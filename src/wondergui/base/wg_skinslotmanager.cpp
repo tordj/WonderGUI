@@ -26,55 +26,53 @@
 
 namespace wg
 {
-	MemPool* SkinSlotManager::s_pMemPool = nullptr;
-	std::vector<SkinSlotPocket*>	SkinSlotManager::s_slotPockets;
 
-	//____ init() _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
-	void SkinSlotManager::init()
+	SkinSlotManager::SkinSlotManager()
 	{
-		s_pMemPool = new MemPool(16, sizeof(SkinSlotPocket));
+		m_pMemPool = new MemPool(16, sizeof(SkinSlotPocket));
 	}
 
 	//____ exit() _____________________________________________________________
 
-	void SkinSlotManager::exit()
+	SkinSlotManager::~SkinSlotManager()
 	{
-		assert(s_pMemPool->entriesAllocated() == 0);
-		delete s_pMemPool;
+		assert(m_pMemPool->entriesAllocated() == 0);
+		delete m_pMemPool;
 	}
 
 	//____ update() ___________________________________________________________
 
 	void SkinSlotManager::update(int msPassed)
 	{
-		auto deleteIt = std::remove_if(s_slotPockets.begin(),
-			s_slotPockets.end(),
-			[msPassed](SkinSlotPocket* pPocket) 
+		auto deleteIt = std::remove_if(m_slotPockets.begin(),
+			m_slotPockets.end(),
+			[msPassed,this](SkinSlotPocket* pPocket)
 			{
 				bool bDelete = pPocket->pHolder->_update(pPocket, msPassed); 
 				if (bDelete)
 				{
 					pPocket->pHolder->_willRemovePocket(pPocket);
-					s_pMemPool->freeEntry(pPocket);
+					m_pMemPool->freeEntry(pPocket);
 				}
 				return bDelete; 
 			}
 		);
 
-		if (deleteIt != s_slotPockets.end())
-			s_slotPockets.erase(deleteIt, s_slotPockets.end());
+		if (deleteIt != m_slotPockets.end())
+			m_slotPockets.erase(deleteIt, m_slotPockets.end());
 	}
 
 	//____ allocPocket() ______________________________________________________
 
 	SkinSlotPocket* SkinSlotManager::allocPocket()
 	{
-		auto pBuff = s_pMemPool->allocEntry();
+		auto pBuff = m_pMemPool->allocEntry();
 
 		auto pPocket = new(pBuff) SkinSlotPocket();
 
-		s_slotPockets.push_back(pPocket);
+		m_slotPockets.push_back(pPocket);
 		return pPocket;
 	}
 
@@ -82,9 +80,9 @@ namespace wg
 
 	void SkinSlotManager::freePocket(SkinSlotPocket* pPocket)
 	{
-		s_pMemPool->freeEntry(pPocket);
+		m_pMemPool->freeEntry(pPocket);
 
-		auto it = std::find(s_slotPockets.begin(), s_slotPockets.end(), pPocket);
-		s_slotPockets.erase(it);
+		auto it = std::find(m_slotPockets.begin(), m_slotPockets.end(), pPocket);
+		m_slotPockets.erase(it);
 	}
 }

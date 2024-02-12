@@ -30,6 +30,8 @@
 #include <string>
 
 #include <wg_strongptr.h>
+#include <wg_weakptr.h>
+#include <wg_object.h>
 #include <wg_geartypes.h>
 
 namespace wg
@@ -52,6 +54,17 @@ namespace wg
 		int				line;
 	};
 
+	//
+
+	class GearContext : public Object
+	{
+		friend class GearBase;
+		
+		std::function<void(Error&)>	pErrorHandler = nullptr;
+	};
+
+	typedef StrongPtr<GearContext>	GearContext_p;
+	typedef WeakPtr<GearContext>	GearContext_wp;
 
 	/**
 	 * @brief	Static base class for WonderGUI.
@@ -80,9 +93,11 @@ namespace wg
 
 		//.____ Content _____________________________________________
 		
-		static void			setErrorHandler(std::function<void(Error&)> handler);
+		static GearContext_p		switchContext( const GearContext_p& pNewContext );
+
+		static void					setErrorHandler(std::function<void(Error&)> handler);
 		std::function<void(Error&)>	errorHandler();
-		
+				
 		//.____ Misc ________________________________________________
 
 		const static TypeInfo	TYPEINFO;
@@ -113,7 +128,6 @@ namespace wg
 		static void			_trackObject(Object* pObject, const char* pFileName, int lineNb);
 
 	protected:
-
 		static int					s_initCounter;
 
 		static WeakPtrHub *	_allocWeakPtrHub();
@@ -122,10 +136,10 @@ namespace wg
         inline static void	_objectWasCreated(Object* pObject) { s_objectsCreated.fetch_add(1, std::memory_order_relaxed); if (s_bTrackingObjects) _trackObject(pObject, nullptr, -1); }
         inline static void	_objectWillDestroy(Object* pObject) { s_objectsDestroyed.fetch_add(1, std::memory_order_relaxed); if (s_bTrackingObjects) s_trackedObjects.erase(pObject); }
 
-
+		static GearContext_p				s_pGearContext;
+		
 		static MemPool *					s_pPtrPool;
 		static MemStack *					s_pMemStack;
-		static std::function<void(Error&)>	s_pErrorHandler;
 		
 		struct ObjectInfo
 		{
@@ -141,6 +155,8 @@ namespace wg
 
 		static bool			s_bTrackingObjects;
 		static std::unordered_map<Object*, ObjectInfo>	s_trackedObjects;
+
+		static  GearContext_p(*s_pContextCreator)();
 	};
 
 

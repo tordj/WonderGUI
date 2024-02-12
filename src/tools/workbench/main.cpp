@@ -787,7 +787,9 @@ int main(int argc, char** argv)
 	pSurfaceFactory = nullptr;
 	pEdgemapFactory = nullptr;
 
-
+	m_pSimpleButtonSkin = nullptr;
+	m_pFont = nullptr;
+	
 	// Exit WonderGUI
 
 	Base::printObjects(std::cout);

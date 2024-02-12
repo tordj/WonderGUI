@@ -51,6 +51,7 @@ namespace wg
 	class Caret;
 	class TextStyle;
 	class Receiver;
+	class SkinSlotManager;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
 	typedef	StrongPtr<NumberLayout>		NumberLayout_p;
@@ -59,7 +60,32 @@ namespace wg
 	typedef	StrongPtr<Caret>			Caret_p;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	StrongPtr<PackLayout>		PackLayout_p;
+	typedef	StrongPtr<SkinSlotManager>	SkinSlotManager_p;
 
+
+
+	class GUIContext : public GfxContext
+	{
+		friend class Base;
+		
+		MsgRouter_p			pMsgRouter;
+		InputHandler_p		pInputHandler;
+		TextLayout_p		pDefaultTextLayout;
+		Caret_p				pDefaultCaret;
+		NumberLayout_p		pDefaultNumberLayout;
+//		TextStyle_p			pDefaultStyle;			// Moved to TextStyle itself for WG2 compatibility reasons.
+		PackLayout_p		pDefaultPackLayout;
+		SkinSlotManager_p	pSkinSlotManager;
+		
+		HostBridge*		pHostBridge;
+
+		int64_t			timestamp;
+
+		std::vector<Receiver*>	updateReceivers;
+	};
+
+	typedef	StrongPtr<GUIContext>	GUIContext_p;
+	typedef	WeakPtr<GUIContext>		GUIContext_wp;
 
 
 	/**
@@ -88,8 +114,11 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
-		static MsgRouter_p	msgRouter();
-		static InputHandler_p	inputHandler();
+		static GUIContext_p	 switchContext( const GUIContext_p& pNewContext );
+		
+		static MsgRouter_p			msgRouter();
+		static InputHandler_p		inputHandler();
+		static SkinSlotManager_p	skinSlotManager();
 
 		static void			setDefaultTextLayout( TextLayout * pTextLayout );
 		static TextLayout_p defaultTextLayout();
@@ -110,7 +139,7 @@ namespace wg
 		static String		getClipboardText();
 		
 
-		static HostBridge *	hostBridge() { return s_pHostBridge; }
+		static HostBridge *	hostBridge() { return s_pGUIContext->pHostBridge; }
 
 
 		
@@ -122,7 +151,7 @@ namespace wg
 
 		static void			update( int64_t timestamp_microseconds );
 
-		static int64_t 		timestamp() { return s_timestamp; }
+		static int64_t 		timestamp() { return s_pGUIContext->timestamp; }
 
 		//.____ Internal ____________________________________________________________
 
@@ -131,28 +160,14 @@ namespace wg
 
 		static TextStyle*	_defaultStyle() { return TextStyle::s_pDefaultStyle.rawPtr(); }
 
-
+	protected:
+		static	GUIContext_p	s_pGUIContext;
 
 	private:
 
-		static	int				s_guiInitCounter;
-		
-		static	MsgRouter_p		s_pMsgRouter;
-		static	InputHandler_p	s_pInputHandler;
-		static	TextLayout_p	s_pDefaultTextLayout;
-		static	Caret_p			s_pDefaultCaret;
-		static	NumberLayout_p	s_pDefaultNumberLayout;
-//		static	TextStyle_p		s_pDefaultStyle;			// Moved to TextStyle itself for WG2 compatibility reasons.
-		static	PackLayout_p	s_pDefaultPackLayout;
-
-
+		static	int				s_guiInitCounter;		
 		static	String			s_clipboardText;
 
-		static HostBridge*		s_pHostBridge;
-
-		static int64_t			s_timestamp;
-
-		static std::vector<Receiver*>		s_updateReceivers;
 	};
 
 

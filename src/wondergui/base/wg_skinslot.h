@@ -51,7 +51,7 @@ namespace wg
 		};
 
 		SkinSlot(Holder* pHolder) : m_pHolder(pHolder) {}
-		~SkinSlot() { if (m_pSkin) m_pSkin->_decUseCount(); if (m_pPocket) SkinSlotManager::freePocket(m_pPocket); }
+		~SkinSlot() { if (m_pSkin) m_pSkin->_decUseCount(); if (m_pPocket) _releasePocket(); }
 
 
 		void			set(Skin* pSkin);

@@ -37,16 +37,19 @@ namespace wg
 
 	int							GearBase::s_initCounter = 0;
 
+	GearContext_p				GearBase::s_pGearContext;
+
 	MemPool *					GearBase::s_pPtrPool = nullptr;
 	MemStack *					GearBase::s_pMemStack = nullptr;
-
-	std::function<void(Error&)>	GearBase::s_pErrorHandler = nullptr;
 
 	std::atomic<unsigned int>	GearBase::s_objectsCreated;
 	std::atomic<unsigned int>	GearBase::s_objectsDestroyed;
 
 
 	bool						GearBase::s_bTrackingObjects = false;
+
+	GearContext_p(*GearBase::s_pContextCreator)();
+
 
 	std::unordered_map<Object*, GearBase::ObjectInfo>	GearBase::s_trackedObjects;
 
@@ -62,6 +65,10 @@ namespace wg
 			s_pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 			s_pMemStack = new MemStack( 4096 );
 
+			if( s_pContextCreator == nullptr )
+				s_pContextCreator = []() { return GearContext_p(new GearContext()); };
+				
+			s_pGearContext = s_pContextCreator();
 		}
 		
 		s_initCounter++;
@@ -84,6 +91,7 @@ namespace wg
 			return true;
 		}
 		
+		
 		if( !s_pPtrPool->isEmpty() )
 		{
 			throwError(ErrorLevel::SilentError, ErrorCode::SystemIntegrity, "Some weak pointers still in use. Can not exit WonderGUI.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
@@ -103,9 +111,12 @@ namespace wg
 		delete s_pMemStack;
 		s_pMemStack = nullptr;
 
-		if (s_objectsCreated != s_objectsDestroyed)
+		// Our context should be the only object alive at this point. Still needed for the error-handler.
+		
+		if (s_objectsCreated != s_objectsDestroyed )
 			throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, &TYPEINFO, __func__, __FILE__, __LINE__);
 
+		s_pGearContext = nullptr;
 		return true;
 	}
 
@@ -113,7 +124,7 @@ namespace wg
 
 	void GearBase::throwError(ErrorLevel severity, ErrorCode code, const char * msg, const Object * pObject, const TypeInfo* pClassType, const char * function, const char * file, int line)
 	{
-		if (s_pErrorHandler)
+		if (s_pGearContext->pErrorHandler)
 		{
 			Error	error;
 
@@ -126,7 +137,7 @@ namespace wg
 			error.line = line;
 			error.severity = severity;
 
-			s_pErrorHandler(error);
+			s_pGearContext->pErrorHandler(error);
 		}
 	}
 
@@ -175,19 +186,31 @@ namespace wg
 	}
 
 
+	//____ switchContext() _______________________________________________________
+
+	GearContext_p GearBase::switchContext( const GearContext_p& pNewContext )
+	{
+		GearContext_p p = s_pGearContext;
+	
+		if( pNewContext )
+			s_pGearContext = pNewContext;
+		else
+			s_pGearContext = s_pContextCreator();
+		return p;
+	}
 
 	//____ setErrorHandler() _________________________________________________________
 
 	void GearBase::setErrorHandler(std::function<void(Error&)> handler)
 	{
-		s_pErrorHandler = handler;
+		s_pGearContext->pErrorHandler = handler;
 	}
 
 	//____ errorHandler() ____________________________________________________________
 
 	std::function<void(Error&)>	GearBase::errorHandler()
 	{
-		return s_pErrorHandler;
+		return s_pGearContext->pErrorHandler;
 	}
 
 	//____ memStackAlloc() ________________________________________________________

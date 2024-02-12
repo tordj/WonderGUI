@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_skinslotmi.h>
+#include <wg_base.h>
 
 namespace wg
 {
@@ -280,7 +281,7 @@ namespace wg
 	{
 		if (!pPocket)
 		{
-			pPocket = SkinSlotManager::allocPocket();
+			pPocket = Base::skinSlotManager()->allocPocket();
 			pPocket->pHolder = this;
 		}
 
@@ -303,7 +304,7 @@ namespace wg
 	{
 		if (pPocket)
 		{
-			SkinSlotManager::freePocket(pPocket);
+			Base::skinSlotManager()->freePocket(pPocket);
 			pPocket = nullptr;
 		}
 	}

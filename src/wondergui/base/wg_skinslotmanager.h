@@ -25,6 +25,7 @@
 
 #include <wg_mempool.h>
 #include <wg_util.h>
+#include <wg_pointers.h>
 
 #include <vector>
 
@@ -52,28 +53,28 @@ namespace wg
 		void* instance = 0;
 	};
 
-	class SkinSlotManager
+	class SkinSlotManager;
+	typedef	StrongPtr<SkinSlotManager>		SkinSlotManager_p;
+	typedef	WeakPtr<SkinSlotManager>		SkinSlotManager_wp;
+
+	class SkinSlotManager : public Object
 	{
 
 	public:
+		static SkinSlotManager_p	create() { return SkinSlotManager_p(new SkinSlotManager());}
+				
+		void update(int msPassed);
 
-
-		static void init();
-		static void exit();
-
-		static void update(int msPassed);
-
-		static SkinSlotPocket* allocPocket();
-		static void freePocket(SkinSlotPocket* pEntry);
+		SkinSlotPocket* allocPocket();
+		void freePocket(SkinSlotPocket* pEntry);
 
 
 	private:
+		SkinSlotManager();
+		~SkinSlotManager();
 
-
-		static MemPool* s_pMemPool;
-
-		static std::vector<SkinSlotPocket*>	s_slotPockets;
-
+		MemPool* 						m_pMemPool;
+		std::vector<SkinSlotPocket*>	m_slotPockets;
 	};
 };
 

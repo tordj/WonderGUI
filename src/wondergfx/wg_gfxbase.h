@@ -38,6 +38,22 @@ namespace wg
 	typedef	StrongPtr<SurfaceFactory>	SurfaceFactory_p;
 
 
+	class GfxContext : public GearContext
+	{
+		friend class GfxBase;
+		
+		bool				bSRGB = true;
+		
+		SurfaceFactory_p	pDefaultSurfaceFactory;
+		EdgemapFactory_p	pDefaultEdgemapFactory;
+		GfxDevice_p			pDefaultGfxDevice;
+		BitmapCache_p		pDefaultBitmapCache;
+	};
+
+	typedef	StrongPtr<GfxContext>	GfxContext_p;
+	typedef	WeakPtr<GfxContext>		GfxContext_wp;
+
+
 	class GfxBase : public GearBase
 	{
 //		friend class Object_wp;
@@ -54,19 +70,21 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
+		static GfxContext_p			switchContext( const GfxContext_p& pNewContext );
+		
 		static BitmapCache_p		defaultBitmapCache();
 		
 		static void					setDefaultSurfaceFactory( SurfaceFactory * pFactory );
-		static inline SurfaceFactory_p	defaultSurfaceFactory() { return s_pDefaultSurfaceFactory; };
+		static inline SurfaceFactory_p	defaultSurfaceFactory() { return s_pGfxContext->pDefaultSurfaceFactory; };
 
 		static void					setDefaultEdgemapFactory(EdgemapFactory* pFactory);
-		static inline EdgemapFactory_p	defaultEdgemapFactory() { return s_pDefaultEdgemapFactory; };
+		static inline EdgemapFactory_p	defaultEdgemapFactory() { return s_pGfxContext->pDefaultEdgemapFactory; };
 
 		static void					setDefaultGfxDevice( GfxDevice * pDevice );
-		static inline GfxDevice_p	defaultGfxDevice() { return s_pDefaultGfxDevice; };
+		static inline GfxDevice_p	defaultGfxDevice() { return s_pGfxContext->pDefaultGfxDevice; };
 
 		static void					setDefaultToSRGB( bool bSRGB );
-		static inline bool			defaultToSRGB() { return s_bSRGB; }
+		static inline bool			defaultToSRGB() { return s_pGfxContext->bSRGB; }
 		
 		static constexpr int *		curveTab() { return s_curveTab; }
 		static constexpr int		curveTabSize() { return c_nCurveTabEntries; }
@@ -77,15 +95,7 @@ namespace wg
 		static void					_genCurveTab();
 
 		static int					s_gfxInitCounter;
-		
-		static bool					s_bSRGB;
-		
-		static SurfaceFactory_p		s_pDefaultSurfaceFactory;
-		static EdgemapFactory_p	s_pDefaultEdgemapFactory;
-
-		static GfxDevice_p			s_pDefaultGfxDevice;
-
-		static BitmapCache_p		s_pDefaultBitmapCache;
+		static GfxContext_p			s_pGfxContext;
 
 		const static int 			c_nCurveTabEntries = 1024;
 		static int 					s_curveTab[c_nCurveTabEntries];

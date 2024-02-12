@@ -33,13 +33,7 @@ namespace wg
 {
 	int					GfxBase::s_gfxInitCounter = 0;
 
-	bool				GfxBase::s_bSRGB = true;
-
-	SurfaceFactory_p	GfxBase::s_pDefaultSurfaceFactory;
-	EdgemapFactory_p	GfxBase::s_pDefaultEdgemapFactory;
-	GfxDevice_p			GfxBase::s_pDefaultGfxDevice;
-
-	BitmapCache_p		GfxBase::s_pDefaultBitmapCache;
+	GfxContext_p		GfxBase::s_pGfxContext;
 
 	int 				GfxBase::s_curveTab[c_nCurveTabEntries];
 
@@ -61,7 +55,14 @@ namespace wg
 			_genCurveTab();
 
 			s_gfxInitCounter++;
-			return GearBase::init();
+			
+			if( s_pContextCreator == nullptr )
+				s_pContextCreator = []() { return GearContext_p(new GfxContext()); };
+			
+			if( !GearBase::init() )
+			   return false;
+
+		   s_pGfxContext = wg_static_cast<GfxContext_p>(s_pGearContext);
 		}
 
 		s_gfxInitCounter++;
@@ -87,15 +88,18 @@ namespace wg
 		
 		s_gfxInitCounter = 0;
 
-		s_pDefaultGfxDevice 		= nullptr;
-		s_pDefaultSurfaceFactory 	= nullptr;
-		s_pDefaultEdgemapFactory	= nullptr;
+		if( s_pGfxContext->pDefaultBitmapCache )
+			s_pGfxContext->pDefaultBitmapCache->clear();
 
-		if( s_pDefaultBitmapCache )
-		{
-			s_pDefaultBitmapCache->clear();
-			s_pDefaultBitmapCache = nullptr;
-		}
+		// We need to make sure our objects are destroyed before continuing.
+
+		s_pGfxContext->pDefaultSurfaceFactory = nullptr;
+		s_pGfxContext->pDefaultEdgemapFactory = nullptr;
+		s_pGfxContext->pDefaultGfxDevice = nullptr;
+		s_pGfxContext->pDefaultBitmapCache = nullptr;
+		
+		
+		s_pGfxContext = nullptr;
 		
 		delete [] PixelTools::pConv_16_linear_to_8_sRGB;
 		PixelTools::pConv_16_linear_to_8_sRGB = nullptr;
@@ -103,42 +107,51 @@ namespace wg
 		return GearBase::exit();
 	}
 
+	//____ switchContext() _______________________________________________________
+
+	GfxContext_p GfxBase::switchContext( const GfxContext_p& pNewContext )
+	{
+		auto pOld = wg_static_cast<GfxContext_p>(GfxBase::switchContext(pNewContext));
+		s_pGfxContext = wg_static_cast<GfxContext_p>(s_pGearContext);
+		return pOld;
+	}
+
 	//____ defaultBitmapCache() __________________________________________________
 
 	BitmapCache_p GfxBase::defaultBitmapCache()
 	{
-		if( s_pDefaultBitmapCache == nullptr )
-			s_pDefaultBitmapCache = BitmapCache::create(16*1024*1024);
+		if( s_pGfxContext->pDefaultBitmapCache == nullptr )
+			s_pGfxContext->pDefaultBitmapCache = BitmapCache::create(16*1024*1024);
 
-		return s_pDefaultBitmapCache;
+		return s_pGfxContext->pDefaultBitmapCache;
 	}
 
 	//____ setDefaultSurfaceFactory() ____________________________________________
 
 	void GfxBase::setDefaultSurfaceFactory( SurfaceFactory * pFactory )
 	{
-		s_pDefaultSurfaceFactory = pFactory;
+		s_pGfxContext->pDefaultSurfaceFactory = pFactory;
 	}
 
 	//____ setDefaultEdgemapFactory() ____________________________________________
 
 	void GfxBase::setDefaultEdgemapFactory(EdgemapFactory* pFactory)
 	{
-		s_pDefaultEdgemapFactory = pFactory;
+		s_pGfxContext->pDefaultEdgemapFactory = pFactory;
 	}
 
 	//____ setDefaultGfxDevice() _________________________________________________
 
 	void GfxBase::setDefaultGfxDevice( GfxDevice * pDevice )
 	{
-		s_pDefaultGfxDevice = pDevice;
+		s_pGfxContext->pDefaultGfxDevice = pDevice;
 	}
 
 	//____ setDefaultToSRGB() ____________________________________________________
 
 	void GfxBase::setDefaultToSRGB( bool bSRGB )
 	{
-		s_bSRGB = bSRGB;
+		s_pGfxContext->bSRGB = bSRGB;
 	}
 
 	//____ _genCurveTab() ___________________________________________________________
