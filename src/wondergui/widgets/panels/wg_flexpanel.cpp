@@ -452,12 +452,18 @@ namespace wg
 
 	//____ _replaceChild() _____________________________________________________
 
-	void FlexPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewWidget)
+	void FlexPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
 	{
+		if( pNewChild == nullptr )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Slot in FlexPanel must contain pointer to widget and not nullptr.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+		
 		auto pSlot = static_cast<FlexPanelSlot*>(_pSlot);
-		slots._releaseGuardPointer(pNewWidget, &pSlot);
+		slots._releaseGuardPointer(pNewChild, &pSlot);
 
-		pSlot->_setWidget(pNewWidget);
+		pSlot->_setWidget(pNewChild);
 
 		if (pSlot->m_bVisible )
 		{

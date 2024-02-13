@@ -324,6 +324,12 @@ namespace wg
 
 	void LambdaPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
 	{
+		if( pNewChild == nullptr )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Slot in LambdaPanel must contain pointer to widget and not nullptr.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+		
 		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
 
 		slots._releaseGuardPointer(pNewChild, &pSlot);

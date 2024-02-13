@@ -399,6 +399,12 @@ namespace wg
 
 	void StackPanel::_replaceChild(StaticSlot * pSlot, Widget * pNewChild)
 	{
+		if( pNewChild == nullptr )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Slot in StackPanel must contain pointer to widget and not nullptr.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+		
 		static_cast<StackPanelSlot*>(pSlot)->_setWidget(pNewChild);
 		_childRequestRender(pSlot);
 		_childRequestResize(pSlot);

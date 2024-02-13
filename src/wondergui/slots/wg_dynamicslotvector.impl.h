@@ -38,6 +38,12 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushFront(const Widget_p& pWidget)
 	{
+		if( !pWidget )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Pushing a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+			return end();
+		}
+		
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		SlotType * pSlot = _pushFrontEmpty();
@@ -49,6 +55,12 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushFront(const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint)
 	{
+		if( !pWidget )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Pushing a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+			return end();
+		}
+
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		SlotType * pSlot = _pushFrontEmpty();
@@ -61,6 +73,15 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushFront(const std::initializer_list<ChildWithBP>& entries)
 	{
+		for (auto& entry : entries)
+		{
+			if( !entry.m_pChild )
+			{
+				Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Pushing a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+				return end();
+			}
+		}
+		
 		for (auto& entry : entries)
 			entry.m_pChild->releaseFromParent();
 
@@ -84,6 +105,12 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(Widget * pWidget)
 	{
+		if( !pWidget )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Pushing a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+			return end();
+		}
+
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		SlotType* pSlot = _pushBackEmpty();
@@ -95,6 +122,12 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(Widget * pWidget, const struct SlotType::Blueprint& blueprint)
 	{
+		if( !pWidget )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Pushing a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+			return end();
+		}
+
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		SlotType* pSlot = _pushBackEmpty();
@@ -108,6 +141,15 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::pushBack(const std::initializer_list<ChildWithBP>& entries)
 	{
+		for (auto& entry : entries)
+		{
+			if( !entry.m_pChild )
+			{
+				Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Pushing a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+				return end();
+			}
+		}
+
 		for (auto& entry : entries)
 			entry.m_pChild->releaseFromParent();
 
@@ -132,8 +174,14 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::insert(int index, const Widget_p& pWidget)
 	{
-		//TODO: Add assert
-
+		//TODO: Check insertion point!
+		
+		if( !pWidget )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Inserting a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+			return end();
+		}
+		
 		SlotType * pSlot = _insertEmpty(index);
 
 		this->_releaseGuardPointer(pWidget, &pSlot);
@@ -145,8 +193,14 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::insert(iterator pos, const Widget_p& pWidget)
 	{
-		//TODO: Add assert
+		//TODO: Check insertion point!
 
+		if( !pWidget )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Inserting a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+			return end();
+		}
+		
 		SlotType * pSlot = pos;
 		pSlot = _insertEmpty(pSlot);
 
@@ -160,7 +214,13 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::insert(int index, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint )
 	{
-		//TODO: Add assert
+		//TODO: Check insertion point!
+
+		if( !pWidget )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Inserting a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+			return end();
+		}
 
 		SlotType * pSlot = _insertEmpty(index);
 
@@ -174,7 +234,13 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::insert(iterator pos, const Widget_p& pWidget, const struct SlotType::Blueprint& blueprint)
 	{
-		//TODO: Add assert
+		//TODO: Check insertion point!
+
+		if( !pWidget )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Inserting a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+			return end();
+		}
 
 		SlotType * pSlot = pos;
 		pSlot = _insertEmpty(pSlot);
@@ -189,7 +255,16 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::insert( int index, const std::initializer_list<ChildWithBP>& entries )
 	{
-		//TODO: Add assert
+		//TODO: Check insertion point!
+
+		for (auto& entry : entries)
+		{
+			if( !entry.m_pChild )
+			{
+				Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Inserting a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+				return end();
+			}
+		}
 
 		SlotType * pInsertionPoint = _insertEmpty(index, (int) entries.size());
 
@@ -211,7 +286,16 @@ namespace wg
 	template < class SlotType>
 	typename DynamicSlotVector<SlotType>::iterator DynamicSlotVector<SlotType>::insert( iterator pos, const std::initializer_list<ChildWithBP>& entries )
 	{
-		//TODO: Add assert
+		//TODO: Check insertion point!
+
+		for (auto& entry : entries)
+		{
+			if( !entry.m_pChild )
+			{
+				Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Inserting a nullptr into a SlotVector is not allowed.", m_pHolder->_container(), nullptr, __func__, __FILE__, __LINE__ );
+				return end();
+			}
+		}
 
 		SlotType * pInsertionPoint = _insertEmpty(pos, (int) entries.size());
 
@@ -568,6 +652,7 @@ namespace wg
 		}
 
 		m_size -= pEnd - pBeg;
+		assert( m_size >= 0 );
 		return pBeg;
 	}
 

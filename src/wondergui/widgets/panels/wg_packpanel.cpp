@@ -584,14 +584,19 @@ namespace wg
 
 	void PackPanel::_releaseChild(StaticSlot * pSlot)
 	{
-		_willEraseSlots(pSlot, 1);
 		slots.erase(static_cast<PackPanelSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________
 
 	void PackPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
-	{
+{
+		if( pNewChild == nullptr )
+		{
+			Base::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "Slot in PackPanel must contain pointer to widget and not nullptr.", this, &TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+		
 		//TODO: Looks like we need to refresh geometry here or something...
 
 		auto pSlot = static_cast<PackPanelSlot* > (_pSlot);
