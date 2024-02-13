@@ -266,7 +266,6 @@ namespace wg
 
 	void Base::update( int64_t timestamp )
 	{
-	
 		int64_t microPassed = timestamp - s_timestamp;
 		s_timestamp = timestamp;
 		
@@ -278,13 +277,24 @@ namespace wg
 			microPassed = 1000;
 
 		// Update wondergui systems
-
-        s_pInputHandler->_update(timestamp/1000);
-        SkinSlotManager::update(microPassed/1000);
-
-		// Update widgets
+		
+		s_pInputHandler->_update(timestamp/1000);
+		SkinSlotManager::update(int(microPassed/1000));
+		
+		// Update widgets.
+		
+		bool bEmptyFound = false;
+		
 		for (auto pReceiver : s_updateReceivers)
-			pReceiver->_update(microPassed, timestamp);
+		{
+			if( pReceiver )
+				pReceiver->_update(int(microPassed), timestamp);
+			else
+				bEmptyFound = true;
+		}
+		
+		if( bEmptyFound )
+			s_updateReceivers.erase(std::remove(s_updateReceivers.begin(), s_updateReceivers.end(), nullptr), s_updateReceivers.end() );
 	}
 
 
@@ -300,15 +310,13 @@ namespace wg
 
 	void Base::_stopReceiveUpdates(Receiver* pReceiver)
 	{
-		auto it = std::remove(s_updateReceivers.begin(), s_updateReceivers.end(), pReceiver);
-		
-		if( it == s_updateReceivers.end() )
+		auto it = std::find(s_updateReceivers.begin(), s_updateReceivers.end(), pReceiver);
+		if( it != s_updateReceivers.end() )
+			* it = nullptr;
+		else
 		{
 			Base::throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "Base::_stopReceiveUpdates() called on object not receiving updates.", pReceiver, nullptr, __func__, __FILE__, __LINE__);
-			return;
 		}
-		
-		s_updateReceivers.erase(it);
 	}
 
 
