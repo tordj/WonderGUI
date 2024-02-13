@@ -44,26 +44,27 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
-			bool			closeOnSelect = true;
-			bool			disabled = false;
-			bool			dropTarget = false;
-			Finalizer_p		finalizer = nullptr;
+			bool			closeOnSelect	= true;
+			bool			disabled		= false;
+			bool			dropTarget		= false;
+			Finalizer_p		finalizer		= nullptr;
 			Icon::Blueprint	icon;
-			int				id = 0;
+			int				id				= 0;
 			Text::Blueprint label;
-			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
-			bool			pickable = false;
-			int				pickCategory = 0;
-			PointerStyle	pointer = PointerStyle::Undefined;
-			bool			selectable = true;
+			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
+			MouseButton		mouseButton		= MouseButton::Left;
+			bool			pickable		= false;
+			int				pickCategory	= 0;
+			PointerStyle	pointer			= PointerStyle::Undefined;
+			bool			selectable		= true;
 			Skin_p			skin;
-			bool			stickyFocus = false;
-			bool			tabLock = false;
+			bool			stickyFocus		= false;
+			bool			tabLock			= false;
 			String			tooltip;
 
 			Widget_p		popup;
-			bool			openOnHover = false;
-			Placement		attachPoint = Placement::SouthWest;
+			bool			openOnHover		= false;
+			Placement		attachPoint		= Placement::SouthWest;
 		};
 
 		//.____ Creation __________________________________________
@@ -89,8 +90,11 @@ namespace wg
 		void		setOpenOnHover(bool bOpen);
 		bool		openOnHover() const { return m_bOpenOnHover;  }
 
+		void		setMouseButton(MouseButton button);
+		MouseButton	mouseButton() const { return m_mouseButton; }
+		
 		void		setAttachPoint(Placement attachPoint);
-		Placement		attachPoint() const { return m_attachPoint;  }
+		Placement	attachPoint() const { return m_attachPoint;  }
 
 		//.____ Internal ______________________________________________________
 
@@ -112,6 +116,7 @@ namespace wg
 			m_bOpenOnHover	= bp.openOnHover;
 			m_bCloseOnSelect= bp.closeOnSelect;
 			m_attachPoint	= bp.attachPoint;
+			m_mouseButton	= bp.mouseButton;
 		}
 		
 		virtual ~PopupOpener();
@@ -142,6 +147,7 @@ namespace wg
 		bool			m_bOpen = false;
 		bool			m_bCloseOnSelect = true;
 		State			m_closeState;
+		MouseButton		m_mouseButton = MouseButton::Left;
 	};
 
 

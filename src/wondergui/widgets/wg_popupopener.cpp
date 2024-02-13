@@ -66,6 +66,14 @@ namespace wg
 		m_bOpenOnHover = bOpen;
 	}
 
+	//____ setMouseButton() ______________________________________________________
+	
+	void PopupOpener::setMouseButton(MouseButton button)
+	{
+		m_mouseButton = button;
+	}
+
+
 	//____ setAttachPoint() ___________________________________________________
 
 	void PopupOpener::setAttachPoint(Placement attachPoint)
@@ -174,7 +182,7 @@ namespace wg
 
 			case MsgType::MousePress:
 			{
-				if (!m_bOpenOnHover && static_cast<MouseButtonMsg*>(pMsg)->button() == MouseButton::Left)
+				if (!m_bOpenOnHover && static_cast<MouseButtonMsg*>(pMsg)->button() == m_mouseButton)
 				{
 					if (m_bOpen)
 					{
@@ -183,7 +191,7 @@ namespace wg
 					else
 					{
 						_open();
-						Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, m_pPopup);
+						Base::inputHandler()->_yieldButtonEvents(m_mouseButton, this, m_pPopup);
 						m_bPressed = false;		// We have yielded our press...
 					}
 				}
@@ -193,7 +201,7 @@ namespace wg
 			case MsgType::MouseRelease:
 			{
 				auto pButtonMsg = MouseReleaseMsg::cast(pMsg);
-				if (!m_bOpenOnHover && pButtonMsg->button() == MouseButton::Left && !pButtonMsg->releaseInside() )
+				if (!m_bOpenOnHover && pButtonMsg->button() == m_mouseButton && !pButtonMsg->releaseInside() )
 					_close();
 				break;
 			}
@@ -203,7 +211,7 @@ namespace wg
 				break;
 		}
 
-		if (pMsg->isMouseButtonMsg() && static_cast<MouseButtonMsg*>(pMsg)->button() == MouseButton::Left)
+		if (pMsg->isMouseButtonMsg() && static_cast<MouseButtonMsg*>(pMsg)->button() == m_mouseButton)
 			pMsg->swallow();
 
 	}
