@@ -631,23 +631,24 @@ namespace wg
 		else
 		{
 			int blocksToMove = int(pBeg - _begin());
-			if (blocksToMove > 0)
+			if (SlotType::safe_to_relocate)
 			{
-				if (SlotType::safe_to_relocate)
-				{
-					_killBlock(pBeg, pEnd);
+				_killBlock(pBeg, pEnd);
 
+				if( blocksToMove > 0 )
+				{
 					memmove(pEnd - blocksToMove, pBeg - blocksToMove, sizeof(SlotType) * blocksToMove);
 					_reallocBlock(pEnd - blocksToMove, pEnd);
 				}
-				else
-				{
-					for (int i = 0; i < blocksToMove; i++)
-						pEnd[-1 - i] = std::move(pBeg[-1 - i]);
-
-					_killBlock(pBeg + blocksToMove, pEnd);
-				}
 			}
+			else
+			{
+				for (int i = 0; i < blocksToMove; i++)
+					pEnd[-1 - i] = std::move(pBeg[-1 - i]);
+
+				_killBlock(pBeg + blocksToMove, pEnd);
+			}
+
 			m_pArray += pEnd - pBeg;
 		}
 
