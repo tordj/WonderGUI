@@ -193,6 +193,7 @@ namespace wg
 		RectSPX				_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
 		RectSPX				_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
 		RectSPX				_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const override;
+		Rect				_childLocalSpxToGlobalPts(const StaticSlot* pSlot, const RectSPX& rect) const override;
 
 		RectSPX				_canvasWindow( RectSPX window ) const;
 

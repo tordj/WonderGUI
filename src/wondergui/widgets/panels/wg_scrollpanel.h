@@ -229,6 +229,7 @@ namespace wg
 		RectSPX		_childLocalToGlobal(const StaticSlot* pSlot, const RectSPX& rect) const override;
 		RectSPX		_globalToChildLocal(const StaticSlot* pSlot, const RectSPX& rect) const override;
 		RectSPX		_globalPtsToChildLocalSpx(const StaticSlot* pSlot, const Rect& rect) const override;
+		Rect		_childLocalSpxToGlobalPts(const StaticSlot* pSlot, const RectSPX& rect) const override;
 
 		void		_childRequestRender(StaticSlot * pSlot) override;
 		void		_childRequestRender(StaticSlot * pSlot, const RectSPX& rect) override;

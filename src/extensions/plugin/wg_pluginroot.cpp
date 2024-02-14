@@ -432,6 +432,12 @@ namespace wg
 		return Util::ptsToSpx(rect, m_scale);
 	}
 
+	//____ _childLocalSpxToGlobalPts() ___________________________________________
+
+	Rect PluginRoot::_childLocalSpxToGlobalPts(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return Util::spxToPts( rect, m_scale );
+	}
 
 	//____ _isChildVisible() __________________________________________________
 

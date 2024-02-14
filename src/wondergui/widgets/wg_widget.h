@@ -450,7 +450,10 @@ namespace wg
 	 */
 	Rect Widget::globalGeo() const
 	{
-		return  Util::spxToPts(_globalGeo(), m_scale);
+		if( m_pHolder )
+			return m_pHolder->_childLocalSpxToGlobalPts(m_pSlot, m_size);
+		else
+			return size();
 	}
 
 	//____ toGlobal() __________________________
@@ -471,8 +474,10 @@ namespace wg
 
 	Coord Widget::toGlobal(const Coord& coord) const
 	{
-		CoordSPX	global = _toGlobal(Util::ptsToSpx(coord, m_scale));
-		return Util::spxToPts(global,m_scale);
+		if( m_pHolder )
+			return m_pHolder->_childLocalSpxToGlobalPts(m_pSlot, Util::ptsToSpx(coord,m_scale));
+		else
+			return coord;
 	}
 
 	//____ toGlobal() __________________________
@@ -493,8 +498,10 @@ namespace wg
 
 	Rect Widget::toGlobal(const Rect& rect) const
 	{
-		RectSPX	global = _toGlobal(Util::ptsToSpx(rect, m_scale));
-		return Util::spxToPts(global,m_scale);
+		if( m_pHolder )
+			return m_pHolder->_childLocalSpxToGlobalPts(m_pSlot, Util::ptsToSpx(rect,m_scale));
+		else
+			return rect;
 	}
 
 	//____ toLocal() ____________________________________________________________

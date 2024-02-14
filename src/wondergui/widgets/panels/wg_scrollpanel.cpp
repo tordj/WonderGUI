@@ -1049,6 +1049,18 @@ namespace wg
 		return rectSPX - m_childCanvas.pos();
 	}
 
+	//____ _childLocalSpxToGlobalPts() ___________________________________________
+
+	Rect ScrollPanel::_childLocalSpxToGlobalPts(const StaticSlot* pSlot, const RectSPX& _rect) const
+	{
+		RectSPX rect = _rect + m_childCanvas.pos();
+		
+		if( m_pHolder )
+			return m_pHolder->_childLocalSpxToGlobalPts( m_pSlot, rect );
+		else
+			return Util::spxToPts(rect, m_scale);
+	}
+
 	//____ _childRequestRender() ______________________________________________
 
 	void ScrollPanel::_childRequestRender(StaticSlot* pSlot)

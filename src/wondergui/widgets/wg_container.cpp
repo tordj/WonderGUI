@@ -90,6 +90,17 @@ namespace wg
 		return rectSPX - _slotGeo(pSlot).pos();
 	}
 
+	//____ _childLocalSpxToGlobalPts() ___________________________________________
+
+	Rect Container::_childLocalSpxToGlobalPts(const StaticSlot* pSlot, const RectSPX& _rect) const
+	{
+		RectSPX rect = _rect + _slotGeo(pSlot).pos();
+		
+		if( m_pHolder )
+			return m_pHolder->_childLocalSpxToGlobalPts( m_pSlot, rect );
+		else
+			return Util::spxToPts(rect, m_scale);
+	}
 
 	//____ _isChildVisible() __________________________________________________
 

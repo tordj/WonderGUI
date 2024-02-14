@@ -681,6 +681,29 @@ namespace wg
 		}
 	}
 
+	//____ _childLocalSpxToGlobalPts() ___________________________________________
+
+	Rect CanvasCapsule::_childLocalSpxToGlobalPts(const StaticSlot* pSlot, const RectSPX& _rect) const
+	{
+		RectSPX rect;
+		
+		if (m_bScaleCanvas)
+		{
+			RectSPX window = _canvasWindow(_contentRect(m_size));
+
+			float scaleFactor = (float)m_canvasSize.w / window.w;
+
+			rect = (_rect + window.pos()) * scaleFactor;
+		}
+		else
+			rect = _rect + _slotGeo(pSlot).pos();
+		
+		if( m_pHolder )
+			return m_pHolder->_childLocalSpxToGlobalPts( m_pSlot, rect );
+		else
+			return Util::spxToPts(rect, m_scale);
+	}
+
 	//____ _canvasWindow() _______________________________________________________
 
 	RectSPX CanvasCapsule::_canvasWindow( RectSPX window ) const

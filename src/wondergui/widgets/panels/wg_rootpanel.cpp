@@ -675,6 +675,12 @@ namespace wg
 		return Util::ptsToSpx(rect, m_scale) - m_geo.pos();
 	}
 
+	//____ _childLocalSpxToGlobalPts() ___________________________________________
+
+	Rect RootPanel::_childLocalSpxToGlobalPts(const StaticSlot* pSlot, const RectSPX& rect) const
+	{
+		return Util::spxToPts( rect + m_geo.pos(), m_scale );
+	}
 
 	//____ _isChildVisible() __________________________________________________
 
