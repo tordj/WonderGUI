@@ -264,13 +264,14 @@ namespace wg
 		}
 		
 		// Render children into canvas surface
-
+		
 		if (!m_patches.isEmpty())
 		{
+
 			pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), m_patches.begin(), m_pCanvasLayers, m_renderLayer);
 
 			// Possibly clear the canvas before rendering
-			
+
 			HiColor clearColor = m_clearColor;
 
 			if( clearColor == HiColor::Undefined )
@@ -437,6 +438,41 @@ namespace wg
 		}
 	
 		glow._setSize(size,scale);
+	}
+
+	//____ _collectPatches() _____________________________________________________
+
+	void CanvasCapsule::_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip)
+	{
+		if( !m_skin.isEmpty() || glow.isActive() )
+			container.add(RectSPX::overlap(geo, clip));
+		else if( slot._widget() )
+			slot._widget()->_collectPatches(container, _contentRect(geo), clip);
+	}
+
+	//____ _maskPatches() ________________________________________________________
+
+	void CanvasCapsule::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
+	{
+		// Mask against our skin if that is opaque.
+		
+		if (!m_skin.isEmpty() && m_skin.isOpaque( clip, geo.size(), m_scale, m_state ) )
+		{
+			patches.sub(RectSPX::overlap(geo, clip));
+			return;
+		}
+		
+		// We can't mask against canvas content if canvas is applied with some transparency.
+		
+		if( m_tintColor.a != 4096 || (m_gradient.isValid() && !m_gradient.isOpaque()) )
+			return;
+		
+		RectSPX contentGeo = _contentRect(geo);
+		
+		if( Util::pixelFormatToDescription(m_canvasFormat).A_mask == 0 )
+			patches.sub(contentGeo);
+		else if( slot._widget() )
+			slot._widget()->_maskPatches( patches, contentGeo, clip, blendMode );
 	}
 
 	//____ _releaseChild() _______________________________________________________

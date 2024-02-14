@@ -174,6 +174,9 @@ namespace wg
 		void				_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		void				_resize(const SizeSPX& size, int scale) override;
 
+		void				_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip) override;
+		void				_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode) override;
+		
 		void				_releaseChild( StaticSlot * pSlot ) override;
 		void				_replaceChild(StaticSlot * pSlot, Widget * pWidget) override;
 
@@ -209,8 +212,6 @@ namespace wg
 		PixelFormat			m_canvasFormat = PixelFormat::BGRA_8;
 		HiColor				m_clearColor = HiColor::Undefined;
 		int					m_renderLayer = -1;
-
-
 
 		HiColor				m_tintColor = HiColor::White;
 		Gradient			m_gradient;
