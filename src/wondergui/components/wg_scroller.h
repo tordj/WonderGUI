@@ -61,6 +61,7 @@ namespace wg
 			Skin_p	bar;
 			Skin_p	forwardButton;
 			bool	jumpToPress = false;
+			bool	visible = true;
 		};
 
 
@@ -72,6 +73,9 @@ namespace wg
 		void		setForwardButton(Skin * pSkin);
 		void		setBackwardButton(Skin* pSkin);
 
+		void		setVisible(bool bVisible);
+		bool		isVisible() const { return m_bVisible; }
+		
 		//.____ Behavior ______________________________________________________
 
 		void		setJumpToPress(bool bJump);
@@ -79,7 +83,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline bool				inWorkingOrder() const { return m_skins[Part::Bar] != nullptr || m_skins[Part::Prev] != nullptr || m_skins[Part::Next] != nullptr; }
+		inline bool				isDisplayable() const { return m_skins[Part::Bar] != nullptr || m_skins[Part::Prev] != nullptr || m_skins[Part::Next] != nullptr; }
 
 		//.____ Internal ______________________________________________
 
@@ -124,6 +128,7 @@ namespace wg
 
 		Axis		m_axis;
 		bool		m_bJumpToPress = false;
+		bool		m_bVisible = true;
 
 		Skin_p		m_skins[Part_size];
 		State		m_states[Part_size];

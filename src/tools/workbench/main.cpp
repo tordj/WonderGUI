@@ -704,7 +704,7 @@ int main(int argc, char** argv)
 		//	textEditorTest(pSlot);
 		//	lineEditorTest(pSlot);
 		//	popupOpenerTest(pSlot);
-		//	scrollbarTest(pSlot);
+			scrollbarTest(pSlot);
 		//	modalLayerTest(pSlot);
 		//	splitPanelTest(pSlot);
 		//	designLayerTest(pSlot);
@@ -744,7 +744,7 @@ int main(int argc, char** argv)
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
 		//	canvasCapsuleTest(pSlot);
-			canvasCapsuleGlowTest(pSlot);
+		//	canvasCapsuleGlowTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -1384,6 +1384,20 @@ bool scrollbarTest(ComponentPtr<DynamicSlot> pEntry)
 
 	* pEntry = pFlex;
 
+	
+	auto pButtonFlipHideX = Button::create( { .label = { .text = "FLIP HIDE X"}, .skin = pButtonSkin } );
+	
+	pFlex->slots.pushBack(pButtonFlipHideX, { .origo = Placement::SouthWest, .pos = {5,-5} });
+	
+	Base::msgRouter()->addRoute(pButtonFlipHideX, MsgType::Select, [pScrollPanel](Msg * p) { pScrollPanel->scrollbarX.setVisible(!pScrollPanel->scrollbarX.isVisible()); }   );
+
+	auto pButtonFlipHideY = Button::create( { .label = { .text = "FLIP HIDE Y"}, .skin = pButtonSkin } );
+	
+	pFlex->slots.pushBack(pButtonFlipHideY, { .origo = Placement::SouthWest, .pos = {5 + 100,-5} });
+	
+	Base::msgRouter()->addRoute(pButtonFlipHideY, MsgType::Select, [pScrollPanel](Msg * p) { pScrollPanel->scrollbarY.setVisible(!pScrollPanel->scrollbarY.isVisible()); }   );
+
+	
 	return true;
 }
 

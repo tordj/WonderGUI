@@ -117,6 +117,19 @@ namespace wg
 		m_bJumpToPress = bJump;
 	}
 
+	//____ setVisible() __________________________________________________________
+
+	void Scroller::setVisible(bool bVisible)
+	{
+		if( bVisible != m_bVisible )
+		{
+			m_bVisible = bVisible;
+			_requestRender();
+			_requestResize();			
+		}
+	}
+
+
 	//____ _initFromBlueprint() _______________________________________________
 
 	void Scroller::_initFromBlueprint(const Blueprint& bp)
@@ -133,13 +146,17 @@ namespace wg
 		if (bp.forwardButton)
 			m_skins[Part::Next] = bp.forwardButton;
 
-		m_bJumpToPress = bp.jumpToPress;
+		m_bJumpToPress	= bp.jumpToPress;
+		m_bVisible		= bp.visible;
 	}
 
 	//____ _defaultSize() ___________________________________________________
 
 	SizeSPX Scroller::_defaultSize(int scale) const
 	{
+		if( !m_bVisible )
+			return {0,0};
+		
 		SizeSPX prefSize = m_skins[Part::Bar] ? m_skins[Part::Bar]->_defaultSize(scale) : SizeSPX();
 
 		if (m_skins[Part::Back])

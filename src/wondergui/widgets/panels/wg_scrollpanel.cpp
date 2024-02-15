@@ -536,10 +536,10 @@ namespace wg
 		if( slot._widget() )
 			sz = slot._widget()->_defaultSize(scale);
 
-		if (scrollbarY.inWorkingOrder() && !m_bAutohideScrollbarY && !m_bOverlayScrollbarY)
+		if (scrollbarY.isDisplayable() && !m_bAutohideScrollbarY && !m_bOverlayScrollbarY)
 			sz.w += scrollbarY._defaultSize(scale).w;
 
-		if (scrollbarX.inWorkingOrder() && !m_bAutohideScrollbarX && !m_bOverlayScrollbarX)
+		if (scrollbarX.isDisplayable() && !m_bAutohideScrollbarX && !m_bOverlayScrollbarX)
 			sz.h += scrollbarX._defaultSize(scale).h;
 
 
@@ -557,11 +557,11 @@ namespace wg
 		spx scrollbarYwidth = scrollbarY._defaultSize(m_scale).w;
 		spx scrollbarXheight = scrollbarX._defaultSize(m_scale).h;
 
-		bool bShowScrollbarY  = scrollbarY.inWorkingOrder()
+		bool bShowScrollbarY  = scrollbarY.isDisplayable()
 								&& (m_heightConstraint == SizeConstraint::None || m_heightConstraint == SizeConstraint::GreaterOrEqual )
 								&& (!m_bAutohideScrollbarY || content.h < m_childCanvas.h);
 		
-		bool bShowScrollbarX = scrollbarX.inWorkingOrder()
+		bool bShowScrollbarX = scrollbarX.isDisplayable()
 								&& (m_widthConstraint == SizeConstraint::None || m_widthConstraint == SizeConstraint::GreaterOrEqual )
 								&& (!m_bAutohideScrollbarX || content.w < m_childCanvas.w);
 
@@ -697,7 +697,7 @@ namespace wg
 			SizeSPX viewMaxSize = _contentRect().size();
 			SizeSPX viewMinSize = viewMaxSize;
 
-			if (scrollbarX.inWorkingOrder() && !m_bOverlayScrollbarX)
+			if (scrollbarX.isDisplayable() && !m_bOverlayScrollbarX)
 			{
 				spx scrollbarXheight = scrollbarX._defaultSize(m_scale).h;
 				if (m_bAutohideScrollbarX)
@@ -709,7 +709,7 @@ namespace wg
 				}
 			}
 
-			if (scrollbarY.inWorkingOrder() && !m_bOverlayScrollbarY)
+			if (scrollbarY.isDisplayable() && !m_bOverlayScrollbarY)
 			{
 				spx scrollbarYwidth = scrollbarY._defaultSize(m_scale).w;
 				if (m_bAutohideScrollbarY)
@@ -747,7 +747,7 @@ namespace wg
 
 		spx oldViewOfs, oldViewLen, oldCanvasLen;
 
-		if (scrollbarX.inWorkingOrder() )
+		if (scrollbarX.isDisplayable() )
 		{
 			oldViewOfs = m_viewXOfs;
 			oldViewLen = m_viewXLen;
@@ -766,7 +766,7 @@ namespace wg
 				scrollbarX._setState(State::Default);
 		}
 
-		if (scrollbarY.inWorkingOrder())
+		if (scrollbarY.isDisplayable())
 		{
 			oldViewOfs = m_viewYOfs;
 			oldViewLen = m_viewYLen;
@@ -825,10 +825,10 @@ namespace wg
 
 		if (!(m_bStealWheelFromScrollbars && pMsg->type() == MsgType::WheelRoll))
 		{
-			if (scrollbarX.inWorkingOrder())
+			if (scrollbarX.isDisplayable())
 				bX = scrollbarX._receive(pMsg);
 
-			if (scrollbarY.inWorkingOrder())
+			if (scrollbarY.isDisplayable())
 				bY = scrollbarY._receive(pMsg);
 		}
 
