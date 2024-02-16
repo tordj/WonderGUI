@@ -109,18 +109,23 @@ namespace wg
 
 	bool GfxDevice::setClipList(int nRectangles, const RectSPX* pRectangles)
 	{
-		if (nRectangles == 0)
+		RectSPX bounds;
+		if( nRectangles == 0 )
+			bounds = { m_clipBounds.x, m_clipBounds.y, 0, 0 };
+		else
 		{
-			resetClipList();
-			return true;
+			bounds = *pRectangles;
+			for (int i = 1; i < nRectangles; i++)
+				bounds.growToContain(pRectangles[i]);
+
+			
+			if (bounds.x < 0 || bounds.y < 0 || bounds.w > m_canvas.size.w || bounds.h > m_canvas.size.h)
+			{
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "ClipList contains rectangels outside canvas. ClipList not set.",
+									this, &TYPEINFO, __func__, __FILE__, __LINE__ );
+				return false;
+			}
 		}
-
-		RectSPX bounds = *pRectangles;
-		for (int i = 1; i < nRectangles; i++)
-			bounds.growToContain(pRectangles[i]);
-
-		if (bounds.x < 0 || bounds.y < 0 || bounds.w > m_canvas.size.w || bounds.h > m_canvas.size.h)
-			return false;
 
 		m_pClipRects = pRectangles;
 		m_nClipRects = nRectangles;
@@ -145,12 +150,23 @@ namespace wg
 	{
 		m_clipListStack.push_back({ m_nClipRects,m_pClipRects,m_clipBounds });
 
-		RectSPX bounds = *pRectangles;
-		for (int i = 1; i < nRectangles; i++)
-			bounds.growToContain(pRectangles[i]);
+		RectSPX bounds;
+		if( nRectangles == 0 )
+			bounds = { m_clipBounds.x, m_clipBounds.y, 0, 0 };
+		else
+		{
+			bounds = *pRectangles;
+			for (int i = 1; i < nRectangles; i++)
+				bounds.growToContain(pRectangles[i]);
 
-		if (bounds.x < 0 || bounds.y < 0 || bounds.w > m_canvas.size.w || bounds.h > m_canvas.size.h)
-			return false;
+			
+			if (bounds.x < 0 || bounds.y < 0 || bounds.w > m_canvas.size.w || bounds.h > m_canvas.size.h)
+			{
+				GfxBase::throwError(ErrorLevel::Error, ErrorCode::InvalidParam, "ClipList contains rectangels outside canvas. ClipList not set.", 
+									this, &TYPEINFO, __func__, __FILE__, __LINE__ );
+				return false;
+			}
+		}
 
 		m_pClipRects = pRectangles;
 		m_nClipRects = nRectangles;
