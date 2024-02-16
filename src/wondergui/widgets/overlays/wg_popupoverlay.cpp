@@ -885,7 +885,7 @@ namespace wg
 		popupSlots._erase(ofs, nb);
 		_restoreKeyboardFocus();
 
-		if (popupSlots.isEmpty())
+		if (popupSlots.isEmpty() && m_receivingUpdateCounter > 0)
 			_stopReceiveUpdates();
 	}
 

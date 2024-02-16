@@ -620,6 +620,17 @@ namespace wg
 
 	void Widget::_stopReceiveUpdates()
 	{
+		assert(m_receivingUpdateCounter >= 0);		// Has this been decreased directly? Only decrease it by calling _stopReceiveUpdates()!
+		
+		if(m_receivingUpdateCounter == 0 )
+		{
+			Base::throwError(ErrorLevel::Warning, ErrorCode::SystemIntegrity, "_stopReceiveUpdates() called but counter is already at 0. Ignoring.", 
+							 this, &TYPEINFO, __func__, __FILE__, __LINE__ );
+
+			m_receivingUpdateCounter = 0;
+			return;
+		}
+		
 		m_receivingUpdateCounter--;
 		if (m_receivingUpdateCounter == 0)
 			Base::_stopReceiveUpdates(this);
