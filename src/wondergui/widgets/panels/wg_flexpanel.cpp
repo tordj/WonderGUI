@@ -256,14 +256,14 @@ namespace wg
 	SizeSPX FlexPanel::_defaultSize(int scale) const
 	{
 		if( !m_defaultSize.isEmpty() )
-			return align(ptsToSpx(m_defaultSize, m_scale));
+			return align(ptsToSpx(m_defaultSize, scale));
 
 		SizeSPX minSize;
 
 		auto p = slots.begin();
 		while( p < slots.end() )
 		{
-			minSize = SizeSPX::max(minSize,_sizeNeededForGeo(p));
+			minSize = SizeSPX::max(minSize,_sizeNeededForGeo(p, scale));
 			p++;
 		}
 		return minSize;
@@ -545,13 +545,13 @@ namespace wg
 
 	//____ _sizeNeededForGeo() ________________________________________
 
-	SizeSPX FlexPanel::_sizeNeededForGeo( FlexPanelSlot * pSlot ) const
+	SizeSPX FlexPanel::_sizeNeededForGeo( FlexPanelSlot * pSlot, int scale ) const
 	{
 		SizeSPX sz;
 
 		if( pSlot->m_bPinned )
 		{
-			sz = pSlot->_widget()->_defaultSize(m_scale);
+			sz = pSlot->_widget()->_defaultSize(scale);
 
 			sz += SizeSPX( pSlot->m_topLeftPin.offset.x, pSlot->m_topLeftPin.offset.y );
 			sz -= SizeSPX( pSlot->m_bottomRightPin.offset.x, pSlot->m_bottomRightPin.offset.y );
@@ -561,10 +561,10 @@ namespace wg
 		}
 		else
 		{
-			RectSPX geo = ptsToSpx(pSlot->m_placementGeo,m_scale);
+			RectSPX geo = ptsToSpx(pSlot->m_placementGeo,scale);
 
-			CoordSPX hotspot = pSlot->m_hotspot._pos(geo.size(), m_scale);
-			CoordSPX offset = geo.pos() + ptsToSpx(pSlot->m_origo.offset,m_scale) - hotspot;
+			CoordSPX hotspot = pSlot->m_hotspot._pos(geo.size(), scale);
+			CoordSPX offset = geo.pos() + ptsToSpx(pSlot->m_origo.offset,scale) - hotspot;
 
 			spx leftOfOrigo = 0 - offset.x;
 			spx rightOfOrigo = offset.x + geo.w;

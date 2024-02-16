@@ -340,8 +340,10 @@ namespace wg
 			{
 				WidgetRenderContext * p = &renderList[i];
 
-				p->clipPop = patchesToClipList(pDevice, p->geo, patches);
-				p->pWidget->_maskPatches( patches, p->geo, p->geo, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				RectSPX	clipBounds = RectSPX::overlap(p->geo,_canvas);
+				
+				p->clipPop = patchesToClipList(pDevice, clipBounds, patches);
+				p->pWidget->_maskPatches( patches, p->geo, clipBounds, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 				if( patches.isEmpty() )
 					break;
@@ -366,7 +368,9 @@ namespace wg
 				RectSPX canvas = child.geo + _canvas.pos();
 				if (canvas.isOverlapping(dirtBounds))
 				{
-					ClipPopData popData = limitClipList(pDevice, canvas );
+					RectSPX	clipBounds = RectSPX::overlap(canvas,_canvas);
+
+					ClipPopData popData = limitClipList(pDevice, clipBounds );
 
 					if( pDevice->clipListSize() > 0 )
 						child.pSlot->_widget()->_render(pDevice, canvas, canvas);

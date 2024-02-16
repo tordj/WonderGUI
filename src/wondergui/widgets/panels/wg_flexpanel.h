@@ -292,7 +292,7 @@ namespace wg
 
 		void		_onRequestRender( const RectSPX& rect, const FlexPanelSlot * pSlot );
 
-		SizeSPX		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
+		SizeSPX		_sizeNeededForGeo( FlexPanelSlot * pSlot, int scale ) const;
 
 		bool		m_bConfineWidgets = false;
 		Size		m_defaultSize;
