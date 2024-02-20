@@ -44,6 +44,9 @@ namespace wg
 
 	void TextBase::setStyle( TextStyle * pStyle )
 	{
+		if( pStyle == m_pStyle )
+			return;
+		
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = pStyle;
 		_layout()->onStyleChanged(this, pStyle, pOld);
@@ -53,6 +56,9 @@ namespace wg
 
 	void TextBase::clearStyle()
 	{
+		if( !m_pStyle )
+			return;
+		
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = 0;
 		_layout()->onStyleChanged(this, nullptr, pOld);
