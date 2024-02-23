@@ -137,6 +137,8 @@ namespace wg
 
 		void				releaseFromParent();
 
+		bool				isDescendantOf(Widget* pAncestor);
+		
 		Widget_p			commonAncestor(Widget* pOtherWidget);
 
 		//.____ State _________________________________________________________

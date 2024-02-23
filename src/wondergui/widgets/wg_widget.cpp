@@ -100,6 +100,29 @@ namespace wg
 	}
 
 
+	//____ isDescendantOf() _______________________________________________________
+
+	bool Widget::isDescendantOf(Widget* pAncestor)
+	{
+		if( pAncestor == this || pAncestor == nullptr || !pAncestor->isContainer() )
+			return false;
+
+		Widget * p = this;
+
+		while( p != nullptr && p->m_pHolder != nullptr )
+		{
+			p = p->m_pHolder->_container();
+			
+			if( p == pAncestor )
+				return true;
+		}
+		
+		return false;
+	}
+
+
+
+
 	//____ commonAncestor() ___________________________________________________
 	/**
 		@brief Finds closest common ancestor of widgets.

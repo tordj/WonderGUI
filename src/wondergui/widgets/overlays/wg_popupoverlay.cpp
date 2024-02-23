@@ -43,11 +43,11 @@ namespace wg
 
 	//____ pushFront() ________________________________________________
 
-	void PopupOverlay::MySlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, Size maxSize )
+	void PopupOverlay::MySlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, Size maxSize, Coord offset )
 	{
 		int scale = _holder()->_scale();
 
-		_pushFront(pPopup, pOpener, align(ptsToSpx(launcherGeo, scale)), attachPoint, bPeek, bCloseOnSelect, align(ptsToSpx(maxSize,scale)));
+		_pushFront(pPopup, pOpener, align(ptsToSpx(launcherGeo, scale)), attachPoint, bPeek, bCloseOnSelect, align(ptsToSpx(maxSize,scale)), align(ptsToSpx(offset,scale)));
 	}
 
 	//____ pop() ________________________________________________
@@ -83,10 +83,10 @@ namespace wg
 
 	//____ _pushFront() ________________________________________________
 
-	void PopupOverlay::MySlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, SizeSPX maxSize)
+	void PopupOverlay::MySlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, SizeSPX maxSize, CoordSPX offset)
 	{
 		pPopup->releaseFromParent();
-		_holder()->_addSlot(pPopup, pOpener, launcherGeo, attachPoint, bPeek, bCloseOnSelect, maxSize);
+		_holder()->_addSlot(pPopup, pOpener, launcherGeo, attachPoint, bPeek, bCloseOnSelect, maxSize, offset);
 	}
 
 
@@ -182,6 +182,10 @@ namespace wg
 
 		}
 
+		// Add offset to geometry
+			
+			geo += pSlot->m_offset;
+			
 		// Adjust geometry to fit inside parent.
 
 		if( geo.right() > m_size.w )
@@ -314,7 +318,14 @@ namespace wg
 						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
 					else if( pSlot->_widget()->_markTest( ofs - pSlot->m_geo.pos() ) )
 						pResult = pSlot->_widget();
+					
 				}
+
+				// We only allow actions on popups below if our popup is in peek-state.
+				
+				if( !pSlot->m_bPeek )
+					break;
+
 				pSlot++;
 			}
 
@@ -323,7 +334,7 @@ namespace wg
 				// Check the root opener
 
 				Slot * pSlot = popupSlots._last();
-				if( pSlot->m_pOpener )
+				if( pSlot->m_pOpener && pSlot->m_launcherGeo.contains(ofs) )
 				{
 					Widget * pOpener = pSlot->m_pOpener.rawPtr();
 
@@ -512,6 +523,7 @@ namespace wg
 
 	void PopupOverlay::_receive( Msg * _pMsg )
 	{
+	
 		Overlay::_receive(_pMsg);
 
 		switch( _pMsg->type() )
@@ -524,10 +536,10 @@ namespace wg
 
 				CoordSPX 	pointerPos = _toLocal(static_cast<InputMsg*>(_pMsg)->pointerSpxPos());
 
-				// Top popup can be in state PeekOpen, which needs special attention.
+				// Top popup can be in state PeekOpen or Opening, which needs special attention.
 
 				Slot * pSlot = popupSlots._first();
-				if (pSlot && pSlot->m_state == Slot::State::PeekOpen)
+				if (pSlot->m_state == Slot::State::PeekOpen)
 				{
 					// Promote popup to state WeakOpen if pointer has entered its geo,
 					// otherwise begin delayed closing if pointer has left launcherGeo.
@@ -538,6 +550,24 @@ namespace wg
 					{
 						pSlot->m_state = Slot::State::ClosingDelay;
 						pSlot->m_stateCounter = 0;
+					}
+				}
+				else if(pSlot->m_state == Slot::State::Opening)
+				{
+					if (!pSlot->m_geo.contains(pointerPos) && !pSlot->m_launcherGeo.contains(pointerPos))
+					{
+						pSlot->m_state = Slot::State::Closing;
+						pSlot->m_stateCounter = (m_openingFadeMs - pSlot->m_stateCounter) * m_closingFadeMs / m_openingFadeMs;
+					}
+				}
+				else if(pSlot->m_state == Slot::State::OpeningDelay)
+				{
+					// Has not been shown yet, just close it immediately
+					
+					if (!pSlot->m_geo.contains(pointerPos) && !pSlot->m_launcherGeo.contains(pointerPos))
+					{
+						pSlot->m_state = Slot::State::Closing;
+						pSlot->m_stateCounter = m_closingFadeMs;
 					}
 				}
 
@@ -554,8 +584,9 @@ namespace wg
 					{
 						if (popup.m_launcherGeo.contains(pointerPos))
 						{
-							popup.m_state = Slot::State::PeekOpen;
+							popup.m_state = popup.m_bPeek ? Slot::State::PeekOpen : Slot::State::FixedOpen;
 							popup.m_stateCounter = 0;
+							_requestRender( popup.m_geo );
 						}
 						else if (popup.m_geo.contains(pointerPos))
 						{
@@ -570,6 +601,39 @@ namespace wg
 						}
 					}
 				}
+				
+				// A popup in state Closing should be promoted to
+				// state Opening if pointer has entered its launcherGeo and
+				// to state WeakOpen if pointer has entered its geo.
+				// Promoting to WeakOpen Should also promote any ancestor also in state Closing.
+
+				for (Slot * pSlot = popupSlots._begin() ; pSlot != popupSlots._end() ; pSlot++)
+				{
+					Slot& popup = *pSlot;
+
+					if (popup.m_state == Slot::State::Closing)
+					{
+						if (popup.m_launcherGeo.contains(pointerPos))
+						{
+							popup.m_state = Slot::State::Opening;
+							popup.m_stateCounter = (m_closingFadeMs - popup.m_stateCounter) * m_openingFadeMs / m_closingFadeMs;
+						}
+						else if (popup.m_geo.contains(pointerPos))
+						{
+							Slot * p = &popup;
+							while (p != popupSlots._end() && p->m_state == Slot::State::Closing)
+							{
+								_requestRender(p->m_geo);
+								p->m_state = Slot::State::WeakOpen;
+								p->m_stateCounter = 0;
+								p++;
+							}
+							break;		// Nothing more to do further down.
+						}
+					}
+				}
+				
+				
 
 				// If pointer has entered a selectable widget of a popup that isn't the top one
 				// and all widgets between them have bPeek=true, they should all enter
@@ -642,30 +706,70 @@ namespace wg
 
 				//
 
-				auto pSource = static_cast<Widget*>(_pMsg->originalSource().rawPtr());
+//				auto pSource = static_cast<Widget*>(_pMsg->originalSource().rawPtr());
+
+				CoordSPX 	pointerPos = _toLocal(static_cast<MouseReleaseMsg*>(_pMsg)->pointerSpxPos());
+				auto pSource = _findWidget(pointerPos, SearchMode::ActionTarget);
+				
 				if (!pSource || pSource == this)
-					_removeSlots(0, popupSlots.size());
-				else if (pSource->isSelectable())
 				{
-					// We send 2 messages on selected:
-					// PopupSelectMsg from opener (like a PopupOpener if availabe) or PopupOverlay itself.
-					// Normal SelectMsg from selected widget itself.
+					// Release outside any popup.
+				
+					// Close top popup and any hierarchy of peek-popups below it.
 					
-					MsgRouter* pRouter = Base::msgRouter().rawPtr();
-
-					if (pRouter)
+					_removeTopSlotAndPeeks();
+				}
+				else
+				{
+					Widget * pTopPopup = pSlot->widget();
+					if(pSource == pTopPopup || pSource->isDescendantOf(pTopPopup) )
 					{
-						if( pOpener )
-							pRouter->post(PopupSelectMsg::create(pOpener, pSource));
-						else
-							pRouter->post(PopupSelectMsg::create(this, pSource));
+						// Relese on top popup or child thereof
+						
+						if (pSource->isSelectable())
+						{
+							// We send 2 messages on selected:
+							// PopupSelectMsg from opener (like a PopupOpener if availabe) or PopupOverlay itself.
+							// Normal SelectMsg from selected widget itself.
+							
+							MsgRouter* pRouter = Base::msgRouter().rawPtr();
+							
+							if (pRouter)
+							{
+								if( pOpener )
+									pRouter->post(PopupSelectMsg::create(pOpener, pSource));
+								else
+									pRouter->post(PopupSelectMsg::create(this, pSource));
+								
+								
+								pRouter->post( SelectMsg::create(pSource) );
+							}
+							
+							if( pSlot->m_bCloseOnSelect )
+							{
+								int i = 1;
+								while( i < popupSlots.size() && popupSlots[i].m_bCloseOnSelect == true )
+									i++;
 
-
-						pRouter->post( SelectMsg::create(pSource) );
+								_removeSlots(0, i);
+							}
+								
+						}
 					}
-										
-					if( pSlot->m_bCloseOnSelect )
-						_removeSlots(0, popupSlots.size());
+					else
+					{
+						// Release on lower popup or widget inside it or its opener.
+						// Figure out which one and close all popups ontop of it.
+						
+						int ofs = 0;
+						Widget * pPopup = popupSlots[ofs].m_pWidget;
+						
+						while( pSource != pPopup && !pSource->isDescendantOf(pPopup) && pSource != popupSlots[ofs].m_pOpener )
+							pPopup = popupSlots[++ofs].m_pWidget;
+
+						_removeSlots(0, ofs);
+					}
+
 				}
 
 				_pMsg->swallow();
@@ -684,7 +788,7 @@ namespace wg
 
 				auto pSource = static_cast<Widget*>(_pMsg->originalSource().rawPtr());
 				if (!pSource || pSource == this )
-					_removeSlots(0,popupSlots.size());
+					_removeTopSlotAndPeeks();
 
 				_pMsg->swallow();
 			}
@@ -715,6 +819,13 @@ namespace wg
 
 	void PopupOverlay::_update(int microPassed, int64_t microsecTimestamp)
 	{
+		if( popupSlots.size() == 2 )
+		{
+			
+			
+			printf( "PopupState: %d - Counter: %d\n", popupSlots[0].m_state, popupSlots[0].m_stateCounter );
+		}
+
 		int ms = microPassed / 1000;
 
 		// Update state for all open popups
@@ -843,7 +954,7 @@ namespace wg
 
 	//____ _addSlot() ____________________________________________________________
 
-	void PopupOverlay::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectSPX& _launcherGeo, Placement _attachPoint, bool _bPeek, bool _bCloseOnSelect, SizeSPX _maxSize)
+	void PopupOverlay::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectSPX& _launcherGeo, Placement _attachPoint, bool _bPeek, bool _bCloseOnSelect, SizeSPX _maxSize, CoordSPX offset)
 	{
 		Slot * pSlot = popupSlots._pushFrontEmpty();
 		pSlot->m_pOpener = _pOpener;
@@ -854,15 +965,30 @@ namespace wg
 		pSlot->m_state = Slot::State::OpeningDelay;
 		pSlot->m_stateCounter = 0;
 		pSlot->m_maxSize = _maxSize;
+		pSlot->m_offset = offset;
 
 		pSlot->_setWidget(_pPopup);
 
 		_updateGeo(pSlot);
 		_stealKeyboardFocus();
 
-		_startReceiveUpdates();
+		if( m_receivingUpdateCounter == 0 )
+			_startReceiveUpdates();
 	}
 
+	//____ _removeTopSlotAndPeeks() ______________________________________________
+
+	void PopupOverlay::_removeTopSlotAndPeeks()
+	{
+		if( popupSlots.isEmpty() )
+			return;
+		
+		int i = 1;
+		while( i < popupSlots.size() && popupSlots[i].m_bPeek )
+			i++;
+		
+		_removeSlots(0, i);
+	}
 
 	//____ _removeSlots() __________________________________________________
 

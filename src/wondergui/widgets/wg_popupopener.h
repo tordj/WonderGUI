@@ -65,6 +65,7 @@ namespace wg
 			Widget_p		popup;
 			bool			openOnHover		= false;
 			Placement		attachPoint		= Placement::SouthWest;
+			Coord			popupOffset;
 		};
 
 		//.____ Creation __________________________________________
@@ -117,6 +118,7 @@ namespace wg
 			m_bCloseOnSelect= bp.closeOnSelect;
 			m_attachPoint	= bp.attachPoint;
 			m_mouseButton	= bp.mouseButton;
+			m_popupOffset	= bp.popupOffset;
 		}
 		
 		virtual ~PopupOpener();
@@ -143,6 +145,7 @@ namespace wg
 		Widget_p		m_pPopup;
 
 		Placement		m_attachPoint = Placement::SouthWest;
+		Coord			m_popupOffset;
 		bool			m_bOpenOnHover = false;
 		bool			m_bOpen = false;
 		bool			m_bCloseOnSelect = true;
