@@ -43,11 +43,11 @@ namespace wg
 
 	//____ pushFront() ________________________________________________
 
-	void PopupOverlay::MySlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, Size maxSize, Coord offset )
+	void PopupOverlay::MySlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, Size maxSize, Border overflow )
 	{
 		int scale = _holder()->_scale();
 
-		_pushFront(pPopup, pOpener, align(ptsToSpx(launcherGeo, scale)), attachPoint, bPeek, bCloseOnSelect, align(ptsToSpx(maxSize,scale)), align(ptsToSpx(offset,scale)));
+		_pushFront(pPopup, pOpener, align(ptsToSpx(launcherGeo, scale)), attachPoint, bPeek, bCloseOnSelect, align(ptsToSpx(maxSize,scale)), align(ptsToSpx(overflow,scale)));
 	}
 
 	//____ pop() ________________________________________________
@@ -83,10 +83,10 @@ namespace wg
 
 	//____ _pushFront() ________________________________________________
 
-	void PopupOverlay::MySlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, SizeSPX maxSize, CoordSPX offset)
+	void PopupOverlay::MySlots::_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, SizeSPX maxSize, BorderSPX overflow)
 	{
 		pPopup->releaseFromParent();
-		_holder()->_addSlot(pPopup, pOpener, launcherGeo, attachPoint, bPeek, bCloseOnSelect, maxSize, offset);
+		_holder()->_addSlot(pPopup, pOpener, launcherGeo, attachPoint, bPeek, bCloseOnSelect, maxSize, overflow);
 	}
 
 
@@ -119,6 +119,8 @@ namespace wg
 		//
 
 		RectSPX geo(0,0,SizeSPX::min(pSlot->_widget()->_defaultSize(m_scale),SizeSPX::min(pSlot->m_maxSize,m_size)));
+
+		geo -= pSlot->m_popupOverflow;	// Remove overflow for correct placement of content, will be added back afterwards.
 
 		switch( pSlot->m_attachPoint )
 		{
@@ -160,7 +162,7 @@ namespace wg
 
 			case Placement::North:						// Centered above launcherGeo.
 			{
-				geo.x = pSlot->m_launcherGeo.left() + pSlot->m_launcherGeo.w/2 + geo.w/2;
+				geo.x = pSlot->m_launcherGeo.left() + pSlot->m_launcherGeo.w/2 - geo.w/2;
 				geo.y = pSlot->m_launcherGeo.top() - geo.h;
 				break;
 			}
@@ -174,17 +176,11 @@ namespace wg
 
 			case Placement::South:						// Centered below launcherGeo.
 			{
-				geo.x = pSlot->m_launcherGeo.left() + pSlot->m_launcherGeo.w/2 + geo.w/2;
+				geo.x = pSlot->m_launcherGeo.left() + pSlot->m_launcherGeo.w/2 - geo.w/2;
 				geo.y = pSlot->m_launcherGeo.bottom();
 				break;
 			}
-
-
 		}
-
-		// Add offset to geometry
-			
-			geo += pSlot->m_offset;
 			
 		// Adjust geometry to fit inside parent.
 
@@ -268,6 +264,10 @@ namespace wg
 			else
 				geo.y = 0;
 		}
+
+		// Adding back overflow. Doesn't matter if this goes outside parent.
+
+		geo += pSlot->m_popupOverflow;
 
 		// Update geometry if it has changed.
 
@@ -954,7 +954,7 @@ namespace wg
 
 	//____ _addSlot() ____________________________________________________________
 
-	void PopupOverlay::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectSPX& _launcherGeo, Placement _attachPoint, bool _bPeek, bool _bCloseOnSelect, SizeSPX _maxSize, CoordSPX offset)
+	void PopupOverlay::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectSPX& _launcherGeo, Placement _attachPoint, bool _bPeek, bool _bCloseOnSelect, SizeSPX _maxSize, BorderSPX overflow)
 	{
 		Slot * pSlot = popupSlots._pushFrontEmpty();
 		pSlot->m_pOpener = _pOpener;
@@ -965,7 +965,7 @@ namespace wg
 		pSlot->m_state = Slot::State::OpeningDelay;
 		pSlot->m_stateCounter = 0;
 		pSlot->m_maxSize = _maxSize;
-		pSlot->m_offset = offset;
+		pSlot->m_popupOverflow = overflow;
 
 		pSlot->_setWidget(_pPopup);
 

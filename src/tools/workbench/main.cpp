@@ -49,8 +49,8 @@ using namespace wg;
 class MyHostBridge : public HostBridge
 {
 public:
-	bool		hidePointer() override {};
-	bool		showPointer() override {};
+	bool		hidePointer() override { return false; };
+	bool		showPointer() override { return true; };
 
 	bool		lockHidePointer() override { return false; };
 	bool		unlockShowPointer() override { return false; };
@@ -1316,7 +1316,7 @@ bool lineEditorTest(ComponentPtr<DynamicSlot> pEntry)
 	pEditor2->editor.setText("TEXT.");
 	pFlex->slots.pushBack(pEditor2, { .pos = {10,150}, .size = {80,40} });
 
-	auto pButton = Button::create( { .skin = m_pSimpleButtonSkin, .label = { .text = "SET TEXT" } } );
+	auto pButton = Button::create( { .label = {.text = "SET TEXT" }, .skin = m_pSimpleButtonSkin } );
 
 	Base::msgRouter()->addRoute(pButton, MsgType::Select, [pEditor2](Msg* p){ pEditor2->editor.setText("MODIFIED."); } );
 	
@@ -1355,11 +1355,15 @@ bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pEntry2 = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
 	pOpened->slots << pEntry2;
 
-	auto pSupPopup = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
-	
-	auto pEntry3 = PopupOpener::create( { .attachPoint = Placement::NorthEast, .openOnHover = true, .popup = pSupPopup, .skin = pButtonSkin });
-	pOpened->slots << pEntry3;
+	auto pShadowSkin = BoxSkin::create(8, Color::Transparent, Color8(0, 0, 0, 128), 8);
 
+	auto pCombSkin = DoubleSkin::create(pButtonSkin, pShadowSkin);
+
+
+	auto pSupPopup = Filler::create( { .defaultSize = { 100, 36 }, .skin = pCombSkin });
+	
+	auto pEntry3 = PopupOpener::create( { .attachPoint = Placement::East, .openOnHover = true, .popup = pSupPopup, .popupOverflow = 8, .skin = pButtonSkin });
+	pOpened->slots << pEntry3;
 
 	return true;
 }

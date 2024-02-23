@@ -43,6 +43,7 @@ namespace wg
 
 		struct Blueprint
 		{
+			Placement		attachPoint		= Placement::SouthWest;
 			Object_p		baggage;
 			bool			closeOnSelect	= true;
 			bool			disabled		= false;
@@ -53,19 +54,18 @@ namespace wg
 			Text::Blueprint label;
 			MarkPolicy		markPolicy		= MarkPolicy::AlphaTest;
 			MouseButton		mouseButton		= MouseButton::Left;
+			bool			openOnHover		= false;
 			bool			pickable		= false;
 			int				pickCategory	= 0;
 			PointerStyle	pointer			= PointerStyle::Undefined;
+			Widget_p		popup;
+			Border			popupOverflow;
 			bool			selectable		= true;
 			Skin_p			skin;
 			bool			stickyFocus		= false;
 			bool			tabLock			= false;
 			String			tooltip;
 
-			Widget_p		popup;
-			bool			openOnHover		= false;
-			Placement		attachPoint		= Placement::SouthWest;
-			Coord			popupOffset;
 		};
 
 		//.____ Creation __________________________________________
@@ -118,7 +118,7 @@ namespace wg
 			m_bCloseOnSelect= bp.closeOnSelect;
 			m_attachPoint	= bp.attachPoint;
 			m_mouseButton	= bp.mouseButton;
-			m_popupOffset	= bp.popupOffset;
+			m_popupOverflow	= bp.popupOverflow;
 		}
 		
 		virtual ~PopupOpener();
@@ -145,7 +145,7 @@ namespace wg
 		Widget_p		m_pPopup;
 
 		Placement		m_attachPoint = Placement::SouthWest;
-		Coord			m_popupOffset;
+		Border			m_popupOverflow;
 		bool			m_bOpenOnHover = false;
 		bool			m_bOpen = false;
 		bool			m_bCloseOnSelect = true;

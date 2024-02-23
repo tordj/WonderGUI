@@ -79,7 +79,7 @@ namespace wg
 			};
 
 			RectSPX		m_launcherGeo;		// Launcher geo relative sibling or parent.
-			CoordSPX	m_offset;			// Offset added to calculated position.
+			BorderSPX	m_popupOverflow;	// Overflow graphics of popup when placing relative launcher.
 			Placement	m_attachPoint = Placement::NorthWest;
 			bool		m_bPeek;			// Has been opened in peek-mode.
 			bool		m_bCloseOnSelect = true;	// Close popups on selection.
@@ -101,14 +101,14 @@ namespace wg
 
 			//.____ Content _______________________________________________________
 
-			void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bPeek = false, bool bCloseOnSelect = true, Size maxSize = Size(1000000, 1000000), Coord offset = {0,0} );
+			void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bPeek = false, bool bCloseOnSelect = true, Size maxSize = Size(1000000, 1000000), Border overflow = Border() );
 			void	pop(int nb = 1);
 			void	pop(Widget * pPopup);
 			void	clear();
 
 			//.____ Internal ______________________________________________________
 
-			void	_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bPeek = false, bool bCloseOnSelect = true, SizeSPX maxSize = SizeSPX(spx_max, spx_max), CoordSPX offset = {0,0});
+			void	_pushFront(const Widget_p& pPopup, Widget* pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, SizeSPX maxSize, BorderSPX overflow );
 
 
 		protected:
@@ -214,7 +214,7 @@ namespace wg
 		void			_removeSlots(int ofs, int nb);
 		void 			_removeTopSlotAndPeeks();
 
-		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, SizeSPX maxSize, CoordSPX offset);
+		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectSPX& launcherGeo, Placement attachPoint, bool bPeek, bool bCloseOnSelect, SizeSPX maxSize, BorderSPX overflow);
 
 		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
 
