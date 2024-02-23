@@ -703,8 +703,8 @@ int main(int argc, char** argv)
 		//	textClipTest(pSlot);
 		//	textEditorTest(pSlot);
 		//	lineEditorTest(pSlot);
-		//	popupOpenerTest(pSlot);
-			scrollbarTest(pSlot);
+			popupOpenerTest(pSlot);
+		//	scrollbarTest(pSlot);
 		//	modalLayerTest(pSlot);
 		//	splitPanelTest(pSlot);
 		//	designLayerTest(pSlot);
@@ -1334,17 +1334,17 @@ bool lineEditorTest(ComponentPtr<DynamicSlot> pEntry)
 bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 {
 
-	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black, 2);
+	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black, 8 );
 
-	auto pPopupOverlay = PopupOverlay::create();
+	
+	auto pPopupOverlay = PopupOverlay::create( { .skin = ColorSkin::create(Color::PaleGoldenrod) } );
 	* pEntry = pPopupOverlay;
-	pPopupOverlay->setSkin( ColorSkin::create(Color::PaleGoldenrod) );
 
 	auto pFlex = FlexPanel::create();
 	pPopupOverlay->mainSlot = pFlex;
 
 	auto  pOpener = PopupOpener::create({ .closeOnSelect = false, .label = {.text = "OPEN POPUP"}, .skin = pButtonSkin });
-	pFlex->slots.pushBack(pOpener, { .pos = {50,50}, .size = {50,30} });
+	pFlex->slots.pushBack(pOpener, { .pos = {50,50}, .size = {70,40} });
 
 	auto pOpened = PackPanel::create( { .axis = Axis::Y, .skin = pButtonSkin } );
 	pOpener->setPopup(pOpened);
@@ -1354,6 +1354,11 @@ bool popupOpenerTest(ComponentPtr<DynamicSlot> pEntry)
 
 	auto pEntry2 = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
 	pOpened->slots << pEntry2;
+
+	auto pSupPopup = Filler::create( { .defaultSize = { 100, 20 }, .skin = pButtonSkin });
+	
+	auto pEntry3 = PopupOpener::create( { .attachPoint = Placement::NorthEast, .openOnHover = true, .popup = pSupPopup, .skin = pButtonSkin });
+	pOpened->slots << pEntry3;
 
 
 	return true;
