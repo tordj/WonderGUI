@@ -277,8 +277,8 @@ namespace wg
 		bool			m_bOverlayScrollbarX = false;
 		bool			m_bOverlayScrollbarY = false;
 
-		spx				m_viewXOfs, m_viewXLen, m_canvasXLen;
-		spx				m_viewYOfs, m_viewYLen, m_canvasYLen;
+		spx				m_viewXOfs = 0, m_viewXLen = 0, m_canvasXLen = 0;
+		spx				m_viewYOfs = 0, m_viewYLen = 0, m_canvasYLen = 0;
 
 		pts				m_stepSizeX = 8, m_stepSizeY = 8;
 		pts				m_wheelStepSizeX = 8*3, m_wheelStepSizeY = 8*3;
