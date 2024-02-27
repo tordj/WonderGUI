@@ -253,11 +253,11 @@ namespace wg
 				PackLayout::Item * pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
 				spx* pOutput = (spx*)&pItemArea[slots.size()];
 
-				int nItems = _populateLayoutArray(pItemArea);
+				int nItems = _populateLayoutArray(pItemArea, scale);
 
 				// Retrieve item lengths and find height of highest item.
 
-				pLayout->getItemSizes(pOutput, width, m_scale, nItems, pItemArea);
+				pLayout->getItemSizes(pOutput, width, scale, nItems, pItemArea);
 
 				spx maxAscend = 0;
 				spx maxDescend = 0;
@@ -296,11 +296,11 @@ namespace wg
 					PackLayout::Item * pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
 					spx* pOutput = (spx*)&pItemArea[slots.size()];
 
-					int nItems = _populateLayoutArray(pItemArea, width);
+					int nItems = _populateLayoutArray(pItemArea, scale, width);
 
 					// Retrieve default length
 
-					height = pLayout->getWantedSizes(pOutput, m_scale, nItems, pItemArea);
+					height = pLayout->getWantedSizes(pOutput, scale, nItems, pItemArea);
 
 					// Release temporary memory area
 
@@ -345,12 +345,12 @@ namespace wg
 					PackLayout::Item* pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
 					spx* pOutput = (spx*)&pItemArea[slots.size()];
 
-					int nItems = _populateLayoutArray(pItemArea);
+					int nItems = _populateLayoutArray(pItemArea, scale);
 
 					// Retrieve item lengths and find height of highest item.
 
 
-					pLayout->getItemSizes(pOutput, height, m_scale, nItems, pItemArea);
+					pLayout->getItemSizes(pOutput, height, scale, nItems, pItemArea);
 
 					spx maxAscend = 0;
 					spx maxDescend = 0;
@@ -390,11 +390,11 @@ namespace wg
 					PackLayout::Item* pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
 					spx* pOutput = (spx*)&pItemArea[slots.size()];
 
-					int nItems = _populateLayoutArray(pItemArea, height);
+					int nItems = _populateLayoutArray(pItemArea, scale, height);
 
 					// Retrieve preferred length
 
-					width = pLayout->getWantedSizes(pOutput, m_scale, nItems, pItemArea);
+					width = pLayout->getWantedSizes(pOutput, scale, nItems, pItemArea);
 
 					// Release temporary memory area
 
@@ -678,7 +678,7 @@ namespace wg
 	void PackPanel::_resize( const SizeSPX& size, int scale )
 	{
 		if( scale != m_scale )
-		{
+		{			
 			for (auto pSlot = slots.begin(); pSlot != slots.end(); pSlot++)
 			{
 				pSlot->m_bResizeRequired = true;
@@ -716,11 +716,11 @@ namespace wg
 				PackLayout::Item* pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
 				spx* pOutput = (spx*) & pItemArea[slots.size()];
 
-				int nItems = _populateLayoutArray(pItemArea);
+				int nItems = _populateLayoutArray(pItemArea, scale);
 
 				// Retrieve preferred length and breadth
 
-				length = pLayout->getWantedSizes(pOutput, m_scale, nItems, pItemArea);
+				length = pLayout->getWantedSizes(pOutput, scale, nItems, pItemArea);
 
 				PackLayout::Item* pI = pItemArea;
 				for (auto pS = slots.begin(); pS != slots.end(); pS++)
@@ -803,7 +803,7 @@ namespace wg
 								SizeSPX defaultSize = p->_widget()->_defaultSize(scale);
 								length += defaultSize.w;
 								
-								spx breadth = p->m_defaultSize.h;
+								spx breadth = defaultSize.h;
 								spx ascend = align(breadth * p->m_baseline);
 								spx descend = breadth - ascend;
 								
@@ -824,7 +824,7 @@ namespace wg
 								SizeSPX defaultSize = p->_widget()->_defaultSize(scale);
 								length += defaultSize.h;
 	
-								spx breadth = p->m_defaultSize.w;
+								spx breadth = defaultSize.w;
 								spx ascend = align(breadth * p->m_baseline);
 								spx descend = breadth - ascend;
 								
@@ -1094,7 +1094,7 @@ namespace wg
 			PackLayout::Item* pItemArea = reinterpret_cast<PackLayout::Item*>(Base::memStackAlloc(arrayBytes));
 			spx* pOutput = (spx*) &pItemArea[slots.size()];
 
-			int nItems = _populateLayoutArray(pItemArea, givenBreadth);
+			int nItems = _populateLayoutArray(pItemArea, m_scale, givenBreadth);
 
 			// Retrieve length and set geo for all children, call _requestRender() and _setSize() where needed.
 
@@ -1188,7 +1188,7 @@ namespace wg
 
 	//____ _populateLayoutArray() ___________________________________________
 
-	int PackPanel::_populateLayoutArray(PackLayout::Item* pArray ) const
+	int PackPanel::_populateLayoutArray(PackLayout::Item* pArray, int scale ) const
 	{
 		PackLayout::Item* pI = pArray;
 
@@ -1198,9 +1198,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->def = pS->m_defaultSize.w;
-					pI->min = pS->_widget()->_minSize(m_scale).w;
-					pI->max = pS->_widget()->_maxSize(m_scale).w;
+					pI->def = scale == m_scale ? pS->m_defaultSize.w : pS->_widget()->_defaultSize(scale).w;
+					pI->min = pS->_widget()->_minSize(scale).w;
+					pI->max = pS->_widget()->_maxSize(scale).w;
 					pI->weight = pS->m_weight*65536;
 					pI++;
 				}
@@ -1212,9 +1212,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->def = pS->m_defaultSize.h;
-					pI->min = pS->_widget()->_minSize(m_scale).h;
-					pI->max = pS->_widget()->_maxSize(m_scale).h;
+					pI->def = scale == m_scale ? pS->m_defaultSize.h : pS->_widget()->_defaultSize(scale).h;
+					pI->min = pS->_widget()->_minSize(scale).h;
+					pI->max = pS->_widget()->_maxSize(scale).h;
 					pI->weight = pS->m_weight*65536;
 					pI++;
 				}
@@ -1224,7 +1224,7 @@ namespace wg
 		return int(pI - pArray);
 	}
 
-	int PackPanel::_populateLayoutArray(PackLayout::Item* pArray, spx forcedBreadth ) const
+	int PackPanel::_populateLayoutArray(PackLayout::Item* pArray, int scale, spx forcedBreadth ) const
 	{
 		PackLayout::Item* pI = pArray;
 
@@ -1234,9 +1234,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->def = pS->_widget()->_matchingWidth(forcedBreadth,m_scale);
-					pI->min = pS->_widget()->_minSize(m_scale).w;
-					pI->max = pS->_widget()->_maxSize(m_scale).w;
+					pI->def = pS->_widget()->_matchingWidth(forcedBreadth,scale);
+					pI->min = pS->_widget()->_minSize(scale).w;
+					pI->max = pS->_widget()->_maxSize(scale).w;
 					pI->weight = pS->m_weight*65536;
 					pI++;
 				}
@@ -1248,9 +1248,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->def = pS->_widget()->_matchingHeight(forcedBreadth,m_scale);
-					pI->min = pS->_widget()->_minSize(m_scale).h;
-					pI->max = pS->_widget()->_maxSize(m_scale).h;
+					pI->def = pS->_widget()->_matchingHeight(forcedBreadth,scale);
+					pI->min = pS->_widget()->_minSize(scale).h;
+					pI->max = pS->_widget()->_maxSize(scale).h;
 					pI->weight = pS->m_weight*65536;
 					pI++;
 				}

@@ -230,8 +230,8 @@ namespace wg
 		spx 		_calcBaselineOffset(spx givenBreadth);
 		spx			_calcTotalSpacing( int scale ) const;
 
-		int			_populateLayoutArray( PackLayout::Item * pArray ) const;
-		int			_populateLayoutArray(PackLayout::Item* pArray, spx forcedBreadth ) const;
+		int			_populateLayoutArray( PackLayout::Item * pArray, int scale ) const;
+		int			_populateLayoutArray(PackLayout::Item* pArray, int scale, spx forcedBreadth ) const;
 
 		Axis			m_axis = Axis::X;
 		PackLayout_p	m_pLayout;
