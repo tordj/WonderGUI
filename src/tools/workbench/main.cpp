@@ -148,6 +148,7 @@ bool wgcombTest(ComponentPtr<DynamicSlot> pSlot);
 bool widgetRecording(ComponentPtr<DynamicSlot> pSlot);
 bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pSlot);
 bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pSlot);
+bool textDisplayTest(ComponentPtr<DynamicSlot> pSlot);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -703,7 +704,7 @@ int main(int argc, char** argv)
 		//	textClipTest(pSlot);
 		//	textEditorTest(pSlot);
 		//	lineEditorTest(pSlot);
-			popupOpenerTest(pSlot);
+		//	popupOpenerTest(pSlot);
 		//	scrollbarTest(pSlot);
 		//	modalLayerTest(pSlot);
 		//	splitPanelTest(pSlot);
@@ -745,6 +746,7 @@ int main(int argc, char** argv)
 		//  widgetRecording(pSlot);
 		//	canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
+			textDisplayTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -3491,3 +3493,44 @@ bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 }
 
+//____ textDisplayTest() ________________________________________________________
+
+bool textDisplayTest(ComponentPtr<DynamicSlot> pSlot)
+{
+	auto pSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Red, .outlineThickness = 1, .padding = 4 } );
+	auto pInnerSkin = BoxSkin::create( { .color = Color::White, .outlineColor = Color::Black, .outlineThickness = 1, .padding = 4 } );
+
+	
+	auto pTextLayout = BasicTextLayout::create( { .wrap = true } );
+	
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pScaleCapsule = ScaleCapsule::create({ .child = pBaseLayer, .scale = 128 });
+	
+	auto pPackPanel = PackPanel::create({ .axis = Axis::Y, .skin = pInnerSkin });
+
+	auto pText1 = TextDisplay::create( { .skin = pSkin, .display = { .layout = pTextLayout } });
+	pText1->display.setText("Och OM de skulle ge något följdfel så vill jag veta det så fort som möjligt. Men jag tror inte det, det var verkligen uppenbara fel som var lätta att fixa (använde m_scale istf parameter scale på flera ställen. Ibland behöver man räkna ut vad geometrin kommer att bli inför en kommande.");
+	pPackPanel->slots << pText1;
+
+	auto pText2 = TextDisplay::create( { .skin = pSkin });
+	pText2->display.setText("TEXT2");
+	pPackPanel->slots << pText2;
+
+	auto pText3 = TextDisplay::create( { .skin = pSkin });
+	pText3->display.setText("TEXT3");
+	pPackPanel->slots << pText3;
+
+
+	auto pSizeCapsule = SizeCapsule::create({ .child = pPackPanel, .maxSize = {200, -1}} );
+	*pSlot = pScaleCapsule;
+
+	pBaseLayer->slots.pushFront(pSizeCapsule, WGBP(FlexPanelSlot, _.pos = {10,10} /*, _.size = {width, height}*/));
+
+	auto pSkin2 = BoxSkin::create( { .outlineColor = Color::Black, .outlineThickness = 10, .padding = 11 } );
+	pPackPanel->setSkin( pSkin2 );
+	
+	return true;
+
+}

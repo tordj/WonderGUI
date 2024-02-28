@@ -237,6 +237,12 @@ namespace wg
 
 	spx PackPanel::_matchingHeight( spx width, int scale ) const
 	{
+		SizeSPX padding = m_skin.contentBorderSize(scale);
+
+		if( padding.w >= width )
+			return padding.h;
+
+		width -= padding.w;
 		spx height = 0;
 
 		if (slots.size() > 0)
@@ -319,7 +325,7 @@ namespace wg
 			}
 		}
 
-		height += m_skin.contentBorderSize(scale).h;
+		height += padding.h;
 
 		return height;
 	}
@@ -328,6 +334,12 @@ namespace wg
 
 	spx PackPanel::_matchingWidth( spx height, int scale ) const
 	{
+		SizeSPX padding = m_skin.contentBorderSize(scale);
+
+		if( padding.h >= height )
+			return padding.w;
+
+		height -= padding.h;
 		spx width = 0;
 		
 		if (slots.size() > 0)
@@ -413,7 +425,7 @@ namespace wg
 			}
 		}
 
-		width += m_skin.contentBorderSize(scale).w;
+		width += padding.w;
 
 		return width;
 	}

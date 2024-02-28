@@ -124,6 +124,7 @@
 #include <wg_scroller.h>
 #include <wg_scrollpanel.h>
 #include <wg_blockslideskin.h>
+#include <wg_scalecapsule.h>
 #include <wg_selectbox.h>
 #include <wg_sidecanvas.h>
 #include <wg_sizecapsule.h>
