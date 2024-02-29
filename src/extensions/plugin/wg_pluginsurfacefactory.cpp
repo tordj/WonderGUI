@@ -36,14 +36,30 @@ namespace wg
 
 	PluginSurfaceFactory::PluginSurfaceFactory( wg_obj cFactory) : m_cFactory(cFactory)
 	{
-		PluginCalls::object->retain(cFactory);
+		/*
+		 TODO: Solve this in a more correct way:
+		 
+		 We skip retaining/releasing the hosts SurfaceFactory used by us to make curent
+		 Softube close down sequence work where PluginSurfaceFactory (due to a static pointer)
+		 is destroyed AFTER the PluginCalls-structure has been cleared.
+		 We therefore can not call release() in our destructor.
+
+		 We therefore rely on the hosts real SurfaceFactory not being deleted until
+		 this class is not used by us anymore. This is safe to assume in the Softube GUI
+		 framework, but could cause issues with other future uses of WonderGUI plugins
+		 implementations.
+		 */
+		
+//		PluginCalls::object->retain(cFactory);
 	}
 
 	//____ destructor ________________________________________________________
 
 	PluginSurfaceFactory::~PluginSurfaceFactory()
 	{
-		PluginCalls::object->release(m_cFactory);
+		//TODO: Solve this in a more correct way. See commen in constructor.
+		
+//		PluginCalls::object->release(m_cFactory);
 	}
 
 
