@@ -819,13 +819,6 @@ namespace wg
 
 	void PopupOverlay::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		if( popupSlots.size() == 2 )
-		{
-			
-			
-			printf( "PopupState: %d - Counter: %d\n", popupSlots[0].m_state, popupSlots[0].m_stateCounter );
-		}
-
 		int ms = microPassed / 1000;
 
 		// Update state for all open popups
