@@ -3430,11 +3430,15 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 	
 	auto pCanvasDisplay1 = CanvasDisplay::create({	.canvas = pCanvasCapsule, 
-													.skin = BoxSkin::create({ .color = Color::Black, .outlineThickness = 1, 
-													.outlineColor = Color::Blue }) });
+													/*.skin = BoxSkin::create({ .color = Color::Black, .outlineThickness = 1,
+													.outlineColor = Color::Blue })*/ });
 
 	pBack->slots.pushBack(pCanvasDisplay1, { .pos = {10, 240}, .size = {200,200} });
 
+	pCanvasDisplay1->setTintColor(HiColor(4096,4096,4096,1024));
+	pCanvasDisplay1->setTintColor(HiColor::White, ColorTransition::create(4000*1000, TransitionCurve::EaseOut));
+
+	
 	return true;
 }
 

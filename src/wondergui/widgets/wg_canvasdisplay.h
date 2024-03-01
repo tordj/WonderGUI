@@ -26,6 +26,8 @@
 
 #include <wg_widget.h>
 #include <wg_skin.h>
+#include <wg_gradient.h>
+#include <wg_transitions.h>
 
 namespace wg
 {
@@ -57,6 +59,7 @@ namespace wg
 		struct Blueprint
 		{
 			Object_p		baggage;
+			BlendMode		blendMode		= BlendMode::Blend;
 			CanvasCapsule_p	canvas;
 			Size			defaultSize = { -1,-1 };
 			bool			disabled = false;
@@ -72,6 +75,8 @@ namespace wg
 			Skin_p			skin;
 			bool			stickyFocus = false;
 			bool			tabLock = false;
+			HiColor			tintColor		= HiColor::Undefined;
+			Gradient		tintGradient;
 			String			tooltip;
 		};
 
@@ -94,6 +99,10 @@ namespace wg
 		void		setPlacement(Placement placement);
 		Placement	placement() const { return m_placement; }
 
+		void		setTintColor(HiColor color, ColorTransition* pTransition = nullptr);
+		void		setTintGradient(const Gradient& gradient, ColorTransition* pTransition = nullptr);
+		void		setBlendMode(BlendMode mode);
+
 
 		//.____ Geometry ____________________________________________
 
@@ -107,6 +116,13 @@ namespace wg
 			m_defaultSize	= bp.defaultSize;
 			m_placement		= bp.placement;
 
+			m_blendMode		= bp.blendMode;
+			
+			if( bp.tintColor != HiColor::Undefined )
+				m_tintColor	= bp.tintColor;
+
+			m_gradient		= bp.tintGradient;
+			
 			if (bp.canvas)
 				setCanvas(bp.canvas);
 		}
@@ -114,6 +130,7 @@ namespace wg
 		virtual ~CanvasDisplay();
 
 		SizeSPX		_defaultSize(int scale) const override;
+		void		_update(int microPassed, int64_t microsecTimestamp) override;
 		void		_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window) override;
 		RectSPX		_canvasWindow(RectSPX window) const;
 
@@ -128,6 +145,24 @@ namespace wg
 		CanvasCapsule_wp	m_pCanvas;
 		SizeSPX				m_canvasSize;
 		Placement			m_placement = Placement::Center;
+		
+		HiColor				m_tintColor = HiColor::White;
+		Gradient			m_gradient;
+		BlendMode			m_blendMode = BlendMode::Blend;
+
+		// Transitions
+
+		HiColor				m_startTintColor;
+		HiColor				m_endTintColor;
+
+		Gradient			m_startGradient;
+		Gradient			m_endGradient;
+
+		ColorTransition_p	m_pTintColorTransition;
+		ColorTransition_p	m_pGradientTransition;
+
+		int					m_tintColorTransitionProgress = 0;
+		int					m_gradientTransitionProgress = 0;
 	};
 
 
