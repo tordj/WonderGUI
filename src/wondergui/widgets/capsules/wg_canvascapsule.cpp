@@ -27,6 +27,8 @@
 #include <wg_base.h>
 #include <wg_util.h>
 
+#include <wg_boxskin.h>
+
 namespace wg
 {
 	const TypeInfo CanvasCapsule::TYPEINFO = { "CanvasCapsule", &Capsule::TYPEINFO };
@@ -68,6 +70,11 @@ namespace wg
 		}
 		
 		Capsule::setSkin(pSkin);
+		
+		// Undo setting of m_bOpaque in case skin might not cover whole widget.
+		
+		if( m_bScaleCanvas && m_bSkinAroundCanvas )
+			m_bOpaque = false;
 	}
 
 
@@ -379,12 +386,22 @@ namespace wg
 
 	void CanvasCapsule::_render(GfxDevice* pDevice, const RectSPX& _canvas, const RectSPX& _window)
 	{
+		// Render our canvas content
+		
 		_renderCanvas(pDevice);
 
-		m_skin.render(pDevice, _canvas, m_scale, m_state);
-
+		//
+		
 		RectSPX contentRect = _contentRect(_canvas);
+		RectSPX canvasArea = m_bScaleCanvas ? _canvasWindow(contentRect) : contentRect;
+		RectSPX glowRect = m_bSkinAroundCanvas ? canvasArea : contentRect;
+		
+		if( m_bSkinAroundCanvas )
+			m_skin.render(pDevice, canvasArea + m_skin.contentBorder(m_scale, m_state), m_scale, m_state);
+		else
+			m_skin.render(pDevice, _canvas, m_scale, m_state);
 
+				
 		// Blit our canvas
 
 		int		rl = pDevice->renderLayer();
@@ -394,20 +411,29 @@ namespace wg
 		if (m_renderLayer != -1)
 			pDevice->setRenderLayer(m_renderLayer);
 
-		RectSPX seedArea = m_bScaleCanvas ? _canvasWindow(contentRect) : contentRect;
 
-		glow._render(pDevice, contentRect, m_pCanvas, seedArea);
+		glow._render(pDevice, glowRect, m_pCanvas, canvasArea);
 
 		pDevice->setBlendMode(m_blendMode);
 
 		pDevice->setTintColor(m_tintColor);
 
 		if (m_gradient.isValid() )
-			pDevice->setTintGradient(contentRect, m_gradient);
+			pDevice->setTintGradient(canvasArea, m_gradient);
 
 		pDevice->setBlitSource(m_pCanvas);
-		pDevice->stretchBlit(seedArea);
+		pDevice->stretchBlit(canvasArea);
+/*
+		// Debug code
+ 
+		Skin_p pOutline1 = BoxSkin::create( WGBP(BoxSkin, _.outlineColor = Color::Green, _.outlineThickness = 1.f, _.color = Color::Transparent ));
 
+		pOutline1->_render(pDevice, _canvas, m_scale, m_state );
+
+		Skin_p pOutline2 = BoxSkin::create( WGBP(BoxSkin, _.outlineColor = Color::Red, _.outlineThickness = 1.f, _.color = Color::Transparent ));
+
+		pOutline2->_render(pDevice, seedArea, m_scale, m_state );
+*/
 		if (m_gradient.isValid())
 			pDevice->clearTintGradient();
 
@@ -442,38 +468,77 @@ namespace wg
 
 	//____ _collectPatches() _____________________________________________________
 
-	void CanvasCapsule::_collectPatches(PatchesSPX& container, const RectSPX& geo, const RectSPX& clip)
+	void CanvasCapsule::_collectPatches( PatchesSPX& container, const RectSPX& geo, const RectSPX& clip )
 	{
-		if( !m_skin.isEmpty() || glow.isActive() )
-			container.add(RectSPX::overlap(geo, clip));
-		else if( slot._widget() )
-			slot._widget()->_collectPatches(container, _contentRect(geo), clip);
+		RectSPX contentRect = _contentRect(geo);
+		RectSPX canvasArea = m_bScaleCanvas ? _canvasWindow(contentRect) : contentRect;
+
+		// A skin always cover the most, if we have a skin we don't need to check the rest
+
+		if( !m_skin.isEmpty() )
+		{
+			RectSPX skinArea;
+
+			if( m_bScaleCanvas && m_bSkinAroundCanvas )
+				skinArea = canvasArea + m_skin.contentBorder(m_scale, m_state);
+			else
+				skinArea = geo;
+
+			container.add(RectSPX::overlap(skinArea, clip));
+			return;
+		}
+
+		// Glow covers whole contentRect as long as skin is not tightened around canvas.
+		
+		RectSPX dirt = canvasArea;
+		
+		if( glow.isActive() && !m_bSkinAroundCanvas )
+			dirt = contentRect;
+			
+		// We don't collect individual patches from within canvas,
+		// the canvas is considered one drawn area.
+
+		container.add(RectSPX::overlap(dirt, clip));
 	}
 
 	//____ _maskPatches() ________________________________________________________
 
-	void CanvasCapsule::_maskPatches(PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode)
+	void CanvasCapsule::_maskPatches( PatchesSPX& patches, const RectSPX& geo, const RectSPX& clip, BlendMode blendMode )
 	{
-		// Mask against our skin if that is opaque.
+		RectSPX skinRect = geo;
 		
-		if (!m_skin.isEmpty() && m_skin.isOpaque( clip, geo.size(), m_scale, m_state ) )
+		RectSPX contentRect = _contentRect(geo);
+		RectSPX canvasArea = m_bScaleCanvas ? _canvasWindow(contentRect) : contentRect;
+
+		if( m_bScaleCanvas && m_bSkinAroundCanvas )
+			skinRect = canvasArea + m_skin.contentBorder(m_scale, m_state);
+
+		if (!m_skin.isEmpty())
 		{
-			patches.sub(RectSPX::overlap(geo, clip));
-			return;
+			if(m_skin.isOpaque( clip - skinRect.pos(), skinRect.size(), m_scale, m_state ) )
+			{
+				patches.sub(RectSPX::overlap(skinRect, clip));
+				return;
+			}
 		}
-		
+
 		// We can't mask against canvas content if canvas is applied with some transparency.
 		
 		if( m_tintColor.a != 4096 || (m_gradient.isValid() && !m_gradient.isOpaque()) )
 			return;
+
+		//
 		
-		RectSPX contentGeo = _contentRect(geo);
-		
-		if( Util::pixelFormatToDescription(m_canvasFormat).A_mask == 0 )
-			patches.sub(contentGeo);
-		else if( slot._widget() )
-			slot._widget()->_maskPatches( patches, contentGeo, clip, blendMode );
+		if( slot._widget() )
+		{
+			if( Util::pixelFormatToDescription(m_canvasFormat).A_mask == 0 )
+				patches.sub(RectSPX::overlap(canvasArea, clip));
+			else
+				slot._widget()->_maskPatches(patches, canvasArea, clip, blendMode);
+		}
 	}
+
+
 
 	//____ _releaseChild() _______________________________________________________
 	

@@ -80,6 +80,7 @@ namespace wg
 			bool			scaleCanvas		= false;
 			bool			selectable		= true;
 			Skin_p			skin;
+			bool			skinAroundCanvas = false;
 			bool			stickyFocus		= false;
 			SurfaceFactory_p surfaceFactory;
 			bool			tabLock			= false;
@@ -156,6 +157,8 @@ namespace wg
 			m_placement		= bp.placement;
 			m_clearColor	= bp.clearColor;
 			
+			m_bSkinAroundCanvas = bp.skinAroundCanvas;
+			
 			if( bp.child )
 				slot.setWidget(bp.child);
 			
@@ -221,10 +224,11 @@ namespace wg
 		PatchesSPX			m_patches;
 
 		bool				m_bScaleCanvas = false;
+		bool				m_bSkinAroundCanvas = false;
 		Placement			m_placement = Placement::Center;
-
+		
 		std::vector<CanvasDisplay*>	m_sideDisplays;
-
+		
 		// Transitions
 
 		HiColor				m_startTintColor;
