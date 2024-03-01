@@ -744,9 +744,9 @@ int main(int argc, char** argv)
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
-		//	canvasCapsuleTest(pSlot);
+			canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
-			textDisplayTest(pSlot);
+		//	textDisplayTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -3415,7 +3415,15 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	pPanel->slots[1] = pContent2;
 
 	
-	auto pCanvasCapsule = CanvasCapsule::create( { .scaleCanvas = true, .skin = StaticColorSkin::create({ .color = Color::Yellow, .padding = 2 }) });
+	auto pCanvasCapsule = CanvasCapsule::create( {  
+		.scaleCanvas = true,
+		.skin = BoxSkin::create({ .color = Color::Yellow,
+			.outlineThickness = 5,
+			.outlineColor = Color::Black,
+			.padding = 6 }),
+		.skinAroundCanvas = true
+	});
+	
 	pCanvasCapsule->slot = pPanel;
 
 	pBack->slots.pushBack(pCanvasCapsule, { .pos = {10,10}, .size = { 400, 200 } });
