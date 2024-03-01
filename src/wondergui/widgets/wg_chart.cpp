@@ -54,6 +54,24 @@ namespace wg
 
 	Chart::~Chart()
 	{
+		// Remove TextItems from TextLayout
+
+		//TODO: This here and in didAddEntries, didMoveEntries, willEraseEntries could
+		// be handled with constructors, move constructors and destructors in GridLine instead.
+
+		TextLayout* pDefaultLayout = m_pTextLayout ? m_pTextLayout : Base::defaultTextLayout();
+
+		for( auto& line : xLines )
+		{
+			TextLayout* pLayout = line.m_pTextLayout ? line.m_pTextLayout.rawPtr() : pDefaultLayout;
+			pLayout->removeText(&line);
+		}
+
+		for (auto& line : yLines)
+		{
+			TextLayout* pLayout = line.m_pTextLayout ? line.m_pTextLayout.rawPtr() : pDefaultLayout;
+			pLayout->removeText(&line);
+		}
 	}
 
 	//____ typeInfo() _________________________________________________________
