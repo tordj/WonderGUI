@@ -165,7 +165,7 @@ namespace wg
 	{
 		if (!m_skin.isEmpty())
 		{
-			if(m_skin.isOpaque( clip, geo.size(), m_scale, m_state ) )
+			if(m_skin.isOpaque( clip - geo.pos(), geo.size(), m_scale, m_state ) )
 				patches.sub(RectSPX::overlap(geo, clip));
 			else if( slot._widget() )
 				slot._widget()->_maskPatches(patches, _contentRect(geo), clip, blendMode);
