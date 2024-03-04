@@ -560,7 +560,7 @@ namespace wg
 
 	//____ setTopSamples() ____________________________________________________
 
-	void AreaChartEntry::setTopSamples(int nSamples, float* pSamples)
+	void AreaChartEntry::setTopSamples(int nSamples, const float* pSamples)
 	{
 		if (nSamples == 0)
 		{
@@ -580,7 +580,7 @@ namespace wg
 
 	//____ setBottomSamples() _________________________________________________
 
-	void AreaChartEntry::setBottomSamples(int nSamples, float* pSamples)
+	void AreaChartEntry::setBottomSamples(int nSamples, const float* pSamples)
 	{
 		if (nSamples == 0)
 		{
@@ -599,7 +599,7 @@ namespace wg
 
 	//____ transitionSamples() ________________________________________________
 
-	bool AreaChartEntry::transitionSamples(ValueTransition* pTransition, int nTopSamples, float* pNewTopSamples, int nBottomSamples, float* pNewBottomSamples)
+	bool AreaChartEntry::transitionSamples(ValueTransition* pTransition, int nTopSamples, const float* pNewTopSamples, int nBottomSamples, const float* pNewBottomSamples)
 	{
 		if( nTopSamples != m_topSamples.size() || nBottomSamples != m_bottomSamples.size() )
 			return false;

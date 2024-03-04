@@ -58,10 +58,10 @@ namespace wg
 
 		void	setRange(float begin, float end);
 
-		void	setTopSamples(int nSamples, float* pSamples);
-		void	setBottomSamples(int nSamples, float* pSamples);
+		void	setTopSamples(int nSamples, const float* pSamples);
+		void	setBottomSamples(int nSamples, const float* pSamples);
 
-		bool	transitionSamples(ValueTransition* pTransition, int nTopSamples, float* pNewTopSamples, int nBottomSamples, float* pNewBottomSamples);
+		bool	transitionSamples(ValueTransition* pTransition, int nTopSamples, const float* pNewTopSamples, int nBottomSamples, const float* pNewBottomSamples);
 
 		void	setVisible(bool bVisible);
 		bool	isVisible() const { return m_bVisible; }
