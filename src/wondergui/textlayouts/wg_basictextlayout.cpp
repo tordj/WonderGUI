@@ -81,7 +81,7 @@ namespace wg
 		int nLines = _countLines( pText, pChars );
 
 		_setTextDataBlock(pText,nullptr);					// Make sure pointer is null for the realloc call.
-		void * pBlock = _reallocBlock(pText,nLines, {-1,-1}, {-1,-1} );
+		void * pBlock = _reallocBlock(pText,nLines, _scale(pText), {-1,-1}, {-1,-1} );
 
 		_updateLineInfo( pText, pBlock, pChars, true );
 	}
@@ -770,7 +770,7 @@ namespace wg
 
 		void * pBlock = _dataBlock(pText);
 		if( !pBlock || _header(pBlock)->nbLines != nLines )
-			pBlock = _reallocBlock(pText,nLines, _header(pBlock)->defaultSize, _header(pBlock)->textSize);
+			pBlock = _reallocBlock(pText,nLines, _scale(pText), _header(pBlock)->defaultSize, _header(pBlock)->textSize);
 
 		_updateLineInfo( pText, pBlock, pChars, bAllowRequestResize );
 		_setTextDirty(pText);
@@ -988,7 +988,7 @@ namespace wg
 
 	SizeSPX BasicTextLayout::defaultSize( const TextItem * pText, int scale ) const
 	{
-		if (scale != _scale(pText))
+		if (scale != _header(_dataBlock(pText))->scaleUsed )
 			return _calcDefaultSize(_chars(pText),_baseStyle(pText), scale, _state(pText));
 
 		return _header(_dataBlock(pText))->defaultSize;
@@ -998,7 +998,7 @@ namespace wg
 
 	spx BasicTextLayout::matchingWidth( const TextItem * pText, spx height, int scale ) const
 	{
-		if (scale != _scale(pText))
+		if (scale != _header(_dataBlock(pText))->scaleUsed )
 			return _calcDefaultSize(_chars(pText),_baseStyle(pText), scale, _state(pText)).w;
 
 		return	_header(_dataBlock(pText))->defaultSize.w;
@@ -1367,7 +1367,7 @@ namespace wg
 
 	//____ _reallocBlock() _________________________________________________________
 
-	void * BasicTextLayout::_reallocBlock( TextItem * pText, int nLines, SizeSPX defaultSize, SizeSPX textSize )
+	void * BasicTextLayout::_reallocBlock( TextItem * pText, int nLines, int scaleUsed, SizeSPX defaultSize, SizeSPX textSize )
 	{
 		void * pBlock = _dataBlock(pText);
 		if( pBlock )
@@ -1377,6 +1377,7 @@ namespace wg
 		_setTextDataBlock(pText, pBlock);
 
 		((BlockHeader *)pBlock)->nbLines = nLines;
+		((BlockHeader *)pBlock)->scaleUsed = scaleUsed;
 		((BlockHeader *)pBlock)->defaultSize = defaultSize;
 		((BlockHeader *)pBlock)->textSize = textSize;
 
@@ -1392,18 +1393,22 @@ namespace wg
 		SizeSPX defaultSize;
 		SizeSPX textSize;
 
+		int scale = _scale(pText);
+		
 		if (m_bLineWrap)
 		{
 			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update defaultSize.
 
-			defaultSize = _updateFixedLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
-			textSize = _updateWrapLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText), _size(pText).w);
+			defaultSize = _updateFixedLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), scale, _state(pText));
+			textSize = _updateWrapLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), scale, _state(pText), _size(pText).w);
 		}
 		else
 		{
-			defaultSize = _updateFixedLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), _scale(pText), _state(pText));
+			defaultSize = _updateFixedLineInfo( _lineInfo(pBlock), pChars, _baseStyle(pText), scale, _state(pText));
 			textSize = defaultSize;
 		}
+
+		pHeader->scaleUsed = scale;
 
 		if (defaultSize != pHeader->defaultSize || textSize != pHeader->textSize)
 		{

@@ -464,7 +464,7 @@ RectI sourceOfs;
 		RectSPX clip = _clip;
 
 		if( clip.contains(pDevice->clipBounds()))
-			return { 0, nullptr, 0 };
+			return ClipPopData();
 
 		int nRects 				= pDevice->clipListSize();
 		const RectSPX * pRects 	= pDevice->clipList();

@@ -133,6 +133,7 @@ namespace wg
 		struct BlockHeader
 		{
 			int nbLines;
+			int scaleUsed;				// Scale used for calculating defaultSize and textSize.
 			SizeSPX defaultSize;
 			SizeSPX textSize;
 		};
@@ -159,7 +160,7 @@ namespace wg
 		int				_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const;
 		spx				_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, int scale, State state, spx maxLineWidth) const;
 
-		void *			_reallocBlock( TextItem * pText, int lines, SizeSPX defaultSize, SizeSPX textSize );
+		void *			_reallocBlock( TextItem * pText, int lines, int scaleUsed, SizeSPX defaultSize, SizeSPX textSize );
 
 		void			_updateLineInfo(TextItem * pText, void * pBlock, const Char * pChars, bool bAllowRequestResize );
 

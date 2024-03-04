@@ -688,8 +688,8 @@ namespace wg
 		if( !m_labelGeo.size().isEmpty() )
 			oldSize = m_labelGeo.size() - oldLabelPadding;
 
-		pLayout->onResized(this, newSize, oldSize, scale, oldScale);
 		m_labelGeo.setSize(newSize + newLabelPadding);
+		pLayout->onResized(this, newSize, oldSize, scale, oldScale);
 	}
 
 	//____ _skinValue() _______________________________________________________
