@@ -325,19 +325,25 @@ namespace wg
 					auto style = pWidget->pointerStyle();
 					
 					if( style != PointerStyle::Undefined )
+					{
 						newStyle = style;
+						break;
+					}
 				}
 				pLastWidget = pWidget;
 				pWidget = pWidget->parent();
 			}
 			
-			auto pRoot = pLastWidget->_holder()->_root();
-			if( pRoot )
+			if( newStyle == PointerStyle::Undefined )
 			{
-				auto style = pRoot->pointerStyle();
-				
-				if( style != PointerStyle::Undefined )
-					newStyle = style;
+				auto pRoot = pLastWidget->_holder()->_root();
+				if( pRoot )
+				{
+					auto style = pRoot->pointerStyle();
+					
+					if( style != PointerStyle::Undefined )
+						newStyle = style;
+				}
 			}
 		}
 		

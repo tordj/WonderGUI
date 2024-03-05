@@ -136,6 +136,9 @@ public:
     void    HidePointer();
     void    ShowPointer();
     
+	WgPointerStyle	PointerStyle() const { return m_pointerStyle; }
+
+	
     bool    isPointerHidden() const { return m_pointerHideCount > 0; }
     
     bool    isPointerLocked() const { return m_pWidgetLockedPointer; }
