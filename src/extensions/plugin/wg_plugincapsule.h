@@ -124,6 +124,8 @@ namespace wg
 		void		_connectPlugin(void * pPluginRoot, wg_pluginroot_calls* pCalls);
 		void		_disconnectPlugin();
 
+		void		_receiveRoutedKeyMsg(Msg* pMsg);
+
 
 	protected:
 		PluginCapsule();
@@ -143,6 +145,8 @@ namespace wg
 
 		bool m_bMouseInside = false;
 
+		RouteId		m_keyPressRoute;
+		RouteId		m_keyReleaseRoute;		
 	};
 
 

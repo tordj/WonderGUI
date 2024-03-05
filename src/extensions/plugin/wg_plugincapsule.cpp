@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_msg.h>
 #include <wg_base.h>
+#include <wg_msgrouter.h>
 
 #include <algorithm>
 
@@ -50,6 +51,16 @@ namespace wg
 
 	PluginCapsule::PluginCapsule()
 	{
+		m_keyPressRoute = Base::msgRouter()->addRoute( MsgType::KeyPress, [this](Msg* pMsg)
+		{
+			this->_receiveRoutedKeyMsg(pMsg);
+		} );
+
+		m_keyReleaseRoute = Base::msgRouter()->addRoute( MsgType::KeyRelease, [this](Msg* pMsg)
+		{
+			this->_receiveRoutedKeyMsg(pMsg);
+		} );
+
 		std::memset(&m_calls, 0, sizeof(m_calls));
 	}
 
@@ -57,6 +68,8 @@ namespace wg
 
 	PluginCapsule::~PluginCapsule()
 	{
+		Base::msgRouter()->deleteRoute(m_keyPressRoute);
+		Base::msgRouter()->deleteRoute(m_keyReleaseRoute);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -179,10 +192,35 @@ namespace wg
 		Widget::_setState(state);
 	}
 
+	//____ _receiveRoutedKeyMsg() ___________________________________________
+
+	void PluginCapsule::_receiveRoutedKeyMsg(Msg* pMsg)
+	{
+		
+		if( !pMsg->hasSource() )
+		{
+			if( pMsg->type() == MsgType::KeyPress )
+			{
+				auto pMess = static_cast<KeyPressMsg*>(pMsg);
+				m_calls.setKeyState(m_pPluginRoot, pMess->nativeKeyCode(), 1, pMess->timestamp() );
+				return;
+			}
+				
+			if( pMsg->type() == MsgType::KeyRelease )
+			{
+				auto pMess = static_cast<KeyReleaseMsg*>(pMsg);
+				m_calls.setKeyState(m_pPluginRoot, pMess->nativeKeyCode(), 0, pMess->timestamp() );
+				return;
+			}
+		}
+	}
+
+
 	//____ _receive() _________________________________________________________
 
 	void PluginCapsule::_receive(Msg* pMsg)
 	{
+		
 		if(!m_pPluginRoot)
 		{
 			Widget::_receive(pMsg);
@@ -243,20 +281,6 @@ namespace wg
 			{
 				auto pMess = static_cast<MouseReleaseMsg*>(pMsg);
 				m_calls.setButtonState(m_pPluginRoot, (int) pMess->button(), 0, pMess->timestamp() );
-				break;
-			}
-
-			case MsgType::KeyPress:
-			{
-				auto pMess = static_cast<KeyPressMsg*>(pMsg);
-				m_calls.setKeyState(m_pPluginRoot, pMess->nativeKeyCode(), 1, pMess->timestamp() );
-				break;
-			}
-
-			case MsgType::KeyRelease:
-			{
-				auto pMess = static_cast<KeyReleaseMsg*>(pMsg);
-				m_calls.setKeyState(m_pPluginRoot, pMess->nativeKeyCode(), 0, pMess->timestamp() );
 				break;
 			}
 
