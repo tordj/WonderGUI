@@ -205,7 +205,7 @@ namespace wg
 				m_calls.setKeyState(m_pPluginRoot, pMess->nativeKeyCode(), 1, pMess->timestamp() );
 				return;
 			}
-				
+	
 			if( pMsg->type() == MsgType::KeyRelease )
 			{
 				auto pMess = static_cast<KeyReleaseMsg*>(pMsg);
@@ -284,6 +284,20 @@ namespace wg
 				break;
 			}
 
+			case MsgType::KeyPress:
+			{
+				auto pMess = static_cast<KeyPressMsg*>(pMsg);
+				m_calls.setKeyState(m_pPluginRoot, pMess->nativeKeyCode(), 1, pMess->timestamp() );
+				break;
+			}
+	
+			case MsgType::KeyRelease:
+			{
+				auto pMess = static_cast<KeyReleaseMsg*>(pMsg);
+				m_calls.setKeyState(m_pPluginRoot, pMess->nativeKeyCode(), 0, pMess->timestamp() );
+				break;
+			}
+				
 			case MsgType::TextInput:
 			{
 				auto pMess = static_cast<TextInputMsg*>(pMsg);
