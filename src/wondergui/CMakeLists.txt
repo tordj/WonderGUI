@@ -160,6 +160,8 @@ set( SOURCES
 	widgets/wg_animplayer.h
 	widgets/wg_areachart.cpp
 	widgets/wg_areachart.h
+	widgets/wg_areascrollchart.cpp
+	widgets/wg_areascrollchart.h
 	widgets/wg_button.cpp
 	widgets/wg_button.h
 	widgets/wg_canvasdisplay.cpp
@@ -188,6 +190,8 @@ set( SOURCES
 	widgets/wg_rangeslider.h
 	widgets/wg_scrollbar.cpp
 	widgets/wg_scrollbar.h
+	widgets/wg_scrollchart.cpp
+	widgets/wg_scrollchart.h
 	widgets/wg_selectbox.cpp
 	widgets/wg_selectbox.h
 	widgets/wg_sidecanvas.cpp
