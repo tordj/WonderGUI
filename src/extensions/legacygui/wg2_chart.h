@@ -79,7 +79,7 @@ public:
     bool    SetWaveGradient(int waveId, wg::Gradient gradient);
 
 	bool	SetWaveSamples(int waveId, int firstSample, int nSamples, float * pTopBorderSamples, float * pBottomBorderSamples);
-	bool	SetWaveSamples(int waveId, int firstSample, int nSamples, float * pSamples, float floor = 0.f);
+	bool	SetWaveSamples(int waveId, int firstSample, int nSamples, const float * pSamples, float floor = 0.f);
 
 	bool	IsWaveDisplayed(int waveId) const;
 	bool	HideWave(int waveId);
@@ -210,10 +210,10 @@ protected:
     void    _onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler);
 
 
-	bool	_setWaveSamples(int waveId, int firstSample, int nSamples, float * pTopBorderSamples, float * pBottomBorderSamples, float defaultSample);
+	bool	_setWaveSamples(int waveId, int firstSample, int nSamples, const float * pTopBorderSamples, float * pBottomBorderSamples, float defaultSample);
 	void	_resampleAllWaves();
 	void	_resampleWave( Wave * pWave, bool bRequestRenderOnChanges = false );
-    void    _filterWaveSamples(float* in, Wave * p, int ms);
+    void    _filterWaveSamples(const float* in, Wave * p, int ms);
 
 
 	void	_requestRenderOnNewSamples(	int begOrgSamples, int nbOrgTopSamples, int * pOrgTopSamples, int nbOrgBottomSamples, int * pOrgBottomSamples,

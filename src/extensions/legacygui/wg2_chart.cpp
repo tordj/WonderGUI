@@ -361,13 +361,13 @@ bool WgChart::SetWaveSamples(int waveId, int firstSample, int nSamples, float * 
 	return _setWaveSamples(waveId, firstSample, nSamples, pTopBorderSamples, pBottomBorderSamples, 0.f);
 }
 
-bool WgChart::SetWaveSamples(int waveId, int firstSample, int nSamples, float * pSamples, float floor)
+bool WgChart::SetWaveSamples(int waveId, int firstSample, int nSamples, const float * pSamples, float floor)
 {
 	return _setWaveSamples(waveId, firstSample, nSamples, pSamples, nullptr, floor);
 }
 
 
-bool WgChart::_setWaveSamples(int waveId, int firstSample, int nSamples, float * pTopBorderSamples, float * pBottomBorderSamples, float defaultSample )
+bool WgChart::_setWaveSamples(int waveId, int firstSample, int nSamples, const float * pTopBorderSamples, float * pBottomBorderSamples, float defaultSample )
 {
 	Wave * pWave = _getWave(waveId);
 	if (!pWave)
@@ -475,7 +475,7 @@ bool WgChart::_setWaveSamples(int waveId, int firstSample, int nSamples, float *
 
 //____ _filterWaveSamples() ________________________________________________________
 
-void WgChart::_filterWaveSamples(float* in, Wave* p, int ms)
+void WgChart::_filterWaveSamples(const float* in, Wave* p, int ms)
 {
 	int N = p->nSamples;
 	if(p->orgTopSamples.size() != N)
