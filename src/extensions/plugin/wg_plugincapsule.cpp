@@ -196,6 +196,8 @@ namespace wg
 
 	void PluginCapsule::_receiveRoutedKeyMsg(Msg* pMsg)
 	{
+		if(!m_pPluginRoot)
+			return;
 		
 		if( !pMsg->hasSource() )
 		{
