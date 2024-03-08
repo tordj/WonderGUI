@@ -40,6 +40,7 @@
 
 
 #include <fstream>
+#include <iostream>
 #include <mutex>
 
 #include "sdlwindow.h"
@@ -254,6 +255,11 @@ bool init_wondergui()
 	g_pHostBridge = new MyHostBridge();
 	
 	Base::init(g_pHostBridge);
+
+	Base::setErrorHandler([](Error& e) 
+	{ 
+		std::cerr << "ERROR:" << e.message << std::endl;  
+	});
 
 /*
 	auto pGfxDevice = SoftGfxDevice::create();

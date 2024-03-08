@@ -138,7 +138,7 @@ namespace wg
 
 		// PlotChartEntry samples
 
-		std::vector<CoordF>	m_samples;				// Samples for top of this graph.
+		std::vector<CoordF>	m_samples;				// Samples
 	};
 
 
