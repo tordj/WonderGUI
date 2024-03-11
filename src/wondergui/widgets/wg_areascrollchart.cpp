@@ -29,69 +29,209 @@
 namespace wg
 {
 
-    const TypeInfo AreaScrollChart::TYPEINFO = {"AreaScrollChart", &Widget::TYPEINFO};
+	const TypeInfo AreaScrollChart::TYPEINFO = {"AreaScrollChart", &Widget::TYPEINFO};
 
-    //____ constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
-    AreaScrollChart::AreaScrollChart()
-    {
-    }
+	AreaScrollChart::AreaScrollChart() : entries(this)
+	{
+	}
 
-    //____ destructor _____________________________________________________________
+	//____ destructor _____________________________________________________________
 
-    AreaScrollChart::~AreaScrollChart()
-    {
-    }
+	AreaScrollChart::~AreaScrollChart()
+	{
+	}
 
-    //____ typeInfo() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-    const TypeInfo& AreaScrollChart::typeInfo(void) const
-    {
-        return TYPEINFO;
-    }
+	const TypeInfo& AreaScrollChart::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
 
-    //____ _update() ____________________________________________________________
+	//____ _update() ____________________________________________________________
 
-    void AreaScrollChart::_update(int microPassed, int64_t microsecTimestamp)
-    {
-        ScrollChart::_update(microPassed, microsecTimestamp);
-    }
+	void AreaScrollChart::_update(int microPassed, int64_t microsecTimestamp)
+	{
+		ScrollChart::_update(microPassed, microsecTimestamp);
+	}
 
-    //____ _renderCharts() ____________________________________________________
+	//____ _didAddEntries() ___________________________________________________
 
-    void AreaScrollChart::_renderCharts(GfxDevice* pDevice, const RectSPX& canvas)
-    {
+	void AreaScrollChart::_didAddEntries(AreaScrollChartEntry* pEntry, int nb)
+	{
+		_requestFullRedraw();
+	}
 
-    }
+	//____ _didMoveEntries() __________________________________________________
 
-    //____ _didAddEntries() ___________________________________________________
+	void AreaScrollChart::_didMoveEntries(AreaScrollChartEntry* pFrom, AreaScrollChartEntry* pTo, int nb)
+	{
+		_requestFullRedraw();
+	}
 
-    void AreaScrollChart::_didAddEntries(AreaScrollChartEntry* pEntry, int nb)
-    {
+	//____ _willEraseEntries() ________________________________________________
 
-    }
+	void AreaScrollChart::_willEraseEntries(AreaScrollChartEntry* pEntry, int nb)
+	{
+		_requestFullRedraw();
+	}
 
-    //____ _didMoveEntries() __________________________________________________
+	//____ _renderOnScrollSurface() ___________________________________________
 
-    void AreaScrollChart::_didMoveEntries(AreaScrollChartEntry* pFrom, AreaScrollChartEntry* pTo, int nb)
-    {
+	void AreaScrollChart::_renderOnScrollSurface( SizeSPX canvasSize, spx rightEdgeOfs, int64_t rightEdgeTimestamp, spx dirtLen )
+	{
+		
+	}
 
-    }
+	//____ _startedOrEndedTransition() ________________________________________
 
-    //____ _willEraseEntries() ________________________________________________
+	void AreaScrollChart::_startedOrEndedTransition()
+	{
 
-    void AreaScrollChart::_willEraseEntries(AreaScrollChartEntry* pEntry, int nb)
-    {
+	}
 
-    }
+	//____ _entryVisibilityChanged() __________________________________________
 
-    //____ _renderOnScrollSurface() ___________________________________________
+	void AreaScrollChart::_entryVisibilityChanged(AreaScrollChartEntry* pAreaChartEntry)
+	{
+		_requestFullRedraw();
+	}
 
-    void AreaScrollChart::_renderOnScrollSurface(spx leftEdgeOfs, int64_t leftEdgeTimestamp)
-    {
+	//____ AreaScrollChartEntry::constructor ___________________________________
 
-    }
+	AreaScrollChartEntry::AreaScrollChartEntry()
+	{
+	}
 
+	AreaScrollChartEntry::AreaScrollChartEntry(const AreaScrollChartEntry::Blueprint& bp)
+	{
+
+	}
+
+	//____ AreaScrollChartEntry::setSampleRate() ______________________________
+
+	void AreaScrollChartEntry::setSampleRate(int samplesPerSec, float rateTweak)
+	{
+
+	}
+
+	//____ AreaScrollChartEntry::addSamples() _________________________________
+
+	void AreaScrollChartEntry::addSamples(int nbSamples, const float* pTopSamples, const float* pBottomSamples)
+	{
+
+	}
+
+	//____ AreaScrollChartEntry::setDefaultSample() _________________________________
+
+	void AreaScrollChartEntry::setDefaultSample(float topSample, float bottomSample)
+	{
+
+	}
+
+	//____ AreaScrollChartEntry::setColors() _________________________________
+
+	bool AreaScrollChartEntry::setColors(HiColor fill, HiColor outline, ColorTransition* pTransition)
+	{
+		if (!fill.isValid() || !outline.isValid())
+			return false;
+
+		if (!m_fillGradient.isUndefined() || !m_outlineGradient.isUndefined())
+		{
+			m_fillGradient = Gradient::Undefined;
+			m_outlineGradient = Gradient::Undefined;
+
+			m_pDisplay->_requestFullRedraw();
+		}
+
+		if (fill == m_fillColor && outline == m_outlineColor)
+			return true;
+
+		if (pTransition)
+		{
+			m_pColorTransition = pTransition;
+			m_colorTransitionProgress = 0;
+
+			m_endFillColor = fill;
+			m_endOutlineColor = outline;
+
+			m_startFillColor = m_fillColor;
+			m_startOutlineColor = m_outlineColor;
+
+			m_pDisplay->_startedOrEndedTransition();
+		}
+		else
+		{
+			m_fillColor = fill;
+			m_outlineColor = outline;
+
+			m_pDisplay->_requestFullRedraw();
+		}
+
+		return true;
+	}
+
+	//____ AreaScrollChartEntry::setGradients() _________________________________
+
+	bool AreaScrollChartEntry::setGradients(Gradient fill, Gradient outline, ColorTransition* pTransition)
+	{
+		if (!fill.isValid() || !outline.isValid())
+			return false;
+
+		if (fill == m_fillGradient && outline == m_outlineGradient)
+			return true;
+
+		if (pTransition)
+		{
+			m_pColorTransition = pTransition;
+			m_colorTransitionProgress = 0;
+
+			m_endFillGradient = fill;
+			m_endOutlineGradient = outline;
+
+			m_startFillGradient = m_fillGradient;
+			m_startOutlineGradient = m_outlineGradient;
+
+			m_pDisplay->_startedOrEndedTransition();
+		}
+		else
+		{
+			m_fillGradient = fill;
+			m_outlineGradient = outline;
+
+			m_pDisplay->_requestFullRedraw();
+		}
+
+		return true;
+	}
+
+	//____ AreaScrollChartEntry::setVisible() _________________________________
+
+	void AreaScrollChartEntry::setVisible(bool bVisible)
+	{
+		if (bVisible != m_bVisible)
+		{
+			m_bVisible = bVisible;
+			m_pDisplay->_entryVisibilityChanged(this);
+		}
+	}
+
+	//____ AreaScrollChartEntry::_endColorTransition() ______________________________________________
+
+	void AreaScrollChartEntry::_endColorTransition()
+	{
+		m_pColorTransition = nullptr;
+
+		m_startFillColor = m_fillColor;
+		m_endFillColor = m_fillColor;
+
+		m_startOutlineColor = m_outlineColor;
+		m_endOutlineColor = m_outlineColor;
+
+		m_pDisplay->_startedOrEndedTransition();
+	}
 
 
 } // namespace wg

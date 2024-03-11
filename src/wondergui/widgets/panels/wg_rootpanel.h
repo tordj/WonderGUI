@@ -390,7 +390,8 @@ namespace wg
 
 	bool RootPanel::addPreRenderCall(Widget* pWidget)
 	{ 
-		m_preRenderCalls.push_back(pWidget); return true; 
+		m_preRenderCalls.push_back(pWidget); 
+		return true; 
 	}
 
 
