@@ -210,7 +210,7 @@ namespace wg
 
 		void	_update(int microPassed, int64_t microsecTimestamp) override;
  
-		void	_updateWaveformEdge(Waveform* pWaveform, uint64_t beginUS, int pixelIncUS, bool bTopEdge, SampleSet* pSamples);
+		void	_updateWaveformEdge(Waveform* pWaveform, uint64_t beginUS, int pixelIncUS, bool bTopEdge, AreaScrollChartEntry::SampleSet* pSamples);
 
 		
 		//

@@ -185,7 +185,7 @@ namespace wg
 
         int microsecPerPixel = m_displayTime / (contentSize.w / 64);
 
-        int timePassed = timestamp - m_rightEdgeTimestamp;
+        int timePassed = int(timestamp - m_rightEdgeTimestamp);
 
         if (timePassed > m_displayTime)
         {
