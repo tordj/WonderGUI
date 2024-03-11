@@ -36,6 +36,7 @@
 #include <wg_gledgemapfactory.h>
 #include <wg_glgfxdevice.h>
 
+#include <wg_areascrollchart.h>
 
 #include <wg_freetypefont.h>
 
@@ -149,6 +150,7 @@ bool widgetRecording(ComponentPtr<DynamicSlot> pSlot);
 bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pSlot);
 bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pSlot);
 bool textDisplayTest(ComponentPtr<DynamicSlot> pSlot);
+bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -744,10 +746,11 @@ int main(int argc, char** argv)
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
-			canvasCapsuleTest(pSlot);
+		//	canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
 		//	textDisplayTest(pSlot);
-
+		scrollChartTest(pSlot);
+		
 		//------------------------------------------------------
 		// Program Main Loop
 		//------------------------------------------------------
@@ -3544,5 +3547,22 @@ bool textDisplayTest(ComponentPtr<DynamicSlot> pSlot)
 	pPackPanel->setSkin( pSkin2 );
 	
 	return true;
+
+}
+
+//____ scrollChartTest() ________________________________________________________
+
+bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pScrollChart = AreaScrollChart::create({ .skin = BoxSkin::create({ .color = Color::Yellow, .outlineColor = Color::Black, .padding = 1 }) });
+	
+	pBaseLayer->slots.pushBack(pScrollChart, { .pos = {10,10}, .size = {500,300} } );
+	
+	*pSlot = pBaseLayer;
+	
+	pScrollChart->start();
 
 }

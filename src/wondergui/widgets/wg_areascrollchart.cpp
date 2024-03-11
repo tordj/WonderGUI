@@ -78,10 +78,160 @@ namespace wg
 		_requestFullRedraw();
 	}
 
+	//____ _updateWaveformEdge() _________________________________________________
+
+	void AreaScrollChart::_updateWaveformEdge(Waveform* pWaveform, uint64_t beginUS, int pixelIncUS, bool bTopEdge, SampleSet* pSamples)
+	{
+		// TODO: Better interpolation, especially when shrinking.
+
+		int sampleIdx = bTopEdge ? 0 : 1;
+		
+		spx * pConverted = (spx*) Base::memStackAlloc(wfSamples * sizeof(spx));
+
+		SizeI	canvas = m_chartCanvas.size() / 64;
+
+		float valueFactor = m_chartCanvas.h / (m_displayFloor - m_displayCeiling);
+
+		uint64_t	pixelUS = beginUS;
+		
+		for (int i = 0; i < wfSamples; i++)
+		{
+			while( pSamples[1].timestamp < pixelUS )
+				pSamples++;
+
+			float frac1 = int(pixelUS - pSamples[0].timestamp) / float(pSamples[1].timestamp - pSamples[0].timestamp);
+			float frac2 = 1.f - frac2;
+
+			float val1 = (pSamples[ofs].sample[sampleIdx] - m_displayCeiling) * valueFactor;
+			float val2 = (pSamples[ofs + 1].sample[sampleIdx] - m_displayCeiling) * valueFactor;
+
+			pConverted[i] = int(val1 * frac1 + val2 * frac2);
+			
+			pixelUS += pixelIncUS;
+		}
+
+		if (bTopEdge)
+			pWaveform->setSamples(0, wfSamples, pConverted, nullptr);
+		else
+			pWaveform->setSamples(0, wfSamples, nullptr, pConverted);
+
+		Base::memStackFree(wfSamples * sizeof(spx));
+	}
+
+
 	//____ _renderOnScrollSurface() ___________________________________________
 
-	void AreaScrollChart::_renderOnScrollSurface( SizeSPX canvasSize, spx rightEdgeOfs, int64_t rightEdgeTimestamp, spx dirtLen )
+	void AreaScrollChart::_renderOnScrollSurface( GfxDevice * pDevice, SizeSPX canvasSize, spx rightEdgeOfs, int64_t rightEdgeTimestamp, spx dirtLen )
 	{
+		
+		int microsecPerPixel = m_displayTime / (canvasSize.w / 64);
+
+		int64_t leftEdgeTimestamp = rightEdgeTimestamp - dirtLen*microsecPerPixel;	// Left edge of dirty area, not whole window.
+		
+		
+		for( auto& entry : entries )
+		{
+			// Fill in with default samples if missing up to our rightEdgeTimestamp.
+			
+			if( entry.m_samples.empty() )
+			{
+				SampleSet spl;
+				spl.timestamp = leftEdgeTimestamp;
+				spl.samples[0] = entry.m_defaultTopSample;
+				spl.samples[1] = entry.m_defaultBottomSample;
+
+				m_samples.push_back(spl);
+				
+				spl.timestamp = rightEdgeTimestamp;
+				m_samples.push_back(spl);
+			}
+			else if( entry.m_samples.back().timestamp < rightEdgeOfs )
+			{
+				SampleSet spl;
+				spl.timestamp = rightEdgeTimestamp;
+				spl.samples[0] = entry.m_defaultTopSample;
+				spl.samples[1] = entry.m_defaultBottomSample;
+
+				m_samples.push_back(spl);
+			}
+
+			// Find first and last sample to deal with
+						
+			auto pSample = entry.m_samples.begin();
+			auto pEnd = entry.m_samples.end();
+			
+			while( pSample->timestamp < leftEdgeTimestamp && pSample != pEnd )
+				pSample++;
+	
+			if( pSample != entry.m_samples.begin() )
+				pSample--;
+			
+			auto pDirtBegin = pSample;
+			
+			while( pSample->timestamp < rightEdgeTimestamp && pSample != pEnd )
+				pSample++;
+			
+			if( pSample == entry.m_samples.end() )
+				pSample--;
+
+			auto pDirtEnd = pSample;
+			
+			// 
+			
+			
+			
+			
+		}
+		
+		
+		
+		// Debug code
+/*
+		spx ofs = rightEdgeOfs;
+
+		
+		int timePerPixel = m_displayTime / (canvasSize.w/64);
+		
+		int descendPerPixel = 64;
+		
+		int64_t startPixel = rightEdgeTimestamp / timePerPixel;
+		
+		spx height = (startPixel*64) % canvasSize.h;
+		
+		
+		int dirtWidth = dirtLen / 64;
+		
+		int memSize = dirtWidth*sizeof(CoordSPX);
+		int memSize2 = dirtWidth*sizeof(HiColor);
+
+		CoordSPX * p = (CoordSPX*) Base::memStackAlloc(memSize);
+		HiColor * pCol = (HiColor*) Base::memStackAlloc(memSize2);
+				
+		for( int i = 0 ; i < dirtWidth ; i++ )
+		{
+			ofs -= 64;
+
+			if( ofs < 0 )
+				ofs += canvasSize.w;
+
+			height -= 64;
+			
+			if( height < 0 )
+				height += canvasSize.h;
+			
+			
+			p[i].x = ofs;
+			p[i].y = height;
+			
+			pCol[i] = Color::Red;
+		}
+		
+		pDevice->plotPixels(dirtWidth, p, pCol );
+		
+		Base::memStackFree(memSize2);
+		Base::memStackFree(memSize);
+*/
+		
 		
 	}
 
@@ -110,16 +260,9 @@ namespace wg
 
 	}
 
-	//____ AreaScrollChartEntry::setSampleRate() ______________________________
-
-	void AreaScrollChartEntry::setSampleRate(int samplesPerSec, float rateTweak)
-	{
-
-	}
-
 	//____ AreaScrollChartEntry::addSamples() _________________________________
 
-	void AreaScrollChartEntry::addSamples(int nbSamples, const float* pTopSamples, const float* pBottomSamples)
+	void AreaScrollChartEntry::addSamples(int nbSamples, int sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak )
 	{
 
 	}
