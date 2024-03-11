@@ -99,6 +99,8 @@ namespace wg
         if (m_pScrollSurface == nullptr)
         {
             m_pScrollSurface = pDevice->surfaceFactory()->createSurface(WGBP(Surface, _.size = canvas.size() / 64, _.format = m_scrollSurfaceFormat, _.canvas = true));
+			m_rightEdgeOfs = canvas.w;
+			m_dirtLen = canvas.w;
         }
 
         // Render the charts
@@ -127,7 +129,7 @@ namespace wg
             pDevice->fill(m_scrollSurfaceBgColor);
             pDevice->setBlendMode(BlendMode::Blend);
 
-            _renderOnScrollSurface(canvas.size(), m_rightEdgeOfs, m_rightEdgeTimestamp, m_dirtLen);
+            _renderOnScrollSurface(pDevice, canvas.size(), m_rightEdgeOfs, m_rightEdgeTimestamp, m_dirtLen);
 
             pDevice->endCanvasUpdate();
 
@@ -137,8 +139,8 @@ namespace wg
         // Copy scroll surface to our canvas
 
         pDevice->setBlitSource(m_pScrollSurface);
-        pDevice->blit({ 0, 0 }, { m_rightEdgeOfs, 0, canvas.w - m_rightEdgeOfs, canvas.h });
-        pDevice->blit({ canvas.w - m_rightEdgeOfs,0 }, { 0,0,m_rightEdgeOfs,canvas.h });
+        pDevice->blit({ canvas.x, canvas.y }, { m_rightEdgeOfs, 0, canvas.w - m_rightEdgeOfs, canvas.h });
+        pDevice->blit({ canvas.x + canvas.w - m_rightEdgeOfs,canvas.x }, { 0,0,m_rightEdgeOfs,canvas.h });
     }
 
     //____ _update() ____________________________________________________________
@@ -161,6 +163,8 @@ namespace wg
 
     void ScrollChart::_preRender()
     {
+		m_bPreRenderRequested = false;
+
         SizeSPX contentSize = m_chartCanvas;
 
         uint64_t timestamp = m_latestTimestamp - m_latency;
@@ -196,14 +200,13 @@ namespace wg
 
             if (pixelsToScroll > 0)
             {
-                m_rightEdgeOfs = (m_rightEdgeOfs + pixelsToScroll) % contentSize.w;
+                m_rightEdgeOfs = (m_rightEdgeOfs + pixelsToScroll*64) % contentSize.w;
                 m_rightEdgeTimestamp += pixelsToScroll * microsecPerPixel;
                 m_dirtLen = pixelsToScroll * 64;
                 _requestRenderChartArea();
             }
         }
 
-        m_bPreRenderRequested = false;
     }
 
     //____ _requestFullRedraw() _______________________________________________

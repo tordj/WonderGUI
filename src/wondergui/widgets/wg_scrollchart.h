@@ -113,18 +113,21 @@ namespace wg
 
 		void		_renderCharts(GfxDevice* pDevice, const RectSPX& canvas) override;
 
-		virtual void _renderOnScrollSurface( SizeSPX canvasSize, spx rightEdgeOfs, int64_t rightEdgeTimestamp, spx dirtLen ) = 0;
+		virtual void _renderOnScrollSurface( GfxDevice * pDevice, SizeSPX canvasSize, spx rightEdgeOfs, int64_t rightEdgeTimestamp, spx dirtLen ) = 0;
 
 		void		_requestFullRedraw();
 
 
 		//
 
+	protected:
+		int			m_displayTime = 4000000;
+
+		
 	private:
 
 		Surface_p	m_pScrollSurface;
 
-		int			m_displayTime = 4000000;
 
 		int64_t		m_latestTimestamp = 0;
 

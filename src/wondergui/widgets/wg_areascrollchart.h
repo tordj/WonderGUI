@@ -29,6 +29,7 @@
 
 namespace wg
 {
+	class AreaScrollChart;
 
 	class AreaScrollChartEntry
 	{
@@ -44,14 +45,16 @@ namespace wg
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
 			pts					topOutlineThickness = 1;
 			bool				visible = true;
+			
+			float				defaultBottomSample = 0.f;
+			float				defaultTopSample = 0.f;
 
 		};
 
         AreaScrollChartEntry();
 		AreaScrollChartEntry(const Blueprint& bp);
 
-        void    setSampleRate(int samplesPerSec, float rateTweak = 0.01f);
-        void    addSamples(int nbSamples, const float* pTopSamples, const float * pBottomSamples );
+        void    addSamples(int nbSamples, int sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak = 0.01f );
         void    setDefaultSample(float topSample, float bottomSample);
 
 		bool	setColors(HiColor fill, HiColor outline, ColorTransition* pTransition = nullptr);
@@ -71,8 +74,7 @@ namespace wg
         struct SampleSet
         {
             uint64_t    timestamp;
-            float       topSample;
-            float       bottomSample;
+            float       samples[2];			// top sample followed by bottom sample.
         };
 
 
@@ -115,7 +117,9 @@ namespace wg
 
 		std::vector<SampleSet>	m_samples;
 
-
+		float				m_defaultTopSample;
+		float				m_defaultBottomSample;
+		
 
 		// Output
 
@@ -182,6 +186,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
+		static AreaScrollChart_p create() { return AreaScrollChart_p(new AreaScrollChart()); }
 		static AreaScrollChart_p create(const Blueprint& blueprint) { return AreaScrollChart_p(new AreaScrollChart(blueprint)); }
 
 		//.____ Components _______________________________________
@@ -197,7 +202,7 @@ namespace wg
 		AreaScrollChart();
 
 		template<class BP>
-		AreaScrollChart(const BP& bp): ScrollChart(bp)
+		AreaScrollChart(const BP& bp): ScrollChart(bp), entries(this)
 		{
 		}
 
@@ -205,13 +210,16 @@ namespace wg
 
 		void	_update(int microPassed, int64_t microsecTimestamp) override;
  
+		void	_updateWaveformEdge(Waveform* pWaveform, uint64_t beginUS, int pixelIncUS, bool bTopEdge, SampleSet* pSamples);
+
+		
 		//
 
    		void	_didAddEntries(AreaScrollChartEntry* pEntry, int nb) override;
 		void	_didMoveEntries(AreaScrollChartEntry* pFrom, AreaScrollChartEntry* pTo, int nb) override;
 		void	_willEraseEntries(AreaScrollChartEntry* pEntry, int nb) override;
 
-		void	_renderOnScrollSurface( SizeSPX canvasSize, spx leftEdgeOfs, int64_t leftEdgeTimestamp, spx dirtLen ) override;
+		void	_renderOnScrollSurface( GfxDevice * pDevice, SizeSPX canvasSize, spx leftEdgeOfs, int64_t leftEdgeTimestamp, spx dirtLen ) override;
 
 		void	_startedOrEndedTransition();
 		void	_entryVisibilityChanged(AreaScrollChartEntry* pAreaChartEntry);
