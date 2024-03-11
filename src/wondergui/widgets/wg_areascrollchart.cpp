@@ -80,12 +80,14 @@ namespace wg
 
 	//____ _updateWaveformEdge() _________________________________________________
 
-	void AreaScrollChart::_updateWaveformEdge(Waveform* pWaveform, uint64_t beginUS, int pixelIncUS, bool bTopEdge, SampleSet* pSamples)
+	void AreaScrollChart::_updateWaveformEdge(Waveform* pWaveform, uint64_t beginUS, int pixelIncUS, bool bTopEdge, AreaScrollChartEntry::SampleSet* pSamples)
 	{
 		// TODO: Better interpolation, especially when shrinking.
 
 		int sampleIdx = bTopEdge ? 0 : 1;
-		
+
+        int wfSamples = pWaveform->nbSamples();
+
 		spx * pConverted = (spx*) Base::memStackAlloc(wfSamples * sizeof(spx));
 
 		SizeI	canvas = m_chartCanvas.size() / 64;
@@ -102,8 +104,8 @@ namespace wg
 			float frac1 = int(pixelUS - pSamples[0].timestamp) / float(pSamples[1].timestamp - pSamples[0].timestamp);
 			float frac2 = 1.f - frac2;
 
-			float val1 = (pSamples[ofs].sample[sampleIdx] - m_displayCeiling) * valueFactor;
-			float val2 = (pSamples[ofs + 1].sample[sampleIdx] - m_displayCeiling) * valueFactor;
+			float val1 = (pSamples[0].samples[sampleIdx] - m_displayCeiling) * valueFactor;
+			float val2 = (pSamples[1].samples[sampleIdx] - m_displayCeiling) * valueFactor;
 
 			pConverted[i] = int(val1 * frac1 + val2 * frac2);
 			
@@ -135,24 +137,24 @@ namespace wg
 			
 			if( entry.m_samples.empty() )
 			{
-				SampleSet spl;
+				AreaScrollChartEntry::SampleSet spl;
 				spl.timestamp = leftEdgeTimestamp;
 				spl.samples[0] = entry.m_defaultTopSample;
 				spl.samples[1] = entry.m_defaultBottomSample;
 
-				m_samples.push_back(spl);
+				entry.m_samples.push_back(spl);
 				
 				spl.timestamp = rightEdgeTimestamp;
-				m_samples.push_back(spl);
+				entry.m_samples.push_back(spl);
 			}
 			else if( entry.m_samples.back().timestamp < rightEdgeOfs )
 			{
-				SampleSet spl;
+                AreaScrollChartEntry::SampleSet spl;
 				spl.timestamp = rightEdgeTimestamp;
 				spl.samples[0] = entry.m_defaultTopSample;
 				spl.samples[1] = entry.m_defaultBottomSample;
 
-				m_samples.push_back(spl);
+				entry.m_samples.push_back(spl);
 			}
 
 			// Find first and last sample to deal with
@@ -178,7 +180,21 @@ namespace wg
 			
 			// 
 			
-			
+            
+/*
+            int edgesNeeded = dirtLen + 1;
+            
+            auto pWaveform = Waveform::create(WGBP(Waveform,
+                _.size = rect.size()/64,
+                _.bottomOutlineThickness = graph.m_bottomOutlineThickness*m_scale,
+                _.color = graph.m_fillColor,
+                _.gradient = graph.m_fillGradient,
+                _.origo = SampleOrigo::Top,
+                _.outlineColor = graph.m_outlineColor,
+                _.outlineGradient = graph.m_outlineGradient,
+                _.topOutlineThickness = graph.m_topOutlineThickness*m_scale
+            ) );
+*/
 			
 			
 		}
