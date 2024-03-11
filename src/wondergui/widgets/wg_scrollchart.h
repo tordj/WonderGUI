@@ -30,100 +30,118 @@
 namespace wg
 {
  
-    class ScrollChart;
-    typedef StrongPtr<ScrollChart> ScrollChart_p;
-    typedef WeakPtr<ScrollChart> ScrollChart_wp;
+	class ScrollChart;
+	typedef StrongPtr<ScrollChart> ScrollChart_p;
+	typedef WeakPtr<ScrollChart> ScrollChart_wp;
 
-    class ScrollChart: public Chart
-    {
-        friend class ScrollChartEntry;
+	class ScrollChart: public Chart
+	{
+		friend class ScrollChartEntry;
 
-    public:
-        struct Blueprint
-        {
-            Object_p baggage;
+	public:
+		struct Blueprint
+		{
+			Object_p		baggage;
 
-            Placement bottomLabelPlacement = Placement::South;
-            pts bottomLabelSpacing = 1;
+			Placement		bottomLabelPlacement = Placement::South;
+			pts				bottomLabelSpacing = 1;
 
-            float displayCeiling = 0.f;
-            float displayFloor = 1.f;
-            Skin_p displaySkin;
+			float			displayCeiling = 0.f;
+			float			displayFloor = 1.f;
+			Skin_p			displaySkin;
 
-            bool dropTarget = false;
-            bool disabled = false;
-            Finalizer_p finalizer = nullptr;
+			bool			dropTarget = false;
+			bool			disabled = false;
+			Finalizer_p		finalizer = nullptr;
 
-            Glow::Blueprint glow;
+			Glow::Blueprint glow;
 
-            HiColor gridColor = Color::DarkGray;
-            pts gridThickness = 1;
+			HiColor			gridColor = Color::DarkGray;
+			pts				gridThickness = 1;
 
-            int id = 0;
-            Skin_p labelSkin;
-            MarkPolicy markPolicy = MarkPolicy::AlphaTest;
-            bool pickable = false;
-            int pickCategory = 0;
-            PointerStyle pointer = PointerStyle::Undefined;
-            bool selectable = true;
+			int				id = 0;
+			Skin_p			labelSkin;
+			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
+			bool			pickable = false;
+			int				pickCategory = 0;
+			PointerStyle	pointer = PointerStyle::Undefined;
+			bool			selectable = true;
 
-            Placement sideLabelPlacement = Placement::West;
-            pts sideLabelSpacing = 4;
+			Placement		sideLabelPlacement = Placement::West;
+			pts				sideLabelSpacing = 4;
 
-            Skin_p skin;
-            bool stickyFocus = false;
-            bool tabLock = false;
+			Skin_p			skin;
+			bool			stickyFocus = false;
+			bool			tabLock = false;
 
-            TextLayout_p textLayout;
-            TextStyle_p textStyle;
+			TextLayout_p	textLayout;
+			TextStyle_p		textStyle;
 
-            String tooltip;
+			String			tooltip;
 
-            int     displayTime = 4000000;    // microsec of samples displayed.
-        };
+			int				displayTime = 4000000;    // microsec of samples displayed.
+			int				latency = 10000;
+		};
 
-        //.____ Identification __________________________________________
+		//.____ Identification __________________________________________
 
-        const TypeInfo& typeInfo(void) const override;
-        const static TypeInfo TYPEINFO;
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo TYPEINFO;
 
-    protected:
-        ScrollChart();
+		//.____ Control _______________________________________________________
 
-        template<class BP>
-        ScrollChart(const BP& bp): Chart(bp)
-        {
-            m_displayTime = bp.displayTime;
-        }
-
-        virtual ~ScrollChart();
-
-		void _fullRefreshOfChart() override;
-
-        void _update(int microPassed, int64_t microsecTimestamp) override;
-        void _renderCharts(GfxDevice* pDevice, const RectSPX& canvas) override;
-
-        virtual void _renderOnScrollSurface( spx leftEdgeOfs, int64_t leftEdgeTimestamp) = 0;
+		void	start();
+		void	stop();
 
 
-        //
+	protected:
+		ScrollChart();
 
-    private:
+		template<class BP>
+		ScrollChart(const BP& bp): Chart(bp)
+		{
+			m_displayTime = bp.displayTime;
+			m_latency = bp.latency;
+		}
 
-        Surface_p   m_pScrollSurface;
+		virtual ~ScrollChart();
 
-        int         m_displayTime;
+		void		_fullRefreshOfChart() override;
 
-        int64_t     m_leftEdgeTimestamp = 0;
-        spx         m_leftEdgeOfs;
+		void		_update(int microPassed, int64_t microsecTimestamp) override;
+		void		_preRender() override;
 
-        int         m_nbScrollSurfaceDirtyRects;
-        RectSPX     m_scrollSurfaceDirtyRects[2];
+		void		_renderCharts(GfxDevice* pDevice, const RectSPX& canvas) override;
 
-        PixelFormat m_scrollSurfaceFormat = PixelFormat::BGRA_8;
-        HiColor     m_scrollSurfaceBgColor = HiColor::Transparent;
+		virtual void _renderOnScrollSurface( SizeSPX canvasSize, spx rightEdgeOfs, int64_t rightEdgeTimestamp, spx dirtLen ) = 0;
 
-    };
+		void		_requestFullRedraw();
+
+
+		//
+
+	private:
+
+		Surface_p	m_pScrollSurface;
+
+		int			m_displayTime = 4000000;
+
+		int64_t		m_latestTimestamp = 0;
+
+		int64_t		m_rightEdgeTimestamp = 0;
+		spx			m_rightEdgeOfs = 0;
+		spx			m_dirtLen = 0;
+
+		PixelFormat	m_scrollSurfaceFormat = PixelFormat::BGRA_8;
+		HiColor		m_scrollSurfaceBgColor = HiColor::Transparent;
+
+		bool		m_bScrolling = false;
+		int			m_latency = 1000;
+
+		bool		m_bFullRedrawRequested = false;
+		bool		m_bPreRenderRequested = false;
+
+	};
 
 } // namespace wg
 #endif // WG_SCROLLCHART_DOT_H

@@ -29,7 +29,7 @@
 namespace wg
 {
 
-    const TypeInfo ScrollChart::TYPEINFO = {"ScrollChart", &Widget::TYPEINFO};
+    const TypeInfo ScrollChart::TYPEINFO = { "ScrollChart", &Widget::TYPEINFO };
 
     //____ constructor ____________________________________________________________
 
@@ -50,26 +50,44 @@ namespace wg
         return TYPEINFO;
     }
 
+    //____ start() ____________________________________________________________
 
+    void ScrollChart::start()
+    {
+        if (!m_bScrolling)
+        {
+            m_bScrolling = true;
+            _startReceiveUpdates();
+        }
+    }
 
-   	//____ _fullRefreshOfChart() _______________________________________
+    //____ stop() _____________________________________________________________
+
+    void ScrollChart::stop()
+    {
+        if (m_bScrolling)
+        {
+            m_bScrolling = false;
+            _stopReceiveUpdates();
+        }
+    }
+
+    //____ _fullRefreshOfChart() _______________________________________
 
     void ScrollChart::_fullRefreshOfChart()
     {
-        if(!m_pScrollSurface)
+        if (!m_pScrollSurface)
             return;
 
         SizeSPX wantedSize = m_size - _contentBorderSize(m_scale);
 
-        if( m_pScrollSurface->pixelSize()*64 != wantedSize )
+        if (m_pScrollSurface->pixelSize() * 64 != wantedSize)
             m_pScrollSurface = nullptr;
         else
         {
-            m_leftEdgeOfs = 0;
-            m_scrollSurfaceDirtyRects[0] = wantedSize;
-            m_nbScrollSurfaceDirtyRects = 1;
+            m_rightEdgeOfs = wantedSize.w;
+            m_dirtLen = wantedSize.w;
         }
-
     }
 
     //____ _renderCharts() ____________________________________________________
@@ -78,92 +96,122 @@ namespace wg
     {
         // Make sure we have a canvas
 
-        if(m_pScrollSurface == nullptr)
+        if (m_pScrollSurface == nullptr)
         {
-            m_pScrollSurface = pDevice->surfaceFactory()->createSurface( WGBP(Surface, _.size = canvas.size()/64, _.format = m_scrollSurfaceFormat, _.canvas = true) );
-
-            m_leftEdgeOfs = 0;
-            m_scrollSurfaceDirtyRects[0] = {0, 0, canvas.size()};
-            m_nbScrollSurfaceDirtyRects = 1;
+            m_pScrollSurface = pDevice->surfaceFactory()->createSurface(WGBP(Surface, _.size = canvas.size() / 64, _.format = m_scrollSurfaceFormat, _.canvas = true));
         }
 
         // Render the charts
 
-        pDevice->beginCanvasUpdate(m_pScrollSurface, m_nbScrollSurfaceDirtyRects, m_scrollSurfaceDirtyRects);
+        if (m_dirtLen > 0)
+        {
+            int         nDirtyRects;
+            RectSPX     dirtyRects[2];
 
-        pDevice->setBlendMode(BlendMode::Replace);
-        pDevice->fill(m_scrollSurfaceBgColor);
-        pDevice->setBlendMode(BlendMode::Blend);
+            int overflow = m_dirtLen - m_rightEdgeOfs;
+            if (overflow > 0)
+            {
+                dirtyRects[0] = { 0, 0, m_rightEdgeOfs, canvas.h };
+                dirtyRects[1] = { canvas.w - overflow, 0, overflow, canvas.h };
+                nDirtyRects = 2;
+            }
+            else
+            {
+                dirtyRects[0] = { m_rightEdgeOfs - m_dirtLen, 0, m_dirtLen, canvas.h };
+                nDirtyRects = 1;
+            }
 
-        _renderOnScrollSurface( m_leftEdgeOfs, m_leftEdgeTimestamp );
+            pDevice->beginCanvasUpdate(m_pScrollSurface, nDirtyRects, dirtyRects);
 
-        pDevice->endCanvasUpdate();
+            pDevice->setBlendMode(BlendMode::Replace);
+            pDevice->fill(m_scrollSurfaceBgColor);
+            pDevice->setBlendMode(BlendMode::Blend);
+
+            _renderOnScrollSurface(canvas.size(), m_rightEdgeOfs, m_rightEdgeTimestamp, m_dirtLen);
+
+            pDevice->endCanvasUpdate();
+
+            m_dirtLen = 0;
+        }
 
         // Copy scroll surface to our canvas
 
         pDevice->setBlitSource(m_pScrollSurface);
-        pDevice->blit({0, 0}, {m_leftEdgeOfs, 0, canvas.w - m_leftEdgeOfs, canvas.h});
-        pDevice->blit({canvas.w - m_leftEdgeOfs,0}, {0,0,m_leftEdgeOfs,canvas.h});
+        pDevice->blit({ 0, 0 }, { m_rightEdgeOfs, 0, canvas.w - m_rightEdgeOfs, canvas.h });
+        pDevice->blit({ canvas.w - m_rightEdgeOfs,0 }, { 0,0,m_rightEdgeOfs,canvas.h });
     }
 
-    	//____ _update() ____________________________________________________________
+    //____ _update() ____________________________________________________________
 
     void ScrollChart::_update(int microPassed, int64_t microsecTimestamp)
     {
         Chart::_update(microPassed, microsecTimestamp);
 
-        if(!m_pScrollSurface)
+        if (!m_bScrolling)
+            return;
+
+        m_latestTimestamp = microsecTimestamp;
+      
+        if( !m_bPreRenderRequested )
+            m_bPreRenderRequested = _requestPreRenderCall();
+
+    }
+
+    //____ _preRender() _______________________________________________________
+
+    void ScrollChart::_preRender()
+    {
+        SizeSPX contentSize = m_chartCanvas;
+
+        uint64_t timestamp = m_latestTimestamp - m_latency;
+
+        if (!m_pScrollSurface || m_bFullRedrawRequested)
         {
-            m_leftEdgeTimestamp = microsecTimestamp - m_displayTime;
-            _requestRender(_contentRect());
+            m_rightEdgeOfs = contentSize.w;
+            m_rightEdgeTimestamp = timestamp;
+            m_dirtLen = contentSize.w;
+
+            _requestRenderChartArea();
+            m_bFullRedrawRequested = false;
             return;
         }
 
-        // Calc new m_leftEdgeTimestamp and m_leftEdgeOfs
+        // Calc new m_leftEdgeTimestamp, m_leftEdgeOfs, m_dirtOfs, m_dirtLen
         // Calc scrollSurface dirty rects.
-
-
-        SizeSPX contentSize = m_size - _contentBorderSize(m_scale);
-
 
         int microsecPerPixel = m_displayTime / (contentSize.w / 64);
 
-        int timePassed = microsecTimestamp - (m_leftEdgeTimestamp + m_displayTime);
+        int timePassed = timestamp - m_rightEdgeTimestamp;
 
-        if(timePassed > m_displayTime)
+        if (timePassed > m_displayTime)
         {
-            m_leftEdgeTimestamp = microsecTimestamp - m_displayTime;
-            m_scrollSurfaceDirtyRects[0] = contentSize;
-            m_nbScrollSurfaceDirtyRects = 1;
-            _requestRender(_contentRect());
+            m_rightEdgeOfs = contentSize.w;
+            m_rightEdgeTimestamp = timestamp;
+            m_dirtLen = contentSize.w;
+            _requestRenderChartArea();
         }
         else
         {
             int pixelsToScroll = (timePassed / microsecPerPixel);
 
-            if(pixelsToScroll > 0)
+            if (pixelsToScroll > 0)
             {
-                m_leftEdgeTimestamp += pixelsToScroll * microsecPerPixel;
-
-                m_leftEdgeOfs = (m_leftEdgeOfs + pixelsToScroll) % contentSize.w;
-
-                RectSPX dirt = {m_leftEdgeOfs - pixelsToScroll * 64, 0, pixelsToScroll, contentSize.h};
-
-                if(dirt.x < 0)
-                {
-                    m_scrollSurfaceDirtyRects[0] = {contentSize.w + dirt.x, 0, -dirt.x, dirt.h};
-                    m_scrollSurfaceDirtyRects[1] = {0, 0, dirt.w + dirt.x, dirt.h};
-                    m_nbScrollSurfaceDirtyRects = 2;
-                }
-                else
-                {
-                    m_scrollSurfaceDirtyRects[0] = dirt;
-                    m_nbScrollSurfaceDirtyRects = 1;
-                }
-
-                _requestRender(_contentRect());
+                m_rightEdgeOfs = (m_rightEdgeOfs + pixelsToScroll) % contentSize.w;
+                m_rightEdgeTimestamp += pixelsToScroll * microsecPerPixel;
+                m_dirtLen = pixelsToScroll * 64;
+                _requestRenderChartArea();
             }
-
         }
 
+        m_bPreRenderRequested = false;
     }
+
+    //____ _requestFullRedraw() _______________________________________________
+
+    void ScrollChart::_requestFullRedraw()
+    {
+        m_bFullRedrawRequested = true;
+    }
+
+
+}
