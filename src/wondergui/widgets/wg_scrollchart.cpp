@@ -57,7 +57,7 @@ namespace wg
         if (!m_bScrolling)
         {
             m_bScrolling = true;
-            _startReceiveUpdates();
+            m_latestTimestamp = _startReceiveUpdates();
         }
     }
 
