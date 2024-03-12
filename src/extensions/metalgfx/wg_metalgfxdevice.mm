@@ -983,7 +983,7 @@ MetalGfxDevice::MetalGfxDevice()
         // Finalize rendering here & push the command buffer to the GPU.
         [m_metalCommandBuffer commit];
 
-        [m_metalCommandBuffer waitUntilCompleted];
+        [m_metalCommandBuffer waitUntilScheduled];
 
         m_bRendering = false;
 
