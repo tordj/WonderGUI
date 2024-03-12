@@ -122,14 +122,13 @@ namespace wg
 
 	protected:
 		int			m_displayTime = 4000000;
+		int64_t		m_latestTimestamp = 0;
+		int			m_latency = 1000;
 
 		
 	private:
 
 		Surface_p	m_pScrollSurface;
-
-
-		int64_t		m_latestTimestamp = 0;
 
 		int64_t		m_rightEdgeTimestamp = 0;
 		spx			m_rightEdgeOfs = 0;
@@ -139,7 +138,6 @@ namespace wg
 		HiColor		m_scrollSurfaceBgColor = HiColor::Transparent;
 
 		bool		m_bScrolling = false;
-		int			m_latency = 1000;
 
 		bool		m_bFullRedrawRequested = false;
 		bool		m_bPreRenderRequested = false;

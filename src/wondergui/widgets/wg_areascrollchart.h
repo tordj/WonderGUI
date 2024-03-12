@@ -80,7 +80,6 @@ namespace wg
 
 		void			_endColorTransition();
 
-
 		AreaScrollChart* m_pDisplay = nullptr;
 
 		// Appearance
@@ -117,8 +116,8 @@ namespace wg
 
 		std::vector<SampleSet>	m_samples;
 
-		float				m_defaultTopSample;
-		float				m_defaultBottomSample;
+		float				m_defaultTopSample = 0.f;
+		float				m_defaultBottomSample = 0.f;
 		
 
 		// Output
@@ -211,6 +210,8 @@ namespace wg
 		void	_update(int microPassed, int64_t microsecTimestamp) override;
  
 		void	_updateWaveformEdge(Waveform* pWaveform, uint64_t beginUS, int pixelIncUS, bool bTopEdge, AreaScrollChartEntry::SampleSet* pSamples);
+
+		void	_initEntrySamples(AreaScrollChartEntry* pEntry);
 
 		
 		//

@@ -128,73 +128,70 @@ namespace wg
 		
 		int microsecPerPixel = m_displayTime / (canvasSize.w / 64);
 
-		int64_t leftEdgeTimestamp = rightEdgeTimestamp - dirtLen*microsecPerPixel;	// Left edge of dirty area, not whole window.
+//		int64_t leftEdgeTimestamp = rightEdgeTimestamp - dirtLen*microsecPerPixel;	// Left edge of dirty area, not whole window.
+		
+		
 		
 		
 		for( auto& entry : entries )
 		{
-			// Fill in with default samples if missing up to our rightEdgeTimestamp.
+			// Calculate needed margin left and right of our window.
+			
+			pts maxThickness = std::max(entry.m_topOutlineThickness,entry.m_bottomOutlineThickness);
+			
+			int pixelMargin = (((maxThickness * m_scale) / 2) + 63) / 64;
+
+			uint64_t firstEdgeTimestamp = rightEdgeTimestamp - (dirtLen+pixelMargin)*microsecPerPixel;
+			uint64_t lastEdgeTimestamp = rightEdgeTimestamp + pixelMargin*microsecPerPixel;
+			
+			// Fill in with default samples if missing up to our lastEdgeTimestamp.
 			
 			if( entry.m_samples.empty() )
-			{
-				AreaScrollChartEntry::SampleSet spl;
-				spl.timestamp = leftEdgeTimestamp;
-				spl.samples[0] = entry.m_defaultTopSample;
-				spl.samples[1] = entry.m_defaultBottomSample;
-
-				entry.m_samples.push_back(spl);
-				
-				spl.timestamp = rightEdgeTimestamp;
-				entry.m_samples.push_back(spl);
-			}
-			else if( entry.m_samples.back().timestamp < rightEdgeOfs )
+				_initEntrySamples(&entry);
+			else if( entry.m_samples.back().timestamp < lastEdgeTimestamp )
 			{
                 AreaScrollChartEntry::SampleSet spl;
-				spl.timestamp = rightEdgeTimestamp;
+				spl.timestamp = lastEdgeTimestamp;
 				spl.samples[0] = entry.m_defaultTopSample;
 				spl.samples[1] = entry.m_defaultBottomSample;
 
 				entry.m_samples.push_back(spl);
 			}
 
-			// Find first and last sample to deal with
+			
+			// Create our waveform
+			
+			SizeI waveformSize = { dirtLen/64 + pixelMargin*2, canvasSize.h / 64 };
+
+			int edgesNeeded = dirtLen + 1;
+ 
+			auto pWaveform = Waveform::create(WGBP(Waveform,
+				_.size = waveformSize,
+				_.bottomOutlineThickness = entry.m_bottomOutlineThickness*m_scale,
+				_.color = entry.m_fillColor,
+				_.gradient = entry.m_fillGradient,
+				_.origo = SampleOrigo::Top,
+				_.outlineColor = entry.m_outlineColor,
+				_.outlineGradient = entry.m_outlineGradient,
+				_.topOutlineThickness = entry.m_topOutlineThickness*m_scale
+			) );
+			
+			
+			// Find first sample to deal with
 						
 			auto pSample = entry.m_samples.begin();
-			auto pEnd = entry.m_samples.end();
-			
-			while( pSample->timestamp < leftEdgeTimestamp && pSample != pEnd )
-				pSample++;
-	
-			if( pSample != entry.m_samples.begin() )
-				pSample--;
-			
-			auto pDirtBegin = pSample;
-			
-			while( pSample->timestamp < rightEdgeTimestamp && pSample != pEnd )
-				pSample++;
-			
-			if( pSample == entry.m_samples.end() )
-				pSample--;
 
-			auto pDirtEnd = pSample;
+			while( pSample->timestamp < firstEdgeTimestamp )
+				pSample++;
 			
 			// 
 			
-            
-/*
-            int edgesNeeded = dirtLen + 1;
-            
-            auto pWaveform = Waveform::create(WGBP(Waveform,
-                _.size = rect.size()/64,
-                _.bottomOutlineThickness = graph.m_bottomOutlineThickness*m_scale,
-                _.color = graph.m_fillColor,
-                _.gradient = graph.m_fillGradient,
-                _.origo = SampleOrigo::Top,
-                _.outlineColor = graph.m_outlineColor,
-                _.outlineGradient = graph.m_outlineGradient,
-                _.topOutlineThickness = graph.m_topOutlineThickness*m_scale
-            ) );
-*/
+			_updateWaveformEdge(pWaveform, firstEdgeTimestamp, microsecPerPixel, true, &(*pSample));
+			_updateWaveformEdge(pWaveform, firstEdgeTimestamp, microsecPerPixel, false, &(*pSample));
+
+			auto pEdgemap = pWaveform->refresh();
+		
+			
 			
 			
 		}
@@ -265,6 +262,22 @@ namespace wg
 		_requestFullRedraw();
 	}
 
+	//____ _initEntrySamples() ________________________________________________
+
+	void AreaScrollChart::_initEntrySamples(AreaScrollChartEntry* pEntry)
+	{
+		AreaScrollChartEntry::SampleSet spl;
+		spl.timestamp = m_latestTimestamp - 1000000000;
+		spl.samples[0] = pEntry->m_defaultTopSample;
+		spl.samples[1] = pEntry->m_defaultBottomSample;
+
+		pEntry->m_samples.push_back(spl);
+		
+		spl.timestamp = m_latestTimestamp - m_latency;
+		pEntry->m_samples.push_back(spl);
+	}
+
+
 	//____ AreaScrollChartEntry::constructor ___________________________________
 
 	AreaScrollChartEntry::AreaScrollChartEntry()
@@ -273,21 +286,85 @@ namespace wg
 
 	AreaScrollChartEntry::AreaScrollChartEntry(const AreaScrollChartEntry::Blueprint& bp)
 	{
-
+		m_bottomOutlineThickness 	= bp.bottomOutlineThickness;
+		m_fillColor					= bp.color;
+		m_fillGradient				= bp.gradient;
+		m_outlineColor				= bp.outlineColor;
+		m_outlineGradient			= bp.outlineGradient;
+		m_topOutlineThickness		= bp.topOutlineThickness;
+		m_bVisible					= bp.visible;
+		
+		m_defaultBottomSample		= bp.defaultBottomSample;
+		m_defaultTopSample			= bp.defaultTopSample;
 	}
 
 	//____ AreaScrollChartEntry::addSamples() _________________________________
 
 	void AreaScrollChartEntry::addSamples(int nbSamples, int sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak )
 	{
+		
+		if( m_samples.empty() )
+			m_pDisplay->_initEntrySamples(this);
+		
+		//
+		
+		float usPerSample = 1000000 / float(sampleRate);
 
+		uint64_t timestamp = m_samples.back().timestamp;
+
+		if( timestamp + nbSamples * usPerSample < m_pDisplay->m_latestTimestamp )
+			usPerSample *= (1.f + rateTweak);
+		else
+			usPerSample *= (1.f - rateTweak);
+
+		// Fill in the samples
+		
+		int offset = m_samples.size();
+		m_samples.reserve(offset + nbSamples);
+		
+		for( int i = 0 ; i < nbSamples ; i++ )
+			m_samples[offset+i].timestamp = timestamp + int64_t((i+1)*usPerSample);
+		
+		if( pTopSamples && pBottomSamples )
+		{
+			for( int i = 0 ; i < nbSamples ; i++ )
+			{
+				m_samples[offset+i].samples[0] = * pTopSamples++;
+				m_samples[offset+i].samples[1] = * pBottomSamples++;
+			}
+		}
+		else if( pTopSamples )
+		{
+			for( int i = 0 ; i < nbSamples ; i++ )
+			{
+				m_samples[offset+i].samples[0] = * pTopSamples++;
+				m_samples[offset+i].samples[1] = m_defaultBottomSample;
+			}
+		}
+		else if( pBottomSamples )
+		{
+			for( int i = 0 ; i < nbSamples ; i++ )
+			{
+				m_samples[offset+i].samples[0] = m_defaultTopSample;
+				m_samples[offset+i].samples[1] = * pBottomSamples++;
+			}
+		}
+		else
+		{
+			for( int i = 0 ; i < nbSamples ; i++ )
+			{
+				m_samples[offset+i].samples[0] = m_defaultTopSample;
+				m_samples[offset+i].samples[1] = m_defaultBottomSample;
+			}
+		}
 	}
 
 	//____ AreaScrollChartEntry::setDefaultSample() _________________________________
 
 	void AreaScrollChartEntry::setDefaultSample(float topSample, float bottomSample)
 	{
-
+		m_defaultTopSample = topSample;
+		m_defaultBottomSample = bottomSample;
 	}
 
 	//____ AreaScrollChartEntry::setColors() _________________________________
