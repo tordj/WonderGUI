@@ -521,7 +521,7 @@ namespace wg
 
 	//____ _setHoveredKey() ___________________________________________________
 
-	void PianoKeyboard::_setHoveredKey(int keyIdx, uint64_t timestamp)
+	void PianoKeyboard::_setHoveredKey(int keyIdx, int64_t timestamp)
 	{
 		if (keyIdx == m_hoveredKey)
 			return;
@@ -560,7 +560,7 @@ namespace wg
 
 	//____ _setHoverPress() _______________________________________________
 
-	void PianoKeyboard::_setHoverPress(bool bPressed, uint64_t timestamp)
+	void PianoKeyboard::_setHoverPress(bool bPressed, int64_t timestamp)
 	{
 		if (m_hoveredKey == -1)
 			return;

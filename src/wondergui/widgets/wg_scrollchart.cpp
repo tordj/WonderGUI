@@ -167,7 +167,7 @@ namespace wg
 
         SizeSPX contentSize = m_chartCanvas;
 
-        uint64_t timestamp = m_latestTimestamp - m_latency;
+        int64_t timestamp = m_latestTimestamp - m_latency;
 
         if (!m_pScrollSurface || m_bFullRedrawRequested)
         {

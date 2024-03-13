@@ -54,6 +54,7 @@ namespace wg
         AreaScrollChartEntry();
 		AreaScrollChartEntry(const Blueprint& bp);
 
+		bool	addNowSample( float topSample, float bottomSample );
         void    addSamples(int nbSamples, int sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak = 0.01f );
         void    setDefaultSample(float topSample, float bottomSample);
 
@@ -73,7 +74,16 @@ namespace wg
 
         struct SampleSet
         {
-            uint64_t    timestamp;
+			SampleSet( int64_t ts, float top, float bottom )
+			{
+				timestamp = ts;
+				samples[0] = top;
+				samples[1] = bottom;
+			}
+			
+			SampleSet() {};
+			
+            int64_t    timestamp;
             float       samples[2];			// top sample followed by bottom sample.
         };
 
@@ -146,8 +156,8 @@ namespace wg
 			Placement		bottomLabelPlacement = Placement::South;
 			pts				bottomLabelSpacing = 1;
 
-			float			displayCeiling = 0.f;
-			float			displayFloor = 1.f;
+			float			displayCeiling = 1.f;
+			float			displayFloor = 0.f;
 			Skin_p			displaySkin;
 
 			bool			dropTarget = false;
@@ -209,7 +219,7 @@ namespace wg
 
 		void	_update(int microPassed, int64_t microsecTimestamp) override;
  
-		void	_updateWaveformEdge(Waveform* pWaveform, uint64_t beginUS, int pixelIncUS, bool bTopEdge, AreaScrollChartEntry::SampleSet* pSamples);
+		void	_updateWaveformEdge(Waveform* pWaveform, int64_t beginUS, int pixelIncUS, bool bTopEdge, AreaScrollChartEntry::SampleSet* pSamples);
 
 		void	_initEntrySamples(AreaScrollChartEntry* pEntry);
 

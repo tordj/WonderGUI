@@ -55,12 +55,39 @@ namespace wg
 	void AreaScrollChart::_update(int microPassed, int64_t microsecTimestamp)
 	{
 		ScrollChart::_update(microPassed, microsecTimestamp);
+
+		int64_t	minTimestamp = microsecTimestamp - m_displayTime - m_latency;
+		
+		for( auto& entry : entries )
+		{
+			if( entry.m_samples.size() < 2 )
+				continue;
+			
+			auto beg = entry.m_samples.begin();
+			auto end = entry.m_samples.end();
+			auto it = beg;
+			
+			
+			while( it->timestamp < minTimestamp && it != end )
+				it++;
+			
+			if( it != beg )
+				it--;									// We should keep one sample of lower value.
+			
+			if( it != beg )
+			{
+				entry.m_samples.erase( beg, it );
+			}
+		}
 	}
 
 	//____ _didAddEntries() ___________________________________________________
 
 	void AreaScrollChart::_didAddEntries(AreaScrollChartEntry* pEntry, int nb)
 	{
+		for (int i = 0; i < nb; i++)
+			pEntry->m_pDisplay = this;
+		
 		_requestFullRedraw();
 	}
 
@@ -80,7 +107,7 @@ namespace wg
 
 	//____ _updateWaveformEdge() _________________________________________________
 
-	void AreaScrollChart::_updateWaveformEdge(Waveform* pWaveform, uint64_t beginUS, int pixelIncUS, bool bTopEdge, AreaScrollChartEntry::SampleSet* pSamples)
+	void AreaScrollChart::_updateWaveformEdge(Waveform* pWaveform, int64_t beginUS, int pixelIncUS, bool bTopEdge, AreaScrollChartEntry::SampleSet* pSamples)
 	{
 		// TODO: Better interpolation, especially when shrinking.
 
@@ -94,15 +121,15 @@ namespace wg
 
 		float valueFactor = m_chartCanvas.h / (m_displayFloor - m_displayCeiling);
 
-		uint64_t	pixelUS = beginUS;
+		int64_t	pixelUS = beginUS;
 		
 		for (int i = 0; i < wfSamples; i++)
 		{
 			while( pSamples[1].timestamp < pixelUS )
 				pSamples++;
 
-			float frac1 = int(pixelUS - pSamples[0].timestamp) / float(pSamples[1].timestamp - pSamples[0].timestamp);
-			float frac2 = 1.f - frac2;
+			float frac2 = int(pixelUS - pSamples[0].timestamp) / float(pSamples[1].timestamp - pSamples[0].timestamp);
+			float frac1 = 1.f - frac2;
 
 			float val1 = (pSamples[0].samples[sampleIdx] - m_displayCeiling) * valueFactor;
 			float val2 = (pSamples[1].samples[sampleIdx] - m_displayCeiling) * valueFactor;
@@ -141,8 +168,8 @@ namespace wg
 			
 			int pixelMargin = (((maxThickness * m_scale) / 2) + 63) / 64;
 
-			uint64_t firstEdgeTimestamp = rightEdgeTimestamp - (dirtLen+pixelMargin)*microsecPerPixel;
-			uint64_t lastEdgeTimestamp = rightEdgeTimestamp + pixelMargin*microsecPerPixel;
+			int64_t firstEdgeTimestamp = rightEdgeTimestamp - (dirtLen/64+pixelMargin)*microsecPerPixel;
+			int64_t lastEdgeTimestamp = rightEdgeTimestamp + pixelMargin*microsecPerPixel;
 			
 			// Fill in with default samples if missing up to our lastEdgeTimestamp.
 			
@@ -163,7 +190,7 @@ namespace wg
 			
 			SizeI waveformSize = { dirtLen/64 + pixelMargin*2, canvasSize.h / 64 };
 
-			int edgesNeeded = dirtLen + 1;
+			int edgesNeeded = (dirtLen/64) + 1;
  
 			auto pWaveform = Waveform::create(WGBP(Waveform,
 				_.size = waveformSize,
@@ -184,13 +211,35 @@ namespace wg
 			while( pSample->timestamp < firstEdgeTimestamp )
 				pSample++;
 			
-			// 
+			if( pSample != entry.m_samples.begin() )
+				pSample--;
+			
+			// Update waveform and generate Edgemap
 			
 			_updateWaveformEdge(pWaveform, firstEdgeTimestamp, microsecPerPixel, true, &(*pSample));
 			_updateWaveformEdge(pWaveform, firstEdgeTimestamp, microsecPerPixel, false, &(*pSample));
 
 			auto pEdgemap = pWaveform->refresh();
 		
+			//
+			
+			if( rightEdgeOfs - dirtLen < 0 )
+			{
+				//TODO: fix clip rectangles so we don't overwrite what we shouldn't if sections are too close to each other.
+								
+				spx pos1 = rightEdgeOfs - dirtLen - pixelMargin*64;
+				spx pos2 = canvasSize.w + pos1;
+				
+				pDevice->drawEdgemap({pos1,0}, pEdgemap);
+
+				pDevice->drawEdgemap({pos2,0}, pEdgemap);
+				
+			}
+			else
+			{
+				pDevice->drawEdgemap({rightEdgeOfs - dirtLen - pixelMargin*64, 0 }, pEdgemap);
+			}
+			
 			
 			
 			
@@ -266,8 +315,10 @@ namespace wg
 
 	void AreaScrollChart::_initEntrySamples(AreaScrollChartEntry* pEntry)
 	{
+		int len = m_displayTime + m_latency;
+		
 		AreaScrollChartEntry::SampleSet spl;
-		spl.timestamp = m_latestTimestamp - 1000000000;
+		spl.timestamp = m_latestTimestamp - 1000000000;		// We want a very low value but nothing that will overflow 32-bit calculations on time diff.
 		spl.samples[0] = pEntry->m_defaultTopSample;
 		spl.samples[1] = pEntry->m_defaultBottomSample;
 
@@ -298,6 +349,29 @@ namespace wg
 		m_defaultTopSample			= bp.defaultTopSample;
 	}
 
+	//____ AreaScrollChartEntry::addNowSample() ______________________________
+
+	bool AreaScrollChartEntry::addNowSample( float topSample, float bottomSample )
+	{
+		if( m_samples.empty() )
+			m_pDisplay->_initEntrySamples(this);
+
+		auto now = m_pDisplay->m_latestTimestamp;
+		
+		if( now <= m_samples.back().timestamp )
+			return false;
+
+		AreaScrollChartEntry::SampleSet spl;
+		spl.timestamp = now;
+		spl.samples[0] = topSample;
+		spl.samples[1] = bottomSample;
+		
+		m_samples.push_back( {now, topSample, bottomSample} );
+		
+		return true;
+	}
+
+
 	//____ AreaScrollChartEntry::addSamples() _________________________________
 
 	void AreaScrollChartEntry::addSamples(int nbSamples, int sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak )
@@ -310,7 +384,7 @@ namespace wg
 		
 		float usPerSample = 1000000 / float(sampleRate);
 
-		uint64_t timestamp = m_samples.back().timestamp;
+		int64_t timestamp = m_samples.back().timestamp;
 
 		if( timestamp + nbSamples * usPerSample < m_pDisplay->m_latestTimestamp )
 			usPerSample *= (1.f + rateTweak);
@@ -319,8 +393,8 @@ namespace wg
 
 		// Fill in the samples
 		
-		int offset = m_samples.size();
-		m_samples.reserve(offset + nbSamples);
+		int offset = (int) m_samples.size();
+		m_samples.resize(offset + nbSamples);
 		
 		for( int i = 0 ; i < nbSamples ; i++ )
 			m_samples[offset+i].timestamp = timestamp + int64_t((i+1)*usPerSample);

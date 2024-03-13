@@ -696,6 +696,7 @@ int main(int argc, char** argv)
 
 		//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
 
+//		Base::update(int64_t(SDL_GetTicks()) * 1000 + 5000000);
 
 
 		auto pSlot = ComponentPtr(pRoot, pRoot->slot);
@@ -755,6 +756,8 @@ int main(int argc, char** argv)
 		// Program Main Loop
 		//------------------------------------------------------
 
+
+		
 		while (!bQuit)
 		{
 
@@ -3558,6 +3561,26 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
 
 	auto pScrollChart = AreaScrollChart::create({ .skin = BoxSkin::create({ .color = Color::Yellow, .outlineColor = Color::Black, .padding = 1 }) });
+	
+	
+	pScrollChart->entries.pushBack({ .defaultTopSample = 0.3f });
+	
+	
+	pScrollChart->start();
+	
+	float samples[1000];
+	
+	for (int i = 0; i < 1000; i++)
+	{
+//		samples[i] = 0.5f;
+		
+		samples[i] = ( 0.3f + sin(i / 10.0) * 0.3f);
+//		bottomSamples[i] = (int)((300 + sin(i / 20.0) * 6) * 64);
+	}
+
+	
+	pScrollChart->entries[0].addSamples(1000, 50, samples, nullptr);
+	
 	
 	pBaseLayer->slots.pushBack(pScrollChart, { .pos = {10,10}, .size = {500,300} } );
 	
