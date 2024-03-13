@@ -46,8 +46,8 @@ namespace wg
 			Placement		bottomLabelPlacement = Placement::South;
 			pts				bottomLabelSpacing = 1;
 
-			float			displayCeiling = 0.f;
-			float			displayFloor = 1.f;
+			float			displayCeiling = 1.f;
+			float			displayFloor = 0.f;
 			Skin_p			displaySkin;
 
 			bool			dropTarget = false;

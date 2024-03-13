@@ -143,9 +143,9 @@ namespace wg
 		void		_requestRenderKey(int keyIdx);
 		int			_markTestKey(const CoordSPX& pos);
 		RectSPX		_keyRect(int keyIdx);
-		void		_setHoveredKey(int keyIdx, uint64_t timestamp);
+		void		_setHoveredKey(int keyIdx, int64_t timestamp);
 		void		_setAPIPressed(int keyIdx, bool bPressed);
-		void		_setHoverPress(bool bPressed, uint64_t timestamp);
+		void		_setHoverPress(bool bPressed, int64_t timestamp);
 
 	private:
 
