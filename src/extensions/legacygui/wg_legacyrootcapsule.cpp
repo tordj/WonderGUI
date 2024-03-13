@@ -58,8 +58,8 @@ namespace wg
 	LegacyRootCapsule::LegacyRootCapsule() : m_hook(this)
 	{
 		m_pEventHandler = new WgEventHandler(this);
-		
-		
+
+
 		_startReceiveUpdates();
 	}
 
@@ -101,7 +101,7 @@ namespace wg
 	SizeSPX LegacyRootCapsule::_defaultSize(int scale) const
 	{
 		//NOTE! This does not take change of scale into account!
-		
+
 		if( m_hook.Widget() )
 			return m_hook.Widget()->PreferredPixelSize()*64;
 		else
@@ -113,7 +113,7 @@ namespace wg
 	SizeSPX LegacyRootCapsule::_minSize(int scale) const
 	{
 		//NOTE! This does not take change of scale into account!
-		
+
 		if( m_hook.Widget() )
 			return m_hook.Widget()->MinPixelSize()*64;
 		else
@@ -125,7 +125,7 @@ namespace wg
 	SizeSPX LegacyRootCapsule::_maxSize(int scale) const
 	{
 		//NOTE! This does not take change of scale into account!
-		
+
 		if( m_hook.Widget() )
 			return m_hook.Widget()->MaxPixelSize()*64;
 		else
@@ -137,7 +137,7 @@ namespace wg
 	spx LegacyRootCapsule::_matchingHeight(spx width, int scale) const
 	{
 		//NOTE! This does not take change of scale into account!
-		
+
 		if( m_hook.Widget() )
 			return m_hook.Widget()->MatchingPixelHeight(width/64)*64;
 		else
@@ -149,7 +149,7 @@ namespace wg
 	spx LegacyRootCapsule::_matchingWidth(spx height, int scale) const
 	{
 		//NOTE! This does not take change of scale into account!
-		
+
 		if( m_hook.Widget() )
 			return m_hook.Widget()->MatchingPixelWidth(height/64)*64;
 		else
@@ -166,7 +166,7 @@ namespace wg
 			if( pWidget )
 				pWidget->_preRender();
 		}
-		
+
 		m_preRenderCalls.clear();
 	}
 
@@ -175,21 +175,21 @@ namespace wg
 	void LegacyRootCapsule::_render(GfxDevice* pDevice, const RectSPX& canvas, const RectSPX& window)
 	{
 		Widget::_render(pDevice, canvas, window);
-		
+
 		if (!m_hook.Widget())
 			return;
 
 		WgPatches patches;
-				
+
 		const RectSPX * pRects 	= pDevice->clipList();
 		int nRects 				= pDevice->clipListSize();
-		
+
 		for( int i = 0 ; i < nRects ; i++ )
 		{
 			patches.push({pRects[i].x/64, pRects[i].y/64, pRects[i].w/64, pRects[i].h/64} );
 		}
-		
-		
+
+
 		m_hook.Widget()->_renderPatches(pDevice, canvas/64, window/64, &patches);
 	}
 
@@ -202,10 +202,10 @@ namespace wg
 
 		auto oldSize = m_size;
 		auto oldScale = m_scale;
-		
+
 		m_size = size;
 		m_scale = scale;
-		
+
 		if( m_hook.Widget() )
 		{
 			m_bBlockRequestResize = true;			// _setScale() might issue requestResize() calls.
@@ -218,7 +218,7 @@ namespace wg
 
 			m_bBlockRequestResize = false;
 		}
-		
+
 	}
 
 	//____ _setState() ________________________________________________________
@@ -267,7 +267,7 @@ namespace wg
 				m_pEventHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( localPos.x/64, localPos.y/64 ) ) );
 				break;
 			}
-			
+
 			case MsgType::MouseDrag:
 			{
 				if( !m_bMouseInside )
@@ -279,11 +279,16 @@ namespace wg
 				break;
 			}
 
-				
+
 			case MsgType::MousePress:
 			{
 				auto pMess = static_cast<MousePressMsg*>(pMsg);
-				
+				if(!m_state.isFocused())
+				{
+					// This is to make sure TextInput messages are not lost along the way
+					_componentRequestFocus(nullptr, true);
+				}
+
 				int button;
 				switch( pMess->button() )
 				{
@@ -297,12 +302,12 @@ namespace wg
 						button = 0;
 						break;
 				}
-				
+
 				if( button > 0 )
 					m_pEventHandler->QueueEvent( new WgEvent::MouseButtonPress(button) );
 				break;
 			}
-				
+
 			case MsgType::MouseRelease:
 			{
 				auto pMess = static_cast<MouseReleaseMsg*>(pMsg);
@@ -320,7 +325,7 @@ namespace wg
 						button = 0;
 						break;
 				}
-				
+
 				if( button > 0 )
 					m_pEventHandler->QueueEvent( new WgEvent::MouseButtonRelease(button) );
 				break;
@@ -330,7 +335,7 @@ namespace wg
 			{
 				auto pMess = static_cast<KeyPressMsg*>(pMsg);
 				m_pEventHandler->QueueEvent( new WgEvent::KeyPress( pMess->nativeKeyCode() ) );
-				
+
 				// WG2 wants return as text input.
 
 				if( pMess->translatedKeyCode() == Key::Return )
@@ -351,14 +356,14 @@ namespace wg
 			{
 				auto pMess = static_cast<TextInputMsg*>(pMsg);
 				String str = pMess->text();
-				
+
 				int maxSize = str.length()*4;
 				char * pDest = (char*) Base::memStackAlloc(maxSize);
-				
+
 				TextTool::getTextUTF8(str.chars(), pDest, maxSize);
-				
+
 				const char * p = pDest;
-				
+
 				while( * p != 0 )
 				{
 					int chr = wg::TextTool::readChar(p);
@@ -368,11 +373,18 @@ namespace wg
 				Base::memStackFree(maxSize);
 				break;
 			}
-				
+
+			case MsgType::WheelRoll:
+			{
+				WheelRollMsg* pMess = static_cast<WheelRollMsg*>(pMsg);
+				m_pEventHandler->QueueEvent( new WgEvent::MouseWheelRoll( pMess->wheel(), pMess->distance(), pMess->invertScroll()) );
+				break;
+			}
+
 			default:
 				break;
 		}
-		
+
 		Widget::_receive( pMsg );
 	}
 
@@ -436,7 +448,7 @@ namespace wg
 
 			if( !result )
 				return false;
-				
+
 			return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
 		}
 	}
@@ -446,7 +458,7 @@ namespace wg
 	bool LegacyRootCapsule::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing )
 	{
 		bool result = (bool) releaseFocus();
-		
+
 		if( !result )
 			return false;
 
@@ -556,7 +568,7 @@ namespace wg
 
 		if(pWidget->PreferredPixelSize()*64 != m_size)
 			_requestResize();
-		
+
 		return true;
 	}
 
