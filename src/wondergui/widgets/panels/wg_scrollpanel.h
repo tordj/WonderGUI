@@ -75,8 +75,8 @@ namespace wg
 			bool				stickyFocus			= false;
 			bool				tabLock 			= false;
 			String				tooltip;
-			int					wheelForX 			= 2;
-			int					wheelForY 			= 1;
+			Axis				wheelOneAxis 		= Axis::Y;
+			Axis				wheelTwoAxis		= Axis::X;
 			ModKeys				wheelShift 			= ModKeys::Alt;
 			pts					wheelStepSize 		= 8*3;
 		};
@@ -113,7 +113,7 @@ namespace wg
 		void			setPageOverlap(pts overlap);
 		void			setPageOverlap(pts x, pts y);
 
-		void			setScrollWheels(int wheelForX, int wheelForY);
+		void			setScrollWheelAxis(Axis wheelOneAxis, Axis wheelTwoAxis);
 		void			setScrollWheelAxisShift(ModKeys axisShift);
 		void			setStealWheelFromScrollbars(bool bSteal);
 		void			setAutoscroll(bool autoscrollX, bool autoscrollY);
@@ -172,8 +172,8 @@ namespace wg
 			m_pageOverlapX			= bp.pageOverlap;
 			m_pageOverlapY			= bp.pageOverlap;
 
-			m_wheelForScrollX		= bp.wheelForX;
-			m_wheelForScrollY		= bp.wheelForY;
+			m_wheelOneAxis			= bp.wheelOneAxis;
+			m_wheelTwoAxis			= bp.wheelTwoAxis;
 
 			m_wheelAxisShiftCombo	= bp.wheelShift;
 			m_bStealWheelFromScrollbars = bp.stealWheelFromScrollbars;
@@ -284,9 +284,9 @@ namespace wg
 		pts				m_wheelStepSizeX = 8*3, m_wheelStepSizeY = 8*3;
 		pts				m_pageOverlapX = 8, m_pageOverlapY = 8;
 
-		int				m_wheelForScrollX = 2;		// What wheel should be used for horizontal scrolling. (0=none)
-		int				m_wheelForScrollY = 1;		// What wheel should be used for vertical scrolling. (0=none)
-		ModKeys	m_wheelAxisShiftCombo = ModKeys::Alt;
+		Axis			m_wheelOneAxis = Axis::Y;		// What wheel should be used for horizontal scrolling. (0=none)
+		Axis			m_wheelTwoAxis = Axis::X;		// What wheel should be used for vertical scrolling. (0=none)
+		ModKeys			m_wheelAxisShiftCombo = ModKeys::Alt;
 		bool			m_bStealWheelFromScrollbars = false;
 
 		bool			m_bAutoscrollX = false;

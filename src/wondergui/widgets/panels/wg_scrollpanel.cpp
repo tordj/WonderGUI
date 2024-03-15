@@ -303,33 +303,30 @@ namespace wg
 		m_pageOverlapY = y;
 	}
 
-	//____ setScrollWheels() __________________________________________________
+	//____ setScrollWheelAxis() __________________________________________________
 	/**
-	*	@brief Set which scroll wheels controls horizontal and vertical scrolling respectively.
+	*	@brief Set scroll direction for each scroll wheel.
 	* 
-	*	@param wheelForX	Scroll wheel to control horizontal scrolling.
-	*	@param wheelForY	Scroll wheel to control vertical scrolling.
+	*	@param wheelOneAxis	Scroll direction for wheel one.
+	*	@param wheelTwoAxis	Scroll direction for wheel two.
 	*
-	*	The scroll wheels are enumerated starting with 1, which then refers to the only scroll wheel
-	*	of a normal mouse and 2 referring to any second scroll wheel on the mouse etc.
-	* 
-	*	Any parameter can also be set to 0 to disable scrolling with scroll wheel in that direction.
+	*	Any parameter can also be set to Undefined to disable use of that scroll wheel.
 	*	
-	*	Default values are 2 for X and 1 for Y, making the first scroll wheel control vertical
+	*	Default values are Y for wheelOneAxis and X for wheelTwoAxis, making the first scroll wheel control vertical
 	*	scrolling and any second scroll wheel control horizontal scrolling.
 	* 
-	*	Note that setScrollWheelAxisShift() can be used to set a modifier key to invert what wheel
-	*	is used for what axis, thus enable scrolling in both directions using only one mouse wheel.
+	*	Note that setScrollWheelAxisShift() can be used to switch the axis of the scroll wheels, 
+	*   thus enable scrolling in both directions using only one mouse wheel.
 	* 
 	*	Also note that this setting doesn't affect how the scrollbars (if any) reacts to scroll wheels.
 	*	Hovering over a scrollbar and rolling wheel 1 will move the scrollbar forward/backward independent
 	*	of the scrollbars orientation. To disable this behavior you can call setStealWheelFromScrollbars().
 	* 
 	*/
-	void ScrollPanel::setScrollWheels(int wheelForX, int wheelForY)
+	void ScrollPanel::setScrollWheelAxis(Axis wheelOneAxis, Axis wheelTwoAxis)
 	{
-		m_wheelForScrollX = wheelForX;
-		m_wheelForScrollY = wheelForY;
+		m_wheelOneAxis = wheelOneAxis;
+		m_wheelTwoAxis = wheelTwoAxis;
 	}
 
 	//____ setScrollWheelAxisShift() __________________________________________
@@ -448,20 +445,20 @@ namespace wg
 	{
 		CoordSPX offset = align(_offset);
 		
-		auto oldChildCanvas = m_childCanvas;
-		auto wantedChildCanvas = m_childWindow - offset;
+		auto oldChildCanvasPos = m_childCanvas.pos();
+		auto wantedChildCanvasPos = -offset;
 
-		m_childCanvas = wantedChildCanvas;
+		m_childCanvas.setPos(wantedChildCanvasPos);
 		
 		_childWindowCorrection();
 
-		if( oldChildCanvas != m_childCanvas )
+		if( oldChildCanvasPos != m_childCanvas.pos() )
 		{
 			_updateScrollbars();
 			_requestRender();
 		}
 		
-		return ( m_childCanvas == wantedChildCanvas );
+		return ( m_childCanvas.pos() == wantedChildCanvasPos);
 	}
 
 
@@ -845,20 +842,28 @@ namespace wg
 			{
 				auto p = static_cast<WheelRollMsg*>(pMsg);
 
-				int wheelX = m_wheelForScrollX;
-				int wheelY = m_wheelForScrollY;
+				Axis direction = Axis::Undefined;
+				if (p->wheel() == 1)
+					direction = m_wheelOneAxis;
+				else if (p->wheel() == 2)
+					direction = m_wheelTwoAxis;
 
 				if (m_wheelAxisShiftCombo == p->modKeys() && m_wheelAxisShiftCombo != ModKeys::None)
-					std::swap(wheelX, wheelY);
+				{
+					if (direction == Axis::X)
+						direction = Axis::Y;
+					else if (direction == Axis::Y)
+						direction = Axis::X;
+				}
 
 				spx movement = 0;
 
-				if( p->wheel() == wheelX )
+				if( direction == Axis::X )
 				{
 					movement = p->distance() * align(ptsToSpx(m_wheelStepSizeX, m_scale));
 					m_childCanvas.x += movement;
 				}
-				else if( p->wheel() == wheelY )
+				else if( direction == Axis::Y )
 				{
 					movement = p->distance() * align(ptsToSpx(m_wheelStepSizeY, m_scale));
 					m_childCanvas.y += movement;
