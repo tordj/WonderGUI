@@ -181,6 +181,8 @@ namespace wg
 
 	const HiColor HiColor::Undefined(-1, -1, -1, -1);
 	const HiColor HiColor::Transparent(0, 0, 0, 0);
+	const HiColor HiColor::TransparentBlack(0, 0, 0, 0);
+	const HiColor HiColor::TransparentWhite(4096, 4096, 4096, 0);
 	const HiColor HiColor::Black(0, 0, 0, 4096);
 	const HiColor HiColor::White(4096, 4096, 4096, 4096);
 

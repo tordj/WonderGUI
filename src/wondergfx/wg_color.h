@@ -335,6 +335,8 @@ namespace wg
 
 		const static HiColor	Undefined;			// -1
 		const static HiColor	Transparent;		// 0x000000
+		const static HiColor	TransparentBlack;	// 0x000000
+		const static HiColor	TransparentWhite;	// 0x000000
 		const static HiColor 	Black;  			// 0xffffff
 		const static HiColor 	White;  			// 0xffffff
 
