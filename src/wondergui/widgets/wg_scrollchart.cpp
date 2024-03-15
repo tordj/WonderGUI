@@ -140,7 +140,7 @@ namespace wg
 
         pDevice->setBlitSource(m_pScrollSurface);
         pDevice->blit({ canvas.x, canvas.y }, { m_rightEdgeOfs, 0, canvas.w - m_rightEdgeOfs, canvas.h });
-        pDevice->blit({ canvas.x + canvas.w - m_rightEdgeOfs,canvas.x }, { 0,0,m_rightEdgeOfs,canvas.h });
+        pDevice->blit({ canvas.x + canvas.w - m_rightEdgeOfs,canvas.y }, { 0,0,m_rightEdgeOfs,canvas.h });
     }
 
     //____ _update() ____________________________________________________________
