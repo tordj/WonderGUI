@@ -151,6 +151,7 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pSlot);
 bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pSlot);
 bool textDisplayTest(ComponentPtr<DynamicSlot> pSlot);
 bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot);
+bool scrollPanelTest(ComponentPtr<DynamicSlot> pEntry);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -747,11 +748,12 @@ int main(int argc, char** argv)
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
-		//	canvasCapsuleTest(pSlot);
+			canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
 		//	textDisplayTest(pSlot);
-		scrollChartTest(pSlot);
-		
+		//  scrollChartTest(pSlot);
+		//  scrollPanelTest(pSlot);
+
 		//------------------------------------------------------
 		// Program Main Loop
 		//------------------------------------------------------
@@ -1272,6 +1274,9 @@ bool scrollIntoViewTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 }
 
+
+
+
 //____ textClipTest() ______________________________________________________
 
 bool textClipTest(ComponentPtr<DynamicSlot> pEntry)
@@ -1417,6 +1422,49 @@ bool scrollbarTest(ComponentPtr<DynamicSlot> pEntry)
 	
 	return true;
 }
+
+//____ scrollPanelTest() ______________________________________________________
+
+bool scrollPanelTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black, 5);
+
+
+	auto pEditor = TextEditor::create();
+
+	pEditor->editor.setText("TEXT AREA This is a long text to make the text be longer than the scrollpanel which is hopefully is by now. Or now, or now or now...");
+	pEditor->setSkin(ColorSkin::create(Color::YellowGreen));
+
+	auto pScrollPanel = ScrollPanel::create();
+	pScrollPanel->slot = pEditor;
+	pScrollPanel->setSkin(ColorSkin::create(Color::Pink));
+
+	pScrollPanel->scrollbarX.setSkins(ColorSkin::create(Color::DarkGreen), pButtonSkin, pButtonSkin, pButtonSkin);
+//	pScrollPanel->scrollbarY.setSkins(ColorSkin::create(Color::DarkGreen), pButtonSkin, pButtonSkin, pButtonSkin);
+
+
+	auto pFlex = FlexPanel::create();
+	pFlex->slots.pushBack(pScrollPanel, { .pos = {10,10}, .size = {200,50} });
+
+	*pEntry = pFlex;
+
+
+	auto pButtonMoveLeft = Button::create({ .label = {.text = "<<<"}, .skin = pButtonSkin });
+
+	pFlex->slots.pushBack(pButtonMoveLeft, { .origo = Placement::SouthWest, .pos = {5,-5} });
+
+	Base::msgRouter()->addRoute(pButtonMoveLeft, MsgType::Select, [pScrollPanel](Msg* p) { pScrollPanel->setViewOffset(pScrollPanel->viewOffset() + Coord{-10,0}); });
+
+	auto pButtonMoveRight = Button::create({ .label = {.text = ">>>"}, .skin = pButtonSkin });
+
+	pFlex->slots.pushBack(pButtonMoveRight, { .origo = Placement::SouthWest, .pos = {5 + 100,-5} });
+
+	Base::msgRouter()->addRoute(pButtonMoveRight, MsgType::Select, [pScrollPanel](Msg* p) { pScrollPanel->setViewOffset(pScrollPanel->viewOffset() + Coord{10, 0}); });
+
+
+	return true;
+}
+
 
 //____ modalLayerTest() ______________________________________________________
 
@@ -2008,7 +2056,7 @@ bool selectBoxTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pListSkin = BoxSkin::create(1, Color::White, Color::Black, 3);
 
-	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .outlineThickness = 1, .outlineColor = Color::Transparent, .padding = 3,
+	auto pListEntrySkin = BoxSkin::create({ .color = Color::Transparent, .outlineColor = Color::Transparent, .outlineThickness = 1, .padding = 3,
 											 .states = {{State::Hovered, {.color = Color::Yellow, .outlineColor = Color::Orange }},
 														{State::Selected, {.color = Color::LightBlue, .outlineColor = Color::White }} } });
 
@@ -2994,8 +3042,8 @@ bool areaChartTest2(ComponentPtr<DynamicSlot> pEntry)
 
 
 	auto pButtonSkin = BoxSkin::create({ .color = Color8::Grey,
-									  .outlineThickness = 1,
 									  .outlineColor = Color8::Black,
+									  .outlineThickness = 1,
 									  .padding = 3
 		});
 
@@ -3092,8 +3140,8 @@ bool plotChartTest(ComponentPtr<DynamicSlot> pEntry)
 
 
 	auto pButtonSkin = BoxSkin::create({ .color = Color8::Grey,
-									  .outlineThickness = 1,
 									  .outlineColor = Color8::Black,
+									  .outlineThickness = 1,
 									  .padding = 3
 		});
 
@@ -3121,8 +3169,8 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 {
 	auto pPaneSkin = BoxSkin::create( { .color = Color8::White,
 										.margin = 5,
-										.outlineThickness = 1,
 										.outlineColor = Color8::Black,
+										.outlineThickness = 1,
 										.padding = 3
 	});
 	
@@ -3130,8 +3178,8 @@ bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pPane2 = Filler::create( { .skin = pPaneSkin });
 
 	auto pButtonSkin = BoxSkin::create( { .color = Color8::Grey,
-										  .outlineThickness = 1,
 										  .outlineColor = Color8::Black,
+										  .outlineThickness = 1,
 										  .padding = 3
 	});
 
@@ -3424,8 +3472,8 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 	auto pCanvasCapsule = CanvasCapsule::create( {  
 		.scaleCanvas = true,
 		.skin = BoxSkin::create({ .color = Color::Yellow,
-			.outlineThickness = 5,
 			.outlineColor = Color::Black,
+			.outlineThickness = 5,
 			.padding = 6 }),
 		.skinAroundCanvas = true
 	});
@@ -3436,8 +3484,9 @@ bool canvasCapsuleTest(ComponentPtr<DynamicSlot> pEntry)
 
 	
 	auto pCanvasDisplay1 = CanvasDisplay::create({	.canvas = pCanvasCapsule, 
-													/*.skin = BoxSkin::create({ .color = Color::Black, .outlineThickness = 1,
-													.outlineColor = Color::Blue })*/ });
+													.skin = BoxSkin::create({ .color = Color::Green,
+													.outlineColor = Color::Blue, .outlineThickness = 2, .padding = 3 }),
+													.skinAroundCanvas = true });
 
 	pBack->slots.pushBack(pCanvasDisplay1, { .pos = {10, 240}, .size = {200,200} });
 
@@ -3477,7 +3526,7 @@ bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pEntry)
 	pGlowCapsule->glow.setActive(true);
 
 
-	pGlowCapsule->setSkin(BoxSkin::create({ .color = HiColor::Transparent, .outlineThickness = 50, .outlineColor = Color::Yellow, .padding = 50 }));
+	pGlowCapsule->setSkin(BoxSkin::create({ .color = HiColor::Transparent, .outlineColor = Color::Yellow, .outlineThickness = 50, .padding = 50 }));
 
 	pBack->slots.pushBack(pGlowCapsule, { .pos = {  50, 50}, .size = {300,0} });
 
@@ -3528,7 +3577,7 @@ bool textDisplayTest(ComponentPtr<DynamicSlot> pSlot)
 	
 	auto pPackPanel = PackPanel::create({ .axis = Axis::Y, .skin = pInnerSkin });
 
-	auto pText1 = TextDisplay::create( { .skin = pSkin, .display = { .layout = pTextLayout } });
+	auto pText1 = TextDisplay::create( { .display = {.layout = pTextLayout }, .skin = pSkin });
 	pText1->display.setText("Och OM de skulle ge något följdfel så vill jag veta det så fort som möjligt. Men jag tror inte det, det var verkligen uppenbara fel som var lätta att fixa (använde m_scale istf parameter scale på flera ställen. Ibland behöver man räkna ut vad geometrin kommer att bli inför en kommande.");
 	pPackPanel->slots << pText1;
 
@@ -3588,4 +3637,5 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 	
 	pScrollChart->start();
 
+	return true;
 }
