@@ -56,8 +56,8 @@ namespace wg
 
 		//.____ Geometry _______________________________________________________
 
-		Coord	pos(Size canvas) const 
-		{ 
+		Coord	pos(Size canvas) const
+		{
 			Coord c( origo.x*canvas.w + offset.x, origo.y*canvas.h + offset.y);
 			return c;
 		}
@@ -94,9 +94,9 @@ namespace wg
 		template<class S> friend class DynamicSlotVector;
 
 	public:
-		 
+
 		//.____ Blueprint _____________________________________________________
-		
+
 		struct Blueprint
 		{
 			// We slightly deviate from keeping things in alphabetical order here
@@ -104,23 +104,23 @@ namespace wg
 			// all members that should be used in same blueprint still comes in alphabetical order.
 
 			// Set for pinned geo only.
-			
+
 			FlexPos		pin1 = Placement::Undefined;
 			FlexPos		pin2 = Placement::Undefined;
 
 			// Set for movable geo only.
-			
+
 			FlexPos		hotspot = Placement::Undefined;
 			FlexPos		origo = Placement::NorthWest;
 			Coord		pos;
 			Size		size;
-			
+
 			// Set for both
-			
+
 			bool		visible = true;
 		};
-		
-		
+
+
 		//.____ Identification ________________________________________________
 
 		const static TypeInfo	TYPEINFO;
@@ -160,7 +160,7 @@ namespace wg
 		inline FlexPos	topLeftPin() const { return m_topLeftPin; }
 		inline FlexPos	bottomRightPin() const { return m_bottomRightPin; }
 
-		
+
 		//.____ Operators __________________________________________
 
 		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
@@ -174,7 +174,7 @@ namespace wg
 
 
 		bool _setBlueprint( const Blueprint& bp );
-		
+
 //		inline FlexPanel * _holder() { return static_cast<FlexPanel*>(DynamicSlot::_holder()); }
 //		inline const FlexPanel * _holder() const { return static_cast<const FlexPanel*>(DynamicSlot::_holder()); }
 
@@ -211,7 +211,7 @@ namespace wg
 	public:
 
 		//.____ Blueprint _____________________________________________________
-		
+
 		struct Blueprint
 		{
 			Object_p		baggage;
@@ -232,7 +232,7 @@ namespace wg
 			bool			tabLock			= false;
 			String			tooltip;
 		};
-		
+
 		//.____ Creation __________________________________________
 
 		static FlexPanel_p	create() { return FlexPanel_p(new FlexPanel()); }
@@ -250,8 +250,8 @@ namespace wg
 
 		void			setDefaultSize( Size size );
 		bool			isDefaultSizeSet() const { return !m_defaultSize.isEmpty(); }
-		
-		
+
+
 		//.____ Internal ______________________________________________________
 
 		SizeSPX			_defaultSize(int scale) const override;
@@ -262,9 +262,10 @@ namespace wg
 		{
 			m_bSiblingsOverlap = true;
 			m_bConfineWidgets = bp.confineWidgets;
-		}
+            m_defaultSize = bp.defaultSize;
+        }
 
-		virtual ~FlexPanel();
+        virtual ~FlexPanel();
 
 
 		// Overloaded from Container
