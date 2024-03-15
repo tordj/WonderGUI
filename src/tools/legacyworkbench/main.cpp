@@ -809,7 +809,7 @@ void packPanelStressTest( WgRootPanel * pRoot )
 	pRoot->SetChild(pBaseFlex);
 	
 
-	auto pVPackSkin = wg::BoxSkin::create( { .color = WgColor::Blue, .outlineThickness = 10, .outlineColor = WgColor::Red, .padding = 11 } );
+	auto pVPackSkin = wg::BoxSkin::create( { .color = WgColor::Blue, .outlineColor = WgColor::Red, .outlineThickness = 10, .padding = 11 } );
 	
 	auto pVPack = new WgPackPanel();
 	pVPack->SetOrientation(wg::Axis::Y);
@@ -1053,12 +1053,12 @@ void baselineTest( WgRootPanel * pRoot )
 
 void scrollPanelTest( WgRootPanel * pRoot )
 {
-	wg::BoxSkin_p    pBgSkin = wg::BoxSkin::create( { .color = WgColor::Green, .outlineThickness = 2, .outlineColor = WgColor::Red, .padding = 2 } );
+	wg::BoxSkin_p    pBgSkin = wg::BoxSkin::create( { .color = WgColor::Green, .outlineColor = WgColor::Red, .outlineThickness = 2, .padding = 2 } );
 	
-	wg::BoxSkin_p    pButtonSkin = wg::BoxSkin::create({ .color = WgColor::Red, .outlineThickness = 2, .outlineColor = WgColor::Black } );
+	wg::BoxSkin_p    pButtonSkin = wg::BoxSkin::create({ .color = WgColor::Red, .outlineColor = WgColor::Black, .outlineThickness = 2 } );
 //    pButtonSkin->SetContentPadding(6);
 
-	wg::BoxSkin_p    pBarSkin = wg::BoxSkin::create({ .color = WgColor::Grey, .outlineThickness = 2, .outlineColor = WgColor::DarkGrey, .padding = 6 });
+	wg::BoxSkin_p    pBarSkin = wg::BoxSkin::create({ .color = WgColor::Grey, .outlineColor = WgColor::DarkGrey, .outlineThickness = 2, .padding = 6 });
 
 	auto pScrollPanel = new WgScrollPanel();
 	
@@ -1332,7 +1332,7 @@ bool tooltipLayerTest(WgRootPanel * pRoot)
 	});
 */
 
-	auto pTooltipSkin = wg::BoxSkin::create( { .color = wg::Color::White, .outlineThickness = 1, .outlineColor = wg::Color::Black, .padding = 2 } );
+	auto pTooltipSkin = wg::BoxSkin::create( { .color = wg::Color::White, .outlineColor = wg::Color::Black, .outlineThickness = 1, .padding = 2 } );
 
 	auto pBaseLayer = new WgFlexPanel();
 	pBaseLayer->SetSkin( wg::ColorSkin::create(wg::Color::PapayaWhip) );
@@ -1728,7 +1728,7 @@ WgFlexPanel * createPresetSelector()
 {
 	WgFlexPanel * pBottom = new WgFlexPanel();
 	
-	wg::BoxSkin_p pSkin = wg::BoxSkin::create( { .color = WgColor(0, 0, 0, 255), .outlineThickness = 0, .outlineColor = WgColor(0, 0, 0, 255) } );
+	wg::BoxSkin_p pSkin = wg::BoxSkin::create( { .color = WgColor(0, 0, 0, 255), .outlineColor = WgColor(0, 0, 0, 255), .outlineThickness = 0 } );
 
 	pBottom->SetSkin(pSkin);
 /*

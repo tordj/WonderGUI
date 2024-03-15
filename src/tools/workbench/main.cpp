@@ -748,10 +748,10 @@ int main(int argc, char** argv)
 		//	skinMarginTest(pSlot);
 		//	wgcombTest(pSlot);
 		//  widgetRecording(pSlot);
-			canvasCapsuleTest(pSlot);
+		//	canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
 		//	textDisplayTest(pSlot);
-		//  scrollChartTest(pSlot);
+		  scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
 
 		//------------------------------------------------------
@@ -3630,12 +3630,32 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 	
 	pScrollChart->entries[0].addSamples(1000, 50, samples, nullptr);
 	
-	
+
 	pBaseLayer->slots.pushBack(pScrollChart, { .pos = {10,10}, .size = {500,300} } );
 	
 	*pSlot = pBaseLayer;
-	
-	pScrollChart->start();
+
+
+	auto pButtonSkin = BoxSkin::create({ .color = Color8::Grey,
+									  .outlineColor = Color8::Black,
+									  .outlineThickness = 1,
+									  .padding = 3
+	});
+
+
+	auto pTransition = ColorTransition::create(2000000);
+
+	auto pButtonMoveLeft = Button::create({ .label = {.text = "Green"}, .skin = pButtonSkin });
+
+	pBaseLayer->slots.pushBack(pButtonMoveLeft, { .origo = Placement::SouthWest, .pos = {5,-5} });
+
+	Base::msgRouter()->addRoute(pButtonMoveLeft, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->entries[0].setColors(Color::Green, Color::Red, pTransition); });
+
+	auto pButtonMoveRight = Button::create({ .label = {.text = "Blue"}, .skin = pButtonSkin });
+
+	pBaseLayer->slots.pushBack(pButtonMoveRight, { .origo = Placement::SouthWest, .pos = {5 + 100,-5} });
+
+	Base::msgRouter()->addRoute(pButtonMoveRight, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->entries[0].setColors(Color::Blue, Color::Black, pTransition); });
 
 	return true;
 }

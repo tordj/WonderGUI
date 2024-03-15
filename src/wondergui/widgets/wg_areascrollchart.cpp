@@ -56,6 +56,8 @@ namespace wg
 	{
 		ScrollChart::_update(microPassed, microsecTimestamp);
 
+		// Remove samples not needed anymore
+
 		int64_t	minTimestamp = microsecTimestamp - m_displayTime - m_latency;
 		
 		for( auto& entry : entries )
@@ -79,6 +81,66 @@ namespace wg
 				entry.m_samples.erase( beg, it );
 			}
 		}
+
+		// Update color/tint transitions.
+
+		bool	transitionsActive = false;
+
+		// Update all transitions
+
+		for (auto& graph : entries)
+		{
+			if (graph.m_pColorTransition)
+			{
+				int timestamp = graph.m_colorTransitionProgress + microPassed;
+
+				if (timestamp >= graph.m_pColorTransition->duration())
+				{
+					graph.m_colorTransitionProgress = 0;
+					graph.m_pColorTransition = nullptr;
+
+					graph.m_fillColor = graph.m_endFillColor;
+					graph.m_outlineColor = graph.m_endOutlineColor;
+
+					graph.m_fillGradient = graph.m_endFillGradient;
+					graph.m_outlineGradient = graph.m_endOutlineGradient;
+				}
+				else
+				{
+					graph.m_colorTransitionProgress = timestamp;
+
+					graph.m_fillColor = graph.m_pColorTransition->snapshot(timestamp, graph.m_startFillColor, graph.m_endFillColor);
+					graph.m_outlineColor = graph.m_pColorTransition->snapshot(timestamp, graph.m_startOutlineColor, graph.m_endOutlineColor);
+
+					if (!graph.m_fillGradient.isUndefined())
+					{
+						graph.m_fillGradient.topLeft = graph.m_pColorTransition->snapshot(timestamp, graph.m_startFillGradient.topLeft, graph.m_endFillGradient.topLeft);
+						graph.m_fillGradient.topRight = graph.m_pColorTransition->snapshot(timestamp, graph.m_startFillGradient.topRight, graph.m_endFillGradient.topRight);
+						graph.m_fillGradient.bottomLeft = graph.m_pColorTransition->snapshot(timestamp, graph.m_startFillGradient.bottomLeft, graph.m_endFillGradient.bottomLeft);
+						graph.m_fillGradient.bottomRight = graph.m_pColorTransition->snapshot(timestamp, graph.m_startFillGradient.bottomRight, graph.m_endFillGradient.bottomRight);
+
+						graph.m_outlineGradient.topLeft = graph.m_pColorTransition->snapshot(timestamp, graph.m_startOutlineGradient.topLeft, graph.m_endOutlineGradient.topLeft);
+						graph.m_outlineGradient.topRight = graph.m_pColorTransition->snapshot(timestamp, graph.m_startOutlineGradient.topRight, graph.m_endOutlineGradient.topRight);
+						graph.m_outlineGradient.bottomLeft = graph.m_pColorTransition->snapshot(timestamp, graph.m_startOutlineGradient.bottomLeft, graph.m_endOutlineGradient.bottomLeft);
+						graph.m_outlineGradient.bottomRight = graph.m_pColorTransition->snapshot(timestamp, graph.m_startOutlineGradient.bottomRight, graph.m_endOutlineGradient.bottomRight);
+					}
+
+					transitionsActive = true;
+				}
+
+				_requestFullRedraw();
+			}
+		}
+
+		if (m_bTransitioning && !transitionsActive)
+		{
+			m_bTransitioning = false;
+			_stopReceiveUpdates();
+		}
+
+
+
+
 	}
 
 	//____ _didAddEntries() ___________________________________________________
@@ -301,6 +363,26 @@ namespace wg
 
 	void AreaScrollChart::_startedOrEndedTransition()
 	{
+		bool bTransitioning = false;
+
+		for (auto& entry : entries)
+		{
+			if( entry.m_pColorTransition)
+			{
+				bTransitioning = true;
+				break;
+			}
+		}
+
+		if (bTransitioning != m_bTransitioning)
+		{
+			if (bTransitioning)
+				_startReceiveUpdates();
+			else
+				_stopReceiveUpdates();
+
+			m_bTransitioning = bTransitioning;
+		}
 
 	}
 
@@ -492,6 +574,13 @@ namespace wg
 
 		if (fill == m_fillGradient && outline == m_outlineGradient)
 			return true;
+
+		// Gradients in scroll chart may only be vertical, not the least horizontal.
+
+		if ((fill.topLeft != fill.topRight) || (fill.bottomLeft != fill.bottomRight) ||
+			(fill.topLeft != fill.topRight) || (fill.bottomLeft != fill.bottomRight))
+			return false;
+
 
 		if (pTransition)
 		{

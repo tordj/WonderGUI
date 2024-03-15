@@ -84,10 +84,7 @@ namespace wg
         if (m_pScrollSurface->pixelSize() * 64 != wantedSize)
             m_pScrollSurface = nullptr;
         else
-        {
-            m_rightEdgeOfs = wantedSize.w;
-            m_dirtLen = wantedSize.w;
-        }
+            m_bFullRedrawRequested = true;
     }
 
     //____ _renderCharts() ____________________________________________________

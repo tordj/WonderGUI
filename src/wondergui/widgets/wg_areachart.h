@@ -81,7 +81,7 @@ namespace wg
 		void				_endColorTransition();
 
 
-		AreaChart* m_pDisplay = nullptr;
+		AreaChart*			m_pDisplay = nullptr;
 
 		// Appearance
 

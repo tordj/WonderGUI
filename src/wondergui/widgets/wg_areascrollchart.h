@@ -237,6 +237,7 @@ namespace wg
 
 	private:
 
+		bool m_bTransitioning = false;
 	};
 
 } // namespace wg

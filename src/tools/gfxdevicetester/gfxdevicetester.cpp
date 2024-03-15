@@ -918,7 +918,7 @@ bool GfxDeviceTester::setup_chrome()
 
 	auto pSkin = BoxSkin::create(1, Color::White, Color::Black, 8);
 
-	auto pEntrySkin = BoxSkin::create({ .color = Color::White, .outlineThickness = 1, .outlineColor = Color::Black, .padding = 8,
+	auto pEntrySkin = BoxSkin::create({ .color = Color::White, .outlineColor = Color::Black, .outlineThickness = 1, .padding = 8,
 			.states = {
 				{State::Hovered, {.color = Color::AntiqueWhite } },
 				{State::SelectedHovered, {.color = Color::AntiqueWhite } },
