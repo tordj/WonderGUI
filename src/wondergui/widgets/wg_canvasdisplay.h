@@ -73,6 +73,7 @@ namespace wg
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
 			Skin_p			skin;
+			bool			skinAroundCanvas = false;
 			bool			stickyFocus = false;
 			bool			tabLock = false;
 			HiColor			tintColor		= HiColor::Undefined;
@@ -92,6 +93,8 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Appearance ____________________________________________________
+
+		void		setSkin(Skin* pSkin) override;
 
 		void		setCanvas(CanvasCapsule* pCanvas);
 		CanvasCapsule_p	canvas() const { return m_pCanvas.rawPtr(); }
@@ -122,7 +125,8 @@ namespace wg
 				m_tintColor	= bp.tintColor;
 
 			m_gradient		= bp.tintGradient;
-			
+			m_bSkinAroundCanvas = bp.skinAroundCanvas;
+
 			if (bp.canvas)
 				setCanvas(bp.canvas);
 		}
@@ -145,7 +149,8 @@ namespace wg
 		CanvasCapsule_wp	m_pCanvas;
 		SizeSPX				m_canvasSize;
 		Placement			m_placement = Placement::Center;
-		
+		bool				m_bSkinAroundCanvas = false;
+
 		HiColor				m_tintColor = HiColor::White;
 		Gradient			m_gradient;
 		BlendMode			m_blendMode = BlendMode::Blend;
