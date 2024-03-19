@@ -40,6 +40,7 @@ namespace wg
 		{
 			pts					bottomOutlineThickness = 1;
 			HiColor				color = Color8::LightGrey;
+			std::function<void(int64_t latestTimestamp, int64_t neededTimestamp, int64_t currentTimestamp)> fetcher;
 			Gradient			gradient;								// Overrides color when set.
 			HiColor				outlineColor = Color8::DarkGrey;
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
@@ -55,12 +56,13 @@ namespace wg
 		AreaScrollChartEntry(const Blueprint& bp);
 
 		bool	addNowSample( float topSample, float bottomSample );
-        void    addSamples(int nbSamples, int sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak = 0.01f );
+        void    addSamples(int nbSamples, int sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak = 0.f );
         void    setDefaultSample(float topSample, float bottomSample);
 
 		bool	setColors(HiColor fill, HiColor outline, ColorTransition* pTransition = nullptr);
 		bool	setGradients(Gradient fill, Gradient outline, ColorTransition* pTransition = nullptr);
 
+		int64_t latestSampleTimestamp() const;
 
 		void	setVisible(bool bVisible);
 		bool	isVisible() const { return m_bVisible; }
@@ -135,6 +137,8 @@ namespace wg
 		bool				m_bColorsChanged = false;
 
 		Waveform_p			m_pWaveform;
+		
+		std::function<void(int64_t, int64_t, int64_t)>	m_fetcher;
 	};
 
 

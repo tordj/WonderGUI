@@ -237,14 +237,21 @@ namespace wg
 			
 			if( entry.m_samples.empty() )
 				_initEntrySamples(&entry);
-			else if( entry.m_samples.back().timestamp < lastEdgeTimestamp )
+			
+			if( entry.latestSampleTimestamp() < lastEdgeTimestamp )
 			{
-                AreaScrollChartEntry::SampleSet spl;
-				spl.timestamp = lastEdgeTimestamp;
-				spl.samples[0] = entry.m_defaultTopSample;
-				spl.samples[1] = entry.m_defaultBottomSample;
+				if( entry.m_fetcher )
+					entry.m_fetcher( entry.latestSampleTimestamp(), lastEdgeTimestamp, m_latestTimestamp);
 
-				entry.m_samples.push_back(spl);
+				if( entry.latestSampleTimestamp() < lastEdgeTimestamp )
+				{
+					AreaScrollChartEntry::SampleSet spl;
+					spl.timestamp = lastEdgeTimestamp;
+					spl.samples[0] = entry.m_defaultTopSample;
+					spl.samples[1] = entry.m_defaultBottomSample;
+					
+					entry.m_samples.push_back(spl);
+				}
 			}
 
 			
@@ -397,8 +404,6 @@ namespace wg
 
 	void AreaScrollChart::_initEntrySamples(AreaScrollChartEntry* pEntry)
 	{
-		int len = m_displayTime + m_latency;
-		
 		AreaScrollChartEntry::SampleSet spl;
 		spl.timestamp = m_latestTimestamp - 1000000000;		// We want a very low value but nothing that will overflow 32-bit calculations on time diff.
 		spl.samples[0] = pEntry->m_defaultTopSample;
@@ -429,6 +434,8 @@ namespace wg
 		
 		m_defaultBottomSample		= bp.defaultBottomSample;
 		m_defaultTopSample			= bp.defaultTopSample;
+		
+		m_fetcher					= bp.fetcher;
 	}
 
 	//____ AreaScrollChartEntry::addNowSample() ______________________________
@@ -605,6 +612,18 @@ namespace wg
 
 		return true;
 	}
+
+	//____ AreaScrollChartEntry::latestSampleTimestamp() _________________________________
+
+	int64_t AreaScrollChartEntry::latestSampleTimestamp() const
+	{
+		if( m_samples.empty() )
+			return 0;
+		
+		return m_samples.back().timestamp;
+	}
+
+
 
 	//____ AreaScrollChartEntry::setVisible() _________________________________
 

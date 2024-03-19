@@ -3611,13 +3611,7 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 
 	auto pScrollChart = AreaScrollChart::create({ .skin = BoxSkin::create({ .color = Color::Yellow, .outlineColor = Color::Black, .padding = 1 }) });
 	
-	
-	pScrollChart->entries.pushBack({ .defaultTopSample = 0.3f });
-	
-	
-	pScrollChart->start();
-	
-	float samples[1000];
+	static float samples[1000];
 	
 	for (int i = 0; i < 1000; i++)
 	{
@@ -3627,8 +3621,40 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 //		bottomSamples[i] = (int)((300 + sin(i / 20.0) * 6) * 64);
 	}
 
+	float * pBeg = samples;
+	float * pCurr = samples;
+	float * pEnd = samples+1000;
 	
-	pScrollChart->entries[0].addSamples(1000, 50, samples, nullptr);
+	AreaScrollChart_wp wpScrollChart = pScrollChart.rawPtr();
+	
+	pScrollChart->entries.pushBack({ .defaultTopSample = 0.3f, .fetcher = [wpScrollChart, pBeg, pCurr, pEnd] (int64_t lastSampleTS, int64_t minimumTS, int64_t currentTS) mutable
+	{
+		int samplesWanted = (currentTS - lastSampleTS) / 1000000.0 * 50 + 1;
+		
+		while(samplesWanted > 0)
+		{
+			if( pEnd - pCurr < samplesWanted )
+			{
+				int nbSamples = pEnd - pCurr;
+				wpScrollChart->entries[0].addSamples(nbSamples, 50, pCurr, nullptr);
+				samplesWanted -= nbSamples;
+				pCurr = pBeg;
+			}
+			else
+			{
+				wpScrollChart->entries[0].addSamples(samplesWanted, 50, pCurr, nullptr);
+				pCurr += samplesWanted;
+				samplesWanted = 0;
+			}
+		}				
+	} });
+	
+	
+	pScrollChart->start();
+	
+
+	
+//	pScrollChart->entries[0].addSamples(1000, 50, samples, nullptr);
 	
 
 	pBaseLayer->slots.pushBack(pScrollChart, { .pos = {10,10}, .size = {500,300} } );
