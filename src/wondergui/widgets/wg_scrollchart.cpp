@@ -58,6 +58,8 @@ namespace wg
         {
             m_bScrolling = true;
             m_latestTimestamp = _startReceiveUpdates();
+			
+			_removeOutdatedSamples();
         }
     }
 
@@ -147,8 +149,16 @@ namespace wg
         Chart::_update(microPassed, microsecTimestamp);
 
         if (!m_bScrolling)
-            return;
-
+		{
+			if( m_bFullRedrawRequested )
+			{
+				_requestRenderChartArea();
+				m_dirtLen = m_chartCanvas.w;
+				m_bFullRedrawRequested = false;
+			}
+			return;
+		}
+		
         m_latestTimestamp = microsecTimestamp;
       
         if( !m_bPreRenderRequested )

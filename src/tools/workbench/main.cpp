@@ -3627,7 +3627,7 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 	
 	AreaScrollChart_wp wpScrollChart = pScrollChart.rawPtr();
 	
-	pScrollChart->entries.pushBack({ .defaultTopSample = 0.3f, .fetcher = [wpScrollChart, pBeg, pCurr, pEnd] (int64_t lastSampleTS, int64_t minimumTS, int64_t currentTS) mutable
+	pScrollChart->entries.pushBack({ .defaultTopSample = 0.3f, .fetcher = [wpScrollChart, pBeg, pCurr, pEnd] (int64_t lastSampleTS, int64_t firstNeededTS, int64_t lastNeededTS, int64_t currentTS) mutable
 	{
 		int samplesWanted = (currentTS - lastSampleTS) / 1000000.0 * 50 + 1;
 		
@@ -3683,5 +3683,19 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 
 	Base::msgRouter()->addRoute(pButtonMoveRight, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->entries[0].setColors(Color::Blue, Color::Black, pTransition); });
 
+	
+	auto pButtonStop = Button::create({ .label = {.text = "Stop"}, .skin = pButtonSkin });
+
+	pBaseLayer->slots.pushBack(pButtonStop, { .origo = Placement::SouthWest, .pos = {5 + 200,-5} });
+
+	Base::msgRouter()->addRoute(pButtonStop, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->stop(); });
+
+	auto pButtonStart = Button::create({ .label = {.text = "Start"}, .skin = pButtonSkin });
+
+	pBaseLayer->slots.pushBack(pButtonStart, { .origo = Placement::SouthWest, .pos = {5 + 300,-5} });
+
+	Base::msgRouter()->addRoute(pButtonStart, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->start(); });
+
+	
 	return true;
 }

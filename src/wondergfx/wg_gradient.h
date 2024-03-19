@@ -64,6 +64,8 @@ namespace wg
 		inline bool isOpaque() const { return (topLeft.a + topRight.a + bottomRight.a + bottomLeft.a) == 4096 * 4; }
 		inline bool isUndefined() const { return topLeft.isUndefined(); }
 		inline bool isValid() const { return topLeft.isValid() && topRight.isValid() && bottomLeft.isValid() && bottomRight.isValid(); }
+		inline bool isVertical() const { return ((topLeft != bottomLeft) || (topRight != bottomRight)); }
+		inline bool isHorizontal() const { return ((topLeft != topRight) || (bottomLeft != bottomRight)); }
 
 		inline bool operator==(const Gradient& other) const
 		{

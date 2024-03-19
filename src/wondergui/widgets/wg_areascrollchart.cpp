@@ -58,29 +58,7 @@ namespace wg
 
 		// Remove samples not needed anymore
 
-		int64_t	minTimestamp = microsecTimestamp - m_displayTime - m_latency;
-		
-		for( auto& entry : entries )
-		{
-			if( entry.m_samples.size() < 2 )
-				continue;
-			
-			auto beg = entry.m_samples.begin();
-			auto end = entry.m_samples.end();
-			auto it = beg;
-			
-			
-			while( it->timestamp < minTimestamp && it != end )
-				it++;
-			
-			if( it != beg )
-				it--;									// We should keep one sample of lower value.
-			
-			if( it != beg )
-			{
-				entry.m_samples.erase( beg, it );
-			}
-		}
+		_removeOutdatedSamples();
 
 		// Update color/tint transitions.
 
@@ -137,10 +115,6 @@ namespace wg
 			m_bTransitioning = false;
 			_stopReceiveUpdates();
 		}
-
-
-
-
 	}
 
 	//____ _didAddEntries() ___________________________________________________
@@ -214,16 +188,15 @@ namespace wg
 
 	void AreaScrollChart::_renderOnScrollSurface( GfxDevice * pDevice, SizeSPX canvasSize, spx rightEdgeOfs, int64_t rightEdgeTimestamp, spx dirtLen )
 	{
-		
 		int microsecPerPixel = m_displayTime / (canvasSize.w / 64);
-
-//		int64_t leftEdgeTimestamp = rightEdgeTimestamp - dirtLen*microsecPerPixel;	// Left edge of dirty area, not whole window.
-		
-		
-		
 		
 		for( auto& entry : entries )
 		{
+			// Skip entry if it isn't visible.
+			
+			if( !entry.m_bVisible || (entry.m_fillColor.a == 0 && (entry.m_outlineColor.a == 0 || (entry.m_topOutlineThickness == 0 && entry.m_bottomOutlineThickness == 0) ) ) )
+				continue;
+						
 			// Calculate needed margin left and right of our window.
 			
 			pts maxThickness = std::max(entry.m_topOutlineThickness,entry.m_bottomOutlineThickness);
@@ -241,7 +214,7 @@ namespace wg
 			if( entry.latestSampleTimestamp() < lastEdgeTimestamp )
 			{
 				if( entry.m_fetcher )
-					entry.m_fetcher( entry.latestSampleTimestamp(), lastEdgeTimestamp, m_latestTimestamp);
+					entry.m_fetcher( entry.latestSampleTimestamp(), firstEdgeTimestamp, lastEdgeTimestamp, m_latestTimestamp);
 
 				if( entry.latestSampleTimestamp() < lastEdgeTimestamp )
 				{
@@ -302,68 +275,12 @@ namespace wg
 				pDevice->drawEdgemap({pos1,0}, pEdgemap);
 
 				pDevice->drawEdgemap({pos2,0}, pEdgemap);
-				
 			}
 			else
 			{
 				pDevice->drawEdgemap({rightEdgeOfs - dirtLen - pixelMargin*64, 0 }, pEdgemap);
 			}
-			
-			
-			
-			
 		}
-		
-		
-		
-		// Debug code
-/*
-		spx ofs = rightEdgeOfs;
-
-		
-		int timePerPixel = m_displayTime / (canvasSize.w/64);
-		
-		int descendPerPixel = 64;
-		
-		int64_t startPixel = rightEdgeTimestamp / timePerPixel;
-		
-		spx height = (startPixel*64) % canvasSize.h;
-		
-		
-		int dirtWidth = dirtLen / 64;
-		
-		int memSize = dirtWidth*sizeof(CoordSPX);
-		int memSize2 = dirtWidth*sizeof(HiColor);
-
-		CoordSPX * p = (CoordSPX*) Base::memStackAlloc(memSize);
-		HiColor * pCol = (HiColor*) Base::memStackAlloc(memSize2);
-				
-		for( int i = 0 ; i < dirtWidth ; i++ )
-		{
-			ofs -= 64;
-
-			if( ofs < 0 )
-				ofs += canvasSize.w;
-
-			height -= 64;
-			
-			if( height < 0 )
-				height += canvasSize.h;
-			
-			
-			p[i].x = ofs;
-			p[i].y = height;
-			
-			pCol[i] = Color::Red;
-		}
-		
-		pDevice->plotPixels(dirtWidth, p, pCol );
-		
-		Base::memStackFree(memSize2);
-		Base::memStackFree(memSize);
-*/
-		
-		
 	}
 
 	//____ _startedOrEndedTransition() ________________________________________
@@ -398,6 +315,42 @@ namespace wg
 	void AreaScrollChart::_entryVisibilityChanged(AreaScrollChartEntry* pAreaChartEntry)
 	{
 		_requestFullRedraw();
+	}
+
+	//____ _removeOutdatedSamples() ______________________________________________
+
+	void AreaScrollChart::_removeOutdatedSamples()
+	{
+		int64_t	timestampStillDisplayed = m_latestTimestamp - m_displayTime - m_latency;
+		
+		int microsecPerPixel = m_displayTime / (m_chartCanvas.w / 64);
+
+		for( auto& entry : entries )
+		{
+			if( entry.m_samples.size() < 2 )
+				continue;
+		
+			pts maxThickness = std::max(entry.m_topOutlineThickness,entry.m_bottomOutlineThickness);
+			
+			int pixelMargin = (((maxThickness * m_scale) / 2) + 63) / 64;
+			int64_t timestampStillNeeded = timestampStillDisplayed - pixelMargin*microsecPerPixel;
+			
+			auto beg = entry.m_samples.begin();
+			auto end = entry.m_samples.end();
+			auto it = beg;
+			
+			
+			while( it->timestamp < timestampStillNeeded && it != end )
+				it++;
+			
+			if( it != beg )
+				it--;									// We should keep one sample of lower value.
+			
+			if( it != beg )
+			{
+				entry.m_samples.erase( beg, it );
+			}
+		}
 	}
 
 	//____ _initEntrySamples() ________________________________________________
@@ -449,17 +402,25 @@ namespace wg
 		
 		if( now <= m_samples.back().timestamp )
 			return false;
-
-		AreaScrollChartEntry::SampleSet spl;
-		spl.timestamp = now;
-		spl.samples[0] = topSample;
-		spl.samples[1] = bottomSample;
 		
 		m_samples.push_back( {now, topSample, bottomSample} );
 		
 		return true;
 	}
 
+	//____ AreaScrollChartEntry::addSampleWithTimestamp() ___________________________
+
+	bool AreaScrollChartEntry::addSampleWithTimestamp( int64_t timestamp, float topSample, float bottomSample )
+	{
+		if( m_samples.empty() )
+			m_pDisplay->_initEntrySamples(this);
+
+		if( timestamp <= m_samples.back().timestamp )
+			return false;
+		
+		m_samples.push_back( {timestamp, topSample, bottomSample} );
+		return true;
+	}
 
 	//____ AreaScrollChartEntry::addSamples() _________________________________
 
@@ -530,6 +491,17 @@ namespace wg
 		m_defaultBottomSample = bottomSample;
 	}
 
+	//____ AreaScrollChartEntry::clearSamples() ___________________________________
+
+	void AreaScrollChartEntry::clearSamples()
+	{
+		m_samples.clear();
+		
+		if( m_bVisible )
+			m_pDisplay->_requestFullRedraw();
+	}
+
+
 	//____ AreaScrollChartEntry::setColors() _________________________________
 
 	bool AreaScrollChartEntry::setColors(HiColor fill, HiColor outline, ColorTransition* pTransition)
@@ -576,18 +548,13 @@ namespace wg
 
 	bool AreaScrollChartEntry::setGradients(Gradient fill, Gradient outline, ColorTransition* pTransition)
 	{
-		if (!fill.isValid() || !outline.isValid())
+		// Gradients in scroll chart may only be vertical, not the least horizontal.
+
+		if (!fill.isValid() || !outline.isValid() || fill.isHorizontal() || outline.isHorizontal() )
 			return false;
 
 		if (fill == m_fillGradient && outline == m_outlineGradient)
 			return true;
-
-		// Gradients in scroll chart may only be vertical, not the least horizontal.
-
-		if ((fill.topLeft != fill.topRight) || (fill.bottomLeft != fill.bottomRight) ||
-			(fill.topLeft != fill.topRight) || (fill.bottomLeft != fill.bottomRight))
-			return false;
-
 
 		if (pTransition)
 		{

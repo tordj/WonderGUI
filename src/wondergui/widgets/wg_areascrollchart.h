@@ -40,7 +40,7 @@ namespace wg
 		{
 			pts					bottomOutlineThickness = 1;
 			HiColor				color = Color8::LightGrey;
-			std::function<void(int64_t latestTimestamp, int64_t neededTimestamp, int64_t currentTimestamp)> fetcher;
+			std::function<void(int64_t latestTimestamp, int64_t firstNeededTimestamp, int64_t lastNeededTimestamp, int64_t currentTimestamp)> fetcher;
 			Gradient			gradient;								// Overrides color when set.
 			HiColor				outlineColor = Color8::DarkGrey;
 			Gradient			outlineGradient;						// Overrides outlineColor when set.
@@ -56,9 +56,13 @@ namespace wg
 		AreaScrollChartEntry(const Blueprint& bp);
 
 		bool	addNowSample( float topSample, float bottomSample );
-        void    addSamples(int nbSamples, int sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak = 0.f );
+		bool	addSampleWithTimestamp( int64_t timestamp, float topSample, float bottomSample );
+
+		void    addSamples(int nbSamples, int sampleRate, const float* pTopSamples, const float * pBottomSamples, float rateTweak = 0.f );
         void    setDefaultSample(float topSample, float bottomSample);
 
+		void	clearSamples();
+		
 		bool	setColors(HiColor fill, HiColor outline, ColorTransition* pTransition = nullptr);
 		bool	setGradients(Gradient fill, Gradient outline, ColorTransition* pTransition = nullptr);
 
@@ -138,7 +142,7 @@ namespace wg
 
 		Waveform_p			m_pWaveform;
 		
-		std::function<void(int64_t, int64_t, int64_t)>	m_fetcher;
+		std::function<void(int64_t, int64_t, int64_t, int64_t)>	m_fetcher;
 	};
 
 
@@ -235,10 +239,12 @@ namespace wg
 		void	_willEraseEntries(AreaScrollChartEntry* pEntry, int nb) override;
 
 		void	_renderOnScrollSurface( GfxDevice * pDevice, SizeSPX canvasSize, spx leftEdgeOfs, int64_t leftEdgeTimestamp, spx dirtLen ) override;
+		void	_removeOutdatedSamples() override;
 
 		void	_startedOrEndedTransition();
 		void	_entryVisibilityChanged(AreaScrollChartEntry* pAreaChartEntry);
 
+		
 	private:
 
 		bool m_bTransitioning = false;
