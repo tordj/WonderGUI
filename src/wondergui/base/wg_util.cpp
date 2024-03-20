@@ -319,73 +319,73 @@ RectI sourceOfs;
 
 	//____ placementToOfs() ________________________________________________________
 
-	CoordSPX Util::placementToOfs( Placement placement, SizeSPX base )
+	CoordSPX Util::placementToOfs( Placement placement, RectSPX base )
 	{
 		switch( placement )
 		{
 			default:
 			case Placement::NorthWest:
-				return CoordSPX();
+				return CoordSPX() + base.pos();
 
 			case Placement::North:
-				return CoordSPX( align(base.w/2),0 );
+				return CoordSPX( align(base.w/2),0 ) + base.pos();
 
 			case Placement::NorthEast:
-				return CoordSPX( base.w,0 );
+				return CoordSPX( base.w,0 ) + base.pos();
 
 			case Placement::East:
-				return CoordSPX( base.w, align(base.h/2) );
+				return CoordSPX( base.w, align(base.h/2) ) + base.pos();
 
 			case Placement::SouthEast:
-				return CoordSPX( base.w, base.h );
+				return CoordSPX( base.w, base.h ) + base.pos();
 
 			case Placement::South:
-				return CoordSPX( align(base.w/2), base.h );
+				return CoordSPX( align(base.w/2), base.h ) + base.pos();
 
 			case Placement::SouthWest:
-				return CoordSPX( 0, base.h );
+				return CoordSPX( 0, base.h ) + base.pos();
 
 			case Placement::West:
-				return CoordSPX( 0, align(base.h/2) );
+				return CoordSPX( 0, align(base.h/2) ) + base.pos();
 
 			case Placement::Center:
-				return CoordSPX( align(base.w/2), align(base.h/2) );
+				return CoordSPX( align(base.w/2), align(base.h/2) ) + base.pos();
 		}
 	}
 
 	//____ placementToRect() ________________________________________________________
 
-	RectSPX Util::placementToRect( Placement placement, SizeSPX base, SizeSPX rect )
+	RectSPX Util::placementToRect( Placement placement, RectSPX bounds, SizeSPX size )
 	{
 		switch( placement )
 		{
 			default:
 			case Placement::NorthWest:
-				return RectSPX(0,0, rect);
+				return RectSPX(0,0, size) + bounds.pos();
 
 			case Placement::North:
-				return RectSPX( align(base.w/2 - rect.w/2), 0, rect );
+				return RectSPX( align(bounds.w/2 - size.w/2), 0, size ) + bounds.pos();
 
 			case Placement::NorthEast:
-				return RectSPX( base.w - rect.w, 0, rect );
+				return RectSPX( bounds.w - size.w, 0, size ) + bounds.pos();
 
 			case Placement::East:
-				return RectSPX( base.w - rect.w, align(base.h/2 - rect.h/2), rect );
+				return RectSPX( bounds.w - size.w, align(bounds.h/2 - size.h/2), size ) + bounds.pos();
 
 			case Placement::SouthEast:
-				return RectSPX( base.w - rect.w, base.h - rect.h, rect );
+				return RectSPX( bounds.w - size.w, bounds.h - size.h, size ) + bounds.pos();
 
 			case Placement::South:
-				return RectSPX( align(base.w/2 - rect.w/2), base.h - rect.h, rect );
+				return RectSPX( align(bounds.w/2 - size.w/2), bounds.h - size.h, size ) + bounds.pos();
 
 			case Placement::SouthWest:
-				return RectSPX( 0, base.h - rect.h, rect );
+				return RectSPX( 0, bounds.h - size.h, size ) + bounds.pos();
 
 			case Placement::West:
-				return RectSPX( 0, align(base.h/2 - rect.h/2), rect );
+				return RectSPX( 0, align(bounds.h/2 - size.h/2), size ) + bounds.pos();
 
 			case Placement::Center:
-				return RectSPX( align(base.w/2 - rect.w/2), align(base.h/2 - rect.h/2), rect );
+				return RectSPX( align(bounds.w/2 - size.w/2), align(bounds.h/2 - size.h/2), size ) + bounds.pos();
 		}
 	}
 
@@ -399,6 +399,54 @@ RectI sourceOfs;
 		return coord + CoordSPX(placementMulX[int(placement)] * rectSize.w / 2, placementMulY[int(placement)] * rectSize.h / 2);
 	}
 
+	//____ rectFromPolicy() ______________________________________________________
+
+	RectSPX Util::rectFromPolicy( SizePolicy2D sizePolicy, Placement placement, RectSPX bounds, SizeSPX orgSize )
+	{
+		RectSPX dest = align(placementToRect(placement, bounds, sizeFromPolicy(sizePolicy, bounds.size(), orgSize)));
+
+		return dest;
+	}
+
+	//____ sizeFromPolicy() ______________________________________________________
+
+	SizeSPX Util::sizeFromPolicy( SizePolicy2D policy, SizeSPX maxSize, SizeSPX orgSize )
+	{
+		if( maxSize.w <= 0 || maxSize.h <= 0 )
+			return RectSPX();
+
+		switch( policy )
+		{
+			default:
+			case SizePolicy2D::Original:
+				return orgSize;
+
+			case SizePolicy2D::Stretch:
+				return maxSize;
+
+			case SizePolicy2D::Scale:
+			{
+				SizeSPX	size;
+
+				float	fracX = orgSize.w / (float) maxSize.w;
+				float	fracY = orgSize.h / (float) maxSize.h;
+
+				if( fracX > fracY )
+				{
+					size.w = maxSize.w;
+					size.h = int (orgSize.h / fracX);
+				}
+				else
+				{
+					size.h = maxSize.h;
+					size.w = (int) (orgSize.w / fracY);
+				}
+
+				return size;
+			}
+		}
+
+	}
 
 	//____ scaleToFit() _______________________________________________________
 

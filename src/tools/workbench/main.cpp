@@ -152,6 +152,7 @@ bool canvasCapsuleGlowTest(ComponentPtr<DynamicSlot> pSlot);
 bool textDisplayTest(ComponentPtr<DynamicSlot> pSlot);
 bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot);
 bool scrollPanelTest(ComponentPtr<DynamicSlot> pEntry);
+bool packPanelStressTest(ComponentPtr<DynamicSlot> pEntry);
 
 void nisBlendTest();
 void commonAncestorTest();
@@ -751,8 +752,9 @@ int main(int argc, char** argv)
 		//	canvasCapsuleTest(pSlot);
 		//	canvasCapsuleGlowTest(pSlot);
 		//	textDisplayTest(pSlot);
-		  scrollChartTest(pSlot);
+		//  scrollChartTest(pSlot);
 		//  scrollPanelTest(pSlot);
+			packPanelStressTest(pSlot);
 
 		//------------------------------------------------------
 		// Program Main Loop
@@ -3161,8 +3163,6 @@ bool plotChartTest(ComponentPtr<DynamicSlot> pEntry)
 	return true;
 }
 
-
-
 //____ nortonCommanderTest() ______________________________________________________
 
 bool nortonCommanderTest(ComponentPtr<DynamicSlot> pEntry)
@@ -3696,6 +3696,77 @@ bool scrollChartTest(ComponentPtr<DynamicSlot> pSlot)
 
 	Base::msgRouter()->addRoute(pButtonStart, MsgType::Select, [pScrollChart, pTransition](Msg* p) { pScrollChart->start(); });
 
+	
+	return true;
+}
+
+//____ packPanelStressTest() ______________________________________________________
+
+bool packPanelStressTest(ComponentPtr<DynamicSlot> pEntry)
+{
+	auto pPaneSkin = BoxSkin::create( { .color = Color8::White,
+										.margin = 5,
+										.outlineColor = Color8::Black,
+										.outlineThickness = 1,
+										.padding = 3
+	});
+	
+	auto pButtonSkin = BoxSkin::create( { .color = Color8::Grey,
+										  .outlineColor = Color8::Black,
+										  .outlineThickness = 1,
+										  .padding = 3
+	});
+
+	auto pFitsButton = Button::create( {
+		.label = { .text = "FITS" },
+		.skin = pButtonSkin
+	 });
+
+	auto pDeleteButton = Button::create( {
+		.label = { .text = "TOO LARGE" },
+		.skin = pButtonSkin
+	 });
+
+	
+	auto pWideButton = Button::create( {
+		.label = { .text = "TOO WIDE" },
+		.skin = pButtonSkin
+	 });
+
+	auto pHighButton = Button::create( {
+		.label = { .text = "TOO HIGH" },
+		.skin = pButtonSkin
+	 });
+
+	
+	Surface_p pImg = Base::defaultSurfaceFactory()->createSurface({ .format = PixelFormat::BGR_8, .size = {1000,800} });
+	pImg->fill( HiColor::White );
+	
+	
+	auto pImage = Image::create( { .image = pImg, .sizePolicy = SizePolicy2D::Scale, .skin = ColorSkin::create( Color8::Yellow ) });
+	
+	
+	auto pCapsule = SizeCapsule::create({ .child = pImage, .maxSize = {600,600} });
+	
+	
+	PackLayout_p pLayout = PackLayout::create({ .expandFactor = PackLayout::Factor::Weight,
+												.shrinkFactor = PackLayout::Factor::Weight });
+
+	PackPanel_p pOuterPanel = PackPanel::create({ .axis = Axis::X, .id = 1, .layout = pLayout, .skin = ColorSkin::create({.color = Color::Red}) });
+	
+	PackPanel_p pInnerPanel = PackPanel::create({ .axis = Axis::Y, .id = 2, .layout = pLayout, .skin = ColorSkin::create({.color = Color::Green}) });
+
+	pOuterPanel->slots << Filler::create() << pInnerPanel << Filler::create();
+	pOuterPanel->setSlotWeight(0, 3, {1,0,1});
+	
+	pInnerPanel->slots << Filler::create() << Filler::create() << Filler::create();
+	pInnerPanel->setSlotWeight(0, 3, {1,0,1});
+
+	
+	*pEntry = pOuterPanel;
+
+	pInnerPanel->slots[1] = pCapsule;
+	
 	
 	return true;
 }

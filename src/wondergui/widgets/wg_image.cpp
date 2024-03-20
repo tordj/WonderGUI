@@ -83,17 +83,62 @@ namespace wg
 		}
 	}
 
+	//____ _matchingHeight() _____________________________________________________
+
+	spx Image::_matchingHeight(spx width, int scale) const
+	{
+		SizeSPX borderSize = m_skin.contentBorderSize(scale);
+
+		spx contentHeight = borderSize.h;
+		
+		if( m_pSurface )
+		{
+			if( m_sizePolicy == SizePolicy2D::Scale )
+			{
+				int contentWidth = width - borderSize.w;
+				if( contentWidth > 0 )
+					contentHeight += align(int(int64_t(contentWidth * m_rect.h) / m_rect.w));
+			}
+			else
+				contentHeight += align(ptsToSpx(m_rect.h,scale));
+		}
+
+		return contentHeight;
+	}
+
+	//____ _matchingWidth() ______________________________________________________
+
+	spx	Image::_matchingWidth(spx height, int scale) const
+	{
+		SizeSPX borderSize = m_skin.contentBorderSize(scale);
+
+		spx contentWidth = borderSize.w;
+		
+		if( m_pSurface )
+		{
+			if( m_sizePolicy == SizePolicy2D::Scale )
+			{
+				int contentHeight = height - borderSize.h;
+				if( contentHeight > 0 )
+					contentWidth += align(int(int64_t(contentHeight * m_rect.w) / m_rect.h));
+			}
+			else
+				contentWidth += align(ptsToSpx(m_rect.w,scale));
+		}
+
+		return contentWidth;
+	}
+
 	//____ _defaultSize() _____________________________________________________________
 
 	SizeSPX Image::_defaultSize(int scale) const
 	{
-
+		SizeSPX size = m_skin.contentBorderSize(scale);
+		
 		if (m_pSurface)
-		{
-			return m_skin.sizeForContent( align(ptsToSpx(m_rect.size(),scale)), scale );
-		}
-		else
-			return Widget::_defaultSize(scale);
+			size += align(ptsToSpx(m_rect.size(),scale));
+
+		return size;
 	}
 
 	//____ _render() _____________________________________________________________
@@ -104,10 +149,14 @@ namespace wg
 
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			RectSPX dest = m_skin.contentRect( _canvas, m_scale, state() );
+			RectSPX content = m_skin.contentRect( _canvas, m_scale, state() );
 
+			RectSPX imgRect = ptsToSpx(m_rect, m_pSurface->scale());
+			
+			RectSPX dest = rectFromPolicy(m_sizePolicy, m_placement, content, imgRect.size() );
+			
 			pDevice->setBlitSource(m_pSurface);
-			pDevice->stretchBlit( dest, ptsToSpx(m_rect,m_pSurface->scale()) );
+			pDevice->stretchBlit( dest, imgRect );
 		}
 	}
 
@@ -117,9 +166,13 @@ namespace wg
 	{
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			RectSPX dest = m_skin.contentRect( m_size, m_scale, state() );
+			RectSPX content = m_skin.contentRect( m_size, m_scale, state() );
 
-			if( Util::markTestStretchRect( ofs, m_pSurface, ptsToSpx(m_rect, m_pSurface->scale()), dest, m_imageMarkAlpha ) )
+			RectSPX imgRect = ptsToSpx(m_rect, m_pSurface->scale());
+			
+			RectSPX dest = rectFromPolicy(m_sizePolicy, m_placement, content, imgRect.size() );
+			
+			if( Util::markTestStretchRect( ofs, m_pSurface, imgRect, dest, m_imageMarkAlpha ) )
 				return true;
 		}
 

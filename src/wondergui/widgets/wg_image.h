@@ -61,8 +61,10 @@ namespace wg
 			MarkPolicy		markPolicy = MarkPolicy::AlphaTest;
 			bool			pickable = false;
 			int				pickCategory = 0;
+			Placement		placement = Placement::Center;
 			PointerStyle	pointer = PointerStyle::Undefined;
 			bool			selectable = true;
+			SizePolicy2D	sizePolicy = SizePolicy2D::Stretch;
 			Skin_p			skin;
 			bool			stickyFocus = false;
 			bool			tabLock = false;
@@ -96,7 +98,10 @@ namespace wg
 
 		//.____ Internal ____________________________________________
 
-		SizeSPX	_defaultSize(int scale) const override;
+		spx			_matchingHeight(spx width, int scale) const override;
+		spx			_matchingWidth(spx height, int scale) const override;
+
+		SizeSPX		_defaultSize(int scale) const override;
 
 
 	protected:
@@ -107,6 +112,8 @@ namespace wg
 			m_pSurface	= bp.image;
 			m_rect = bp.imageRect;
 			m_imageMarkAlpha = bp.imageMarkAlpha;
+			m_sizePolicy = bp.sizePolicy;
+			m_placement = bp.placement;
 			
 			if( m_rect.isEmpty() && m_pSurface )
 				m_rect = m_pSurface->pointSize();
@@ -119,9 +126,11 @@ namespace wg
 
 	private:
 
-		Surface_p	m_pSurface;
-		Rect		m_rect;
-		int			m_imageMarkAlpha = 1;
+		Surface_p		m_pSurface;
+		Rect			m_rect;
+		int				m_imageMarkAlpha = 1;
+		SizePolicy2D	m_sizePolicy = SizePolicy2D::Stretch;
+		Placement		m_placement = Placement::Center;
 	};
 
 

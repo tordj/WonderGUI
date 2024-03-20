@@ -151,8 +151,7 @@ namespace wg
 			w += padding.width();
 			h += padding.height();
 
-			rect = Util::placementToRect( m_placement, contentRect.size(), SizeSPX(w,h) );
-			rect += contentRect.pos();
+			rect = Util::placementToRect( m_placement, contentRect, SizeSPX(w,h) );
 			rect -= padding;
 		}
 

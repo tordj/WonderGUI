@@ -553,53 +553,9 @@ namespace wg
 		if( base.w <= 0 || base.h <= 0 )
 			return RectSPX();
 
-		switch( pSlot->m_sizePolicy )
-		{
-			default:
-		case SizePolicy2D::Original:
-			{
-				SizeSPX	size = pSlot->_widget()->_defaultSize(m_scale);
-				RectSPX geo = Util::placementToRect( pSlot->m_placement, base, size );
-
-				if( geo.w > base.w )
-				{
-					geo.x = 0;
-					geo.w = base.w;
-				}
-
-				if( geo.h > base.h )
-				{
-					geo.y = 0;
-					geo.h = base.h;
-				}
-				return geo;
-			}
-			case SizePolicy2D::Stretch:
-			{
-				return base;
-			}
-			case SizePolicy2D::Scale:
-			{
-				SizeSPX	orgSize = pSlot->_widget()->_defaultSize(m_scale);
-				SizeSPX	size;
-
-				float	fracX = orgSize.w / (float) base.w;
-				float	fracY = orgSize.h / (float) base.h;
-
-				if( fracX > fracY )
-				{
-					size.w = base.w;
-					size.h = int (orgSize.h / fracX);
-				}
-				else
-				{
-					size.h = base.h;
-					size.w = (int) (orgSize.w / fracY);
-				}
-
-				return Util::placementToRect( pSlot->m_placement, base, size );
-			}
-		}
+		RectSPX geo = rectFromPolicy(pSlot->m_sizePolicy, pSlot->m_placement, base, pSlot->_widget()->_defaultSize(m_scale));
+		
+		return geo;
 	}
 
 

@@ -46,11 +46,14 @@ namespace wg
 		bool		markTestNinePatch(CoordSPX ofs, Surface* pSurface, const NinePatch& patch, const RectSPX& _dest, int scale, int opacityTreshold);
 
 
-		CoordSPX 	placementToOfs( Placement placement, SizeSPX base );
-		RectSPX		placementToRect( Placement placement, SizeSPX base, SizeSPX rect );
+		CoordSPX 	placementToOfs( Placement placement, RectSPX base );
+		RectSPX		placementToRect( Placement placement, RectSPX base, SizeSPX rect );
 		CoordSPX	placeRectAroundCoord(Placement placement, CoordSPX coord, SizeSPX rectSize);
 
+		SizeSPX		sizeFromPolicy( SizePolicy2D sizePolicy, SizeSPX maxSize, SizeSPX orgSize );
+		RectSPX 	rectFromPolicy( SizePolicy2D sizePolicy, Placement placement, RectSPX bounds, SizeSPX orgSize );
 
+	
 		SizeSPX		scaleToFit(SizeSPX object, SizeSPX boundaries);
 
 		spx 		sizeFromConstraint( spx defaultSize, spx specifiedSize, SizeConstraint policy );
