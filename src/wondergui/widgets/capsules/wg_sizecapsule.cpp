@@ -122,6 +122,8 @@ namespace wg
 
    SizeSPX SizeCapsule::_defaultSize(int scale) const
    {
+	   Widget * pChild = slot._widget();
+	   
 	   // Special handling of m_maxSize to allow -1 to equal MAX.
 	   
 	   Size maxPts = m_maxSize;
@@ -136,7 +138,7 @@ namespace wg
 	   SizeSPX minSize		= align(ptsToSpx(m_minSize, scale));
 	   SizeSPX maxSize		= align(ptsToSpx(maxPts, scale));
 
-	   if (!slot._widget())
+	   if (!pChild)
 	   {
 		   SizeSPX size = { std::max(0, defaultSize.w), std::max(0, defaultSize.h) };
 		   size += m_skin.contentBorderSize(scale);
@@ -157,12 +159,7 @@ namespace wg
 			   pref.h = defaultSize.h;
 		   else
 		   {
-			   pref.h = _matchingHeight(pref.w, scale);
-
-			   if (pref.h > maxSize.h)
-				   pref.h = maxSize.h;
-			   if (pref.h < minSize.h)
-				   pref.h = minSize.h;
+			   pref.h = pChild->_matchingHeight(pref.w, scale);
 		   }
 	   }
 	   else if (defaultSize.h >= 0)
@@ -170,29 +167,21 @@ namespace wg
 		   // Default height is forced, we only need to adapt width.
 
 		   pref.h = defaultSize.w;
-		   pref.w = _matchingWidth(pref.h, scale);
-
-		   if (pref.w > maxSize.w)
-			   pref.w = maxSize.w;
-		   if (pref.w < minSize.w)
-			   pref.w = minSize.w;
+		   pref.w = pChild->_matchingWidth(pref.h, scale);
 	   }
 	   else
 	   {
 		   // Default size not set in size capsule.
 		   // We take default from child and check against our min/max.
 
-		   pref = slot._widget()->_defaultSize(scale);
+		   pref = pChild->_defaultSize(scale);
 
 		   if (pref.w > maxSize.w && pref.h > maxSize.h)
 		   {
 			   // Both width and height surpasses our max, get matching values for both and limit them to our min.
 
-			   spx matchW = _matchingWidth(maxSize.h,scale);
-			   spx matchH = _matchingHeight(maxSize.w,scale);
-
-			   matchW = std::max(matchW, minSize.w);
-			   matchH = std::max(matchH, minSize.h);
+			   spx matchW = pChild->_matchingWidth(maxSize.h,scale);
+			   spx matchH = pChild->_matchingHeight(maxSize.w,scale);
 
 			   //
 
@@ -226,35 +215,23 @@ namespace wg
 				   else
 				   {
 					   pref.w = maxSize.w;
-					   pref.h = maxSize.h;
+					   pref.h = matchH;
 				   }
 			   }
-
 		   }
 		   else if (pref.w > maxSize.w)
 		   {
 			   // Only width surpasses our max.
 
 			   pref.w = maxSize.w;
-			   pref.h = _matchingHeight(pref.w,scale);
-
-			   if (pref.h > maxSize.h)
-				   pref.h = maxSize.h;
-			   if (pref.h < minSize.h)
-				   pref.h = minSize.h;
+			   pref.h = pChild->_matchingHeight(pref.w,scale);
 		   }
 		   else if (pref.h > maxSize.h)
 		   {
 			   // Only height surpasses our max
 
 			   pref.h = maxSize.h;
-			   pref.w = _matchingWidth(pref.h,scale);
-
-			   if (pref.w > maxSize.w)
-				   pref.w = maxSize.w;
-			   if (pref.w < minSize.w)
-				   pref.w = minSize.w;
-
+			   pref.w = pChild->_matchingWidth(pref.h,scale);
 		   }
 		   else
 		   {
@@ -263,28 +240,20 @@ namespace wg
 			   if (pref.w < minSize.w)
 			   {
 				   pref.w = minSize.w;
-				   pref.h = _matchingHeight(pref.w,scale);
-
-				   if (pref.h > maxSize.h)
-					   pref.h = maxSize.h;
-				   if (pref.h < minSize.h)
-					   pref.h = minSize.h;
+				   pref.h = pChild->_matchingHeight(pref.w,scale);
 			   }
 			   else if (pref.h < minSize.h)
 			   {
 				   pref.h = minSize.h;
-				   pref.w = _matchingWidth(pref.h,scale);
-
-				   if (pref.w > maxSize.w)
-					   pref.w = maxSize.w;
-				   if (pref.w < minSize.w)
-					   pref.w = minSize.w;
+				   pref.w = pChild->_matchingWidth(pref.h,scale);
 			   }
 		   }
 	   }
 
-	   pref += m_skin.contentBorderSize(scale);
+	   limit(pref.w, minSize.w, maxSize.w);
+	   limit(pref.h, minSize.h, maxSize.h);
 
+	   pref += m_skin.contentBorderSize(scale);
 	   return pref;
    }
 
